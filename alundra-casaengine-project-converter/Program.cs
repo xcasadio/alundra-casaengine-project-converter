@@ -31,6 +31,12 @@ if (options.Phase >= 1)
     TileMapWriter.ConvertMaps(options.InputDirectory, options.OutputDirectory, options.MapFilter, report);
 }
 
+// Phase 2: per-cell gameplay metadata merged into TileMapData.CustomProperties.
+if (options.Phase >= 2)
+{
+    CellMetadataWriter.ConvertMaps(options.InputDirectory, options.OutputDirectory, options.MapFilter, report);
+}
+
 report.Save(Path.Combine(options.OutputDirectory, "report.json"));
 report.PrintSummary();
 
