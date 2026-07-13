@@ -7,5 +7,7 @@
     <Project Path="CasaEngineMonogame/MGUI/MGUI.Shared/MGUI.Shared.csproj" />
   </Folder>
   <Project Path="alundra-casaengine-project-converter/alundra-casaengine-project-converter.csproj" />
+  <Project Path="alundra-casaengine-project-converter.Tests/alundra-casaengine-project-converter.Tests.csproj" />
   <Project Path="CasaEngineMonogame/CasaEngine/CasaEngine.csproj" />
+  <Project Path="CasaEngineMonogame/CasaEngine.EditorServices/CasaEngine.EditorServices.csproj" />
 </Solution>

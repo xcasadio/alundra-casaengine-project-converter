@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CasaEngineMonogame\CasaEngine\CasaEngine.csproj" />
+    <ProjectReference Include="..\CasaEngineMonogame\CasaEngine.EditorServices\CasaEngine.EditorServices.csproj" />
     <ProjectReference Include="..\CasaEngineMonogame\MGUI\MGUI.Core\MGUI.Core.csproj" />
     <ProjectReference Include="..\CasaEngineMonogame\MGUI\MGUI.FontStashSharp\MGUI.FontStashSharp.csproj" />
     <ProjectReference Include="..\CasaEngineMonogame\MGUI\MGUI.Rendering.Abstractions\MGUI.Rendering.Abstractions.csproj" />

@@ -58,3 +58,6 @@ nunit-*.xml
 
 .vs/
 data-extracted/
+
+# Generated CasaEngine project (converter output)
+alundra-project/
