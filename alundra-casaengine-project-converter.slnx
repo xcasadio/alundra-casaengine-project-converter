@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/MGUI/">
+    <Project Path="CasaEngineMonogame/MGUI/MGUI.Core/MGUI.Core.csproj" />
+    <Project Path="CasaEngineMonogame/MGUI/MGUI.FontStashSharp/MGUI.FontStashSharp.csproj" />
+    <Project Path="CasaEngineMonogame/MGUI/MGUI.MonoGame.Integration/MGUI.MonoGame.Integration.csproj" />
+    <Project Path="CasaEngineMonogame/MGUI/MGUI.Rendering.Abstractions/MGUI.Rendering.Abstractions.csproj" />
+    <Project Path="CasaEngineMonogame/MGUI/MGUI.Shared/MGUI.Shared.csproj" />
+  </Folder>
+  <Project Path="alundra-casaengine-project-converter/alundra-casaengine-project-converter.csproj" />
+  <Project Path="CasaEngineMonogame/CasaEngine/CasaEngine.csproj" />
+</Solution>

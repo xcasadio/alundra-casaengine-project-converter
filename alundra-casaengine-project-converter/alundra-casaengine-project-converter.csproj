@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <RootNamespace>alundra_casaengine_project_converter</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CasaEngineMonogame\CasaEngine\CasaEngine.csproj" />
+    <ProjectReference Include="..\CasaEngineMonogame\MGUI\MGUI.Core\MGUI.Core.csproj" />
+    <ProjectReference Include="..\CasaEngineMonogame\MGUI\MGUI.FontStashSharp\MGUI.FontStashSharp.csproj" />
+    <ProjectReference Include="..\CasaEngineMonogame\MGUI\MGUI.Rendering.Abstractions\MGUI.Rendering.Abstractions.csproj" />
+    <ProjectReference Include="..\CasaEngineMonogame\MGUI\MGUI.Shared\MGUI.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

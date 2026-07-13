@@ -1,0 +1,4 @@
+[submodule "CasaEngineMonogame"]
+	path = CasaEngineMonogame
+	url = https://github.com/xcasadio/CasaEngineMonogame.git
+	branch = main
