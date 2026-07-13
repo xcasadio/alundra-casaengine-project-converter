@@ -25,9 +25,13 @@ if (options.Phase >= 0)
     ProjectWriter.CreateEmptyProject(options.OutputDirectory, report);
 }
 
+// Phase 1: textures, tilesets and tilemaps from the Tiled export.
+if (options.Phase >= 1)
+{
+    TileMapWriter.ConvertMaps(options.InputDirectory, options.OutputDirectory, options.MapFilter, report);
+}
+
 report.Save(Path.Combine(options.OutputDirectory, "report.json"));
 report.PrintSummary();
 
 return report.Errors.Count > 0 ? 1 : 0;
-
-

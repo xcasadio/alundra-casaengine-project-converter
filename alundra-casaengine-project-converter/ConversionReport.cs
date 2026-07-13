@@ -13,6 +13,11 @@ public sealed class ConversionReport
     public List<string> Errors { get; } = new();
     public List<string> Messages { get; } = new();
 
+    public void Increment(string counterName, int amount = 1)
+    {
+        Counters[counterName] = Counters.GetValueOrDefault(counterName) + amount;
+    }
+
     public void Save(string filePath)
     {
         var payload = new
