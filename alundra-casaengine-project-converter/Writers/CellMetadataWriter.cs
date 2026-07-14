@@ -23,21 +23,32 @@ public static class CellMetadataWriter
     };
 
     public static void ConvertMaps(
-        string inputDirectory, string outputDirectory, IReadOnlyList<int>? mapFilter, ConversionReport report)
+        string inputDirectory,
+        string outputDirectory,
+        IReadOnlyList<int>? mapFilter,
+        IReadOnlyDictionary<int, MapLocation> mapLocations,
+        ConversionReport report)
     {
-        var mapIndices = mapFilter is { Count: > 0 } ? mapFilter : DiscoverConvertedMapIndices(outputDirectory);
+        var mapIndices = mapFilter is { Count: > 0 } ? mapFilter : MapDiscovery.DiscoverMapIndices(inputDirectory);
 
         foreach (var mapIndex in mapIndices.OrderBy(index => index))
         {
-            ConvertMap(inputDirectory, outputDirectory, mapIndex, report);
+            ConvertMap(inputDirectory, outputDirectory, mapIndex, mapLocations, report);
         }
     }
 
-    private static void ConvertMap(string inputDirectory, string outputDirectory, int mapIndex, ConversionReport report)
+    private static void ConvertMap(
+        string inputDirectory,
+        string outputDirectory,
+        int mapIndex,
+        IReadOnlyDictionary<int, MapLocation> mapLocations,
+        ConversionReport report)
     {
         var companionPath = Path.Combine(inputDirectory, "data", "tiled", $"map_{mapIndex}.alundra.json");
         var nativeMapPath = Path.Combine(inputDirectory, "data", $"map_{mapIndex}.json");
-        var tileMapRelativePath = Path.Combine("Maps", $"map_{mapIndex}.tileMap");
+
+        var location = TileMapWriter.ResolveLocation(mapIndex, mapLocations, report);
+        var tileMapRelativePath = Path.Combine("Maps", location.ZoneFolder, $"{location.FileBaseName}.tileMap");
         var tileMapFullPath = Path.Combine(outputDirectory, tileMapRelativePath);
 
         if (!File.Exists(companionPath))
@@ -78,27 +89,5 @@ public static class CellMetadataWriter
 
         report.Increment("Maps.CellMetadata");
         report.Increment("Cells.WallTileStacks", cellMetadata.WallTiles.Count);
-    }
-
-    private static IReadOnlyList<int> DiscoverConvertedMapIndices(string outputDirectory)
-    {
-        var mapsDirectory = Path.Combine(outputDirectory, "Maps");
-        if (!Directory.Exists(mapsDirectory))
-        {
-            return Array.Empty<int>();
-        }
-
-        var indices = new List<int>();
-        foreach (var filePath in Directory.EnumerateFiles(mapsDirectory, "map_*.tileMap"))
-        {
-            var fileName = Path.GetFileNameWithoutExtension(filePath);
-            if (fileName.StartsWith("map_", StringComparison.Ordinal)
-                && int.TryParse(fileName.AsSpan(4), out var mapIndex))
-            {
-                indices.Add(mapIndex);
-            }
-        }
-
-        return indices;
     }
 }

@@ -8,6 +8,14 @@ sorties, des critères d'acceptation et une validation exécutable.
 génère un projet CasaEngine complet (catalogue + assets) dont chaque asset se charge sans erreur
 via les classes du moteur, et dont une map s'affiche dans l'éditeur/launcher.
 
+## Legende des statuts
+
+- ✅ Done
+- 🚧 In progress
+- ⏳ Todo
+- 🧪 Needs testing
+- ⚠️ Blocked
+
 ---
 
 ## 0. Prérequis
@@ -99,7 +107,7 @@ Règles de code (héritées du repo moteur) :
 
 ## 2. Phases
 
-### Phase 0 — Bootstrap et projet vide
+### ✅ Phase 0 — Bootstrap et projet vide
 
 **Entrées** : aucune. **Sorties** : squelette CLI + projet CasaEngine vide chargeable.
 
@@ -115,7 +123,7 @@ Règles de code (héritées du repo moteur) :
 **Acceptation** : build OK ; le projet vide s'ouvre dans l'éditeur CasaEngine (ou à défaut, un test
 qui charge `AlundraGame.json` + `AssetInfos.json` via `AssetCatalog` sans exception).
 
-### Phase 1 — Textures, tilesets, tilemaps
+### ✅ Phase 1 — Textures, tilesets, tilemaps
 
 **Entrées** : `data/tiled/map_N.{tmj,tsj,png}`, `data/map_N_tilesheet.png`.
 **Sorties** : `Content/Textures/map_N_tileset.png`, `Content/TileSets/map_N.tileset`,
@@ -133,7 +141,7 @@ qui charge `AlundraGame.json` + `AssetInfos.json` via `AssetCatalog` sans except
 `TileSetData.Load()` sans exception ; `map_10` contient bien 27 tiles animées ; `map_0` s'affiche
 dans l'éditeur.
 
-### Phase 2 — Métadonnées gameplay par cellule
+### ✅ Phase 2 — Métadonnées gameplay par cellule
 
 **Entrées** : `data/tiled/map_N.alundra.json` (+ `WallTiles` des JSON natifs).
 **Sorties** : données par cellule accessibles au runtime.
@@ -149,7 +157,7 @@ dans l'éditeur.
 **Acceptation** : golden file `map_10.cells.json` ; rechargement sans perte (comparaison
 round-trip source → converti → relu = identique champ à champ).
 
-### Phase 3 — Sprites et animations
+### ⏳ Phase 3 — Sprites et animations
 
 **Entrées** : `SpriteRecords` des 483 maps + `map_alundra.json` + spritesheets PNG.
 **Sorties** : `Content/Sprites/bank_<Sector5Id>/…`, `.sprite`, `.anim2d`, PNG par palette.
@@ -172,7 +180,7 @@ round-trip source → converti → relu = identique champ à champ).
 tous les `.sprite`/`.anim2d` rechargent via `Load()` ; report : 244 banques, 0 quad perdu
 (compteur quads lus = quads convertis).
 
-### Phase 4 — Audio
+### ⏳ Phase 4 — Audio
 
 **Entrées** : `sound/bgm/*.wav`, `sound/sfx/*.wav`, `bgm.json`, `sfx.json`.
 **Sorties** : `Content/Musics/`, `Content/Sounds/`, `Content/Sounds/sfx-manifest.json`.
@@ -186,7 +194,7 @@ tous les `.sprite`/`.anim2d` rechargent via `Load()` ; report : 244 banques, 0 q
 **Acceptation** : 1 041 WAV copiés + manifest ; test unitaire qui instancie un `SoundEffect`
 MonoGame avec les loop points du manifest sur un SFX bouclé (ex. `sfx_0001`, LoopStart=28).
 
-### Phase 5 — Textes, dialogues, police
+### ⏳Phase 5 — Textes, dialogues, police
 
 **Entrées** : `Strings[]` par map, `ETC_RES.R.json`, `ui/font3.{png,json}`.
 **Sorties** : `Content/Dialogues/`, `Content/UI/font3.fnt` + PNG.
@@ -204,7 +212,7 @@ MonoGame avec les loop points du manifest sur un SFX bouclé (ex. `sfx_0001`, Lo
 **Acceptation** : chaînes accentuées correctes en UTF-8 (échantillon : « Epée sacrée » etc. depuis
 ETC_RES) ; `.fnt` chargé par FontStashSharp dans un test ; report listant les codes de contrôle.
 
-### Phase 6 — Worlds, entités, portails, events
+### ⏳ Phase 6 — Worlds, entités, portails, events
 
 **Entrées** : `map_N.json` (Entities/Portals/MapEvents/EventCodes), assets des phases 1–3.
 **Sorties** : `Content/Worlds/map_N.world` + JSON compagnons events.
@@ -226,7 +234,7 @@ ETC_RES) ; `.fnt` chargé par FontStashSharp dans un test ; report listant les c
 9 631 entités, 3 316 portails, 1 714 map events répartis conformément aux stats du rapport
 d'analyse ; ouverture d'un world dans l'éditeur avec la tilemap visible.
 
-### Phase 7 — UI et divers
+### ⏳ Phase 7 — UI et divers
 
 1. `wind.json` → 277 `SpriteData` sur `wind.png` (`Content/UI/`).
 2. `memorycard/*.png`, `loading_screen.png` → textures cataloguées.
@@ -235,7 +243,7 @@ d'analyse ; ouverture d'un world dans l'éditeur avec la tilemap visible.
 
 **Acceptation** : catalogue complet, chargement round-trip OK.
 
-### Phase 8 — Validation globale et finition
+### ⏳ Phase 8 — Validation globale et finition
 
 1. Run complet sur les 483 maps : `0 erreur`, warnings triés par type dans `report.json`.
 2. Test automatisé « charge tout » : itérer `AssetInfos.json`, charger chaque asset via la classe

@@ -1,0 +1,2238 @@
+[
+  {
+    "Test Map": [
+      {
+        "id": 0,
+        "name": "Test Map"
+      }
+    ]
+  },
+  {
+    "Debug zone": [
+      {
+        "id": 11,
+        "name": "Debug zone"
+      }
+    ]
+  },
+  {
+    "The Klark": [
+      {
+        "id": 312,
+        "name": "Ship (inner, broken, unused)"
+      },
+      {
+        "id": 313,
+        "name": "Ship (inner, broken, unused)"
+      },
+      {
+        "id": 320,
+        "name": "Klark (outer, unused)"
+      },
+      {
+        "id": 387,
+        "name": "The Klark"
+      },
+      {
+        "id": 388,
+        "name": "The Klark - inner"
+      },
+      {
+        "id": 389,
+        "name": "Ship Klark (beginning)"
+      },
+      {
+        "id": 390,
+        "name": "Ship Klark (inner)"
+      },
+      {
+        "id": 391,
+        "name": "Ship Klark (night, break, Event)"
+      },
+      {
+        "id": 392,
+        "name": "Ship Klark (night, inner, break)"
+      }
+    ]
+  },
+  {
+    "Lars' Crypt": [
+      {
+        "id": 21,
+        "name": "Lars' Crypt"
+      },
+      {
+        "id": 22,
+        "name": "Lars' Crypt"
+      },
+      {
+        "id": 23,
+        "name": "Lars' Crypt"
+      },
+      {
+        "id": 24,
+        "name": "Lars' Crypt"
+      },
+      {
+        "id": 25,
+        "name": "Lars' Crypt"
+      }
+    ]
+  },
+  {
+    "Ancient Shrine": [
+      {
+        "id": 26,
+        "name": "Ancient Shrine"
+      },
+      {
+        "id": 27,
+        "name": "Ancient Shrine"
+      },
+      {
+        "id": 28,
+        "name": "Ancient Shrine"
+      },
+      {
+        "id": 29,
+        "name": "Ancient Shrine"
+      },
+      {
+        "id": 30,
+        "name": "Ancient Shrine"
+      },
+      {
+        "id": 31,
+        "name": "Ancient Shrine"
+      },
+      {
+        "id": 32,
+        "name": "Ancient Shrine"
+      },
+      {
+        "id": 33,
+        "name": "Ancient Shrine"
+      },
+      {
+        "id": 34,
+        "name": "Ancient Shrine - Golem"
+      }
+    ]
+  },
+  {
+    "Overworld": [
+      {
+        "id": 1,
+        "name": "Overworld 0,0"
+      },
+      {
+        "id": 2,
+        "name": "Overworld 0,1"
+      },
+      {
+        "id": 3,
+        "name": "Overworld 0,2"
+      },
+      {
+        "id": 4,
+        "name": "Overworld 0,3"
+      },
+      {
+        "id": 5,
+        "name": "Overworld 1,0"
+      },
+      {
+        "id": 6,
+        "name": "Overworld 1,1"
+      },
+      {
+        "id": 7,
+        "name": "Overworld 1,2"
+      },
+      {
+        "id": 8,
+        "name": "Overworld 1,3"
+      },
+      {
+        "id": 9,
+        "name": "Overworld 2,0"
+      },
+      {
+        "id": 10,
+        "name": "Overworld 2,1"
+      },
+      {
+        "id": 12,
+        "name": "Overworld 2,3"
+      },
+      {
+        "id": 13,
+        "name": "Overworld 3,0"
+      },
+      {
+        "id": 14,
+        "name": "Overworld 3,1"
+      },
+      {
+        "id": 15,
+        "name": "Overworld 3,2"
+      },
+      {
+        "id": 16,
+        "name": "Overworld 3,3"
+      },
+      {
+        "id": 17,
+        "name": "Overworld 4,0"
+      },
+      {
+        "id": 18,
+        "name": "Overworld 4,1"
+      },
+      {
+        "id": 19,
+        "name": "Overworld 4,2"
+      },
+      {
+        "id": 20,
+        "name": "Overworld 4,3"
+      }
+    ]
+  },
+  {
+    "Nirude’s Lair": [
+      {
+        "id": 35,
+        "name": "Nirude’s Lair"
+      },
+      {
+        "id": 36,
+        "name": "Nirude’s Lair"
+      },
+      {
+        "id": 37,
+        "name": "Nirude’s Lair"
+      },
+      {
+        "id": 38,
+        "name": "Nirude’s Lair"
+      },
+      {
+        "id": 39,
+        "name": "Nirude’s Lair"
+      },
+      {
+        "id": 40,
+        "name": "Nirude’s Lair"
+      }
+    ]
+  },
+  {
+    "Surferboy Nightmare": [
+      {
+        "id": 41,
+        "name": "Surferboy Nightmare (outer)"
+      },
+      {
+        "id": 43,
+        "name": "Surferboy Nightmare (outer)"
+      },
+      {
+        "id": 42,
+        "name": "Surferboy Nightmare (inner)"
+      }
+    ]
+  },
+  {
+    "Wendels Nightmare": [
+      {
+        "id": 44,
+        "name": "Wendels Nightmare"
+      }
+    ]
+  },
+  {
+    "Unused Dream": [
+      {
+        "id": 45,
+        "name": "Unused Dream (inner) (Beta Surferboys Dream)?"
+      },
+      {
+        "id": 46,
+        "name": "Unused Dream (outer) (Beta Surferboys Dream)?"
+      },
+      {
+        "id": 47,
+        "name": "Unused Dream (Boss) (Beta Surferboys Dream)?"
+      }
+    ]
+  },
+  {
+    "Elenes Nightmare": [
+      {
+        "id": 48,
+        "name": "Elenes Nightmare"
+      },
+      {
+        "id": 49,
+        "name": "Elenes Nightmare"
+      },
+      {
+        "id": 50,
+        "name": "Elenes Nightmare"
+      },
+      {
+        "id": 51,
+        "name": "Elenes Nightmare"
+      },
+      {
+        "id": 52,
+        "name": "Elenes Nightmare"
+      },
+      {
+        "id": 53,
+        "name": "Elenes Nightmare"
+      },
+      {
+        "id": 54,
+        "name": "Elenes Nightmare"
+      }
+    ]
+  },
+  {
+    "Torla Buggy? with bar music and random texts": [
+      {
+        "id": 55,
+        "name": "Torla Buggy? with bar music and random texts (early version of Torla)"
+      },
+      {
+        "id": 56,
+        "name": "Torla Buggy? with bar music and random texts (early version of Torla)"
+      },
+      {
+        "id": 57,
+        "name": "Torla Buggy? with bar music and random texts (early version of Torla)"
+      },
+      {
+        "id": 58,
+        "name": "Torla Buggy? with bar music and random texts (early version of Torla)"
+      },
+      {
+        "id": 59,
+        "name": "Torla Buggy? with bar music and random texts (early version of Torla)"
+      },
+      {
+        "id": 60,
+        "name": "Torla Buggy? with bar music and random texts (early version of Torla)"
+      }
+    ]
+  },
+  {
+    "Coal Mine": [
+      {
+        "id": 61,
+        "name": "Coal Mine (First Entrance)"
+      },
+      {
+        "id": 62,
+        "name": "Coal Mine"
+      },
+      {
+        "id": 63,
+        "name": "Coal Mine"
+      },
+      {
+        "id": 66,
+        "name": "Coal Mine"
+      },
+      {
+        "id": 67,
+        "name": "Coal Mine"
+      },
+      {
+        "id": 64,
+        "name": "Coal Mine (unused)"
+      },
+      {
+        "id": 65,
+        "name": "Coal Mine (unused?)"
+      },
+      {
+        "id": 68,
+        "name": "Coal Mine (unused?)"
+      },
+      {
+        "id": 328,
+        "name": "Coal Mine (generator)"
+      },
+      {
+        "id": 329,
+        "name": "Coal Mine (Elevator & Zazan & Murgg)"
+      }
+    ]
+  },
+  {
+    "Coastal Cave": [
+      {
+        "id": 69,
+        "name": "Coastal Cave"
+      },
+      {
+        "id": 70,
+        "name": "Coastal Cave"
+      },
+      {
+        "id": 71,
+        "name": "Coastal Cave"
+      },
+      {
+        "id": 72,
+        "name": "Coastal Cave"
+      },
+      {
+        "id": 73,
+        "name": "Coastal Cave"
+      },
+      {
+        "id": 74,
+        "name": "Coastal Cave"
+      },
+      {
+        "id": 75,
+        "name": "Coastal Cave"
+      },
+      {
+        "id": 76,
+        "name": "Coastal Cave (Boss)"
+      }
+    ]
+  },
+  {
+    "Underground Watercourse": [
+      {
+        "id": 77,
+        "name": "Underground Watercourse"
+      },
+      {
+        "id": 78,
+        "name": "Underground Watercourse"
+      },
+      {
+        "id": 79,
+        "name": "Underground Watercourse"
+      }
+    ]
+  },
+  {
+    "Lizardman's Lair": [
+      {
+        "id": 80,
+        "name": "Lizardman's Lair"
+      },
+      {
+        "id": 81,
+        "name": "Lizardman's Lair"
+      },
+      {
+        "id": 82,
+        "name": "Lizardman's Lair"
+      },
+      {
+        "id": 83,
+        "name": "Lizardman's Lair"
+      },
+      {
+        "id": 84,
+        "name": "Lizardman's Lair"
+      },
+      {
+        "id": 85,
+        "name": "Lizardman's Lair"
+      },
+      {
+        "id": 408,
+        "name": "Lizardman's Lair"
+      },
+      {
+        "id": 409,
+        "name": "Lizardman's Lair"
+      },
+      {
+        "id": 410,
+        "name": "Lizardman's Lair"
+      },
+      {
+        "id": 411,
+        "name": "Lizardman's Lair (Boss)"
+      }
+    ]
+  },
+  {
+    "Magyscar": [
+      {
+        "id": 86,
+        "name": "Magyscar"
+      },
+      {
+        "id": 87,
+        "name": "Magyscar"
+      },
+      {
+        "id": 88,
+        "name": "Magyscar"
+      },
+      {
+        "id": 89,
+        "name": "Magyscar"
+      },
+      {
+        "id": 90,
+        "name": "Magyscar"
+      },
+      {
+        "id": 91,
+        "name": "Magyscar"
+      },
+      {
+        "id": 92,
+        "name": "Magyscar"
+      },
+      {
+        "id": 93,
+        "name": "Magyscar"
+      },
+      {
+        "id": 94,
+        "name": "Magyscar (Boss / Uma)"
+      }
+    ]
+  },
+  {
+    "Unused Nightmare": [
+      {
+        "id": 95,
+        "name": "Unused Nightmare"
+      },
+      {
+        "id": 96,
+        "name": "Unused Nightmare"
+      },
+      {
+        "id": 97,
+        "name": "Unused Nightmare"
+      },
+      {
+        "id": 98,
+        "name": "Unused Nightmare (Boss / Dream Eater)"
+      }
+    ]
+  },
+  {
+    "Giles Nightmare": [
+      {
+        "id": 99,
+        "name": "Giles Nightmare"
+      },
+      {
+        "id": 100,
+        "name": "Giles Nightmare"
+      },
+      {
+        "id": 101,
+        "name": "Giles Nightmare"
+      },
+      {
+        "id": 102,
+        "name": "Giles Nightmare"
+      },
+      {
+        "id": 103,
+        "name": "Giles Nightmare"
+      },
+      {
+        "id": 104,
+        "name": "Giles Nightmare"
+      },
+      {
+        "id": 105,
+        "name": "Giles Nightmare"
+      },
+      {
+        "id": 106,
+        "name": "Giles Nightmare"
+      },
+      {
+        "id": 107,
+        "name": "Giles Nightmare"
+      },
+      {
+        "id": 449,
+        "name": "Giles Nightmare (Boss)"
+      }
+    ]
+  },
+  {
+    "Nestus' Dream": [
+      {
+        "id": 108,
+        "name": "Nestus' Dream (Boss)"
+      },
+      {
+        "id": 109,
+        "name": "Nestus' Dream"
+      },
+      {
+        "id": 110,
+        "name": "Nestus' Dream"
+      },
+      {
+        "id": 111,
+        "name": "Nestus' Dream"
+      },
+      {
+        "id": 112,
+        "name": "Nestus' Dream"
+      },
+      {
+        "id": 113,
+        "name": "Nestus' Dream"
+      }
+    ]
+  },
+  {
+    "Tarn's Manor": [
+      {
+        "id": 114,
+        "name": "Tarn's Manor"
+      },
+      {
+        "id": 115,
+        "name": "Tarn's Manor"
+      },
+      {
+        "id": 116,
+        "name": "Tarn's Manor"
+      },
+      {
+        "id": 117,
+        "name": "Tarn's Manor (unused broken)"
+      }
+    ]
+  },
+  {
+    "Old desert entrance": [
+      {
+        "id": 118,
+        "name": "Old desert entrance (unused)"
+      },
+      {
+        "id": 119,
+        "name": "Old desert entrance (unused)"
+      },
+      {
+        "id": 120,
+        "name": "Old desert entrance (unused)"
+      },
+      {
+        "id": 121,
+        "name": "Old desert entrance (unused)"
+      }
+    ]
+  },
+  {
+    "Kline's Nightmare": [
+      {
+        "id": 123,
+        "name": "Kline's Nightmare"
+      },
+      {
+        "id": 124,
+        "name": "Kline's Nightmare"
+      },
+      {
+        "id": 125,
+        "name": "Kline's Nightmare"
+      },
+      {
+        "id": 126,
+        "name": "Kline's Nightmare"
+      },
+      {
+        "id": 127,
+        "name": "Kline's Nightmare"
+      },
+      {
+        "id": 122,
+        "name": "Kline's Nightmare (Boss)"
+      }
+    ]
+  },
+  {
+    "Inoa": [
+      {
+        "id": 128,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 129,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 130,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 131,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 132,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 163,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 164,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 165,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 166,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 167,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 168,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 170,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 171,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 172,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 173,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 174,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 175,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 177,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 178,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 179,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 180,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 181,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 182,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 184,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 185,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 187,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 188,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 189,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 190,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 191,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 192,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 194,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 195,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 196,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 197,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 199,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 200,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 201,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 202,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 203,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 204,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 206,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 207,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 208,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 209,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 210,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 211,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 213,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 214,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 215,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 216,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 217,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 218,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 220,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 221,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 222,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 223,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 224,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 225,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 227,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 228,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 229,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 231,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 232,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 233,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 234,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 235,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 236,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 238,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 239,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 240,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 242,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 243,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 244,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 245,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 246,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 247,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 249,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 250,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 251,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 253,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 254,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 255,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 256,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 257,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 258,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 260,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 261,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 262,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 263,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 264,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 265,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 267,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 268,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 269,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 270,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 272,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 273,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 274,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 276,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 277,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 278,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 279,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 280,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 281,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 283,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 284,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 285,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 286,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 287,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 288,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 332,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 333,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 334,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 336,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 359,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 361,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 365,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 366,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 370,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 372,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 373,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 374,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 375,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 376,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 377,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 387,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 417,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 418,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 419,
+        "name": "Inoa (inner)"
+      },
+      {
+        "id": 133,
+        "name": "Inoa (inner, Merrick)"
+      },
+      {
+        "id": 162,
+        "name": "Inoa"
+      },
+      {
+        "id": 169,
+        "name": "Inoa"
+      },
+      {
+        "id": 176,
+        "name": "Inoa"
+      },
+      {
+        "id": 183,
+        "name": "Inoa"
+      },
+      {
+        "id": 186,
+        "name": "Inoa"
+      },
+      {
+        "id": 193,
+        "name": "Inoa"
+      },
+      {
+        "id": 198,
+        "name": "Inoa"
+      },
+      {
+        "id": 205,
+        "name": "Inoa"
+      },
+      {
+        "id": 212,
+        "name": "Inoa"
+      },
+      {
+        "id": 219,
+        "name": "Inoa"
+      },
+      {
+        "id": 226,
+        "name": "Inoa"
+      },
+      {
+        "id": 230,
+        "name": "Inoa"
+      },
+      {
+        "id": 237,
+        "name": "Inoa"
+      },
+      {
+        "id": 241,
+        "name": "Inoa"
+      },
+      {
+        "id": 248,
+        "name": "Inoa"
+      },
+      {
+        "id": 252,
+        "name": "Inoa"
+      },
+      {
+        "id": 259,
+        "name": "Inoa"
+      },
+      {
+        "id": 266,
+        "name": "Inoa"
+      },
+      {
+        "id": 271,
+        "name": "Inoa"
+      },
+      {
+        "id": 275,
+        "name": "Inoa"
+      },
+      {
+        "id": 282,
+        "name": "Inoa"
+      },
+      {
+        "id": 330,
+        "name": "Inoa"
+      },
+      {
+        "id": 364,
+        "name": "Inoa"
+      },
+      {
+        "id": 371,
+        "name": "Inoa"
+      },
+      {
+        "id": 289,
+        "name": "Inoa (night)"
+      },
+      {
+        "id": 290,
+        "name": "Inoa (inner, night)"
+      },
+      {
+        "id": 291,
+        "name": "Inoa (inner, night)"
+      },
+      {
+        "id": 292,
+        "name": "Inoa (inner, night)"
+      },
+      {
+        "id": 293,
+        "name": "Inoa (burning)"
+      },
+      {
+        "id": 294,
+        "name": "Inoa (inner, burning)"
+      },
+      {
+        "id": 295,
+        "name": "Inoa (inner, burning)"
+      },
+      {
+        "id": 296,
+        "name": "Inoa (inner, burning)"
+      },
+      {
+        "id": 297,
+        "name": "Inoa (destroyed)"
+      },
+      {
+        "id": 301,
+        "name": "Inoa (destroyed)"
+      },
+      {
+        "id": 298,
+        "name": "Inoa (inner, destroyed)"
+      },
+      {
+        "id": 299,
+        "name": "Inoa (inner, destroyed)"
+      },
+      {
+        "id": 300,
+        "name": "Inoa (inner, destroyed)"
+      },
+      {
+        "id": 302,
+        "name": "Inoa (inner, destroyed)"
+      },
+      {
+        "id": 357,
+        "name": "Inoa (night, Kline Event)"
+      },
+      {
+        "id": 358,
+        "name": "Inoa (night, inner, Kline Event)"
+      },
+      {
+        "id": 360,
+        "name": "Inoa (night, inner, Kline Event?)"
+      },
+      {
+        "id": 367,
+        "name": "Inoa (Kline, Sybil's vision)"
+      },
+      {
+        "id": 475,
+        "name": "Inoa (inner, Yustel, Map)"
+      },
+      {
+        "id": 478,
+        "name": "Inoa (Vision Event from Lars and Melzas cutscene)"
+      },
+      {
+        "id": 481,
+        "name": "Inoa (night, Sybil crime scene)"
+      }
+    ]
+  },
+  {
+    "Church": [
+      {
+        "id": 134,
+        "name": "Church (lobby)"
+      },
+      {
+        "id": 135,
+        "name": "Church"
+      },
+      {
+        "id": 136,
+        "name": "Church"
+      },
+      {
+        "id": 137,
+        "name": "Church (basement, Holy sword)"
+      }
+    ]
+  },
+  {
+    "Cave": [
+      {
+        "id": 138,
+        "name": "Cave"
+      },
+      {
+        "id": 140,
+        "name": "Cave"
+      },
+      {
+        "id": 141,
+        "name": "Cave"
+      },
+      {
+        "id": 145,
+        "name": "Cave"
+      },
+      {
+        "id": 139,
+        "name": "Cave (Fire manor)"
+      },
+      {
+        "id": 316,
+        "name": "Cave (unused) probably Nava entrance early"
+      },
+      {
+        "id": 317,
+        "name": "Cave (unused) probably Nava entrance early"
+      },
+      {
+        "id": 318,
+        "name": "Cave (unused) probably Nava entrance early"
+      },
+      {
+        "id": 319,
+        "name": "Cave (unused) probably Nava entrance early"
+      }
+    ]
+  },
+  {
+    "Kohei Tanaka House / Olen? house": [
+      {
+        "id": 142,
+        "name": "Kohei Tanaka House / Olen? house (music house)"
+      }
+    ]
+  },
+  {
+    "Magyscar Entrance": [
+      {
+        "id": 144,
+        "name": "Magyscar Entrance"
+      }
+    ]
+  },
+  {
+    "Murgg Tree": [
+      {
+        "id": 146,
+        "name": "Murgg Tree Houses"
+      },
+      {
+        "id": 147,
+        "name": "Murgg Tree (inner)"
+      },
+      {
+        "id": 148,
+        "name": "Murgg Tree (inner)"
+      },
+      {
+        "id": 149,
+        "name": "Murgg Tree (inner)"
+      },
+      {
+        "id": 150,
+        "name": "Murgg Tree (inner)"
+      },
+      {
+        "id": 151,
+        "name": "Murgg Tree (inner)"
+      },
+      {
+        "id": 153,
+        "name": "Murgg Tree (inner)"
+      },
+      {
+        "id": 154,
+        "name": "Murgg Tree (inner)"
+      },
+      {
+        "id": 152,
+        "name": "Murgg Tree (Boss)"
+      },
+      {
+        "id": 155,
+        "name": "Murgg Tree (elevator)"
+      },
+      {
+        "id": 399,
+        "name": "Murgg Golem (Boss)"
+      }
+    ]
+  },
+  {
+    "Fairy cave": [
+      {
+        "id": 156,
+        "name": "Fairy cave? (bugged / unused?)"
+      },
+      {
+        "id": 157,
+        "name": "Fairy cave"
+      },
+      {
+        "id": 158,
+        "name": "Fairy cave"
+      },
+      {
+        "id": 159,
+        "name": "Fairy cave (underwater)"
+      },
+      {
+        "id": 160,
+        "name": "Fairy cave (underwater)"
+      },
+      {
+        "id": 161,
+        "name": "Fairy cave (Stenia)"
+      }
+    ]
+  },
+  {
+    "Olen, Cephas house": [
+      {
+        "id": 303,
+        "name": "Olen, Cephas house"
+      }
+    ]
+  },
+  {
+    "Ice manor": [
+      {
+        "id": 304,
+        "name": "Ice manor"
+      }
+    ]
+  },
+  {
+    "Meia Dream": [
+      {
+        "id": 305,
+        "name": "Meia Dream (unused?)"
+      },
+      {
+        "id": 306,
+        "name": "Meia Dream"
+      },
+      {
+        "id": 307,
+        "name": "Meia Dream"
+      },
+      {
+        "id": 440,
+        "name": "Meia Dream"
+      },
+      {
+        "id": 441,
+        "name": "Meia Dream"
+      },
+      {
+        "id": 442,
+        "name": "Meia Dream"
+      },
+      {
+        "id": 308,
+        "name": "Meia Dream (flashback)"
+      },
+      {
+        "id": 309,
+        "name": "Meia Dream (flashback)"
+      },
+      {
+        "id": 310,
+        "name": "Meia Dream (flashback, Inoa)"
+      }
+    ]
+  },
+  {
+    "Well": [
+      {
+        "id": 311,
+        "name": "Well (+Lurvy house unused?)"
+      }
+    ]
+  },
+  {
+    "Arena Zorgia": [
+      {
+        "id": 321,
+        "name": "Arena Zorgia (Boss)"
+      }
+    ]
+  },
+  {
+    "Arena Corpse Worm": [
+      {
+        "id": 322,
+        "name": "Arena Corpse Worm (Boss)"
+      }
+    ]
+  },
+  {
+    "Arena Black Dragon": [
+      {
+        "id": 323,
+        "name": "Arena Black Dragon (Boss)"
+      }
+    ]
+  },
+  {
+    "Arena Nirude": [
+      {
+        "id": 324,
+        "name": "Arena Nirude (Boss)"
+      }
+    ]
+  },
+  {
+    "Arena Wilda": [
+      {
+        "id": 325,
+        "name": "Arena Wilda (Boss)"
+      }
+    ]
+  },
+  {
+    "Arena Ronan": [
+      {
+        "id": 326,
+        "name": "Arena Ronan (Boss)"
+      }
+    ]
+  },
+  {
+    "Arena Melzas 1": [
+      {
+        "id": 327,
+        "name": "Arena Melzas 1 (Boss)"
+      }
+    ]
+  },
+  {
+    "Church / Graveyard": [
+      {
+        "id": 331,
+        "name": "Church / Graveyard (probably for events)"
+      }
+    ]
+  },
+  {
+    "Coal Mine outer": [
+      {
+        "id": 335,
+        "name": "Coal Mine outer (exit Event)"
+      }
+    ]
+  },
+  {
+    "Lake Shrine": [
+      {
+        "id": 337,
+        "name": "Lake Shrine (inner)"
+      },
+      {
+        "id": 338,
+        "name": "Lake Shrine (inner)"
+      },
+      {
+        "id": 339,
+        "name": "Lake Shrine (inner)"
+      },
+      {
+        "id": 340,
+        "name": "Lake Shrine (inner)"
+      },
+      {
+        "id": 341,
+        "name": "Lake Shrine (inner)"
+      },
+      {
+        "id": 342,
+        "name": "Lake Shrine (inner)"
+      },
+      {
+        "id": 343,
+        "name": "Lake Shrine (inner)"
+      },
+      {
+        "id": 344,
+        "name": "Lake Shrine (inner)"
+      },
+      {
+        "id": 345,
+        "name": "Lake Shrine (inner)"
+      },
+      {
+        "id": 346,
+        "name": "Lake Shrine (inner)"
+      },
+      {
+        "id": 347,
+        "name": "Lake Shrine (inner)"
+      },
+      {
+        "id": 348,
+        "name": "Lake Shrine (inner)"
+      },
+      {
+        "id": 349,
+        "name": "Lake Shrine (inner)"
+      },
+      {
+        "id": 350,
+        "name": "Lake Shrine (inner)"
+      },
+      {
+        "id": 351,
+        "name": "Lake Shrine (inner)"
+      },
+      {
+        "id": 352,
+        "name": "Lake Shrine (inner)"
+      },
+      {
+        "id": 353,
+        "name": "Lake Shrine (inner)"
+      },
+      {
+        "id": 354,
+        "name": "Lake Shrine (outer, unused)"
+      },
+      {
+        "id": 413,
+        "name": "Lake Shrine (outer, unused)"
+      },
+      {
+        "id": 355,
+        "name": "Lake Shrine (roof)"
+      },
+      {
+        "id": 356,
+        "name": "Lake Shrine (roof)"
+      },
+      {
+        "id": 414,
+        "name": "Lake Shrine (inner, unused)"
+      },
+      {
+        "id": 433,
+        "name": "Lake Shrine"
+      },
+      {
+        "id": 434,
+        "name": "Lake Shrine (garden)"
+      },
+      {
+        "id": 480,
+        "name": "Lake Shrine (Melzas, Dark Dragon Event)"
+      }
+    ]
+  },
+  {
+    "Coal Mine / Olen's Dream": [
+      {
+        "id": 362,
+        "name": "Coal Mine / Olen's Dream"
+      },
+      {
+        "id": 363,
+        "name": "Coal Mine / Olen's Dream"
+      }
+    ]
+  },
+  {
+    "Arena Zazan": [
+      {
+        "id": 368,
+        "name": "Arena Zazan (Sybil's vision)"
+      }
+    ]
+  },
+  {
+    "Mrugg House": [
+      {
+        "id": 369,
+        "name": "Mrugg House (Sybil's vision?)"
+      }
+    ]
+  },
+  {
+    "Lake Shrine Bridge": [
+      {
+        "id": 378,
+        "name": "Lake Shrine Bridge (Event)?"
+      },
+      {
+        "id": 412,
+        "name": "Lake Shrine Bridge (Event?)"
+      }
+    ]
+  },
+  {
+    "Lake Shrine teleporter": [
+      {
+        "id": 379,
+        "name": "Lake Shrine teleporter"
+      }
+    ]
+  },
+  {
+    "Deep Cave with Mimics": [
+      {
+        "id": 380,
+        "name": "Deep Cave with Mimics"
+      },
+      {
+        "id": 397,
+        "name": "Deep Cave with Mimics (unused?)"
+      }
+    ]
+  },
+  {
+    "Warp-Zone": [
+      {
+        "id": 381,
+        "name": "Warp-Zone"
+      }
+    ]
+  },
+  {
+    "Murgg Caves": [
+      {
+        "id": 382,
+        "name": "Murgg Caves"
+      },
+      {
+        "id": 383,
+        "name": "Murgg Caves"
+      },
+      {
+        "id": 384,
+        "name": "Murgg Caves"
+      },
+      {
+        "id": 385,
+        "name": "Murgg Caves"
+      },
+      {
+        "id": 386,
+        "name": "Murgg Caves"
+      }
+    ]
+  },
+  {
+    "Nirude": [
+      {
+        "id": 388,
+        "name": "Nirude (Event)"
+      },
+      {
+        "id": 421,
+        "name": "Nirude (inner)"
+      },
+      {
+        "id": 422,
+        "name": "Nirude (inner)"
+      },
+      {
+        "id": 423,
+        "name": "Nirude (inner)"
+      },
+      {
+        "id": 424,
+        "name": "Nirude (inner)"
+      },
+      {
+        "id": 425,
+        "name": "Nirude (inner)"
+      },
+      {
+        "id": 426,
+        "name": "Nirude (inner)"
+      },
+      {
+        "id": 439,
+        "name": "Nirude (outer, Event, water cape)"
+      },
+      {
+        "id": 451,
+        "name": "Nirude (inner, Event)"
+      }
+    ]
+  },
+  {
+    "Water Mill": [
+      {
+        "id": 393,
+        "name": "Water Mill"
+      },
+      {
+        "id": 395,
+        "name": "Water Mill (inner)"
+      }
+    ]
+  },
+  {
+    "Pub Entrance + Floor": [
+      {
+        "id": 394,
+        "name": "Pub Entrance + Floor"
+      }
+    ]
+  },
+  {
+    "Sluice, Berue, Cave": [
+      {
+        "id": 396,
+        "name": "Sluice, Berue, Cave"
+      }
+    ]
+  },
+  {
+    "Lurvy House, Well": [
+      {
+        "id": 398,
+        "name": "Lurvy House, Well"
+      }
+    ]
+  },
+  {
+    "Desert": [
+      {
+        "id": 400,
+        "name": "Desert / Ancient Shrine"
+      },
+      {
+        "id": 401,
+        "name": "Desert Entrance"
+      },
+      {
+        "id": 402,
+        "name": "Desert Cave (sand Cape)"
+      }
+    ]
+  },
+  {
+    "Desert Mini Puzle to Shrine": [
+      {
+        "id": 403,
+        "name": "Desert Mini Puzle to Shrine"
+      },
+      {
+        "id": 404,
+        "name": "Desert Mini Puzle to Shrine"
+      },
+      {
+        "id": 405,
+        "name": "Desert Mini Puzle to Shrine"
+      },
+      {
+        "id": 406,
+        "name": "Desert Mini Puzle to Shrine"
+      }
+    ]
+  },
+  {
+    "Coast": [
+      {
+        "id": 407,
+        "name": "Coast"
+      },
+      {
+        "id": 416,
+        "name": "Coast beginning"
+      }
+    ]
+  },
+  {
+    "Lake Shrine Melzas": [
+      {
+        "id": 415,
+        "name": "Lake Shrine Melzas (inner, Beginning Event?)"
+      }
+    ]
+  },
+  {
+    "Dark Castle": [
+      {
+        "id": 427,
+        "name": "Dark Castle (unused)"
+      }
+    ]
+  },
+  {
+    "A big mess": [
+      {
+        "id": 428,
+        "name": "A big mess (unused)"
+      }
+    ]
+  },
+  {
+    "Nava": [
+      {
+        "id": 314,
+        "name": "Island (unused) probably Nava early"
+      },
+      {
+        "id": 315,
+        "name": "Island (unused) probably Nava early"
+      },
+      {
+        "id": 143,
+        "name": "Coast house (nava's cave entrance)"
+      },
+      {
+        "id": 420,
+        "name": "Coast house (Nava)"
+      },
+      {
+        "id": 429,
+        "name": "Nava''s Entrance Caves"
+      },
+      {
+        "id": 430,
+        "name": "Nava''s Entrance Caves"
+      },
+      {
+        "id": 431,
+        "name": "Nava''s Island"
+      },
+      {
+        "id": 432,
+        "name": "Nava''s House (inner)"
+      }
+    ]
+  },
+  {
+    "Elane Nightmare": [
+      {
+        "id": 435,
+        "name": "Elane Nightmare"
+      },
+      {
+        "id": 436,
+        "name": "Elane Nightmare"
+      },
+      {
+        "id": 437,
+        "name": "Elane Nightmare"
+      },
+      {
+        "id": 438,
+        "name": "Elane Nightmare"
+      }
+    ]
+  },
+  {
+    "Torla": [
+      {
+        "id": 443,
+        "name": "Torla (inner)"
+      },
+      {
+        "id": 444,
+        "name": "Torla (inner)"
+      },
+      {
+        "id": 445,
+        "name": "Torla (inner)"
+      },
+      {
+        "id": 446,
+        "name": "Torla (inner)"
+      },
+      {
+        "id": 447,
+        "name": "Torla (inner)"
+      },
+      {
+        "id": 448,
+        "name": "Torla (inner)"
+      }
+    ]
+  },
+  {
+    "Desert": [
+      {
+        "id": 450,
+        "name": "Desert"
+      }
+    ]
+  },
+  {
+    "Save Room": [
+      {
+        "id": 452,
+        "name": "Save Room (Coal Mine)"
+      },
+      {
+        "id": 453,
+        "name": "Save Room (Lars Crypt)"
+      },
+      {
+        "id": 454,
+        "name": "Save Room (Coastal Cave?)"
+      },
+      {
+        "id": 455,
+        "name": "Save Room (Desert / Ancient Shrine)"
+      },
+      {
+        "id": 456,
+        "name": "Save Room (Magyscar)"
+      },
+      {
+        "id": 457,
+        "name": "Save Room (Underground Watercourse)"
+      },
+      {
+        "id": 458,
+        "name": "Save Room (Lizardman's Lair)"
+      },
+      {
+        "id": 459,
+        "name": "Save Room (Magyscar?)"
+      },
+      {
+        "id": 460,
+        "name": "Save Room (Nirude)"
+      },
+      {
+        "id": 461,
+        "name": "Save Room (?)"
+      },
+      {
+        "id": 462,
+        "name": "Save Room (Murgg Tree)"
+      },
+      {
+        "id": 463,
+        "name": "Save Room (Fairy cave)"
+      },
+      {
+        "id": 464,
+        "name": "Save Room (Lake Shrine?)"
+      },
+      {
+        "id": 465,
+        "name": "Save Room (Nightmare ...)"
+      },
+      {
+        "id": 466,
+        "name": "Save Room (Kline's Nightmare)"
+      },
+      {
+        "id": 467,
+        "name": "Save Room (Giles Nightmare)"
+      },
+      {
+        "id": 468,
+        "name": "Save Room (Meia Dream)"
+      },
+      {
+        "id": 469,
+        "name": "Save Room (Elenes Nightmare)"
+      },
+      {
+        "id": 470,
+        "name": "Save Room (Nestus' Dream)"
+      }
+    ]
+  },
+  {
+    "Arena Melzas 2": [
+      {
+        "id": 471,
+        "name": "Arena Melzas 2 (Boss)"
+      }
+    ]
+  },
+  {
+    "Pub": [
+      {
+        "id": 472,
+        "name": "Pub (Ring)"
+      },
+      {
+        "id": 473,
+        "name": "Pub (Shooting)"
+      },
+      {
+        "id": 474,
+        "name": "Pub (Roulette)"
+      }
+    ]
+  },
+  {
+    "Lars & Melzas Room": [
+      {
+        "id": 476,
+        "name": "Lars & Melzas Room (beginning Event)"
+      }
+    ]
+  },
+  {
+    "Continue Screen": [
+      {
+        "id": 477,
+        "name": "Continue Screen"
+      }
+    ]
+  },
+  {
+    "Overworld 0,0 with Lake Shrine Entrance": [
+      {
+        "id": 479,
+        "name": "Overworld 0,0 with Lake Shrine Entrance"
+      }
+    ]
+  },
+  {
+    "Church Basement": [
+      {
+        "id": 482,
+        "name": "Church Basement (Event for final Battle)"
+      }
+    ]
+  }
+]

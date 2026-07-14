@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "alundra-casaengine-project-converter": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\development\\repo\\alundra-casaengine-project-converter\\data-extracted D:\\development\\repo\\alundra-casaengine-project-converter\\alundra-project"
+    }
+  }
+}

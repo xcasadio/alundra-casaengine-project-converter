@@ -31,20 +31,21 @@ public class CellMetadataWriterTests
         try
         {
             WriteMapFixture(inputDirectory, mapIndex: 0);
+            var mapLocations = new Dictionary<int, MapLocation> { [0] = new MapLocation("TestZone", "Test Map-0") };
 
             EngineEnvironment.ProjectPath = outputDirectory;
             EditorAssetCatalogService.Clear();
 
             var report = new ConversionReport();
             ProjectWriter.CreateEmptyProject(outputDirectory, report);
-            TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, report);
-            CellMetadataWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, report);
+            TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
+            CellMetadataWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
 
             Assert.Empty(report.Errors);
             Assert.Equal(1, report.Counters["Maps.CellMetadata"]);
             Assert.Equal(1, report.Counters["Cells.WallTileStacks"]);
 
-            var tileMapPath = Path.Combine(outputDirectory, "Maps", "map_0.tileMap");
+            var tileMapPath = Path.Combine(outputDirectory, "Maps", "TestZone", "Test Map-0.tileMap");
             var tileMapDocument = JObject.Parse(File.ReadAllText(tileMapPath));
             var customProperties = Assert.IsType<JObject>(tileMapDocument["custom_properties"]);
             var cellsJson = (string?)customProperties["AlundraCells"];
@@ -104,8 +105,9 @@ public class CellMetadataWriterTests
             var report = new ConversionReport();
             ProjectWriter.CreateEmptyProject(outputDirectory, report);
 
-            // Phase 1 intentionally not run: no Maps/map_0.tileMap exists yet.
-            CellMetadataWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: new[] { 0 }, report);
+            // Phase 1 intentionally not run: no .tileMap asset exists yet.
+            CellMetadataWriter.ConvertMaps(
+                inputDirectory, outputDirectory, mapFilter: new[] { 0 }, new Dictionary<int, MapLocation>(), report);
 
             Assert.False(report.Counters.ContainsKey("Maps.CellMetadata"));
             Assert.Contains(report.Warnings, warning => warning.Contains("tileMap asset not found", StringComparison.Ordinal));
