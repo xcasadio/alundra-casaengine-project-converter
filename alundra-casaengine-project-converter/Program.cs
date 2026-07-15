@@ -56,6 +56,12 @@ if (options.Phase >= 2)
     CellMetadataWriter.ConvertMaps(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report);
 }
 
+// Phase 3: sprite banks and their animations.
+if (options.Phase >= 3)
+{
+    SpriteWriter.ConvertSprites(options.InputDirectory, options.OutputDirectory, report);
+}
+
 report.Save(Path.Combine(options.OutputDirectory, "report.json"));
 report.PrintSummary();
 
