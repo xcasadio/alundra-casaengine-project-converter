@@ -4,6 +4,8 @@ using CasaEngine.EditorServices;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Assets.Sprites;
+using CasaEngine.Framework.Assets.Textures;
+using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -123,6 +125,17 @@ public class SpriteWriterTests
             var heroEffectsPath = Path.Combine(outputDirectory, "Sprites", "hero", "hero_effects.json");
             Assert.True(File.Exists(heroEffectsPath));
             Assert.Equal(2, report.Counters["Sprites.HeroEffectsPreserved"]);
+
+            // Regression guard: AssetLoader<Texture>.LoadAsset swallows its exception and returns
+            // null on any missing sampler_state field, surfacing only as a generic "IAssetLoader
+            // can't load" error in the editor with no indication of the real cause. Load()'ing the
+            // wrapper for real is the only way to catch a schema mismatch here.
+            var textureWrapperPath = Path.Combine(outputDirectory, "Sprites", "Textures", "map_0_spritesheet.texture");
+            Assert.True(File.Exists(textureWrapperPath));
+            var texture = new CasaEngine.Framework.Assets.Textures.Texture();
+            texture.Load(JObject.Parse(File.ReadAllText(textureWrapperPath)));
+            Assert.Equal(SamplerState.AnisotropicWrap.Filter, texture.PreferredSamplerState.Filter);
+            Assert.Equal(SamplerState.AnisotropicWrap.AddressU, texture.PreferredSamplerState.AddressU);
         }
         finally
         {

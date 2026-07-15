@@ -318,18 +318,43 @@ public static class SpriteWriter
             ["id"] = wrapperId.ToString(),
             ["name"] = rawName,
             ["texture_asset_id"] = rawAssetInfo.Id.ToString(),
-            ["sampler_state"] = new JObject
-            {
-                ["texture_filter"] = nameof(TextureFilter.Anisotropic),
-                ["address_u"] = nameof(TextureAddressMode.Wrap),
-                ["address_v"] = nameof(TextureAddressMode.Wrap),
-            },
+            ["sampler_state"] = SaveSamplerState(SamplerState.AnisotropicWrap),
         };
         EditorAssetWriterService.SaveDocument(wrapperRelativePath, wrapperDocument);
         EditorAssetCatalogService.Add(new AssetInfo(wrapperId) { Name = rawName, FileName = wrapperRelativePath });
 
         textureAssetIdsBySpritesheet[spritesheetFileName] = wrapperId;
         return wrapperId;
+    }
+
+    // Mirrors CasaEngine.EditorServices.EditorJsonSaveHelper.Save(this SamplerState, JObject),
+    // which is internal to that assembly and so not callable from here. Texture.Load() reads
+    // every one of these fields unconditionally (JsonHelper.GetSamplerState) - a wrapper missing
+    // any of them throws inside AssetLoader<Texture>.LoadAsset, which swallows the exception and
+    // returns null, surfacing only as "IAssetLoader can't load ...texture" in the editor.
+    private static JObject SaveSamplerState(SamplerState samplerState)
+    {
+        var borderColorObject = new JObject
+        {
+            ["r"] = samplerState.BorderColor.R,
+            ["g"] = samplerState.BorderColor.G,
+            ["b"] = samplerState.BorderColor.B,
+            ["a"] = samplerState.BorderColor.A,
+        };
+
+        return new JObject
+        {
+            ["texture_filter"] = samplerState.Filter.ToString(),
+            ["address_u"] = samplerState.AddressU.ToString(),
+            ["address_v"] = samplerState.AddressV.ToString(),
+            ["address_w"] = samplerState.AddressW.ToString(),
+            ["border_color"] = borderColorObject,
+            ["max_anisotropy"] = samplerState.MaxAnisotropy,
+            ["max_mip_level"] = samplerState.MaxMipLevel,
+            ["mip_map_level_of_detail_bias"] = samplerState.MipMapLevelOfDetailBias,
+            ["comparison_function"] = samplerState.ComparisonFunction.ToString(),
+            ["filter_mode"] = samplerState.FilterMode.ToString(),
+        };
     }
 
     private static void PreserveHeroEffects(string inputDirectory, string outputDirectory, ConversionReport report)
