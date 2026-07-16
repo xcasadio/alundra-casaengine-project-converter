@@ -200,7 +200,18 @@ public static class SpriteWriter
                 var maxX = Math.Max(Math.Max(quad.X1, quad.X2), Math.Max(quad.X3, quad.X4));
                 var minY = Math.Min(Math.Min(quad.Y1, quad.Y2), Math.Min(quad.Y3, quad.Y4));
                 var maxY = Math.Max(Math.Max(quad.Y1, quad.Y2), Math.Max(quad.Y3, quad.Y4));
-                var center = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
+
+                // Alundra's destination corners are screen-space Y-down (Y1 negative = above the
+                // entity anchor). CasaEngine composes parts in a Y-up local space: the engine
+                // renderer and Animation2dBoundsCalculator both place a part's sprite so that its
+                // Origin lands at part.Position with the sprite extending up by Origin.Y, and a
+                // part sitting above the anchor needs a positive Position.Y. So X carries over
+                // directly but Y must be negated. Missing this negation mirrors every part
+                // vertically across the anchor: harmless-looking on single-part animations (the
+                // editor preview recenters on the bounds, absorbing the global offset) but visibly
+                // wrong on multi-part ones, where it flips the parts' arrangement relative to each
+                // other.
+                var center = new Vector2((minX + maxX) / 2f, -(minY + maxY) / 2f);
                 var flipX = quad.X1 > quad.X2;
                 var flipY = quad.Y1 > quad.Y3;
 

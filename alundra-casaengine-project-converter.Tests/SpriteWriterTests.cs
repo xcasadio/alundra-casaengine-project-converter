@@ -109,6 +109,13 @@ public class SpriteWriterTests
             Assert.Equal(2, spriteTrack.SpriteKeyframes.Count);
             Assert.NotEqual(spriteTrack.SpriteKeyframes[0].Value, spriteTrack.SpriteKeyframes[1].Value);
 
+            // The quad sits above the anchor (Alundra Y-down corners -16..0), so in CasaEngine's
+            // Y-up part space its center must be at +8, not -8. A wrong sign here mirrors the part
+            // vertically across the anchor.
+            var positionTrack = Assert.Single(animationData.Tracks, t => t.Property == Animation2dTrackProperty.Position);
+            Assert.Equal(0f, positionTrack.PositionKeyframes[0].Value.X);
+            Assert.Equal(8f, positionTrack.PositionKeyframes[0].Value.Y);
+
             var firstSpritePath = Path.Combine(outputDirectory, "Sprites", "bank_5", "sprite_111.sprite");
             var secondSpritePath = Path.Combine(outputDirectory, "Sprites", "bank_5", "sprite_222.sprite");
             Assert.True(File.Exists(firstSpritePath));
@@ -136,6 +143,87 @@ public class SpriteWriterTests
             texture.Load(JObject.Parse(File.ReadAllText(textureWrapperPath)));
             Assert.Equal(SamplerState.AnisotropicWrap.Filter, texture.PreferredSamplerState.Filter);
             Assert.Equal(SamplerState.AnisotropicWrap.AddressU, texture.PreferredSamplerState.AddressU);
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void ConvertSprites_MultiPartFrame_PreservesVerticalArrangementBetweenParts()
+    {
+        // Reproduces the reported "multi-part animations are mispositioned" bug: a frame with two
+        // quads, one clearly above the anchor and one clearly below (Alundra Y-down corners). Their
+        // relative vertical order must survive the Y-down -> Y-up conversion; getting the sign
+        // wrong mirrors each part across the anchor and swaps which one is on top.
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            var dataDirectory = Path.Combine(inputDirectory, "data");
+            Directory.CreateDirectory(dataDirectory);
+            File.WriteAllBytes(Path.Combine(dataDirectory, "map_0_spritesheet.png"), FakePngBytes);
+            File.WriteAllBytes(Path.Combine(dataDirectory, "map_alundra_spritesheet.png"), FakePngBytes);
+
+            // part0 quad: Y-down corners -40..-24 (above the anchor)  -> Y-up center +32
+            // part1 quad: Y-down corners  8..24  (below the anchor)   -> Y-up center -16
+            File.WriteAllText(
+                Path.Combine(dataDirectory, "map_0.json"),
+                """
+                {
+                    "SpriteInfo": {
+                        "SpriteRecords": [
+                            {
+                                "Header": { "Sector5Id": 7 },
+                                "AnimSets": [ { "PreloadedAnims": [
+                                    { "Frames": [
+                                        { "Delay": 10, "Images": { "Images": [
+                                            { "Spritesheet": 0, "Palette": 0, "AtlasX": 0, "AtlasY": 0, "Swidth": 16, "Sheight": 16, "X1": -8, "Y1": -40, "X2": 8, "Y2": -40, "X3": -8, "Y3": -24, "X4": 8, "Y4": -24, "Signature": 700 },
+                                            { "Spritesheet": 0, "Palette": 0, "AtlasX": 20, "AtlasY": 0, "Swidth": 16, "Sheight": 16, "X1": -8, "Y1": 8, "X2": 8, "Y2": 8, "X3": -8, "Y3": 24, "X4": 8, "Y4": 24, "Signature": 701 }
+                                        ] } }
+                                    ] },
+                                    null, null, null
+                                ] } ]
+                            }
+                        ]
+                    }
+                }
+                """);
+
+            File.WriteAllText(
+                Path.Combine(dataDirectory, "map_alundra.json"),
+                """{ "SpriteInfo": { "SpriteRecords": [], "SpriteEffectRecords": [] } }""");
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            ProjectWriter.CreateEmptyProject(outputDirectory, report);
+            SpriteWriter.ConvertSprites(inputDirectory, outputDirectory, report);
+
+            Assert.Empty(report.Errors);
+
+            var animationPath = Path.Combine(outputDirectory, "Sprites", "bank_7", "bank7_anim0_down.anim2d");
+            var animationData = new Animation2dData();
+            animationData.Load(JObject.Parse(File.ReadAllText(animationPath)));
+
+            Assert.Equal(2, animationData.Parts.Count);
+
+            var part0Position = Assert.Single(
+                animationData.Tracks, t => t.TargetPartId == "part0" && t.Property == Animation2dTrackProperty.Position);
+            var part1Position = Assert.Single(
+                animationData.Tracks, t => t.TargetPartId == "part1" && t.Property == Animation2dTrackProperty.Position);
+
+            Assert.Equal(32f, part0Position.PositionKeyframes[0].Value.Y);
+            Assert.Equal(-16f, part1Position.PositionKeyframes[0].Value.Y);
+            // The above-anchor part must end up higher (greater Y-up) than the below-anchor part.
+            Assert.True(part0Position.PositionKeyframes[0].Value.Y > part1Position.PositionKeyframes[0].Value.Y);
         }
         finally
         {
