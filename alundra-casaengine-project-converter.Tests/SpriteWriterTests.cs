@@ -224,6 +224,16 @@ public class SpriteWriterTests
             Assert.Equal(-16f, part1Position.PositionKeyframes[0].Value.Y);
             // The above-anchor part must end up higher (greater Y-up) than the below-anchor part.
             Assert.True(part0Position.PositionKeyframes[0].Value.Y > part1Position.PositionKeyframes[0].Value.Y);
+
+            // Depth order: Alundra draws a frame's images in reverse, so part0 (image[0]) is
+            // frontmost. CasaEngine draws higher DrawOrder in front, so part0 must carry the higher
+            // DefaultDrawOrder. A no-DrawOrder track is expected (it's constant on the part).
+            var part0 = animationData.Parts.Single(p => p.Id == "part0");
+            var part1 = animationData.Parts.Single(p => p.Id == "part1");
+            Assert.Equal(1, part0.DefaultDrawOrder);
+            Assert.Equal(0, part1.DefaultDrawOrder);
+            Assert.True(part0.DefaultDrawOrder > part1.DefaultDrawOrder);
+            Assert.DoesNotContain(animationData.Tracks, t => t.Property == Animation2dTrackProperty.DrawOrder);
         }
         finally
         {

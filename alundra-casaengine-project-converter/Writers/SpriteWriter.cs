@@ -162,17 +162,26 @@ public static class SpriteWriter
         for (var partIndex = 0; partIndex < maxQuadCount; partIndex++)
         {
             var partId = $"part{partIndex}";
+
+            // Depth order. Alundra draws a frame's images in reverse array order at a single shared
+            // entity depth (GraphicManager.RenderEntities: for idex = NumberOfImages-1 downto 0),
+            // so image[0] is painted last and ends up frontmost, image[N-1] backmost. CasaEngine
+            // draws higher DrawOrder in front (SpriteRendererComponent sorts higher z to the back;
+            // zOrder = Z - DrawOrder*k, and the depth-sortable path adds DrawOrder to
+            // LocalSortOffset the same way). So part[0] (=image[0]) must get the highest DrawOrder.
+            // This ordering is purely index-based and identical for every frame, so it lives on the
+            // part default rather than a per-frame track.
             animationAsset.Parts.Add(new Animation2dPartData
             {
                 Id = partId,
                 Name = partId,
                 DefaultVisible = false,
+                DefaultDrawOrder = maxQuadCount - 1 - partIndex,
             });
 
             var spriteTrack = NewTrack(partId, Animation2dTrackProperty.Sprite);
             var positionTrack = NewTrack(partId, Animation2dTrackProperty.Position);
             var visibleTrack = NewTrack(partId, Animation2dTrackProperty.Visible);
-            var drawOrderTrack = NewTrack(partId, Animation2dTrackProperty.DrawOrder);
             var flipXTrack = NewTrack(partId, Animation2dTrackProperty.FlipX);
             var flipYTrack = NewTrack(partId, Animation2dTrackProperty.FlipY);
             var usesFlipX = false;
@@ -218,7 +227,6 @@ public static class SpriteWriter
                 spriteTrack.SpriteKeyframes.Add(new Animation2dGuidKeyframeData(time, spriteId));
                 positionTrack.PositionKeyframes.Add(new Animation2dVector2KeyframeData(time, center));
                 visibleTrack.VisibleKeyframes.Add(new Animation2dBoolKeyframeData(time, true));
-                drawOrderTrack.DrawOrderKeyframes.Add(new Animation2dIntKeyframeData(time, partIndex));
                 flipXTrack.FlipKeyframes.Add(new Animation2dBoolKeyframeData(time, flipX));
                 flipYTrack.FlipKeyframes.Add(new Animation2dBoolKeyframeData(time, flipY));
                 usesFlipX |= flipX;
@@ -228,7 +236,6 @@ public static class SpriteWriter
             animationAsset.Tracks.Add(spriteTrack);
             animationAsset.Tracks.Add(positionTrack);
             animationAsset.Tracks.Add(visibleTrack);
-            animationAsset.Tracks.Add(drawOrderTrack);
             if (usesFlipX)
             {
                 animationAsset.Tracks.Add(flipXTrack);
