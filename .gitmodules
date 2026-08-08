@@ -2,3 +2,7 @@
 	path = CasaEngineMonogame
 	url = https://github.com/xcasadio/CasaEngineMonogame.git
 	branch = main
+[submodule "alundra-datas-analyser"]
+	path = alundra-datas-analyser
+	url = https://github.com/xcasadio/alundra-datas-analyser.git
+	branch = master
