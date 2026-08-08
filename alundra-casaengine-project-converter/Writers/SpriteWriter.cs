@@ -220,7 +220,21 @@ public static class SpriteWriter
                 // editor preview recenters on the bounds, absorbing the global offset) but visibly
                 // wrong on multi-part ones, where it flips the parts' arrangement relative to each
                 // other.
-                var center = new Vector2((minX + maxX) / 2f, -(minY + maxY) / 2f);
+                //
+                // Half-pixel compensation. SpriteData.Origin is a Point, so a crop with an odd
+                // width or height cannot store its true centre (a 23x31 crop centres on 11.5/15.5
+                // but Origin holds 11/15). Both the renderer and Animation2dBoundsCalculator draw
+                // the sprite centred on Position + (Width/2f - Origin.X, Origin.Y - Height/2f), so
+                // that lost half pixel shifts the part unless Position absorbs it. The shift is
+                // per-part - it only happens on odd dimensions - so parts of the same frame slide
+                // relative to each other: bank0_anim1_down pairs a 23x31 body with a 15x24 legs
+                // crop, dropping the body half a pixel onto the legs and eating their top row.
+                var originOffset = new Vector2(
+                    quad.Width / 2f - quad.Width / 2,
+                    quad.Height / 2f - quad.Height / 2);
+                var center = new Vector2(
+                    (minX + maxX) / 2f - originOffset.X,
+                    -(minY + maxY) / 2f + originOffset.Y);
                 var flipX = quad.X1 > quad.X2;
                 var flipY = quad.Y1 > quad.Y3;
 

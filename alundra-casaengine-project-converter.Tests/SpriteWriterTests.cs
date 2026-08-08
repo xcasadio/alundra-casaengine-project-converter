@@ -245,6 +245,111 @@ public class SpriteWriterTests
     }
 
     [Fact]
+    public void ConvertSprites_WithOddSizedQuads_CompensatesForTheIntegerSpriteOrigin()
+    {
+        // Reproduces the reported "bank0_anim1_down eats the top of the legs" bug. SpriteData.Origin
+        // is a Point, so an odd-sized crop cannot store its own centre, and the renderer draws the
+        // sprite centred on Position + (Width/2f - Origin.X, Origin.Y - Height/2f). That leftover
+        // half pixel only appears on odd dimensions, so a 23x31 body paired with a 15x24 legs crop
+        // slides half a pixel down onto the legs unless Position absorbs it.
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            var dataDirectory = Path.Combine(inputDirectory, "data");
+            Directory.CreateDirectory(dataDirectory);
+            File.WriteAllBytes(Path.Combine(dataDirectory, "map_0_spritesheet.png"), FakePngBytes);
+            File.WriteAllBytes(Path.Combine(dataDirectory, "map_alundra_spritesheet.png"), FakePngBytes);
+
+            // The real bank 0 / anim 1 / down frame 0 quads: a 23x31 body (odd on both axes) over a
+            // 15x24 legs crop (odd width, even height).
+            File.WriteAllText(
+                Path.Combine(dataDirectory, "map_0.json"),
+                """
+                {
+                    "SpriteInfo": {
+                        "SpriteRecords": [
+                            {
+                                "Header": { "Sector5Id": 9 },
+                                "AnimSets": [ { "PreloadedAnims": [
+                                    { "Frames": [
+                                        { "Delay": 10, "Images": { "Images": [
+                                            { "Spritesheet": 0, "Palette": 0, "AtlasX": 0, "AtlasY": 0, "Swidth": 23, "Sheight": 31, "X1": -11, "Y1": -36, "X2": 12, "Y2": -36, "X3": -11, "Y3": -5, "X4": 12, "Y4": -5, "Signature": 900 },
+                                            { "Spritesheet": 0, "Palette": 0, "AtlasX": 40, "AtlasY": 0, "Swidth": 15, "Sheight": 24, "X1": -7, "Y1": -15, "X2": 8, "Y2": -15, "X3": -7, "Y3": 9, "X4": 8, "Y4": 9, "Signature": 901 }
+                                        ] } }
+                                    ] },
+                                    null, null, null
+                                ] } ]
+                            }
+                        ]
+                    }
+                }
+                """);
+
+            File.WriteAllText(
+                Path.Combine(dataDirectory, "map_alundra.json"),
+                """{ "SpriteInfo": { "SpriteRecords": [], "SpriteEffectRecords": [] } }""");
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            ProjectWriter.CreateEmptyProject(outputDirectory, report);
+            SpriteWriter.ConvertSprites(inputDirectory, outputDirectory, report);
+
+            Assert.Empty(report.Errors);
+
+            var animationPath = Path.Combine(outputDirectory, "Sprites", "bank_9", "bank9_anim0_down.anim2d");
+            var animationData = new Animation2dData();
+            animationData.Load(JObject.Parse(File.ReadAllText(animationPath)));
+
+            var part0Position = Assert.Single(
+                animationData.Tracks, t => t.TargetPartId == "part0" && t.Property == Animation2dTrackProperty.Position).PositionKeyframes[0].Value;
+            var part1Position = Assert.Single(
+                animationData.Tracks, t => t.TargetPartId == "part1" && t.Property == Animation2dTrackProperty.Position).PositionKeyframes[0].Value;
+
+            // Odd width -> Origin.X is half a pixel short; odd height -> Origin.Y is too.
+            Assert.Equal(0f, part0Position.X);
+            Assert.Equal(21f, part0Position.Y);
+            Assert.Equal(0f, part1Position.X);
+            Assert.Equal(3f, part1Position.Y);
+
+            // What actually matters is where the renderer ends up drawing each crop's centre:
+            // Position + (Width/2f - Origin.X, Origin.Y - Height/2f) must land on the Alundra
+            // destination rectangle's own centre (Y negated), for every part of the frame.
+            AssertDrawnCentre(outputDirectory, animationData, "part0", expectedX: 0.5f, expectedY: 20.5f);
+            AssertDrawnCentre(outputDirectory, animationData, "part1", expectedX: 0.5f, expectedY: 3f);
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    // Mirrors SpriteRendererComponent.DrawSprite / Animation2dBoundsCalculator, which both place a
+    // part's crop centred on Position + (Width/2f - Origin.X, Origin.Y - Height/2f).
+    private static void AssertDrawnCentre(
+        string outputDirectory, Animation2dData animationData, string partId, float expectedX, float expectedY)
+    {
+        var position = Assert.Single(
+            animationData.Tracks, t => t.TargetPartId == partId && t.Property == Animation2dTrackProperty.Position).PositionKeyframes[0].Value;
+        var spriteId = Assert.Single(
+            animationData.Tracks, t => t.TargetPartId == partId && t.Property == Animation2dTrackProperty.Sprite).SpriteKeyframes[0].Value;
+
+        var spriteInfo = Assert.Single(EditorAssetCatalogService.AssetInfos, info => info.Id == spriteId);
+        var spriteData = new SpriteData();
+        spriteData.Load(JObject.Parse(File.ReadAllText(Path.Combine(outputDirectory, spriteInfo.FileName))));
+
+        Assert.Equal(expectedX, position.X + spriteData.PositionInTexture.Width / 2f - spriteData.Origin.X);
+        Assert.Equal(expectedY, position.Y + spriteData.Origin.Y - spriteData.PositionInTexture.Height / 2f);
+    }
+
+    [Fact]
     public void ConvertSprites_WithHeroAndMapSharingSameSector5Id_KeepsBothBanksSeparate()
     {
         // Regression test: the hero's SpriteRecords (map_alundra.json) use their own id space,
