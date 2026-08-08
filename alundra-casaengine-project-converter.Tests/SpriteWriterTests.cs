@@ -245,6 +245,97 @@ public class SpriteWriterTests
     }
 
     [Fact]
+    public void ConvertSprites_TakesFrameDurationFromTheLowSevenBitsOfDelay()
+    {
+        // Reproduces the reported "animations are far too slow" bug. Only the low 7 bits of
+        // SiFrame.Delay are the duration - bit 7 marks a frame that plays and then advances, and
+        // the game reads it as Delay & 0x7f. Every displayable frame in the shipped data sets that
+        // bit, so using the raw byte stretched a 0x88 walk frame from 8 game frames to 136.
+        // The trailing frame carries no images and no duration either: its Delay is a control code
+        // (1 loops, anything else chains), so it must land on the end of the last displayed frame.
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            var dataDirectory = Path.Combine(inputDirectory, "data");
+            Directory.CreateDirectory(dataDirectory);
+            File.WriteAllBytes(Path.Combine(dataDirectory, "map_0_spritesheet.png"), FakePngBytes);
+            File.WriteAllBytes(Path.Combine(dataDirectory, "map_alundra_spritesheet.png"), FakePngBytes);
+
+            // Two 0x88 frames (8 game frames each) closed by a Delay=1 loop terminator, the exact
+            // shape of the real bank 0 walk cycles.
+            File.WriteAllText(
+                Path.Combine(dataDirectory, "map_0.json"),
+                """
+                {
+                    "SpriteInfo": {
+                        "SpriteRecords": [
+                            {
+                                "Header": { "Sector5Id": 11 },
+                                "AnimSets": [ { "PreloadedAnims": [
+                                    { "Frames": [
+                                        { "Delay": 136, "Images": { "Images": [
+                                            { "Spritesheet": 0, "Palette": 0, "AtlasX": 0, "AtlasY": 0, "Swidth": 16, "Sheight": 16, "X1": -8, "Y1": -16, "X2": 8, "Y2": -16, "X3": -8, "Y3": 0, "X4": 8, "Y4": 0, "Signature": 1100 }
+                                        ] } },
+                                        { "Delay": 136, "Images": { "Images": [
+                                            { "Spritesheet": 0, "Palette": 0, "AtlasX": 20, "AtlasY": 0, "Swidth": 16, "Sheight": 16, "X1": -8, "Y1": -16, "X2": 8, "Y2": -16, "X3": -8, "Y3": 0, "X4": 8, "Y4": 0, "Signature": 1101 }
+                                        ] } },
+                                        { "Delay": 1, "Images": null }
+                                    ] },
+                                    null, null, null
+                                ] } ]
+                            }
+                        ]
+                    }
+                }
+                """);
+
+            File.WriteAllText(
+                Path.Combine(dataDirectory, "map_alundra.json"),
+                """{ "SpriteInfo": { "SpriteRecords": [], "SpriteEffectRecords": [] } }""");
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            ProjectWriter.CreateEmptyProject(outputDirectory, report);
+            SpriteWriter.ConvertSprites(inputDirectory, outputDirectory, report);
+
+            Assert.Empty(report.Errors);
+
+            var animationPath = Path.Combine(outputDirectory, "Sprites", "bank_11", "bank11_anim0_down.anim2d");
+            var animationData = new Animation2dData();
+            animationData.Load(JObject.Parse(File.ReadAllText(animationPath)));
+
+            var sprites = Assert.Single(
+                animationData.Tracks, t => t.TargetPartId == "part0" && t.Property == Animation2dTrackProperty.Sprite);
+            var visible = Assert.Single(
+                animationData.Tracks, t => t.TargetPartId == "part0" && t.Property == Animation2dTrackProperty.Visible);
+
+            // 0x88 -> 8 game frames -> 8/50 s, not 136/50 s.
+            Assert.Equal(2, sprites.SpriteKeyframes.Count);
+            Assert.Equal(0f, sprites.SpriteKeyframes[0].TimeSeconds);
+            Assert.Equal(0.16f, sprites.SpriteKeyframes[1].TimeSeconds, 5);
+
+            // The terminator hides the parts at the end of the second frame, and adds no time of
+            // its own - so the animation lasts exactly its two frames.
+            Assert.Equal(3, visible.VisibleKeyframes.Count);
+            Assert.False(visible.VisibleKeyframes[2].Value);
+            Assert.Equal(0.32f, visible.VisibleKeyframes[2].TimeSeconds, 5);
+            Assert.Equal(0.32f, animationData.GetDurationSeconds(), 5);
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    [Fact]
     public void ConvertSprites_WithOddSizedQuads_CompensatesForTheIntegerSpriteOrigin()
     {
         // Reproduces the reported "bank0_anim1_down eats the top of the legs" bug. SpriteData.Origin

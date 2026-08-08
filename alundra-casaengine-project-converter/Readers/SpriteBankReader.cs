@@ -16,8 +16,28 @@ public sealed class SpriteQuad
 
 public sealed class SpriteFrame
 {
+    /// <summary>
+    /// How long this frame is held, in game frames (the source is PAL, so 50 Hz).
+    ///
+    /// Only the low 7 bits of SiFrame.Delay carry the duration - bit 7 marks a frame that plays
+    /// for that long and then advances, and EntityManager.UpdateAnimation reads it as
+    /// <c>Delay &amp; 0x7f</c> everywhere. Every one of the 376441 displayable frames in the game
+    /// sets that bit, so taking the byte at face value stretched every animation by a factor of
+    /// 17 to 129 (a 0x88 walk frame is 8 game frames, not 136).
+    /// </summary>
     public int DelayFrames;
+
+    /// <summary>
+    /// Raw SiFrame.Delay of the animation's trailing frame, which carries no images and no
+    /// duration: it is a control code. 1 loops back to frame 0; anything else (always 0 in the
+    /// shipped data) chains to the animation named by the frame's TransformIndexLow. All 92452
+    /// animations end with exactly one such frame.
+    /// </summary>
+    public int TerminatorCode;
+
     public IReadOnlyList<SpriteQuad> Quads = Array.Empty<SpriteQuad>();
+
+    public bool IsTerminator => Quads.Count == 0;
 }
 
 public sealed class SpriteAnimation
@@ -177,7 +197,7 @@ public static class SpriteBankReader
                 continue;
             }
 
-            var delay = frameElement.GetProperty("Delay").GetInt32();
+            var rawDelay = frameElement.GetProperty("Delay").GetInt32();
             var quads = new List<SpriteQuad>();
 
             if (frameElement.TryGetProperty("Images", out var imagesElement)
@@ -191,7 +211,12 @@ public static class SpriteBankReader
                 }
             }
 
-            frames.Add(new SpriteFrame { DelayFrames = delay, Quads = quads });
+            frames.Add(new SpriteFrame
+            {
+                DelayFrames = rawDelay & 0x7f,
+                TerminatorCode = rawDelay,
+                Quads = quads,
+            });
         }
 
         return frames.Count == 0 ? null : new SpriteAnimation { Frames = frames };

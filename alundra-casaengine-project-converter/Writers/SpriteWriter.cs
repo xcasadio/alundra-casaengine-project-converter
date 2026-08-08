@@ -132,12 +132,20 @@ public static class SpriteWriter
         string outputDirectory,
         ConversionReport report)
     {
+        // Frame start times. The trailing terminator frame carries a control code rather than a
+        // duration (SpriteFrame.TerminatorCode), so it contributes nothing to the timeline - it
+        // just lands on the end of the last displayed frame, where its all-parts-hidden keyframe
+        // gives Animation2dData the animation's real duration.
         var frameTimes = new float[animation.Frames.Count];
         var cumulativeSeconds = 0f;
         for (var frameIndex = 0; frameIndex < animation.Frames.Count; frameIndex++)
         {
+            var frame = animation.Frames[frameIndex];
             frameTimes[frameIndex] = cumulativeSeconds;
-            cumulativeSeconds += animation.Frames[frameIndex].DelayFrames * PsxFrameSeconds;
+            if (!frame.IsTerminator)
+            {
+                cumulativeSeconds += frame.DelayFrames * PsxFrameSeconds;
+            }
         }
 
         var maxQuadCount = 0;
