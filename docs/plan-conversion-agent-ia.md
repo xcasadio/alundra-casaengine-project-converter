@@ -327,10 +327,37 @@ autorité sur ce plan :
   qu'écrit), et la phase 1 les a déjà tous préservés dans les `object_layers` du `.tileMap`
   (`Portals` / `MapEvents` / `Entities`, tous champs natifs en `custom_properties`). La DLL gameplay
   les lira depuis `TileMapData.ObjectLayers`.
-- Chaque `.world` (`Maps/{Zone}/{Nom}-{id}/{Nom}-{id}.world`) contient donc : entité `tileMap`
-  (`TileMapComponent`), entité `camera` (`Camera3dIn2dAxisComponent` — son `Target` est un `Vector3`
-  qui cadre correctement sans code gameplay, là où `CameraTargeted2dComponent` vise une `Entity`
-  forcément nulle dans un projet fraîchement converti et mirroite l'image), entité `PlayerStart`.
+- Chaque `.world` (`Maps/{Zone}/{Nom}-{id}/{Nom}-{id}.world`) contient donc, dans cet ordre : la
+  référence `camera`, l'entité `tileMap` (`TileMapComponent`), l'entité `PlayerStart`.
+- **Caméra (révisé le 2026-08-09, après la branche moteur `tilemap-render-spaces`)** : un **unique
+  asset partagé `Entities/AlundraCamera.entity`**, portant un `Camera2dComponent`
+  (`Target` = centre de map `(624, -480, 0)`, `Zoom` = 1, `PixelSnap` = true), référencé par
+  `asset_id` depuis les 483 worlds.
+  - *Pourquoi `Camera2dComponent`* : `CasaEngineMonogame/docs/engine/rendering-2d-3d-spaces.md`
+    en fait le mode nominal 2D et déclare `Camera3dIn2dAxisComponent` — le choix initial de cette
+    phase — **legacy**, à ne plus retenir pour un nouveau rendu 2D. Celui-ci reste une caméra
+    *perspective* : seul le plan cible est à l'échelle 1:1, donc les layers d'une map Alundra
+    (z 0 / 0,1 / 0,2 / 0,3) sont déformés ; sa distance est recalculée à chaque resize depuis la
+    taille écran globale ; et il n'a ni zoom ni snap texel, donc aucun contrat pixel-perfect.
+  - *Pourquoi partagée* : les 483 maps mesurent **toutes** 52 × 60 tuiles de 24 × 16 px (vérifié sur
+    les 483 `.tmj`), donc un `Target` unique cadre correctement chacune. Ce n'est pas du partage à
+    l'exécution : `EntityReference.Load` fait `Load<Entity>(AssetId).Clone()`, chaque world garde
+    son instance.
+  - *Pourquoi en premier* : `DefaultRuntimeViewBootstrapper` retient
+    `world.Entities.Select(GetComponent<CameraComponent>).FirstOrDefault(c => c != null)` — la
+    première entité portant une caméra devient la caméra par défaut de la vue.
+  - *Hypothèse assumée* : le `Target` est le centre géométrique de la map. La vraie caméra d'Alundra
+    **suit une entité désignée** — `g_entityFollowedByCamera`, relue chaque frame par
+    `UpdateEntities` (`g_cameraLookAtX = suivie.PosX >> 16`). C'est le plus souvent Alundra, mais
+    c'est une **variable, pas une constante** : les scripts la réassignent (cinématiques, boss). Le
+    code runtime devra donc suivre l'entité couramment désignée, pas le joueur en dur. Le cadrage
+    centré écrit ici n'est que celui d'un world **avant** tout code gameplay.
+  - *Pourquoi pas `CameraTargeted2dComponent`*, qui modéliserait pourtant le suivi nativement (son
+    `Target` **est** une `Entity`, avec dead zone et limites) : il dérive de `Camera3dComponent`,
+    c'est donc une caméra perspective, qui retombe exactement sous le reproche que
+    `rendering-2d-3d-spaces.md` adresse au composant remplacé ici. Aucun composant du moteur ne
+    combine aujourd'hui suivi d'entité et projection orthographique pixel-perfect ; on garde la
+    projection, parce que c'est elle qu'on ne peut pas rajouter après coup depuis le gameplay.
 - **Spawn** : seule la map 389 en a un documenté (tuile 33/59/0 → `(804, -952, 0)`). Les 482 autres
   reçoivent un `PlayerStart` au centre de la map, compté à part
   (`Worlds.PlayerStartPlaceholders`) — elles s'atteignent par portail, pas par spawn.

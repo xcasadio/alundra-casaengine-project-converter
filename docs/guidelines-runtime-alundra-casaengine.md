@@ -112,6 +112,7 @@ Table de conversion complète pour une entité :
 | Table de chaînes de la map | `Maps/<Zone>/<Nom>-<MapId>/dialogues/<Nom>-<MapId>.strings.json` | — |
 | Bytecode d'évènements de la map | `Maps/<Zone>/<Nom>-<MapId>/events/<Nom>-<MapId>.events.json` | — |
 | Index des worlds | `Maps/world-index.json` | `MapId` → chemin du `.world` |
+| Caméra (partagée par les 483 worlds) | `Entities/AlundraCamera.entity` | `Camera2dComponent`, `Target` (624, −480, 0), `Zoom` 1, `PixelSnap` |
 | Banque de sprites | `Entities/<NomEntité>/` d'après `EntityNames.csv` ; repli `Entities/bank_<Clé>/` | `Entities/Alundra/`, `Entities/bank_hero_5/` |
 | Animation 2D | `bank<Key>_anim<AnimSetIndex>_<down\|up\|left\|right>.anim2d` | `bankhero_0_anim54_down.anim2d` |
 | Tables de chaînes globales | `Dialogues/{global-strings,control-codes}.json` | — |

@@ -23,7 +23,8 @@ public readonly record struct TileCentreSpawn(int PixelX, int PixelY, float Worl
 ///    origin. The tilemap renderer draws tile (x, y) at (position.X + x*tileWidth,
 ///    position.Y - y*tileHeight), so a tilemap at the origin occupies X in [0, width*24] and Y in
 ///    [0, -height*16] - the same frame the entity/spawn conversion below targets.
-///  - entity "camera": a Camera3dIn2dAxisComponent. See the camera note below.
+///  - entity reference "camera": a reference to the single shared Entities/AlundraCamera.entity
+///    asset. See the camera note below.
 ///  - entity "PlayerStart": a PlayerStartComponent, which is what World.InitializePlayerControllers
 ///    looks for when it spawns the default pawn.
 ///  - nothing else. The map's entities, portals and map events are NOT duplicated here as
@@ -35,19 +36,56 @@ public readonly record struct TileCentreSpawn(int PixelX, int PixelY, float Worl
 ///    instantiate them from TileMapData.ObjectLayers. Duplicating 9 631 entities into 483 worlds
 ///    would freeze component choices before that DLL exists, for no gain.
 ///
-/// Camera choice - Camera3dIn2dAxisComponent, not CameraTargeted2dComponent:
-///  neither camera's target is serialized (the editor's world writer saves a target only for
-///  ArcBallCameraComponent), so whichever is written here starts with its default target and the
-///  gameplay DLL has to aim it at the hero anyway. The difference is what happens *before* that
-///  happens. Camera3dIn2dAxisComponent's target is a Vector3 defaulting to (0,0,0) and it places
-///  the eye at target + (0, 0, +d) looking back along -Z, which is the orientation the 2D
-///  rendering path is built for; the map renders the right way round with no gameplay code at all.
-///  CameraTargeted2dComponent's target is an Entity reference (necessarily null in a freshly
-///  converted project) and its ComputeViewMatrix places the eye at (0, 0, -d), i.e. behind the
-///  scene plane, which mirrors the image until something assigns a target. RPGDemo's DefaultWorld
-///  makes the same choice, and its ScriptWorld re-aims the camera in OnBeginPlay - the entity is
-///  named "camera" here for exactly that reason, so an Alundra world proxy can find it the same
-///  way.
+/// Camera choice - one shared Camera2dComponent asset, referenced first by every world.
+///
+///  Why Camera2dComponent. CasaEngineMonogame/docs/engine/rendering-2d-3d-spaces.md calls
+///  "Mode 2 - World-space 2D pixel-perfect" the nominal mode of a 2D game, and says of
+///  Camera3dIn2dAxisComponent (which this writer used before) that it "reste supportée pour
+///  compatibilité des scènes existantes, mais ne doit plus être choisie pour un nouveau rendu 2D".
+///  Facts behind that, all from the same document: Camera3dIn2dAxisComponent stays a *perspective*
+///  camera placed at the distance that renders the target plane 1:1, so only that one plane is at
+///  scale - every layer at another Z is scaled and translated, which is exactly the situation of an
+///  Alundra map (its render layers sit at z 0 / 0.1 / 0.2 / 0.3); its camera distance is recomputed
+///  from the field of view at every resize and from the global screen height rather than the view's;
+///  and it has neither zoom nor texel snap, so no pixel-perfect contract is expressible. A
+///  Camera2dComponent is orthographic: world units are pixels, every layer projects at the same
+///  scale whatever its Z, and Zoom / PixelSnap make the doc's pixel-perfect checklist satisfiable.
+///  The X/Y framing is unchanged (it is equivalent to the old camera at Zoom = 1); only the depth
+///  window changes, to [Target.Z - 500, Target.Z + 499], which the layer offsets fit into easily.
+///
+///  Why the camera is shared rather than inlined per world. Its Target *is* serialized -
+///  EditorEntityJsonSerializer.SaveCamera2dComponent writes target / zoom / pixel_snap and
+///  Camera2dComponent.Load reads them back - so a camera written here really does keep its framing,
+///  which was not true of the component this replaced. And a single Target frames every map:
+///  all 483 Alundra maps measure exactly 52 x 60 tiles of 24 x 16 px (verified on the 483 .tmj),
+///  so the map centre is the same point everywhere. Hence one Entities/AlundraCamera.entity asset,
+///  referenced by asset_id from the 483 worlds. That is a reference, not sharing at runtime:
+///  EntityReference.Load(AssetContentManager) does Load&lt;Entity&gt;(AssetId).Clone(), so each world
+///  still gets its own instance and a gameplay proxy may move it freely.
+///
+///  Why it is written first in entity_references. DefaultRuntimeViewBootstrapper picks a world's
+///  camera with world.Entities.Select(GetComponent&lt;CameraComponent&gt;).FirstOrDefault(c =&gt; c != null),
+///  i.e. the first entity carrying a CameraComponent wins. Today it is also the only one, so the
+///  order is not load-bearing yet - it is written that way so the intent survives the day another
+///  camera-carrying entity is added. The entity keeps the name "camera" so an Alundra world proxy
+///  can find it by name, the way RPGDemo's ScriptWorld re-aims its camera in OnBeginPlay.
+///
+/// Assumption, not fact: the Target is the geometric centre of a map. Alundra's real camera tracks
+/// an entity - g_entityFollowedByCamera, which UpdateEntities reads every frame as
+/// g_cameraLookAtX = followed.PosX &gt;&gt; 16. That entity is usually the hero, but it is a variable, not
+/// a constant: scripts reassign it (cutscenes, bosses), so runtime code must follow whichever entity
+/// is currently designated rather than hard-coding the player. The centred Target here is therefore
+/// only the framing a world has *before* any gameplay code runs - deliberately a valid, centred view
+/// of any map rather than a guess at the runtime behaviour.
+///
+/// That tracking belongs in the gameplay DLL, not in this asset: Camera2dComponent.Target is a
+/// Vector3, so the proxy assigns it each frame from the followed entity's position - which is what
+/// the original does too. CameraTargeted2dComponent would model the follow natively (its Target IS
+/// an Entity, with dead zone and limits), but it derives from Camera3dComponent, i.e. it is a
+/// perspective camera, and so falls under the very objection the engine's rendering-2d-3d-spaces.md
+/// raises against the component replaced here. Entity-following and an orthographic pixel-perfect
+/// projection cannot both come from a stock component today; the projection is the one that cannot
+/// be added later from gameplay code, so it wins.
 ///
 /// player_startup_settings_asset_id is deliberately left at Guid.Empty. The .gameMode asset it
 /// would point at needs the hero .entity, which is step E2 of docs/demarrage-nouvelle-partie.md
@@ -70,6 +108,17 @@ public static class WorldWriter
     // docs/guidelines-runtime-alundra-casaengine.md section 1: uniform over all 483 maps.
     private const int AlundraTileWidth = 24;
     private const int AlundraTileHeight = 16;
+
+    // Verified on the 483 exported .tmj: every Alundra map is exactly this size, which is what makes
+    // a single shared camera correct and not merely convenient (see the class summary).
+    private const int AlundraMapWidthInTiles = 52;
+    private const int AlundraMapHeightInTiles = 60;
+
+    // The one camera asset every world references. Written once per run, before the worlds that
+    // reference it.
+    private const string SharedCameraName = "AlundraCamera";
+    private const string SharedCameraEntityName = "camera";
+    private const string SharedCameraEntitiesFolder = "Entities";
 
     // docs/demarrage-nouvelle-partie.md section 2.1: the only documented spawn in the whole game.
     // g_saveData.InitialMapId = 389, CameraTileX/Y/Z = 33 / 59 / 0.
@@ -105,9 +154,12 @@ public static class WorldWriter
 
         var worldPathsByMapId = new SortedDictionary<int, string>();
 
+        var sharedCameraAssetId = WriteSharedCamera(outputDirectory, report);
+
         foreach (var mapIndex in mapIndices.OrderBy(index => index))
         {
-            ConvertMap(inputDirectory, outputDirectory, mapIndex, mapLocations, worldPathsByMapId, report);
+            ConvertMap(
+                inputDirectory, outputDirectory, mapIndex, mapLocations, sharedCameraAssetId, worldPathsByMapId, report);
         }
 
         WriteWorldIndex(outputDirectory, worldPathsByMapId, report);
@@ -147,11 +199,49 @@ public static class WorldWriter
             0f);
     }
 
+    /// <summary>
+    /// Writes the single Entities/AlundraCamera.entity every world references, and returns its asset
+    /// id. See the class summary for why there is only one and why it is a Camera2dComponent.
+    /// The Target is the centre of a map, derived from the map size rather than written as a literal:
+    /// (52*24/2, -(60*16/2), 0) = (624, -480, 0). The negative Y is the Y = -pixelY convention of
+    /// docs/guidelines-runtime-alundra-casaengine.md section 2.3, used everywhere in this converter.
+    /// </summary>
+    private static Guid WriteSharedCamera(string outputDirectory, ConversionReport report)
+    {
+        var assetId = Ids.For("entity:camera");
+        var relativePath = Path.Combine(SharedCameraEntitiesFolder, $"{SharedCameraName}.entity");
+
+        Directory.CreateDirectory(Path.Combine(outputDirectory, SharedCameraEntitiesFolder));
+
+        var entityNode = new JObject
+        {
+            ["id"] = assetId.ToString(),
+            ["name"] = SharedCameraName,
+            ["root_component"] = BuildCamera2dComponent(Ids.For("entity:camera:component")),
+            ["components"] = new JArray(),
+            ["script_class_name"] = null,
+            // Entity policy keys omitted on purpose, as in BuildEntityReference below: Entity.Load
+            // treats them as optional and EntityPolicyResolver derives better values from the
+            // components themselves.
+        };
+
+        EditorAssetWriterService.SaveDocument(relativePath, entityNode);
+        EditorAssetCatalogService.Add(new AssetInfo(assetId)
+        {
+            Name = SharedCameraName,
+            FileName = relativePath,
+        });
+
+        report.Increment("Worlds.SharedCameras");
+        return assetId;
+    }
+
     private static void ConvertMap(
         string inputDirectory,
         string outputDirectory,
         int mapIndex,
         IReadOnlyDictionary<int, MapLocation> mapLocations,
+        Guid sharedCameraAssetId,
         IDictionary<int, string> worldPathsByMapId,
         ConversionReport report)
     {
@@ -183,7 +273,7 @@ public static class WorldWriter
         Directory.CreateDirectory(Path.Combine(outputDirectory, location.MapFolder));
 
         var worldId = Ids.For($"world:{mapIndex}");
-        var worldNode = BuildWorld(mapIndex, worldId, location.FileBaseName, tileMapData.Id, spawn);
+        var worldNode = BuildWorld(mapIndex, worldId, location.FileBaseName, tileMapData.Id, sharedCameraAssetId, spawn);
 
         EditorAssetWriterService.SaveDocument(worldRelativePath, worldNode);
         EditorAssetCatalogService.Add(new AssetInfo(worldId)
@@ -219,19 +309,24 @@ public static class WorldWriter
         return new TileCentreSpawn((int)centreX, (int)centreY, centreX, -centreY, 0f);
     }
 
-    private static JObject BuildWorld(int mapIndex, Guid worldId, string worldName, Guid tileMapDataAssetId, TileCentreSpawn spawn)
+    private static JObject BuildWorld(
+        int mapIndex,
+        Guid worldId,
+        string worldName,
+        Guid tileMapDataAssetId,
+        Guid sharedCameraAssetId,
+        TileCentreSpawn spawn)
     {
         var entityReferences = new JArray
         {
+            // FIRST on purpose: DefaultRuntimeViewBootstrapper takes the first entity of the world
+            // carrying a CameraComponent as the default view camera.
+            BuildSharedEntityReference(sharedCameraAssetId, SharedCameraEntityName),
+
             BuildEntityReference(
                 Ids.For($"world:{mapIndex}:entity:tileMap"),
                 "tileMap",
                 BuildTileMapComponent(Ids.For($"world:{mapIndex}:component:tileMap"), tileMapDataAssetId)),
-
-            BuildEntityReference(
-                Ids.For($"world:{mapIndex}:entity:camera"),
-                "camera",
-                BuildCameraComponent(Ids.For($"world:{mapIndex}:component:camera"))),
 
             BuildEntityReference(
                 Ids.For($"world:{mapIndex}:entity:playerStart"),
@@ -275,6 +370,27 @@ public static class WorldWriter
         };
     }
 
+    /// <summary>
+    /// The other branch of EntityReference.Load: a non-empty asset_id means "load this .entity asset
+    /// and clone it", and the reference then carries only a name and the transform to copy onto the
+    /// clone's root component. The keys are exactly the three that branch reads - "entity" would be
+    /// ignored here, so it is not written.
+    /// </summary>
+    private static JObject BuildSharedEntityReference(Guid assetId, string entityName)
+    {
+        return new JObject
+        {
+            ["asset_id"] = assetId.ToString(),
+            ["name"] = entityName,
+            ["initial_local_transform"] = new JObject
+            {
+                ["position"] = new JObject { ["x"] = 0f, ["y"] = 0f, ["z"] = 0f },
+                ["scale"] = new JObject { ["x"] = 1f, ["y"] = 1f, ["z"] = 1f },
+                ["rotation"] = new JObject { ["x"] = 0f, ["y"] = 0f, ["z"] = 0f, ["w"] = 1f },
+            },
+        };
+    }
+
     private static JObject BuildTileMapComponent(Guid componentId, Guid tileMapDataAssetId)
     {
         var node = BuildSceneComponent(componentId, "TileMapComponent", 0f, 0f, 0f);
@@ -282,13 +398,20 @@ public static class WorldWriter
         return node;
     }
 
-    private static JObject BuildCameraComponent(Guid componentId)
+    /// <summary>
+    /// The shared camera's root component. Key order and names mirror exactly what
+    /// EditorEntityJsonSerializer.SaveCamera2dComponent emits: the SceneComponent base, then
+    /// SaveCameraComponent's view_distance / viewport, then target / zoom / pixel_snap.
+    /// Values follow the pixel-perfect checklist of docs/engine/rendering-2d-3d-spaces.md:
+    /// integer Zoom and PixelSnap on.
+    /// </summary>
+    private static JObject BuildCamera2dComponent(Guid componentId)
     {
-        var node = BuildSceneComponent(componentId, "Camera3dIn2dAxisComponent", 0f, 0f, 0f);
+        var node = BuildSceneComponent(componentId, "Camera2dComponent", 0f, 0f, 0f);
 
-        // CameraComponent.InitializeWithWorld overwrites the viewport from the live screen size and
-        // Camera3dComponent.InitializeWithWorld recomputes the field of view from it, so these are
-        // only placeholders that keep the document loadable (both keys are read unconditionally).
+        // CameraComponent.InitializeWithWorld overwrites the viewport from the live screen size, so
+        // these are only placeholders keeping the document loadable (both keys are read
+        // unconditionally by CameraComponent.Load).
         node["view_distance"] = 999f;
         node["viewport"] = new JObject
         {
@@ -299,7 +422,15 @@ public static class WorldWriter
             ["min_depth"] = 1f,
             ["max_depth"] = 1000f,
         };
-        node["fieldOfView"] = MathF.PI / 4f;
+
+        node["target"] = new JObject
+        {
+            ["x"] = AlundraMapWidthInTiles * AlundraTileWidth / 2f,
+            ["y"] = -(AlundraMapHeightInTiles * AlundraTileHeight / 2f),
+            ["z"] = 0f,
+        };
+        node["zoom"] = 1f;
+        node["pixel_snap"] = true;
         return node;
     }
 

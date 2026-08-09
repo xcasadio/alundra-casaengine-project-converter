@@ -229,8 +229,13 @@ Nouveau `Writers/WorldWriter.cs` :
 
 1. Un `.world` par map, contenant au minimum :
    - entité `tileMap` avec un `TileMapComponent` → `tile_map_data_asset_id` du `.tileMap` de la map ;
-   - entité `camera` avec un `CameraTargeted2dComponent` (ou `Camera3dIn2dAxisComponent` en repli,
-     comme RPGDemo) ;
+   - ~~entité `camera` avec un `CameraTargeted2dComponent` (ou `Camera3dIn2dAxisComponent` en repli,
+     comme RPGDemo)~~ → **révisé le 2026-08-09** : une référence vers l'asset partagé
+     `Entities/AlundraCamera.entity` (`Camera2dComponent`, `Zoom` 1, `PixelSnap`), **placée en
+     premier** dans `entity_references` pour devenir la caméra par défaut de la vue. Les deux
+     composants d'origine sont écartés : `Camera3dIn2dAxisComponent` est déclaré legacy par
+     `CasaEngineMonogame/docs/engine/rendering-2d-3d-spaces.md`, et `CameraTargeted2dComponent` vise
+     une `Entity` forcément nulle avant que la DLL gameplay existe ;
    - entité `PlayerStart` avec un `PlayerStartComponent` positionné au spawn de la map
      (pour la map 389 : tuile 33/59/0 → voir la conversion de repère dans les guidelines).
 2. `player_startup_settings_asset_id` → asset `.gameMode` commun `Worlds/AlundraPlayer.gameMode`
@@ -286,8 +291,20 @@ le héros apparaît au bon endroit avec l'animation 54 vers le bas.
   avec les actions Alundra : `MoveUp/Down/Left/Right`, `Action`, `Attack`, `Jump`, `Menu`.
 - `AlundraPlayerController` : déplacement libre, choix de la direction (`down/up/left/right`) et
   bascule vers les animations de marche correspondantes.
-- Caméra : `CameraTargeted2dComponent.Target` = entité héros (équivalent de
-  `g_entityFollowedByCamera`).
+- Caméra : le world porte désormais un `Camera2dComponent` (asset partagé
+  `Entities/AlundraCamera.entity`, entité nommée `camera`). Son `Target` est un `Vector3`, pas une
+  `Entity` : le suivi se code dans le controller ou le proxy de world, en écrivant `Target` chaque
+  frame — c'est d'ailleurs ce que fait le jeu d'origine (`g_cameraLookAtX = suivie.PosX >> 16` dans
+  `UpdateEntities`).
+  > **Le cadrage suit une entité désignée, pas « le héros ».** `g_entityFollowedByCamera` est une
+  > variable : c'est Alundra la plupart du temps, mais les scripts la réassignent (cinématiques,
+  > boss). Prévoir dès E4 un champ « entité suivie » réassignable, et non une référence en dur au
+  > joueur — sinon les cinématiques imposeront une réécriture.
+  >
+  > `CameraTargeted2dComponent` semble fait pour ça (`Target` est une `Entity`, avec dead zone et
+  > `Limits`) mais dérive de `Camera3dComponent` : caméra perspective, donc plus de pixel-perfect ni
+  > d'échelle uniforme entre layers. À écarter tant qu'un équivalent orthographique n'existe pas ;
+  > le suivi, lui, se code en quelques lignes.
 
 **Acceptation** : le héros se déplace, la caméra le suit, les animations changent de direction.
 

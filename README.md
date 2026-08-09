@@ -74,7 +74,7 @@ alundra-casaengine-project-converter data-extracted out\AlundraGame --no-verify
 | 3 | `data/map_N.json` `SpriteInfo.SpriteRecords`, `data/map_alundra.json`, `EntityNames.csv` | `Entities/<EntityName>/*.sprite` + `*.anim2d`, spritesheets under `Sprites/Textures/`, hero effects under `Sprites/hero/`. |
 | 4 | `sound/bgm.json`, `sound/sfx.json`, `sound/bgm/*.wav`, `sound/sfx/*.wav` | Raw WAV copies under `Musics/` / `Sounds/`, plus their manifests. |
 | 5 | `data/ETC_RES.R.json`, `data/map_N.json` `Strings`, `ui/font3.json`, `ui/font3.png` | `Dialogues/global-strings.json`, `Maps/{Zone}/{Name}-{id}/dialogues/{Name}-{id}.strings.json`, `Dialogues/control-codes.json`, `UI/font3.fnt` + `UI/font3-charset.json`. |
-| 6 | `.tileMap` assets from Phase 1, `data/map_N.json` | One `.world` per map at the root of its map folder (`Maps/{Zone}/{Name}-{id}/{Name}-{id}.world`), `Maps/world-index.json`, the project's `FirstWorldLoaded`, and `Maps/{Zone}/{Name}-{id}/events/{Name}-{id}.events.json` (raw event bytecode). |
+| 6 | `.tileMap` assets from Phase 1, `data/map_N.json` | One `.world` per map at the root of its map folder (`Maps/{Zone}/{Name}-{id}/{Name}-{id}.world`), the single shared `Entities/AlundraCamera.entity` every world references, `Maps/world-index.json`, the project's `FirstWorldLoaded`, and `Maps/{Zone}/{Name}-{id}/events/{Name}-{id}.events.json` (raw event bytecode). |
 | 7 | `ui/wind.json` + `ui/wind.png`, `memorycard/`, `closing/`, `data/loading_screen.png`, `data/BALANCE.BIN.json` | `UI/*.sprite` + `UI/wind-sprites.json`, catalogued screen textures under `UI/Textures/`, `Data/balance.json`. |
 | 8 | Every asset registered in `AssetInfos.json` | Nothing — loads each one back through its engine class (or existence-checks it) and records the result in `report.json`. Runs by default; `--no-verify` skips it. |
 
@@ -96,7 +96,11 @@ Top-level folders of a converted project (from a real full run):
       {Name}-{id}.world     the map's world, at the root of its folder
   TileSets/               (present but currently empty — tilesets are written next to their map under Maps/)
   Textures/               (present but currently empty — map textures also live under Maps/)
-  Entities/<EntityName>/  one folder per sprite bank, named by EntityNames.csv; holds that bank's
+  Entities/
+    AlundraCamera.entity   the single 2D camera asset all 483 worlds reference by asset_id (a
+                           Camera2dComponent targeting the map centre; every map is the same size,
+                           so one camera frames them all — see Writers/WorldWriter.cs)
+    <EntityName>/          one folder per sprite bank, named by EntityNames.csv; holds that bank's
                            .sprite and .anim2d assets (NOT "Sprites/bank_<id>/" — banks are grouped
                            by the entity name the game itself uses, e.g. Entities/Alundra for the hero)
   Sprites/
@@ -183,15 +187,15 @@ From one full, unfiltered run (`--phase` omitted, verification on), on one devel
 indicative, not a contract. Duration in particular varies with the machine; the counts should not.
 
 - **483** maps converted
-- **~21 000** catalog entries (`Verify.Assets`: 20 991)
-- **~910 MB** total output (`OutputSizeMegabytes`: 909.665), **~22 000** files (`OutputFileCount`: 21 968)
+- **~21 000** catalog entries (`Verify.Assets`: 20 992)
+- **~910 MB** total output (`OutputSizeMegabytes`: 909.43), **~22 000** files (`OutputFileCount`: 21 969)
 - **~40 seconds** total duration (`TotalDurationSeconds`: 38.467)
 - 9 620 `.anim2d` assets, 6 908 sprite-bank `.sprite` assets (deduplicated from 160 355 quads) plus
   277 UI ones — hence `Verify.Loaded.sprite`: 7 185 — and 395 sprite banks
 - 1 041 WAVs copied (45 BGM + 996 SFX tones), 91 SFX records the extractor could not decode
 - 9 741 map entities (9 631 enabled), 3 316 portals, 1 714 map events — counted from source, not
   duplicated into the worlds (see `docs/formats` and the `WorldWriter` doc comments for why)
-- Verification: 18 860 assets loaded through their engine class, 2 131 existence-checked, 0 failed
+- Verification: 18 861 assets loaded through their engine class, 2 131 existence-checked, 0 failed
 
 ## Known gaps
 
@@ -215,6 +219,11 @@ Taken from the writers' own doc comments — not new findings:
   custom-property bag to hold their native fields.
 - **`player_startup_settings_asset_id` and `gameplay_mode_asset_id` are left as `Guid.Empty`** in
   every world — they need a hero `.entity` and a gameplay DLL, both out of this converter's scope.
+- **The shared camera is a static framing, not Alundra's camera.** Every world references the same
+  `Entities/AlundraCamera.entity`, a `Camera2dComponent` centred on the map (all 483 maps are
+  52 × 60 tiles of 24 × 16 px, so one target frames them all). The real camera follows the hero and
+  is clamped to the map; that is gameplay-DLL work. The reference is written first in
+  `entity_references` because the engine takes the first camera-carrying entity as the view camera.
 - **483 `PlayerStartComponent`s are mostly placeholders.** Only map 389 (the documented New Game
   spawn) gets a real spawn point; every other map's is a placeholder at the map's centre, since
   every other map is entered through a portal that carries its own destination tile.

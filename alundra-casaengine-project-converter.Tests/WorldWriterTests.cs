@@ -4,6 +4,7 @@ using CasaEngine.EditorServices;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
+using Microsoft.Xna.Framework;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
@@ -103,6 +104,24 @@ public class WorldWriterTests
             var entityNodes = (JArray)worldDocument["entity_references"]!;
             Assert.Equal(3, entityNodes.Count);
 
+            // The camera is a reference to the single shared asset, and it comes first:
+            // DefaultRuntimeViewBootstrapper keeps the first entity carrying a CameraComponent.
+            var cameraAssetInfo = Assert.Single(
+                EditorAssetCatalogService.AssetInfos,
+                assetInfo => assetInfo.FileName == Path.Combine("Entities", "AlundraCamera.entity"));
+            var cameraReferenceNode = (JObject)entityNodes[0];
+            Assert.Equal(cameraAssetInfo.Id.ToString(), (string?)cameraReferenceNode["asset_id"]);
+            Assert.Equal("camera", (string?)cameraReferenceNode["name"]);
+            Assert.Null(cameraReferenceNode["entity"]);
+            Assert.NotNull(cameraReferenceNode["initial_local_transform"]);
+
+            // The engine reads the reference back the way it was written.
+            var entityReference = new EntityReference();
+            entityReference.Load(cameraReferenceNode);
+            Assert.Equal(cameraAssetInfo.Id, entityReference.AssetId);
+            Assert.Equal("camera", entityReference.Name);
+            Assert.Equal(Vector3.One, entityReference.InitialLocalTransform.Scale);
+
             var tileMapEntity = LoadEntity(entityNodes, "tileMap");
             var tileMapComponent = Assert.IsType<TileMapComponent>(tileMapEntity.RootComponent);
 
@@ -113,9 +132,6 @@ public class WorldWriterTests
                     "Ship Klark (beginning)-389.tileMap")));
             Assert.Equal(Guid.Parse((string)tileMapDocument["id"]!), tileMapComponent.TileMapDataAssetId);
             Assert.NotEqual(Guid.Empty, tileMapComponent.TileMapDataAssetId);
-
-            var cameraEntity = LoadEntity(entityNodes, "camera");
-            Assert.IsType<Camera3dIn2dAxisComponent>(cameraEntity.RootComponent);
 
             var playerStartEntity = LoadEntity(entityNodes, "PlayerStart");
             var playerStartComponent = Assert.IsType<PlayerStartComponent>(playerStartEntity.RootComponent);
@@ -183,6 +199,86 @@ public class WorldWriterTests
         }
     }
 
+    /// <summary>
+    /// The shared camera asset. Its values are the pixel-perfect checklist of
+    /// CasaEngineMonogame/docs/engine/rendering-2d-3d-spaces.md: Camera2dComponent, integer Zoom,
+    /// PixelSnap on - and a Target at the centre of an Alundra map, which is the same point for all
+    /// 483 of them (52 x 60 tiles of 24 x 16 px).
+    /// </summary>
+    [Fact]
+    public void ConvertWorlds_WritesOneSharedCamera2dEntityForEveryWorld()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            WriteMapFixture(inputDirectory, NewGameMapIndex);
+            WriteMapFixture(inputDirectory, mapIndex: 4);
+            var mapLocations = new Dictionary<int, MapLocation>
+            {
+                [NewGameMapIndex] = new MapLocation("The Klark", "Ship Klark (beginning)-389"),
+                [4] = new MapLocation("TestZone", "Test Map-4"),
+            };
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            ProjectWriter.CreateEmptyProject(outputDirectory, report);
+            TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
+            WorldWriter.ConvertWorlds(
+                inputDirectory, outputDirectory, mapFilter: new[] { NewGameMapIndex, 4 }, mapLocations, report);
+
+            Assert.Empty(report.Errors);
+            Assert.Equal(2, report.Counters["Worlds"]);
+            // One asset for two worlds - that is the whole point.
+            Assert.Equal(1, report.Counters["Worlds.SharedCameras"]);
+
+            var cameraRelativePath = Path.Combine("Entities", "AlundraCamera.entity");
+            var cameraFullPath = Path.Combine(outputDirectory, cameraRelativePath);
+            Assert.True(File.Exists(cameraFullPath));
+
+            var cameraAssetInfo = Assert.Single(
+                EditorAssetCatalogService.AssetInfos, assetInfo => assetInfo.FileName == cameraRelativePath);
+            Assert.Equal("AlundraCamera", cameraAssetInfo.Name);
+
+            var cameraDocument = JObject.Parse(File.ReadAllText(cameraFullPath));
+            Assert.Equal(cameraAssetInfo.Id.ToString(), (string?)cameraDocument["id"]);
+            Assert.Equal("Camera2dComponent", (string?)cameraDocument["root_component"]!["type"]);
+
+            // Loaded through the engine, not just read as JSON: the point is that Camera2dComponent
+            // gets its framing back, which the component this replaced could not do.
+            var cameraEntity = new Entity();
+            cameraEntity.Load(cameraDocument);
+            var camera = Assert.IsType<Camera2dComponent>(cameraEntity.RootComponent);
+            Assert.Equal(new Vector3(624f, -480f, 0f), camera.Target);
+            Assert.Equal(1f, camera.Zoom);
+            Assert.True(camera.PixelSnap);
+
+            // Both worlds point at that one asset, and both point at it first.
+            foreach (var worldRelativePath in new[]
+                     {
+                         Path.Combine("Maps", "The Klark", "Ship Klark (beginning)-389", "Ship Klark (beginning)-389.world"),
+                         Path.Combine("Maps", "TestZone", "Test Map-4", "Test Map-4.world"),
+                     })
+            {
+                var worldDocument = JObject.Parse(File.ReadAllText(Path.Combine(outputDirectory, worldRelativePath)));
+                var firstReference = (JObject)((JArray)worldDocument["entity_references"]!)[0];
+                Assert.Equal(cameraAssetInfo.Id.ToString(), (string?)firstReference["asset_id"]);
+                Assert.Equal("camera", (string?)firstReference["name"]);
+            }
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
     [Fact]
     public void ConvertWorlds_WithoutTileMapAsset_WarnsAndSkips()
     {
@@ -221,7 +317,13 @@ public class WorldWriterTests
     {
         foreach (var entityReferenceNode in entityReferenceNodes)
         {
-            var entityNode = (JObject)entityReferenceNode["entity"]!;
+            // References to a separate .entity asset carry no inline entity - see
+            // EntityReference.Load - so only the inlined ones can be materialised from the world.
+            if (entityReferenceNode["entity"] is not JObject entityNode)
+            {
+                continue;
+            }
+
             if ((string?)entityNode["name"] != entityName)
             {
                 continue;

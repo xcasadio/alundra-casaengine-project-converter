@@ -2,6 +2,7 @@ using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Assets.Sprites;
 using CasaEngine.Framework.Assets.TileMap;
+using CasaEngine.Framework.Scene.Entities;
 using Newtonsoft.Json.Linq;
 using Texture = CasaEngine.Framework.Assets.Textures.Texture;
 using World = CasaEngine.Framework.Scene.World.World;
@@ -36,6 +37,10 @@ public static class AssetVerifier
         // materialised later by AssetContentManager, which needs a running game - see
         // WorldWriterTests.
         ["world"] = element => new World().Load(element),
+        // Entity.Load builds its components through ElementFactory and attaches the root component,
+        // none of which touches Owner.World.Game - only InitializeWithWorld does, and that is not
+        // part of Load. WorldWriterTests has been loading entities this way since Phase 6.
+        ["entity"] = element => new Entity().Load(element),
     };
 
     public static bool Verify(string outputDirectory, ConversionReport report)
