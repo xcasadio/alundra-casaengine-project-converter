@@ -16,6 +16,15 @@ Documents liés :
 
 ### 1.1 Convertisseur — phases 0 à 3 terminées
 
+> **Mise à jour 2026-08-09 : les 8 phases sont désormais faites.** Les chiffres et l'arborescence
+> ci-dessous datent du 2026-08-08 et ne décrivent plus la sortie actuelle — notamment les banques de
+> sprites vivent sous `Entities/<NomEntité>/` (et non `Sprites/bank_<id>/`), et `Dialogues/`,
+> `Sounds/`, `Musics/`, `UI/`, `Data/` ne sont plus vides. Surtout, **toutes les données d'une map
+> sont désormais regroupées dans `Maps/{Zone}/{Nom}-{id}/`** (`tilemap/`, `dialogues/`, `events/` et
+> le `.world`) — les arbres de premier niveau `Worlds/` et `Events/` n'existent plus. Voir le
+> [README](../README.md) pour la disposition à jour et
+> [plan-conversion-agent-ia.md](plan-conversion-agent-ia.md) pour les compteurs de référence.
+
 Sortie actuelle : `alundra-project/` (projet CasaEngine généré). Compteurs de `report.json` :
 
 | Compteur | Valeur |
@@ -182,8 +191,8 @@ Points structurants :
 
 | # | Manque | Nature | Bloquant pour « New Game » |
 |---|---|---|---|
-| 1 | Aucun `.world` généré (phase 6 du plan non faite) | Convertisseur | **Oui** |
-| 2 | `AlundraGame.json` : `FirstWorldLoaded` et `GameplayDllName` vides | Convertisseur | **Oui** |
+| 1 | ~~Aucun `.world` généré~~ — **fait** (phase 6, 2026-08-09) : 483 `.world` dans `Maps/<Zone>/<Nom>-<id>/` | Convertisseur | ~~Oui~~ |
+| 2 | `GameplayDllName` vide — `FirstWorldLoaded` est **fait** (map 389) | Convertisseur | **Oui** (DLL) |
 | 3 | Pas d'asset `.entity` pour le héros (liste des `.anim2d` de `bank_hero_0`) | Convertisseur | **Oui** |
 | 4 | Pas de `PlayerStartupSettings` (`.gameMode`) | Convertisseur | **Oui** |
 | 5 | Pas de DLL gameplay `AlundraGame.Gameplay` (IPlugin, GameplayProxy, controller) | Nouveau projet C# | **Oui** |
@@ -191,7 +200,7 @@ Points structurants :
 | 7 | Physique 2.5D (Walkability / GroundProperty / Slope / Height / WallTiles / gravité Z) | DLL gameplay | Non (V1 sans collision) |
 | 8 | Interpréteur du bytecode événementiel (programmes A–F, map events) | DLL gameplay | Non (V1 sans events) |
 | 9 | Portails / téléportation entre worlds | DLL gameplay | Non (V1 mono-map) |
-| 10 | Audio (phase 4), textes + police (phase 5), UI/HUD + `BALANCE.BIN` (phase 7) | Convertisseur | Non |
+| 10 | ~~Audio (phase 4), textes + police (phase 5), UI/HUD + `BALANCE.BIN` (phase 7)~~ — **faits** (2026-08-09) | Convertisseur | Non |
 | 11 | Table `g_itemDropProperties` (98 entrées) — vit dans `StaticVariables.cs` de la décompilation, **pas** dans `data-extracted` | Extraction à faire | Non (3 objets en dur suffisent en V1) |
 | 12 | Parallaxe / `ScrollParameters`, palette swap | DLL gameplay / rendu | Non |
 
@@ -208,8 +217,10 @@ puis un héros qui bouge.
   `alundra-game-gameplay/AlundraGame.Gameplay.csproj` à la racine du repo, ajouté au `.slnx`.
   Sa sortie doit être copiée à la racine de `alundra-project/` (c'est là que
   `AssemblyManager.Load()` la cherche : `Path.Combine(EngineEnvironment.ProjectPath, fileName)`).
-- Les `.world` sont générés dans `alundra-project/Worlds/<Zone>/<Nom>-<id>.world`
-  (ajouter `Worlds` à `ProjectWriter.ContentFolders`).
+- ~~Les `.world` sont générés dans `alundra-project/Worlds/<Zone>/<Nom>-<id>.world`~~ →
+  **révisé le 2026-08-09** : chaque `.world` vit dans le dossier de sa map,
+  `alundra-project/Maps/<Zone>/<Nom>-<id>/<Nom>-<id>.world`, aux côtés de `tilemap/`, `dialogues/`
+  et `events/`. Pas de dossier `Worlds/` de premier niveau ; `MapLocation` en est l'autorité.
 - V1 = **une seule map jouable** (389). Les 482 autres `.world` sont générés mais non testés.
 
 ### E1 — Convertisseur : phase 6 minimale (worlds)
@@ -238,8 +249,10 @@ Nouveau `Writers/WorldWriter.cs` :
    `DepthSortable2DComponent` (`render_pass: YSortedWorld`, `sort_mode: TopDownYUp`),
    `script_class_name: "ScriptAlundra"`.
    Écrire aussi `Worlds/AlundraPlayer.gameMode` qui le référence.
-2. `ProjectWriter` : `FirstWorldLoaded = "Worlds/The Klark/Ship Klark (beginning)-389.world"`,
-   `GameplayDllName = "AlundraGame.Gameplay.dll"`.
+2. `ProjectWriter` : `FirstWorldLoaded` — **déjà fait**, et dérivé du `MapLocation` plutôt que codé
+   en dur, donc il vaut aujourd'hui
+   `Maps\The Klark\Ship Klark (beginning)-389\Ship Klark (beginning)-389.world`.
+   Reste `GameplayDllName = "AlundraGame.Gameplay.dll"`.
    > 1 017 fichiers dans `bank_hero_0` : mesurer le coût de chargement d'une entité qui liste
    > ~1 000 `.anim2d`. Si c'est trop lourd, ne lister en V1 que les animations réellement
    > utilisées (au minimum les 4 directions de l'anim 54) et charger le reste à la demande.
@@ -313,8 +326,8 @@ convertisseur en même temps que les worlds.
 
 | Étape | Statut |
 |---|---|
-| E0 — décisions | ⏳ |
-| E1 — WorldWriter | ⏳ |
+| E0 — décisions | ✅ |
+| E1 — WorldWriter | 🚧 points 1, 3 et 4 faits (phase 6 du plan : 483 `.world` avec `tileMap` / `camera` / `PlayerStart`, entités laissées dans les `object_layers`, worlds catalogués, + `Maps/world-index.json` demandé par E6). Reste le point 2 : `player_startup_settings_asset_id` → un `.gameMode` commun, qui dépend de l'entité héros (E2). |
 | E2 — entité héros + settings projet | ⏳ |
 | E3 — DLL gameplay + boot New Game | ⏳ |
 | E4 — déplacement + caméra | ⏳ |

@@ -1,4 +1,4 @@
-using AlundraCasaEngineProjectConverter;
+﻿using AlundraCasaEngineProjectConverter;
 using AlundraCasaEngineProjectConverter.Writers;
 using CasaEngine.EditorServices;
 using CasaEngine.Engine.Environment;
@@ -16,6 +16,20 @@ public class SpriteWriterTests
     // Minimal 8-byte PNG signature: enough for the writer's file-copy pipeline, which does not
     // decode image content. Not related to any Alundra asset.
     private static readonly byte[] FakePngBytes = { 137, 80, 78, 71, 13, 10, 26, 10 };
+
+    // A bank's assets live in Entities/<entity name>/, and the name comes from the shipped
+    // EntityNames.csv - so these tests look their fixture assets up by file name rather than
+    // hardcoding a folder and pinning themselves to that table's contents. The naming rule itself
+    // is covered by EntityNameCatalogReaderTests.
+    private static string FindEntityAsset(string outputDirectory, string fileName)
+    {
+        var entitiesDirectory = Path.Combine(outputDirectory, "Entities");
+        Assert.True(Directory.Exists(entitiesDirectory), $"'{entitiesDirectory}' was not created.");
+
+        var matches = Directory.GetFiles(entitiesDirectory, fileName, SearchOption.AllDirectories);
+        Assert.True(matches.Length == 1, $"Expected exactly one '{fileName}' under Entities/, found {matches.Length}.");
+        return matches[0];
+    }
 
     [Fact]
     public void ConvertSprites_WithPaletteCyclingFrames_CreatesDistinctSpritesPerFrame()
@@ -97,7 +111,7 @@ public class SpriteWriterTests
             Assert.Equal(2, report.Counters["Sprites.QuadsConverted"]);
             Assert.Equal(2, report.Counters["Assets.Sprite"]); // one per frame: distinct atlas cells
 
-            var animationPath = Path.Combine(outputDirectory, "Sprites", "bank_5", "bank5_anim0_down.anim2d");
+            var animationPath = FindEntityAsset(outputDirectory, "bank5_anim0_down.anim2d");
             Assert.True(File.Exists(animationPath));
 
             var animationDocument = JObject.Parse(File.ReadAllText(animationPath));
@@ -116,8 +130,8 @@ public class SpriteWriterTests
             Assert.Equal(0f, positionTrack.PositionKeyframes[0].Value.X);
             Assert.Equal(8f, positionTrack.PositionKeyframes[0].Value.Y);
 
-            var firstSpritePath = Path.Combine(outputDirectory, "Sprites", "bank_5", "sprite_111.sprite");
-            var secondSpritePath = Path.Combine(outputDirectory, "Sprites", "bank_5", "sprite_222.sprite");
+            var firstSpritePath = FindEntityAsset(outputDirectory, "sprite_111.sprite");
+            var secondSpritePath = FindEntityAsset(outputDirectory, "sprite_222.sprite");
             Assert.True(File.Exists(firstSpritePath));
             Assert.True(File.Exists(secondSpritePath));
 
@@ -209,7 +223,7 @@ public class SpriteWriterTests
 
             Assert.Empty(report.Errors);
 
-            var animationPath = Path.Combine(outputDirectory, "Sprites", "bank_7", "bank7_anim0_down.anim2d");
+            var animationPath = FindEntityAsset(outputDirectory, "bank7_anim0_down.anim2d");
             var animationData = new Animation2dData();
             animationData.Load(JObject.Parse(File.ReadAllText(animationPath)));
 
@@ -305,7 +319,7 @@ public class SpriteWriterTests
 
             Assert.Empty(report.Errors);
 
-            var animationPath = Path.Combine(outputDirectory, "Sprites", "bank_11", "bank11_anim0_down.anim2d");
+            var animationPath = FindEntityAsset(outputDirectory, "bank11_anim0_down.anim2d");
             var animationData = new Animation2dData();
             animationData.Load(JObject.Parse(File.ReadAllText(animationPath)));
 
@@ -392,7 +406,7 @@ public class SpriteWriterTests
 
             Assert.Empty(report.Errors);
 
-            var animationPath = Path.Combine(outputDirectory, "Sprites", "bank_9", "bank9_anim0_down.anim2d");
+            var animationPath = FindEntityAsset(outputDirectory, "bank9_anim0_down.anim2d");
             var animationData = new Animation2dData();
             animationData.Load(JObject.Parse(File.ReadAllText(animationPath)));
 
@@ -518,8 +532,8 @@ public class SpriteWriterTests
             Assert.Empty(report.Errors);
             Assert.Equal(2, report.Counters["Sprites.Banks"]);
 
-            var regularAnimationPath = Path.Combine(outputDirectory, "Sprites", "bank_5", "bank5_anim0_down.anim2d");
-            var heroAnimationPath = Path.Combine(outputDirectory, "Sprites", "bank_hero_5", "bankhero_5_anim0_down.anim2d");
+            var regularAnimationPath = FindEntityAsset(outputDirectory, "bank5_anim0_down.anim2d");
+            var heroAnimationPath = FindEntityAsset(outputDirectory, "bankhero_5_anim0_down.anim2d");
             Assert.True(File.Exists(regularAnimationPath));
             Assert.True(File.Exists(heroAnimationPath));
 

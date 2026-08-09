@@ -48,7 +48,7 @@ public static class CellMetadataWriter
         var nativeMapPath = Path.Combine(inputDirectory, "data", $"map_{mapIndex}.json");
 
         var location = TileMapWriter.ResolveLocation(mapIndex, mapLocations, report);
-        var tileMapRelativePath = Path.Combine("Maps", location.ZoneFolder, $"{location.FileBaseName}.tileMap");
+        var tileMapRelativePath = location.TileMapRelativePath;
         var tileMapFullPath = Path.Combine(outputDirectory, tileMapRelativePath);
 
         if (!File.Exists(companionPath))

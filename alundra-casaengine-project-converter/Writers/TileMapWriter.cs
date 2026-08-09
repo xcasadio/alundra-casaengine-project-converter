@@ -7,8 +7,9 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 /// <summary>
 /// Phase 1: converts the Tiled export of each Alundra map (data/tiled/map_N.tmj) into CasaEngine
 /// texture/tileset/tileMap assets, via the engine's own TiledMapImporter. Output files are
-/// grouped under Maps/{Zone}/ per maps.json, named "{MapName}-{id}" so the many maps sharing an
-/// identical display name (e.g. 130 maps named "Inoa (inner)") don't collide.
+/// grouped under Maps/{Zone}/{MapName}-{id}/tilemap/ per maps.json - see
+/// <see cref="MapLocation"/>, which owns that layout - and named "{MapName}-{id}" so the many maps
+/// sharing an identical display name (e.g. 130 maps named "Inoa (inner)") don't collide.
 /// </summary>
 public static class TileMapWriter
 {
@@ -43,10 +44,13 @@ public static class TileMapWriter
 
         var location = ResolveLocation(mapIndex, mapLocations, report);
 
-        var mapsDirectory = Path.Combine(outputDirectory, "Maps", location.ZoneFolder);
-        Directory.CreateDirectory(mapsDirectory);
+        // The importer derives its whole output (.tileMap, .tileset, .texture and the tileset PNG)
+        // from the destination .tmj's folder and base name, so pointing it at
+        // MapLocation.TiledMapRelativePath is what lands the tilemap assets in the map's tilemap/
+        // subfolder.
+        var destinationTmjPath = Path.Combine(outputDirectory, location.TiledMapRelativePath);
+        Directory.CreateDirectory(Path.GetDirectoryName(destinationTmjPath)!);
 
-        var destinationTmjPath = Path.Combine(mapsDirectory, $"{location.FileBaseName}.tmj");
         File.Copy(sourceTmjPath, destinationTmjPath, overwrite: true);
 
         TiledMapImportResult result;

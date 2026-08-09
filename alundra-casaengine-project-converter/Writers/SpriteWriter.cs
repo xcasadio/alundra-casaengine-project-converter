@@ -5,8 +5,6 @@ using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Assets.Sprites;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json.Linq;
 
 namespace AlundraCasaEngineProjectConverter.Writers;
 
@@ -16,6 +14,11 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///
 /// Mapping decisions (see docs/plan-conversion-agent-ia.md Phase 3 and the accompanying session
 /// notes for the full reasoning):
+///  - One folder per bank under Entities/, named after the entity the game itself names it (see
+///    EntityNameCatalogReader): the hero bank is Entities/Alundra. Banks the name table leaves
+///    empty, and banks sharing a name, fall back to or keep their bank key. Both the .anim2d and
+///    the .sprite assets of a bank live there; the spritesheet textures they all share stay under
+///    Sprites/Textures since they belong to no single entity.
 ///  - One .anim2d per (bank, AnimSet index, direction). Its parts are numbered slots (part0..N-1)
 ///    sized to the animation's own max simultaneous quad count; a frame with fewer quads than
 ///    that hides the unused slots for that frame via the Visible track. This does not require
@@ -53,12 +56,32 @@ public static class SpriteWriter
     {
         var banks = SpriteBankReader.ReadAllBanks(inputDirectory, report);
 
+        var entityNamesPath = Path.Combine(AppContext.BaseDirectory, "EntityNames.csv");
+        IReadOnlyDictionary<string, string> folderNamesByBankKey;
+        if (File.Exists(entityNamesPath))
+        {
+            var catalog = EntityNameCatalogReader.Read(entityNamesPath, banks);
+            folderNamesByBankKey = catalog.FolderNamesByBankKey;
+            foreach (var warning in catalog.Warnings)
+            {
+                report.Warnings.Add(warning);
+            }
+        }
+        else
+        {
+            report.Errors.Add(
+                $"EntityNames.csv not found at '{entityNamesPath}'; entity folders would lose their names.");
+            return;
+        }
+
         var textureAssetIdsBySpritesheet = new Dictionary<string, Guid>(StringComparer.OrdinalIgnoreCase);
         var spriteAssetIdsByKey = new Dictionary<(string Spritesheet, long Signature), Guid>();
 
         foreach (var bank in banks)
         {
-            ConvertBank(bank, inputDirectory, outputDirectory, textureAssetIdsBySpritesheet, spriteAssetIdsByKey, report);
+            ConvertBank(
+                bank, folderNamesByBankKey[bank.BankKey], inputDirectory, outputDirectory,
+                textureAssetIdsBySpritesheet, spriteAssetIdsByKey, report);
         }
 
         EditorAssetCatalogService.Save();
@@ -71,6 +94,7 @@ public static class SpriteWriter
 
     private static void ConvertBank(
         SpriteBank bank,
+        string entityFolderName,
         string inputDirectory,
         string outputDirectory,
         Dictionary<string, Guid> textureAssetIdsBySpritesheet,
@@ -89,7 +113,7 @@ public static class SpriteWriter
             return;
         }
 
-        var bankRelativeDirectory = Path.Combine("Sprites", $"bank_{bank.BankKey}");
+        var bankRelativeDirectory = Path.Combine("Entities", entityFolderName);
         Directory.CreateDirectory(Path.Combine(outputDirectory, bankRelativeDirectory));
         var quadsRead = 0;
         var quadsConverted = 0;
@@ -325,76 +349,16 @@ public static class SpriteWriter
         return spriteData.Id;
     }
 
+    // Spritesheets stay under Sprites/Textures because they belong to no single entity: several
+    // banks share one map spritesheet. The actual copy/catalog work is TextureAssetWriter's, which
+    // Phase 7 reuses for the UI textures.
     private static Guid EnsureSpritesheetTexture(
         string inputDirectory, string outputDirectory, string spritesheetFileName,
         Dictionary<string, Guid> textureAssetIdsBySpritesheet)
     {
-        if (textureAssetIdsBySpritesheet.TryGetValue(spritesheetFileName, out var existingId))
-        {
-            return existingId;
-        }
-
         var sourcePngPath = Path.Combine(inputDirectory, "data", spritesheetFileName);
-        if (!File.Exists(sourcePngPath))
-        {
-            throw new FileNotFoundException("Spritesheet PNG not found.", sourcePngPath);
-        }
-
-        var texturesDirectory = Path.Combine(outputDirectory, "Sprites", "Textures");
-        Directory.CreateDirectory(texturesDirectory);
-
-        var destinationPngPath = Path.Combine(texturesDirectory, spritesheetFileName);
-        File.Copy(sourcePngPath, destinationPngPath, overwrite: true);
-
-        var rawRelativePath = Path.Combine("Sprites", "Textures", spritesheetFileName);
-        var rawName = Path.GetFileNameWithoutExtension(spritesheetFileName);
-        var rawAssetInfo = new AssetInfo(Guid.NewGuid()) { Name = rawName, FileName = rawRelativePath };
-        EditorAssetCatalogService.Add(rawAssetInfo);
-
-        var wrapperRelativePath = Path.ChangeExtension(rawRelativePath, ".texture");
-        var wrapperId = Guid.NewGuid();
-        var wrapperDocument = new JObject
-        {
-            ["id"] = wrapperId.ToString(),
-            ["name"] = rawName,
-            ["texture_asset_id"] = rawAssetInfo.Id.ToString(),
-            ["sampler_state"] = SaveSamplerState(SamplerState.AnisotropicWrap),
-        };
-        EditorAssetWriterService.SaveDocument(wrapperRelativePath, wrapperDocument);
-        EditorAssetCatalogService.Add(new AssetInfo(wrapperId) { Name = rawName, FileName = wrapperRelativePath });
-
-        textureAssetIdsBySpritesheet[spritesheetFileName] = wrapperId;
-        return wrapperId;
-    }
-
-    // Mirrors CasaEngine.EditorServices.EditorJsonSaveHelper.Save(this SamplerState, JObject),
-    // which is internal to that assembly and so not callable from here. Texture.Load() reads
-    // every one of these fields unconditionally (JsonHelper.GetSamplerState) - a wrapper missing
-    // any of them throws inside AssetLoader<Texture>.LoadAsset, which swallows the exception and
-    // returns null, surfacing only as "IAssetLoader can't load ...texture" in the editor.
-    private static JObject SaveSamplerState(SamplerState samplerState)
-    {
-        var borderColorObject = new JObject
-        {
-            ["r"] = samplerState.BorderColor.R,
-            ["g"] = samplerState.BorderColor.G,
-            ["b"] = samplerState.BorderColor.B,
-            ["a"] = samplerState.BorderColor.A,
-        };
-
-        return new JObject
-        {
-            ["texture_filter"] = samplerState.Filter.ToString(),
-            ["address_u"] = samplerState.AddressU.ToString(),
-            ["address_v"] = samplerState.AddressV.ToString(),
-            ["address_w"] = samplerState.AddressW.ToString(),
-            ["border_color"] = borderColorObject,
-            ["max_anisotropy"] = samplerState.MaxAnisotropy,
-            ["max_mip_level"] = samplerState.MaxMipLevel,
-            ["mip_map_level_of_detail_bias"] = samplerState.MipMapLevelOfDetailBias,
-            ["comparison_function"] = samplerState.ComparisonFunction.ToString(),
-            ["filter_mode"] = samplerState.FilterMode.ToString(),
-        };
+        return TextureAssetWriter.EnsureTexture(
+            sourcePngPath, Path.Combine("Sprites", "Textures"), outputDirectory, textureAssetIdsBySpritesheet);
     }
 
     private static void PreserveHeroEffects(string inputDirectory, string outputDirectory, ConversionReport report)

@@ -8,6 +8,13 @@ sorties, des critères d'acceptation et une validation exécutable.
 génère un projet CasaEngine complet (catalogue + assets) dont chaque asset se charge sans erreur
 via les classes du moteur, et dont une map s'affiche dans l'éditeur/launcher.
 
+> **État au 2026-08-09 — les 8 phases sont faites.** Un run complet produit 483 maps / 20 991 entrées
+> de catalogue en 38 s, 0 erreur, et la passe de vérification recharge les 18 860 assets typés sans
+> exception. Chaque phase porte ci-dessous une note « Réalisé » quand l'implémentation a tranché
+> autrement que le texte d'origine — **le code fait foi**, ce plan est le récit de l'intention.
+> Restent hors périmètre et documentés comme tels : les golden files (§3), la démo visuelle
+> (phase 8 point 4) et tout le runtime gameplay (§6).
+
 ## Legende des statuts
 
 - ✅ Done
@@ -25,7 +32,7 @@ via les classes du moteur, et dont une map s'affiche dans l'éditeur/launcher.
 | Besoin | Support CasaEngine | Statut |
 |---|---|---|
 | Catalogue projet (`{Nom}.json` + `AssetInfos.json`) | `AssetInfo`, `AssetCatalog` (`CasaEngine/Framework/Assets/`) | ✅ Présent |
-| Écriture d'assets sur disque | `EditorAssetWriterService.SaveAsset()` (public), `EditorJsonSaveHelper` — **dans `CasaEngine.EditorServices`** | ⚠️ Présent mais **non référencé par le csproj du convertisseur** → à ajouter |
+| Écriture d'assets sur disque | `EditorAssetWriterService.SaveAsset()` (public), `EditorJsonSaveHelper` — **dans `CasaEngine.EditorServices`** | ✅ Référencé par le csproj depuis la phase 0 |
 | Tilemap / tileset (+ tiles animées) | `TileMapData` (.tileMap), `TileSetData` (.tileset), `AnimatedTileData`, `CustomProperties` | ✅ Présent |
 | Import Tiled `.tmj` (couches, animations, objets, propriétés) | `CasaEngine.EditorServices/Tiled/TiledMapImporter.cs` | ✅ Présent |
 | Sprites (région, hotspot, collisions, sockets) | `SpriteData` (.sprite) | ✅ Présent |
@@ -68,28 +75,61 @@ donnée dont le runtime aura besoin — la préserver dans des `CustomProperties
 
 ## 1. Architecture du convertisseur
 
+Arborescence réelle (le `Model/` intermédiaire n'a pas été nécessaire : chaque reader produit
+directement son document de sortie) :
+
 ```
 alundra-casaengine-project-converter/
-├── Program.cs                    # CLI : <inputDir> <outputDir> [--maps 0,4,10] [--phase N]
-├── Readers/                      # Lecture data-extracted (POCO + System.Text.Json ou Newtonsoft)
-│   ├── AlundraMapReader.cs       # map_N.json
-│   ├── AlundraSpriteBankReader.cs# SpriteRecords + map_alundra.json
-│   ├── CompanionReader.cs        # map_N.alundra.json (cellules)
+├── Program.cs                    # CLI : <inputDir> <outputDir> [--maps 0,4,10] [--phase N] [--no-verify]
+├── CliOptions.cs
+├── Readers/                      # Lecture data-extracted (System.Text.Json)
+│   ├── MapCatalogReader.cs       # maps.json → zones (MapLocation)
+│   ├── CellMetadataReader.cs     # map_N.alundra.json + WallTiles natifs
+│   ├── SpriteBankReader.cs       # SpriteRecords + map_alundra.json
+│   ├── EntityNameCatalogReader.cs# EntityNames.csv → nom de dossier par banque
 │   ├── SoundManifestReader.cs    # bgm.json / sfx.json
-│   ├── UiReader.cs               # font3.json / wind.json
-│   └── EtcResReader.cs           # ETC_RES.R.json / BALANCE.BIN.json
-├── Model/                        # Modèle intermédiaire neutre (découplé des 2 formats)
+│   ├── UiSpriteReader.cs         # wind.json
+│   ├── StringTableReader.cs      # ETC_RES.R.json + Strings[] par map
+│   └── EventCodeReader.cs        # SpriteInfo.EventCodes (tables A–F + Codes)
 ├── Writers/                      # Génération assets via classes CasaEngine
-│   ├── ProjectWriter.cs          # {Nom}.json + AssetInfos.json
-│   ├── TileMapWriter.cs          # .tileset/.tileMap (via TiledMapImporter + fusion compagnon)
-│   ├── SpriteWriter.cs           # .sprite/.anim2d + PNG par palette
-│   ├── AudioWriter.cs            # WAV + manifest loop points
-│   ├── TextWriter.cs             # dialogues/tables de chaînes
-│   ├── FontWriter.cs             # .fnt BMFont + PNG
-│   └── WorldWriter.cs            # .world + entités/portails/events
+│   ├── ProjectWriter.cs          # {Nom}.json + AssetInfos.json + arborescence
+│   ├── MapDiscovery.cs
+│   ├── TileMapWriter.cs          # .tileset/.tileMap (via TiledMapImporter)
+│   ├── CellMetadataWriter.cs     # fusion compagnon → TileMapData.CustomProperties
+│   ├── TextureAssetWriter.cs     # PNG + wrapper .texture (partagé phases 3/5/7)
+│   ├── SpriteWriter.cs           # .sprite/.anim2d sous Entities/<Nom>/
+│   ├── AudioWriter.cs            # WAV + manifests loop points
+│   ├── TextWriter.cs             # tables de chaînes + inventaire des codes de contrôle
+│   ├── FontWriter.cs             # .fnt BMFont + font3-charset.json
+│   ├── WorldWriter.cs            # .world + world-index.json
+│   ├── EventCodeWriter.cs        # compagnons de bytecode
+│   └── UiWriter.cs               # sprites wind, textures UI, balance.json
 ├── Ids.cs                        # GUIDs déterministes (UUID v5)
-└── ConversionReport.cs           # compteurs, warnings, invariants → report.json
+├── AssetVerifier.cs              # passe « charge tout » (phase 8)
+└── ConversionReport.cs           # compteurs, warnings, métriques, invariants → report.json
 ```
+
+### Disposition de sortie (2026-08-09)
+
+Toutes les données d'une même map vivent dans **un seul dossier**, au lieu des quatre arbres
+parallèles `Maps/` + `Dialogues/` + `Events/` + `Worlds/` d'origine :
+
+```
+Maps/{Zone}/{Nom}-{id}/
+    tilemap/    {Nom}-{id}.tileMap, .tileset, .tmj, map_{id}_tileset.png, map_{id}_tileset.texture
+    dialogues/  {Nom}-{id}.strings.json
+    events/     {Nom}-{id}.events.json
+    {Nom}-{id}.world
+Maps/world-index.json          # MapId -> chemin du .world
+Dialogues/                     # uniquement les tables globales : global-strings.json, control-codes.json
+Entities/<NomEntité>/          # banques de sprites (.sprite + .anim2d)
+Sprites/Textures/, Sprites/hero/, Sounds/, Musics/, UI/, UI/Textures/, Data/
+```
+
+Les dossiers de premier niveau `Worlds/` et `Events/` n'existent plus. **`MapLocation`
+(`Readers/MapCatalogReader.cs`) est la seule autorité sur cette disposition** : aucun writer ne
+compose un chemin de map lui-même — ils en étaient six à le faire, et les copies étaient libres de
+diverger. Changer la disposition se fait là et nulle part ailleurs.
 
 Règles de code (héritées du repo moteur) :
 - parsing déterministe, ordre de sortie stable entre runs (tri explicite) ;
@@ -126,8 +166,8 @@ qui charge `AlundraGame.json` + `AssetInfos.json` via `AssetCatalog` sans except
 ### ✅ Phase 1 — Textures, tilesets, tilemaps
 
 **Entrées** : `data/tiled/map_N.{tmj,tsj,png}`, `data/map_N_tilesheet.png`.
-**Sorties** : `Content/Textures/map_N_tileset.png`, `Content/TileSets/map_N.tileset`,
-`Content/Maps/map_N.tileMap`, catalogue mis à jour.
+**Sorties** : `Maps/{Zone}/{Nom}-{id}/tilemap/` (`.tileMap`, `.tileset`, `.tmj`, le PNG de tileset
+et son `.texture`), catalogue mis à jour. Voir « Disposition de sortie » ci-dessous.
 
 1. Copier les PNG de tilesets ; enregistrer chaque texture au catalogue (GUID déterministe).
 2. Piloter `TiledMapImporter` sur chaque `map_N.tmj` (il gère couches `Render_*`, animations de
@@ -152,12 +192,12 @@ dans l'éditeur.
    chargement ; si > quelques Mo par map, préférer l'asset compagnon).
 2. Y inclure : `Walkability`, `GroundProperty`, `Slope`, `Height`, `Flags`, piles `WallTiles`,
    et les propriétés de map (`Gravity`, `ZViscosity`, `SlideEffectId`, `BalanceLevel`).
-3. Documenter le schéma dans `docs/formats/cells-companion.md`.
+3. Documenter le schéma dans [docs/formats/cells-companion.md](formats/cells-companion.md).
 
 **Acceptation** : golden file `map_10.cells.json` ; rechargement sans perte (comparaison
 round-trip source → converti → relu = identique champ à champ).
 
-### ⏳ Phase 3 — Sprites et animations
+### ✅ Phase 3 — Sprites et animations
 
 **Entrées** : `SpriteRecords` des 483 maps + `map_alundra.json` + spritesheets PNG.
 **Sorties** : `Content/Sprites/bank_<Sector5Id>/…`, `.sprite`, `.anim2d`, PNG par palette.
@@ -180,7 +220,23 @@ round-trip source → converti → relu = identique champ à champ).
 tous les `.sprite`/`.anim2d` rechargent via `Load()` ; report : 244 banques, 0 quad perdu
 (compteur quads lus = quads convertis).
 
-### ⏳ Phase 4 — Audio
+**Réalisé — écarts assumés** (le code fait foi, cf. commentaires de `Writers/SpriteWriter.cs`) :
+
+- Sortie sous **`Entities/<NomEntité>/`**, pas `Sprites/bank_<id>/` : `Readers/EntityNameCatalogReader.cs`
+  résout chaque banque via `EntityNames.csv` (table partagée avec l'analyseur). Repli
+  `Entities/bank_<clé>/` quand la table ne nomme pas la banque.
+- **Palettes** : rien à générer — l'extracteur a déjà cuit la palette dans l'atlas exporté
+  (`Signature` inclut `Palette`, `AtlasX/Y` sont calculés par map). Point 3 sans objet.
+- **Ids non déterministes** pour `.sprite`/`.anim2d` : `ObjectBase.Id` a un setter privé et
+  `EditorAssetWriterService.SaveAsset` sérialise l'id porté par l'objet. `Ids.For()` n'est utilisé
+  que là où aucune classe moteur n'impose l'id (audio, worlds, police).
+- **`CollisionData` 3D par frame non convertie** (point 5) : `SpriteData` n'a pas de sac de
+  propriétés custom et les parts d'`Animation2dData` indexent du contenu, pas des hitboxes. Donnée
+  intacte dans `data-extracted`, à reprendre avec la DLL gameplay.
+- Compteurs réels : 395 banques (244 de map + banques héros), 160 355 quads lus == convertis,
+  9 620 `.anim2d`, 7 185 `.sprite`, 104 spritesheets.
+
+### ✅ Phase 4 — Audio
 
 **Entrées** : `sound/bgm/*.wav`, `sound/sfx/*.wav`, `bgm.json`, `sfx.json`.
 **Sorties** : `Content/Musics/`, `Content/Sounds/`, `Content/Sounds/sfx-manifest.json`.
@@ -194,7 +250,14 @@ tous les `.sprite`/`.anim2d` rechargent via `Load()` ; report : 244 banques, 0 q
 **Acceptation** : 1 041 WAV copiés + manifest ; test unitaire qui instancie un `SoundEffect`
 MonoGame avec les loop points du manifest sur un SFX bouclé (ex. `sfx_0001`, LoopStart=28).
 
-### ⏳Phase 5 — Textes, dialogues, police
+**Réalisé** : 45 BGM + 996 tons SFX = 1 041 WAV copiés tels quels, chacun inscrit au catalogue avec
+un id **déterministe** (`Ids.For("sound/…")`) — le moteur n'ayant aucun loader audio, rien ne
+dispute l'id. Manifests `Musics/bgm-manifest.json` et `Sounds/sfx-manifest.json` (961 enregistrements
+SFX, dont 91 avec `SkipReason` conservés). Le point 3 (extension moteur exposant les loop points)
+n'a pas été fait : hors périmètre du convertisseur, la donnée est dans le manifest.
+Schéma : [docs/formats/audio-manifests.md](formats/audio-manifests.md).
+
+### ✅ Phase 5 — Textes, dialogues, police
 
 **Entrées** : `Strings[]` par map, `ETC_RES.R.json`, `ui/font3.{png,json}`.
 **Sorties** : `Content/Dialogues/`, `Content/UI/font3.fnt` + PNG.
@@ -212,7 +275,28 @@ MonoGame avec les loop points du manifest sur un SFX bouclé (ex. `sfx_0001`, Lo
 **Acceptation** : chaînes accentuées correctes en UTF-8 (échantillon : « Epée sacrée » etc. depuis
 ETC_RES) ; `.fnt` chargé par FontStashSharp dans un test ; report listant les codes de contrôle.
 
-### ⏳ Phase 6 — Worlds, entités, portails, events
+**Réalisé — écarts assumés** :
+
+- Tables par map en **`Maps/{Zone}/{Nom}-{id}/dialogues/{Nom}-{id}.strings.json`**, dans le dossier
+  de la map (cf. « Disposition de sortie » plus bas), pas `map_N.strings.json`. `Dialogues/` ne garde
+  que les deux tables qui n'appartiennent à aucune map : `global-strings.json` et
+  `control-codes.json`.
+- Codes de contrôle : la liste vit dans **`Dialogues/control-codes.json`** (code → occurrences +
+  exemple) plutôt que dans `report.json`, qui n'en garde que le compteur `Text.ControlCodesDistinct`.
+  27 codes distincts trouvés (`\N` 24 612, `\B` 17 063, `\W` 11 099, `\A` 6 972…).
+- **`char id` du `.fnt` = point de code Unicode**, pas le code brut du jeu : les chaînes extraites
+  sont déjà décodées, un `.fnt` indexé sur les codes bruts n'en rendrait aucune. Conversion = port de
+  `TextDecoder.ConvertCp850ToLatin1` (branche FR/PAL). Codes bruts conservés dans
+  `UI/font3-charset.json`. 42 codes sur 256 tombent sur un point de code déjà pris : celui que la
+  table CP850 nomme l'emporte sur celui qui n'a fait que garder sa valeur d'octet.
+- **Limite connue — le texte rend en chasse fixe** : Alundra avance de
+  `g_fontCharWidthTable[code * 5]`, table qui vit dans l'exécutable et **n'est pas** dans
+  `data-extracted`. Tous les `xadvance` valent la cellule de 16 px. C'est un vrai écart de fidélité ;
+  extraire cette table est le correctif.
+- Compteurs réels : 916 chaînes globales (562 vides), 483 tables de map, 61 824 chaînes, 214 glyphes
+  dans le `.fnt`. Schémas : [text-tables.md](formats/text-tables.md), [font.md](formats/font.md).
+
+### ✅ Phase 6 — Worlds, entités, portails, events
 
 **Entrées** : `map_N.json` (Entities/Portals/MapEvents/EventCodes), assets des phases 1–3.
 **Sorties** : `Content/Worlds/map_N.world` + JSON compagnons events.
@@ -234,7 +318,33 @@ ETC_RES) ; `.fnt` chargé par FontStashSharp dans un test ; report listant les c
 9 631 entités, 3 316 portails, 1 714 map events répartis conformément aux stats du rapport
 d'analyse ; ouverture d'un world dans l'éditeur avec la tilemap visible.
 
-### ⏳ Phase 7 — UI et divers
+**Réalisé — les points 2, 3 et 4 ont été tranchés autrement**, conformément à
+[demarrage-nouvelle-partie.md](demarrage-nouvelle-partie.md) §5 (E1) et §6 point 1, qui font
+autorité sur ce plan :
+
+- **Les entités / portails / map events ne sont PAS dupliqués en `entity_references`.** Deux
+  raisons : `Entity` n'a **aucun** sac de propriétés custom (le point 2 était irréalisable tel
+  qu'écrit), et la phase 1 les a déjà tous préservés dans les `object_layers` du `.tileMap`
+  (`Portals` / `MapEvents` / `Entities`, tous champs natifs en `custom_properties`). La DLL gameplay
+  les lira depuis `TileMapData.ObjectLayers`.
+- Chaque `.world` (`Maps/{Zone}/{Nom}-{id}/{Nom}-{id}.world`) contient donc : entité `tileMap`
+  (`TileMapComponent`), entité `camera` (`Camera3dIn2dAxisComponent` — son `Target` est un `Vector3`
+  qui cadre correctement sans code gameplay, là où `CameraTargeted2dComponent` vise une `Entity`
+  forcément nulle dans un projet fraîchement converti et mirroite l'image), entité `PlayerStart`.
+- **Spawn** : seule la map 389 en a un documenté (tuile 33/59/0 → `(804, -952, 0)`). Les 482 autres
+  reçoivent un `PlayerStart` au centre de la map, compté à part
+  (`Worlds.PlayerStartPlaceholders`) — elles s'atteignent par portail, pas par spawn.
+- `player_startup_settings_asset_id` laissé vide : le `.gameMode` exige l'entité héros (étape E2 du
+  doc de démarrage), le renseigner créerait une référence morte.
+- Ajouté hors plan car demandé par E6 : **`Maps/world-index.json`** (`MapId` → chemin du world).
+- Point 6 fait : `FirstWorldLoaded` = world de la map **389** (« Ship Klark (beginning) »), valeur
+  fixée par le doc de démarrage — pas map_0. `GameplayDllName` reste vide (hors périmètre, cf. §6).
+- Invariants vérifiés sur un run complet : 483 worlds, 9 741 entités dont **9 631** activées,
+  **3 316** portails (`DestMapId != 0` ; les 30 912 emplacements bruts ne veulent rien dire),
+  **1 714** map events, 365 344 mots de bytecode.
+  Schémas : [events.md](formats/events.md), [world-index.md](formats/world-index.md).
+
+### ✅ Phase 7 — UI et divers
 
 1. `wind.json` → 277 `SpriteData` sur `wind.png` (`Content/UI/`).
 2. `memorycard/*.png`, `loading_screen.png` → textures cataloguées.
@@ -243,7 +353,15 @@ d'analyse ; ouverture d'un world dans l'éditeur avec la tilemap visible.
 
 **Acceptation** : catalogue complet, chargement round-trip OK.
 
-### ⏳ Phase 8 — Validation globale et finition
+**Réalisé** : 277 `SpriteData` sous `UI/` (nommés `wind_000`..`wind_276` — plusieurs enregistrements
+partagent le même rectangle, un nom dérivé du rectangle collisionnerait ; `PaletteIndex`, que
+`SpriteData` ne sait pas porter, est préservé dans `UI/wind-sprites.json`). 18 textures UI sous
+`UI/Textures/` (wind + 3 memory card + 13 closing + loading screen). `Data/balance.json` :
+512 enregistrements, champs inconnus sous leur nom d'origine ; **seul le `FileName` de tête est
+retiré** — c'est un chemin absolu de la machine d'extraction, donc de la provenance, pas de la
+donnée de jeu. Schéma : [misc-data.md](formats/misc-data.md).
+
+### ✅ Phase 8 — Validation globale et finition
 
 1. Run complet sur les 483 maps : `0 erreur`, warnings triés par type dans `report.json`.
 2. Test automatisé « charge tout » : itérer `AssetInfos.json`, charger chaque asset via la classe
@@ -254,6 +372,47 @@ d'analyse ; ouverture d'un world dans l'éditeur avec la tilemap visible.
 5. Mettre à jour `README.md` (usage CLI) et `docs/formats/` (schémas compagnons).
 
 **Acceptation finale** : commande unique → projet complet ; suite de tests verte ; démo visuelle.
+
+**Réalisé** :
+
+- Le « charge tout » est devenu `AssetVerifier`, **une passe du convertisseur lui-même, active par
+  défaut** (`--no-verify` pour l'éviter), pas seulement un test : ainsi il valide la vraie sortie de
+  chaque run, ce qu'un test sur un projet jouet ne ferait jamais. Il charge chaque asset via la
+  classe moteur correspondante et signale en plus les défauts d'intégrité du catalogue (fichier
+  absent, id ou nom de fichier en double). Les extensions sans loader utilisable sans
+  `GraphicsDevice` (`.wav` — le moteur n'a aucun loader audio, `.png`, `.tmj`, `.fnt`) sont
+  vérifiées en existence, dans un compteur **distinct** : elles ne sont pas comptées comme chargées.
+- La passe étant pilotée par le catalogue, elle est confrontée aux fichiers réellement présents pour
+  ne pas pouvoir être aveugle : **catalogue vide sur un dossier plein d'assets = erreur** (« rien n'a
+  été vérifié »), et un fichier chargeable absent du catalogue = warning (reliquat d'un run
+  précédent — l'import Tiled du moteur renomme au lieu d'écraser). Sur un run propre,
+  `Verify.LoadableFilesOnDisk == Verify.Loaded` et `Verify.UncataloguedFiles` vaut 0.
+- **Ce que la passe ne couvre pas** : les ~980 JSON compagnons (`Dialogues/`, `Events/`, manifests
+  audio, `wind-sprites.json`, `font3-charset.json`, `balance.json`, `world-index.json`). Ils ne sont
+  pas des types d'assets CasaEngine, donc rien ne les recharge ; ils sont couverts par les tests
+  unitaires et documentés dans [docs/formats/](formats/README.md).
+- `report.json` : durée totale et par phase, taille et nombre de fichiers en sortie, et un
+  regroupement des warnings par catégorie **en plus** de la liste brute (la liste brute reste, la
+  perdre serait une régression).
+- Point 3 partiel : le **temps d'ouverture du projet dans l'éditeur n'est pas mesuré** — il faut
+  l'éditeur WPF et un humain. Aucune mesure de substitution n'a été inventée.
+- Point 4 (**démo visuelle**) **non fait** : afficher un world dans le launcher exige l'entité héros,
+  un `.gameMode` et la DLL gameplay, c'est-à-dire les étapes E2/E3 de
+  [demarrage-nouvelle-partie.md](demarrage-nouvelle-partie.md), hors périmètre de ce plan.
+- Point 5 fait : [README.md](../README.md) (usage CLI) et [docs/formats/](formats/README.md).
+
+**Résultats du run complet de référence** (`data-extracted` → `alundra-project/`, une machine) :
+483 maps, 20 991 entrées de catalogue, 18 860 assets chargés + 2 131 vérifiés en existence,
+**0 erreur**, 6 warnings, 21 968 fichiers / 910 Mo, 38 s. Suite de tests : 70 verte.
+
+Une passe de vérification adverse indépendante (contre-calcul de tous les compteurs depuis
+`data-extracted`, corruptions délibérées d'assets, double run pour le déterminisme, comparaison
+champ à champ des chaînes / manifests / bytecode) a confirmé ces résultats : 0 perte de donnée,
+1 041 WAV identiques au bit près, 61 824 chaînes et 365 344 mots de bytecode sans écart, et le seul
+octet qui bouge d'un run à l'autre dans un `.world` est `tile_map_data_asset_id` — exactement le
+caveat documenté ci-dessus. Les défauts secondaires qu'elle a relevés (catalogue vide déclaré
+« PASSED », `--maps abc` en stack trace, garde de run complet, code de contrôle en fin de chaîne)
+ont été corrigés et couverts par des tests.
 
 ---
 
@@ -268,7 +427,18 @@ d'analyse ; ouverture d'un world dans l'éditeur avec la tilemap visible.
 | Invariants | Compteurs globaux du report vs statistiques du rapport d'analyse |
 | Intégration | Ouverture éditeur/launcher (manuelle en V1, scriptable ensuite) |
 
-Framework : xUnit ou NUnit selon ce qu'utilise `CasaEngine.Tests` (s'aligner sur l'existant).
+Framework : xUnit (59 tests). 
+
+**Golden files : non faits, et bloqués — pas oubliés.** Ils exigent une sortie identique d'un run à
+l'autre, or les ids d'assets des phases 1 et 3 viennent de `ObjectBase.Id`, dont le setter est privé :
+`EditorAssetImportService.ImportTiledMap` et `EditorAssetWriterService.SaveAsset` sérialisent un
+`Guid` neuf à chaque run. Un golden file de `.tileMap`, `.tileset`, `.sprite` ou `.anim2d` échouerait
+donc systématiquement, et le committer reviendrait à figer du bruit. Le reste de la sortie *est*
+déterministe (`Ids.For()` pour l'audio, les worlds et la police ; collections triées ; aucun
+`DateTime.Now`). **Préalable au chantier golden files** : exposer un id assignable côté moteur
+(`CasaEngineMonogame`), puis basculer les phases 1 et 3 sur `Ids.For()`. Même constat côté
+[demarrage-nouvelle-partie.md](demarrage-nouvelle-partie.md) §6 point 4. En attendant, le filet est
+la passe `AssetVerifier` (phase 8), qui recharge toute la sortie réelle à chaque run.
 
 ---
 
@@ -278,11 +448,14 @@ Framework : xUnit ou NUnit selon ce qu'utilise `CasaEngine.Tests` (s'aligner sur
 # Build
 dotnet build alundra-casaengine-project-converter/alundra-casaengine-project-converter.csproj
 
-# Conversion complète
-dotnet run --project alundra-casaengine-project-converter -- data-extracted output/AlundraGame
+# Conversion complète (~38 s, ~910 Mo) — alundra-project/ est la sortie de référence, gitignorée
+dotnet run --project alundra-casaengine-project-converter -- data-extracted alundra-project
 
-# Itération rapide sur 3 maps de référence
-dotnet run --project alundra-casaengine-project-converter -- data-extracted output/AlundraGame --maps 0,4,10
+# Itération rapide sur 3 maps de référence (--phase N exécute les phases 0..N incluses)
+dotnet run --project alundra-casaengine-project-converter -- data-extracted alundra-project --maps 0,4,10
+
+# Sans la passe de vérification finale
+dotnet run --project alundra-casaengine-project-converter -- data-extracted alundra-project --no-verify
 
 # Inspection des données sources
 jq '.SpriteInfo.Entities.Entities[] | select(.IsEnabled==1)' data-extracted/data/map_4.json

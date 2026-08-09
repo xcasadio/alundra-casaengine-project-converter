@@ -45,7 +45,8 @@ public class CellMetadataWriterTests
             Assert.Equal(1, report.Counters["Maps.CellMetadata"]);
             Assert.Equal(1, report.Counters["Cells.WallTileStacks"]);
 
-            var tileMapPath = Path.Combine(outputDirectory, "Maps", "TestZone", "Test Map-0.tileMap");
+            var tileMapPath = Path.Combine(
+                outputDirectory, "Maps", "TestZone", "Test Map-0", "tilemap", "Test Map-0.tileMap");
             var tileMapDocument = JObject.Parse(File.ReadAllText(tileMapPath));
             var customProperties = Assert.IsType<JObject>(tileMapDocument["custom_properties"]);
             var cellsJson = (string?)customProperties["AlundraCells"];

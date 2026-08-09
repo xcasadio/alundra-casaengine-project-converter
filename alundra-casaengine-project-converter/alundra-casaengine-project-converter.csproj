@@ -12,6 +12,11 @@
     <None Include="maps.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <!-- Linked, not copied: the analyser owns this table and the game engine reads the same file,
+         so a second copy here would drift the moment either side edits it. -->
+    <None Include="..\alundra-datas-analyser\AlundraTools\AlundraTools\EntityNames.csv" Link="EntityNames.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

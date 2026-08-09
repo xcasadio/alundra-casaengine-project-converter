@@ -2,6 +2,9 @@
 using AlundraCasaEngineProjectConverter.Readers;
 using AlundraCasaEngineProjectConverter.Writers;
 
+// Disambiguates the Phase 5 writer from System.IO.TextWriter, which the implicit usings bring in.
+using TextWriter = AlundraCasaEngineProjectConverter.Writers.TextWriter;
+
 var options = CliOptions.Parse(args);
 if (options is null)
 {
@@ -19,6 +22,7 @@ Console.WriteLine($"Input : {options.InputDirectory}");
 Console.WriteLine($"Output: {options.OutputDirectory}");
 
 var report = new ConversionReport();
+var totalStopwatch = System.Diagnostics.Stopwatch.StartNew();
 
 // maps.json groups map ids into named zones (Maps/{Zone}/{Name}-{id}.*); it ships with the
 // converter itself, not with data-extracted.
@@ -41,28 +45,94 @@ else
 // Phase 0: bootstrap an empty CasaEngine project.
 if (options.Phase >= 0)
 {
-    ProjectWriter.CreateEmptyProject(options.OutputDirectory, report);
+    report.RunPhase("Phase0.Project", () => ProjectWriter.CreateEmptyProject(options.OutputDirectory, report));
 }
 
 // Phase 1: textures, tilesets and tilemaps from the Tiled export.
 if (options.Phase >= 1)
 {
-    TileMapWriter.ConvertMaps(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report);
+    report.RunPhase("Phase1.TileMaps", () =>
+        TileMapWriter.ConvertMaps(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report));
 }
 
 // Phase 2: per-cell gameplay metadata merged into TileMapData.CustomProperties.
 if (options.Phase >= 2)
 {
-    CellMetadataWriter.ConvertMaps(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report);
+    report.RunPhase("Phase2.CellMetadata", () =>
+        CellMetadataWriter.ConvertMaps(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report));
 }
 
 // Phase 3: sprite banks and their animations.
 if (options.Phase >= 3)
 {
-    SpriteWriter.ConvertSprites(options.InputDirectory, options.OutputDirectory, report);
+    report.RunPhase("Phase3.Sprites", () =>
+        SpriteWriter.ConvertSprites(options.InputDirectory, options.OutputDirectory, report));
 }
+
+// Phase 4: BGM and SFX preserved as raw WAV assets plus their manifests.
+if (options.Phase >= 4)
+{
+    report.RunPhase("Phase4.Audio", () =>
+        AudioWriter.ConvertAudio(options.InputDirectory, options.OutputDirectory, report));
+}
+
+// Phase 5: string tables (global + per map), their control-code inventory, and the bitmap font.
+if (options.Phase >= 5)
+{
+    report.RunPhase("Phase5.Text", () =>
+        TextWriter.ConvertText(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report));
+    report.RunPhase("Phase5.Font", () =>
+        FontWriter.ConvertFont(options.InputDirectory, options.OutputDirectory, report));
+}
+
+// Phase 6: one world per map (tilemap + camera + player start), the MapId -> world index, and the
+// raw event bytecode companions. Map entities/portals/map events stay in the .tileMap object
+// layers Phase 1 wrote them to - see WorldWriter's summary.
+if (options.Phase >= 6)
+{
+    report.RunPhase("Phase6.Worlds", () =>
+        WorldWriter.ConvertWorlds(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report));
+    report.RunPhase("Phase6.Events", () =>
+        EventCodeWriter.ConvertEvents(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report));
+}
+
+// Phase 7: UI sprites, standalone screen textures and the BALANCE.BIN table.
+if (options.Phase >= 7)
+{
+    report.RunPhase("Phase7.Ui", () => UiWriter.ConvertUi(options.InputDirectory, options.OutputDirectory, report));
+}
+
+// Phase 8: load every generated asset back through its engine class. On by default - assets that
+// only fail at load time are otherwise silently broken until the editor opens them.
+var verificationPassed = true;
+if (options.Verify)
+{
+    Console.WriteLine("Verifying generated assets...");
+    report.RunPhase("Phase8.Verify", () => verificationPassed = AssetVerifier.Verify(options.OutputDirectory, report));
+}
+
+totalStopwatch.Stop();
+report.TotalDurationSeconds = totalStopwatch.Elapsed.TotalSeconds;
+report.MeasureOutput(options.OutputDirectory);
 
 report.Save(Path.Combine(options.OutputDirectory, "report.json"));
 report.PrintSummary();
+
+if (!options.Verify)
+{
+    Console.WriteLine("  Verification: SKIPPED (--no-verify)");
+}
+else if (verificationPassed)
+{
+    Console.WriteLine(
+        $"  Verification: PASSED ({report.Counters.GetValueOrDefault("Verify.Loaded")} loaded, " +
+        $"{report.Counters.GetValueOrDefault("Verify.ExistenceChecked")} existence-checked).");
+}
+else
+{
+    Console.WriteLine(
+        $"  Verification: FAILED ({report.Counters.GetValueOrDefault("Verify.Failed")} assets failed, " +
+        $"see report.json).");
+}
 
 return report.Errors.Count > 0 ? 1 : 0;

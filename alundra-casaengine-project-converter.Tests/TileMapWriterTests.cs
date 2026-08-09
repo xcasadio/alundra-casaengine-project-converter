@@ -47,11 +47,11 @@ public class TileMapWriterTests
             Assert.Equal(2, report.Counters["Maps"]);
             Assert.Empty(report.Errors);
 
-            var map0TileMapPath = Path.Combine(outputDirectory, "Maps", "TestZone", "Static Map-0.tileMap");
-            var map0TileSetPath = Path.Combine(outputDirectory, "Maps", "TestZone", "Static Map-0.tileset");
+            var map0TileMapPath = Path.Combine(outputDirectory, "Maps", "TestZone", "Static Map-0", "tilemap", "Static Map-0.tileMap");
+            var map0TileSetPath = Path.Combine(outputDirectory, "Maps", "TestZone", "Static Map-0", "tilemap", "Static Map-0.tileset");
             Assert.True(File.Exists(map0TileMapPath));
             Assert.True(File.Exists(map0TileSetPath));
-            Assert.True(File.Exists(Path.Combine(outputDirectory, "Maps", "TestZone", "Static Map-0.tmj")));
+            Assert.True(File.Exists(Path.Combine(outputDirectory, "Maps", "TestZone", "Static Map-0", "tilemap", "Static Map-0.tmj")));
 
             var tileMapData = new TileMapData();
             tileMapData.Load(JObject.Parse(File.ReadAllText(map0TileMapPath)));
@@ -65,7 +65,7 @@ public class TileMapWriterTests
             tileSetData.Load(JObject.Parse(File.ReadAllText(map0TileSetPath)));
             Assert.Equal(2, tileSetData.Tiles.Count);
 
-            var map5TileSetPath = Path.Combine(outputDirectory, "Maps", "TestZone", "Animated Map-5.tileset");
+            var map5TileSetPath = Path.Combine(outputDirectory, "Maps", "TestZone", "Animated Map-5", "tilemap", "Animated Map-5.tileset");
             Assert.True(File.Exists(map5TileSetPath));
 
             var animatedTileSetData = new TileSetData();
@@ -110,8 +110,8 @@ public class TileMapWriterTests
             TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: new[] { 1 }, mapLocations, report);
 
             Assert.Equal(1, report.Counters["Maps"]);
-            Assert.False(File.Exists(Path.Combine(outputDirectory, "Maps", "TestZone", "First Map-0.tileMap")));
-            Assert.True(File.Exists(Path.Combine(outputDirectory, "Maps", "TestZone", "Second Map-1.tileMap")));
+            Assert.False(File.Exists(Path.Combine(outputDirectory, "Maps", "TestZone", "First Map-0", "tilemap", "First Map-0.tileMap")));
+            Assert.True(File.Exists(Path.Combine(outputDirectory, "Maps", "TestZone", "Second Map-1", "tilemap", "Second Map-1.tileMap")));
         }
         finally
         {
@@ -144,7 +144,7 @@ public class TileMapWriterTests
             TileMapWriter.ConvertMaps(
                 inputDirectory, outputDirectory, mapFilter: null, new Dictionary<int, MapLocation>(), report);
 
-            Assert.True(File.Exists(Path.Combine(outputDirectory, "Maps", "Uncategorized", "map_7.tileMap")));
+            Assert.True(File.Exists(Path.Combine(outputDirectory, "Maps", "Uncategorized", "map_7", "tilemap", "map_7.tileMap")));
             Assert.Contains(report.Warnings, warning => warning.Contains("not listed in maps.json", StringComparison.Ordinal));
         }
         finally

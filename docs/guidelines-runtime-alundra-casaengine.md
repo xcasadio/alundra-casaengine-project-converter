@@ -102,16 +102,26 @@ Table de conversion complète pour une entité :
 
 ## 4. Conventions de nommage des assets générés
 
+**Toutes les données d'une map vivent dans un seul dossier**, `Maps/<Zone>/<Nom>-<MapId>/` (revu le
+2026-08-09 ; il n'y a plus d'arbres `Worlds/` ni `Events/` de premier niveau) :
+
 | Asset | Convention | Exemple |
 |---|---|---|
-| TileMap / TileSet / texture | `Maps/<Zone>/<Nom>-<MapId>.{tileMap,tileset}` + `map_<MapId>_tileset.{png,texture}` | `Maps/The Klark/Ship Klark (beginning)-389.tileMap` |
-| World | `Worlds/<Zone>/<Nom>-<MapId>.world` | à créer (E1) |
-| Banque de sprites de map | `Sprites/bank_<Sector5Id>/` | `Sprites/bank_25/` |
-| Banque de sprites du héros | `Sprites/bank_hero_<Sector5Id>/` | `Sprites/bank_hero_0/` |
+| TileMap / TileSet / texture | `Maps/<Zone>/<Nom>-<MapId>/tilemap/<Nom>-<MapId>.{tileMap,tileset,tmj}` + `map_<MapId>_tileset.{png,texture}` | `Maps/The Klark/Ship Klark (beginning)-389/tilemap/Ship Klark (beginning)-389.tileMap` |
+| World | `Maps/<Zone>/<Nom>-<MapId>/<Nom>-<MapId>.world` | `Maps/The Klark/Ship Klark (beginning)-389/Ship Klark (beginning)-389.world` |
+| Table de chaînes de la map | `Maps/<Zone>/<Nom>-<MapId>/dialogues/<Nom>-<MapId>.strings.json` | — |
+| Bytecode d'évènements de la map | `Maps/<Zone>/<Nom>-<MapId>/events/<Nom>-<MapId>.events.json` | — |
+| Index des worlds | `Maps/world-index.json` | `MapId` → chemin du `.world` |
+| Banque de sprites | `Entities/<NomEntité>/` d'après `EntityNames.csv` ; repli `Entities/bank_<Clé>/` | `Entities/Alundra/`, `Entities/bank_hero_5/` |
 | Animation 2D | `bank<Key>_anim<AnimSetIndex>_<down\|up\|left\|right>.anim2d` | `bankhero_0_anim54_down.anim2d` |
+| Tables de chaînes globales | `Dialogues/{global-strings,control-codes}.json` | — |
 
 `<Zone>` vient de `alundra-casaengine-project-converter/maps.json` (embarqué avec le convertisseur,
 pas avec `data-extracted`) ; les maps absentes de ce fichier tombent dans `Uncategorized`.
+
+Cette disposition est définie **une seule fois**, par `MapLocation`
+(`alundra-casaengine-project-converter/Readers/MapCatalogReader.cs`) : aucun writer ne compose de
+chemin de map lui-même. La changer se fait là.
 
 **Ordre des directions** : `down, up, left, right` — c'est l'ordre des offsets `Down/Up/Left/Right`
 des `AnimSets` d'Alundra, et `g_resetDirectionId = 0` signifie donc **down**.
