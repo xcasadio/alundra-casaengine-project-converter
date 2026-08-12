@@ -50,8 +50,15 @@ public readonly record struct TileCentreSpawn(int PixelX, int PixelY, float Worl
 ///  and it has neither zoom nor texel snap, so no pixel-perfect contract is expressible. A
 ///  Camera2dComponent is orthographic: world units are pixels, every layer projects at the same
 ///  scale whatever its Z, and Zoom / PixelSnap make the doc's pixel-perfect checklist satisfiable.
-///  The X/Y framing is unchanged (it is equivalent to the old camera at Zoom = 1); only the depth
-///  window changes, to [Target.Z - 500, Target.Z + 499], which the layer offsets fit into easily.
+///  Only the depth window changes, to [Target.Z - 500, Target.Z + 499], which the layer offsets fit
+///  into easily.
+///
+///  Framing. The engine shows viewport / Zoom world pixels, and the viewport is the live window, so
+///  the zoom written here only means something together with the window size Phase 0 writes into
+///  AlundraGame.json. Both come from AlundraDisplay, which exists so they cannot drift: at Zoom = 1
+///  against the engine's default 1024x768 window the view showed 1024x768 world pixels where
+///  Alundra shows 320x236 - about ten times too much map on screen, which is what a run of the
+///  converted game actually looked like before this was fixed.
 ///
 ///  Why the camera is shared rather than inlined per world. Its Target *is* serialized -
 ///  EditorEntityJsonSerializer.SaveCamera2dComponent writes target / zoom / pixel_snap and
@@ -415,14 +422,15 @@ public static class WorldWriter
 
         // CameraComponent.InitializeWithWorld overwrites the viewport from the live screen size, so
         // these are only placeholders keeping the document loadable (both keys are read
-        // unconditionally by CameraComponent.Load).
+        // unconditionally by CameraComponent.Load). They still carry the window size the project
+        // asks for, so a reader of this file is not misled about the intended framing.
         node["view_distance"] = 999f;
         node["viewport"] = new JObject
         {
             ["x"] = 0,
             ["y"] = 0,
-            ["w"] = 1024,
-            ["h"] = 768,
+            ["w"] = AlundraDisplay.WindowWidth,
+            ["h"] = AlundraDisplay.WindowHeight,
             ["min_depth"] = 1f,
             ["max_depth"] = 1000f,
         };
@@ -433,7 +441,9 @@ public static class WorldWriter
             ["y"] = -(AlundraMapHeightInTiles * AlundraTileHeight / 2f),
             ["z"] = 0f,
         };
-        node["zoom"] = 1f;
+        // The other half of the framing (see AlundraDisplay). Zoom = 1 with the engine's default
+        // window showed 1024x768 world pixels where Alundra shows 320x236 - ten times too much map.
+        node["zoom"] = AlundraDisplay.CameraZoom;
         node["pixel_snap"] = true;
         return node;
     }

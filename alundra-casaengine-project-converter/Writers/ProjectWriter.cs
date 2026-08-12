@@ -14,16 +14,21 @@ public static class ProjectWriter
 {
     public const string ProjectName = "AlundraGame";
 
-    // No "Worlds" and no "Events": a map's world and event bytecode live inside that map's own
-    // folder under Maps/ (see MapLocation), so those top-level trees would only ever stay empty.
+    // Only folders something actually writes into. The list used to mirror a generic CasaEngine
+    // project layout, which left five empty directories in every converted project:
+    //  - "Worlds" and "Events": a map's world and event bytecode live inside that map's own folder
+    //    under Maps/ (see MapLocation);
+    //  - "TileSets" and "Textures": a map's tileset and its texture live in that same folder too,
+    //    under tilemap/, and the other textures are written next to what uses them, in
+    //    Sprites/Textures/ and UI/Textures/ (both created on demand by TextureAssetWriter);
+    //  - "Animations": .anim2d assets live with their sprite bank, in Entities/<EntityName>/.
+    // Folders nested under these are still created by the writers that fill them, so nothing here
+    // needs to predeclare them.
     private static readonly string[] ContentFolders =
     {
         MapLocation.MapsRootFolder,
-        "TileSets",
-        "Textures",
         "Entities",
         "Sprites",
-        "Animations",
         "Sounds",
         "Musics",
         "Dialogues",
@@ -53,6 +58,12 @@ public static class ProjectWriter
             FirstWorldLoaded = string.Empty,
             GameplayDllName = string.Empty,
             ExternalToolsDirectory = "ExternalTools",
+
+            // Half of the framing: the engine shows window / Zoom world pixels, so leaving these at
+            // the engine's 1024x768 default while the camera zooms by 4 would show the map at the
+            // wrong scale. See AlundraDisplay - the window size and the camera zoom are one setting.
+            DebugWidth = AlundraDisplay.WindowWidth,
+            DebugHeight = AlundraDisplay.WindowHeight,
         };
 
         ProjectSettingsHelper.Save(Path.Combine(outputDirectory, $"{ProjectName}.json"), projectSettings);

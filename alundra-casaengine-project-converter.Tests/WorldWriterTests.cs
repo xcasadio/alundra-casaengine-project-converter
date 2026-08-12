@@ -254,7 +254,7 @@ public class WorldWriterTests
             cameraEntity.Load(cameraDocument);
             var camera = Assert.IsType<Camera2dComponent>(cameraEntity.RootComponent);
             Assert.Equal(new Vector3(624f, -480f, 0f), camera.Target);
-            Assert.Equal(1f, camera.Zoom);
+            Assert.Equal(AlundraDisplay.CameraZoom, camera.Zoom);
             Assert.True(camera.PixelSnap);
 
             // Both worlds point at that one asset, and both point at it first.
@@ -269,6 +269,64 @@ public class WorldWriterTests
                 Assert.Equal(cameraAssetInfo.Id.ToString(), (string?)firstReference["asset_id"]);
                 Assert.Equal("camera", (string?)firstReference["name"]);
             }
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    /// <summary>
+    /// The regression guard for the framing bug: the visible world area is window / Zoom, and those
+    /// two values are written by two different phases into two different files. Reading them back
+    /// from the files the game actually consumes - not from AlundraDisplay, which would only test
+    /// that a constant equals itself - is what catches them drifting apart. Before this, the window
+    /// kept the engine's 1024x768 default while Zoom stayed at 1, and the game showed 1024x768 world
+    /// pixels instead of Alundra's 320x236: ten times too much map on screen.
+    /// </summary>
+    [Fact]
+    public void ProjectWindowAndCameraZoom_TogetherFrameTheNativeAlundraScreen()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            WriteMapFixture(inputDirectory, mapIndex: 4);
+            var mapLocations = new Dictionary<int, MapLocation>
+            {
+                [4] = new MapLocation("TestZone", "Test Map-4"),
+            };
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            ProjectWriter.CreateEmptyProject(outputDirectory, report);
+            TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
+            WorldWriter.ConvertWorlds(inputDirectory, outputDirectory, new[] { 4 }, mapLocations, report);
+
+            var projectDocument = JObject.Parse(
+                File.ReadAllText(Path.Combine(outputDirectory, "AlundraGame.json")));
+            var windowWidth = (int)projectDocument["DebugWidth"]!;
+            var windowHeight = (int)projectDocument["DebugHeight"]!;
+
+            var cameraEntity = new Entity();
+            cameraEntity.Load(JObject.Parse(
+                File.ReadAllText(Path.Combine(outputDirectory, "Entities", "AlundraCamera.entity"))));
+            var zoom = Assert.IsType<Camera2dComponent>(cameraEntity.RootComponent).Zoom;
+
+            // AlundraEngine.StaticVariables.ScreenWidth / ScreenHeight.
+            Assert.Equal(320f, windowWidth / zoom);
+            Assert.Equal(236f, windowHeight / zoom);
+
+            // An integer zoom is what makes one tileset texel cover a whole number of screen pixels;
+            // the engine's pixel-perfect checklist requires it.
+            Assert.Equal(MathF.Round(zoom), zoom);
         }
         finally
         {
