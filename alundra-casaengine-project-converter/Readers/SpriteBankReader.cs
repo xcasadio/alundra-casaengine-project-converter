@@ -14,6 +14,31 @@ public sealed class SpriteQuad
     public long Signature;
 }
 
+/// <summary>
+/// One frame's 3D collision volume (SiFrame.CollisionData), exactly as the extractor exports it.
+/// Offset is the box's MIN CORNER, in pixels, relative to the entity's feet; Width/Depth/Height are
+/// its extents along X (east), Y (ground depth) and Z (elevation). Most frames carry none.
+/// </summary>
+public sealed class SpriteFrameCollision
+{
+    public int OffsetX;
+    public int OffsetY;
+    public int OffsetZ;
+    public int Width;
+    public int Depth;
+    public int Height;
+
+    public bool HasSameVolumeAs(SpriteFrameCollision other)
+    {
+        return OffsetX == other.OffsetX
+               && OffsetY == other.OffsetY
+               && OffsetZ == other.OffsetZ
+               && Width == other.Width
+               && Depth == other.Depth
+               && Height == other.Height;
+    }
+}
+
 public sealed class SpriteFrame
 {
     /// <summary>
@@ -36,6 +61,11 @@ public sealed class SpriteFrame
     public int TerminatorCode;
 
     public IReadOnlyList<SpriteQuad> Quads = Array.Empty<SpriteQuad>();
+
+    /// <summary>
+    /// The frame's 3D collision volume, or null when the frame declares none (the common case).
+    /// </summary>
+    public SpriteFrameCollision? Collision;
 
     public bool IsTerminator => Quads.Count == 0;
 }
@@ -216,10 +246,30 @@ public static class SpriteBankReader
                 DelayFrames = rawDelay & 0x7f,
                 TerminatorCode = rawDelay,
                 Quads = quads,
+                Collision = ReadCollision(frameElement),
             });
         }
 
         return frames.Count == 0 ? null : new SpriteAnimation { Frames = frames };
+    }
+
+    private static SpriteFrameCollision? ReadCollision(JsonElement frameElement)
+    {
+        if (!frameElement.TryGetProperty("CollisionData", out var collisionElement)
+            || collisionElement.ValueKind != JsonValueKind.Object)
+        {
+            return null; // absent or explicitly null on most frames
+        }
+
+        return new SpriteFrameCollision
+        {
+            OffsetX = collisionElement.GetProperty("OffsetX").GetInt32(),
+            OffsetY = collisionElement.GetProperty("OffsetY").GetInt32(),
+            OffsetZ = collisionElement.GetProperty("OffsetZ").GetInt32(),
+            Width = collisionElement.GetProperty("Width").GetInt32(),
+            Depth = collisionElement.GetProperty("Depth").GetInt32(),
+            Height = collisionElement.GetProperty("Height").GetInt32(),
+        };
     }
 
     private static SpriteQuad ReadQuad(JsonElement quadElement)

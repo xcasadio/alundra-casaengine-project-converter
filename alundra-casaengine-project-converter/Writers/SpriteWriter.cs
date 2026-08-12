@@ -1,6 +1,8 @@
 using System.Text.Json;
 using AlundraCasaEngineProjectConverter.Readers;
 using CasaEngine.EditorServices;
+using CasaEngine.Engine.Geometry;
+using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Assets.Sprites;
@@ -33,11 +35,14 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    placement (from its X1..Y4 destination corners) becomes the part's per-frame Position
 ///    instead, at the corners' geometric center. Center-based, not corner-based, so flipping
 ///    (which mirrors around Origin) doesn't shift the visible position.
-///  - Per-frame 3D collision (SiFrame.CollisionData) is dropped for V1: it doesn't fit
-///    SpriteData's schema (which has no custom-properties slot) or Animation2dData's (parts index
-///    by content, not raw hitboxes), and hitbox/physics handling is already out of scope for this
-///    converter per the project's own decisions (DLL gameplay territory). The raw data remains
-///    fully available in data-extracted for a future pass.
+///  - Per-frame 3D collision (SiFrame.CollisionData) becomes Animation2dData.CollisionKeyframes,
+///    one Box fixture per keyframe. Alundra stores the box's MIN CORNER plus its extents, the
+///    engine poses a fixture by its CENTRE, hence the +Size/2 shift; sizes stay in pixels and the
+///    box is never rotated (Alundra volumes are AABBs). Consecutive frames carrying the same volume
+///    emit nothing, a frame that loses its volume emits an empty fixture set, and the trailing
+///    terminator frame never emits (see ConvertCollisionKeyframes for the full rule). ProfileName
+///    and Tag stay empty: CollisionData carries no attack/defence semantics - that lives in the
+///    event bytecode, still out of scope - and an empty profile inherits Trigger in the engine.
 ///  - Hero SpriteEffectRecords (map_alundra.json) are preserved as a raw JSON companion, not
 ///    converted to sprites/animations in V1 (their Spritesheet indices exceed the normal 0-7
 ///    range, suggesting a different graphics source not covered by the atlas-packing fix).
@@ -293,6 +298,13 @@ public static class SpriteWriter
             }
         }
 
+        var collisionKeyframeCount = ConvertCollisionKeyframes(animation, frameTimes, cumulativeSeconds, animationAsset);
+        if (collisionKeyframeCount > 0)
+        {
+            report.Increment("Sprites.CollisionKeyframes", collisionKeyframeCount);
+            report.Increment("Sprites.AnimationsWithCollision");
+        }
+
         var relativePath = Path.Combine(bankRelativeDirectory, $"{animationName}.anim2d");
         EditorAssetWriterService.SaveAsset(relativePath, animationAsset);
         EditorAssetCatalogService.Add(new AssetInfo(animationAsset.Id)
@@ -303,6 +315,103 @@ public static class SpriteWriter
         report.Increment("Assets.Animation2d");
 
         return convertedQuadCount;
+    }
+
+    /// <summary>
+    /// Turns the frames' SiFrame.CollisionData into Animation2dData.CollisionKeyframes, collapsing
+    /// consecutive frames that repeat the same volume - the large majority of animations carry one
+    /// constant hitbox and end up with a single keyframe at t=0.
+    ///
+    /// The trailing terminator frame never emits: it carries a control code rather than a duration
+    /// and sits exactly on the animation's end, where the loop-wrapping sampler can never reach it.
+    /// A volume active on the last displayed frame therefore stays active until the wrap, and the
+    /// keyframe at t=0 (or its absence) decides what the next cycle starts with.
+    /// </summary>
+    private static int ConvertCollisionKeyframes(
+        SpriteAnimation animation, float[] frameTimes, float durationSeconds, Animation2dData animationAsset)
+    {
+        SpriteFrameCollision? activeCollision = null;
+        var emittedCount = 0;
+
+        for (var frameIndex = 0; frameIndex < animation.Frames.Count; frameIndex++)
+        {
+            var frame = animation.Frames[frameIndex];
+            if (frame.IsTerminator)
+            {
+                continue;
+            }
+
+            var time = frameTimes[frameIndex];
+
+            // A keyframe landing on the duration is unreachable (the sampler wraps CurrentTime at
+            // the duration), which only happens on a zero-length trailing frame. Skip it rather
+            // than write a set no sample can ever select.
+            if (durationSeconds > 0f && time >= durationSeconds)
+            {
+                continue;
+            }
+
+            var collision = frame.Collision;
+
+            if (collision == null)
+            {
+                if (activeCollision == null)
+                {
+                    continue;
+                }
+
+                // Deactivation: an empty fixture set clears the volumes of the previous frames.
+                animationAsset.CollisionKeyframes.Add(new Animation2dCollisionKeyframeData { TimeSeconds = time });
+                activeCollision = null;
+                emittedCount++;
+                continue;
+            }
+
+            if (activeCollision != null && collision.HasSameVolumeAs(activeCollision))
+            {
+                continue;
+            }
+
+            var keyframe = new Animation2dCollisionKeyframeData { TimeSeconds = time };
+            keyframe.Fixtures.Add(CreateColliderFixture(collision));
+            animationAsset.CollisionKeyframes.Add(keyframe);
+            activeCollision = collision;
+            emittedCount++;
+        }
+
+        return emittedCount;
+    }
+
+    /// <summary>
+    /// Alundra gives the box's MIN CORNER (Offset) plus its extents (Width along X/east, Depth
+    /// along Y/ground depth, Height along Z/elevation) in pixels, with the origin at the entity's
+    /// feet; the engine poses a fixture by the box's CENTRE, hence the +Size/2 shift. Sizes stay
+    /// unscaled: the whole conversion works in Alundra pixels.
+    ///
+    /// No Y negation here, unlike the parts' Position above. These fixtures live in LOGICAL space -
+    /// AnimatedSpriteComponent poses the timeline bodies from the entity root's logical transform,
+    /// never from the space it renders in - whereas the parts live in RENDER space and keep the
+    /// historical Y negation. The two spaces coexist inside one asset by design; it only reads as
+    /// an inconsistency.
+    ///
+    /// ProfileName and Tag stay empty on purpose: CollisionData carries no attack/defence
+    /// semantics (that lives in the event bytecode, out of scope for this converter), so inventing
+    /// an AttackVolume/DamageableVolume profile would be fiction. An empty profile makes the engine
+    /// fall back to Trigger.
+    /// </summary>
+    private static ColliderFixture CreateColliderFixture(SpriteFrameCollision collision)
+    {
+        return new ColliderFixture
+        {
+            Shape = new Box { Size = new Vector3(collision.Width, collision.Depth, collision.Height) },
+            LocalPosition = new Vector3(
+                collision.OffsetX + collision.Width / 2f,
+                collision.OffsetY + collision.Depth / 2f,
+                collision.OffsetZ + collision.Height / 2f),
+            LocalRotation = Quaternion.Identity,
+            ProfileName = string.Empty,
+            Tag = string.Empty,
+        };
     }
 
     private static Animation2dTrackData NewTrack(string partId, Animation2dTrackProperty property)
