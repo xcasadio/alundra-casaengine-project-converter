@@ -28,6 +28,40 @@ Documents liés : [demarrage-nouvelle-partie.md](demarrage-nouvelle-partie.md) �
 
 C'est la source d'erreur n° 1. Trois systèmes d'unités coexistent dans les données sources.
 
+### 2.0 Résolution et cadrage — deux valeurs, un seul réglage
+
+**Écran natif d'Alundra : 320 × 236** (`AlundraEngine.StaticVariables.ScreenWidth` / `ScreenHeight`
+de la décompilation ; le `//224` en commentaire est une estimation antérieure).
+
+Côté CasaEngine, la surface de monde visible vaut **taille de la fenêtre ÷ `Zoom`**
+(`Camera2dComponent.ComputeProjectionMatrix` :
+`Matrix.CreateOrthographic(viewport.Width / Zoom, viewport.Height / Zoom, …)`). Le `viewport`
+sérialisé dans l'asset caméra **ne compte pas** : `CameraComponent.InitializeWithWorld` l'écrase par
+`Game.ScreenSizeWidth/Height`, donc c'est la fenêtre réelle qui décide, et `OnScreenResized` la suit.
+
+Le cadrage dépend donc de **deux valeurs écrites dans deux fichiers différents** :
+
+| Valeur | Fichier | Phase |
+|---|---|---|
+| Taille de fenêtre (`DebugWidth`/`DebugHeight`) | `AlundraGame.json` | 0 |
+| `Zoom` de la caméra | `Entities/AlundraCamera.entity` | 6 |
+
+**Règle : `fenêtre = N × (320 × 236)` et `Zoom = N`**, avec N entier. On retrouve alors exactement le
+cadrage d'origine, et un texel de tileset couvre N × N pixels écran, ce qu'exige la checklist
+pixel-perfect du moteur. Valeur actuelle : **N = 4**, soit une fenêtre 1280 × 944 — une tuile de
+24 × 16 occupe 96 × 64 pixels écran, et on voit 13,3 × 14,8 tuiles sur les 52 × 60 d'une map.
+
+> **Piège vécu.** Ces deux valeurs sont un seul réglage ; les laisser diverger produit un projet
+> parfaitement valide mais mal cadré. La fenêtre était restée au défaut du moteur (1024 × 768) et le
+> `Zoom` à 1 : le jeu affichait 1024 × 768 pixels de monde au lieu de 320 × 236, soit **10 fois trop
+> de map à l'écran** — d'où l'impression de caméra « trop loin ». Un `Zoom` entier était nécessaire,
+> pas suffisant. D'où `AlundraDisplay` côté convertisseur : une seule constante `PixelScale` alimente
+> les deux fichiers, et un test relit les deux pour vérifier que `fenêtre / Zoom == 320 × 236`.
+>
+> Les pixels sont supposés carrés. L'original tournait sur un téléviseur 4:3 à pixels non carrés :
+> un rendu 1:1 est donc 1,7 % plus large en proportion qu'à l'époque. Corriger cet écart imposerait
+> une échelle non entière sur un axe et casserait le pixel-perfect — c'est assumé.
+
 ### 2.1 Positions d'entité dans `SpriteInfo.Entities` (`XPos`, `YPos`, `Height`)
 
 Elles sont en **demi-tuiles**. L'extracteur Tiled applique déjà la division :

@@ -94,8 +94,6 @@ Top-level folders of a converted project (from a real full run):
       dialogues/            {Name}-{id}.strings.json — that map's 128 dialogue lines
       events/               {Name}-{id}.events.json — raw event bytecode (not a CasaEngine asset)
       {Name}-{id}.world     the map's world, at the root of its folder
-  TileSets/               (present but currently empty — tilesets are written next to their map under Maps/)
-  Textures/               (present but currently empty — map textures also live under Maps/)
   Entities/
     AlundraCamera.entity   the single 2D camera asset all 483 worlds reference by asset_id (a
                            Camera2dComponent targeting the map centre; every map is the same size,
@@ -106,7 +104,6 @@ Top-level folders of a converted project (from a real full run):
   Sprites/
     Textures/              spritesheet PNGs + .texture wrappers, shared across entities
     hero/hero_effects.json companion: hero SpriteEffectRecords, not converted to sprites in V1
-  Animations/             (present but currently empty — animations live under Entities/<Name>/)
   Sounds/                 sfx_NNNN.wav + sfx-manifest.json
   Musics/                 bgm_NNN.wav + bgm-manifest.json
   Dialogues/              only the two tables that belong to no single map
@@ -197,6 +194,64 @@ indicative, not a contract. Duration in particular varies with the machine; the 
   duplicated into the worlds (see `docs/formats` and the `WorldWriter` doc comments for why)
 - Verification: 18 861 assets loaded through their engine class, 2 131 existence-checked, 0 failed
 
+## Per-frame collision volumes
+
+Phase 3 turns each frame's `SiFrame.CollisionData` into `collision_keyframes` on the generated
+`.anim2d` assets (7 747 keyframes over 5 568 animations on a full run — counters
+`Sprites.CollisionKeyframes` and `Sprites.AnimationsWithCollision`):
+
+- **Mapping.** Alundra stores the box's *min corner* (`OffsetX/Y/Z`) plus its extents
+  (`Width`→X east, `Depth`→Y ground depth, `Height`→Z elevation), in pixels, with the origin at the
+  entity's feet. CasaEngine poses a `ColliderFixture` by the box's *centre*, so
+  `local_position = Offset + Size / 2` and `shape` is a `Box` whose size is the raw pixel extents.
+  The rotation is always identity: Alundra volumes are axis-aligned.
+- **Logical space, not render space.** These fixtures are *not* Y-negated, unlike the animation's
+  part positions. `AnimatedSpriteComponent` poses the timeline bodies from the entity root's
+  logical transform, never from the space it renders in, whereas the parts live in render space and
+  keep the historical Y negation. The two spaces coexist inside one asset by design.
+- **No profile, no tag.** See the first entry of *Known gaps* below.
+- **Duplicates collapse.** A keyframe is emitted only when a frame's volume differs from the one
+  currently active; a frame that loses its volume emits a keyframe with an *empty* fixture list
+  (deactivation). A constant hitbox — the large majority of animations — emits exactly one keyframe
+  at `t=0`.
+- **The terminator never emits.** The trailing frame carries a control code rather than a duration
+  and sits exactly on the animation's end, where the loop-wrapping sampler can never reach it. A
+  volume active on the last displayed frame therefore stays active until the wrap, and the keyframe
+  at `t=0` (or its absence) decides what the next cycle starts with. No emitted keyframe ever sits
+  on the animation duration.
+- An animation with no collision data at all gets no `collision_keyframes` key: those assets are
+  byte-identical to what earlier runs produced.
+
+## Per-entity body prefabs and the world space policy
+
+Besides the per-frame hitboxes above, an Alundra sprite record declares one body volume for the
+entity as a whole, in its header (`SpriteRecord.Header` `OffsetX/Y/Z` + `SizeX/Y/Z`). Phase 3 emits
+it as a prefab, and Phase 6 declares the space that body lives in:
+
+- **One `.entity` per bank with a body.** A bank whose header box has all three sizes greater than
+  zero gets `Entities/{name}/{name}.entity`, next to that bank's `.anim2d` and `.sprite` assets: an
+  entity whose root component is a `CollisionComponent` carrying a single `Box` fixture. On a full
+  run: 384 prefabs written (`Entities.BodyPrefabs`).
+- **Same box convention as the per-frame volumes.** The header stores the *min corner* plus the
+  extents in pixels with the origin at the entity's feet, so `local_position = Offset + Size / 2`
+  and the `Box` size is the raw pixel extents. Identity rotation, no Y negation: fixtures live in
+  logical space.
+- **Kinetic, hence Pawn.** The component's `physics_type` is `Kinetic`: an Alundra entity's body is
+  moved by gameplay code, never by a simulation, and it must still report contacts — which is
+  exactly the ghost object a kinetic component builds. Both the component's and the fixture's
+  `collision_profile` are left empty, so the engine's `PhysicsType` rule resolves them to `Pawn`.
+- **The skip rule.** A header whose `SizeX`, `SizeY` or `SizeZ` is zero declares no body and gets no
+  prefab; the bank is counted under `Entities.BodyPrefabsSkipped` (11 on a full run — Alundra ships
+  a handful of records with `SizeZ = 0`). A bank found in several maps keeps the box of the first
+  record read; a later map disagreeing about it is ignored but counted under
+  `Sprites.BodyBoxConflicts` (0 on a full run).
+- **Every `.world` declares `"space_policy": "TopDownElevation"`.** That is the engine's simulation
+  space for a game whose X/Y is the ground plane and whose Z is elevation — the frame this whole
+  converter works in. Without it a world would fall back to the generic 3D policy and the bodies
+  above would be simulated in the wrong space.
+- **Ids are not deterministic here**, like every other Phase 3 asset: `ObjectBase.Id` has a private
+  setter, so the engine's own serializer mints a fresh id per run.
+
 ## Known gaps
 
 Taken from the writers' own doc comments — not new findings:
@@ -205,9 +260,11 @@ Taken from the writers' own doc comments — not new findings:
   Alundra draws text proportionally via `g_fontCharWidthTable`, a table that lives in the game
   executable and is not part of `data-extracted`. Converted dialogue will be far wider and more
   loosely spaced than the original until that table is extracted.
-- **Per-frame 3D sprite collision is dropped.** `SiFrame.CollisionData` doesn't fit `SpriteData`'s
-  or `Animation2dData`'s schema and hitbox/physics handling is out of this converter's scope
-  (gameplay-DLL territory). The raw data remains available in `data-extracted`.
+- **Per-frame 3D sprite collision carries no gameplay semantics.** `SiFrame.CollisionData` is now
+  converted (see below), but only as geometry: nothing in it says whether a volume hurts, blocks or
+  can be hurt. That meaning lives in the event bytecode, which this converter does not decode, so
+  every emitted fixture has an empty `collision_profile` (the engine falls back to `Trigger`) and an
+  empty `tag`. Turning them into attack/damageable volumes is gameplay-DLL work.
 - **Hero `SpriteEffectRecords` are preserved but not converted** to sprites/animations: their
   `Spritesheet` indices exceed the normal 0–7 range, suggesting a graphics source the atlas-packing
   fix doesn't cover.

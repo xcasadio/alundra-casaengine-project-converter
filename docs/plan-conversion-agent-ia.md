@@ -230,11 +230,57 @@ tous les `.sprite`/`.anim2d` rechargent via `Load()` ; report : 244 banques, 0 q
 - **Ids non déterministes** pour `.sprite`/`.anim2d` : `ObjectBase.Id` a un setter privé et
   `EditorAssetWriterService.SaveAsset` sérialise l'id porté par l'objet. `Ids.For()` n'est utilisé
   que là où aucune classe moteur n'impose l'id (audio, worlds, police).
-- **`CollisionData` 3D par frame non convertie** (point 5) : `SpriteData` n'a pas de sac de
-  propriétés custom et les parts d'`Animation2dData` indexent du contenu, pas des hitboxes. Donnée
-  intacte dans `data-extracted`, à reprendre avec la DLL gameplay.
+- **`CollisionData` 3D par frame convertie** (point 5), mais en `collision_keyframes`
+  d'`Animation2dData` (schéma phase E du moteur) plutôt qu'en `Collision2d` + compagnon : le volume
+  reste **3D**, une `ColliderFixture` portant une `Box`, donc rien n'est projeté ni déporté.
+  - *Mapping* : Alundra donne le **coin minimum** (`OffsetX/Y/Z`) et les extents
+    (`Width`→X est, `Depth`→Y profondeur au sol, `Height`→Z élévation), en pixels, origine aux pieds
+    de l'entité. Le moteur pose une fixture par le **centre** de la boîte, d'où
+    `local_position = Offset + Size / 2` ; taille en pixels bruts, rotation identité (les volumes
+    Alundra sont des AABB).
+  - *Espace logique, pas espace de rendu* : ces fixtures ne subissent **pas** la négation de Y
+    appliquée aux positions des parts. `AnimatedSpriteComponent` pose les corps de la timeline
+    depuis la transform logique de la racine de l'entité, jamais depuis l'espace où il rend, alors
+    que les parts vivent en espace de rendu et gardent la négation historique. Les deux espaces
+    cohabitent dans un même asset **par construction**.
+  - *Ni profil ni tag* : `CollisionData` ne porte aucune sémantique attaque/défense — elle vit dans
+    le bytecode d'événements, toujours hors périmètre. `collision_profile` et `tag` restent vides
+    (le moteur retombe alors sur `Trigger`) ; inventer `AttackVolume`/`DamageableVolume` serait de
+    la fiction.
+  - *Doublons écrasés* : une keyframe n'est émise que quand le volume diffère de celui actif ; une
+    frame qui perd son volume émet une keyframe à **liste de fixtures vide** (désactivation). Un
+    hitbox constant — la grande majorité des animations — donne exactement une keyframe à `t=0`.
+  - *Règle du terminator* : la frame terminale n'émet jamais. Elle porte un code de contrôle et non
+    une durée, et se place exactement à la fin de l'animation, là où l'échantillonneur qui boucle ne
+    peut jamais arriver. Un volume actif sur la dernière frame affichée reste donc actif jusqu'au
+    bouclage, et c'est la keyframe à `t=0` (ou son absence) qui décide du cycle suivant. Aucune
+    keyframe émise ne tombe sur la durée de l'animation.
+  - Une animation sans aucune `CollisionData` n'a pas de clé `collision_keyframes` : ces assets
+    restent identiques octet pour octet.
+- **Boîte de corps par banque → prefab `.entity`** (ajout CONV-G2). En plus des hitbox par frame,
+  l'en-tête d'un record (`SpriteRecord.Header` : `OffsetX/Y/Z` + `SizeX/Y/Z`) déclare **un** volume
+  pour l'entité entière. Chaque banque dont les trois tailles sont > 0 reçoit
+  `Entities/<NomEntité>/<NomEntité>.entity` : une entité dont le composant racine est un
+  `CollisionComponent` portant **une** fixture `Box`.
+  - *Mapping* : même convention que les volumes par frame — coin minimum + extents en pixels,
+    origine aux pieds, donc `local_position = Offset + Size / 2`, rotation identité, **pas** de
+    négation de Y (espace logique).
+  - *Kinetic, donc Pawn* : `physics_type = Kinetic`, parce qu'un corps d'entité Alundra est déplacé
+    par le code gameplay et jamais par une simulation, tout en devant rapporter ses contacts — ce
+    que fait exactement le ghost object construit par un composant kinetic. `collision_profile`
+    reste vide sur le composant **et** sur la fixture : la règle `PhysicsType` du moteur résout
+    alors le profil en `Pawn`.
+  - *Règle d'exclusion* : un en-tête dont `SizeX`, `SizeY` ou `SizeZ` vaut 0 ne déclare aucun corps,
+    donc aucun prefab ; la banque est comptée dans `Entities.BodyPrefabsSkipped`.
+  - *Banque vue dans plusieurs maps* : la boîte du premier record lu fait foi (comme le reste de la
+    banque) ; une map ultérieure qui la contredit est ignorée mais comptée
+    (`Sprites.BodyBoxConflicts`).
+  - *Ids non déterministes*, comme tous les assets de cette phase : le document est produit par le
+    sérialiseur d'entité du moteur, donc `ObjectBase.Id` est neuf à chaque run.
+  - Compteurs réels : 384 prefabs écrits, 11 banques ignorées, 0 conflit de boîte.
 - Compteurs réels : 395 banques (244 de map + banques héros), 160 355 quads lus == convertis,
-  9 620 `.anim2d`, 7 185 `.sprite`, 104 spritesheets.
+  9 620 `.anim2d`, 7 185 `.sprite`, 104 spritesheets, 7 747 keyframes de collision sur 5 568
+  animations (`Sprites.CollisionKeyframes`, `Sprites.AnimationsWithCollision`).
 
 ### ✅ Phase 4 — Audio
 
@@ -346,6 +392,11 @@ autorité sur ce plan :
   - *Pourquoi en premier* : `DefaultRuntimeViewBootstrapper` retient
     `world.Entities.Select(GetComponent<CameraComponent>).FirstOrDefault(c => c != null)` — la
     première entité portant une caméra devient la caméra par défaut de la vue.
+  - *Cadrage* : la surface visible vaut **fenêtre ÷ `Zoom`**, et la fenêtre (`DebugWidth`/
+    `DebugHeight` d'`AlundraGame.json`, phase 0) et le `Zoom` (phase 6) sont **un seul réglage écrit
+    dans deux fichiers**. `AlundraDisplay` les dérive tous deux d'une constante `PixelScale` = 4 :
+    fenêtre 1280 × 944, `Zoom` 4, donc 320 × 236 pixels de monde visibles — l'écran natif d'Alundra.
+    Voir [guidelines §2.0](guidelines-runtime-alundra-casaengine.md) pour le piège correspondant.
   - *Hypothèse assumée* : le `Target` est le centre géométrique de la map. La vraie caméra d'Alundra
     **suit une entité désignée** — `g_entityFollowedByCamera`, relue chaque frame par
     `UpdateEntities` (`g_cameraLookAtX = suivie.PosX >> 16`). C'est le plus souvent Alundra, mais
@@ -358,6 +409,11 @@ autorité sur ce plan :
     `rendering-2d-3d-spaces.md` adresse au composant remplacé ici. Aucun composant du moteur ne
     combine aujourd'hui suivi d'entité et projection orthographique pixel-perfect ; on garde la
     projection, parce que c'est elle qu'on ne peut pas rajouter après coup depuis le gameplay.
+- **Politique d'espace de simulation** (ajout CONV-G2) : chaque `.world` déclare
+  `"space_policy": "TopDownElevation"`. C'est l'espace du moteur pour un jeu dont X/Y est le plan du
+  sol et Z l'élévation — le repère de toute la conversion. Sans cette clé, `World.Load` laisse
+  `SpacePolicyName` vide et le moteur retombe sur la politique 3D générique, qui simulerait les
+  corps des prefabs de la phase 3 dans le mauvais espace.
 - **Spawn** : seule la map 389 en a un documenté (tuile 33/59/0 → `(804, -952, 0)`). Les 482 autres
   reçoivent un `PlayerStart` au centre de la map, compté à part
   (`Worlds.PlayerStartPlaceholders`) — elles s'atteignent par portail, pas par spawn.
