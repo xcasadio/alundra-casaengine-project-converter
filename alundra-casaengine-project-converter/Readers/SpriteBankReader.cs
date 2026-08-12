@@ -76,6 +76,35 @@ public sealed class SpriteAnimation
 }
 
 /// <summary>
+/// The body volume declared by a sprite record's header (SpriteRecord.Header), exactly as the
+/// extractor exports it. Unlike <see cref="SpriteFrameCollision"/>, which changes frame by frame,
+/// this one belongs to the entity as a whole: Offset is the box's MIN CORNER, in pixels, relative
+/// to the entity's feet, and SizeX/SizeY/SizeZ are its extents along X (east), Y (ground depth) and
+/// Z (elevation). A record may declare a degenerate box (any size 0), which means "no body".
+/// </summary>
+public sealed class SpriteBodyBox
+{
+    public int OffsetX;
+    public int OffsetY;
+    public int OffsetZ;
+    public int SizeX;
+    public int SizeY;
+    public int SizeZ;
+
+    public bool HasPositiveVolume => SizeX > 0 && SizeY > 0 && SizeZ > 0;
+
+    public bool HasSameVolumeAs(SpriteBodyBox other)
+    {
+        return OffsetX == other.OffsetX
+               && OffsetY == other.OffsetY
+               && OffsetZ == other.OffsetZ
+               && SizeX == other.SizeX
+               && SizeY == other.SizeY
+               && SizeZ == other.SizeZ;
+    }
+}
+
+/// <summary>
 /// One deduplicated Alundra sprite bank (Header.Sector5Id). AnimSets[j] holds up to 4 directions
 /// (index 0=Down, 1=Up, 2=Left, 3=Right, matching SiAnimDir/AnimationSet.PreloadedAnims in the
 /// extractor) - an entry is null if that direction has no frames.
@@ -91,6 +120,12 @@ public sealed class SpriteBank
     public int SourceMapIndex; // -1 for the hero bank (map_alundra.json)
     public string SourceSpritesheetFileName = string.Empty;
     public IReadOnlyList<SpriteAnimation?[]> AnimSets = Array.Empty<SpriteAnimation?[]>();
+
+    /// <summary>
+    /// The header's body volume, or null when the record declares none. Read from the first record
+    /// this bank was found in, like every other field of the bank.
+    /// </summary>
+    public SpriteBodyBox? BodyBox;
 
     public string BankKey => IsHeroBank ? $"hero_{Sector5Id}" : $"{Sector5Id}";
 }
@@ -111,7 +146,7 @@ public static class SpriteBankReader
         var heroPath = Path.Combine(inputDirectory, "data", "map_alundra.json");
         if (File.Exists(heroPath))
         {
-            ReadMapSpriteRecords(heroPath, mapIndex: -1, "map_alundra_spritesheet.png", isHeroBank: true, banksByKey);
+            ReadMapSpriteRecords(heroPath, mapIndex: -1, "map_alundra_spritesheet.png", isHeroBank: true, banksByKey, report);
         }
         else
         {
@@ -127,7 +162,7 @@ public static class SpriteBankReader
                 continue;
             }
 
-            ReadMapSpriteRecords(mapPath, mapIndex, $"map_{mapIndex}_spritesheet.png", isHeroBank: false, banksByKey);
+            ReadMapSpriteRecords(mapPath, mapIndex, $"map_{mapIndex}_spritesheet.png", isHeroBank: false, banksByKey, report);
         }
 
         return banksByKey.Values.OrderBy(bank => bank.IsHeroBank).ThenBy(bank => bank.Sector5Id).ToList();
@@ -135,7 +170,8 @@ public static class SpriteBankReader
 
     private static void ReadMapSpriteRecords(
         string mapPath, int mapIndex, string spritesheetFileName, bool isHeroBank,
-        Dictionary<string, SpriteBank> banksByKey)
+        Dictionary<string, SpriteBank> banksByKey,
+        ConversionReport report)
     {
         using var stream = File.OpenRead(mapPath);
         using var document = JsonDocument.Parse(stream);
@@ -154,11 +190,21 @@ public static class SpriteBankReader
                 continue;
             }
 
-            var sector5Id = recordElement.GetProperty("Header").GetProperty("Sector5Id").GetInt32();
+            var headerElement = recordElement.GetProperty("Header");
+            var sector5Id = headerElement.GetProperty("Sector5Id").GetInt32();
             var bankKey = isHeroBank ? $"hero_{sector5Id}" : $"{sector5Id}";
-            if (banksByKey.ContainsKey(bankKey))
+            if (banksByKey.TryGetValue(bankKey, out var existingBank))
             {
-                continue; // same content across maps (verified); first occurrence is canonical
+                // Same content across maps (verified); first occurrence is canonical. The body box
+                // is checked rather than assumed: a later map disagreeing about it is ignored, but
+                // counted, so the assumption stays measurable instead of silent.
+                var duplicateBodyBox = ReadBodyBox(headerElement);
+                if (!SameBodyBox(existingBank.BodyBox, duplicateBodyBox))
+                {
+                    report.Increment("Sprites.BodyBoxConflicts");
+                }
+
+                continue;
             }
 
             if (!recordElement.TryGetProperty("AnimSets", out var animSetsElement)
@@ -180,8 +226,47 @@ public static class SpriteBankReader
                 SourceMapIndex = mapIndex,
                 SourceSpritesheetFileName = spritesheetFileName,
                 AnimSets = animSets,
+                BodyBox = ReadBodyBox(headerElement),
             };
         }
+    }
+
+    /// <summary>
+    /// Reads SpriteRecord.Header's body volume. The six fields always exist in the export, so a
+    /// missing one means the record is not the shape this converter expects and the bank simply
+    /// gets no body.
+    /// </summary>
+    private static SpriteBodyBox? ReadBodyBox(JsonElement headerElement)
+    {
+        if (!headerElement.TryGetProperty("OffsetX", out var offsetX)
+            || !headerElement.TryGetProperty("OffsetY", out var offsetY)
+            || !headerElement.TryGetProperty("OffsetZ", out var offsetZ)
+            || !headerElement.TryGetProperty("SizeX", out var sizeX)
+            || !headerElement.TryGetProperty("SizeY", out var sizeY)
+            || !headerElement.TryGetProperty("SizeZ", out var sizeZ))
+        {
+            return null;
+        }
+
+        return new SpriteBodyBox
+        {
+            OffsetX = offsetX.GetInt32(),
+            OffsetY = offsetY.GetInt32(),
+            OffsetZ = offsetZ.GetInt32(),
+            SizeX = sizeX.GetInt32(),
+            SizeY = sizeY.GetInt32(),
+            SizeZ = sizeZ.GetInt32(),
+        };
+    }
+
+    private static bool SameBodyBox(SpriteBodyBox? left, SpriteBodyBox? right)
+    {
+        if (left == null || right == null)
+        {
+            return left == null && right == null;
+        }
+
+        return left.HasSameVolumeAs(right);
     }
 
     private static SpriteAnimation?[] ReadAnimSet(JsonElement animSetElement)

@@ -342,6 +342,10 @@ public static class WorldWriter
             // The world's own GameplayProxy class. Empty until the gameplay DLL exists (E3);
             // World.Load reads this key unconditionally, so it must be present.
             ["script_class_name"] = null,
+            // Alundra's simulation space: X/Y is the ground plane and Z is elevation, which is what
+            // SimulationSpacePolicyNames.TopDownElevation constrains bodies to. Written as the
+            // literal the engine matches on (World.Load -> SpacePolicyName -> CreateByName).
+            ["space_policy"] = "TopDownElevation",
             ["player_startup_settings_asset_id"] = Guid.Empty.ToString(),
             ["gameplay_mode_asset_id"] = Guid.Empty.ToString(),
         };

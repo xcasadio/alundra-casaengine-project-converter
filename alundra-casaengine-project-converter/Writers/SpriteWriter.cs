@@ -6,6 +6,8 @@ using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Assets.Sprites;
+using CasaEngine.Framework.Scene.Entities;
+using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
 
 namespace AlundraCasaEngineProjectConverter.Writers;
@@ -43,6 +45,9 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    terminator frame never emits (see ConvertCollisionKeyframes for the full rule). ProfileName
 ///    and Tag stay empty: CollisionData carries no attack/defence semantics - that lives in the
 ///    event bytecode, still out of scope - and an empty profile inherits Trigger in the engine.
+///  - A bank whose header (SpriteRecord.Header) declares a positive body volume also gets an
+///    Entities/{name}/{name}.entity prefab: one CollisionComponent with a single Box fixture, the
+///    entity's own body box - see WriteBodyPrefab for the Kinetic/Pawn decision and the skip rule.
 ///  - Hero SpriteEffectRecords (map_alundra.json) are preserved as a raw JSON companion, not
 ///    converted to sprites/animations in V1 (their Spritesheet indices exceed the normal 0-7
 ///    range, suggesting a different graphics source not covered by the atlas-packing fix).
@@ -146,9 +151,84 @@ public static class SpriteWriter
             }
         }
 
+        WriteBodyPrefab(bank, entityFolderName, bankRelativeDirectory, report);
+
         report.Increment("Sprites.Banks");
         report.Increment("Sprites.QuadsRead", quadsRead);
         report.Increment("Sprites.QuadsConverted", quadsConverted);
+    }
+
+    /// <summary>
+    /// Writes Entities/{name}/{name}.entity for a bank whose header declares a body volume: one
+    /// CollisionComponent carrying a single Box fixture, which is Alundra's per-entity body box
+    /// (SpriteRecord.Header Offset/Size), as opposed to the per-frame hitboxes that live on the
+    /// animations. A record with any size at 0 declares no body and gets no prefab.
+    ///
+    /// PhysicsType is Kinetic: an Alundra entity's body is moved by gameplay code, never by a
+    /// simulation, and it must still report contacts - which is exactly the ghost object a kinetic
+    /// component builds. With an empty ProfileName on both the definition and the fixture, the
+    /// engine's PhysicsType rule resolves the profile to Pawn, the profile meant for such bodies.
+    ///
+    /// The document is produced by the engine's own entity serializer rather than hand-built, so
+    /// the physics_definition node PhysicsBaseComponent.Load reads unconditionally is complete by
+    /// construction. As everywhere else in this writer, ids are not deterministic: ObjectBase.Id has
+    /// a private setter (see the class summary).
+    /// </summary>
+    private static void WriteBodyPrefab(
+        SpriteBank bank, string entityFolderName, string bankRelativeDirectory, ConversionReport report)
+    {
+        var bodyBox = bank.BodyBox;
+        if (bodyBox == null || !bodyBox.HasPositiveVolume)
+        {
+            report.Increment("Entities.BodyPrefabsSkipped");
+            return;
+        }
+
+        var collisionComponent = new CollisionComponent { Name = nameof(CollisionComponent) };
+        collisionComponent.PhysicsDefinition.PhysicsType = PhysicsType.Kinetic;
+        collisionComponent.PhysicsDefinition.ProfileName = string.Empty;
+        collisionComponent.Fixtures.Add(CreateBodyFixture(bodyBox));
+
+        var entity = new Entity
+        {
+            Name = entityFolderName,
+            RootComponent = collisionComponent,
+        };
+
+        var relativePath = Path.Combine(bankRelativeDirectory, $"{entityFolderName}.entity");
+        EditorAssetWriterService.SaveAsset(relativePath, entity);
+        EditorAssetCatalogService.Add(new AssetInfo(entity.Id)
+        {
+            Name = entity.Name,
+            FileName = relativePath,
+        });
+
+        report.Increment("Entities.BodyPrefabs");
+    }
+
+    /// <summary>
+    /// Same convention as <see cref="CreateColliderFixture"/>: Alundra gives the box's MIN CORNER
+    /// plus its extents in pixels with the origin at the entity's feet, the engine poses a fixture
+    /// by its CENTRE, hence the +Size/2 shift; the box is never rotated (Alundra volumes are AABBs)
+    /// and no Y negation applies - fixtures live in LOGICAL space, not in the render space the
+    /// animation parts use.
+    ///
+    /// ProfileName and Tag stay empty: an empty fixture profile inherits the component's, which the
+    /// Kinetic PhysicsType resolves to Pawn.
+    /// </summary>
+    private static ColliderFixture CreateBodyFixture(SpriteBodyBox bodyBox)
+    {
+        return new ColliderFixture
+        {
+            Shape = new Box { Size = new Vector3(bodyBox.SizeX, bodyBox.SizeY, bodyBox.SizeZ) },
+            LocalPosition = new Vector3(
+                bodyBox.OffsetX + bodyBox.SizeX / 2f,
+                bodyBox.OffsetY + bodyBox.SizeY / 2f,
+                bodyBox.OffsetZ + bodyBox.SizeZ / 2f),
+            LocalRotation = Quaternion.Identity,
+            ProfileName = string.Empty,
+            Tag = string.Empty,
+        };
     }
 
     private static int ConvertAnimation(
