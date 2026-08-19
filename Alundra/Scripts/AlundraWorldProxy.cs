@@ -120,6 +120,15 @@ public class AlundraWorldProxy : GameplayProxy
     {
         _world = world;
 
+        // The engine enables its physics debug wireframes by default (PhysicsDebugViewRendererComponent
+        // .DisplayPhysics = true), which draws every kinetic body box - one white rectangle per spawned
+        // entity with a body - over the game. Off for normal play; the Back button toggles it back on
+        // (see UpdateDebugCameraPan) to inspect collision boxes while flying the debug camera.
+        if (world.Game?.PhysicsDebugViewRendererComponent != null)
+        {
+            world.Game.PhysicsDebugViewRendererComponent.DisplayPhysics = false;
+        }
+
         var tileMapEntity = world.Entities.FirstOrDefault(entity => entity.Name == TileMapEntityName);
         if (tileMapEntity == null)
         {
@@ -629,6 +638,17 @@ public class AlundraWorldProxy : GameplayProxy
         if (!gamePad.IsConnected)
         {
             return;
+        }
+
+        // DEBUG ONLY - Back (Select) toggles the engine's physics wireframes, off by default at world
+        // load (see InitializeWithWorld), so collision boxes can be inspected while flying the camera.
+        if (gamePad.BackJustPressed)
+        {
+            var physicsDebug = _world?.Game?.PhysicsDebugViewRendererComponent;
+            if (physicsDebug != null)
+            {
+                physicsDebug.DisplayPhysics = !physicsDebug.DisplayPhysics;
+            }
         }
 
         _debugCamera.Target = ComputeDebugCameraPanTarget(
