@@ -3,6 +3,7 @@ using CasaEngine.EditorServices;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Engine.Geometry;
 using CasaEngine.Engine.Physics;
+using CasaEngine.Framework.Rendering.Depth;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
@@ -12,9 +13,11 @@ using Xunit;
 namespace AlundraCasaEngineProjectConverter.Tests;
 
 /// <summary>
-/// Covers the per-bank SpriteRecord.Header body box -> Entities/{name}/{name}.entity prefab.
-/// The assertions go through the engine's own Entity.Load, because that is the loader whose
-/// unconditional read of "physics_definition" the emitted document has to satisfy.
+/// Covers the per-bank Entities/{name}/{name}.entity prefab: root AnimatedSpriteComponent, the
+/// header body box (SpriteRecord.Header) as an optional CollisionComponent child, the entity-level
+/// DepthSortable2DComponent and script_class_name. The assertions go through the engine's own
+/// Entity.Load, because that is the loader whose unconditional read of "physics_definition" the
+/// emitted document has to satisfy.
 /// </summary>
 public class SpriteWriterBodyPrefabTests
 {
@@ -29,8 +32,9 @@ public class SpriteWriterBodyPrefabTests
             bodyBox: """ "OffsetX": -10, "OffsetY": -7, "OffsetZ": 0, "SizeX": 20, "SizeY": 14, "SizeZ": 32 """,
             (outputDirectory, report) =>
             {
+                Assert.Equal(1, report.Counters["Entities.Prefabs"]);
                 Assert.Equal(1, report.Counters["Entities.BodyPrefabs"]);
-                Assert.False(report.Counters.ContainsKey("Entities.BodyPrefabsSkipped"));
+                Assert.False(report.Counters.ContainsKey("Entities.SpriteOnlyPrefabs"));
 
                 var entityPath = Assert.Single(
                     Directory.GetFiles(Path.Combine(outputDirectory, "Entities"), "*.entity", SearchOption.AllDirectories));
@@ -49,7 +53,15 @@ public class SpriteWriterBodyPrefabTests
                 var entity = new Entity();
                 entity.Load(entityDocument);
 
-                var collisionComponent = Assert.IsType<CollisionComponent>(entity.RootComponent);
+                Assert.Equal("AlundraEntityScriptProxy", entity.GameplayProxyClassName);
+
+                var spriteComponent = Assert.IsType<AnimatedSpriteComponent>(entity.RootComponent);
+                Assert.NotEmpty(spriteComponent.AnimationAssetIds);
+
+                var depthSortable = Assert.IsType<DepthSortable2DComponent>(Assert.Single(entity.Components));
+                Assert.Equal(RenderPass2D.YSortedWorld, depthSortable.RenderPass);
+
+                var collisionComponent = Assert.IsType<CollisionComponent>(Assert.Single(spriteComponent.Children));
                 Assert.Equal(PhysicsType.Kinetic, collisionComponent.PhysicsType);
 
                 var fixture = Assert.Single(collisionComponent.Fixtures);
@@ -70,7 +82,7 @@ public class SpriteWriterBodyPrefabTests
     }
 
     [Fact]
-    public void ConvertSprites_WithADegenerateHeaderBox_WritesNoEntityAndCountsTheSkip()
+    public void ConvertSprites_WithADegenerateHeaderBox_WritesASpriteOnlyEntity()
     {
         // 4 of the 147 hero records ship SizeZ = 0: a flat volume is no volume.
         RunConversion(
@@ -78,26 +90,41 @@ public class SpriteWriterBodyPrefabTests
             bodyBox: """ "OffsetX": -10, "OffsetY": -7, "OffsetZ": 0, "SizeX": 20, "SizeY": 14, "SizeZ": 0 """,
             (outputDirectory, report) =>
             {
-                Assert.Equal(1, report.Counters["Entities.BodyPrefabsSkipped"]);
+                Assert.Equal(1, report.Counters["Entities.Prefabs"]);
+                Assert.Equal(1, report.Counters["Entities.SpriteOnlyPrefabs"]);
                 Assert.False(report.Counters.ContainsKey("Entities.BodyPrefabs"));
-                Assert.Empty(
-                    Directory.GetFiles(Path.Combine(outputDirectory, "Entities"), "*.entity", SearchOption.AllDirectories));
+                AssertSpriteOnlyPrefab(outputDirectory);
             });
     }
 
     [Fact]
-    public void ConvertSprites_WithoutAHeaderBox_WritesNoEntityAndCountsTheSkip()
+    public void ConvertSprites_WithoutAHeaderBox_WritesASpriteOnlyEntity()
     {
         RunConversion(
             sector5Id: 42,
             bodyBox: null,
             (outputDirectory, report) =>
             {
-                Assert.Equal(1, report.Counters["Entities.BodyPrefabsSkipped"]);
+                Assert.Equal(1, report.Counters["Entities.Prefabs"]);
+                Assert.Equal(1, report.Counters["Entities.SpriteOnlyPrefabs"]);
                 Assert.False(report.Counters.ContainsKey("Entities.BodyPrefabs"));
-                Assert.Empty(
-                    Directory.GetFiles(Path.Combine(outputDirectory, "Entities"), "*.entity", SearchOption.AllDirectories));
+                AssertSpriteOnlyPrefab(outputDirectory);
             });
+    }
+
+    private static void AssertSpriteOnlyPrefab(string outputDirectory)
+    {
+        var entityPath = Assert.Single(
+            Directory.GetFiles(Path.Combine(outputDirectory, "Entities"), "*.entity", SearchOption.AllDirectories));
+        var entityDocument = JObject.Parse(File.ReadAllText(entityPath));
+
+        var entity = new Entity();
+        entity.Load(entityDocument);
+
+        Assert.Equal("AlundraEntityScriptProxy", entity.GameplayProxyClassName);
+        var spriteComponent = Assert.IsType<AnimatedSpriteComponent>(entity.RootComponent);
+        Assert.Empty(spriteComponent.Children);
+        Assert.IsType<DepthSortable2DComponent>(Assert.Single(entity.Components));
     }
 
     /// <summary>

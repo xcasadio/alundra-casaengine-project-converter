@@ -62,11 +62,19 @@ if (options.Phase >= 2)
         CellMetadataWriter.ConvertMaps(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report));
 }
 
-// Phase 3: sprite banks and their animations.
+// Phase 3: sprite banks, their animations, and the per-bank entity prefab. Phase 3.5 then links
+// every map's "Entities" object-layer records (already written by Phase 1) to the prefab of the
+// bank their SpriteTableIndex resolves to - it needs the bank -> prefab id map Phase 3 produces, so
+// it must run after it, and it read-modify-writes the .tileMap files the same way Phase 2 does.
+var prefabAssetIdsByBankKey = (IReadOnlyDictionary<string, Guid>)new Dictionary<string, Guid>();
 if (options.Phase >= 3)
 {
     report.RunPhase("Phase3.Sprites", () =>
-        SpriteWriter.ConvertSprites(options.InputDirectory, options.OutputDirectory, report));
+        prefabAssetIdsByBankKey = SpriteWriter.ConvertSprites(options.InputDirectory, options.OutputDirectory, report));
+    report.RunPhase("Phase3.PrefabLinks", () =>
+        EntityPrefabLinkWriter.LinkMaps(
+            options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations,
+            prefabAssetIdsByBankKey, report));
 }
 
 // Phase 4: BGM and SFX preserved as raw WAV assets plus their manifests.

@@ -45,9 +45,15 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    terminator frame never emits (see ConvertCollisionKeyframes for the full rule). ProfileName
 ///    and Tag stay empty: CollisionData carries no attack/defence semantics - that lives in the
 ///    event bytecode, still out of scope - and an empty profile inherits Trigger in the engine.
-///  - A bank whose header (SpriteRecord.Header) declares a positive body volume also gets an
-///    Entities/{name}/{name}.entity prefab: one CollisionComponent with a single Box fixture, the
-///    entity's own body box - see WriteBodyPrefab for the Kinetic/Pawn decision and the skip rule.
+///  - Every bank gets an Entities/{name}/{name}.entity prefab: a root AnimatedSpriteComponent
+///    carrying every animation the bank converted (in the same (AnimSet, direction) order they were
+///    written), a DepthSortable2DComponent entity-level component, entity-level
+///    script_class_name = "AlundraEntityScriptProxy", and - only when the bank's header
+///    (SpriteRecord.Header) declares a positive body volume - a CollisionComponent child of the root
+///    with a single Box fixture, the entity's own body box. See WriteEntityPrefab for the
+///    Kinetic/Pawn decision on that fixture. Banks with no body box (previously skipped) now get the
+///    same prefab minus the CollisionComponent, so every SpriteTableIndex a map references resolves
+///    to a prefab (see EntityPrefabLinkWriter, Phase 3.5).
 ///  - Hero SpriteEffectRecords (map_alundra.json) are preserved as a raw JSON companion, not
 ///    converted to sprites/animations in V1 (their Spritesheet indices exceed the normal 0-7
 ///    range, suggesting a different graphics source not covered by the atlas-packing fix).
@@ -62,9 +68,17 @@ public static class SpriteWriter
     private static readonly string[] DirectionNames = { "down", "up", "left", "right" };
     private const float PsxFrameSeconds = 1f / 50f; // source data is PAL (50 Hz)
 
-    public static void ConvertSprites(string inputDirectory, string outputDirectory, ConversionReport report)
+    /// <summary>
+    /// Converts every sprite bank and returns the prefab asset id each one got, keyed by
+    /// <see cref="SpriteBank.BankKey"/> - the same key <see cref="EntityPrefabLinkWriter"/> resolves
+    /// a map's Entities records to, so it can link a tileMap record straight to its prefab without
+    /// re-deriving anything this phase already knows.
+    /// </summary>
+    public static IReadOnlyDictionary<string, Guid> ConvertSprites(
+        string inputDirectory, string outputDirectory, ConversionReport report)
     {
         var banks = SpriteBankReader.ReadAllBanks(inputDirectory, report);
+        var prefabAssetIdsByBankKey = new Dictionary<string, Guid>(StringComparer.Ordinal);
 
         var entityNamesPath = Path.Combine(AppContext.BaseDirectory, "EntityNames.csv");
         IReadOnlyDictionary<string, string> folderNamesByBankKey;
@@ -81,7 +95,7 @@ public static class SpriteWriter
         {
             report.Errors.Add(
                 $"EntityNames.csv not found at '{entityNamesPath}'; entity folders would lose their names.");
-            return;
+            return prefabAssetIdsByBankKey;
         }
 
         var textureAssetIdsBySpritesheet = new Dictionary<string, Guid>(StringComparer.OrdinalIgnoreCase);
@@ -91,7 +105,7 @@ public static class SpriteWriter
         {
             ConvertBank(
                 bank, folderNamesByBankKey[bank.BankKey], inputDirectory, outputDirectory,
-                textureAssetIdsBySpritesheet, spriteAssetIdsByKey, report);
+                textureAssetIdsBySpritesheet, spriteAssetIdsByKey, prefabAssetIdsByBankKey, report);
         }
 
         EditorAssetCatalogService.Save();
@@ -100,6 +114,8 @@ public static class SpriteWriter
         report.Increment("Sprites.Textures", textureAssetIdsBySpritesheet.Count);
 
         PreserveHeroEffects(inputDirectory, outputDirectory, report);
+
+        return prefabAssetIdsByBankKey;
     }
 
     private static void ConvertBank(
@@ -109,6 +125,7 @@ public static class SpriteWriter
         string outputDirectory,
         Dictionary<string, Guid> textureAssetIdsBySpritesheet,
         Dictionary<(string Spritesheet, long Signature), Guid> spriteAssetIdsByKey,
+        Dictionary<string, Guid> prefabAssetIdsByBankKey,
         ConversionReport report)
     {
         Guid textureAssetId;
@@ -127,6 +144,7 @@ public static class SpriteWriter
         Directory.CreateDirectory(Path.Combine(outputDirectory, bankRelativeDirectory));
         var quadsRead = 0;
         var quadsConverted = 0;
+        var animationAssetIds = new List<Guid>();
 
         for (var animSetIndex = 0; animSetIndex < bank.AnimSets.Count; animSetIndex++)
         {
@@ -147,11 +165,12 @@ public static class SpriteWriter
                 var animationName = $"bank{bank.BankKey}_anim{animSetIndex}_{DirectionNames[directionIndex]}";
                 quadsConverted += ConvertAnimation(
                     animation, animationName, bankRelativeDirectory, bank.SourceSpritesheetFileName,
-                    textureAssetId, spriteAssetIdsByKey, outputDirectory, report);
+                    textureAssetId, spriteAssetIdsByKey, outputDirectory, animationAssetIds, report);
             }
         }
 
-        WriteBodyPrefab(bank, entityFolderName, bankRelativeDirectory, report);
+        WriteEntityPrefab(
+            bank, entityFolderName, bankRelativeDirectory, animationAssetIds, prefabAssetIdsByBankKey, report);
 
         report.Increment("Sprites.Banks");
         report.Increment("Sprites.QuadsRead", quadsRead);
@@ -159,10 +178,22 @@ public static class SpriteWriter
     }
 
     /// <summary>
-    /// Writes Entities/{name}/{name}.entity for a bank whose header declares a body volume: one
-    /// CollisionComponent carrying a single Box fixture, which is Alundra's per-entity body box
-    /// (SpriteRecord.Header Offset/Size), as opposed to the per-frame hitboxes that live on the
-    /// animations. A record with any size at 0 declares no body and gets no prefab.
+    /// Writes Entities/{name}/{name}.entity for every bank: a root AnimatedSpriteComponent carrying
+    /// the bank's own animation asset ids (see <see cref="AnimatedSpriteComponent.AnimationAssetIds"/>
+    /// - built in memory here rather than through Load, since there is no source document to load
+    /// from), an entity-level DepthSortable2DComponent configured like
+    /// CasaEngineMonogame/Projects/RPGDemo/Entities/character_link.entity (YSortedWorld render pass,
+    /// top-down Y-up sort - the defaults both components already carry), and entity-level
+    /// script_class_name = "AlundraEntityScriptProxy" so a spawned instance gets the shared gameplay
+    /// proxy. The prefab is never Initialize()'d in this process - AssetVerifier (Phase 8) only
+    /// Load()s entities - so the proxy class not being loadable here (this converter has no reference
+    /// to the Alundra gameplay DLL) never surfaces as a failure; ElementFactory.Create only runs from
+    /// Entity.InitializePrivate, which Load never calls.
+    ///
+    /// When the bank's header also declares a positive body volume, a CollisionComponent child of the
+    /// root carries a single Box fixture, which is Alundra's per-entity body box (SpriteRecord.Header
+    /// Offset/Size), as opposed to the per-frame hitboxes that live on the animations. A record with
+    /// any size at 0 declares no body and the prefab stays sprite-only (root with no children).
     ///
     /// PhysicsType is Kinetic: an Alundra entity's body is moved by gameplay code, never by a
     /// simulation, and it must still report contacts - which is exactly the ghost object a kinetic
@@ -174,26 +205,35 @@ public static class SpriteWriter
     /// construction. As everywhere else in this writer, ids are not deterministic: ObjectBase.Id has
     /// a private setter (see the class summary).
     /// </summary>
-    private static void WriteBodyPrefab(
-        SpriteBank bank, string entityFolderName, string bankRelativeDirectory, ConversionReport report)
+    private static void WriteEntityPrefab(
+        SpriteBank bank,
+        string entityFolderName,
+        string bankRelativeDirectory,
+        List<Guid> animationAssetIds,
+        Dictionary<string, Guid> prefabAssetIdsByBankKey,
+        ConversionReport report)
     {
-        var bodyBox = bank.BodyBox;
-        if (bodyBox == null || !bodyBox.HasPositiveVolume)
-        {
-            report.Increment("Entities.BodyPrefabsSkipped");
-            return;
-        }
+        var spriteComponent = new AnimatedSpriteComponent { Name = nameof(AnimatedSpriteComponent) };
+        spriteComponent.AnimationAssetIds.AddRange(animationAssetIds);
 
-        var collisionComponent = new CollisionComponent { Name = nameof(CollisionComponent) };
-        collisionComponent.PhysicsDefinition.PhysicsType = PhysicsType.Kinetic;
-        collisionComponent.PhysicsDefinition.ProfileName = string.Empty;
-        collisionComponent.Fixtures.Add(CreateBodyFixture(bodyBox));
+        var bodyBox = bank.BodyBox;
+        var hasBody = bodyBox != null && bodyBox.HasPositiveVolume;
+        if (hasBody)
+        {
+            var collisionComponent = new CollisionComponent { Name = nameof(CollisionComponent) };
+            collisionComponent.PhysicsDefinition.PhysicsType = PhysicsType.Kinetic;
+            collisionComponent.PhysicsDefinition.ProfileName = string.Empty;
+            collisionComponent.Fixtures.Add(CreateBodyFixture(bodyBox!));
+            spriteComponent.AddChildComponent(collisionComponent);
+        }
 
         var entity = new Entity
         {
             Name = entityFolderName,
-            RootComponent = collisionComponent,
+            RootComponent = spriteComponent,
+            GameplayProxyClassName = "AlundraEntityScriptProxy",
         };
+        entity.AddComponent(new DepthSortable2DComponent { Name = nameof(DepthSortable2DComponent) });
 
         var relativePath = Path.Combine(bankRelativeDirectory, $"{entityFolderName}.entity");
         EditorAssetWriterService.SaveAsset(relativePath, entity);
@@ -203,7 +243,10 @@ public static class SpriteWriter
             FileName = relativePath,
         });
 
-        report.Increment("Entities.BodyPrefabs");
+        prefabAssetIdsByBankKey[bank.BankKey] = entity.Id;
+
+        report.Increment("Entities.Prefabs");
+        report.Increment(hasBody ? "Entities.BodyPrefabs" : "Entities.SpriteOnlyPrefabs");
     }
 
     /// <summary>
@@ -239,6 +282,7 @@ public static class SpriteWriter
         Guid textureAssetId,
         Dictionary<(string Spritesheet, long Signature), Guid> spriteAssetIdsByKey,
         string outputDirectory,
+        List<Guid> animationAssetIds,
         ConversionReport report)
     {
         // Frame start times. The trailing terminator frame carries a control code rather than a
@@ -392,6 +436,7 @@ public static class SpriteWriter
             Name = animationAsset.Name,
             FileName = relativePath,
         });
+        animationAssetIds.Add(animationAsset.Id);
         report.Increment("Assets.Animation2d");
 
         return convertedQuadCount;
