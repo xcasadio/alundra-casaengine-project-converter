@@ -127,6 +127,10 @@ public static class WorldWriter
     private const string SharedCameraEntityName = "camera";
     private const string SharedCameraEntitiesFolder = "Entities";
 
+    // The world-level GameplayProxy class, implemented in the Alundra gameplay DLL
+    // (Alundra/Scripts/AlundraWorldProxy.cs) and resolved by simple name at runtime.
+    private const string WorldScriptClassName = "AlundraWorldProxy";
+
     // docs/demarrage-nouvelle-partie.md section 2.1: the only documented spawn in the whole game.
     // g_saveData.InitialMapId = 389, CameraTileX/Y/Z = 33 / 59 / 0.
     private const int NewGameMapId = 389;
@@ -346,9 +350,12 @@ public static class WorldWriter
             ["id"] = worldId.ToString(),
             ["name"] = worldName,
             ["entity_references"] = entityReferences,
-            // The world's own GameplayProxy class. Empty until the gameplay DLL exists (E3);
-            // World.Load reads this key unconditionally, so it must be present.
-            ["script_class_name"] = null,
+            // The world's own GameplayProxy class, implemented by AlundraWorldProxy in the Alundra
+            // gameplay DLL (Alundra/Scripts/), and resolved at runtime by simple name via
+            // ElementFactory.Create<GameplayProxy>. The forward reference is intentional: the class
+            // itself is implemented in a follow-up commit, but World.Load reads this key
+            // unconditionally, so it must be present now.
+            ["script_class_name"] = WorldScriptClassName,
             // Alundra's simulation space: X/Y is the ground plane and Z is elevation, which is what
             // SimulationSpacePolicyNames.TopDownElevation constrains bodies to. Written as the
             // literal the engine matches on (World.Load -> SpacePolicyName -> CreateByName).
