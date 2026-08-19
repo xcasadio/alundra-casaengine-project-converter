@@ -56,6 +56,14 @@ public class AlundraWorldProxy : GameplayProxy
     private readonly List<Entity> _spawnedEntities = new();
 
     /// <summary>
+    /// Per-frame working list for <see cref="Update"/>: cleared and refilled from
+    /// <see cref="_spawnedEntities"/> every frame instead of allocating a temporary list in the hot
+    /// path. Kept as a re-read of each entity's <c>GameplayProxy</c> (rather than a list frozen at
+    /// spawn) so <see cref="_spawnedEntities"/> stays the single source of truth.
+    /// </summary>
+    private readonly List<AlundraEntityScriptProxy> _updateProxies = new();
+
+    /// <summary>
     /// Seam over actual event-program execution (see <see cref="IEventProgramRunner"/>); defaults to a
     /// silent no-op since the bytecode interpreter does not exist yet. Internal, not injected through
     /// the constructor: <c>ElementFactory</c> constructs gameplay proxies parameterless, so tests swap
@@ -332,16 +340,16 @@ public class AlundraWorldProxy : GameplayProxy
             return;
         }
 
-        var proxies = new List<AlundraEntityScriptProxy>(_spawnedEntities.Count);
+        _updateProxies.Clear();
         foreach (var entity in _spawnedEntities)
         {
             if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
             {
-                proxies.Add(proxy);
+                _updateProxies.Add(proxy);
             }
         }
 
-        RunEntityEventsPass(proxies, EventProgramRunner, ActiveCollisionEntity, DestroyEntity);
+        RunEntityEventsPass(_updateProxies, EventProgramRunner, ActiveCollisionEntity, DestroyEntity);
     }
 
     /// <summary>
