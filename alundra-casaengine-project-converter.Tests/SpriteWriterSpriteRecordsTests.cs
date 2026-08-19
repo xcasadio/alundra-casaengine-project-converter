@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text.Json;
 using AlundraCasaEngineProjectConverter.Writers;
 using CasaEngine.EditorServices;
@@ -92,6 +93,42 @@ public class SpriteWriterSpriteRecordsTests
             });
     }
 
+    [Fact]
+    public void ConvertSprites_WithVaryingPerFrameIdsv_RoundTripsTheFullFrameList()
+    {
+        // The fixture's one converted (anim, direction) pair carries two displayed frames with
+        // DepthSortValue 6 then 3 (SiImageSet.DepthSortValue, EntityManager.cs:338/1049) followed by a
+        // terminator frame (Images: null, no Idsv of its own) - see SpriteBankReader.ReadAnimation.
+        RunConversion(
+            sector5Id: 52,
+            headerFields: """
+                "MoreFlags": 0, "CanPickup": 0, "FlagsPortraitShadowType": 0,
+                "ProgramLoad": 0, "ProgramTick": 0, "ProgramTouch": 0, "ProgramDeactivate": 0,
+                "ProgramInteract": 0,
+                "OffsetX": 0, "OffsetY": 0, "OffsetZ": 0, "SizeX": 0, "SizeY": 0, "SizeZ": 0,
+                "Contents": 0
+                """,
+            (outputDirectory, report, prefabAssetIdsByBankKey) =>
+            {
+                Assert.Equal(1, report.Counters["SpriteRecords.IdsvAnimDirs"]);
+
+                var prefabAssetId = prefabAssetIdsByBankKey["52"];
+                var recordsPath = Path.Combine(outputDirectory, "Data", "sprite-records.json");
+                using var document = JsonDocument.Parse(File.ReadAllText(recordsPath));
+                var record = document.RootElement.GetProperty(prefabAssetId.ToString());
+
+                var idsvAnimDirs = record.GetProperty("IdsvAnimDirs");
+                Assert.Equal(1, idsvAnimDirs.GetArrayLength());
+
+                var entry = idsvAnimDirs[0];
+                Assert.Equal(0, entry.GetProperty("Anim").GetInt32());
+                Assert.Equal(0, entry.GetProperty("Direction").GetInt32());
+
+                var frames = entry.GetProperty("Frames").EnumerateArray().Select(e => e.GetInt32()).ToArray();
+                Assert.Equal(new[] { 6, 3 }, frames);
+            });
+    }
+
     /// <summary>
     /// Converts a one-bank fixture whose header carries <paramref name="headerFields"/> (the raw
     /// JSON fields, comma-separated, following "Sector5Id"), then hands the output directory, the
@@ -122,7 +159,10 @@ public class SpriteWriterSpriteRecordsTests
                                 "Header": { "Sector5Id": {{sector5Id}}, {{headerFields}} },
                                 "AnimSets": [ { "PreloadedAnims": [
                                     { "Frames": [
-                                        { "Delay": 136, "Images": { "Images": [
+                                        { "Delay": 136, "Images": { "DepthSortValue": 6, "Images": [
+                                            { "Spritesheet": 0, "Palette": 0, "AtlasX": 0, "AtlasY": 0, "Swidth": 16, "Sheight": 16, "X1": -8, "Y1": -16, "X2": 8, "Y2": -16, "X3": -8, "Y3": 0, "X4": 8, "Y4": 0, "Signature": {{sector5Id}}0 }
+                                        ] } },
+                                        { "Delay": 136, "Images": { "DepthSortValue": 3, "Images": [
                                             { "Spritesheet": 0, "Palette": 0, "AtlasX": 0, "AtlasY": 0, "Swidth": 16, "Sheight": 16, "X1": -8, "Y1": -16, "X2": 8, "Y2": -16, "X3": -8, "Y3": 0, "X4": 8, "Y4": 0, "Signature": {{sector5Id}}0 }
                                         ] } },
                                         { "Delay": 1, "Images": null }

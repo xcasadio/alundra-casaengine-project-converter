@@ -83,6 +83,47 @@ public class SpriteRecordCatalogTests : IDisposable
         Assert.Equal(24, header.SizeX);
         Assert.Equal(16, header.SizeY);
         Assert.Equal(32, header.SizeZ);
+
+        // Tolerance: the fixture above omits "IdsvAnimDirs" entirely (a pre-IDSV export, or a record
+        // whose bank had none) - System.Text.Json ignores unknown/missing fields, and ToHeader defaults
+        // this one to empty rather than null (see SpriteRecordHeader.IdsvAnimDirs's doc comment).
+        Assert.NotNull(header.IdsvAnimDirs);
+        Assert.Empty(header.IdsvAnimDirs!);
+    }
+
+    [Fact]
+    public void TryGet_KnownPrefabId_ParsesIdsvAnimDirs()
+    {
+        var prefabAssetId = Guid.Parse("fd375feb-2f77-447e-aedb-c3fa44c64edd");
+        WriteSpriteRecords(
+            "{\n"
+            + $"  \"{prefabAssetId}\": {{\n"
+            + "    \"MoreFlags\": 0, \"CanPickup\": 0, \"FlagsPortraitShadowType\": 0,\n"
+            + "    \"ProgramLoad\": 0, \"ProgramTick\": 0, \"ProgramTouch\": 0, \"ProgramDeactivate\": 0,\n"
+            + "    \"ProgramInteract\": 0,\n"
+            + "    \"OffsetX\": 0, \"OffsetY\": 0, \"OffsetZ\": 0, \"SizeX\": 0, \"SizeY\": 0, \"SizeZ\": 0,\n"
+            + "    \"Contents\": 0,\n"
+            + "    \"IdsvAnimDirs\": [\n"
+            + "      { \"Anim\": 1, \"Direction\": 0, \"Frames\": [6, 3, 6] },\n"
+            + "      { \"Anim\": 10, \"Direction\": 2, \"Frames\": [0] }\n"
+            + "    ]\n"
+            + "  }\n"
+            + "}");
+
+        var catalog = new SpriteRecordCatalog(_projectPath);
+
+        Assert.True(catalog.TryGet(prefabAssetId, out var header));
+        Assert.Equal(2, header.IdsvAnimDirs!.Count);
+
+        var first = header.IdsvAnimDirs[0];
+        Assert.Equal(1, first.Anim);
+        Assert.Equal(0, first.Direction);
+        Assert.Equal(new[] { 6, 3, 6 }, first.Frames);
+
+        var second = header.IdsvAnimDirs[1];
+        Assert.Equal(10, second.Anim);
+        Assert.Equal(2, second.Direction);
+        Assert.Equal(new[] { 0 }, second.Frames);
     }
 
     [Fact]

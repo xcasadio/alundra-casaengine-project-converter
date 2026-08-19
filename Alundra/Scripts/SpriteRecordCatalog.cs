@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CasaEngine.Core.Logging;
@@ -33,6 +34,31 @@ public readonly struct SpriteRecordHeader
     public int SizeY { get; init; }
     public int SizeZ { get; init; }
     public int Contents { get; init; }
+
+    /// <summary>
+    /// One entry per (AnimSet index, direction) the bank's converter run actually converted, each
+    /// carrying its own per-frame Images.DepthSortValue list (see <c>SpriteWriter</c>'s class doc,
+    /// "IdsvAnimDirs" bullet). <see cref="WallPlacementOverlay.ApplyEntitySortKey"/> only applies each
+    /// pair's frame-0 value (a documented approximation) - the full per-frame list still travels here
+    /// for completeness and future per-frame fidelity. Empty (real <see cref="SpriteRecordCatalog"/>
+    /// entries, via <c>SpriteRecordJson.ToHeader</c>) or null (a <see cref="FakeSpriteRecordCatalog"/>
+    /// entry built without it) when the source record had no entries, or the file predates this field
+    /// (backward-tolerant: unknown/missing JSON fields default here, same as every other header
+    /// field) - <see cref="AlundraWorldProxy.BuildIdsvByAnimDirection"/> treats both the same way.
+    /// </summary>
+    public IReadOnlyList<AnimDirIdsv>? IdsvAnimDirs { get; init; }
+}
+
+/// <summary>
+/// One <see cref="SpriteRecordHeader.IdsvAnimDirs"/> entry - see its doc comment. <see cref="Frames"/>
+/// holds the per-frame Images.DepthSortValue list of every displayed frame (terminator frames
+/// excluded), in animation-frame order.
+/// </summary>
+public readonly struct AnimDirIdsv
+{
+    public int Anim { get; init; }
+    public int Direction { get; init; }
+    public IReadOnlyList<int>? Frames { get; init; }
 }
 
 /// <summary>
@@ -144,6 +170,7 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
         [JsonInclude] public int SizeY { get; set; }
         [JsonInclude] public int SizeZ { get; set; }
         [JsonInclude] public int Contents { get; set; }
+        [JsonInclude] public List<AnimDirIdsvJson>? IdsvAnimDirs { get; set; }
 
         public SpriteRecordHeader ToHeader() => new()
         {
@@ -162,7 +189,25 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
             SizeY = SizeY,
             SizeZ = SizeZ,
             Contents = Contents,
+            IdsvAnimDirs = IdsvAnimDirs == null
+                ? Array.Empty<AnimDirIdsv>()
+                : IdsvAnimDirs
+                    .Select(entry => new AnimDirIdsv
+                    {
+                        Anim = entry.Anim,
+                        Direction = entry.Direction,
+                        Frames = entry.Frames ?? new List<int>(),
+                    })
+                    .ToArray(),
         };
+    }
+
+    // No naming policy: field names/order match SpriteWriter.AnimDirIdsvJson exactly.
+    private sealed class AnimDirIdsvJson
+    {
+        [JsonInclude] public int Anim { get; set; }
+        [JsonInclude] public int Direction { get; set; }
+        [JsonInclude] public List<int>? Frames { get; set; }
     }
 }
 

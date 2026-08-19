@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using System.Collections.Generic;
 using CasaEngine.Framework.Physics;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.World;
@@ -113,6 +114,18 @@ public class AlundraEntityScriptProxy : GameplayProxy
     public int EventTrigger;//228
     public int MapEventProgramId;//22c
     public Entity LogicContextEntity = null!; //self
+
+    /// <summary>
+    /// Engine-only, not part of the original struct (same as <see cref="LogicContextEntity"/>):
+    /// this entity's IDSV table, resolved once at spawn from its <c>SpriteRecordCatalog</c> entry
+    /// (see <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>) and keyed by
+    /// <c>(int)CurrentAnimationId * 4 + AnimationDirection</c> so the per-frame wall-interleave sort
+    /// pass (<see cref="AlundraWorldProxy.RunWallInterleaveSortKeyPass"/>) never re-looks-up the
+    /// catalog's own (larger, Guid-keyed) dictionary. Null when the entity's header carried no
+    /// IdsvAnimDirs entries (degraded catalog, or a bank whose header simply has none); callers treat
+    /// that the same as "0 bias for every (anim, direction)".
+    /// </summary>
+    public Dictionary<int, int>? IdsvByAnimDirection;
 
     /// <summary>
     /// Persisted interpreter cursor for slots B (Map) and C (Tick) - the only two slots the original
@@ -286,6 +299,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
             EventTrigger = EventTrigger,
             MapEventProgramId = MapEventProgramId,
             LogicContextEntity = LogicContextEntity,
+            IdsvByAnimDirection = IdsvByAnimDirection,
             LastTargetAnimationId = LastTargetAnimationId,
             LastTargetDirection = LastTargetDirection,
             Bytes = (byte[])Bytes.Clone(),

@@ -67,6 +67,15 @@ public sealed class SpriteFrame
     /// </summary>
     public SpriteFrameCollision? Collision;
 
+    /// <summary>
+    /// Alundra's per-frame image-depth-sort bias (SiImageSet.DepthSortValue, exported as
+    /// Images.DepthSortValue), 0 on a terminator frame (it carries no Images). The original folds
+    /// this into <c>EntityManager.SortEntities</c>'s <c>sortValue = PosY + (ImageDepthSortValue &lt;&lt; 16)</c>
+    /// (EntityManager.cs:1049) - a per-frame pixel bias on top of the entity's own logical PosY - see
+    /// SpriteWriter's class doc for how this converter exports it.
+    /// </summary>
+    public int Idsv;
+
     public bool IsTerminator => Quads.Count == 0;
 }
 
@@ -385,15 +394,23 @@ public static class SpriteBankReader
 
             var rawDelay = frameElement.GetProperty("Delay").GetInt32();
             var quads = new List<SpriteQuad>();
+            var idsv = 0;
 
             if (frameElement.TryGetProperty("Images", out var imagesElement)
-                && imagesElement.ValueKind == JsonValueKind.Object
-                && imagesElement.TryGetProperty("Images", out var quadsElement)
-                && quadsElement.ValueKind == JsonValueKind.Array)
+                && imagesElement.ValueKind == JsonValueKind.Object)
             {
-                foreach (var quadElement in quadsElement.EnumerateArray())
+                if (imagesElement.TryGetProperty("DepthSortValue", out var depthSortValueElement))
                 {
-                    quads.Add(ReadQuad(quadElement));
+                    idsv = depthSortValueElement.GetInt32();
+                }
+
+                if (imagesElement.TryGetProperty("Images", out var quadsElement)
+                    && quadsElement.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var quadElement in quadsElement.EnumerateArray())
+                    {
+                        quads.Add(ReadQuad(quadElement));
+                    }
                 }
             }
 
@@ -403,6 +420,7 @@ public static class SpriteBankReader
                 TerminatorCode = rawDelay,
                 Quads = quads,
                 Collision = ReadCollision(frameElement),
+                Idsv = idsv,
             });
         }
 

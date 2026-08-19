@@ -130,7 +130,7 @@ public class WallPlacementOverlayTests
         // AlundraWorldProxyTests: PosY = 584 * 0x10000 (584 pixels), tile row 584 >> 4 = 36.
         const int posY = 584 * 0x10000;
 
-        var elevation = WallPlacementOverlay.ComputeEntityElevation(posY);
+        var elevation = WallPlacementOverlay.ComputeEntityElevation(posY, idsv: 0);
 
         Assert.Equal(36 * 16 + 6, elevation);
         Assert.Equal(582, elevation);
@@ -139,7 +139,23 @@ public class WallPlacementOverlayTests
     [Fact]
     public void ComputeEntityElevation_ZeroPosY_IsRowZeroEntitySlot()
     {
-        Assert.Equal(6, WallPlacementOverlay.ComputeEntityElevation(0));
+        Assert.Equal(6, WallPlacementOverlay.ComputeEntityElevation(0, idsv: 0));
+    }
+
+    [Fact]
+    public void ComputeEntityElevation_IdsvBias_CanCrossARowBoundary()
+    {
+        // PosY = 575 pixels (16.16 fixed): row bucket alone is 575 >> 4 = 35. Folding in an IDSV bias
+        // of 6 (EntityManager.cs:1049's sortValue = PosY + (ImageDepthSortValue << 16)) pushes the
+        // biased pixel value to 581, whose row bucket is 581 >> 4 = 36 - one row further back, exactly
+        // the kind of miss the bug report measured (anim 1 direction 0 on map 389 banks 146/161).
+        const int posY = 575 * 0x10000;
+
+        var withoutBias = WallPlacementOverlay.ComputeEntityElevation(posY, idsv: 0);
+        var withBias = WallPlacementOverlay.ComputeEntityElevation(posY, idsv: 6);
+
+        Assert.Equal(35 * 16 + 6, withoutBias);
+        Assert.Equal(36 * 16 + 6, withBias);
     }
 
     // -------------------- Entity-vs-wall ordering (RenderSortKey2D comparisons) --------------------
@@ -179,7 +195,7 @@ public class WallPlacementOverlayTests
     private static RenderSortKey2D EntityKeyForRow(int tileRow)
     {
         var posY = tileRow * 16 * 0x10000;
-        var elevation = WallPlacementOverlay.ComputeEntityElevation(posY);
+        var elevation = WallPlacementOverlay.ComputeEntityElevation(posY, idsv: 0);
         return new RenderSortKey2D((int)RenderPass2D.YSortedWorld, (int)RenderPass2D.YSortedWorld, 0, elevation, 0, 0, 0);
     }
 

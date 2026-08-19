@@ -265,6 +265,36 @@ public class AlundraWorldProxy : GameplayProxy
         return true;
     }
 
+    /// <summary>
+    /// Stride used to pack (anim, direction) into <see cref="AlundraEntityScriptProxy.IdsvByAnimDirection"/>'s
+    /// single-int key: directions are always 0-3 (<c>AnimationTables.DirectionNames.Length</c>), so 4 is
+    /// enough to keep every (anim, direction) pair distinct without a tuple key/comparer.
+    /// </summary>
+    private const int IdsvDirectionStride = 4;
+
+    /// <summary>
+    /// Builds the per-entity IDSV lookup <see cref="AlundraEntityScriptProxy.IdsvByAnimDirection"/> stashes
+    /// at spawn (see <see cref="ApplySpawnInitialization"/>): one frame-0 value per (anim, direction) pair
+    /// the catalog entry carries. Returns null when <paramref name="idsvAnimDirs"/> is empty (nothing to
+    /// look up - callers treat a null table the same as "0 bias for every (anim, direction)").
+    /// </summary>
+    internal static Dictionary<int, int>? BuildIdsvByAnimDirection(IReadOnlyList<AnimDirIdsv>? idsvAnimDirs)
+    {
+        if (idsvAnimDirs == null || idsvAnimDirs.Count == 0)
+        {
+            return null;
+        }
+
+        var table = new Dictionary<int, int>(idsvAnimDirs.Count);
+        foreach (var entry in idsvAnimDirs)
+        {
+            var frame0 = entry.Frames is { Count: > 0 } frames ? frames[0] : 0;
+            table[entry.Anim * IdsvDirectionStride + entry.Direction] = frame0;
+        }
+
+        return table;
+    }
+
     /// <summary>Best-effort integer read of one custom property; missing or malformed leaves 0/false -
     /// mirroring how the converter always emits these two keys, so a missing key is not expected but
     /// should not itself block a spawn the way a malformed <see cref="EntityRecordMapper"/> key does.</summary>
@@ -520,6 +550,13 @@ public class AlundraWorldProxy : GameplayProxy
         proxy.SpriteProgramIndexes[ScriptHelper.ProgramFInteract] = header.ProgramInteract;
 
         SetEntityDimensions(proxy, header.OffsetX, header.OffsetY, header.OffsetZ, header.SizeX, header.SizeY, header.SizeZ);
+
+        // Resolve this entity's IDSV table once, from the catalog entry already fetched above, and
+        // stash it on the proxy - see AlundraEntityScriptProxy.IdsvByAnimDirection's doc comment and
+        // WallPlacementOverlay.ApplyEntitySortKey's frame-0-only deviation note. Only frame 0 of each
+        // (anim, direction) pair is kept; the per-frame lists Data/sprite-records.json carries are not
+        // needed on this hot-path table.
+        proxy.IdsvByAnimDirection = BuildIdsvByAnimDirection(header.IdsvAnimDirs);
 
         // EntityManager.cs:119: the mapper seeded PosZ with the raw pre-clamp elevation
         // (EntityRecordMapper's documented caveat); this is the -ModZ+1 offset InitializeEntity applies
@@ -892,11 +929,13 @@ public class AlundraWorldProxy : GameplayProxy
     /// <summary>
     /// Per-frame half of the wall/sprite depth interleave (see <see cref="WallPlacementOverlay"/>'s class
     /// doc): aligns every spawned entity's <see cref="DepthSortable2DComponent.Elevation"/> with its
-    /// current logical <see cref="AlundraEntityScriptProxy.PosY"/>, field writes only - the overlay tiles
-    /// themselves are built once in <see cref="InitializeWithWorld"/> and never touched again. An entity
-    /// without a <see cref="DepthSortable2DComponent"/> (the bare-fallback spawn path,
-    /// <see cref="CreateBareEntityFromRecord"/>) is skipped - it carries no sprite to sort in the first
-    /// place.
+    /// current logical <see cref="AlundraEntityScriptProxy.PosY"/> plus its current (anim, direction)'s
+    /// IDSV bias, looked up from <see cref="AlundraEntityScriptProxy.IdsvByAnimDirection"/> (already
+    /// resolved at spawn - no per-frame catalog dictionary lookup here) - field writes/one small-dictionary
+    /// lookup only, the overlay tiles themselves are built once in <see cref="InitializeWithWorld"/> and
+    /// never touched again. An entity without a <see cref="DepthSortable2DComponent"/> (the bare-fallback
+    /// spawn path, <see cref="CreateBareEntityFromRecord"/>) is skipped - it carries no sprite to sort in
+    /// the first place.
     /// </summary>
     internal static void RunWallInterleaveSortKeyPass(IReadOnlyList<Entity> entities)
     {
@@ -913,7 +952,11 @@ public class AlundraWorldProxy : GameplayProxy
                 continue;
             }
 
-            WallPlacementOverlay.ApplyEntitySortKey(depthSortable, proxy.PosY);
+            var idsv = 0;
+            var idsvKey = (int)proxy.CurrentAnimationId * IdsvDirectionStride + proxy.AnimationDirection;
+            proxy.IdsvByAnimDirection?.TryGetValue(idsvKey, out idsv);
+
+            WallPlacementOverlay.ApplyEntitySortKey(depthSortable, proxy.PosY, idsv);
         }
     }
 

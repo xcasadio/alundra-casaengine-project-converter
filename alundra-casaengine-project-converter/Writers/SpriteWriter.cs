@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text.Json;
 using AlundraCasaEngineProjectConverter.Readers;
 using CasaEngine.EditorServices;
@@ -65,6 +66,17 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    script program slots, sizing the body volume - so they travel as data rather than being
 ///    guessed at here. Like hero_effects.json and the per-map events companion, it is NOT
 ///    registered in the asset catalog: there is no engine type that could load it.
+///  - Data/sprite-records.json also carries "IdsvAnimDirs": one entry per (AnimSet index, direction)
+///    the bank actually converted, each holding the per-frame Images.DepthSortValue list (source:
+///    SpriteFrame.Idsv, read by SpriteBankReader.ReadAnimation from each frame's
+///    Images.DepthSortValue - the same SiImageSet.DepthSortValue byte
+///    EntityManager.cs:338/1049 folds into sortValue = PosY + (ImageDepthSortValue &lt;&lt; 16) for
+///    depth sorting, and which this converter never exported before). Measured across the full
+///    corpus (395 unique banks, 9620 (anim,dir) pairs with at least one displayed frame): 2851 of
+///    them (about 30%) have a non-constant IDSV between frames, so the full per-frame list is
+///    emitted for completeness rather than collapsing to one value per (anim,dir) - see
+///    Alundra.Scripts.WallPlacementOverlay.ApplyEntitySortKey for the frame-0-only approximation the
+///    DLL currently applies from this data, and its documented deviation.
 ///  - Asset ids are NOT forced deterministic here: ObjectBase.Id has a private setter, and
 ///    EditorAssetWriterService.SaveAsset always serializes whatever Id the object already has.
 ///    This matches Phase 1's actual behavior (EditorAssetImportService.ImportTiledMap also
@@ -75,6 +87,13 @@ public static class SpriteWriter
 {
     private static readonly string[] DirectionNames = { "down", "up", "left", "right" };
     private const float PsxFrameSeconds = 1f / 50f; // source data is PAL (50 Hz)
+
+    /// <summary>
+    /// One (AnimSet index, direction) pair a bank actually converted, with the per-frame
+    /// Images.DepthSortValue list of its displayed frames (terminator frames excluded, same as every
+    /// other per-frame track this writer emits) - see the class doc's sprite-records.json bullet.
+    /// </summary>
+    private readonly record struct AnimDirIdsv(int Anim, int Direction, List<int> Frames);
 
     /// <summary>
     /// Converts every sprite bank and returns the prefab asset id each one got, keyed by
@@ -109,13 +128,14 @@ public static class SpriteWriter
         var textureAssetIdsBySpritesheet = new Dictionary<string, Guid>(StringComparer.OrdinalIgnoreCase);
         var spriteAssetIdsByKey = new Dictionary<(string Spritesheet, long Signature), Guid>();
         var headerFieldsByPrefabId = new Dictionary<Guid, SpriteRecordHeader>();
+        var idsvAnimDirsByPrefabId = new Dictionary<Guid, List<AnimDirIdsv>>();
 
         foreach (var bank in banks)
         {
             ConvertBank(
                 bank, folderNamesByBankKey[bank.BankKey], inputDirectory, outputDirectory,
                 textureAssetIdsBySpritesheet, spriteAssetIdsByKey, prefabAssetIdsByBankKey,
-                headerFieldsByPrefabId, report);
+                headerFieldsByPrefabId, idsvAnimDirsByPrefabId, report);
         }
 
         EditorAssetCatalogService.Save();
@@ -124,7 +144,7 @@ public static class SpriteWriter
         report.Increment("Sprites.Textures", textureAssetIdsBySpritesheet.Count);
 
         PreserveHeroEffects(inputDirectory, outputDirectory, report);
-        WriteSpriteRecords(outputDirectory, headerFieldsByPrefabId, report);
+        WriteSpriteRecords(outputDirectory, headerFieldsByPrefabId, idsvAnimDirsByPrefabId, report);
 
         return prefabAssetIdsByBankKey;
     }
@@ -138,6 +158,7 @@ public static class SpriteWriter
         Dictionary<(string Spritesheet, long Signature), Guid> spriteAssetIdsByKey,
         Dictionary<string, Guid> prefabAssetIdsByBankKey,
         Dictionary<Guid, SpriteRecordHeader> headerFieldsByPrefabId,
+        Dictionary<Guid, List<AnimDirIdsv>> idsvAnimDirsByPrefabId,
         ConversionReport report)
     {
         Guid textureAssetId;
@@ -157,6 +178,7 @@ public static class SpriteWriter
         var quadsRead = 0;
         var quadsConverted = 0;
         var animationAssetIds = new List<Guid>();
+        var idsvAnimDirs = new List<AnimDirIdsv>();
 
         for (var animSetIndex = 0; animSetIndex < bank.AnimSets.Count; animSetIndex++)
         {
@@ -169,10 +191,17 @@ public static class SpriteWriter
                     continue;
                 }
 
+                var frameIdsvList = new List<int>();
                 foreach (var frame in animation.Frames)
                 {
                     quadsRead += frame.Quads.Count;
+                    if (!frame.IsTerminator)
+                    {
+                        frameIdsvList.Add(frame.Idsv);
+                    }
                 }
+
+                idsvAnimDirs.Add(new AnimDirIdsv(animSetIndex, directionIndex, frameIdsvList));
 
                 var animationName = $"bank{bank.BankKey}_anim{animSetIndex}_{DirectionNames[directionIndex]}";
                 quadsConverted += ConvertAnimation(
@@ -183,7 +212,7 @@ public static class SpriteWriter
 
         WriteEntityPrefab(
             bank, entityFolderName, bankRelativeDirectory, animationAssetIds, prefabAssetIdsByBankKey,
-            headerFieldsByPrefabId, report);
+            headerFieldsByPrefabId, idsvAnimDirs, idsvAnimDirsByPrefabId, report);
 
         report.Increment("Sprites.Banks");
         report.Increment("Sprites.QuadsRead", quadsRead);
@@ -225,6 +254,8 @@ public static class SpriteWriter
         List<Guid> animationAssetIds,
         Dictionary<string, Guid> prefabAssetIdsByBankKey,
         Dictionary<Guid, SpriteRecordHeader> headerFieldsByPrefabId,
+        List<AnimDirIdsv> idsvAnimDirs,
+        Dictionary<Guid, List<AnimDirIdsv>> idsvAnimDirsByPrefabId,
         ConversionReport report)
     {
         var spriteComponent = new AnimatedSpriteComponent { Name = nameof(AnimatedSpriteComponent) };
@@ -259,6 +290,7 @@ public static class SpriteWriter
 
         prefabAssetIdsByBankKey[bank.BankKey] = entity.Id;
         headerFieldsByPrefabId[entity.Id] = bank.Header;
+        idsvAnimDirsByPrefabId[entity.Id] = idsvAnimDirs;
 
         report.Increment("Entities.Prefabs");
         report.Increment(hasBody ? "Entities.BodyPrefabs" : "Entities.SpriteOnlyPrefabs");
@@ -651,11 +683,16 @@ public static class SpriteWriter
     private static void WriteSpriteRecords(
         string outputDirectory,
         Dictionary<Guid, SpriteRecordHeader> headerFieldsByPrefabId,
+        Dictionary<Guid, List<AnimDirIdsv>> idsvAnimDirsByPrefabId,
         ConversionReport report)
     {
         var recordsByPrefabId = new Dictionary<string, SpriteRecordJson>(StringComparer.Ordinal);
+        var idsvAnimDirCount = 0;
         foreach (var (prefabAssetId, header) in headerFieldsByPrefabId)
         {
+            var idsvAnimDirs = idsvAnimDirsByPrefabId.GetValueOrDefault(prefabAssetId, new List<AnimDirIdsv>());
+            idsvAnimDirCount += idsvAnimDirs.Count;
+
             recordsByPrefabId[prefabAssetId.ToString()] = new SpriteRecordJson
             {
                 MoreFlags = header.MoreFlags,
@@ -673,6 +710,14 @@ public static class SpriteWriter
                 SizeY = header.SizeY,
                 SizeZ = header.SizeZ,
                 Contents = header.Contents,
+                IdsvAnimDirs = idsvAnimDirs
+                    .Select(entry => new AnimDirIdsvJson
+                    {
+                        Anim = entry.Anim,
+                        Direction = entry.Direction,
+                        Frames = entry.Frames,
+                    })
+                    .ToList(),
             };
         }
 
@@ -683,6 +728,7 @@ public static class SpriteWriter
             JsonSerializer.Serialize(recordsByPrefabId, SpriteRecordsSerializerOptions));
 
         report.Increment("SpriteRecords.Exported", recordsByPrefabId.Count);
+        report.Increment("SpriteRecords.IdsvAnimDirs", idsvAnimDirCount);
         CheckSpriteRecordsInvariant(report);
     }
 
@@ -719,5 +765,18 @@ public static class SpriteWriter
         public int SizeY { get; set; }
         public int SizeZ { get; set; }
         public int Contents { get; set; }
+        public List<AnimDirIdsvJson> IdsvAnimDirs { get; set; } = new();
+    }
+
+    /// <summary>
+    /// The JSON shape for one entry of "IdsvAnimDirs" (see the class summary's sprite-records.json
+    /// bullet) - field names/order match the DLL-side data contract exactly, same as
+    /// <see cref="SpriteRecordJson"/>.
+    /// </summary>
+    private sealed class AnimDirIdsvJson
+    {
+        public int Anim { get; set; }
+        public int Direction { get; set; }
+        public List<int> Frames { get; set; } = new();
     }
 }

@@ -287,6 +287,72 @@ public class AlundraWorldProxySpawnInitializationTests
     }
 
     // -----------------------------------------------------------------------------------------
+    // IdsvByAnimDirection (see WallPlacementOverlay.ApplyEntitySortKey's frame-0-only deviation note)
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void BuildIdsvByAnimDirection_EmptyList_ReturnsNull()
+    {
+        Assert.Null(AlundraWorldProxy.BuildIdsvByAnimDirection(Array.Empty<AnimDirIdsv>()));
+    }
+
+    [Fact]
+    public void BuildIdsvByAnimDirection_KeepsOnlyFrameZeroPerAnimDirection()
+    {
+        var idsvAnimDirs = new[]
+        {
+            new AnimDirIdsv { Anim = 1, Direction = 0, Frames = new[] { 6, 3, 6 } },
+            new AnimDirIdsv { Anim = 10, Direction = 2, Frames = new[] { 0 } },
+        };
+
+        var table = AlundraWorldProxy.BuildIdsvByAnimDirection(idsvAnimDirs);
+
+        Assert.NotNull(table);
+        Assert.Equal(6, table![1 * 4 + 0]);
+        Assert.Equal(0, table[10 * 4 + 2]);
+        Assert.Equal(2, table.Count);
+    }
+
+    [Fact]
+    public void ApplySpawnInitialization_KnownHeaderWithIdsvAnimDirs_StashesTheFrameZeroTableOnTheProxy()
+    {
+        var prefabAssetId = Guid.NewGuid();
+        var header = new SpriteRecordHeader
+        {
+            IdsvAnimDirs = new[]
+            {
+                new AnimDirIdsv { Anim = 1, Direction = 0, Frames = new[] { 6, 3, 6 } },
+                new AnimDirIdsv { Anim = 10, Direction = 0, Frames = new[] { 0 } },
+            },
+        };
+        var catalog = new FakeSpriteRecordCatalog().Add(prefabAssetId, header);
+        var record = BuildRecordWithPrefabLink(prefabAssetId);
+        var proxy = new AlundraEntityScriptProxy();
+        AlundraWorldProxy.ApplyRecord(record, proxy);
+
+        AlundraWorldProxy.ApplySpawnInitialization(record, new Entity(), proxy, catalog);
+
+        Assert.NotNull(proxy.IdsvByAnimDirection);
+        Assert.Equal(6, proxy.IdsvByAnimDirection![1 * 4 + 0]);
+        Assert.Equal(0, proxy.IdsvByAnimDirection[10 * 4 + 0]);
+    }
+
+    [Fact]
+    public void ApplySpawnInitialization_HeaderWithNoIdsvAnimDirs_LeavesTheTableNull()
+    {
+        var prefabAssetId = Guid.NewGuid();
+        var header = new SpriteRecordHeader(); // IdsvAnimDirs left unset (null, see its doc comment)
+        var catalog = new FakeSpriteRecordCatalog().Add(prefabAssetId, header);
+        var record = BuildRecordWithPrefabLink(prefabAssetId);
+        var proxy = new AlundraEntityScriptProxy();
+        AlundraWorldProxy.ApplyRecord(record, proxy);
+
+        AlundraWorldProxy.ApplySpawnInitialization(record, new Entity(), proxy, catalog);
+
+        Assert.Null(proxy.IdsvByAnimDirection);
+    }
+
+    // -----------------------------------------------------------------------------------------
     // Creation-flow integration: header init flows into CreateEntityFromPrefab's world transform too.
     // -----------------------------------------------------------------------------------------
 
