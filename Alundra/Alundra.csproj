@@ -3,7 +3,11 @@
     <TargetFramework>net9.0-windows</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*">
+    <!-- MUST match the engine's pin in CasaEngineMonogame/Directory.Packages.props: the launcher
+         loads Alundra.dll via Assembly.LoadFile, so its MonoGame dependency resolves against the
+         MonoGame already loaded by the engine process - a floating (3.8.*) or higher version makes
+         the load fail at runtime with FileNotFoundException on MonoGame.Framework. -->
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4.1">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>

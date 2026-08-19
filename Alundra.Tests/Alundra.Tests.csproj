@@ -13,7 +13,8 @@
          via TileMapDepthSettings.CreateDefault) reference Microsoft.Xna.Framework.Vector2, and
          Alundra.csproj marks its own MonoGame.Framework.DesktopGL reference PrivateAssets="All" (it
          only needs it for game-folder deployment), so that assembly never flows into this test host. -->
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*" />
+    <!-- Version MUST match Alundra.csproj / the engine's Directory.Packages.props pin. -->
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.1">
