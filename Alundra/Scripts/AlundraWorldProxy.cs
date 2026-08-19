@@ -1,8 +1,10 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using CasaEngine.Core.Logging;
+using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Physics;
 using CasaEngine.Framework.Scene.Entities;
@@ -72,6 +74,14 @@ public class AlundraWorldProxy : GameplayProxy
     internal IEventProgramRunner EventProgramRunner = new NoOpEventProgramRunner();
 
     /// <summary>
+    /// Seam over <c>Data/sprite-records.json</c> lookups (see <see cref="Alundra.Scripts.SpriteRecordCatalog"/>'s
+    /// class doc), read once and reused for every record this proxy spawns. Internal, not injected
+    /// through the constructor - same reasoning as <see cref="EventProgramRunner"/>: <c>ElementFactory</c>
+    /// constructs gameplay proxies parameterless, so tests swap this field directly.
+    /// </summary>
+    internal ISpriteRecordCatalog SpriteRecordCatalog = new SpriteRecordCatalog();
+
+    /// <summary>
     /// Port of the original global <c>g_activeCollisionEntity</c>: the entity currently involved in the
     /// active collision pair, used by the pick phase to decide whether a touch downgrades all the way
     /// to an interact (slot F). Null in V1 (no collision system driving it yet); settable internally for
@@ -111,11 +121,21 @@ public class AlundraWorldProxy : GameplayProxy
             return;
         }
 
+        var skippedCount = 0;
+
         foreach (var record in entitiesLayer.Objects)
         {
+            if (!ShouldSpawnRecord(record, out var skipReason))
+            {
+                skippedCount++;
+                Logs.WriteDebug($"AlundraWorldProxy: record '{record.Name}' not spawned ({skipReason}).");
+                continue;
+            }
+
             try
             {
-                var entity = CreateEntityFromRecord(record, guid => world.Game.AssetContentManager.Load<Entity>(guid));
+                var entity = CreateEntityFromRecord(
+                    record, guid => world.Game.AssetContentManager.Load<Entity>(guid), SpriteRecordCatalog);
                 world.AddEntity(entity);
                 _spawnedEntities.Add(entity);
             }
@@ -126,6 +146,69 @@ public class AlundraWorldProxy : GameplayProxy
                     + $"skipping. {ex.Message}");
             }
         }
+
+        if (skippedCount > 0)
+        {
+            Logs.WriteInfo(
+                $"AlundraWorldProxy: world '{world.Name}' - {skippedCount} of {entitiesLayer.Objects.Count} "
+                + "Entities records not spawned (see ShouldSpawnRecord).");
+        }
+    }
+
+    /// <summary>
+    /// Spawn-time gate over one "Entities" record, ported from the two checks
+    /// <c>GameEngine.SpawnEntity</c> (GameEngine.cs:681-758) applies before ever building an entity, for
+    /// the specific call the map-load path makes: <c>GameEngine.InitializeEntitySlots</c>
+    /// (GameEngine.cs:629-645) spawns every record of the map with <c>SpawnEntity(null, i, 0)</c> - i.e.
+    /// <c>notCheckSpawnZone == 0</c>, so both of these checks apply, in this order:
+    /// <list type="number">
+    /// <item><description><c>IsEnabled == 0</c>: <c>GameEngine.GetEntityRecord</c> (GameEngine.cs:2126-2144)
+    /// returns null for such a record, so <c>SpawnEntity</c> never proceeds past its very first line.
+    /// Every map-389 record happens to have <c>IsEnabled == 1</c>, so this never fires there, but other
+    /// maps do carry disabled records (9741 total, 9631 with <c>IsEnabled != 0</c> - see
+    /// <c>WorldWriter</c>'s own count).</description></item>
+    /// <item><description><c>(SpriteDirection &amp; 0x40) == 0</c> (GameEngine.cs:715-718): with
+    /// <c>notCheckSpawnZone == 0</c> this alone is enough to skip the record. On map 389 this drops the
+    /// spawn count from 19 to 14 (5 of its records carry <c>SpriteDirection</c> values 0 or 128, both with
+    /// bit 0x40 clear).</description></item>
+    /// </list>
+    /// Deliberately NOT ported: the player-tile spawn-zone box (<c>XMin</c>/<c>XMax</c>/<c>YMin</c>/
+    /// <c>YMax</c> vs <c>StaticVariables.PlayerEntity.TileX</c>/<c>TileY</c>, GameEngine.cs:690-711). The
+    /// original resolves it against a player entity <c>GameEngine.ResetEntityState</c> (GameEngine.cs:648-672)
+    /// already spawned before this loop runs; this world proxy has no player system yet (see the class
+    /// doc), so the check would only ever compare against a zeroed sentinel, which is worse than not
+    /// checking it at all - a follow-up task once a player entity exists.
+    /// </summary>
+    internal static bool ShouldSpawnRecord(TileMapObjectData record, out string skipReason)
+    {
+        if (TryGetRecordInt(record, "IsEnabled", out var isEnabled) && isEnabled == 0)
+        {
+            skipReason = "IsEnabled=0";
+            return false;
+        }
+
+        if (TryGetRecordInt(record, "SpriteDirection", out var spriteDirection) && (spriteDirection & 0x40) == 0)
+        {
+            skipReason = $"SpriteDirection={spriteDirection} has bit 0x40 clear";
+            return false;
+        }
+
+        skipReason = string.Empty;
+        return true;
+    }
+
+    /// <summary>Best-effort integer read of one custom property; missing or malformed leaves 0/false -
+    /// mirroring how the converter always emits these two keys, so a missing key is not expected but
+    /// should not itself block a spawn the way a malformed <see cref="EntityRecordMapper"/> key does.</summary>
+    private static bool TryGetRecordInt(TileMapObjectData record, string key, out int value)
+    {
+        if (record.CustomProperties.TryGetValue(key, out var raw) && int.TryParse(raw, out value))
+        {
+            return true;
+        }
+
+        value = 0;
+        return false;
     }
 
     /// <summary>
@@ -146,7 +229,8 @@ public class AlundraWorldProxy : GameplayProxy
     /// MonoGame.Framework.DesktopGL reference PrivateAssets="All" for game-folder deployment, so it never
     /// flows into Alundra.Tests's deps.json); tests inject a fake in-memory prefab instead.
     /// </summary>
-    internal static Entity CreateEntityFromRecord(TileMapObjectData record, Func<Guid, Entity?>? prefabLoader)
+    internal static Entity CreateEntityFromRecord(
+        TileMapObjectData record, Func<Guid, Entity?>? prefabLoader, ISpriteRecordCatalog? spriteRecordCatalog = null)
     {
         if (TryGetPrefabAssetId(record, out var prefabAssetId))
         {
@@ -175,7 +259,7 @@ public class AlundraWorldProxy : GameplayProxy
 
             if (prefab != null)
             {
-                return CreateEntityFromPrefab(record, prefab);
+                return CreateEntityFromPrefab(record, prefab, spriteRecordCatalog);
             }
 
             Logs.WriteWarning(
@@ -189,7 +273,7 @@ public class AlundraWorldProxy : GameplayProxy
                 + "falling back to a bare entity.");
         }
 
-        return CreateBareEntityFromRecord(record);
+        return CreateBareEntityFromRecord(record, spriteRecordCatalog);
     }
 
     /// <summary>
@@ -215,7 +299,8 @@ public class AlundraWorldProxy : GameplayProxy
     /// sprite/collision components, renamed for this record and with its
     /// <see cref="AlundraEntityScriptProxy"/> filled from <paramref name="record"/>.
     /// </summary>
-    internal static Entity CreateEntityFromPrefab(TileMapObjectData record, Entity prefab)
+    internal static Entity CreateEntityFromPrefab(
+        TileMapObjectData record, Entity prefab, ISpriteRecordCatalog? spriteRecordCatalog = null)
     {
         var entity = prefab.Clone();
         entity.Name = BuildEntityName(record);
@@ -234,9 +319,11 @@ public class AlundraWorldProxy : GameplayProxy
         if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
         {
             ApplyRecord(record, proxy);
+            ApplySpawnInitialization(record, entity, proxy, spriteRecordCatalog);
 
             // The prefab's root is the bank's AnimatedSpriteComponent (EntityBankPrefabWriter); place it
-            // in the CasaEngine world frame from the logical position EntityRecordMapper just filled.
+            // in the CasaEngine world frame from the logical position EntityRecordMapper/ApplySpawnInitialization
+            // just filled (PosZ already carries the -ModZ+1 header adjustment when a header was found).
             // Defensive null-check only: a bank prefab is expected to always carry a root component.
             if (entity.RootComponent != null)
             {
@@ -293,7 +380,7 @@ public class AlundraWorldProxy : GameplayProxy
     /// bare entity" warning already covers this case, so it needs no separate warning of its own here.
     /// Does not add the entity to any world; the caller does that.
     /// </summary>
-    internal static Entity CreateBareEntityFromRecord(TileMapObjectData record)
+    internal static Entity CreateBareEntityFromRecord(TileMapObjectData record, ISpriteRecordCatalog? spriteRecordCatalog = null)
     {
         var entity = new Entity
         {
@@ -308,6 +395,7 @@ public class AlundraWorldProxy : GameplayProxy
         if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
         {
             ApplyRecord(record, proxy);
+            ApplySpawnInitialization(record, entity, proxy, spriteRecordCatalog);
         }
 
         return entity;
@@ -318,6 +406,100 @@ public class AlundraWorldProxy : GameplayProxy
     {
         EntityRecordMapper.Map(record, proxy);
         proxy.Status = EntityStatus.Loaded;
+    }
+
+    /// <summary>
+    /// Faithful port of the rest of <c>EntityManager.InitializeEntity</c> @ 0x80039D04 that
+    /// <see cref="EntityRecordMapper"/> could not do on its own (no header, no owning entity) - run after
+    /// <see cref="ApplyRecord"/> for both the prefab and the bare creation path (see
+    /// <see cref="CreateEntityFromPrefab"/>/<see cref="CreateBareEntityFromRecord"/>).
+    /// <list type="bullet">
+    /// <item><description><c>entity.LogicContextEntity = entity</c> (EntityManager.cs:147,
+    /// <c>InitializeCodePrograms</c> @ 0x8004201C) is unconditional in the original - it needs nothing but
+    /// the entity that was just created, so it always runs here too, header or not.</description></item>
+    /// <item><description>Everything else below it (<c>Flags</c>, <c>SpriteProgramIndexes</c>,
+    /// <c>SetEntityDimensions</c>, the <c>PosZ</c> header adjustment, <c>ModdedPosX/Y/Z</c>, and the
+    /// spawn-time animation/direction fields) needs the bank's <c>SpriteRecord.Header</c>
+    /// (<see cref="SpriteRecordHeader"/>), which the original always has by construction - <c>SpawnEntity</c>
+    /// (GameEngine.cs:721-726) returns null before ever calling <c>InitializeEntity</c> when the sprite
+    /// record fails to resolve. <paramref name="spriteRecordCatalog"/> can fail to resolve one here (file
+    /// missing, or this record's prefab link missing/invalid) in ways the original never could; when that
+    /// happens this entire block is skipped and the entity keeps the plain <see cref="EntityRecordMapper"/>
+    /// output - documented degraded mode, see <see cref="SpriteRecordCatalog"/>'s class doc.</description></item>
+    /// </list>
+    /// </summary>
+    internal static void ApplySpawnInitialization(
+        TileMapObjectData record, Entity entity, AlundraEntityScriptProxy proxy, ISpriteRecordCatalog? spriteRecordCatalog)
+    {
+        proxy.LogicContextEntity = entity;
+
+        if (spriteRecordCatalog == null
+            || !TryGetPrefabAssetId(record, out var prefabAssetId)
+            || !spriteRecordCatalog.TryGet(prefabAssetId, out var header))
+        {
+            return;
+        }
+
+        // EntityManager.cs:92-93 (Entity.Flags packing documented by EntityFlags).
+        proxy.Flags = (uint)(header.MoreFlags | (header.CanPickup << 8) | (header.FlagsPortraitShadowType << 16));
+
+        // EntityManager.cs:95-100.
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramALoad] = header.ProgramLoad;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramBMap] = 0;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramCTick] = header.ProgramTick;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramDTouch] = header.ProgramTouch;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate] = header.ProgramDeactivate;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramFInteract] = header.ProgramInteract;
+
+        SetEntityDimensions(proxy, header.OffsetX, header.OffsetY, header.OffsetZ, header.SizeX, header.SizeY, header.SizeZ);
+
+        // EntityManager.cs:119: the mapper seeded PosZ with the raw pre-clamp elevation
+        // (EntityRecordMapper's documented caveat); this is the -ModZ+1 offset InitializeEntity applies
+        // once the header (hence ModZ) is known. The ground-height clamp (EntityManager.cs:130-136) stays
+        // out - it needs the map's collision cells, a later chantier.
+        proxy.PosZ = proxy.PosZ - proxy.ModZ + 1;
+
+        // EntityManager.cs:123-125.
+        proxy.ModdedPosX = proxy.PosX + proxy.ModX;
+        proxy.ModdedPosY = proxy.PosY + proxy.ModY;
+        proxy.ModdedPosZ = proxy.PosZ + proxy.ModZ;
+
+        // GameEngine.cs:752-753: SpawnEntity always passes animationId=0 and reads the facing off the
+        // record's own SpriteDirection (not the header) - a missing/malformed key defaults to 0, same as
+        // a record whose SpriteDirection happens to be 0.
+        TryGetRecordInt(record, "SpriteDirection", out var spriteDirection);
+        const uint animationId = 0;
+        var direction = AnimationTables.CardinalDirectionTable[spriteDirection & 0x3];
+
+        // EntityManager.cs:85-88.
+        proxy.CurrentAnimationId = ~animationId;
+        proxy.CurrentDirection = ~direction;
+        proxy.TargetAnimationId = animationId;
+        proxy.TargetDirection = direction;
+    }
+
+    /// <summary>
+    /// Port of <c>EntityManager.SetEntityDimensions</c> @ 0x80039C40: derives the entity's collision/mod
+    /// box from its bank header's raw offset/size fields (already 16.16-fixed-point-free integers; the
+    /// original shifts them into 16.16 itself with <c>&lt;&lt; 16</c>). Constants
+    /// <c>0x4e00000</c>/<c>0x3c00000</c>/<c>0x7800000</c> are ported verbatim, unexplained in the original
+    /// beyond their use as screen-clip bounds.
+    /// </summary>
+    internal static void SetEntityDimensions(
+        AlundraEntityScriptProxy proxy, int offsetX, int offsetY, int offsetZ, int sizeX, int sizeY, int sizeZ)
+    {
+        proxy.NegModX = -(offsetX << 16);
+        proxy.NegModY = -(offsetY << 16);
+        proxy.ModX = offsetX << 16;
+        proxy.ModY = offsetY << 16;
+        proxy.ModZ = offsetZ << 16;
+        proxy.ScreenClipX = 0x4e00000 - ((offsetX + sizeX) << 16);
+        proxy.ScreenClipY = 0x3c00000 - ((offsetY + sizeY) << 16);
+        proxy.ScreenClipZ = 0x7800000 - ((offsetZ + sizeZ) << 16);
+
+        proxy.Width = sizeX == 0 ? 0 : (sizeX << 16) - 1;
+        proxy.Height = sizeY == 0 ? 0 : (sizeY << 16) - 1;
+        proxy.Depth = sizeZ == 0 ? 0 : (sizeZ << 16) - 1;
     }
 
     internal static string BuildEntityName(TileMapObjectData record)
@@ -350,6 +532,10 @@ public class AlundraWorldProxy : GameplayProxy
         }
 
         RunEntityEventsPass(_updateProxies, EventProgramRunner, ActiveCollisionEntity, DestroyEntity);
+
+        // Mirrors the original ordering: EntityManager.UpdateEntitiesEvents runs before
+        // EntityManager.UpdateEntitiesAnimation in UpdateEntities' own pass list - see RunAnimationSyncPass.
+        RunAnimationSyncPass(_spawnedEntities);
     }
 
     /// <summary>
@@ -473,6 +659,119 @@ public class AlundraWorldProxy : GameplayProxy
                 keepGoing = true;
             }
         } while (keepGoing);
+    }
+
+    /// <summary>
+    /// Drives, once per frame, the target-resolution part of <c>EntityManager.UpdateAnimation</c> @
+    /// 0x80038AB4 (EntityManager.cs:209-224 only - see <see cref="TryResolveAnimationTarget"/>) for every
+    /// entity this proxy spawned, then bridges a resolved change onto the spawned entity's own
+    /// <see cref="AnimatedSpriteComponent"/> (see <see cref="TrySelectAnimationByNameSuffix"/>).
+    ///
+    /// Runs from <see cref="Update"/> deliberately, not from spawn: at spawn time
+    /// (<see cref="ApplySpawnInitialization"/>, mirroring <c>EntityManager.InitializeEntity</c> setting
+    /// <c>CurrentAnimationId = ~animationId</c>) the entity has just been queued with <c>World.AddEntity</c>
+    /// and not yet integrated - its <see cref="AnimatedSpriteComponent.Animations"/> list is only
+    /// populated later, when <c>World.InternalAddEntities</c> calls the component's own
+    /// <c>InitializeWithWorld</c> (see <see cref="World.LoadContent"/>: that runs strictly after
+    /// <c>GameplayProxy.InitializeWithWorld</c>, i.e. after this whole proxy's spawn loop returns). By the
+    /// time <see cref="Update"/> first runs the list is populated, and every freshly spawned entity has
+    /// <c>CurrentAnimationId = ~TargetAnimationId</c> (guaranteed different, since <c>TargetAnimationId</c>
+    /// is never 0xFFFFFFFF-complemented of itself), so the very first sync always fires and sets the
+    /// entity's initial visual - the visibility payoff this port exists for.
+    ///
+    /// Frame-level animation state (<c>Frame</c>/<c>NextFrameDelay</c>/<c>AnimCompleteCounter</c>, the rest
+    /// of <c>UpdateAnimation</c>) stays out of scope: CasaEngine's own <c>Animation2dCompositionSampler</c>
+    /// (driven by <see cref="AnimatedSpriteComponent.Update"/>) already owns frame timing once the right
+    /// animation is selected.
+    /// </summary>
+    internal static void RunAnimationSyncPass(IReadOnlyList<Entity> entities)
+    {
+        foreach (var entity in entities)
+        {
+            if (entity.GameplayProxy is not AlundraEntityScriptProxy proxy)
+            {
+                continue;
+            }
+
+            if (!TryResolveAnimationTarget(proxy, out var newCurrentAnimationId, out var newAnimationDirection))
+            {
+                continue;
+            }
+
+            proxy.CurrentAnimationId = newCurrentAnimationId;
+            proxy.AnimationDirection = newAnimationDirection;
+
+            var animatedSprite = entity.GetComponent<AnimatedSpriteComponent>();
+            if (animatedSprite == null)
+            {
+                continue;
+            }
+
+            if (TrySelectAnimationByNameSuffix(animatedSprite, proxy.CurrentAnimationId, proxy.AnimationDirection, out var selected))
+            {
+                animatedSprite.SetCurrentAnimation(selected, forceReset: true);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Port of the target-resolution part of <c>EntityManager.UpdateAnimation</c> @ 0x80038AB4
+    /// (EntityManager.cs:209-224 only): resolves <see cref="AlundraEntityScriptProxy.AnimationDirection"/>
+    /// from the entity's current facing and its <see cref="AlundraEntityScriptProxy.TargetDirection"/> via
+    /// <see cref="AnimationTables.AnimationDirectionTable"/>, and returns true (with the new
+    /// <c>CurrentAnimationId</c>/<c>AnimationDirection</c> pair) exactly when the original would have
+    /// entered its "animation or direction changed" branch. Pure and static so it can be unit tested
+    /// without a <see cref="World"/> or a component.
+    /// </summary>
+    internal static bool TryResolveAnimationTarget(
+        AlundraEntityScriptProxy proxy, out uint newCurrentAnimationId, out int newAnimationDirection)
+    {
+        var row = proxy.AnimationDirection;
+        var col = (int)(((proxy.TargetDirection + 2) & 0x1c) >> 2);
+        var animationDirectionFromTargetDirection = AnimationTables.AnimationDirectionTable[row * 8 + col];
+
+        if (proxy.CurrentAnimationId != proxy.TargetAnimationId || proxy.AnimationDirection != animationDirectionFromTargetDirection)
+        {
+            newCurrentAnimationId = proxy.TargetAnimationId;
+            newAnimationDirection = animationDirectionFromTargetDirection;
+            return true;
+        }
+
+        newCurrentAnimationId = proxy.CurrentAnimationId;
+        newAnimationDirection = proxy.AnimationDirection;
+        return false;
+    }
+
+    /// <summary>
+    /// Finds, among <paramref name="animatedSprite"/>'s own loaded animations, the one whose name ends
+    /// with "_anim{animationId}_{directionName}" - the converter's own naming scheme
+    /// (<c>AlundraCasaEngineProjectConverter.Writers.SpriteWriter</c>: <c>$"bank{bank.BankKey}_anim{animSetIndex}_{DirectionNames[directionIndex]}"</c>).
+    /// Matches by suffix rather than the component's own exact-name <c>SetCurrentAnimation(string,bool)</c>
+    /// because this proxy does not carry the bank key prefix - only the (animationId, direction) pair the
+    /// original engine itself tracked.
+    /// </summary>
+    internal static bool TrySelectAnimationByNameSuffix(
+        AnimatedSpriteComponent animatedSprite, uint animationId, int animationDirection, out Animation2d? selected)
+    {
+        if (animationDirection < 0 || animationDirection >= AnimationTables.DirectionNames.Length)
+        {
+            selected = null;
+            return false;
+        }
+
+        var suffix = "_anim" + animationId.ToString(CultureInfo.InvariantCulture) + "_" + AnimationTables.DirectionNames[animationDirection];
+
+        foreach (var animation in animatedSprite.Animations)
+        {
+            if (animation.Animation2dData.Name.EndsWith(suffix, StringComparison.Ordinal))
+            {
+                selected = animation;
+                return true;
+            }
+        }
+
+        selected = null;
+        return false;
     }
 
     /// <summary>

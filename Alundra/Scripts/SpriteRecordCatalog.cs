@@ -1,0 +1,184 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using CasaEngine.Core.Logging;
+using CasaEngine.Engine.Environment;
+
+namespace Alundra.Scripts;
+
+/// <summary>
+/// One Data/sprite-records.json entry (see <c>AlundraCasaEngineProjectConverter.Writers.SpriteWriter</c>,
+/// which documents the field list and packing rules this DLL still needs): the raw
+/// <c>SpriteRecord.Header</c> fields of a bank prefab, keyed by that prefab's own asset id (the same
+/// <c>PrefabAssetId</c> a tileMap record carries - see <c>EntityPrefabLinkWriter</c>). Field names/order
+/// match the converter's own JSON contract exactly (no naming policy on either side).
+/// </summary>
+public readonly struct SpriteRecordHeader
+{
+    public int MoreFlags { get; init; }
+    public int CanPickup { get; init; }
+    public int FlagsPortraitShadowType { get; init; }
+    public int ProgramLoad { get; init; }
+    public int ProgramTick { get; init; }
+    public int ProgramTouch { get; init; }
+    public int ProgramDeactivate { get; init; }
+    public int ProgramInteract { get; init; }
+    public int OffsetX { get; init; }
+    public int OffsetY { get; init; }
+    public int OffsetZ { get; init; }
+    public int SizeX { get; init; }
+    public int SizeY { get; init; }
+    public int SizeZ { get; init; }
+    public int Contents { get; init; }
+}
+
+/// <summary>
+/// Seam over <see cref="SpriteRecordCatalog"/> so spawn-time code (<see cref="AlundraWorldProxy"/>) and
+/// its tests can swap the real file-backed catalog for an in-memory fake, the same way
+/// <c>AlundraWorldProxy.CreateEntityFromRecord</c>'s <c>prefabLoader</c> parameter is swapped in tests.
+/// </summary>
+public interface ISpriteRecordCatalog
+{
+    /// <summary>
+    /// Looks up the raw sprite-record header of the bank prefab <paramref name="prefabAssetId"/> links
+    /// to. Returns false when the catalog has no entry for it - including when the whole catalog
+    /// failed to load (see <see cref="SpriteRecordCatalog"/>'s class doc): callers treat that the same
+    /// way as "this particular prefab has no header", a degraded-but-safe spawn with no header-derived
+    /// initialization.
+    /// </summary>
+    bool TryGet(Guid prefabAssetId, out SpriteRecordHeader header);
+}
+
+/// <summary>
+/// Loads Data/sprite-records.json once (from <see cref="EngineEnvironment.ProjectPath"/>, the same
+/// project-root resolution the engine itself uses - this converter output is read-only from here, the
+/// converter that writes it stays untouched) and answers <see cref="TryGet"/> from the in-memory
+/// dictionary it parses it into.
+///
+/// Degraded mode: when the file is missing, unreadable, or fails to parse, this logs exactly one
+/// warning at construction time and then behaves as an always-empty catalog - every
+/// <see cref="TryGet"/> call returns false. Callers (<see cref="AlundraWorldProxy"/>) are documented to
+/// treat that as "spawn the entity without header-derived initialization" rather than fail the spawn,
+/// so a missing companion file degrades map entities to their pre-header-port behaviour instead of
+/// breaking world load entirely.
+/// </summary>
+public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
+{
+    private const string DataDirectoryName = "Data";
+    private const string FileName = "sprite-records.json";
+
+    private readonly Dictionary<Guid, SpriteRecordHeader> _headersByPrefabId = new();
+
+    /// <summary>Loads from <c>Data/sprite-records.json</c> under <see cref="EngineEnvironment.ProjectPath"/>.</summary>
+    public SpriteRecordCatalog() : this(EngineEnvironment.ProjectPath)
+    {
+    }
+
+    /// <summary>Loads from <c>Data/sprite-records.json</c> under <paramref name="projectPath"/> - the
+    /// overload tests use to point at a temporary fixture directory instead of the real project.</summary>
+    public SpriteRecordCatalog(string projectPath)
+    {
+        var filePath = Path.Combine(projectPath, DataDirectoryName, FileName);
+
+        try
+        {
+            if (!File.Exists(filePath))
+            {
+                Logs.WriteWarning(
+                    $"SpriteRecordCatalog: '{filePath}' not found; spawns proceed without header "
+                    + "initialization (degraded mode).");
+                return;
+            }
+
+            var json = File.ReadAllText(filePath);
+            var parsed = JsonSerializer.Deserialize<Dictionary<string, SpriteRecordJson>>(json, SerializerOptions);
+
+            if (parsed == null)
+            {
+                Logs.WriteWarning(
+                    $"SpriteRecordCatalog: '{filePath}' parsed to nothing; spawns proceed without header "
+                    + "initialization (degraded mode).");
+                return;
+            }
+
+            foreach (var (key, value) in parsed)
+            {
+                if (Guid.TryParse(key, out var prefabAssetId))
+                {
+                    _headersByPrefabId[prefabAssetId] = value.ToHeader();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logs.WriteWarning(
+                $"SpriteRecordCatalog: failed to load '{filePath}' ({ex.Message}); spawns proceed without "
+                + "header initialization (degraded mode).");
+            _headersByPrefabId.Clear();
+        }
+    }
+
+    public bool TryGet(Guid prefabAssetId, out SpriteRecordHeader header)
+        => _headersByPrefabId.TryGetValue(prefabAssetId, out header);
+
+    // No naming policy: field names/order match SpriteWriter.SpriteRecordJson exactly.
+    private static readonly JsonSerializerOptions SerializerOptions = new();
+
+    private sealed class SpriteRecordJson
+    {
+        [JsonInclude] public int MoreFlags { get; set; }
+        [JsonInclude] public int CanPickup { get; set; }
+        [JsonInclude] public int FlagsPortraitShadowType { get; set; }
+        [JsonInclude] public int ProgramLoad { get; set; }
+        [JsonInclude] public int ProgramTick { get; set; }
+        [JsonInclude] public int ProgramTouch { get; set; }
+        [JsonInclude] public int ProgramDeactivate { get; set; }
+        [JsonInclude] public int ProgramInteract { get; set; }
+        [JsonInclude] public int OffsetX { get; set; }
+        [JsonInclude] public int OffsetY { get; set; }
+        [JsonInclude] public int OffsetZ { get; set; }
+        [JsonInclude] public int SizeX { get; set; }
+        [JsonInclude] public int SizeY { get; set; }
+        [JsonInclude] public int SizeZ { get; set; }
+        [JsonInclude] public int Contents { get; set; }
+
+        public SpriteRecordHeader ToHeader() => new()
+        {
+            MoreFlags = MoreFlags,
+            CanPickup = CanPickup,
+            FlagsPortraitShadowType = FlagsPortraitShadowType,
+            ProgramLoad = ProgramLoad,
+            ProgramTick = ProgramTick,
+            ProgramTouch = ProgramTouch,
+            ProgramDeactivate = ProgramDeactivate,
+            ProgramInteract = ProgramInteract,
+            OffsetX = OffsetX,
+            OffsetY = OffsetY,
+            OffsetZ = OffsetZ,
+            SizeX = SizeX,
+            SizeY = SizeY,
+            SizeZ = SizeZ,
+            Contents = Contents,
+        };
+    }
+}
+
+/// <summary>
+/// In-memory <see cref="ISpriteRecordCatalog"/> for tests: no file I/O, entries added directly.
+/// </summary>
+public sealed class FakeSpriteRecordCatalog : ISpriteRecordCatalog
+{
+    private readonly Dictionary<Guid, SpriteRecordHeader> _headersByPrefabId = new();
+
+    public FakeSpriteRecordCatalog Add(Guid prefabAssetId, SpriteRecordHeader header)
+    {
+        _headersByPrefabId[prefabAssetId] = header;
+        return this;
+    }
+
+    public bool TryGet(Guid prefabAssetId, out SpriteRecordHeader header)
+        => _headersByPrefabId.TryGetValue(prefabAssetId, out header);
+}
