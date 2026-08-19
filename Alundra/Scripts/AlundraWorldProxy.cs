@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using CasaEngine.Core.Logging;
+using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Physics;
@@ -128,6 +129,13 @@ public class AlundraWorldProxy : GameplayProxy
         {
             world.Game.PhysicsDebugViewRendererComponent.DisplayPhysics = false;
         }
+
+        // Loads this world's own event-code document (see MapEventProgramLoader's class doc on path
+        // resolution) and wires the real slot-A interpreter over it; null document means "not found /
+        // failed to parse" and AlundraEventProgramRunner degrades to a counted no-op for slot A too, the
+        // same shape as SpriteRecordCatalog's own degraded mode.
+        var eventProgramDocument = MapEventProgramLoader.Load(EngineEnvironment.ProjectPath, world.Name);
+        EventProgramRunner = new AlundraEventProgramRunner(eventProgramDocument, new AlundraGameState());
 
         var tileMapEntity = world.Entities.FirstOrDefault(entity => entity.Name == TileMapEntityName);
         if (tileMapEntity == null)

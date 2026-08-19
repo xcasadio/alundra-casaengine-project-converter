@@ -113,7 +113,16 @@ public class AlundraEntityScriptProxy : GameplayProxy
     public int EventTrigger;//228
     public int MapEventProgramId;//22c
     public Entity LogicContextEntity = null!; //self
-    //public readonly EventProgramState EventProgramState = new();
+
+    /// <summary>
+    /// Persisted interpreter cursor for slots B (Map) and C (Tick) - the only two slots the original
+    /// resumes across frames instead of always re-initializing (see
+    /// <see cref="AlundraEventProgramRunner"/>'s class doc). Slot A (Load) never reads this: it always
+    /// runs off a fresh, throwaway <c>EventProgramState</c> instead (same reasoning). Not ported yet by
+    /// any runner (B/C bytecode interpretation is a later chantier - V1 only interprets slot A), but the
+    /// field lives here now so that work does not also need a proxy/Clone change.
+    /// </summary>
+    public readonly EventProgramState EventProgramState = new();
     public uint LastTargetAnimationId;//26c
     public uint LastTargetDirection;//270
     public byte[] Bytes = new byte[4];
