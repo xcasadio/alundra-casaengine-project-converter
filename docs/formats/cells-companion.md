@@ -88,3 +88,122 @@ Extrait de `Maps/Ancient Shrine/Ancient Shrine - Golem-34/tilemap/Ancient Shrine
   }
 }
 ```
+
+# Placement des tuiles de mur (`AlundraWallPlacements`)
+
+Code : [`Writers/WallPlacementReplayer.cs`](../../alundra-casaengine-project-converter/Writers/WallPlacementReplayer.cs),
+[`Readers/TileSetGidMapReader.cs`](../../alundra-casaengine-project-converter/Readers/TileSetGidMapReader.cs),
+branché depuis [`Writers/CellMetadataWriter.cs`](../../alundra-casaengine-project-converter/Writers/CellMetadataWriter.cs)
+(toujours Phase 2, même écriture read-modify-write du `.tileMap` que `AlundraCells`).
+
+## Le problème
+
+Les 4 couches "Render_*" du `.tileMap` sont des plans de tuiles **plats** : chaque cellule (sol ou
+mur) y a été aplatie par l'exporteur Tiled de l'analyser
+(`TiledMapExporter.CreateRendererOrderedTileLayers`, AlundraTools/AlundraDataExtractor/TiledMapExporter.cs:287-358)
+selon une règle de "premier plan libre" — mais **quel plan** et **quel slot de profondeur PSX**
+chaque tuile de mur a fini par occuper n'est enregistré nulle part. Sans cette information, le
+gameplay ne peut pas isoler les tuiles de mur des couches plates pour les re-rendre triées en
+profondeur.
+
+## Comment c'est produit : rejeu + vérification, jamais une simple copie
+
+`WallPlacementReplayer.Replay` **rejoue** l'algorithme d'empaquetage de l'exporteur à partir des
+mêmes données de cellule que `AlundraCells` (`CellMetadataDocument.TileId`, `.Height`,
+`.WallTiles`) :
+
+- même ordre d'itération (`y` puis `x`, `index = y * width + x`) ;
+- même séquence par cellule (la tuile de sol rivalise pour un plan avant les tuiles de mur de la
+  pile, exactement comme `TiledMapExporter.cs:298-319`) ;
+- même règle du premier plan libre, un nouveau plan n'étant créé que si tous les plans existants
+  ont déjà leur cellule cible occupée (`AddRendererTile`, `TiledMapExporter.cs:338-358`) ;
+- mêmes règles de rejet : `targetY = y - height - offset + stack_index + 1` hors bornes, ou gid nul
+  (tuile vide `0xffff`) → la tuile est abandonnée, jamais placée, jamais enregistrée.
+
+Le gid Tiled attendu pour chaque id de tuile brut n'est **pas recalculé** (l'algorithme
+d'assignation de gid dépend aussi d'ids de frame d'animation synthétiques, hors sujet ici) mais lu
+directement dans le tileset que l'exporteur a réellement produit : chaque tuile locale du
+`.tsj` porte sa propre propriété personnalisée `TileId` (id brut PSX,
+`TiledMapExporter.CreateTilesetJson`, ligne 143), et son gid vaut toujours `firstgid + id_local`
+(`firstgid` fixé à 1). `TileSetGidMapReader` reconstruit ainsi `id brut → gid` sans dépendre du
+mode de layout ("original" ou "compact").
+
+Chaque placement prédit est ensuite **vérifié** contre les couches `Render_*` réellement importées
+dans le `.tileMap` (celles que la Phase 1 a produites via l'import Tiled du moteur) : le
+`local_tile_id` stocké à `(plan, x, y)` doit valoir `gid - firstgid`. **Tout désaccord, sur
+n'importe quelle map, est une erreur de conversion** (`report.Errors`), jamais un avertissement —
+un désaccord signifierait que ce rejeu ne peut pas être utilisé de façon fiable pour retirer les
+tuiles de mur des couches plates au moment du jeu.
+
+## Le slot de profondeur PSX (`depth_slot`)
+
+`GraphicManager.RenderTiles` calcule la profondeur de chaque tuile de mur via
+`DepthWallBlock(y, GetTileDepthSlot(wallTileId))`
+(AlundraTools/AlundraEngine/Graphics/GraphicManager.cs:287,313-321), et `GetTileDepthSlot` regarde
+`g_tileAnimDescriptorTable[tileId & 0x3ff].SpriteIndex`. Cette table de 960 entrées n'est **pas une
+donnée par map** : `GameInitializer.CreateTileAnimDescriptors`
+(AlundraTools/AlundraEngine/GameInitializer.cs:216-244) la construit de façon purement
+algorithmique, indépendamment de tout paramètre (son propre argument `tileX` est écrasé avant
+d'être utilisé) — 6 blocs consécutifs de 160 entrées, chacun rempli avec `SpriteIndex = son propre
+index de bloc (0..5)`. Le "tableau" est donc une fonction fixe de l'id de tuile brut, reproduite
+directement par `WallPlacementReplayer.ComputeDepthSlot` :
+
+```
+tileIndex = rawTileId & 0x3ff
+depthSlot = tileIndex < 960 ? tileIndex / 160 : 0
+```
+
+## Schéma
+
+Document columnar, mêmes raisons que `AlundraCells` (une clé JSON répétée par tuile de mur — 501 962
+sur la conversion complète — coûterait cher une fois sérialisée comme chaîne dans une seule
+propriété texte). `count` == la longueur de chacun des 8 tableaux.
+
+| Champ | Type | Signification |
+|---|---|---|
+| `map_index` | int | Index de la map Alundra |
+| `count` | int | Nombre de placements (une entrée par tuile de mur non vide et dans les bornes) |
+| `cell_x[]` / `cell_y[]` | int[] | Cellule source (`x`, `y`) de la tuile de mur dans la grille Alundra |
+| `stack_index[]` | int[] | Index dans `wall_tiles.{index}.tiles[]` (voir `AlundraCells` ci-dessus) |
+| `plane[]` | int[] | Index de la couche `Render_{plane}` où la tuile a atterri |
+| `x[]` / `y[]` | int[] | Cellule cible dans cette couche (`y = cell_y - height - offset + stack_index + 1`) |
+| `gid[]` | int[] | Gid Tiled (1-based) tel qu'il apparaît dans `Render_{plane}.data` (`local_tile_id = gid - firstgid`) |
+| `depth_slot[]` | int[] | Slot de profondeur PSX (0..5) tel que le moteur d'origine l'aurait résolu pour cette tuile |
+
+## Compteurs et invariants (`report.json`)
+
+- `WallPlacements.Emitted` : nombre total de placements émis sur la conversion (501 962 sur la
+  conversion complète) — enregistré, pas une constante attendue à l'avance.
+- `WallPlacements.StacksCovered` : nombre de piles de tuiles de mur parcourues par le rejeu. Doit
+  **toujours** égaler `Cells.WallTileStacks` (163 881), puisque les deux compteurs sont incrémentés,
+  par map, avec exactement la même valeur (`cellMetadata.WallTiles.Count`) — un écart signifierait
+  qu'une map a été traitée par l'un des deux chemins mais pas par l'autre. Vérifié après chaque
+  `ConvertMaps`, qu'il porte sur toutes les maps ou seulement un sous-ensemble `--maps`.
+- Un compte indépendant (une deuxième passe, qui ne partage aucun état avec la boucle de placement)
+  recalcule combien de tuiles de mur sont non vides et dans les bornes ; `document.count` doit lui
+  être strictement égal, sans quoi c'est une erreur de conversion.
+
+## Extrait réel
+
+Deux entrées de `Maps/The Klark/Ship Klark (beginning)-389/tilemap/Ship Klark (beginning)-389.tileMap`
+(`CustomProperties["AlundraWallPlacements"]`, désérialisé et réduit à une entrée pour lisibilité) :
+
+```json
+{
+  "map_index": 389,
+  "count": 774,
+  "cell_x": [17],
+  "cell_y": [17],
+  "stack_index": [0],
+  "plane": [0],
+  "x": [17],
+  "y": [6],
+  "gid": [613],
+  "depth_slot": [3]
+}
+```
+
+Vérifié à la main : `Render_0.data[6 * 52 + 17]` vaut bien `612` (`gid - firstgid`, `firstgid = 1`).
+Sur cette même map, les plans 0 à 3 sont tous utilisés par au moins un placement - la règle du
+premier plan libre n'est donc pas triviale sur les données réelles.
+

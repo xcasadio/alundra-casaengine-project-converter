@@ -79,6 +79,17 @@ public class CellMetadataWriterTests
             // Phase 1's own map-level custom properties (from the Tiled map's "properties" array)
             // must survive the Phase 2 rewrite untouched.
             Assert.Equal("128", tileMapData.CustomProperties["Gravity"]);
+
+            // Every one of this fixture's wall stack tiles lands out of the 2x2 map's bounds (their
+            // computed targetY is 6, 7 and 8), so the replay must emit zero placements without
+            // raising any verification error - not skip the property, not throw.
+            var placementsJson = (string?)customProperties["AlundraWallPlacements"];
+            Assert.NotNull(placementsJson);
+            var placements = JsonSerializer.Deserialize<WallPlacementDocument>(placementsJson!, DeserializeOptions)!;
+            Assert.Equal(0, placements.MapIndex);
+            Assert.Equal(0, placements.Count);
+            Assert.Equal(1, report.Counters["WallPlacements.StacksCovered"]);
+            Assert.Equal(0, report.Counters["WallPlacements.Emitted"]);
         }
         finally
         {
@@ -122,7 +133,44 @@ public class CellMetadataWriterTests
         }
     }
 
-    private static void WriteMapFixture(string inputDirectory, int mapIndex)
+    [Fact]
+    public void ConvertMaps_WhenImportedTileMapDisagreesWithReplay_ReportsVerificationError()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            WriteMismatchedMapFixture(inputDirectory, mapIndex: 0);
+            var mapLocations = new Dictionary<int, MapLocation> { [0] = new MapLocation("TestZone", "Test Map-0") };
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            ProjectWriter.CreateEmptyProject(outputDirectory, report);
+            TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
+            CellMetadataWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
+
+            // The replay predicts local tile id 5 (gid 6, raw id 500) at plane 0, (0,2), but the
+            // fixture's Render_0 layer deliberately stores local tile id 1 (gid 2) there instead:
+            // an artificial drift the "any mismatch is an error" contract must catch.
+            Assert.Contains(report.Errors, error =>
+                error.Contains("wall placement verification failed", StringComparison.Ordinal)
+                && error.Contains("expected local tile id 5", StringComparison.Ordinal)
+                && error.Contains("found 1", StringComparison.Ordinal));
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    private static void WriteMismatchedMapFixture(string inputDirectory, int mapIndex)
     {
         var tiledDirectory = Path.Combine(inputDirectory, "data", "tiled");
         var dataDirectory = Path.Combine(inputDirectory, "data");
@@ -139,11 +187,113 @@ public class CellMetadataWriterTests
                 "name": "tileset",
                 "tilewidth": 24,
                 "tileheight": 16,
+                "tilecount": 10,
+                "columns": 5,
+                "image": "map_INDEX_tileset.png",
+                "imagewidth": 120,
+                "imageheight": 32,
+                "tiles": [
+                    { "id": 5, "properties": [ { "name": "TileId", "type": "int", "value": 500 } ] }
+                ]
+            }
+            """.Replace("INDEX", mapIndex.ToString()));
+
+        // Replay predicts the wall tile (raw id 500, cell (0,1), stack index 0) lands at plane 0,
+        // (0,2) as local tile id 5 (gid 6). The layer below deliberately stores local tile id 1
+        // (gid 2) at that position instead, to exercise the verification error path.
+        File.WriteAllText(
+            Path.Combine(tiledDirectory, $"{baseName}.tmj"),
+            """
+            {
+                "type": "map",
+                "orientation": "orthogonal",
+                "infinite": false,
+                "width": 1,
+                "height": 3,
+                "tilewidth": 24,
+                "tileheight": 16,
+                "properties": [ { "name": "Gravity", "type": "int", "value": 128 } ],
+                "tilesets": [ { "firstgid": 1, "source": "map_INDEX_tileset.tsj" } ],
+                "layers": [
+                    {
+                        "type": "tilelayer",
+                        "name": "Render_0",
+                        "width": 1,
+                        "height": 3,
+                        "data": [0, 0, 2]
+                    }
+                ]
+            }
+            """.Replace("INDEX", mapIndex.ToString()));
+
+        File.WriteAllText(
+            Path.Combine(tiledDirectory, $"{baseName}.alundra.json"),
+            """
+            {
+                "MapIndex": 0,
+                "MapId": 0,
+                "Width": 1,
+                "Height": 3,
+                "TileWidth": 24,
+                "TileHeight": 16,
+                "CellOrder": "y * Width + x",
+                "Cells": [
+                    { "Index": 0, "X": 0, "Y": 0, "Walkability": 0, "GroundProperty": 0, "Slope": 0, "Height": 0, "WallTilesOffset": -1, "TileId": 65535, "Palette": -1, "Tile": -1, "Flags": 0 },
+                    { "Index": 1, "X": 0, "Y": 1, "Walkability": 0, "GroundProperty": 0, "Slope": 0, "Height": 0, "WallTilesOffset": 0,  "TileId": 65535, "Palette": -1, "Tile": -1, "Flags": 0 },
+                    { "Index": 2, "X": 0, "Y": 2, "Walkability": 0, "GroundProperty": 0, "Slope": 0, "Height": 0, "WallTilesOffset": -1, "TileId": 65535, "Palette": -1, "Tile": -1, "Flags": 0 }
+                ]
+            }
+            """);
+
+        File.WriteAllText(
+            Path.Combine(dataDirectory, $"{baseName}.json"),
+            """
+            {
+                "Map": {
+                    "MapTiles": [
+                        { "TileX": 0, "TileY": 0 },
+                        { "TileX": 0, "TileY": 1, "WallTiles": { "TileX": 0, "TileY": 1, "Offset": 0, "Count": 1, "Tiles": [500] } },
+                        { "TileX": 0, "TileY": 2 }
+                    ]
+                }
+            }
+            """);
+    }
+
+    private static void WriteMapFixture(string inputDirectory, int mapIndex)
+    {
+        var tiledDirectory = Path.Combine(inputDirectory, "data", "tiled");
+        var dataDirectory = Path.Combine(inputDirectory, "data");
+        Directory.CreateDirectory(tiledDirectory);
+
+        var baseName = $"map_{mapIndex}";
+        File.WriteAllBytes(Path.Combine(tiledDirectory, $"{baseName}_tileset.png"), FakePngBytes);
+
+        // "TileId" tile properties for every raw id this fixture's cells reference (100 and 200 as
+        // floor tiles, 33099/33109/33119 as the wall stack), matching what CreateTilesetJson writes
+        // (TiledMapExporter.cs:143) - the wall placement replay resolves a gid for every raw id it
+        // touches, even ones whose target ends up out of bounds, exactly like AddRendererTile's own
+        // call site resolves the gid before its bounds check runs.
+        File.WriteAllText(
+            Path.Combine(tiledDirectory, $"{baseName}_tileset.tsj"),
+            """
+            {
+                "type": "tileset",
+                "name": "tileset",
+                "tilewidth": 24,
+                "tileheight": 16,
                 "tilecount": 2,
                 "columns": 2,
                 "image": "map_INDEX_tileset.png",
                 "imagewidth": 48,
-                "imageheight": 16
+                "imageheight": 16,
+                "tiles": [
+                    { "id": 0, "properties": [ { "name": "TileId", "type": "int", "value": 100 } ] },
+                    { "id": 1, "properties": [ { "name": "TileId", "type": "int", "value": 200 } ] },
+                    { "id": 2, "properties": [ { "name": "TileId", "type": "int", "value": 33099 } ] },
+                    { "id": 3, "properties": [ { "name": "TileId", "type": "int", "value": 33109 } ] },
+                    { "id": 4, "properties": [ { "name": "TileId", "type": "int", "value": 33119 } ] }
+                ]
             }
             """.Replace("INDEX", mapIndex.ToString()));
 

@@ -49,6 +49,21 @@ public static class CellMetadataReader
         return document;
     }
 
+    /// <summary>
+    /// The map's grid size (in cells), read from the companion's own "Width"/"Height" root
+    /// properties - the same dimensions <see cref="Read"/>'s per-cell arrays are laid out against
+    /// (index = y * width + x). Used by the wall placement replay, which needs to iterate the grid
+    /// the same way the exporter did.
+    /// </summary>
+    public static (int Width, int Height) ReadMapSize(string companionFilePath)
+    {
+        using var stream = File.OpenRead(companionFilePath);
+        using var jsonDocument = JsonDocument.Parse(stream);
+        var width = jsonDocument.RootElement.GetProperty("Width").GetInt32();
+        var height = jsonDocument.RootElement.GetProperty("Height").GetInt32();
+        return (width, height);
+    }
+
     private static CellMetadataDocument ReadCompanion(string companionFilePath, int mapIndex)
     {
         using var stream = File.OpenRead(companionFilePath);
