@@ -3,6 +3,7 @@ using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
+using Microsoft.Xna.Framework;
 using Xunit;
 
 namespace Alundra.Tests;
@@ -46,6 +47,9 @@ public class AlundraWorldProxyTests
         };
 
         record.CustomProperties["Index"] = "0";
+        record.CustomProperties["XPos"] = "34";
+        record.CustomProperties["YPos"] = "72";
+        record.CustomProperties["Height"] = "46";
         record.CustomProperties["SpriteTableIndex"] = "25";
         record.CustomProperties["EventCodesA_LoadIndex"] = "133";
         record.CustomProperties["EventCodesB_MapIndex"] = "5";
@@ -76,6 +80,9 @@ public class AlundraWorldProxyTests
         Assert.Equal(25u, proxy.SpriteTableIndex);
         Assert.Equal(new[] { 133, 5, 9, 13, 17, 21 }, proxy.ProgramIndexes);
         Assert.Equal(0, proxy.ContentsGameFlag);
+        Assert.Equal(420 * 0x10000, proxy.PosX);
+        Assert.Equal(584 * 0x10000, proxy.PosY);
+        Assert.Equal(46 << 19, proxy.PosZ);
     }
 
     [Fact]
@@ -187,6 +194,35 @@ public class AlundraWorldProxyTests
         Assert.Equal(0, proxy.EntityRefId);
         Assert.Equal(25u, proxy.SpriteTableIndex);
         Assert.Equal(new[] { 133, 5, 9, 13, 17, 21 }, proxy.ProgramIndexes);
+
+        // Map 389 / Entity_0 anchor: root transform must match AlundraWorldProxy.ResolveWorldPosition
+        // fed with the proxy's own PosX/PosY/PosZ - this is the clone path exercising the same
+        // conversion covered directly by ResolveWorldPosition_* below.
+        var expectedPosition = AlundraWorldProxy.ResolveWorldPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+        Assert.Equal(expectedPosition, entity.RootComponent.LocalTransform.Position);
+        Assert.Equal(new Vector3(420, -216, 0f), entity.RootComponent.LocalTransform.Position);
+    }
+
+    [Fact]
+    public void CreateEntityFromRecord_ValidPrefabLink_RootComponentNull_DoesNotThrow()
+    {
+        var record = BuildEntity0Record();
+        var prefabAssetId = Guid.NewGuid();
+        record.CustomProperties["PrefabAssetId"] = prefabAssetId.ToString();
+
+        var prefab = new Entity
+        {
+            Name = "BankPrefab",
+            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            RootComponent = null,
+        };
+
+        var entity = AlundraWorldProxy.CreateEntityFromRecord(record, _ => prefab);
+
+        Assert.Null(entity.RootComponent);
+        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        Assert.Equal(EntityStatus.Loaded, proxy.Status);
+        Assert.Equal(420 * 0x10000, proxy.PosX);
     }
 
     [Theory]
@@ -219,5 +255,28 @@ public class AlundraWorldProxyTests
 
         Assert.False(result);
         Assert.Equal(Guid.Empty, prefabAssetId);
+    }
+
+    [Fact]
+    public void ResolveWorldPosition_Map389Entity0Anchor_MatchesWorldWriterFrame()
+    {
+        // XPos=34/YPos=72/Height=46 -> PosX=420*0x10000, PosY=584*0x10000, PosZ=46<<19
+        // (see EntityRecordMapperTests.Map_XPosYPosHeight_FillPositionAndTileFields). Pixel X stays as-is;
+        // pixel Y is negated (Alundra Y-down -> CasaEngine Y-up) with the elevation (PosZ>>16 = 368 px)
+        // added back in, projecting the sprite up the screen: -(584-368) = -216. World Z stays 0, exactly
+        // like WorldWriter.ResolveTileCentreSpawn - it only orders render layers here.
+        var position = AlundraWorldProxy.ResolveWorldPosition(420 * 0x10000, 584 * 0x10000, 46 << 19);
+
+        Assert.Equal(new Vector3(420, -216, 0f), position);
+    }
+
+    [Fact]
+    public void ResolveWorldPosition_ZeroHeight_ProjectsToUnshiftedNegatedPixelY()
+    {
+        // XPos=10/YPos=20/Height=0 -> PosX=132*0x10000, PosY=168*0x10000, PosZ=0. With no elevation the
+        // projected Y is exactly the negated raw pixel Y: -(168-0) = -168.
+        var position = AlundraWorldProxy.ResolveWorldPosition(132 * 0x10000, 168 * 0x10000, 0);
+
+        Assert.Equal(new Vector3(132, -168, 0f), position);
     }
 }

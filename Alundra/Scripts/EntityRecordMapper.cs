@@ -13,8 +13,11 @@ namespace Alundra.Scripts;
 /// from the record alone, mirroring how the original <c>SiEntityRecord</c> was consumed by
 /// <c>EntityManager.InitializeEntity</c> / <c>InitializeCodePrograms</c> / <c>GameEngine.InitializeContents</c>.
 ///
-/// World placement (spawning the entity, positioning it in CasaEngine world space) is explicitly out of
-/// scope here; this type only fills scalar fields it can derive with no dependency on world/save state.
+/// This fills the entity's own logical position fields (<c>PosX</c>/<c>PosY</c>/<c>PosZ</c>,
+/// <c>TileX</c>/<c>TileY</c>/<c>TileZ</c>) from the record alone, with no dependency on world/save
+/// state. Converting that logical position into a CasaEngine world-space transform (placing the
+/// spawned entity's <c>RootComponent</c>) is a separate, engine-facing concern handled by
+/// <see cref="AlundraWorldProxy"/>, not this pure mapper.
 ///
 /// Mapped keys:
 /// <list type="bullet">
@@ -34,6 +37,36 @@ namespace Alundra.Scripts;
 /// <c>ContentsItemId</c> by consulting live save-game flags and rolling randomised item tables) needs
 /// runtime state this pure mapper does not have, so <see cref="AlundraEntityScriptProxy.ContentsItemId"/>
 /// is deliberately left unmapped - see below.</description></item>
+/// <item><description><c>XPos</c> -&gt; <see cref="AlundraEntityScriptProxy.PosX"/> /
+/// <see cref="AlundraEntityScriptProxy.TileX"/>; <c>YPos</c> -&gt;
+/// <see cref="AlundraEntityScriptProxy.PosY"/> / <see cref="AlundraEntityScriptProxy.TileY"/>;
+/// <c>Height</c> -&gt; <see cref="AlundraEntityScriptProxy.PosZ"/> /
+/// <see cref="AlundraEntityScriptProxy.TileZ"/>. Confirmed against the decompilation, not the Tiled
+/// exporter's preview math (that one drops precision - see the caveat below):
+/// <c>GameEngine.SpawnEntity</c> (AlundraEngine/GameEngine.cs:743-751) passes
+/// <c>(entityRecord.XPos * 12 + 12) * 0x10000</c>, <c>(entityRecord.YPos * 8 + 8) * 0x10000</c> and
+/// <c>entityRecord.Height &lt;&lt; 0x13</c> as the raw <c>x</c>/<c>y</c>/<c>z</c> spawn position -
+/// i.e. <c>XPos</c>/<c>YPos</c>/<c>Height</c> are in half-tile units (12 px / 8 px / 8 px - half of
+/// <c>MapTileWidth</c>=24 and <c>MapTileHeight</c>=16), and the "+half-tile" term centres the point in
+/// the tile, all packed as 16.16 fixed-point pixels, exactly like <see cref="AlundraEntityScriptProxy.PosX"/>
+/// et al. document at their declaration (offset 0x114). <c>PhysicsEngine.cs:1698-1700</c> (normally run
+/// every physics tick, <c>entity.TileX = (entity.PosX &gt;&gt; 16) / MapTileWidth</c> etc.) gives the pure
+/// formula this mapper reuses once, at spawn time, to seed <c>TileX</c>/<c>TileY</c>/<c>TileZ</c> from the
+/// same <c>PosX</c>/<c>PosY</c>/<c>PosZ</c> it just computed.
+/// <para>Caveat: <c>EntityManager.InitializeEntity</c> (EntityManager.cs:117-136) does not store this
+/// spawn <c>z</c> as-is - it further offsets <c>PosZ</c> by <c>-entity.ModZ + 1</c> (from the sprite's
+/// collision box, via <c>SetEntityDimensions</c>) and then clamps it against
+/// <c>PhysicsEngine.ComputeEntityGroundHeight</c>'s live terrain probe. Both need runtime state (the
+/// resolved sprite, the map's collision cells) this pure mapper does not have, so
+/// <see cref="AlundraEntityScriptProxy.PosZ"/> here is the raw elevation input before that ground clamp,
+/// not the entity's final resting height - reproducing the clamp is future physics/status-machine
+/// work.</para>
+/// <para>Also note the Tiled exporter's own <c>DisplayPixelX</c>/<c>DisplayPixelY</c> (see the
+/// "deliberately NOT mapped" list below) use a coarser, editor-preview-only conversion - integer-divide
+/// <c>XPos</c>/<c>YPos</c>/<c>Height</c> by 2 into whole tiles first (losing the half-tile bit) and skip
+/// the "+half-tile" centring term - which is why they do not numerically match <see cref="AlundraEntityScriptProxy.PosX"/>/
+/// <see cref="AlundraEntityScriptProxy.PosY"/> here; this mapper follows the decompiled runtime formula,
+/// not the exporter's preview math.</para></description></item>
 /// </list>
 ///
 /// Deliberately NOT mapped:
@@ -49,8 +82,6 @@ namespace Alundra.Scripts;
 /// <c>g_cardinalDirectionTable</c> to seed <c>TargetDirection</c>/<c>CurrentDirection</c>. Reproducing that
 /// requires spawn-time logic and table data this pure mapper does not have; left to the future
 /// spawner/world proxy.</description></item>
-/// <item><description><c>XPos</c>, <c>YPos</c>, <c>Height</c>: world placement / coordinate-space
-/// conversion, explicitly out of scope for this mapper.</description></item>
 /// <item><description><c>Contents</c>: raw item-content pool index, consumed only inside
 /// <c>GameEngine.InitializeContents</c> together with live save-flag state and RNG to resolve
 /// <see cref="AlundraEntityScriptProxy.ContentsItemId"/>; that resolution is stateful and non-deterministic,
@@ -71,6 +102,16 @@ namespace Alundra.Scripts;
 /// </summary>
 public static class EntityRecordMapper
 {
+    // StaticVariables.MapTileWidth / MapTileHeight (docs/guidelines-runtime-alundra-casaengine.md
+    // section 1) and their halves, as GameEngine.SpawnEntity (GameEngine.cs:743-744) computes them.
+    private const int TileWidth = 24;
+    private const int TileHeight = 16;
+    private const int TileHalfWidth = TileWidth / 2;
+    private const int TileHalfHeight = TileHeight / 2;
+
+    // 16.16 fixed-point scale, GameEngine.cs:749-751 ("* 0x10000").
+    private const int FixedPointOne = 0x10000;
+
     /// <summary>
     /// Fills <paramref name="proxy"/> from one entity record's custom properties.
     /// Missing keys are tolerated and leave the corresponding field at its default value. A key that is
@@ -131,6 +172,32 @@ public static class EntityRecordMapper
             // Mirrors GameEngine.InitializeContents: the save-flag index is discarded when it falls
             // outside the valid 0..0x7ff range once the sign/high bits are masked off.
             proxy.ContentsGameFlag = (rawContentsFlag & 0x7fff) > 0x7ff ? 0 : rawContentsFlag;
+        }
+
+        // GameEngine.SpawnEntity, GameEngine.cs:749: (entityRecord.XPos * tileHalfWidth + tileHalfWidth) * 0x10000.
+        if (TryGetInt(recordName, customProperties, "XPos", out var xPos))
+        {
+            proxy.PosX = (xPos * TileHalfWidth + TileHalfWidth) * FixedPointOne;
+            // PhysicsEngine.cs:1698: entity.TileX = (entity.PosX >> 16) / MapTileWidth.
+            proxy.TileX = (proxy.PosX >> 16) / TileWidth;
+        }
+
+        // GameEngine.SpawnEntity, GameEngine.cs:750: (entityRecord.YPos * tileHalfHeight + tileHalfHeight) * 0x10000.
+        if (TryGetInt(recordName, customProperties, "YPos", out var yPos))
+        {
+            proxy.PosY = (yPos * TileHalfHeight + TileHalfHeight) * FixedPointOne;
+            // PhysicsEngine.cs:1699: entity.TileY = (entity.PosY >> 16) / MapTileHeight.
+            proxy.TileY = (proxy.PosY >> 16) / TileHeight;
+        }
+
+        // GameEngine.SpawnEntity, GameEngine.cs:751: entityRecord.Height << 0x13. This is the raw
+        // elevation input SpawnEntity passes down, before EntityManager.InitializeEntity's further
+        // -ModZ+1 offset and ground-height clamp (EntityManager.cs:119,130-136) - see the XML doc above.
+        if (TryGetInt(recordName, customProperties, "Height", out var height))
+        {
+            proxy.PosZ = height << 0x13;
+            // PhysicsEngine.cs:1700: entity.TileZ = entity.PosZ >> 20.
+            proxy.TileZ = proxy.PosZ >> 20;
         }
     }
 

@@ -57,6 +57,12 @@ public class EntityRecordMapperTests
         Assert.Equal(17, proxy.ProgramIndexes[4]);
         Assert.Equal(21, proxy.ProgramIndexes[5]);
         Assert.Equal(0, proxy.ContentsGameFlag);
+        Assert.Equal(420 * 0x10000, proxy.PosX);
+        Assert.Equal(584 * 0x10000, proxy.PosY);
+        Assert.Equal(46 << 19, proxy.PosZ);
+        Assert.Equal(17, proxy.TileX);
+        Assert.Equal(36, proxy.TileY);
+        Assert.Equal(23, proxy.TileZ);
     }
 
     [Fact]
@@ -67,10 +73,11 @@ public class EntityRecordMapperTests
         EntityRecordMapper.Map("Entity_0", properties, mapped);
 
         // Same record but with every deliberately-unmapped key stripped: the mapped fields must be
-        // unaffected, since the mapper never reads those keys.
+        // unaffected, since the mapper never reads those keys. XPos/YPos/Height are mapped (see
+        // Map_XPosYPosHeight_FillPositionAndTileFields above) so they stay out of this list.
         var unmappedKeys = new[]
         {
-            "XMin", "YMin", "XMax", "YMax", "IsEnabled", "SpriteDirection", "XPos", "YPos", "Height",
+            "XMin", "YMin", "XMax", "YMax", "IsEnabled", "SpriteDirection",
             "Contents", "DisplayX", "DisplayY", "DisplayHeight", "DisplayPixelX", "DisplayPixelY", "EntityName",
         };
         foreach (var key in unmappedKeys)
@@ -85,6 +92,9 @@ public class EntityRecordMapperTests
         Assert.Equal(mapped.SpriteTableIndex, stripped.SpriteTableIndex);
         Assert.Equal(mapped.ProgramIndexes, stripped.ProgramIndexes);
         Assert.Equal(mapped.ContentsGameFlag, stripped.ContentsGameFlag);
+        Assert.Equal(mapped.PosX, stripped.PosX);
+        Assert.Equal(mapped.PosY, stripped.PosY);
+        Assert.Equal(mapped.PosZ, stripped.PosZ);
     }
 
     [Fact]
@@ -98,6 +108,9 @@ public class EntityRecordMapperTests
         Assert.Equal(0u, proxy.SpriteTableIndex);
         Assert.Equal(new[] { 0, 0, 0, 0, 0, 0 }, proxy.ProgramIndexes);
         Assert.Equal(0, proxy.ContentsGameFlag);
+        Assert.Equal(0, proxy.PosX);
+        Assert.Equal(0, proxy.PosY);
+        Assert.Equal(0, proxy.PosZ);
     }
 
     [Theory]
@@ -136,6 +149,47 @@ public class EntityRecordMapperTests
         EntityRecordMapper.Map("Entity_0", properties, proxy);
 
         Assert.Equal(42, proxy.ContentsGameFlag);
+    }
+
+    [Fact]
+    public void Map_XPosYPosHeight_FillPositionAndTileFields()
+    {
+        // Map 389 / Entity_0 anchor (docs/demarrage-nouvelle-partie.md section 1.2), confirmed against
+        // GameEngine.SpawnEntity (GameEngine.cs:743-751) and PhysicsEngine.cs:1698-1700:
+        // PosX = (34*12+12)*0x10000 = 420*0x10000, TileX = 420/24 = 17
+        // PosY = (72*8+8)*0x10000  = 584*0x10000, TileY = 584/16 = 36
+        // PosZ = 46<<19 = 23*0x100000,             TileZ = 23
+        var properties = new Dictionary<string, string>
+        {
+            ["XPos"] = "34",
+            ["YPos"] = "72",
+            ["Height"] = "46",
+        };
+        var proxy = new AlundraEntityScriptProxy();
+
+        EntityRecordMapper.Map("Entity_0", properties, proxy);
+
+        Assert.Equal(420 * 0x10000, proxy.PosX);
+        Assert.Equal(584 * 0x10000, proxy.PosY);
+        Assert.Equal(46 << 19, proxy.PosZ);
+        Assert.Equal(17, proxy.TileX);
+        Assert.Equal(36, proxy.TileY);
+        Assert.Equal(23, proxy.TileZ);
+    }
+
+    [Fact]
+    public void Map_MissingXPosYPosHeight_LeavePositionFieldsAtDefault()
+    {
+        var proxy = new AlundraEntityScriptProxy();
+
+        EntityRecordMapper.Map("Entity_missing", new Dictionary<string, string>(), proxy);
+
+        Assert.Equal(0, proxy.PosX);
+        Assert.Equal(0, proxy.PosY);
+        Assert.Equal(0, proxy.PosZ);
+        Assert.Equal(0, proxy.TileX);
+        Assert.Equal(0, proxy.TileY);
+        Assert.Equal(0, proxy.TileZ);
     }
 
     [Fact]

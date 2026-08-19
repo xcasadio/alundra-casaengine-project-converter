@@ -8,6 +8,7 @@ using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.Scripting;
+using Microsoft.Xna.Framework;
 
 namespace Alundra.Scripts;
 
@@ -21,8 +22,11 @@ namespace Alundra.Scripts;
 /// the spawned entity carries the bank's sprite/collision components. When the link is missing,
 /// cannot be loaded, or the record has none, a bare entity is created instead (logged fallback).
 /// Either way, the resulting entity carries an <see cref="AlundraEntityScriptProxy"/> filled by
-/// <see cref="EntityRecordMapper"/>. No coordinate conversion, no status-machine/event-program
-/// execution - that lands in follow-up work.
+/// <see cref="EntityRecordMapper"/>, whose logical position fields (<c>PosX</c>/<c>PosY</c>/<c>PosZ</c>)
+/// this proxy then converts into the spawned entity's <c>RootComponent.LocalTransform.Position</c> via
+/// <see cref="ResolveWorldPosition"/> - see <see cref="CreateEntityFromPrefab"/>. No status-machine or
+/// event-program execution yet - that lands in follow-up work, which will need to re-derive this
+/// transform every time the logical position changes.
 /// </summary>
 public class AlundraWorldProxy : GameplayProxy
 {
@@ -190,17 +194,64 @@ public class AlundraWorldProxy : GameplayProxy
         if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
         {
             ApplyRecord(record, proxy);
+
+            // The prefab's root is the bank's AnimatedSpriteComponent (EntityBankPrefabWriter); place it
+            // in the CasaEngine world frame from the logical position EntityRecordMapper just filled.
+            // Defensive null-check only: a bank prefab is expected to always carry a root component.
+            if (entity.RootComponent != null)
+            {
+                entity.RootComponent.LocalTransform.Position = ResolveWorldPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+            }
         }
 
         return entity;
     }
 
     /// <summary>
+    /// Converts an entity's logical spawn position (<see cref="AlundraEntityScriptProxy.PosX"/> /
+    /// <see cref="AlundraEntityScriptProxy.PosY"/> / <see cref="AlundraEntityScriptProxy.PosZ"/>, 16.16
+    /// fixed-point Alundra pixels - see <see cref="EntityRecordMapper"/>) into a CasaEngine world
+    /// position, consistently with <c>WorldWriter.ResolveTileCentreSpawn</c> (the converter's own
+    /// tile-to-world conversion, used for the PlayerStart) and
+    /// docs/guidelines-runtime-alundra-casaengine.md section 2.3:
+    /// <list type="bullet">
+    /// <item><description><c>X = pixelX</c> (no conversion - CasaEngine's X already matches Alundra's).</description></item>
+    /// <item><description><c>Y = -pixelY + elevationPixels</c>: Alundra's Y points down, CasaEngine's Y
+    /// points up, hence the negation; and Alundra's Z is not a camera depth, it is an elevation that
+    /// shifts the sprite up the screen (<c>elevationPixels = pixelZ</c>, i.e. <c>PosZ &gt;&gt; 16</c>) -
+    /// it is folded into this projected Y rather than left in Z, because
+    /// <see cref="CasaEngine.Framework.Scene.Entities.Components.DepthSortable2DComponent"/>'s default
+    /// <c>TopDownYUp</c> sort mode (and <see cref="CasaEngine.Framework.Scene.Entities.Components.AnimatedSpriteComponent.DrawComposedAnimation"/>,
+    /// which draws at <c>Position.X</c>/<c>Position.Y</c> verbatim) only read world X/Y - there is no
+    /// orthographic-camera projection step in this 2D pipeline that would turn a raw Z into a screen
+    /// offset the way the original PSX renderer did.</description></item>
+    /// <item><description><c>Z = 0</c>: left unused here, exactly like <c>WorldWriter</c> - in this
+    /// engine Z only orders render layers (<c>DepthSortable2DComponent.SortingLayer</c>/<c>Elevation</c>),
+    /// it does not carry Alundra's elevation.</description></item>
+    /// </list>
+    /// This is a spawn-time snapshot of a logical position that can change at runtime (movement, event
+    /// programs); a future status-machine task must call this again whenever <c>PosX</c>/<c>PosY</c>/
+    /// <c>PosZ</c> changes to keep the transform in sync - the logical fields are authoritative, this
+    /// transform is derived.
+    /// </summary>
+    internal static Vector3 ResolveWorldPosition(int posX, int posY, int posZ)
+    {
+        var pixelX = posX >> 16;
+        var pixelY = posY >> 16;
+        var elevationPixels = posZ >> 16;
+
+        return new Vector3(pixelX, -pixelY + elevationPixels, 0f);
+    }
+
+    /// <summary>
     /// Builds one bare game entity from an "Entities" object-layer record: a deterministically named
     /// entity carrying an <see cref="AlundraEntityScriptProxy"/> filled by <see cref="EntityRecordMapper"/>,
     /// with <see cref="EntityStatus.Loaded"/>. Used as the fallback when the record has no usable prefab
-    /// link (see <see cref="CreateEntityFromRecord"/>). Does not add the entity to any world; the caller
-    /// does that.
+    /// link (see <see cref="CreateEntityFromRecord"/>). Unlike <see cref="CreateEntityFromPrefab"/> this
+    /// never sets a world transform: a bare entity has no <c>RootComponent</c> to place (it carries no
+    /// components at all), only the proxy's logical position fields - the existing "falling back to a
+    /// bare entity" warning already covers this case, so it needs no separate warning of its own here.
+    /// Does not add the entity to any world; the caller does that.
     /// </summary>
     internal static Entity CreateBareEntityFromRecord(TileMapObjectData record)
     {
