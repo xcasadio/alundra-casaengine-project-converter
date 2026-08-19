@@ -18,15 +18,16 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    AlundraTools/AlundraEngine/GameEngine.cs) indexes one of two flat arrays by the record's raw,
 ///    unmodified SpriteTableIndex: SpriteDirection bit 0x80 clear (isMapSprite == false, the common
 ///    case) reads DatasBin.AlundraGameMap.SpriteInfo.SpriteRecords - i.e. map_alundra.json, which
-///    SpriteBankReader treats as the "hero" source (SpriteBank.IsHeroBank) even though the vast
-///    majority of its records are ordinary map entities/items, not the hero himself; bit 0x80 set
+///    SpriteBankReader treats as the global bank (SpriteBank.IsAlundraBank, keyed with an "alundra_"
+///    prefix) even though the vast majority of its records are ordinary map entities/items, not the
+///    hero himself - the game's own naming for this table calls it the "hero" table; bit 0x80 set
 ///    reads CurrentMap.SpriteInfo.SpriteRecords - the record's own map's local table.
 ///  - Every SpriteRecords[i].Header.Sector5Id equals its own ordinal index i (verified against all
-///    257-entry SpriteRecords arrays in data-extracted/data/*.json, hero and regular maps alike; the
-///    only mismatches are the unused/placeholder slots, which carry no Header at all). SpriteBank.BankKey
-///    is exactly Sector5Id (prefixed "hero_" for the hero source), so the record's own
-///    SpriteTableIndex already IS the bank key's numeric part - no JSON re-reads are needed here, only
-///    the SpriteDirection bit and the id-space prefix.
+///    257-entry SpriteRecords arrays in data-extracted/data/*.json, map_alundra.json and regular maps
+///    alike; the only mismatches are the unused/placeholder slots, which carry no Header at all).
+///    SpriteBank.BankKey is exactly Sector5Id (prefixed "alundra_" for the map_alundra.json source), so
+///    the record's own SpriteTableIndex already IS the bank key's numeric part - no JSON re-reads are
+///    needed here, only the SpriteDirection bit and the id-space prefix.
 ///  - The resulting BankKey looks up the prefab id SpriteWriter.ConvertSprites returned. A miss (index
 ///    outside the known bank set) or a record with IsEnabled == "0" leaves the key absent rather than
 ///    writing a dangling reference - see WriteLink's summary for why each case is or isn't warned
@@ -145,7 +146,7 @@ public static class EntityPrefabLinkWriter
         }
 
         var isMapSprite = (spriteDirection & MapSpriteDirectionBit) != 0;
-        var bankKey = isMapSprite ? $"{spriteTableIndex}" : $"hero_{spriteTableIndex}";
+        var bankKey = isMapSprite ? $"{spriteTableIndex}" : $"alundra_{spriteTableIndex}";
 
         if (!prefabAssetIdsByBankKey.TryGetValue(bankKey, out var prefabAssetId))
         {

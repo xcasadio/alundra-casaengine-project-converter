@@ -19,7 +19,7 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 /// Mapping decisions (see docs/plan-conversion-agent-ia.md Phase 3 and the accompanying session
 /// notes for the full reasoning):
 ///  - One folder per bank under Entities/, named after the entity the game itself names it (see
-///    EntityNameCatalogReader): the hero bank is Entities/Alundra. Banks the name table leaves
+///    EntityNameCatalogReader): the map_alundra.json bank is Entities/Alundra. Banks the name table leaves
 ///    empty, and banks sharing a name, fall back to or keep their bank key. Both the .anim2d and
 ///    the .sprite assets of a bank live there; the spritesheet textures they all share stay under
 ///    Sprites/Textures since they belong to no single entity.

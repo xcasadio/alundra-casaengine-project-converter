@@ -26,20 +26,20 @@ public class EntityNameCatalogReaderTests
         return path;
     }
 
-    private static SpriteBank Bank(int sector5Id, bool isHero = false)
-        => new() { Sector5Id = sector5Id, IsHeroBank = isHero };
+    private static SpriteBank Bank(int sector5Id, bool isAlundra = false)
+        => new() { Sector5Id = sector5Id, IsAlundraBank = isAlundra };
 
     [Fact]
-    public void Read_NamesTheHeroBankFromThePageZeroRow()
+    public void Read_NamesTheAlundraBankFromThePageZeroRow()
     {
         var csvPath = WriteCsv((0, "Alundra"), (0x100, "Beaumont (chef du village)"));
         try
         {
-            var result = EntityNameCatalogReader.Read(csvPath, new[] { Bank(0, isHero: true), Bank(0) });
+            var result = EntityNameCatalogReader.Read(csvPath, new[] { Bank(0, isAlundra: true), Bank(0) });
 
-            // Hero bank 0 reads row 0; map bank 0 reads row 0x100 - the game adds that page offset
-            // for sprites coming from the current map rather than the global Alundra table.
-            Assert.Equal("Alundra", result.FolderNamesByBankKey["hero_0"]);
+            // map_alundra.json bank 0 reads row 0; map bank 0 reads row 0x100 - the game adds that
+            // page offset for sprites coming from the current map rather than the global table.
+            Assert.Equal("Alundra", result.FolderNamesByBankKey["alundra_0"]);
             Assert.Equal("Beaumont (chef du village)", result.FolderNamesByBankKey["0"]);
             Assert.Empty(result.Warnings);
         }
@@ -55,10 +55,10 @@ public class EntityNameCatalogReaderTests
         var csvPath = WriteCsv((0x100, "Beaumont (chef du village)"));
         try
         {
-            var result = EntityNameCatalogReader.Read(csvPath, new[] { Bank(0), Bank(5, isHero: true) });
+            var result = EntityNameCatalogReader.Read(csvPath, new[] { Bank(0), Bank(5, isAlundra: true) });
 
-            Assert.Equal("bank_hero_5", result.FolderNamesByBankKey["hero_5"]);
-            Assert.Contains(result.Warnings, w => w.Contains("hero_5"));
+            Assert.Equal("bank_alundra_5", result.FolderNamesByBankKey["alundra_5"]);
+            Assert.Contains(result.Warnings, w => w.Contains("alundra_5"));
         }
         finally
         {

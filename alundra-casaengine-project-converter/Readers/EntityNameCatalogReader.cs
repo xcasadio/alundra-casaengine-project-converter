@@ -42,7 +42,7 @@ public static class EntityNameCatalogReader
 
         foreach (var bank in banks)
         {
-            var nameIndex = bank.IsHeroBank ? bank.Sector5Id : MapSpritePageOffset + bank.Sector5Id;
+            var nameIndex = bank.IsAlundraBank ? bank.Sector5Id : MapSpritePageOffset + bank.Sector5Id;
             var name = nameIndex >= 0 && nameIndex < names.Count ? names[nameIndex] : null;
 
             if (string.IsNullOrWhiteSpace(name) || PlaceholderNames.Contains(name.Trim()))

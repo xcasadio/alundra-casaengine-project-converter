@@ -455,10 +455,10 @@ public class SpriteWriterTests
     }
 
     [Fact]
-    public void ConvertSprites_WithHeroAndMapSharingSameSector5Id_KeepsBothBanksSeparate()
+    public void ConvertSprites_WithAlundraAndMapSharingSameSector5Id_KeepsBothBanksSeparate()
     {
-        // Regression test: the hero's SpriteRecords (map_alundra.json) use their own id space,
-        // independent of regular maps'. A hero bank and a map bank can carry the same numeric
+        // Regression test: map_alundra.json's SpriteRecords use their own id space, independent of
+        // regular maps'. The map_alundra.json bank and a map bank can carry the same numeric
         // Sector5Id while being unrelated content; they must not collide/shadow each other.
         var inputDirectory = CreateTempDirectory();
         var outputDirectory = CreateTempDirectory();
@@ -533,19 +533,19 @@ public class SpriteWriterTests
             Assert.Equal(2, report.Counters["Sprites.Banks"]);
 
             var regularAnimationPath = FindEntityAsset(outputDirectory, "bank5_anim0_down.anim2d");
-            var heroAnimationPath = FindEntityAsset(outputDirectory, "bankhero_5_anim0_down.anim2d");
+            var alundraAnimationPath = FindEntityAsset(outputDirectory, "bankalundra_5_anim0_down.anim2d");
             Assert.True(File.Exists(regularAnimationPath));
-            Assert.True(File.Exists(heroAnimationPath));
+            Assert.True(File.Exists(alundraAnimationPath));
 
             var regularAnimation = new Animation2dData();
             regularAnimation.Load(JObject.Parse(File.ReadAllText(regularAnimationPath)));
             var regularSpriteTrack = Assert.Single(regularAnimation.Tracks, t => t.Property == Animation2dTrackProperty.Sprite);
             Assert.Equal(3, regularSpriteTrack.SpriteKeyframes.Count);
 
-            var heroAnimation = new Animation2dData();
-            heroAnimation.Load(JObject.Parse(File.ReadAllText(heroAnimationPath)));
-            var heroSpriteTrack = Assert.Single(heroAnimation.Tracks, t => t.Property == Animation2dTrackProperty.Sprite);
-            Assert.Single(heroSpriteTrack.SpriteKeyframes);
+            var alundraAnimation = new Animation2dData();
+            alundraAnimation.Load(JObject.Parse(File.ReadAllText(alundraAnimationPath)));
+            var alundraSpriteTrack = Assert.Single(alundraAnimation.Tracks, t => t.Property == Animation2dTrackProperty.Sprite);
+            Assert.Single(alundraSpriteTrack.SpriteKeyframes);
         }
         finally
         {

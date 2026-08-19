@@ -11,7 +11,7 @@ namespace AlundraCasaEngineProjectConverter.Tests;
 /// <summary>
 /// Covers the SpriteTableIndex -&gt; bank key -&gt; prefab asset id resolution
 /// <see cref="EntityPrefabLinkWriter"/> writes into each map's .tileMap "Entities" records. The
-/// bank-index cross-check (map 389, Entity_0, SpriteTableIndex 25, "hero_25") is documented on
+/// bank-index cross-check (map 389, Entity_0, SpriteTableIndex 25, "alundra_25") is documented on
 /// EntityPrefabLinkWriter itself and reproduced here as the isMapSprite == false case.
 /// </summary>
 public class EntityPrefabLinkWriterTests
@@ -43,7 +43,7 @@ public class EntityPrefabLinkWriterTests
             var mapLocalPrefabId = Guid.NewGuid();
             var prefabAssetIdsByBankKey = new Dictionary<string, Guid>
             {
-                ["hero_25"] = globalPrefabId, // isMapSprite == false: SpriteDirection 64 (0x40)
+                ["alundra_25"] = globalPrefabId, // isMapSprite == false: SpriteDirection 64 (0x40)
                 ["7"] = mapLocalPrefabId, // isMapSprite == true: SpriteDirection 0xC0 (0x40 | 0x80)
             };
 

@@ -112,12 +112,14 @@ public sealed class SpriteBodyBox
 public sealed class SpriteBank
 {
     public int Sector5Id;
-    // Sector5Id is only unique within its own source: the hero's SpriteRecords (map_alundra.json)
-    // and every regular map's SpriteRecords are separate id spaces that happen to reuse the same
-    // small integers (verified against real data: hero id 82 is an unrelated 2-frame bank, not
-    // the map_4/map_5 NPC bank also numbered 82). BankKey keeps them from colliding.
-    public bool IsHeroBank;
-    public int SourceMapIndex; // -1 for the hero bank (map_alundra.json)
+    // Sector5Id is only unique within its own source: map_alundra.json's SpriteRecords - the game's
+    // own naming calls this the "hero" table, though the vast majority of its entries are ordinary
+    // map entities, not the hero himself - and every regular map's SpriteRecords are separate id
+    // spaces that happen to reuse the same small integers (verified against real data: id 82 in
+    // map_alundra.json is an unrelated 2-frame bank, not the map_4/map_5 NPC bank also numbered 82).
+    // BankKey keeps them from colliding.
+    public bool IsAlundraBank;
+    public int SourceMapIndex; // -1 for the map_alundra.json bank
     public string SourceSpritesheetFileName = string.Empty;
     public IReadOnlyList<SpriteAnimation?[]> AnimSets = Array.Empty<SpriteAnimation?[]>();
 
@@ -127,15 +129,15 @@ public sealed class SpriteBank
     /// </summary>
     public SpriteBodyBox? BodyBox;
 
-    public string BankKey => IsHeroBank ? $"hero_{Sector5Id}" : $"{Sector5Id}";
+    public string BankKey => IsAlundraBank ? $"alundra_{Sector5Id}" : $"{Sector5Id}";
 }
 
 /// <summary>
 /// Reads every unique sprite bank across data-extracted. The same Sector5Id bank is duplicated
 /// verbatim in every regular map that uses it (verified against real data before relying on it),
 /// so the first map a bank is found in becomes its canonical source for both animation data and
-/// the spritesheet texture it references. The hero bank(s) from map_alundra.json are read
-/// separately since they are not part of the same id space (see SpriteBank.BankKey).
+/// the spritesheet texture it references. The bank(s) from map_alundra.json are read separately
+/// since they are not part of the same id space (see SpriteBank.BankKey).
 /// </summary>
 public static class SpriteBankReader
 {
@@ -143,14 +145,14 @@ public static class SpriteBankReader
     {
         var banksByKey = new Dictionary<string, SpriteBank>();
 
-        var heroPath = Path.Combine(inputDirectory, "data", "map_alundra.json");
-        if (File.Exists(heroPath))
+        var alundraPath = Path.Combine(inputDirectory, "data", "map_alundra.json");
+        if (File.Exists(alundraPath))
         {
-            ReadMapSpriteRecords(heroPath, mapIndex: -1, "map_alundra_spritesheet.png", isHeroBank: true, banksByKey, report);
+            ReadMapSpriteRecords(alundraPath, mapIndex: -1, "map_alundra_spritesheet.png", isAlundraBank: true, banksByKey, report);
         }
         else
         {
-            report.Warnings.Add($"Hero bank source not found at '{heroPath}'.");
+            report.Warnings.Add($"map_alundra.json bank source not found at '{alundraPath}'.");
         }
 
         foreach (var mapIndex in DiscoverNativeMapIndices(inputDirectory))
@@ -162,14 +164,14 @@ public static class SpriteBankReader
                 continue;
             }
 
-            ReadMapSpriteRecords(mapPath, mapIndex, $"map_{mapIndex}_spritesheet.png", isHeroBank: false, banksByKey, report);
+            ReadMapSpriteRecords(mapPath, mapIndex, $"map_{mapIndex}_spritesheet.png", isAlundraBank: false, banksByKey, report);
         }
 
-        return banksByKey.Values.OrderBy(bank => bank.IsHeroBank).ThenBy(bank => bank.Sector5Id).ToList();
+        return banksByKey.Values.OrderBy(bank => bank.IsAlundraBank).ThenBy(bank => bank.Sector5Id).ToList();
     }
 
     private static void ReadMapSpriteRecords(
-        string mapPath, int mapIndex, string spritesheetFileName, bool isHeroBank,
+        string mapPath, int mapIndex, string spritesheetFileName, bool isAlundraBank,
         Dictionary<string, SpriteBank> banksByKey,
         ConversionReport report)
     {
@@ -192,7 +194,7 @@ public static class SpriteBankReader
 
             var headerElement = recordElement.GetProperty("Header");
             var sector5Id = headerElement.GetProperty("Sector5Id").GetInt32();
-            var bankKey = isHeroBank ? $"hero_{sector5Id}" : $"{sector5Id}";
+            var bankKey = isAlundraBank ? $"alundra_{sector5Id}" : $"{sector5Id}";
             if (banksByKey.TryGetValue(bankKey, out var existingBank))
             {
                 // Same content across maps (verified); first occurrence is canonical. The body box
@@ -222,7 +224,7 @@ public static class SpriteBankReader
             banksByKey[bankKey] = new SpriteBank
             {
                 Sector5Id = sector5Id,
-                IsHeroBank = isHeroBank,
+                IsAlundraBank = isAlundraBank,
                 SourceMapIndex = mapIndex,
                 SourceSpritesheetFileName = spritesheetFileName,
                 AnimSets = animSets,
