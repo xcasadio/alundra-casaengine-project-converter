@@ -105,6 +105,35 @@ public sealed class SpriteBodyBox
 }
 
 /// <summary>
+/// SpriteRecord.Header's remaining fields, exactly as the extractor exports them - the ones
+/// EntityManager.InitializeEntity (alundra-datas-analyser AlundraTools/AlundraEngine/Gameplay/
+/// EntityManager.cs:90-115) reads to finish spawning an entity, on top of the body volume already
+/// covered by <see cref="SpriteBodyBox"/> (OffsetX/Y/Z, SizeX/Y/Z duplicated here so the whole
+/// header travels as one object). MoreFlags/CanPickup/FlagsPortraitShadowType are the three bytes
+/// EntityManager packs into Entity.Flags (bits 0-7/8-15/16-23); ProgramLoad/Tick/Touch/Deactivate/
+/// Interact are script slot indices; Contents is read by GameEngine.InitializeContents. Every field
+/// defaults to 0 when the source record omits it (only synthetic test fixtures do).
+/// </summary>
+public sealed class SpriteRecordHeader
+{
+    public int MoreFlags;
+    public int CanPickup;
+    public int FlagsPortraitShadowType;
+    public int ProgramLoad;
+    public int ProgramTick;
+    public int ProgramTouch;
+    public int ProgramDeactivate;
+    public int ProgramInteract;
+    public int OffsetX;
+    public int OffsetY;
+    public int OffsetZ;
+    public int SizeX;
+    public int SizeY;
+    public int SizeZ;
+    public int Contents;
+}
+
+/// <summary>
 /// One deduplicated Alundra sprite bank (Header.Sector5Id). AnimSets[j] holds up to 4 directions
 /// (index 0=Down, 1=Up, 2=Left, 3=Right, matching SiAnimDir/AnimationSet.PreloadedAnims in the
 /// extractor) - an entry is null if that direction has no frames.
@@ -128,6 +157,12 @@ public sealed class SpriteBank
     /// this bank was found in, like every other field of the bank.
     /// </summary>
     public SpriteBodyBox? BodyBox;
+
+    /// <summary>
+    /// The rest of the header's runtime fields (see <see cref="SpriteRecordHeader"/>), read from the
+    /// same record <see cref="BodyBox"/> came from.
+    /// </summary>
+    public SpriteRecordHeader Header = new();
 
     public string BankKey => IsAlundraBank ? $"alundra_{Sector5Id}" : $"{Sector5Id}";
 }
@@ -221,6 +256,7 @@ public static class SpriteBankReader
                 animSets.Add(ReadAnimSet(animSetElement));
             }
 
+            var bodyBox = ReadBodyBox(headerElement);
             banksByKey[bankKey] = new SpriteBank
             {
                 Sector5Id = sector5Id,
@@ -228,7 +264,8 @@ public static class SpriteBankReader
                 SourceMapIndex = mapIndex,
                 SourceSpritesheetFileName = spritesheetFileName,
                 AnimSets = animSets,
-                BodyBox = ReadBodyBox(headerElement),
+                BodyBox = bodyBox,
+                Header = ReadHeader(headerElement, bodyBox),
             };
         }
     }
@@ -259,6 +296,38 @@ public static class SpriteBankReader
             SizeY = sizeY.GetInt32(),
             SizeZ = sizeZ.GetInt32(),
         };
+    }
+
+    /// <summary>
+    /// Reads the rest of SpriteRecord.Header (see <see cref="SpriteRecordHeader"/>), reusing the
+    /// body box already read for OffsetX/Y/Z and SizeX/Y/Z. Every field is optional, defaulting to
+    /// 0 when absent, since only synthetic test fixtures ever omit them.
+    /// </summary>
+    private static SpriteRecordHeader ReadHeader(JsonElement headerElement, SpriteBodyBox? bodyBox)
+    {
+        return new SpriteRecordHeader
+        {
+            MoreFlags = GetOptionalInt32(headerElement, "MoreFlags"),
+            CanPickup = GetOptionalInt32(headerElement, "CanPickup"),
+            FlagsPortraitShadowType = GetOptionalInt32(headerElement, "FlagsPortraitShadowType"),
+            ProgramLoad = GetOptionalInt32(headerElement, "ProgramLoad"),
+            ProgramTick = GetOptionalInt32(headerElement, "ProgramTick"),
+            ProgramTouch = GetOptionalInt32(headerElement, "ProgramTouch"),
+            ProgramDeactivate = GetOptionalInt32(headerElement, "ProgramDeactivate"),
+            ProgramInteract = GetOptionalInt32(headerElement, "ProgramInteract"),
+            OffsetX = bodyBox?.OffsetX ?? 0,
+            OffsetY = bodyBox?.OffsetY ?? 0,
+            OffsetZ = bodyBox?.OffsetZ ?? 0,
+            SizeX = bodyBox?.SizeX ?? 0,
+            SizeY = bodyBox?.SizeY ?? 0,
+            SizeZ = bodyBox?.SizeZ ?? 0,
+            Contents = GetOptionalInt32(headerElement, "Contents"),
+        };
+    }
+
+    private static int GetOptionalInt32(JsonElement headerElement, string propertyName)
+    {
+        return headerElement.TryGetProperty(propertyName, out var value) ? value.GetInt32() : 0;
     }
 
     private static bool SameBodyBox(SpriteBodyBox? left, SpriteBodyBox? right)

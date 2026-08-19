@@ -57,6 +57,14 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///  - Hero SpriteEffectRecords (map_alundra.json) are preserved as a raw JSON companion, not
 ///    converted to sprites/animations in V1 (their Spritesheet indices exceed the normal 0-7
 ///    range, suggesting a different graphics source not covered by the atlas-packing fix).
+///  - Data/sprite-records.json: one raw companion per emitted prefab, keyed by the prefab's own
+///    asset id (the same Guid EntityPrefabLinkWriter, Phase 3.5, writes onto every tileMap record
+///    that spawns it), carrying the SpriteRecord.Header fields this converter does not otherwise
+///    interpret (see SpriteRecordHeader). The future gameplay DLL needs them to finish faithful
+///    entity spawning the way EntityManager.InitializeEntity does - packing Entity.Flags, resolving
+///    script program slots, sizing the body volume - so they travel as data rather than being
+///    guessed at here. Like hero_effects.json and the per-map events companion, it is NOT
+///    registered in the asset catalog: there is no engine type that could load it.
 ///  - Asset ids are NOT forced deterministic here: ObjectBase.Id has a private setter, and
 ///    EditorAssetWriterService.SaveAsset always serializes whatever Id the object already has.
 ///    This matches Phase 1's actual behavior (EditorAssetImportService.ImportTiledMap also
@@ -100,12 +108,14 @@ public static class SpriteWriter
 
         var textureAssetIdsBySpritesheet = new Dictionary<string, Guid>(StringComparer.OrdinalIgnoreCase);
         var spriteAssetIdsByKey = new Dictionary<(string Spritesheet, long Signature), Guid>();
+        var headerFieldsByPrefabId = new Dictionary<Guid, SpriteRecordHeader>();
 
         foreach (var bank in banks)
         {
             ConvertBank(
                 bank, folderNamesByBankKey[bank.BankKey], inputDirectory, outputDirectory,
-                textureAssetIdsBySpritesheet, spriteAssetIdsByKey, prefabAssetIdsByBankKey, report);
+                textureAssetIdsBySpritesheet, spriteAssetIdsByKey, prefabAssetIdsByBankKey,
+                headerFieldsByPrefabId, report);
         }
 
         EditorAssetCatalogService.Save();
@@ -114,6 +124,7 @@ public static class SpriteWriter
         report.Increment("Sprites.Textures", textureAssetIdsBySpritesheet.Count);
 
         PreserveHeroEffects(inputDirectory, outputDirectory, report);
+        WriteSpriteRecords(outputDirectory, headerFieldsByPrefabId, report);
 
         return prefabAssetIdsByBankKey;
     }
@@ -126,6 +137,7 @@ public static class SpriteWriter
         Dictionary<string, Guid> textureAssetIdsBySpritesheet,
         Dictionary<(string Spritesheet, long Signature), Guid> spriteAssetIdsByKey,
         Dictionary<string, Guid> prefabAssetIdsByBankKey,
+        Dictionary<Guid, SpriteRecordHeader> headerFieldsByPrefabId,
         ConversionReport report)
     {
         Guid textureAssetId;
@@ -170,7 +182,8 @@ public static class SpriteWriter
         }
 
         WriteEntityPrefab(
-            bank, entityFolderName, bankRelativeDirectory, animationAssetIds, prefabAssetIdsByBankKey, report);
+            bank, entityFolderName, bankRelativeDirectory, animationAssetIds, prefabAssetIdsByBankKey,
+            headerFieldsByPrefabId, report);
 
         report.Increment("Sprites.Banks");
         report.Increment("Sprites.QuadsRead", quadsRead);
@@ -211,6 +224,7 @@ public static class SpriteWriter
         string bankRelativeDirectory,
         List<Guid> animationAssetIds,
         Dictionary<string, Guid> prefabAssetIdsByBankKey,
+        Dictionary<Guid, SpriteRecordHeader> headerFieldsByPrefabId,
         ConversionReport report)
     {
         var spriteComponent = new AnimatedSpriteComponent { Name = nameof(AnimatedSpriteComponent) };
@@ -244,6 +258,7 @@ public static class SpriteWriter
         });
 
         prefabAssetIdsByBankKey[bank.BankKey] = entity.Id;
+        headerFieldsByPrefabId[entity.Id] = bank.Header;
 
         report.Increment("Entities.Prefabs");
         report.Increment(hasBody ? "Entities.BodyPrefabs" : "Entities.SpriteOnlyPrefabs");
@@ -619,5 +634,90 @@ public static class SpriteWriter
         File.WriteAllText(Path.Combine(heroDirectory, "hero_effects.json"), effectsElement.GetRawText());
 
         report.Increment("Sprites.HeroEffectsPreserved", effectsElement.GetArrayLength());
+    }
+
+    // No naming policy: the field names and order match the DLL-side data contract exactly.
+    private static readonly JsonSerializerOptions SpriteRecordsSerializerOptions = new()
+    {
+        WriteIndented = true,
+    };
+
+    /// <summary>
+    /// Writes Data/sprite-records.json (see the class summary): one entry per prefab this run
+    /// emitted, keyed by the prefab's own asset id. SpriteRecords.Exported must equal
+    /// Entities.Prefabs - every prefab has a header, even the sprite-only ones - so a mismatch
+    /// would mean a bank's prefab id never made it into <paramref name="headerFieldsByPrefabId"/>.
+    /// </summary>
+    private static void WriteSpriteRecords(
+        string outputDirectory,
+        Dictionary<Guid, SpriteRecordHeader> headerFieldsByPrefabId,
+        ConversionReport report)
+    {
+        var recordsByPrefabId = new Dictionary<string, SpriteRecordJson>(StringComparer.Ordinal);
+        foreach (var (prefabAssetId, header) in headerFieldsByPrefabId)
+        {
+            recordsByPrefabId[prefabAssetId.ToString()] = new SpriteRecordJson
+            {
+                MoreFlags = header.MoreFlags,
+                CanPickup = header.CanPickup,
+                FlagsPortraitShadowType = header.FlagsPortraitShadowType,
+                ProgramLoad = header.ProgramLoad,
+                ProgramTick = header.ProgramTick,
+                ProgramTouch = header.ProgramTouch,
+                ProgramDeactivate = header.ProgramDeactivate,
+                ProgramInteract = header.ProgramInteract,
+                OffsetX = header.OffsetX,
+                OffsetY = header.OffsetY,
+                OffsetZ = header.OffsetZ,
+                SizeX = header.SizeX,
+                SizeY = header.SizeY,
+                SizeZ = header.SizeZ,
+                Contents = header.Contents,
+            };
+        }
+
+        var dataDirectory = Path.Combine(outputDirectory, "Data");
+        Directory.CreateDirectory(dataDirectory);
+        File.WriteAllText(
+            Path.Combine(dataDirectory, "sprite-records.json"),
+            JsonSerializer.Serialize(recordsByPrefabId, SpriteRecordsSerializerOptions));
+
+        report.Increment("SpriteRecords.Exported", recordsByPrefabId.Count);
+        CheckSpriteRecordsInvariant(report);
+    }
+
+    private static void CheckSpriteRecordsInvariant(ConversionReport report)
+    {
+        var exported = report.Counters.GetValueOrDefault("SpriteRecords.Exported");
+        var prefabs = report.Counters.GetValueOrDefault("Entities.Prefabs");
+        if (exported != prefabs)
+        {
+            report.Errors.Add(
+                $"SpriteRecords: invariant 'SpriteRecords.Exported' is {exported}, expected {prefabs} "
+                + "(Entities.Prefabs).");
+        }
+    }
+
+    /// <summary>
+    /// The JSON shape for one Data/sprite-records.json entry - field names and order match the
+    /// DLL-side data contract exactly (see the class summary).
+    /// </summary>
+    private sealed class SpriteRecordJson
+    {
+        public int MoreFlags { get; set; }
+        public int CanPickup { get; set; }
+        public int FlagsPortraitShadowType { get; set; }
+        public int ProgramLoad { get; set; }
+        public int ProgramTick { get; set; }
+        public int ProgramTouch { get; set; }
+        public int ProgramDeactivate { get; set; }
+        public int ProgramInteract { get; set; }
+        public int OffsetX { get; set; }
+        public int OffsetY { get; set; }
+        public int OffsetZ { get; set; }
+        public int SizeX { get; set; }
+        public int SizeY { get; set; }
+        public int SizeZ { get; set; }
+        public int Contents { get; set; }
     }
 }
