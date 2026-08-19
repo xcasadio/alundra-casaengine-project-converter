@@ -10,7 +10,4 @@
   <ItemGroup>
     <ProjectReference Include="..\CasaEngineMonogame\CasaEngine\CasaEngine.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Scripts\" />
-  </ItemGroup>
 </Project>
