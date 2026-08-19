@@ -50,11 +50,6 @@ public class AlundraWorldProxy : GameplayProxy
     private const string PortalsLayerName = "Portals";
     private const string MapEventsLayerName = "MapEvents";
 
-    /// <summary>
-    /// Name of the shared camera entity every converted world carries (see WorldWriter's doc comment on
-    /// why it keeps this exact name: so a world proxy can find it without a saved reference).
-    /// </summary>
-    private const string CameraEntityName = "camera";
 
     /// <summary>
     /// DEBUG ONLY - temporary right-stick camera pan so the map can be flown over at runtime to inspect
@@ -113,7 +108,7 @@ public class AlundraWorldProxy : GameplayProxy
     /// </summary>
     private World? _world;
 
-    /// <summary>DEBUG ONLY. Cached <see cref="Camera2dComponent"/> of the <see cref="CameraEntityName"/>
+    /// <summary>DEBUG ONLY. Cached <see cref="Camera2dComponent"/> of the world's camera
     /// entity, resolved once on first <see cref="Update"/> call; stays null (and logs once) when the
     /// world has no such entity/component.</summary>
     private Camera2dComponent? _debugCamera;
@@ -578,15 +573,15 @@ public class AlundraWorldProxy : GameplayProxy
 
     /// <summary>
     /// DEBUG ONLY - temporary tool, to be gated/replaced once the real camera-follow (E4) lands. Pans the
-    /// world's shared "camera" entity (see <see cref="CameraEntityName"/>) with the gamepad's right
+    /// world's camera (first entity carrying a <see cref="Camera2dComponent"/>) with the gamepad's right
     /// thumbstick so the whole map can be flown over at runtime to inspect spawned entities.
     ///
     /// Reads the right stick through the engine's own <c>CasaEngineGame.InputComponent.GamePadManager</c>
     /// (see <c>CasaEngine.Framework.Input.InputComponent</c>/<c>CasaEngine.Engine.Input.GamePad</c>)
     /// rather than MonoGame's <c>GamePad.GetState</c> directly, since that manager is already reachable
     /// off <see cref="World.Game"/> and is what every other in-engine input read goes through
-    /// (<c>InputMapping.Update</c>). A no-op whenever no gamepad is connected on player one, or the
-    /// "camera" entity/component cannot be found (warns once in the latter case).
+    /// (<c>InputMapping.Update</c>). A no-op whenever no gamepad is connected on player one, or no
+    /// camera component can be found (warns once in the latter case).
     ///
     /// Axis mapping: MonoGame's right-stick Y is positive up; these converted maps' world Y is also "more
     /// positive = further up/north" (<see cref="ResolveWorldPosition"/> negates Alundra's down-positive Y),
@@ -599,13 +594,27 @@ public class AlundraWorldProxy : GameplayProxy
         {
             _debugCameraLookupDone = true;
 
-            var cameraEntity = _world?.Entities.FirstOrDefault(entity => entity.Name == CameraEntityName);
-            _debugCamera = cameraEntity?.GetComponent<Camera2dComponent>();
+            // Looked up by COMPONENT, not by the reference name "camera": EntityReference.Load's
+            // shared-asset branch clones the asset without applying the reference's name, so the live
+            // entity is named after the asset ("AlundraCamera"). Taking the first Camera2dComponent in
+            // the world mirrors DefaultRuntimeViewBootstrapper's own camera pick, so the pan always
+            // drives the camera the runtime view actually uses.
+            if (_world != null)
+            {
+                foreach (var entity in _world.Entities)
+                {
+                    _debugCamera = entity.GetComponent<Camera2dComponent>();
+                    if (_debugCamera != null)
+                    {
+                        break;
+                    }
+                }
+            }
 
             if (_debugCamera == null)
             {
                 Logs.WriteWarning(
-                    $"AlundraWorldProxy: no '{CameraEntityName}' entity/Camera2dComponent found in world "
+                    $"AlundraWorldProxy: no Camera2dComponent found in world "
                     + $"'{_world?.Name}'; debug camera pan disabled.");
             }
         }
