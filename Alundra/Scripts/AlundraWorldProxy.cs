@@ -51,6 +51,23 @@ public class AlundraWorldProxy : GameplayProxy
     private const string MapEventsLayerName = "MapEvents";
 
     /// <summary>
+    /// Name of the shared camera entity every converted world carries (see WorldWriter's doc comment on
+    /// why it keeps this exact name: so a world proxy can find it without a saved reference).
+    /// </summary>
+    private const string CameraEntityName = "camera";
+
+    /// <summary>
+    /// DEBUG ONLY - temporary right-stick camera pan so the map can be flown over at runtime to inspect
+    /// spawned entities, until the real camera-follow (E4) replaces it. Speed in world pixels/second,
+    /// picked so a full stick deflection crosses the widest converted map (52 tiles * 24px = 1248px) in
+    /// roughly 2.5 seconds.
+    /// </summary>
+    private const float DebugCameraPanSpeedPixelsPerSecond = 500f;
+
+    /// <summary>DEBUG ONLY - see <see cref="DebugCameraPanSpeedPixelsPerSecond"/>. Per-axis stick deadzone.</summary>
+    private const float DebugCameraPanDeadZone = 0.2f;
+
+    /// <summary>
     /// Entities spawned by this proxy in <see cref="InitializeWithWorld"/> (both the prefab-clone and
     /// bare-fallback paths), in creation order - <see cref="Update"/> drives their status machine in
     /// this same order, mirroring the original manager's single flat entity-slot array.
@@ -89,8 +106,25 @@ public class AlundraWorldProxy : GameplayProxy
     /// </summary>
     internal AlundraEntityScriptProxy? ActiveCollisionEntity;
 
+    /// <summary>
+    /// DEBUG ONLY (see <see cref="DebugCameraPanSpeedPixelsPerSecond"/>). Cached so <see cref="Update"/>,
+    /// which gets no <see cref="World"/> parameter, can still read the gamepad and reach the camera entity
+    /// looked up in <see cref="InitializeWithWorld"/>.
+    /// </summary>
+    private World? _world;
+
+    /// <summary>DEBUG ONLY. Cached <see cref="Camera2dComponent"/> of the <see cref="CameraEntityName"/>
+    /// entity, resolved once on first <see cref="Update"/> call; stays null (and logs once) when the
+    /// world has no such entity/component.</summary>
+    private Camera2dComponent? _debugCamera;
+
+    /// <summary>DEBUG ONLY. Guards the one-time <see cref="_debugCamera"/> lookup/warning.</summary>
+    private bool _debugCameraLookupDone;
+
     public override void InitializeWithWorld(World world)
     {
+        _world = world;
+
         var tileMapEntity = world.Entities.FirstOrDefault(entity => entity.Name == TileMapEntityName);
         if (tileMapEntity == null)
         {
@@ -517,6 +551,10 @@ public class AlundraWorldProxy : GameplayProxy
     /// </summary>
     public override void Update(float elapsedTime)
     {
+        // DEBUG ONLY - runs unconditionally (unlike the entity passes below, which are skipped when
+        // nothing was spawned) so the map can still be flown over even for a world with no entities.
+        UpdateDebugCameraPan(elapsedTime);
+
         if (_spawnedEntities.Count == 0)
         {
             return;
@@ -536,6 +574,74 @@ public class AlundraWorldProxy : GameplayProxy
         // Mirrors the original ordering: EntityManager.UpdateEntitiesEvents runs before
         // EntityManager.UpdateEntitiesAnimation in UpdateEntities' own pass list - see RunAnimationSyncPass.
         RunAnimationSyncPass(_spawnedEntities);
+    }
+
+    /// <summary>
+    /// DEBUG ONLY - temporary tool, to be gated/replaced once the real camera-follow (E4) lands. Pans the
+    /// world's shared "camera" entity (see <see cref="CameraEntityName"/>) with the gamepad's right
+    /// thumbstick so the whole map can be flown over at runtime to inspect spawned entities.
+    ///
+    /// Reads the right stick through the engine's own <c>CasaEngineGame.InputComponent.GamePadManager</c>
+    /// (see <c>CasaEngine.Framework.Input.InputComponent</c>/<c>CasaEngine.Engine.Input.GamePad</c>)
+    /// rather than MonoGame's <c>GamePad.GetState</c> directly, since that manager is already reachable
+    /// off <see cref="World.Game"/> and is what every other in-engine input read goes through
+    /// (<c>InputMapping.Update</c>). A no-op whenever no gamepad is connected on player one, or the
+    /// "camera" entity/component cannot be found (warns once in the latter case).
+    ///
+    /// Axis mapping: MonoGame's right-stick Y is positive up; these converted maps' world Y is also "more
+    /// positive = further up/north" (<see cref="ResolveWorldPosition"/> negates Alundra's down-positive Y),
+    /// so stick-up must increase <c>Target.Y</c> - no sign flip needed, unlike Alundra's own Y. Stick X
+    /// maps directly onto world X the same way. <c>Target.Z</c> is left untouched.
+    /// </summary>
+    private void UpdateDebugCameraPan(float elapsedTime)
+    {
+        if (!_debugCameraLookupDone)
+        {
+            _debugCameraLookupDone = true;
+
+            var cameraEntity = _world?.Entities.FirstOrDefault(entity => entity.Name == CameraEntityName);
+            _debugCamera = cameraEntity?.GetComponent<Camera2dComponent>();
+
+            if (_debugCamera == null)
+            {
+                Logs.WriteWarning(
+                    $"AlundraWorldProxy: no '{CameraEntityName}' entity/Camera2dComponent found in world "
+                    + $"'{_world?.Name}'; debug camera pan disabled.");
+            }
+        }
+
+        var gamePadManager = _world?.Game?.InputComponent?.GamePadManager;
+        if (_debugCamera == null || gamePadManager == null)
+        {
+            return;
+        }
+
+        var gamePad = gamePadManager.GetGamePad(PlayerIndex.One);
+        if (!gamePad.IsConnected)
+        {
+            return;
+        }
+
+        _debugCamera.Target = ComputeDebugCameraPanTarget(
+            _debugCamera.Target, gamePad.RightStickX, gamePad.RightStickY, elapsedTime);
+    }
+
+    /// <summary>
+    /// DEBUG ONLY (see <see cref="UpdateDebugCameraPan"/>) - the pure math factored out for unit testing:
+    /// applies a per-axis deadzone to the raw stick values, then moves <paramref name="currentTarget"/> by
+    /// stick * <see cref="DebugCameraPanSpeedPixelsPerSecond"/> * <paramref name="elapsedTime"/> on X/Y,
+    /// leaving Z untouched.
+    /// </summary>
+    internal static Vector3 ComputeDebugCameraPanTarget(
+        Vector3 currentTarget, float stickX, float stickY, float elapsedTime)
+    {
+        var x = MathF.Abs(stickX) < DebugCameraPanDeadZone ? 0f : stickX;
+        var y = MathF.Abs(stickY) < DebugCameraPanDeadZone ? 0f : stickY;
+
+        return new Vector3(
+            currentTarget.X + x * DebugCameraPanSpeedPixelsPerSecond * elapsedTime,
+            currentTarget.Y + y * DebugCameraPanSpeedPixelsPerSecond * elapsedTime,
+            currentTarget.Z);
     }
 
     /// <summary>
