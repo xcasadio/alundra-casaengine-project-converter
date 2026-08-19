@@ -117,6 +117,16 @@ public class AlundraWorldProxy : GameplayProxy
     /// <summary>DEBUG ONLY. Guards the one-time <see cref="_debugCamera"/> lookup/warning.</summary>
     private bool _debugCameraLookupDone;
 
+    /// <summary>
+    /// True once <see cref="InitializeWithWorld"/> successfully parsed and applied this world's
+    /// <see cref="WallPlacementOverlay"/> (see <see cref="WallPlacementOverlay.CustomPropertyKey"/>).
+    /// Gates the per-entity <see cref="WallPlacementOverlay.ApplyEntitySortKey"/> call in
+    /// <see cref="RunAnimationSyncPass"/>'s caller (<see cref="Update"/>): with no wall placements loaded
+    /// there is nothing to interleave against, so entities keep whatever
+    /// <see cref="DepthSortable2DComponent"/> defaults their prefab already carries.
+    /// </summary>
+    private bool _wallPlacementOverlayApplied;
+
     public override void InitializeWithWorld(World world)
     {
         _world = world;
@@ -150,6 +160,18 @@ public class AlundraWorldProxy : GameplayProxy
         {
             Logs.WriteWarning($"AlundraWorldProxy: entity '{TileMapEntityName}' has no loaded TileMapData in world '{world.Name}'; no entity spawned.");
             return;
+        }
+
+        // Wall/sprite depth interleave (Slice B): strip every baked wall tile the converter recorded
+        // out of the flat "Render_*" layers and resubmit it through the tile map's runtime sorted
+        // overlay, so it draws ordered against Y-sorted entity sprites instead of always flat. Tolerant
+        // by design - see WallPlacementOverlay.TryParse's doc comment - so a world with no (or a
+        // malformed) "AlundraWallPlacements" property still spawns its entities normally, just without
+        // the interleave.
+        if (WallPlacementOverlay.TryParse(tileMapData.CustomProperties, world.Name, out var wallPlacements))
+        {
+            WallPlacementOverlay.Apply(tileMapComponent!, wallPlacements, world.Name);
+            _wallPlacementOverlayApplied = true;
         }
 
         var entitiesLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == EntitiesLayerName);
@@ -586,6 +608,16 @@ public class AlundraWorldProxy : GameplayProxy
         // Mirrors the original ordering: EntityManager.UpdateEntitiesEvents runs before
         // EntityManager.UpdateEntitiesAnimation in UpdateEntities' own pass list - see RunAnimationSyncPass.
         RunAnimationSyncPass(_spawnedEntities);
+
+        // Wall/sprite depth interleave (Slice B) - see WallPlacementOverlay's class doc. Gated on the
+        // overlay actually having been populated: with no wall placements loaded (missing/malformed
+        // property) there is nothing to interleave against, so entities are left at whatever
+        // DepthSortable2DComponent defaults their prefab already carries instead of paying a per-frame
+        // field write for nothing.
+        if (_wallPlacementOverlayApplied)
+        {
+            RunWallInterleaveSortKeyPass(_spawnedEntities);
+        }
     }
 
     /// <summary>
@@ -854,6 +886,34 @@ public class AlundraWorldProxy : GameplayProxy
             {
                 animatedSprite.SetCurrentAnimation(selected, forceReset: true);
             }
+        }
+    }
+
+    /// <summary>
+    /// Per-frame half of the wall/sprite depth interleave (see <see cref="WallPlacementOverlay"/>'s class
+    /// doc): aligns every spawned entity's <see cref="DepthSortable2DComponent.Elevation"/> with its
+    /// current logical <see cref="AlundraEntityScriptProxy.PosY"/>, field writes only - the overlay tiles
+    /// themselves are built once in <see cref="InitializeWithWorld"/> and never touched again. An entity
+    /// without a <see cref="DepthSortable2DComponent"/> (the bare-fallback spawn path,
+    /// <see cref="CreateBareEntityFromRecord"/>) is skipped - it carries no sprite to sort in the first
+    /// place.
+    /// </summary>
+    internal static void RunWallInterleaveSortKeyPass(IReadOnlyList<Entity> entities)
+    {
+        foreach (var entity in entities)
+        {
+            if (entity.GameplayProxy is not AlundraEntityScriptProxy proxy)
+            {
+                continue;
+            }
+
+            var depthSortable = entity.GetComponent<DepthSortable2DComponent>();
+            if (depthSortable == null)
+            {
+                continue;
+            }
+
+            WallPlacementOverlay.ApplyEntitySortKey(depthSortable, proxy.PosY);
         }
     }
 
