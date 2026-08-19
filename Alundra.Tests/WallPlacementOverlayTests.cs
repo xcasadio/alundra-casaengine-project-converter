@@ -100,6 +100,73 @@ public class WallPlacementOverlayTests
         Assert.Equal(3, records.DepthSlot[0]);
     }
 
+    // -------------------- Floor parsing --------------------
+
+    [Fact]
+    public void TryParseFloor_MissingProperty_ReturnsFalseAndDisablesFeature()
+    {
+        var customProperties = new Dictionary<string, string>();
+
+        var result = WallPlacementOverlay.TryParseFloor(customProperties, "map_1", out var records);
+
+        Assert.False(result);
+        Assert.Null(records);
+    }
+
+    [Fact]
+    public void TryParseFloor_MalformedJson_ReturnsFalse()
+    {
+        var customProperties = new Dictionary<string, string>
+        {
+            [WallPlacementOverlay.FloorCustomPropertyKey] = "{not valid json",
+        };
+
+        var result = WallPlacementOverlay.TryParseFloor(customProperties, "map_1", out var records);
+
+        Assert.False(result);
+        Assert.Null(records);
+    }
+
+    [Fact]
+    public void TryParseFloor_ColumnLengthMismatch_ReturnsFalse()
+    {
+        var customProperties = new Dictionary<string, string>
+        {
+            [WallPlacementOverlay.FloorCustomPropertyKey] =
+                "{\"map_index\":389,\"count\":2,\"cell_x\":[17],\"cell_y\":[17],"
+                + "\"plane\":[0],\"x\":[17],\"y\":[6],\"gid\":[613],\"depth_slot\":[3]}",
+        };
+
+        var result = WallPlacementOverlay.TryParseFloor(customProperties, "map_1", out var records);
+
+        Assert.False(result);
+        Assert.Null(records);
+    }
+
+    [Fact]
+    public void TryParseFloor_WellFormedDocument_ParsesEveryColumn()
+    {
+        var customProperties = new Dictionary<string, string>
+        {
+            [WallPlacementOverlay.FloorCustomPropertyKey] =
+                "{\"map_index\":389,\"count\":1,\"cell_x\":[17],\"cell_y\":[17],"
+                + "\"plane\":[0],\"x\":[17],\"y\":[6],\"gid\":[613],\"depth_slot\":[3]}",
+        };
+
+        var result = WallPlacementOverlay.TryParseFloor(customProperties, "map_1", out var records);
+
+        Assert.True(result);
+        Assert.Equal(389, records.MapIndex);
+        Assert.Equal(1, records.Count);
+        Assert.Equal(17, records.CellX[0]);
+        Assert.Equal(17, records.CellY[0]);
+        Assert.Equal(0, records.Plane[0]);
+        Assert.Equal(17, records.X[0]);
+        Assert.Equal(6, records.Y[0]);
+        Assert.Equal(613, records.Gid[0]);
+        Assert.Equal(3, records.DepthSlot[0]);
+    }
+
     // -------------------- Key formulas --------------------
 
     [Fact]
@@ -156,6 +223,60 @@ public class WallPlacementOverlayTests
 
         Assert.Equal(35 * 16 + 6, withoutBias);
         Assert.Equal(36 * 16 + 6, withBias);
+    }
+
+    [Fact]
+    public void ComputeFloorSortKey_MatchesDepthFloorFormula()
+    {
+        // GraphicManager.DepthFloor(tileY, floorSlot) = tileY * 16 + clamp(floorSlot, 0, 5) - no wall bias.
+        var key = WallPlacementOverlay.ComputeFloorSortKey(cellY: 17, depthSlot: 3, stableId: 0);
+
+        Assert.Equal((int)RenderPass2D.YSortedWorld, key.RenderPass);
+        Assert.Equal((int)RenderPass2D.YSortedWorld, key.SortingLayer);
+        Assert.Equal(0, key.OrderInLayer);
+        Assert.Equal(17 * 16 + 3, key.Elevation);
+        Assert.Equal(275, key.Elevation);
+    }
+
+    [Fact]
+    public void ComputeFloorSortKey_ClampsDepthSlotToFiveMax()
+    {
+        var key = WallPlacementOverlay.ComputeFloorSortKey(cellY: 0, depthSlot: 99, stableId: 0);
+
+        Assert.Equal(5, key.Elevation);
+    }
+
+    // -------------------- Floor-vs-entity / floor-vs-wall ordering --------------------
+
+    [Fact]
+    public void Ordering_FloorSouthOfEntityRow_FloorDrawsInFrontOfEntity()
+    {
+        // An elevated floor's own row (cellY) south of (numerically greater than) the entity's row
+        // draws over that entity - the exact bug report scenario.
+        var entityKey = EntityKeyForRow(tileRow: 5);
+        var floorKey = WallPlacementOverlay.ComputeFloorSortKey(cellY: 6, depthSlot: 0, stableId: 0);
+
+        Assert.True(floorKey.CompareTo(entityKey) > 0);
+    }
+
+    [Fact]
+    public void Ordering_FloorSameRowAsEntity_FloorDrawsBehindEntitySlotSix()
+    {
+        // Same tile row: the floor's own slot (0..5) is always below the entity's fixed slot 6.
+        var entityKey = EntityKeyForRow(tileRow: 6);
+        var floorKey = WallPlacementOverlay.ComputeFloorSortKey(cellY: 6, depthSlot: 5, stableId: 0);
+
+        Assert.True(floorKey.CompareTo(entityKey) < 0);
+    }
+
+    [Fact]
+    public void Ordering_FloorSameRowAsWall_FloorDrawsBehindWall()
+    {
+        // Same tile row: the floor's slot 0..5 is always below the wall's slot 7+ bias.
+        var floorKey = WallPlacementOverlay.ComputeFloorSortKey(cellY: 6, depthSlot: 5, stableId: 0);
+        var wallKey = WallPlacementOverlay.ComputeWallSortKey(cellY: 6, depthSlot: 0, stableId: 0);
+
+        Assert.True(floorKey.CompareTo(wallKey) < 0);
     }
 
     // -------------------- Entity-vs-wall ordering (RenderSortKey2D comparisons) --------------------
@@ -268,6 +389,115 @@ public class WallPlacementOverlayTests
         };
 
         var exception = Record.Exception(() => WallPlacementOverlay.Apply(component, records, "map_1"));
+
+        Assert.Null(exception);
+        Assert.Equal(0, component.SortedOverlayTileCount);
+    }
+
+    [Fact]
+    public void ApplyFloor_MatchingPlacement_StripsTileAndAddsOverlayEntry()
+    {
+        var component = CreateHeadlessTileMapComponent();
+        var records = new FloorPlacementRecords
+        {
+            MapIndex = 1,
+            Count = 1,
+            CellX = new[] { 1 },
+            CellY = new[] { 2 },
+            Plane = new[] { 0 },
+            X = new[] { 1 },
+            Y = new[] { 2 },
+            Gid = new[] { TileId + 1 },
+            DepthSlot = new[] { 3 },
+        };
+
+        WallPlacementOverlay.ApplyFloor(component, records, "map_1");
+
+        Assert.Equal(TileMapData.EmptyTileId, component.GetTileId(0, 1, 2));
+        Assert.Equal(1, component.SortedOverlayTileCount);
+    }
+
+    [Fact]
+    public void ApplyFloor_MismatchedGid_LeavesTileInPlaceAndSkipsOverlay()
+    {
+        var component = CreateHeadlessTileMapComponent();
+        var records = new FloorPlacementRecords
+        {
+            MapIndex = 1,
+            Count = 1,
+            CellX = new[] { 1 },
+            CellY = new[] { 2 },
+            Plane = new[] { 0 },
+            X = new[] { 1 },
+            Y = new[] { 2 },
+            Gid = new[] { TileId + 2 },
+            DepthSlot = new[] { 3 },
+        };
+
+        WallPlacementOverlay.ApplyFloor(component, records, "map_1");
+
+        Assert.Equal(TileId, component.GetTileId(0, 1, 2));
+        Assert.Equal(0, component.SortedOverlayTileCount);
+    }
+
+    [Fact]
+    public void Apply_WallsAndFloorsBothApplied_OverlayCountsBothAccumulate()
+    {
+        // Mixed accounting: walls and floors resubmit into the same overlay list, independently
+        // stripped from different flat-layer cells so neither Apply call disturbs the other's tile.
+        var component = CreateHeadlessTileMapComponent();
+        var wallRecords = new WallPlacementRecords
+        {
+            MapIndex = 1,
+            Count = 1,
+            CellX = new[] { 0 },
+            CellY = new[] { 0 },
+            StackIndex = new[] { 0 },
+            Plane = new[] { 0 },
+            X = new[] { 0 },
+            Y = new[] { 0 },
+            Gid = new[] { TileId + 1 },
+            DepthSlot = new[] { 0 },
+        };
+        var floorRecords = new FloorPlacementRecords
+        {
+            MapIndex = 1,
+            Count = 1,
+            CellX = new[] { 1 },
+            CellY = new[] { 1 },
+            Plane = new[] { 0 },
+            X = new[] { 1 },
+            Y = new[] { 1 },
+            Gid = new[] { TileId + 1 },
+            DepthSlot = new[] { 0 },
+        };
+
+        WallPlacementOverlay.Apply(component, wallRecords, "map_1");
+        WallPlacementOverlay.ApplyFloor(component, floorRecords, "map_1");
+
+        Assert.Equal(TileMapData.EmptyTileId, component.GetTileId(0, 0, 0));
+        Assert.Equal(TileMapData.EmptyTileId, component.GetTileId(0, 1, 1));
+        Assert.Equal(2, component.SortedOverlayTileCount);
+    }
+
+    [Fact]
+    public void ApplyFloor_OutOfRangePlacement_IsSkippedNotThrown()
+    {
+        var component = CreateHeadlessTileMapComponent();
+        var records = new FloorPlacementRecords
+        {
+            MapIndex = 1,
+            Count = 1,
+            CellX = new[] { 99 },
+            CellY = new[] { 99 },
+            Plane = new[] { 0 },
+            X = new[] { 99 },
+            Y = new[] { 99 },
+            Gid = new[] { TileId + 1 },
+            DepthSlot = new[] { 0 },
+        };
+
+        var exception = Record.Exception(() => WallPlacementOverlay.ApplyFloor(component, records, "map_1"));
 
         Assert.Null(exception);
         Assert.Equal(0, component.SortedOverlayTileCount);

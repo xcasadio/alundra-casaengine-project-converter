@@ -174,6 +174,16 @@ public class AlundraWorldProxy : GameplayProxy
             _wallPlacementOverlayApplied = true;
         }
 
+        // Same interleave for elevated (Height > 0) floor tiles, through the same runtime sorted
+        // overlay - see WallPlacementOverlay.ComputeFloorSortKey's doc for why a floor's own row bias
+        // (slot 0..5, no +7) already orders it correctly against both walls and Y-sorted entities.
+        // Independently tolerant, like the wall property above: a world with no (or malformed)
+        // "AlundraFloorPlacements" property still spawns normally, just without this interleave.
+        if (WallPlacementOverlay.TryParseFloor(tileMapData.CustomProperties, world.Name, out var floorPlacements))
+        {
+            WallPlacementOverlay.ApplyFloor(tileMapComponent!, floorPlacements, world.Name);
+        }
+
         var entitiesLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == EntitiesLayerName);
         var portalsLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == PortalsLayerName);
         var mapEventsLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == MapEventsLayerName);

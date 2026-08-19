@@ -90,6 +90,16 @@ public class CellMetadataWriterTests
             Assert.Equal(0, placements.Count);
             Assert.Equal(1, report.Counters["WallPlacements.StacksCovered"]);
             Assert.Equal(0, report.Counters["WallPlacements.Emitted"]);
+
+            // Cell (1,0) has Height 3, but its floor's computed target (sourceY 0 - height 3 = -3) is
+            // out of bounds - so, like the wall stack above, the property must still be written (as an
+            // empty document), never skipped, and the count must stay zero.
+            var floorPlacementsJson = (string?)customProperties["AlundraFloorPlacements"];
+            Assert.NotNull(floorPlacementsJson);
+            var floorPlacements = JsonSerializer.Deserialize<FloorPlacementDocument>(floorPlacementsJson!, DeserializeOptions)!;
+            Assert.Equal(0, floorPlacements.MapIndex);
+            Assert.Equal(0, floorPlacements.Count);
+            Assert.Equal(0, report.Counters["FloorPlacements.Emitted"]);
         }
         finally
         {
@@ -168,6 +178,193 @@ public class CellMetadataWriterTests
             Directory.Delete(inputDirectory, recursive: true);
             Directory.Delete(outputDirectory, recursive: true);
         }
+    }
+
+    [Fact]
+    public void ConvertMaps_ElevatedFloorTile_EmitsAndVerifiesFloorPlacement()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            WriteElevatedFloorMapFixture(inputDirectory, mapIndex: 0, mismatchedGid: false);
+            var mapLocations = new Dictionary<int, MapLocation> { [0] = new MapLocation("TestZone", "Test Map-0") };
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            ProjectWriter.CreateEmptyProject(outputDirectory, report);
+            TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
+            CellMetadataWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
+
+            Assert.Empty(report.Errors);
+
+            var tileMapPath = Path.Combine(
+                outputDirectory, "Maps", "TestZone", "Test Map-0", "tilemap", "Test Map-0.tileMap");
+            var tileMapDocument = JObject.Parse(File.ReadAllText(tileMapPath));
+            var customProperties = Assert.IsType<JObject>(tileMapDocument["custom_properties"]);
+
+            var floorPlacementsJson = (string?)customProperties["AlundraFloorPlacements"];
+            Assert.NotNull(floorPlacementsJson);
+            var floorPlacements = JsonSerializer.Deserialize<FloorPlacementDocument>(floorPlacementsJson!, DeserializeOptions)!;
+
+            // Cell (0,1)'s floor (Height 1, raw id 400) collides with cell (0,0)'s flat floor (raw id
+            // 100) on plane 0's target (0,0), so it lands on plane 1 - exercising both the elevated-only
+            // filter and the first-free-plane collision rule at once.
+            Assert.Equal(1, floorPlacements.Count);
+            Assert.Equal(new[] { 0 }, floorPlacements.CellX);
+            Assert.Equal(new[] { 1 }, floorPlacements.CellY);
+            Assert.Equal(new[] { 1 }, floorPlacements.Plane);
+            Assert.Equal(new[] { 0 }, floorPlacements.X);
+            Assert.Equal(new[] { 0 }, floorPlacements.Y);
+            Assert.Equal(1, report.Counters["FloorPlacements.Emitted"]);
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void ConvertMaps_WhenElevatedFloorDisagreesWithReplay_ReportsFloorVerificationError()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            WriteElevatedFloorMapFixture(inputDirectory, mapIndex: 0, mismatchedGid: true);
+            var mapLocations = new Dictionary<int, MapLocation> { [0] = new MapLocation("TestZone", "Test Map-0") };
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            ProjectWriter.CreateEmptyProject(outputDirectory, report);
+            TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
+            CellMetadataWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
+
+            Assert.Contains(report.Errors, error =>
+                error.Contains("floor placement verification failed", StringComparison.Ordinal)
+                && error.Contains("expected local tile id 1", StringComparison.Ordinal));
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    /// <summary>
+    /// 1-wide, 2-tall map: cell (0,0) is a flat floor (Height 0, raw id 100 -&gt; local tile 0, gid 1);
+    /// cell (0,1) is an elevated floor (Height 1, raw id 400 -&gt; local tile 1, gid 2) whose target
+    /// (sourceY 1 - height 1 = 0) collides with cell (0,0)'s floor on plane 0, so it is pushed to plane
+    /// 1. When <paramref name="mismatchedGid"/> is true, Render_1's stored gid at (0,0) is deliberately
+    /// wrong (3 instead of 2) to exercise the verification-error path.
+    /// </summary>
+    private static void WriteElevatedFloorMapFixture(string inputDirectory, int mapIndex, bool mismatchedGid)
+    {
+        var tiledDirectory = Path.Combine(inputDirectory, "data", "tiled");
+        var dataDirectory = Path.Combine(inputDirectory, "data");
+        Directory.CreateDirectory(tiledDirectory);
+
+        var baseName = $"map_{mapIndex}";
+        File.WriteAllBytes(Path.Combine(tiledDirectory, $"{baseName}_tileset.png"), FakePngBytes);
+
+        File.WriteAllText(
+            Path.Combine(tiledDirectory, $"{baseName}_tileset.tsj"),
+            """
+            {
+                "type": "tileset",
+                "name": "tileset",
+                "tilewidth": 24,
+                "tileheight": 16,
+                "tilecount": 3,
+                "columns": 3,
+                "image": "map_INDEX_tileset.png",
+                "imagewidth": 72,
+                "imageheight": 16,
+                "tiles": [
+                    { "id": 0, "properties": [ { "name": "TileId", "type": "int", "value": 100 } ] },
+                    { "id": 1, "properties": [ { "name": "TileId", "type": "int", "value": 400 } ] },
+                    { "id": 2, "properties": [ { "name": "TileId", "type": "int", "value": 999 } ] }
+                ]
+            }
+            """.Replace("INDEX", mapIndex.ToString()));
+
+        var plane1Cell0 = mismatchedGid ? 3 : 2;
+
+        File.WriteAllText(
+            Path.Combine(tiledDirectory, $"{baseName}.tmj"),
+            $$"""
+            {
+                "type": "map",
+                "orientation": "orthogonal",
+                "infinite": false,
+                "width": 1,
+                "height": 2,
+                "tilewidth": 24,
+                "tileheight": 16,
+                "properties": [ { "name": "Gravity", "type": "int", "value": 128 } ],
+                "tilesets": [ { "firstgid": 1, "source": "map_INDEX_tileset.tsj" } ],
+                "layers": [
+                    {
+                        "type": "tilelayer",
+                        "name": "Render_0",
+                        "width": 1,
+                        "height": 2,
+                        "data": [1, 0]
+                    },
+                    {
+                        "type": "tilelayer",
+                        "name": "Render_1",
+                        "width": 1,
+                        "height": 2,
+                        "data": [{{plane1Cell0}}, 0]
+                    }
+                ]
+            }
+            """.Replace("INDEX", mapIndex.ToString()));
+
+        File.WriteAllText(
+            Path.Combine(tiledDirectory, $"{baseName}.alundra.json"),
+            """
+            {
+                "MapIndex": 0,
+                "MapId": 0,
+                "Width": 1,
+                "Height": 2,
+                "TileWidth": 24,
+                "TileHeight": 16,
+                "CellOrder": "y * Width + x",
+                "Cells": [
+                    { "Index": 0, "X": 0, "Y": 0, "Walkability": 0, "GroundProperty": 0, "Slope": 0, "Height": 0, "WallTilesOffset": -1, "TileId": 100, "Palette": 1, "Tile": 1, "Flags": 0 },
+                    { "Index": 1, "X": 0, "Y": 1, "Walkability": 0, "GroundProperty": 0, "Slope": 0, "Height": 1, "WallTilesOffset": -1, "TileId": 400, "Palette": 1, "Tile": 1, "Flags": 0 }
+                ]
+            }
+            """);
+
+        File.WriteAllText(
+            Path.Combine(dataDirectory, $"{baseName}.json"),
+            """
+            {
+                "Map": {
+                    "MapTiles": [
+                        { "TileX": 0, "TileY": 0 },
+                        { "TileX": 0, "TileY": 1 }
+                    ]
+                }
+            }
+            """);
     }
 
     private static void WriteMismatchedMapFixture(string inputDirectory, int mapIndex)

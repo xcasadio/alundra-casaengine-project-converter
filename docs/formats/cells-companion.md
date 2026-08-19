@@ -207,3 +207,80 @@ Vérifié à la main : `Render_0.data[6 * 52 + 17]` vaut bien `612` (`gid - firs
 Sur cette même map, les plans 0 à 3 sont tous utilisés par au moins un placement - la règle du
 premier plan libre n'est donc pas triviale sur les données réelles.
 
+# Placement des tuiles de sol élevées (`AlundraFloorPlacements`)
+
+Code : même rejeu que ci-dessus, [`Writers/WallPlacementReplayer.cs`](../../alundra-casaengine-project-converter/Writers/WallPlacementReplayer.cs)
+(`FloorPlacementDocument`), branché depuis la même fonction `WriteWallPlacements` dans
+[`Writers/CellMetadataWriter.cs`](../../alundra-casaengine-project-converter/Writers/CellMetadataWriter.cs).
+
+## Le problème
+
+Dans l'original, les tuiles de SOL participent au même tri de profondeur unifié que les murs -
+`DepthFloor(cellY, GetTileDepthSlot(tileId)) = cellY*16 + slot(0..5)`
+(AlundraTools/AlundraEngine/Graphics/GraphicManager.cs:275,324-347). Un sol ÉLEVÉ (cellule
+`Height > 0`, par exemple le pont supérieur d'un navire) dont la ligne de cellule est **au sud**
+d'une entité (`cellY` de la cellule de sol > ligne d'ancrage de l'entité) se dessine **par-dessus**
+cette entité. Le port initial gardait toutes les tuiles de sol à plat dans la passe Ground, ce qui
+laissait les jambes d'une entité de niveau inférieur transpercer le bord du pont supérieur (observé
+sur la map 389).
+
+## Pourquoi seulement `Height > 0`
+
+Un sol au niveau du sol (`Height == 0`) se dessine à la ligne d'écran de sa propre cellule. Une
+entité ancrée sur une ligne **plus au nord** est le seul cas où l'original placerait ce sol devant
+elle - mais ce cas ne peut jamais se produire visuellement : les sprites s'étendent **vers le haut**
+depuis leur point d'ancrage, et une élévation ne fait que les remonter davantage à l'écran. Un sol à
+`Height == 0` ne peut donc jamais chevaucher, à l'écran, une entité d'une ligne plus au nord - il n'y
+a aucune divergence observable à laisser ce cas plat. Émettre `AlundraFloorPlacements` seulement pour
+`Height > 0` couvre donc exactement les cas où le rendu plat diverge de l'original, sans coût inutile
+sur le reste (163 881 cellules ont une pile de mur, mais bien plus de cellules ont un sol : borner
+aux cellules élevées garde `FloorPlacements.Emitted` très inférieur à `Cells.CellCount` cumulé).
+
+## Schéma
+
+Document columnar, même convention que `AlundraWallPlacements`, sans colonne `stack_index` (chaque
+cellule n'a qu'une seule tuile de sol, donc `(cell_x, cell_y)` suffit à l'identifier). `count` == la
+longueur de chacun des 7 tableaux.
+
+| Champ | Type | Signification |
+|---|---|---|
+| `map_index` | int | Index de la map Alundra |
+| `count` | int | Nombre de placements (une entrée par tuile de sol élevée non vide et dans les bornes) |
+| `cell_x[]` / `cell_y[]` | int[] | Cellule source (`x`, `y`) de la tuile de sol dans la grille Alundra |
+| `plane[]` | int[] | Index de la couche `Render_{plane}` où la tuile a atterri |
+| `x[]` / `y[]` | int[] | Cellule cible dans cette couche (`y = cell_y - height`) |
+| `gid[]` | int[] | Gid Tiled (1-based) tel qu'il apparaît dans `Render_{plane}.data` |
+| `depth_slot[]` | int[] | Slot de profondeur PSX (0..5), même formule `GetTileDepthSlot` que pour les murs |
+
+Le rejeu émet les tuiles de sol de chaque cellule dans le même ordre que l'exporteur (sol avant murs,
+donc elles rivalisent en premier pour les plans) mais ne les enregistre dans le document que si
+`Height > 0` - la compétition de plan avec les murs reste identique dans les deux cas, seul
+l'enregistrement change.
+
+## Clé de tri côté moteur
+
+`Alundra/Scripts/WallPlacementOverlay.ApplyFloor`/`ComputeFloorSortKey` retire chaque tuile de sol
+élevée de sa couche plate (même mécanisme `TileMapComponent.RemoveTile` +
+`AddSortedOverlayTile` que pour les murs) et la réinsère avec
+`Elevation = cell_y*16 + clamp(depth_slot, 0, 5)` - **sans** le biais `+7` des murs. Un sol élevé de
+ligne `cellY` se trie donc toujours en dessous du slot 6 (les entités triées en Y) de sa propre ligne
+et des murs (slot 7+) de cette même ligne, et toujours au-dessus de n'importe quelle tuile d'une
+ligne plus au nord - exactement l'ordre `DepthFloor`/`DepthEntity`/`DepthWallBlock` de l'original.
+
+## Compteurs et invariants (`report.json`)
+
+- `FloorPlacements.Emitted` : nombre total de placements de sol élevé émis sur la conversion
+  complète - enregistré, pas une constante attendue à l'avance.
+- Un compte indépendant (même principe que pour les murs) recalcule combien de tuiles de sol sont
+  élevées (`Height > 0`), non vides et dans les bornes après application du seul décalage `Height` ;
+  `document.count` doit lui être strictement égal, sans quoi c'est une erreur de conversion.
+- Même vérification stricte que pour les murs : chaque `(plane, x, y)` prédit doit contenir le gid
+  attendu dans les couches importées - tout désaccord, sur n'importe quelle map, est une erreur.
+
+## Extrait réel
+
+Map 389 (`Ship Klark (beginning)-389`) : 774 placements de mur et 477 placements de sol élevé, pour
+1 251 tuiles au total réinsérées dans l'overlay trié en profondeur. Premier placement de sol de cette
+map : cellule `(17, 16)`, plan 1, cible `(17, 4)`, gid `593`, slot de profondeur `3`. Vérifié à la
+main : `Render_1.data[4 * 52 + 17]` vaut bien `592` (`gid - firstgid`, `firstgid = 1`).
+

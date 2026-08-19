@@ -40,6 +40,44 @@ public sealed class WallPlacementReplayResult
     /// an independent pass so it can catch a bug in the main placement loop rather than restate it.
     /// Must equal <see cref="WallPlacementDocument.Count"/>.</summary>
     public int ExpectedEmitted { get; init; }
+
+    /// <summary>Elevated (Height > 0) floor tile placements - see <see cref="FloorPlacementDocument"/>'s
+    /// class doc for why only elevated floors are recorded.</summary>
+    public FloorPlacementDocument FloorDocument { get; init; } = new();
+
+    /// <summary>Independent recount of how many Height&gt;0 floor tiles should have been emitted -
+    /// non-empty and in-bounds after the Height offset alone (no stack/offset math, floors have
+    /// neither) - mirrors <see cref="ExpectedEmitted"/>'s role for walls. Must equal
+    /// <see cref="FloorPlacementDocument.Count"/>.</summary>
+    public int FloorExpectedEmitted { get; init; }
+}
+
+/// <summary>
+/// One baked FLOOR tile's placement in the renderer-ordered flat tile planes, recorded only for
+/// cells with Height &gt; 0 (an elevated floor, e.g. an upper ship deck).
+///
+/// Ground-level (Height 0) floors participate in the original's unified depth sort exactly like
+/// elevated ones (<c>DepthFloor(cellY, slot) = cellY*16 + slot</c>,
+/// AlundraTools/AlundraEngine/Graphics/GraphicManager.cs:275,324-347) but can never visibly diverge
+/// from staying flat: a floor only draws in front of an entity when the floor's own row is south of
+/// (numerically greater than) the entity's row, and a Height-0 floor draws at its own cell's screen
+/// row - so the only entities it could contend with are ones anchored on that same row or further
+/// north, which the flat Ground pass already draws it behind or under correctly (see
+/// <c>docs/formats/cells-companion.md</c> for the full argument, including the elevated case this
+/// column exists to fix). No stack_index column: unlike wall stacks, each cell has exactly one floor
+/// tile, so the (cell_x, cell_y) pair alone identifies it.
+/// </summary>
+public sealed class FloorPlacementDocument
+{
+    public int MapIndex { get; set; }
+    public int Count { get; set; }
+    public int[] CellX { get; set; } = Array.Empty<int>();
+    public int[] CellY { get; set; } = Array.Empty<int>();
+    public int[] Plane { get; set; } = Array.Empty<int>();
+    public int[] X { get; set; } = Array.Empty<int>();
+    public int[] Y { get; set; } = Array.Empty<int>();
+    public int[] Gid { get; set; } = Array.Empty<int>();
+    public int[] DepthSlot { get; set; } = Array.Empty<int>();
 }
 
 /// <summary>
@@ -96,6 +134,14 @@ public static class WallPlacementReplayer
         var gidList = new List<int>();
         var depthSlotList = new List<int>();
 
+        var floorCellX = new List<int>();
+        var floorCellY = new List<int>();
+        var floorPlaneList = new List<int>();
+        var floorXList = new List<int>();
+        var floorYList = new List<int>();
+        var floorGidList = new List<int>();
+        var floorDepthSlotList = new List<int>();
+
         var stacksCovered = 0;
 
         for (var sourceY = 0; sourceY < height; sourceY++)
@@ -109,7 +155,22 @@ public static class WallPlacementReplayer
                 var floorRawId = floorRawTileId[index];
                 if (floorRawId != EmptyTileId)
                 {
-                    PlaceTile(layerDataByPlane, width, height, sourceX, sourceY - cellHeight[index], ResolveGid(floorRawId, gidByRawTileId));
+                    var floorTargetY = sourceY - cellHeight[index];
+                    var floorGid = ResolveGid(floorRawId, gidByRawTileId);
+                    var floorPlane = PlaceTile(layerDataByPlane, width, height, sourceX, floorTargetY, floorGid);
+
+                    // Only elevated (Height > 0) floors are recorded - see FloorPlacementDocument's
+                    // class doc for why Height-0 floors can stay flat with no observable divergence.
+                    if (cellHeight[index] > 0 && floorPlane >= 0)
+                    {
+                        floorCellX.Add(sourceX);
+                        floorCellY.Add(sourceY);
+                        floorPlaneList.Add(floorPlane);
+                        floorXList.Add(sourceX);
+                        floorYList.Add(floorTargetY);
+                        floorGidList.Add(floorGid);
+                        floorDepthSlotList.Add(ComputeDepthSlot(floorRawId));
+                    }
                 }
 
                 if (!wallTilesByCellIndex.TryGetValue(index.ToString(CultureInfo.InvariantCulture), out var stack))
@@ -155,6 +216,7 @@ public static class WallPlacementReplayer
         }
 
         var expectedEmitted = CountNonEmptyInBoundsWallTiles(width, height, cellHeight, wallTilesByCellIndex);
+        var floorExpectedEmitted = CountElevatedInBoundsFloorTiles(width, height, floorRawTileId, cellHeight);
 
         var document = new WallPlacementDocument
         {
@@ -170,11 +232,26 @@ public static class WallPlacementReplayer
             DepthSlot = depthSlotList.ToArray(),
         };
 
+        var floorDocument = new FloorPlacementDocument
+        {
+            MapIndex = mapIndex,
+            Count = floorCellX.Count,
+            CellX = floorCellX.ToArray(),
+            CellY = floorCellY.ToArray(),
+            Plane = floorPlaneList.ToArray(),
+            X = floorXList.ToArray(),
+            Y = floorYList.ToArray(),
+            Gid = floorGidList.ToArray(),
+            DepthSlot = floorDepthSlotList.ToArray(),
+        };
+
         return new WallPlacementReplayResult
         {
             Document = document,
             StacksCovered = stacksCovered,
             ExpectedEmitted = expectedEmitted,
+            FloorDocument = floorDocument,
+            FloorExpectedEmitted = floorExpectedEmitted,
         };
     }
 
@@ -206,6 +283,38 @@ public static class WallPlacementReplayer
 
                 var targetY = sourceY - cellHeight[index] - stack.Offset + stackIndex + 1;
                 if (sourceX >= 0 && sourceX < width && targetY >= 0 && targetY < height)
+                {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Independent recount of how many elevated (Height &gt; 0) floor tiles should have been
+    /// emitted - non-empty and in-bounds after applying the Height offset alone - kept deliberately
+    /// separate from the placement loop above, mirroring <see cref="CountNonEmptyInBoundsWallTiles"/>'s
+    /// role for walls.
+    /// </summary>
+    private static int CountElevatedInBoundsFloorTiles(
+        int width, int height, IReadOnlyList<int> floorRawTileId, IReadOnlyList<int> cellHeight)
+    {
+        var count = 0;
+
+        for (var sourceY = 0; sourceY < height; sourceY++)
+        {
+            for (var sourceX = 0; sourceX < width; sourceX++)
+            {
+                var index = sourceY * width + sourceX;
+                if (floorRawTileId[index] == EmptyTileId || cellHeight[index] <= 0)
+                {
+                    continue;
+                }
+
+                var targetY = sourceY - cellHeight[index];
+                if (targetY >= 0 && targetY < height)
                 {
                     count++;
                 }

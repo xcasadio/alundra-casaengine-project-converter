@@ -35,6 +35,26 @@ public sealed class WallPlacementRecords
 }
 
 /// <summary>
+/// One baked, elevated (Height &gt; 0) FLOOR tile's placement - the "AlundraFloorPlacements" custom
+/// property counterpart to <see cref="WallPlacementRecords"/> (see
+/// <c>AlundraCasaEngineProjectConverter.Writers.WallPlacementReplayer.FloorPlacementDocument</c> and
+/// <c>docs/formats/cells-companion.md</c>). No <c>StackIndex</c> column: each cell has exactly one
+/// floor tile, so (CellX, CellY) alone identifies it.
+/// </summary>
+public sealed class FloorPlacementRecords
+{
+    public int MapIndex { get; init; }
+    public int Count { get; init; }
+    public int[] CellX { get; init; } = Array.Empty<int>();
+    public int[] CellY { get; init; } = Array.Empty<int>();
+    public int[] Plane { get; init; } = Array.Empty<int>();
+    public int[] X { get; init; } = Array.Empty<int>();
+    public int[] Y { get; init; } = Array.Empty<int>();
+    public int[] Gid { get; init; } = Array.Empty<int>();
+    public int[] DepthSlot { get; init; } = Array.Empty<int>();
+}
+
+/// <summary>
 /// Parses <see cref="WallPlacementRecords"/> from a <see cref="TileMapData"/>'s custom properties, and
 /// drives the wall/sprite depth interleave (strip the baked wall tiles from the flat layers, resubmit
 /// them through <see cref="TileMapComponent.AddSortedOverlayTile"/> so they order against Y-sorted
@@ -47,6 +67,10 @@ public static class WallPlacementOverlay
 {
     /// <summary>Key of the map-level custom property carrying the columnar wall placement JSON.</summary>
     public const string CustomPropertyKey = "AlundraWallPlacements";
+
+    /// <summary>Key of the map-level custom property carrying the columnar elevated-floor placement
+    /// JSON (see <see cref="FloorPlacementRecords"/>).</summary>
+    public const string FloorCustomPropertyKey = "AlundraFloorPlacements";
 
     /// <summary>Every gid in the placement document is <c>firstgid + localTileId</c> with a single
     /// tileset per map and <c>firstgid</c> fixed at 1 (see <c>TileSetGidMapReader</c>/
@@ -138,6 +162,59 @@ public static class WallPlacementOverlay
     }
 
     /// <summary>
+    /// Best-effort parse of <see cref="FloorCustomPropertyKey"/>, same tolerant shape as
+    /// <see cref="TryParse"/>: a missing property, malformed JSON, or a column-length mismatch all
+    /// return false with a single warning logged - elevated floors simply stay flat for that world.
+    /// </summary>
+    public static bool TryParseFloor(
+        IReadOnlyDictionary<string, string> customProperties, string worldName, out FloorPlacementRecords records)
+    {
+        records = null!;
+
+        if (!customProperties.TryGetValue(FloorCustomPropertyKey, out var json) || string.IsNullOrEmpty(json))
+        {
+            Logs.WriteWarning(
+                $"WallPlacementOverlay: world '{worldName}' has no '{FloorCustomPropertyKey}' custom property; "
+                + "elevated floor depth interleave disabled.");
+            return false;
+        }
+
+        try
+        {
+            var parsed = JsonSerializer.Deserialize<FloorPlacementRecords>(json, SerializerOptions);
+            if (parsed == null || !IsWellFormed(parsed))
+            {
+                Logs.WriteWarning(
+                    $"WallPlacementOverlay: world '{worldName}' - '{FloorCustomPropertyKey}' parsed to a malformed "
+                    + "document (column length mismatch); elevated floor depth interleave disabled.");
+                return false;
+            }
+
+            records = parsed;
+            return true;
+        }
+        catch (JsonException ex)
+        {
+            Logs.WriteWarning(
+                $"WallPlacementOverlay: world '{worldName}' - failed to parse '{FloorCustomPropertyKey}' "
+                + $"({ex.Message}); elevated floor depth interleave disabled.");
+            return false;
+        }
+    }
+
+    private static bool IsWellFormed(FloorPlacementRecords records)
+    {
+        var count = records.Count;
+        return records.CellX.Length == count
+            && records.CellY.Length == count
+            && records.Plane.Length == count
+            && records.X.Length == count
+            && records.Y.Length == count
+            && records.Gid.Length == count
+            && records.DepthSlot.Length == count;
+    }
+
+    /// <summary>
     /// STRIP + RESUBMIT: for every placement, removes the baked tile from its flat layer
     /// (<see cref="TileMapComponent.RemoveTile"/>) and immediately re-adds the identical tile reference to
     /// the runtime sorted overlay (<see cref="TileMapComponent.AddSortedOverlayTile"/>) keyed by
@@ -189,6 +266,71 @@ public static class WallPlacementOverlay
                 + $"placements did not match the live tile map (removed {removedCount}); those tiles were "
                 + "left exactly as loaded, un-interleaved.");
         }
+    }
+
+    /// <summary>
+    /// STRIP + RESUBMIT for elevated floor tiles - identical shape to <see cref="Apply"/>, through the
+    /// same overlay list (<see cref="ComputeFloorSortKey"/> keys these low enough, slots 0..5, to never
+    /// collide with a wall's slot 7+ bias on the same row - see that method's doc).
+    /// </summary>
+    public static void ApplyFloor(TileMapComponent tileMapComponent, FloorPlacementRecords records, string worldName)
+    {
+        var removedCount = 0;
+        var mismatchCount = 0;
+
+        for (var i = 0; i < records.Count; i++)
+        {
+            var plane = records.Plane[i];
+            var x = records.X[i];
+            var y = records.Y[i];
+            var expectedLocalTileId = records.Gid[i] - FirstGid;
+
+            TileMapTileReference tileReference;
+            try
+            {
+                tileReference = tileMapComponent.GetTileReference(plane, x, y);
+            }
+            catch (Exception)
+            {
+                mismatchCount++;
+                continue;
+            }
+
+            if (tileReference.IsEmpty || tileReference.TileId != expectedLocalTileId)
+            {
+                mismatchCount++;
+                continue;
+            }
+
+            tileMapComponent.RemoveTile(plane, x, y);
+            removedCount++;
+
+            var sortKey = ComputeFloorSortKey(records.CellY[i], records.DepthSlot[i], i);
+            tileMapComponent.AddSortedOverlayTile(tileReference, x, y, in sortKey);
+        }
+
+        if (mismatchCount > 0)
+        {
+            Logs.WriteError(
+                $"WallPlacementOverlay: world '{worldName}' - {mismatchCount} of {records.Count} floor "
+                + $"placements did not match the live tile map (removed {removedCount}); those tiles were "
+                + "left exactly as loaded, un-interleaved.");
+        }
+    }
+
+    /// <summary>
+    /// Port of <c>GraphicManager.DepthFloor(tileY, floorSlot)</c>: <c>tileY * 16 + clamp(floorSlot, 0, 5)</c>
+    /// - no <see cref="WallDepthBias"/>. An elevated floor of row <paramref name="cellY"/> therefore always
+    /// sorts (slot 0..5) below that same row's Y-sorted entity slot (6) and its walls (slot 7+), and above
+    /// every tile of any northern row (whose highest slot is a wall's, still &lt; <c>(cellY-1)*16+16 &lt;=
+    /// cellY*16</c>) - exactly the "floor south of an entity draws over it" ordering the bug report
+    /// describes, reproduced here instead of the original's raw index-buffer compare.
+    /// </summary>
+    internal static RenderSortKey2D ComputeFloorSortKey(int cellY, int depthSlot, int stableId)
+    {
+        var elevation = cellY * RowStride + Math.Clamp(depthSlot, 0, 5);
+        return new RenderSortKey2D(
+            (int)RenderPass2D.YSortedWorld, SharedSortingLayer, 0, elevation, 0, 0, stableId);
     }
 
     /// <summary>

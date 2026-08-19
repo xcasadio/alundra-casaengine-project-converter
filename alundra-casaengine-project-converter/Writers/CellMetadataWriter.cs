@@ -17,6 +17,7 @@ public static class CellMetadataWriter
 {
     private const string CustomPropertyKey = "AlundraCells";
     private const string WallPlacementsCustomPropertyKey = "AlundraWallPlacements";
+    private const string FloorPlacementsCustomPropertyKey = "AlundraFloorPlacements";
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
@@ -115,12 +116,13 @@ public static class CellMetadataWriter
 
     /// <summary>
     /// Replays the exporter's floor/wall tile packing (see <see cref="WallPlacementReplayer"/>) to
-    /// predict every baked wall tile's (plane, x, y, gid), verifies each prediction against the
-    /// flat layers Phase 1 already imported into <paramref name="tileMapData"/>, and - only once
-    /// every prediction has been confirmed - stores the result as the "AlundraWallPlacements"
-    /// custom property. A verification mismatch or a replay failure is a hard error (report.Errors),
-    /// never a warning: it means this map's wall tiles cannot be reliably stripped from the flat
-    /// layers and depth-sorted at gameplay time.
+    /// predict every baked wall tile's (plane, x, y, gid) and every elevated (Height &gt; 0) floor
+    /// tile's, verifies each prediction against the flat layers Phase 1 already imported into
+    /// <paramref name="tileMapData"/>, and - only once every prediction has been confirmed - stores
+    /// the results as the "AlundraWallPlacements" and "AlundraFloorPlacements" custom properties. A
+    /// verification mismatch or a replay failure is a hard error (report.Errors), never a warning: it
+    /// means this map's tiles cannot be reliably stripped from the flat layers and depth-sorted at
+    /// gameplay time.
     /// </summary>
     private static void WriteWallPlacements(
         string inputDirectory,
@@ -168,6 +170,21 @@ public static class CellMetadataWriter
             {
                 report.Increment("WallPlacements.MultiPlaneMaps");
             }
+
+            var floorDocument = replayResult.FloorDocument;
+
+            if (floorDocument.Count != replayResult.FloorExpectedEmitted)
+            {
+                report.Errors.Add(
+                    $"map_{mapIndex}: floor placement count mismatch - emitted {floorDocument.Count}, " +
+                    $"independently expected {replayResult.FloorExpectedEmitted}.");
+            }
+
+            VerifyFloorPlacements(tileMapData, floorDocument, firstGid, mapIndex, report);
+
+            tileMapData.CustomProperties[FloorPlacementsCustomPropertyKey] = JsonSerializer.Serialize(floorDocument, SerializerOptions);
+
+            report.Increment("FloorPlacements.Emitted", floorDocument.Count);
         }
         catch (Exception exception)
         {
@@ -218,6 +235,51 @@ public static class CellMetadataWriter
                     $"map_{mapIndex}: wall placement verification failed at plane {plane} ({x},{y}) for cell " +
                     $"({document.CellX[i]},{document.CellY[i]}) stack index {document.StackIndex[i]} - expected " +
                     $"local tile id {expectedLocalTileId} (gid {document.Gid[i]}), found {actualLocalTileId}.");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Same hard verification as <see cref="VerifyPlacements"/>, for elevated floor placements - no
+    /// stack index to report (each cell has exactly one floor tile).
+    /// </summary>
+    private static void VerifyFloorPlacements(
+        TileMapData tileMapData, FloorPlacementDocument document, int firstGid, int mapIndex, ConversionReport report)
+    {
+        for (var i = 0; i < document.Count; i++)
+        {
+            var plane = document.Plane[i];
+            var x = document.X[i];
+            var y = document.Y[i];
+            var expectedLocalTileId = document.Gid[i] - firstGid;
+
+            if (plane < 0 || plane >= tileMapData.Layers.Count)
+            {
+                report.Errors.Add(
+                    $"map_{mapIndex}: floor placement verification failed - predicted plane {plane} does not " +
+                    $"exist ({tileMapData.Layers.Count} layers) for cell ({document.CellX[i]},{document.CellY[i]}).");
+                continue;
+            }
+
+            int actualLocalTileId;
+            try
+            {
+                actualLocalTileId = tileMapData.GetTileId(plane, x, y);
+            }
+            catch (Exception exception)
+            {
+                report.Errors.Add(
+                    $"map_{mapIndex}: floor placement verification failed - could not read plane {plane} at ({x},{y}) " +
+                    $"for cell ({document.CellX[i]},{document.CellY[i]}): {exception.Message}");
+                continue;
+            }
+
+            if (actualLocalTileId != expectedLocalTileId)
+            {
+                report.Errors.Add(
+                    $"map_{mapIndex}: floor placement verification failed at plane {plane} ({x},{y}) for cell " +
+                    $"({document.CellX[i]},{document.CellY[i]}) - expected local tile id {expectedLocalTileId} " +
+                    $"(gid {document.Gid[i]}), found {actualLocalTileId}.");
             }
         }
     }

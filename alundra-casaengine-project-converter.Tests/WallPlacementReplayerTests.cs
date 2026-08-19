@@ -61,6 +61,50 @@ public class WallPlacementReplayerTests
         Assert.Contains(document.Plane, plane => plane >= 1);
     }
 
+    [Fact]
+    public void Replay_EmitsFloorPlacements_OnlyForElevatedCells()
+    {
+        // 1-wide, 4-tall map. Cell (0,0): Height 0, floor raw 10 -> targetY = 0 (flat, NOT recorded).
+        // Cell (0,2): Height 2, floor raw 300 -> targetY = 0 (elevated, recorded, depth slot
+        // 300/160=1). Cell (0,3): Height 0, no floor tile at all (EmptyTileId).
+        var floorTileId = new[] { 10, 0xffff, 300, 0xffff };
+        var cellHeight = new[] { 0, 0, 2, 0 };
+        var wallTiles = new Dictionary<string, WallTileStack>();
+        var gidByRawTileId = new Dictionary<int, int> { [10] = 101, [300] = 103 };
+
+        var result = WallPlacementReplayer.Replay(MapIndex, Width, Height, floorTileId, cellHeight, wallTiles, gidByRawTileId);
+
+        Assert.Equal(1, result.FloorExpectedEmitted);
+
+        var floorDocument = result.FloorDocument;
+        Assert.Equal(MapIndex, floorDocument.MapIndex);
+        Assert.Equal(1, floorDocument.Count);
+        Assert.Equal(new[] { 0 }, floorDocument.CellX);
+        Assert.Equal(new[] { 2 }, floorDocument.CellY);
+        // Collides with cell (0,0)'s flat floor (raw 10, target (0,0)) on plane 0, so it is pushed to
+        // plane 1 - not trivially always plane 0.
+        Assert.Equal(new[] { 1 }, floorDocument.Plane);
+        Assert.Equal(new[] { 0 }, floorDocument.X);
+        Assert.Equal(new[] { 0 }, floorDocument.Y); // sourceY(2) - height(2) = 0
+        Assert.Equal(new[] { 103 }, floorDocument.Gid);
+        Assert.Equal(new[] { 1 }, floorDocument.DepthSlot); // 300/160 = 1
+    }
+
+    [Fact]
+    public void Replay_ElevatedFloorOutOfBounds_IsDroppedFromFloorExpectedEmitted()
+    {
+        // Cell (0,0): Height 5 pushes targetY negative -> out of bounds, dropped, never counted.
+        var floorTileId = new[] { 10, 0xffff, 0xffff, 0xffff };
+        var cellHeight = new[] { 5, 0, 0, 0 };
+        var wallTiles = new Dictionary<string, WallTileStack>();
+        var gidByRawTileId = new Dictionary<int, int> { [10] = 101 };
+
+        var result = WallPlacementReplayer.Replay(MapIndex, Width, Height, floorTileId, cellHeight, wallTiles, gidByRawTileId);
+
+        Assert.Equal(0, result.FloorExpectedEmitted);
+        Assert.Equal(0, result.FloorDocument.Count);
+    }
+
     [Theory]
     [InlineData(0, 0)]      // tileIndex 0 -> bucket 0
     [InlineData(159, 0)]    // last entry of bucket 0
@@ -122,6 +166,39 @@ public class WallPlacementReplayerTests
         Assert.Equal(document.CellX, roundTripped.CellX);
         Assert.Equal(document.CellY, roundTripped.CellY);
         Assert.Equal(document.StackIndex, roundTripped.StackIndex);
+        Assert.Equal(document.Plane, roundTripped.Plane);
+        Assert.Equal(document.X, roundTripped.X);
+        Assert.Equal(document.Y, roundTripped.Y);
+        Assert.Equal(document.Gid, roundTripped.Gid);
+        Assert.Equal(document.DepthSlot, roundTripped.DepthSlot);
+    }
+
+    [Fact]
+    public void FloorPlacementDocument_RoundTripsThroughSnakeCaseJson()
+    {
+        var floorTileId = new[] { 0xffff, 300 };
+        var cellHeight = new[] { 0, 1 };
+        var wallTiles = new Dictionary<string, WallTileStack>();
+        var gidByRawTileId = new Dictionary<int, int> { [300] = 103 };
+        var document = WallPlacementReplayer.Replay(MapIndex, Width, 2, floorTileId, cellHeight, wallTiles, gidByRawTileId).FloorDocument;
+
+        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower };
+        var json = JsonSerializer.Serialize(document, options);
+
+        // Columnar schema, same convention as AlundraWallPlacements - no "stack_index" column, floor
+        // tiles have no stack.
+        Assert.Contains("\"map_index\"", json);
+        Assert.Contains("\"cell_x\"", json);
+        Assert.Contains("\"cell_y\"", json);
+        Assert.Contains("\"plane\"", json);
+        Assert.Contains("\"depth_slot\"", json);
+        Assert.DoesNotContain("\"stack_index\"", json);
+
+        var roundTripped = JsonSerializer.Deserialize<FloorPlacementDocument>(json, options)!;
+        Assert.Equal(document.MapIndex, roundTripped.MapIndex);
+        Assert.Equal(document.Count, roundTripped.Count);
+        Assert.Equal(document.CellX, roundTripped.CellX);
+        Assert.Equal(document.CellY, roundTripped.CellY);
         Assert.Equal(document.Plane, roundTripped.Plane);
         Assert.Equal(document.X, roundTripped.X);
         Assert.Equal(document.Y, roundTripped.Y);
