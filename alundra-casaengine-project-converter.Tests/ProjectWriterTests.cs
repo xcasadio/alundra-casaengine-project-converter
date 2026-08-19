@@ -29,6 +29,7 @@ public class ProjectWriterTests
             ProjectSettingsHelper.Load(Path.Combine(outputDirectory, "AlundraGame.json"));
 
             Assert.Equal("AlundraGame", GameSettings.ProjectSettings.ProjectName);
+            Assert.Equal("Alundra.dll", GameSettings.ProjectSettings.GameplayDllName);
             Assert.True(AssetCatalog.IsLoaded);
             Assert.Empty(AssetCatalog.AssetInfos);
         }

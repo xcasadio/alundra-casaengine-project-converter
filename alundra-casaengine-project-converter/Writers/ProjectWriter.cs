@@ -14,6 +14,13 @@ public static class ProjectWriter
 {
     public const string ProjectName = "AlundraGame";
 
+    // Name of the gameplay assembly built by Alundra/Alundra.csproj. The engine reads this from
+    // ProjectSettings.GameplayDllName (ProjectSettingsHelper.Load) and loads it with
+    // Assembly.LoadFile(Path.Combine(EngineEnvironment.ProjectPath, GameplayDllName)), so it must
+    // match the built DLL's file name (with extension) and the DLL must sit at the project root -
+    // see Alundra.csproj's post-build copy target.
+    public const string GameplayDllName = "Alundra.dll";
+
     // Only folders something actually writes into. The list used to mirror a generic CasaEngine
     // project layout, which left five empty directories in every converted project:
     //  - "Worlds" and "Events": a map's world and event bytecode live inside that map's own folder
@@ -56,7 +63,7 @@ public static class ProjectWriter
             IsFixedTimeStep = false,
             IsMouseVisible = true,
             FirstWorldLoaded = string.Empty,
-            GameplayDllName = string.Empty,
+            GameplayDllName = GameplayDllName,
             ExternalToolsDirectory = "ExternalTools",
 
             // Half of the framing: the engine shows window / Zoom world pixels, so leaving these at
@@ -83,9 +90,8 @@ public static class ProjectWriter
     /// must be the very path Phase 6 registered in the asset catalog (GameManager resolves
     /// FirstWorldLoaded through AssetCatalog.GetByFileName, an ordinal lookup).
     ///
-    /// Only FirstWorldLoaded is touched; every other setting written in Phase 0 is left as is.
-    /// GameplayDllName stays empty on purpose - that DLL is out of this converter's scope
-    /// (plan section 6).
+    /// Only FirstWorldLoaded is touched; every other setting written in Phase 0 (including
+    /// GameplayDllName) is left as is.
     /// </summary>
     public static void SetFirstWorldLoaded(string outputDirectory, string worldRelativePath, ConversionReport report)
     {

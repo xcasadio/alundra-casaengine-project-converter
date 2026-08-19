@@ -10,4 +10,14 @@
   <ItemGroup>
     <ProjectReference Include="..\CasaEngineMonogame\CasaEngine\CasaEngine.csproj" />
   </ItemGroup>
+
+  <!-- The engine loads the gameplay DLL from the project root (see ProjectWriter.GameplayDllName
+       and ProjectSettingsHelper.Load), so drop the built assembly there after every build. -->
+  <Target Name="CopyGameplayDllToProject" AfterTargets="Build">
+    <ItemGroup>
+      <GameplayDeployFiles Include="$(TargetDir)Alundra.dll;$(TargetDir)Alundra.pdb" Condition="Exists('$(TargetDir)Alundra.dll')" />
+    </ItemGroup>
+    <MakeDir Directories="$(MSBuildProjectDirectory)\..\alundra-project" Condition="'@(GameplayDeployFiles)' != ''" />
+    <Copy SourceFiles="@(GameplayDeployFiles)" DestinationFolder="$(MSBuildProjectDirectory)\..\alundra-project" Condition="'@(GameplayDeployFiles)' != ''" SkipUnchangedFiles="true" />
+  </Target>
 </Project>
