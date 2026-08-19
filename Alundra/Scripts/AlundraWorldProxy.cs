@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Assets.TileMap;
@@ -24,9 +25,16 @@ namespace Alundra.Scripts;
 /// Either way, the resulting entity carries an <see cref="AlundraEntityScriptProxy"/> filled by
 /// <see cref="EntityRecordMapper"/>, whose logical position fields (<c>PosX</c>/<c>PosY</c>/<c>PosZ</c>)
 /// this proxy then converts into the spawned entity's <c>RootComponent.LocalTransform.Position</c> via
-/// <see cref="ResolveWorldPosition"/> - see <see cref="CreateEntityFromPrefab"/>. No status-machine or
-/// event-program execution yet - that lands in follow-up work, which will need to re-derive this
-/// transform every time the logical position changes.
+/// <see cref="ResolveWorldPosition"/> - see <see cref="CreateEntityFromPrefab"/>.
+///
+/// This proxy also retains every entity it spawned and drives their status machine each frame (see
+/// <see cref="Update"/>), a faithful port of the two-phase pass of
+/// <c>EntityManager.UpdateEntitiesEvents</c> @ 0x800386D0: the original manager-level pass, not a
+/// per-entity one, which is why the driver lives here rather than on
+/// <see cref="AlundraEntityScriptProxy"/> (whose own <c>Update</c> stays a no-op by design - see its
+/// doc comment). Actual event-program execution goes through the <see cref="IEventProgramRunner"/> seam
+/// (<see cref="EventProgramRunner"/>); the bytecode interpreter itself is a later chantier. Transform
+/// re-derivation when the logical position changes at runtime is still a follow-up task.
 /// </summary>
 public class AlundraWorldProxy : GameplayProxy
 {
@@ -39,6 +47,29 @@ public class AlundraWorldProxy : GameplayProxy
     private const string EntitiesLayerName = "Entities";
     private const string PortalsLayerName = "Portals";
     private const string MapEventsLayerName = "MapEvents";
+
+    /// <summary>
+    /// Entities spawned by this proxy in <see cref="InitializeWithWorld"/> (both the prefab-clone and
+    /// bare-fallback paths), in creation order - <see cref="Update"/> drives their status machine in
+    /// this same order, mirroring the original manager's single flat entity-slot array.
+    /// </summary>
+    private readonly List<Entity> _spawnedEntities = new();
+
+    /// <summary>
+    /// Seam over actual event-program execution (see <see cref="IEventProgramRunner"/>); defaults to a
+    /// silent no-op since the bytecode interpreter does not exist yet. Internal, not injected through
+    /// the constructor: <c>ElementFactory</c> constructs gameplay proxies parameterless, so tests swap
+    /// this field directly instead.
+    /// </summary>
+    internal IEventProgramRunner EventProgramRunner = new NoOpEventProgramRunner();
+
+    /// <summary>
+    /// Port of the original global <c>g_activeCollisionEntity</c>: the entity currently involved in the
+    /// active collision pair, used by the pick phase to decide whether a touch downgrades all the way
+    /// to an interact (slot F). Null in V1 (no collision system driving it yet); settable internally for
+    /// tests.
+    /// </summary>
+    internal AlundraEntityScriptProxy? ActiveCollisionEntity;
 
     public override void InitializeWithWorld(World world)
     {
@@ -78,6 +109,7 @@ public class AlundraWorldProxy : GameplayProxy
             {
                 var entity = CreateEntityFromRecord(record, guid => world.Game.AssetContentManager.Load<Entity>(guid));
                 world.AddEntity(entity);
+                _spawnedEntities.Add(entity);
             }
             catch (Exception ex)
             {
@@ -288,9 +320,165 @@ public class AlundraWorldProxy : GameplayProxy
             : baseName;
     }
 
+    /// <summary>
+    /// Drives the status machine of every entity this proxy spawned, in creation order. Port of
+    /// <c>EntityManager.UpdateEntitiesEvents</c> @ 0x800386D0 - see <see cref="RunEntityEventsPass"/> for
+    /// the actual (headless-testable) two-phase pass.
+    /// </summary>
     public override void Update(float elapsedTime)
     {
-        //Nothing to do at world level yet.
+        if (_spawnedEntities.Count == 0)
+        {
+            return;
+        }
+
+        var proxies = new List<AlundraEntityScriptProxy>(_spawnedEntities.Count);
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
+            {
+                proxies.Add(proxy);
+            }
+        }
+
+        RunEntityEventsPass(proxies, EventProgramRunner, ActiveCollisionEntity, DestroyEntity);
+    }
+
+    /// <summary>
+    /// Faithful port of the two-phase entity event pass of <c>EntityManager.UpdateEntitiesEvents</c> @
+    /// 0x800386D0, factored out of <see cref="Update"/> so it can run headless over a plain list of
+    /// proxies in tests, without a live <see cref="World"/>.
+    ///
+    /// Out of V1 scope (documented, not ported): <c>MovePlayer()</c> at the head of the original pass
+    /// (no player system yet), the <c>g_playerControlFlags</c> gate, and the sibling passes
+    /// (UpdateDestroyedEntities/Counters/Lists/Animation/Physics) - this only ports the event pass
+    /// itself. The original loop also starts at slot index 1 (slot 0 is an unused sentinel); every
+    /// element of <paramref name="entities"/> here is already a real spawned entity, so this port
+    /// iterates all of them.
+    /// </summary>
+    internal static void RunEntityEventsPass(
+        IReadOnlyList<AlundraEntityScriptProxy> entities,
+        IEventProgramRunner runner,
+        AlundraEntityScriptProxy? activeCollisionEntity,
+        Action<AlundraEntityScriptProxy, int> destroyEntity)
+    {
+        // Phase 1 (pick): decide which event program slot each entity should run this frame, and apply
+        // the status transitions the original interleaves into that same pick.
+        foreach (var entity in entities)
+        {
+            var eventProgramType = ScriptHelper.ProgramUnknown;
+
+            if (entity.BlockedByEntity == null)
+            {
+                switch (entity.Status)
+                {
+                    case EntityStatus.Destroyed:
+                    case EntityStatus.FlagToDestroy:
+                        eventProgramType = ScriptHelper.ProgramUnknown;
+                        break;
+
+                    case EntityStatus.Loaded:
+                        eventProgramType = ScriptHelper.ProgramALoad;
+                        entity.Status = EntityStatus.Normal;
+                        Logs.WriteDebug($"AlundraWorldProxy: entity[{entity.EntityRefId}] Loaded -> Normal (slot A).");
+                        break;
+
+                    case EntityStatus.Normal:
+                    {
+                        var flags = entity.Flags;
+
+                        if ((flags & EntityFlags.DestroyOnSlidingSlope) != 0 && entity.Slope_18c == 4)
+                        {
+                            destroyEntity(entity, 6);
+                            eventProgramType = ScriptHelper.ProgramUnknown;
+                        }
+                        else if ((flags & EntityFlags.DestroyOnVramFlags) != 0 && (entity.CombinedVramFlagsOR & 0x8004U) != 0)
+                        {
+                            destroyEntity(entity, -1);
+                            eventProgramType = ScriptHelper.ProgramUnknown;
+                        }
+                        else if (((flags & EntityFlags.DeactivateOnImpact) != 0 && (entity.ForceAdjusted != 0 || entity.IsOnGround != 0))
+                                 || ((flags & EntityFlags.DeactivateOnHit) != 0 && entity.HitCounter != 0)
+                                 || ((flags & EntityFlags.DeactivateOnAnimationEnd) != 0 && entity.ForceResetAnimationFlag != 0))
+                        {
+                            entity.Status = EntityStatus.Deactivated;
+                            eventProgramType = ScriptHelper.ProgramEDeactivate;
+                            Logs.WriteDebug($"AlundraWorldProxy: entity[{entity.EntityRefId}] Normal -> Deactivated (slot E).");
+                        }
+                        else
+                        {
+                            eventProgramType = ScriptHelper.ProgramDTouch;
+
+                            if (entity.TouchingEntity == null)
+                            {
+                                eventProgramType = ScriptHelper.ProgramCTick;
+
+                                if (ReferenceEquals(activeCollisionEntity, entity)
+                                    && (entity.ProgramIndexes[5] != 0 || entity.SpriteProgramIndexes[5] != 0))
+                                {
+                                    eventProgramType = ScriptHelper.ProgramFInteract;
+                                }
+                            }
+                        }
+
+                        break;
+                    }
+
+                    case EntityStatus.Deactivated:
+                        eventProgramType = ScriptHelper.ProgramEDeactivate;
+                        break;
+                }
+            }
+
+            entity.EventTrigger = eventProgramType;
+        }
+
+        // Phase 2 (run): the do/while re-scan loop of the original - a runner that sets another
+        // entity's EventTrigger while running gets that entity run within the same call, until a clean
+        // pass finds nothing left to do.
+        bool keepGoing;
+
+        do
+        {
+            keepGoing = false;
+
+            foreach (var entity in entities)
+            {
+                if (entity.EventTrigger == ScriptHelper.ProgramUnknown)
+                {
+                    continue;
+                }
+
+                var programIndex = entity.ProgramIndexes[entity.EventTrigger] & 0x7f;
+
+                if (programIndex == 0)
+                {
+                    // g_entityEventFunctionsByType => AI
+                    runner.RunSpriteEvent(entity);
+                }
+                else
+                {
+                    runner.RunScript(entity, entity.EventTrigger);
+                }
+
+                entity.EventTrigger = -1;
+                keepGoing = true;
+            }
+        } while (keepGoing);
+    }
+
+    /// <summary>
+    /// V1 minimal port of <c>GameEngine.DestroyEntity(Entity, int)</c> @ 0x8003A59C: marks the entity for
+    /// destruction (naturally skipped by the pick phase from now on) and logs once at debug level with
+    /// the original's numeric effect-id argument (-1 = "use the sprite record's break effect", 6 = the
+    /// sliding-slope break effect, see the pick-phase callers above). Does not remove the entity from the
+    /// CasaEngine world yet (slot recycling, contents spawning and the original's other side effects -
+    /// ActiveEffect/PlatformEntity cleanup, SpawnEntityContents - are later work).
+    /// </summary>
+    internal void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+    {
+        entity.Status = EntityStatus.FlagToDestroy;
+        Logs.WriteDebug($"AlundraWorldProxy: entity[{entity.EntityRefId}] -> FlagToDestroy (effectId={effectId}).");
     }
 
     public override void Draw()
@@ -321,7 +509,9 @@ public class AlundraWorldProxy : GameplayProxy
 
     public override IGameplayProxy Clone()
     {
-        //No state on this proxy yet (V1 only spawns entities on load); revisit once it gains any.
+        //Still returns a fresh instance: the spawned-entity list is runtime state rebuilt by
+        //InitializeWithWorld (each world instance spawns and owns its own entities), not something a
+        //clone should share or carry over.
         return new AlundraWorldProxy();
     }
 }

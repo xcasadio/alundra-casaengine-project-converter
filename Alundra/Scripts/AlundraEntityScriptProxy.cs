@@ -139,6 +139,13 @@ public class AlundraEntityScriptProxy : GameplayProxy
     {
     }
 
+    /// <summary>
+    /// Stays a no-op by design: the original entity event status machine
+    /// (<c>EntityManager.UpdateEntitiesEvents</c> @ 0x800386D0) is a manager-level pass over every
+    /// entity slot, not a per-entity update method. <see cref="AlundraWorldProxy"/> (which spawned this
+    /// entity) drives it instead, in creation order, mirroring that architecture - see
+    /// <see cref="AlundraWorldProxy.Update"/> / <see cref="AlundraWorldProxy.RunEntityEventsPass"/>.
+    /// </summary>
     public override void Update(float elapsedTime)
     {
     }
