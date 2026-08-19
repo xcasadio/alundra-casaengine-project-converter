@@ -1,4 +1,4 @@
-﻿using System;
+﻿#nullable enable
 using CasaEngine.Framework.Physics;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.World;
@@ -112,7 +112,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
     public Entity? TouchingEntity;//224
     public int EventTrigger;//228
     public int MapEventProgramId;//22c
-    public Entity LogicContextEntity; //self
+    public Entity LogicContextEntity = null!; //self
     //public readonly EventProgramState EventProgramState = new();
     public uint LastTargetAnimationId;//26c
     public uint LastTargetDirection;//270
@@ -130,43 +130,158 @@ public class AlundraEntityScriptProxy : GameplayProxy
 
 
 
+    //The engine calls Initialize/InitializeWithWorld/Update on every integrated entity
+    //(World.InternalAddEntities catches and drops the entity on a throw, and World.Update would
+    //throw every frame), so every override below is a safe no-op for now. The real status-machine
+    //logic (event program interpreter driving Index/ProgramIndexes/etc.) lands in a follow-up.
+
     public override void InitializeWithWorld(World world)
     {
-        throw new NotImplementedException();
     }
 
     public override void Update(float elapsedTime)
     {
-        throw new NotImplementedException();
     }
 
     public override void Draw()
     {
-        throw new NotImplementedException();
     }
 
     public override void OnHit(Collision collision)
     {
-        throw new NotImplementedException();
     }
 
     public override void OnHitEnded(Collision collision)
     {
-        throw new NotImplementedException();
     }
 
     public override void OnBeginPlay(World world)
     {
-        throw new NotImplementedException();
     }
 
     public override void OnEndPlay(World world)
     {
-        throw new NotImplementedException();
     }
 
     public override IGameplayProxy Clone()
     {
-        throw new NotImplementedException();
+        var clone = new AlundraEntityScriptProxy
+        {
+            Index = Index,
+            Index2 = Index2,
+            ChildEntity = ChildEntity,
+            ParentEntity = ParentEntity,
+            Status = Status,
+            Hp = Hp,
+            HpMax = HpMax,
+            FrameCounter = FrameCounter,
+            BlockedByEntity = BlockedByEntity,
+            Flags2 = Flags2,
+            PlatformEntity = PlatformEntity,
+            CarriedEntity = CarriedEntity,
+            RelativeWarpOffsetX = RelativeWarpOffsetX,
+            RelativeWarpOffsetY = RelativeWarpOffsetY,
+            RelativeWarpOffsetZ = RelativeWarpOffsetZ,
+            ContentsItemId = ContentsItemId,
+            ContentsGameFlag = ContentsGameFlag,
+            EntityRefId = EntityRefId,
+            SpriteTableIndex = SpriteTableIndex,
+            Flags = Flags,
+            TargetAnimationId = TargetAnimationId,
+            TargetDirection = TargetDirection,
+            CurrentAnimationId = CurrentAnimationId,
+            CurrentDirection = CurrentDirection,
+            AnimationDirection = AnimationDirection,
+            NextFrameDelay = NextFrameDelay,
+            ForceResetAnimationFlag = ForceResetAnimationFlag,
+            AnimCompleteCounter = AnimCompleteCounter,
+            AnimFlags = AnimFlags,
+            ForceZ = ForceZ,
+            TargetForceX = TargetForceX,
+            TargetForceY = TargetForceY,
+            ForceX = ForceX,
+            ForceY = ForceY,
+            PreviousAdjustedForceX = PreviousAdjustedForceX,
+            PreviousAdjustedForceY = PreviousAdjustedForceY,
+            ForceStepX = ForceStepX,
+            ForceStepY = ForceStepY,
+            AdjustedForceX = AdjustedForceX,
+            AdjustedForceY = AdjustedForceY,
+            FinalForceX = FinalForceX,
+            FinalForceY = FinalForceY,
+            FinalForceZ = FinalForceZ,
+            Acceleration = Acceleration,
+            Speed = Speed,
+            IsZForceApplied = IsZForceApplied,
+            ScreenClipX = ScreenClipX,
+            ScreenClipY = ScreenClipY,
+            ScreenClipZ = ScreenClipZ,
+            NegModX = NegModX,
+            NegModY = NegModY,
+            NegModZ = NegModZ,
+            PosX = PosX,
+            PosY = PosY,
+            PosZ = PosZ,
+            TileX = TileX,
+            TileY = TileY,
+            TileZ = TileZ,
+            RidingEntity = RidingEntity,
+            XCollisionEntity = XCollisionEntity,
+            FloorHeight = FloorHeight,
+            TerrainHeight = TerrainHeight,
+            ForceAdjusted = ForceAdjusted,
+            CollidedWithEntityZ = CollidedWithEntityZ,
+            IsOnGround = IsOnGround,
+            PlatformUpdateFlag = PlatformUpdateFlag,
+            _16c = _16c,
+            HitBoxOriginX = HitBoxOriginX,
+            HitBoxOriginY = HitBoxOriginY,
+            HitBoxOriginZ = HitBoxOriginZ,
+            _17c = _17c,
+            CombinedVramFlagsOR = CombinedVramFlagsOR,
+            CombinedVramFlagsAND = CombinedVramFlagsAND,
+            TileAttributes = TileAttributes,
+            Slope_18c = Slope_18c,
+            Slope_190 = Slope_190,
+            ZUpperBound = ZUpperBound,
+            RenderSortKey = RenderSortKey,
+            DamagedTickCounter = DamagedTickCounter,
+            FrameCollisionTickCounter = FrameCollisionTickCounter,
+            ModdedPosX = ModdedPosX,
+            ModdedPosY = ModdedPosY,
+            ModdedPosZ = ModdedPosZ,
+            ModX = ModX,
+            ModY = ModY,
+            ModZ = ModZ,
+            Width = Width,
+            Height = Height,
+            Depth = Depth,
+            HitBoxX = HitBoxX,
+            HitBoxY = HitBoxY,
+            HitBoxZ = HitBoxZ,
+            CollisionOffsetX = CollisionOffsetX,
+            CollisionOffsetY = CollisionOffsetY,
+            CollisionOffsetZ = CollisionOffsetZ,
+            CollisionWidth = CollisionWidth,
+            CollisionDepth = CollisionDepth,
+            CollisionHeight = CollisionHeight,
+            HitCounter = HitCounter,
+            TouchingEntity = TouchingEntity,
+            EventTrigger = EventTrigger,
+            MapEventProgramId = MapEventProgramId,
+            LogicContextEntity = LogicContextEntity,
+            LastTargetAnimationId = LastTargetAnimationId,
+            LastTargetDirection = LastTargetDirection,
+            Bytes = (byte[])Bytes.Clone(),
+            DelayOrAngleOrEntityId = DelayOrAngleOrEntityId,
+            ItemState = ItemState,
+            AIValues = (short[])AIValues.Clone(),
+        };
+
+        ProgramIndexes.CopyTo(clone.ProgramIndexes, 0);
+        SpriteProgramIndexes.CopyTo(clone.SpriteProgramIndexes, 0);
+        MapHeights.CopyTo(clone.MapHeights, 0);
+
+        return clone;
     }
 }
