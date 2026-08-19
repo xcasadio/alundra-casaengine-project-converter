@@ -1,21 +1,29 @@
+using System;
 using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
+using CasaEngine.Framework.Scene.Entities;
+using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// Covers <see cref="AlundraWorldProxy"/>'s per-record entity creation, split into
-/// <see cref="AlundraWorldProxy.BuildEntityName"/>, <see cref="AlundraWorldProxy.ApplyRecord"/> and the
-/// full <see cref="AlundraWorldProxy.CreateEntityFromRecord"/> (which additionally exercises
+/// <see cref="AlundraWorldProxy.BuildEntityName"/>, <see cref="AlundraWorldProxy.ApplyRecord"/>,
+/// <see cref="AlundraWorldProxy.TryGetPrefabAssetId"/> and the full
+/// <see cref="AlundraWorldProxy.CreateEntityFromRecord"/> (which additionally exercises
 /// <c>Entity.Initialize()</c> resolving <see cref="AlundraEntityScriptProxy"/> through <c>ElementFactory</c>
 /// - this needs Alundra.Tests to carry its own MonoGame.Framework.DesktopGL reference, since
 /// Alundra.csproj marks its own copy PrivateAssets="All" for game-folder deployment and it would
 /// otherwise never flow into this test host).
 ///
-/// Not covered: the entity actually being added to and integrated by a live <see cref="World"/>
-/// (<c>World.AddEntity</c> / <c>InternalAddEntities</c> calling <c>Entity.InitializeWithWorld</c>), which
-/// needs a running <see cref="CasaEngine.Framework.Application.CasaEngineGame"/>.
+/// Not covered: the live prefab loader (<c>World.Game.AssetContentManager.Load&lt;Entity&gt;</c>) wired in
+/// <see cref="AlundraWorldProxy.InitializeWithWorld"/> - it needs a running
+/// <see cref="CasaEngine.Framework.Application.CasaEngineGame"/> with a populated asset catalog, so tests
+/// exercise <see cref="AlundraWorldProxy.CreateEntityFromRecord"/> directly with a fake loader instead.
+/// Likewise not covered: the entity actually being added to and integrated by a live
+/// <see cref="World"/> (<c>World.AddEntity</c> / <c>InternalAddEntities</c> calling
+/// <c>Entity.InitializeWithWorld</c>).
 /// </summary>
 public class AlundraWorldProxyTests
 {
@@ -95,20 +103,121 @@ public class AlundraWorldProxyTests
     }
 
     [Fact]
-    public void CreateEntityFromRecord_ProducesInitializedEntityWithMappedProxy()
+    public void CreateEntityFromRecord_NoPrefabLink_ProducesInitializedBareEntityWithMappedProxy()
     {
         var record = BuildEntity0Record();
 
-        var entity = AlundraWorldProxy.CreateEntityFromRecord(record);
+        var entity = AlundraWorldProxy.CreateEntityFromRecord(record, prefabLoader: null);
 
         Assert.Equal("Entity_0 (Bloc transparent (1x1x2))", entity.Name);
         Assert.Equal(nameof(AlundraEntityScriptProxy), entity.GameplayProxyClassName);
         Assert.True(entity.IsInitialized);
+        Assert.Null(entity.RootComponent);
 
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         Assert.Equal(EntityStatus.Loaded, proxy.Status);
         Assert.Equal(0, proxy.EntityRefId);
         Assert.Equal(25u, proxy.SpriteTableIndex);
         Assert.Equal(new[] { 133, 5, 9, 13, 17, 21 }, proxy.ProgramIndexes);
+    }
+
+    [Fact]
+    public void CreateEntityFromRecord_LoaderReturnsNull_FallsBackToBareEntityWithMappedProxy()
+    {
+        var record = BuildEntity0Record();
+        record.CustomProperties["PrefabAssetId"] = Guid.NewGuid().ToString();
+
+        var entity = AlundraWorldProxy.CreateEntityFromRecord(record, _ => null);
+
+        Assert.Equal("Entity_0 (Bloc transparent (1x1x2))", entity.Name);
+        Assert.Equal(nameof(AlundraEntityScriptProxy), entity.GameplayProxyClassName);
+        Assert.True(entity.IsInitialized);
+        Assert.Null(entity.RootComponent);
+
+        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        Assert.Equal(EntityStatus.Loaded, proxy.Status);
+        Assert.Equal(0, proxy.EntityRefId);
+    }
+
+    [Fact]
+    public void CreateEntityFromRecord_LoaderThrows_FallsBackToBareEntityWithMappedProxy()
+    {
+        var record = BuildEntity0Record();
+        record.CustomProperties["PrefabAssetId"] = Guid.NewGuid().ToString();
+
+        var entity = AlundraWorldProxy.CreateEntityFromRecord(record, _ => throw new InvalidOperationException("asset not found"));
+
+        Assert.Equal(nameof(AlundraEntityScriptProxy), entity.GameplayProxyClassName);
+        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        Assert.Equal(EntityStatus.Loaded, proxy.Status);
+    }
+
+    [Fact]
+    public void CreateEntityFromRecord_ValidPrefabLink_ClonesPrefabAndMapsProxy()
+    {
+        var record = BuildEntity0Record();
+        var prefabAssetId = Guid.NewGuid();
+        record.CustomProperties["PrefabAssetId"] = prefabAssetId.ToString();
+
+        var prefab = new Entity
+        {
+            Name = "BankPrefab",
+            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            RootComponent = new AnimatedSpriteComponent(),
+        };
+
+        Guid? requestedId = null;
+        var entity = AlundraWorldProxy.CreateEntityFromRecord(record, id =>
+        {
+            requestedId = id;
+            return prefab;
+        });
+
+        Assert.Equal(prefabAssetId, requestedId);
+        Assert.Equal("Entity_0 (Bloc transparent (1x1x2))", entity.Name);
+        Assert.Equal(nameof(AlundraEntityScriptProxy), entity.GameplayProxyClassName);
+        Assert.True(entity.IsInitialized);
+
+        var clonedComponent = Assert.IsType<AnimatedSpriteComponent>(entity.RootComponent);
+        Assert.NotSame(prefab.RootComponent, clonedComponent);
+        Assert.NotSame(prefab, entity);
+
+        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        Assert.Equal(EntityStatus.Loaded, proxy.Status);
+        Assert.Equal(0, proxy.EntityRefId);
+        Assert.Equal(25u, proxy.SpriteTableIndex);
+        Assert.Equal(new[] { 133, 5, 9, 13, 17, 21 }, proxy.ProgramIndexes);
+    }
+
+    [Theory]
+    [InlineData("11111111-1111-1111-1111-111111111111", true)]
+    [InlineData("not-a-guid", false)]
+    public void TryGetPrefabAssetId_ParsesOrRejectsValue(string rawValue, bool expected)
+    {
+        var record = BuildEntity0Record();
+        record.CustomProperties["PrefabAssetId"] = rawValue;
+
+        var result = AlundraWorldProxy.TryGetPrefabAssetId(record, out var prefabAssetId);
+
+        Assert.Equal(expected, result);
+        if (expected)
+        {
+            Assert.Equal(Guid.Parse(rawValue), prefabAssetId);
+        }
+        else
+        {
+            Assert.Equal(Guid.Empty, prefabAssetId);
+        }
+    }
+
+    [Fact]
+    public void TryGetPrefabAssetId_MissingKey_ReturnsFalse()
+    {
+        var record = BuildEntity0Record();
+
+        var result = AlundraWorldProxy.TryGetPrefabAssetId(record, out var prefabAssetId);
+
+        Assert.False(result);
+        Assert.Equal(Guid.Empty, prefabAssetId);
     }
 }

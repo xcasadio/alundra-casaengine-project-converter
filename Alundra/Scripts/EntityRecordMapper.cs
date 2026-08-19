@@ -62,6 +62,11 @@ namespace Alundra.Scripts;
 /// (<c>EntityNames.GetName</c>); not consumed by the original entity-loading logic and has no corresponding
 /// proxy field (the record's own object name, e.g. <c>"Entity_0"</c>, is a separate value and is only used
 /// here to build error messages).</description></item>
+/// <item><description><c>PrefabAssetId</c>: the bank prefab's asset id (see
+/// <c>EntityBankPrefabWriter</c>/<c>Entities/{Name}/{Name}.entity</c>), injected by the converter so the
+/// spawner (<see cref="AlundraWorldProxy"/>) can clone the right prefab per record. It is consumed at
+/// spawn time, before this mapper runs, and has no corresponding proxy field - deliberately not mapped
+/// here.</description></item>
 /// </list>
 /// </summary>
 public static class EntityRecordMapper
