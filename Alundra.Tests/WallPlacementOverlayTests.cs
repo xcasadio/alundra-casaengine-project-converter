@@ -653,5 +653,10 @@ public class WallPlacementOverlayTests
         public override void Draw(float x, float y, float z, Rectangle uvOffset, Vector2 scale)
         {
         }
+
+        public override Rectangle GetCurrentSourceRectangle()
+        {
+            return Rectangle.Empty;
+        }
     }
 }
