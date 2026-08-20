@@ -185,11 +185,120 @@ public class BackdropWriterTests
         }, includeDisabledMap: true, includeMap389: false);
     }
 
+    [Fact]
+    public void ConvertBackdrops_ForAMapWithTheOverlayGate_RoundTripsTheTintFields()
+    {
+        RunConversion(mapLocations =>
+        {
+            var mapIndex = 389;
+            mapLocations[mapIndex] = new MapLocation("TestZone", "Open Sea-389");
+        },
+        (outputDirectory, report) =>
+        {
+            Assert.Equal(1, report.Counters["Backdrop.OverlayTints"]);
+
+            var companionPath = Path.Combine(
+                outputDirectory, "Maps", "TestZone", "Open Sea-389", "backdrop", "Open Sea-389.backdrop.json");
+            var document = JsonDocument.Parse(File.ReadAllText(companionPath)).RootElement;
+
+            Assert.True(document.GetProperty("OverlayEnabled").GetBoolean());
+            Assert.Equal(84, document.GetProperty("OverlayColorR").GetInt32());
+            Assert.Equal(75, document.GetProperty("OverlayColorG").GetInt32());
+            Assert.Equal(52, document.GetProperty("OverlayColorB").GetInt32());
+        },
+        bgColorA: 1,
+        overlayColorBytes: new byte[] { 84, 75, 52 });
+    }
+
+    [Fact]
+    public void ConvertBackdrops_ForACellularOnlyFixture_StillEmitsACompanionCarryingTheTint()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            var dataDirectory = Path.Combine(inputDirectory, "data");
+            Directory.CreateDirectory(dataDirectory);
+
+            const int mapIndex = 96;
+            WriteCellularOnlyMapFixture(dataDirectory, mapIndex, bgColorA: 1, overlayColorBytes: new byte[] { 40, 40, 40 });
+
+            var mapLocations = new Dictionary<int, MapLocation>
+            {
+                [mapIndex] = new MapLocation("TestZone", "Cellular Only-96"),
+            };
+            var mapFilter = new List<int> { mapIndex };
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            ProjectWriter.CreateEmptyProject(outputDirectory, report);
+            BackdropWriter.ConvertBackdrops(inputDirectory, outputDirectory, mapFilter, mapLocations, report);
+
+            Assert.Empty(report.Errors);
+            Assert.Equal(1, report.Counters["Backdrop.Maps"]);
+            Assert.Equal(1, report.Counters["Backdrop.OverlayTints"]);
+            Assert.Equal(0, report.Counters.GetValueOrDefault("Backdrop.LayersExported"));
+
+            var companionPath = Path.Combine(
+                outputDirectory, "Maps", "TestZone", "Cellular Only-96", "backdrop", "Cellular Only-96.backdrop.json");
+            Assert.True(File.Exists(companionPath));
+
+            var document = JsonDocument.Parse(File.ReadAllText(companionPath)).RootElement;
+            Assert.True(document.GetProperty("OverlayEnabled").GetBoolean());
+            Assert.Equal(40, document.GetProperty("OverlayColorR").GetInt32());
+            Assert.Equal(40, document.GetProperty("OverlayColorG").GetInt32());
+            Assert.Equal(40, document.GetProperty("OverlayColorB").GetInt32());
+
+            var layers = document.GetProperty("Layers");
+            Assert.Equal("Disabled", layers[0].GetProperty("Mode").GetString());
+            Assert.Equal("Cellular", layers[1].GetProperty("Mode").GetString());
+
+            // No Tiles layer means no texture directory at all.
+            var backdropDirectory = Path.Combine(outputDirectory, "Maps", "TestZone", "Cellular Only-96", "backdrop");
+            Assert.Empty(Directory.GetFiles(backdropDirectory, "*.png"));
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void ConvertBackdrops_WithBGColorAZero_EmitsOverlayEnabledFalse()
+    {
+        RunConversion(mapLocations =>
+        {
+            var mapIndex = 389;
+            mapLocations[mapIndex] = new MapLocation("TestZone", "Open Sea-389");
+        },
+        (outputDirectory, report) =>
+        {
+            Assert.Equal(0, report.Counters.GetValueOrDefault("Backdrop.OverlayTints"));
+
+            var companionPath = Path.Combine(
+                outputDirectory, "Maps", "TestZone", "Open Sea-389", "backdrop", "Open Sea-389.backdrop.json");
+            var document = JsonDocument.Parse(File.ReadAllText(companionPath)).RootElement;
+
+            Assert.False(document.GetProperty("OverlayEnabled").GetBoolean());
+            Assert.Equal(0, document.GetProperty("OverlayColorR").GetInt32());
+        },
+        bgColorA: 0);
+    }
+
     private static void RunConversion(
         Action<Dictionary<int, MapLocation>> configureLocations,
         Action<string, ConversionReport> assert,
         bool includeDisabledMap = false,
-        bool includeMap389 = true)
+        bool includeMap389 = true,
+        int bgColorA = 0,
+        byte[]? overlayColorBytes = null)
     {
         var inputDirectory = CreateTempDirectory();
         var outputDirectory = CreateTempDirectory();
@@ -205,7 +314,7 @@ public class BackdropWriterTests
 
             if (includeMap389)
             {
-                WriteMap389Fixture(dataDirectory);
+                WriteMap389Fixture(dataDirectory, bgColorA, overlayColorBytes);
                 mapLocations[389] = new MapLocation("TestZone", "Open Sea-389");
                 mapFilter.Add(389);
             }
@@ -237,9 +346,18 @@ public class BackdropWriterTests
         }
     }
 
-    private static void WriteMap389Fixture(string dataDirectory)
+    // Overlay tint bytes live well before TileGridBaseOffset, in the zero-padding BuildDataBlob
+    // otherwise leaves untouched.
+    private const int OverlayTestPointer = 100;
+
+    private static void WriteMap389Fixture(string dataDirectory, int bgColorA = 0, byte[]? overlayColorBytes = null)
     {
         var data = BuildDataBlob();
+        if (overlayColorBytes != null)
+        {
+            Array.Copy(overlayColorBytes, 0, data, OverlayTestPointer, overlayColorBytes.Length);
+        }
+
         var tileSheet = BuildTileSheet();
         var paletteWords = BuildPaletteWords();
 
@@ -252,11 +370,13 @@ public class BackdropWriterTests
 
         writer.WriteNumber("Graphics", 0);
         writer.WriteBoolean("HasGraphics", true);
+        writer.WriteNumber("Overlay", OverlayTestPointer);
 
         writer.WritePropertyName("Infos");
         writer.WriteStartObject();
         writer.WriteNumber("Enabled", 1);
         writer.WriteNumber("AnimNum", 1);
+        writer.WriteNumber("BGColorA", bgColorA);
         writer.WritePropertyName("ModeLayer");
         writer.WriteStartArray();
         writer.WriteNumberValue(1);
@@ -348,6 +468,97 @@ public class BackdropWriterTests
             writer.WriteEndArray();
         }
 
+        writer.WriteEndArray();
+
+        writer.WriteEndObject();
+        writer.WriteEndObject();
+    }
+
+    /// <summary>Mirrors the corpus's 9 Cellular-only tinted maps (e.g. map 96): layer 1 is
+    /// <c>Mode 2</c> ("Cellular"), layer 0 is disabled, and no layer has graphics to bake into a
+    /// texture - only the overlay tint is exportable.</summary>
+    private static void WriteCellularOnlyMapFixture(
+        string dataDirectory, int mapIndex, int bgColorA, byte[] overlayColorBytes)
+    {
+        var data = new byte[OverlayTestPointer + overlayColorBytes.Length + 16];
+        Array.Copy(overlayColorBytes, 0, data, OverlayTestPointer, overlayColorBytes.Length);
+
+        using var stream = File.Create(Path.Combine(dataDirectory, $"map_{mapIndex}.json"));
+        using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = false });
+
+        writer.WriteStartObject();
+        writer.WritePropertyName("ScrollParameters");
+        writer.WriteStartObject();
+
+        writer.WriteNumber("Graphics", 0);
+        writer.WriteBoolean("HasGraphics", true);
+        writer.WriteNumber("Overlay", OverlayTestPointer);
+
+        writer.WritePropertyName("Infos");
+        writer.WriteStartObject();
+        writer.WriteNumber("Enabled", 1);
+        writer.WriteNumber("AnimNum", 1);
+        writer.WriteNumber("BGColorA", bgColorA);
+        writer.WritePropertyName("ModeLayer");
+        writer.WriteStartArray();
+        writer.WriteNumberValue(0);
+        writer.WriteNumberValue(2);
+        writer.WriteEndArray();
+        writer.WriteEndObject();
+
+        writer.WritePropertyName("LayerInfos");
+        writer.WriteStartArray();
+        writer.WriteStartObject();
+        writer.WriteNumber("AnimTimer", 0);
+        writer.WriteNumber("BlendMode", 0);
+        writer.WriteNumber("Ground", 0);
+        writer.WriteEndObject();
+        writer.WriteStartObject();
+        writer.WriteNumber("AnimTimer", 0);
+        writer.WriteNumber("BlendMode", 0);
+        writer.WriteNumber("Ground", 0);
+        writer.WriteEndObject();
+        writer.WriteEndArray();
+
+        writer.WritePropertyName("Scrollars");
+        writer.WriteStartArray();
+        writer.WriteEndArray();
+
+        writer.WritePropertyName("Cellulars");
+        writer.WriteStartArray();
+        for (var i = 0; i < 2; i++)
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("CountBase", 0);
+            writer.WriteNumber("AWaveY", 0);
+            writer.WriteNumber("AWavePhase", 0);
+            writer.WriteNumber("AWaveAmp", 0);
+            writer.WriteNumber("BWaveY", 0);
+            writer.WriteNumber("BWavePhase", 0);
+            writer.WriteNumber("BWaveWeight", 0);
+            writer.WriteNumber("Divisions", 0);
+            writer.WriteEndObject();
+        }
+
+        writer.WriteEndArray();
+
+        writer.WritePropertyName("Cells");
+        writer.WriteStartArray();
+        writer.WriteStartArray();
+        writer.WriteEndArray();
+        writer.WriteStartArray();
+        writer.WriteEndArray();
+        writer.WriteEndArray();
+
+        writer.WritePropertyName("WaveLut");
+        writer.WriteStartArray();
+        writer.WriteEndArray();
+
+        WriteIntArray(writer, "Data", data);
+        WriteIntArray(writer, "TileSheetImageData", Array.Empty<byte>());
+
+        writer.WritePropertyName("PaletteWords");
+        writer.WriteStartArray();
         writer.WriteEndArray();
 
         writer.WriteEndObject();

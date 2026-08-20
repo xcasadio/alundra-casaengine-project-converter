@@ -37,6 +37,27 @@ Format source dérivé de `GraphicManager.RenderAllTileLayers`/`RenderLayerToBuf
   640x480 (40x30 tuiles de 16px) : c'est exactement la grille exportée, donc le moteur consommateur
   n'a qu'à répéter la texture pour obtenir le défilement infini.
 
+## Incrustation plein écran (`Overlay*`)
+
+`GraphicManager.RenderTileOverlayLayer` (@ 0x8005BA40, re-vérifié dans la source actuelle) dessine,
+indépendamment des couches de tuiles ci-dessus, un rectangle plein écran (320x240) semi-transparent
+par-dessus toute la scène - un ciel qui s'assombrit, une teinte d'intérieur... Porte :
+
+- **Gate** : `Infos.Enabled != 0 && Infos.BGColorA != 0`. `BGColorA == 1` et `== 2` rendent à
+  l'identique (branche "non étendue"). Le corpus ne contient aucune map avec `BGColorA >= 0x65`, qui
+  basculerait vers un dégradé 4 coins (`OverlayExt`) jamais atteint ici - **non exporté**, écart
+  documenté.
+- **Couleur** : **pas** `Infos.BGColorR/G/B` - ces trois octets sont des leurres, jamais lus par le
+  rendu. La vraie couleur est aux 3 premiers octets du pointeur `Overlay` dans `Data`
+  (`Data[Overlay]`, `Data[Overlay+1]`, `Data[Overlay+2]` = R,G,B) ; le 4e octet ("Hold", un compteur
+  d'animation par frame) vaut 0 sur toutes les maps observées - vérifié, pas modélisé comme
+  animation.
+- **Alpha** 0.5, profondeur `SpriteDepth.BackgroundUI - 2000` : au-dessus de tout sol/mur/entité/fond
+  `Ground=0`, mais en dessous du bucket `Ground=1` (-1000) ci-dessus.
+- 16 maps du corpus passent la gate : 7 avec une couche `Tiles` (18/19/403/404/405/406/450) et 9
+  purement `Cellular` (96/97/98/99/271/289/293/357/481) - ces dernières reçoivent quand même un
+  compagnon JSON (juste la teinte, aucune texture).
+
 ## Ce qui est exporté
 
 - Pour chaque couche `Mode 1` ("Tiles") non vide : une texture 640x480 pré-rendue (composition
@@ -44,8 +65,11 @@ Format source dérivé de `GraphicManager.RenderAllTileLayers`/`RenderLayerToBuf
   enregistrée comme n'importe quelle texture du convertisseur (`.texture` + PNG brut au catalogue)
   sous `Maps/{Zone}/{Name}-{id}/backdrop/{Name}-{id}-layer{N}.png`.
 - Un compagnon JSON brut, **pas** un asset CasaEngine (même convention que `events.json`) :
-  `Maps/{Zone}/{Name}-{id}/backdrop/{Name}-{id}.backdrop.json`.
-- Rien n'est écrit pour une map dont `ScrollParameters.Infos.Enabled` est faux.
+  `Maps/{Zone}/{Name}-{id}/backdrop/{Name}-{id}.backdrop.json`, avec l'incrustation plein écran
+  (`OverlayEnabled`/`OverlayColorR/G/B`, voir ci-dessus).
+- Rien n'est écrit pour une map dont `ScrollParameters.Infos.Enabled` est faux ; à l'inverse, le
+  compagnon est écrit dès que `Enabled` est vrai, même sans aucune couche `Tiles` exportée - c'est
+  le cas des 9 maps purement `Cellular` listées ci-dessus.
 
 ## Différé (paramètres bruts exportés, rendu non implémenté)
 
@@ -53,8 +77,8 @@ Format source dérivé de `GraphicManager.RenderAllTileLayers`/`RenderLayerToBuf
   caméra/dérive périodique/piste sinusoïdale (`CellType.WaveX`, table `WaveLut`) - un système bien
   plus riche qu'une grille de tuiles. Les paramètres bruts (`Cellular`, `Cells[]`, `WaveLut` au
   niveau map) sont exportés ; aucune texture n'est produite pour ces couches.
-- L'incrustation plein écran (`LiningInfos.BGColorR/G/B/A`, `RenderTileOverlayLayer` @ 0x8005BA40) :
-  un rectangle/dégradé semi-transparent indépendant des couches de tuiles - non exporté du tout.
+- La variante étendue (`OverlayExt`, dégradé 4 coins, `BGColorA >= 0x65`) : jamais atteinte dans le
+  corpus, voir ci-dessus.
 - L'animation de tuile (`LayerInfos.AnimTimer` + le décalage V par `AnimFrameCounter`) : la texture
   exportée correspond à l'image statique `AnimFrameCounter == 0`.
 
@@ -67,6 +91,8 @@ Racine :
 | `MapIndex` | int | Index de la map Alundra |
 | `Enabled` | bool | `ScrollParameters.Infos.Enabled` |
 | `AnimNum` | int | Nombre de sous-images d'animation de tuile |
+| `OverlayEnabled` | bool | `Infos.Enabled != 0 && Infos.BGColorA != 0` (voir la section incrustation ci-dessus) |
+| `OverlayColorR`/`G`/`B` | byte | Couleur lue à `Data[Overlay..Overlay+2]` ; 0 si `OverlayEnabled` est faux |
 | `WaveLut` | int[256]? | Table de la sinusoïde `WaveX`, partagée par les deux couches ; absente si `WaveLUT == 0` |
 | `Layers[]` | objet | Une entrée par couche (0 et 1, toujours 2 entrées) |
 
@@ -101,6 +127,7 @@ Racine :
 - `Backdrop.Layers.Tiles` / `.Cellular` / `.Disabled` : répartition par mode.
 - `Backdrop.LayersExported` : couches `Tiles` ayant produit une texture (une grille entièrement
   vide, elle, ne produit ni texture ni erreur - il n'y a simplement rien à dessiner).
+- `Backdrop.OverlayTints` : maps dont `OverlayEnabled` est vrai (16 dans le corpus actuel).
 
 ## Extrait réel
 

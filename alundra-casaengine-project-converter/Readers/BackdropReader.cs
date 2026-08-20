@@ -116,12 +116,26 @@ public sealed class BackdropLayerDocument
 /// not a backdrop. Both are exported identically; which bucket a layer belongs to is the consuming
 /// renderer's job, driven by <see cref="BackdropLayerDocument.Ground"/>.
 ///
+/// Per-map full-screen tint overlay (<see cref="OverlayEnabled"/>/<see cref="OverlayColorR"/>/G/B -
+/// GraphicManager.RenderTileOverlayLayer @ 0x8005BA40, re-verified against the current source): gated
+/// on <c>Infos.Enabled != 0 &amp;&amp; Infos.BGColorA != 0</c> (BGColorA == 1 and == 2 render
+/// identically - both take the "not extended" branch below; the corpus never sets BGColorA &gt;=
+/// 0x65, which would switch to an unreached 4-corner gradient (OverlayExt) - not modeled here, a
+/// documented deviation). The RGB color is NOT <c>Infos.BGColorR/G/B</c> - those three bytes are
+/// decoys the renderer never reads. The real color is the first 3 bytes at the <c>Overlay</c> pointer
+/// inside <see cref="Readers.BackdropReadResult.Data"/> (Data[Overlay], Data[Overlay+1],
+/// Data[Overlay+2] = R,G,B, 0-255); the 4th byte ("Hold", a per-frame animation-hold counter) is 0 on
+/// every observed map in the corpus, so it is sanity-checked but not modeled as animation. The
+/// original draws this as a 320x240 rectangle at alpha 0.5, depth <c>SpriteDepth.BackgroundUI -
+/// 2000</c> - one step below the Ground=1 bucket above (-1000) and so always painted first within it,
+/// but still above every floor/wall/entity/Ground=0 backdrop.
+///
 /// Deferred (raw parameters exported, rendering not implemented here):
 ///  - WaveX cell tracks (Cellulars + <see cref="WaveLut"/>): a per-tick sine-like displacement
 ///    table indexed by AWaveY/AWavePhase/AWaveAmp/BWaveY/BWavePhase/BWaveWeight.
 ///  - Cellular (mode 2) layers entirely: independently-moving sprite cells, not a tile grid.
-///  - Per-map screen tint overlay (LiningInfos.BGColorR/G/B/A, RenderTileOverlayLayer @
-///    0x8005BA40): a full-screen alpha-blended rectangle/gradient, unrelated to the tile layers.
+///  - The extended (OverlayExt) 4-corner gradient tint variant (BGColorA &gt;= 0x65): unreached in
+///    the corpus, see above.
 ///  - Tile animation (LayerInfos.AnimTimer + the per-tile AnimFrameCounter that shifts sampled V):
 ///    the exported texture is a single static frame (AnimFrameCounter == 0).
 /// </summary>
@@ -130,6 +144,10 @@ public sealed class BackdropDocument
     public int MapIndex { get; set; }
     public bool Enabled { get; set; }
     public int AnimNum { get; set; }
+    public bool OverlayEnabled { get; set; }
+    public byte OverlayColorR { get; set; }
+    public byte OverlayColorG { get; set; }
+    public byte OverlayColorB { get; set; }
     public int[]? WaveLut { get; set; }
     public List<BackdropLayerDocument> Layers { get; set; } = new();
 }
@@ -199,6 +217,28 @@ public static class BackdropReader
             && hasGraphicsElement.ValueKind == JsonValueKind.True;
         var graphics = GetLong(scrollElement, "Graphics");
         var data = ReadByteArray(scrollElement, "Data");
+
+        // Overlay tint gate (RenderTileOverlayLayer @ 0x8005BA40 - see the class doc on
+        // BackdropDocument): Infos.BGColorA != 0 (Enabled is already true here). The color lives at
+        // Data[Overlay..Overlay+2] (R,G,B) - Infos.BGColorR/G/B are decoys, never read by the
+        // renderer. A pointer that falls outside Data (should not happen on real data, but Data is
+        // itself read defensively above) disables the tint rather than throwing.
+        var bgColorA = GetInt(scrollElement, "Infos", "BGColorA");
+        document.OverlayEnabled = bgColorA != 0;
+        if (document.OverlayEnabled)
+        {
+            var overlayPointer = GetInt(scrollElement, "Overlay");
+            if (overlayPointer >= 0 && overlayPointer + 3 <= data.Length)
+            {
+                document.OverlayColorR = data[overlayPointer];
+                document.OverlayColorG = data[overlayPointer + 1];
+                document.OverlayColorB = data[overlayPointer + 2];
+            }
+            else
+            {
+                document.OverlayEnabled = false;
+            }
+        }
         var tileSheetImageData = ReadByteArray(scrollElement, "TileSheetImageData");
         var paletteWords = ReadPaletteWords(scrollElement);
         var waveLut = ReadIntArray(scrollElement, "WaveLut");

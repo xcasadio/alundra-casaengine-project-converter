@@ -51,11 +51,21 @@ public sealed class BackdropLayerData
 /// convention as <see cref="EventProgramDocument"/>/<see cref="MapEventProgramLoader"/>. See
 /// <see cref="BackdropLoader"/> for path resolution and <see cref="BackdropRenderer"/> for how this
 /// gets drawn.
+///
+/// <see cref="OverlayEnabled"/>/<see cref="OverlayColorR"/>/G/B mirror the converter's own tint
+/// fields (see <c>docs/formats/backdrops.md</c>): a companion written before this feature existed
+/// simply has these properties absent from its JSON, which <see cref="System.Text.Json.JsonSerializer"/>
+/// leaves at their defaults (<c>false</c>/<c>0</c>) - an old companion therefore loads with the tint
+/// disabled rather than failing.
 /// </summary>
 public sealed class BackdropDocument
 {
     public int MapIndex { get; set; }
     public bool Enabled { get; set; }
     public int AnimNum { get; set; }
+    public bool OverlayEnabled { get; set; }
+    public byte OverlayColorR { get; set; }
+    public byte OverlayColorG { get; set; }
+    public byte OverlayColorB { get; set; }
     public List<BackdropLayerData> Layers { get; set; } = new();
 }

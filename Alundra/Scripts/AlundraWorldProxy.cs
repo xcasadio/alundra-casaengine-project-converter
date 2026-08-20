@@ -865,11 +865,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext
 
     /// <summary>Ticks and draws this world's scrolling background layers - see
     /// <see cref="BackdropRenderer"/>'s class doc for the render pass/camera-space reasoning. A no-op
-    /// when the world's backdrop companion had no Tiles-mode layer (the common case), or before the
-    /// engine's <see cref="SpriteRendererComponent"/>/debug camera are resolvable.</summary>
+    /// when the world has no backdrop companion at all, or one with neither a Tiles-mode layer nor the
+    /// overlay tint (the common case), or before the engine's <see cref="SpriteRendererComponent"/>/
+    /// debug camera are resolvable.</summary>
     private void UpdateAndDrawBackdrop(float elapsedTime)
     {
-        if (!_backdropRenderer.HasLayers || _world?.Game == null)
+        if (!_backdropRenderer.HasContent || _world?.Game == null)
         {
             return;
         }

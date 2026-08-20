@@ -21,9 +21,13 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///  - Maps/{Zone}/{Name}-{id}/backdrop/{Name}-{id}.backdrop.json: a raw companion (not a CasaEngine
 ///    asset, nothing loads it - same convention as events.json) carrying every layer's parallax
 ///    factors, auto-scroll speeds/periods, blend mode, ground flag, anim timer, texture reference,
-///    and - for Cellular (mode 2) layers - the raw cell/wave parameters whose rendering this
-///    converter does not implement (see the deferred-items list on
-///    <see cref="Readers.BackdropDocument"/>).
+///    the map's full-screen overlay tint (OverlayEnabled/OverlayColorR/G/B - see the class doc on
+///    <see cref="Readers.BackdropDocument"/> for the corrected source semantics), and - for Cellular
+///    (mode 2) layers - the raw cell/wave parameters whose rendering this converter does not
+///    implement (see the deferred-items list on <see cref="Readers.BackdropDocument"/>). Written for
+///    every map passing the <c>Infos.Enabled</c> gate, independently of whether any layer exported a
+///    texture - this is why the 9 Cellular-only tinted maps (no Tiles layer at all) still get a
+///    companion carrying just the tint.
 /// </summary>
 public static class BackdropWriter
 {
@@ -79,6 +83,13 @@ public static class BackdropWriter
         if (!result.Document.Enabled)
         {
             return;
+        }
+
+        if (result.Document.OverlayEnabled)
+        {
+            // Companion emission below is unconditional once Enabled is true - it does not depend on
+            // any layer having exported a texture, so the 9 Cellular-only tinted maps still get one.
+            report.Increment("Backdrop.OverlayTints");
         }
 
         var location = TileMapWriter.ResolveLocation(mapIndex, mapLocations, report);
