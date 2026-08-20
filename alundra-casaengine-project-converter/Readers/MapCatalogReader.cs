@@ -19,6 +19,7 @@ namespace AlundraCasaEngineProjectConverter.Readers;
 ///     tilemap/    {Name}-{id}.tileMap, .tileset, .tmj, map_{id}_tileset.png, .texture
 ///     dialogues/  {Name}-{id}.strings.json
 ///     events/     {Name}-{id}.events.json
+///     backdrop/   {Name}-{id}.backdrop.json, {Name}-{id}-layer{N}.png, .texture
 ///     {Name}-{id}.world
 /// </code>
 /// The tilemap companions (.tileset, .texture and the tileset PNG) are not named here because the
@@ -36,6 +37,8 @@ public sealed record MapLocation(string ZoneFolder, string FileBaseName)
 
     public string EventsDirectory => Path.Combine(MapFolder, "events");
 
+    public string BackdropDirectory => Path.Combine(MapFolder, "backdrop");
+
     public string TileMapRelativePath => Path.Combine(TileMapDirectory, $"{FileBaseName}.tileMap");
 
     public string TiledMapRelativePath => Path.Combine(TileMapDirectory, $"{FileBaseName}.tmj");
@@ -43,6 +46,10 @@ public sealed record MapLocation(string ZoneFolder, string FileBaseName)
     public string StringsRelativePath => Path.Combine(DialoguesDirectory, $"{FileBaseName}.strings.json");
 
     public string EventsRelativePath => Path.Combine(EventsDirectory, $"{FileBaseName}.events.json");
+
+    public string BackdropRelativePath => Path.Combine(BackdropDirectory, $"{FileBaseName}.backdrop.json");
+
+    public string BackdropLayerTextureFileName(int layerId) => $"{FileBaseName}-layer{layerId}.png";
 
     public string WorldRelativePath => Path.Combine(MapFolder, $"{FileBaseName}.world");
 

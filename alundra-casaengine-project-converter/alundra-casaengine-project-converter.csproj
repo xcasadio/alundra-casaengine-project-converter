@@ -9,6 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- System.Drawing.Common (Bitmap/Image) for baking backdrop layer PNGs. Referenced directly
+         (rather than via UseWindowsForms, which the analyser's AlundraEngine project uses) because
+         UseWindowsForms's implicit "using System.Drawing" collides with Microsoft.Xna.Framework's
+         own Rectangle/Point already used elsewhere in this project. -->
+    <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="maps.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

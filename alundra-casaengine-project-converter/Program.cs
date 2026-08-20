@@ -110,6 +110,13 @@ if (options.Phase >= 7)
     report.RunPhase("Phase7.Ui", () => UiWriter.ConvertUi(options.InputDirectory, options.OutputDirectory, report));
 }
 
+// Phase 9: each map's scrolling background layers (the PSX parallax backdrop).
+if (options.Phase >= 9)
+{
+    report.RunPhase("Phase9.Backdrops", () =>
+        BackdropWriter.ConvertBackdrops(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report));
+}
+
 // Phase 8: load every generated asset back through its engine class. On by default - assets that
 // only fail at load time are otherwise silently broken until the editor opens them.
 var verificationPassed = true;

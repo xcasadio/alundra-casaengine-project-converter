@@ -17,6 +17,7 @@ provient), et un extrait réel tiré d'une conversion complète.
 | [`text-tables.md`](text-tables.md) | `Dialogues/global-strings.json`, les `*.strings.json` par map (sous `Maps/{Zone}/{Name}-{id}/dialogues/`), et `Dialogues/control-codes.json`. |
 | [`font.md`](font.md) | `UI/font3.fnt` (BMFont) et `UI/font3-charset.json` : la police bitmap et la table code brut → point de code Unicode. |
 | [`events.md`](events.md) | `Maps/{Zone}/{Name}-{id}/events/{Name}-{id}.events.json` : le bytecode d'évènements de map, non interprété. |
+| [`backdrops.md`](backdrops.md) | `Maps/{Zone}/{Name}-{id}/backdrop/{Name}-{id}.backdrop.json` : les couches de décor défilant PSX (parallaxe, auto-scroll, cellulaire différé), plus les textures pré-rendues. |
 | [`world-index.md`](world-index.md) | `Maps/world-index.json` : la table MapId → chemin du `.world`. |
 | [`misc-data.md`](misc-data.md) | `Data/balance.json`, `UI/wind-sprites.json`, `Sprites/hero/hero_effects.json`. |
 
