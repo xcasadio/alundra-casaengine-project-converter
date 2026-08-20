@@ -1,6 +1,8 @@
 using AlundraCasaEngineProjectConverter.Readers;
 using CasaEngine.EditorServices;
 using CasaEngine.EditorServices.Tiled;
+using CasaEngine.Framework.Assets.TileMap;
+using Newtonsoft.Json.Linq;
 
 namespace AlundraCasaEngineProjectConverter.Writers;
 
@@ -72,6 +74,11 @@ public static class TileMapWriter
         foreach (var createdAssetFileName in result.CreatedAssetFileNames)
         {
             CountCreatedAsset(report, createdAssetFileName);
+
+            if (string.Equals(Path.GetExtension(createdAssetFileName), ".tileset", StringComparison.OrdinalIgnoreCase))
+            {
+                CountAnimatedTiles(report, Path.Combine(outputDirectory, createdAssetFileName));
+            }
         }
 
         report.Increment("Maps");
@@ -87,6 +94,25 @@ public static class TileMapWriter
 
         report.Warnings.Add($"map_{mapIndex}: not listed in maps.json; placed under 'Uncategorized'.");
         return new MapLocation("Uncategorized", $"map_{mapIndex}");
+    }
+
+    /// <summary>
+    /// The engine's TiledMapImporter already turns each Tiled tile's native "animation" property
+    /// (baked by the analyser's TiledMapExporter from g_tileAnimDescriptorTable + the map's
+    /// SpriteMapEntries) into AnimatedTileData entries when it writes the .tileset asset - see
+    /// CasaEngine.EditorServices/EditorAssetImportService.cs CreateTileSetData(). This just counts
+    /// how many of a map's tileset entries came out animated, for reporting.
+    /// </summary>
+    private static void CountAnimatedTiles(ConversionReport report, string tileSetFullPath)
+    {
+        var tileSetData = new TileSetData();
+        tileSetData.Load(JObject.Parse(File.ReadAllText(tileSetFullPath)));
+
+        var animatedTileCount = tileSetData.Tiles.Count(tile => tile is AnimatedTileData);
+        if (animatedTileCount > 0)
+        {
+            report.Increment("TileSets.AnimatedTiles", animatedTileCount);
+        }
     }
 
     private static void CountCreatedAsset(ConversionReport report, string relativeFileName)

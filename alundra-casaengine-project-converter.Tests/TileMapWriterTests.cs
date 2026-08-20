@@ -70,7 +70,21 @@ public class TileMapWriterTests
 
             var animatedTileSetData = new TileSetData();
             animatedTileSetData.Load(JObject.Parse(File.ReadAllText(map5TileSetPath)));
-            Assert.IsType<AnimatedTileData>(animatedTileSetData.Tiles[0]);
+            var animatedTile = Assert.IsType<AnimatedTileData>(animatedTileSetData.Tiles[0]);
+            var staticTile = Assert.IsType<StaticTileData>(animatedTileSetData.Tiles[1]);
+            Assert.NotNull(staticTile);
+
+            // Duration math: the analyser bakes duration_ms straight into the Tiled fixture (no
+            // further PSX-tick conversion happens in the converter), so the round-tripped frame
+            // duration must equal it exactly.
+            Assert.Equal(2, animatedTile.Frames.Count);
+            Assert.All(animatedTile.Frames, frame => Assert.Equal(160, frame.DurationMilliseconds));
+
+            // TileSets.AnimatedTiles counts every AnimatedTileData entry across the corpus; the
+            // static map contributes none, the animated map contributes exactly its one animated tile
+            // (tile id outside the animated range - tile 1 here - stays a StaticTileData and is not
+            // counted).
+            Assert.Equal(1, report.Counters["TileSets.AnimatedTiles"]);
         }
         finally
         {
@@ -222,10 +236,10 @@ public class TileMapWriterTests
                 "name": "tileset",
                 "tilewidth": 24,
                 "tileheight": 16,
-                "tilecount": 1,
-                "columns": 1,
+                "tilecount": 2,
+                "columns": 2,
                 "image": "map_INDEX_tileset.png",
-                "imagewidth": 24,
+                "imagewidth": 48,
                 "imageheight": 16,
                 "tiles": [
                     {
@@ -247,7 +261,7 @@ public class TileMapWriterTests
                 "orientation": "orthogonal",
                 "infinite": false,
                 "width": 1,
-                "height": 1,
+                "height": 2,
                 "tilewidth": 24,
                 "tileheight": 16,
                 "tilesets": [ { "firstgid": 1, "source": "map_INDEX_tileset.tsj" } ],
@@ -256,8 +270,8 @@ public class TileMapWriterTests
                         "type": "tilelayer",
                         "name": "Render_0",
                         "width": 1,
-                        "height": 1,
-                        "data": [1]
+                        "height": 2,
+                        "data": [1, 2]
                     }
                 ]
             }
