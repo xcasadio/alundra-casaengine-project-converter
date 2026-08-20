@@ -213,14 +213,18 @@ public class CellMetadataWriterTests
 
             // Cell (0,1)'s floor (Height 1, raw id 400) collides with cell (0,0)'s flat floor (raw id
             // 100) on plane 0's target (0,0), so it lands on plane 1 - exercising both the elevated-only
-            // filter and the first-free-plane collision rule at once.
-            Assert.Equal(1, floorPlacements.Count);
-            Assert.Equal(new[] { 0 }, floorPlacements.CellX);
-            Assert.Equal(new[] { 1 }, floorPlacements.CellY);
-            Assert.Equal(new[] { 1 }, floorPlacements.Plane);
-            Assert.Equal(new[] { 0 }, floorPlacements.X);
-            Assert.Equal(new[] { 0 }, floorPlacements.Y);
-            Assert.Equal(1, report.Counters["FloorPlacements.Emitted"]);
+            // filter and the first-free-plane collision rule at once. Because (0,0) now holds that
+            // elevated placement, the CLOSURE pass promotes cell (0,0)'s own flat (Height 0) floor on
+            // plane 0 too - both entries at the same (x,y), on different planes.
+            Assert.Equal(2, floorPlacements.Count);
+            Assert.Equal(new[] { 0, 0 }, floorPlacements.CellX);
+            Assert.Equal(new[] { 1, 0 }, floorPlacements.CellY);
+            Assert.Equal(new[] { 1, 0 }, floorPlacements.Plane);
+            Assert.Equal(new[] { 0, 0 }, floorPlacements.X);
+            Assert.Equal(new[] { 0, 0 }, floorPlacements.Y);
+            Assert.Equal(new[] { 2, 1 }, floorPlacements.Gid);
+            Assert.Equal(2, report.Counters["FloorPlacements.Emitted"]);
+            Assert.Equal(1, report.Counters["FloorPlacements.ConflictEmitted"]);
         }
         finally
         {

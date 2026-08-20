@@ -167,6 +167,32 @@ public class WallPlacementOverlayTests
         Assert.Equal(3, records.DepthSlot[0]);
     }
 
+    [Fact]
+    public void TryParseFloor_MultipleEntries_ParsesElevatedAndClosureEntriesTheSameWay()
+    {
+        // The schema carries no Height/kind column (see FloorPlacementRecords' class doc): an elevated
+        // floor and a closure-promoted Height-0 floor round-trip identically. Two entries here, at
+        // different positions, exercise multi-row parsing the same shape a closure map would produce.
+        var customProperties = new Dictionary<string, string>
+        {
+            [WallPlacementOverlay.FloorCustomPropertyKey] =
+                "{\"map_index\":389,\"count\":2,\"cell_x\":[17,17],\"cell_y\":[17,16],"
+                + "\"plane\":[1,0],\"x\":[17,17],\"y\":[6,6],\"gid\":[613,42],\"depth_slot\":[3,0]}",
+        };
+
+        var result = WallPlacementOverlay.TryParseFloor(customProperties, "map_1", out var records);
+
+        Assert.True(result);
+        Assert.Equal(2, records.Count);
+        Assert.Equal(new[] { 17, 17 }, records.CellX);
+        Assert.Equal(new[] { 17, 16 }, records.CellY);
+        Assert.Equal(new[] { 1, 0 }, records.Plane);
+        Assert.Equal(new[] { 17, 17 }, records.X);
+        Assert.Equal(new[] { 6, 6 }, records.Y);
+        Assert.Equal(new[] { 613, 42 }, records.Gid);
+        Assert.Equal(new[] { 3, 0 }, records.DepthSlot);
+    }
+
     // -------------------- Key formulas --------------------
 
     [Fact]
@@ -477,6 +503,34 @@ public class WallPlacementOverlayTests
 
         Assert.Equal(TileMapData.EmptyTileId, component.GetTileId(0, 0, 0));
         Assert.Equal(TileMapData.EmptyTileId, component.GetTileId(0, 1, 1));
+        Assert.Equal(2, component.SortedOverlayTileCount);
+    }
+
+    [Fact]
+    public void ApplyFloor_TwoCoLocatedEntries_BothStripAndAccumulate()
+    {
+        // Simulates a converter CLOSURE pair: an elevated floor and the Height-0 floor promoted
+        // because it shares its bake position with that elevated placement (see
+        // FloorPlacementRecords' class doc) - two entries, same schema, same code path, both must
+        // strip and accumulate independently of which one is "the elevated one".
+        var component = CreateHeadlessTileMapComponent();
+        var records = new FloorPlacementRecords
+        {
+            MapIndex = 1,
+            Count = 2,
+            CellX = new[] { 1, 1 },
+            CellY = new[] { 2, 1 },
+            Plane = new[] { 0, 0 },
+            X = new[] { 1, 2 },
+            Y = new[] { 2, 3 },
+            Gid = new[] { TileId + 1, TileId + 1 },
+            DepthSlot = new[] { 3, 0 },
+        };
+
+        WallPlacementOverlay.ApplyFloor(component, records, "map_1");
+
+        Assert.Equal(TileMapData.EmptyTileId, component.GetTileId(0, 1, 2));
+        Assert.Equal(TileMapData.EmptyTileId, component.GetTileId(0, 2, 3));
         Assert.Equal(2, component.SortedOverlayTileCount);
     }
 

@@ -224,17 +224,22 @@ cette entité. Le port initial gardait toutes les tuiles de sol à plat dans la 
 laissait les jambes d'une entité de niveau inférieur transpercer le bord du pont supérieur (observé
 sur la map 389).
 
-## Pourquoi seulement `Height > 0`
+## Pourquoi seulement `Height > 0` (par défaut)
 
 Un sol au niveau du sol (`Height == 0`) se dessine à la ligne d'écran de sa propre cellule. Une
 entité ancrée sur une ligne **plus au nord** est le seul cas où l'original placerait ce sol devant
 elle - mais ce cas ne peut jamais se produire visuellement : les sprites s'étendent **vers le haut**
 depuis leur point d'ancrage, et une élévation ne fait que les remonter davantage à l'écran. Un sol à
 `Height == 0` ne peut donc jamais chevaucher, à l'écran, une entité d'une ligne plus au nord - il n'y
-a aucune divergence observable à laisser ce cas plat. Émettre `AlundraFloorPlacements` seulement pour
-`Height > 0` couvre donc exactement les cas où le rendu plat diverge de l'original, sans coût inutile
-sur le reste (163 881 cellules ont une pile de mur, mais bien plus de cellules ont un sol : borner
-aux cellules élevées garde `FloorPlacements.Emitted` très inférieur à `Cells.CellCount` cumulé).
+a aucune divergence observable à laisser ce cas plat PAR RAPPORT AUX ENTITÉS. Émettre
+`AlundraFloorPlacements` par défaut seulement pour `Height > 0` couvre donc exactement les cas où le
+rendu plat diverge de l'original vis-à-vis des entités, sans coût inutile sur le reste (163 881
+cellules ont une pile de mur, mais bien plus de cellules ont un sol : borner aux cellules élevées
+garde `FloorPlacements.Emitted` très inférieur à `Cells.CellCount` cumulé).
+
+Cet argument ne couvre que la relation sol/entité. Il existe une seconde source de divergence, entre
+tuiles bakées elles-mêmes, indépendante de la hauteur - voir « Fermeture » ci-dessous, qui promeut
+certains sols `Height == 0` en placements malgré cet argument.
 
 ## Schéma
 
@@ -245,7 +250,7 @@ longueur de chacun des 7 tableaux.
 | Champ | Type | Signification |
 |---|---|---|
 | `map_index` | int | Index de la map Alundra |
-| `count` | int | Nombre de placements (une entrée par tuile de sol élevée non vide et dans les bornes) |
+| `count` | int | Nombre de placements (une entrée par tuile de sol élevée non vide et dans les bornes, plus les entrées de fermeture - voir « Fermeture » ci-dessous) |
 | `cell_x[]` / `cell_y[]` | int[] | Cellule source (`x`, `y`) de la tuile de sol dans la grille Alundra |
 | `plane[]` | int[] | Index de la couche `Render_{plane}` où la tuile a atterri |
 | `x[]` / `y[]` | int[] | Cellule cible dans cette couche (`y = cell_y - height`) |
@@ -254,8 +259,45 @@ longueur de chacun des 7 tableaux.
 
 Le rejeu émet les tuiles de sol de chaque cellule dans le même ordre que l'exporteur (sol avant murs,
 donc elles rivalisent en premier pour les plans) mais ne les enregistre dans le document que si
-`Height > 0` - la compétition de plan avec les murs reste identique dans les deux cas, seul
-l'enregistrement change.
+`Height > 0` ou si la FERMETURE ci-dessous l'exige - la compétition de plan avec les murs reste
+identique dans tous les cas, seul l'enregistrement change.
+
+## Fermeture (`FloorPlacements.ConflictEmitted`)
+
+**Le bug** : le bake pack les tuiles de mur et de sol dans les plans `Render_N` par ordre de
+RENCONTRE du premier plan libre (`TiledMapExporter.AddRendererTile`), pas par profondeur. Deux tuiles
+qui atterrissent à la même position bake `(x, y)` mais sur des plans différents peuvent donc se
+retrouver, après le tri par profondeur du moteur, dans un ordre incohérent l'une par rapport à
+l'autre : celle promue en placement (mur, ou sol élevé) se trie désormais à sa vraie profondeur via
+l'overlay `YSortedWorld`, tandis que l'autre reste plate, dessinée dans son plan `Render_N` d'origine
+- **au-dessus** de toutes les couches plates, y compris celles de plans plus profonds. Mesuré sur la
+map 389 : 413 positions bake, concentrées sur le pourtour de la coque (colonnes 0-1, ex. `(0,10)` à
+`(0,19)`), où un placement de mur/sol élevé retiré d'un plan BAS avait été bake sous une tuile de mer
+`Height == 0` d'un plan plus élevé (plans 1-2, tuiles de mer 2/3/136/146/156/781) - visible comme une
+inversion de pixels mer/coque au bord de la coque (« trait bleu »).
+
+**La règle de fermeture** : à chaque position bake `(x, y)` qui contient AU MOINS un placement (mur ou
+sol élevé, sur n'importe quel plan), TOUTES les autres tuiles bakées non vides encore présentes à
+cette même position `(x, y)`, sur tous les autres plans, deviennent des placements elles aussi -
+chacune indexée par sa cellule PROPRIÉTAIRE (celle qui l'a produite au bake), avec le même
+`depth_slot` (`GetTileDepthSlot` reproduit à l'identique). Ce sont systématiquement des sols
+`Height == 0` : murs et sols élevés sont déjà, sans condition, des placements - il ne peut rien rester
+d'autre. `WallPlacementReplayer.Replay` calcule cette fermeture après la boucle de rejeu principale
+(`FloorPlacementReplayResult.FloorConflictEmitted`) et l'ajoute à `AlundraFloorPlacements` ; le schéma
+ne change pas (pas de colonne « kind » : la formule de tri `cell_y*16 + clamp(depth_slot,0,5)` est
+déjà indépendante de la hauteur côté moteur, voir `Alundra/Scripts/WallPlacementOverlay.cs`).
+
+**Invariant dur** : après la fermeture, `WallPlacementReplayer.FindResidualConflicts` revérifie chaque
+position tenant un placement : aucun plan ne doit plus y porter une tuile non vide qui ne soit pas
+elle-même un placement. Tout résultat non vide est une ERREUR d'export
+(`CellMetadataWriter.WriteWallPlacements`) - la carte ne peut pas être scindée de façon fiable entre
+couches plates et overlay trié.
+
+**Approximation restante (documentée, invisible)** : une position bake qui ne contient QUE des sols
+`Height == 0` (aucun placement) - typiquement une pile de mer ouverte, sans mur ni sol élevé au-dessus
+- reste plate, dans l'ordre bake d'origine. Aucune tuile promue n'y coexiste avec une tuile restée
+plate, donc aucune divergence observable ; c'est le même argument que « Pourquoi seulement
+`Height > 0` » ci-dessus, simplement restreint aux positions sans aucun placement du tout.
 
 ## Clé de tri côté moteur
 
@@ -269,18 +311,41 @@ ligne plus au nord - exactement l'ordre `DepthFloor`/`DepthEntity`/`DepthWallBlo
 
 ## Compteurs et invariants (`report.json`)
 
-- `FloorPlacements.Emitted` : nombre total de placements de sol élevé émis sur la conversion
-  complète - enregistré, pas une constante attendue à l'avance.
+- `FloorPlacements.Emitted` : nombre total de placements de sol émis sur la conversion complète
+  (élevés + fermeture) - enregistré, pas une constante attendue à l'avance.
+- `FloorPlacements.ConflictEmitted` : sous-ensemble de `FloorPlacements.Emitted` promu par la
+  fermeture (sols `Height == 0` colocalisés avec un placement) - enregistré, pas une constante
+  attendue à l'avance.
 - Un compte indépendant (même principe que pour les murs) recalcule combien de tuiles de sol sont
   élevées (`Height > 0`), non vides et dans les bornes après application du seul décalage `Height` ;
-  `document.count` doit lui être strictement égal, sans quoi c'est une erreur de conversion.
+  `document.count` doit être strictement égal à ce compte PLUS `FloorPlacements.ConflictEmitted`, sans
+  quoi c'est une erreur de conversion.
 - Même vérification stricte que pour les murs : chaque `(plane, x, y)` prédit doit contenir le gid
-  attendu dans les couches importées - tout désaccord, sur n'importe quelle map, est une erreur.
+  attendu dans les couches importées - tout désaccord, sur n'importe quelle map, est une erreur. Ceci
+  couvre aussi bien les entrées de fermeture que les entrées élevées.
+- Invariant de fermeture : `FindResidualConflicts` doit toujours retourner une liste vide - voir
+  « Fermeture » ci-dessus.
 
 ## Extrait réel
 
-Map 389 (`Ship Klark (beginning)-389`) : 774 placements de mur et 477 placements de sol élevé, pour
-1 251 tuiles au total réinsérées dans l'overlay trié en profondeur. Premier placement de sol de cette
-map : cellule `(17, 16)`, plan 1, cible `(17, 4)`, gid `593`, slot de profondeur `3`. Vérifié à la
-main : `Render_1.data[4 * 52 + 17]` vaut bien `592` (`gid - firstgid`, `firstgid = 1`).
+Map 389 (`Ship Klark (beginning)-389`) : 774 placements de mur et 582 placements de sol (477 sols
+élevés + 105 entrées de fermeture), pour 1 356 tuiles au total réinsérées dans l'overlay trié en
+profondeur. Premier placement de sol de cette map : cellule `(17, 16)`, plan 1, cible `(17, 4)`, gid
+`593`, slot de profondeur `3`. Vérifié à la main : `Render_1.data[4 * 52 + 17]` vaut bien `592`
+(`gid - firstgid`, `firstgid = 1`).
+
+Fermeture, colonne 0 (coque) : les positions bake `(0, 10)` à `(0, 19)` illustrent le cas exact du
+rapport de bug - un mélange de placements de mur (ex. cellule `(0,20)`, plans 0/1, cibles
+`(0,10)`-`(0,12)`) et d'entrées de fermeture de sol (ex. cellule `(0,23)`, plan 1, cible `(0,10)`,
+gid `137`) à la même colonne. Après la fermeture, `FindResidualConflicts` ne remonte plus rien sur
+ces positions - avant la correction, la mesure équivalente (mêmes positions, tuile résiduelle non
+plaçée sur un autre plan) en trouvait 413 sur cette seule map.
+
+Sur l'export complet (483 maps) : `FloorPlacements.Emitted = 713 484` (dont
+`FloorPlacements.ConflictEmitted = 36 375` de fermeture, soit 677 109 sols élevés), pour zéro entrée
+dans `Errors` - donc zéro violation de l'invariant de fermeture sur l'ensemble du corpus. Les
+compteurs indépendants du reste de la conversion (`WallPlacements.Emitted = 501 962`,
+`WallPlacements.StacksCovered = 163 881`, `SpriteRecords.IdsvAnimDirs = 9 620`,
+`Entities.Prefabs = 395`, `PrefabLinks.Resolved = 9 741`) sont inchangés par cette correction, qui ne
+touche que `AlundraFloorPlacements`.
 

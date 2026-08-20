@@ -172,19 +172,34 @@ public static class CellMetadataWriter
             }
 
             var floorDocument = replayResult.FloorDocument;
+            var expectedFloorCount = replayResult.FloorExpectedEmitted + replayResult.FloorConflictEmitted;
 
-            if (floorDocument.Count != replayResult.FloorExpectedEmitted)
+            if (floorDocument.Count != expectedFloorCount)
             {
                 report.Errors.Add(
                     $"map_{mapIndex}: floor placement count mismatch - emitted {floorDocument.Count}, " +
-                    $"independently expected {replayResult.FloorExpectedEmitted}.");
+                    $"independently expected {expectedFloorCount} " +
+                    $"({replayResult.FloorExpectedEmitted} elevated + {replayResult.FloorConflictEmitted} closure).");
             }
 
             VerifyFloorPlacements(tileMapData, floorDocument, firstGid, mapIndex, report);
 
+            // HARD INVARIANT (see WallPlacementReplayResult.ResidualConflicts's doc): the closure pass
+            // above must leave no bake position with a placement on one plane and a leftover non-empty
+            // tile on another. A hit means this map's tiles cannot be reliably split between the flat
+            // layers and the runtime depth-sorted overlay - the map/hull/sea inversion bug this closure
+            // exists to fix would reappear at that exact position.
+            foreach (var (plane, x, y) in replayResult.ResidualConflicts)
+            {
+                report.Errors.Add(
+                    $"map_{mapIndex}: closure invariant violated - plane {plane} at ({x},{y}) still holds a " +
+                    "non-empty tile that is not a placement, alongside a placement at the same position.");
+            }
+
             tileMapData.CustomProperties[FloorPlacementsCustomPropertyKey] = JsonSerializer.Serialize(floorDocument, SerializerOptions);
 
             report.Increment("FloorPlacements.Emitted", floorDocument.Count);
+            report.Increment("FloorPlacements.ConflictEmitted", replayResult.FloorConflictEmitted);
         }
         catch (Exception exception)
         {

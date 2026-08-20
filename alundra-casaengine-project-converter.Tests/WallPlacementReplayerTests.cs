@@ -64,9 +64,10 @@ public class WallPlacementReplayerTests
     [Fact]
     public void Replay_EmitsFloorPlacements_OnlyForElevatedCells()
     {
-        // 1-wide, 4-tall map. Cell (0,0): Height 0, floor raw 10 -> targetY = 0 (flat, NOT recorded).
-        // Cell (0,2): Height 2, floor raw 300 -> targetY = 0 (elevated, recorded, depth slot
-        // 300/160=1). Cell (0,3): Height 0, no floor tile at all (EmptyTileId).
+        // 1-wide, 4-tall map. Cell (0,0): Height 0, floor raw 10 -> targetY = 0 (flat; not recorded by
+        // itself, but promoted by the CLOSURE pass below since it shares position (0,0) with the
+        // elevated placement). Cell (0,2): Height 2, floor raw 300 -> targetY = 0 (elevated, recorded,
+        // depth slot 300/160=1). Cell (0,3): Height 0, no floor tile at all (EmptyTileId).
         var floorTileId = new[] { 10, 0xffff, 300, 0xffff };
         var cellHeight = new[] { 0, 0, 2, 0 };
         var wallTiles = new Dictionary<string, WallTileStack>();
@@ -76,18 +77,90 @@ public class WallPlacementReplayerTests
 
         Assert.Equal(1, result.FloorExpectedEmitted);
 
+        // CLOSURE: (0,0) already holds a placement (the elevated floor, on plane 1), so cell (0,0)'s
+        // own flat Height-0 floor (plane 0, same position) must be promoted too, or the position would
+        // draw with one plane depth-sorted and the other stuck flat.
+        Assert.Equal(1, result.FloorConflictEmitted);
+        Assert.Empty(result.ResidualConflicts);
+
         var floorDocument = result.FloorDocument;
         Assert.Equal(MapIndex, floorDocument.MapIndex);
-        Assert.Equal(1, floorDocument.Count);
-        Assert.Equal(new[] { 0 }, floorDocument.CellX);
-        Assert.Equal(new[] { 2 }, floorDocument.CellY);
+        Assert.Equal(2, floorDocument.Count);
+        Assert.Equal(new[] { 0, 0 }, floorDocument.CellX);
+        Assert.Equal(new[] { 2, 0 }, floorDocument.CellY);
         // Collides with cell (0,0)'s flat floor (raw 10, target (0,0)) on plane 0, so it is pushed to
         // plane 1 - not trivially always plane 0.
-        Assert.Equal(new[] { 1 }, floorDocument.Plane);
+        Assert.Equal(new[] { 1, 0 }, floorDocument.Plane);
+        Assert.Equal(new[] { 0, 0 }, floorDocument.X);
+        Assert.Equal(new[] { 0, 0 }, floorDocument.Y); // sourceY(2) - height(2) = 0; cell (0,0) itself.
+        Assert.Equal(new[] { 103, 101 }, floorDocument.Gid);
+        Assert.Equal(new[] { 1, 0 }, floorDocument.DepthSlot); // 300/160 = 1; 10/160 = 0.
+    }
+
+    [Fact]
+    public void Replay_ClosurePromotesCoLocatedHeightZeroFloor_WhenAWallSharesItsBakePosition()
+    {
+        // 1-wide, 2-tall map. Cell (0,0): a wall stack (Offset 0) whose single tile (raw 200) targets
+        // Y = 0 - 0 - 0 + 0 + 1 = 1, landing on plane 0 first (row 0 is replayed before row 1). Cell
+        // (0,1): Height 0, floor raw 10 -> targetY = 1 too (flat by itself), colliding with the wall's
+        // plane 0 slot and getting pushed to plane 1. Because (0,1) already holds the wall placement,
+        // the co-located Height-0 floor on plane 1 must close too.
+        var floorTileId = new[] { 0xffff, 10 };
+        var cellHeight = new[] { 0, 0 };
+        var wallTiles = new Dictionary<string, WallTileStack>
+        {
+            ["0"] = new WallTileStack { Offset = 0, Tiles = new[] { 200 } },
+        };
+        var gidByRawTileId = new Dictionary<int, int> { [10] = 101, [200] = 102 };
+
+        var result = WallPlacementReplayer.Replay(MapIndex, Width, 2, floorTileId, cellHeight, wallTiles, gidByRawTileId);
+
+        Assert.Equal(1, result.Document.Count);
+        Assert.Equal(0, result.Document.CellX[0]);
+        Assert.Equal(0, result.Document.CellY[0]);
+        Assert.Equal(0, result.Document.Plane[0]); // the wall is replayed first, so it claims plane 0.
+        Assert.Equal(1, result.Document.Y[0]);
+
+        Assert.Equal(1, result.FloorConflictEmitted);
+        Assert.Empty(result.ResidualConflicts);
+
+        var floorDocument = result.FloorDocument;
+        Assert.Equal(1, floorDocument.Count);
+        Assert.Equal(new[] { 0 }, floorDocument.CellX); // owner cell of the closed-over floor tile.
+        Assert.Equal(new[] { 1 }, floorDocument.CellY);
+        Assert.Equal(new[] { 1 }, floorDocument.Plane); // pushed off plane 0 by the wall already there.
         Assert.Equal(new[] { 0 }, floorDocument.X);
-        Assert.Equal(new[] { 0 }, floorDocument.Y); // sourceY(2) - height(2) = 0
-        Assert.Equal(new[] { 103 }, floorDocument.Gid);
-        Assert.Equal(new[] { 1 }, floorDocument.DepthSlot); // 300/160 = 1
+        Assert.Equal(new[] { 1 }, floorDocument.Y);
+        Assert.Equal(new[] { 101 }, floorDocument.Gid);
+    }
+
+    [Fact]
+    public void FindResidualConflicts_DetectsLeftoverNonEmptyTile_NotItselfAPlacement()
+    {
+        // A crafted 2-plane, 1x1 grid: plane 0 holds the "placement" tile, plane 1 holds a leftover
+        // non-empty tile that was never closed over - the artificial invariant violation.
+        var layerDataByPlane = new List<int[]> { new[] { 101 }, new[] { 202 } };
+        var placementPositions = new HashSet<(int X, int Y)> { (0, 0) };
+        var placementPlanes = new HashSet<(int Plane, int X, int Y)> { (0, 0, 0) };
+
+        var residuals = WallPlacementReplayer.FindResidualConflicts(
+            layerDataByPlane, width: 1, placementPositions, placementPlanes);
+
+        var residual = Assert.Single(residuals);
+        Assert.Equal((1, 0, 0), residual);
+    }
+
+    [Fact]
+    public void FindResidualConflicts_ReturnsEmpty_WhenEveryNonEmptyPlaneIsAPlacement()
+    {
+        var layerDataByPlane = new List<int[]> { new[] { 101 }, new[] { 202 } };
+        var placementPositions = new HashSet<(int X, int Y)> { (0, 0) };
+        var placementPlanes = new HashSet<(int Plane, int X, int Y)> { (0, 0, 0), (1, 0, 0) };
+
+        var residuals = WallPlacementReplayer.FindResidualConflicts(
+            layerDataByPlane, width: 1, placementPositions, placementPlanes);
+
+        Assert.Empty(residuals);
     }
 
     [Fact]

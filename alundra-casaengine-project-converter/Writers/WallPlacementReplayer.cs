@@ -47,25 +47,50 @@ public sealed class WallPlacementReplayResult
 
     /// <summary>Independent recount of how many Height&gt;0 floor tiles should have been emitted -
     /// non-empty and in-bounds after the Height offset alone (no stack/offset math, floors have
-    /// neither) - mirrors <see cref="ExpectedEmitted"/>'s role for walls. Must equal
-    /// <see cref="FloorPlacementDocument.Count"/>.</summary>
+    /// neither) - mirrors <see cref="ExpectedEmitted"/>'s role for walls. <see cref="FloorPlacementDocument.Count"/>
+    /// must equal this plus <see cref="FloorConflictEmitted"/> (the closure additions below).</summary>
     public int FloorExpectedEmitted { get; init; }
+
+    /// <summary>
+    /// Number of additional (Height 0) floor placements the CLOSURE pass promoted: for every bake
+    /// position that already holds at least one placement (a wall tile or an elevated floor), every
+    /// other baked tile still occupying that same (x, y) across the other planes must become a
+    /// placement too, or the two would draw inconsistently - one true-depth-sorted, the other stuck
+    /// in bake-plane order (see the class doc and docs/formats/cells-companion.md's closure section).
+    /// These are always Height 0 floors: walls and Height&gt;0 floors are unconditionally placements
+    /// already, so nothing else can be left over - <see cref="ResidualConflicts"/> is the hard-error
+    /// safety net if that assumption is ever violated.
+    /// </summary>
+    public int FloorConflictEmitted { get; init; }
+
+    /// <summary>
+    /// Bake positions where, even after the closure pass above, a non-empty baked tile on some plane
+    /// still coexists with a placement at the same (x, y) on another plane - each entry is
+    /// (Plane, X, Y) of the leftover tile. Must always be empty; a non-empty result means the closure
+    /// invariant is violated and the map must fail the export (see <see cref="CellMetadataWriter"/>).
+    /// </summary>
+    public IReadOnlyList<(int Plane, int X, int Y)> ResidualConflicts { get; init; } = Array.Empty<(int, int, int)>();
 }
 
 /// <summary>
-/// One baked FLOOR tile's placement in the renderer-ordered flat tile planes, recorded only for
-/// cells with Height &gt; 0 (an elevated floor, e.g. an upper ship deck).
+/// One baked FLOOR tile's placement in the renderer-ordered flat tile planes - recorded for every cell
+/// with Height &gt; 0 (an elevated floor, e.g. an upper ship deck), PLUS every Height-0 (ground-level)
+/// floor that the CLOSURE pass (see <see cref="WallPlacementReplayResult.FloorConflictEmitted"/>) had
+/// to promote because it shares its bake position with another placement on a different plane.
 ///
-/// Ground-level (Height 0) floors participate in the original's unified depth sort exactly like
+/// Ground-level floors otherwise participate in the original's unified depth sort exactly like
 /// elevated ones (<c>DepthFloor(cellY, slot) = cellY*16 + slot</c>,
 /// AlundraTools/AlundraEngine/Graphics/GraphicManager.cs:275,324-347) but can never visibly diverge
-/// from staying flat: a floor only draws in front of an entity when the floor's own row is south of
-/// (numerically greater than) the entity's row, and a Height-0 floor draws at its own cell's screen
-/// row - so the only entities it could contend with are ones anchored on that same row or further
-/// north, which the flat Ground pass already draws it behind or under correctly (see
+/// from staying flat ON THEIR OWN: a floor only draws in front of an entity when the floor's own row
+/// is south of (numerically greater than) the entity's row, and a Height-0 floor draws at its own
+/// cell's screen row - so the only entities it could contend with are ones anchored on that same row
+/// or further north, which the flat Ground pass already draws it behind or under correctly (see
 /// <c>docs/formats/cells-companion.md</c> for the full argument, including the elevated case this
-/// column exists to fix). No stack_index column: unlike wall stacks, each cell has exactly one floor
-/// tile, so the (cell_x, cell_y) pair alone identifies it.
+/// column exists to fix, and the closure section for why a Height-0 floor CAN still diverge once a
+/// co-located tile of its own is pulled into the depth-sorted overlay). A bake position holding only
+/// Height-0 floors (no placement at all - e.g. an open-sea stack) stays flat with all its tiles in
+/// bake-plane order; this remains a documented, invisible approximation. No stack_index column: unlike
+/// wall stacks, each cell has exactly one floor tile, so the (cell_x, cell_y) pair alone identifies it.
 /// </summary>
 public sealed class FloorPlacementDocument
 {
@@ -142,6 +167,13 @@ public static class WallPlacementReplayer
         var floorGidList = new List<int>();
         var floorDepthSlotList = new List<int>();
 
+        // Every non-dropped baked floor tile (elevated or not), tracked purely so the CLOSURE pass
+        // below can find the Height-0 ones co-located with a placement - see FloorConflictEmitted's
+        // doc. Elevated floors are already added to the placement lists above at insertion time; this
+        // list additionally remembers their owner cell so closure can recognize "already a placement"
+        // positions without re-deriving them from the four column lists.
+        var floorOccupancy = new List<FloorOccupancy>();
+
         var stacksCovered = 0;
 
         for (var sourceY = 0; sourceY < height; sourceY++)
@@ -159,17 +191,28 @@ public static class WallPlacementReplayer
                     var floorGid = ResolveGid(floorRawId, gidByRawTileId);
                     var floorPlane = PlaceTile(layerDataByPlane, width, height, sourceX, floorTargetY, floorGid);
 
-                    // Only elevated (Height > 0) floors are recorded - see FloorPlacementDocument's
-                    // class doc for why Height-0 floors can stay flat with no observable divergence.
-                    if (cellHeight[index] > 0 && floorPlane >= 0)
+                    if (floorPlane >= 0)
                     {
-                        floorCellX.Add(sourceX);
-                        floorCellY.Add(sourceY);
-                        floorPlaneList.Add(floorPlane);
-                        floorXList.Add(sourceX);
-                        floorYList.Add(floorTargetY);
-                        floorGidList.Add(floorGid);
-                        floorDepthSlotList.Add(ComputeDepthSlot(floorRawId));
+                        var isElevated = cellHeight[index] > 0;
+                        var floorDepthSlot = ComputeDepthSlot(floorRawId);
+
+                        // Only elevated (Height > 0) floors are recorded here unconditionally - see
+                        // FloorPlacementDocument's class doc for why Height-0 floors can otherwise stay
+                        // flat with no observable divergence. The CLOSURE pass below promotes the
+                        // Height-0 ones that turn out to share a bake position with a placement.
+                        if (isElevated)
+                        {
+                            floorCellX.Add(sourceX);
+                            floorCellY.Add(sourceY);
+                            floorPlaneList.Add(floorPlane);
+                            floorXList.Add(sourceX);
+                            floorYList.Add(floorTargetY);
+                            floorGidList.Add(floorGid);
+                            floorDepthSlotList.Add(floorDepthSlot);
+                        }
+
+                        floorOccupancy.Add(new FloorOccupancy(
+                            sourceX, sourceY, floorPlane, sourceX, floorTargetY, floorGid, floorDepthSlot, isElevated));
                     }
                 }
 
@@ -218,6 +261,57 @@ public static class WallPlacementReplayer
         var expectedEmitted = CountNonEmptyInBoundsWallTiles(width, height, cellHeight, wallTilesByCellIndex);
         var floorExpectedEmitted = CountElevatedInBoundsFloorTiles(width, height, floorRawTileId, cellHeight);
 
+        // CLOSURE: every bake position holding at least one placement (a wall tile above, or an
+        // elevated floor just added above) must have ALL of its co-located baked tiles - on every
+        // plane - become placements too, or the position renders inconsistently: some planes
+        // depth-sorted through the runtime overlay, others stuck drawing flat in bake-plane order
+        // (the exporter's first-free-plane ENCOUNTER order, not depth). See the class doc and
+        // docs/formats/cells-companion.md.
+        var placementPositions = new HashSet<(int X, int Y)>(xList.Count + floorXList.Count);
+        for (var i = 0; i < xList.Count; i++)
+        {
+            placementPositions.Add((xList[i], yList[i]));
+        }
+        for (var i = 0; i < floorXList.Count; i++)
+        {
+            placementPositions.Add((floorXList[i], floorYList[i]));
+        }
+
+        var floorConflictEmitted = 0;
+        foreach (var occupancy in floorOccupancy)
+        {
+            if (occupancy.IsElevated || !placementPositions.Contains((occupancy.X, occupancy.Y)))
+            {
+                continue;
+            }
+
+            floorCellX.Add(occupancy.CellX);
+            floorCellY.Add(occupancy.CellY);
+            floorPlaneList.Add(occupancy.Plane);
+            floorXList.Add(occupancy.X);
+            floorYList.Add(occupancy.Y);
+            floorGidList.Add(occupancy.Gid);
+            floorDepthSlotList.Add(occupancy.DepthSlot);
+            floorConflictEmitted++;
+        }
+
+        // HARD INVARIANT: after the closure pass above, no bake position that holds a placement may
+        // still have a leftover non-empty tile, on any plane, that is not itself a placement. Walls
+        // and elevated floors are always placements already, and the closure pass just promoted every
+        // co-located Height-0 floor, so this can only fire on a logic regression - never expected to
+        // find anything on a converter-produced map.
+        var placementPlanes = new HashSet<(int Plane, int X, int Y)>(xList.Count + floorXList.Count);
+        for (var i = 0; i < xList.Count; i++)
+        {
+            placementPlanes.Add((planeList[i], xList[i], yList[i]));
+        }
+        for (var i = 0; i < floorXList.Count; i++)
+        {
+            placementPlanes.Add((floorPlaneList[i], floorXList[i], floorYList[i]));
+        }
+
+        var residualConflicts = FindResidualConflicts(layerDataByPlane, width, placementPositions, placementPlanes);
+
         var document = new WallPlacementDocument
         {
             MapIndex = mapIndex,
@@ -252,7 +346,43 @@ public static class WallPlacementReplayer
             ExpectedEmitted = expectedEmitted,
             FloorDocument = floorDocument,
             FloorExpectedEmitted = floorExpectedEmitted,
+            FloorConflictEmitted = floorConflictEmitted,
+            ResidualConflicts = residualConflicts,
         };
+    }
+
+    /// <summary>One baked floor tile's occupancy, tracked regardless of Height so the CLOSURE pass in
+    /// <see cref="Replay"/> can find the Height-0 ones sharing a bake position with a placement.</summary>
+    private readonly record struct FloorOccupancy(
+        int CellX, int CellY, int Plane, int X, int Y, int Gid, int DepthSlot, bool IsElevated);
+
+    /// <summary>
+    /// Scans every plane at every position that holds at least one placement for a leftover non-empty
+    /// tile that is not itself a placement - the hard invariant backing <see
+    /// cref="WallPlacementReplayResult.ResidualConflicts"/>. Exposed internally so it can be exercised
+    /// directly with a crafted plane grid, independent of a full <see cref="Replay"/> call.
+    /// </summary>
+    public static List<(int Plane, int X, int Y)> FindResidualConflicts(
+        IReadOnlyList<int[]> layerDataByPlane,
+        int width,
+        IReadOnlySet<(int X, int Y)> placementPositions,
+        IReadOnlySet<(int Plane, int X, int Y)> placementPlanes)
+    {
+        var residuals = new List<(int Plane, int X, int Y)>();
+
+        foreach (var (x, y) in placementPositions)
+        {
+            var targetIndex = y * width + x;
+            for (var plane = 0; plane < layerDataByPlane.Count; plane++)
+            {
+                if (layerDataByPlane[plane][targetIndex] != 0 && !placementPlanes.Contains((plane, x, y)))
+                {
+                    residuals.Add((plane, x, y));
+                }
+            }
+        }
+
+        return residuals;
     }
 
     /// <summary>

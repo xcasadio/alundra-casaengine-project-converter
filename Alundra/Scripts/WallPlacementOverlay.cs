@@ -35,11 +35,16 @@ public sealed class WallPlacementRecords
 }
 
 /// <summary>
-/// One baked, elevated (Height &gt; 0) FLOOR tile's placement - the "AlundraFloorPlacements" custom
-/// property counterpart to <see cref="WallPlacementRecords"/> (see
+/// One baked FLOOR tile's placement - the "AlundraFloorPlacements" custom property counterpart to
+/// <see cref="WallPlacementRecords"/> (see
 /// <c>AlundraCasaEngineProjectConverter.Writers.WallPlacementReplayer.FloorPlacementDocument</c> and
-/// <c>docs/formats/cells-companion.md</c>). No <c>StackIndex</c> column: each cell has exactly one
-/// floor tile, so (CellX, CellY) alone identifies it.
+/// <c>docs/formats/cells-companion.md</c>). Most entries are elevated (Height &gt; 0) floors, recorded
+/// unconditionally; a Height-0 (ground-level) floor also appears here whenever it shares its bake
+/// position with another placement - the CLOSURE rule (see the converter's <c>WallPlacementReplayer</c>
+/// class doc) - so parsing and the strip/resubmit below make no assumption about which case a given
+/// entry is: the key formula (<c>CellY*16 + clamp(DepthSlot,0,5)</c>, see
+/// <see cref="ComputeFloorSortKey"/>) is Height-independent already. No <c>StackIndex</c> column: each
+/// cell has exactly one floor tile, so (CellX, CellY) alone identifies it.
 /// </summary>
 public sealed class FloorPlacementRecords
 {
@@ -68,8 +73,9 @@ public static class WallPlacementOverlay
     /// <summary>Key of the map-level custom property carrying the columnar wall placement JSON.</summary>
     public const string CustomPropertyKey = "AlundraWallPlacements";
 
-    /// <summary>Key of the map-level custom property carrying the columnar elevated-floor placement
-    /// JSON (see <see cref="FloorPlacementRecords"/>).</summary>
+    /// <summary>Key of the map-level custom property carrying the columnar floor placement JSON
+    /// (mostly elevated floors, plus Height-0 closure entries - see <see cref="FloorPlacementRecords"/>'s
+    /// class doc).</summary>
     public const string FloorCustomPropertyKey = "AlundraFloorPlacements";
 
     /// <summary>Every gid in the placement document is <c>firstgid + localTileId</c> with a single
@@ -269,9 +275,12 @@ public static class WallPlacementOverlay
     }
 
     /// <summary>
-    /// STRIP + RESUBMIT for elevated floor tiles - identical shape to <see cref="Apply"/>, through the
-    /// same overlay list (<see cref="ComputeFloorSortKey"/> keys these low enough, slots 0..5, to never
-    /// collide with a wall's slot 7+ bias on the same row - see that method's doc).
+    /// STRIP + RESUBMIT for floor tiles (elevated or Height-0 closure entries alike) - identical shape
+    /// to <see cref="Apply"/>, through the same overlay list (<see cref="ComputeFloorSortKey"/> keys
+    /// these low enough, slots 0..5, to never collide with a wall's slot 7+ bias on the same row - see
+    /// that method's doc). The strip accounting below (removedCount/mismatchCount vs records.Count)
+    /// covers closure entries the same way it covers elevated ones - there is nothing entry-kind-specific
+    /// here to account for separately.
     /// </summary>
     public static void ApplyFloor(TileMapComponent tileMapComponent, FloorPlacementRecords records, string worldName)
     {
