@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Alundra.Scripts;
 using Xunit;
@@ -21,10 +22,35 @@ public class AlundraEventProgramRunnerTests
         };
     }
 
-    private static AlundraEventProgramRunner NewRunner(EventProgramDocument document, AlundraGameState? gameState = null)
-        => new(document, gameState ?? new AlundraGameState());
+    private static AlundraEventProgramRunner NewRunner(EventProgramDocument document, AlundraGameState? gameState = null, IEntityWorldContext? worldContext = null)
+        => new(document, gameState ?? new AlundraGameState(), worldContext);
 
     private static AlundraEntityScriptProxy NewEntity() => new();
+
+    /// <summary>Records spawn/destroy calls and hands back a fixed <see cref="SpawnedEntities"/> list -
+    /// the fake <see cref="IEntityWorldContext"/> every 0x2D/0x2E/0x62/0x63/0x64/0x65/0xAC test below
+    /// uses instead of a live <see cref="AlundraWorldProxy"/>.</summary>
+    private sealed class FakeEntityWorldContext : IEntityWorldContext
+    {
+        public List<AlundraEntityScriptProxy> SpawnedEntitiesList { get; } = new();
+        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => SpawnedEntitiesList;
+
+        public readonly List<(AlundraEntityScriptProxy LogicEntity, int EntityRecordId)> SpawnCalls = new();
+        public AlundraEntityScriptProxy? EntityToSpawn;
+
+        public readonly List<AlundraEntityScriptProxy> DestroyedEntities = new();
+
+        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId)
+        {
+            SpawnCalls.Add((logicEntity, entityRecordId));
+            return EntityToSpawn;
+        }
+
+        public void DestroyEntity(AlundraEntityScriptProxy entity)
+        {
+            DestroyedEntities.Add(entity);
+        }
+    }
 
     [Fact]
     public void SequentialOps_ThenEnd_RunsToCompletion()
@@ -324,5 +350,214 @@ public class AlundraEventProgramRunnerTests
         runner.RunSpriteEvent(entity);
 
         Assert.Equal(2, runner.SpriteEventRunCount);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Entity search/manipulation opcodes (0x2D, 0x2E, 0x62, 0x63, 0x64, 0x65, 0xAC)
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void ActivateEntity_0x2D_DelegatesToContext_WithSelfAsLogicEntity()
+    {
+        var document = NewDocument(0x2D, 5, 0xFF);
+        var context = new FakeEntityWorldContext { EntityToSpawn = NewEntity() };
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        var call = Assert.Single(context.SpawnCalls);
+        Assert.Same(entity, call.LogicEntity);
+        Assert.Equal(5, call.EntityRecordId);
+        Assert.Equal(2, state.CodeIndex);
+    }
+
+    [Fact]
+    public void DestroyEntity_0x2E_DestroysEveryMatch_AndSetsResult1()
+    {
+        // v1=0x80 -> functionId 0 ("get owner"): the owner itself is the only match.
+        var document = NewDocument(0x2E, 0x80, 0xFF);
+        var context = new FakeEntityWorldContext();
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(new[] { entity }, context.DestroyedEntities);
+        Assert.Equal(1, state.Result);
+    }
+
+    [Fact]
+    public void DestroyEntity_0x2E_NoMatches_SetsResult0()
+    {
+        // v1=0x81 -> functionId 1 ("get player"): never matches (no player system yet).
+        var document = NewDocument(0x2E, 0x81, 0xFF);
+        var context = new FakeEntityWorldContext();
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Empty(context.DestroyedEntities);
+        Assert.Equal(0, state.Result);
+    }
+
+    [Fact]
+    public void SetEntitiesFlagsLow16_0x62_OrsFlagIntoEveryMatch()
+    {
+        // v1=0x82 (all entities), v2/v3 = flag bytes 0x34/0x12 -> flag = 0x1234.
+        var document = NewDocument(0x62, 0x82, 0x34, 0x12, 0xFF);
+        var target = NewEntity();
+        target.Status = EntityStatus.Normal;
+        target.Flags = 0x0001;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(target);
+        var runner = NewRunner(document, worldContext: context);
+        var owner = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal(0x1235u, target.Flags);
+    }
+
+    [Fact]
+    public void ClearEntitiesFlagsLow16_0x63_ClearsOnlyLow16Bits()
+    {
+        var document = NewDocument(0x63, 0x82, 0xFF, 0xFF, 0xFF); // clear mask = 0xFFFF
+        var target = NewEntity();
+        target.Status = EntityStatus.Normal;
+        target.Flags = 0xABCD1234;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(target);
+        var runner = NewRunner(document, worldContext: context);
+        var owner = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        // High 16 bits (0xABCD) survive untouched; low 16 bits (0x1234) are cleared.
+        Assert.Equal(0xABCD0000u, target.Flags);
+    }
+
+    [Fact]
+    public void SetEntitiesPosition_0x64_SetsPosXYZ_FromRealMap389Operands()
+    {
+        // The exact operand bytes decoded from map 389's real Load program 139 (events offset 239):
+        // v1=0x80 (owner), x=(2<<8|0x34)<<16, y=(1<<8|0x78)<<16, z=((0<<8|0xa0)<<16)+1.
+        var document = NewDocument(0x64, 0x80, 0x34, 0x02, 0x78, 0x01, 0xa0, 0x00, 0xFF);
+        var owner = NewEntity();
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(owner);
+        var runner = NewRunner(document, worldContext: context);
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal(0x234 << 16, owner.PosX);
+        Assert.Equal(0x178 << 16, owner.PosY);
+        Assert.Equal((0xa0 << 16) + 1, owner.PosZ);
+        Assert.Equal(8, state.CodeIndex); // stopped at the 0xFF byte
+    }
+
+    [Fact]
+    public void AddEntitiesPositionOffset_0x65_AddsOffset_ToEveryMatch()
+    {
+        var document = NewDocument(0x65, 0x80, 0x10, 0x00, 0x20, 0x00, 0x30, 0x00, 0xFF);
+        var owner = NewEntity();
+        owner.PosX = 1 << 16;
+        owner.PosY = 2 << 16;
+        owner.PosZ = 3 << 16;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(owner);
+        var runner = NewRunner(document, worldContext: context);
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal((1 + 0x10) << 16, owner.PosX);
+        Assert.Equal((2 + 0x20) << 16, owner.PosY);
+        Assert.Equal((3 + 0x30) << 16, owner.PosZ);
+    }
+
+    [Fact]
+    public void SetEntityShadowSize_0xAC_RewritesFirstMatchOnly()
+    {
+        var document = NewDocument(0xAC, 0x82, 5, 0xFF);
+        var first = NewEntity();
+        first.Status = EntityStatus.Normal;
+        var second = NewEntity();
+        second.Status = EntityStatus.Normal;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(first);
+        context.SpawnedEntitiesList.Add(second);
+        var runner = NewRunner(document, worldContext: context);
+        var owner = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal(5u, EntityFlags.GetShadowSize(first.Flags));
+        Assert.Equal(0u, EntityFlags.GetShadowSize(second.Flags));
+    }
+
+    [Fact]
+    public void DestroyEntity_0x2E_NoWorldContext_DoesNotThrow_StillMatchesOwner()
+    {
+        var document = NewDocument(0x2E, 0x80, 0xFF);
+        var runner = NewRunner(document); // no worldContext -> NoOpEntityWorldContext
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        // "get owner" (functionId 0) always matches the owner itself, independent of
+        // NoOpEntityWorldContext's empty SpawnedEntities list (see EntitySearchService's own doc) - so
+        // Result is still 1, and NoOpEntityWorldContext.DestroyEntity swallows the call without throwing.
+        Assert.Equal(1, state.Result);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Result carry across sequential slot-A calls (shared scratch EventProgramState)
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void RunScript_SlotA_ResultCarriesAcrossSequentialCalls()
+    {
+        // Block 1 (@0, program index masked to 0): 0x2E DestroyEntity(v1=0x80 "get owner") - matches the
+        // owner itself unconditionally (EntitySearchService's functionId 0), so this always sets
+        // Result=1, regardless of what SpawnedEntities the context (none here) knows about.
+        //
+        // Block 2 (@3, program index masked to 1): 0x03 IfTrueGoto +6 -> @9 SetAnim(2) if Result != 0,
+        // else falls through (size 3) to @6 SetAnim(1). Block 2 never runs any opcode of its own that
+        // would set Result - whichever value it sees came only from block 1's earlier, unrelated call.
+        var document = new EventProgramDocument
+        {
+            EventCodesATable = new[] { 0, 3, 0, 0, 0, 0 },
+            Codes = new[]
+            {
+                /* @0 */ 0x2E, 0x80, 0xFF,
+                /* @3 */ 0x03, 6, 0,
+                /* @6 */ 0x1A, 1, 0xFF,
+                /* @9 */ 0x1A, 2, 0xFF,
+            },
+        };
+        var runner = NewRunner(document);
+
+        var entityA = NewEntity();
+        entityA.ProgramIndexes[ScriptHelper.ProgramALoad] = 0x80; // masked 0x7f -> table[0] -> @0
+        runner.RunScript(entityA, ScriptHelper.ProgramALoad);
+
+        var entityB = NewEntity();
+        entityB.ProgramIndexes[ScriptHelper.ProgramALoad] = 0x81; // masked 0x7f -> table[1] -> @3
+        runner.RunScript(entityB, ScriptHelper.ProgramALoad);
+
+        // If Result had NOT carried over (the old "new EventProgramState() per call" behaviour), the
+        // shared state's Result would start this second call at its C# default (0) and entityB would end
+        // up with TargetAnimationId=1 (the not-taken fallthrough) instead.
+        Assert.Equal(2u, entityB.TargetAnimationId);
     }
 }

@@ -41,19 +41,36 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     private readonly EventProgramDocument? _document;
     private readonly byte[]? _codes;
     private readonly AlundraGameState _gameState;
+    private readonly IEntityWorldContext _worldContext;
 
     private readonly HashSet<(int Slot, int ProgramIndex)> _loggedNoOpPrograms = new();
     private readonly HashSet<int> _loggedUnknownOpcodes = new();
     private readonly HashSet<int> _loggedDegradedOpcodes = new();
+    private readonly HashSet<int> _loggedFailedActivations = new();
     private bool _loggedNoDocument;
     private bool _loggedGlobalTableFallback;
     private bool _loggedSpriteEventOnce;
 
-    public AlundraEventProgramRunner(EventProgramDocument? document, AlundraGameState gameState)
+    /// <summary>
+    /// Slot A's shared scratch <see cref="EventProgramState"/> - the original never gives Load its own
+    /// per-entity state, it always runs off <c>_gameEngine.StaticVariables.g_eventProgramState</c>
+    /// (EntityEventHandlers.cs:234), one instance shared by every non-resuming slot call. Reused (not
+    /// reconstructed) by every <see cref="RunScript"/> call for slot A so that <see cref="EventProgramState.Result"/>
+    /// - never cleared by <see cref="InitializeEventData"/> - carries across sequential slot-A calls
+    /// exactly like the original: a Load program that starts with a conditional opcode reading a
+    /// <c>Result</c> a previous, unrelated Load call happened to leave behind sees that same stale value.
+    /// A V1 deviation only in that this runtime has one runner (hence one shared state) per world rather
+    /// than one process-wide global, which does not matter in practice since only one world is ever
+    /// interpreting slot A programs at a time.
+    /// </summary>
+    private readonly EventProgramState _slotAScratchState = new();
+
+    public AlundraEventProgramRunner(EventProgramDocument? document, AlundraGameState gameState, IEntityWorldContext? worldContext = null)
     {
         _document = document;
         _codes = document?.CodesAsBytes();
         _gameState = gameState;
+        _worldContext = worldContext ?? NoOpEntityWorldContext.Instance;
     }
 
     public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
@@ -86,9 +103,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             return;
         }
 
-        var state = new EventProgramState();
-        InitializeEventData(entity, programSlot, state);
-        RunOneScriptCall(entity, state);
+        InitializeEventData(entity, programSlot, _slotAScratchState);
+        RunOneScriptCall(entity, _slotAScratchState);
     }
 
     public void RunSpriteEvent(AlundraEntityScriptProxy entity)
@@ -252,28 +268,32 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             case 0x37: // Wait - Script_55_037
                 return Wait(v, state);
 
-            case 0x2D: // Activate entity - Script_45_02D (needs the entity search/spawn system)
-                LogDegradedOpcodeOnce(0x2D, "ActivateEntity", "entity search/spawn system");
+            case 0x2D: // Activate entity - Script_45_02D
+                ActivateEntity(entity, v);
                 return 2;
 
-            case 0x2E: // Destroy entity - Script_46_02E (needs the entity search system)
-                LogDegradedOpcodeOnce(0x2E, "DestroyEntity", "entity search system");
+            case 0x2E: // Destroy entity - Script_46_02E
+                DestroyMatchingEntities(entity, v, state);
                 return 2;
 
-            case 0x62: // Set entities flags (low 16 bits) - Script_98_062 (needs the entity search system)
-                LogDegradedOpcodeOnce(0x62, "SetEntitiesFlagsLow16", "entity search system");
+            case 0x62: // Set entities flags (low 16 bits) - Script_98_062
+                SetEntitiesFlagsLow16(entity, v);
                 return 4;
 
-            case 0x63: // Clear entities flags (low 16 bits) - Script_99_063 (needs the entity search system)
-                LogDegradedOpcodeOnce(0x63, "ClearEntitiesFlagsLow16", "entity search system");
+            case 0x63: // Clear entities flags (low 16 bits) - Script_99_063
+                ClearEntitiesFlagsLow16(entity, v);
                 return 4;
 
-            case 0x64: // Set entities position - Script_100_064 (needs the entity search system)
-                LogDegradedOpcodeOnce(0x64, "SetEntitiesPosition", "entity search system");
+            case 0x64: // Set entities position - Script_100_064
+                SetEntitiesPosition(entity, v);
                 return 8;
 
-            case 0xAC: // Set entity shadow size - Script_172_0AC (shadow rendering not ported)
-                LogDegradedOpcodeOnce(0xAC, "SetEntityShadowSize", "shadow rendering");
+            case 0x65: // Add entities position offset - Script_101_065
+                AddEntitiesPositionOffset(entity, v);
+                return 8;
+
+            case 0xAC: // Set entity shadow size - Script_172_0AC
+                SetEntityShadowSize(entity, v);
                 return 4;
 
             case 0xBD: // Play sound 2 - Script_189_0BD (sound system not wired to the interpreter)
@@ -292,6 +312,122 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         var mask = 1 << (v[1] & 0x1f);
         var isSet = (_gameState.GetFlag(flag) & mask) != 0;
         return isSet == wantSet ? SignExtend16((v[4] << 8) | v[3]) : 5;
+    }
+
+    /// <summary>
+    /// Script_45_02D (0x2D ActivateEntity) - dynamic spawn by entity-record id, always with
+    /// <c>notCheckSpawnZone = 1</c> (the original hardcodes that argument). Delegates to
+    /// <see cref="IEntityWorldContext.SpawnEntityByRecordId"/>; the original breakpoints (debug-only
+    /// trap) when the spawn fails, this V1 port just logs once per failing record id instead.
+    /// </summary>
+    private void ActivateEntity(AlundraEntityScriptProxy entity, int[] v)
+    {
+        var spawned = _worldContext.SpawnEntityByRecordId(entity, v[1]);
+
+        if (spawned == null && _loggedFailedActivations.Add(v[1]))
+        {
+            Logs.WriteDebug(
+                $"AlundraEventProgramRunner: opcode 0x2D ActivateEntity({v[1]}) - spawn failed (record "
+                + "disabled/missing, or the spawn path threw) - the original breakpoints here instead.");
+        }
+    }
+
+    /// <summary>Script_46_02E (0x2E DestroyEntity) - destroys every entity matched by
+    /// <c>variables[1]</c>'s search type, and sets <see cref="EventProgramState.Result"/> to 1 if at
+    /// least one entity matched (0 otherwise) - read by a following conditional-goto opcode.</summary>
+    private void DestroyMatchingEntities(AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
+    {
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities);
+        state.Result = matches.Count > 0 ? 1 : 0;
+
+        foreach (var match in matches)
+        {
+            _worldContext.DestroyEntity(match);
+        }
+    }
+
+    /// <summary>Script_98_062 (0x62) - ORs the low-16-bit flag word <c>(v[3]&lt;&lt;8|v[2])</c> into every
+    /// matched entity's <see cref="AlundraEntityScriptProxy.Flags"/>.</summary>
+    private void SetEntitiesFlagsLow16(AlundraEntityScriptProxy entity, int[] v)
+    {
+        var flag = (uint)((v[3] << 8) | v[2]);
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities);
+
+        foreach (var match in matches)
+        {
+            match.Flags |= flag;
+        }
+    }
+
+    /// <summary>Script_99_063 (0x63) - clears the low-16-bit flag word <c>(v[3]&lt;&lt;8|v[2])</c> out of
+    /// every matched entity's <see cref="AlundraEntityScriptProxy.Flags"/> (bits 16-31 always
+    /// survive).</summary>
+    private void ClearEntitiesFlagsLow16(AlundraEntityScriptProxy entity, int[] v)
+    {
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities);
+        var clearMask = (uint)((v[3] << 8) | v[2]);
+        var andMask = 0xFFFF0000u | (~clearMask & 0xFFFFu);
+
+        foreach (var match in matches)
+        {
+            match.Flags &= andMask;
+        }
+    }
+
+    /// <summary>Script_100_064 (0x64) - sets PosX/PosY/PosZ of every matched entity from the raw operand
+    /// bytes, packed as 16.16 fixed-point (PosZ gets the original's own <c>+1</c> bias). Transform
+    /// re-derivation onto the CasaEngine world position happens later, once per frame, in
+    /// <see cref="AlundraWorldProxy"/>'s own per-frame pass - this handler only ever touches the logical
+    /// fields, exactly like the original.</summary>
+    private void SetEntitiesPosition(AlundraEntityScriptProxy entity, int[] v)
+    {
+        var x = ((v[3] << 8) | v[2]) << 16;
+        var y = ((v[5] << 8) | v[4]) << 16;
+        var z = (((v[7] << 8) | v[6]) << 16) + 1;
+
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities);
+
+        foreach (var match in matches)
+        {
+            match.PosX = x;
+            match.PosY = y;
+            match.PosZ = z;
+        }
+    }
+
+    /// <summary>Script_101_065 (0x65) - adds a raw 16.16 fixed-point offset to PosX/PosY/PosZ of every
+    /// matched entity (note the original's little-endian byte order here is the mirror image of 0x64's -
+    /// <c>v[2]|(v[3]&lt;&lt;8)</c> vs 0x64's <c>(v[3]&lt;&lt;8)|v[2]</c>, same value either way but ported
+    /// verbatim for fidelity).</summary>
+    private void AddEntitiesPositionOffset(AlundraEntityScriptProxy entity, int[] v)
+    {
+        var x = (v[2] | (v[3] << 8)) << 16;
+        var y = (v[4] | (v[5] << 8)) << 16;
+        var z = (v[6] | (v[7] << 8)) << 16;
+
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities);
+
+        foreach (var match in matches)
+        {
+            match.PosX += x;
+            match.PosY += y;
+            match.PosZ += z;
+        }
+    }
+
+    /// <summary>Script_172_0AC (0xAC) - rewrites the shadow-size bits of the FIRST matched entity's
+    /// <see cref="AlundraEntityScriptProxy.Flags"/> only (the original reads
+    /// <c>g_matchingEntitiesBuffer[0]</c> unconditionally when <c>count != 0</c>, every other match is
+    /// ignored). Actual shadow drawing stays unported (no shadow renderer yet) - this only reproduces the
+    /// flag write, which is all following searches/reads of the shadow-size bits can observe.</summary>
+    private void SetEntityShadowSize(AlundraEntityScriptProxy entity, int[] v)
+    {
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities);
+
+        if (matches.Count != 0)
+        {
+            matches[0].Flags = EntityFlags.WithShadowSize(matches[0].Flags, (uint)v[2]);
+        }
     }
 
     /// <summary>Script_55_037 (0x37 Wait) - suspends (returns 0) until <c>v[1]</c> frames have elapsed
