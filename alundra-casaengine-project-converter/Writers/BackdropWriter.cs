@@ -2,6 +2,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Text.Json;
 using AlundraCasaEngineProjectConverter.Readers;
+using CasaEngine.EditorServices;
 
 namespace AlundraCasaEngineProjectConverter.Writers;
 
@@ -40,6 +41,13 @@ public static class BackdropWriter
         {
             ConvertMap(inputDirectory, outputDirectory, mapIndex, mapLocations, textureCache, report);
         }
+
+        // The layer textures were registered through EditorAssetCatalogService.Add (via
+        // TextureAssetWriter.EnsureTexture), but only Save() persists the catalog to
+        // AssetInfos.json - and Phase 9 runs after every other writer's own Save(), so
+        // skipping it here silently dropped all 264 backdrop entries: the runtime then
+        // resolved none of the textures and every layer was skipped at world load.
+        EditorAssetCatalogService.Save();
     }
 
     private static void ConvertMap(

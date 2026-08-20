@@ -160,6 +160,16 @@ public class BackdropWriterTests
             Assert.True(File.Exists(texturePath));
             var wrapperPath = Path.ChangeExtension(texturePath, ".texture");
             Assert.True(File.Exists(wrapperPath));
+
+            // The texture must also be PERSISTED into AssetInfos.json: the in-memory catalog dies
+            // with the process, and a texture the runtime cannot resolve through the catalog makes
+            // the whole layer silently unrenderable (this exact gap shipped once - the runtime
+            // skipped all 132 exported layers because ConvertBackdrops never called Save()).
+            var catalogPath = Path.Combine(outputDirectory, "AssetInfos.json");
+            Assert.True(File.Exists(catalogPath));
+            var catalogText = File.ReadAllText(catalogPath);
+            var textureAssetId = layer0.GetProperty("TextureAssetId").GetString();
+            Assert.Contains(textureAssetId!, catalogText);
         });
     }
 

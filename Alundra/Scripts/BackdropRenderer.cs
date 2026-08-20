@@ -41,17 +41,14 @@ namespace Alundra.Scripts;
 /// - an opaque overwrite, not a soft blend), with no per-draw override. A true "Average" blend
 /// (<see cref="BackdropLayerData.BlendMode"/> == 1, observed on map 389's cloud-shadow overlay) is
 /// therefore not achievable without an engine change (out of scope for this slice, deferred and
-/// documented here per the task brief) - the closest available approximation is tinting the draw
-/// color toward a half-alpha white (<see cref="AverageBlendTint"/>), which lightens the overlay
-/// somewhat even though the fixed blend state means the alpha channel does not actually blend against
-/// the destination.
+/// documented here per the task brief). No draw-color approximation is attempted either: with that
+/// fixed blend state and the shader's plain texel * color multiply, an alpha-only tint such as
+/// (255,255,255,128) changes NOTHING on screen (RGB multipliers stay 1.0 and alpha is only used for
+/// the discard test) - verified during review. Average-blend layers are drawn opaque until the
+/// engine grows per-draw blend support.
 /// </summary>
 internal sealed class BackdropRenderer
 {
-    /// <summary>See the class doc's Blend handling paragraph - a best-effort tint, not a real blend.</summary>
-    internal static readonly Color AverageBlendTint = new(255, 255, 255, 128);
-
-    private const int AverageBlendMode = 1;
 
     private readonly struct LayerRuntime
     {
@@ -129,9 +126,9 @@ internal sealed class BackdropRenderer
 
             var renderPass = layer.Ground ? RenderPass2D.Effects : RenderPass2D.Background;
             var sortKey = new RenderSortKey2D((int)renderPass, 0, layer.DepthOrder, 0, 0, 0, layer.LayerId);
-            var tint = layer.BlendMode == AverageBlendMode ? AverageBlendTint : Color.White;
 
-            _layers.Add(new LayerRuntime(layer.Scrollar, texture2d, sortKey, tint));
+            // Average-blend layers draw opaque for now - see the class doc's Blend paragraph.
+            _layers.Add(new LayerRuntime(layer.Scrollar, texture2d, sortKey, Color.White));
         }
     }
 
