@@ -274,6 +274,39 @@ public class AlundraEventProgramRunnerTests
     }
 
     [Fact]
+    public void WaitUntilFlagOn_FlagClear_SuspendsAtSameCodeIndex()
+    {
+        // Script_54_036 (0x36) - despite EventOpcodeSizeTable naming it "Wait flag off", it suspends
+        // (returns 0) while the flag bit is CLEAR and only advances once it is SET - see the case 0x36
+        // comment on AlundraEventProgramRunner.Dispatch. flag = v2<<8|v1 = 1<<8|44 = 300; bit = 44&0x1f = 12.
+        var document = NewDocument(0x36, 44, 1, 0x1A, 9, 0xFF);
+        var runner = NewRunner(document); // fresh AlundraGameState: flag 300 bit 12 starts clear
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.CodeIndex); // suspended - never advanced past the 0x36 instruction
+        Assert.Equal(0u, entity.TargetAnimationId); // SetAnim(9) never reached
+    }
+
+    [Fact]
+    public void WaitUntilFlagOn_FlagSet_AdvancesByThree()
+    {
+        var document = NewDocument(0x36, 44, 1, 0x1A, 9, 0xFF);
+        var gameState = new AlundraGameState();
+        gameState.AddFlag(300, 1u << (44 & 0x1f));
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(9u, entity.TargetAnimationId); // advanced past 0x36 (size 3) and ran SetAnim(9)
+        Assert.Equal(5, state.CodeIndex);
+    }
+
+    [Fact]
     public void InitializeEventData_MasksIndexWith0x7f_AndResolvesATableOffset()
     {
         // Mirrors the brief's own worked example: EventCodesA_LoadIndex=133 -> &0x7f=5 -> table[5]=132.
@@ -371,6 +404,88 @@ public class AlundraEventProgramRunnerTests
         Assert.Same(entity, call.LogicEntity);
         Assert.Equal(5, call.EntityRecordId);
         Assert.Equal(2, state.CodeIndex);
+    }
+
+    [Fact]
+    public void SpawnEntityNextToEntity_0x8B_MatchFound_AppliesOffsetToMatchPosition()
+    {
+        // v1=0x80 (owner match, returns [entity] regardless of SpawnedEntities); v2=5 (record id);
+        // offset (v3..v8) = (2,0, 3,0, 4,0) -> +2/+3/+4 in 16.16 units on X/Y/Z.
+        var document = NewDocument(0x8B, 0x80, 5, 2, 0, 3, 0, 4, 0, 0xFF);
+        var spawned = NewEntity();
+        var context = new FakeEntityWorldContext { EntityToSpawn = spawned };
+        var runner = NewRunner(document, worldContext: context);
+        var entity = new AlundraEntityScriptProxy { PosX = 5 << 16, PosY = 7 << 16, PosZ = 9 << 16 };
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        var call = Assert.Single(context.SpawnCalls);
+        Assert.Same(entity, call.LogicEntity);
+        Assert.Equal(5, call.EntityRecordId);
+        Assert.Equal(7 << 16, spawned.PosX);
+        Assert.Equal(10 << 16, spawned.PosY);
+        Assert.Equal(13 << 16, spawned.PosZ);
+    }
+
+    [Fact]
+    public void SpawnEntityNextToEntity_0x8B_NoMatch_LeavesSpawnedAtItsOwnRecordPosition()
+    {
+        // v1=0x81 ("get player" - never matches, no player system yet): the position write is skipped
+        // entirely, leaving the spawned entity wherever SpawnEntityByRecordId already placed it (its own
+        // record's spawn position, mirrored by the fake context here as a preset PosX/PosY/PosZ).
+        var document = NewDocument(0x8B, 0x81, 6, 2, 0, 3, 0, 4, 0, 0xFF);
+        var spawned = new AlundraEntityScriptProxy { PosX = 111, PosY = 222, PosZ = 333 };
+        var context = new FakeEntityWorldContext { EntityToSpawn = spawned };
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(111, spawned.PosX);
+        Assert.Equal(222, spawned.PosY);
+        Assert.Equal(333, spawned.PosZ);
+    }
+
+    [Fact]
+    public void CheckFlagsOn_0x33_AllFourSet_SetsResult1()
+    {
+        // Four (flag,bit) pairs, each encoded as flag = v[2i+1] + v[2i+2]*0x100: flags 12/13/14/15
+        // directly (all < 32, so mask = 1<<flag - keeps the test arithmetic simple).
+        var document = NewDocument(0x33, 12, 0, 13, 0, 14, 0, 15, 0, 0xFF);
+        var gameState = new AlundraGameState();
+        gameState.AddFlag(12, 1u << 12);
+        gameState.AddFlag(13, 1u << 13);
+        gameState.AddFlag(14, 1u << 14);
+        gameState.AddFlag(15, 1u << 15);
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(9, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckFlagsOn_0x33_OnePairClear_SetsResult0_ShortCircuits()
+    {
+        // Same four pairs as above, but flag 14's bit is never set.
+        var document = NewDocument(0x33, 12, 0, 13, 0, 14, 0, 15, 0, 0xFF);
+        var gameState = new AlundraGameState();
+        gameState.AddFlag(12, 1u << 12);
+        gameState.AddFlag(13, 1u << 13);
+        gameState.AddFlag(15, 1u << 15);
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.Result);
+        Assert.Equal(9, state.CodeIndex);
     }
 
     [Fact]

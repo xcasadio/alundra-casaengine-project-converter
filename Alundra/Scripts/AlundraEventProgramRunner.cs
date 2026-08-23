@@ -33,10 +33,61 @@ namespace Alundra.Scripts;
 /// falls back to using the current map's table anyway. Every real map-389 Load program index observed
 /// (133-145) carries the bit set, so this fallback path is not expected to fire during normal play.
 /// </summary>
+public enum EventTraceKind
+{
+    Implemented,
+    Degraded,
+    UnknownSkipped,
+    UnknownNoSizeTerminated,
+    End,
+    Break,
+
+    /// <summary>Diagnostic-only kind, never produced in production: <see cref="AlundraEventProgramRunner.MaxIterationsPerCall"/>
+    /// forcibly ended this script call after too many dispatched opcodes without reaching 0xFF/0x00/a
+    /// suspend - almost always an unimplemented suspending opcode (e.g. 0x35/0x36 wait-flag, skipped
+    /// instead of suspending - see this runner's own class doc) sitting inside a Goto loop that never
+    /// exits. Diagnostic only - not a fidelity concern for slot A (the only slot production code
+    /// actually interprets), which never hits this in practice.</summary>
+    LoopBudgetExceeded,
+}
+
+/// <summary>One dispatched opcode (or program-boundary event), reported to <see cref="AlundraEventProgramRunner.TraceSink"/>
+/// - see that property own doc. Read-only trace record, never allocated on the null-sink path.
+/// <see cref="State"/> is the live <see cref="EventProgramState"/> being executed (a reference,
+/// not a copy - no extra allocation) so a trace-mode sink can inspect or mutate it (e.g. the intro
+/// trace harness own optimistic-predicate deviation, which sets <c>State.Result = 1</c> for a
+/// handful of skipped predicate opcodes - see IntroTraceHarnessTests own class doc, section 0, for
+/// the rationale). Never mutated by this runner itself outside of normal opcode handling.</summary>
+public readonly record struct EventTraceRecord(
+    int ProgramSlot,
+    int CodeIndex,
+    int Opcode,
+    EventTraceKind Kind,
+    int Size,
+    byte[]? Parameters,
+    EventProgramState State);
+
 public sealed class AlundraEventProgramRunner : IEventProgramRunner
 {
     public int ScriptRunCount { get; private set; }
     public int SpriteEventRunCount { get; private set; }
+
+    /// <summary>
+    /// Trace seam for the headless intro trace harness (Alundra.Tests/IntroTraceHarnessTests.cs) - null
+    /// by default (zero cost: a single null-check per dispatched opcode, no allocation) and never set by
+    /// production code. When non-null, <see cref="RunOneScriptCall"/> reports every dispatched opcode
+    /// (after <see cref="Dispatch"/>, so its <see cref="EventTraceKind"/> is known) plus the 0xFF/0x00
+    /// program-boundary terminations, so a caller can reconstruct the exact linear "skip path" the
+    /// interpreter took without re-implementing any dispatch logic of its own.
+    /// </summary>
+    internal Action<EventTraceRecord>? TraceSink { get; set; }
+
+    /// <summary>Diagnostic-only safety valve, null (unlimited) by default - unused, hence no behavior
+    /// change, unless a caller (the intro trace harness) explicitly sets it. When set,
+    /// <see cref="RunOneScriptCall"/> forcibly ends a script call after this many dispatched opcodes
+    /// without reaching a natural end/suspend, reporting <see cref="EventTraceKind.LoopBudgetExceeded"/>
+    /// through <see cref="TraceSink"/> instead of hanging forever - see that trace kind's own doc.</summary>
+    internal int? MaxIterationsPerCall { get; set; }
 
     private readonly EventProgramDocument? _document;
     private readonly byte[]? _codes;
@@ -104,7 +155,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         }
 
         InitializeEventData(entity, programSlot, _slotAScratchState);
-        RunOneScriptCall(entity, _slotAScratchState);
+        RunOneScriptCall(entity, _slotAScratchState, programSlot);
     }
 
     public void RunSpriteEvent(AlundraEntityScriptProxy entity)
@@ -165,15 +216,25 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// reused <see cref="EventProgramState"/> across multiple calls (e.g. to exercise 0x37 Wait's
     /// multi-frame suspend/resume) independently of slot A's own always-fresh-state policy in
     /// <see cref="RunScript"/> above.</summary>
-    internal void RunOneScriptCall(AlundraEntityScriptProxy entity, EventProgramState state)
+    internal void RunOneScriptCall(AlundraEntityScriptProxy entity, EventProgramState state, int programSlot = -1)
     {
+        var iterations = 0;
+
         while (true)
         {
+            if (MaxIterationsPerCall is { } budget && ++iterations > budget)
+            {
+                TraceSink?.Invoke(new EventTraceRecord(programSlot, state.CodeIndex, state.Sp, EventTraceKind.LoopBudgetExceeded, 0, null, state));
+                return;
+            }
+
+            var codeIndexAtFetch = state.CodeIndex;
             var variables = FillDataFromCommand(state);
             var command = variables[0];
 
             if (command == 0xFF)
             {
+                TraceSink?.Invoke(new EventTraceRecord(programSlot, codeIndexAtFetch, command, EventTraceKind.End, 0, null, state));
                 return;
             }
 
@@ -181,10 +242,30 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             {
                 state.Parameters[1] = 0;
                 state.CodeIndex++;
+                TraceSink?.Invoke(new EventTraceRecord(programSlot, codeIndexAtFetch, command, EventTraceKind.Break, 1, null, state));
                 return;
             }
 
+            _lastDispatchKind = EventTraceKind.Implemented;
             var result = Dispatch(command, entity, variables, state);
+
+            if (TraceSink != null)
+            {
+                EventOpcodeSizeTable.Entries.TryGetValue((byte)command, out var entry);
+                var instructionSize = entry?.Size ?? 0;
+                byte[]? parameters = null;
+                if (instructionSize > 1)
+                {
+                    var count = Math.Max(0, Math.Min(instructionSize - 1, variables.Length - 1));
+                    parameters = new byte[count];
+                    for (var i = 0; i < count; i++)
+                    {
+                        parameters[i] = (byte)variables[i + 1];
+                    }
+                }
+
+                TraceSink.Invoke(new EventTraceRecord(programSlot, codeIndexAtFetch, command, _lastDispatchKind, result, parameters, state));
+            }
 
             if (result == 0)
             {
@@ -195,6 +276,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             state.CodeIndex += result;
         }
     }
+
+    private EventTraceKind _lastDispatchKind = EventTraceKind.Implemented;
 
     /// <summary>Port of EntityEventHandlers.FillDataFromCommand (EntityEventHandlers.cs:400-417).</summary>
     internal static int[] FillDataFromCommand(EventProgramState state)
@@ -268,6 +351,11 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             case 0x37: // Wait - Script_55_037
                 return Wait(v, state);
 
+            case 0x36: // Wait until flag on - Script_54_036 @ 0x8003E35C (EntityEventHandlers.cs:1166-1176);
+                       // EventCodeDebugger/EventOpcodeSizeTable names this "Wait flag off", which is misleading -
+                       // it returns 3 (advance) when the flag bit IS SET, and 0 (suspend) when it is clear.
+                return WaitUntilFlagOn(v);
+
             case 0x2D: // Activate entity - Script_45_02D
                 ActivateEntity(entity, v);
                 return 2;
@@ -275,6 +363,13 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             case 0x2E: // Destroy entity - Script_46_02E
                 DestroyMatchingEntities(entity, v, state);
                 return 2;
+
+            case 0x33: // Check flags on - Script_51_033
+                return CheckFlagsOn(v, state);
+
+            case 0x8B: // Spawn entity next to entity - Script_139_08B @ 0x8004033C
+                SpawnEntityNextToEntity(entity, v);
+                return 9;
 
             case 0x62: // Set entities flags (low 16 bits) - Script_98_062
                 SetEntitiesFlagsLow16(entity, v);
@@ -314,6 +409,41 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         return isSet == wantSet ? SignExtend16((v[4] << 8) | v[3]) : 5;
     }
 
+    /// <summary>Script_54_036 (0x36) - a pure-flag suspend/advance test, same shape as
+    /// <see cref="FlagBranch"/> but WITHOUT a goto (it is only ever used as a suspend gate, not a
+    /// branch): returns 3 (advance past the instruction) once the flag bit is SET, 0 (suspend, retry
+    /// next frame) while it is clear. The size table calls this "Wait flag off", which is backwards -
+    /// see the case 0x36 comment on <see cref="Dispatch"/>.</summary>
+    private int WaitUntilFlagOn(int[] v)
+    {
+        var flag = (uint)((v[2] << 8) | v[1]);
+        var mask = 1u << (v[1] & 0x1f);
+        return (_gameState.GetFlag(flag) & mask) != 0 ? 3 : 0;
+    }
+
+    /// <summary>Script_51_033 (0x33 CheckFlagsOn) - tests FOUR (flag,bit) pairs from v[1..8]:
+    /// Result=1 only if ALL FOUR bits are set, Result=0 (short-circuit on the first clear pair)
+    /// otherwise. Always returns 9 (instruction size) regardless of Result - unlike FlagBranch,
+    /// this opcode never branches itself; a following conditional-goto (0x03/0x04) reads Result.
+    /// </summary>
+    private int CheckFlagsOn(int[] v, EventProgramState state)
+    {
+        for (var i = 0; i < 4; i++)
+        {
+            var flag = (uint)(v[i * 2 + 1] + (v[i * 2 + 2] << 8));
+            var mask = 1u << (int)(flag & 0x1f);
+
+            if ((_gameState.GetFlag(flag) & mask) == 0)
+            {
+                state.Result = 0;
+                return 9;
+            }
+        }
+
+        state.Result = 1;
+        return 9;
+    }
+
     /// <summary>
     /// Script_45_02D (0x2D ActivateEntity) - dynamic spawn by entity-record id, always with
     /// <c>notCheckSpawnZone = 1</c> (the original hardcodes that argument). Delegates to
@@ -329,6 +459,36 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             Logs.WriteDebug(
                 $"AlundraEventProgramRunner: opcode 0x2D ActivateEntity({v[1]}) - spawn failed (record "
                 + "disabled/missing, or the spawn path threw) - the original breakpoints here instead.");
+        }
+    }
+
+    /// <summary>Script_139_08B (0x8B SpawnEntityNextToEntity) - dynamic spawn by entity-record
+    /// id (v[2]), same notCheckSpawnZone=1 spawn path as 0x2D ActivateEntity, then positions the
+    /// NEW entity relative to the first entity matched by v[1]s search type: raw 16.16 offset
+    /// added to that match own PosX/PosY/PosZ. The original (EntityEventHandlers.cs:2557-2575)
+    /// dereferences the spawned entity unconditionally even when SpawnEntity returned null (a
+    /// latent null-pointer bug it never hits in practice on real data) - this port null-checks
+    /// instead and simply skips the position write when the spawn failed, logging once like 0x2D
+    /// own ActivateEntity above (shares the same failed-activation log set).</summary>
+    private void SpawnEntityNextToEntity(AlundraEntityScriptProxy entity, int[] v)
+    {
+        var spawned = _worldContext.SpawnEntityByRecordId(entity, v[2]);
+
+        if (spawned == null && _loggedFailedActivations.Add(v[2]))
+        {
+            Logs.WriteDebug(
+                $"AlundraEventProgramRunner: opcode 0x8B SpawnEntityNextToEntity({v[2]}) - spawn "
+                + "failed (record disabled/missing, or the spawn path threw) - the original "
+                + "breakpoints here instead.");
+        }
+
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities);
+
+        if (spawned != null && matches.Count != 0)
+        {
+            spawned.PosX = matches[0].PosX + ((v[3] + v[4] * 0x100) << 16);
+            spawned.PosY = matches[0].PosY + ((v[5] + v[6] * 0x100) << 16);
+            spawned.PosZ = matches[0].PosZ + ((v[7] + v[8] * 0x100) << 16);
         }
     }
 
@@ -461,6 +621,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     {
         if (!EventOpcodeSizeTable.Entries.TryGetValue((byte)command, out var entry) || entry.Size <= 0)
         {
+            _lastDispatchKind = EventTraceKind.UnknownNoSizeTerminated;
+
             if (_loggedUnknownOpcodes.Add(command))
             {
                 Logs.WriteWarning(
@@ -470,6 +632,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
             return 0;
         }
+
+        _lastDispatchKind = EventTraceKind.UnknownSkipped;
 
         if (_loggedUnknownOpcodes.Add(command))
         {
@@ -483,6 +647,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
     private void LogDegradedOpcodeOnce(int opcode, string name, string missingSystem)
     {
+        _lastDispatchKind = EventTraceKind.Degraded;
+
         if (_loggedDegradedOpcodes.Add(opcode))
         {
             Logs.WriteDebug(
