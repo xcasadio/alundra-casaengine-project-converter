@@ -363,7 +363,7 @@ Données/DLL (ce repo) : les prefabs G2 ont racine `AnimatedSpriteComponent` + e
   Alundra/Alundra.csproj` 0 erreur ; harnais intro non affecté (aucune logique d'event program ni de
   spawn touchée par cette tranche).
 
-### E3.c — Mover conscient de la politique ⏳ (moteur, plan-verifier)
+### E3.c — Mover conscient de la politique ✅ (moteur dbda6359, verifier CONFIRMED ; différés : composition de l'empreinte si la CollisionComponent n'est pas sous la racine (P3), repli de RequestDash en X/Z (P4), coût de ResolveFootUpCoordinate sans champ (P4), assertion du plateau −800 indirecte (P4))
 
 Propriétaire : moteur seul (un commit dans le submodule, puis bump du pointeur). Unités = unités
 monde (pixels pour Alundra) ; les défauts « mètres » existants restent.
@@ -479,24 +479,95 @@ monde (pixels pour Alundra) ; les défauts « mètres » existants restent.
   deux tours de correctifs. **Arrêt** : si le changement de base casse un test existant sans
   solution additive, ou si le backend ne supporte pas la forme de requête Box.
 
-### E3.d — Branchement Alundra ⏳ (convertisseur + DLL)
+### E3.d — Branchement Alundra ⏳ (moteur sérialisation, puis convertisseur + DLL)
 
-- **Scope** : convertisseur — `CharacterControllerComponent` sur le prefab Alundra (réglages : Box du
-  header, `StepHeight 3`, `GroundSnapDistance`, `Gravity`/`MaxFallSpeed` calculés depuis les
-  propriétés de map au runtime par la DLL : `Gravity 128` → `(128 << 8) / 65536` px/tick² × 50² =
-  **1 250 px/s²**, `ZViscosity 4096` → `(4096 << 8) / 65536` px/tick × 50 = **800 px/s**) ; DLL —
-  `AlundraPlayerManager.Tick` passe `Move(dx, dy, 0)` au contrôleur au lieu d'écrire `PosX/PosY` ;
-  après l'update du composant, le proxy relit la racine logique → `PosX/PosY/PosZ` (16.16) ;
-  `IsOnGround ← controller.IsGrounded` (remplace le stub) ; clamp au sol au spawn
-  (`EntityManager.cs:127-136`) ; les téléports scriptés (0x64/0x65) écrivent la racine. Mode
-  `Script` pendant `ControlLocked`.
-- **Acceptation** : runtime 389 — Alundra marche sur le pont, bloquée par les bastingages et les
-  mâts, suit les marches du pont, ne traverse pas les cellules non marchables ; harnais inchangé ;
-  tests DLL verts. Pour tester avant la fin de l'intro : **flag de debug** (à valider par
-  l'utilisateur) ignorant le verrou 0x10, écart explicite hors fidélité.
+- **Découpage** (un seul committeur par repo, ordre strict) : (1) **E3.d.0 moteur** —
+  `EditorEntityJsonSerializer` (CasaEngine.EditorServices) ne sait pas sauver un
+  `CharacterControllerComponent` (`EntityComponent`, branche `default:` → `type` seul,
+  `EditorEntityJsonSerializer.cs:211-261`) alors que `Load` lit `settings` et `control_mode`
+  (`CharacterControllerComponent.cs:477-489`) : ajouter `case CharacterControllerComponent` écrivant
+  `settings` (mêmes clés que `CharacterControllerSettings.Load :97-132`, nouveaux réglages compris) et
+  `control_mode` ; test de round-trip `SaveEntity → Entity.Load` sur chaque réglage ; commit moteur puis
+  bump du pointeur ; (2) **convertisseur** ; (3) **DLL** (parent, un commit pour 2+3).
+- **Convertisseur** (`Writers/SpriteWriter.cs`, `WriteEntityPrefab`) : sélecteur du héros =
+  `bank.IsAlundraBank && bank.Sector5Id == 0` (clé `alundra_0`, dossier `Entities/Alundra`,
+  `SpriteBankReader.cs:187, :211`) ; **ce seul prefab** reçoit un `CharacterControllerComponent` (les
+  394 autres : aucun — E4 décidera pour les PNJ). Réglages à l'export, en pixels : `Radius 7.5`,
+  `Height 32` (≥ 2×Radius ; contraintes capsule de `Validate :137-199`, sans effet sur le sweep Box
+  qui lit la fixture 21×15×32), `SkinWidth 0.5` (< Radius), `StepHeight 3` (`PhysicsEngine.cs:436-475`),
+  `GroundSnapDistance 4`, `MaxSlopeAngle` défaut, `Gravity 0`, `MaxFallSpeed 0`, `WalkabilityMask 0`,
+  `control_mode Player` — `Gravity`/`MaxFallSpeed`/`WalkabilityMask` sont **écrasés au runtime** par la
+  DLL (ci-dessous) car ils dépendent de la map et de l'entité. Test convertisseur : exactement un
+  prefab porte le composant, avec ces valeurs ; export complet 0 erreur, compteurs d'E3.a inchangés.
+- **DLL — adoption** (`AdoptPlayerPawn`) : `controller = pawn.GetComponent<CharacterControllerComponent>()`
+  (absent → avertissement unique, comportement E2 conservé) ; `controller.Settings.Gravity =
+  (mapGravity << 8) / 65536 × 2500` (389 : **1 250 px/s²**), `MaxFallSpeed = (mapZViscosity << 8) /
+  65536 × 50` (**800 px/s**), `WalkabilityMask = AlundraCellsCollisionField.WalkabilityMaskFor(proxy.Flags)`
+  (propriétés `Gravity`/`ZViscosity` du tilemap, lues comme `AlundraCells`) ; `ControlMode` laissé à
+  `Player` tel que posé par `Possess` (`ControllerPossessionTests.cs:20-29`, `World.cs:350-364`) ; **aucun
+  `SetMoveIntent` n'est jamais appelé** : l'intention reste nulle, `Move(d)` est la seule source
+  horizontale ; pendant `ControlLocked`, `MovePlayer` n'appelle pas `Move` (gate E2) — pas de changement
+  de mode. **Clamp au spawn** (`EntityManager.cs:127-136`) : après l'écriture de la pose New Game,
+  `field.TrySampleGround(pied, maxDrop ∞)` → si `GroundHeight > PosZ`, `PosZ = GroundHeight` ; puis
+  `controller.Teleport(pose logique)` ; `IsOnGround = 1` jusqu'au premier update du contrôleur
+  (`CharacterMotionSystem` l'enregistre à la frame suivante, `CharacterMotionSystem.cs:96-98`).
+- **DLL — propriété de la racine par frame** (ordre moteur : `World.Update` → `RuntimeSystems.Update`
+  → `CharacterMotionSystem.UpdateControllers` (gravité/sol, déplace la racine) → `Entity.Update`
+  (saute le contrôleur, piloté par système, `Entity.cs:480`) → `GameplayProxy.Update`) : pour une entité
+  **pilotée par contrôleur** (le héros), **la racine est la source de vérité** :
+  1. en tête de `AlundraEntityScriptProxy.Update` : `Pos* ← racine` (pull, conversion `(int)
+     MathF.Round(px × 65536)`, arrondi au plus proche pour éviter la dérive) ; `IsOnGround ←
+     controller.IsGrounded` (après le premier update contrôleur) ;
+  2. `MovePlayer` puis `Tick` : pour chacun des 0..4 sous-pas 50 Hz, l'intégration fidèle d'E2 produit
+     `ΔPosX/ΔPosY` (16.16) → `controller.Move((ΔX >> 16) en float px, (ΔY >> 16) en float px, 0)` (on
+     passe la fraction : `Δ / 65536f`) → `Pos* ← racine` (re-pull) avant le sous-pas suivant ; un axe
+     bloqué laisse `Force*` inchangés (pas de `ForceAdjusted` — écart documenté) ;
+  3. `SyncTransform` : si l'entité a un contrôleur, **ne réécrit pas la racine** ; elle ne fait que
+     re-projeter (`RenderProjection.UpdateProjection()`) ; pour les entités sans contrôleur (PNJ jusqu'à
+     E4) comportement E3.a inchangé (racine ← `Pos*`).
+  4. **Écritures scriptées** de `Pos*` (0x64/0x65 `SetEntitiesPosition`/`AddEntitiesPositionOffset`, et
+     tout autre site qui écrit `PosX/PosY/PosZ` — grep) : après l'écriture, `proxy.PushLogicalPositionToRoot()`
+     : racine ← `Pos*` puis, si contrôleur, `controller.Teleport(racine)` (`:452-458`, remet vitesse et
+     état de collision à zéro) ; re-projection.
+- **Non-goals** : **flag de debug ignorant 0x10 — décision utilisateur en attente, NON implémenté** ;
+  PNJ sur le contrôleur (E4) ; saut ; glissade par attribut ; entité-entité.
+- **Acceptation** :
+  1. Moteur (E3.d.0) : round-trip de tous les réglages + `control_mode` ; `CasaEngine.Tests` sans nouvel
+     échec (18 préexistants).
+  2. Convertisseur : un seul prefab avec `CharacterControllerComponent` (test sur `Alundra.entity` et sur
+     un prefab non-héros) ; valeurs ci-dessus relues par `Entity.Load` ; export complet 0 erreur ;
+     compteurs `Worlds 483`, `Entities.Prefabs 395`, `Sprites.QuadsRead == QuadsConverted 160355`,
+     `Assets.Animation2d 9620` inchangés.
+  3. DLL headless (monde `TopDownElevation` réel construit comme dans `AlundraEntityLogicalRenderPoseTests`,
+     champ `AlundraCellsCollisionField` de la 389, pawn = prefab Alundra exporté chargé tel quel) :
+     - **pose au sol** : héros adopté puis téléporté en (18,57) → `PosZ` = 80 px après le clamp ; après
+       2 `World.Update(1/50)`, racine z == 80 et `IsOnGround == 1` ;
+     - **mur** : depuis (18,15)… non : depuis la cellule (17,15) (marchable, h11 → z 176), `Move` de +24 px
+       en X vers (18,15) (`walkability 1`) avec masque ClassB (`0x41`) → racine inchangée ; avec masque
+       `0x40` → avancée ;
+     - **marche du pont** : depuis (18,57) z 80 vers (18,56) : lire `AlundraCells` des deux cellules ;
+       si `height` diffère de plus de 3 px × (1/16) → bloqué, sinon franchi — le test affiche les deux
+       hauteurs lues et assert la règle (valeur attendue calculée depuis la donnée, pas devinée) ;
+     - **propriété de la racine** : une frame où `Move` a été appliqué laisse racine ET `Pos*` à la
+       position résolue par le mover (échoue si `SyncTransform` réécrit l'ancienne pose) ; deux frames
+       consécutives sans dérive ;
+     - **téléport scripté** : 0x64 vers (804, 872, 0) → racine, `Pos*` et vitesse verticale du
+       contrôleur cohérents (vitesse 0) ; la frame suivante ne ramène pas le héros ;
+     - **sans Move** : un `World.Update` sans `Move` ne déplace pas le héros horizontalement (intention
+       nulle) ;
+     - harnais intro inchangé (frame 926 — il n'a ni contrôleur ni champ : chemin E2).
+  4. Runtime (utilisateur) : Alundra marche sur le pont, bloquée par bastingages/mâts, suit les
+     marches ; ne traverse pas les cellules non marchables. Contrôle disponible seulement après 0x11
+     (fin de l'intro, qui s'arrête au bloc 18 jusqu'à E4) — voir non-goal « flag de debug ».
+- **Rollback** : revert du commit moteur + pointeur ; revert du commit parent (+ export). **Budget** :
+  trois commits, ≤ 1 journée ; au plus deux tours de correctifs. **Arrêt** : si le harnais change de
+  trajectoire (IsOnGround/LoadingMap), si le mode `Player` ne peut pas être tenu après `Possess` sans
+  intention parasite, ou si la relecture racine → `Pos*` fait dériver l'intégration 16.16 d'E2 (test de
+  deux frames).
 
 ## 4. Ordre et dépendances
 
-E3.0 → E3.a → E3.b → E3.c → E3.d. E3.0 et E3.c sont des commits moteur, E3.b un commit moteur puis un
-commit DLL (plan-verifier pour chaque tranche moteur) ; E3.a et E3.d sont des commits du repo parent. Après chaque commit moteur : rappel du fetch/merge du checkout
+E3.0 → E3.a → E3.b → E3.c → E3.d. E3.0, E3.c et E3.d.0 sont des commits moteur, E3.b un commit moteur
+puis un commit DLL (plan-verifier pour chaque tranche moteur) ; E3.a et E3.d (convertisseur + DLL) sont
+des commits du repo parent. Après chaque commit moteur : rappel du fetch/merge du checkout
 standalone.
