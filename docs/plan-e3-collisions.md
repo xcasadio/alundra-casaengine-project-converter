@@ -365,22 +365,119 @@ Données/DLL (ce repo) : les prefabs G2 ont racine `AnimatedSpriteComponent` + e
 
 ### E3.c — Mover conscient de la politique ⏳ (moteur, plan-verifier)
 
-- **Scope** (`CharacterControllerComponent`) : axe « haut » = `policy.Up` (Z sous
-  `TopDownElevation`, Y sinon) pour la gravité, le snap et le pied ; fixture **Box ou Capsule** ;
-  pied = racine + min de la fixture le long de l'axe haut (helper `FootOffset`) ; sol : si
-  `World.CollisionField != null`, échantillonner l'empreinte (4 coins de la boîte, ou 4 points du
-  rayon de la capsule) avec le masque des réglages et prendre le **max** ; sinon sweep actuel ;
-  horizontal : pour un `Move(d)`, tenter X puis Y séparément ; un coin cible non marchable ou
-  dont le sol dépasse `pied + StepHeight` bloque l'axe ; vertical : gravité le long de l'axe haut,
-  nouveau réglage `MaxFallSpeed`, atterrissage = snap au sol et `IsGrounded`. Réglages en unités
-  monde (px pour Alundra). Modes de contrôle inchangés.
-- **Non-goals** : pentes (`MaxSlopeAngle` reste tel quel), pathfinding, entité-entité.
-- **Acceptation** : tests moteur sur un monde `TopDownElevation` + `HeightGridCollisionField`
-  synthétique + pawn Box : marche sur plat, bloqué par falaise > `StepHeight`, monte une marche ≤
-  `StepHeight`, tombe avec `MaxFallSpeed` et atterrit (`IsGrounded`), non marchable bloque ; les
-  tests existants (`CharacterControllerComponentTests`, Y-up/capsule/sweep) restent verts ; démo
-  `TopDownElevationDemo` inchangée.
-- **Rollback** : revert dans le submodule.
+Propriétaire : moteur seul (un commit dans le submodule, puis bump du pointeur). Unités = unités
+monde (pixels pour Alundra) ; les défauts « mètres » existants restent.
+
+- **C1 — Axe haut de la politique (API additive)** : `SimulationSpacePolicy` gagne
+  `public virtual Vector3 Up => Vector3.Up;` (`SimulationSpacePolicy.cs`), surchargé en
+  `Vector3.UnitZ` dans `TopDownElevationSimulationSpacePolicy`. Le mover résout
+  `Owner?.World?.PhysicsWorld?.SpacePolicy?.Up ?? Vector3.Up` au début de chaque `Update` et en
+  dérive sa **base** `(up, h1, h2)` = axe haut + les deux autres axes dans l'ordre X→Y→Z (up = Y →
+  h1 = X, h2 = Z ; up = Z → h1 = X, h2 = Y). Sans monde/politique : base Y-up = comportement actuel.
+  Note d'API additive selon `.github/copilot-instructions.md`.
+- **C2 — Changement de base complet** (pas seulement les sites `Vector3.Up`) : toutes les méthodes
+  qui codent X/Z horizontaux et `velocity.Y` vertical passent par la base : `ApplyHorizontalVelocity`
+  (`CharacterControllerComponent.cs:532-542`), `GetDesiredHorizontalVelocity` (`:946-949` : intent.X
+  sur h1, −intent.Y sur h2 — même signe qu'aujourd'hui ; sous `TopDownElevation` Y logique croît vers
+  le bas de l'écran, donc stick haut = Y décroissant), `ApplyDashVelocity` (`:544-558`),
+  `ApplyVerticalVelocity` (`:560-586`, gravité et saut sur la composante `up`), `TryStepMove`
+  (`:751`), `UpdateGround` (`:794-838`) et les 7 sites `Vector3.Up` (`:664, :762, :775, :784, :815,
+  :832, :925`). Sous `Identity3d`/`Planar2d` la base est exactement (Y, X, Z) : comportement
+  inchangé, `CharacterControllerComponentTests` inchangés et verts ; `TopDownElevationDemo` inchangée.
+- **C3 — Fixture Box ou Capsule** : `ValidateDependencies` (`:240-244`) et
+  `TryResolveCollisionDependencies` (`:855-859`) acceptent une fixture `Box` **ou** `Capsule` (la
+  première trouvée, capsule prioritaire si les deux). Forme de requête : Capsule → inchangé
+  (`Settings.Radius/Height`, `GetSweepShape :879-893`) ; **Box → forme `Box` de la taille de la
+  fixture rétrécie de `SkinWidth` sur chaque face** (le backend l'accepte,
+  `BepuQueryShapeBackend.cs:54-67`) ; `Settings.Radius/Height` restent propres à la capsule (la
+  validation `Height ≥ 2×Radius` subsiste — E3.d fournit des valeurs plausibles). **Espace du pied et
+  de l'empreinte** : pose de la fixture = transform locale de la `CollisionComponent` ∘
+  `ColliderFixture.LocalPosition`, exprimée **dans l'espace de la racine** ; `FootOffset` = (centre
+  de la fixture · up) − (demi-étendue de la fixture le long de up) ; empreinte = les 4 coins
+  (centre ± demi-étendues sur h1/h2) à la hauteur du pied. Boîte G2 d'Alundra (`local_position
+  (0.5, 0.5, 16)`, taille 21×15×32, transform de la `CollisionComponent` identité) → pied z = 0.
+  Capsule : pied = centre − (Height/2), empreinte = 4 points du rayon.
+- **C4 — Sol depuis le champ (remplace le sweep)** : quand `World.CollisionField != null`, le
+  champ est la **seule** source de sol d'`UpdateGround` (le sweep de snap `:815-827` est sauté ;
+  chemin sans champ inchangé). Sonde de sol : pour chaque coin de l'empreinte, origine =
+  coin + `StepHeight`·up, `maxDropDistance = StepHeight + GroundSnapDistance`, masque =
+  `Settings.WalkabilityMask` ; sol = **max** des `GroundHeight` des coins avec `HasGround` (aucun →
+  pas de sol). **Origine de sonde couvrant le pas** : `origine = pied_avant_pas + max(StepHeight,
+  |Δ vertical du pas|)` (pied avant le déplacement vertical de ce tick), `maxDropDistance =
+  (origine − pied_après_pas) + GroundSnapDistance`. Règle : si `pied_après_pas − GroundSnapDistance ≤
+  sol ≤ origine` → au sol : la racine est déplacée le long de up de `sol − pied_après_pas` (remontée
+  au sol traversé, ou snap), vitesse verticale annulée, `IsGrounded = true` ; sinon en l'air
+  (gravité). Un sol traversé pendant le pas est ainsi toujours retrouvé (origine au-dessus de lui :
+  HeightGrid le renvoie ; Alundra renvoie `GroundHeight ≥ pied`) — port du clamp inconditionnel
+  de l'original (`PosZ = TerrainHeight + 1`, `:123-135`). La branche champ est évaluée **avant** la
+  sortie anticipée `GroundSnapDistance <= 0` d'`UpdateGround` (`:807-811`). L'empreinte est celle de
+  la fixture **pleine** (non rétrécie de `SkinWidth`). Les deux conventions de champ donnent la même décision : un sol
+  ≤ pied + StepHeight est sous la sonde (HeightGrid le renvoie ; Alundra aussi), un sol plus haut que
+  l'origine (plus de `StepHeight` au-dessus du pied, sans chute dans ce pas) est au-dessus de la
+  sonde (HeightGrid « pas de sol », Alundra hauteur > sonde) — traité « pas au sol » ici et
+  « bloqué » par C5. **Séquence** : `Move(d)` ne résout que le déplacement horizontal (`:338-360`,
+  inchangé) ; la résolution de sol reste dans `Update` (`UpdateGround`), donc un `Move` est toujours
+  suivi d'un `Update(dt)` pour voir son effet sur le sol.
+- **C5 — Règle horizontale depuis le champ** : tout déplacement horizontal (`Move(d)` ou vitesse
+  d'intention) est résolu **axe par axe, h1 puis h2** : pour l'axe courant, calculer les 4 coins de
+  l'empreinte à la position cible ; sonder chaque coin avec origine = coin + `StepHeight`·up,
+  `maxDropDistance = float.MaxValue` (pour qu'une descente de corniche reste autorisée avec
+  HeightGrid), masque des réglages ; l'axe est **bloqué** (déplacement sur cet axe mis à 0 — pas de
+  déplacement partiel, simplification documentée de la recherche dichotomique
+  `PhysicsEngine.cs:364-475`) si un coin a `!HasGround` (hors champ) ou `!IsWalkable` ou
+  `GroundHeight > pied + StepHeight` (port de « cellule bloquante si hauteur ≥ Z » `:1159`, avec la
+  marche de 3 px `:436-475`). Puis sweeps contre les corps physiques comme aujourd'hui.
+- **C6 — Verticale** : `v_up −= Gravity × dt` ; si `MaxFallSpeed > 0`, `v_up ≥ −MaxFallSpeed` ;
+  atterrissage par C4 ; saut inchangé (sur up).
+- **C7 — Réglages** (`CharacterControllerSettings.cs` : propriété, constructeur de copie
+  `:16-38`, `Load :97-121`, `Validate :123-184`, `Clone`) : `uint WalkabilityMask` (clé
+  `walkability_mask`, **défaut 0 = aucune classe ne bloque** dans la polarité du champ Alundra
+  `(flags & mask) == 0` ; E3.d fournit le masque par entité) ; `float MaxFallSpeed` (clé
+  `max_fall_speed`, **défaut 0 = non borné**, `Validate : ≥ 0`). `StepHeight` garde son défaut 0
+  (E3.d pose 3).
+- **Non-goals** : pentes (`MaxSlopeAngle` inchangé), pathfinding, entité-entité (sweeps existants
+  inchangés), `slopesHit` multi-coins, glissade par attribut.
+- **Acceptation** (tests `CasaEngine.Tests/Physics/`, monde `TopDownElevation` construit comme dans
+  `CharacterControllerComponentTests.cs:723-737`/`:787` ; champ `HeightGridCollisionField(origin 0,
+  cellSize 16, width 8, depth 8, up: UnitZ)` ; pawn Box 16×16×32, fixture `local_position z 16` →
+  pied 0 ; réglages `StepHeight 3`, `GroundSnapDistance 4`, `Gravity 1250`, `MaxFallSpeed 800`,
+  `SkinWidth 0.5`, `WalkabilityMask 0`, `Radius 8`, `Height 32`) :
+  1. **Politique** : `Up == UnitZ` pour `TopDownElevation`, `Vector3.Up` pour `Identity3d` et
+     `Planar2d` ; un contrôleur sans `World` reste Y-up (test existant inchangé).
+  2. **Base** : sous Z-up, **sans champ installé**, racine (24, 24, 500) (hors de portée de toute
+     sonde), après un `Update` avec intention horizontale (1, 0) et vitesse verticale initiale −10 :
+     la composante Z de la vitesse vaut −10 − 1250·dt (pas remise à 0), la composante X a
+     progressé, Y inchangée.
+  Chaque scénario 3/4/5/7 appelle `Move(...)` **puis exactement un `Update(1/50)`** (intention
+  nulle) avant ses assertions.
+  3. **Plat** : hauteurs 0 ; racine (24, 24, 0) ; `Move(8, 0, 0)` + `Update` → racine **(32, 24, 0)**,
+     `IsGrounded == true`.
+  4. **Falaise** : colonnes x ≥ 64 à hauteur 32 ; racine (48, 24, 0) ; `Move(20, 0, 0)` (coins cibles
+     jusqu'à x = 76 → cellule 4, sol 32 > 0 + 3) → racine **inchangée (48, 24, 0)**.
+  5. **Marche** : colonnes x ≥ 64 à hauteur 2 ; même déplacement → racine **(68, 24, 2)**
+     (autorisé, pied snappé à 2), `IsGrounded == true`.
+  6. **Chute, clamp et atterrissage** : hauteurs 0 ; racine (24, 24, **400**), pas au sol ;
+     `Update(1/50)` répété 2 s (chute ≈ 0,8 s) : la composante Z de la vitesse **atteint −800** (à la
+     précision près) puis **y reste** jusqu'à l'atterrissage ; à la fin racine z == **0**,
+     `IsGrounded == true` (échoue sans le clamp).
+  6 bis. **Sol traversé en un pas** : hauteurs 0 ; racine (24, 24, 8), pas au sol, vitesse verticale
+     initiale −16 px/tick (−800 px/s) ; un `Update(1/50)` : le pas nominal mène à z = −8, la sonde
+     (origine 8 + 16 = 24, `maxDrop` 24 + 8 + 4) retrouve le sol 0 → racine z == **0**,
+     `IsGrounded == true`, vitesse verticale 0 (échoue avec une sonde à `pied + StepHeight` seul).
+  7. **Non marchable** : `walkable[]` faux pour x ≥ 64 ; `Move(20, 0, 0)` depuis (48, 24, 0) →
+     **bloqué**, racine inchangée.
+  8. **Box** : avec la fixture ci-dessus, `FootOffset` = 0 le long de up ; avec une fixture Box un
+     `Move` contre un corps physique statique est bien **bloqué par le sweep Box** (pas le repli
+     « passe-à-travers » `:677-682`) — le `FakePhysicsWorldContext` du fichier de tests est étendu
+     (additif) pour accepter une forme `Box` et enregistrer ses dimensions
+     (`CharacterControllerComponentTests.cs:862-867` n'accepte qu'une capsule aujourd'hui).
+  9. **Réglages** : round-trip `Load`/`Clone` des deux nouveaux réglages ; `MaxFallSpeed < 0` → rejet.
+  10. Les tests existants de `CharacterControllerComponentTests` (Y-up, capsule, sweep) inchangés et
+      verts ; `CasaEngine.Tests` sans nouvel échec (18 préexistants) ; `CasaEngine.MonoGame.sln` 0
+      erreur.
+- **Rollback** : revert dans le submodule + pointeur. **Budget** : un commit, ≤ 2 journées ; au plus
+  deux tours de correctifs. **Arrêt** : si le changement de base casse un test existant sans
+  solution additive, ou si le backend ne supporte pas la forme de requête Box.
 
 ### E3.d — Branchement Alundra ⏳ (convertisseur + DLL)
 
