@@ -238,23 +238,70 @@ Données/DLL (ce repo) : les prefabs G2 ont racine `AnimatedSpriteComponent` + e
   avant/après demandée par le plan mais hors du périmètre d'un agent headless) — signalé comme
   écart à valider, pas deviné.
 
-### E3.b — Champ de collision Alundra ⏳ (moteur API + DLL, plan-verifier)
+### E3.b — Champ de collision Alundra ⏳ (moteur API puis DLL, plan-verifier)
 
-- **Scope** : moteur — `ICollisionField.TrySampleGround` reçoit un **masque de marchabilité** opaque
-  (`uint walkabilityMask`, défaut « tout ») et `GroundSample` expose `IsWalkable` pour ce masque ;
-  `HeightGridCollisionField` inchangé sinon (masque ignoré). DLL — `AlundraCellsCollisionField :
-  ICollisionField` construit une fois par world depuis `AlundraCells` : hauteur = `height × 16` avec
-  les cas `Slope & 3` (table `g_heights_800236d4` copiée de `StaticVariables.cs` avec adresse),
-  marchabilité `((walkability | ground_property << 8) & masque) == 0`, `SurfaceTag` =
-  `ground_property`, clamp des coordonnées à la grille ; installé dans `World.CollisionField` au
-  `InitializeWithWorld`. Espace du champ = **espace logique de la politique** (X, Y profondeur,
-  Z élévation) — le contrat Y-up d'`ICollisionField.cs:9` est remplacé par « axes de la politique du
-  monde » (doc + tests moteur mis à jour).
-- **Acceptation** : tests DLL sur les cellules réelles de la 389 ((18,57) → 80 px ; une cellule
-  non marchable ; un escalier d'une autre map si présent) ; tests moteur du masque ; aucun
-  consommateur runtime encore (le mover arrive en E3.c).
-- **Question ouverte à trancher en E3.b** : valeur du masque pour le joueur et les PNJ (classe A/B
-  selon `EntityFlags`, à lire dans `GetCollisionFlagsWithPlayer`).
+- **Découpage** : deux commits ordonnés, un seul committeur par repo — (1) **moteur** (submodule) :
+  contrat d'axes + masque ; bump du pointeur dans le parent ; (2) **DLL** (parent) :
+  `AlundraCellsCollisionField` + installation dans `World.CollisionField`. La moitié DLL dépend de la
+  nouvelle signature : elle ne démarre qu'après le bump.
+- **Moteur — contrat d'axes (option a)** : `ICollisionField` : « haut = axe d'élévation déclaré par le
+  champ, qui doit coïncider avec celui de la politique du monde ; `GroundHeight` est mesurée le long
+  de cet axe ». `HeightGridCollisionField` reçoit un paramètre **additif** `Vector3 up` (ou la
+  politique) dont la valeur par défaut reste `Vector3.Up` — les 14 tests de `CollisionFieldTests.cs`
+  restent verts sans changement ; sous `up = Vector3.UnitZ` (`TopDownElevation`), les deux axes
+  horizontaux sont X et Y et la hauteur est lue/retournée sur Z. Un test moteur échantillonne une
+  grille Z-up et obtient l'élévation sur Z. E3.c consomme cette grille Z-up pour ses tests.
+- **Moteur — masque (additif, sans rupture)** : méthode d'interface **par défaut**
+  `bool TrySampleGround(in Vector3 p, float maxDrop, uint walkabilityMask, out GroundSample s)
+  => TrySampleGround(p, maxDrop, out s)` ; l'ancienne signature reste l'unique méthode abstraite ;
+  `HeightGridCollisionField` et `SquareCollisionField` (tests) ne changent pas. Note d'API additive
+  selon `.github/copilot-instructions.md`.
+- **DLL — `AlundraCellsCollisionField : ICollisionField`** (espace logique X/Y/Z, `up = UnitZ`),
+  construit une fois par world dans `InitializeWithWorld` depuis `AlundraCells` (parseur tolérant sur
+  le modèle de `WallPlacementOverlay.TryParse`, `:115-135` ; largeur/hauteur = dimensions du
+  `TileMapData` (52 × 60, `cell_count` = 3 120) ; table `g_heights_800236d4` copiée de
+  `StaticVariables.cs:532-541` avec adresse), installé dans `World.CollisionField` (le `World.Clear()`
+  le remet à null : réinstallation à chaque chargement). Règles, toutes en pixels absolus :
+  - cellule = `(x / 24, y / 16)`, **clampée** à `[0,51] × [0,59]` (original `PhysicsEngine.cs:979-989`) ;
+    un point hors grille a donc un sol (écart assumé vis-à-vis du contrat générique « hors grille =
+    pas de sol », documenté) ;
+  - hauteur (port de la branche « premier coin » de `ComputeEntityGroundHeight`, `:1007-1061`) selon
+    `slope & 3` : 0 → `h × 16` ; 1 (escalier) → `(h − 1) × 16 + 16 − (y % 16)` ; 2 (échelle entrante)
+    → `(h − 1) × 16 + table[(23 − x % 24) % 24]` ; 3 (échelle sortante) → `(h − 1) × 16 + table[x % 24]`.
+    **Écart documenté** : l'original accumule `slopesHit` sur les 4 coins et ajoute 16 aux coins
+    suivants d'une empreinte à cheval sur plusieurs cellules en pente ; le champ par point ne le fait
+    pas (le mover d'E3.c prend le max des 4 coins) ;
+  - `HasGround` = vrai en toute position (clamp) ; `GroundHeight` retournée **même si elle est
+    au-dessus du point échantillonné** (l'original renvoie toujours la hauteur et le mover décide :
+    `IsOnGround = FloorHeight ≥ PosZ`, atterrissage par clamp, marche bloquée au-delà de 3 px) ;
+    `maxDropDistance` **ignoré** (pas de limite de chute dans l'original) — les deux écarts sont notés
+    dans le doc du champ et repris par E3.c ;
+  - `IsWalkable` = `((walkability | ground_property << 8) & walkabilityMask) == 0`
+    (`GetCollisionFlags :1137-1166`, même formule dans `GetCollisionFlagsWithPlayer :1087-1099`) ;
+    `SurfaceTag` = `ground_property` (texte) ; `Normal` = `UnitZ`.
+  - **Masque** (arrêté, plus de question ouverte) : fourni par l'appelant, dérivé par entité :
+    `0x40 | (ClassB ? 0x01 : 0) | (ClassA ? 0x1000 : 0)` depuis `proxy.Flags` (bits `EntityFlags` à
+    lire dans `Gameplay/EntityFlags.cs` ; la DLL renseigne déjà `Flags` au spawn —
+    `AlundraWorldProxy.cs:894, :1042` — et la note « Flags non renseigné » de
+    `Alundra/Scripts/EntityFlags.cs:19-22` est périmée, à corriger). Le champ ne fige aucune constante.
+  - **Hors champ** (règles du mover, E3.c/E3.d) : « cellule bloquante si hauteur ≥ Z de l'entité »
+    (`:1159`), clauses `g_gravityFlag`/`(tileFlags & 0xE00) == 0x0800` (`:1113-1124`) et
+    `g_warpLockTimer` (`:1108`).
+- **Non-goals** : consommateur runtime (E3.c), glissade par attribut, mutation de cellules (E7).
+- **Acceptation** (tests nommés, valeurs calculées à la main depuis `AlundraCells` de la 389) :
+  - moteur : grille Z-up échantillonnée → élévation sur Z ; les 14 tests existants inchangés ; la
+    surcharge par défaut du masque délègue à l'ancienne méthode ; `CasaEngine.Tests` sans nouvel échec.
+  - DLL, cellules réelles de la 389 : (18,57) plat h5 → **80 px** ; escalier (13,27) `slope 5` h10 →
+    y = 27×16 + 0 → **160 px**, y = 27×16 + 8 → **152 px** ; échelle entrante (17,40) `slope 6` h8 →
+    x = 17×24 + 0 → 112 + table[23] = **128 px**, x = 17×24 + 23 → 112 + table[0] = **113 px** ;
+    échelle sortante (18,48) `slope 7` h6 → x = 18×24 + 0 → 80 + table[0] = **81 px**, x = 18×24 + 23
+    → **96 px** ; marchabilité (18,15) `walkability 1` : masque `0x40` → marchable, masque `0x41`
+    (classe B) → non marchable ; (18,38) `ground_property 128` : masque `0x8040` → non marchable ;
+    hors grille (x = −10, y = 5 000) → clamp (0, 59), `HasGround` vrai ; point sous la surface
+    ((18,57) à Z = 10 px) → `GroundHeight` 80 ; `maxDrop` 0 → même résultat.
+- **Rollback** : revert du commit moteur + pointeur ; revert du commit DLL. **Budget** : deux commits,
+  ≤ 1 journée. **Arrêt** : si le paramètre d'axe additif ne peut pas garder les 14 tests verts, ou si
+  `World.CollisionField` n'est pas accessible au `InitializeWithWorld` du proxy.
 
 ### E3.c — Mover conscient de la politique ⏳ (moteur, plan-verifier)
 
@@ -293,6 +340,6 @@ Données/DLL (ce repo) : les prefabs G2 ont racine `AnimatedSpriteComponent` + e
 
 ## 4. Ordre et dépendances
 
-E3.0 → E3.a → E3.b → E3.c → E3.d. E3.0, E3.b et E3.c sont des commits moteur (plan-verifier chacun) ;
-E3.a et E3.d sont des commits du repo parent. Après chaque commit moteur : rappel du fetch/merge du checkout
+E3.0 → E3.a → E3.b → E3.c → E3.d. E3.0 et E3.c sont des commits moteur, E3.b un commit moteur puis un
+commit DLL (plan-verifier pour chaque tranche moteur) ; E3.a et E3.d sont des commits du repo parent. Après chaque commit moteur : rappel du fetch/merge du checkout
 standalone.
