@@ -366,7 +366,7 @@ Oracle transverse : le harnais headless `Alundra.Tests/IntroTraceHarnessTests.cs
     reste figé jusqu'au déclenchement de la chaîne, `IntroTraceHarnessTests` toujours à la frame 926
     (ne dépend pas des animations, confirmé).
 
-### E3 — Collisions : champ de hauteur depuis `AlundraCells` + mover ⏳ (moteur, plan-verifier)
+### E3 — Collisions : champ de hauteur `AlundraCells` + mover conscient de la politique ✅ (plan et tranches : docs/plan-e3-collisions.md ; runtime à valider par l'utilisateur)
 
 - **But** : le héros marche sur le pont, est bloqué par les murs, suit la hauteur des cellules.
 - **Contenu** : moteur — mover conscient de la politique `TopDownElevation`, helper pied/demi-hauteur
@@ -500,7 +500,7 @@ Oracle transverse : le harnais headless `Alundra.Tests/IntroTraceHarnessTests.cs
 |---|---|---|
 | E1 scripts par entité + MapEvents | ✅ (verifier CONFIRMED ; visuel runtime à valider par l'utilisateur) | 92f1be5 |
 | E2 héros pawn | ✅ (verifier CONFIRMED ; visuel runtime à valider par l'utilisateur) | voir git log |
-| E3 collisions champ de hauteur | ⏳ | |
+| E3 collisions (E3.0/a/b/c/c-bis/d.0/d) | ✅ (verifiers CONFIRMED ; runtime à valider par l'utilisateur) | voir git log |
 | E4 déplacement scripté | ⏳ | |
 | E5 caméra | ⏳ | |
 | E6 contrôle joueur | ⏳ | |

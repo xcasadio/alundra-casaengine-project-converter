@@ -251,11 +251,23 @@ public static class AlundraPlayerManager
         player.FinalForceZ = player.ForceZ;
 
         // PhysicsEngine.cs:421-422 (position update) - the surrounding collision-retry loop
-        // (PhysicsEngine.cs:390-800ish) is NOT ported (no collision system), so this always fully commits
-        // FinalForceX/Y in one step, exactly like the original's own first (and, absent collision, only)
-        // TRY_ADVANCE iteration would for an entity that never gets blocked.
-        player.PosX += player.FinalForceX;
-        player.PosY += player.FinalForceY;
+        // (PhysicsEngine.cs:390-800ish) is NOT ported. E3.d (docs/plan-e3-collisions.md, "DLL -
+        // propriete de la racine par frame" item 2): for the CharacterControllerComponent-driven hero,
+        // FinalForceX/Y is routed through the mover's own Move instead of committed directly - the
+        // mover resolves walls/walkability/step-height per axis (CasaEngine's CharacterControllerComponent
+        // C5) where the original's now-NOT-ported retry loop used to; see
+        // AlundraEntityScriptProxy.MoveControllerAndPullPosition's own doc for the exact conversion and
+        // the accepted no-ForceAdjusted-feedback deviation. Every other entity (no controller yet, E4)
+        // keeps E2's original collision-free integration, unchanged.
+        if (player.Controller != null)
+        {
+            player.MoveControllerAndPullPosition(player.FinalForceX / 65536f, player.FinalForceY / 65536f);
+        }
+        else
+        {
+            player.PosX += player.FinalForceX;
+            player.PosY += player.FinalForceY;
+        }
 
         // PhysicsEngine.cs:1698-1700 (same formula EntityRecordMapper/AlundraWorldProxy already use to
         // seed TileX/TileY from PosX/PosY elsewhere) - kept in sync every tick so the record spawn-zone

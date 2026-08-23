@@ -1,11 +1,15 @@
 ﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using CasaEngine.Core.Logging;
+using CasaEngine.Engine.Geometry;
+using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Physics;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.Scripting;
+using Microsoft.Xna.Framework;
 
 namespace Alundra.Scripts;
 
@@ -171,6 +175,17 @@ public class AlundraEntityScriptProxy : GameplayProxy
     public RenderProjectionComponent? RenderProjection;
 
     /// <summary>
+    /// Engine-only, not part of the original struct: this entity's <see cref="CharacterControllerComponent"/>,
+    /// resolved once at adoption (<see cref="AlundraWorldProxy.AdoptPlayerPawn"/> - only the hero prefab
+    /// carries one, E3.d, docs/plan-e3-collisions.md) and cached the same way <see cref="RenderProjection"/>
+    /// is, so no per-frame <c>Entity.GetComponent&lt;CharacterControllerComponent&gt;()</c> tree search is
+    /// needed. Null for every entity without a controller (every non-hero prefab today, E4 decides for
+    /// NPCs) - every site that reads this field treats null as "keep E2's controller-free movement",
+    /// never as an error.
+    /// </summary>
+    public CharacterControllerComponent? Controller;
+
+    /// <summary>
     /// Engine-only, not part of the original struct (same as <see cref="LogicContextEntity"/>):
     /// this entity's IDSV table, resolved once at spawn from its <c>SpriteRecordCatalog</c> entry
     /// (see <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>) and keyed by
@@ -288,6 +303,24 @@ public class AlundraEntityScriptProxy : GameplayProxy
         if (ScriptHost == null)
         {
             return;
+        }
+
+        // E3.d ("DLL - propriete de la racine par frame" item 1, docs/plan-e3-collisions.md): for a
+        // controller-driven entity the root is this frame's source of truth - CharacterMotionSystem
+        // registers/updates controllers at the head of the SAME frame's World.Update, strictly before
+        // Entity.Update ever reaches this GameplayProxy.Update (CharacterMotionSystem.cs:96-98,
+        // :272-278), so by the time this runs the controller has always had at least one update since
+        // registration; there is no "before the first controller update" case to special-case here.
+        // Pulled with double-rounding, not a float cast: at this magnitude (~950 px) a float's ULP is
+        // already ~8 16.16 units, so `(int)(px * 65536f)` would silently drop low bits every frame
+        // (quantization, not a bug - see the 100-frame bounded-drift acceptance test).
+        if (Controller != null && Owner.RootComponent != null)
+        {
+            var root = Owner.RootComponent.LocalTransform.Position;
+            PosX = (int)Math.Round((double)root.X * 65536.0);
+            PosY = (int)Math.Round((double)root.Y * 65536.0);
+            PosZ = (int)Math.Round((double)root.Z * 65536.0);
+            IsOnGround = Controller.IsGrounded ? 1 : 0;
         }
 
         if (!IsPlayer)
@@ -434,6 +467,157 @@ public class AlundraEntityScriptProxy : GameplayProxy
         EventTrigger = -1;
     }
 
+    /// <summary>
+    /// Port of <c>EntityManager.cs:127-136</c> (spawn clamp) and the unconditional ground clamp in
+    /// <c>PhysicsEngine.cs:123-135</c>, restricted to this entity's own header-box footprint - the 4
+    /// corners of its <see cref="CollisionComponent"/>'s <see cref="Box"/> fixture, far edge exclusive,
+    /// same corners <see cref="CharacterControllerComponent"/>'s own C4 ground probe uses
+    /// (docs/plan-e3-collisions.md E3.c/E3.c-bis) - sampled against <c>World.CollisionField</c>. The far
+    /// edge is pushed one <see cref="MathF.BitDecrement"/> below <c>centre + half-extent</c> (the FINAL
+    /// summed coordinate, not the half-extent before the addition) - a fixed <c>1/65536f</c> subtraction
+    /// is only exclusive near zero (float32's ULP grows with magnitude and swallows a fixed epsilon at
+    /// Alundra's real map coordinates, e.g. 928 px - see E3.c-bis's own doc on
+    /// <see cref="CharacterControllerComponent"/>'s identical fix for the full incident write-up); one ULP
+    /// below the already-rounded sum stays exclusive at any magnitude. RAISES <see cref="PosZ"/> to the
+    /// highest corner's ground height, never lowers it: a written position under its effective ground is
+    /// meant to be caught here (a real fall is the mover's own per-frame gravity job, not this helper's -
+    /// see the callers' own doc for why skipping this would let a scripted write onto a cell that sits
+    /// below the sampled ground fall forever). A no-op without a <see cref="CollisionComponent"/> Box
+    /// fixture or an installed <c>World.CollisionField</c> - PosZ is simply left as written, exactly like
+    /// before E3.d.
+    /// </summary>
+    internal void ClampToGround()
+    {
+        var field = Owner?.World?.CollisionField;
+        if (field == null)
+        {
+            return;
+        }
+
+        var collisionComponent = Owner!.GetComponent<CollisionComponent>();
+        ColliderFixture? boxFixture = null;
+        if (collisionComponent != null)
+        {
+            for (var i = 0; i < collisionComponent.Fixtures.Count; i++)
+            {
+                if (collisionComponent.Fixtures[i].Shape is Box)
+                {
+                    boxFixture = collisionComponent.Fixtures[i];
+                    break;
+                }
+            }
+        }
+
+        if (boxFixture?.Shape is not Box box)
+        {
+            return;
+        }
+
+        var centerX = PosX / 65536f + boxFixture.LocalPosition.X;
+        var centerY = PosY / 65536f + boxFixture.LocalPosition.Y;
+        var halfX = box.Size.X / 2f;
+        var halfY = box.Size.Y / 2f;
+
+        var minX = centerX - halfX;
+        var maxX = MathF.BitDecrement(centerX + halfX);
+        var minY = centerY - halfY;
+        var maxY = MathF.BitDecrement(centerY + halfY);
+
+        var hasGround = false;
+        var groundMax = 0f;
+        SampleGroundCorner(field, minX, minY, ref hasGround, ref groundMax);
+        SampleGroundCorner(field, minX, maxY, ref hasGround, ref groundMax);
+        SampleGroundCorner(field, maxX, minY, ref hasGround, ref groundMax);
+        SampleGroundCorner(field, maxX, maxY, ref hasGround, ref groundMax);
+
+        if (!hasGround)
+        {
+            return;
+        }
+
+        var groundPosZ = (int)Math.Round((double)groundMax * 65536.0);
+        if (groundPosZ > PosZ)
+        {
+            PosZ = groundPosZ;
+        }
+    }
+
+    private static void SampleGroundCorner(ICollisionField field, float x, float y, ref bool hasGround, ref float groundMax)
+    {
+        if (!field.TrySampleGround(new Vector3(x, y, 0f), float.MaxValue, out var sample) || !sample.HasGround)
+        {
+            return;
+        }
+
+        if (!hasGround || sample.GroundHeight > groundMax)
+        {
+            groundMax = sample.GroundHeight;
+            hasGround = true;
+        }
+    }
+
+    /// <summary>
+    /// Routes a scripted (post-spawn) write to <see cref="PosX"/>/<see cref="PosY"/>/<see cref="PosZ"/>
+    /// onto the CasaEngine root transform - docs/plan-e3-collisions.md E3.d "DLL - propriete de la
+    /// racine par frame" item 4 (grep sites: <c>AlundraEventProgramRunner</c>'s 0x64
+    /// SetEntitiesPosition/0x65 AddEntitiesPositionOffset/0x8B SpawnEntityNextToEntity). A no-op for
+    /// every entity WITHOUT a <see cref="Controller"/> - those keep the deferred per-frame
+    /// re-derivation <see cref="AlundraWorldProxy.SyncTransform"/> already does every frame (see that
+    /// method's own doc), unchanged since E3.a. For a controller-driven entity the root write can no
+    /// longer wait for <see cref="AlundraWorldProxy.SyncTransform"/> - that method now skips the root
+    /// write entirely for a controller-driven entity (item 3 of the same plan section) - so this pushes
+    /// the (possibly ground-clamped, see <see cref="ClampToGround"/>) logical position onto the root
+    /// immediately, re-projects the sprite the same frame, and calls
+    /// <see cref="CharacterControllerComponent.Teleport"/> so its velocity/collision state resets onto
+    /// the new pose, exactly like a scripted jump resets the original's own force/ground state
+    /// (<c>EntityManager.cs:127-136</c>).
+    /// </summary>
+    internal void PushLogicalPositionToRoot()
+    {
+        if (Controller == null || Owner?.RootComponent == null)
+        {
+            return;
+        }
+
+        ClampToGround();
+
+        var root = AlundraWorldProxy.ResolveLogicalPosition(PosX, PosY, PosZ);
+        Owner.RootComponent.LocalTransform.Position = root;
+        RenderProjection?.UpdateProjection();
+        Controller.Teleport(root);
+    }
+
+    /// <summary>
+    /// Routes one 50 Hz sub-step's horizontal displacement through the controller's own
+    /// <see cref="CharacterControllerComponent.Move"/>, then re-pulls <see cref="PosX"/>/<see cref="PosY"/>/
+    /// <see cref="PosZ"/> from the resulting root - docs/plan-e3-collisions.md E3.d "DLL - propriete de
+    /// la racine par frame" item 2. <c>Move</c> only resolves the horizontal axes (wall/walkability/
+    /// step-height, C5) - it never touches the vertical axis, so the re-pulled <see cref="PosZ"/> is
+    /// unchanged by this call; ground/gravity resolution stays this frame's own
+    /// CharacterMotionSystem pass, pulled separately at the head of
+    /// <see cref="Update"/>. <paramref name="deltaXPixels"/>/<paramref name="deltaYPixels"/> are the
+    /// sub-step's <c>ΔPosX</c>/<c>ΔPosY</c> (16.16) already converted to float pixels INCLUDING their
+    /// fraction (<c>Δ / 65536f</c>, not the original's own truncated <c>Δ &gt;&gt; 16</c>) - see
+    /// <see cref="AlundraPlayerManager.RunOneTick"/>'s own call site. An axis <c>Move</c> blocks leaves
+    /// <see cref="ForceX"/>/<see cref="ForceY"/> untouched by design (no <c>ForceAdjusted</c> feedback -
+    /// accepted deviation, documented on the same plan section). A no-op without a controller (the
+    /// caller falls back to its own direct <see cref="PosX"/>/<see cref="PosY"/> += in that case).
+    /// </summary>
+    internal void MoveControllerAndPullPosition(float deltaXPixels, float deltaYPixels)
+    {
+        if (Controller == null || Owner?.RootComponent == null)
+        {
+            return;
+        }
+
+        Controller.Move(new Vector3(deltaXPixels, deltaYPixels, 0f));
+
+        var root = Owner.RootComponent.LocalTransform.Position;
+        PosX = (int)Math.Round((double)root.X * 65536.0);
+        PosY = (int)Math.Round((double)root.Y * 65536.0);
+        PosZ = (int)Math.Round((double)root.Z * 65536.0);
+    }
+
     public override void Draw()
     {
     }
@@ -564,6 +748,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
             MapEventProgramId = MapEventProgramId,
             LogicContextEntity = LogicContextEntity,
             RenderProjection = RenderProjection,
+            Controller = Controller,
             IdsvByAnimDirection = IdsvByAnimDirection,
             AnimationEndByAnimDirection = AnimationEndByAnimDirection,
             AnimSetsByAnim = AnimSetsByAnim,

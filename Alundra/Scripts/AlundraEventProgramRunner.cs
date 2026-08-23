@@ -594,6 +594,11 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             spawned.PosX = matches[0].PosX + ((v[3] + v[4] * 0x100) << 16);
             spawned.PosY = matches[0].PosY + ((v[5] + v[6] * 0x100) << 16);
             spawned.PosZ = matches[0].PosZ + ((v[7] + v[8] * 0x100) << 16);
+            // E3.d: grep-routed Pos* write site (docs/plan-e3-collisions.md "DLL - propriete de la
+            // racine par frame" item 4) - a no-op today (no spawned prefab carries a controller, E3.d
+            // scopes CharacterControllerComponent to the hero alone), kept for parity with every other
+            // scripted Pos* write site so a future controller-driven spawn is routed correctly too.
+            spawned.PushLogicalPositionToRoot();
         }
     }
 
@@ -643,7 +648,10 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// bytes, packed as 16.16 fixed-point (PosZ gets the original's own <c>+1</c> bias). Transform
     /// re-derivation onto the CasaEngine world position happens later, once per frame, in
     /// <see cref="AlundraWorldProxy"/>'s own per-frame pass - this handler only ever touches the logical
-    /// fields, exactly like the original.</summary>
+    /// fields, exactly like the original; E3.d's <see cref="AlundraEntityScriptProxy.PushLogicalPositionToRoot"/>
+    /// (docs/plan-e3-collisions.md "DLL - propriete de la racine par frame" item 4) pushes it onto the
+    /// root immediately instead, but only for a controller-driven entity - a no-op for every other
+    /// match, keeping this handler's own behaviour exactly as before E3.d for them.</summary>
     private void SetEntitiesPosition(AlundraEntityScriptProxy entity, int[] v)
     {
         var x = ((v[3] << 8) | v[2]) << 16;
@@ -657,13 +665,14 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             match.PosX = x;
             match.PosY = y;
             match.PosZ = z;
+            match.PushLogicalPositionToRoot();
         }
     }
 
     /// <summary>Script_101_065 (0x65) - adds a raw 16.16 fixed-point offset to PosX/PosY/PosZ of every
     /// matched entity (note the original's little-endian byte order here is the mirror image of 0x64's -
     /// <c>v[2]|(v[3]&lt;&lt;8)</c> vs 0x64's <c>(v[3]&lt;&lt;8)|v[2]</c>, same value either way but ported
-    /// verbatim for fidelity).</summary>
+    /// verbatim for fidelity). Same E3.d root-push as 0x64 above - see that handler's own doc.</summary>
     private void AddEntitiesPositionOffset(AlundraEntityScriptProxy entity, int[] v)
     {
         var x = (v[2] | (v[3] << 8)) << 16;
@@ -677,6 +686,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             match.PosX += x;
             match.PosY += y;
             match.PosZ += z;
+            match.PushLogicalPositionToRoot();
         }
     }
 

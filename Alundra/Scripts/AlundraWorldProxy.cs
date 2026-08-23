@@ -148,6 +148,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
     private bool _loggedNoHeroHeader;
 
+    /// <summary>E3.d: logged once when the hero's engine-spawned pawn carries no
+    /// <see cref="CharacterControllerComponent"/> (older/regenerated non-hero prefab reused as the
+    /// default pawn, or an export that predates E3.d's converter change) - the player then keeps E2's
+    /// controller-free movement, exactly as before this chantier.</summary>
+    private bool _loggedNoHeroController;
+
     /// <summary>E2: this world's own <see cref="AlundraPlayerController"/>, resolved once in
     /// <see cref="InitializeWithWorld"/> (<c>World.PlayerControllers</c> is already populated by then -
     /// see <see cref="AdoptPlayerPawn"/>'s own doc). Null when no such controller exists (no
@@ -317,7 +323,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // ResetEntityState/InitializeEntitySlots' own spawn order, GameEngine.cs:626-643: the player exists
         // BEFORE any record is spawned - the spawn-zone gate below reads its tile) instead of spawning a
         // second, separate hero entity ourselves.
-        AdoptPlayerPawn(world);
+        AdoptPlayerPawn(world, tileMapData);
 
         // MapEvents (port of InitializeMapEvents, GameEngine.cs:476-583) - always against PlayerEntity;
         // empty when there is none (see PlayerEntity's own doc).
@@ -997,7 +1003,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// observable effect on E2's own ported <see cref="AlundraPlayerManager.MovePlayer"/> subset. No
     /// camera-follow yet (E5).
     /// </summary>
-    private void AdoptPlayerPawn(World world)
+    private void AdoptPlayerPawn(World world, TileMapData tileMapData)
     {
         var playerController = world.PlayerControllers.OfType<AlundraPlayerController>().FirstOrDefault();
         _playerController = playerController;
@@ -1036,9 +1042,22 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         proxy.EntityRefId = -1; // not an "Entities" layer record - no slot to index by.
         proxy.EventTrigger = ScriptHelper.ProgramUnknown; // hygiene only - IsPlayer already excludes it from RunPendingEventTriggers regardless of value.
 
+        // E3.d ("DLL - adoption", docs/plan-e3-collisions.md): resolved once here, before the New Game
+        // pose write below, so AlundraEntityScriptProxy.ClampToGround (called right after that write)
+        // and every later per-frame root/controller routing (AlundraEntityScriptProxy.Update,
+        // AlundraPlayerManager.Tick, AlundraEntityScriptProxy.PushLogicalPositionToRoot) all see the
+        // same cached reference. Null on a hero prefab that predates/skips E3.d's converter change -
+        // every controller-aware site already falls back to E2's controller-free behaviour on null.
+        proxy.Controller = entity.GetComponent<CharacterControllerComponent>();
+
         proxy.PosX = (AlundraGameState.CameraTileX * TileWidth + TileWidth / 2) << 16;
         proxy.PosY = (AlundraGameState.CameraTileY * TileHeight + TileHeight / 2) << 16;
         proxy.PosZ = 0;
+        // E3.d: raises PosZ onto the actual cell height under the New Game spawn tile before anything
+        // else reads it - port of EntityManager.cs:127-136's own spawn-time ground clamp (see
+        // AlundraEntityScriptProxy.ClampToGround's own doc). A no-op without a controller/collision
+        // field/Box fixture, so PosZ simply stays 0 exactly like before E3.d.
+        proxy.ClampToGround();
         // PhysicsEngine.cs:1698-1700, same formula EntityRecordMapper seeds every record's own tile from.
         proxy.TileX = (proxy.PosX >> 16) / TileWidth;
         proxy.TileY = (proxy.PosY >> 16) / TileHeight;
@@ -1051,10 +1070,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         proxy.CurrentDirection = ~AlundraGameState.ResetDirectionId;
 
         // Documented stub for AlundraPlayerManager's faithful LoadingMap(0x36) port
-        // (PlayerManager.cs:914-916: "if IsOnGround != 0, break" - i.e. stay in LoadingMap): V1 has no
-        // gravity/collision (D4/E2), so IsOnGround can never become a real ground-contact reading before
-        // that chantier (E3). Pinning it to 1 here reproduces the ONE case that matters for a fresh New
-        // Game spawn - a grounded hero - so MovePlayer's LoadingMap case takes the "stay" branch instead
+        // (PlayerManager.cs:914-916: "if IsOnGround != 0, break" - i.e. stay in LoadingMap): only ever
+        // read before this frame's own AlundraEntityScriptProxy.Update runs (E3.d has that method pull
+        // a real Controller.IsGrounded reading here on, every frame, once the controller exists - see
+        // its own doc). Pinning it to 1 here reproduces the ONE case that matters for a fresh New Game
+        // spawn - a grounded hero - so MovePlayer's LoadingMap case takes the "stay" branch instead
         // of falling to the NOT-ported Jump case; the actual LoadingMap -> Idle exit is the animation
         // Chain bridge instead (anim 54 -> 0, see AlundraWorldProxy.OnAnimationFinished), matching the
         // original's own trailing-control-frame-driven animation switch rather than a ground check.
@@ -1080,6 +1100,35 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             Logs.WriteDebug(
                 $"AlundraWorldProxy: no sprite-records.json header found for the hero prefab in world "
                 + $"'{world.Name}'; Flags/SpriteProgramIndexes/AnimSetsByAnim left at their defaults.");
+        }
+
+        // E3.d ("DLL - adoption", docs/plan-e3-collisions.md): overrides the converter-exported
+        // Gravity/MaxFallSpeed/WalkabilityMask - the only three CharacterControllerSettings the
+        // converter cannot bake in, since they depend on this MAP's own properties and this ENTITY's
+        // own Flags, not on the hero prefab alone. Deliberately placed AFTER the Flags assignment
+        // above: WalkabilityMaskFor(proxy.Flags) needs the real header flags, not the pre-adoption
+        // default 0 (which would derive a masks-nothing-blocks mask regardless of the hero's real
+        // ClassA/ClassB bits). Float arithmetic throughout (mapGravity/mapZViscosity are ints - an
+        // integer 128*256/65536 truncates to 0 before the final *2500 ever runs).
+        if (proxy.Controller != null)
+        {
+            tileMapData.CustomProperties.TryGetValue("Gravity", out var gravityRaw);
+            int.TryParse(gravityRaw, out var mapGravity);
+            tileMapData.CustomProperties.TryGetValue("ZViscosity", out var zViscosityRaw);
+            int.TryParse(zViscosityRaw, out var mapZViscosity);
+
+            var settings = proxy.Controller.Settings;
+            settings.Gravity = mapGravity * 256f / 65536f * 2500f;
+            settings.MaxFallSpeed = mapZViscosity * 256f / 65536f * 50f;
+            settings.WalkabilityMask = AlundraCellsCollisionField.WalkabilityMaskFor(proxy.Flags);
+        }
+        else if (!_loggedNoHeroController)
+        {
+            _loggedNoHeroController = true;
+            Logs.WriteWarning(
+                $"AlundraWorldProxy: hero prefab in world '{world.Name}' has no "
+                + $"{nameof(CharacterControllerComponent)}; falling back to E2's controller-free player "
+                + "movement (no gravity, no field collision).");
         }
 
         SubscribeAnimationEndBridge(entity);
@@ -1596,7 +1645,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// BEFORE <c>GameplayProxy.Update</c> in <c>Entity.Update</c> (Entity.cs:473-504), and this method is
     /// itself called from <see cref="AlundraEntityScriptProxy.Update"/>, i.e. from inside that same
     /// GameplayProxy.Update - without the explicit call here the sprite would lag the logical pose by
-    /// exactly one frame.</summary>
+    /// exactly one frame.
+    /// <para>
+    /// E3.d ("DLL - propriete de la racine par frame" item 3, docs/plan-e3-collisions.md): for a
+    /// controller-driven entity (<see cref="AlundraEntityScriptProxy.Controller"/> non-null) the ROOT
+    /// is this frame's source of truth - <see cref="AlundraEntityScriptProxy.Update"/> already pulled
+    /// Pos*/IsOnGround FROM it - so this method must not write it back from Pos* (that would undo
+    /// whatever the mover resolved this frame); it only re-projects the sprite. Every other entity (no
+    /// controller, E4) keeps the E3.a behaviour above unchanged.
+    /// </para>
+    /// </summary>
     internal static void SyncTransform(Entity entity)
     {
         if (entity.GameplayProxy is not AlundraEntityScriptProxy proxy || proxy.Status == EntityStatus.FlagToDestroy)
@@ -1606,7 +1664,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         if (entity.RootComponent != null)
         {
-            entity.RootComponent.LocalTransform.Position = ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+            if (proxy.Controller == null)
+            {
+                entity.RootComponent.LocalTransform.Position = ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+            }
+
             proxy.RenderProjection?.UpdateProjection();
         }
     }

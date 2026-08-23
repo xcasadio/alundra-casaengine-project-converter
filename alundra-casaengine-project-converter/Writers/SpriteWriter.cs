@@ -348,6 +348,31 @@ public static class SpriteWriter
         };
         entity.AddComponent(new DepthSortable2DComponent { Name = nameof(DepthSortable2DComponent) });
 
+        // E3.d (docs/plan-e3-collisions.md "DLL - adoption"): ONLY the hero's own prefab - the
+        // map_alundra.json bank keyed alundra_0 (Sector5Id 0, IsAlundraBank - SpriteBankReader.cs:187,
+        // :211) - gets a CharacterControllerComponent; the other 394 prefabs get none (E4 decides for
+        // NPCs). Radius/Height/SkinWidth/StepHeight/GroundSnapDistance are plausible, map-independent
+        // values (Height/2*Radius satisfies CharacterControllerSettings.Validate even though the mover
+        // itself sweeps the sibling CollisionComponent's Box fixture above, not this capsule -
+        // docs/plan-e3-collisions.md E3.c C3); Gravity/MaxFallSpeed/WalkabilityMask are exported as 0
+        // and OVERWRITTEN at runtime by AlundraWorldProxy.AdoptPlayerPawn, which alone knows this
+        // entity's map (Gravity/ZViscosity custom properties) and its own header Flags
+        // (ClassA/ClassB). ControlMode is left at its class default (Player) - not written explicitly.
+        if (bank.IsAlundraBank && bank.Sector5Id == 0)
+        {
+            var controllerComponent = new CharacterControllerComponent { Name = nameof(CharacterControllerComponent) };
+            var settings = controllerComponent.Settings;
+            settings.Radius = 7.5f;
+            settings.Height = 32f;
+            settings.SkinWidth = 0.5f;
+            settings.StepHeight = 3f;
+            settings.GroundSnapDistance = 4f;
+            settings.Gravity = 0f;
+            settings.MaxFallSpeed = 0f;
+            settings.WalkabilityMask = 0u;
+            entity.AddComponent(controllerComponent);
+        }
+
         var relativePath = Path.Combine(bankRelativeDirectory, $"{entityFolderName}.entity");
         EditorAssetWriterService.SaveAsset(relativePath, entity);
         EditorAssetCatalogService.Add(new AssetInfo(entity.Id)

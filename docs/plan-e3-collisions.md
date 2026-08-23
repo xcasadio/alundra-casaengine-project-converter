@@ -489,15 +489,20 @@ monde (pixels pour Alundra) ; les défauts « mètres » existants restent.
   (80 px). La fixture G2 (`local_position (0.5, 0.5, 16)`, 21×15×32) reproduit exactement la boîte
   originale `[x−10, x+11) × [y−7, y+8)` une fois le bord exclusif appliqué.
 - **Scope (moteur)** : dans le calcul d'empreinte du mover (`ResolveFootprint` et les boucles de
-  coins de C4/C5), les coins « max » utilisent `centre + demi − ε` avec `ε = 1/65536f` (bord
-  lointain exclusif) ; les coins « min » inchangés. Test : une boîte 15 px de profondeur centrée
+  coins de C4/C5), les coins « max » sont **un ULP sous le bord** : `MathF.BitDecrement(centre +
+  demi)` appliqué à la coordonnée finale (bord lointain exclusif) ; les coins « min » inchangés.
+  **Correctif du 2026-08-24** : la première implémentation soustrayait `ε = 1/65536f`, plus petit
+  que l'ULP du float32 aux coordonnées réelles des maps (ULP ≈ 6,1e-5 à ~928 px) — `928f − ε`
+  re-arrondissait à `928f` et le bord redevenait inclusif exactement sur les frontières de
+  cellules ; le `− 1/65536` en virgule fixe de l'original vaut « une unité représentable sous la
+  frontière », dont la traduction float est `BitDecrement`. Test : une boîte 15 px de profondeur centrée
   dans une cellule de 16 px (fixture `local_position 0.5`) n'échantillonne que sa cellule ; les
   scénarios d'E3.c inchangés (leurs coins ne tombaient pas sur une frontière).
 - **Acceptation** : le nouveau test moteur ; les 12 tests d'E3.c inchangés et verts ;
   `CasaEngine.Tests` sans nouvel échec. **Rollback** : revert submodule. **Budget** : un commit,
   ≤ 2 h.
 
-### E3.d — Branchement Alundra ⏳ (moteur sérialisation, puis convertisseur + DLL)
+### E3.d — Branchement Alundra ✅ (verifier CONFIRMED ; runtime à valider par l'utilisateur ; différé P3 : le test des overrides recopie la formule au lieu d'appeler AdoptPlayerPawn)
 
 - **Découpage** (un seul committeur par repo, ordre strict) : (1) **E3.d.0 moteur** —
   `EditorEntityJsonSerializer` (CasaEngine.EditorServices) ne sait pas sauver un
@@ -602,7 +607,7 @@ monde (pixels pour Alundra) ; les défauts « mètres » existants restent.
      - **suivi d'escalier** ((13,27) `slope 5` h10, formule par coin `144 + 16 − (y % 16)`) : départ
        racine (324, 439, 160) — coins y [432, 447−ε] ⊂ ligne 27, sol max au coin haut y = 432 → 160 ;
        `Move(0, +4, 0)` + `Update` → y 443, coins [436, 451−ε] : ligne 27 (coin 436 → 156) et ligne 28
-       (`slope 5` h9, coin 448 → 128 + 16 − 0 = 144) → sol max **156**, descente 4 ≤ GroundSnapDistance
+       (`slope 5` h9, coin BitDecrement(451) → 450 → 128 + 16 − 2 = 142) → sol max **156**, descente 4 ≤ GroundSnapDistance
        → racine (324, 443, **156**), `IsOnGround == 1` ; `Move(0, +4, 0)` de nouveau → coins [440,
        455−ε] : ligne 27 → 152, ligne 28 → 144 → racine (324, 447, **152**) — l'escalier est suivi
        marche par marche ;
@@ -623,6 +628,81 @@ monde (pixels pour Alundra) ; les défauts « mètres » existants restent.
   trajectoire (IsOnGround/LoadingMap), si le mode `Player` ne peut pas être tenu après `Possess` sans
   intention parasite, ou si la relecture racine → `Pos*` fait **croître** l'écart avec l'intégration
   16.16 d'E2 au-delà de la tolérance (test de 100 frames).
+
+#### Réalisé — écarts (2026-08-24)
+
+- **Épisode bord lointain exclusif à magnitude réelle** : en cours d'implémentation, l'empreinte à
+  bord lointain exclusif d'E3.c-bis (`centre + demi-étendue − 1/65536f`) s'est révélée **inopérante
+  aux coordonnées réelles de la 389** (jusqu'à ~1300 px) — l'ULP du `float32` croît avec la magnitude
+  (`2⁻¹⁴ ≈ 6,1e-5` autour de 928 px) et dépasse l'epsilon fixe (`1/65536 ≈ 1,53e-5`) : la soustraction
+  est absorbée par l'arrondi et le bord redevient inclusif (vérifié empiriquement : `928f −
+  1/65536f == 928f`, peu importe l'ordre des opérations — sur le petit côté avant addition ou sur la
+  somme finale). Ce défaut ne touchait aucun scénario d'E3.c (coordonnées < 128 px) mais cassait le
+  scénario « pose au sol / clamp scripté » de la présente tranche (racine (444, 920, 0) : sol attendu
+  80, obtenu 112 — identique au scénario « à cheval »). Corrigé **côté moteur** (hors du périmètre de
+  ce commit — submodule `93365879`, pointeur bumpé à `1a70a12`) : `CharacterFootprint.GetCorners`
+  applique désormais `MathF.BitDecrement` à la coordonnée finale (`centre + demi-étendue`), qui reste
+  exclusive à toute magnitude — voir le commentaire de classe d'`E3.c-bis` dans
+  `CharacterControllerComponent.cs` pour l'écriture complète de l'incident. `AlundraEntityScriptProxy.
+  ClampToGround` (DLL, ce commit) porte le même correctif (`MathF.BitDecrement(centre + demi-étendue)`
+  au lieu de `centre + demi-étendue − 1/65536f`) pour rester cohérent avec le mover. Re-vérifié après
+  correctif : (444, 920, 0) → sol 80 (4 coins de la boîte du header restent dans la ligne 57) ; (444,
+  924, 0) → sol 112 (empreinte à cheval sur les lignes 57/58), distinct comme prévu par le plan.
+- **Convertisseur** : `Writers/SpriteWriter.cs` (`WriteEntityPrefab`) ajoute un
+  `CharacterControllerComponent` uniquement quand `bank.IsAlundraBank && bank.Sector5Id == 0`, avec
+  exactement les réglages du plan (`Radius 7.5`, `Height 32`, `SkinWidth 0.5`, `StepHeight 3`,
+  `GroundSnapDistance 4`, `Gravity 0`, `MaxFallSpeed 0`, `WalkabilityMask 0`) ; `control_mode` reste au
+  défaut de la classe (`Player`), non écrit explicitement. Vérifié sur l'export complet : un seul
+  fichier `.entity` (`Entities/Alundra/Alundra.entity`) contient `CharacterControllerComponent` parmi
+  les 395 prefabs. Test `SpriteWriterCharacterControllerTests.cs` (nouveau, 1 cas) : exactement un
+  prefab porte le composant (assertion sur `Alundra.entity` ET sur un prefab non-héros), valeurs
+  relues via `Entity.Load` ET en JSON brut (round-trip `settings`/`control_mode`).
+- **Export complet** : 0 erreur, compteurs d'E3.a inchangés (`Worlds` 483, `Entities.Prefabs` 395,
+  `Sprites.QuadsRead` = `Sprites.QuadsConverted` 160355, `Assets.Animation2d` 9620).
+- **DLL — adoption** (`AlundraWorldProxy.AdoptPlayerPawn`) : `proxy.Controller` mis en cache avant
+  l'écriture de la pose New Game, `ClampToGround()` appelé juste après (raccroche le spawn Z=0 au sol
+  réel de la tuile de caméra) ; les surcharges `Gravity`/`MaxFallSpeed`/`WalkabilityMask` sont posées
+  **après** l'affectation de `proxy.Flags`, lues depuis `TileMapData.CustomProperties["Gravity"/
+  "ZViscosity"]` (vérifié sur la 389 : `"128"`/`"4096"`, formule flottante → 1250/800 px/s exacts) et
+  `AlundraCellsCollisionField.WalkabilityMaskFor(proxy.Flags)`. Un avertissement unique est loggé si le
+  pawn engine-spawné n'a pas de `CharacterControllerComponent` (comportement E2 conservé).
+- **DLL — propriété de la racine par frame** : `AlundraEntityScriptProxy.Update` tire `Pos*`/
+  `IsOnGround` depuis la racine en tête de méthode pour toute entité pilotée par contrôleur (conversion
+  double `(int)Math.Round((double)px * 65536.0)`, jamais un cast `float` direct — écart de
+  quantification documenté sur place) ; `AlundraPlayerManager.RunOneTick` route
+  `FinalForceX`/`FinalForceY` par sous-pas via le nouveau `AlundraEntityScriptProxy.
+  MoveControllerAndPullPosition` (`Controller.Move` + re-pull) au lieu de l'écriture directe
+  `PosX/Y += Final*` quand un contrôleur existe ; `AlundraWorldProxy.SyncTransform` saute l'écriture de
+  la racine pour une entité à contrôleur (elle ne fait que ré-projeter). **Sites d'écriture `Pos*`
+  scriptés grepés et routés** via le nouveau `AlundraEntityScriptProxy.PushLogicalPositionToRoot`
+  (clamp au sol → racine ← `Pos*` → ré-projection → `Controller.Teleport` si contrôleur) :
+  `AlundraEventProgramRunner.SetEntitiesPosition` (0x64), `.AddEntitiesPositionOffset` (0x65),
+  `.SpawnEntityNextToEntity` (0x8B) — no-op aujourd'hui pour les 394 prefabs non-héros (aucun n'a de
+  contrôleur), en place pour E4.
+- **Écarts documentés** (déjà annoncés par le plan, confirmés par l'implémentation) : décalage d'une
+  frame entre le snap d'élévation et le déplacement horizontal du même tick (`Move` appelé dans
+  `GameplayProxy.Update`, après la résolution de sol de tête de frame) ; aucun `ForceAdjusted` — un axe
+  bloqué par le mover laisse `ForceX`/`ForceY` inchangés, pas de réduction pour matcher le déplacement
+  réel (`MoveControllerAndPullPosition`'s own doc).
+- **Tests DLL** (`Alundra.Tests/AlundraCharacterControllerAdoptionTests.cs`, nouveau, 13 cas, pawn
+  héros construit à la main sous un `World` réel `TopDownElevation` avec le champ `AlundraCellsCollisionField`
+  de la 389 installé, réglages chargés depuis `alundra-project/Entities/Alundra/Alundra.entity`) :
+  réglages du fichier (`StepHeight == 3`, `Radius == 7.5` confirmés) ; overrides (1250/800/masque réel,
+  équivalent headless de l'adoption — `AdoptPlayerPawn` lui-même exige un `AlundraPlayerController`
+  vivant que ce harnais ne peut pas construire, même contrainte que `AlundraPlayerControllerTests`) ;
+  chute de +100 → atterrit à 80, `IsOnGround` 1 ; pose au sol (444, 920, 0) → 80, stable sur 10
+  updates ; à cheval (444, 924, 0) → 112, stable sur 10 updates ; masque seul (23,39)→(24,39) : 0x41
+  bloqué, 0x40 avance à (588, 632, 80) ; falaise (16,16)→(17,16) bloquée ; escalier (324, 439, 160) →
+  (324, 443, 156) → (324, 447, 152) ; propriété de la racine (une frame avec `Move` : racine et `Pos*`
+  d'accord ; 100 frames de marche sur le plat réel (rangée 57, colonnes 23+, hauteur 0) : écart borné
+  ≤ 16 unités 16.16, pas de suite strictement croissante) ; téléport scripté (804, 872, 0) : racine/
+  `Pos*` cohérents, vitesse du contrôleur nulle, pas de retour en arrière la frame suivante ; sans
+  `Move` : `World.Update` seul ne déplace pas horizontalement. Harnais intro (`IntroTraceHarnessTests`)
+  inchangé à la frame 926 (aucun contrôleur/champ dans son chemin). Total DLL : **357/357** (344
+  préexistants + 13) ; convertisseur : **130/130** (129 + 1).
+- **Runtime (utilisateur)** : NON vérifié dans cette session (nécessite de lancer le jeu) — reste à
+  faire, signalé comme écart à valider, pas deviné. Le non-goal « flag de debug ignorant 0x10 »
+  n'est PAS implémenté (décision utilisateur toujours en attente).
 
 ## 4. Ordre et dépendances
 
