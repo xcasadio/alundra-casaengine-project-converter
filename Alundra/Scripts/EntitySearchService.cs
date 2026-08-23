@@ -29,18 +29,20 @@ namespace Alundra.Scripts;
 /// queries (GameEngine.cs:1956-2104):
 /// <list type="number">
 /// <item><description>0 - the owner itself.</description></item>
-/// <item><description>1 - the player entity. This runtime has no player entity system yet (see
-/// <see cref="AlundraWorldProxy"/>'s class doc); this case never matches anything, documented
-/// deviation.</description></item>
-/// <item><description>2 - every loaded/normal/deactivated entity. The original's loop starts at slot
-/// index 0 (the player slot) and runs for <c>g_numberOfEntities</c> iterations, i.e. it includes the
-/// player and (by the original's own off-by-one against case 3 below) excludes the very last real
-/// entity slot. This runtime keeps no separate player slot in <see cref="IEntityWorldContext.SpawnedEntities"/>,
-/// so that boundary has nothing to reproduce; here this case is simply "every matching spawned
-/// entity".</description></item>
-/// <item><description>3 - every loaded/normal/deactivated entity except the player (loop starts at slot
-/// index 1). With no player slot to exclude, this reduces to the exact same set as case 2 in this
-/// port.</description></item>
+/// <item><description>1 - the player entity (GameEngine.cs:1962-1964:
+/// <c>g_matchingEntitiesBuffer[0] = StaticVariables.PlayerEntity</c>). Since E1 the player IS a real
+/// spawned entity (<see cref="AlundraWorldProxy.PlayerEntity"/>, also present in
+/// <see cref="IEntityWorldContext.SpawnedEntities"/>) - ported by returning
+/// <paramref name="playerEntity"/> when non-null (the caller's own <c>IEntityWorldContext.PlayerEntity</c>),
+/// no matches when null (no player spawned this session, degraded mode, same shape as every other
+/// "nothing to search" case in this class).</description></item>
+/// <item><description>2 - every loaded/normal/deactivated entity, PLAYER INCLUDED (GameEngine.cs:1965-1975:
+/// loop starts at slot index 0, the player's own slot).</description></item>
+/// <item><description>3 - every loaded/normal/deactivated entity EXCEPT the player (GameEngine.cs:1978-1988:
+/// loop starts at slot index 1, skipping the player's own slot 0). Ported here by excluding whichever
+/// candidate has <see cref="AlundraEntityScriptProxy.IsPlayer"/> set - this runtime has no fixed
+/// slot-0 layout to index around, but the player is always exactly one entity, so filtering on its own
+/// flag reproduces the same set.</description></item>
 /// <item><description>4 - every entity on the ground: <see cref="EntityFlags.Collidable"/> set, the
 /// per-animation "no entity collision" bit (<c>EntityAnimFlags.NoEntityCollision</c> = 0x80, ported here
 /// as a local constant - see that class's own doc for why it is not pulled in as a whole file) clear, and
@@ -81,9 +83,16 @@ public static class EntitySearchService
     /// entity whose Load/Tick/... program issued the search (<c>logicEntity</c>/<c>ownerEntity</c> in the
     /// original are the same object by the time any opcode runs in this V1 interpreter - see
     /// <see cref="AlundraEventProgramRunner"/>'s class doc on always-self <c>LogicContextEntity</c>).
+    /// <paramref name="playerEntity"/> backs function id 1 ("get player") - passed explicitly (the
+    /// caller's own <see cref="IEntityWorldContext.PlayerEntity"/>) rather than found by scanning
+    /// <paramref name="spawnedEntities"/> for <see cref="AlundraEntityScriptProxy.IsPlayer"/>, since every
+    /// call site already has it at hand and a linear scan for a single, already-known reference would be
+    /// wasted work on this hot-ish path. Optional (defaults to null - no match, same as no player spawned)
+    /// so existing tests/call sites that never exercise function id 1 do not need to pass it.
     /// </summary>
     public static List<AlundraEntityScriptProxy> GetMatchingEntitiesBySearchType(
-        AlundraEntityScriptProxy ownerEntity, int searchType, IReadOnlyList<AlundraEntityScriptProxy> spawnedEntities)
+        AlundraEntityScriptProxy ownerEntity, int searchType, IReadOnlyList<AlundraEntityScriptProxy> spawnedEntities,
+        AlundraEntityScriptProxy? playerEntity = null)
     {
         var matches = new List<AlundraEntityScriptProxy>();
 
@@ -109,14 +118,29 @@ public static class EntitySearchService
                 matches.Add(ownerEntity);
                 break;
 
-            case 1: // get player - no player entity system yet; never matches (see class doc).
+            case 1: // get player - GameEngine.cs:1962-1964
+                if (playerEntity != null)
+                {
+                    matches.Add(playerEntity);
+                }
+
                 break;
 
-            case 2: // get all entities
-            case 3: // get all entities except player
+            case 2: // get all entities (player included) - GameEngine.cs:1965-1975
                 foreach (var candidate in spawnedEntities)
                 {
                     if (candidate.IsLoadedNormalOrDeactivated)
+                    {
+                        matches.Add(candidate);
+                    }
+                }
+
+                break;
+
+            case 3: // get all entities except player - GameEngine.cs:1978-1988
+                foreach (var candidate in spawnedEntities)
+                {
+                    if (candidate.IsLoadedNormalOrDeactivated && !candidate.IsPlayer)
                     {
                         matches.Add(candidate);
                     }

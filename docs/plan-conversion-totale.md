@@ -130,6 +130,62 @@ Oracle transverse : le harnais headless `Alundra.Tests/IntroTraceHarnessTests.cs
   de l'intro s'arrête au bloc 18 jusqu'à E4 — écart attendu, pas un bug d'E1.
 - **Dépendances** : aucune. **Prochaine étape à lancer après validation.**
 
+**Réalisé — écarts (2026-08-23)** :
+
+- **Ordre par entité** : `AlundraEntityScriptProxy.Update` fait pick → run → sync animation → sync
+  transform pour lui-même ; le world ne fait plus que MapEvents (`RunMapEventsPass`) puis la boucle de
+  rattrapage (`RunPendingEventTriggers`), après que le moteur a déjà mis à jour toutes les entités
+  (`World.Update`). Conséquence : une entité plus loin dans l'ordre d'itération voit les effets du script
+  d'une entité plus tôt dans l'ordre *dans la même frame* (c'était déjà vrai dans l'ancien
+  `RunEntityEventsPass`, qui itérait aussi séquentiellement) ; ce qui change, c'est que les MapEvents
+  tournent maintenant *après* les entités au lieu d'avant, d'où un décalage d'environ 1 frame sur les
+  évènements pilotés par un flag que B1 pose (0x83EA à 705 au lieu de 704, 0x83E9 à 783 au lieu de 782,
+  flag 860 à 786 au lieu de 785, spawn du bloc 18 à 783 au lieu de 785) — la frame du `0x11` final reste
+  identique (926), ainsi que les 3 spawns pilotés directement par B1 (7/8/9 à 555/678/801, inchangés) et
+  le flag 0x83E8 (554, inchangé, posé par B1 lui-même sans dépendre d'une entité).
+- **Latence d'une frame documentée** : tout ce que la passe monde change (déplacement du joueur par 0x64
+  dans un MapEvent, entité rattrapée par `RunPendingEventTriggers`) n'est visible aux entités qu'à partir
+  de leur prochaine frame de sync — conforme à la doc de `AlundraEntityScriptProxy.Update`.
+- **`EventTrigger` initialisé à `ProgramUnknown`** : nécessaire (pas dans la décompilation, jamais mis à
+  zéro explicitement par l'original) parce qu'un `AlundraEntityScriptProxy` fraîchement construit a
+  `EventTrigger = 0` (= `ProgramALoad`) par défaut C#, et la nouvelle boucle de rattrapage
+  (`RunPendingEventTriggers`) peut désormais voir une entité spawnée *dans la même frame* par les
+  MapEvents (0x2D/0x8B) avant la fin de la frame — sans ce correctif elle aurait fait tourner son
+  programme A sans jamais passer par `PickEventTrigger` (donc sans transition Loaded → Normal). Ajouté
+  dans `AlundraWorldProxy.ApplyRecord`/`SpawnPlayerEntity`.
+- **`LogicEntity` distinct de `LogicContextEntity`** : le champ original `Entity.LogicContextEntity` (type
+  original = l'équivalent de `AlundraEntityScriptProxy`, utilisé par `RunMapEventsPass` pour cibler
+  l'entité logique du map-event) n'a **pas** été fusionné avec le `LogicContextEntity` existant du proxy
+  (qui est un pointeur moteur vers sa propre `Entity` CasaEngine, posé une fois au spawn) — un nouveau
+  champ `AlundraEntityScriptProxy.LogicEntity` porte la sémantique de l'original.
+- **`g_clearProgramState`** : mécanisme ajouté (`AlundraEventProgramRunner.ClearProgramStateRequested`)
+  mais aucun opcode porté ne le positionne encore (seul 0x40, non porté, le ferait) ; simplification
+  documentée : l'original re-teste le flag après *chaque* opcode et distingue nettoyer l'état de l'entité
+  en cours d'exécution de celui d'une autre entité ciblée — ce port ne re-teste qu'une fois, après le
+  retour de `RunOneScriptCall`, et ne nettoie que l'état de l'appel en cours.
+- **Entité joueur minimale** : spawnée par nom de catalogue `"Alundra"` (résolu via
+  `AssetCatalog.Get("Alundra").Id`, le même id que `SpriteRecordCatalog.TryGet` utilise pour son en-tête
+  sprite-records.json) plutôt que par un `PrefabAssetId` de record — il n'y a pas de record `Entities`
+  pour le héros. `EntityRefId = -1` (pas un slot de la table de records).
+- **Gate de spawn joueur** : `ShouldSpawnRecord` gagne une surcharge à 5 arguments (tuile joueur) utilisée
+  uniquement quand `PlayerEntity != null` ; la boîte XMin/XMax/YMin/YMax n'a aucun effet observable sur la
+  389 (les 7 records couvrent toute la map), donc le compte de spawn au chargement reste 14.
+- **Risque connu (P4, différé, non corrigé ici)** : le pick/run par entité dépend maintenant de la
+  `TickPolicy` du moteur (`World.cs:456 ShouldUpdateThisFrame`) — un prefab qui ne porte qu'un
+  `AnimatedSpriteComponent` (pas de composant physique/collision) résout en `TickPolicy.Conditional`,
+  gardée par `CurrentAnimation != null && UpdateAnimatedSprites`, ce qui pourrait sauter l'`Update` de
+  l'entité (donc son pick/run de script) certaines frames. Sur la 389, les 14 prefabs chargés et le héros
+  portent tous un `CollisionComponent` (`TickPolicy.EveryFrame`), donc ce risque ne s'exprime pas ici ;
+  mais 12 des 396 prefabs convertis au total n'ont aucun composant collision/physique et tomberaient dans
+  ce cas — à vérifier avant de généraliser au-delà de la 389.
+
+- **Différés après la revue de clôture (verifier CONFIRMED)** : N1 (P3) — `EntitySearchService` n'exclut le
+  joueur que pour la fonction 3 ; l'original l'exclut aussi dans la branche par id et les fonctions 5–11
+  (`GameEngine.cs:1942, 2010-2091`, boucles depuis le slot 1). Inatteignable tant que le joueur n'a ni
+  `EntityRefId` ≥ 0 ni `RidingEntity`/`ParentEntity`/etc. (E2) — **à corriger en E2**. N2 (P4) — citations
+  `GameInitializer.cs:363-367` à décaler de +4 dans `AlundraGameState`, et `FillDataFromCommand` ne remet pas à
+  zéro `[1..9]` sur le chemin de fin de programme (inobservable : `RunOneScriptCall` sort sur 0xFF).
+
 ### E2 — Héros : pawn possédé ⏳ (convertisseur + DLL)
 
 - **But** : le héros existe comme pawn du moteur, visible en (33,59) avec l'animation 54 vers le bas.
@@ -275,7 +331,7 @@ Oracle transverse : le harnais headless `Alundra.Tests/IntroTraceHarnessTests.cs
 
 | Étape | Statut | Commit |
 |---|---|---|
-| E1 scripts par entité + MapEvents | ⏳ | |
+| E1 scripts par entité + MapEvents | 🧪 | |
 | E2 héros pawn | ⏳ | |
 | E3 collisions champ de hauteur | ⏳ | |
 | E4 déplacement scripté | ⏳ | |

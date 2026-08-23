@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
+using CasaEngine.Framework.Scene.Entities;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -21,8 +22,10 @@ namespace Alundra.Tests;
 /// Purpose: replay the exact original frame structure (<see cref="HeadlessIntroSimulation"/>'s own doc
 /// comment lists every original call this mirrors, with file:line) using the REAL bytecode interpreter
 /// (<see cref="AlundraEventProgramRunner"/>, via its <see cref="AlundraEventProgramRunner.TraceSink"/>
-/// seam) and the runtime's own already-ported passes (<see cref="AlundraWorldProxy.RunEntityEventsPass"/>,
-/// <see cref="EntityRecordMapper"/>, <see cref="MapEventProgramLoader"/>), and produce an ordered trace of
+/// seam) and the runtime's own already-ported passes (<see cref="AlundraEntityScriptProxy.PickEventTrigger"/>/
+/// <see cref="AlundraEntityScriptProxy.RunPickedEvent"/>, <see cref="AlundraWorldProxy.RunMapEventsPass"/>,
+/// <see cref="AlundraWorldProxy.RunPendingEventTriggers"/>, <see cref="EntityRecordMapper"/>,
+/// <see cref="MapEventProgramLoader"/>), and produce an ordered trace of
 /// every dispatched opcode plus every absent engine system, in the order the original would reach them.
 /// Two artifacts are written under docs/ next to this checkout:
 /// <list type="bullet">
@@ -117,24 +120,30 @@ public class IntroTraceHarnessTests
 /// inventory-open check, sound streaming, RNG tick.</description></item>
 /// <item><description><c>UpdateWorld</c> (1638-1664): <c>RunMapEvents()</c>; <c>UpdateEntities()</c>;
 /// <c>EffectManager.UpdateEffects()</c>.</description></item>
-/// <item><description><c>RunMapEvents</c> (1667-1718, quoted in full in <see cref="RunMapEventsPass"/>'s
-/// own doc comment).</description></item>
+/// <item><description><c>RunMapEvents</c> (1667-1718, quoted in full in
+/// <see cref="AlundraWorldProxy.RunMapEventsPass"/>'s own doc comment).</description></item>
 /// <item><description><c>UpdateEntities</c> (EntityManager.cs:367-395):
-/// <c>UpdateEntitiesEvents</c> (806, itself <c>MovePlayer()</c> then the pick/run passes -
-/// <see cref="AlundraWorldProxy.RunEntityEventsPass"/> already ports the pick/run shape headlessly, reused
-/// here unmodified), then <c>UpdateDestroyedEntities</c>/<c>Counters</c>/<c>Lists</c>/<c>Animation</c>,
+/// <c>UpdateEntitiesEvents</c> (806, itself <c>MovePlayer()</c> then the pick/run passes - now each
+/// entity's own <see cref="AlundraEntityScriptProxy.Update"/>, run directly by this harness's own frame
+/// loop in engine order, then <see cref="AlundraWorldProxy.RunPendingEventTriggers"/> for decision D3's
+/// catch-up re-scan), then <c>UpdateDestroyedEntities</c>/<c>Counters</c>/<c>Lists</c>/<c>Animation</c>,
 /// <c>PhysicsEngine.UpdateEntitiesPhysics</c>, <c>UpdateActiveEffects</c>, <c>UpdateBalanceRecords</c>,
 /// <c>UpdateVisibleEntitiesZSort</c>.</description></item>
 /// </list>
 ///
-/// Out of scope (documented non-goals, not simulated): rendering, real player movement/physics (no player
-/// system yet), sound/effects/HUD. Dynamic entity spawn (opcodes 0x2D/0x8B, via
-/// <see cref="SpawnEntityByRecordId"/>) IS simulated - see that method's own doc.
+/// Out of scope (documented non-goals, not simulated): rendering, real player movement/physics (no
+/// controller/input/camera yet - E2/E5/E6), sound/effects/HUD. Dynamic entity spawn (opcodes 0x2D/0x8B,
+/// via <see cref="SpawnEntityByRecordId"/>) IS simulated - see that method's own doc.
 /// </summary>
-internal sealed class HeadlessIntroSimulation : IEntityWorldContext
+internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScriptHost
 {
     private const string WorldName_ = "Ship Klark (beginning)-389";
-    private const uint GameplayBlockedMask = 0x48; // PlayerControlFlags.MenuOpen | Unused40 - never set here (no menu opcodes ported)
+
+    /// <summary>Program id of map-event 0 (B 129), the intro's own cinematic driver - see
+    /// <see cref="TraceAwareEntityRunner.RunScript"/>'s own doc for why this replaces the old
+    /// index-based "is this map-event 0" check now that <see cref="AlundraWorldProxy.RunMapEventsPass"/>
+    /// no longer hands this harness a per-map-event callback to hook context off of.</summary>
+    private const int IntroCinematicProgramId = 129;
 
     private static readonly HashSet<int> ImplementedOpcodes = new()
     {
@@ -150,11 +159,13 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext
     private readonly AlundraEventProgramRunner _runner;
     private readonly TraceAwareEntityRunner _wrapperRunner;
 
+    // Includes the player (index 0) - mirrors AlundraWorldProxy's own _spawnedEntities, which also holds
+    // the player (SpawnPlayerEntity adds it before any record) - see IEntityWorldContext.SpawnedEntities's
+    // own doc for why that matters (a search opcode must be able to find the player too).
     private readonly List<AlundraEntityScriptProxy> _spawnedEntities = new();
     private readonly Dictionary<AlundraEntityScriptProxy, string> _entityNames = new();
     private readonly Dictionary<int, TileMapObjectData> _entityRecordsByIndex = new(); // for SpawnEntityByRecordId (0x2D/0x8B)
-    private readonly List<MapEventSlot> _mapEvents = new();
-    private readonly EventProgramState _defaultSlotScratchState = new(); // mirrors the original's single shared g_eventProgramState, for slots D/E/F only (A has its own scratch inside AlundraEventProgramRunner; B/C resume off the entity's own persisted state)
+    private readonly List<AlundraMapEvent> _mapEvents = new();
 
     private readonly SortedSet<int> _referencedALoad = new();
     private readonly SortedSet<int> _referencedBMap = new();
@@ -266,25 +277,35 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext
 
     private void BuildInitialState()
     {
-        // New Game hero spawn (GameEngine.cs ResetEntityState / map-entry block): tile (33,59,0), anim
-        // 0x36 ("idle"), direction 0. Position is the tile-centre 16.16 fixed-point form
-        // (TileWidth=24, TileHeight=16 - see EntityRecordMapper's own class doc for the same constants).
+        // New Game hero spawn (GameEngine.cs ResetEntityState / map-entry block, port of
+        // AlundraWorldProxy.SpawnPlayerEntity's own logical-field half - this harness has no engine
+        // AssetCatalog/prefab to clone, so it builds the proxy directly): tile (33,59,0), anim 0x36
+        // ("idle"), direction 0 - AlundraGameState's own New Game constants. Position is the tile-centre
+        // 16.16 fixed-point form (TileWidth=24, TileHeight=16 - see EntityRecordMapper's own class doc for
+        // the same constants).
         _player = new AlundraEntityScriptProxy
         {
+            IsPlayer = true,
             EntityRefId = -1,
             Status = EntityStatus.Normal,
-            TileX = 33,
-            TileY = 59,
+            EventTrigger = ScriptHelper.ProgramUnknown,
+            TileX = AlundraGameState.CameraTileX,
+            TileY = AlundraGameState.CameraTileY,
             TileZ = 0,
-            PosX = (33 * 24 + 12) << 16,
-            PosY = (59 * 16 + 8) << 16,
+            PosX = (AlundraGameState.CameraTileX * 24 + 12) << 16,
+            PosY = (AlundraGameState.CameraTileY * 16 + 8) << 16,
             PosZ = 0,
-            TargetAnimationId = 0x36,
-            CurrentAnimationId = 0x36,
-            TargetDirection = 0,
-            CurrentDirection = 0,
+            TargetAnimationId = AlundraGameState.ResetAnimationId,
+            CurrentAnimationId = AlundraGameState.ResetAnimationId,
+            TargetDirection = AlundraGameState.ResetDirectionId,
+            CurrentDirection = AlundraGameState.ResetDirectionId,
         };
+        var playerOwnerEntity = new Entity();
+        _player.LogicContextEntity = playerOwnerEntity;
+        _player.ScriptHost = this;
+        _player.Initialize(playerOwnerEntity); // gives Owner a value so Update's SyncAnimation/SyncTransform are no-ops instead of throwing
         _entityNames[_player] = "PlayerEntity";
+        _spawnedEntities.Add(_player); // mirrors AlundraWorldProxy's own _spawnedEntities, which also holds the player
 
         var tileMapFile = Directory.GetFiles(
             Path.Combine(_projectRoot, "Maps"), $"{_worldName}.tileMap", SearchOption.AllDirectories).FirstOrDefault();
@@ -300,43 +321,42 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext
         var entitiesLayer = tileMapData.ObjectLayers.First(l => l.Name == "Entities");
         var mapEventsLayer = tileMapData.ObjectLayers.First(l => l.Name == "MapEvents");
 
-        // InitializeMapEvents (GameEngine.cs:476-583): one MapEvent slot per record with
-        // EventCodesBIndex != 0, in record order, Entity=PlayerEntity, fresh EventData.
+        // InitializeMapEvents (GameEngine.cs:476-583), reusing AlundraWorldProxy.BuildMapEvents' own
+        // record shape by hand (that method is private and takes a live World-resolved layer type - this
+        // harness has no World): one AlundraMapEvent per record with EventCodesBIndex != 0, in record
+        // order, Entity=PlayerEntity, fresh EventData.
         foreach (var record in mapEventsLayer.Objects)
         {
             var cp = record.CustomProperties;
             var programBMap = int.Parse(cp.GetValueOrDefault("EventCodesBIndex", "0"));
-            if ((programBMap & 0x7F) == 0)
+            if (programBMap == 0)
             {
                 continue;
             }
 
-            var slot = new MapEventSlot
+            _mapEvents.Add(new AlundraMapEvent
             {
-                Index = int.Parse(cp.GetValueOrDefault("Index", "0")),
+                Id = int.Parse(cp.GetValueOrDefault("Index", "0")),
                 X1 = int.Parse(cp.GetValueOrDefault("X1", "0")),
                 Y1 = int.Parse(cp.GetValueOrDefault("Y1", "0")),
                 X2 = int.Parse(cp.GetValueOrDefault("X2", "0")),
                 Y2 = int.Parse(cp.GetValueOrDefault("Y2", "0")),
                 ProgramBMap = programBMap,
-                EventData = new EventProgramState(),
-            };
-            _mapEvents.Add(slot);
+                Entity = _player,
+            });
             _referencedBMap.Add(programBMap & 0x7F);
         }
 
-        // Entity spawn: EntityRecordMapper.Map (pure record -> proxy field mapping, reused verbatim),
-        // gated the same way GameEngine.SpawnEntity(null, i, 0) gates InitializeEntitySlots' own map-load
-        // spawn pass (GameEngine.cs:684-717, notCheckSpawnZone=0): the player-tile spawn-zone box
-        // (XMin/XMax/YMin/YMax vs the player's OWN tile - kept here even though AlundraWorldProxy's own
-        // ShouldSpawnRecord deliberately skips it for lack of a live player, see that method's own doc -
-        // this harness DOES have a real player, so it is honored) AND AlundraWorldProxy.ShouldSpawnRecord
-        // itself (IsEnabled==0, and - the fidelity fix of this round - (SpriteDirection & 0x40) == 0:
-        // GameEngine.cs:714-717 returns null for such a record UNLESS notCheckSpawnZone=1, i.e. only a
-        // dynamic spawn via 0x2D/0x8B can ever produce one of these entities, never the map-load pass).
-        // On map 389 this drops the load-time spawn count from 19 to 14 (records 7/8/9 have
-        // SpriteDirection 128, records 10/18 have SpriteDirection 0 - all four values have bit 0x40
-        // clear).
+        // Entity spawn: AlundraWorldProxy.ApplyRecord (EntityRecordMapper.Map + Status=Loaded +
+        // EventTrigger=ProgramUnknown, reused verbatim), gated the same way GameEngine.SpawnEntity(null, i, 0)
+        // gates InitializeEntitySlots' own map-load spawn pass (GameEngine.cs:684-717, notCheckSpawnZone=0):
+        // the player-tile spawn-zone box (XMin/XMax/YMin/YMax vs the player's OWN tile) AND
+        // AlundraWorldProxy.ShouldSpawnRecord's own two gates (IsEnabled==0, (SpriteDirection & 0x40) == 0) -
+        // now the SAME production overload AlundraWorldProxy.InitializeWithWorld itself calls once a player
+        // exists (AlundraWorldProxy.ShouldSpawnRecord(record, notCheckSpawnZone, playerTileX, playerTileY,
+        // out reason)), reused here instead of this harness's own former hand-rolled box check. On map 389
+        // this drops the load-time spawn count from 19 to 14 (records 7/8/9 have SpriteDirection 128,
+        // records 10/18 have SpriteDirection 0 - all four values have bit 0x40 clear).
         //
         // Every record (spawned or not) is also indexed by its own "Index" property into
         // _entityRecordsByIndex, so SpawnEntityByRecordId (opcodes 0x2D/0x8B) can dynamically spawn any
@@ -347,23 +367,16 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext
             var recordIndex = int.Parse(cp.GetValueOrDefault("Index", "0"));
             _entityRecordsByIndex[recordIndex] = record;
 
-            if (!AlundraWorldProxy.ShouldSpawnRecord(record, notCheckSpawnZone: false, out _))
+            if (!AlundraWorldProxy.ShouldSpawnRecord(record, notCheckSpawnZone: false, _player.TileX, _player.TileY, out _))
             {
                 continue;
             }
 
-            var xMin = int.Parse(cp.GetValueOrDefault("XMin", "0"));
-            var yMin = int.Parse(cp.GetValueOrDefault("YMin", "0"));
-            var xMax = int.Parse(cp.GetValueOrDefault("XMax", "0"));
-            var yMax = int.Parse(cp.GetValueOrDefault("YMax", "0"));
-
-            if (_player.TileX < xMin || _player.TileX > xMax || _player.TileY < yMin || _player.TileY > yMax)
-            {
-                continue; // spawn-zone gate failed - never spawned this session
-            }
-
-            var proxy = new AlundraEntityScriptProxy { Status = EntityStatus.Loaded };
-            EntityRecordMapper.Map(record, proxy);
+            var proxy = new AlundraEntityScriptProxy();
+            AlundraWorldProxy.ApplyRecord(record, proxy);
+            proxy.LogicContextEntity = new Entity();
+            proxy.ScriptHost = this;
+            proxy.Initialize(proxy.LogicContextEntity);
 
             var entityName = cp.GetValueOrDefault("EntityName", record.Name ?? "Entity");
             _entityNames[proxy] = $"{record.Name} ({entityName})";
@@ -406,200 +419,54 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext
     // Per-frame simulation
     // ------------------------------------------------------------------------------------------------
 
+    /// <summary>
+    /// One frame: entities first, then the world - same order as the production
+    /// <see cref="AlundraWorldProxy"/>, since the engine's own <c>World.Update</c> always updates every
+    /// entity (<c>GameplayProxy.Update</c>, here <see cref="AlundraEntityScriptProxy.Update"/>) before the
+    /// world's own <c>GameplayProxy.Update</c> (CasaEngineMonogame/CasaEngine/Framework/Scene/World/World.cs:443-491).
+    /// </summary>
     private void RunFrame()
     {
         RecordSystemOnce("PadManager.UpdatePads()", "GameEngine.cs:1517 (Update)", "gamepad polling - CasaEngine's own InputComponent/GamePadManager exists but is not wired to this proxy's Update yet");
 
-        RunMapEventsPass();
-
-        RecordSystemOnce("PlayerManager.MovePlayer()", "EntityManager.cs:808 / PlayerManager.cs:17", "player movement/input/physics - no player entity system ported yet (RunEntityEventsPass's own doc lists this as an explicit non-goal)");
-
         // Snapshot BEFORE the pass, not the live _spawnedEntities list itself: 0x2D/0x8B
         // (SpawnEntityByRecordId) can append to _spawnedEntities WHILE a script is running inside this
-        // same pass, and AlundraWorldProxy.RunEntityEventsPass's phase-2 foreach would otherwise throw
-        // "collection was modified" - a pure harness-side artifact of reusing the mutable master list
-        // directly, not an engine bug (the original never runs a same-frame pick/run pass over an entity
-        // spawned mid-pass either: InitializeEntitySlots only picks up a new Loaded entity on ITS OWN
-        // next frame's pick phase). A frozen snapshot reproduces that: newly spawned entities join the
-        // simulation starting next frame, exactly like the original.
+        // same pass, and iterating the live list would otherwise throw "collection was modified" - a pure
+        // harness-side artifact of reusing the mutable master list directly, not an engine bug (the
+        // original never runs a same-frame pick/run pass over an entity spawned mid-pass either -
+        // InitializeEntitySlots only picks up a new Loaded entity on ITS OWN next frame's pick phase, see
+        // AlundraWorldProxy.ApplyRecord's own EventTrigger=ProgramUnknown seeding). A frozen snapshot
+        // reproduces that: newly spawned entities join the simulation starting next frame, exactly like
+        // the original.
         var entitiesThisFrame = _spawnedEntities.ToList();
-        AlundraWorldProxy.RunEntityEventsPass(entitiesThisFrame, _wrapperRunner, null, (entity, _) => entity.Status = EntityStatus.FlagToDestroy);
+
+        RecordSystemOnce("PlayerManager.MovePlayer()", "EntityManager.cs:808 / PlayerManager.cs:17", "player movement/input/physics - no player controller yet (E2's own scope); AlundraEntityScriptProxy.Update excludes the player from its own pick/run half, same as the original's own loop starting at slot index 1");
+
+        foreach (var entity in entitiesThisFrame)
+        {
+            entity.Update(0f);
+        }
+
+        if (PlayerEntity != null)
+        {
+            AlundraWorldProxy.RunMapEventsPass(PlayerEntity, _mapEvents, _wrapperRunner, _gameState.PlayerControlFlags);
+        }
+
+        AlundraWorldProxy.RunPendingEventTriggers(entitiesThisFrame, _wrapperRunner);
 
         RecordSystemOnce("EntityManager.UpdateDestroyedEntities", "EntityManager.cs:367-395 (UpdateEntities pass list)", "slot recycling for destroyed entities - not ported");
         RecordSystemOnce("EntityManager.UpdateEntitiesCounters", "EntityManager.cs:367-395 (UpdateEntities pass list)", "per-entity frame counters - not ported");
         RecordSystemOnce("EntityManager.UpdateEntityLists", "EntityManager.cs:367-395 (UpdateEntities pass list)", "active/renderable list rebuild - not ported");
-        RecordSystemOnce("EntityManager.UpdateAnimation", "EntityManager.cs:209-224", "PARTIAL: AlundraWorldProxy.RunAnimationSyncPass ports the target-resolution half only (CurrentAnimationId/AnimationDirection); frame timing/AnimCompleteCounter/NextFrameDelay are not ported (owned by CasaEngine's own Animation2dCompositionSampler instead)");
+        RecordSystemOnce("EntityManager.UpdateAnimation", "EntityManager.cs:209-224", "PARTIAL: AlundraWorldProxy.SyncAnimation (called per-entity from AlundraEntityScriptProxy.Update) ports the target-resolution half only (CurrentAnimationId/AnimationDirection); frame timing/AnimCompleteCounter/NextFrameDelay are not ported (owned by CasaEngine's own Animation2dCompositionSampler instead)");
         RecordSystemOnce("PhysicsEngine.UpdateEntitiesPhysics", "PhysicsEngine.cs:10", "gravity/collision/ground-height physics tick - not ported");
         RecordSystemOnce("EntityManager.UpdateActiveEffects", "EntityManager.cs:367-395 (UpdateEntities pass list)", "not ported");
         RecordSystemOnce("EntityManager.UpdateBalanceRecords", "EntityManager.cs:367-395 (UpdateEntities pass list)", "combat/damage balance records - not ported");
-        RecordSystemOnce("EntityManager.UpdateVisibleEntitiesZSort", "EntityManager.cs:367-395 (UpdateEntities pass list)", "not ported (AlundraWorldProxy.RunWallInterleaveSortKeyPass covers a narrower wall/sprite depth-interleave concern only)");
+        RecordSystemOnce("EntityManager.UpdateVisibleEntitiesZSort", "EntityManager.cs:367-395 (UpdateEntities pass list)", "not ported (AlundraWorldProxy.RunWallInterleaveSortKeyPass covers a narrower wall/sprite depth-interleave concern only, and is not even called by this harness - no rendering here)");
 
         RecordSystemOnce("EffectManager.UpdateEffects", "GameEngine.cs:1638-1664 (UpdateWorld)", "particle/sprite-effect tick - not ported");
         RecordSystemOnce("GameEngine.Update: g_warpDelayFrames--, inventory-open check", "GameEngine.cs:1500-1592", "warp fade countdown / inventory-open input gate - not ported");
         RecordSystemOnce("SoundManager.HandleMapSoundStreaming", "GameEngine.cs:1500-1592 (Update)", "not ported");
         RecordSystemOnce("Random.Next()", "GameEngine.cs:1500-1592 (Update)", "PSX-faithful RNG stream tick - not ported (nothing ported yet consumes randomness)");
-    }
-
-    /// <summary>
-    /// Faithful port of <c>GameEngine.RunMapEvents</c> @ 0x8003c67c (GameEngine.cs:1665-1712), quoted here
-    /// verbatim for reference:
-    /// <code>
-    /// private void RunMapEvents()
-    /// {
-    ///     if ((StaticVariables.g_playerControlFlags &amp; PlayerControlFlags.GameplayBlockedMask) != 0) return;
-    ///     var playerEntity = StaticVariables.PlayerEntity;
-    ///     for (var i = 0; i &lt; StaticVariables.g_mapEvents.Length; ++i)
-    ///     {
-    ///         var currentMapEvent = StaticVariables.g_mapEvents[i];
-    ///         if ((currentMapEvent.ProgramBMap &amp; 0x7F) == 0) continue;
-    ///         var mapEventEntity = currentMapEvent.Entity;
-    ///         var record = currentMapEvent.MapEventRecord;
-    ///         var px = playerEntity.TileX; var py = playerEntity.TileY;
-    ///         if (px &lt; record.X1 || px &gt; record.X2 || py &lt; record.Y1 || py &gt; record.Y2)
-    ///         {
-    ///             mapEventEntity.ChildEntity = null;
-    ///             mapEventEntity.EventProgramState.Sp = 0;
-    ///             mapEventEntity.RelativeWarpOffsetX = 0;
-    ///             mapEventEntity.Index = playerEntity.Index;
-    ///             continue;
-    ///         }
-    ///         playerEntity.ProgramIndexes[ScriptHelper.ProgramBMap] = currentMapEvent.ProgramBMap;
-    ///         playerEntity.MapEventProgramId = currentMapEvent.ProgramBMap;
-    ///         playerEntity.EventTrigger = i;
-    ///         playerEntity.LogicContextEntity = mapEventEntity;
-    ///         playerEntity.EventProgramState.CopyFrom(currentMapEvent.EventData);
-    ///         RunScript(playerEntity, ScriptHelper.ProgramBMap);
-    ///         currentMapEvent.EventData.CopyFrom(playerEntity.EventProgramState);
-    ///         currentMapEvent.Entity = playerEntity.LogicContextEntity;
-    ///         currentMapEvent.ProgramBMap = playerEntity.ProgramIndexes[ScriptHelper.ProgramBMap];
-    ///     }
-    /// }
-    /// </code>
-    /// <c>mapEventEntity</c> is always <c>PlayerEntity</c> for map 389 (opcode 0x66, which could retarget
-    /// <c>currentMapEvent.Entity</c>, is never reached on this map's programs) so this port keeps
-    /// <see cref="MapEventSlot"/> simple (no separate <c>Entity</c>/<c>ChildEntity</c> fields) and always
-    /// runs against <see cref="_player"/> directly.
-    ///
-    /// Stop-condition (a) scoping (round 4): only MapEvent index 0 (program 129, the intro driver) is
-    /// flagged <c>isPlayerMapEvent</c> when setting the trace context. MapEvents 1-5 (programs 130-135)
-    /// are independent door/wall/zone scripts that ALSO use 0x10/0x11 (see the static disassembly) - their
-    /// own control-lock/unlock has nothing to do with the intro's own "player regains control" milestone,
-    /// so letting any of them trip stop condition (a) stopped the simulation before program 129 ever got
-    /// anywhere near its own 0x11 (see round 3's report).
-    /// </summary>
-    private void RunMapEventsPass()
-    {
-        if ((_gamePlayerControlFlags & GameplayBlockedMask) != 0)
-        {
-            return;
-        }
-
-        for (var i = 0; i < _mapEvents.Count; i++)
-        {
-            var mapEvent = _mapEvents[i];
-
-            if ((mapEvent.ProgramBMap & 0x7F) == 0)
-            {
-                continue;
-            }
-
-            var px = _player.TileX;
-            var py = _player.TileY;
-
-            if (px < mapEvent.X1 || px > mapEvent.X2 || py < mapEvent.Y1 || py > mapEvent.Y2)
-            {
-                mapEvent.EventData.Sp = 0;
-                continue;
-            }
-
-            _player.ProgramIndexes[ScriptHelper.ProgramBMap] = mapEvent.ProgramBMap;
-            _player.EventProgramState.CopyFrom(mapEvent.EventData);
-
-            SetContext($"MapEvent {i} (prog {mapEvent.ProgramBMap})", isPlayerMapEvent: i == 0);
-            RunProgramSlotTraceOnly(_player, ScriptHelper.ProgramBMap);
-
-            mapEvent.EventData.CopyFrom(_player.EventProgramState);
-            mapEvent.ProgramBMap = _player.ProgramIndexes[ScriptHelper.ProgramBMap];
-        }
-    }
-
-    // Local mirror of g_playerControlFlags - only ever changed by this trace itself (opcodes 0x10/0x11 are
-    // NOT implemented by AlundraEventProgramRunner, so they never actually reach here in V1; kept for
-    // documentation/stop-condition purposes only, see OnOpcodeTraced's 0x11 check).
-    private uint _gamePlayerControlFlags;
-
-    /// <summary>
-    /// Runs one program slot for <paramref name="entity"/>, TRACE-ONLY for slots other than A: production
-    /// <see cref="AlundraEventProgramRunner.RunScript"/> only interprets slot A (V1 scope, see its class
-    /// doc) - every other slot is a counted no-op there. This method extends the SAME interpreter (via its
-    /// internal <see cref="AlundraEventProgramRunner.InitializeEventData"/> /
-    /// <see cref="AlundraEventProgramRunner.RunOneScriptCall"/>) to slots B-F, purely for this harness's
-    /// trace, mirroring the resume policy of the original <c>EntityEventHandlers.RunScript</c> @
-    /// 0x8004205c (EntityEventHandlers.cs:232-296): slots B (Map) and C (Tick) resume the entity's own
-    /// persisted <see cref="AlundraEntityScriptProxy.EventProgramState"/> when it already carries a
-    /// program (<c>Codes != null</c>); every other slot (A/D/E/F) always re-initializes off a throwaway
-    /// state (one shared scratch instance per this simulation, mirroring the original's single
-    /// <c>g_eventProgramState</c>).
-    /// </summary>
-    private void RunProgramSlotTraceOnly(AlundraEntityScriptProxy entity, int programSlot)
-    {
-        EventProgramState state;
-
-        switch (programSlot)
-        {
-            case ScriptHelper.ProgramALoad:
-                _runner.RunScript(entity, programSlot); // real, production interpreter path
-                return;
-
-            case ScriptHelper.ProgramBMap:
-                state = entity.EventProgramState;
-                if (state.Codes == null)
-                {
-                    _runner.InitializeEventData(entity, programSlot, state);
-                }
-
-                entity.MapEventProgramId = programSlot;
-                _runner.RunOneScriptCall(entity, state, programSlot);
-                return;
-
-            case ScriptHelper.ProgramCTick:
-                state = entity.EventProgramState;
-                if (state.Codes != null)
-                {
-                    if (entity.MapEventProgramId != ScriptHelper.ProgramCTick)
-                    {
-                        entity.TargetAnimationId = entity.LastTargetAnimationId;
-                        entity.TargetDirection = entity.LastTargetDirection;
-                    }
-                }
-                else
-                {
-                    _runner.InitializeEventData(entity, programSlot, state);
-                }
-
-                entity.MapEventProgramId = programSlot;
-                _runner.RunOneScriptCall(entity, state, programSlot);
-                return;
-
-            case ScriptHelper.ProgramFInteract:
-                entity.ForceStepX = 0;
-                entity.ForceStepY = 0;
-                entity.ForceX = 0;
-                entity.ForceY = 0;
-                goto default;
-
-            default: // D (Touch), E (Deactivate), F (Interact)
-                if (entity.MapEventProgramId == ScriptHelper.ProgramCTick)
-                {
-                    entity.LastTargetAnimationId = entity.TargetAnimationId;
-                    entity.LastTargetDirection = entity.TargetDirection;
-                }
-
-                _runner.InitializeEventData(entity, programSlot, _defaultSlotScratchState);
-                entity.MapEventProgramId = programSlot;
-                _runner.RunOneScriptCall(entity, _defaultSlotScratchState, programSlot);
-                return;
-        }
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -608,19 +475,21 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext
 
     public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => _spawnedEntities;
 
+    public AlundraEntityScriptProxy? PlayerEntity => _player;
+
     /// <summary>
     /// Dynamic spawn-by-record-id (opcodes 0x2D ActivateEntity, 0x8B SpawnEntityNextToEntity) - mirrors
     /// GameEngine.SpawnEntity (GameEngine.cs:684-760) called with notCheckSpawnZone=1, i.e. only
     /// AlundraWorldProxy.ShouldSpawnRecord's IsEnabled gate still applies (the 0x40 SpriteDirection gate
     /// and the player-tile spawn-zone box are both skipped, exactly like the original). Builds a fresh
-    /// proxy from the same record BuildInitialState already indexed, via the same EntityRecordMapper.Map
-    /// the load-time spawn path uses (position/ProgramIndexes/etc.), then seeds
-    /// TargetAnimationId/TargetDirection/CurrentAnimationId/CurrentDirection exactly like
-    /// AlundraWorldProxy's own ApplySpawnInitialization (AlundraWorldProxy.cs:645-654: animationId always
-    /// 0, direction off AnimationTables.CardinalDirectionTable[SpriteDirection &amp; 0x3], Current* bit-
-    /// complemented so the next animation sync always fires). Status=Loaded so the next pick pass runs
-    /// its Load slot (record 18's Load index is 0, so it goes through RunSpriteEvent's native-AI path
-    /// instead - see AlundraWorldProxy.RunEntityEventsPass's own 0x7f==0 branch).
+    /// proxy from the same record BuildInitialState already indexed, via AlundraWorldProxy.ApplyRecord
+    /// (EntityRecordMapper.Map + Status=Loaded + EventTrigger=ProgramUnknown) the load-time spawn path
+    /// also uses, then seeds TargetAnimationId/TargetDirection/CurrentAnimationId/CurrentDirection exactly
+    /// like AlundraWorldProxy's own ApplySpawnInitialization (AlundraWorldProxy.cs:645-654: animationId
+    /// always 0, direction off AnimationTables.CardinalDirectionTable[SpriteDirection &amp; 0x3], Current*
+    /// bit-complemented so the next animation sync always fires). Status=Loaded so its own next Update
+    /// runs its Load slot (record 18's Load index is 0, so it goes through RunSpriteEvent's native-AI path
+    /// instead - see AlundraEntityScriptProxy.RunPickedEvent's own programIndex==0 branch).
     ///
     /// Deviation: <see cref="AlundraEntityScriptProxy.ParentEntity"/> is left null - it is a live
     /// CasaEngine <c>Entity</c> reference and this harness's proxies are never wrapped in one (no engine
@@ -638,8 +507,11 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext
             return null;
         }
 
-        var proxy = new AlundraEntityScriptProxy { Status = EntityStatus.Loaded };
-        EntityRecordMapper.Map(record, proxy);
+        var proxy = new AlundraEntityScriptProxy();
+        AlundraWorldProxy.ApplyRecord(record, proxy);
+        proxy.LogicContextEntity = new Entity();
+        proxy.ScriptHost = this;
+        proxy.Initialize(proxy.LogicContextEntity);
 
         var cp = record.CustomProperties;
         var spriteDirectionRaw = int.Parse(cp.GetValueOrDefault("SpriteDirection", "0"));
@@ -660,6 +532,19 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext
     }
 
     public void DestroyEntity(AlundraEntityScriptProxy entity) => entity.Status = EntityStatus.FlagToDestroy;
+
+    // ------------------------------------------------------------------------------------------------
+    // IAlundraScriptHost - what each entity's own Update reaches for pick/run (see that interface's own
+    // doc). ActiveCollisionEntity stays null (no collision system in V1, same as AlundraWorldProxy's own
+    // field); DestroyEntity(entity, effectId) is the pick phase's own two-argument overload, distinct
+    // from IEntityWorldContext.DestroyEntity(entity) above (the search-driven one-argument overload).
+    // ------------------------------------------------------------------------------------------------
+
+    public IEventProgramRunner Runner => _wrapperRunner;
+
+    public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
+
+    public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId) => entity.Status = EntityStatus.FlagToDestroy;
 
     /// <summary>Shared with the initial load-time spawn loop in <see cref="BuildInitialState"/> - registers
     /// a freshly spawned entity's non-zero A/C/F program indexes so the static disassembly annex covers
@@ -683,7 +568,8 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext
     }
 
     // ------------------------------------------------------------------------------------------------
-    // Trace-aware IEventProgramRunner wrapper - what AlundraWorldProxy.RunEntityEventsPass drives
+    // Trace-aware IEventProgramRunner wrapper - what each entity's own AlundraEntityScriptProxy.Update
+    // (pick/run) and AlundraWorldProxy.RunMapEventsPass/RunPendingEventTriggers drive
     // ------------------------------------------------------------------------------------------------
 
     internal sealed class TraceAwareEntityRunner : IEventProgramRunner
@@ -695,10 +581,32 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext
             _sim = sim;
         }
 
+        /// <summary>
+        /// Delegates straight to the REAL production interpreter (<see cref="AlundraEventProgramRunner.RunScript"/>,
+        /// which now interprets every slot A-F - see that class's own doc) after setting the trace
+        /// context. <see cref="AlundraWorldProxy.RunMapEventsPass"/> always calls this with
+        /// <paramref name="entity"/> = the player and <paramref name="programSlot"/> = <see cref="ScriptHelper.ProgramBMap"/>
+        /// - that specific combination gets the "MapEvent" context label instead of the generic
+        /// per-entity one, and <see cref="HeadlessIntroSimulation.IntroCinematicProgramId"/> (129, map-event
+        /// 0's own program) replaces the old index-based "is this map-event 0" check stop-condition (a)
+        /// needs, since <see cref="AlundraWorldProxy.RunMapEventsPass"/> no longer hands this harness a
+        /// per-map-event callback to hook an index off of.
+        /// </summary>
         public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
         {
-            _sim.SetContext(_sim.DescribeEntityContext(entity, programSlot));
-            _sim.RunProgramSlotTraceOnly(entity, programSlot);
+            if (programSlot == ScriptHelper.ProgramBMap && entity.IsPlayer)
+            {
+                var programId = entity.ProgramIndexes[ScriptHelper.ProgramBMap];
+                _sim.SetContext(
+                    $"MapEvent (prog {programId})",
+                    isPlayerMapEvent: programId == IntroCinematicProgramId);
+            }
+            else
+            {
+                _sim.SetContext(_sim.DescribeEntityContext(entity, programSlot));
+            }
+
+            _sim._runner.RunScript(entity, programSlot);
         }
 
         public void RunSpriteEvent(AlundraEntityScriptProxy entity)
@@ -1118,19 +1026,6 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext
 
         return sb.ToString();
     }
-}
-
-/// <summary>Headless mirror of one <c>MapEvent</c> slot (GameEngine.cs's <c>MapEvent</c> struct, the
-/// subset <see cref="HeadlessIntroSimulation.RunMapEventsPass"/> needs).</summary>
-internal sealed class MapEventSlot
-{
-    public int Index;
-    public int X1;
-    public int Y1;
-    public int X2;
-    public int Y2;
-    public int ProgramBMap;
-    public EventProgramState EventData = new();
 }
 
 /// <summary>

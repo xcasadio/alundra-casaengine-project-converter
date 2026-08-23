@@ -23,6 +23,15 @@ public interface IEntityWorldContext
     IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; }
 
     /// <summary>
+    /// The New Game hero entity (port of <c>ResetEntityState</c>, GameEngine.cs:648-670 - see
+    /// <see cref="AlundraWorldProxy.PlayerEntity"/>'s own doc), or null when this world spawned none (no
+    /// hero asset in the catalog, no prefab loader, etc. - see that same doc). Needed by
+    /// <see cref="AlundraEventProgramRunner.RunScript"/>'s slot F policy (EntityEventHandlers.cs:268-273:
+    /// slot F always zeroes the PLAYER's own forces, not the entity being run).
+    /// </summary>
+    AlundraEntityScriptProxy? PlayerEntity { get; }
+
+    /// <summary>
     /// Dynamic spawn by entity-record id - backs opcode 0x2D (Script_45_02D), which always calls the
     /// original's <c>GameEngine.SpawnEntity(logicEntity, entityRecordId, notCheckSpawnZone: 1)</c>.
     /// Returns null when the record is disabled/missing or the spawn otherwise fails (prefab loader
@@ -50,6 +59,8 @@ public sealed class NoOpEntityWorldContext : IEntityWorldContext
     public static readonly NoOpEntityWorldContext Instance = new();
 
     public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = System.Array.Empty<AlundraEntityScriptProxy>();
+
+    public AlundraEntityScriptProxy? PlayerEntity => null;
 
     public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
 

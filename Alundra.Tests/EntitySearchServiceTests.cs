@@ -67,7 +67,7 @@ public class EntitySearchServiceTests
     }
 
     [Fact]
-    public void FunctionId1_GetPlayer_NeverMatches_NoPlayerSystemYet()
+    public void FunctionId1_GetPlayer_NoPlayerPassed_NoMatches()
     {
         var owner = NewSpawnedProxy();
         var other = NewSpawnedProxy();
@@ -77,18 +77,46 @@ public class EntitySearchServiceTests
         Assert.Empty(matches);
     }
 
-    [Theory]
-    [InlineData(0x82)] // get all entities
-    [InlineData(0x83)] // get all entities except player
-    public void FunctionId2Or3_AllActiveSpawnedEntities(int searchType)
+    [Fact]
+    public void FunctionId1_GetPlayer_ReturnsThePassedPlayerEntity()
     {
         var owner = NewSpawnedProxy();
-        var active = NewSpawnedProxy();
+        var player = NewSpawnedProxy();
+        player.IsPlayer = true;
+        var other = NewSpawnedProxy();
+
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(
+            owner, 0x81, new[] { owner, player, other }, player);
+
+        Assert.Equal(new[] { player }, matches);
+    }
+
+    [Fact]
+    public void FunctionId2_AllActiveSpawnedEntities_PlayerIncluded()
+    {
+        var owner = NewSpawnedProxy();
+        var player = NewSpawnedProxy();
+        player.IsPlayer = true;
         var destroyed = NewSpawnedProxy(EntityStatus.FlagToDestroy);
 
-        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(owner, searchType, new[] { owner, active, destroyed });
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(
+            owner, 0x82, new[] { owner, player, destroyed }, player);
 
-        Assert.Equal(new[] { owner, active }, matches);
+        Assert.Equal(new[] { owner, player }, matches);
+    }
+
+    [Fact]
+    public void FunctionId3_AllActiveSpawnedEntities_PlayerExcluded()
+    {
+        var owner = NewSpawnedProxy();
+        var player = NewSpawnedProxy();
+        player.IsPlayer = true;
+        var destroyed = NewSpawnedProxy(EntityStatus.FlagToDestroy);
+
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(
+            owner, 0x83, new[] { owner, player, destroyed }, player);
+
+        Assert.Equal(new[] { owner }, matches);
     }
 
     [Fact]

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System.Collections.Generic;
+using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Physics;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.World;
@@ -11,6 +12,45 @@ public class AlundraEntityScriptProxy : GameplayProxy
 {
     public bool IsLoadedNormalOrDeactivated =>
                 Status is EntityStatus.Loaded or EntityStatus.Normal or EntityStatus.Deactivated;
+
+    /// <summary>
+    /// True only for the world's hero entity (<see cref="AlundraWorldProxy.PlayerEntity"/>, port of
+    /// <c>ResetEntityState</c>'s slot-0 spawn - GameEngine.cs:648-670). The original's own pick/run pass
+    /// (<c>EntityManager.UpdateEntitiesEvents</c>, EntityManager.cs:810) loops <c>i = 1..n</c>, i.e. it
+    /// never picks or runs slot 0's own event program - the hero is driven by <c>PlayerManager.MovePlayer</c>
+    /// instead (E2's own scope) and, during map-events, by <see cref="AlundraWorldProxy.RunMapEventsPass"/>.
+    /// <see cref="Update"/> honors the same exclusion for its own pick/run half; the hero still gets its
+    /// per-frame animation/transform sync every frame like every other entity.
+    /// </summary>
+    public bool IsPlayer;
+
+    /// <summary>
+    /// Port of the ORIGINAL's own <c>Entity.LogicContextEntity</c> field - in the decompiled engine this
+    /// is the same struct type as this whole proxy (there is no separate "scene entity" type there), used
+    /// by <c>RunScript</c> as the "logic entity" context passed to every opcode handler
+    /// (EntityEventHandlers.cs:335: <c>func(entity.LogicContextEntity, entity, ...)</c>) and reassigned by
+    /// <see cref="AlundraWorldProxy.RunMapEventsPass"/> (port of <c>RunMapEvents</c>, GameEngine.cs:1698:
+    /// <c>playerEntity.LogicContextEntity = mapEventEntity</c>) to the map-event's own logic entity
+    /// (initially the player itself, retargetable by opcode 0x66 - not ported). Deliberately a SEPARATE
+    /// field from this proxy's own <see cref="LogicContextEntity"/> below, which is an engine-only,
+    /// unrelated-by-coincidence-of-name back-pointer to this proxy's OWN CasaEngine <see cref="Entity"/>
+    /// (set once at spawn, see <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>) - conflating the
+    /// two would silently overwrite that self-pointer with a different proxy's engine <c>Entity</c>
+    /// reference, which is not what the original does.
+    /// </summary>
+    public AlundraEntityScriptProxy? LogicEntity;
+
+    /// <summary>
+    /// Seam over the world-level services this entity's own pick/run pass needs (see
+    /// <see cref="IAlundraScriptHost"/>'s own doc) - set once per spawn by whichever
+    /// <see cref="AlundraWorldProxy"/> created this entity (<c>InitializeWithWorld</c> /
+    /// <c>SpawnEntityByRecordId</c>), never by <see cref="Clone"/> (a cloned prefab has not been spawned
+    /// into any world yet, so there is no host to carry over - the spawner always sets its own reference
+    /// right after cloning). Null until then; <see cref="Update"/> is a no-op while it is null (mirrors
+    /// every other override on this class staying a safe no-op before the entity is actually spawned - see
+    /// the class-level note above <see cref="InitializeWithWorld"/>).
+    /// </summary>
+    internal IAlundraScriptHost? ScriptHost;
 
     public int Index;
     public int Index2;
@@ -162,14 +202,168 @@ public class AlundraEntityScriptProxy : GameplayProxy
     }
 
     /// <summary>
-    /// Stays a no-op by design: the original entity event status machine
-    /// (<c>EntityManager.UpdateEntitiesEvents</c> @ 0x800386D0) is a manager-level pass over every
-    /// entity slot, not a per-entity update method. <see cref="AlundraWorldProxy"/> (which spawned this
-    /// entity) drives it instead, in creation order, mirroring that architecture - see
-    /// <see cref="AlundraWorldProxy.Update"/> / <see cref="AlundraWorldProxy.RunEntityEventsPass"/>.
+    /// Per-entity port of the original's status machine (decision D2, docs/plan-conversion-totale.md §2):
+    /// unlike the manager-level pass this replaced (<c>EntityManager.UpdateEntitiesEvents</c> @
+    /// 0x800386D0), each entity now picks and runs its OWN event-program slot, in the engine's own entity
+    /// update order (<c>World.Update</c>, CasaEngineMonogame/CasaEngine/Framework/Scene/World/World.cs:443-491:
+    /// entities update before the world's own <see cref="AlundraWorldProxy.Update"/>). A no-op before this
+    /// entity has actually been spawned through a world (<see cref="ScriptHost"/> still null - e.g. a bare
+    /// prefab instantiated directly in a unit test).
+    ///
+    /// The original's own do/while re-scan (EntityManager.cs:874-921: an entity whose <see cref="EventTrigger"/>
+    /// another entity's script sets DURING THE SAME FRAME runs again immediately, within the same pass) no
+    /// longer fits a per-entity <c>Update</c> - <see cref="AlundraWorldProxy.RunPendingEventTriggers"/>
+    /// (decision D3) replays it afterward, once every spawned entity has had its own <c>Update</c> this
+    /// frame.
+    ///
+    /// <see cref="IsPlayer"/> is excluded from the pick/run half only (see that field's own doc - the
+    /// original's own pass never picks/runs slot 0 either); every entity, player included, still gets its
+    /// per-frame animation/transform sync every frame (<see cref="AlundraWorldProxy.SyncAnimation"/> /
+    /// <see cref="AlundraWorldProxy.SyncTransform"/>, moved here from the world's own per-frame passes -
+    /// see those methods' own doc on why the world no longer loops over every spawned entity for this).
+    ///
+    /// Accepted deviation (documented per docs/plan-conversion-totale.md §5): the original picks EVERY
+    /// entity, THEN runs every picked entity, THEN syncs every entity's animation/transform, all as three
+    /// separate manager-level passes. Here each entity picks, runs and syncs itself in one call, in the
+    /// engine's entity iteration order - so an entity later in that order sees an EARLIER entity's
+    /// same-frame script effects (position/flags/status changes) one step sooner than the original would,
+    /// and anything the WORLD half of the frame changes (MapEvents moving the player via 0x64, the D3
+    /// catch-up loop) is only visible to entities starting the NEXT frame's sync (one frame of latency),
+    /// since the world's own <see cref="AlundraWorldProxy.Update"/> always runs after every entity's
+    /// <c>Update</c> this same frame, never before.
     /// </summary>
     public override void Update(float elapsedTime)
     {
+        if (ScriptHost == null)
+        {
+            return;
+        }
+
+        if (!IsPlayer)
+        {
+            PickEventTrigger();
+            RunPickedEvent(ScriptHost.Runner);
+        }
+
+        AlundraWorldProxy.SyncAnimation(Owner);
+        AlundraWorldProxy.SyncTransform(Owner);
+    }
+
+    /// <summary>
+    /// Phase 1 ("pick") of the original's status machine, ported for THIS entity only - faithful
+    /// per-entity port of the per-iteration body of <c>EntityManager.UpdateEntitiesEvents</c>'s first loop
+    /// (EntityManager.cs:810-870, exactly the body <see cref="AlundraWorldProxy"/>'s own (now removed)
+    /// <c>RunEntityEventsPass</c> used to run over every entity). Requires <see cref="ScriptHost"/> to be
+    /// non-null (only called from <see cref="Update"/>, which already checked).
+    /// </summary>
+    internal void PickEventTrigger()
+    {
+        var eventProgramType = ScriptHelper.ProgramUnknown;
+
+        if (BlockedByEntity == null)
+        {
+            switch (Status)
+            {
+                case EntityStatus.Destroyed:
+                case EntityStatus.FlagToDestroy:
+                    eventProgramType = ScriptHelper.ProgramUnknown;
+                    break;
+
+                case EntityStatus.Loaded:
+                    eventProgramType = ScriptHelper.ProgramALoad;
+                    Status = EntityStatus.Normal;
+                    // Transition-only (fires once per entity, not every frame), but guarded anyway: the
+                    // interpolated string itself is built eagerly regardless of Logs.WriteDebug's own
+                    // internal verbosity check, so this avoids that formatting cost too when the existing
+                    // Logs.Verbosity gate is raised above Debug.
+                    if (Logs.Verbosity <= LogVerbosity.Debug)
+                    {
+                        Logs.WriteDebug($"AlundraEntityScriptProxy: entity[{EntityRefId}] Loaded -> Normal (slot A).");
+                    }
+
+                    break;
+
+                case EntityStatus.Normal:
+                {
+                    var flags = Flags;
+                    var host = ScriptHost!;
+
+                    if ((flags & EntityFlags.DestroyOnSlidingSlope) != 0 && Slope_18c == 4)
+                    {
+                        host.DestroyEntity(this, 6);
+                        eventProgramType = ScriptHelper.ProgramUnknown;
+                    }
+                    else if ((flags & EntityFlags.DestroyOnVramFlags) != 0 && (CombinedVramFlagsOR & 0x8004U) != 0)
+                    {
+                        host.DestroyEntity(this, -1);
+                        eventProgramType = ScriptHelper.ProgramUnknown;
+                    }
+                    else if (((flags & EntityFlags.DeactivateOnImpact) != 0 && (ForceAdjusted != 0 || IsOnGround != 0))
+                             || ((flags & EntityFlags.DeactivateOnHit) != 0 && HitCounter != 0)
+                             || ((flags & EntityFlags.DeactivateOnAnimationEnd) != 0 && ForceResetAnimationFlag != 0))
+                    {
+                        Status = EntityStatus.Deactivated;
+                        eventProgramType = ScriptHelper.ProgramEDeactivate;
+                        if (Logs.Verbosity <= LogVerbosity.Debug)
+                        {
+                            Logs.WriteDebug($"AlundraEntityScriptProxy: entity[{EntityRefId}] Normal -> Deactivated (slot E).");
+                        }
+                    }
+                    else
+                    {
+                        eventProgramType = ScriptHelper.ProgramDTouch;
+
+                        if (TouchingEntity == null)
+                        {
+                            eventProgramType = ScriptHelper.ProgramCTick;
+
+                            if (ReferenceEquals(host.ActiveCollisionEntity, this)
+                                && (ProgramIndexes[5] != 0 || SpriteProgramIndexes[5] != 0))
+                            {
+                                eventProgramType = ScriptHelper.ProgramFInteract;
+                            }
+                        }
+                    }
+
+                    break;
+                }
+
+                case EntityStatus.Deactivated:
+                    eventProgramType = ScriptHelper.ProgramEDeactivate;
+                    break;
+            }
+        }
+
+        EventTrigger = eventProgramType;
+    }
+
+    /// <summary>
+    /// Phase 2 ("run") of the original's status machine, ported for THIS entity only - one dispatch, not
+    /// the original's own re-scanning do/while (that loop is now <see cref="AlundraWorldProxy.RunPendingEventTriggers"/>,
+    /// run by the world once every entity has had its own <see cref="Update"/> this frame - decision D3).
+    /// A no-op when <see cref="EventTrigger"/> is <see cref="ScriptHelper.ProgramUnknown"/> (nothing was
+    /// picked, or it was already run and cleared).
+    /// </summary>
+    internal void RunPickedEvent(IEventProgramRunner runner)
+    {
+        if (EventTrigger == ScriptHelper.ProgramUnknown)
+        {
+            return;
+        }
+
+        var programIndex = ProgramIndexes[EventTrigger] & 0x7f;
+
+        if (programIndex == 0)
+        {
+            // g_entityEventFunctionsByType => AI
+            runner.RunSpriteEvent(this);
+        }
+        else
+        {
+            runner.RunScript(this, EventTrigger);
+        }
+
+        EventTrigger = -1;
     }
 
     public override void Draw()
@@ -196,6 +390,8 @@ public class AlundraEntityScriptProxy : GameplayProxy
     {
         var clone = new AlundraEntityScriptProxy
         {
+            IsPlayer = IsPlayer,
+            LogicEntity = LogicEntity,
             Index = Index,
             Index2 = Index2,
             ChildEntity = ChildEntity,

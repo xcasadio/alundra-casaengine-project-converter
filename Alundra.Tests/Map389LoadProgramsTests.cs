@@ -81,6 +81,7 @@ public class Map389LoadProgramsTests
     {
         public List<AlundraEntityScriptProxy> SpawnedEntitiesList { get; } = new();
         public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => SpawnedEntitiesList;
+        public AlundraEntityScriptProxy? PlayerEntity => null;
         public readonly List<AlundraEntityScriptProxy> DestroyedEntities = new();
 
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;

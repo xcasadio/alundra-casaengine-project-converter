@@ -21,6 +21,75 @@ public sealed class AlundraGameState
     private const int WordCount = 1024;
     private const uint TemporaryFlagBit = 0x8000;
 
+    // New Game constants - port of the New Game branch of GameInitializer.InitializeGameState
+    // (GameInitializer.cs:331-436, the SlotData==0 branch only; SlotData==1 "load save" and the
+    // SlotData==else "debug" branch are out of scope). Only the fields E1 needs (hero spawn map/tile,
+    // reset animation/direction) are ported here - items/HP/MP/money/weapon (InitializePlayerStatsAndItems,
+    // the do/while item-unlock loop, SetPlayerWeaponId) are E2's own scope (a real PlayerManager).
+    /// <summary>GameInitializer.cs:363 - <c>g_saveData.InitialMapId = 389</c> (Ship Klark, beginning).</summary>
+    public const uint InitialMapId = 389;
+
+    /// <summary>GameInitializer.cs:364 - <c>g_saveData.CameraTileX = 33</c>.</summary>
+    public const int CameraTileX = 33;
+
+    /// <summary>GameInitializer.cs:365 - <c>g_saveData.CameraTileY = 59</c>.</summary>
+    public const int CameraTileY = 59;
+
+    /// <summary>GameInitializer.cs:366 - <c>g_saveData.CameraTileZ = 0</c>.</summary>
+    public const int CameraTileZ = 0;
+
+    /// <summary>GameInitializer.cs:414 - <c>g_resetAnimationId = 0x36</c> (set unconditionally, after the
+    /// SlotData branch, for every New Game/Load alike).</summary>
+    public const uint ResetAnimationId = 0x36;
+
+    /// <summary>GameInitializer.cs:367,414 - <c>g_resetDirectionId = 0</c> (set both inside the New Game
+    /// branch and again unconditionally afterward - same value either way).</summary>
+    public const uint ResetDirectionId = 0;
+
+    /// <summary>
+    /// Port of <see cref="AlundraEngine.PlayerControlFlags"/> (alundra-datas-analyser
+    /// AlundraTools/AlundraEngine/PlayerControlFlags.cs) - named bits of <see cref="PlayerControlFlags"/>
+    /// below. Kept as a nested static class (rather than a separate file) since this V1 sliver has no
+    /// other consumer yet - see that class's own doc for the Ghidra-verified meaning of each bit.
+    /// </summary>
+    public static class PlayerControlBits
+    {
+        /// <summary>Bit 2 - script-driven player lock (event opcode 0x10 sets it, 0x11 clears it).</summary>
+        public const uint ControlLocked = 0x04;
+
+        /// <summary>Bit 3 - a full-screen UI owns the game (inventory, memory card, debug menu).</summary>
+        public const uint MenuOpen = 0x08;
+
+        /// <summary>Bit 4 - "message with background" box in its keep-control variant.</summary>
+        public const uint MessageBox = 0x10;
+
+        /// <summary>Bit 5 - forced sequence (warp departure, sand-cape ride, boss choreography).</summary>
+        public const uint ForcedSequence = 0x20;
+
+        /// <summary>Bit 6 - dead bit in the retail binary (see the original's own doc); only appears
+        /// inside <see cref="GameplayBlockedMask"/>.</summary>
+        public const uint Unused40 = 0x40;
+
+        /// <summary>Bit 7 - scripted weapon lock (event opcodes 0xC0/0xC1).</summary>
+        public const uint ForcedWeapon = 0x80;
+
+        /// <summary>Mask 0x48 - map events and world updates pause while any of these bits is set
+        /// (<c>RunMapEvents</c>, GameEngine.cs:1667-1671; <c>UpdateEntities</c>, EntityManager.cs:367-395).</summary>
+        public const uint GameplayBlockedMask = MenuOpen | Unused40;
+
+        /// <summary>Mask 0x34 - normal player input processing is skipped while any of these bits is set
+        /// (<c>PlayerManager.MovePlayer</c>, PlayerManager.cs:38).</summary>
+        public const uint InputBlockedMask = ControlLocked | MessageBox | ForcedSequence;
+    }
+
+    /// <summary>Port of <c>StaticVariables.g_playerControlFlags</c> - zero at New Game (see
+    /// docs/intro-roadmap.md §1.4: nothing explicitly zeroes it at boot, it is simply BSS-zero; E1's own
+    /// port starts every world the same way, since only a New Game flow is covered so far). E1 only
+    /// stores/reads this field (<see cref="AlundraWorldProxy.RunMapEventsPass"/>'s
+    /// <see cref="PlayerControlBits.GameplayBlockedMask"/> gate); no opcode writes it yet (0x10/0x11 are
+    /// E6's own scope).</summary>
+    public uint PlayerControlFlags;
+
     /// <summary>Persistent save-game flags (<c>g_saveData.GameFlags</c>) - all zero, matching New Game.</summary>
     public readonly uint[] GameFlags = new uint[WordCount];
 

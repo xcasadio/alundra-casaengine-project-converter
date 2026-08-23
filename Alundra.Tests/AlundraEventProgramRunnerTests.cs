@@ -34,6 +34,7 @@ public class AlundraEventProgramRunnerTests
     {
         public List<AlundraEntityScriptProxy> SpawnedEntitiesList { get; } = new();
         public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => SpawnedEntitiesList;
+        public AlundraEntityScriptProxy? PlayerEntity { get; set; }
 
         public readonly List<(AlundraEntityScriptProxy LogicEntity, int EntityRecordId)> SpawnCalls = new();
         public AlundraEntityScriptProxy? EntityToSpawn;
@@ -674,5 +675,149 @@ public class AlundraEventProgramRunnerTests
         // shared state's Result would start this second call at its C# default (0) and entityB would end
         // up with TargetAnimationId=1 (the not-taken fallthrough) instead.
         Assert.Equal(2u, entityB.TargetAnimationId);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // RunScript slot policy (EntityEventHandlers.cs:232-296)
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void RunScript_SlotB_ResumesAcrossCalls_InsteadOfRestartingTheProgram()
+    {
+        // @0: 0x37 Wait(1) (2 bytes); @2: 0x1A SetAnim(9) (2 bytes); @4: 0xFF End.
+        var document = new EventProgramDocument
+        {
+            EventCodesBTable = new[] { 0 },
+            Codes = new byte[] { 0x37, 1, 0x1A, 9, 0xFF }.Select(b => (int)b).ToArray(),
+        };
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.ProgramIndexes[ScriptHelper.ProgramBMap] = 0x80; // masked 0x7f -> table[0] -> @0
+
+        runner.RunScript(entity, ScriptHelper.ProgramBMap); // suspends inside Wait(1), counter 0 -> 0
+        Assert.Equal(0u, entity.TargetAnimationId); // not reached yet
+
+        // If this call re-initialized instead of resuming entity.EventProgramState, CodeIndex/Parameters
+        // would reset to the program's own start and Wait's counter would never reach 1 - the program
+        // would suspend forever instead of ever reaching SetAnim(9).
+        runner.RunScript(entity, ScriptHelper.ProgramBMap);
+        Assert.Equal(9u, entity.TargetAnimationId);
+    }
+
+    [Fact]
+    public void RunScript_SlotC_MapEventProgramIdNotTick_RestoresLastTargetAnimationAndDirection()
+    {
+        // A single 0x00 Break (1 byte) so the call suspends immediately without touching Target*
+        // itself - only RunScript's own slot-C prelude (EntityEventHandlers.cs:255-260) should move
+        // LastTargetAnimationId/LastTargetDirection back onto TargetAnimationId/TargetDirection.
+        var document = new EventProgramDocument
+        {
+            EventCodesCTable = new[] { 0 },
+            Codes = new[] { 0x00 },
+        };
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.ProgramIndexes[ScriptHelper.ProgramCTick] = 0x80; // masked 0x7f -> table[0] -> @0
+        entity.LastTargetAnimationId = 7;
+        entity.LastTargetDirection = 3;
+        entity.TargetAnimationId = 99;
+        entity.TargetDirection = 99;
+
+        // First call: entity.EventProgramState.Codes is still null (never resumed before), so RunScript
+        // falls into InitializeEventData instead of the "resume" branch - the Last* restore only happens
+        // on the RESUME path (Codes != null AND MapEventProgramId != ProgramCTick), so seed
+        // MapEventProgramId to something else and run it a first time to populate Codes, then a second
+        // time to actually exercise the restore.
+        entity.MapEventProgramId = ScriptHelper.ProgramALoad;
+        runner.RunScript(entity, ScriptHelper.ProgramCTick); // suspends on Break, Codes now non-null
+        entity.TargetAnimationId = 99; // clobber again so the second call's restore is observable
+        entity.TargetDirection = 99;
+        entity.MapEventProgramId = ScriptHelper.ProgramALoad; // != ProgramCTick -> restore should fire
+
+        runner.RunScript(entity, ScriptHelper.ProgramCTick);
+
+        Assert.Equal(7u, entity.TargetAnimationId);
+        Assert.Equal(3u, entity.TargetDirection);
+    }
+
+    [Fact]
+    public void RunScript_DefaultSlot_AlwaysReInitializes_EvenAfterASuspend()
+    {
+        // Slot A (Load), like D/E, never resumes - see the shared-scratch-state doc. @0: 0x01 no-op
+        // (1 byte, just so the Wait below does not coincidentally start at CodeIndex 0 - Wait keys its
+        // own re-entrancy off "Parameters[1] != CodeIndex", and a freshly-cleared Parameters[1] is
+        // already 0); @1: 0x37 Wait(5) (2 bytes, would suspend for 5 frames if ever allowed to keep
+        // counting) - if RunScript resumed instead of re-initializing, enough calls would eventually
+        // reach past it; since it always re-initializes, every call restarts Wait's own counter from
+        // scratch, so SetAnim(3) is never reached no matter how many calls are made.
+        var document = new EventProgramDocument
+        {
+            EventCodesATable = new[] { 0 },
+            Codes = new[] { 0x01, 0x37, 5, 0x1A, 3, 0xFF },
+        };
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.ProgramIndexes[ScriptHelper.ProgramALoad] = 0x80;
+
+        for (var i = 0; i < 8; i++)
+        {
+            runner.RunScript(entity, ScriptHelper.ProgramALoad);
+        }
+
+        Assert.Equal(0u, entity.TargetAnimationId);
+    }
+
+    [Fact]
+    public void RunScript_SlotF_ZeroesThePlayersOwnForces_NotTheRunningEntitys()
+    {
+        var document = new EventProgramDocument
+        {
+            EventCodesFTable = new[] { 0 },
+            Codes = new[] { 0x00 }, // Break - suspend immediately, nothing else to interpret
+        };
+        var player = NewEntity();
+        player.ForceX = 11;
+        player.ForceY = 22;
+        player.ForceStepX = 33;
+        player.ForceStepY = 44;
+
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = NewRunner(document, worldContext: context);
+
+        var npc = NewEntity();
+        npc.ProgramIndexes[ScriptHelper.ProgramFInteract] = 0x80;
+        npc.ForceX = 111;
+        npc.ForceY = 222;
+        npc.ForceStepX = 333;
+        npc.ForceStepY = 444;
+
+        runner.RunScript(npc, ScriptHelper.ProgramFInteract);
+
+        Assert.Equal(0, player.ForceX);
+        Assert.Equal(0, player.ForceY);
+        Assert.Equal(0, player.ForceStepX);
+        Assert.Equal(0, player.ForceStepY);
+
+        // The entity actually running slot F keeps its own forces untouched - only the player's are
+        // zeroed (EntityEventHandlers.cs:266-273).
+        Assert.Equal(111, npc.ForceX);
+        Assert.Equal(222, npc.ForceY);
+        Assert.Equal(333, npc.ForceStepX);
+        Assert.Equal(444, npc.ForceStepY);
+    }
+
+    [Fact]
+    public void RunScript_SlotF_NoPlayerEntity_DoesNotThrow()
+    {
+        var document = new EventProgramDocument
+        {
+            EventCodesFTable = new[] { 0 },
+            Codes = new[] { 0x00 },
+        };
+        var runner = NewRunner(document); // no worldContext -> NoOpEntityWorldContext, PlayerEntity == null
+        var entity = NewEntity();
+        entity.ProgramIndexes[ScriptHelper.ProgramFInteract] = 0x80;
+
+        runner.RunScript(entity, ScriptHelper.ProgramFInteract); // must not throw
     }
 }

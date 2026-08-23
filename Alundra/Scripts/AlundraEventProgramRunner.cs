@@ -6,23 +6,24 @@ using CasaEngine.Core.Logging;
 namespace Alundra.Scripts;
 
 /// <summary>
-/// V1 of the event-program bytecode interpreter (see docs on <see cref="IEventProgramRunner"/>):
-/// interprets slot A (Load) programs to completion, faithfully porting
-/// AlundraEngine.Gameplay.Scripts.EntityEventHandlers.RunScript @ 0x8004205c and its
-/// InitializeEventData helper @ 0x80041ee4. Every other slot (B-F) and <see cref="RunSpriteEvent"/>
-/// stay a counted no-op with a one-shot debug log per (slot, program index) - porting the ~120 native
-/// sprite AI handlers (SpriteEventHandlers.cs) and slots B-F's own bytecode semantics is a later
-/// chantier (see the class docs on <see cref="IEventProgramRunner"/> and this brief's scope).
+/// Event-program bytecode interpreter (see docs on <see cref="IEventProgramRunner"/>). <see cref="RunScript"/>
+/// is a faithful port of AlundraEngine.Gameplay.Scripts.EntityEventHandlers.RunScript @ 0x8004205c,
+/// including its per-slot resume policy (EntityEventHandlers.cs:239-296) and <c>g_clearProgramState</c>
+/// END_SCRIPT handling (:343-391) - see that method's own doc for the port's one documented
+/// simplification. <see cref="RunSpriteEvent"/> stays a counted no-op (porting the ~120 native sprite AI
+/// handlers, SpriteEventHandlers.cs, is a later chantier - E14).
 ///
-/// Slot A always re-initializes on every entry (see <see cref="RunScript"/>'s own doc comment): the
-/// original's RunScript only resumes the entity's own persisted <c>EventProgramState</c> for slots
-/// B (Map) and C (Tick) - every other slot, including A, always falls into InitializeEventData, using
-/// what amounts to a throwaway per-call state. Combined with the pick phase only ever offering slot A
-/// once per entity (the Loaded -&gt; Normal transition happens in the very same pick pass that chose
-/// slot A - see <c>AlundraWorldProxy.RunEntityEventsPass</c>), a Load program that suspends (returns 0,
-/// e.g. via 0x37 Wait) simply never resumes: it stops there for good. This is faithful to the original,
-/// not a V1 shortcut - map 389's own Load programs never hit a suspending opcode, so this never fires
-/// there in practice.
+/// Slots B (Map) and C (Tick) are the only two the original ever RESUMES across calls, off the entity's
+/// own persisted <see cref="AlundraEntityScriptProxy.EventProgramState"/> - every other slot (A/D/E/F)
+/// always falls into <see cref="InitializeEventData"/>, using a scratch state shared by all four
+/// (<see cref="_slotAScratchState"/>, mirroring the original's single <c>g_eventProgramState</c>). A slot
+/// A/D/E/F program that suspends (returns 0, e.g. via 0x37 Wait) therefore never resumes where it left
+/// off on a LATER call for a DIFFERENT entity/slot (they all share the one scratch state) - faithful to
+/// the original, not a V1 shortcut. Combined with the pick phase only ever offering slot A once per
+/// entity (the Loaded -&gt; Normal transition happens in the same pick pass that chose slot A - see
+/// <see cref="AlundraEntityScriptProxy.PickEventTrigger"/>), a Load program that suspends simply never
+/// resumes at all: it stops there for good. Map 389's own Load programs never hit a suspending opcode, so
+/// this never fires there in practice.
 ///
 /// The 0x80 bit of a program index (checked in <see cref="InitializeEventData"/>) selects, in the
 /// original, between the current map's own event-code table and the global <c>AlundraMap</c>
@@ -94,7 +95,6 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     private readonly AlundraGameState _gameState;
     private readonly IEntityWorldContext _worldContext;
 
-    private readonly HashSet<(int Slot, int ProgramIndex)> _loggedNoOpPrograms = new();
     private readonly HashSet<int> _loggedUnknownOpcodes = new();
     private readonly HashSet<int> _loggedDegradedOpcodes = new();
     private readonly HashSet<int> _loggedFailedActivations = new();
@@ -103,16 +103,18 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     private bool _loggedSpriteEventOnce;
 
     /// <summary>
-    /// Slot A's shared scratch <see cref="EventProgramState"/> - the original never gives Load its own
-    /// per-entity state, it always runs off <c>_gameEngine.StaticVariables.g_eventProgramState</c>
-    /// (EntityEventHandlers.cs:234), one instance shared by every non-resuming slot call. Reused (not
-    /// reconstructed) by every <see cref="RunScript"/> call for slot A so that <see cref="EventProgramState.Result"/>
-    /// - never cleared by <see cref="InitializeEventData"/> - carries across sequential slot-A calls
-    /// exactly like the original: a Load program that starts with a conditional opcode reading a
-    /// <c>Result</c> a previous, unrelated Load call happened to leave behind sees that same stale value.
-    /// A V1 deviation only in that this runtime has one runner (hence one shared state) per world rather
-    /// than one process-wide global, which does not matter in practice since only one world is ever
-    /// interpreting slot A programs at a time.
+    /// Shared scratch <see cref="EventProgramState"/> for every NON-RESUMING slot - A (Load), D (Touch),
+    /// E (Deactivate) and F (Interact) - the original never gives any of these their own per-entity state,
+    /// they all run off the SAME <c>_gameEngine.StaticVariables.g_eventProgramState</c>
+    /// (EntityEventHandlers.cs:234), one instance shared across every call to any of the four (only B/Map
+    /// and C/Tick resume the entity's own persisted <see cref="AlundraEntityScriptProxy.EventProgramState"/>
+    /// instead - see <see cref="RunScript"/>). Reused (not reconstructed) by every such call so that
+    /// <see cref="EventProgramState.Result"/> - never cleared by <see cref="InitializeEventData"/> - carries
+    /// across sequential calls exactly like the original: a Load program that starts with a conditional
+    /// opcode reading a <c>Result</c> a previous, unrelated A/D/E/F call happened to leave behind sees that
+    /// same stale value. A V1 deviation only in that this runtime has one runner (hence one shared state)
+    /// per world rather than one process-wide global, which does not matter in practice since only one
+    /// world is ever interpreting these programs at a time.
     /// </summary>
     private readonly EventProgramState _slotAScratchState = new();
 
@@ -124,22 +126,25 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         _worldContext = worldContext ?? NoOpEntityWorldContext.Instance;
     }
 
+    /// <summary>
+    /// Full port of the slot resume/reset policy of <c>EntityEventHandlers.RunScript</c> @ 0x8004205c
+    /// (EntityEventHandlers.cs:232-296) and its END_SCRIPT <c>g_clearProgramState</c> handling (:343-358,
+    /// :382-391).
+    ///
+    /// Documented simplification on <c>g_clearProgramState</c>: the original re-checks the flag after
+    /// EVERY dispatched opcode (not just once at the end) and, when set, distinguishes clearing the
+    /// CURRENTLY RUNNING entity's own state (deferred to this call's own END_SCRIPT, via
+    /// <c>wasEntityCleared</c>) from clearing a DIFFERENT entity's <c>LogicContextEntity.EventProgramState</c>
+    /// immediately, inline, mid-loop. No opcode this runner implements ever sets the flag yet - only
+    /// <c>Script_64_040</c> (0x40, EntityEventHandlers.cs:1332-1338) and one <c>FunctionTypeC</c> handler do,
+    /// neither ported - so this port only re-checks <see cref="ClearProgramStateRequested"/> once, after
+    /// <see cref="RunOneScriptCall"/> returns, and only ever clears the state THIS call actually ran
+    /// (<paramref name="programSlot"/>'s own <c>state</c>). The self-vs-other distinction is deferred to
+    /// whichever future task ports opcode 0x40.
+    /// </summary>
     public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
     {
         ScriptRunCount++;
-
-        if (programSlot != ScriptHelper.ProgramALoad)
-        {
-            var programIndex = entity.ProgramIndexes[programSlot];
-            if (_loggedNoOpPrograms.Add((programSlot, programIndex)))
-            {
-                Logs.WriteDebug(
-                    $"AlundraEventProgramRunner: slot {programSlot} program {programIndex} not "
-                    + "interpreted (V1 interprets slot A only) - counted no-op.");
-            }
-
-            return;
-        }
 
         if (_document == null || _codes == null)
         {
@@ -147,16 +152,95 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             {
                 _loggedNoDocument = true;
                 Logs.WriteWarning(
-                    "AlundraEventProgramRunner: no event-code document loaded for this world; Load "
-                    + "programs are a counted no-op (degraded mode).");
+                    "AlundraEventProgramRunner: no event-code document loaded for this world; RunScript "
+                    + "is a counted no-op (degraded mode).");
             }
 
             return;
         }
 
-        InitializeEventData(entity, programSlot, _slotAScratchState);
-        RunOneScriptCall(entity, _slotAScratchState, programSlot);
+        EventProgramState state;
+        var resumed = false;
+
+        switch (programSlot)
+        {
+            case ScriptHelper.ProgramBMap:
+                // EntityEventHandlers.cs:242-249.
+                state = entity.EventProgramState;
+                if (state.Codes != null)
+                {
+                    resumed = true;
+                }
+
+                break;
+
+            case ScriptHelper.ProgramCTick:
+                // EntityEventHandlers.cs:251-264.
+                state = entity.EventProgramState;
+                if (state.Codes != null)
+                {
+                    if (entity.MapEventProgramId != ScriptHelper.ProgramCTick)
+                    {
+                        entity.TargetAnimationId = entity.LastTargetAnimationId;
+                        entity.TargetDirection = entity.LastTargetDirection;
+                    }
+
+                    resumed = true;
+                }
+
+                break;
+
+            case ScriptHelper.ProgramFInteract:
+                // EntityEventHandlers.cs:266-273 - always zeroes the PLAYER's own forces, regardless of
+                // which entity is actually running this slot F program.
+                if (_worldContext.PlayerEntity is { } player)
+                {
+                    player.ForceStepY = 0;
+                    player.ForceStepX = 0;
+                    player.ForceY = 0;
+                    player.ForceX = 0;
+                }
+
+                goto default;
+
+            default: // A (Load), D (Touch), E (Deactivate), and F falling through from above.
+                // EntityEventHandlers.cs:275-279.
+                if (entity.MapEventProgramId == ScriptHelper.ProgramCTick)
+                {
+                    entity.LastTargetAnimationId = entity.TargetAnimationId;
+                    entity.LastTargetDirection = entity.TargetDirection;
+                }
+
+                state = _slotAScratchState; // shared scratch for A/D/E/F - see its own doc.
+                break;
+        }
+
+        if (!resumed)
+        {
+            InitializeEventData(entity, programSlot, state);
+        }
+
+        // EntityEventHandlers.cs:297 (SET_LOGIC_MODE) - both the resumed and re-initialized paths reach
+        // this same assignment next, in the original.
+        entity.MapEventProgramId = programSlot;
+
+        ClearProgramStateRequested = false;
+        RunOneScriptCall(entity, state, programSlot);
+
+        if (ClearProgramStateRequested)
+        {
+            ClearProgramStateRequested = false;
+            state.Sp = 0;
+            state.Codes = null;
+        }
     }
+
+    /// <summary>
+    /// Port of <c>StaticVariables.g_clearProgramState</c> - see <see cref="RunScript"/>'s own doc on this
+    /// port's END_SCRIPT simplification. No opcode implemented by this runner sets this yet; it exists so
+    /// a future opcode 0x40 port does not also need a <see cref="RunScript"/> change.
+    /// </summary>
+    internal bool ClearProgramStateRequested;
 
     public void RunSpriteEvent(AlundraEntityScriptProxy entity)
     {
@@ -279,23 +363,44 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
     private EventTraceKind _lastDispatchKind = EventTraceKind.Implemented;
 
-    /// <summary>Port of EntityEventHandlers.FillDataFromCommand (EntityEventHandlers.cs:400-417).</summary>
-    internal static int[] FillDataFromCommand(EventProgramState state)
+    /// <summary>
+    /// Scratch buffer for <see cref="FillDataFromCommand"/> - deviation from the original AND from this
+    /// port's own prior V1 shape: the decompiled <c>FillDataFromCommand</c> (EntityEventHandlers.cs:400-417)
+    /// itself allocates its own local array every call too (the PSX C compiler just stack-allocates it, no
+    /// GC pressure there), but the repo's own no-per-frame-allocation rule applies here regardless, since
+    /// every Tick now calls this at least once per dispatched opcode (see <see cref="AlundraEntityScriptProxy.Update"/>).
+    /// One instance per runner (not per <see cref="EventProgramState"/>): <see cref="RunOneScriptCall"/>
+    /// always runs a single state to completion synchronously before this runner is free to fetch for any
+    /// other state, so there is never more than one in-flight fetch to share a buffer across.
+    /// </summary>
+    private readonly int[] _fetchScratch = new int[10];
+
+    /// <summary>Port of EntityEventHandlers.FillDataFromCommand (EntityEventHandlers.cs:400-417) - see
+    /// <see cref="_fetchScratch"/>'s own doc for the one allocation deviation from the original.</summary>
+    internal int[] FillDataFromCommand(EventProgramState state)
     {
         if (state.Codes == null || state.CodeIndex >= state.Codes.Length)
         {
-            return new[] { 0xFF };
+            _fetchScratch[0] = 0xFF;
+            return _fetchScratch;
         }
 
         state.Sp = state.Codes[state.CodeIndex];
-        var variables = new int[10];
         var length = Math.Min(10, state.Codes.Length - state.CodeIndex);
         for (var i = 0; i < length; i++)
         {
-            variables[i] = state.Codes[state.CodeIndex + i];
+            _fetchScratch[i] = state.Codes[state.CodeIndex + i];
         }
 
-        return variables;
+        // Zero the tail past what was actually read this fetch - a shared, reused buffer must not leak a
+        // PREVIOUS fetch's trailing bytes when this one has fewer than 10 remaining (matching the
+        // zero-initialized "new int[10]" semantics the old per-call allocation gave for free).
+        for (var i = length; i < _fetchScratch.Length; i++)
+        {
+            _fetchScratch[i] = 0;
+        }
+
+        return _fetchScratch;
     }
 
     private int Dispatch(int command, AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
@@ -482,7 +587,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 + "breakpoints here instead.");
         }
 
-        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities);
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
 
         if (spawned != null && matches.Count != 0)
         {
@@ -497,7 +602,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// least one entity matched (0 otherwise) - read by a following conditional-goto opcode.</summary>
     private void DestroyMatchingEntities(AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
     {
-        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities);
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
         state.Result = matches.Count > 0 ? 1 : 0;
 
         foreach (var match in matches)
@@ -511,7 +616,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     private void SetEntitiesFlagsLow16(AlundraEntityScriptProxy entity, int[] v)
     {
         var flag = (uint)((v[3] << 8) | v[2]);
-        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities);
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
 
         foreach (var match in matches)
         {
@@ -524,7 +629,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// survive).</summary>
     private void ClearEntitiesFlagsLow16(AlundraEntityScriptProxy entity, int[] v)
     {
-        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities);
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
         var clearMask = (uint)((v[3] << 8) | v[2]);
         var andMask = 0xFFFF0000u | (~clearMask & 0xFFFFu);
 
@@ -545,7 +650,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         var y = ((v[5] << 8) | v[4]) << 16;
         var z = (((v[7] << 8) | v[6]) << 16) + 1;
 
-        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities);
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
 
         foreach (var match in matches)
         {
@@ -565,7 +670,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         var y = (v[4] | (v[5] << 8)) << 16;
         var z = (v[6] | (v[7] << 8)) << 16;
 
-        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities);
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
 
         foreach (var match in matches)
         {
@@ -582,7 +687,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// flag write, which is all following searches/reads of the shadow-size bits can observe.</summary>
     private void SetEntityShadowSize(AlundraEntityScriptProxy entity, int[] v)
     {
-        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities);
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
 
         if (matches.Count != 0)
         {
