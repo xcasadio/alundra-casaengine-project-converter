@@ -168,6 +168,27 @@ public class AlundraEntityScriptProxy : GameplayProxy
     public Dictionary<int, int>? IdsvByAnimDirection;
 
     /// <summary>
+    /// Engine-only, not part of the original struct (same as <see cref="IdsvByAnimDirection"/>): this
+    /// entity's per-anim walk-speed/acceleration lookup (E2), resolved once at spawn from its
+    /// <c>SpriteRecordCatalog</c> entry (see <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> - only the
+    /// player pawn uses this today, <see cref="AlundraPlayerManager"/>'s own kinematic tick). Null when the
+    /// entity's header carried no <c>AnimSets</c> entries (degraded catalog, older export, or a non-player
+    /// entity nothing has wired this up for yet) - callers treat that as "0 speed/acceleration for every
+    /// anim", same shape as <see cref="IdsvByAnimDirection"/>'s own null case.
+    /// </summary>
+    public IReadOnlyDictionary<int, AnimSetEntry>? AnimSetsByAnim;
+
+    /// <summary>
+    /// Engine-only, not part of the original struct: fixed-step accumulator for
+    /// <see cref="AlundraPlayerManager.Tick"/>'s own 50 Hz kinematic integration (E2) - the original PSX
+    /// build ran <c>PhysicsEngine.UpdateEntitiesPhysics</c> exactly once per game frame at a fixed rate;
+    /// this engine's frame rate is not fixed, so this accumulates real elapsed time and lets
+    /// <see cref="AlundraPlayerManager.Tick"/> run as many whole 50 Hz steps as have actually elapsed. Only
+    /// ever written by that method; every other entity leaves it at its C# default (0).
+    /// </summary>
+    public float PhysicsTickAccumulator;
+
+    /// <summary>
     /// Persisted interpreter cursor for slots B (Map) and C (Tick) - the only two slots the original
     /// resumes across frames instead of always re-initializing (see
     /// <see cref="AlundraEventProgramRunner"/>'s class doc). Slot A (Load) never reads this: it always
@@ -243,6 +264,23 @@ public class AlundraEntityScriptProxy : GameplayProxy
         {
             PickEventTrigger();
             RunPickedEvent(ScriptHost.Runner);
+        }
+        else
+        {
+            // E2: port of PlayerManager.MovePlayer, called at the head of the original's own
+            // UpdateEntitiesEvents (EntityManager.cs:808) - now this proxy's own per-frame tick instead
+            // (decision D2) - plus the kinematic integration PhysicsEngine.UpdateEntitiesPhysics normally
+            // drives for the player (see AlundraPlayerManager's own class doc). A no-op whenever this
+            // world has no AlundraPlayerController possessing a pawn yet (see IAlundraScriptHost.PlayerController's
+            // own doc - headless test harnesses in particular construct their own player proxy with no
+            // controller at all, by design).
+            var playerController = ScriptHost.PlayerController;
+            if (playerController != null)
+            {
+                var pad = playerController.BuildPadState();
+                AlundraPlayerManager.MovePlayer(this, in pad, ScriptHost.GameState);
+                AlundraPlayerManager.Tick(this, elapsedTime);
+            }
         }
 
         AlundraWorldProxy.SyncAnimation(Owner);
@@ -496,6 +534,8 @@ public class AlundraEntityScriptProxy : GameplayProxy
             MapEventProgramId = MapEventProgramId,
             LogicContextEntity = LogicContextEntity,
             IdsvByAnimDirection = IdsvByAnimDirection,
+            AnimSetsByAnim = AnimSetsByAnim,
+            PhysicsTickAccumulator = PhysicsTickAccumulator,
             LastTargetAnimationId = LastTargetAnimationId,
             LastTargetDirection = LastTargetDirection,
             Bytes = (byte[])Bytes.Clone(),

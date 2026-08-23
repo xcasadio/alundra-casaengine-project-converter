@@ -137,6 +137,115 @@ public class SpriteRecordCatalogTests : IDisposable
     }
 
     [Fact]
+    public void TryGet_KnownPrefabId_ParsesAnimSetsKeyedByAnimIndex()
+    {
+        var prefabAssetId = Guid.Parse("fd375feb-2f77-447e-aedb-c3fa44c64edd");
+        WriteSpriteRecords(
+            "{\n"
+            + $"  \"{prefabAssetId}\": {{\n"
+            + "    \"MoreFlags\": 0, \"CanPickup\": 0, \"FlagsPortraitShadowType\": 0,\n"
+            + "    \"ProgramLoad\": 0, \"ProgramTick\": 0, \"ProgramTouch\": 0, \"ProgramDeactivate\": 0,\n"
+            + "    \"ProgramInteract\": 0,\n"
+            + "    \"OffsetX\": 0, \"OffsetY\": 0, \"OffsetZ\": 0, \"SizeX\": 0, \"SizeY\": 0, \"SizeZ\": 0,\n"
+            + "    \"Contents\": 0,\n"
+            + "    \"AnimSets\": [\n"
+            + "      { \"Anim\": 0, \"Speed\": 0, \"Acceleration\": 1, \"IsZForceApplied\": 0, \"Sfx\": 0, \"Flags\": 0, \"Unknown\": 0 },\n"
+            + "      { \"Anim\": 1, \"Speed\": 208, \"Acceleration\": 1, \"IsZForceApplied\": 0, \"Sfx\": 0, \"Flags\": 0, \"Unknown\": 0 },\n"
+            + "      { \"Anim\": 54, \"Speed\": 0, \"Acceleration\": 64, \"IsZForceApplied\": 0, \"Sfx\": 0, \"Flags\": 0, \"Unknown\": 0 }\n"
+            + "    ]\n"
+            + "  }\n"
+            + "}");
+
+        var catalog = new SpriteRecordCatalog(_projectPath);
+
+        Assert.True(catalog.TryGet(prefabAssetId, out var header));
+        Assert.NotNull(header.AnimSets);
+        Assert.Equal(3, header.AnimSets!.Count);
+
+        Assert.True(header.AnimSets.TryGetValue(1, out var moving));
+        Assert.Equal(208, moving.Speed);
+        Assert.Equal(1, moving.Acceleration);
+
+        Assert.True(header.AnimSets.TryGetValue(54, out var loadingMap));
+        Assert.Equal(0, loadingMap.Speed);
+        Assert.Equal(64, loadingMap.Acceleration);
+
+        Assert.False(header.AnimSets.ContainsKey(2)); // sparse: only converted AnimSets are present
+    }
+
+    [Fact]
+    public void TryGet_KnownPrefabId_NoAnimSetsArray_LeavesAnimSetsNull()
+    {
+        var prefabAssetId = Guid.Parse("fd375feb-2f77-447e-aedb-c3fa44c64edd");
+        WriteSpriteRecords(
+            "{\n"
+            + $"  \"{prefabAssetId}\": {{\n"
+            + "    \"MoreFlags\": 0, \"CanPickup\": 0, \"FlagsPortraitShadowType\": 0,\n"
+            + "    \"ProgramLoad\": 0, \"ProgramTick\": 0, \"ProgramTouch\": 0, \"ProgramDeactivate\": 0,\n"
+            + "    \"ProgramInteract\": 0,\n"
+            + "    \"OffsetX\": 0, \"OffsetY\": 0, \"OffsetZ\": 0, \"SizeX\": 0, \"SizeY\": 0, \"SizeZ\": 0,\n"
+            + "    \"Contents\": 0\n"
+            + "  }\n"
+            + "}");
+
+        var catalog = new SpriteRecordCatalog(_projectPath);
+
+        Assert.True(catalog.TryGet(prefabAssetId, out var header));
+        Assert.Null(header.AnimSets);
+    }
+
+    /// <summary>
+    /// Real-export anchor test (E2 acceptance): reads the hero's own AnimSets straight off the real
+    /// converter output, self-skipping when <c>alundra-project/</c> is not present in this checkout
+    /// (same pattern as <c>IntroTraceHarnessTests</c>) - verifies the exact Speed/Acceleration values
+    /// quoted in <c>docs/plan-conversion-totale.md</c> §4 E2 (anim 1 "Moving" -&gt; 208/1, anim 54
+    /// "LoadingMap" -&gt; 0/64), which <see cref="AlundraPlayerManager"/>'s kinematic tick depends on.
+    /// </summary>
+    [Fact]
+    public void TryGet_RealHeroExport_Anim1SpeedIs208Acceleration1()
+    {
+        var projectRoot = FindProjectRoot();
+        if (projectRoot == null)
+        {
+            return; // self-skip: alundra-project/ not present in this checkout
+        }
+
+        // Entities/Alundra/Alundra.entity's own "id" - the same prefab asset id sprite-records.json keys
+        // this header by (see AlundraWorldProxy.AdoptPlayerPawn's own AssetCatalog.Get(HeroAssetName) ->
+        // SpriteRecordCatalog.TryGet(assetInfo.Id, ...) lookup chain).
+        var heroPrefabAssetId = Guid.Parse("898176e8-1d1f-4125-a339-a52f34a7b407");
+        var catalog = new SpriteRecordCatalog(projectRoot);
+
+        Assert.True(catalog.TryGet(heroPrefabAssetId, out var header));
+        Assert.NotNull(header.AnimSets);
+
+        Assert.True(header.AnimSets!.TryGetValue(1, out var moving));
+        Assert.Equal(208, moving.Speed);
+        Assert.Equal(1, moving.Acceleration);
+
+        Assert.True(header.AnimSets.TryGetValue(54, out var loadingMap));
+        Assert.Equal(0, loadingMap.Speed);
+        Assert.Equal(64, loadingMap.Acceleration);
+    }
+
+    private static string? FindProjectRoot()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, "alundra-project");
+            if (Directory.Exists(Path.Combine(candidate, "Data")))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        return null;
+    }
+
+    [Fact]
     public void FakeSpriteRecordCatalog_AddThenTryGet_Roundtrips()
     {
         var prefabAssetId = Guid.NewGuid();

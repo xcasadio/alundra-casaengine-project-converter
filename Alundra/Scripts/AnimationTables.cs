@@ -42,4 +42,46 @@ internal static class AnimationTables
     /// 3=right order as <see cref="AnimationDirectionTable"/>'s output.
     /// </summary>
     public static readonly string[] DirectionNames = { "down", "up", "left", "right" };
+
+    /// <summary>
+    /// StaticVariables.g_directionByButtons (StaticVariables.cs:99-103, address comment 0x80022c6c): maps
+    /// the 4-bit directional pad mask (<c>ButtonsHold &gt;&gt; 0xc</c>, bit 0=Up, 1=Right, 2=Down, 3=Left -
+    /// see <see cref="AlundraPadState"/>'s own doc) to the packed direction value
+    /// <see cref="AlundraEntityScriptProxy.TargetDirection"/> stores. <c>0xFFFFFFFF</c> marks an invalid
+    /// combination (e.g. Up+Down held together) - <see cref="AlundraPlayerManager.MovePlayer"/> falls back
+    /// to the entity's current <c>TargetDirection</c> in that case, exactly like
+    /// <c>PlayerManager.cs:199-205</c>.
+    /// </summary>
+    public static readonly uint[] DirectionByButtons =
+    {
+        0xFFFFFFFF, 0x10, 0x18, 0x14, 0x0, 0xFFFFFFFF, 0x1C, 0xFFFFFFFF, 0x8, 0xC, 0xFFFFFFFF, 0xFFFFFFFF, 0x4,
+        0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF
+    };
+
+    /// <summary>
+    /// StaticVariables.g_offsetXList (StaticVariables.cs:476-483, address comment 0x80023654): 32 signed
+    /// 16-bit per-direction X speed multipliers (16.16-fixed-point-free, pre-multiplied by
+    /// <c>AnimationSet.Speed</c> - see <see cref="AlundraPlayerManager"/>'s own kinematic tick), indexed by
+    /// the packed direction value (<see cref="DirectionByButtons"/>'s own output domain).
+    /// </summary>
+    public static readonly short[] OffsetXList =
+    {
+        0x0, unchecked((short)0xff6a), unchecked((short)0xfeda), unchecked((short)0xfe5a), unchecked((short)0xfde1),
+        unchecked((short)0xfd81), unchecked((short)0xfd3a), unchecked((short)0xfd0f), unchecked((short)0xfd00),
+        unchecked((short)0xfd0f), unchecked((short)0xfd3a), unchecked((short)0xfd81), unchecked((short)0xfde1),
+        unchecked((short)0xfe5a), unchecked((short)0xfeda), unchecked((short)0xff6a),
+        0x0, 0x96, 0x126, 0x1a6, 0x21f, 0x27f, 0x2c6, 0x2f1, 0x300, 0x2f1, 0x2c6, 0x27f, 0x21f, 0x1a6, 0x126, 0x96
+    };
+
+    /// <summary>StaticVariables.g_offsetYList (StaticVariables.cs:486-494, address comment 0x80023694) -
+    /// see <see cref="OffsetXList"/>'s own doc, same shape for Y.</summary>
+    public static readonly short[] OffsetYList =
+    {
+        0x200, 0x1f6, 0x1d9, 0x1aa, 0x16a, 0x11c, 0xc4, 0x64, 0x0, unchecked((short)0xff9c), unchecked((short)0xff3c),
+        unchecked((short)0xfee4), unchecked((short)0xfe96), unchecked((short)0xfe56), unchecked((short)0xfe27),
+        unchecked((short)0xfe0a),
+        unchecked((short)0xfe00), unchecked((short)0xfe0a), unchecked((short)0xfe27), unchecked((short)0xfe56),
+        unchecked((short)0xfe96), unchecked((short)0xfee4), unchecked((short)0xff3c), unchecked((short)0xff9c), 0x0,
+        0x64, 0xc4, 0x11c, 0x16a, 0x1aa, 0x1d9, 0x1f6
+    };
 }

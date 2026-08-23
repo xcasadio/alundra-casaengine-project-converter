@@ -28,4 +28,19 @@ public interface IAlundraScriptHost
     /// destroy branches (DestroyOnSlidingSlope/DestroyOnVramFlags) call - see
     /// <see cref="AlundraWorldProxy.DestroyEntity(AlundraEntityScriptProxy,int)"/>'s own doc.</summary>
     void DestroyEntity(AlundraEntityScriptProxy entity, int effectId);
+
+    /// <summary>The shared game-flag/control-flag store (E2: also read by
+    /// <see cref="AlundraEntityScriptProxy.Update"/>'s own player branch for
+    /// <see cref="AlundraGameState.PlayerControlBits.InputBlockedMask"/>, mirroring the original's single
+    /// global <c>g_playerControlFlags</c>) - see <see cref="AlundraWorldProxy.GameState"/>'s own doc.</summary>
+    AlundraGameState GameState { get; }
+
+    /// <summary>
+    /// The world's own <see cref="AlundraPlayerController"/> (E2), or null when no such controller
+    /// possesses a pawn in this world (headless test harness, or a world with no player-startup settings) -
+    /// see <see cref="AlundraWorldProxy"/>'s own implementation. <see cref="AlundraEntityScriptProxy.Update"/>'s
+    /// player branch treats a null controller as "no input available this frame" (no-op), never a
+    /// fallback spawn or a thrown exception.
+    /// </summary>
+    AlundraPlayerController? PlayerController { get; }
 }

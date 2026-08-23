@@ -77,6 +77,13 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    emitted for completeness rather than collapsing to one value per (anim,dir) - see
 ///    Alundra.Scripts.WallPlacementOverlay.ApplyEntitySortKey for the frame-0-only approximation the
 ///    DLL currently applies from this data, and its documented deviation.
+///  - Data/sprite-records.json also carries "AnimSets": one entry per AnimSet index the record
+///    declares (source: SpriteBankReader.ReadAnimSetHeader, from SpriteInfo.SpriteRecords[].AnimSets
+///    - see AnimSetHeader), in index order, regardless of whether any direction of that index
+///    converted frames. It exists so the future gameplay DLL can drive an entity's movement (walk
+///    speed above all - docs/plan-conversion-totale.md E2 requires the hero's speed to come from the
+///    original data, not be invented) from the same numbers the original engine used, instead of the
+///    frame timing this converter already exports for rendering.
 ///  - Asset ids are NOT forced deterministic here: ObjectBase.Id has a private setter, and
 ///    EditorAssetWriterService.SaveAsset always serializes whatever Id the object already has.
 ///    This matches Phase 1's actual behavior (EditorAssetImportService.ImportTiledMap also
@@ -129,13 +136,14 @@ public static class SpriteWriter
         var spriteAssetIdsByKey = new Dictionary<(string Spritesheet, long Signature), Guid>();
         var headerFieldsByPrefabId = new Dictionary<Guid, SpriteRecordHeader>();
         var idsvAnimDirsByPrefabId = new Dictionary<Guid, List<AnimDirIdsv>>();
+        var animSetHeadersByPrefabId = new Dictionary<Guid, IReadOnlyList<AnimSetHeader>>();
 
         foreach (var bank in banks)
         {
             ConvertBank(
                 bank, folderNamesByBankKey[bank.BankKey], inputDirectory, outputDirectory,
                 textureAssetIdsBySpritesheet, spriteAssetIdsByKey, prefabAssetIdsByBankKey,
-                headerFieldsByPrefabId, idsvAnimDirsByPrefabId, report);
+                headerFieldsByPrefabId, idsvAnimDirsByPrefabId, animSetHeadersByPrefabId, report);
         }
 
         EditorAssetCatalogService.Save();
@@ -144,7 +152,7 @@ public static class SpriteWriter
         report.Increment("Sprites.Textures", textureAssetIdsBySpritesheet.Count);
 
         PreserveHeroEffects(inputDirectory, outputDirectory, report);
-        WriteSpriteRecords(outputDirectory, headerFieldsByPrefabId, idsvAnimDirsByPrefabId, report);
+        WriteSpriteRecords(outputDirectory, headerFieldsByPrefabId, idsvAnimDirsByPrefabId, animSetHeadersByPrefabId, report);
 
         return prefabAssetIdsByBankKey;
     }
@@ -159,6 +167,7 @@ public static class SpriteWriter
         Dictionary<string, Guid> prefabAssetIdsByBankKey,
         Dictionary<Guid, SpriteRecordHeader> headerFieldsByPrefabId,
         Dictionary<Guid, List<AnimDirIdsv>> idsvAnimDirsByPrefabId,
+        Dictionary<Guid, IReadOnlyList<AnimSetHeader>> animSetHeadersByPrefabId,
         ConversionReport report)
     {
         Guid textureAssetId;
@@ -212,7 +221,7 @@ public static class SpriteWriter
 
         WriteEntityPrefab(
             bank, entityFolderName, bankRelativeDirectory, animationAssetIds, prefabAssetIdsByBankKey,
-            headerFieldsByPrefabId, idsvAnimDirs, idsvAnimDirsByPrefabId, report);
+            headerFieldsByPrefabId, idsvAnimDirs, idsvAnimDirsByPrefabId, animSetHeadersByPrefabId, report);
 
         report.Increment("Sprites.Banks");
         report.Increment("Sprites.QuadsRead", quadsRead);
@@ -256,6 +265,7 @@ public static class SpriteWriter
         Dictionary<Guid, SpriteRecordHeader> headerFieldsByPrefabId,
         List<AnimDirIdsv> idsvAnimDirs,
         Dictionary<Guid, List<AnimDirIdsv>> idsvAnimDirsByPrefabId,
+        Dictionary<Guid, IReadOnlyList<AnimSetHeader>> animSetHeadersByPrefabId,
         ConversionReport report)
     {
         var spriteComponent = new AnimatedSpriteComponent { Name = nameof(AnimatedSpriteComponent) };
@@ -291,6 +301,7 @@ public static class SpriteWriter
         prefabAssetIdsByBankKey[bank.BankKey] = entity.Id;
         headerFieldsByPrefabId[entity.Id] = bank.Header;
         idsvAnimDirsByPrefabId[entity.Id] = idsvAnimDirs;
+        animSetHeadersByPrefabId[entity.Id] = bank.AnimSetHeaders;
 
         report.Increment("Entities.Prefabs");
         report.Increment(hasBody ? "Entities.BodyPrefabs" : "Entities.SpriteOnlyPrefabs");
@@ -684,14 +695,20 @@ public static class SpriteWriter
         string outputDirectory,
         Dictionary<Guid, SpriteRecordHeader> headerFieldsByPrefabId,
         Dictionary<Guid, List<AnimDirIdsv>> idsvAnimDirsByPrefabId,
+        Dictionary<Guid, IReadOnlyList<AnimSetHeader>> animSetHeadersByPrefabId,
         ConversionReport report)
     {
         var recordsByPrefabId = new Dictionary<string, SpriteRecordJson>(StringComparer.Ordinal);
         var idsvAnimDirCount = 0;
+        var animSetCount = 0;
         foreach (var (prefabAssetId, header) in headerFieldsByPrefabId)
         {
             var idsvAnimDirs = idsvAnimDirsByPrefabId.GetValueOrDefault(prefabAssetId, new List<AnimDirIdsv>());
             idsvAnimDirCount += idsvAnimDirs.Count;
+
+            var animSetHeaders = animSetHeadersByPrefabId.GetValueOrDefault(
+                prefabAssetId, Array.Empty<AnimSetHeader>());
+            animSetCount += animSetHeaders.Count;
 
             recordsByPrefabId[prefabAssetId.ToString()] = new SpriteRecordJson
             {
@@ -718,6 +735,18 @@ public static class SpriteWriter
                         Frames = entry.Frames,
                     })
                     .ToList(),
+                AnimSets = animSetHeaders
+                    .Select((animSetHeader, animSetIndex) => new AnimSetJson
+                    {
+                        Anim = animSetIndex,
+                        Speed = animSetHeader.Speed,
+                        Acceleration = animSetHeader.Acceleration,
+                        IsZForceApplied = animSetHeader.IsZForceApplied,
+                        Sfx = animSetHeader.Sfx,
+                        Flags = animSetHeader.Flags,
+                        Unknown = animSetHeader.Unknown,
+                    })
+                    .ToList(),
             };
         }
 
@@ -729,6 +758,7 @@ public static class SpriteWriter
 
         report.Increment("SpriteRecords.Exported", recordsByPrefabId.Count);
         report.Increment("SpriteRecords.IdsvAnimDirs", idsvAnimDirCount);
+        report.Increment("SpriteRecords.AnimSetsExported", animSetCount);
         CheckSpriteRecordsInvariant(report);
     }
 
@@ -766,6 +796,7 @@ public static class SpriteWriter
         public int SizeZ { get; set; }
         public int Contents { get; set; }
         public List<AnimDirIdsvJson> IdsvAnimDirs { get; set; } = new();
+        public List<AnimSetJson> AnimSets { get; set; } = new();
     }
 
     /// <summary>
@@ -778,5 +809,22 @@ public static class SpriteWriter
         public int Anim { get; set; }
         public int Direction { get; set; }
         public List<int> Frames { get; set; } = new();
+    }
+
+    /// <summary>
+    /// The JSON shape for one entry of "AnimSets" (see <see cref="AnimSetHeader"/> and the
+    /// SpriteBankReader class doc) - one per AnimSet index the record declares, in index order.
+    /// Speed is what the gameplay DLL needs to derive the hero's walk speed from the original data
+    /// rather than inventing one (docs/plan-conversion-totale.md E2).
+    /// </summary>
+    private sealed class AnimSetJson
+    {
+        public int Anim { get; set; }
+        public int Speed { get; set; }
+        public int Acceleration { get; set; }
+        public int IsZForceApplied { get; set; }
+        public int Sfx { get; set; }
+        public int Flags { get; set; }
+        public int Unknown { get; set; }
     }
 }

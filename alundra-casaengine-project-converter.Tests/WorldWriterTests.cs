@@ -19,6 +19,11 @@ public class WorldWriterTests
 
     private const int NewGameMapIndex = 389;
 
+    // Stands in for the real Alundra.gameMode id (written by PlayerSetupWriter, Phase 6): these
+    // tests exercise WorldWriter in isolation, so a fixed placeholder is enough to assert the value
+    // makes it into player_startup_settings_asset_id unchanged.
+    private static readonly Guid TestGameModeAssetId = Ids.For("test:gameMode");
+
     [Theory]
     // The documented New Game spawn: docs/demarrage-nouvelle-partie.md section 2.1 gives tile
     // (33, 59, 0) -> pixels (804, 952), and guidelines section 2.3 turns that into world Y = -952.
@@ -64,7 +69,8 @@ public class WorldWriterTests
             // hold for the whole data-extracted corpus, so WorldWriter skips them when --maps is
             // given, which is exactly what a fixture is.
             WorldWriter.ConvertWorlds(
-                inputDirectory, outputDirectory, mapFilter: new[] { NewGameMapIndex }, mapLocations, report);
+                inputDirectory, outputDirectory, mapFilter: new[] { NewGameMapIndex }, mapLocations,
+                TestGameModeAssetId, report);
 
             Assert.Empty(report.Errors);
             Assert.Equal(1, report.Counters["Worlds"]);
@@ -99,7 +105,7 @@ public class WorldWriterTests
             var world = new World();
             world.Load(worldDocument);
             Assert.Equal(worldAssetInfo.Id, world.Id);
-            Assert.Equal(Guid.Empty, world.PlayerStartupSettingsAssetId);
+            Assert.Equal(TestGameModeAssetId, world.PlayerStartupSettingsAssetId);
 
             var entityNodes = (JArray)worldDocument["entity_references"]!;
             Assert.Equal(3, entityNodes.Count);
@@ -165,7 +171,8 @@ public class WorldWriterTests
             var report = new ConversionReport();
             ProjectWriter.CreateEmptyProject(outputDirectory, report);
             TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
-            WorldWriter.ConvertWorlds(inputDirectory, outputDirectory, mapFilter: new[] { 4 }, mapLocations, report);
+            WorldWriter.ConvertWorlds(
+                inputDirectory, outputDirectory, mapFilter: new[] { 4 }, mapLocations, TestGameModeAssetId, report);
 
             Assert.Empty(report.Errors);
             Assert.Equal(1, report.Counters["Worlds.PlayerStartPlaceholders"]);
@@ -229,7 +236,8 @@ public class WorldWriterTests
             ProjectWriter.CreateEmptyProject(outputDirectory, report);
             TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
             WorldWriter.ConvertWorlds(
-                inputDirectory, outputDirectory, mapFilter: new[] { NewGameMapIndex, 4 }, mapLocations, report);
+                inputDirectory, outputDirectory, mapFilter: new[] { NewGameMapIndex, 4 }, mapLocations,
+                TestGameModeAssetId, report);
 
             Assert.Empty(report.Errors);
             Assert.Equal(2, report.Counters["Worlds"]);
@@ -308,7 +316,8 @@ public class WorldWriterTests
             var report = new ConversionReport();
             ProjectWriter.CreateEmptyProject(outputDirectory, report);
             TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
-            WorldWriter.ConvertWorlds(inputDirectory, outputDirectory, new[] { 4 }, mapLocations, report);
+            WorldWriter.ConvertWorlds(
+                inputDirectory, outputDirectory, new[] { 4 }, mapLocations, TestGameModeAssetId, report);
 
             var projectDocument = JObject.Parse(
                 File.ReadAllText(Path.Combine(outputDirectory, "AlundraGame.json")));
@@ -356,7 +365,8 @@ public class WorldWriterTests
 
             // Phase 1 intentionally not run: no .tileMap asset exists yet.
             WorldWriter.ConvertWorlds(
-                inputDirectory, outputDirectory, mapFilter: new[] { 4 }, new Dictionary<int, MapLocation>(), report);
+                inputDirectory, outputDirectory, mapFilter: new[] { 4 }, new Dictionary<int, MapLocation>(),
+                TestGameModeAssetId, report);
 
             Assert.Empty(report.Errors);
             Assert.False(report.Counters.ContainsKey("Worlds"));

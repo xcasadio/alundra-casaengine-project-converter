@@ -198,6 +198,104 @@ Oracle transverse : le harnais headless `Alundra.Tests/IntroTraceHarnessTests.cs
 - **Acceptation** : New Game → map 389, héros visible au bon endroit ; le pad le déplace (sans
   collision) ; l'export complet reste à 0 erreur.
 - **Dépendances** : E1.
+- **Réalisé (convertisseur, E2-A, 2026-08-23)** — trois assets, ids déterministes (`Ids.For`, donc
+  stables d'un run à l'autre) car `PlayerStartupSettings`/`ButtonsMapping` héritent d'`ObjectBase`
+  dont `Id` a un setter privé (même contournement que la caméra/les worlds de `WorldWriter` : JSON
+  écrit à la main puis `EditorAssetWriterService.SaveDocument`) :
+  - `Entities/Alundra/Alundra.gameMode` (catalogue `"AlundraPlayer"`, id `Ids.For("gameMode:alundra")`,
+    `default_pawn_asset_id` = id de `Entities/Alundra/Alundra.entity` (résolu via la clé de banque
+    `"alundra_0"` retournée par `SpriteWriter.ConvertSprites`), `player_controller_class` =
+    `"AlundraPlayerController"`, `ai_controller_class`/`hud_class` aux valeurs par défaut du moteur).
+  - `Data/Alundra.buttonsMapping` (catalogue `"AlundraButtons"`, id
+    `Ids.For("buttonsMapping:alundra")`) : comme le `.gameMode` ci-dessus, écrit à la main en JObject
+    brut (pas via les classes moteur `ButtonsMapping`/`InputMapping` — `ObjectBase.Id` a un setter privé
+    donc `EditorAssetWriterService.SaveAsset` ne peut jamais leur donner un id déterministe), au format
+    exact que lit `ButtonsMapping.Load`/`InputMapping.Load`/`KeyButton.Load`, puis
+    `EditorAssetWriterService.SaveDocument` (voir `PlayerSetupWriter`'s propre doc de classe) : 9 actions
+    (`MoveUp/Down/Left/Right`, `Jump`, `Attack`, `UseItem`, `Sprint`,
+    `Menu`), clavier flèches/Espace/X/C/Maj-gauche/Échap + alternative manette (D-pad pour le
+    déplacement — un seul emplacement `alternative_key_button` existe, donc pas de place pour le
+    stick gauche en plus ; PSX→pad : Cross→A, Square→X, Circle→B, Triangle→Y, cf.
+    `Alundra/Scripts/PlayerManager.cs:413/549/964/1904/430`).
+  - Les 483 `.world` référencent désormais tous le même `player_startup_settings_asset_id` (celui du
+    `.gameMode` ci-dessus), passé à `WorldWriter.ConvertWorlds` en paramètre plutôt que recalculé
+    (Phase 6 tourne après Phase 3, qui seule connaît l'id du prefab héros).
+  - `Data/sprite-records.json` gagne un tableau `"AnimSets"` par prefab (un élément par index
+    d'AnimSet déclaré dans le record source, dans l'ordre) :
+    `{ "Anim": <index>, "Speed": <int>, "Acceleration": <int>, "IsZForceApplied": <int>, "Sfx": <int>,
+    "Flags": <int>, "Unknown": <int> }`, lu par `SpriteBankReader.ReadAnimSetHeader` depuis
+    `SpriteInfo.SpriteRecords[].AnimSets[]` (extracteur), pour que la vitesse de marche du héros
+    vienne des données originales plutôt que d'être inventée (`AnimSets[54].Speed = 0,
+    Acceleration = 64` ; `AnimSets[1].Speed = 208, Acceleration = 1`, vérifiés sur data-extracted).
+    Compteur `SpriteRecords.AnimSetsExported` (2405 sur le corpus complet).
+- **Réalisé (DLL, E2-B, 2026-08-23) — écarts** : le moteur (pas le convertisseur) spawn et possède
+  désormais le pawn héros (`World.LoadContent` → `InitializePlayerControllers`) ; `AlundraWorldProxy`
+  n'en spawn plus un second — `AdoptPlayerPawn` (remplace `SpawnPlayerEntity`) retrouve le contrôleur via
+  `world.PlayerControllers.OfType<AlundraPlayerController>()` et applique l'état logique New Game
+  (position/anim/direction) au pawn déjà en place. Déplacement **logique uniquement** (décision
+  utilisateur du jour même) : pas de `CharacterControllerComponent`, pas de gravité, pas de collision
+  avant E3 — seul `AlundraPlayerManager.Tick` (intégration cinématique 16.16 à pas fixe 50 Hz, catch-up
+  plafonné à 4 ticks/frame) déplace `PosX`/`PosY`.
+  - **Porté** : `PlayerManager.MovePlayer` (PlayerManager.cs:17-951) restreint à `BlockedByEntity` (31-36),
+    la branche verrouillée `InputBlockedMask` (38-57, no-op documenté), l'en-tête libre `Flags |= Gravity`
+    (59-60), la résolution pad→direction (`g_directionByButtons`, 199-205), le cas Idle(0x00)/Moving(0x01)
+    simplifié (361-383 : direction + bascule Idle/Moving, sans `TryUseItem`/`PlayerTryAction`/
+    `CheckEntityInteraction`/`PlayerTryAttack`) et la bascule LoadingMap(0x36) (914-922, **écart
+    documenté** — voir ci-dessous).
+  - **Non porté (hors périmètre E2)** : `CheckAndExecuteWarp`, poids/armes, la branche de mort HP==0
+    (82-170), le tuile-attribut `0x80` (172-196), le switch de pente non plat (207-353, `Slope_18c` reste
+    0 = sol plat en V1), `UpdatePlayerWeaponEffect`/`UpdateWeaponStepProgression`/
+    `UpdatePlayerCarriedEntity` (355-357), toute autre valeur de `TargetAnimationId` (saut, sprint,
+    attaque, portage, escalade, nage, sable, sort, dégâts… 385-943), la fin `UpdateItemEffectState`/
+    `SetPlayerHpMax`/`SetPlayerHp` (947-950).
+  - **Écart documenté — LoadingMap → Idle** : l'original ne quitte `LoadingMap` que si `IsOnGround == 0`
+    (914-922, sinon `break` = reste bloqué) ; `IsOnGround` n'existe pas en V1 (pas de gravité/collision).
+    Un port littéral bloquerait le héros dans la pose LoadingMap pour toujours. `AlundraPlayerManager`
+    fait donc basculer `LoadingMap` vers `Idle` dès le premier tick `MovePlayer` non verrouillé, avant le
+    switch Idle/Moving (même tick) — le pad fonctionne donc dès la frame où le joueur reprend la main.
+  - **Intégration cinématique** (`AlundraPlayerManager.Tick`, port de `PhysicsEngine.UpdateEntityPhysics`
+    1579-1597, `IncrementForce` 1551-1576, la moitié « sol plat » d'`ApplyEntityForces` 1514-1547 —
+    `TileAttributes` reste 0 donc `XForceTable[0]`/`YForceTable[0]` = 0, pas de
+    `PreviousAdjustedForceX/Y`, pas de clamp écran — et `PosX += dx` 421-422, sans la boucle de collision
+    environnante) : vitesse/accélération lues dans `AnimSets` (E2-A) via un index par anim
+    (`SpriteRecordHeader.AnimSets`, `AlundraEntityScriptProxy.AnimSetsByAnim`), tables
+    `g_offsetXList`/`g_offsetYList` copiées dans `AnimationTables.OffsetXList`/`OffsetYList`. Scénario
+    vérifié à la main (Speed 208, Acceleration 1, direction 0x18 est) : tick1 ForceX=79872, tick2=159744,
+    puis régime permanent 159744/tick — reproduit par `AlundraPlayerManagerTests`.
+  - **Contrôleur/pawn** : `world.PlayerControllers` (`IReadOnlyList<PlayerController>`,
+    CasaEngineMonogame/CasaEngine/Framework/Scene/World/World.cs:76) et `Controller.Pawn`
+    (CasaEngineMonogame/CasaEngine/Framework/Gameplay/Controller.cs:20) — pas d'`Update` moteur sur
+    `Controller`/`PlayerController` (aucun appelant dans `World.cs`), donc `AlundraPlayerController` ne
+    peut pas se piloter seule : `AlundraEntityScriptProxy.Update` (branche `IsPlayer`) l'interroge chaque
+    frame via `IAlundraScriptHost.PlayerController` (nouveau membre, implémenté par `AlundraWorldProxy`,
+    résolu une fois dans `InitializeWithWorld`). `.buttonsMapping` enregistré une fois par session
+    (`AlundraPlayerController.EnsureInputMappingsRegistered`, appelé depuis `InitializeWithWorld` — charge
+    l'asset via `AssetContentManager.Load<ButtonsMapping>` puis délègue à `RegisterMappings`, qui
+    n'ajoute que les mappings dont le nom n'est pas déjà `InputMappingManager.Contains` — idempotent par
+    nom, pas par une seule sonde globale).
+  - **Harnais headless** (`IntroTraceHarnessTests`) : construit son propre proxy joueur sans
+    `AlundraPlayerController` ; `IAlundraScriptHost.PlayerController => null` y rend la branche `IsPlayer`
+    de `AlundraEntityScriptProxy.Update` un no-op — trace toujours à la frame 926, sans régression.
+- **Correctif (verifier E2, F1, 2026-08-23)** : le moteur (CasaEngineMonogame fe19e1e6, sous-module) a
+  gagné l'`AssetLoader<ButtonsMapping>` (manquant jusque-là — `EnsureInputMappingsRegistered` devait
+  contourner l'échec de chargement) et `InputMappingManager.Contains`/`TryGet` (match ordinal). La DLL
+  charge maintenant `.buttonsMapping` normalement et `RegisterMappings` garde l'idempotence **par nom**
+  (`Contains` par action, pas une seule sonde sur `"MoveUp"` — corrige l'avis A5 : un enregistrement
+  partiel précédent n'aurait pu bloquer que les actions déjà présentes). Un échec de chargement (checkout
+  moteur non reconstruit/fusionné) loggue désormais un WARNING nommant l'asset et le type d'exception,
+  au lieu d'avaler l'erreur silencieusement. `BuildPadState`/`ComputePadState` sautent une action non
+  enregistrée via `Contains` (pas de try/catch sur le chemin chaud).
+- **Écarts** :
+  - **A1 — EditorPreview** : `GameplayExecutionPolicies.EditorPreview` a
+    `InitializePlayerControllers = false`, donc aucun contrôleur/pawn n'est créé par le moteur dans ce
+    mode ; `AdoptPlayerPawn` loggue un warning une fois et ne spawn aucun héros de secours (décision
+    assumée, pas de fallback) — le gate de spawn des enregistrements retombe sur la surcharge sans
+    joueur (`ShouldSpawnRecord(record, out reason)`).
+  - **A2/A3 — différés** : `PlayerInput.GetButtonState` alloue une instance `Engine.Input.ButtonState`
+    par appel côté moteur (9 allocations/frame côté `BuildPadState`, une par action mappée) ; l'
+    accumulateur `PhysicsTickAccumulator` est remis à 0 (pas seulement plafonné) au déclenchement du
+    catch-up de `AlundraPlayerManager.Tick` — les deux sont des micro-optimisations sans effet
+    observable au rythme New Game/map 389 actuel, reportées (pas de ticket dédié pour l'instant).
 
 ### E3 — Collisions : champ de hauteur depuis `AlundraCells` + mover ⏳ (moteur, plan-verifier)
 
@@ -332,7 +430,7 @@ Oracle transverse : le harnais headless `Alundra.Tests/IntroTraceHarnessTests.cs
 | Étape | Statut | Commit |
 |---|---|---|
 | E1 scripts par entité + MapEvents | ✅ (verifier CONFIRMED ; visuel runtime à valider par l'utilisateur) | 92f1be5 |
-| E2 héros pawn | ⏳ | |
+| E2 héros pawn | ✅ (verifier CONFIRMED ; visuel runtime à valider par l'utilisateur) | voir git log |
 | E3 collisions champ de hauteur | ⏳ | |
 | E4 déplacement scripté | ⏳ | |
 | E5 caméra | ⏳ | |

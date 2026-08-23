@@ -85,6 +85,26 @@ public sealed class SpriteAnimation
 }
 
 /// <summary>
+/// One AnimSet entry's header fields (AnimationSet, exported alongside PreloadedAnims), exactly as
+/// the extractor exports them - everything the original reads to drive movement for that anim set,
+/// on top of the frame data already covered by <see cref="SpriteAnimation"/>. Speed and Acceleration
+/// are the values EntityManager/PlayerManager scale an entity's velocity by (ushort/byte in the
+/// source, widened here); Flags and Unknown are SiAnimationSet's two control bytes and
+/// IsZForceApplied is their (Flags &lt;&lt; 8) | Unknown combination - PlayerManager tests it as a
+/// signed 16-bit value, hence the short cast when it must be computed rather than read from the JSON.
+/// Sfx is the sound-effect index the animation set triggers, if any.
+/// </summary>
+public sealed class AnimSetHeader
+{
+    public int Speed;
+    public int Acceleration;
+    public int Flags;
+    public int Unknown;
+    public int Sfx;
+    public int IsZForceApplied;
+}
+
+/// <summary>
 /// The body volume declared by a sprite record's header (SpriteRecord.Header), exactly as the
 /// extractor exports it. Unlike <see cref="SpriteFrameCollision"/>, which changes frame by frame,
 /// this one belongs to the entity as a whole: Offset is the box's MIN CORNER, in pixels, relative
@@ -160,6 +180,13 @@ public sealed class SpriteBank
     public int SourceMapIndex; // -1 for the map_alundra.json bank
     public string SourceSpritesheetFileName = string.Empty;
     public IReadOnlyList<SpriteAnimation?[]> AnimSets = Array.Empty<SpriteAnimation?[]>();
+
+    /// <summary>
+    /// AnimSets[j]'s own header fields (see <see cref="AnimSetHeader"/>), same indexing as
+    /// <see cref="AnimSets"/> - one entry per AnimSet index the record declares, independent of
+    /// whether any direction actually converted frames.
+    /// </summary>
+    public IReadOnlyList<AnimSetHeader> AnimSetHeaders = Array.Empty<AnimSetHeader>();
 
     /// <summary>
     /// The header's body volume, or null when the record declares none. Read from the first record
@@ -260,9 +287,11 @@ public static class SpriteBankReader
             }
 
             var animSets = new List<SpriteAnimation?[]>();
+            var animSetHeaders = new List<AnimSetHeader>();
             foreach (var animSetElement in animSetsElement.EnumerateArray())
             {
                 animSets.Add(ReadAnimSet(animSetElement));
+                animSetHeaders.Add(ReadAnimSetHeader(animSetElement));
             }
 
             var bodyBox = ReadBodyBox(headerElement);
@@ -273,6 +302,7 @@ public static class SpriteBankReader
                 SourceMapIndex = mapIndex,
                 SourceSpritesheetFileName = spritesheetFileName,
                 AnimSets = animSets,
+                AnimSetHeaders = animSetHeaders,
                 BodyBox = bodyBox,
                 Header = ReadHeader(headerElement, bodyBox),
             };
@@ -347,6 +377,38 @@ public static class SpriteBankReader
         }
 
         return left.HasSameVolumeAs(right);
+    }
+
+    /// <summary>
+    /// Reads one AnimSet entry's header fields (see <see cref="AnimSetHeader"/>). Every field is
+    /// optional, defaulting to 0 when absent, same convention as <see cref="ReadHeader"/>.
+    /// IsZForceApplied is read straight from the JSON when the extractor exports it (it always has,
+    /// on every corpus this converter has seen); when absent, it is recomputed the way
+    /// EntityManager packs it - (short)((Flags &lt;&lt; 8) | Unknown) - so a test on real data can
+    /// assert the two never disagree without this reader silently trusting one path over the other.
+    /// </summary>
+    private static AnimSetHeader ReadAnimSetHeader(JsonElement animSetElement)
+    {
+        if (animSetElement.ValueKind != JsonValueKind.Object)
+        {
+            return new AnimSetHeader();
+        }
+
+        var flags = GetOptionalInt32(animSetElement, "Flags");
+        var unknown = GetOptionalInt32(animSetElement, "Unknown");
+        var isZForceApplied = animSetElement.TryGetProperty("IsZForceApplied", out var isZForceAppliedElement)
+            ? isZForceAppliedElement.GetInt32()
+            : (short)((flags << 8) | unknown);
+
+        return new AnimSetHeader
+        {
+            Speed = GetOptionalInt32(animSetElement, "Speed"),
+            Acceleration = GetOptionalInt32(animSetElement, "Acceleration"),
+            Flags = flags,
+            Unknown = unknown,
+            Sfx = GetOptionalInt32(animSetElement, "Sfx"),
+            IsZForceApplied = isZForceApplied,
+        };
     }
 
     private static SpriteAnimation?[] ReadAnimSet(JsonElement animSetElement)

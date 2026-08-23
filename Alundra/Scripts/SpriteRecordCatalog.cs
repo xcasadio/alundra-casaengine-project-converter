@@ -47,6 +47,58 @@ public readonly struct SpriteRecordHeader
     /// field) - <see cref="AlundraWorldProxy.BuildIdsvByAnimDirection"/> treats both the same way.
     /// </summary>
     public IReadOnlyList<AnimDirIdsv>? IdsvAnimDirs { get; init; }
+
+    /// <summary>
+    /// Per-anim-index lookup of <see cref="AnimSetEntry"/> (walk speed/acceleration/z-force/sfx), built
+    /// once here (not per-frame) from <c>Data/sprite-records.json</c>'s <c>"AnimSets"</c> array (converter
+    /// E2-A - see <c>SpriteBankReader.ReadAnimSetHeader</c>), keyed by each entry's own <c>Anim</c> index
+    /// (not array position - the source only carries one element per AnimSet the bank's converter run
+    /// actually converted, so indexes can be sparse). Used by <see cref="AlundraPlayerManager"/>'s
+    /// kinematic tick to resolve <c>AnimationSet.Speed</c>/<c>Acceleration</c> for the player's current
+    /// <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> (hero anim 1 "Moving" -&gt; Speed 208,
+    /// Acceleration 1; anim 54 "LoadingMap" -&gt; Speed 0, Acceleration 64 - verified on the real export).
+    /// Null (not empty) when the source record has no <c>"AnimSets"</c> array at all (older export,
+    /// backward-tolerant like every other header field) or an empty one; callers treat a miss the same way
+    /// as <see cref="IdsvAnimDirs"/>'s own null case ("no data for this entity/anim").
+    /// </summary>
+    public IReadOnlyDictionary<int, AnimSetEntry>? AnimSets { get; init; }
+}
+
+/// <summary>
+/// One <see cref="SpriteRecordHeader.AnimSets"/> entry - a bank's <c>SiAnimationSet</c> header fields
+/// (converter E2-A, <c>SpriteBankReader.ReadAnimSetHeader</c>), read-only mirror of
+/// <c>Data/sprite-records.json</c>'s per-AnimSet JSON object.
+/// </summary>
+public readonly struct AnimSetEntry
+{
+    /// <summary>The AnimSet index this entry describes (matches <see cref="AlundraEntityScriptProxy.TargetAnimationId"/>'s
+    /// domain) - also the dictionary key in <see cref="SpriteRecordHeader.AnimSets"/>, duplicated here so
+    /// a caller iterating the dictionary's values still has it.</summary>
+    public int Anim { get; init; }
+
+    /// <summary>Walk speed, pre-multiplied by <see cref="AnimationTables.OffsetXList"/>/<see cref="AnimationTables.OffsetYList"/>
+    /// in <see cref="AlundraPlayerManager"/>'s kinematic tick (<c>PhysicsEngine.UpdateEntityPhysics</c>,
+    /// PhysicsEngine.cs:1593-1594).</summary>
+    public int Speed { get; init; }
+
+    /// <summary>Right-shift amount applied to the force step (<c>&amp; 0xf</c> at the call site,
+    /// PhysicsEngine.cs:1591/1596-1597) - larger values mean slower acceleration toward the target
+    /// speed.</summary>
+    public int Acceleration { get; init; }
+
+    /// <summary>Not consumed by V1's kinematic tick (no Z-axis movement yet) - carried for a future
+    /// jump/fall chantier.</summary>
+    public int IsZForceApplied { get; init; }
+
+    /// <summary>Sound-effect id associated with this AnimSet (e.g. footstep sfx) - not consumed yet (no
+    /// audio system, E11's own scope).</summary>
+    public int Sfx { get; init; }
+
+    /// <summary>Raw AnimSet flags byte, meaning not yet reverse-engineered beyond <see cref="IsZForceApplied"/>.</summary>
+    public int Flags { get; init; }
+
+    /// <summary>Unidentified trailing field of the source AnimSet header - carried for completeness.</summary>
+    public int Unknown { get; init; }
 }
 
 /// <summary>
@@ -171,6 +223,7 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
         [JsonInclude] public int SizeZ { get; set; }
         [JsonInclude] public int Contents { get; set; }
         [JsonInclude] public List<AnimDirIdsvJson>? IdsvAnimDirs { get; set; }
+        [JsonInclude] public List<AnimSetJson>? AnimSets { get; set; }
 
         public SpriteRecordHeader ToHeader() => new()
         {
@@ -199,6 +252,20 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
                         Frames = entry.Frames ?? new List<int>(),
                     })
                     .ToArray(),
+            AnimSets = AnimSets is not { Count: > 0 }
+                ? null
+                : AnimSets.ToDictionary(
+                    entry => entry.Anim,
+                    entry => new AnimSetEntry
+                    {
+                        Anim = entry.Anim,
+                        Speed = entry.Speed,
+                        Acceleration = entry.Acceleration,
+                        IsZForceApplied = entry.IsZForceApplied,
+                        Sfx = entry.Sfx,
+                        Flags = entry.Flags,
+                        Unknown = entry.Unknown,
+                    }),
         };
     }
 
@@ -208,6 +275,19 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
         [JsonInclude] public int Anim { get; set; }
         [JsonInclude] public int Direction { get; set; }
         [JsonInclude] public List<int>? Frames { get; set; }
+    }
+
+    // No naming policy: field names/order match SpriteBankReader.ReadAnimSetHeader's own JSON contract
+    // exactly (see SpriteRecordHeader.AnimSets' own doc).
+    private sealed class AnimSetJson
+    {
+        [JsonInclude] public int Anim { get; set; }
+        [JsonInclude] public int Speed { get; set; }
+        [JsonInclude] public int Acceleration { get; set; }
+        [JsonInclude] public int IsZForceApplied { get; set; }
+        [JsonInclude] public int Sfx { get; set; }
+        [JsonInclude] public int Flags { get; set; }
+        [JsonInclude] public int Unknown { get; set; }
     }
 }
 

@@ -129,6 +129,43 @@ public class SpriteWriterSpriteRecordsTests
             });
     }
 
+    [Fact]
+    public void ConvertSprites_WithAnAnimSetHeader_WritesItToTheAnimSetsArray()
+    {
+        RunConversion(
+            sector5Id: 53,
+            headerFields: """
+                "MoreFlags": 0, "CanPickup": 0, "FlagsPortraitShadowType": 0,
+                "ProgramLoad": 0, "ProgramTick": 0, "ProgramTouch": 0, "ProgramDeactivate": 0,
+                "ProgramInteract": 0,
+                "OffsetX": 0, "OffsetY": 0, "OffsetZ": 0, "SizeX": 0, "SizeY": 0, "SizeZ": 0,
+                "Contents": 0
+                """,
+            (outputDirectory, report, prefabAssetIdsByBankKey) =>
+            {
+                Assert.Equal(1, report.Counters["SpriteRecords.AnimSetsExported"]);
+
+                var prefabAssetId = prefabAssetIdsByBankKey["53"];
+                var recordsPath = Path.Combine(outputDirectory, "Data", "sprite-records.json");
+                using var document = JsonDocument.Parse(File.ReadAllText(recordsPath));
+                var record = document.RootElement.GetProperty(prefabAssetId.ToString());
+
+                var animSets = record.GetProperty("AnimSets");
+                Assert.Equal(1, animSets.GetArrayLength());
+
+                var animSet = animSets[0];
+                Assert.Equal(0, animSet.GetProperty("Anim").GetInt32());
+                Assert.Equal(208, animSet.GetProperty("Speed").GetInt32());
+                Assert.Equal(1, animSet.GetProperty("Acceleration").GetInt32());
+                Assert.Equal(5, animSet.GetProperty("Sfx").GetInt32());
+                Assert.Equal(2, animSet.GetProperty("Flags").GetInt32());
+                Assert.Equal(9, animSet.GetProperty("Unknown").GetInt32());
+                // (Flags << 8) | Unknown = (2 << 8) | 9 = 521.
+                Assert.Equal(521, animSet.GetProperty("IsZForceApplied").GetInt32());
+            },
+            animSetFields: """, "Speed": 208, "Acceleration": 1, "Flags": 2, "Unknown": 9, "Sfx": 5""");
+    }
+
     /// <summary>
     /// Converts a one-bank fixture whose header carries <paramref name="headerFields"/> (the raw
     /// JSON fields, comma-separated, following "Sector5Id"), then hands the output directory, the
@@ -136,7 +173,8 @@ public class SpriteWriterSpriteRecordsTests
     /// </summary>
     private static void RunConversion(
         int sector5Id, string headerFields,
-        Action<string, ConversionReport, IReadOnlyDictionary<string, Guid>> assert)
+        Action<string, ConversionReport, IReadOnlyDictionary<string, Guid>> assert,
+        string animSetFields = "")
     {
         var inputDirectory = CreateTempDirectory();
         var outputDirectory = CreateTempDirectory();
@@ -168,7 +206,7 @@ public class SpriteWriterSpriteRecordsTests
                                         { "Delay": 1, "Images": null }
                                     ] },
                                     null, null, null
-                                ] } ]
+                                ] {{animSetFields}} } ]
                             }
                         ]
                     }

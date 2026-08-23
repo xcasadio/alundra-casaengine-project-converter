@@ -37,6 +37,8 @@ public class AlundraWorldProxyEventPassTests
     {
         public IEventProgramRunner Runner { get; }
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public AlundraGameState GameState { get; } = new();
+        public AlundraPlayerController? PlayerController => null;
         public readonly List<(AlundraEntityScriptProxy Entity, int EffectId)> Destroyed = new();
 
         public FakeScriptHost(IEventProgramRunner runner)

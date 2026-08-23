@@ -36,7 +36,8 @@ public class WorldSpacePolicyTests
             var report = new ConversionReport();
             ProjectWriter.CreateEmptyProject(outputDirectory, report);
             TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
-            WorldWriter.ConvertWorlds(inputDirectory, outputDirectory, mapFilter: new[] { 4 }, mapLocations, report);
+            WorldWriter.ConvertWorlds(
+                inputDirectory, outputDirectory, mapFilter: new[] { 4 }, mapLocations, Ids.For("test:gameMode"), report);
 
             Assert.Empty(report.Errors);
 

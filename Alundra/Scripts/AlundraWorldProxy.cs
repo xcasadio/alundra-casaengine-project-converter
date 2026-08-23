@@ -143,8 +143,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     private readonly List<AlundraMapEvent> _mapEvents = new();
 
-    private bool _loggedNoHeroAsset;
     private bool _loggedNoHeroHeader;
+
+    /// <summary>E2: this world's own <see cref="AlundraPlayerController"/>, resolved once in
+    /// <see cref="InitializeWithWorld"/> (<c>World.PlayerControllers</c> is already populated by then -
+    /// see <see cref="AdoptPlayerPawn"/>'s own doc). Null when no such controller exists (no
+    /// <c>.gameMode</c>/PlayerStartupSettings wired for this world, or its <c>player_controller_class</c>
+    /// resolved to something other than <see cref="AlundraPlayerController"/>) - logged once.</summary>
+    private AlundraPlayerController? _playerController;
+    private bool _loggedNoPlayerController;
 
     /// <summary>
     /// Seam over <c>Data/sprite-records.json</c> lookups (see <see cref="Alundra.Scripts.SpriteRecordCatalog"/>'s
@@ -272,9 +279,18 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             + $"{PortalsLayerName}={portalsLayer?.Objects.Count ?? 0}, "
             + $"{MapEventsLayerName}={mapEventsLayer?.Objects.Count ?? 0}.");
 
-        // New Game hero (port of ResetEntityState/InitializeEntitySlots' own spawn order, GameEngine.cs:626-643:
-        // the player exists BEFORE any record is spawned - the spawn-zone gate below reads its tile).
-        SpawnPlayerEntity(world);
+        // E2: register the "AlundraButtons" input mappings once per game (idempotent across world
+        // reloads - see AlundraPlayerController.EnsureInputMappingsRegistered's own doc), before any
+        // entity's first Update ever reads them.
+        AlundraPlayerController.EnsureInputMappingsRegistered(world.Game);
+
+        // E2: the engine itself already spawned and possessed the hero pawn (World.LoadContent ->
+        // InitializePlayerControllers, strictly before this GameplayProxy's own InitializeWithWorld runs -
+        // see AdoptPlayerPawn's own doc) - adopt it and apply the New Game logical state (port of
+        // ResetEntityState/InitializeEntitySlots' own spawn order, GameEngine.cs:626-643: the player exists
+        // BEFORE any record is spawned - the spawn-zone gate below reads its tile) instead of spawning a
+        // second, separate hero entity ourselves.
+        AdoptPlayerPawn(world);
 
         // MapEvents (port of InitializeMapEvents, GameEngine.cs:476-583) - always against PlayerEntity;
         // empty when there is none (see PlayerEntity's own doc).
@@ -791,89 +807,74 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
-    /// Minimal V1 port of <c>ResetEntityState</c> (GameEngine.cs:648-670), called BEFORE any "Entities"
-    /// record is spawned (their own spawn-zone gate reads the player's tile). Resolves the hero bank
-    /// prefab (<see cref="HeroAssetName"/> = "Alundra", <c>Entities/Alundra/Alundra.entity</c> -
-    /// <c>GetSpriteFromSpriteTable(false, 0)</c>, "record 0 of the global sprite table") the SAME way
-    /// records do (<c>world.Game.AssetContentManager.Load&lt;Entity&gt;</c>), by catalog NAME rather than a
-    /// per-record <c>PrefabAssetId</c> custom property, since the hero has no "Entities" layer record of
-    /// its own.
-    ///
-    /// Ported: spawn position (New Game tile (33,59), tile-centre 16.16 fixed-point - GameInitializer.cs's
-    /// New Game branch via <see cref="AlundraGameState"/>'s own New Game constants),
+    /// E2 replacement for the old <c>SpawnPlayerEntity</c> (which used to clone a SECOND hero prefab
+    /// itself): the ENGINE now spawns the hero pawn and possesses it with an <see cref="AlundraPlayerController"/>
+    /// (<c>World.LoadContent</c> -&gt; <c>InitializePlayerControllers</c>, CasaEngineMonogame/CasaEngine/Framework/Scene/World/World.cs:221-252/282-297,
+    /// strictly before <c>CreateGameplayProxy</c>/<c>InitializeWithWorld</c> run - so by the time this
+    /// method runs, the pawn is already in <c>world.Entities</c>, already <c>Initialize</c>/
+    /// <c>InitializeWithWorld</c>'d, and already positioned at the map's <c>PlayerStart</c> component by
+    /// <c>CreateLocalPlayerController</c>, World.cs:350-367). This method only ADOPTS that pawn (finds its
+    /// controller via <c>world.PlayerControllers</c>, World.cs:76) and applies the New Game LOGICAL state -
+    /// same fields the old <c>SpawnPlayerEntity</c> set, a V1 port of <c>ResetEntityState</c>
+    /// (GameEngine.cs:648-670), called BEFORE any "Entities" record is spawned (their own spawn-zone gate
+    /// reads the player's tile): spawn position (New Game tile (33,59), tile-centre 16.16 fixed-point -
+    /// GameInitializer.cs's New Game branch via <see cref="AlundraGameState"/>'s own New Game constants),
     /// <c>TargetAnimationId</c>/<c>TargetDirection</c> = <see cref="AlundraGameState.ResetAnimationId"/>/
-    /// <see cref="AlundraGameState.ResetDirectionId"/> (54/"idle", 0/down), <c>Status = Normal</c> (NOT
-    /// <c>Loaded</c> - GameEngine.cs:661: the hero has no Load program, unlike every record-spawned
-    /// entity), <c>Flags</c>/<c>SpriteProgramIndexes</c> from the hero's own sprite-records.json header
-    /// when the catalog has one for it (looked up by the SAME prefab asset id a record's own
-    /// <c>PrefabAssetId</c> would carry - <see cref="ISpriteRecordCatalog"/> is keyed by prefab id, not by
-    /// record).
+    /// <see cref="AlundraGameState.ResetDirectionId"/> (54/"LoadingMap", 0/down), <c>Status = Normal</c>
+    /// (NOT <c>Loaded</c> - GameEngine.cs:661: the hero has no Load program, unlike every record-spawned
+    /// entity), <c>Flags</c>/<c>SpriteProgramIndexes</c>/<c>AnimSetsByAnim</c> from the hero's own
+    /// sprite-records.json header when the catalog has one for it.
     ///
-    /// Deliberately NOT ported (E2's own scope - <c>InitializeGameState</c>/<c>PlayerManager</c>, a real
-    /// player system): <c>Hp</c>/<c>HpMax</c> (<c>PlayerManager.GetPlayerHp/HpMax</c>),
+    /// Deviation note: the engine already positioned the pawn's transform at the <c>PlayerStart</c>
+    /// component (world-space (804, -952, 0) on map 389, equal to <c>ResolveWorldPosition</c> of this same
+    /// New Game tile) - this method's own <see cref="ResolveWorldPosition"/> call below OVERWRITES that
+    /// with the logical position instead, which is harmless (same result) but makes explicit that
+    /// <c>AlundraEntityScriptProxy</c>'s logical PosX/PosY/PosZ, not the engine's PlayerStart transform, is
+    /// the field this proxy's own <see cref="SyncTransform"/> re-derives from every frame going forward
+    /// (decision D2's "logical state wins" rule).
+    ///
+    /// Deliberately NOT ported (still out of E2's own scope - a real <c>InitializeGameState</c>/full
+    /// <c>PlayerManager</c>): <c>Hp</c>/<c>HpMax</c> (<c>PlayerManager.GetPlayerHp/HpMax</c>),
     /// <c>g_activeCollisionEntity = null</c> (this world's own <see cref="ActiveCollisionEntity"/> already
     /// starts null), <c>g_currentWeaponFlags</c>/weapon item id, the warp timer/effect resets
     /// (<c>g_playerWarpTimer</c>, <c>g_isWarpDisabled</c>, <c>g_playerWarpEffect</c>,
     /// <c>g_playerEffectTransitionCooldown</c>, <c>ResetWarpLockTimer</c>) - none of these have any
-    /// observable effect before a player-control/physics system exists to read them. No controller, no
-    /// input, no camera-follow (E2/E5/E6).
+    /// observable effect on E2's own ported <see cref="AlundraPlayerManager.MovePlayer"/> subset. No
+    /// camera-follow yet (E5).
     /// </summary>
-    private void SpawnPlayerEntity(World world)
+    private void AdoptPlayerPawn(World world)
     {
-        var assetInfo = AssetCatalog.Get(HeroAssetName);
-        if (assetInfo == null)
+        var playerController = world.PlayerControllers.OfType<AlundraPlayerController>().FirstOrDefault();
+        _playerController = playerController;
+
+        if (playerController?.Pawn == null)
         {
-            if (!_loggedNoHeroAsset)
+            if (!_loggedNoPlayerController)
             {
-                _loggedNoHeroAsset = true;
+                _loggedNoPlayerController = true;
                 Logs.WriteWarning(
-                    $"AlundraWorldProxy: no '{HeroAssetName}' asset in the catalog; no player entity "
-                    + $"spawned in world '{world.Name}' (ResetEntityState, GameEngine.cs:648-670).");
+                    $"AlundraWorldProxy: no {nameof(AlundraPlayerController)} possessing a pawn in world "
+                    + $"'{world.Name}' (missing/misconfigured player_startup_settings_asset_id, "
+                    + "player_controller_class, or default_pawn_asset_id); no player entity adopted, no "
+                    + "fallback spawn.");
             }
 
             return;
         }
 
-        Entity? prefab;
-        try
-        {
-            prefab = world.Game.AssetContentManager.Load<Entity>(assetInfo.Id);
-        }
-        catch (Exception ex)
-        {
-            Logs.WriteWarning(
-                $"AlundraWorldProxy: failed to load hero prefab '{HeroAssetName}' ({assetInfo.Id}) in "
-                + $"world '{world.Name}'; no player entity spawned. {ex.Message}");
-            return;
-        }
-
-        if (prefab == null)
-        {
-            Logs.WriteWarning(
-                $"AlundraWorldProxy: hero prefab '{HeroAssetName}' loader returned null in world "
-                + $"'{world.Name}'; no player entity spawned.");
-            return;
-        }
-
-        var entity = prefab.Clone();
-        entity.Name = HeroAssetName;
-
-        if (string.IsNullOrEmpty(entity.GameplayProxyClassName))
-        {
-            entity.GameplayProxyClassName = nameof(AlundraEntityScriptProxy);
-        }
-
-        entity.Initialize();
+        var entity = playerController.Pawn;
 
         if (entity.GameplayProxy is not AlundraEntityScriptProxy proxy)
         {
             Logs.WriteWarning(
-                $"AlundraWorldProxy: hero prefab '{HeroAssetName}' did not produce an "
-                + $"{nameof(AlundraEntityScriptProxy)} in world '{world.Name}'; no player entity spawned.");
+                $"AlundraWorldProxy: the engine-spawned pawn in world '{world.Name}' did not produce an "
+                + $"{nameof(AlundraEntityScriptProxy)} (GameplayProxyClassName on the pawn prefab); no "
+                + "player entity adopted.");
             return;
         }
 
         proxy.IsPlayer = true;
+        proxy.ScriptHost = this;
         proxy.LogicContextEntity = entity;
         proxy.ParentEntity = null;
         proxy.Status = EntityStatus.Normal;
@@ -894,7 +895,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         proxy.CurrentAnimationId = ~AlundraGameState.ResetAnimationId;
         proxy.CurrentDirection = ~AlundraGameState.ResetDirectionId;
 
-        if (SpriteRecordCatalog != null && SpriteRecordCatalog.TryGet(assetInfo.Id, out var header))
+        var assetInfo = AssetCatalog.Get(HeroAssetName);
+        if (assetInfo != null && SpriteRecordCatalog != null && SpriteRecordCatalog.TryGet(assetInfo.Id, out var header))
         {
             proxy.Flags = (uint)(header.MoreFlags | (header.CanPickup << 8) | (header.FlagsPortraitShadowType << 16));
             proxy.SpriteProgramIndexes[ScriptHelper.ProgramALoad] = header.ProgramLoad;
@@ -904,23 +906,26 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             proxy.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate] = header.ProgramDeactivate;
             proxy.SpriteProgramIndexes[ScriptHelper.ProgramFInteract] = header.ProgramInteract;
             proxy.IdsvByAnimDirection = BuildIdsvByAnimDirection(header.IdsvAnimDirs);
+            proxy.AnimSetsByAnim = header.AnimSets;
         }
         else if (!_loggedNoHeroHeader)
         {
             _loggedNoHeroHeader = true;
             Logs.WriteDebug(
                 $"AlundraWorldProxy: no sprite-records.json header found for the hero prefab in world "
-                + $"'{world.Name}'; Flags/SpriteProgramIndexes left at their defaults.");
+                + $"'{world.Name}'; Flags/SpriteProgramIndexes/AnimSetsByAnim left at their defaults.");
         }
 
-        proxy.ScriptHost = this;
-
+        // Overwrites the engine's own PlayerStart-derived transform - see this method's own doc
+        // ("Deviation note") for why that is intentional, not redundant.
         if (entity.RootComponent != null)
         {
             entity.RootComponent.LocalTransform.Position = ResolveWorldPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
         }
 
-        world.AddEntity(entity);
+        // The pawn is already in world.Entities (the engine added it) but not yet in this proxy's own
+        // _spawnedEntities - add it so the per-entity animation/transform sync passes (SyncAnimation/
+        // SyncTransform) see it every frame, exactly like the old SpawnPlayerEntity used to.
         _spawnedEntities.Add(entity);
         PlayerEntity = proxy;
     }
@@ -1631,6 +1636,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     AlundraEntityScriptProxy? IAlundraScriptHost.ActiveCollisionEntity => ActiveCollisionEntity;
 
     void IAlundraScriptHost.DestroyEntity(AlundraEntityScriptProxy entity, int effectId) => DestroyEntity(entity, effectId);
+
+    AlundraGameState IAlundraScriptHost.GameState => GameState;
+
+    AlundraPlayerController? IAlundraScriptHost.PlayerController => _playerController;
 
     /// <summary>
     /// Snapshot of <see cref="_spawnedEntities"/>'s own <see cref="AlundraEntityScriptProxy"/> proxies, in

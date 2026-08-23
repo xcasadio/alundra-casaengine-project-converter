@@ -93,13 +93,25 @@ if (options.Phase >= 5)
         FontWriter.ConvertFont(options.InputDirectory, options.OutputDirectory, report));
 }
 
-// Phase 6: one world per map (tilemap + camera + player start), the MapId -> world index, and the
-// raw event bytecode companions. Map entities/portals/map events stay in the .tileMap object
-// layers Phase 1 wrote them to - see WorldWriter's summary.
+// Phase 6: the hero's PlayerStartupSettings (.gameMode) and input mapping (.buttonsMapping) - see
+// PlayerSetupWriter - then one world per map (tilemap + camera + player start, each pointing at the
+// gameMode above), the MapId -> world index, and the raw event bytecode companions. Map
+// entities/portals/map events stay in the .tileMap object layers Phase 1 wrote them to - see
+// WorldWriter's summary. The gameMode needs the hero prefab's asset id, which only Phase 3 knows, so
+// it must run after Phase 3 and before the worlds that reference it.
+var playerStartupSettingsAssetId = Guid.Empty;
 if (options.Phase >= 6)
 {
+    report.RunPhase("Phase6.PlayerSetup", () =>
+    {
+        playerStartupSettingsAssetId =
+            PlayerSetupWriter.WriteGameMode(options.OutputDirectory, prefabAssetIdsByBankKey, report);
+        PlayerSetupWriter.WriteButtonsMapping(options.OutputDirectory, report);
+    });
     report.RunPhase("Phase6.Worlds", () =>
-        WorldWriter.ConvertWorlds(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report));
+        WorldWriter.ConvertWorlds(
+            options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations,
+            playerStartupSettingsAssetId, report));
     report.RunPhase("Phase6.Events", () =>
         EventCodeWriter.ConvertEvents(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report));
 }

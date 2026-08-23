@@ -546,6 +546,16 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
 
     public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId) => entity.Status = EntityStatus.FlagToDestroy;
 
+    // E2: this harness builds its own player proxy directly (see BuildInitialState) with no
+    // AlundraPlayerController/World behind it - GameState is still the same shared flag store every other
+    // pass here already reads (_gameState), but PlayerController stays null so
+    // AlundraEntityScriptProxy.Update's own player branch (AlundraPlayerManager.MovePlayer/Tick) is a
+    // documented no-op, exactly like "no player controller yet" used to read before E2 (see RunFrame's own
+    // comment) - keeps this trace's frame count/opcode sequence unchanged.
+    public AlundraGameState GameState => _gameState;
+
+    public AlundraPlayerController? PlayerController => null;
+
     /// <summary>Shared with the initial load-time spawn loop in <see cref="BuildInitialState"/> - registers
     /// a freshly spawned entity's non-zero A/C/F program indexes so the static disassembly annex covers
     /// dynamically spawned entities too, not just the ones present at map load.</summary>

@@ -2,6 +2,8 @@ using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Assets.Sprites;
 using CasaEngine.Framework.Assets.TileMap;
+using CasaEngine.Framework.Gameplay;
+using CasaEngine.Framework.Input;
 using CasaEngine.Framework.Scene.Entities;
 using Newtonsoft.Json.Linq;
 using Texture = CasaEngine.Framework.Assets.Textures.Texture;
@@ -41,6 +43,10 @@ public static class AssetVerifier
         // none of which touches Owner.World.Game - only InitializeWithWorld does, and that is not
         // part of Load. WorldWriterTests has been loading entities this way since Phase 6.
         ["entity"] = element => new Entity().Load(element),
+        // PlayerStartupSettings.Load and ButtonsMapping.Load are both plain JObject readers with no
+        // game/graphics dependency - see PlayerSetupWriter.
+        ["gamemode"] = element => new PlayerStartupSettings().Load(element),
+        ["buttonsmapping"] = element => new ButtonsMapping().Load(element),
     };
 
     public static bool Verify(string outputDirectory, ConversionReport report)

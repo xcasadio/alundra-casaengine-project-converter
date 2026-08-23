@@ -211,7 +211,7 @@ public class AssetVerifierTests
             ProjectWriter.CreateEmptyProject(outputDirectory, buildReport);
             TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, buildReport);
             WorldWriter.ConvertWorlds(
-                inputDirectory, outputDirectory, mapFilter: new[] { MapIndex }, mapLocations, buildReport);
+                inputDirectory, outputDirectory, mapFilter: new[] { MapIndex }, mapLocations, Guid.Empty, buildReport);
             Assert.Empty(buildReport.Errors);
 
             body(outputDirectory, new ConversionReport());

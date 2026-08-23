@@ -94,9 +94,12 @@ public readonly record struct TileCentreSpawn(int PixelX, int PixelY, float Worl
 /// projection cannot both come from a stock component today; the projection is the one that cannot
 /// be added later from gameplay code, so it wins.
 ///
-/// player_startup_settings_asset_id is deliberately left at Guid.Empty. The .gameMode asset it
-/// would point at needs the hero .entity, which is step E2 of docs/demarrage-nouvelle-partie.md
-/// and outside Phase 6; writing one now would only create a dangling reference in 483 files.
+/// player_startup_settings_asset_id points at Entities/Alundra/Alundra.gameMode (see
+/// PlayerSetupWriter), the same id in all 483 worlds - World.LoadContent spawns the hero at
+/// whichever PlayerStartComponent that world declares, so every world can share the one
+/// PlayerStartupSettings asset. Phase 6 receives the id already resolved (it needs the hero
+/// .entity's own asset id, which only Phase 3 knows), so ConvertWorlds takes it as a parameter
+/// rather than deriving it itself.
 ///
 /// Serialization: the .world JSON is built directly as a JObject rather than through
 /// EditorWorldEditingService.AddEntity + EditorWorldWriter.SaveWorld. That path cannot run here:
@@ -151,6 +154,7 @@ public static class WorldWriter
         string outputDirectory,
         IReadOnlyList<int>? mapFilter,
         IReadOnlyDictionary<int, MapLocation> mapLocations,
+        Guid playerStartupSettingsAssetId,
         ConversionReport report)
     {
         // The invariants below are the totals of the shipped Alundra corpus, so they may only be
@@ -170,7 +174,8 @@ public static class WorldWriter
         foreach (var mapIndex in mapIndices.OrderBy(index => index))
         {
             ConvertMap(
-                inputDirectory, outputDirectory, mapIndex, mapLocations, sharedCameraAssetId, worldPathsByMapId, report);
+                inputDirectory, outputDirectory, mapIndex, mapLocations, sharedCameraAssetId,
+                playerStartupSettingsAssetId, worldPathsByMapId, report);
         }
 
         WriteWorldIndex(outputDirectory, worldPathsByMapId, report);
@@ -253,6 +258,7 @@ public static class WorldWriter
         int mapIndex,
         IReadOnlyDictionary<int, MapLocation> mapLocations,
         Guid sharedCameraAssetId,
+        Guid playerStartupSettingsAssetId,
         IDictionary<int, string> worldPathsByMapId,
         ConversionReport report)
     {
@@ -284,7 +290,9 @@ public static class WorldWriter
         Directory.CreateDirectory(Path.Combine(outputDirectory, location.MapFolder));
 
         var worldId = Ids.For($"world:{mapIndex}");
-        var worldNode = BuildWorld(mapIndex, worldId, location.FileBaseName, tileMapData.Id, sharedCameraAssetId, spawn);
+        var worldNode = BuildWorld(
+            mapIndex, worldId, location.FileBaseName, tileMapData.Id, sharedCameraAssetId,
+            playerStartupSettingsAssetId, spawn);
 
         EditorAssetWriterService.SaveDocument(worldRelativePath, worldNode);
         EditorAssetCatalogService.Add(new AssetInfo(worldId)
@@ -326,6 +334,7 @@ public static class WorldWriter
         string worldName,
         Guid tileMapDataAssetId,
         Guid sharedCameraAssetId,
+        Guid playerStartupSettingsAssetId,
         TileCentreSpawn spawn)
     {
         var entityReferences = new JArray
@@ -360,7 +369,7 @@ public static class WorldWriter
             // SimulationSpacePolicyNames.TopDownElevation constrains bodies to. Written as the
             // literal the engine matches on (World.Load -> SpacePolicyName -> CreateByName).
             ["space_policy"] = "TopDownElevation",
-            ["player_startup_settings_asset_id"] = Guid.Empty.ToString(),
+            ["player_startup_settings_asset_id"] = playerStartupSettingsAssetId.ToString(),
             ["gameplay_mode_asset_id"] = Guid.Empty.ToString(),
         };
     }
