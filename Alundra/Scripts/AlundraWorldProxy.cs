@@ -197,6 +197,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     private bool _wallPlacementOverlayApplied;
 
+    /// <summary>
+    /// This world's <see cref="AlundraCellsCollisionField"/>, built once in
+    /// <see cref="InitializeWithWorld"/> from the loaded <see cref="TileMapData"/>'s "AlundraCells"
+    /// custom property and installed as <c>World.CollisionField</c> (also exposed here for tests -
+    /// null in degraded mode, see <see cref="AlundraCellsRecords.TryParse"/>).
+    /// </summary>
+    public AlundraCellsCollisionField? CollisionField { get; private set; }
+
     /// <summary>Renders this world's scrolling background layers (see <see cref="BackdropRenderer"/>'s
     /// class doc) - loaded once in <see cref="InitializeWithWorld"/>, ticked and drawn every frame
     /// from <see cref="Update"/>.</summary>
@@ -248,6 +256,22 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         {
             Logs.WriteWarning($"AlundraWorldProxy: entity '{TileMapEntityName}' has no loaded TileMapData in world '{world.Name}'; no entity spawned.");
             return;
+        }
+
+        // E3.b: build this world's ground/walkability field from the same TileMapData and install it on
+        // World.CollisionField - World.Clear() resets the slot to null (World.cs), so every load
+        // re-installs it here. Tolerant by design, like the wall/floor placement overlays right below:
+        // a missing/malformed "AlundraCells" property (or a cell_count that does not match MapSize)
+        // just leaves World.CollisionField null (degraded mode, single warning already logged by
+        // AlundraCellsCollisionField.TryCreate) - E3.c's mover then has no field to sample.
+        if (AlundraCellsCollisionField.TryCreate(tileMapData, world.Name, out var collisionField))
+        {
+            CollisionField = collisionField;
+            world.CollisionField = collisionField;
+        }
+        else
+        {
+            CollisionField = null;
         }
 
         // Wall/sprite depth interleave (Slice B): strip every baked wall tile the converter recorded

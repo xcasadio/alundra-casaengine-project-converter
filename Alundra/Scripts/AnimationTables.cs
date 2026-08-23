@@ -84,4 +84,21 @@ internal static class AnimationTables
         unchecked((short)0xfe96), unchecked((short)0xfee4), unchecked((short)0xff3c), unchecked((short)0xff9c), 0x0,
         0x64, 0xc4, 0x11c, 0x16a, 0x1aa, 0x1d9, 0x1f6
     };
+
+    /// <summary>
+    /// StaticVariables.g_heights_800236d4 (StaticVariables.cs:531-541, address comment 0x800236d4): 24
+    /// per-pixel-column height offsets (in map-tile-height units, i.e. already the value added to
+    /// <c>(tile.Height - 1) * StaticVariables.MapTileHeight</c>) used by the ladder-entering/exiting
+    /// slope branches of <c>PhysicsEngine.ComputeEntityGroundHeight</c> @ 0x800370c4 - see
+    /// <see cref="AlundraCellsCollisionField"/>.
+    /// </summary>
+    public static readonly byte[] HeightsTable_800236d4 =
+    {
+        0x1, 0x2, 0x2, 0x3,
+        0x4, 0x4, 0x5, 0x6,
+        0x6, 0x7, 0x8, 0x8,
+        0x9, 0xA, 0xA, 0xB,
+        0xC, 0xC, 0xD, 0xE,
+        0xE, 0xF, 0x10, 0x10
+    };
 }

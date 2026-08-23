@@ -16,10 +16,10 @@ namespace Alundra.Scripts;
 /// </code>
 /// Bits 24-31 are never produced by the data and are never read by the engine.
 ///
-/// V1 note: the converter does not yet populate <see cref="AlundraEntityScriptProxy.Flags"/> from the
-/// sprite record at spawn time (unlike the original), so every branch that reads a flag below is
-/// dormant for now - ported faithfully anyway so <c>UpdateEntitiesEvents</c> reads correctly once the
-/// mapper is extended.
+/// <see cref="AlundraEntityScriptProxy.Flags"/> IS populated from the sprite record header at spawn
+/// time (<c>AlundraWorldProxy.CreateEntityFromPrefab</c> ~:894 and <c>AlundraWorldProxy.AdoptPlayerPawn</c>
+/// ~:1042, both porting <c>EntityManager.cs:92-93</c>'s packing), so every branch that reads a flag
+/// below is live.
 /// </summary>
 public static class EntityFlags
 {

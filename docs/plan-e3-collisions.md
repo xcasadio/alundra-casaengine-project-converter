@@ -238,7 +238,7 @@ Données/DLL (ce repo) : les prefabs G2 ont racine `AnimatedSpriteComponent` + e
   avant/après demandée par le plan mais hors du périmètre d'un agent headless) — signalé comme
   écart à valider, pas deviné.
 
-### E3.b — Champ de collision Alundra ⏳ (moteur API puis DLL, plan-verifier)
+### E3.b — Champ de collision Alundra ✅ (moteur c8798c59 + DLL, verifiers CONFIRMED)
 
 - **Découpage** : deux commits ordonnés, un seul committeur par repo — (1) **moteur** (submodule) :
   contrat d'axes + masque ; bump du pointeur dans le parent ; (2) **DLL** (parent) :
@@ -302,6 +302,66 @@ Données/DLL (ce repo) : les prefabs G2 ont racine `AnimatedSpriteComponent` + e
 - **Rollback** : revert du commit moteur + pointeur ; revert du commit DLL. **Budget** : deux commits,
   ≤ 1 journée. **Arrêt** : si le paramètre d'axe additif ne peut pas garder les 14 tests verts, ou si
   `World.CollisionField` n'est pas accessible au `InitializeWithWorld` du proxy.
+
+#### Réalisé — écarts (2026-08-23)
+
+- **Moteur** : déjà livré avant cette tranche (`ICollisionField.TrySampleGround(in Vector3, float,
+  uint, out GroundSample)` par défaut, `HeightGridCollisionField(..., Vector3? up = null)`,
+  `World.CollisionField` settable/reset par `World.Clear()`) — aucune modification moteur nécessaire
+  dans cette moitié DLL.
+- **`Alundra/Scripts/AlundraCellsCollisionField.cs`** : deux types — `AlundraCellsRecords` (parseur
+  tolérant de la propriété custom `AlundraCells`, même patron que
+  `WallPlacementOverlay.TryParse`/`WallPlacementRecords`, colonnes `walkability`/`ground_property`/
+  `slope`/`height` seulement — `tile_id`/`palette`/`tile`/`flags`/`wall_tiles_offset`/`wall_tiles` sont
+  ignorées par `JsonSerializer.Deserialize`, non consommées par les règles de cette tranche) et
+  `AlundraCellsCollisionField : ICollisionField` (espace logique, `up = Vector3.UnitZ` implicite via
+  `Normal = UnitZ`). `TryCreate(TileMapData, worldName, out field)` vérifie en plus que
+  `cell_count`/longueur des colonnes correspondent à `TileMapData.MapSize.Width * Height` (52×60=3120
+  sur la 389) — un mismatch dégrade (avertissement, pas de champ) exactement comme un JSON absent ou
+  malformé.
+- **Mapping case 2 / case 3 lu dans la décompilation** (`PhysicsEngine.cs:1030-1035` pour le cas 2,
+  `:1046-1051` pour le cas 3) : cas 2 (`slope & 3 == 2`, "ladders entering or stair side down") →
+  `xIndex = (23 - x % 24) % 24` (`:1034`) ; cas 3 (`slope & 3 == 3`, "ladders exiting") →
+  `xIndex = x % 24` directement (`:1050`) — confirmé conforme à l'énoncé du plan, aucun écart. La
+  table `g_heights_800236d4` (24 octets, `StaticVariables.cs:531-541`) est copiée dans
+  `AnimationTables.HeightsTable_800236d4` avec le commentaire d'adresse `0x800236d4`.
+- **Bit ClassB** : `0x00000008` (`Gameplay/EntityFlags.cs:53` côté décompilation, `Alundra/Scripts/
+  EntityFlags.cs:62` côté DLL — bit 3, "the entity belongs to collision/damage class B" ; ClassA reste
+  `0x00000001`, bit 0). `WalkabilityMaskFor` : `0x40 | (ClassB ? 0x01 : 0) | (ClassA ? 0x1000 : 0)`,
+  port exact de `GetCollisionFlagsWithPlayer` (`PhysicsEngine.cs:1085-1099`) et `GetCollisionFlags`
+  (`:1139-1149`) — les deux méthodes partent de `flag = 0x40`, passent à `0x41` sous ClassB, OR `0x1000`
+  sous ClassA.
+- **Note périmée corrigée** : `Alundra/Scripts/EntityFlags.cs` (doc de classe) affirmait que `Flags`
+  n'était pas encore renseigné au spawn ; corrigé — `AlundraWorldProxy.CreateEntityFromPrefab` (~:894)
+  et `AdoptPlayerPawn` (~:1042) le renseignent bien depuis le header (`EntityManager.cs:92-93`), donc
+  toutes les branches qui lisent un bit de `EntityFlags` sont actives, pas dormantes.
+- **Installation** : `AlundraWorldProxy.InitializeWithWorld` construit le champ juste après la
+  résolution de `tileMapData` (avant l'application des overlays mur/sol et avant `AdoptPlayerPawn`/le
+  spawn des records) et l'installe à la fois sur `world.CollisionField` et sur une propriété publique
+  `AlundraWorldProxy.CollisionField` (pour les tests) ; en mode dégradé les deux valent `null` — un
+  seul avertissement déjà logué par `AlundraCellsCollisionField.TryCreate`/`AlundraCellsRecords.TryParse`.
+- **Valeurs de test confirmées sur les données réelles de la 389** (`AlundraCells` de
+  `Ship Klark (beginning)-389.tileMap`, indexées `y*52+x`) : (18,57) `slope=4` (`&3=0` plat) `h=5` →
+  **80 px** ; (13,27) `slope=5` (`&3=1` escalier) `h=10` → y=432→**160 px**, y=440→**152 px** ;
+  (17,40) `slope=6` (`&3=2` échelle entrante) `h=8` → x=408→**128 px**, x=431→**113 px** ; (18,48)
+  `slope=7` (`&3=3` échelle sortante) `h=6` → x=432→**81 px**, x=455→**96 px** ; (18,15)
+  `walkability=1` → masque `0x40` marchable, `0x41` non marchable ; (18,38) `ground_property=128` →
+  masque `0x8040` non marchable ; hors grille (−10, 5000) → clamp (0,59), `HasGround` vrai ; sous la
+  surface (Z=10 sur (18,57)) → `GroundHeight` 80 inchangé ; `maxDrop=0` vs `maxDrop` large → même
+  résultat (le paramètre est ignoré, écart documenté ci-dessous). **Aucun désaccord** entre les valeurs
+  à la main du plan et la formule portée — pas d'arrêt nécessaire.
+- **Écarts documentés** (identiques à ceux annoncés dans le plan, confirmés à l'implémentation) :
+  bump `slopesHit` multi-coins (+16 sur les coins suivants d'une empreinte à cheval sur plusieurs
+  cellules en pente, `PhysicsEngine.cs:1021-1024/:1037-1040/:1053-1056`) non reproduit — le champ ne
+  voit qu'un point, E3.c prendra le max des 4 coins sans reproduire ce bump exact ; `HasGround` toujours
+  vrai (clamp hors grille) ; `GroundHeight` renvoyée même au-dessus du point échantillonné ;
+  `maxDropDistance` ignoré. `SurfaceTag` = `ground_property` en texte, mis en cache par valeur distincte
+  au constructeur (`string?[256]`), aucune allocation par appel.
+- **Tests** : `Alundra.Tests/AlundraCellsCollisionFieldTests.cs`, 18 nouveaux (3 parsing synthétique,
+  2 `TryCreate` synthétiques, 4 `WalkabilityMaskFor`, 9 sur les données réelles de la 389 listées
+  ci-dessus) — 344/344 verts (326 existants + 18). `dotnet build` solution 0 erreur ; `dotnet build
+  Alundra/Alundra.csproj` 0 erreur ; harnais intro non affecté (aucune logique d'event program ni de
+  spawn touchée par cette tranche).
 
 ### E3.c — Mover conscient de la politique ⏳ (moteur, plan-verifier)
 
