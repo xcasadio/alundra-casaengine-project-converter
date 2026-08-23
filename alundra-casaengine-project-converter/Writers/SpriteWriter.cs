@@ -46,15 +46,19 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    terminator frame never emits (see ConvertCollisionKeyframes for the full rule). ProfileName
 ///    and Tag stay empty: CollisionData carries no attack/defence semantics - that lives in the
 ///    event bytecode, still out of scope - and an empty profile inherits Trigger in the engine.
-///  - Every bank gets an Entities/{name}/{name}.entity prefab: a root AnimatedSpriteComponent
-///    carrying every animation the bank converted (in the same (AnimSet, direction) order they were
-///    written), a DepthSortable2DComponent entity-level component, entity-level
-///    script_class_name = "AlundraEntityScriptProxy", and - only when the bank's header
-///    (SpriteRecord.Header) declares a positive body volume - a CollisionComponent child of the root
-///    with a single Box fixture, the entity's own body box. See WriteEntityPrefab for the
-///    Kinetic/Pawn decision on that fixture. Banks with no body box (previously skipped) now get the
-///    same prefab minus the CollisionComponent, so every SpriteTableIndex a map references resolves
-///    to a prefab (see EntityPrefabLinkWriter, Phase 3.5).
+///  - Every bank gets an Entities/{name}/{name}.entity prefab (E3.a, docs/plan-e3-collisions.md): a
+///    root TransformComponent (inert, carries the entity's LOGICAL pose) with a RenderProjectionComponent
+///    child (derives the render pose from the root every update under the world's TopDownElevation
+///    policy), which itself carries the AnimatedSpriteComponent with every animation the bank
+///    converted (in the same (AnimSet, direction) order they were written); a DepthSortable2DComponent
+///    entity-level component; entity-level script_class_name = "AlundraEntityScriptProxy"; and - only
+///    when the bank's header (SpriteRecord.Header) declares a positive body volume - a
+///    CollisionComponent child of the ROOT (sibling of the projection, not of the sprite) with a
+///    single Box fixture, the entity's own body box, so its pose stays logical rather than following
+///    the render projection. See WriteEntityPrefab for the Kinetic/Pawn decision on that fixture.
+///    Banks with no body box (previously skipped) now get the same prefab minus the
+///    CollisionComponent, so every SpriteTableIndex a map references resolves to a prefab (see
+///    EntityPrefabLinkWriter, Phase 3.5).
 ///  - Hero SpriteEffectRecords (map_alundra.json) are preserved as a raw JSON companion, not
 ///    converted to sprites/animations in V1 (their Spritesheet indices exceed the normal 0-7
 ///    range, suggesting a different graphics source not covered by the atlas-packing fix).
@@ -256,10 +260,13 @@ public static class SpriteWriter
     }
 
     /// <summary>
-    /// Writes Entities/{name}/{name}.entity for every bank: a root AnimatedSpriteComponent carrying
-    /// the bank's own animation asset ids (see <see cref="AnimatedSpriteComponent.AnimationAssetIds"/>
-    /// - built in memory here rather than through Load, since there is no source document to load
-    /// from), an entity-level DepthSortable2DComponent configured like
+    /// Writes Entities/{name}/{name}.entity for every bank (E3.a restructuring,
+    /// docs/plan-e3-collisions.md): root TransformComponent (logical pose, inert) -&gt;
+    /// RenderProjectionComponent (derives the render pose from the root every update under the
+    /// world's TopDownElevation policy) -&gt; AnimatedSpriteComponent carrying the bank's own animation
+    /// asset ids (see <see cref="AnimatedSpriteComponent.AnimationAssetIds"/> - built in memory here
+    /// rather than through Load, since there is no source document to load from); an entity-level
+    /// DepthSortable2DComponent configured like
     /// CasaEngineMonogame/Projects/RPGDemo/Entities/character_link.entity (YSortedWorld render pass,
     /// top-down Y-up sort - the defaults both components already carry), and entity-level
     /// script_class_name = "AlundraEntityScriptProxy" so a spawned instance gets the shared gameplay
@@ -269,9 +276,12 @@ public static class SpriteWriter
     /// Entity.InitializePrivate, which Load never calls.
     ///
     /// When the bank's header also declares a positive body volume, a CollisionComponent child of the
-    /// root carries a single Box fixture, which is Alundra's per-entity body box (SpriteRecord.Header
-    /// Offset/Size), as opposed to the per-frame hitboxes that live on the animations. A record with
-    /// any size at 0 declares no body and the prefab stays sprite-only (root with no children).
+    /// ROOT (sibling of the RenderProjectionComponent, not a descendant of it) carries a single Box
+    /// fixture, which is Alundra's per-entity body box (SpriteRecord.Header Offset/Size), as opposed
+    /// to the per-frame hitboxes that live on the animations - its effective pose is therefore the
+    /// entity's logical pose, not its render pose (intended side effect, no runtime consumer yet). A
+    /// record with any size at 0 declares no body and the prefab stays sprite-only (root + projection
+    /// + sprite, no collision child).
     ///
     /// PhysicsType is Kinetic: an Alundra entity's body is moved by gameplay code, never by a
     /// simulation, and it must still report contacts - which is exactly the ghost object a kinetic
@@ -280,8 +290,12 @@ public static class SpriteWriter
     ///
     /// The document is produced by the engine's own entity serializer rather than hand-built, so
     /// the physics_definition node PhysicsBaseComponent.Load reads unconditionally is complete by
-    /// construction. As everywhere else in this writer, ids are not deterministic: ObjectBase.Id has
-    /// a private setter (see the class summary).
+    /// construction. As everywhere else in this writer, ids are not deterministic - including the two
+    /// new components (TransformComponent, RenderProjectionComponent): ObjectBase.Id has a private
+    /// setter only Load(JObject) can assign (see the class summary), and this method builds objects
+    /// in memory rather than loading them, so there is no way to force Ids.For here even for a newly
+    /// introduced component - same constraint the pre-existing sprite/collision components were
+    /// already subject to.
     /// </summary>
     private static void WriteEntityPrefab(
         SpriteBank bank,
@@ -298,21 +312,38 @@ public static class SpriteWriter
         var spriteComponent = new AnimatedSpriteComponent { Name = nameof(AnimatedSpriteComponent) };
         spriteComponent.AnimationAssetIds.AddRange(animationAssetIds);
 
+        // E3.a (docs/plan-e3-collisions.md): the root carries the LOGICAL pose (an inert
+        // TransformComponent - CasaEngineMonogame E3.0), a RenderProjectionComponent child derives
+        // the render pose from it every update (SimulationSpacePolicy.DeriveRenderPosition under the
+        // world's TopDownElevation policy - CasaEngineMonogame/.../RenderProjectionComponent.cs), and
+        // the AnimatedSpriteComponent lives under that projection so it renders at the projected
+        // position while the collision body below stays in logical space.
+        var projectionComponent = new RenderProjectionComponent { Name = nameof(RenderProjectionComponent) };
+        projectionComponent.AddChildComponent(spriteComponent);
+
+        var rootComponent = new TransformComponent { Name = nameof(TransformComponent) };
+        rootComponent.AddChildComponent(projectionComponent);
+
         var bodyBox = bank.BodyBox;
         var hasBody = bodyBox != null && bodyBox.HasPositiveVolume;
         if (hasBody)
         {
+            // Child of the ROOT, not of the projection: a CollisionComponent's fixtures must stay in
+            // logical space, the same space the (still absent) runtime collision consumer will read
+            // (docs/plan-e3-collisions.md E3.b/E3.c). Its effective pose is therefore the entity's
+            // logical pose rather than its render pose - an intended side effect of this
+            // restructuring, with no runtime consumer yet.
             var collisionComponent = new CollisionComponent { Name = nameof(CollisionComponent) };
             collisionComponent.PhysicsDefinition.PhysicsType = PhysicsType.Kinetic;
             collisionComponent.PhysicsDefinition.ProfileName = string.Empty;
             collisionComponent.Fixtures.Add(CreateBodyFixture(bodyBox!));
-            spriteComponent.AddChildComponent(collisionComponent);
+            rootComponent.AddChildComponent(collisionComponent);
         }
 
         var entity = new Entity
         {
             Name = entityFolderName,
-            RootComponent = spriteComponent,
+            RootComponent = rootComponent,
             GameplayProxyClassName = "AlundraEntityScriptProxy",
         };
         entity.AddComponent(new DepthSortable2DComponent { Name = nameof(DepthSortable2DComponent) });

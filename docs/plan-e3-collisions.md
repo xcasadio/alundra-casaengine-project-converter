@@ -143,7 +143,7 @@ Données/DLL (ce repo) : les prefabs G2 ont racine `AnimatedSpriteComponent` + e
 - **Rollback** : revert dans le submodule. **Budget** : un commit, ≤ 1 demi-journée ; arrêt si la
   sérialisation générique n'accepte pas une sous-classe sans champ.
 
-### E3.a — Pose logique dans les prefabs et la DLL ⏳ (convertisseur + DLL, sans physique)
+### E3.a — Pose logique dans les prefabs et la DLL ✅ (verifier CONFIRMED ; tri murs/sprites à confirmer à l'œil par l'utilisateur)
 
 - **Prérequis** : E3.0 commité et pointeur de submodule bumpé (le convertisseur référence le
   moteur pour écrire les prefabs).
@@ -181,6 +181,62 @@ Données/DLL (ce repo) : les prefabs G2 ont racine `AnimatedSpriteComponent` + e
   montage de `Alundra.Tests/WallPlacementOverlayTests.cs:566-580`.
 - **Rollback** : revert + export. **Budget** : un commit convertisseur + DLL ; arrêt si le tri de
   profondeur change à l'écran.
+
+#### Réalisé — écarts (2026-08-23)
+
+- **Structure des prefabs** : `Writers/SpriteWriter.cs` (`WriteEntityPrefab`) construit maintenant
+  `TransformComponent` (racine) → `RenderProjectionComponent` → `AnimatedSpriteComponent` ; quand le
+  header déclare une boîte de corps positive, `CollisionComponent` est ajouté comme enfant de la
+  RACINE (frère de la projection, pas du sprite) — vérifié sur l'export complet :
+  `alundra-project/Entities/Alundra/Alundra.entity` montre exactement cette chaîne
+  (`root_component.type = TransformComponent` → `RenderProjectionComponent` →
+  `AnimatedSpriteComponent`, plus `CollisionComponent` en second enfant de la racine) ;
+  `DepthSortable2DComponent` reste au niveau entité, inchangé. Les 11 prefabs sprite-only obtiennent
+  la même racine + projection, sans `CollisionComponent`.
+- **Effet de bord de la boîte de collision** : conforme au plan — la pose effective de
+  `CollisionComponent` est désormais la pose LOGIQUE de l'entité (racine directe), pas sa pose de
+  rendu ; aucun consommateur runtime aujourd'hui (E3.b/E3.c la brancheront).
+- **`PlayerStart`** : `Writers/WorldWriter.cs` (`ResolveTileCentreSpawn`) émet la pose logique
+  `(X pixelX, Y pixelY non inversé, Z élévation en px)`. Map 389 → `(804, 952, 0)`, vérifié sur
+  l'export complet (`Ship Klark (beginning)-389.world`, entité `PlayerStart`). Le placeholder
+  centre-de-map (les 482 autres worlds) suit la même règle (`(centreX, centreY, 0)`, non inversé).
+- **DLL — trois sites de pose** : `AlundraWorldProxy.ResolveWorldPosition` renommée
+  `ResolveLogicalPosition`, ne négocie plus Y et laisse l'élévation sur Z (au lieu de la replier dans
+  Y) ; les trois sites (`CreateEntityFromPrefab` ~:749-762, `AdoptPlayerPawn` ~:1056-1074,
+  `SyncTransform` ~:1548-1587) écrivent la pose logique puis ré-projettent.
+- **Re-projection même frame** : un champ engine-only `AlundraEntityScriptProxy.RenderProjection`
+  (résolu une fois par `entity.GetComponent<RenderProjectionComponent>()` au spawn/adoption, jamais
+  par frame) est mis en cache et sa `UpdateProjection()` est appelée explicitement juste après
+  chaque écriture de racine — y compris dans `SyncTransform`, le site qui tourne chaque frame depuis
+  `AlundraEntityScriptProxy.Update` (donc APRÈS que la mise à jour naturelle des composants ait déjà
+  projeté l'ancienne pose plus tôt dans le même `Entity.Update`). Vérifié négativement : l'appel
+  retiré temporairement dans `SyncTransform` fait échouer les deux tests d'ordre/bornes
+  (`AlundraEntityLogicalRenderPoseTests`), remis en place ensuite (326/326 verts).
+- **`WallPlacementOverlay.ApplyEntitySortKey`**, caméra debug, cible caméra (backdrop) : intouchés,
+  comme prévu — seul un commentaire de la caméra debug a été corrigé (il citait l'ancienne
+  négation directement dans `ResolveWorldPosition`, qui n'existe plus sous ce nom/cette forme).
+  Recherche (`grep`) confirmée : aucun AUTRE lecteur de `RootComponent...Position` comme coordonnée
+  de rendu dans `Alundra/Scripts` en dehors des trois sites listés ci-dessus.
+- **Ids déterministes des nouveaux composants** : NON appliqué — écart documenté, pas deviné.
+  `ObjectBase.Id` a un setter privé, assignable uniquement via `Load(JObject)` ; `SpriteWriter`
+  construit les composants en mémoire (jamais via `Load`), donc aucun composant du prefab —
+  ni les anciens (`AnimatedSpriteComponent`, `CollisionComponent`) ni les deux nouveaux
+  (`TransformComponent`, `RenderProjectionComponent`) — ne reçoit d'id `Ids.For(...)` ; seul
+  `entity.Id` lui-même reste non déterministe, exactement comme documenté avant cette tranche (voir
+  le commentaire de classe de `SpriteWriter`, section « Asset ids are NOT forced deterministic
+  here »). Aucun consommateur ne dépend d'un id de composant stable aujourd'hui.
+- **Tests** : convertisseur 129/129 verts (structure de prefab et `PlayerStart` mis à jour dans
+  `SpriteWriterBodyPrefabTests.cs`/`WorldWriterTests.cs`, sans test supplémentaire) ; DLL 326/326
+  verts (304 existants, mis à jour sur les 5 sites `ResolveWorldPosition`/pose de rendu attendue
+  identifiés par le plan, + 22 nouveaux dans `Alundra.Tests/AlundraEntityLogicalRenderPoseTests.cs` :
+  19 cas de formule sur les enregistrements réels de la 389, 1 cas de formule sur le héros, 1 test
+  d'ordre, 1 test de bornes/index) ; harnais intro toujours à la frame 926.
+- **Export complet** : 0 erreur, compteurs inchangés (`Worlds` 483, `Entities.Prefabs` 395,
+  `Sprites.QuadsRead` = `Sprites.QuadsConverted` 160355, `SpriteRecords.IdsvAnimDirs`/
+  `Verify.Loaded.anim2d` 9620).
+- **Tri visuel** : non re-vérifié à l'écran par l'utilisateur dans cette session (capture
+  avant/après demandée par le plan mais hors du périmètre d'un agent headless) — signalé comme
+  écart à valider, pas deviné.
 
 ### E3.b — Champ de collision Alundra ⏳ (moteur API + DLL, plan-verifier)
 

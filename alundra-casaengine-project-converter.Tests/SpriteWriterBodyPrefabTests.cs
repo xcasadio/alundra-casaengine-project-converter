@@ -1,3 +1,4 @@
+using System.Linq;
 using AlundraCasaEngineProjectConverter.Writers;
 using CasaEngine.EditorServices;
 using CasaEngine.Engine.Environment;
@@ -13,8 +14,10 @@ using Xunit;
 namespace AlundraCasaEngineProjectConverter.Tests;
 
 /// <summary>
-/// Covers the per-bank Entities/{name}/{name}.entity prefab: root AnimatedSpriteComponent, the
-/// header body box (SpriteRecord.Header) as an optional CollisionComponent child, the entity-level
+/// Covers the per-bank Entities/{name}/{name}.entity prefab (E3.a structure,
+/// docs/plan-e3-collisions.md): root TransformComponent (logical pose) -&gt; RenderProjectionComponent
+/// -&gt; AnimatedSpriteComponent, the header body box (SpriteRecord.Header) as an optional
+/// CollisionComponent child of the ROOT (sibling of the projection), the entity-level
 /// DepthSortable2DComponent and script_class_name. The assertions go through the engine's own
 /// Entity.Load, because that is the loader whose unconditional read of "physics_definition" the
 /// emitted document has to satisfy.
@@ -55,13 +58,21 @@ public class SpriteWriterBodyPrefabTests
 
                 Assert.Equal("AlundraEntityScriptProxy", entity.GameplayProxyClassName);
 
-                var spriteComponent = Assert.IsType<AnimatedSpriteComponent>(entity.RootComponent);
+                // Root: inert TransformComponent (logical pose) with two children - the render
+                // projection and the collision body, both siblings under the root.
+                var rootComponent = Assert.IsType<TransformComponent>(entity.RootComponent);
+                Assert.Equal(2, rootComponent.Children.Count);
+
+                var projectionComponent = Assert.IsType<RenderProjectionComponent>(
+                    rootComponent.Children.Single(c => c is RenderProjectionComponent));
+                var spriteComponent = Assert.IsType<AnimatedSpriteComponent>(Assert.Single(projectionComponent.Children));
                 Assert.NotEmpty(spriteComponent.AnimationAssetIds);
 
                 var depthSortable = Assert.IsType<DepthSortable2DComponent>(Assert.Single(entity.Components));
                 Assert.Equal(RenderPass2D.YSortedWorld, depthSortable.RenderPass);
 
-                var collisionComponent = Assert.IsType<CollisionComponent>(Assert.Single(spriteComponent.Children));
+                var collisionComponent = Assert.IsType<CollisionComponent>(
+                    rootComponent.Children.Single(c => c is CollisionComponent));
                 Assert.Equal(PhysicsType.Kinetic, collisionComponent.PhysicsType);
 
                 var fixture = Assert.Single(collisionComponent.Fixtures);
@@ -122,7 +133,12 @@ public class SpriteWriterBodyPrefabTests
         entity.Load(entityDocument);
 
         Assert.Equal("AlundraEntityScriptProxy", entity.GameplayProxyClassName);
-        var spriteComponent = Assert.IsType<AnimatedSpriteComponent>(entity.RootComponent);
+
+        // No body box: root TransformComponent has a single child, the render projection - no
+        // CollisionComponent sibling.
+        var rootComponent = Assert.IsType<TransformComponent>(entity.RootComponent);
+        var projectionComponent = Assert.IsType<RenderProjectionComponent>(Assert.Single(rootComponent.Children));
+        var spriteComponent = Assert.IsType<AnimatedSpriteComponent>(Assert.Single(projectionComponent.Children));
         Assert.Empty(spriteComponent.Children);
         Assert.IsType<DepthSortable2DComponent>(Assert.Single(entity.Components));
     }

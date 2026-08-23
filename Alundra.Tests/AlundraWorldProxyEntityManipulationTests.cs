@@ -182,7 +182,9 @@ public class AlundraWorldProxyEntityManipulationTests
 
         AlundraWorldProxy.RunTransformSyncPass(new List<Entity> { entity });
 
-        var expected = AlundraWorldProxy.ResolveWorldPosition(420 * 0x10000, 584 * 0x10000, 46 << 19);
+        // E3.a: the root now carries the LOGICAL pose (RenderProjection is null in this fixture -
+        // AnimatedSpriteComponent is the bare root, so the re-projection call is a no-op here).
+        var expected = AlundraWorldProxy.ResolveLogicalPosition(420 * 0x10000, 584 * 0x10000, 46 << 19);
         Assert.Equal(expected, entity.RootComponent.LocalTransform.Position);
     }
 
@@ -199,7 +201,8 @@ public class AlundraWorldProxyEntityManipulationTests
 
         AlundraWorldProxy.RunTransformSyncPass(new List<Entity> { entity });
 
-        Assert.Equal(new Microsoft.Xna.Framework.Vector3(100, -50, 0f), entity.RootComponent.LocalTransform.Position);
+        // E3.a: logical pose, Y un-flipped.
+        Assert.Equal(new Microsoft.Xna.Framework.Vector3(100, 50, 0f), entity.RootComponent.LocalTransform.Position);
     }
 
     [Fact]

@@ -195,12 +195,15 @@ public class AlundraWorldProxyTests
         Assert.Equal(25u, proxy.SpriteTableIndex);
         Assert.Equal(new[] { 133, 5, 9, 13, 17, 21 }, proxy.ProgramIndexes);
 
-        // Map 389 / Entity_0 anchor: root transform must match AlundraWorldProxy.ResolveWorldPosition
-        // fed with the proxy's own PosX/PosY/PosZ - this is the clone path exercising the same
-        // conversion covered directly by ResolveWorldPosition_* below.
-        var expectedPosition = AlundraWorldProxy.ResolveWorldPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+        // Map 389 / Entity_0 anchor: root transform must match AlundraWorldProxy.ResolveLogicalPosition
+        // fed with the proxy's own PosX/PosY/PosZ (E3.a - the root now carries the LOGICAL pose, not a
+        // render pose) - this is the clone path exercising the same conversion covered directly by
+        // ResolveLogicalPosition_* below.
+        var expectedPosition = AlundraWorldProxy.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
         Assert.Equal(expectedPosition, entity.RootComponent.LocalTransform.Position);
-        Assert.Equal(new Vector3(420, -216, 0f), entity.RootComponent.LocalTransform.Position);
+        // XPos=34/YPos=72/Height=46 -> pixelX=420, pixelY=584, elevation=368 (see ResolveLogicalPosition_*
+        // below for the full derivation) - the logical pose, un-flipped and un-shifted.
+        Assert.Equal(new Vector3(420, 584, 368f), entity.RootComponent.LocalTransform.Position);
     }
 
     [Fact]
@@ -258,25 +261,28 @@ public class AlundraWorldProxyTests
     }
 
     [Fact]
-    public void ResolveWorldPosition_Map389Entity0Anchor_MatchesWorldWriterFrame()
+    public void ResolveLogicalPosition_Map389Entity0Anchor_MatchesWorldWriterFrame()
     {
         // XPos=34/YPos=72/Height=46 -> PosX=420*0x10000, PosY=584*0x10000, PosZ=46<<19
-        // (see EntityRecordMapperTests.Map_XPosYPosHeight_FillPositionAndTileFields). Pixel X stays as-is;
-        // pixel Y is negated (Alundra Y-down -> CasaEngine Y-up) with the elevation (PosZ>>16 = 368 px)
-        // added back in, projecting the sprite up the screen: -(584-368) = -216. World Z stays 0, exactly
-        // like WorldWriter.ResolveTileCentreSpawn - it only orders render layers here.
-        var position = AlundraWorldProxy.ResolveWorldPosition(420 * 0x10000, 584 * 0x10000, 46 << 19);
+        // (see EntityRecordMapperTests.Map_XPosYPosHeight_FillPositionAndTileFields). E3.a: the LOGICAL
+        // pose keeps pixel Y un-flipped (down-positive, same as Alundra) and elevation on its own Z axis
+        // (PosZ>>16 = 368 px) - the render policy (SimulationSpacePolicy.DeriveRenderPosition under
+        // TopDownElevation) is what later turns this into the same render position the old single-step
+        // formula used to compute directly: -(584-368) = -216 (see
+        // AlundraEntityLogicalRenderPoseTests.RenderPoseFormula_* for that full round-trip check).
+        var position = AlundraWorldProxy.ResolveLogicalPosition(420 * 0x10000, 584 * 0x10000, 46 << 19);
 
-        Assert.Equal(new Vector3(420, -216, 0f), position);
+        Assert.Equal(new Vector3(420, 584, 368f), position);
     }
 
     [Fact]
-    public void ResolveWorldPosition_ZeroHeight_ProjectsToUnshiftedNegatedPixelY()
+    public void ResolveLogicalPosition_ZeroHeight_KeepsRawPixelYUnflipped()
     {
         // XPos=10/YPos=20/Height=0 -> PosX=132*0x10000, PosY=168*0x10000, PosZ=0. With no elevation the
-        // projected Y is exactly the negated raw pixel Y: -(168-0) = -168.
-        var position = AlundraWorldProxy.ResolveWorldPosition(132 * 0x10000, 168 * 0x10000, 0);
+        // logical Y is exactly the raw (down-positive) pixel Y, not negated - E3.a moves the flip to the
+        // render policy.
+        var position = AlundraWorldProxy.ResolveLogicalPosition(132 * 0x10000, 168 * 0x10000, 0);
 
-        Assert.Equal(new Vector3(132, -168, 0f), position);
+        Assert.Equal(new Vector3(132, 168, 0f), position);
     }
 }

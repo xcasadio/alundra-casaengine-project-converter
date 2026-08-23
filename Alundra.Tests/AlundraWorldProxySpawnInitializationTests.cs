@@ -384,7 +384,10 @@ public class AlundraWorldProxySpawnInitializationTests
         var entity = AlundraWorldProxy.CreateEntityFromRecord(record, _ => prefab, catalog);
 
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
-        var expectedPosition = AlundraWorldProxy.ResolveWorldPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+        // E3.a: the root now carries the LOGICAL pose (this fixture's prefab root is a bare
+        // AnimatedSpriteComponent with no RenderProjectionComponent, so the re-projection call in
+        // CreateEntityFromPrefab is a no-op here, same as elsewhere in this file's fixtures).
+        var expectedPosition = AlundraWorldProxy.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
         Assert.Equal(expectedPosition, entity.RootComponent!.LocalTransform.Position);
         // PosZ carries the header's -ModZ+1 adjustment ((46<<19) - 0 + 1), unlike the no-catalog case
         // covered by AlundraWorldProxyTests.CreateEntityFromRecord_ValidPrefabLink_ClonesPrefabAndMapsProxy.

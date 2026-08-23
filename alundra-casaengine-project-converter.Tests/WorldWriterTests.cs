@@ -26,13 +26,15 @@ public class WorldWriterTests
 
     [Theory]
     // The documented New Game spawn: docs/demarrage-nouvelle-partie.md section 2.1 gives tile
-    // (33, 59, 0) -> pixels (804, 952), and guidelines section 2.3 turns that into world Y = -952.
-    [InlineData(33, 59, 0, 804, 952, 804f, -952f)]
-    // Elevation goes up the screen, i.e. up in a Y-up frame: +tileZ * 16.
-    [InlineData(33, 59, 2, 804, 952, 804f, -920f)]
-    [InlineData(0, 0, 0, 12, 8, 12f, -8f)]
-    public void ResolveTileCentreSpawn_ConvertsTileCoordinatesToTheCasaEngineFrame(
-        int tileX, int tileY, int tileZ, int expectedPixelX, int expectedPixelY, float expectedWorldX, float expectedWorldY)
+    // (33, 59, 0) -> pixels (804, 952). E3.a (docs/plan-e3-collisions.md, decision E3-1): the spawn's
+    // world position is now the LOGICAL pose - Y is the un-flipped depth (952, not -952), and Z is
+    // the elevation in pixels rather than always 0.
+    [InlineData(33, 59, 0, 804, 952, 804f, 952f, 0f)]
+    [InlineData(33, 59, 2, 804, 952, 804f, 952f, 32f)]
+    [InlineData(0, 0, 0, 12, 8, 12f, 8f, 0f)]
+    public void ResolveTileCentreSpawn_ConvertsTileCoordinatesToTheCasaEngineLogicalFrame(
+        int tileX, int tileY, int tileZ, int expectedPixelX, int expectedPixelY,
+        float expectedWorldX, float expectedWorldY, float expectedWorldZ)
     {
         var spawn = WorldWriter.ResolveTileCentreSpawn(tileX, tileY, tileZ);
 
@@ -40,7 +42,7 @@ public class WorldWriterTests
         Assert.Equal(expectedPixelY, spawn.PixelY);
         Assert.Equal(expectedWorldX, spawn.WorldX);
         Assert.Equal(expectedWorldY, spawn.WorldY);
-        Assert.Equal(0f, spawn.WorldZ);
+        Assert.Equal(expectedWorldZ, spawn.WorldZ);
     }
 
     [Fact]
@@ -141,8 +143,11 @@ public class WorldWriterTests
 
             var playerStartEntity = LoadEntity(entityNodes, "PlayerStart");
             var playerStartComponent = Assert.IsType<PlayerStartComponent>(playerStartEntity.RootComponent);
+            // Logical pose (E3.a, decision E3-1): Y is the un-flipped depth, not the render Y this
+            // used to emit.
             Assert.Equal(804f, playerStartComponent.LocalPosition.X);
-            Assert.Equal(-952f, playerStartComponent.LocalPosition.Y);
+            Assert.Equal(952f, playerStartComponent.LocalPosition.Y);
+            Assert.Equal(0f, playerStartComponent.LocalPosition.Z);
         }
         finally
         {
@@ -184,12 +189,13 @@ public class WorldWriterTests
             Assert.Equal(2, report.Counters["Worlds.Portals"]);
             Assert.Equal(1, report.Counters["Worlds.MapEvents"]);
 
-            // The fixture map is 2 x 2 tiles of 24 x 16 px, so its centre is (24, -16).
+            // The fixture map is 2 x 2 tiles of 24 x 16 px, so its centre is (24, 16) in the logical
+            // (un-flipped) frame (E3.a, decision E3-1).
             var worldDocument = JObject.Parse(
                 File.ReadAllText(Path.Combine(outputDirectory, "Maps", "TestZone", "Test Map-4", "Test Map-4.world")));
             var playerStartEntity = LoadEntity((JArray)worldDocument["entity_references"]!, "PlayerStart");
             Assert.Equal(24f, playerStartEntity.RootComponent!.LocalPosition.X);
-            Assert.Equal(-16f, playerStartEntity.RootComponent.LocalPosition.Y);
+            Assert.Equal(16f, playerStartEntity.RootComponent.LocalPosition.Y);
 
             // Map 389 was not converted, so the project must stay pointed at nothing rather than at
             // a world that does not exist.

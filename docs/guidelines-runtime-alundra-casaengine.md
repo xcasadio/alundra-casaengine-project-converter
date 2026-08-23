@@ -122,6 +122,21 @@ Table de conversion complète pour une entité :
 > vers le haut de l'écran et intervient dans le tri. Ne pas le mapper naïvement sur le Z de
 > CasaEngine, qui sert l'ordre de rendu des couches (`zOffset` 0 / 0,1 / 0,2 / 0,3 ici).
 
+**Depuis E3.a (docs/plan-e3-collisions.md, décision E3-1) : cette table décrit toujours la
+conversion pixel → écran, mais elle n'est plus appliquée directement par la DLL.** La racine d'une
+entité (un `TransformComponent` inerte pour les prefabs convertis, ou le `PlayerStart` d'un world)
+porte désormais la **pose logique** `(X, Y profondeur non inversé, Z élévation)`, en pixels
+Alundra bruts, écrite par `AlundraWorldProxy.ResolveLogicalPosition` (les trois sites qui posaient
+autrefois `RootComponent.LocalTransform.Position` en pose de rendu). C'est un
+`RenderProjectionComponent` enfant, porté par le sprite, qui applique cette table à chaque frame
+via `SimulationSpacePolicy.DeriveRenderPosition` sous la politique `TopDownElevation` du world
+(`render = (X, -(Y - Z), 0)`, `SimulationSpacePolicy.cs:135-137`) - c'est-à-dire exactement
+`worldY = -pixelY` avec l'élévation déjà repliée dedans. La règle « `worldY = -pixelY_Alundra` »
+ci-dessus reste donc vraie, mais c'est désormais le travail de la politique de simulation, pas
+celui du code qui écrit la racine. Toute mutation de la pose logique (une entité, un
+`PlayerStart`) doit rester dans ce repère non inversé ; ne jamais y ré-appliquer la négation à la
+main.
+
 ---
 
 ## 3. Timings

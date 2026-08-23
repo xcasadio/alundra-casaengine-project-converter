@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Physics;
 using CasaEngine.Framework.Scene.Entities;
+using CasaEngine.Framework.Scene.Entities.Components;
 using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.Scripting;
 
@@ -154,6 +155,20 @@ public class AlundraEntityScriptProxy : GameplayProxy
     public int EventTrigger;//228
     public int MapEventProgramId;//22c
     public Entity LogicContextEntity = null!; //self
+
+    /// <summary>
+    /// Engine-only, not part of the original struct (same as <see cref="LogicContextEntity"/>): the
+    /// entity root's own <see cref="RenderProjectionComponent"/> child (E3.a,
+    /// docs/plan-e3-collisions.md), resolved once at spawn/adoption
+    /// (<see cref="AlundraWorldProxy.CreateEntityFromPrefab"/>/<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>)
+    /// so the per-frame transform sync (<see cref="AlundraWorldProxy.SyncTransform"/>) can re-project the
+    /// sprite the same frame the logical root pose changes without a per-frame
+    /// <c>Entity.GetComponent&lt;RenderProjectionComponent&gt;()</c> search. Null for a bare-fallback
+    /// spawn (<see cref="AlundraWorldProxy.CreateBareEntityFromRecord"/>, which has no
+    /// <c>RootComponent</c> at all) or for a prefab whose root does not carry one (defensive only - every
+    /// converted prefab does, see <c>SpriteWriter.WriteEntityPrefab</c>).
+    /// </summary>
+    public RenderProjectionComponent? RenderProjection;
 
     /// <summary>
     /// Engine-only, not part of the original struct (same as <see cref="LogicContextEntity"/>):
@@ -548,6 +563,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
             EventTrigger = EventTrigger,
             MapEventProgramId = MapEventProgramId,
             LogicContextEntity = LogicContextEntity,
+            RenderProjection = RenderProjection,
             IdsvByAnimDirection = IdsvByAnimDirection,
             AnimationEndByAnimDirection = AnimationEndByAnimDirection,
             AnimSetsByAnim = AnimSetsByAnim,

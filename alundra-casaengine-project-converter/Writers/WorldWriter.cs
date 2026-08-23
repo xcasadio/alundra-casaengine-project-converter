@@ -8,8 +8,11 @@ using Newtonsoft.Json.Linq;
 namespace AlundraCasaEngineProjectConverter.Writers;
 
 /// <summary>
-/// One converted map's spawn point, in every unit the two engines disagree about.
-/// See <see cref="WorldWriter.ResolveTileCentreSpawn"/> for the conversion rule.
+/// One converted map's spawn point, in every unit the two engines disagree about. WorldX/WorldY/WorldZ
+/// hold the CasaEngine LOGICAL pose (E3.a, docs/plan-e3-collisions.md decision E3-1) - X east, Y depth
+/// (NOT flipped), Z elevation, all in raw Alundra pixels - not a render pose; a RenderProjectionComponent
+/// derives the render pose from it at runtime. See <see cref="WorldWriter.ResolveTileCentreSpawn"/> for
+/// the conversion rule.
 /// </summary>
 public readonly record struct TileCentreSpawn(int PixelX, int PixelY, float WorldX, float WorldY, float WorldZ);
 
@@ -190,17 +193,20 @@ public static class WorldWriter
     }
 
     /// <summary>
-    /// Converts an Alundra tile coordinate to a CasaEngine world position, for a spawn placed at
-    /// the centre of its tile. Follows docs/guidelines-runtime-alundra-casaengine.md:
-    ///  - section 2.2, runtime tile coordinate to pixels:
+    /// Converts an Alundra tile coordinate to a CasaEngine LOGICAL position (E3.a,
+    /// docs/plan-e3-collisions.md decision E3-1), for a spawn placed at the centre of its tile.
+    /// PlayerStartComponent's local_transform is copied verbatim onto the spawned pawn's root
+    /// (World.CreateLocalPlayerController, World.cs:361-364), so this must be the same logical pose
+    /// the DLL itself writes (<c>AlundraWorldProxy.ResolveLogicalPosition</c>) - a RenderProjectionComponent
+    /// child of the pawn's own root derives the render pose from it every update:
+    ///  - runtime tile coordinate to pixels (docs/guidelines-runtime-alundra-casaengine.md section 2.2):
     ///    pixelX = tileX*24 + 12, pixelY = tileY*16 + 8 (the +12/+8 centre the point in the tile).
-    ///  - section 2.3, pixels to CasaEngine: X = pixelX, Y = -pixelY. Alundra's Y points down, the
-    ///    tilemap renderer's Y points up, so the sign flip is mandatory.
-    ///  - section 2.3 again, elevation: Alundra's Z is not a camera depth, it shifts the sprite up
-    ///    the screen by tileZ*16. In a Y-up frame that is Y += tileZ*16. CasaEngine's Z is left at
-    ///    0, because here it only orders the render layers (0 / 0.1 / 0.2 / 0.3).
-    /// For the documented New Game spawn, tile (33, 59, 0), this yields pixels (804, 952) and world
-    /// (804, -952, 0).
+    ///  - logical pose = (X, Y depth, Z elevation) in raw Alundra pixels, X = pixelX, Y = pixelY
+    ///    (NOT flipped - the flip is the render policy's job, not this writer's, per E3-1), Z =
+    ///    tileZ*16 (elevation in pixels, the same tileZ*16 the render policy later subtracts back
+    ///    out via DeriveRenderPosition: render Y = -(depth - elevation)).
+    /// For the documented New Game spawn, tile (33, 59, 0), this yields pixels (804, 952) and logical
+    /// pose (804, 952, 0).
     /// </summary>
     public static TileCentreSpawn ResolveTileCentreSpawn(int tileX, int tileY, int tileZ)
     {
@@ -211,8 +217,8 @@ public static class WorldWriter
             pixelX,
             pixelY,
             pixelX,
-            -pixelY + tileZ * AlundraTileHeight,
-            0f);
+            pixelY,
+            tileZ * AlundraTileHeight);
     }
 
     /// <summary>
@@ -325,7 +331,8 @@ public static class WorldWriter
 
         var centreX = tileMapData.MapSize.Width * AlundraTileWidth / 2f;
         var centreY = tileMapData.MapSize.Height * AlundraTileHeight / 2f;
-        return new TileCentreSpawn((int)centreX, (int)centreY, centreX, -centreY, 0f);
+        // Logical pose (E3-1): Y is the un-flipped depth, not the render Y this used to emit.
+        return new TileCentreSpawn((int)centreX, (int)centreY, centreX, centreY, 0f);
     }
 
     private static JObject BuildWorld(

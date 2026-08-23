@@ -381,7 +381,7 @@ public static class WallPlacementOverlay
     /// read-only for this slice) or re-deriving the world transform every frame (out of scope, a separate
     /// follow-up per <see cref="AlundraWorldProxy"/>'s class doc). DEVIATION from the original: the fine order
     /// within a row therefore comes from <c>-worldY</c> (which folds in <c>PosZ</c>'s elevation offset via
-    /// <c>AlundraWorldProxy.ResolveWorldPosition</c>) instead of the original's raw <c>PosY</c> low bits -
+    /// <c>AlundraWorldProxy.ResolveLogicalPosition</c> + the policy's render projection) instead of the original's raw <c>PosY</c> low bits -
     /// both still order correctly by row (the coarse <c>Elevation</c> bucket this method sets), only the
     /// tiebreak among entities sharing one row can diverge slightly from the original.
     ///

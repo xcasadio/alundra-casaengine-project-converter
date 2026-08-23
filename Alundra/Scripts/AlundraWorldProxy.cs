@@ -30,8 +30,11 @@ namespace Alundra.Scripts;
 /// cannot be loaded, or the record has none, a bare entity is created instead (logged fallback).
 /// Either way, the resulting entity carries an <see cref="AlundraEntityScriptProxy"/> filled by
 /// <see cref="EntityRecordMapper"/>, whose logical position fields (<c>PosX</c>/<c>PosY</c>/<c>PosZ</c>)
-/// this proxy then converts into the spawned entity's <c>RootComponent.LocalTransform.Position</c> via
-/// <see cref="ResolveWorldPosition"/> - see <see cref="CreateEntityFromPrefab"/>.
+/// this proxy then converts into the spawned entity's <c>RootComponent.LocalTransform.Position</c> - now
+/// the entity's LOGICAL pose (E3.a, docs/plan-e3-collisions.md decision E3-1), not a render pose - via
+/// <see cref="ResolveLogicalPosition"/> - see <see cref="CreateEntityFromPrefab"/>. A
+/// <c>RenderProjectionComponent</c> child of that root (<c>SpriteWriter.WriteEntityPrefab</c>) derives
+/// the render pose from it every update.
 ///
 /// This proxy also retains every entity it spawned and drives their status machine each frame (see
 /// <see cref="Update"/>), a faithful port of the two-phase pass of
@@ -742,13 +745,21 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             ApplyRecord(record, proxy);
             ApplySpawnInitialization(record, entity, proxy, spriteRecordCatalog, parentEntity);
 
-            // The prefab's root is the bank's AnimatedSpriteComponent (EntityBankPrefabWriter); place it
-            // in the CasaEngine world frame from the logical position EntityRecordMapper/ApplySpawnInitialization
-            // just filled (PosZ already carries the -ModZ+1 header adjustment when a header was found).
+            // The prefab's root is the inert TransformComponent (SpriteWriter.WriteEntityPrefab, E3.a);
+            // place it in the CasaEngine LOGICAL frame from the logical position
+            // EntityRecordMapper/ApplySpawnInitialization just filled (PosZ already carries the -ModZ+1
+            // header adjustment when a header was found).
             // Defensive null-check only: a bank prefab is expected to always carry a root component.
             if (entity.RootComponent != null)
             {
-                entity.RootComponent.LocalTransform.Position = ResolveWorldPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+                entity.RootComponent.LocalTransform.Position = ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+
+                // Resolve and cache the root's RenderProjectionComponent once, then re-project
+                // immediately so the very first draw already shows the projected render pose rather
+                // than whatever default position the prefab's projection carried before this spawn
+                // wrote the root (see AlundraEntityScriptProxy.RenderProjection's own doc).
+                proxy.RenderProjection = entity.GetComponent<RenderProjectionComponent>();
+                proxy.RenderProjection?.UpdateProjection();
             }
         }
 
@@ -758,37 +769,35 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <summary>
     /// Converts an entity's logical spawn position (<see cref="AlundraEntityScriptProxy.PosX"/> /
     /// <see cref="AlundraEntityScriptProxy.PosY"/> / <see cref="AlundraEntityScriptProxy.PosZ"/>, 16.16
-    /// fixed-point Alundra pixels - see <see cref="EntityRecordMapper"/>) into a CasaEngine world
-    /// position, consistently with <c>WorldWriter.ResolveTileCentreSpawn</c> (the converter's own
-    /// tile-to-world conversion, used for the PlayerStart) and
-    /// docs/guidelines-runtime-alundra-casaengine.md section 2.3:
+    /// fixed-point Alundra pixels - see <see cref="EntityRecordMapper"/>) into the LOGICAL pose written
+    /// onto the entity root's <c>LocalTransform.Position</c> (E3.a, docs/plan-e3-collisions.md decision
+    /// E3-1) - consistently with <c>WorldWriter.ResolveTileCentreSpawn</c> (the converter's own
+    /// tile-to-logical-pose conversion, used for the PlayerStart):
     /// <list type="bullet">
     /// <item><description><c>X = pixelX</c> (no conversion - CasaEngine's X already matches Alundra's).</description></item>
-    /// <item><description><c>Y = -pixelY + elevationPixels</c>: Alundra's Y points down, CasaEngine's Y
-    /// points up, hence the negation; and Alundra's Z is not a camera depth, it is an elevation that
-    /// shifts the sprite up the screen (<c>elevationPixels = pixelZ</c>, i.e. <c>PosZ &gt;&gt; 16</c>) -
-    /// it is folded into this projected Y rather than left in Z, because
-    /// <see cref="CasaEngine.Framework.Scene.Entities.Components.DepthSortable2DComponent"/>'s default
-    /// <c>TopDownYUp</c> sort mode (and <see cref="CasaEngine.Framework.Scene.Entities.Components.AnimatedSpriteComponent.DrawComposedAnimation"/>,
-    /// which draws at <c>Position.X</c>/<c>Position.Y</c> verbatim) only read world X/Y - there is no
-    /// orthographic-camera projection step in this 2D pipeline that would turn a raw Z into a screen
-    /// offset the way the original PSX renderer did.</description></item>
-    /// <item><description><c>Z = 0</c>: left unused here, exactly like <c>WorldWriter</c> - in this
-    /// engine Z only orders render layers (<c>DepthSortable2DComponent.SortingLayer</c>/<c>Elevation</c>),
-    /// it does not carry Alundra's elevation.</description></item>
+    /// <item><description><c>Y = pixelY</c>: Alundra's own down-positive depth, NOT flipped here - the
+    /// flip from depth to a Y-up render position is now the render policy's job
+    /// (<c>SimulationSpacePolicy.DeriveRenderPosition</c> under the world's TopDownElevation policy),
+    /// applied every frame by the <c>RenderProjectionComponent</c> child a prefab's root now carries
+    /// (<c>SpriteWriter.WriteEntityPrefab</c>), not baked into this snapshot.</description></item>
+    /// <item><description><c>Z = elevationPixels</c> (<c>PosZ &gt;&gt; 16</c>): Alundra's elevation, kept
+    /// on the logical Z axis rather than folded into Y - again the render policy's job to translate into
+    /// a screen offset.</description></item>
     /// </list>
     /// This is a spawn-time snapshot of a logical position that can change at runtime (movement, event
-    /// programs); a future status-machine task must call this again whenever <c>PosX</c>/<c>PosY</c>/
-    /// <c>PosZ</c> changes to keep the transform in sync - the logical fields are authoritative, this
-    /// transform is derived.
+    /// programs); every caller that writes it onto the root MUST also re-run the entity's
+    /// <c>RenderProjectionComponent.UpdateProjection()</c> in the same frame so the sprite renders the
+    /// new pose immediately rather than one frame late (component update order:
+    /// <c>RootComponent.Update</c>, hence the projection, runs before <c>GameplayProxy.Update</c> -
+    /// Entity.cs:473-504) - see <see cref="SyncTransform"/>.
     /// </summary>
-    internal static Vector3 ResolveWorldPosition(int posX, int posY, int posZ)
+    internal static Vector3 ResolveLogicalPosition(int posX, int posY, int posZ)
     {
         var pixelX = posX >> 16;
         var pixelY = posY >> 16;
         var elevationPixels = posZ >> 16;
 
-        return new Vector3(pixelX, -pixelY + elevationPixels, 0f);
+        return new Vector3(pixelX, pixelY, elevationPixels);
     }
 
     /// <summary>
@@ -948,8 +957,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// sprite-records.json header when the catalog has one for it.
     ///
     /// Deviation note: the engine already positioned the pawn's transform at the <c>PlayerStart</c>
-    /// component (world-space (804, -952, 0) on map 389, equal to <c>ResolveWorldPosition</c> of this same
-    /// New Game tile) - this method's own <see cref="ResolveWorldPosition"/> call below OVERWRITES that
+    /// component (logical pose (804, 952, 0) on map 389, equal to <c>ResolveLogicalPosition</c> of this same
+    /// New Game tile) - this method's own <see cref="ResolveLogicalPosition"/> call below OVERWRITES that
     /// with the logical position instead, which is harmless (same result) but makes explicit that
     /// <c>AlundraEntityScriptProxy</c>'s logical PosX/PosY/PosZ, not the engine's PlayerStart transform, is
     /// the field this proxy's own <see cref="SyncTransform"/> re-derives from every frame going forward
@@ -1055,7 +1064,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // ("Deviation note") for why that is intentional, not redundant.
         if (entity.RootComponent != null)
         {
-            entity.RootComponent.LocalTransform.Position = ResolveWorldPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+            entity.RootComponent.LocalTransform.Position = ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+
+            // The pawn is already in world.Entities by the time this method runs (see this method's
+            // own doc), so - unlike CreateEntityFromPrefab's spawn-time call - this re-projection is
+            // not a no-op: without it the sprite would keep showing the engine's PlayerStart-derived
+            // render pose for one extra frame instead of the New Game logical pose just written above.
+            proxy.RenderProjection = entity.GetComponent<RenderProjectionComponent>();
+            proxy.RenderProjection?.UpdateProjection();
         }
 
         // The pawn is already in world.Entities (the engine added it) but not yet in this proxy's own
@@ -1302,10 +1318,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// (<c>InputMapping.Update</c>). A no-op whenever no gamepad is connected on player one, or no
     /// camera component can be found (warns once in the latter case).
     ///
-    /// Axis mapping: MonoGame's right-stick Y is positive up; these converted maps' world Y is also "more
-    /// positive = further up/north" (<see cref="ResolveWorldPosition"/> negates Alundra's down-positive Y),
-    /// so stick-up must increase <c>Target.Y</c> - no sign flip needed, unlike Alundra's own Y. Stick X
-    /// maps directly onto world X the same way. <c>Target.Z</c> is left untouched.
+    /// Axis mapping: MonoGame's right-stick Y is positive up; the camera lives in RENDER space (its
+    /// <c>Target</c> is a world/render position, not a logical entity pose), where "more positive = further
+    /// up/north" (the same Y-up convention <c>SimulationSpacePolicy.DeriveRenderPosition</c> produces for a
+    /// projected entity - see <see cref="ResolveLogicalPosition"/>'s own doc for why entities themselves no
+    /// longer negate Alundra's down-positive Y here), so stick-up must increase <c>Target.Y</c> - no sign
+    /// flip needed, unlike Alundra's own Y. Stick X maps directly onto world X the same way. <c>Target.Z</c>
+    /// is left untouched.
     /// </summary>
     private void UpdateDebugCameraPan(float elapsedTime)
     {
@@ -1517,14 +1536,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
-    /// Transform re-derivation: re-applies <see cref="ResolveWorldPosition"/> to every spawned entity's
+    /// Transform re-derivation: re-applies <see cref="ResolveLogicalPosition"/> to every spawned entity's
     /// <c>RootComponent.LocalTransform.Position</c> from its CURRENT logical
     /// <see cref="AlundraEntityScriptProxy.PosX"/>/<see cref="AlundraEntityScriptProxy.PosY"/>/
     /// <see cref="AlundraEntityScriptProxy.PosZ"/>, every frame, for every spawned entity - the original
     /// recomputes screen position from the logical position every frame (there is no cached "world
     /// transform" struct in the PSX engine, the renderer projects PosX/PosY/PosZ straight from the entity
     /// struct each frame), it never trusts a stale, spawn-time-only placement. This supersedes
-    /// <see cref="CreateEntityFromPrefab"/>'s own spawn-time-only <c>ResolveWorldPosition</c> call (still
+    /// <see cref="CreateEntityFromPrefab"/>'s own spawn-time-only <c>ResolveLogicalPosition</c> call (still
     /// needed there so a freshly spawned, not-yet-<see cref="Update"/>-ed entity has a sane initial
     /// transform for its very first draw) - see that method's own doc, and
     /// <c>WallPlacementOverlay.ApplyEntitySortKey</c>'s deviation note, now resolved by this pass.
@@ -1544,7 +1563,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
     /// <summary>Per-entity half of <see cref="RunTransformSyncPass"/> - see that method's own doc, and
     /// <see cref="AlundraEntityScriptProxy.Update"/>'s doc for why this is now called per-entity, once per
-    /// frame, rather than looped from this world's own <see cref="Update"/> (decision D2).</summary>
+    /// frame, rather than looped from this world's own <see cref="Update"/> (decision D2).
+    /// E3.a (docs/plan-e3-collisions.md): after writing the LOGICAL pose onto the root, also re-runs
+    /// <see cref="RenderProjectionComponent.UpdateProjection"/> on the entity's cached
+    /// <see cref="AlundraEntityScriptProxy.RenderProjection"/> (resolved once at spawn/adoption, not
+    /// looked up here) so the <c>AnimatedSpriteComponent</c> renders the projected pose of THIS frame,
+    /// not the previous one: component <c>Update</c> (hence a natural, non-forced projection) runs
+    /// BEFORE <c>GameplayProxy.Update</c> in <c>Entity.Update</c> (Entity.cs:473-504), and this method is
+    /// itself called from <see cref="AlundraEntityScriptProxy.Update"/>, i.e. from inside that same
+    /// GameplayProxy.Update - without the explicit call here the sprite would lag the logical pose by
+    /// exactly one frame.</summary>
     internal static void SyncTransform(Entity entity)
     {
         if (entity.GameplayProxy is not AlundraEntityScriptProxy proxy || proxy.Status == EntityStatus.FlagToDestroy)
@@ -1554,7 +1582,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         if (entity.RootComponent != null)
         {
-            entity.RootComponent.LocalTransform.Position = ResolveWorldPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+            entity.RootComponent.LocalTransform.Position = ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+            proxy.RenderProjection?.UpdateProjection();
         }
     }
 
