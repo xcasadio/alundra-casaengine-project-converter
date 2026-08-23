@@ -331,7 +331,7 @@ Oracle transverse : le harnais headless `Alundra.Tests/IntroTraceHarnessTests.cs
 
 | Étape | Statut | Commit |
 |---|---|---|
-| E1 scripts par entité + MapEvents | 🧪 | |
+| E1 scripts par entité + MapEvents | ✅ (verifier CONFIRMED ; visuel runtime à valider par l'utilisateur) | 92f1be5 |
 | E2 héros pawn | ⏳ | |
 | E3 collisions champ de hauteur | ⏳ | |
 | E4 déplacement scripté | ⏳ | |
