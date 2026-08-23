@@ -76,7 +76,14 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    them (about 30%) have a non-constant IDSV between frames, so the full per-frame list is
 ///    emitted for completeness rather than collapsing to one value per (anim,dir) - see
 ///    Alundra.Scripts.WallPlacementOverlay.ApplyEntitySortKey for the frame-0-only approximation the
-///    DLL currently applies from this data, and its documented deviation.
+///    DLL currently applies from this data, and its documented deviation. Each entry also carries
+///    "End" ("Loop" | "Hold" | "Chain", from AnimationEndClassifier reading the animation's trailing
+///    control frame - see EntityManager.cs:257-281) and, only when End is "Chain", "ChainTo" (the
+///    target AnimSet index, an unmasked byte). This is the same classification that decides the
+///    animation's own AnimationType below: Loop stays AnimationType.Loop, Hold/Chain become
+///    AnimationType.Once with their terminal keyframe holding the last displayed frame's pose (see
+///    ConvertAnimation's repeatLastFrame) - the DLL still needs End/ChainTo to bridge the engine's
+///    Once-finished event back to the original's Hold/Chain semantics (docs/plan-conversion-totale.md).
 ///  - Data/sprite-records.json also carries "AnimSets": one entry per AnimSet index the record
 ///    declares (source: SpriteBankReader.ReadAnimSetHeader, from SpriteInfo.SpriteRecords[].AnimSets
 ///    - see AnimSetHeader), in index order, regardless of whether any direction of that index
@@ -100,7 +107,8 @@ public static class SpriteWriter
     /// Images.DepthSortValue list of its displayed frames (terminator frames excluded, same as every
     /// other per-frame track this writer emits) - see the class doc's sprite-records.json bullet.
     /// </summary>
-    private readonly record struct AnimDirIdsv(int Anim, int Direction, List<int> Frames);
+    private readonly record struct AnimDirIdsv(
+        int Anim, int Direction, List<int> Frames, AnimationEndKind End, int? ChainTo);
 
     /// <summary>
     /// Converts every sprite bank and returns the prefab asset id each one got, keyed by
@@ -210,12 +218,31 @@ public static class SpriteWriter
                     }
                 }
 
-                idsvAnimDirs.Add(new AnimDirIdsv(animSetIndex, directionIndex, frameIdsvList));
+                var animationEnd = AnimationEndClassifier.Classify(animation, report);
+                var chainTo = animationEnd.Kind == AnimationEndKind.Chain
+                    ? animationEnd.ChainTargetAnimationId
+                    : (int?)null;
+                if (animationEnd.Kind == AnimationEndKind.Chain && animationEnd.ChainTargetAnimationId == animSetIndex)
+                {
+                    report.Increment("Sprites.AnimationsChainSelf");
+                }
+
+                report.Increment(animationEnd.Kind switch
+                {
+                    AnimationEndKind.Loop => "Sprites.AnimationsLoop",
+                    AnimationEndKind.Hold => "Sprites.AnimationsHold",
+                    AnimationEndKind.Chain => "Sprites.AnimationsChain",
+                    _ => "Sprites.AnimationsLoop",
+                });
+
+                idsvAnimDirs.Add(new AnimDirIdsv(
+                    animSetIndex, directionIndex, frameIdsvList, animationEnd.Kind, chainTo));
 
                 var animationName = $"bank{bank.BankKey}_anim{animSetIndex}_{DirectionNames[directionIndex]}";
                 quadsConverted += ConvertAnimation(
                     animation, animationName, bankRelativeDirectory, bank.SourceSpritesheetFileName,
-                    textureAssetId, spriteAssetIdsByKey, outputDirectory, animationAssetIds, report);
+                    textureAssetId, spriteAssetIdsByKey, outputDirectory, animationAssetIds,
+                    animationEnd.Kind, report);
             }
         }
 
@@ -341,6 +368,7 @@ public static class SpriteWriter
         Dictionary<(string Spritesheet, long Signature), Guid> spriteAssetIdsByKey,
         string outputDirectory,
         List<Guid> animationAssetIds,
+        AnimationEndKind endKind,
         ConversionReport report)
     {
         // Frame start times. The trailing terminator frame carries a control code rather than a
@@ -373,8 +401,20 @@ public static class SpriteWriter
         var animationAsset = new Animation2dData
         {
             Name = animationName,
-            AnimationType = AnimationType.Loop,
+            AnimationType = endKind == AnimationEndKind.Loop ? AnimationType.Loop : AnimationType.Once,
         };
+
+        // Hold/Chain animations play Once: Animation2dCompositionSampler clamps CurrentTime at
+        // DurationSeconds (the last displayed frame's end) and keeps sampling the tracks there, so
+        // whatever pose the terminal keyframe holds is what stays on screen forever after. The
+        // reader's terminator frame carries no quads, so without this the sampler would hide every
+        // part at t_end instead of holding the last displayed frame - see the class doc's
+        // AnimationEndKind bullet. Loop animations are unaffected (repeatLastFrame stays false),
+        // keeping their output byte-identical to before this change.
+        var repeatLastFrame = endKind != AnimationEndKind.Loop
+            && animation.Frames.Count >= 2
+            && animation.Frames[^1].IsTerminator;
+        var lastDisplayedFrameIndex = animation.Frames.Count - 2;
 
         var convertedQuadCount = 0;
 
@@ -408,8 +448,15 @@ public static class SpriteWriter
 
             for (var frameIndex = 0; frameIndex < animation.Frames.Count; frameIndex++)
             {
-                var frame = animation.Frames[frameIndex];
                 var time = frameTimes[frameIndex];
+
+                // On the terminal keyframe of a Hold/Chain animation, repeat the last displayed
+                // frame's values instead of the terminator's own (empty) quads - see repeatLastFrame
+                // above.
+                var isTerminalRepeatFrame = repeatLastFrame && frameIndex == animation.Frames.Count - 1;
+                var frame = isTerminalRepeatFrame
+                    ? animation.Frames[lastDisplayedFrameIndex]
+                    : animation.Frames[frameIndex];
 
                 if (partIndex >= frame.Quads.Count)
                 {
@@ -418,7 +465,13 @@ public static class SpriteWriter
                 }
 
                 var quad = frame.Quads[partIndex];
-                convertedQuadCount++;
+                if (!isTerminalRepeatFrame)
+                {
+                    // The synthetic terminal repeat re-emits an already-counted quad: counting it
+                    // again would break the Sprites.QuadsRead == Sprites.QuadsConverted invariant
+                    // (docs/demarrage-nouvelle-partie.md, "0 quad perdu").
+                    convertedQuadCount++;
+                }
 
                 var spriteId = EnsureSpriteData(
                     quad, spritesheetFileName, textureAssetId, bankRelativeDirectory,
@@ -733,6 +786,8 @@ public static class SpriteWriter
                         Anim = entry.Anim,
                         Direction = entry.Direction,
                         Frames = entry.Frames,
+                        End = entry.End.ToString(),
+                        ChainTo = entry.ChainTo,
                     })
                     .ToList(),
                 AnimSets = animSetHeaders
@@ -809,6 +864,20 @@ public static class SpriteWriter
         public int Anim { get; set; }
         public int Direction { get; set; }
         public List<int> Frames { get; set; } = new();
+
+        /// <summary>
+        /// "Loop" | "Hold" | "Chain" - see AnimationEndClassifier and the class doc's End/ChainTo
+        /// bullet.
+        /// </summary>
+        public string End { get; set; } = nameof(AnimationEndKind.Loop);
+
+        /// <summary>
+        /// Present only when End is "Chain": the target AnimSet index (SiFrame.TransformIndexLow,
+        /// an unmasked byte - see AnimationEndClassifier).
+        /// </summary>
+        [System.Text.Json.Serialization.JsonIgnore(
+            Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        public int? ChainTo { get; set; }
     }
 
     /// <summary>

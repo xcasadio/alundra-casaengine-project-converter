@@ -29,9 +29,15 @@ namespace Alundra.Scripts;
 /// original's own <c>TryUseItem</c>/<c>PlayerTryAction</c>/<c>CheckEntityInteraction</c>/<c>PlayerTryAttack</c>
 /// calls (item use, carried-entity/NPC interaction, weapon attack) are NOT ported - no item/interaction/
 /// combat system exists yet.</description></item>
-/// <item><description>LoadingMap(0x36) case, PlayerManager.cs:914-922 - see <see cref="MovePlayer"/>'s
-/// own doc for the exact deviation (bridged straight to Idle instead of the original's ground-contact
-/// check).</description></item>
+/// <item><description>LoadingMap(0x36) case, PlayerManager.cs:914-922, ported faithfully: <c>if
+/// IsOnGround != 0, break</c> (stay in LoadingMap); the original's ground-contact check reads a stub
+/// value (<see cref="AlundraEntityScriptProxy.IsOnGround"/> pinned to 1 for the player until E3's own
+/// gravity/collision chantier - see <see cref="MovePlayer"/>'s own doc). The freshly spawned hero's
+/// actual LoadingMap -&gt; Idle exit is the animation Chain bridge (<c>AlundraWorldProxy.OnAnimationFinished</c>,
+/// 2026-08-23 "Correctif fins d'animation" - anim 54's trailing control frame chains to anim 0/Idle),
+/// not this method - matching the original, where the same trailing-control-frame-driven
+/// <c>UpdateAnimation</c> recursion is what actually leaves LoadingMap, not
+/// <c>MovePlayer</c>.</description></item>
 /// </list>
 ///
 /// NOT ported (out of E2's own scope, unconditionally, regardless of <c>TargetAnimationId</c>):
@@ -140,16 +146,18 @@ public static class AlundraPlayerManager
         // PlayerManager.cs:355-357 (UpdatePlayerWeaponEffect/UpdateWeaponStepProgression/
         // UpdatePlayerCarriedEntity) - NOT PORTED (no weapon/carry system).
 
-        // Documented V1 bridge for the LoadingMap(0x36) case (PlayerManager.cs:914-922): the original only
-        // ever leaves LoadingMap when IsOnGround == 0 (branching to the Jump animation instead - itself not
-        // ported, see this class' own doc); IsOnGround is never observable in V1 (no gravity/collision), so
-        // a literal port would strand the freshly spawned hero in the LoadingMap pose forever. Instead, the
-        // very first unlocked MovePlayer tick after spawn promotes LoadingMap straight to Idle so the
-        // pad-driven Idle/Moving switch below can take over on the SAME tick - documented deviation,
-        // docs/plan-conversion-totale.md §4 E2.
-        if (player.TargetAnimationId == LoadingMapAnimationId)
+        // LoadingMap(0x36) case, PlayerManager.cs:914-922, ported faithfully: "if IsOnGround != 0, break"
+        // (stay in LoadingMap) else switch to Jump (NOT ported - no jump animation/physics in V1, see this
+        // class' own doc). AlundraWorldProxy.AdoptPlayerPawn pins IsOnGround = 1 for the player until E3
+        // (no gravity/collision yet), so this always takes the "stay" branch - the hero's actual
+        // LoadingMap -> Idle exit is the animation Chain bridge instead (anim 54's trailing control frame
+        // chains to anim 0/Idle - see AlundraWorldProxy.OnAnimationFinished), matching the original's own
+        // trailing-control-frame-driven animation switch rather than this ground check.
+        if (player.TargetAnimationId == LoadingMapAnimationId && player.IsOnGround == 0)
         {
-            player.TargetAnimationId = IdleAnimationId;
+            // PlayerManager.cs:919-920 (goto LAB_80032604): the original branches to the Jump animation
+            // here. Not ported (no jump animation/physics in V1) - documented no-op rather than a fake
+            // jump, same convention as every other unported TargetAnimationId case in this class.
         }
 
         // PlayerManager.cs:361-383 (Idle/Moving case), simplified per E2's own scope - see this class' own

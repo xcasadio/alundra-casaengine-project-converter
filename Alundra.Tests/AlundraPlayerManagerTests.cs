@@ -148,41 +148,47 @@ public class AlundraPlayerManagerTests
     }
 
     // -----------------------------------------------------------------------------------------
-    // LoadingMap(0x36) -> Idle bridge (PlayerManager.cs:914-922, documented V1 deviation).
+    // LoadingMap(0x36) case, ported faithfully (PlayerManager.cs:914-922): "if IsOnGround != 0,
+    // break" (stay in LoadingMap), else switch to Jump (NOT ported). Either way MovePlayer itself
+    // never moves a LoadingMap-animation player off it - the actual exit is the animation Chain
+    // bridge (AlundraWorldProxy.OnAnimationFinished, hero anim 54 -> 0/Idle), not this method. See
+    // AlundraWorldProxyAnimationEndBridgeTests for that side.
     // -----------------------------------------------------------------------------------------
 
     [Fact]
-    public void MovePlayer_LoadingMapNoPadHeld_BridgesToIdle()
+    public void MovePlayer_LoadingMapGrounded_StaysLoadingMap_RegardlessOfPad()
     {
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0 };
-
-        AlundraPlayerManager.MovePlayer(player, in NoInput, NewUnlockedState());
-
-        Assert.Equal(0u, player.TargetAnimationId); // Idle
-    }
-
-    [Fact]
-    public void MovePlayer_LoadingMapPadHeld_BridgesStraightToMoving_SameTick()
-    {
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0 };
+        // IsOnGround stub = 1 (AlundraWorldProxy.AdoptPlayerPawn's own documented stub until E3):
+        // the original's "break" branch - stays LoadingMap.
+        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, IsOnGround = 1 };
         var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up };
 
         AlundraPlayerManager.MovePlayer(player, in pad, NewUnlockedState());
 
-        Assert.Equal(1u, player.TargetAnimationId); // Moving - the bridge and the Idle/Moving switch both
-                                                      // apply within the SAME MovePlayer call.
-        Assert.Equal(0x10u, player.TargetDirection);
+        Assert.Equal(0x36u, player.TargetAnimationId);
+    }
+
+    [Fact]
+    public void MovePlayer_LoadingMapNotGrounded_StaysLoadingMap_JumpNotPorted()
+    {
+        // IsOnGround == 0 (default): the original would switch to Jump here (PlayerManager.cs:919-920) -
+        // not ported (no jump animation/physics in V1), so this is a documented no-op, not a mutation.
+        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0 };
+
+        AlundraPlayerManager.MovePlayer(player, in NoInput, NewUnlockedState());
+
+        Assert.Equal(0x36u, player.TargetAnimationId);
     }
 
     [Fact]
     public void MovePlayer_LoadingMapWhileInputBlocked_StaysLoadingMap()
     {
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0 };
+        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, IsOnGround = 1 };
         var state = new AlundraGameState { PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked };
 
         AlundraPlayerManager.MovePlayer(player, in NoInput, state);
 
-        Assert.Equal(0x36u, player.TargetAnimationId); // locked branch returns before the bridge ever runs.
+        Assert.Equal(0x36u, player.TargetAnimationId); // locked branch returns before the LoadingMap case ever runs.
     }
 
     // -----------------------------------------------------------------------------------------

@@ -60,6 +60,14 @@ public sealed class SpriteFrame
     /// </summary>
     public int TerminatorCode;
 
+    /// <summary>
+    /// Raw SiFrame.TransformIndexLow (an unmasked byte, see SiFrame.cs). Only meaningful on the
+    /// trailing terminator frame: EntityManager.UpdateAnimation reads its bit 7 to choose Hold vs
+    /// Chain, and on Chain assigns the whole byte to TargetAnimationId with no mask
+    /// (EntityManager.cs:267-279) - see AnimationEndClassifier.
+    /// </summary>
+    public int TransformIndexLow;
+
     public IReadOnlyList<SpriteQuad> Quads = Array.Empty<SpriteQuad>();
 
     /// <summary>
@@ -455,6 +463,9 @@ public static class SpriteBankReader
             }
 
             var rawDelay = frameElement.GetProperty("Delay").GetInt32();
+            var transformIndexLow = frameElement.TryGetProperty("TransformIndexLow", out var transformIndexLowElement)
+                ? transformIndexLowElement.GetInt32()
+                : 0;
             var quads = new List<SpriteQuad>();
             var idsv = 0;
 
@@ -480,6 +491,7 @@ public static class SpriteBankReader
             {
                 DelayFrames = rawDelay & 0x7f,
                 TerminatorCode = rawDelay,
+                TransformIndexLow = transformIndexLow,
                 Quads = quads,
                 Collision = ReadCollision(frameElement),
                 Idsv = idsv,

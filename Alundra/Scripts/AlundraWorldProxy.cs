@@ -496,6 +496,126 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         return table;
     }
 
+    /// <summary>
+    /// Builds the per-entity Hold/Chain lookup <see cref="AlundraEntityScriptProxy.AnimationEndByAnimDirection"/>
+    /// stashes at spawn - same key packing as <see cref="BuildIdsvByAnimDirection"/>, so both tables share
+    /// the (anim, direction) -&gt; int key without a tuple key/comparer. Only entries whose End is Hold or
+    /// Chain are worth keeping (a Loop entry has nothing to bridge - <see cref="OnAnimationFinished"/>
+    /// treats a lookup miss as "keep looping" already, so a Loop entry would be a table slot that is never
+    /// read for anything different); this also keeps the table small - Loop entries were the majority
+    /// (5207 of 9620 across the real export) and would triple its size for no observable effect.
+    /// </summary>
+    internal static Dictionary<int, AnimationEndInfo>? BuildAnimationEndByAnimDirection(
+        IReadOnlyList<AnimDirIdsv>? idsvAnimDirs)
+    {
+        if (idsvAnimDirs == null || idsvAnimDirs.Count == 0)
+        {
+            return null;
+        }
+
+        Dictionary<int, AnimationEndInfo>? table = null;
+        foreach (var entry in idsvAnimDirs)
+        {
+            if (entry.End == AnimationEndKind.Loop)
+            {
+                continue;
+            }
+
+            table ??= new Dictionary<int, AnimationEndInfo>(idsvAnimDirs.Count);
+            table[entry.Anim * IdsvDirectionStride + entry.Direction] =
+                new AnimationEndInfo { Kind = entry.End, ChainTargetAnimationId = entry.ChainTo };
+        }
+
+        return table;
+    }
+
+    /// <summary>
+    /// Subscribes <paramref name="entity"/>'s <see cref="AnimatedSpriteComponent"/> (if it has one) to
+    /// <see cref="OnAnimationFinished"/> exactly once, at spawn/adoption (see
+    /// <see cref="ApplySpawnInitialization"/>/<see cref="AdoptPlayerPawn"/>) - bridging the engine's
+    /// Once-finished event back to the original's Hold/Chain semantics (EntityManager.cs:257-281, see
+    /// <see cref="OnAnimationFinished"/>'s own doc). The cached static delegate
+    /// (<see cref="AnimationFinishedHandler"/>) means subscribing allocates nothing beyond the one-time
+    /// delegate instance shared by every entity; the handler itself resolves the proxy from
+    /// <c>sender</c>/<c>Owner.GameplayProxy</c> rather than capturing anything per-entity.
+    /// </summary>
+    /// <summary>
+    /// No unsubscribe on destroy: <see cref="DestroyEntity(AlundraEntityScriptProxy)"/> only ever sets
+    /// <see cref="EntityStatus.FlagToDestroy"/> (V1 scope is invisibility, not removal/slot recycling -
+    /// see that method's own doc), never disposes the entity or its components, so the subscription
+    /// this method makes lives exactly as long as the entity object itself and needs no explicit
+    /// teardown. A FlagToDestroy entity's <see cref="OnAnimationFinished"/> calls (should its sampler
+    /// still run while invisible) are themselves harmless: every per-frame pass that reads
+    /// <see cref="AlundraEntityScriptProxy.ForceResetAnimationFlag"/>/<c>TargetAnimationId</c>
+    /// (<see cref="SyncAnimation"/>, <see cref="RunPendingEventTriggers"/>) already skips FlagToDestroy
+    /// entities.
+    /// </summary>
+    internal static void SubscribeAnimationEndBridge(Entity entity)
+    {
+        var animatedSprite = entity.GetComponent<AnimatedSpriteComponent>();
+        if (animatedSprite == null)
+        {
+            return;
+        }
+
+        animatedSprite.AnimationFinished += AnimationFinishedHandler;
+    }
+
+    private static readonly EventHandler<Animation2d> AnimationFinishedHandler = OnAnimationFinished;
+
+    /// <summary>
+    /// Bridge from <see cref="AnimatedSpriteComponent.AnimationFinished"/> (fired once, from inside
+    /// <c>Entity.Update</c>'s component pass, strictly BEFORE that same entity's own
+    /// <see cref="AlundraEntityScriptProxy.Update"/> runs - see <c>Animation2dCompositionSampler.Update</c>'s
+    /// clamp-at-DurationSeconds/IsFinished and <c>AnimatedSpriteComponent.Update</c>) back to the
+    /// original's Hold/Chain semantics (EntityManager.cs:257-281):
+    /// <list type="bullet">
+    /// <item><description>Hold: sets <see cref="AlundraEntityScriptProxy.ForceResetAnimationFlag"/> = 1
+    /// (EntityManager.cs:273-275) - already read by <see cref="AlundraEntityScriptProxy.Update"/>'s pick
+    /// phase for <c>DeactivateOnAnimationEnd</c>. The engine's own Once clamp already holds the last
+    /// displayed frame's pose (the writer's terminal keyframe repeats it, see <c>SpriteWriter</c>'s
+    /// class doc) - nothing else to do.</description></item>
+    /// <item><description>Chain: sets <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> to the
+    /// chain target (EntityManager.cs:277-279). <see cref="AlundraEntityScriptProxy.Update"/> calls
+    /// <see cref="SyncAnimation"/> every frame regardless, so the very next call - later this SAME
+    /// frame, since the component pass already ran - notices <c>TargetAnimationId</c> changed and
+    /// switches animation: the same-tick effect the original gets from its own recursive
+    /// <c>UpdateAnimation</c> call (EntityManager.cs:280), without this bridge needing to call
+    /// <see cref="SyncAnimation"/> itself.</description></item>
+    /// </list>
+    /// A lookup miss (no entry for the just-finished (anim, direction), including every Loop entry -
+    /// see <see cref="BuildAnimationEndByAnimDirection"/>) is a no-op: the engine already looped or
+    /// nothing was ever wired up for this entity (degraded catalog). The original's own
+    /// <c>AnimCompleteCounter++</c> per Loop cycle (EntityManager.cs:263) is NOT bridged - nothing in
+    /// the ported V1 gameplay reads it yet, and <see cref="AnimatedSpriteComponent.AnimationFinished"/>
+    /// does not even fire for a Loop animation (<c>Animation2dCompositionSampler</c> wraps instead of
+    /// finishing) so there would be no signal to bridge it from.
+    /// </summary>
+    internal static void OnAnimationFinished(object? sender, Animation2d finishedAnimation)
+    {
+        if (sender is not AnimatedSpriteComponent component
+            || component.Owner?.GameplayProxy is not AlundraEntityScriptProxy proxy
+            || proxy.AnimationEndByAnimDirection == null)
+        {
+            return;
+        }
+
+        var key = (int)proxy.CurrentAnimationId * IdsvDirectionStride + proxy.AnimationDirection;
+        if (!proxy.AnimationEndByAnimDirection.TryGetValue(key, out var end))
+        {
+            return;
+        }
+
+        if (end.Kind == AnimationEndKind.Hold)
+        {
+            proxy.ForceResetAnimationFlag = 1;
+        }
+        else if (end.Kind == AnimationEndKind.Chain)
+        {
+            proxy.TargetAnimationId = (uint)end.ChainTargetAnimationId;
+        }
+    }
+
     /// <summary>Best-effort integer read of one custom property; missing or malformed leaves 0/false -
     /// mirroring how the converter always emits these two keys, so a missing key is not expected but
     /// should not itself block a spawn the way a malformed <see cref="EntityRecordMapper"/> key does.</summary>
@@ -780,6 +900,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // (anim, direction) pair is kept; the per-frame lists Data/sprite-records.json carries are not
         // needed on this hot-path table.
         proxy.IdsvByAnimDirection = BuildIdsvByAnimDirection(header.IdsvAnimDirs);
+        proxy.AnimationEndByAnimDirection = BuildAnimationEndByAnimDirection(header.IdsvAnimDirs);
+        SubscribeAnimationEndBridge(entity);
 
         // EntityManager.cs:119: the mapper seeded PosZ with the raw pre-clamp elevation
         // (EntityRecordMapper's documented caveat); this is the -ModZ+1 offset InitializeEntity applies
@@ -895,6 +1017,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         proxy.CurrentAnimationId = ~AlundraGameState.ResetAnimationId;
         proxy.CurrentDirection = ~AlundraGameState.ResetDirectionId;
 
+        // Documented stub for AlundraPlayerManager's faithful LoadingMap(0x36) port
+        // (PlayerManager.cs:914-916: "if IsOnGround != 0, break" - i.e. stay in LoadingMap): V1 has no
+        // gravity/collision (D4/E2), so IsOnGround can never become a real ground-contact reading before
+        // that chantier (E3). Pinning it to 1 here reproduces the ONE case that matters for a fresh New
+        // Game spawn - a grounded hero - so MovePlayer's LoadingMap case takes the "stay" branch instead
+        // of falling to the NOT-ported Jump case; the actual LoadingMap -> Idle exit is the animation
+        // Chain bridge instead (anim 54 -> 0, see AlundraWorldProxy.OnAnimationFinished), matching the
+        // original's own trailing-control-frame-driven animation switch rather than a ground check.
+        proxy.IsOnGround = 1;
+
         var assetInfo = AssetCatalog.Get(HeroAssetName);
         if (assetInfo != null && SpriteRecordCatalog != null && SpriteRecordCatalog.TryGet(assetInfo.Id, out var header))
         {
@@ -906,6 +1038,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             proxy.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate] = header.ProgramDeactivate;
             proxy.SpriteProgramIndexes[ScriptHelper.ProgramFInteract] = header.ProgramInteract;
             proxy.IdsvByAnimDirection = BuildIdsvByAnimDirection(header.IdsvAnimDirs);
+            proxy.AnimationEndByAnimDirection = BuildAnimationEndByAnimDirection(header.IdsvAnimDirs);
             proxy.AnimSetsByAnim = header.AnimSets;
         }
         else if (!_loggedNoHeroHeader)
@@ -915,6 +1048,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 $"AlundraWorldProxy: no sprite-records.json header found for the hero prefab in world "
                 + $"'{world.Name}'; Flags/SpriteProgramIndexes/AnimSetsByAnim left at their defaults.");
         }
+
+        SubscribeAnimationEndBridge(entity);
 
         // Overwrites the engine's own PlayerStart-derived transform - see this method's own doc
         // ("Deviation note") for why that is intentional, not redundant.

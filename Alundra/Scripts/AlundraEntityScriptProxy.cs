@@ -168,6 +168,21 @@ public class AlundraEntityScriptProxy : GameplayProxy
     public Dictionary<int, int>? IdsvByAnimDirection;
 
     /// <summary>
+    /// Engine-only, not part of the original struct (same shape/purpose as
+    /// <see cref="IdsvByAnimDirection"/>, same key packing): this entity's Hold/Chain end-of-animation
+    /// table, resolved once at spawn from its <c>SpriteRecordCatalog</c> entry (see
+    /// <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>/<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>)
+    /// and read by <see cref="AlundraWorldProxy.OnAnimationFinished"/> - the bridge from the engine's
+    /// Once-finished event back to the original's Hold ("freeze the last frame") / Chain ("play this
+    /// other animation next") semantics (EntityManager.cs:257-281). Null when the entity's header
+    /// carried no IdsvAnimDirs entries, same degraded case as <see cref="IdsvByAnimDirection"/>; a miss
+    /// on a specific (anim, direction) key is also possible (an older export's IdsvAnimDirs entry with
+    /// no End field defaults to Loop when parsed, so it is never chained/held) - both cases are callers
+    /// treating a miss as "nothing to bridge, the engine already looped".
+    /// </summary>
+    public Dictionary<int, AnimationEndInfo>? AnimationEndByAnimDirection;
+
+    /// <summary>
     /// Engine-only, not part of the original struct (same as <see cref="IdsvByAnimDirection"/>): this
     /// entity's per-anim walk-speed/acceleration lookup (E2), resolved once at spawn from its
     /// <c>SpriteRecordCatalog</c> entry (see <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> - only the
@@ -534,6 +549,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
             MapEventProgramId = MapEventProgramId,
             LogicContextEntity = LogicContextEntity,
             IdsvByAnimDirection = IdsvByAnimDirection,
+            AnimationEndByAnimDirection = AnimationEndByAnimDirection,
             AnimSetsByAnim = AnimSetsByAnim,
             PhysicsTickAccumulator = PhysicsTickAccumulator,
             LastTargetAnimationId = LastTargetAnimationId,

@@ -102,15 +102,46 @@ public readonly struct AnimSetEntry
 }
 
 /// <summary>
+/// How an (anim, direction)'s trailing control frame ends playback - mirrors the converter's own
+/// <c>AnimationEndClassifier.AnimationEndKind</c> (alundra-casaengine-project-converter/Readers/
+/// AnimationEndClassifier.cs), duplicated here rather than shared since this DLL does not reference
+/// the converter project. See <see cref="AlundraWorldProxy.SubscribeAnimationEndBridge"/> for how
+/// this drives the engine's Once-finished event back to the original's Hold/Chain semantics
+/// (EntityManager.cs:257-281).
+/// </summary>
+public enum AnimationEndKind
+{
+    Loop,
+    Hold,
+    Chain,
+}
+
+/// <summary>
+/// One <see cref="AlundraEntityScriptProxy.AnimationEndByAnimDirection"/> table value - see
+/// <see cref="AlundraWorldProxy.BuildAnimationEndByAnimDirection"/> and
+/// <see cref="AlundraWorldProxy.OnAnimationFinished"/>.
+/// </summary>
+public readonly struct AnimationEndInfo
+{
+    public AnimationEndKind Kind { get; init; }
+    public int ChainTargetAnimationId { get; init; }
+}
+
+/// <summary>
 /// One <see cref="SpriteRecordHeader.IdsvAnimDirs"/> entry - see its doc comment. <see cref="Frames"/>
 /// holds the per-frame Images.DepthSortValue list of every displayed frame (terminator frames
-/// excluded), in animation-frame order.
+/// excluded), in animation-frame order. <see cref="End"/>/<see cref="ChainTo"/> are the same
+/// classification <c>SpriteWriter</c> already used to pick this animation's own AnimationType
+/// (Loop stays engine Loop; Hold/Chain became engine Once) - see
+/// <see cref="AlundraWorldProxy.BuildAnimationEndByAnimDirection"/>.
 /// </summary>
 public readonly struct AnimDirIdsv
 {
     public int Anim { get; init; }
     public int Direction { get; init; }
     public IReadOnlyList<int>? Frames { get; init; }
+    public AnimationEndKind End { get; init; }
+    public int ChainTo { get; init; }
 }
 
 /// <summary>
@@ -250,6 +281,16 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
                         Anim = entry.Anim,
                         Direction = entry.Direction,
                         Frames = entry.Frames ?? new List<int>(),
+                        // Absent/unrecognized End (older export, or a future value this DLL does not
+                        // know about yet) defaults to Loop - the converter's own pre-End-field
+                        // behaviour, and the safe choice: the engine keeps looping, nothing to bridge.
+                        End = entry.End switch
+                        {
+                            "Hold" => AnimationEndKind.Hold,
+                            "Chain" => AnimationEndKind.Chain,
+                            _ => AnimationEndKind.Loop,
+                        },
+                        ChainTo = entry.ChainTo ?? 0,
                     })
                     .ToArray(),
             AnimSets = AnimSets is not { Count: > 0 }
@@ -275,6 +316,8 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
         [JsonInclude] public int Anim { get; set; }
         [JsonInclude] public int Direction { get; set; }
         [JsonInclude] public List<int>? Frames { get; set; }
+        [JsonInclude] public string? End { get; set; }
+        [JsonInclude] public int? ChainTo { get; set; }
     }
 
     // No naming policy: field names/order match SpriteBankReader.ReadAnimSetHeader's own JSON contract

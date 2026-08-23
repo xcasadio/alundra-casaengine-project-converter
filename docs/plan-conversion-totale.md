@@ -296,6 +296,75 @@ Oracle transverse : le harnais headless `Alundra.Tests/IntroTraceHarnessTests.cs
     accumulateur `PhysicsTickAccumulator` est remis à 0 (pas seulement plafonné) au déclenchement du
     catch-up de `AlundraPlayerManager.Tick` — les deux sont des micro-optimisations sans effet
     observable au rythme New Game/map 389 actuel, reportées (pas de ticket dédié pour l'instant).
+- **Correctif fins d'animation (2026-08-23)** : bug signalé par l'utilisateur (« l'animation
+  d'Alundra est trop rapide »). Le convertisseur exportait TOUTE animation en `AnimationType.Loop`
+  (`SpriteWriter.cs:376` avant correctif) et ignorait la signification de la frame de contrôle
+  finale — documentée par `SpriteBankReader`/`SpriteFrame.TerminatorCode` mais jamais lue. Dans
+  l'original (`alundra-datas-analyser/AlundraTools/AlundraEngine/Gameplay/EntityManager.cs:257-281`,
+  `UpdateAnimation`), en atteignant la dernière frame, la frame de contrôle finale (sans image ;
+  `TerminatorCode` = `SiFrame.Delay` brut) décide de trois issues :
+  - **Loop** — `Delay == 1` (:257-263) → retour à la frame 0, `AnimCompleteCounter++`.
+  - **Hold** — `Delay != 1` et `(Delay & 0x80) == 0` (toujours vrai dans les données livrées) et
+    `(TransformIndexLow & 0x80) != 0` (:267-275) → `NextFrameDelay = 0x7fffffff`,
+    `ForceResetAnimationFlag = 1` : gel sur la dernière pose affichée.
+  - **Chain** — même garde, `TransformIndexLow & 0x80 == 0` (:277-281) → `TargetAnimationId =
+    TransformIndexLow` (**octet complet, non masqué** — `EntityManager.cs:277` affecte la valeur
+    brute sans `& 0x7f`, et `SiFrame.TransformIndexLow` est lui-même un `byte` non masqué, voir
+    `SiFrame.cs`) puis récursion immédiate de `UpdateAnimation`, même tick.
+  Recensement sur le corpus réel (scan brut par map, avant dédoublonnage des banques — les
+  compteurs du convertisseur, dédoublonnés, font foi) : 90280 direction-animations, 51911 Loop,
+  22596 Hold, 15773 Chain (846 en chaîne vers elles-mêmes). L'anim 54 du héros (LoadingMap,
+  frames 10/10/3 ticks) se termine par `Delay 0 / TransformIndexLow 0` → joue une fois puis
+  enchaîne sur l'anim 0 (Idle) ; exportée en Loop elle bouclait toutes les 0,48 s (frames de 10, 10, 3 et 1 ticks) — le « trop
+  rapide » observé. L'anim 0 (Idle) se termine par `Delay 1` → Loop (déjà correct).
+  - **Classification** (`Readers/AnimationEndClassifier.cs`, nouveau) : `AnimationEndKind { Loop,
+    Hold, Chain }`, lu sur la dernière frame de l'animation (`SpriteFrame.IsTerminator`). Absence de
+    frame de contrôle finale (jamais observée sur les 92452 animations du corpus réel) → repli sur
+    Loop (comportement historique) + compteur `Sprites.AnimationsMissingTerminator`.
+  - **Règle du terminal Once** : pour Hold/Chain, `AnimationType.Once` remplace `Loop`, et la
+    keyframe terminale (à `t_end`, durée de la dernière frame affichée) répète les valeurs de la
+    DERNIÈRE FRAME AFFICHÉE (sprite, position, flips, `visible = true`) au lieu de tout masquer —
+    `Animation2dCompositionSampler` clampe `CurrentTime` à `DurationSeconds` en `Once` et échantillonne
+    les pistes à cette position, donc la pose retenue à l'arrêt est celle de la keyframe terminale ;
+    sans ce correctif le sprite aurait disparu à la fin au lieu de se figer. Le rendu Loop reste
+    identique octet pour octet (vérifié par diff avant/après sur
+    `bankalundra_0_anim54_down.anim2d` : `animation_type: Loop → Once`, dernière keyframe de chaque
+    piste dupliquée à `t=0.48s` avec `visible: true`, aucun autre octet changé).
+  - **Schéma `Data/sprite-records.json`** : chaque entrée `IdsvAnimDirs` gagne `"End":
+    "Loop"|"Hold"|"Chain"` et, si `Chain`, `"ChainTo": <id anim>`. Nouveaux compteurs de rapport :
+    `Sprites.AnimationsLoop/Hold/Chain`, `Sprites.AnimationsChainSelf`. Sur l'export complet réel :
+    9620 paires (anim, direction) exportées → 5207 Loop, 2657 Hold, 1756 Chain (119 en boucle sur
+    elles-mêmes).
+  - **Côté DLL** (`Alundra/Scripts`) : `SpriteRecordCatalog`/`AnimDirIdsv` lit `End`/`ChainTo` (tolère
+    l'absence → Loop, export antérieur). `AlundraEntityScriptProxy.AnimationEndByAnimDirection`
+    (même clé packée que `IdsvByAnimDirection` : `anim*4+direction`) est construit une fois au spawn
+    (`ApplySpawnInitialization`/`AdoptPlayerPawn`), sans entrée Loop (rien à ponter). Un seul
+    abonnement par entité, au spawn, à `AnimatedSpriteComponent.AnimationFinished`
+    (`AlundraWorldProxy.SubscribeAnimationEndBridge`/`OnAnimationFinished`, délégué statique
+    partagé, aucune fermeture par appel) : Hold → `ForceResetAnimationFlag = 1` (lu par la passe de
+    pick pour `DeactivateOnAnimationEnd`) ; Chain → `TargetAnimationId = ChainTo`, repris au même
+    tick par `AlundraEntityScriptProxy.Update` → `SyncAnimation` (le composant tourne AVANT le
+    `GameplayProxy.Update` de la même entité, donc l'effet est same-tick comme la récursion
+    originale, sans appel direct à `SyncAnimation` depuis le pont). Pas de désabonnement à la
+    destruction : `DestroyEntity` ne fait que marquer `FlagToDestroy` (invisibilité, pas de
+    suppression — hors périmètre V1), l'abonnement vit donc aussi longtemps que l'entité elle-même ;
+    un appel résiduel sur une entité `FlagToDestroy` est sans effet (`SyncAnimation`/
+    `RunPendingEventTriggers` l'ignorent déjà). L'`AnimCompleteCounter++` par boucle de l'original
+    n'est PAS ponté (rien ne le lit côté V1 ; `AnimationFinished` ne se déclenche même pas pour une
+    animation Loop, qui boucle sans jamais « finir »).
+  - **Suppression de l'écart E2 LoadingMap** : `AlundraPlayerManager.MovePlayer` portait auparavant
+    « LoadingMap → Idle inconditionnel » (écart documenté, faute de pont d'animation). Remplacé par
+    le port fidèle de `PlayerManager.cs:914-922` (`if IsOnGround != 0, break` ; sinon Jump — Jump
+    non porté, no-op documenté) ; `AlundraWorldProxy.AdoptPlayerPawn` fixe le stub
+    `IsOnGround = 1` pour le héros jusqu'à E3 (pas de gravité/collision). La sortie de LoadingMap
+    passe donc désormais par la chaîne d'animation (anim 54 → 0) livrée ci-dessus, comme
+    l'original.
+  - **Tests** : `alundra-casaengine-project-converter.Tests` (129, +7) — classification sur données
+    réelles (héros anim 0 Loop, anim 54 Chain→0, un exemple Hold réel du corpus), keyframe terminale
+    Once qui répète la dernière frame affichée, sortie Loop inchangée. `Alundra.Tests` (304, +10) —
+    parsing `End`/`ChainTo`, comportement du pont Hold/Chain (appel direct du handler), LoadingMap
+    reste figé jusqu'au déclenchement de la chaîne, `IntroTraceHarnessTests` toujours à la frame 926
+    (ne dépend pas des animations, confirmé).
 
 ### E3 — Collisions : champ de hauteur depuis `AlundraCells` + mover ⏳ (moteur, plan-verifier)
 
