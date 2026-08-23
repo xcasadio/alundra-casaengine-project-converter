@@ -208,6 +208,13 @@ Points structurants :
 
 ## 5. Plan d'implémentation
 
+> **Mise à jour 2026-08-23 : les étapes E3–E6 ci-dessous sont remplacées** par
+> [plan-conversion-totale.md](plan-conversion-totale.md) (scripts joués par chaque entité, héros =
+> pawn possédé sur le `CharacterControllerComponent`, physique/navigation/dialogues/UI sur les
+> systèmes du moteur). E0–E2 restent la référence pour le convertisseur (worlds, entité héros,
+> `.gameMode`). Le reste de cette section est conservé comme historique.
+
+
 L'ordre est choisi pour obtenir le plus tôt possible une **image à l'écran**, puis un héros animé,
 puis un héros qui bouge.
 

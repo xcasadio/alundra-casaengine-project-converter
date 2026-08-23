@@ -41,8 +41,8 @@ via les classes du moteur, et dont une map s'affiche dans l'éditeur/launcher.
 | Worlds + entités + composants | `.world`, `TileMapComponent`, `SpriteRendererComponent`… | ✅ Présent |
 | Dialogues / textes localisés | Système Yarn `.dialogue` (`line_texts`) | ✅ Présent |
 | Scripting gameplay | `GameplayDllName` (DLL C#), DotNetCompiler | ✅ Présent |
-| Physique 2.5D top-down (Height/Slope/gravité Z/murs) | — | ❌ Absent → données préservées en custom, runtime hors périmètre |
-| Interpréteur bytecode événements Alundra | — | ❌ Absent → bytecode préservé tel quel, interpréteur hors périmètre |
+| Physique 2.5D top-down (Height/Slope/gravité Z/murs) | refonte collisions livrée le 2026-08-12 (`ICollisionField`, `HeightGridCollisionField`, `SimulationSpacePolicy.TopDownElevation`, `CharacterControllerComponent`) — mover conscient de la politique encore à faire | ⚠️ Partiel (maj 2026-08-23) → étape E3 de [plan-conversion-totale.md](plan-conversion-totale.md) |
+| Interpréteur bytecode événements Alundra | `Alundra/Scripts/AlundraEventProgramRunner.cs` (DLL gameplay) | ✅ Présent (maj 2026-08-23), étendu opcode par opcode selon [plan-conversion-totale.md](plan-conversion-totale.md) |
 | Loop points audio (SFX `LoopStart/LoopEnd`) | `Sound.cs` minimal ; MonoGame `SoundEffect` le permet | ❌ Non exposé → manifest préservé, extension moteur optionnelle |
 | Police bitmap | FontStashSharp `StaticSpriteFont` (BMFont) via MGUI | ⚠️ Possible, pas d'asset natif → générer `.fnt` |
 | Parallaxe / ondes (`ScrollParameters`) | — | ❌ Absent → données préservées en JSON compagnon |
@@ -557,6 +557,14 @@ jq '.SpriteInfo.Entities.Entities[] | select(.IsEnabled==1)' data-extracted/data
   ne jamais forker le format — adapter le convertisseur.
 
 ## 6. Hors périmètre V1 (chantiers suivants, dans l'ordre conseillé)
+
+> **Mise à jour 2026-08-23 : l'ordre et le contenu des chantiers runtime sont définis par
+> [plan-conversion-totale.md](plan-conversion-totale.md)** (étapes E1–E15). Les exports que ce plan
+> demande au convertisseur : `AnimSets[].Speed/Acceleration/IsZForceApplied/Sfx` (E4), couche
+> TileMap `navigation.*` (E4), `.gameMode` + `.buttonsMapping` (E2), `.yarn` + `DialogueAsset` par map
+> avec un nœud par chaîne (E12), données de placement des murs au format moteur (E8). La liste
+> ci-dessous est conservée comme historique.
+
 
 1. **DLL gameplay `AlundraGame.Gameplay`** : composants typés (entité, portail, map event),
    physique 2.5D (Walkability/Slope/Height/gravité), chargement du manifest audio avec loop points.

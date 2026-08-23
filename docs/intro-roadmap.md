@@ -1,7 +1,9 @@
 # Feuille de route : intro d'Alundra (New Game → map 389) jusqu'au contrôle joueur
 
 Date : 2026-08-23. Étape 0 du chantier « faire jouer la scène d'intro jusqu'au moment où le joueur prend
-le contrôle ». Ce document est produit par un **harnais de trace headless** qui rejoue le flux New Game sur
+le contrôle ». **Mise à jour 2026-08-23 (soir) : la stratégie a changé — voir
+[plan-conversion-totale.md](plan-conversion-totale.md). Les §0–§3 (méthode, faits, inventaire, systèmes)
+restent valides ; le §1.5 et le §4 sont remplacés par ce plan.** Ce document est produit par un **harnais de trace headless** qui rejoue le flux New Game sur
 la map 389 avec l'interpréteur existant, plus une lecture croisée de la décompilation
 (`alundra-datas-analyser/AlundraTools/AlundraEngine/`, autorité de fidélité). FAIT = lu dans le code ou
 observé dans la trace ; HYPOTHÈSE = inféré.
@@ -222,17 +224,16 @@ Références dans `alundra-datas-analyser/AlundraTools/AlundraEngine/`.
   « le joueur prend le contrôle » = exécution de 0x11 par B1 (`g_playerControlFlags` redevient 0) puis
   `MovePlayer` qui lit le pad.
 
-### 1.5 Conséquences pour le port (décisions d'architecture)
+### 1.5 Conséquences pour le port — remplacé
 
-- Le driver des map-events (port de `RunMapEvents`) vit dans `AlundraWorldProxy.Update`, **avant** la
-  passe d'entités, exécute sur l'entité joueur avec un `EventProgramState` par map-event.
-- L'entité joueur est un `AlundraEntityScriptProxy` de slot 0 créé par le port de `ResetEntityState`
-  avant le spawn des records (gate de zone), `Status = Normal`, jamais parcourue par pick/run.
-- `MovePlayer` devient le tick du joueur, en tête de la passe d'événements, gardé par `InputBlockedMask`.
-- Le runner doit porter la politique de reprise de `RunScript` (`:239-296`) et `g_clearProgramState`,
-  pas seulement des handlers.
-- `g_entityFollowedByCamera` est une variable réassignée 6 fois pendant l'intro (6 → bloc 10 → 11 → 12 →
-  bloc 18 → joueur) et dont la cible peut être détruite : la caméra suit une référence, pas « le héros ».
+Les décisions d'architecture prises ici le 2026-08-23 (driver des map-events dans le world **et**
+machine d'états des entités dans le world, `MovePlayer` porté, physique portée) sont **remplacées** par
+les décisions D1–D9 de [plan-conversion-totale.md](plan-conversion-totale.md) §2 : scripts joués par
+chaque entité avec boucle de rattrapage dans le world, MapEvents seuls dans le world, héros = pawn du
+moteur, physique/navigation/dialogue/UI sur les systèmes du moteur. Deux faits de cette section
+restent structurants : le runner doit porter la politique de reprise de `RunScript` (`:239-296`) et
+`g_clearProgramState` ; `g_entityFollowedByCamera` est une variable réassignée 6 fois pendant l'intro
+dont la cible peut être détruite.
 
 ## 2. Inventaire ordonné des opcodes non implémentés
 
@@ -325,18 +326,17 @@ gardé par 0x800C du Tick 140), 0x59/0x27 (idem).
 
 (33 lignes `SYSTEM` dans la trace : les 26 ci-dessus + une par entité passant par `RunSpriteEvent`.)
 
-## 4. Ordre des chantiers
+## 4. Ordre des chantiers — remplacé par plan-conversion-totale.md
 
-### 4.1 Ce que l'intro exige réellement
+L'ordre des lots rédigé ici (1 moteur de script, 2 héros, 3 physique portée, 4 caméra/fondu/audio,
+5 tuiles, 6 dialogue) est **remplacé** par les étapes E1–E15 de
+[plan-conversion-totale.md](plan-conversion-totale.md) §4. Ce qui en survit : les faits du §4.1
+ci-dessous, et la correspondance inventaire → étape.
 
-Le déroulé sous New Game est une **chaîne de synchronisation par flags** entre B1 (exécuté par le joueur)
-et les Ticks des entités 10, 11, 12, 15 et 18, plus les mouettes 6-9 en décor animé (chronologie §0).
-
-FAITS qui bornent le périmètre :
+### 4.1 Ce que l'intro exige réellement (faits conservés)
 
 - **Aucun dialogue avant la prise de contrôle** : 0x0D n'apparaît que dans les programmes F et dans le
-  bloc du Tick 140 gardé par le flag temporaire 0x800C, que seul F12 (interaction) pose. Le chantier
-  dialogue passe **après** le jalon.
+  bloc du Tick 140 gardé par le flag temporaire 0x800C, que seul F12 (interaction) pose.
 - **IA native réduite à deux handlers** : les banques 25/146/161 ont tous leurs `Program*` natifs à 0
   (`alundra-project/Data/sprite-records.json`) ; `SpriteEventHandlers.cs:24,50,155,203,233` :
   A0 = `FunctionTypeA.SetSpawnFlagFromZPos` (entité 18, `AIValues[0] = PosZ >> 16`), C0/D0/F0 vides,
@@ -344,39 +344,35 @@ FAITS qui bornent le périmètre :
 - **Le mouvement scripté passe par la physique** : 0x5B/0x1E/0x1F ne déplacent rien ; ils posent
   `TargetDirection`/`TargetAnimationId` et attendent que `PhysicsEngine.UpdateEntityPhysics`
   (`PhysicsEngine.cs:1579-1597`) dérive `TargetForceX/Y = g_offsetXList[dir] × AnimationSet.Speed` avec
-  `Acceleration`, puis que `UpdateEntitiesForces`/`MoveEntity` intègrent. **Gap d'export** : le convertisseur
-  ne lit que `AnimSets[].PreloadedAnims` (`alundra-casaengine-project-converter/Readers/SpriteBankReader.cs`,
-  `ReadAnimSet`) et perd `Speed`, `Acceleration`, `Flags|Unknown` (= `IsZForceApplied`) et `Sfx`, présents
-  dans `data-extracted/data/map_389.json` (`SpriteInfo.SpriteRecords[].AnimSets[]`).
-- **0x85 copie des cellules** (`ChangeAreaTileProperties`) : walkability, ground, slope, height, `TileId`
-  et pile de murs d'un rectangle source vers une destination — la trappe (entité 15) modifie le rendu et
-  les collisions à chaud. Visuel : ne conditionne pas la prise de contrôle.
-- **Caméra** : `g_entityFollowedByCamera` change 6 fois pendant l'intro, et deux de ses cibles (blocs 10
-  et 18) sont détruites après coup.
+  `Acceleration`. **Gap d'export** : le convertisseur ne lit que `AnimSets[].PreloadedAnims`
+  (`alundra-casaengine-project-converter/Readers/SpriteBankReader.cs`, `ReadAnimSet`) et perd `Speed`,
+  `Acceleration`, `Flags|Unknown` (= `IsZForceApplied`) et `Sfx`, présents dans
+  `data-extracted/data/map_389.json` (`SpriteInfo.SpriteRecords[].AnimSets[]`).
+- **0x85 copie des cellules** (`ChangeAreaTileProperties`, `GameEngine.cs:2239-2300`) : walkability,
+  ground, slope, height, `TileId` et pile de murs d'un rectangle source vers une destination — la trappe
+  (entité 15) modifie le rendu et les collisions à chaud.
+- **Caméra** : `g_entityFollowedByCamera` change 6 fois pendant l'intro (6 → bloc 10 → 11 → 12 →
+  bloc 18 → joueur), deux cibles (blocs 10 et 18) sont détruites après coup.
 
-### 4.2 Lots, dans l'ordre (un lot = commit + verifier frais)
+### 4.2 Correspondance inventaire (§2, §3) → étapes du plan
 
-| # | Lot | Contenu (port ligne à ligne) | Débloque |
-|---|---|---|---|
-| **1** | **Moteur de script complet** | `RunScript` complet : reprise B/C sur `entity.EventProgramState`, `g_clearProgramState`, `Last*` pour C (`EntityEventHandlers.cs:232-392`) ; driver `RunMapEvents` sur l'entité joueur avec un état par map-event (`GameEngine.cs:1667-1718`, `:476-583`) ; spawn dynamique réel via `IEntityWorldContext` (gates de `SpawnEntity` `:684-717`, `ParentEntity`). Opcodes purs de l'intro : 0x38, 0x10/0x11 (flags de contrôle dans `AlundraGameState`), 0x67/0x68/0x69 (variable « entité suivie »), 0x19, 0x59, 0x5A/0x5B, 0x07, 0x0A, 0x16, 0x27, 0x49/0x4B, 0x3B (lit le joueur), 0x2F, 0x70 (lit `IsOnGround` — stub à 1 tant que le lot 3 n'existe pas, **déviation documentée**). IA native A0/E0 via `SpriteProgramIndexes`. | La chaîne de flags tourne en production (oracle = chronologie §0 : mêmes frames de pose de flags, même frame de 0x11) même si rien ne bouge à l'écran. |
-| **2** | **Héros et état de jeu** | `InitializeGameState` New Game (`GameInitializer.cs:331-436`) ; `ResetEntityState` (`GameEngine.cs:648-670`) = proxy joueur slot 0, banque `Entities/Alundra`, anim 0x36 dir 0, tuile (33,59,0), `Status = Normal`, hors pick/run, **créé avant** le spawn des records ; `MovePlayer` minimal (`PlayerManager.cs:17-60` : `InputBlockedMask`, branche verrouillée no-op, branche libre = pad + déplacement E4) ; `g_entityFollowedByCamera = PlayerEntity`. Côté convertisseur : `.gameMode`/controller si le moteur l'exige (`docs/demarrage-nouvelle-partie.md` E2/E3). | Le joueur existe, est placé par 0x64, verrouillé par 0x10, libéré par 0x11 ; déplacement après 0x11. |
-| **3** | **Physique des entités** | `UpdateEntitiesPhysics` (`PhysicsEngine.cs:10`), `UpdateEntitiesForces` (`:1365`), `UpdateEntityPhysics` (`:1579`), `MoveEntity`/`ComputeZPosition`/`ComputeXYPosition` (`:71/:109/:364`), `ComputeEntityGroundHeight` (`:956`, cellules `AlundraCells`), `UpdateTileAttributes` (`:1678`) ; clamp au sol d'`InitializeEntity:127-136` ; `UpdateEntitiesCounters`. **Prérequis export** : `Speed`/`Acceleration`/`IsZForceApplied`/`Sfx` par `AnimSet` dans `sprite-records.json` (+ test convertisseur + compteur `report.json`), puis `AnimationTables` côté DLL. 0x1E/0x1F/0x1B/0x07/0x70 deviennent réels. | Sauts, atterrissages, marches des entités 11/12/15/18, envol des mouettes, durées réelles. |
-| **4** | **Caméra, fondu, audio** | suivi de `g_entityFollowedByCamera` (`g_cameraLookAt = suivie.Pos >> 16`), `InitializeScrollingMode`, limites de scroll ; `WarpPlayer` effet 0 (`GameEngine.cs:878-903`) et scroll-in `g_mapOffsetX/Y` (`:1504-1515`) ; `LoadMapSounds` + BGM de la 389, SFX 44/45/46/61 de 0xBD, `HandleMapSoundStreaming`. | L'intro est regardable : plan sur la mouette, descente sur le pont, suivi des marins, retour sur Alundra. |
-| **5** | **Modification de tuiles à chaud** | 0x85 (`GameEngine.cs:2239-2300`), 0x55/0x54 : copier cellules + `TileId` + pile de murs ; côté moteur, invalidation du `TileMapComponent` et de l'overlay de murs pour le rectangle modifié — chantier **moteur**, plan-verifier requis. | Trappe de l'entité 15 ; portes B 130-133 après contrôle. |
-| **6** | **Dialogue et interaction** (post-jalon) | slot F via `g_activeCollisionEntity` (`MovePlayer`), 0x0D/0x39/0x44/0x50/0x51/0x5C, boîte de message (police/strings Phase 5), `MessageBox`/`MenuOpen`. | Parler aux marins (F 139-145, Tick 140), B 134. |
-
-Pourquoi cet ordre : le lot 1 est testable **headless** avec ce harnais (la chronologie §0 devient
-l'oracle) ; le lot 2 rend le jalon observable (verrou → libération) sans attendre la physique ; le lot 3
-est le plus gros et dépend d'un export supplémentaire, il ne doit bloquer ni 1 ni 2 ; 4 et 5 sont
-visuels/sonores et se valident à l'œil ; 6 n'est pas sur le chemin critique.
-
-### 4.3 Acceptation du jalon
-
-1. Harnais : après les lots 1-3, plus aucun `UnknownSkipped` ni prédicat optimiste avant la frame de 0x11,
-   et la chronologie des flags 0x83E8 / 0x83EA / 0x83E9 / 860 est reproduite par le runner de production.
-2. Runtime : New Game → map 389, fondu d'entrée, caméra sur la mouette puis descente, marins animés,
-   trappe, retour caméra sur Alundra, **le pad déplace Alundra après 0x11**.
-3. Aucun workaround : chaque écart visuel est remonté à sa cause (export / DLL / moteur).
+| Lignes de l'inventaire | Étape |
+|---|---|
+| machine d'états par entité, `RunMapEvents`, spawn dynamique, IA native A0/E0, 0x38, 0x19, 0x49/0x4B | E1 |
+| `ResetEntityState`, `InitializeGameState`, `MovePlayer`, 0x3B | E2 |
+| `UpdateEntitiesPhysics`, clamp au sol, `AlundraCells` | E3 |
+| 0x1E/0x1F/0x5B/0x5A/0x1B/0x16/0x17/0x07/0x70/0x0A, export `AnimSets.Speed` | E4 |
+| 0x67/0x68/0x69, `InitializeScrollingMode`, suivi caméra | E5 |
+| 0x10/0x11, `g_playerControlFlags` | E6 |
+| 0x85, 0x55/0x54 | E7 |
+| `WallPlacementOverlay`, `UpdateVisibleEntitiesZSort` | E8 |
+| `BackdropRenderer`, `ScrollParameters` | E9 |
+| `WarpPlayer`, fondu, `g_mapOffsetX/Y` | E10 |
+| `LoadMapSounds`, 0xBD, `HandleMapSoundStreaming` | E11 |
+| 0x0D/0x39/0x44/0x50/0x51/0x5C, slot F, `MessageBox` | E12 |
+| `HudManager` | E13 |
+| `SpriteEventHandlers` (hors A0/E0) | E14 |
+| programme B 129 → `.cutscene` | E15 |
 
 ## Annexes
 

@@ -193,6 +193,16 @@ Initialize(owner) → InitializeWithWorld(world) → [BeginPlay] OnBeginPlay(wor
 `Clone()` est abstrait et obligatoire. `OnBeginPlay` est le bon endroit pour lire les données de
 map (`TileMapData.CustomProperties`, `ObjectLayers`) : à ce moment le world et les entités existent.
 
+### 5.3 bis Répartition world / entités (décision du 2026-08-23)
+
+FAIT (`CasaEngineMonogame/CasaEngine/Framework/Scene/World/World.cs:443-491`) : le moteur met à jour
+les entités d'abord (`Entity.Update` → composants, enfants, `GameplayProxy.Update`), puis le
+`GameplayProxy` du world. Conséquence pour Alundra ([plan-conversion-totale.md](plan-conversion-totale.md)
+§3) : chaque `AlundraEntityScriptProxy.Update` joue son propre programme (A–F) ; `AlundraWorldProxy.Update`
+ne joue que les MapEvents (programmes B sur l'entité joueur), la boucle de rattrapage des entités
+déclenchées dans la frame, et les services partagés. Ne pas remettre de machine d'états d'entités
+dans le world.
+
 ### 5.4 Écriture d'assets
 
 Toujours via `CasaEngine.EditorServices` :
@@ -210,7 +220,13 @@ jamais par frame ; pas de LINQ ni d'interpolation de chaînes dans les boucles d
 
 ## 6. Règles de portage depuis la décompilation
 
-Héritées des instructions du repo `alundra-datas-analyser` et du repo moteur :
+Héritées des instructions du repo `alundra-datas-analyser` et du repo moteur. **Depuis le 2026-08-23**
+([plan-conversion-totale.md](plan-conversion-totale.md) §5), elles s'appliquent à ce qui reste porté
+(interpréteur, état de jeu, gates, ordre des passes) ; dès qu'un système du moteur remplace un système
+original (physique, navigation, dialogue, UI, caméra, rendu), la règle devient la **fidélité du
+comportement observable**, chaque écart étant documenté (fait / hypothèse / écart) dans le code et
+dans l'étape du plan.
+
 
 - **Préserver la logique et l'ordre d'exécution** d'origine ; ne pas « améliorer » spontanément.
 - **Conserver les commentaires d'adresse** (`// 80031700`) sur les fonctions portées.
