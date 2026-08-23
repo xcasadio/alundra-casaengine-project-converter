@@ -83,7 +83,7 @@ Données/DLL (ce repo) : les prefabs G2 ont racine `AnimatedSpriteComponent` + e
 
 ## 3. Tranches
 
-### E3.0 — Composant racine inerte `TransformComponent` ⏳ (moteur, plan-verifier)
+### E3.0 — Composant racine inerte `TransformComponent` ✅ (moteur ab4314e1, verifier CONFIRMED ; différé P3 : `AddChildComponent` n'invalide pas le cache de politique, hors chemin de chargement)
 
 - **Pourquoi** : `SceneComponent` est abstrait (`SceneComponent.cs:16`) et aucune sous-classe concrète
   n'est inerte (AnimatedSprite, ChildActor, Light, ParticleSystem, PlayerStart, RenderProjection,
