@@ -8,6 +8,7 @@
   </Folder>
   <Project Path="alundra-casaengine-project-converter/alundra-casaengine-project-converter.csproj" />
   <Project Path="alundra-casaengine-project-converter.Tests/alundra-casaengine-project-converter.Tests.csproj" />
+  <Project Path="CasaEngineMonogame/CasaEngine.Launcher/CasaEngine.Launcher.csproj" />
   <Project Path="CasaEngineMonogame/CasaEngine/CasaEngine.csproj" />
   <Project Path="Alundra/Alundra.csproj" Id="7a4aa688-5dc0-476c-8960-cac56efecc29" />
   <Project Path="Alundra.Tests/Alundra.Tests.csproj" />
