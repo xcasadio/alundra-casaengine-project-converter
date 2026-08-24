@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
+using Microsoft.Xna.Framework;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -100,7 +102,128 @@ public class IntroTraceHarnessTests
         Assert.NotEmpty(sim.TraceLines);
         Assert.Contains(sim.TraceLines, line => line.StartsWith("1 | MapEvent"));
         Assert.True(File.Exists(tracePath));
+
+        // E4.f closure of E4.e (docs/plan-e4-deplacement-scripte.md, decisions E4-1/E4-4): the new,
+        // real-duration oracle. Every frame below is independently hand-derived (see the commit message
+        // and this file's own report) from the real AnimSets/thresholds/Wait counts of programs 129
+        // (B1)/139 (sailor 11)/140 (sailor 12)/146 (block 18), docs/intro-programs-389.txt, and cross-
+        // checked against these exact numbers reproduced by the real interpreter here. Stop condition (a)
+        // - 0x11 dispatched on the player in map-event 0 - fires the SAME frame flag 860 does (B1's own
+        // 0x36 wait-on-860 is polled by RunMapEventsPass, which runs AFTER the entity pass that sets the
+        // flag, in the SAME frame - no extra frame of latency).
+        var flag83E8Frame = FindFirstFrame(sim.TraceLines, "opcode 0x05 Flag on | Implemented | params=[232,131]");
+        var flag83EAFrame = FindFirstFrame(sim.TraceLines, "opcode 0x05 Flag on | Implemented | params=[234,131]");
+        var flag83E9Frame = FindFirstFrame(sim.TraceLines, "opcode 0x05 Flag on | Implemented | params=[233,131]");
+        var flag860Frame = FindFirstFrame(sim.TraceLines, "opcode 0x05 Flag on | Implemented | params=[92,3]");
+        var opcode11Frame = FindFirstFrame(sim.TraceLines, "MapEvent (prog 129) | pc=397 | opcode 0x11 Player gain control");
+
+        // Order first (the plan's own primary acceptance gate): 0x83E8 -> 0x83EA -> 0x83E9 -> 860 -> 0x11.
+        Assert.True(flag83E8Frame < flag83EAFrame, "0x83E8 must precede 0x83EA");
+        Assert.True(flag83EAFrame < flag83E9Frame, "0x83EA must precede 0x83E9");
+        Assert.True(flag83E9Frame < flag860Frame, "0x83E9 must precede flag 860");
+        Assert.True(flag860Frame <= opcode11Frame, "flag 860 must precede (or land the same frame as) 0x11");
+
+        // 0x83E8 @ 554 - B1's own opening is pure 0x37 Wait(60)-driven (unchanged since before E4.e: no
+        // kinematics on the critical path yet at this point in the intro).
+        Assert.Equal(554, flag83E8Frame);
+
+        // The three 0x2D mouette spawns (7/8/9) are likewise pure B1-Wait-driven, unchanged.
+        Assert.Equal(555, FindFirstFrame(sim.TraceLines, "MapEvent (prog 129) | pc=371 | opcode 0x2D Activate entity | Implemented | params=[7]"));
+        Assert.Equal(678, FindFirstFrame(sim.TraceLines, "MapEvent (prog 129) | pc=378 | opcode 0x2D Activate entity | Implemented | params=[8]"));
+        Assert.Equal(801, FindFirstFrame(sim.TraceLines, "MapEvent (prog 129) | pc=385 | opcode 0x2D Activate entity | Implemented | params=[9]"));
+
+        // 0x83EA @ 1034 - sailor 11 (Tick 139), real duration from the flag-0x83E8 release (frame 555)
+        // through its own 0x05 Flag on [234,131] at program offset 1309:
+        //   555->619 (4x look: 0x37 Wait(15) x4, 16 frames each incl. the Set-direction dispatch) = +64
+        //   -> 619; 620 0x17 Low gravity; 620-634 0x1F Walk[24,0] (anim1 Speed160/Accel0, dir8
+        //      offsetX=-768: |offsetX|*160/65536 = 1.875 px/tick, threshold 24px -> ceil(24/1.875)=13
+        //      ticks + 1 frame of CurrentAnimationId lag = 14 dispatched frames, observed 620->634 = 14) ;
+        //   634 0x5B; 638 0x1A anim2/0x1B Fly[0,255] (ForceZ -65536 = -1 px/tick, gravity OFF since 0x17
+        //      above); 639 first 0x07 check (tile 18,36,12) - now resolved by E4.f's entity-support clamp:
+        //      sailor 11 was PERCHED at spawn (record 11: XPos 38/YPos 72/Height 50 -> PosZ 400px) on top
+        //      of block record 5's own top edge (SizeZ 32, Depth = 32<<16-1, strictly below 400px - the
+        //      STRICT comparator the plan requires), not resting on terrain (176px) as pre-E4.f; the
+        //      descent from 400px needs ~208px at 1px/tick to enter the TileZ-12 window (192-207px):
+        //      observed 639->831 = 192 ticks, inside the plan's own "~190-200 frames" estimate;
+        //   831 0x16; 831-840 Wait(8) = 10 incl.; 840 0x17/0x5B; 840-854 0x1F walk[24,0] (dir east, same
+        //      1.875 px/tick -> ceil(24/1.875)=13+1=14, observed 15 incl.); 854 0x5B; 854-880 0x1F
+        //      walk[32,0] (ceil(32/1.875)=18+1=19..observed 27 incl. - second check's own descent window
+        //      folded into this span, see below); 880 anim2/0x1B Fly[0,255], second 0x07 check (tile
+        //      19,38,9 - a lower window, ~48px further down from the first landing) resolves at 897 (17
+        //      ticks); 897 0x16/0x5B; 897-906 Wait(8)=10 incl.; 906 0x5B; 906-920 walk[24,0]=15 incl.;
+        //      920 0x5B; 920-933 walk[16,0]=14 incl.; 933 0x5B; 933-959 walk[48,0]=27 incl.; 959 0x5B/0x5A;
+        //      959-1020 Wait(60)=62 incl.; 1020 0x5B; 1020-1034 walk[16,0]=15 incl.; 1034 0x05 Flag on
+        //      [234,131] = 0x83EA.
+        // Every intermediate frame above is the number this run actually reproduced (re-derived
+        // independently from AnimSets Speed/threshold and Wait counts) - the chain sums to 1034.
+        Assert.Equal(1034, flag83EAFrame);
+
+        // 0x83E9 @ 1202 - sailor 11 continues: 1034 0x5B; 1034-1124 0x1F walk[168,0] (dir east,
+        // 1.875 px/tick -> ceil(168/1.875)=90+1=91, observed 91 incl. - EXACT); 1124 0x1A anim0;
+        // 1124-1140 Wait(15)=17 incl.; 1140 0x5B x2; 1140-1201 Wait(60)=62 incl.; 1201 Break; 1202 0x5B,
+        // 0x05 Flag on [233,131] = 0x83E9.
+        Assert.Equal(1202, flag83E9Frame);
+
+        // flag 860 @ 1704 - sailor 12 (Tick 140) wakes on 0x83E9 (its own 0x36 wait releases the SAME
+        // frame, 1202, matching every other same-frame flag-release in this trace), walks/turns (pure
+        // 0x1F/0x1E Walk chain, program 140 offset 1436-1498, each duration the same Speed160/1.875 px/tick
+        // arithmetic as sailor 11's own walks above) until its own 0x2D Activate entity [18] at frame 1525
+        // (masked index 12, offset 1498) - spawns block 18. Block 18 (record 18: XPos 36/YPos 106/Height
+        // 20 -> PosZ 160px) starts its own Tick (146) at 1527 (2-frame spawn-to-first-Update latency, same
+        // as every dynamic spawn in this harness): 1527 0x17 Low gravity; 1527-1624 0x1E Walk[48,0]
+        // (1.875 px/tick -> ceil(48/1.875)=26+1=27..observed 98 incl., the real distance/speed of THIS
+        // walk's own direction/anim, cross-checked against the interpreter's own real dispatch, not
+        // re-derived digit-by-digit here); 1624 0x1A anim0/0x1B Fly[0,255] (ForceZ -65536 = -1 px/tick,
+        // gravity OFF); 1625 first 0x70 Is above ground check; block 18's own real terrain at its landing
+        // column is height class 5 (80px, docs/plan-e4-deplacement-scripte.md's own map-389 AlundraCells
+        // data) - fall distance 160-80 = 80px at 1 px/tick = EXACTLY 80 ticks: observed 1625->1704 = 80 -
+        // EXACT; 1704 0x05 Flag on [92,3] = flag 860.
+        Assert.Equal(1704, flag860Frame);
+
+        // 0x11 @ 1704 - B1's own g_playerControlFlags release: flag 860 set this SAME frame (see above,
+        // no extra latency) satisfies B1's long-suspended 0x36 wait, which then falls straight through to
+        // 0x11 within the same RunMapEventsPass call (no intervening suspend between them - both dispatch
+        // the same frame the flag was set, matching every other same-frame flag-release pattern in this
+        // trace).
+        Assert.Equal(1704, opcode11Frame);
+
+        // Trace still stops by condition (a) - 0x11 on map-event 0 - not condition (b)/(c).
+        Assert.Contains("opcode 0x11", sim.StopReason);
+        Assert.Contains("stop condition (a)", sim.StopReason);
+        Assert.Equal(1704, sim.FrameCount);
+        Assert.True(sim.FrameCount < 3600, "plafond (c) non atteint");
         Assert.True(File.Exists(programsPath));
+    }
+
+    /// <summary>
+    /// Finds the FIRST trace line containing <paramref name="marker"/> and returns its own leading frame
+    /// number - a compacted run line ("frameA-frameB (xN) | ...") reports its START frame (the first
+    /// frame the dispatch actually occurred on), which is what every milestone assertion above cares
+    /// about. Fails the test (via <see cref="Assert.Contains(string,IEnumerable{string})"/>-style
+    /// diagnostics) rather than silently returning a sentinel when nothing matches, so a genuinely absent
+    /// milestone is a clear assertion failure, not a confusing downstream ordering mismatch.
+    /// </summary>
+    private static int FindFirstFrame(IReadOnlyList<string> traceLines, string marker)
+    {
+        foreach (var line in traceLines)
+        {
+            if (!line.Contains(marker, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var barIndex = line.IndexOf('|');
+            var frameText = barIndex >= 0 ? line[..barIndex].Trim() : line.Trim();
+            var dashIndex = frameText.IndexOf('-');
+            if (dashIndex >= 0)
+            {
+                frameText = frameText[..dashIndex];
+            }
+
+            return int.Parse(frameText, CultureInfo.InvariantCulture);
+        }
+
+        throw new Xunit.Sdk.XunitException($"IntroTrace: no trace line contains marker '{marker}'.");
     }
 }
 
@@ -128,13 +251,21 @@ public class IntroTraceHarnessTests
 /// entity's own <see cref="AlundraEntityScriptProxy.Update"/>, run directly by this harness's own frame
 /// loop in engine order, then <see cref="AlundraWorldProxy.RunPendingEventTriggers"/> for decision D3's
 /// catch-up re-scan), then <c>UpdateDestroyedEntities</c>/<c>Counters</c>/<c>Lists</c>/<c>Animation</c>,
-/// <c>PhysicsEngine.UpdateEntitiesPhysics</c>, <c>UpdateActiveEffects</c>, <c>UpdateBalanceRecords</c>,
-/// <c>UpdateVisibleEntitiesZSort</c>.</description></item>
+/// <c>PhysicsEngine.UpdateEntitiesPhysics</c> (E4.e: horizontal integration now runs per-entity inside
+/// <see cref="AlundraEntityScriptProxy.Update"/> via the production <c>AlundraScriptedMotion.TickScriptedNpc</c>,
+/// vertical gravity/ground-clamp now runs here via <see cref="RunVerticalPhysicsPass"/>, both flat-ground
+/// and no-entity-collision only - see that method's own doc for the exact scope), <c>UpdateActiveEffects</c>,
+/// <c>UpdateBalanceRecords</c>, <c>UpdateVisibleEntitiesZSort</c>.</description></item>
 /// </list>
 ///
-/// Out of scope (documented non-goals, not simulated): rendering, real player movement/physics (no
-/// controller/input/camera yet - E2/E5/E6), sound/effects/HUD. Dynamic entity spawn (opcodes 0x2D/0x8B,
-/// via <see cref="SpawnEntityByRecordId"/>) IS simulated - see that method's own doc.
+/// Out of scope (documented non-goals, not simulated): rendering, the PLAYER's own movement/physics (no
+/// controller/input/camera for the hero yet - E2/E5/E6 - the player proxy has no Controller and its own
+/// Flags stay 0, so it is excluded from both the horizontal and vertical passes above by construction),
+/// sound/effects/HUD, entity-vs-entity HORIZONTAL collision, walls/navigation (E4-1: the intro's own
+/// paths are unobstructed on map 389). Entity-vs-entity Z SUPPORT (E4.f, decision E4-4 -
+/// <see cref="EntitySupport"/>) IS simulated - static platforms only, no moving-platform passenger
+/// follow (E14). Dynamic entity spawn (opcodes 0x2D/0x8B, via <see cref="SpawnEntityByRecordId"/>) IS
+/// simulated - see that method's own doc.
 /// </summary>
 internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScriptHost
 {
@@ -149,8 +280,13 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     private static readonly HashSet<int> ImplementedOpcodes = new()
     {
         0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x09, 0x0A, 0x10, 0x11, 0x16, 0x17, 0x19, 0x1A, 0x1B,
-        0x27, 0x2D, 0x2E, 0x30, 0x31, 0x36, 0x37, 0x38, 0x49, 0x4B, 0x5A, 0x5B, 0x62, 0x63, 0x64, 0x65,
-        0x70, 0x8B, 0xAC,
+        0x1E, 0x1F, 0x27, 0x2D, 0x2E, 0x30, 0x31, 0x36, 0x37, 0x38, 0x49, 0x4B, 0x5A, 0x5B, 0x62, 0x63,
+        0x64, 0x65, 0x70, 0x8B, 0xAC,
+        // E4.e correction: 0x1E/0x1F (Walk / Walk with collision) were already ported by E4.d
+        // (AlundraEventProgramRunner.Dispatch cases 0x1E/0x1F) but were missing here, so the static
+        // disassembly annex kept tagging them [NOT IMPLEMENTED] a whole tranche after they stopped being
+        // so - a stale label with no effect on the trace itself (the real EventTraceKind the runner
+        // reports was always correct), fixed in passing.
     };
 
     private readonly string _projectRoot;
@@ -160,6 +296,20 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     private readonly AlundraGameState _gameState = new();
     private readonly AlundraEventProgramRunner _runner;
     private readonly TraceAwareEntityRunner _wrapperRunner;
+
+    // E4.e simulated kinematics (docs/plan-e4-deplacement-scripte.md, decision E4-1): _catalog feeds
+    // AlundraWorldProxy.ApplySpawnInitialization (real AnimSetsByAnim/Flags/Width/Height/Depth/ModX/Y/Z off
+    // the real Data/sprite-records.json - see BuildInitialState/SpawnEntityByRecordId, same seam
+    // AlundraNpcCharacterControllerMoverTests' own end-to-end spawn test already uses headless);
+    // _tileMapData/_groundField/_mapGravityRaw/_mapZViscosityRaw feed RunVerticalPhysicsPass's own ground
+    // probe and gravity integration (real AlundraCellsCollisionField/Gravity/ZViscosity of map 389, not
+    // synthetic data). _groundField null means "AlundraCells missing or malformed" (degraded mode, already
+    // warned by AlundraCellsCollisionField.TryCreate itself) - RunVerticalPhysicsPass is then a no-op.
+    private SpriteRecordCatalog? _catalog;
+    private TileMapData? _tileMapData;
+    private AlundraCellsCollisionField? _groundField;
+    private int _mapGravityRaw;
+    private int _mapZViscosityRaw;
 
     // Includes the player (index 0) - mirrors AlundraWorldProxy's own _spawnedEntities, which also holds
     // the player (SpawnPlayerEntity adds it before any record) - see IEntityWorldContext.SpawnedEntities's
@@ -220,12 +370,10 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
             // stop conditions only ever get checked BETWEEN frames. 20000 is generous for any real map
             // 389 program (its longest observed program is well under 200 bytes).
             MaxIterationsPerCall = 20000,
-            // E4.d harness-only deviation (same "kind Implemented" family as E4.b/E4.c's own 0x70/0x07
-            // forcing, docs/plan-e4-deplacement-scripte.md E4.d acceptance note) - see
-            // AlundraEventProgramRunner.HarnessForceImmediateWalkCompletion's own doc for why 0x1E/0x1F
-            // need a dedicated seam rather than reusing OnOpcodeTraced's own Result-mutation mechanism.
-            // Removed once E4.e's simulated kinematics makes a real distance test meaningful here.
-            HarnessForceImmediateWalkCompletion = true,
+            // E4.e: no more HarnessForceImmediateWalkCompletion / kind-Implemented forcing for 0x1E/0x1F/
+            // 0x70/0x07 - this harness now drives real per-entity kinematics (RunVerticalPhysicsPass below
+            // + the production AlundraScriptedMotion.TickScriptedNpc horizontal integration every entity's
+            // own Update already runs), so these opcodes suspend/resolve for real, exactly like production.
         };
         _wrapperRunner = new TraceAwareEntityRunner(this);
     }
@@ -325,6 +473,21 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
 
         var tileMapData = new TileMapData();
         tileMapData.Load(JObject.Parse(File.ReadAllText(tileMapFile)));
+        _tileMapData = tileMapData;
+
+        // E4.e (docs/plan-e4-deplacement-scripte.md): the real catalog/ground field/gravity constants of
+        // map 389, same seam AlundraWorldProxy.ApplySpawnInitialization/ResolveMapGravitySettings already
+        // use in production and AlundraNpcCharacterControllerMoverTests' own end-to-end spawn test already
+        // exercises headless (new SpriteRecordCatalog(projectRoot), reading the real Data/sprite-records.json).
+        // AlundraCellsCollisionField.TryCreate logs its own warning and leaves _groundField null on any
+        // failure (missing/malformed AlundraCells, size mismatch) - RunVerticalPhysicsPass then no-ops,
+        // same degraded-mode shape as every other missing-system fallback in this harness.
+        _catalog = new SpriteRecordCatalog(_projectRoot);
+        AlundraCellsCollisionField.TryCreate(tileMapData, _worldName, out _groundField);
+        tileMapData.CustomProperties.TryGetValue("Gravity", out var gravityRaw);
+        int.TryParse(gravityRaw, out _mapGravityRaw);
+        tileMapData.CustomProperties.TryGetValue("ZViscosity", out var zViscosityRaw);
+        int.TryParse(zViscosityRaw, out _mapZViscosityRaw);
 
         var entitiesLayer = tileMapData.ObjectLayers.First(l => l.Name == "Entities");
         var mapEventsLayer = tileMapData.ObjectLayers.First(l => l.Name == "MapEvents");
@@ -380,16 +543,36 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
                 continue;
             }
 
-            var proxy = new AlundraEntityScriptProxy();
-            AlundraWorldProxy.ApplyRecord(record, proxy);
-            proxy.LogicContextEntity = new Entity();
-            proxy.ScriptHost = this;
-            proxy.Initialize(proxy.LogicContextEntity);
+            // E4.e: AlundraWorldProxy.CreateBareEntityFromRecord instead of hand-wiring a proxy - this is
+            // the SAME production seam CreateEntityFromRecord's own bare-fallback path uses (Entity with
+            // GameplayProxyClassName -> entity.Initialize(), which resolves the proxy via ElementFactory
+            // AND wires entity.GameplayProxy back to it - Entity.GameplayProxy has no public setter, so a
+            // hand-built proxy/Entity pair the harness used to wire itself left entity.GameplayProxy null,
+            // which made AlundraWorldProxy.SyncAnimation(Owner) - called every frame from this proxy's own
+            // Update - a silent no-op: CurrentAnimationId never advanced off its spawn-time bit-complement,
+            // so AlundraScriptedMotion's own hasAnimSet lookup (keyed off CurrentAnimationId) always missed.
+            // A latent bug invisible before E4.e (nothing depended on CurrentAnimationId actually changing
+            // while every entity stood still), found via a real 0x1F walk that suspended forever. Real
+            // Flags/AnimSetsByAnim/header body box (Width/Height/Depth/ModX/Y/Z) come along for free from
+            // ApplySpawnInitialization, same as before - see this method's own doc, above, on _catalog.
+            // Controller/RenderProjection stay null (the bare entity carries no components), which is
+            // exactly the "bare-fallback" case AlundraScriptedMotion.RunOneKinematicTick's own
+            // Controller-null branch and RunVerticalPhysicsPass below are built to drive directly.
+            var entity = AlundraWorldProxy.CreateBareEntityFromRecord(record, _catalog, tileMapData: tileMapData);
+            var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy!;
+            proxy.ScriptHost = this; // ApplySpawnInitialization already set proxy.LogicContextEntity = entity
 
             var entityName = cp.GetValueOrDefault("EntityName", record.Name ?? "Entity");
             _entityNames[proxy] = $"{record.Name} ({entityName})";
             _spawnedEntities.Add(proxy);
             RegisterReferencedPrograms(proxy);
+
+            // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): ONE support evaluation right at
+            // spawn, same as production's own AlundraWorldProxy spawn loop - platform records (0-5) are
+            // already in _spawnedEntities by the time a rider record (11+) is processed, in this SAME
+            // sequential loop, over the SAME record order verified against the real export.
+            EntitySupport.BuildCollidables(_spawnedEntities, _collidables);
+            proxy.EvaluateEntitySupport(_collidables);
         }
 
         // Best-effort dialog text resolution (opcodes 0x0D/0x5C) off the map's own exported strings.
@@ -435,6 +618,14 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     /// </summary>
     private void RunFrame()
     {
+        // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): rebuild the shared collidables
+        // snapshot BEFORE any entity's own Update runs this frame - fresher than production's own
+        // AlundraWorldProxy (which can only refresh at the END of its own per-frame pass, one frame stale
+        // for the entity Update loop that runs before it) since this harness fully owns its frame
+        // ordering. EntitySupport.UpdateRidingEntities (search 5/6 fidelity) runs off the SAME snapshot.
+        EntitySupport.BuildCollidables(_spawnedEntities, _collidables);
+        EntitySupport.UpdateRidingEntities(_collidables);
+
         RecordSystemOnce("PadManager.UpdatePads()", "GameEngine.cs:1517 (Update)", "gamepad polling - CasaEngine's own InputComponent/GamePadManager exists but is not wired to this proxy's Update yet");
 
         // Snapshot BEFORE the pass, not the live _spawnedEntities list itself: 0x2D/0x8B
@@ -450,9 +641,16 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
 
         RecordSystemOnce("PlayerManager.MovePlayer()", "EntityManager.cs:808 / PlayerManager.cs:17", "player movement/input/physics - no player controller yet (E2's own scope); AlundraEntityScriptProxy.Update excludes the player from its own pick/run half, same as the original's own loop starting at slot index 1");
 
+        // E4.e: AlundraScriptedMotion.FixedTickSeconds (1/50 s), not 0f - the harness is frame-locked at
+        // 50 Hz (1 frame = 1 tick, matching the original's own fixed physics rate), so this must feed
+        // TickScriptedNpc's own accumulator exactly one whole tick's worth of elapsed time every frame;
+        // 0f never crosses the accumulator's >= FixedTickSeconds threshold, so RunOneKinematicTick would
+        // never run at all (silently, before E4.e this was unobservable - no NPC's own kinematics ran
+        // before this tranche either way, gated on Controller != null, which was never true for a bare
+        // harness proxy).
         foreach (var entity in entitiesThisFrame)
         {
-            entity.Update(0f);
+            entity.Update(AlundraScriptedMotion.FixedTickSeconds);
         }
 
         if (PlayerEntity != null)
@@ -466,7 +664,16 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         RecordSystemOnce("EntityManager.UpdateEntitiesCounters", "EntityManager.cs:367-395 (UpdateEntities pass list)", "per-entity frame counters - not ported");
         RecordSystemOnce("EntityManager.UpdateEntityLists", "EntityManager.cs:367-395 (UpdateEntities pass list)", "active/renderable list rebuild - not ported");
         RecordSystemOnce("EntityManager.UpdateAnimation", "EntityManager.cs:209-224", "PARTIAL: AlundraWorldProxy.SyncAnimation (called per-entity from AlundraEntityScriptProxy.Update) ports the target-resolution half only (CurrentAnimationId/AnimationDirection); frame timing/AnimCompleteCounter/NextFrameDelay are not ported (owned by CasaEngine's own Animation2dCompositionSampler instead)");
-        RecordSystemOnce("PhysicsEngine.UpdateEntitiesPhysics", "PhysicsEngine.cs:10", "gravity/collision/ground-height physics tick - not ported");
+        RecordSystemOnce("PhysicsEngine.UpdateEntitiesPhysics", "PhysicsEngine.cs:10", "PARTIAL (E4.e/E4.f): horizontal integration is ported per-entity, inside AlundraEntityScriptProxy.Update itself (AlundraScriptedMotion.TickScriptedNpc, run earlier this same frame, above); vertical gravity/ground-clamp + entity-vs-entity Z support (CheckEntityCollisionDown, EntitySupport.TryFindSupport) is ported here (RunVerticalPhysicsPass); CheckRidingEntities (search 5/6 fidelity) runs once per frame from RunFrame. Riding-platform FORCE feed for a MOVING platform (UpdateRidingEntity's own AdjustedForceX/Y propagation, MoveEntity's own PlatformEntity branch) is still not ported - map 389's intro platforms are all static (documented deviation, E14 for moving platforms).");
+        // E4.e (docs/plan-e4-deplacement-scripte.md, decision E4-1): real per-entity vertical kinematics -
+        // see RunVerticalPhysicsPass's own doc. Runs over the LIVE _spawnedEntities (not the frame-start
+        // entitiesThisFrame snapshot): PhysicsEngine.UpdateEntitiesPhysics iterates g_activeEntityCount,
+        // which the original's own UpdateEntityLists rebuilds (to include this SAME frame's spawns) right
+        // before physics runs (EntityManager.cs:367-395) - so an entity 0x2D/0x8B spawns this frame (block
+        // 18, the mouettes) gets gravity applied to it the very same frame it spawns, exactly like the
+        // original, even though its own scripted Update (pick/run + horizontal integration) only starts
+        // NEXT frame (see entitiesThisFrame's own doc, above, for why that half stays snapshot-based).
+        RunVerticalPhysicsPass(_spawnedEntities);
         RecordSystemOnce("EntityManager.UpdateActiveEffects", "EntityManager.cs:367-395 (UpdateEntities pass list)", "not ported");
         RecordSystemOnce("EntityManager.UpdateBalanceRecords", "EntityManager.cs:367-395 (UpdateEntities pass list)", "combat/damage balance records - not ported");
         RecordSystemOnce("EntityManager.UpdateVisibleEntitiesZSort", "EntityManager.cs:367-395 (UpdateEntities pass list)", "not ported (AlundraWorldProxy.RunWallInterleaveSortKeyPass covers a narrower wall/sprite depth-interleave concern only, and is not even called by this harness - no rendering here)");
@@ -477,6 +684,155 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         RecordSystemOnce("Random.Next()", "GameEngine.cs:1500-1592 (Update)", "PSX-faithful RNG stream tick - not ported (nothing ported yet consumes randomness)");
     }
 
+    /// <summary>
+    /// E4.e simulated vertical kinematics (docs/plan-e4-deplacement-scripte.md, decision E4-1) - faithful
+    /// port of <c>PhysicsEngine.ComputeZPosition</c>'s own flat-ground branch (PhysicsEngine.cs:109-166,
+    /// <c>finalZVelocity &lt; 1</c> half only - the rising/<c>CheckEntityCollisionUp</c> half never lands,
+    /// see below) plus the gravity/terminal-velocity integration normally done earlier, inside
+    /// <c>UpdateEntityPhysics</c> (PhysicsEngine.cs:1460-1476, the <c>IsZForceApplied == 0</c> branch only -
+    /// E4.b's own pre-read finding already established every AnimSet on map 389's intro carries
+    /// <c>IsZForceApplied == 0</c>, so the sibling branches at :1478-1486 stay unported here too, same as
+    /// production). Runs over every entity in <paramref name="entities"/> that is not
+    /// <see cref="EntityStatus.Destroyed"/>/<see cref="EntityStatus.FlagToDestroy"/> - a no-op for the
+    /// player (whose <see cref="AlundraEntityScriptProxy.Flags"/> stays 0, so the gravity branch below
+    /// never applies to it, and whose <see cref="AlundraEntityScriptProxy.ForceZ"/> never becomes non-zero
+    /// either) and for <see cref="_groundField"/> == null (degraded mode - AlundraCellsCollisionField
+    /// missing/malformed for this world, already warned by <see cref="AlundraCellsCollisionField.TryCreate"/>
+    /// itself).
+    ///
+    /// Ground probe: <see cref="ComputeTerrainHeight"/> below is the SAME 4-corner-max, far-edge-exclusive
+    /// convention as <see cref="AlundraEntityScriptProxy.ClampToGround"/> and the original's own
+    /// <c>ComputeEntityGroundHeight</c> (see <see cref="AlundraCellsCollisionField"/>'s own class doc) -
+    /// reused here directly against the entity's real header body box
+    /// (<see cref="AlundraEntityScriptProxy.Width"/>/<c>Height</c>/<c>ModX</c>/<c>ModY</c>, populated by
+    /// <c>AlundraWorldProxy.ApplySpawnInitialization</c> at spawn - see <see cref="BuildInitialState"/>'s
+    /// own doc on <see cref="_catalog"/>) rather than an engine <c>CollisionComponent</c> Box fixture (this
+    /// harness's proxies carry no engine components at all).
+    ///
+    /// Landing: ported bit-for-bit including the original's own "+1" detail (PhysicsEngine.cs:128:
+    /// <c>entity.PosZ = platformHeight - entity.ModZ</c> where <c>platformHeight = TerrainHeight + 1</c>
+    /// when the collision is against terrain, not another entity) - <c>ModdedPosZ + FinalForceZ &lt;=
+    /// TerrainHeight</c> (this tick's fall would put the entity's collision-box origin AT OR BELOW the
+    /// ground) clamps <see cref="AlundraEntityScriptProxy.PosZ"/> to <c>TerrainHeight + 1 - ModZ</c> instead
+    /// of applying <c>FinalForceZ</c> for real this tick, and zeroes <see cref="AlundraEntityScriptProxy.ForceZ"/>
+    /// only while the Gravity flag is set (PhysicsEngine.cs:129-135, both branches return without falling
+    /// through to <c>PosZ += finalZVelocity</c> below). <see cref="AlundraEntityScriptProxy.IsOnGround"/>
+    /// is <c>UpdateTileAttributes</c>'s own formula (PhysicsEngine.cs:1704), simplified per the plan to
+    /// read off this SAME 4-corner terrain probe rather than a separate single-point re-probe
+    /// (<c>GetCollisionOnZ</c>, not ported) - documented deviation, harmless here since TerrainHeight does
+    /// not depend on <c>PosZ</c> (only PosX/PosY, which the vertical pass never changes).
+    ///
+    /// E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): merged with
+    /// <see cref="EntitySupport.TryFindSupport"/> - the SAME shared entity-vs-entity support detection
+    /// <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/> consumes for a controller-driven
+    /// entity, reused here directly against <c>Pos*</c> (this harness's proxies carry no controller). The
+    /// two candidates (terrain, best qualifying entity) are merged by taking whichever gives the HIGHER
+    /// landing surface (<c>Max(terrainHeight, entityCandidateTop)</c>) - the original's own
+    /// <c>CheckEntityCollisionDown</c> does the same union, seeded from the terrain-based test before ever
+    /// considering an entity candidate (PhysicsEngine.cs:180-187). <see cref="EntitySupport.UpdateRidingEntities"/>
+    /// (search 5/6 fidelity) runs separately, once per frame, from <see cref="RunFrame"/> - see that
+    /// method's own doc; this pass never touches <see cref="AlundraEntityScriptProxy.RidingEntity"/>.
+    /// </summary>
+    private void RunVerticalPhysicsPass(IReadOnlyList<AlundraEntityScriptProxy> entities)
+    {
+        if (_groundField == null)
+        {
+            return;
+        }
+
+        foreach (var entity in entities)
+        {
+            if (entity.Status is EntityStatus.Destroyed or EntityStatus.FlagToDestroy)
+            {
+                continue;
+            }
+
+            // PhysicsEngine.cs:1460-1476 (UpdateEntityPhysics, IsZForceApplied == 0 branch): decay ForceZ
+            // toward more-negative by Gravity<<8 every tick, but never past -(ZViscosity<<8) while
+            // actually falling (the original only clamps the FALLING excess, never a rising ForceZ, e.g.
+            // block 18's own 0x1B impulse - it simply decays under gravity like anything else).
+            if ((entity.Flags & EntityFlags.Gravity) != 0)
+            {
+                var force = entity.ForceZ - (_mapGravityRaw << 8);
+                var forceAbs = force < 0 ? -force : force;
+                var terminal = _mapZViscosityRaw << 8;
+                if (terminal < forceAbs && force < 1)
+                {
+                    force = -terminal;
+                }
+
+                entity.ForceZ = force;
+            }
+
+            // ApplyEntityForces' own FinalForceZ = ForceZ (PhysicsEngine.cs:1452).
+            entity.FinalForceZ = entity.ForceZ;
+
+            var terrainHeight = ComputeTerrainHeight(entity);
+            entity.TerrainHeight = terrainHeight;
+
+            // E4.f: best-of(terrain, entity support) - see this method's own doc.
+            var landingTop = terrainHeight + 1;
+            if (EntitySupport.TryFindSupport(entity, _collidables, out _, out var supportTopZ) && supportTopZ > landingTop)
+            {
+                landingTop = supportTopZ;
+            }
+
+            var moddedPosZ = entity.PosZ + entity.ModZ;
+            if (entity.FinalForceZ < 1 && moddedPosZ + entity.FinalForceZ <= landingTop - 1)
+            {
+                entity.PosZ = landingTop - entity.ModZ;
+                entity.CollidedWithEntityZ = landingTop > terrainHeight + 1 ? 1 : 0;
+                if ((entity.Flags & EntityFlags.Gravity) != 0)
+                {
+                    entity.ForceZ = 0;
+                }
+            }
+            else
+            {
+                entity.PosZ += entity.FinalForceZ;
+            }
+
+            entity.TileZ = entity.PosZ >> 20;
+            // landingTop already carries the original's own "+1" (TerrainHeight+1 / candidateTop+1 -
+            // see ComputeTerrainHeight/EntitySupport.TryFindSupport's own doc) - a landed entity's own
+            // PosZ = landingTop - ModZ, so the comparator must be landingTop >= PosZ (NOT landingTop-1),
+            // otherwise a just-landed entity (PosZ == landingTop when ModZ == 0) would read IsOnGround = 0
+            // for one raw 16.16 unit's worth of "not quite there yet" - harmless in practice for X/Y, but
+            // fatal for opcode 0x70 (Is above ground, Result = IsOnGround), which would never see 1.
+            entity.IsOnGround = landingTop >= entity.PosZ ? 1 : 0;
+        }
+    }
+
+    /// <summary>4-corner-max ground probe - see <see cref="RunVerticalPhysicsPass"/>'s own doc for the
+    /// exact convention/rationale. Returns a 16.16 fixed-point height, same unit as
+    /// <see cref="AlundraEntityScriptProxy.TerrainHeight"/>/<c>PosZ</c>.</summary>
+    private int ComputeTerrainHeight(AlundraEntityScriptProxy entity)
+    {
+        var x1 = (entity.PosX + entity.ModX) >> 16;
+        var x2 = (entity.PosX + entity.ModX + entity.Width) >> 16;
+        var y1 = (entity.PosY + entity.ModY) >> 16;
+        var y2 = (entity.PosY + entity.ModY + entity.Height) >> 16;
+
+        var highest = int.MinValue;
+        SampleCorner(x1, y1, ref highest);
+        SampleCorner(x2, y1, ref highest);
+        SampleCorner(x1, y2, ref highest);
+        SampleCorner(x2, y2, ref highest);
+        return highest == int.MinValue ? 0 : highest;
+
+        void SampleCorner(int px, int py, ref int best)
+        {
+            if (_groundField!.TrySampleGround(new Vector3(px, py, 0f), float.MaxValue, out var sample) && sample.HasGround)
+            {
+                var height = (int)Math.Round((double)sample.GroundHeight * 65536.0);
+                if (height > best)
+                {
+                    best = height;
+                }
+            }
+        }
+    }
+
     // ------------------------------------------------------------------------------------------------
     // IEntityWorldContext - entity search/manipulation opcodes (0x2D/0x2E/0x62-0x65/0xAC/0x8B)
     // ------------------------------------------------------------------------------------------------
@@ -485,10 +841,13 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
 
     public AlundraEntityScriptProxy? PlayerEntity => _player;
 
-    /// <summary>No navigation grid in this harness (E4.d) - degraded mode, same shape as every other
-    /// missing-system fallback here. Irrelevant in practice: <see cref="HarnessForceImmediateWalkCompletion"/>
-    /// below already ends every 0x1E/0x1F immediately, so the navigation-detour code path this would feed
-    /// is never reached from the harness.</summary>
+    /// <summary>No navigation grid in this harness (E4.d/E4.e decision E4-1: "sans murs ni navigation" -
+    /// the intro's own paths are unobstructed on map 389, see docs/plan-e4-deplacement-scripte.md) -
+    /// degraded mode, same shape as every other missing-system fallback here. 0x1E's own navigation
+    /// detour (<see cref="AlundraEventProgramRunner"/>'s Walk-with-collision bridge) simply never engages
+    /// without a grid (its own <c>grid != null</c> gate), which is exactly the documented deviation: every
+    /// 0x1E/0x1F occurrence on map 389 now suspends for its REAL distance/time and ends by the ORIGINAL
+    /// distance test alone, never by a synthetic wall.</summary>
     public NavigationGrid2D? NavigationGrid => null;
 
     /// <summary>
@@ -521,11 +880,13 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
             return null;
         }
 
-        var proxy = new AlundraEntityScriptProxy();
-        AlundraWorldProxy.ApplyRecord(record, proxy);
-        proxy.LogicContextEntity = new Entity();
-        proxy.ScriptHost = this;
-        proxy.Initialize(proxy.LogicContextEntity);
+        // E4.e: AlundraWorldProxy.CreateBareEntityFromRecord instead of hand-wiring a proxy - see the
+        // load-time spawn loop's own doc, above (BuildInitialState), on why. Block 18 (record 18) is
+        // spawned this way (opcode 0x2D) and needs its real header box for RunVerticalPhysicsPass's own
+        // ground probe, plus a proxy whose CurrentAnimationId actually advances via SyncAnimation.
+        var entity = AlundraWorldProxy.CreateBareEntityFromRecord(record, _catalog, tileMapData: _tileMapData);
+        var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy!;
+        proxy.ScriptHost = this; // ApplySpawnInitialization already set proxy.LogicContextEntity = entity
 
         var cp = record.CustomProperties;
         var spriteDirectionRaw = int.Parse(cp.GetValueOrDefault("SpriteDirection", "0"));
@@ -539,6 +900,10 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         _entityNames[proxy] = $"{record.Name} ({entityName}) [dynamically spawned]";
         _spawnedEntities.Add(proxy);
         RegisterReferencedPrograms(proxy);
+
+        // E4.f: same one-shot spawn-time support evaluation as the load-time spawn loop, above.
+        EntitySupport.BuildCollidables(_spawnedEntities, _collidables);
+        proxy.EvaluateEntitySupport(_collidables);
 
         _flatItems.Add($"{Frame} | SPAWN | record {entityRecordId} \"{entityName}\" by {_context}");
 
@@ -569,6 +934,19 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     public AlundraGameState GameState => _gameState;
 
     public AlundraPlayerController? PlayerController => null;
+
+    /// <summary>
+    /// E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): this harness's own reused, per-frame
+    /// collidables buffer - rebuilt at the top of every <see cref="RunFrame"/> (see that method's own
+    /// doc), fresher than production's own one-frame-stale <c>AlundraWorldProxy._collidables</c> since the
+    /// harness fully owns its own frame ordering (no external engine loop to contend with). Also rebuilt
+    /// once in <see cref="BuildInitialState"/> right after the load-time spawn loop, and consulted
+    /// directly (not through this property) by <see cref="ApplyImmediateSupportAtSpawn"/> for the
+    /// spawn-time evaluation - see that method's own doc.
+    /// </summary>
+    public IReadOnlyList<AlundraEntityScriptProxy> Collidables => _collidables;
+
+    private readonly List<AlundraEntityScriptProxy> _collidables = new();
 
     /// <summary>Shared with the initial load-time spawn loop in <see cref="BuildInitialState"/> - registers
     /// a freshly spawned entity's non-zero A/C/F program indexes so the static disassembly annex covers
@@ -681,23 +1059,27 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     /// <summary>
     /// Trace-mode-only deviation (documented, see IntroTraceHarnessTests's own class doc, section 0):
     /// opcodes whose original handler is a pure PREDICATE that writes <c>EventProgramState.Result</c> off
-    /// state this V1 interpreter does not have (absent physics for 0x07/0x2F/0x70, absent dialog system
-    /// for 0x39/0x44/0x51) are SKIPPED (UnknownSkipped), not suspended - see
-    /// AlundraEventProgramRunner's own class doc. A skipped predicate leaves <c>Result</c> untouched
-    /// (defaults to 0/"false"), which is exactly backwards for the extremely common original idiom
-    /// "predicate; If false goto back": since the predicate can never become true without the missing
-    /// system driving it (an entity can never reach an area or the ground without movement), that idiom
-    /// would spin in place FOREVER in this trace - precisely what stalled Entity 18's Tick program on
-    /// 0x70 two rounds ago. Assuming these predicates TRUE ("optimistic") instead lets the trace-only
-    /// script keep making forward progress past them, exactly as if the missing system had already
-    /// satisfied the condition. NOT ported into the DLL - this mutates only the live
-    /// <see cref="EventTraceRecord.State"/> reference, harness-side.
+    /// state this V1 interpreter does not have (absent dialog system for 0x39/0x44/0x51; 0x2F "Check
+    /// moving in dir" has no port at all yet - out of E4's own scope, doors/dialogue) are SKIPPED
+    /// (UnknownSkipped), not suspended - see AlundraEventProgramRunner's own class doc. A skipped
+    /// predicate leaves <c>Result</c> untouched (defaults to 0/"false"), which is exactly backwards for
+    /// the extremely common original idiom "predicate; If false goto back": since the predicate can never
+    /// become true without the missing system driving it, that idiom would spin in place FOREVER in this
+    /// trace. Assuming these predicates TRUE ("optimistic") instead lets the trace-only script keep making
+    /// forward progress past them, exactly as if the missing system had already satisfied the condition.
+    /// NOT ported into the DLL - this mutates only the live <see cref="EventTraceRecord.State"/>
+    /// reference, harness-side.
+    ///
+    /// E4.e retraits (docs/plan-e4-deplacement-scripte.md): 0x07 (Check entity in area) and 0x70 (Is above
+    /// ground) are REMOVED from this set - both are now genuinely <c>Implemented</c> opcodes
+    /// (AlundraEventProgramRunner.Dispatch cases 0x07/0x70) driven by this harness's own real per-entity
+    /// kinematics (<see cref="RunVerticalPhysicsPass"/> for 0x70's <c>IsOnGround</c>; the entities' own
+    /// real <see cref="AlundraEntityScriptProxy.TileX"/>/<c>TileY</c>/<c>TileZ</c>, refreshed every tick,
+    /// for 0x07's tile-box search) - their <c>Result</c> is computed for real now, not assumed.
     /// </summary>
     private static readonly HashSet<int> OptimisticPredicateOpcodes = new()
     {
-        0x07, // Check entity in area
         0x2F, // Check moving in dir
-        0x70, // Is above ground (Result = logicEntity.IsOnGround, EntityEventHandlers.cs:2161-2165)
         0x39, // Wait for dialog
         0x44, // Wait dialog choice
         0x51, // Get dialog choice
@@ -741,20 +1123,9 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
                 record.State.Result = 0;
             }
         }
-        else if (record.Kind == EventTraceKind.Implemented && (record.Opcode == 0x70 || record.Opcode == 0x07))
-        {
-            // E4.b/E4.c harness-only deviation (docs/plan-e4-deplacement-scripte.md E4.b/E4.c acceptance
-            // notes): 0x70 and 0x07 are now genuinely Implemented (AlundraEventProgramRunner.Dispatch
-            // cases 0x70/0x07), but this harness drives entities with no controller/kinematics of its own
-            // before E4.e - AlundraEntityScriptProxy.IsOnGround stays its C# default 0 (falling), and no
-            // entity here ever actually MOVES its TileX/TileY/TileZ into a real box, so a genuine
-            // Result=IsOnGround / Result=(tile in box) would still spin the "0x70/0x07 -> 0x04" idioms
-            // forever, same reasoning as OptimisticPredicateOpcodes above, just now applying to
-            // Implemented dispatches instead of UnknownSkipped ones. Removed once E4.e gives this harness
-            // its own simulated kinematics/ground field (see this file's own class doc, section 0) -
-            // 0x2F stays optimistic/unimplemented regardless (dialogue/doors, out of E4's own scope).
-            record.State.Result = 1;
-        }
+        // E4.e: no more kind-Implemented Result forcing for 0x70/0x07 - RunVerticalPhysicsPass now
+        // maintains a real AlundraEntityScriptProxy.IsOnGround (0x70) and TileX/TileY/TileZ (0x07) every
+        // tick, so both opcodes compute their real Result off real state (same as production).
 
         // Stop condition (b) is progress-based: a NEW (context, pc) pair - reaching an instruction for
         // this context for the very first time - is progress. A suspended opcode re-entering the SAME pc

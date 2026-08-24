@@ -76,8 +76,10 @@ internal static class AlundraScriptedMotion
     /// docs/plan-e4-deplacement-scripte.md "Mover scripte par frame") - same shape as
     /// <see cref="TickPlayer"/>, keyed off <see cref="AlundraEntityScriptProxy.CurrentAnimationId"/> instead
     /// of <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> - see this class' own doc for why.
-    /// Called from <see cref="AlundraEntityScriptProxy.Update"/>'s own <c>!IsPlayer</c> branch, only for an
-    /// entity that actually has a <see cref="AlundraEntityScriptProxy.Controller"/>.</summary>
+    /// Called from <see cref="AlundraEntityScriptProxy.Update"/>'s own <c>!IsPlayer</c> branch,
+    /// unconditionally (E4.e) - <see cref="RunOneKinematicTick"/>'s own <see cref="AlundraEntityScriptProxy.Controller"/>-null
+    /// branch integrates <c>Pos*</c> directly, same as it always did for the pre-E3 hero, so this is safe
+    /// to call for every non-player entity regardless of whether it carries a controller.</summary>
     internal static void TickScriptedNpc(AlundraEntityScriptProxy entity, float elapsedTime)
     {
         // See TickPlayer's own doc on this same top-of-frame reset (PhysicsEngine.cs:17).

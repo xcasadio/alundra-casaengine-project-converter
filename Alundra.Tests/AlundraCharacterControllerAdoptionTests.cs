@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -230,6 +231,7 @@ public class AlundraCharacterControllerAdoptionTests
         public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
         public AlundraGameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
+        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
 
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
         {

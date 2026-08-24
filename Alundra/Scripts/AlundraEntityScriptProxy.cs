@@ -246,6 +246,56 @@ public class AlundraEntityScriptProxy : GameplayProxy
     }
 
     /// <summary>
+    /// E4.f entity-support clamp (docs/plan-e4-deplacement-scripte.md, decision E4-4) - consumes
+    /// <see cref="EntitySupport.TryFindSupport"/> (port of <c>CheckEntityCollisionDown</c>'s consumption
+    /// half, <c>PhysicsEngine.cs:123-139</c>) every call, no latch: when a support is found, pins
+    /// <see cref="PosZ"/> to its top (<see cref="ModZ"/>-adjusted), sets <see cref="CollidedWithEntityZ"/>,
+    /// zeroes <see cref="ForceZ"/> ONLY while <see cref="EntityFlags.Gravity"/> is set (preserved
+    /// otherwise, <c>PhysicsEngine.cs:129-134</c>) - and, for a controller-driven entity, suppresses the
+    /// ENGINE's own gravity for the controller's NEXT frame (<c>Settings.Gravity = 0</c>,
+    /// <c>SetVerticalVelocity(0)</c>) and pushes the pinned Z through the existing pose path
+    /// (<see cref="PushLogicalPositionToRoot"/>) so THIS SAME frame's rendered/logical position is already
+    /// correct - no "first frame dip" (see this class' own E4.f doc, "anti-creux" ordering:
+    /// <see cref="AlundraWorldProxy.ApplySpawnInitialization"/> already ran ONE such evaluation
+    /// immediately at spawn, before this entity's own first <see cref="Update"/> or the engine's first
+    /// <c>CharacterMotionSystem.UpdateControllers</c> pass ever runs). When no support is found, restores
+    /// the controller's normal gravity (<see cref="ApplyGravitySettingsToController"/>) - a no-op for a
+    /// controller-less entity (harness bare proxy, or a genuinely controller-less sprite-only prefab),
+    /// which callers instead read the updated <see cref="PosZ"/>/<see cref="ForceZ"/> fields directly (see
+    /// <c>IntroTraceHarnessTests</c>' own <c>RunVerticalPhysicsPass</c>, which reuses
+    /// <see cref="EntitySupport.TryFindSupport"/> the same way but merges it with its own terrain probe
+    /// instead of a <see cref="CharacterControllerComponent"/>). Deliberately does NOT touch
+    /// <see cref="RidingEntity"/> - the original keeps that relation entirely separate, populated only by
+    /// <c>CheckRidingEntities</c> (<see cref="EntitySupport.UpdateRidingEntities"/>, its own EXACT-match
+    /// test, unrelated to this clamp's own strict-below/highest-wins one - see that method's own doc).
+    /// </summary>
+    internal void EvaluateEntitySupport(IReadOnlyList<AlundraEntityScriptProxy> collidables)
+    {
+        if (EntitySupport.TryFindSupport(this, collidables, out _, out var supportTopZ))
+        {
+            CollidedWithEntityZ = 1;
+            PosZ = supportTopZ - ModZ;
+            if ((Flags & EntityFlags.Gravity) != 0)
+            {
+                ForceZ = 0;
+            }
+
+            TileZ = PosZ >> 20;
+
+            if (Controller != null)
+            {
+                Controller.Settings.Gravity = 0f;
+                Controller.SetVerticalVelocity(0f);
+                PushLogicalPositionToRoot();
+            }
+        }
+        else if (Controller != null)
+        {
+            ApplyGravitySettingsToController();
+        }
+    }
+
+    /// <summary>
     /// Engine-only, not part of the original struct (same as <see cref="LogicContextEntity"/>):
     /// this entity's IDSV table, resolved once at spawn from its <c>SpriteRecordCatalog</c> entry
     /// (see <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>) and keyed by
@@ -437,10 +487,23 @@ public class AlundraEntityScriptProxy : GameplayProxy
             // class' own documented one-frame World/entity latency (see this method's own doc, "Accepted
             // deviation" paragraph) - "à défaut d'équivalent exact, utiliser l'anim courante synchronisée et
             // documenter l'écart" per the plan.
-            if (Controller != null)
-            {
-                AlundraScriptedMotion.TickScriptedNpc(this, elapsedTime);
-            }
+            //
+            // E4.e (docs/plan-e4-deplacement-scripte.md): unconditional, not gated on Controller != null -
+            // the original applies UpdateEntityPhysics to every entity in g_activeEntities regardless of
+            // whether it carries a body/controller (PhysicsEngine.cs:12-14's own loop has no such gate);
+            // RunOneKinematicTick's own Controller-null branch (AlundraScriptedMotion, "PosX += FinalForceX"
+            // else-arm) already existed for exactly this case - it is what the pre-E3 hero used - and is
+            // production-safe: every body-carrying entity keeps a real CharacterControllerComponent
+            // (E4.a), so this fallback only ever executes for the harness's own bare proxies (no
+            // Owner/World at all) or a genuinely controller-less sprite-only prefab (11 on map 389, whose
+            // Speed is 0 for every AnimSet they carry - this is a no-op integration for them in practice).
+            AlundraScriptedMotion.TickScriptedNpc(this, elapsedTime);
+
+            // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): entity-vs-entity Z support clamp
+            // - AFTER the horizontal tick above, so a walk that just moved this entity out of a platform's
+            // XY footprint loses support the SAME frame (matching the original's own "hors de l'empreinte:
+            // plus de support" behaviour), not one frame late. See EvaluateEntitySupport's own doc.
+            EvaluateEntitySupport(ScriptHost.Collidables);
         }
         else
         {

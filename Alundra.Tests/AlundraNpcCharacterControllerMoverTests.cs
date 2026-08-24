@@ -269,6 +269,7 @@ public class AlundraNpcCharacterControllerMoverTests
         public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
         public AlundraGameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
+        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = new List<AlundraEntityScriptProxy>();
 
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
         {
@@ -286,6 +287,7 @@ public class AlundraNpcCharacterControllerMoverTests
         public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
         public AlundraGameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
+        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = new List<AlundraEntityScriptProxy>();
 
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
         {

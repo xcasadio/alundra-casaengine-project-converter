@@ -1,4 +1,6 @@
 #nullable enable
+using System.Collections.Generic;
+
 namespace Alundra.Scripts;
 
 /// <summary>
@@ -43,4 +45,15 @@ public interface IAlundraScriptHost
     /// fallback spawn or a thrown exception.
     /// </summary>
     AlundraPlayerController? PlayerController { get; }
+
+    /// <summary>
+    /// E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): this frame's collidable-entity snapshot
+    /// (<see cref="EntitySupport.BuildCollidables"/>'s own criteria, <c>EntityManager.cs:994</c>) - shared,
+    /// allocation-free, rebuilt once per frame by whichever host owns the spawned-entity list
+    /// (<c>AlundraWorldProxy</c> in production, <c>HeadlessIntroSimulation</c> in the intro trace harness).
+    /// Consumed by <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>, called once per entity per
+    /// frame from <see cref="AlundraEntityScriptProxy.Update"/>. Never mutated by a reader - only ever
+    /// rebuilt in place by its owner.
+    /// </summary>
+    IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; }
 }

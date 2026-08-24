@@ -92,25 +92,6 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// through <see cref="TraceSink"/> instead of hanging forever - see that trace kind's own doc.</summary>
     internal int? MaxIterationsPerCall { get; set; }
 
-    /// <summary>
-    /// Harness-only deviation (E4.d, docs/plan-e4-deplacement-scripte.md - same "kind Implemented"
-    /// family as E4.b/E4.c's own 0x70/0x07 forcing, see Alundra.Tests' own IntroTraceHarnessTests class
-    /// doc section 0): false (no effect) unless a caller explicitly sets it. When true, 0x1E/0x1F END
-    /// IMMEDIATELY - <see cref="Walk"/> returns the completed result (3) on its very first dispatch,
-    /// never suspending - instead of the mechanism 0x70/0x07 use (mutating <c>EventTraceRecord.State</c>
-    /// from <see cref="TraceSink"/> AFTER <see cref="Dispatch"/> already ran): that mechanism cannot work
-    /// HERE, because 0x1E/0x1F's own suspend/complete signal IS <see cref="Dispatch"/>'s return value
-    /// itself (whether <see cref="RunOneScriptCall"/> suspends this call), already fixed before
-    /// <see cref="TraceSink"/> ever fires - there is no separate <c>Result</c> read by a LATER opcode to
-    /// retroactively flip. A settable property the harness sets once at construction (same shape as
-    /// <see cref="MaxIterationsPerCall"/> right above) is the smallest faithful equivalent: without a
-    /// simulated kinematics/ground field (E4.e, not yet delivered), the intro trace harness drives
-    /// entities that never actually move, so a genuine 0x1E/0x1F would suspend forever - same reasoning
-    /// as 0x70/0x07's own deviation, just wired through a different seam. Never set by production code;
-    /// removed once E4.e's simulated kinematics makes a real distance test meaningful in the harness too.
-    /// </summary>
-    internal bool HarnessForceImmediateWalkCompletion { get; set; }
-
     private readonly EventProgramDocument? _document;
     private readonly byte[]? _codes;
     private readonly AlundraGameState _gameState;
@@ -900,14 +881,6 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// </summary>
     private int Walk(AlundraEntityScriptProxy entity, int[] v, EventProgramState state, bool allowDetour)
     {
-        if (HarnessForceImmediateWalkCompletion)
-        {
-            // Harness-only deviation - see HarnessForceImmediateWalkCompletion's own doc.
-            entity.WalkDetourPath = null;
-            entity.WalkDetourAttempted = false;
-            return 3;
-        }
-
         var signature = (v[2] << 16) | (v[1] << 8) | v[0];
 
         if (state.Parameters[1] != signature)

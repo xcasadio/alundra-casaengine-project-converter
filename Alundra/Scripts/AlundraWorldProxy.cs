@@ -109,6 +109,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     private readonly List<AlundraEntityScriptProxy> _updateProxies = new();
 
     /// <summary>
+    /// E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): this frame's collidable-entity snapshot
+    /// (<see cref="EntitySupport.BuildCollidables"/>), rebuilt from <see cref="_updateProxies"/> every time
+    /// that list is refreshed (<see cref="RefreshUpdateProxiesAndCollidables"/>) - same no-per-frame-
+    /// allocation shape as <see cref="_updateProxies"/> itself. Exposed as <see cref="IAlundraScriptHost.Collidables"/>.
+    /// </summary>
+    private readonly List<AlundraEntityScriptProxy> _collidables = new();
+
+    /// <summary>
     /// Seam over actual event-program execution (see <see cref="IEventProgramRunner"/>); defaults to a
     /// silent no-op since the bytecode interpreter does not exist yet. Internal, not injected through
     /// the constructor: <c>ElementFactory</c> constructs gameplay proxies parameterless, so tests swap
@@ -416,6 +424,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 // run off the un-clamped PosZ). A no-op without a Controller
                 // (PushLogicalPositionToRoot's own gate), same as every other entity today.
                 spawnedProxy?.PushLogicalPositionToRoot();
+
+                // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): ONE support evaluation right
+                // at spawn - see BuildCollidablesSnapshot's own doc on why platform records (0-5) are
+                // already present here for a rider record (11+) to land on.
+                spawnedProxy?.EvaluateEntitySupport(BuildCollidablesSnapshot());
             }
             catch (Exception ex)
             {
@@ -424,6 +437,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                     + $"skipping. {ex.Message}");
             }
         }
+
+        // E4.f: seed _updateProxies/_collidables from the fully-spawned load-time entity set BEFORE the
+        // engine's own first Update cycle ever runs - see RefreshUpdateProxiesAndCollidables's own doc for
+        // why this second call (beyond the per-frame one in Update) matters.
+        RefreshUpdateProxiesAndCollidables();
 
         if (skippedCount > 0)
         {
@@ -1242,6 +1260,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             proxy.IdsvByAnimDirection = BuildIdsvByAnimDirection(header.IdsvAnimDirs);
             proxy.AnimationEndByAnimDirection = BuildAnimationEndByAnimDirection(header.IdsvAnimDirs);
             proxy.AnimSetsByAnim = header.AnimSets;
+            // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): the hero's own logical
+            // Mod*/Width/Height/Depth, same port (SetEntityDimensions, EntityManager.cs:160-199) every
+            // record-spawned NPC already gets from ApplySpawnInitialization - needed so the hero counts as
+            // a valid EntitySupport candidate/target (e.g. a future entity standing on the hero, or the
+            // hero itself queried by EntitySearchService) with real dimensions instead of all-zero ones.
+            SetEntityDimensions(proxy, header.OffsetX, header.OffsetY, header.OffsetZ, header.SizeX, header.SizeY, header.SizeZ);
         }
         else if (!_loggedNoHeroHeader)
         {
@@ -1409,14 +1433,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             return;
         }
 
-        _updateProxies.Clear();
-        foreach (var entity in _spawnedEntities)
-        {
-            if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
-            {
-                _updateProxies.Add(proxy);
-            }
-        }
+        RefreshUpdateProxiesAndCollidables();
 
         RunPendingEventTriggers(_updateProxies, EventProgramRunner);
 
@@ -2007,6 +2024,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // E4.b: same ground-clamp + root push as the map-load spawn loop above - see that call site's
             // own doc for why this must happen AFTER AddEntity.
             spawnedProxy?.PushLogicalPositionToRoot();
+            // E4.f: same one-shot spawn-time support evaluation as the map-load spawn loop - see
+            // BuildCollidablesSnapshot's own doc. Block 18 (record 18) spawns this way (opcode 0x2D) and
+            // does not land on another entity (its own fall is terrain-only), so this is a no-op for it,
+            // but a future dynamically-spawned rider needs it too.
+            spawnedProxy?.EvaluateEntitySupport(BuildCollidablesSnapshot());
             return spawnedProxy;
         }
         catch (Exception ex)
@@ -2041,6 +2063,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
     AlundraPlayerController? IAlundraScriptHost.PlayerController => _playerController;
 
+    IReadOnlyList<AlundraEntityScriptProxy> IAlundraScriptHost.Collidables => _collidables;
+
     /// <summary>
     /// Snapshot of <see cref="_spawnedEntities"/>'s own <see cref="AlundraEntityScriptProxy"/> proxies, in
     /// the same creation order - built fresh on every call (not cached) so an entity dynamically spawned
@@ -2062,6 +2086,54 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         }
 
         return proxies;
+    }
+
+    /// <summary>
+    /// Rebuilds <see cref="_updateProxies"/> from <see cref="_spawnedEntities"/> and, from that,
+    /// <see cref="_collidables"/> (E4.f) - the per-frame hot-path pair, both reused list instances (no
+    /// allocation). Called once per frame from <see cref="Update"/>, and once more right after the
+    /// map-load spawn loop in <see cref="InitializeWithWorld"/> completes, so <see cref="_collidables"/>
+    /// already reflects every load-time-spawned entity BEFORE the engine's very first
+    /// <c>CharacterMotionSystem.UpdateControllers</c>/entity-<c>Update</c> pass ever runs - without that
+    /// second call, frame 1's <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/> would see an
+    /// empty <see cref="_collidables"/> and wrongly restore gravity on every supported entity for one
+    /// frame (the exact "creux de première frame" decision E4-4 forbids) before <see cref="Update"/> ever
+    /// gets to populate it. <see cref="_updateProxies"/>/<see cref="_collidables"/> are otherwise always
+    /// exactly one frame stale relative to entities spawned or moved THIS frame (the same latency
+    /// <see cref="_updateProxies"/> already had before E4.f) - harmless for map 389's intro, whose
+    /// platform entities never move.
+    /// </summary>
+    private void RefreshUpdateProxiesAndCollidables()
+    {
+        _updateProxies.Clear();
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
+            {
+                _updateProxies.Add(proxy);
+            }
+        }
+
+        EntitySupport.BuildCollidables(_updateProxies, _collidables);
+        EntitySupport.UpdateRidingEntities(_collidables);
+    }
+
+    /// <summary>
+    /// E4.f spawn-time support snapshot: a freshly-built (allocating - spawn is not a per-frame hot path,
+    /// same policy as <see cref="GetSpawnedEntityProxies"/>) collidables list off whatever is in
+    /// <see cref="_spawnedEntities"/> AT THIS EXACT MOMENT, for
+    /// <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>'s own one-shot call right after a
+    /// record spawns (see the map-load spawn loop in <see cref="InitializeWithWorld"/> and
+    /// <see cref="SpawnEntityByRecordId"/>). Map 389's platform records (0-5) spawn before their riders in
+    /// record order (verified against the real export - see docs/plan-e4-deplacement-scripte.md E4.f's own
+    /// "Pourquoi" note), so by the time a rider's own spawn reaches this call every platform it could land
+    /// on is already present.
+    /// </summary>
+    private List<AlundraEntityScriptProxy> BuildCollidablesSnapshot()
+    {
+        var collidables = new List<AlundraEntityScriptProxy>();
+        EntitySupport.BuildCollidables(GetSpawnedEntityProxies(), collidables);
+        return collidables;
     }
 
     public override void Draw()

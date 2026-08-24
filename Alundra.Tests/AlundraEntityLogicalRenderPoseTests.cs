@@ -165,6 +165,7 @@ public class AlundraEntityLogicalRenderPoseTests
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
         public AlundraGameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
+        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = new List<AlundraEntityScriptProxy>();
 
         public FakeScriptHost(IEventProgramRunner runner)
         {

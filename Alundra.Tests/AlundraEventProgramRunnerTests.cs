@@ -1504,20 +1504,6 @@ public class AlundraEventProgramRunnerTests
     }
 
     [Fact]
-    public void Walk_0x1E_HarnessForceImmediateWalkCompletion_EndsOnFirstDispatch()
-    {
-        var document = NewDocument(0x1E, 24, 0, 0x1A, 55, 0xFF);
-        var runner = NewRunner(document);
-        runner.HarnessForceImmediateWalkCompletion = true;
-        var entity = NewEntity();
-        var state = new EventProgramState { Codes = document.CodesAsBytes() };
-
-        runner.RunOneScriptCall(entity, state);
-
-        Assert.Equal(55u, entity.TargetAnimationId);
-    }
-
-    [Fact]
     public void Walk_0x1E_ForceAdjustedWithNavigationGrid_EngagesDetourAndReDerivesDirection_WithoutEndingTheWalk()
     {
         // 10x10 synthetic grid, cell (5,5) blocked - directly between the entity's own cell (4,5) and the
