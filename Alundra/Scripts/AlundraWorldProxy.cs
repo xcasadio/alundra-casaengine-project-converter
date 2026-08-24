@@ -1015,6 +1015,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // needed on this hot-path table.
         proxy.IdsvByAnimDirection = BuildIdsvByAnimDirection(header.IdsvAnimDirs);
         proxy.AnimationEndByAnimDirection = BuildAnimationEndByAnimDirection(header.IdsvAnimDirs);
+
+        // E4.b fix (verifier F1, P2): same source as AdoptPlayerPawn's own hero-only assignment
+        // (this file, AdoptPlayerPawn - "proxy.AnimSetsByAnim = header.AnimSets") - without this, every
+        // record-spawned NPC's AnimSetsByAnim stays null, so AlundraScriptedMotion.RunOneKinematicTick's
+        // own hasAnimSet lookup always misses (Speed/Acceleration both resolve to 0) and the entity never
+        // moves at runtime, regardless of TargetAnimationId/TargetDirection. Null (not empty) when the
+        // header carries no AnimSets at all (older export/degraded catalog) - same "0 speed for every
+        // anim" fallback AlundraScriptedMotion already treats a null table as.
+        proxy.AnimSetsByAnim = header.AnimSets;
+
         SubscribeAnimationEndBridge(entity);
 
         // EntityManager.cs:119: the mapper seeded PosZ with the raw pre-clamp elevation

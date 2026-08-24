@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Alundra.Scripts;
@@ -487,5 +488,127 @@ public class AlundraNpcCharacterControllerMoverTests
 
         Assert.False(strictlyIncreasingRun, "the Pos*-vs-pure-integration drift grew monotonically over 100 frames.");
         _ = entity; // kept for symmetry with the hero's own pattern (root position not asserted directly here).
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // (5) End-to-end spawn regression (verifier finding F1, P2): ApplySpawnInitialization must itself
+    // populate AnimSetsByAnim, not just a hand-built test fixture. Drives a REAL "Entities" record (bank
+    // 146, pulled straight out of the real map 389 tileMapData) through the REAL spawn path -
+    // AlundraWorldProxy.CreateEntityFromRecord -&gt; CreateEntityFromPrefab -&gt; ApplySpawnInitialization -
+    // with a REAL SpriteRecordCatalog reading the real Data/sprite-records.json (so the AnimSets asserted
+    // below come straight off the converter export, not a value this test transcribed by hand). Only the
+    // "prefab" argument itself is a hand-built in-memory Entity: the headless test process has no live
+    // AssetContentManager to Load&lt;Entity&gt; a real .entity file from disk (same constraint
+    // CreateEntityFromRecord's own doc comment states, and the same pattern
+    // AlundraWorldProxySpawnInitializationTests's own "Creation-flow integration" test already uses) - this
+    // is the closest reachable seam to a genuinely full spawn (world's own InitializeWithWorld spawn loop)
+    // short of a live GraphicsDevice/content pipeline. Without ApplySpawnInitialization's own
+    // "proxy.AnimSetsByAnim = header.AnimSets" line, the first assertion below (AnimSetsByAnim non-null)
+    // fails outright, and the walk-kinematics assertion after it would fail too (Speed resolves to 0 -
+    // AlundraScriptedMotion.RunOneKinematicTick's own hasAnimSet miss).
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void EndToEndSpawn_RealBank146RecordThroughApplySpawnInitialization_PopulatesAnimSetsByAnimAndDrivesRealWalkKinematics()
+    {
+        var projectRoot = FindProjectRoot();
+        var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var tileMapData = LoadMap389TileMapData(projectRoot!);
+        Assert.NotNull(tileMapData);
+
+        var entitiesLayer = tileMapData!.ObjectLayers.FirstOrDefault(layer => layer.Name == "Entities");
+        Assert.NotNull(entitiesLayer);
+        var record = entitiesLayer!.Objects.FirstOrDefault(
+            o => o.CustomProperties.TryGetValue("SpriteTableIndex", out var spriteTableIndex) && spriteTableIndex == "146");
+        Assert.NotNull(record);
+
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        if (settings == null)
+        {
+            return;
+        }
+
+        var prefabRoot = new TransformComponent();
+        var collisionComponent = new CollisionComponent();
+        collisionComponent.Fixtures.Add(new ColliderFixture
+        {
+            Shape = new Box { Size = new Vector3(18f, 12f, 32f) },
+            LocalPosition = new Vector3(0f, 0f, 16f),
+            LocalRotation = Quaternion.Identity,
+        });
+        prefabRoot.AddChildComponent(collisionComponent);
+
+        var controllerComponent = new CharacterControllerComponent { Settings = settings };
+        controllerComponent.SetControlMode(CharacterControlMode.Script);
+
+        var prefab = new Entity
+        {
+            Name = "Bank146Prefab",
+            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            RootComponent = prefabRoot,
+        };
+        prefab.AddComponent(controllerComponent);
+
+        // Real Data/sprite-records.json, resolved against the record's own real PrefabAssetId below - not
+        // a FakeSpriteRecordCatalog with hand-copied values.
+        var catalog = new SpriteRecordCatalog(projectRoot!);
+
+        var entity = AlundraWorldProxy.CreateEntityFromRecord(record!, _ => prefab, catalog, tileMapData: tileMapData);
+        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+
+        // The regression itself (F1): this is null without ApplySpawnInitialization's own assignment.
+        Assert.NotNull(proxy.AnimSetsByAnim);
+        Assert.NotEmpty(proxy.AnimSetsByAnim!);
+        Assert.True(proxy.AnimSetsByAnim!.ContainsKey(10), "real bank-146 AnimSets should carry index 10 (Speed 128/Acceleration 6).");
+        var animSetTen = proxy.AnimSetsByAnim[10];
+        Assert.Equal(128, animSetTen.Speed);
+        Assert.Equal(6, animSetTen.Acceleration);
+
+        // Same caching this file's own BuildNpcPawn asserts explicitly - ApplySpawnInitialization's E4.b
+        // "Spawn" block resolves it too (this class' own WalkKinematics test builds it by hand instead).
+        Assert.NotNull(proxy.Controller);
+
+        var world = BuildWorld(field);
+        proxy.IsPlayer = false;
+        proxy.ScriptHost = new FakeScriptHost();
+        proxy.Status = EntityStatus.Normal;
+
+        // Override the record's own real spawn position to the same open flat stretch (row 57, sol 80px)
+        // every other test in this class uses, so the hand-computed displacement below is independent of
+        // which real record happened to match SpriteTableIndex=146.
+        proxy.PosX = 564 * 65536;
+        proxy.PosY = 920 * 65536;
+        proxy.PosZ = 80 * 65536;
+        entity.RootComponent!.LocalTransform.Position = new Vector3(564f, 920f, 80f);
+
+        world.AddEntity(entity);
+        world.Update(1f / 50f); // register with CharacterMotionSystem before the scripted mover ever runs.
+
+        proxy.TargetAnimationId = 10;
+        proxy.TargetDirection = 24; // AnimationTables.CardinalDirectionTable[3] = 0x18, pure +X.
+
+        // Same hand-computed reference as WalkKinematics_Bank146AnimTenRealSpeedAndAcceleration... above
+        // (that test's own doc comment explains the one-frame CurrentAnimationId latency and the transient/
+        // steady-state derivation in full).
+        const int frames = 70;
+        var expectedForce = 0;
+        var expectedPositionDeltaPixels = 0.0;
+        for (var frame = 2; frame <= frames; frame++)
+        {
+            expectedForce = Math.Min(expectedForce + 1536, 98304);
+            expectedPositionDeltaPixels += expectedForce / 65536.0;
+        }
+
+        for (var frame = 1; frame <= frames; frame++)
+        {
+            world.Update(1f / 50f);
+        }
+
+        Assert.Equal(564.0 + expectedPositionDeltaPixels, entity.RootComponent!.Position.X, 2);
     }
 }
