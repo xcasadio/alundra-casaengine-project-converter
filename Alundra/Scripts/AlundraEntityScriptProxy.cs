@@ -290,6 +290,38 @@ public class AlundraEntityScriptProxy : GameplayProxy
     }
 
     /// <summary>
+    /// Bug fix (user-reported runtime timing bug, gull entity 6): the original has NO bridge between its
+    /// per-entity <see cref="Flags"/> word and its physics - <c>PhysicsEngine.cs</c> reads <c>Flags</c>
+    /// directly every single tick (the Gravity gate at :1458-1476 <see cref="ApplyGravitySettingsToController"/>
+    /// already ports, and the ClassA/ClassB-driven collision mask <c>GetCollisionFlagsWithPlayer</c>/
+    /// <c>GetCollisionFlags</c> build fresh every call, PhysicsEngine.cs:1085-1149). This engine's own
+    /// <see cref="CharacterControllerComponent"/> instead CACHES both as <c>Settings.Gravity</c>/
+    /// <c>MaxFallSpeed</c> and <c>Settings.WalkabilityMask</c> - so unlike the original, EVERY site that
+    /// mutates <see cref="Flags"/> on a controller-driven entity must explicitly resync both, or the
+    /// controller keeps acting on stale flags. This is the ONE shared resync point: re-applies gravity
+    /// (delegating to <see cref="ApplyGravitySettingsToController"/>, unchanged) AND re-derives
+    /// <c>Settings.WalkabilityMask</c> from the CURRENT <see cref="Flags"/> via
+    /// <see cref="AlundraCellsCollisionField.WalkabilityMaskFor"/> - same pairing
+    /// <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>/<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>
+    /// already apply once at spawn. Called by every opcode handler that can flip a controller-relevant bit
+    /// in <see cref="Flags"/> (0x16/0x17 High/Low gravity - Gravity bit only; 0x62/0x63 Set/Clear entities
+    /// flags low 16 - any bit, including Gravity/ClassA/ClassB) instead of each calling
+    /// <see cref="ApplyGravitySettingsToController"/> directly, so there is exactly one place that knows
+    /// both settings need refreshing together. A no-op without a <see cref="Controller"/>, same shape as
+    /// every other controller-gated site on this class.
+    /// </summary>
+    internal void ResyncControllerFromFlags()
+    {
+        if (Controller == null)
+        {
+            return;
+        }
+
+        ApplyGravitySettingsToController();
+        Controller.Settings.WalkabilityMask = AlundraCellsCollisionField.WalkabilityMaskFor(Flags);
+    }
+
+    /// <summary>
     /// E4.f entity-support clamp (docs/plan-e4-deplacement-scripte.md, decision E4-4) - consumes
     /// <see cref="EntitySupport.TryFindSupport"/> (port of <c>CheckEntityCollisionDown</c>'s consumption
     /// half, <c>PhysicsEngine.cs:123-139</c>) every call, no latch: when a support is found, pins

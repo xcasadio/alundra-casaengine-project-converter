@@ -562,6 +562,85 @@ public class AlundraEventProgramRunnerTests
         Assert.Equal(0xABCD0000u, target.Flags);
     }
 
+    /// <summary>Bug fix (user-reported runtime timing bug, gull entity 6): 0x62/0x63 must resync a
+    /// matched entity's <see cref="CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent"/>
+    /// (gravity AND walkability mask) whenever they touch <see cref="AlundraEntityScriptProxy.Flags"/> on
+    /// an entity that carries one - see <see cref="AlundraEntityScriptProxy.ResyncControllerFromFlags"/>'s
+    /// own doc. Sets Gravity (0x100) via v2/v3 = (0,1) -&gt; flag = (1&lt;&lt;8)|0 = 0x100, the exact byte
+    /// pair the real gull program uses (just the OR direction, not the clear direction below).</summary>
+    [Fact]
+    public void SetEntitiesFlagsLow16_0x62_ResyncsControllerGravityAndWalkabilityMask()
+    {
+        var document = NewDocument(0x62, 0x82, 0, 1, 0xFF); // flag = (1<<8)|0 = 0x100 = Gravity.
+        var target = NewEntity();
+        target.Status = EntityStatus.Normal;
+        target.Flags = EntityFlags.ClassA; // mask should already reflect ClassA once resynced.
+        target.MapGravity = 1250f;
+        target.MapMaxFallSpeed = 800f;
+        target.Controller = new CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent();
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(target);
+        var runner = NewRunner(document, worldContext: context);
+        var owner = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal(EntityFlags.Gravity, target.Flags & EntityFlags.Gravity);
+        Assert.Equal(1250f, target.Controller.Settings.Gravity);
+        Assert.Equal(800f, target.Controller.Settings.MaxFallSpeed);
+        Assert.Equal(AlundraCellsCollisionField.WalkabilityMaskFor(target.Flags), target.Controller.Settings.WalkabilityMask);
+        Assert.Equal(0x1040u, target.Controller.Settings.WalkabilityMask); // base 0x40 | ClassA's own 0x1000.
+    }
+
+    /// <summary>The gull-6 bug's own exact repro shape: Tick program 134's real 0x63 [128,0,1] (clear
+    /// mask (1&lt;&lt;8)|0 = 0x100 = Gravity) at the climb apex used to leave the controller's own cached
+    /// <c>Settings.Gravity</c> stuck at its spawn-time value - this asserts the resync now zeroes it.
+    /// </summary>
+    [Fact]
+    public void ClearEntitiesFlagsLow16_0x63_ResyncsControllerGravityAndWalkabilityMask()
+    {
+        var document = NewDocument(0x63, 0x82, 0, 1, 0xFF); // clear mask = (1<<8)|0 = 0x100 = Gravity.
+        var target = NewEntity();
+        target.Status = EntityStatus.Normal;
+        target.Flags = EntityFlags.Gravity | EntityFlags.ClassB;
+        target.MapGravity = 1250f;
+        target.MapMaxFallSpeed = 800f;
+        target.Controller = new CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent();
+        target.Controller.Settings.Gravity = 1250f;
+        target.Controller.Settings.MaxFallSpeed = 800f;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(target);
+        var runner = NewRunner(document, worldContext: context);
+        var owner = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal(0u, target.Flags & EntityFlags.Gravity);
+        Assert.Equal(0f, target.Controller.Settings.Gravity);
+        Assert.Equal(0f, target.Controller.Settings.MaxFallSpeed);
+        Assert.Equal(AlundraCellsCollisionField.WalkabilityMaskFor(target.Flags), target.Controller.Settings.WalkabilityMask);
+        Assert.Equal(0x41u, target.Controller.Settings.WalkabilityMask); // base 0x40 | ClassB's own 0x01, Gravity cleared, ClassA never set.
+    }
+
+    [Fact]
+    public void SetEntitiesFlagsLow16_0x62_NoController_DoesNotThrow()
+    {
+        var document = NewDocument(0x62, 0x82, 0, 1, 0xFF);
+        var target = NewEntity();
+        target.Status = EntityStatus.Normal;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(target);
+        var runner = NewRunner(document, worldContext: context);
+        var owner = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state); // must not throw without a controller
+
+        Assert.Equal(EntityFlags.Gravity, target.Flags & EntityFlags.Gravity);
+    }
+
     [Fact]
     public void SetEntitiesPosition_0x64_SetsPosXYZ_FromRealMap389Operands()
     {

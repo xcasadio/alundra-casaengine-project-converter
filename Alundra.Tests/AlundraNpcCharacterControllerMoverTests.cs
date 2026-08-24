@@ -538,6 +538,131 @@ public class AlundraNpcCharacterControllerMoverTests
         Assert.True(maxDownwardSpeed > 700f, $"fall speed {maxDownwardSpeed} never got close to the 800 clamp over a 400px fall.");
     }
 
+    /// <summary>
+    /// Bug fix (user-reported runtime timing bug, gull entity 6): a gull-6-shaped cycle - hover-climb,
+    /// clear the Gravity bit mid-air via the REAL 0x63 opcode bridge (Tick program 134's own real
+    /// operands, offset 900, [128,0,1]: clear mask (1&lt;&lt;8)|0 = 0x100 = <see cref="EntityFlags.Gravity"/>),
+    /// zero the vertical impulse (0x1B [0,0]), hold for 60 real ticks, then a real 0x1B [127,255] scripted
+    /// descent, then the REAL 0x62 opcode bridge restores gravity ([128,0,1]: set mask 0x100).
+    /// Pre-fix, <see cref="AlundraEventProgramRunner.RunOneScriptCall"/>'s own 0x63 handler mutated
+    /// <see cref="AlundraEntityScriptProxy.Flags"/> but never told the entity's own
+    /// <see cref="CharacterControllerComponent"/> - <c>Settings.Gravity</c> stayed at its spawn-time 1250
+    /// and kept pulling the entity down every tick of the "hover", exactly the reported bug. Post-fix
+    /// (<see cref="AlundraEntityScriptProxy.ResyncControllerFromFlags"/>, called from both 0x62 and 0x63),
+    /// Z genuinely holds during the hover.
+    /// </summary>
+    [Fact]
+    public void GullHoverCycle_Real0x63ClearsGravityMidAir_HoldsAltitudeThenScriptedDescentThenReal0x62Falls()
+    {
+        var projectRoot = FindProjectRoot();
+        var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        if (settings == null)
+        {
+            return;
+        }
+
+        var world = BuildWorld(field);
+        // Same flat cell (18,57) the GravityToggle test above uses (sol 80px) - spawned well above it
+        // (300px) so neither the climb nor the later accelerated fall clips the ground within this test's
+        // own frame budget.
+        var (entity, proxy) = BuildNpcPawn(world, settings, new Vector3(444f, 920f, 300f), new FakeScriptHost());
+        world.Update(1f / 50f); // register with CharacterMotionSystem first (same ordering note as GravityToggle above).
+
+        proxy.Flags = EntityFlags.Gravity;
+        proxy.MapGravity = 1250f;
+        proxy.MapMaxFallSpeed = 800f;
+        proxy.ApplyGravitySettingsToController(); // spawn-time resync (ApplySpawnInitialization's own real call).
+
+        var runner = new AlundraEventProgramRunner(
+            new EventProgramDocument { MapIndex = 389, Codes = Array.Empty<int>() }, new AlundraGameState(), worldContext: null);
+        void RunOpcode(params int[] codes)
+            => runner.RunOneScriptCall(proxy, new EventProgramState { Codes = Array.ConvertAll(codes, c => (byte)c) });
+
+        // Hover-climb: real 0x1B [128,3] (v1=128,v2=3 -> raw=(3<<8)|128=896, ForceZ=896*0x10000>>8=229376,
+        // i.e. +3.5 px/tick/+175 px/s) reissued every tick for 10 ticks - SetVerticalVelocity is a one-shot
+        // SET (AlundraEventProgramRunner's own 0x1B doc), so sustaining a climb against real Gravity=1250
+        // needs the repeated re-issue the real gull program itself performs (its own Wait(N)-gated 0x1B
+        // loop before the 0x63/apex).
+        for (var frame = 0; frame < 10; frame++)
+        {
+            RunOpcode(0x1B, 128, 3, 0xFF);
+            world.Update(1f / 50f);
+        }
+
+        Assert.True(entity.RootComponent!.Position.Z > 300f, "expected the climb to have raised Z above the 300px spawn height.");
+
+        // Climb apex: real Tick program 134's own 0x63 [128,0,1] (clear Gravity) immediately followed by
+        // 0x1B [0,0] (zero the vertical impulse/velocity - same shape the real program's own hover uses to
+        // stop climbing exactly at the apex instead of merely disabling further acceleration).
+        RunOpcode(0x63, 128, 0, 1, 0xFF);
+        RunOpcode(0x1B, 0, 0, 0xFF);
+
+        Assert.Equal(0u, proxy.Flags & EntityFlags.Gravity);
+        Assert.Equal(0f, proxy.Controller!.Settings.Gravity);
+        Assert.Equal(0f, proxy.Controller.Settings.MaxFallSpeed);
+
+        var hoverZ = entity.RootComponent!.Position.Z;
+
+        // THE bug's own exact repro: without the fix, Settings.Gravity silently stayed 1250 here and the
+        // gull fell through every one of these 60 ticks instead of holding. Z is bit-exact constant (not
+        // just "close"): with Gravity/MaxFallSpeed both 0 and vertical velocity zeroed, nothing ever writes
+        // to the root's own Z component again until the 0x1B descent call below - no float round-trip is
+        // even in play (contrast the entity-support pin, which DOES re-derive Pos every tick and needed a
+        // quantization-tolerant comparator).
+        for (var frame = 0; frame < 60; frame++)
+        {
+            world.Update(1f / 50f);
+            Assert.Equal(hoverZ, entity.RootComponent!.Position.Z);
+            Assert.Equal(0f, proxy.Controller.Velocity.Z);
+        }
+
+        // Scripted descent: real 0x1B [127,255] (v1=127,v2=255 -> raw=(255<<8)|127=0xFF7F=65407,
+        // SignExtend16=65407-65536=-129, ForceZ=-129*0x10000>>8=-33024, i.e. -0.50390625 px/tick/
+        // -25.1953125 px/s). Gravity is STILL 0 here (only 0x1B was called, not 0x62 yet), so this is pure
+        // constant-velocity motion, no acceleration - the hand-computed window below is exact float
+        // arithmetic, not an approximation band.
+        RunOpcode(0x1B, 127, 255, 0xFF);
+
+        const int descentTicks = 20;
+        for (var frame = 0; frame < descentTicks; frame++)
+        {
+            world.Update(1f / 50f);
+        }
+
+        var expectedDescentZ = hoverZ + descentTicks * (-33024 / 65536f);
+        Assert.Equal(expectedDescentZ, entity.RootComponent!.Position.Z, 2);
+        Assert.True(entity.RootComponent!.Position.Z < hoverZ, "expected the scripted descent to have lowered Z below the hover altitude.");
+
+        var zBeforeGravityRestored = entity.RootComponent!.Position.Z;
+
+        // Real 0x62 [128,0,1] (set mask 0x100 = Gravity) restores real map gravity through the SAME
+        // resync helper as 0x63 above - confirms the fix is symmetric (0x62 also resyncs, not just 0x63).
+        RunOpcode(0x62, 128, 0, 1, 0xFF);
+
+        Assert.Equal(EntityFlags.Gravity, proxy.Flags & EntityFlags.Gravity);
+        Assert.Equal(1250f, proxy.Controller.Settings.Gravity);
+        Assert.Equal(800f, proxy.Controller.Settings.MaxFallSpeed);
+
+        for (var frame = 0; frame < 15; frame++)
+        {
+            world.Update(1f / 50f);
+        }
+
+        // Real gravity now accelerates the fall well past the prior constant -25.2 px/s scripted descent
+        // rate - the entity has genuinely resumed falling under Settings.Gravity=1250, not merely
+        // continuing at the old scripted velocity.
+        Assert.True(-proxy.Controller.Velocity.Z > 60f,
+            $"expected restored gravity to accelerate the fall past 60 px/s within 15 ticks; got {-proxy.Controller.Velocity.Z}.");
+        Assert.True(entity.RootComponent!.Position.Z < zBeforeGravityRestored,
+            "expected Z to keep dropping once real gravity was restored.");
+    }
+
     // -----------------------------------------------------------------------------------------
     // (4) Root-ownership replay of the E3.d pattern (AlundraCharacterControllerAdoptionTests
     // .RootOwnership_OneHundredFramesFlatWalk...) on an NPC: 100 frames of flat walking via a direct

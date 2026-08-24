@@ -466,12 +466,12 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
             case 0x16: // High gravity - Script_22_016
                 entity.Flags |= EntityFlags.Gravity;
-                entity.ApplyGravitySettingsToController();
+                entity.ResyncControllerFromFlags();
                 return 1;
 
             case 0x17: // Low gravity - Script_23_017
                 entity.Flags &= ~EntityFlags.Gravity;
-                entity.ApplyGravitySettingsToController();
+                entity.ResyncControllerFromFlags();
                 return 1;
 
             case 0x19: // Deactivate entity - Script_25_019 (EntityEventHandlers.cs:729-733).
@@ -730,7 +730,12 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     }
 
     /// <summary>Script_98_062 (0x62) - ORs the low-16-bit flag word <c>(v[3]&lt;&lt;8|v[2])</c> into every
-    /// matched entity's <see cref="AlundraEntityScriptProxy.Flags"/>.</summary>
+    /// matched entity's <see cref="AlundraEntityScriptProxy.Flags"/>. Bug fix (user-reported runtime timing
+    /// bug, gull entity 6): the original has no such bridge (physics reads <c>Flags</c> directly every
+    /// tick, PhysicsEngine.cs:1460) - this engine's own controller caches Gravity/WalkabilityMask from
+    /// Flags in its own Settings, so every match with a controller must be resynced here too (see
+    /// <see cref="AlundraEntityScriptProxy.ResyncControllerFromFlags"/>'s own doc), same as
+    /// <see cref="ClearEntitiesFlagsLow16"/> below and the 0x16/0x17 opcode handlers.</summary>
     private void SetEntitiesFlagsLow16(AlundraEntityScriptProxy entity, int[] v)
     {
         var flag = (uint)((v[3] << 8) | v[2]);
@@ -739,12 +744,19 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         foreach (var match in matches)
         {
             match.Flags |= flag;
+            match.ResyncControllerFromFlags();
         }
     }
 
     /// <summary>Script_99_063 (0x63) - clears the low-16-bit flag word <c>(v[3]&lt;&lt;8|v[2])</c> out of
-    /// every matched entity's <see cref="AlundraEntityScriptProxy.Flags"/> (bits 16-31 always
-    /// survive).</summary>
+    /// every matched entity's <see cref="AlundraEntityScriptProxy.Flags"/> (bits 16-31 always survive). Bug
+    /// fix (user-reported runtime timing bug): same controller resync requirement as
+    /// <see cref="SetEntitiesFlagsLow16"/> above - see that method's own doc and
+    /// <see cref="AlundraEntityScriptProxy.ResyncControllerFromFlags"/>'s own doc. This is the exact site
+    /// the gull-6 bug traced to: Tick program 134's own 0x63 [128,0,1] (clear mask (1&lt;&lt;8)|0 = 0x100 =
+    /// <see cref="EntityFlags.Gravity"/>) at its climb apex used to clear the Flags bit without ever telling
+    /// the controller, so <c>Settings.Gravity</c> stayed at its spawn-time value and kept pulling the gull
+    /// down through its own scripted hover.</summary>
     private void ClearEntitiesFlagsLow16(AlundraEntityScriptProxy entity, int[] v)
     {
         var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
@@ -754,6 +766,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         foreach (var match in matches)
         {
             match.Flags &= andMask;
+            match.ResyncControllerFromFlags();
         }
     }
 
