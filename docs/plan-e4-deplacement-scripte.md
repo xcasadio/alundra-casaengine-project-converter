@@ -254,7 +254,7 @@ DLL / convertisseur / harnais (ce repo) :
   Avis P4 différé : `TileMapComponent.Initialize` non exécuté end-to-end (GraphicsDevice requis) —
   à couvrir par la validation runtime utilisateur.
 
-### E4.b — DLL : les PNJ bougent sur le mover ⏳ (DLL)
+### E4.b — DLL : les PNJ bougent sur le mover ✅ (365946f + correctif de1eceb, verifier CONFIRMED)
 
 - **Spawn** (`ApplySpawnInitialization`) : `AnimSetsByAnim = header.AnimSets` (même source que le
   héros, `AlundraWorldProxy.cs:1095`) ; cache `Controller`/`RenderProjection` ; APRÈS l'affectation de
@@ -296,6 +296,38 @@ DLL / convertisseur / harnais (ce repo) :
   jalons et à la frame 926 ; **arrêt** si un jalon bouge (analyser avant d'ajuster).
 - **Rollback** : revert + export si besoin. **Budget** : un commit, ≤ 1,5 journée. **Arrêts** : la
   note harnais ; divergence du pull racine (test 100 frames).
+
+#### Réalisé — écarts (2026-08-24)
+
+- **Pré-lectures (faits)** : `AnimationSet` n'est réassigné qu'au changement effectif d'animation
+  (`EntityManager.cs:227-233`) → le mover PNJ est keyé sur `CurrentAnimationId` (latence d'une frame
+  documentée, le héros garde `TargetAnimationId` inchangé) ; clamp de spawn (`EntityManager.cs:
+  127-136`) porté en réutilisant `ClampToGround` via `PushLogicalPositionToRoot` APRÈS
+  `world.AddEntity` (le champ n'est joignable qu'à ce moment) ; `IsZForceApplied` = 0 sur TOUTES les
+  AnimSets des banques de l'intro (25/146) → branche `:1381-1486` non portée (fait consigné) ;
+  `EntityFlags.Gravity = 0x100`, posé dans les Flags réels de spawn (`0x3A180`/`0x83A180`) — le
+  `0x17` du Load 133 retire un bit effectivement présent.
+- **Extraction `AlundraScriptedMotion`** : accumulateur 50 Hz + `IncrementForce` + tick cinématique
+  partagés ; le chemin héros est une relocation byte-for-byte (vérifié par diff), tests héros
+  inchangés.
+- **Fidélité 0x1B réelle** : l'impulsion du bloc 18 (programme 146, params `[0,255]`) est
+  **descendante** (−65536 en 16.16 → −50 px/s, gravité déjà coupée) — une poussée vers le sol, pas
+  un saut ; le test (2) reflète ce fait.
+- **REFUTED → correctif** : le premier verifier frais a réfuté la tranche (F1, P2 :
+  `ApplySpawnInitialization` ne posait pas `AnimSetsByAnim` — les PNJ réels restaient à Speed 0 ;
+  les tests d'intégration assignaient la table à la main). Correctif `de1eceb` : assignation au
+  spawn + test end-to-end par le vrai chemin (`CreateEntityFromRecord` → `ApplySpawnInitialization`,
+  catalogue réel, Speed 128/Accel 6 de l'anim 10 banque 146, déplacement 56,25 px sur 69 ticks
+  re-dérivé indépendamment par le second verifier). Second verifier frais : **CONFIRMED**.
+- **Harnais** : forçage de 0x70 étendu au kind `Implemented` (déviation E4.b, retirée en E4.e) ;
+  trace : seuls les kinds de 0x1B (×21)/0x16 (×2)/0x70 (×1) changent, jalons identiques
+  (0x83E8@554, 0x83EA@705, 0x83E9@783, 860@786, 0x11@926), fichier byte-reproductible.
+- **Tests** : DLL 370/370 (357 + 8 opcodes + 4 intégration + 1 end-to-end spawn) ; convertisseur
+  137/137 intact.
+- **Différés (P4)** : le leg `.entity`-fichier → prefab du spawn complet reste non couvert headless
+  (pas d'`AssetContentManager` sans jeu — couvert par la validation runtime utilisateur) ; le `+1`
+  d'une unité 16.16 du clamp original (`PosZ = ground + 1`) n'est pas reproduit par `ClampToGround`
+  (préexistant E3.d, aucun impact observé).
 
 ### E4.c — DLL : opcodes de flux, direction et contrôle ⏳ (DLL)
 
@@ -391,7 +423,7 @@ checkout standalone. Validation par tranche : builds/tests/export selon les règ
 |---|---|---|
 | E4.0 vitesse verticale moteur | ✅ (verifier CONFIRMED) | moteur a9267735 |
 | E4.a couche navigation + contrôleurs PNJ | ✅ (verifier CONFIRMED) | 94a871e |
-| E4.b PNJ sur le mover | ⏳ | |
+| E4.b PNJ sur le mover | ✅ (verifier CONFIRMED après correctif) | 365946f + de1eceb |
 | E4.c opcodes flux/direction/contrôle + debug 0x10 | ⏳ | |
 | E4.d marche naviguée 0x1E/0x1F | ⏳ | |
 | E4.e harnais cinématique + nouvel oracle | ⏳ | |
