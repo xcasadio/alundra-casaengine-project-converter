@@ -189,7 +189,7 @@ DLL / convertisseur / harnais (ce repo) :
   vitesse — le site d'appel DLL (0x1B) convertit un entier 16.16, fini par construction, pas de
   garde moteur ajoutée.
 
-### E4.a — Convertisseur : couche navigation + contrôleurs PNJ ⏳ (convertisseur)
+### E4.a — Convertisseur : couche navigation + contrôleurs PNJ ✅ (94a871e, verifier CONFIRMED)
 
 - **Couche navigation (D5)** : chaque `.tileMap` dont la map a des `AlundraCells` gagne une couche
   `Navigation` : `custom_properties` `navigation.role = "grid"`, `navigation.defaultWalkable = "false"` ;
@@ -231,6 +231,28 @@ DLL / convertisseur / harnais (ce repo) :
   contrôleur avec les valeurs dérivées de SA boîte ; un sprite-only n'en porte pas ; le héros garde
   `Radius 7.5/Height 32` ; round-trip `Entity.Load`.
 - **Rollback** : revert + export. **Budget** : un commit, ≤ 1 journée. **Arrêts** : listés ci-dessus.
+
+#### Réalisé — écarts (2026-08-24)
+
+- **Pré-check 1 déclenché puis résolu** : les marcheurs de l'intro ne sont pas ClassB (voir la
+  révision M = 0x40 ci-dessus) — plan corrigé avant implémentation.
+- **Pré-check 2 (fait)** : `TileMapComponent.InitializeWithWorld` (`:190-210`) construit un `Tile`
+  par cellule non vide de TOUTE couche, sans gate sur `Depth.Role` — la couche `CollisionOnly` a
+  donc besoin de `TileData` valides + texture chargeable : `Data/Navigation.tileset` (2 tuiles
+  Static 24×16) + `Data/Navigation.png` (24×16) partagés, catalogués. `LoadTileSets` exige un
+  `TileSize` uniforme : vérifié 24×16 sur les 483 maps.
+- **Écart — banque dégénérée** : `alundra_244` (boîte 1×1×1 px → Radius 0,5 == SkinWidth 0,5,
+  rejeté par `Validate`) reste sans contrôleur, compté
+  (`Entities.CharacterControllersSkippedDegenerateBody 1`) et loggé — 383 contrôleurs émis
+  (héros + 382), 11 sprite-only sans.
+- **Compteurs** : `Navigation.Layers 483`, `Navigation.TileSets 1`, `WalkableCells 1344209`,
+  `BlockedCells 162751` (somme = 483×3120) ; historiques inchangés. Sur la 389 : 0 cellule B
+  (les murs du pont sont des différences de hauteur — hors grille, écart documenté).
+- **Verifier CONFIRMED** : re-dérivation indépendante des 1 506 960 cellules (0 écart) ; le vrai
+  `NavigationGrid2D.TryCreateFromTileMap` exécuté sur les 483 maps exportées → 0 échec, compteurs
+  reproduits ; 383/383 réglages relus par `CharacterControllerSettings.Load` ; héros inchangé.
+  Avis P4 différé : `TileMapComponent.Initialize` non exécuté end-to-end (GraphicsDevice requis) —
+  à couvrir par la validation runtime utilisateur.
 
 ### E4.b — DLL : les PNJ bougent sur le mover ⏳ (DLL)
 
@@ -368,7 +390,7 @@ checkout standalone. Validation par tranche : builds/tests/export selon les règ
 | Tranche | Statut | Commit |
 |---|---|---|
 | E4.0 vitesse verticale moteur | ✅ (verifier CONFIRMED) | moteur a9267735 |
-| E4.a couche navigation + contrôleurs PNJ | ⏳ | |
+| E4.a couche navigation + contrôleurs PNJ | ✅ (verifier CONFIRMED) | 94a871e |
 | E4.b PNJ sur le mover | ⏳ | |
 | E4.c opcodes flux/direction/contrôle + debug 0x10 | ⏳ | |
 | E4.d marche naviguée 0x1E/0x1F | ⏳ | |
