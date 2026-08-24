@@ -147,8 +147,8 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
 
     private static readonly HashSet<int> ImplementedOpcodes = new()
     {
-        0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x09, 0x17, 0x1A, 0x2D, 0x2E, 0x30, 0x31, 0x36, 0x37,
-        0x62, 0x63, 0x64, 0x65, 0x8B, 0xAC,
+        0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x09, 0x16, 0x17, 0x1A, 0x1B, 0x2D, 0x2E, 0x30, 0x31, 0x36,
+        0x37, 0x62, 0x63, 0x64, 0x65, 0x70, 0x8B, 0xAC,
     };
 
     private readonly string _projectRoot;
@@ -726,6 +726,18 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
             {
                 record.State.Result = 0;
             }
+        }
+        else if (record.Kind == EventTraceKind.Implemented && record.Opcode == 0x70)
+        {
+            // E4.b harness-only deviation (docs/plan-e4-deplacement-scripte.md E4.b acceptance note):
+            // 0x70 is now genuinely Implemented (AlundraEventProgramRunner.Dispatch case 0x70, Result =
+            // logicEntity.IsOnGround), but this harness drives entities with no controller/kinematics of
+            // its own - AlundraEntityScriptProxy.IsOnGround stays its C# default 0 (falling) for every
+            // entity here, so a real Result=IsOnGround would still spin the block-18 "0x70 -> 0x04" idiom
+            // forever, same reasoning as OptimisticPredicateOpcodes above, just now applying to an
+            // Implemented dispatch instead of an UnknownSkipped one. Removed once E4.e gives this harness
+            // its own simulated kinematics/ground field (see this file's own class doc, section 0).
+            record.State.Result = 1;
         }
 
         // Stop condition (b) is progress-based: a NEW (context, pc) pair - reaching an instruction for

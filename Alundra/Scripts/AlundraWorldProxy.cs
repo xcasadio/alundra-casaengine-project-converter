@@ -185,6 +185,21 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     private World? _world;
 
+    /// <summary>
+    /// This world's own <see cref="TileMapData"/> (resolved once in <see cref="InitializeWithWorld"/>,
+    /// same instance <see cref="AlundraCellsCollisionField"/>/<see cref="AdoptPlayerPawn"/> already read) -
+    /// cached so every NPC spawn (<see cref="CreateEntityFromRecord"/> -&gt; <see cref="CreateEntityFromPrefab"/>/
+    /// <see cref="CreateBareEntityFromRecord"/> -&gt; <see cref="ApplySpawnInitialization"/>, both the
+    /// map-load loop below and the dynamic-spawn opcode 0x2D's own <see cref="SpawnEntityByRecordId"/>)
+    /// can resolve THIS map's own Gravity/ZViscosity (E4.b, docs/plan-e4-deplacement-scripte.md "Spawn")
+    /// without re-threading a <see cref="TileMapData"/> parameter through every caller of this world's own
+    /// per-frame passes. Null before <see cref="InitializeWithWorld"/> runs, or when this world has no
+    /// loaded tilemap (see that method's own early-return) - every reader already treats a missing map
+    /// gracefully (see <see cref="AlundraEntityScriptProxy.ApplyGravitySettingsToController"/>'s own
+    /// no-controller no-op).
+    /// </summary>
+    private TileMapData? _tileMapData;
+
     /// <summary>DEBUG ONLY. Cached <see cref="Camera2dComponent"/> of the world's camera
     /// entity, resolved once on first <see cref="Update"/> call; stays null (and logs once) when the
     /// world has no such entity/component.</summary>
@@ -263,6 +278,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             Logs.WriteWarning($"AlundraWorldProxy: entity '{TileMapEntityName}' has no loaded TileMapData in world '{world.Name}'; no entity spawned.");
             return;
         }
+
+        _tileMapData = tileMapData;
 
         // E3.b: build this world's ground/walkability field from the same TileMapData and install it on
         // World.CollisionField - World.Clear() resets the slot to null (World.cs), so every load
@@ -366,14 +383,24 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             try
             {
                 var entity = CreateEntityFromRecord(
-                    record, guid => world.Game.AssetContentManager.Load<Entity>(guid), SpriteRecordCatalog);
-                if (entity.GameplayProxy is AlundraEntityScriptProxy spawnedProxy)
+                    record, guid => world.Game.AssetContentManager.Load<Entity>(guid), SpriteRecordCatalog,
+                    tileMapData: _tileMapData);
+                var spawnedProxy = entity.GameplayProxy as AlundraEntityScriptProxy;
+                if (spawnedProxy != null)
                 {
                     spawnedProxy.ScriptHost = this;
                 }
 
                 world.AddEntity(entity);
                 _spawnedEntities.Add(entity);
+
+                // E4.b ("Spawn" item, docs/plan-e4-deplacement-scripte.md): ground-clamp + root push for a
+                // controller-driven NPC now that the entity is actually IN the world - ClampToGround needs
+                // World.CollisionField, only reachable once Entity.World is set (World.AddEntity, just
+                // above), strictly AFTER CreateEntityFromPrefab's own spawn-time root write (which had to
+                // run off the un-clamped PosZ). A no-op without a Controller
+                // (PushLogicalPositionToRoot's own gate), same as every other entity today.
+                spawnedProxy?.PushLogicalPositionToRoot();
             }
             catch (Exception ex)
             {
@@ -683,7 +710,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     internal static Entity CreateEntityFromRecord(
         TileMapObjectData record, Func<Guid, Entity?>? prefabLoader, ISpriteRecordCatalog? spriteRecordCatalog = null,
-        Entity? parentEntity = null)
+        Entity? parentEntity = null, TileMapData? tileMapData = null)
     {
         if (TryGetPrefabAssetId(record, out var prefabAssetId))
         {
@@ -712,7 +739,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
             if (prefab != null)
             {
-                return CreateEntityFromPrefab(record, prefab, spriteRecordCatalog, parentEntity);
+                return CreateEntityFromPrefab(record, prefab, spriteRecordCatalog, parentEntity, tileMapData);
             }
 
             Logs.WriteWarning(
@@ -726,7 +753,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 + "falling back to a bare entity.");
         }
 
-        return CreateBareEntityFromRecord(record, spriteRecordCatalog, parentEntity);
+        return CreateBareEntityFromRecord(record, spriteRecordCatalog, parentEntity, tileMapData);
     }
 
     /// <summary>
@@ -754,7 +781,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     internal static Entity CreateEntityFromPrefab(
         TileMapObjectData record, Entity prefab, ISpriteRecordCatalog? spriteRecordCatalog = null,
-        Entity? parentEntity = null)
+        Entity? parentEntity = null, TileMapData? tileMapData = null)
     {
         var entity = prefab.Clone();
         entity.Name = BuildEntityName(record);
@@ -773,7 +800,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
         {
             ApplyRecord(record, proxy);
-            ApplySpawnInitialization(record, entity, proxy, spriteRecordCatalog, parentEntity);
+            ApplySpawnInitialization(record, entity, proxy, spriteRecordCatalog, parentEntity, tileMapData);
 
             // The prefab's root is the inert TransformComponent (SpriteWriter.WriteEntityPrefab, E3.a);
             // place it in the CasaEngine LOGICAL frame from the logical position
@@ -821,6 +848,27 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <c>RootComponent.Update</c>, hence the projection, runs before <c>GameplayProxy.Update</c> -
     /// Entity.cs:473-504) - see <see cref="SyncTransform"/>.
     /// </summary>
+    /// <summary>
+    /// This map's own Gravity/ZViscosity (<c>TileMapData.CustomProperties</c>, written by
+    /// <c>CellMetadataWriter.ConvertMap</c>), converted to the units
+    /// <see cref="CharacterControllerSettings.Gravity"/>/<see cref="CharacterControllerSettings.MaxFallSpeed"/>
+    /// expect - E3.d's own formula (<c>AdoptPlayerPawn</c>'s original override block): <c>mapGravity*256/
+    /// 65536*2500</c> / <c>mapZViscosity*256/65536*50</c> (1250/800 on map 389). Shared by
+    /// <see cref="AdoptPlayerPawn"/> (hero, unconditional) and <see cref="ApplySpawnInitialization"/> (NPC,
+    /// gated on the Gravity flag bit via <see cref="AlundraEntityScriptProxy.ApplyGravitySettingsToController"/>)
+    /// so the formula itself lives in exactly one place. Float arithmetic throughout: an integer
+    /// <c>128*256/65536</c> truncates to 0 before the final <c>*2500</c> ever runs.
+    /// </summary>
+    private static (float Gravity, float MaxFallSpeed) ResolveMapGravitySettings(TileMapData tileMapData)
+    {
+        tileMapData.CustomProperties.TryGetValue("Gravity", out var gravityRaw);
+        int.TryParse(gravityRaw, out var mapGravity);
+        tileMapData.CustomProperties.TryGetValue("ZViscosity", out var zViscosityRaw);
+        int.TryParse(zViscosityRaw, out var mapZViscosity);
+
+        return (mapGravity * 256f / 65536f * 2500f, mapZViscosity * 256f / 65536f * 50f);
+    }
+
     internal static Vector3 ResolveLogicalPosition(int posX, int posY, int posZ)
     {
         var pixelX = posX >> 16;
@@ -841,7 +889,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// Does not add the entity to any world; the caller does that.
     /// </summary>
     internal static Entity CreateBareEntityFromRecord(
-        TileMapObjectData record, ISpriteRecordCatalog? spriteRecordCatalog = null, Entity? parentEntity = null)
+        TileMapObjectData record, ISpriteRecordCatalog? spriteRecordCatalog = null, Entity? parentEntity = null,
+        TileMapData? tileMapData = null)
     {
         var entity = new Entity
         {
@@ -856,7 +905,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
         {
             ApplyRecord(record, proxy);
-            ApplySpawnInitialization(record, entity, proxy, spriteRecordCatalog, parentEntity);
+            ApplySpawnInitialization(record, entity, proxy, spriteRecordCatalog, parentEntity, tileMapData);
         }
 
         return entity;
@@ -903,7 +952,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     internal static void ApplySpawnInitialization(
         TileMapObjectData record, Entity entity, AlundraEntityScriptProxy proxy, ISpriteRecordCatalog? spriteRecordCatalog,
-        Entity? parentEntity = null)
+        Entity? parentEntity = null, TileMapData? tileMapData = null)
     {
         proxy.LogicContextEntity = entity;
 
@@ -922,6 +971,32 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         // EntityManager.cs:92-93 (Entity.Flags packing documented by EntityFlags).
         proxy.Flags = (uint)(header.MoreFlags | (header.CanPickup << 8) | (header.FlagsPortraitShadowType << 16));
+
+        // E4.b ("Spawn" item, docs/plan-e4-deplacement-scripte.md): cache Controller/RenderProjection the
+        // same way AdoptPlayerPawn does for the hero (E3.d) - every prefab with a positive body box now
+        // carries a CharacterControllerComponent (E4.a), so a record-spawned NPC needs the same caching
+        // this proxy's own per-frame passes (Update's root pull, MoveControllerAndPullPosition,
+        // PushLogicalPositionToRoot) already assume. ??= rather than an unconditional overwrite: harmless
+        // either way here (both start null on a freshly Initialize()'d proxy), but keeps this call site
+        // consistent with "cache once" even if a future caller pre-seeds either field.
+        proxy.Controller ??= entity.GetComponent<CharacterControllerComponent>();
+        proxy.RenderProjection ??= entity.GetComponent<RenderProjectionComponent>();
+
+        // Overrides the converter-exported Gravity/MaxFallSpeed/WalkabilityMask - the only three
+        // CharacterControllerSettings the converter cannot bake in (E4.a leaves them 0, see that
+        // tranche's own "Contrôleurs PNJ" note), since they depend on THIS map's own properties and THIS
+        // entity's own Flags, not on the prefab alone - same reasoning as AdoptPlayerPawn's own override
+        // block (E3.d), reusing its exact formula via ResolveMapGravitySettings rather than duplicating
+        // it. Deliberately AFTER the Flags assignment above: both WalkabilityMaskFor(proxy.Flags) and
+        // ApplyGravitySettingsToController's own Gravity-bit gate need the real header flags. A no-op
+        // without a controller (11 sprite-only prefabs, E4.a) or without this world's tilemap
+        // (tileMapData null - a caller that never resolved one, e.g. an older test fixture).
+        if (proxy.Controller != null && tileMapData != null)
+        {
+            (proxy.MapGravity, proxy.MapMaxFallSpeed) = ResolveMapGravitySettings(tileMapData);
+            proxy.ApplyGravitySettingsToController();
+            proxy.Controller.Settings.WalkabilityMask = AlundraCellsCollisionField.WalkabilityMaskFor(proxy.Flags);
+        }
 
         // EntityManager.cs:95-100.
         proxy.SpriteProgramIndexes[ScriptHelper.ProgramALoad] = header.ProgramLoad;
@@ -1112,14 +1187,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // integer 128*256/65536 truncates to 0 before the final *2500 ever runs).
         if (proxy.Controller != null)
         {
-            tileMapData.CustomProperties.TryGetValue("Gravity", out var gravityRaw);
-            int.TryParse(gravityRaw, out var mapGravity);
-            tileMapData.CustomProperties.TryGetValue("ZViscosity", out var zViscosityRaw);
-            int.TryParse(zViscosityRaw, out var mapZViscosity);
+            var (mapGravity, mapMaxFallSpeed) = ResolveMapGravitySettings(tileMapData);
 
             var settings = proxy.Controller.Settings;
-            settings.Gravity = mapGravity * 256f / 65536f * 2500f;
-            settings.MaxFallSpeed = mapZViscosity * 256f / 65536f * 50f;
+            settings.Gravity = mapGravity;
+            settings.MaxFallSpeed = mapMaxFallSpeed;
             settings.WalkabilityMask = AlundraCellsCollisionField.WalkabilityMaskFor(proxy.Flags);
         }
         else if (!_loggedNoHeroController)
@@ -1849,15 +1921,19 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         {
             var entity = CreateEntityFromRecord(
                 record, guid => _world.Game.AssetContentManager.Load<Entity>(guid), SpriteRecordCatalog,
-                parentEntity: logicEntity.LogicContextEntity);
-            if (entity.GameplayProxy is AlundraEntityScriptProxy spawnedProxy)
+                parentEntity: logicEntity.LogicContextEntity, tileMapData: _tileMapData);
+            var spawnedProxy = entity.GameplayProxy as AlundraEntityScriptProxy;
+            if (spawnedProxy != null)
             {
                 spawnedProxy.ScriptHost = this;
             }
 
             _world.AddEntity(entity);
             _spawnedEntities.Add(entity);
-            return entity.GameplayProxy as AlundraEntityScriptProxy;
+            // E4.b: same ground-clamp + root push as the map-load spawn loop above - see that call site's
+            // own doc for why this must happen AFTER AddEntity.
+            spawnedProxy?.PushLogicalPositionToRoot();
+            return spawnedProxy;
         }
         catch (Exception ex)
         {

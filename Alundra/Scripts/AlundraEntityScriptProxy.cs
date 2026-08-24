@@ -186,6 +186,51 @@ public class AlundraEntityScriptProxy : GameplayProxy
     public CharacterControllerComponent? Controller;
 
     /// <summary>
+    /// Engine-only, not part of the original struct: this entity's own map's Gravity/ZViscosity, already
+    /// converted to the units <see cref="CharacterControllerSettings.Gravity"/>/<see cref="CharacterControllerSettings.MaxFallSpeed"/>
+    /// expect (E3.d's own formula: <c>mapGravity*256/65536*2500</c> / <c>mapZViscosity*256/65536*50</c> -
+    /// 1250/800 on map 389). Resolved ONCE at spawn (<see cref="AlundraWorldProxy.ApplySpawnInitialization"/>/
+    /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/>, both via <c>AlundraWorldProxy.ResolveMapGravitySettings</c>)
+    /// and stashed here so <see cref="ApplyGravitySettingsToController"/> - called again by the 0x16/0x17
+    /// opcode bridges every time the script toggles <see cref="Flags"/>' Gravity bit (E4.b,
+    /// docs/plan-e4-deplacement-scripte.md) - never has to re-read the map's <c>TileMapData.CustomProperties</c>
+    /// per call. Stay 0 for an entity spawned with no controller and no map data (bare-fallback spawn) -
+    /// harmless, since <see cref="ApplyGravitySettingsToController"/> is itself a no-op without a
+    /// <see cref="Controller"/>.
+    /// </summary>
+    public float MapGravity;
+
+    /// <summary>See <see cref="MapGravity"/>'s own doc - the matching <c>MaxFallSpeed</c> half.</summary>
+    public float MapMaxFallSpeed;
+
+    /// <summary>
+    /// Port of the <c>Flags &amp; EntityFlags.Gravity</c> gate <c>PhysicsEngine.cs</c>'s per-entity vertical
+    /// branch reads every tick (PhysicsEngine.cs:1458-1476, non-player half of <c>UpdateEntitiesForces</c>):
+    /// with the bit set, this entity's <see cref="Controller"/> gets this map's real
+    /// <see cref="MapGravity"/>/<see cref="MapMaxFallSpeed"/> (same formula/values E3.d's
+    /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> already applies to the hero); with it clear, both go
+    /// to 0 - the original's own "entity keeps whatever <c>ForceZ</c> it already has, unaffected by
+    /// gravity" (the vertical-impulse opcode 0x1B, <see cref="AlundraEventProgramRunner"/>'s own bridge,
+    /// is exactly how that ForceZ gets set while gravity is off - E4.b, docs/plan-e4-deplacement-scripte.md).
+    /// Called once at spawn (<see cref="AlundraWorldProxy.ApplySpawnInitialization"/>, AFTER
+    /// <see cref="Flags"/> is assigned) and again by the 0x16/0x17 opcode handlers every time they flip the
+    /// Gravity bit. A no-op without a <see cref="Controller"/> (bare-fallback spawn, or a prefab that
+    /// predates E4.a's converter change) - <see cref="MapGravity"/>/<see cref="MapMaxFallSpeed"/> simply
+    /// stay unused in that case, same shape as every other controller-gated site on this class.
+    /// </summary>
+    internal void ApplyGravitySettingsToController()
+    {
+        if (Controller == null)
+        {
+            return;
+        }
+
+        var hasGravity = (Flags & EntityFlags.Gravity) != 0;
+        Controller.Settings.Gravity = hasGravity ? MapGravity : 0f;
+        Controller.Settings.MaxFallSpeed = hasGravity ? MapMaxFallSpeed : 0f;
+    }
+
+    /// <summary>
     /// Engine-only, not part of the original struct (same as <see cref="LogicContextEntity"/>):
     /// this entity's IDSV table, resolved once at spawn from its <c>SpriteRecordCatalog</c> entry
     /// (see <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>) and keyed by
@@ -327,6 +372,33 @@ public class AlundraEntityScriptProxy : GameplayProxy
         {
             PickEventTrigger();
             RunPickedEvent(ScriptHost.Runner);
+
+            // E4.b (docs/plan-e4-deplacement-scripte.md): scripted mover for every controller-driven NPC -
+            // port of PhysicsEngine.UpdateEntityPhysics (:1579-1598) restricted to the flat-ground half
+            // already ported for the hero (AlundraPlayerManager/AlundraScriptedMotion's own class docs).
+            // Placed AFTER this frame's own pick/run above so a Load/Tick program that just set
+            // TargetDirection/TargetAnimationId this same frame (0x09/0x1A, or 0x5B/0x5A once E4.c lands)
+            // is already visible to this tick, matching the original's own MovePlayer-then-physics order.
+            //
+            // Pre-read finding (E4.b item 1a, docs/plan-e4-deplacement-scripte.md): the original's
+            // UpdateEntityPhysics reads entity.AnimationSet, not TargetAnimationId directly - that field is
+            // only reassigned by EntityManager.UpdateAnimation (EntityManager.cs:203-248) at the exact
+            // moment the animation actually SWITCHES (CurrentAnimationId != TargetAnimationId), i.e. it
+            // tracks the CURRENTLY PLAYING animation, not the just-written target. This proxy's own
+            // equivalent of that reassignment site is AlundraWorldProxy.SyncAnimation - it likewise only
+            // updates CurrentAnimationId when TryResolveAnimationTarget reports a change - so
+            // AlundraScriptedMotion.TickScriptedNpc below is keyed off CurrentAnimationId, not
+            // TargetAnimationId (unlike the hero's own AlundraPlayerManager.Tick, out of E4.b's scope to
+            // change). Documented accepted deviation: SyncAnimation runs at the END of this same Update
+            // call (below), so this tick sees CurrentAnimationId as of the END of the PREVIOUS frame - one
+            // frame of latency behind a same-frame TargetAnimationId write, exactly the same shape as this
+            // class' own documented one-frame World/entity latency (see this method's own doc, "Accepted
+            // deviation" paragraph) - "à défaut d'équivalent exact, utiliser l'anim courante synchronisée et
+            // documenter l'écart" per the plan.
+            if (Controller != null)
+            {
+                AlundraScriptedMotion.TickScriptedNpc(this, elapsedTime);
+            }
         }
         else
         {
@@ -749,6 +821,8 @@ public class AlundraEntityScriptProxy : GameplayProxy
             LogicContextEntity = LogicContextEntity,
             RenderProjection = RenderProjection,
             Controller = Controller,
+            MapGravity = MapGravity,
+            MapMaxFallSpeed = MapMaxFallSpeed,
             IdsvByAnimDirection = IdsvByAnimDirection,
             AnimationEndByAnimDirection = AnimationEndByAnimDirection,
             AnimSetsByAnim = AnimSetsByAnim,

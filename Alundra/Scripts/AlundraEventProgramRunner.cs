@@ -439,13 +439,31 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 entity.TargetDirection = (uint)(v[1] & 0x1f);
                 return 2;
 
+            case 0x16: // High gravity - Script_22_016
+                entity.Flags |= EntityFlags.Gravity;
+                entity.ApplyGravitySettingsToController();
+                return 1;
+
             case 0x17: // Low gravity - Script_23_017
                 entity.Flags &= ~EntityFlags.Gravity;
+                entity.ApplyGravitySettingsToController();
                 return 1;
 
             case 0x1A: // Set anim - Script_26_01A
                 entity.TargetAnimationId = (uint)v[1];
                 return 2;
+
+            case 0x1B: // Fly - Script_27_01B (EntityEventHandlers.cs:743-747): ForceZ = (((v2<<8)|v1) *
+                       // 0x10000) >> 8, a signed 16.16 vertical impulse. E4.b (docs/plan-e4-deplacement-
+                       // scripte.md): stores it on the proxy AND, when this entity has a controller, pushes
+                       // it onto CharacterControllerComponent.SetVerticalVelocity (E4.0) - the controller's
+                       // own vertical axis is in px/s, ForceZ is 16.16 px/tick at the original's 50 Hz
+                       // tick rate, hence the *50f/65536f conversion. Without a controller (bare-fallback
+                       // spawn, or the intro trace harness - E4.e still owns that simulated kinematics),
+                       // ForceZ alone is kept, same as before this opcode was ported.
+                entity.ForceZ = SignExtend16(((v[2] << 8) | v[1])) * 0x10000 >> 8;
+                entity.Controller?.SetVerticalVelocity(entity.ForceZ * 50f / 65536f);
+                return 3;
 
             case 0x30: // If flag on - Script_48_030
                 return FlagBranch(v, wantSet: true);
@@ -499,6 +517,13 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             case 0xBD: // Play sound 2 - Script_189_0BD (sound system not wired to the interpreter)
                 LogDegradedOpcodeOnce(0xBD, "PlaySound2", "sound system");
                 return 3;
+
+            case 0x70: // Is above ground - Script_112_070 (EntityEventHandlers.cs:2161-2165): Result =
+                       // logicEntity.IsOnGround, pulled from the controller every frame by
+                       // AlundraEntityScriptProxy.Update's own root pull (E3.d) - 0 (falls) for an entity
+                       // with no controller yet, same default the field already carries.
+                state.Result = entity.IsOnGround;
+                return 1;
 
             default:
                 return UnknownOpcode(command, state);

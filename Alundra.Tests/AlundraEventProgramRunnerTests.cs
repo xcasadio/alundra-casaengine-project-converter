@@ -820,4 +820,139 @@ public class AlundraEventProgramRunnerTests
 
         runner.RunScript(entity, ScriptHelper.ProgramFInteract); // must not throw
     }
+
+    // ---------------------------------------------------------------------------------------------
+    // E4.b: 0x16/0x17 (gravity flag + controller bridge), 0x1B (Fly - vertical impulse), 0x70 (IsOnGround).
+    // ---------------------------------------------------------------------------------------------
+
+    [Fact]
+    public void HighGravity_0x16_SetsFlagAndAppliesMapGravityToController()
+    {
+        // @0: 0x16 High gravity; @1: End.
+        var document = NewDocument(0x16, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.Controller = new CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent();
+        entity.MapGravity = 1250f;
+        entity.MapMaxFallSpeed = 800f;
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(EntityFlags.Gravity, entity.Flags & EntityFlags.Gravity);
+        Assert.Equal(1250f, entity.Controller.Settings.Gravity);
+        Assert.Equal(800f, entity.Controller.Settings.MaxFallSpeed);
+    }
+
+    [Fact]
+    public void LowGravity_0x17_ClearsFlagAndZeroesControllerGravity()
+    {
+        // @0: 0x17 Low gravity; @1: End.
+        var document = NewDocument(0x17, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.Flags = EntityFlags.Gravity;
+        entity.Controller = new CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent();
+        entity.MapGravity = 1250f;
+        entity.MapMaxFallSpeed = 800f;
+        entity.Controller.Settings.Gravity = 1250f;
+        entity.Controller.Settings.MaxFallSpeed = 800f;
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0u, entity.Flags & EntityFlags.Gravity);
+        Assert.Equal(0f, entity.Controller.Settings.Gravity);
+        Assert.Equal(0f, entity.Controller.Settings.MaxFallSpeed);
+    }
+
+    [Fact]
+    public void LowGravity_0x17_NoController_DoesNotThrow()
+    {
+        var document = NewDocument(0x17, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.Flags = EntityFlags.Gravity;
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state); // must not throw
+
+        Assert.Equal(0u, entity.Flags & EntityFlags.Gravity);
+    }
+
+    [Fact]
+    public void Fly_0x1B_BlockEighteenRealImpulse_SetsForceZAndControllerVerticalVelocity()
+    {
+        // Real block-18 (masked index 18, entity record 18/bank 25 "Bloc transparent (1x1x2)") program 146
+        // impulse - docs/intro-programs-389.txt offset 1620: "0x1B Fly params=[0,255]".
+        // ForceZ = SignExtend16((255<<8)|0) * 0x10000 >> 8 = SignExtend16(0xFF00) * 0x10000 >> 8
+        //        = -256 * 0x10000 >> 8 = -65536 (16.16 -> -1.0 px/tick, i.e. -50 px/s at the 50 Hz tick rate).
+        var document = NewDocument(0x1B, 0, 255, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.Controller = new CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent();
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(-65536, entity.ForceZ);
+        Assert.Equal(-50f, entity.Controller.Velocity.Y); // Y-up default axis (no World -> ResolveUp falls back to Vector3.Up).
+    }
+
+    [Fact]
+    public void Fly_0x1B_NoController_OnlyStoresForceZ()
+    {
+        var document = NewDocument(0x1B, 0, 255, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state); // must not throw without a controller
+
+        Assert.Equal(-65536, entity.ForceZ);
+        Assert.Null(entity.Controller);
+    }
+
+    [Fact]
+    public void Fly_0x1B_PositiveImpulse_SignExtendsCorrectly()
+    {
+        // v1=0,v2=1 -> (1<<8|0)=0x100 -> SignExtend16(0x100)=256 (positive, MSB clear) -> *0x10000>>8 = 65536.
+        var document = NewDocument(0x1B, 0, 1, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(65536, entity.ForceZ);
+    }
+
+    [Fact]
+    public void IsAboveGround_0x70_ReadsProxyIsOnGround()
+    {
+        // @0: 0x70 Is above ground; @1: End.
+        var document = NewDocument(0x70, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.IsOnGround = 1;
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+    }
+
+    [Fact]
+    public void IsAboveGround_0x70_FallingEntity_ResultZero()
+    {
+        var document = NewDocument(0x70, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.IsOnGround = 0;
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.Result);
+    }
 }

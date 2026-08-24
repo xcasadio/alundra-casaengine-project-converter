@@ -80,22 +80,6 @@ public static class AlundraPlayerManager
     /// (<see cref="AlundraGameState.ResetAnimationId"/>).</summary>
     private const uint LoadingMapAnimationId = 0x36;
 
-    // EntityRecordMapper's own tile constants (StaticVariables.MapTileWidth/Height), duplicated here for
-    // the same reason AlundraWorldProxy duplicates them on its own copy (see that class' own doc): only
-    // this file's TileX/TileY re-derivation after a kinematic tick needs them.
-    private const int TileWidth = 24;
-    private const int TileHeight = 16;
-
-    /// <summary>Original engine tick rate the PSX build ran physics at (50 Hz) - see <see cref="Tick"/>'s
-    /// own doc for the fixed-step accumulation this drives.</summary>
-    private const float FixedTickSeconds = 1f / 50f;
-
-    /// <summary>Caps the catch-up run inside <see cref="Tick"/> to at most this many 50 Hz steps per
-    /// engine frame, so a long stall (debugger pause, GC hitch) cannot spiral into an unbounded loop of
-    /// kinematic ticks - documented fixed-step deviation, <c>docs/plan-conversion-totale.md</c> §4 E2. Any
-    /// accumulated remainder beyond that is dropped, not carried into the next frame.</summary>
-    private const int MaxTicksPerFrame = 4;
-
     /// <summary>
     /// Port of the documented subset of <c>PlayerManager.MovePlayer</c> - see this class' own doc for the
     /// exact ported/not-ported line ranges. Only sets <see cref="AlundraEntityScriptProxy.TargetDirection"/>/
@@ -179,130 +163,11 @@ public static class AlundraPlayerManager
     /// <c>PhysicsEngine.UpdateEntityPhysics</c> (PhysicsEngine.cs:1579-1597), the <c>IncrementForce</c>
     /// calls (PhysicsEngine.cs:1445-1446/1490-1491), and the flat-ground half of <c>ApplyEntityForces</c>
     /// (PhysicsEngine.cs:1514-1547) plus the position update (PhysicsEngine.cs:421-422) - restricted to
-    /// exactly what a collision-free, gravity-free player needs (see this class' own doc, D4/E2). Accumulates
-    /// <paramref name="elapsedTime"/> on <see cref="AlundraEntityScriptProxy.PhysicsTickAccumulator"/> and
-    /// runs as many whole 50 Hz steps as have elapsed, capped at <see cref="MaxTicksPerFrame"/> per engine
-    /// frame (documented fixed-step deviation - the original always ran exactly one physics tick per game
-    /// frame, itself locked to ~50/60 Hz by the PSX's own vsync; this engine's frame rate is not fixed, so a
-    /// slow frame must still advance the player by the same number of 50 Hz ticks a real frame budget would
-    /// have covered, not by a single oversized step).
+    /// exactly what a collision-free, gravity-free player needs (see this class' own doc, D4/E2).
+    /// Delegates to <see cref="AlundraScriptedMotion.TickPlayer"/> (E4.b extraction,
+    /// docs/plan-e4-deplacement-scripte.md - see that class' own doc): bit-for-bit the same accumulator/
+    /// tick body this method used to run inline, now shared with the E4.b scripted-NPC mover.
     /// </summary>
     public static void Tick(AlundraEntityScriptProxy player, float elapsedTime)
-    {
-        player.PhysicsTickAccumulator += elapsedTime;
-
-        var ticks = 0;
-        while (player.PhysicsTickAccumulator >= FixedTickSeconds && ticks < MaxTicksPerFrame)
-        {
-            player.PhysicsTickAccumulator -= FixedTickSeconds;
-            RunOneTick(player);
-            ticks++;
-        }
-
-        if (ticks >= MaxTicksPerFrame)
-        {
-            // Catch-up cap reached (see MaxTicksPerFrame's own doc) - drop the remainder rather than let
-            // it carry over and force an even longer catch-up run next frame.
-            player.PhysicsTickAccumulator = 0f;
-        }
-    }
-
-    /// <summary>One 50 Hz kinematic step - see <see cref="Tick"/>'s own doc for the ported line ranges.</summary>
-    private static void RunOneTick(AlundraEntityScriptProxy player)
-    {
-        AnimSetEntry animSet = default;
-        var hasAnimSet = player.AnimSetsByAnim != null
-            && player.AnimSetsByAnim.TryGetValue((int)player.TargetAnimationId, out animSet);
-        var speed = hasAnimSet ? animSet.Speed : 0;
-        var acceleration = (hasAnimSet ? animSet.Acceleration : 0) & 0xf;
-
-        // PhysicsEngine.UpdateEntityPhysics (PhysicsEngine.cs:1579-1597): only recompute the target
-        // force/step when speed, direction or acceleration actually changed since the last tick - exactly
-        // the original's own early-out.
-        if (player.Speed != speed || player.TargetDirection != player.CurrentDirection || player.Acceleration != acceleration)
-        {
-            player.CurrentDirection = player.TargetDirection;
-            player.Speed = speed;
-            player.Acceleration = acceleration;
-
-            var dirIndex = (int)player.TargetDirection;
-            var offsetX = dirIndex >= 0 && dirIndex < AnimationTables.OffsetXList.Length ? AnimationTables.OffsetXList[dirIndex] : (short)0;
-            var offsetY = dirIndex >= 0 && dirIndex < AnimationTables.OffsetYList.Length ? AnimationTables.OffsetYList[dirIndex] : (short)0;
-
-            player.TargetForceX = offsetX * speed;
-            player.TargetForceY = offsetY * speed;
-            player.ForceStepX = Math.Abs(player.TargetForceX - player.ForceX) >> player.Acceleration;
-            player.ForceStepY = Math.Abs(player.TargetForceY - player.ForceY) >> player.Acceleration;
-        }
-
-        // PhysicsEngine.cs:1445-1446/1490-1491.
-        player.ForceX = IncrementForce(player.ForceX, player.TargetForceX, player.ForceStepX);
-        player.ForceY = IncrementForce(player.ForceY, player.TargetForceY, player.ForceStepY);
-
-        // PhysicsEngine.ApplyEntityForces (PhysicsEngine.cs:1514-1547), flat-ground-only: TileAttributes
-        // stays 0 in V1 (no collision), so XForceTable[0]/YForceTable[0] (both 0, ScriptHelper.cs:183-194)
-        // contribute nothing; PreviousAdjustedForceX/Y stay 0 (nothing ported ever sets them - the
-        // original only feeds them from a riding-platform entity, PhysicsEngine.cs:61, not ported); the
-        // NegModX/NegModY/ScreenClipX/ScreenClipY clamp is NOT ported (no collision/screen-clip system).
-        player.AdjustedForceX = player.ForceX;
-        player.AdjustedForceY = player.ForceY;
-        player.FinalForceX = player.AdjustedForceX;
-        player.FinalForceY = player.AdjustedForceY;
-        player.FinalForceZ = player.ForceZ;
-
-        // PhysicsEngine.cs:421-422 (position update) - the surrounding collision-retry loop
-        // (PhysicsEngine.cs:390-800ish) is NOT ported. E3.d (docs/plan-e3-collisions.md, "DLL -
-        // propriete de la racine par frame" item 2): for the CharacterControllerComponent-driven hero,
-        // FinalForceX/Y is routed through the mover's own Move instead of committed directly - the
-        // mover resolves walls/walkability/step-height per axis (CasaEngine's CharacterControllerComponent
-        // C5) where the original's now-NOT-ported retry loop used to; see
-        // AlundraEntityScriptProxy.MoveControllerAndPullPosition's own doc for the exact conversion and
-        // the accepted no-ForceAdjusted-feedback deviation. Every other entity (no controller yet, E4)
-        // keeps E2's original collision-free integration, unchanged.
-        if (player.Controller != null)
-        {
-            player.MoveControllerAndPullPosition(player.FinalForceX / 65536f, player.FinalForceY / 65536f);
-        }
-        else
-        {
-            player.PosX += player.FinalForceX;
-            player.PosY += player.FinalForceY;
-        }
-
-        // PhysicsEngine.cs:1698-1700 (same formula EntityRecordMapper/AlundraWorldProxy already use to
-        // seed TileX/TileY from PosX/PosY elsewhere) - kept in sync every tick so the record spawn-zone
-        // gate (AlundraWorldProxy.ShouldSpawnRecord) and any future opcode reading TileX/TileY see the
-        // player's current tile, not a stale spawn-time one.
-        player.TileX = (player.PosX >> 16) / TileWidth;
-        player.TileY = (player.PosY >> 16) / TileHeight;
-    }
-
-    /// <summary>Bit-for-bit port of <c>PhysicsEngine.IncrementForce</c> (PhysicsEngine.cs:1551-1576,
-    /// address 0x800367e4).</summary>
-    internal static int IncrementForce(int force, int targetForce, int step)
-    {
-        if (targetForce != force)
-        {
-            if (force < targetForce)
-            {
-                force += step;
-
-                if (targetForce < force)
-                {
-                    return targetForce;
-                }
-            }
-            else
-            {
-                force -= step;
-
-                if (force < targetForce)
-                {
-                    return targetForce;
-                }
-            }
-        }
-
-        return force;
-    }
+        => AlundraScriptedMotion.TickPlayer(player, elapsedTime);
 }
