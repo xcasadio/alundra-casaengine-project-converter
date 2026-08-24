@@ -477,39 +477,60 @@ DLL / convertisseur / harnais (ce repo) :
   repositionnement post-intro) : les entités restent aux positions de **record** — marin 11 :
   `(468, 584, 400)` (PosZ = `Height << 19` = Height × 8 px, `GameEngine.cs:751`), Tile (19,36),
   **perché à 400 px** au-dessus d'un sol de cellule à 176 px (h11).
-- **Le perchoir est une plateforme-entité** : le bloc transparent record 5 (468, 600, Z 368) +
-  boîte de 32 → sommet exactement 400. Détection originale (`PhysicsEngine.cs:180-230`) : pour une
-  entité `Collidable && !NoEntityCollision && PlatformEntity == null` (`:189`), un candidat des
-  `g_collideableEntities` devient sa plateforme si son sommet (`ModdedPosZ + Depth`) est sous ses
-  pieds ET que le pas du tick (`ModdedPosZ + FinalForceZ`, clampé `TerrainHeight + 1`) traverse ou
-  atteint ce sommet, avec recouvrement XY des boîtes. **Gel** (`:1456`, `:1501-1504`) :
-  `PlatformEntity != null` → `ForceX/Y/Z = 0` chaque frame — pas de gravité, entité figée.
-- **Le script du marin 11 devient alors cohérent** : perché (400) → regards → `0x17` (gravité off) →
-  marche 0x1F **hors de l'empreinte** de la plateforme (libération) → flottement à Z constant →
-  `0x1B` (−1 px/tick, ~190-200 frames — la lente descente filmée de l'intro) → fenêtre `TileZ 12`
-  (192-207 px) → `0x07` passe → `0x16` → atterrissage sur les caisses. Idem pour la structure des
+- **Le perchoir est un clamp Z par frame, sans latch** (lecture corrigée après plan-verifier) :
+  `ComputeZPosition` consomme `CheckEntityCollisionDown` (`PhysicsEngine.cs:171-230` détection,
+  `:123-139` consommation) — pour une entité `Collidable && !NoEntityCollision &&
+  PlatformEntity == null` (`:189`), si le pas vertical du tick traverse ou atteint le sommet d'une
+  entité collidable sous ses pieds (sommet = `ModdedPosZ + Depth` avec recouvrement XY, comparateur
+  **strict** `sommet < ModdedPosZ` `:205`), alors : `CollidedWithEntityZ = 1`,
+  `PosZ = platformHeight − ModZ`, et `ForceZ = 0` **seulement si `Flags & Gravity`** (`:129-134` —
+  gravité off : `ForceZ` conservé). **X/Y restent libres** (aucun gel horizontal), et la détection
+  est réévaluée CHAQUE frame (pas d'état à libérer). Le bloc record 5 (468, 600, Z 368 px) porte le
+  marin parce que `Depth = (SizeZ << 16) − 1` (`EntityManager.cs:192-199`) place son sommet à
+  **400 px − 1/65536, strictement sous les pieds à 400** — c'est ce bord qui satisfait le `<`
+  strict ; le port doit CONSERVER le comparateur strict (un « fix » en `<=` serait une infidélité).
+- **`PlatformEntity` n'est PAS ce mécanisme** : c'est la relation « porté » (pickup/throw — sites
+  d'assignation dans `PlayerManager.cs:1117/:2027/:2224`, `FunctionTypeC.cs`), hors périmètre. La
+  relation générique « debout sur » est **`RidingEntity`** (`CheckRidingEntities`,
+  `PhysicsEngine.cs:1288-1358`), consommée par les recherches 5/6.
+- **Le script du marin 11 devient alors cohérent** : soutenu à ~400 (clamp par frame contre la
+  gravité ON) → regards → `0x17` (gravité off) → marche 0x1F hors de l'empreinte (X/Y libres — le
+  clamp cesse simplement de trouver un support, et `ForceZ` = 0 conservé) → flottement à Z
+  constant → `0x1B` (−1 px/tick, ~190-200 frames — la lente descente filmée de l'intro) → fenêtre
+  `TileZ 12` (192-207 px) → `0x07` passe → `0x16` → atterrissage sur les caisses. Idem pour les
   autres perchés (mouettes/blocs) et la chute réelle du bloc 18 (spawn `Height 20` → 160 px, `0x70`).
 - `IsZForceApplied` = `(short)((Flags << 8) | Unknown)` de l'AnimSet, recopié à chaque update
   d'anim (`EntityManager.cs:209, :233`) — 0 partout sur les banques de l'intro (vérifié source +
-  export) : pas en cause. `g_activeEntities` = statut seul (`EntityManager.cs:988-991`), pas de
-  critère caméra : pas en cause non plus.
+  export) : pas en cause. `g_activeEntities` = `Status.IsActive() && BlockedByEntity == null`
+  (`EntityManager.cs:988-991`), pas de critère caméra : pas en cause non plus.
 
 #### Scope
 
 - **DLL — dimensions logiques** : port de `SetEntityDimensions` (`EntityManager.cs:160-199`) —
   `Mod*`/`Width`/`Height`/`Depth` (16.16, bord `−1/65536`) posés sur le proxy depuis le header de
   banque, à `ApplySpawnInitialization` ET `AdoptPlayerPawn`.
-- **DLL — liste des collidables** : port des critères originaux (site de construction de
-  `g_collideableEntities` à relever — vraisemblablement `UpdateEntityLists`) sur les proxies,
-  reconstruite par frame sans allocation (buffer réutilisé).
-- **DLL — détection/libération `PlatformEntity`** : port fidèle de la fonction `:171-230` (site
-  d'appel dans la passe physique à relever) et du site de **libération** (`PlatformEntity = null` —
-  à relever dans la décompilation ; arrêt si introuvable) ; `RidingEntity` porté aussi si la même
-  passe le pose (sites à relever), sinon documenté.
-- **DLL — gel/restauration** : tant que `PlatformEntity != null` : pas de tick mover (skip
-  TargetForce/IncrementForce/Move), et si contrôleur : `Settings.Gravity = 0` +
-  `SetVerticalVelocity(0)` à l'engel ; à la libération : `ApplyGravitySettingsToController()`
-  (état selon `Flags & Gravity`). Fidélité : les forces gelées à 0 chaque frame comme `:1501-1504`.
+- **DLL — liste des collidables** : port des critères originaux (`EntityManager.cs:994` —
+  `Collidable && !NoEntityCollision && PlatformEntity == null` ; `PlatformEntity` restant toujours
+  null dans notre périmètre, documenter) sur les proxies, reconstruite par frame sans allocation
+  (buffer réutilisé).
+- **DLL — clamp de support vertical** : port fidèle de `CheckEntityCollisionDown` (`:171-230`,
+  comparateur strict conservé) et de sa consommation (`:123-139`) : évalué à CHAQUE tick vertical,
+  sans latch ni « libération » ; quand un support est trouvé : `PosZ = sommet − ModZ`,
+  `CollidedWithEntityZ = 1`, `ForceZ = 0` si `Flags & Gravity` (conservé sinon).
+- **DLL — `RidingEntity`** : port de `CheckRidingEntities` (`PhysicsEngine.cs:1288-1358`) — la
+  relation « debout sur » qui alimente les recherches 5/6.
+- **DLL — mapping contrôleur et ORDRE (anti-creux de première frame)** : le mover horizontal
+  continue NORMALEMENT pendant le support (Move à chaque sous-pas — X/Y libres) ; la verticale :
+  tant que le tick trouve un support, `Settings.Gravity = 0` + `SetVerticalVelocity(0)` + Z logique
+  épinglé (poussé par le chemin de pose existant) ; dès qu'un tick ne trouve plus de support,
+  `ApplyGravitySettingsToController()` restaure l'état selon `Flags & Gravity`. **Ordre imposé** :
+  `CharacterMotionSystem.UpdateControllers` tourne en tête de frame, AVANT le tick DLL — pour
+  qu'aucune gravité moteur ne déplace un perché avant sa première évaluation :
+  `ApplySpawnInitialization` exécute UNE évaluation de support immédiatement au spawn (les
+  plateformes — records 0-5 — sont spawnées avant leurs passagers dans l'ordre des records ;
+  le spawn dynamique est couvert par la même évaluation au spawn) et pose `Settings.Gravity = 0`
+  si soutenu ; ensuite la ré-évaluation par tick DLL entretient l'état. **Arrêt** si l'ordre de
+  spawn des records ne garantit pas plateformes-avant-passagers sur la 389.
 - **DLL — différé E1-N1 résorbé** : `EntitySearchService` fonctions 5-11 excluent le joueur
   (`GameEngine.cs:1942, :2010-2091`, boucles depuis le slot 1) — pertinent maintenant que
   `PlatformEntity`/`RidingEntity` se peuplent.
@@ -521,20 +542,25 @@ DLL / convertisseur / harnais (ce repo) :
 
 #### Acceptation
 
-- Tests chiffrés (patron mover/harnais, données réelles 389) : (a) marin 11 perché stable
-  (`PlatformEntity != null`, Z = 400 constant ≥ 60 frames, gravité ON gelée) ; (b) marche hors de
-  l'empreinte → libération à la frame calculée, flottement Z constant (0x17) ; (c) descente 0x1B →
-  fenêtre `TileZ 12` atteinte à la frame calculée à la main ; (d) gel = position strictement
-  constante (pas de tick mover) ; (e) fonctions 5-11 excluent le joueur (tests unitaires) ;
-  (f) toute l'acceptation E4.e (ordre des jalons conservé, frames justifiées par dérivation,
-  ±1 frame expliqué, trace byte-stable, plafond 3600 non atteint).
+- Tests chiffrés (patron mover/harnais, données réelles 389) : (a) marin 11 soutenu stable —
+  Z ≈ 400 (précision du clamp) **dès la frame 0 incluse** (pas de creux de première frame — échoue
+  si l'ordre spawn/contrôleur est mauvais), ≥ 60 frames, avec `Flags & Gravity` posé ; test
+  unitaire du comparateur STRICT : un candidat dont le sommet est EXACTEMENT au niveau des pieds ne
+  porte pas (le bord `Depth − 1/65536` des vraies boîtes est ce qui porte) ; (b) marche 0x1F
+  pendant le support : X avance normalement (X/Y libres), Z épinglé ; hors de l'empreinte (frame
+  calculée depuis la boîte du bloc) : plus de support, gravité off scriptée (0x17) → flottement Z
+  constant ; (c) descente 0x1B → fenêtre `TileZ 12` atteinte à la frame calculée à la main ;
+  (d) pendant le support : Z constant, X/Y libres (jamais « position figée ») ; (e) recherches 5/6
+  sur `RidingEntity` réel + fonctions 5-11 excluent le joueur (tests unitaires) ; (f) toute
+  l'acceptation E4.e (ordre des jalons conservé, frames justifiées par dérivation, ±1 frame
+  expliqué, trace byte-stable, plafond 3600 non atteint).
 - Suites : build 0 erreur ; DLL 415 + nouveaux verts ; convertisseur 137 ; export non touché.
 - **Rollback** : revert du commit unique — E4.f et la clôture E4.e sont fusionnées en UN commit
   (écart documenté au patron « une tranche = un commit » : le working tree porte déjà E4.e partiel
   non commité et les deux unités sont fonctionnellement interdépendantes ; un découpage par hunks
   serait plus risqué que la fusion). **Budget** : un commit, ≤ 1,5 journée. **Arrêts** : ordre des
-  jalons différent (STOP, analyse) ; une entité de l'intro encore bloquée malgré les plateformes
-  (STOP, nouveau diagnostic) ; site de libération introuvable dans la décompilation (STOP).
+  jalons différent (STOP, analyse) ; une entité de l'intro encore bloquée malgré le support
+  (STOP, nouveau diagnostic) ; ordre de spawn plateformes/passagers non garanti (STOP).
 
 ## 4. Ordre et dépendances
 
