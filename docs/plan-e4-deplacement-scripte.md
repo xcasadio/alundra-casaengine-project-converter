@@ -11,6 +11,7 @@ plan-verifier avant toute tranche moteur, verifier frais après chaque tranche.
 | E4-1 | **Harnais : cinématique simulée fidèle.** Le harnais d'intro intègre par entité la cinématique de l'original (TargetForce = offset[dir] × Speed, IncrementForce, gravité, sol via le champ `AlundraCellsCollisionField` réel, sans murs). La trace gagne des durées réelles calculables → **nouvel oracle chiffré** ; `docs/intro-trace-389.txt` et la chronologie §0 d'intro-roadmap sont régénérés (la frame finale ne sera plus 926). 0x07/0x70 retirés des prédicats optimistes. |
 | E4-2 | **Navigation = chemin seul.** La grille `NavigationGrid2D` (couche `navigation.*` émise par le convertisseur, D5) fournit le CHEMIN via `TryFindPath` ; la marche reste l'intégration 16.16 fidèle (vitesse `AnimSets`) poussée au mover par `Move` — conforme E3-4. Ligne dégagée → marche droite identique à l'original ; obstacle → suivi de waypoints (écart D5 assumé). Le `CharacterControllerNavigationDriverComponent` n'est **pas** utilisé en E4 ; son incompatibilité `TopDownElevation` (intent `(X, −Z)` codé en dur, vitesse des réglages moteur) est consignée comme différé pour E14. |
 | E4-3 | **Flag de debug ignorant le verrou 0x10** : réglage DLL jamais actif par défaut, neutralisant `InputBlockedMask` dans `MovePlayer`, livré dans E4 (permet de valider marche/collisions au pad à tout moment de l'intro). |
+| E4-4 | **(2026-08-24, après l'arrêt d'E4.e)** : les plateformes-entités entrent dans E4 — nouvelle tranche **E4.f** (port fidèle de `PlatformEntity` : détection, gel des forces, libération) fusionnée avec la clôture d'E4.e. L'intro perche marins/mouettes sur les « Blocs transparents » ; sans ce système, harnais ET runtime se bloquent au marin 11. Plateformes mobiles et le reste de l'entité-entité restent différés (E14). |
 
 ## 1. Faits qui bornent le plan
 
@@ -468,6 +469,73 @@ DLL / convertisseur / harnais (ce repo) :
   différent (analyse, puis question à l'utilisateur si l'écart n'est pas une durée réelle
   explicable) ; une marche qui ne finit jamais (bug de seuil/vitesse — analyser, ne pas masquer).
 
+### E4.f — Plateformes-entités fidèles + clôture d'E4.e ⏳ (DLL + harnais, décision E4-4)
+
+#### Pourquoi — diagnostic de l'arrêt d'E4.e (2026-08-24, faits)
+
+- **Sous New Game, les `0x64` des Loads sont sautés** (`0x31` « if flag 860 off → goto » saute le
+  repositionnement post-intro) : les entités restent aux positions de **record** — marin 11 :
+  `(468, 584, 400)` (PosZ = `Height << 19` = Height × 8 px, `GameEngine.cs:751`), Tile (19,36),
+  **perché à 400 px** au-dessus d'un sol de cellule à 176 px (h11).
+- **Le perchoir est une plateforme-entité** : le bloc transparent record 5 (468, 600, Z 368) +
+  boîte de 32 → sommet exactement 400. Détection originale (`PhysicsEngine.cs:180-230`) : pour une
+  entité `Collidable && !NoEntityCollision && PlatformEntity == null` (`:189`), un candidat des
+  `g_collideableEntities` devient sa plateforme si son sommet (`ModdedPosZ + Depth`) est sous ses
+  pieds ET que le pas du tick (`ModdedPosZ + FinalForceZ`, clampé `TerrainHeight + 1`) traverse ou
+  atteint ce sommet, avec recouvrement XY des boîtes. **Gel** (`:1456`, `:1501-1504`) :
+  `PlatformEntity != null` → `ForceX/Y/Z = 0` chaque frame — pas de gravité, entité figée.
+- **Le script du marin 11 devient alors cohérent** : perché (400) → regards → `0x17` (gravité off) →
+  marche 0x1F **hors de l'empreinte** de la plateforme (libération) → flottement à Z constant →
+  `0x1B` (−1 px/tick, ~190-200 frames — la lente descente filmée de l'intro) → fenêtre `TileZ 12`
+  (192-207 px) → `0x07` passe → `0x16` → atterrissage sur les caisses. Idem pour la structure des
+  autres perchés (mouettes/blocs) et la chute réelle du bloc 18 (spawn `Height 20` → 160 px, `0x70`).
+- `IsZForceApplied` = `(short)((Flags << 8) | Unknown)` de l'AnimSet, recopié à chaque update
+  d'anim (`EntityManager.cs:209, :233`) — 0 partout sur les banques de l'intro (vérifié source +
+  export) : pas en cause. `g_activeEntities` = statut seul (`EntityManager.cs:988-991`), pas de
+  critère caméra : pas en cause non plus.
+
+#### Scope
+
+- **DLL — dimensions logiques** : port de `SetEntityDimensions` (`EntityManager.cs:160-199`) —
+  `Mod*`/`Width`/`Height`/`Depth` (16.16, bord `−1/65536`) posés sur le proxy depuis le header de
+  banque, à `ApplySpawnInitialization` ET `AdoptPlayerPawn`.
+- **DLL — liste des collidables** : port des critères originaux (site de construction de
+  `g_collideableEntities` à relever — vraisemblablement `UpdateEntityLists`) sur les proxies,
+  reconstruite par frame sans allocation (buffer réutilisé).
+- **DLL — détection/libération `PlatformEntity`** : port fidèle de la fonction `:171-230` (site
+  d'appel dans la passe physique à relever) et du site de **libération** (`PlatformEntity = null` —
+  à relever dans la décompilation ; arrêt si introuvable) ; `RidingEntity` porté aussi si la même
+  passe le pose (sites à relever), sinon documenté.
+- **DLL — gel/restauration** : tant que `PlatformEntity != null` : pas de tick mover (skip
+  TargetForce/IncrementForce/Move), et si contrôleur : `Settings.Gravity = 0` +
+  `SetVerticalVelocity(0)` à l'engel ; à la libération : `ApplyGravitySettingsToController()`
+  (état selon `Flags & Gravity`). Fidélité : les forces gelées à 0 chaque frame comme `:1501-1504`.
+- **DLL — différé E1-N1 résorbé** : `EntitySearchService` fonctions 5-11 excluent le joueur
+  (`GameEngine.cs:1942, :2010-2091`, boucles depuis le slot 1) — pertinent maintenant que
+  `PlatformEntity`/`RidingEntity` se peuplent.
+- **Harnais — clôture E4.e** : la même détection partagée dans la passe cinématique simulée, puis
+  tout le contenu E4.e déjà spécifié (cinématique fidèle, retraits des forçages, nouvel oracle
+  chiffré, trace régénérée, rapport complet pour la synthèse doc).
+- **Non-goals** : plateformes **mobiles** (suivi du mouvement par les passagers — celles de l'intro
+  sont statiques ; E14) ; `TouchingEntity`/`XCollisionEntity` ; collision horizontale entité-entité.
+
+#### Acceptation
+
+- Tests chiffrés (patron mover/harnais, données réelles 389) : (a) marin 11 perché stable
+  (`PlatformEntity != null`, Z = 400 constant ≥ 60 frames, gravité ON gelée) ; (b) marche hors de
+  l'empreinte → libération à la frame calculée, flottement Z constant (0x17) ; (c) descente 0x1B →
+  fenêtre `TileZ 12` atteinte à la frame calculée à la main ; (d) gel = position strictement
+  constante (pas de tick mover) ; (e) fonctions 5-11 excluent le joueur (tests unitaires) ;
+  (f) toute l'acceptation E4.e (ordre des jalons conservé, frames justifiées par dérivation,
+  ±1 frame expliqué, trace byte-stable, plafond 3600 non atteint).
+- Suites : build 0 erreur ; DLL 415 + nouveaux verts ; convertisseur 137 ; export non touché.
+- **Rollback** : revert du commit unique — E4.f et la clôture E4.e sont fusionnées en UN commit
+  (écart documenté au patron « une tranche = un commit » : le working tree porte déjà E4.e partiel
+  non commité et les deux unités sont fonctionnellement interdépendantes ; un découpage par hunks
+  serait plus risqué que la fusion). **Budget** : un commit, ≤ 1,5 journée. **Arrêts** : ordre des
+  jalons différent (STOP, analyse) ; une entité de l'intro encore bloquée malgré les plateformes
+  (STOP, nouveau diagnostic) ; site de libération introuvable dans la décompilation (STOP).
+
 ## 4. Ordre et dépendances
 
 E4.0 (moteur, plan-verifier) → E4.a (convertisseur) → E4.b → E4.c → E4.d → E4.e. E4.c ne dépend que
@@ -485,4 +553,5 @@ checkout standalone. Validation par tranche : builds/tests/export selon les règ
 | E4.b PNJ sur le mover | ✅ (verifier CONFIRMED après correctif) | 365946f + de1eceb |
 | E4.c opcodes flux/direction/contrôle + debug 0x10 | ✅ (verifier CONFIRMED) | 07be483 |
 | E4.d marche naviguée 0x1E/0x1F | ✅ (verifier CONFIRMED) | fd2a89e |
-| E4.e harnais cinématique + nouvel oracle | ⏳ | |
+| E4.e harnais cinématique + nouvel oracle | ⚠️ arrêt déclenché (marin 11 bloqué — diagnostic : plateformes-entités manquantes) ; fusionnée dans E4.f | |
+| E4.f plateformes-entités + clôture E4.e | ⏳ | |
