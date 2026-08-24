@@ -382,7 +382,7 @@ DLL / convertisseur / harnais (ce repo) :
   d'une `List<>` par dispatch de recherche — préexistant (0x62-0x65/0x8B), pas par frame de rendu,
   à pooler seulement si un profil le montre.
 
-### E4.d — DLL : marche naviguée 0x1E/0x1F ⏳ (DLL)
+### E4.d — DLL : marche naviguée 0x1E/0x1F ✅ (fd2a89e, verifier CONFIRMED)
 
 - **Grille** : au `InitializeWithWorld`, `NavigationGrid2D.TryCreateFromTileMap(tileMapData,
   tileSets, cellSize: 1f)` (tilesets résolus comme le `TileMapComponent` les charge) → grille 52×60
@@ -413,6 +413,35 @@ DLL / convertisseur / harnais (ce repo) :
   retirée en E4.e — **arrêt** si ce n'est pas isolable proprement du chemin de production.
 - **Rollback** : revert. **Budget** : un commit, ≤ 1 journée. **Arrêts** : `TryCreateFromTileMap`
   rejette la couche émise ; politique harnais temporaire non isolable.
+
+#### Réalisé — écarts (2026-08-24)
+
+- **Ports fidèles vérifiés instruction par instruction** (0x1E `:793-829`, 0x1F `:832-841`) : abs
+  AVANT le `>>16`, seuil inclusif (`threshold <= |Δ|`), `Parameters[1] = 0` par la boucle du runner
+  comme l'original ; 0x1F = cœur 0x1E + sortie `ForceAdjusted != 0`, sans détour.
+- **`ForceAdjusted`** introduit (remis à 0 en tête de passe par frame — port de
+  `UpdateEntitiesPhysics :17` — posé par `MoveControllerAndPullPosition` sur `Move` raboté,
+  epsilon 0,01 px) ; écart documenté : valeur du dernier sous-pas, pas de snapshot frame-level.
+- **Grille** : construite dans `InitializeWithWorld` (`TryCreateFromTileMap`, cellSize 1, tilesets
+  dans l'ordre de `TileSetDataAssetIds`) ; conversions px↔cellule documentées ; mode dégradé null +
+  un warning ; vérifiée sur l'export réel ((18,57) marchable).
+- **Détour D5 (0x1E seul)** : latch par occurrence (`WalkDetourAttempted`), destination = position
+  mémorisée + signe(offsets) × (seuil + 24 px de marge), suivi par `GetDirectionToTarget` par tick,
+  fin UNIQUEMENT par le test de distance original ; échec `TryFindPath` → poussée continue
+  (comportement original) ; régime permanent sans allocation. Constantes DLL (rayon d'arrivée 8 px,
+  marge 24 px) documentées — pas d'équivalent original (l'original n'a pas de navigation).
+- **Différés E4.c résorbés** : `TileZ = PosZ >> 20` rafraîchi chaque tick (héros + PNJ) ; XML doc de
+  `PlayerControlFlags` corrigée.
+- **Déviation harnais** : `HarnessForceImmediateWalkCompletion` (interne, défaut false, aucun
+  appelant production) au lieu du mécanisme TraceSink — le retour de `Dispatch` décide de la
+  suspension AVANT que le sink ne tourne (vérifié structurellement) ; retiré en E4.e.
+- **Trace** : jalons inchangés ; diff vs tranche précédente = uniquement les kinds 0x1E/0x1F.
+- **Tests** : DLL 416/416 (399 + 17) ; convertisseur 137/137. Frame de complétion du 0x1F réel du
+  marin 11 (seuil 24 px, anim 1 Speed 160/Accél 0, est) re-dérivée indépendamment par le verifier :
+  15 — identique au test.
+- **Différés (P4)** : wiring `InitializeWithWorld` de la grille vérifié par inspection (pas
+  d'exécution headless possible — validation runtime utilisateur) ; les tests real-data passent
+  silencieusement sans `alundra-project/` (patron auto-skip établi du repo).
 
 ### E4.e — Harnais : cinématique simulée fidèle + nouvel oracle ⏳ (harnais + docs)
 
@@ -455,5 +484,5 @@ checkout standalone. Validation par tranche : builds/tests/export selon les règ
 | E4.a couche navigation + contrôleurs PNJ | ✅ (verifier CONFIRMED) | 94a871e |
 | E4.b PNJ sur le mover | ✅ (verifier CONFIRMED après correctif) | 365946f + de1eceb |
 | E4.c opcodes flux/direction/contrôle + debug 0x10 | ✅ (verifier CONFIRMED) | 07be483 |
-| E4.d marche naviguée 0x1E/0x1F | ⏳ | |
+| E4.d marche naviguée 0x1E/0x1F | ✅ (verifier CONFIRMED) | fd2a89e |
 | E4.e harnais cinématique + nouvel oracle | ⏳ | |
