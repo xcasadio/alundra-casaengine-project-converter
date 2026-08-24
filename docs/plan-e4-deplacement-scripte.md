@@ -329,7 +329,7 @@ DLL / convertisseur / harnais (ce repo) :
   d'une unité 16.16 du clamp original (`PosZ = ground + 1`) n'est pas reproduit par `ClampToGround`
   (préexistant E3.d, aucun impact observé).
 
-### E4.c — DLL : opcodes de flux, direction et contrôle ⏳ (DLL)
+### E4.c — DLL : opcodes de flux, direction et contrôle ✅ (07be483, verifier CONFIRMED)
 
 - **Scope** : 0x38 (table `MapIdToInternalMapIndexTable` dans `AlundraGameState` — ajouter le champ
   s'il manque), 0x19, 0x0A, 0x49, 0x4B (patron des sauts existants 0x02/0x03/0x04), 0x27 (port de
@@ -351,6 +351,36 @@ DLL / convertisseur / harnais (ce repo) :
   harnais avant E4.e) ; trace régénérée, jalons et frame finale identiques (926) ; **arrêt** si un
   jalon bouge ; DLL verts.
 - **Rollback** : revert. **Budget** : un commit, ≤ 1 journée.
+
+#### Réalisé — écarts (2026-08-24)
+
+- **Census des directions (fait)** : les 30 occurrences 0x5B/0x5A de la 389 utilisent exclusivement
+  le mode 2 (cardinal, octets 64-67) — pas de RNG requis ; les modes 4/5 lèvent une
+  `NotSupportedException` explicite (port complet, pas de repli silencieux).
+- **Ports vérifiés bit à bit par le verifier** : `GetDirectionToTarget` (DirectionTable 256 +
+  DivTable 29, égalité programmatique avec `ScriptHelper.cs:223-274`), `g_cardinalDirectionTable`
+  {0, 0x10, 0x08, 0x18}, bornes inclusives de 0x07, sémantique de saut 0x49/0x4B équivalente au
+  retour négatif original, table 0x38 `ushort[500]` avec seed identité fidèle au chemin New Game
+  (`GameInitializer.cs:359, :490-493`). Mode 7 (warp) → −1 systématique tant que le système de warp
+  n'existe pas (E7), conforme au comportement original hors warp.
+- **Trace** : jalons inchangés (554/705/783/786/926, spawns 555/678/801) ; frames de dispatch
+  inchangées ligne à ligne (le « 374 » de l'inventaire d'intro-roadmap était une coquille
+  manuscrite — les traces avant/après disent 375 pour le 0x19 du bloc 10). Changements structurels
+  attendus et expliqués : bloc 10 réellement `Deactivated` après son 0x19 (slot E natif, plus de
+  lignes) ; marins 13/14 inversent réellement leur direction (0x0A) et bouclent (0x49) chaque
+  frame ; 0x10/0x11 écrivent `PlayerControlFlags` (`ControlLocked` 0x04 ∉ `GameplayBlockedMask`
+  0x48 → `RunMapEvents` continue, fidèle).
+- **Flag de debug E4-3** : `ALUNDRA_DEBUG_IGNORE_CONTROL_LOCK=1`, lu une fois (static readonly),
+  loggé une fois, jamais actif par défaut ; couture de test interne (`InternalsVisibleTo`) sans
+  appelant production.
+- **Tests** : DLL 399/399 (370 + 29) ; convertisseur 137/137.
+- **Différés → E4.d/E4.e** : (P3, **à corriger en E4.d**) `TileZ` n'est rafraîchi qu'au spawn alors
+  que l'original le recalcule chaque tick (`PhysicsEngine.cs:1698-1700`) — dès que 0x07 sera réel
+  avec du mouvement vertical, le test de boîte Z lirait une valeur périmée ; (P4, E4.d) XML doc
+  périmée de `AlundraGameState.PlayerControlFlags` (« no opcode writes it yet ») ; (P4, E4.e)
+  l'entrée 0x07 du HashSet optimiste est morte (plus jamais `UnknownSkipped`) ; (P4) allocation
+  d'une `List<>` par dispatch de recherche — préexistant (0x62-0x65/0x8B), pas par frame de rendu,
+  à pooler seulement si un profil le montre.
 
 ### E4.d — DLL : marche naviguée 0x1E/0x1F ⏳ (DLL)
 
@@ -424,6 +454,6 @@ checkout standalone. Validation par tranche : builds/tests/export selon les règ
 | E4.0 vitesse verticale moteur | ✅ (verifier CONFIRMED) | moteur a9267735 |
 | E4.a couche navigation + contrôleurs PNJ | ✅ (verifier CONFIRMED) | 94a871e |
 | E4.b PNJ sur le mover | ✅ (verifier CONFIRMED après correctif) | 365946f + de1eceb |
-| E4.c opcodes flux/direction/contrôle + debug 0x10 | ⏳ | |
+| E4.c opcodes flux/direction/contrôle + debug 0x10 | ✅ (verifier CONFIRMED) | 07be483 |
 | E4.d marche naviguée 0x1E/0x1F | ⏳ | |
 | E4.e harnais cinématique + nouvel oracle | ⏳ | |
