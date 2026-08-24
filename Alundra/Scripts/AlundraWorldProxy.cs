@@ -346,6 +346,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <see cref="Update"/>, mirroring <see cref="_debugCameraLookupDone"/>'s own one-time-retry shape.</summary>
     private bool _clearColorApplied;
 
+    /// <summary>Bug fix (see <see cref="AlundraLogicClock"/>'s own class doc for the full diagnosis): this
+    /// world's ONE shared 50 Hz logic clock - every spawned entity's own <see cref="AlundraEntityScriptProxy.Update"/>
+    /// and this proxy's own <see cref="Update"/> read <see cref="LogicTicksThisFrame"/> off this SAME
+    /// instance, so they always agree on how many logic ticks happened this rendered frame.</summary>
+    private readonly AlundraLogicClock _logicClock = new();
+
+    /// <summary>See <see cref="IAlundraScriptHost.LogicTicksThisFrame"/>'s own doc.</summary>
+    public int LogicTicksThisFrame(float elapsedTime) => _logicClock.TicksThisFrame(elapsedTime);
+
     public override void InitializeWithWorld(World world)
     {
         _world = world;
@@ -1507,25 +1516,48 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     public override void Update(float elapsedTime)
     {
         // DEBUG ONLY - runs unconditionally (unlike the entity passes below, which are skipped when
-        // nothing was spawned) so the map can still be flown over even for a world with no entities.
+        // nothing was spawned) so the map can still be flown over even for a world with no entities. Input
+        // sampling, deliberately per RENDERED frame (see AlundraLogicClock's own class doc on what stays
+        // per-frame vs per-tick) - a debug pan tool reading input at logic-tick rate would feel laggy.
         UpdateDebugCameraPan(elapsedTime);
 
+        // Rendering-only passes - per rendered frame, same reasoning.
         ApplyOriginalBackgroundClearColorOnce();
         UpdateAndDrawBackdrop(elapsedTime);
 
+        // Bug fix (AlundraLogicClock's own class doc): this world's ONE shared logic clock. Reads the SAME
+        // cached value every spawned entity's own Update already advanced/read this frame (this proxy's
+        // own Update always runs LAST - World.cs:443-491) - or, for a world with no entities at all (the
+        // `if` below never ran a single AlundraEntityScriptProxy.Update this frame), becomes the clock's
+        // own first caller this frame, so the clock still advances every frame regardless of entity count.
+        var ticksThisFrame = LogicTicksThisFrame(elapsedTime);
+
         if (PlayerEntity != null)
         {
-            RunMapEventsPass(PlayerEntity, _mapEvents, EventProgramRunner, GameState.PlayerControlFlags);
+            // Frame-counted map-event chronology (GameEngine.RunMapEvents originally ran once per the
+            // fixed 50 Hz frame) - gated the same way as every entity's own pick/run pass.
+            for (var tick = 0; tick < ticksThisFrame; tick++)
+            {
+                RunMapEventsPass(PlayerEntity, _mapEvents, EventProgramRunner, GameState.PlayerControlFlags);
+            }
         }
 
         if (_spawnedEntities.Count == 0)
         {
+            // No entity ran this frame, so this proxy's own call above was the clock's first (and only)
+            // caller - close the frame here so the memo does not stick into the next one.
+            _logicClock.CloseFrame();
             return;
         }
 
         RefreshUpdateProxiesAndCollidables();
 
-        RunPendingEventTriggers(_updateProxies, EventProgramRunner);
+        // Decision D3's own catch-up rescan - same frame-counted shape as RunMapEventsPass above (the
+        // original's own do/while re-scan ran once per fixed frame too).
+        for (var tick = 0; tick < ticksThisFrame; tick++)
+        {
+            RunPendingEventTriggers(_updateProxies, EventProgramRunner);
+        }
 
         // Wall/sprite depth interleave (Slice B) - see WallPlacementOverlay's class doc. Gated on the
         // overlay actually having been populated: with no wall placements loaded (missing/malformed
@@ -1536,6 +1568,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         {
             RunWallInterleaveSortKeyPass(_spawnedEntities);
         }
+
+        // Closes this frame's logic-clock memo (see AlundraLogicClock's own class doc) - this proxy's own
+        // Update always runs last (World.cs:443-491), so the next frame's first caller (an entity's own
+        // Update, or this proxy again for a zero-entity world) recomputes fresh.
+        _logicClock.CloseFrame();
     }
 
     /// <summary>

@@ -47,6 +47,18 @@ public class AlundraWorldProxyEventPassTests
             Runner = runner;
         }
 
+        // Bug fix (AlundraLogicClock's own class doc): this file exercises PickEventTrigger/RunPickedEvent
+        // directly, never through AlundraEntityScriptProxy.Update, so nothing here ever calls this - kept
+        // only to satisfy the interface. Auto-closes its own clock each call (own frame per call) in case
+        // a future test does call Update, same pattern as every other FakeScriptHost in this test project.
+        private readonly AlundraLogicClock _logicClock = new();
+        public int LogicTicksThisFrame(float elapsedTime)
+        {
+            var ticks = _logicClock.TicksThisFrame(elapsedTime);
+            _logicClock.CloseFrame();
+            return ticks;
+        }
+
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
         {
             Destroyed.Add((entity, effectId));

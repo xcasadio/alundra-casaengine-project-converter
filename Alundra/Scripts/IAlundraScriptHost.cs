@@ -56,4 +56,18 @@ public interface IAlundraScriptHost
     /// rebuilt in place by its owner.
     /// </summary>
     IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; }
+
+    /// <summary>
+    /// Bug fix (user-reported runtime pacing bug - script logic was running at rendered-frame rate
+    /// instead of the original's fixed 50 Hz, see <see cref="AlundraLogicClock"/>'s own class doc for the
+    /// full diagnosis): this frame's logic-tick count, computed once per frame and shared by every caller
+    /// (per-frame memo - see <see cref="AlundraLogicClock.TicksThisFrame"/>). <see cref="AlundraEntityScriptProxy.Update"/>
+    /// calls this to gate its own pick/run pass and <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>;
+    /// <see cref="AlundraWorldProxy.Update"/> calls it again (reading the SAME cached value, since every
+    /// entity's own <c>Update</c> already ran this frame) to gate <see cref="AlundraWorldProxy.RunMapEventsPass"/>/
+    /// <see cref="AlundraWorldProxy.RunPendingEventTriggers"/>, then closes the frame. Implemented by
+    /// <see cref="AlundraWorldProxy"/> and the intro trace harness's own <c>HeadlessIntroSimulation</c>,
+    /// each owning exactly one <see cref="AlundraLogicClock"/> instance.
+    /// </summary>
+    int LogicTicksThisFrame(float elapsedTime);
 }

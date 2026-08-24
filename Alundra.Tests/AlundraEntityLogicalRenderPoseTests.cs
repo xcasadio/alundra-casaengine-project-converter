@@ -175,6 +175,18 @@ public class AlundraEntityLogicalRenderPoseTests
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
         {
         }
+
+        // Bug fix (AlundraLogicClock's own class doc): this file drives entities through one
+        // World.Update(1/50) call per test, so a single-frame auto-closed clock reproduces the pre-fix
+        // "always exactly 1 tick" behaviour these tests already assume - same pattern as every other
+        // FakeScriptHost in this test project.
+        private readonly AlundraLogicClock _logicClock = new();
+        public int LogicTicksThisFrame(float elapsedTime)
+        {
+            var ticks = _logicClock.TicksThisFrame(elapsedTime);
+            _logicClock.CloseFrame();
+            return ticks;
+        }
     }
 
     [Fact]

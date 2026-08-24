@@ -643,6 +643,14 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
 
         RecordSystemOnce("PlayerManager.MovePlayer()", "EntityManager.cs:808 / PlayerManager.cs:17", "player movement/input/physics - no player controller yet (E2's own scope); AlundraEntityScriptProxy.Update excludes the player from its own pick/run half, same as the original's own loop starting at slot index 1");
 
+        // Bug fix (AlundraLogicClock's own class doc): this harness's own shared logic clock - advanced
+        // here (this call becomes the frame's first caller; every entity's own Update below reads back the
+        // SAME cached value) so ticksThisFrame is available for the world-level passes further down too,
+        // without needing entitiesThisFrame to be non-empty. At this harness's fixed dt
+        // (AlundraScriptedMotion.FixedTickSeconds exactly, see below) this always yields exactly 1 - see
+        // this class' own _logicClock doc.
+        var ticksThisFrame = LogicTicksThisFrame(AlundraScriptedMotion.FixedTickSeconds);
+
         // E4.e: AlundraScriptedMotion.FixedTickSeconds (1/50 s), not 0f - the harness is frame-locked at
         // 50 Hz (1 frame = 1 tick, matching the original's own fixed physics rate), so this must feed
         // TickScriptedNpc's own accumulator exactly one whole tick's worth of elapsed time every frame;
@@ -657,10 +665,21 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
 
         if (PlayerEntity != null)
         {
-            AlundraWorldProxy.RunMapEventsPass(PlayerEntity, _mapEvents, _wrapperRunner, _gameState.PlayerControlFlags);
+            for (var tick = 0; tick < ticksThisFrame; tick++)
+            {
+                AlundraWorldProxy.RunMapEventsPass(PlayerEntity, _mapEvents, _wrapperRunner, _gameState.PlayerControlFlags);
+            }
         }
 
-        AlundraWorldProxy.RunPendingEventTriggers(entitiesThisFrame, _wrapperRunner);
+        for (var tick = 0; tick < ticksThisFrame; tick++)
+        {
+            AlundraWorldProxy.RunPendingEventTriggers(entitiesThisFrame, _wrapperRunner);
+        }
+
+        // Closes this frame's logic-clock memo (see AlundraLogicClock's own class doc) so the NEXT
+        // RunFrame call's own LogicTicksThisFrame call recomputes fresh instead of reading this frame's
+        // now-stale cached count.
+        _logicClock.CloseFrame();
 
         RecordSystemOnce("EntityManager.UpdateDestroyedEntities", "EntityManager.cs:367-395 (UpdateEntities pass list)", "slot recycling for destroyed entities - not ported");
         RecordSystemOnce("EntityManager.UpdateEntitiesCounters", "EntityManager.cs:367-395 (UpdateEntities pass list)", "per-entity frame counters - not ported");
@@ -965,6 +984,20 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     public IReadOnlyList<AlundraEntityScriptProxy> Collidables => _collidables;
 
     private readonly List<AlundraEntityScriptProxy> _collidables = new();
+
+    /// <summary>
+    /// Bug fix (AlundraLogicClock's own class doc): this harness's own shared logic clock - same one
+    /// instance every spawned entity's own <see cref="AlundraEntityScriptProxy.Update"/> AND
+    /// <see cref="RunFrame"/> itself read/advance, mirroring production's <see cref="AlundraWorldProxy"/>.
+    /// This harness runs at a FIXED dt (<see cref="AlundraScriptedMotion.FixedTickSeconds"/> exactly) one
+    /// frame at a time - see <see cref="RunFrame"/>'s own doc on why that makes
+    /// <see cref="AlundraLogicClock.TicksThisFrame"/> yield exactly 1 every single frame, forever, so this
+    /// fix is intentionally a no-op for the intro trace (see docs/intro-trace-389.txt's own acceptance
+    /// note).
+    /// </summary>
+    private readonly AlundraLogicClock _logicClock = new();
+
+    public int LogicTicksThisFrame(float elapsedTime) => _logicClock.TicksThisFrame(elapsedTime);
 
     /// <summary>Shared with the initial load-time spawn loop in <see cref="BuildInitialState"/> - registers
     /// a freshly spawned entity's non-zero A/C/F program indexes so the static disassembly annex covers

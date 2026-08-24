@@ -236,6 +236,18 @@ public class AlundraCharacterControllerAdoptionTests
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
         {
         }
+
+        // Bug fix (AlundraLogicClock's own class doc): the player branch this file exercises never reads
+        // this (out of this fix's scope - the player's own AlundraPlayerManager.Tick keeps its own
+        // pre-existing 50 Hz accumulator, untouched). Auto-closes its own clock each call (own frame per
+        // call), same pattern as every other FakeScriptHost in this test project.
+        private readonly AlundraLogicClock _logicClock = new();
+        public int LogicTicksThisFrame(float elapsedTime)
+        {
+            var ticks = _logicClock.TicksThisFrame(elapsedTime);
+            _logicClock.CloseFrame();
+            return ticks;
+        }
     }
 
     // -----------------------------------------------------------------------------------------

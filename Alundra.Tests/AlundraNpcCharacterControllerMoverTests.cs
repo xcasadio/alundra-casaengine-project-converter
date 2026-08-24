@@ -281,6 +281,19 @@ public class AlundraNpcCharacterControllerMoverTests
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
         {
         }
+
+        // Bug fix (AlundraLogicClock's own class doc): this file drives world.Update(1/50) in a loop, one
+        // call per test-frame - a single-frame auto-closed clock reproduces the pre-fix "always exactly 1
+        // tick per world.Update call" behaviour these tests already assume, since every call passes the
+        // SAME dt as the clock's own fixed-tick constant. Same pattern as every other FakeScriptHost in
+        // this test project.
+        private readonly AlundraLogicClock _logicClock = new();
+        public int LogicTicksThisFrame(float elapsedTime)
+        {
+            var ticks = _logicClock.TicksThisFrame(elapsedTime);
+            _logicClock.CloseFrame();
+            return ticks;
+        }
     }
 
     /// <summary>E4.d: same shape as <see cref="FakeScriptHost"/>, but wraps a REAL
@@ -302,6 +315,16 @@ public class AlundraNpcCharacterControllerMoverTests
 
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
         {
+        }
+
+        // Bug fix (AlundraLogicClock's own class doc): see FakeScriptHost's own doc on this same member,
+        // above - identical rationale.
+        private readonly AlundraLogicClock _logicClock = new();
+        public int LogicTicksThisFrame(float elapsedTime)
+        {
+            var ticks = _logicClock.TicksThisFrame(elapsedTime);
+            _logicClock.CloseFrame();
+            return ticks;
         }
     }
 

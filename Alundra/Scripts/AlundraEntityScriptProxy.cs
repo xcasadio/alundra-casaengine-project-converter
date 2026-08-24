@@ -636,8 +636,19 @@ public class AlundraEntityScriptProxy : GameplayProxy
 
         if (!IsPlayer)
         {
-            PickEventTrigger();
-            RunPickedEvent(ScriptHost.Runner);
+            // Bug fix (user-reported runtime pacing bug - see AlundraLogicClock's own class doc for the
+            // full diagnosis/log evidence): the pick/run status-machine pass is counted in FRAMES by the
+            // original (0x37 Wait, the whole EntityManager.UpdateEntitiesEvents chronology) - it must run
+            // at the fixed 50 Hz logic rate, not once per rendered frame. ticksThisFrame is usually 1 (a
+            // display frame roughly matches 50 Hz) but can be 0 (a fast render frame, nothing new to pick
+            // this frame - EventTrigger simply stays whatever RunPickedEvent last cleared it to) or up to
+            // AlundraScriptedMotion.MaxTicksPerFrame under catch-up (a stalled/slow frame).
+            var ticksThisFrame = ScriptHost.LogicTicksThisFrame(elapsedTime);
+            for (var tick = 0; tick < ticksThisFrame; tick++)
+            {
+                PickEventTrigger();
+                RunPickedEvent(ScriptHost.Runner);
+            }
 
             // E4.b (docs/plan-e4-deplacement-scripte.md): scripted mover for every controller-driven NPC -
             // port of PhysicsEngine.UpdateEntityPhysics (:1579-1598) restricted to the flat-ground half
@@ -671,13 +682,40 @@ public class AlundraEntityScriptProxy : GameplayProxy
             // (E4.a), so this fallback only ever executes for the harness's own bare proxies (no
             // Owner/World at all) or a genuinely controller-less sprite-only prefab (11 on map 389, whose
             // Speed is 0 for every AnimSet they carry - this is a no-op integration for them in practice).
+            //
+            // Bug fix (AlundraLogicClock's own class doc): deliberately STAYS per RENDERED frame, not
+            // gated on ticksThisFrame - it already carries its OWN internal 50 Hz accumulator
+            // (PhysicsTickAccumulator), same constants as the logic clock, and time-based Move commands
+            // routed through it need to stay smooth at display rate rather than snapping once per logic
+            // tick (a controller-driven entity's engine-owned interpolation already expects a per-frame
+            // call - see SyncTransform's own doc for the same "must follow every rendered frame" reasoning
+            // applied to the pose it produces). The motion clock and the logic clock are two SEPARATE
+            // accumulators, both stepping at the same 50 Hz - acceptable because they never need to agree
+            // frame-by-frame with each other, only converge to the same long-run rate: motion is a smooth,
+            // idempotent-in-the-limit visual quantity, while the logic clock's job is exact tick COUNTING
+            // for frame-counted game logic (Wait, MapEvents) that must never run at the wrong rate.
             AlundraScriptedMotion.TickScriptedNpc(this, elapsedTime);
 
             // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): entity-vs-entity Z support clamp
             // - AFTER the horizontal tick above, so a walk that just moved this entity out of a platform's
             // XY footprint loses support the SAME frame (matching the original's own "hors de l'empreinte:
             // plus de support" behaviour), not one frame late. See EvaluateEntitySupport's own doc.
-            EvaluateEntitySupport(ScriptHost.Collidables);
+            //
+            // Bug fix (AlundraLogicClock's own class doc): gated on ticksThisFrame, same as the pick/run
+            // pass above - EvaluateEntitySupport's own ForceZ gravity-decay branch is a per-TICK quantity
+            // (ForceZ -= Gravity<<8, PhysicsEngine.cs:1460-1476, ported verbatim inside that method); at
+            // rendered-frame rate it would decay 2.5x too fast, the exact same class of bug this whole fix
+            // addresses. The WHOLE method (detection + pin), not just its decay half, runs per tick: the
+            // original evaluates CheckEntityCollisionDown once per its own fixed frame too (i.e. once per
+            // logic tick here), and a supported entity provably cannot move between two ticks of the SAME
+            // rendered frame (EvaluateEntitySupport's own "if found" branch already zeroes Gravity and
+            // SetVerticalVelocity(0) on the controller the first time support is found this frame, so a
+            // second call in the same loop iteration re-evaluates the SAME still-true support and is a
+            // cheap, side-effect-free confirmation, not wasted divergent work).
+            for (var tick = 0; tick < ticksThisFrame; tick++)
+            {
+                EvaluateEntitySupport(ScriptHost.Collidables);
+            }
         }
         else
         {
