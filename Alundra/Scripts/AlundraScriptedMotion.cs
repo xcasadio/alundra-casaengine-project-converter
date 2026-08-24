@@ -51,6 +51,11 @@ internal static class AlundraScriptedMotion
     /// extraction.</summary>
     internal static void TickPlayer(AlundraEntityScriptProxy player, float elapsedTime)
     {
+        // PhysicsEngine.cs:17 (top of UpdateEntitiesPhysics): ForceAdjusted is cleared exactly once per
+        // frame, before this frame's own sub-step loop - see AlundraEntityScriptProxy.ForceAdjusted's own
+        // doc. A curtailed sub-step later THIS SAME frame (MoveControllerAndPullPosition) sets it back;
+        // it then stays set for the rest of this frame regardless of how many more sub-steps run.
+        player.ForceAdjusted = 0;
         player.PhysicsTickAccumulator += elapsedTime;
 
         var ticks = 0;
@@ -75,6 +80,8 @@ internal static class AlundraScriptedMotion
     /// entity that actually has a <see cref="AlundraEntityScriptProxy.Controller"/>.</summary>
     internal static void TickScriptedNpc(AlundraEntityScriptProxy entity, float elapsedTime)
     {
+        // See TickPlayer's own doc on this same top-of-frame reset (PhysicsEngine.cs:17).
+        entity.ForceAdjusted = 0;
         entity.PhysicsTickAccumulator += elapsedTime;
 
         var ticks = 0;
@@ -156,9 +163,13 @@ internal static class AlundraScriptedMotion
         }
 
         // PhysicsEngine.cs:1698-1700, same formula EntityRecordMapper/AlundraWorldProxy already use to seed
-        // TileX/TileY from PosX/PosY elsewhere - kept in sync every tick.
+        // TileX/TileY from PosX/PosY elsewhere - kept in sync every tick. TileZ (E4.c deferral, fixed in
+        // E4.d - docs/plan-e4-deplacement-scripte.md) was previously refreshed only at spawn; it is now
+        // refreshed here every tick too, alongside TileX/TileY, for BOTH callers (TickPlayer/
+        // TickScriptedNpc both funnel through this one shared method).
         entity.TileX = (entity.PosX >> 16) / TileWidth;
         entity.TileY = (entity.PosY >> 16) / TileHeight;
+        entity.TileZ = entity.PosZ >> 20;
     }
 
     /// <summary>Bit-for-bit port of <c>PhysicsEngine.IncrementForce</c> (PhysicsEngine.cs:1551-1576,

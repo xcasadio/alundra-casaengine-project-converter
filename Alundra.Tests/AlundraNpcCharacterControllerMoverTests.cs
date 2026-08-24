@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using Alundra.Scripts;
 using CasaEngine.Engine.Geometry;
 using CasaEngine.Engine.Physics;
+using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Application.Components.Physics;
 using CasaEngine.Framework.Assets.TileMap;
@@ -75,6 +76,41 @@ public class AlundraNpcCharacterControllerMoverTests
         var tileMapData = new TileMapData();
         tileMapData.Load(JObject.Parse(File.ReadAllText(tileMapPath)));
         return tileMapData;
+    }
+
+    /// <summary>
+    /// E4.d: resolves map 389's own real tilesets (its native map tileset PLUS E4.a's shared
+    /// "Navigation" tileset, both listed in <c>tile_set_asset_ids</c>) straight off disk via
+    /// <c>AssetInfos.json</c>'s id -&gt; file_name index - the same "real export, no live
+    /// AssetContentManager" constraint <see cref="LoadMap389TileMapData"/> itself works under (no
+    /// GraphicsDevice/content pipeline in this headless test process). Feeds
+    /// <see cref="NavigationGrid2D.TryCreateFromTileMap"/> in EXACTLY the order
+    /// <c>AlundraWorldProxy.TryBuildNavigationGrid</c> resolves them at runtime (position-indexed by
+    /// <see cref="TileMapData.TileSetDataAssetIds"/>).
+    /// </summary>
+    private static List<TileSetData> LoadMap389TileSets(string projectRoot, TileMapData tileMapData)
+    {
+        var assetInfos = JObject.Parse(File.ReadAllText(Path.Combine(projectRoot, "AssetInfos.json")));
+        var pathById = new Dictionary<Guid, string>();
+        foreach (var entry in (JArray)assetInfos["asset_infos"]!)
+        {
+            if (Guid.TryParse((string?)entry["id"], out var id) && (string?)entry["file_name"] is { } fileName)
+            {
+                pathById[id] = fileName;
+            }
+        }
+
+        var tileSets = new List<TileSetData>();
+        foreach (var assetId in tileMapData.TileSetDataAssetIds)
+        {
+            Assert.True(pathById.TryGetValue(assetId, out var relativePath), $"AssetInfos.json missing tileset {assetId}.");
+            var fullPath = Path.Combine(projectRoot, relativePath!.Replace('\\', Path.DirectorySeparatorChar));
+            var tileSetData = new TileSetData();
+            tileSetData.Load(JObject.Parse(File.ReadAllText(fullPath)));
+            tileSets.Add(tileSetData);
+        }
+
+        return tileSets;
     }
 
     private static AlundraCellsCollisionField? LoadMap389Field(string projectRoot)
@@ -237,6 +273,58 @@ public class AlundraNpcCharacterControllerMoverTests
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
         {
         }
+    }
+
+    /// <summary>E4.d: same shape as <see cref="FakeScriptHost"/>, but wraps a REAL
+    /// <see cref="AlundraEventProgramRunner"/> instead of the no-op one - so a hand-built Tick program
+    /// (0x1E/0x1F) actually dispatches through <see cref="AlundraEntityScriptProxy.Update"/>'s own
+    /// pick/run pass every <c>World.Update</c>.</summary>
+    private sealed class RealRunnerScriptHost : IAlundraScriptHost
+    {
+        public RealRunnerScriptHost(IEventProgramRunner runner) => Runner = runner;
+        public IEventProgramRunner Runner { get; }
+        public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
+        public AlundraGameState GameState { get; } = new();
+        public AlundraPlayerController? PlayerController => null;
+
+        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        {
+        }
+    }
+
+    /// <summary>E4.d: minimal <see cref="IEntityWorldContext"/> a hand-built <see cref="AlundraEventProgramRunner"/>
+    /// needs so its 0x1E/0x1F walk-detour helpers can reach an injected <see cref="NavigationGrid2D"/> -
+    /// map 389 itself has 0 blocked navigation cells (E4.a's own finding), so obstacle/detour tests need
+    /// a synthetic one. Every other member is a trivial no-op - none of this class' own tests exercise the
+    /// entity-search opcodes.</summary>
+    private sealed class FakeNavigationWorldContext : IEntityWorldContext
+    {
+        public NavigationGrid2D? NavigationGrid { get; set; }
+        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
+        public AlundraEntityScriptProxy? PlayerEntity => null;
+        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(AlundraEntityScriptProxy entity)
+        {
+        }
+    }
+
+    /// <summary>Wires <paramref name="proxy"/> so its own Tick slot (C) dispatches <paramref name="codes"/>
+    /// (a raw opcode byte stream, no header) through a REAL <see cref="AlundraEventProgramRunner"/> every
+    /// <c>World.Update</c> - <see cref="ScriptHelper.ProgramCTick"/>'s masked index 1 -&gt; offset 0 (index
+    /// 0 of the table is left unused/zero, never referenced).</summary>
+    private static AlundraEventProgramRunner WireRealTickProgram(
+        AlundraEntityScriptProxy proxy, int[] codes, IEntityWorldContext? worldContext = null)
+    {
+        var document = new EventProgramDocument
+        {
+            MapIndex = 389,
+            EventCodesCTable = new[] { 0, 0 },
+            Codes = codes,
+        };
+        var runner = new AlundraEventProgramRunner(document, new AlundraGameState(), worldContext);
+        proxy.ScriptHost = new RealRunnerScriptHost(runner);
+        proxy.ProgramIndexes[ScriptHelper.ProgramCTick] = 0x81; // bit 0x80 set, masked index 1.
+        return runner;
     }
 
     // -----------------------------------------------------------------------------------------
@@ -610,5 +698,402 @@ public class AlundraNpcCharacterControllerMoverTests
         }
 
         Assert.Equal(564.0 + expectedPositionDeltaPixels, entity.RootComponent!.Position.X, 2);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // (6) E4.d, item 7(1): REAL 0x1F walk - sailor-11's own Tick program (masked index 11, offset 1168,
+    // docs/intro-programs-389.txt). The 0x1F occurrence at offset 1238 (params=[24,0] -> threshold 24px)
+    // is immediately preceded by the 0x5B at offset 1234 (params=[128,1,67]): TargetAnimationId=1,
+    // direction param 67 (0x43) -> high 3 bits = 67>>5 = 2 (cardinal mode) ->
+    // AnimationTables.CardinalDirectionTable[67&3] = CardinalDirectionTable[3] = 0x18 (24, pure +X - same
+    // "east" direction WalkKinematics' own test above uses). Real bank-146 AnimSets[1]
+    // (alundra-project/Data/sprite-records.json, this prefab's own guid): Speed 160, Acceleration 0 (NO
+    // ramp - IncrementForce jumps straight to the target force the very first tick it recomputes).
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void RealWalk_0x1F_SailorElevenProgramOffsetTwelveThirtyEight_CompletesAtHandComputedFrame()
+    {
+        var projectRoot = FindProjectRoot();
+        var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        if (settings == null)
+        {
+            return;
+        }
+
+        var world = BuildWorld(field);
+        var (_, proxy) = BuildNpcPawn(world, settings, new Vector3(564f, 920f, 80f), new FakeScriptHost());
+
+        proxy.AnimSetsByAnim = new Dictionary<int, AnimSetEntry>
+        {
+            [1] = new AnimSetEntry { Anim = 1, Speed = 160, Acceleration = 0 },
+        };
+        proxy.TargetAnimationId = 1; // as if the real 0x5B at offset 1234 had just run.
+        proxy.TargetDirection = 24;
+
+        // Real 0x1F occurrence (offset 1238, params=[24,0]), followed by a marker opcode (0x1A SetAnim
+        // 254 - unreachable by any real AnimSet index) so completion is directly observable without
+        // inspecting interpreter internals.
+        WireRealTickProgram(proxy, new[] { 0x1F, 24, 0, 0x1A, 254, 0xFF });
+
+        // Hand-computed reference: the 0x1F's own dispatch at World.Update call N reads PosX as of the
+        // END of call N-1's own physics tick (AlundraEntityScriptProxy.Update runs pick/run BEFORE this
+        // frame's own AlundraScriptedMotion tick). Call #1's own tick contributes 0 (CurrentAnimationId
+        // still the spawn-time bit-complement, AnimSetsByAnim miss - E4.b's own documented one-frame
+        // latency). From call #2's own tick on, Acceleration 0 jumps ForceX straight to TargetForceX =
+        // OffsetXList[24]*160 = 0x300*160 = 122880 (16.16) EVERY tick (no ramp) = 1.875 px/tick exactly.
+        // threshold(24px) <= floor(k*1.875) first holds at k=13 (floor(13*1.875)=floor(24.375)=24); the
+        // number of already-applied force ticks by the time call N's own dispatch runs is (N-2) (calls
+        // 2..N-1), so N-2>=13 -> N=15 is the first completing call.
+        var completionFrame = -1;
+        for (var frame = 1; frame <= 30 && completionFrame < 0; frame++)
+        {
+            world.Update(1f / 50f);
+            if (proxy.TargetAnimationId == 254)
+            {
+                completionFrame = frame;
+            }
+        }
+
+        Assert.Equal(15, completionFrame);
+        Assert.Equal(0, proxy.EventProgramState.Parameters[1]); // resets like the original (generic post-dispatch bookkeeping).
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // (7) E4.d, item 7(2)/(3): a REAL map-389 wall (cell (24,39), walkability 1 - same cell/mask
+    // AlundraCharacterControllerAdoptionTests.Mask_ClassBMaskOnEqualHeightCells_BlocksTheMove already
+    // proves blocks under a ClassB mask 0x41) curtails a due-east walk. 0x1E gets a synthetic navigation
+    // grid (map 389 itself has 0 blocked cells - E4.a's own finding) with the SAME cell blocked and
+    // detours around it without ending; 0x1F has NO grid and ends immediately instead (D5: no detour for
+    // 0x1F).
+    // -----------------------------------------------------------------------------------------
+
+    private static NavigationGrid2D BuildSyntheticGridMatchingMap389(params (int X, int Y)[] blockedCells)
+    {
+        var grid = new NavigationGrid2D(52, 60, 1f); // real map 389 dimensions (MapSize 52x60).
+        var blocked = new HashSet<(int, int)>(blockedCells);
+        for (var y = 0; y < 60; y++)
+        {
+            for (var x = 0; x < 52; x++)
+            {
+                grid.SetCell(x, y, blocked.Contains((x, y))
+                    ? NavigationGridCell.Blocked
+                    : new NavigationGridCell(true, 1f, NavigationLayerMask.All));
+            }
+        }
+
+        return grid;
+    }
+
+    [Fact]
+    public void Walk0x1E_RealWallCurtailsMovement_NavigationDetourEngagesWithoutEndingTheWalk()
+    {
+        var projectRoot = FindProjectRoot();
+        var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        if (settings == null)
+        {
+            return;
+        }
+
+        var world = BuildWorld(field);
+        var (entity, proxy) = BuildNpcPawn(world, settings, new Vector3(564f, 632f, 80f), new FakeScriptHost());
+        proxy.Controller!.Settings.WalkabilityMask = 0x41u; // ClassB - cell (24,39) walkability 1 blocks.
+        world.Update(1f / 50f);
+
+        var grid = BuildSyntheticGridMatchingMap389((24, 39));
+        var worldContext = new FakeNavigationWorldContext { NavigationGrid = grid };
+        WireRealTickProgram(proxy, new[] { 0x1E, 24, 0, 0xFF }, worldContext);
+
+        proxy.AnimSetsByAnim = new Dictionary<int, AnimSetEntry>
+        {
+            [1] = new AnimSetEntry { Anim = 1, Speed = 160, Acceleration = 0 },
+        };
+        proxy.TargetAnimationId = 1;
+        proxy.TargetDirection = 24; // due east, straight at the wall.
+
+        var sawRederivedDirection = false;
+        for (var frame = 0; frame < 80; frame++)
+        {
+            world.Update(1f / 50f);
+            if (proxy.TargetDirection != 24)
+            {
+                sawRederivedDirection = true;
+            }
+        }
+
+        Assert.True(sawRederivedDirection, "TargetDirection should have been re-derived toward a detour waypoint once the wall curtailed movement.");
+        Assert.NotNull(proxy.WalkDetourPath);
+        _ = entity;
+    }
+
+    [Fact]
+    public void Walk0x1E_RealWallCurtailsMovement_NoGridInjected_FailsToDetourAndKeepsPushing()
+    {
+        var projectRoot = FindProjectRoot();
+        var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        if (settings == null)
+        {
+            return;
+        }
+
+        var world = BuildWorld(field);
+        var (_, proxy) = BuildNpcPawn(world, settings, new Vector3(564f, 632f, 80f), new FakeScriptHost());
+        proxy.Controller!.Settings.WalkabilityMask = 0x41u;
+        world.Update(1f / 50f);
+
+        // No worldContext -> NoOpEntityWorldContext -> NavigationGrid null - degraded mode.
+        WireRealTickProgram(proxy, new[] { 0x1E, 24, 0, 0xFF });
+
+        proxy.AnimSetsByAnim = new Dictionary<int, AnimSetEntry>
+        {
+            [1] = new AnimSetEntry { Anim = 1, Speed = 160, Acceleration = 0 },
+        };
+        proxy.TargetAnimationId = 1;
+        proxy.TargetDirection = 24;
+
+        for (var frame = 0; frame < 40; frame++)
+        {
+            world.Update(1f / 50f);
+        }
+
+        Assert.Null(proxy.WalkDetourPath);
+        Assert.Equal(24u, proxy.TargetDirection); // unchanged - original "keep pushing" behavior.
+    }
+
+    [Fact]
+    public void Walk0x1F_RealWallCurtailsMovement_EndsEarlyOnForceAdjustedRatherThanDistance()
+    {
+        var projectRoot = FindProjectRoot();
+        var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        if (settings == null)
+        {
+            return;
+        }
+
+        var world = BuildWorld(field);
+        var (entity, proxy) = BuildNpcPawn(world, settings, new Vector3(564f, 632f, 80f), new FakeScriptHost());
+        proxy.Controller!.Settings.WalkabilityMask = 0x41u;
+        world.Update(1f / 50f);
+
+        // No detour for 0x1F (D5) - no navigation grid needed here.
+        WireRealTickProgram(proxy, new[] { 0x1F, 24, 0, 0x1A, 254, 0xFF });
+
+        proxy.AnimSetsByAnim = new Dictionary<int, AnimSetEntry>
+        {
+            [1] = new AnimSetEntry { Anim = 1, Speed = 160, Acceleration = 0 },
+        };
+        proxy.TargetAnimationId = 1;
+        proxy.TargetDirection = 24;
+
+        var completionFrame = -1;
+        for (var frame = 1; frame <= 40 && completionFrame < 0; frame++)
+        {
+            world.Update(1f / 50f);
+            if (proxy.TargetAnimationId == 254)
+            {
+                completionFrame = frame;
+            }
+        }
+
+        Assert.True(completionFrame > 0, "0x1F should complete once the wall curtails movement.");
+        // Cell (24,39) starts at px 576 - only ~12px east of the 564px spawn, well under the 24px
+        // distance threshold: this proves ForceAdjusted, not the distance test, ended the walk.
+        Assert.True(entity.RootComponent!.Position.X < 564f + 24f);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // (8) E4.d, item 7(4): navigation grid construction - real 389 grid via the real path, a synthetic
+    // walkability-0x40 cell (not walkable), and the missing-layer degraded case.
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void NavigationGrid_RealMap389_BuiltViaTheRealPath_NonNullAndCellEighteenFiftySevenWalkable()
+    {
+        var projectRoot = FindProjectRoot();
+        var tileMapData = projectRoot == null ? null : LoadMap389TileMapData(projectRoot);
+        if (tileMapData == null)
+        {
+            return;
+        }
+
+        var tileSets = LoadMap389TileSets(projectRoot!, tileMapData);
+
+        var created = NavigationGrid2D.TryCreateFromTileMap(tileMapData, tileSets, 1f, out var grid);
+
+        Assert.True(created);
+        Assert.NotNull(grid);
+        Assert.True(grid!.IsCellWalkable(18, 57, new NavigationQuery()));
+    }
+
+    [Fact]
+    public void NavigationGrid_SyntheticWalkabilityMaskCell_TileWalkableFalse_IsNotWalkable()
+    {
+        // E4.a's own M=0x40 formula (docs/plan-e4-deplacement-scripte.md E4.a) folds walkability bit 6
+        // into navigation.walkable="false" at conversion time - here the DLL side just needs to confirm
+        // the engine's own NavigationGridCell.CanEnter honors that tile flag once loaded off a synthetic
+        // TileSetData/TileMapData pair (no converter involved).
+        var tileMapData = new TileMapData { MapSize = new CasaEngine.Core.Math.Size(2, 1) };
+        tileMapData.TileSetDataAssetIds.Add(Guid.NewGuid());
+        var navigationLayer = new TileMapLayerData { Name = "Navigation" };
+        navigationLayer.CustomProperties["navigation.role"] = "grid";
+        navigationLayer.tiles.Add(0); // walkable tile id
+        navigationLayer.tiles.Add(1); // blocked tile id
+        tileMapData.Layers.Add(navigationLayer);
+
+        var tileSet = new TileSetData { TileSize = new CasaEngine.Core.Math.Size(24, 16) };
+        var walkableTile = new StaticTileData { Id = 0 };
+        walkableTile.CustomProperties["navigation.walkable"] = "true";
+        var blockedTile = new StaticTileData { Id = 1 };
+        blockedTile.CustomProperties["navigation.walkable"] = "false";
+        tileSet.AddTile(walkableTile);
+        tileSet.AddTile(blockedTile);
+
+        var created = NavigationGrid2D.TryCreateFromTileMap(tileMapData, new List<TileSetData> { tileSet }, 1f, out var grid);
+
+        Assert.True(created);
+        var query = new NavigationQuery();
+        Assert.True(grid!.IsCellWalkable(0, 0, query));
+        Assert.False(grid.IsCellWalkable(1, 0, query));
+    }
+
+    [Fact]
+    public void NavigationGrid_NoNavigationLayer_DegradesToFalseNullGrid()
+    {
+        var tileMapData = new TileMapData { MapSize = new CasaEngine.Core.Math.Size(1, 1) };
+        tileMapData.Layers.Add(new TileMapLayerData { Name = "Ground" }); // no "navigation.role" property.
+        tileMapData.Layers[0].tiles.Add(0);
+
+        var created = NavigationGrid2D.TryCreateFromTileMap(tileMapData, new List<TileSetData>(), 1f, out var grid);
+
+        Assert.False(created);
+        Assert.Null(grid);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // (9) E4.d, item 7(5): ForceAdjusted unit semantics - cleared once per frame at the top of the
+    // scripted-motion pass, set when the controller's own Move returns a curtailed displacement.
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void ForceAdjusted_ClearedEachFrameTop_SetOnlyWhenARealWallCurtailsTheMove()
+    {
+        var projectRoot = FindProjectRoot();
+        var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        if (settings == null)
+        {
+            return;
+        }
+
+        var world = BuildWorld(field);
+        var (_, proxy) = BuildNpcPawn(world, settings, new Vector3(564f, 632f, 80f), new FakeScriptHost());
+        proxy.Controller!.Settings.WalkabilityMask = 0x41u; // ClassB - cell (24,39) walkability 1 blocks.
+        world.Update(1f / 50f);
+
+        proxy.AnimSetsByAnim = new Dictionary<int, AnimSetEntry>
+        {
+            [1] = new AnimSetEntry { Anim = 1, Speed = 160, Acceleration = 0 },
+        };
+        proxy.TargetAnimationId = 1;
+        proxy.TargetDirection = 24; // due east, straight at the wall (cell (24,39) starts at px 576).
+
+        var hitFrame = -1;
+        for (var frame = 1; frame <= 20 && hitFrame < 0; frame++)
+        {
+            world.Update(1f / 50f);
+
+            if (proxy.ForceAdjusted != 0)
+            {
+                hitFrame = frame;
+            }
+            else
+            {
+                Assert.Equal(0, proxy.ForceAdjusted); // clear every frame while still moving freely.
+            }
+        }
+
+        Assert.True(hitFrame > 0, "the wall should eventually curtail the eastward walk.");
+
+        // Turn away from the wall - nothing curtails a westward move here, so ForceAdjusted must clear
+        // again at the very next frame's own top-of-tick reset (AlundraScriptedMotion.TickScriptedNpc).
+        proxy.TargetDirection = 8; // reverse of 24 ((24+0x10)&0x1f), matching opcode 0x0A's own formula.
+        world.Update(1f / 50f);
+
+        Assert.Equal(0, proxy.ForceAdjusted);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // (10) E4.d, item 7(6): TileZ deferral fix (E4.c) - refreshed every tick, not just at spawn, for an
+    // entity with real vertical motion (0x1B-equivalent SetVerticalVelocity).
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void TileZ_EntityWithVerticalMotion_TracksPosZShiftedTwentyAcrossFrames()
+    {
+        var projectRoot = FindProjectRoot();
+        var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        if (settings == null)
+        {
+            return;
+        }
+
+        var world = BuildWorld(field);
+        // Cell (18,57): flat, sol 80px (same cell/spawn AlundraNpcCharacterControllerMoverTests' own
+        // VerticalImpulse_RealBlockEighteen0x1BValue... test uses) - 50px fall, same constant-velocity
+        // shape (0x17 clears gravity: Flags carries no Gravity bit, so ApplyGravitySettingsToController
+        // zeroes both Settings.Gravity/MaxFallSpeed - a clean, non-accelerated fall).
+        var (entity, proxy) = BuildNpcPawn(world, settings, new Vector3(444f, 920f, 130f), new FakeScriptHost());
+        world.Update(1f / 50f);
+
+        proxy.MapGravity = 1250f;
+        proxy.MapMaxFallSpeed = 800f;
+        proxy.ApplyGravitySettingsToController();
+        proxy.Controller!.SetVerticalVelocity(-50f);
+
+        for (var frame = 0; frame < 100 && proxy.IsOnGround == 0; frame++)
+        {
+            world.Update(1f / 50f);
+
+            Assert.Equal(proxy.PosZ >> 20, proxy.TileZ);
+        }
+
+        Assert.Equal(1, proxy.IsOnGround);
+        Assert.Equal(proxy.PosZ >> 20, proxy.TileZ);
+        _ = entity;
     }
 }

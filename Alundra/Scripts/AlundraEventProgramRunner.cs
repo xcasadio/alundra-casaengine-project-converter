@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using CasaEngine.Core.Logging;
+using CasaEngine.Framework.AI.Navigation;
+using Microsoft.Xna.Framework;
 
 namespace Alundra.Scripts;
 
@@ -89,6 +91,25 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// without reaching a natural end/suspend, reporting <see cref="EventTraceKind.LoopBudgetExceeded"/>
     /// through <see cref="TraceSink"/> instead of hanging forever - see that trace kind's own doc.</summary>
     internal int? MaxIterationsPerCall { get; set; }
+
+    /// <summary>
+    /// Harness-only deviation (E4.d, docs/plan-e4-deplacement-scripte.md - same "kind Implemented"
+    /// family as E4.b/E4.c's own 0x70/0x07 forcing, see Alundra.Tests' own IntroTraceHarnessTests class
+    /// doc section 0): false (no effect) unless a caller explicitly sets it. When true, 0x1E/0x1F END
+    /// IMMEDIATELY - <see cref="Walk"/> returns the completed result (3) on its very first dispatch,
+    /// never suspending - instead of the mechanism 0x70/0x07 use (mutating <c>EventTraceRecord.State</c>
+    /// from <see cref="TraceSink"/> AFTER <see cref="Dispatch"/> already ran): that mechanism cannot work
+    /// HERE, because 0x1E/0x1F's own suspend/complete signal IS <see cref="Dispatch"/>'s return value
+    /// itself (whether <see cref="RunOneScriptCall"/> suspends this call), already fixed before
+    /// <see cref="TraceSink"/> ever fires - there is no separate <c>Result</c> read by a LATER opcode to
+    /// retroactively flip. A settable property the harness sets once at construction (same shape as
+    /// <see cref="MaxIterationsPerCall"/> right above) is the smallest faithful equivalent: without a
+    /// simulated kinematics/ground field (E4.e, not yet delivered), the intro trace harness drives
+    /// entities that never actually move, so a genuine 0x1E/0x1F would suspend forever - same reasoning
+    /// as 0x70/0x07's own deviation, just wired through a different seam. Never set by production code;
+    /// removed once E4.e's simulated kinematics makes a real distance test meaningful in the harness too.
+    /// </summary>
+    internal bool HarnessForceImmediateWalkCompletion { get; set; }
 
     private readonly EventProgramDocument? _document;
     private readonly byte[]? _codes;
@@ -480,6 +501,21 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 entity.TargetAnimationId = (uint)v[1];
                 return 2;
 
+            case 0x1E: // Walk - Script_30_01E (EntityEventHandlers.cs:793-829): see this case's own doc
+                       // on Walk below for the full port + E4.d navigation-detour extension (D5). Sets
+                       // NEITHER anim NOR direction by itself (0x5A/0x5B do - free walk comes from the
+                       // permanent physics tick, AlundraScriptedMotion).
+                return Walk(entity, v, state, allowDetour: true);
+
+            case 0x1F: // Walk with collision - Script_31_01F (EntityEventHandlers.cs:832-841): delegates
+                       // to the SAME 0x1E core (Walk below, allowDetour: false - D5: no navigation
+                       // detour for 0x1F, the original itself just ends on a curtailed movement), but ALSO
+                       // ends once ForceAdjusted becomes nonzero this frame - faithful (the original tests
+                       // the frame's own ForceAdjusted; this port tests the last completed sub-step's own
+                       // curtailment instead, see AlundraEntityScriptProxy.ForceAdjusted's own doc -
+                       // documented deviation, plan §3 E4.d).
+                return Walk(entity, v, state, allowDetour: false) == 0 && entity.ForceAdjusted == 0 ? 0 : 3;
+
             case 0x1B: // Fly - Script_27_01B (EntityEventHandlers.cs:743-747): ForceZ = (((v2<<8)|v1) *
                        // 0x10000) >> 8, a signed 16.16 vertical impulse. E4.b (docs/plan-e4-deplacement-
                        // scripte.md): stores it on the proxy AND, when this entity has a controller, pushes
@@ -817,6 +853,227 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         state.Parameters[2] = counter + 1;
 
         return counter >= v[1] ? 2 : 0;
+    }
+
+    // Tile size the whole walk/detour port converts px<->grid-cell with (StaticVariables.MapTileWidth/
+    // Height - same constants AlundraCellsCollisionField/AlundraScriptedMotion already duplicate for the
+    // same reason, see either class' own doc).
+    private const int TileWidthPx = 24;
+    private const int TileHeightPx = 16;
+
+    /// <summary>Margin (E4.d decision D5) added past the original's own distance threshold when the
+    /// navigation detour projects its destination cell - one full tile, so the projected point clears
+    /// the CURRENT cell in either axis rather than landing right on its own boundary (which could
+    /// resolve, after px-&gt;cell clamping, back to the very cell the entity is already standing in).
+    /// <see cref="TileWidthPx"/> (the larger of the two tile axes) is used uniformly for both X and Y -
+    /// the original's own threshold test itself is a single scalar applied identically to both axes
+    /// (Script_30_01E's <c>threshold &lt;= dx || threshold &lt;= dy</c>), so the margin follows the same
+    /// shape.</summary>
+    private const int WalkDetourMarginPx = TileWidthPx;
+
+    /// <summary>Arrival radius (E4.d decision D5) the navigation detour advances
+    /// <see cref="NavigationPath.CurrentPointIndex"/> at - half the SHORTER tile axis, so a waypoint
+    /// counts as "reached" well before the entity could overshoot past its own cell into the next
+    /// one.</summary>
+    private const float WalkDetourArrivalRadiusPx = TileHeightPx / 2f;
+
+    /// <summary>Reused across every detour this runner engages (never per-tick - see
+    /// <see cref="TryEngageDetour"/>'s own call site) - default query (no diagonal-corner-cutting,
+    /// <see cref="NavigationLayerMask.All"/>): E4.a's own navigation layer only encodes universal walls
+    /// (M = 0x40, no per-entity class/layer split - see that tranche's own "Réalisé" note), so no
+    /// per-entity query customization is needed here.</summary>
+    private readonly NavigationQuery _walkDetourQuery = new();
+
+    /// <summary>
+    /// Shared core of Script_30_01E (0x1E "Walk") and Script_31_01F (0x1F "Walk with collision") -
+    /// EntityEventHandlers.cs:793-829, port kept bit-for-bit: packs a re-entry <paramref name="v"/>-based
+    /// signature into <c>state.Parameters[1]</c>, memorizes the walk's own start position into
+    /// <c>Parameters[2..3]</c> on the FIRST call for this signature (suspending, return 0), then on every
+    /// later call compares the CURRENT position against that memorized start: <c>threshold &lt;= |ΔX|&gt;&gt;16
+    /// || threshold &lt;= |ΔY|&gt;&gt;16</c> (both an inclusive test AND a truncating, not rounding, pixel
+    /// shift - ported exactly) ends the walk (return 3), otherwise it keeps suspending (return 0).
+    /// <paramref name="allowDetour"/> (true for 0x1E, false for 0x1F - D5) additionally drives
+    /// <see cref="UpdateWalkDetour"/> while still suspended - see that method's own doc for the E4.d
+    /// navigation extension. <see cref="AlundraEntityScriptProxy.WalkDetourPath"/>/
+    /// <see cref="AlundraEntityScriptProxy.WalkDetourAttempted"/> are reset on every fresh occurrence
+    /// (signature change) AND on completion, so a LATER 0x1E/0x1F on the same entity always starts clean.
+    /// </summary>
+    private int Walk(AlundraEntityScriptProxy entity, int[] v, EventProgramState state, bool allowDetour)
+    {
+        if (HarnessForceImmediateWalkCompletion)
+        {
+            // Harness-only deviation - see HarnessForceImmediateWalkCompletion's own doc.
+            entity.WalkDetourPath = null;
+            entity.WalkDetourAttempted = false;
+            return 3;
+        }
+
+        var signature = (v[2] << 16) | (v[1] << 8) | v[0];
+
+        if (state.Parameters[1] != signature)
+        {
+            state.Parameters[1] = signature;
+            state.Parameters[2] = entity.PosX;
+            state.Parameters[3] = entity.PosY;
+            entity.WalkDetourPath = null;
+            entity.WalkDetourAttempted = false;
+            return 0;
+        }
+
+        var dx = state.Parameters[2] - entity.PosX;
+        var dy = state.Parameters[3] - entity.PosY;
+
+        if (dx < 0)
+        {
+            dx = -dx;
+        }
+
+        if (dy < 0)
+        {
+            dy = -dy;
+        }
+
+        dx >>= 16;
+        dy >>= 16;
+
+        var threshold = (v[2] << 8) | v[1];
+
+        if (threshold <= dx || threshold <= dy)
+        {
+            entity.WalkDetourPath = null;
+            entity.WalkDetourAttempted = false;
+            return 3;
+        }
+
+        if (allowDetour)
+        {
+            UpdateWalkDetour(entity, state, threshold);
+        }
+
+        return 0;
+    }
+
+    /// <summary>
+    /// E4.d navigation detour (decision D5, docs/plan-e4-deplacement-scripte.md): default is to do
+    /// NOTHING (free walk continues, identical to the original) - only engages when this frame's
+    /// <see cref="AlundraEntityScriptProxy.ForceAdjusted"/> is nonzero (the last completed sub-step's own
+    /// movement was curtailed - see that field's own doc) AND a navigation grid is available
+    /// (<see cref="IEntityWorldContext.NavigationGrid"/>, null in degraded mode - see
+    /// <see cref="TryEngageDetour"/>'s own doc for what happens when <c>TryFindPath</c> itself fails).
+    /// Once a detour path exists and has not finished, <see cref="AdvanceDetourWaypoint"/> re-derives
+    /// <see cref="AlundraEntityScriptProxy.TargetDirection"/> toward the CURRENT waypoint every tick, so
+    /// the entity visibly walks around the obstacle instead of pushing into it - the 0x1E/0x1F walk
+    /// itself still only ends via <see cref="Walk"/>'s own ORIGINAL distance test (this method never
+    /// returns a "completed" signal of its own). Once <c>WalkDetourPath.IsFinished</c>,
+    /// <see cref="TargetDirection"/> is simply left at its last derived value (documented écart, D5) -
+    /// nothing here re-engages a SECOND detour for the same occurrence (see
+    /// <see cref="AlundraEntityScriptProxy.WalkDetourAttempted"/>'s own doc on why one attempt per
+    /// occurrence is deliberate, not merely an optimization).
+    /// </summary>
+    private void UpdateWalkDetour(AlundraEntityScriptProxy entity, EventProgramState state, int thresholdPx)
+    {
+        var grid = _worldContext.NavigationGrid;
+
+        if (entity.WalkDetourPath == null && !entity.WalkDetourAttempted && grid != null && entity.ForceAdjusted != 0)
+        {
+            TryEngageDetour(entity, state, grid, thresholdPx);
+        }
+
+        if (entity.WalkDetourPath != null && !entity.WalkDetourPath.IsFinished)
+        {
+            AdvanceDetourWaypoint(entity);
+        }
+    }
+
+    /// <summary>
+    /// One-shot detour engagement (see <see cref="AlundraEntityScriptProxy.WalkDetourAttempted"/>'s own
+    /// doc on why this never runs twice for the same 0x1E occurrence): destination = the walk's own
+    /// MEMORIZED start position (<c>state.Parameters[2..3]</c>, NOT the entity's current position) offset
+    /// by <c>(sign(OffsetXList[TargetDirection]), sign(OffsetYList[TargetDirection])) *
+    /// (thresholdPx + WalkDetourMarginPx)</c> - i.e. projected past where the ORIGINAL walk was always
+    /// heading anyway, exactly <see cref="WalkDetourMarginPx"/> beyond the distance that would have ended
+    /// it cleanly. Both the entity's current position and that destination are converted px-&gt;cell the
+    /// same clamped way <see cref="AlundraCellsCollisionField"/> does (24x16, clamped to the grid bounds -
+    /// see that class' own doc), then <c>NavigationGrid2D.TryFindPath</c> runs ONCE, from cell-center to
+    /// cell-center. On failure (no path exists, e.g. a fully enclosed wall) <see cref="AlundraEntityScriptProxy.WalkDetourPath"/>
+    /// stays null - D5's own "no detour (keep pushing, original behavior)" - and
+    /// <see cref="AlundraEntityScriptProxy.WalkDetourAttempted"/> still latches true, so this occurrence
+    /// never retries (matching "keep pushing" for its own remaining duration, not just this one tick).
+    /// </summary>
+    private void TryEngageDetour(AlundraEntityScriptProxy entity, EventProgramState state, NavigationGrid2D grid, int thresholdPx)
+    {
+        entity.WalkDetourAttempted = true;
+
+        var dirIndex = (int)entity.TargetDirection;
+        var offsetX = dirIndex >= 0 && dirIndex < AnimationTables.OffsetXList.Length ? AnimationTables.OffsetXList[dirIndex] : (short)0;
+        var offsetY = dirIndex >= 0 && dirIndex < AnimationTables.OffsetYList.Length ? AnimationTables.OffsetYList[dirIndex] : (short)0;
+        var signX = Math.Sign((int)offsetX);
+        var signY = Math.Sign((int)offsetY);
+
+        var reachPx = thresholdPx + WalkDetourMarginPx;
+        var destPxX = (state.Parameters[2] >> 16) + signX * reachPx;
+        var destPxY = (state.Parameters[3] >> 16) + signY * reachPx;
+
+        var (startCellX, startCellY) = ToCell(grid, entity.PosX >> 16, entity.PosY >> 16);
+        var (destCellX, destCellY) = ToCell(grid, destPxX, destPxY);
+
+        var start = grid.GetWorldPosition(startCellX, startCellY);
+        var goal = grid.GetWorldPosition(destCellX, destCellY);
+
+        if (grid.TryFindPath(start, goal, _walkDetourQuery, out var path))
+        {
+            entity.WalkDetourPath = path;
+        }
+    }
+
+    /// <summary>px-&gt;cell conversion (E4.d decision E4-2), same clamped shape
+    /// <see cref="AlundraCellsCollisionField"/>'s own ground sampling uses (that class' own doc,
+    /// "cell = (x / 24, y / 16), clamped to [0, width-1] x [0, height-1]").</summary>
+    private static (int X, int Y) ToCell(NavigationGrid2D grid, int px, int py)
+        => (Math.Clamp(px / TileWidthPx, 0, grid.Width - 1), Math.Clamp(py / TileHeightPx, 0, grid.Height - 1));
+
+    /// <summary>
+    /// Re-derives <see cref="AlundraEntityScriptProxy.TargetDirection"/> toward the CURRENT waypoint of an
+    /// active detour (E4.d decision D5) every tick this is called, via the SAME
+    /// <see cref="ScriptHelper.GetDirectionToTarget"/> 0x27 already uses (raw 16.16 deltas). The waypoint
+    /// (a <see cref="NavigationGrid2D"/> "grid world" point, cell size 1 - <c>X = cellX + 0.5</c>,
+    /// <c>Z = cellY + 0.5</c>, Y-logical mapped onto grid Z per E4-2) converts back to its own cell-center
+    /// pixel position (<c>cx*24+12</c>, <c>cy*16+8</c>) before the delta is taken. Advances
+    /// <see cref="NavigationPath.CurrentPointIndex"/> once the entity is within
+    /// <see cref="WalkDetourArrivalRadiusPx"/> of the current waypoint; if that advance finishes the path,
+    /// this leaves <see cref="AlundraEntityScriptProxy.TargetDirection"/> at whatever it last resolved to
+    /// (documented écart, D5) rather than re-deriving toward a waypoint that no longer exists.
+    /// </summary>
+    private static void AdvanceDetourWaypoint(AlundraEntityScriptProxy entity)
+    {
+        var path = entity.WalkDetourPath!;
+        var waypoint = path.Points[path.CurrentPointIndex];
+        var waypointPxX = (int)MathF.Floor(waypoint.X) * TileWidthPx + TileWidthPx / 2;
+        var waypointPxY = (int)MathF.Floor(waypoint.Z) * TileHeightPx + TileHeightPx / 2;
+
+        var dx = (waypointPxX << 16) - entity.PosX;
+        var dy = (waypointPxY << 16) - entity.PosY;
+
+        var deltaXPx = dx / 65536f;
+        var deltaYPx = dy / 65536f;
+
+        if (deltaXPx * deltaXPx + deltaYPx * deltaYPx <= WalkDetourArrivalRadiusPx * WalkDetourArrivalRadiusPx)
+        {
+            path.CurrentPointIndex++;
+
+            if (path.IsFinished)
+            {
+                return;
+            }
+
+            waypoint = path.Points[path.CurrentPointIndex];
+            waypointPxX = (int)MathF.Floor(waypoint.X) * TileWidthPx + TileWidthPx / 2;
+            waypointPxY = (int)MathF.Floor(waypoint.Z) * TileHeightPx + TileHeightPx / 2;
+            dx = (waypointPxX << 16) - entity.PosX;
+            dy = (waypointPxY << 16) - entity.PosY;
+        }
+
+        entity.TargetDirection = ScriptHelper.GetDirectionToTarget(dx, dy);
     }
 
     private static int SignExtend16(int value) => (short)value;

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using Alundra.Scripts;
+using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using Newtonsoft.Json.Linq;
@@ -219,6 +220,12 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
             // stop conditions only ever get checked BETWEEN frames. 20000 is generous for any real map
             // 389 program (its longest observed program is well under 200 bytes).
             MaxIterationsPerCall = 20000,
+            // E4.d harness-only deviation (same "kind Implemented" family as E4.b/E4.c's own 0x70/0x07
+            // forcing, docs/plan-e4-deplacement-scripte.md E4.d acceptance note) - see
+            // AlundraEventProgramRunner.HarnessForceImmediateWalkCompletion's own doc for why 0x1E/0x1F
+            // need a dedicated seam rather than reusing OnOpcodeTraced's own Result-mutation mechanism.
+            // Removed once E4.e's simulated kinematics makes a real distance test meaningful here.
+            HarnessForceImmediateWalkCompletion = true,
         };
         _wrapperRunner = new TraceAwareEntityRunner(this);
     }
@@ -477,6 +484,12 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => _spawnedEntities;
 
     public AlundraEntityScriptProxy? PlayerEntity => _player;
+
+    /// <summary>No navigation grid in this harness (E4.d) - degraded mode, same shape as every other
+    /// missing-system fallback here. Irrelevant in practice: <see cref="HarnessForceImmediateWalkCompletion"/>
+    /// below already ends every 0x1E/0x1F immediately, so the navigation-detour code path this would feed
+    /// is never reached from the harness.</summary>
+    public NavigationGrid2D? NavigationGrid => null;
 
     /// <summary>
     /// Dynamic spawn-by-record-id (opcodes 0x2D ActivateEntity, 0x8B SpawnEntityNextToEntity) - mirrors

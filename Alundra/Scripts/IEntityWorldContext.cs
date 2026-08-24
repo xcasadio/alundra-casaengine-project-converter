@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using CasaEngine.Framework.AI.Navigation;
 
 namespace Alundra.Scripts;
 
@@ -47,6 +48,19 @@ public interface IEntityWorldContext
     /// contents).
     /// </summary>
     void DestroyEntity(AlundraEntityScriptProxy entity);
+
+    /// <summary>
+    /// This world's navigation grid (E4.d, docs/plan-e4-deplacement-scripte.md decision E4-2), built once
+    /// by <see cref="AlundraWorldProxy.InitializeWithWorld"/> right after <c>World.CollisionField</c> from
+    /// the SAME <c>TileMapData</c>, in "cell space" (<c>cellSize = 1</c>) - the DLL, not the engine's own
+    /// <c>CharacterControllerNavigationDriverComponent</c> (not used in E4), does its own px&lt;-&gt;cell
+    /// conversion (see <see cref="AlundraEventProgramRunner"/>'s own 0x1E walk-detour helpers). Null in
+    /// degraded mode (missing navigation layer/tileset, or a world with no tilemap at all) - every reader
+    /// treats that as "no detour available, keep pushing" (0x1E's own original behavior). Settable by
+    /// fakes so a test can inject a synthetic grid without a live <see cref="AlundraWorldProxy"/> (map 389
+    /// itself has 0 blocked navigation cells - E4.a's own finding - so an obstacle test needs one).
+    /// </summary>
+    NavigationGrid2D? NavigationGrid { get; }
 }
 
 /// <summary>
@@ -68,4 +82,6 @@ public sealed class NoOpEntityWorldContext : IEntityWorldContext
     {
         // No-op: no world to mutate.
     }
+
+    public NavigationGrid2D? NavigationGrid => null;
 }

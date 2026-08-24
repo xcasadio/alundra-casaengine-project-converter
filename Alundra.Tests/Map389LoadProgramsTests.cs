@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Alundra.Scripts;
+using CasaEngine.Framework.AI.Navigation;
 using Xunit;
 
 namespace Alundra.Tests;
@@ -87,6 +88,8 @@ public class Map389LoadProgramsTests
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
 
         public void DestroyEntity(AlundraEntityScriptProxy entity) => DestroyedEntities.Add(entity);
+
+        public NavigationGrid2D? NavigationGrid => null;
     }
 
     /// <summary>

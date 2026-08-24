@@ -84,10 +84,12 @@ public sealed class AlundraGameState
 
     /// <summary>Port of <c>StaticVariables.g_playerControlFlags</c> - zero at New Game (see
     /// docs/intro-roadmap.md §1.4: nothing explicitly zeroes it at boot, it is simply BSS-zero; E1's own
-    /// port starts every world the same way, since only a New Game flow is covered so far). E1 only
-    /// stores/reads this field (<see cref="AlundraWorldProxy.RunMapEventsPass"/>'s
-    /// <see cref="PlayerControlBits.GameplayBlockedMask"/> gate); no opcode writes it yet (0x10/0x11 are
-    /// E6's own scope).</summary>
+    /// port starts every world the same way, since only a New Game flow is covered so far). Read by
+    /// <see cref="AlundraWorldProxy.RunMapEventsPass"/>'s <see cref="PlayerControlBits.GameplayBlockedMask"/>
+    /// gate and by <see cref="AlundraPlayerManager.MovePlayer"/>'s <see cref="PlayerControlBits.InputBlockedMask"/>
+    /// gate; written by event opcodes 0x10/0x11 (E4.c, <see cref="AlundraEventProgramRunner"/>'s own
+    /// <c>ControlLocked</c> bridge) - the full engine bridge onto
+    /// <c>PlayerInput.IsInputEnable</c>/<c>CharacterControlMode</c> stays E6's own scope.</summary>
     public uint PlayerControlFlags;
 
     /// <summary>Persistent save-game flags (<c>g_saveData.GameFlags</c>) - all zero, matching New Game.</summary>

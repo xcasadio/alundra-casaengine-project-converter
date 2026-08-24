@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Geometry;
 using CasaEngine.Engine.Physics;
+using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Physics;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -116,6 +117,20 @@ public class AlundraEntityScriptProxy : GameplayProxy
     public Entity? XCollisionEntity;
     public int FloorHeight;
     public int TerrainHeight;//
+    /// <summary>
+    /// Port of the original's <c>Entity.ForceAdjusted</c> (E4.d, docs/plan-e4-deplacement-scripte.md):
+    /// cleared once per frame at the top of the scripted-motion pass (before the 50 Hz sub-step loop -
+    /// <see cref="AlundraScriptedMotion.TickPlayer"/>/<see cref="AlundraScriptedMotion.TickScriptedNpc"/>,
+    /// porting <c>PhysicsEngine.UpdateEntitiesPhysics</c>'s own top-of-frame reset, PhysicsEngine.cs:17),
+    /// set (nonzero) by <see cref="MoveControllerAndPullPosition"/> whenever the controller's own
+    /// <c>Move</c> returns an actual displacement that falls short of the requested one beyond a small
+    /// epsilon on either horizontal axis (<c>CharacterControllerComponent.Move</c> returns the actual
+    /// displacement - CharacterControllerComponent.cs:345-369) - the DLL's own equivalent of the
+    /// original's "movement was curtailed by a wall/screen clamp/collision" signal, consumed by opcode
+    /// 0x1F (<see cref="AlundraEventProgramRunner"/>'s own Walk-with-collision bridge) and by 0x1E's own
+    /// navigation detour. Stays 0 the whole session for an entity with no controller (bare-fallback
+    /// spawn) - <see cref="MoveControllerAndPullPosition"/> is itself a no-op in that case.
+    /// </summary>
     public int ForceAdjusted;//0x13c
     public int CollidedWithEntityZ;//0x140
     public int IsOnGround;
@@ -277,6 +292,33 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// ever written by that method; every other entity leaves it at its C# default (0).
     /// </summary>
     public float PhysicsTickAccumulator;
+
+    /// <summary>
+    /// Engine-only, not part of the original struct: the active 0x1E navigation detour's own path state
+    /// (E4.d decision D5, docs/plan-e4-deplacement-scripte.md) - reused across ticks (no per-frame
+    /// allocation: <see cref="AlundraEventProgramRunner"/>'s own walk-detour helpers only call
+    /// <c>NavigationGrid2D.TryFindPath</c> ONCE per detour, right here, when engaging it), so a suspended
+    /// 0x1E's own re-entry loop can keep re-deriving <see cref="TargetDirection"/> toward the CURRENT
+    /// waypoint (<see cref="NavigationPath.CurrentPointIndex"/>) every tick without rebuilding the path.
+    /// Null when no detour is active for this entity's current 0x1E occurrence (free walk, no navigation
+    /// grid, or <c>TryFindPath</c> failed) - reset to null both on a fresh 0x1E occurrence (first-pass
+    /// signature change) and once that occurrence completes (distance test satisfied), so a LATER 0x1E
+    /// occurrence on this same entity always starts clean. 0x1F never sets this (D5: no detour for
+    /// 0x1F).
+    /// </summary>
+    internal NavigationPath? WalkDetourPath;
+
+    /// <summary>
+    /// Engine-only, not part of the original struct: guards <see cref="WalkDetourPath"/>'s own one-shot
+    /// <c>TryFindPath</c> attempt for the CURRENT 0x1E occurrence - once a detour attempt has been made
+    /// (successful or not), later ticks do not retry <c>TryFindPath</c> every frame while
+    /// <see cref="ForceAdjusted"/> stays nonzero (that would allocate a fresh
+    /// <see cref="NavigationPath"/>/search buffers every tick of a stuck walk, violating this codebase's
+    /// no-per-frame-allocation rule - see <see cref="AlundraEventProgramRunner"/>'s own class doc for the
+    /// same constraint applied elsewhere). Reset alongside <see cref="WalkDetourPath"/> at the same two
+    /// points (fresh 0x1E occurrence / occurrence completion).
+    /// </summary>
+    internal bool WalkDetourAttempted;
 
     /// <summary>
     /// Persisted interpreter cursor for slots B (Map) and C (Tick) - the only two slots the original
@@ -671,9 +713,14 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// sub-step's <c>ΔPosX</c>/<c>ΔPosY</c> (16.16) already converted to float pixels INCLUDING their
     /// fraction (<c>Δ / 65536f</c>, not the original's own truncated <c>Δ &gt;&gt; 16</c>) - see
     /// <see cref="AlundraPlayerManager.RunOneTick"/>'s own call site. An axis <c>Move</c> blocks leaves
-    /// <see cref="ForceX"/>/<see cref="ForceY"/> untouched by design (no <c>ForceAdjusted</c> feedback -
-    /// accepted deviation, documented on the same plan section). A no-op without a controller (the
-    /// caller falls back to its own direct <see cref="PosX"/>/<see cref="PosY"/> += in that case).
+    /// <see cref="ForceX"/>/<see cref="ForceY"/> untouched by design (no per-axis correction - accepted
+    /// deviation, documented on the same plan section); it DOES set <see cref="ForceAdjusted"/> (E4.d)
+    /// when the controller's own returned displacement falls short of what was requested here by more
+    /// than <see cref="ForceAdjustedEpsilonPixels"/> on either horizontal axis - the DLL's own equivalent
+    /// of the original's "movement was curtailed" signal (see <see cref="ForceAdjusted"/>'s own doc). A
+    /// no-op without a controller (the caller falls back to its own direct
+    /// <see cref="PosX"/>/<see cref="PosY"/> += in that case) - <see cref="ForceAdjusted"/> is left
+    /// untouched, same as every other controller-gated site on this class.
     /// </summary>
     internal void MoveControllerAndPullPosition(float deltaXPixels, float deltaYPixels)
     {
@@ -682,13 +729,28 @@ public class AlundraEntityScriptProxy : GameplayProxy
             return;
         }
 
-        Controller.Move(new Vector3(deltaXPixels, deltaYPixels, 0f));
+        var requested = new Vector3(deltaXPixels, deltaYPixels, 0f);
+        var actual = Controller.Move(requested);
+
+        if (MathF.Abs(actual.X - requested.X) > ForceAdjustedEpsilonPixels
+            || MathF.Abs(actual.Y - requested.Y) > ForceAdjustedEpsilonPixels)
+        {
+            ForceAdjusted = 1;
+        }
 
         var root = Owner.RootComponent.LocalTransform.Position;
         PosX = (int)Math.Round((double)root.X * 65536.0);
         PosY = (int)Math.Round((double)root.Y * 65536.0);
         PosZ = (int)Math.Round((double)root.Z * 65536.0);
     }
+
+    /// <summary>Small horizontal-axis tolerance <see cref="MoveControllerAndPullPosition"/> uses to decide
+    /// whether the controller's own returned displacement counts as "curtailed" (sets
+    /// <see cref="ForceAdjusted"/>) - well under a single pixel, so ordinary floating-point noise from the
+    /// <c>Move</c> round trip never sets it spuriously, while any REAL wall/step-height block (which stops
+    /// the entity short by at least a fraction of a pixel every tick it keeps pushing) reliably does.
+    /// </summary>
+    private const float ForceAdjustedEpsilonPixels = 0.01f;
 
     public override void Draw()
     {

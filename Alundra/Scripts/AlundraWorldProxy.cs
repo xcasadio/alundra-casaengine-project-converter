@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
+using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Application.Components;
@@ -226,6 +227,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     public AlundraCellsCollisionField? CollisionField { get; private set; }
 
+    /// <summary>
+    /// This world's navigation grid (E4.d, docs/plan-e4-deplacement-scripte.md decision E4-2), built once
+    /// in <see cref="InitializeWithWorld"/> right after <see cref="CollisionField"/> from the SAME
+    /// <see cref="TileMapData"/> - see <see cref="TryBuildNavigationGrid"/>'s own doc. Null in degraded
+    /// mode (missing navigation layer or tileset-resolution failure) - satisfies
+    /// <see cref="IEntityWorldContext.NavigationGrid"/> implicitly (this class already implements that
+    /// interface).
+    /// </summary>
+    public NavigationGrid2D? NavigationGrid { get; private set; }
+
     /// <summary>Renders this world's scrolling background layers (see <see cref="BackdropRenderer"/>'s
     /// class doc) - loaded once in <see cref="InitializeWithWorld"/>, ticked and drawn every frame
     /// from <see cref="Update"/>.</summary>
@@ -296,6 +307,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         {
             CollisionField = null;
         }
+
+        // E4.d (docs/plan-e4-deplacement-scripte.md, decision E4-2): navigation grid, built from the same
+        // TileMapData right after the collision field above - see TryBuildNavigationGrid's own doc.
+        NavigationGrid = TryBuildNavigationGrid(world, tileMapData);
 
         // Wall/sprite depth interleave (Slice B): strip every baked wall tile the converter recorded
         // out of the flat "Render_*" layers and resubmit it through the tile map's runtime sorted
@@ -859,6 +874,55 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// so the formula itself lives in exactly one place. Float arithmetic throughout: an integer
     /// <c>128*256/65536</c> truncates to 0 before the final <c>*2500</c> ever runs.
     /// </summary>
+    /// <summary>
+    /// E4.d (docs/plan-e4-deplacement-scripte.md, decision E4-2): builds this world's navigation grid
+    /// from the SAME <paramref name="tileMapData"/> <see cref="InitializeWithWorld"/>'s collision field
+    /// just read, right after it. Tilesets are resolved in <c>tile_set_asset_ids</c> order - the exact
+    /// same order/lookup <c>TileMapComponent.LoadTileSets</c> uses at runtime
+    /// (CasaEngineMonogame/CasaEngine/Framework/Scene/Entities/Components/TileMapComponent.cs:819-850:
+    /// index <see cref="TileMapData.TileSetDataAssetIds"/> by position, <c>Load&lt;TileSetData&gt;</c>
+    /// each through the world's own <c>AssetContentManager</c>) - required so the navigation layer's own
+    /// per-tile <c>tileSourceIndex</c> lines up with <paramref name="tileSets"/>' own indices exactly the
+    /// way <see cref="NavigationGrid2D.TryCreateFromTileMap"/> expects
+    /// (<c>tileSets[tileSourceIndex]</c>). <c>cellSize</c> is always 1f: the DLL consumes the grid purely
+    /// in "cell space" and does its own px&lt;-&gt;cell conversion (24x16 - see
+    /// <see cref="AlundraEventProgramRunner"/>'s own 0x1E walk-detour helpers), since the engine's
+    /// <see cref="CasaEngine.Framework.AI.Navigation.CharacterControllerNavigationDriverComponent"/> is
+    /// deliberately NOT used in E4 (its <c>(X, -Z)</c> intent axis is hard-coded, E4-2). Degraded mode -
+    /// null, one warning - on a missing navigation layer (an older/regenerated export that predates E4.a)
+    /// or any tileset-resolution failure (missing asset id, catalog miss), the same tolerant shape as
+    /// <see cref="AlundraCellsCollisionField.TryCreate"/> right above this method's own call site.
+    /// </summary>
+    private static NavigationGrid2D? TryBuildNavigationGrid(World world, TileMapData tileMapData)
+    {
+        List<TileSetData> tileSets;
+        try
+        {
+            tileSets = new List<TileSetData>(tileMapData.TileSetDataAssetIds.Count);
+            foreach (var assetId in tileMapData.TileSetDataAssetIds)
+            {
+                tileSets.Add(world.Game.AssetContentManager.Load<TileSetData>(assetId));
+            }
+        }
+        catch (Exception ex)
+        {
+            Logs.WriteWarning(
+                $"AlundraWorldProxy: world '{world.Name}' - failed to resolve its tilesets for "
+                + $"navigation grid construction ({ex.Message}); navigation disabled (degraded mode).");
+            return null;
+        }
+
+        if (NavigationGrid2D.TryCreateFromTileMap(tileMapData, tileSets, cellSize: 1f, out var grid))
+        {
+            return grid;
+        }
+
+        Logs.WriteWarning(
+            $"AlundraWorldProxy: world '{world.Name}' has no navigation layer ('{NavigationGrid2D.NavigationRoleProperty}' "
+            + $"= '{NavigationGrid2D.NavigationRoleGrid}'); navigation disabled (degraded mode).");
+        return null;
+    }
+
     private static (float Gravity, float MaxFallSpeed) ResolveMapGravitySettings(TileMapData tileMapData)
     {
         tileMapData.CustomProperties.TryGetValue("Gravity", out var gravityRaw);

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Alundra.Scripts;
+using CasaEngine.Framework.AI.Navigation;
 using Xunit;
 
 namespace Alundra.Tests;
@@ -51,6 +52,8 @@ public class AlundraEventProgramRunnerTests
         {
             DestroyedEntities.Add(entity);
         }
+
+        public NavigationGrid2D? NavigationGrid { get; set; }
     }
 
     [Fact]
@@ -1385,5 +1388,179 @@ public class AlundraEventProgramRunnerTests
         runner.RunOneScriptCall(owner, state);
 
         Assert.Equal(1, state.Result);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // E4.d: 0x1E "Walk" / 0x1F "Walk with collision" - core suspend/complete logic (opcode-level,
+    // synthetic PosX/PosY - see AlundraNpcCharacterControllerMoverTests for the real-mover integration
+    // scenarios: real program-139 walk, real wall + navigation detour, degraded no-grid mode over the
+    // real map).
+    // ---------------------------------------------------------------------------------------------
+
+    private static NavigationGrid2D NewSyntheticGrid(int width, int height, params (int X, int Y)[] blockedCells)
+    {
+        var grid = new NavigationGrid2D(width, height, 1f);
+        var blocked = new HashSet<(int, int)>(blockedCells);
+        for (var y = 0; y < height; y++)
+        {
+            for (var x = 0; x < width; x++)
+            {
+                grid.SetCell(x, y, blocked.Contains((x, y))
+                    ? NavigationGridCell.Blocked
+                    : new NavigationGridCell(true, 1f, NavigationLayerMask.All));
+            }
+        }
+
+        return grid;
+    }
+
+    [Fact]
+    public void Walk_0x1E_FirstPass_MemorizesPositionAndSuspends()
+    {
+        // threshold = (v2<<8)|v1 = 24 px; params=[24,0].
+        var document = NewDocument(0x1E, 24, 0, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.PosX = 1000 << 16;
+        entity.PosY = 2000 << 16;
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.CodeIndex); // suspended - still sitting at the 0x1E instruction.
+        Assert.Equal(1000 << 16, state.Parameters[2]);
+        Assert.Equal(2000 << 16, state.Parameters[3]);
+    }
+
+    [Fact]
+    public void Walk_0x1E_BelowThreshold_KeepsSuspending()
+    {
+        var document = NewDocument(0x1E, 24, 0, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.PosX = 1000 << 16;
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state); // first pass
+
+        entity.PosX += 20 << 16; // dx_px = 20 < 24
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.CodeIndex);
+    }
+
+    [Fact]
+    public void Walk_0x1E_ExactThreshold_CompletesInclusive_AndResetsParameters()
+    {
+        // Script_30_01E's own comparison is "threshold <= dx" (inclusive), not "threshold < dx" - dx_px
+        // exactly equal to the threshold must already complete the walk.
+        var document = NewDocument(0x1E, 24, 0, 0x1A, 99, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.PosX = 1000 << 16;
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state); // first pass
+
+        entity.PosX += 24 << 16; // dx_px = 24 == threshold.
+        runner.RunOneScriptCall(entity, state);
+
+        // Completion (result=3, nonzero) falls straight through to the marker 0x1A within the SAME call
+        // (RunOneScriptCall only stops on a result of 0).
+        Assert.Equal(99u, entity.TargetAnimationId);
+        Assert.Equal(0, state.Parameters[1]); // reset by the generic post-dispatch bookkeeping.
+    }
+
+    [Fact]
+    public void WalkWithCollision_0x1F_ForceAdjustedNonzero_EndsEarlyDespiteDistanceNotReached()
+    {
+        var document = NewDocument(0x1F, 24, 0, 0x1A, 77, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.PosX = 1000 << 16;
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state); // first pass
+
+        entity.PosX += 5 << 16; // dx_px = 5, well under the 24 threshold.
+        entity.ForceAdjusted = 1;
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(77u, entity.TargetAnimationId);
+    }
+
+    [Fact]
+    public void WalkWithCollision_0x1F_NeitherDistanceNorForceAdjusted_KeepsSuspending()
+    {
+        var document = NewDocument(0x1F, 24, 0, 0x1A, 77, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.PosX = 1000 << 16;
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        entity.PosX += 5 << 16;
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0u, entity.TargetAnimationId); // 0x1A never reached.
+        Assert.Equal(0, state.CodeIndex);
+    }
+
+    [Fact]
+    public void Walk_0x1E_HarnessForceImmediateWalkCompletion_EndsOnFirstDispatch()
+    {
+        var document = NewDocument(0x1E, 24, 0, 0x1A, 55, 0xFF);
+        var runner = NewRunner(document);
+        runner.HarnessForceImmediateWalkCompletion = true;
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(55u, entity.TargetAnimationId);
+    }
+
+    [Fact]
+    public void Walk_0x1E_ForceAdjustedWithNavigationGrid_EngagesDetourAndReDerivesDirection_WithoutEndingTheWalk()
+    {
+        // 10x10 synthetic grid, cell (5,5) blocked - directly between the entity's own cell (4,5) and the
+        // projected destination cell (6,5) (threshold 24 + one-cell margin 24 = 48px east of the
+        // memorized start, per TryEngageDetour's own doc), so TryFindPath must route around it.
+        var grid = NewSyntheticGrid(10, 10, (5, 5));
+        var context = new FakeEntityWorldContext { NavigationGrid = grid };
+        var document = NewDocument(0x1E, 24, 0, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        entity.PosX = 108 << 16; // cell (4,5) center exactly (4*24+12).
+        entity.PosY = 88 << 16; // cell (4,5) center exactly (5*16+8).
+        entity.TargetDirection = 24; // east (OffsetXList[24]=0x300>0, OffsetYList[24]=0).
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state); // first pass - memorizes, no detour yet.
+
+        entity.ForceAdjusted = 1; // simulates a curtailed sub-step between the two calls.
+        runner.RunOneScriptCall(entity, state); // second call - PosX/PosY unchanged -> still suspended.
+
+        Assert.Equal(0, state.CodeIndex); // 0x1E itself only ends via the ORIGINAL distance test.
+        Assert.NotNull(entity.WalkDetourPath);
+        Assert.True(entity.WalkDetourPath!.Points.Count > 2, "a genuine detour around the blocked cell should need more than a direct 2-point line.");
+        Assert.NotEqual(24u, entity.TargetDirection); // re-derived toward the first real waypoint.
+    }
+
+    [Fact]
+    public void Walk_0x1E_ForceAdjustedWithoutNavigationGrid_DoesNotDetour_KeepsPushingOriginalDirection()
+    {
+        var document = NewDocument(0x1E, 24, 0, 0xFF);
+        var runner = NewRunner(document); // no worldContext -> NoOpEntityWorldContext -> NavigationGrid null.
+        var entity = NewEntity();
+        entity.PosX = 108 << 16;
+        entity.PosY = 88 << 16;
+        entity.TargetDirection = 24;
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state); // first pass
+
+        entity.ForceAdjusted = 1;
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Null(entity.WalkDetourPath);
+        Assert.Equal(24u, entity.TargetDirection); // unchanged - degraded mode, original "keep pushing" behavior.
     }
 }
