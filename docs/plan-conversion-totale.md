@@ -99,7 +99,10 @@ l'ordre conseillé, les dépendances sont explicites. Statuts : ⏳ à faire · 
 
 Oracle transverse : le harnais headless `Alundra.Tests/IntroTraceHarnessTests.cs` (chronologie
 `intro-roadmap.md` §0 : flags 0x83E8 → 0x83EA → 0x83E9 → 860 → 0x11). Il doit être adapté à chaque
-étape qui change l'architecture (E1) et sert ensuite de non-régression.
+étape qui change l'architecture (E1) et sert ensuite de non-régression. **Depuis E4 (décision E4-1),
+le harnais simule la cinématique fidèle : l'oracle est à durées réelles, 0x11 à la frame 1704**
+(jalons 554/1034/1202/1704 — voir `plan-e4-deplacement-scripte.md` E4.f et la table §0
+d'intro-roadmap).
 
 ### E1 — Scripts par entité, MapEvents dans le world ⏳ (DLL)
 
@@ -379,7 +382,7 @@ Oracle transverse : le harnais headless `Alundra.Tests/IntroTraceHarnessTests.cs
 - **Dépendances** : E2. **À valider avant lancement** : représentation exacte Z-élévation / unités
   (cf. `guidelines-runtime-alundra-casaengine.md` §2).
 
-### E4 — Déplacement scripté des entités ⏳ (convertisseur + DLL)
+### E4 — Déplacement scripté des entités ✅ (plan et tranches : docs/plan-e4-deplacement-scripte.md ; runtime à valider par l'utilisateur)
 
 - **But** : les marins de l'intro marchent, sautent, atterrissent (durées réelles).
 - **Contenu** : convertisseur — exporter `AnimSets[].Speed`, `Acceleration`, `IsZForceApplied`,
@@ -505,7 +508,7 @@ Oracle transverse : le harnais headless `Alundra.Tests/IntroTraceHarnessTests.cs
 | E1 scripts par entité + MapEvents | ✅ (verifier CONFIRMED ; visuel runtime à valider par l'utilisateur) | 92f1be5 |
 | E2 héros pawn | ✅ (verifier CONFIRMED ; visuel runtime à valider par l'utilisateur) | voir git log |
 | E3 collisions (E3.0/a/b/c/c-bis/d.0/d) | ✅ (verifiers CONFIRMED ; runtime à valider par l'utilisateur) | voir git log |
-| E4 déplacement scripté | ⏳ | |
+| E4 déplacement scripté (E4.0/a/b/c/d/f) | ✅ (verifiers CONFIRMED ; runtime à valider par l'utilisateur) | voir git log ; moteur a9267735 |
 | E5 caméra | ⏳ | |
 | E6 contrôle joueur | ⏳ | |
 | E7 mutation de tuiles | ⏳ | |

@@ -469,7 +469,7 @@ DLL / convertisseur / harnais (ce repo) :
   différent (analyse, puis question à l'utilisateur si l'écart n'est pas une durée réelle
   explicable) ; une marche qui ne finit jamais (bug de seuil/vitesse — analyser, ne pas masquer).
 
-### E4.f — Plateformes-entités fidèles + clôture d'E4.e ⏳ (DLL + harnais, décision E4-4)
+### E4.f — Plateformes-entités fidèles + clôture d'E4.e ✅ (2de7faa + 5dea954 + db9f560, verifiers CONFIRMED)
 
 #### Pourquoi — diagnostic de l'arrêt d'E4.e (2026-08-24, faits)
 
@@ -489,6 +489,8 @@ DLL / convertisseur / harnais (ce repo) :
   marin parce que `Depth = (SizeZ << 16) − 1` (`EntityManager.cs:192-199`) place son sommet à
   **400 px − 1/65536, strictement sous les pieds à 400** — c'est ce bord qui satisfait le `<`
   strict ; le port doit CONSERVER le comparateur strict (un « fix » en `<=` serait une infidélité).
+  **Correctif de fait (verifier)** : le perchoir réel du marin 11 est le record **2** (468, 584, 368)
+  — le record 5 (468, 600, 368) est 16 px au sud, hors recouvrement d'empreinte.
 - **`PlatformEntity` n'est PAS ce mécanisme** : c'est la relation « porté » (pickup/throw — sites
   d'assignation dans `PlayerManager.cs:1117/:2027/:2224`, `FunctionTypeC.cs`), hors périmètre. La
   relation générique « debout sur » est **`RidingEntity`** (`CheckRidingEntities`,
@@ -562,6 +564,43 @@ DLL / convertisseur / harnais (ce repo) :
   jalons différent (STOP, analyse) ; une entité de l'intro encore bloquée malgré le support
   (STOP, nouveau diagnostic) ; ordre de spawn plateformes/passagers non garanti (STOP).
 
+#### Réalisé — écarts (2026-08-24)
+
+- **Trois commits au lieu d'un** (écart documenté — deux passes de recovery après verdicts) :
+  `2de7faa` (clamp de support + clôture E4.e, verifier CONFIRMED avec avis), `5dea954` (conjonction
+  complète de `:205` + gate sujet `:189` + les 5 tests d'acceptation (a)-(e) + correction record 2),
+  `db9f560` (pin du Z logique pendant le support).
+- **Nouvel oracle chiffré (E4-1)** : arrêt par la condition (a), **0x11 à la frame 1704** (ancien
+  oracle « durées nulles » : 926). Jalons : 0x83E8@554 et spawns 555/678/801 **inchangés** (purs
+  Waits de B1) ; 0x83EA@**1034** (marin 11 : regards, marches réelles à 1,875 px/tick, descente
+  ~192 ticks) ; 0x83E9@**1202** (marche 168 px = 91 ticks exacts + Wait 15 + Wait 60) ; 860 et
+  0x11@**1704** (bloc 18 : spawn@1525, marche 48 px à 0,5 px/tick = 96 ticks, chute 160→80 px à
+  1 px/tick = 80 ticks exacts, 1624→1704). Deux chaînes re-dérivées indépendamment par le verifier,
+  exactes ; trace byte-stable (SHA identique sur relances).
+- **Mouettes 8/9 et bloc 10 débloqués par le correctif A1** : le clamp sans borne basse gelait leur
+  `ForceZ` chaque frame ; avec la conjonction complète ils terminent leurs vraies séquences
+  (mouettes : montée, deux contrôles d'altitude, atterrissage ~1106/1229 ; bloc 10 : 0x07 vrai à
+  1023 → 0x19 Deactivate → End) — l'écart anticipé pour E5 (bloc 10 jamais désactivé) est résorbé.
+- **Off-by-one trouvé et corrigé** dans la passe verticale du harnais : le comparateur `IsOnGround`
+  utilisait `landingTop − 1` ; la forme fidèle (`GetCollisionOnZ` = hauteur + 1, `:1602/:1704`) est
+  `landingTop` — sans quoi 0x70 du bloc 18 ne passait jamais.
+- **Pin du Z logique (quantification float)** : la marge réelle du perchoir est d'exactement
+  **1 unité 16.16** (< ULP float32 ≈ 1/32 px à 400 px) ; le re-pull racine(float) → `Pos*` la
+  détruisait aux DEUX sites (tête d'`Update` ET `MoveControllerAndPullPosition` — le second était le
+  coupable réel). Tant que `WasEntitySupportedLastTick` : `PosZ` logique est la source de vérité
+  verticale (X/Y toujours pullés). Test réel : 60 `World.Update(1/50)`, `PosZ == 26214401` bit-exact
+  dès la frame 0, transition propre à la sortie d'empreinte. Même famille que l'épisode
+  BitDecrement d'E3.c-bis.
+- **`ForceZ` decay ajouté** pour les entités à contrôleur dans l'évaluation de support (port
+  `:1460-1476` — gravité/vitesse terminale), la passe horizontale restant `AlundraScriptedMotion`.
+- **Écarts documentés** : seed de portée non clampé à `TerrainHeight + 1` côté production (pas de
+  `TerrainHeight` suivi par la DLL — documenté au call site ; le harnais applique la forme
+  complète) ; `CollidedWithEntityZ` collant côté production (aucun lecteur aujourd'hui, latent) ;
+  support statique seulement (pas de suivi de plateforme mobile — E14) ; joueur exclu des passes
+  cinématiques simulées du harnais (pas de contrôleur/pad harnais — E2/E5/E6).
+- **Tests** : DLL **421/421** (415 + 5 tests d'acceptation + 1 régression logic-level) ;
+  convertisseur 137/137 ; builds 0 erreur.
+
 ## 4. Ordre et dépendances
 
 E4.0 (moteur, plan-verifier) → E4.a (convertisseur) → E4.b → E4.c → E4.d → E4.e. E4.c ne dépend que
@@ -579,5 +618,5 @@ checkout standalone. Validation par tranche : builds/tests/export selon les règ
 | E4.b PNJ sur le mover | ✅ (verifier CONFIRMED après correctif) | 365946f + de1eceb |
 | E4.c opcodes flux/direction/contrôle + debug 0x10 | ✅ (verifier CONFIRMED) | 07be483 |
 | E4.d marche naviguée 0x1E/0x1F | ✅ (verifier CONFIRMED) | fd2a89e |
-| E4.e harnais cinématique + nouvel oracle | ⚠️ arrêt déclenché (marin 11 bloqué — diagnostic : plateformes-entités manquantes) ; fusionnée dans E4.f | |
-| E4.f plateformes-entités + clôture E4.e | ⏳ | |
+| E4.e harnais cinématique + nouvel oracle | fusionnée dans E4.f (arrêt du 1er essai : support d'entités manquant) | |
+| E4.f plateformes-entités + clôture E4.e | ✅ (verifiers CONFIRMED, 3 passes) | 2de7faa + 5dea954 + db9f560 |

@@ -13,6 +13,12 @@ l'entité joueur, qui verrouille le contrôle (0x10), orchestre par flags les Ti
 15 et 18, et rend la main (0x11) quand le bloc 18 pose le flag 860 — 926 frames dans la trace (les
 déplacements des PNJ y sont de durée nulle, faute de physique).**
 
+> **Mise à jour 2026-08-24 (E4 livré, décision E4-1)** : le harnais simule désormais la cinématique
+> fidèle (forces, gravité, sol, support d'entités — plan `plan-e4-deplacement-scripte.md`) ; la trace
+> à durées réelles s'arrête par la condition (a) avec **0x11 à la frame 1704**. La chronologie ci-
+> dessous (§0 « Chronologie ») donne le **nouvel oracle** ; l'ancienne table « durées nulles » est
+> conservée en référence historique.
+
 ## 0. Méthode
 
 ### Le harnais
@@ -112,6 +118,23 @@ pose elle-même.
   partiels ; 0 garde-fou déclenché ; 0 opcode sans taille connue.
 
 ### Chronologie de l'intro (trace)
+
+**Oracle courant — durées réelles (E4, 2026-08-24, `IntroTraceHarnessTests` ; dérivations chiffrées
+dans le test)** :
+
+| Frame | Jalon | Dérivation |
+|---|---|---|
+| 554 | B1 : flag **0x83E8** (libère le marin 11) | inchangé — purs `Wait(60)` de B1 |
+| 555 / 678 / 801 | B1 : `0x2D` active 7, 8, 9 (mouettes) | inchangé — purs Waits de B1 |
+| ~1023 | Bloc 10 : `0x07` vrai → `0x19` se désactive | montée réelle vers sa boîte cible |
+| 1034 | Marin 11 : flag **0x83EA** (libère le marin 15) | regards 4×Wait(15) ; marches réelles (anim 1, Speed 160 → 1,875 px/tick) ; descente du perchoir (record 2, 400 px) par `0x1B` −1 px/tick ≈ 192 ticks jusqu'à la fenêtre TileZ 12 |
+| ~1106 / ~1229 | Mouettes 8/9 : fin d'envol (contrôles d'altitude passés) | `0x1B [128,3]` = +3,5 px/tick, gravité −0,5 |
+| 1202 | Marin 11 : flag **0x83E9** (libère le marin 12) | marche 168 px = 91 ticks exacts + Wait(15) + Wait(60) |
+| 1525 | Marin 12 : `0x2D` spawn du bloc 18 | chaîne de marches réelles du marin 12 |
+| 1624 | Bloc 18 : fin de marche 48 px (0,5 px/tick = 96 ticks) | anim 1 banque 25, Speed 64 |
+| **1704** | Bloc 18 au sol (chute 160→80 px à 1 px/tick = **80 ticks exacts**) → flag **860** ; B1 : `0x36` passe, **`0x11` rend la main** | arrêt condition (a), 1704 frames |
+
+**Table historique — durées nulles (avant E4 ; 0x1E/0x1F/0x07/0x70 optimistes ou sautés)** :
 
 | Frame | Évènement |
 |---|---|
