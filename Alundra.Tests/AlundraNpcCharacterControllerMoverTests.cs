@@ -572,6 +572,221 @@ public class AlundraNpcCharacterControllerMoverTests
         Assert.True(maxDownwardSpeed > 700f, $"fall speed {maxDownwardSpeed} never got close to the 800 clamp over a 400px fall.");
     }
 
+    // -----------------------------------------------------------------------------------------
+    // (3b) Regression - sailor 12, map 389 intro: the original resets ForceZ to 0 on a TERRAIN landing
+    // too, not only an entity-vs-entity one (PhysicsEngine.cs:123-135's own `if (platformEntity == null ||
+    // ...)` branch runs the SAME reset for both). Before the fix, a controller-driven NPC resting on real
+    // terrain keeps decaying ForceZ every logic tick past 0 down to the terminal
+    // -(ZViscosity&lt;&lt;8) - never re-clamped, because EvaluateEntitySupport's own "found" branch (the
+    // only site that reset ForceZ) never fires without an ENTITY support below.
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void TerrainLanding_RestingOnRealFlatGround_ForceZStaysZeroInsteadOfDecayingToTheTerminalVelocity()
+    {
+        var projectRoot = FindProjectRoot();
+        var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        if (settings == null)
+        {
+            return;
+        }
+
+        var world = BuildWorld(field);
+        // Cell (18,57): flat, sol 80px - spawned exactly on the ground, no script impulse, so this test
+        // isolates the resting-on-terrain decay alone (no walk, no entity support).
+        var (entity, proxy) = BuildNpcPawn(world, settings, new Vector3(444f, 920f, 80f), new FakeScriptHost());
+        world.Update(1f / 50f); // register with CharacterMotionSystem first (same ordering note as the tests above).
+
+        proxy.Flags = EntityFlags.Gravity;
+        // Real map 389 raw Gravity/ZViscosity (same values GravityToggle/GullHoverCycle use above).
+        proxy.MapGravityRaw = 128;
+        proxy.MapZViscosityRaw = 4096;
+        proxy.ApplyGravitySettingsToController();
+
+        for (var frame = 0; frame < 100; frame++)
+        {
+            world.Update(1f / 50f);
+
+            // Bug (pre-fix): ForceZ decayed every tick regardless of terrain support and was never reset,
+            // so by frame ~32 it had already reached the terminal -(4096&lt;&lt;8) = -1048576 and stayed
+            // there; the resulting constant terminal velocity was re-applied to the controller every tick
+            // (SetVerticalVelocity below), silently absorbed here by the engine's own ground-snap on flat
+            // ground (this is exactly why the bug was invisible on flat ground - see the staircase test
+            // below for where it stops being invisible).
+            Assert.Equal(0, proxy.ForceZ);
+            Assert.Equal(80f, entity.RootComponent!.Position.Z);
+            Assert.Equal(1, proxy.IsOnGround);
+        }
+
+        Assert.Equal(0f, proxy.Controller!.Velocity.Z);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // (3c) THE user-visible regression - sailor 12 stuck at the intro's own last staircase (map 389,
+    // after commit 1d460f0): real stair cell (13,27), slope 5 height 10, the SAME fixture
+    // AlundraCharacterControllerAdoptionTests.Stairs_SteppingDownTheSlope_FollowsEachStepInTurn uses for
+    // the hero's own direct-Move stair-following test ((324,439,160) -&gt; (324,443,156) -&gt;
+    // (324,447,152), walking +Y/south = descending). This NPC spawns at the BOTTOM of that same slope
+    // ((324,447,152)) and walks NORTH (TargetDirection 16: OffsetXList[16]=0/OffsetYList[16]=-512, pure
+    // -Y, the reverse of the hero's own descending direction) - i.e. it must CLIMB the same slope the
+    // hero descends, and onto the real flat deck at the slope's own documented top-corner height (160,
+    // per the hero test's own comment) - a scripted mover, not a direct Controller.Move, so this
+    // exercises the SAME AlundraScriptedMotion.TickScriptedNpc + EvaluateEntitySupport path the real
+    // sailor 12 walks through.
+    //
+    // Fidelity note (verified empirically, both with and without the fix, real map/settings): this
+    // engine's own <see cref="CharacterControllerComponent.Update"/> already re-derives ground height
+    // fully every rendered frame (<c>UpdateGround</c>) and its own <c>ApplyVerticalVelocity</c> zeroes
+    // any downward request outright while grounded - a robustness net the original PSX engine's
+    // equivalent code did not have. Because of that net, THIS test's own X/Y/Z trajectory is bit-for-bit
+    // identical with and without the fix (confirmed by direct comparison) - the missing terrain reset
+    // never manages to visibly displace this particular NPC on this particular slope. The bug is real
+    // and worth fixing regardless (see EvaluateEntitySupport's own doc for the full citation/rationale,
+    // and TerrainLanding_.../VerticalImpulse_... above for the state-level regression coverage that DOES
+    // discriminate cleanly) - this test additionally proves the SAME missing reset on the EXACT real
+    // stair cells the user hit: <see cref="AlundraEntityScriptProxy.ForceZ"/> must recover to 0 on every
+    // grounded tick while climbing, not merely decay unboundedly underneath a trajectory this engine's
+    // own snap happens to still render correctly.
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void Stairs_ScriptedWalkNorthFromTheBottomStep_ClimbsEachStepWithForceZPinnedAtZeroInsteadOfDecayingUnderneathIt()
+    {
+        var projectRoot = FindProjectRoot();
+        var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        if (settings == null)
+        {
+            return;
+        }
+
+        var world = BuildWorld(field);
+        // Bottom of the real stair cell (13,27) - the hero's own final position in
+        // AlundraCharacterControllerAdoptionTests.Stairs_SteppingDownTheSlope_FollowsEachStepInTurn.
+        var (entity, proxy) = BuildNpcPawn(world, settings, new Vector3(324f, 447f, 152f), new FakeScriptHost());
+        world.Update(1f / 50f); // register with CharacterMotionSystem first.
+
+        proxy.Flags = EntityFlags.Gravity;
+        proxy.MapGravityRaw = 128;
+        proxy.MapZViscosityRaw = 4096;
+        proxy.ApplyGravitySettingsToController();
+
+        // Real bank-146 AnimSets[1] (Speed 160, Acceleration 0 - same as RealWalk_0x1F.../Walk0x1E... above),
+        // TargetDirection 16 (pure north, -Y) - climbing, the reverse of the hero's own descending test.
+        proxy.AnimSetsByAnim = new Dictionary<int, AnimSetEntry>
+        {
+            [1] = new AnimSetEntry { Anim = 1, Speed = 160, Acceleration = 0 },
+        };
+        proxy.TargetAnimationId = 1;
+        proxy.TargetDirection = 16;
+
+        // 1.25 px/tick north once CurrentAnimationId catches up (one-frame lag, same as every other
+        // scripted-walk test in this class) - crossing the slope's own 8px span (447 -&gt; 439) takes ~7
+        // ticks; 60 ticks gives ample margin to also clear the top corner onto the flat deck beyond it.
+        var crossedBoundaryFrame = -1;
+        var everSawNonZeroForceZWhileGrounded = false;
+        for (var frame = 1; frame <= 60 && crossedBoundaryFrame < 0; frame++)
+        {
+            world.Update(1f / 50f);
+
+            if (proxy.Controller!.IsGrounded && proxy.ForceZ != 0)
+            {
+                everSawNonZeroForceZWhileGrounded = true;
+            }
+
+            if (entity.RootComponent!.Position.Y <= 435f)
+            {
+                crossedBoundaryFrame = frame;
+            }
+        }
+
+        // Real-world progress across the stair boundary (both before and after the fix, in this engine -
+        // see this test's own "Fidelity note" above for why position alone does not discriminate here).
+        Assert.True(crossedBoundaryFrame > 0,
+            $"NPC never crossed the stair boundary (Y <= 435) within 60 ticks - stuck at Y={entity.RootComponent!.Position.Y}, Z={entity.RootComponent!.Position.Z}.");
+        Assert.True(entity.RootComponent!.Position.Z >= 158f,
+            $"expected the NPC to have climbed to (near) the top-corner height 160 by Y={entity.RootComponent!.Position.Y}; got Z={entity.RootComponent!.Position.Z}.");
+
+        // THE fix, exercised on the exact real stair cells: while grounded and gravity-flagged, ForceZ
+        // must never be left non-zero (pre-fix, it decays every tick and is only ever reset by the
+        // entity-support "found" branch, which this scenario never reaches - no entity below, only real
+        // terrain). This is the direct, state-level proof of the missing PhysicsEngine.cs:123-135
+        // terrain reset on the EXACT scenario the user reported (sailor 12, map 389's last staircase).
+        Assert.False(everSawNonZeroForceZWhileGrounded,
+            "ForceZ was left non-zero on a grounded tick while climbing the real staircase - the terrain-landing reset (PhysicsEngine.cs:123-135's missing half) did not fire.");
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // (3d) The terrain-landing reset must not wipe a same-tick scripted upward (0x1B) impulse - the
+    // original's own reset is reached only through ComputeZPosition's own `finalZVelocity &lt; 1` gate
+    // (PhysicsEngine.cs:118), i.e. never while rising; here it is gated on `ForceZ &lt; 0` instead (see
+    // EvaluateEntitySupport's own doc for why that is the narrower, still-safe equivalent).
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void VerticalImpulse_UpwardZeroOneBWhileRestingOnRealGround_StillLiftsAndIsNotWipedByTheTerrainReset()
+    {
+        var projectRoot = FindProjectRoot();
+        var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        if (settings == null)
+        {
+            return;
+        }
+
+        var world = BuildWorld(field);
+        // Cell (18,57): flat, sol 80px - same resting spot as TerrainLanding_... above.
+        var (entity, proxy) = BuildNpcPawn(world, settings, new Vector3(444f, 920f, 80f), new FakeScriptHost());
+        world.Update(1f / 50f);
+
+        proxy.Flags = EntityFlags.Gravity;
+        proxy.MapGravityRaw = 128;
+        proxy.MapZViscosityRaw = 4096;
+        proxy.ApplyGravitySettingsToController();
+
+        // Rest first, exactly like TerrainLanding_... above, so the terrain-landing reset is genuinely
+        // engaged (ForceZ pinned at 0 by it every tick) before the impulse arrives - proving the reset does
+        // not somehow suppress the FOLLOWING tick's own positive impulse either.
+        for (var frame = 0; frame < 30; frame++)
+        {
+            world.Update(1f / 50f);
+        }
+
+        Assert.Equal(0, proxy.ForceZ);
+        var zBeforeImpulse = entity.RootComponent!.Position.Z;
+
+        // Real block-18 0x1B params [128,3] (same raw impulse GullHoverCycle... above uses): raw=(3&lt;&lt;8)|128=896,
+        // ForceZ=896*0x10000&gt;&gt;8=229376 (+3.5 px/tick) BEFORE this tick's own decay; net after the
+        // -MapGravityRaw&lt;&lt;8=-32768 decay is +196608 (+3 px/tick) - still positive, so this tick's own
+        // terrain-reset test (ForceZ &lt; 0) must NOT fire.
+        var runner = new AlundraEventProgramRunner(
+            new EventProgramDocument { MapIndex = 389, Codes = Array.Empty<int>() }, new AlundraGameState(), worldContext: null);
+        runner.RunOneScriptCall(proxy, new EventProgramState { Codes = new byte[] { 0x1B, 128, 3, 0xFF } });
+
+        world.Update(1f / 50f);
+
+        Assert.True(entity.RootComponent!.Position.Z > zBeforeImpulse,
+            $"expected the upward 0x1B impulse to lift the entity off {zBeforeImpulse}; got {entity.RootComponent!.Position.Z}.");
+        Assert.True(proxy.Controller!.Velocity.Z > 0f,
+            $"expected a positive vertical velocity from the upward impulse; got {proxy.Controller.Velocity.Z}.");
+    }
+
     /// <summary>
     /// Bug fix (user-reported runtime timing bug, gull entity 6): a gull-6-shaped cycle - hover-climb,
     /// clear the Gravity bit mid-air via the REAL 0x63 opcode bridge (Tick program 134's own real

@@ -462,13 +462,65 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 // ApplyGravitySettingsToController's own doc).
                 ApplyGravitySettingsToController();
 
+                // Bug fix (sailor 12, map 389 intro - walks down toward the last staircase and never
+                // climbs it): the original's own ComputeZPosition (PhysicsEngine.cs:123-135) resets ForceZ
+                // to 0 on TWO kinds of landing, not one - CheckEntityCollisionDown's own platformEntity
+                // result can be either a genuine entity (platformEntity != null, the case
+                // EntitySupport.TryFindSupport/the "found" branch above already ports) OR the bare TERRAIN
+                // probe itself (platformEntity == null, ComputeEntityGroundHeight's own result folded into
+                // CheckEntityCollisionDown's platformTopZ seed at PhysicsEngine.cs:180-187) - PhysicsEngine.cs:
+                // 125-135's own `if (platformEntity == null || ...)` branch runs the SAME
+                // `entity.PosZ = platformHeight - entity.ModZ; if (Gravity) entity.ForceZ = 0;` pair for
+                // both. Only the entity half was ported (see the "found" branch above); this "not found"
+                // tail (no ENTITY support this tick) is exactly where the missing terrain half belongs -
+                // without it, a controller-driven NPC resting on terrain keeps decaying ForceZ every tick
+                // (the decay above) down to the terminal -(ZViscosity&lt;&lt;8) and re-applies that terminal
+                // velocity to the controller every tick via SetVerticalVelocity below; on flat ground the
+                // engine's own ground-snap silently absorbs it, but at a staircase the resulting deep
+                // downward velocity makes the mover's own step-up test see a wall instead of a step, so the
+                // NPC stalls instead of climbing.
+                //
+                // Implementation choice (shape (a) of the two the fix's own brief allows): reuses the
+                // ENGINE's own ground resolution - Controller.IsGrounded - instead of a second DLL-side
+                // terrain probe like EntitySupport.TryFindSupport/the harness's own RunVerticalPhysicsPass
+                // run for the entity-support/intro-trace cases. The controller has owned ground detection
+                // since E3 (CharacterMotionSystem's own UpdateGround, which always runs at the head of THIS
+                // SAME frame's World.Update, strictly before GameplayProxy.Update ever reaches here - see
+                // this class' own Update doc on that ordering) - re-probing the terrain here would compute
+                // the exact same answer a second time, at real per-tick cost, purely to duplicate work the
+                // engine already did. The one-frame lag this reuse carries (IsGrounded reflects the LAST
+                // controller ground update, evaluated once at the head of Update - see that method's own
+                // IsOnGround assignment - not a fresh probe for every tick of a multi-tick catch-up frame)
+                // is the same documented lag <see cref="AlundraEntityScriptProxy.Update"/>'s own root-pull
+                // already accepts elsewhere on this class, and is harmless here: it can only delay the reset
+                // by at most one further frame's worth of ticks, never wipe a genuine landing.
+                //
+                // Faithfulness gate (must not fire while rising): the original only ever reaches this reset
+                // through ComputeZPosition's own `if (finalZVelocity < 1)` branch (PhysicsEngine.cs:118) -
+                // i.e. only while this tick's own vertical step is descending or stationary, never while
+                // rising under a scripted upward 0x1B impulse. Gated here on `ForceZ < 0` (strictly
+                // descending) rather than the original's `< 1` (descending-or-zero): ForceZ is already 0 in
+                // the steady "resting on flat ground" case (the very case this fix targets), so `< 1` would
+                // be a no-op re-assignment there anyway, while `< 0` still cannot wipe a same-tick 0x1B lift
+                // (ForceZ > 0 the instant that impulse lands - see
+                // AlundraNpcCharacterControllerMoverTests.VerticalImpulse_UpwardZeroOneBWhileRestingOnRealGround...)
+                // - the narrower test is strictly safer with no behavioural cost.
+                if (Controller.IsGrounded && (Flags & EntityFlags.Gravity) != 0 && ForceZ < 0)
+                {
+                    ForceZ = 0;
+                    FinalForceZ = 0;
+                }
+
                 // THE fix: port of PhysicsEngine.cs:165's own unconditional `entity.PosZ = entity.PosZ +
                 // finalZVelocity` - drives this tick's own vertical displacement through the controller so
                 // the engine integrates EXACTLY FinalForceZ px over the tick (ForceZ is a 16.16 px/tick
                 // quantity at the original's own 50 Hz rate; * 50f converts ticks/s, / 65536f converts
                 // 16.16 to whole pixels). Skipped at the immediate spawn-time evaluation, same reasoning as
                 // the decay above (FinalForceZ is still 0 there, so this would be a harmless no-op anyway,
-                // but skipping keeps the two guards symmetric and documents the same reasoning).
+                // but skipping keeps the two guards symmetric and documents the same reasoning). Reads
+                // FinalForceZ AFTER the terrain-landing reset above so a real landing this tick genuinely
+                // holds still (matching the original never falling through to its own PosZ +=
+                // finalZVelocity, PhysicsEngine.cs:165, once it has already returned from the reset above).
                 if (!immediateAtSpawn)
                 {
                     Controller.SetVerticalVelocity(FinalForceZ * 50f / 65536f);
