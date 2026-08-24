@@ -68,8 +68,14 @@ public class SpriteWriterBodyPrefabTests
                 var spriteComponent = Assert.IsType<AnimatedSpriteComponent>(Assert.Single(projectionComponent.Children));
                 Assert.NotEmpty(spriteComponent.AnimationAssetIds);
 
-                var depthSortable = Assert.IsType<DepthSortable2DComponent>(Assert.Single(entity.Components));
+                // E4.a: a positive body box now also gets a CharacterControllerComponent (NPC mover
+                // target), alongside the pre-existing entity-level DepthSortable2DComponent - see
+                // SpriteWriterNpcCharacterControllerTests for its own values.
+                Assert.Equal(2, entity.Components.Count());
+                var depthSortable = Assert.IsType<DepthSortable2DComponent>(
+                    Assert.Single(entity.Components, c => c is DepthSortable2DComponent));
                 Assert.Equal(RenderPass2D.YSortedWorld, depthSortable.RenderPass);
+                Assert.Contains(entity.Components, c => c is CharacterControllerComponent);
 
                 var collisionComponent = Assert.IsType<CollisionComponent>(
                     rootComponent.Children.Single(c => c is CollisionComponent));

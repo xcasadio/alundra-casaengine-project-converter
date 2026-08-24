@@ -92,6 +92,11 @@ public class SpriteWriterCharacterControllerTests
 
             Assert.Empty(report.Errors);
             Assert.Equal(2, report.Counters["Entities.Prefabs"]);
+            // E4.a: the hero still counts as one CharacterControllerComponent; the non-hero bank
+            // carries no body box in this fixture (no SizeX/Y/Z on its Header), so it gets neither a
+            // CollisionComponent nor a controller - see SpriteWriterNpcCharacterControllerTests for the
+            // "body box but not the hero" branch this tranche adds.
+            Assert.Equal(1, report.Counters["Entities.CharacterControllers"]);
 
             var heroAssetId = prefabAssetIdsByBankKey["alundra_0"];
             var nonHeroAssetId = prefabAssetIdsByBankKey["55"];

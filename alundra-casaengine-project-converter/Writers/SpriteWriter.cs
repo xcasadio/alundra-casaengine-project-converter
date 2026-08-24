@@ -348,16 +348,16 @@ public static class SpriteWriter
         };
         entity.AddComponent(new DepthSortable2DComponent { Name = nameof(DepthSortable2DComponent) });
 
-        // E3.d (docs/plan-e3-collisions.md "DLL - adoption"): ONLY the hero's own prefab - the
+        // E3.d (docs/plan-e3-collisions.md "DLL - adoption"): the hero's own prefab - the
         // map_alundra.json bank keyed alundra_0 (Sector5Id 0, IsAlundraBank - SpriteBankReader.cs:187,
-        // :211) - gets a CharacterControllerComponent; the other 394 prefabs get none (E4 decides for
-        // NPCs). Radius/Height/SkinWidth/StepHeight/GroundSnapDistance are plausible, map-independent
-        // values (Height/2*Radius satisfies CharacterControllerSettings.Validate even though the mover
-        // itself sweeps the sibling CollisionComponent's Box fixture above, not this capsule -
-        // docs/plan-e3-collisions.md E3.c C3); Gravity/MaxFallSpeed/WalkabilityMask are exported as 0
-        // and OVERWRITTEN at runtime by AlundraWorldProxy.AdoptPlayerPawn, which alone knows this
-        // entity's map (Gravity/ZViscosity custom properties) and its own header Flags
-        // (ClassA/ClassB). ControlMode is left at its class default (Player) - not written explicitly.
+        // :211) - gets a CharacterControllerComponent with fixed, map-independent capsule values.
+        // Radius/Height/SkinWidth/StepHeight/GroundSnapDistance are plausible values (Height/2*Radius
+        // satisfies CharacterControllerSettings.Validate even though the mover itself sweeps the
+        // sibling CollisionComponent's Box fixture above, not this capsule - docs/plan-e3-collisions.md
+        // E3.c C3); Gravity/MaxFallSpeed/WalkabilityMask are exported as 0 and OVERWRITTEN at runtime
+        // by AlundraWorldProxy.AdoptPlayerPawn, which alone knows this entity's map (Gravity/ZViscosity
+        // custom properties) and its own header Flags (ClassA/ClassB). ControlMode is left at its
+        // class default (Player) - not written explicitly.
         if (bank.IsAlundraBank && bank.Sector5Id == 0)
         {
             var controllerComponent = new CharacterControllerComponent { Name = nameof(CharacterControllerComponent) };
@@ -371,6 +371,56 @@ public static class SpriteWriter
             settings.MaxFallSpeed = 0f;
             settings.WalkabilityMask = 0u;
             entity.AddComponent(controllerComponent);
+            report.Increment("Entities.CharacterControllers");
+        }
+        // E4.a (docs/plan-e4-deplacement-scripte.md): every OTHER prefab with a positive body box (the
+        // same condition CreateBodyFixture above already gates on) also gets a
+        // CharacterControllerComponent, so the DLL's per-entity mover (E4.b) has a controller to drive
+        // for every scripted NPC. Radius/Height come from THIS bank's own body box (the two horizontal
+        // extents give the capsule radius, the vertical extent - or 2*Radius if that would violate
+        // CharacterControllerSettings.Validate's Height >= 2*Radius - gives the height); the remaining
+        // fields mirror the hero's fixed values (SkinWidth/StepHeight/GroundSnapDistance are plausible
+        // constants, not derived from anything Alundra-specific) - Gravity/MaxFallSpeed/WalkabilityMask
+        // stay 0, overwritten per-entity at spawn time the same way the hero's are (E4.b). ControlMode
+        // is "Script": Move() is honored in every mode except Disabled, and no input ever targets an
+        // NPC, so Script only marks intent, matching PlayerSetupWriter's convention of using the enum
+        // to document who drives the component.
+        else if (hasBody)
+        {
+            const float skinWidth = 0.5f;
+            var radius = Math.Min(bodyBox!.SizeX, bodyBox.SizeY) / 2f;
+
+            // One real bank (map_alundra.json Sector5Id 244) has a degenerate 1x1x1 pixel body box:
+            // radius 0.5 exactly equals the fixed skin width above, which
+            // CharacterControllerSettings.Validate rejects (skin width must be STRICTLY smaller than
+            // the radius). Rather than shrink the shared skin width for every NPC to accommodate one
+            // sub-pixel hitbox, this single bank is left without a controller (still gets its
+            // CollisionComponent above) - documented deviation, not a silent drop.
+            if (radius > skinWidth)
+            {
+                var height = Math.Max(bodyBox.SizeZ, 2f * radius);
+
+                var controllerComponent = new CharacterControllerComponent { Name = nameof(CharacterControllerComponent) };
+                var settings = controllerComponent.Settings;
+                settings.Radius = radius;
+                settings.Height = height;
+                settings.SkinWidth = skinWidth;
+                settings.StepHeight = 3f;
+                settings.GroundSnapDistance = 4f;
+                settings.Gravity = 0f;
+                settings.MaxFallSpeed = 0f;
+                settings.WalkabilityMask = 0u;
+                controllerComponent.SetControlMode(CharacterControlMode.Script);
+                entity.AddComponent(controllerComponent);
+                report.Increment("Entities.CharacterControllers");
+            }
+            else
+            {
+                report.Warnings.Add(
+                    $"Sprites: bank '{bank.BankKey}' has a body box too small for a character controller " +
+                    $"(radius {radius:0.###} <= skin width {skinWidth}); no CharacterControllerComponent was added.");
+                report.Increment("Entities.CharacterControllersSkippedDegenerateBody");
+            }
         }
 
         var relativePath = Path.Combine(bankRelativeDirectory, $"{entityFolderName}.entity");

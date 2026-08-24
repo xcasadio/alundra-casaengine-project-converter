@@ -60,6 +60,12 @@ if (options.Phase >= 2)
 {
     report.RunPhase("Phase2.CellMetadata", () =>
         CellMetadataWriter.ConvertMaps(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report));
+
+    // E4.a (docs/plan-e4-deplacement-scripte.md, D5): a "Navigation" layer + its shared tileset, for
+    // the same maps Phase 2 just wrote AlundraCells onto. Runs from the same phase gate - it
+    // read-modify-writes the .tileMap files exactly like Phase 2 does and depends on nothing later.
+    report.RunPhase("Phase2.Navigation", () =>
+        NavigationWriter.ConvertMaps(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report));
 }
 
 // Phase 3: sprite banks, their animations, and the per-bank entity prefab. Phase 3.5 then links

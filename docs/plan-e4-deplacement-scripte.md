@@ -195,11 +195,17 @@ DLL / convertisseur / harnais (ce repo) :
   `Navigation` : `custom_properties` `navigation.role = "grid"`, `navigation.defaultWalkable = "false"` ;
   `Depth.Role = CollisionOnly` (non rendue, `TileMapDepthSettings.cs:64`) ; `tiles[]` = tuile W
   (marchable) ou B (bloquée) par cellule selon `((walkability | ground_property << 8) & M) == 0`,
-  **M = 0x41** (0x40 | classe B) — justification : les marcheurs scriptés de l'intro (banques 146/161)
-  sont des PNJ de classe B (à vérifier sur leurs `Flags` réels en début de tranche ; **arrêt** si un
-  marcheur de l'intro a un masque différent). Écart documenté : la grille fige un masque unique ; le
-  mover par entité (masque réel) reste l'autorité de collision — la navigation ne sert qu'au
-  contournement.
+  **M = 0x40** — **fait relevé le 2026-08-24 (arrêt du pré-check exécuté)** : les quatre marcheurs
+  scriptés de l'intro (records 11/12 banque 146, 15 banque 161, 18 banque 25) ont
+  `MoreFlags = 0x80` (Collidable seul ; `Flags` complets `0x3A180`/`0x83A180`,
+  `data-extracted/data/map_389.json`, banque 25 canonique dans `map_10.json`) — ni ClassB (bit 3)
+  ni ClassA (bit 0), donc leur masque mover réel `WalkabilityMaskFor(Flags)` vaut **0x40**. La
+  justification initiale du plan (« marins = classe B, M = 0x41 ») était une hypothèse réfutée par
+  les données. Sous M = 0x40, seul le bit 6 de `walkability` bloque dans la grille (`gp << 8` ne
+  recoupe jamais 0x40) : la grille code les murs universels, les restrictions de classe restent au
+  mover par entité. Écart documenté : une entité future ClassA/ClassB aura un masque mover plus
+  strict que la grille — la navigation peut proposer un chemin que le mover bloque (le contournement
+  0x1E re-navigue sur blocage).
 - **Tileset partagé** : un `Navigation.tileSet` (2 `TileData` : `navigation.walkable = "true"/"false"`)
   + texture minimale, ajouté aux `tile_set_asset_ids` de chaque map ; catalogue via
   `EditorAssetCatalogService.Save()`. **Vérification en début de tranche** : ce que
@@ -215,11 +221,15 @@ DLL / convertisseur / harnais (ce repo) :
 - **Non-goals** : aucune consommation runtime (E4.b/E4.d) ; pas de `navigation.cost`/`layers` (V1).
 - **Acceptation** : export complet 0 erreur, compteurs historiques inchangés + nouveaux compteurs
   (`Navigation.Layers = 483` si toutes les maps ont des cells — sinon compte réel + compteur de maps
-  dégradées ; `Entities.CharacterControllers`) ; tests convertisseur : la couche de la 389 a
-  `navigation.role = grid` et `CollisionOnly`, la cellule marchable (18,57) → tuile W, la cellule
-  `walkability 1` (18,15) → tuile B (avec M = 0x41), `ground_property 128` (18,38) → tuile B ; un
-  prefab PNJ à corps (banque 146) porte le contrôleur avec les valeurs dérivées de SA boîte ; un
-  sprite-only n'en porte pas ; le héros garde `Radius 7.5/Height 32` ; round-trip `Entity.Load`.
+  dégradées ; `Navigation.WalkableCells/BlockedCells` ; `Entities.CharacterControllers`) ; tests
+  convertisseur : la couche de la 389 a `navigation.role = grid` et `CollisionOnly` ; formule M = 0x40
+  sur cellules synthétiques (`walkability 0x40` → B ; `walkability 1` → W ; `ground_property 128` →
+  W — les restrictions de classe ne sont PAS dans la grille) ; cellules réelles de la 389 :
+  (18,57) → W, et le compte de cellules B de la 389 == valeur relevée dans `AlundraCells` (assertion
+  du compte réel, même si 0 — les murs de la 389 peuvent être des différences de hauteur, jamais
+  codées dans la grille, écart déjà documenté) ; un prefab PNJ à corps (banque 146) porte le
+  contrôleur avec les valeurs dérivées de SA boîte ; un sprite-only n'en porte pas ; le héros garde
+  `Radius 7.5/Height 32` ; round-trip `Entity.Load`.
 - **Rollback** : revert + export. **Budget** : un commit, ≤ 1 journée. **Arrêts** : listés ci-dessus.
 
 ### E4.b — DLL : les PNJ bougent sur le mover ⏳ (DLL)
@@ -309,8 +319,9 @@ DLL / convertisseur / harnais (ce repo) :
 - **Acceptation** : (1) 0x1F réel du marin 11 (programme 139 — relever seuil/direction) sur la 389 :
   fin à la frame calculée (distance/vitesse AnimSet réels) ; (2) 0x1E avec obstacle (cellules
   bloquées réelles ou monde synthétique) : contournement par waypoints, fin à distance atteinte —
-  échoue sans la grille ; (3) 0x1F contre un mur : fin anticipée ; (4) grille : la cellule (18,15)
-  `walkability 1` est non marchable dans la grille de la 389, (18,57) l'est ; mode dégradé sans
+  échoue sans la grille ; (3) 0x1F contre un mur : fin anticipée ; (4) grille : une cellule
+  `walkability 0x40` (réelle si la 389 en a, sinon synthétique) est non marchable, (18,57) l'est ;
+  mode dégradé sans
   couche ; harnais : jalons inchangés. **Politique harnais temporaire** : sans cinématique (E4.e pas
   encore livrée), les positions du harnais n'évoluent pas et un 0x1E/0x1F réel y suspendrait sans
   fin ; cette tranche ajoute donc au harnais une déviation documentée « fin immédiate de 0x1E/0x1F »
