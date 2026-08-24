@@ -1235,35 +1235,110 @@ public class AlundraNpcCharacterControllerMoverTests
         // here (matches expectedPosZ exactly).
         Assert.Equal(expectedPosZ, proxy.PosZ);
         Assert.Equal(400f, entity.RootComponent!.Position.Z, 2);
+        Assert.True(proxy.WasEntitySupportedLastTick);
 
-        // KNOWN ENGINE-INTEGRATION FINDING (discovered by this test, out of E4.f's own port-fidelity
-        // scope - CasaEngineMonogame is read-only here): record 2/11's real authored margin is exactly
-        // ONE 16.16 unit (the STRICT comparator's own edge, verified above) - below float32's own
-        // representable precision at ~400px magnitude (ULP ~4.8e-5, i.e. ~3 16.16 units). The FIRST
-        // World.Update already collapses PosZ from 26214401 to 26214400 once it round-trips through the
-        // engine's own float Vector3 root transform (Update's own "pull from root",
-        // AlundraEntityScriptProxy.cs: "PosZ = Math.Round(root.Z * 65536.0)") - at that point candidateTop
-        // (26214400) is no longer STRICTLY below moddedPosZ (26214400 == 26214400), so this SAME tick's
-        // EvaluateEntitySupport correctly (per its own strict-comparator contract) stops supporting it, and
-        // ApplyGravitySettingsToController restores the map's real Gravity (1250) - the engine's own
-        // CharacterMotionSystem then genuinely accelerates it downward every following frame (traced:
-        // 26214400, 26181632, 26116096, 26017792, ... - a real, accelerating fall, not a bug in
-        // TryFindSupport/EvaluateEntitySupport's own logic, which this file's own
-        // TryFindSupport_StrictComparator unit test already verifies bit-exact in isolation). The all-
-        // integer intro-trace harness (docs/intro-trace-389.txt's own milestone oracle, re-verified byte-
-        // stable after this same A1/A2 fix) never round-trips PosZ through a float32 transform at all, so
-        // it does NOT exhibit this - the milestone chain (554/1034/1202/1704) is unaffected. This is a
-        // genuine CasaEngine float32-controller-vs-original-all-integer-physics precision mismatch,
-        // specific to a razor-thin (exactly 1/65536px) authored margin, reported to the coordinator rather
-        // than "fixed" here (would require either a CasaEngineMonogame change or moving map 389's own
-        // record 2/11 authored heights - both out of this slice's scope).
-        //
-        // What THIS test asserts instead, matching the plan's own "(a)" intent (the SUPPORT LOGIC itself
-        // holds stably for >= 60 evaluations, Gravity flag set) without the unrelated float-precision
-        // artifact: repeated DIRECT EvaluateEntitySupport calls (bypassing World.Update's own controller
-        // float round-trip) keep PosZ bit-exact at the SAME value for 60 straight evaluations - the
-        // logic-level guarantee CheckEntityCollisionDown's own port provides, independent of how any given
-        // engine happens to store position.
+        // Engine-integration fix (coordinator-dispositioned FIX after the finding this test itself first
+        // surfaced): record 2/11's real authored margin is exactly ONE 16.16 unit (the STRICT comparator's
+        // own edge, verified above) - below float32's own representable precision at ~400px magnitude
+        // (ULP ~1/32 px, i.e. ~2048 16.16 units). Without AlundraEntityScriptProxy.Update's own
+        // WasEntitySupportedLastTick pull-preservation (see that field's own doc), the FIRST real
+        // World.Update would collapse PosZ from 26214401 to 26214400 by re-quantizing it through the
+        // engine's float Vector3 root transform, permanently defeating the strict comparator one tick after
+        // the entity settles. With the fix, PosZ stays the DLL's own source of truth (never re-pulled from
+        // the float root) for as long as the entity remains supported - bit-exact across REAL engine ticks,
+        // not just direct EvaluateEntitySupport calls (see this class' own
+        // Support_SailorElevenOnRealRecordTwoPlatform_LogicLevel...  test below for the float-round-trip-
+        // free variant kept as a narrower regression net on the port itself).
+        for (var frame = 1; frame <= 60; frame++)
+        {
+            world.Update(1f / 50f);
+            Assert.Equal(expectedPosZ, proxy.PosZ);
+            Assert.Equal(400f, entity.RootComponent!.Position.Z, 2);
+            Assert.True((proxy.Flags & EntityFlags.Gravity) != 0);
+            Assert.True(proxy.WasEntitySupportedLastTick);
+        }
+
+        // Clean transition off support: 0x17 (Gravity flag cleared) + walk west far enough to leave record
+        // 2's own real footprint (same real anim 1, Speed 160/Acceleration 0, threshold well past the
+        // combined half-widths - see Support_WalkingWhileSupported's own doc for the exact mechanics).
+        // Once support drops, WasEntitySupportedLastTick clears and the float pull resumes for Z; since
+        // Gravity is already off (scripted, not the support clamp's own doing), Z simply stays constant
+        // (floating) instead of falling - the plan's own (b) shape, verified here as (a)'s own natural
+        // conclusion rather than a separate scenario.
+        proxy.Flags &= ~EntityFlags.Gravity;
+        proxy.ApplyGravitySettingsToController();
+        proxy.TargetDirection = 8; // west, real OffsetXList[8] = -768.
+        proxy.TargetAnimationId = 1; // real AnimSets[1]: Speed 160, Acceleration 0.
+
+        var lostSupportAtFrame = -1;
+        for (var frame = 61; frame <= 100 && lostSupportAtFrame < 0; frame++)
+        {
+            world.Update(1f / 50f);
+            if (!proxy.WasEntitySupportedLastTick)
+            {
+                lostSupportAtFrame = frame;
+            }
+        }
+
+        Assert.True(lostSupportAtFrame > 0, "expected the walk to carry sailor 11 off record 2's real footprint within 40 more frames.");
+
+        // WasEntitySupportedLastTick's own one-frame-late transition (documented at its own declaration):
+        // the frame that FIRST reads false was itself pulled at the HEAD of that same frame using the
+        // PRIOR (still true) flag, so its own PosZ is still the preserved logical value, not yet a real
+        // float pull. One more tick lets the pull itself catch up to the now-false flag - THIS is the
+        // first frame whose PosZ is an actual float-root read, so it is the right baseline for "stays
+        // constant while floating" rather than the still-preserved value one frame before it.
+        world.Update(1f / 50f);
+        Assert.False(proxy.WasEntitySupportedLastTick);
+        var zAfterLosingSupport = proxy.PosZ;
+
+        for (var frame = 0; frame < 10; frame++)
+        {
+            world.Update(1f / 50f);
+            Assert.False(proxy.WasEntitySupportedLastTick); // stays unsupported - it walked away, not back.
+            Assert.Equal(zAfterLosingSupport, proxy.PosZ); // floats - Gravity was cleared before the walk.
+            Assert.True((proxy.Flags & EntityFlags.Gravity) == 0);
+        }
+    }
+
+    /// <summary>(a) continued - the SAME claim as
+    /// <see cref="Support_SailorElevenOnRealRecordTwoPlatform_HeldAtZApprox400FromFrameZeroInclusiveFor60Frames"/>
+    /// but exercised via direct, repeated <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>
+    /// calls (bypassing <c>World.Update</c>'s own controller/float round-trip entirely) - a narrower
+    /// regression net directly on the port's own 16.16 arithmetic, independent of
+    /// <see cref="AlundraEntityScriptProxy.WasEntitySupportedLastTick"/>'s own pull-preservation fix (which
+    /// the test above now covers through the real engine frame loop).</summary>
+    [Fact]
+    public void Support_SailorElevenOnRealRecordTwoPlatform_LogicLevelDirectEvaluateCallsStayBitExact()
+    {
+        var projectRoot = FindProjectRoot();
+        var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        if (settings == null)
+        {
+            return;
+        }
+
+        var tileMapData = LoadMap389TileMapData(projectRoot!)!;
+        var catalog = new SpriteRecordCatalog(projectRoot!);
+        var platformProxy = BuildRealRecordProxy(tileMapData, catalog, recordIndex: 2);
+
+        var world = BuildWorld(field);
+        var host = new FakeScriptHost();
+        host.Collidables.Add(platformProxy);
+
+        var (_, proxy) = BuildRealSailor11Pawn(world, tileMapData, catalog, settings, host);
+        var expectedPosZ = platformProxy.PosZ + platformProxy.ModZ + platformProxy.Depth + 1;
+
+        proxy.PushLogicalPositionToRoot();
+        proxy.EvaluateEntitySupport(host.Collidables, immediateAtSpawn: true);
+        Assert.Equal(expectedPosZ, proxy.PosZ);
+
         for (var frame = 1; frame <= 60; frame++)
         {
             proxy.EvaluateEntitySupport(host.Collidables);
@@ -1352,9 +1427,19 @@ public class AlundraNpcCharacterControllerMoverTests
         var startX = entity.RootComponent!.Position.X;
         var startY = entity.RootComponent!.Position.Y;
         var lostSupportAtFrame = -1;
-        var settledPosZ = -1; // captured after World.Update call #1 - see Support_SailorEleven...'s own
-                               // doc on why the pre-round-trip pinnedPosZ (exact candidateTop+1) is not
-                               // reproduced bit-for-bit past the engine's own float32 Vector3 pose.
+        var settledPosZ = -1; // captured after World.Update call #1.
+
+        // Engine-integration fix (WasEntitySupportedLastTick, see its own doc): while the entity remains
+        // entity-supported, its logical PosZ is now preserved bit-exact (never re-quantized through the
+        // float32 root) - so settledPosZ is expected to equal pinnedPosZ exactly here, unlike before that
+        // fix (when the very first World.Update already eroded it by one unit). The pin only actually
+        // erodes once support genuinely ends and the float pull resumes - handled below via
+        // postSupportPosZ, the SAME one-frame-late-transition shape
+        // Support_SailorElevenOnRealRecordTwoPlatform_...'s own "clean transition off support" section
+        // documents (WasEntitySupportedLastTick's own flip is read one frame behind the pull that used
+        // it).
+        var postSupportPosZ = -1;
+        var sawUnsupportedFrame = false;
 
         for (var frame = 1; frame <= 40; frame++)
         {
@@ -1363,12 +1448,34 @@ public class AlundraNpcCharacterControllerMoverTests
             if (frame == 1)
             {
                 settledPosZ = proxy.PosZ;
-                Assert.InRange(settledPosZ, pinnedPosZ - 1, pinnedPosZ);
+                Assert.Equal(pinnedPosZ, settledPosZ);
             }
 
-            // Z stays pinned to the real platform top for as long as the support relationship holds - AND
-            // stays constant even after it ends (0x17 already cleared gravity, so nothing pulls it down).
-            Assert.Equal(settledPosZ, proxy.PosZ);
+            if (proxy.WasEntitySupportedLastTick)
+            {
+                // Z stays pinned to the real platform top for as long as the support relationship holds.
+                Assert.Equal(settledPosZ, proxy.PosZ);
+            }
+            else if (!sawUnsupportedFrame)
+            {
+                // First frame the flag reads false - still the one-frame-late transition (this frame's own
+                // pull ran using LAST tick's still-true flag), so PosZ is still the preserved value here,
+                // not yet a real float pull.
+                Assert.Equal(settledPosZ, proxy.PosZ);
+                sawUnsupportedFrame = true;
+            }
+            else if (postSupportPosZ < 0)
+            {
+                // First REAL float-pulled frame past the transition - captured as the new baseline (the
+                // pull is no longer obligated to reproduce the pre-transition pin bit-for-bit past the
+                // engine's own float32 Vector3 pose).
+                postSupportPosZ = proxy.PosZ;
+            }
+            else
+            {
+                // Stays constant thereafter (0x17 already cleared gravity, so nothing pulls it down).
+                Assert.Equal(postSupportPosZ, proxy.PosZ);
+            }
 
             var stillSupported = EntitySupport.IsEligibleSubject(proxy)
                 && EntitySupport.TryFindSupport(proxy, host.Collidables, int.MinValue, out _, out _);

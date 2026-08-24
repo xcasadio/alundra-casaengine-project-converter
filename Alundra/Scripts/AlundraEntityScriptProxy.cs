@@ -239,6 +239,30 @@ public class AlundraEntityScriptProxy : GameplayProxy
     public int MapZViscosityRaw;
 
     /// <summary>
+    /// Engine-only, not part of the original struct: set by <see cref="EvaluateEntitySupport"/> to whether
+    /// THIS tick's own evaluation actually found and pinned a support (true right after the "if found"
+    /// branch runs; false in both the "ineligible subject" early return and the "no candidate found" else
+    /// branch - i.e. always kept in sync with this same call, no stale carry-over). Consumed by BOTH of
+    /// this class' own root-Z pull sites - <see cref="Update"/>'s own head pull (root -&gt; <c>Pos*</c>)
+    /// AND <see cref="MoveControllerAndPullPosition"/>'s own pull (reached EARLIER in the same frame, via
+    /// <see cref="AlundraScriptedMotion.TickScriptedNpc"/>'s own kinematic tick, for every controller-
+    /// driven NPC) - while true, both pulls PRESERVE the current logical <see cref="PosZ"/> instead of
+    /// re-deriving it from the engine's own float32 root transform (X/Y are never guarded - support never
+    /// constrains them). See either call site's own doc for why (the authored support margin on map 389
+    /// can be as tight as ONE 16.16 unit, e.g. sailor 11 on record 2's own real top - far below float32's
+    /// own representable precision at this magnitude, so re-quantizing PosZ from a float root every frame
+    /// would silently erode that margin and break <see cref="EntitySupport.TryFindSupport"/>'s own STRICT
+    /// comparator). Both sites need the guard: gating only <see cref="Update"/>'s own pull was found
+    /// empirically insufficient on its own - <see cref="MoveControllerAndPullPosition"/> runs first in the
+    /// same frame (before this same tick's own <see cref="EvaluateEntitySupport"/> call even re-evaluates
+    /// support) and would otherwise silently re-collapse PosZ moments before that re-evaluation ran. Defaults
+    /// false (a freshly constructed/never-evaluated proxy is never treated as supported) - harmless for
+    /// every entity this mechanism does not apply to (the player, never entity-supported on map 389; any
+    /// NPC before its own first <see cref="EvaluateEntitySupport"/> call).
+    /// </summary>
+    internal bool WasEntitySupportedLastTick;
+
+    /// <summary>
     /// Port of the <c>Flags &amp; EntityFlags.Gravity</c> gate <c>PhysicsEngine.cs</c>'s per-entity vertical
     /// branch reads every tick (PhysicsEngine.cs:1458-1476, non-player half of <c>UpdateEntitiesForces</c>):
     /// with the bit set, this entity's <see cref="Controller"/> gets this map's real
@@ -325,6 +349,8 @@ public class AlundraEntityScriptProxy : GameplayProxy
     {
         if (!EntitySupport.IsEligibleSubject(this))
         {
+            WasEntitySupportedLastTick = false;
+
             if (Controller != null)
             {
                 ApplyGravitySettingsToController();
@@ -359,6 +385,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
 
         if (EntitySupport.TryFindSupport(this, collidables, platformTopZSeed, out _, out var supportTopZ))
         {
+            WasEntitySupportedLastTick = true;
             CollidedWithEntityZ = 1;
             PosZ = supportTopZ - ModZ;
             if ((Flags & EntityFlags.Gravity) != 0)
@@ -375,9 +402,14 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 PushLogicalPositionToRoot();
             }
         }
-        else if (Controller != null)
+        else
         {
-            ApplyGravitySettingsToController();
+            WasEntitySupportedLastTick = false;
+
+            if (Controller != null)
+            {
+                ApplyGravitySettingsToController();
+            }
         }
     }
 
@@ -537,12 +569,36 @@ public class AlundraEntityScriptProxy : GameplayProxy
         // Pulled with double-rounding, not a float cast: at this magnitude (~950 px) a float's ULP is
         // already ~8 16.16 units, so `(int)(px * 65536f)` would silently drop low bits every frame
         // (quantization, not a bug - see the 100-frame bounded-drift acceptance test).
+        //
+        // E4.f follow-up (engine-integration fix, coordinator-dispositioned FIX after verifier A1/A2):
+        // while <see cref="WasEntitySupportedLastTick"/> is set, PosZ is NOT re-derived from the float
+        // root here - X/Y still are (support never constrains them). Rationale: map 389's own authored
+        // entity-support margins can be as tight as ONE 16.16 unit (e.g. sailor 11 perched on record 2's
+        // own real top, PhysicsEngine.cs:205's own strict edge) - float32's own representable precision at
+        // ~400px magnitude is roughly 1/32 px (2^-23 relative ULP), i.e. ~2048 16.16 units, VASTLY coarser
+        // than that 1-unit margin. While supported, EvaluateEntitySupport already configured the controller
+        // as Gravity 0 + SetVerticalVelocity(0) and pushed the authoritative logical PosZ through
+        // PushLogicalPositionToRoot THIS SAME tick (see that method's own doc) - the root's own Z cannot
+        // legitimately change on its own between two such pushes (no vertical force is being applied), so
+        // pulling it back through the lossy float transform would only re-quantize an unchanged value and
+        // silently erode the authored margin, permanently defeating EntitySupport.TryFindSupport's own
+        // strict comparator one tick after the entity settles (empirically confirmed: PosZ collapsed
+        // 26214401 -> 26214400 on the very next real World.Update before this fix). Logical PosZ stays the
+        // single source of truth for as long as the flag holds; the very next tick that finds NO support
+        // resumes the normal float pull immediately (WasEntitySupportedLastTick clears in
+        // EvaluateEntitySupport's own "not found" branch, evaluated after this same frame's pull already
+        // ran using last tick's still-true flag - a documented one-frame-late transition, harmless since
+        // the flag itself was already accurate for what THIS pull needed to decide).
         if (Controller != null && Owner.RootComponent != null)
         {
             var root = Owner.RootComponent.LocalTransform.Position;
             PosX = (int)Math.Round((double)root.X * 65536.0);
             PosY = (int)Math.Round((double)root.Y * 65536.0);
-            PosZ = (int)Math.Round((double)root.Z * 65536.0);
+            if (!WasEntitySupportedLastTick)
+            {
+                PosZ = (int)Math.Round((double)root.Z * 65536.0);
+            }
+
             IsOnGround = Controller.IsGrounded ? 1 : 0;
         }
 
@@ -890,7 +946,20 @@ public class AlundraEntityScriptProxy : GameplayProxy
         var root = Owner.RootComponent.LocalTransform.Position;
         PosX = (int)Math.Round((double)root.X * 65536.0);
         PosY = (int)Math.Round((double)root.Y * 65536.0);
-        PosZ = (int)Math.Round((double)root.Z * 65536.0);
+
+        // Engine-integration fix (same rationale as Update's own head-pull - see
+        // WasEntitySupportedLastTick's own doc): this is a SECOND pull site, reached earlier in the same
+        // frame (RunOneKinematicTick -> here, called from TickScriptedNpc, which runs BEFORE
+        // EvaluateEntitySupport in Update). Without this same guard here, THIS site alone re-quantized
+        // PosZ through the float32 root every tick regardless of support, which is what actually caused
+        // the 26214401 -> 26214400 collapse (root-caused via a debug trace: Update's own head-pull was
+        // already correctly gated and read back 26214401 intact, but this method's unconditional PosZ
+        // pull silently overwrote it moments later, in the SAME frame, before EvaluateEntitySupport's own
+        // re-evaluation ever ran).
+        if (!WasEntitySupportedLastTick)
+        {
+            PosZ = (int)Math.Round((double)root.Z * 65536.0);
+        }
     }
 
     /// <summary>Small horizontal-axis tolerance <see cref="MoveControllerAndPullPosition"/> uses to decide
