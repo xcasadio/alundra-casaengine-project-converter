@@ -263,19 +263,27 @@ public class AlundraEntityScriptProxy : GameplayProxy
     internal bool WasEntitySupportedLastTick;
 
     /// <summary>
-    /// Port of the <c>Flags &amp; EntityFlags.Gravity</c> gate <c>PhysicsEngine.cs</c>'s per-entity vertical
-    /// branch reads every tick (PhysicsEngine.cs:1458-1476, non-player half of <c>UpdateEntitiesForces</c>):
-    /// with the bit set, this entity's <see cref="Controller"/> gets this map's real
-    /// <see cref="MapGravity"/>/<see cref="MapMaxFallSpeed"/> (same formula/values E3.d's
-    /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> already applies to the hero); with it clear, both go
-    /// to 0 - the original's own "entity keeps whatever <c>ForceZ</c> it already has, unaffected by
-    /// gravity" (the vertical-impulse opcode 0x1B, <see cref="AlundraEventProgramRunner"/>'s own bridge,
-    /// is exactly how that ForceZ gets set while gravity is off - E4.b, docs/plan-e4-deplacement-scripte.md).
-    /// Called once at spawn (<see cref="AlundraWorldProxy.ApplySpawnInitialization"/>, AFTER
-    /// <see cref="Flags"/> is assigned) and again by the 0x16/0x17 opcode handlers every time they flip the
-    /// Gravity bit. A no-op without a <see cref="Controller"/> (bare-fallback spawn, or a prefab that
-    /// predates E4.a's converter change) - <see cref="MapGravity"/>/<see cref="MapMaxFallSpeed"/> simply
-    /// stay unused in that case, same shape as every other controller-gated site on this class.
+    /// Bug fix (user-reported runtime timing bug, gull entity 6 of map 389 - measured ~158 px/s climb
+    /// instead of the faithful 150 px/s, westward drift only 179.25 px instead of 209.25 px): a
+    /// controller-driven NPC's vertical is now ENTIRELY owned by the DLL's own per-tick decay
+    /// (<see cref="EvaluateEntitySupport"/>, the single site - see that method's own doc), never by the
+    /// engine's own continuous <c>Settings.Gravity</c>/<c>MaxFallSpeed</c> integrator
+    /// (<c>CharacterControllerComponent.ApplyVerticalVelocity</c>, which runs every RENDERED frame, not
+    /// every 50 Hz logic tick - integrating a per-tick quantity at render rate is exactly what produced
+    /// the measured drift). This method therefore always zeroes both settings for a controller-driven
+    /// NPC, REGARDLESS of <see cref="Flags"/>' Gravity bit - the bit still exists and still matters (it
+    /// now gates <see cref="EvaluateEntitySupport"/>'s own decay instead, the original's own
+    /// <c>PhysicsEngine.cs:1458-1476</c> gate, ported one level down). <see cref="MapGravity"/>/
+    /// <see cref="MapMaxFallSpeed"/> are consequently unused by this method (kept as fields - see their own
+    /// doc, still fed by <see cref="AlundraWorldProxy.ResolveMapGravitySettings"/> for parity with the
+    /// hero's own unrelated E3.d path, <see cref="AlundraWorldProxy.AdoptPlayerPawn"/>, which sets its
+    /// controller's real Settings.Gravity/MaxFallSpeed directly and is OUT OF SCOPE for this fix - the hero
+    /// keeps its engine-driven vertical unchanged). Called once at spawn
+    /// (<see cref="AlundraWorldProxy.ApplySpawnInitialization"/>), by the 0x16/0x17 and 0x62/0x63 opcode
+    /// handlers (via <see cref="ResyncControllerFromFlags"/>) every time they flip a Flags bit, and every
+    /// tick from <see cref="EvaluateEntitySupport"/>'s own "not found" tail (defensive re-assertion, cheap
+    /// - see that method's own doc). A no-op without a <see cref="Controller"/> (bare-fallback spawn, or a
+    /// prefab that predates E4.a's converter change).
     /// </summary>
     internal void ApplyGravitySettingsToController()
     {
@@ -284,9 +292,8 @@ public class AlundraEntityScriptProxy : GameplayProxy
             return;
         }
 
-        var hasGravity = (Flags & EntityFlags.Gravity) != 0;
-        Controller.Settings.Gravity = hasGravity ? MapGravity : 0f;
-        Controller.Settings.MaxFallSpeed = hasGravity ? MapMaxFallSpeed : 0f;
+        Controller.Settings.Gravity = 0f;
+        Controller.Settings.MaxFallSpeed = 0f;
     }
 
     /// <summary>
@@ -327,17 +334,19 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// half, <c>PhysicsEngine.cs:123-139</c>) every call, no latch: when a support is found, pins
     /// <see cref="PosZ"/> to its top (<see cref="ModZ"/>-adjusted), sets <see cref="CollidedWithEntityZ"/>,
     /// zeroes <see cref="ForceZ"/> ONLY while <see cref="EntityFlags.Gravity"/> is set (preserved
-    /// otherwise, <c>PhysicsEngine.cs:129-134</c>) - and, for a controller-driven entity, suppresses the
-    /// ENGINE's own gravity for the controller's NEXT frame (<c>Settings.Gravity = 0</c>,
-    /// <c>SetVerticalVelocity(0)</c>) and pushes the pinned Z through the existing pose path
+    /// otherwise, <c>PhysicsEngine.cs:129-134</c>) - and, for a controller-driven entity, pins the
+    /// controller's own vertical velocity to zero (<c>SetVerticalVelocity(0)</c> - <c>Settings.Gravity</c>
+    /// is ALREADY 0 at all times for an NPC, see <see cref="ApplyGravitySettingsToController"/>'s own doc,
+    /// so there is nothing left to suppress) and pushes the pinned Z through the existing pose path
     /// (<see cref="PushLogicalPositionToRoot"/>) so THIS SAME frame's rendered/logical position is already
     /// correct - no "first frame dip" (see this class' own E4.f doc, "anti-creux" ordering:
     /// <see cref="AlundraWorldProxy.ApplySpawnInitialization"/> already ran ONE such evaluation
     /// immediately at spawn, before this entity's own first <see cref="Update"/> or the engine's first
-    /// <c>CharacterMotionSystem.UpdateControllers</c> pass ever runs). When no support is found, restores
-    /// the controller's normal gravity (<see cref="ApplyGravitySettingsToController"/>) - a no-op for a
-    /// controller-less entity (harness bare proxy, or a genuinely controller-less sprite-only prefab),
-    /// which callers instead read the updated <see cref="PosZ"/>/<see cref="ForceZ"/> fields directly (see
+    /// <c>CharacterMotionSystem.UpdateControllers</c> pass ever runs). When no support is found, drives
+    /// this tick's own vertical displacement through the controller instead (bug fix - see this method's
+    /// own body for the exact <c>SetVerticalVelocity</c> call and rationale) - a no-op for a controller-less
+    /// entity (harness bare proxy, or a genuinely controller-less sprite-only prefab), which callers instead
+    /// read the updated <see cref="PosZ"/>/<see cref="ForceZ"/> fields directly (see
     /// <c>IntroTraceHarnessTests</c>' own <c>RunVerticalPhysicsPass</c>, which reuses
     /// <see cref="EntitySupport.TryFindSupport"/> the same way but merges it with its own terrain probe
     /// instead of a <see cref="CharacterControllerComponent"/>). Deliberately does NOT touch
@@ -348,12 +357,15 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// Verifier A2 (PhysicsEngine.cs:189): this entity itself must pass
     /// <see cref="EntitySupport.IsEligibleSubject"/> before <see cref="EntitySupport.TryFindSupport"/> ever
     /// runs - <c>CheckEntityCollisionDown</c> is only ever called for a
-    /// Collidable/not-NoEntityCollision/no-PlatformEntity entity in the first place. An ineligible entity
-    /// takes the SAME "no support" branch a genuinely-unsupported one does (still restores the
-    /// controller's normal gravity), rather than a separate no-op - the original never special-cases this,
-    /// it simply never calls <c>MoveEntity</c>/<c>ComputeZPosition</c> for such an entity at all, so its
-    /// own gravity/terrain handling (the engine's <c>CharacterControllerComponent</c>, unaffected by this
-    /// method either way) is exactly what should still apply.
+    /// Collidable/not-NoEntityCollision/no-PlatformEntity entity in the first place. Bug fix follow-up: that
+    /// eligibility gate covers ONLY the <c>TryFindSupport</c> call, not the decay/displacement around it -
+    /// the original's own <c>MoveEntity</c>/<c>ComputeZPosition</c> (PhysicsEngine.cs:74-165) has NO such
+    /// gate at all, it runs for every active entity unconditionally, and <c>CheckEntityCollisionDown</c>'s
+    /// own eligibility check (PhysicsEngine.cs:189) only skips ITS internal entity-candidate search, still
+    /// falling through to the same "apply <c>finalZVelocity</c>" tail (PhysicsEngine.cs:165) an eligible,
+    /// unsupported entity reaches too. So an ineligible entity here takes the exact SAME "no support" tail
+    /// a genuinely-unsupported eligible one does (never a separate no-op) - same decay, same
+    /// <c>SetVerticalVelocity</c> displacement, just never entity-vs-entity clamped.
     ///
     /// Verifier A1 (PhysicsEngine.cs:180-187, :205): <paramref name="immediateAtSpawn"/> false (the normal,
     /// per-frame call from <see cref="Update"/>) computes the FULL original conjunct's terrain-clamped
@@ -379,26 +391,29 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// </summary>
     internal void EvaluateEntitySupport(IReadOnlyList<AlundraEntityScriptProxy> collidables, bool immediateAtSpawn = false)
     {
-        if (!EntitySupport.IsEligibleSubject(this))
-        {
-            WasEntitySupportedLastTick = false;
+        // Bug fix (gull entity 6, map 389 - see ApplyGravitySettingsToController's own doc for the full
+        // measured numbers): EntitySupport.IsEligibleSubject only gates the ENTITY-VS-ENTITY search below
+        // (CheckEntityCollisionDown's own eligibility gate, PhysicsEngine.cs:189/994) - the original's own
+        // ComputeZPosition (PhysicsEngine.cs:375-421) decays/applies ForceZ to PosZ UNCONDITIONALLY, for
+        // every active entity regardless of Collidable/eligibility (MoveEntity has no such gate at all).
+        // So eligibility must NOT skip the decay/velocity work below it only skips the TryFindSupport call
+        // a few lines down - both an eligible and an ineligible entity fall through to the exact same
+        // "found"/"not found" tail (see that variable's own use).
+        var eligible = EntitySupport.IsEligibleSubject(this);
 
-            if (Controller != null)
-            {
-                ApplyGravitySettingsToController();
-            }
-
-            return;
-        }
-
-        // See this method's own doc, MapGravityRaw's own doc: a controller-driven entity's own ForceZ is
-        // never decayed by AlundraScriptedMotion.RunOneKinematicTick (horizontal-only, shared with the
-        // player) - the engine's own controller owns real vertical motion. Without this decay, a resting
-        // (already-supported) entity's ForceZ would stay frozen at 0 forever (set by the "if Gravity:
-        // ForceZ = 0" branch below), permanently failing the reach gate above - port of
-        // UpdateEntityPhysics's own IsZForceApplied == 0 branch (PhysicsEngine.cs:1460-1476), same shape
-        // as the harness's own RunVerticalPhysicsPass. Skipped at the immediate spawn-time evaluation
-        // (FinalForceZ has no real per-tick meaning yet there either).
+        // Single decay site (verifier A1/A6 follow-up, reconciled with the timing bug fix above): a
+        // controller-driven entity's own ForceZ is never decayed by AlundraScriptedMotion.RunOneKinematicTick
+        // (horizontal-only, shared with the player) - this is the ONE place it decays, port of
+        // UpdateEntityPhysics's own IsZForceApplied == 0 branch (PhysicsEngine.cs:1460-1476), same shape as
+        // the harness's own RunVerticalPhysicsPass. Gated on ticksThisFrame by this method's only caller
+        // (Update, see its own doc) so this runs exactly once per 50 Hz logic tick, never once per rendered
+        // frame - the actual root cause of the measured bug was NOT this decay (already tick-quantized
+        // before this fix) but the fact that nothing routed the decayed value through the controller,
+        // leaving the engine's own continuous Settings.Gravity (render-rate) to integrate the vertical
+        // instead - see the SetVerticalVelocity call in the "not found" tail below, and
+        // ApplyGravitySettingsToController's own doc for why that engine path is now permanently disabled
+        // for every controller-driven NPC. Skipped at the immediate spawn-time evaluation (FinalForceZ has
+        // no real per-tick meaning yet there either).
         if (Controller != null && !immediateAtSpawn && (Flags & EntityFlags.Gravity) != 0)
         {
             var force = ForceZ - (MapGravityRaw << 8);
@@ -415,7 +430,11 @@ public class AlundraEntityScriptProxy : GameplayProxy
 
         var platformTopZSeed = immediateAtSpawn ? int.MinValue : (PosZ + ModZ) + FinalForceZ;
 
-        if (EntitySupport.TryFindSupport(this, collidables, platformTopZSeed, out _, out var supportTopZ))
+        var supportTopZ = 0;
+        var found = eligible
+            && EntitySupport.TryFindSupport(this, collidables, platformTopZSeed, out _, out supportTopZ);
+
+        if (found)
         {
             WasEntitySupportedLastTick = true;
             CollidedWithEntityZ = 1;
@@ -429,7 +448,6 @@ public class AlundraEntityScriptProxy : GameplayProxy
 
             if (Controller != null)
             {
-                Controller.Settings.Gravity = 0f;
                 Controller.SetVerticalVelocity(0f);
                 PushLogicalPositionToRoot();
             }
@@ -440,7 +458,21 @@ public class AlundraEntityScriptProxy : GameplayProxy
 
             if (Controller != null)
             {
+                // Always re-assert Gravity/MaxFallSpeed at 0 - defensive, already the steady state (see
+                // ApplyGravitySettingsToController's own doc).
                 ApplyGravitySettingsToController();
+
+                // THE fix: port of PhysicsEngine.cs:165's own unconditional `entity.PosZ = entity.PosZ +
+                // finalZVelocity` - drives this tick's own vertical displacement through the controller so
+                // the engine integrates EXACTLY FinalForceZ px over the tick (ForceZ is a 16.16 px/tick
+                // quantity at the original's own 50 Hz rate; * 50f converts ticks/s, / 65536f converts
+                // 16.16 to whole pixels). Skipped at the immediate spawn-time evaluation, same reasoning as
+                // the decay above (FinalForceZ is still 0 there, so this would be a harmless no-op anyway,
+                // but skipping keeps the two guards symmetric and documents the same reasoning).
+                if (!immediateAtSpawn)
+                {
+                    Controller.SetVerticalVelocity(FinalForceZ * 50f / 65536f);
+                }
             }
         }
     }

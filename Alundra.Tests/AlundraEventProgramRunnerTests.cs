@@ -586,9 +586,15 @@ public class AlundraEventProgramRunnerTests
 
         runner.RunOneScriptCall(owner, state);
 
+        // Bug fix follow-up (gull entity 6, map 389, measured ~158 px/s vs the faithful 150 px/s): the
+        // engine's own Settings.Gravity/MaxFallSpeed now stay permanently pinned at 0 for every
+        // controller-driven NPC, at every Flags.Gravity state - see
+        // AlundraEntityScriptProxy.ApplyGravitySettingsToController's own doc. The Gravity bit this opcode
+        // sets still matters: it now gates AlundraEntityScriptProxy.EvaluateEntitySupport's own per-tick
+        // ForceZ decay instead of the controller's settings.
         Assert.Equal(EntityFlags.Gravity, target.Flags & EntityFlags.Gravity);
-        Assert.Equal(1250f, target.Controller.Settings.Gravity);
-        Assert.Equal(800f, target.Controller.Settings.MaxFallSpeed);
+        Assert.Equal(0f, target.Controller.Settings.Gravity);
+        Assert.Equal(0f, target.Controller.Settings.MaxFallSpeed);
         Assert.Equal(AlundraCellsCollisionField.WalkabilityMaskFor(target.Flags), target.Controller.Settings.WalkabilityMask);
         Assert.Equal(0x1040u, target.Controller.Settings.WalkabilityMask); // base 0x40 | ClassA's own 0x1000.
     }
@@ -908,8 +914,14 @@ public class AlundraEventProgramRunnerTests
     // ---------------------------------------------------------------------------------------------
 
     [Fact]
-    public void HighGravity_0x16_SetsFlagAndAppliesMapGravityToController()
+    public void HighGravity_0x16_SetsFlagAndKeepsControllerGravityAtZero()
     {
+        // Bug fix (gull entity 6, map 389): a controller-driven NPC's vertical is now entirely owned by
+        // the DLL's own per-tick decay (AlundraEntityScriptProxy.EvaluateEntitySupport), never by the
+        // engine's own continuous Settings.Gravity/MaxFallSpeed (which used to integrate at render rate,
+        // not the original's 50 Hz tick rate - see ApplyGravitySettingsToController's own doc for the
+        // measured numbers). 0x16 still sets the Flags Gravity bit - it now gates EvaluateEntitySupport's
+        // own decay instead of the controller's settings, which stay pinned at 0.
         // @0: 0x16 High gravity; @1: End.
         var document = NewDocument(0x16, 0xFF);
         var runner = NewRunner(document);
@@ -922,8 +934,8 @@ public class AlundraEventProgramRunnerTests
         runner.RunOneScriptCall(entity, state);
 
         Assert.Equal(EntityFlags.Gravity, entity.Flags & EntityFlags.Gravity);
-        Assert.Equal(1250f, entity.Controller.Settings.Gravity);
-        Assert.Equal(800f, entity.Controller.Settings.MaxFallSpeed);
+        Assert.Equal(0f, entity.Controller.Settings.Gravity);
+        Assert.Equal(0f, entity.Controller.Settings.MaxFallSpeed);
     }
 
     [Fact]
