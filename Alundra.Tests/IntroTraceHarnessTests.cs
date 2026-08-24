@@ -141,8 +141,10 @@ public class IntroTraceHarnessTests
         //   634 0x5B; 638 0x1A anim2/0x1B Fly[0,255] (ForceZ -65536 = -1 px/tick, gravity OFF since 0x17
         //      above); 639 first 0x07 check (tile 18,36,12) - now resolved by E4.f's entity-support clamp:
         //      sailor 11 was PERCHED at spawn (record 11: XPos 38/YPos 72/Height 50 -> PosZ 400px) on top
-        //      of block record 5's own top edge (SizeZ 32, Depth = 32<<16-1, strictly below 400px - the
-        //      STRICT comparator the plan requires), not resting on terrain (176px) as pre-E4.f; the
+        //      of block RECORD 2's own top edge (verifier A6: record 2 - XPos 38/YPos 72/Height 46 ->
+        //      (468,584,368) - is the real perch directly under the sailor, NOT record 5, which sits one
+        //      tile row south; SizeZ 32, Depth = 32<<16-1, strictly below 400px - the STRICT comparator the
+        //      plan requires), not resting on terrain (176px) as pre-E4.f; the
         //      descent from 400px needs ~208px at 1px/tick to enter the TileZ-12 window (192-207px):
         //      observed 639->831 = 192 ticks, inside the plan's own "~190-200 frames" estimate;
         //   831 0x16; 831-840 Wait(8) = 10 incl.; 840 0x17/0x5B; 840-854 0x1F walk[24,0] (dir east, same
@@ -572,7 +574,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
             // already in _spawnedEntities by the time a rider record (11+) is processed, in this SAME
             // sequential loop, over the SAME record order verified against the real export.
             EntitySupport.BuildCollidables(_spawnedEntities, _collidables);
-            proxy.EvaluateEntitySupport(_collidables);
+            proxy.EvaluateEntitySupport(_collidables, immediateAtSpawn: true);
         }
 
         // Best-effort dialog text resolution (opcodes 0x0D/0x5C) off the map's own exported strings.
@@ -722,16 +724,20 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     /// (<c>GetCollisionOnZ</c>, not ported) - documented deviation, harmless here since TerrainHeight does
     /// not depend on <c>PosZ</c> (only PosX/PosY, which the vertical pass never changes).
     ///
-    /// E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): merged with
+    /// E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4; verifiers A1/A2): merged with
     /// <see cref="EntitySupport.TryFindSupport"/> - the SAME shared entity-vs-entity support detection
     /// <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/> consumes for a controller-driven
-    /// entity, reused here directly against <c>Pos*</c> (this harness's proxies carry no controller). The
-    /// two candidates (terrain, best qualifying entity) are merged by taking whichever gives the HIGHER
-    /// landing surface (<c>Max(terrainHeight, entityCandidateTop)</c>) - the original's own
+    /// entity, reused here directly against <c>Pos*</c> (this harness's proxies carry no controller),
+    /// including the FULL PhysicsEngine.cs:180-187/:205 seed (<c>Math.Max(naturalStep, TerrainHeight+1)</c>,
+    /// passed to <c>TryFindSupport</c> so it only accepts a candidate this tick's own downward reach
+    /// legitimately gets to) and the PhysicsEngine.cs:189 subject-eligibility gate
+    /// (<see cref="EntitySupport.IsEligibleSubject"/>, checked before ever searching candidates - an
+    /// ineligible entity falls back to terrain-only landing). The two candidates (terrain, best qualifying
+    /// entity) are merged by taking whichever gives the HIGHER landing surface - the original's own
     /// <c>CheckEntityCollisionDown</c> does the same union, seeded from the terrain-based test before ever
-    /// considering an entity candidate (PhysicsEngine.cs:180-187). <see cref="EntitySupport.UpdateRidingEntities"/>
-    /// (search 5/6 fidelity) runs separately, once per frame, from <see cref="RunFrame"/> - see that
-    /// method's own doc; this pass never touches <see cref="AlundraEntityScriptProxy.RidingEntity"/>.
+    /// considering an entity candidate. <see cref="EntitySupport.UpdateRidingEntities"/> (search 5/6
+    /// fidelity) runs separately, once per frame, from <see cref="RunFrame"/> - see that method's own doc;
+    /// this pass never touches <see cref="AlundraEntityScriptProxy.RidingEntity"/>.
     /// </summary>
     private void RunVerticalPhysicsPass(IReadOnlyList<AlundraEntityScriptProxy> entities)
     {
@@ -770,14 +776,26 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
             var terrainHeight = ComputeTerrainHeight(entity);
             entity.TerrainHeight = terrainHeight;
 
-            // E4.f: best-of(terrain, entity support) - see this method's own doc.
+            var moddedPosZ = entity.PosZ + entity.ModZ;
+
+            // Verifier A1 (PhysicsEngine.cs:180-187): the FULL original seed - this tick's own natural
+            // step, clamped UP to TerrainHeight + 1 when it would go at-or-below terrain (algebraically
+            // Math.Max, see EntitySupport.TryFindSupport's own doc) - passed to the entity-support search
+            // so a falling entity only snaps onto a candidate its OWN downward reach this tick actually
+            // gets to, not any overlapping candidate however far below.
+            var platformTopZSeed = Math.Max(moddedPosZ + entity.FinalForceZ, terrainHeight + 1);
             var landingTop = terrainHeight + 1;
-            if (EntitySupport.TryFindSupport(entity, _collidables, out _, out var supportTopZ) && supportTopZ > landingTop)
+
+            // Verifier A2 (PhysicsEngine.cs:189): only an eligible subject is even tested against
+            // candidates - an ineligible entity (not Collidable, or NoEntityCollision this frame) falls
+            // back to terrain-only landing, same as CheckEntityCollisionDown never being called for it.
+            if (EntitySupport.IsEligibleSubject(entity)
+                && EntitySupport.TryFindSupport(entity, _collidables, platformTopZSeed, out _, out var supportTopZ)
+                && supportTopZ > landingTop)
             {
                 landingTop = supportTopZ;
             }
 
-            var moddedPosZ = entity.PosZ + entity.ModZ;
             if (entity.FinalForceZ < 1 && moddedPosZ + entity.FinalForceZ <= landingTop - 1)
             {
                 entity.PosZ = landingTop - entity.ModZ;
@@ -903,7 +921,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
 
         // E4.f: same one-shot spawn-time support evaluation as the load-time spawn loop, above.
         EntitySupport.BuildCollidables(_spawnedEntities, _collidables);
-        proxy.EvaluateEntitySupport(_collidables);
+        proxy.EvaluateEntitySupport(_collidables, immediateAtSpawn: true);
 
         _flatItems.Add($"{Frame} | SPAWN | record {entityRecordId} \"{entityName}\" by {_context}");
 

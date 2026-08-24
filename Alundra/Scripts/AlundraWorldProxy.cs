@@ -428,7 +428,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): ONE support evaluation right
                 // at spawn - see BuildCollidablesSnapshot's own doc on why platform records (0-5) are
                 // already present here for a rider record (11+) to land on.
-                spawnedProxy?.EvaluateEntitySupport(BuildCollidablesSnapshot());
+                spawnedProxy?.EvaluateEntitySupport(BuildCollidablesSnapshot(), immediateAtSpawn: true);
             }
             catch (Exception ex)
             {
@@ -941,14 +941,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         return null;
     }
 
-    private static (float Gravity, float MaxFallSpeed) ResolveMapGravitySettings(TileMapData tileMapData)
+    private static (float Gravity, float MaxFallSpeed, int GravityRaw, int ZViscosityRaw) ResolveMapGravitySettings(TileMapData tileMapData)
     {
         tileMapData.CustomProperties.TryGetValue("Gravity", out var gravityRaw);
         int.TryParse(gravityRaw, out var mapGravity);
         tileMapData.CustomProperties.TryGetValue("ZViscosity", out var zViscosityRaw);
         int.TryParse(zViscosityRaw, out var mapZViscosity);
 
-        return (mapGravity * 256f / 65536f * 2500f, mapZViscosity * 256f / 65536f * 50f);
+        return (mapGravity * 256f / 65536f * 2500f, mapZViscosity * 256f / 65536f * 50f, mapGravity, mapZViscosity);
     }
 
     internal static Vector3 ResolveLogicalPosition(int posX, int posY, int posZ)
@@ -1075,7 +1075,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // (tileMapData null - a caller that never resolved one, e.g. an older test fixture).
         if (proxy.Controller != null && tileMapData != null)
         {
-            (proxy.MapGravity, proxy.MapMaxFallSpeed) = ResolveMapGravitySettings(tileMapData);
+            (proxy.MapGravity, proxy.MapMaxFallSpeed, proxy.MapGravityRaw, proxy.MapZViscosityRaw) = ResolveMapGravitySettings(tileMapData);
             proxy.ApplyGravitySettingsToController();
             proxy.Controller.Settings.WalkabilityMask = AlundraCellsCollisionField.WalkabilityMaskFor(proxy.Flags);
         }
@@ -1285,7 +1285,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // integer 128*256/65536 truncates to 0 before the final *2500 ever runs).
         if (proxy.Controller != null)
         {
-            var (mapGravity, mapMaxFallSpeed) = ResolveMapGravitySettings(tileMapData);
+            var (mapGravity, mapMaxFallSpeed, mapGravityRaw, mapZViscosityRaw) = ResolveMapGravitySettings(tileMapData);
+            proxy.MapGravityRaw = mapGravityRaw;
+            proxy.MapZViscosityRaw = mapZViscosityRaw;
 
             var settings = proxy.Controller.Settings;
             settings.Gravity = mapGravity;
@@ -2028,7 +2030,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // BuildCollidablesSnapshot's own doc. Block 18 (record 18) spawns this way (opcode 0x2D) and
             // does not land on another entity (its own fall is terrain-only), so this is a no-op for it,
             // but a future dynamically-spawned rider needs it too.
-            spawnedProxy?.EvaluateEntitySupport(BuildCollidablesSnapshot());
+            spawnedProxy?.EvaluateEntitySupport(BuildCollidablesSnapshot(), immediateAtSpawn: true);
             return spawnedProxy;
         }
         catch (Exception ex)

@@ -35,7 +35,10 @@ internal static class EntitySupport
     /// scope - see this class' own doc). Fills <paramref name="buffer"/> in place (<c>Clear</c> then
     /// re-add) so callers can reuse the SAME list instance every frame with no per-frame allocation,
     /// exactly like <c>IntroTraceHarnessTests</c>' own <c>entitiesThisFrame</c> snapshot pattern and
-    /// <c>AlundraWorldProxy</c>'s own <c>_updateProxies</c>.
+    /// <c>AlundraWorldProxy</c>'s own <c>_updateProxies</c>. Same predicate as <see cref="IsEligibleSubject"/>
+    /// below - one entity can be both a CANDIDATE (via this list) and a SUBJECT (via that gate) of the
+    /// exact same test, since <c>CheckEntityCollisionDown</c> uses the identical criteria for both roles
+    /// (PhysicsEngine.cs:189, :994).
     /// </summary>
     internal static void BuildCollidables(IReadOnlyList<AlundraEntityScriptProxy> spawnedEntities, List<AlundraEntityScriptProxy> buffer)
     {
@@ -44,9 +47,7 @@ internal static class EntitySupport
         for (var i = 0; i < spawnedEntities.Count; i++)
         {
             var candidate = spawnedEntities[i];
-            if ((candidate.Flags & EntityFlags.Collidable) != 0
-                && (candidate.AnimFlags & NoEntityCollisionAnimFlag) == 0
-                && candidate.PlatformEntity == null)
+            if (IsEligibleSubject(candidate))
             {
                 buffer.Add(candidate);
             }
@@ -54,15 +55,46 @@ internal static class EntitySupport
     }
 
     /// <summary>
-    /// Port of <c>CheckEntityCollisionDown</c>'s ENTITY-candidate branch only (PhysicsEngine.cs:189-258) -
-    /// the TERRAIN-based half of that function (<c>platformTopZ = ModdedPosZ + FinalForceZ; collisionDetected
-    /// = platformTopZ &lt;= TerrainHeight</c>) is a separate concern each caller already owns (the
-    /// harness's own terrain probe; the engine's own <c>CharacterControllerComponent</c> ground-snap
-    /// against the real <c>AlundraCellsCollisionField</c> for a controller-driven entity) - see each call
-    /// site's own doc for how the two are merged. Takes the HIGHEST qualifying candidate (ties broken by
-    /// iteration order, same as the original's own "replace only if not lower" rule) whose top sits
-    /// STRICTLY below <paramref name="entity"/>'s own feet (<c>ModdedPosZ</c>) -
-    /// <b>this comparator must stay strict</b>: a real body box's own <c>Depth</c> is
+    /// Verifier A2 (PhysicsEngine.cs:189): the SAME gate <see cref="BuildCollidables"/> uses to decide
+    /// candidacy, reused here as the SUBJECT-eligibility guard <see cref="TryFindSupport"/>'s own callers
+    /// must apply BEFORE ever searching for a support - <c>CheckEntityCollisionDown</c> is only ever
+    /// called (from <c>MoveEntity</c>) for an entity that itself passes
+    /// <c>(entity.Flags &amp; Collidable) != 0 &amp;&amp; (entity.AnimFlags &amp; NoEntityCollision) == 0
+    /// &amp;&amp; entity.PlatformEntity == null</c>. <see cref="AlundraEntityScriptProxy.PlatformEntity"/>
+    /// is always null in this runtime's current scope (the "carried/thrown" relation, out of scope - see
+    /// this class' own doc), so this gate's third conjunct is checked anyway (faithfully, not assumed)
+    /// rather than special-cased away.
+    /// </summary>
+    internal static bool IsEligibleSubject(AlundraEntityScriptProxy entity)
+        => (entity.Flags & EntityFlags.Collidable) != 0
+            && (entity.AnimFlags & NoEntityCollisionAnimFlag) == 0
+            && entity.PlatformEntity == null;
+
+    /// <summary>
+    /// Port of <c>CheckEntityCollisionDown</c>'s ENTITY-candidate branch (PhysicsEngine.cs:189-258),
+    /// INCLUDING the full original conjunct at <c>:205</c> - verifier A1. The TERRAIN-based seed
+    /// (<c>platformTopZ = ModdedPosZ + FinalForceZ</c>, clamped UP to <c>TerrainHeight + 1</c> when the
+    /// natural step would go at-or-below terrain, PhysicsEngine.cs:180-187 -
+    /// <c>Math.Max(ModdedPosZ + FinalForceZ, TerrainHeight + 1)</c>, algebraically identical to the
+    /// original's own if/reassign) is each caller's own concern to compute and pass in as
+    /// <paramref name="platformTopZSeed"/> - the harness's own terrain probe for a bare proxy; for a
+    /// controller-driven entity in production there is no DLL-tracked <c>TerrainHeight</c> at all (the
+    /// engine's own <c>CharacterControllerComponent</c> ground-snap against the real
+    /// <c>AlundraCellsCollisionField</c> owns terrain separately), so that caller passes the UNCLAMPED
+    /// <c>ModdedPosZ + FinalForceZ</c> - see each call site's own doc.
+    ///
+    /// The candidate conjunct is now BOTH halves of PhysicsEngine.cs:205: <c>candidateTop &lt;
+    /// entity.ModdedPosZ</c> (STRICT - see below) AND <c>platformTopZ &lt;= candidateTop</c> (this tick's
+    /// own downward reach must actually get TO OR PAST the candidate's top - without this half, a falling
+    /// entity would snap onto any overlapping candidate however far below, the very first tick it starts
+    /// overlapping in X/Y, instead of only once its own vertical step legitimately reaches that height).
+    /// <paramref name="platformTopZSeed"/> is itself UPDATED to <c>candidateTop + 1</c> once a qualifying
+    /// candidate is found (PhysicsEngine.cs:219/226/240/247's own <c>platformTopZ = deltaY + 1</c>), so a
+    /// LATER candidate in the same call only replaces it when at least as high - the original's own
+    /// "highest qualifying support wins" rule, now correctly seeded from the real per-tick reach instead
+    /// of unconditionally accepting anything below.
+    ///
+    /// The STRICT comparator itself must stay strict: a real body box's own <c>Depth</c> is
     /// <c>(SizeZ &lt;&lt; 16) − 1</c> (one 16.16 unit short of a full tile edge, <c>EntityManager.cs:192-199</c>),
     /// which is exactly what lets an entity resting flush on top of another satisfy this test - a
     /// non-strict (<c>&lt;=</c>) comparator would ALSO support an entity merely touching the platform's
@@ -71,11 +103,11 @@ internal static class EntitySupport
     /// </summary>
     internal static bool TryFindSupport(
         AlundraEntityScriptProxy entity, IReadOnlyList<AlundraEntityScriptProxy> collidables,
-        out AlundraEntityScriptProxy? support, out int supportTopZ)
+        int platformTopZSeed, out AlundraEntityScriptProxy? support, out int supportTopZ)
     {
         support = null;
         supportTopZ = 0;
-        var bestCandidateTop = int.MinValue;
+        var platformTopZ = platformTopZSeed;
 
         var moddedPosX = entity.PosX + entity.ModX;
         var moddedPosY = entity.PosY + entity.ModY;
@@ -92,15 +124,9 @@ internal static class EntitySupport
             var candidateModZ = candidate.PosZ + candidate.ModZ;
             var candidateTop = candidateModZ + candidate.Depth;
 
-            // PhysicsEngine.cs:205 - the strict comparator (see this method's own doc).
-            if (candidateTop >= moddedPosZ)
-            {
-                continue;
-            }
-
-            // PhysicsEngine.cs:219/226/240/247 - "platformTopZ <= deltaY": only a candidate at least as
-            // high as the current best replaces it (keep the HIGHEST qualifying support).
-            if (support != null && candidateTop < bestCandidateTop)
+            // PhysicsEngine.cs:205 - BOTH conjuncts (verifier A1): strictly below the entity's own feet,
+            // AND at/above this tick's own reach (see this method's own doc).
+            if (candidateTop >= moddedPosZ || platformTopZ > candidateTop)
             {
                 continue;
             }
@@ -144,8 +170,8 @@ internal static class EntitySupport
             }
 
             support = candidate;
-            bestCandidateTop = candidateTop;
-            supportTopZ = candidateTop + 1; // PhysicsEngine.cs:219/226/240/247 - "deltaY + 1".
+            platformTopZ = candidateTop + 1; // PhysicsEngine.cs:219/226/240/247 - "deltaY + 1".
+            supportTopZ = platformTopZ;
         }
 
         return support != null;

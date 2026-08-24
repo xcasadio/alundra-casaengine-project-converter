@@ -219,6 +219,26 @@ public class AlundraEntityScriptProxy : GameplayProxy
     public float MapMaxFallSpeed;
 
     /// <summary>
+    /// E4.f (verifier A1 follow-up): the map's RAW <c>Gravity</c>/<c>ZViscosity</c> ints (before E3.d's
+    /// own controller-unit conversion - see <see cref="MapGravity"/>'s own doc), resolved at the SAME spawn
+    /// site and gated the SAME way (<c>Controller != null</c>). Needed because a controller-driven entity's
+    /// own vertical fall is entirely owned by the ENGINE (<c>Settings.Gravity</c>/<c>MaxFallSpeed</c>), so
+    /// <see cref="AlundraScriptedMotion.RunOneKinematicTick"/> (shared, horizontal-only) never decays
+    /// <see cref="ForceZ"/> for such an entity - <see cref="EvaluateEntitySupport"/> now does that decay
+    /// itself, in the SAME <c>ForceZ -= Gravity&lt;&lt;8</c>/terminal-velocity-clamp shape the intro trace
+    /// harness's own <c>RunVerticalPhysicsPass</c> already used (port of <c>UpdateEntityPhysics</c>'s
+    /// <c>IsZForceApplied == 0</c> branch, PhysicsEngine.cs:1460-1476), so a resting-but-still-Gravity-
+    /// flagged entity's <c>ForceZ</c> genuinely cycles (0 -&gt; decayed -&gt; re-clamped to 0 by the next
+    /// support hit) exactly like the original's own per-tick struct, instead of staying frozen at 0 forever
+    /// (which would make <see cref="EntitySupport.TryFindSupport"/>'s own reach gate, verifier A1,
+    /// permanently unsatisfiable for an entity that is already resting).
+    /// </summary>
+    public int MapGravityRaw;
+
+    /// <summary>See <see cref="MapGravityRaw"/>'s own doc - the matching raw <c>ZViscosity</c> half.</summary>
+    public int MapZViscosityRaw;
+
+    /// <summary>
     /// Port of the <c>Flags &amp; EntityFlags.Gravity</c> gate <c>PhysicsEngine.cs</c>'s per-entity vertical
     /// branch reads every tick (PhysicsEngine.cs:1458-1476, non-player half of <c>UpdateEntitiesForces</c>):
     /// with the bit set, this entity's <see cref="Controller"/> gets this map's real
@@ -268,10 +288,76 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// <see cref="RidingEntity"/> - the original keeps that relation entirely separate, populated only by
     /// <c>CheckRidingEntities</c> (<see cref="EntitySupport.UpdateRidingEntities"/>, its own EXACT-match
     /// test, unrelated to this clamp's own strict-below/highest-wins one - see that method's own doc).
+    ///
+    /// Verifier A2 (PhysicsEngine.cs:189): this entity itself must pass
+    /// <see cref="EntitySupport.IsEligibleSubject"/> before <see cref="EntitySupport.TryFindSupport"/> ever
+    /// runs - <c>CheckEntityCollisionDown</c> is only ever called for a
+    /// Collidable/not-NoEntityCollision/no-PlatformEntity entity in the first place. An ineligible entity
+    /// takes the SAME "no support" branch a genuinely-unsupported one does (still restores the
+    /// controller's normal gravity), rather than a separate no-op - the original never special-cases this,
+    /// it simply never calls <c>MoveEntity</c>/<c>ComputeZPosition</c> for such an entity at all, so its
+    /// own gravity/terrain handling (the engine's <c>CharacterControllerComponent</c>, unaffected by this
+    /// method either way) is exactly what should still apply.
+    ///
+    /// Verifier A1 (PhysicsEngine.cs:180-187, :205): <paramref name="immediateAtSpawn"/> false (the normal,
+    /// per-frame call from <see cref="Update"/>) computes the FULL original conjunct's terrain-clamped
+    /// seed - for a controller-driven entity there is no DLL-tracked <c>TerrainHeight</c> (the engine owns
+    /// terrain separately), so this passes the UNCLAMPED <c>ModdedPosZ + FinalForceZ</c> (this tick's own
+    /// natural vertical step, already computed by <see cref="AlundraScriptedMotion.RunOneKinematicTick"/>
+    /// earlier this SAME call chain) straight through to <see cref="EntitySupport.TryFindSupport"/> - see
+    /// that method's own doc for why a controller-driven caller cannot supply the terrain half and does
+    /// not need to (the engine's own ground-snap already prevents falling through real terrain
+    /// independently of this entity-only clamp). <paramref name="immediateAtSpawn"/> true (the ONE-SHOT
+    /// call <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>'s own callers make right at spawn,
+    /// before <c>FinalForceZ</c> has ever been computed by a real tick - see that call site's own doc on
+    /// the "anti-creux" ordering) instead passes <see cref="int.MinValue"/> as the seed, disabling the
+    /// reach gate for this one evaluation only: this is NOT literally <c>CheckEntityCollisionDown</c>'s
+    /// own per-tick reach test (a freshly spawned entity's <c>FinalForceZ</c> is 0, which would make ANY
+    /// perch fail the reach gate even though the level's own authored spawn height sits, by design,
+    /// exactly one 16.16 unit above the platform's own strict edge - e.g. sailor 11's real record 2 perch,
+    /// (468,584,368) - see docs/plan-e4-deplacement-scripte.md's own E4.f "Pourquoi" note) - it is this
+    /// runtime's own proactive fixup for the engine's controller-update-before-DLL-tick frame ordering,
+    /// matching the ALREADY documented "ClampToGround also covers EntityManager.cs's own separate spawn
+    /// clamp" precedent on this same class: the strict below-the-feet test alone is exactly what an
+    /// authored, already-resting spawn position needs.
     /// </summary>
-    internal void EvaluateEntitySupport(IReadOnlyList<AlundraEntityScriptProxy> collidables)
+    internal void EvaluateEntitySupport(IReadOnlyList<AlundraEntityScriptProxy> collidables, bool immediateAtSpawn = false)
     {
-        if (EntitySupport.TryFindSupport(this, collidables, out _, out var supportTopZ))
+        if (!EntitySupport.IsEligibleSubject(this))
+        {
+            if (Controller != null)
+            {
+                ApplyGravitySettingsToController();
+            }
+
+            return;
+        }
+
+        // See this method's own doc, MapGravityRaw's own doc: a controller-driven entity's own ForceZ is
+        // never decayed by AlundraScriptedMotion.RunOneKinematicTick (horizontal-only, shared with the
+        // player) - the engine's own controller owns real vertical motion. Without this decay, a resting
+        // (already-supported) entity's ForceZ would stay frozen at 0 forever (set by the "if Gravity:
+        // ForceZ = 0" branch below), permanently failing the reach gate above - port of
+        // UpdateEntityPhysics's own IsZForceApplied == 0 branch (PhysicsEngine.cs:1460-1476), same shape
+        // as the harness's own RunVerticalPhysicsPass. Skipped at the immediate spawn-time evaluation
+        // (FinalForceZ has no real per-tick meaning yet there either).
+        if (Controller != null && !immediateAtSpawn && (Flags & EntityFlags.Gravity) != 0)
+        {
+            var force = ForceZ - (MapGravityRaw << 8);
+            var forceAbs = force < 0 ? -force : force;
+            var terminal = MapZViscosityRaw << 8;
+            if (terminal < forceAbs && force < 1)
+            {
+                force = -terminal;
+            }
+
+            ForceZ = force;
+            FinalForceZ = force;
+        }
+
+        var platformTopZSeed = immediateAtSpawn ? int.MinValue : (PosZ + ModZ) + FinalForceZ;
+
+        if (EntitySupport.TryFindSupport(this, collidables, platformTopZSeed, out _, out var supportTopZ))
         {
             CollidedWithEntityZ = 1;
             PosZ = supportTopZ - ModZ;
