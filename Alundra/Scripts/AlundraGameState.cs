@@ -96,6 +96,28 @@ public sealed class AlundraGameState
     /// <summary>Session-only flags (<c>g_temporaryFlags</c>) - all zero at construction.</summary>
     public readonly uint[] TemporaryFlags = new uint[WordCount];
 
+    /// <summary>
+    /// Port of <c>g_saveData.MapIdToInternalMapIndexTable</c> (<c>SaveData.cs:18</c>, <c>ushort[500]</c>) -
+    /// written by event opcode 0x38 (<c>Script_SetSaveMapIdToInternalMapIndex_038</c>,
+    /// EntityEventHandlers.cs:1202-1207) and read by portal travel (<c>PlayerManager.cs:3497</c>, out of
+    /// this DLL's own scope). <c>GameInitializer.ResetGameFlags</c> (GameInitializer.cs:490-493) seeds it
+    /// to the identity mapping (<c>table[i] = i</c>) for every New Game - reproduced here at construction
+    /// so this state starts New-Game-equivalent without needing a separate reset call, same rationale as
+    /// <see cref="GameFlags"/>/<see cref="TemporaryFlags"/> starting zeroed.
+    /// </summary>
+    public readonly ushort[] MapIdToInternalMapIndexTable = CreateIdentityMapIndexTable();
+
+    private static ushort[] CreateIdentityMapIndexTable()
+    {
+        var table = new ushort[500];
+        for (var i = 0; i < table.Length; i++)
+        {
+            table[i] = (ushort)i;
+        }
+
+        return table;
+    }
+
     private static int IndexOf(uint flag) => (int)((flag >> 5) & 0x3ff);
 
     private uint[] BankFor(uint flag) => (flag & TemporaryFlagBit) == 0 ? GameFlags : TemporaryFlags;

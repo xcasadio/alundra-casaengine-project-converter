@@ -278,4 +278,58 @@ public class AlundraPlayerManagerTests
     }
 
     private static readonly AlundraPadState NoInput = default;
+
+    // -----------------------------------------------------------------------------------------
+    // Decision E4-3 debug flag (docs/plan-e4-deplacement-scripte.md): ALUNDRA_DEBUG_IGNORE_CONTROL_LOCK
+    // neutralizes MovePlayer's InputBlockedMask gate. Driven through the test-only
+    // SetDebugIgnoreControlLockOverrideForTests seam (see AlundraPlayerManager's own doc on why - the
+    // real static-readonly env-var read cannot be exercised deterministically once some other test in
+    // the shared xunit host may already have forced this type's one-time static initialization).
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void MovePlayer_ControlLocked_DebugFlagInactive_StillBlocked()
+    {
+        AlundraPlayerManager.SetDebugIgnoreControlLockOverrideForTests(false);
+        try
+        {
+            var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
+            var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Right };
+            var state = new AlundraGameState { PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked };
+
+            AlundraPlayerManager.MovePlayer(player, in pad, state);
+
+            // Flag inactive -> the InputBlockedMask gate still applies -> untouched, same as the
+            // pre-existing MovePlayer_InputBlocked_DoesNotChangeAnimationOrDirection test above.
+            Assert.Equal(0u, player.TargetAnimationId);
+            Assert.Equal(0u, player.TargetDirection);
+        }
+        finally
+        {
+            AlundraPlayerManager.SetDebugIgnoreControlLockOverrideForTests(null);
+        }
+    }
+
+    [Fact]
+    public void MovePlayer_ControlLocked_DebugFlagActive_ReadsThePad()
+    {
+        AlundraPlayerManager.SetDebugIgnoreControlLockOverrideForTests(true);
+        try
+        {
+            var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
+            var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Right };
+            var state = new AlundraGameState { PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked };
+
+            AlundraPlayerManager.MovePlayer(player, in pad, state);
+
+            // Flag active -> the InputBlockedMask gate is skipped even with ControlLocked set -> the pad
+            // is read normally (Right held -> Moving, TargetDirection = g_directionByButtons[Right] = 0x18).
+            Assert.Equal(1u, player.TargetAnimationId);
+            Assert.Equal(0x18u, player.TargetDirection);
+        }
+        finally
+        {
+            AlundraPlayerManager.SetDebugIgnoreControlLockOverrideForTests(null);
+        }
+    }
 }

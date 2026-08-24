@@ -955,4 +955,435 @@ public class AlundraEventProgramRunnerTests
 
         Assert.Equal(0, state.Result);
     }
+
+    // ---------------------------------------------------------------------------------------------
+    // E4.c: 0x19 (Deactivate), 0x0A (ReverseDirection), 0x49/0x4B (Restart), 0x10/0x11 (control lock),
+    // 0x38 (save map index table), 0x27 (Face player), 0x5A/0x5B (Turn entity [+ anim]),
+    // 0x07 (Check entity in area). See docs/plan-e4-deplacement-scripte.md "E4.c".
+    // ---------------------------------------------------------------------------------------------
+
+    [Fact]
+    public void Deactivate_0x19_SetsStatusToDeactivated()
+    {
+        var document = NewDocument(0x19, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.Status = EntityStatus.Normal;
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(EntityStatus.Deactivated, entity.Status);
+        Assert.Equal(1, state.CodeIndex); // 1-byte instruction (EventOpcodeSizeTable: 0x19 size 1).
+    }
+
+    [Fact]
+    public void Deactivate_0x19_FromLoaded_AlsoBecomesDeactivated()
+    {
+        var document = NewDocument(0x19, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.Status = EntityStatus.Loaded;
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(EntityStatus.Deactivated, entity.Status);
+    }
+
+    [Fact]
+    public void ReverseDirection_0x0A_AddsSixteen()
+    {
+        var document = NewDocument(0x0A, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.TargetDirection = 4;
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        // (4 + 0x10) & 0x1f = 0x14 = 20.
+        Assert.Equal(20u, entity.TargetDirection);
+    }
+
+    [Fact]
+    public void ReverseDirection_0x0A_WrapsAroundThirtyTwo()
+    {
+        var document = NewDocument(0x0A, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.TargetDirection = 0x1F; // 31
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        // (31 + 16) & 0x1f = 47 & 31 = 15.
+        Assert.Equal(15u, entity.TargetDirection);
+    }
+
+    [Fact]
+    public void Restart_0x49_JumpsBackToProgramStartAndResumesExecution()
+    {
+        // @0: SetAnim(9), size 2; @2: Break (0x00); @5: Restart (0x49), size 1; @6: End.
+        var document = NewDocument(0x1A, 9, 0, 0, 0, 0x49, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        // Parameters[0] pinned to 0 - reproduces InitializeEventData's own "program start" bookkeeping
+        // (AlundraEventProgramRunner.InitializeEventData: state.Parameters[0] = state.CodeIndex) by hand,
+        // since this test drives RunOneScriptCall directly rather than through RunScript/InitializeEventData.
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), CodeIndex = 5, Parameters = { [0] = 0 } };
+
+        runner.RunOneScriptCall(entity, state);
+
+        // The jump actually landed on @0 and re-executed SetAnim(9) (not just moved CodeIndex): @0
+        // SetAnim(9) -> @2 Break -> suspend, CodeIndex left at 3 (Break's own CodeIndex++, see
+        // RunOneScriptCall's own doc on command==0x00).
+        Assert.Equal(9u, entity.TargetAnimationId);
+        Assert.Equal(3, state.CodeIndex);
+    }
+
+    [Fact]
+    public void IfFalseRestart_0x4B_ResultZero_JumpsBackToProgramStart()
+    {
+        var document = NewDocument(0x1A, 9, 0, 0, 0, 0x4B, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), CodeIndex = 5, Result = 0, Parameters = { [0] = 0 } };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(9u, entity.TargetAnimationId);
+    }
+
+    [Fact]
+    public void IfFalseRestart_0x4B_ResultNonZero_AdvancesPastInstructionInstead()
+    {
+        var document = NewDocument(0x1A, 9, 0, 0, 0, 0x4B, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), CodeIndex = 5, Result = 1, Parameters = { [0] = 0 } };
+
+        runner.RunOneScriptCall(entity, state);
+
+        // No jump - advances by 1 (its own instruction size) to @6 (0xFF, End); the anim at @0 never runs.
+        Assert.Equal(0u, entity.TargetAnimationId);
+        Assert.Equal(6, state.CodeIndex);
+    }
+
+    [Fact]
+    public void PlayerLoseControl_0x10_SetsControlLockedBit()
+    {
+        var document = NewDocument(0x10, 0xFF);
+        var gameState = new AlundraGameState();
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(
+            AlundraGameState.PlayerControlBits.ControlLocked,
+            gameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.ControlLocked);
+    }
+
+    [Fact]
+    public void PlayerGainControl_0x11_ClearsControlLockedBit_PreservesOtherBits()
+    {
+        var document = NewDocument(0x11, 0xFF);
+        var gameState = new AlundraGameState
+        {
+            PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked | AlundraGameState.PlayerControlBits.MenuOpen,
+        };
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0u, gameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.ControlLocked);
+        Assert.Equal(AlundraGameState.PlayerControlBits.MenuOpen, gameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
+    }
+
+    [Fact]
+    public void SetSaveMapIdToInternalMapIndex_0x38_RealMap389Operands_WritesTable()
+    {
+        // Real Load-program operand bytes (docs/intro-programs-389.txt offset 305):
+        // params=[17,0,183,1] -> index = (0<<8)|17 = 17; value = (1<<8)|183 = 439.
+        var document = NewDocument(0x38, 17, 0, 183, 1, 0xFF);
+        var gameState = new AlundraGameState();
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal((ushort)439, gameState.MapIdToInternalMapIndexTable[17]);
+    }
+
+    [Fact]
+    public void SetSaveMapIdToInternalMapIndex_0x38_OutOfRangeIndex_SkipsWithoutThrowing()
+    {
+        // v1=255,v2=255 -> index = 0xFFFF = 65535, far beyond the table's 500 entries.
+        var document = NewDocument(0x38, 255, 255, 1, 0, 0xFF);
+        var gameState = new AlundraGameState();
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state); // must not throw
+
+        // Untouched elsewhere - the identity seed at a real index survives.
+        Assert.Equal((ushort)17, gameState.MapIdToInternalMapIndexTable[17]);
+    }
+
+    [Fact]
+    public void FacePlayer_0x27_HandComputedCardinalCase_PlayerDueEast()
+    {
+        var document = NewDocument(0x27, 0xFF);
+        var entity = NewEntity();
+        entity.PosX = 0;
+        entity.PosY = 0;
+        var player = NewEntity();
+        player.PosX = 100 << 16; // due east, 16.16 fixed-point (same shape 0x27 actually feeds GetDirectionToTarget)
+        player.PosY = 0;
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = NewRunner(document, worldContext: context);
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        // ScriptHelper.GetDirectionToTarget(100<<16, 0): y<1 -> flipper=2; x>=0 unaffected; greatest=x;
+        // div picks the shift bringing x into 0..15 (DivTable[19]=0x7fffff >= 6553600 > DivTable[18]) ->
+        // x>>19=12, y>>19=0 -> DirectionTable[0*16+12] (row 0, all zero) = 0 -> ret = 0x18-0 = 0x18 = 24,
+        // matching AnimationTables.CardinalDirectionTable[3] (east/right).
+        Assert.Equal(24u, entity.TargetDirection);
+    }
+
+    [Fact]
+    public void FacePlayer_0x27_HandComputedDiagonalCase_PlayerUpAndRight()
+    {
+        var document = NewDocument(0x27, 0xFF);
+        var entity = NewEntity();
+        entity.PosX = 0;
+        entity.PosY = 0;
+        var player = NewEntity();
+        player.PosX = 100 << 16;
+        player.PosY = -100 << 16;
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = NewRunner(document, worldContext: context);
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        // ScriptHelper.GetDirectionToTarget(100<<16, -100<<16): y<1 -> flipper=2; x>=0 unaffected; |y|=|x|
+        // -> the div-loop shift lands both on the SAME quotient the un-scaled x=100,y=-100 case would
+        // (12,12 - the octant ratio, not the raw magnitude, drives the table lookup) ->
+        // DirectionTable[12*16+12] = row12[index12] = 0x4 -> ret = 0x18-4 = 0x14 = 20 (halfway between
+        // up=0x10 and right=0x18, as expected for an exact 45-degree target).
+        Assert.Equal(20u, entity.TargetDirection);
+    }
+
+    [Fact]
+    public void FacePlayer_0x27_NoPlayerSpawned_LeavesDirectionUnchanged()
+    {
+        var document = NewDocument(0x27, 0xFF);
+        var runner = NewRunner(document); // no worldContext -> NoOpEntityWorldContext.PlayerEntity == null
+        var entity = NewEntity();
+        entity.TargetDirection = 7;
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state); // must not throw
+
+        Assert.Equal(7u, entity.TargetDirection);
+    }
+
+    [Fact]
+    public void TurnEntity_0x5A_RealMap389Params_Mode2Cardinal()
+    {
+        // Real Load-program operand bytes (docs/intro-programs-389.txt offset 1297): params=[15,64].
+        // v1=15 (raw EntityRefId search, 0x80 clear), v2=64=0b01000000 -> mode = 64>>5 = 2 (cardinal),
+        // encodedDir&3 = 0 -> AnimationTables.CardinalDirectionTable[0] = 0 (down).
+        var document = NewDocument(0x5A, 15, 64, 0xFF);
+        var target = NewEntity();
+        target.EntityRefId = 15;
+        var owner = NewEntity();
+        // Raw EntityRefId search (0x80 clear) is gated on the OWNER's own status (EntitySearchService,
+        // GameEngine.cs:1940-1953) - Status defaults to Destroyed (0), which would gate this off.
+        owner.Status = EntityStatus.Normal;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(target);
+        var runner = NewRunner(document, worldContext: context);
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal(0u, target.TargetDirection);
+    }
+
+    [Fact]
+    public void TurnEntityWithAnim_0x5B_RealMap389Params_SetsAnimAndDirection()
+    {
+        // Real Load-program operand bytes (docs/intro-programs-389.txt offset 1126): params=[128,1,66].
+        // v1=128 -> function id 0 (owner); v2=1 (TargetAnimationId); v3=66=0b01000010 -> mode 2, &3=2 ->
+        // CardinalDirectionTable[2] = 0x08 (left).
+        var document = NewDocument(0x5B, 128, 1, 66, 0xFF);
+        var owner = NewEntity();
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(owner);
+        var runner = NewRunner(document, worldContext: context);
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal(1u, owner.TargetAnimationId);
+        Assert.Equal(0x08u, owner.TargetDirection);
+    }
+
+    [Fact]
+    public void ResolveDirectionFromParam_Mode0Direct_ReturnsLowFiveBitsVerbatim()
+    {
+        var runner = NewRunner(NewDocument(0xFF));
+        var entity = NewEntity();
+
+        // encodedDir=9 -> mode = 9>>5 = 0 -> result = 9&0x1f = 9.
+        Assert.Equal(9u, runner.ResolveDirectionFromParam(entity, 9));
+    }
+
+    [Fact]
+    public void ResolveDirectionFromParam_Mode1RelativeToOwnTargetDirection()
+    {
+        var runner = NewRunner(NewDocument(0xFF));
+        var entity = NewEntity();
+        entity.TargetDirection = 6;
+
+        // encodedDir = 0x23 = 0b00100011 -> mode=1, result=3 -> (6+3)&0x1f = 9.
+        Assert.Equal(9u, runner.ResolveDirectionFromParam(entity, 0x23));
+    }
+
+    [Fact]
+    public void ResolveDirectionFromParam_Mode3TowardPlayerPlusOffset()
+    {
+        var player = NewEntity();
+        player.PosX = 100 << 16;
+        player.PosY = 0;
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = NewRunner(NewDocument(0xFF), worldContext: context);
+        var entity = NewEntity();
+        entity.PosX = 0;
+        entity.PosY = 0;
+
+        // encodedDir = 0x61 = 0b01100001 -> mode=3. GetDirectionToTarget(100<<16,0) = 24 (east, see
+        // FacePlayer_0x27_HandComputedCardinalCase_PlayerDueEast's own derivation). result added is the
+        // FULL encodedDir byte (0x61 = 97), not just its low 5 bits: (24 + 97) & 0x1f = 121 & 31 = 25.
+        Assert.Equal(25u, runner.ResolveDirectionFromParam(entity, 0x61));
+    }
+
+    [Fact]
+    public void ResolveDirectionFromParam_Mode3NoPlayer_TreatsToPlayerDirectionAsZero()
+    {
+        var runner = NewRunner(NewDocument(0xFF)); // no worldContext -> PlayerEntity null
+        var entity = NewEntity();
+
+        // mode=3, encodedDir=0x60=96 -> (0 + 96)&0x1f = 96&31 = 0.
+        Assert.Equal(0u, runner.ResolveDirectionFromParam(entity, 0x60));
+    }
+
+    [Fact]
+    public void ResolveDirectionFromParam_Mode6PlayersOwnTargetDirectionPlusOffset()
+    {
+        var player = NewEntity();
+        player.TargetDirection = 8;
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = NewRunner(NewDocument(0xFF), worldContext: context);
+        var entity = NewEntity();
+
+        // encodedDir = 0xC3 = 0b11000011 -> mode=6, result=3 -> (8+3)&0x1f = 11.
+        Assert.Equal(11u, runner.ResolveDirectionFromParam(entity, 0xC3));
+    }
+
+    [Fact]
+    public void ResolveDirectionFromParam_Mode7NoActiveWarpEntity_FallsBackToLowFiveBits()
+    {
+        // Mode 7 (warp facing) - this runtime never has a "g_activeCollisionEntity", so
+        // GetWarpFacingDirection always returns -1 (see that method's own doc), matching the original's
+        // own fallback for every entity that is not mid-warp.
+        var runner = NewRunner(NewDocument(0xFF));
+        var entity = NewEntity();
+
+        // encodedDir = 0xE5 = 0b11100101 -> mode=7, result=5 -> facingDirection==-1 -> returns result=5.
+        Assert.Equal(5u, runner.ResolveDirectionFromParam(entity, 0xE5));
+    }
+
+    [Theory]
+    [InlineData(0x80u)] // mode 4 (random cardinal), result=0.
+    [InlineData(0xA0u)] // mode 5 (random 0..31), result=0.
+    public void ResolveDirectionFromParam_RandomModes_ThrowNotSupported(uint encodedDir)
+    {
+        var runner = NewRunner(NewDocument(0xFF));
+        var entity = NewEntity();
+
+        // Pre-read census (docs/plan-e4-deplacement-scripte.md "MANDATORY PRE-READ"): no 0x5A/0x5B
+        // occurrence in map 389's own programs decodes to mode 4/5 - this path is provably unreached in
+        // practice, so it must fail loudly instead of silently guessing a direction (no faithful PSX RNG
+        // port exists).
+        Assert.Throws<System.NotSupportedException>(() => runner.ResolveDirectionFromParam(entity, encodedDir));
+    }
+
+    [Fact]
+    public void CheckEntityInArea_0x07_MatchInsideBox_ResultOne()
+    {
+        var document = NewDocument(0x07, 0x80, 10, 20, 30, 40, 0, 5, 0xFF); // v1=0x80 (owner)
+        var owner = NewEntity();
+        owner.TileX = 15;
+        owner.TileY = 35;
+        owner.TileZ = 2;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(owner);
+        var runner = NewRunner(document, worldContext: context);
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(8, state.CodeIndex); // stopped at 0xFF
+    }
+
+    [Fact]
+    public void CheckEntityInArea_0x07_MatchOutsideBox_ResultZero()
+    {
+        var document = NewDocument(0x07, 0x80, 10, 20, 30, 40, 0, 5, 0xFF);
+        var owner = NewEntity();
+        owner.TileX = 25; // outside [10,20]
+        owner.TileY = 35;
+        owner.TileZ = 2;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(owner);
+        var runner = NewRunner(document, worldContext: context);
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal(0, state.Result);
+    }
+
+    [Fact]
+    public void CheckEntityInArea_0x07_RealMap389Params_TileZDerivedFromPosZ()
+    {
+        // Real Tick-program operand bytes (docs/intro-programs-389.txt offset 1131):
+        // params=[128,18,18,0,59,20,60] -> v1=0x80 (owner), box x:[18,18] y:[0,59] z:[20,60].
+        var document = NewDocument(0x07, 128, 18, 18, 0, 59, 20, 60, 0xFF);
+        var owner = NewEntity();
+        owner.TileX = 18;
+        owner.TileY = 40;
+        owner.PosZ = 30 << 20; // TileZ = PosZ >> 20 = 30, inside [20,60].
+        owner.TileZ = owner.PosZ >> 20;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(owner);
+        var runner = NewRunner(document, worldContext: context);
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal(1, state.Result);
+    }
 }

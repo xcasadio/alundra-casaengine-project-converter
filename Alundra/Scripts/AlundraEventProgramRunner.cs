@@ -435,9 +435,32 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 return 3;
             }
 
+            case 0x07: // Check entity in area - Script_7_007 (EntityEventHandlers.cs:539-582): Result = 1
+                       // if ANY entity matched by v1's search type has TileX/TileY/TileZ inside the
+                       // inclusive box v2..v7, else 0. The original iterates the match buffer BACKWARD
+                       // (last match down to the first) - immaterial here since only "any match" is
+                       // observed, not which one; ported forward over EntitySearchService's own order.
+                state.Result = EntityInArea(entity, v) ? 1 : 0;
+                return 8;
+
             case 0x09: // Set direction - Script_9_009
                 entity.TargetDirection = (uint)(v[1] & 0x1f);
                 return 2;
+
+            case 0x0A: // Reverse direction - Script_10_00A
+                entity.TargetDirection = (entity.TargetDirection + 0x10) & 0x1f;
+                return 1;
+
+            case 0x10: // Player lose control - Script_16_010 (EntityEventHandlers.cs:680-684): the full
+                       // engine bridge (PlayerInput.IsInputEnable/CharacterControlMode) is E6 - E4 only
+                       // ports the flag store, which AlundraPlayerManager.MovePlayer's own
+                       // InputBlockedMask gate already reads.
+                _gameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.ControlLocked;
+                return 1;
+
+            case 0x11: // Player gain control - Script_17_011 (EntityEventHandlers.cs:686-690).
+                _gameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.ControlLocked;
+                return 1;
 
             case 0x16: // High gravity - Script_22_016
                 entity.Flags |= EntityFlags.Gravity;
@@ -447,6 +470,10 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             case 0x17: // Low gravity - Script_23_017
                 entity.Flags &= ~EntityFlags.Gravity;
                 entity.ApplyGravitySettingsToController();
+                return 1;
+
+            case 0x19: // Deactivate entity - Script_25_019 (EntityEventHandlers.cs:729-733).
+                entity.Status = EntityStatus.Deactivated;
                 return 1;
 
             case 0x1A: // Set anim - Script_26_01A
@@ -464,6 +491,17 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 entity.ForceZ = SignExtend16(((v[2] << 8) | v[1])) * 0x10000 >> 8;
                 entity.Controller?.SetVerticalVelocity(entity.ForceZ * 50f / 65536f);
                 return 3;
+
+            case 0x27: // Face player - Script_39_027 (EntityEventHandlers.cs:973-978): TargetDirection =
+                       // GetDirectionToTarget(player.Pos - entity.Pos). No player spawned this session
+                       // (degraded mode) -> TargetDirection left unchanged, same "nothing to search"
+                       // shape every other player-dependent path in this runner already falls back to.
+                if (_worldContext.PlayerEntity is { } faceTarget)
+                {
+                    entity.TargetDirection = ScriptHelper.GetDirectionToTarget(faceTarget.PosX - entity.PosX, faceTarget.PosY - entity.PosY);
+                }
+
+                return 1;
 
             case 0x30: // If flag on - Script_48_030
                 return FlagBranch(v, wantSet: true);
@@ -489,6 +527,39 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
             case 0x33: // Check flags on - Script_51_033
                 return CheckFlagsOn(v, state);
+
+            case 0x38: // Set save map-id -> internal map index - Script_SetSaveMapIdToInternalMapIndex_038
+                       // (EntityEventHandlers.cs:1202-1207): MapIdToInternalMapIndexTable[v2<<8|v1] =
+                       // v4<<8|v3. Real map-389 operand (docs/intro-programs-389.txt offset 305):
+                       // params=[17,0,183,1] -> table[17] = 439.
+                SetSaveMapIdToInternalMapIndex(v);
+                return 5;
+
+            case 0x49: // Restart - Script_73_049 (EntityEventHandlers.cs:1454-1459): unconditional jump
+                       // back to Parameters[0] (this program's own start CodeIndex, set once by
+                       // InitializeEventData - see that method's own doc). Same
+                       // "target - CodeIndexAtFetch" shape as the 0x02/0x03/0x04 Goto family above;
+                       // state.CodeIndex still equals codeIndexAtFetch here (Dispatch runs before
+                       // RunOneScriptCall applies the returned delta).
+                return state.Parameters[0] - state.CodeIndex;
+
+            case 0x4B: // If false restart - Script_75_04B (EntityEventHandlers.cs:1476-1487): same jump
+                       // as 0x49, but only when Result == 0; otherwise just advances past the 1-byte
+                       // instruction (size 1, see EventOpcodeSizeTable).
+                return state.Result == 0 ? state.Parameters[0] - state.CodeIndex : 1;
+
+            case 0x5A: // Turn entity - Script_90_05A (EntityEventHandlers.cs:1694-1710): for every entity
+                       // matched by v1's search type, TargetDirection = ResolveDirectionFromParam(v2).
+                TurnMatchingEntities(entity, v[1], (uint)v[2], animationId: null);
+                return 3;
+
+            case 0x5B: // Turn entity with anim - Script_91_05B (EntityEventHandlers.cs:1713-1733): same
+                       // as 0x5A, plus TargetAnimationId = v2 (v3 is the direction param here). Real
+                       // map-389 operands (docs/intro-programs-389.txt, e.g. offset 1126): every
+                       // occurrence's direction byte decodes to mode 2 (cardinal) - see pre-read census
+                       // on ResolveDirectionFromParam's own doc.
+                TurnMatchingEntities(entity, v[1], (uint)v[3], animationId: (uint)v[2]);
+                return 4;
 
             case 0x8B: // Spawn entity next to entity - Script_139_08B @ 0x8004033C
                 SpawnEntityNextToEntity(entity, v);
@@ -796,4 +867,151 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 + $"({missingSystem} not ported yet) - degraded no-op, advancing by its size.");
         }
     }
+
+    /// <summary>Script_7_007 (0x07 CheckEntityInArea) - true if AT LEAST ONE entity matched by
+    /// <c>v[1]</c>'s search type has <see cref="AlundraEntityScriptProxy.TileX"/>/
+    /// <see cref="AlundraEntityScriptProxy.TileY"/>/<see cref="AlundraEntityScriptProxy.TileZ"/> inside
+    /// the inclusive box <c>v[2]..v[7]</c> (xmin,xmax,ymin,ymax,zmin,zmax). See the 0x07 case's own doc
+    /// on <see cref="Dispatch"/> for the one order-of-iteration deviation from the original.</summary>
+    private bool EntityInArea(AlundraEntityScriptProxy entity, int[] v)
+    {
+        var xmin = v[2];
+        var xmax = v[3];
+        var ymin = v[4];
+        var ymax = v[5];
+        var zmin = v[6];
+        var zmax = v[7];
+
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+
+        foreach (var match in matches)
+        {
+            if (match.TileX >= xmin && match.TileX <= xmax
+                && match.TileY >= ymin && match.TileY <= ymax
+                && match.TileZ >= zmin && match.TileZ <= zmax)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private readonly HashSet<int> _loggedOutOfRangeMapIndexes = new();
+
+    /// <summary>Script_SetSaveMapIdToInternalMapIndex_038 (0x38) - see the 0x38 case's own doc on
+    /// <see cref="Dispatch"/>. <see cref="AlundraGameState.MapIdToInternalMapIndexTable"/> is sized 500
+    /// (the original's own <c>ushort[500]</c>, SaveData.cs:18) but the packed index <c>v2&lt;&lt;8|v1</c>
+    /// spans a full byte pair (0..65535) - out of range on real map-389 data (indices observed stay under
+    /// 60), guarded here (logged once per offending index) rather than trusting every possible operand
+    /// byte pair the way the original's raw array write implicitly would.</summary>
+    private void SetSaveMapIdToInternalMapIndex(int[] v)
+    {
+        var index = (v[2] << 8) | v[1];
+        var table = _gameState.MapIdToInternalMapIndexTable;
+
+        if (index < 0 || index >= table.Length)
+        {
+            if (_loggedOutOfRangeMapIndexes.Add(index))
+            {
+                Logs.WriteWarning(
+                    $"AlundraEventProgramRunner: opcode 0x38 SetSaveMapIdToInternalMapIndex({index}) - "
+                    + $"index out of range (table size {table.Length}); write skipped (V1 deviation).");
+            }
+
+            return;
+        }
+
+        table[index] = (ushort)((v[4] << 8) | v[3]);
+    }
+
+    /// <summary>Shared shape of Script_90_05A (Turn entity) / Script_91_05B (Turn entity with anim) - for
+    /// every entity matched by <paramref name="searchType"/>, resolves and writes
+    /// <see cref="AlundraEntityScriptProxy.TargetDirection"/> via <see cref="ResolveDirectionFromParam"/>,
+    /// and, when <paramref name="animationId"/> is non-null (0x5B only), also writes
+    /// <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> first (matching the original's own
+    /// assignment order, EntityEventHandlers.cs:1726-1729 - the anim id itself never influences direction
+    /// resolution, so the order has no observable effect, but is kept faithful anyway).</summary>
+    private void TurnMatchingEntities(AlundraEntityScriptProxy entity, int searchType, uint directionParam, uint? animationId)
+    {
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, searchType, _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+
+        foreach (var match in matches)
+        {
+            if (animationId.HasValue)
+            {
+                match.TargetAnimationId = animationId.Value;
+            }
+
+            match.TargetDirection = ResolveDirectionFromParam(match, directionParam);
+        }
+    }
+
+    /// <summary>
+    /// Full port of <c>GameEngine.ResolveDirectionFromParam</c> (GameEngine.cs:2325-2382, address
+    /// 0x8003cfc8) - the 3 high bits of <paramref name="encodedDir"/> select one of 8 modes, the low 5
+    /// bits (<c>result</c>) feed most of them. Modes 4/5 (random, <c>Random.Next()</c>) are NOT ported -
+    /// no faithful PSX RNG exists in this runtime - and throw instead of silently guessing: the E4.c
+    /// pre-read census (docs/plan-e4-deplacement-scripte.md "MANDATORY PRE-READ") decoded every real
+    /// 0x5A/0x5B direction-parameter occurrence in map 389's own programs and found mode 2 (cardinal)
+    /// exclusively, so this path is provably unreached by the intro; a future map that DOES reach it must
+    /// stop here loudly, not silently fall back to a wrong direction.
+    /// </summary>
+    internal uint ResolveDirectionFromParam(AlundraEntityScriptProxy entity, uint encodedDir)
+    {
+        var result = encodedDir & 0x1f;
+
+        switch (encodedDir >> 5)
+        {
+            case 0: // Direct: the low 5 bits are the direction verbatim.
+                return result;
+
+            case 1: // Relative to the entity's own current TargetDirection.
+                return (entity.TargetDirection + result) & 0x1f;
+
+            case 2: // Cardinal, via g_cardinalDirectionTable (AnimationTables.CardinalDirectionTable).
+                return AnimationTables.CardinalDirectionTable[encodedDir & 3];
+
+            case 3: // Toward the player, plus a signed offset (the FULL encodedDir byte, not just result).
+            {
+                var toPlayer = _worldContext.PlayerEntity is { } player3
+                    ? ScriptHelper.GetDirectionToTarget(player3.PosX - entity.PosX, player3.PosY - entity.PosY)
+                    : 0u;
+                return (toPlayer + encodedDir) & 0x1f;
+            }
+
+            case 4: // Random cardinal - RNG not ported, see this method's own doc.
+            case 5: // Random direction (0..31) - RNG not ported, see this method's own doc.
+                throw new NotSupportedException(
+                    $"ResolveDirectionFromParam: mode {encodedDir >> 5} (random) requires a PSX RNG port "
+                    + "that does not exist in this runtime - the E4.c pre-read census found no map-389 "
+                    + "occurrence reaching this mode, so hitting it live is unexpected; refusing to guess "
+                    + "a direction instead of silently deviating from the original.");
+
+            case 6: // The PLAYER's current TargetDirection, plus result (not toward-target, unlike mode 3).
+            {
+                var playerDirection = _worldContext.PlayerEntity?.TargetDirection ?? 0u;
+                return (playerDirection + result) & 0x1f;
+            }
+
+            case 7: // Warp-departure facing - see GetWarpFacingDirection's own doc.
+            {
+                var facingDirection = GetWarpFacingDirection(entity);
+                return facingDirection == -1 ? result : (uint)((facingDirection + result) & 0x1f);
+            }
+
+            default: // Unreachable: encodedDir is always a byte (0..255), so encodedDir >> 5 is 0..7.
+                return 0;
+        }
+    }
+
+    /// <summary>Port of <c>GameEngine.GetWarpFacingDirection</c> (GameEngine.cs:2385-2415, address
+    /// 0x8003cf20) - only ever non-trivial for the entity <c>g_activeCollisionEntity</c> currently points
+    /// at (the warp trigger an entity just walked into), a piece of state E7's own warp system has not
+    /// ported yet. With no concept of "the active collision entity" in this runtime, the original's own
+    /// <c>g_activeCollisionEntity != entity</c> guard is always true here, so this always returns -1 -
+    /// documented accepted deviation (mode 7 falls back to <c>ResolveDirectionFromParam</c>'s own "no
+    /// facing direction" branch, exactly like the original does for every entity that ISN'T mid-warp).
+    /// </summary>
+    private static int GetWarpFacingDirection(AlundraEntityScriptProxy entity) => -1;
 }

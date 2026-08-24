@@ -81,6 +81,52 @@ public static class AlundraPlayerManager
     private const uint LoadingMapAnimationId = 0x36;
 
     /// <summary>
+    /// Decision E4-3 (docs/plan-e4-deplacement-scripte.md): name of the debug-only environment variable
+    /// that, set to exactly "1" in the process environment, disables <see cref="MovePlayer"/>'s
+    /// <c>InputBlockedMask</c> gate below - lets a developer drive the hero with the pad at any point in
+    /// the intro (including while script-locked by opcode 0x10) to validate walk/collision without
+    /// waiting for 0x11. NEVER active by default - the variable must be explicitly set before this
+    /// process starts (or, for tests only, forced via <see cref="SetDebugIgnoreControlLockOverrideForTests"/>).
+    /// This is a debug knob only, never toggled by any opcode or game system.
+    /// </summary>
+    internal const string DebugIgnoreControlLockEnvVar = "ALUNDRA_DEBUG_IGNORE_CONTROL_LOCK";
+
+    /// <summary>Real-world value of the flag: the environment variable read exactly once (static
+    /// readonly, evaluated on this type's first use) and logged exactly once when it evaluates active -
+    /// see <see cref="DebugIgnoreControlLockEnvVar"/>'s own doc.</summary>
+    private static readonly bool DebugIgnoreControlLockFromEnvironment = ReadDebugIgnoreControlLockFromEnvironment();
+
+    /// <summary>Test-only seam over <see cref="DebugIgnoreControlLockFromEnvironment"/>: null (the
+    /// default) defers to the real environment-variable read above; a non-null value overrides it. Exists
+    /// solely so unit tests can exercise both the "active" and "inactive" branches of
+    /// <see cref="MovePlayer"/> deterministically, without depending on this process's environment
+    /// variables being set before the CLR first touches this type (which a shared xunit test host cannot
+    /// guarantee - some other test may have already forced the static field's one-time initialization).
+    /// Never read or written by production code paths.</summary>
+    private static bool? _debugIgnoreControlLockOverrideForTests;
+
+    private static bool DebugIgnoreControlLock => _debugIgnoreControlLockOverrideForTests ?? DebugIgnoreControlLockFromEnvironment;
+
+    private static bool ReadDebugIgnoreControlLockFromEnvironment()
+    {
+        var active = Environment.GetEnvironmentVariable(DebugIgnoreControlLockEnvVar) == "1";
+
+        if (active)
+        {
+            CasaEngine.Core.Logging.Logs.WriteWarning(
+                $"AlundraPlayerManager: {DebugIgnoreControlLockEnvVar}=1 - MovePlayer's InputBlockedMask "
+                + "gate is disabled (debug-only, never active by default).");
+        }
+
+        return active;
+    }
+
+    /// <summary>Test-only seam - see <see cref="_debugIgnoreControlLockOverrideForTests"/>'s own doc.
+    /// Pass null to restore the real environment-variable-derived value.</summary>
+    internal static void SetDebugIgnoreControlLockOverrideForTests(bool? value)
+        => _debugIgnoreControlLockOverrideForTests = value;
+
+    /// <summary>
     /// Port of the documented subset of <c>PlayerManager.MovePlayer</c> - see this class' own doc for the
     /// exact ported/not-ported line ranges. Only sets <see cref="AlundraEntityScriptProxy.TargetDirection"/>/
     /// <see cref="AlundraEntityScriptProxy.TargetAnimationId"/>/<see cref="AlundraEntityScriptProxy.Flags"/>;
@@ -103,7 +149,7 @@ public static class AlundraPlayerManager
         // nothing ported yet drives carried entities, warp effects, or forced-sequence facing - so this
         // whole branch is a deliberate no-op: the player simply does not move or change animation while
         // g_playerControlFlags carries any of ControlLocked/MessageBox/ForcedSequence.
-        if ((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.InputBlockedMask) != 0)
+        if (!DebugIgnoreControlLock && (state.PlayerControlFlags & AlundraGameState.PlayerControlBits.InputBlockedMask) != 0)
         {
             return;
         }
