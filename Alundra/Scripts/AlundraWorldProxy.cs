@@ -81,6 +81,59 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     private const float DebugCameraPanDeadZone = 0.2f;
 
     /// <summary>
+    /// Name of the debug-only environment variable that gates whether the right stick may drive
+    /// <see cref="UpdateDebugCameraPan"/>'s DEBUG offset (and its R3/right-stick-click reset) at all.
+    /// ENABLED BY DEFAULT - user decision, 2026-08-24 - deliberately the opposite convention of
+    /// <see cref="AlundraPlayerManager.DebugIgnoreControlLockEnvVar"/> ("never active by default"):
+    /// that flag bypasses a real gameplay gate, so it must be opted into explicitly, whereas this one
+    /// only gates an always-optional debug convenience layered on top of whatever the camera is already
+    /// doing (see <see cref="_debugCameraBase"/>) - leaving it on by default costs nothing and saves
+    /// developers from re-enabling it every session. Set to exactly "0" or "false" (case-insensitive) to
+    /// disable; any other value, or leaving it unset, keeps it enabled.
+    /// </summary>
+    internal const string DebugCameraPanEnabledEnvVar = "ALUNDRA_DEBUG_CAMERA_ENABLED";
+
+    /// <summary>Real-world value of <see cref="DebugCameraPanEnabledEnvVar"/> - the environment variable
+    /// read exactly once (static readonly, evaluated on this type's first use) and logged exactly once
+    /// when it evaluates disabled - see that field's own doc.</summary>
+    private static readonly bool DebugCameraPanEnabledFromEnvironment = ReadDebugCameraPanEnabledFromEnvironment();
+
+    /// <summary>Test-only seam over <see cref="DebugCameraPanEnabledFromEnvironment"/> - same rationale as
+    /// <see cref="AlundraPlayerManager"/>'s own <c>_debugIgnoreControlLockOverrideForTests</c> seam: a
+    /// shared xunit host cannot guarantee this type's static field has not already been forced to
+    /// initialize before a test sets the real environment variable. Never read or written by production
+    /// code paths.</summary>
+    private static bool? _debugCameraPanEnabledOverrideForTests;
+
+    private static bool DebugCameraPanEnabled
+        => _debugCameraPanEnabledOverrideForTests ?? DebugCameraPanEnabledFromEnvironment;
+
+    /// <summary>Test-only read of <see cref="DebugCameraPanEnabled"/> - that property itself is private
+    /// (production code only reads it from inside <see cref="UpdateDebugCameraPan"/>), so tests exercise
+    /// the flag's resolution through this seam instead.</summary>
+    internal static bool DebugCameraPanEnabledForTests => DebugCameraPanEnabled;
+
+    private static bool ReadDebugCameraPanEnabledFromEnvironment()
+    {
+        var raw = Environment.GetEnvironmentVariable(DebugCameraPanEnabledEnvVar);
+        var disabled = raw == "0" || string.Equals(raw, "false", StringComparison.OrdinalIgnoreCase);
+
+        if (disabled)
+        {
+            Logs.WriteWarning(
+                $"AlundraWorldProxy: {DebugCameraPanEnabledEnvVar}={raw} - debug camera pan stick input "
+                + "disabled (default is enabled).");
+        }
+
+        return !disabled;
+    }
+
+    /// <summary>Test-only seam - see <see cref="_debugCameraPanEnabledOverrideForTests"/>'s own doc. Pass
+    /// null to restore the real environment-variable-derived value.</summary>
+    internal static void SetDebugCameraPanEnabledOverrideForTests(bool? value)
+        => _debugCameraPanEnabledOverrideForTests = value;
+
+    /// <summary>
     /// Entities spawned by this proxy in <see cref="InitializeWithWorld"/> (both the prefab-clone and
     /// bare-fallback paths), in creation order - <see cref="Update"/> drives their status machine in
     /// this same order, mirroring the original manager's single flat entity-slot array.
@@ -216,6 +269,41 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
     /// <summary>DEBUG ONLY. Guards the one-time <see cref="_debugCamera"/> lookup/warning.</summary>
     private bool _debugCameraLookupDone;
+
+    /// <summary>
+    /// DEBUG ONLY (see <see cref="UpdateDebugCameraPan"/>). The stick-accumulated pan offset applied on
+    /// top of <see cref="_debugCameraBase"/> - <c>Z</c> is always 0 (matching
+    /// <see cref="ComputeDebugCameraPanOffset"/>'s own contract). Reset to <see cref="Vector3.Zero"/> by
+    /// an R3 (right-stick) click; never touched at all while
+    /// <see cref="DebugCameraPanEnabled"/> is false.
+    /// </summary>
+    private Vector3 _debugCameraOffset;
+
+    /// <summary>
+    /// DEBUG ONLY (see <see cref="UpdateDebugCameraPan"/>). This debug tool's notion of the camera's
+    /// "real" target - whatever the camera's own behavior (a future E5 follow-target script, or nothing
+    /// yet) last put in <see cref="Camera2dComponent.Target"/>, with the stick's own
+    /// <see cref="_debugCameraOffset"/> subtracted back out. Adopted fresh from
+    /// <see cref="Camera2dComponent.Target"/> whenever that no longer matches
+    /// <see cref="_debugCameraLastWrittenTarget"/> - see <see cref="ResolveDebugCameraBase"/>.
+    /// </summary>
+    private Vector3 _debugCameraBase;
+
+    /// <summary>
+    /// DEBUG ONLY. True once <see cref="_debugCameraBase"/> has been seeded from the camera's actual
+    /// <see cref="Camera2dComponent.Target"/> on the first tick the camera was found - before that, there
+    /// is no prior write to compare <see cref="Camera2dComponent.Target"/> against, so
+    /// <see cref="ResolveDebugCameraBase"/> would otherwise wrongly treat the camera's initial target as
+    /// "unchanged from a stale zero base".
+    /// </summary>
+    private bool _debugCameraBaseInitialized;
+
+    /// <summary>
+    /// DEBUG ONLY. The exact <see cref="Camera2dComponent.Target"/> value this proxy itself wrote last
+    /// frame (<c>base + offset</c>) - compared against the camera's current <c>Target</c> each frame to
+    /// detect an external write (see <see cref="_debugCameraBase"/>'s own doc).
+    /// </summary>
+    private Vector3 _debugCameraLastWrittenTarget;
 
     /// <summary>
     /// True once <see cref="InitializeWithWorld"/> successfully parsed and applied this world's
@@ -1560,9 +1648,18 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <c>Target</c> is a world/render position, not a logical entity pose), where "more positive = further
     /// up/north" (the same Y-up convention <c>SimulationSpacePolicy.DeriveRenderPosition</c> produces for a
     /// projected entity - see <see cref="ResolveLogicalPosition"/>'s own doc for why entities themselves no
-    /// longer negate Alundra's down-positive Y here), so stick-up must increase <c>Target.Y</c> - no sign
-    /// flip needed, unlike Alundra's own Y. Stick X maps directly onto world X the same way. <c>Target.Z</c>
-    /// is left untouched.
+    /// longer negate Alundra's down-positive Y here), so stick-up must increase the offset's Y - no sign
+    /// flip needed, unlike Alundra's own Y. Stick X maps directly onto world X the same way.
+    ///
+    /// The stick no longer moves <c>Target</c> directly (user decision, 2026-08-24, ahead of E5's own
+    /// script-driven follow camera): it only accumulates <see cref="_debugCameraOffset"/> (<c>Z</c> always
+    /// 0), applied on top of <see cref="_debugCameraBase"/> - whatever the camera's own behavior (nothing
+    /// yet; a future E5 follow-target) last put in <c>Target</c>. Each frame this method first re-derives
+    /// <see cref="_debugCameraBase"/> from <c>Target</c> (see <see cref="ResolveDebugCameraBase"/>) so an
+    /// external write - E5's own follow logic - always wins as the base; the stick only ever adds a debug
+    /// offset around it. An R3 (right-stick) click resets the offset to 0. While
+    /// <see cref="DebugCameraPanEnabled"/> is false, the stick never changes the offset and R3 is inert -
+    /// only the base write-through still runs, so the camera simply follows its base.
     /// </summary>
     private void UpdateDebugCameraPan(float elapsedTime)
     {
@@ -1595,50 +1692,79 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             }
         }
 
+        if (_debugCamera == null)
+        {
+            return;
+        }
+
+        // Base resilience (E5-proof, see this method's own doc): whatever last wrote Target - including
+        // nothing yet, on the very first tick the camera was found - becomes the base to pan around.
+        _debugCameraBase = _debugCameraBaseInitialized
+            ? ResolveDebugCameraBase(_debugCamera.Target, _debugCameraLastWrittenTarget, _debugCameraBase)
+            : _debugCamera.Target;
+        _debugCameraBaseInitialized = true;
+
         var gamePadManager = _world?.Game?.InputComponent?.GamePadManager;
-        if (_debugCamera == null || gamePadManager == null)
+        if (gamePadManager != null)
         {
-            return;
-        }
-
-        var gamePad = gamePadManager.GetGamePad(PlayerIndex.One);
-        if (!gamePad.IsConnected)
-        {
-            return;
-        }
-
-        // DEBUG ONLY - Back (Select) toggles the engine's physics wireframes, off by default at world
-        // load (see InitializeWithWorld), so collision boxes can be inspected while flying the camera.
-        if (gamePad.BackJustPressed)
-        {
-            var physicsDebug = _world?.Game?.PhysicsDebugViewRendererComponent;
-            if (physicsDebug != null)
+            var gamePad = gamePadManager.GetGamePad(PlayerIndex.One);
+            if (gamePad.IsConnected)
             {
-                physicsDebug.DisplayPhysics = !physicsDebug.DisplayPhysics;
+                // DEBUG ONLY - Back (Select) toggles the engine's physics wireframes, off by default at
+                // world load (see InitializeWithWorld), so collision boxes can be inspected while flying
+                // the camera.
+                if (gamePad.BackJustPressed)
+                {
+                    var physicsDebug = _world?.Game?.PhysicsDebugViewRendererComponent;
+                    if (physicsDebug != null)
+                    {
+                        physicsDebug.DisplayPhysics = !physicsDebug.DisplayPhysics;
+                    }
+                }
+
+                if (DebugCameraPanEnabled)
+                {
+                    _debugCameraOffset = gamePad.RightStickJustPressed
+                        ? Vector3.Zero
+                        : ComputeDebugCameraPanOffset(
+                            _debugCameraOffset, gamePad.RightStickX, gamePad.RightStickY, elapsedTime);
+                }
             }
         }
 
-        _debugCamera.Target = ComputeDebugCameraPanTarget(
-            _debugCamera.Target, gamePad.RightStickX, gamePad.RightStickY, elapsedTime);
+        _debugCamera.Target = _debugCameraBase + _debugCameraOffset;
+        _debugCameraLastWrittenTarget = _debugCamera.Target;
     }
 
     /// <summary>
     /// DEBUG ONLY (see <see cref="UpdateDebugCameraPan"/>) - the pure math factored out for unit testing:
-    /// applies a per-axis deadzone to the raw stick values, then moves <paramref name="currentTarget"/> by
-    /// stick * <see cref="DebugCameraPanSpeedPixelsPerSecond"/> * <paramref name="elapsedTime"/> on X/Y,
-    /// leaving Z untouched.
+    /// applies a per-axis deadzone to the raw stick values, then moves <paramref name="currentOffset"/> by
+    /// stick * <see cref="DebugCameraPanSpeedPixelsPerSecond"/> * <paramref name="elapsedTime"/> on X/Y.
+    /// <c>Z</c> is always 0, both in and out - the offset never carries a depth component.
     /// </summary>
-    internal static Vector3 ComputeDebugCameraPanTarget(
-        Vector3 currentTarget, float stickX, float stickY, float elapsedTime)
+    internal static Vector3 ComputeDebugCameraPanOffset(
+        Vector3 currentOffset, float stickX, float stickY, float elapsedTime)
     {
         var x = MathF.Abs(stickX) < DebugCameraPanDeadZone ? 0f : stickX;
         var y = MathF.Abs(stickY) < DebugCameraPanDeadZone ? 0f : stickY;
 
         return new Vector3(
-            currentTarget.X + x * DebugCameraPanSpeedPixelsPerSecond * elapsedTime,
-            currentTarget.Y + y * DebugCameraPanSpeedPixelsPerSecond * elapsedTime,
-            currentTarget.Z);
+            currentOffset.X + x * DebugCameraPanSpeedPixelsPerSecond * elapsedTime,
+            currentOffset.Y + y * DebugCameraPanSpeedPixelsPerSecond * elapsedTime,
+            0f);
     }
+
+    /// <summary>
+    /// DEBUG ONLY (see <see cref="UpdateDebugCameraPan"/>) - the pure math factored out for unit testing:
+    /// resolves this frame's debug-camera base. Returns <paramref name="currentTarget"/> itself whenever
+    /// it no longer matches <paramref name="lastWrittenTarget"/> (some other system - a future E5
+    /// follow-target - wrote <c>Target</c> since this proxy last did, so that new value IS the base, with
+    /// nothing to subtract back out); otherwise returns <paramref name="previousBase"/> unchanged (nothing
+    /// external moved the camera this frame).
+    /// </summary>
+    internal static Vector3 ResolveDebugCameraBase(
+        Vector3 currentTarget, Vector3 lastWrittenTarget, Vector3 previousBase)
+        => currentTarget != lastWrittenTarget ? currentTarget : previousBase;
 
     /// <summary>
     /// Sets the world's runtime view <see cref="CasaEngine.Framework.Rendering.RenderView.ClearColor"/>
