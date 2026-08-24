@@ -491,8 +491,12 @@ Oracle transverse : le harnais headless `Alundra.Tests/IntroTraceHarnessTests.cs
 - Moteur : commit dans le submodule puis bump du pointeur ; le launcher tourne depuis le checkout
   standalone `D:\development\repo\CasaEngineMonogame` (fetch + merge après chaque commit moteur).
 - Validation : `dotnet build alundra-casaengine-project-converter.slnx -c Release` ;
-  `dotnet test Alundra.Tests -c Release` (233) ; `dotnet test alundra-casaengine-project-converter.Tests -c Release`
-  (115) ; moteur : `CasaEngine.Tests` (18 échecs préexistants, tout nouvel échec = régression).
+  `dotnet test Alundra.Tests -c Release` et
+  `dotnet test alundra-casaengine-project-converter.Tests -c Release` : **0 échec** — le contrat est
+  l'absence d'échec, pas le total, qui croît à chaque test ajouté (à titre indicatif : 357 et 130 au
+  2026-08-24) ; moteur : `CasaEngine.Tests` (à builder explicitement, le `.slnx` ne l'inclut pas) :
+  aucun échec au-delà des **18 préexistants** (18 échecs / 1206 au 2026-08-24), tout nouvel échec =
+  régression.
 
 ## 6. Suivi
 
