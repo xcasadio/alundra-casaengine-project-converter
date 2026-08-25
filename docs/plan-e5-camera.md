@@ -155,26 +155,34 @@ neutralise l'offset.
   logique = 2 px écran : la grille de texels du sprite ne coïncide plus avec celle de l'écran.
   L'original ne connaît pas ce défaut : il garde ses positions en 16.16 et **tronque uniquement au
   rendu**.
-- **Scope (moteur, API additive)** : `RenderProjectionComponent` gagne une propriété opt-in
-  (défaut **false** → aucun comportement existant ne change) qui accroche la position projetée à
-  l'unité entière, appliquée une seule fois là où la pose de rendu est dérivée
-  (`RenderProjectionComponent.cs:60`, juste après `policy.DeriveRenderPosition`). La pose LOGIQUE et
-  la physique continue restent intactes — seule la pose de RENDU est accrochée, exactement comme
-  l'original. **Convention d'arrondi à trancher et à justifier** : l'original tronque
-  (`>> 16` = plancher) dans son espace Y-vers-le-bas, alors que notre pose de rendu est
-  `−(Y − Z)` (négative) : un plancher naïf en espace de rendu introduirait un biais systématique
-  d'un pixel par rapport à l'original. Choisir et documenter (plancher dans l'espace d'origine,
-  ou arrondi au plus proche), avec un test sur des valeurs réelles montrant que la valeur est
-  STABLE (pas d'oscillation entre deux entiers pour un sprite qui avance lentement).
+- **Scope (moteur, API additive)** : accrochage de la pose de RENDU à l'unité entière, opt-in
+  (défaut **false** → aucun comportement existant ne change), appliqué une seule fois là où la pose
+  est dérivée (`RenderProjectionComponent.UpdateProjection`, juste après `DeriveRenderPosition`).
+  La pose LOGIQUE et la physique continue restent intactes.
+  **Convention FIXÉE (correctif plan-verifier, ne pas re-déléguer)** : le résultat doit égaler le
+  plancher de l'original dans SON espace Y-vers-le-bas (`X >> 16`, `(Y − Z) >> 16`). Comme notre
+  pose de rendu vaut `(X, −(Y − Z), 0)`, cela donne **plancher sur X et PLAFOND sur Y**
+  (`ceil(renderY) = −floor(−renderY) = −floor(Y − Z)`). Un plancher naïf en espace de rendu
+  décalerait chaque valeur non entière d'une ligne vers le bas par rapport au décor (qui, lui, est
+  positionné en entiers), et un arrondi au plus proche basculerait à .5 au lieu de .0 et donnerait
+  un X faux.
+  **Où vit la connaissance d'axe** : la politique d'espace possède déjà l'inversion `−(Y − Z)`, donc
+  le snap lui appartient — ajouter à `SimulationSpacePolicy` une méthode d'accrochage (défaut :
+  plancher sur les trois axes) surchargée par `TopDownElevationSimulationSpacePolicy` (plancher X,
+  plafond Y). `RenderProjectionComponent` se contente de l'appeler quand le drapeau est posé ; il
+  n'embarque aucune connaissance d'axe.
 - **Activation côté Alundra** : la DLL pose la propriété au spawn sur la `RenderProjection` déjà
   mise en cache (même patron que `Zoom`/`PixelSnap` d'E5.a) — **pas de changement d'asset, pas
   d'export**.
 - **Acceptation** : moteur — défaut false : tests existants inchangés, `CasaEngine.Tests` sans
-  nouvel échec ; drapeau posé : une pose logique fractionnaire produit une position de rendu
-  entière, et une progression lente et continue de la pose logique produit une suite de positions
-  de rendu monotone sans oscillation. DLL — les entités à contrôleur ont une position de rendu
-  entière ; les valeurs chiffrées d'E4/E5 inchangées (mouette 171 ticks / 209,25 px, escalier, pin
-  du Z, cadrage caméra) ; trace d'intro byte-identique ; suites vertes. Runtime (utilisateur) :
+  nouvel échec (18 préexistants) ; drapeau posé : **cas chiffré discriminant** — pose logique
+  `(10.7, 20.3, 0)` → pose de rendu **exactement `(10, −20, 0)`** (échoue avec un plancher en espace
+  de rendu, qui donnerait `(10, −21, 0)`, ET avec un arrondi au plus proche, qui donnerait
+  `(11, −20, 0)`) ; au moins un second cas à Z non nul (l'élévation entre dans `Y − Z`) ; une
+  progression lente et continue de la pose logique produit une suite de positions de rendu monotone,
+  sans oscillation entre deux entiers. DLL — les entités à contrôleur ont une position de rendu
+  entière ; valeurs chiffrées d'E4/E5 inchangées (mouette 171 ticks / 209,25 px, escalier, pin du Z,
+  cadrage caméra, clamp) ; trace d'intro byte-identique ; suites vertes. Runtime (utilisateur) :
   plus de flou ni de vibration sur les entités en mouvement.
 - **Rollback** : revert du commit moteur + pointeur, revert du commit DLL. **Budget** : un commit
   moteur + un commit parent. **Arrêt** : si accrocher la pose de rendu casse le tri de profondeur
