@@ -167,6 +167,19 @@ Deux classes de bugs ont coûté une journée entière et ont la même racine :
 M1 puis M2 (indépendantes, mais M2 profite du montage de tests à pas fixe). Après chaque commit
 moteur : bump du pointeur dans le parent. La consommation par Alundra reste hors périmètre (M-3).
 
+## 4. Différés (avis P4 des verifiers, non bloquants)
+
+- Doc de `SweepHit` : le rapport publie le OU logique des deux appels `MoveWithCollisions` d'un
+  `Update`, alors que `LastCollisionHit` ne retient que le dernier — la formulation « même fait »
+  est imprécise (le OU est bien ce que le plan demande).
+- `RestoreStateSnapshot` restaure `_groundInfo` mais efface le rapport : entre la restauration et le
+  prochain `Update`, `LastContact.IsGrounded` peut contredire `component.IsGrounded` (fenêtre à
+  documenter).
+- « Pas de sol » a deux représentations : `CharacterControllerGroundInfo.None.Normal` vaut
+  `Vector3.Up`, une normale de rapport effacé vaut `Vector3.Zero` (inoffensif, gardé par
+  `IsGrounded`).
+- La doc XML d'`ExecutedFixedStepCount` dit « depuis la construction » sans nommer `Clear()`.
+
 ## 4. Suivi
 
 | Tranche | Statut | Commit |
