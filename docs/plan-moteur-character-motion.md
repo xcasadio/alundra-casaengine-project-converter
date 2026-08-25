@@ -32,7 +32,7 @@ Deux classes de bugs ont coûté une journée entière et ont la même racine :
 
 ## 2. Tranches
 
-### M1 — Pas fixe du `CharacterMotionSystem` ⏳ (moteur, plan-verifier)
+### M1 — Pas fixe du `CharacterMotionSystem` ✅ (moteur, plan-verifier)
 
 - **But** : rendre l'intégration du mouvement de personnage indépendante de la cadence d'affichage.
 - **Scope** : `CharacterMotionSystem` gagne un mode à pas fixe **opt-in** : `FixedTimeStep`
@@ -116,5 +116,5 @@ moteur : bump du pointeur dans le parent. La consommation par Alundra reste hors
 
 | Tranche | Statut | Commit |
 |---|---|---|
-| M1 pas fixe du CharacterMotionSystem | ⏳ | |
+| M1 pas fixe du CharacterMotionSystem | ✅ | CasaEngineMonogame dcfd57a3 |
 | M2 rapport de contact par pas | ⏳ | |
