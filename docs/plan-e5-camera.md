@@ -133,8 +133,56 @@ neutralise l'offset.
 - **Différé (P4)** : le test « pas de repli sur le joueur » n'exerce que la fonction pure ; un repli
   introduit dans `UpdateCameraFollow` lui-même ne le ferait pas échouer.
 
+## 2 bis. Tranche E5.b — Sprites projetés au pixel entier ⏳ (moteur, plan-verifier)
+
+- **Symptôme utilisateur (2026-08-25)** : les entités suivies par la caméra deviennent floues /
+  vibrent PENDANT leur mouvement et redeviennent nettes à l'arrêt (le marin dans l'escalier, la
+  mouette en vol).
+- **Cause établie (investigation, faits)** : le filtrage n'est PAS en cause —
+  `SpriteRendererComponent` force déjà `SamplerState.PointClamp` au GPU
+  (`Application/Components/SpriteRendererComponent.cs:142` et `:269`), et le `sampler_state` des
+  assets texture n'est lu que par le chemin des modèles 3D
+  (`StaticModelMaterialResolver.cs:28,53`) — le correctif convertisseur `e4cca85` (PointClamp au
+  lieu d'AnisotropicWrap) reste juste mais c'est de l'hygiène de données, sans effet visuel ici.
+  La cause réelle est une **position de rendu fractionnaire** : `AlundraWorldProxy.SyncTransform`
+  (`:2306-2320`) écrit la position tronquée à l'entier (`ResolveLogicalPosition`, `:1157`,
+  `Pos >> 16`) pour les entités SANS contrôleur — donc nettes — mais la saute pour celles qui en ont
+  un, dont la racine vient du `Move()` flottant du moteur
+  (`AlundraEntityScriptProxy.MoveControllerAndPullPosition:1253-1280` →
+  `CharacterControllerComponent.Move:413`, aucun arrondi). Ni
+  `RenderProjectionComponent.UpdateProjection` (`:49-76`) ni la construction de la matrice monde du
+  sprite (`SpriteRendererComponent.cs:614-621`) ne tronquent. À zoom 4, un décalage de 0,5 px
+  logique = 2 px écran : la grille de texels du sprite ne coïncide plus avec celle de l'écran.
+  L'original ne connaît pas ce défaut : il garde ses positions en 16.16 et **tronque uniquement au
+  rendu**.
+- **Scope (moteur, API additive)** : `RenderProjectionComponent` gagne une propriété opt-in
+  (défaut **false** → aucun comportement existant ne change) qui accroche la position projetée à
+  l'unité entière, appliquée une seule fois là où la pose de rendu est dérivée
+  (`RenderProjectionComponent.cs:60`, juste après `policy.DeriveRenderPosition`). La pose LOGIQUE et
+  la physique continue restent intactes — seule la pose de RENDU est accrochée, exactement comme
+  l'original. **Convention d'arrondi à trancher et à justifier** : l'original tronque
+  (`>> 16` = plancher) dans son espace Y-vers-le-bas, alors que notre pose de rendu est
+  `−(Y − Z)` (négative) : un plancher naïf en espace de rendu introduirait un biais systématique
+  d'un pixel par rapport à l'original. Choisir et documenter (plancher dans l'espace d'origine,
+  ou arrondi au plus proche), avec un test sur des valeurs réelles montrant que la valeur est
+  STABLE (pas d'oscillation entre deux entiers pour un sprite qui avance lentement).
+- **Activation côté Alundra** : la DLL pose la propriété au spawn sur la `RenderProjection` déjà
+  mise en cache (même patron que `Zoom`/`PixelSnap` d'E5.a) — **pas de changement d'asset, pas
+  d'export**.
+- **Acceptation** : moteur — défaut false : tests existants inchangés, `CasaEngine.Tests` sans
+  nouvel échec ; drapeau posé : une pose logique fractionnaire produit une position de rendu
+  entière, et une progression lente et continue de la pose logique produit une suite de positions
+  de rendu monotone sans oscillation. DLL — les entités à contrôleur ont une position de rendu
+  entière ; les valeurs chiffrées d'E4/E5 inchangées (mouette 171 ticks / 209,25 px, escalier, pin
+  du Z, cadrage caméra) ; trace d'intro byte-identique ; suites vertes. Runtime (utilisateur) :
+  plus de flou ni de vibration sur les entités en mouvement.
+- **Rollback** : revert du commit moteur + pointeur, revert du commit DLL. **Budget** : un commit
+  moteur + un commit parent. **Arrêt** : si accrocher la pose de rendu casse le tri de profondeur
+  (`DepthSortable2DComponent` lit la position monde du sprite) ou la re-projection d'E3.a.
+
 ## 3. Suivi
 
 | Tranche | Statut | Commit |
 |---|---|---|
 | E5.a suivi scripté de la caméra | ✅ (verifier CONFIRMED) | cc1fc60 + 1507afc |
+| E5.b sprites projetés au pixel entier | ⏳ | |
