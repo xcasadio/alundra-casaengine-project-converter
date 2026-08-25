@@ -360,10 +360,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// half, <c>PhysicsEngine.cs:123-139</c>) every call, no latch: when a support is found, pins
     /// <see cref="PosZ"/> to its top (<see cref="ModZ"/>-adjusted), sets <see cref="CollidedWithEntityZ"/>,
     /// zeroes <see cref="ForceZ"/> ONLY while <see cref="EntityFlags.Gravity"/> is set (preserved
-    /// otherwise, <c>PhysicsEngine.cs:129-134</c>) - and, for a controller-driven entity, pins the
-    /// controller's own vertical velocity to zero (<c>SetVerticalVelocity(0)</c> - <c>Settings.Gravity</c>
-    /// is ALREADY 0 at all times for an NPC, see <see cref="ApplyGravitySettingsToController"/>'s own doc,
-    /// so there is nothing left to suppress) and pushes the pinned Z through the existing pose path
+    /// otherwise, <c>PhysicsEngine.cs:129-134</c>) - and pushes the pinned Z through the existing pose path
     /// (<see cref="PushLogicalPositionToRoot"/>) so THIS SAME frame's rendered/logical position is already
     /// correct - no "first frame dip" (see this class' own E4.f doc, "anti-creux" ordering:
     /// <see cref="AlundraWorldProxy.ApplySpawnInitialization"/> already ran ONE such evaluation
@@ -470,8 +467,9 @@ public class AlundraEntityScriptProxy : GameplayProxy
         }
 
         // Root-cause redo (measured on the real gull, entity 6, map 389, dt~1/123): driving this tick's own
-        // vertical through Controller.SetVerticalVelocity (below in the "not found" tail) let the ENGINE
-        // integrate it over REAL elapsed time every rendered frame - during a real asset-streaming hitch
+        // vertical through Controller.SetVerticalVelocity (as this method's "not found" tail used to, before
+        // E4.g replaced it with SetExternalVerticalDisplacement at this method's own tail - see that call's
+        // own doc) let the ENGINE integrate it over REAL elapsed time every rendered frame - during a real asset-streaming hitch
         // (dt up to ~0.3s) the shared logic clock legitimately capped the HORIZONTAL step at
         // AlundraScriptedMotion.MaxTicksPerFrame (4 ticks) while the engine kept integrating the vertical
         // velocity for the entire 0.3s (~45px, ~15 ticks' worth) - the two axes counted in different units.
@@ -530,7 +528,6 @@ public class AlundraEntityScriptProxy : GameplayProxy
 
             if (Controller != null)
             {
-                Controller.SetVerticalVelocity(0f);
                 PushLogicalPositionToRoot();
                 IsOnGround = 1;
             }
@@ -616,7 +613,6 @@ public class AlundraEntityScriptProxy : GameplayProxy
                         }
 
                         TileZ = PosZ >> 20;
-                        Controller.SetVerticalVelocity(0f);
                         if (!wasAlreadyLanded)
                         {
                             PushLogicalPositionToRoot();
@@ -630,40 +626,36 @@ public class AlundraEntityScriptProxy : GameplayProxy
                         // a pure per-tick displacement (see this method's own doc above and
                         // MoveVerticalAndPullPosition's own doc for the full investigation/measured
                         // numbers) - the engine contributes ZERO REAL vertical motion of its own between
-                        // ticks; only this per-tick Move() ever moves this entity's Z.
-                        //
-                        // RisingVelocitySignal (not 0f) while climbing: investigated (read-only,
-                        // CharacterControllerComponent.cs) - UpdateGround (the controller's own per-RENDER-
-                        // FRAME field-based ground snap, runs BEFORE this same entity's own Update each
-                        // frame - see this class' own Update doc on that ordering) unconditionally CORRECTS
-                        // rootComponent.Position back toward ground whenever the foot sits within
-                        // (StepHeight + GroundSnapDistance) of it - a window several ticks wide at the
-                        // gull's own 3px/tick real climb rate - UNLESS <c>Dot(Velocity, up) &gt; 0f</c>, its
-                        // own "rising, treat as airborne" escape hatch (checked at UpdateGround's own head,
-                        // before it ever looks at the field). A genuinely zero Velocity fails that check
-                        // (Dot == 0, not &gt; 0), so with Velocity truly 0 the very next frame's UpdateGround
-                        // silently snaps this tick's own upward Move() straight back down to ground -
-                        // measured directly: PosZ pinned at the SAME value every tick instead of climbing.
-                        // RisingVelocitySignal only needs to be POSITIVE, not physically meaningful - it is
-                        // never itself allowed to move anything: at
-                        // <see cref="AlundraScriptedMotion.MaxTicksPerFrame"/>'s own longest realistic
-                        // catch-up hitch (~0.3s, the exact hitch this fix's own measured numbers use),
-                        // RisingVelocitySignal's own contribution is
-                        // 1e-6 px/s * 0.3s = 3e-7 px - fifty times below one 16.16 fixed-point unit
-                        // (1/65536 px ~= 1.5e-5) and far below Controller.Move's own MinMoveDistanceSquared
-                        // gate, so CharacterMotionSystem's own velocity-integration path (the SAME real-time
-                        // integration this whole fix removes for the actual displacement) never actually
-                        // moves anything - this is a pure state signal to UpdateGround's own gate, not a
-                        // second source of motion. Zero (not the signal) while falling/resting: only a
-                        // RISING tick needs to defeat the ground snap (a falling/resting tick WANTS
-                        // UpdateGround's own detection live, as a defensive backstop alongside this method's
-                        // own direct terrain probe above).
-                        Controller.SetVerticalVelocity(FinalForceZ > 0 ? RisingVelocitySignal : 0f);
+                        // ticks; only this per-tick Move() ever moves this entity's Z. The end-of-method
+                        // SetExternalVerticalDisplacement call below is what now keeps
+                        // CharacterControllerComponent.UpdateGround from re-pinning a climbing NPC to
+                        // ground every render frame - see this method's own tail doc (E4.g superseded the
+                        // former RisingVelocitySignal workaround this comment used to describe).
                         MoveVerticalAndPullPosition(FinalForceZ / 65536f, wasSupportedEnteringThisTick);
                         IsOnGround = 0;
                     }
                 }
             }
+        }
+
+        // E4.g (docs/plan-e4-deplacement-scripte.md): exactly ONE per-tick declaration of this tick's
+        // RESOLVED vertical displacement, unconditional on which branch above ran (found/not-found,
+        // landed/still-moving, even immediateAtSpawn) - the single site this invariant needs, since
+        // nothing above ever returns out of this method early. Replaces the former
+        // Controller.SetVerticalVelocity(0f | RisingVelocitySignal) calls the three branches above used
+        // to make individually: CharacterControllerComponent.UpdateGround now reads this LATCHED
+        // declaration directly (a positive value means airborne), so a genuinely zero FinalForceZ (a
+        // landing/support reset, or an already-resting tick) correctly re-arms ground detection, while a
+        // positive one (a still-rising tick) correctly keeps it suppressed - without the former signal's
+        // own float-precision workaround. This call also runs AFTER every PushLogicalPositionToRoot
+        // above (whose own Controller.Teleport -&gt; Stop call resets the latch to 0), so the latch is
+        // always re-established fresh by this same tick's own resolved value, never left stale from a
+        // Stop() a few lines earlier in this same call. A scripted position write made OUTSIDE a tick
+        // (0x64/0x65/0x8B) leaves the latch at 0 until this entity's next tick - correct, since a
+        // teleport-to-ground is never a rising displacement.
+        if (Controller != null)
+        {
+            Controller.SetExternalVerticalDisplacement(FinalForceZ / 65536f);
         }
     }
 
@@ -821,7 +813,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
         // own real top, PhysicsEngine.cs:205's own strict edge) - float32's own representable precision at
         // ~400px magnitude is roughly 1/32 px (2^-23 relative ULP), i.e. ~2048 16.16 units, VASTLY coarser
         // than that 1-unit margin. While supported, EvaluateEntitySupport already configured the controller
-        // as Gravity 0 + SetVerticalVelocity(0) and pushed the authoritative logical PosZ through
+        // as Gravity 0 + a zero SetExternalVerticalDisplacement declaration and pushed the authoritative logical PosZ through
         // PushLogicalPositionToRoot THIS SAME tick (see that method's own doc) - the root's own Z cannot
         // legitimately change on its own between two such pushes (no vertical force is being applied), so
         // pulling it back through the lossy float transform would only re-quantize an unchanged value and
@@ -1374,22 +1366,6 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// the entity short by at least a fraction of a pixel every tick it keeps pushing) reliably does.
     /// </summary>
     private const float ForceAdjustedEpsilonPixels = 0.01f;
-
-    /// <summary>
-    /// See <see cref="EvaluateEntitySupport"/>'s own "not found"/rising-branch doc for the full
-    /// investigation - a state-only positive signal fed to <see cref="CharacterControllerComponent.SetVerticalVelocity"/>
-    /// while a controller-driven NPC's own vertical is rising this tick, purely so
-    /// <c>CharacterControllerComponent.UpdateGround</c>'s own <c>Dot(Velocity, up) &gt; 0f</c> "treat as
-    /// airborne" gate sees a genuinely positive value and skips its field-based ground snap for that
-    /// render frame (a truly zero Velocity fails that check and lets UpdateGround re-pin the entity to
-    /// ground every frame, defeating the climb this fix's own per-tick Move() otherwise performs
-    /// correctly). Small enough that CharacterMotionSystem's own real-time velocity integration - the exact
-    /// mechanism this whole fix removes for the entity's actual displacement - contributes nothing
-    /// measurable even at the longest realistic catch-up hitch (~0.3s): 1e-6 px/s * 0.3s = 3e-7 px, ~50x
-    /// below one 16.16 fixed-point unit (1/65536px) and far under <c>Controller.Move</c>'s own
-    /// MinMoveDistanceSquared gate.
-    /// </summary>
-    private const float RisingVelocitySignal = 0.000001f;
 
     public override void Draw()
     {

@@ -1175,6 +1175,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             (proxy.MapGravity, proxy.MapMaxFallSpeed, proxy.MapGravityRaw, proxy.MapZViscosityRaw) = ResolveMapGravitySettings(tileMapData);
             proxy.ApplyGravitySettingsToController();
             proxy.Controller.Settings.WalkabilityMask = AlundraCellsCollisionField.WalkabilityMaskFor(proxy.Flags);
+
+            // E4.g (docs/plan-e4-deplacement-scripte.md): a scripted NPC's vertical is entirely owned
+            // by AlundraEntityScriptProxy.EvaluateEntitySupport's own per-tick ForceZ, declared through
+            // Controller.SetExternalVerticalDisplacement - never the engine's own gravity/vertical
+            // integration (already zeroed above, belt-and-suspenders). The hero is NEVER spawned through
+            // this method (see AdoptPlayerPawn instead) so this flag never touches the hero's own
+            // engine-driven vertical.
+            proxy.Controller.IsVerticalOwnedExternally = true;
         }
 
         // EntityManager.cs:95-100.

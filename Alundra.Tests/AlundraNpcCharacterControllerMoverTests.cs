@@ -227,6 +227,10 @@ public class AlundraNpcCharacterControllerMoverTests
 
         var controllerComponent = new CharacterControllerComponent { Settings = settings };
         controllerComponent.SetControlMode(CharacterControlMode.Script);
+        // E4.g: mirrors AlundraWorldProxy.ApplySpawnInitialization's own real spawn path - this bare
+        // test pawn bypasses that method entirely, so it must set the flag itself, the same way every
+        // real scripted NPC gets it at spawn.
+        controllerComponent.IsVerticalOwnedExternally = true;
         entity.AddComponent(controllerComponent);
 
         entity.Initialize();
@@ -792,8 +796,18 @@ public class AlundraNpcCharacterControllerMoverTests
 
         Assert.True(entity.RootComponent!.Position.Z > zBeforeImpulse,
             $"expected the upward 0x1B impulse to lift the entity off {zBeforeImpulse}; got {entity.RootComponent!.Position.Z}.");
-        Assert.True(proxy.Controller!.Velocity.Z > 0f,
-            $"expected a positive vertical velocity from the upward impulse; got {proxy.Controller.Velocity.Z}.");
+
+        // E4.g: the controller no longer carries a real vertical Velocity for a scripted NPC at all -
+        // EvaluateEntitySupport's own end-of-tick SetExternalVerticalDisplacement(FinalForceZ / 65536f)
+        // call is what now keeps CharacterControllerComponent.UpdateGround from re-pinning this climbing
+        // entity to ground (a positive latched declaration means airborne), not a Velocity artifact. The
+        // engine's own CharacterMotionSystem updates every controller at the HEAD of World.Update,
+        // strictly before this entity's own Update (where the declaration above was latched) runs - so
+        // UpdateGround only consumes THIS tick's declaration on the FOLLOWING world.Update, one frame
+        // later (the same lag the former Velocity-based signal carried).
+        world.Update(1f / 50f);
+        Assert.False(proxy.Controller!.IsGrounded,
+            "expected the upward 0x1B impulse to leave the entity airborne (not re-grounded by UpdateGround).");
     }
 
     /// <summary>
@@ -2760,5 +2774,168 @@ public class AlundraNpcCharacterControllerMoverTests
 
         Assert.True(sawForceAdjustedSet, "expected the real wall to curtail the move (ForceAdjusted set) within this test's own frame budget.");
         Assert.True(sawTicklessFrameAfterSet, "expected at least one render frame with no logic tick to occur after ForceAdjusted was set, at dt=1/123 - otherwise this test never actually exercises the invariant.");
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // E4.g invariant (A): EvaluateEntitySupport declares this tick's own resolved vertical
+    // displacement EXACTLY ONCE, at the very end of the method, regardless of which branch ran -
+    // never only from the "still moving" tail. Both tests below directly drive
+    // AlundraEntityScriptProxy.EvaluateEntitySupport (same technique
+    // Support_SailorElevenOnRealRecordTwoPlatform... above already uses) so the RISING tick (k) and
+    // the LANDING tick (k+1) are exact, not dependent on a realistic ballistic trajectory happening
+    // to land on a particular real tick. CharacterMotionSystem updates every controller at the HEAD
+    // of World.Update, strictly before this entity's own Update (where EvaluateEntitySupport runs) -
+    // so each call to proxy.Controller.Update below simulates that ordering directly, one simulated
+    // frame at a time, without needing a full World.Update/script pass.
+    // -----------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// (A) terrain branch: rises on tick k, lands on terrain on tick k+1 with
+    /// <c>wasAlreadyLanded</c> true (PosZ/ForceZ already match the landed target) - the ONE case in
+    /// that branch where <see cref="AlundraEntityScriptProxy.PushLogicalPositionToRoot"/> (whose own
+    /// <c>Controller.Teleport</c> call would otherwise reset the latch to 0) is SKIPPED, so this is
+    /// the case that actually fails without the method's own end-of-tick declaration: a
+    /// still-moving-branch-only declaration would leave tick k's positive latch stale, and
+    /// <see cref="CharacterControllerComponent.IsGrounded"/> would incorrectly stay false forever
+    /// after landing.
+    /// </summary>
+    [Fact]
+    public void SupportInvariant_RisesThenLandsViaTerrainBranch_BecomesGroundedAfterTheLandingTick()
+    {
+        var projectRoot = FindProjectRoot();
+        var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        if (settings == null)
+        {
+            return;
+        }
+
+        var world = BuildWorld(field);
+        var host = new FakeScriptHost();
+        // Cell (18,57): flat, sol 80px - same resting spot every other test in this file uses.
+        var (entity, proxy) = BuildNpcPawn(world, settings, new Vector3(444f, 920f, 80f), host);
+        world.Update(1f / 50f); // register with CharacterMotionSystem, initial ground snap.
+        Assert.True(proxy.Controller!.IsGrounded);
+
+        const int oneTickFixed = 65536; // 1px in 16.16.
+        var groundPosZ = proxy.PosZ; // 80px, 16.16.
+
+        // Gravity flag OFF: EvaluateEntitySupport's own decay block is gated on it, so this test can
+        // drive ForceZ/FinalForceZ directly and exactly, without a real decay curve overwriting them.
+        proxy.Flags = EntityFlags.None;
+
+        // Simulated frame k: consume whatever the controller already latched (grounded, from the
+        // real world.Update above), then declare a RISING displacement directly.
+        proxy.Controller.Update(1f / 50f);
+        proxy.ForceZ = 3 * oneTickFixed;
+        proxy.FinalForceZ = 3 * oneTickFixed;
+        proxy.EvaluateEntitySupport(host.Collidables); // tick k: "still moving" (rising) branch.
+
+        // Simulated frame k+1: the controller now consumes tick k's positive latch -> airborne.
+        proxy.Controller.Update(1f / 50f);
+        Assert.False(proxy.Controller.IsGrounded, "expected tick k's rising declaration to leave the entity airborne one simulated frame later.");
+
+        // Tick k+1: land on terrain, exactly at the already-resting target (wasAlreadyLanded true -
+        // PushLogicalPositionToRoot is skipped, so ONLY the method's own end-of-tick declaration can
+        // reset the latch here).
+        proxy.PosZ = groundPosZ;
+        proxy.ForceZ = 0;
+        proxy.FinalForceZ = 0;
+        proxy.EvaluateEntitySupport(host.Collidables); // tick k+1: terrain-landing branch.
+        Assert.Equal(1, proxy.IsOnGround);
+
+        // Simulated frame k+2: the controller consumes tick k+1's (non-positive) latch and should
+        // find ground again - fails if the latch is still stuck at tick k's positive value.
+        proxy.Controller.Update(1f / 50f);
+        Assert.True(proxy.Controller.IsGrounded,
+            "expected the controller to be grounded again one simulated frame after the terrain-landing tick.");
+    }
+
+    /// <summary>
+    /// (A) support-found branch: rises on tick k, lands on a synthetic entity-support candidate on
+    /// tick k+1. Same direct-call technique as the terrain test above, with a bare candidate proxy
+    /// (no <see cref="CharacterControllerComponent"/> needed - <see cref="EntitySupport.TryFindSupport"/>
+    /// only reads its position/size fields). Documents the found branch's own contract (declares 0 or
+    /// negative on every landing tick this seed formula can reach, see
+    /// <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>'s own tail doc) - note this branch
+    /// ALSO calls <see cref="AlundraEntityScriptProxy.PushLogicalPositionToRoot"/> unconditionally,
+    /// whose own <c>Controller.Teleport</c> already resets the latch to 0 on its own; this test still
+    /// asserts the full documented contract (IsGrounded true one simulated frame after landing).
+    /// </summary>
+    [Fact]
+    public void SupportInvariant_RisesThenLandsViaSupportFoundBranch_BecomesGroundedAfterTheLandingTick()
+    {
+        var projectRoot = FindProjectRoot();
+        var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        if (settings == null)
+        {
+            return;
+        }
+
+        var world = BuildWorld(field);
+        var host = new FakeScriptHost();
+        // Cell (18,57): flat, sol 80px - same resting spot every other test in this file uses, so the
+        // real terrain-field ground snap and the synthetic candidate below agree on height (the
+        // candidate sits a hair above real terrain - entity-support can never be reached BELOW
+        // terrainHeight+1, see EvaluateEntitySupport's own platformTopZSeed doc) and
+        // Controller.IsGrounded after landing reflects genuine engine ground resolution, not merely
+        // the entity-support clamp's own DLL-side bookkeeping.
+        var (entity, proxy) = BuildNpcPawn(world, settings, new Vector3(444f, 920f, 80f), host);
+        world.Update(1f / 50f); // register with CharacterMotionSystem, initial ground snap.
+        Assert.True(proxy.Controller!.IsGrounded);
+        var terrainPosZ = proxy.PosZ; // 80px, 16.16 - this cell's real terrain height.
+
+        var candidate = new AlundraEntityScriptProxy
+        {
+            Flags = EntityFlags.Collidable,
+            PosX = proxy.PosX,
+            PosY = proxy.PosY,
+            PosZ = terrainPosZ + 4, // a few 16.16 units above terrainHeight+1 - reachable, negligible height.
+        };
+        AlundraWorldProxy.SetEntityDimensions(candidate, offsetX: 0, offsetY: 0, offsetZ: 0, sizeX: 64, sizeY: 64, sizeZ: 0);
+        host.Collidables.Add(candidate);
+        var candidateTop = candidate.PosZ + candidate.ModZ + candidate.Depth;
+
+        proxy.Flags = EntityFlags.Collidable; // subject must itself be an eligible support subject.
+
+        // Simulated frame k: rise (well above the candidate's own reach window, so it is NOT found).
+        proxy.Controller.Update(1f / 50f);
+        proxy.PosZ = 200 * 65536;
+        proxy.ForceZ = 3 * 65536;
+        proxy.FinalForceZ = 3 * 65536;
+        proxy.EvaluateEntitySupport(host.Collidables); // tick k: "still moving" (rising) branch.
+        Assert.False(proxy.WasEntitySupportedLastTick);
+
+        // Simulated frame k+1: controller consumes tick k's positive latch -> airborne.
+        proxy.Controller.Update(1f / 50f);
+        Assert.False(proxy.Controller.IsGrounded, "expected tick k's rising declaration to leave the entity airborne one simulated frame later.");
+
+        // Tick k+1: land on the synthetic candidate - this tick's own reach (moddedPosZ + FinalForceZ)
+        // must drop AT/PAST candidateTop, while feet stay strictly above it.
+        proxy.PosZ = candidateTop + 65536; // 1px above the candidate's own top.
+        proxy.ForceZ = -65536;
+        proxy.FinalForceZ = -65536;
+        proxy.EvaluateEntitySupport(host.Collidables); // tick k+1: support-found branch.
+        Assert.True(proxy.WasEntitySupportedLastTick, "expected the synthetic candidate to qualify as a support this tick.");
+        Assert.Equal(candidateTop + 1, proxy.PosZ);
+        Assert.Equal(1, proxy.IsOnGround);
+
+        // Simulated frame k+2: the controller consumes tick k+1's latch and should be grounded again -
+        // via genuine terrain-field ground resolution, since the candidate sits within a fraction of a
+        // pixel of the real terrain height.
+        proxy.Controller.Update(1f / 50f);
+        Assert.True(proxy.Controller.IsGrounded,
+            "expected the controller to be grounded again one simulated frame after the support-found landing tick.");
     }
 }
