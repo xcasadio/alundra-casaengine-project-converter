@@ -55,7 +55,7 @@ et **adopte comme nouvelle base toute écriture externe** (travail du 2026-08-24
 suivi scripté écrit donc la base sans que le stick droit ne le perturbe, et `ALUNDRA_DEBUG_CAMERA_ENABLED`
 neutralise l'offset.
 
-## 2. Tranche E5.a — Suivi scripté de la caméra ⏳ (DLL)
+## 2. Tranche E5.a — Suivi scripté de la caméra ✅ (cc1fc60 + correctifs 1507afc, verifier CONFIRMED)
 
 - **But** : la caméra suit la cible désignée par les scripts, avec le cadrage et le rattrapage de
   l'original ; au bout de l'intro elle revient au héros.
@@ -105,8 +105,36 @@ neutralise l'offset.
   peut pas être reproduit sans toucher au moteur ; si le clamp dérivé de la taille de map contredit
   les constantes de l'original sur la 389.
 
+### Réalisé — écarts (2026-08-25)
+
+- **Formule de cadrage dérivée et figée par test** : `Target = (X, −(Y − Z) + 16, 0)` — pas de biais
+  en X (0xa0 = 160 = la moitié de 320), biais de +16 en Y parce que 0x88 = 136 dépasse de 16 la
+  moitié de la hauteur de clamp. Position New Game du héros (804, 952, 0) → `Target (804, −936, 0)`.
+- **Clamp validé par recoupement** : les bornes dérivées de `MapSize` retombent EXACTEMENT sur les
+  constantes codées en dur de l'original sur la 389 (`scrollX ∈ [0, 0x39f]`, `scrollY ∈ [0, 0x2cf]`),
+  y compris son « −1 » de borne inclusive — c'est la meilleure preuve que le port est juste.
+- **Deux hauteurs distinctes dans l'original, les deux portées** (fait relevé au correctif) : la
+  hauteur RENDUE vaut **236** (`StaticVariables.cs:56`, utilisée par tous les blits/clips de
+  `GraphicManager`), tandis que l'arithmétique de clamp et de scroll raisonne sur **240**
+  (`GraphicManager.cs:97-121` et `:817`). L'original clampe donc comme si 240 lignes étaient
+  visibles alors qu'il n'en dessine que 236. Notre port fait pareil : le **zoom** vient de la hauteur
+  d'affichage (236 → zoom **4 exact** sur la fenêtre 1280×944, donc pixel-perfect), le **clamp** garde
+  240. Aucune modification d'asset ni export nécessaire.
+- **Correctif de fidélité (P3 du verifier)** : l'original réinjecte la valeur CLAMPÉE dans son état de
+  scroll ; notre première version gardait l'état non clampé et repartait de lui — 97 px de dépassement
+  caché dès l'entrée de map sur la 389, et une caméra qui restait collée à un bord avant de repartir.
+  Corrigé : l'état lissé EST l'état clampé, comme l'original (vérifié avant/après : −839 figé pendant
+  10 ticks avant, −836,5625 dès le premier tick après).
+- **Écarts documentés** : lissage flottant continu (décision E5-2) — pas d'arrêt résiduel entier ;
+  0x67 sans résultat met `null` alors que l'original garde l'entrée précédente de son buffer de
+  recherche (jamais atteint sur la 389, les six opérandes matchent tous).
+- **Tests** : DLL 475 (454 + 21) ; convertisseur 137 ; trace d'intro byte-identique, jalons intacts
+  (554 / 555-678-801 / 1034 / 1202 / 1704), seuls les six 0x67 passent en `Implemented`.
+- **Différé (P4)** : le test « pas de repli sur le joueur » n'exerce que la fonction pure ; un repli
+  introduit dans `UpdateCameraFollow` lui-même ne le ferait pas échouer.
+
 ## 3. Suivi
 
 | Tranche | Statut | Commit |
 |---|---|---|
-| E5.a suivi scripté de la caméra | ⏳ | |
+| E5.a suivi scripté de la caméra | ✅ (verifier CONFIRMED) | cc1fc60 + 1507afc |

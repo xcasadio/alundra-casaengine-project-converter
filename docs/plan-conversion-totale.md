@@ -396,7 +396,7 @@ d'intro-roadmap).
   chronologie de l'intro se déroule avec des marins qui bougent.
 - **Dépendances** : E3.
 
-### E5 — Caméra suivant une entité désignée ⏳ (DLL, éventuellement moteur)
+### E5 — Caméra suivant une entité désignée ✅ (plan et tranche : docs/plan-e5-camera.md ; runtime à valider par l'utilisateur)
 
 - **But** : le plan sur la mouette, la descente avec le bloc 10, le suivi des marins 11/12, le retour
   sur Alundra.
@@ -509,7 +509,7 @@ d'intro-roadmap).
 | E2 héros pawn | ✅ (verifier CONFIRMED ; visuel runtime à valider par l'utilisateur) | voir git log |
 | E3 collisions (E3.0/a/b/c/c-bis/d.0/d) | ✅ (verifiers CONFIRMED ; runtime à valider par l'utilisateur) | voir git log |
 | E4 déplacement scripté (E4.0/a/b/c/d/f) | ✅ (verifiers CONFIRMED ; runtime à valider par l'utilisateur) | voir git log ; moteur a9267735 |
-| E5 caméra | ⏳ | |
+| E5 caméra | ✅ (verifier CONFIRMED ; runtime à valider par l'utilisateur) | cc1fc60 + 1507afc |
 | E6 contrôle joueur | ⏳ | |
 | E7 mutation de tuiles | ⏳ | |
 | E8 profondeur murs/sols moteur | ⏳ | |
