@@ -1267,6 +1267,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         proxy.Controller ??= entity.GetComponent<CharacterControllerComponent>();
         proxy.RenderProjection ??= entity.GetComponent<RenderProjectionComponent>();
 
+        // E5.b (docs/plan-e5-camera.md): a controller-driven entity's logical pose keeps a float
+        // remainder every frame (CharacterControllerComponent.Move has no rounding), so without this
+        // the sprite's texel grid drifts off the screen's at non-unit zoom and blurs while moving. Set
+        // unconditionally (not guarded by the ??= above): harmless to repeat on the same instance, and
+        // keeps this true even if a future caller pre-seeds RenderProjection with the flag left off.
+        if (proxy.RenderProjection != null)
+        {
+            proxy.RenderProjection.SnapToPixel = true;
+        }
+
         // Overrides the converter-exported Gravity/MaxFallSpeed/WalkabilityMask - the only three
         // CharacterControllerSettings the converter cannot bake in (E4.a leaves them 0, see that
         // tranche's own "Contrôleurs PNJ" note), since they depend on THIS map's own properties and THIS
@@ -1527,6 +1537,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // not a no-op: without it the sprite would keep showing the engine's PlayerStart-derived
             // render pose for one extra frame instead of the New Game logical pose just written above.
             proxy.RenderProjection = entity.GetComponent<RenderProjectionComponent>();
+
+            // E5.b (docs/plan-e5-camera.md): the hero is controller-driven exactly like a scripted NPC
+            // (ApplySpawnInitialization's own E5.b block) and keeps the same float remainder every
+            // frame, so it needs the same integer render snap. Set before the re-projection below so
+            // the very first draw already snaps.
+            if (proxy.RenderProjection != null)
+            {
+                proxy.RenderProjection.SnapToPixel = true;
+            }
+
             proxy.RenderProjection?.UpdateProjection();
         }
 

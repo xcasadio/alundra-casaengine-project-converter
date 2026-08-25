@@ -193,4 +193,4 @@ neutralise l'offset.
 | Tranche | Statut | Commit |
 |---|---|---|
 | E5.a suivi scripté de la caméra | ✅ (verifier CONFIRMED) | cc1fc60 + 1507afc |
-| E5.b sprites projetés au pixel entier | ⏳ | |
+| E5.b sprites projetés au pixel entier | ✅ | moteur 6384bf4d + parent eab5f17 |

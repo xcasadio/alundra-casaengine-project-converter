@@ -2203,6 +2203,119 @@ public class AlundraNpcCharacterControllerMoverTests
     }
 
     /// <summary>
+    /// Same real bank-146 gull-six spawn as <see cref="SpawnRealGullEntitySix"/>, but with the
+    /// prefab root also carrying a <see cref="RenderProjectionComponent"/> (-&gt;
+    /// <see cref="AnimatedSpriteComponent"/>) child, exactly the shape <c>SpriteWriter.WriteEntityPrefab</c>
+    /// gives every real bank prefab - needed for the E5.b acceptance below, which reads the projected
+    /// render position rather than the logical root position the other tests in this class check.
+    /// </summary>
+    private static (Entity Entity, AlundraEntityScriptProxy Proxy, RenderProjectionComponent Projection)? SpawnRealGullEntitySixWithRenderProjection(
+        string projectRoot, TileMapData tileMapData)
+    {
+        var entitiesLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == "Entities");
+        Assert.NotNull(entitiesLayer);
+        var record = entitiesLayer!.Objects.FirstOrDefault(
+            o => o.CustomProperties.TryGetValue("XPos", out var xPos) && xPos == "66"
+                && o.CustomProperties.TryGetValue("YPos", out var yPos) && yPos == "71");
+        Assert.NotNull(record);
+
+        var settings = LoadBank146ControllerSettings(projectRoot);
+        if (settings == null)
+        {
+            return null;
+        }
+
+        var prefabRoot = new TransformComponent();
+        var collisionComponent = new CollisionComponent();
+        collisionComponent.Fixtures.Add(new ColliderFixture
+        {
+            Shape = new Box { Size = new Vector3(18f, 12f, 32f) },
+            LocalPosition = new Vector3(0f, 0f, 16f),
+            LocalRotation = Quaternion.Identity,
+        });
+        prefabRoot.AddChildComponent(collisionComponent);
+
+        var projection = new RenderProjectionComponent();
+        prefabRoot.AddChildComponent(projection);
+        projection.AddChildComponent(new AnimatedSpriteComponent());
+
+        var controllerComponent = new CharacterControllerComponent { Settings = settings };
+        controllerComponent.SetControlMode(CharacterControlMode.Script);
+
+        var prefab = new Entity
+        {
+            Name = "GullSixPrefabWithProjection",
+            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            RootComponent = prefabRoot,
+        };
+        prefab.AddComponent(controllerComponent);
+
+        var catalog = new SpriteRecordCatalog(projectRoot);
+        var entity = AlundraWorldProxy.CreateEntityFromRecord(record!, _ => prefab, catalog, tileMapData: tileMapData);
+        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        Assert.NotNull(proxy.Controller);
+        Assert.NotNull(proxy.RenderProjection);
+        return (entity, proxy, proxy.RenderProjection!);
+    }
+
+    /// <summary>
+    /// E5.b acceptance (docs/plan-e5-camera.md): a controller-driven entity - the real gull entity 6, SAME
+    /// fixture/flight as <see cref="GullEntitySix_RealFlightAtRenderRateAndAtFiftyHertz_ClimbsAndDriftsWithFaithfulTickQuantizedPhysics"/>,
+    /// whose own 209.25px westward drift proves the LOGICAL root position keeps a fractional remainder
+    /// every tick - must still end up with an INTEGER render position every frame, because
+    /// <see cref="AlundraWorldProxy.ApplySpawnInitialization"/> now sets
+    /// <see cref="RenderProjectionComponent.SnapToPixel"/> on every controller-driven entity's cached
+    /// projection. Checked every frame (not just at the end): the snap must hold continuously while the
+    /// entity is airborne and drifting, not only once it settles.
+    /// </summary>
+    [Fact]
+    public void GullEntitySix_ControllerDrivenFlight_RenderPositionIsIntegerEveryFrame()
+    {
+        var projectRoot = FindProjectRoot();
+        if (projectRoot == null)
+        {
+            return;
+        }
+
+        var field = LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var tileMapData = LoadMap389TileMapData(projectRoot)!;
+        var spawn = SpawnRealGullEntitySixWithRenderProjection(projectRoot, tileMapData);
+        if (spawn == null)
+        {
+            return;
+        }
+
+        var (entity, proxy, projection) = spawn.Value;
+        Assert.True(projection.SnapToPixel, "expected ApplySpawnInitialization to opt this controller-driven entity into E5.b's pixel snap.");
+
+        var world = BuildWorld(field);
+        var host = new GullClimbScriptHost();
+        proxy.ScriptHost = host;
+        proxy.Status = EntityStatus.Normal;
+        proxy.TargetAnimationId = 10;
+        proxy.TargetDirection = 8;
+
+        world.AddEntity(entity);
+        world.Update(1f / 50f);
+
+        var startTileZ = proxy.TileZ;
+
+        for (var frame = 0; frame < 200 && proxy.TileZ < startTileZ + 32; frame++)
+        {
+            world.Update(1f / 123f); // the user's own real frame rate - the same rate the drift fixture uses.
+
+            var renderPosition = projection.WorldMatrixNoScale.Translation;
+            Assert.Equal(renderPosition.X, MathF.Round(renderPosition.X), precision: 4);
+            Assert.Equal(renderPosition.Y, MathF.Round(renderPosition.Y), precision: 4);
+        }
+    }
+
+    /// <summary>
     /// THE fix's own end-to-end acceptance: the real gull entity 6 flight (measured facts) - anim 10 (real
     /// AnimSetsByAnim[10] Speed 128/Acceleration 6, resolved by the real spawn off the real
     /// Data/sprite-records.json header), direction 8 (OffsetXList[8]=-768, pure west), 0x1B [128,3]
