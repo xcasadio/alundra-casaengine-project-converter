@@ -1655,27 +1655,36 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     public override void Update(float elapsedTime)
     {
+        // Bug fix (AlundraLogicClock's own class doc): this world's ONE shared logic clock. Reads the SAME
+        // cached value every spawned entity's own Update already advanced/read this frame (this proxy's
+        // own Update always runs LAST - World.cs:443-491) - or, for a world with no entities at all (the
+        // `if` further down never ran a single AlundraEntityScriptProxy.Update this frame), becomes the
+        // clock's own first caller this frame, so the clock still advances every frame regardless of
+        // entity count.
+        //
+        // E5.c (docs/plan-e5-camera.md §2 ter): read here, at the very head of the frame, rather than
+        // further down where it used to live - UpdateCameraFollow below now needs it. Moving the read
+        // earlier is side-effect-free: it is a memo read (AlundraLogicClock._frameComputed), nothing
+        // between this line and the old site touches the clock, and both CloseFrame() calls still run
+        // after it.
+        var ticksThisFrame = LogicTicksThisFrame(elapsedTime);
+
         // E5.a: resolve the camera once, then run the scripted follow BEFORE the debug pan - see
         // UpdateCameraFollow's own doc on why this order lets the pan's base-adoption mechanism pick up
         // the follow's write the SAME frame instead of one frame late. Both run unconditionally (like the
         // debug pan already did) so the camera still follows/can be panned even for a world with no
-        // entities. Per RENDERED frame, deliberately (see AlundraLogicClock's own class doc on what stays
-        // per-frame vs per-tick) - both a debug pan and a smoothed camera follow driven at logic-tick rate
-        // would feel laggy/juddery.
+        // entities.
+        //
+        // E5.c: the follow is driven by the LOGIC TICK COUNT, not by elapsed time - see
+        // UpdateCameraFollow's own doc on the cadence beat that per-frame smoothing caused. The debug pan
+        // stays per rendered frame (it samples the stick).
         ResolveDebugCameraOnce();
-        UpdateCameraFollow(elapsedTime);
+        UpdateCameraFollow(ticksThisFrame);
         UpdateDebugCameraPan(elapsedTime);
 
         // Rendering-only passes - per rendered frame, same reasoning.
         ApplyOriginalBackgroundClearColorOnce();
         UpdateAndDrawBackdrop(elapsedTime);
-
-        // Bug fix (AlundraLogicClock's own class doc): this world's ONE shared logic clock. Reads the SAME
-        // cached value every spawned entity's own Update already advanced/read this frame (this proxy's
-        // own Update always runs LAST - World.cs:443-491) - or, for a world with no entities at all (the
-        // `if` below never ran a single AlundraEntityScriptProxy.Update this frame), becomes the clock's
-        // own first caller this frame, so the clock still advances every frame regardless of entity count.
-        var ticksThisFrame = LogicTicksThisFrame(elapsedTime);
 
         if (PlayerEntity != null)
         {
@@ -1877,48 +1886,57 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <c>g_cameraScrollingX/Y</c> (<c>GraphicManager.cs:97-122</c> assigns into the SAME fields the
     /// smoothing read at <c>:75-92</c>) - the clamp IS the smoothing state, not a read-only view of it.
     /// This port used to clamp only on the way OUT to <c>Camera2dComponent.Target</c> while
-    /// <see cref="_cameraSmoothedTarget"/> kept the unclamped value, so the lerp's next start point still
-    /// carried whatever overshoot the clamp had hidden (measured on map 389: the hero's New Game render
-    /// target is Y = -936, 97px past the clamp's own -839 lower bound) - once the camera left a clamped
-    /// edge it stayed pinned there until that hidden overshoot travelled back across the bound on its own,
-    /// instead of moving immediately like the original does. Assigning the clamped value back into
-    /// <see cref="_cameraSmoothedTarget"/> here (both the snap and lerp paths funnel through this single
+    /// <see cref="_cameraSmoothedTarget"/> kept the unclamped value, so the catch-up's next start point
+    /// still carried whatever overshoot the clamp had hidden (measured on map 389: the hero's New Game
+    /// render target is Y = -936, 97px past the clamp's own -839 lower bound) - once the camera left a
+    /// clamped edge it stayed pinned there until that hidden overshoot travelled back across the bound on
+    /// its own, instead of moving immediately like the original does. Assigning the clamped value back into
+    /// <see cref="_cameraSmoothedTarget"/> here (both the snap and step paths funnel through this single
     /// assignment) closes that gap.
     ///
     /// No-op before <see cref="_debugCamera"/> is resolved (see <see cref="ResolveDebugCameraOnce"/>,
     /// already called this frame by <see cref="Update"/>).
     ///
-    /// FIX (measured sawtooth, ~4 device px at zoom 4, e.g. 145/134/136/126/129/120/123/127/118 across
-    /// consecutive frames): two inconsistent quantizations were beating against each other. Since E5.b
-    /// (sprites projected at the whole-pixel grid, <c>RenderProjectionComponent.SnapToPixel</c> /
-    /// <c>SimulationSpacePolicy.SnapRenderPosition</c>) a followed sprite's OWN rendered position steps in
-    /// whole LOGICAL pixels (4 device px at zoom 4), while <see cref="_cameraSmoothedTarget"/> stayed a
-    /// continuous float written straight to <c>Target</c>, only ever rounded by
-    /// <see cref="Camera2dComponent.PixelSnap"/>'s own <c>1 / Zoom</c> step - a single DEVICE pixel (0.25
-    /// logical unit at zoom 4). The sprite therefore jumps by 4 device px while the camera creeps by 1,
-    /// and the difference between the two reverses direction every few frames instead of moving smoothly -
-    /// the visible vibration/blur. The fix below snaps the value WRITTEN to <c>Target</c> onto the SAME
-    /// whole-logical-pixel grid the sprites already use, via the world's own
-    /// <c>PhysicsWorld.SpacePolicy.SnapRenderPosition</c> (floor X, ceiling Y under
-    /// <c>TopDownElevationSimulationSpacePolicy</c> - the exact convention E5.b ported, reused here rather
-    /// than re-implemented) - order of operations: smooth (continuous float,
-    /// <see cref="_cameraSmoothedTarget"/>) -&gt; clamp to map bounds (<see cref="ComputeSmoothedCameraTarget"/>,
-    /// unchanged) -&gt; snap to whole logical pixels -&gt; write to <c>Target</c>. The snap is NOT fed back
-    /// into <see cref="_cameraSmoothedTarget"/>: that state must stay continuous so the lerp keeps its own
-    /// rate (decision E5-2) - only the rendered value is quantized, same split as
-    /// <see cref="AlundraEntityScriptProxy"/>'s own logical-vs-render pose. Snapping AFTER the clamp cannot
-    /// push the view outside the map bounds by even one pixel: <see cref="ClampCameraTargetToMap"/>'s own
-    /// bounds are already whole numbers (half of the integer 320/240 visible size, offset by the integer
-    /// map size in pixels), so flooring/ceiling a value already pinned to one of those integer bounds is a
-    /// no-op, and a value strictly inside the bounds can only move TOWARD the bound it floors/ceils to
-    /// zero, never past it - both axes' snap rounds each in the direction that shrinks the coordinate's
-    /// magnitude relative to the corresponding bound, so no additional re-clamp is needed.
-    /// <see cref="Camera2dComponent.PixelSnap"/> is left set (see <see cref="ResolveDebugCameraOnce"/>):
-    /// with <c>Target</c> already on whole logical units its own 1/Zoom rounding is a no-op, kept as a
-    /// harmless defensive floor for whatever else may write <c>Target</c> (e.g. <see cref="UpdateDebugCameraPan"/>'s
-    /// own stick offset, still added on TOP of this snapped base every frame).
+    /// E5.c FIX (user-reported vibration: followed entities blur while they MOVE and sharpen when they
+    /// stop - the sailor on the stairs, the gull in flight). Root cause was a CADENCE BEAT, not a
+    /// rendering defect. Since E5.b a followed sprite's rendered position steps in whole LOGICAL pixels
+    /// (4 device px at zoom 4) and only ever changes on a 50Hz LOGIC TICK
+    /// (<c>AlundraEntityScriptProxy.Update</c>'s own <c>for tick</c> loop owns all motion), whereas this
+    /// method used to run its smoothing once per RENDERED frame (~123Hz) with that frame's own delta time.
+    /// Between two ticks the sprite was therefore frozen while the camera kept creeping and crossed
+    /// whole-pixel boundaries ON ITS OWN: the sprite slid 4 device px backwards, then jumped forwards when
+    /// the next tick landed - a 1-logical-pixel shimmer that reads as blur. Measured on the production
+    /// formulas: 24 direction reversals per 60 rendered frames at 1.22 px/tick, 48 at 3.7 px/tick, with
+    /// the amplitude growing with entity speed (8/12/16 device px) - which is also why the stairs are
+    /// worse than flat ground, <c>renderY = -(Y - Z)</c> moving roughly twice as fast when Y and Z change
+    /// in opposite directions. The ORIGINAL cannot beat: <c>GameEngine.cs:225-229</c> runs
+    /// <c>RenderScene()</c> (which smooths the scroll, <c>GraphicManager.cs:75-92</c>) and then
+    /// <c>Update(0)</c> (which moves entities) once each per game frame, so camera and entities are locked
+    /// together by construction.
+    ///
+    /// The fix restores that lock: the catch-up now advances <c>ticksThisFrame</c> times per frame (0 on
+    /// most frames at 123Hz) instead of once, and it is the original's INTEGER
+    /// <c>scroll += (target - scroll) &gt;&gt; 4</c> rather than a float lerp - see
+    /// <see cref="StepCameraScroll"/>'s own doc for the axis conversion (floor X, ceiling Y) and for the
+    /// measurements showing why a float state still shimmers while the integer one does not. Because the
+    /// state is now whole-numbered, it IS the rendered value: no separate pixel snap is applied on the way
+    /// out any more (the former <c>SnapCameraRenderTarget</c> is gone), exactly like the original's own
+    /// <c>g_cameraScrollingX/Y</c>. <see cref="Camera2dComponent.PixelSnap"/> is left set (see
+    /// <see cref="ResolveDebugCameraOnce"/>) purely for <see cref="UpdateDebugCameraPan"/>'s own stick
+    /// offset, which is still integrated per rendered frame and may be fractional.
+    ///
+    /// <para>Accepted deviations, both documented in docs/plan-e5-camera.md: the camera now stops once the
+    /// gap falls under 16px (the shift's dead zone), so a followed entity can sit up to 15px off exact
+    /// centre - the original's own behaviour, chosen by the user on 2026-08-26 in place of decision
+    /// E5-2's asymptotic convergence; and while the debug pan is actively deflected its per-frame
+    /// fractional offset can reintroduce the beat, which is debug-only and out of scope.</para>
+    ///
+    /// <para>Not covered by the headless tests: this method's own wiring (the
+    /// <see cref="AdvanceCameraSmoothing"/> call site), which needs a live World/Camera2dComponent. Every
+    /// rule it applies is unit-tested through that seam and through <see cref="StepCameraScroll"/>; the
+    /// residual gap is this single call - same shape as E5.a's own deferred P4.</para>
     /// </summary>
-    private void UpdateCameraFollow(float elapsedTime)
+    private void UpdateCameraFollow(int ticksThisFrame)
     {
         if (_debugCamera == null)
         {
@@ -1938,52 +1956,140 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         var target = ComputeCameraLookAtRenderPosition(_cameraLookAtX, _cameraLookAtY, _cameraLookAtZ);
 
-        // FIX (see this method's own doc above): ComputeSmoothedCameraTarget returns the CLAMPED value,
-        // and that is what gets stored back into _cameraSmoothedTarget - not just written out to Target -
-        // exactly like the original's own g_cameraScrollingX/Y assignment.
-        _cameraSmoothedTarget = ComputeSmoothedCameraTarget(
-            _cameraSmoothedTarget, _cameraNeedsSnap, target, elapsedTime,
+        // E5.c (see this method's own doc above): one catch-up step per LOGIC TICK, none at all on a frame
+        // that carried no tick - that is what keeps the camera locked to the sprites. The clamped value is
+        // what gets stored back into _cameraSmoothedTarget, not just written out to Target, exactly like
+        // the original's own g_cameraScrollingX/Y assignment (fresh verifier of cc1fc60).
+        _cameraSmoothedTarget = AdvanceCameraSmoothing(
+            _cameraSmoothedTarget, _cameraNeedsSnap, target, ticksThisFrame,
             _tileMapData != null ? _tileMapData.MapSize.Width * TileWidth : null,
             _tileMapData != null ? _tileMapData.MapSize.Height * TileHeight : null);
         _cameraNeedsSnap = false;
 
-        // FIX (see this method's own doc above): snap only the WRITTEN value onto the sprites' own
-        // whole-logical-pixel grid - _cameraSmoothedTarget itself stays continuous for next frame's lerp.
-        _debugCamera.Target = SnapCameraRenderTarget(_cameraSmoothedTarget, _world?.PhysicsWorld?.SpacePolicy);
+        // The state is whole-numbered by construction (see AdvanceCameraSmoothing's own integer
+        // invariant), so it IS the rendered value - written unconditionally, including on a zero-tick
+        // frame, so UpdateDebugCameraPan's base-adoption still sees this proxy's own last write.
+        _debugCamera.Target = _cameraSmoothedTarget;
     }
 
     /// <summary>
-    /// FIX (see <see cref="UpdateCameraFollow"/>'s own doc) - pure logic factored out for unit testing:
-    /// the exact snap <see cref="UpdateCameraFollow"/> applies to the value it writes to
-    /// <see cref="Camera2dComponent.Target"/>, reusing <paramref name="spacePolicy"/>'s own
-    /// <see cref="SimulationSpacePolicy.SnapRenderPosition"/> - the SAME whole-logical-pixel convention
-    /// E5.b already ported for sprites (<c>RenderProjectionComponent.SnapToPixel</c>) - rather than
-    /// re-implementing a rounding rule here. <paramref name="spacePolicy"/> null (no world/no physics
-    /// context yet) is a no-op, matching <see cref="UpdateCameraFollow"/>'s own null-conditional call.
+    /// E5.c - ONE catch-up step of the original's own scroll smoothing
+    /// (<c>GraphicManager.cs:75-92</c>: <c>scroll += (target - scroll) &gt;&gt; 4</c>), ported verbatim as
+    /// INTEGER arithmetic and expressed in RENDER space. Pure, so the whole rule is unit-testable.
+    ///
+    /// <para><b>Axis convention - the subtle part.</b> <c>&gt;&gt; 4</c> is an arithmetic shift, i.e. a
+    /// FLOOR, so it is not symmetric: <c>(-d) &gt;&gt; 4 != -(d &gt;&gt; 4)</c> (e.g. <c>1 &gt;&gt; 4 == 0</c>
+    /// but <c>-1 &gt;&gt; 4 == -1</c>). Our render space flips Y relative to the original's scroll space,
+    /// so the shift must be converted, not copied. From the constants E5.a already froze:
+    /// <list type="bullet">
+    /// <item><description>X: <c>scrollX = lookAtX - 0xa0</c> and <c>renderX = lookAtX</c>, so
+    /// <c>renderX = scrollX + 160</c> - SAME direction;</description></item>
+    /// <item><description>Y: <c>scrollY = (Y - Z) - 0x88</c> and
+    /// <c>renderY = -(Y - Z) + </c><see cref="CameraCenterBiasY"/> (16), so
+    /// <c>renderY = -scrollY - 120</c> - OPPOSITE direction.</description></item>
+    /// </list>
+    /// Both relations are confirmed by <see cref="ClampCameraTargetToMap"/>'s own frozen map-389 bounds
+    /// (scroll <c>[0, 0x39f]</c> -&gt; render <c>[160, 1087]</c>; scroll <c>[0, 0x2cf]</c> -&gt; render
+    /// <c>[-120, -839]</c>). A render-space delta <c>d</c> is therefore <c>-d</c> in scroll space; the
+    /// original's increment is <c>(-d) &gt;&gt; 4</c>; converting back flips the sign again, giving
+    /// <c>-((-d) &gt;&gt; 4) == ceil(d / 16)</c>. Hence <b>floor on X, ceiling on Y</b> - the very same
+    /// convention E5.b established for sprites (<c>SimulationSpacePolicy.SnapRenderPosition</c>).
+    /// Verified against the original on every sign: d = -40/-16/-15/-7/-1/0/1/7/15/16/40 gives
+    /// X = -3/-1/-1/-1/-1/0/0/0/0/1/2 and Y = -2/-1/0/0/0/0/1/1/1/1/3.</para>
+    ///
+    /// <para><b>Why integer and not a float lerp.</b> A continuous float state converges to a NON-integer
+    /// lag, so quantizing only the rendered value makes it flip whenever the target - which advances in
+    /// irregular 1-1-2 steps, being <c>PosY &gt;&gt; 16</c> - pushes it across a boundary: measured 480
+    /// direction reversals per 1500 ticks at 1.22 px/tick, 1197 at 2.4 px/tick, i.e. the same 1-logical-px
+    /// shimmer this fix exists to remove, merely slowed from 123Hz to 50Hz. The integer shift has a DEAD
+    /// ZONE (increment 0 while |d| &lt; 16) that locks the state onto an integer: the ceiling absorbs the
+    /// target's irregular step exactly (d = -31 -&gt; -1, d = -32 -&gt; -2), so the gap is a FIXED POINT,
+    /// not a cycle - measured 0 reversals at every speed from 1.22 to 8 px/tick. The trade, accepted by
+    /// the user on 2026-08-26 in place of decision E5-2's own deviation: the camera stops once the gap
+    /// falls under 16px, so the followed entity can sit up to 15px off exact centre - which is precisely
+    /// what the original does.</para>
+    ///
+    /// <para>Z carries no scroll in the original and is passed through untouched (it is always 0, see
+    /// <see cref="ComputeCameraLookAtRenderPosition"/>).</para>
     /// </summary>
-    internal static Vector3 SnapCameraRenderTarget(Vector3 clampedSmoothedTarget, SimulationSpacePolicy? spacePolicy)
-        => spacePolicy != null ? spacePolicy.SnapRenderPosition(clampedSmoothedTarget) : clampedSmoothedTarget;
+    internal static Vector3 StepCameraScroll(Vector3 current, Vector3 target)
+    {
+        // Both operands are whole numbers (see AdvanceCameraSmoothing's own integer invariant), so these
+        // casts are exact.
+        var deltaX = (int)(target.X - current.X);
+        var deltaY = (int)(target.Y - current.Y);
+
+        return new Vector3(
+            current.X + (deltaX >> 4),      // floor - same direction as the original's scroll axis
+            current.Y + -((-deltaY) >> 4),  // ceiling - render Y is the original's scroll Y, flipped
+            current.Z);
+    }
+
+    /// <summary>
+    /// E5.c - the whole per-frame camera catch-up, factored out of <see cref="UpdateCameraFollow"/> (which
+    /// needs a live World/Camera2dComponent and so cannot be driven headless - see this class's own scope
+    /// note in <c>AlundraWorldProxyCameraFollowTests</c>) so that every rule it applies is unit-testable.
+    ///
+    /// Runs <paramref name="ticksThisFrame"/> steps of <see cref="StepCameraScroll"/>, clamping after EACH
+    /// one (the original clamps every frame and the clamped value IS the scroll state - see
+    /// <see cref="ComputeSmoothedCameraTarget"/>'s own doc). <paramref name="ticksThisFrame"/> = 0 leaves
+    /// the state untouched: that is the entire point of this slice, since a followed entity's own position
+    /// only changes on a logic tick, so between ticks the camera must not move either - otherwise the
+    /// sprite slides across the screen on its own (see <see cref="UpdateCameraFollow"/>'s own doc).
+    ///
+    /// <paramref name="needsSnap"/> (map entry, port of <c>g_isCameraScrolling = 1</c>) snaps straight to
+    /// the clamped target BEFORE the loop. No tick is consumed for it: after the snap the state is a FIXED
+    /// POINT of any further step this frame - the target is either already reached (delta 0, increment 0)
+    /// or outside the bounds, in which case the step moves outward and the clamp pins it right back onto
+    /// the same bound - so decrementing would be unobservable.
+    ///
+    /// <para><b>Integer invariant.</b> The state is always whole-numbered: the target is built from ints
+    /// (<see cref="ComputeCameraLookAtRenderPosition"/>), <see cref="StepCameraScroll"/> adds an integer,
+    /// and <see cref="ClampCameraTargetToMap"/>'s bounds are integers too (half of the whole 320/240
+    /// visible size, offset by a whole map size in pixels). That is why the rendered value needs no
+    /// separate pixel snap any more - the state IS the rendered value, exactly like the original's own
+    /// <c>g_cameraScrollingX/Y</c>.</para>
+    /// </summary>
+    internal static Vector3 AdvanceCameraSmoothing(
+        Vector3 previousSmoothedTarget, bool needsSnap, Vector3 lookAtRenderTarget,
+        int ticksThisFrame, int? mapWidthPx, int? mapHeightPx)
+    {
+        var smoothed = previousSmoothedTarget;
+
+        if (needsSnap)
+        {
+            smoothed = ComputeSmoothedCameraTarget(smoothed, true, lookAtRenderTarget, mapWidthPx, mapHeightPx);
+        }
+
+        for (var tick = 0; tick < ticksThisFrame; tick++)
+        {
+            smoothed = ComputeSmoothedCameraTarget(smoothed, false, lookAtRenderTarget, mapWidthPx, mapHeightPx);
+        }
+
+        return smoothed;
+    }
 
     /// <summary>
     /// FIX (fresh verifier of cc1fc60) - pure state-transition factored out of <see cref="UpdateCameraFollow"/>
     /// for unit testing (that method itself needs a live World/Camera2dComponent - see this class's own
-    /// scope note in <c>AlundraWorldProxyCameraFollowTests</c>). Snaps or lerps
-    /// <paramref name="previousSmoothedTarget"/> toward <paramref name="lookAtRenderTarget"/>, THEN clamps
+    /// scope note in <c>AlundraWorldProxyCameraFollowTests</c>). Snaps to, or takes ONE
+    /// <see cref="StepCameraScroll"/> step toward, <paramref name="lookAtRenderTarget"/>, THEN clamps
     /// - and returns the CLAMPED result as the new smoothing state (not just the render output), so the
     /// next call's <paramref name="previousSmoothedTarget"/> already reflects the clamp, exactly like the
     /// original writes its clamped scroll value back into <c>g_cameraScrollingX/Y</c>
     /// (<c>GraphicManager.cs:97-122</c>) rather than leaving it a read-only view over an unclamped state.
     /// <paramref name="mapWidthPx"/>/<paramref name="mapHeightPx"/> null (no tile map yet) skips the clamp,
     /// matching <see cref="UpdateCameraFollow"/>'s own <c>_tileMapData == null</c> case.
+    /// E5.c: one call is one 50Hz LOGIC TICK, no longer one rendered frame - see
+    /// <see cref="AdvanceCameraSmoothing"/>, which is what production calls.
     /// </summary>
     internal static Vector3 ComputeSmoothedCameraTarget(
-        Vector3 previousSmoothedTarget, bool needsSnap, Vector3 lookAtRenderTarget, float elapsedTime,
+        Vector3 previousSmoothedTarget, bool needsSnap, Vector3 lookAtRenderTarget,
         int? mapWidthPx, int? mapHeightPx)
     {
         var smoothed = needsSnap
             ? lookAtRenderTarget
-            : ApplyCameraSmoothing(
-                previousSmoothedTarget, lookAtRenderTarget, ComputeCameraSmoothingFactor(elapsedTime));
+            : StepCameraScroll(previousSmoothedTarget, lookAtRenderTarget);
 
         return mapWidthPx.HasValue && mapHeightPx.HasValue
             ? ClampCameraTargetToMap(smoothed, mapWidthPx.Value, mapHeightPx.Value)
@@ -2016,26 +2122,6 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     internal static Vector3 ComputeCameraLookAtRenderPosition(int lookAtX, int lookAtY, int lookAtZ)
         => new(lookAtX, -(lookAtY - lookAtZ) + CameraCenterBiasY, 0f);
-
-    /// <summary>
-    /// E5.a (decision E5-2) - pure math factored out for unit testing: the ORIGINAL's own scroll
-    /// catch-up rate (<c>GraphicManager.cs:75-92</c>: <c>scroll += (target - scroll) &gt;&gt; 4</c> once
-    /// per 50Hz frame, i.e. a 1/16 catch-up per tick), re-expressed as a continuous function of real
-    /// elapsed time instead of a fixed per-tick shift - so it gives the IDENTICAL result at any frame
-    /// rate (50/123/240 fps alike), unlike a naive per-frame <c>&gt;&gt; 4</c> port would (E4's own
-    /// tick-dependency bug class, deliberately not reintroduced here). <c>(15/16)^50</c> is the fraction
-    /// of the original gap still remaining after exactly one real second (50 ticks at 1/16 catch-up
-    /// each); raising it to <c>elapsedTime</c> gives the fraction remaining after any real duration, so
-    /// <c>1 - that</c> is the fraction to close this frame.
-    /// </summary>
-    internal static float ComputeCameraSmoothingFactor(float elapsedTime)
-        => 1f - MathF.Pow(15f / 16f, elapsedTime * 50f);
-
-    /// <summary>E5.a - pure math factored out for unit testing: moves <paramref name="current"/> a
-    /// <paramref name="factor"/> fraction of the way to <paramref name="target"/> (0 = no movement, 1 =
-    /// snap straight to <paramref name="target"/>).</summary>
-    internal static Vector3 ApplyCameraSmoothing(Vector3 current, Vector3 target, float factor)
-        => current + (target - current) * factor;
 
     /// <summary>
     /// E5.a (docs/plan-e5-camera.md §2, point 7) - pure math factored out for unit testing: clamps a

@@ -10,10 +10,11 @@ namespace Alundra.Tests;
 /// <summary>
 /// Covers the pure math of E5.a's scripted camera follow (docs/plan-e5-camera.md) -
 /// <see cref="AlundraWorldProxy.ResolveCameraLookAt"/>, <see cref="AlundraWorldProxy.ComputeCameraLookAtRenderPosition"/>,
-/// <see cref="AlundraWorldProxy.ComputeCameraSmoothingFactor"/>, <see cref="AlundraWorldProxy.ApplyCameraSmoothing"/>,
 /// <see cref="AlundraWorldProxy.ClampCameraTargetToMap"/>, <see cref="AlundraWorldProxy.ComputeCameraZoom"/>
-/// and <see cref="AlundraWorldProxy.ComputeSmoothedCameraTarget"/> (the snap-or-lerp-then-clamp state
-/// transition <see cref="AlundraWorldProxy.UpdateCameraFollow"/> calls every frame).
+/// and <see cref="AlundraWorldProxy.ComputeSmoothedCameraTarget"/> (the snap-or-step-then-clamp state
+/// transition) - plus E5.c's own integer scroll port, <see cref="AlundraWorldProxy.StepCameraScroll"/>
+/// and <see cref="AlundraWorldProxy.AdvanceCameraSmoothing"/> (the per-frame seam
+/// <see cref="AlundraWorldProxy.UpdateCameraFollow"/> calls with that frame's LOGIC TICK count).
 ///
 /// Not covered here (headless-untestable, needs a live World/Camera2dComponent): the thin wiring around
 /// that state transition (<see cref="AlundraWorldProxy.UpdateCameraFollow"/>'s own null-guard/field
@@ -93,72 +94,43 @@ public class AlundraWorldProxyCameraFollowTests
     }
 
     // -----------------------------------------------------------------------------------------
-    // ComputeCameraSmoothingFactor / ApplyCameraSmoothing - time-independent catch-up (decision E5-2)
+    // StepCameraScroll - E5.c's integer port of GraphicManager.cs:75-92's own `scroll += diff >> 4`
     // -----------------------------------------------------------------------------------------
 
-    [Fact]
-    public void ComputeCameraSmoothingFactor_OneSecond_MatchesFiftyTicksAtOneSixteenthCatchUp()
-    {
-        // 50 ticks of the original's own (target-cur)>>4 (i.e. *1/16) catch-up, compounded, leaves
-        // (15/16)^50 of the original gap remaining - so the continuous formula over exactly 1 real second
-        // must close 1 - (15/16)^50 of the gap, bit-for-bit the same value.
-        var expected = 1f - MathF.Pow(15f / 16f, 50f);
-
-        var factor = AlundraWorldProxy.ComputeCameraSmoothingFactor(1f);
-
-        Assert.Equal(expected, factor, 5);
-    }
-
     /// <summary>
-    /// Plan acceptance: "identical at dt = 1/50, 1/123 and 1/240" - starting from a known 160px gap and
-    /// applying the smoothing formula for exactly one real second (compounding across however many
-    /// substeps that dt implies), the resulting position must be the SAME regardless of dt - proving the
-    /// catch-up rate is truly time-independent, not a hidden per-frame-count dependency (the exact bug
-    /// class E4 already fixed for movement).
+    /// E5.c: the ONE rule the whole slice rests on, and the easiest to get wrong. <c>&gt;&gt; 4</c> is an
+    /// arithmetic shift (a FLOOR), so it is not symmetric; our render space flips Y relative to the
+    /// original's scroll space (<c>renderY = -scrollY - 120</c>, <c>renderX = scrollX + 160</c>, both
+    /// confirmed by <see cref="AlundraWorldProxy.ClampCameraTargetToMap"/>'s own frozen map-389 bounds).
+    /// The increment is therefore FLOOR on X and CEILING on Y - the same convention E5.b established for
+    /// sprites. Every row below was checked against the original by computing <c>(-delta) &gt;&gt; 4</c> in
+    /// scroll space and converting back.
+    ///
+    /// Discriminating by construction: a naive floor on BOTH axes fails on delta = 1, 7 and 15; a
+    /// round-to-nearest fails on delta = 7 and -7; a truncation toward zero fails on delta = -1, -7, -15.
+    /// Rows 15/16 pin the dead zone (nothing moves on X until the gap reaches 16), row 1600 pins the rate.
     /// </summary>
     [Theory]
-    [InlineData(1f / 50f)]
-    [InlineData(1f / 123f)]
-    [InlineData(1f / 240f)]
-    public void ApplyCameraSmoothing_OneSecondOfSubsteps_IdenticalRegardlessOfFrameRate(float dt)
+    [InlineData(-40, -3, -2)]
+    [InlineData(-16, -1, -1)]
+    [InlineData(-15, -1, 0)]
+    [InlineData(-7, -1, 0)]
+    [InlineData(0, 0, 0)]
+    [InlineData(1, 0, 1)]
+    [InlineData(7, 0, 1)]
+    [InlineData(15, 0, 1)]
+    [InlineData(16, 1, 1)]
+    [InlineData(1600, 100, 100)]
+    public void StepCameraScroll_MatchesTheOriginalShiftOnEverySign(int delta, int expectedX, int expectedY)
     {
         var current = new Vector3(0f, 0f, 0f);
-        var target = new Vector3(160f, 0f, 0f);
-        var steps = (int)MathF.Round(1f / dt);
+        var target = new Vector3(delta, delta, 0f);
 
-        for (var i = 0; i < steps; i++)
-        {
-            var factor = AlundraWorldProxy.ComputeCameraSmoothingFactor(dt);
-            current = AlundraWorldProxy.ApplyCameraSmoothing(current, target, factor);
-        }
+        var stepped = AlundraWorldProxy.StepCameraScroll(current, target);
 
-        // (15/16)^50 of the 160px gap should remain, whatever dt/step count got there.
-        var expectedRemainingGap = 160f * MathF.Pow(15f / 16f, 50f);
-        var expectedX = 160f - expectedRemainingGap;
-
-        Assert.Equal(expectedX, current.X, 2);
-    }
-
-    [Fact]
-    public void ApplyCameraSmoothing_ZeroFactor_LeavesCurrentUnchanged()
-    {
-        var current = new Vector3(5f, 6f, 7f);
-        var target = new Vector3(100f, 100f, 100f);
-
-        var result = AlundraWorldProxy.ApplyCameraSmoothing(current, target, 0f);
-
-        Assert.Equal(current, result);
-    }
-
-    [Fact]
-    public void ApplyCameraSmoothing_FactorOne_SnapsStraightToTarget()
-    {
-        var current = new Vector3(5f, 6f, 7f);
-        var target = new Vector3(100f, 100f, 100f);
-
-        var result = AlundraWorldProxy.ApplyCameraSmoothing(current, target, 1f);
-
-        Assert.Equal(target, result);
+        Assert.Equal(expectedX, stepped.X);
+        Assert.Equal(expectedY, stepped.Y);
+        Assert.Equal(0f, stepped.Z);
     }
 
     // -----------------------------------------------------------------------------------------
@@ -262,8 +234,9 @@ public class AlundraWorldProxyCameraFollowTests
     // pure-math analogue of AlundraWorldProxyCameraFollowTests's own scope note: UpdateCameraFollow
     // itself needs a live World/Camera2dComponent and is out of reach here, but the exact sequence it
     // performs - smooth, then clamp, then feed the clamp back into next frame's smoothing input - is
-    // fully exercised by chaining ApplyCameraSmoothing -> ClampCameraTargetToMap -> (next call) by hand,
-    // matching UpdateCameraFollow's own new "_cameraSmoothedTarget = ClampCameraTargetToMap(...)" line.
+    // fully exercised by chaining StepCameraScroll -> ClampCameraTargetToMap -> (next call) by hand,
+    // matching what AdvanceCameraSmoothing does per logic tick before UpdateCameraFollow stores the
+    // result back into _cameraSmoothedTarget.
     // -----------------------------------------------------------------------------------------
 
     /// <summary>
@@ -275,15 +248,20 @@ public class AlundraWorldProxyCameraFollowTests
     ///
     /// Asserts the FIXED behaviour: because <c>ComputeSmoothedCameraTarget</c> returns (and this test
     /// feeds back in as next frame's <c>previousSmoothedTarget</c>) the CLAMPED value, the smoothing state
-    /// is already sitting exactly at -839 once the look-at moves inward - so the very next tick lerps from
-    /// -839 toward -800 and moves immediately to -836.5625, not still -839.
+    /// is already sitting exactly at -839 once the look-at moves inward - so the very next tick steps from
+    /// -839 toward -800 and moves immediately, not still -839.
+    ///
+    /// E5.c updated the expected value: under the integer port the step is <c>ceil(delta / 16)</c> with
+    /// delta = -800 - (-839) = +39, i.e. <c>ceil(2.4375) = 3</c>, so the state lands on exactly -836. (The
+    /// former -836.5625 was the float lerp's own 1/16 of 39; that smoothing no longer exists - see
+    /// <see cref="AlundraWorldProxy.StepCameraScroll"/>.) The PROPERTY under test is unchanged.
     ///
     /// A pre-fix implementation of this method (clamp applied only to the RETURNED render value, feeding
-    /// the UNCLAMPED lerp result back as next frame's state) would still read -839 here: one tick from the
-    /// hidden -936 toward -800 at the 1/16 catch-up rate only reaches -927.5 internally, which the clamp
-    /// still pins to -839 on the way out - motion would stay invisible for many more ticks (10 ticks still
-    /// reads -839) until the hidden internal state alone climbed back above the bound. This assertion
-    /// therefore fails against that pre-fix shape and passes against the current one.
+    /// the UNCLAMPED step result back as next frame's state) would still read -839 here: one step from the
+    /// hidden -936 toward -800 only reaches -928 internally, which the clamp still pins to -839 on the way
+    /// out - motion would stay invisible for many more ticks until the hidden internal state alone climbed
+    /// back above the bound. This assertion therefore fails against that pre-fix shape and passes against
+    /// the current one.
     /// </summary>
     [Fact]
     public void ComputeSmoothedCameraTarget_PinnedAtBoundThenTargetMovesInward_NextTickMovesImmediately()
@@ -299,7 +277,7 @@ public class AlundraWorldProxyCameraFollowTests
         for (var i = 0; i < 5; i++)
         {
             smoothed = AlundraWorldProxy.ComputeSmoothedCameraTarget(
-                smoothed, needsSnap: i == 0, pinnedLookAt, elapsedTime: 1f / 50f, mapWidthPx, mapHeightPx);
+                smoothed, needsSnap: i == 0, pinnedLookAt, mapWidthPx, mapHeightPx);
         }
 
         Assert.Equal(-839f, smoothed.Y); // clamped every frame, matches the plan's own documented bound.
@@ -308,136 +286,245 @@ public class AlundraWorldProxyCameraFollowTests
         // tick.
         var newLookAt = new Vector3(804f, -800f, 0f);
         var nextFrame = AlundraWorldProxy.ComputeSmoothedCameraTarget(
-            smoothed, needsSnap: false, newLookAt, elapsedTime: 1f / 50f, mapWidthPx, mapHeightPx);
+            smoothed, needsSnap: false, newLookAt, mapWidthPx, mapHeightPx);
 
         Assert.NotEqual(-839f, nextFrame.Y);
-        Assert.Equal(-836.5625f, nextFrame.Y, 3);
+        Assert.Equal(-836f, nextFrame.Y); // ceil(39 / 16) = 3, see this test's own doc.
     }
-
     // -----------------------------------------------------------------------------------------
-    // FIX (measured trace, ~4 device px sawtooth at zoom 4: 145/134/136/126/129/120/123/127/118/
-    // 122/126/118/125/118/122) - root cause: since E5.b a followed sprite's own rendered position is
-    // snapped to the WHOLE-LOGICAL-PIXEL grid (SimulationSpacePolicy.SnapRenderPosition), while the
-    // camera's smoothed target used to be written to Target as a continuous float, only ever rounded by
-    // Camera2dComponent.PixelSnap's own 1/Zoom step - a single DEVICE pixel (0.25 logical unit at zoom
-    // 4), a FINER grid than the sprite's. The sprite therefore jumps by 4 device px per logical pixel
-    // crossed while the camera creeps by 1, so (sprite - camera) in device pixels does not move
-    // monotonically - it reverses direction every few frames (the visible vibration). The fix snaps the
-    // value WRITTEN to Target onto the SAME whole-logical-pixel grid via SpacePolicy.SnapRenderPosition,
-    // matching UpdateCameraFollow's own new call - reproduced here at the pure-math level with the real
-    // TopDownElevationSimulationSpacePolicy (no live World/Camera2dComponent needed).
+    // E5.c - AdvanceCameraSmoothing: the camera catches up once per LOGIC TICK, never per rendered
+    // frame. Root cause of the reported vibration was that mismatch: a followed sprite only moves on a
+    // 50Hz tick, so a camera that kept creeping between ticks crossed whole-pixel boundaries on its own
+    // and slid the sprite around the screen. See AlundraWorldProxy.UpdateCameraFollow's own doc.
     // -----------------------------------------------------------------------------------------
 
     /// <summary>
-    /// Drives a synthetic "gull" at the plan's own literal rate - 3 logical px per 50Hz tick, i.e. the
-    /// followed entity's raw Alundra-space Y jumps by 3 whole px each time a 50Hz simulation tick fires,
-    /// held constant between ticks (E4's own tick-independent movement still fires the SAME discrete
-    /// per-tick step regardless of frame rate - only its accumulation across real time is frame-rate
-    /// independent) - sampled once per render frame at dt = 1/123 (the plan's own example, deliberately
-    /// NOT a divisor of 1/50s, so a render frame straddles a tick boundary at an arbitrary, shifting
-    /// phase - <paramref name="tickPhase"/> below seeds that phase so this observation window starts
-    /// mid-tick, like a real gameplay capture would, rather than perfectly aligned on frame 0). Exercises
-    /// the exact shape <see cref="AlundraWorldProxy.UpdateCameraFollow"/> runs every frame:
-    /// <list type="number">
-    /// <item><description>the entity's raw position is truncated to an int look-at every frame exactly
-    /// like <c>followed.PosY &gt;&gt; 16</c> (floor of the raw fixed-point position, before the
-    /// <see cref="AlundraWorldProxy.ComputeCameraLookAtRenderPosition"/> sign flip) - this already matches
-    /// the sprite's own <see cref="TopDownElevationSimulationSpacePolicy.SnapRenderPosition"/> grid by
-    /// construction (<c>ceil(-x) = -floor(x)</c>, the same identity that method's own doc cites), so the
-    /// sprite's rendered Y each frame is simply the negation of that int look-at;</description></item>
-    /// <item><description>the camera's <see cref="AlundraWorldProxy.ComputeSmoothedCameraTarget"/> state
-    /// runs unclamped (map bounds irrelevant here) exactly as production drives it, fed the SAME
-    /// <see cref="AlundraWorldProxy.ComputeCameraLookAtRenderPosition"/> target production
-    /// computes;</description></item>
-    /// <item><description>PRE-FIX, the value written to <c>Target</c> was rounded to the nearest 1/Zoom
-    /// device-pixel step by <c>Camera2dComponent.ComputeViewMatrix</c> (<c>step = 1/zoom</c>,
-    /// <c>Round(value/step)*step</c>, Camera2dComponent.cs:99-101) - reproduced here by
-    /// hand;</description></item>
-    /// <item><description>POST-FIX, the value written to <c>Target</c> is the REAL
-    /// <see cref="TopDownElevationSimulationSpacePolicy.SnapRenderPosition"/> - the exact call
-    /// <see cref="AlundraWorldProxy.UpdateCameraFollow"/> now makes.</description></item>
-    /// </list>
-    /// Verified BOTH ways before landing this test (see this method's own local sweep, not kept in the
-    /// suite): the PRE-FIX per-frame offset sequence reverses direction almost immediately (matching the
-    /// measured trace's own fast sawtooth, e.g. 145 -&gt; 134 -&gt; 136); the POST-FIX sequence stays
-    /// monotone (non-increasing, the gull moving one steady direction) for the whole window below. Kept
-    /// short (14 samples, matching the measured trace's own 15) rather than run indefinitely: even
-    /// POST-FIX, two independently-quantized monotone sequences (the sprite's own whole-pixel steps and
-    /// the camera's continuously-converging EMA, ceiled to the same grid) can drift back into phase over
-    /// a long enough run and tick a single grid step apart for one frame - a real but tiny (one whole
-    /// logical pixel) residual, utterly unlike the multi-pixel, constantly-reversing PRE-FIX sawtooth this
-    /// fix removes. This window is exactly the realistic timescale the bug was reported and measured at.
+    /// The heart of the fix: a rendered frame that carried NO logic tick must leave the camera exactly
+    /// where it was. Fails against any per-frame smoothing, which by definition always advances.
     /// </summary>
     [Fact]
-    public void CameraFollow_SubPixelTargetAtRealisticRate_DeviceOffsetIsMonotone_NotSawtooth()
+    public void AdvanceCameraSmoothing_ZeroTicks_LeavesTheStateStrictlyUnchanged()
     {
-        const float zoom = 4f;
-        const float step = 1f / zoom; // Camera2dComponent.PixelSnap's own 1/Zoom device-pixel step (pre-fix).
-        const float dt = 1f / 123f;
-        const float tickPeriod = 1f / 50f; // the original's own 50Hz simulation tick.
-        const float pxPerTick = 3f; // the plan's own gull rate: 3 logical px per 50Hz tick.
-        const float tickPhase = 0.007f; // mid-tick start, see this method's own doc on tickPhase.
-        const int frames = 14;
+        var previous = new Vector3(804f, -936f, 0f);
+        var lookAt = new Vector3(1000f, -100f, 0f);
 
-        var policy = new TopDownElevationSimulationSpacePolicy();
+        var result = AlundraWorldProxy.AdvanceCameraSmoothing(
+            previous, needsSnap: false, lookAt, ticksThisFrame: 0, mapWidthPx: null, mapHeightPx: null);
 
-        var rawY = 0f; // Alundra-space (down-positive) raw position, stepping by pxPerTick each tick.
-        var tickAccumulator = tickPhase;
-        var smoothedPreFix = Vector3.Zero;
-        var smoothedPostFix = Vector3.Zero;
-        var preFixOffsets = new List<float>();
-        var postFixOffsets = new List<float>();
-
-        for (var i = 0; i < frames; i++)
-        {
-            tickAccumulator += dt;
-
-            while (tickAccumulator >= tickPeriod)
-            {
-                tickAccumulator -= tickPeriod;
-                rawY += pxPerTick;
-            }
-
-            var lookAtY = (int)MathF.Floor(rawY); // followed.PosY >> 16, i.e. floor of the raw fixed-point position.
-
-            var target = AlundraWorldProxy.ComputeCameraLookAtRenderPosition(804, lookAtY, 0);
-
-            smoothedPreFix = AlundraWorldProxy.ComputeSmoothedCameraTarget(
-                smoothedPreFix, needsSnap: i == 0, target, dt, mapWidthPx: null, mapHeightPx: null);
-            smoothedPostFix = AlundraWorldProxy.ComputeSmoothedCameraTarget(
-                smoothedPostFix, needsSnap: i == 0, target, dt, mapWidthPx: null, mapHeightPx: null);
-
-            // Sprite's own rendered Y: same floor-then-negate the look-at already went through - see this
-            // test's own doc, point 1.
-            var spriteRenderY = -(float)lookAtY;
-
-            var cameraTargetPreFixY = MathF.Round(smoothedPreFix.Y / step) * step; // old Camera2dComponent.PixelSnap.
-            // POST-FIX: the exact AlundraWorldProxy.SnapCameraRenderTarget call UpdateCameraFollow now makes.
-            var cameraTargetPostFixY = AlundraWorldProxy.SnapCameraRenderTarget(smoothedPostFix, policy).Y;
-
-            preFixOffsets.Add((spriteRenderY - cameraTargetPreFixY) * zoom);
-            postFixOffsets.Add((spriteRenderY - cameraTargetPostFixY) * zoom);
-        }
-
-        Assert.True(
-            HasDirectionReversal(preFixOffsets),
-            "expected the PRE-FIX device-pixel offset to reproduce the measured sawtooth (a direction reversal)");
-        Assert.False(
-            HasDirectionReversal(postFixOffsets),
-            "expected the POST-FIX device-pixel offset to move monotonically, with no sawtooth reversal");
+        Assert.Equal(previous, result);
     }
 
-    /// <summary>True if <paramref name="values"/> ever changes direction (a non-zero step whose sign
-    /// differs from the previous non-zero step) - the sawtooth signature. A flat run (all zero steps, or
-    /// a single direction throughout) is monotone and returns false.</summary>
-    private static bool HasDirectionReversal(IReadOnlyList<float> values)
+    /// <summary>
+    /// Map entry (port of <c>g_isCameraScrolling = 1</c>): the snap jumps straight to the clamped look-at,
+    /// and consumes no tick - after it, further steps THIS frame are a fixed point (the target is either
+    /// already reached, or outside the bounds so the step moves outward and the clamp pins it back onto
+    /// the same bound). Asserted both ways so the "no decrement" decision is pinned rather than assumed.
+    /// </summary>
+    [Fact]
+    public void AdvanceCameraSmoothing_MapEntrySnap_ReachesTheClampedLookAtAndIsAFixedPoint()
+    {
+        const int mapWidthPx = 1248;
+        const int mapHeightPx = 960;
+
+        // Look-at 97px past the -839 lower bound, E5.a's own measured New Game overshoot.
+        var lookAt = new Vector3(804f, -936f, 0f);
+        var expected = AlundraWorldProxy.ClampCameraTargetToMap(lookAt, mapWidthPx, mapHeightPx);
+
+        var snappedNoTick = AlundraWorldProxy.AdvanceCameraSmoothing(
+            Vector3.Zero, needsSnap: true, lookAt, ticksThisFrame: 0, mapWidthPx, mapHeightPx);
+        var snappedFourTicks = AlundraWorldProxy.AdvanceCameraSmoothing(
+            Vector3.Zero, needsSnap: true, lookAt, ticksThisFrame: 4, mapWidthPx, mapHeightPx);
+
+        Assert.Equal(expected, snappedNoTick);
+        Assert.Equal(expected, snappedFourTicks);
+    }
+
+    /// <summary>
+    /// The integer invariant that lets the smoothing state BE the rendered value (E5.c removed the
+    /// separate write-time pixel snap): whatever the tick count, and even with the clamp firing on every
+    /// step, every component stays a whole number.
+    /// </summary>
+    [Fact]
+    public void AdvanceCameraSmoothing_WithClampActive_KeepsTheStateWholeNumbered()
+    {
+        const int mapWidthPx = 1248;
+        const int mapHeightPx = 960;
+
+        var state = new Vector3(804f, -400f, 0f);
+        var lookAt = new Vector3(5000f, -9000f, 0f); // far outside the map, clamp fires every step.
+
+        for (var tick = 0; tick < 200; tick++)
+        {
+            state = AlundraWorldProxy.AdvanceCameraSmoothing(
+                state, needsSnap: false, lookAt, ticksThisFrame: 1, mapWidthPx, mapHeightPx);
+
+            Assert.Equal(MathF.Truncate(state.X), state.X);
+            Assert.Equal(MathF.Truncate(state.Y), state.Y);
+            Assert.Equal(MathF.Truncate(state.Z), state.Z);
+        }
+    }
+
+    /// <summary>
+    /// The acceptance test of the whole slice, and the one the previous attempt (445594e) got wrong by
+    /// running only 14 frames from a hand-picked tick phase. Drives 3000 logic ticks of a followed entity
+    /// moving at a steady rate, exactly as production does: its logical position is truncated to an int
+    /// look-at (<c>PosY &gt;&gt; 16</c>), the look-at is turned into a render target by
+    /// <see cref="AlundraWorldProxy.ComputeCameraLookAtRenderPosition"/>, and the camera takes ONE
+    /// <see cref="AlundraWorldProxy.AdvanceCameraSmoothing"/> step per tick. The sprite's own rendered Y
+    /// is the negated look-at (<c>ceil(-x) = -floor(x)</c>, E5.b's own identity), so the on-screen gap is
+    /// <c>(-look) - state.Y</c> in logical pixels.
+    ///
+    /// Asserts ZERO direction reversals of that gap over ticks 1500-3000: under the integer port the gap
+    /// is a genuine FIXED POINT, because the ceiling absorbs the target's irregular 1-1-2 stepping exactly
+    /// (delta -31 -&gt; -1, delta -32 -&gt; -2). Measured: gap constant at -30 for 1.22 px/tick, -45 for
+    /// 2.4 px/tick.
+    ///
+    /// The counter-proof in the same test replays the SAME tick sequence through the rejected float 1/16
+    /// smoothing (a local reference implementation, not production) and requires it to reverse at least
+    /// <paramref name="minimumFloatReversals"/> times - measured 480 at 1.22 px/tick and 1197 at 2.4, i.e.
+    /// the very shimmer this slice removes. At 3.7 px/tick the float variant happens to be stable too, so
+    /// that row carries no counter-proof (0) and only pins the production behaviour.
+    /// </summary>
+    [Theory]
+    [InlineData(1.22f, 100)]
+    [InlineData(2.4f, 100)]
+    [InlineData(3.7f, 0)]
+    public void AdvanceCameraSmoothing_SteadyPursuit_GapNeverReverses_UnlikeFloatSmoothing(
+        float pixelsPerTick, int minimumFloatReversals)
+    {
+        const int ticks = 3000;
+        const int settleTicks = 1500;
+
+        var rawY = 0f;
+        var integerState = Vector3.Zero;
+        var floatStateY = 0f;
+        var started = false;
+        var integerGaps = new List<float>();
+        var floatGaps = new List<float>();
+
+        for (var tick = 0; tick < ticks; tick++)
+        {
+            rawY += pixelsPerTick;
+            var lookAtY = (int)MathF.Floor(rawY); // followed.PosY >> 16
+            var target = AlundraWorldProxy.ComputeCameraLookAtRenderPosition(804, lookAtY, 0);
+
+            if (!started)
+            {
+                started = true;
+                integerState = AlundraWorldProxy.AdvanceCameraSmoothing(
+                    integerState, needsSnap: true, target, ticksThisFrame: 0, null, null);
+                floatStateY = target.Y;
+            }
+            else
+            {
+                integerState = AlundraWorldProxy.AdvanceCameraSmoothing(
+                    integerState, needsSnap: false, target, ticksThisFrame: 1, null, null);
+
+                // Rejected variant, kept here purely as the counter-proof - see this test's own doc.
+                floatStateY += (target.Y - floatStateY) * (1f / 16f);
+            }
+
+            if (tick < settleTicks)
+            {
+                continue;
+            }
+
+            integerGaps.Add(-lookAtY - integerState.Y);
+            floatGaps.Add(-lookAtY - MathF.Ceiling(floatStateY));
+        }
+
+        Assert.Equal(0, CountDirectionReversals(integerGaps));
+        Assert.True(
+            CountDirectionReversals(floatGaps) >= minimumFloatReversals,
+            $"the rejected float smoothing should reverse at least {minimumFloatReversals} times at "
+            + $"{pixelsPerTick} px/tick, making this test discriminating; "
+            + $"got {CountDirectionReversals(floatGaps)}");
+    }
+
+    /// <summary>
+    /// Frame-rate independence, driven by the REAL <see cref="AlundraLogicClock"/>. The camera must be a
+    /// pure function of the accumulated TICK count, never of the display rate.
+    ///
+    /// The target keeps advancing throughout (2.4 px per tick) rather than standing still: under the
+    /// integer port a fixed target is reached in finitely many steps, so a converged run would compare
+    /// equal whatever the cadence and the test would prove nothing.
+    ///
+    /// Measured: 50 ticks of pursuit leave the camera at -61 whatever dt (50, 124 and 240 rendered frames
+    /// respectively). The counter-proof advances ONE step per rendered FRAME instead, which lands on -87
+    /// at dt = 1/123 and 1/240 - the regression this slice fixes. At dt = 1/50 one frame IS one tick, so
+    /// the two agree there by construction; that row is deliberately not asserted as different.
+    /// </summary>
+    [Fact]
+    public void AdvanceCameraSmoothing_DrivenByTheRealLogicClock_IsIdenticalAtEveryFrameRate()
+    {
+        Assert.Equal(-61f, RunPursuit(1f / 50f, stepPerFrame: false));
+        Assert.Equal(-61f, RunPursuit(1f / 123f, stepPerFrame: false));
+        Assert.Equal(-61f, RunPursuit(1f / 240f, stepPerFrame: false));
+
+        // Counter-proof: stepping per rendered frame makes the result depend on the display rate.
+        Assert.Equal(-87f, RunPursuit(1f / 123f, stepPerFrame: true));
+        Assert.Equal(-87f, RunPursuit(1f / 240f, stepPerFrame: true));
+    }
+
+    /// <summary>Runs a followed entity moving at 2.4 px per logic tick until the real
+    /// <see cref="AlundraLogicClock"/> has delivered exactly 50 ticks at the given frame time, and returns
+    /// the camera's render-space Y. <paramref name="stepPerFrame"/> selects the regression shape (one
+    /// catch-up step per rendered frame) instead of the production one (one per logic tick).</summary>
+    private static float RunPursuit(float dt, bool stepPerFrame)
+    {
+        const float pixelsPerTick = 2.4f;
+        const int totalTicks = 50;
+
+        var clock = new AlundraLogicClock();
+        var rawY = 0f;
+        var state = Vector3.Zero;
+        var started = false;
+        var delivered = 0;
+
+        while (delivered < totalTicks)
+        {
+            var ticksThisFrame = Math.Min(clock.TicksThisFrame(dt), totalTicks - delivered);
+            clock.CloseFrame();
+
+            for (var tick = 0; tick < ticksThisFrame; tick++)
+            {
+                rawY += pixelsPerTick;
+                delivered++;
+
+                var target = AlundraWorldProxy.ComputeCameraLookAtRenderPosition(804, (int)MathF.Floor(rawY), 0);
+
+                if (!started)
+                {
+                    started = true;
+                    state = AlundraWorldProxy.AdvanceCameraSmoothing(state, true, target, 0, null, null);
+                }
+                else if (!stepPerFrame)
+                {
+                    state = AlundraWorldProxy.AdvanceCameraSmoothing(state, false, target, 1, null, null);
+                }
+            }
+
+            if (stepPerFrame && started)
+            {
+                var target = AlundraWorldProxy.ComputeCameraLookAtRenderPosition(804, (int)MathF.Floor(rawY), 0);
+                state = AlundraWorldProxy.AdvanceCameraSmoothing(state, false, target, 1, null, null);
+            }
+        }
+
+        return state.Y;
+    }
+
+    /// <summary>Number of times <paramref name="values"/> changes direction (a non-zero step whose sign
+    /// differs from the previous non-zero step) - the shimmer signature. A flat run, or one that only ever
+    /// moves one way, returns 0.</summary>
+    private static int CountDirectionReversals(IReadOnlyList<float> values)
     {
         var previousSign = 0;
+        var reversals = 0;
 
         for (var i = 1; i < values.Count; i++)
         {
-            var delta = values[i] - values[i - 1];
-            var sign = MathF.Sign(delta);
+            var sign = MathF.Sign(values[i] - values[i - 1]);
 
             if (sign == 0)
             {
@@ -446,12 +533,12 @@ public class AlundraWorldProxyCameraFollowTests
 
             if (previousSign != 0 && sign != previousSign)
             {
-                return true;
+                reversals++;
             }
 
             previousSign = sign;
         }
 
-        return false;
+        return reversals;
     }
 }

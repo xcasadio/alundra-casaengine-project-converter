@@ -9,7 +9,8 @@ après la tranche.
 | # | Décision |
 |---|---|
 | E5-1 | **Cadrage fidèle** : la caméra montre la zone visible d'origine (320×240 unités logiques autour du point suivi), mise à l'échelle pour remplir la fenêtre, `PixelSnap` actif, et le clamp aux bords de map reprend la formule originale. Les décors sont dessinés pour ce cadre ; c'est la seule option où la chorégraphie de l'intro se lit comme dans le jeu d'origine. |
-| E5-2 | **Lissage flottant continu**, au même taux de rattrapage que l'original mais **exprimé en fonction du temps** — `facteur = 1 − (15/16)^(dt × 50)` — donc identique à 50, 123 ou 240 im/s (on ne réintroduit pas la dépendance à la cadence corrigée en E4). Écart assumé : pas d'arrêt résiduel entier (l'original s'arrête quand l'écart passe sous 16 px, notre convergence est asymptotique). |
+| E5-2 | ~~**Lissage flottant continu**, au même taux de rattrapage que l'original mais **exprimé en fonction du temps** — `facteur = 1 − (15/16)^(dt × 50)` — donc identique à 50, 123 ou 240 im/s (on ne réintroduit pas la dépendance à la cadence corrigée en E4). Écart assumé : pas d'arrêt résiduel entier (l'original s'arrête quand l'écart passe sous 16 px, notre convergence est asymptotique).~~ **REMPLACÉE par E5-3** (2026-08-26) — voir la tranche E5.c : la mesure a montré qu'un état flottant, quantifié seulement au rendu, continue de scintiller d'un pixel logique. |
+| E5-3 | **Port entier fidèle** (2026-08-26, remplace E5-2) : `scroll += (cible − scroll) >> 4` en entiers, **une fois par tick logique 50 Hz** et non par image rendue. L'indépendance de la cadence d'affichage est conservée (le tick est fixe). Écart assumé, désormais **celui de l'original** : la caméra s'arrête quand l'écart passe sous 16 px (zone morte du décalage), donc l'entité suivie peut être jusqu'à 15 px hors du centre exact. |
 
 ## 1. Faits qui bornent le plan
 
@@ -124,7 +125,9 @@ neutralise l'offset.
   scroll ; notre première version gardait l'état non clampé et repartait de lui — 97 px de dépassement
   caché dès l'entrée de map sur la 389, et une caméra qui restait collée à un bord avant de repartir.
   Corrigé : l'état lissé EST l'état clampé, comme l'original (vérifié avant/après : −839 figé pendant
-  10 ticks avant, −836,5625 dès le premier tick après).
+  10 ticks avant, −836,5625 dès le premier tick après — **valeur devenue −836 depuis E5.c**, le pas
+  entier donnant `ceil(39/16) = 3` là où le lissage flottant donnait 39/16 ; la propriété testée, elle,
+  est inchangée).
 - **Écarts documentés** : lissage flottant continu (décision E5-2) — pas d'arrêt résiduel entier ;
   0x67 sans résultat met `null` alors que l'original garde l'entrée précédente de son buffer de
   recherche (jamais atteint sur la 389, les six opérandes matchent tous).
@@ -188,9 +191,62 @@ neutralise l'offset.
   moteur + un commit parent. **Arrêt** : si accrocher la pose de rendu casse le tri de profondeur
   (`DepthSortable2DComponent` lit la position monde du sprite) ou la re-projection d'E3.a.
 
+## 2 ter. Tranche E5.c — Caméra cadencée au tick logique, port entier du scroll ✅
+
+- **Symptôme résiduel (2026-08-25)** : après E5.b et l'accrochage de la cible caméra (`445594e`), les
+  entités suivies **vibraient toujours** pendant leur mouvement. Mesuré en jeu : tout tombe sur des
+  pixels écran entiers, mais l'écart vertical oscille en dents de scie d'environ 4 px écran.
+- **Cause racine (DLL, pas moteur)** : un **battement de cadence**. La position d'une entité ne change
+  qu'au **tick logique 50 Hz** (`AlundraEntityScriptProxy.Update`, boucle `for tick`), alors que
+  `AlundraWorldProxy.UpdateCameraFollow` lissait la caméra **une fois par image rendue** (~123 Hz).
+  Entre deux ticks le sprite est figé mais la caméra franchit seule des frontières de pixel entier :
+  le sprite recule de 4 px écran puis ressaute au tick suivant. Reproduit numériquement avec les
+  formules de production : **24 inversions de sens par 60 images** à 1,22 px/tick, **48** à 3,7 px/tick,
+  amplitude croissant avec la vitesse (8/12/16 px écran) — ce qui explique aussi « net sur le plat,
+  flou dans l'escalier » (`renderY = −(Y − Z)` bouge ~2× plus vite quand Y et Z varient en sens
+  opposés) et « nette une fois posée » (à l'arrêt la caméra converge, plus aucun franchissement).
+  L'original ne peut pas battre : `GameEngine.cs:225-229` fait `RenderScene()` (qui lisse le scroll)
+  puis `Update(0)` (qui bouge les entités), une fois chacun par image de jeu.
+- **Hypothèses écartées par la mesure, à ne pas rouvrir** : pas de render target intermédiaire (le
+  `LinearClamp` de `BackBufferPresenter` n'est jamais atteint, `RenderTarget` est nul sur
+  `BackBufferSurface`) ; 1280/4 = 320 et 944/4 = 236 exacts, aucun demi-pixel dans l'ortho de
+  `Camera2dComponent` ; son `PixelSnap` (pas de 1/Zoom) était bien devenu un no-op ;
+  `WallPlacementOverlay` n'émet ses tuiles **qu'une fois au chargement** et leur clé de tri ne dépend
+  d'aucune position d'entité.
+- **Pourquoi le lissage flottant au tick ne suffisait pas** (mesuré, régime établi sur 1500 ticks) : un
+  état flottant converge vers un décalage **non entier**, donc le `ceil()` du rendu bascule dès que la
+  cible — qui avance par pas irréguliers 1‑1‑2, étant `PosY >> 16` — le pousse d'un côté ou l'autre de
+  la frontière : **480 inversions** à 1,22 px/tick, **748** à 1,75, **1197** à 2,4 — c'est-à-dire aux
+  vitesses de marche, précisément celles du bug rapporté. (Aux vitesses plus élevées le flottant se
+  stabilise par hasard : 1 inversion à 3,7 px/tick, 0 à 5 et 8 — d'où l'importance de ne pas mesurer
+  qu'à une seule vitesse.) Le bug aurait donc seulement été ralenti de 123 Hz à 50 Hz. Le `>> 4` entier
+  a une **zone morte** (incrément nul tant que |écart| < 16) qui verrouille l'état sur un entier :
+  **0 inversion à toutes les vitesses testées, de 1,22 à 8 px/tick**.
+- **Convention d'axe (le point fragile)** : `>> 4` est un plancher, donc non symétrique, et notre
+  espace de rendu inverse le Y (`renderY = −scrollY − 120`, `renderX = scrollX + 160`, les deux
+  recoupés par les bornes de clamp figées en E5.a). Un écart Δ en rendu vaut −Δ en scroll, d'où
+  **incrément X = `Δ >> 4` (plancher), incrément Y = `−((−Δ) >> 4)` = `ceil(Δ/16)` (plafond)** —
+  exactement la convention « plancher X, plafond Y » d'E5.b. Vérifiée contre l'original sur tous les
+  signes et figée par un `Theory` de 10 cas.
+- **Réalisé** : `LogicTicksThisFrame` remonté en tête d'`Update` ; `UpdateCameraFollow(int ticksThisFrame)` ;
+  deux coutures pures testables `StepCameraScroll` et `AdvanceCameraSmoothing` ;
+  `ComputeCameraSmoothingFactor`, `ApplyCameraSmoothing` et `SnapCameraRenderTarget` supprimées (l'état
+  est entier par construction, donc il EST la valeur rendue, comme `g_cameraScrollingX/Y`).
+- **Écarts documentés** : arrêt résiduel sous 16 px (décision E5-3, comportement de l'original) ; le pan
+  de debug intègre toujours son offset par image et peut réintroduire le battement tant que le stick
+  est dévié (debug-only) ; la ligne de câblage `UpdateCameraFollow(ticksThisFrame)` reste hors de
+  portée des tests headless (même forme que le P4 différé d'E5.a).
+- **Tests** : DLL **487** (477 − 7 retirés + 17 ajoutés) ; convertisseur 138 ; trace d'intro
+  byte-identique, jalons intacts. Aucun fichier moteur touché.
+- **Observation hors scope relevée au passage** : l'accumulateur `float` d'`AlundraLogicClock` rend
+  **49** ticks par seconde réelle à dt = 1/123 (accumulateur à 0,019999985, juste sous 0,02) contre 50
+  à dt = 1/50 et 1/240. Préexistant, sans effet sur cette tranche (entités et caméra partagent la même
+  horloge) ni sur le harnais (dt fixe).
+
 ## 3. Suivi
 
 | Tranche | Statut | Commit |
 |---|---|---|
 | E5.a suivi scripté de la caméra | ✅ (verifier CONFIRMED) | cc1fc60 + 1507afc |
 | E5.b sprites projetés au pixel entier | ✅ | moteur 6384bf4d + parent eab5f17 |
+| E5.c caméra cadencée au tick logique, port entier | ✅ | (ce commit) |
