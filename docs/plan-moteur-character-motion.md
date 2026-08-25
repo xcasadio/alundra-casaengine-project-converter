@@ -50,11 +50,25 @@ Deux classes de bugs ont coûté une journée entière et ont la même racine :
   aujourd'hui, tous les tests existants inchangés ; (b) mode on à 1/50 avec dt = 1/50 → exactement
   un pas par frame ; (c) dt = 1/123 sur 123 frames → 50 pas ± 1, aucun reliquat perdu, aucune frame
   au-delà d'un pas ; (d) frame longue (1 s) → plafonnée à `MaxStepsPerFrame` ; (e) **invariance de
-  trajectoire** : un contrôleur soumis à la même intention pendant 1 s de temps réel parcourt la
-  même distance à dt = 1/50, 1/123 et 1/240 (le test échoue en mode off) ; (f) `CasaEngine.Tests`
-  sans nouvel échec (18 préexistants).
+  trajectoire, à nombre de pas ÉPINGLÉ** (correctif plan-verifier : la tolérance « ± 1 pas » de (c)
+  vaut 0,2 unité de déplacement, soit plus que la divergence de 0,079 que ce test doit détecter en
+  mode off — une tolérance qui absorbe l'une absorbe l'autre) : réglages explicites
+  `MaxHorizontalSpeed 10`, `Acceleration 100`, `Gravity 0` (ceux des fixtures existantes,
+  `CharacterControllerMoveToDriverTests.cs:53-62`) ; à intention constante pendant 1 s de temps réel
+  et à dt = 1/50, 1/123, 1/240, le test **assert que les trois cadences exécutent exactement le même
+  nombre de pas fixes (50)** puis compare les distances avec une tolérance **strictement inférieure
+  à 0,079** (l'écart attendu en mode off, `9,5 + 5·dt` : 9,600 / 9,541 / 9,521). Le même test relancé
+  avec `FixedTimeStep = 0` doit **échouer** sur au moins une des trois cadences ; (f)
+  `CasaEngine.Tests` sans nouvel échec (18 préexistants).
 - **Non-goals** : activer le mode pour Alundra (M-3) ; toucher `PhysicsWorld`/Bepu ; changer la
   cadence de systèmes non liés au mouvement de personnage.
+- **Écart assumé à documenter (P3, relevé par le plan-verifier)** : sous le mode actif, les pas
+  supplémentaires d'une frame voient un index de steering reconstruit une fois par
+  `World.UpdateSequence` (`UniformGridSteeringSpatialIndex.cs:43-56`) et des corps Bepu avancés par
+  `PhysicsSystemComponent` hors de `World.Update` — donc des positions d'un pas de retard pour ces
+  deux sources. Dégradation acceptée, opt-in, sans effet sur un monde comme la 389 (aucun agent de
+  steering, sol issu du `ICollisionField`) ; à réexaminer si un jeu active le mode avec du steering
+  ou des plateformes rigides mobiles.
 - **Rollback** : revert du commit moteur (+ pointeur si bumpé). **Budget** : un commit moteur.
   **Arrêt** : si un agent/driver ne peut pas tourner à pas fixe sans changer son comportement en
   mode off.
