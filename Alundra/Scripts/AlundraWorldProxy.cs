@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
+using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets;
@@ -1886,6 +1887,36 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     ///
     /// No-op before <see cref="_debugCamera"/> is resolved (see <see cref="ResolveDebugCameraOnce"/>,
     /// already called this frame by <see cref="Update"/>).
+    ///
+    /// FIX (measured sawtooth, ~4 device px at zoom 4, e.g. 145/134/136/126/129/120/123/127/118 across
+    /// consecutive frames): two inconsistent quantizations were beating against each other. Since E5.b
+    /// (sprites projected at the whole-pixel grid, <c>RenderProjectionComponent.SnapToPixel</c> /
+    /// <c>SimulationSpacePolicy.SnapRenderPosition</c>) a followed sprite's OWN rendered position steps in
+    /// whole LOGICAL pixels (4 device px at zoom 4), while <see cref="_cameraSmoothedTarget"/> stayed a
+    /// continuous float written straight to <c>Target</c>, only ever rounded by
+    /// <see cref="Camera2dComponent.PixelSnap"/>'s own <c>1 / Zoom</c> step - a single DEVICE pixel (0.25
+    /// logical unit at zoom 4). The sprite therefore jumps by 4 device px while the camera creeps by 1,
+    /// and the difference between the two reverses direction every few frames instead of moving smoothly -
+    /// the visible vibration/blur. The fix below snaps the value WRITTEN to <c>Target</c> onto the SAME
+    /// whole-logical-pixel grid the sprites already use, via the world's own
+    /// <c>PhysicsWorld.SpacePolicy.SnapRenderPosition</c> (floor X, ceiling Y under
+    /// <c>TopDownElevationSimulationSpacePolicy</c> - the exact convention E5.b ported, reused here rather
+    /// than re-implemented) - order of operations: smooth (continuous float,
+    /// <see cref="_cameraSmoothedTarget"/>) -&gt; clamp to map bounds (<see cref="ComputeSmoothedCameraTarget"/>,
+    /// unchanged) -&gt; snap to whole logical pixels -&gt; write to <c>Target</c>. The snap is NOT fed back
+    /// into <see cref="_cameraSmoothedTarget"/>: that state must stay continuous so the lerp keeps its own
+    /// rate (decision E5-2) - only the rendered value is quantized, same split as
+    /// <see cref="AlundraEntityScriptProxy"/>'s own logical-vs-render pose. Snapping AFTER the clamp cannot
+    /// push the view outside the map bounds by even one pixel: <see cref="ClampCameraTargetToMap"/>'s own
+    /// bounds are already whole numbers (half of the integer 320/240 visible size, offset by the integer
+    /// map size in pixels), so flooring/ceiling a value already pinned to one of those integer bounds is a
+    /// no-op, and a value strictly inside the bounds can only move TOWARD the bound it floors/ceils to
+    /// zero, never past it - both axes' snap rounds each in the direction that shrinks the coordinate's
+    /// magnitude relative to the corresponding bound, so no additional re-clamp is needed.
+    /// <see cref="Camera2dComponent.PixelSnap"/> is left set (see <see cref="ResolveDebugCameraOnce"/>):
+    /// with <c>Target</c> already on whole logical units its own 1/Zoom rounding is a no-op, kept as a
+    /// harmless defensive floor for whatever else may write <c>Target</c> (e.g. <see cref="UpdateDebugCameraPan"/>'s
+    /// own stick offset, still added on TOP of this snapped base every frame).
     /// </summary>
     private void UpdateCameraFollow(float elapsedTime)
     {
@@ -1915,8 +1946,23 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             _tileMapData != null ? _tileMapData.MapSize.Width * TileWidth : null,
             _tileMapData != null ? _tileMapData.MapSize.Height * TileHeight : null);
         _cameraNeedsSnap = false;
-        _debugCamera.Target = _cameraSmoothedTarget;
+
+        // FIX (see this method's own doc above): snap only the WRITTEN value onto the sprites' own
+        // whole-logical-pixel grid - _cameraSmoothedTarget itself stays continuous for next frame's lerp.
+        _debugCamera.Target = SnapCameraRenderTarget(_cameraSmoothedTarget, _world?.PhysicsWorld?.SpacePolicy);
     }
+
+    /// <summary>
+    /// FIX (see <see cref="UpdateCameraFollow"/>'s own doc) - pure logic factored out for unit testing:
+    /// the exact snap <see cref="UpdateCameraFollow"/> applies to the value it writes to
+    /// <see cref="Camera2dComponent.Target"/>, reusing <paramref name="spacePolicy"/>'s own
+    /// <see cref="SimulationSpacePolicy.SnapRenderPosition"/> - the SAME whole-logical-pixel convention
+    /// E5.b already ported for sprites (<c>RenderProjectionComponent.SnapToPixel</c>) - rather than
+    /// re-implementing a rounding rule here. <paramref name="spacePolicy"/> null (no world/no physics
+    /// context yet) is a no-op, matching <see cref="UpdateCameraFollow"/>'s own null-conditional call.
+    /// </summary>
+    internal static Vector3 SnapCameraRenderTarget(Vector3 clampedSmoothedTarget, SimulationSpacePolicy? spacePolicy)
+        => spacePolicy != null ? spacePolicy.SnapRenderPosition(clampedSmoothedTarget) : clampedSmoothedTarget;
 
     /// <summary>
     /// FIX (fresh verifier of cc1fc60) - pure state-transition factored out of <see cref="UpdateCameraFollow"/>

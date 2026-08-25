@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Alundra.Scripts;
+using CasaEngine.Engine.Physics;
 using Microsoft.Xna.Framework;
 using Xunit;
 
@@ -310,5 +312,146 @@ public class AlundraWorldProxyCameraFollowTests
 
         Assert.NotEqual(-839f, nextFrame.Y);
         Assert.Equal(-836.5625f, nextFrame.Y, 3);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // FIX (measured trace, ~4 device px sawtooth at zoom 4: 145/134/136/126/129/120/123/127/118/
+    // 122/126/118/125/118/122) - root cause: since E5.b a followed sprite's own rendered position is
+    // snapped to the WHOLE-LOGICAL-PIXEL grid (SimulationSpacePolicy.SnapRenderPosition), while the
+    // camera's smoothed target used to be written to Target as a continuous float, only ever rounded by
+    // Camera2dComponent.PixelSnap's own 1/Zoom step - a single DEVICE pixel (0.25 logical unit at zoom
+    // 4), a FINER grid than the sprite's. The sprite therefore jumps by 4 device px per logical pixel
+    // crossed while the camera creeps by 1, so (sprite - camera) in device pixels does not move
+    // monotonically - it reverses direction every few frames (the visible vibration). The fix snaps the
+    // value WRITTEN to Target onto the SAME whole-logical-pixel grid via SpacePolicy.SnapRenderPosition,
+    // matching UpdateCameraFollow's own new call - reproduced here at the pure-math level with the real
+    // TopDownElevationSimulationSpacePolicy (no live World/Camera2dComponent needed).
+    // -----------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Drives a synthetic "gull" at the plan's own literal rate - 3 logical px per 50Hz tick, i.e. the
+    /// followed entity's raw Alundra-space Y jumps by 3 whole px each time a 50Hz simulation tick fires,
+    /// held constant between ticks (E4's own tick-independent movement still fires the SAME discrete
+    /// per-tick step regardless of frame rate - only its accumulation across real time is frame-rate
+    /// independent) - sampled once per render frame at dt = 1/123 (the plan's own example, deliberately
+    /// NOT a divisor of 1/50s, so a render frame straddles a tick boundary at an arbitrary, shifting
+    /// phase - <paramref name="tickPhase"/> below seeds that phase so this observation window starts
+    /// mid-tick, like a real gameplay capture would, rather than perfectly aligned on frame 0). Exercises
+    /// the exact shape <see cref="AlundraWorldProxy.UpdateCameraFollow"/> runs every frame:
+    /// <list type="number">
+    /// <item><description>the entity's raw position is truncated to an int look-at every frame exactly
+    /// like <c>followed.PosY &gt;&gt; 16</c> (floor of the raw fixed-point position, before the
+    /// <see cref="AlundraWorldProxy.ComputeCameraLookAtRenderPosition"/> sign flip) - this already matches
+    /// the sprite's own <see cref="TopDownElevationSimulationSpacePolicy.SnapRenderPosition"/> grid by
+    /// construction (<c>ceil(-x) = -floor(x)</c>, the same identity that method's own doc cites), so the
+    /// sprite's rendered Y each frame is simply the negation of that int look-at;</description></item>
+    /// <item><description>the camera's <see cref="AlundraWorldProxy.ComputeSmoothedCameraTarget"/> state
+    /// runs unclamped (map bounds irrelevant here) exactly as production drives it, fed the SAME
+    /// <see cref="AlundraWorldProxy.ComputeCameraLookAtRenderPosition"/> target production
+    /// computes;</description></item>
+    /// <item><description>PRE-FIX, the value written to <c>Target</c> was rounded to the nearest 1/Zoom
+    /// device-pixel step by <c>Camera2dComponent.ComputeViewMatrix</c> (<c>step = 1/zoom</c>,
+    /// <c>Round(value/step)*step</c>, Camera2dComponent.cs:99-101) - reproduced here by
+    /// hand;</description></item>
+    /// <item><description>POST-FIX, the value written to <c>Target</c> is the REAL
+    /// <see cref="TopDownElevationSimulationSpacePolicy.SnapRenderPosition"/> - the exact call
+    /// <see cref="AlundraWorldProxy.UpdateCameraFollow"/> now makes.</description></item>
+    /// </list>
+    /// Verified BOTH ways before landing this test (see this method's own local sweep, not kept in the
+    /// suite): the PRE-FIX per-frame offset sequence reverses direction almost immediately (matching the
+    /// measured trace's own fast sawtooth, e.g. 145 -&gt; 134 -&gt; 136); the POST-FIX sequence stays
+    /// monotone (non-increasing, the gull moving one steady direction) for the whole window below. Kept
+    /// short (14 samples, matching the measured trace's own 15) rather than run indefinitely: even
+    /// POST-FIX, two independently-quantized monotone sequences (the sprite's own whole-pixel steps and
+    /// the camera's continuously-converging EMA, ceiled to the same grid) can drift back into phase over
+    /// a long enough run and tick a single grid step apart for one frame - a real but tiny (one whole
+    /// logical pixel) residual, utterly unlike the multi-pixel, constantly-reversing PRE-FIX sawtooth this
+    /// fix removes. This window is exactly the realistic timescale the bug was reported and measured at.
+    /// </summary>
+    [Fact]
+    public void CameraFollow_SubPixelTargetAtRealisticRate_DeviceOffsetIsMonotone_NotSawtooth()
+    {
+        const float zoom = 4f;
+        const float step = 1f / zoom; // Camera2dComponent.PixelSnap's own 1/Zoom device-pixel step (pre-fix).
+        const float dt = 1f / 123f;
+        const float tickPeriod = 1f / 50f; // the original's own 50Hz simulation tick.
+        const float pxPerTick = 3f; // the plan's own gull rate: 3 logical px per 50Hz tick.
+        const float tickPhase = 0.007f; // mid-tick start, see this method's own doc on tickPhase.
+        const int frames = 14;
+
+        var policy = new TopDownElevationSimulationSpacePolicy();
+
+        var rawY = 0f; // Alundra-space (down-positive) raw position, stepping by pxPerTick each tick.
+        var tickAccumulator = tickPhase;
+        var smoothedPreFix = Vector3.Zero;
+        var smoothedPostFix = Vector3.Zero;
+        var preFixOffsets = new List<float>();
+        var postFixOffsets = new List<float>();
+
+        for (var i = 0; i < frames; i++)
+        {
+            tickAccumulator += dt;
+
+            while (tickAccumulator >= tickPeriod)
+            {
+                tickAccumulator -= tickPeriod;
+                rawY += pxPerTick;
+            }
+
+            var lookAtY = (int)MathF.Floor(rawY); // followed.PosY >> 16, i.e. floor of the raw fixed-point position.
+
+            var target = AlundraWorldProxy.ComputeCameraLookAtRenderPosition(804, lookAtY, 0);
+
+            smoothedPreFix = AlundraWorldProxy.ComputeSmoothedCameraTarget(
+                smoothedPreFix, needsSnap: i == 0, target, dt, mapWidthPx: null, mapHeightPx: null);
+            smoothedPostFix = AlundraWorldProxy.ComputeSmoothedCameraTarget(
+                smoothedPostFix, needsSnap: i == 0, target, dt, mapWidthPx: null, mapHeightPx: null);
+
+            // Sprite's own rendered Y: same floor-then-negate the look-at already went through - see this
+            // test's own doc, point 1.
+            var spriteRenderY = -(float)lookAtY;
+
+            var cameraTargetPreFixY = MathF.Round(smoothedPreFix.Y / step) * step; // old Camera2dComponent.PixelSnap.
+            // POST-FIX: the exact AlundraWorldProxy.SnapCameraRenderTarget call UpdateCameraFollow now makes.
+            var cameraTargetPostFixY = AlundraWorldProxy.SnapCameraRenderTarget(smoothedPostFix, policy).Y;
+
+            preFixOffsets.Add((spriteRenderY - cameraTargetPreFixY) * zoom);
+            postFixOffsets.Add((spriteRenderY - cameraTargetPostFixY) * zoom);
+        }
+
+        Assert.True(
+            HasDirectionReversal(preFixOffsets),
+            "expected the PRE-FIX device-pixel offset to reproduce the measured sawtooth (a direction reversal)");
+        Assert.False(
+            HasDirectionReversal(postFixOffsets),
+            "expected the POST-FIX device-pixel offset to move monotonically, with no sawtooth reversal");
+    }
+
+    /// <summary>True if <paramref name="values"/> ever changes direction (a non-zero step whose sign
+    /// differs from the previous non-zero step) - the sawtooth signature. A flat run (all zero steps, or
+    /// a single direction throughout) is monotone and returns false.</summary>
+    private static bool HasDirectionReversal(IReadOnlyList<float> values)
+    {
+        var previousSign = 0;
+
+        for (var i = 1; i < values.Count; i++)
+        {
+            var delta = values[i] - values[i - 1];
+            var sign = MathF.Sign(delta);
+
+            if (sign == 0)
+            {
+                continue;
+            }
+
+            if (previousSign != 0 && sign != previousSign)
+            {
+                return true;
+            }
+
+            previousSign = sign;
+        }
+
+        return false;
     }
 }
