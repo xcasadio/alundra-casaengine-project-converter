@@ -167,6 +167,30 @@ Deux classes de bugs ont coûté une journée entière et ont la même racine :
 M1 puis M2 (indépendantes, mais M2 profite du montage de tests à pas fixe). Après chaque commit
 moteur : bump du pointeur dans le parent. La consommation par Alundra reste hors périmètre (M-3).
 
+### M3 — Migration d'Alundra sur les capacités M1/M2 ⏳ (DLL, à faire APRÈS E5)
+
+- **Condition de déclenchement (décision utilisateur, 2026-08-25)** : ne pas migrer tant qu'Alundra
+  ne peut pas être **pleinement joué et observé**, c'est-à-dire après E5 (caméra qui suit). Raison :
+  la moitié PNJ est protégée par l'oracle d'intro (trace byte-identique, jalons 554 / 1034 / 1202 /
+  1704), mais **le héros n'a aucun oracle** — il est exclu du harnais (ni contrôleur ni input) et sa
+  seule vérification est visuelle, au pad. Or c'est lui que la migration touche le plus (il a
+  aujourd'hui la verticale MOTEUR d'E3-3 pendant que les PNJ ont la verticale DLL d'E4.g).
+- **Contenu** : (1) faire consommer par la DLL le pas fixe moteur (M1) au lieu de son
+  `AlundraLogicClock`, ce qui supprime le double régime héros/PNJ et rend la verticale des PNJ au
+  moteur (retrait d'`IsVerticalOwnedExternally` et du déplacement vertical par tick de la DLL) ;
+  (2) remplacer la dérivation à l'epsilon de `ForceAdjusted`
+  (`AlundraEntityScriptProxy.MoveControllerAndPullPosition`) par le rapport de contact M2
+  (`LastContact`, drapeaux par axe autoritaires sur le chemin champ) ; (3) évaluer si
+  `EntitySupport` (port de `CheckEntityCollisionDown`) peut s'appuyer sur la moitié sol du rapport —
+  à trancher sur pièces, la sémantique Alundra (comparateur strict, bord `Depth − 1/65536`) devant
+  rester exacte.
+- **Protocole de comparaison exigé** : avant migration, parcours de référence au pad sur la 389
+  (pont, escaliers, bastingages, pente près des caisses) ; après migration, le MÊME parcours, plus
+  l'oracle d'intro inchangé et les valeurs chiffrées d'E4 (mouette 171 ticks / 209,25 px, escalier,
+  chute quantifiée, pin bit-exact). Tout écart ressenti au pad est bloquant tant qu'il n'est pas
+  expliqué.
+- **Rappel** : aucun bug connu ne dépend de cette migration — c'est du nettoyage d'architecture.
+
 ## 4. Différés (avis P4 des verifiers, non bloquants)
 
 - Doc de `SweepHit` : le rapport publie le OU logique des deux appels `MoveWithCollisions` d'un
