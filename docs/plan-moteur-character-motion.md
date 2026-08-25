@@ -42,6 +42,9 @@ Deux classes de bugs ont coûté une journée entière et ont la même racine :
   drivers, `ApplyCommands`, `UpdateControllers`, ponts d'animation), le **reliquat étant conservé**
   (jamais remis à zéro sauf plafond atteint — exactement le piège déjà corrigé dans
   `AlundraLogicClock`). Quand il est inactif : chemin actuel, inchangé, zéro coût ajouté.
+  **Testabilité** : le système expose le nombre cumulé de pas fixes exécutés (compteur simple,
+  interne au moteur ou public selon ce qui reste le plus sobre), condition nécessaire du test (e)
+  qui pilote jusqu'à un nombre de pas atteint plutôt que jusqu'à une durée.
 - **Point à trancher par l'exécutant, à documenter** : les drivers/agents tournent-ils à chaque pas
   fixe ou une fois par frame ? Choix par défaut proposé : **à chaque pas** (un pas = une frame de
   simulation complète), avec justification écrite si l'inspection montre qu'un composant y est
@@ -49,17 +52,22 @@ Deux classes de bugs ont coûté une journée entière et ont la même racine :
 - **Acceptation** (tests `CasaEngine.Tests`) : (a) mode off → séquence et résultats identiques à
   aujourd'hui, tous les tests existants inchangés ; (b) mode on à 1/50 avec dt = 1/50 → exactement
   un pas par frame ; (c) dt = 1/123 sur 123 frames → 50 pas ± 1, aucun reliquat perdu, aucune frame
-  au-delà d'un pas ; (d) frame longue (1 s) → plafonnée à `MaxStepsPerFrame` ; (e) **invariance de
-  trajectoire, à nombre de pas ÉPINGLÉ** (correctif plan-verifier : la tolérance « ± 1 pas » de (c)
-  vaut 0,2 unité de déplacement, soit plus que la divergence de 0,079 que ce test doit détecter en
-  mode off — une tolérance qui absorbe l'une absorbe l'autre) : réglages explicites
-  `MaxHorizontalSpeed 10`, `Acceleration 100`, `Gravity 0` (ceux des fixtures existantes,
-  `CharacterControllerMoveToDriverTests.cs:53-62`) ; à intention constante pendant 1 s de temps réel
-  et à dt = 1/50, 1/123, 1/240, le test **assert que les trois cadences exécutent exactement le même
-  nombre de pas fixes (50)** puis compare les distances avec une tolérance **strictement inférieure
-  à 0,079** (l'écart attendu en mode off, `9,5 + 5·dt` : 9,600 / 9,541 / 9,521). Le même test relancé
-  avec `FixedTimeStep = 0` doit **échouer** sur au moins une des trois cadences ; (f)
-  `CasaEngine.Tests` sans nouvel échec (18 préexistants).
+  au-delà d'un pas ; (d) frame longue (1 s) → plafonnée à `MaxStepsPerFrame` ;
+  (e) **invariance de trajectoire, pilotée par le NOMBRE DE PAS et non par une durée** (deuxième
+  correctif plan-verifier : à durée fixée d'exactement 1 s, le 50e pas tombe sur la frontière et
+  c'est l'arrondi flottant qui tranche — `float(1/123)` cumulé 123 fois reste ~8 ulps SOUS le seuil,
+  donc 49 pas et non 50). Le test **pilote des frames jusqu'à ce que le système ait exécuté
+  exactement 50 pas fixes** (compteur de pas exposé pour la testabilité, voir le scope), à
+  dt = 1/50, 1/123 et 1/240, avec `MaxHorizontalSpeed 10`, `Acceleration 100`, `Gravity 0` (fixtures
+  existantes, `CharacterControllerMoveToDriverTests.cs:53-62`) et une intention constante : les
+  trois distances doivent être **égales à 1e-4 près** — elles voient les mêmes 50 pas de même dt,
+  donc la trajectoire ne dépend plus de la cadence.
+  (e-bis) **Témoin en mode off** (sinon (e) serait vacue) : même montage, `FixedTimeStep = 0`,
+  chaque cadence pilotée sur ~1 s de temps réel → les distances divergent d'au moins **0,079**
+  (9,600 à 1/50 ; 9,540 à 1/123 ; 9,5208 à 1/240 — le modèle est
+  `v_n = MoveTowards(v_{n-1}, 10, 100·dt)`, déplacement `v_n·dt` ; la forme fermée `9,5 + 5·dt`
+  n'est exacte que si `0,1/dt` est entier, ce qui n'est pas le cas à 1/123) ;
+  (f) `CasaEngine.Tests` sans nouvel échec (18 préexistants).
 - **Non-goals** : activer le mode pour Alundra (M-3) ; toucher `PhysicsWorld`/Bepu ; changer la
   cadence de systèmes non liés au mouvement de personnage.
 - **Écart assumé à documenter (P3, relevé par le plan-verifier)** : sous le mode actif, les pas
