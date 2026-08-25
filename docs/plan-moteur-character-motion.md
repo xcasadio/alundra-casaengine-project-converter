@@ -81,7 +81,7 @@ Deux classes de bugs ont coûté une journée entière et ont la même racine :
   **Arrêt** : si un agent/driver ne peut pas tourner à pas fixe sans changer son comportement en
   mode off.
 
-### M2 — Rapport de contact par pas ⏳ (moteur, plan-verifier)
+### M2 — Rapport de contact par pas ✅ (moteur, plan-verifier)
 
 - **But** : que le mover publie ce qu'il sait déjà, au lieu que chaque jeu le re-déduise avec un
   epsilon. Faisabilité confirmée par le plan-verifier : les déplacements par axe sont de simples
@@ -150,7 +150,7 @@ Deux classes de bugs ont coûté une journée entière et ont la même racine :
 - **Rollback** : revert du commit moteur. **Budget** : un commit moteur. **Arrêt** : si publier le
   détail par axe imposait malgré tout de restructurer la résolution.
 
-### M1.a — Correctif : `Clear()` ne remet pas l'accumulateur à zéro ⏳ (moteur, avis P3 du verifier M1)
+### M1.a — Correctif : `Clear()` ne remet pas l'accumulateur à zéro ✅ (moteur, avis P3 du verifier M1)
 
 - **Fait** : `CharacterMotionSystem.Clear()` réinitialise toutes les listes mais pas
   `_fixedStepAccumulator` (état ajouté par M1) : un rechargement de monde avec un reliquat en
@@ -172,5 +172,5 @@ moteur : bump du pointeur dans le parent. La consommation par Alundra reste hors
 | Tranche | Statut | Commit |
 |---|---|---|
 | M1 pas fixe du CharacterMotionSystem | ✅ | CasaEngineMonogame dcfd57a3 |
-| M1.a correctif Clear() de l'accumulateur | ⏳ | |
-| M2 rapport de contact par pas | ⏳ | |
+| M1.a correctif Clear() de l'accumulateur | ✅ | CasaEngineMonogame 864e3f97 |
+| M2 rapport de contact par pas | ✅ | CasaEngineMonogame ec356065 |
