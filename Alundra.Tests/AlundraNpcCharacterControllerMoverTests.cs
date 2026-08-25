@@ -342,6 +342,8 @@ public class AlundraNpcCharacterControllerMoverTests
         public NavigationGrid2D? NavigationGrid { get; set; }
         public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
         public AlundraEntityScriptProxy? PlayerEntity => null;
+        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
         public void DestroyEntity(AlundraEntityScriptProxy entity)
         {

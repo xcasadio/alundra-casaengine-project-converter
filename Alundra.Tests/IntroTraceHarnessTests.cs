@@ -283,7 +283,9 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     {
         0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x09, 0x0A, 0x10, 0x11, 0x16, 0x17, 0x19, 0x1A, 0x1B,
         0x1E, 0x1F, 0x27, 0x2D, 0x2E, 0x30, 0x31, 0x36, 0x37, 0x38, 0x49, 0x4B, 0x5A, 0x5B, 0x62, 0x63,
-        0x64, 0x65, 0x70, 0x8B, 0xAC,
+        0x64, 0x65, 0x67, 0x68, 0x69, 0x70, 0x8B, 0xAC,
+        // E5.a: 0x67/0x68/0x69 (camera follow/stop/forced look-at) newly implemented - the six real
+        // map-389 0x67 occurrences (docs/intro-programs-389.txt) now trace as [implemented].
         // E4.e correction: 0x1E/0x1F (Walk / Walk with collision) were already ported by E4.d
         // (AlundraEventProgramRunner.Dispatch cases 0x1E/0x1F) but were missing here, so the static
         // disassembly annex kept tagging them [NOT IMPLEMENTED] a whole tranche after they stopped being
@@ -877,6 +879,14 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => _spawnedEntities;
 
     public AlundraEntityScriptProxy? PlayerEntity => _player;
+
+    /// <summary>E5.a: minimal support for opcodes 0x67/0x68/0x69 - this harness only needs the
+    /// interpreter to dispatch them as [implemented] and advance by their real size (see
+    /// <see cref="ImplementedOpcodes"/>); nothing here reads camera state, so the stored value is never
+    /// consumed.</summary>
+    public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+
+    public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
 
     /// <summary>No navigation grid in this harness (E4.d/E4.e decision E4-1: "sans murs ni navigation" -
     /// the intro's own paths are unobstructed on map 389, see docs/plan-e4-deplacement-scripte.md) -

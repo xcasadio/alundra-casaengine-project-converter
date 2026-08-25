@@ -33,6 +33,24 @@ public interface IEntityWorldContext
     AlundraEntityScriptProxy? PlayerEntity { get; }
 
     /// <summary>
+    /// Port of <c>g_entityFollowedByCamera</c> (GameEngine.cs) - the entity the camera's per-tick
+    /// look-at follows (<see cref="AlundraWorldProxy"/>'s own camera-follow pass, E5.a). Written by
+    /// opcode 0x67 (first match of an <see cref="EntitySearchService"/> search, or <c>null</c> when
+    /// nothing matched - faithful, no fallback), nulled by 0x68 and by 0x69 (which also forces the
+    /// look-at position directly - see <see cref="SetForcedCameraLookAt"/>). Settable so the
+    /// opcode handlers below can write it without depending on the concrete world proxy.
+    /// </summary>
+    AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+
+    /// <summary>
+    /// Port of opcode 0x69 (Script_105_069, EntityEventHandlers.cs:2082-2089): nulls
+    /// <see cref="EntityFollowedByCamera"/> and imposes <paramref name="x"/>/<paramref name="y"/>/
+    /// <paramref name="z"/> as the camera's look-at position directly (already plain pixel ints, not
+    /// 16.16 fixed-point - same units <c>g_cameraLookAtX/Y/Z</c> carries).
+    /// </summary>
+    void SetForcedCameraLookAt(int x, int y, int z);
+
+    /// <summary>
     /// Dynamic spawn by entity-record id - backs opcode 0x2D (Script_45_02D), which always calls the
     /// original's <c>GameEngine.SpawnEntity(logicEntity, entityRecordId, notCheckSpawnZone: 1)</c>.
     /// Returns null when the record is disabled/missing or the spawn otherwise fails (prefab loader
@@ -75,6 +93,10 @@ public sealed class NoOpEntityWorldContext : IEntityWorldContext
     public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = System.Array.Empty<AlundraEntityScriptProxy>();
 
     public AlundraEntityScriptProxy? PlayerEntity => null;
+
+    public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+
+    public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
 
     public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
 

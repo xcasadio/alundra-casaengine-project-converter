@@ -54,6 +54,27 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     private const int TileWidth = 24;
     private const int TileHeight = 16;
 
+    /// <summary>
+    /// E5-1 (docs/plan-e5-camera.md, decision E5-1): the original's own visible-area size in logical
+    /// pixels, derived (not guessed) from <c>GraphicManager.cs</c>'s own scroll/clamp constants - see
+    /// <see cref="ClampCameraTargetToMap"/>'s own doc for the arithmetic that pins this to 320x240 rather
+    /// than the unrelated 320x236 "native screen" constant (<c>AlundraDisplay.NativeHeight</c>/
+    /// <c>StaticVariables.ScreenHeight</c> in the decompilation) - a DIFFERENT, framebuffer-crop constant
+    /// this camera's own scroll math never reads.
+    /// </summary>
+    private const float CameraVisibleWidth = 320f;
+    private const float CameraVisibleHeight = 240f;
+
+    /// <summary>
+    /// E5-1's centre-bias: the original's look-at sits at screen position (0xa0, 0x88) = (160, 136) from
+    /// the view's top-left (<c>GraphicManager.cs:75-92</c>), and 136 is 16px more than half of 240 (120) -
+    /// i.e. the followed point is NOT at the view's geometric vertical centre, it sits 16px below it (more
+    /// map is visible above the point than below). Ported as a bias added to the render-space Y of the
+    /// (already Y-flipped) look-at position - see <see cref="ComputeCameraLookAtRenderPosition"/>.
+    /// Horizontal bias is 0: 0xa0 = 160 is exactly half of 320, so no X bias exists.
+    /// </summary>
+    private const float CameraCenterBiasY = 16f;
+
     /// <summary>Catalog name of the hero bank prefab (<c>Entities/Alundra/Alundra.entity</c>) - see
     /// <see cref="SpawnPlayerEntity"/>'s own doc.</summary>
     private const string HeroAssetName = "Alundra";
@@ -306,6 +327,51 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     private Vector3 _debugCameraLastWrittenTarget;
 
     /// <summary>
+    /// E5.a: port of <c>g_entityFollowedByCamera</c> (GameEngine.cs) - see
+    /// <see cref="IEntityWorldContext.EntityFollowedByCamera"/>'s own doc. Initialized to the hero at
+    /// pawn adoption (port of <c>GameEngine.cs:644</c>, <see cref="AdoptPlayerPawn"/>), then only ever
+    /// written by opcodes 0x67/0x68/0x69 (<see cref="AlundraEventProgramRunner"/>).
+    /// </summary>
+    public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+
+    /// <summary>E5.a: port of <c>g_cameraLookAtX/Y/Z</c> - plain pixel ints (not 16.16 fixed-point),
+    /// updated every frame from <see cref="EntityFollowedByCamera"/> while it is non-null and
+    /// <see cref="AlundraEntityScriptProxy.IsLoadedNormalOrDeactivated"/> (port of
+    /// <c>GameEngine.cs:1747-1752</c>'s own <c>UpdateEntities</c> gate); left untouched otherwise - a
+    /// destroyed target FREEZES the camera on its last look-at, never falls back to the player (faithful:
+    /// the original never auto-clears <c>g_entityFollowedByCamera</c> either). Also written directly by
+    /// opcode 0x69 (<see cref="IEntityWorldContext.SetForcedCameraLookAt"/>).</summary>
+    private int _cameraLookAtX;
+    private int _cameraLookAtY;
+    private int _cameraLookAtZ;
+
+    /// <summary>E5.a: <see cref="IEntityWorldContext.SetForcedCameraLookAt"/> - port of opcode 0x69
+    /// (Script_105_069). Public (rather than explicit-interface) since nothing about it needs hiding from
+    /// this proxy's own surface, unlike <see cref="PlayerEntity"/>'s internal setter above.</summary>
+    public void SetForcedCameraLookAt(int x, int y, int z)
+    {
+        EntityFollowedByCamera = null;
+        _cameraLookAtX = x;
+        _cameraLookAtY = y;
+        _cameraLookAtZ = z;
+    }
+
+    /// <summary>E5.a (decision E5-2): port of <c>g_isCameraScrolling = 1</c> at map load
+    /// (<c>GraphicManager.cs</c>) - true makes the NEXT <see cref="UpdateCameraFollow"/> call snap
+    /// <see cref="_cameraSmoothedTarget"/> straight to that frame's look-at instead of catching up to it,
+    /// so the camera never scrolls in from wherever the engine's own default <c>Target</c> happened to be
+    /// when a new map loads. Set once in <see cref="InitializeWithWorld"/>, cleared by the first
+    /// <see cref="UpdateCameraFollow"/> call that finds the camera.</summary>
+    private bool _cameraNeedsSnap;
+
+    /// <summary>E5.a (decision E5-2): the smoothed render-space camera target - this proxy's own float
+    /// catch-up state, written every frame by <see cref="UpdateCameraFollow"/> (snap-or-lerp), then
+    /// clamped and pushed onto <see cref="_debugCamera"/>'s <c>Target</c> as the BASE
+    /// <see cref="UpdateDebugCameraPan"/> then adds its own stick offset on top of (see that method's own
+    /// doc on adopting an external write as the new base).</summary>
+    private Vector3 _cameraSmoothedTarget;
+
+    /// <summary>
     /// True once <see cref="InitializeWithWorld"/> successfully parsed and applied this world's
     /// <see cref="WallPlacementOverlay"/> (see <see cref="WallPlacementOverlay.CustomPropertyKey"/>).
     /// Gates the per-entity <see cref="WallPlacementOverlay.ApplyEntitySortKey"/> call in
@@ -358,6 +424,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     public override void InitializeWithWorld(World world)
     {
         _world = world;
+
+        // E5.a (decision E5-2): port of GraphicManager.cs's own g_isCameraScrolling = 1 at map load - the
+        // next UpdateCameraFollow call snaps straight to that frame's look-at instead of scrolling in from
+        // the engine's default camera Target.
+        _cameraNeedsSnap = true;
 
         // The engine enables its physics debug wireframes by default (PhysicsDebugViewRendererComponent
         // .DisplayPhysics = true), which draws every kinetic body box - one white rectangle per spawned
@@ -1429,6 +1500,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // SyncTransform) see it every frame, exactly like the old SpawnPlayerEntity used to.
         _spawnedEntities.Add(entity);
         PlayerEntity = proxy;
+
+        // E5.a: port of GameEngine.cs:644 (InitializeEntitySlots' trailing
+        // "g_entityFollowedByCamera = StaticVariables.PlayerEntity") - the camera follows the hero by
+        // default until an event program retargets it (opcode 0x67) or forces a look-at (0x69).
+        EntityFollowedByCamera = proxy;
     }
 
     /// <summary>
@@ -1523,10 +1599,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     public override void Update(float elapsedTime)
     {
-        // DEBUG ONLY - runs unconditionally (unlike the entity passes below, which are skipped when
-        // nothing was spawned) so the map can still be flown over even for a world with no entities. Input
-        // sampling, deliberately per RENDERED frame (see AlundraLogicClock's own class doc on what stays
-        // per-frame vs per-tick) - a debug pan tool reading input at logic-tick rate would feel laggy.
+        // E5.a: resolve the camera once, then run the scripted follow BEFORE the debug pan - see
+        // UpdateCameraFollow's own doc on why this order lets the pan's base-adoption mechanism pick up
+        // the follow's write the SAME frame instead of one frame late. Both run unconditionally (like the
+        // debug pan already did) so the camera still follows/can be panned even for a world with no
+        // entities. Per RENDERED frame, deliberately (see AlundraLogicClock's own class doc on what stays
+        // per-frame vs per-tick) - both a debug pan and a smoothed camera follow driven at logic-tick rate
+        // would feel laggy/juddery.
+        ResolveDebugCameraOnce();
+        UpdateCameraFollow(elapsedTime);
         UpdateDebugCameraPan(elapsedTime);
 
         // Rendering-only passes - per rendered frame, same reasoning.
@@ -1678,6 +1759,196 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
+    /// One-time <see cref="_debugCamera"/> lookup (by component, not by reference name - see this
+    /// method's own doc below for why), shared by <see cref="UpdateCameraFollow"/> and
+    /// <see cref="UpdateDebugCameraPan"/> so whichever runs first this frame (see <see cref="Update"/>'s
+    /// own ordering) resolves it. E5-1 (docs/plan-e5-camera.md): also poses the ORIGINAL's own framing on
+    /// the camera right here, the moment it is found - runtime-only (no asset touched, no full export
+    /// needed): <c>Zoom = real viewport height / 240</c> (see <see cref="ComputeCameraZoom"/> - computed
+    /// from the LIVE viewport, never hardcoded, since <c>CameraComponent.InitializeWithWorld</c> already
+    /// overwrites whatever Zoom/viewport an asset serialized) and <c>PixelSnap = true</c>.
+    /// </summary>
+    private void ResolveDebugCameraOnce()
+    {
+        if (_debugCameraLookupDone)
+        {
+            return;
+        }
+
+        _debugCameraLookupDone = true;
+
+        // Looked up by COMPONENT, not by the reference name "camera": EntityReference.Load's
+        // shared-asset branch clones the asset without applying the reference's name, so the live
+        // entity is named after the asset ("AlundraCamera"). Taking the first Camera2dComponent in
+        // the world mirrors DefaultRuntimeViewBootstrapper's own camera pick, so the pan/follow always
+        // drives the camera the runtime view actually uses.
+        if (_world != null)
+        {
+            foreach (var entity in _world.Entities)
+            {
+                _debugCamera = entity.GetComponent<Camera2dComponent>();
+                if (_debugCamera != null)
+                {
+                    break;
+                }
+            }
+        }
+
+        if (_debugCamera == null)
+        {
+            Logs.WriteWarning(
+                $"AlundraWorldProxy: no Camera2dComponent found in world "
+                + $"'{_world?.Name}'; debug camera pan/follow disabled.");
+            return;
+        }
+
+        _debugCamera.Zoom = ComputeCameraZoom(_debugCamera.Viewport.Height);
+        _debugCamera.PixelSnap = true;
+    }
+
+    /// <summary>
+    /// E5.a (docs/plan-e5-camera.md §2): scripted camera follow, faithful port of
+    /// <c>GameEngine.UpdateEntities</c>'s own look-at update (<c>GameEngine.cs:1747-1752</c>) plus
+    /// <c>GraphicManager</c>'s own scroll smoothing/clamp (<c>GraphicManager.cs:75-122</c>). Runs BEFORE
+    /// <see cref="UpdateDebugCameraPan"/> in <see cref="Update"/> (see that method's own ordering
+    /// comment): this method writes the camera's <c>Target</c> as the new BASE, and
+    /// <see cref="UpdateDebugCameraPan"/>'s own <see cref="ResolveDebugCameraBase"/> call adopts that
+    /// write as the base a moment later in the SAME frame, then adds the stick offset back on top - so
+    /// the scripted follow and the debug pan never fight (see <see cref="UpdateDebugCameraPan"/>'s own
+    /// doc on that mechanism, decision bca9338).
+    ///
+    /// No-op before <see cref="_debugCamera"/> is resolved (see <see cref="ResolveDebugCameraOnce"/>,
+    /// already called this frame by <see cref="Update"/>).
+    /// </summary>
+    private void UpdateCameraFollow(float elapsedTime)
+    {
+        if (_debugCamera == null)
+        {
+            return;
+        }
+
+        // Port of GameEngine.cs:1747-1752 via ResolveCameraLookAt (see that method's own doc): only
+        // overwrites the look-at while the followed entity is non-null AND Loaded/Normal/Deactivated -
+        // otherwise it freezes on the last value (never falls back to the player - the original never
+        // auto-clears EntityFollowedByCamera either).
+        var followed = EntityFollowedByCamera;
+        var hasValidTarget = followed != null && followed.IsLoadedNormalOrDeactivated;
+        (_cameraLookAtX, _cameraLookAtY, _cameraLookAtZ) = ResolveCameraLookAt(
+            hasValidTarget,
+            followed?.PosX >> 16 ?? 0, followed?.PosY >> 16 ?? 0, followed?.PosZ >> 16 ?? 0,
+            _cameraLookAtX, _cameraLookAtY, _cameraLookAtZ);
+
+        var target = ComputeCameraLookAtRenderPosition(_cameraLookAtX, _cameraLookAtY, _cameraLookAtZ);
+
+        if (_cameraNeedsSnap)
+        {
+            _cameraSmoothedTarget = target;
+            _cameraNeedsSnap = false;
+        }
+        else
+        {
+            var factor = ComputeCameraSmoothingFactor(elapsedTime);
+            _cameraSmoothedTarget = ApplyCameraSmoothing(_cameraSmoothedTarget, target, factor);
+        }
+
+        _debugCamera.Target = _tileMapData != null
+            ? ClampCameraTargetToMap(
+                _cameraSmoothedTarget, _tileMapData.MapSize.Width * TileWidth, _tileMapData.MapSize.Height * TileHeight)
+            : _cameraSmoothedTarget;
+    }
+
+    /// <summary>
+    /// E5.a - pure decision factored out for unit testing: port of <c>GameEngine.cs:1747-1752</c>'s own
+    /// look-at update gate. Returns <paramref name="candidateX"/>/<paramref name="candidateY"/>/
+    /// <paramref name="candidateZ"/> (the followed entity's current position) when
+    /// <paramref name="hasValidTarget"/> is true; otherwise returns
+    /// <paramref name="previousX"/>/<paramref name="previousY"/>/<paramref name="previousZ"/> UNCHANGED -
+    /// a destroyed (or null) followed entity freezes the look-at on its last value, faithful to the
+    /// original which never auto-clears <c>g_entityFollowedByCamera</c> nor falls back to the player.
+    /// </summary>
+    internal static (int X, int Y, int Z) ResolveCameraLookAt(
+        bool hasValidTarget, int candidateX, int candidateY, int candidateZ,
+        int previousX, int previousY, int previousZ)
+        => hasValidTarget ? (candidateX, candidateY, candidateZ) : (previousX, previousY, previousZ);
+
+    /// <summary>
+    /// E5.a - pure math factored out for unit testing: the ORIGINAL's own look-at-to-view-centre
+    /// transform, in render space. <paramref name="lookAtX"/>/<paramref name="lookAtY"/>/
+    /// <paramref name="lookAtZ"/> are plain pixel ints (<c>g_cameraLookAtX/Y/Z</c>'s own units - already
+    /// shifted by 16, see <see cref="UpdateCameraFollow"/>). Same Y-flip as
+    /// <c>SimulationSpacePolicy.DeriveRenderPosition</c> (render Y = -(logical Y - Z)), PLUS the
+    /// <see cref="CameraCenterBiasY"/> centre-bias (GraphicManager.cs's own scroll formula centres the
+    /// view at look-at depth - 16, i.e. 16px ABOVE the look-at point in render space - see that
+    /// constant's own doc for the full derivation). No X bias (0xa0 is exactly half of 320).
+    /// </summary>
+    internal static Vector3 ComputeCameraLookAtRenderPosition(int lookAtX, int lookAtY, int lookAtZ)
+        => new(lookAtX, -(lookAtY - lookAtZ) + CameraCenterBiasY, 0f);
+
+    /// <summary>
+    /// E5.a (decision E5-2) - pure math factored out for unit testing: the ORIGINAL's own scroll
+    /// catch-up rate (<c>GraphicManager.cs:75-92</c>: <c>scroll += (target - scroll) &gt;&gt; 4</c> once
+    /// per 50Hz frame, i.e. a 1/16 catch-up per tick), re-expressed as a continuous function of real
+    /// elapsed time instead of a fixed per-tick shift - so it gives the IDENTICAL result at any frame
+    /// rate (50/123/240 fps alike), unlike a naive per-frame <c>&gt;&gt; 4</c> port would (E4's own
+    /// tick-dependency bug class, deliberately not reintroduced here). <c>(15/16)^50</c> is the fraction
+    /// of the original gap still remaining after exactly one real second (50 ticks at 1/16 catch-up
+    /// each); raising it to <c>elapsedTime</c> gives the fraction remaining after any real duration, so
+    /// <c>1 - that</c> is the fraction to close this frame.
+    /// </summary>
+    internal static float ComputeCameraSmoothingFactor(float elapsedTime)
+        => 1f - MathF.Pow(15f / 16f, elapsedTime * 50f);
+
+    /// <summary>E5.a - pure math factored out for unit testing: moves <paramref name="current"/> a
+    /// <paramref name="factor"/> fraction of the way to <paramref name="target"/> (0 = no movement, 1 =
+    /// snap straight to <paramref name="target"/>).</summary>
+    internal static Vector3 ApplyCameraSmoothing(Vector3 current, Vector3 target, float factor)
+        => current + (target - current) * factor;
+
+    /// <summary>
+    /// E5.a (docs/plan-e5-camera.md §2, point 7) - pure math factored out for unit testing: clamps a
+    /// render-space camera Target so the visible <see cref="CameraVisibleWidth"/>x<see cref="CameraVisibleHeight"/>
+    /// area never leaves the map, bounds derived from <paramref name="mapWidthPx"/>/
+    /// <paramref name="mapHeightPx"/> (<c>TileMapData.MapSize</c> x 24/16) exactly like the plan directs -
+    /// NOT hardcoded from the original's own <c>0x39f</c>/<c>0x2cf</c> scroll-clamp constants
+    /// (<c>GraphicManager.cs:97-122</c>), though those are what this formula was verified against: on
+    /// map 389 (1248x960px), <c>ClampCameraTargetToMap</c> derives <c>TargetX in [160, 1087]</c> and
+    /// <c>TargetY in [-839, -120]</c>, which is EXACTLY the original's own <c>[0, 0x39f]</c>/<c>[0,
+    /// 0x2cf]</c> top-left scroll bounds once converted to render-space view-centre coordinates (X:
+    /// scroll + 160 -&gt; [160, 927+160] = [160, 1087]; Y: -(scroll + 120) -&gt; [-(719+120), -120] =
+    /// [-839, -120]) - confirming the original's own clamp is <c>mapSize - visibleSize - 1</c> (an
+    /// inclusive-bound-by-one quirk faithfully reproduced here, not <c>mapSize - visibleSize</c>).</summary>
+    internal static Vector3 ClampCameraTargetToMap(Vector3 target, int mapWidthPx, int mapHeightPx)
+    {
+        var halfWidth = CameraVisibleWidth / 2f;
+        var halfHeight = CameraVisibleHeight / 2f;
+
+        var minX = halfWidth;
+        var maxX = mapWidthPx - halfWidth - 1f;
+        var minY = -(mapHeightPx - halfHeight - 1f);
+        var maxY = -halfHeight;
+
+        // A map narrower/shorter than the visible area (never true for a real Alundra map, all 52x60)
+        // would invert the bounds above - fall back to centring on the map instead of throwing.
+        var x = minX <= maxX ? Math.Clamp(target.X, minX, maxX) : mapWidthPx / 2f;
+        var y = minY <= maxY ? Math.Clamp(target.Y, minY, maxY) : -(mapHeightPx / 2f);
+
+        return new Vector3(x, y, target.Z);
+    }
+
+    /// <summary>
+    /// E5-1 - pure math factored out for unit testing: the camera's <see cref="Camera2dComponent.Zoom"/>
+    /// that reproduces the original's own <see cref="CameraVisibleHeight"/>-tall visible area for a real
+    /// <paramref name="viewportHeight"/> (<c>Camera2dComponent.ComputeProjectionMatrix</c>'s own visible
+    /// area is <c>viewport / Zoom</c>). Computed at runtime from the LIVE viewport rather than hardcoded,
+    /// per the plan's own instruction - the DLL's own window size (<c>AlundraDisplay.WindowHeight</c> =
+    /// 944, PixelScale x the UNRELATED 236 "native screen" constant) does not currently divide evenly by
+    /// 240, so this yields a non-integer zoom (944/240 = 3.9333) until a later export-time fix aligns the
+    /// window height to 240 x PixelScale - a known, reported follow-up (see this slice's own commit
+    /// message), not a blocker for this DLL-only slice (no asset export here).
+    /// </summary>
+    internal static float ComputeCameraZoom(int viewportHeight) => viewportHeight / CameraVisibleHeight;
+
+    /// <summary>
     /// DEBUG ONLY - temporary tool, to be gated/replaced once the real camera-follow (E4) lands. Pans the
     /// world's camera (first entity carrying a <see cref="Camera2dComponent"/>) with the gamepad's right
     /// thumbstick so the whole map can be flown over at runtime to inspect spawned entities.
@@ -1708,34 +1979,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     private void UpdateDebugCameraPan(float elapsedTime)
     {
-        if (!_debugCameraLookupDone)
-        {
-            _debugCameraLookupDone = true;
-
-            // Looked up by COMPONENT, not by the reference name "camera": EntityReference.Load's
-            // shared-asset branch clones the asset without applying the reference's name, so the live
-            // entity is named after the asset ("AlundraCamera"). Taking the first Camera2dComponent in
-            // the world mirrors DefaultRuntimeViewBootstrapper's own camera pick, so the pan always
-            // drives the camera the runtime view actually uses.
-            if (_world != null)
-            {
-                foreach (var entity in _world.Entities)
-                {
-                    _debugCamera = entity.GetComponent<Camera2dComponent>();
-                    if (_debugCamera != null)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            if (_debugCamera == null)
-            {
-                Logs.WriteWarning(
-                    $"AlundraWorldProxy: no Camera2dComponent found in world "
-                    + $"'{_world?.Name}'; debug camera pan disabled.");
-            }
-        }
+        ResolveDebugCameraOnce();
 
         if (_debugCamera == null)
         {

@@ -88,7 +88,7 @@ Static disassembly of every program map 389 ("Ship Klark (beginning)-389") refer
   300: 0x30 If flag on [implemented] params=[92,3,98,0]
   305: 0x38 Set MapIdToInternalMapIndex [implemented] params=[17,0,183,1]
   310: 0x38 Set MapIdToInternalMapIndex [implemented] params=[55,0,187,1]
-  315: 0x67 Camera follow entity [NOT IMPLEMENTED] params=[6]
+  315: 0x67 Camera follow entity [implemented] params=[6]
   317: 0x10 Player lose control [implemented] params=[]
   318: 0x64 Set entities position [implemented] params=[128,36,3,104,3,0,0]
   326: 0x00 Break [implemented - Break, handled by the main loop] params=[]
@@ -107,7 +107,7 @@ Static disassembly of every program map 389 ("Ship Klark (beginning)-389") refer
   362: 0x37 Wait [implemented] params=[60]
   364: 0x00 Break [implemented - Break, handled by the main loop] params=[]
   365: 0x05 Flag on [implemented] params=[232,131]
-  368: 0x67 Camera follow entity [NOT IMPLEMENTED] params=[11]
+  368: 0x67 Camera follow entity [implemented] params=[11]
   370: 0x00 Break [implemented - Break, handled by the main loop] params=[]
   371: 0x2D Activate entity [implemented] params=[7]
   373: 0x37 Wait [implemented] params=[60]
@@ -395,7 +395,7 @@ Static disassembly of every program map 389 ("Ship Klark (beginning)-389") refer
   1123: 0xFF End
 
 -- masked index 10 - offset 1124 --
-  1124: 0x67 Camera follow entity [NOT IMPLEMENTED] params=[128]
+  1124: 0x67 Camera follow entity [implemented] params=[128]
   1126: 0x5B Turn entity with anim [implemented] params=[128,1,66]
   1130: 0x00 Break [implemented - Break, handled by the main loop] params=[]
   1131: 0x07 Check entity in area [implemented] params=[128,18,18,0,59,20,60]
@@ -520,7 +520,7 @@ Static disassembly of every program map 389 ("Ship Klark (beginning)-389") refer
   1431: 0x00 Break [implemented - Break, handled by the main loop] params=[]
   1432: 0x00 Break [implemented - Break, handled by the main loop] params=[]
   1433: 0x36 Wait flag off [implemented] params=[233,131]
-  1436: 0x67 Camera follow entity [NOT IMPLEMENTED] params=[12]
+  1436: 0x67 Camera follow entity [implemented] params=[12]
   1438: 0x5B Turn entity with anim [implemented] params=[128,1,64]
   1442: 0x1F Walk with collision [implemented] params=[16,0]
   1445: 0x5B Turn entity with anim [implemented] params=[128,1,66]
@@ -581,7 +581,7 @@ Static disassembly of every program map 389 ("Ship Klark (beginning)-389") refer
   1605: 0xFF End
 
 -- masked index 18 - offset 1608 --
-  1608: 0x67 Camera follow entity [NOT IMPLEMENTED] params=[128]
+  1608: 0x67 Camera follow entity [implemented] params=[128]
   1610: 0x17 Low gravity [implemented] params=[]
   1611: 0x5B Turn entity with anim [implemented] params=[128,1,64]
   1615: 0x1E Walk [implemented] params=[48,0]
@@ -591,7 +591,7 @@ Static disassembly of every program map 389 ("Ship Klark (beginning)-389") refer
   1624: 0x70 Is above ground [implemented] params=[]
   1625: 0x04 If false goto [implemented] params=[254,255]
   1628: 0x05 Flag on [implemented] params=[92,3]
-  1631: 0x67 Camera follow entity [NOT IMPLEMENTED] params=[129]
+  1631: 0x67 Camera follow entity [implemented] params=[129]
   1633: 0x2E Destroy entity [implemented] params=[128]
   1635: 0xFF End
 

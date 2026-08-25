@@ -611,6 +611,18 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 SetEntityShadowSize(entity, v);
                 return 4;
 
+            case 0x67: // Camera follow entity - Script_103_067 (E5.a, EntityEventHandlers.cs:2068-2074)
+                CameraFollowEntity(entity, v);
+                return 2;
+
+            case 0x68: // Camera stop follow entity - Script_104_068 (E5.a, EntityEventHandlers.cs:2077-2081)
+                _worldContext.EntityFollowedByCamera = null;
+                return 1;
+
+            case 0x69: // Camera look at (forced) - Script_105_069 (E5.a, EntityEventHandlers.cs:2084-2091)
+                CameraForceLookAt(v);
+                return 7;
+
             case 0xBD: // Play sound 2 - Script_189_0BD (sound system not wired to the interpreter)
                 LogDegradedOpcodeOnce(0xBD, "PlaySound2", "sound system");
                 return 3;
@@ -838,6 +850,29 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         {
             matches[0].Flags = EntityFlags.WithShadowSize(matches[0].Flags, (uint)v[2]);
         }
+    }
+
+    /// <summary>Script_103_067 (0x67, E5.a) - retargets <see cref="IEntityWorldContext.EntityFollowedByCamera"/>
+    /// to the FIRST entity matched by <c>v[1]</c>'s search type, or <c>null</c> when nothing matched
+    /// (faithful - the original reads <c>g_matchingEntitiesBuffer[0]</c> unconditionally, which is
+    /// <c>null</c>/unset on an empty search; no fallback to the player or to the previous target).</summary>
+    private void CameraFollowEntity(AlundraEntityScriptProxy entity, int[] v)
+    {
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+        _worldContext.EntityFollowedByCamera = matches.Count != 0 ? matches[0] : null;
+    }
+
+    /// <summary>Script_105_069 (0x69, E5.a) - nulls <see cref="IEntityWorldContext.EntityFollowedByCamera"/>
+    /// and imposes the camera's look-at position directly from <c>v[1..6]</c>, each axis packed as
+    /// low+high bytes (<c>v[2n-1] | (v[2n] &lt;&lt; 8)</c>) exactly like <c>g_cameraLookAtX/Y/Z</c>'s own
+    /// plain-pixel-int units (no fixed-point shift - see <see cref="IEntityWorldContext.SetForcedCameraLookAt"/>'s
+    /// own doc).</summary>
+    private void CameraForceLookAt(int[] v)
+    {
+        var x = v[1] | (v[2] << 8);
+        var y = v[3] | (v[4] << 8);
+        var z = v[5] | (v[6] << 8);
+        _worldContext.SetForcedCameraLookAt(x, y, z);
     }
 
     /// <summary>Script_55_037 (0x37 Wait) - suspends (returns 0) until <c>v[1]</c> frames have elapsed

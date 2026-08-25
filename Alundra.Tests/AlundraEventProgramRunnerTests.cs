@@ -36,6 +36,13 @@ public class AlundraEventProgramRunnerTests
         public List<AlundraEntityScriptProxy> SpawnedEntitiesList { get; } = new();
         public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => SpawnedEntitiesList;
         public AlundraEntityScriptProxy? PlayerEntity { get; set; }
+        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public readonly List<(int X, int Y, int Z)> ForcedCameraLookAtCalls = new();
+        public void SetForcedCameraLookAt(int x, int y, int z)
+        {
+            EntityFollowedByCamera = null;
+            ForcedCameraLookAtCalls.Add((x, y, z));
+        }
 
         public readonly List<(AlundraEntityScriptProxy LogicEntity, int EntityRecordId)> SpawnCalls = new();
         public AlundraEntityScriptProxy? EntityToSpawn;
@@ -706,6 +713,91 @@ public class AlundraEventProgramRunnerTests
 
         Assert.Equal(5u, EntityFlags.GetShadowSize(first.Flags));
         Assert.Equal(0u, EntityFlags.GetShadowSize(second.Flags));
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Camera follow opcodes (0x67, 0x68, 0x69) - E5.a, docs/plan-e5-camera.md. Real map-389 operands
+    // (docs/intro-programs-389.txt) for 0x67 - params=[11]/[12] (raw entity-record-id search, sailors 11
+    // and 12) - the map's own six 0x67 occurrences never carry a non-matching or 0x80-flavored operand,
+    // so the "no match" case below uses a synthetic id instead. Map 389 has no 0x68/0x69 occurrence at
+    // all (grep of docs/intro-programs-389.txt), so both use synthetic operands.
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void CameraFollowEntity_0x67_RealMap389Param_DesignatesTheMatchingEntity()
+    {
+        // params=[11] - raw entity-record-id search (bit 0x80 clear), matches EntityRefId == 11 (sailor
+        // 11, real operand of map-389 program offset 1436 - docs/intro-programs-389.txt).
+        var document = NewDocument(0x67, 11, 0xFF);
+        var sailor11 = NewEntity();
+        sailor11.Status = EntityStatus.Normal;
+        sailor11.EntityRefId = 11;
+        var other = NewEntity();
+        other.Status = EntityStatus.Normal;
+        other.EntityRefId = 12;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(other);
+        context.SpawnedEntitiesList.Add(sailor11);
+        var runner = NewRunner(document, worldContext: context);
+        var owner = NewEntity();
+        owner.Status = EntityStatus.Normal; // raw entity-id search gates on the OWNER's own status too.
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Same(sailor11, context.EntityFollowedByCamera);
+    }
+
+    [Fact]
+    public void CameraFollowEntity_0x67_NoMatch_SetsNull_DoesNotKeepPreviousTarget()
+    {
+        var document = NewDocument(0x67, 99, 0xFF); // no entity carries EntityRefId 99.
+        var previousTarget = NewEntity();
+        previousTarget.Status = EntityStatus.Normal;
+        previousTarget.EntityRefId = 5;
+        var context = new FakeEntityWorldContext { EntityFollowedByCamera = previousTarget };
+        context.SpawnedEntitiesList.Add(previousTarget);
+        var runner = NewRunner(document, worldContext: context);
+        var owner = NewEntity();
+        owner.Status = EntityStatus.Normal;
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Null(context.EntityFollowedByCamera);
+    }
+
+    [Fact]
+    public void CameraStopFollowEntity_0x68_SetsNull()
+    {
+        var document = NewDocument(0x68, 0xFF);
+        var previousTarget = NewEntity();
+        var context = new FakeEntityWorldContext { EntityFollowedByCamera = previousTarget };
+        var runner = NewRunner(document, worldContext: context);
+        var owner = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Null(context.EntityFollowedByCamera);
+    }
+
+    [Fact]
+    public void CameraForceLookAt_0x69_NullsFollowedEntity_AndForwardsPackedCoordinates()
+    {
+        // v1..v6 = 1,2,3,4,5,6 -> X = 1|(2<<8) = 513, Y = 3|(4<<8) = 1027, Z = 5|(6<<8) = 1541 (synthetic
+        // - map 389 has no real 0x69 occurrence, see this section's own doc).
+        var document = NewDocument(0x69, 1, 2, 3, 4, 5, 6, 0xFF);
+        var previousTarget = NewEntity();
+        var context = new FakeEntityWorldContext { EntityFollowedByCamera = previousTarget };
+        var runner = NewRunner(document, worldContext: context);
+        var owner = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Null(context.EntityFollowedByCamera);
+        Assert.Equal(new[] { (513, 1027, 1541) }, context.ForcedCameraLookAtCalls);
     }
 
     [Fact]
