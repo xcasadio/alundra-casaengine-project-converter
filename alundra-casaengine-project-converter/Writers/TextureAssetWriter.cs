@@ -60,7 +60,17 @@ public static class TextureAssetWriter
             ["id"] = wrapperId.ToString(),
             ["name"] = rawName,
             ["texture_asset_id"] = rawAssetInfo.Id.ToString(),
-            ["sampler_state"] = SaveSamplerState(SamplerState.AnisotropicWrap),
+            // Every texture this writer imports is pixel art (sprite/UI/font atlases, backdrop and
+            // navigation tileset textures) drawn at whatever fractional screen position the entity or
+            // camera lands on. AnisotropicWrap (linear filtering + wrap addressing) interpolated
+            // between texels whenever that position wasn't texel-aligned, producing a moving/stopping
+            // sprite that blurred while it moved and sharpened the instant it settled - visible on real
+            // entities (map 389 intro: the sailor on stairs, the gull in flight). Wrap addressing was
+            // also simply wrong for an atlas: it can sample across into a neighbouring atlas cell at
+            // the edges. PointClamp (nearest-neighbour, clamp addressing) matches the original PSX
+            // renderer's own always-integer-pixel sprite placement and is what the engine's own
+            // TileMapSurfaceComponent doc already recommends for this art (see that file's class doc).
+            ["sampler_state"] = SaveSamplerState(SamplerState.PointClamp),
         };
         EditorAssetWriterService.SaveDocument(wrapperRelativePath, wrapperDocument);
         EditorAssetCatalogService.Add(new AssetInfo(wrapperId) { Name = rawName, FileName = wrapperRelativePath });

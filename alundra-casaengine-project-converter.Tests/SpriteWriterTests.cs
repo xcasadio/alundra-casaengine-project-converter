@@ -155,8 +155,10 @@ public class SpriteWriterTests
             Assert.True(File.Exists(textureWrapperPath));
             var texture = new CasaEngine.Framework.Assets.Textures.Texture();
             texture.Load(JObject.Parse(File.ReadAllText(textureWrapperPath)));
-            Assert.Equal(SamplerState.AnisotropicWrap.Filter, texture.PreferredSamplerState.Filter);
-            Assert.Equal(SamplerState.AnisotropicWrap.AddressU, texture.PreferredSamplerState.AddressU);
+            // PointClamp (nearest-neighbour, clamp addressing): pixel art, drawn at fractional
+            // positions, must never blend between texels or bleed across atlas cell edges.
+            Assert.Equal(SamplerState.PointClamp.Filter, texture.PreferredSamplerState.Filter);
+            Assert.Equal(SamplerState.PointClamp.AddressU, texture.PreferredSamplerState.AddressU);
         }
         finally
         {

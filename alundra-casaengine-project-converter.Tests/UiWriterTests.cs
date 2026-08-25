@@ -60,7 +60,7 @@ public class UiWriterTests
 
             var texture = new CasaEngine.Framework.Assets.Textures.Texture();
             texture.Load(wrapperDocument);
-            Assert.Equal(SamplerState.AnisotropicWrap.Filter, texture.PreferredSamplerState.Filter);
+            Assert.Equal(SamplerState.PointClamp.Filter, texture.PreferredSamplerState.Filter);
 
             // PaletteIndex has nowhere to go in SpriteData, so it must survive in the companion.
             using var companion = JsonDocument.Parse(
