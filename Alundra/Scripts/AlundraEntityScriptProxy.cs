@@ -369,8 +369,8 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// <see cref="AlundraWorldProxy.ApplySpawnInitialization"/> already ran ONE such evaluation
     /// immediately at spawn, before this entity's own first <see cref="Update"/> or the engine's first
     /// <c>CharacterMotionSystem.UpdateControllers</c> pass ever runs). When no support is found, drives
-    /// this tick's own vertical displacement through the controller instead (bug fix - see this method's
-    /// own body for the exact <c>SetVerticalVelocity</c> call and rationale) - a no-op for a controller-less
+    /// this tick's own vertical displacement through the controller instead (bug fix - see
+    /// <see cref="MoveVerticalAndPullPosition"/>'s own doc for the exact call and rationale) - a no-op for a controller-less
     /// entity (harness bare proxy, or a genuinely controller-less sprite-only prefab), which callers instead
     /// read the updated <see cref="PosZ"/>/<see cref="ForceZ"/> fields directly (see
     /// <c>IntroTraceHarnessTests</c>' own <c>RunVerticalPhysicsPass</c>, which reuses
@@ -391,7 +391,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// falling through to the same "apply <c>finalZVelocity</c>" tail (PhysicsEngine.cs:165) an eligible,
     /// unsupported entity reaches too. So an ineligible entity here takes the exact SAME "no support" tail
     /// a genuinely-unsupported eligible one does (never a separate no-op) - same decay, same
-    /// <c>SetVerticalVelocity</c> displacement, just never entity-vs-entity clamped.
+    /// <see cref="MoveVerticalAndPullPosition"/> displacement, just never entity-vs-entity clamped.
     ///
     /// Verifier A1 (PhysicsEngine.cs:180-187, :205): <paramref name="immediateAtSpawn"/> false (the normal,
     /// per-frame call from <see cref="Update"/>) computes the FULL original conjunct's terrain-clamped
@@ -422,6 +422,16 @@ public class AlundraEntityScriptProxy : GameplayProxy
         // once per fixed frame regardless of outcome.
         SupportTickCount++;
 
+        // Captured BEFORE this call can overwrite WasEntitySupportedLastTick below - see
+        // MoveVerticalAndPullPosition's own call site (the "not found" tail's falling/rising branch) for
+        // why: that call's own root-Z pull must stay gated on whether THIS ENTITY was supported ENTERING
+        // this tick (the same "one-frame-late" contract MoveControllerAndPullPosition's own guard already
+        // honours, reached earlier in the same tick, before this method ever runs), not on
+        // WasEntitySupportedLastTick's own post-this-call value (already flipped false by the time that
+        // branch runs, for every tick support just ended on - which would otherwise erode PosZ the SAME
+        // tick support ends, one tick earlier than WasEntitySupportedLastTick's own documented contract).
+        var wasSupportedEnteringThisTick = WasEntitySupportedLastTick;
+
         // Bug fix (gull entity 6, map 389 - see ApplyGravitySettingsToController's own doc for the full
         // measured numbers): EntitySupport.IsEligibleSubject only gates the ENTITY-VS-ENTITY search below
         // (CheckEntityCollisionDown's own eligibility gate, PhysicsEngine.cs:189/994) - the original's own
@@ -441,7 +451,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
         // frame - the actual root cause of the measured bug was NOT this decay (already tick-quantized
         // before this fix) but the fact that nothing routed the decayed value through the controller,
         // leaving the engine's own continuous Settings.Gravity (render-rate) to integrate the vertical
-        // instead - see the SetVerticalVelocity call in the "not found" tail below, and
+        // instead - see the MoveVerticalAndPullPosition call in the "not found" tail below, and
         // ApplyGravitySettingsToController's own doc for why that engine path is now permanently disabled
         // for every controller-driven NPC. Skipped at the immediate spawn-time evaluation (FinalForceZ has
         // no real per-tick meaning yet there either).
@@ -459,12 +469,53 @@ public class AlundraEntityScriptProxy : GameplayProxy
             FinalForceZ = force;
         }
 
-        var platformTopZSeed = immediateAtSpawn ? int.MinValue : (PosZ + ModZ) + FinalForceZ;
+        // Root-cause redo (measured on the real gull, entity 6, map 389, dt~1/123): driving this tick's own
+        // vertical through Controller.SetVerticalVelocity (below in the "not found" tail) let the ENGINE
+        // integrate it over REAL elapsed time every rendered frame - during a real asset-streaming hitch
+        // (dt up to ~0.3s) the shared logic clock legitimately capped the HORIZONTAL step at
+        // AlundraScriptedMotion.MaxTicksPerFrame (4 ticks) while the engine kept integrating the vertical
+        // velocity for the entire 0.3s (~45px, ~15 ticks' worth) - the two axes counted in different units.
+        // Landed 606.75 instead of the faithful 594.75 (12px = 8 ticks short of the 209.25px drift); the
+        // very first trace sample already showed the vertical 9 ticks ahead of the horizontal (55.94px =
+        // 18.6 ticks' worth of climb after only 13 elapsed logic ticks), and 9 ticks * 1.5px/tick == the
+        // 12px error. THE fix (see <see cref="MoveVerticalAndPullPosition"/>'s own doc for the
+        // CharacterControllerComponent.Move/UpdateGround investigation this required): drive this tick's
+        // own vertical through the controller's Move() as a pure DISPLACEMENT - Move() has no elapsedTime
+        // parameter, so it cannot integrate over real time by construction. Investigated (read-only):
+        // Move()'s own displacement does NOT resolve this game's height-field terrain (only
+        // MoveVerticalAndPullPosition's own general 3D sweep against rigid colliders, of which the terrain
+        // height-field is not one) - CharacterMotionSystem's own field-based ground snap (UpdateGround)
+        // only widens its probe by the SAME FRAME's own velocity-driven displacement, which no longer
+        // exists once Velocity is kept at 0 for a controller-driven NPC (see <see cref="ApplyGravitySettingsToController"/>'s
+        // sibling doc). So a controller-driven NPC now needs its OWN terrain probe again for the terrain
+        // half of landing - <see cref="ComputeTerrainHeight"/>, the exact same 4-corner-max convention
+        // <c>IntroTraceHarnessTests.RunVerticalPhysicsPass</c>'s own <c>ComputeTerrainHeight</c> already
+        // ports faithfully for every controller-less entity - reused here (shape (b) of the two
+        // a750256's own doc originally weighed, declined there only because the engine's own velocity-
+        // driven ground snap covered it at the time; that coupling is exactly what this fix removes).
+        var terrainHeight = 0;
+        if (Controller != null && !immediateAtSpawn)
+        {
+            terrainHeight = ComputeTerrainHeight();
+            TerrainHeight = terrainHeight;
+        }
+
+        // Verifier A1 (PhysicsEngine.cs:180-187): the FULL original conjunct - this tick's own natural
+        // step, clamped UP to terrainHeight + 1 when it would go at-or-below terrain (Math.Max, same shape
+        // <c>IntroTraceHarnessTests.RunVerticalPhysicsPass</c> already uses) - so a falling entity only
+        // snaps onto an entity-support candidate its OWN downward reach this tick actually gets to, not any
+        // overlapping candidate however far below. Only applied for a controller-driven, non-spawn
+        // evaluation (terrainHeight is otherwise meaningless 0, and immediateAtSpawn keeps its own
+        // int.MinValue reach-gate override - see this method's own doc on that one-shot spawn fixup).
+        var platformTopZSeed = immediateAtSpawn
+            ? int.MinValue
+            : Controller != null
+                ? Math.Max((PosZ + ModZ) + FinalForceZ, terrainHeight + 1)
+                : (PosZ + ModZ) + FinalForceZ;
 
         var supportTopZ = 0;
         var found = eligible
             && EntitySupport.TryFindSupport(this, collidables, platformTopZSeed, out _, out supportTopZ);
-
         if (found)
         {
             WasEntitySupportedLastTick = true;
@@ -481,6 +532,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
             {
                 Controller.SetVerticalVelocity(0f);
                 PushLogicalPositionToRoot();
+                IsOnGround = 1;
             }
         }
         else
@@ -493,68 +545,123 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 // ApplyGravitySettingsToController's own doc).
                 ApplyGravitySettingsToController();
 
-                // Bug fix (sailor 12, map 389 intro - walks down toward the last staircase and never
-                // climbs it): the original's own ComputeZPosition (PhysicsEngine.cs:123-135) resets ForceZ
-                // to 0 on TWO kinds of landing, not one - CheckEntityCollisionDown's own platformEntity
-                // result can be either a genuine entity (platformEntity != null, the case
-                // EntitySupport.TryFindSupport/the "found" branch above already ports) OR the bare TERRAIN
-                // probe itself (platformEntity == null, ComputeEntityGroundHeight's own result folded into
-                // CheckEntityCollisionDown's platformTopZ seed at PhysicsEngine.cs:180-187) - PhysicsEngine.cs:
-                // 125-135's own `if (platformEntity == null || ...)` branch runs the SAME
-                // `entity.PosZ = platformHeight - entity.ModZ; if (Gravity) entity.ForceZ = 0;` pair for
-                // both. Only the entity half was ported (see the "found" branch above); this "not found"
-                // tail (no ENTITY support this tick) is exactly where the missing terrain half belongs -
-                // without it, a controller-driven NPC resting on terrain keeps decaying ForceZ every tick
-                // (the decay above) down to the terminal -(ZViscosity&lt;&lt;8) and re-applies that terminal
-                // velocity to the controller every tick via SetVerticalVelocity below; on flat ground the
-                // engine's own ground-snap silently absorbs it, but at a staircase the resulting deep
-                // downward velocity makes the mover's own step-up test see a wall instead of a step, so the
-                // NPC stalls instead of climbing.
-                //
-                // Implementation choice (shape (a) of the two the fix's own brief allows): reuses the
-                // ENGINE's own ground resolution - Controller.IsGrounded - instead of a second DLL-side
-                // terrain probe like EntitySupport.TryFindSupport/the harness's own RunVerticalPhysicsPass
-                // run for the entity-support/intro-trace cases. The controller has owned ground detection
-                // since E3 (CharacterMotionSystem's own UpdateGround, which always runs at the head of THIS
-                // SAME frame's World.Update, strictly before GameplayProxy.Update ever reaches here - see
-                // this class' own Update doc on that ordering) - re-probing the terrain here would compute
-                // the exact same answer a second time, at real per-tick cost, purely to duplicate work the
-                // engine already did. The one-frame lag this reuse carries (IsGrounded reflects the LAST
-                // controller ground update, evaluated once at the head of Update - see that method's own
-                // IsOnGround assignment - not a fresh probe for every tick of a multi-tick catch-up frame)
-                // is the same documented lag <see cref="AlundraEntityScriptProxy.Update"/>'s own root-pull
-                // already accepts elsewhere on this class, and is harmless here: it can only delay the reset
-                // by at most one further frame's worth of ticks, never wipe a genuine landing.
-                //
-                // Faithfulness gate (must not fire while rising): the original only ever reaches this reset
-                // through ComputeZPosition's own `if (finalZVelocity < 1)` branch (PhysicsEngine.cs:118) -
-                // i.e. only while this tick's own vertical step is descending or stationary, never while
-                // rising under a scripted upward 0x1B impulse. Gated here on `ForceZ < 0` (strictly
-                // descending) rather than the original's `< 1` (descending-or-zero): ForceZ is already 0 in
-                // the steady "resting on flat ground" case (the very case this fix targets), so `< 1` would
-                // be a no-op re-assignment there anyway, while `< 0` still cannot wipe a same-tick 0x1B lift
-                // (ForceZ > 0 the instant that impulse lands - see
-                // AlundraNpcCharacterControllerMoverTests.VerticalImpulse_UpwardZeroOneBWhileRestingOnRealGround...)
-                // - the narrower test is strictly safer with no behavioural cost.
-                if (Controller.IsGrounded && (Flags & EntityFlags.Gravity) != 0 && ForceZ < 0)
-                {
-                    ForceZ = 0;
-                    FinalForceZ = 0;
-                }
-
-                // THE fix: port of PhysicsEngine.cs:165's own unconditional `entity.PosZ = entity.PosZ +
-                // finalZVelocity` - drives this tick's own vertical displacement through the controller so
-                // the engine integrates EXACTLY FinalForceZ px over the tick (ForceZ is a 16.16 px/tick
-                // quantity at the original's own 50 Hz rate; * 50f converts ticks/s, / 65536f converts
-                // 16.16 to whole pixels). Skipped at the immediate spawn-time evaluation, same reasoning as
-                // the decay above (FinalForceZ is still 0 there, so this would be a harmless no-op anyway,
-                // but skipping keeps the two guards symmetric and documents the same reasoning). Reads
-                // FinalForceZ AFTER the terrain-landing reset above so a real landing this tick genuinely
-                // holds still (matching the original never falling through to its own PosZ +=
-                // finalZVelocity, PhysicsEngine.cs:165, once it has already returned from the reset above).
                 if (!immediateAtSpawn)
                 {
-                    Controller.SetVerticalVelocity(FinalForceZ * 50f / 65536f);
+                    // Belt-and-suspenders reset (a750256's own original terrain-landing fix, kept alongside
+                    // the strict terrain probe below): the engine's own Controller.IsGrounded already
+                    // carries a StepHeight/GroundSnapDistance-wide tolerance a STRICT terrain-height
+                    // comparator does not (see ComputeTerrainHeight's own doc) - on a real staircase, an NPC
+                    // climbing one step at a time can sit genuinely grounded (IsGrounded true, mid-step,
+                    // engine-tolerant) for a tick or two where its own PosZ has not yet crossed the strict
+                    // "moddedPosZ + FinalForceZ &lt;= landingTop - 1" test below (sailor 12, map 389's own
+                    // last staircase - the exact regression a750256 fixed). Gated on `ForceZ &lt; 0` (never
+                    // wipes a same-tick rising 0x1B impulse), matching that commit's own faithfulness note.
+                    if (Controller.IsGrounded && (Flags & EntityFlags.Gravity) != 0 && ForceZ < 0)
+                    {
+                        ForceZ = 0;
+                        FinalForceZ = 0;
+                    }
+
+                    // Port of PhysicsEngine.cs:123-135's own `if (platformEntity == null || ...)` branch -
+                    // entity support already came up empty above, so this tick's own landing test is
+                    // TERRAIN-only (landingTop == terrainHeight + 1, never higher: an entity candidate
+                    // taller than terrain would already have satisfied the "found" branch above via the
+                    // SAME terrain-clamped platformTopZSeed). `FinalForceZ < 1` mirrors the original's own
+                    // `finalZVelocity < 1` (descending-or-stationary, PhysicsEngine.cs:118) - never fires
+                    // while rising under a scripted upward 0x1B impulse (FinalForceZ > 0 the instant that
+                    // impulse lands).
+                    var moddedPosZ = PosZ + ModZ;
+                    var landingTop = terrainHeight + 1;
+
+                    if (FinalForceZ < 1 && moddedPosZ + FinalForceZ <= landingTop - 1)
+                    {
+                        // Terrain landing this tick - same reset PhysicsEngine.cs:129-134 applies for
+                        // either landing kind (see EntitySupport's own "found" branch above for the entity
+                        // half). A GENUINE transition (previous tick was still airborne, or ForceZ still
+                        // carried real motion) routes through the SAME landed-pose path
+                        // (PushLogicalPositionToRoot: root write + ClampToGround + Teleport) the entity-
+                        // support "found" branch already uses; an ALREADY-resting tick (this entity landed
+                        // on a PRIOR tick and nothing has moved it since) skips that same call.
+                        //
+                        // Bug fix (measured on the real bank-146 spawn's own horizontal-kinematics test):
+                        // AlundraWorldProxy.ResolveLogicalPosition (PushLogicalPositionToRoot's own root
+                        // write) TRUNCATES PosX/PosY/PosZ to whole pixels (`pos &gt;&gt; 16`) - the entity-
+                        // support "found" branch already accepts that cost every tick because a
+                        // SUPPORT-pinned entity's PosZ genuinely needs re-deriving from a live candidate top
+                        // every tick (see WasEntitySupportedLastTick's own doc). A terrain-resting entity's
+                        // PosZ does NOT change tick to tick once landed - calling the same truncating write
+                        // unconditionally here (this branch is reached EVERY tick a resting NPC is
+                        // evaluated, not just once on impact) silently truncated this same NPC's own
+                        // fractional horizontal walk progress every tick, measured to erode ~29px off a
+                        // 500px, 70-tick real walk. Uses <c>terrainHeight</c> directly for the LANDED value
+                        // (not the "+1"-shifted <c>landingTop</c> the harness's own controller-less port
+                        // uses for its own PosZ assignment too) - that extra 16.16 unit (1/65536 px,
+                        // imperceptible - the same order of magnitude already accepted by this class' own
+                        // root-pull rounding, see Update's own "double-rounding, not a float cast" doc) is
+                        // silently swallowed the moment root.Z round-trips through
+                        // ResolveLogicalPosition's own integer truncation (`posZ &gt;&gt; 16`, no
+                        // remainder) - re-adding it every tick without ever being able to keep it made
+                        // `wasAlreadyLanded` permanently false (PosZ could never equal `landingTop - ModZ`
+                        // after its own first round-trip), silently re-triggering the SAME truncating X/Y
+                        // write above every single tick regardless of the skip.
+                        var targetPosZ = terrainHeight - ModZ;
+                        var wasAlreadyLanded = PosZ == targetPosZ && ForceZ == 0;
+
+                        PosZ = targetPosZ;
+                        CollidedWithEntityZ = 0;
+                        if ((Flags & EntityFlags.Gravity) != 0)
+                        {
+                            ForceZ = 0;
+                            FinalForceZ = 0;
+                        }
+
+                        TileZ = PosZ >> 20;
+                        Controller.SetVerticalVelocity(0f);
+                        if (!wasAlreadyLanded)
+                        {
+                            PushLogicalPositionToRoot();
+                        }
+
+                        IsOnGround = 1;
+                    }
+                    else
+                    {
+                        // Still falling/rising this tick - drive it through the controller's own Move() as
+                        // a pure per-tick displacement (see this method's own doc above and
+                        // MoveVerticalAndPullPosition's own doc for the full investigation/measured
+                        // numbers) - the engine contributes ZERO REAL vertical motion of its own between
+                        // ticks; only this per-tick Move() ever moves this entity's Z.
+                        //
+                        // RisingVelocitySignal (not 0f) while climbing: investigated (read-only,
+                        // CharacterControllerComponent.cs) - UpdateGround (the controller's own per-RENDER-
+                        // FRAME field-based ground snap, runs BEFORE this same entity's own Update each
+                        // frame - see this class' own Update doc on that ordering) unconditionally CORRECTS
+                        // rootComponent.Position back toward ground whenever the foot sits within
+                        // (StepHeight + GroundSnapDistance) of it - a window several ticks wide at the
+                        // gull's own 3px/tick real climb rate - UNLESS <c>Dot(Velocity, up) &gt; 0f</c>, its
+                        // own "rising, treat as airborne" escape hatch (checked at UpdateGround's own head,
+                        // before it ever looks at the field). A genuinely zero Velocity fails that check
+                        // (Dot == 0, not &gt; 0), so with Velocity truly 0 the very next frame's UpdateGround
+                        // silently snaps this tick's own upward Move() straight back down to ground -
+                        // measured directly: PosZ pinned at the SAME value every tick instead of climbing.
+                        // RisingVelocitySignal only needs to be POSITIVE, not physically meaningful - it is
+                        // never itself allowed to move anything: at
+                        // <see cref="AlundraScriptedMotion.MaxTicksPerFrame"/>'s own longest realistic
+                        // catch-up hitch (~0.3s, the exact hitch this fix's own measured numbers use),
+                        // RisingVelocitySignal's own contribution is
+                        // 1e-6 px/s * 0.3s = 3e-7 px - fifty times below one 16.16 fixed-point unit
+                        // (1/65536 px ~= 1.5e-5) and far below Controller.Move's own MinMoveDistanceSquared
+                        // gate, so CharacterMotionSystem's own velocity-integration path (the SAME real-time
+                        // integration this whole fix removes for the actual displacement) never actually
+                        // moves anything - this is a pure state signal to UpdateGround's own gate, not a
+                        // second source of motion. Zero (not the signal) while falling/resting: only a
+                        // RISING tick needs to defeat the ground snap (a falling/resting tick WANTS
+                        // UpdateGround's own detection live, as a defensive backstop alongside this method's
+                        // own direct terrain probe above).
+                        Controller.SetVerticalVelocity(FinalForceZ > 0 ? RisingVelocitySignal : 0f);
+                        MoveVerticalAndPullPosition(FinalForceZ / 65536f, wasSupportedEnteringThisTick);
+                        IsOnGround = 0;
+                    }
                 }
             }
         }
@@ -1036,6 +1143,55 @@ public class AlundraEntityScriptProxy : GameplayProxy
         }
     }
 
+    /// <summary>
+    /// Direct DLL-side terrain ground probe for a controller-driven NPC's own per-tick vertical landing
+    /// test (<see cref="EvaluateEntitySupport"/>'s own "not found" tail) - port of
+    /// <c>PhysicsEngine.cs:180-187</c>'s own <c>ComputeEntityGroundHeight</c>, the SAME 4-corner-max
+    /// convention <c>IntroTraceHarnessTests.ComputeTerrainHeight</c> already ports faithfully for every
+    /// controller-less entity's own vertical pass. Needed again for a controller-driven NPC because
+    /// <see cref="MoveVerticalAndPullPosition"/>'s own <c>Controller.Move</c> call resolves general 3D
+    /// collision geometry (walls/ceilings against <c>Owner.World.PhysicsWorld</c>) but NOT this game's own
+    /// height-field terrain - see that method's own doc for the full investigation. Samples this entity's
+    /// own struct footprint (<see cref="PosX"/>/<see cref="PosY"/>/<see cref="ModX"/>/<see cref="ModY"/>/
+    /// <see cref="Width"/>/<see cref="Height"/> - the original's own box, populated at spawn by
+    /// <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>), NOT <see cref="ClampToGround"/>'s own
+    /// <see cref="CollisionComponent"/> fixture - matching <c>IntroTraceHarnessTests.ComputeTerrainHeight</c>'s
+    /// own corners bit-for-bit. Returns a 16.16 fixed-point height, 0 when no corner finds ground (same
+    /// "sea level" fallback <c>ComputeEntityGroundHeight</c>/the harness's own port already use) - a no-op
+    /// return without an installed <c>World.CollisionField</c>.
+    /// </summary>
+    internal int ComputeTerrainHeight()
+    {
+        var field = Owner?.World?.CollisionField;
+        if (field == null)
+        {
+            return 0;
+        }
+
+        var x1 = (PosX + ModX) >> 16;
+        var x2 = (PosX + ModX + Width) >> 16;
+        var y1 = (PosY + ModY) >> 16;
+        var y2 = (PosY + ModY + Height) >> 16;
+        var highest = int.MinValue;
+        SampleTerrainHeightCorner(field, x1, y1, ref highest);
+        SampleTerrainHeightCorner(field, x2, y1, ref highest);
+        SampleTerrainHeightCorner(field, x1, y2, ref highest);
+        SampleTerrainHeightCorner(field, x2, y2, ref highest);
+        return highest == int.MinValue ? 0 : highest;
+    }
+
+    private static void SampleTerrainHeightCorner(ICollisionField field, int px, int py, ref int best)
+    {
+        if (field.TrySampleGround(new Vector3(px, py, 0f), float.MaxValue, out var sample) && sample.HasGround)
+        {
+            var height = (int)Math.Round((double)sample.GroundHeight * 65536.0);
+            if (height > best)
+            {
+                best = height;
+            }
+        }
+    }
+
     private static void SampleGroundCorner(ICollisionField field, float x, float y, ref bool hasGround, ref float groundMax)
     {
         if (!field.TrySampleGround(new Vector3(x, y, 0f), float.MaxValue, out var sample) || !sample.HasGround)
@@ -1137,6 +1293,80 @@ public class AlundraEntityScriptProxy : GameplayProxy
         }
     }
 
+    /// <summary>
+    /// Routes THIS tick's own vertical displacement through the controller's own
+    /// <see cref="CharacterControllerComponent.Move"/> - the seam <see cref="EvaluateEntitySupport"/>'s own
+    /// "not found" tail uses instead of a controller-owned velocity the engine would integrate over REAL
+    /// elapsed time (see that call site's own doc for the full measured gull-entity-6 numbers). Move()
+    /// takes a pure displacement, never a rate, so the exact <c>FinalForceZ</c> pixel amount lands
+    /// regardless of how long the current rendered frame took - this is what makes the per-tick vertical
+    /// step frame-rate invariant.
+    /// <para>
+    /// Investigated (read-only, <c>CharacterControllerComponent.cs</c>): <c>Move</c>'s displacement is
+    /// resolved by <c>MoveWithCollisions</c> against the FULL 3D physics world (<c>Sweep</c>/
+    /// <c>TryStepMove</c>/<c>Slide</c>) - a nonzero Z component here is genuinely swept against solid
+    /// colliders (walls, ceilings), not silently dropped or treated as horizontal-only; only
+    /// <c>ResolveHorizontalDisplacementAgainstField</c>'s own per-corner walkability/step-height probe is
+    /// horizontal-axis-specific (its own h1Amount/h2Amount are both 0 for a pure-Z displacement, so that
+    /// probe is a no-op here and the Z delta passes straight to the general sweep). What Move() does NOT
+    /// do: ground-snap or refresh <see cref="CharacterControllerComponent.IsGrounded"/>/MovementState -
+    /// that is <c>UpdateGround</c>'s own job, run only from the controller's per-RENDER-FRAME
+    /// <c>Update</c> (via <c>CharacterMotionSystem</c>, BEFORE this same entity's own <see cref="Update"/>
+    /// each frame - see that method's own doc), never from <c>Move()</c> itself. So
+    /// <see cref="Controller"/>.IsGrounded here still reflects the LAST render frame's own ground probe -
+    /// the same one-frame lag <see cref="EvaluateEntitySupport"/>'s own terrain-reset branch already
+    /// documents and accepts. <c>UpdateGround</c>'s own field-based ground snap still runs every render
+    /// frame regardless of this call (unaffected by this fix): once this entity's Z genuinely reaches real
+    /// ground, that snap (not this method) is what pins it there and zeroes the downward component of
+    /// <see cref="CharacterControllerComponent.Velocity"/> - see
+    /// <c>GravityFlagged_NoScriptImpulse_FallsTickQuantizedAndLandsOnRealGround_ClearingFlagFreezesAltitude</c>.
+    /// </para>
+    /// <para>
+    /// Deliberately a SEPARATE call from <see cref="MoveControllerAndPullPosition"/> (not one Move() call
+    /// carrying X/Y/Z together): this tick's own ForceZ gravity decay is computed by
+    /// <see cref="EvaluateEntitySupport"/>, which runs AFTER <see cref="AlundraScriptedMotion.RunOneKinematicTick"/>'s
+    /// own horizontal Move() call this same tick (see <see cref="Update"/>'s own doc on the fused per-tick
+    /// loop order: script, THEN motion, THEN support) - by the time <see cref="FinalForceZ"/> is known for
+    /// this tick, the horizontal step has already been taken. A second, vertical-only Move() call here is
+    /// still exactly ONE per-tick Z displacement, sweep-resolved the same way the horizontal one is -
+    /// reordering the fused loop so a single call could carry both axes was rejected as materially riskier
+    /// (it would move the ForceZ decay ahead of the script pass, changing an order several other documented
+    /// fixes on this class rely on) for no behavioural difference: two same-tick Move() calls against an
+    /// unmoving collision world resolve identically to one call carrying both deltas at once.
+    /// </para>
+    /// Does not touch <see cref="ForceAdjusted"/> - that flag is the original's own HORIZONTAL "movement
+    /// was curtailed" signal (0x1F Walk-with-collision's own exit test, see that field's own doc); the
+    /// original has no vertical equivalent. A no-op without a controller (bare-fallback spawn/harness
+    /// proxy), same shape as every other controller-gated site on this class.
+    /// </summary>
+    internal void MoveVerticalAndPullPosition(float deltaZPixels, bool wasSupportedEnteringThisTick)
+    {
+        if (Controller == null || Owner?.RootComponent == null)
+        {
+            return;
+        }
+
+        Controller.Move(new Vector3(0f, 0f, deltaZPixels));
+
+        // Same guard MoveControllerAndPullPosition's own horizontal pull already uses (see that method's
+        // own doc) - just evaluated against the caller-captured PRE-this-tick value
+        // (EvaluateEntitySupport's own wasSupportedEnteringThisTick, not its current
+        // WasEntitySupportedLastTick field, already flipped false by the time this "not found" tail runs).
+        // A support-pinned entity's authoritative PosZ comes from the "found" branch's own supportTopZ
+        // clamp, not a live float32 root read (the same 1-unit-margin precision argument
+        // WasEntitySupportedLastTick's own doc makes) - without this guard, an entity whose support just
+        // ended THIS tick had its preserved PosZ silently re-quantized (eroded by exactly the same 1 16.16
+        // unit WasEntitySupportedLastTick's own fix already solved for MoveControllerAndPullPosition) one
+        // tick EARLIER than that fix's own documented "one-frame-late" contract, purely because this
+        // method's own call site (the "still falling/rising" branch) happens to run on the very tick
+        // support ends.
+        if (!wasSupportedEnteringThisTick)
+        {
+            var root = Owner.RootComponent.LocalTransform.Position;
+            PosZ = (int)Math.Round((double)root.Z * 65536.0);
+        }
+    }
+
     /// <summary>Small horizontal-axis tolerance <see cref="MoveControllerAndPullPosition"/> uses to decide
     /// whether the controller's own returned displacement counts as "curtailed" (sets
     /// <see cref="ForceAdjusted"/>) - well under a single pixel, so ordinary floating-point noise from the
@@ -1144,6 +1374,22 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// the entity short by at least a fraction of a pixel every tick it keeps pushing) reliably does.
     /// </summary>
     private const float ForceAdjustedEpsilonPixels = 0.01f;
+
+    /// <summary>
+    /// See <see cref="EvaluateEntitySupport"/>'s own "not found"/rising-branch doc for the full
+    /// investigation - a state-only positive signal fed to <see cref="CharacterControllerComponent.SetVerticalVelocity"/>
+    /// while a controller-driven NPC's own vertical is rising this tick, purely so
+    /// <c>CharacterControllerComponent.UpdateGround</c>'s own <c>Dot(Velocity, up) &gt; 0f</c> "treat as
+    /// airborne" gate sees a genuinely positive value and skips its field-based ground snap for that
+    /// render frame (a truly zero Velocity fails that check and lets UpdateGround re-pin the entity to
+    /// ground every frame, defeating the climb this fix's own per-tick Move() otherwise performs
+    /// correctly). Small enough that CharacterMotionSystem's own real-time velocity integration - the exact
+    /// mechanism this whole fix removes for the entity's actual displacement - contributes nothing
+    /// measurable even at the longest realistic catch-up hitch (~0.3s): 1e-6 px/s * 0.3s = 3e-7 px, ~50x
+    /// below one 16.16 fixed-point unit (1/65536px) and far under <c>Controller.Move</c>'s own
+    /// MinMoveDistanceSquared gate.
+    /// </summary>
+    private const float RisingVelocitySignal = 0.000001f;
 
     public override void Draw()
     {

@@ -975,12 +975,18 @@ public class AlundraEventProgramRunnerTests
     }
 
     [Fact]
-    public void Fly_0x1B_BlockEighteenRealImpulse_SetsForceZAndControllerVerticalVelocity()
+    public void Fly_0x1B_BlockEighteenRealImpulse_SetsForceZOnlyNeverPokesControllerVelocity()
     {
         // Real block-18 (masked index 18, entity record 18/bank 25 "Bloc transparent (1x1x2)") program 146
         // impulse - docs/intro-programs-389.txt offset 1620: "0x1B Fly params=[0,255]".
         // ForceZ = SignExtend16((255<<8)|0) * 0x10000 >> 8 = SignExtend16(0xFF00) * 0x10000 >> 8
         //        = -256 * 0x10000 >> 8 = -65536 (16.16 -> -1.0 px/tick, i.e. -50 px/s at the 50 Hz tick rate).
+        //
+        // Root-cause vertical-fidelity fix (see AlundraEntityScriptProxy.EvaluateEntitySupport's own doc):
+        // 0x1B no longer pushes this impulse onto Controller.SetVerticalVelocity directly - only the DLL-
+        // side ForceZ struct field is set here; EvaluateEntitySupport reads it (after its own per-tick
+        // decay) and drives the entity through Controller.Move() every logic tick instead, so the
+        // controller's own Velocity is left untouched by this opcode call alone.
         var document = NewDocument(0x1B, 0, 255, 0xFF);
         var runner = NewRunner(document);
         var entity = NewEntity();
@@ -990,7 +996,9 @@ public class AlundraEventProgramRunnerTests
         runner.RunOneScriptCall(entity, state);
 
         Assert.Equal(-65536, entity.ForceZ);
-        Assert.Equal(-50f, entity.Controller.Velocity.Y); // Y-up default axis (no World -> ResolveUp falls back to Vector3.Up).
+        Assert.Equal(0f, entity.Controller.Velocity.X);
+        Assert.Equal(0f, entity.Controller.Velocity.Y);
+        Assert.Equal(0f, entity.Controller.Velocity.Z);
     }
 
     [Fact]

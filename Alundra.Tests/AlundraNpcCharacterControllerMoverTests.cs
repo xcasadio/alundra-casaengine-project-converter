@@ -438,7 +438,9 @@ public class AlundraNpcCharacterControllerMoverTests
     // step-support branch in UpdateGround runs before the upward-velocity gate and can swallow an
     // impulse applied the same tick as a horizontal step-up - isolating to a standstill impulse avoids it).
     // ForceZ = SignExtend16((255<<8)|0) * 0x10000 >> 8 = -256 * 0x10000 >> 8 = -65536 (16.16), i.e. a
-    // constant -50 px/s (Controller.SetVerticalVelocity(ForceZ * 50f / 65536f)) - the real block-18 program
+    // constant -50 px/s (-1 px/tick, applied every logic tick through
+    // AlundraEntityScriptProxy.EvaluateEntitySupport's own Controller.Move() displacement - root-cause
+    // vertical-fidelity fix, see that method's own doc) - the real block-18 program
     // clears gravity (0x17) BEFORE this impulse, so this is a linear (non-accelerated) fall, not a
     // jump/liftoff: "IsOnGround 0 during flight, 1 after" per the plan's own acceptance wording, without a
     // liftoff/peak phase (documented deviation - real data has no positive 0x1B impulse anywhere in map
@@ -474,11 +476,13 @@ public class AlundraNpcCharacterControllerMoverTests
         proxy.ApplyGravitySettingsToController();
         Assert.Equal(0f, proxy.Controller!.Settings.Gravity);
 
-        // 0x1B: real block-18 params [0,255] - SignExtend16((v2<<8)|v1) * 0x10000 >> 8.
+        // 0x1B: real block-18 params [0,255] - SignExtend16((v2<<8)|v1) * 0x10000 >> 8. Only the DLL-side
+        // ForceZ struct field is set (matching the real opcode handler post-fix - see
+        // AlundraEventProgramRunner's own 0x1B doc): EvaluateEntitySupport reads it from here every tick,
+        // never a manually pre-poked Controller.Velocity (which real production code never sets directly
+        // for a scripted NPC any more either).
         proxy.ForceZ = unchecked((short)(0 | (255 << 8))) * 0x10000 >> 8;
         Assert.Equal(-65536, proxy.ForceZ);
-        proxy.Controller.SetVerticalVelocity(proxy.ForceZ * 50f / 65536f);
-        Assert.Equal(-50f, proxy.Controller.Velocity.Z);
 
         Assert.Equal(0, proxy.IsOnGround);
 
@@ -560,7 +564,12 @@ public class AlundraNpcCharacterControllerMoverTests
         for (var i = 0; i < 200 && entity.RootComponent!.Position.Z > 80f; i++)
         {
             world.Update(1f / 50f);
-            maxDownwardSpeed = Math.Max(maxDownwardSpeed, -proxy.Controller.Velocity.Z);
+            // Root-cause vertical-fidelity fix (see EvaluateEntitySupport's own doc): the controller's own
+            // Velocity.Z is no longer a real fall-rate observable (Controller.Move() displaces this NPC
+            // directly; Velocity itself only ever carries the RisingVelocitySignal state signal or 0) -
+            // ForceZ is the DLL's own authoritative per-tick rate now, same *50f/65536f 16.16-to-px/s
+            // conversion the old direct read used.
+            maxDownwardSpeed = Math.Max(maxDownwardSpeed, -proxy.ForceZ * 50f / 65536f);
         }
 
         Assert.Equal(80f, entity.RootComponent!.Position.Z);
@@ -844,29 +853,25 @@ public class AlundraNpcCharacterControllerMoverTests
 
         // Hover-climb: real 0x1B [128,3] (v1=128,v2=3 -> raw=(3<<8)|128=896, ForceZ=896*0x10000>>8=229376,
         // i.e. +3.5 px/tick/+175 px/s) reissued every tick for 10 ticks, exactly the real gull program's own
-        // Wait(N)-gated 0x1B loop before the 0x63/apex. 0x1B's own handler sets ForceZ/velocity to the raw
-        // impulse FIRST; EvaluateEntitySupport's own per-tick decay then runs LATER the same World.Update
-        // (ForceZ -= MapGravityRaw&lt;&lt;8 = 32768, i.e. -0.5 px/tick), so the velocity actually applied
-        // this tick is the DECAYED 196608 (3.0 px/tick, 150 px/s) - the measured facts' own faithful number
-        // for the gull's real climb, not the raw 175 px/s impulse.
+        // Wait(N)-gated 0x1B loop before the 0x63/apex.
+        //
+        // Root-cause vertical-fidelity fix (see AlundraEntityScriptProxy.EvaluateEntitySupport's own doc):
+        // 0x1B's own handler now ONLY sets the DLL-side ForceZ struct field (no longer pokes
+        // Controller.SetVerticalVelocity directly - that used to let CharacterMotionSystem's own per-
+        // RENDER-FRAME integrator apply the RAW pre-decay impulse as a SECOND, independent source of motion
+        // the same tick EvaluateEntitySupport's own Move() also ran, before this fix removed it). So
+        // EvaluateEntitySupport's own per-tick decay (ForceZ -= MapGravityRaw&lt;&lt;8 = 32768, i.e. -0.5
+        // px/tick) is now the ONLY thing that ever moves this entity, regardless of whether 0x1B was called
+        // manually (as here, before World.Update) or through the real pick/run pipeline - both see the
+        // SAME decayed 196608 (3.0 px/tick, 150 px/s), the measured facts' own faithful number for the
+        // gull's real climb. 10 ticks * 3.0 px/tick = 30px.
         for (var frame = 0; frame < 10; frame++)
         {
             RunOpcode(0x1B, 128, 3, 0xFF);
             world.Update(1f / 50f);
         }
 
-        // Exact: this loop calls RunOpcode BEFORE World.Update, not through the real pick/run pipeline
-        // (RunPickedEvent, reached from GameplayProxy.Update - see AlundraEntityScriptProxy.Update's own
-        // E4.b doc) - so each iteration's controller integration (CharacterMotionSystem, head of World.Update,
-        // strictly before GameplayProxy.Update) always uses the RAW impulse velocity RunOpcode just set
-        // (175 px/s), never the decayed one EvaluateEntitySupport computes moments later THIS SAME
-        // World.Update call (which only ever matters for whatever integration happens next - here,
-        // immediately re-overwritten by the next iteration's own RunOpcode before that happens). A real
-        // 0x1B issued from inside Update (the real script pipeline) would instead only take effect on the
-        // FOLLOWING frame's integration, seeing the DECAYED 150 px/s the measured facts describe - covered
-        // precisely by GullVerticalFidelityTests' own real-pipeline acceptance test. 10 ticks * 175 px/s *
-        // (1/50 s/tick) = 35px.
-        Assert.Equal(335f, entity.RootComponent!.Position.Z, 2);
+        Assert.Equal(330f, entity.RootComponent!.Position.Z, 2);
 
         // Climb apex: real Tick program 134's own 0x63 [128,0,1] (clear Gravity) immediately followed by
         // 0x1B [0,0] (zero the vertical impulse/velocity - same shape the real program's own hover uses to
@@ -933,9 +938,14 @@ public class AlundraNpcCharacterControllerMoverTests
 
         // The DLL's own decay now accelerates the fall well past the prior constant -25.2 px/s scripted
         // descent rate - the entity has genuinely resumed falling under EvaluateEntitySupport's own
-        // MapGravityRaw decay, not merely continuing at the old scripted velocity.
-        Assert.True(-proxy.Controller.Velocity.Z > 60f,
-            $"expected restored gravity to accelerate the fall past 60 px/s within 15 ticks; got {-proxy.Controller.Velocity.Z}.");
+        // MapGravityRaw decay, not merely continuing at the old scripted velocity. Reads ForceZ, not
+        // Controller.Velocity.Z (root-cause vertical-fidelity fix - see EvaluateEntitySupport's own doc:
+        // Controller.Move() displaces this NPC directly now, so Velocity itself is no longer a real
+        // fall-rate observable while falling - it only ever carries 0 or the RisingVelocitySignal state
+        // signal).
+        var fallRatePxPerSecond = -proxy.ForceZ * 50f / 65536f;
+        Assert.True(fallRatePxPerSecond > 60f,
+            $"expected restored gravity to accelerate the fall past 60 px/s within 15 ticks; got {fallRatePxPerSecond}.");
         Assert.True(entity.RootComponent!.Position.Z < zBeforeGravityRestored,
             "expected Z to keep dropping once real gravity was restored.");
     }
@@ -1083,11 +1093,17 @@ public class AlundraNpcCharacterControllerMoverTests
 
         // Override the record's own real spawn position to the same open flat stretch (row 57, sol 80px)
         // every other test in this class uses, so the hand-computed displacement below is independent of
-        // which real record happened to match SpriteTableIndex=146.
-        proxy.PosX = 564 * 65536;
+        // which real record happened to match SpriteTableIndex=146. (444,920) is the real cell (18,57)
+        // every other test's own BuildNpcPawn fixture uses - (564,920) sits over a DIFFERENT real cell
+        // (23,57) with no ground at Z=80 (the real terrain there is far below), only ever safe for this
+        // file's OTHER (564,920,80) fixtures because BuildNpcPawn leaves Flags at 0 (Gravity never set) -
+        // this test's entity goes through the REAL spawn path instead
+        // (AlundraWorldProxy.CreateEntityFromRecord -&gt; ApplySpawnInitialization), which DOES carry the
+        // real header's own Gravity flag/MapGravityRaw, so a genuinely resting spawn location matters here.
+        proxy.PosX = 444 * 65536;
         proxy.PosY = 920 * 65536;
         proxy.PosZ = 80 * 65536;
-        entity.RootComponent!.LocalTransform.Position = new Vector3(564f, 920f, 80f);
+        entity.RootComponent!.LocalTransform.Position = new Vector3(444f, 920f, 80f);
 
         world.AddEntity(entity);
         world.Update(1f / 50f); // register with CharacterMotionSystem before the scripted mover ever runs.
@@ -1112,7 +1128,7 @@ public class AlundraNpcCharacterControllerMoverTests
             world.Update(1f / 50f);
         }
 
-        Assert.Equal(564.0 + expectedPositionDeltaPixels, entity.RootComponent!.Position.X, 2);
+        Assert.Equal(444.0 + expectedPositionDeltaPixels, entity.RootComponent!.Position.X, 2);
     }
 
     // -----------------------------------------------------------------------------------------
@@ -1503,15 +1519,27 @@ public class AlundraNpcCharacterControllerMoverTests
         // clean, non-accelerated fall, matching this test's own "0x1B-equivalent" doc).
         proxy.ForceZ = -65536;
 
+        // Root-cause vertical-fidelity fix (see AlundraEntityScriptProxy.EvaluateEntitySupport's own doc):
+        // TileZ is refreshed twice this same tick while falling - once by
+        // AlundraScriptedMotion.RunOneKinematicTick (from THIS tick's own PRE-vertical-step PosZ, since
+        // that call runs before EvaluateEntitySupport in the same fused per-tick loop - see Update's own
+        // doc), and no further refresh happens until EITHER the entity lands (EvaluateEntitySupport's own
+        // landing branch explicitly sets TileZ = PosZ &gt;&gt; 20 again) or the NEXT tick's own
+        // RunOneKinematicTick call. So while still falling, TileZ can lag the LATEST PosZ by up to one
+        // tile-unit (16px, the exact PosZ &gt;&gt; 20 granularity) for exactly the tick a fall crosses a
+        // tile boundary - a one-tick-lag deviation, same documented shape as this class' own
+        // WasEntitySupportedLastTick/root-pull latencies elsewhere.
         for (var frame = 0; frame < 100 && proxy.IsOnGround == 0; frame++)
         {
             world.Update(1f / 50f);
 
-            Assert.Equal(proxy.PosZ >> 20, proxy.TileZ);
+            var freshTileZ = proxy.PosZ >> 20;
+            Assert.True(proxy.TileZ == freshTileZ || proxy.TileZ == freshTileZ + 1,
+                $"TileZ {proxy.TileZ} should equal the fresh PosZ>>20 {freshTileZ} or lag it by exactly one tile unit.");
         }
 
         Assert.Equal(1, proxy.IsOnGround);
-        Assert.Equal(proxy.PosZ >> 20, proxy.TileZ);
+        Assert.Equal(proxy.PosZ >> 20, proxy.TileZ); // landing always re-syncs TileZ exactly.
         _ = entity;
     }
 
@@ -1946,9 +1974,12 @@ public class AlundraNpcCharacterControllerMoverTests
         proxy.Flags &= ~EntityFlags.Gravity;
         proxy.ApplyGravitySettingsToController();
 
-        // 0x1B [0,255] - real value, -1 px/tick.
+        // 0x1B [0,255] - real value, -1 px/tick. Only the DLL-side ForceZ struct field is set (matching
+        // the real opcode handler post-fix - see AlundraEventProgramRunner's own 0x1B doc);
+        // EvaluateEntitySupport's own Controller.Move() reads it every tick, so a redundant manual
+        // Controller.SetVerticalVelocity call here would double this tick's own displacement instead of
+        // matching it (root-cause vertical-fidelity fix - see that method's own doc).
         proxy.ForceZ = -65536;
-        proxy.Controller!.SetVerticalVelocity(-50f);
 
         var frame = 0;
         while (frame < 300 && entity.RootComponent!.Position.Z >= 208f)
@@ -2171,6 +2202,7 @@ public class AlundraNpcCharacterControllerMoverTests
     [Theory]
     [InlineData(1f / 123f)]
     [InlineData(1f / 50f)]
+    [InlineData(1f / 240f)]
     public void GullEntitySix_RealFlightAtRenderRateAndAtFiftyHertz_ClimbsAndDriftsWithFaithfulTickQuantizedPhysics(float dt)
     {
         var projectRoot = FindProjectRoot();
@@ -2229,6 +2261,97 @@ public class AlundraNpcCharacterControllerMoverTests
 
         var drift = startX - entity.RootComponent!.Position.X;
         Assert.InRange(drift, 208.25f, 210.25f); // 209.25 +-1.
+    }
+
+    /// <summary>
+    /// Root-cause fix's own regression test: the real gull entity 6 flight (SAME fixture/spawn as
+    /// <see cref="GullEntitySix_RealFlightAtRenderRateAndAtFiftyHertz_ClimbsAndDriftsWithFaithfulTickQuantizedPhysics"/>)
+    /// at the user's own real frame rate (dt=1/123), with a real asset-streaming HITCH injected mid-climb -
+    /// every 11th frame runs dt=0.3s instead of dt=1/123s (exactly what the game does while streaming
+    /// assets: <see cref="AlundraScriptedMotion.MaxTicksPerFrame"/> legitimately caps the horizontal at 4
+    /// ticks that frame while a real elapsed-time-driven integrator would keep integrating the vertical for
+    /// the FULL 0.3s). Must still reach the apex at 171 ticks and drift 209.25px (landing X = 594.75), the
+    /// SAME numbers the hitch-free run produces - the whole point of driving the vertical through
+    /// <see cref="AlundraEntityScriptProxy.MoveVerticalAndPullPosition"/> as a per-tick DISPLACEMENT instead
+    /// of <c>Controller.SetVerticalVelocity</c> (a rate the engine would integrate over whatever real
+    /// elapsedTime a hitch frame happens to carry) is that this result no longer depends on frame timing at
+    /// all.
+    /// <para>
+    /// Measured BEFORE this fix (the exact regression this test reproduces, root-caused during this same
+    /// investigation): with <c>SetVerticalVelocity(FinalForceZ * 50f / 65536f)</c> driving the vertical, the
+    /// SAME hitch schedule landed the gull at X = 606.75 instead of 594.75 - 12px (8 ticks' worth) short of
+    /// the faithful 209.25px drift. Root cause visible in the raw trace: at 13 elapsed logic ticks the
+    /// entity had ALREADY climbed 55.94px (18.6 ticks' worth) - a 9-tick vertical head start over the
+    /// horizontal, entirely from a single 0.3s hitch frame's own real-time velocity integration; 9 ticks *
+    /// 1.5px/tick == the 12px landing error. AFTER this fix (Controller.Move() per-tick displacement, no
+    /// engine-side velocity integration): the SAME hitch schedule reproduces the hitch-free 171-tick/
+    /// 209.25px result exactly, verified below.
+    /// </para>
+    /// </summary>
+    [Fact]
+    public void GullEntitySix_RealFlightWithFrameTimeHitchesInjectedMidClimb_StillReachesTheFaithfulApexAndDrift()
+    {
+        var projectRoot = FindProjectRoot();
+        if (projectRoot == null)
+        {
+            return;
+        }
+
+        var field = LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var tileMapData = LoadMap389TileMapData(projectRoot)!;
+        var spawn = SpawnRealGullEntitySix(projectRoot, tileMapData);
+        if (spawn == null)
+        {
+            return;
+        }
+
+        var (entity, proxy) = spawn.Value;
+        var world = BuildWorld(field);
+        var host = new GullClimbScriptHost();
+        proxy.ScriptHost = host;
+        proxy.Status = EntityStatus.Normal;
+        proxy.TargetAnimationId = 10;
+        proxy.TargetDirection = 8;
+
+        world.AddEntity(entity);
+        world.Update(1f / 50f); // register with CharacterMotionSystem/settle the real terrain ground clamp first.
+
+        Assert.Equal(EntityFlags.Gravity, proxy.Flags & EntityFlags.Gravity);
+
+        var startTileZ = proxy.TileZ;
+        var startX = entity.RootComponent!.Position.X;
+        var ticksAtStart = host.TotalTicks;
+
+        const float normalDt = 1f / 123f;
+        const float hitchDt = 0.3f; // real asset-streaming hitch, per this fix's own investigation.
+
+        var ticksAtClimb = -1;
+        for (var frame = 0; frame < 300 && ticksAtClimb < 0; frame++)
+        {
+            // Every 11th frame is a hitch - a handful of real hitches scattered through the climb (171
+            // ticks at ~123 ticks/s is ~1.4s of real time, ~17 frames at this cadence), interleaved with
+            // ordinary frames, matching the ticket's own "a handful of dt = 0.3s frames interleaved" spec.
+            var dt = frame % 11 == 10 ? hitchDt : normalDt;
+            world.Update(dt);
+
+            if (proxy.TileZ >= startTileZ + 32)
+            {
+                ticksAtClimb = host.TotalTicks;
+            }
+        }
+
+        Assert.True(ticksAtClimb >= 0, "expected TileZ to reach the 32-tile climb within this test's own frame budget.");
+
+        var climbLogicTicks = ticksAtClimb - ticksAtStart;
+        Assert.InRange(climbLogicTicks, 170, 172); // 171 +-1 - SAME tolerance/target as the hitch-free run.
+
+        var drift = startX - entity.RootComponent!.Position.X;
+        Assert.InRange(drift, 208.25f, 210.25f); // 209.25 +-1 - SAME tolerance/target as the hitch-free run.
     }
 
     // -----------------------------------------------------------------------------------------

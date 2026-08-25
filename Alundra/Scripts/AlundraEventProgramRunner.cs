@@ -498,15 +498,24 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 return Walk(entity, v, state, allowDetour: false) == 0 && entity.ForceAdjusted == 0 ? 0 : 3;
 
             case 0x1B: // Fly - Script_27_01B (EntityEventHandlers.cs:743-747): ForceZ = (((v2<<8)|v1) *
-                       // 0x10000) >> 8, a signed 16.16 vertical impulse. E4.b (docs/plan-e4-deplacement-
-                       // scripte.md): stores it on the proxy AND, when this entity has a controller, pushes
-                       // it onto CharacterControllerComponent.SetVerticalVelocity (E4.0) - the controller's
-                       // own vertical axis is in px/s, ForceZ is 16.16 px/tick at the original's 50 Hz
-                       // tick rate, hence the *50f/65536f conversion. Without a controller (bare-fallback
-                       // spawn, or the intro trace harness - E4.e still owns that simulated kinematics),
-                       // ForceZ alone is kept, same as before this opcode was ported.
+                       // 0x10000) >> 8, a signed 16.16 vertical impulse. Only the DLL-side struct field is
+                       // set here now (root-cause vertical-fidelity fix, gull entity 6 map 389 - see
+                       // AlundraEntityScriptProxy.EvaluateEntitySupport's own doc for the full
+                       // investigation): a controller-driven NPC's vertical is driven ENTIRELY by that
+                       // method's own per-tick decay + Controller.Move() displacement, read from ForceZ at
+                       // the head of the very next EvaluateEntitySupport call this same tick (RunPickedEvent
+                       // runs before AlundraScriptedMotion.TickScriptedNpc/EvaluateEntitySupport in the
+                       // same per-tick loop - see AlundraEntityScriptProxy.Update's own doc). This opcode
+                       // used to ALSO push the raw (pre-decay) impulse straight onto
+                       // CharacterControllerComponent.SetVerticalVelocity, letting CharacterMotionSystem's
+                       // own per-RENDER-FRAME integrator move the entity a SECOND, independent time this
+                       // same tick before EvaluateEntitySupport's own Move() ran - real-time-integrated,
+                       // exactly the render-rate-dependent bug this fix removes (and, once
+                       // EvaluateEntitySupport also stopped consuming that pre-set velocity for real motion,
+                       // simply a redundant write immediately about to be zeroed the same frame). Without a
+                       // controller (bare-fallback spawn, or the intro trace harness - E4.e still owns that
+                       // simulated kinematics), ForceZ alone is what ever mattered anyway.
                 entity.ForceZ = SignExtend16(((v[2] << 8) | v[1])) * 0x10000 >> 8;
-                entity.Controller?.SetVerticalVelocity(entity.ForceZ * 50f / 65536f);
                 return 3;
 
             case 0x27: // Face player - Script_39_027 (EntityEventHandlers.cs:973-978): TargetDirection =
