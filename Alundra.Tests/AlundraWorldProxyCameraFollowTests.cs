@@ -9,10 +9,13 @@ namespace Alundra.Tests;
 /// Covers the pure math of E5.a's scripted camera follow (docs/plan-e5-camera.md) -
 /// <see cref="AlundraWorldProxy.ResolveCameraLookAt"/>, <see cref="AlundraWorldProxy.ComputeCameraLookAtRenderPosition"/>,
 /// <see cref="AlundraWorldProxy.ComputeCameraSmoothingFactor"/>, <see cref="AlundraWorldProxy.ApplyCameraSmoothing"/>,
-/// <see cref="AlundraWorldProxy.ClampCameraTargetToMap"/> and <see cref="AlundraWorldProxy.ComputeCameraZoom"/>.
+/// <see cref="AlundraWorldProxy.ClampCameraTargetToMap"/>, <see cref="AlundraWorldProxy.ComputeCameraZoom"/>
+/// and <see cref="AlundraWorldProxy.ComputeSmoothedCameraTarget"/> (the snap-or-lerp-then-clamp state
+/// transition <see cref="AlundraWorldProxy.UpdateCameraFollow"/> calls every frame).
 ///
-/// Not covered here (headless-untestable, needs a live World/Camera2dComponent): the wiring itself
-/// (<see cref="AlundraWorldProxy.UpdateCameraFollow"/>/<see cref="AlundraWorldProxy.ResolveDebugCameraOnce"/>) -
+/// Not covered here (headless-untestable, needs a live World/Camera2dComponent): the thin wiring around
+/// that state transition (<see cref="AlundraWorldProxy.UpdateCameraFollow"/>'s own null-guard/field
+/// writes, and <see cref="AlundraWorldProxy.ResolveDebugCameraOnce"/>) -
 /// same shape as <see cref="AlundraWorldProxyDebugCameraPanTests"/>'s own doc on
 /// <see cref="AlundraWorldProxy.UpdateDebugCameraPan"/>. <see cref="AlundraEventProgramRunnerTests"/> covers
 /// opcodes 0x67/0x68/0x69 (the only way <see cref="AlundraWorldProxy.EntityFollowedByCamera"/> is written
@@ -213,12 +216,28 @@ public class AlundraWorldProxyCameraFollowTests
 
     // -----------------------------------------------------------------------------------------
     // ComputeCameraZoom - runtime framing (decision E5-1)
+    //
+    // FIX (fresh verifier of cc1fc60): the divisor is the original's own DISPLAY height (236,
+    // StaticVariables.ScreenHeight/AlundraDisplay.NativeHeight - the actual rendered framebuffer), not
+    // its separate CLAMP height (240, GraphicManager.cs's own scroll-clamp arithmetic - still used
+    // unchanged by ClampCameraTargetToMap). See AlundraWorldProxy's own CameraDisplayHeight doc for the
+    // full display-vs-clamp investigation (file:line citations). At the real 1280x944 window (944 = 236
+    // x PixelScale 4) this now yields an exact integer zoom of 4 - pixel-perfect - instead of the old
+    // 944/240 = 3.9333.
     // -----------------------------------------------------------------------------------------
 
     [Fact]
-    public void ComputeCameraZoom_ExactMultipleOf240_IsIntegerZoom()
+    public void ComputeCameraZoom_RealWindowHeight_IsExactlyFour()
     {
-        Assert.Equal(4f, AlundraWorldProxy.ComputeCameraZoom(960));
+        // 944 = AlundraDisplay.WindowHeight (236 native x 4 PixelScale) - the actual window this DLL runs
+        // in. Must be an exact integer zoom: pixel-perfect rendering requires it, not merely "close to 4".
+        Assert.Equal(4f, AlundraWorldProxy.ComputeCameraZoom(944));
+    }
+
+    [Fact]
+    public void ComputeCameraZoom_ExactMultipleOf236_IsIntegerZoom()
+    {
+        Assert.Equal(2f, AlundraWorldProxy.ComputeCameraZoom(472));
     }
 
     [Fact]
@@ -226,7 +245,70 @@ public class AlundraWorldProxyCameraFollowTests
     {
         // Different viewport heights must yield different zooms - proves the value is derived, not a
         // constant 4.
-        Assert.Equal(2f, AlundraWorldProxy.ComputeCameraZoom(480));
-        Assert.Equal(1f, AlundraWorldProxy.ComputeCameraZoom(240));
+        Assert.Equal(2f, AlundraWorldProxy.ComputeCameraZoom(472));
+        Assert.Equal(1f, AlundraWorldProxy.ComputeCameraZoom(236));
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // FIX (fresh verifier of cc1fc60) - the clamp must feed back into the smoothing state, exactly like
+    // the original's own g_cameraScrollingX/Y assignment (GraphicManager.cs:97-122 clamps IN PLACE the
+    // same fields the catch-up formula at :75-92 reads back next frame). Covered here at the pure-math
+    // level: a smoothed target sitting outside the clamp bounds (as if a previous frame's lerp had
+    // overshot past an edge) must clamp on THIS call - proven by feeding the clamped result back in as
+    // "current" for a second call and checking the position no longer moves at all once already pinned,
+    // and moves immediately (not gradually) once the look-at target moves back inside bounds. This is a
+    // pure-math analogue of AlundraWorldProxyCameraFollowTests's own scope note: UpdateCameraFollow
+    // itself needs a live World/Camera2dComponent and is out of reach here, but the exact sequence it
+    // performs - smooth, then clamp, then feed the clamp back into next frame's smoothing input - is
+    // fully exercised by chaining ApplyCameraSmoothing -> ClampCameraTargetToMap -> (next call) by hand,
+    // matching UpdateCameraFollow's own new "_cameraSmoothedTarget = ClampCameraTargetToMap(...)" line.
+    // -----------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Exercises <see cref="AlundraWorldProxy.ComputeSmoothedCameraTarget"/> - the exact state-transition
+    /// <see cref="AlundraWorldProxy.UpdateCameraFollow"/> now calls every frame - across a short sequence
+    /// of frames: pin the camera at the map's bottom edge (an unclamped look-at of -936, the verifier's
+    /// own measured hidden overshoot, 97px past the -839 lower bound) for several ticks, THEN move the
+    /// look-at inward to -800 (safely inside <c>[-839, -120]</c>) and take one more tick.
+    ///
+    /// Asserts the FIXED behaviour: because <c>ComputeSmoothedCameraTarget</c> returns (and this test
+    /// feeds back in as next frame's <c>previousSmoothedTarget</c>) the CLAMPED value, the smoothing state
+    /// is already sitting exactly at -839 once the look-at moves inward - so the very next tick lerps from
+    /// -839 toward -800 and moves immediately to -836.5625, not still -839.
+    ///
+    /// A pre-fix implementation of this method (clamp applied only to the RETURNED render value, feeding
+    /// the UNCLAMPED lerp result back as next frame's state) would still read -839 here: one tick from the
+    /// hidden -936 toward -800 at the 1/16 catch-up rate only reaches -927.5 internally, which the clamp
+    /// still pins to -839 on the way out - motion would stay invisible for many more ticks (10 ticks still
+    /// reads -839) until the hidden internal state alone climbed back above the bound. This assertion
+    /// therefore fails against that pre-fix shape and passes against the current one.
+    /// </summary>
+    [Fact]
+    public void ComputeSmoothedCameraTarget_PinnedAtBoundThenTargetMovesInward_NextTickMovesImmediately()
+    {
+        const int mapWidthPx = 1248;
+        const int mapHeightPx = 960;
+
+        // Several frames pinned at the bottom edge with an unclamped look-at of -936 (the verifier's own
+        // measured overshoot) - each call feeds the PREVIOUS call's returned (clamped) value back in,
+        // exactly as UpdateCameraFollow's _cameraSmoothedTarget field does frame to frame.
+        var smoothed = new Vector3(804f, 0f, 0f);
+        var pinnedLookAt = new Vector3(804f, -936f, 0f);
+        for (var i = 0; i < 5; i++)
+        {
+            smoothed = AlundraWorldProxy.ComputeSmoothedCameraTarget(
+                smoothed, needsSnap: i == 0, pinnedLookAt, elapsedTime: 1f / 50f, mapWidthPx, mapHeightPx);
+        }
+
+        Assert.Equal(-839f, smoothed.Y); // clamped every frame, matches the plan's own documented bound.
+
+        // Look-at now moves inward (e.g. the followed entity steps away from the map edge) - one more
+        // tick.
+        var newLookAt = new Vector3(804f, -800f, 0f);
+        var nextFrame = AlundraWorldProxy.ComputeSmoothedCameraTarget(
+            smoothed, needsSnap: false, newLookAt, elapsedTime: 1f / 50f, mapWidthPx, mapHeightPx);
+
+        Assert.NotEqual(-839f, nextFrame.Y);
+        Assert.Equal(-836.5625f, nextFrame.Y, 3);
     }
 }

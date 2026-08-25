@@ -66,6 +66,41 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     private const float CameraVisibleHeight = 240f;
 
     /// <summary>
+    /// FIX (fresh verifier of cc1fc60), investigated in <c>GraphicManager.cs</c>/<c>StaticVariables.cs</c>:
+    /// the original itself uses TWO different heights and they are NOT the same value.
+    /// <list type="bullet">
+    /// <item><description><b>Display height (this constant) = 236.</b>
+    /// <c>StaticVariables.cs:56</c>: <c>public const int ScreenHeight = 236; //224</c> - the trailing
+    /// comment is an earlier (wrong) guess the analyst left in place, 236 is what actually ships. This is
+    /// the height of the real framebuffer: <c>Renderer.cs:22</c> allocates the backbuffer bitmap as
+    /// <c>ScreenWidth x ScreenHeight</c>, and every blit/copy routine in <c>GraphicManager.cs</c> that
+    /// touches the actual displayed surface bounds itself by <c>StaticVariables.ScreenHeight</c> (loop/clip
+    /// bounds at <c>GraphicManager.cs:243,284,2000,2030,2102,2191,2198,2223,2289</c>). It is also exactly
+    /// the converter's own <c>AlundraDisplay.NativeHeight</c> (<c>alundra-casaengine-project-converter/
+    /// AlundraDisplay.cs</c>), which is why the real 1280x944 window (944 = 236 x <c>PixelScale</c> 4) is
+    /// the RIGHT window, not a converter bug - no STOP needed here.</description></item>
+    /// <item><description><b>Clamp height (<see cref="CameraVisibleHeight"/>, 240) is a SEPARATE
+    /// constant</b> the original's scroll code uses for its own arithmetic, never for the framebuffer:
+    /// <c>GraphicManager.cs:117-121</c>'s clamp bound <c>0x2cf</c> (719) = mapHeightPx(960) - 240 - 1 (see
+    /// <see cref="ClampCameraTargetToMap"/>'s own doc for that derivation), and the SAME 240 shows up again,
+    /// completely independently, as <c>GraphicManager.cs:817</c>'s local <c>scrollScreenHeight = 240</c>
+    /// used only by the background-tile-layer scroll/wrap math (<c>GraphicManager.cs:942,1083,1086,1088,
+    /// 1170,1173</c>) and the overlay height at <c>GraphicManager.cs:1256</c> - none of which ever reads
+    /// <c>StaticVariables.ScreenHeight</c>. So the original itself clamps/scrolls as though 240 logical
+    /// rows were visible while only drawing 236 of them to the actual screen (a 4px margin baked into its
+    /// own scroll math, not a rendering bug this port needs to fix) - two genuinely different constants
+    /// for two different purposes, both faithfully kept separate here: <see cref="CameraVisibleHeight"/>
+    /// stays 240 for the CLAMP (<see cref="ClampCameraTargetToMap"/>, still verified against the original's
+    /// own 0x39f/0x2cf), while <see cref="CameraDisplayHeight"/> (236) now drives the ZOOM
+    /// (<see cref="ComputeCameraZoom"/>) so the rendered window is an exact integer multiple of the
+    /// original's own display area - the 320x240 CLAMP window and the 320x236 DISPLAY window overlap
+    /// almost entirely (236 of the clamp's 240 visible rows are actually drawn) and are never meant to be
+    /// the same measurement.</description></item>
+    /// </list>
+    /// </summary>
+    private const float CameraDisplayHeight = 236f;
+
+    /// <summary>
     /// E5-1's centre-bias: the original's look-at sits at screen position (0xa0, 0x88) = (160, 136) from
     /// the view's top-left (<c>GraphicManager.cs:75-92</c>), and 136 is 16px more than half of 240 (120) -
     /// i.e. the followed point is NOT at the view's geometric vertical centre, it sits 16px below it (more
@@ -1764,7 +1799,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <see cref="UpdateDebugCameraPan"/> so whichever runs first this frame (see <see cref="Update"/>'s
     /// own ordering) resolves it. E5-1 (docs/plan-e5-camera.md): also poses the ORIGINAL's own framing on
     /// the camera right here, the moment it is found - runtime-only (no asset touched, no full export
-    /// needed): <c>Zoom = real viewport height / 240</c> (see <see cref="ComputeCameraZoom"/> - computed
+    /// needed): <c>Zoom = real viewport height / 236</c> (see <see cref="ComputeCameraZoom"/> - computed
     /// from the LIVE viewport, never hardcoded, since <c>CameraComponent.InitializeWithWorld</c> already
     /// overwrites whatever Zoom/viewport an asset serialized) and <c>PixelSnap = true</c>.
     /// </summary>
@@ -1817,6 +1852,18 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// the scripted follow and the debug pan never fight (see <see cref="UpdateDebugCameraPan"/>'s own
     /// doc on that mechanism, decision bca9338).
     ///
+    /// FIX (fresh verifier of cc1fc60): the original writes its clamped scroll value straight back into
+    /// <c>g_cameraScrollingX/Y</c> (<c>GraphicManager.cs:97-122</c> assigns into the SAME fields the
+    /// smoothing read at <c>:75-92</c>) - the clamp IS the smoothing state, not a read-only view of it.
+    /// This port used to clamp only on the way OUT to <c>Camera2dComponent.Target</c> while
+    /// <see cref="_cameraSmoothedTarget"/> kept the unclamped value, so the lerp's next start point still
+    /// carried whatever overshoot the clamp had hidden (measured on map 389: the hero's New Game render
+    /// target is Y = -936, 97px past the clamp's own -839 lower bound) - once the camera left a clamped
+    /// edge it stayed pinned there until that hidden overshoot travelled back across the bound on its own,
+    /// instead of moving immediately like the original does. Assigning the clamped value back into
+    /// <see cref="_cameraSmoothedTarget"/> here (both the snap and lerp paths funnel through this single
+    /// assignment) closes that gap.
+    ///
     /// No-op before <see cref="_debugCamera"/> is resolved (see <see cref="ResolveDebugCameraOnce"/>,
     /// already called this frame by <see cref="Update"/>).
     /// </summary>
@@ -1840,21 +1887,41 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         var target = ComputeCameraLookAtRenderPosition(_cameraLookAtX, _cameraLookAtY, _cameraLookAtZ);
 
-        if (_cameraNeedsSnap)
-        {
-            _cameraSmoothedTarget = target;
-            _cameraNeedsSnap = false;
-        }
-        else
-        {
-            var factor = ComputeCameraSmoothingFactor(elapsedTime);
-            _cameraSmoothedTarget = ApplyCameraSmoothing(_cameraSmoothedTarget, target, factor);
-        }
+        // FIX (see this method's own doc above): ComputeSmoothedCameraTarget returns the CLAMPED value,
+        // and that is what gets stored back into _cameraSmoothedTarget - not just written out to Target -
+        // exactly like the original's own g_cameraScrollingX/Y assignment.
+        _cameraSmoothedTarget = ComputeSmoothedCameraTarget(
+            _cameraSmoothedTarget, _cameraNeedsSnap, target, elapsedTime,
+            _tileMapData != null ? _tileMapData.MapSize.Width * TileWidth : null,
+            _tileMapData != null ? _tileMapData.MapSize.Height * TileHeight : null);
+        _cameraNeedsSnap = false;
+        _debugCamera.Target = _cameraSmoothedTarget;
+    }
 
-        _debugCamera.Target = _tileMapData != null
-            ? ClampCameraTargetToMap(
-                _cameraSmoothedTarget, _tileMapData.MapSize.Width * TileWidth, _tileMapData.MapSize.Height * TileHeight)
-            : _cameraSmoothedTarget;
+    /// <summary>
+    /// FIX (fresh verifier of cc1fc60) - pure state-transition factored out of <see cref="UpdateCameraFollow"/>
+    /// for unit testing (that method itself needs a live World/Camera2dComponent - see this class's own
+    /// scope note in <c>AlundraWorldProxyCameraFollowTests</c>). Snaps or lerps
+    /// <paramref name="previousSmoothedTarget"/> toward <paramref name="lookAtRenderTarget"/>, THEN clamps
+    /// - and returns the CLAMPED result as the new smoothing state (not just the render output), so the
+    /// next call's <paramref name="previousSmoothedTarget"/> already reflects the clamp, exactly like the
+    /// original writes its clamped scroll value back into <c>g_cameraScrollingX/Y</c>
+    /// (<c>GraphicManager.cs:97-122</c>) rather than leaving it a read-only view over an unclamped state.
+    /// <paramref name="mapWidthPx"/>/<paramref name="mapHeightPx"/> null (no tile map yet) skips the clamp,
+    /// matching <see cref="UpdateCameraFollow"/>'s own <c>_tileMapData == null</c> case.
+    /// </summary>
+    internal static Vector3 ComputeSmoothedCameraTarget(
+        Vector3 previousSmoothedTarget, bool needsSnap, Vector3 lookAtRenderTarget, float elapsedTime,
+        int? mapWidthPx, int? mapHeightPx)
+    {
+        var smoothed = needsSnap
+            ? lookAtRenderTarget
+            : ApplyCameraSmoothing(
+                previousSmoothedTarget, lookAtRenderTarget, ComputeCameraSmoothingFactor(elapsedTime));
+
+        return mapWidthPx.HasValue && mapHeightPx.HasValue
+            ? ClampCameraTargetToMap(smoothed, mapWidthPx.Value, mapHeightPx.Value)
+            : smoothed;
     }
 
     /// <summary>
@@ -1936,17 +2003,18 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
-    /// E5-1 - pure math factored out for unit testing: the camera's <see cref="Camera2dComponent.Zoom"/>
-    /// that reproduces the original's own <see cref="CameraVisibleHeight"/>-tall visible area for a real
+    /// FIX (fresh verifier of cc1fc60) - pure math factored out for unit testing: the camera's
+    /// <see cref="Camera2dComponent.Zoom"/> that reproduces the original's own
+    /// <see cref="CameraDisplayHeight"/>-tall (236, NOT <see cref="CameraVisibleHeight"/>'s 240 - see that
+    /// constant's own doc for the display-vs-clamp investigation) DISPLAY area for a real
     /// <paramref name="viewportHeight"/> (<c>Camera2dComponent.ComputeProjectionMatrix</c>'s own visible
     /// area is <c>viewport / Zoom</c>). Computed at runtime from the LIVE viewport rather than hardcoded,
-    /// per the plan's own instruction - the DLL's own window size (<c>AlundraDisplay.WindowHeight</c> =
-    /// 944, PixelScale x the UNRELATED 236 "native screen" constant) does not currently divide evenly by
-    /// 240, so this yields a non-integer zoom (944/240 = 3.9333) until a later export-time fix aligns the
-    /// window height to 240 x PixelScale - a known, reported follow-up (see this slice's own commit
-    /// message), not a blocker for this DLL-only slice (no asset export here).
+    /// per the plan's own instruction - the DLL's own window height (<c>AlundraDisplay.WindowHeight</c> =
+    /// 944 = 236 x <c>PixelScale</c> 4) now divides evenly by 236, so this yields the exact integer zoom 4
+    /// at the real 1280x944 window, restoring pixel-perfect rendering (used to be 944/240 = 3.9333, texels
+    /// stretched over 3-4 device pixels).
     /// </summary>
-    internal static float ComputeCameraZoom(int viewportHeight) => viewportHeight / CameraVisibleHeight;
+    internal static float ComputeCameraZoom(int viewportHeight) => viewportHeight / CameraDisplayHeight;
 
     /// <summary>
     /// DEBUG ONLY - temporary tool, to be gated/replaced once the real camera-follow (E4) lands. Pans the
