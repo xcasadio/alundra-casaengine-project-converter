@@ -8,10 +8,26 @@ namespace Alundra.Scripts;
 /// extracted from <see cref="AlundraPlayerManager"/>'s own E2 hero tick (<c>RunOneTick</c>/<c>IncrementForce</c>,
 /// PhysicsEngine.cs:1445-1446/1490-1491/1551-1598) so E4.b's scripted-NPC mover
 /// (<see cref="AlundraEntityScriptProxy.Update"/>'s own <c>!IsPlayer</c> branch) can reuse the exact same
-/// generic pieces - <see cref="IncrementForce"/>, the 50 Hz accumulator/catch-up-4 pattern, and
-/// <see cref="AnimationTables"/>' own offset tables - without duplicating them, and WITHOUT changing the
-/// hero's own behaviour: <see cref="AlundraPlayerManager.Tick"/> now simply calls <see cref="TickPlayer"/>,
-/// bit-for-bit the same body <c>RunOneTick</c> used to run inline.
+/// generic pieces - <see cref="IncrementForce"/> and <see cref="AnimationTables"/>' own offset tables -
+/// without duplicating them, and WITHOUT changing the hero's own behaviour: <see cref="AlundraPlayerManager.Tick"/>
+/// now simply calls <see cref="TickPlayer"/>, running the same body <c>RunOneTick</c> used to run inline,
+/// once per logic tick.
+///
+/// ONE-CLOCK fix (user-reported stall, sailor entity 12 of map 389 stuck on opcode 0x1F at pc 1470 -
+/// see the commit message for the full diagnosis): this class used to own its OWN per-entity 50 Hz
+/// accumulator (<c>PhysicsTickAccumulator</c>, fed a raw <c>elapsedTime</c> every RENDERED frame),
+/// completely independent of <see cref="AlundraLogicClock"/>, the SAME clock that already gates the
+/// script (pick/run) pass. The two accumulators phase-drifted against each other (they only agree on the
+/// long-run RATE, not on which rendered frame carries a tick) - <see cref="AlundraEntityScriptProxy.ForceAdjusted"/>
+/// was cleared on a render frame that carried no motion sub-step and set only on a frame that did, so a
+/// 0x1F (Walk with collision)'s own script-side read of <c>ForceAdjusted</c> usually saw a stale 0 and
+/// never took its "movement was curtailed" exit - the entity walked into geometry and stalled forever.
+/// <see cref="TickPlayer"/>/<see cref="TickScriptedNpc"/> no longer accumulate time themselves: the
+/// caller (<see cref="AlundraEntityScriptProxy.Update"/>) passes the SAME <c>ticksThisFrame</c> count
+/// <see cref="IAlundraScriptHost.LogicTicksThisFrame"/> already handed the script pass this frame, so one
+/// logic tick is always exactly one script pass followed by one motion sub-step (and, for an NPC, one
+/// <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/> vertical step) - never more, never fewer,
+/// never on a different frame.
 ///
 /// The ONE deliberate difference between the two callers is which field feeds the per-tick
 /// <c>AnimSetsByAnim</c> lookup - <see cref="TickPlayer"/> keeps E2's own <c>TargetAnimationId</c> (out of
@@ -23,12 +39,11 @@ namespace Alundra.Scripts;
 /// animation id as a parameter precisely so this one distinction stays a one-line difference at each call
 /// site rather than two near-duplicate tick bodies.
 ///
-/// No delegate/closure of any kind is used anywhere here (<see cref="TickPlayer"/>/<see cref="TickScriptedNpc"/>
-/// each inline their own copy of the tiny accumulator while-loop instead of sharing it through an
-/// <c>Action</c>) - both run every frame for potentially many entities, and a captured lambda would
-/// allocate per call, violating this codebase's no-per-frame-allocation rule (see e.g.
-/// <see cref="AlundraEventProgramRunner"/>'s own <c>_fetchScratch</c> doc for the same constraint applied
-/// elsewhere).
+/// No delegate/closure of any kind is used anywhere here (both callers inline their own tiny loop/call
+/// instead of sharing one through an <c>Action</c>) - both run every frame for potentially many entities,
+/// and a captured lambda would allocate per call, violating this codebase's no-per-frame-allocation rule
+/// (see e.g. <see cref="AlundraEventProgramRunner"/>'s own <c>_fetchScratch</c> doc for the same
+/// constraint applied elsewhere).
 /// </summary>
 internal static class AlundraScriptedMotion
 {
@@ -45,59 +60,48 @@ internal static class AlundraScriptedMotion
     private const int TileWidth = 24;
     private const int TileHeight = 16;
 
-    /// <summary>Fixed-step tick for the hero pawn - see this class' own doc for why this is a thin,
-    /// non-shared accumulator loop rather than a delegate-based one. Called from
-    /// <see cref="AlundraPlayerManager.Tick"/>, bit-for-bit the same body/order as before this
-    /// extraction.</summary>
-    internal static void TickPlayer(AlundraEntityScriptProxy player, float elapsedTime)
+    /// <summary>Runs <paramref name="ticks"/> whole 50 Hz kinematic ticks for the hero pawn - the tick
+    /// COUNT is owned entirely by the caller now (this class' own doc, ONE-CLOCK fix): it is always the
+    /// same <c>ticksThisFrame</c> the shared <see cref="AlundraLogicClock"/> already handed the script
+    /// pass this same frame, never a separately-accumulated value. Called from
+    /// <see cref="AlundraPlayerManager.Tick"/>.</summary>
+    internal static void TickPlayer(AlundraEntityScriptProxy player, int ticks)
     {
-        // PhysicsEngine.cs:17 (top of UpdateEntitiesPhysics): ForceAdjusted is cleared exactly once per
-        // frame, before this frame's own sub-step loop - see AlundraEntityScriptProxy.ForceAdjusted's own
-        // doc. A curtailed sub-step later THIS SAME frame (MoveControllerAndPullPosition) sets it back;
-        // it then stays set for the rest of this frame regardless of how many more sub-steps run.
-        player.ForceAdjusted = 0;
-        player.PhysicsTickAccumulator += elapsedTime;
-
-        var ticks = 0;
-        while (player.PhysicsTickAccumulator >= FixedTickSeconds && ticks < MaxTicksPerFrame)
+        for (var i = 0; i < ticks; i++)
         {
-            player.PhysicsTickAccumulator -= FixedTickSeconds;
-            RunOneKinematicTick(player, player.TargetAnimationId);
-            ticks++;
-        }
-
-        if (ticks >= MaxTicksPerFrame)
-        {
-            player.PhysicsTickAccumulator = 0f;
+            RunOneMotionTick(player, player.TargetAnimationId);
         }
     }
 
-    /// <summary>Fixed-step tick for a controller-driven, non-player entity (E4.b,
+    /// <summary>Runs ONE 50 Hz kinematic tick for a controller-driven, non-player entity (E4.b,
     /// docs/plan-e4-deplacement-scripte.md "Mover scripte par frame") - same shape as
     /// <see cref="TickPlayer"/>, keyed off <see cref="AlundraEntityScriptProxy.CurrentAnimationId"/> instead
     /// of <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> - see this class' own doc for why.
-    /// Called from <see cref="AlundraEntityScriptProxy.Update"/>'s own <c>!IsPlayer</c> branch,
-    /// unconditionally (E4.e) - <see cref="RunOneKinematicTick"/>'s own <see cref="AlundraEntityScriptProxy.Controller"/>-null
-    /// branch integrates <c>Pos*</c> directly, same as it always did for the pre-E3 hero, so this is safe
-    /// to call for every non-player entity regardless of whether it carries a controller.</summary>
-    internal static void TickScriptedNpc(AlundraEntityScriptProxy entity, float elapsedTime)
+    /// Called once per logic tick from <see cref="AlundraEntityScriptProxy.Update"/>'s own <c>!IsPlayer</c>
+    /// branch, inside the SAME per-tick loop that runs this entity's script pass immediately before it and
+    /// its <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/> immediately after (this class' own
+    /// doc, ONE-CLOCK fix) - unconditionally (E4.e), not gated on <see cref="AlundraEntityScriptProxy.Controller"/>:
+    /// <see cref="RunOneKinematicTick"/>'s own controller-null branch integrates <c>Pos*</c> directly, same
+    /// as it always did for the pre-E3 hero, so this is safe to call for every non-player entity regardless
+    /// of whether it carries a controller.</summary>
+    internal static void TickScriptedNpc(AlundraEntityScriptProxy entity)
     {
-        // See TickPlayer's own doc on this same top-of-frame reset (PhysicsEngine.cs:17).
+        RunOneMotionTick(entity, entity.CurrentAnimationId);
+    }
+
+    /// <summary>One logic tick's worth of motion for either caller - PhysicsEngine.cs:17 (top of
+    /// UpdateEntitiesPhysics): <see cref="AlundraEntityScriptProxy.ForceAdjusted"/> is cleared exactly once
+    /// per TICK, immediately before that tick's own kinematic step - see that field's own doc. A curtailed
+    /// step (<see cref="AlundraEntityScriptProxy.MoveControllerAndPullPosition"/>) sets it back within this
+    /// SAME tick; it then stays set until the very next tick's own clear, which is exactly what makes it a
+    /// reliable "last completed tick was curtailed" signal for the NEXT tick's script pass to read (see
+    /// <see cref="AlundraEntityScriptProxy.ForceAdjusted"/>'s own doc and this class' own doc, ONE-CLOCK
+    /// fix).</summary>
+    private static void RunOneMotionTick(AlundraEntityScriptProxy entity, uint animSetAnimationId)
+    {
         entity.ForceAdjusted = 0;
-        entity.PhysicsTickAccumulator += elapsedTime;
-
-        var ticks = 0;
-        while (entity.PhysicsTickAccumulator >= FixedTickSeconds && ticks < MaxTicksPerFrame)
-        {
-            entity.PhysicsTickAccumulator -= FixedTickSeconds;
-            RunOneKinematicTick(entity, entity.CurrentAnimationId);
-            ticks++;
-        }
-
-        if (ticks >= MaxTicksPerFrame)
-        {
-            entity.PhysicsTickAccumulator = 0f;
-        }
+        RunOneKinematicTick(entity, animSetAnimationId);
+        entity.MotionTickCount++; // see that field's own doc (ONE-CLOCK invariant instrumentation).
     }
 
     /// <summary>

@@ -205,15 +205,18 @@ public static class AlundraPlayerManager
     }
 
     /// <summary>
-    /// Fixed-step (50 Hz, matching the original's own tick rate) kinematic integration - port of
+    /// Runs <paramref name="ticks"/> whole 50 Hz kinematic ticks - port of
     /// <c>PhysicsEngine.UpdateEntityPhysics</c> (PhysicsEngine.cs:1579-1597), the <c>IncrementForce</c>
     /// calls (PhysicsEngine.cs:1445-1446/1490-1491), and the flat-ground half of <c>ApplyEntityForces</c>
     /// (PhysicsEngine.cs:1514-1547) plus the position update (PhysicsEngine.cs:421-422) - restricted to
     /// exactly what a collision-free, gravity-free player needs (see this class' own doc, D4/E2).
     /// Delegates to <see cref="AlundraScriptedMotion.TickPlayer"/> (E4.b extraction,
-    /// docs/plan-e4-deplacement-scripte.md - see that class' own doc): bit-for-bit the same accumulator/
-    /// tick body this method used to run inline, now shared with the E4.b scripted-NPC mover.
+    /// docs/plan-e4-deplacement-scripte.md - see that class' own doc), now driven by the SAME
+    /// <c>ticksThisFrame</c> the shared <see cref="AlundraLogicClock"/> hands the script/pick-run pass this
+    /// frame (ONE-CLOCK fix, see <see cref="AlundraScriptedMotion"/>'s own class doc) instead of its own
+    /// separately-accumulated elapsed time - the hero's own observable per-tick behaviour is unchanged, only
+    /// the source of the tick count.
     /// </summary>
-    public static void Tick(AlundraEntityScriptProxy player, float elapsedTime)
-        => AlundraScriptedMotion.TickPlayer(player, elapsedTime);
+    public static void Tick(AlundraEntityScriptProxy player, int ticks)
+        => AlundraScriptedMotion.TickPlayer(player, ticks);
 }

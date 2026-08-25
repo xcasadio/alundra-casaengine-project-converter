@@ -2318,4 +2318,324 @@ public class AlundraNpcCharacterControllerMoverTests
 
         Assert.Equal(forceZAtClear, proxy.ForceZ); // decay genuinely stopped, not merely masked by the ground clamp.
     }
+
+    // -----------------------------------------------------------------------------------------
+    // ONE-CLOCK fix (user-reported stall, sailor entity 12 of map 389 stuck on opcode 0x1F at pc 1470):
+    // AlundraScriptedMotion used to run its own SEPARATE per-entity 50 Hz accumulator, fed raw elapsedTime
+    // every RENDERED frame, completely independent of the shared AlundraLogicClock that already gates the
+    // script (pick/run) pass. At the user's own real frame rate (dt=1/123, NOT an exact divisor of 1/50)
+    // the two accumulators phase-drifted: ForceAdjusted was cleared on a render frame that carried no
+    // motion sub-step and set only on a frame that did, so a 0x1F's own script-side read of ForceAdjusted
+    // almost always saw a stale 0 and its "movement was curtailed" exit never fired - the walk (and the
+    // whole intro, which never reaches its own player-gains-control opcode 0x11) stalled forever. The tests
+    // below cover: (A) the exact regression, at the exact frame rate, through the exact opcode; (B) the
+    // single-clock invariant this fix establishes; (C) ForceAdjusted's own corrected lifetime.
+    // -----------------------------------------------------------------------------------------
+
+    /// <summary>Counts every real script dispatch (<see cref="IEventProgramRunner.RunScript"/>) while
+    /// delegating to a REAL <see cref="AlundraEventProgramRunner"/> - lets a test observe "how many times
+    /// this entity's own script pass actually ran" from OUTSIDE the fused per-tick loop, independent of
+    /// <see cref="AlundraEntityScriptProxy.MotionTickCount"/>/<see cref="AlundraEntityScriptProxy.SupportTickCount"/>
+    /// (which are incremented from inside <see cref="AlundraScriptedMotion"/>/<see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>
+    /// respectively) - three independently-observed counters for the same ONE-CLOCK invariant.</summary>
+    private sealed class ScriptPassCountingRunner : IEventProgramRunner
+    {
+        private readonly AlundraEventProgramRunner _inner;
+        public ScriptPassCountingRunner(AlundraEventProgramRunner inner) => _inner = inner;
+        public int ScriptPassCount { get; private set; }
+
+        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        {
+            ScriptPassCount++;
+            _inner.RunScript(entity, programSlot);
+        }
+
+        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        {
+            ScriptPassCount++;
+            _inner.RunSpriteEvent(entity);
+        }
+    }
+
+    /// <summary>Same shape as <see cref="RealRunnerScriptHost"/>, but exposes <see cref="TotalTicks"/> -
+    /// the shared <see cref="AlundraLogicClock"/>'s own running tick total across every
+    /// <see cref="IAlundraScriptHost.LogicTicksThisFrame"/> call this host has served, the test's own
+    /// direct observable for "how many real logic ticks have elapsed so far" (same pattern
+    /// <c>GullClimbScriptHost</c>, in this file's own gull vertical-fidelity tests, already uses).</summary>
+    private sealed class TickCountingRunnerScriptHost : IAlundraScriptHost
+    {
+        public TickCountingRunnerScriptHost(IEventProgramRunner runner) => Runner = runner;
+        public IEventProgramRunner Runner { get; }
+        public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
+        public AlundraGameState GameState { get; } = new();
+        public AlundraPlayerController? PlayerController => null;
+        public List<AlundraEntityScriptProxy> Collidables { get; } = new();
+        IReadOnlyList<AlundraEntityScriptProxy> IAlundraScriptHost.Collidables => Collidables;
+
+        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        {
+        }
+
+        public int TotalTicks { get; private set; }
+
+        private readonly AlundraLogicClock _logicClock = new();
+        public int LogicTicksThisFrame(float elapsedTime)
+        {
+            var ticks = _logicClock.TicksThisFrame(elapsedTime);
+            _logicClock.CloseFrame();
+            TotalTicks += ticks;
+            return ticks;
+        }
+    }
+
+    /// <summary>
+    /// (A) THE regression test - reproduces the user's own real-game stall as closely as this headless
+    /// fixture can: a real map-389 wall (same cell/mask <see cref="Walk0x1F_RealWallCurtailsMovement_EndsEarlyOnForceAdjustedRatherThanDistance"/>
+    /// already uses, at dt=1/50, where the bug is invisible - see this method's own final remark on why),
+    /// a REAL threshold-24 0x1F dispatched through the REAL <see cref="AlundraEventProgramRunner"/> once
+    /// per logic tick, but driven at dt=1/123 - the user's own real frame rate, and specifically NOT an
+    /// exact divisor of the 50 Hz logic tick, which is exactly what let the two independent accumulators
+    /// drift apart pre-fix. FAILS before this fix (confirmed by running this exact test body against the
+    /// pre-fix source - see the commit message) and PASSES after it.
+    /// </summary>
+    [Fact]
+    public void Walk0x1F_RealWallAtUsersRealFrameRateDt1Over123_AdvancesPastTheOpcodeWithinAFewTicksOfTheBlock()
+    {
+        var projectRoot = FindProjectRoot();
+        var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        if (settings == null)
+        {
+            return;
+        }
+
+        var document = new EventProgramDocument
+        {
+            MapIndex = 389,
+            EventCodesCTable = new[] { 0, 0 },
+            // Real 0x1F occurrence shape (threshold 24px), followed by a marker opcode (0x1A SetAnim 254 -
+            // unreachable by any real AnimSet index) so "the opcode advanced" is directly observable
+            // without inspecting interpreter internals, same convention as this file's own other real-0x1F
+            // tests.
+            Codes = new[] { 0x1F, 24, 0, 0x1A, 254, 0xFF },
+        };
+        var opcodeRunner = new AlundraEventProgramRunner(document, new AlundraGameState(), worldContext: null);
+        var countingRunner = new ScriptPassCountingRunner(opcodeRunner);
+        var host = new TickCountingRunnerScriptHost(countingRunner);
+
+        var world = BuildWorld(field);
+        var (entity, proxy) = BuildNpcPawn(world, settings, new Vector3(564f, 632f, 80f), host);
+        proxy.Controller!.Settings.WalkabilityMask = 0x41u; // ClassB - real cell (24,39) walkability 1 blocks.
+        proxy.ProgramIndexes[ScriptHelper.ProgramCTick] = 0x81; // bit 0x80 set, masked index 1.
+        world.Update(1f / 50f); // register with CharacterMotionSystem, same settle-first pattern as every other test in this file.
+
+        proxy.AnimSetsByAnim = new Dictionary<int, AnimSetEntry>
+        {
+            [1] = new AnimSetEntry { Anim = 1, Speed = 160, Acceleration = 0 },
+        };
+        proxy.TargetAnimationId = 1;
+        proxy.TargetDirection = 24; // due east, straight at the wall.
+
+        var ticksAtBlockStart = -1;
+        var ticksAtCompletion = -1;
+        var codeIndexAtBlockStart = -1;
+
+        // Frame budget: cell (24,39) starts ~12px east of the 564px spawn, comfortably reached well before
+        // 40 real logic ticks (this file's own dt=1/50 sibling test uses a 40-frame budget for the SAME
+        // scenario) - at ~123 Hz, roughly 2.46 render frames carry each logic tick, so 400 render frames
+        // (≈3.25s) covers the same ~40-tick budget many times over, generous headroom against the
+        // catch-up cap and the odd zero-tick frame.
+        for (var frame = 1; frame <= 400 && ticksAtCompletion < 0; frame++)
+        {
+            world.Update(1f / 123f);
+
+            if (ticksAtBlockStart < 0 && proxy.ForceAdjusted != 0)
+            {
+                ticksAtBlockStart = host.TotalTicks;
+                codeIndexAtBlockStart = proxy.EventProgramState.CodeIndex;
+            }
+
+            if (proxy.TargetAnimationId == 254)
+            {
+                ticksAtCompletion = host.TotalTicks;
+            }
+        }
+
+        Assert.True(ticksAtBlockStart > 0, "expected the wall to actually curtail the move (ForceAdjusted set) within this test's own frame budget.");
+        Assert.True(ticksAtCompletion > 0, "expected the 0x1F to advance past its own collision exit within this test's own frame budget at dt=1/123 - THE regression this fix addresses (pre-fix, this assertion fails: the walk stalls forever, exactly like sailor 12 on the real intro).");
+
+        // "advances WITHIN A COUPLE OF TICKS of the block" - the very next tick's own script pass is the
+        // first one guaranteed to observe this tick's ForceAdjusted (see that field's own doc); a small,
+        // fixed tolerance (not "eventually") is the whole point of the fix.
+        Assert.InRange(ticksAtCompletion - ticksAtBlockStart, 0, 3);
+
+        // The script's own CodeIndex genuinely moved past the 0x1F dispatch, not merely resumed at the
+        // same pc (RunScript re-enters at CodeIndex every call for a suspended 0x1F occurrence).
+        Assert.True(proxy.EventProgramState.CodeIndex > codeIndexAtBlockStart, $"expected CodeIndex to move past the 0x1F (was {codeIndexAtBlockStart} at block start, still {proxy.EventProgramState.CodeIndex} at completion).");
+
+        // Same distance sanity as the dt=1/50 sibling test: proves ForceAdjusted, not the distance
+        // threshold, ended the walk - the wall stopped the entity barely past spawn, well under 24px.
+        Assert.True(entity.RootComponent!.Position.X < 564f + 24f);
+    }
+
+    /// <summary>
+    /// (B) Single-clock invariant: over N frames at a non-integer-dividing dt (1/123, the user's own real
+    /// frame rate) the number of script passes (<see cref="ScriptPassCountingRunner.ScriptPassCount"/>,
+    /// observed from OUTSIDE the fused loop), motion sub-steps
+    /// (<see cref="AlundraEntityScriptProxy.MotionTickCount"/>), and vertical/support steps
+    /// (<see cref="AlundraEntityScriptProxy.SupportTickCount"/>) are IDENTICAL - they can no longer diverge,
+    /// which is the whole point of this fix (pre-fix, motion ran on its own separate accumulator and could
+    /// diverge from the other two at this exact dt). At dt=1/50 (an exact divisor - one render frame is
+    /// always exactly one logic tick) all three are additionally exactly 1 per frame, i.e. equal to the
+    /// frame count itself.
+    /// </summary>
+    [Theory]
+    [InlineData(1f / 123f)]
+    [InlineData(1f / 50f)]
+    public void OneClock_ScriptMotionAndSupportStepCountsNeverDiverge(float dt)
+    {
+        var projectRoot = FindProjectRoot();
+        var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        if (settings == null)
+        {
+            return;
+        }
+
+        var document = new EventProgramDocument
+        {
+            MapIndex = 389,
+            EventCodesCTable = new[] { 0, 0 },
+            // A program that never suspends/ends (SetDirection then an infinite skip-nothing loop shape is
+            // unnecessary - EventTrigger simply re-resolves to ProgramCTick every tick for an untouched
+            // Normal-status entity, see PickEventTrigger's own doc, so a single 0x1A + terminator dispatched
+            // fresh every tick is enough) - this test only cares about the TICK COUNT, not any particular
+            // program outcome.
+            Codes = new[] { 0x1A, 1, 0xFF },
+        };
+        var opcodeRunner = new AlundraEventProgramRunner(document, new AlundraGameState(), worldContext: null);
+        var countingRunner = new ScriptPassCountingRunner(opcodeRunner);
+        var host = new TickCountingRunnerScriptHost(countingRunner);
+
+        var world = BuildWorld(field);
+        // Open flat ground, no wall in the walk direction - nothing here should curtail the move; this
+        // test is about tick COUNTS, not collision.
+        var (_, proxy) = BuildNpcPawn(world, settings, new Vector3(444f, 920f, 80f), host);
+        proxy.ProgramIndexes[ScriptHelper.ProgramCTick] = 0x81;
+        world.Update(1f / 50f); // settle registration first, same as every other test in this file.
+
+        proxy.AnimSetsByAnim = new Dictionary<int, AnimSetEntry>
+        {
+            [1] = new AnimSetEntry { Anim = 1, Speed = 160, Acceleration = 0 },
+        };
+        proxy.TargetAnimationId = 1;
+        proxy.TargetDirection = 0; // due south - open ground the whole way (see BuildNpcPawn's own doc / GravityFlagged... test's own cell notes for this row).
+
+        // Snapshotted AFTER the settle-first world.Update(1/50) above (which itself consumes exactly one
+        // tick, since 1/50 exactly equals the clock's own fixed-tick constant) - so the assertions below
+        // are about ticks elapsed DURING the loop only.
+        var ticksBeforeLoop = host.TotalTicks;
+        var scriptPassesBeforeLoop = countingRunner.ScriptPassCount;
+        var motionTicksBeforeLoop = proxy.MotionTickCount;
+        var supportTicksBeforeLoop = proxy.SupportTickCount;
+
+        const int frames = 300;
+        for (var frame = 0; frame < frames; frame++)
+        {
+            world.Update(dt);
+        }
+
+        var ticksDuringLoop = host.TotalTicks - ticksBeforeLoop;
+        Assert.True(ticksDuringLoop > 0, "expected at least one real logic tick to have elapsed during the loop.");
+        Assert.Equal(ticksDuringLoop, countingRunner.ScriptPassCount - scriptPassesBeforeLoop);
+        Assert.Equal(ticksDuringLoop, proxy.MotionTickCount - motionTicksBeforeLoop);
+        Assert.Equal(ticksDuringLoop, proxy.SupportTickCount - supportTicksBeforeLoop);
+
+        if (dt == 1f / 50f)
+        {
+            Assert.Equal(frames, ticksDuringLoop); // exact divisor - one tick per frame, no catch-up, no skipped frame.
+        }
+    }
+
+    /// <summary>
+    /// (C) <see cref="AlundraEntityScriptProxy.ForceAdjusted"/>'s own corrected lifetime: cleared once per
+    /// LOGIC tick (not once per rendered frame), set within that same tick when a real wall curtails the
+    /// move, and - the actual bug this fix closes - VISIBLE to the immediately following tick's own script
+    /// pass, even across the several render frames of dt=1/123 that carry no tick in between (this is
+    /// exactly what pre-fix would fail: ForceAdjusted could be cleared by a tick-less render frame between
+    /// the curtailing tick and the NEXT tick's own script read).
+    /// </summary>
+    [Fact]
+    public void ForceAdjusted_ClearedOncePerTick_SurvivesTicklessRenderFramesUntilTheNextTicksScriptRead()
+    {
+        var projectRoot = FindProjectRoot();
+        var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
+        if (field == null)
+        {
+            return;
+        }
+
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        if (settings == null)
+        {
+            return;
+        }
+
+        var world = BuildWorld(field);
+        var host = new TickCountingRunnerScriptHost(new NoOpRunner());
+        var (_, proxy) = BuildNpcPawn(world, settings, new Vector3(564f, 632f, 80f), host);
+        proxy.Controller!.Settings.WalkabilityMask = 0x41u; // ClassB - real cell (24,39) walkability 1 blocks.
+        world.Update(1f / 50f);
+
+        proxy.AnimSetsByAnim = new Dictionary<int, AnimSetEntry>
+        {
+            [1] = new AnimSetEntry { Anim = 1, Speed = 160, Acceleration = 0 },
+        };
+        proxy.TargetAnimationId = 1;
+        proxy.TargetDirection = 24; // due east, straight at the wall.
+
+        var previousForceAdjusted = proxy.ForceAdjusted;
+        var sawForceAdjustedSet = false;
+        var sawTicklessFrameAfterSet = false;
+
+        for (var frame = 0; frame < 400; frame++)
+        {
+            var ticksBefore = host.TotalTicks;
+            world.Update(1f / 123f);
+            var tickHappenedThisFrame = host.TotalTicks != ticksBefore;
+
+            if (sawForceAdjustedSet && !tickHappenedThisFrame)
+            {
+                // THE invariant this fix guarantees: a render frame that carried NO logic tick must never
+                // change ForceAdjusted - only a tick's own clear-then-maybe-set (AlundraScriptedMotion's
+                // RunOneMotionTick) may touch it. Pre-fix, TickScriptedNpc ran unconditionally every
+                // RENDER frame and unconditionally cleared ForceAdjusted at its own top regardless of
+                // whether its OWN separate accumulator actually ran a motion sub-step that frame - so a
+                // tick-less-per-the-logic-clock frame could still silently wipe the previous real tick's
+                // curtailment signal. This assertion is exactly what that pre-fix behaviour would violate.
+                sawTicklessFrameAfterSet = true;
+                Assert.Equal(previousForceAdjusted, proxy.ForceAdjusted);
+            }
+
+            if (proxy.ForceAdjusted != 0)
+            {
+                sawForceAdjustedSet = true;
+            }
+
+            previousForceAdjusted = proxy.ForceAdjusted;
+        }
+
+        Assert.True(sawForceAdjustedSet, "expected the real wall to curtail the move (ForceAdjusted set) within this test's own frame budget.");
+        Assert.True(sawTicklessFrameAfterSet, "expected at least one render frame with no logic tick to occur after ForceAdjusted was set, at dt=1/123 - otherwise this test never actually exercises the invariant.");
+    }
 }

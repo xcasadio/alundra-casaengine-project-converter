@@ -20,9 +20,12 @@ namespace Alundra.Scripts;
 /// HeadlessIntroSimulation in tests), NOT one accumulator per entity: a per-entity accumulator would
 /// phase-drift entities spawned at different real times against each other and against the world's own
 /// MapEvents/catch-up passes, which must all agree on "how many ticks happened this frame" to stay in
-/// lock-step (exactly the shape <see cref="AlundraScriptedMotion"/>'s OWN per-entity
-/// <c>PhysicsTickAccumulator</c> deliberately does NOT need to agree on, since motion is smooth/visual,
-/// not logic-stepped - see that class' own doc).
+/// lock-step. <see cref="AlundraScriptedMotion"/> used to keep its OWN separate per-entity accumulator for
+/// exactly this reason it should not have (motion IS logic-stepped, its per-tick outcome feeds back into
+/// the script pass via <see cref="AlundraEntityScriptProxy.ForceAdjusted"/> - see that class' own
+/// ONE-CLOCK fix doc) - it has since been folded into this same clock instead, so <see cref="TicksThisFrame"/>
+/// is now the single source of "how many ticks happened this frame" for script, motion, AND vertical
+/// support alike.
 ///
 /// Per-frame memo: the engine updates every entity BEFORE the world's own <c>GameplayProxy.Update</c>
 /// (<c>World.cs:443-491</c>), so the world proxy cannot itself be first to know this frame's tick count
@@ -45,8 +48,9 @@ internal sealed class AlundraLogicClock
     /// <summary>
     /// Returns this frame's tick count, computing and caching it on the first call this frame (see this
     /// class' own doc) - every later call this frame is a pure cache read, <paramref name="elapsedTime"/>
-    /// ignored. Same catch-up-4/leftover-carries shape as <see cref="AlundraScriptedMotion.TickPlayer"/>'s
-    /// own accumulator loop, just counting steps instead of running them.
+    /// ignored. The returned count is what every caller this frame (script pass, motion,
+    /// <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>) loops over - see
+    /// <see cref="AlundraScriptedMotion"/>'s own class doc.
     /// </summary>
     internal int TicksThisFrame(float elapsedTime)
     {

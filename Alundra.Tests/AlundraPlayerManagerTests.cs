@@ -210,23 +210,28 @@ public class AlundraPlayerManagerTests
 
         // Tick 1: TargetForceX = g_offsetXList[0x18] * 208 = 768 * 208 = 159744;
         // ForceStepX = |159744-0| >> 1 = 79872; ForceX = IncrementForce(0, 159744, 79872) = 79872.
-        AlundraPlayerManager.Tick(player, 1f / 50f);
+        AlundraPlayerManager.Tick(player, 1);
         Assert.Equal(79872, player.ForceX);
         Assert.Equal(0, player.ForceY); // g_offsetYList[0x18] = 0 (due east has no Y component)
         Assert.Equal(79872, player.PosX);
 
         // Tick 2: Speed/Direction/Acceleration unchanged -> no recompute; ForceX = IncrementForce(79872,
         // 159744, 79872) = 159744.
-        AlundraPlayerManager.Tick(player, 1f / 50f);
+        AlundraPlayerManager.Tick(player, 1);
         Assert.Equal(159744, player.ForceX);
         Assert.Equal(79872 + 159744, player.PosX);
 
         // Tick 3: force already equals target -> steady state, ForceX unchanged at 159744.
-        AlundraPlayerManager.Tick(player, 1f / 50f);
+        AlundraPlayerManager.Tick(player, 1);
         Assert.Equal(159744, player.ForceX);
         Assert.Equal(79872 + 159744 + 159744, player.PosX);
     }
 
+    /// <summary>ONE-CLOCK fix (see <see cref="AlundraScriptedMotion"/>'s own class doc): <see cref="AlundraPlayerManager.Tick"/>
+    /// no longer owns a sub-step elapsed-time accumulator itself - production now derives its own tick
+    /// count from the SAME shared <see cref="AlundraLogicClock"/> the script pass reads. This test's own
+    /// driver is adapted to match (a local clock feeding elapsed time in, ticks out) so the expected
+    /// per-call results stay exactly what they were before this fix.</summary>
     [Fact]
     public void Tick_AccumulatesSubStepElapsedTime_RunsWholeTicksOnly()
     {
@@ -236,17 +241,22 @@ public class AlundraPlayerManagerTests
             TargetDirection = 0x18,
             AnimSetsByAnim = new Dictionary<int, AnimSetEntry> { [1] = new AnimSetEntry { Anim = 1, Speed = 208, Acceleration = 1 } },
         };
+        var clock = new AlundraLogicClock();
 
         // A small slice of elapsed time - not enough to run any 50 Hz (0.02s) step yet.
-        AlundraPlayerManager.Tick(player, 0.005f);
+        AlundraPlayerManager.Tick(player, clock.TicksThisFrame(0.005f));
+        clock.CloseFrame();
         Assert.Equal(0, player.PosX);
 
         // Enough more arrives that the accumulator now clearly exceeds one 50 Hz step (0.005 + 0.02 =
         // 0.025s, comfortably past the 0.02s threshold regardless of float rounding) - runs exactly once.
-        AlundraPlayerManager.Tick(player, 0.02f);
+        AlundraPlayerManager.Tick(player, clock.TicksThisFrame(0.02f));
+        clock.CloseFrame();
         Assert.Equal(79872, player.PosX);
     }
 
+    /// <summary>ONE-CLOCK fix - see <see cref="Tick_AccumulatesSubStepElapsedTime_RunsWholeTicksOnly"/>'s
+    /// own doc: driver adapted to a local <see cref="AlundraLogicClock"/>, same expected values.</summary>
     [Fact]
     public void Tick_LongStall_CapsCatchUpAtFourTicksPerFrame()
     {
@@ -256,9 +266,11 @@ public class AlundraPlayerManagerTests
             TargetDirection = 0x18,
             AnimSetsByAnim = new Dictionary<int, AnimSetEntry> { [1] = new AnimSetEntry { Anim = 1, Speed = 208, Acceleration = 1 } },
         };
+        var clock = new AlundraLogicClock();
 
         // 1 full second (50 ticks worth) in one go - capped at 4 ticks for this single frame.
-        AlundraPlayerManager.Tick(player, 1f);
+        AlundraPlayerManager.Tick(player, clock.TicksThisFrame(1f));
+        clock.CloseFrame();
 
         // Ticks: 79872, +159744=239616, +159744(steady)=399360... wait force reaches target after tick 2
         // and steady-states at 159744/tick from tick 2 onward: tick1=79872, tick2=+159744, tick3=+159744,
@@ -271,7 +283,7 @@ public class AlundraPlayerManagerTests
     {
         var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0x18, AnimSetsByAnim = null };
 
-        AlundraPlayerManager.Tick(player, 1f / 50f);
+        AlundraPlayerManager.Tick(player, 1);
 
         Assert.Equal(0, player.PosX);
         Assert.Equal(0, player.ForceX);
