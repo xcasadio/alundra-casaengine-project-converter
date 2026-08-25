@@ -1,0 +1,98 @@
+# Plan moteur — pas fixe et rapport de contact du `CharacterMotionSystem`
+
+Date : 2026-08-25. Suite directe de la revue d'architecture demandée après E4 (voir
+[plan-e4-deplacement-scripte.md](plan-e4-deplacement-scripte.md), notamment E4.g). Chantier
+**moteur** : chaque tranche passe par un `plan-verifier` avant exécution et un `verifier` frais
+après. Dépôt propriétaire : submodule `CasaEngineMonogame` (commit propre puis bump du pointeur).
+
+## 0. Pourquoi (constats mesurés pendant E4, 2026-08-24/25)
+
+Deux classes de bugs ont coûté une journée entière et ont la même racine :
+
+1. **Deux horloges.** Le moteur intègre le mouvement en temps réel (`CharacterMotionSystem.Update`
+   → `controller.Update(dt)` une fois par frame RENDUE, `CharacterMotionSystem.cs:96-120`), alors
+   que la logique Alundra avance à pas fixe 50 Hz. Mesuré en jeu : à ~123 im/s la mouette montait à
+   158 px/s au lieu de 150 et dérivait de 179 px au lieu de 209 ; le marin 12 restait bloqué parce
+   que `ForceAdjusted`, posé au tick, était effacé par une frame sans tick. Corrigé côté DLL en lui
+   donnant la verticale (E4.g), au prix d'un régime différent entre héros (verticale moteur) et PNJ
+   (verticale DLL) — dette assumée, à résorber plus tard grâce à M1.
+2. **Pas de rapport de contact.** `Move` ne renvoie qu'un `Vector3` de déplacement effectif ; la DLL
+   doit re-déduire « quel axe a été raboté » en comparant demandé/résolu avec un epsilon
+   (`AlundraEntityScriptProxy.MoveControllerAndPullPosition`), et re-porter elle-même le support
+   d'entité (`EntitySupport`, port de `CheckEntityCollisionDown`) alors que le mover connaît déjà
+   ces faits.
+
+## 1. Décisions de cadrage
+
+| # | Décision |
+|---|---|
+| M-1 | **Opt-in, défaut inchangé.** Le pas fixe est désactivé par défaut : démos, éditeur et tous les tests existants gardent exactement le comportement actuel (variable). Aucune régression possible pour un consommateur qui ne l'active pas. |
+| M-2 | **Le rapport de contact est additif et sans allocation** : `readonly struct` rempli en place, exposé en propriété du composant (dernier pas), jamais un objet alloué par frame. |
+| M-3 | **Aucune migration de la DLL dans ces deux tranches.** Alundra garde son `AlundraLogicClock` et son `EntitySupport`. Rapatrier la verticale des PNJ vers le moteur et remplacer `EntitySupport` sont des décisions ultérieures, à prendre une fois ces capacités livrées et vérifiées (l'oracle d'intro doit rester byte-identique à chaque étape). |
+
+## 2. Tranches
+
+### M1 — Pas fixe du `CharacterMotionSystem` ⏳ (moteur, plan-verifier)
+
+- **But** : rendre l'intégration du mouvement de personnage indépendante de la cadence d'affichage.
+- **Scope** : `CharacterMotionSystem` gagne un mode à pas fixe **opt-in** : `FixedTimeStep`
+  (secondes, 0 = désactivé, défaut 0) et `MaxStepsPerFrame` (défaut 4, ignoré quand le mode est
+  off). Quand il est actif, `Update(frameTime)` accumule le temps réel et exécute N pas complets de
+  `FixedTimeStep` — chaque pas exécutant la MÊME séquence qu'aujourd'hui (agents navigation/steering,
+  drivers, `ApplyCommands`, `UpdateControllers`, ponts d'animation), le **reliquat étant conservé**
+  (jamais remis à zéro sauf plafond atteint — exactement le piège déjà corrigé dans
+  `AlundraLogicClock`). Quand il est inactif : chemin actuel, inchangé, zéro coût ajouté.
+- **Point à trancher par l'exécutant, à documenter** : les drivers/agents tournent-ils à chaque pas
+  fixe ou une fois par frame ? Choix par défaut proposé : **à chaque pas** (un pas = une frame de
+  simulation complète), avec justification écrite si l'inspection montre qu'un composant y est
+  sensible (par exemple un driver qui consomme un `elapsedTime` réel pour un lissage).
+- **Acceptation** (tests `CasaEngine.Tests`) : (a) mode off → séquence et résultats identiques à
+  aujourd'hui, tous les tests existants inchangés ; (b) mode on à 1/50 avec dt = 1/50 → exactement
+  un pas par frame ; (c) dt = 1/123 sur 123 frames → 50 pas ± 1, aucun reliquat perdu, aucune frame
+  au-delà d'un pas ; (d) frame longue (1 s) → plafonnée à `MaxStepsPerFrame` ; (e) **invariance de
+  trajectoire** : un contrôleur soumis à la même intention pendant 1 s de temps réel parcourt la
+  même distance à dt = 1/50, 1/123 et 1/240 (le test échoue en mode off) ; (f) `CasaEngine.Tests`
+  sans nouvel échec (18 préexistants).
+- **Non-goals** : activer le mode pour Alundra (M-3) ; toucher `PhysicsWorld`/Bepu ; changer la
+  cadence de systèmes non liés au mouvement de personnage.
+- **Rollback** : revert du commit moteur (+ pointeur si bumpé). **Budget** : un commit moteur.
+  **Arrêt** : si un agent/driver ne peut pas tourner à pas fixe sans changer son comportement en
+  mode off.
+
+### M2 — Rapport de contact par pas ⏳ (moteur, plan-verifier)
+
+- **But** : que le mover publie ce qu'il sait déjà, au lieu que chaque jeu le re-déduise.
+- **Scope** : `CharacterControllerComponent` expose, pour le dernier pas, un
+  `readonly struct` de rapport de contact contenant au minimum : déplacement demandé et résolu
+  **par axe de la base de la politique** (`up`, `h1`, `h2`) ; un indicateur « axe raboté » par axe
+  horizontal (ce que la DLL calcule aujourd'hui avec un epsilon) ; l'état de sol (`IsGrounded`,
+  normale, tag de surface quand il vient d'un `ICollisionField`) ; le collider porteur (déjà connu
+  via `GroundCollider`/`LastCollisionHit`). Exposé en propriété (`LastContact`), rempli en place,
+  **sans allocation**. Strictement additif : `Move` garde sa signature (retour `Vector3`) et les
+  propriétés existantes (`LastRequestedDisplacement`, `LastActualDisplacement`, `LastCollisionHit`,
+  `GroundCollider`) restent inchangées.
+- **Acceptation** (tests `CasaEngine.Tests`, montage `TopDownElevation` +
+  `HeightGridCollisionField` du patron E3.c) : (a) déplacement libre → aucun axe marqué raboté,
+  demandé == résolu ; (b) déplacement contre une cellule non marchable → l'axe concerné est marqué,
+  l'autre non, demandé/résolu corrects par axe ; (c) atterrissage → sol présent, normale et tag de
+  surface attendus, collider renseigné quand le sol vient d'un corps ; (d) le rapport reflète le
+  DERNIER pas (deux `Move` successifs → le second gagne) ; (e) aucune allocation par appel (test de
+  compteur d'allocations, ou revue explicite justifiée) ; (f) propriétés et tests existants
+  inchangés, `CasaEngine.Tests` sans nouvel échec.
+- **Non-goals** : porter la sémantique Alundra (`ForceAdjusted`, `CollidedWithEntityZ`,
+  `RidingEntity`) dans le moteur — ce sont des noms de jeu ; la DLL les dérivera du rapport plus
+  tard (M-3). Aucun changement de la résolution elle-même : M2 **publie**, ne décide pas.
+- **Rollback** : revert du commit moteur. **Budget** : un commit moteur. **Arrêt** : si publier le
+  détail par axe impose de restructurer la résolution (le scope changerait et repasserait en revue).
+
+## 3. Ordre
+
+M1 puis M2 (indépendantes, mais M2 profite du montage de tests à pas fixe). Après chaque commit
+moteur : bump du pointeur dans le parent. La consommation par Alundra reste hors périmètre (M-3).
+
+## 4. Suivi
+
+| Tranche | Statut | Commit |
+|---|---|---|
+| M1 pas fixe du CharacterMotionSystem | ⏳ | |
+| M2 rapport de contact par pas | ⏳ | |
