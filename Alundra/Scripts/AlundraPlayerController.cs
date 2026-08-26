@@ -165,6 +165,18 @@ public sealed class AlundraPlayerController : PlayerController
     }
 
     /// <summary>
+    /// Test-only seam (Oracle du héros, docs/plan-oracle-heros.md §2.4): when non-null, <see cref="BuildPadState"/>
+    /// returns this delegate's result instead of reading <see cref="PlayerController.Input"/>/
+    /// <see cref="InputMappingManager"/> - the headless hero trace harness has no live
+    /// <see cref="CasaEngineGame"/>/<see cref="Framework.Input.PlayerInput"/> to script a pad through, and
+    /// <see cref="AlundraPlayerController"/> is <c>sealed</c> (not fakeable via a test double implementing
+    /// <see cref="PlayerController"/>). Instance-scoped field, default <c>null</c> - strictly no effect in
+    /// production, same idiom as <see cref="AlundraPlayerManager.SetDebugIgnoreControlLockOverrideForTests"/>.
+    /// Never read or written by any production code path.
+    /// </summary>
+    internal Func<AlundraPadState>? PadStateProviderForTests;
+
+    /// <summary>
     /// Builds this frame's <see cref="AlundraPadState"/> by OR-ing in each of the 9 mapped actions' bit
     /// (<see cref="ActionBits"/>) whenever <see cref="PlayerController.Input"/>'s
     /// <see cref="PlayerInput.GetButtonState"/> reports it held/just-pressed. Returns the zero state
@@ -179,6 +191,11 @@ public sealed class AlundraPlayerController : PlayerController
     /// </summary>
     public AlundraPadState BuildPadState()
     {
+        if (PadStateProviderForTests != null)
+        {
+            return PadStateProviderForTests();
+        }
+
         if (Input == null)
         {
             return default;
