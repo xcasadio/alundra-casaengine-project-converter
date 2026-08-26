@@ -249,4 +249,9 @@ neutralise l'offset.
 |---|---|---|
 | E5.a suivi scripté de la caméra | ✅ (verifier CONFIRMED) | cc1fc60 + 1507afc |
 | E5.b sprites projetés au pixel entier | ✅ | moteur 6384bf4d + parent eab5f17 |
-| E5.c caméra cadencée au tick logique, port entier | ✅ | (ce commit) |
+| E5.c caméra cadencée au tick logique, port entier | ✅ (verifier CONFIRMED) | 753e9b1 |
+
+**E5 VALIDÉE AU RUNTIME PAR L'UTILISATEUR le 2026-08-26** : plus de vibration ni de flou sur les
+entités suivies. E5 est close ; le prérequis « E5 validé visuellement » de la tranche différée **M3**
+(`docs/plan-moteur-character-motion.md`) est donc levé — il ne reste que le parcours de référence au
+pad, à faire par l'utilisateur avant la migration.

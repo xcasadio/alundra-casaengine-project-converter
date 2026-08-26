@@ -396,7 +396,7 @@ d'intro-roadmap).
   chronologie de l'intro se déroule avec des marins qui bougent.
 - **Dépendances** : E3.
 
-### E5 — Caméra suivant une entité désignée ✅ (plan et tranche : docs/plan-e5-camera.md ; runtime à valider par l'utilisateur)
+### E5 — Caméra suivant une entité désignée ✅ (plan et tranches : docs/plan-e5-camera.md ; **runtime VALIDÉ par l'utilisateur le 2026-08-26**)
 
 - **But** : le plan sur la mouette, la descente avec le bloc 10, le suivi des marins 11/12, le retour
   sur Alundra.
