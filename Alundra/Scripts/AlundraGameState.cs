@@ -88,8 +88,12 @@ public sealed class AlundraGameState
     /// <see cref="AlundraWorldProxy.RunMapEventsPass"/>'s <see cref="PlayerControlBits.GameplayBlockedMask"/>
     /// gate and by <see cref="AlundraPlayerManager.MovePlayer"/>'s <see cref="PlayerControlBits.InputBlockedMask"/>
     /// gate; written by event opcodes 0x10/0x11 (E4.c, <see cref="AlundraEventProgramRunner"/>'s own
-    /// <c>ControlLocked</c> bridge) - the full engine bridge onto
-    /// <c>PlayerInput.IsInputEnable</c>/<c>CharacterControlMode</c> stays E6's own scope.</summary>
+    /// <c>ControlLocked</c> bridge). E6 is closed (docs/plan-conversion-totale.md §4 E6) and its
+    /// decision E6-1 DECLINES the engine bridge onto <c>PlayerInput.IsInputEnable</c>/
+    /// <c>CharacterControlMode</c>: the original has no global input switch - it tests this mask at each
+    /// consumer site - and cutting input upstream would silently defeat
+    /// <see cref="AlundraPlayerManager.DebugIgnoreControlLockEnvVar"/>, since
+    /// <c>AlundraPlayerController.BuildPadState</c> already reads through <c>PlayerInput</c>.</summary>
     public uint PlayerControlFlags;
 
     /// <summary>Persistent save-game flags (<c>g_saveData.GameFlags</c>) - all zero, matching New Game.</summary>

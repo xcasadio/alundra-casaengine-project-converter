@@ -407,13 +407,59 @@ d'intro-roadmap).
 - **Dépendances** : E1 (E4 pour voir les mouvements). **À valider** : `CameraTargeted2dComponent`
   dérive de `Camera3dComponent` (perspective) — pixel-perfect à vérifier ou à faire évoluer.
 
-### E6 — Contrôle joueur : verrou / libération ⏳ (DLL)
+### E6 — Contrôle joueur : verrou / libération ✅ (DLL — livrée par anticipation dans E4.c, close le 2026-08-26)
 
 - **But** : 0x10 retire le contrôle, 0x11 le rend ; jalon « l'intro se joue jusqu'au contrôle ».
 - **Contenu** : `g_playerControlFlags` dans `AlundraGameState` ; pont vers `PlayerInput.IsInputEnable`
   / `CharacterControlMode.Script` ; branche verrouillée de `MovePlayer`.
 - **Acceptation** : au runtime, le pad est inerte jusqu'à la frame de 0x11 puis déplace Alundra.
 - **Dépendances** : E2 (E4/E5 pour la scène complète).
+
+**Constat de clôture (2026-08-26)** — le contenu d'E6 avait déjà été livré par la tranche E4.c
+(`07be483`), sauf le « pont moteur » qui est délibérément écarté (décision E6-1 ci-dessous) :
+
+- `AlundraGameState.PlayerControlBits` porte les bits nommés et les deux masques utiles
+  (`InputBlockedMask` 0x34, `GameplayBlockedMask` 0x48) ;
+- 0x10/0x11 posent et retirent `ControlLocked` (`AlundraEventProgramRunner.cs:460/464`) ;
+- `MovePlayer` teste `InputBlockedMask` **exactement au site de l'original** (`PlayerManager.cs:38`),
+  et sa branche verrouillée est un no-op documenté (les cinq effets de bord de l'original —
+  `CreatePlayerAnimationEffects(1)`, reset du timer de warp, purge des cooldowns d'effet,
+  `UpdatePlayerCarriedEntity(1)`, `AnimateWarpEffect()` — sont tous dormants sur une New Game) ;
+- `RunMapEventsPass` teste `GameplayBlockedMask` (port d'`EntityManager.cs:377`) ;
+- vérifié au runtime par la trace d'intro : `0x10 Player lose control` est dispatché **frame 1**,
+  `0x11` **frame 1704**, les deux `Implemented` ;
+- couvert par `MovePlayer_InputBlocked_DoesNotChangeAnimationOrDirection`,
+  `MovePlayer_LoadingMapWhileInputBlocked_StaysLoadingMap`,
+  `MovePlayer_ControlLocked_DebugFlagInactive_StillBlocked` et
+  `MovePlayer_ControlLocked_DebugFlagActive_ReadsThePad`.
+
+**Décision E6-1 — pas de pont vers `PlayerInput.IsInputEnable` / `CharacterControlMode`**, pour deux
+raisons établies par reconnaissance :
+
+1. **Cela casserait le flag de debug de la décision E4-3.** `AlundraPlayerController.BuildPadState`
+   passe par `PlayerInput.GetButtonState`, lui-même filtré par `IsInputEnable`
+   (`PlayerInput.cs:76/117/149`). Mettre `IsInputEnable = false` sous verrou viderait le pad **en
+   amont** de la porte d'`MovePlayer` — or `ALUNDRA_DEBUG_IGNORE_CONTROL_LOCK` ne contourne que cette
+   porte-là. Le flag deviendrait inopérant en silence.
+2. **Ce serait moins fidèle.** L'original n'a **aucun** interrupteur global d'entrée : il teste le
+   masque à chaque site consommateur — `PlayerManager.cs:38` (déplacement), `:1906` (usage d'objet),
+   `:3437` (menu), `:1297` (`HpRegenBlockedMask` 0x7C), `EntityManager.cs:377` (map events),
+   `SpriteEventHandlers.cs:289` (trésor), `GameEngine.cs:1523/1567` (warp). Notre port reproduit déjà
+   les deux seuls sites dont le système existe.
+
+**Sites de la variable non portés, tous hors périmètre faute du système correspondant** (relevé
+exhaustif) : écritures depuis les gestionnaires d'UI/inventaire/carte mémoire (`MenuOpen`,
+`MessageBox`), mort du joueur (`PlayerManager.cs:145`), respawn (`GameEngine.cs:331` remet à 0),
+séquences forcées et sand-cape (`FunctionTypeC.cs`), opcodes 0xC0/0xC1 (`ForcedWeapon`), et
+`SpriteEventHandlers.cs:277` (le programme F pose le verrou) — ce dernier est **inatteignable** chez
+nous : `AlundraWorldProxy.ActiveCollisionEntity` n'est jamais assigné en production, donc
+`ProgramFInteract` n'est jamais élu. Le masque `HpRegenBlockedMask` (0x7C) n'est pas porté non plus,
+faute de système de régénération. À reprendre avec les étapes qui apportent ces systèmes (E12
+dialogues, E13 HUD, puis combat/objets).
+
+**Limite connue** : aucun test ne pinne la décision E6-1 elle-même. Les tests du flag de debug passent
+un `AlundraPadState` directement à `MovePlayer`, donc ils n'échoueraient pas si quelqu'un vidait le pad
+en amont via `IsInputEnable` — c'est un trou de couverture assumé, faute de harnais d'entrée headless.
 
 ### E7 — Mutation de tuiles à chaud ⏳ (moteur, plan-verifier)
 

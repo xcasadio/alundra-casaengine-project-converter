@@ -453,10 +453,11 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 entity.TargetDirection = (entity.TargetDirection + 0x10) & 0x1f;
                 return 1;
 
-            case 0x10: // Player lose control - Script_16_010 (EntityEventHandlers.cs:680-684): the full
-                       // engine bridge (PlayerInput.IsInputEnable/CharacterControlMode) is E6 - E4 only
-                       // ports the flag store, which AlundraPlayerManager.MovePlayer's own
-                       // InputBlockedMask gate already reads.
+            case 0x10: // Player lose control - Script_16_010 (EntityEventHandlers.cs:680-684). The flag
+                       // store IS the whole port: AlundraPlayerManager.MovePlayer's own InputBlockedMask
+                       // gate reads it, at the same site the original tests it (PlayerManager.cs:38).
+                       // E6 decision E6-1 deliberately declines an engine-level input cut - see
+                       // AlundraGameState.PlayerControlFlags' own doc.
                 _gameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.ControlLocked;
                 return 1;
 
