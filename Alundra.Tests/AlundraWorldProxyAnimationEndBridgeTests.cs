@@ -116,6 +116,60 @@ public class AlundraWorldProxyAnimationEndBridgeTests
 
         Assert.Equal(0u, proxy.TargetAnimationId);
         Assert.Equal(0, proxy.ForceResetAnimationFlag); // Chain only touches TargetAnimationId, not Hold.
+        Assert.Equal(1, proxy.PendingChainRestartFlag); // every chain asks for a restart - see below.
+    }
+
+    /// <summary>
+    /// User-reported bug (2026-08-26, "the walk animation does not loop when it should"): the original
+    /// spells a looping animation TWO ways, and only one survives conversion as an engine loop. A
+    /// terminator with <c>TerminatorCode == 1</c> becomes <c>AnimationType.Loop</c>; a terminator that
+    /// CHAINS BACK TO ITSELF becomes <c>Once</c> plus a chain edge onto its own id. The hero's real
+    /// exported data is exactly that: anim 0 (idle) is <c>Loop</c>, while anim 1 (walk) is
+    /// <c>Chain, ChainTo = 1</c> in all four directions - which is why the idle looped on screen and the
+    /// walk froze on its last frame.
+    ///
+    /// Without <see cref="AlundraEntityScriptProxy.PendingChainRestartFlag"/> this self-chain is
+    /// invisible to the sync pass: <see cref="AlundraWorldProxy.TryResolveAnimationTarget"/> only reports
+    /// work when the animation id or the direction CHANGES, and a self-chain changes neither, so
+    /// <c>SetCurrentAnimation(..., forceReset: true)</c> was never reached. This test pins the exact
+    /// self-chain shape (both ids equal to 1), so it fails if the restart flag is dropped.
+    /// </summary>
+    [Fact]
+    public void OnAnimationFinished_SelfChainEntry_RequestsARestartEvenThoughTheIdIsUnchanged()
+    {
+        var (_, component, proxy) = BuildSpawnedEntity();
+        proxy.CurrentAnimationId = 1; // the hero's walk
+        proxy.AnimationDirection = 0;
+        proxy.TargetAnimationId = 1;
+        proxy.AnimationEndByAnimDirection = new Dictionary<int, AnimationEndInfo>
+        {
+            [1 * 4 + 0] = new() { Kind = AnimationEndKind.Chain, ChainTargetAnimationId = 1 },
+        };
+
+        AlundraWorldProxy.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
+
+        // The chain target IS the animation that just ended, so nothing about the target changed...
+        Assert.Equal(1u, proxy.TargetAnimationId);
+        Assert.Equal(proxy.CurrentAnimationId, proxy.TargetAnimationId);
+        // ...and the restart flag is therefore the ONLY thing that can make the walk play again.
+        Assert.Equal(1, proxy.PendingChainRestartFlag);
+    }
+
+    [Fact]
+    public void OnAnimationFinished_HoldEntry_DoesNotRequestAChainRestart()
+    {
+        var (_, component, proxy) = BuildSpawnedEntity();
+        proxy.CurrentAnimationId = 54;
+        proxy.AnimationDirection = 0;
+        proxy.AnimationEndByAnimDirection = new Dictionary<int, AnimationEndInfo>
+        {
+            [54 * 4 + 0] = new() { Kind = AnimationEndKind.Hold },
+        };
+
+        AlundraWorldProxy.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
+
+        Assert.Equal(1, proxy.ForceResetAnimationFlag);
+        Assert.Equal(0, proxy.PendingChainRestartFlag); // a Hold must stay frozen, never restart.
     }
 
     [Fact]

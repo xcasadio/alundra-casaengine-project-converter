@@ -910,6 +910,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         else if (end.Kind == AnimationEndKind.Chain)
         {
             proxy.TargetAnimationId = (uint)end.ChainTargetAnimationId;
+
+            // A chain must restart its target even when that target is the animation that just ended -
+            // the original's own way of spelling "loop" for the hero's walk (ChainTo = 1 on anim 1, all
+            // four directions). SyncAnimation alone would not: TryResolveAnimationTarget only fires on a
+            // CHANGE of animation id or direction, and a self-chain changes neither, so the sampler stayed
+            // parked on its terminal pose - the frozen walk the user reported on 2026-08-26. See
+            // AlundraEntityScriptProxy.PendingChainRestartFlag's own doc.
+            proxy.PendingChainRestartFlag = 1;
         }
     }
 
@@ -2388,7 +2396,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             return;
         }
 
-        if (!TryResolveAnimationTarget(proxy, out var newCurrentAnimationId, out var newAnimationDirection))
+        // A pending chain restart is consumed here whatever TryResolveAnimationTarget decides: a chain
+        // onto a DIFFERENT animation is already covered by the id-changed path below, but a chain onto
+        // the SAME animation (the original's own spelling of a looping walk) changes neither the id nor
+        // the direction, so it would otherwise never reach SetCurrentAnimation. Cleared unconditionally so
+        // one finished animation can only ever cause one restart.
+        var chainRestartRequested = proxy.PendingChainRestartFlag != 0;
+        proxy.PendingChainRestartFlag = 0;
+
+        if (!TryResolveAnimationTarget(proxy, out var newCurrentAnimationId, out var newAnimationDirection)
+            && !chainRestartRequested)
         {
             return;
         }

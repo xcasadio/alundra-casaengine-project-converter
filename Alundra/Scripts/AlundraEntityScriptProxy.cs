@@ -92,6 +92,30 @@ public class AlundraEntityScriptProxy : GameplayProxy
     //public SiFrame? Frame;
     public int NextFrameDelay;
     public int ForceResetAnimationFlag;
+
+    /// <summary>
+    /// Engine-only, not part of the original struct. Raised by
+    /// <see cref="AlundraWorldProxy.OnAnimationFinished"/> when a <c>Chain</c> terminator fires, and
+    /// consumed by <see cref="AlundraWorldProxy.SyncAnimation"/> to restart the animation even when the
+    /// chain target turns out to be the animation that just ended.
+    ///
+    /// <para>Needed because the original expresses a LOOPING animation two different ways, and only one
+    /// of them survives the conversion as <c>AnimationType.Loop</c>: a terminator with
+    /// <c>TerminatorCode == 1</c> becomes a real engine loop, but a terminator that CHAINS BACK TO ITSELF
+    /// (<c>ChainTo</c> = the same animation id) is exported as <c>Once</c> + a chain edge. The hero's own
+    /// walk (anim 1) is the second kind in all four directions, while his idle (anim 0) is the first -
+    /// which is exactly why the idle looped and the walk froze on its last frame (user report,
+    /// 2026-08-26).</para>
+    ///
+    /// <para>Without this flag <see cref="AlundraWorldProxy.TryResolveAnimationTarget"/> reports "nothing
+    /// to do" for a self-chain - it only restarts when <see cref="CurrentAnimationId"/> or
+    /// <see cref="AnimationDirection"/> actually CHANGE, and a self-chain changes neither - so
+    /// <c>SetCurrentAnimation(..., forceReset: true)</c> was never reached and the sampler stayed parked
+    /// at <c>IsFinished</c> on the terminal pose. Set on EVERY chain, not just self-chains: a chain onto a
+    /// different animation already restarts through the normal id-changed path, so raising it there is
+    /// redundant but harmless, and it keeps the rule "a chain always restarts the target" in one piece.</para>
+    /// </summary>
+    public int PendingChainRestartFlag;
     public int AnimCompleteCounter;
     public int AnimFlags;
     public int ForceZ;//rise/fall speed

@@ -154,6 +154,85 @@ public class AlundraWorldProxyAnimationSyncTests
         Assert.Same(animationBeforeSecondCall, component.CurrentAnimation);
     }
 
+    /// <summary>
+    /// User-reported bug (2026-08-26, "the walk animation does not loop when it should"). The hero's walk
+    /// is exported as <c>Once</c> plus a chain edge onto ITSELF (<c>anim 1 -&gt; ChainTo 1</c>, all four
+    /// directions), which is how the original spells a looping walk; his idle is a real engine
+    /// <c>Loop</c>. On the chain, <see cref="AlundraWorldProxy.OnAnimationFinished"/> writes
+    /// <c>TargetAnimationId = 1</c> - the id it already had - so
+    /// <see cref="AlundraWorldProxy.TryResolveAnimationTarget"/> reports "no change" and the sync pass
+    /// used to return early, leaving the sampler parked at its terminal pose: a frozen walk.
+    ///
+    /// This test drives the real observable rather than an internal flag: it advances playback with
+    /// <see cref="AnimatedSpriteComponent.SeekCurrentAnimation"/>, then checks that a pending chain
+    /// restart rewinds <see cref="AnimatedSpriteComponent.CurrentAnimationTimeSeconds"/> to 0 even though
+    /// neither the animation id nor the direction changed. The control case below proves the assertion is
+    /// discriminating: without the flag, the very same setup leaves playback exactly where it was.
+    /// </summary>
+    [Fact]
+    public void RunAnimationSyncPass_PendingChainRestart_RewindsPlaybackDespiteUnchangedAnimationId()
+    {
+        var (entity, component, proxy) = BuildSyncedEntityOnAnimationZero();
+
+        Assert.True(component.SeekCurrentAnimation(0.05f));
+        Assert.True(component.CurrentAnimationTimeSeconds > 0f);
+
+        proxy.PendingChainRestartFlag = 1; // as OnAnimationFinished raises it on a self-chain
+        AlundraWorldProxy.RunAnimationSyncPass(new List<Entity> { entity });
+
+        Assert.Equal(0f, component.CurrentAnimationTimeSeconds);
+        Assert.Equal(0, proxy.PendingChainRestartFlag); // consumed, so one ending causes one restart
+    }
+
+    [Fact]
+    public void RunAnimationSyncPass_NoPendingChainRestart_LeavesPlaybackWhereItWas()
+    {
+        var (entity, component, proxy) = BuildSyncedEntityOnAnimationZero();
+
+        Assert.True(component.SeekCurrentAnimation(0.05f));
+        var timeBefore = component.CurrentAnimationTimeSeconds;
+        Assert.True(timeBefore > 0f);
+
+        Assert.Equal(0, proxy.PendingChainRestartFlag);
+        AlundraWorldProxy.RunAnimationSyncPass(new List<Entity> { entity });
+
+        Assert.Equal(timeBefore, component.CurrentAnimationTimeSeconds);
+    }
+
+    /// <summary>Spawns an entity and runs one sync pass, leaving it settled on animation 0 facing down -
+    /// the shared starting point of the two chain-restart tests above.</summary>
+    private static (Entity Entity, AnimatedSpriteComponent Component, AlundraEntityScriptProxy Proxy)
+        BuildSyncedEntityOnAnimationZero()
+    {
+        // Unlike BuildComponentWithAllDirections, these animations carry a Part: AnimatedSpriteComponent
+        // only builds a composition sampler for animations that have one, and the sampler is what holds
+        // the playback clock these two tests observe.
+        var component = new AnimatedSpriteComponent();
+        foreach (var direction in new[] { "down", "up", "left", "right" })
+        {
+            var data = new Animation2dData { Name = $"bankalundra_25_anim0_{direction}" };
+            data.Parts.Add(new Animation2dPartData { Id = "body" });
+            // Gives the animation a non-zero duration (Animation2dData.GetDurationSeconds takes the max
+            // over tracks, events and collision keyframes) so playback has somewhere to advance TO.
+            data.CollisionKeyframes.Add(new Animation2dCollisionKeyframeData { TimeSeconds = 0.2f });
+            component.AddAnimation(new Animation2d(data));
+        }
+
+        var entity = new Entity
+        {
+            Name = "e",
+            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            RootComponent = component,
+        };
+        entity.Initialize();
+        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        proxy.CurrentAnimationId = ~0u;
+
+        AlundraWorldProxy.RunAnimationSyncPass(new List<Entity> { entity });
+
+        return (entity, component, proxy);
+    }
+
     [Fact]
     public void RunAnimationSyncPass_TargetChangesAfterSpawn_SelectsNewAnimation()
     {
