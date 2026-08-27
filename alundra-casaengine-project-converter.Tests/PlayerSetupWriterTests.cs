@@ -1,3 +1,4 @@
+using System.Linq;
 using AlundraCasaEngineProjectConverter.Writers;
 using CasaEngine.EditorServices;
 using CasaEngine.Engine.Environment;
@@ -95,7 +96,7 @@ public class PlayerSetupWriterTests
     }
 
     [Fact]
-    public void WriteButtonsMapping_WritesTheNineDigitalActions()
+    public void WriteButtonsMapping_WritesTheNineDigitalActionsAndTheFourLeftStickAxes()
     {
         var outputDirectory = CreateTempDirectory();
         var previousProjectPath = EngineEnvironment.ProjectPath;
@@ -110,7 +111,7 @@ public class PlayerSetupWriterTests
 
             Assert.Equal(Ids.For("buttonsMapping:alundra"), buttonsMappingAssetId);
             Assert.Equal(1, report.Counters["PlayerSetup.ButtonsMappings"]);
-            Assert.Equal(9, report.Counters["PlayerSetup.ButtonsMappingActions"]);
+            Assert.Equal(13, report.Counters["PlayerSetup.ButtonsMappingActions"]);
 
             var relativePath = Path.Combine("Data", "Alundra.buttonsMapping");
             var fullPath = Path.Combine(outputDirectory, relativePath);
@@ -126,7 +127,7 @@ public class PlayerSetupWriterTests
             var buttonsMapping = new CasaEngine.Framework.Input.ButtonsMapping();
             buttonsMapping.Load(document);
             Assert.Equal(buttonsMappingAssetId, buttonsMapping.Id);
-            Assert.Equal(9, buttonsMapping.Buttons.Count);
+            Assert.Equal(13, buttonsMapping.Buttons.Count);
 
             AssertBinding(buttonsMapping, "MoveUp", Microsoft.Xna.Framework.Input.Keys.Up, Microsoft.Xna.Framework.Input.Buttons.DPadUp);
             AssertBinding(buttonsMapping, "MoveDown", Microsoft.Xna.Framework.Input.Keys.Down, Microsoft.Xna.Framework.Input.Buttons.DPadDown);
@@ -142,10 +143,20 @@ public class PlayerSetupWriterTests
             AssertBinding(buttonsMapping, "Sprint", Microsoft.Xna.Framework.Input.Keys.LeftShift, Microsoft.Xna.Framework.Input.Buttons.Y);
             AssertBinding(buttonsMapping, "Menu", Microsoft.Xna.Framework.Input.Keys.Escape, Microsoft.Xna.Framework.Input.Buttons.Start);
 
+            // The nine original actions stay digital...
             Assert.All(
-                buttonsMapping.Buttons,
+                buttonsMapping.Buttons.Where(b => !b.Name.EndsWith("Stick", System.StringComparison.Ordinal)),
                 button => Assert.Equal(
                     CasaEngine.Engine.Input.ButtonBehaviors.DigitalInput, button.ButtonBehavior));
+
+            // ...and the four left-stick actions are analog (user report, 2026-08-26: the stick moved
+            // nothing because only the D-pad was bound). An InputMapping is either digital or analog and
+            // never both, which is exactly why these are separate actions rather than extra slots on the
+            // four Move* entries; AlundraPlayerController.ActionBits aliases them onto the same PSX bits.
+            AssertLeftStickBinding(buttonsMapping, "MoveUpStick", CasaEngine.Engine.Input.AnalogAxis.LeftStickY, invert: false);
+            AssertLeftStickBinding(buttonsMapping, "MoveDownStick", CasaEngine.Engine.Input.AnalogAxis.LeftStickY, invert: true);
+            AssertLeftStickBinding(buttonsMapping, "MoveRightStick", CasaEngine.Engine.Input.AnalogAxis.LeftStickX, invert: false);
+            AssertLeftStickBinding(buttonsMapping, "MoveLeftStick", CasaEngine.Engine.Input.AnalogAxis.LeftStickX, invert: true);
         }
         finally
         {
@@ -207,6 +218,26 @@ public class PlayerSetupWriterTests
             Directory.Delete(inputDirectory, recursive: true);
             Directory.Delete(outputDirectory, recursive: true);
         }
+    }
+
+    /// <summary>
+    /// One half-axis of the left stick. InputMapping.Update reads the axis, negates it when Invert is
+    /// set, and reports Pressed once the result reaches DeadZone - so one axis needs two mappings, one
+    /// per direction, and MonoGame's LeftStickY being positive UP is why up is not inverted.
+    /// The dead zone is pinned at 0.5 on purpose: a real stick's gate is circular, so at 45 degrees each
+    /// axis only reaches about 0.707 - the digital bindings' own 0.75 placeholder would leave the four
+    /// cardinals working while making every DIAGONAL physically unreachable.
+    /// </summary>
+    private static void AssertLeftStickBinding(
+        CasaEngine.Framework.Input.ButtonsMapping buttonsMapping, string actionName,
+        CasaEngine.Engine.Input.AnalogAxis expectedAxis, bool invert)
+    {
+        var binding = Assert.Single(buttonsMapping.Buttons, button => button.Name == actionName);
+        Assert.Equal(CasaEngine.Engine.Input.ButtonBehaviors.AnalogInput, binding.ButtonBehavior);
+        Assert.Equal(expectedAxis, binding.AnalogAxis);
+        Assert.Equal(invert, binding.Invert);
+        Assert.Equal(0.5f, binding.DeadZone);
+        Assert.True(binding.DeadZone < 0.707f, "a dead zone at or above 0.707 makes stick diagonals unreachable");
     }
 
     private static void AssertBinding(

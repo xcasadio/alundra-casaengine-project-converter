@@ -38,7 +38,12 @@ public class AlundraPlayerControllerTests
 
     private static readonly string[] ExpectedActionNames =
     {
-        "MoveUp", "MoveDown", "MoveLeft", "MoveRight", "Jump", "Attack", "UseItem", "Sprint", "Menu",
+        "MoveUp", "MoveDown", "MoveLeft", "MoveRight",
+        // Left stick (user report, 2026-08-26: the stick moved nothing because only the D-pad was bound).
+        // Four SEPARATE analog actions, because an InputMapping is either digital or analog and never
+        // both - they alias onto the same four PSX bits in AlundraPlayerController.ActionBits.
+        "MoveUpStick", "MoveDownStick", "MoveRightStick", "MoveLeftStick",
+        "Jump", "Attack", "UseItem", "Sprint", "Menu",
     };
 
     /// <summary>
@@ -50,7 +55,7 @@ public class AlundraPlayerControllerTests
     /// <see cref="IntroTraceHarnessTests"/>).
     /// </summary>
     [Fact]
-    public void AssetLoader_RealButtonsMappingFile_ParsesNineMappingsWithExpectedNames()
+    public void AssetLoader_RealButtonsMappingFile_ParsesThirteenMappingsWithExpectedNames()
     {
         var projectRoot = FindProjectRoot();
         if (projectRoot == null)
@@ -65,7 +70,7 @@ public class AlundraPlayerControllerTests
         var asset = (ButtonsMapping?)loader.LoadAsset(filePath, null!);
 
         Assert.NotNull(asset);
-        Assert.Equal(9, asset!.Buttons.Count);
+        Assert.Equal(13, asset!.Buttons.Count);
         Assert.Equal(ExpectedActionNames, asset.Buttons.Select(b => b.Name).ToArray());
     }
 
@@ -85,7 +90,7 @@ public class AlundraPlayerControllerTests
     }
 
     [Fact]
-    public void RegisterMappings_FreshManager_RegistersAllNine()
+    public void RegisterMappings_FreshManager_RegistersAllThirteen()
     {
         var manager = new InputMappingManager();
 
@@ -110,14 +115,14 @@ public class AlundraPlayerControllerTests
     }
 
     [Fact]
-    public void RegisterMappings_AppliedTwice_LeavesExactlyNineMappings()
+    public void RegisterMappings_AppliedTwice_LeavesExactlyThirteenMappings()
     {
         var manager = new InputMappingManager();
 
         AlundraPlayerController.RegisterMappings(NewButtonsMapping(), manager);
         AlundraPlayerController.RegisterMappings(NewButtonsMapping(), manager);
 
-        Assert.Equal(9, CountMappings(manager));
+        Assert.Equal(13, CountMappings(manager));
 
         foreach (var name in ExpectedActionNames)
         {
@@ -156,6 +161,47 @@ public class AlundraPlayerControllerTests
             | AlundraPadState.Cross | AlundraPadState.Square | AlundraPadState.Circle | AlundraPadState.Triangle
             | AlundraPadState.Start,
             state.ButtonsHold);
+    }
+
+    /// <summary>
+    /// User report (2026-08-26): "the left stick does not move Alundra, only the D-pad does". The fix
+    /// gives the stick its own four AnalogInput actions, aliased onto the SAME four PSX bits as the
+    /// D-pad. This test holds ONLY the stick actions - every D-pad action reads released - and requires
+    /// the four direction bits to come out set anyway. It fails if the stick entries are dropped from
+    /// <c>ActionBits</c>, or if they are wired onto different bits.
+    /// </summary>
+    [Fact]
+    public void ComputePadState_OnlyTheLeftStickHeld_StillSetsTheFourDirectionBits()
+    {
+        var manager = new InputMappingManager();
+        AlundraPlayerController.RegisterMappings(NewButtonsMapping(), manager);
+
+        var state = AlundraPlayerController.ComputePadState(
+            manager, name => new ButtonState { IsKeyPressed = name.EndsWith("Stick", StringComparison.Ordinal) });
+
+        Assert.Equal(
+            AlundraPadState.Up | AlundraPadState.Down | AlundraPadState.Left | AlundraPadState.Right,
+            state.ButtonsHold);
+    }
+
+    /// <summary>Holding the stick AND the D-pad the same way must not produce anything new: both feed one
+    /// ButtonsHold, so the ported game logic can never tell which device a direction came from.</summary>
+    [Fact]
+    public void ComputePadState_StickAndDPadAgreeing_ProducesTheSameBitsAsEitherAlone()
+    {
+        var manager = new InputMappingManager();
+        AlundraPlayerController.RegisterMappings(NewButtonsMapping(), manager);
+
+        var stickOnly = AlundraPlayerController.ComputePadState(
+            manager, name => new ButtonState { IsKeyPressed = name == "MoveLeftStick" });
+        var dPadOnly = AlundraPlayerController.ComputePadState(
+            manager, name => new ButtonState { IsKeyPressed = name == "MoveLeft" });
+        var both = AlundraPlayerController.ComputePadState(
+            manager, name => new ButtonState { IsKeyPressed = name is "MoveLeft" or "MoveLeftStick" });
+
+        Assert.Equal(AlundraPadState.Left, stickOnly.ButtonsHold);
+        Assert.Equal(AlundraPadState.Left, dPadOnly.ButtonsHold);
+        Assert.Equal(AlundraPadState.Left, both.ButtonsHold);
     }
 
     [Fact]

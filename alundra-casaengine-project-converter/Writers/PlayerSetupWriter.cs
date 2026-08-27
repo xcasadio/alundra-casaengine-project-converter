@@ -117,6 +117,15 @@ public static class PlayerSetupWriter
             BuildDigitalBinding("MoveDown", "Down", "DPadDown"),
             BuildDigitalBinding("MoveLeft", "Left", "DPadLeft"),
             BuildDigitalBinding("MoveRight", "Right", "DPadRight"),
+            // Left stick, as four SEPARATE actions rather than extra slots on the four above: an
+            // InputMapping's ButtonBehavior is either DigitalInput or AnalogInput, never both
+            // (InputMapping.Update), so a digital D-pad binding cannot also carry an axis. The DLL ORs
+            // these into the very same PSX pad bits as the D-pad (AlundraPlayerController.ActionBits),
+            // so the ported game logic still sees one ButtonsHold and never learns the difference.
+            BuildLeftStickBinding("MoveUpStick", "LeftStickY", invert: false),
+            BuildLeftStickBinding("MoveDownStick", "LeftStickY", invert: true),
+            BuildLeftStickBinding("MoveRightStick", "LeftStickX", invert: false),
+            BuildLeftStickBinding("MoveLeftStick", "LeftStickX", invert: true),
             // PSX Cross (PlayerManager.cs:413).
             BuildDigitalBinding("Jump", "Space", "A"),
             // PSX Square (PlayerManager.cs:549/964).
@@ -181,4 +190,50 @@ public static class PlayerSetupWriter
             },
         };
     }
+
+    /// <summary>
+    /// One half-axis of the left stick, as an AnalogInput mapping: InputMapping.Update reads the axis,
+    /// negates it when <paramref name="invert"/> is set, and reports Pressed once the result reaches
+    /// DeadZone - so one axis needs two mappings, one per direction. MonoGame's LeftStickY is positive
+    /// UP, hence up = not inverted and down = inverted.
+    ///
+    /// <para><see cref="LeftStickDeadZone"/> is deliberately NOT the 0.75 the digital bindings carry as a
+    /// placeholder: a real stick's gate is circular, so at 45 degrees each axis only reaches about 0.707
+    /// and a 0.75 threshold would make every DIAGONAL physically unreachable while the four cardinals
+    /// still worked. 0.5 clears both axes on a diagonal while still requiring a deliberate push.</para>
+    /// </summary>
+    private static JObject BuildLeftStickBinding(string actionName, string analogAxis, bool invert)
+    {
+        return new JObject
+        {
+            ["id"] = Ids.For($"buttonsMapping:alundra:{actionName}").ToString(),
+            ["name"] = actionName,
+            ["game_pad_number"] = "One",
+            ["button_behavior"] = "AnalogInput",
+            ["analog_axis"] = analogAxis,
+            ["invert"] = invert,
+            ["dead_zone"] = LeftStickDeadZone,
+            // Unused by an AnalogInput mapping (InputMapping.Update reads the axis, never these), but
+            // InputMapping.Load reads both nodes unconditionally, so they carry the same inert
+            // placeholders the digital bindings use rather than a shape the engine has never shipped.
+            ["key_button"] = new JObject
+            {
+                ["key"] = "None",
+                ["game_pad_button"] = "None",
+                ["mouse_button"] = "LeftButton",
+                ["input_device"] = "NoDevice",
+            },
+            ["alternative_key_button"] = new JObject
+            {
+                ["key"] = "None",
+                ["game_pad_button"] = "None",
+                ["mouse_button"] = "LeftButton",
+                ["input_device"] = "NoDevice",
+            },
+        };
+    }
+
+    /// <summary>See <see cref="BuildLeftStickBinding"/> on why this is 0.5 and not the digital
+    /// bindings' own 0.75 placeholder.</summary>
+    private const float LeftStickDeadZone = 0.5f;
 }

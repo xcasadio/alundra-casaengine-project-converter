@@ -74,6 +74,16 @@ public sealed class AlundraPlayerController : PlayerController
         ("MoveDown", AlundraPadState.Down),
         ("MoveLeft", AlundraPadState.Left),
         ("MoveRight", AlundraPadState.Right),
+        // Left stick, onto the SAME four PSX bits as the D-pad above (user report, 2026-08-26: the
+        // stick moved nothing). The converter emits these as four separate AnalogInput mappings because
+        // an InputMapping is either digital or analog, never both, so the stick cannot ride along on the
+        // D-pad's own entries - see PlayerSetupWriter.BuildLeftStickBinding. ComputePadState ORs every
+        // action's bit into one ButtonsHold, so the ported game logic sees a single PSX pad and cannot
+        // tell which device produced a direction; holding both simply agrees with itself.
+        ("MoveUpStick", AlundraPadState.Up),
+        ("MoveDownStick", AlundraPadState.Down),
+        ("MoveLeftStick", AlundraPadState.Left),
+        ("MoveRightStick", AlundraPadState.Right),
         ("Jump", AlundraPadState.Cross),
         ("Attack", AlundraPadState.Square),
         ("UseItem", AlundraPadState.Circle),
