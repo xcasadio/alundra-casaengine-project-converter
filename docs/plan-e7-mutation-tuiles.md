@@ -578,7 +578,7 @@ non stagé, absent du commit — discipline de staging tenue.
   cours de partie naît à l'image 0, déphasée des tuiles plates de même id qui animent depuis le
   chargement, et le cache rend cet écart permanent. Les deux existaient déjà avant la tranche.
 
-### E7.c — 0x3B et 0x2F ⏳
+### E7.c — 0x3B et 0x2F ✅ `e5d73bb`
 
 #### Faits établis par la reconnaissance (2026-08-28) — la tranche n'est pas ce que son titre dit
 
@@ -681,6 +681,44 @@ non stagé, absent du commit — discipline de staging tenue.
   chemin d'entrée.
 - **Rollback** : un commit. **Budget** : un commit, ≤ 2 tours. **Arrêts** : dérive de golden au-delà
   du ré-étiquetage ; jalon de frame déplacé ; impossibilité de publier le pad sans élargir le seam.
+
+#### Réalisé — écarts et dispositions (2026-08-28, `e5d73bb`)
+
+**Les deux passes CONFIRMED.** `Alundra.Tests` **589** (568 + 21), convertisseur **138**, build 0
+erreur, 0 avertissement ; quatre traces du héros byte-identiques ; jalons de frame intacts (aucune
+assertion retirée — les seules suppressions du fichier de harnais sont du texte de commentaire et les
+deux entrées de forçage).
+
+- **La démonstration qui justifie l'item 2 bis, faite trois fois** (session principale, puis
+  indépendamment par les deux vérificateurs) : en bouchonnant 0x3B pour qu'il rende toujours 0, le
+  test `IntroTrace` reste **vert** et les deux goldens se régénèrent **byte-identiques**. Seuls les
+  tests de branche vraie au site de production tombent. **Troisième occurrence du mode « verte et
+  inerte » sur ce chantier, et la première anticipée avant la livraison plutôt qu'après.**
+- **Goldens, ré-étiquetage prouvé mécaniquement** : 41774 lignes avant comme après ; pour chacune des
+  8514 lignes différentes, remplacer *une* occurrence de `UnknownSkipped` par `Implemented` redonne
+  exactement la nouvelle ligne (zéro violation) ; en-tête et compteurs inchangés.
+  `intro-programs-389.txt` : **9 lignes physiques** (5 étiquettes de 0x3B + 4 lignes de 0x2F où
+  l'étiquette et le libellé changent ensemble) — le « 9 + 4 » du plan se lit donc 9.
+- **Écart de méthode de l'exécuteur, justifié** : l'observable suggéré par l'item 2 bis (la position
+  d'arrêt du programme) n'est **pas** discriminant — la branche fausse de 0x70 atterrit sur le même
+  `Break` que celle de 0x3B. Remplacé par « 0x70 a-t-il été dispatché dans cet appel », sans
+  ambiguïté. Le `Result` est en outre figé au dispatch, car 0x70 l'écrase trois opcodes plus loin.
+- **Cohérence des étiquettes vérifiée exhaustivement** : `Dispatch` couvre 47 opcodes ;
+  `ImplementedOpcodes` est cet ensemble moins 0xBD (annoté `[degraded]` par le chemin dédié) ; les six
+  opcodes restés `[NOT IMPLEMENTED]` (0x0D, 0x39, 0x44, 0x50, 0x51, 0x59) sont bien absents du
+  dispatch. Aucun opcode mal étiqueté.
+- **Différés P4, aucun bloquant** : (A1) le snapshot de pad est publié dans l'`Update` du joueur,
+  donc une entité mise à jour **avant** lui verrait le pad de la frame précédente — l'original le pose
+  en tête de frame ; inatteignable sur la 389 (0x2F y est dispatché zéro fois), le deviendrait sur une
+  map ayant un 0x2F en programme d'entité. (A2) le mode 2 `ButtonsReleased` **existe** dans
+  l'original ; c'est `AlundraPadState` qui ne le porte pas — le commentaire du runner amalgame les
+  modes 2 et 3 et sous-estime le 2. (A3) **les tests unitaires de 0x3B n'utilisent que la boîte
+  dégénérée** `[18,18,38,38,8,8]` : avec `xmin == xmax`, une inversion d'opérandes **au sein d'un
+  axe** resterait indétectable. Remède connu et bon marché : un jeu d'`InlineData` sur la boîte réelle
+  non dégénérée `[15,21,32,40,25,30]` (programme à l'offset 773). La fidélité, elle, est vérifiée par
+  lecture côte à côte — c'est la robustesse du test qui manque, pas la correction. (A4) le correctif
+  D-E7-11 re-dérive la tuile de **toutes** les entités de la passe, pas seulement du joueur : plus
+  fidèle à `PhysicsEngine.cs:1698-1700`, et sans effet prouvé par le ré-étiquetage pur.
 
 ### E7.d — Clôture ⏳
 
