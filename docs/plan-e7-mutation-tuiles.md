@@ -580,10 +580,107 @@ non stagé, absent du commit — discipline de staging tenue.
 
 ### E7.c — 0x3B et 0x2F ⏳
 
-- 0x3B (boîte TileX/Y/Z du joueur — ordre des params relevé dans `Script_59_03B :1223-1238`) et 0x2F
-  (`Check moving in dir`). Re-baseline des goldens propre à la tranche : les 4624 occurrences de
-  0x3B changent d'annotation ; contrôle de flux réel, résultat attendu identique au forçage
-  pessimiste dans la fenêtre tracée (le joueur n'est jamais dans une zone d'écoutille).
+#### Faits établis par la reconnaissance (2026-08-28) — la tranche n'est pas ce que son titre dit
+
+1. **0x2F n'est PAS un test de direction.** `Script_47_02F` (`EntityEventHandlers.cs:1047-1069`,
+   taille 4) est un test de **bouton du pad** : `flag = (v2 << 8) | v1`, puis `Result =
+   (snapshot & flag) != 0` où `v3` choisit le snapshot (0 `ButtonsHold`, 1 `ButtonsJustPressed`,
+   2 `ButtonsReleased`, défaut `ButtonsJustPressedByInterval`). Les quatre occurrences de la 389 sont
+   `[0,16,0]` = masque **0x1000 = Haut**, snapshot **ButtonsHold**. Le nom « Check moving in dir » de
+   `EventOpcodeSizeTable` est un **contresens** — il décrit l'intention du script (« le joueur pousse
+   vers l'écoutille »), pas la sémantique. Cohérent : le héros dérive sa direction des mêmes bits
+   12-15 de `ButtonsHold` (`PlayerManager.cs:199-205`).
+2. **0x3B** (`Script_59_03B :1223-1240`, taille 7) teste **l'entité JOUEUR** — pas l'entité
+   courante — sur `TileX/TileY/TileZ`, bornes **inclusives des deux côtés**, ordre
+   `xmin,xmax,ymin,ymax,zmin,zmax`, sans clamp. Écrit `Result` seul.
+3. **Le chiffre du plan était périmé** : le golden porte **8514** dispatches de 0x3B (5 sites ×
+   ~1703 frames), pas 4624 — ce dernier datait de la fenêtre à 926 frames. **0x2F est dispatché
+   ZÉRO fois** : il est derrière 0x3B et 0x70 dans les quatre boucles d'écoutille, donc inatteignable
+   tant que 0x3B est faux. Les deux opcodes ne sont pas symétriques : 0x3B ne coûte rien et porte
+   tout le diff, 0x2F coûte un nouveau seam et n'a **aucune couverture par golden**.
+4. **Un 0x3B réel rend 0 sur toute la fenêtre**, pour les cinq boîtes, sous les deux lectures
+   possibles de la tuile joueur — aucune boîte n'a de plage en `y` contenant 57 ni 59. Le forçage
+   pessimiste était donc exact : le golden ne bouge que d'étiquettes.
+5. **Piège** : la tuile du joueur dans le harnais est **périmée à (33,59)** alors que sa vraie
+   position après les deux 0x64 est **(18,57,5)**. Cause : 0x64 n'écrit que `Pos*` sans re-dériver
+   `Tile*`, et le joueur du harnais ne tourne aucun tick de mouvement (pas de contrôleur). Un 0x3B
+   fidèle serait donc **juste pour une mauvaise raison**. Corriger la tuile ne change aucun résultat,
+   et la relecture l'a établi par **trois** chemins et non un : les 7 map-events couvrent toute la
+   carte, **les boîtes `XMin/XMax/YMin/YMax` des 19 records d'entité aussi**, et les 1960 dispatches
+   de 0x07 utilisent tous le type de recherche 128 (le propriétaire, jamais le joueur). Aucun autre
+   lecteur de la tuile joueur ne peut donc déplacer les goldens.
+6. Le runner n'a **aucun accès au pad** (construit avec `AlundraGameState` + `IEntityWorldContext`
+   seuls) ; `AlundraPadState` ne porte que `ButtonsHold` et `ButtonsJustPressed` — les snapshots 2 et
+   3 n'ont aucun champ derrière eux.
+7. L'annotation des goldens vient toujours du `HashSet ImplementedOpcodes` tenu à la main dans le
+   harnais, indépendant de `Dispatch` (troisième fois que ce piège est consigné : 0x1E/0x1F, 0x33).
+
+#### Décisions
+
+- **D-E7-7** : porter 0x2F pour ce qu'il **est** — un test de pad — et corriger son libellé dans
+  `EventOpcodeSizeTable` (« Check pad buttons »), en acceptant les 4 lignes de golden supplémentaires.
+  Garder l'ancien nom serait perpétuer un contresens dans un fichier de référence.
+- **D-E7-8 — seam de pad** : le dernier snapshot de pad est publié sur **`AlundraGameState`** (que le
+  runner détient déjà), écrit par la branche joueur d'`AlundraEntityScriptProxy.Update` juste avant
+  `MovePlayer`. C'est le pendant fidèle du `g_padState1` global de l'original, et le plus petit seam
+  possible : ni `IEntityWorldContext` ni le runner ne changent de signature.
+- **D-E7-9 — snapshots non portés** : modes 0 et 1 servis depuis `AlundraPadState` ; modes 2 et 3
+  (`ButtonsReleased`, `ButtonsJustPressedByInterval`) **dégradés** — `Result = 0` et un avertissement
+  unique, jamais une exception : ce code tourne dans le dispatch de production et lever tuerait le
+  jeu sur une map non portée. Inatteignables sur la 389 (les 4 sites sont en mode 0).
+- **D-E7-10** : `PlayerEntity` nul → `Result = 0` et avertissement unique (convention du dépôt, cf.
+  0x27 et le mode de direction 3). L'original déréférence sans garde et planterait.
+- **D-E7-11** : la tuile du joueur du harnais est corrigée (fait 5) pour que 0x3B soit juste pour la
+  bonne raison. **Acceptation stricte** : après correction, le golden reste un ré-étiquetage pur —
+  toute autre dérive est une condition d'arrêt.
+
+#### Acceptation
+
+1. **0x3B, unitaires** (patron `CheckEntityInArea_0x07_*`, le plus proche) : boîte réelle de la 389,
+   dedans → `Result = 1`, dehors → `0`, bornes **inclusives** vérifiées sur les quatre faces, avance
+   de **7**, `Result` du joueur lu depuis `IEntityWorldContext.PlayerEntity` et non l'entité courante
+   (test qui échoue si l'on lit l'entité courante : leur donner des tuiles différentes) ;
+   `PlayerEntity` nul → `Result = 0` + dégradé.
+2. **0x2F, unitaires** : `[0,16,0]` avec `ButtonsHold = 0x1000` → `Result = 1` ; sans le bit → `0` ;
+   mode 1 servi depuis `ButtonsJustPressed` ; modes 2 et 3 → `Result = 0` + avertissement unique ;
+   avance de **4** ; masque composé sur deux octets vérifié (`v2 << 8 | v1`).
+2 bis. **0x3B, BRANCHE VRAIE AU SITE DE PRODUCTION — l'item qui décide de la tranche.** Puisqu'un
+   0x3B réel rend 0 sur les 8514 dispatches de la fenêtre (fait 4), **aucun golden ne peut
+   distinguer une implémentation correcte d'un bouchon qui rend toujours 0** — ni les items
+   unitaires, qui montent leur propre contexte. Un handler lisant le mauvais champ, ou dont le
+   `PlayerEntity` de production résout `null` et prend la branche dégradée de D-E7-10, passerait les
+   items 1, 5, 6 et 7 sans broncher : c'est exactement le mode « verte et inerte en jeu » d'É1 et du
+   mutateur non câblé d'E7.a. Le test place donc le joueur du harnais sur la tuile **(18,38,8)** —
+   la boîte réelle `[18,18,38,38,8,8]` du programme B 130 — et fait tourner la vraie passe
+   `AlundraWorldProxy.RunMapEventsPass` (hors du run doré), puis assère que le programme prend la
+   branche **en zone** au lieu de re-boucler sur son `Break`. **Neutralisation obligatoire, à
+   exécuter et rapporter** : mettre `IEntityWorldContext.PlayerEntity` à `null` doit faire échouer
+   cet item — le contexte et le paramètre `player` de `RunMapEventsPass` sont bien deux chemins
+   distincts. En revanche la confusion « joueur vs entité courante » **ne peut pas** être neutralisée
+   ici et reste couverte par l'item 1 : dans un programme de slot B l'entité exécutante **est** le
+   joueur (`AlundraWorldProxy.cs:1865, :1891`), donc leur donner des tuiles différentes est
+   impossible sur ce chemin.
+3. **Seam de pad, site de production** : après une frame réelle où la branche joueur construit un
+   pad, `AlundraGameState` porte ce snapshot, et un 0x2F dispatché le lit. **Neutralisation** : sans
+   l'écriture du snapshot, le 0x2F rend 0.
+4. **Tuile du joueur du harnais (fait 5)** : après les deux 0x64, le joueur du harnais porte
+   `TileX/TileY/TileZ = (18,57,5)` — le test échoue avec les valeurs périmées (33,59,0).
+5. **Goldens** : `intro-trace-389.txt` change **uniquement** le jeton `UnknownSkipped` →
+   `Implemented` sur les **8514** lignes de 0x3B — même nombre de lignes, mêmes numéros de frame,
+   même en-tête de comptage ; `intro-programs-389.txt` change 9 lignes d'étiquette (+ 4 de libellé
+   si D-E7-7). **Les assertions de frame épinglées restent intactes.** Toute autre dérive = arrêt.
+6. **Nettoyage des forçages** : 0x3B retiré de `PessimisticPredicateOpcodes`, 0x2F de
+   `OptimisticPredicateOpcodes`, avec une note datée (précédent E4.e) — les laisser serait
+   inoffensif mais contredirait la doc de classe qui justifie la confiance dans les goldens.
+   0x3B et 0x2F **ajoutés à `ImplementedOpcodes`** (fait 7).
+7. **Suites** : build 0 erreur ; `Alundra.Tests` verts (568 + nouveaux) ; convertisseur 138 ;
+   quatre traces du héros byte-identiques ; moteur non relancé (aucun fichier moteur touché).
+
+- **Non-objectifs** : porter `ButtonsReleased`/`ButtonsJustPressedByInterval` (D-E7-9) ; faire
+  réellement ouvrir une écoutille en jeu (c'est E7.d, validation utilisateur) ; toucher au reste du
+  chemin d'entrée.
+- **Rollback** : un commit. **Budget** : un commit, ≤ 2 tours. **Arrêts** : dérive de golden au-delà
+  du ré-étiquetage ; jalon de frame déplacé ; impossibilité de publier le pad sans élargir le seam.
 
 ### E7.d — Clôture ⏳
 
