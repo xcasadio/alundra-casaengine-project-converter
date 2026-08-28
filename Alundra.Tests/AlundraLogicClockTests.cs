@@ -26,14 +26,37 @@ public class AlundraLogicClockTests
         }
     }
 
-    [Fact]
-    public void TicksThisFrame_Dt1Over123_Over123Frames_TotalIs50TicksPlusOrMinus1_NoFrameExceedsOneTick()
+    /// <summary>
+    /// Investigated 2026-08-26 after the main session raised a false alarm ("the game runs ~0.4% slow at
+    /// 123 fps"). It does not. The clock is one tick BEHIND a perfect 50 Hz reference at this frame rate,
+    /// and that deficit is a bounded one-off PHASE OFFSET of 20 ms - it never grows, at any duration.
+    /// Measured on the production float32 arithmetic: -1 tick at 1 s, at 10 s, at 60 s, at 300 s and at
+    /// 900 s, the rate converging on 49.9989 ticks/s over 900 s.
+    ///
+    /// <para>The cause is not this class' accumulator but the frame time it is handed: float32(1/123) is a
+    /// hair BELOW the true 1/123, so 123 of them sum to 0.999999962747097 while the 50th tick's threshold
+    /// sits at 0.9999999776482582. No accumulator of any precision - float, double, or exact rational -
+    /// can emit 50 ticks in 123 such frames. Widening the parameter is impossible anyway: elapsedTime is
+    /// already quantised by <c>GameplayProxy.Update(float)</c> in the engine submodule, before any Alundra
+    /// code runs. Decision of 2026-08-26: leave the arithmetic alone (a double accumulator would fix 72,
+    /// 144, 280 and 400 Hz by one tick each, but not 123 Hz, and it would make this clock diverge from the
+    /// engine's own float <c>CharacterMotionSystem._fixedStepAccumulator</c>, which cannot be touched).</para>
+    ///
+    /// <para>This test replaces one that asserted <c>InRange(total, 49, 51)</c> - a tolerance written into
+    /// its own name, which is precisely what let the behaviour go undescribed while the suite stayed
+    /// green. Exact counts now, so the day any of this changes, a test says so.</para>
+    /// </summary>
+    [Theory]
+    [InlineData(123, 49)]    // 1 s
+    [InlineData(1230, 499)]  // 10 s
+    [InlineData(7380, 2999)] // 60 s
+    public void TicksThisFrame_Dt1Over123_IsExactlyOneTickBehind_WhateverTheDuration(int frames, int expectedTotal)
     {
         var clock = new AlundraLogicClock();
         const float dt = 1f / 123f;
 
         var total = 0;
-        for (var frame = 0; frame < 123; frame++)
+        for (var frame = 0; frame < frames; frame++)
         {
             var ticks = clock.TicksThisFrame(dt);
             Assert.True(ticks is 0 or 1, $"frame {frame}: expected 0 or 1 tick at ~123 Hz, got {ticks}.");
@@ -41,7 +64,12 @@ public class AlundraLogicClockTests
             clock.CloseFrame();
         }
 
-        Assert.InRange(total, 49, 51);
+        Assert.Equal(expectedTotal, total);
+
+        // The point of the three rows: the deficit against a perfect 50 Hz clock is ONE tick at every
+        // duration. A drift would show up here as a deficit growing with `frames`.
+        var perfectClockTotal = (int)(frames / 123.0 * 50.0);
+        Assert.Equal(1, perfectClockTotal - total);
     }
 
     [Fact]
