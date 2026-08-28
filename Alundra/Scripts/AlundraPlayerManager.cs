@@ -52,9 +52,16 @@ namespace Alundra.Scripts;
 /// <item><description><c>TileAttributes &amp; 0x80</c> warp-tile branch - PlayerManager.cs:172-196 (no
 /// tile-attribute sampling yet, <see cref="AlundraEntityScriptProxy.TileAttributes"/> stays 0).</description></item>
 /// <item><description>The slope switch's non-flat cases (4=water, 6=climbing wall, default) -
-/// PlayerManager.cs:207-353 (no collision/slope detection yet, <see cref="AlundraEntityScriptProxy.Slope_18c"/>
-/// stays 0 = flat ground, which is exactly <c>case 0</c>'s own <c>break</c> - i.e. falling straight
-/// through to the animation switch below, same as the original for this scenario).</description></item>
+/// PlayerManager.cs:207-353 still NOT ported (no ladder/climbing state machine yet - E1's own scope is
+/// only alimenting the field, docs/plan-echelles-chiffrage.md É1/É4). <see cref="AlundraEntityScriptProxy.Slope_18c"/>
+/// itself is no longer pinned to 0, though: E1 (<see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>)
+/// now computes it for the player from the real map 389 cell data every frame, and reads 6 whenever the
+/// hero's <c>ModdedPosZ</c> exactly matches one of the four ladder cells' own ground height (all four are
+/// reachable by ordinary walking, no step-up needed - see <see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>'s
+/// own doc on the qualification rule this depends on) - this switch just does not consume that value yet
+/// (still <c>case 0</c>'s own
+/// <c>break</c> for every <c>TargetAnimationId</c>, i.e. falling straight through to the animation
+/// switch below, regardless of what <see cref="AlundraEntityScriptProxy.Slope_18c"/> actually holds).</description></item>
 /// <item><description><c>UpdatePlayerWeaponEffect</c>/<c>UpdateWeaponStepProgression</c>/
 /// <c>UpdatePlayerCarriedEntity</c> - PlayerManager.cs:355-357 (no weapon/carry system).</description></item>
 /// <item><description>Every <c>TargetAnimationId</c> case other than Idle/Moving/LoadingMap - jump, sprint,

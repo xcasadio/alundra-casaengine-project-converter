@@ -960,6 +960,14 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 AlundraPlayerManager.MovePlayer(this, in pad, ScriptHost.GameState);
                 var ticksThisFrame = ScriptHost.LogicTicksThisFrame(elapsedTime);
                 AlundraPlayerManager.Tick(this, ticksThisFrame);
+
+                // E1 (docs/plan-echelles-chiffrage.md É1): alimente Slope_18c AFTER this frame's own
+                // MovePlayer+Tick, exactly like the original's UpdateTileAttributes runs at the end of
+                // the physics pass (PhysicsEngine.cs:1706-1826) - so next frame's MovePlayer reads THIS
+                // frame's freshly computed value, the same one-frame latency the original already has
+                // (see UpdateGroundSlope's own doc, and docs/plan-echelles-chiffrage.md §2's "fait qui
+                // simplifie la conception").
+                UpdateGroundSlope();
             }
         }
 
@@ -1206,6 +1214,118 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 best = height;
             }
         }
+    }
+
+    /// <summary>
+    /// E1 (docs/plan-echelles-chiffrage.md É1): port of the <c>Slope_18c</c> half of
+    /// <c>PhysicsEngine.UpdateTileAttributes</c>'s gravity branch (PhysicsEngine.cs:1740-1820) - the
+    /// four-corner qualification rule that feeds the ladder/water slope switch in
+    /// <c>PlayerManager.MovePlayer</c> (that switch is NOT ported yet - see
+    /// <see cref="AlundraPlayerManager"/>'s own class doc; this method only ALIMENTS the field, nothing
+    /// reads it yet besides the pre-existing <c>DestroyOnSlidingSlope</c>/<c>Slope_18c == 4</c> check -
+    /// see the restriction paragraph below). Samples the SAME four corners as
+    /// <see cref="ComputeTerrainHeight"/> (identical <see cref="PosX"/>/<see cref="PosY"/>/
+    /// <see cref="ModX"/>/<see cref="ModY"/>/<see cref="Width"/>/<see cref="Height"/> footprint,
+    /// PhysicsEngine.cs:960-971/1187-1190) instead of a single center point - the divergence between the
+    /// two is the whole point of this port (docs/plan-echelles-chiffrage.md §7.1: a hero pressed flush
+    /// against a wall straddles a cell boundary where the corners disagree; a center-only sample would
+    /// silently read the wrong cell and misreport the slope).
+    ///
+    /// Per corner: qualifies only when that corner's ground height (16.16, same rounding as
+    /// <see cref="SampleTerrainHeightCorner"/>) is exactly equal to <c>PosZ + ModZ</c> - i.e. the entity
+    /// is standing exactly on that corner's ground.
+    ///
+    /// DEVIATION FROM THE LITERAL ORIGINAL (deliberate, not a bug): the original compares
+    /// <c>MapHeights[i] + 1 == ModdedPosZ</c> (PhysicsEngine.cs:1748) because ITS OWN resting invariant is
+    /// <c>ModdedPosZ == TerrainHeight + 1</c> (<c>PhysicsEngine.cs:186</c>'s <c>platformTopZ = entity.TerrainHeight + 1</c>,
+    /// landed via <c>PhysicsEngine.cs:128</c>'s <c>entity.PosZ = platformHeight - entity.ModZ</c>). This
+    /// port never adopted that <c>+1</c>: its own resting invariant is <c>ModdedPosZ == TerrainHeight</c>,
+    /// chosen and documented where the player lands
+    /// (<see cref="Update"/>'s landed-pose branch, <c>targetPosZ = terrainHeight - ModZ</c>, see the long
+    /// comment a few lines above that assignment for why the extra 16.16 unit the original keeps is
+    /// silently swallowed the moment <c>root.Z</c> round-trips through
+    /// <c>AlundraWorldProxy.ResolveLogicalPosition</c>'s own integer truncation, <c>posZ &gt;&gt; 16</c>,
+    /// no remainder) and at spawn (<c>ClampToGround</c>: <c>PosZ = groundPosZ;</c>, no <c>+1</c> either).
+    /// Porting the original's <c>+1</c> literally here would therefore make this qualification
+    /// permanently unsatisfiable in THIS engine - a player standing on ground always has
+    /// <c>ModdedPosZ == TerrainHeight</c> exactly, never <c>TerrainHeight + 1</c>, confirmed on all four
+    /// golden hero traces on map 389 (<c>posZ == cellHeight * 16 &lt;&lt; 16</c> exactly, e.g. frame 1 of
+    /// <c>docs/hero-trace-389-highground-fixedstep.txt</c>: <c>posZ = 8388608</c>, <c>cellHeight = 8</c>,
+    /// <c>8 * 16 &lt;&lt; 16 = 8388608</c>; same for frames 40/210/258 across both golden traces). So this
+    /// method ports the RULE's MEANING - "the entity is resting on this corner" - against THIS port's own
+    /// resting invariant, not the original's literal comparison. <c>bestFlagMask</c> starts at the sentinel <c>0xe00</c> (the
+    /// maximum <c>(GroundProperty &amp; 0x0e) &lt;&lt; 8</c> can ever reach) and is only lowered to a
+    /// qualifying corner's own masked value when that value is smaller (PhysicsEngine.cs:1751-1761); ANY
+    /// disqualified corner resets it to 0 (PhysicsEngine.cs:1763) and it can never recover afterwards (0
+    /// can never be beaten by an unsigned "&lt;" comparison) - so <see cref="Slope_18c"/> ends up non-zero
+    /// only when ALL FOUR corners qualify, and is then the MINIMUM <c>(GroundProperty &gt;&gt; 1) &amp; 7</c>
+    /// across them (PhysicsEngine.cs:1819-1820).
+    ///
+    /// RESTRICTION (E1 scope, documented deviation): called for the PLAYER ONLY - see the single call
+    /// site in <see cref="Update"/>'s <c>IsPlayer</c> branch. Every NPC's <see cref="Slope_18c"/> stays
+    /// the C# default 0. Reason: <see cref="Slope_18c"/> already has one live consumer,
+    /// <see cref="PickEventTrigger"/>'s <c>DestroyOnSlidingSlope</c> check (<c>Slope_18c == 4</c>, water) -
+    /// alimenting it for NPCs too could change their observable behaviour (and the intro trace). Map 389
+    /// carries no water cell, so nothing could actually trigger that branch today even without this
+    /// restriction, but the restriction is kept for this slice regardless, per the ticket.
+    ///
+    /// No-op (<see cref="Slope_18c"/> forced to 0) without <see cref="EntityFlags.Gravity"/> set
+    /// (PhysicsEngine.cs:1706's own gravity gate) or without an installed
+    /// <see cref="AlundraCellsCollisionField"/> (no <see cref="GroundSample"/> string tag was needed
+    /// here - the four-corner rule needs the NUMERIC accessor <see cref="AlundraCellsCollisionField.SampleGroundProperty"/>,
+    /// which only that concrete field type exposes, hence the type check instead of the plain
+    /// <see cref="ICollisionField"/> interface <see cref="ComputeTerrainHeight"/> uses).
+    /// </summary>
+    internal void UpdateGroundSlope()
+    {
+        if ((Flags & EntityFlags.Gravity) == 0)
+        {
+            Slope_18c = 0;
+            return;
+        }
+
+        if (Owner?.World?.CollisionField is not AlundraCellsCollisionField cellsField)
+        {
+            Slope_18c = 0;
+            return;
+        }
+
+        var x1 = (PosX + ModX) >> 16;
+        var x2 = (PosX + ModX + Width) >> 16;
+        var y1 = (PosY + ModY) >> 16;
+        var y2 = (PosY + ModY + Height) >> 16;
+        var moddedPosZ = PosZ + ModZ;
+
+        var bestFlagMask = 0xe00u;
+        ProbeSlopeCorner(cellsField, x1, y1, moddedPosZ, ref bestFlagMask);
+        ProbeSlopeCorner(cellsField, x2, y1, moddedPosZ, ref bestFlagMask);
+        ProbeSlopeCorner(cellsField, x1, y2, moddedPosZ, ref bestFlagMask);
+        ProbeSlopeCorner(cellsField, x2, y2, moddedPosZ, ref bestFlagMask);
+
+        Slope_18c = (int)(bestFlagMask >> 9);
+    }
+
+    private static void ProbeSlopeCorner(
+        AlundraCellsCollisionField field, int px, int py, int moddedPosZ, ref uint bestFlagMask)
+    {
+        var position = new Vector3(px, py, 0f);
+        if (field.TrySampleGround(position, float.MaxValue, out var sample) && sample.HasGround)
+        {
+            var height = (int)Math.Round((double)sample.GroundHeight * 65536.0);
+            if (height == moddedPosZ)
+            {
+                var groundProperty = field.SampleGroundProperty(position);
+                var masked = ((uint)groundProperty << 8) & 0xe00u;
+                if (masked < bestFlagMask)
+                {
+                    bestFlagMask = masked;
+                }
+
+                return;
+            }
+        }
+
+        bestFlagMask = 0;
     }
 
     private static void SampleGroundCorner(ICollisionField field, float x, float y, ref bool hasGround, ref float groundMax)

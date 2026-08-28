@@ -64,13 +64,23 @@ la règle du **minimum sur les coins qualifiés** (~25 lignes). `MapTiles[4]` n'
 
 - **Construit** : accesseur numérique de propriété de sol sur `AlundraCellsCollisionField` (additif) ;
   port de la règle des quatre coins — minimum de `GroundProperty` sur les coins vérifiant
-  `hauteur + 1 == ModdedPosZ`, remise à 0 dès qu'un coin échoue, et 0 forcé quand le bit `Gravity`
+  `hauteur == ModdedPosZ`, remise à 0 dès qu'un coin échoue, et 0 forcé quand le bit `Gravity`
   est absent ; appel de `ComputeTerrainHeight` (existant) dans la branche joueur.
+  **Décision de conception (2026-08-26, post-revue adversariale) : pas de `+1`.** L'original compare
+  `hauteur + 1 == ModdedPosZ` parce que SON invariant au repos est `ModdedPosZ == TerrainHeight + 1`
+  (`PhysicsEngine.cs:186`/`:128`). Ce portage n'a jamais adopté ce `+1` — son propre invariant au repos
+  est `ModdedPosZ == TerrainHeight` (`AlundraEntityScriptProxy.cs`, atterrissage et `ClampToGround` :
+  aucun des deux n'ajoute `+1`), confirmé sur les 4 traces dorées du héros (`posZ == cellHeight × 16 <<
+  16` exactement, jamais `+1`). Porter le `+1` littéralement aurait rendu la condition en permanence
+  insatisfiable dans ce moteur (verdict de la revue adversariale, F1) : on porte le SENS de la règle
+  (« le héros est posé sur ce coin »), pas sa lettre.
 - **Coût** : ~25 lignes de règle + ~10 d'accesseur + le câblage joueur. Réemploie les 30 lignes
   d'échantillonnage 4 coins existantes.
 - **Acceptation** : sur le champ réel de la 389, `Slope_18c == 6` sur les 4 cellules d'échelle et 0
-  ailleurs ; **et** un cas où l'échantillon au centre et la règle des coins **divergent** (héros collé
-  au mur), qui échoue si l'on se contente du centre.
+  ailleurs — vérifié à la fois en appelant `UpdateGroundSlope()` directement ET via le site d'appel de
+  PRODUCTION (`Update`'s own `IsPlayer` branch, `HeroWorldFixture`-monté, un vrai `World`/`PhysicsWorld`/
+  champ de collision réel) ; **et** un cas qui tue la mutation « échantillon au centre » (mais voir la
+  note ci-dessous sur ce qu'il prouve réellement).
 - **Débloque en propre** : rien de visible. C'est une brique.
 
 ### É2 — `FloorHeight` du joueur (petite)
@@ -131,10 +141,40 @@ réemploi de `ComputeTerrainHeight`. `MapTiles[4]` — n'a pas à être ressusci
 
 ## 7. Risques identifiés
 
-1. **La divergence centre/coins est le cœur du sujet.** L'entrée en escalade exige `ForceAdjusted != 0`,
-   donc le héros collé au mur — précisément la pose où un échantillon au centre et la règle des coins
-   ne donnent pas le même résultat. É1 doit être testée sur cette pose, sinon la tranche peut être
-   verte et l'échelle inutilisable.
+1. **La divergence centre/coins, mesurée sur la 389, ne se matérialise PAS à la pose « collé au mur »**
+   (correctif du risque ci-dessous, revue adversariale F3 : force brute sur toutes les positions
+   entières de la carte 52×60, empreinte de production). La règle des quatre coins ne rend 6 que pour
+   12 positions sur toute la carte (3 par cellule d'échelle), et pour chacune d'elles — y compris la
+   pose collée contre le mur (18,37) — le centre géométrique et les quatre coins **s'accordent** (les
+   deux lisent 6). La divergence centre/coins n'est démontrable que sur une pose 2px plus profonde,
+   inatteignable par la marche (pas de step-up, voir §1). Le test É1 qui l'exerce est donc conservé
+   comme tueur de mutation « échantillon central » uniquement, documenté comme tel — ce n'est PAS une
+   démonstration que le risque ci-dessous se réalise en jeu réel.
+
+2. **Écarts connus, documentés mais non corrigés dans É1** (identifiés par la revue adversariale,
+   disposition : documenter seulement) :
+   - `Slope_190` n'est jamais mis à jour par ce portage alors que l'original l'écrit à chaque appel
+     d'`UpdateTileAttributes` (`PhysicsEngine.cs:1819`) ; le champ existe et est cloné, et l'original le
+     consomme (détection de front eau, `FunctionTypeC`/`FunctionTypeE`) mais rien ne l'alimente ici.
+   - `CombinedVramFlagsOR`/`CombinedVramFlagsAND` ne sont jamais écrits par ce portage (déviation
+     préexistante à É1, non introduite par elle), alors qu'un consommateur les lit
+     (`DestroyOnVramFlags`).
+   - `TrySampleGround`/`ProbeSlopeCorner` n'appliquent jamais le bump `slopesHit` de +16 que l'original
+     applique aux 2e/3e/4e coins d'une empreinte à cheval sur plusieurs cellules en pente
+     (`PhysicsEngine.cs:1021-1024`/`:1037-1040`/`:1053-1056`). Sans effet mesurable sur la 389 (toutes
+     ses cellules en pente ont `GroundProperty = 0`), mais non porté.
+   - La position réelle de `Flags |= EntityFlags.Gravity` dans `MovePlayer` est APRÈS deux `return`
+     anticipés (`BlockedByEntity != null`, `InputBlockedMask`) — sans effet observable puisque le bit
+     est rémanent, mais le rapport initial de la tranche affirmait à tort qu'il était posé
+     inconditionnellement « chaque frame ».
+
+3. **Trous de couverture acceptés par construction (F8)** : le minimum entre deux masques
+   `(GroundProperty & 0x0e) << 8` non nuls et distincts n'est exercé par aucun test — la 389 ne porte
+   que trois valeurs de `GroundProperty` (`{0, 12, 128}`), et `(128 << 8) & 0xe00 == 0`, donc ce chemin
+   est inatteignable avec les données réelles de cette carte. Une inversion min/max serait quand même
+   attrapée par les 4 cas `[Theory]` existants (la sentinelle `0xe00` est le maximum, une inversion
+   rendrait 7 au lieu de 6). Le clamp hors-carte, lui, EST testé (voir
+   `AlundraGroundSlopeTests.OutOfMapFootprint_ClampsToNearestCell_*`).
 2. **`MovePlayer` tourne par image rendue**, pas par tick comme dans l'original. L'escalade lit le pad
    (par image) et décide d'un déplacement (par tick). La frontière doit être écrite explicitement dans
    É4, sinon on réintroduit la classe de bug corrigée en E4 et en E5.c.

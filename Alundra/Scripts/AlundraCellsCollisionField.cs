@@ -248,6 +248,29 @@ public sealed class AlundraCellsCollisionField : ICollisionField
     }
 
     /// <summary>
+    /// Raw per-cell <c>GroundProperty</c> (E1, docs/plan-echelles-chiffrage.md É1) - additive numeric
+    /// accessor next to <see cref="TrySampleGround(in Vector3, float, out GroundSample)"/>, which already
+    /// reads this exact same <c>_groundProperty[cellIndex]</c> internally but, until now, only exposed it
+    /// through <see cref="GroundSample.SurfaceTag"/>'s string form (<c>_surfaceTagCache</c>). Needed
+    /// because <c>PhysicsEngine.UpdateTileAttributes</c>'s <c>Slope_18c</c> four-corner rule
+    /// (PhysicsEngine.cs:1706-1826, ported in <see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>)
+    /// reads <c>GroundProperty</c> bits directly, not a surface-tag string. Same clamp-to-nearest-cell
+    /// convention as <see cref="TrySampleGround(in Vector3, float, out GroundSample)"/> (never fails -
+    /// see that method's own doc on the out-of-grid deviation); does not touch any existing member.
+    /// </summary>
+    public int SampleGroundProperty(in Vector3 worldPosition)
+    {
+        var x = (int)MathF.Floor(worldPosition.X);
+        var y = (int)MathF.Floor(worldPosition.Y);
+
+        var cellX = Math.Clamp(x / CellWidthPx, 0, _width - 1);
+        var cellY = Math.Clamp(y / CellHeightPx, 0, _height - 1);
+        var cellIndex = cellY * _width + cellX;
+
+        return _groundProperty[cellIndex];
+    }
+
+    /// <summary>
     /// Height (px) of one point, ported from the single-corner body of the
     /// <c>switch (tile.Slope &amp; 0x3)</c> in <c>ComputeEntityGroundHeight</c>
     /// (PhysicsEngine.cs:1009-1061), without the <c>slopesHit</c> multi-corner +16 bump (see class
