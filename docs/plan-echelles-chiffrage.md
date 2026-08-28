@@ -193,3 +193,48 @@ réemploi de `ComputeTerrainHeight`. `MapTiles[4]` — n'a pas à être ressusci
 3. **La restauration de gravité n'a aujourd'hui aucune source** : `AdoptPlayerPawn` écrit
    `Settings.Gravity` sans mémoriser la valeur. É4 doit créer cette réserve, sans quoi « restaurer »
    restaurerait zéro.
+
+---
+
+## 8. Clôture — les quatre tranches sont livrées et VALIDÉES EN JEU (2026-08-26)
+
+**L'utilisateur confirme : « Alundra peut monter sur les échelles ».** Le bug rapporté est corrigé.
+
+| tranche | commit | ce qu'elle a livré |
+|---|---|---|
+| É1 | `19095d3` | sonde de terrain à quatre coins du joueur, alimentant `Slope_18c` |
+| É2 | `1396df0` | `FloorHeight` composé du terrain et du support entité |
+| É3 | `f03a199` | `GetTileHeightAtOffset` sur les hauteurs **brutes** de cellule |
+| É4 | `9afa867` | cas 6, états `Climbing`/`ClimbStill`, ±1 px par tick, gravité rendue à la sortie |
+
+Suites finales : `Alundra.Tests` **538**, convertisseur **138**, cinq traces dorées byte-identiques,
+aucun fichier moteur touché.
+
+### Ce que ce chantier a appris, et qui vaut au-delà des échelles
+
+**Les quatre tranches ont été livrées vertes, et les quatre ont été réfutées par une passe
+adversariale.** Le vérificateur d'acceptation a rendu `CONFIRMED` trois fois sur quatre. Les défauts :
+
+1. **É1** — le `+1` de l'original transcrit à la lettre rendait la condition insatisfiable en
+   permanence : tranche verte et **totalement inerte**. Cause : l'original repose à
+   `ModdedPosZ == TerrainHeight + 1`, ce portage à `ModdedPosZ == TerrainHeight`.
+2. **É2** — le même `-1` appliqué aux **deux** moitiés faussait la branche entité d'une unité, ce
+   portage ayant conservé le `+1` de l'original pour le support entité. Et le test « entité » passait
+   avec une liste de candidats **vide**.
+3. **É3** — réutiliser `SampleTerrainHeightCorner` importait une interpolation de pente que l'original
+   **n'a pas** : 4560 poses divergeaient, jusqu'à 15 px. « Même sémantique » valait pour la
+   **réduction**, pas pour la **valeur par coin**.
+4. **É4** — le héros **ne grimpait pas** : le moteur le recollait au sol à chaque image. Le fixture
+   utilisait `GroundSnapDistance = 0,15` (défaut C#) au lieu du **4,0** du prefab exporté, et le
+   chemin PNJ réutilisé était le même primitif sous un **contrat** différent
+   (`IsVerticalOwnedExternally` + `SetExternalVerticalDisplacement`).
+
+**Trois règles qui en découlent, à appliquer à toute tranche future :**
+
+- **Aucun `+1`/`-1` de l'original ne se transcrit** — il se re-dérive dans la convention de ce
+  portage, et la dérivation s'écrit à côté du code.
+- **Aucune tranche n'est acceptée sans un test traversant le site d'appel de production.** Un test qui
+  n'atteint pas le chemin qu'il prétend couvrir passe quand même : il faut le construire pour que le
+  chemin NON visé donne une valeur différente, et le prouver en neutralisant le chemin visé.
+- **Avant de réutiliser un helper, comparer les sémantiques ligne à ligne** — et pas seulement la
+  fonction, aussi le **contrat** qui l'entoure chez son appelant d'origine.
