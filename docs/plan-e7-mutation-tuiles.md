@@ -210,28 +210,198 @@ tableaux clonés au lieu d'aliasés → 9).
 
 ### E7.b — Applier visuel + synchronisation navigation ⏳
 
-- Modèle vivant des placements depuis `AlundraWallPlacements`/`AlundraFloorPlacements` + carte
-  rawId→(tileset, id local) depuis les propriétés `TileId` du `.tileset` (couvre les 497 raw ids de
-  la 389 ; ne **pas** coder `raw & 0x3ff`, faux pour les 36 tuiles synthétiques ≥ 960) ; stocker sur
-  le proxy le `TileMapComponent` et les documents (aujourd'hui locaux d'`InitializeWithWorld`).
-- **Câblage du proxy (item n°1, sans quoi la tranche est verte et inerte en jeu)** :
-  `AlundraWorldProxy` construit le `AlundraCellStore` depuis les records déjà parsés dans
-  `InitializeWithWorld` (à côté de l'installation du champ) et **surcharge
-  `IEntityWorldContext.CellMutator`**. Acceptation : un test échoue si la surcharge disparaît (le
-  défaut par défaut de l'interface rend `null` en silence — mode d'échec d'É1).
-- Abonnement au callback d'E7.a : re-dérivation des positions/depth-slots (formules du
-  `WallPlacementReplayer`, comparaison ligne à ligne) ; clear + resubmit de l'overlay aux frames de
-  mutation ; précheck des 12 rectangles (aucun sol en couche plate) ; warnings dégradés.
-- `NavigationGrid2D.SetCell` sur mutation de marchabilité (même formule `((walk|gp<<8) & 0x40) == 0`
-  que le `NavigationWriter`).
-- Tests sur fixture `World` réelle (patron `WallPlacementOverlayTests`) : swap de gids observé dans
-  l'overlay après `CopyCellRectangle`, changement de forme de (21,27) produisant l'entrée
-  supplémentaire, chemin non-visé prouvé par neutralisation.
-- **Reprise des différés d'E7.a** : les tests sur données réelles **échouent** (message nommant
-  l'export manquant) au lieu de se sauter ; test du pré-remplissage des 256 tags ; assertion du kind
-  `Degraded` au niveau production sur le jumeau de neutralisation ; avertissement sur clé
-  `wall_tiles` malformée ; `GetWallTileStack` ne rend plus le tableau vivant (l'applier en garde une
-  référence) ; `CellsMutated` n'alloue pas sans abonné.
+#### Faits établis par la reconnaissance (2026-08-28) — ils changent la conception
+
+1. **Le `plane` ne survit pas à l'initialisation.** `WallPlacementOverlay.Apply/ApplyFloor` n'utilise
+   `plane` que pour le **strip** (`GetTileReference(plane,x,y)` puis `RemoveTile(plane,x,y)`) ;
+   `AddSortedOverlayTile(tileReference, x, y, in sortKey)` ne le reçoit pas. Une fois les 1356 tuiles
+   (774 murs + 582 sols) déplacées dans l'overlay, l'ordre de dessin est **entièrement** décidé par
+   la clé de tri. **Conséquence majeure** : l'applier n'a jamais à rejouer le *packing* de planes du
+   convertisseur — le plus gros piège identifié (le packing est un algorithme **global et à état** :
+   muter (21,27) déplace la tuile 14 de (21,35), cellule jamais mutée, du plane 1 au plane 2 —
+   mesuré par ré-implémentation du `Replay` reproduisant l'export à l'identique).
+2. **Formules de position** (vérifiées sur les 28 entrées réelles des écoutilles) : sol à
+   `(x, y − height)` ; mur k à `(x, y − height − offset + k + 1)`. Le `+1` est la **pré-incrémentation
+   de la boucle** de l'original (`GraphicManager.cs:279` incrémente `dy` avant de dessiner) : aucune
+   tuile de mur ne se dessine sur sa propre ligne de base. `offset` est **signé** ((21,27) vaut −1).
+3. **Deux `y` distincts** — piège de rendu « presque correct » : la **position** utilise la ligne
+   calculée ci-dessus, la **clé de tri** utilise le `y` de la **cellule source**
+   (`GraphicManager.cs:246, :287` passent la variable de boucle `y`). Élévation sol
+   `cellY*16 + clamp(slot,0,5)`, mur `cellY*16 + 7 + clamp(slot,0,6)`, entités slot 6 entre les deux.
+4. **Depth slot** : fonction **pure** du raw id — `(raw & 0x3ff) < 960 ? (raw & 0x3ff)/160 : 0`,
+   plage 0..5. Vérifié : raw 17176 → 792 → slot 4 (l'export dit 4) ; raw 53251 → 3 → slot 0.
+5. **Carte rawId → id local** : propriété par tuile `TileId` du `.tileset` exporté, **stockée en
+   CHAÎNE** (`"12388"`), 623 tuiles, toutes distinctes donc injective. `raw & 0x3ff` est faux pour
+   les 36 tuiles synthétiques (id local 972 ↔ raw 37353, alors que `37353 & 0x3ff` = 489, une autre
+   tuile). `localId = gid − 1` (firstgid 1).
+6. **Un seul tileset visuel** : les quatre couches `Render_*` n'ont **pas** de `tile_sources` (donc
+   index 0) ; le tileset 1 ne sert qu'à la couche Navigation. `TileMapComponent.TileSetData`
+   (public, index 0) suffit — l'index > 0 n'est pas exposé.
+7. **Pas de surface hors écran** : aucun `TileMapSurfaceComponent` dans la DLL ni dans le `.world` de
+   la 389 → la carte est dessinée dans la passe principale, donc l'absence de bump de `TileRevision`
+   par les opérations d'overlay (vraie, vérifiée) est **inerte ici**. À re-vérifier si une map passe
+   un jour par la surface.
+8. **Pas de suppression unitaire dans l'overlay** (confirmé exhaustivement) : `clear + resubmit` est
+   la seule stratégie, pas un choix. Coût : ~1356 allocations de `Tile` par reconstruction, aucun
+   buffer GPU ni corps physique. `AddSortedOverlayTile` **lève** (n'avertit pas) sur référence vide,
+   index de tileset inconnu, id inconnu ou tuile `Auto` → pré-valider avant de soumettre.
+9. **Ce qui change réellement sur la 389** : *aucun* sol. Les 12 rectangles laissent hauteur, pente,
+   marchabilité et tile_id des destinations **inchangés** ; seules bougent la queue des piles de murs
+   (gids 2/12/22 ↔ 3/13/23 ↔ 4/14/24) et, pour (21,27) seule, la **forme** de la pile (6 → 7 tuiles,
+   nouvelle position de dessin (21,14)). Les 0x54/0x55 ne touchent que marchabilité et
+   ground_property : **aucun effet visuel**.
+10. **Le cas dégradé D-E7-3 est prouvé inatteignable sur la 389** : les 5 cellules de destination qui
+    ont un sol sont toutes dans `AlundraFloorPlacements` ; les 3 autres ont `tile_id 65535` (pas de
+    sol). Sur toute la carte, les 477 cellules `height ≠ 0` avec un sol y sont **toutes** (0
+    exception). **Le précheck doit tester « a un sol ET est dans les placements », pas « a un sol »**
+    — sinon quatre fausses alertes par entrée de map.
+11. **(21,14), la seule position créée par une mutation**, porte aujourd'hui `Render_0 = 986` et
+    `Render_1 = 633` — mais ces deux tuiles **sont** des placements ((21,24) sol, (21,35) mur k14),
+    donc retirées des couches plates à l'init : la position est libre au runtime. **À vérifier par
+    test, pas à supposer.**
+12. **Le programme C masqué 5 (offset 772) mute (17,37), (17,38) et (19,38)** — trois cellules qui ne
+    sont **pas** des destinations d'écoutille et qui portent leurs propres piles et sols. L'applier
+    doit gérer toute cellule mutée, pas seulement les 12 rectangles.
+
+#### Faits ajoutés à la relecture (plan-verifier, 2026-08-28)
+
+13. **Le document de placement est un SUR-ENSEMBLE de l'overlay réel.** `Apply`/`ApplyFloor` sautent
+    entièrement toute entrée dont le gid ne correspond pas à la tuile plate vivante (ni strip, ni
+    resubmit ; un seul `Logs.WriteError` agrégé, aucune valeur de retour —
+    `WallPlacementOverlay.cs:255-266, :308-319`). Ensemencer le modèle depuis les **documents**
+    resoumettrait ces entrées à la première reconstruction alors que leur tuile plate est toujours en
+    place → **double dessin**, précisément ce que l'ensemencement prétend éviter.
+14. **Trous `0xffff` dans les piles** : la boucle du convertisseur saute les tuiles vides **mais leur
+    `stackIndex` consomme sa ligne** — le `k` de la formule est l'**indice brut** dans le tableau, pas
+    un compteur compacté (`WallPlacementReplayer.cs:226-235`). Un applier qui compacte décale d'une
+    ligne toutes les entrées après un trou. **Réel sur la 389** : 34 des 233 piles contiennent des
+    `0xffff`, certains **intérieurs** avec des tuiles après (ex. (13,35), (11,35)).
+    **Portée exacte** (correction de relecture) : la reconstruction **rejoue des entrées mémorisées**,
+    elle ne re-dérive rien — la règle du `k` brut ne s'exécute donc que pour une cellule **mutée**.
+    Aucun des 12 templates ni des 4 destinations ne porte de trou : le risque est **latent partout,
+    sauf pour une mutation dont la source en porte un**. C'est exactement ce que l'item 2 ter doit
+    fabriquer, sinon il ne peut pas échouer.
+15. **Une cible hors carte est abandonnée SILENCIEUSEMENT** à l'export (`PlaceTile` rend −1, jamais
+    enregistrée, aucune trace — `:242-247, :476`). L'applier doit s'aligner : **pas d'avertissement**
+    par occurrence et par frame.
+16. **L'overlay n'est pas observable publiquement** : `TileMapComponent` n'expose que
+    `SortedOverlayTileCount` (`:131`) ; la liste et le type d'entrée sont privés (`:28, :84`) et le
+    moteur est intouchable (D-E7-1). Précédent au dépôt : `WallPlacementOverlayTests.cs:595-596`
+    accède déjà à des champs privés par réflexion.
+17. **`AlundraWorldProxy.InitializeWithWorld` n'est pas atteignable en test** : il exige un
+    `CasaEngineGame` vivant et un catalogue d'assets peuplé, et aucun test ne l'appelle
+    (`AlundraWorldProxyTests.cs:21-24`).
+
+#### Conception
+
+- **Modèle vivant des contributions**, porté par le proxy, **ensemencé depuis ce que `Apply`/
+  `ApplyFloor` ont RÉELLEMENT soumis** — les deux méthodes rendent désormais la liste des entrées
+  soumises (changement DLL, autorisé), au lieu d'être lues depuis les documents bruts (fait 13).
+  L'overlay contient ainsi exactement l'ensemble retiré des couches plates, sans quoi une tuile
+  serait dessinée deux fois ou disparaîtrait. Les 105 promotions de « clôture » (sols de hauteur 0
+  partageant une position avec un placement) sont héritées telles quelles, sans rejouer leur règle
+  globale.
+- **Testabilité du câblage (fait 17)** : le bloc d'`InitializeWithWorld` qui installe champ, store,
+  `CellMutator`, grille de navigation et overlay est **extrait en une méthode interne** appelée à la
+  fois par `InitializeWithWorld` et par les tests (montage `World` + `TileMapComponent` sans
+  `CasaEngineGame`). C'est ce chemin — et non un store construit à la main — que traversent les
+  tests d'acceptation.
+- **Sur mutation** : re-dériver les contributions des seules cellules mutées (positions, gids, depth
+  slots, `cellY` source) et **comparer au modèle**. Si rien ne diffère → **aucune reconstruction**
+  (rend les 0x54/0x55 gratuits). Sinon : remplacer les entrées de ces cellules, puis
+  `ClearSortedOverlayTiles` + resubmit du modèle entier. **Coalescer par frame** (l'entrée de map
+  déclenche 4 × 0x85 : une seule reconstruction).
+- **Bornes de pile** : itérer le `Count` visible via `GetWallTileStack` (E7.a), **jamais**
+  `Tiles.Length` — la formule du convertisseur (`WallPlacementReplayer.cs:226`) itère `Tiles.Length`
+  et la recopier verbatim réintroduirait le défaut corrigé en E7.a.
+- **Trous dans les piles (fait 14)** : parcourir les indices `0..Count−1` en **conservant l'indice
+  brut comme `k`** ; une entrée `0xffff` est ignorée **sans compacter** — sa ligne reste consommée.
+  Compacter décalerait d'une ligne toutes les tuiles situées après un trou.
+- **Hors carte (fait 15)** : entrée simplement ignorée, **sans avertissement** — l'export fait de
+  même en silence ; avertir par frame serait à la fois infidèle et bruyant.
+- **`stableId`** : conserver celui de l'init pour toute entrée déjà présente ; une entrée nouvelle
+  reçoit un id au-delà du maximum. (Les égalités de clé n'arrivent qu'entre cellules distinctes de
+  même ligne et même slot, donc visuellement disjointes ; le déterminisme suffit.)
+- **Câblage du proxy (item n°1, sans quoi la tranche est verte et inerte en jeu)** : `AlundraWorldProxy`
+  construit le `AlundraCellStore` depuis les records déjà parsés dans `InitializeWithWorld` (à côté
+  de l'installation du champ), **surcharge `IEntityWorldContext.CellMutator`**, et retient le
+  `TileMapComponent` et les deux documents (aujourd'hui locaux `:497, :533, :544`).
+- **Navigation** : sur mutation de marchabilité/gp, recalculer `((walk | gp<<8) & 0x40) == 0` (formule
+  du `NavigationWriter`) et `NavigationGrid2D.SetCell` en **reportant le masque de couches** de la
+  cellule existante (`CanEnter` exige `IsWalkable` **et** une intersection non vide : une cellule
+  marchable avec `NavigationLayerMask.None` est inatteignable).
+- **Dégradé, jamais fatal** : id brut absent de la carte, sol muté hors placements, position hors
+  carte → avertissement et entrée ignorée. Ne jamais laisser `AddSortedOverlayTile` lever en pleine
+  frame.
+
+#### Acceptation
+
+**Observation de l'overlay (fait 16)** : tous les items qui assèrent le CONTENU de l'overlay le lisent
+par **réflexion sur `_sortedOverlayTiles`** (champs `TileReference`/`GridX`/`GridY`/`SortKey`), via un
+unique helper de test — jamais sur le modèle vivant côté DLL, qui resterait correct si l'applier
+n'appelait plus `AddSortedOverlayTile`. **Mutation obligatoire à exécuter et rapporter** : supprimer
+l'appel `AddSortedOverlayTile` de l'applier doit faire échouer les items 2, 3, 4 et 6.
+
+1. **Câblage** : un test traverse le **chemin de production** (la méthode interne extraite,
+   fait 17) et observe que `((IEntityWorldContext)proxy).CellMutator` est non nul **et** que
+   l'abonnement à `CellsMutated` est posé sur le `TileMapComponent` réel. **Mutation** : supprimer la
+   ligne d'abonnement dans le proxy fait échouer ce test (prouvé, pas raisonné).
+2. **Swap de gids** (données réelles, fixture `World` du patron `WallPlacementOverlayTests`) : après
+   `CopyCellRectangle(0,20,1,2,18,37)`, les entrées d'overlay de (18,37) portent les gids 2/12/22
+   (fermé) au lieu de 4/14/24 (ouvert), aux **mêmes** positions (18,25..29) et avec les **mêmes**
+   clés de tri ; neutralisation : en retirant **l'abonnement posé par la production**, les gids
+   restent 4/14/24.
+2 bis. **Entrée désaccordée jamais resoumise (fait 13)** : avec un document portant une entrée dont
+   le gid ne correspond pas (patron `Apply_MismatchedGid_LeavesTileInPlaceAndSkipsOverlay`), après
+   une mutation et une reconstruction, cette entrée n'est **pas** soumise et sa tuile plate reste
+   unique (pas de double dessin).
+2 ter. **Trou de pile (fait 14)** : la règle du `k` brut ne s'exécute que sur une cellule **mutée**,
+   donc le test doit en **fabriquer** une — `CopyCellRectangle` prenant pour **source** une cellule
+   dont la pile porte un `0xffff` intercalé suivi de vraies tuiles ((13,35) ou (11,35) sur la 389,
+   sinon un store synthétique). La tuile qui suit le trou est soumise à
+   `y = cellY − height − offset + k + 1` avec `k` = son **indice brut**. **Mutation obligatoire** :
+   faire compacter les indices à l'applier doit faire échouer cet item (prouvé, pas raisonné). Et
+   aucune alerte n'est émise pour une entrée tombant hors carte (fait 15).
+3. **Changement de forme** : après `CopyCellRectangle(0,39,1,2,21,27)`, l'overlay porte **7** entrées
+   pour (21,27), la nouvelle en (21,14) avec le gid 783 (raw 17166) et le slot 4 ; et **rien** ne
+   subsiste en couche plate à (21,14) sur les 4 planes (vérification du fait 11).
+4. **Clés de tri exactes** : pour au moins une entrée de mur et une de sol, la clé re-dérivée est
+   **égale champ par champ** à celle produite à l'init par `WallPlacementOverlay` (test qui échoue si
+   l'on utilise la ligne de dessin au lieu du `y` source — le piège du fait 3).
+5. **Aucun effet visuel des bits** : un `SetCellBits`/`ClearCellBits` réel ne déclenche **aucune**
+   reconstruction d'overlay (compteur de reconstructions observé), et l'overlay est identique avant
+   et après.
+6. **Sols invariants** : après les 12 rectangles, les entrées de sol des 8 cellules de destination
+   sont **inchangées** (position et gid) — conforme au fait 9 ; et aucun avertissement de cas
+   dégradé n'est émis (fait 10).
+7. **Navigation, par le chemin câblé** : le test **injecte une grille** dans le proxy (le résolveur
+   réel dégrade à `null` sans `AssetContentManager` vivant), puis mute par
+   `SetCellBits`/`ClearCellBits` **du store câblé** — donc via le handler `CellsMutated` posé par la
+   méthode interne d'installation, jamais en appelant le helper de synchronisation directement.
+   Marchabilité portant le bit **0x40** (inatteignable sur la 389 — ce bit est absent de toute la
+   carte, donc un test 389 seul ne distinguerait pas un `SetCell` correct d'un no-op) : la cellule de
+   navigation bascule et le **masque de couches est conservé**. **Deux mutations obligatoires** :
+   retirer l'appel `NavigationGrid2D.SetCell` du handler doit faire échouer cet item ; abandonner le
+   masque de couches doit faire échouer l'assertion de masque.
+8. **Cellules hors rectangles** : les mutations du programme 772 sur (17,37)/(17,38)/(19,38) sont
+   traitées sans avertissement et sans changement visuel (elles ne touchent que des bits).
+9. **Reprise des différés d'E7.a** : les tests sur données réelles **échouent** (message nommant
+   l'export manquant) au lieu de se sauter ; test du pré-remplissage des 256 tags ; assertion du kind
+   `Degraded` au niveau production sur le jumeau de neutralisation ; avertissement sur clé
+   `wall_tiles` malformée ; `GetWallTileStack` ne rend plus le tableau vivant ; `CellsMutated`
+   n'alloue pas sans abonné.
+10. **Suites** : build 0 erreur ; `Alundra.Tests` verts (554 + nouveaux) ; convertisseur 138 ;
+    IntroTrace vert **et goldens inchangés** (E7.b ne change aucun opcode ni flux — un diff de golden
+    dans cette tranche est un signal d'arrêt) ; quatre traces du héros byte-identiques.
+
+- **Limites documentées** (à écrire dans le code) : le jeu de « clôture » et l'invariant de conflit
+  résiduel sont des fonctions **globales** de la carte, calculées à l'export seulement ; l'applier ne
+  les recalcule pas. Prouvé sans effet pour les copies de la 389 (105 entrées de clôture avant comme
+  après, 4 planes) — mais une future map ou un futur opcode pourrait l'exiger. Le packing de planes
+  n'est pas rejoué non plus (sans objet pour l'overlay, fait 1).
+- **Rollback** : revert du commit. **Budget** : un commit, ≤ 1 journée, ≤ 2 tours de correctifs.
+  **Arrêts** : si un golden bouge ; si le précheck signale un sol hors placements sur la 389 ; si une
+  clé de tri re-dérivée diffère de celle de l'init.
 
 ### E7.c — 0x3B et 0x2F ⏳
 
