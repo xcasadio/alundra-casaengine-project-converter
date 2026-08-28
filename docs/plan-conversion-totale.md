@@ -461,15 +461,35 @@ dialogues, E13 HUD, puis combat/objets).
 un `AlundraPadState` directement à `MovePlayer`, donc ils n'échoueraient pas si quelqu'un vidait le pad
 en amont via `IsInputEnable` — c'est un trou de couverture assumé, faute de harnais d'entrée headless.
 
-### E7 — Mutation de tuiles à chaud ⏳ (moteur, plan-verifier)
+### E7 — Mutation de tuiles à chaud ✅ code livré, validation runtime en attente
 
-- **But** : la trappe du marin 15 (0x85), les portes B 130-133 (0x55/0x54).
-- **Contenu** : moteur — API publique de mutation de tuile (id, collision, propriétés) avec
-  reconstruction du rendu, du champ de collision et de la grille de navigation pour le rectangle
-  modifié (`TileMapComponent` n'expose qu'un overlay aujourd'hui) ; DLL — 0x85 = copie de cellules
-  (`GameEngine.cs:2239-2300` : walkability, ground, slope, height, TileId, pile de murs), 0x55/0x54.
-- **Acceptation** : test moteur de mutation ; au runtime, la trappe s'ouvre et se referme.
-- **Dépendances** : E3 (champ), E8 (si les murs passent au moteur avant).
+Plan détaillé : [plan-e7-mutation-tuiles.md](plan-e7-mutation-tuiles.md). Tranches E7.a `326917e`,
+E7.b `9493b78`, E7.b-bis (moteur `1c5bf445` + pointeur `1215f3b`), E7.c `e5d73bb`. Reste **E7.d** :
+validation en jeu par l'utilisateur.
+
+- **But (reformulé par la reconnaissance)** : les « portes B 130-133 » sont **quatre écoutilles** du
+  pont (destinations 1×2 : (18,37), (15,27), (21,27), (16,41)), et la « trappe du marin 15 » est la
+  première d'entre elles. L'export livre les écoutilles **ouvertes** ; ce sont les programmes
+  d'entrée de map qui les ferment.
+- **Écart au contenu prévu** : **aucune API moteur de mutation n'a été nécessaire** — la prémisse
+  « `TileMapComponent` n'expose qu'un overlay » était fausse (`SetTile`/`SetTileReference`/
+  `RemoveTile` existent, avec reconstruction partielle). Le chantier a été **DLL seule**
+  (décision D-E7-1), à une exception : **E7.b-bis**, un correctif moteur décidé par l'utilisateur
+  parce que reconstruire l'overlay remettait à l'image 0 les 223 tuiles animées de la carte.
+  Aucun changement convertisseur, aucun export relancé.
+- **Livré** : 0x54/0x55/0x85 portés fidèlement (store de cellules partageant ses tableaux avec le
+  champ de collision, donc toutes les sondes du héros voient une mutation instantanément) ; applier
+  visuel re-dérivant les seules cellules mutées et reconstruisant l'overlay une fois par frame ;
+  synchro de la grille de navigation ; puis 0x3B et 0x2F, qui rendent les écoutilles ouvrables par le
+  joueur. **0x2F n'est pas un test de direction** malgré son nom : c'est un test de bouton du pad.
+- **Acceptation** : tests — `Alundra.Tests` 589, convertisseur 138, moteur sans nouvel échec (18
+  préexistants), goldens d'intro re-baselinés en ré-étiquetage prouvé pur, quatre traces du héros
+  byte-identiques. **Runtime (E7.d, utilisateur)** : écoutilles fermées à l'entrée de map, trappe
+  animée pendant l'intro, ouverture au passage du joueur poussant vers le haut.
+- **Dépendances** : E3 (champ) — satisfaite. E8 n'était pas un prérequis.
+- **Non portés, documentés** : opcode 0x56 (copie via la table `MapCopies`, non exportée) ; tuiles
+  cassables (`CheckAndTriggerTileEffect`, combat) ; consommateur warp du bit `GroundProperty` 0x80
+  (E10) ; les snapshots de pad `ButtonsReleased`/`ButtonsJustPressedByInterval`.
 
 ### E8 — Profondeur murs/sols dans le moteur ⏳ (moteur, plan-verifier)
 
@@ -557,7 +577,7 @@ en amont via `IsInputEnable` — c'est un trou de couverture assumé, faute de h
 | E4 déplacement scripté (E4.0/a/b/c/d/f) | ✅ (verifiers CONFIRMED ; runtime à valider par l'utilisateur) | voir git log ; moteur a9267735 |
 | E5 caméra | ✅ (verifier CONFIRMED ; runtime à valider par l'utilisateur) | cc1fc60 + 1507afc |
 | E6 contrôle joueur | ⏳ | |
-| E7 mutation de tuiles | ⏳ | |
+| E7 mutation de tuiles | ✅ code livré, runtime à valider | `326917e`, `9493b78`, moteur `1c5bf445`+`1215f3b`, `e5d73bb` |
 | E8 profondeur murs/sols moteur | ⏳ | |
 | E9 backdrops moteur | ⏳ | |
 | E10 fondu/transitions moteur | ⏳ | |
