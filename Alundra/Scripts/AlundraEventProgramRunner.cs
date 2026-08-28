@@ -682,6 +682,62 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 state.Result = entity.IsOnGround;
                 return 1;
 
+            case 0x3B: // Check player in area - Script_59_03B (EntityEventHandlers.cs:1223-1240): tests
+                       // the PLAYER entity's own TileX/TileY/TileZ - NOT the executing entity, unlike
+                       // 0x07's EntityInArea (see that method's own doc) - against the inclusive box
+                       // v[1]..v[6] (xmin,xmax,ymin,ymax,zmin,zmax), no clamp, same as the original.
+                       // Writes Result only, advances by its own size (7) either way (docs/plan-e7-
+                       // mutation-tuiles.md, slice E7.c, D-E7-6). D-E7-10: no PlayerEntity spawned for
+                       // this world -> Result = 0, degraded no-op (once-logged warning) - the same
+                       // "nothing to search" shape every other player-dependent path in this runner
+                       // already falls back to (see case 0x27 above).
+                if (_worldContext.PlayerEntity is { } areaPlayer)
+                {
+                    state.Result = areaPlayer.TileX >= v[1] && areaPlayer.TileX <= v[2]
+                        && areaPlayer.TileY >= v[3] && areaPlayer.TileY <= v[4]
+                        && areaPlayer.TileZ >= v[5] && areaPlayer.TileZ <= v[6]
+                        ? 1 : 0;
+                }
+                else
+                {
+                    state.Result = 0;
+                    LogDegradedNoPlayerOpcodeOnce(0x3B, "CheckPlayerInArea");
+                }
+
+                return 7;
+
+            case 0x2F: // Check pad buttons - Script_47_02F (EntityEventHandlers.cs:1047-1069): NOT a
+                       // direction test, despite the size table's old "Check moving in dir" label
+                       // (D-E7-7 corrects it - see fact 1, docs/plan-e7-mutation-tuiles.md) - a raw pad-
+                       // button test. Result = 1 iff (snapshot & ((v[2] << 8) | v[1])) != 0. v[3] selects
+                       // the snapshot: 0 ButtonsHold, 1 ButtonsJustPressed - both read off
+                       // AlundraGameState.LastPadState (D-E7-8's own seam, published by
+                       // AlundraEntityScriptProxy.Update's player branch just before MovePlayer); 2
+                       // (ButtonsReleased) and every other value (the original's own default arm,
+                       // ButtonsJustPressedByInterval) have no field behind them on AlundraPadState
+                       // (D-E7-9) - degraded no-op (Result = 0, once-logged warning), never an exception,
+                       // since this runs on the production dispatch path.
+            {
+                var padFlag = (uint)((v[2] << 8) | v[1]);
+                var padState = _gameState.LastPadState;
+
+                if (v[3] == 0)
+                {
+                    state.Result = (padState.ButtonsHold & padFlag) != 0 ? 1 : 0;
+                }
+                else if (v[3] == 1)
+                {
+                    state.Result = (padState.ButtonsJustPressed & padFlag) != 0 ? 1 : 0;
+                }
+                else
+                {
+                    state.Result = 0;
+                    LogDegradedPadSnapshotOnce(v[3]);
+                }
+
+                return 4;
+            }
+
             default:
                 return UnknownOpcode(command, state);
         }
@@ -1220,6 +1276,47 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             Logs.WriteWarning(
                 $"AlundraEventProgramRunner: opcode 0x{opcode:x2} ({name}) has no CellMutator installed "
                 + "for this world - degraded no-op, advancing by its size.");
+        }
+    }
+
+    /// <summary>
+    /// Degraded fallback for opcode 0x3B (Check player in area, D-E7-10, docs/plan-e7-mutation-tuiles.md,
+    /// slice E7.c) when this world spawned no <see cref="IEntityWorldContext.PlayerEntity"/> - same
+    /// "nothing to search" shape every other player-dependent path in this runner already falls back to
+    /// (e.g. case 0x27's FacePlayer), but reported as <see cref="EventTraceKind.Degraded"/> with a
+    /// dedicated WARNING (not <see cref="Logs.WriteDebug"/>), same convention as
+    /// <see cref="LogDegradedCellOpcodeOnce"/>: a world with no player is a setup gap, not an unported
+    /// subsystem.
+    /// </summary>
+    private void LogDegradedNoPlayerOpcodeOnce(int opcode, string name)
+    {
+        _lastDispatchKind = EventTraceKind.Degraded;
+
+        if (_loggedDegradedOpcodes.Add(opcode))
+        {
+            Logs.WriteWarning(
+                $"AlundraEventProgramRunner: opcode 0x{opcode:x2} ({name}) has no PlayerEntity spawned "
+                + "for this world - degraded no-op (Result = 0), advancing by its size.");
+        }
+    }
+
+    /// <summary>
+    /// Degraded fallback for opcode 0x2F's two unported pad snapshots (D-E7-9, docs/plan-e7-mutation-
+    /// tuiles.md, slice E7.c): mode 2 (ButtonsReleased) and every other value (the original's own default
+    /// arm, ButtonsJustPressedByInterval) have no field behind them on <see cref="AlundraPadState"/> -
+    /// this degrades (Result = 0, once-logged warning) rather than throwing, since this runs on the
+    /// production dispatch path and every real map-389 0x2F site is mode 0 (unreached in practice).
+    /// </summary>
+    private void LogDegradedPadSnapshotOnce(int mode)
+    {
+        _lastDispatchKind = EventTraceKind.Degraded;
+
+        if (_loggedDegradedOpcodes.Add(0x2F))
+        {
+            Logs.WriteWarning(
+                $"AlundraEventProgramRunner: opcode 0x2F (CheckPadButtons) snapshot mode {mode} "
+                + "(ButtonsReleased/ButtonsJustPressedByInterval) is not backed by AlundraPadState - "
+                + "degraded no-op (Result = 0).");
         }
     }
 

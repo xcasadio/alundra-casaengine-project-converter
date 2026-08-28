@@ -227,6 +227,38 @@ public class IntroTraceHarnessTests
 
         throw new Xunit.Sdk.XunitException($"IntroTrace: no trace line contains marker '{marker}'.");
     }
+
+    /// <summary>
+    /// D-E7-11 (docs/plan-e7-mutation-tuiles.md, fact 5, acceptance item 4): after the intro's own two
+    /// player-owner 0x64 calls (program 129, offsets 318/327 - docs/intro-programs-389.txt), the harness
+    /// player's own TileX/TileY must read its REAL post-teleport tile (18,57), not the New Game spawn
+    /// seed (33,59) frozen forever by the pre-fix bug (0x64 only ever writes Pos*, and this harness's
+    /// player ticks no movement system of its own - see <see cref="RunVerticalPhysicsPass"/>'s own updated
+    /// doc). TileZ (5) was already correct before this fix (that pass already refreshed it) - asserted
+    /// here too, as a same-cause regression guard.
+    /// </summary>
+    [Fact]
+    public void D_E7_11_HarnessPlayerTile_RefreshedAfterTheIntrosTwoTeleports_MatchesRealPostTeleportTile()
+    {
+        var projectRoot = FindProjectRoot();
+        if (projectRoot == null)
+        {
+            return; // self-skip: alundra-project/ not present in this checkout
+        }
+
+        var document = MapEventProgramLoader.Load(projectRoot, WorldName);
+        Assert.NotNull(document);
+
+        var sim = new HeadlessIntroSimulation(projectRoot, WorldName, document!);
+        // Frame 1: program 129 dispatches its own FIRST player-owner 0x64 (offset 318) then hits its own
+        // Break (offset 326), suspending. Frame 2: resumes at 327, dispatches the SECOND (final) 0x64.
+        sim.RunFramesForTest(2);
+
+        Assert.NotNull(sim.PlayerEntity);
+        Assert.Equal(18, sim.PlayerEntity!.TileX);
+        Assert.Equal(57, sim.PlayerEntity.TileY);
+        Assert.Equal(5, sim.PlayerEntity.TileZ);
+    }
 }
 
 /// <summary>
@@ -279,11 +311,17 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     /// no longer hands this harness a per-map-event callback to hook context off of.</summary>
     private const int IntroCinematicProgramId = 129;
 
+    // D-E7-11 (docs/plan-e7-mutation-tuiles.md): same tile-size constants every TileX/TileY derivation in
+    // this DLL already carries its own private copy of (EntityRecordMapper.cs:107-108,
+    // AlundraScriptedMotion.cs:60-61, AlundraWorldProxy.cs:55-56).
+    private const int TileWidthPx = 24;
+    private const int TileHeightPx = 16;
+
     private static readonly HashSet<int> ImplementedOpcodes = new()
     {
         0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x09, 0x0A, 0x10, 0x11, 0x16, 0x17, 0x19, 0x1A, 0x1B,
-        0x1E, 0x1F, 0x27, 0x2D, 0x2E, 0x30, 0x31, 0x33, 0x36, 0x37, 0x38, 0x49, 0x4B, 0x54, 0x55, 0x5A,
-        0x5B, 0x62, 0x63, 0x64, 0x65, 0x67, 0x68, 0x69, 0x70, 0x85, 0x8B, 0xAC,
+        0x1E, 0x1F, 0x27, 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x33, 0x36, 0x37, 0x38, 0x3B, 0x49, 0x4B, 0x54,
+        0x55, 0x5A, 0x5B, 0x62, 0x63, 0x64, 0x65, 0x67, 0x68, 0x69, 0x70, 0x85, 0x8B, 0xAC,
         // E5.a: 0x67/0x68/0x69 (camera follow/stop/forced look-at) newly implemented - the six real
         // map-389 0x67 occurrences (docs/intro-programs-389.txt) now trace as [implemented].
         // E4.e correction: 0x1E/0x1F (Walk / Walk with collision) were already ported by E4.d
@@ -301,6 +339,10 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         // passing, in this SAME set, since it is a one-line addition next to the three opcodes this slice
         // already touches (not a re-litigation of any E7 decision - 0x33 itself is untouched, only its
         // label in this disassembly annex).
+        // E7.c (docs/plan-e7-mutation-tuiles.md): 0x3B (Check player in area) and 0x2F (Check pad
+        // buttons, D-E7-7 relabel) newly implemented (AlundraEventProgramRunner.Dispatch cases 0x3B/0x2F)
+        // - see PessimisticPredicateOpcodes/OptimisticPredicateOpcodes' own updated docs above for why
+        // this changes only labels, never a Result, on map 389.
     };
 
     private readonly string _projectRoot;
@@ -902,6 +944,17 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
                 entity.PosZ += entity.FinalForceZ;
             }
 
+            // D-E7-11 (docs/plan-e7-mutation-tuiles.md, fact 5): TileX/TileY were never refreshed
+            // ANYWHERE in this harness before this fix - only 0x64 (SetEntitiesPosition) ever writes
+            // Pos*, and this harness's player never ticks a movement system of its own (E2's own
+            // non-goal here), so a teleported player's own TileX/TileY stayed frozen at the New Game
+            // spawn seed (33,59) forever, even after the intro's own two 0x64 calls (offsets 318/327)
+            // moved it to its real (18,57) - a mismatch opcode 0x3B's real box tests would have silently
+            // computed "just for the wrong reason". Mirrors production's own derivation
+            // (EntityRecordMapper.cs:181-190 / AlundraScriptedMotion.cs:248-249), alongside TileZ below,
+            // which this pass already refreshed correctly - see this method's own class doc.
+            entity.TileX = (entity.PosX >> 16) / TileWidthPx;
+            entity.TileY = (entity.PosY >> 16) / TileHeightPx;
             entity.TileZ = entity.PosZ >> 20;
             // landingTop already carries the original's own "+1" (TerrainHeight+1 / candidateTop+1 -
             // see ComputeTerrainHeight/EntitySupport.TryFindSupport's own doc) - a landed entity's own
@@ -1205,8 +1258,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     /// <summary>
     /// Trace-mode-only deviation (documented, see IntroTraceHarnessTests's own class doc, section 0):
     /// opcodes whose original handler is a pure PREDICATE that writes <c>EventProgramState.Result</c> off
-    /// state this V1 interpreter does not have (absent dialog system for 0x39/0x44/0x51; 0x2F "Check
-    /// moving in dir" has no port at all yet - out of E4's own scope, doors/dialogue) are SKIPPED
+    /// state this V1 interpreter does not have (absent dialog system for 0x39/0x44/0x51) are SKIPPED
     /// (UnknownSkipped), not suspended - see AlundraEventProgramRunner's own class doc. A skipped
     /// predicate leaves <c>Result</c> untouched (defaults to 0/"false"), which is exactly backwards for
     /// the extremely common original idiom "predicate; If false goto back": since the predicate can never
@@ -1222,32 +1274,40 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     /// kinematics (<see cref="RunVerticalPhysicsPass"/> for 0x70's <c>IsOnGround</c>; the entities' own
     /// real <see cref="AlundraEntityScriptProxy.TileX"/>/<c>TileY</c>/<c>TileZ</c>, refreshed every tick,
     /// for 0x07's tile-box search) - their <c>Result</c> is computed for real now, not assumed.
+    ///
+    /// E7.c retrait (2026-08-28, docs/plan-e7-mutation-tuiles.md, acceptance item 6): 0x2F ("Check moving
+    /// in dir", D-E7-7 relabels it "Check pad buttons") is REMOVED too - now a genuinely
+    /// <c>Implemented</c> opcode (AlundraEventProgramRunner.Dispatch case 0x2F) reading this harness's own
+    /// real <see cref="AlundraGameState.LastPadState"/> (D-E7-8). Inert on map 389: fact 3 established
+    /// 0x2F is dispatched ZERO times in this trace's own window (it always sits behind 0x3B, which stays
+    /// false throughout - see <see cref="PessimisticPredicateOpcodes"/>'s own updated doc below), so this
+    /// removal is dead-code cleanup, not an observed behaviour change.
     /// </summary>
     private static readonly HashSet<int> OptimisticPredicateOpcodes = new()
     {
-        0x2F, // Check moving in dir
         0x39, // Wait for dialog
         0x44, // Wait dialog choice
         0x51, // Get dialog choice
     };
 
     /// <summary>
-    /// Trace-mode-only deviation, the PESSIMISTIC counterpart to <see cref="OptimisticPredicateOpcodes"/>:
-    /// 0x3B "Check player in area" (Script_59_03B, EntityEventHandlers.cs:1223-1238) tests
-    /// PlayerEntity.TileX/TileY/TileZ against a static box [v1..v2]x[v3..v4]x[v5..v6]. This runner has no
-    /// player-movement system yet (lot 2's own non-goal), so the player stays exactly where B1 froze it
-    /// for the whole intro - tile (33,59) per New Game spawn, or wherever a scripted warp/teleport last
-    /// left it. Every 0x3B box map 389's own map-event/tick programs actually test - (18,18,38,38,8,8),
-    /// (15,15,28,28,7,7), (21,21,28,28,7,7), (16,16,42,42,5,5), (15..21,32..40,25..30) - excludes the
-    /// player's frozen tile, so Result=0 (pessimistic/false) is not a guess here: it is EXACTLY what the
-    /// original computes for this scenario, unlike the genuinely-missing-system predicates above (where
-    /// optimism is the only way to avoid an artificial forever-loop). Kept as its own set (rather than
-    /// folded into <see cref="OptimisticPredicateOpcodes"/> with an inverted meaning) so the two policies
-    /// stay visually and semantically distinct at the call site below.
+    /// Trace-mode-only deviation, the PESSIMISTIC counterpart to <see cref="OptimisticPredicateOpcodes"/>.
+    /// E7.c retrait (2026-08-28, docs/plan-e7-mutation-tuiles.md, acceptance item 6): 0x3B "Check player in
+    /// area" (Script_59_03B, EntityEventHandlers.cs:1223-1238) is REMOVED from this set - now a genuinely
+    /// <c>Implemented</c> opcode (AlundraEventProgramRunner.Dispatch case 0x3B) testing the real
+    /// <see cref="PlayerEntity"/>'s own <c>TileX</c>/<c>TileY</c>/<c>TileZ</c>, D-E7-11's own harness tile
+    /// fix included (see <see cref="RunVerticalPhysicsPass"/>). Fact 4 (docs/plan-e7-mutation-tuiles.md):
+    /// a real 0x3B still returns 0 (false) across this trace's own window - none of the five boxes map
+    /// 389's own map-event/tick programs test - (18,18,38,38,8,8), (15,15,28,28,7,7), (21,21,28,28,7,7),
+    /// (16,16,42,42,5,5), (15..21,32..40,25..30) - contains the player's real tile at any frame, so this
+    /// removal changes only the trace's own <c>UnknownSkipped</c> -&gt; <c>Implemented</c> label, not any
+    /// <c>Result</c> value: the old pessimistic forcing below was exactly right for the wrong reason (a
+    /// frozen, PRE-D-E7-11 tile), now it is exactly right for the real one. Left as its own (now empty) set
+    /// rather than deleted outright, matching this file's own precedent for a fully-retired forcing policy
+    /// (see the class doc's own "E4.e" paragraph on 0x07/0x70 above).
     /// </summary>
     private static readonly HashSet<int> PessimisticPredicateOpcodes = new()
     {
-        0x3B, // Check player in area
     };
 
     private void OnOpcodeTraced(EventTraceRecord record)

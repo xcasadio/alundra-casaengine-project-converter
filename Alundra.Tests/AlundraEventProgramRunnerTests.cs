@@ -1983,4 +1983,362 @@ public class AlundraEventProgramRunnerTests
         Assert.Equal(EventTraceKind.Degraded, kind);
         Assert.Equal(7, state.CodeIndex);
     }
+
+    // -----------------------------------------------------------------------------------------
+    // 0x3B (Check player in area) / 0x2F (Check pad buttons) - E7.c, docs/plan-e7-mutation-tuiles.md.
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void CheckPlayerInArea_0x3B_PlayerInsideBox_ResultOne_AdvancesBySeven()
+    {
+        // Box xmin,xmax,ymin,ymax,zmin,zmax = [18,18,38,38,8,8] - the real B130 hatch box.
+        var document = NewDocument(0x3B, 18, 18, 38, 38, 8, 8, 0xFF);
+        var player = NewEntity();
+        player.TileX = 18;
+        player.TileY = 38;
+        player.TileZ = 8;
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = NewRunner(document, worldContext: context);
+        var owner = NewEntity(); // executing entity - deliberately NOT the player, see the next test.
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(7, state.CodeIndex); // stopped at 0xFF.
+    }
+
+    [Fact]
+    public void CheckPlayerInArea_0x3B_ReadsThePlayerEntity_NotTheExecutingEntity()
+    {
+        var document = NewDocument(0x3B, 18, 18, 38, 38, 8, 8, 0xFF);
+        var player = NewEntity();
+        player.TileX = 18;
+        player.TileY = 38;
+        player.TileZ = 8;
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = NewRunner(document, worldContext: context);
+        // The EXECUTING entity sits outside the box - would fail if 0x3B read it instead of the player.
+        var owner = NewEntity();
+        owner.TileX = 0;
+        owner.TileY = 0;
+        owner.TileZ = 0;
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal(1, state.Result);
+    }
+
+    [Theory]
+    [InlineData(17, 38, 8, 0)] // X below xmin.
+    [InlineData(19, 38, 8, 0)] // X above xmax.
+    [InlineData(18, 37, 8, 0)] // Y below ymin.
+    [InlineData(18, 39, 8, 0)] // Y above ymax.
+    [InlineData(18, 38, 7, 0)] // Z below zmin.
+    [InlineData(18, 38, 9, 0)] // Z above zmax.
+    [InlineData(18, 38, 8, 1)] // exactly on every bound (all mins == maxes here) - inside.
+    public void CheckPlayerInArea_0x3B_BoundsAreInclusiveOnEveryFace(int tileX, int tileY, int tileZ, int expectedResult)
+    {
+        var document = NewDocument(0x3B, 18, 18, 38, 38, 8, 8, 0xFF);
+        var player = NewEntity();
+        player.TileX = tileX;
+        player.TileY = tileY;
+        player.TileZ = tileZ;
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = NewRunner(document, worldContext: context);
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(NewEntity(), state);
+
+        Assert.Equal(expectedResult, state.Result);
+    }
+
+    [Fact]
+    public void CheckPlayerInArea_0x3B_NoPlayerSpawned_ResultZero_DegradedKind_StillAdvances()
+    {
+        var document = NewDocument(0x3B, 18, 18, 38, 38, 8, 8, 0xFF);
+        var runner = NewRunner(document); // no worldContext -> NoOpEntityWorldContext.PlayerEntity == null
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 9 };
+
+        var kind = CaptureKindForOpcode(runner, 0x3B, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(0, state.Result);
+        Assert.Equal(EventTraceKind.Degraded, kind);
+        Assert.Equal(7, state.CodeIndex); // advanced by its own real size (7), not suspended.
+    }
+
+    [Fact]
+    public void CheckPadButtons_0x2F_ButtonHeld_ResultOne()
+    {
+        // Real map-389 params [0,16,0]: flag = (v2<<8)|v1 = (16<<8)|0 = 0x1000 = Up, snapshot 0 (Hold).
+        var document = NewDocument(0x2F, 0, 16, 0, 0xFF);
+        var gameState = new AlundraGameState { LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Up } };
+        var runner = NewRunner(document, gameState: gameState);
+        var entity = NewEntity();
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(4, state.CodeIndex); // stopped at 0xFF.
+    }
+
+    [Fact]
+    public void CheckPadButtons_0x2F_ButtonNotHeld_ResultZero()
+    {
+        var document = NewDocument(0x2F, 0, 16, 0, 0xFF);
+        var gameState = new AlundraGameState { LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Down } };
+        var runner = NewRunner(document, gameState: gameState);
+        var entity = NewEntity();
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.Result);
+    }
+
+    [Fact]
+    public void CheckPadButtons_0x2F_Mode1_ReadsButtonsJustPressed_NotButtonsHold()
+    {
+        var document = NewDocument(0x2F, 0, 16, 1, 0xFF); // v3=1 -> ButtonsJustPressed
+        var gameState = new AlundraGameState
+        {
+            LastPadState = new AlundraPadState { ButtonsHold = 0, ButtonsJustPressed = AlundraPadState.Up },
+        };
+        var runner = NewRunner(document, gameState: gameState);
+        var entity = NewEntity();
+
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+    }
+
+    [Theory]
+    [InlineData(2)] // ButtonsReleased - unported.
+    [InlineData(3)] // ButtonsJustPressedByInterval (the original's own default arm) - unported.
+    public void CheckPadButtons_0x2F_UnportedSnapshotModes_ResultZero_DegradedKind(int mode)
+    {
+        var document = NewDocument(0x2F, 0, 16, mode, 0xFF);
+        // Both real fields set so a bug reading the wrong one would still (wrongly) pass - only reading
+        // NEITHER (the degraded path) proves this.
+        var gameState = new AlundraGameState
+        {
+            LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Up, ButtonsJustPressed = AlundraPadState.Up },
+        };
+        var runner = NewRunner(document, gameState: gameState);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0x2F, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(0, state.Result);
+        Assert.Equal(EventTraceKind.Degraded, kind);
+        Assert.Equal(4, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckPadButtons_0x2F_MaskComposedFromTwoOperandBytes()
+    {
+        // A pad state with ONLY bit 0 held (0x0001). v1 carries the LOW byte, v2 the HIGH byte
+        // (flag = v[2]<<8|v[1]) - two disjoint single-bit masks prove each operand lands in its own byte
+        // position, not that they are simply OR'd/ignored.
+        var gameState = new AlundraGameState { LastPadState = new AlundraPadState { ButtonsHold = 0x0001 } };
+
+        // v1=0x01 (low byte) -> flag = 0x0001 - matches the held bit.
+        var document = NewDocument(0x2F, 0x01, 0x00, 0, 0xFF);
+        var runner = NewRunner(document, gameState: gameState);
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(NewEntity(), state);
+        Assert.Equal(1, state.Result);
+
+        // v2=0x01 (HIGH byte) instead -> flag = 0x0100, a DIFFERENT bit - must miss the 0x0001 pad state,
+        // proving v[1] is not simply dropped in favor of v[2] (or the two bytes swapped).
+        var document2 = NewDocument(0x2F, 0x00, 0x01, 0, 0xFF);
+        var runner2 = NewRunner(document2, gameState: gameState);
+        var state2 = new EventProgramState { Codes = document2.CodesAsBytes() };
+        runner2.RunOneScriptCall(NewEntity(), state2);
+        Assert.Equal(0, state2.Result);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // D-E7-8 pad seam, production site: AlundraEntityScriptProxy.Update's player branch publishes
+    // AlundraGameState.LastPadState just before MovePlayer - see that write site's own doc.
+    // -----------------------------------------------------------------------------------------
+
+    private sealed class PadSeamScriptHost : IAlundraScriptHost
+    {
+        public IEventProgramRunner Runner { get; } = new NoOpRunnerForPadSeamTest();
+        public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
+        public AlundraGameState GameState { get; } = new();
+        public AlundraPlayerController? PlayerController { get; init; }
+        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = System.Array.Empty<AlundraEntityScriptProxy>();
+        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        {
+        }
+
+        public int LogicTicksThisFrame(float elapsedTime) => 1;
+    }
+
+    private sealed class NoOpRunnerForPadSeamTest : IEventProgramRunner
+    {
+        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        {
+        }
+
+        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        {
+        }
+    }
+
+    [Fact]
+    public void PadSeam_ProductionSite_PlayerUpdate_PublishesLastPadStateBeforeMovePlayer_And0x2FReadsIt()
+    {
+        var controller = new AlundraPlayerController { PadStateProviderForTests = () => new AlundraPadState { ButtonsHold = AlundraPadState.Up } };
+        var host = new PadSeamScriptHost { PlayerController = controller };
+
+        var player = new AlundraEntityScriptProxy { IsPlayer = true, ScriptHost = host };
+        var owner = new CasaEngine.Framework.Scene.Entities.Entity();
+        player.Initialize(owner); // gives Owner a value so Update's SyncAnimation/SyncTransform are no-ops.
+
+        player.Update(1f / 50f); // real production frame - the player branch runs MovePlayer for real.
+
+        // A real 0x2F dispatch now reads what THIS Update call published, not a hand-set gameState.
+        var document = NewDocument(0x2F, 0, 16, 0, 0xFF); // mask 0x1000 = Up, snapshot 0 (Hold).
+        var runner = NewRunner(document, gameState: host.GameState);
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(NewEntity(), state);
+
+        Assert.Equal(1, state.Result);
+    }
+
+    [Fact]
+    public void PadSeam_Neutralization_NoPlayerUpdateRan_LastPadStateStaysZero_0x2FReadsZero()
+    {
+        // Same gameState, but never touched by a player Update - the untouched default.
+        var gameState = new AlundraGameState();
+
+        var document = NewDocument(0x2F, 0, 16, 0, 0xFF);
+        var runner = NewRunner(document, gameState: gameState);
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(NewEntity(), state);
+
+        Assert.Equal(0, state.Result);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // 0x3B, production call site (item 2 bis - the item that decides the tranche, docs/plan-e7-mutation-
+    // tuiles.md): drives the REAL AlundraWorldProxy.RunMapEventsPass over the REAL map-389 door program
+    // (masked index 2, program id 130, offset 400 in docs/intro-programs-389.txt), with the harness
+    // player placed exactly inside program B130's own real box [18,18,38,38,8,8]. A stubbed-0x3B ("always
+    // false") or a null-PlayerEntity implementation would both loop the program back onto its own Break
+    // (codeIndex 412) every call, forever - so codeIndex alone at the end of one call cannot distinguish
+    // "0x3B took the in-zone branch" from "0x3B is still false" (0x70's own false branch loops back to
+    // that SAME pc). What DOES distinguish them: 0x70 (pc 423, right after 0x3B's own "if false goto") is
+    // only ever dispatched at all when 0x3B's branch was NOT taken - captured via TraceSink.
+    // -----------------------------------------------------------------------------------------
+
+    private static string FindProjectRootForRealMap389()
+    {
+        var directory = new System.IO.DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = System.IO.Path.Combine(directory.FullName, "alundra-project");
+            if (System.IO.Directory.Exists(System.IO.Path.Combine(candidate, "Maps")))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new System.InvalidOperationException(
+            $"AlundraEventProgramRunnerTests: no 'alundra-project/Maps' directory found above "
+            + $"'{AppContext.BaseDirectory}' - the 0x3B production-site test needs the real converter "
+            + "export of map 389 and cannot self-skip without one (docs/plan-e7-mutation-tuiles.md, "
+            + "slice E7.c, acceptance item 2 bis).");
+    }
+
+    private const string Map389WorldName = "Ship Klark (beginning)-389";
+    private const int HatchDoorProgramBMap = 130; // masked index 2 (130 & 0x7f), offset 400.
+
+    /// <summary>Snapshot of one dispatched opcode, taken AT DISPATCH TIME - unlike the raw
+    /// <see cref="EventTraceRecord"/> (whose own <c>State</c> is a LIVE reference, see that record's own
+    /// doc), <see cref="ResultAtDispatch"/> here is a frozen copy, so a later opcode overwriting
+    /// <c>Result</c> (0x70 does, right after 0x3B in this program) cannot retroactively corrupt what THIS
+    /// entry observed.</summary>
+    private readonly record struct DispatchSnapshot(int Opcode, int CodeIndex, EventTraceKind Kind, int ResultAtDispatch);
+
+    private static List<DispatchSnapshot> RunHatchDoorProgramTwice(AlundraEventProgramRunner runner, AlundraEntityScriptProxy player)
+    {
+        var records = new List<DispatchSnapshot>();
+        runner.TraceSink = r => records.Add(new DispatchSnapshot(r.Opcode, r.CodeIndex, r.Kind, r.State.Result));
+
+        var mapEvent = new AlundraMapEvent { Id = 2, X1 = 0, Y1 = 0, X2 = 100, Y2 = 100, ProgramBMap = HatchDoorProgramBMap, Entity = player };
+        var mapEvents = new[] { mapEvent };
+
+        // Frame 1: fresh state -> InitializeEventData seeds CodeIndex at table[2]=400. Dispatches
+        // 0x55/0x85 (map-entry hatch-close template) then hits the program's own Break at 412, suspends.
+        AlundraWorldProxy.RunMapEventsPass(player, mapEvents, runner, playerControlFlags: 0);
+        records.Clear(); // only the SECOND call (0x3B onward) matters for this test.
+
+        // Frame 2: resumes at pc 413 (0x3B).
+        AlundraWorldProxy.RunMapEventsPass(player, mapEvents, runner, playerControlFlags: 0);
+
+        runner.TraceSink = null;
+        return records;
+    }
+
+    [Fact]
+    public void CheckPlayerInArea_0x3B_RealHatchDoorProgram_PlayerInZone_TakesInZoneBranch_Not0x3BAlone()
+    {
+        var projectRoot = FindProjectRootForRealMap389();
+        var document = MapEventProgramLoader.Load(projectRoot, Map389WorldName);
+        Assert.NotNull(document);
+
+        var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 18, TileY = 38, TileZ = 8 };
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = new AlundraEventProgramRunner(document!, new AlundraGameState(), context);
+
+        var records = RunHatchDoorProgramTwice(runner, player);
+
+        // 0x3B itself dispatched, Implemented, and Result true AT THE MOMENT IT DISPATCHED (0x70 right
+        // after it overwrites the SAME live Result to 0 - see DispatchSnapshot's own doc - so this must
+        // read the frozen snapshot, not the record's own live State.Result post-hoc).
+        var check = Assert.Single(records, r => r.Opcode == 0x3B);
+        Assert.Equal(EventTraceKind.Implemented, check.Kind);
+        Assert.Equal(1, check.ResultAtDispatch);
+
+        // The decisive signal: 0x70 (pc 423) is dispatched in this SAME call, meaning the "if false
+        // goto" right after 0x3B did NOT jump back to the Break loop - it can only reach here if 0x3B's
+        // own branch was true.
+        Assert.Contains(records, r => r.Opcode == 0x70);
+    }
+
+    [Fact]
+    public void CheckPlayerInArea_0x3B_RealHatchDoorProgram_Neutralization_NullPlayerEntity_StaysInBreakLoop()
+    {
+        var projectRoot = FindProjectRootForRealMap389();
+        var document = MapEventProgramLoader.Load(projectRoot, Map389WorldName);
+        Assert.NotNull(document);
+
+        // Same player TILE, same box - but the world context's own PlayerEntity is null, so the
+        // production runner cannot see it (proves IEntityWorldContext.PlayerEntity and RunMapEventsPass's
+        // own "player" parameter are two distinct seams - see item 2 bis's own doc, docs/plan-e7-
+        // mutation-tuiles.md).
+        var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 18, TileY = 38, TileZ = 8 };
+        var context = new FakeEntityWorldContext { PlayerEntity = null };
+        var runner = new AlundraEventProgramRunner(document!, new AlundraGameState(), context);
+
+        var records = RunHatchDoorProgramTwice(runner, player);
+
+        var check = Assert.Single(records, r => r.Opcode == 0x3B);
+        Assert.Equal(EventTraceKind.Degraded, check.Kind);
+        Assert.Equal(0, check.ResultAtDispatch);
+
+        // Never reaches 0x70 - the false branch looped straight back onto the Break.
+        Assert.DoesNotContain(records, r => r.Opcode == 0x70);
+    }
 }

@@ -96,6 +96,20 @@ public sealed class AlundraGameState
     /// <c>AlundraPlayerController.BuildPadState</c> already reads through <c>PlayerInput</c>.</summary>
     public uint PlayerControlFlags;
 
+    /// <summary>
+    /// D-E7-8 seam (docs/plan-e7-mutation-tuiles.md, slice E7.c): last pad snapshot published by
+    /// <see cref="AlundraEntityScriptProxy.Update"/>'s own player branch, just before it calls
+    /// <see cref="AlundraPlayerManager.MovePlayer"/> - the fidelity pendant of the original's global
+    /// <c>g_padState1</c> (read by <c>Script_47_02F</c>/<see cref="AlundraEventProgramRunner"/>'s own case
+    /// 0x2F). Chosen over widening <see cref="IEntityWorldContext"/> or the runner's own constructor:
+    /// this class is the one seam <see cref="AlundraEntityScriptProxy"/> (the writer) and
+    /// <see cref="AlundraEventProgramRunner"/> (the reader) already BOTH hold a reference to, so no other
+    /// signature needs to change. Defaults to an all-zero <see cref="AlundraPadState"/> (nothing held) -
+    /// the same safe no-op a 0x2F dispatched before this world's first player Update would see the
+    /// original's own zero-initialized pad global read as.
+    /// </summary>
+    public AlundraPadState LastPadState;
+
     /// <summary>Persistent save-game flags (<c>g_saveData.GameFlags</c>) - all zero, matching New Game.</summary>
     public readonly uint[] GameFlags = new uint[WordCount];
 

@@ -957,6 +957,13 @@ public class AlundraEntityScriptProxy : GameplayProxy
             if (playerController != null)
             {
                 var pad = playerController.BuildPadState();
+                // D-E7-8 (docs/plan-e7-mutation-tuiles.md, slice E7.c): publish this frame's pad snapshot
+                // BEFORE MovePlayer, matching the original's own g_padState1 global being fully populated
+                // before PlayerManager.MovePlayer ever runs - the smallest seam that lets event opcode
+                // 0x2F (Check pad buttons, AlundraEventProgramRunner.Dispatch case 0x2F) read a real pad
+                // without widening IEntityWorldContext or this runner's own constructor - see
+                // AlundraGameState.LastPadState's own doc.
+                ScriptHost.GameState.LastPadState = pad;
                 AlundraPlayerManager.MovePlayer(this, in pad, ScriptHost.GameState);
                 var ticksThisFrame = ScriptHost.LogicTicksThisFrame(elapsedTime);
                 AlundraPlayerManager.Tick(this, ticksThisFrame);
