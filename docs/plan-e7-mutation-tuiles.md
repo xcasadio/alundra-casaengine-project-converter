@@ -120,7 +120,7 @@ DLL (ce repo) :
 
 ## 3. Tranches
 
-### E7.a — Store de cellules + 0x54/0x55/0x85 (données seules, aucun visuel) ⏳
+### E7.a — Store de cellules + 0x54/0x55/0x85 (données seules, aucun visuel) ✅ `326917e`
 
 - **Parse étendu** : `AlundraCellsRecords` parse en plus `tile_id`, `wall_tiles_offset` et le
   dictionnaire épars `wall_tiles` (`{offset, tiles[]}`) — colonnes déjà exportées ; la colonne
@@ -167,12 +167,58 @@ DLL (ce repo) :
      re-baselinés), hero-traces byte-identiques, assertions de frame inchangées, build 0 erreur.
 - **Rollback** : revert du commit. **Budget** : un commit, ≤ 1 journée, ≤ 2 tours de correctifs.
 
+#### Réalisé — écarts et dispositions (2026-08-28, `326917e`)
+
+Livrée verte : `Alundra.Tests` **554** (538 + 16), convertisseur **138** inchangé, build 0 erreur,
+IntroTrace vert, quatre traces du héros byte-identiques, jalons de frame intacts (22 `Assert.` avant
+comme après). **Verifier d'acceptation CONFIRMED et passe adversariale CONFIRMED** — la première fois
+sur ce chantier que l'adversariale ne réfute pas ; elle a prouvé les tests par quatre mutations
+réelles (suppression de l'appel 0x85 → 4 échecs ; clamp 0x33→0x34 → 2 ; `Count` faussé → 1 ;
+tableaux clonés au lieu d'aliasés → 9).
+
+- **Défaut trouvé et corrigé en session principale avant les vérifications** : le portage avait
+  supprimé le champ `Count` de la pile de murs, justifié par « `Count == Tiles.Length` à l'export » —
+  vrai au chargement (`WallTiles.cs:19-26` alloue `Tiles = new ushort[Count]`), **faux après une
+  copie**. L'original copie `Count` depuis la source (`GameEngine.cs:2297`) et son rendu s'arrête à
+  `Count` (`GraphicManager.cs:277`) : sans ce champ, une copie vers une destination plus longue
+  exposait une queue périmée qu'E7.b aurait dessinée en tuiles de mur fantômes. `Count` rétabli,
+  `GetWallTileStack` restreint aux entrées visibles, test du cas manquant ajouté
+  (`ChangeAreaTileProperties_0x85_ShorterSourceStack_HidesTheDestinationsStaleTail`). Latent sur la
+  389 (sa seule variation de forme, (21,27), **agrandit** 6 → 7). Illustration de la règle 3 : la
+  réutilisation d'une forme sans comparer le contrat.
+- **Écart assumé, à ne pas redécouvrir** : `AlundraWorldProxy` **ne câble aucun mutateur** — en jeu,
+  les trois opcodes prennent la branche `Degraded` (no-op). C'est le découpage voulu (E7.a n'a pas de
+  visuel : muter les cellules sans redessiner donnerait des écoutilles fermées en collision et
+  ouvertes à l'écran). **Le câblage du proxy est un item explicite d'E7.b** ci-dessous — sans quoi
+  la tranche resterait verte et inerte en jeu, exactement le mode d'échec d'É1.
+- **Rejeté** : « le diff du fichier de harnais ne peut contenir que des ajouts » (D-E7-4) est violé à
+  la lettre — 4 lignes modifiées, dont la reflowée du `HashSet ImplementedOpcodes`, table que la
+  tranche devait précisément mettre à jour, plus la signature du constructeur du harnais. **Aucune
+  assertion touchée** : l'intention de D-E7-4 (pas de dérive d'oracle) est tenue. La règle reste
+  « aucune assertion modifiée », pas « aucune ligne modifiée ».
+- **Provenance des annotations du dump** (question ouverte d'E7.a, close) : le `[implemented]` /
+  `[NOT IMPLEMENTED]` d'`intro-programs-389.txt` vient d'un `HashSet<int> ImplementedOpcodes` tenu à
+  la main dans `IntroTraceHarnessTests`, **sans lien avec `Dispatch`** — d'où l'anomalie 0x33
+  (implémenté depuis des tranches, jamais ajouté au set). Corrigé au passage, même table, une ligne.
+- **Différés en E7.b** (P4, aucun ne bloque) : les tests sur données réelles se **sautent
+  silencieusement** si `alundra-project/` est absent (7 des 16 passeraient à vide — patron
+  préexistant des tests de champ, mais contraire à la leçon du §2.8 de `plan-oracle-heros.md`) ;
+  le pré-remplissage des 256 tags n'a aucun test ; le jumeau de neutralisation n'assère pas le kind
+  `Degraded` au niveau production (couvert seulement en synthétique) ; une clé `wall_tiles` malformée
+  est ignorée sans avertissement ; `GetWallTileStack` rend le tableau vivant, pas une copie ;
+  `CellsMutated` alloue à chaque appel même sans abonné.
+
 ### E7.b — Applier visuel + synchronisation navigation ⏳
 
 - Modèle vivant des placements depuis `AlundraWallPlacements`/`AlundraFloorPlacements` + carte
   rawId→(tileset, id local) depuis les propriétés `TileId` du `.tileset` (couvre les 497 raw ids de
   la 389 ; ne **pas** coder `raw & 0x3ff`, faux pour les 36 tuiles synthétiques ≥ 960) ; stocker sur
   le proxy le `TileMapComponent` et les documents (aujourd'hui locaux d'`InitializeWithWorld`).
+- **Câblage du proxy (item n°1, sans quoi la tranche est verte et inerte en jeu)** :
+  `AlundraWorldProxy` construit le `AlundraCellStore` depuis les records déjà parsés dans
+  `InitializeWithWorld` (à côté de l'installation du champ) et **surcharge
+  `IEntityWorldContext.CellMutator`**. Acceptation : un test échoue si la surcharge disparaît (le
+  défaut par défaut de l'interface rend `null` en silence — mode d'échec d'É1).
 - Abonnement au callback d'E7.a : re-dérivation des positions/depth-slots (formules du
   `WallPlacementReplayer`, comparaison ligne à ligne) ; clear + resubmit de l'overlay aux frames de
   mutation ; précheck des 12 rectangles (aucun sol en couche plate) ; warnings dégradés.
@@ -181,6 +227,11 @@ DLL (ce repo) :
 - Tests sur fixture `World` réelle (patron `WallPlacementOverlayTests`) : swap de gids observé dans
   l'overlay après `CopyCellRectangle`, changement de forme de (21,27) produisant l'entrée
   supplémentaire, chemin non-visé prouvé par neutralisation.
+- **Reprise des différés d'E7.a** : les tests sur données réelles **échouent** (message nommant
+  l'export manquant) au lieu de se sauter ; test du pré-remplissage des 256 tags ; assertion du kind
+  `Degraded` au niveau production sur le jumeau de neutralisation ; avertissement sur clé
+  `wall_tiles` malformée ; `GetWallTileStack` ne rend plus le tableau vivant (l'applier en garde une
+  référence) ; `CellsMutated` n'alloue pas sans abonné.
 
 ### E7.c — 0x3B et 0x2F ⏳
 
