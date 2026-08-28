@@ -208,7 +208,7 @@ tableaux clonés au lieu d'aliasés → 9).
   est ignorée sans avertissement ; `GetWallTileStack` rend le tableau vivant, pas une copie ;
   `CellsMutated` alloue à chaque appel même sans abonné.
 
-### E7.b — Applier visuel + synchronisation navigation ⏳
+### E7.b — Applier visuel + synchronisation navigation ✅ `9493b78`
 
 #### Faits établis par la reconnaissance (2026-08-28) — ils changent la conception
 
@@ -403,7 +403,7 @@ l'appel `AddSortedOverlayTile` de l'applier doit faire échouer les items 2, 3, 
   **Arrêts** : si un golden bouge ; si le précheck signale un sol hors placements sur la 389 ; si une
   clé de tri re-dérivée diffère de celle de l'init.
 
-### E7.b-bis — Phase des tuiles animées de l'overlay (moteur) ⏳
+### E7.b-bis — Phase des tuiles animées de l'overlay (moteur) ✅ moteur `1c5bf445`, pointeur `1215f3b`
 
 **Décision utilisateur du 2026-08-28** : corriger **dans le moteur**, conformément à la règle
 permanente du chantier (un défaut de rendu se corrige dans `CasaEngineMonogame`, jamais contourné en
@@ -527,6 +527,56 @@ d'image 4,4,4,4,4 → 0,0,0,0,0 après un flush.
   vitesse d'animation observable — **ou si une tuile animée de l'overlay cesse d'animer après une
   reconstruction** (le mode d'échec symétrique, couvert par l'item 3 quater) ; si `HasAnimatedTiles`
   ne peut pas garder sa sémantique.
+
+#### Réalisé — écarts et dispositions d'E7.b et E7.b-bis (2026-08-28)
+
+**E7.b** (`9493b78`) : `Alundra.Tests` **568** (554 + 14), convertisseur **138**, build 0 erreur,
+goldens d'intro et quatre traces du héros byte-identiques. Verifier d'acceptation **REFUTED** puis
+CONFIRMED après correctif ; passe adversariale **REFUTED** sur un défaut réel (ci-dessous).
+
+- **Défaut de test corrigé avant commit (P2, item 4)** : le test des clés de tri restait vert alors
+  qu'on supprimait `AddSortedOverlayTile` de l'applier — il pilotait `SetCellBits(18,37,0,0)`, une
+  mutation **sans effet visuel par construction** (c'est l'objet de l'item 5), donc rien n'était
+  reconstruit et l'entrée lue était celle posée à l'**initialisation**. Réécrit pour traverser une
+  vraie reconstruction (`CopyCellRectangle(0,20,1,2,18,37)`) et couvrir aussi une entrée de **sol**,
+  que le plan exigeait. Mutation rejouée en session principale : l'item tombe désormais avec les
+  autres.
+- **Preuve indépendante forte** : la passe adversariale a re-dérivé en Python les 582 sols et 774
+  murs depuis les tableaux de cellules bruts — **0 écart sur 1356** — puis rejoué les 12 rectangles
+  et comparé l'overlay entrée par entrée : 1357 contre 1357, aucun manquant, aucun en trop.
+  Elle a aussi vérifié empiriquement que (21,14) ne porte **aucune** tuile plate sur les 4 planes,
+  donc pas de double dessin (fait 11 confirmé, non supposé).
+- **Différés P3/P4 assumés** : l'item 6 n'exerce que 4 des 12 rectangles (équivalents par la preuve
+  §1) ; « aucun avertissement » n'est jamais asséré faute de puits de log capturable dans
+  `Alundra.Tests` ; l'item 2 n'épingle pas les valeurs de gids (E7.a épingle déjà la pile brute) ;
+  le flush précède le rattrapage D3, donc une mutation issue de cette passe n'est visible qu'à la
+  frame suivante (les 0x85 de la 389 viennent des passes antérieures — latent) ; `ProcessCellWalls`
+  n'a pas la garde anti-double-dessin de `ProcessCellFloor` (0 désaccord de gid sur la 389 —
+  latent) ; un sol de hauteur 0 hors placements muté est ignoré **sans** avertissement alors que
+  D-E7-3 en demande un (aucun sol ne change sur la 389 — latent, détection exacte demanderait un
+  instantané des ids initiaux).
+
+**E7.b-bis** (moteur `1c5bf445`, pointeur `1215f3b`) : **les deux passes CONFIRMED**. Moteur 1420
+tests avec les **mêmes 18 échecs préexistants** nommément identiques ; diff du fichier de tests
+moteur purement additif (168 ajouts, 0 suppression) ; `CasaEngine.Launcher/Program.cs` resté modifié,
+non stagé, absent du commit — discipline de staging tenue.
+
+- **Le piège que la relecture a sauvé** : l'enregistrement dans `_animatedTiles` vivait **dans**
+  `CreateOverlayTile`, l'appel même que le cache court-circuite. L'implémentation évidente aurait
+  **gelé** les tuiles animées de l'overlay après la première reconstruction — pire que le défaut
+  corrigé — et tous les critères écrits jusqu'alors l'auraient laissée passer (une tuile gelée garde
+  son instance, garde son image, ne saute pas). Mutation rejouée en session principale : seul l'item
+  3 quater tombe.
+- **Correction P4 appliquée après verdict** (commentaire seul, aucun comportement) : la doc de
+  `SortedOverlayTile.Tile` décrivait encore le modèle « une instance par entrée » et aurait conduit
+  un lecteur à poser un état par entrée sur une instance désormais **partagée**, corrompant les
+  entrées sœurs. Réécrite ; 90 tests TileMap re-vérifiés verts.
+- **Lacunes de phase résiduelles, NON introduites par la tranche et non fermées par elle** (P3, à ne
+  pas redécouvrir) : (1) une instance en cache **gèle** tant que sa référence n'a aucune entrée
+  vivante, donc une référence qui quitte l'overlay puis revient reste déphasée — atteignable si une
+  écoutille se referme après s'être ouverte ; (2) une référence soumise pour la **première fois** en
+  cours de partie naît à l'image 0, déphasée des tuiles plates de même id qui animent depuis le
+  chargement, et le cache rend cet écart permanent. Les deux existaient déjà avant la tranche.
 
 ### E7.c — 0x3B et 0x2F ⏳
 
