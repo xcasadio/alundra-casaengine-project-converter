@@ -1516,6 +1516,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         if (proxy.Controller != null)
         {
             var (mapGravity, mapMaxFallSpeed, mapGravityRaw, mapZViscosityRaw) = ResolveMapGravitySettings(tileMapData);
+            // E4 (docs/plan-echelles-chiffrage.md É4): stash the resolved values on the proxy itself, not
+            // just on the live Controller.Settings below - AlundraPlayerManager's own climbing state
+            // machine needs a RESERVE to restore the hero's engine-driven gravity to once a climb ends
+            // (Controller.Settings.Gravity/MaxFallSpeed are zeroed WHILE climbing, see MovePlayer's own
+            // Climbing/ClimbStill case). Before this fix, proxy.MapGravity/MapMaxFallSpeed were left at
+            // their C# defaults (0f) for the hero - only ApplySpawnInitialization's own NPC path populated
+            // them (see that method's own doc) - so "restore" would have restored to zero gravity forever,
+            // exactly the gap docs/plan-echelles-chiffrage.md §7 risk 3 flags.
+            proxy.MapGravity = mapGravity;
+            proxy.MapMaxFallSpeed = mapMaxFallSpeed;
             proxy.MapGravityRaw = mapGravityRaw;
             proxy.MapZViscosityRaw = mapZViscosityRaw;
 

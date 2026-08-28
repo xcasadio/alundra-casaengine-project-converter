@@ -51,25 +51,24 @@ namespace Alundra.Scripts;
 /// oversight).</description></item>
 /// <item><description><c>TileAttributes &amp; 0x80</c> warp-tile branch - PlayerManager.cs:172-196 (no
 /// tile-attribute sampling yet, <see cref="AlundraEntityScriptProxy.TileAttributes"/> stays 0).</description></item>
-/// <item><description>The slope switch's non-flat cases (4=water, 6=climbing wall, default) -
-/// PlayerManager.cs:207-353 still NOT ported (no ladder/climbing state machine yet - E1's own scope is
-/// only alimenting the field, docs/plan-echelles-chiffrage.md É1/É4). <see cref="AlundraEntityScriptProxy.Slope_18c"/>
-/// itself is no longer pinned to 0, though: E1 (<see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>)
-/// now computes it for the player from the real map 389 cell data every frame, and reads 6 whenever the
-/// hero's <c>ModdedPosZ</c> exactly matches one of the four ladder cells' own ground height (all four are
-/// reachable by ordinary walking, no step-up needed - see <see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>'s
-/// own doc on the qualification rule this depends on) - this switch just does not consume that value yet
-/// (still <c>case 0</c>'s own
-/// <c>break</c> for every <c>TargetAnimationId</c>, i.e. falling straight through to the animation
-/// switch below, regardless of what <see cref="AlundraEntityScriptProxy.Slope_18c"/> actually holds).</description></item>
+/// <item><description>The slope switch's case 4 (water/swimming) and every case other than 6 (including
+/// default) - PlayerManager.cs:207-353 - still NOT ported (no swimming system; map 389 has no water cell,
+/// docs/plan-echelles-chiffrage.md, decision "cas 4 differe"). Case 6 (climbing wall) IS now ported (É4,
+/// see <see cref="MovePlayer"/>'s own body) - the ONLY slope case that sets <c>TargetAnimationId</c>,
+/// unconditionally to <see cref="ClimbingAnimationId"/> whenever its own 5-conjunct gate holds, regardless
+/// of the current animation. <see cref="AlundraEntityScriptProxy.Slope_18c"/> itself has been alimented
+/// since E1 (<see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>) from the real map 389 cell data
+/// every frame, reading 6 on the four ladder cells - see that method's own doc.</description></item>
 /// <item><description><c>UpdatePlayerWeaponEffect</c>/<c>UpdateWeaponStepProgression</c>/
 /// <c>UpdatePlayerCarriedEntity</c> - PlayerManager.cs:355-357 (no weapon/carry system).</description></item>
-/// <item><description>Every <c>TargetAnimationId</c> case other than Idle/Moving/LoadingMap - jump, sprint,
-/// attack (all weapon types), pickup/carry/throw, climbing, swimming, sand, spell cast, damage-taken,
-/// victory pose, etc. - PlayerManager.cs:385-943. An entity whose <c>TargetAnimationId</c> is none of the
-/// three ported values simply keeps it unchanged (no case matches, same shape as the original's own
-/// <c>default: AnimateWarpEffect(); break;</c>, itself not ported since it is a pure visual-effect
-/// call).</description></item>
+/// <item><description>Every <c>TargetAnimationId</c> case other than Idle/Moving/LoadingMap/Climbing/
+/// ClimbStill - jump, sprint, attack (all weapon types), pickup/carry/throw, swimming, sand, spell cast,
+/// damage-taken, victory pose, etc. - PlayerManager.cs:385-943. An entity whose <c>TargetAnimationId</c>
+/// is none of the five ported values simply keeps it unchanged (no case matches, same shape as the
+/// original's own <c>default: AnimateWarpEffect(); break;</c>, itself not ported since it is a pure
+/// visual-effect call). Within the Climbing/ClimbStill case itself, the original's own lateral-input exit
+/// to Jump (PlayerManager.cs:681-683) is likewise not ported (no jump animation/physics in V1) - this
+/// port's own documented deviation sends that exit to Idle instead (user decision, 2026-08-26).</description></item>
 /// <item><description><c>END</c>: <c>UpdateItemEffectState</c>, <c>SetPlayerHpMax</c>/<c>SetPlayerHp</c> -
 /// PlayerManager.cs:947-950 (no item/HP system).</description></item>
 /// </list>
@@ -86,6 +85,18 @@ public static class AlundraPlayerManager
     /// <c>ResetEntityState</c>/<c>AlundraWorldProxy</c>'s own pawn-adoption spawns the hero with
     /// (<see cref="AlundraGameState.ResetAnimationId"/>).</summary>
     private const uint LoadingMapAnimationId = 0x36;
+
+    /// <summary>PlayerAnimation.Climbing = 0x0E (PlayerAnimation.cs, address comment - see
+    /// docs/plan-echelles-chiffrage.md É4): the hero is actively moving up/down a ladder wall this
+    /// frame. Internal (not private): <see cref="AlundraScriptedMotion.TickPlayer"/> needs it too, to gate
+    /// its own per-TICK vertical step - see that method's own doc.</summary>
+    internal const uint ClimbingAnimationId = 0x0E;
+
+    /// <summary>PlayerAnimation.ClimbStill = 0x35 (PlayerAnimation.cs - see
+    /// docs/plan-echelles-chiffrage.md É4): the hero is on the ladder wall, pad released, holding position
+    /// (frozen, no vertical step this tick). Internal for the same reason as
+    /// <see cref="ClimbingAnimationId"/>.</summary>
+    internal const uint ClimbStillAnimationId = 0x35;
 
     /// <summary>
     /// Decision E4-3 (docs/plan-e4-deplacement-scripte.md): name of the debug-only environment variable
@@ -166,8 +177,8 @@ public static class AlundraPlayerManager
         player.Flags |= EntityFlags.Gravity;
 
         // PlayerManager.cs:61-353 (CheckAndExecuteWarp's warp-facing branch, HP==0 death branch,
-        // TileAttributes&0x80 warp-tile branch, the slope switch's non-flat cases) - NOT PORTED, see this
-        // class' own doc for why each is safe to skip for a fresh New Game / flat-ground V1 scenario.
+        // TileAttributes&0x80 warp-tile branch) - NOT PORTED, see this class' own doc for why each is
+        // safe to skip for a fresh New Game / flat-ground V1 scenario.
 
         // PlayerManager.cs:198-205 (pad -> direction).
         var buttonsHold = pad.ButtonsHold >> 0xc;
@@ -178,6 +189,32 @@ public static class AlundraPlayerManager
         if (dir == uint.MaxValue)
         {
             dir = player.TargetDirection;
+        }
+
+        // Slope switch (PlayerManager.cs:207-353) - ONLY case 6 (climbing wall) ported, per
+        // docs/plan-echelles-chiffrage.md É4 (user decision, 2026-08-26). Case 4 (water/swimming) and
+        // every other case (including default) are deliberately NOT ported - no swimming system exists,
+        // and no other slope case has a documented consumer yet; every one of them falls through as a
+        // silent no-op, same convention as every other unported TargetAnimationId case in this class.
+        // PlayerManager.cs:341-350's own 5-conjunct gate, verbatim: buttonsHold != 0 (some direction key
+        // held - note the RAW pad bitmask before AnimationTables resolution, not "dir != invalid"),
+        // dir == 0x10 (resolved direction is up/north THIS frame), TargetDirection == 0x10 (already facing
+        // up - guards against a same-frame facing change), ForceAdjusted != 0 (this tick's own horizontal
+        // step was curtailed - i.e. walked INTO the ladder wall, this port's equivalent of the original's
+        // collision-adjusted-movement signal, see that field's own doc), CarriedEntity == null (not
+        // carrying an object). Sets TargetAnimationId = Climbing UNCONDITIONALLY when all five hold,
+        // regardless of the CURRENT TargetAnimationId (the original's own cas 6 body does the same - it
+        // does not gate on the current animation at all) - the very next statement below (the
+        // Climbing/ClimbStill case) then runs THIS SAME frame against the freshly-set animation, exactly
+        // like the original's own slope-switch-then-animation-switch order within one MovePlayer call.
+        if (player.Slope_18c == 6
+            && buttonsHold != 0
+            && dir == 0x10
+            && player.TargetDirection == 0x10
+            && player.ForceAdjusted != 0
+            && player.CarriedEntity == null)
+        {
+            player.TargetAnimationId = ClimbingAnimationId;
         }
 
         // PlayerManager.cs:355-357 (UpdatePlayerWeaponEffect/UpdateWeaponStepProgression/
@@ -204,11 +241,196 @@ public static class AlundraPlayerManager
             player.TargetDirection = dir;
             player.TargetAnimationId = buttonsHold != 0 ? MovingAnimationId : IdleAnimationId;
         }
+        // Climbing(0x0E)/ClimbStill(0x35) case, PlayerManager.cs:675-731 (docs/plan-echelles-chiffrage.md
+        // É4). TryUseItem/PlayerTryAction (:677) NOT PORTED (no item/interaction system, same scope
+        // restriction as every other unported call in this class) - proceeds straight to the body.
+        else if (player.TargetAnimationId == ClimbingAnimationId || player.TargetAnimationId == ClimbStillAnimationId)
+        {
+            // PlayerManager.cs:679-684: any held direction OTHER than up/down (i.e. a genuinely LATERAL
+            // input - left/right) while climbing. The original goes to Jump here - NOT ported (no jump
+            // animation/physics in V1, same restriction as the LoadingMap case above). USER DECISION
+            // (2026-08-26, docs/plan-echelles-chiffrage.md): this port's own lateral exit goes to Idle
+            // instead - documented deviation, not an oversight. ForceZ is cleared (engine-only addition:
+            // the original has no separate "stop climbing" reset because a Jump entry starts its own fresh
+            // vertical impulse; this port instead just needs to stop feeding the ladder's per-tick vertical
+            // step to Tick, see AlundraScriptedMotion.TickPlayer's own doc).
+            if (buttonsHold != 0 && dir != 0 && dir != 0x10)
+            {
+                player.TargetAnimationId = IdleAnimationId;
+                player.ForceZ = 0;
+                RestoreGravityAfterClimb(player);
+            }
+            else
+            {
+                // PlayerManager.cs:685 (TargetDirection = 0x10) - stays facing up the whole time on the ladder.
+                player.TargetDirection = 0x10;
+
+                if (buttonsHold == 0)
+                {
+                    // PlayerManager.cs:687-691 (pad released): freeze - ClimbStill, no vertical step, and
+                    // (engine-only addition - see this method's own doc on SuspendGravityForClimb/
+                    // RestoreGravityAfterClimb) gravity STAYS suspended (still on the wall, just not moving).
+                    player.TargetAnimationId = ClimbStillAnimationId;
+                    player.ForceZ = 0;
+                    player.Flags &= ~EntityFlags.Gravity; // PlayerManager.cs:690 - see this class' own
+                    // doc on the Gravity FLAG BIT (distinct from the engine's own
+                    // Controller.Settings.Gravity, suspended below). CORRECTED (verifier's own minor
+                    // observation): this bit IS read for the player -
+                    // AlundraEntityScriptProxy.UpdateGroundSlope's own gravity gate
+                    // (`if ((Flags & EntityFlags.Gravity) == 0) { Slope_18c = 0; return; }`), and that
+                    // method only ever runs for IsPlayer (see AlundraEntityScriptProxy.Update's own
+                    // IsPlayer branch) - so clearing this bit here forces Slope_18c to 0 for the whole
+                    // climb, matching the original's own "clear the bit before UpdateTileAttributes" order,
+                    // but also means MovePlayer's own Slope_18c == 6 re-entry gate needs one extra frame
+                    // to see Slope_18c == 6 again after a lateral exit re-sets the bit.
+                    SuspendGravityForClimb(player);
+                }
+                else if (dir == 0) // PlayerManager.cs:694-701 (DESC - held Down).
+                {
+                    // LESSON 1 re-derivation (docs/plan-echelles-chiffrage.md, established facts §2): the
+                    // original's own condition is "FloorHeight + 1 < PosZ" against ITS OWN resting
+                    // invariant (ModdedPosZ == TerrainHeight + 1, PhysicsEngine.cs:186/:128). Re-derived
+                    // for THIS port's own two resting invariants (terrain: PosZ == TerrainHeight, no +1;
+                    // entity-support: PosZ == candidateTop + 1, EntitySupport.cs:173) - both make the SAME
+                    // literal condition FALSE at rest (terrain: TerrainHeight+1 < TerrainHeight is false;
+                    // platform: (candidateTop+1)+1 < candidateTop+1 is false) - see UpdateFloorHeight's own
+                    // doc for why FloorHeight already carries the correct convention for each case, so no
+                    // further +1/-1 adjustment belongs HERE. Ported verbatim, unmodified.
+                    if (player.FloorHeight + 1 < player.PosZ)
+                    {
+                        player.ForceZ = -0x10000;
+                        player.TargetAnimationId = ClimbingAnimationId;
+                        player.Flags &= ~EntityFlags.Gravity; // parity only - see the ClimbStill branch's own note.
+                        SuspendGravityForClimb(player);
+                    }
+                    // else: PlayerManager.cs:701's own fallthrough to LAB_80031e7c/:729 (reached bottom of
+                    // the climbable descent). CORRECTED (verifier F3): the original DOES reassign there -
+                    // both guard failures (DESC and MONT) fall to the SAME ":729 TargetAnimationId = Idle",
+                    // without clearing the Gravity flag bit, so the original hero resumes falling under its
+                    // own engine's gravity. This port's equivalent of "resume falling" is
+                    // RestoreGravityAfterClimb (undoes SuspendGravityForClimb's zeroing of
+                    // Controller.Settings.Gravity/MaxFallSpeed AND its IsVerticalOwnedExternally latch, see
+                    // that method's own doc) - without it the hero was left in Idle with gravity/max fall
+                    // speed pinned at 0 forever (AnimSets[14]/[53].Speed == 0 for that animation pair too,
+                    // so the hero could not even walk away). ForceZ = 0 is this port's own engine-only
+                    // addition, same rationale as the Climbing/MONT entry above: stop feeding a stale
+                    // per-tick vertical step to AlundraScriptedMotion.TickPlayer now that this is no longer
+                    // a climbing animation.
+                    else
+                    {
+                        player.TargetAnimationId = IdleAnimationId;
+                        player.ForceZ = 0;
+                        RestoreGravityAfterClimb(player);
+                    }
+                }
+                else if (dir == 0x10) // PlayerManager.cs:704-712 (MONT - held Up).
+                {
+                    // PlayerManager.cs:718-719, verbatim - the ladder guard É3 built for exactly this call.
+                    var tileHeightAbove = player.GetTileHeightAtOffset(0, -0x10000);
+                    if (player.PosZ <= tileHeightAbove)
+                    {
+                        player.ForceZ = 0x10000;
+                        player.TargetAnimationId = ClimbingAnimationId;
+                        player.Flags &= ~EntityFlags.Gravity; // parity only - see the ClimbStill branch's own note.
+                        SuspendGravityForClimb(player);
+                    }
+                    else
+                    {
+                        // Reached the top of the climbable tile - same ":729 exit to Idle + gravity
+                        // restore" fix as the DESC branch's own "else" above (verifier F3).
+                        player.TargetAnimationId = IdleAnimationId;
+                        player.ForceZ = 0;
+                        RestoreGravityAfterClimb(player);
+                    }
+                }
+                // dir cannot be anything else here: the lateral-exit check above already filtered out
+                // every value except 0 (down) and 0x10 (up), matching the original's own two-armed
+                // if/else-if (no third branch in PlayerManager.cs either).
+            }
+        }
 
         // PlayerManager.cs:385-943 (every other TargetAnimationId case) - NOT PORTED; an entity whose
-        // TargetAnimationId is neither of the two ported values above keeps it unchanged.
+        // TargetAnimationId is neither of the three ported values above keeps it unchanged.
 
         // PlayerManager.cs:947-950 (END: UpdateItemEffectState, SetPlayerHpMax/SetPlayerHp) - NOT PORTED.
+    }
+
+    /// <summary>
+    /// Engine-only addition (docs/plan-echelles-chiffrage.md É4, no equivalent original call): the
+    /// original's own vertical-hold-while-climbing is the Gravity FLAG BIT
+    /// (<c>entity.Flags &amp; EntityFlags.Gravity</c>, read directly by <c>PhysicsEngine.ComputeZPosition</c>
+    /// every original tick). THIS port's hero has no such bridge - the player's own vertical is owned by
+    /// the ENGINE's continuous <c>CharacterControllerComponent.Settings.Gravity</c>/<c>MaxFallSpeed</c>
+    /// integrator instead (<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>'s own override block, E3.d) -
+    /// so suspending gravity here means zeroing THOSE, exactly the same
+    /// zero-Gravity/zero-MaxFallSpeed shape <see cref="AlundraEntityScriptProxy.ApplyGravitySettingsToController"/>
+    /// already uses for every controller-driven scripted NPC (proven pattern, not a new one - see that
+    /// method's own doc). Idempotent (safe to call every frame the hero is actively on the ladder, same as
+    /// the original's own per-frame "Flags &amp;= ~Gravity" re-application). A no-op without a
+    /// <see cref="AlundraEntityScriptProxy.Controller"/> (E2's own controller-free fallback player, which
+    /// has no engine-driven vertical to suspend in the first place).
+    /// <para>
+    /// CORRECTED (verifier F1/F2): zeroing Settings.Gravity/MaxFallSpeed alone is NOT enough - the
+    /// engine's own <c>CharacterControllerComponent.UpdateGround</c> still re-snaps the root to the
+    /// ground field every RENDERED frame regardless of those two settings (it runs before gravity
+    /// integration, off the same per-frame ground field probe a stationary/walking entity needs), which
+    /// silently cancelled every ladder-tick's 1px rise the instant the next frame's
+    /// <c>CharacterControllerComponent.Update</c> ran - the hero oscillated at the bottom rung and never
+    /// actually climbed. This is exactly the case
+    /// <see cref="CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent.IsVerticalOwnedExternally"/>
+    /// exists for (its own doc: "lets a scripted-motion owner ... declare vertical displacement without
+    /// the controller's per-render-frame gravity fighting a per-logic-tick value") - already the exact
+    /// contract every scripted NPC uses (<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>'s NPC sibling,
+    /// <c>ApplySpawnInitialization</c>, sets it permanently; <see cref="AlundraEntityScriptProxy.Update"/>
+    /// declares <see cref="CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent.SetExternalVerticalDisplacement"/>
+    /// every tick). The hero's own controller (<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>) never sets
+    /// this flag, so outside a climb the hero keeps its normal engine-driven gravity/ground-snap
+    /// unchanged - this method only claims the flag for the DURATION of a climb, and
+    /// <see cref="RestoreGravityAfterClimb"/> hands it back. No engine change: the mechanism already
+    /// existed, unused by the hero.
+    /// </para>
+    /// </summary>
+    private static void SuspendGravityForClimb(AlundraEntityScriptProxy player)
+    {
+        if (player.Controller == null)
+        {
+            return;
+        }
+
+        player.Controller.Settings.Gravity = 0f;
+        player.Controller.Settings.MaxFallSpeed = 0f;
+        player.Controller.IsVerticalOwnedExternally = true;
+    }
+
+    /// <summary>
+    /// See <see cref="SuspendGravityForClimb"/>'s own doc - the matching restore, called from every path
+    /// this port's own Climbing/ClimbStill case leaves those two animations from: the lateral-exit branch
+    /// (PlayerManager.cs:679-684) and, since verifier F3, the DESC/MONT boundary-guard exits
+    /// (PlayerManager.cs:697-730 - both guard failures fall to the SAME ":729 TargetAnimationId = Idle",
+    /// see <see cref="MovePlayer"/>'s own updated doc on that call site). Restores
+    /// <c>Controller.Settings.Gravity</c>/<c>Controller.Settings.MaxFallSpeed</c> from
+    /// <see cref="AlundraEntityScriptProxy.MapGravity"/>/<see cref="AlundraEntityScriptProxy.MapMaxFallSpeed"/> -
+    /// the RESERVE this same slice's own <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> fix now populates
+    /// for the hero (previously left at the C# default 0f - see that method's own E4 comment; without that
+    /// fix, "restoring" would have restored the hero's own gravity to zero forever, silently breaking
+    /// every fall after the hero's first climb) - AND hands
+    /// <see cref="CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent.IsVerticalOwnedExternally"/>
+    /// back to <c>false</c> (verifier F1/F2's own fix, see <see cref="SuspendGravityForClimb"/>'s own doc):
+    /// without this, the hero would keep skipping the engine's own per-frame ground snap/gravity
+    /// integration forever after its first climb, exactly like a climb that never actually ended. A no-op
+    /// without a <see cref="AlundraEntityScriptProxy.Controller"/>, same guard as
+    /// <see cref="SuspendGravityForClimb"/>.
+    /// </summary>
+    private static void RestoreGravityAfterClimb(AlundraEntityScriptProxy player)
+    {
+        if (player.Controller == null)
+        {
+            return;
+        }
+
+        player.Controller.Settings.Gravity = player.MapGravity;
+        player.Controller.Settings.MaxFallSpeed = player.MapMaxFallSpeed;
+        player.Controller.IsVerticalOwnedExternally = false;
     }
 
     /// <summary>

@@ -60,6 +60,14 @@ internal static class AlundraScriptedMotion
     private const int TileWidth = 24;
     private const int TileHeight = 16;
 
+    /// <summary>Fixed positive value <see cref="TickPlayer"/> latches through
+    /// <see cref="CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent.SetExternalVerticalDisplacement"/>
+    /// for EVERY tick the hero spends Climbing/ClimbStill, regardless of the real signed
+    /// <see cref="AlundraEntityScriptProxy.ForceZ"/> for that tick (verifier F1/F2 fix) - see that call
+    /// site's own doc for the full rationale (the engine's own `UpdateGround` only reads this latch's SIGN,
+    /// never its magnitude). Not a physical distance; any positive value would do.</summary>
+    private const float ClimbingExternalDisplacementSentinel = 1f;
+
     /// <summary>Runs <paramref name="ticks"/> whole 50 Hz kinematic ticks for the hero pawn - the tick
     /// COUNT is owned entirely by the caller now (this class' own doc, ONE-CLOCK fix): it is always the
     /// same <c>ticksThisFrame</c> the shared <see cref="AlundraLogicClock"/> already handed the script
@@ -70,6 +78,70 @@ internal static class AlundraScriptedMotion
         for (var i = 0; i < ticks; i++)
         {
             RunOneMotionTick(player, player.TargetAnimationId);
+
+            // E4 (docs/plan-echelles-chiffrage.md É4): the hero's vertical is normally the ENGINE's own
+            // continuous Settings.Gravity/MaxFallSpeed integrator (AlundraWorldProxy.AdoptPlayerPawn,
+            // E3.d) - deliberately UNCHANGED by this method (see this class' own doc, "no jump/gravity
+            // system"). Climbing is the ONE documented exception: while AlundraPlayerManager.MovePlayer
+            // set TargetAnimationId to Climbing/ClimbStill THIS frame (it also suspended
+            // Controller.Settings.Gravity/MaxFallSpeed to 0 for the same duration, see
+            // AlundraPlayerManager's own SuspendGravityForClimb), the ladder's own vertical step is pushed
+            // through the controller HERE, once per LOGIC TICK (not once per rendered frame like
+            // MovePlayer itself runs) - the exact reason player.ForceZ is a per-tick +-0x10000 (+-1px)
+            // quantity, not a per-frame one: a render frame carrying 2 logic ticks climbs 2px this frame,
+            // matching how the horizontal RunOneMotionTick call just above already applies its own
+            // per-tick step ticks times. Reuses AlundraEntityScriptProxy.MoveVerticalAndPullPosition - the
+            // SAME primitive EvaluateEntitySupport's own "not found" tail already uses for every
+            // controller-driven scripted NPC's per-tick vertical (proven pattern - see that method's own
+            // doc); wasSupportedEnteringThisTick is always false here because EntitySupport/
+            // EvaluateEntitySupport is never called for the player (WasEntitySupportedLastTick stays false
+            // for the hero the whole session - see that field's own doc), so this always takes the normal
+            // "pull PosZ from the post-Move root" branch. ForceZ is 0 while ClimbStill (frozen) or at
+            // either climbable boundary (see MovePlayer's own DESC/MONT "else" branches) - a harmless
+            // zero-displacement Move() call in that case, still needed to re-pull PosZ from the root every
+            // tick the SAME way the "moving" case does. This entire block is unreachable for every OTHER
+            // TargetAnimationId (Idle/Moving/LoadingMap/anything not ported) - the hero's own four golden
+            // traces never set TargetAnimationId to either climbing value (no ladder cell lies on any of
+            // them), so this addition leaves them byte-identical.
+            //
+            // CORRECTED (verifier F1/F2): MoveVerticalAndPullPosition's own Controller.Move call alone is
+            // NOT enough - it only advances the root along a per-tick displacement, it does not stop
+            // CharacterControllerComponent.UpdateGround from re-snapping that same root back to the
+            // ground field on the very next RENDERED frame's Update. AlundraPlayerManager.
+            // SuspendGravityForClimb now also claims Controller.IsVerticalOwnedExternally for the
+            // duration of the climb (see that method's own doc) - the SAME latched declaration every
+            // controller-driven scripted NPC already makes each tick
+            // (AlundraEntityScriptProxy.Update's own trailing SetExternalVerticalDisplacement call), so
+            // UpdateGround treats the hero as airborne instead of re-grounding it while on the ladder.
+            //
+            // Declares a FIXED positive sentinel, not player.ForceZ/65536f (measured, verifier F1
+            // regression): CharacterControllerComponent.UpdateGround's own gate
+            // (`IsVerticalOwnedExternally && _externalVerticalDisplacement > 0f`) only treats a POSITIVE
+            // declaration as airborne - "Ground resolution ... on non-rising ticks are unaffected" is
+            // that method's own documented contract, i.e. a zero or negative declaration deliberately lets
+            // the engine's normal ground-field snap run. That is exactly wrong for THIS state machine:
+            // ClimbStill (pad released, ForceZ == 0, holding position mid-ladder) and DESC (ForceZ < 0)
+            // are just as much "clinging to the wall, not resting on real terrain" as an ascending tick is
+            // - the hero is never actually standing on the ground while Climbing/ClimbStill, regardless of
+            // which way ForceZ currently points or whether it is momentarily zero. Measured: with the real
+            // exported GroundSnapDistance (4.0px, F1's own fixture fix), declaring the true signed
+            // ForceZ/65536f let a frozen ClimbStill 3px above the ladder's own ground height get silently
+            // pulled back down to that ground height the very next frame (GroundSnapDistance covers the
+            // gap) - defeating the freeze entirely. A fixed positive sentinel here is NOT a fabricated
+            // physical value: grep of CharacterControllerComponent.cs confirms the ONLY reader of the
+            // latched field this call sets is that single `> 0f` sign check (UpdateGround), never its
+            // magnitude - so any positive constant conveys the exact same "airborne, owner-controlled"
+            // signal AlundraPlayerManager.MovePlayer's own explicit FloorHeight/tileHeightAbove guards
+            // (not this engine field) already own as the SOLE ground-detection authority for the whole
+            // climb, matching the original PS1 code's own slope-switch logic (no continuous ground-field
+            // physics at all while climbing). The REAL per-tick displacement/direction is still exactly
+            // player.ForceZ, applied unchanged by MoveVerticalAndPullPosition just above - only the
+            // separate airborne-signal latch uses this fixed value.
+            if (player.TargetAnimationId is AlundraPlayerManager.ClimbingAnimationId or AlundraPlayerManager.ClimbStillAnimationId)
+            {
+                player.MoveVerticalAndPullPosition(player.ForceZ / 65536f, wasSupportedEnteringThisTick: false);
+                player.Controller?.SetExternalVerticalDisplacement(ClimbingExternalDisplacementSentinel);
+            }
         }
     }
 
