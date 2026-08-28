@@ -403,6 +403,131 @@ l'appel `AddSortedOverlayTile` de l'applier doit faire échouer les items 2, 3, 
   **Arrêts** : si un golden bouge ; si le précheck signale un sol hors placements sur la 389 ; si une
   clé de tri re-dérivée diffère de celle de l'init.
 
+### E7.b-bis — Phase des tuiles animées de l'overlay (moteur) ⏳
+
+**Décision utilisateur du 2026-08-28** : corriger **dans le moteur**, conformément à la règle
+permanente du chantier (un défaut de rendu se corrige dans `CasaEngineMonogame`, jamais contourné en
+aval). Écart assumé à **D-E7-1** (« DLL seule ») : E7 gagne un commit sous-module + bump de pointeur.
+
+#### Le défaut (mesuré, pas déduit)
+
+`AddSortedOverlayTile` fabrique **une nouvelle instance de `Tile` par appel**
+(`TileMapComponent.CreateOverlayTile:930-966`) et `ClearSortedOverlayTiles:753-773` désenregistre puis
+jette les anciennes. Un `AnimatedTile` neuf repart à `_currentFrameIndex = 0`,
+`_elapsedFrameMilliseconds = 0` (`AnimatedTile.cs:11-12`). Comme la reconstruction d'E7.b est un
+`clear + resubmit` intégral (seule stratégie possible, il n'existe aucune suppression unitaire),
+**chaque mutation d'écoutille remet à l'image 0 les 223 entrées animées** de la 389 (114 murs +
+109 sols sur 1356, soit 16 % — 18 tuiles animées distinctes, ids locaux 800-804 et 807-819), et les
+**désynchronise définitivement** des tuiles animées identiques restées dans les couches plates, qui
+gardent leur phase. Couture visible entre des tuiles censées animer ensemble. Observé : indices
+d'image 4,4,4,4,4 → 0,0,0,0,0 après un flush.
+
+#### Conception (additive, **aucun contrat public modifié**)
+
+- **Cache d'instances par référence**, porté par le composant :
+  `Dictionary<TileMapTileReference, Tile>`. `AddSortedOverlayTile` consulte le cache avant de créer ;
+  `CreateOverlayTile` n'est appelé qu'au **premier** usage d'une référence. Les entrées d'overlay
+  partageant une même référence partagent alors une instance — **plus fidèle à l'original**, dont
+  `GetAnimatedTileId` est une fonction **globale** de la frame (`GraphicManager.cs:313-322`) : deux
+  tuiles animées de même id y sont en phase par construction.
+- **La phase survit parce que l'INSTANCE survit, pas parce qu'elle reste enregistrée**
+  (correction de relecture, ronde 1). `ClearSortedOverlayTiles` **garde son comportement actuel** :
+  il désenregistre de `_animatedTiles`. `_hasAnimatedTiles` conserve donc exactement sa sémantique,
+  `HasAnimatedTiles` reste vrai ssi une animée est réellement vivante, et
+  `TileMapSurfaceComponent.ShouldRedraw` comme `ShouldUpdateWhenConditional` sont **intouchés** — les
+  trois problèmes qu'un enregistrement permanent aurait créés. Le test existant
+  `ClearSortedOverlayTiles_UnregistersAnimatedOverlayTilesFromTheUpdateLoop` reste **valide et non
+  amendé**. Entre le `Clear` et le resubmit d'une même reconstruction aucun `Update` ne tourne : la
+  phase ne dérive pas pendant cet intervalle.
+- **Comptage de références, obligatoire dès qu'on partage** : une instance animée partagée par N
+  entrées ne doit être enregistrée qu'**une fois** dans `_animatedTiles`, sinon elle serait mise à
+  jour N fois par frame et **l'animation tournerait N fois trop vite**. Le composant tient donc un
+  compteur par instance mise en cache : `Add` enregistre au passage 0 → 1, `Clear` décrémente et
+  désenregistre au passage 1 → 0. Coût O(1) par entrée, contenu de `_animatedTiles` **identique à
+  aujourd'hui** (enregistrée ssi ≥ 1 entrée vivante l'utilise).
+- **Égalité du type de clé (correction de relecture, ronde 1)** : `TileMapTileReference` est un
+  `readonly struct` **sans** `Equals`/`GetHashCode`/`IEquatable`, donc
+  `EqualityComparer<T>.Default` retomberait sur le comparateur boxant de `ValueType` — une
+  allocation par consultation, sur un chemin par frame, interdite par les règles d'allocation du
+  moteur. La tranche implémente donc `IEquatable<TileMapTileReference>` + `Equals`/`GetHashCode` sur
+  le struct (**additif** : aucun renommage, aucun champ sérialisé touché).
+- **Cycle de vie** : le cache est vidé **uniquement** dans `InitializeWithWorld` (`:174`), là où
+  l'overlay est déjà vidé — au chargement de monde, jamais entre deux reconstructions.
+- **Bénéfice secondaire** : la reconstruction n'alloue plus ~1356 `Tile` par frame de mutation
+  (mesure d'E7.b) mais zéro après échauffement — **à condition** que l'égalité ci-dessus soit en
+  place, sans quoi le boxing remplacerait simplement une allocation par une autre.
+- **Non-objectifs** : aucune API de suppression unitaire (hors périmètre) ; aucune modification du
+  chemin des couches plates ; aucun changement de `TileRevision` ni de `HasAnimatedTiles` (la 389 ne
+  passe pas par la surface hors écran — fait 7 d'E7.b — mais ce contrat reste intact pour les maps
+  qui y passent).
+
+#### Acceptation
+
+1. **Test moteur de phase** (`CasaEngine.Tests\TileMap\TileMapComponentSortedOverlayTests.cs`) : une
+   entrée d'overlay animée avancée de plusieurs images, puis `ClearSortedOverlayTiles` +
+   ré-`AddSortedOverlayTile` de la **même référence** → `CurrentFrameIndex` **conservé** et instance
+   **identique** (`ReferenceEquals`). **Mutation** : rétablir la création systématique fait échouer
+   ce test.
+2. **Partage par référence** : deux entrées d'overlay de même référence partagent l'instance et sont
+   donc en phase ; deux références différentes ne la partagent pas.
+3. **Enregistrement unique et comptage** : après N ajouts de la même référence animée, l'instance
+   n'est enregistrée qu'**une fois** dans `_animatedTiles` — un test avance le temps et vérifie que
+   l'animation progresse à la vitesse **nominale**, pas N fois trop vite. Après un `Clear`, elle est
+   désenregistrée (compteur retombé à 0) ; après `InitializeWithWorld`, le cache est vide.
+3 bis. **`HasAnimatedTiles` inchangé** : sans aucune animée en couche plate, `HasAnimatedTiles` est
+   vrai après `AddSortedOverlayTile` d'une animée et **faux** après `ClearSortedOverlayTiles` — la
+   sémantique d'aujourd'hui. Cet item échoue si l'implémentation laisse les instances enregistrées.
+3 ter. **Aucun boxing sur le chemin par frame** : `EqualityComparer<TileMapTileReference>.Default`
+   résout bien vers l'implémentation `IEquatable`, et N re-ajouts d'une référence déjà en cache
+   n'allouent rien de mesurable (`GC.GetAllocatedBytesForCurrentThread`).
+3 quater. **CYCLE COMPLET SUR CACHE CHAUD — l'item qui décide de la tranche.** L'enregistrement dans
+   `_animatedTiles` vit aujourd'hui **à l'intérieur de `CreateOverlayTile`** (`:954-955`), l'appel même
+   que le cache court-circuite au deuxième usage d'une référence. Une implémentation qui laisse
+   l'enregistrement là et nulle part ailleurs **gèle définitivement** les tuiles animées de l'overlay
+   après la première reconstruction (le `Clear` les désenregistre, le re-`Add` depuis le cache ne les
+   réenregistre jamais) — une régression **pire** que le défaut corrigé, et tous les items ci-dessus
+   la laisseraient passer : une tuile gelée conserve son instance, son `CurrentFrameIndex` et ne
+   « saute » pas. Le test exerce donc le cycle entier : `Add` d'une animée → avance du temps →
+   `ClearSortedOverlayTiles` → re-`Add` de la **même** référence → nouvelle avance du temps, et
+   assère (a) que `CurrentFrameIndex` **continue de progresser** après le re-`Add`, (b) que
+   `HasAnimatedTiles` est **de nouveau vrai**, (c) qu'après N re-`Add` de la même référence l'instance
+   est présente **exactement une fois** dans `_animatedTiles` et que la vitesse reste **nominale**.
+   **Mutation obligatoire** : ne réenregistrer qu'au sein de `CreateOverlayTile` (donc pas au hit de
+   cache) doit faire échouer cet item.
+4. **Non-régression, sans amender l'oracle** : les tests existants de
+   `TileMapComponentSortedOverlayTests` — **dont**
+   `ClearSortedOverlayTiles_UnregistersAnimatedOverlayTilesFromTheUpdateLoop` et
+   `SavedEntity_NeverContainsSortedOverlayTiles` — restent verts **inchangés** ; la conception révisée
+   ne change aucun contrat, donc **aucun amendement de test existant n'est autorisé** dans cette
+   tranche (s'il en faut un, c'est le signe que la conception a dérivé : arrêt et question à
+   l'utilisateur). `CasaEngine.Tests` sans **nouvel** échec (18 préexistants). Rappel opérationnel :
+   le `.sln` n'inclut pas `CasaEngine.Tests` — le builder explicitement avant
+   `dotnet test --no-build`.
+5. **Côté DLL, aucune régression** : `Alundra.Tests` 568 et convertisseur 138 inchangés après bump du
+   pointeur ; goldens d'intro et quatre traces du héros byte-identiques.
+6. **Runtime (utilisateur, avec E7.d)** : les tuiles animées ne sautent plus quand une écoutille
+   s'ouvre ou se ferme.
+
+- **Découpage et discipline de staging** (première tranche du programme à commiter dans le
+  sous-module — le rappeler ici parce que le sous-module porte une modification **non commitée et
+  propriété de l'utilisateur**, `CasaEngine.Launcher/Program.cs`, chemin codé en dur) :
+  1. **commit moteur**, en stageant **nommément** les seuls chemins :
+     `CasaEngine/Framework/Scene/Entities/Components/TileMapComponent.cs`,
+     `CasaEngine/Framework/Assets/TileMap/TileMapTileReference.cs`,
+     `CasaEngine.Tests/TileMap/TileMapComponentSortedOverlayTests.cs`.
+     **`git add -A` et `git commit -a` sont interdits dans le sous-module.**
+     `CasaEngine.Launcher/Program.cs` doit rester **modifié et non stagé**, avant comme après.
+  2. **bump du pointeur** dans le repo parent (le seul chemin stagé y étant `CasaEngineMonogame`).
+  **Acceptation de la discipline** : après les deux commits, `git -C CasaEngineMonogame status
+  --short` montre toujours `CasaEngine.Launcher/Program.cs` modifié, et il est absent de la liste des
+  fichiers du commit moteur.
+- **Rollback** : revert des deux commits (le fichier de l'utilisateur n'ayant jamais été stagé, il
+  survit aux deux). **Budget** : deux commits, ≤ 2 tours de correctifs. **Arrêts** : si le partage
+  d'instance exige d'amender un test moteur existant ; si le comptage de références fait diverger la
+  vitesse d'animation observable — **ou si une tuile animée de l'overlay cesse d'animer après une
+  reconstruction** (le mode d'échec symétrique, couvert par l'item 3 quater) ; si `HasAnimatedTiles`
+  ne peut pas garder sa sémantique.
+
 ### E7.c — 0x3B et 0x2F ⏳
 
 - 0x3B (boîte TileX/Y/Z du joueur — ordre des params relevé dans `Script_59_03B :1223-1238`) et 0x2F
