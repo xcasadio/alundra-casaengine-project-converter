@@ -968,6 +968,13 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 // (see UpdateGroundSlope's own doc, and docs/plan-echelles-chiffrage.md §2's "fait qui
                 // simplifie la conception").
                 UpdateGroundSlope();
+
+                // E2 (docs/plan-echelles-chiffrage.md E2): alimente FloorHeight, same restriction and same
+                // one-frame latency as UpdateGroundSlope just above (see UpdateFloorHeight's own doc) - both
+                // are pure post-tick probes over this same frame's freshly-integrated position, independent
+                // of each other (the original's own UpdateTileAttributes computes them independently too,
+                // hitz at PhysicsEngine.cs:1702-1703 before ever touching Slope_18c's own corners).
+                UpdateFloorHeight();
             }
         }
 
@@ -1326,6 +1333,90 @@ public class AlundraEntityScriptProxy : GameplayProxy
         }
 
         bestFlagMask = 0;
+    }
+
+    /// <summary>
+    /// E2 (docs/plan-echelles-chiffrage.md E2): port of <c>GetCollisionOnZ</c> (PhysicsEngine.cs:1602-1675),
+    /// the method that feeds <c>entity.FloorHeight</c> (<c>PhysicsEngine.cs:1703</c>,
+    /// <c>UpdateTileAttributes</c>: <c>entity.FloorHeight = hitz;</c>) - COMPOSED from this port's own
+    /// existing bricks rather than re-ported line-for-line, per the plan: <see cref="ComputeTerrainHeight"/>
+    /// for the terrain half (same 4-corner-max port <c>GetCollisionOnZ</c>'s own <c>entity.TerrainHeight</c>
+    /// input feeds from, see <see cref="EvaluateEntitySupport"/>'s own <c>terrainHeight</c> local) and
+    /// <see cref="EntitySupport.TryFindSupport"/> for the entity half (the SAME strict-below/highest-wins
+    /// search <c>GetCollisionOnZ</c>'s own loop performs, field for field - see that method's own doc; both
+    /// gate the entity search behind <see cref="EntitySupport.IsEligibleSubject"/>, the identical
+    /// Collidable/NoEntityCollision/PlatformEntity conjunct <c>GetCollisionOnZ</c> checks at
+    /// <c>:1606-1619</c> before ever touching <c>g_collideableEntities</c>).
+    ///
+    /// EQUIVALENCE ARGUMENT (verified against the decompiled source before composing, per the ticket):
+    /// <c>GetCollisionOnZ</c> seeds <c>collision = entity.TerrainHeight + 1</c>, then for every eligible
+    /// candidate below the entity's own feet (<c>otherEntityZTop &lt; entity.ModdedPosZ</c>) whose top is
+    /// AT LEAST the running <c>collision</c> (<c>otherEntityZTop &gt;= collision</c>, i.e. NOT
+    /// <c>otherEntityZTop &lt; collision</c>) and XY-overlaps (identical asymmetric <c>Width+1</c>/
+    /// <c>Height+1</c> test), raises <c>collision</c> to <c>otherEntityZTop + 1</c> - "highest qualifying
+    /// candidate wins, seeded at terrain height". <see cref="EntitySupport.TryFindSupport"/> is the exact
+    /// same shape: seeded with <paramref name="seed"/>, a candidate qualifies only when
+    /// <c>candidateTop &lt; moddedPosZ &amp;&amp; platformTopZ &lt;= candidateTop</c> (algebraically
+    /// <c>NOT (candidateTop &gt;= moddedPosZ || platformTopZ &gt; candidateTop)</c> - the exact same two
+    /// conjuncts, seed-variable renamed), and on match raises its own running seed to
+    /// <c>candidateTop + 1</c> (<c>EntitySupport.cs:173</c>, "PhysicsEngine.cs:219/226/240/247" - the SAME
+    /// otherEntityZTop + 1 update <c>GetCollisionOnZ:1661/:1668</c> performs). So calling
+    /// <see cref="EntitySupport.TryFindSupport"/> with <c>seed = ComputeTerrainHeight() + 1</c> and taking
+    /// its result (the winning candidate's <c>supportTopZ</c> when found, else the untouched seed)
+    /// reproduces <c>GetCollisionOnZ</c>'s own return value bit for bit, in the ORIGINAL's <c>+1</c>
+    /// convention.
+    ///
+    /// THE <c>-1</c> BELONGS TO THE SEED, NOT TO A FOUND RESULT (converting to THIS port's own
+    /// convention): the original's resting invariant is <c>ModdedPosZ == TerrainHeight + 1</c>
+    /// (<c>PhysicsEngine.cs:186</c>/<c>:128</c>), so on flat ground <c>GetCollisionOnZ</c>'s return -
+    /// exactly "the terrain height, plus one" under that invariant - is one 16.16 unit ABOVE the terrain
+    /// surface. THIS port's own TERRAIN resting invariant is <c>ModdedPosZ == TerrainHeight</c>, no
+    /// <c>+1</c> (see <see cref="UpdateGroundSlope"/>'s own long "DEVIATION FROM THE LITERAL ORIGINAL"
+    /// note for why - the extra unit is silently swallowed by
+    /// <see cref="AlundraWorldProxy.ResolveLogicalPosition"/>'s own <c>posZ &gt;&gt; 16</c> truncation, so
+    /// porting the original's <c>+1</c> literally here would make it permanently unobservable). That is
+    /// why <paramref name="seed"/>'s own <c>-1</c> (folded into <c>terrainHeight</c> below, since
+    /// <c>seed - 1 == terrainHeight</c> by construction) is correct when no candidate is found.
+    ///
+    /// The ENTITY branch does NOT carry this same offset, and must NOT have <c>-1</c> applied to it: THIS
+    /// port kept the original's <c>+1</c> convention for entity-support resting, unlike terrain -
+    /// <see cref="EntitySupport.TryFindSupport"/>'s own <c>platformTopZ = candidateTop + 1</c>
+    /// (<c>EntitySupport.cs:173</c>) is exactly what <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>
+    /// (<c>proxy.PosZ = proxy.PosZ - proxy.ModZ + 1</c>, mirroring the original's own spawn-adjust) relies
+    /// on: an entity resting on a platform sits at <c>ModdedPosZ == candidateTop + 1</c>, not
+    /// <c>candidateTop</c> (pinned by
+    /// <c>AlundraNpcCharacterControllerMoverTests.Support_SailorElevenOnRealRecordTwoPlatform...</c>). So
+    /// <see cref="EntitySupport.TryFindSupport"/>'s own <c>supportTopZ</c> (<c>candidateTop + 1</c>) IS
+    /// already this port's own entity-resting value - subtracting 1 from it (as a previous version of
+    /// this method did) would put <see cref="FloorHeight"/> one unit BELOW an entity actually standing on
+    /// the platform, breaking the same "descent test" invariant the terrain branch is built to preserve
+    /// (verified against real record data by <c>AlundraFloorHeightTests</c>' own platform case).
+    /// Concretely: on flat ground with no entity underneath, <see cref="FloorHeight"/> ==
+    /// <see cref="ComputeTerrainHeight"/>'s own return (the terrain height itself, no offset) - matching
+    /// this port's own resting <c>ModdedPosZ</c> exactly, as verified by <c>AlundraFloorHeightTests</c>'
+    /// flat-ground case; standing on an entity, <see cref="FloorHeight"/> == that entity's own
+    /// <c>ModdedPosZ + Depth + 1</c> (its top surface, PLUS the port's own entity-resting <c>+1</c>) -
+    /// verified by that same suite's platform case.
+    ///
+    /// RESTRICTION (player only, same rationale as <see cref="UpdateGroundSlope"/>'s own restriction -
+    /// see the single call site in <see cref="Update"/>'s <c>IsPlayer</c> branch): <see cref="FloorHeight"/>
+    /// has no live consumer yet in THIS slice (E2 is a pure brick - the descent condition above is E4's own
+    /// job to wire), so widening this to NPCs cannot be justified by any currently-observable behaviour;
+    /// kept restricted per the ticket, exactly like E1.
+    /// </summary>
+    internal void UpdateFloorHeight()
+    {
+        var terrainHeight = ComputeTerrainHeight();
+        var seed = terrainHeight + 1;
+
+        var supportTopZ = 0;
+        var found = EntitySupport.IsEligibleSubject(this)
+            && EntitySupport.TryFindSupport(this, ScriptHost.Collidables, seed, out _, out supportTopZ);
+
+        // The -1 belongs to the seed (seed - 1 == terrainHeight): a found entity candidate's own
+        // supportTopZ already carries this port's own entity-resting +1 convention and must pass through
+        // unmodified (see this method's own doc, "THE -1 BELONGS TO THE SEED" paragraph).
+        FloorHeight = found ? supportTopZ : terrainHeight;
     }
 
     private static void SampleGroundCorner(ICollisionField field, float x, float y, ref bool hasGround, ref float groundMax)

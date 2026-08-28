@@ -89,11 +89,17 @@ la règle du **minimum sur les coins qualifiés** (~25 lignes). `MapTiles[4]` n'
   terrain, `EntitySupport.TryFindSupport` pour les plateformes — au lieu de porter les 74 lignes de
   `GetCollisionOnZ`.
 - **Coût** : ~20 lignes. **Réemploi quasi total.**
-- **Acceptation** : sur le sol plat de la 389, `FloorHeight` vaut la hauteur de terrain ; sur le
-  perchoir du marin 11 (record 2, Z ≈ 400, déjà couvert par les tests PNJ), il vaut la hauteur de la
-  plateforme.
-- **Débloque en propre** : le champ cesse d'être un 0 trompeur — il est aujourd'hui lu par du code
-  porté qui croit lire une hauteur de sol.
+- **Acceptation** : sur le sol plat de la 389, `FloorHeight` vaut la hauteur de terrain ; posé sur une
+  vraie plateforme entité (record 1, sommet ≈ 496 px) à une pose où le terrain seul rendrait une
+  valeur différente (176 px), il vaut la hauteur de la plateforme + 1 (convention `+1` de ce portage
+  pour le repos sur entité, `EntitySupport.cs:173`) — avec un contrôle obligatoire prouvant que
+  `Collidables` vide fait échouer cette assertion.
+- **Débloque en propre** : rien d'observable pour l'instant — `grep` sur `Alundra/` ne trouve aucun
+  consommateur de `FloorHeight` (déclaration, clone, et mentions en commentaire seulement) ; É2 est
+  une brique pure, sans risque de régression, dont les consommateurs viendront en É4 (la condition de
+  descente `FloorHeight + 1 < PosZ`, `PlayerManager.cs:701`). À la pose New Game réelle, `FloorHeight`
+  vaut déjà 0 — correct dans la convention de ce portage (l'original rendrait 1), donc ce bénéfice
+  n'est de toute façon pas observable à la pose où la partie démarre.
 
 ### É3 — `GetTileHeightAtOffset` (moyenne)
 
