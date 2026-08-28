@@ -94,6 +94,42 @@ public class AlundraCellsCollisionFieldTests
         Assert.Null(field);
     }
 
+    /// <summary>
+    /// E7.b (docs/plan-e7-mutation-tuiles.md, acceptance item 9, picking up an E7.a deferral): the
+    /// pre-fill of all 256 possible <c>_surfaceTagCache</c> entries (not just the GroundProperty values
+    /// present at load) had no test. A value ABSENT from the synthetic document at load (only 5 is
+    /// present) is introduced purely by a mutation - <see cref="AlundraCellStore.SetCellBits"/> OR-ing in
+    /// 200, giving 205 - and must still read back as the surface tag "205", not the pre-fix "" fallback.
+    /// </summary>
+    [Fact]
+    public void TrySampleGround_SurfaceTag_PrefilledForValueOnlyIntroducedByMutation()
+    {
+        var tileMapData = new TileMapData();
+        tileMapData.MapSize = new CasaEngine.Core.Math.Size(1, 1);
+        tileMapData.CustomProperties["AlundraCells"] =
+            "{\"map_index\":1,\"cell_count\":1,\"walkability\":[0],\"ground_property\":[5],"
+            + "\"slope\":[0],\"height\":[0],\"tile_id\":[65535],\"wall_tiles_offset\":[0]}";
+
+        var created = AlundraCellsCollisionField.TryCreate(tileMapData, "map_1", out var field, out var records);
+        Assert.True(created);
+
+        var storeCreated = AlundraCellStore.TryCreate(records!, 1, 1, "map_1", out var store);
+        Assert.True(storeCreated);
+
+        var position = new Vector3(0f, 0f, 0f);
+        var foundBefore = field!.TrySampleGround(position, 0f, out var sampleBefore);
+        Assert.True(foundBefore);
+        Assert.Equal("5", sampleBefore.SurfaceTag);
+
+        // 5 | 200 = 205 - never present in the document, so pre-E7.a's "only what was seen at load" cache
+        // would have missed it and fallen back to "".
+        store!.SetCellBits(0, 0, 0, 200);
+
+        var foundAfter = field.TrySampleGround(position, 0f, out var sampleAfter);
+        Assert.True(foundAfter);
+        Assert.Equal("205", sampleAfter.SurfaceTag);
+    }
+
     // -------------------- WalkabilityMaskFor --------------------
 
     [Fact]

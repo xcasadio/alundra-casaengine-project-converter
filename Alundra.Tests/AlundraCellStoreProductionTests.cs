@@ -15,14 +15,17 @@ namespace Alundra.Tests;
 /// (<c>installCellMutator: false</c>) per the plan's own "rule 2" (production or neutralization proof):
 /// the same drive, with <see cref="IEntityWorldContext.CellMutator"/> forced null, must leave the export's
 /// original values untouched - proving the main test's change comes from this exact seam, not some other
-/// accidental code path. Self-skips when alundra-project/ is absent, same pattern as every other real-data
-/// test in this project.
+/// accidental code path.
+///
+/// E7.b (docs/plan-e7-mutation-tuiles.md, acceptance item 9, picking up an E7.a deferral): these used to
+/// self-skip silently when alundra-project/ was absent - they now throw, naming the missing export,
+/// instead (same fix as <see cref="AlundraCellStoreTests"/>).
 /// </summary>
 public class AlundraCellStoreProductionTests
 {
     private const string WorldName = "Ship Klark (beginning)-389";
 
-    private static string? FindProjectRoot()
+    private static string FindProjectRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory is not null)
@@ -36,17 +39,16 @@ public class AlundraCellStoreProductionTests
             directory = directory.Parent;
         }
 
-        return null;
+        throw new InvalidOperationException(
+            $"AlundraCellStoreProductionTests: no 'alundra-project/Maps' directory found above "
+            + $"'{AppContext.BaseDirectory}' - these tests need the real converter export of map 389 and "
+            + "cannot self-skip without one (docs/plan-e7-mutation-tuiles.md, slice E7.b, acceptance item 9).");
     }
 
     [Fact]
     public void MapEntry_Frame1_RealMutator_ClosesDoorHatchAndReplacesStackTail()
     {
         var projectRoot = FindProjectRoot();
-        if (projectRoot == null)
-        {
-            return; // self-skip: alundra-project/ not present in this checkout
-        }
 
         var document = MapEventProgramLoader.Load(projectRoot, WorldName);
         Assert.NotNull(document);
@@ -71,10 +73,6 @@ public class AlundraCellStoreProductionTests
     public void MapEntry_Frame1_NeutralizedNullMutator_LeavesExportValuesUntouched()
     {
         var projectRoot = FindProjectRoot();
-        if (projectRoot == null)
-        {
-            return;
-        }
 
         var document = MapEventProgramLoader.Load(projectRoot, WorldName);
         Assert.NotNull(document);
@@ -95,5 +93,14 @@ public class AlundraCellStoreProductionTests
         var stack1837 = sim.CellStore!.GetWallTileStack(18, 37);
         Assert.NotNull(stack1837);
         Assert.Equal(new[] { 12434, 12444, 53251, 53261, 53271 }, stack1837!.Value.Tiles);
+
+        // E7.b (docs/plan-e7-mutation-tuiles.md, acceptance item 9, picking up an E7.a deferral): the
+        // neutralization twin only asserted export VALUES stayed untouched - it never asserted that the
+        // trace itself actually took the degraded ("CellMutator null") path rather than, say, some
+        // accidental UnknownSkipped path that happened to also leave values untouched. 0x55/0x85 are both
+        // dispatched on frame 1 (map entry, one per hatch) - each must trace as EventTraceKind.Degraded at
+        // least once here.
+        Assert.True(sim.DegradedOpcodeCounts.GetValueOrDefault(0x55) > 0, "expected 0x55 to trace Degraded on frame 1.");
+        Assert.True(sim.DegradedOpcodeCounts.GetValueOrDefault(0x85) > 0, "expected 0x85 to trace Degraded on frame 1.");
     }
 }

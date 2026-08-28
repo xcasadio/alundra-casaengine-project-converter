@@ -81,8 +81,10 @@ public static class WallPlacementOverlay
     /// <summary>Every gid in the placement document is <c>firstgid + localTileId</c> with a single
     /// tileset per map and <c>firstgid</c> fixed at 1 (see <c>TileSetGidMapReader</c>/
     /// <c>docs/formats/cells-companion.md</c>) - so the local tile id <see cref="TileMapComponent"/>'s own
-    /// layers store is always <c>gid - 1</c>.</summary>
-    private const int FirstGid = 1;
+    /// layers store is always <c>gid - 1</c>. Internal (not private) since E7.b's
+    /// <see cref="AlundraCellVisualSync"/> seeds its own live model off the SAME gid convention when it
+    /// bootstraps from these two records documents (docs/plan-e7-mutation-tuiles.md, slice E7.b).</summary>
+    internal const int FirstGid = 1;
 
     /// <summary>
     /// PSX depth stride: original code packs <c>otIndex = value &gt;&gt; 20</c>ish and multiplies the
@@ -228,10 +230,17 @@ public static class WallPlacementOverlay
     /// document predicted (already stripped, hand-edited map, out-of-range plane/coordinates, ...) is
     /// counted as a mismatch and skipped entirely (neither stripped nor resubmitted) rather than thrown -
     /// this is expected to be rare/zero on a converter-produced map, but must never crash world load.
+    ///
+    /// Returns the indices into <paramref name="records"/> that were ACTUALLY resubmitted (plan fact 13,
+    /// docs/plan-e7-mutation-tuiles.md, slice E7.b): a mismatched entry above is a superset member of
+    /// <paramref name="records"/> that never reached the overlay, so a caller seeding a live model of the
+    /// overlay's real contents (<see cref="AlundraCellVisualSync"/>) must seed from this return value, not
+    /// from <paramref name="records"/> itself - resubmitting a mismatched entry at the first mutation-driven
+    /// reconstruction would double-draw a tile whose flat original was never stripped.
     /// </summary>
-    public static void Apply(TileMapComponent tileMapComponent, WallPlacementRecords records, string worldName)
+    public static IReadOnlyList<int> Apply(TileMapComponent tileMapComponent, WallPlacementRecords records, string worldName)
     {
-        var removedCount = 0;
+        var submitted = new List<int>(records.Count);
         var mismatchCount = 0;
 
         for (var i = 0; i < records.Count; i++)
@@ -259,19 +268,21 @@ public static class WallPlacementOverlay
             }
 
             tileMapComponent.RemoveTile(plane, x, y);
-            removedCount++;
 
             var sortKey = ComputeWallSortKey(records.CellY[i], records.DepthSlot[i], i);
             tileMapComponent.AddSortedOverlayTile(tileReference, x, y, in sortKey);
+            submitted.Add(i);
         }
 
         if (mismatchCount > 0)
         {
             Logs.WriteError(
                 $"WallPlacementOverlay: world '{worldName}' - {mismatchCount} of {records.Count} wall "
-                + $"placements did not match the live tile map (removed {removedCount}); those tiles were "
+                + $"placements did not match the live tile map (removed {submitted.Count}); those tiles were "
                 + "left exactly as loaded, un-interleaved.");
         }
+
+        return submitted;
     }
 
     /// <summary>
@@ -280,11 +291,13 @@ public static class WallPlacementOverlay
     /// these low enough, slots 0..5, to never collide with a wall's slot 7+ bias on the same row - see
     /// that method's doc). The strip accounting below (removedCount/mismatchCount vs records.Count)
     /// covers closure entries the same way it covers elevated ones - there is nothing entry-kind-specific
-    /// here to account for separately.
+    /// here to account for separately. See <see cref="Apply"/>'s own doc for why the return value (the
+    /// indices actually resubmitted, not every index in <paramref name="records"/>) is what a live-model
+    /// seed must use.
     /// </summary>
-    public static void ApplyFloor(TileMapComponent tileMapComponent, FloorPlacementRecords records, string worldName)
+    public static IReadOnlyList<int> ApplyFloor(TileMapComponent tileMapComponent, FloorPlacementRecords records, string worldName)
     {
-        var removedCount = 0;
+        var submitted = new List<int>(records.Count);
         var mismatchCount = 0;
 
         for (var i = 0; i < records.Count; i++)
@@ -312,19 +325,21 @@ public static class WallPlacementOverlay
             }
 
             tileMapComponent.RemoveTile(plane, x, y);
-            removedCount++;
 
             var sortKey = ComputeFloorSortKey(records.CellY[i], records.DepthSlot[i], i);
             tileMapComponent.AddSortedOverlayTile(tileReference, x, y, in sortKey);
+            submitted.Add(i);
         }
 
         if (mismatchCount > 0)
         {
             Logs.WriteError(
                 $"WallPlacementOverlay: world '{worldName}' - {mismatchCount} of {records.Count} floor "
-                + $"placements did not match the live tile map (removed {removedCount}); those tiles were "
+                + $"placements did not match the live tile map (removed {submitted.Count}); those tiles were "
                 + "left exactly as loaded, un-interleaved.");
         }
+
+        return submitted;
     }
 
     /// <summary>

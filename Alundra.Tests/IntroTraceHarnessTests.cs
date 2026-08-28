@@ -367,6 +367,14 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     private readonly Dictionary<int, int> _unimplementedCount = new();
     private readonly Dictionary<int, (int FirstFrame, string FirstContext)> _implementedFirstSeen = new();
     private readonly Dictionary<int, int> _implementedCount = new();
+
+    // E7.b (docs/plan-e7-mutation-tuiles.md, acceptance item 9, picking up an E7.a deferral): per-opcode
+    // count of EventTraceKind.Degraded dispatches - Implemented and Degraded shared one accounting bucket
+    // above (_implementedCount) with nothing distinguishing them; a neutralization run (installCellMutator:
+    // false) needs to assert it actually took the degraded path, not merely that export values held still.
+    private readonly Dictionary<int, int> _degradedCount = new();
+    public IReadOnlyDictionary<int, int> DegradedOpcodeCounts => _degradedCount;
+
     private readonly SortedSet<int> _blindSpots = new(); // UnknownNoSizeTerminated opcodes
     private readonly List<string> _loopBudgetHits = new(); // LoopBudgetExceeded occurrences (diagnostic)
 
@@ -1329,6 +1337,12 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
                 }
 
                 _implementedCount[record.Opcode] = _implementedCount.GetValueOrDefault(record.Opcode) + 1;
+
+                if (record.Kind == EventTraceKind.Degraded)
+                {
+                    _degradedCount[record.Opcode] = _degradedCount.GetValueOrDefault(record.Opcode) + 1;
+                }
+
                 break;
 
             case EventTraceKind.LoopBudgetExceeded:

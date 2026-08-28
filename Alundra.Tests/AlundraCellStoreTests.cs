@@ -9,18 +9,22 @@ using Xunit;
 namespace Alundra.Tests;
 
 /// <summary>
-/// Covers <see cref="AlundraCellStore"/> against the REAL map 389 ("Ship Klark (beginning)") cell data -
-/// same self-skip pattern as <see cref="AlundraCellsCollisionFieldTests"/> (skips when alundra-project/ is
-/// absent from this checkout). docs/plan-e7-mutation-tuiles.md, slice E7.a, acceptance 2 and 4. Acceptance
-/// 1 (synthetic, per-opcode dispatch) lives in <see cref="AlundraEventProgramRunnerTests"/>; acceptance 3
-/// (the production call site, via the real headless intro harness) lives in
-/// <see cref="AlundraCellStoreProductionTests"/>.
+/// Covers <see cref="AlundraCellStore"/> against the REAL map 389 ("Ship Klark (beginning)") cell data.
+/// docs/plan-e7-mutation-tuiles.md, slice E7.a, acceptance 2 and 4. Acceptance 1 (synthetic, per-opcode
+/// dispatch) lives in <see cref="AlundraEventProgramRunnerTests"/>; acceptance 3 (the production call
+/// site, via the real headless intro harness) lives in <see cref="AlundraCellStoreProductionTests"/>.
+///
+/// E7.b (docs/plan-e7-mutation-tuiles.md, acceptance item 9, picking up an E7.a deferral): these used to
+/// self-skip silently when alundra-project/ was absent from the checkout - the same pattern every other
+/// real-data test in this project used, but one plan-oracle-heros.md §2.8 already flagged as wrong for
+/// this kind of test (a self-skip can hide these 5 tests going silently unrun for a long time). They now
+/// throw, naming the missing export, instead of self-skipping.
 /// </summary>
 public class AlundraCellStoreTests
 {
     private const string WorldName = "Ship Klark (beginning)-389";
 
-    private static string? FindProjectRoot()
+    private static string FindProjectRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory is not null)
@@ -34,16 +38,15 @@ public class AlundraCellStoreTests
             directory = directory.Parent;
         }
 
-        return null;
+        throw new InvalidOperationException(
+            $"AlundraCellStoreTests: no 'alundra-project/Maps' directory found above '{AppContext.BaseDirectory}' - "
+            + "these tests need the real converter export of map 389 and cannot self-skip without one "
+            + "(docs/plan-e7-mutation-tuiles.md, slice E7.b, acceptance item 9).");
     }
 
-    private static (AlundraCellsCollisionField Field, AlundraCellStore Store)? LoadMap389()
+    private static (AlundraCellsCollisionField Field, AlundraCellStore Store) LoadMap389()
     {
         var projectRoot = FindProjectRoot();
-        if (projectRoot == null)
-        {
-            return null;
-        }
 
         var tileMapPath = Path.Combine(
             projectRoot, "Maps", "The Klark", "Ship Klark (beginning)-389", "tilemap",
@@ -51,7 +54,9 @@ public class AlundraCellStoreTests
 
         if (!File.Exists(tileMapPath))
         {
-            return null;
+            throw new InvalidOperationException(
+                $"AlundraCellStoreTests: '{tileMapPath}' not found - the real map 389 export is incomplete "
+                + "in this checkout.");
         }
 
         var tileMapData = new TileMapData();
@@ -72,13 +77,7 @@ public class AlundraCellStoreTests
     [Fact]
     public void CopyCellRectangle_HatchTemplateOntoDoor_18_37_ReplacesStackAndClosesGroundProperty()
     {
-        var loaded = LoadMap389();
-        if (loaded == null)
-        {
-            return; // self-skip: alundra-project/ not present in this checkout
-        }
-
-        var (field, store) = loaded.Value;
+        var (field, store) = LoadMap389();
 
         // Real map-389 map-entry mutation (docs/intro-programs-389.txt): 0x85 [0,20,1,2,18,37] copies the
         // "closed hatch" template rows (0,20)/(0,21) onto the door cell (18,37)/(18,38). Export ships the
@@ -109,13 +108,7 @@ public class AlundraCellStoreTests
     [Fact]
     public void CopyCellRectangle_HatchTemplateOntoDoor_21_27_ChangesStackShape()
     {
-        var loaded = LoadMap389();
-        if (loaded == null)
-        {
-            return;
-        }
-
-        var (_, store) = loaded.Value;
+        var (_, store) = LoadMap389();
 
         // Real map-389 map-entry mutation: 0x85 [0,39,1,2,21,27] - the exceptional pair (plan §1 "Exception
         // de forme"): (21,27)'s export stack has offset -1 and 6 tiles; its template (0,39)/(0,40) has
@@ -141,13 +134,7 @@ public class AlundraCellStoreTests
     [Fact]
     public void SetThenClearCellBits_RealCell_RoundTripsExactly()
     {
-        var loaded = LoadMap389();
-        if (loaded == null)
-        {
-            return;
-        }
-
-        var (field, store) = loaded.Value;
+        var (field, store) = LoadMap389();
 
         // Cell (18,15): walkability 1, ground_property 0 (AlundraCellsCollisionFieldTests' own
         // Map389_Walkability_... fixture) - untouched by any other E7.a rectangle/bit test above.
@@ -171,13 +158,7 @@ public class AlundraCellStoreTests
     [Fact]
     public void SetCellBits_OutOfRangeCoordinates_ClampsToHardcodedBounds()
     {
-        var loaded = LoadMap389();
-        if (loaded == null)
-        {
-            return;
-        }
-
-        var (field, store) = loaded.Value;
+        var (field, store) = LoadMap389();
 
         // (60,70) clamps to (0x33,0x3b) = (51,59) - map 389's own last row/column, NOT re-derived from its
         // actual 52x60 size (see AlundraCellStore.ApplyCellBits's own doc on why the two coincide here).
@@ -194,13 +175,7 @@ public class AlundraCellStoreTests
     [Fact]
     public void CopyCellRectangle_MutatesHeightAndWalkability_VisibleThroughSameFieldInstance()
     {
-        var loaded = LoadMap389();
-        if (loaded == null)
-        {
-            return;
-        }
-
-        var (field, store) = loaded.Value;
+        var (field, store) = LoadMap389();
 
         // (18,15): height 11, walkability 1. (17,16): height 12, walkability 0 - both flat (slope 4,
         // slope&3==0), untouched by every other E7.a test in this file/AlundraEventProgramRunnerTests.
@@ -221,5 +196,95 @@ public class AlundraCellStoreTests
         var foundAfterMasked = field.TrySampleGround(position, 0f, 0x41u, out var sampleAfterMasked);
         Assert.True(foundAfterMasked);
         Assert.False(sampleAfterMasked.IsWalkable); // walkability now 1 -> (1 & 0x41) != 0 - changed too.
+    }
+
+    // -------------------- E7.b acceptance item 9: E7.a deferrals picked up (synthetic) --------------
+
+    private static AlundraCellStore NewSyntheticStoreWithMalformedWallTilesKey()
+    {
+        var tileMapData = new TileMapData();
+        tileMapData.MapSize = new CasaEngine.Core.Math.Size(1, 1);
+        tileMapData.CustomProperties["AlundraCells"] =
+            "{\"map_index\":1,\"cell_count\":1,\"walkability\":[0],\"ground_property\":[0],"
+            + "\"slope\":[0],\"height\":[0],\"tile_id\":[0],\"wall_tiles_offset\":[0],"
+            + "\"wall_tiles\":{\"not_a_number\":{\"offset\":0,\"tiles\":[1]}}}";
+
+        var fieldCreated = AlundraCellsCollisionField.TryCreate(tileMapData, "map_1", out _, out var records);
+        Assert.True(fieldCreated);
+
+        var storeCreated = AlundraCellStore.TryCreate(records!, 1, 1, "map_1", out var store);
+        Assert.True(storeCreated);
+        return store!;
+    }
+
+    /// <summary>
+    /// A "wall_tiles" key that is not a valid cell index used to be silently dropped (E7.a). It now also
+    /// logs a warning (AlundraCellStore's own constructor) - this codebase has no test-capturable log
+    /// sink to assert the message text against, so this test covers the BEHAVIOR the warning documents:
+    /// the malformed entry is dropped (no stack for cell (0,0)) and construction never throws.
+    /// </summary>
+    [Fact]
+    public void TryCreate_MalformedWallTilesKey_DropsThatStackWithoutThrowing()
+    {
+        var store = NewSyntheticStoreWithMalformedWallTilesKey();
+
+        Assert.Null(store.GetWallTileStack(0, 0));
+    }
+
+    /// <summary>
+    /// E7.b: <see cref="AlundraCellStore.GetWallTileStack"/> used to hand back its own live backing array
+    /// (or an <see cref="ArraySegment{T}"/> over it) whenever <c>Count == Tiles.Length</c> - a caller could
+    /// mutate the store's own state through what looks like a read-only accessor. It must now always
+    /// return an independent copy.
+    /// </summary>
+    [Fact]
+    public void GetWallTileStack_ReturnsIndependentCopy_NotTheLiveBackingArray()
+    {
+        var (_, store) = LoadMap389();
+
+        var first = store.GetWallTileStack(18, 37);
+        Assert.NotNull(first);
+        var tiles = (int[])first!.Value.Tiles;
+        tiles[0] = -12345; // mutate the returned array in place.
+
+        var second = store.GetWallTileStack(18, 37);
+        Assert.NotNull(second);
+        Assert.NotEqual(-12345, second!.Value.Tiles[0]); // the store's own state must be unaffected.
+        Assert.Equal(12434, second.Value.Tiles[0]); // still the real, unmutated value.
+    }
+
+    /// <summary>
+    /// E7.b: <see cref="AlundraCellStore.CellsMutated"/>'s payload used to be allocated unconditionally,
+    /// even with zero subscribers (both <c>CopyCellRectangle</c>'s <c>List&lt;int&gt;</c> and
+    /// <c>ApplyCellBits</c>'s single-element array were built before the null-conditional invoke, which
+    /// still evaluates its argument). Measured via <see cref="GC.GetAllocatedBytesForCurrentThread"/>: a
+    /// tight loop of same-shape mutations with no subscriber must allocate near nothing per call.
+    /// </summary>
+    [Fact]
+    public void CellMutations_NoSubscriber_AllocateNearNothingPerCall()
+    {
+        var (_, store) = LoadMap389();
+
+        // Warm up (JIT, any one-time allocations) before measuring.
+        store.CopyCellRectangle(0, 0, 1, 1, 0, 1);
+        store.SetCellBits(0, 0, 0, 0);
+        store.ClearCellBits(0, 0, 0, 0);
+
+        const int iterations = 2000;
+        var before = GC.GetAllocatedBytesForCurrentThread();
+
+        for (var i = 0; i < iterations; i++)
+        {
+            store.CopyCellRectangle(0, 0, 1, 1, 0, 1); // same shape every time - no stack resize either.
+            store.SetCellBits(0, 0, 0, 0);
+            store.ClearCellBits(0, 0, 0, 0);
+        }
+
+        var after = GC.GetAllocatedBytesForCurrentThread();
+        var bytesPerIteration = (after - before) / (double)iterations;
+
+        Assert.True(
+            bytesPerIteration < 64,
+            $"expected near-zero allocation per iteration with no CellsMutated subscriber, got {bytesPerIteration:F1} bytes.");
     }
 }

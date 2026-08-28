@@ -433,7 +433,32 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <see cref="IEntityWorldContext.NavigationGrid"/> implicitly (this class already implements that
     /// interface).
     /// </summary>
-    public NavigationGrid2D? NavigationGrid { get; private set; }
+    public NavigationGrid2D? NavigationGrid { get; internal set; }
+
+    /// <summary>
+    /// This world's cell-mutation seam (E7.a, docs/plan-e7-mutation-tuiles.md) - a real
+    /// <see cref="AlundraCellStore"/> built from the SAME parsed <see cref="AlundraCellsRecords"/>
+    /// <see cref="CollisionField"/> aliases its own arrays from (<see cref="InstallCellAndOverlaySystems"/>),
+    /// satisfying <see cref="IEntityWorldContext.CellMutator"/>. Null in degraded mode (missing/malformed
+    /// "AlundraCells" property, or a tile_id/wall_tiles_offset column length mismatch) - the interpreter's
+    /// own null-mutator fallback then applies (skip by size, <c>Degraded</c> trace kind).
+    /// </summary>
+    public IAlundraCellMutator? CellMutator { get; private set; }
+
+    /// <summary>
+    /// E7.b (docs/plan-e7-mutation-tuiles.md): the visual + navigation applier subscribed to
+    /// <see cref="CellMutator"/>'s (as an <see cref="AlundraCellStore"/>) own
+    /// <see cref="AlundraCellStore.CellsMutated"/> event - see <see cref="AlundraCellVisualSync"/>'s own
+    /// class doc. Null when <see cref="CellMutator"/> is (no cell store installed - nothing to make
+    /// visible), or when the wall/floor placement overlay itself was never applied.
+    /// </summary>
+    private AlundraCellVisualSync? _cellVisualSync;
+
+    /// <summary>Test-only accessor (E7.b, docs/plan-e7-mutation-tuiles.md, acceptance items 1-8): lets a
+    /// test drive <see cref="AlundraCellVisualSync.FlushPendingOverlayReconstruction"/> and read
+    /// <see cref="AlundraCellVisualSync.ReconstructionCount"/> after mutating through <see cref="CellMutator"/>,
+    /// without exposing either on the public surface.</summary>
+    internal AlundraCellVisualSync? CellVisualSync => _cellVisualSync;
 
     /// <summary>Renders this world's scrolling background layers (see <see cref="BackdropRenderer"/>'s
     /// class doc) - loaded once in <see cref="InitializeWithWorld"/>, ticked and drawn every frame
@@ -504,47 +529,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         _tileMapData = tileMapData;
 
-        // E3.b: build this world's ground/walkability field from the same TileMapData and install it on
-        // World.CollisionField - World.Clear() resets the slot to null (World.cs), so every load
-        // re-installs it here. Tolerant by design, like the wall/floor placement overlays right below:
-        // a missing/malformed "AlundraCells" property (or a cell_count that does not match MapSize)
-        // just leaves World.CollisionField null (degraded mode, single warning already logged by
-        // AlundraCellsCollisionField.TryCreate) - E3.c's mover then has no field to sample.
-        if (AlundraCellsCollisionField.TryCreate(tileMapData, world.Name, out var collisionField))
-        {
-            CollisionField = collisionField;
-            world.CollisionField = collisionField;
-        }
-        else
-        {
-            CollisionField = null;
-        }
-
-        // E4.d (docs/plan-e4-deplacement-scripte.md, decision E4-2): navigation grid, built from the same
-        // TileMapData right after the collision field above - see TryBuildNavigationGrid's own doc.
-        NavigationGrid = TryBuildNavigationGrid(world, tileMapData);
-
-        // Wall/sprite depth interleave (Slice B): strip every baked wall tile the converter recorded
-        // out of the flat "Render_*" layers and resubmit it through the tile map's runtime sorted
-        // overlay, so it draws ordered against Y-sorted entity sprites instead of always flat. Tolerant
-        // by design - see WallPlacementOverlay.TryParse's doc comment - so a world with no (or a
-        // malformed) "AlundraWallPlacements" property still spawns its entities normally, just without
-        // the interleave.
-        if (WallPlacementOverlay.TryParse(tileMapData.CustomProperties, world.Name, out var wallPlacements))
-        {
-            WallPlacementOverlay.Apply(tileMapComponent!, wallPlacements, world.Name);
-            _wallPlacementOverlayApplied = true;
-        }
-
-        // Same interleave for elevated (Height > 0) floor tiles, through the same runtime sorted
-        // overlay - see WallPlacementOverlay.ComputeFloorSortKey's doc for why a floor's own row bias
-        // (slot 0..5, no +7) already orders it correctly against both walls and Y-sorted entities.
-        // Independently tolerant, like the wall property above: a world with no (or malformed)
-        // "AlundraFloorPlacements" property still spawns normally, just without this interleave.
-        if (WallPlacementOverlay.TryParseFloor(tileMapData.CustomProperties, world.Name, out var floorPlacements))
-        {
-            WallPlacementOverlay.ApplyFloor(tileMapComponent!, floorPlacements, world.Name);
-        }
+        InstallCellAndOverlaySystems(world, tileMapComponent!, tileMapData);
 
         var entitiesLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == EntitiesLayerName);
         var portalsLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == PortalsLayerName);
@@ -1093,6 +1078,106 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <c>RootComponent.Update</c>, hence the projection, runs before <c>GameplayProxy.Update</c> -
     /// Entity.cs:473-504) - see <see cref="SyncTransform"/>.
     /// </summary>
+    /// <summary>
+    /// E7.b (docs/plan-e7-mutation-tuiles.md, "Testabilité du câblage", plan fact 17): the block that used
+    /// to live inline in <see cref="InitializeWithWorld"/> - collision field, cell store/
+    /// <see cref="CellMutator"/>, navigation grid, and the wall/floor placement overlay - extracted into
+    /// its own INTERNAL method so a test can drive it directly against a hand-built <c>World</c> +
+    /// <see cref="TileMapComponent"/> (no live <c>CasaEngineGame</c>/asset catalog required - the only
+    /// piece that needs one, <see cref="TryBuildNavigationGrid"/>, already degrades to null without one).
+    /// <see cref="InitializeWithWorld"/> is now a thin caller; acceptance tests (docs/plan-e7-mutation-tuiles.md,
+    /// slice E7.b) call this method directly - the SAME production path, not a hand-rolled store.
+    ///
+    /// Builds <see cref="AlundraCellVisualSync"/> and subscribes it to the freshly-built
+    /// <see cref="AlundraCellStore"/>'s own <see cref="AlundraCellStore.CellsMutated"/> event - THIS
+    /// subscription line is what makes 0x54/0x55/0x85 visible/routable at runtime (acceptance item 1's own
+    /// mutation: deleting it must fail that test). Skipped entirely when no cell store could be built (no
+    /// "AlundraCells" property, or a tile_id/wall_tiles_offset length mismatch) - degraded mode, same as
+    /// E7.a's own no-mutator fallback.
+    /// </summary>
+    internal void InstallCellAndOverlaySystems(World world, TileMapComponent tileMapComponent, TileMapData tileMapData)
+    {
+        // E3.b: build this world's ground/walkability field from the same TileMapData and install it on
+        // World.CollisionField - World.Clear() resets the slot to null (World.cs), so every load
+        // re-installs it here. Tolerant by design, like the wall/floor placement overlays right below:
+        // a missing/malformed "AlundraCells" property (or a cell_count that does not match MapSize)
+        // just leaves World.CollisionField null (degraded mode, single warning already logged by
+        // AlundraCellsCollisionField.TryCreate) - E3.c's mover then has no field to sample.
+        //
+        // E7.a/E7.b: the 4-out overload also hands back the parsed AlundraCellsRecords, so the cell store
+        // built right below aliases the SAME int[] instances this field reads - a mutation is instantly
+        // visible to both.
+        AlundraCellsRecords? cellRecords = null;
+        if (AlundraCellsCollisionField.TryCreate(tileMapData, world.Name, out var collisionField, out cellRecords))
+        {
+            CollisionField = collisionField;
+            world.CollisionField = collisionField;
+        }
+        else
+        {
+            CollisionField = null;
+        }
+
+        // E4.d (docs/plan-e4-deplacement-scripte.md, decision E4-2): navigation grid, built from the same
+        // TileMapData right after the collision field above - see TryBuildNavigationGrid's own doc.
+        NavigationGrid = TryBuildNavigationGrid(world, tileMapData);
+
+        // E7.a: the cell-mutation store, built from the SAME parsed records the collision field above
+        // aliases its arrays from - see AlundraCellStore's own class doc. Degraded (null CellMutator) on
+        // a tile_id/wall_tiles_offset length mismatch, or when the collision field itself never parsed.
+        CellMutator = null;
+        AlundraCellStore? cellStore = null;
+        if (cellRecords != null
+            && AlundraCellStore.TryCreate(cellRecords, tileMapData.MapSize.Width, tileMapData.MapSize.Height, world.Name, out cellStore))
+        {
+            CellMutator = cellStore;
+        }
+
+        // Wall/sprite depth interleave (Slice B): strip every baked wall tile the converter recorded
+        // out of the flat "Render_*" layers and resubmit it through the tile map's runtime sorted
+        // overlay, so it draws ordered against Y-sorted entity sprites instead of always flat. Tolerant
+        // by design - see WallPlacementOverlay.TryParse's doc comment - so a world with no (or a
+        // malformed) "AlundraWallPlacements" property still spawns its entities normally, just without
+        // the interleave.
+        WallPlacementRecords? wallPlacements = null;
+        IReadOnlyList<int> submittedWallIndices = Array.Empty<int>();
+        if (WallPlacementOverlay.TryParse(tileMapData.CustomProperties, world.Name, out wallPlacements))
+        {
+            submittedWallIndices = WallPlacementOverlay.Apply(tileMapComponent, wallPlacements, world.Name);
+            _wallPlacementOverlayApplied = true;
+        }
+
+        // Same interleave for elevated (Height > 0) floor tiles, through the same runtime sorted
+        // overlay - see WallPlacementOverlay.ComputeFloorSortKey's doc for why a floor's own row bias
+        // (slot 0..5, no +7) already orders it correctly against both walls and Y-sorted entities.
+        // Independently tolerant, like the wall property above: a world with no (or malformed)
+        // "AlundraFloorPlacements" property still spawns normally, just without this interleave.
+        FloorPlacementRecords? floorPlacements = null;
+        IReadOnlyList<int> submittedFloorIndices = Array.Empty<int>();
+        if (WallPlacementOverlay.TryParseFloor(tileMapData.CustomProperties, world.Name, out floorPlacements))
+        {
+            submittedFloorIndices = WallPlacementOverlay.ApplyFloor(tileMapComponent, floorPlacements, world.Name);
+        }
+
+        // E7.b: the visual + navigation applier - see AlundraCellVisualSync's own class doc. Seeded from
+        // exactly what was resubmitted above (submittedWallIndices/submittedFloorIndices), never from the
+        // documents themselves (plan fact 13). The navigation grid accessor reads THIS property live
+        // (`() => NavigationGrid`), not a captured snapshot, so a test injecting a synthetic grid after
+        // this call still gets it picked up by navigation sync.
+        _cellVisualSync = null;
+        if (cellStore != null)
+        {
+            _cellVisualSync = AlundraCellVisualSync.Create(
+                tileMapComponent, cellStore, tileMapData.MapSize.Width, tileMapData.MapSize.Height, world.Name,
+                tileMapComponent.TileSetData,
+                wallPlacements, submittedWallIndices,
+                floorPlacements, submittedFloorIndices,
+                () => NavigationGrid);
+
+            cellStore.CellsMutated += _cellVisualSync.OnCellsMutated;
+        }
+    }
+
     /// <summary>
     /// This map's own Gravity/ZViscosity (<c>TileMapData.CustomProperties</c>, written by
     /// <c>CellMetadataWriter.ConvertMap</c>), converted to the units
@@ -1713,6 +1798,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 RunMapEventsPass(PlayerEntity, _mapEvents, EventProgramRunner, GameState.PlayerControlFlags);
             }
         }
+
+        // E7.b (docs/plan-e7-mutation-tuiles.md, "coalescer par frame"): applies at most one overlay
+        // reconstruction for however many 0x54/0x55/0x85 opcodes the loop above just dispatched (a map's
+        // four-hatch entry alone fires four separate CopyCellRectangle calls) - a no-op when nothing
+        // actually changed the overlay's contents (AlundraCellVisualSync.ReconstructionCount stays put).
+        _cellVisualSync?.FlushPendingOverlayReconstruction();
 
         if (_spawnedEntities.Count == 0)
         {

@@ -75,7 +75,7 @@ public sealed class AlundraCellStore : IAlundraCellMutator
     /// </summary>
     public event Action<IReadOnlyList<int>>? CellsMutated;
 
-    private AlundraCellStore(int width, int height, AlundraCellsRecords records)
+    private AlundraCellStore(int width, int height, AlundraCellsRecords records, string worldName)
     {
         _width = width;
         _height = height;
@@ -100,6 +100,17 @@ public sealed class AlundraCellStore : IAlundraCellMutator
                     Count = stack.Tiles.Length,
                     Tiles = (int[])stack.Tiles.Clone(),
                 };
+            }
+            else
+            {
+                // E7.b (docs/plan-e7-mutation-tuiles.md, deferred item picked up from E7.a): a malformed
+                // key - not an integer, or out of [0, width*height) - used to be silently dropped. Never
+                // observed on a converter-produced export (WallTiles keys are always CellMetadataWriter's
+                // own row-major indices), but a hand-edited/corrupted document should not lose a wall
+                // stack without a trace.
+                Logs.WriteWarning(
+                    $"AlundraCellStore: world '{worldName}' - AlundraCells 'wall_tiles' key '{key}' is not a "
+                    + $"valid cell index in [0,{_wallTiles.Length}); that wall tile stack is dropped.");
             }
         }
     }
@@ -126,9 +137,30 @@ public sealed class AlundraCellStore : IAlundraCellMutator
             return false;
         }
 
-        store = new AlundraCellStore(width, height, records);
+        store = new AlundraCellStore(width, height, records, worldName);
         return true;
     }
+
+    /// <summary>One cell's raw floor tile id (E7.b, docs/plan-e7-mutation-tuiles.md) - <c>0xffff</c> means
+    /// "no floor" (matches the export's own sentinel, see <see cref="AlundraCellsCollisionField"/>'s class
+    /// doc on <c>tile_id</c> not being read there). No clamping, same contract as
+    /// <see cref="GetWallTileStack"/>.</summary>
+    public int GetFloorTileId(int x, int y) => _tileId[y * _width + x];
+
+    /// <summary>One cell's current elevation (E7.b) - the SAME <c>_cellHeight</c> array
+    /// <see cref="AlundraCellsCollisionField"/> aliases, read here by (x, y) instead of by world
+    /// position.</summary>
+    public int GetHeight(int x, int y) => _cellHeight[y * _width + x];
+
+    /// <summary>One cell's raw Walkability byte (E7.b) - see <see cref="GetHeight"/>'s own doc on why this
+    /// duplicates an <see cref="AlundraCellsCollisionField.SampleRawWalkability"/>-shaped read by (x, y)
+    /// instead of by world position: the overlay/navigation applier only ever has cell coordinates on
+    /// hand, not a <c>Vector3</c>.</summary>
+    public int GetWalkability(int x, int y) => _walkability[y * _width + x];
+
+    /// <summary>One cell's raw GroundProperty byte (E7.b) - see <see cref="GetWalkability"/>'s own
+    /// doc.</summary>
+    public int GetGroundProperty(int x, int y) => _groundProperty[y * _width + x];
 
     /// <summary>
     /// One cell's wall tile stack AS THE ORIGINAL RENDERER SEES IT. Returns null when the cell carries no
@@ -150,9 +182,12 @@ public sealed class AlundraCellStore : IAlundraCellMutator
             return null;
         }
 
-        IReadOnlyList<int> visibleTiles = stack.Count == stack.Tiles.Length
-            ? stack.Tiles
-            : new ArraySegment<int>(stack.Tiles, 0, stack.Count);
+        // E7.b (docs/plan-e7-mutation-tuiles.md, deferred item picked up from E7.a): always a fresh copy,
+        // never the live backing array (nor an ArraySegment over it, which would still alias it) - a
+        // caller (e.g. AlundraCellVisualSync) must not be able to observe/corrupt this store's own mutable
+        // state through what looks like a read-only accessor.
+        var visibleTiles = new int[stack.Count];
+        Array.Copy(stack.Tiles, visibleTiles, stack.Count);
 
         return (stack.Offset, visibleTiles);
     }
@@ -192,7 +227,11 @@ public sealed class AlundraCellStore : IAlundraCellMutator
                 + "this port logs and proceeds identically (no debugger to break into).");
         }
 
-        var mutated = new List<int>();
+        // E7.b (docs/plan-e7-mutation-tuiles.md, deferred item picked up from E7.a): only allocate the
+        // mutated-indices list when something is actually listening - most synthetic/degraded-mode tests
+        // (and any world with no cell visual sync installed) have no subscriber at all.
+        var hasSubscriber = CellsMutated != null;
+        List<int>? mutated = hasSubscriber ? new List<int>() : null;
 
         for (var y = 0; y < height; y++)
         {
@@ -210,11 +249,14 @@ public sealed class AlundraCellStore : IAlundraCellMutator
 
                 CopyWallTileStack(srcIndex, dstIndex);
 
-                mutated.Add(dstIndex);
+                mutated?.Add(dstIndex);
             }
         }
 
-        CellsMutated?.Invoke(mutated);
+        if (mutated != null)
+        {
+            CellsMutated?.Invoke(mutated);
+        }
     }
 
     /// <summary>
@@ -309,7 +351,13 @@ public sealed class AlundraCellStore : IAlundraCellMutator
             _groundProperty[index] |= (byte)groundPropertyMask;
         }
 
-        CellsMutated?.Invoke(new[] { index });
+        // E7.b (docs/plan-e7-mutation-tuiles.md, deferred item): `?.Invoke(new[] { index })` would still
+        // allocate the array even with no subscriber - the argument is evaluated before the null-check on
+        // the delegate. Guarded explicitly instead.
+        if (CellsMutated != null)
+        {
+            CellsMutated(new[] { index });
+        }
     }
 
     /// <summary>Mutable counterpart of the immutable, JSON-parsed <see cref="WallTileStack"/> - this
