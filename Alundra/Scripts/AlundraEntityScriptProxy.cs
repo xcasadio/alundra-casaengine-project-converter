@@ -1419,6 +1419,140 @@ public class AlundraEntityScriptProxy : GameplayProxy
         FloorHeight = found ? supportTopZ : terrainHeight;
     }
 
+    /// <summary>
+    /// E3 (docs/plan-echelles-chiffrage.md É3): port of <c>GetTileHeightAtOffset</c>
+    /// (<c>EntityGameplayManager.cs:277-345</c>) - the four-corner-max RAW terrain sample used, in the
+    /// original, at an arbitrary XY offset from the entity's own footprint. The SAME
+    /// <see cref="PosX"/>/<see cref="PosY"/>/<see cref="ModX"/>/<see cref="ModY"/>/<see cref="Width"/>/
+    /// <see cref="Height"/> footprint as <see cref="ComputeTerrainHeight"/>, just displaced by
+    /// <paramref name="offsetX"/>/<paramref name="offsetY"/> (both 16.16) before the four corners are
+    /// derived.
+    ///
+    /// CORRECTED AFTER REVIEW (this slice's own re-derivation, not the original commit): the FIRST
+    /// version of this port reused <see cref="SampleTerrainHeightCorner"/> -&gt;
+    /// <see cref="AlundraCellsCollisionField.TrySampleGround(in Vector3, float, out GroundSample)"/>,
+    /// i.e. <see cref="ComputeTerrainHeight"/>'s own helper. That is WRONG: the original
+    /// <c>GetTileHeightAtOffset</c> (<c>EntityGameplayManager.cs:338-340</c>,
+    /// <c>if (maxHeight &lt; tile.Height) maxHeight = tile.Height</c>) reads <c>tile.Height</c> - the
+    /// cell's RAW, un-interpolated height - and NEVER inspects <c>tile.Slope</c>; there is no
+    /// <c>switch (tile.Slope &amp; 0x3)</c> anywhere in its 68-line body. That switch belongs to a
+    /// DIFFERENT original function, <c>PhysicsEngine.ComputeEntityGroundHeight</c>
+    /// (PhysicsEngine.cs:1007-1061) - the function <see cref="AlundraCellsCollisionField"/>'s
+    /// <c>ComputeGroundHeight</c> actually ports. Reusing it here silently imported slope
+    /// interpolation the original does not perform: measured on map 389's real production hero
+    /// footprint, 4560 of 1,159,515 integer poses diverge from the original by 1 to 15 px (worst case
+    /// x1=312,y1=447: this port would have returned 145 px where the original returns 160 px). This
+    /// version instead samples <see cref="AlundraCellsCollisionField.SampleRawCellHeight"/> - the raw
+    /// per-cell value, added alongside <see cref="AlundraCellsCollisionField.SampleGroundProperty"/> in
+    /// the exact same additive style É1 already established - so no interpolation is ever applied here.
+    ///
+    /// UNITS: <c>tile.Height</c> is in CELL units (1 unit = 16 px, <c>StaticVariables.MapTileHeight</c>),
+    /// and the original converts straight to 16.16 pixels with <c>maxHeight &lt;&lt; 0x14</c>
+    /// (EntityGameplayManager.cs:344). Derivation: <c>unit &lt;&lt; 20 == unit * 1,048,576 ==
+    /// (unit * 16 px) * 65,536</c> - i.e. <c>&lt;&lt; 20</c> is exactly "convert unit to px (`&lt;&lt; 4`)
+    /// then to 16.16 (`&lt;&lt; 16`)" fused into one shift; no separate multiply is needed. This port
+    /// keeps the single fused shift for the same reason.
+    ///
+    /// ATTENUATION (not an excuse - documented per the ticket): map 389's four scale cells and their
+    /// north neighbors are all flat (<c>slope &amp; 3 == 0</c>), so at É4's own call site
+    /// (<c>PlayerManager.cs:718-719</c>) on THIS map the interpolation bug above would never actually
+    /// have fired. That does not make the earlier port correct - it was wrong on 4560 real poses, and
+    /// this method is also the brick <c>EntityGameplayManager.GetEntityTileHeight</c>
+    /// (EntityGameplayManager.cs:262-274) would reuse for arbitrary directional offsets - so it is
+    /// fixed regardless of today's reachability.
+    ///
+    /// TWO PIECES OF THE ORIGINAL DELIBERATELY NOT PORTED (documented, not silently dropped):
+    /// <list type="bullet">
+    /// <item><description><c>g_tileToWorldXTable</c> (<c>EntityGameplayManager.cs:289-292</c>): a
+    /// precomputed lookup that answers <c>(pixelsX &gt;&gt; 16) / 24</c> - a fixed division by 24 (the
+    /// cell width), nothing more (established in the read-only reconnaissance for this slice). This
+    /// port already performs that same division directly, inside
+    /// <see cref="AlundraCellsCollisionField.SampleRawCellHeight"/> (<c>x / CellWidthPx</c>,
+    /// <c>CellWidthPx = 24</c>) - reusing it gets this division for free without needing the table.
+    /// The original's table has 1248 entries and is never clamped before indexing
+    /// (out-of-range is undefined there); this port's own clamp-to-nearest-cell (inherited from
+    /// <see cref="AlundraCellsCollisionField"/>'s established convention, see its class doc) is a
+    /// DEVIATION for out-of-map offsets, not a faithful port of that table - see
+    /// <see cref="AlundraCellsCollisionField.TrySampleGround(in Vector3, float, out GroundSample)"/>'s
+    /// own doc for the same pre-existing (E1) deviation.</description></item>
+    /// <item><description>The <c>ClassA</c>/<c>ClassB</c> walkability filter
+    /// (<c>EntityGameplayManager.cs:300-304</c>/<c>333-336</c>, returning the sentinel <c>0x7800000</c>
+    /// on an unwalkable corner): NOT ported. Earlier text here claimed the hero never carries either
+    /// flag, citing <c>PhysicsEngine.cs:1087-1098</c> as proof - that citation is
+    /// <c>GetCollisionFlagsWithPlayer</c>, which reads <c>player.Flags &amp; EntityFlags.ClassB</c>/
+    /// <c>ClassA</c> to build the PLAYER's own mask, i.e. evidence the player CAN carry these flags
+    /// (e.g. <c>FunctionTypeC.cs:17343</c>, <c>player.Flags |= EntityFlags.ClassB | Gravity</c>; script
+    /// opcodes 0x28/0x2A also set them on <c>logicEntity</c>, EntityEventHandlers.cs:983,997). So this
+    /// is correctly "not ported, reachability not established" - NOT "dead code": if the flag were ever
+    /// set, the original would return the sentinel (always &gt;= any real terrain height), while this
+    /// port would return a real terrain sample instead, changing the SENSE of whatever guard consumes
+    /// it, not just its value. Left unported because widening scope to a flag state this slice has no
+    /// evidence is reachable for the intended (hero) caller would be inventing behaviour, not
+    /// preserving any - to be revisited before any future caller passes a ClassA/ClassB-carrying
+    /// entity through this method.</description></item>
+    /// </list>
+    ///
+    /// NO <c>+1</c>/<c>-1</c> ANYWHERE IN THIS METHOD (lesson from earlier slices in this same plan):
+    /// the original's own body (<c>EntityGameplayManager.cs:277-345</c>) never adds or subtracts 1
+    /// against <c>ModdedPosZ</c> or any resting invariant - unlike <see cref="UpdateGroundSlope"/> or
+    /// <see cref="UpdateFloorHeight"/>, this is a plain terrain-height sample, not a "resting on"
+    /// comparison, so there is no <c>+1</c> to re-derive or drop here. The sole offset in this method is
+    /// the caller-supplied spatial displacement (<paramref name="offsetX"/>/<paramref name="offsetY"/>,
+    /// e.g. the ladder guard's own <c>-0x10000</c> - one pixel north, PlayerManager.cs:718), which is
+    /// not a resting-invariant compensation at all.
+    ///
+    /// FALLBACK: the original seeds <c>maxHeight</c> as <c>uint 0</c> (EntityGameplayManager.cs:285,
+    /// 306), so the result is floored at 0 by construction, never by a separate "no ground" branch -
+    /// <c>tile.Height</c> is always non-negative (a raw map byte). This port seeds <c>best</c> at 0 the
+    /// same way (no <c>int.MinValue</c> sentinel, no dead "no ground" ternary): raw cell heights are
+    /// likewise always non-negative, so there is no negative case to floor.
+    ///
+    /// RESTRICTION (E3 scope): this method has NO CALL SITE yet - it is wired to nothing, per the ticket
+    /// (docs/plan-echelles-chiffrage.md É3, "Débloque en propre : rien. Brique de É4."). The ladder
+    /// climb guard that will consume it (<c>PlayerManager.cs:718-719</c>,
+    /// <c>PosZ &lt;= GetTileHeightAtOffset(entity, 0, -0x10000)</c>) is É4's job. Kept as a pure,
+    /// side-effect-free instance method (reads <see cref="PosX"/>/<see cref="PosY"/>/<see cref="ModX"/>/
+    /// <see cref="ModY"/>/<see cref="Width"/>/<see cref="Height"/>/<see cref="Owner"/> only, writes
+    /// nothing) rather than gated behind an <c>IsPlayer</c> restriction like <see cref="UpdateGroundSlope"/>/
+    /// <see cref="UpdateFloorHeight"/> - those two write shared entity state (<see cref="Slope_18c"/>/
+    /// <see cref="FloorHeight"/>) that a stray NPC call could observably corrupt; this one only computes
+    /// and returns a value, so there is nothing to protect by restricting the caller.
+    /// </summary>
+    /// <param name="offsetX">Horizontal displacement (16.16) applied to the footprint before sampling.</param>
+    /// <param name="offsetY">Vertical displacement (16.16) applied to the footprint before sampling.</param>
+    /// <returns>The maximum RAW terrain height (16.16, cell-unit precision - never interpolated by
+    /// slope) across the four displaced corners, or 0 if no <see cref="AlundraCellsCollisionField"/> is
+    /// installed.</returns>
+    internal int GetTileHeightAtOffset(int offsetX, int offsetY)
+    {
+        if (Owner?.World?.CollisionField is not AlundraCellsCollisionField cellsField)
+        {
+            return 0;
+        }
+
+        var x1 = (PosX + ModX + offsetX) >> 16;
+        var x2 = (PosX + ModX + offsetX + Width) >> 16;
+        var y1 = (PosY + ModY + offsetY) >> 16;
+        var y2 = (PosY + ModY + offsetY + Height) >> 16;
+
+        var best = 0;
+        SampleRawTileHeightCorner(cellsField, x1, y1, ref best);
+        SampleRawTileHeightCorner(cellsField, x2, y1, ref best);
+        SampleRawTileHeightCorner(cellsField, x1, y2, ref best);
+        SampleRawTileHeightCorner(cellsField, x2, y2, ref best);
+
+        return best << 20;
+    }
+
+    private static void SampleRawTileHeightCorner(AlundraCellsCollisionField field, int px, int py, ref int best)
+    {
+        var height = field.SampleRawCellHeight(new Vector3(px, py, 0f));
+        if (height > best)
+        {
+            best = height;
+        }
+    }
+
     private static void SampleGroundCorner(ICollisionField field, float x, float y, ref bool hasGround, ref float groundMax)
     {
         if (!field.TrySampleGround(new Vector3(x, y, 0f), float.MaxValue, out var sample) || !sample.HasGround)

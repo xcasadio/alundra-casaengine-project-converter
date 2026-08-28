@@ -271,6 +271,32 @@ public sealed class AlundraCellsCollisionField : ICollisionField
     }
 
     /// <summary>
+    /// Raw per-cell <c>Height</c> (E3, docs/plan-echelles-chiffrage.md É3) - additive numeric accessor
+    /// next to <see cref="TrySampleGround(in Vector3, float, out GroundSample)"/>, exposing this exact
+    /// same <c>_cellHeight[cellIndex]</c> BEFORE <see cref="ComputeGroundHeight"/>'s per-slope
+    /// interpolation is applied (cell units - 1 unit = 16 px; NOT the interpolated pixel height
+    /// <see cref="GroundSample.GroundHeight"/> returns). Needed because
+    /// <c>EntityGameplayManager.GetTileHeightAtOffset</c> (EntityGameplayManager.cs:277-345) reads
+    /// <c>tile.Height</c> directly and never interpolates by slope - unlike
+    /// <c>PhysicsEngine.ComputeEntityGroundHeight</c> (PhysicsEngine.cs:1007-1061, the function
+    /// <see cref="ComputeGroundHeight"/> actually ports), which is a DIFFERENT original function that
+    /// happens to read the same per-cell table. Same clamp-to-nearest-cell convention as
+    /// <see cref="TrySampleGround(in Vector3, float, out GroundSample)"/> (never fails - see that
+    /// method's own doc on the out-of-grid deviation); does not touch any existing member.
+    /// </summary>
+    public int SampleRawCellHeight(in Vector3 worldPosition)
+    {
+        var x = (int)MathF.Floor(worldPosition.X);
+        var y = (int)MathF.Floor(worldPosition.Y);
+
+        var cellX = Math.Clamp(x / CellWidthPx, 0, _width - 1);
+        var cellY = Math.Clamp(y / CellHeightPx, 0, _height - 1);
+        var cellIndex = cellY * _width + cellX;
+
+        return _cellHeight[cellIndex];
+    }
+
+    /// <summary>
     /// Height (px) of one point, ported from the single-corner body of the
     /// <c>switch (tile.Slope &amp; 0x3)</c> in <c>ComputeEntityGroundHeight</c>
     /// (PhysicsEngine.cs:1009-1061), without the <c>slopesHit</c> multi-corner +16 bump (see class

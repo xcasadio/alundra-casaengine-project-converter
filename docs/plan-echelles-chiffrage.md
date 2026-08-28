@@ -105,7 +105,13 @@ la règle du **minimum sur les coins qualifiés** (~25 lignes). `MapTiles[4]` n'
 
 - **Construit** : port des 69 lignes, échantillonnage 4 coins à un décalage donné. Nécessaire au
   **seul** garde de montée (« continuer à monter tant que `PosZ <= hauteur de la tuile devant »).
-- **Coût** : ~50 lignes en réemployant `SampleTerrainHeightCorner`.
+- **Coût** : ~50 lignes — **corrigé après relecture** : réemployer `SampleTerrainHeightCorner` est
+  invalide ici. Cette méthode échantillonne `AlundraCellsCollisionField.TrySampleGround`, qui interpole
+  par pente (port de `PhysicsEngine.ComputeEntityGroundHeight`) ; l'original de `GetTileHeightAtOffset`
+  (`EntityGameplayManager.cs:277-345`) lit `tile.Height` **brut**, sans aucun `switch (tile.Slope & 0x3)`
+  — les deux fonctions n'échantillonnent pas la même grandeur. Il a donc fallu un accesseur de hauteur
+  brute additif dédié (`AlundraCellsCollisionField.SampleRawCellHeight`, même style que l'accesseur de
+  propriété de sol posé en É1) plutôt que de réutiliser l'existant.
 - **Acceptation** : valeurs chiffrées sur les 4 cellules d'échelle et leurs voisines.
 - **Débloque en propre** : rien. Brique de É4.
 
