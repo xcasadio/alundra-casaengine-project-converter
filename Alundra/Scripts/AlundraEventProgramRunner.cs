@@ -628,6 +628,53 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 LogDegradedOpcodeOnce(0xBD, "PlaySound2", "sound system");
                 return 3;
 
+            case 0x54: // Set walkable - Script_84_054 (EntityEventHandlers.cs:1589-1620): OR's
+                       // v[3]/v[4] into (Walkability, GroundProperty) of the tile at (v[1],v[2]), clamped
+                       // to the original's own hardcoded [0,0x33]x[0,0x3b] - see
+                       // AlundraCellStore.SetCellBits's own doc for the exact clamp/index derivation.
+                       // CellMutator null (no AlundraCellStore installed for this world) -> degraded
+                       // no-op, same shape as 0xBD above.
+                if (_worldContext.CellMutator is { } setBitsMutator)
+                {
+                    setBitsMutator.SetCellBits(v[1], v[2], v[3], v[4]);
+                }
+                else
+                {
+                    LogDegradedCellOpcodeOnce(0x54, "SetWalkable");
+                }
+
+                return 5;
+
+            case 0x55: // Set unwalkable - Script_85_055 (EntityEventHandlers.cs:1623-1654): same clamp as
+                       // 0x54 above, AND's the COMPLEMENT of v[3]/v[4] into (Walkability, GroundProperty)
+                       // instead (bit clear).
+                if (_worldContext.CellMutator is { } clearBitsMutator)
+                {
+                    clearBitsMutator.ClearCellBits(v[1], v[2], v[3], v[4]);
+                }
+                else
+                {
+                    LogDegradedCellOpcodeOnce(0x55, "SetUnwalkable");
+                }
+
+                return 5;
+
+            case 0x85: // Set map tiles - Script_133_085 (EntityEventHandlers.cs:2440-2444): port of
+                       // GameEngine.ChangeAreaTileProperties(srcX, srcY, width, height, dstX, dstY) - see
+                       // AlundraCellStore.CopyCellRectangle's own doc for the exact field list and the
+                       // documented no-clamp deviation (the original's own bounds check is a debug-only
+                       // trap, not a guard).
+                if (_worldContext.CellMutator is { } copyRectMutator)
+                {
+                    copyRectMutator.CopyCellRectangle(v[1], v[2], v[3], v[4], v[5], v[6]);
+                }
+                else
+                {
+                    LogDegradedCellOpcodeOnce(0x85, "ChangeAreaTileProperties");
+                }
+
+                return 7;
+
             case 0x70: // Is above ground - Script_112_070 (EntityEventHandlers.cs:2161-2165): Result =
                        // logicEntity.IsOnGround, pulled from the controller every frame by
                        // AlundraEntityScriptProxy.Update's own root pull (E3.d) - 0 (falls) for an entity
@@ -1153,6 +1200,26 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             Logs.WriteDebug(
                 $"AlundraEventProgramRunner: opcode 0x{opcode:x2} ({name}) not implemented "
                 + $"({missingSystem} not ported yet) - degraded no-op, advancing by its size.");
+        }
+    }
+
+    /// <summary>
+    /// Degraded fallback for the three cell-mutation opcodes (0x54/0x55/0x85, E7.a,
+    /// docs/plan-e7-mutation-tuiles.md) when this world's <see cref="IEntityWorldContext.CellMutator"/> is
+    /// null - same shape as <see cref="LogDegradedOpcodeOnce"/> (once per opcode value, trace kind
+    /// <see cref="EventTraceKind.Degraded"/>, caller still advances by the instruction's own size), but a
+    /// dedicated WARNING (not <see cref="Logs.WriteDebug"/>) since a missing cell store is a world-setup
+    /// gap, not an unported subsystem like 0xBD's sound system.
+    /// </summary>
+    private void LogDegradedCellOpcodeOnce(int opcode, string name)
+    {
+        _lastDispatchKind = EventTraceKind.Degraded;
+
+        if (_loggedDegradedOpcodes.Add(opcode))
+        {
+            Logs.WriteWarning(
+                $"AlundraEventProgramRunner: opcode 0x{opcode:x2} ({name}) has no CellMutator installed "
+                + "for this world - degraded no-op, advancing by its size.");
         }
     }
 

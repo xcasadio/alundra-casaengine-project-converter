@@ -282,8 +282,8 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     private static readonly HashSet<int> ImplementedOpcodes = new()
     {
         0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x09, 0x0A, 0x10, 0x11, 0x16, 0x17, 0x19, 0x1A, 0x1B,
-        0x1E, 0x1F, 0x27, 0x2D, 0x2E, 0x30, 0x31, 0x36, 0x37, 0x38, 0x49, 0x4B, 0x5A, 0x5B, 0x62, 0x63,
-        0x64, 0x65, 0x67, 0x68, 0x69, 0x70, 0x8B, 0xAC,
+        0x1E, 0x1F, 0x27, 0x2D, 0x2E, 0x30, 0x31, 0x33, 0x36, 0x37, 0x38, 0x49, 0x4B, 0x54, 0x55, 0x5A,
+        0x5B, 0x62, 0x63, 0x64, 0x65, 0x67, 0x68, 0x69, 0x70, 0x85, 0x8B, 0xAC,
         // E5.a: 0x67/0x68/0x69 (camera follow/stop/forced look-at) newly implemented - the six real
         // map-389 0x67 occurrences (docs/intro-programs-389.txt) now trace as [implemented].
         // E4.e correction: 0x1E/0x1F (Walk / Walk with collision) were already ported by E4.d
@@ -291,6 +291,16 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         // disassembly annex kept tagging them [NOT IMPLEMENTED] a whole tranche after they stopped being
         // so - a stale label with no effect on the trace itself (the real EventTraceKind the runner
         // reports was always correct), fixed in passing.
+        // E7.a (docs/plan-e7-mutation-tuiles.md): 0x54/0x55/0x85 newly implemented (AlundraCellStore).
+        // 0x33 correction: this HashSet is the SAME "provenance" the plan asked E7.a to establish for the
+        // dump's [NOT IMPLEMENTED]/[implemented] tag (BuildProgramsDisassemblyText below, NOT
+        // AlundraEventProgramRunner.Dispatch, which has had a 0x33 case since before E7 - see
+        // Script_51_033/CheckFlagsOn) - it is a hand-maintained mirror of Dispatch's real opcode coverage,
+        // independent of it by construction, exactly the same class of staleness the 0x1E/0x1F note above
+        // already documents. 0x33 was simply never added here when its Dispatch case landed - fixed in
+        // passing, in this SAME set, since it is a one-line addition next to the three opcodes this slice
+        // already touches (not a re-litigation of any E7 decision - 0x33 itself is untouched, only its
+        // label in this disassembly annex).
     };
 
     private readonly string _projectRoot;
@@ -314,6 +324,16 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     private AlundraCellsCollisionField? _groundField;
     private int _mapGravityRaw;
     private int _mapZViscosityRaw;
+
+    // E7.a (docs/plan-e7-mutation-tuiles.md): built from the SAME AlundraCellsRecords instance
+    // _groundField above aliases its own arrays from (AlundraCellsCollisionField.TryCreate's 4-out
+    // overload) - see CellMutator's own doc for why this matters. _installCellMutator gates
+    // CellMutator's returned value only (never whether the store itself gets built), so the
+    // neutralization twin (acceptance 3) still builds a real, working store - it just never hands it to
+    // the interpreter, proving the "no mutator" path leaves export values untouched via the SAME
+    // production RunMapEventsPass call, not a different code path.
+    private readonly bool _installCellMutator;
+    private AlundraCellStore? _cellStore;
 
     // Includes the player (index 0) - mirrors AlundraWorldProxy's own _spawnedEntities, which also holds
     // the player (SpawnPlayerEntity adds it before any record) - see IEntityWorldContext.SpawnedEntities's
@@ -358,11 +378,19 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     public string? StopReason { get; private set; }
     public IReadOnlyList<string> TraceLines => FormatFlatItems();
 
-    public HeadlessIntroSimulation(string projectRoot, string worldName, EventProgramDocument document)
+    // E7.a test-only accessors (acceptance 3/4, docs/plan-e7-mutation-tuiles.md): let a test inspect
+    // post-mutation cell state after driving real frames via RunFramesForTest, without this class itself
+    // needing any assertion of its own.
+    public AlundraCellsCollisionField? GroundField => _groundField;
+    public AlundraCellStore? CellStore => _cellStore;
+
+    public HeadlessIntroSimulation(
+        string projectRoot, string worldName, EventProgramDocument document, bool installCellMutator = true)
     {
         _projectRoot = projectRoot;
         _worldName = worldName;
         _document = document;
+        _installCellMutator = installCellMutator;
         _codesBytes = document.CodesAsBytes();
         _runner = new AlundraEventProgramRunner(document, _gameState, this)
         {
@@ -431,6 +459,30 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         FrameCount = hardCap;
     }
 
+    /// <summary>
+    /// E7.a test-only entry point (acceptance 3, docs/plan-e7-mutation-tuiles.md): builds the SAME
+    /// initial state <see cref="Run"/> does, then drives exactly <paramref name="frameCount"/> frames via
+    /// the SAME per-frame <see cref="RunFrame"/> (hence the SAME production
+    /// <see cref="AlundraWorldProxy.RunMapEventsPass"/> call, hence the same real
+    /// <see cref="AlundraEventProgramRunner.Dispatch"/> path 0x54/0x55/0x85 opcodes go through) - without
+    /// <see cref="Run"/>'s own stop-condition/runaway-guard bookkeeping, since a full multi-thousand-frame
+    /// intro trace is unnecessary just to observe the map-entry mutations dispatched on frame 1. Never
+    /// called by <see cref="Run"/> itself - a separate entry point, not a change to it.
+    /// </summary>
+    public void RunFramesForTest(int frameCount)
+    {
+        BuildInitialState();
+        Frame = 0;
+        RecordMapEntrySystemsOnce();
+
+        for (Frame = 1; Frame <= frameCount; Frame++)
+        {
+            RunFrame();
+        }
+
+        FrameCount = frameCount;
+    }
+
     // ------------------------------------------------------------------------------------------------
     // Setup
     // ------------------------------------------------------------------------------------------------
@@ -487,7 +539,18 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         // failure (missing/malformed AlundraCells, size mismatch) - RunVerticalPhysicsPass then no-ops,
         // same degraded-mode shape as every other missing-system fallback in this harness.
         _catalog = new SpriteRecordCatalog(_projectRoot);
-        AlundraCellsCollisionField.TryCreate(tileMapData, _worldName, out _groundField);
+
+        // E7.a: the 4-out overload hands back the SAME parsed AlundraCellsRecords _groundField itself
+        // aliases its arrays from, so AlundraCellStore's mutations (0x54/0x55/0x85, via CellMutator below)
+        // are instantly visible to _groundField's own TrySampleGround/SampleGroundProperty/
+        // SampleRawCellHeight - no separate parse, no copy (see AlundraCellStore's own class doc).
+        AlundraCellsCollisionField.TryCreate(tileMapData, _worldName, out _groundField, out var cellRecords);
+        if (cellRecords != null)
+        {
+            AlundraCellStore.TryCreate(
+                cellRecords, tileMapData.MapSize.Width, tileMapData.MapSize.Height, _worldName, out _cellStore);
+        }
+
         tileMapData.CustomProperties.TryGetValue("Gravity", out var gravityRaw);
         int.TryParse(gravityRaw, out _mapGravityRaw);
         tileMapData.CustomProperties.TryGetValue("ZViscosity", out var zViscosityRaw);
@@ -896,6 +959,20 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     /// 0x1E/0x1F occurrence on map 389 now suspends for its REAL distance/time and ends by the ORIGINAL
     /// distance test alone, never by a synthetic wall.</summary>
     public NavigationGrid2D? NavigationGrid => null;
+
+    /// <summary>
+    /// E7.a (docs/plan-e7-mutation-tuiles.md) - the "production call site" acceptance: this harness drives
+    /// opcodes 0x54/0x55/0x85 through the REAL <see cref="AlundraEventProgramRunner.Dispatch"/> via
+    /// <see cref="AlundraWorldProxy.RunMapEventsPass"/>/<see cref="TraceAwareEntityRunner.RunScript"/>
+    /// exactly like production, backed by a real <see cref="AlundraCellStore"/> (see
+    /// <see cref="_cellStore"/>'s own doc on why it shares its records with <see cref="_groundField"/>).
+    /// <see cref="_installCellMutator"/> gates only THIS property's returned value - the neutralization
+    /// twin (constructed with <c>installCellMutator: false</c>) still builds the same real store, it just
+    /// never hands it to the interpreter, so its run takes the SAME degraded "CellMutator null" path
+    /// production takes on a world with no cell store, proving the mutation actually flows through this
+    /// exact seam rather than some other, accidental code path.
+    /// </summary>
+    public IAlundraCellMutator? CellMutator => _installCellMutator ? _cellStore : null;
 
     /// <summary>
     /// Dynamic spawn-by-record-id (opcodes 0x2D ActivateEntity, 0x8B SpawnEntityNextToEntity) - mirrors

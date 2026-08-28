@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
+using CasaEngine.Framework.Assets.TileMap;
+using Microsoft.Xna.Framework;
 using Xunit;
 
 namespace Alundra.Tests;
@@ -61,6 +63,11 @@ public class AlundraEventProgramRunnerTests
         }
 
         public NavigationGrid2D? NavigationGrid { get; set; }
+
+        // E7.a (docs/plan-e7-mutation-tuiles.md): declaring a plain public property with the interface's
+        // own member signature overrides IEntityWorldContext.CellMutator's default-interface-member "=>
+        // null" for THIS class - see IEntityWorldContext's own doc on why the default member exists.
+        public IAlundraCellMutator? CellMutator { get; set; }
     }
 
     [Fact]
@@ -1739,5 +1746,241 @@ public class AlundraEventProgramRunnerTests
 
         Assert.Null(entity.WalkDetourPath);
         Assert.Equal(24u, entity.TargetDirection); // unchanged - degraded mode, original "keep pushing" behavior.
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Cell mutation opcodes (0x54/0x55/0x85) - E7.a, docs/plan-e7-mutation-tuiles.md. A tiny 2x2
+    // synthetic AlundraCellStore (built through the real TryCreate/TryCreate factories, not a hand-rolled
+    // fake) exercises the real production mutation code, exactly like AlundraCellsCollisionFieldTests'
+    // own synthetic-grid tests do for the field. Cell (0,0) starts with walkability=1/groundProperty=2/
+    // slope=3/height=4/tileId=1000/wallTilesOffset=10, wall stack {offset:5, tiles:[11,22]}; cell (1,0)
+    // starts with walkability=9/groundProperty=8/slope=7/height=6/tileId=2000/wallTilesOffset=20, wall
+    // stack {offset:50, tiles:[99]} (deliberately SHORTER than cell (0,0)'s, to exercise the resize
+    // branch); cell (0,1) starts all-zero with no wall stack (to exercise stack destruction).
+    // -----------------------------------------------------------------------------------------
+
+    private static AlundraCellStore NewSyntheticCellStore(out AlundraCellsCollisionField field)
+    {
+        var tileMapData = new TileMapData();
+        tileMapData.MapSize = new CasaEngine.Core.Math.Size(2, 2);
+        tileMapData.CustomProperties["AlundraCells"] =
+            "{\"map_index\":1,\"cell_count\":4,"
+            + "\"walkability\":[1,9,0,0],"
+            + "\"ground_property\":[2,8,0,0],"
+            + "\"slope\":[3,7,0,0],"
+            + "\"height\":[4,6,0,0],"
+            + "\"tile_id\":[1000,2000,0,0],"
+            + "\"wall_tiles_offset\":[10,20,-1,-1],"
+            + "\"wall_tiles\":{\"0\":{\"offset\":5,\"tiles\":[11,22]},\"1\":{\"offset\":50,\"tiles\":[99]}}}";
+
+        var fieldCreated = AlundraCellsCollisionField.TryCreate(tileMapData, "synthetic", out var createdField, out var records);
+        Assert.True(fieldCreated);
+        field = createdField!;
+
+        var storeCreated = AlundraCellStore.TryCreate(records!, 2, 2, "synthetic", out var store);
+        Assert.True(storeCreated);
+        return store!;
+    }
+
+    private static EventTraceKind? CaptureKindForOpcode(AlundraEventProgramRunner runner, int opcode, System.Action run)
+    {
+        EventTraceKind? kind = null;
+        runner.TraceSink = record =>
+        {
+            if (record.Opcode == opcode)
+            {
+                kind = record.Kind;
+            }
+        };
+
+        run();
+        runner.TraceSink = null;
+        return kind;
+    }
+
+    [Fact]
+    public void SetWalkable_0x54_Implemented_OrsBitsIntoClampedCell_ResultUntouched()
+    {
+        var store = NewSyntheticCellStore(out var field);
+        var context = new FakeEntityWorldContext { CellMutator = store };
+        var document = NewDocument(0x54, 0, 0, 0x10, 0x20, 0xFF); // x=0,y=0, walkMask=0x10, gpMask=0x20
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 42 };
+
+        var kind = CaptureKindForOpcode(runner, 0x54, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(5, state.CodeIndex); // advanced by the instruction's own size (5), not suspended (0).
+        Assert.Equal(42, state.Result); // untouched.
+        Assert.Equal(0x11, field.SampleRawWalkability(new Vector3(0, 0, 0))); // 1 | 0x10.
+        Assert.Equal(0x22, field.SampleGroundProperty(new Vector3(0, 0, 0))); // 2 | 0x20.
+    }
+
+    [Fact]
+    public void SetUnwalkable_0x55_Implemented_AndsComplementIntoClampedCell_ResultUntouched()
+    {
+        var store = NewSyntheticCellStore(out var field);
+        var context = new FakeEntityWorldContext { CellMutator = store };
+        var document = NewDocument(0x55, 0, 0, 0x01, 0x02, 0xFF); // clears bit 0 of walkability (1) and gp (2)
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 7 };
+
+        var kind = CaptureKindForOpcode(runner, 0x55, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(5, state.CodeIndex);
+        Assert.Equal(7, state.Result);
+        Assert.Equal(0, field.SampleRawWalkability(new Vector3(0, 0, 0))); // 1 & ~1 = 0.
+        Assert.Equal(0, field.SampleGroundProperty(new Vector3(0, 0, 0))); // 2 & ~2 = 0.
+    }
+
+    [Fact]
+    public void SetCellBits_0x54_ClampsCoordinatesToHardcodedBounds()
+    {
+        // x=200 clamps to 0x33, y=200 clamps to 0x3b - but this 2x2 synthetic grid only has cells
+        // (0,0)/(1,0)/(0,1)/(1,1), so the clamped index (0x33 + 0x3b*2 = 51 + 118 = 169) falls OUTSIDE
+        // this tiny grid's own 4-cell array: exactly the "no clamping to map size" deviation the real
+        // map-389 acceptance test below exercises safely (that grid IS 0x34 x 0x3c). Proven here instead
+        // via a grid exactly the clamp's own size, so the clamped write lands in bounds and is directly
+        // observable.
+        var tileMapData = new TileMapData();
+        var width = 0x34;
+        var height = 0x3c;
+        var cellCount = width * height;
+        var walkability = string.Join(",", System.Linq.Enumerable.Repeat("0", cellCount));
+        tileMapData.MapSize = new CasaEngine.Core.Math.Size(width, height);
+        tileMapData.CustomProperties["AlundraCells"] =
+            "{\"map_index\":1,\"cell_count\":" + cellCount + ","
+            + "\"walkability\":[" + walkability + "],"
+            + "\"ground_property\":[" + walkability + "],"
+            + "\"slope\":[" + walkability + "],"
+            + "\"height\":[" + walkability + "],"
+            + "\"tile_id\":[" + walkability + "],"
+            + "\"wall_tiles_offset\":[" + walkability + "],"
+            + "\"wall_tiles\":{}}";
+
+        AlundraCellsCollisionField.TryCreate(tileMapData, "clamp", out var field, out var records);
+        AlundraCellStore.TryCreate(records!, width, height, "clamp", out var store);
+        var context = new FakeEntityWorldContext { CellMutator = store };
+        var document = NewDocument(0x54, 60, 70, 0x40, 0, 0xFF); // (60,70) -> clamps to (0x33,0x3b)
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0x40, field!.SampleRawWalkability(new Vector3(0x33 * 24, 0x3b * 16, 0f)));
+    }
+
+    [Fact]
+    public void ChangeAreaTileProperties_0x85_Implemented_CopiesSixFieldsAndWallStack_ResultUntouched()
+    {
+        var store = NewSyntheticCellStore(out var field);
+        var context = new FakeEntityWorldContext { CellMutator = store };
+        // srcX=0,srcY=0,width=1,height=1,dstX=1,dstY=0 -> copies cell (0,0) onto cell (1,0).
+        var document = NewDocument(0x85, 0, 0, 1, 1, 1, 0, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 99 };
+
+        var kind = CaptureKindForOpcode(runner, 0x85, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(7, state.CodeIndex);
+        Assert.Equal(99, state.Result);
+
+        var destPos = new Vector3(1 * 24, 0, 0f);
+        Assert.Equal(1, field.SampleRawWalkability(destPos));
+        Assert.Equal(2, field.SampleGroundProperty(destPos));
+        var destStack = store.GetWallTileStack(1, 0);
+        Assert.NotNull(destStack);
+        Assert.Equal(5, destStack!.Value.Offset);
+        // dest (1,0) started with a SHORTER stack (1 tile) than source (0,0)'s (2 tiles) - exercises the
+        // resize-to-source-length branch (GameEngine.cs:2296-2299), not just an in-place overwrite.
+        Assert.Equal(new[] { 11, 22 }, destStack.Value.Tiles);
+    }
+
+    [Fact]
+    public void ChangeAreaTileProperties_0x85_ShorterSourceStack_HidesTheDestinationsStaleTail()
+    {
+        var store = NewSyntheticCellStore(out _);
+        var context = new FakeEntityWorldContext { CellMutator = store };
+        // The mirror of the resize case above: source (1,0) has ONE tile, destination (0,0) has TWO, so
+        // the original neither shrinks nor reallocates the destination array - it copies the 1-tile prefix
+        // and sets Count = 1 (GameEngine.cs:2293-2297). Its renderer then stops at Count
+        // (GraphicManager.cs:277), so the stale second entry (22) is never drawn. Reading Tiles.Length
+        // instead of Count would surface it and make E7.b's overlay draw a wall tile the original does not.
+        var document = NewDocument(0x85, 1, 0, 1, 1, 0, 0, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        var destStack = store.GetWallTileStack(0, 0);
+        Assert.NotNull(destStack);
+        Assert.Equal(50, destStack!.Value.Offset);
+        Assert.Equal(new[] { 99 }, destStack.Value.Tiles);
+    }
+
+    [Fact]
+    public void ChangeAreaTileProperties_0x85_SourceWithNoStack_DestroysDestinationStack()
+    {
+        var store = NewSyntheticCellStore(out _);
+        var context = new FakeEntityWorldContext { CellMutator = store };
+        // srcX=0,srcY=1 (cell (0,1), no wall stack), width=1,height=1, dstX=0,dstY=0 (cell (0,0), HAS one).
+        var document = NewDocument(0x85, 0, 1, 1, 1, 0, 0, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Null(store.GetWallTileStack(0, 0));
+    }
+
+    [Fact]
+    public void Opcode54_NullCellMutator_DegradedNoOp_SkipsBySize()
+    {
+        var document = NewDocument(0x54, 1, 2, 3, 4, 0xFF);
+        var runner = NewRunner(document); // no worldContext -> NoOpEntityWorldContext -> CellMutator null.
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 5 };
+
+        var kind = CaptureKindForOpcode(runner, 0x54, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Degraded, kind);
+        Assert.Equal(5, state.CodeIndex); // still skipped by its own real size, not 0/suspended.
+        Assert.Equal(5, state.Result); // untouched.
+    }
+
+    [Fact]
+    public void Opcode55_NullCellMutator_DegradedNoOp_SkipsBySize()
+    {
+        var document = NewDocument(0x55, 1, 2, 3, 4, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0x55, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Degraded, kind);
+        Assert.Equal(5, state.CodeIndex);
+    }
+
+    [Fact]
+    public void Opcode85_NullCellMutator_DegradedNoOp_SkipsBySize()
+    {
+        var document = NewDocument(0x85, 0, 0, 1, 1, 1, 1, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0x85, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Degraded, kind);
+        Assert.Equal(7, state.CodeIndex);
     }
 }

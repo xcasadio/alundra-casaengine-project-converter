@@ -19,10 +19,17 @@ namespace Alundra.Scripts;
 /// PhysicsEngine.cs:989). This project does not reference the converter, so the shape is duplicated
 /// here rather than shared - same tolerant-parse pattern as <see cref="WallPlacementRecords"/>/
 /// <see cref="WallPlacementOverlay.TryParse"/>, read back with the same
-/// <c>JsonNamingPolicy.SnakeCaseLower</c> the converter serialized it with. Only the columns
-/// <see cref="AlundraCellsCollisionField"/> actually reads are declared here; the JSON also carries
-/// tile_id/palette/tile/wall_tiles_offset/wall_tiles, silently ignored by
-/// <see cref="JsonSerializer"/>.
+/// <c>JsonNamingPolicy.SnakeCaseLower</c> the converter serialized it with.
+///
+/// E7.a (docs/plan-e7-mutation-tuiles.md): <see cref="TileId"/>, <see cref="WallTilesOffset"/> and the
+/// sparse <see cref="WallTiles"/> dictionary are now parsed too - <see cref="AlundraCellStore"/> needs
+/// them to faithfully port <c>GameEngine.ChangeAreaTileProperties</c> (opcode 0x85), which copies both
+/// alongside Walkability/GroundProperty/Slope/Height. The JSON also carries <c>palette</c>/<c>tile</c>/
+/// <c>flags</c> columns, still silently ignored by <see cref="JsonSerializer"/>: <c>flags</c> in
+/// particular is never read here on purpose - the original <c>MapTile.Flags</c> is a DERIVED property
+/// (computed from the other fields, e.g. by <c>PhysicsEngine.UpdateTileAttributes</c>), never itself
+/// copied by <c>ChangeAreaTileProperties</c> or the 0x54/0x55 handlers - so there is nothing for this
+/// port to read it into.
 /// </summary>
 public sealed class AlundraCellsRecords
 {
@@ -32,6 +39,14 @@ public sealed class AlundraCellsRecords
     public int[] GroundProperty { get; init; } = Array.Empty<int>();
     public int[] Slope { get; init; } = Array.Empty<int>();
     public int[] Height { get; init; } = Array.Empty<int>();
+    public int[] TileId { get; init; } = Array.Empty<int>();
+    public int[] WallTilesOffset { get; init; } = Array.Empty<int>();
+
+    /// <summary>Sparse: only cells with an actual wall tile stack, keyed by cell index (as a string -
+    /// JSON object keys must be strings, mirroring <c>CellMetadataDocument.WallTiles</c> on the
+    /// converter side). <see cref="AlundraCellStore"/> re-indexes this into a dense per-cell array once,
+    /// at construction, rather than every reader re-parsing string keys.</summary>
+    public Dictionary<string, WallTileStack> WallTiles { get; init; } = new();
 
     private const string CustomPropertyKey = "AlundraCells";
 
@@ -90,7 +105,24 @@ public sealed class AlundraCellsRecords
             && records.GroundProperty.Length == count
             && records.Slope.Length == count
             && records.Height.Length == count;
+
+        // TileId/WallTilesOffset are NOT checked here on purpose: AlundraCellsCollisionField (the only
+        // reader of this well-formed gate) never touches them, and every synthetic document in this
+        // codebase's own tests predates E7.a (no tile_id/wall_tiles_offset columns at all) - adding them
+        // here would make those degrade to false. AlundraCellStore.TryCreate below validates their
+        // length against cell_count itself, independently, since it is the one that actually needs them.
     }
+}
+
+/// <summary>One cell's wall tile stack (E7.a) - mirrors the converter's <c>WallTileStack</c>
+/// (CellMetadataReader.cs) field-for-field: <see cref="Offset"/> is the original's raw
+/// <c>WallTiles.Offset</c> pointer, <see cref="Tiles"/> the stacked tile ids. No separate "Count" field:
+/// the original's <c>WallTiles.Count</c> is always <c>Tiles.Length</c> in this export (see
+/// docs/formats/cells-companion.md), so there is nothing extra to carry.</summary>
+public sealed class WallTileStack
+{
+    public int Offset { get; init; }
+    public int[] Tiles { get; init; } = Array.Empty<int>();
 }
 
 /// <summary>
@@ -155,11 +187,16 @@ public sealed class AlundraCellsCollisionField : ICollisionField
         _slope = records.Slope;
         _cellHeight = records.Height;
 
-        // Precompute every distinct SurfaceTag string once, here, so TrySampleGround never allocates.
-        foreach (var raw in _groundProperty)
+        // Precompute every one of the 256 possible SurfaceTag strings once, here, so TrySampleGround
+        // never allocates. E7.a (docs/plan-e7-mutation-tuiles.md): pre-filled for every value, not just
+        // the ones present at load time - a live mutation (0x54/0x55/0x85, via AlundraCellStore, which
+        // aliases these SAME arrays) can introduce a GroundProperty byte this map's export never used;
+        // before this change such a value would have missed the cache and fallen back to "" (documented
+        // micro-deviation, harmless in practice since the string is only a debug-facing SurfaceTag, but
+        // no longer needed now that filling all 256 costs nothing extra).
+        for (var groundProperty = 0; groundProperty < _surfaceTagCache.Length; groundProperty++)
         {
-            var groundProperty = raw & 0xFF;
-            _surfaceTagCache[groundProperty] ??= groundProperty.ToString(CultureInfo.InvariantCulture);
+            _surfaceTagCache[groundProperty] = groundProperty.ToString(CultureInfo.InvariantCulture);
         }
     }
 
@@ -171,10 +208,25 @@ public sealed class AlundraCellsCollisionField : ICollisionField
     /// field installed for that world.
     /// </summary>
     public static bool TryCreate(TileMapData tileMapData, string worldName, out AlundraCellsCollisionField? field)
+        => TryCreate(tileMapData, worldName, out field, out _);
+
+    /// <summary>
+    /// Same as <see cref="TryCreate(TileMapData, string, out AlundraCellsCollisionField?)"/>, but also
+    /// hands back the parsed <paramref name="records"/> - E7.a (docs/plan-e7-mutation-tuiles.md,
+    /// slice E7.a "share one parsed instance"): a caller that also wants an <see cref="AlundraCellStore"/>
+    /// for the SAME world builds it from these exact <paramref name="records"/> instead of re-parsing the
+    /// "AlundraCells" custom property a second time, so both the field's aliased arrays and the store's
+    /// mutations operate on the SAME <c>int[]</c> instances (element mutation instantly visible to
+    /// <see cref="TrySampleGround(in Vector3, float, out GroundSample)"/>/<see cref="SampleGroundProperty"/>/
+    /// <see cref="SampleRawCellHeight"/> - no separate parse, no copy).
+    /// </summary>
+    public static bool TryCreate(
+        TileMapData tileMapData, string worldName, out AlundraCellsCollisionField? field, out AlundraCellsRecords? records)
     {
         field = null;
+        records = null;
 
-        if (!AlundraCellsRecords.TryParse(tileMapData.CustomProperties, worldName, out var records))
+        if (!AlundraCellsRecords.TryParse(tileMapData.CustomProperties, worldName, out var parsedRecords))
         {
             return false;
         }
@@ -183,16 +235,17 @@ public sealed class AlundraCellsCollisionField : ICollisionField
         var height = tileMapData.MapSize.Height;
         var expectedCellCount = width * height;
 
-        if (records.CellCount != expectedCellCount || records.Walkability.Length != expectedCellCount)
+        if (parsedRecords.CellCount != expectedCellCount || parsedRecords.Walkability.Length != expectedCellCount)
         {
             Logs.WriteWarning(
                 $"AlundraCellsCollisionField: world '{worldName}' - AlundraCells cell_count "
-                + $"({records.CellCount}) does not match TileMapData.MapSize ({width}x{height}="
+                + $"({parsedRecords.CellCount}) does not match TileMapData.MapSize ({width}x{height}="
                 + $"{expectedCellCount}); collision field not installed (degraded mode).");
             return false;
         }
 
-        field = new AlundraCellsCollisionField(width, height, records);
+        field = new AlundraCellsCollisionField(width, height, parsedRecords);
+        records = parsedRecords;
         return true;
     }
 
@@ -268,6 +321,30 @@ public sealed class AlundraCellsCollisionField : ICollisionField
         var cellIndex = cellY * _width + cellX;
 
         return _groundProperty[cellIndex];
+    }
+
+    /// <summary>
+    /// Raw per-cell <c>Walkability</c> (E7.a, docs/plan-e7-mutation-tuiles.md) - additive numeric
+    /// accessor next to <see cref="SampleGroundProperty"/>, exposing this exact same
+    /// <c>_walkability[cellIndex]</c> instead of only its mask-combined form through
+    /// <see cref="TrySampleGround(in Vector3, float, uint, out GroundSample)"/>'s <c>IsWalkable</c>.
+    /// Needed so a test can assert the EXACT bit pattern <see cref="AlundraCellStore.SetCellBits"/>/
+    /// <see cref="AlundraCellStore.ClearCellBits"/> left behind (0x54/0x55), the same way
+    /// <see cref="SampleGroundProperty"/> already lets a test assert GroundProperty exactly rather than
+    /// only through a walkability-mask side effect. Same clamp-to-nearest-cell convention as
+    /// <see cref="TrySampleGround(in Vector3, float, out GroundSample)"/> (never fails); does not touch
+    /// any existing member.
+    /// </summary>
+    public int SampleRawWalkability(in Vector3 worldPosition)
+    {
+        var x = (int)MathF.Floor(worldPosition.X);
+        var y = (int)MathF.Floor(worldPosition.Y);
+
+        var cellX = Math.Clamp(x / CellWidthPx, 0, _width - 1);
+        var cellY = Math.Clamp(y / CellHeightPx, 0, _height - 1);
+        var cellIndex = cellY * _width + cellX;
+
+        return _walkability[cellIndex];
     }
 
     /// <summary>

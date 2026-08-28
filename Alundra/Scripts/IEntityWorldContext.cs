@@ -79,6 +79,19 @@ public interface IEntityWorldContext
     /// itself has 0 blocked navigation cells - E4.a's own finding - so an obstacle test needs one).
     /// </summary>
     NavigationGrid2D? NavigationGrid { get; }
+
+    /// <summary>
+    /// This world's cell-mutation seam (E7.a, docs/plan-e7-mutation-tuiles.md) - backs opcodes
+    /// 0x54/0x55/0x85 in <see cref="AlundraEventProgramRunner.Dispatch"/>. A default interface member
+    /// (rather than a required one) so every EXISTING implementer - <see cref="NoOpEntityWorldContext"/>,
+    /// every test fake, <see cref="AlundraWorldProxy"/> itself - keeps compiling unmodified, defaulting to
+    /// null (the same "degraded, skip by size" fallback <see cref="AlundraEventProgramRunner"/> already
+    /// applies when a world has no mutator installed). Only the intro trace harness's
+    /// <c>HeadlessIntroSimulation</c> overrides this, backed by a real <see cref="AlundraCellStore"/> built
+    /// from the SAME parsed records its collision field aliases (E7.a's "production call site"
+    /// acceptance) - E7.b wires a real one into <see cref="AlundraWorldProxy"/> itself.
+    /// </summary>
+    IAlundraCellMutator? CellMutator => null;
 }
 
 /// <summary>
