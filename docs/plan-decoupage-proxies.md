@@ -145,7 +145,7 @@ couvrant les membres déplacés** qui ont été exécutés.
 
 ## 4. Tranches (ordre = coût croissant, mesuré en sites de test à mettre à jour)
 
-### R1 — `AlundraFrameSyncPasses` ⏳ (~248 lignes, ~34 sites)
+### R1 — `AlundraFrameSyncPasses` ✅ `fb35d90` (~248 lignes, ~34 sites)
 
 Déplacer le bloc contigu des passes par frame : `RunAnimationSyncPass`, `SyncAnimation`,
 `RunTransformSyncPass`, `SyncTransform`, `RunWallInterleaveSortKeyPass`, `TryResolveAnimationTarget`,
@@ -163,7 +163,7 @@ de relecture — le plan les confondait, et la tranche ne compilait pas) :
 « moins cher d'abord », et les deux touches sont mécaniques et vérifiées par le compilateur.
 **Vérification de tranche** : `dotnet build … -c Release` = 0 erreur au commit de R1 **seul**, sans R3.
 
-### R2 — `AlundraCameraMath` ⏳ (~150 lignes, ~52 sites)
+### R2 — `AlundraCameraMath` ✅ `eefa292` (~150 lignes, ~52 sites)
 
 Déplacer **la seule mathématique pure** de caméra : `StepCameraScroll`, `AdvanceCameraSmoothing`,
 `ComputeSmoothedCameraTarget`, `ResolveCameraLookAt`, `ComputeCameraLookAtRenderPosition`,
@@ -172,7 +172,7 @@ avec les constantes que ces seules méthodes lisent. **Restent sur le proxy** : 
 `UpdateDebugCameraPan`, `ResolveDebugCameraOnce`, `SetForcedCameraLookAt` et les champs de caméra —
 c'est la câblerie d'instance non couverte, explicitement hors périmètre.
 
-### R3 — `AlundraEntitySpawnFactory` ⏳ (~635 lignes, ~69 sites, 10 fichiers de test)
+### R3 — `AlundraEntitySpawnFactory` ✅ `3bb6755` (~635 lignes, ~69 sites, 10 fichiers de test)
 
 La plus grosse et la plus payante : `ShouldSpawnRecord` (×3), `BuildIdsvByAnimDirection`,
 `BuildAnimationEndByAnimDirection`, `SubscribeAnimationEndBridge`, `OnAnimationFinished`,
@@ -182,7 +182,7 @@ La plus grosse et la plus payante : `ShouldSpawnRecord` (×3), `BuildIdsvByAnimD
 et le handler statique d'animation. Touche les deux harnais de trace : **exécuter les deux et
 vérifier `git status docs/` après**.
 
-### R4 — `AlundraTerrainProbe` ⏳ (proxy d'entité, ~51 lignes de code)
+### R4 — `AlundraTerrainProbe` ✅ `df6cf0e` (proxy d'entité, ~51 lignes de code)
 
 Les quatre échantillonneurs de coin `private static` qui ne touchent aucun état d'instance :
 `SampleTerrainHeightCorner`, `ProbeSlopeCorner`, `SampleRawTileHeightCorner`, `SampleGroundCorner`.
@@ -192,8 +192,42 @@ Les quatre échantillonneurs de coin `private static` qui ne touchent aucun éta
 (`EvaluateEntitySupport` → `PushLogicalPositionToRoot` → `ClampToGround`) : elles ne peuvent pas
 devenir un collaborateur indépendant sans casser ce cycle, ce que R-1 exclut.
 
-### R5 — Clôture ⏳
+### R5 — Clôture ✅ `d29fd63`
 
 Mise à jour des `<see cref>` cassés par les déplacements. **Attention** : `GenerateDocumentationFile`
 n'est pas activé, donc le compilateur **ne signale jamais** un cref mort — il en existe déjà trois
 avant ce chantier. C'est une passe explicite, pas un effet de bord espéré.
+
+## 5. Réalisé — résultat et écarts (2026-08-28/29)
+
+**Les cinq tranches sont livrées.** `AlundraWorldProxy.cs` **2948 → 1749 lignes (−41 %)** ;
+`AlundraEntityScriptProxy.cs` 1896 → 1838. Quatre classes créées, toutes `internal static` et
+préfixées `Alundra` : `AlundraFrameSyncPasses` (284 l.), `AlundraCameraMath` (334 l.),
+`AlundraEntitySpawnFactory` (697 l.), `AlundraTerrainProbe` (88 l.). Suites finales :
+`Alundra.Tests` **589**, convertisseur **138**, build 0 erreur, six goldens inchangés à chaque
+tranche avec preuve d'exécution.
+
+- **Écart corrigé en session principale (R3)** : l'exécuteur avait laissé `TryGetRecordInt` et
+  `ResolveMapGravitySettings` sur le proxy en les élargissant, au lieu de les déplacer — et rapporté
+  « aucun écart ». Résultat : la fabrique extraite **rappelait sept fois** la classe dont elle
+  venait, soit un **cycle** entre les deux, dans un refactoring dont le but est de découpler.
+  Déplacés, appelants requalifiés des deux côtés ; la fabrique ne mentionne plus le proxy que dans
+  des commentaires.
+- **Méthode qui a payé en R5** : activer temporairement `GenerateDocumentationFile` transforme chaque
+  cref mort en avertissement `CS1574` — le compilateur trouve ce qu'un grep rate. Décisif ici : la
+  première passe n'en a corrigé qu'un tiers, parce que la plupart des références étaient écrites
+  `cref="AlundraWorldProxy.X"`, **déjà qualifiées avec l'ancienne classe**, et que le compilateur ne
+  signale que le **segment fautif** (`X`) — une recherche du nom nu les manquait toutes.
+  97 références repointées. Le csproj est restauré à l'octet près.
+- **Estimation corrigée** : le plan annonçait « trois crefs déjà cassés avant le chantier ». Il y en
+  a **26** (plus 18 dans le sous-module, hors périmètre), nommant des membres jamais déplacés ou des
+  types moteur non résolvables. Laissés tels quels, hors périmètre de R5.
+- **Fausse alerte de mon propre outillage (R1)**, à ne pas reproduire : mon premier script de
+  comparaison de corps accrochait le **site d'appel** d'une méthode au lieu de sa déclaration, puis
+  prenait l'accolade suivante — il comparait donc deux méthodes différentes et annonçait une
+  divergence inexistante. Un extracteur de corps doit ancrer sur la **déclaration** (modificateur
+  d'accès + `static` + nom), jamais sur la première occurrence du nom.
+- **Reste hors périmètre, comme décidé (R-1)** : les 131 champs et le `Clone()` de 118 entrées du
+  proxy d'entité, et la câblerie d'instance d'`Update()` (caméra vivante, backdrop) — cette dernière
+  n'ayant toujours **aucune couverture de test**, c'est le prochain travail utile si le découpage
+  doit aller plus loin, et il faut le faire précéder d'un test de caractérisation de l'ordre.
