@@ -985,8 +985,8 @@ public class AlundraEntityScriptProxy : GameplayProxy
             }
         }
 
-        AlundraWorldProxy.SyncAnimation(Owner);
-        AlundraWorldProxy.SyncTransform(Owner);
+        AlundraFrameSyncPasses.SyncAnimation(Owner);
+        AlundraFrameSyncPasses.SyncTransform(Owner);
     }
 
     /// <summary>

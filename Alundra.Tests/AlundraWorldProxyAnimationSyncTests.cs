@@ -36,7 +36,7 @@ public class AlundraWorldProxyAnimationSyncTests
             TargetDirection = 0,
         };
 
-        var fired = AlundraWorldProxy.TryResolveAnimationTarget(proxy, out var newAnim, out var newDirection);
+        var fired = AlundraFrameSyncPasses.TryResolveAnimationTarget(proxy, out var newAnim, out var newDirection);
 
         Assert.True(fired);
         Assert.Equal(0u, newAnim);
@@ -54,7 +54,7 @@ public class AlundraWorldProxyAnimationSyncTests
             TargetDirection = 0,
         };
 
-        var fired = AlundraWorldProxy.TryResolveAnimationTarget(proxy, out var newAnim, out var newDirection);
+        var fired = AlundraFrameSyncPasses.TryResolveAnimationTarget(proxy, out var newAnim, out var newDirection);
 
         Assert.False(fired);
         Assert.Equal(proxy.CurrentAnimationId, newAnim);
@@ -75,7 +75,7 @@ public class AlundraWorldProxyAnimationSyncTests
             TargetDirection = 0x10,
         };
 
-        var fired = AlundraWorldProxy.TryResolveAnimationTarget(proxy, out var newAnim, out var newDirection);
+        var fired = AlundraFrameSyncPasses.TryResolveAnimationTarget(proxy, out var newAnim, out var newDirection);
 
         Assert.True(fired);
         Assert.Equal(0u, newAnim);
@@ -106,7 +106,7 @@ public class AlundraWorldProxyAnimationSyncTests
     {
         var component = BuildComponentWithAllDirections(animationId: 0);
 
-        var found = AlundraWorldProxy.TrySelectAnimationByNameSuffix(component, 0, animationDirection, out var selected);
+        var found = AlundraFrameSyncPasses.TrySelectAnimationByNameSuffix(component, 0, animationDirection, out var selected);
 
         Assert.True(found);
         Assert.EndsWith($"_anim0_{expectedDirectionName}", selected!.Animation2dData.Name);
@@ -117,7 +117,7 @@ public class AlundraWorldProxyAnimationSyncTests
     {
         var component = BuildComponentWithAllDirections(animationId: 0);
 
-        var found = AlundraWorldProxy.TrySelectAnimationByNameSuffix(component, 5, 0, out var selected);
+        var found = AlundraFrameSyncPasses.TrySelectAnimationByNameSuffix(component, 5, 0, out var selected);
 
         Assert.False(found);
         Assert.Null(selected);
@@ -141,7 +141,7 @@ public class AlundraWorldProxyAnimationSyncTests
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.CurrentAnimationId = ~0u; // as ApplySpawnInitialization leaves it: TargetAnimationId=0, CurrentAnimationId=~0.
 
-        AlundraWorldProxy.RunAnimationSyncPass(new List<Entity> { entity });
+        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
 
         Assert.Equal(0u, proxy.CurrentAnimationId);
         Assert.Equal(0, proxy.AnimationDirection);
@@ -150,7 +150,7 @@ public class AlundraWorldProxyAnimationSyncTests
 
         // Second call: nothing changed since the first sync, so no further work happens (change-detected).
         var animationBeforeSecondCall = component.CurrentAnimation;
-        AlundraWorldProxy.RunAnimationSyncPass(new List<Entity> { entity });
+        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
         Assert.Same(animationBeforeSecondCall, component.CurrentAnimation);
     }
 
@@ -178,7 +178,7 @@ public class AlundraWorldProxyAnimationSyncTests
         Assert.True(component.CurrentAnimationTimeSeconds > 0f);
 
         proxy.PendingChainRestartFlag = 1; // as OnAnimationFinished raises it on a self-chain
-        AlundraWorldProxy.RunAnimationSyncPass(new List<Entity> { entity });
+        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
 
         Assert.Equal(0f, component.CurrentAnimationTimeSeconds);
         Assert.Equal(0, proxy.PendingChainRestartFlag); // consumed, so one ending causes one restart
@@ -194,7 +194,7 @@ public class AlundraWorldProxyAnimationSyncTests
         Assert.True(timeBefore > 0f);
 
         Assert.Equal(0, proxy.PendingChainRestartFlag);
-        AlundraWorldProxy.RunAnimationSyncPass(new List<Entity> { entity });
+        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
 
         Assert.Equal(timeBefore, component.CurrentAnimationTimeSeconds);
     }
@@ -228,7 +228,7 @@ public class AlundraWorldProxyAnimationSyncTests
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.CurrentAnimationId = ~0u;
 
-        AlundraWorldProxy.RunAnimationSyncPass(new List<Entity> { entity });
+        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
 
         return (entity, component, proxy);
     }
@@ -248,11 +248,11 @@ public class AlundraWorldProxyAnimationSyncTests
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.CurrentAnimationId = 0;
         proxy.TargetAnimationId = 0;
-        AlundraWorldProxy.RunAnimationSyncPass(new List<Entity> { entity }); // settle the initial spawn state
+        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity }); // settle the initial spawn state
 
         proxy.TargetAnimationId = 1;
 
-        AlundraWorldProxy.RunAnimationSyncPass(new List<Entity> { entity });
+        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
 
         Assert.Equal(1u, proxy.CurrentAnimationId);
         Assert.EndsWith("_anim1_down", component.CurrentAnimation!.Animation2dData.Name);
@@ -266,7 +266,7 @@ public class AlundraWorldProxyAnimationSyncTests
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.CurrentAnimationId = ~0u;
 
-        AlundraWorldProxy.RunAnimationSyncPass(new List<Entity> { entity });
+        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
 
         Assert.Equal(0u, proxy.CurrentAnimationId);
     }
@@ -274,6 +274,6 @@ public class AlundraWorldProxyAnimationSyncTests
     [Fact]
     public void RunAnimationSyncPass_EmptyList_DoesNothing()
     {
-        AlundraWorldProxy.RunAnimationSyncPass(Array.Empty<Entity>());
+        AlundraFrameSyncPasses.RunAnimationSyncPass(Array.Empty<Entity>());
     }
 }

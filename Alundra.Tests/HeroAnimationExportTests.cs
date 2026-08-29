@@ -85,7 +85,7 @@ public class HeroAnimationExportTests
             CurrentAnimationId = ~1u, // force the sync to fire
         };
 
-        var fired = AlundraWorldProxy.TryResolveAnimationTarget(proxy, out _, out var animationDirection);
+        var fired = AlundraFrameSyncPasses.TryResolveAnimationTarget(proxy, out _, out var animationDirection);
 
         Assert.True(fired);
         Assert.Equal(expectedSuffix, AnimationTables.DirectionNames[animationDirection]);

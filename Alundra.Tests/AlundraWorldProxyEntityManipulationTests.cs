@@ -180,7 +180,7 @@ public class AlundraWorldProxyEntityManipulationTests
     {
         var entity = NewEntityWithProxy(EntityStatus.Normal, 420 * 0x10000, 584 * 0x10000, 46 << 19);
 
-        AlundraWorldProxy.RunTransformSyncPass(new List<Entity> { entity });
+        AlundraFrameSyncPasses.RunTransformSyncPass(new List<Entity> { entity });
 
         // E3.a: the root now carries the LOGICAL pose (RenderProjection is null in this fixture -
         // AnimatedSpriteComponent is the bare root, so the re-projection call is a no-op here).
@@ -199,7 +199,7 @@ public class AlundraWorldProxyEntityManipulationTests
         proxy.PosY = 50 * 0x10000;
         proxy.PosZ = 0;
 
-        AlundraWorldProxy.RunTransformSyncPass(new List<Entity> { entity });
+        AlundraFrameSyncPasses.RunTransformSyncPass(new List<Entity> { entity });
 
         // E3.a: logical pose, Y un-flipped.
         Assert.Equal(new Microsoft.Xna.Framework.Vector3(100, 50, 0f), entity.RootComponent.LocalTransform.Position);
@@ -211,7 +211,7 @@ public class AlundraWorldProxyEntityManipulationTests
         var entity = NewEntityWithProxy(EntityStatus.FlagToDestroy, 1000 * 0x10000, 1000 * 0x10000, 0);
         var originalPosition = entity.RootComponent.LocalTransform.Position;
 
-        AlundraWorldProxy.RunTransformSyncPass(new List<Entity> { entity });
+        AlundraFrameSyncPasses.RunTransformSyncPass(new List<Entity> { entity });
 
         Assert.Equal(originalPosition, entity.RootComponent.LocalTransform.Position);
     }
@@ -222,7 +222,7 @@ public class AlundraWorldProxyEntityManipulationTests
         var entity = new Entity { Name = "bare", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
         entity.Initialize();
 
-        AlundraWorldProxy.RunTransformSyncPass(new List<Entity> { entity });
+        AlundraFrameSyncPasses.RunTransformSyncPass(new List<Entity> { entity });
     }
 
     // -----------------------------------------------------------------------------------------
@@ -239,7 +239,7 @@ public class AlundraWorldProxyEntityManipulationTests
         proxy.CurrentAnimationId = ~0u; // would normally fire a sync if not skipped
         Assert.True(entity.IsVisible);
 
-        AlundraWorldProxy.RunAnimationSyncPass(new List<Entity> { entity });
+        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
 
         Assert.False(entity.IsVisible);
         Assert.Equal(~0u, proxy.CurrentAnimationId); // untouched - the pass returned before resolving
@@ -256,7 +256,7 @@ public class AlundraWorldProxyEntityManipulationTests
         proxy.Status = EntityStatus.FlagToDestroy;
         proxy.PosY = 999 * 0x10000;
 
-        AlundraWorldProxy.RunWallInterleaveSortKeyPass(new List<Entity> { entity });
+        AlundraFrameSyncPasses.RunWallInterleaveSortKeyPass(new List<Entity> { entity });
 
         Assert.Equal(123, depthSortable.Elevation);
     }
