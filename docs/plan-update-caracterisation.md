@@ -153,7 +153,7 @@ inverse** — la mutation (b) de S1 *est* la correction de `U-1`.
 
 ## 3. Tranches
 
-### S1 — Test de caractérisation d'`Update` ⏳ (test seul, zéro ligne de production)
+### S1 — Test de caractérisation d'`Update` ✅ `e60d174` (test seul, zéro ligne de production)
 
 Nouveau `Alundra.Tests/AlundraWorldProxyUpdateCharacterizationTests.cs`.
 
@@ -231,7 +231,7 @@ autorisés, **et strictement ceux-là** :
 Tout le reste demeure une condition d'arrêt. Le rapport de tranche liste, **membre par membre**, la
 comparaison avant/après et le delta appliqué, en montrant qu'il appartient à cet ensemble énuméré.
 
-### S2 — Extraction de la câblerie caméra ⏳
+### S2 — Extraction de la câblerie caméra ✅ `52771a4`
 
 `AlundraCameraDirector` (`internal sealed`), **construit dans un initialiseur de champ** (piège 9),
 portant les trois membres de câblerie et **les deux sites d'appel de la résolution** (piège 2).
@@ -266,7 +266,7 @@ unique ligne, **zéro assertion touchée**.
 **Arrêt** : tout delta hors règle de preuve ; toute modification de S1 **autre** que cette ligne.
 **Budget** : un commit, ≤ 2 tours.
 
-### S3 — Extraction de la câblerie de rendu ⏳
+### S3 — Extraction de la câblerie de rendu ✅ `7bb6738`
 
 `AlundraBackdropStage` (`internal sealed`), même forme, portant la couleur de fond une-fois et le
 tick/draw du backdrop. Dépend de la caméra (il lit `Target`), donc **après S2**, la caméra résolue
@@ -278,7 +278,7 @@ la non-régression des suites plus la relecture chiffrée du corps déplacé. **
 **règle de preuve étendue** (même formulation que S2 — la rédaction d'origine, restreinte à la seule
 qualification, contredisait l'acceptation de sa propre tranche). **Budget** : un commit, ≤ 2 tours.
 
-### S4 — Clôture ⏳
+### S4 — Clôture ✅
 
 Crefs cassés par S2/S3 traités **par le compilateur** (activer temporairement
 `GenerateDocumentationFile`, corriger, désactiver) — méthode éprouvée en R5 ; mise à jour de
@@ -286,3 +286,42 @@ Crefs cassés par S2/S3 traités **par le compilateur** (activer temporairement
 **Acceptation** : plus aucun cref cassé **nommant un membre déplacé par S2/S3** ; `Alundra.csproj`
 **identique à l'octet près** après l'expérience (`git diff --stat` vide sur ce fichier) ; build 0
 erreur ; suites vertes. **Budget** : un commit.
+
+## 4. Réalisé — résultat et écarts (2026-08-29)
+
+**Les quatre tranches sont livrées.** `AlundraWorldProxy.cs` : **1749 → 1426 lignes**, et **2948 →
+1426 depuis le début du chantier de découpage, soit −52 %**. Deux collaborateurs créés,
+`internal sealed`, construits dans des initialiseurs de champ : `AlundraCameraDirector` (327 l.) et
+`AlundraBackdropStage` (141 l.). Suites : `Alundra.Tests` **595** (589 + 6 de caractérisation),
+convertisseur **138**, six goldens inchangés avec preuve d'exécution à chaque tranche.
+
+- **L'ordre demandé par l'utilisateur a payé, et c'est mesurable** : S2 est la première tranche de ce
+  chantier vérifiée contre un **oracle** et non contre une relecture — les six tests de S1 sont passés
+  **sans qu'une seule assertion ne change**.
+- **Ce que la relecture a sauvé (S1)** : deux des trois mutations obligatoires **n'auraient rien
+  cassé** dans la première rédaction. Sans `Game`, le décalage du pan vaut zéro, donc l'étape de pan
+  est l'**identité** sur la cible : intervertir deux étapes d'`Update` était **indétectable**. Et sur
+  une frame à zéro tick, la cible vaut déjà la valeur lissée, donc supprimer l'écriture du suivi ne se
+  voyait pas sans perturber la cible d'abord. Vérifié en session principale : l'interversion fait
+  tomber l'item 1 avec l'écart exact du décalage, `(105,−177)` contre `(100,−184)`.
+- **Prédiction du plan démentie, sans conséquence** : la correction du pointeur de réflexion dans le
+  fichier S1 a demandé **deux** lignes et non une — le type déclarant et l'instance cible sont deux
+  expressions distinctes. Zéro assertion touchée, ce qui était la vraie garantie.
+- **Encapsulation refermée en session principale (S3)** : les tranches livrées laissaient le proxy
+  **atteindre à travers** ses collaborateurs (`_backdropStage._backdropRenderer.Load(...)`, et de même
+  pour le drapeau de snap en S2). C'était dans les clous de la règle de preuve, mais **une
+  responsabilité dans laquelle on pioche n'est pas extraite** : les deux champs sont redevenus privés
+  et chaque collaborateur expose l'opération qu'il possède (`Load`, `ArmFirstFrameSnap`).
+- **Incident consigné** : un test a échoué **une fois** pendant la vérification de S2 (594/595), sans
+  jamais réapparaître en dix exécutions, séquence identique et reconstruction propre comprises. Nom
+  non capturé. Ce dépôt a déjà connu cette forme d'instabilité par binaires périmés.
+- **Limite assumée, répétée ici pour qu'elle ne soit pas redécouverte** : les deux membres de S3 sont
+  des **no-op sans `Game`**, donc **l'oracle ne les couvre pas** — leur garantie est la non-régression
+  plus la comparaison ligne à ligne du corps déplacé.
+- **S4** : 9 crefs repointés vers les deux nouvelles classes, trouvés par le compilateur via
+  `GenerateDocumentationFile` activé puis désactivé ; csproj restauré à l'octet près ; 62 crefs
+  préexistants laissés tels quels, hors périmètre.
+
+**Reste ouvert** : l'unité **`U-1`** (§2 bis) — corriger le verrou posé avant la garde `_world`, qui
+condamne la caméra pour la vie du proxy si `Update` est appelé trop tôt. L'item 4 de S1 l'épingle
+**tel quel** et devra être **inversé** par `U-1`.

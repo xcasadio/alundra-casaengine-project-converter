@@ -71,7 +71,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
     /// <summary>
     /// Name of the debug-only environment variable that gates whether the right stick may drive
-    /// <see cref="UpdateDebugCameraPan"/>'s DEBUG offset (and its R3/right-stick-click reset) at all.
+    /// <see cref="AlundraCameraDirector.UpdateDebugCameraPan"/>'s DEBUG offset (and its R3/right-stick-click reset) at all.
     /// ENABLED BY DEFAULT - user decision, 2026-08-24 - deliberately the opposite convention of
     /// <see cref="AlundraPlayerManager.DebugIgnoreControlLockEnvVar"/> ("never active by default"):
     /// that flag bypasses a real gameplay gate, so it must be opted into explicitly, whereas this one
@@ -101,7 +101,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         => _debugCameraPanEnabledOverrideForTests ?? DebugCameraPanEnabledFromEnvironment;
 
     /// <summary>Test-only read of <see cref="DebugCameraPanEnabled"/> - that property itself is private
-    /// (production code only reads it from inside <see cref="UpdateDebugCameraPan"/>), so tests exercise
+    /// (production code only reads it from inside <see cref="AlundraCameraDirector.UpdateDebugCameraPan"/>), so tests exercise
     /// the flag's resolution through this seam instead.</summary>
     internal static bool DebugCameraPanEnabledForTests => DebugCameraPanEnabled;
 

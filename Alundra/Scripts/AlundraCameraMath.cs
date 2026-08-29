@@ -160,7 +160,7 @@ internal static class AlundraCameraMath
     }
 
     /// <summary>
-    /// E5.c - the whole per-frame camera catch-up, factored out of <see cref="UpdateCameraFollow"/>
+    /// E5.c - the whole per-frame camera catch-up, factored out of <see cref="AlundraCameraDirector.UpdateCameraFollow"/>
     /// (which needs a live World/Camera2dComponent and so cannot be driven headless - see this class's own
     /// scope note in <c>AlundraWorldProxyCameraFollowTests</c>) so that every rule it applies is unit-testable.
     ///
@@ -169,7 +169,7 @@ internal static class AlundraCameraMath
     /// <see cref="ComputeSmoothedCameraTarget"/>'s own doc). <paramref name="ticksThisFrame"/> = 0 leaves
     /// the state untouched: that is the entire point of this slice, since a followed entity's own position
     /// only changes on a logic tick, so between ticks the camera must not move either - otherwise the
-    /// sprite slides across the screen on its own (see <see cref="UpdateCameraFollow"/>'s own doc).
+    /// sprite slides across the screen on its own (see <see cref="AlundraCameraDirector.UpdateCameraFollow"/>'s own doc).
     ///
     /// <paramref name="needsSnap"/> (map entry, port of <c>g_isCameraScrolling = 1</c>) snaps straight to
     /// the clamped target BEFORE the loop. No tick is consumed for it: after the snap the state is a FIXED
@@ -204,7 +204,7 @@ internal static class AlundraCameraMath
     }
 
     /// <summary>
-    /// FIX (fresh verifier of cc1fc60) - pure state-transition factored out of <see cref="UpdateCameraFollow"/>
+    /// FIX (fresh verifier of cc1fc60) - pure state-transition factored out of <see cref="AlundraCameraDirector.UpdateCameraFollow"/>
     /// for unit testing (that method itself needs a live World/Camera2dComponent - see this class's own
     /// scope note in <c>AlundraWorldProxyCameraFollowTests</c>). Snaps to, or takes ONE
     /// <see cref="StepCameraScroll"/> step toward, <paramref name="lookAtRenderTarget"/>, THEN clamps
@@ -213,7 +213,7 @@ internal static class AlundraCameraMath
     /// original writes its clamped scroll value back into <c>g_cameraScrollingX/Y</c>
     /// (<c>GraphicManager.cs:97-122</c>) rather than leaving it a read-only view over an unclamped state.
     /// <paramref name="mapWidthPx"/>/<paramref name="mapHeightPx"/> null (no tile map yet) skips the clamp,
-    /// matching <see cref="UpdateCameraFollow"/>'s own <c>_tileMapData == null</c> case.
+    /// matching <see cref="AlundraCameraDirector.UpdateCameraFollow"/>'s own <c>_tileMapData == null</c> case.
     /// E5.c: one call is one 50Hz LOGIC TICK, no longer one rendered frame - see
     /// <see cref="AdvanceCameraSmoothing"/>, which is what production calls.
     /// </summary>
@@ -248,7 +248,7 @@ internal static class AlundraCameraMath
     /// E5.a - pure math factored out for unit testing: the ORIGINAL's own look-at-to-view-centre
     /// transform, in render space. <paramref name="lookAtX"/>/<paramref name="lookAtY"/>/
     /// <paramref name="lookAtZ"/> are plain pixel ints (<c>g_cameraLookAtX/Y/Z</c>'s own units - already
-    /// shifted by 16, see <see cref="UpdateCameraFollow"/>). Same Y-flip as
+    /// shifted by 16, see <see cref="AlundraCameraDirector.UpdateCameraFollow"/>). Same Y-flip as
     /// <c>SimulationSpacePolicy.DeriveRenderPosition</c> (render Y = -(logical Y - Z)), PLUS the
     /// <see cref="CameraCenterBiasY"/> centre-bias (GraphicManager.cs's own scroll formula centres the
     /// view at look-at depth - 16, i.e. 16px ABOVE the look-at point in render space - see that
@@ -303,7 +303,7 @@ internal static class AlundraCameraMath
     internal static float ComputeCameraZoom(int viewportHeight) => viewportHeight / CameraDisplayHeight;
 
     /// <summary>
-    /// DEBUG ONLY (see <see cref="UpdateDebugCameraPan"/>) - the pure math factored out for unit testing:
+    /// DEBUG ONLY (see <see cref="AlundraCameraDirector.UpdateDebugCameraPan"/>) - the pure math factored out for unit testing:
     /// applies a per-axis deadzone to the raw stick values, then moves <paramref name="currentOffset"/> by
     /// stick * <see cref="DebugCameraPanSpeedPixelsPerSecond"/> * <paramref name="elapsedTime"/> on X/Y.
     /// <c>Z</c> is always 0, both in and out - the offset never carries a depth component.
@@ -321,7 +321,7 @@ internal static class AlundraCameraMath
     }
 
     /// <summary>
-    /// DEBUG ONLY (see <see cref="UpdateDebugCameraPan"/>) - the pure math factored out for unit testing:
+    /// DEBUG ONLY (see <see cref="AlundraCameraDirector.UpdateDebugCameraPan"/>) - the pure math factored out for unit testing:
     /// resolves this frame's debug-camera base. Returns <paramref name="currentTarget"/> itself whenever
     /// it no longer matches <paramref name="lastWrittenTarget"/> (some other system - a future E5
     /// follow-target - wrote <c>Target</c> since this proxy last did, so that new value IS the base, with
