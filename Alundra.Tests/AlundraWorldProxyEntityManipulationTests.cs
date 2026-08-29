@@ -11,14 +11,14 @@ namespace Alundra.Tests;
 /// <summary>
 /// Covers the structural pieces the entity search/manipulation opcodes need on
 /// <see cref="AlundraWorldProxy"/>: the <c>notCheckSpawnZone</c> overload of
-/// <see cref="AlundraWorldProxy.ShouldSpawnRecord(TileMapObjectData,bool,out string)"/>, the single-argument
+/// <see cref="AlundraEntitySpawnFactory.ShouldSpawnRecord(TileMapObjectData,bool,out string)"/>, the single-argument
 /// <see cref="AlundraWorldProxy.DestroyEntity(AlundraEntityScriptProxy)"/> overload, the
 /// <c>ParentEntity</c> threading through the shared spawn path, transform re-derivation
 /// (<see cref="AlundraWorldProxy.RunTransformSyncPass"/>) and destroyed-entity visibility/skip in the
 /// per-frame passes. <see cref="AlundraWorldProxy.SpawnEntityByRecordId"/>'s live-<c>World</c> path is
 /// intentionally not exercised here for the same reason <see cref="AlundraWorldProxyTests"/> does not
 /// cover <see cref="AlundraWorldProxy.InitializeWithWorld"/>'s live prefab loader - it needs a running
-/// <c>CasaEngineGame</c>; its build path is the exact same <see cref="AlundraWorldProxy.CreateEntityFromRecord"/>
+/// <c>CasaEngineGame</c>; its build path is the exact same <see cref="AlundraEntitySpawnFactory.CreateEntityFromRecord"/>
 /// covered directly below and by <see cref="AlundraWorldProxyTests"/>.
 /// </summary>
 public class AlundraWorldProxyEntityManipulationTests
@@ -49,8 +49,8 @@ public class AlundraWorldProxyEntityManipulationTests
         // SpriteDirection=0 has bit 0x40 clear - would be rejected with notCheckSpawnZone=false.
         var record = NewRecord(isEnabled: 1, spriteDirection: 0);
 
-        Assert.False(AlundraWorldProxy.ShouldSpawnRecord(record, notCheckSpawnZone: false, out _));
-        Assert.True(AlundraWorldProxy.ShouldSpawnRecord(record, notCheckSpawnZone: true, out var reason));
+        Assert.False(AlundraEntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: false, out _));
+        Assert.True(AlundraEntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: true, out var reason));
         Assert.Equal(string.Empty, reason);
     }
 
@@ -59,7 +59,7 @@ public class AlundraWorldProxyEntityManipulationTests
     {
         var record = NewRecord(isEnabled: 0, spriteDirection: 0);
 
-        Assert.False(AlundraWorldProxy.ShouldSpawnRecord(record, notCheckSpawnZone: true, out var reason));
+        Assert.False(AlundraEntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: true, out var reason));
         Assert.Equal("IsEnabled=0", reason);
     }
 
@@ -68,7 +68,7 @@ public class AlundraWorldProxyEntityManipulationTests
     {
         var record = NewRecord(isEnabled: 1, spriteDirection: 0);
 
-        Assert.False(AlundraWorldProxy.ShouldSpawnRecord(record, out var reason));
+        Assert.False(AlundraEntitySpawnFactory.ShouldSpawnRecord(record, out var reason));
         Assert.Equal("SpriteDirection=0 has bit 0x40 clear", reason);
     }
 
@@ -87,7 +87,7 @@ public class AlundraWorldProxyEntityManipulationTests
         record.CustomProperties["Height"] = "0";
         var parent = new Entity { Name = "caller" };
 
-        var entity = AlundraWorldProxy.CreateEntityFromRecord(record, prefabLoader: null, parentEntity: parent);
+        var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record, prefabLoader: null, parentEntity: parent);
 
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         Assert.Same(parent, proxy.ParentEntity);
@@ -99,7 +99,7 @@ public class AlundraWorldProxyEntityManipulationTests
         var record = NewRecord(isEnabled: 1, spriteDirection: 0x40);
         record.CustomProperties["Index"] = "0";
 
-        var entity = AlundraWorldProxy.CreateEntityFromRecord(record, prefabLoader: null);
+        var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record, prefabLoader: null);
 
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         Assert.Null(proxy.ParentEntity);
@@ -184,7 +184,7 @@ public class AlundraWorldProxyEntityManipulationTests
 
         // E3.a: the root now carries the LOGICAL pose (RenderProjection is null in this fixture -
         // AnimatedSpriteComponent is the bare root, so the re-projection call is a no-op here).
-        var expected = AlundraWorldProxy.ResolveLogicalPosition(420 * 0x10000, 584 * 0x10000, 46 << 19);
+        var expected = AlundraEntitySpawnFactory.ResolveLogicalPosition(420 * 0x10000, 584 * 0x10000, 46 << 19);
         Assert.Equal(expected, entity.RootComponent.LocalTransform.Position);
     }
 

@@ -67,7 +67,7 @@ public class AlundraGroundSlopeTests
 
     /// <summary>F4 fix (docs/plan-echelles-chiffrage.md, adversarial review): the hero's own real
     /// converter-exported bank header (<c>alundra-project/Data/sprite-records.json</c>, hero asset
-    /// <c>4158f0d7-c5f0-4f6a-a48f-e73d0dd2250b</c>) - <c>AlundraWorldProxy.SetEntityDimensions</c>'s own
+    /// <c>4158f0d7-c5f0-4f6a-a48f-e73d0dd2250b</c>) - <c>AlundraEntitySpawnFactory.SetEntityDimensions</c>'s own
     /// formula (<c>Width = (sizeX &lt;&lt; 16) - 1</c>, <c>ModX = offsetX &lt;&lt; 16</c>, etc.) applied to
     /// these exact values is what every real player entity carries in production.</summary>
     private const int HeroOffsetX = -10;
@@ -435,10 +435,10 @@ public class AlundraGroundSlopeTests
         var (_, proxy) = HeroWorldFixture.BuildHeroPawn(
             world, settings, new Vector3(rootX, rootY, groundHeightPx), host);
 
-        // Production footprint (F4 fix) - AlundraWorldProxy.SetEntityDimensions is the SAME method the
+        // Production footprint (F4 fix) - AlundraEntitySpawnFactory.SetEntityDimensions is the SAME method the
         // real AdoptPlayerPawn calls with the hero's own real header (SizeX=21, SizeY=15, OffsetX=-10,
         // OffsetY=-7, OffsetZ=0); SizeZ=32 matches the CollisionComponent Box HeroWorldFixture builds.
-        AlundraWorldProxy.SetEntityDimensions(proxy, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
+        AlundraEntitySpawnFactory.SetEntityDimensions(proxy, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
 
         // One real production frame: CharacterMotionSystem runs first (root stays put - already exactly
         // on real ground, no pad input), then AlundraEntityScriptProxy.Update's IsPlayer branch runs

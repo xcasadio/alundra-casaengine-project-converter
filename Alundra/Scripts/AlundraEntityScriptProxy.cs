@@ -1599,7 +1599,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
 
         ClampToGround();
 
-        var root = AlundraWorldProxy.ResolveLogicalPosition(PosX, PosY, PosZ);
+        var root = AlundraEntitySpawnFactory.ResolveLogicalPosition(PosX, PosY, PosZ);
         Owner.RootComponent.LocalTransform.Position = root;
         RenderProjection?.UpdateProjection();
         Controller.Teleport(root);

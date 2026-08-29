@@ -132,7 +132,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// <see cref="AlundraCharacterControllerAdoptionTests.LoadHeroControllerSettings"/>, a different entity
     /// file. Confirmed on the real export: Radius 6, Height 32, SkinWidth 0.5, StepHeight 3,
     /// GroundSnapDistance 4, Gravity/MaxFallSpeed/WalkabilityMask all 0 (E4.a leaves them 0 - overridden at
-    /// spawn by <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>, exactly like the hero's own
+    /// spawn by <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>, exactly like the hero's own
     /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> override, E4.b's own "Spawn" item).
     /// </summary>
     private static CharacterControllerSettings? LoadBank146ControllerSettings(string projectRoot)
@@ -227,7 +227,7 @@ public class AlundraNpcCharacterControllerMoverTests
 
         var controllerComponent = new CharacterControllerComponent { Settings = settings };
         controllerComponent.SetControlMode(CharacterControlMode.Script);
-        // E4.g: mirrors AlundraWorldProxy.ApplySpawnInitialization's own real spawn path - this bare
+        // E4.g: mirrors AlundraEntitySpawnFactory.ApplySpawnInitialization's own real spawn path - this bare
         // test pawn bypasses that method entirely, so it must set the flag itself, the same way every
         // real scripted NPC gets it at spawn.
         controllerComponent.IsVerticalOwnedExternally = true;
@@ -1023,7 +1023,7 @@ public class AlundraNpcCharacterControllerMoverTests
     // (5) End-to-end spawn regression (verifier finding F1, P2): ApplySpawnInitialization must itself
     // populate AnimSetsByAnim, not just a hand-built test fixture. Drives a REAL "Entities" record (bank
     // 146, pulled straight out of the real map 389 tileMapData) through the REAL spawn path -
-    // AlundraWorldProxy.CreateEntityFromRecord -&gt; CreateEntityFromPrefab -&gt; ApplySpawnInitialization -
+    // AlundraEntitySpawnFactory.CreateEntityFromRecord -&gt; CreateEntityFromPrefab -&gt; ApplySpawnInitialization -
     // with a REAL SpriteRecordCatalog reading the real Data/sprite-records.json (so the AnimSets asserted
     // below come straight off the converter export, not a value this test transcribed by hand). Only the
     // "prefab" argument itself is a hand-built in-memory Entity: the headless test process has no live
@@ -1087,7 +1087,7 @@ public class AlundraNpcCharacterControllerMoverTests
         // a FakeSpriteRecordCatalog with hand-copied values.
         var catalog = new SpriteRecordCatalog(projectRoot!);
 
-        var entity = AlundraWorldProxy.CreateEntityFromRecord(record!, _ => prefab, catalog, tileMapData: tileMapData);
+        var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record!, _ => prefab, catalog, tileMapData: tileMapData);
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
 
         // The regression itself (F1): this is null without ApplySpawnInitialization's own assignment.
@@ -1114,7 +1114,7 @@ public class AlundraNpcCharacterControllerMoverTests
         // (23,57) with no ground at Z=80 (the real terrain there is far below), only ever safe for this
         // file's OTHER (564,920,80) fixtures because BuildNpcPawn leaves Flags at 0 (Gravity never set) -
         // this test's entity goes through the REAL spawn path instead
-        // (AlundraWorldProxy.CreateEntityFromRecord -&gt; ApplySpawnInitialization), which DOES carry the
+        // (AlundraEntitySpawnFactory.CreateEntityFromRecord -&gt; ApplySpawnInitialization), which DOES carry the
         // real header's own Gravity flag/MapGravityRaw, so a genuinely resting spawn location matters here.
         proxy.PosX = 444 * 65536;
         proxy.PosY = 920 * 65536;
@@ -1577,13 +1577,13 @@ public class AlundraNpcCharacterControllerMoverTests
             o => o.CustomProperties.TryGetValue("Index", out var idx) && idx == recordIndex.ToString());
 
         var proxy = new AlundraEntityScriptProxy();
-        AlundraWorldProxy.ApplyRecord(record, proxy);
+        AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
         var backingEntity = new Entity();
         proxy.LogicContextEntity = backingEntity;
         // No controller/world needed for a pure candidate/search fixture - ApplySpawnInitialization sets
         // Flags/Width/Height/Depth/Mod*/AnimSetsByAnim from the real header regardless (only the
         // Controller-gated Gravity/MaxFallSpeed/WalkabilityMask override needs a real Controller).
-        AlundraWorldProxy.ApplySpawnInitialization(record, backingEntity, proxy, catalog, tileMapData: tileMapData);
+        AlundraEntitySpawnFactory.ApplySpawnInitialization(record, backingEntity, proxy, catalog, tileMapData: tileMapData);
         return proxy;
     }
 
@@ -1620,7 +1620,7 @@ public class AlundraNpcCharacterControllerMoverTests
         };
         prefab.AddComponent(controllerComponent);
 
-        var entity = AlundraWorldProxy.CreateEntityFromRecord(record, _ => prefab, catalog, tileMapData: tileMapData);
+        var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record, _ => prefab, catalog, tileMapData: tileMapData);
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.IsPlayer = false;
         proxy.ScriptHost = host;
@@ -2155,7 +2155,7 @@ public class AlundraNpcCharacterControllerMoverTests
 
     /// <summary>Real record spawn (bank 146, XPos 66/YPos 71 - "Entity_6", the real gull the bug was
     /// measured on; EventCodesC_TickIndex 134 in the real tileMap confirms it) through
-    /// <see cref="AlundraWorldProxy.CreateEntityFromRecord"/>, same pattern as
+    /// <see cref="AlundraEntitySpawnFactory.CreateEntityFromRecord"/>, same pattern as
     /// <c>EndToEndSpawn_RealBank146RecordThroughApplySpawnInitialization_PopulatesAnimSetsByAnimAndDrivesRealWalkKinematics</c>
     /// above. Null when this checkout has no real bank-146 controller settings to load (self-skip, same
     /// convention as every other real-fixture test in this class).</summary>
@@ -2196,7 +2196,7 @@ public class AlundraNpcCharacterControllerMoverTests
         prefab.AddComponent(controllerComponent);
 
         var catalog = new SpriteRecordCatalog(projectRoot);
-        var entity = AlundraWorldProxy.CreateEntityFromRecord(record!, _ => prefab, catalog, tileMapData: tileMapData);
+        var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record!, _ => prefab, catalog, tileMapData: tileMapData);
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         Assert.NotNull(proxy.Controller);
         return (entity, proxy);
@@ -2251,7 +2251,7 @@ public class AlundraNpcCharacterControllerMoverTests
         prefab.AddComponent(controllerComponent);
 
         var catalog = new SpriteRecordCatalog(projectRoot);
-        var entity = AlundraWorldProxy.CreateEntityFromRecord(record!, _ => prefab, catalog, tileMapData: tileMapData);
+        var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record!, _ => prefab, catalog, tileMapData: tileMapData);
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         Assert.NotNull(proxy.Controller);
         Assert.NotNull(proxy.RenderProjection);
@@ -2263,7 +2263,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// fixture/flight as <see cref="GullEntitySix_RealFlightAtRenderRateAndAtFiftyHertz_ClimbsAndDriftsWithFaithfulTickQuantizedPhysics"/>,
     /// whose own 209.25px westward drift proves the LOGICAL root position keeps a fractional remainder
     /// every tick - must still end up with an INTEGER render position every frame, because
-    /// <see cref="AlundraWorldProxy.ApplySpawnInitialization"/> now sets
+    /// <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/> now sets
     /// <see cref="RenderProjectionComponent.SnapToPixel"/> on every controller-driven entity's cached
     /// projection. Checked every frame (not just at the end): the snap must hold continuously while the
     /// entity is airborne and drifting, not only once it settles.
@@ -3018,7 +3018,7 @@ public class AlundraNpcCharacterControllerMoverTests
             PosY = proxy.PosY,
             PosZ = terrainPosZ + 4, // a few 16.16 units above terrainHeight+1 - reachable, negligible height.
         };
-        AlundraWorldProxy.SetEntityDimensions(candidate, offsetX: 0, offsetY: 0, offsetZ: 0, sizeX: 64, sizeY: 64, sizeZ: 0);
+        AlundraEntitySpawnFactory.SetEntityDimensions(candidate, offsetX: 0, offsetY: 0, offsetZ: 0, sizeX: 64, sizeY: 64, sizeZ: 0);
         host.Collidables.Add(candidate);
         var candidateTop = candidate.PosZ + candidate.ModZ + candidate.Depth;
 

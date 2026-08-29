@@ -176,7 +176,7 @@ internal static class AlundraFrameSyncPasses
         {
             if (proxy.Controller == null)
             {
-                entity.RootComponent.LocalTransform.Position = AlundraWorldProxy.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+                entity.RootComponent.LocalTransform.Position = AlundraEntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
             }
 
             proxy.RenderProjection?.UpdateProjection();
@@ -215,7 +215,7 @@ internal static class AlundraFrameSyncPasses
             }
 
             var idsv = 0;
-            var idsvKey = (int)proxy.CurrentAnimationId * AlundraWorldProxy.IdsvDirectionStride + proxy.AnimationDirection;
+            var idsvKey = (int)proxy.CurrentAnimationId * AlundraEntitySpawnFactory.IdsvDirectionStride + proxy.AnimationDirection;
             proxy.IdsvByAnimDirection?.TryGetValue(idsvKey, out idsv);
 
             WallPlacementOverlay.ApplyEntitySortKey(depthSortable, proxy.PosY, idsv);

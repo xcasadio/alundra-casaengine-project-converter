@@ -354,7 +354,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     private readonly TraceAwareEntityRunner _wrapperRunner;
 
     // E4.e simulated kinematics (docs/plan-e4-deplacement-scripte.md, decision E4-1): _catalog feeds
-    // AlundraWorldProxy.ApplySpawnInitialization (real AnimSetsByAnim/Flags/Width/Height/Depth/ModX/Y/Z off
+    // AlundraEntitySpawnFactory.ApplySpawnInitialization (real AnimSetsByAnim/Flags/Width/Height/Depth/ModX/Y/Z off
     // the real Data/sprite-records.json - see BuildInitialState/SpawnEntityByRecordId, same seam
     // AlundraNpcCharacterControllerMoverTests' own end-to-end spawn test already uses headless);
     // _tileMapData/_groundField/_mapGravityRaw/_mapZViscosityRaw feed RunVerticalPhysicsPass's own ground
@@ -582,7 +582,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         _tileMapData = tileMapData;
 
         // E4.e (docs/plan-e4-deplacement-scripte.md): the real catalog/ground field/gravity constants of
-        // map 389, same seam AlundraWorldProxy.ApplySpawnInitialization/ResolveMapGravitySettings already
+        // map 389, same seam AlundraEntitySpawnFactory.ApplySpawnInitialization/ResolveMapGravitySettings already
         // use in production and AlundraNpcCharacterControllerMoverTests' own end-to-end spawn test already
         // exercises headless (new SpriteRecordCatalog(projectRoot), reading the real Data/sprite-records.json).
         // AlundraCellsCollisionField.TryCreate logs its own warning and leaves _groundField null on any
@@ -635,13 +635,13 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
             _referencedBMap.Add(programBMap & 0x7F);
         }
 
-        // Entity spawn: AlundraWorldProxy.ApplyRecord (EntityRecordMapper.Map + Status=Loaded +
+        // Entity spawn: AlundraEntitySpawnFactory.ApplyRecord (EntityRecordMapper.Map + Status=Loaded +
         // EventTrigger=ProgramUnknown, reused verbatim), gated the same way GameEngine.SpawnEntity(null, i, 0)
         // gates InitializeEntitySlots' own map-load spawn pass (GameEngine.cs:684-717, notCheckSpawnZone=0):
         // the player-tile spawn-zone box (XMin/XMax/YMin/YMax vs the player's OWN tile) AND
-        // AlundraWorldProxy.ShouldSpawnRecord's own two gates (IsEnabled==0, (SpriteDirection & 0x40) == 0) -
+        // AlundraEntitySpawnFactory.ShouldSpawnRecord's own two gates (IsEnabled==0, (SpriteDirection & 0x40) == 0) -
         // now the SAME production overload AlundraWorldProxy.InitializeWithWorld itself calls once a player
-        // exists (AlundraWorldProxy.ShouldSpawnRecord(record, notCheckSpawnZone, playerTileX, playerTileY,
+        // exists (AlundraEntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone, playerTileX, playerTileY,
         // out reason)), reused here instead of this harness's own former hand-rolled box check. On map 389
         // this drops the load-time spawn count from 19 to 14 (records 7/8/9 have SpriteDirection 128,
         // records 10/18 have SpriteDirection 0 - all four values have bit 0x40 clear).
@@ -655,12 +655,12 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
             var recordIndex = int.Parse(cp.GetValueOrDefault("Index", "0"));
             _entityRecordsByIndex[recordIndex] = record;
 
-            if (!AlundraWorldProxy.ShouldSpawnRecord(record, notCheckSpawnZone: false, _player.TileX, _player.TileY, out _))
+            if (!AlundraEntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: false, _player.TileX, _player.TileY, out _))
             {
                 continue;
             }
 
-            // E4.e: AlundraWorldProxy.CreateBareEntityFromRecord instead of hand-wiring a proxy - this is
+            // E4.e: AlundraEntitySpawnFactory.CreateBareEntityFromRecord instead of hand-wiring a proxy - this is
             // the SAME production seam CreateEntityFromRecord's own bare-fallback path uses (Entity with
             // GameplayProxyClassName -> entity.Initialize(), which resolves the proxy via ElementFactory
             // AND wires entity.GameplayProxy back to it - Entity.GameplayProxy has no public setter, so a
@@ -675,7 +675,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
             // Controller/RenderProjection stay null (the bare entity carries no components), which is
             // exactly the "bare-fallback" case AlundraScriptedMotion.RunOneKinematicTick's own
             // Controller-null branch and RunVerticalPhysicsPass below are built to drive directly.
-            var entity = AlundraWorldProxy.CreateBareEntityFromRecord(record, _catalog, tileMapData: tileMapData);
+            var entity = AlundraEntitySpawnFactory.CreateBareEntityFromRecord(record, _catalog, tileMapData: tileMapData);
             var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy!;
             proxy.ScriptHost = this; // ApplySpawnInitialization already set proxy.LogicContextEntity = entity
 
@@ -751,7 +751,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         // harness-side artifact of reusing the mutable master list directly, not an engine bug (the
         // original never runs a same-frame pick/run pass over an entity spawned mid-pass either -
         // InitializeEntitySlots only picks up a new Loaded entity on ITS OWN next frame's pick phase, see
-        // AlundraWorldProxy.ApplyRecord's own EventTrigger=ProgramUnknown seeding). A frozen snapshot
+        // AlundraEntitySpawnFactory.ApplyRecord's own EventTrigger=ProgramUnknown seeding). A frozen snapshot
         // reproduces that: newly spawned entities join the simulation starting next frame, exactly like
         // the original.
         var entitiesThisFrame = _spawnedEntities.ToList();
@@ -841,7 +841,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     /// <c>ComputeEntityGroundHeight</c> (see <see cref="AlundraCellsCollisionField"/>'s own class doc) -
     /// reused here directly against the entity's real header body box
     /// (<see cref="AlundraEntityScriptProxy.Width"/>/<c>Height</c>/<c>ModX</c>/<c>ModY</c>, populated by
-    /// <c>AlundraWorldProxy.ApplySpawnInitialization</c> at spawn - see <see cref="BuildInitialState"/>'s
+    /// <c>AlundraEntitySpawnFactory.ApplySpawnInitialization</c> at spawn - see <see cref="BuildInitialState"/>'s
     /// own doc on <see cref="_catalog"/>) rather than an engine <c>CollisionComponent</c> Box fixture (this
     /// harness's proxies carry no engine components at all).
     ///
@@ -1038,9 +1038,9 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     /// <summary>
     /// Dynamic spawn-by-record-id (opcodes 0x2D ActivateEntity, 0x8B SpawnEntityNextToEntity) - mirrors
     /// GameEngine.SpawnEntity (GameEngine.cs:684-760) called with notCheckSpawnZone=1, i.e. only
-    /// AlundraWorldProxy.ShouldSpawnRecord's IsEnabled gate still applies (the 0x40 SpriteDirection gate
+    /// AlundraEntitySpawnFactory.ShouldSpawnRecord's IsEnabled gate still applies (the 0x40 SpriteDirection gate
     /// and the player-tile spawn-zone box are both skipped, exactly like the original). Builds a fresh
-    /// proxy from the same record BuildInitialState already indexed, via AlundraWorldProxy.ApplyRecord
+    /// proxy from the same record BuildInitialState already indexed, via AlundraEntitySpawnFactory.ApplyRecord
     /// (EntityRecordMapper.Map + Status=Loaded + EventTrigger=ProgramUnknown) the load-time spawn path
     /// also uses, then seeds TargetAnimationId/TargetDirection/CurrentAnimationId/CurrentDirection exactly
     /// like AlundraWorldProxy's own ApplySpawnInitialization (AlundraWorldProxy.cs:645-654: animationId
@@ -1060,16 +1060,16 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
             return null;
         }
 
-        if (!AlundraWorldProxy.ShouldSpawnRecord(record, notCheckSpawnZone: true, out _))
+        if (!AlundraEntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: true, out _))
         {
             return null;
         }
 
-        // E4.e: AlundraWorldProxy.CreateBareEntityFromRecord instead of hand-wiring a proxy - see the
+        // E4.e: AlundraEntitySpawnFactory.CreateBareEntityFromRecord instead of hand-wiring a proxy - see the
         // load-time spawn loop's own doc, above (BuildInitialState), on why. Block 18 (record 18) is
         // spawned this way (opcode 0x2D) and needs its real header box for RunVerticalPhysicsPass's own
         // ground probe, plus a proxy whose CurrentAnimationId actually advances via SyncAnimation.
-        var entity = AlundraWorldProxy.CreateBareEntityFromRecord(record, _catalog, tileMapData: _tileMapData);
+        var entity = AlundraEntitySpawnFactory.CreateBareEntityFromRecord(record, _catalog, tileMapData: _tileMapData);
         var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy!;
         proxy.ScriptHost = this; // ApplySpawnInitialization already set proxy.LogicContextEntity = entity
 

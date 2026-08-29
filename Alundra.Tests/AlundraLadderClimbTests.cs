@@ -196,7 +196,7 @@ public class AlundraLadderClimbTests
         settings.Gravity = MapGravity;
         settings.MaxFallSpeed = MapMaxFallSpeed;
         var (entity, proxy) = HeroWorldFixture.BuildHeroPawn(world, settings, new Vector3(rootX, rootY, LadderGroundHeightPx), host);
-        AlundraWorldProxy.SetEntityDimensions(proxy, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
+        AlundraEntitySpawnFactory.SetEntityDimensions(proxy, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
 
         // E4 fix (this slice's own AdoptPlayerPawn change) - stands in for what real adoption now does:
         // stash the SAME Gravity/MaxFallSpeed as the reserve MovePlayer's climbing state machine restores
@@ -270,12 +270,12 @@ public class AlundraLadderClimbTests
     /// to match. Deliberately bypasses <see cref="AlundraEntityScriptProxy.PushLogicalPositionToRoot"/>
     /// (which re-clamps onto the terrain via <see cref="AlundraEntityScriptProxy.ClampToGround"/> - not
     /// what these tests want, they need the hero suspended ABOVE ground mid-climb) - same
-    /// <see cref="AlundraWorldProxy.ResolveLogicalPosition"/> formula, applied directly to the root.</summary>
+    /// <see cref="AlundraEntitySpawnFactory.ResolveLogicalPosition"/> formula, applied directly to the root.</summary>
     private static void SetElevatedPosZ(Entity entity, AlundraEntityScriptProxy proxy, int posZ)
     {
         proxy.PosZ = posZ;
         entity.RootComponent!.LocalTransform.Position =
-            AlundraWorldProxy.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+            AlundraEntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
     }
 
     // -----------------------------------------------------------------------------------------

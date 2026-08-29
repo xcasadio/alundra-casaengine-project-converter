@@ -263,7 +263,7 @@ public class HeroTraceHarnessTests
 
         proxy.Flags = (uint)(header.MoreFlags | (header.CanPickup << 8) | (header.FlagsPortraitShadowType << 16));
         proxy.AnimSetsByAnim = header.AnimSets;
-        AlundraWorldProxy.SetEntityDimensions(proxy, header.OffsetX, header.OffsetY, header.OffsetZ, header.SizeX, header.SizeY, header.SizeZ);
+        AlundraEntitySpawnFactory.SetEntityDimensions(proxy, header.OffsetX, header.OffsetY, header.OffsetZ, header.SizeX, header.SizeY, header.SizeZ);
 
         tileMapData.CustomProperties.TryGetValue("Gravity", out var gravityRaw);
         int.TryParse(gravityRaw, out var mapGravityRaw);
