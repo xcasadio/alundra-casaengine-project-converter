@@ -189,7 +189,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// class); in that case no MapEvents run either (they always execute against the player,
     /// <see cref="RunMapEventsPass"/> requires a non-null player).
     /// </summary>
-    internal AlundraEntityScriptProxy? PlayerEntity { get; private set; }
+    /// Setter widened to <c>internal</c> (C1, docs/plan-camera-ordre-frame.md §4): the map-event
+    /// characterization test needs to seed this directly - <see cref="AdoptPlayerPawn"/> is not
+    /// headless-reachable (it needs a live <see cref="AlundraPlayerController"/>), same precedent as
+    /// <see cref="InstallCellAndOverlaySystems"/> being carved out of <see cref="InitializeWithWorld"/>.
+    internal AlundraEntityScriptProxy? PlayerEntity { get; set; }
 
     /// <summary>
     /// This world's MapEvents (port of <c>InitializeMapEvents</c>, GameEngine.cs:476-583): one entry per
@@ -932,7 +936,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <see cref="PlayerEntity"/> to run them against (<see cref="RunMapEventsPass"/> always executes
     /// against the player; a null player has nothing to drive them with).
     /// </summary>
-    private void BuildMapEvents(TileMapObjectLayerData? mapEventsLayer)
+    /// Widened to <c>internal</c> (C1, docs/plan-camera-ordre-frame.md §4), same reason/precedent as
+    /// <see cref="PlayerEntity"/>'s own setter above: lets the map-event characterization test build
+    /// <see cref="_mapEvents"/> directly off a synthetic layer, since <see cref="InitializeWithWorld"/>'s
+    /// own call site is unreachable without a live world/tilemap.
+    internal void BuildMapEvents(TileMapObjectLayerData? mapEventsLayer)
     {
         if (mapEventsLayer == null || PlayerEntity == null)
         {
@@ -995,36 +1003,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // after it.
         var ticksThisFrame = LogicTicksThisFrame(elapsedTime);
 
-        // E5.a: resolve the camera once, then run the scripted follow BEFORE the debug pan - see
-        // UpdateCameraFollow's own doc on why this order lets the pan's base-adoption mechanism pick up
-        // the follow's write the SAME frame instead of one frame late. Both run unconditionally (like the
-        // debug pan already did) so the camera still follows/can be panned even for a world with no
-        // entities.
-        //
-        // E5.c: the follow is driven by the LOGIC TICK COUNT, not by elapsed time - see
-        // UpdateCameraFollow's own doc on the cadence beat that per-frame smoothing caused. The debug pan
-        // stays per rendered frame (it samples the stick).
-        // S2 (docs/plan-update-caracterisation.md): the camera wiring itself now lives on
-        // _cameraDirector; the map bounds and _world are read here at USE TIME and passed in per frame
-        // (extended proof rule delta (a)) - _tileMapData is only assigned in InitializeWithWorld AFTER
-        // two early returns, so capturing it any earlier would hold null forever and silently drop the
-        // map-bounds clamp (trap 2).
-        _cameraDirector.ResolveDebugCameraOnce(_world);
-        _cameraDirector.UpdateCameraFollow(
-            ticksThisFrame,
-            EntityFollowedByCamera,
-            _tileMapData != null ? _tileMapData.MapSize.Width * TileWidth : null,
-            _tileMapData != null ? _tileMapData.MapSize.Height * TileHeight : null);
-        _cameraDirector.UpdateDebugCameraPan(elapsedTime, _world);
-
-        // Rendering-only passes - per rendered frame, same reasoning.
-        // S3 (docs/plan-update-caracterisation.md): the rendering wiring itself now lives on
-        // _backdropStage; _world is read here at USE TIME and passed in per frame (extended proof rule
-        // delta (a)), and the resolved camera is passed in rather than re-looked-up (delta (a), the one
-        // named for S3) since it is _cameraDirector's own state.
-        _backdropStage.ApplyOriginalBackgroundClearColorOnce(_world);
-        _backdropStage.UpdateAndDrawBackdrop(elapsedTime, _world, _cameraDirector.ResolvedCamera);
-
+        // C1 (docs/plan-camera-ordre-frame.md §3): map-events run FIRST, before the camera block - a
+        // faithful port of the original's own frame order (GameEngine.cs:1638-1664/1743-1753:
+        // RunMapEvents() -> UpdateEntities(), whose own look-at update is the LAST thing it does), not
+        // camera-then-map-events (the previous, unmotivated order - see the plan's §1.2/1.3 for the
+        // symptom this produced: the camera saw a scripted teleport/retarget one frame late, most
+        // visibly at map load, where it showed up as a startup camera snap-then-correct).
         if (PlayerEntity != null)
         {
             // Frame-counted map-event chronology (GameEngine.RunMapEvents originally ran once per the
@@ -1039,38 +1023,80 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // reconstruction for however many 0x54/0x55/0x85 opcodes the loop above just dispatched (a map's
         // four-hatch entry alone fires four separate CopyCellRectangle calls) - a no-op when nothing
         // actually changed the overlay's contents (AlundraCellVisualSync.ReconstructionCount stays put).
+        // Invariant (plan §3, point 1): stays immediately after the map-events pass, unmoved by C1.
         _cellVisualSync?.FlushPendingOverlayReconstruction();
 
-        if (_spawnedEntities.Count == 0)
+        if (_spawnedEntities.Count != 0)
         {
-            // No entity ran this frame, so this proxy's own call above was the clock's first (and only)
-            // caller - close the frame here so the memo does not stick into the next one.
-            _logicClock.CloseFrame();
-            return;
+            RefreshUpdateProxiesAndCollidables();
+
+            // Decision D3's own catch-up rescan - same frame-counted shape as RunMapEventsPass above (the
+            // original's own do/while re-scan ran once per fixed frame too). C1: this still runs BEFORE
+            // the camera block below - the original's own re-scan (EntityManager.cs's UpdateEntitiesEvents
+            // phase-2 loop) is itself part of UpdateEntities, which the look-at update only follows at the
+            // very end (see this method's own C1 comment above) - so anything a re-scanned entity's 0x67/
+            // 0x64/0x69 does must be visible to THIS frame's camera too, not just the map-events pass'.
+            for (var tick = 0; tick < ticksThisFrame; tick++)
+            {
+                RunPendingEventTriggers(_updateProxies, EventProgramRunner);
+            }
+
+            // Wall/sprite depth interleave (Slice B) - see WallPlacementOverlay's class doc. Gated on the
+            // overlay actually having been populated: with no wall placements loaded (missing/malformed
+            // property) there is nothing to interleave against, so entities are left at whatever
+            // DepthSortable2DComponent defaults their prefab already carries instead of paying a per-frame
+            // field write for nothing.
+            if (_wallPlacementOverlayApplied)
+            {
+                AlundraFrameSyncPasses.RunWallInterleaveSortKeyPass(_spawnedEntities);
+            }
         }
 
-        RefreshUpdateProxiesAndCollidables();
+        // E5.a: resolve the camera once, then run the scripted follow BEFORE the debug pan - see
+        // UpdateCameraFollow's own doc on why this order lets the pan's base-adoption mechanism pick up
+        // the follow's write the SAME frame instead of one frame late. Both run unconditionally (like the
+        // debug pan already did) so the camera still follows/can be panned even for a world with no
+        // entities. Invariant (plan §3, point 3): this internal order - resolve -> follow -> pan - is
+        // untouched by C1.
+        //
+        // E5.c: the follow is driven by the LOGIC TICK COUNT, not by elapsed time - see
+        // UpdateCameraFollow's own doc on the cadence beat that per-frame smoothing caused. The debug pan
+        // stays per rendered frame (it samples the stick).
+        // S2 (docs/plan-update-caracterisation.md): the camera wiring itself now lives on
+        // _cameraDirector; the map bounds and _world are read here at USE TIME and passed in per frame
+        // (extended proof rule delta (a)) - _tileMapData is only assigned in InitializeWithWorld AFTER
+        // two early returns, so capturing it any earlier would hold null forever and silently drop the
+        // map-bounds clamp (trap 2).
+        //
+        // C1: the whole camera block moves here, AFTER the map-events pass and the pending-event/wall
+        // passes above (plan §3: not merely after map-events - the original's own look-at update is the
+        // LAST thing UpdateEntities does, after its own catch-up re-scan too) - so EntityFollowedByCamera/
+        // the look-at position both reflect whatever this SAME frame's scripts (0x64/0x65/0x67/0x69, from
+        // either pass) just wrote, exactly like the original.
+        _cameraDirector.ResolveDebugCameraOnce(_world);
+        _cameraDirector.UpdateCameraFollow(
+            ticksThisFrame,
+            EntityFollowedByCamera,
+            _tileMapData != null ? _tileMapData.MapSize.Width * TileWidth : null,
+            _tileMapData != null ? _tileMapData.MapSize.Height * TileHeight : null);
+        _cameraDirector.UpdateDebugCameraPan(elapsedTime, _world);
 
-        // Decision D3's own catch-up rescan - same frame-counted shape as RunMapEventsPass above (the
-        // original's own do/while re-scan ran once per fixed frame too).
-        for (var tick = 0; tick < ticksThisFrame; tick++)
-        {
-            RunPendingEventTriggers(_updateProxies, EventProgramRunner);
-        }
-
-        // Wall/sprite depth interleave (Slice B) - see WallPlacementOverlay's class doc. Gated on the
-        // overlay actually having been populated: with no wall placements loaded (missing/malformed
-        // property) there is nothing to interleave against, so entities are left at whatever
-        // DepthSortable2DComponent defaults their prefab already carries instead of paying a per-frame
-        // field write for nothing.
-        if (_wallPlacementOverlayApplied)
-        {
-            AlundraFrameSyncPasses.RunWallInterleaveSortKeyPass(_spawnedEntities);
-        }
+        // Rendering-only passes - per rendered frame, same reasoning. C1: moved down with the camera
+        // block (plan §3) - UpdateAndDrawBackdrop reads the just-resolved camera, so it must stay right
+        // after it.
+        // S3 (docs/plan-update-caracterisation.md): the rendering wiring itself now lives on
+        // _backdropStage; _world is read here at USE TIME and passed in per frame (extended proof rule
+        // delta (a)), and the resolved camera is passed in rather than re-looked-up (delta (a), the one
+        // named for S3) since it is _cameraDirector's own state.
+        _backdropStage.ApplyOriginalBackgroundClearColorOnce(_world);
+        _backdropStage.UpdateAndDrawBackdrop(elapsedTime, _world, _cameraDirector.ResolvedCamera);
 
         // Closes this frame's logic-clock memo (see AlundraLogicClock's own class doc) - this proxy's own
         // Update always runs last (World.cs:443-491), so the next frame's first caller (an entity's own
-        // Update, or this proxy again for a zero-entity world) recomputes fresh.
+        // Update, or this proxy again for a zero-entity world) recomputes fresh. C1 (plan §3): the old
+        // two-call-site shape (an early return for zero entities, this same call for the rest) collapses
+        // to this ONE call on every path now that the camera/render block runs unconditionally instead of
+        // early-returning before it - invariant (plan §3, point 2): CloseFrame runs exactly once.
         _logicClock.CloseFrame();
     }
 

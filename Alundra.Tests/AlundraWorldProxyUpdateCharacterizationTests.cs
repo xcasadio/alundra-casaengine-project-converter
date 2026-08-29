@@ -2,6 +2,7 @@
 using System;
 using System.Reflection;
 using Alundra.Scripts;
+using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
@@ -344,5 +345,103 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         Assert.Equal(500f, distanceB);
         Assert.Equal(1319f, distanceC);
         Assert.True(distanceA != distanceB && distanceB != distanceC && distanceA != distanceC);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Item 7 (C1, docs/plan-camera-ordre-frame.md) - the map-events/camera ORDER defect: a scripted
+    // teleport (0x64) that runs THIS frame must be visible to THIS SAME frame's camera Target, exactly
+    // like the original (GameEngine.cs:1638-1664/1743-1753 - RunMapEvents runs BEFORE the look-at
+    // update). Today Update runs the camera block (steps 2-4) BEFORE the map-events pass (step 7), so
+    // the camera still sees the PRE-move position. This test drives the real proxy.Update(...) - the
+    // only way to traverse RunMapEventsPass at all, see this class' own "Montage" note below.
+    //
+    // Montage - each point traces back to a defect the plan's own relecture found (see plan §4):
+    //  - The shared montage above (no "tileMap" entity) cannot reach the map-event pass on its own:
+    //    without one, InitializeWithWorld returns before AdoptPlayerPawn, PlayerEntity stays null, and
+    //    Update's own "if (PlayerEntity != null)" gate around RunMapEventsPass is never entered.
+    //    AdoptPlayerPawn itself is not headless-reachable (needs a live AlundraPlayerController) - so
+    //    this test seeds PlayerEntity/_mapEvents directly through the two members C1 widened to
+    //    internal for exactly this reason (PlayerEntity's setter, BuildMapEvents).
+    //  - ONE AND THE SAME proxy is moved and followed: PlayerEntity and EntityFollowedByCamera are set
+    //    to the SAME instance. A distinct followed entity could not work - the 0x64 below uses search
+    //    type 0x80 ("the owner"), which RunMapEventsPass always resolves to the player it was called
+    //    with; every OTHER search type walks SpawnedEntities, empty in this montage.
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void MapEventTeleport_IsVisibleToCameraTarget_SameFrame()
+    {
+        var world = BuildHeadlessWorld();
+        var camera = AddCameraEntity(world);
+
+        var proxy = new AlundraWorldProxy();
+        proxy.InitializeWithWorld(world); // no "tileMap" entity -> early return, PlayerEntity stays null.
+
+        // Seed PlayerEntity == EntityFollowedByCamera (same instance, see montage note above), Normal so
+        // IsLoadedNormalOrDeactivated holds, at an arbitrary PRE-move position - anything other than the
+        // 0x64's own target below, so a camera reading the stale position is observably wrong.
+        var playerProxy = new AlundraEntityScriptProxy
+        {
+            Status = EntityStatus.Normal,
+            PosX = 1 << 16,
+            PosY = 2 << 16,
+            PosZ = 0,
+            TileX = 0,
+            TileY = 0,
+        };
+        proxy.PlayerEntity = playerProxy;
+        proxy.EntityFollowedByCamera = playerProxy;
+
+        // One MapEvents record whose zone [X1,X2]x[Y1,Y2] contains the player's own tile (0,0) - see
+        // RunMapEventsPass's own "out-of-zone reset" branch, which would otherwise skip the program
+        // entirely instead of running it. EventCodesBIndex=0x81 (masked 0x7F=1 != 0, passes
+        // RunMapEventsPass's own "not a dud slot" gate; the SAME masked value then selects
+        // EventCodesBTable[1] - see AlundraEventProgramRunnerTests's own
+        // "RunScript_SlotB_ResumesAcrossCalls" comment for this exact masking - 0x80 alone masks to 0
+        // and would be skipped by the dud-slot gate before ever reaching the interpreter).
+        var record = new TileMapObjectData();
+        record.CustomProperties["EventCodesBIndex"] = "129";
+        record.CustomProperties["Index"] = "1";
+        record.CustomProperties["X1"] = "0";
+        record.CustomProperties["Y1"] = "0";
+        record.CustomProperties["X2"] = "100";
+        record.CustomProperties["Y2"] = "100";
+        var mapEventsLayer = new TileMapObjectLayerData();
+        mapEventsLayer.Objects.Add(record);
+        proxy.BuildMapEvents(mapEventsLayer);
+
+        // The program: 0x64 SetEntitiesPosition(v1=0x80 "owner", x=0x234, y=0x178, z=0xa0), then 0xFF
+        // End - the exact operand encoding AlundraEventProgramRunnerTests.
+        // SetEntitiesPosition_0x64_SetsPosXYZ_FromRealMap389Operands uses (real map 389 bytes), so the
+        // resulting PosX/PosY/PosZ are 0x234<<16 / 0x178<<16 / (0xa0<<16)+1. Table[1]=0 points slot B's
+        // resolved index (masked 1, see above) at code offset 0, the program's own start.
+        var document = new EventProgramDocument
+        {
+            MapIndex = 1,
+            EventCodesBTable = new[] { 0, 0 },
+            Codes = new[] { 0x64, 0x80, 0x34, 0x02, 0x78, 0x01, 0xa0, 0x00, 0xFF },
+        };
+        // Replaces InitializeWithWorld's own degraded runner (world "TestWorld" has no trailing map id,
+        // so MapEventProgramLoader.Load returns null and the wired runner is a permanent no-op) with a
+        // real, document-backed one - proxy itself is the IEntityWorldContext, exactly like production
+        // wiring (InitializeWithWorld: "new AlundraEventProgramRunner(eventProgramDocument, GameState,
+        // this)").
+        proxy.EventProgramRunner = new AlundraEventProgramRunner(document, proxy.GameState, proxy);
+
+        proxy.Update(0.02f); // exactly one 50Hz logic tick - runs RunMapEventsPass exactly once.
+
+        // The move actually happened (sanity: proves the 0x64 ran at all, independent of ordering).
+        Assert.Equal(0x234 << 16, playerProxy.PosX);
+        Assert.Equal(0x178 << 16, playerProxy.PosY);
+        Assert.Equal((0xa0 << 16) + 1, playerProxy.PosZ);
+
+        // Target must reflect the position AFTER the move, in the SAME frame - exactly like the
+        // original (look-at update is the LAST thing UpdateEntities does, after RunMapEvents already
+        // ran this frame). lookAt=(0x234,0x178,160) [PosZ>>16 truncates (0xa0<<16)+1 back to 160] ->
+        // ComputeCameraLookAtRenderPosition = (0x234, -(0x178-160)+16, 0) = (564, -200, 0). No map
+        // bounds are wired in this headless montage (_tileMapData stays null), so nothing clamps it,
+        // and needsSnap (armed by InitializeWithWorld) makes this frame jump straight there - see item
+        // 1 above for the same snap reasoning.
+        Assert.Equal(new Vector3(564f, -200f, 0f), camera.Target);
     }
 }
