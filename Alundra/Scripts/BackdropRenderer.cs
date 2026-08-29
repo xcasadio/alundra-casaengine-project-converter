@@ -191,7 +191,7 @@ internal sealed class BackdropRenderer
     /// screen-space position regardless of where the camera currently is - the camera's own
     /// contribution to that position was already folded into the offset via
     /// <see cref="BackdropOffsetMath.ComputeParallaxOffset"/>. World Y is up-positive while screen Y
-    /// is down-positive (see <see cref="AlundraWorldProxy.ResolveLogicalPosition"/>'s own note on this),
+    /// is down-positive (see <see cref="AlundraEntitySpawnFactory.ResolveLogicalPosition"/>'s own note on this),
     /// hence the Y flip below; X needs no flip.
     /// </summary>
     public void Draw(SpriteRendererComponent spriteRenderer, Vector3 cameraPosition, int viewportWidth, int viewportHeight)

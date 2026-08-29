@@ -44,7 +44,7 @@ public readonly struct SpriteRecordHeader
     /// entries, via <c>SpriteRecordJson.ToHeader</c>) or null (a <see cref="FakeSpriteRecordCatalog"/>
     /// entry built without it) when the source record had no entries, or the file predates this field
     /// (backward-tolerant: unknown/missing JSON fields default here, same as every other header
-    /// field) - <see cref="AlundraWorldProxy.BuildIdsvByAnimDirection"/> treats both the same way.
+    /// field) - <see cref="AlundraEntitySpawnFactory.BuildIdsvByAnimDirection"/> treats both the same way.
     /// </summary>
     public IReadOnlyList<AnimDirIdsv>? IdsvAnimDirs { get; init; }
 
@@ -105,7 +105,7 @@ public readonly struct AnimSetEntry
 /// How an (anim, direction)'s trailing control frame ends playback - mirrors the converter's own
 /// <c>AnimationEndClassifier.AnimationEndKind</c> (alundra-casaengine-project-converter/Readers/
 /// AnimationEndClassifier.cs), duplicated here rather than shared since this DLL does not reference
-/// the converter project. See <see cref="AlundraWorldProxy.SubscribeAnimationEndBridge"/> for how
+/// the converter project. See <see cref="AlundraEntitySpawnFactory.SubscribeAnimationEndBridge"/> for how
 /// this drives the engine's Once-finished event back to the original's Hold/Chain semantics
 /// (EntityManager.cs:257-281).
 /// </summary>
@@ -118,8 +118,8 @@ public enum AnimationEndKind
 
 /// <summary>
 /// One <see cref="AlundraEntityScriptProxy.AnimationEndByAnimDirection"/> table value - see
-/// <see cref="AlundraWorldProxy.BuildAnimationEndByAnimDirection"/> and
-/// <see cref="AlundraWorldProxy.OnAnimationFinished"/>.
+/// <see cref="AlundraEntitySpawnFactory.BuildAnimationEndByAnimDirection"/> and
+/// <see cref="AlundraEntitySpawnFactory.OnAnimationFinished"/>.
 /// </summary>
 public readonly struct AnimationEndInfo
 {
@@ -133,7 +133,7 @@ public readonly struct AnimationEndInfo
 /// excluded), in animation-frame order. <see cref="End"/>/<see cref="ChainTo"/> are the same
 /// classification <c>SpriteWriter</c> already used to pick this animation's own AnimationType
 /// (Loop stays engine Loop; Hold/Chain became engine Once) - see
-/// <see cref="AlundraWorldProxy.BuildAnimationEndByAnimDirection"/>.
+/// <see cref="AlundraEntitySpawnFactory.BuildAnimationEndByAnimDirection"/>.
 /// </summary>
 public readonly struct AnimDirIdsv
 {

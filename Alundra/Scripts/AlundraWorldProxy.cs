@@ -34,7 +34,7 @@ namespace Alundra.Scripts;
 /// <see cref="EntityRecordMapper"/>, whose logical position fields (<c>PosX</c>/<c>PosY</c>/<c>PosZ</c>)
 /// this proxy then converts into the spawned entity's <c>RootComponent.LocalTransform.Position</c> - now
 /// the entity's LOGICAL pose (E3.a, docs/plan-e3-collisions.md decision E3-1), not a render pose - via
-/// <see cref="ResolveLogicalPosition"/> - see <see cref="CreateEntityFromPrefab"/>. A
+/// <see cref="AlundraEntitySpawnFactory.ResolveLogicalPosition"/> - see <see cref="AlundraEntitySpawnFactory.CreateEntityFromPrefab"/>. A
 /// <c>RenderProjectionComponent</c> child of that root (<c>SpriteWriter.WriteEntityPrefab</c>) derives
 /// the render pose from it every update.
 ///
@@ -136,7 +136,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// (<c>GameEngine.SpawnEntity</c>'s <c>entityId</c> parameter) looks records up by
     /// (<c>GameEngine.GetEntityRecord</c>, GameEngine.cs:2125-2144). Populated once in
     /// <see cref="InitializeWithWorld"/> from every record of the layer, including ones
-    /// <see cref="ShouldSpawnRecord"/> would reject for the map-load pass - 0x2D applies its own,
+    /// <see cref="AlundraEntitySpawnFactory.ShouldSpawnRecord"/> would reject for the map-load pass - 0x2D applies its own,
     /// looser gate (<c>notCheckSpawnZone = 1</c>, see <see cref="SpawnEntityByRecordId"/>) so a record
     /// this world did not spawn at load time can still become spawnable later.
     /// </summary>
@@ -230,7 +230,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     internal AlundraEntityScriptProxy? ActiveCollisionEntity;
 
     /// <summary>
-    /// DEBUG ONLY (see <see cref="DebugCameraPanSpeedPixelsPerSecond"/>). Cached so <see cref="Update"/>,
+    /// DEBUG ONLY (see <see cref="AlundraCameraMath.DebugCameraPanSpeedPixelsPerSecond"/>). Cached so <see cref="Update"/>,
     /// which gets no <see cref="World"/> parameter, can still read the gamepad and reach the camera entity
     /// looked up in <see cref="InitializeWithWorld"/>.
     /// </summary>
@@ -239,8 +239,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <summary>
     /// This world's own <see cref="TileMapData"/> (resolved once in <see cref="InitializeWithWorld"/>,
     /// same instance <see cref="AlundraCellsCollisionField"/>/<see cref="AdoptPlayerPawn"/> already read) -
-    /// cached so every NPC spawn (<see cref="CreateEntityFromRecord"/> -&gt; <see cref="CreateEntityFromPrefab"/>/
-    /// <see cref="CreateBareEntityFromRecord"/> -&gt; <see cref="ApplySpawnInitialization"/>, both the
+    /// cached so every NPC spawn (<see cref="AlundraEntitySpawnFactory.CreateEntityFromRecord"/> -&gt; <see cref="AlundraEntitySpawnFactory.CreateEntityFromPrefab"/>/
+    /// <see cref="AlundraEntitySpawnFactory.CreateBareEntityFromRecord"/> -&gt; <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>, both the
     /// map-load loop below and the dynamic-spawn opcode 0x2D's own <see cref="SpawnEntityByRecordId"/>)
     /// can resolve THIS map's own Gravity/ZViscosity (E4.b, docs/plan-e4-deplacement-scripte.md "Spawn")
     /// without re-threading a <see cref="TileMapData"/> parameter through every caller of this world's own
@@ -262,7 +262,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <summary>
     /// DEBUG ONLY (see <see cref="UpdateDebugCameraPan"/>). The stick-accumulated pan offset applied on
     /// top of <see cref="_debugCameraBase"/> - <c>Z</c> is always 0 (matching
-    /// <see cref="ComputeDebugCameraPanOffset"/>'s own contract). Reset to <see cref="Vector3.Zero"/> by
+    /// <see cref="AlundraCameraMath.ComputeDebugCameraPanOffset"/>'s own contract). Reset to <see cref="Vector3.Zero"/> by
     /// an R3 (right-stick) click; never touched at all while
     /// <see cref="DebugCameraPanEnabled"/> is false.
     /// </summary>
@@ -274,7 +274,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// yet) last put in <see cref="Camera2dComponent.Target"/>, with the stick's own
     /// <see cref="_debugCameraOffset"/> subtracted back out. Adopted fresh from
     /// <see cref="Camera2dComponent.Target"/> whenever that no longer matches
-    /// <see cref="_debugCameraLastWrittenTarget"/> - see <see cref="ResolveDebugCameraBase"/>.
+    /// <see cref="_debugCameraLastWrittenTarget"/> - see <see cref="AlundraCameraMath.ResolveDebugCameraBase"/>.
     /// </summary>
     private Vector3 _debugCameraBase;
 
@@ -282,7 +282,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// DEBUG ONLY. True once <see cref="_debugCameraBase"/> has been seeded from the camera's actual
     /// <see cref="Camera2dComponent.Target"/> on the first tick the camera was found - before that, there
     /// is no prior write to compare <see cref="Camera2dComponent.Target"/> against, so
-    /// <see cref="ResolveDebugCameraBase"/> would otherwise wrongly treat the camera's initial target as
+    /// <see cref="AlundraCameraMath.ResolveDebugCameraBase"/> would otherwise wrongly treat the camera's initial target as
     /// "unchanged from a stale zero base".
     /// </summary>
     private bool _debugCameraBaseInitialized;
@@ -343,7 +343,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// True once <see cref="InitializeWithWorld"/> successfully parsed and applied this world's
     /// <see cref="WallPlacementOverlay"/> (see <see cref="WallPlacementOverlay.CustomPropertyKey"/>).
     /// Gates the per-entity <see cref="WallPlacementOverlay.ApplyEntitySortKey"/> call in
-    /// <see cref="RunAnimationSyncPass"/>'s caller (<see cref="Update"/>): with no wall placements loaded
+    /// <see cref="AlundraFrameSyncPasses.RunAnimationSyncPass"/>'s caller (<see cref="Update"/>): with no wall placements loaded
     /// there is nothing to interleave against, so entities keep whatever
     /// <see cref="DepthSortable2DComponent"/> defaults their prefab already carries.
     /// </summary>
@@ -595,7 +595,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <c>RenderProjectionComponent.UpdateProjection()</c> in the same frame so the sprite renders the
     /// new pose immediately rather than one frame late (component update order:
     /// <c>RootComponent.Update</c>, hence the projection, runs before <c>GameplayProxy.Update</c> -
-    /// Entity.cs:473-504) - see <see cref="SyncTransform"/>.
+    /// Entity.cs:473-504) - see <see cref="AlundraFrameSyncPasses.SyncTransform"/>.
     /// </summary>
     /// <summary>
     /// E7.b (docs/plan-e7-mutation-tuiles.md, "Testabilité du câblage", plan fact 17): the block that used
@@ -703,7 +703,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <see cref="CharacterControllerSettings.Gravity"/>/<see cref="CharacterControllerSettings.MaxFallSpeed"/>
     /// expect - E3.d's own formula (<c>AdoptPlayerPawn</c>'s original override block): <c>mapGravity*256/
     /// 65536*2500</c> / <c>mapZViscosity*256/65536*50</c> (1250/800 on map 389). Shared by
-    /// <see cref="AdoptPlayerPawn"/> (hero, unconditional) and <see cref="ApplySpawnInitialization"/> (NPC,
+    /// <see cref="AdoptPlayerPawn"/> (hero, unconditional) and <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/> (NPC,
     /// gated on the Gravity flag bit via <see cref="AlundraEntityScriptProxy.ApplyGravitySettingsToController"/>)
     /// so the formula itself lives in exactly one place. Float arithmetic throughout: an integer
     /// <c>128*256/65536</c> truncates to 0 before the final <c>*2500</c> ever runs.
@@ -778,10 +778,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     ///
     /// Deviation note: the engine already positioned the pawn's transform at the <c>PlayerStart</c>
     /// component (logical pose (804, 952, 0) on map 389, equal to <c>ResolveLogicalPosition</c> of this same
-    /// New Game tile) - this method's own <see cref="ResolveLogicalPosition"/> call below OVERWRITES that
+    /// New Game tile) - this method's own <see cref="AlundraEntitySpawnFactory.ResolveLogicalPosition"/> call below OVERWRITES that
     /// with the logical position instead, which is harmless (same result) but makes explicit that
     /// <c>AlundraEntityScriptProxy</c>'s logical PosX/PosY/PosZ, not the engine's PlayerStart transform, is
-    /// the field this proxy's own <see cref="SyncTransform"/> re-derives from every frame going forward
+    /// the field this proxy's own <see cref="AlundraFrameSyncPasses.SyncTransform"/> re-derives from every frame going forward
     /// (decision D2's "logical state wins" rule).
     ///
     /// Deliberately NOT ported (still out of E2's own scope - a real <c>InitializeGameState</c>/full
@@ -1214,7 +1214,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <see cref="UpdateDebugCameraPan"/> so whichever runs first this frame (see <see cref="Update"/>'s
     /// own ordering) resolves it. E5-1 (docs/plan-e5-camera.md): also poses the ORIGINAL's own framing on
     /// the camera right here, the moment it is found - runtime-only (no asset touched, no full export
-    /// needed): <c>Zoom = real viewport height / 236</c> (see <see cref="ComputeCameraZoom"/> - computed
+    /// needed): <c>Zoom = real viewport height / 236</c> (see <see cref="AlundraCameraMath.ComputeCameraZoom"/> - computed
     /// from the LIVE viewport, never hardcoded, since <c>CameraComponent.InitializeWithWorld</c> already
     /// overwrites whatever Zoom/viewport an asset serialized) and <c>PixelSnap = true</c>.
     /// </summary>
@@ -1262,7 +1262,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <c>GraphicManager</c>'s own scroll smoothing/clamp (<c>GraphicManager.cs:75-122</c>). Runs BEFORE
     /// <see cref="UpdateDebugCameraPan"/> in <see cref="Update"/> (see that method's own ordering
     /// comment): this method writes the camera's <c>Target</c> as the new BASE, and
-    /// <see cref="UpdateDebugCameraPan"/>'s own <see cref="ResolveDebugCameraBase"/> call adopts that
+    /// <see cref="UpdateDebugCameraPan"/>'s own <see cref="AlundraCameraMath.ResolveDebugCameraBase"/> call adopts that
     /// write as the base a moment later in the SAME frame, then adds the stick offset back on top - so
     /// the scripted follow and the debug pan never fight (see <see cref="UpdateDebugCameraPan"/>'s own
     /// doc on that mechanism, decision bca9338).
@@ -1302,7 +1302,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// The fix restores that lock: the catch-up now advances <c>ticksThisFrame</c> times per frame (0 on
     /// most frames at 123Hz) instead of once, and it is the original's INTEGER
     /// <c>scroll += (target - scroll) &gt;&gt; 4</c> rather than a float lerp - see
-    /// <see cref="StepCameraScroll"/>'s own doc for the axis conversion (floor X, ceiling Y) and for the
+    /// <see cref="AlundraCameraMath.StepCameraScroll"/>'s own doc for the axis conversion (floor X, ceiling Y) and for the
     /// measurements showing why a float state still shimmers while the integer one does not. Because the
     /// state is now whole-numbered, it IS the rendered value: no separate pixel snap is applied on the way
     /// out any more (the former <c>SnapCameraRenderTarget</c> is gone), exactly like the original's own
@@ -1317,8 +1317,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// fractional offset can reintroduce the beat, which is debug-only and out of scope.</para>
     ///
     /// <para>Not covered by the headless tests: this method's own wiring (the
-    /// <see cref="AdvanceCameraSmoothing"/> call site), which needs a live World/Camera2dComponent. Every
-    /// rule it applies is unit-tested through that seam and through <see cref="StepCameraScroll"/>; the
+    /// <see cref="AlundraCameraMath.AdvanceCameraSmoothing"/> call site), which needs a live World/Camera2dComponent. Every
+    /// rule it applies is unit-tested through that seam and through <see cref="AlundraCameraMath.StepCameraScroll"/>; the
     /// residual gap is this single call - same shape as E5.a's own deferred P4.</para>
     /// </summary>
     private void UpdateCameraFollow(int ticksThisFrame)
@@ -1372,7 +1372,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// Axis mapping: MonoGame's right-stick Y is positive up; the camera lives in RENDER space (its
     /// <c>Target</c> is a world/render position, not a logical entity pose), where "more positive = further
     /// up/north" (the same Y-up convention <c>SimulationSpacePolicy.DeriveRenderPosition</c> produces for a
-    /// projected entity - see <see cref="ResolveLogicalPosition"/>'s own doc for why entities themselves no
+    /// projected entity - see <see cref="AlundraEntitySpawnFactory.ResolveLogicalPosition"/>'s own doc for why entities themselves no
     /// longer negate Alundra's down-positive Y here), so stick-up must increase the offset's Y - no sign
     /// flip needed, unlike Alundra's own Y. Stick X maps directly onto world X the same way.
     ///
@@ -1380,7 +1380,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// script-driven follow camera): it only accumulates <see cref="_debugCameraOffset"/> (<c>Z</c> always
     /// 0), applied on top of <see cref="_debugCameraBase"/> - whatever the camera's own behavior (nothing
     /// yet; a future E5 follow-target) last put in <c>Target</c>. Each frame this method first re-derives
-    /// <see cref="_debugCameraBase"/> from <c>Target</c> (see <see cref="ResolveDebugCameraBase"/>) so an
+    /// <see cref="_debugCameraBase"/> from <c>Target</c> (see <see cref="AlundraCameraMath.ResolveDebugCameraBase"/>) so an
     /// external write - E5's own follow logic - always wins as the base; the stick only ever adds a debug
     /// offset around it. An R3 (right-stick) click resets the offset to 0. While
     /// <see cref="DebugCameraPanEnabled"/> is false, the stick never changes the offset and R3 is inert -
@@ -1530,8 +1530,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <c>IsEnabled</c> gate applies (see <see cref="ShouldSpawnRecord(TileMapObjectData,bool,out string)"/>'s
     /// own doc); the record lookup (<c>GameEngine.GetEntityRecord</c>) is <see cref="_entityRecordsByIndex"/>.
     /// Shares the exact same build path as the map-load spawn loop in <see cref="InitializeWithWorld"/>
-    /// (<see cref="CreateEntityFromRecord"/> -&gt; <see cref="ApplyRecord"/> -&gt;
-    /// <see cref="ApplySpawnInitialization"/>), with <paramref name="logicEntity"/>'s own backing entity
+    /// (<see cref="AlundraEntitySpawnFactory.CreateEntityFromRecord"/> -&gt; <see cref="AlundraEntitySpawnFactory.ApplyRecord"/> -&gt;
+    /// <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>), with <paramref name="logicEntity"/>'s own backing entity
     /// passed down as the new entity's <c>ParentEntity</c> - exactly like <c>EntityManager.InitializeEntity</c>
     /// does for its <c>parentEntity</c> argument. The spawned entity joins <see cref="_spawnedEntities"/>
     /// immediately, so it is visible to any further search this same script call issues, and is picked up

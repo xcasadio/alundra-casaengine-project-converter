@@ -19,7 +19,7 @@ namespace Alundra.Tests;
 /// Covers E3.a (docs/plan-e3-collisions.md): the logical/render pose split introduced on
 /// <see cref="AlundraWorldProxy"/>'s three transform write sites
 /// (<see cref="AlundraEntitySpawnFactory.CreateEntityFromPrefab"/>, <see cref="AlundraWorldProxy.AdoptPlayerPawn"/>,
-/// <see cref="AlundraWorldProxy.SyncTransform"/>).
+/// <see cref="AlundraFrameSyncPasses.SyncTransform"/>).
 ///  - Formula: <see cref="AlundraEntitySpawnFactory.ResolveLogicalPosition"/> followed by
 ///    <see cref="TopDownElevationSimulationSpacePolicy.DeriveRenderPosition"/> must reproduce, bit for
 ///    bit, the OLD single-step formula this slice replaced (kept below as <see cref="OldResolveWorldPosition"/>),
@@ -131,7 +131,7 @@ public class AlundraEntityLogicalRenderPoseTests
     /// <summary>
     /// A fake <see cref="IEventProgramRunner"/> whose <c>RunScript</c> mutates the entity's OWN logical
     /// pose fields, standing in for a Load program that repositions the entity - exactly the kind of
-    /// same-frame, mid-<c>Update</c> pose change <see cref="AlundraWorldProxy.SyncTransform"/>'s
+    /// same-frame, mid-<c>Update</c> pose change <see cref="AlundraFrameSyncPasses.SyncTransform"/>'s
     /// re-projection call exists for.
     /// </summary>
     private sealed class PoseMovingRunner : IEventProgramRunner

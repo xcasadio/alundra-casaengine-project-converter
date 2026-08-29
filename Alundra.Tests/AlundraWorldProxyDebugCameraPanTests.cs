@@ -7,7 +7,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// Covers the pure math of the DEBUG-only right-stick camera pan
-/// (<see cref="AlundraWorldProxy.ComputeDebugCameraPanOffset"/>, <see cref="AlundraWorldProxy.ResolveDebugCameraBase"/>)
+/// (<see cref="AlundraCameraMath.ComputeDebugCameraPanOffset"/>, <see cref="AlundraCameraMath.ResolveDebugCameraBase"/>)
 /// and the <c>ALUNDRA_DEBUG_CAMERA_ENABLED</c> flag - see
 /// <see cref="AlundraWorldProxy.UpdateDebugCameraPan"/>'s own doc comment for the tool's rationale/lifetime
 /// and the base/offset composition (<c>Target = base + offset</c>).

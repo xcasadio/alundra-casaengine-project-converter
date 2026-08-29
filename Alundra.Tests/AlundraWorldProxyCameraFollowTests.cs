@@ -9,11 +9,11 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// Covers the pure math of E5.a's scripted camera follow (docs/plan-e5-camera.md) -
-/// <see cref="AlundraWorldProxy.ResolveCameraLookAt"/>, <see cref="AlundraWorldProxy.ComputeCameraLookAtRenderPosition"/>,
-/// <see cref="AlundraWorldProxy.ClampCameraTargetToMap"/>, <see cref="AlundraWorldProxy.ComputeCameraZoom"/>
-/// and <see cref="AlundraWorldProxy.ComputeSmoothedCameraTarget"/> (the snap-or-step-then-clamp state
-/// transition) - plus E5.c's own integer scroll port, <see cref="AlundraWorldProxy.StepCameraScroll"/>
-/// and <see cref="AlundraWorldProxy.AdvanceCameraSmoothing"/> (the per-frame seam
+/// <see cref="AlundraCameraMath.ResolveCameraLookAt"/>, <see cref="AlundraCameraMath.ComputeCameraLookAtRenderPosition"/>,
+/// <see cref="AlundraCameraMath.ClampCameraTargetToMap"/>, <see cref="AlundraCameraMath.ComputeCameraZoom"/>
+/// and <see cref="AlundraCameraMath.ComputeSmoothedCameraTarget"/> (the snap-or-step-then-clamp state
+/// transition) - plus E5.c's own integer scroll port, <see cref="AlundraCameraMath.StepCameraScroll"/>
+/// and <see cref="AlundraCameraMath.AdvanceCameraSmoothing"/> (the per-frame seam
 /// <see cref="AlundraWorldProxy.UpdateCameraFollow"/> calls with that frame's LOGIC TICK count).
 ///
 /// Not covered here (headless-untestable, needs a live World/Camera2dComponent): the thin wiring around
@@ -101,7 +101,7 @@ public class AlundraWorldProxyCameraFollowTests
     /// E5.c: the ONE rule the whole slice rests on, and the easiest to get wrong. <c>&gt;&gt; 4</c> is an
     /// arithmetic shift (a FLOOR), so it is not symmetric; our render space flips Y relative to the
     /// original's scroll space (<c>renderY = -scrollY - 120</c>, <c>renderX = scrollX + 160</c>, both
-    /// confirmed by <see cref="AlundraWorldProxy.ClampCameraTargetToMap"/>'s own frozen map-389 bounds).
+    /// confirmed by <see cref="AlundraCameraMath.ClampCameraTargetToMap"/>'s own frozen map-389 bounds).
     /// The increment is therefore FLOOR on X and CEILING on Y - the same convention E5.b established for
     /// sprites. Every row below was checked against the original by computing <c>(-delta) &gt;&gt; 4</c> in
     /// scroll space and converting back.
@@ -240,7 +240,7 @@ public class AlundraWorldProxyCameraFollowTests
     // -----------------------------------------------------------------------------------------
 
     /// <summary>
-    /// Exercises <see cref="AlundraWorldProxy.ComputeSmoothedCameraTarget"/> - the exact state-transition
+    /// Exercises <see cref="AlundraCameraMath.ComputeSmoothedCameraTarget"/> - the exact state-transition
     /// <see cref="AlundraWorldProxy.UpdateCameraFollow"/> now calls every frame - across a short sequence
     /// of frames: pin the camera at the map's bottom edge (an unclamped look-at of -936, the verifier's
     /// own measured hidden overshoot, 97px past the -839 lower bound) for several ticks, THEN move the
@@ -254,7 +254,7 @@ public class AlundraWorldProxyCameraFollowTests
     /// E5.c updated the expected value: under the integer port the step is <c>ceil(delta / 16)</c> with
     /// delta = -800 - (-839) = +39, i.e. <c>ceil(2.4375) = 3</c>, so the state lands on exactly -836. (The
     /// former -836.5625 was the float lerp's own 1/16 of 39; that smoothing no longer exists - see
-    /// <see cref="AlundraWorldProxy.StepCameraScroll"/>.) The PROPERTY under test is unchanged.
+    /// <see cref="AlundraCameraMath.StepCameraScroll"/>.) The PROPERTY under test is unchanged.
     ///
     /// A pre-fix implementation of this method (clamp applied only to the RETURNED render value, feeding
     /// the UNCLAMPED step result back as next frame's state) would still read -839 here: one step from the
@@ -369,8 +369,8 @@ public class AlundraWorldProxyCameraFollowTests
     /// running only 14 frames from a hand-picked tick phase. Drives 3000 logic ticks of a followed entity
     /// moving at a steady rate, exactly as production does: its logical position is truncated to an int
     /// look-at (<c>PosY &gt;&gt; 16</c>), the look-at is turned into a render target by
-    /// <see cref="AlundraWorldProxy.ComputeCameraLookAtRenderPosition"/>, and the camera takes ONE
-    /// <see cref="AlundraWorldProxy.AdvanceCameraSmoothing"/> step per tick. The sprite's own rendered Y
+    /// <see cref="AlundraCameraMath.ComputeCameraLookAtRenderPosition"/>, and the camera takes ONE
+    /// <see cref="AlundraCameraMath.AdvanceCameraSmoothing"/> step per tick. The sprite's own rendered Y
     /// is the negated look-at (<c>ceil(-x) = -floor(x)</c>, E5.b's own identity), so the on-screen gap is
     /// <c>(-look) - state.Y</c> in logical pixels.
     ///

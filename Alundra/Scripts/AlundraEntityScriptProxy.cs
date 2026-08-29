@@ -40,7 +40,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// (initially the player itself, retargetable by opcode 0x66 - not ported). Deliberately a SEPARATE
     /// field from this proxy's own <see cref="LogicContextEntity"/> below, which is an engine-only,
     /// unrelated-by-coincidence-of-name back-pointer to this proxy's OWN CasaEngine <see cref="Entity"/>
-    /// (set once at spawn, see <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>) - conflating the
+    /// (set once at spawn, see <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>) - conflating the
     /// two would silently overwrite that self-pointer with a different proxy's engine <c>Entity</c>
     /// reference, which is not what the original does.
     /// </summary>
@@ -95,8 +95,8 @@ public class AlundraEntityScriptProxy : GameplayProxy
 
     /// <summary>
     /// Engine-only, not part of the original struct. Raised by
-    /// <see cref="AlundraWorldProxy.OnAnimationFinished"/> when a <c>Chain</c> terminator fires, and
-    /// consumed by <see cref="AlundraWorldProxy.SyncAnimation"/> to restart the animation even when the
+    /// <see cref="AlundraEntitySpawnFactory.OnAnimationFinished"/> when a <c>Chain</c> terminator fires, and
+    /// consumed by <see cref="AlundraFrameSyncPasses.SyncAnimation"/> to restart the animation even when the
     /// chain target turns out to be the animation that just ended.
     ///
     /// <para>Needed because the original expresses a LOOPING animation two different ways, and only one
@@ -107,7 +107,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// which is exactly why the idle looped and the walk froze on its last frame (user report,
     /// 2026-08-26).</para>
     ///
-    /// <para>Without this flag <see cref="AlundraWorldProxy.TryResolveAnimationTarget"/> reports "nothing
+    /// <para>Without this flag <see cref="AlundraFrameSyncPasses.TryResolveAnimationTarget"/> reports "nothing
     /// to do" for a self-chain - it only restarts when <see cref="CurrentAnimationId"/> or
     /// <see cref="AnimationDirection"/> actually CHANGE, and a self-chain changes neither - so
     /// <c>SetCurrentAnimation(..., forceReset: true)</c> was never reached and the sampler stayed parked
@@ -229,11 +229,11 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// Engine-only, not part of the original struct (same as <see cref="LogicContextEntity"/>): the
     /// entity root's own <see cref="RenderProjectionComponent"/> child (E3.a,
     /// docs/plan-e3-collisions.md), resolved once at spawn/adoption
-    /// (<see cref="AlundraWorldProxy.CreateEntityFromPrefab"/>/<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>)
-    /// so the per-frame transform sync (<see cref="AlundraWorldProxy.SyncTransform"/>) can re-project the
+    /// (<see cref="AlundraEntitySpawnFactory.CreateEntityFromPrefab"/>/<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>)
+    /// so the per-frame transform sync (<see cref="AlundraFrameSyncPasses.SyncTransform"/>) can re-project the
     /// sprite the same frame the logical root pose changes without a per-frame
     /// <c>Entity.GetComponent&lt;RenderProjectionComponent&gt;()</c> search. Null for a bare-fallback
-    /// spawn (<see cref="AlundraWorldProxy.CreateBareEntityFromRecord"/>, which has no
+    /// spawn (<see cref="AlundraEntitySpawnFactory.CreateBareEntityFromRecord"/>, which has no
     /// <c>RootComponent</c> at all) or for a prefab whose root does not carry one (defensive only - every
     /// converted prefab does, see <c>SpriteWriter.WriteEntityPrefab</c>).
     /// </summary>
@@ -254,7 +254,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// Engine-only, not part of the original struct: this entity's own map's Gravity/ZViscosity, already
     /// converted to the units <see cref="CharacterControllerSettings.Gravity"/>/<see cref="CharacterControllerSettings.MaxFallSpeed"/>
     /// expect (E3.d's own formula: <c>mapGravity*256/65536*2500</c> / <c>mapZViscosity*256/65536*50</c> -
-    /// 1250/800 on map 389). Resolved ONCE at spawn (<see cref="AlundraWorldProxy.ApplySpawnInitialization"/>/
+    /// 1250/800 on map 389). Resolved ONCE at spawn (<see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>/
     /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/>, both via <c>AlundraWorldProxy.ResolveMapGravitySettings</c>)
     /// and stashed here so <see cref="ApplyGravitySettingsToController"/> - called again by the 0x16/0x17
     /// opcode bridges every time the script toggles <see cref="Flags"/>' Gravity bit (E4.b,
@@ -325,11 +325,11 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// now gates <see cref="EvaluateEntitySupport"/>'s own decay instead, the original's own
     /// <c>PhysicsEngine.cs:1458-1476</c> gate, ported one level down). <see cref="MapGravity"/>/
     /// <see cref="MapMaxFallSpeed"/> are consequently unused by this method (kept as fields - see their own
-    /// doc, still fed by <see cref="AlundraWorldProxy.ResolveMapGravitySettings"/> for parity with the
+    /// doc, still fed by <see cref="AlundraEntitySpawnFactory.ResolveMapGravitySettings"/> for parity with the
     /// hero's own unrelated E3.d path, <see cref="AlundraWorldProxy.AdoptPlayerPawn"/>, which sets its
     /// controller's real Settings.Gravity/MaxFallSpeed directly and is OUT OF SCOPE for this fix - the hero
     /// keeps its engine-driven vertical unchanged). Called once at spawn
-    /// (<see cref="AlundraWorldProxy.ApplySpawnInitialization"/>), by the 0x16/0x17 and 0x62/0x63 opcode
+    /// (<see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>), by the 0x16/0x17 and 0x62/0x63 opcode
     /// handlers (via <see cref="ResyncControllerFromFlags"/>) every time they flip a Flags bit, and every
     /// tick from <see cref="EvaluateEntitySupport"/>'s own "not found" tail (defensive re-assertion, cheap
     /// - see that method's own doc). A no-op without a <see cref="Controller"/> (bare-fallback spawn, or a
@@ -359,7 +359,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// (delegating to <see cref="ApplyGravitySettingsToController"/>, unchanged) AND re-derives
     /// <c>Settings.WalkabilityMask</c> from the CURRENT <see cref="Flags"/> via
     /// <see cref="AlundraCellsCollisionField.WalkabilityMaskFor"/> - same pairing
-    /// <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>/<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>
+    /// <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>/<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>
     /// already apply once at spawn. Called by every opcode handler that can flip a controller-relevant bit
     /// in <see cref="Flags"/> (0x16/0x17 High/Low gravity - Gravity bit only; 0x62/0x63 Set/Clear entities
     /// flags low 16 - any bit, including Gravity/ClassA/ClassB) instead of each calling
@@ -387,7 +387,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// otherwise, <c>PhysicsEngine.cs:129-134</c>) - and pushes the pinned Z through the existing pose path
     /// (<see cref="PushLogicalPositionToRoot"/>) so THIS SAME frame's rendered/logical position is already
     /// correct - no "first frame dip" (see this class' own E4.f doc, "anti-creux" ordering:
-    /// <see cref="AlundraWorldProxy.ApplySpawnInitialization"/> already ran ONE such evaluation
+    /// <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/> already ran ONE such evaluation
     /// immediately at spawn, before this entity's own first <see cref="Update"/> or the engine's first
     /// <c>CharacterMotionSystem.UpdateControllers</c> pass ever runs). When no support is found, drives
     /// this tick's own vertical displacement through the controller instead (bug fix - see
@@ -423,7 +423,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// that method's own doc for why a controller-driven caller cannot supply the terrain half and does
     /// not need to (the engine's own ground-snap already prevents falling through real terrain
     /// independently of this entity-only clamp). <paramref name="immediateAtSpawn"/> true (the ONE-SHOT
-    /// call <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>'s own callers make right at spawn,
+    /// call <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>'s own callers make right at spawn,
     /// before <c>FinalForceZ</c> has ever been computed by a real tick - see that call site's own doc on
     /// the "anti-creux" ordering) instead passes <see cref="int.MinValue"/> as the seed, disabling the
     /// reach gate for this one evaluation only: this is NOT literally <c>CheckEntityCollisionDown</c>'s
@@ -686,9 +686,9 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// <summary>
     /// Engine-only, not part of the original struct (same as <see cref="LogicContextEntity"/>):
     /// this entity's IDSV table, resolved once at spawn from its <c>SpriteRecordCatalog</c> entry
-    /// (see <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>) and keyed by
+    /// (see <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>) and keyed by
     /// <c>(int)CurrentAnimationId * 4 + AnimationDirection</c> so the per-frame wall-interleave sort
-    /// pass (<see cref="AlundraWorldProxy.RunWallInterleaveSortKeyPass"/>) never re-looks-up the
+    /// pass (<see cref="AlundraFrameSyncPasses.RunWallInterleaveSortKeyPass"/>) never re-looks-up the
     /// catalog's own (larger, Guid-keyed) dictionary. Null when the entity's header carried no
     /// IdsvAnimDirs entries (degraded catalog, or a bank whose header simply has none); callers treat
     /// that the same as "0 bias for every (anim, direction)".
@@ -699,8 +699,8 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// Engine-only, not part of the original struct (same shape/purpose as
     /// <see cref="IdsvByAnimDirection"/>, same key packing): this entity's Hold/Chain end-of-animation
     /// table, resolved once at spawn from its <c>SpriteRecordCatalog</c> entry (see
-    /// <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>/<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>)
-    /// and read by <see cref="AlundraWorldProxy.OnAnimationFinished"/> - the bridge from the engine's
+    /// <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>/<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>)
+    /// and read by <see cref="AlundraEntitySpawnFactory.OnAnimationFinished"/> - the bridge from the engine's
     /// Once-finished event back to the original's Hold ("freeze the last frame") / Chain ("play this
     /// other animation next") semantics (EntityManager.cs:257-281). Null when the entity's header
     /// carried no IdsvAnimDirs entries, same degraded case as <see cref="IdsvByAnimDirection"/>; a miss
@@ -799,8 +799,8 @@ public class AlundraEntityScriptProxy : GameplayProxy
     ///
     /// <see cref="IsPlayer"/> is excluded from the pick/run half only (see that field's own doc - the
     /// original's own pass never picks/runs slot 0 either); every entity, player included, still gets its
-    /// per-frame animation/transform sync every frame (<see cref="AlundraWorldProxy.SyncAnimation"/> /
-    /// <see cref="AlundraWorldProxy.SyncTransform"/>, moved here from the world's own per-frame passes -
+    /// per-frame animation/transform sync every frame (<see cref="AlundraFrameSyncPasses.SyncAnimation"/> /
+    /// <see cref="AlundraFrameSyncPasses.SyncTransform"/>, moved here from the world's own per-frame passes -
     /// see those methods' own doc on why the world no longer loops over every spawned entity for this).
     ///
     /// Accepted deviation (documented per docs/plan-conversion-totale.md §5): the original picks EVERY
@@ -1192,7 +1192,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// height-field terrain - see that method's own doc for the full investigation. Samples this entity's
     /// own struct footprint (<see cref="PosX"/>/<see cref="PosY"/>/<see cref="ModX"/>/<see cref="ModY"/>/
     /// <see cref="Width"/>/<see cref="Height"/> - the original's own box, populated at spawn by
-    /// <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>), NOT <see cref="ClampToGround"/>'s own
+    /// <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>), NOT <see cref="ClampToGround"/>'s own
     /// <see cref="CollisionComponent"/> fixture - matching <c>IntroTraceHarnessTests.ComputeTerrainHeight</c>'s
     /// own corners bit-for-bit. Returns a 16.16 fixed-point height, 0 when no corner finds ground (same
     /// "sea level" fallback <c>ComputeEntityGroundHeight</c>/the harness's own port already use) - a no-op
@@ -1234,7 +1234,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// silently read the wrong cell and misreport the slope).
     ///
     /// Per corner: qualifies only when that corner's ground height (16.16, same rounding as
-    /// <see cref="SampleTerrainHeightCorner"/>) is exactly equal to <c>PosZ + ModZ</c> - i.e. the entity
+    /// <see cref="AlundraTerrainProbe.SampleTerrainHeightCorner"/>) is exactly equal to <c>PosZ + ModZ</c> - i.e. the entity
     /// is standing exactly on that corner's ground.
     ///
     /// DEVIATION FROM THE LITERAL ORIGINAL (deliberate, not a bug): the original compares
@@ -1345,7 +1345,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// surface. THIS port's own TERRAIN resting invariant is <c>ModdedPosZ == TerrainHeight</c>, no
     /// <c>+1</c> (see <see cref="UpdateGroundSlope"/>'s own long "DEVIATION FROM THE LITERAL ORIGINAL"
     /// note for why - the extra unit is silently swallowed by
-    /// <see cref="AlundraWorldProxy.ResolveLogicalPosition"/>'s own <c>posZ &gt;&gt; 16</c> truncation, so
+    /// <see cref="AlundraEntitySpawnFactory.ResolveLogicalPosition"/>'s own <c>posZ &gt;&gt; 16</c> truncation, so
     /// porting the original's <c>+1</c> literally here would make it permanently unobservable). That is
     /// why <paramref name="seed"/>'s own <c>-1</c> (folded into <c>terrainHeight</c> below, since
     /// <c>seed - 1 == terrainHeight</c> by construction) is correct when no candidate is found.
@@ -1353,7 +1353,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// The ENTITY branch does NOT carry this same offset, and must NOT have <c>-1</c> applied to it: THIS
     /// port kept the original's <c>+1</c> convention for entity-support resting, unlike terrain -
     /// <see cref="EntitySupport.TryFindSupport"/>'s own <c>platformTopZ = candidateTop + 1</c>
-    /// (<c>EntitySupport.cs:173</c>) is exactly what <see cref="AlundraWorldProxy.ApplySpawnInitialization"/>
+    /// (<c>EntitySupport.cs:173</c>) is exactly what <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>
     /// (<c>proxy.PosZ = proxy.PosZ - proxy.ModZ + 1</c>, mirroring the original's own spawn-adjust) relies
     /// on: an entity resting on a platform sits at <c>ModdedPosZ == candidateTop + 1</c>, not
     /// <c>candidateTop</c> (pinned by
@@ -1401,7 +1401,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// derived.
     ///
     /// CORRECTED AFTER REVIEW (this slice's own re-derivation, not the original commit): the FIRST
-    /// version of this port reused <see cref="SampleTerrainHeightCorner"/> -&gt;
+    /// version of this port reused <see cref="AlundraTerrainProbe.SampleTerrainHeightCorner"/> -&gt;
     /// <see cref="AlundraCellsCollisionField.TrySampleGround(in Vector3, float, out GroundSample)"/>,
     /// i.e. <see cref="ComputeTerrainHeight"/>'s own helper. That is WRONG: the original
     /// <c>GetTileHeightAtOffset</c> (<c>EntityGameplayManager.cs:338-340</c>,
@@ -1522,9 +1522,9 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// racine par frame" item 4 (grep sites: <c>AlundraEventProgramRunner</c>'s 0x64
     /// SetEntitiesPosition/0x65 AddEntitiesPositionOffset/0x8B SpawnEntityNextToEntity). A no-op for
     /// every entity WITHOUT a <see cref="Controller"/> - those keep the deferred per-frame
-    /// re-derivation <see cref="AlundraWorldProxy.SyncTransform"/> already does every frame (see that
+    /// re-derivation <see cref="AlundraFrameSyncPasses.SyncTransform"/> already does every frame (see that
     /// method's own doc), unchanged since E3.a. For a controller-driven entity the root write can no
-    /// longer wait for <see cref="AlundraWorldProxy.SyncTransform"/> - that method now skips the root
+    /// longer wait for <see cref="AlundraFrameSyncPasses.SyncTransform"/> - that method now skips the root
     /// write entirely for a controller-driven entity (item 3 of the same plan section) - so this pushes
     /// the (possibly ground-clamped, see <see cref="ClampToGround"/>) logical position onto the root
     /// immediately, re-projects the sprite the same frame, and calls

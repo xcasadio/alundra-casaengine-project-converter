@@ -129,7 +129,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
     /// walk froze on its last frame.
     ///
     /// Without <see cref="AlundraEntityScriptProxy.PendingChainRestartFlag"/> this self-chain is
-    /// invisible to the sync pass: <see cref="AlundraWorldProxy.TryResolveAnimationTarget"/> only reports
+    /// invisible to the sync pass: <see cref="AlundraFrameSyncPasses.TryResolveAnimationTarget"/> only reports
     /// work when the animation id or the direction CHANGES, and a self-chain changes neither, so
     /// <c>SetCurrentAnimation(..., forceReset: true)</c> was never reached. This test pins the exact
     /// self-chain shape (both ids equal to 1), so it fails if the restart flag is dropped.

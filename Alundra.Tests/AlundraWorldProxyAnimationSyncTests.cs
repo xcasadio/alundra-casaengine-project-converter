@@ -11,9 +11,9 @@ namespace Alundra.Tests;
 /// <summary>
 /// Covers the animation-sync port added to <see cref="AlundraWorldProxy"/>: the target-resolution part
 /// of <c>EntityManager.UpdateAnimation</c> @ 0x80038AB4
-/// (<see cref="AlundraWorldProxy.TryResolveAnimationTarget"/>), the by-suffix animation lookup
-/// (<see cref="AlundraWorldProxy.TrySelectAnimationByNameSuffix"/>) and the per-frame driver
-/// (<see cref="AlundraWorldProxy.RunAnimationSyncPass"/>). Uses real
+/// (<see cref="AlundraFrameSyncPasses.TryResolveAnimationTarget"/>), the by-suffix animation lookup
+/// (<see cref="AlundraFrameSyncPasses.TrySelectAnimationByNameSuffix"/>) and the per-frame driver
+/// (<see cref="AlundraFrameSyncPasses.RunAnimationSyncPass"/>). Uses real
 /// <see cref="AnimatedSpriteComponent"/>/<see cref="Animation2d"/> instances (both headless-constructible,
 /// as CasaEngine.Tests's own animation tests do), not a fake/spy - the component only needs asset loading
 /// for sprites, which this proxy never touches.
@@ -158,9 +158,9 @@ public class AlundraWorldProxyAnimationSyncTests
     /// User-reported bug (2026-08-26, "the walk animation does not loop when it should"). The hero's walk
     /// is exported as <c>Once</c> plus a chain edge onto ITSELF (<c>anim 1 -&gt; ChainTo 1</c>, all four
     /// directions), which is how the original spells a looping walk; his idle is a real engine
-    /// <c>Loop</c>. On the chain, <see cref="AlundraWorldProxy.OnAnimationFinished"/> writes
+    /// <c>Loop</c>. On the chain, <see cref="AlundraEntitySpawnFactory.OnAnimationFinished"/> writes
     /// <c>TargetAnimationId = 1</c> - the id it already had - so
-    /// <see cref="AlundraWorldProxy.TryResolveAnimationTarget"/> reports "no change" and the sync pass
+    /// <see cref="AlundraFrameSyncPasses.TryResolveAnimationTarget"/> reports "no change" and the sync pass
     /// used to return early, leaving the sampler parked at its terminal pose: a frozen walk.
     ///
     /// This test drives the real observable rather than an internal flag: it advances playback with

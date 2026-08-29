@@ -401,7 +401,7 @@ public static class WallPlacementOverlay
     /// tiebreak among entities sharing one row can diverge slightly from the original.
     ///
     /// SECOND DEVIATION: <paramref name="idsv"/> is only ever the CURRENT (CurrentAnimationId,
-    /// AnimationDirection) pair's frame-0 IDSV value (see <see cref="AlundraWorldProxy.RunWallInterleaveSortKeyPass"/>),
+    /// AnimationDirection) pair's frame-0 IDSV value (see <see cref="AlundraFrameSyncPasses.RunWallInterleaveSortKeyPass"/>),
     /// not the currently-displayed frame's own value. The original's animation player owns exact frame
     /// timing; this proxy does not track "which frame is currently showing" at all (see
     /// <c>AlundraWorldProxy.RunAnimationSyncPass</c>'s class doc - frame-level state is CasaEngine's own

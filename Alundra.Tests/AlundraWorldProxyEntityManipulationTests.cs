@@ -14,7 +14,7 @@ namespace Alundra.Tests;
 /// <see cref="AlundraEntitySpawnFactory.ShouldSpawnRecord(TileMapObjectData,bool,out string)"/>, the single-argument
 /// <see cref="AlundraWorldProxy.DestroyEntity(AlundraEntityScriptProxy)"/> overload, the
 /// <c>ParentEntity</c> threading through the shared spawn path, transform re-derivation
-/// (<see cref="AlundraWorldProxy.RunTransformSyncPass"/>) and destroyed-entity visibility/skip in the
+/// (<see cref="AlundraFrameSyncPasses.RunTransformSyncPass"/>) and destroyed-entity visibility/skip in the
 /// per-frame passes. <see cref="AlundraWorldProxy.SpawnEntityByRecordId"/>'s live-<c>World</c> path is
 /// intentionally not exercised here for the same reason <see cref="AlundraWorldProxyTests"/> does not
 /// cover <see cref="AlundraWorldProxy.InitializeWithWorld"/>'s live prefab loader - it needs a running

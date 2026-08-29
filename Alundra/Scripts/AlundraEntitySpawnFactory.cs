@@ -229,7 +229,7 @@ internal static class AlundraEntitySpawnFactory
     /// teardown. A FlagToDestroy entity's <see cref="OnAnimationFinished"/> calls (should its sampler
     /// still run while invisible) are themselves harmless: every per-frame pass that reads
     /// <see cref="AlundraEntityScriptProxy.ForceResetAnimationFlag"/>/<c>TargetAnimationId</c>
-    /// (<see cref="SyncAnimation"/>, <see cref="RunPendingEventTriggers"/>) already skips FlagToDestroy
+    /// (<see cref="AlundraFrameSyncPasses.SyncAnimation"/>, <see cref="RunPendingEventTriggers"/>) already skips FlagToDestroy
     /// entities.
     /// </summary>
     internal static void SubscribeAnimationEndBridge(Entity entity)
@@ -259,11 +259,11 @@ internal static class AlundraEntitySpawnFactory
     /// class doc) - nothing else to do.</description></item>
     /// <item><description>Chain: sets <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> to the
     /// chain target (EntityManager.cs:277-279). <see cref="AlundraEntityScriptProxy.Update"/> calls
-    /// <see cref="SyncAnimation"/> every frame regardless, so the very next call - later this SAME
+    /// <see cref="AlundraFrameSyncPasses.SyncAnimation"/> every frame regardless, so the very next call - later this SAME
     /// frame, since the component pass already ran - notices <c>TargetAnimationId</c> changed and
     /// switches animation: the same-tick effect the original gets from its own recursive
     /// <c>UpdateAnimation</c> call (EntityManager.cs:280), without this bridge needing to call
-    /// <see cref="SyncAnimation"/> itself.</description></item>
+    /// <see cref="AlundraFrameSyncPasses.SyncAnimation"/> itself.</description></item>
     /// </list>
     /// A lookup miss (no entry for the just-finished (anim, direction), including every Loop entry -
     /// see <see cref="BuildAnimationEndByAnimDirection"/>) is a no-op: the engine already looped or

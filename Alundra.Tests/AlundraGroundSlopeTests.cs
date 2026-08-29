@@ -117,7 +117,7 @@ public class AlundraGroundSlopeTests
         return proxy;
     }
 
-    /// <summary>16.16 ground height (px) matching <see cref="AlundraEntityScriptProxy.SampleTerrainHeightCorner"/>'s
+    /// <summary>16.16 ground height (px) matching <see cref="AlundraTerrainProbe.SampleTerrainHeightCorner"/>'s
     /// own rounding - the exact <c>ModdedPosZ</c> a resting player entity carries in THIS port (F1 fix,
     /// docs/plan-echelles-chiffrage.md: the qualification rule is <c>height == ModdedPosZ</c>, no <c>+1</c>
     /// - see <see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>'s own doc for why this port never

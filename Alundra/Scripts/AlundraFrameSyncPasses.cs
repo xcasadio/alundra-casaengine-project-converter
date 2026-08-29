@@ -61,7 +61,7 @@ internal static class AlundraFrameSyncPasses
     /// (<c>World.InternalAddEntities</c>, called before any entity's <c>GameplayProxy.Update</c> ever
     /// runs), so its <see cref="AnimatedSpriteComponent.Animations"/> list is already populated - and every
     /// freshly spawned entity has <c>CurrentAnimationId = ~TargetAnimationId</c> (spawn-time bit-complement,
-    /// see <see cref="ApplySpawnInitialization"/>/<see cref="SpawnPlayerEntity"/>, guaranteed different from
+    /// see <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>/<see cref="SpawnPlayerEntity"/>, guaranteed different from
     /// <c>TargetAnimationId</c>), so the very first sync always fires and sets the entity's initial visual.
     ///
     /// Frame-level animation state (<c>Frame</c>/<c>NextFrameDelay</c>/<c>AnimCompleteCounter</c>, the rest
@@ -119,20 +119,20 @@ internal static class AlundraFrameSyncPasses
     }
 
     /// <summary>
-    /// Transform re-derivation: re-applies <see cref="ResolveLogicalPosition"/> to every spawned entity's
+    /// Transform re-derivation: re-applies <see cref="AlundraEntitySpawnFactory.ResolveLogicalPosition"/> to every spawned entity's
     /// <c>RootComponent.LocalTransform.Position</c> from its CURRENT logical
     /// <see cref="AlundraEntityScriptProxy.PosX"/>/<see cref="AlundraEntityScriptProxy.PosY"/>/
     /// <see cref="AlundraEntityScriptProxy.PosZ"/>, every frame, for every spawned entity - the original
     /// recomputes screen position from the logical position every frame (there is no cached "world
     /// transform" struct in the PSX engine, the renderer projects PosX/PosY/PosZ straight from the entity
     /// struct each frame), it never trusts a stale, spawn-time-only placement. This supersedes
-    /// <see cref="CreateEntityFromPrefab"/>'s own spawn-time-only <c>ResolveLogicalPosition</c> call (still
+    /// <see cref="AlundraEntitySpawnFactory.CreateEntityFromPrefab"/>'s own spawn-time-only <c>ResolveLogicalPosition</c> call (still
     /// needed there so a freshly spawned, not-yet-<see cref="Update"/>-ed entity has a sane initial
     /// transform for its very first draw) - see that method's own doc, and
     /// <c>WallPlacementOverlay.ApplyEntitySortKey</c>'s deviation note, now resolved by this pass.
     /// Required for the search-driven position opcodes (0x64/0x65) to have any visible effect: without
     /// this, PosX/PosY/PosZ change but nothing ever reads them again. Field write only, no allocation - a
-    /// bare-fallback spawn (<see cref="CreateBareEntityFromRecord"/>) has no <c>RootComponent</c> and is
+    /// bare-fallback spawn (<see cref="AlundraEntitySpawnFactory.CreateBareEntityFromRecord"/>) has no <c>RootComponent</c> and is
     /// skipped, same as a destroyed entity (see <see cref="RunAnimationSyncPass"/>'s own doc on the
     /// FlagToDestroy check).
     /// </summary>
@@ -191,7 +191,7 @@ internal static class AlundraFrameSyncPasses
     /// resolved at spawn - no per-frame catalog dictionary lookup here) - field writes/one small-dictionary
     /// lookup only, the overlay tiles themselves are built once in <see cref="InitializeWithWorld"/> and
     /// never touched again. An entity without a <see cref="DepthSortable2DComponent"/> (the bare-fallback
-    /// spawn path, <see cref="CreateBareEntityFromRecord"/>) is skipped - it carries no sprite to sort in
+    /// spawn path, <see cref="AlundraEntitySpawnFactory.CreateBareEntityFromRecord"/>) is skipped - it carries no sprite to sort in
     /// the first place. A <see cref="EntityStatus.FlagToDestroy"/> entity is skipped too, same as
     /// <see cref="RunAnimationSyncPass"/> and <see cref="RunTransformSyncPass"/>.
     /// </summary>
