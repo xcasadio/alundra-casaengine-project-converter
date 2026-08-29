@@ -1164,10 +1164,10 @@ public class AlundraEntityScriptProxy : GameplayProxy
 
         var hasGround = false;
         var groundMax = 0f;
-        SampleGroundCorner(field, minX, minY, ref hasGround, ref groundMax);
-        SampleGroundCorner(field, minX, maxY, ref hasGround, ref groundMax);
-        SampleGroundCorner(field, maxX, minY, ref hasGround, ref groundMax);
-        SampleGroundCorner(field, maxX, maxY, ref hasGround, ref groundMax);
+        AlundraTerrainProbe.SampleGroundCorner(field, minX, minY, ref hasGround, ref groundMax);
+        AlundraTerrainProbe.SampleGroundCorner(field, minX, maxY, ref hasGround, ref groundMax);
+        AlundraTerrainProbe.SampleGroundCorner(field, maxX, minY, ref hasGround, ref groundMax);
+        AlundraTerrainProbe.SampleGroundCorner(field, maxX, maxY, ref hasGround, ref groundMax);
 
         if (!hasGround)
         {
@@ -1211,23 +1211,11 @@ public class AlundraEntityScriptProxy : GameplayProxy
         var y1 = (PosY + ModY) >> 16;
         var y2 = (PosY + ModY + Height) >> 16;
         var highest = int.MinValue;
-        SampleTerrainHeightCorner(field, x1, y1, ref highest);
-        SampleTerrainHeightCorner(field, x2, y1, ref highest);
-        SampleTerrainHeightCorner(field, x1, y2, ref highest);
-        SampleTerrainHeightCorner(field, x2, y2, ref highest);
+        AlundraTerrainProbe.SampleTerrainHeightCorner(field, x1, y1, ref highest);
+        AlundraTerrainProbe.SampleTerrainHeightCorner(field, x2, y1, ref highest);
+        AlundraTerrainProbe.SampleTerrainHeightCorner(field, x1, y2, ref highest);
+        AlundraTerrainProbe.SampleTerrainHeightCorner(field, x2, y2, ref highest);
         return highest == int.MinValue ? 0 : highest;
-    }
-
-    private static void SampleTerrainHeightCorner(ICollisionField field, int px, int py, ref int best)
-    {
-        if (field.TrySampleGround(new Vector3(px, py, 0f), float.MaxValue, out var sample) && sample.HasGround)
-        {
-            var height = (int)Math.Round((double)sample.GroundHeight * 65536.0);
-            if (height > best)
-            {
-                best = height;
-            }
-        }
     }
 
     /// <summary>
@@ -1311,35 +1299,12 @@ public class AlundraEntityScriptProxy : GameplayProxy
         var moddedPosZ = PosZ + ModZ;
 
         var bestFlagMask = 0xe00u;
-        ProbeSlopeCorner(cellsField, x1, y1, moddedPosZ, ref bestFlagMask);
-        ProbeSlopeCorner(cellsField, x2, y1, moddedPosZ, ref bestFlagMask);
-        ProbeSlopeCorner(cellsField, x1, y2, moddedPosZ, ref bestFlagMask);
-        ProbeSlopeCorner(cellsField, x2, y2, moddedPosZ, ref bestFlagMask);
+        AlundraTerrainProbe.ProbeSlopeCorner(cellsField, x1, y1, moddedPosZ, ref bestFlagMask);
+        AlundraTerrainProbe.ProbeSlopeCorner(cellsField, x2, y1, moddedPosZ, ref bestFlagMask);
+        AlundraTerrainProbe.ProbeSlopeCorner(cellsField, x1, y2, moddedPosZ, ref bestFlagMask);
+        AlundraTerrainProbe.ProbeSlopeCorner(cellsField, x2, y2, moddedPosZ, ref bestFlagMask);
 
         Slope_18c = (int)(bestFlagMask >> 9);
-    }
-
-    private static void ProbeSlopeCorner(
-        AlundraCellsCollisionField field, int px, int py, int moddedPosZ, ref uint bestFlagMask)
-    {
-        var position = new Vector3(px, py, 0f);
-        if (field.TrySampleGround(position, float.MaxValue, out var sample) && sample.HasGround)
-        {
-            var height = (int)Math.Round((double)sample.GroundHeight * 65536.0);
-            if (height == moddedPosZ)
-            {
-                var groundProperty = field.SampleGroundProperty(position);
-                var masked = ((uint)groundProperty << 8) & 0xe00u;
-                if (masked < bestFlagMask)
-                {
-                    bestFlagMask = masked;
-                }
-
-                return;
-            }
-        }
-
-        bestFlagMask = 0;
     }
 
     /// <summary>
@@ -1543,35 +1508,12 @@ public class AlundraEntityScriptProxy : GameplayProxy
         var y2 = (PosY + ModY + offsetY + Height) >> 16;
 
         var best = 0;
-        SampleRawTileHeightCorner(cellsField, x1, y1, ref best);
-        SampleRawTileHeightCorner(cellsField, x2, y1, ref best);
-        SampleRawTileHeightCorner(cellsField, x1, y2, ref best);
-        SampleRawTileHeightCorner(cellsField, x2, y2, ref best);
+        AlundraTerrainProbe.SampleRawTileHeightCorner(cellsField, x1, y1, ref best);
+        AlundraTerrainProbe.SampleRawTileHeightCorner(cellsField, x2, y1, ref best);
+        AlundraTerrainProbe.SampleRawTileHeightCorner(cellsField, x1, y2, ref best);
+        AlundraTerrainProbe.SampleRawTileHeightCorner(cellsField, x2, y2, ref best);
 
         return best << 20;
-    }
-
-    private static void SampleRawTileHeightCorner(AlundraCellsCollisionField field, int px, int py, ref int best)
-    {
-        var height = field.SampleRawCellHeight(new Vector3(px, py, 0f));
-        if (height > best)
-        {
-            best = height;
-        }
-    }
-
-    private static void SampleGroundCorner(ICollisionField field, float x, float y, ref bool hasGround, ref float groundMax)
-    {
-        if (!field.TrySampleGround(new Vector3(x, y, 0f), float.MaxValue, out var sample) || !sample.HasGround)
-        {
-            return;
-        }
-
-        if (!hasGround || sample.GroundHeight > groundMax)
-        {
-            groundMax = sample.GroundHeight;
-            hasGround = true;
-        }
     }
 
     /// <summary>
