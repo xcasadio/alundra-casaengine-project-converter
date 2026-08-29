@@ -122,7 +122,7 @@ avait relevé qu'un `CloseFrame` manqué ou doublé est silencieux à l'intérie
 suivie, `0x69` force le look-at) et n'en **lisent** aucun ; le bloc caméra lit cet état. Déplacer la
 caméra après les map-events ne crée donc aucune dépendance circulaire.
 
-## 4. Tranche unique C1 — réordonner, avec un test qui échoue d'abord
+## 4. Tranche unique C1 — réordonner, avec un test qui échoue d'abord ✅ `5271400`
 
 **Ordre imposé, et c'est le fond de la tranche** : écrire le test **avant** le correctif et **le voir
 échouer**. Un test écrit après un correctif ne prouve pas qu'il corrige quelque chose.
@@ -168,3 +168,33 @@ d'exécution ; **validation en jeu par l'utilisateur**.
 **Arrêts** : si un golden bouge ; si le correctif exige de toucher un des trois invariants ; si le
 test de l'étape 1 passe avant correctif ; **si une assertion existante du fichier de caractérisation
 doit changer** ; si un élargissement de visibilité autre que les deux nommés s'avère nécessaire.
+
+## 5. Réalisé (2026-08-29)
+
+**Livrée. Reste la validation en jeu par l'utilisateur** : la caméra ne devrait plus sauter au
+démarrage.
+
+- **Le protocole a tenu, et c'est lui qui donne sa valeur au correctif** : le test a été écrit
+  d'abord et **vu échouer** — `{564,−200,0}` attendu, `{1,14,0}` obtenu, soit exactement la position
+  **d'avant** le déplacement calculée par `ComputeCameraLookAtRenderPosition`. Preuve directe que la
+  caméra lisait un état périmé. Mutation rejouée en session principale : remettre l'ancien ordre
+  reproduit cet échec **et lui seul**.
+- **Les six items de caractérisation sont restés verts ET intacts** — diff de 99 ajouts, **zéro
+  suppression**. C'était la prédiction du plan (ils n'exercent pas la passe de map-events) et c'est
+  exactement le service qu'un oracle écrit à l'avance doit rendre.
+- **Défaut de montage attrapé avant le correctif, pas après** : la première tentative échouait sur
+  l'assertion de sanité et non sur le comportement visé, parce que la garde de créneau vide de
+  `RunMapEventsPass` (`& 0x7F == 0`) traite `128` comme un créneau inoccupé. Corrigé en `129` avant
+  de toucher `Update`. Sans cette vérification, un test rouge « pour la mauvaise raison » aurait
+  ensuite viré au vert et **semblé** prouver le correctif.
+- **Écart de rédaction du plan** : le §4 laissait entendre que `128` convenait comme index de
+  programme B ; c'est l'opérande `0x80` du `0x64` (« le propriétaire ») qui vaut 0x80, pas l'index
+  de créneau. Détail de montage, sans effet sur ce qui est prouvé.
+- **Bénéfice secondaire, mesuré** : `CloseFrame` n'a plus qu'**un seul** site d'appel au lieu de
+  deux — la reconnaissance avait relevé qu'un appel manqué ou doublé y est silencieux à l'intérieur
+  d'une frame.
+- **Deux élargissements de visibilité**, ceux nommés par le plan et aucun autre : le setter de
+  `PlayerEntity` et `BuildMapEvents`, pour qu'un test atteigne la passe de map-events par
+  `proxy.Update`.
+- Suites : `Alundra.Tests` **596**, convertisseur **138**, build 0 erreur, **goldens non déplacés**
+  avec preuve d'exécution.
