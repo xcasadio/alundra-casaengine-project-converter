@@ -461,11 +461,13 @@ dialogues, E13 HUD, puis combat/objets).
 un `AlundraPadState` directement à `MovePlayer`, donc ils n'échoueraient pas si quelqu'un vidait le pad
 en amont via `IsInputEnable` — c'est un trou de couverture assumé, faute de harnais d'entrée headless.
 
-### E7 — Mutation de tuiles à chaud ✅ code livré, validation runtime en attente
+### E7 — Mutation de tuiles à chaud ✅ CLOSE (validée en jeu par l'utilisateur, 2026-08-28)
 
 Plan détaillé : [plan-e7-mutation-tuiles.md](plan-e7-mutation-tuiles.md). Tranches E7.a `326917e`,
-E7.b `9493b78`, E7.b-bis (moteur `1c5bf445` + pointeur `1215f3b`), E7.c `e5d73bb`. Reste **E7.d** :
-validation en jeu par l'utilisateur.
+E7.b `9493b78`, E7.b-bis (moteur `1c5bf445` + pointeur `1215f3b`), E7.c `e5d73bb`, clôture **E7.d**.
+**Validée en jeu par l'utilisateur** : écoutilles fermées à l'entrée, trappe animée pendant l'intro,
+ouverture au passage du joueur, tuiles animées sans saut. Seule réserve, attendue et hors périmètre :
+**pas de son** — `0xBD` est un no-op dégradé et le son 61 de la trappe attend **E11**.
 
 - **But (reformulé par la reconnaissance)** : les « portes B 130-133 » sont **quatre écoutilles** du
   pont (destinations 1×2 : (18,37), (15,27), (21,27), (16,41)), et la « trappe du marin 15 » est la
@@ -484,8 +486,9 @@ validation en jeu par l'utilisateur.
   joueur. **0x2F n'est pas un test de direction** malgré son nom : c'est un test de bouton du pad.
 - **Acceptation** : tests — `Alundra.Tests` 589, convertisseur 138, moteur sans nouvel échec (18
   préexistants), goldens d'intro re-baselinés en ré-étiquetage prouvé pur, quatre traces du héros
-  byte-identiques. **Runtime (E7.d, utilisateur)** : écoutilles fermées à l'entrée de map, trappe
-  animée pendant l'intro, ouverture au passage du joueur poussant vers le haut.
+  byte-identiques. **Runtime : VALIDÉ par l'utilisateur le 2026-08-28** — écoutilles fermées à
+  l'entrée de map, trappe animée pendant l'intro, ouverture au passage du joueur poussant vers le
+  haut, tuiles animées sans saut.
 - **Dépendances** : E3 (champ) — satisfaite. E8 n'était pas un prérequis.
 - **Non portés, documentés** : opcode 0x56 (copie via la table `MapCopies`, non exportée) ; tuiles
   cassables (`CheckAndTriggerTileEffect`, combat) ; consommateur warp du bit `GroundProperty` 0x80
@@ -577,7 +580,7 @@ validation en jeu par l'utilisateur.
 | E4 déplacement scripté (E4.0/a/b/c/d/f) | ✅ (verifiers CONFIRMED ; runtime à valider par l'utilisateur) | voir git log ; moteur a9267735 |
 | E5 caméra | ✅ (verifier CONFIRMED ; runtime à valider par l'utilisateur) | cc1fc60 + 1507afc |
 | E6 contrôle joueur | ⏳ | |
-| E7 mutation de tuiles | ✅ code livré, runtime à valider | `326917e`, `9493b78`, moteur `1c5bf445`+`1215f3b`, `e5d73bb` |
+| E7 mutation de tuiles | ✅ close (validée en jeu) | `326917e`, `9493b78`, moteur `1c5bf445`+`1215f3b`, `e5d73bb` |
 | E8 profondeur murs/sols moteur | ⏳ | |
 | E9 backdrops moteur | ⏳ | |
 | E10 fondu/transitions moteur | ⏳ | |

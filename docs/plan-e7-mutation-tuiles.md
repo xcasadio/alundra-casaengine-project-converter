@@ -720,8 +720,27 @@ deux entrées de forçage).
   D-E7-11 re-dérive la tuile de **toutes** les entités de la passe, pas seulement du joueur : plus
   fidèle à `PhysicsEngine.cs:1698-1700`, et sans effet prouvé par le ré-étiquetage pur.
 
-### E7.d — Clôture ⏳
+### E7.d — Clôture ✅ (2026-08-28)
 
-- Validation runtime par l'utilisateur (écoutilles fermées à l'entrée, trappe animée pendant
-  l'intro, ouverture au passage du joueur) ; mise à jour de `plan-conversion-totale.md` (§4 E7,
-  écarts) ; mémoire de session.
+**L'utilisateur valide E7 en jeu : « je valide tout ».** Les quatre observables du plan sont donc
+tenus au runtime — écoutilles fermées à l'entrée de map, trappe animée pendant l'intro, ouverture au
+passage du joueur, et pas de saut des tuiles animées lors d'une mutation (E7.b-bis).
+
+**Une seule réserve remontée, attendue et hors périmètre : « il n'y a pas encore de son ».** C'est
+exactement l'écart déjà consigné — `0xBD` (`Play sound 2`) est un **no-op dégradé** dans le dispatch
+(`AlundraEventProgramRunner.cs:627-629`, `LogDegradedOpcodeOnce(0xBD, "PlaySound2", "sound system")`),
+et le **son 61 est précisément celui de la trappe** (`intro-roadmap.md:150, :299`). Les 15 dispatches
+de 0xBD de l'intro (ambiance 44, mouettes 45, 46, trappe 61) attendent tous **E11 audio**
+(`intro-roadmap.md:394`). Aucune action E7 : le son n'a jamais fait partie de cette étape.
+
+**Bilan de l'étape** : 4 tranches livrées (E7.a `326917e`, E7.b `9493b78`, E7.b-bis moteur
+`1c5bf445` + pointeur `1215f3b`, E7.c `e5d73bb`), 8 passes de vérification toutes CONFIRMED au
+final, **11 blocages réels trouvés par le plan-verifier** avant exécution, et 3 défauts attrapés en
+session principale ou par les passes adversariales. `Alundra.Tests` 538 → **589**, convertisseur
+**138** inchangé, moteur sans nouvel échec (18 préexistants), goldens d'intro re-baselinés **deux
+fois** en ré-étiquetage prouvé pur, quatre traces du héros byte-identiques d'un bout à l'autre.
+
+**Ce que E7 laisse pour la suite** (déjà consigné, ne pas redécouvrir) : les différés P3/P4 d'E7.b et
+E7.c listés dans leurs sections « Réalisé » respectives ; les deux lacunes de phase résiduelles
+d'E7.b-bis ; et les non-portés de l'enveloppe (0x56, tuiles cassables, warp derrière le bit
+`GroundProperty` 0x80 → E10, snapshots de pad 2 et 3).
