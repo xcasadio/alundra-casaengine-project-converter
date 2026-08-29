@@ -339,18 +339,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// without exposing either on the public surface.</summary>
     internal AlundraCellVisualSync? CellVisualSync => _cellVisualSync;
 
-    /// <summary>Renders this world's scrolling background layers (see <see cref="BackdropRenderer"/>'s
-    /// class doc) - loaded once in <see cref="InitializeWithWorld"/>, ticked and drawn every frame
-    /// from <see cref="Update"/>.</summary>
-    private readonly BackdropRenderer _backdropRenderer = new();
-
-    /// <summary>Cached once <see cref="ApplyOriginalBackgroundClearColor"/> has set the world's runtime
-    /// view <see cref="CasaEngine.Framework.Rendering.RenderView.ClearColor"/> - the view does not
-    /// exist yet when <see cref="InitializeWithWorld"/> runs (<c>GameManager.EndLoadContent</c> calls
-    /// <c>World.LoadContent</c>, which drives this proxy, strictly before
-    /// <c>IRuntimeViewBootstrapper.BootstrapViews</c>), so the lookup is retried lazily from
-    /// <see cref="Update"/>, mirroring <see cref="_debugCameraLookupDone"/>'s own one-time-retry shape.</summary>
-    private bool _clearColorApplied;
+    /// <summary>
+    /// Rendering instance wiring (S3, docs/plan-update-caracterisation.md) - built in this FIELD
+    /// INITIALIZER, never lazily and never handed a back-reference to this proxy (trap 9: <see cref="Clone"/>
+    /// returns a bare <c>new AlundraWorldProxy()</c> and copies nothing, which stays safe only while every
+    /// collaborator is constructed exactly this way).
+    /// </summary>
+    internal readonly AlundraBackdropStage _backdropStage = new();
 
     /// <summary>Bug fix (see <see cref="AlundraLogicClock"/>'s own class doc for the full diagnosis): this
     /// world's ONE shared 50 Hz logic clock - every spawned entity's own <see cref="AlundraEntityScriptProxy.Update"/>
@@ -369,7 +364,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // next UpdateCameraFollow call snaps straight to that frame's look-at instead of scrolling in from
         // the engine's default camera Target. Requalified to the camera director (S2's extended proof
         // rule delta (b)) since that flag moved there.
-        _cameraDirector._cameraNeedsSnap = true;
+        _cameraDirector.ArmFirstFrameSnap();
 
         // The engine enables its physics debug wireframes by default (PhysicsDebugViewRendererComponent
         // .DisplayPhysics = true), which draws every kinetic body box - one white rectangle per spawned
@@ -390,7 +385,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // Scrolling background layers (see BackdropRenderer's class doc) - same degraded-mode shape as
         // the event-program document above: a world with no companion file (most of them - Scroll
         // Parameters.Infos.Enabled was false) simply renders nothing extra.
-        _backdropRenderer.Load(world, EngineEnvironment.ProjectPath);
+        // S3 (docs/plan-update-caracterisation.md): _backdropRenderer now lives on _backdropStage
+        // (requalified field access, extended proof rule delta (b), same shape as S2's
+        // _cameraDirector.ArmFirstFrameSnap()) - this Load call needs a live GraphicsDevice, so it stays
+        // here rather than moving into the stage's own members.
+        _backdropStage.Load(world, EngineEnvironment.ProjectPath);
 
         var tileMapEntity = world.Entities.FirstOrDefault(entity => entity.Name == TileMapEntityName);
         if (tileMapEntity == null)
@@ -1019,8 +1018,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         _cameraDirector.UpdateDebugCameraPan(elapsedTime, _world);
 
         // Rendering-only passes - per rendered frame, same reasoning.
-        ApplyOriginalBackgroundClearColorOnce();
-        UpdateAndDrawBackdrop(elapsedTime);
+        // S3 (docs/plan-update-caracterisation.md): the rendering wiring itself now lives on
+        // _backdropStage; _world is read here at USE TIME and passed in per frame (extended proof rule
+        // delta (a)), and the resolved camera is passed in rather than re-looked-up (delta (a), the one
+        // named for S3) since it is _cameraDirector's own state.
+        _backdropStage.ApplyOriginalBackgroundClearColorOnce(_world);
+        _backdropStage.UpdateAndDrawBackdrop(elapsedTime, _world, _cameraDirector.ResolvedCamera);
 
         if (PlayerEntity != null)
         {
@@ -1163,63 +1166,6 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 keepGoing = true;
             }
         } while (keepGoing);
-    }
-
-    /// <summary>
-    /// Sets the world's runtime view <see cref="CasaEngine.Framework.Rendering.RenderView.ClearColor"/>
-    /// to the original engine's own background clear (<c>AlundraGame.Draw</c>'s
-    /// <c>GraphicsDevice.Clear(Color.Black)</c>, both for the game's off-screen render target and the
-    /// final backbuffer blit - alundra-datas-analyser/AlundraTools/AlundraGame/AlundraGame.cs:199,236)
-    /// instead of the engine's default <c>Color.CornflowerBlue</c>
-    /// (<see cref="CasaEngine.Framework.Application.DefaultRuntimeViewBootstrapper"/>): without this,
-    /// every pixel no cell tile (or, now, no <see cref="BackdropRenderer"/> layer) covers shows
-    /// turquoise instead of the black the original always drew there. Retried lazily once per world
-    /// from <see cref="Update"/> (see <see cref="_clearColorApplied"/>'s own doc for why
-    /// <see cref="InitializeWithWorld"/> is too early to find the view).
-    /// </summary>
-    private void ApplyOriginalBackgroundClearColorOnce()
-    {
-        if (_clearColorApplied || _world?.Game == null)
-        {
-            return;
-        }
-
-        foreach (var view in _world.Game.GameManager.ViewManager.Views)
-        {
-            if (view.World == _world)
-            {
-                view.ClearColor = Color.Black;
-                _clearColorApplied = true;
-                break;
-            }
-        }
-    }
-
-    /// <summary>Ticks and draws this world's scrolling background layers - see
-    /// <see cref="BackdropRenderer"/>'s class doc for the render pass/camera-space reasoning. A no-op
-    /// when the world has no backdrop companion at all, or one with neither a Tiles-mode layer nor the
-    /// overlay tint (the common case), or before the engine's <see cref="SpriteRendererComponent"/>/
-    /// debug camera are resolvable.</summary>
-    private void UpdateAndDrawBackdrop(float elapsedTime)
-    {
-        if (!_backdropRenderer.HasContent || _world?.Game == null)
-        {
-            return;
-        }
-
-        _backdropRenderer.Tick(elapsedTime);
-
-        var spriteRenderer = _world.Game.GetGameComponent<SpriteRendererComponent>();
-        if (spriteRenderer == null)
-        {
-            return;
-        }
-
-        // Reuses the same camera the debug pan drives (see AlundraCameraDirector.UpdateDebugCameraPan,
-        // which already ran earlier this frame and resolved it) - both are "the world's camera", and the
-        // runtime has no other camera reference yet (E4 follow-up).
-        var cameraPosition = _cameraDirector.ResolvedCamera?.Target ?? Vector3.Zero;
-        _backdropRenderer.Draw(spriteRenderer, cameraPosition, _world.Game.ScreenSizeWidth, _world.Game.ScreenSizeHeight);
     }
 
     /// <summary>

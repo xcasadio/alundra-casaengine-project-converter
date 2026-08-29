@@ -117,7 +117,7 @@ internal sealed class AlundraCameraDirector
     /// own extended proof rule delta (b)), cleared by the first <see cref="UpdateCameraFollow"/> call
     /// that finds the camera. Internal (rather than private) purely so
     /// <c>AlundraWorldProxy.InitializeWithWorld</c> can requalify that one write to its new owner.</summary>
-    internal bool _cameraNeedsSnap;
+    private bool _cameraNeedsSnap;
 
     /// <summary>E5.a (decision E5-2): the smoothed render-space camera target - this class' own float
     /// catch-up state, written every frame by <see cref="UpdateCameraFollow"/> (snap-or-lerp), then
@@ -316,4 +316,12 @@ internal sealed class AlundraCameraDirector
         _debugCamera.Target = _debugCameraBase + _debugCameraOffset;
         _debugCameraLastWrittenTarget = _debugCamera.Target;
     }
+
+    /// <summary>
+    /// Arms the first-frame snap, so the next <see cref="UpdateCameraFollow"/> jumps straight to the
+    /// followed target instead of scrolling in. Called from <c>AlundraWorldProxy.InitializeWithWorld</c>.
+    /// Exposed as an operation rather than as a writable field, for the reason given on
+    /// <c>AlundraBackdropStage.Load</c>.
+    /// </summary>
+    internal void ArmFirstFrameSnap() => _cameraNeedsSnap = true;
 }
