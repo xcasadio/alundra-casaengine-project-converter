@@ -94,7 +94,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// code paths.</summary>
     private static bool? _debugCameraPanEnabledOverrideForTests;
 
-    private static bool DebugCameraPanEnabled
+    /// <summary>Internal (widened from private, S2's base extraction rule) so
+    /// <see cref="AlundraCameraDirector.UpdateDebugCameraPan"/> can read it after the camera wiring moved
+    /// out of this class.</summary>
+    internal static bool DebugCameraPanEnabled
         => _debugCameraPanEnabledOverrideForTests ?? DebugCameraPanEnabledFromEnvironment;
 
     /// <summary>Test-only read of <see cref="DebugCameraPanEnabled"/> - that property itself is private
@@ -251,48 +254,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     private TileMapData? _tileMapData;
 
-    /// <summary>DEBUG ONLY. Cached <see cref="Camera2dComponent"/> of the world's camera
-    /// entity, resolved once on first <see cref="Update"/> call; stays null (and logs once) when the
-    /// world has no such entity/component.</summary>
-    private Camera2dComponent? _debugCamera;
-
-    /// <summary>DEBUG ONLY. Guards the one-time <see cref="_debugCamera"/> lookup/warning.</summary>
-    private bool _debugCameraLookupDone;
-
     /// <summary>
-    /// DEBUG ONLY (see <see cref="UpdateDebugCameraPan"/>). The stick-accumulated pan offset applied on
-    /// top of <see cref="_debugCameraBase"/> - <c>Z</c> is always 0 (matching
-    /// <see cref="AlundraCameraMath.ComputeDebugCameraPanOffset"/>'s own contract). Reset to <see cref="Vector3.Zero"/> by
-    /// an R3 (right-stick) click; never touched at all while
-    /// <see cref="DebugCameraPanEnabled"/> is false.
+    /// Camera instance wiring (S2, docs/plan-update-caracterisation.md) - built in this FIELD
+    /// INITIALIZER, never lazily and never handed a back-reference to this proxy (trap 9: <see cref="Clone"/>
+    /// returns a bare <c>new AlundraWorldProxy()</c> and copies nothing, which stays safe only while every
+    /// collaborator is constructed exactly this way). Internal (rather than private) purely so
+    /// AlundraWorldProxyUpdateCharacterizationTests' <c>SeedDebugCameraOffset</c> helper can reach this
+    /// instance directly - the private-&gt;internal widening the plan's base extraction rule already
+    /// permits - instead of adding a second reflection hop.
     /// </summary>
-    private Vector3 _debugCameraOffset;
-
-    /// <summary>
-    /// DEBUG ONLY (see <see cref="UpdateDebugCameraPan"/>). This debug tool's notion of the camera's
-    /// "real" target - whatever the camera's own behavior (a future E5 follow-target script, or nothing
-    /// yet) last put in <see cref="Camera2dComponent.Target"/>, with the stick's own
-    /// <see cref="_debugCameraOffset"/> subtracted back out. Adopted fresh from
-    /// <see cref="Camera2dComponent.Target"/> whenever that no longer matches
-    /// <see cref="_debugCameraLastWrittenTarget"/> - see <see cref="AlundraCameraMath.ResolveDebugCameraBase"/>.
-    /// </summary>
-    private Vector3 _debugCameraBase;
-
-    /// <summary>
-    /// DEBUG ONLY. True once <see cref="_debugCameraBase"/> has been seeded from the camera's actual
-    /// <see cref="Camera2dComponent.Target"/> on the first tick the camera was found - before that, there
-    /// is no prior write to compare <see cref="Camera2dComponent.Target"/> against, so
-    /// <see cref="AlundraCameraMath.ResolveDebugCameraBase"/> would otherwise wrongly treat the camera's initial target as
-    /// "unchanged from a stale zero base".
-    /// </summary>
-    private bool _debugCameraBaseInitialized;
-
-    /// <summary>
-    /// DEBUG ONLY. The exact <see cref="Camera2dComponent.Target"/> value this proxy itself wrote last
-    /// frame (<c>base + offset</c>) - compared against the camera's current <c>Target</c> each frame to
-    /// detect an external write (see <see cref="_debugCameraBase"/>'s own doc).
-    /// </summary>
-    private Vector3 _debugCameraLastWrittenTarget;
+    internal readonly AlundraCameraDirector _cameraDirector = new();
 
     /// <summary>
     /// E5.a: port of <c>g_entityFollowedByCamera</c> (GameEngine.cs) - see
@@ -302,42 +273,18 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
 
-    /// <summary>E5.a: port of <c>g_cameraLookAtX/Y/Z</c> - plain pixel ints (not 16.16 fixed-point),
-    /// updated every frame from <see cref="EntityFollowedByCamera"/> while it is non-null and
-    /// <see cref="AlundraEntityScriptProxy.IsLoadedNormalOrDeactivated"/> (port of
-    /// <c>GameEngine.cs:1747-1752</c>'s own <c>UpdateEntities</c> gate); left untouched otherwise - a
-    /// destroyed target FREEZES the camera on its last look-at, never falls back to the player (faithful:
-    /// the original never auto-clears <c>g_entityFollowedByCamera</c> either). Also written directly by
-    /// opcode 0x69 (<see cref="IEntityWorldContext.SetForcedCameraLookAt"/>).</summary>
-    private int _cameraLookAtX;
-    private int _cameraLookAtY;
-    private int _cameraLookAtZ;
-
     /// <summary>E5.a: <see cref="IEntityWorldContext.SetForcedCameraLookAt"/> - port of opcode 0x69
     /// (Script_105_069). Public (rather than explicit-interface) since nothing about it needs hiding from
-    /// this proxy's own surface, unlike <see cref="PlayerEntity"/>'s internal setter above.</summary>
+    /// this proxy's own surface, unlike <see cref="PlayerEntity"/>'s internal setter above. Clears
+    /// <see cref="EntityFollowedByCamera"/> (which stays on this proxy) and DELEGATES the look-at pixel
+    /// coordinates themselves to <see cref="AlundraCameraDirector.SetForcedLookAt"/> (S2,
+    /// docs/plan-update-caracterisation.md) - see that collaborator's own doc on why this delegation is
+    /// not the banned "facade".</summary>
     public void SetForcedCameraLookAt(int x, int y, int z)
     {
         EntityFollowedByCamera = null;
-        _cameraLookAtX = x;
-        _cameraLookAtY = y;
-        _cameraLookAtZ = z;
+        _cameraDirector.SetForcedLookAt(x, y, z);
     }
-
-    /// <summary>E5.a (decision E5-2): port of <c>g_isCameraScrolling = 1</c> at map load
-    /// (<c>GraphicManager.cs</c>) - true makes the NEXT <see cref="UpdateCameraFollow"/> call snap
-    /// <see cref="_cameraSmoothedTarget"/> straight to that frame's look-at instead of catching up to it,
-    /// so the camera never scrolls in from wherever the engine's own default <c>Target</c> happened to be
-    /// when a new map loads. Set once in <see cref="InitializeWithWorld"/>, cleared by the first
-    /// <see cref="UpdateCameraFollow"/> call that finds the camera.</summary>
-    private bool _cameraNeedsSnap;
-
-    /// <summary>E5.a (decision E5-2): the smoothed render-space camera target - this proxy's own float
-    /// catch-up state, written every frame by <see cref="UpdateCameraFollow"/> (snap-or-lerp), then
-    /// clamped and pushed onto <see cref="_debugCamera"/>'s <c>Target</c> as the BASE
-    /// <see cref="UpdateDebugCameraPan"/> then adds its own stick offset on top of (see that method's own
-    /// doc on adopting an external write as the new base).</summary>
-    private Vector3 _cameraSmoothedTarget;
 
     /// <summary>
     /// True once <see cref="InitializeWithWorld"/> successfully parsed and applied this world's
@@ -420,8 +367,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         // E5.a (decision E5-2): port of GraphicManager.cs's own g_isCameraScrolling = 1 at map load - the
         // next UpdateCameraFollow call snaps straight to that frame's look-at instead of scrolling in from
-        // the engine's default camera Target.
-        _cameraNeedsSnap = true;
+        // the engine's default camera Target. Requalified to the camera director (S2's extended proof
+        // rule delta (b)) since that flag moved there.
+        _cameraDirector._cameraNeedsSnap = true;
 
         // The engine enables its physics debug wireframes by default (PhysicsDebugViewRendererComponent
         // .DisplayPhysics = true), which draws every kinetic body box - one white rectangle per spawned
@@ -1057,9 +1005,18 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // E5.c: the follow is driven by the LOGIC TICK COUNT, not by elapsed time - see
         // UpdateCameraFollow's own doc on the cadence beat that per-frame smoothing caused. The debug pan
         // stays per rendered frame (it samples the stick).
-        ResolveDebugCameraOnce();
-        UpdateCameraFollow(ticksThisFrame);
-        UpdateDebugCameraPan(elapsedTime);
+        // S2 (docs/plan-update-caracterisation.md): the camera wiring itself now lives on
+        // _cameraDirector; the map bounds and _world are read here at USE TIME and passed in per frame
+        // (extended proof rule delta (a)) - _tileMapData is only assigned in InitializeWithWorld AFTER
+        // two early returns, so capturing it any earlier would hold null forever and silently drop the
+        // map-bounds clamp (trap 2).
+        _cameraDirector.ResolveDebugCameraOnce(_world);
+        _cameraDirector.UpdateCameraFollow(
+            ticksThisFrame,
+            EntityFollowedByCamera,
+            _tileMapData != null ? _tileMapData.MapSize.Width * TileWidth : null,
+            _tileMapData != null ? _tileMapData.MapSize.Height * TileHeight : null);
+        _cameraDirector.UpdateDebugCameraPan(elapsedTime, _world);
 
         // Rendering-only passes - per rendered frame, same reasoning.
         ApplyOriginalBackgroundClearColorOnce();
@@ -1209,232 +1166,6 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
-    /// One-time <see cref="_debugCamera"/> lookup (by component, not by reference name - see this
-    /// method's own doc below for why), shared by <see cref="UpdateCameraFollow"/> and
-    /// <see cref="UpdateDebugCameraPan"/> so whichever runs first this frame (see <see cref="Update"/>'s
-    /// own ordering) resolves it. E5-1 (docs/plan-e5-camera.md): also poses the ORIGINAL's own framing on
-    /// the camera right here, the moment it is found - runtime-only (no asset touched, no full export
-    /// needed): <c>Zoom = real viewport height / 236</c> (see <see cref="AlundraCameraMath.ComputeCameraZoom"/> - computed
-    /// from the LIVE viewport, never hardcoded, since <c>CameraComponent.InitializeWithWorld</c> already
-    /// overwrites whatever Zoom/viewport an asset serialized) and <c>PixelSnap = true</c>.
-    /// </summary>
-    private void ResolveDebugCameraOnce()
-    {
-        if (_debugCameraLookupDone)
-        {
-            return;
-        }
-
-        _debugCameraLookupDone = true;
-
-        // Looked up by COMPONENT, not by the reference name "camera": EntityReference.Load's
-        // shared-asset branch clones the asset without applying the reference's name, so the live
-        // entity is named after the asset ("AlundraCamera"). Taking the first Camera2dComponent in
-        // the world mirrors DefaultRuntimeViewBootstrapper's own camera pick, so the pan/follow always
-        // drives the camera the runtime view actually uses.
-        if (_world != null)
-        {
-            foreach (var entity in _world.Entities)
-            {
-                _debugCamera = entity.GetComponent<Camera2dComponent>();
-                if (_debugCamera != null)
-                {
-                    break;
-                }
-            }
-        }
-
-        if (_debugCamera == null)
-        {
-            Logs.WriteWarning(
-                $"AlundraWorldProxy: no Camera2dComponent found in world "
-                + $"'{_world?.Name}'; debug camera pan/follow disabled.");
-            return;
-        }
-
-        _debugCamera.Zoom = AlundraCameraMath.ComputeCameraZoom(_debugCamera.Viewport.Height);
-        _debugCamera.PixelSnap = true;
-    }
-
-    /// <summary>
-    /// E5.a (docs/plan-e5-camera.md §2): scripted camera follow, faithful port of
-    /// <c>GameEngine.UpdateEntities</c>'s own look-at update (<c>GameEngine.cs:1747-1752</c>) plus
-    /// <c>GraphicManager</c>'s own scroll smoothing/clamp (<c>GraphicManager.cs:75-122</c>). Runs BEFORE
-    /// <see cref="UpdateDebugCameraPan"/> in <see cref="Update"/> (see that method's own ordering
-    /// comment): this method writes the camera's <c>Target</c> as the new BASE, and
-    /// <see cref="UpdateDebugCameraPan"/>'s own <see cref="AlundraCameraMath.ResolveDebugCameraBase"/> call adopts that
-    /// write as the base a moment later in the SAME frame, then adds the stick offset back on top - so
-    /// the scripted follow and the debug pan never fight (see <see cref="UpdateDebugCameraPan"/>'s own
-    /// doc on that mechanism, decision bca9338).
-    ///
-    /// FIX (fresh verifier of cc1fc60): the original writes its clamped scroll value straight back into
-    /// <c>g_cameraScrollingX/Y</c> (<c>GraphicManager.cs:97-122</c> assigns into the SAME fields the
-    /// smoothing read at <c>:75-92</c>) - the clamp IS the smoothing state, not a read-only view of it.
-    /// This port used to clamp only on the way OUT to <c>Camera2dComponent.Target</c> while
-    /// <see cref="_cameraSmoothedTarget"/> kept the unclamped value, so the catch-up's next start point
-    /// still carried whatever overshoot the clamp had hidden (measured on map 389: the hero's New Game
-    /// render target is Y = -936, 97px past the clamp's own -839 lower bound) - once the camera left a
-    /// clamped edge it stayed pinned there until that hidden overshoot travelled back across the bound on
-    /// its own, instead of moving immediately like the original does. Assigning the clamped value back into
-    /// <see cref="_cameraSmoothedTarget"/> here (both the snap and step paths funnel through this single
-    /// assignment) closes that gap.
-    ///
-    /// No-op before <see cref="_debugCamera"/> is resolved (see <see cref="ResolveDebugCameraOnce"/>,
-    /// already called this frame by <see cref="Update"/>).
-    ///
-    /// E5.c FIX (user-reported vibration: followed entities blur while they MOVE and sharpen when they
-    /// stop - the sailor on the stairs, the gull in flight). Root cause was a CADENCE BEAT, not a
-    /// rendering defect. Since E5.b a followed sprite's rendered position steps in whole LOGICAL pixels
-    /// (4 device px at zoom 4) and only ever changes on a 50Hz LOGIC TICK
-    /// (<c>AlundraEntityScriptProxy.Update</c>'s own <c>for tick</c> loop owns all motion), whereas this
-    /// method used to run its smoothing once per RENDERED frame (~123Hz) with that frame's own delta time.
-    /// Between two ticks the sprite was therefore frozen while the camera kept creeping and crossed
-    /// whole-pixel boundaries ON ITS OWN: the sprite slid 4 device px backwards, then jumped forwards when
-    /// the next tick landed - a 1-logical-pixel shimmer that reads as blur. Measured on the production
-    /// formulas: 24 direction reversals per 60 rendered frames at 1.22 px/tick, 48 at 3.7 px/tick, with
-    /// the amplitude growing with entity speed (8/12/16 device px) - which is also why the stairs are
-    /// worse than flat ground, <c>renderY = -(Y - Z)</c> moving roughly twice as fast when Y and Z change
-    /// in opposite directions. The ORIGINAL cannot beat: <c>GameEngine.cs:225-229</c> runs
-    /// <c>RenderScene()</c> (which smooths the scroll, <c>GraphicManager.cs:75-92</c>) and then
-    /// <c>Update(0)</c> (which moves entities) once each per game frame, so camera and entities are locked
-    /// together by construction.
-    ///
-    /// The fix restores that lock: the catch-up now advances <c>ticksThisFrame</c> times per frame (0 on
-    /// most frames at 123Hz) instead of once, and it is the original's INTEGER
-    /// <c>scroll += (target - scroll) &gt;&gt; 4</c> rather than a float lerp - see
-    /// <see cref="AlundraCameraMath.StepCameraScroll"/>'s own doc for the axis conversion (floor X, ceiling Y) and for the
-    /// measurements showing why a float state still shimmers while the integer one does not. Because the
-    /// state is now whole-numbered, it IS the rendered value: no separate pixel snap is applied on the way
-    /// out any more (the former <c>SnapCameraRenderTarget</c> is gone), exactly like the original's own
-    /// <c>g_cameraScrollingX/Y</c>. <see cref="Camera2dComponent.PixelSnap"/> is left set (see
-    /// <see cref="ResolveDebugCameraOnce"/>) purely for <see cref="UpdateDebugCameraPan"/>'s own stick
-    /// offset, which is still integrated per rendered frame and may be fractional.
-    ///
-    /// <para>Accepted deviations, both documented in docs/plan-e5-camera.md: the camera now stops once the
-    /// gap falls under 16px (the shift's dead zone), so a followed entity can sit up to 15px off exact
-    /// centre - the original's own behaviour, chosen by the user on 2026-08-26 in place of decision
-    /// E5-2's asymptotic convergence; and while the debug pan is actively deflected its per-frame
-    /// fractional offset can reintroduce the beat, which is debug-only and out of scope.</para>
-    ///
-    /// <para>Not covered by the headless tests: this method's own wiring (the
-    /// <see cref="AlundraCameraMath.AdvanceCameraSmoothing"/> call site), which needs a live World/Camera2dComponent. Every
-    /// rule it applies is unit-tested through that seam and through <see cref="AlundraCameraMath.StepCameraScroll"/>; the
-    /// residual gap is this single call - same shape as E5.a's own deferred P4.</para>
-    /// </summary>
-    private void UpdateCameraFollow(int ticksThisFrame)
-    {
-        if (_debugCamera == null)
-        {
-            return;
-        }
-
-        // Port of GameEngine.cs:1747-1752 via ResolveCameraLookAt (see that method's own doc): only
-        // overwrites the look-at while the followed entity is non-null AND Loaded/Normal/Deactivated -
-        // otherwise it freezes on the last value (never falls back to the player - the original never
-        // auto-clears EntityFollowedByCamera either).
-        var followed = EntityFollowedByCamera;
-        var hasValidTarget = followed != null && followed.IsLoadedNormalOrDeactivated;
-        (_cameraLookAtX, _cameraLookAtY, _cameraLookAtZ) = AlundraCameraMath.ResolveCameraLookAt(
-            hasValidTarget,
-            followed?.PosX >> 16 ?? 0, followed?.PosY >> 16 ?? 0, followed?.PosZ >> 16 ?? 0,
-            _cameraLookAtX, _cameraLookAtY, _cameraLookAtZ);
-
-        var target = AlundraCameraMath.ComputeCameraLookAtRenderPosition(_cameraLookAtX, _cameraLookAtY, _cameraLookAtZ);
-
-        // E5.c (see this method's own doc above): one catch-up step per LOGIC TICK, none at all on a frame
-        // that carried no tick - that is what keeps the camera locked to the sprites. The clamped value is
-        // what gets stored back into _cameraSmoothedTarget, not just written out to Target, exactly like
-        // the original's own g_cameraScrollingX/Y assignment (fresh verifier of cc1fc60).
-        _cameraSmoothedTarget = AlundraCameraMath.AdvanceCameraSmoothing(
-            _cameraSmoothedTarget, _cameraNeedsSnap, target, ticksThisFrame,
-            _tileMapData != null ? _tileMapData.MapSize.Width * TileWidth : null,
-            _tileMapData != null ? _tileMapData.MapSize.Height * TileHeight : null);
-        _cameraNeedsSnap = false;
-
-        // The state is whole-numbered by construction (see AdvanceCameraSmoothing's own integer
-        // invariant), so it IS the rendered value - written unconditionally, including on a zero-tick
-        // frame, so UpdateDebugCameraPan's base-adoption still sees this proxy's own last write.
-        _debugCamera.Target = _cameraSmoothedTarget;
-    }
-
-    /// <summary>
-    /// DEBUG ONLY - temporary tool, to be gated/replaced once the real camera-follow (E4) lands. Pans the
-    /// world's camera (first entity carrying a <see cref="Camera2dComponent"/>) with the gamepad's right
-    /// thumbstick so the whole map can be flown over at runtime to inspect spawned entities.
-    ///
-    /// Reads the right stick through the engine's own <c>CasaEngineGame.InputComponent.GamePadManager</c>
-    /// (see <c>CasaEngine.Framework.Input.InputComponent</c>/<c>CasaEngine.Engine.Input.GamePad</c>)
-    /// rather than MonoGame's <c>GamePad.GetState</c> directly, since that manager is already reachable
-    /// off <see cref="World.Game"/> and is what every other in-engine input read goes through
-    /// (<c>InputMapping.Update</c>). A no-op whenever no gamepad is connected on player one, or no
-    /// camera component can be found (warns once in the latter case).
-    ///
-    /// Axis mapping: MonoGame's right-stick Y is positive up; the camera lives in RENDER space (its
-    /// <c>Target</c> is a world/render position, not a logical entity pose), where "more positive = further
-    /// up/north" (the same Y-up convention <c>SimulationSpacePolicy.DeriveRenderPosition</c> produces for a
-    /// projected entity - see <see cref="AlundraEntitySpawnFactory.ResolveLogicalPosition"/>'s own doc for why entities themselves no
-    /// longer negate Alundra's down-positive Y here), so stick-up must increase the offset's Y - no sign
-    /// flip needed, unlike Alundra's own Y. Stick X maps directly onto world X the same way.
-    ///
-    /// The stick no longer moves <c>Target</c> directly (user decision, 2026-08-24, ahead of E5's own
-    /// script-driven follow camera): it only accumulates <see cref="_debugCameraOffset"/> (<c>Z</c> always
-    /// 0), applied on top of <see cref="_debugCameraBase"/> - whatever the camera's own behavior (nothing
-    /// yet; a future E5 follow-target) last put in <c>Target</c>. Each frame this method first re-derives
-    /// <see cref="_debugCameraBase"/> from <c>Target</c> (see <see cref="AlundraCameraMath.ResolveDebugCameraBase"/>) so an
-    /// external write - E5's own follow logic - always wins as the base; the stick only ever adds a debug
-    /// offset around it. An R3 (right-stick) click resets the offset to 0. While
-    /// <see cref="DebugCameraPanEnabled"/> is false, the stick never changes the offset and R3 is inert -
-    /// only the base write-through still runs, so the camera simply follows its base.
-    /// </summary>
-    private void UpdateDebugCameraPan(float elapsedTime)
-    {
-        ResolveDebugCameraOnce();
-
-        if (_debugCamera == null)
-        {
-            return;
-        }
-
-        // Base resilience (E5-proof, see this method's own doc): whatever last wrote Target - including
-        // nothing yet, on the very first tick the camera was found - becomes the base to pan around.
-        _debugCameraBase = _debugCameraBaseInitialized
-            ? AlundraCameraMath.ResolveDebugCameraBase(_debugCamera.Target, _debugCameraLastWrittenTarget, _debugCameraBase)
-            : _debugCamera.Target;
-        _debugCameraBaseInitialized = true;
-
-        var gamePadManager = _world?.Game?.InputComponent?.GamePadManager;
-        if (gamePadManager != null)
-        {
-            var gamePad = gamePadManager.GetGamePad(PlayerIndex.One);
-            if (gamePad.IsConnected)
-            {
-                // DEBUG ONLY - Back (Select) toggles the engine's physics wireframes, off by default at
-                // world load (see InitializeWithWorld), so collision boxes can be inspected while flying
-                // the camera.
-                if (gamePad.BackJustPressed)
-                {
-                    var physicsDebug = _world?.Game?.PhysicsDebugViewRendererComponent;
-                    if (physicsDebug != null)
-                    {
-                        physicsDebug.DisplayPhysics = !physicsDebug.DisplayPhysics;
-                    }
-                }
-
-                if (DebugCameraPanEnabled)
-                {
-                    _debugCameraOffset = gamePad.RightStickJustPressed
-                        ? Vector3.Zero
-                        : AlundraCameraMath.ComputeDebugCameraPanOffset(
-                            _debugCameraOffset, gamePad.RightStickX, gamePad.RightStickY, elapsedTime);
-                }
-            }
-        }
-
-        _debugCamera.Target = _debugCameraBase + _debugCameraOffset;
-        _debugCameraLastWrittenTarget = _debugCamera.Target;
-    }
-
-    /// <summary>
     /// Sets the world's runtime view <see cref="CasaEngine.Framework.Rendering.RenderView.ClearColor"/>
     /// to the original engine's own background clear (<c>AlundraGame.Draw</c>'s
     /// <c>GraphicsDevice.Clear(Color.Black)</c>, both for the game's off-screen render target and the
@@ -1484,10 +1215,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             return;
         }
 
-        // Reuses the same camera the debug pan drives (see UpdateDebugCameraPan, which already ran
-        // earlier this frame and resolved _debugCamera) - both are "the world's camera", and the
+        // Reuses the same camera the debug pan drives (see AlundraCameraDirector.UpdateDebugCameraPan,
+        // which already ran earlier this frame and resolved it) - both are "the world's camera", and the
         // runtime has no other camera reference yet (E4 follow-up).
-        var cameraPosition = _debugCamera?.Target ?? Vector3.Zero;
+        var cameraPosition = _cameraDirector.ResolvedCamera?.Target ?? Vector3.Zero;
         _backdropRenderer.Draw(spriteRenderer, cameraPosition, _world.Game.ScreenSizeWidth, _world.Game.ScreenSizeHeight);
     }
 

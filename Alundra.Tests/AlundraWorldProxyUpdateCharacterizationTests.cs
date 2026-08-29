@@ -114,9 +114,9 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
     /// to re-point once <c>_debugCameraOffset</c> moves to the new camera-wiring collaborator).</summary>
     private static void SeedDebugCameraOffset(AlundraWorldProxy proxy, Vector3 offset)
     {
-        var field = typeof(AlundraWorldProxy).GetField("_debugCameraOffset", BindingFlags.Instance | BindingFlags.NonPublic);
+        var field = typeof(AlundraCameraDirector).GetField("_debugCameraOffset", BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(field);
-        field!.SetValue(proxy, offset);
+        field!.SetValue(proxy._cameraDirector, offset);
     }
 
     /// <summary>The non-zero offset every scenario below seeds - see this class' own doc on why zero
