@@ -357,8 +357,39 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// instance, so they always agree on how many logic ticks happened this rendered frame.</summary>
     private readonly AlundraLogicClock _logicClock = new();
 
-    /// <summary>See <see cref="IAlundraScriptHost.LogicTicksThisFrame"/>'s own doc.</summary>
-    public int LogicTicksThisFrame(float elapsedTime) => _logicClock.TicksThisFrame(elapsedTime);
+    /// <summary>
+    /// Bug fix (docs/plan-camera-premiere-frame.md §3, point 1): on a free time-step engine faster than
+    /// 50 Hz, the very first rendered frame can carry ZERO raw logic ticks (the accumulator has not yet
+    /// reached <see cref="AlundraScriptedMotion.FixedTickSeconds"/>) - so neither the map-events loop nor
+    /// the camera's armed first-frame snap (<see cref="AlundraCameraDirector.ArmFirstFrameSnap"/>) ever
+    /// runs before that frame's own camera resolve, and the one snap is spent on the player's raw spawn
+    /// pose instead of wherever the intro's own opening script retargets the camera one instruction
+    /// later.
+    ///
+    /// Guarantees at least ONE tick on this world's very first frame - applied INSIDE
+    /// <see cref="LogicTicksThisFrame"/> itself (every caller, entity or proxy, already funnels through
+    /// it), not as a flag <see cref="Update"/> alone consumes: <see cref="AlundraLogicClock"/>'s own memo
+    /// caches the RAW count on the FIRST call of the frame and every later call this same frame is a pure
+    /// cache read (<see cref="AlundraLogicClock.TicksThisFrame"/>), and the engine updates every entity
+    /// BEFORE this world's own <see cref="Update"/> - so a floor consumed only by the first caller would
+    /// hand a tick to whichever entity happens to call first and leave every later caller (every other
+    /// entity, and this proxy's own read) at the RAW, un-floored count, permanently splitting the world's
+    /// tick count from the entities' - exactly the desync <see cref="AlundraLogicClock"/>'s own class doc
+    /// gives as the reason to share ONE clock in the first place. So this flag is instead STICKY across
+    /// the whole open frame - applied on EVERY call while <see langword="true"/> - and cleared exactly
+    /// once, at the frame-close site right next to <see cref="_logicClock"/>'s own <c>CloseFrame()</c>
+    /// call in <see cref="Update"/>. <see cref="AlundraLogicClock"/> itself is untouched (plan §2: both
+    /// golden trace harnesses build their own instance of it and pin exact tick counts against it).
+    /// </summary>
+    private bool _firstFrameStillOpen = true;
+
+    /// <summary>See <see cref="IAlundraScriptHost.LogicTicksThisFrame"/>'s own doc; the sticky first-frame
+    /// floor is documented on <see cref="_firstFrameStillOpen"/> itself.</summary>
+    public int LogicTicksThisFrame(float elapsedTime)
+    {
+        var ticks = _logicClock.TicksThisFrame(elapsedTime);
+        return _firstFrameStillOpen ? Math.Max(ticks, 1) : ticks;
+    }
 
     public override void InitializeWithWorld(World world)
     {
@@ -1098,6 +1129,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // to this ONE call on every path now that the camera/render block runs unconditionally instead of
         // early-returning before it - invariant (plan §3, point 2): CloseFrame runs exactly once.
         _logicClock.CloseFrame();
+
+        // docs/plan-camera-premiere-frame.md §3, point 1: clears the sticky first-frame tick floor
+        // exactly once, right next to CloseFrame - see _firstFrameStillOpen's own doc. Idempotent past
+        // the very first frame (already false), so this unconditional write is safe on every later call.
+        _firstFrameStillOpen = false;
     }
 
     /// <summary>

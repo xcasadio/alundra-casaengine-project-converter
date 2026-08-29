@@ -1,11 +1,14 @@
 #nullable enable
 using System;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
 
@@ -443,5 +446,263 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         // and needsSnap (armed by InitializeWithWorld) makes this frame jump straight there - see item
         // 1 above for the same snap reasoning.
         Assert.Equal(new Vector3(564f, -200f, 0f), camera.Target);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // docs/plan-camera-premiere-frame.md - the real user-reported bug: on a free time-step engine, the
+    // very first rendered frame carries ZERO logic ticks (plan §1), so neither the map-events loop nor
+    // the camera snap ran before that frame's own camera resolve - the one armed snap is spent on the
+    // player's raw spawn pose instead of wherever the intro's own opening script (map-event 0, program
+    // 129) retargets the camera one instruction later. Written BEFORE the fix, and must fail first
+    // (plan §4).
+    // -----------------------------------------------------------------------------------------
+
+    private const string Map389WorldName = "Ship Klark (beginning)-389";
+
+    private static string FindProjectRootForCameraTests()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, "alundra-project");
+            if (Directory.Exists(Path.Combine(candidate, "Maps")))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new InvalidOperationException(
+            "AlundraWorldProxyUpdateCharacterizationTests: no 'alundra-project/Maps' directory found above "
+            + $"'{AppContext.BaseDirectory}' - the camera-premiere-frame reproduction needs the real "
+            + "converter export of map 389 and cannot self-skip without one (docs/plan-camera-premiere-frame.md §4).");
+    }
+
+    /// <summary>Reflection seam for two <see cref="AlundraWorldProxy"/> fields this montage needs but
+    /// that carry no test-only accessor: <c>_tileMapData</c> (plan §4 needs the REAL map-389 tilemap
+    /// installed there, exactly as <c>InitializeWithWorld</c> itself does, so the camera's map-bounds
+    /// clamp and the map-events/record-spawn loops below all see real data) and <c>_world</c> - without
+    /// it, <c>AlundraCameraDirector.ResolveDebugCameraOnce(_world)</c> (called at the top of every
+    /// <c>Update</c>) sees a null world and never resolves the camera entity this montage already added,
+    /// which would make every later <c>UpdateCameraFollow</c> call an unconditional no-op
+    /// (<c>if (_debugCamera == null) return;</c>) - not the defect this montage exists to reproduce.</summary>
+    private static void SetTileMapData(AlundraWorldProxy proxy, TileMapData tileMapData)
+    {
+        var field = typeof(AlundraWorldProxy).GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.NotNull(field);
+        field!.SetValue(proxy, tileMapData);
+    }
+
+    private static void SetWorld(AlundraWorldProxy proxy, World world)
+    {
+        var field = typeof(AlundraWorldProxy).GetField("_world", BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.NotNull(field);
+        field!.SetValue(proxy, world);
+    }
+
+    /// <summary>Reflection seam for <c>_spawnedEntities</c> (private, no test-only accessor): the record
+    /// spawn loop below needs to land its entities there directly, exactly like
+    /// <c>InitializeWithWorld</c>'s own record-spawn loop and <c>AdoptPlayerPawn</c>'s own trailing
+    /// <c>_spawnedEntities.Add(entity)</c> do.</summary>
+    private static System.Collections.Generic.List<Entity> GetSpawnedEntities(AlundraWorldProxy proxy)
+    {
+        var field = typeof(AlundraWorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.NotNull(field);
+        return (System.Collections.Generic.List<Entity>)field!.GetValue(proxy)!;
+    }
+
+    /// <summary>
+    /// Builds the real map-389 montage the reproduction test needs (plan §4): headless <see cref="World"/>
+    /// + camera entity, a real <see cref="AlundraWorldProxy"/> with the real map-389
+    /// <see cref="TileMapData"/> installed as <c>_tileMapData</c>, the player seeded EXACTLY as
+    /// <see cref="AlundraWorldProxy"/>'s own private <c>AdoptPlayerPawn</c> does (tile 33/59 -&gt; px
+    /// 804/952 - <see cref="AlundraGameState.CameraTileX"/>/<see cref="AlundraGameState.CameraTileY"/>,
+    /// <c>PlayerEntity</c> == <c>EntityFollowedByCamera</c> - <c>AdoptPlayerPawn</c> itself is not
+    /// headless-reachable, it needs a live <see cref="AlundraPlayerController"/>, the same reason
+    /// <c>IntroTraceHarnessTests</c>' own <c>HeadlessIntroSimulation</c> seeds its player by hand too), the
+    /// 14 "Entities" records this map's own spawn-zone gate actually admits through the SAME production
+    /// seam <c>InitializeWithWorld</c> itself uses (<see cref="AlundraEntitySpawnFactory.ShouldSpawnRecord"/>/
+    /// <see cref="AlundraEntitySpawnFactory.CreateBareEntityFromRecord"/> - the bare-entity, not
+    /// prefab-clone, path, since this headless montage has no <c>World.Game.AssetContentManager</c> to
+    /// clone a prefab through), map events built through the real <see cref="AlundraWorldProxy.BuildMapEvents"/>,
+    /// and the real bytecode interpreter (<see cref="AlundraEventProgramRunner"/>) wired over map 389's own
+    /// real event-code document (the same file <see cref="MapEventProgramLoader"/> loads in production).
+    ///
+    /// The player entity is built through <c>Entity.Initialize()</c> off a bare
+    /// <c>GameplayProxyClassName</c> (not a hand-built <see cref="AlundraEntityScriptProxy"/> wired to a
+    /// separate <c>new Entity()</c>) so <c>Entity.GameplayProxy</c> - private-set, only ever assigned by
+    /// <c>Entity.Initialize()</c>'s own <c>ElementFactory</c> resolution - actually round-trips back to
+    /// the SAME proxy instance this method configures, exactly like the engine-spawned pawn
+    /// <c>AdoptPlayerPawn</c> adopts in production. Without that, <c>Update</c>'s own
+    /// <c>RefreshUpdateProxiesAndCollidables</c> (reads <c>entity.GameplayProxy is AlundraEntityScriptProxy</c>)
+    /// would silently drop the player out of <c>_updateProxies</c>.
+    /// </summary>
+    private static (AlundraWorldProxy Proxy, Camera2dComponent Camera) BuildMap389Montage()
+    {
+        var projectRoot = FindProjectRootForCameraTests();
+
+        var world = new World { Name = Map389WorldName };
+        var camera = AddCameraEntity(world);
+
+        var tileMapFile = Directory.GetFiles(
+            Path.Combine(projectRoot, "Maps"), $"{Map389WorldName}.tileMap", SearchOption.AllDirectories).FirstOrDefault();
+        Assert.NotNull(tileMapFile);
+
+        var tileMapData = new TileMapData();
+        tileMapData.Load(JObject.Parse(File.ReadAllText(tileMapFile!)));
+
+        var proxy = new AlundraWorldProxy();
+        SetTileMapData(proxy, tileMapData);
+        SetWorld(proxy, world);
+        proxy.SpriteRecordCatalog = new SpriteRecordCatalog(projectRoot);
+
+        var spawnedEntities = GetSpawnedEntities(proxy);
+
+        // Player - see this method's own doc for why it goes through Entity.Initialize() rather than a
+        // hand-built proxy/Entity pair, and AdoptPlayerPawn's own doc for the exact field set this mirrors
+        // (New Game tile (33,59), tile-centre 16.16 fixed-point pose (804,952,0), Status=Normal).
+        var playerEntity = new Entity { GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        playerEntity.Initialize();
+        var playerProxy = (AlundraEntityScriptProxy)playerEntity.GameplayProxy!;
+        playerProxy.IsPlayer = true;
+        playerProxy.LogicContextEntity = playerEntity;
+        playerProxy.ScriptHost = proxy;
+        playerProxy.Status = EntityStatus.Normal;
+        playerProxy.EntityRefId = -1;
+        playerProxy.EventTrigger = ScriptHelper.ProgramUnknown;
+        playerProxy.PosX = (AlundraGameState.CameraTileX * 24 + 12) << 16;
+        playerProxy.PosY = (AlundraGameState.CameraTileY * 16 + 8) << 16;
+        playerProxy.PosZ = 0;
+        playerProxy.TileX = (playerProxy.PosX >> 16) / 24;
+        playerProxy.TileY = (playerProxy.PosY >> 16) / 16;
+        playerProxy.TileZ = 0;
+        playerProxy.TargetAnimationId = AlundraGameState.ResetAnimationId;
+        playerProxy.TargetDirection = AlundraGameState.ResetDirectionId;
+        playerProxy.CurrentAnimationId = ~AlundraGameState.ResetAnimationId;
+        playerProxy.CurrentDirection = ~AlundraGameState.ResetDirectionId;
+
+        proxy.PlayerEntity = playerProxy;
+        proxy.EntityFollowedByCamera = playerProxy;
+        spawnedEntities.Add(playerEntity);
+
+        var entitiesLayer = tileMapData.ObjectLayers.First(l => l.Name == "Entities");
+        var mapEventsLayer = tileMapData.ObjectLayers.First(l => l.Name == "MapEvents");
+
+        foreach (var record in entitiesLayer.Objects)
+        {
+            if (!AlundraEntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: false, playerProxy.TileX, playerProxy.TileY, out _))
+            {
+                continue;
+            }
+
+            var entity = AlundraEntitySpawnFactory.CreateBareEntityFromRecord(record, proxy.SpriteRecordCatalog, tileMapData: tileMapData);
+            if (entity.GameplayProxy is AlundraEntityScriptProxy spawnedProxy)
+            {
+                spawnedProxy.ScriptHost = proxy;
+            }
+
+            spawnedEntities.Add(entity);
+        }
+
+        // Sanity (plan §1/§4): map 389's own load-time spawn-zone gate admits 14 of its 19 "Entities"
+        // records - the player occupies slot 0, so this montage's own spawn loop must have added exactly
+        // 14 more.
+        Assert.Equal(14, spawnedEntities.Count - 1);
+
+        proxy.BuildMapEvents(mapEventsLayer);
+
+        var document = MapEventProgramLoader.Load(projectRoot, Map389WorldName);
+        Assert.NotNull(document);
+        proxy.EventProgramRunner = new AlundraEventProgramRunner(document!, proxy.GameState, proxy);
+
+        // Port of GameEngine.cs:1638-1664's own g_isCameraScrolling=1 at map load (InitializeWithWorld's
+        // own InitializeWithWorld call site) - the next UpdateCameraFollow call snaps straight to that
+        // frame's look-at instead of scrolling in.
+        proxy._cameraDirector.ArmFirstFrameSnap();
+
+        return (proxy, camera);
+    }
+
+    [Fact]
+    public void FirstFrame_FreeTimeStep_CameraTargetIsFinalIntroLookAt_NotRawSpawnPose()
+    {
+        var (proxy, camera) = BuildMap389Montage();
+
+        // One 60Hz-shaped rendered frame (1/60s), free time step - the exact repro shape plan §1 measured:
+        // the accumulator only reaches 1/60s, below the 1/50s (0.02) fixed-tick threshold, so this frame
+        // carries ZERO raw logic ticks. Pre-fix, that means neither the map-events loop nor the camera
+        // snap run this frame, and camera.Target lands on the player's own raw spawn pose (804,-839), a
+        // full 279px away from the correct (804,-560) the fix must produce (plan §1's own measured table).
+        proxy.Update(1f / 60f);
+
+        Assert.Equal(new Vector3(804f, -560f, 0f), camera.Target);
+    }
+
+    [Fact]
+    public void ZeroTickFrame_ArmedSnap_DoesNotFireUntilATickBearingFrameArrives()
+    {
+        var world = BuildHeadlessWorld();
+        var camera = AddCameraEntity(world);
+
+        var proxy = new AlundraWorldProxy();
+        proxy.InitializeWithWorld(world); // arms the first-frame snap (ArmFirstFrameSnap).
+        SeedDebugCameraOffset(proxy, SeededOffset);
+
+        var followed = BuildFollowedTarget(posXPixels: 100, posYPixels: 200);
+        proxy.EntityFollowedByCamera = followed;
+
+        // Frame 1 - exactly one 50Hz tick (0.02s): consumes the armed snap normally, exactly like item 1
+        // above. Not the frame under test; just establishes a known baseline and closes frame 1 (clearing
+        // any sticky tick floor for every frame after it).
+        proxy.Update(0.02f);
+        var baseline = camera.Target;
+        Assert.Equal(new Vector3(105f, -177f, 0f), baseline);
+
+        // Re-arm the snap (mirrors a later in-game trigger - a map load, an opcode 0x69 forced look-at -
+        // arming it again well after frame 1), move the look-at target somewhere the baseline could never
+        // reach by drifting, then drive a GENUINELY zero-tick frame (0f elapsed - frame 1 already closed,
+        // so no sticky floor applies here).
+        proxy._cameraDirector.ArmFirstFrameSnap();
+        followed.PosX = 5000 << 16;
+
+        proxy.Update(0f);
+
+        // The bug this test guards against: an unconditional _cameraNeedsSnap consumption would snap
+        // camera.Target straight to the new look-at even though zero ticks ran this frame. The fix gates
+        // the snap on ticksThisFrame > 0 in AlundraCameraDirector.UpdateCameraFollow (plan §3.2) - so on a
+        // zero-tick frame Target must stay exactly at baseline, and the snap must stay armed.
+        Assert.Equal(baseline, camera.Target);
+
+        // The very next TICK-BEARING frame must then actually snap (the armed flag was not silently
+        // dropped, only deferred) - straight to the new look-at, not a single incremental step toward it.
+        proxy.Update(0.02f);
+        Assert.Equal(new Vector3(5005f, -177f, 0f), camera.Target);
+    }
+
+    [Fact]
+    public void LogicTicksThisFrame_FirstFrameFloorIsStickyForEveryCallThatFrame_NotJustTheFirst()
+    {
+        var proxy = new AlundraWorldProxy();
+
+        // Frame 1, driven at 60Hz (1/60s < 1/50s - carries ZERO raw ticks): the floor must apply to
+        // EVERY call this frame, not just the first - in production the FIRST caller is an entity's own
+        // Update (entities update before the world proxy), so a first-call-only floor would hand the
+        // entity a tick and leave the world proxy's own later read (and the world's own map-events loop)
+        // at zero, splitting the world/entity tick counts the shared clock exists to keep in lock-step
+        // (plan §3.1).
+        Assert.Equal(1, proxy.LogicTicksThisFrame(1f / 60f));
+        Assert.Equal(1, proxy.LogicTicksThisFrame(1f / 60f));
+
+        // Closes frame 1 (same call site as production - right next to _logicClock.CloseFrame()) and
+        // clears the sticky floor exactly once. The elapsed time here does not matter to this assertion;
+        // Update reads LogicTicksThisFrame itself (a memoized re-read of the same floored frame).
+        proxy.Update(1f / 60f);
+
+        // Frame 2 - 0f elapsed on top of frame 1's own leftover ~1/60s accumulator (still under 1/50s):
+        // its RAW tick count is 0. If the floor were still active (never cleared, or cleared then
+        // reapplied unconditionally), this would read back 1 instead - the exact mutation this assertion
+        // is paired against (plan §4, mutation 3).
+        Assert.Equal(0, proxy.LogicTicksThisFrame(0f));
     }
 }

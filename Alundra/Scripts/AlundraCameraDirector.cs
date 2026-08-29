@@ -229,14 +229,31 @@ internal sealed class AlundraCameraDirector
 
         var target = AlundraCameraMath.ComputeCameraLookAtRenderPosition(_cameraLookAtX, _cameraLookAtY, _cameraLookAtZ);
 
+        // Bug fix (docs/plan-camera-premiere-frame.md §3, point 2): a snap must not be spent on a frame
+        // that carried no logic tick - AlundraCameraMath.AdvanceCameraSmoothing's own pure contract
+        // snaps unconditionally whenever needsSnap is true, REGARDLESS of ticksThisFrame (pinned by
+        // AlundraWorldProxyCameraFollowTests at three call sites - the gate below deliberately does NOT
+        // move into that pure function, which would turn those three call sites red). Without this gate,
+        // a snap armed on a tick-less frame (today: this world's very first free-time-step frame, before
+        // the sticky tick floor above existed at all; tomorrow: any snap armed later, e.g. a map load or
+        // an opcode 0x69 forced look-at, landing on an unlucky tick-less frame) would fire against
+        // whatever "target" this frame's SCRIPTS have not run yet - so the gate lives here, where
+        // _cameraNeedsSnap is actually consumed and cleared, not in the pure math. The flag stays armed
+        // (NOT cleared) on a tick-less frame, so the very next tick-bearing frame still snaps.
+        var snapsThisFrame = _cameraNeedsSnap && ticksThisFrame > 0;
+
         // E5.c: one catch-up step per LOGIC TICK, none at all on a frame that carried no tick - that is
         // what keeps the camera locked to the sprites. The clamped value is what gets stored back into
         // _cameraSmoothedTarget, not just written out to Target, exactly like the original's own
         // g_cameraScrollingX/Y assignment (fresh verifier of cc1fc60).
         _cameraSmoothedTarget = AlundraCameraMath.AdvanceCameraSmoothing(
-            _cameraSmoothedTarget, _cameraNeedsSnap, target, ticksThisFrame,
+            _cameraSmoothedTarget, snapsThisFrame, target, ticksThisFrame,
             mapWidthPx, mapHeightPx);
-        _cameraNeedsSnap = false;
+
+        if (ticksThisFrame > 0)
+        {
+            _cameraNeedsSnap = false;
+        }
 
         // The state is whole-numbered by construction (see AdvanceCameraSmoothing's own integer
         // invariant), so it IS the rendered value - written unconditionally, including on a zero-tick
