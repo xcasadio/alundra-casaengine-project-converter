@@ -54,12 +54,25 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
 {
     private readonly AudioService _audioService;
     private readonly AlundraSoundBank _soundBank;
+    private readonly object _owner;
     private readonly Dictionary<int, List<AudioVoiceHandle>> _liveVoicesBySfxId = new();
 
-    public AlundraSoundPlayer(AudioService audioService, AlundraSoundBank soundBank)
+    /// <summary>
+    /// <paramref name="owner"/> is passed straight through to every <see cref="AudioService.PlayClip"/>
+    /// call this instance makes (docs/plan-e11c-musique.md, slice C1, D-C-5): production hands it the
+    /// owning <c>World</c> (<see cref="AlundraWorldProxy.InstallAudioSystems"/>) so
+    /// <c>World.Clear</c>'s own <c>StopVoicesOwnedBy(world)</c> actually stops these voices - the fix
+    /// for fact 1.7's real defect (this class used to pass <c>owner: this</c>, and a fresh instance is
+    /// built per world, so <see cref="CasaEngine.Framework.Audio.AudioService.StopVoicesOwnedBy"/> could
+    /// never match it by <c>ReferenceEquals</c>). A sound effect has no reason to outlive its world, so
+    /// unlike <see cref="AlundraMusicPlayer"/> (session-owned, D-C-5's other half) this one always
+    /// receives the world.
+    /// </summary>
+    public AlundraSoundPlayer(AudioService audioService, AlundraSoundBank soundBank, object owner)
     {
         _audioService = audioService ?? throw new ArgumentNullException(nameof(audioService));
         _soundBank = soundBank ?? throw new ArgumentNullException(nameof(soundBank));
+        _owner = owner ?? throw new ArgumentNullException(nameof(owner));
     }
 
     public void PlaySfx(int sfxId)
@@ -93,7 +106,7 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
 
             var parameters = new AudioVoiceParameters(
                 AudioVoiceParameters.MaxVolume, 0f, 0f, tone.Repeat);
-            var handle = _audioService.PlayClip(clip, AudioBusNames.Sfx, parameters, owner: this);
+            var handle = _audioService.PlayClip(clip, AudioBusNames.Sfx, parameters, owner: _owner);
             if (handle.IsValid)
             {
                 liveVoices.Add(handle);

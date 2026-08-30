@@ -106,6 +106,18 @@ public interface IEntityWorldContext
     /// <c>installSoundPlayer</c> flag (same neutralization shape as <see cref="CellMutator"/>).
     /// </summary>
     IAlundraSoundPlayer? SoundPlayer => null;
+
+    /// <summary>
+    /// This session's background-music playback seam (docs/plan-e11c-musique.md, slice C1) - NOT
+    /// opcode-backed (fact 1.5: nothing in the intro's own programs changes music), driven instead at
+    /// map entry by <see cref="AlundraWorldProxy.InitializeWithWorld"/> itself (item 4 of the plan's own
+    /// contract). A default interface member, same "degraded, skip" shape as <see cref="SoundPlayer"/>
+    /// above, defaulting to null so every EXISTING implementer keeps compiling unmodified.
+    /// <see cref="AlundraWorldProxy"/> installs the session-scoped <see cref="AlundraMusicPlayer.Instance"/>
+    /// once a <c>Game</c>'s <c>AudioSystemComponent</c> exists (see that class's own doc for why it is a
+    /// singleton rather than a per-world instance - D-C-6).
+    /// </summary>
+    IAlundraMusicPlayer? MusicPlayer => null;
 }
 
 /// <summary>

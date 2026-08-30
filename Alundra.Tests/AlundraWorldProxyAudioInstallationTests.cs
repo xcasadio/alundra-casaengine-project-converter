@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -28,6 +28,12 @@ namespace Alundra.Tests;
 /// <see cref="AlundraSoundPlayer"/> production code, only the otherwise-unconstructible MonoGame shell
 /// around it is faked.
 /// </summary>
+/// docs/plan-e11c-musique.md, slice C1: <see cref="InstallAudioSystems"/> now also re-points the
+/// SESSION-scoped <see cref="AlundraMusicPlayer.Instance"/> singleton (D-C-6) - so this class shares
+/// the <see cref="AlundraMusicPlayerSingletonCollection"/> xunit collection with
+/// <see cref="AlundraMusicPlayerTests"/>, the only other class touching that same shared instance,
+/// keeping them from racing (xunit runs different test CLASSES in parallel by default).
+[Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public class AlundraWorldProxyAudioInstallationTests
 {
     private const string WorldName = "Ship Klark (beginning)-389";
@@ -101,6 +107,53 @@ public class AlundraWorldProxyAudioInstallationTests
             Assert.True(resolved, $"expected sfx id {sfxId} to resolve on the real install path.");
             Assert.Equal(expectedFirstToneFile, resolution.Tones[0].File);
         }
+    }
+
+    /// <summary>
+    /// Pins the OWNER that the real install path hands to <see cref="AlundraSoundPlayer"/> — the
+    /// production decision itself, not just the constructor plumbing.
+    ///
+    /// <para>Found in main-session verification of slice C1: the ownership test in
+    /// <c>AlundraSoundPlayerTests</c> builds the player DIRECTLY with an explicit owner, so it proves
+    /// the parameter is honoured but is blind to what <see cref="AlundraWorldProxy.InstallAudioSystems"/>
+    /// actually passes. Changing that one call site to any non-world object left the whole suite green
+    /// — the "no slice without a test traversing the production call site" rule, unsatisfied.</para>
+    ///
+    /// <para>What it guards (fact 1.7 of docs/plan-e11c-musique.md): <c>World.Clear</c> stops voices by
+    /// <c>ReferenceEquals(entry.Owner, world)</c>, and a fresh <see cref="AlundraSoundPlayer"/> is built
+    /// per world — so any owner other than the world leaves sound effects running past their world.</para>
+    /// </summary>
+    [Fact]
+    public void InstallAudioSystems_PlaysSfxOwnedByTheWorldItself_SoClearingTheWorldStopsThem()
+    {
+        var projectRoot = FindProjectRoot();
+        var world = new World { Name = WorldName };
+        var backend = new FakeAudioBackend();
+        var provider = new FakeAudioClipProvider();
+        var game = BuildGameWithAudio(backend, provider);
+        HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
+
+        var proxy = new AlundraWorldProxy { SoundBank = new AlundraSoundBank(projectRoot) };
+        proxy.InstallAudioSystems(world);
+        Assert.NotNull(proxy.SoundPlayer);
+
+        var service = game.AudioSystemComponent.Service;
+
+        // Register a clip for every tone of sfx 300 so the real player can actually start a voice.
+        Assert.True(proxy.SoundBank.TryResolve(300, soundGroup: null, out var resolution));
+        foreach (var tone in resolution.Tones)
+        {
+            provider.Register(tone.AssetId, new FakeAudioClip());
+        }
+
+        proxy.SoundPlayer!.PlaySfx(300);
+        Assert.True(service.ActiveVoiceCount > 0, "the sfx should have started a voice on the real install path.");
+
+        // The production decision under test: these voices must belong to the WORLD, which is what
+        // World.Clear passes when it tears the world down.
+        service.StopVoicesOwnedBy(world);
+
+        Assert.Equal(0, service.ActiveVoiceCount);
     }
 
     [Fact]

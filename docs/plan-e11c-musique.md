@@ -155,7 +155,10 @@ Portée : `Alundra/`, `Alundra.Tests/`, le convertisseur et l'analyseur pour la 
    `Maps/world-index.json` (même forme, 483 entrées).
 2. **`IAlundraMusicPlayer`** — `PlayMapMusic(int mapId)` / `StopMusic()`, déclarée en tête de son
    implémenteur, accrochée à `IEntityWorldContext` en membre par défaut `=> null`, branche dégradée.
-3. **`AlundraMusicPlayer`** sur `PlayClip`, bus `Music`, `IsLooped`, plein volume, **`owner: world`**.
+3. **`AlundraMusicPlayer`** sur `PlayClip`, bus `Music`, `IsLooped`, plein volume, et **`owner` = le
+   directeur de session lui-même, JAMAIS le monde** (D-C-5/D-C-6). *(Correction : cette ligne portait
+   encore `owner: world`, resté de la rédaction d'avant D-C-5 — l'exécuteur l'a signalée comme
+   contradictoire au lieu de la suivre, et il a eu raison.)*
 4. **Le déclenchement** : à l'installation du monde, l'équivalent de `LoadMapSounds` — l'id de carte se
    lit déjà depuis le nom du monde (`-(\d+)$`, mécanisme existant).
 5. **D-C-5** : `owner: world` aussi pour `AlundraSoundPlayer`.

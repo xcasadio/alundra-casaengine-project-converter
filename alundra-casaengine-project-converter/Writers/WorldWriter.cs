@@ -117,6 +117,7 @@ public readonly record struct TileCentreSpawn(int PixelX, int PixelY, float Worl
 public static class WorldWriter
 {
     private const string WorldIndexFileName = "world-index.json";
+    private const string MusicIndexFileName = "music-index.json";
 
     // docs/guidelines-runtime-alundra-casaengine.md section 1: uniform over all 483 maps.
     private const int AlundraTileWidth = 24;
@@ -182,6 +183,7 @@ public static class WorldWriter
         }
 
         WriteWorldIndex(outputDirectory, worldPathsByMapId, report);
+        WriteMusicIndex(outputDirectory, report);
         EditorAssetCatalogService.Save();
 
         SetFirstWorldLoaded(outputDirectory, worldPathsByMapId, report);
@@ -522,6 +524,46 @@ public static class WorldWriter
             indexNode.ToString());
 
         report.Increment("Worlds.Indexed", worldPathsByMapId.Count);
+    }
+
+    /// <summary>
+    /// Maps/music-index.json - the companion table docs/plan-e11c-musique.md's slice C1 (D-C-2, item
+    /// 1) asks for, same key shape as <see cref="WriteWorldIndex"/> right above it (a flat map-id ->
+    /// value JSON object) but keyed off the ENTIRE table (all 483 <c>map_id</c> rows of
+    /// <c>MapMusicIndex.csv</c>), independent of which maps this particular run actually converted -
+    /// unlike <c>world-index.json</c>, this table is not a run artifact, it is the original's own
+    /// <c>g_defaultSoundOffsetList</c> republished whole. Values are the RAW ints the CSV carries (see
+    /// <see cref="MusicIndexCatalogReader"/>'s own doc for why); a missing/unreadable CSV degrades to
+    /// "no file written" plus one warning, the same shape <see cref="SpriteWriter"/> already uses for
+    /// its own EntityNames.csv dependency.
+    /// </summary>
+    private static void WriteMusicIndex(string outputDirectory, ConversionReport report)
+    {
+        var csvPath = Path.Combine(AppContext.BaseDirectory, "MapMusicIndex.csv");
+        if (!File.Exists(csvPath))
+        {
+            report.Errors.Add($"MapMusicIndex.csv not found at '{csvPath}'; Maps/music-index.json not written.");
+            return;
+        }
+
+        var result = MusicIndexCatalogReader.Read(csvPath);
+        foreach (var warning in result.Warnings)
+        {
+            report.Warnings.Add(warning);
+        }
+
+        var indexNode = new JObject();
+        foreach (var (mapId, rawIndex) in result.RawIndexByMapId.OrderBy(pair => pair.Key))
+        {
+            indexNode[mapId.ToString(CultureInfo.InvariantCulture)] = rawIndex;
+        }
+
+        Directory.CreateDirectory(Path.Combine(outputDirectory, MapLocation.MapsRootFolder));
+        File.WriteAllText(
+            Path.Combine(outputDirectory, MapLocation.MapsRootFolder, MusicIndexFileName),
+            indexNode.ToString());
+
+        report.Increment("Worlds.MusicIndexed", result.RawIndexByMapId.Count);
     }
 
     private static void SetFirstWorldLoaded(

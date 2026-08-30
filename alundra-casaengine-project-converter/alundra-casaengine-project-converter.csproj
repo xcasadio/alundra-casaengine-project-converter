@@ -25,6 +25,12 @@
     <None Include="..\alundra-datas-analyser\AlundraTools\AlundraTools\EntityNames.csv" Link="EntityNames.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <!-- docs/plan-e11c-musique.md, slice C1, D-C-2: same "linked, not copied" precedent as
+         EntityNames.csv above - the analyser owns g_defaultSoundOffsetList (StaticVariables.cs),
+         this converter only reads it. -->
+    <None Include="..\alundra-datas-analyser\AlundraTools\AlundraTools\MapMusicIndex.csv" Link="MapMusicIndex.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

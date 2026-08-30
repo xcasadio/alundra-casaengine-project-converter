@@ -735,7 +735,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         RecordSystemOnce("GameEngine.WarpPlayer (fade setup, g_warpDelayFrames=10)", "GameEngine.cs:878", "screen fade-in + warp delay countdown init - not ported");
         RecordSystemOnce("GameEngine.InitializeScrollingMode", "GameEngine.cs:168-219 (map-entry block)", "camera scroll-mode setup - not ported");
         RecordSystemOnce("HudManager.InitializeHudPositionBeforeHide", "GameEngine.cs:168-219 (map-entry block)", "HUD position/visibility init - not ported");
-        RecordSystemOnce("GameEngine.LoadMapSounds", "GameEngine.cs:168-219 (map-entry block)", "map BGM/ambient sound table load - not ported");
+        RecordSystemOnce("GameEngine.LoadMapSounds", "GameEngine.cs:168-219 (map-entry block)", "map BGM index resolution/playback - PORTED (docs/plan-e11c-musique.md, slice C1: AlundraWorldProxy.TriggerMapEntryMusic -> AlundraMusicPlayer.PlayMapMusic, map 389 -> music index 25); the sound-GROUP/ambient half (LoadMapSoundGroup) is NOT ported - the map -> VAB-group table is not exported (plan's own fact 2.1), same trou as E11.a's group parameter");
         RecordSystemOnce("GraphicManager.ResetDebugRenderingState", "GameEngine.cs:168-219 (map-entry block)", "debug rendering flags reset - not ported");
     }
 
@@ -832,7 +832,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
 
         RecordSystemOnce("EffectManager.UpdateEffects", "GameEngine.cs:1638-1664 (UpdateWorld)", "particle/sprite-effect tick - not ported");
         RecordSystemOnce("GameEngine.Update: g_warpDelayFrames--, inventory-open check", "GameEngine.cs:1500-1592", "warp fade countdown / inventory-open input gate - not ported");
-        RecordSystemOnce("SoundManager.HandleMapSoundStreaming", "GameEngine.cs:1500-1592 (Update)", "not ported");
+        RecordSystemOnce("SoundManager.HandleMapSoundStreaming", "GameEngine.cs:1500-1592 (Update)", "deliberately NOT ported (docs/plan-e11c-musique.md, slice C1, fact 1.4/decision D-C-4): the frame-1 g_resetSoundFlag consumption is a re-arm, not a real restart - StartSequencePlayback never resets SeqPosition - and produces no audible difference on map 389, so porting it would add code without changing what is heard");
         RecordSystemOnce("Random.Next()", "GameEngine.cs:1500-1592 (Update)", "PSX-faithful RNG stream tick - not ported (nothing ported yet consumes randomness)");
     }
 

@@ -387,6 +387,56 @@ public class WorldWriterTests
         }
     }
 
+    /// <summary>
+    /// T3 bis of docs/plan-e11c-musique.md, slice C1: <c>Maps/music-index.json</c> is written next to
+    /// <c>world-index.json</c> (D-C-2, item 1), carries all 483 entries of <c>MapMusicIndex.csv</c>
+    /// (independent of the narrowed <c>--maps</c> filter this fixture uses - see
+    /// <see cref="WorldWriter.WriteMusicIndex"/>'s own doc for why), and map 389's own entry is 25
+    /// (fact 1.1).
+    /// </summary>
+    [Fact]
+    public void ConvertWorlds_WritesMusicIndex_AllEntries_Map389Is25()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            WriteMapFixture(inputDirectory, NewGameMapIndex);
+            var mapLocations = new Dictionary<int, MapLocation>
+            {
+                [NewGameMapIndex] = new MapLocation("The Klark", "Ship Klark (beginning)-389"),
+            };
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            ProjectWriter.CreateEmptyProject(outputDirectory, report);
+            TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
+            WorldWriter.ConvertWorlds(
+                inputDirectory, outputDirectory, mapFilter: new[] { NewGameMapIndex }, mapLocations,
+                TestGameModeAssetId, report);
+
+            Assert.Empty(report.Errors);
+
+            var musicIndexPath = Path.Combine(outputDirectory, "Maps", "music-index.json");
+            Assert.True(File.Exists(musicIndexPath));
+
+            var musicIndex = JObject.Parse(File.ReadAllText(musicIndexPath));
+            Assert.Equal(483, musicIndex.Properties().Count());
+            Assert.Equal(25, (int)musicIndex["389"]!);
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
     private static Entity LoadEntity(JArray entityReferenceNodes, string entityName)
     {
         foreach (var entityReferenceNode in entityReferenceNodes)

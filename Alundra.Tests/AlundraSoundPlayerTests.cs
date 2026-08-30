@@ -71,7 +71,7 @@ public class AlundraSoundPlayerTests : IDisposable
         }
     }
 
-    private AlundraSoundPlayer NewPlayer(out FakeAudioBackend backend, out AudioService service)
+    private AlundraSoundPlayer NewPlayer(out FakeAudioBackend backend, out AudioService service, object? owner = null)
     {
         backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
@@ -81,7 +81,7 @@ public class AlundraSoundPlayerTests : IDisposable
         provider.Register(Id61Tone0, new FakeAudioClip("sfx_0061", 18142));
 
         service = new AudioService(backend) { ClipProvider = provider };
-        return new AlundraSoundPlayer(service, new AlundraSoundBank(_projectPath));
+        return new AlundraSoundPlayer(service, new AlundraSoundBank(_projectPath), owner ?? new object());
     }
 
     [Fact]

@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -337,6 +337,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// trace kind), same shape as <see cref="CellMutator"/> above.
     /// </summary>
     public IAlundraSoundPlayer? SoundPlayer { get; private set; }
+
+    /// <summary>
+    /// This session's background-music playback seam (docs/plan-e11c-musique.md, slice C1) - the
+    /// session-scoped <see cref="AlundraMusicPlayer.Instance"/> (D-C-6, see that class's own doc), NOT
+    /// a per-world instance like <see cref="SoundPlayer"/> above. Null without a <c>Game</c> (same
+    /// degraded shape as <see cref="SoundPlayer"/>), installed by <see cref="InstallAudioSystems"/>.
+    /// </summary>
+    public IAlundraMusicPlayer? MusicPlayer { get; private set; }
 
     /// <summary>
     /// Seam over <c>Sounds/sfx-manifest.json</c> lookups (see <see cref="Alundra.Scripts.AlundraSoundBank"/>'s
@@ -711,12 +719,56 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     internal void InstallAudioSystems(World world)
     {
         SoundPlayer = null;
+        MusicPlayer = null;
 
         var audioService = world.Game?.AudioSystemComponent?.Service;
         if (audioService != null)
         {
-            SoundPlayer = new AlundraSoundPlayer(audioService, SoundBank);
+            // D-C-5: owner: world, so World.Clear's own StopVoicesOwnedBy(world) actually stops these
+            // voices (fact 1.7's fix - see AlundraSoundPlayer's own constructor doc).
+            SoundPlayer = new AlundraSoundPlayer(audioService, SoundBank, world);
+
+            // D-C-6: AlundraMusicPlayer.Instance is SESSION-scoped, never rebuilt here - only
+            // re-pointed at this world's own AudioService/project path. See that class's own doc for
+            // why (the guard state would be vacuous by construction in a per-world instance).
+            AlundraMusicPlayer.Instance.AttachToWorld(audioService, EngineEnvironment.ProjectPath);
+            MusicPlayer = AlundraMusicPlayer.Instance;
         }
+
+        // The map-entry music start lives HERE rather than at a second call site in
+        // InitializeWithWorld, and that placement is the point: an outcome-verifier of slice C1 showed
+        // that deleting a separate `TriggerMapEntryMusic(world);` line left all 637 tests green - the
+        // whole slice would have gone inert in the real game with a fully green suite. This method is
+        // already driven end-to-end by AlundraWorldProxyAudioInstallationTests on the real install
+        // path, so folding the trigger into it puts the last wiring link under test instead of leaving
+        // it to the in-game check alone. Ordering is unaffected: the original starts the BGM at the end
+        // of its own map-entry block, but the start depends on nothing this method runs after.
+        TriggerMapEntryMusic(world);
+    }
+
+    /// <summary>
+    /// docs/plan-e11c-musique.md, slice C1, item 4: the equivalent of the original's own
+    /// <c>LoadMapSounds</c> map-entry call (fact 1.4: the second-to-last instruction of the map-entry
+    /// block, right before the first <c>Update</c>) - this world's own map id, read the same way
+    /// <see cref="BackdropLoader"/>/<see cref="MapEventProgramLoader"/> already do (trailing "-{mapId}"
+    /// of <see cref="World.Name"/>), a no-op when the name carries none (not a converted Alundra map
+    /// world) or when <see cref="MusicPlayer"/> was never installed (no <c>Game</c> - degraded, same
+    /// shape as every other missing-system seam in this DLL). Internal so a test can drive it directly
+    /// (same precedent as <see cref="InstallAudioSystems"/>/<see cref="InstallCellAndOverlaySystems"/>).
+    /// </summary>
+    private void TriggerMapEntryMusic(World world)
+    {
+        if (MusicPlayer == null)
+        {
+            return;
+        }
+
+        if (!BackdropLoader.TryParseMapIndex(world.Name, out var mapId))
+        {
+            return;
+        }
+
+        MusicPlayer.PlayMapMusic(mapId);
     }
 
     /// <summary>
