@@ -319,3 +319,58 @@ fournisseur de clips de T5 sont un livrable à part entière). **Arrêts** : tou
 du convertisseur, d'`alundra-project/`, du sous-module ou d'`AlundraLogicClock` ; toute tentative de
 faire porter la preuve par les traces dorées (§2.1) ; et si un test T1-T4 passe **avant** le correctif,
 il ne teste pas ce qu'il prétend — arrêt.
+
+## 6. Réalisé — E11.a **validée en jeu par l'utilisateur** (2026-08-30)
+
+« Je teste en jeu et ça marche. » Commit `3b1eb24`, verifier CONFIRMED avant la validation.
+**La réserve d'E7 est close** : la trappe ne s'ouvre plus en silence.
+
+- **Le pari de la reconnaissance a payé, et c'est le fait marquant.** Le plan maître annonçait un
+  chantier convertisseur (générer 1041 documents `.sound`, relancer l'export). La reconnaissance a
+  montré que sa prémisse était périmée : `AudioService.PlayClip` prend un `IAudioClip`, les `.wav` se
+  chargent déjà comme tels et sont catalogués. **Chantier DLL seule, zéro ré-export.** Vérifier une
+  prémisse coûte quelques minutes ; l'avoir crue en aurait coûté des heures pour rien.
+- **Le risque qui aurait tout gâché a été écarté par lecture, pas par essai.** Si l'original
+  transposait l'échantillon et pas nous, **tous** les sons auraient sonné faux — et rien dans nos
+  oracles ne l'aurait vu. Il transpose bien, mais l'extracteur applique la **même formule** et écrit
+  le WAV au taux transposé : jouer à plat est correct, transposer une seconde fois aurait été le bug.
+  C'est exactement le service que rend la règle « re-dériver, jamais transcrire ».
+- **Trois rondes de relecture, cinq blocages, zéro ligne de code écrite** — et la tranche en est
+  ressortie **plus petite**, pas plus grosse. Trois étaient de vraies erreurs de conception :
+  une résolution que la production ne pouvait pas faire (les tests fournissaient le groupe eux-mêmes,
+  donc verts pendant que le jeu serait resté muet) ; un oracle déclaré infaisable à tort
+  (« `AudioService` est `sealed` » — on n'avait jamais eu besoin d'en hériter) ; et une mutation qui
+  ne pouvait pas mordre.
+- **La mutation vacue, 3e occurrence sur ce chantier — 1re attrapée par l'exécuteur lui-même.**
+  « Ignorer le groupe dans la chaîne `RefSfxId` » ne tuait pas son test, parce que la chaîne réelle
+  303→835 ne fait **qu'un saut** : s'arrêter au premier saut tombe quand même juste. Une fixture
+  synthétique à **deux** sauts la rend discriminante, et le verifier a confirmé indépendamment
+  qu'elle est le **seul** test que la mutation fait tomber.
+  **Généralisation : une mutation contre des données réelles peut être inerte parce que les données
+  réelles sont trop simples.** Vérifier qu'elle mord ; sinon fabriquer la fixture qui la rend
+  discriminante.
+- **Retirer a mieux valu que tester autour.** L'anti-doublon par frame exigeait un propriétaire de
+  frame que le seam ne fournit pas, et une implémentation à ensemble permanent aurait passé **tous**
+  les critères écrits en faisant perdre 14 des 15 lectures de l'ambiance. Mesuré qu'aucun id ne se
+  répète dans une frame, donc retiré plutôt que spécifié : le mode de défaillance disparaît au lieu
+  d'être contourné.
+- **La vérification a piloté, pas lu.** Un vrai `AudioService` sur un backend arrêtant les voix à la
+  durée réelle des WAV, frames 1→1589 : 15 lectures de l'ambiance, 6 mouettes, les deux tonalités du
+  lit sonore, la trappe à 1087, 2 démarrages bouclés, 5 voix simultanées au pic. Dix mutations
+  indépendantes, toutes mordantes.
+- **Honnêteté de forme** : le « vu échouer » est ici plus faible qu'à l'ordinaire — la plupart des
+  tests ne compilaient pas avant que le seam existe, ce qui ne prouve aucune discrimination. Ce sont
+  les mutations contre le code fini qui la prouvent. Situation normale pour un seam neuf, mais à
+  nommer plutôt qu'à laisser croire.
+- **Échec transitoire non élucidé** : une exécution à 623/624, non reproduite en 22 runs, **nom non
+  capturé** (2e occurrence de la session). Écartés : course d'écriture sur les goldens, écriture dans
+  l'export réel, repointage d'un statique global, build incrémental périmé (les deux runs encadrants
+  partageaient le même binaire). **Prochaine fois : capturer le nom immédiatement.**
+- Différés : banque reconstruite à chaque construction de proxy (P4, par chargement de carte) ; marche
+  de chaîne sans plafond ni ensemble de visités (P4, aucun cycle réel, injoignable en production).
+- Suites : `Alundra.Tests` **624**, convertisseur **138**, cinq goldens byte-identiques avec preuve
+  positive d'exécution, et les 23 lignes d'`intro-trace-389.txt` prouvées **ré-étiquetage pur**.
+
+**Reste dû, inchangé et annoncé avant approbation** : E11.b (le reste des opcodes, l'export de la table
+carte → groupe, l'anti-doublon avec son propriétaire de frame) et **E11.c la musique, bloquée** sur la
+ré-extraction des BGM 19 et 21-46 dans `alundra-datas-analyser`.
