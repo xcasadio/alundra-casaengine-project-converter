@@ -149,3 +149,46 @@ carte (`alundra-project/Entities/AlundraCamera.entity`).
 par l'utilisateur** — plus de glissement de caméra au démarrage, et ce à sa fréquence d'écran réelle.
 **Budget** : un commit, ≤ 2 tours. **Arrêts** : ceux du point 4, plus toute modification de
 `AlundraLogicClock`.
+
+## 5. Réalisé (2026-08-29) — **validé en jeu par l'utilisateur**
+
+**« La caméra est bonne au début de la map. »** Ce qui clôt aussi `5271400`, resté jusqu'ici en
+attente de la même validation : les deux correctifs d'ordre et de cadence sont désormais confirmés
+sur le matériel réel de l'utilisateur, pas seulement en test.
+
+- **La mesure a remplacé la troisième hypothèse, et c'est ce qui a fait la différence.** Deux
+  correctifs précédents avaient été livrés verts et prouvés par mutation sans faire disparaître le
+  symptôme. Après le second retour utilisateur, aucun code n'a été touché avant qu'une instrumentation
+  du vrai `Update` sur les données réelles de la 389 ne produise la table du §1. Les deux hypothèses
+  en cours — la mienne et celle de l'utilisateur — s'y sont révélées fausses **comme cause de ce
+  symptôme**. Règle à retenir : après un correctif juste qui ne corrige pas le symptôme, la dette est
+  une mesure, pas une idée de plus.
+- **Le blocage décisif a été trouvé par le plan-verifier, AVANT la moindre ligne écrite** : un
+  plancher « consommé au premier appel » aurait été **vert en test et inerte en jeu**, parce que le
+  mémo d'`AlundraLogicClock` cache le compte **avant** plancher et qu'en production le premier
+  appelant est une **entité** (les entités sont mises à jour avant le proxy de monde) là où un montage
+  headless fait du proxy son propre premier appelant. Le plancher est donc **collant sur toute la
+  frame**, et le test 1 ter appelle l'accesseur **deux fois** pour l'épingler.
+  **Généralisation transférable : quand la justesse d'un correctif dépend de QUI appelle en premier,
+  le montage headless ment par construction — tester la propriété, pas l'effet observé une fois.**
+- **Les trois mutations ont été rejouées en session principale**, pas seulement rapportées. La
+  troisième est la seule qui compte vraiment : rendue « premier appel seulement », l'implémentation
+  laisse les tests 1 et 1 bis **verts** et ne fait tomber que le test 1 ter. Sans ce troisième test,
+  le correctif serait parti au dépôt inerte.
+- **Écart de prédiction du plan, consigné** : le §4 annonçait que retirer le plancher ferait échouer
+  le test 1 sur `(804, −839)` ; il échoue sur `(0,0,0)`. La garde de snap étant alors toujours en
+  place, la frame sans tick laisse la caméra à son état initial au lieu de l'envoyer sur la pose de
+  spawn — c'est précisément la raison, donnée au §3, pour laquelle les deux moitiés sont nécessaires.
+  La mutation mord ; c'est le chiffre annoncé qui était faux.
+- **La garde de snap vit dans le directeur**, là où le drapeau est consommé, et pas dans la fonction
+  pure `AdvanceCameraSmoothing` dont le contrat est épinglé à trois sites — le plan l'avait prévu et
+  `AlundraWorldProxyCameraFollowTests` est resté vert et **intact**.
+- **`AlundraLogicClock` n'a pas été touchée** (§2) : les deux suites d'horloge sont vertes et
+  inchangées, et les six goldens se sont régénérés **byte-identiques** avec preuve positive
+  d'exécution (`alundra-project/Maps` présent, mtimes postérieures au début du run).
+- **Divergence réelle laissée ouverte, et volontairement** : le semis du look-at au chargement de map
+  (`GameEngine.cs:1492-1496`) n'est toujours pas porté. Le §1 l'a mesurée **latente** — la première
+  résolution écrit déjà (804,952), soit numériquement ce que le semis produirait. À porter le jour où
+  un symptôme la rendra visible, pas avant.
+- Suites : `Alundra.Tests` **599** (596 + 3), convertisseur **138**, build 0 erreur, goldens non
+  déplacés. Correctif `517db77`.
