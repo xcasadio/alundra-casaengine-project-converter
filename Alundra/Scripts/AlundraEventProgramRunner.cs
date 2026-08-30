@@ -624,9 +624,77 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 CameraForceLookAt(v);
                 return 7;
 
-            case 0xBD: // Play sound 2 - Script_189_0BD (sound system not wired to the interpreter)
-                LogDegradedOpcodeOnce(0xBD, "PlaySound2", "sound system");
+            case 0xBD: // Play sound 2 - Script_189_0BD (EntityEventHandlers.cs:3597-3610, E11.a,
+                       // docs/plan-e11-audio.md): sfxId = (v[2] << 8) | v[1] - see AlundraSoundPlayer's
+                       // own doc for the resolution/playback mechanics. SoundPlayer null (no
+                       // AudioSystemComponent for this world, or the intro trace harness's own
+                       // neutralization twin) -> degraded no-op, same shape as 0x54 below.
+                if (_worldContext.SoundPlayer is { } playSound2Player)
+                {
+                    playSound2Player.PlaySfx((v[2] << 8) | v[1]);
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0xBD, "PlaySound2", "sound system");
+                }
+
                 return 3;
+
+            case 0xBE: // Play sound 2 (bis) - Script_190_0BE (E11.a, docs/plan-e11-audio.md): same
+                       // derivation and dispatch shape as 0xBD above - the decompilation never gives
+                       // 0xBE an id derivation distinct from 0xBD's.
+                if (_worldContext.SoundPlayer is { } playSound2BisPlayer)
+                {
+                    playSound2BisPlayer.PlaySfx((v[2] << 8) | v[1]);
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0xBE, "PlaySound2Bis", "sound system");
+                }
+
+                return 3;
+
+            case 0x12: // Play sound 1 - Script_18_012 (EntityEventHandlers.cs:694-698, E11.a,
+                       // docs/plan-e11-audio.md): sfxId = v[1] ALONE - a single-byte operand on a 2-byte
+                       // instruction, NOT 0xBD's two-byte (v[2] << 8) | v[1] derivation (copying that
+                       // would read one byte past this instruction, see T6's own doc).
+                if (_worldContext.SoundPlayer is { } playSound1Player)
+                {
+                    playSound1Player.PlaySfx(v[1]);
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0x12, "PlaySound1", "sound system");
+                }
+
+                return 2;
+
+            case 0x75: // Play sound effect - Script_117_075 (EntityEventHandlers.cs:2208-2212, E11.a,
+                       // docs/plan-e11-audio.md): same single-byte v[1] derivation as 0x12 above, on its
+                       // own 2-byte instruction.
+                if (_worldContext.SoundPlayer is { } playSoundEffectPlayer)
+                {
+                    playSoundEffectPlayer.PlaySfx(v[1]);
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0x75, "PlaySoundEffect", "sound system");
+                }
+
+                return 2;
+
+            case 0xA8: // Is sound loading - Script_168_0A8 (D-E11-5, docs/plan-e11-audio.md): this DLL
+                       // never streams sound effects from a CD, so this predicate is always false. Writes
+                       // Result explicitly (unlike the old UnknownOpcode fallback, which does NOT clear
+                       // Result - the script would otherwise branch on whatever the PREVIOUS predicate
+                       // left there).
+                state.Result = 0;
+                return 1;
+
+            case 0xBA: // Check if loading from CD - Script_186_0BA (D-E11-5, docs/plan-e11-audio.md):
+                       // same rationale as 0xA8 above - never streaming from a CD, always false.
+                state.Result = 0;
+                return 1;
 
             case 0x54: // Set walkable - Script_84_054 (EntityEventHandlers.cs:1589-1620): OR's
                        // v[3]/v[4] into (Walkability, GroundProperty) of the tile at (v[1],v[2]), clamped

@@ -301,7 +301,7 @@ public class IntroTraceHarnessTests
 /// follow (E14). Dynamic entity spawn (opcodes 0x2D/0x8B, via <see cref="SpawnEntityByRecordId"/>) IS
 /// simulated - see that method's own doc.
 /// </summary>
-internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScriptHost
+internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScriptHost, IAlundraSoundPlayer
 {
     private const string WorldName_ = "Ship Klark (beginning)-389";
 
@@ -377,6 +377,15 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     private readonly bool _installCellMutator;
     private AlundraCellStore? _cellStore;
 
+    // E11.a (docs/plan-e11-audio.md): T1's own "production call site" fake - this harness IMPLEMENTS
+    // IAlundraSoundPlayer itself (rather than a separate class) since it already tracks its own Frame
+    // property, so PlaySfx just records (Frame, sfxId) directly - see SoundRequests' own doc.
+    // _installSoundPlayer gates only IEntityWorldContext.SoundPlayer's returned value, same "install a
+    // real thing but only sometimes hand it to the interpreter" shape as _installCellMutator above (T2's
+    // neutralization twin).
+    private readonly bool _installSoundPlayer;
+    private readonly List<(int Frame, int SfxId)> _soundRequests = new();
+
     // Includes the player (index 0) - mirrors AlundraWorldProxy's own _spawnedEntities, which also holds
     // the player (SpawnPlayerEntity adds it before any record) - see IEntityWorldContext.SpawnedEntities's
     // own doc for why that matters (a search opcode must be able to find the player too).
@@ -434,13 +443,20 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     public AlundraCellsCollisionField? GroundField => _groundField;
     public AlundraCellStore? CellStore => _cellStore;
 
+    /// <summary>E11.a test-only accessor (T1/T2, docs/plan-e11-audio.md): every <c>(Frame, sfxId)</c>
+    /// pair requested through the REAL production dispatch path (0xBD/0xBE/0x12/0x75) while
+    /// <see cref="_installSoundPlayer"/> was true.</summary>
+    public IReadOnlyList<(int Frame, int SfxId)> SoundRequests => _soundRequests;
+
     public HeadlessIntroSimulation(
-        string projectRoot, string worldName, EventProgramDocument document, bool installCellMutator = true)
+        string projectRoot, string worldName, EventProgramDocument document,
+        bool installCellMutator = true, bool installSoundPlayer = true)
     {
         _projectRoot = projectRoot;
         _worldName = worldName;
         _document = document;
         _installCellMutator = installCellMutator;
+        _installSoundPlayer = installSoundPlayer;
         _codesBytes = document.CodesAsBytes();
         _runner = new AlundraEventProgramRunner(document, _gameState, this)
         {
@@ -1034,6 +1050,21 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     /// exact seam rather than some other, accidental code path.
     /// </summary>
     public IAlundraCellMutator? CellMutator => _installCellMutator ? _cellStore : null;
+
+    /// <summary>
+    /// E11.a (docs/plan-e11-audio.md) - the "production call site" acceptance for T1: this harness
+    /// drives opcodes 0xBD/0xBE/0x12/0x75 through the REAL <see cref="AlundraEventProgramRunner.Dispatch"/>
+    /// via <see cref="AlundraWorldProxy.RunMapEventsPass"/>/<see cref="TraceAwareEntityRunner.RunScript"/>
+    /// exactly like production, backed by itself as a fake <see cref="IAlundraSoundPlayer"/> (see
+    /// <see cref="PlaySfx"/>). <see cref="_installSoundPlayer"/> gates only THIS property's returned
+    /// value (T2's neutralization twin), same shape as <see cref="CellMutator"/> above.
+    /// </summary>
+    public IAlundraSoundPlayer? SoundPlayer => _installSoundPlayer ? this : null;
+
+    /// <summary>Fake <see cref="IAlundraSoundPlayer"/> implementation (T1, docs/plan-e11-audio.md):
+    /// records the request instead of actually playing anything - no live AudioService in this
+    /// headless harness.</summary>
+    public void PlaySfx(int sfxId) => _soundRequests.Add((Frame, sfxId));
 
     /// <summary>
     /// Dynamic spawn-by-record-id (opcodes 0x2D ActivateEntity, 0x8B SpawnEntityNextToEntity) - mirrors

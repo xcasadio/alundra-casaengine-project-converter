@@ -12,6 +12,7 @@ using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Application.Components;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Assets.TileMap;
+using CasaEngine.Framework.Audio;
 using CasaEngine.Framework.Physics;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -329,6 +330,22 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     public IAlundraCellMutator? CellMutator { get; private set; }
 
     /// <summary>
+    /// This world's sound-effect playback seam (E11.a, docs/plan-e11-audio.md) - a real
+    /// <see cref="AlundraSoundPlayer"/> over <c>world.Game.AudioSystemComponent.Service</c>, installed by
+    /// <see cref="InstallAudioSystems"/>. Null without a <c>Game</c> (e.g. a world built without one in a
+    /// test) - the interpreter's own null-player fallback then applies (skip by size, <c>Degraded</c>
+    /// trace kind), same shape as <see cref="CellMutator"/> above.
+    /// </summary>
+    public IAlundraSoundPlayer? SoundPlayer { get; private set; }
+
+    /// <summary>
+    /// Seam over <c>Sounds/sfx-manifest.json</c> lookups (see <see cref="Alundra.Scripts.AlundraSoundBank"/>'s
+    /// class doc), read once and reused by <see cref="SoundPlayer"/> for every sfx it resolves. Internal,
+    /// not injected through the constructor - same reasoning as <see cref="SpriteRecordCatalog"/> above.
+    /// </summary>
+    internal AlundraSoundBank SoundBank = new AlundraSoundBank();
+
+    /// <summary>
     /// E7.b (docs/plan-e7-mutation-tuiles.md): the visual + navigation applier subscribed to
     /// <see cref="CellMutator"/>'s (as an <see cref="AlundraCellStore"/>) own
     /// <see cref="AlundraCellStore.CellsMutated"/> event - see <see cref="AlundraCellVisualSync"/>'s own
@@ -444,6 +461,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         _tileMapData = tileMapData;
 
         InstallCellAndOverlaySystems(world, tileMapComponent!, tileMapData);
+        InstallAudioSystems(world);
 
         var entitiesLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == EntitiesLayerName);
         var portalsLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == PortalsLayerName);
@@ -676,6 +694,28 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 () => NavigationGrid);
 
             cellStore.CellsMutated += _cellVisualSync.OnCellsMutated;
+        }
+    }
+
+    /// <summary>
+    /// E11.a (docs/plan-e11-audio.md, D-E11-1/D-E11-2): installs <see cref="SoundPlayer"/> - a real
+    /// <see cref="AlundraSoundPlayer"/> over <c>world.Game.AudioSystemComponent.Service</c> (the same
+    /// engine-owned <see cref="AudioService"/> every other production audio call site resolves off of,
+    /// e.g. <c>CutsceneActionCoroutineFactory.GetAudioService</c>/<c>SoundEmitterComponent</c>'s own
+    /// <c>world?.Game?.AudioSystemComponent?.Service</c>). Extracted as its own INTERNAL method
+    /// (same precedent as <see cref="InstallCellAndOverlaySystems"/>) so a test can drive it directly.
+    /// Left null without a <c>Game</c> (a world built without one) - the interpreter's own null-player
+    /// fallback then applies, same degraded shape every other missing-system seam in this DLL already
+    /// has.
+    /// </summary>
+    internal void InstallAudioSystems(World world)
+    {
+        SoundPlayer = null;
+
+        var audioService = world.Game?.AudioSystemComponent?.Service;
+        if (audioService != null)
+        {
+            SoundPlayer = new AlundraSoundPlayer(audioService, SoundBank);
         }
     }
 

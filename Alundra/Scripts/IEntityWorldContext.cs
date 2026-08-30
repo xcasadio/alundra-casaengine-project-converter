@@ -92,6 +92,20 @@ public interface IEntityWorldContext
     /// acceptance) - E7.b wires a real one into <see cref="AlundraWorldProxy"/> itself.
     /// </summary>
     IAlundraCellMutator? CellMutator => null;
+
+    /// <summary>
+    /// This world's sound-effect playback seam (E11.a, docs/plan-e11-audio.md) - backs opcodes
+    /// 0xBD/0xBE/0x12/0x75 in <see cref="AlundraEventProgramRunner.Dispatch"/>. A default interface
+    /// member (rather than a required one) so every EXISTING implementer - <see cref="NoOpEntityWorldContext"/>,
+    /// every test fake, <see cref="AlundraWorldProxy"/> itself - keeps compiling unmodified, defaulting
+    /// to null (the same "degraded, skip by size" fallback <see cref="AlundraEventProgramRunner"/> already
+    /// applies when a world has no sound player installed). <see cref="AlundraWorldProxy"/> installs a
+    /// real <see cref="AlundraSoundPlayer"/> once a <c>Game</c>'s <c>AudioSystemComponent</c> exists
+    /// (<see cref="AlundraWorldProxy.InstallAudioSystems"/>); the intro trace harness's
+    /// <c>HeadlessIntroSimulation</c> installs a fake instead, gated by its own
+    /// <c>installSoundPlayer</c> flag (same neutralization shape as <see cref="CellMutator"/>).
+    /// </summary>
+    IAlundraSoundPlayer? SoundPlayer => null;
 }
 
 /// <summary>

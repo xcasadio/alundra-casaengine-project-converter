@@ -68,6 +68,19 @@ public class AlundraEventProgramRunnerTests
         // own member signature overrides IEntityWorldContext.CellMutator's default-interface-member "=>
         // null" for THIS class - see IEntityWorldContext's own doc on why the default member exists.
         public IAlundraCellMutator? CellMutator { get; set; }
+
+        // E11.a (docs/plan-e11-audio.md): same override shape as CellMutator above - overrides
+        // IEntityWorldContext.SoundPlayer's default-interface-member "=> null" for THIS class.
+        public IAlundraSoundPlayer? SoundPlayer { get; set; }
+    }
+
+    /// <summary>Records every <see cref="PlaySfx"/> call, in order - T6's own oracle for the exact id
+    /// each opcode derived (docs/plan-e11-audio.md, slice E11.a).</summary>
+    private sealed class FakeSoundPlayer : IAlundraSoundPlayer
+    {
+        public readonly List<int> Requests = new();
+
+        public void PlaySfx(int sfxId) => Requests.Add(sfxId);
     }
 
     [Fact]
@@ -2340,5 +2353,152 @@ public class AlundraEventProgramRunnerTests
 
         // Never reaches 0x70 - the false branch looped straight back onto the Break.
         Assert.DoesNotContain(records, r => r.Opcode == 0x70);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Sound opcodes (0xBD/0xBE/0x12/0x75/0xA8/0xBA) - E11.a, docs/plan-e11-audio.md.
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void PlaySound2_0xBD_Implemented_DerivesIdFromTwoBytes_ResultUntouched()
+    {
+        var soundPlayer = new FakeSoundPlayer();
+        var context = new FakeEntityWorldContext { SoundPlayer = soundPlayer };
+        // sfxId = (v[2] << 8) | v[1] = (0x01 << 8) | 0x2C = 0x12C = 300.
+        var document = NewDocument(0xBD, 0x2C, 0x01, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 42 };
+
+        var kind = CaptureKindForOpcode(runner, 0xBD, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(3, state.CodeIndex);
+        Assert.Equal(42, state.Result); // untouched - a side-effect-only opcode.
+        Assert.Equal(new[] { 300 }, soundPlayer.Requests);
+    }
+
+    [Fact]
+    public void PlaySound2_0xBD_NullSoundPlayer_DegradedNoOp_SkipsBySize()
+    {
+        var document = NewDocument(0xBD, 0x2C, 0x01, 0xFF);
+        var runner = NewRunner(document); // no worldContext -> NoOpEntityWorldContext -> SoundPlayer null.
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 5 };
+
+        var kind = CaptureKindForOpcode(runner, 0xBD, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Degraded, kind);
+        Assert.Equal(3, state.CodeIndex); // still skipped by its own real size.
+        Assert.Equal(5, state.Result);
+    }
+
+    [Fact]
+    public void PlaySound2Bis_0xBE_Implemented_SameTwoByteDerivationAs0xBD()
+    {
+        var soundPlayer = new FakeSoundPlayer();
+        var context = new FakeEntityWorldContext { SoundPlayer = soundPlayer };
+        // sfxId = (v[2] << 8) | v[1] = (0x01 << 8) | 0x2D = 0x12D = 301.
+        var document = NewDocument(0xBE, 0x2D, 0x01, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0xBE, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(3, state.CodeIndex);
+        Assert.Equal(new[] { 301 }, soundPlayer.Requests);
+    }
+
+    // T6 (docs/plan-e11-audio.md, blocker P2 of the second relecture): 0x12/0x75 derive sfxId from
+    // v[1] ALONE, on a 2-byte instruction - NOT 0xBD/0xBE's two-byte (v[2] << 8) | v[1]. The byte
+    // FOLLOWING the operand (v[2] in the underlying byte stream, which this 2-byte instruction never
+    // reads as part of ITS OWN operand, but FillDataFromCommand still peeks at) is pinned NON-ZERO and
+    // DIFFERENT from the operand - operand 0x2A (42), following byte 0xFF (255, which conveniently also
+    // doubles as the terminator once the correct 2-byte advance lands on it) - so a mutant that wrongly
+    // applies 0xBD's derivation produces (0xFF << 8) | 0x2A = 0xFF2A = 65322, a clearly different id than
+    // the correct 0x2A = 42, and the id assertion (not just the advance) catches it.
+
+    [Fact]
+    public void PlaySound1_0x12_Implemented_DerivesIdFromSingleByte_NotTwo()
+    {
+        var soundPlayer = new FakeSoundPlayer();
+        var context = new FakeEntityWorldContext { SoundPlayer = soundPlayer };
+        var document = NewDocument(0x12, 0x2A, 0xFF); // operand=0x2A(42); v[2]=0xFF - non-zero, != operand.
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 7 };
+
+        var kind = CaptureKindForOpcode(runner, 0x12, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(2, state.CodeIndex); // 2-byte instruction - stops right after its own operand.
+        Assert.Equal(7, state.Result);
+        Assert.Equal(new[] { 42 }, soundPlayer.Requests); // NOT 0xFF2A (65322) - the wrong two-byte derivation.
+    }
+
+    [Fact]
+    public void PlaySound1_0x12_NullSoundPlayer_DegradedNoOp_SkipsBySize()
+    {
+        var document = NewDocument(0x12, 0x2A, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0x12, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Degraded, kind);
+        Assert.Equal(2, state.CodeIndex);
+    }
+
+    [Fact]
+    public void PlaySoundEffect_0x75_Implemented_DerivesIdFromSingleByte_NotTwo()
+    {
+        var soundPlayer = new FakeSoundPlayer();
+        var context = new FakeEntityWorldContext { SoundPlayer = soundPlayer };
+        var document = NewDocument(0x75, 0x2A, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0x75, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(2, state.CodeIndex);
+        Assert.Equal(new[] { 42 }, soundPlayer.Requests);
+    }
+
+    [Fact]
+    public void IsSoundLoading_0xA8_AlwaysWritesResultZero_OverwritingAStalePredicateValue()
+    {
+        // The value must first be shown stale (D-E11-5): pose Result=1 by a PREVIOUS predicate, then
+        // dispatch 0xA8 - unlike the old UnknownOpcode fallback (which never touched Result at all), this
+        // opcode is a real implemented predicate and must overwrite it.
+        var document = NewDocument(0xA8, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 };
+
+        var kind = CaptureKindForOpcode(runner, 0xA8, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(1, state.CodeIndex);
+        Assert.Equal(0, state.Result); // overwrites the stale 1 - never streaming from a CD.
+    }
+
+    [Fact]
+    public void CheckLoadingFromCd_0xBA_AlwaysWritesResultZero_OverwritingAStalePredicateValue()
+    {
+        var document = NewDocument(0xBA, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 };
+
+        var kind = CaptureKindForOpcode(runner, 0xBA, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(1, state.CodeIndex);
+        Assert.Equal(0, state.Result);
     }
 }
