@@ -237,3 +237,44 @@ git. Les lignes proposées comme « réelles » contiennent du code sans rapport
 `AssetInfos.json`) ; un golden qui bouge autrement que par les deux
 annotations ; toute tentative d'ajouter un fondu d'entrée (§1.3) ou de rejouer la piste à la frame 1
 (§1.4) ; et si T5 passe **avant** le correctif, il ne teste pas le défaut du §1.7.
+
+## 6. Réalisé — C1 **validée en jeu par l'utilisateur** (2026-08-30)
+
+« La musique est bien jouée ! » Commits `0b1d2d9` (jeu) et `f216b32` (analyseur, publié),
+verifier CONFIRMED avant la validation. **E11 est complète** : bruitages, musique, et l'extraction
+réparée en amont.
+
+- **Deux trous « vert et inerte », trouvés par MUTATION et non par relecture** — 4e et 5e occurrences
+  du chantier, et tous deux de la même forme : *un test qui ne traverse pas le site de production*.
+  1. Le test de propriété construisait le lecteur **directement**, avec un propriétaire explicite.
+     Changer la ligne où `InstallAudioSystems` décide laissait **toute la suite verte** — alors que
+     c'est précisément le correctif d'un défaut réel livré en E11.a.
+  2. Le déclencheur de musique était un **second site d'appel non épinglé** : le supprimer laissait
+     **637 tests verts** pendant que la fonctionnalité devenait totalement inerte en jeu.
+  **Remède retenu pour le second : SUPPRIMER le site plutôt qu'inventer un test pour lui.** Le
+  déclencheur est replié dans `InstallAudioSystems`, que le test de production traverse déjà — un seul
+  site, désormais sous test. Généralisation : *quand un appel n'est pas couvert, se demander d'abord
+  s'il doit exister séparément.*
+- **La leçon de conception : l'état de garde doit vivre là où vit l'état de l'original.**
+  `g_currentMapSoundIndex` est une **globale** ; la porter dans un objet reconstruit par monde aurait
+  rendu la garde **vacue par construction** — un directeur neuf n'a rien à garder. D'où la portée
+  session, qui décide aussi de la propriété des voix : la musique survit au changement de carte, les
+  bruitages meurent avec leur monde.
+- **Deux faits contre-intuitifs, lus et non supposés** : la rampe de volume d'entrée est
+  *mathématiquement* un no-op, donc **ajouter un fondu aurait été moins fidèle** ; et le second
+  `PlaySeq` ne rembobine rien, donc **ne pas le porter** est plus juste que le porter.
+- **Une erreur de fait rattrapée avant qu'elle n'entre dans la donnée** : `−1` donné pour « pas de
+  musique » alors que le code remappe vers l'index 1. Elle serait partie **dans la table exportée et
+  dans un test**. C'est pour ça que la table est exportée **brute** et interprétée par le consommateur.
+- **Un blocage de relecture REJETÉ avec preuve** : quatre citations de ligne données pour décalées de
+  +31 étaient exactes, réimprimées une à une. Un verdict est une preuve à peser, pas une autorité.
+- **La course de parallélisme est réelle et corrigée** (singleton partagé par deux classes de test :
+  1 échec sur 10 sans sérialisation, 20 runs propres avec). **Nuance à ne pas gober** : le verifier l'a
+  donnée comme explication de l'échec transitoire 623/624 vu plus tôt dans la session — impossible, le
+  singleton n'existait pas encore. Même *classe* de défaut, pas la même instance ; celui-là reste non
+  élucidé.
+- Différés nommés : la table d'override conditionnée aux flags (7 triplets) n'est pas portée — sans
+  effet sur 389/390, mais la carte 476 est à la fois cible d'override et fixture de test ;
+  `AttachToWorld` relit deux JSON à chaque installation de monde (P4).
+- Suites : `Alundra.Tests` **637**, convertisseur **139**, six goldens byte-identiques avec preuve
+  positive d'exécution, audio exporté inchangé (1044 fichiers, 1042 entrées de catalogue).
