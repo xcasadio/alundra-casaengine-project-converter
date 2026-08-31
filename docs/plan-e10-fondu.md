@@ -205,8 +205,15 @@ toucher. Cartes témoins de la correction : **Coal Mine (First Entrance)-61** (s
    - **instancié par `CasaEngineGame`** avec une propriété d'accès, le site exact
      d'`AudioSystemComponent` (`:353`).
 5. Propriété `game.ScreenEffectComponent` / accès au service, comme `game.AudioSystemComponent.Service`.
-6. Page `docs/engine/screen-effects.md` + entrée dans l'index, au gabarit de `audio-system.md`.
-7. Tests `CasaEngine.Tests` : rampes du service (cible exacte, long-frame sans dépassement, durée 0,
+6. **L'action de cutscene `FadeScreen`** (décision utilisateur, ajoutée après la revue de clôture —
+   voir §5) : `FadeScreenCutsceneActionData` (champs `r`, `g`, `b`, `duration_seconds`, `blend_mode`),
+   exécutée par la fabrique de coroutines via la commodité `StartFade` du service, **bloquante
+   jusqu'à l'arrivée** comme `FadeMusicCutsceneActionData` — le calque exact des quatre actions
+   audio : cas sérialiseur dans `CutsceneAssetJsonSerializer`, validation dans `CutsceneValidator`,
+   test d'aller-retour de sérialisation. **Mutation appariée** : retirer le cas sérialiseur → le test
+   d'aller-retour tombe (la famille du piège d'`EntityComponent` : perte de données silencieuse).
+7. Page `docs/engine/screen-effects.md` + entrée dans l'index, au gabarit de `audio-system.md`.
+8. Tests `CasaEngine.Tests` : rampes du service (cible exacte, long-frame sans dépassement, durée 0,
    redémarrage depuis la valeur courante — le miroir d'`AudioServiceFadeTests`) ; `GetBlendState`
    rend des instances **en cache** (contrat anti-allocation) ; la config exacte des deux
    `BlendState` (fonctions et facteurs du §1.3) ; **et le test de SOUMISSION du composant** (blocage
@@ -302,6 +309,15 @@ recette obligatoire, à la discrétion de l'utilisateur.
 **Budget** : E10.a un commit sous-module + pointeur ; E10.b un commit parent ; exécution par agents
 (moteur puis DLL, le second dépend de l'enum du premier) ; verifier de clôture avant tout commit.
 ≤ 6 tours au total.
+
+**État de relecture.** Trois rondes, sept blocages, tous FIX ; revue de clôture **READY**.
+**Ajout postérieur au READY, sur décision utilisateur** : l'action de cutscene `FadeScreen`
+(livrable 6 d'E10.a) — non re-relue, mais calquée sur un précédent littéral du dépôt (les quatre
+actions audio, sérialiseur + validateur + tests compris) et couverte par sa propre mutation. Le
+verifier de clôture d'exécution la vérifie comme le reste. Deux précisions issues des questions de
+l'utilisateur : la durée de 16 frames vaut **0,32 s sur la version France (PAL, 50 Hz) convertie
+ici** (~0,27 s sur NTSC) ; et hors cette action de cutscene, la feature n'a **pas de surface
+éditeur** — choix explicite, pas un oubli.
 
 **Arrêts** : un golden qui bouge ; un test moteur existant qui casse ; `CasaEngine.Launcher/Program.cs`
 stagé ; toute tentative de « corriger » l'échange de canaux, le pas-0, ou la troncature (§D-E10-8) ;
