@@ -743,6 +743,51 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
                 return 7;
 
+            case 0xAF: // Begin fade transition with color - Script_175_0AF (E10.b, docs/plan-e10-fondu.md):
+                       // machine B (the drawn fade rectangle). v[1]/v[2]/v[3] are (R,G,B) already in
+                       // DISPLAY order (§1.2 - see AlundraScreenFadeDirector's own class doc on the
+                       // channel swap, which this port never re-applies). v[4] = tpage (blend selector),
+                       // v[5] = duration (ticks), v[6] = persist (the persistence latch, §1.1 - never
+                       // decremented anywhere in this DLL). ScreenFadeDirector null (no world context
+                       // wired to exercise this opcode, e.g. most synthetic interpreter tests) ->
+                       // degraded no-op, same shape as 0xBD/0x54 above.
+                if (_worldContext.ScreenFadeDirector is { } beginFadeDirector)
+                {
+                    beginFadeDirector.BeginFadeEffect(v[1], v[2], v[3], v[4], v[5], v[6]);
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0xAF, "BeginFadeTransition", "screen fade director");
+                }
+
+                return 7;
+
+            case 0xB0: // Set warp fade color and duration - Script_176_0B0 (E10.b): machine A, the "warp"
+                       // timer - its colours are DEAD in this port (§1.1: their only output has zero
+                       // readers in the decompilation) - only its flag/duration matter, consumed by
+                       // 0xB1 below.
+                if (_worldContext.ScreenFadeDirector is { } warpFadeDirector)
+                {
+                    warpFadeDirector.SetWarpFadeDuration(v[1], v[2], v[3], v[4]);
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0xB0, "SetWarpFadeDuration", "screen fade director");
+                }
+
+                return 5;
+
+            case 0xB1: // Check fade and warp flags - Script_177_0B1 (E10.b): predicate, Result =
+                       // (fadeFlags == 0 && warpFlags == 0) ? 1 : 0. Writes Result in BOTH cases -
+                       // unlike UnknownOpcode's own no-touch fallback, which would leave a stale Result
+                       // from whatever the PREVIOUS predicate wrote (§1.7) - so a null ScreenFadeDirector
+                       // still writes Result = 0 explicitly rather than skipping the write.
+                state.Result = _worldContext.ScreenFadeDirector is { } fadeCheckDirector && fadeCheckDirector.IsSettled
+                    ? 1
+                    : 0;
+
+                return 1;
+
             case 0x70: // Is above ground - Script_112_070 (EntityEventHandlers.cs:2161-2165): Result =
                        // logicEntity.IsOnGround, pulled from the controller every frame by
                        // AlundraEntityScriptProxy.Update's own root pull (E3.d) - 0 (falls) for an entity

@@ -72,6 +72,27 @@ public class AlundraEventProgramRunnerTests
         // E11.a (docs/plan-e11-audio.md): same override shape as CellMutator above - overrides
         // IEntityWorldContext.SoundPlayer's default-interface-member "=> null" for THIS class.
         public IAlundraSoundPlayer? SoundPlayer { get; set; }
+
+        // E10.b (docs/plan-e10-fondu.md): same override shape as SoundPlayer above - overrides
+        // IEntityWorldContext.ScreenFadeDirector's default-interface-member "=> null" for THIS class.
+        public IAlundraScreenFadeDirector? ScreenFadeDirector { get; set; }
+    }
+
+    /// <summary>Records every <see cref="BeginFadeEffect"/>/<see cref="SetWarpFadeDuration"/> call, in
+    /// order - the dispatch-level oracle for 0xAF/0xB0's own operand extraction (E10.b,
+    /// docs/plan-e10-fondu.md). <see cref="IsSettled"/> is settable so 0xB1's own dispatch (Result written
+    /// both ways) is directly testable without a real <see cref="AlundraScreenFadeDirector"/>.</summary>
+    private sealed class FakeScreenFadeDirector : IAlundraScreenFadeDirector
+    {
+        public readonly List<(int R, int G, int B, int Tpage, int Duration, int Persist)> BeginFadeCalls = new();
+        public readonly List<(int R, int G, int B, int Duration)> SetWarpFadeDurationCalls = new();
+        public bool IsSettled { get; set; }
+
+        public void BeginFadeEffect(int r, int g, int b, int tpage, int duration, int persistLock)
+            => BeginFadeCalls.Add((r, g, b, tpage, duration, persistLock));
+
+        public void SetWarpFadeDuration(int r, int g, int b, int duration)
+            => SetWarpFadeDurationCalls.Add((r, g, b, duration));
     }
 
     /// <summary>Records every <see cref="PlaySfx"/> call, in order - T6's own oracle for the exact id
@@ -2498,6 +2519,103 @@ public class AlundraEventProgramRunnerTests
         var kind = CaptureKindForOpcode(runner, 0xBA, () => runner.RunOneScriptCall(entity, state));
 
         Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(1, state.CodeIndex);
+        Assert.Equal(0, state.Result);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Screen fade opcodes (0xAF/0xB0/0xB1) - E10.b, docs/plan-e10-fondu.md.
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void BeginFadeTransition_0xAF_Implemented_ExtractsAllSixOperandsInDisplayOrder()
+    {
+        var fadeDirector = new FakeScreenFadeDirector();
+        var context = new FakeEntityWorldContext { ScreenFadeDirector = fadeDirector };
+        // [op, r, g, b, tpage, duration, persist] - r=10, g=20, b=30, tpage=1, duration=8, persist=9.
+        var document = NewDocument(0xAF, 10, 20, 30, 1, 8, 9, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+
+        var kind = CaptureKindForOpcode(runner, 0xAF, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(7, state.CodeIndex);
+        Assert.Single(fadeDirector.BeginFadeCalls);
+        // The mutation this pins (T3, "follow the decomp's own inverted names"): r=10/b=30 must NOT swap.
+        Assert.Equal((10, 20, 30, 1, 8, 9), fadeDirector.BeginFadeCalls[0]);
+    }
+
+    [Fact]
+    public void BeginFadeTransition_0xAF_NullScreenFadeDirector_DegradedNoOp_SkipsBySize()
+    {
+        var document = NewDocument(0xAF, 10, 20, 30, 1, 8, 9, 0xFF);
+        var runner = NewRunner(document); // no worldContext -> NoOpEntityWorldContext -> null director.
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 5 };
+
+        var kind = CaptureKindForOpcode(runner, 0xAF, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Degraded, kind);
+        Assert.Equal(7, state.CodeIndex);
+        Assert.Equal(5, state.Result); // untouched.
+    }
+
+    [Fact]
+    public void SetWarpFadeDuration_0xB0_Implemented_ExtractsAllFourOperands()
+    {
+        var fadeDirector = new FakeScreenFadeDirector();
+        var context = new FakeEntityWorldContext { ScreenFadeDirector = fadeDirector };
+        // [op, r, g, b, duration] - r=1, g=2, b=3, duration=6.
+        var document = NewDocument(0xB0, 1, 2, 3, 6, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+
+        var kind = CaptureKindForOpcode(runner, 0xB0, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(5, state.CodeIndex);
+        Assert.Single(fadeDirector.SetWarpFadeDurationCalls);
+        Assert.Equal((1, 2, 3, 6), fadeDirector.SetWarpFadeDurationCalls[0]);
+    }
+
+    [Fact]
+    public void CheckFadeAndWarpFlags_0xB1_WritesResultBothWays_OverwritingAStaleValue()
+    {
+        var fadeDirector = new FakeScreenFadeDirector { IsSettled = false };
+        var context = new FakeEntityWorldContext { ScreenFadeDirector = fadeDirector };
+        var document = NewDocument(0xB1, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+
+        // Stale Result = 1, mid-fade (IsSettled = false) - must be overwritten to 0 (T6's own "stale"
+        // half - unlike UnknownOpcode's own no-touch fallback).
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 };
+        var kind = CaptureKindForOpcode(runner, 0xB1, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(1, state.CodeIndex);
+        Assert.Equal(0, state.Result);
+
+        // After arrival (IsSettled = true) - Result flips to 1.
+        fadeDirector.IsSettled = true;
+        state.CodeIndex = 0;
+        runner.RunOneScriptCall(entity, state);
+        Assert.Equal(1, state.Result);
+    }
+
+    [Fact]
+    public void CheckFadeAndWarpFlags_0xB1_NullScreenFadeDirector_WritesResultZero()
+    {
+        var document = NewDocument(0xB1, 0xFF);
+        var runner = NewRunner(document); // no worldContext -> NoOpEntityWorldContext -> null director.
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 };
+
+        runner.RunOneScriptCall(entity, state);
+
         Assert.Equal(1, state.CodeIndex);
         Assert.Equal(0, state.Result);
     }

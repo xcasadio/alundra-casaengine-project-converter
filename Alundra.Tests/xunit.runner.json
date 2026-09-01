@@ -1,0 +1,5 @@
+{
+  "$schema": "https://xunit.net/schema/current/xunit.runner.schema.json",
+  "parallelizeTestCollections": false,
+  "_comment": "Session-scoped singletons (AlundraMusicPlayer since E11.c, AlundraScreenFadeDirector since E10) are mutated by any test driving AlundraWorldProxy.Update or an install method. Two distinct cross-collection races reached the suite before this knob (E11.c: 1 failure in 10 runs; E10: 2 in 40, T1 reading 207 instead of 239 from two injected ticks). Per-singleton [Collection] enrollment fixed each instance but not the family - every future singleton would need remembering. Serializing collections kills the class of defect; the suite runs in seconds either way."
+}

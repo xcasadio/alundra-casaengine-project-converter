@@ -347,6 +347,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     public IAlundraMusicPlayer? MusicPlayer { get; private set; }
 
     /// <summary>
+    /// This session's screen fade/tint seam (E10.b, docs/plan-e10-fondu.md, D-E10-6) - the SESSION-scoped
+    /// <see cref="AlundraScreenFadeDirector.Instance"/> (see that class's own doc), NOT a per-world
+    /// instance. Always non-null (unlike <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/>): attaching
+    /// to a <c>null</c> engine service is itself a tolerated, tested state (T2) - the singleton is
+    /// installed by <see cref="InstallScreenFadeSystems"/> regardless of whether this world has a
+    /// <c>Game</c>.
+    /// </summary>
+    public IAlundraScreenFadeDirector ScreenFadeDirector => AlundraScreenFadeDirector.Instance;
+
+    /// <summary>
     /// Seam over <c>Sounds/sfx-manifest.json</c> lookups (see <see cref="Alundra.Scripts.AlundraSoundBank"/>'s
     /// class doc), read once and reused by <see cref="SoundPlayer"/> for every sfx it resolves. Internal,
     /// not injected through the constructor - same reasoning as <see cref="SpriteRecordCatalog"/> above.
@@ -470,6 +480,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         InstallCellAndOverlaySystems(world, tileMapComponent!, tileMapData);
         InstallAudioSystems(world);
+        InstallScreenFadeSystems(world);
 
         var entitiesLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == EntitiesLayerName);
         var portalsLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == PortalsLayerName);
@@ -744,6 +755,27 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // it to the in-game check alone. Ordering is unaffected: the original starts the BGM at the end
         // of its own map-entry block, but the start depends on nothing this method runs after.
         TriggerMapEntryMusic(world);
+    }
+
+    /// <summary>
+    /// E10.b (docs/plan-e10-fondu.md, D-E10-7): installs the screen fade/tint seam - re-points the
+    /// SESSION-scoped <see cref="AlundraScreenFadeDirector.Instance"/> at this world's own
+    /// <see cref="CasaEngine.Framework.Rendering.ScreenEffects.ScreenEffectService"/>
+    /// (<c>world.Game?.ScreenEffectComponent?.Service</c> - null without a <c>Game</c>, tolerated, T2),
+    /// THEN arms effect 0 for this map entry (<see cref="AlundraScreenFadeDirector.InstallForMapEntry"/>).
+    /// Called from <see cref="InitializeWithWorld"/> - the ONLY call site (D-E10-7's own M16 lesson: no
+    /// separate, independently deletable call site) - and extracted as its own INTERNAL method, same
+    /// precedent as <see cref="InstallAudioSystems"/>, so a test can drive it directly against a world
+    /// with no <c>Game</c> (T2) or against two successive worlds sharing the same session (T7).
+    ///
+    /// <b>Pushes nothing to the service</b> (see <see cref="AlundraScreenFadeDirector.InstallForMapEntry"/>'s
+    /// own doc) - the first push happens from <see cref="Update"/>, after that same frame's
+    /// <see cref="AlundraScreenFadeDirector.Advance"/> call.
+    /// </summary>
+    internal void InstallScreenFadeSystems(World world)
+    {
+        AlundraScreenFadeDirector.Instance.AttachToWorld(world.Game?.ScreenEffectComponent?.Service);
+        AlundraScreenFadeDirector.Instance.InstallForMapEntry();
     }
 
     /// <summary>
@@ -1213,6 +1245,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // named for S3) since it is _cameraDirector's own state.
         _backdropStage.ApplyOriginalBackgroundClearColorOnce(_world);
         _backdropStage.UpdateAndDrawBackdrop(elapsedTime, _world, _cameraDirector.ResolvedCamera);
+
+        // E10.b (docs/plan-e10-fondu.md, §1.6/D-E10-8): the fade pass - positioned here purely for
+        // frame-order consistency with the camera/backdrop block above, NOT because it depends on
+        // either: it advances its own two 16.16 machines by LOGIC TICKS (ticksThisFrame, same cadence as
+        // UpdateCameraFollow - never by rendered frame, §1.6) and then pushes colour/blend/active to the
+        // engine's ScreenEffectService - no camera read, no backdrop read. "Advance, then push" - never
+        // the reverse (§1.5: pushing before Advance would submit a stale, or even the just-armed 255,
+        // value one frame early).
+        AlundraScreenFadeDirector.Instance.Advance(ticksThisFrame);
+        AlundraScreenFadeDirector.Instance.PushToAttachedService();
 
         // Closes this frame's logic-clock memo (see AlundraLogicClock's own class doc) - this proxy's own
         // Update always runs last (World.cs:443-491), so the next frame's first caller (an entity's own

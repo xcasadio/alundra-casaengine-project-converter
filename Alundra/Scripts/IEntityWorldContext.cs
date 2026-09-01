@@ -118,6 +118,16 @@ public interface IEntityWorldContext
     /// singleton rather than a per-world instance - D-C-6).
     /// </summary>
     IAlundraMusicPlayer? MusicPlayer => null;
+
+    /// <summary>
+    /// This session's screen fade/tint seam (E10.b, docs/plan-e10-fondu.md) - backs opcodes
+    /// 0xAF/0xB0/0xB1 in <see cref="AlundraEventProgramRunner.Dispatch"/>. A default interface member,
+    /// same "degraded, skip" shape as <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/> above,
+    /// defaulting to null so every EXISTING implementer keeps compiling unmodified.
+    /// <see cref="AlundraWorldProxy"/> installs the session-scoped <see cref="AlundraScreenFadeDirector.Instance"/>
+    /// (D-E10-6 - see that class's own doc for why it is a singleton rather than a per-world instance).
+    /// </summary>
+    IAlundraScreenFadeDirector? ScreenFadeDirector => null;
 }
 
 /// <summary>

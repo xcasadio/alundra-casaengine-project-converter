@@ -50,7 +50,10 @@ namespace Alundra.Scripts;
 /// <c>0.5 * src + 0.5 * dest</c>, the PSX "Average" blend mode (<see
 /// cref="BackdropLayerData.BlendMode"/> == 1) - both for Ground=1 Tiles layers using it (true
 /// semi-transparency, replacing the previous opaque-draw limitation) and for the overlay tint itself.
-/// Every other layer keeps <see cref="SpriteBlendMode.Opaque"/> (the previous fixed behavior).
+/// Every other layer keeps <see cref="SpriteBlendMode.Opaque"/> (the previous fixed behavior) - except
+/// <c>Ground == true</c> layers with <c>BlendMode</c> 2/3/4, additive/subtractive/additive-attenuated
+/// respectively (E10.b, docs/plan-e10-fondu.md §1.8) - see <see cref="ResolveGroundLayerBlend"/>'s own
+/// doc for the exact mapping and the deliberately untouched <c>(Ground = false, BlendMode 1)</c> bucket.
 /// </summary>
 internal sealed class BackdropRenderer
 {
@@ -161,13 +164,49 @@ internal sealed class BackdropRenderer
             var renderPass = layer.Ground ? RenderPass2D.Effects : RenderPass2D.Background;
             var sortKey = new RenderSortKey2D((int)renderPass, 0, layer.DepthOrder, 0, 0, 0, layer.LayerId);
 
-            // BlendMode == 1 is the PSX "Average" blend - see the class doc's Blend paragraph.
-            var isAverage = layer.Ground && layer.BlendMode == 1;
-            var tint = isAverage ? new Color(255, 255, 255, 128) : Color.White;
-            var blendMode = isAverage ? SpriteBlendMode.AlphaBlend : SpriteBlendMode.Opaque;
+            var (blendMode, tint) = ResolveGroundLayerBlend(layer.Ground, layer.BlendMode);
 
             _layers.Add(new LayerRuntime(layer.Scrollar, texture2d, sortKey, tint, blendMode));
         }
+    }
+
+    /// <summary>
+    /// E10.b (docs/plan-e10-fondu.md §1.8): the ORIGINAL's own backdrop blend mapping
+    /// (GraphicManager.cs:846-853) - 1 = average (unchanged from before this slice), 2 = additive white,
+    /// 3 = subtractive white, 4 = additive tint (63,63,63) (the shader multiplies the tint into the
+    /// source, so B + 0.247F against the original's own targeted 0.25F - a documented quantization gap,
+    /// 63/255, with no fourth blend state involved). Only <paramref name="ground"/> == <see langword="true"/>
+    /// layers are re-mapped by any of this - the <c>(Ground = false, BlendMode 1)</c> bucket (34 layers,
+    /// re-verified on the export) is explicitly OUT OF SCOPE (the original per-PIXEL STP-bit gate that
+    /// bucket needs, GraphicManager.cs:1233-1246, is unanalyzed) and must stay Opaque, untouched - so
+    /// every other combination (including that bucket) falls through to the pre-existing Opaque/white
+    /// default.
+    ///
+    /// Extracted as its own static, pure method (no <see cref="Texture2D"/>/<see cref="World"/> touched)
+    /// specifically so it is testable with a synthetic document and no live <see cref="GraphicsDevice"/>
+    /// (T8, docs/plan-e10-fondu.md).
+    /// </summary>
+    internal static (SpriteBlendMode BlendMode, Color Tint) ResolveGroundLayerBlend(bool ground, int blendMode)
+    {
+        if (ground)
+        {
+            switch (blendMode)
+            {
+                case 1: // Average - unchanged (§1.8): true semi-transparency via AlphaBlend.
+                    return (SpriteBlendMode.AlphaBlend, new Color(255, 255, 255, 128));
+                case 2: // Additive white.
+                    return (SpriteBlendMode.Additive, Color.White);
+                case 3: // Subtractive white.
+                    return (SpriteBlendMode.Subtractive, Color.White);
+                case 4: // Additive, tint (63,63,63) - see this method's own doc on the 0.247 vs 0.25
+                        // quantization gap.
+                    return (SpriteBlendMode.Additive, new Color(63, 63, 63));
+            }
+        }
+
+        // Every other combination - including the deliberately untouched (Ground=false, BlendMode 1)
+        // bucket - keeps the pre-existing fixed behavior.
+        return (SpriteBlendMode.Opaque, Color.White);
     }
 
     /// <summary>Advances the shared tick clock every layer's auto-scroll reads from - see
