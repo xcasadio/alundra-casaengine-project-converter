@@ -1,3 +1,5 @@
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -163,6 +165,96 @@ public class BackdropRendererTests
         var (blend, tint) = BackdropRenderer.ResolveGroundLayerBlend(ground: true, blendMode: 99);
         Assert.Equal(SpriteBlendMode.Opaque, blend);
         Assert.Equal(Color.White, tint);
+    }
+
+    /// <summary>
+    /// The user's own bug report, first visible the day the backdrop textures finally loaded: "des que
+    /// la camera se deplace verticalement les nuages bougent plus vite". Map 389's cloud layer has
+    /// parallax factor 1/1 on BOTH axes - it must be GLUED TO THE WORLD, moving on screen exactly like
+    /// the tiles. The defect: Draw fed the RENDER-space camera Y (up-positive) into
+    /// ComputeLayerOffset, where the original consumes a WORLD-space scroll (down-positive,
+    /// g_cameraScrollingY) - so the vertical parallax term carried the wrong sign and the layer
+    /// drifted at TWICE the camera's vertical movement. X was fine (no flip on that axis), which is
+    /// why the symptom was vertical-only.
+    ///
+    /// Discriminating invariant, at the production call site (Draw): with factor 1/1 and no
+    /// auto-scroll, the submitted quads' world positions must be IDENTICAL for two camera positions
+    /// that differ only in Y (world-glued, same wrap window). Under the sign bug they differ by twice
+    /// the camera delta.
+    /// </summary>
+    [Fact]
+    public void Draw_Factor1Layer_StaysWorldGlued_WhenCameraMovesVertically()
+    {
+        var renderer = CreateRendererWithOneFactor1Layer();
+        var spriteRenderer = CreateSpriteRendererComponent();
+
+        // Camera moves DOWN in the world by 10 px: render-space Y (up-positive) decreases by 10.
+        // Deltas chosen well inside one 480-px canvas period so no wrap boundary is crossed.
+        var cameraA = new Vector3(0f, -100f, 0f);
+        var cameraB = new Vector3(0f, -110f, 0f);
+
+        renderer.Draw(spriteRenderer, cameraA, viewportWidth: 320, viewportHeight: 240);
+        var quadsA = ReadLayerQuadTranslations(spriteRenderer);
+        GetSpriteDatas(spriteRenderer).Clear();
+
+        renderer.Draw(spriteRenderer, cameraB, viewportWidth: 320, viewportHeight: 240);
+        var quadsB = ReadLayerQuadTranslations(spriteRenderer);
+
+        Assert.NotEmpty(quadsA);
+        Assert.NotEmpty(quadsB);
+
+        // World-glued: the canvas grid sits at the same world alignment for both camera positions.
+        // (Compared modulo the 480-px canvas period: a wrap re-tiling may add/remove an edge quad,
+        // never move the grid itself.)
+        static float Mod(float v, float m) => ((v % m) + m) % m;
+        var alignmentA = Mod(quadsA[0].Y, 480f);
+        var alignmentB = Mod(quadsB[0].Y, 480f);
+        Assert.Equal(alignmentA, alignmentB, precision: 3);
+
+        // Horizontal guard: X was never affected and must stay world-glued too.
+        Assert.Equal(Mod(quadsA[0].X, 640f), Mod(quadsB[0].X, 640f), precision: 3);
+    }
+
+    private static BackdropRenderer CreateRendererWithOneFactor1Layer()
+    {
+        var renderer = new BackdropRenderer();
+
+        var scrollar = new BackdropScrollarData
+        {
+            FactorXNum = 1, FactorXDenom = 1,
+            FactorYNum = 1, FactorYDenom = 1,
+            ScrollXSpeed = 0, ScrollXPeriod = 0,
+            ScrollYSpeed = 0, ScrollYPeriod = 0,
+        };
+
+        // An uninitialized Texture2D has 0x0 bounds; the covering-quad tiling runs off the canvas
+        // constants, not the texture, so the quads are still queued with their world positions.
+        var texture = CreateTexture();
+        var sortKey = new RenderSortKey2D((int)RenderPass2D.Effects, 0, 0, 0, 0, 0, 0);
+
+        var layerRuntimeType = typeof(BackdropRenderer).GetNestedType("LayerRuntime", BindingFlags.NonPublic);
+        Assert.NotNull(layerRuntimeType);
+        var layer = Activator.CreateInstance(
+            layerRuntimeType!, scrollar, texture, sortKey, Color.White, SpriteBlendMode.AlphaBlend);
+
+        var layersField = typeof(BackdropRenderer).GetField("_layers", BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.NotNull(layersField);
+        var layers = (System.Collections.IList)layersField!.GetValue(renderer)!;
+        layers.Add(layer);
+
+        return renderer;
+    }
+
+    private static List<Vector3> ReadLayerQuadTranslations(SpriteRendererComponent spriteRenderer)
+    {
+        var result = new List<Vector3>();
+        foreach (var entry in GetSpriteDatas(spriteRenderer))
+        {
+            var matrix = (Matrix)GetField(entry!, "WorldMatrix");
+            result.Add(matrix.Translation);
+        }
+
+        return result;
     }
 
     private static Texture2D CreateTexture()

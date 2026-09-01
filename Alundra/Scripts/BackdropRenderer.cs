@@ -291,8 +291,15 @@ internal sealed class BackdropRenderer
             var offsetX = BackdropOffsetMath.ComputeLayerOffset(
                 cameraPosition.X, scrollar.FactorXNum, scrollar.FactorXDenom,
                 scrollar.ScrollXSpeed, scrollar.ScrollXPeriod, tickCount, BackdropOffsetMath.CanvasWidth);
+            // -cameraPosition.Y, not cameraPosition.Y: the offset math consumes a WORLD-space
+            // vertical scroll (down-positive - the original feeds g_cameraScrollingY), but this
+            // engine's render space is up-positive (see this method's own Y-flip note above), so the
+            // camera's render Y must be negated before it becomes a canvas coordinate. Fed raw, the
+            // parallax term carries the wrong sign and a factor-1/1 layer drifts at TWICE the
+            // camera's vertical movement - the user's "les nuages bougent plus vite" report, visible
+            // the very day the backdrop textures first loaded. X needs no negation.
             var offsetY = BackdropOffsetMath.ComputeLayerOffset(
-                cameraPosition.Y, scrollar.FactorYNum, scrollar.FactorYDenom,
+                -cameraPosition.Y, scrollar.FactorYNum, scrollar.FactorYDenom,
                 scrollar.ScrollYSpeed, scrollar.ScrollYPeriod, tickCount, BackdropOffsetMath.CanvasHeight);
 
             var origins = BackdropOffsetMath.ComputeCoveringQuadOrigins(viewportWidth, viewportHeight, offsetX, offsetY);
