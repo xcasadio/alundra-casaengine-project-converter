@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -130,7 +130,7 @@ public class AlundraGroundSlopeTests
     private sealed class NoOpScriptHost : IAlundraScriptHost
     {
         public IEventProgramRunner Runner => throw new NotSupportedException();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
+        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
         public AlundraGameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public System.Collections.Generic.IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
@@ -381,7 +381,7 @@ public class AlundraGroundSlopeTests
     private sealed class PlayerScriptHost : IAlundraScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
+        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
         public AlundraGameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController { get; init; }
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();

@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -146,7 +146,7 @@ public class AlundraCharacterControllerAdoptionTests
     private sealed class FakeScriptHost : IAlundraScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
+        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
         public AlundraGameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();

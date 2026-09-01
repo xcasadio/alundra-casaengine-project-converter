@@ -1174,7 +1174,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
 
     public IEventProgramRunner Runner => _wrapperRunner;
 
-    public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
+    public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
 
     public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId) => entity.Status = EntityStatus.FlagToDestroy;
 

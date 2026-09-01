@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
@@ -174,11 +174,33 @@ public class EntitySearchServiceTests
     {
         var owner = NewSpawnedProxy();
         var target = NewSpawnedProxy();
-        owner.XCollisionEntity = target.LogicContextEntity;
+        owner.XCollisionEntity = target; // proxy-typed since E12.d (D-E12D-8).
 
         var matches = EntitySearchService.GetMatchingEntitiesBySearchType(owner, 0x87, new[] { target, NewSpawnedProxy() });
 
         Assert.Equal(new[] { target }, matches);
+    }
+
+    /// <summary>E12.d D-E12D-8's pinning test (docs/plan-e12d-interaction-joueur.md §1.9): the
+    /// proxy-typed <c>XCollisionEntity</c> makes functions 7/8 REACHABLE with the player as owner (the
+    /// permanent-null field was our deviation, not the original's), and the old latent trap - a null
+    /// field ReferenceEquals-matching bare candidates whose <c>LogicContextEntity</c> was null - is
+    /// structurally gone: a null field can never equal a candidate reference.</summary>
+    [Fact]
+    public void FunctionId7_PlayerOwnerWithLiveContact_ReturnsThePointedEntity_AndANullFieldMatchesNothing()
+    {
+        var player = NewSpawnedProxy();
+        player.IsPlayer = true;
+        var pointed = NewSpawnedProxy();
+        var bare = new AlundraEntityScriptProxy { Status = EntityStatus.Normal }; // LogicContextEntity null.
+
+        player.XCollisionEntity = pointed;
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(player, 0x87, new[] { pointed, bare, NewSpawnedProxy() });
+        Assert.Equal(new[] { pointed }, matches);
+
+        player.XCollisionEntity = null;
+        matches = EntitySearchService.GetMatchingEntitiesBySearchType(player, 0x87, new[] { pointed, bare });
+        Assert.Empty(matches);
     }
 
     [Fact]
@@ -186,7 +208,7 @@ public class EntitySearchServiceTests
     {
         var owner = NewSpawnedProxy();
         var candidate = NewSpawnedProxy();
-        candidate.XCollisionEntity = owner.LogicContextEntity;
+        candidate.XCollisionEntity = owner; // proxy-typed since E12.d (D-E12D-8).
 
         var matches = EntitySearchService.GetMatchingEntitiesBySearchType(owner, 0x88, new[] { candidate, NewSpawnedProxy() });
 

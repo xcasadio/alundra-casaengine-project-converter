@@ -143,6 +143,43 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
     }
 
     [Fact]
+    public void OpeningPress_IsSwallowed_ButtonOnly_TheTimerStillCounts()
+    {
+        // E12.d T4 (docs/plan-e12d-interaction-joueur.md D-E12D-6): a box opened WHILE the interact
+        // button is just-pressed (the very press that triggered the interaction) must not advance or
+        // close on its own opening press - and the swallow must eat exactly ONE snapshot: a fresh
+        // press on a later tick closes normally, and the auto-timer is never suspended by it.
+        var gameState = new AlundraGameState();
+        var director = AlundraDialogueDirector.Instance;
+        director.AttachToWorld(new DialogueService(), gameState);
+
+        gameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
+        director.Open("bonjour", controlMode: 0);
+        Assert.True(director.IsOpen);
+
+        director.Tick(); // same still-live snapshot: swallowed, the box must survive.
+        Assert.True(director.IsOpen);
+
+        gameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
+        director.Tick(); // a FRESH press one tick later closes normally (mask bit1).
+        Assert.False(director.IsOpen);
+
+        // And the timer half: same swallowed opening, then NO button ever again - the 360-tick
+        // auto-close (mask bit0) must still fire, proving the swallow only ate the button, not time.
+        gameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
+        director.Open("bonjour", controlMode: 0);
+        gameState.LastPadState = default;
+        for (var tick = 0; tick < 359; tick++)
+        {
+            director.Tick();
+        }
+
+        Assert.True(director.IsOpen);
+        director.Tick();
+        Assert.False(director.IsOpen);
+    }
+
+    [Fact]
     public void AttachToWorld_RePointsWithoutResetting_AnOpenDialogueSurvives()
     {
         // F4: collapsing AttachToWorld into a reset (the tempting "simplification") used to stay green

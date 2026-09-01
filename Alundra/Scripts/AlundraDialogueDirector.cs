@@ -153,12 +153,24 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
         _ticksSinceOpenOrPage = 0;
         _awaitingChoice = false;
         _pendingChoiceResult = null;
+        _swallowOpeningButtonPress = false;
     }
+
+    /// <summary>E12.d (D-E12D-6): true when the interact button was ALREADY just-pressed in the pad
+    /// snapshot at the moment <see cref="Open"/> ran - i.e. the very press that triggered the
+    /// interaction that opened this box. The first <see cref="Tick"/> then ignores the button (the
+    /// auto-timer still counts), so the opening press cannot advance or close what it just opened.
+    /// The original is protected upstream instead: its advance pass is suppressed during the box's
+    /// opening animation and text decoding (UIManager.Fun_80046ef0:104-119, g_dialog_flags &amp; 3 /
+    /// g_textPrimitives) - a strictly LONGER suppression window than this one-snapshot swallow.</summary>
+    private bool _swallowOpeningButtonPress;
 
     /// <inheritdoc/>
     public void Open(string rawText, int controlMode)
     {
         _closeMask = DefaultCloseMask; // §1.2/T3: every open resets the close-mode mask to 3.
+        _swallowOpeningButtonPress =
+            _gameState != null && (_gameState.LastPadState.ButtonsJustPressed & InteractButtonBit) != 0;
         _pages = AlundraDialogueTextParser.SplitIntoPages(rawText);
         _pageIndex = 0;
         _ticksSinceOpenOrPage = 0;
@@ -225,6 +237,13 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
         _ticksSinceOpenOrPage++;
 
         var buttonPressed = _gameState != null && (_gameState.LastPadState.ButtonsJustPressed & InteractButtonBit) != 0;
+
+        // D-E12D-6: the press that opened this box does not also advance it (see the field's own doc).
+        if (_swallowOpeningButtonPress)
+        {
+            _swallowOpeningButtonPress = false;
+            buttonPressed = false;
+        }
         var autoTimerElapsed = (_closeMask & CloseMaskAutoTimerBit) != 0 && _ticksSinceOpenOrPage >= AutoCloseTicks;
 
         if (!buttonPressed && !autoTimerElapsed)
@@ -352,6 +371,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
         _ticksSinceOpenOrPage = 0;
         _awaitingChoice = false;
         _pendingChoiceResult = null;
+        _swallowOpeningButtonPress = false;
     }
 
     /// <summary>Test-only accessor (T3): the close-mode mask currently in effect.</summary>

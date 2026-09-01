@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 namespace Alundra.Scripts;
 
 /// <summary>
@@ -109,6 +109,26 @@ public sealed class AlundraGameState
     /// original's own zero-initialized pad global read as.
     /// </summary>
     public AlundraPadState LastPadState;
+
+    /// <summary>
+    /// E12.d (D-E12D-3): the INTERACT LATCH - port of the original's <c>g_lastValidWarp*</c> globals
+    /// (decompiler-artifact names; PlayerManager.cs:1605-1643 shows they are the interaction memory:
+    /// while the player stands still against an InteractRequiresButton entity, contact may read null,
+    /// and these eight stored values let the button still find it). Lives here because this object has
+    /// the original globals' scope (the E11.c lesson: guard state lives where the original's lives),
+    /// and the eight equality checks self-invalidate any stale value - including a cross-map
+    /// coincidence, exactly like the original. Only <c>AlundraPlayerManager.CheckEntityInteraction</c>
+    /// reads or writes these.
+    /// </summary>
+    public AlundraEntityScriptProxy? InteractLatchEntity;
+    public int InteractLatchFacing;       // g_lastWarpFacing  <- entity.Index2
+    public int InteractLatchEntityX;      // g_lastWarpTargetX/Y/Z <- entity.Pos*
+    public int InteractLatchEntityY;
+    public int InteractLatchEntityZ;
+    public int InteractLatchPlayerX;      // g_lastWarpCamX/Y/Z <- player.Pos*
+    public int InteractLatchPlayerY;
+    public int InteractLatchPlayerZ;
+    public uint InteractLatchDirection;   // g_lastWarpDirection <- player.TargetDirection
 
     /// <summary>Persistent save-game flags (<c>g_saveData.GameFlags</c>) - all zero, matching New Game.</summary>
     public readonly uint[] GameFlags = new uint[WordCount];

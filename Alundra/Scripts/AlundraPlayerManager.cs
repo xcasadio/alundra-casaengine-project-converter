@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 
 namespace Alundra.Scripts;
@@ -152,8 +152,13 @@ public static class AlundraPlayerManager
     /// position change is <see cref="Tick"/>, called separately (mirrors the original's own split between
     /// <c>PlayerManager.MovePlayer</c> and <c>PhysicsEngine.UpdateEntitiesPhysics</c>).
     /// </summary>
-    public static void MovePlayer(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state)
+    public static void MovePlayer(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IAlundraScriptHost? host)
     {
+        // E12.d: `host` is REQUIRED at every call site (no default) - null means "no world" and skips
+        // CheckEntityInteraction below, a documented degraded mode the ~19 direct movement-only test
+        // callers opt into EXPLICITLY with `host: null` (never silently by omission - the
+        // green-and-inert family demands the skip be visible at the site). Production passes ScriptHost.
+
         // PlayerManager.cs:31-36 (BlockedByEntity != null -> END). Nothing ported so far ever sets
         // BlockedByEntity (it stays the C# default null), so this is currently always false - ported
         // anyway for forward parity once something does set it.
@@ -234,12 +239,24 @@ public static class AlundraPlayerManager
             // jump, same convention as every other unported TargetAnimationId case in this class.
         }
 
-        // PlayerManager.cs:361-383 (Idle/Moving case), simplified per E2's own scope - see this class' own
-        // doc for exactly what is skipped (TryUseItem/PlayerTryAction/CheckEntityInteraction/PlayerTryAttack).
+        // PlayerManager.cs:361-383 (Idle/Moving case) - E12.d ports CheckEntityInteraction into it
+        // (TryUseItem/PlayerTryAction/PlayerTryAttack stay unported no-ops, E2's scope): res==2 (button
+        // interact) forces Idle and ends the case; res==1 (auto-touch interact) ends it WITHOUT
+        // updating the animation this tick; res==0 falls through to the normal animation update -
+        // exactly the original's `if (iVar2 != 0) { if (iVar2 != 2) break; ... Idle ... }` shape.
         if (player.TargetAnimationId == IdleAnimationId || player.TargetAnimationId == MovingAnimationId)
         {
             player.TargetDirection = dir;
-            player.TargetAnimationId = buttonsHold != 0 ? MovingAnimationId : IdleAnimationId;
+
+            var interact = CheckEntityInteraction(player, in pad, state, host);
+            if (interact == 2)
+            {
+                player.TargetAnimationId = IdleAnimationId;
+            }
+            else if (interact == 0)
+            {
+                player.TargetAnimationId = buttonsHold != 0 ? MovingAnimationId : IdleAnimationId;
+            }
         }
         // Climbing(0x0E)/ClimbStill(0x35) case, PlayerManager.cs:675-731 (docs/plan-echelles-chiffrage.md
         // É4). TryUseItem/PlayerTryAction (:677) NOT PORTED (no item/interaction system, same scope
@@ -446,6 +463,105 @@ public static class AlundraPlayerManager
     /// separately-accumulated elapsed time - the hero's own observable per-tick behaviour is unchanged, only
     /// the source of the tick count.
     /// </summary>
+    /// <summary>
+    /// Port of <c>CheckEntityInteraction</c> @ 0x8002e910 (decompilation PlayerManager.cs:1597-1669),
+    /// E12.d (docs/plan-e12d-interaction-joueur.md). Reads the player's per-tick entity contact
+    /// (<see cref="AlundraEntityScriptProxy.XCollisionEntity"/>, written by AlundraWorldProxy.Update's
+    /// contact pass), maintains the interact latch on <paramref name="state"/> (see the latch fields'
+    /// own doc there), and on success assigns <see cref="IAlundraScriptHost.ActiveCollisionEntity"/> -
+    /// the one-shot signal the slot-F pick consumes (D-E12D-4). Returns the original's exact result
+    /// codes: 0 = no interaction, 1 = auto-touch interact (no InteractRequiresButton flag),
+    /// 2 = button interact (flag + Square just pressed).
+    ///
+    /// Two deliberate, documented gates the original carries UPSTREAM instead:
+    /// <paramref name="host"/> null = "no world" - skipped (degraded; see MovePlayer's own doc);
+    /// GameplayBlockedMask posed - skipped, the narrowest equivalent of the original's whole-pipeline
+    /// gate at EntityManager.cs:377 (with a MenuOpen box up, neither MovePlayer nor the pick nor the
+    /// physics ran at all there; our pipeline has no such global gate - E4.c only ported the map-events
+    /// one - so the interact computation carries it itself, D-E12D-5).
+    /// </summary>
+    internal static int CheckEntityInteraction(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IAlundraScriptHost? host)
+    {
+        if (host == null)
+        {
+            return 0;
+        }
+
+        if ((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0)
+        {
+            return 0;
+        }
+
+        // PlayerManager.cs:1603-1643 - candidate resolution, latch included, ported branch for branch.
+        var collidedEntity = player.XCollisionEntity;
+        var reachedFinalCheck = false;
+
+        if (player.XCollisionEntity == null)
+        {
+            if (state.InteractLatchEntity == null ||
+                (state.InteractLatchEntity.Index2 == state.InteractLatchFacing &&
+                 state.InteractLatchEntity.PosX == state.InteractLatchEntityX &&
+                 state.InteractLatchEntity.PosY == state.InteractLatchEntityY &&
+                 state.InteractLatchEntity.PosZ == state.InteractLatchEntityZ &&
+                 player.PosX == state.InteractLatchPlayerX &&
+                 player.PosY == state.InteractLatchPlayerY &&
+                 player.PosZ == state.InteractLatchPlayerZ))
+            {
+                collidedEntity = state.InteractLatchEntity;
+
+                if (player.TargetDirection == state.InteractLatchDirection)
+                {
+                    reachedFinalCheck = true; // goto FinalCheck (:1624-1626).
+                }
+            }
+        }
+        else if ((player.XCollisionEntity.Flags & EntityFlags.InteractRequiresButton) != 0)
+        {
+            state.InteractLatchFacing = player.XCollisionEntity.Index2;
+            state.InteractLatchEntity = player.XCollisionEntity;
+            state.InteractLatchEntityX = player.XCollisionEntity.PosX;
+            state.InteractLatchEntityY = player.XCollisionEntity.PosY;
+            state.InteractLatchEntityZ = player.XCollisionEntity.PosZ;
+            state.InteractLatchPlayerX = player.PosX;
+            state.InteractLatchPlayerY = player.PosY;
+            state.InteractLatchPlayerZ = player.PosZ;
+            state.InteractLatchDirection = player.TargetDirection;
+            reachedFinalCheck = true; // goto FinalCheck (:1640).
+        }
+
+        if (!reachedFinalCheck)
+        {
+            // :1642-1643 - the latch invalidation fall-through.
+            state.InteractLatchEntity = null;
+            collidedEntity = player.XCollisionEntity;
+        }
+
+        // FinalCheck (:1645-1667).
+        var res = 0;
+
+        if (collidedEntity != null &&
+            (collidedEntity.ProgramIndexes[ScriptHelper.ProgramFInteract] != 0
+             || collidedEntity.SpriteProgramIndexes[ScriptHelper.ProgramFInteract] != 0))
+        {
+            if ((collidedEntity.Flags & EntityFlags.InteractRequiresButton) == 0)
+            {
+                res = 1;
+                host.ActiveCollisionEntity = collidedEntity;
+            }
+            else if ((pad.ButtonsJustPressed & AlundraPadState.Square) == 0)
+            {
+                res = 0;
+            }
+            else
+            {
+                res = 2;
+                host.ActiveCollisionEntity = collidedEntity;
+            }
+        }
+
+        return res;
+    }
+
     public static void Tick(AlundraEntityScriptProxy player, int ticks)
         => AlundraScriptedMotion.TickPlayer(player, ticks);
 }

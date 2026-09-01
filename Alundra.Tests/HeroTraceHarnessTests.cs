@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -209,7 +209,7 @@ public class HeroTraceHarnessTests
     private sealed class HeroScriptHost : IAlundraScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
+        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
 
         // §2.4: PlayerControlFlags = 0 explicitly (not the ALUNDRA_DEBUG_IGNORE_CONTROL_LOCK escape hatch),
         // so MovePlayer's real InputBlockedMask gate is exercised (and found open) rather than masked.

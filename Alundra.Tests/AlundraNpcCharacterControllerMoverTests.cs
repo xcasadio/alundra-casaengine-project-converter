@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -270,7 +270,7 @@ public class AlundraNpcCharacterControllerMoverTests
     private sealed class FakeScriptHost : IAlundraScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
+        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
         public AlundraGameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
 
@@ -308,7 +308,7 @@ public class AlundraNpcCharacterControllerMoverTests
     {
         public RealRunnerScriptHost(IEventProgramRunner runner) => Runner = runner;
         public IEventProgramRunner Runner { get; }
-        public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
+        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
         public AlundraGameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
 
@@ -2042,8 +2042,8 @@ public class AlundraNpcCharacterControllerMoverTests
         playerProxy.RidingEntity = platformProxy.LogicContextEntity;
         sailorProxy.RidingEntity = platformProxy.LogicContextEntity; // re-affirm after UpdateRidingEntities above.
         platformProxy.RidingEntity = playerProxy.LogicContextEntity;
-        sailorProxy.XCollisionEntity = playerProxy.LogicContextEntity;
-        playerProxy.XCollisionEntity = sailorProxy.LogicContextEntity;
+        sailorProxy.XCollisionEntity = playerProxy; // proxy-typed since E12.d (D-E12D-8).
+        playerProxy.XCollisionEntity = sailorProxy;
         sailorProxy.ParentEntity = playerProxy.LogicContextEntity;
         playerProxy.ParentEntity = sailorProxy.LogicContextEntity;
         playerProxy.PlatformEntity = sailorProxy.LogicContextEntity;
@@ -2131,7 +2131,7 @@ public class AlundraNpcCharacterControllerMoverTests
     private sealed class GullClimbScriptHost : IAlundraScriptHost
     {
         public IEventProgramRunner Runner { get; } = new GullClimbRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
+        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
         public AlundraGameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public List<AlundraEntityScriptProxy> Collidables { get; } = new();
@@ -2618,7 +2618,7 @@ public class AlundraNpcCharacterControllerMoverTests
     {
         public TickCountingRunnerScriptHost(IEventProgramRunner runner) => Runner = runner;
         public IEventProgramRunner Runner { get; }
-        public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
+        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
         public AlundraGameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public List<AlundraEntityScriptProxy> Collidables { get; } = new();

@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -119,7 +119,7 @@ public class AlundraFloorHeightTests
     private sealed class PlayerScriptHost : IAlundraScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
+        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
         public AlundraGameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController { get; init; }
         public List<AlundraEntityScriptProxy> Collidables { get; } = new();

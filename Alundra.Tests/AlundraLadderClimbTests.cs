@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -153,7 +153,7 @@ public class AlundraLadderClimbTests
     private sealed class PlayerScriptHost : IAlundraScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
+        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
         public AlundraGameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController { get; init; }
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
@@ -487,7 +487,7 @@ public class AlundraLadderClimbTests
         player.Slope_18c = 0; // broken: not on a ladder cell.
         var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState());
+        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState(), host: null);
 
         Assert.NotEqual(AlundraPlayerManager.ClimbingAnimationId, player.TargetAnimationId);
     }
@@ -498,7 +498,7 @@ public class AlundraLadderClimbTests
         var player = MakeQualifyingIdlePlayer();
         var pad = default(AlundraPadState); // broken: buttonsHold == 0.
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState());
+        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState(), host: null);
 
         // CORRECTED (verifier F4): `Assert.NotEqual(ClimbingAnimationId, ...)` is inert against a mutant
         // that removes this conjunct from the gate - a broken gate here still leaves TargetAnimationId at
@@ -515,7 +515,7 @@ public class AlundraLadderClimbTests
         var player = MakeQualifyingIdlePlayer();
         var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Right }; // broken: dir == 0x18, not 0x10.
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState());
+        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState(), host: null);
 
         // CORRECTED (verifier F4): same inert-NotEqual problem as CaseSixGate_NoPadHeld above. The gate
         // correctly does NOT fire (dir == 0x18, not 0x10), so TargetAnimationId falls through to the
@@ -530,7 +530,7 @@ public class AlundraLadderClimbTests
         player.TargetDirection = 0x18; // broken: not already facing up.
         var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState());
+        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState(), host: null);
 
         Assert.NotEqual(AlundraPlayerManager.ClimbingAnimationId, player.TargetAnimationId);
     }
@@ -542,7 +542,7 @@ public class AlundraLadderClimbTests
         player.ForceAdjusted = 0; // broken: no collision this tick (never walked into the wall).
         var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState());
+        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState(), host: null);
 
         Assert.NotEqual(AlundraPlayerManager.ClimbingAnimationId, player.TargetAnimationId);
     }
@@ -554,7 +554,7 @@ public class AlundraLadderClimbTests
         player.CarriedEntity = new CasaEngine.Framework.Scene.Entities.Entity(); // broken: carrying something.
         var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Up };
 
-        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState());
+        AlundraPlayerManager.MovePlayer(player, in pad, new AlundraGameState(), host: null);
 
         Assert.NotEqual(AlundraPlayerManager.ClimbingAnimationId, player.TargetAnimationId);
     }

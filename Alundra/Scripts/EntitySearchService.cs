@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System.Collections.Generic;
 using CasaEngine.Core.Logging;
 
@@ -194,8 +194,11 @@ public static class EntitySearchService
             case 7: // entities the owner's XCollisionEntity points at (besides the player - GameEngine.cs:2036-2044)
                 foreach (var candidate in spawnedEntities)
                 {
+                    // E12.d (D-E12D-8): XCollisionEntity is proxy-typed now - compare proxies
+                    // directly (the original compares the same unified entities), which also removes
+                    // the latent null==null match bare test proxies used to allow via LogicContextEntity.
                     if (!candidate.IsPlayer && candidate.IsLoadedNormalOrDeactivated
-                        && ReferenceEquals(ownerEntity.XCollisionEntity, candidate.LogicContextEntity))
+                        && ReferenceEquals(ownerEntity.XCollisionEntity, candidate))
                     {
                         matches.Add(candidate);
                     }
@@ -207,7 +210,7 @@ public static class EntitySearchService
                 foreach (var candidate in spawnedEntities)
                 {
                     if (!candidate.IsPlayer && candidate.IsLoadedNormalOrDeactivated
-                        && ReferenceEquals(candidate.XCollisionEntity, ownerEntity.LogicContextEntity))
+                        && ReferenceEquals(candidate.XCollisionEntity, ownerEntity))
                     {
                         matches.Add(candidate);
                     }

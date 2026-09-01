@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System.Collections.Generic;
 
 namespace Alundra.Scripts;
@@ -22,9 +22,11 @@ public interface IAlundraScriptHost
     /// (there is exactly one interpreter per world, not one per entity).</summary>
     IEventProgramRunner Runner { get; }
 
-    /// <summary>Port of the original global <c>g_activeCollisionEntity</c> - see
-    /// <see cref="AlundraWorldProxy.ActiveCollisionEntity"/>'s own doc for what sets it (nothing yet, V1).</summary>
-    AlundraEntityScriptProxy? ActiveCollisionEntity { get; }
+    /// <summary>Port of the original global <c>g_activeCollisionEntity</c> - set by
+    /// <c>AlundraPlayerManager.CheckEntityInteraction</c> on the interact frame (E12.d), consumed (and
+    /// cleared) by the slot-F pick in <see cref="AlundraEntityScriptProxy.Update"/> - see D-E12D-4's
+    /// consume-on-pick doc there. Settable since E12.d: the writer reaches it through this host.</summary>
+    AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
 
     /// <summary>Two-argument <c>GameEngine.DestroyEntity(Entity, int)</c> port the pick phase's own
     /// destroy branches (DestroyOnSlidingSlope/DestroyOnVramFlags) call - see

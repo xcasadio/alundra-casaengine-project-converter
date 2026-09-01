@@ -1,4 +1,4 @@
-using Alundra.Scripts;
+﻿using Alundra.Scripts;
 using Xunit;
 
 namespace Alundra.Tests;
@@ -29,7 +29,7 @@ public class AlundraWorldProxyLogicClockTests
     private sealed class ClockHost : IAlundraScriptHost
     {
         public IEventProgramRunner Runner { get; }
-        public AlundraEntityScriptProxy? ActiveCollisionEntity => null;
+        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
         public AlundraGameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = System.Array.Empty<AlundraEntityScriptProxy>();

@@ -138,7 +138,12 @@ public class AlundraEntityScriptProxy : GameplayProxy
     public int TileY;
     public int TileZ;
     public Entity? RidingEntity; //12c
-    public Entity? XCollisionEntity;
+    // E12.d (D-E12D-8): retyped from the engine Entity to this proxy type - the original compares
+    // UNIFIED entities (the object carrying Flags/ProgramIndexes, i.e. our proxy), and the proxy-typed
+    // comparison also kills a latent ReferenceEquals(null, null) match in EntitySearchService's
+    // functions 7/8 against bare test proxies whose LogicContextEntity is null. Written once per logic
+    // tick for the PLAYER by AlundraWorldProxy.Update's contact pass (detection only, no blocking).
+    public AlundraEntityScriptProxy? XCollisionEntity;
     public int FloorHeight;
     public int TerrainHeight;//
     /// <summary>
@@ -964,7 +969,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 // without widening IEntityWorldContext or this runner's own constructor - see
                 // AlundraGameState.LastPadState's own doc.
                 ScriptHost.GameState.LastPadState = pad;
-                AlundraPlayerManager.MovePlayer(this, in pad, ScriptHost.GameState);
+                AlundraPlayerManager.MovePlayer(this, in pad, ScriptHost.GameState, ScriptHost);
                 var ticksThisFrame = ScriptHost.LogicTicksThisFrame(elapsedTime);
                 AlundraPlayerManager.Tick(this, ticksThisFrame);
 
@@ -1061,6 +1066,16 @@ public class AlundraEntityScriptProxy : GameplayProxy
                                 && (ProgramIndexes[5] != 0 || SpriteProgramIndexes[5] != 0))
                             {
                                 eventProgramType = ScriptHelper.ProgramFInteract;
+
+                                // E12.d (D-E12D-4): CONSUME-ON-PICK. The original clears the signal at
+                                // the head of the NEXT tick's MovePlayer (PlayerManager.cs:23) - with
+                                // frame==tick there, that IS "consumed by the one pick of the tick".
+                                // Here MovePlayer runs once per RENDERED frame while this pick runs per
+                                // logic tick (0..4 per frame): a head-clear would drop presses on
+                                // zero-tick frames and let one assignment feed N picks on catch-up
+                                // frames. Consuming at the exact pick that selects F is the derived
+                                // equivalent: one assignment -> exactly one F pick, never zero.
+                                host.ActiveCollisionEntity = null;
                             }
                         }
                     }

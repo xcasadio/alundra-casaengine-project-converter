@@ -1308,6 +1308,25 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             AlundraDialogueDirector.Instance.Tick();
         }
 
+        // E12.d (D-E12D-2): the player's entity-contact probe, once per logic tick - the port of
+        // MoveEntity's "XCollisionEntity = ComputeXYPosition(...)" write (PhysicsEngine.cs:71-84),
+        // detection only (D-E12D-1, no blocking). Phase fidelity: the original computes this in the
+        // physics pass, AFTER the events pass of the same tick (EntityManager.cs:377-387), so
+        // MovePlayer always consumes the PREVIOUS tick's contact - identical here, where this
+        // end-of-frame pass feeds the next frame's MovePlayer. Gated by GameplayBlockedMask
+        // (D-E12D-5): the original freezes its whole entity pipeline - physics included - behind that
+        // mask (EntityManager.cs:377), so with a MenuOpen dialogue box up, the contact stays frozen
+        // at its pre-open value exactly like the original's.
+        if (PlayerEntity is { } contactProbeSubject
+            && (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) == 0)
+        {
+            for (var contactTick = 0; contactTick < ticksThisFrame; contactTick++)
+            {
+                contactProbeSubject.XCollisionEntity =
+                    AlundraEntityCollision.FindEntityCollisionCandidate(contactProbeSubject, _collidables);
+            }
+        }
+
         // Closes this frame's logic-clock memo (see AlundraLogicClock's own class doc) - this proxy's own
         // Update always runs last (World.cs:443-491), so the next frame's first caller (an entity's own
         // Update, or this proxy again for a zero-entity world) recomputes fresh. C1 (plan §3): the old
@@ -1536,7 +1555,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     // IEntityWorldContext above.
     IEventProgramRunner IAlundraScriptHost.Runner => EventProgramRunner;
 
-    AlundraEntityScriptProxy? IAlundraScriptHost.ActiveCollisionEntity => ActiveCollisionEntity;
+    AlundraEntityScriptProxy? IAlundraScriptHost.ActiveCollisionEntity
+    {
+        get => ActiveCollisionEntity;
+        set => ActiveCollisionEntity = value;
+    }
 
     void IAlundraScriptHost.DestroyEntity(AlundraEntityScriptProxy entity, int effectId) => DestroyEntity(entity, effectId);
 
