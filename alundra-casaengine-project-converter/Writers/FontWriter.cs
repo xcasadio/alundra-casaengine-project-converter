@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using AlundraCasaEngineProjectConverter.Readers;
 using CasaEngine.EditorServices;
 using CasaEngine.Framework.Assets;
 
@@ -38,11 +39,14 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    a guess; between two codes of equal standing the lower one wins. The losers are dropped with a
 ///    warning and "chars count" is recomputed from the lines actually written.
 ///
-/// KNOWN LIMITATION - text renders monospaced. Alundra draws text proportionally, advancing by
-/// g_fontCharWidthTable[code * 5], a table that lives in the game executable and is NOT part of
-/// data-extracted. Every xadvance below is therefore the fixed 16px cell width. This is a real
-/// fidelity gap, not a rounding detail: dialogue laid out with these advances will be far wider and
-/// more loosely spaced than the original. Extracting that table is the fix.
+///  - PROPORTIONAL WIDTHS (docs/plan-e12-dialogues.md, slice E12.b, D-E12-2): each glyph's
+///    <c>xadvance</c> comes from <c>FontCharWidths.csv</c> (<see cref="FontCharWidthCatalogReader"/>),
+///    the RAW port of the game's own <c>g_fontCharWidthTable</c>, looked up by the glyph's own raw
+///    game code - not by its resolved Unicode codepoint, and not by whichever raw code happens to be
+///    the "canonical" winner of a CP850 duplicate collision. Every row (winner and dropped duplicate
+///    alike) carries its own <c>RawCode</c>, so a duplicate glyph never steals the width the table
+///    lists for the code that actually reached the .fnt. A code the CSV has no row for (should not
+///    happen - it lists all 256 raw codes) falls back to the 16px cell width, reported as a warning.
 /// </summary>
 public static class FontWriter
 {
@@ -148,7 +152,9 @@ public static class FontWriter
             return;
         }
 
-        var charsetRows = BuildCharset(records, report);
+        var advanceByRawCode = ReadCharWidths(report);
+
+        var charsetRows = BuildCharset(records, advanceByRawCode, report);
         WriteFontFile(outputDirectory, charsetRows, report);
         WriteCharsetFile(outputDirectory, charsetRows);
 
@@ -156,11 +162,28 @@ public static class FontWriter
 
         report.Increment("Assets.Font");
         report.Increment("Font.Glyphs", charsetRows.Count(row => row.InFont));
-        report.Messages.Add(
-            "Font: UI/font3.fnt uses a fixed xadvance of 16px for every glyph. Alundra renders text "
-            + "proportionally through g_fontCharWidthTable, which lives in the game executable and is "
-            + "not part of data-extracted, so converted text will render monospaced until that table "
-            + "is extracted.");
+    }
+
+    // docs/plan-e12-dialogues.md, slice E12.b: FontCharWidths.csv ships with the converter the same
+    // way EntityNames.csv/MapMusicIndex.csv do (see alundra-casaengine-project-converter.csproj).
+    private static IReadOnlyDictionary<int, int> ReadCharWidths(ConversionReport report)
+    {
+        var csvPath = Path.Combine(AppContext.BaseDirectory, "FontCharWidths.csv");
+        if (!File.Exists(csvPath))
+        {
+            report.Errors.Add(
+                $"Font: FontCharWidths.csv not found at '{csvPath}'; every glyph falls back to the "
+                + "fixed 16px cell width.");
+            return new Dictionary<int, int>();
+        }
+
+        var result = FontCharWidthCatalogReader.Read(csvPath);
+        foreach (var warning in result.Warnings)
+        {
+            report.Warnings.Add(warning);
+        }
+
+        return result.AdvanceByRawCode;
     }
 
     private static List<FontGlyphRecord> ReadGlyphRecords(string fontJsonPath)
@@ -185,7 +208,8 @@ public static class FontWriter
         return records;
     }
 
-    private static List<CharsetRow> BuildCharset(List<FontGlyphRecord> records, ConversionReport report)
+    private static List<CharsetRow> BuildCharset(
+        List<FontGlyphRecord> records, IReadOnlyDictionary<int, int> advanceByRawCode, ConversionReport report)
     {
         var rows = new List<CharsetRow>(records.Count);
         var ownerByCodepoint = new Dictionary<int, int>();
@@ -213,6 +237,18 @@ public static class FontWriter
             }
 
             var codepoint = ConvertCp850ToLatin1(record.Code);
+
+            // Looked up by this glyph's OWN raw code, never by the codepoint or by whichever raw
+            // code wins the CP850 duplicate-collision resolution below - a dropped duplicate's
+            // advance must never leak onto the code that actually reaches the .fnt, and vice versa.
+            if (!advanceByRawCode.TryGetValue(record.Code, out var advance))
+            {
+                advance = CellSize;
+                report.Warnings.Add(
+                    $"Font: FontCharWidths.csv has no row for raw code {record.Code}; "
+                    + $"falling back to the fixed {CellSize}px cell width.");
+            }
+
             var row = new CharsetRow
             {
                 RawCode = record.Code,
@@ -222,6 +258,7 @@ public static class FontWriter
                 Width = record.Width,
                 Height = record.Height,
                 Palette = record.Palette,
+                Advance = advance,
                 InFont = true,
             };
 
@@ -287,7 +324,7 @@ public static class FontWriter
             builder.AppendLine(string.Create(
                 CultureInfo.InvariantCulture,
                 $"char id={row.Codepoint} x={row.X} y={row.Y} width={row.Width} height={row.Height} "
-                + $"xoffset=0 yoffset=0 xadvance={CellSize} page=0 chnl=15"));
+                + $"xoffset=0 yoffset=0 xadvance={row.Advance} page=0 chnl=15"));
         }
 
         var targetDirectory = Path.Combine(outputDirectory, UiRelativeDirectory);
@@ -345,6 +382,7 @@ public static class FontWriter
         public int Width { get; set; }
         public int Height { get; set; }
         public int Palette { get; set; }
+        public int Advance { get; set; }
         public bool InFont { get; set; }
         public int? DuplicateOfRawCode { get; set; }
     }

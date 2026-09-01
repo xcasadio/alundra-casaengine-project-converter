@@ -71,6 +71,7 @@ public static class TextWriter
         ConvertGlobalTable(inputDirectory, outputDirectory, inventory, report);
         ConvertMapTables(inputDirectory, outputDirectory, mapFilter, mapLocations, inventory, report);
         WriteControlCodes(outputDirectory, inventory, report);
+        WriteEtcIndex(outputDirectory, report);
     }
 
     private static void ConvertGlobalTable(
@@ -267,6 +268,53 @@ public static class TextWriter
         report.Messages.Add(
             $"Text: {rows.Count} distinct control codes inventoried in Dialogues/control-codes.json; "
             + "they are kept raw in the string tables, no mapping table exists yet.");
+    }
+
+    // docs/plan-e12-dialogues.md, slice E12.b, D-E12-6: the ETC index table - GetEtcString(id) =
+    // StringByIndex[IndexTable[id]], and IndexTable is the first 1024 int16 of the game's own
+    // ETC_RES.R file, never derivable from decompiled code. EtcIndexTable.csv ships with the
+    // converter (see alundra-casaengine-project-converter.csproj) exactly like FontCharWidths.csv
+    // above; this just republishes the same 1024 raw values as flat JSON so the DLL can resolve, for
+    // example, the OUI/NON labels at index 0x43/0x44 against Dialogues/global-strings.json.
+    private static void WriteEtcIndex(string outputDirectory, ConversionReport report)
+    {
+        var csvPath = Path.Combine(AppContext.BaseDirectory, "EtcIndexTable.csv");
+        if (!File.Exists(csvPath))
+        {
+            report.Errors.Add($"Text: EtcIndexTable.csv not found at '{csvPath}'; Dialogues/etc-index.json not written.");
+            return;
+        }
+
+        var result = EtcIndexCatalogReader.Read(csvPath);
+        foreach (var warning in result.Warnings)
+        {
+            report.Warnings.Add(warning);
+        }
+
+        if (result.ValueByIndex.Count != 1024)
+        {
+            report.Errors.Add(
+                $"Text: EtcIndexTable.csv has {result.ValueByIndex.Count} entries, expected 1024; "
+                + "Dialogues/etc-index.json not written.");
+            return;
+        }
+
+        var targetDirectory = Path.Combine(outputDirectory, DialoguesRelativeDirectory);
+        Directory.CreateDirectory(targetDirectory);
+
+        using (var stream = File.Create(Path.Combine(targetDirectory, "etc-index.json")))
+        using (var writer = new Utf8JsonWriter(stream, WriterOptions))
+        {
+            writer.WriteStartArray();
+            foreach (var value in result.ValueByIndex)
+            {
+                writer.WriteNumberValue(value);
+            }
+
+            writer.WriteEndArray();
+        }
+
+        report.Increment("Text.EtcIndexEntries", result.ValueByIndex.Count);
     }
 
     /// <summary>

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using AlundraCasaEngineProjectConverter.Readers;
@@ -195,6 +196,72 @@ public class TextWriterTests
             Assert.Equal(1, report.Counters["Text.MapStringTables"]);
             Assert.True(File.Exists(Path.Combine(outputDirectory, "Maps", "Inoa", "Inoa (outer)-4", "dialogues", "Inoa (outer)-4.strings.json")));
             Assert.False(File.Exists(Path.Combine(outputDirectory, "Maps", "Inoa", "Inoa (inner)-0", "dialogues", "Inoa (inner)-0.strings.json")));
+        }
+        finally
+        {
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void ConvertText_WritesEtcIndexAndItsChoiceLabelsResolveToOuiNon()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+
+        try
+        {
+            var dataDirectory = Path.Combine(inputDirectory, "data");
+            var tiledDirectory = Path.Combine(dataDirectory, "tiled");
+            Directory.CreateDirectory(tiledDirectory);
+
+            // docs/plan-e12-dialogues.md, D-E12-6: EtcIndexTable.csv (the real, shipped table) has
+            // index 0x43 (67) -> offset 3656 and index 0x44 (68) -> offset 3660. This fixture's
+            // global-strings source supplies exactly those two real offsets with the two labels
+            // 0x44's OUI/NON choice actually shows in game, so the test proves the whole chain -
+            // etc-index.json's raw values resolving, through global-strings.json, to real strings -
+            // not just that some string exists at some offset.
+            File.WriteAllText(
+                Path.Combine(dataDirectory, "ETC_RES.R.json"),
+                """
+                {
+                  "3656": "OUI",
+                  "3660": "NON"
+                }
+                """,
+                Encoding.UTF8);
+            WriteMapFixture(dataDirectory, tiledDirectory, 0, """[ "line" ]""");
+
+            var report = new ConversionReport();
+            TextWriter.ConvertText(inputDirectory, outputDirectory, null, MapLocations, report);
+
+            Assert.Empty(report.Errors);
+            Assert.Equal(1024, report.Counters["Text.EtcIndexEntries"]);
+
+            var etcIndexPath = Path.Combine(outputDirectory, "Dialogues", "etc-index.json");
+            Assert.True(File.Exists(etcIndexPath));
+
+            using var etcIndexDocument = JsonDocument.Parse(File.ReadAllText(etcIndexPath, Encoding.UTF8));
+            var etcIndex = etcIndexDocument.RootElement.EnumerateArray().Select(e => e.GetInt32()).ToArray();
+
+            // Flat array of 1024 raw values - the structure IS the identity: etc-index[id] is the
+            // offset GetEtcString(id) looks up.
+            Assert.Equal(1024, etcIndex.Length);
+
+            var yesOffset = etcIndex[0x43];
+            var noOffset = etcIndex[0x44];
+
+            using var globalStringsDocument = JsonDocument.Parse(
+                File.ReadAllText(Path.Combine(outputDirectory, "Dialogues", "global-strings.json"), Encoding.UTF8));
+            var globalStrings = globalStringsDocument.RootElement;
+
+            // The offsets etc-index.json names for 0x43/0x44 must be keys ACTUALLY PRESENT in
+            // global-strings.json, resolving to the exact OUI/NON strings the game shows.
+            Assert.True(globalStrings.TryGetProperty(yesOffset.ToString(CultureInfo.InvariantCulture), out var yesElement));
+            Assert.Equal("OUI", yesElement.GetString());
+            Assert.True(globalStrings.TryGetProperty(noOffset.ToString(CultureInfo.InvariantCulture), out var noElement));
+            Assert.Equal("NON", noElement.GetString());
         }
         finally
         {

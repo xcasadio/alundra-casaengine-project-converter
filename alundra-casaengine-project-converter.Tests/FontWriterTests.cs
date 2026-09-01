@@ -42,11 +42,31 @@ public class FontWriterTests
             AssertGlyph(font, 'Ç', 0, 8 * 16);
             // ASCII is identity: 'A' is raw 65 -> cell (1, 4).
             AssertGlyph(font, 'A', 1 * 16, 4 * 16);
+        });
+    }
 
-            // Every glyph advances by the fixed cell: the real per-character width table is not in
-            // data-extracted (see the writer's known limitation).
-            Assert.All(font.Chars.Values, glyph => Assert.Equal(16, glyph.XAdvance));
-            Assert.Contains(report.Messages, message => message.Contains("monospaced", StringComparison.Ordinal));
+    [Fact]
+    public void ConvertFont_UsesProportionalXAdvanceFromFontCharWidthsCsv()
+    {
+        RunConversion((outputDirectory, report) =>
+        {
+            Assert.Empty(report.Errors);
+
+            var font = ParseBmFont(Path.Combine(outputDirectory, "UI", "font3.fnt"));
+
+            // docs/plan-e12-dialogues.md, D-E12-2: g_fontCharWidthTable is not a fixed 16px cell -
+            // at least two glyphs must come out with genuinely different advances, proving the .fnt
+            // is proportional rather than monospace.
+            var distinctAdvances = font.Chars.Values.Select(glyph => glyph.XAdvance).Distinct().Count();
+            Assert.True(
+                distinctAdvances > 1,
+                "expected at least two distinct xadvance values; the font is still monospaced");
+
+            // ASCII space, raw code 32: FontCharWidths.csv row "32;4". ASCII '!' raw 33: row "33;3".
+            // Both keep raw code == codepoint (ASCII is identity in ConvertCp850ToLatin1), so looking
+            // them up by char is unambiguous.
+            AssertXAdvance(font, ' ', 4);
+            AssertXAdvance(font, '!', 3);
         });
     }
 
@@ -126,7 +146,7 @@ public class FontWriterTests
             Assert.Equal(2 * 16, glyph!.TextureRectangle.X);
             Assert.Equal(8 * 16, glyph.TextureRectangle.Y);
             Assert.Equal(16, glyph.TextureRectangle.Width);
-            Assert.Equal(16, glyph.XAdvance);
+            Assert.Equal(5, glyph.XAdvance); // FontCharWidths.csv row "130;5"
 
             Assert.NotNull(font.Glyphs['à']);
             Assert.NotNull(font.Glyphs['Ç']);
@@ -228,6 +248,12 @@ public class FontWriterTests
         Assert.Equal(y, glyph.Y);
         Assert.Equal(16, glyph.Width);
         Assert.Equal(16, glyph.Height);
+    }
+
+    private static void AssertXAdvance(BmFontDocument font, char character, int expectedAdvance)
+    {
+        Assert.True(font.Chars.TryGetValue(character, out var glyph), $"no char id={(int)character} ('{character}')");
+        Assert.Equal(expectedAdvance, glyph!.XAdvance);
     }
 
     /// <summary>
