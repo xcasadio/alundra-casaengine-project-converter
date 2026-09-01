@@ -322,3 +322,35 @@ ici** (~0,27 s sur NTSC) ; et hors cette action de cutscene, la feature n'a **pa
 **Arrêts** : un golden qui bouge ; un test moteur existant qui casse ; `CasaEngine.Launcher/Program.cs`
 stagé ; toute tentative de « corriger » l'échange de canaux, le pas-0, ou la troncature (§D-E10-8) ;
 le bucket `(false,1)` touché ; un fondu piloté par frame rendue au lieu du tick (§1.6).
+
+## 6. Réalisé — E10 **validée en jeu par l'utilisateur** (2026-09-01)
+
+Fondu d'entrée validé sur la 389 (« le fadeout est OK »), puis — après deux correctifs nés de la
+recette elle-même — les nuages validés aussi (« ça marche sur 389 »). Commits : moteur `1f837ed6`,
+parent `96f440e`, plus `692ec4c` et `767e9e6`. **E10 est complète.**
+
+- **La recette a payé plus que la tranche.** Le test de carte témoin (« pas d'effet additif sur la
+  159 ») a exposé que **le backdrop n'avait JAMAIS été dessiné en jeu** — l'asset `Texture` du moteur
+  se charge en deux temps et `BackdropRenderer` ne faisait jamais le second appel ; toutes les
+  couches, toutes les cartes, depuis l'écriture du renderer (`692ec4c`). Puis, les nuages enfin
+  visibles, leur **parallaxe verticale au double de la caméra** est apparue : le Y rendu (vers le
+  haut) passé brut là où le calcul attend un défilement monde (vers le bas) — signe inversé sur le
+  seul axe flippé (`767e9e6`). **Deux défauts dormants plus vieux qu'E10, exposés en deux jours par
+  la première exécution réelle du chemin.**
+- **Les deux causes racines venaient du journal et de l'axe.** Le lanceur avait écrit
+  `texture resolved to null; layer skipped` — personne ne le lisait (même forme que les 26 BGM
+  muettes : le signal existait). Et le symptôme utilisateur « plus vite, seulement en vertical »
+  désignait l'axe flippé avant toute lecture de code.
+- **Le test de parallaxe a une propriété rare** : son exécution rouge d'avant-correctif EST la preuve
+  de mutation — l'ancien code est littéralement l'état muté (400 vs 380, le double exact prédit).
+- **La famille « maillon couvert par l'œil » n'est plus théorique** : les advisories A1-A3 du verifier
+  décrivaient précisément la classe du défaut de chargement. À traiter comme un risque réel dans les
+  prochaines tranches, pas comme une note de bas de page.
+- Restes connus, dispositionnés : la parallaxe lit la cible caméra au lieu du défilement **clampé**
+  de l'original (écart constant aux bords de carte — E9) ; l'animation d'offset V (`AnimNum`) et le
+  `WaveLut` ne sont pas rejoués (E9 — la 159 ne luit que sur son quart supérieur pour ça) ; l'action
+  de cutscene `FadeScreen` inerte dans Alundra (A4 — chantier transitions) ; `ParseBlendMode` défaute
+  sur Additive (A6, P4).
+- Suites finales : `Alundra.Tests` **662** (40/40 runs après sérialisation des collections),
+  convertisseur **139**, moteur **1421** + ses 18 échecs préexistants inchangés, six goldens intacts,
+  audio exporté intact.
