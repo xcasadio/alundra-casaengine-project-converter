@@ -245,6 +245,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     private World? _world;
 
+    /// <summary>E12.a wiring fix (user-reported: no dialogue box ever appeared in game): true once the
+    /// dialogue presenter has been built over a live UI view - set by <see cref="InstallDialogueSystems"/>
+    /// when a view already exists at install time (pre-wired hosts, the wiring test's montage), or by
+    /// <see cref="TryWireDialoguePresenterOnce"/>'s per-frame retry otherwise. Per-proxy on purpose
+    /// (trap 9: Clone copies nothing, and a NEW world must re-wire its own view) - the director itself
+    /// stays session-scoped.</summary>
+    private bool _dialoguePresenterWired;
+
     /// <summary>
     /// This world's own <see cref="TileMapData"/> (resolved once in <see cref="InitializeWithWorld"/>,
     /// same instance <see cref="AlundraCellsCollisionField"/>/<see cref="AdoptPlayerPawn"/> already read) -
@@ -810,11 +818,54 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     internal void InstallDialogueSystems(World world)
     {
-        var uiView = world.Game?.GameManager.ViewManager.GetActiveUIView();
+        // IN A REAL GAME RUN THIS LOOKUP ALWAYS RETURNS NULL - user-reported in-game failure, root
+        // cause proven in the engine boot order (GameManager.UpdateWorld, GameManager.cs:93-108):
+        // (1) ViewManager.Clear() -> (2) World.LoadContent - WHICH RUNS InitializeWithWorld AND THIS
+        // METHOD - -> (3) RuntimeViewBootstrapper.BootstrapViews creates the Default view and its MGUI
+        // UIView -> (5) BeginPlay. So the install phase sits inside the window where the ViewManager is
+        // empty by construction, on EVERY world load. The backdrop clear color hit the same window
+        // (AlundraBackdropStage.cs:60-66) and so do the engine's own game scripts (RPGDemo wires UI in
+        // OnBeginPlay, never at load). The eager attempt below still serves hosts that pre-wire a view
+        // before install (the wiring test's montage); the real game is wired by
+        // TryWireDialoguePresenterOnce's per-frame retry in Update.
+        var uiView = world.Game?.GameManager?.ViewManager?.GetActiveUIView();
         IDialoguePresenter? presenter = uiView != null ? new AlundraDialoguePresenter(uiView) : null;
+        _dialoguePresenterWired = presenter != null;
 
         AlundraDialogueDirector.Instance.AttachToWorld(presenter, GameState);
         AlundraDialogueDirector.Instance.InstallForMapEntry();
+    }
+
+    /// <summary>
+    /// The real game's dialogue-presenter wiring: retry-until-success, once per frame from the head of
+    /// <see cref="Update"/>, because the UI view this needs is created strictly AFTER
+    /// <see cref="InitializeWithWorld"/> ran (see <see cref="InstallDialogueSystems"/>'s own doc for the
+    /// proven boot order). Copies the ONE proven lazy-lookup shape in this DLL - the clear-color retry
+    /// (<c>AlundraBackdropStage.ApplyOriginalBackgroundClearColorOnce</c>, guard set ONLY inside the
+    /// success branch) - and deliberately NOT <c>ResolveDebugCameraOnce</c>'s one-shot-at-first-try
+    /// shape, whose first-frame miss is permanent (the exact trap here, since the view's availability
+    /// frame is bootstrap-dependent). On success this RE-POINTS the session director via
+    /// <see cref="AlundraDialogueDirector.AttachToWorld"/> - which by contract touches no open/mask/
+    /// page/choice state - and never calls <see cref="AlundraDialogueDirector.InstallForMapEntry"/>
+    /// again (the map-entry reset already ran at install; nothing can have opened meanwhile, every
+    /// dialogue opcode degrades while <c>HasPresenter</c> is false).
+    /// </summary>
+    private void TryWireDialoguePresenterOnce()
+    {
+        if (_dialoguePresenterWired)
+        {
+            return;
+        }
+
+        var uiView = _world?.Game?.GameManager?.ViewManager?.GetActiveUIView();
+        if (uiView == null)
+        {
+            return; // retry next frame - the view appears once BootstrapViews has run.
+        }
+
+        AlundraDialogueDirector.Instance.AttachToWorld(new AlundraDialoguePresenter(uiView), GameState);
+        _dialoguePresenterWired = true;
+        Logs.WriteInfo("AlundraWorldProxy: dialogue presenter wired to the active UI view (post-bootstrap retry).");
     }
 
     /// <summary>
@@ -1196,6 +1247,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // between this line and the old site touches the clock, and both CloseFrame() calls still run
         // after it.
         var ticksThisFrame = LogicTicksThisFrame(elapsedTime);
+
+        // E12.a wiring fix: must run BEFORE the map-events pass below - a scripted dialogue opened
+        // on this very frame has to find a live presenter (see the method's own doc).
+        TryWireDialoguePresenterOnce();
 
         // C1 (docs/plan-camera-ordre-frame.md §3): map-events run FIRST, before the camera block - a
         // faithful port of the original's own frame order (GameEngine.cs:1638-1664/1743-1753:

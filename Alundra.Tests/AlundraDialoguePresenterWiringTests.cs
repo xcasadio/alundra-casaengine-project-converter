@@ -163,4 +163,82 @@ public class AlundraDialoguePresenterWiringTests
         }
     }
 
+    /// <summary>
+    /// The REAL GAME's wiring route (user-reported in-game failure: no dialogue box ever appeared).
+    /// In a real run the engine's boot order guarantees GetActiveUIView() is null during
+    /// InitializeWithWorld (GameManager.cs:93-108: ViewManager.Clear -> World.LoadContent [which runs
+    /// the install] -> BootstrapViews [which creates the view+UIView]), so the eager install above can
+    /// never wire anything there - the per-frame retry at the head of AlundraWorldProxy.Update
+    /// (TryWireDialoguePresenterOnce) is what actually wires the game. This test reproduces that exact
+    /// timing: install first with NO view (presenter null, degraded), THEN the view appears, then one
+    /// real Update - the presenter must come live and push on open. Deleting the Update call site (or
+    /// regressing to the one-shot-at-first-try lookup shape) fails this test.
+    /// </summary>
+    [Fact]
+    public void Update_WiresThePresenter_OnceTheViewAppearsAfterWorldInit()
+    {
+        AlundraDialogueDirector.Instance.ResetForTests();
+        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
+        try
+        {
+            var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
+            var game = (CasaEngine.Framework.Application.CasaEngineGame)System.Runtime.CompilerServices.RuntimeHelpers
+                .GetUninitializedObject(typeof(CasaEngine.Framework.Application.CasaEngineGame));
+            var componentsField = typeof(Microsoft.Xna.Framework.Game)
+                .GetField("_components", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
+            componentsField.SetValue(game, new Microsoft.Xna.Framework.GameComponentCollection());
+
+            var gameManager = (CasaEngine.Framework.Application.GameManager)System.Runtime.CompilerServices.RuntimeHelpers
+                .GetUninitializedObject(typeof(CasaEngine.Framework.Application.GameManager));
+            var viewManager = new CasaEngine.Framework.Rendering.ViewManager();
+            typeof(CasaEngine.Framework.Application.GameManager)
+                .GetField("<ViewManager>k__BackingField", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+                .SetValue(gameManager, viewManager);
+            typeof(CasaEngine.Framework.Application.CasaEngineGame)
+                .GetField("<GameManager>k__BackingField", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+                .SetValue(game, gameManager);
+
+            HeroWorldFixture.SetProperty(world, nameof(CasaEngine.Framework.Scene.World.World.Game), game);
+
+            // Phase 1 - the LoadContent window: InitializeWithWorld runs while the ViewManager is
+            // still empty (the real game's exact state). The install's eager lookup must find nothing.
+            var proxy = new AlundraWorldProxy();
+            proxy.InitializeWithWorld(world);
+            proxy.InstallDialogueSystems(world); // "TestWorld" has no tileMap, so InitializeWithWorld
+                                                 // early-returns before the real install - drive it
+                                                 // explicitly in the same empty-ViewManager state.
+            Assert.False(AlundraDialogueDirector.Instance.HasPresenter,
+                "montage error: no view exists yet, the eager install cannot have wired a presenter.");
+
+            // Even a frame BEFORE the view exists must not wedge the retry (the clear-color shape:
+            // guard only set on success - a one-shot lookup would make this miss permanent).
+            proxy.Update(1f / 50f);
+            Assert.False(AlundraDialogueDirector.Instance.HasPresenter);
+
+            // Phase 2 - BootstrapViews' equivalent: the view (with its UI runtime) appears.
+            var recorder = new RecordingUIViewRuntime();
+            var view = (CasaEngine.Framework.Rendering.RenderView)System.Runtime.CompilerServices.RuntimeHelpers
+                .GetUninitializedObject(typeof(CasaEngine.Framework.Rendering.RenderView));
+            view.UIView = recorder;
+            view.Enabled = true;
+            view.IsVisible = true;
+            viewManager.Add(view);
+            viewManager.SetActive(view);
+
+            // Phase 3 - the next real Update wires the presenter and dialogue becomes visible.
+            proxy.Update(1f / 50f);
+
+            Assert.True(AlundraDialogueDirector.Instance.HasPresenter,
+                "Update's per-frame retry must wire the presenter once the bootstrapped view exists.");
+
+            AlundraDialogueDirector.Instance.Open("bonjour", 1);
+            Assert.True(recorder.Pushed.Count > 0,
+                "opening a dialogue after the late wiring must push the screen on the game's UI view.");
+        }
+        finally
+        {
+            AlundraDialogueDirector.Instance.ResetForTests();
+            AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
+        }
+    }
 }
