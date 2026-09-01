@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using CasaEngine.Core.Logging;
@@ -143,7 +143,18 @@ internal sealed class BackdropRenderer
             Texture2D? texture2d;
             try
             {
-                texture2d = world.Game.AssetContentManager.Load<CasaEngineTexture>(textureAssetId)?.Resource;
+                var wrapperTexture = world.Game.AssetContentManager.Load<CasaEngineTexture>(textureAssetId);
+
+                // Two-step asset: Load<CasaEngineTexture> alone only reads the wrapper document -
+                // its inner Texture2D is materialized by the SECOND call below, the exact call
+                // TileMapComponent.cs:901-902 makes for tilesets. Skipping it left .Resource null
+                // for EVERY backdrop layer on EVERY map since this renderer was written: the
+                // degraded branch below fired each time, its warning went unread, and no headless
+                // test can reach this line (it needs a live GraphicsDevice - the known-uncovered
+                // link this file's tests document). Found when E10's witness-map check came back
+                // "no additive effect" on Fairy cave (underwater)-159.
+                wrapperTexture?.Load(world.Game.AssetContentManager);
+                texture2d = wrapperTexture?.Resource;
             }
             catch (Exception ex)
             {
