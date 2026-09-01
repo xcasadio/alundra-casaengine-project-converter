@@ -13,6 +13,7 @@ using CasaEngine.Framework.Application.Components;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Audio;
+using CasaEngine.Framework.Dialogue.Presentation;
 using CasaEngine.Framework.Physics;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -357,6 +358,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     public IAlundraScreenFadeDirector ScreenFadeDirector => AlundraScreenFadeDirector.Instance;
 
     /// <summary>
+    /// This session's dialogue-flow seam (E12.a, docs/plan-e12-dialogues.md) - the SESSION-scoped
+    /// <see cref="AlundraDialogueDirector.Instance"/> (D-C-6/D-E10-6 lesson, see that class's own doc),
+    /// NOT a per-world instance. Always non-null: unlike <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/>,
+    /// attaching with a null presenter (no active UI view for this world) is itself a tolerated, tested
+    /// state - <see cref="IAlundraDialogueDirector.HasPresenter"/> is what actually gates real vs degraded
+    /// dispatch (see that member's own doc). Installed by <see cref="InstallDialogueSystems"/>.
+    /// </summary>
+    public IAlundraDialogueDirector DialogueDirector => AlundraDialogueDirector.Instance;
+
+    /// <summary>
     /// Seam over <c>Sounds/sfx-manifest.json</c> lookups (see <see cref="Alundra.Scripts.AlundraSoundBank"/>'s
     /// class doc), read once and reused by <see cref="SoundPlayer"/> for every sfx it resolves. Internal,
     /// not injected through the constructor - same reasoning as <see cref="SpriteRecordCatalog"/> above.
@@ -450,7 +461,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // failed to parse" and AlundraEventProgramRunner degrades to a counted no-op for slot A too, the
         // same shape as SpriteRecordCatalog's own degraded mode.
         var eventProgramDocument = MapEventProgramLoader.Load(EngineEnvironment.ProjectPath, world.Name);
-        EventProgramRunner = new AlundraEventProgramRunner(eventProgramDocument, GameState, this);
+        EventProgramRunner = new AlundraEventProgramRunner(eventProgramDocument, GameState, this)
+        {
+            // E12.a (docs/plan-e12-dialogues.md §1.5): this world's own local dialogue-string table -
+            // null (degraded) when this world has none, same shape as eventProgramDocument above.
+            LocalDialogueStrings = AlundraDialogueStringsLoader.Load(EngineEnvironment.ProjectPath, world.Name),
+        };
 
         // Scrolling background layers (see BackdropRenderer's class doc) - same degraded-mode shape as
         // the event-program document above: a world with no companion file (most of them - Scroll
@@ -481,6 +497,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         InstallCellAndOverlaySystems(world, tileMapComponent!, tileMapData);
         InstallAudioSystems(world);
         InstallScreenFadeSystems(world);
+        InstallDialogueSystems(world);
 
         var entitiesLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == EntitiesLayerName);
         var portalsLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == PortalsLayerName);
@@ -776,6 +793,28 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     {
         AlundraScreenFadeDirector.Instance.AttachToWorld(world.Game?.ScreenEffectComponent?.Service);
         AlundraScreenFadeDirector.Instance.InstallForMapEntry();
+    }
+
+    /// <summary>
+    /// E12.a (docs/plan-e12-dialogues.md, item ③bis/④): installs the dialogue-flow seam - re-points the
+    /// SESSION-scoped <see cref="AlundraDialogueDirector.Instance"/> at an <see cref="AlundraDialoguePresenter"/>
+    /// wired to this world's own ACTIVE UI view (<c>world.Game.GameManager.ViewManager.GetActiveUIView()</c>
+    /// - the SAME route the engine's own <c>UIOverlayDemo</c> uses), THEN resets this map entry's dialogue
+    /// state (<see cref="AlundraDialogueDirector.InstallForMapEntry"/>). No active UI view (no <c>Game</c>,
+    /// or the active render view has none) -&gt; the presenter stays null, same tolerated degraded shape as
+    /// every other missing-system seam in this DLL (<see cref="IAlundraDialogueDirector.HasPresenter"/> is
+    /// what <see cref="AlundraEventProgramRunner.Dispatch"/> actually tests). Called from
+    /// <see cref="InitializeWithWorld"/> - the ONLY call site (M16 lesson, same precedent as
+    /// <see cref="InstallScreenFadeSystems"/>/<see cref="InstallAudioSystems"/>) - and extracted as its own
+    /// INTERNAL method so a test can drive it directly against a world with no <c>Game</c>.
+    /// </summary>
+    internal void InstallDialogueSystems(World world)
+    {
+        var uiView = world.Game?.GameManager.ViewManager.GetActiveUIView();
+        IDialoguePresenter? presenter = uiView != null ? new AlundraDialoguePresenter(uiView) : null;
+
+        AlundraDialogueDirector.Instance.AttachToWorld(presenter, GameState);
+        AlundraDialogueDirector.Instance.InstallForMapEntry();
     }
 
     /// <summary>
@@ -1255,6 +1294,19 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // value one frame early).
         AlundraScreenFadeDirector.Instance.Advance(ticksThisFrame);
         AlundraScreenFadeDirector.Instance.PushToAttachedService();
+
+        // E12.a fix, found by the closing verifier (F1): the dialogue box's advance/close pass belongs
+        // to the FRAME LOOP, exactly like the original's UIManager.ProcessEtcTextAdvance which runs
+        // every main-loop frame INDEPENDENTLY of scripts (UI/UIManager.cs:855-880). It used to live
+        // only inside opcode 0x39's dispatch - but six of map 389's seven sailors open their box from
+        // a mono-line F(Interact) program with NO 0x39 at all, so the box could never advance, close,
+        // or time out: a permanent softlock with MenuOpen blocking every later map event. One tick per
+        // LOGIC tick (the original's pass runs once per its 50 Hz frame); a closed box makes this a
+        // cheap no-op.
+        for (var dialogueTick = 0; dialogueTick < ticksThisFrame; dialogueTick++)
+        {
+            AlundraDialogueDirector.Instance.Tick();
+        }
 
         // Closes this frame's logic-clock memo (see AlundraLogicClock's own class doc) - this proxy's own
         // Update always runs last (World.cs:443-491), so the next frame's first caller (an entity's own

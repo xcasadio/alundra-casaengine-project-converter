@@ -128,6 +128,24 @@ public interface IEntityWorldContext
     /// (D-E10-6 - see that class's own doc for why it is a singleton rather than a per-world instance).
     /// </summary>
     IAlundraScreenFadeDirector? ScreenFadeDirector => null;
+
+    /// <summary>
+    /// This session's dialogue-flow seam (E12.a, docs/plan-e12-dialogues.md) - backs opcodes
+    /// 0x0D/0x39/0x44/0x50/0x51/0x5C in <see cref="AlundraEventProgramRunner.Dispatch"/>. A default
+    /// interface member, same "degraded, skip" shape as <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/>/
+    /// <see cref="ScreenFadeDirector"/> above, defaulting to null so every EXISTING implementer
+    /// (<see cref="NoOpEntityWorldContext"/>, every existing test fake) keeps compiling unmodified.
+    /// <see cref="AlundraWorldProxy"/> installs the session-scoped <see cref="AlundraDialogueDirector.Instance"/>
+    /// (see that class's own doc for why it is a singleton rather than a per-world instance - same D-C-6/
+    /// D-E10-6 lesson as <see cref="AlundraMusicPlayer"/>/<see cref="AlundraScreenFadeDirector"/>) via
+    /// <see cref="AlundraWorldProxy.InstallDialogueSystems"/>. Unlike <see cref="ScreenFadeDirector"/>, this
+    /// member stays NULLABLE even on <see cref="AlundraWorldProxy"/> itself: <see cref="IAlundraDialogueDirector.HasPresenter"/>
+    /// is what actually distinguishes real from degraded dispatch (the singleton is attached with a null
+    /// presenter, not omitted, when no UI view is available - see <see cref="AlundraDialogueDirector.AttachToWorld"/>'s
+    /// own doc), so a null CONTEXT member here only ever means "this context has no dialogue system wired at
+    /// all" (most synthetic interpreter tests, <see cref="NoOpEntityWorldContext"/>).
+    /// </summary>
+    IAlundraDialogueDirector? DialogueDirector => null;
 }
 
 /// <summary>

@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -386,6 +386,15 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     private readonly bool _installSoundPlayer;
     private readonly List<(int Frame, int SfxId)> _soundRequests = new();
 
+    // E12.a (docs/plan-e12-dialogues.md): unlike every OTHER _install* flag above, this one defaults to
+    // FALSE - AlundraDialogueDirector.Instance is a SESSION-scoped singleton (not a per-harness fake like
+    // IAlundraSoundPlayer above), so wiring it by default would leak across every OTHER pre-existing test
+    // built on this harness that never anticipated a dialogue system being present. Only
+    // AlundraDialogueOpcodesProductionTests (T1) passes true, and resets/attaches the singleton itself
+    // before driving frames - see OptimisticPredicateOpcodes' own updated doc (item ⑦) for why removing
+    // 0x39/0x44/0x51 from that set is still behaviourally inert for every OTHER test.
+    private readonly bool _installDialogueDirector;
+
     // Includes the player (index 0) - mirrors AlundraWorldProxy's own _spawnedEntities, which also holds
     // the player (SpawnPlayerEntity adds it before any record) - see IEntityWorldContext.SpawnedEntities's
     // own doc for why that matters (a search opcode must be able to find the player too).
@@ -450,13 +459,14 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
 
     public HeadlessIntroSimulation(
         string projectRoot, string worldName, EventProgramDocument document,
-        bool installCellMutator = true, bool installSoundPlayer = true)
+        bool installCellMutator = true, bool installSoundPlayer = true, bool installDialogueDirector = false)
     {
         _projectRoot = projectRoot;
         _worldName = worldName;
         _document = document;
         _installCellMutator = installCellMutator;
         _installSoundPlayer = installSoundPlayer;
+        _installDialogueDirector = installDialogueDirector;
         _codesBytes = document.CodesAsBytes();
         _runner = new AlundraEventProgramRunner(document, _gameState, this)
         {
@@ -535,7 +545,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     /// intro trace is unnecessary just to observe the map-entry mutations dispatched on frame 1. Never
     /// called by <see cref="Run"/> itself - a separate entry point, not a change to it.
     /// </summary>
-    public void RunFramesForTest(int frameCount)
+    public void RunFramesForTest(int frameCount, Action<HeadlessIntroSimulation>? afterEachFrame = null)
     {
         BuildInitialState();
         Frame = 0;
@@ -544,6 +554,16 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         for (Frame = 1; Frame <= frameCount; Frame++)
         {
             RunFrame();
+            // Mirrors AlundraWorldProxy.Update's own per-tick dialogue pass (the F1 fix: the box's
+            // advance/close belongs to the frame loop, not to opcode 0x39) - the harness IS the frame
+            // owner here, exactly as it mirrors the other world-level passes. One tick per simulated
+            // frame (the harness runs one logic tick per frame, per its own class doc).
+            if (_installDialogueDirector)
+            {
+                AlundraDialogueDirector.Instance.Tick();
+            }
+
+            afterEachFrame?.Invoke(this);
         }
 
         FrameCount = frameCount;
@@ -722,6 +742,11 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
                 _dialogueStrings = null; // best-effort only
             }
         }
+
+        // E12.a (docs/plan-e12-dialogues.md): the SAME real local-strings array feeds opcode 0x0D/0x5C's
+        // own text resolution through the REAL AlundraEventProgramRunner.LocalDialogueStrings seam -
+        // production wiring (AlundraWorldProxy.InitializeWithWorld), not a separate parse.
+        _runner.LocalDialogueStrings = _dialogueStrings;
     }
 
     private void RecordMapEntrySystemsOnce()
@@ -1061,6 +1086,18 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     /// </summary>
     public IAlundraSoundPlayer? SoundPlayer => _installSoundPlayer ? this : null;
 
+    /// <summary>
+    /// E12.a (docs/plan-e12-dialogues.md) - the "production call site" for T1: this harness drives
+    /// opcodes 0x0D/0x39/0x44/0x50/0x51/0x5C through the REAL <see cref="AlundraEventProgramRunner.Dispatch"/>
+    /// via each entity's own <see cref="AlundraEntityScriptProxy.Update"/> -&gt; pick -&gt; run (the real
+    /// slot-C path, NOT <see cref="AlundraWorldProxy.RunPendingEventTriggers"/>'s own D3 catch-up),
+    /// exactly like production, backed by the SAME session-scoped <see cref="AlundraDialogueDirector.Instance"/>
+    /// <see cref="AlundraWorldProxy.InstallDialogueSystems"/> installs. <see cref="_installDialogueDirector"/>
+    /// gates only THIS property's returned value (default false - see that field's own doc on why, unlike
+    /// every other <c>_install*</c> flag here).
+    /// </summary>
+    public IAlundraDialogueDirector? DialogueDirector => _installDialogueDirector ? AlundraDialogueDirector.Instance : null;
+
     /// <summary>Fake <see cref="IAlundraSoundPlayer"/> implementation (T1, docs/plan-e11-audio.md):
     /// records the request instead of actually playing anything - no live AudioService in this
     /// headless harness.</summary>
@@ -1314,11 +1351,24 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     /// false throughout - see <see cref="PessimisticPredicateOpcodes"/>'s own updated doc below), so this
     /// removal is dead-code cleanup, not an observed behaviour change.
     /// </summary>
+    /// <summary>
+    /// E12.a retrait (docs/plan-e12-dialogues.md, item ⑦): 0x39/0x44/0x51 are REMOVED - all three are now
+    /// genuinely <c>Implemented</c>/<c>Degraded</c> opcodes (AlundraEventProgramRunner.Dispatch cases
+    /// 0x39/0x44/0x51, backed by <see cref="AlundraDialogueDirector"/>) rather than <c>UnknownSkipped</c>,
+    /// so this forcing set - which only ever applies to <c>UnknownSkipped</c> dispatches - self-neutralized
+    /// for them the moment their real case landed (§1.6: "retirer les entrées du set est un nettoyage, pas
+    /// un ré-étalonnage"). By DEFAULT this harness's own <see cref="HeadlessIntroSimulation.DialogueDirector"/>
+    /// still returns null (no dialogue system wired) - a full intro trace run therefore takes the SAME
+    /// "degraded, once-logged, size-only-advance" fallback these three opcodes' real dispatch cases
+    /// already document for a null <see cref="IEntityWorldContext.DialogueDirector"/>, which is
+    /// BEHAVIOURALLY IDENTICAL to the old forced-optimistic skip (Result=1 for 0x44, size-only advance
+    /// for 0x39/0x51/0x0D/0x50/0x5C either way) - see each opcode's own dispatch doc. Only
+    /// <c>AlundraDialogueOpcodesProductionTests</c> (E12.a's own T1) opts into a REAL, session-scoped
+    /// <see cref="AlundraDialogueDirector"/> (<c>installDialogueDirector: true</c>), since that singleton
+    /// must not leak into every OTHER pre-existing test built on this same harness.
+    /// </summary>
     private static readonly HashSet<int> OptimisticPredicateOpcodes = new()
     {
-        0x39, // Wait for dialog
-        0x44, // Wait dialog choice
-        0x51, // Get dialog choice
     };
 
     /// <summary>
@@ -1469,10 +1519,15 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         // Script_OpenDialog_13_00D: TryOpenDialog((uint)variables[1], variables[2]) - dialog id is the
         // FIRST parameter byte. Script_OpenDialogWithChoice_05C: variables[1] is a search type, the
         // dialog id is the SECOND parameter byte (best-effort - see this file's own class doc caveat).
+        // E12.a fix (docs/plan-e12-dialogues.md, item ⑥): parameters[0]/[1] is the RAW textId operand,
+        // whose bit 0x80 selects local vs shared text (see AlundraEventProgramRunner's own dispatch case
+        // 0x0D) - masking with 0x7F here is what the real opcode does before indexing _dialogueStrings;
+        // without it, every local id >= 128 (i.e. every real textId, which always carries bit 0x80 set)
+        // resolved to null.
         var id = opcode switch
         {
-            0x0D when parameters.Length >= 1 => (int)parameters[0],
-            0x5C when parameters.Length >= 2 => (int)parameters[1],
+            0x0D when parameters.Length >= 1 => (int)parameters[0] & 0x7f,
+            0x5C when parameters.Length >= 2 => (int)parameters[1] & 0x7f,
             _ => -1,
         };
 

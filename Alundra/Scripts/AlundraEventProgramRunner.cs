@@ -1,7 +1,8 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using CasaEngine.Core.Logging;
+using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.AI.Navigation;
 using Microsoft.Xna.Framework;
 
@@ -91,6 +92,18 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// without reaching a natural end/suspend, reporting <see cref="EventTraceKind.LoopBudgetExceeded"/>
     /// through <see cref="TraceSink"/> instead of hanging forever - see that trace kind's own doc.</summary>
     internal int? MaxIterationsPerCall { get; set; }
+
+    /// <summary>
+    /// This world's own local dialogue-string table (E12.a, docs/plan-e12-dialogues.md §1.5) - loaded by
+    /// <see cref="AlundraWorldProxy.InitializeWithWorld"/> via <see cref="AlundraDialogueStringsLoader"/>
+    /// and handed here as a plain settable property (rather than a constructor parameter) so every
+    /// EXISTING call site of this runner's constructor (17 of them across this DLL and its tests) keeps
+    /// compiling unmodified - null means "not loaded/unavailable", the same degraded fallback opcode
+    /// 0x0D's own <c>textId &amp; 0x80</c> branch already has for an out-of-range index.
+    /// </summary>
+    internal IReadOnlyList<string>? LocalDialogueStrings { get; set; }
+
+    private bool _loggedSharedDialogTableOnce;
 
     private readonly EventProgramDocument? _document;
     private readonly byte[]? _codes;
@@ -562,6 +575,91 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 SetSaveMapIdToInternalMapIndex(v);
                 return 5;
 
+            case 0x0D: // Dialog - Script_OpenDialog_13_00D (E12.a, docs/plan-e12-dialogues.md): opens a
+                       // dialogue box. v[1]=textId (bit 0x80 -> LOCAL Strings[textId&0x7F], clear -> the
+                       // SHARED map_alundra table, not exported by the converter yet - degrades, once
+                       // warned); v[2]=controlMode (1 -> MessageBox, 0 -> MenuOpen, see
+                       // AlundraDialogueDirector.Open's own doc). Dispatch itself owns the reentrancy
+                       // guard (T2): a dialogue already open makes this retry (return 0) rather than
+                       // stomping a second one open.
+                return OpenDialog(v[1], v[2], instructionSize: 3, opcode: 0x0D, opcodeName: "Dialog");
+
+            case 0x39: // Wait for dialog - Script_59_039 (E12.a): blocking gate, NOT a predicate - writes
+                       // no Result either way. Returns 0 while a dialogue is open, advances (1) once
+                       // CLOSED.
+            {
+                var waitDirector = _worldContext.DialogueDirector;
+                if (waitDirector == null || !waitDirector.HasPresenter)
+                {
+                    LogDegradedOpcodeOnce(0x39, "WaitForDialog", "dialogue presenter");
+                    return 1;
+                }
+
+                // PURE POLL, like the original's Script_IsDialogInProgress_039 - the box's own
+                // advance/close pass runs once per logic tick from AlundraWorldProxy.Update (see the
+                // F1 comment there), NOT from this opcode: six of the seven sailors open their box
+                // from a program with no 0x39 at all.
+                return waitDirector.IsOpen ? 0 : 1;
+            }
+
+            case 0x44: // Wait dialog choice - Script_WaitDialogChoice_44 (E12.a): the CHOICE, WITH STATE.
+                       // First entry (not yet awaiting a choice) opens OUI/NON (labels = GLOBAL strings
+                       // via the ETC index table, D-E12-6 - never local/map strings) and blocks; once the
+                       // player selects, Result = 1 iff the FIRST option, else 0, and this instruction
+                       // finally advances (1). Degraded (no presenter, or no etc-index/global-strings
+                       // data): Result = 1 unconditionally and advances immediately - the old
+                       // optimistic-forcing behaviour the harness used to apply by hand (§1.6/item ⑦),
+                       // now a real, documented degraded mode so this predicate can never deadlock a
+                       // script with no dialogue system installed.
+            {
+                var choiceDirector = _worldContext.DialogueDirector;
+                if (choiceDirector == null || !choiceDirector.HasPresenter)
+                {
+                    state.Result = 1;
+                    LogDegradedOpcodeOnce(0x44, "WaitDialogChoice", "dialogue presenter");
+                    return 1;
+                }
+
+                if (!choiceDirector.IsAwaitingChoice)
+                {
+                    if (!AlundraEtcStringTable.TryResolveYesNo(EngineEnvironment.ProjectPath, out var yesLabel, out var noLabel))
+                    {
+                        state.Result = 1;
+                        LogDegradedOpcodeOnce(0x44, "WaitDialogChoice", "etc-index/global-strings data");
+                        return 1;
+                    }
+
+                    choiceDirector.OpenChoice(new[] { yesLabel, noLabel });
+                    return 0;
+                }
+
+                var choiceResult = choiceDirector.TakeChoiceResult();
+                if (choiceResult == null)
+                {
+                    return 0;
+                }
+
+                state.Result = choiceResult.Value;
+                return 1;
+            }
+
+            case 0x50: // Set dialog choice (misnomer, §1.3 - really sets the CLOSE-MODE mask) -
+                       // Script_SetDialogChoice_50 (E12.a): bit0 auto-timer (360 ticks), bit1 button,
+                       // bit2 script (0x51). No presenter needed to just remember the mask value.
+                _worldContext.DialogueDirector?.SetCloseMask(v[1]);
+                return 2;
+
+            case 0x51: // Get dialog choice (misnomer, §1.3 - really a script-close REQUEST) -
+                       // Script_GetDialogChoice_51 (E12.a): honoured only while the mask's bit2 is set
+                       // (AlundraDialogueDirector.RequestScriptClose's own doc). No Result either way.
+                _worldContext.DialogueDirector?.RequestScriptClose();
+                return 1;
+
+            case 0x5C: // Dialog with entity - Script_DialogWithEntity_5C (E12.a): same open semantics as
+                       // 0x0D (textId is v[2] here, ctrl is v[3]); v[1] (entity search) is only for the
+                       // deferred portrait/name box (E12.c) - ignored for display here, per plan.
+                return OpenDialog(v[2], v[3], instructionSize: 4, opcode: 0x5C, opcodeName: "DialogWithEntity");
+
             case 0x49: // Restart - Script_73_049 (EntityEventHandlers.cs:1454-1459): unconditional jump
                        // back to Parameters[0] (this program's own start CodeIndex, set once by
                        // InitializeEventData - see that method's own doc). Same
@@ -854,6 +952,76 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             default:
                 return UnknownOpcode(command, state);
         }
+    }
+
+    /// <summary>
+    /// Shared "open" half of opcodes 0x0D and 0x5C (E12.a, docs/plan-e12-dialogues.md): resolves
+    /// <paramref name="textIdParam"/> (see <see cref="ResolveDialogText"/>), then either opens the real
+    /// dialogue through <see cref="AlundraDialogueDirector"/> (Dispatch's own reentrancy guard - T2 -
+    /// already ran BEFORE this is called, via <see cref="IAlundraDialogueDirector.IsOpen"/>) or degrades:
+    /// still parses the text and applies every numeric control-code flag it contains (D-E12-4's own P0
+    /// correction - "le mode dégradé pose AUSSI les drapeaux numériques", or a later <c>0x36</c> waiting
+    /// on one of them would suspend forever) before advancing by <paramref name="instructionSize"/>
+    /// regardless.
+    /// </summary>
+    private int OpenDialog(int textIdParam, int controlMode, int instructionSize, int opcode, string opcodeName)
+    {
+        var text = ResolveDialogText(textIdParam) ?? string.Empty;
+        var director = _worldContext.DialogueDirector;
+
+        if (director == null || !director.HasPresenter)
+        {
+            foreach (var page in AlundraDialogueTextParser.SplitIntoPages(text))
+            {
+                foreach (var n in page.NumericCodes)
+                {
+                    _gameState.AddFlag((uint)(n | 0x8000), 1u << (n & 0x1f));
+                }
+            }
+
+            LogDegradedOpcodeOnce(opcode, opcodeName, "dialogue presenter");
+            return instructionSize;
+        }
+
+        if (director.IsOpen)
+        {
+            return 0; // T2: a dialogue is already open - retry rather than opening a second one.
+        }
+
+        director.Open(text, controlMode);
+        return instructionSize;
+    }
+
+    /// <summary>
+    /// Resolves opcode 0x0D/0x5C's own textId operand (§1.3): bit 0x80 set -&gt; this world's LOCAL
+    /// <see cref="LocalDialogueStrings"/>[textId &amp; 0x7F] (null if the table was never loaded, or the
+    /// masked index is out of range); bit clear -&gt; the SHARED <c>map_alundra</c> table, which the
+    /// converter does not export yet (E12.c) - always null here, logged once.
+    /// </summary>
+    private string? ResolveDialogText(int textIdParam)
+    {
+        if ((textIdParam & 0x80) != 0)
+        {
+            var localIndex = textIdParam & 0x7f;
+            var localStrings = LocalDialogueStrings;
+            if (localStrings != null && localIndex >= 0 && localIndex < localStrings.Count)
+            {
+                return localStrings[localIndex];
+            }
+
+            return null;
+        }
+
+        if (!_loggedSharedDialogTableOnce)
+        {
+            _loggedSharedDialogTableOnce = true;
+            Logs.WriteWarning(
+                "AlundraEventProgramRunner: dialog opcode referenced the SHARED table (map_alundra, "
+                + "textId bit 0x80 clear), which the converter does not export yet (E12.c) - degraded, "
+                + "empty text.");
+        }
+
+        return null;
     }
 
     /// <summary>Shared shape of Script_48_030 (If flag on) / Script_49_031 (If flag off).</summary>
