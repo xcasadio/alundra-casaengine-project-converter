@@ -643,6 +643,22 @@ que le moteur invoque avant l'update du proxy de monde.
   d'événement d'entité** n'avancent pas d'un tick pendant les 16 ticks du fondu sortant » — le
   montage qu'elle demande couvre exactement cette passe.
 
+**[R7] Risque structurel du gel, analysé après la régression, à connaître avant T4.** Le gel arrête
+l'interprète de scripts. Or trois opcodes de dialogue **se ré-exécutent à chaque tick jusqu'à
+satisfaction** : `0x39` (attendre la boîte), `0x44` (attendre le choix) et le couple `0x50`/`0x51`
+(fermeture pilotée par le script). Une boîte ouverte en **mode de contrôle 0** (`MenuOpen`, qui gèle)
+puis suivie d'un de ces opcodes serait un **interblocage garanti** : le script qui doit la fermer ne
+tourne plus.
+
+**La carte 389 est indemne, vérifié sur la donnée** (`docs/intro-programs-389.txt`) : les boîtes des
+marins en mode 0 (textes 132/138/133/155/128/134/135/139) sont suivies d'un `0x05` puis d'un `0xFF End`
+immédiat — aucune attente, la fermeture revient au directeur (pression ou minuterie), hors gel. Et
+toute la chaîne à choix (`0x39`, `0x50 [4]`, `0x44`, `0x51`) est ouverte en **mode 1** (`MessageBox`),
+qui bloque l'entrée du joueur mais **laisse le monde et les scripts tourner** — exactement la
+distinction que les deux masques encodent.
+
+À rouvrir si une autre carte combine mode 0 et attente scriptée.
+
 ### T3 — Détection des portails
 
 **Contenu** :
