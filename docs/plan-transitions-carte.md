@@ -622,6 +622,26 @@ que le moteur invoque avant l'update du proxy de monde.
 | **[R4]** élargir la porte à l'avance de boîte | **2** | « la boîte avance et se ferme » sous le vrai `AlundraWorldProxy.Update`, précédent `AlundraDialogueFramePassTests` qui pilote déjà `proxy.Update` avec une boîte `MenuOpen` ouverte |
 | mettre le suivi caméra dedans | 2 | « la caméra continue » |
 
+**[R6] Deux réserves du vérificateur de clôture de T2, différées avec leur propriétaire.**
+
+- **La gravité moteur n'est pas gelée pour le héros.** `AdoptPlayerPawn` laisse au contrôleur du
+  héros la vraie gravité de la carte, et `CharacterMotionSystem` du moteur tourne à chaque frame sans
+  aucune porte côté Alundra. Or `SyncTransform` **n'écrit pas la racine** d'une entité à contrôleur
+  (`AlundraFrameSyncPasses.cs:176-181`) : rien ne rappelle donc la racine à la pose logique gelée.
+  Si une boîte `MenuOpen` s'ouvre alors que le héros est **en l'air**, sa racine continue de tomber
+  pendant le gel et la pose logique importe la chute à la levée. L'original, lui, gèle toute la
+  physique. Déclenchement étroit : seules les boîtes à monde fermé posent `MenuOpen`, et celles du
+  chemin d'acceptation s'ouvrent joueur au sol. **Aucun effet sur l'acceptation de ce chantier.**
+  **Propriétaire : T4.** Sa porte de départ vit au même site et hérite exactement du même trou —
+  un départ de warp déclenché en l'air aurait le même symptôme. T4 doit donc trancher : soit geler
+  aussi le contrôleur moteur pendant sa séquence, soit consigner la déviation avec sa raison.
+- **La porte de `RunPendingEventTriggers` n'est épinglée par aucun test de site de production.** Le
+  harnais headless appelle cette passe lui-même hors de toute porte. Le **placement** a été vérifié
+  indépendamment et le tableau de mutations de T2 n'exigeait pas ce cas, donc la livraison est
+  conforme. **Propriétaire : T4**, dont l'acceptation exige déjà « au moins un PNJ **et un programme
+  d'événement d'entité** n'avancent pas d'un tick pendant les 16 ticks du fondu sortant » — le
+  montage qu'elle demande couvre exactement cette passe.
+
 ### T3 — Détection des portails
 
 **Contenu** :
