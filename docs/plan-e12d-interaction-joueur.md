@@ -260,3 +260,15 @@ couplé : pick + directeur + player manager — pas de fan-out), verifier de cl�
 **Différés nommés** : blocage entité↔entité (E14) ; branche nage de l'interaction (pas de nage) ;
 `BlockedByEntity` toujours null (préexistant) ; l'avis A1 d'E12.a (appui reconsommé par tick en frame
 à rattrapage) reste différé à E12.c — l'avale-appui de D-E12D-6 n'y touche pas.
+
+
+---
+
+## Clôture — VALIDÉE EN JEU le 2026-09-02
+
+L'appui Carré contre un marin ouvre son dialogue (capture utilisateur à l'appui, puis validation
+finale « le dialogue s'affiche bien avec les deux boutons »). Livrée en un commit DLL (`774255f`)
+conformément au budget, verifier de clôture CONFIRMED sans P0-P2 ; sa trouvaille P3 (la remise à
+zéro d'entrée de carte d'`ActiveCollisionEntity` promise par D-E12D-3 n'est pas portée — nulle en
+pratique, consommation par identité seulement) est différée au chantier transitions, avec sa boucle
+de contact idempotente (P4). Le blocage physique entité↔entité reste à E14 comme décidé.

@@ -270,3 +270,38 @@ suivent mot pour mot les révisions minimales prescrites par le relecteur de cl�
 `font3.fnt`/`report.json` qui bouge en E12.b ; `Program.cs` du lanceur stagé ; toute inversion des
 noms trompeurs de `0x50`/`0x51` non documentée ; un opcode bloquant qui interbloque en mode dégradé ;
 et si T1 passe avant l'implémentation, il ne teste rien — arrêt.
+
+
+---
+
+## Clôture — VALIDÉE EN JEU le 2026-09-02
+
+« Le dialogue s'affiche bien avec les deux boutons. » Le marin 12 pose sa question en `font3`
+proportionnel, en français correct, avec le choix OUI/NON complet.
+
+**Réalisé vs plan.** Les tranches E12.a-moteur → E12.b → E12.a-DLL ont été livrées comme prévu
+(`9c6e708a`/`34c08f4` moteur+MGUI, `eb38cac` analyseur, `4639f6b` convertisseur, `1c89427` DLL),
+plus la tranche imprévue **E12.d interaction joueur** (`774255f`, plan dédié) sans laquelle le pick
+du slot F ne pouvait pas se déclencher — trouvée par le re-verifier (avis A2). Le verifier de
+clôture d'E12.a a d'abord REFUTED (F1 P1 : la vie de la boîte vivait dans 0x39 alors que six des
+sept marins n'en ont pas — softlock permanent) ; correctif : la passe tourne par tick logique depuis
+`AlundraWorldProxy.Update`, 0x39 est un pur sondage.
+
+**Trois défauts trouvés par la validation en jeu de l'utilisateur, tous hors des suites headless :**
+1. `81f2c0e` — le presenter n'était jamais câblé en vrai run : `InstallDialogueSystems` tourne dans
+   la fenêtre où le ViewManager est vide PAR CONSTRUCTION (Clear → LoadContent → BootstrapViews) ;
+   réessai par frame, garde posée au succès seulement (la forme clear-color).
+2. moteur `35f5025c` — fenêtre figée à 150 px : le second bouton de choix rendait sous le clip ;
+   elle s'ajuste désormais à son contenu (3 tests de layout headless).
+3. analyseur `a8598f4` — table d'échappements incomplète : 1192 occurrences corrompues corpus
+   entier (« o}i »=où, » décodé en ù…) ; ré-extraction 301 JSON texte-seuls, zéro paire restante
+   sur 24 431 chaînes. NB : la citation « o}i » plus haut dans ce plan est HISTORIQUE (l'état des
+   données au moment de la rédaction).
+
+**Leçon maîtresse** : les trois défauts vivaient dans le maillon harnais→jeu réel (vue UI créée
+après l'init du monde, layout réel, données réelles) — la famille que les suites ne voient pas et
+que seule la validation en jeu attrape. Le détail et les leçons transférables vivent dans la
+mémoire de session (intro-chantier-etat).
+
+**Différés vers E12.c** : cadence machine à écrire, nom/portrait, table partagée `map_alundra`,
+0xC4, sfx 6/7, appui reconsommé par tick en frame de rattrapage (A1), 4+ choix sans scroll.
