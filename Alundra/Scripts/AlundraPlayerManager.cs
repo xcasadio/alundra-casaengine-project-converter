@@ -487,16 +487,44 @@ public static class AlundraPlayerManager
     /// world are torn down by the very map switch that ends the transition (§1.3.c), so nothing outlives
     /// it to hand the flag back to.
     /// </summary>
-    internal static void SuspendGravityForWarpDeparture(AlundraEntityScriptProxy player)
+    internal static (float Gravity, float MaxFallSpeed, bool VerticalOwnedExternally)? SuspendGravityForWarpDeparture(
+        AlundraEntityScriptProxy player)
+    {
+        if (player.Controller == null)
+        {
+            return null;
+        }
+
+        // Returned so an ABORTED departure can put them back (see RestoreGravityAfterAbortedWarpDeparture).
+        // A departure that completes needs no restore: the map switch builds a fresh pawn, and
+        // AdoptPlayerPawn rewrites both values unconditionally from the arrival map's own properties.
+        var previous = (
+            player.Controller.Settings.Gravity,
+            player.Controller.Settings.MaxFallSpeed,
+            player.Controller.IsVerticalOwnedExternally);
+
+        player.Controller.Settings.Gravity = 0f;
+        player.Controller.Settings.MaxFallSpeed = 0f;
+        player.Controller.IsVerticalOwnedExternally = true;
+        return previous;
+    }
+
+    /// <summary>Puts back what <see cref="SuspendGravityForWarpDeparture"/> took away, for the one path
+    /// where no map switch will ever do it: a departure this session cannot finish (see
+    /// <c>AlundraWarpDirector</c>'s own abort guard). Without it the hero would keep walking on the
+    /// departure map with gravity permanently at zero.</summary>
+    internal static void RestoreGravityAfterAbortedWarpDeparture(
+        AlundraEntityScriptProxy player,
+        (float Gravity, float MaxFallSpeed, bool VerticalOwnedExternally) previous)
     {
         if (player.Controller == null)
         {
             return;
         }
 
-        player.Controller.Settings.Gravity = 0f;
-        player.Controller.Settings.MaxFallSpeed = 0f;
-        player.Controller.IsVerticalOwnedExternally = true;
+        player.Controller.Settings.Gravity = previous.Gravity;
+        player.Controller.Settings.MaxFallSpeed = previous.MaxFallSpeed;
+        player.Controller.IsVerticalOwnedExternally = previous.VerticalOwnedExternally;
     }
 
     /// <summary>

@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Application;
+using CasaEngine.Framework.Rendering.ScreenEffects;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
@@ -226,6 +227,14 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
         // Arm the gel directly (this test is about the FREEZE, not the trigger arithmetic - covered by
         // the previous test) - same director state OnPortalTriggerDetected would have armed.
+        // A NON-degraded montage on purpose: with no GameManager and no world index the director's own
+        // abort guard would (rightly) lift the gate the moment the fade settles, and this test would then
+        // be measuring the abort path instead of the freeze. Attaching both makes Advance take the real
+        // emission branch, which keeps the gate posted through to InstallForMapEntry - exactly what
+        // happens in game.
+        var projectRoot = FindProjectRoot();
+        AlundraWarpDirector.Instance.AttachToWorld(new GameManager(null), soundPlayer: null, projectRoot);
+
         AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, proxy.GameState);
         Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
 
@@ -334,6 +343,86 @@ public sealed class AlundraWarpDepartureTests : IDisposable
     }
 
     // ---- shared project-root lookup (same precedent as AlundraDialogueOpcodesProductionTests) --------
+
+    [Fact]
+    public void InstallForMapEntry_ClearsAPendingWorldPathThatIsActuallyThere()
+    {
+        // The closing verifier found this clause pinned by a VACUOUS assertion: the montage had no world
+        // index, so the pending path was null before InstallForMapEntry ever ran. Resolve a real one
+        // first, and assert it is non-null, so the clearing has something to clear.
+        var projectRoot = FindProjectRoot();
+        AlundraWarpDirector.Instance.AttachToWorld(new GameManager(null), soundPlayer: null, projectRoot);
+
+        var player = NewPlayer(posXPixels: 0, posYPixels: 0);
+        AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, new AlundraGameState());
+
+        Assert.NotNull(AlundraWarpDirector.Instance.PendingWorldPathForTests);
+
+        AlundraWarpDirector.Instance.InstallForMapEntry();
+
+        Assert.Null(AlundraWarpDirector.Instance.PendingWorldPathForTests);
+    }
+
+    [Fact]
+    public void TheOutgoingFadeKeepsPushingBlackAfterItSettles_SoItSurvivesTheWorldSwitch()
+    {
+        // D-T-5's persistence latch. Without it the fade director's draw guard would call Clear() the
+        // tick after the machine settles, and the screen would flash back to the departure map for the
+        // frame the switch happens on.
+        var service = new ScreenEffectService();
+        AlundraScreenFadeDirector.Instance.AttachToWorld(service);
+
+        var player = NewPlayer(posXPixels: 0, posYPixels: 0);
+        AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, new AlundraGameState());
+
+        for (var tick = 0; tick < 24; tick++)
+        {
+            AlundraScreenFadeDirector.Instance.Advance(1);
+            AlundraScreenFadeDirector.Instance.PushToAttachedService();
+        }
+
+        Assert.True(AlundraScreenFadeDirector.Instance.IsSettled);
+        Assert.True(service.Active, "the settled black must keep being submitted - that is what the persistence latch is for.");
+        Assert.Equal(0xff, service.R);
+    }
+
+    [Fact]
+    public void ADepartureThatCanNeverReachTheEngine_LiftsTheGateAndGivesTheHeroItsGravityBack()
+    {
+        // Abort guard. With no GameManager attached the world change can never be requested; doing
+        // nothing would leave the gate posted for the rest of the session - player and NPCs frozen, in
+        // silence. Unreachable on the shipped export, but a mute permanent lock is the worst possible
+        // failure, so it fails loudly and recoverably instead.
+        AlundraWarpDirector.Instance.AttachToWorld(gameManager: null, soundPlayer: null, FindProjectRoot());
+
+        var player = NewPlayerWithController(gravity: 42f, maxFallSpeed: 7f);
+        AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, new AlundraGameState());
+
+        Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        Assert.Equal(0f, player.Controller!.Settings.Gravity);
+
+        for (var tick = 0; tick < 24; tick++)
+        {
+            AlundraScreenFadeDirector.Instance.Advance(1);
+            AlundraWarpDirector.Instance.Advance(1);
+        }
+
+        Assert.False(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        Assert.Equal(42f, player.Controller!.Settings.Gravity);
+        Assert.Equal(7f, player.Controller!.Settings.MaxFallSpeed);
+        Assert.False(player.Controller!.IsVerticalOwnedExternally);
+    }
+
+    private static AlundraEntityScriptProxy NewPlayerWithController(float gravity, float maxFallSpeed)
+    {
+        var player = NewPlayer(posXPixels: 0, posYPixels: 0);
+        var controller = new CharacterControllerComponent();
+        controller.Settings.Gravity = gravity;
+        controller.Settings.MaxFallSpeed = maxFallSpeed;
+        controller.IsVerticalOwnedExternally = false;
+        player.Controller = controller;
+        return player;
+    }
 
     private static string FindProjectRoot()
     {

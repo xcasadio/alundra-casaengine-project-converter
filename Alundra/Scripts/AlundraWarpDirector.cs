@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Application;
 
@@ -91,6 +91,17 @@ public sealed class AlundraWarpDirector
     /// une fois le fondu stabilisé") - D-T-15's own "demande de changement de monde" row.</summary>
     private string? _pendingWorldPath;
 
+    /// <summary>True once <see cref="Advance"/> has actually handed the world path to the engine, so the
+    /// gate stays posted through the switch (the arrival map's own <see cref="InstallForMapEntry"/> lifts
+    /// it) without the abort guard below mistaking "already emitted" for "cannot emit".</summary>
+    private bool _worldChangeRequested;
+
+    /// <summary>The player whose gravity <see cref="BeginDeparture"/> suspended, and what it was, so an
+    /// aborted departure can put it back - a completed one never needs to (fresh pawn, and
+    /// AdoptPlayerPawn rewrites both values at every map entry).</summary>
+    private AlundraEntityScriptProxy? _gravitySuspendedPlayer;
+    private (float Gravity, float MaxFallSpeed, bool VerticalOwnedExternally) _gravityBeforeDeparture;
+
     // ---- The arrival record + transition effect id (D-T-15: CONSERVED across InstallForMapEntry - T5's
     // own AdoptPlayerPawn/InstallScreenFadeSystems are their only readers, both running strictly AFTER
     // this class' own InstallForMapEntry call in the SAME AlundraWorldProxy.InitializeWithWorld).
@@ -149,11 +160,35 @@ public sealed class AlundraWarpDirector
     /// PNJ would stay frozen on the arrival map forever, since that map already receives its own first
     /// <see cref="AlundraWorldProxy.Update"/> in the very same frame as the switch (§1.3.b).
     /// </summary>
+    /// <summary>Undoes everything <see cref="BeginDeparture"/> armed, for a departure that will never
+    /// reach an arrival: lifts the gate, drops the arrival record no one will read, and puts the hero's
+    /// gravity back - the one path where no map entry will do it for us.</summary>
+    private void AbortDeparture()
+    {
+        IsTransitionInProgress = false;
+        _sequenceTicks = 0;
+        _pendingWorldPath = null;
+        _worldChangeRequested = false;
+        HasPendingArrival = false;
+
+        if (_gravitySuspendedPlayer != null)
+        {
+            AlundraPlayerManager.RestoreGravityAfterAbortedWarpDeparture(_gravitySuspendedPlayer, _gravityBeforeDeparture);
+            _gravitySuspendedPlayer = null;
+        }
+    }
+
     public void InstallForMapEntry()
     {
         IsTransitionInProgress = false;
         _sequenceTicks = 0;
         _pendingWorldPath = null;
+        _worldChangeRequested = false;
+
+        // The arrival this entry IS the completion of: the pawn is fresh and AdoptPlayerPawn rewrites
+        // gravity from this map's own properties, so there is nothing to put back - just drop the
+        // reference to the departure map's now-dead player proxy.
+        _gravitySuspendedPlayer = null;
 
         // Arrival record + effect id: CONSERVED - see this class' own doc and D-T-15's own table.
     }
@@ -222,7 +257,12 @@ public sealed class AlundraWarpDirector
         // engine-driven gravity for the duration of the departure - see
         // AlundraPlayerManager.SuspendGravityForWarpDeparture's own doc for why this, not an engine
         // change, closes the gap.
-        AlundraPlayerManager.SuspendGravityForWarpDeparture(player);
+        var previousGravity = AlundraPlayerManager.SuspendGravityForWarpDeparture(player);
+        if (previousGravity != null)
+        {
+            _gravitySuspendedPlayer = player;
+            _gravityBeforeDeparture = previousGravity.Value;
+        }
 
         // §1.1.e: resolved now (this world's own AttachToWorld already loaded the table), but NOT
         // requested yet - Advance emits it only once the fade above has settled.
@@ -274,11 +314,33 @@ public sealed class AlundraWarpDirector
         // §1.1.e: "émis seulement une fois le fondu stabilisé" - AlundraScreenFadeDirector.Advance always
         // runs before this call in AlundraWorldProxy.Update's own frame order, so this reads the SAME
         // tick's settled state, never a frame-stale one.
-        if (_pendingWorldPath != null && AlundraScreenFadeDirector.Instance.IsSettled)
+        if (!AlundraScreenFadeDirector.Instance.IsSettled || _worldChangeRequested)
         {
-            _gameManager?.SetWorldToLoad(_pendingWorldPath);
-            _pendingWorldPath = null;
+            return;
         }
+
+        if (_pendingWorldPath != null && _gameManager != null)
+        {
+            _gameManager.SetWorldToLoad(_pendingWorldPath);
+            _pendingWorldPath = null;
+            _worldChangeRequested = true;
+            return;
+        }
+
+        // ABORT GUARD. The fade has settled but this departure can never be handed to the engine - no
+        // resolvable world path (a missing or unreadable Maps/world-index.json, or a DestMapId absent
+        // from it) or no GameManager to hand it to. Doing nothing here would leave the gate posted
+        // forever: player and NPCs frozen for the rest of the session, in silence, with no box left to
+        // dismiss and nothing in the log. Unreachable on the shipped export - world-index.json carries
+        // 483 contiguous entries and every DestMapId falls inside it - so this turns a data-degraded
+        // case into a loud, recoverable failure rather than a mute lock.
+        Logs.WriteWarning(
+            "AlundraWarpDirector: departure aborted - "
+            + (_pendingWorldPath == null
+                ? "no world path resolved for the destination map"
+                : "no GameManager attached to request the world change")
+            + ". Lifting the transition gate so the world keeps running.");
+        AbortDeparture();
     }
 
     /// <summary>Test-only: clears every piece of session state so tests do not leak into each other
@@ -292,6 +354,9 @@ public sealed class AlundraWarpDirector
         IsTransitionInProgress = false;
         _sequenceTicks = 0;
         _pendingWorldPath = null;
+        _worldChangeRequested = false;
+        _gravitySuspendedPlayer = null;
+        _gravityBeforeDeparture = default;
 
         HasPendingArrival = false;
         _arrivalMapIndex = 0;
