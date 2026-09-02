@@ -70,18 +70,19 @@ public class AlundraDialogueTextParserTests
     [Fact]
     public void SplitIntoPages_RealMap389String_MatchesKnownShape()
     {
-        // Real map 389 strings.json index 1 (docs/plan-e12-dialogues.md §1.4/T1): "\CQu'est-ce que tu
-        // veux, petit ? As-tu\Nencore oublié o}i se trouve\Nta cabine ?\999\Y" - \C and \Y stripped, \N
-        // becomes newlines, \999 collected as a numeric code, one single page (no \A anywhere).
+        // Real map 389 strings.json index 1 (docs/plan-e12-dialogues.md §1.4/T1), as re-exported after
+        // the analyser's escape-pair fix ("où" used to come out "o}i" - TextDecoder's '}i' entry was
+        // missing): \C and \Y stripped, \N becomes newlines, \999 collected as a numeric code, one
+        // single page (no \A anywhere).
         AlundraDialogueTextParser.ResetCountersForTests();
 
-        const string raw = "\\CQu'est-ce que tu veux, petit ? As-tu\\Nencore oublié o}i se trouve\\Nta cabine ?\\999\\Y";
+        const string raw = "\\CQu'est-ce que tu veux, petit ? As-tu\\Nencore oublié où se trouve\\Nta cabine ?\\999\\Y";
         var pages = AlundraDialogueTextParser.SplitIntoPages(raw);
 
         Assert.Single(pages);
         Assert.Equal(new[] { 999 }, pages[0].NumericCodes);
         Assert.Equal(
-            "Qu'est-ce que tu veux, petit ? As-tu\nencore oublié o}i se trouve\nta cabine ?",
+            "Qu'est-ce que tu veux, petit ? As-tu\nencore oublié où se trouve\nta cabine ?",
             pages[0].DisplayText);
     }
 }
