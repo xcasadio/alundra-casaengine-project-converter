@@ -118,6 +118,41 @@ public sealed class AlundraWarpDirector
     /// record is actually present (as opposed to this director's all-zero construction default).</summary>
     public bool HasPendingArrival { get; private set; }
 
+    /// <summary>
+    /// T5 (§1.4.g, D-T-7): the transition effect id carried by the pending arrival, or 0 when there is
+    /// none - a PEEK, no side effect on <see cref="HasPendingArrival"/>. Read by
+    /// <see cref="AlundraWorldProxy.InstallScreenFadeSystems"/>, which runs BEFORE <c>AdoptPlayerPawn</c>
+    /// (the record's own consuming reader, <see cref="ConsumeArrivalRecord"/>) in the SAME
+    /// <see cref="AlundraWorldProxy.InitializeWithWorld"/> call - a peek, not a consume, is required here
+    /// so the id is still readable when the position/animation/direction reader runs afterward.
+    /// </summary>
+    public int PendingArrivalEffectId => HasPendingArrival ? _arrivalEffectId : 0;
+
+    /// <summary>Test-only mirror of the DÉCLARÉ INERTE warp-delay counter (see
+    /// <see cref="InstallForMapEntry"/>'s own doc) - internal, not part of this class' public surface,
+    /// since nothing in this port ever reads it.</summary>
+    internal int WarpDelayFramesForTests { get; private set; }
+
+    /// <summary>
+    /// T5 (D-T-4, [R9]): <c>AdoptPlayerPawn</c>'s sole consuming read of the arrival record - position,
+    /// animation and direction, all four already written by <see cref="BeginDeparture"/> - which ALSO
+    /// clears <see cref="HasPendingArrival"/> ([R9], T4's own closing-verifier reserve: without this, a
+    /// later map entry that is not itself the destination of a warp would read this same STALE record
+    /// forever, since this director is session-scoped and nothing else ever clears the flag). Returns
+    /// <see langword="null"/> when there is no pending arrival, so the caller falls back to the New Game
+    /// constants instead of the all-zero construction default.
+    /// </summary>
+    public (int PosX, int PosY, int PosZ, uint AnimationId, uint DirectionId)? ConsumeArrivalRecord()
+    {
+        if (!HasPendingArrival)
+        {
+            return null;
+        }
+
+        HasPendingArrival = false;
+        return (_arrivalPosX, _arrivalPosY, _arrivalPosZ, _arrivalAnimationId, _arrivalDirectionId);
+    }
+
     /// <summary>Test-only mirror of the arrival record's five fields, so a test can assert them without
     /// this class exposing setters on its public surface - see <see cref="BeginDeparture"/>'s own doc for
     /// what each one is.</summary>
@@ -189,6 +224,16 @@ public sealed class AlundraWarpDirector
         // gravity from this map's own properties, so there is nothing to put back - just drop the
         // reference to the departure map's now-dead player proxy.
         _gravitySuspendedPlayer = null;
+
+        // T5 (§1.2.f, DÉCLARÉ INERTE - same shape as D-T-8/D-T-9): port of WarpPlayer's own
+        // g_warpDelayFrames = 10 (GameEngine.cs:890), set at EVERY map entry regardless of warp-or-not -
+        // NOT one of D-T-15's own six states (that table's clause d'exhaustivité covers the departure
+        // sequence only), a separate, brand-new piece of structure T5 itself introduces. Its only two
+        // original consumers - the Start+Select combo and the inventory-open gate (GameEngine.cs:1523-1528
+        // and :1567-1574) - are NOT ported by this chantier (this port has no button-driven inventory
+        // path at all, MenuOpen is only ever posed by AlundraDialogueDirector), so nothing ever reads this
+        // field: posed here for structural fidelity only, never covered by acceptance.
+        WarpDelayFramesForTests = 10;
 
         // Arrival record + effect id: CONSERVED - see this class' own doc and D-T-15's own table.
     }
@@ -366,5 +411,6 @@ public sealed class AlundraWarpDirector
         _arrivalAnimationId = 0;
         _arrivalDirectionId = 0;
         _arrivalEffectId = 0;
+        WarpDelayFramesForTests = 0;
     }
 }

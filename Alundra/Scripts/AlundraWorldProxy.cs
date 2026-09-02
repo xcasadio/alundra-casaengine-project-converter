@@ -859,11 +859,26 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <b>Pushes nothing to the service</b> (see <see cref="AlundraScreenFadeDirector.InstallForMapEntry"/>'s
     /// own doc) - the first push happens from <see cref="Update"/>, after that same frame's
     /// <see cref="AlundraScreenFadeDirector.Advance"/> call.
+    ///
+    /// <b>T5 (§1.4.g, D-T-7)</b>: this is the injection point for the arrival's own transition effect id,
+    /// PEEKED (not consumed - <see cref="AlundraWarpDirector.PendingArrivalEffectId"/>'s own doc) off the
+    /// SESSION-scoped <see cref="AlundraWarpDirector.Instance"/> - <see cref="InstallWarpSystems"/> has
+    /// already run by this call site (:548 vs :549), so its own <c>InstallForMapEntry</c> has not touched
+    /// the record (D-T-15: conserved). D-T-7 ramène tout id non nul à l'effet 0: the fade machine armed
+    /// just above is unconditionally effect 0 regardless of what is logged here - only the log is new.
     /// </summary>
     internal void InstallScreenFadeSystems(World world)
     {
         AlundraScreenFadeDirector.Instance.AttachToWorld(world.Game?.ScreenEffectComponent?.Service);
         AlundraScreenFadeDirector.Instance.InstallForMapEntry();
+
+        var arrivalEffectId = AlundraWarpDirector.Instance.PendingArrivalEffectId;
+        if (arrivalEffectId != 0)
+        {
+            Logs.WriteInfo(
+                $"AlundraWorldProxy: world '{world.Name}' arrival transition effect id {arrivalEffectId} "
+                + "transported by the departing portal, reduced to effect 0 (D-T-7).");
+        }
     }
 
     /// <summary>
@@ -1054,6 +1069,17 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <c>g_playerEffectTransitionCooldown</c>, <c>ResetWarpLockTimer</c>) - none of these have any
     /// observable effect on E2's own ported <see cref="AlundraPlayerManager.MovePlayer"/> subset. No
     /// camera-follow yet (E5).
+    ///
+    /// <b>T5 (docs/plan-transitions-carte.md §3 T5, D-T-4)</b>: the New Game constants quoted above are
+    /// now only the FALLBACK. When <see cref="AlundraWarpDirector.Instance"/> holds a pending arrival -
+    /// this world is the destination of a warp, not a fresh New Game/Continue load - the position,
+    /// animation id and direction id below come from <see cref="AlundraWarpDirector.ConsumeArrivalRecord"/>
+    /// instead, which ALSO clears <see cref="AlundraWarpDirector.HasPendingArrival"/> ([R9]: the record is
+    /// session-scoped and would otherwise still read as "pending" on the NEXT map entry, warp or not).
+    /// <see cref="AlundraEntityScriptProxy.ClampToGround"/> still runs unconditionally either way - an
+    /// arrival's <c>PosZ</c> is the portal's own <c>ZLevel &lt;&lt; 20</c> (frequently 0, §1.2.c), not yet
+    /// the destination cell's real ground height, exactly like the New Game constants above were never
+    /// ground-clamped by the original either (both are raw authored/computed values, §1.4.e).
     /// </summary>
     private void AdoptPlayerPawn(World world, TileMapData tileMapData)
     {
@@ -1102,24 +1128,33 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // every controller-aware site already falls back to E2's controller-free behaviour on null.
         proxy.Controller = entity.GetComponent<CharacterControllerComponent>();
 
-        proxy.PosX = (AlundraGameState.CameraTileX * TileWidth + TileWidth / 2) << 16;
-        proxy.PosY = (AlundraGameState.CameraTileY * TileHeight + TileHeight / 2) << 16;
-        proxy.PosZ = 0;
-        // E3.d: raises PosZ onto the actual cell height under the New Game spawn tile before anything
-        // else reads it - port of EntityManager.cs:127-136's own spawn-time ground clamp (see
+        // T5 (D-T-4, [R9]): consume the warp director's pending arrival record, if this map entry is the
+        // destination of a warp - clears AlundraWarpDirector.HasPendingArrival on the way out, so a LATER,
+        // non-warp map entry never reads this same stale record (see AlundraWarpDirector.ConsumeArrivalRecord's
+        // own doc). Null falls back to the New Game constants exactly as before this slice.
+        var arrivalRecord = AlundraWarpDirector.Instance.ConsumeArrivalRecord();
+
+        proxy.PosX = arrivalRecord?.PosX ?? (AlundraGameState.CameraTileX * TileWidth + TileWidth / 2) << 16;
+        proxy.PosY = arrivalRecord?.PosY ?? (AlundraGameState.CameraTileY * TileHeight + TileHeight / 2) << 16;
+        proxy.PosZ = arrivalRecord?.PosZ ?? 0;
+        // E3.d: raises PosZ onto the actual cell height under the spawn tile before anything else reads it
+        // - port of EntityManager.cs:127-136's own spawn-time ground clamp (see
         // AlundraEntityScriptProxy.ClampToGround's own doc). A no-op without a controller/collision
-        // field/Box fixture, so PosZ simply stays 0 exactly like before E3.d.
+        // field/Box fixture, so PosZ simply stays at whatever was written above, exactly like before E3.d.
+        // T5 (§1.1.f): on a warp arrival this is the step that turns the portal's own ZLevel<<20 (often 0)
+        // into the destination cell's real ground height - ClampToGround only ever RAISES PosZ (§1.4.e),
+        // so it is compatible with either source of the pre-clamp value above.
         proxy.ClampToGround();
         // PhysicsEngine.cs:1698-1700, same formula EntityRecordMapper seeds every record's own tile from.
         proxy.TileX = (proxy.PosX >> 16) / TileWidth;
         proxy.TileY = (proxy.PosY >> 16) / TileHeight;
         proxy.TileZ = proxy.PosZ >> 20;
 
-        proxy.TargetAnimationId = AlundraGameState.ResetAnimationId;
-        proxy.TargetDirection = AlundraGameState.ResetDirectionId;
+        proxy.TargetAnimationId = arrivalRecord?.AnimationId ?? AlundraGameState.ResetAnimationId;
+        proxy.TargetDirection = arrivalRecord?.DirectionId ?? AlundraGameState.ResetDirectionId;
         // EntityManager.cs:85-88 - bit-complemented so the very first per-frame animation sync always fires.
-        proxy.CurrentAnimationId = ~AlundraGameState.ResetAnimationId;
-        proxy.CurrentDirection = ~AlundraGameState.ResetDirectionId;
+        proxy.CurrentAnimationId = ~proxy.TargetAnimationId;
+        proxy.CurrentDirection = ~proxy.TargetDirection;
 
         // Documented stub for AlundraPlayerManager's faithful LoadingMap(0x36) port
         // (PlayerManager.cs:914-916: "if IsOnGround != 0, break" - i.e. stay in LoadingMap): only ever
