@@ -195,3 +195,32 @@ premier plan), verifier de clôture avant commit.
 **Arrêts** : un fichier supprimé hors d'un dossier `tilemap/` ; un diff de double export hors
 report.json ; un golden qui bouge ; `Program.cs` du Launcher stagé ; toute suppression manuelle dans
 `alundra-project`.
+
+
+---
+
+## Clôture — oracle final PASSÉ le 2026-09-02, smoke en jeu en attente
+
+Tranches livrées : N1 `6370f20` (purge + verifier durci scopé), N2 `eaf0676` (pré-ensemencement
+Phase 1 + TextureAssetWriter), N3 moteur `2f0d7000` (16 fichiers additifs) + convertisseur `5a91482`
+(13 sites). Verifiers de clôture CONFIRMED sur les trois tranches — dont, en N2, des runs réels
+partiels sur les vraies données (racines absolue ET relative, 483/483 tmj inspectés) et, en N3, la
+re-preuve du baseline des 18 échecs moteur préexistants par restauration.
+
+**D-N-7 PROUVÉ** : deux exports complets in-place successifs → **UN seul fichier différent sur
+22 971 : `report.json`** (durées). Zéro ajout, zéro suppression. **D-N-8 fait** : l'adoption a
+supprimé exactement les 1 932 orphelins (966 png + 966 texture, les deux générations) et basculé
+19 521 fichiers vers leurs ids déterministes ; vérification interne PASSED en mode full-run durci
+sur les deux runs (aucun orphelin hors-tilemap légué). Suites : convertisseur 152, moteur 1449+18
+préexistants, `Alundra.Tests` 711 avec six goldens byte-identiques contre le projet adopté.
+
+**La discipline de vérification du chantier entier change de régime** : désormais tout changement de
+convertisseur se prouve par « double export → diff ⊆ {report.json} + le délta attendu », au bit
+près, sur les 22 971 fichiers.
+
+Différés consignés : `--maps` dupliqué → abort sur collision d'ids (P3, injoignable corpus réel) ;
+repli tileset embarqué sans fixture (P4) ; assertion « Object » plein-fichier dépendante
+d'EntityNames.csv (P4) ; asymétrie de casse spritesheet et unicité des bank keys (P4 préexistants,
+désormais fail-fast). Reste dû : smoke utilisateur en jeu (le jeu démarre, la 389 se comporte comme
+avant), puis E11.b sur décision utilisateur (plan rel u et commité, non exécuté — reporté par
+l'utilisateur le 2026-09-02).
