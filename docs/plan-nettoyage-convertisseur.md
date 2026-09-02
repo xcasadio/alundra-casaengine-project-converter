@@ -221,6 +221,6 @@ près, sur les 22 971 fichiers.
 Différés consignés : `--maps` dupliqué → abort sur collision d'ids (P3, injoignable corpus réel) ;
 repli tileset embarqué sans fixture (P4) ; assertion « Object » plein-fichier dépendante
 d'EntityNames.csv (P4) ; asymétrie de casse spritesheet et unicité des bank keys (P4 préexistants,
-désormais fail-fast). Reste dû : smoke utilisateur en jeu (le jeu démarre, la 389 se comporte comme
-avant), puis E11.b sur décision utilisateur (plan rel u et commité, non exécuté — reporté par
-l'utilisateur le 2026-09-02).
+désormais fail-fast). Smoke utilisateur PASSÉ le 2026-09-02 (« le jeu marche comme avant ») — chantier
+DÉFINITIVEMENT CLOS. E11.b reste sur décision utilisateur (plan relu et commité, non exécuté,
+reporté le 2026-09-02).
