@@ -786,6 +786,24 @@ noir sur 16 ticks.
 sauter `ClampToGround` → `PosZ` vaut 0 au lieu de 4194304 et le test tombe ; écrire l'index d'arrivée
 brut (1) au lieu de la valeur de table (`0x10`) → le test de direction tombe.
 
+**[R10] Trois réserves du vérificateur de T5, différées à une passe de durcissement APRÈS la
+validation en jeu** — volontairement, pour que l'essai de T6 mesure le chantier tel qu'il est plutôt
+qu'un remaniement de dernière minute. Aucune n'est atteignable sur l'export livré.
+
+- **Quatre sorties anticipées laissent l'enregistrement d'arrivée non consommé.**
+  `InitializeWithWorld` sort avant `InstallWarpSystems`/`AdoptPlayerPawn` quand le monde n'a pas
+  d'entité `tileMap` ou pas de `TileMapData` ; `AdoptPlayerPawn` sort avant sa consommation quand
+  aucun contrôleur ne possède de pion. Sur les deux premières, `IsTransitionInProgress` reste
+  également posé : la carte d'arrivée resterait gelée. **Même famille que le garde-fou d'abandon de
+  T4** : un blocage muet. Le remède naturel est de faire tourner les dispositions d'entrée de carte
+  des porteurs de session (état de partie et directeur de warp) **avant** la recherche du `tileMap`,
+  dont elles ne dépendent pas — ce qui touche aussi le placement retenu par T1.
+- **L'assertion d'animation d'arrivée ne discrimine pas** : l'animation du warp (`0x36`) est
+  exactement `AlundraGameState.ResetAnimationId`, donc muter la ligne vers la constante New Game ne
+  fait tomber aucun test. La valeur reste juste ; c'est la couverture qui est nulle sur cet élément.
+- **`WarpDelayFramesForTests` est écrit par le code de production** alors que son nom annonce un
+  miroir de test. À renommer le jour où le champ sera lu.
+
 ### T6 — Intégration : aller-retour en jeu
 
 **Contenu** : aucune fonctionnalité nouvelle. Montage headless à deux mondes dans le style de T7
