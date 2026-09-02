@@ -753,6 +753,13 @@ la **séquence de départ armée** à l'entrée de carte → la porte se repose 
 clause 2 du dégel tombe ; **[R4]** retirer la remise à zéro **entière** (constructeur ET `Dispose`)
 du directeur dans une classe câblée nommée → un test nommé tombe dans l'exécution complète.
 
+**[R9] Réserve du vérificateur de T4, propriétaire T5.** `AlundraWarpDirector.HasPendingArrival` est
+posé par le départ et **n'est jamais consommé** : une fois un warp effectué, il reste vrai jusqu'à la
+fin de la session. Tout changement de monde ultérieur **non issu d'un warp** présenterait donc un
+enregistrement d'arrivée périmé à son lecteur. T5, qui est ce lecteur, doit l'effacer à la
+consommation — et son acceptation doit contenir le cas « entrée de carte sans départ préalable
+retombe sur les constantes New Game ».
+
 ### T5 — Arrivée
 
 **Contenu et statut de chaque élément [R2]** :
