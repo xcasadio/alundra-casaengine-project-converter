@@ -95,11 +95,14 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    speed above all - docs/plan-conversion-totale.md E2 requires the hero's speed to come from the
 ///    original data, not be invented) from the same numbers the original engine used, instead of the
 ///    frame timing this converter already exports for rendering.
-///  - Asset ids are NOT forced deterministic here: ObjectBase.Id has a private setter, and
-///    EditorAssetWriterService.SaveAsset always serializes whatever Id the object already has.
-///    This matches Phase 1's actual behavior (EditorAssetImportService.ImportTiledMap also
-///    generates fresh ids per run), even though it was aspirationally documented as "deterministic
-///    everywhere" in the plan - see the completion notes for this session.
+///  - D-N-6 (docs/plan-nettoyage-convertisseur.md): every asset and fixture shape this writer
+///    constructs now gets a deterministic id via the engine's additive Guid constructors
+///    (ObjectBase(Guid) and its per-type overrides) plus Ids.For(&lt;stable key&gt;) - prefab entity
+///    keyed by bankKey/entityFolderName, its components keyed by bankKey + component role, fixture
+///    Box shapes keyed by bankKey/animationName + role (and given a matching stable Name, killing
+///    the "Object {guid}" leak fact 7 flagged), .anim2d keyed by its own animationName, .sprite
+///    keyed by (spritesheet, quad signature) - so two runs on the same input produce byte-identical
+///    prefab/anim2d/sprite files, nested shape ids included.
 /// </summary>
 public static class SpriteWriter
 {
@@ -290,12 +293,9 @@ public static class SpriteWriter
     ///
     /// The document is produced by the engine's own entity serializer rather than hand-built, so
     /// the physics_definition node PhysicsBaseComponent.Load reads unconditionally is complete by
-    /// construction. As everywhere else in this writer, ids are not deterministic - including the two
-    /// new components (TransformComponent, RenderProjectionComponent): ObjectBase.Id has a private
-    /// setter only Load(JObject) can assign (see the class summary), and this method builds objects
-    /// in memory rather than loading them, so there is no way to force Ids.For here even for a newly
-    /// introduced component - same constraint the pre-existing sprite/collision components were
-    /// already subject to.
+    /// construction. D-N-6: every object built here (entity, every component, the body fixture's
+    /// Box) is constructed through the engine's additive Guid ctor with an Ids.For(bankKey + role)
+    /// key, so this prefab's ids - nested shape ids included - are stable across runs.
     /// </summary>
     private static void WriteEntityPrefab(
         SpriteBank bank,
@@ -309,7 +309,10 @@ public static class SpriteWriter
         Dictionary<Guid, IReadOnlyList<AnimSetHeader>> animSetHeadersByPrefabId,
         ConversionReport report)
     {
-        var spriteComponent = new AnimatedSpriteComponent { Name = nameof(AnimatedSpriteComponent) };
+        var spriteComponent = new AnimatedSpriteComponent(Ids.For($"component:sprite:{bank.BankKey}"))
+        {
+            Name = nameof(AnimatedSpriteComponent),
+        };
         spriteComponent.AnimationAssetIds.AddRange(animationAssetIds);
 
         // E3.a (docs/plan-e3-collisions.md): the root carries the LOGICAL pose (an inert
@@ -318,10 +321,16 @@ public static class SpriteWriter
         // world's TopDownElevation policy - CasaEngineMonogame/.../RenderProjectionComponent.cs), and
         // the AnimatedSpriteComponent lives under that projection so it renders at the projected
         // position while the collision body below stays in logical space.
-        var projectionComponent = new RenderProjectionComponent { Name = nameof(RenderProjectionComponent) };
+        var projectionComponent = new RenderProjectionComponent(Ids.For($"component:projection:{bank.BankKey}"))
+        {
+            Name = nameof(RenderProjectionComponent),
+        };
         projectionComponent.AddChildComponent(spriteComponent);
 
-        var rootComponent = new TransformComponent { Name = nameof(TransformComponent) };
+        var rootComponent = new TransformComponent(Ids.For($"component:transform:{bank.BankKey}"))
+        {
+            Name = nameof(TransformComponent),
+        };
         rootComponent.AddChildComponent(projectionComponent);
 
         var bodyBox = bank.BodyBox;
@@ -333,20 +342,26 @@ public static class SpriteWriter
             // (docs/plan-e3-collisions.md E3.b/E3.c). Its effective pose is therefore the entity's
             // logical pose rather than its render pose - an intended side effect of this
             // restructuring, with no runtime consumer yet.
-            var collisionComponent = new CollisionComponent { Name = nameof(CollisionComponent) };
+            var collisionComponent = new CollisionComponent(Ids.For($"component:collision:{bank.BankKey}"))
+            {
+                Name = nameof(CollisionComponent),
+            };
             collisionComponent.PhysicsDefinition.PhysicsType = PhysicsType.Kinetic;
             collisionComponent.PhysicsDefinition.ProfileName = string.Empty;
-            collisionComponent.Fixtures.Add(CreateBodyFixture(bodyBox!));
+            collisionComponent.Fixtures.Add(CreateBodyFixture(bodyBox!, bank.BankKey));
             rootComponent.AddChildComponent(collisionComponent);
         }
 
-        var entity = new Entity
+        var entity = new Entity(Ids.For($"entity:{bank.BankKey}/{entityFolderName}"))
         {
             Name = entityFolderName,
             RootComponent = rootComponent,
             GameplayProxyClassName = "AlundraEntityScriptProxy",
         };
-        entity.AddComponent(new DepthSortable2DComponent { Name = nameof(DepthSortable2DComponent) });
+        entity.AddComponent(new DepthSortable2DComponent(Ids.For($"component:depthsort:{bank.BankKey}"))
+        {
+            Name = nameof(DepthSortable2DComponent),
+        });
 
         // E3.d (docs/plan-e3-collisions.md "DLL - adoption"): the hero's own prefab - the
         // map_alundra.json bank keyed alundra_0 (Sector5Id 0, IsAlundraBank - SpriteBankReader.cs:187,
@@ -360,7 +375,10 @@ public static class SpriteWriter
         // class default (Player) - not written explicitly.
         if (bank.IsAlundraBank && bank.Sector5Id == 0)
         {
-            var controllerComponent = new CharacterControllerComponent { Name = nameof(CharacterControllerComponent) };
+            var controllerComponent = new CharacterControllerComponent(Ids.For($"component:charactercontroller:{bank.BankKey}"))
+            {
+                Name = nameof(CharacterControllerComponent),
+            };
             var settings = controllerComponent.Settings;
             settings.Radius = 7.5f;
             settings.Height = 32f;
@@ -400,7 +418,10 @@ public static class SpriteWriter
             {
                 var height = Math.Max(bodyBox.SizeZ, 2f * radius);
 
-                var controllerComponent = new CharacterControllerComponent { Name = nameof(CharacterControllerComponent) };
+                var controllerComponent = new CharacterControllerComponent(Ids.For($"component:charactercontroller:{bank.BankKey}"))
+                {
+                    Name = nameof(CharacterControllerComponent),
+                };
                 var settings = controllerComponent.Settings;
                 settings.Radius = radius;
                 settings.Height = height;
@@ -449,12 +470,21 @@ public static class SpriteWriter
     ///
     /// ProfileName and Tag stay empty: an empty fixture profile inherits the component's, which the
     /// Kinetic PhysicsType resolves to Pawn.
+    ///
+    /// D-N-6: this Box's id and Name are deterministic (Ids.For("fixture-box:body:" + bankKey)) -
+    /// its id is serialized (a stable Name alone would not survive the double-export oracle), and
+    /// the stable Name also kills the "Object {guid}" leak fact 7 flagged for fixture shapes with no
+    /// authored name.
     /// </summary>
-    private static ColliderFixture CreateBodyFixture(SpriteBodyBox bodyBox)
+    private static ColliderFixture CreateBodyFixture(SpriteBodyBox bodyBox, string bankKey)
     {
         return new ColliderFixture
         {
-            Shape = new Box { Size = new Vector3(bodyBox.SizeX, bodyBox.SizeY, bodyBox.SizeZ) },
+            Shape = new Box(Ids.For($"fixture-box:body:{bankKey}"))
+            {
+                Name = $"fixture-box:body:{bankKey}",
+                Size = new Vector3(bodyBox.SizeX, bodyBox.SizeY, bodyBox.SizeZ),
+            },
             LocalPosition = new Vector3(
                 bodyBox.OffsetX + bodyBox.SizeX / 2f,
                 bodyBox.OffsetY + bodyBox.SizeY / 2f,
@@ -504,7 +534,7 @@ public static class SpriteWriter
             return 0;
         }
 
-        var animationAsset = new Animation2dData
+        var animationAsset = new Animation2dData(Ids.For($"anim2d:{animationName}"))
         {
             Name = animationName,
             AnimationType = endKind == AnimationEndKind.Loop ? AnimationType.Loop : AnimationType.Once,
@@ -639,7 +669,7 @@ public static class SpriteWriter
             }
         }
 
-        var collisionKeyframeCount = ConvertCollisionKeyframes(animation, frameTimes, cumulativeSeconds, animationAsset);
+        var collisionKeyframeCount = ConvertCollisionKeyframes(animation, frameTimes, cumulativeSeconds, animationAsset, animationName);
         if (collisionKeyframeCount > 0)
         {
             report.Increment("Sprites.CollisionKeyframes", collisionKeyframeCount);
@@ -670,7 +700,8 @@ public static class SpriteWriter
     /// keyframe at t=0 (or its absence) decides what the next cycle starts with.
     /// </summary>
     private static int ConvertCollisionKeyframes(
-        SpriteAnimation animation, float[] frameTimes, float durationSeconds, Animation2dData animationAsset)
+        SpriteAnimation animation, float[] frameTimes, float durationSeconds, Animation2dData animationAsset,
+        string animationName)
     {
         SpriteFrameCollision? activeCollision = null;
         var emittedCount = 0;
@@ -715,7 +746,7 @@ public static class SpriteWriter
             }
 
             var keyframe = new Animation2dCollisionKeyframeData { TimeSeconds = time };
-            keyframe.Fixtures.Add(CreateColliderFixture(collision));
+            keyframe.Fixtures.Add(CreateColliderFixture(collision, animationName, emittedCount));
             animationAsset.CollisionKeyframes.Add(keyframe);
             activeCollision = collision;
             emittedCount++;
@@ -740,12 +771,23 @@ public static class SpriteWriter
     /// semantics (that lives in the event bytecode, out of scope for this converter), so inventing
     /// an AttackVolume/DamageableVolume profile would be fiction. An empty profile makes the engine
     /// fall back to Trigger.
+    ///
+    /// D-N-6: this Box's id and Name are deterministic
+    /// (Ids.For("fixture-box:collision:" + animationName + ":" + keyframeIndex), keyframeIndex being
+    /// this animation's own emitted-keyframe ordinal - stable across runs since it only depends on
+    /// the deterministic frame data) - its id is serialized, so a stable Name alone would not
+    /// survive the double-export oracle.
     /// </summary>
-    private static ColliderFixture CreateColliderFixture(SpriteFrameCollision collision)
+    private static ColliderFixture CreateColliderFixture(SpriteFrameCollision collision, string animationName, int keyframeIndex)
     {
+        var fixtureKey = $"fixture-box:collision:{animationName}:{keyframeIndex}";
         return new ColliderFixture
         {
-            Shape = new Box { Size = new Vector3(collision.Width, collision.Depth, collision.Height) },
+            Shape = new Box(Ids.For(fixtureKey))
+            {
+                Name = fixtureKey,
+                Size = new Vector3(collision.Width, collision.Depth, collision.Height),
+            },
             LocalPosition = new Vector3(
                 collision.OffsetX + collision.Width / 2f,
                 collision.OffsetY + collision.Depth / 2f,
@@ -780,7 +822,7 @@ public static class SpriteWriter
             return existingId;
         }
 
-        var spriteData = new SpriteData
+        var spriteData = new SpriteData(Ids.For($"sprite:{spritesheetFileName}:{quad.Signature}"))
         {
             SpriteSheetAssetId = textureAssetId,
             PositionInTexture = new Rectangle(quad.AtlasX, quad.AtlasY, quad.Width, quad.Height),

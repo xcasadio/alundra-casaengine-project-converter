@@ -95,7 +95,7 @@ public static class UiWriter
 
         foreach (var entry in entries)
         {
-            var spriteData = new SpriteData
+            var spriteData = new SpriteData(Ids.For($"sprite-ui:wind_{entry.Index}"))
             {
                 SpriteSheetAssetId = textureAssetId,
                 PositionInTexture = new Rectangle(entry.U0, entry.V0, entry.Width, entry.Height),
