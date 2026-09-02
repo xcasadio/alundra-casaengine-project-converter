@@ -37,11 +37,30 @@ namespace Alundra.Tests;
 /// Self-contained, no self-skip (see the E7.a-deferral fix in <see cref="AlundraCellStoreTests"/>): throws,
 /// naming the missing export, when alundra-project/ is absent.
 /// </summary>
-public class AlundraCellVisualSyncTests
+public class AlundraCellVisualSyncTests : IDisposable
 {
     private const string WorldName = "Ship Klark (beginning)-389";
     private const string TileMapEntityName = "tileMap";
     private const int RenderLayerCount = 4;
+
+    public AlundraCellVisualSyncTests()
+    {
+        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
+        // so it shares the three session carriers T1 introduces - reset them here (constructor, the
+        // isolation-carrying element) so no earlier test's state leaks in.
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        // D-T-14: hygiene, not covered by the acceptance (the constructor above is what carries
+        // isolation) - kept for symmetry with the existing session-singleton test classes.
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
+    }
 
     private readonly record struct OverlayEntrySnapshot(int TileSetIndex, int TileId, int GridX, int GridY, RenderSortKey2D SortKey);
 

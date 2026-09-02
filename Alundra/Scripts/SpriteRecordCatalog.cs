@@ -233,6 +233,33 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
     public bool TryGet(Guid prefabAssetId, out SpriteRecordHeader header)
         => _headersByPrefabId.TryGetValue(prefabAssetId, out header);
 
+    /// <summary>
+    /// Session-scoped cache keyed by project path (D-T-14, docs/plan-transitions-carte.md, slice T1):
+    /// <see cref="AlundraWorldProxy"/>'s own field initializer resolves through here instead of always
+    /// constructing a fresh catalog, so two consecutive worlds over the SAME project read
+    /// <c>Data/sprite-records.json</c> only once - the keying by <paramref name="projectPath"/> is what
+    /// keeps two DIFFERENT projects (e.g. two test fixtures) from ever sharing a cached catalog.
+    /// </summary>
+    private static readonly Dictionary<string, SpriteRecordCatalog> SessionCacheByProjectPath = new();
+
+    /// <summary>Returns the cached catalog for <paramref name="projectPath"/>, loading it once on the
+    /// first request and reusing it for every later one - see <see cref="SessionCacheByProjectPath"/>'s
+    /// own doc.</summary>
+    public static SpriteRecordCatalog GetOrCreate(string projectPath)
+    {
+        if (!SessionCacheByProjectPath.TryGetValue(projectPath, out var catalog))
+        {
+            catalog = new SpriteRecordCatalog(projectPath);
+            SessionCacheByProjectPath[projectPath] = catalog;
+        }
+
+        return catalog;
+    }
+
+    /// <summary>Test-only: clears the session cache so tests do not leak a catalog loaded by one test
+    /// into another through <see cref="GetOrCreate"/> - same seam as <see cref="AlundraGameState.ResetForTests"/>.</summary>
+    internal static void ResetForTests() => SessionCacheByProjectPath.Clear();
+
     // No naming policy: field names/order match SpriteWriter.SpriteRecordJson exactly.
     private static readonly JsonSerializerOptions SerializerOptions = new();
 

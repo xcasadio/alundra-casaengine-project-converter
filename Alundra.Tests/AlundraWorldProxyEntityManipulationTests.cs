@@ -21,8 +21,27 @@ namespace Alundra.Tests;
 /// <c>CasaEngineGame</c>; its build path is the exact same <see cref="AlundraEntitySpawnFactory.CreateEntityFromRecord"/>
 /// covered directly below and by <see cref="AlundraWorldProxyTests"/>.
 /// </summary>
-public class AlundraWorldProxyEntityManipulationTests
+public class AlundraWorldProxyEntityManipulationTests : IDisposable
 {
+    public AlundraWorldProxyEntityManipulationTests()
+    {
+        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
+        // so it shares the three session carriers T1 introduces - reset them here (constructor, the
+        // isolation-carrying element) so no earlier test's state leaks in.
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        // D-T-14: hygiene, not covered by the acceptance (the constructor above is what carries
+        // isolation) - kept for symmetry with the existing session-singleton test classes.
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
+    }
+
     // -----------------------------------------------------------------------------------------
     // ShouldSpawnRecord(record, notCheckSpawnZone, out reason)
     // -----------------------------------------------------------------------------------------

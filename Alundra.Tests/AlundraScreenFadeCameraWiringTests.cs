@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Alundra.Scripts;
@@ -30,8 +31,27 @@ namespace Alundra.Tests;
 /// not a different camera) - so no STOP is warranted here; the assertion is a passing test, not a
 /// silent workaround.
 /// </summary>
-public class AlundraScreenFadeCameraWiringTests
+public class AlundraScreenFadeCameraWiringTests : IDisposable
 {
+    public AlundraScreenFadeCameraWiringTests()
+    {
+        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
+        // so it shares the three session carriers T1 introduces - reset them here (constructor, the
+        // isolation-carrying element) so no earlier test's state leaks in.
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        // D-T-14: hygiene, not covered by the acceptance (the constructor above is what carries
+        // isolation) - kept for symmetry with the existing session-singleton test classes.
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
+    }
+
     [Fact]
     public void ActiveViewCamera_IsTheSameInstance_AsTheCameraAlundraBackdropStageAlreadyResolves()
     {

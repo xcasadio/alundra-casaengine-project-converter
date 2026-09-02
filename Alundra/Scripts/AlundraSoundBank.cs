@@ -201,6 +201,31 @@ public sealed class AlundraSoundBank
         return true;
     }
 
+    /// <summary>
+    /// Session-scoped cache keyed by project path (D-T-14, docs/plan-transitions-carte.md, slice T1) -
+    /// same shape and rationale as <see cref="SpriteRecordCatalog"/>'s own cache: <see cref="AlundraWorldProxy"/>'s
+    /// field initializer resolves through here so two consecutive worlds over the SAME project read
+    /// <c>Sounds/sfx-manifest.json</c> only once, while two DIFFERENT projects never share a cached bank.
+    /// </summary>
+    private static readonly Dictionary<string, AlundraSoundBank> SessionCacheByProjectPath = new();
+
+    /// <summary>Returns the cached bank for <paramref name="projectPath"/>, loading it once on the first
+    /// request and reusing it for every later one - see <see cref="SessionCacheByProjectPath"/>'s own doc.</summary>
+    public static AlundraSoundBank GetOrCreate(string projectPath)
+    {
+        if (!SessionCacheByProjectPath.TryGetValue(projectPath, out var bank))
+        {
+            bank = new AlundraSoundBank(projectPath);
+            SessionCacheByProjectPath[projectPath] = bank;
+        }
+
+        return bank;
+    }
+
+    /// <summary>Test-only: clears the session cache so tests do not leak a bank loaded by one test into
+    /// another through <see cref="GetOrCreate"/> - same seam as <see cref="SpriteRecordCatalog.ResetForTests"/>.</summary>
+    internal static void ResetForTests() => SessionCacheByProjectPath.Clear();
+
     private static readonly JsonSerializerOptions SerializerOptions = new();
 
     // Field names match AudioWriter's own JSON contract exactly (snake_case - see that writer's doc).

@@ -592,6 +592,19 @@ ne tient que si le site de production porte son propre test ».
    dans le proxy est réellement exercée, et les passes « dehors » (fondus, avance de boîte, suivi
    caméra, `SyncTransform`) tournent encore pendant le gel.
 
+**[R5] DETTE HÉRITÉE DE T1, à solder par cet oracle 2.** Constaté à la livraison de T1 : **aucun test
+n'atteint le bloc d'installation d'`InitializeWithWorld`** — tous les tests qui appellent cette
+méthode le font sur un monde sans entité `tileMap`, donc elle sort par son retour anticipé
+(`AlundraWorldProxy.cs:489-501`) avant le bloc. Deux instructions de production posées par T1 sont
+donc **vertes mais non épinglées** : `GameState.InstallForMapEntry()` et la remise à zéro
+d'`ActiveCollisionEntity`. Supprimer la première laisserait les drapeaux temporaires jamais vidés à
+l'entrée de carte, sans qu'aucun test unitaire ne tombe. C'est la famille « vert et inerte » que ce
+dépôt connaît bien. Le montage nécessaire — un monde portant une vraie entité `tileMap`, dont le
+matériel existe déjà dans `AlundraCellVisualSyncTests` (carte 389 réelle, `TileMapComponent`
+headless) — est exactement celui que l'oracle 2 demande, d'où le report ici plutôt qu'un montage
+construit deux fois. **T2 doit donc, en plus de son propre objet, faire franchir le bloc
+d'installation et épingler ces deux instructions.**
+
 **Acceptation en jeu** : pendant un dialogue avec un marin, Alundra ne se déplace plus et les PNJ ne
 bougent plus. C'est la correction du défaut que l'utilisateur a signalé et accepté de différer.
 **[R4] Rattachement des mutations à l'oracle qui peut RÉELLEMENT les détecter.** La révision 3 en

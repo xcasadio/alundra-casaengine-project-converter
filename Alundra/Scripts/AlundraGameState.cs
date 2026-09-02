@@ -1,4 +1,6 @@
 ﻿#nullable enable
+using System;
+
 namespace Alundra.Scripts;
 
 /// <summary>
@@ -18,6 +20,16 @@ namespace Alundra.Scripts;
 /// </summary>
 public sealed class AlundraGameState
 {
+    /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares (D-T-3,
+    /// docs/plan-transitions-carte.md) - same shape as <see cref="AlundraMusicPlayer.Instance"/>/
+    /// <see cref="AlundraScreenFadeDirector.Instance"/>/<see cref="AlundraDialogueDirector.Instance"/>.
+    /// Unlike those three, this class KEEPS its public parameterless constructor (two test harnesses -
+    /// <see cref="AlundraEventProgramRunnerTests"/> and <see cref="IntroTraceHarnessTests"/> among others -
+    /// build their own private instance directly, never through this session carrier) - so <see cref="Instance"/>
+    /// is just one more instance, reachable through the same public constructor, that <see cref="AlundraWorldProxy.GameState"/>
+    /// happens to always resolve to.</summary>
+    public static readonly AlundraGameState Instance = new();
+
     private const int WordCount = 1024;
     private const uint TemporaryFlagBit = 0x8000;
 
@@ -174,4 +186,60 @@ public sealed class AlundraGameState
 
     /// <summary>GameEngine.XorFlag (GameEngine.cs:2909-2926).</summary>
     public void XorFlag(uint flag, uint mask) => BankFor(flag)[IndexOf(flag)] ^= mask;
+
+    /// <summary>
+    /// D-T-3/D-T-13 (docs/plan-transitions-carte.md, slice T1): applies this session carrier's own
+    /// map-entry disposition, called from <see cref="AlundraWorldProxy.InitializeWithWorld"/> at the
+    /// START of that method's own installation block (before <see cref="AlundraWorldProxy.InstallCellAndOverlaySystems"/>,
+    /// so before <see cref="AlundraWorldProxy.InstallDialogueSystems"/> goes on to clean up the
+    /// MessageBox/MenuOpen bits of <see cref="PlayerControlFlags"/> below). The table is EXHAUSTIVE
+    /// (D-T-13) - only the two rows below move; every other field survives untouched across the map
+    /// change, exactly like the original's own globals:
+    /// <list type="bullet">
+    /// <item><description><see cref="GameFlags"/>, <see cref="MapIdToInternalMapIndexTable"/>,
+    /// <see cref="PlayerControlFlags"/>, <see cref="LastPadState"/> and the eight numeric interact-latch
+    /// fields all stay CONSERVED - nothing to do here for them.</description></item>
+    /// </list>
+    /// </summary>
+    public void InstallForMapEntry()
+    {
+        // D-T-13: TemporaryFlags is VIDÉ - port of ClearTemporaryFlags (GameEngine.cs:429-438), the
+        // original's own map-entry preamble for the session-only flag bank.
+        Array.Clear(TemporaryFlags);
+
+        // D-T-13: InteractLatchEntity is VIDÉ - a strong reference into the world just destroyed, so
+        // keeping it would retain that whole dead world graph and could run an interaction against an
+        // entity from a torn-down map. The original stores this in a slot table InitializeEntitySlots
+        // re-initializes at every map entry - clearing here is the faithful equivalent. The eight numeric
+        // latch fields (InteractLatchFacing/.../InteractLatchDirection) stay CONSERVED - they
+        // self-invalidate via their own eight equality checks, exactly like the original.
+        InteractLatchEntity = null;
+    }
+
+    /// <summary>Test-only: restores this session carrier to its New-Game-equivalent construction state,
+    /// so tests do not leak state into each other through <see cref="Instance"/> - same seam as
+    /// <see cref="AlundraMusicPlayer.ResetForTests"/>/<see cref="AlundraScreenFadeDirector.ResetForTests"/>.</summary>
+    internal void ResetForTests()
+    {
+        Array.Clear(GameFlags);
+        Array.Clear(TemporaryFlags);
+
+        for (var i = 0; i < MapIdToInternalMapIndexTable.Length; i++)
+        {
+            MapIdToInternalMapIndexTable[i] = (ushort)i;
+        }
+
+        PlayerControlFlags = 0;
+        LastPadState = default;
+
+        InteractLatchEntity = null;
+        InteractLatchFacing = 0;
+        InteractLatchEntityX = 0;
+        InteractLatchEntityY = 0;
+        InteractLatchEntityZ = 0;
+        InteractLatchPlayerX = 0;
+        InteractLatchPlayerY = 0;
+        InteractLatchPlayerZ = 0;
+        InteractLatchDirection = 0;
+    }
 }

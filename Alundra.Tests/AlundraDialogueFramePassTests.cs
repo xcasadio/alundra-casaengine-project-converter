@@ -35,12 +35,25 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         // Same seam note as AlundraWorldProxyUpdateCharacterizationTests: inert here (world.Game is
         // always null below), set explicitly anyway rather than relying on the env-var-backed static.
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
+
+        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
+        // so it shares the three session carriers T1 introduces - reset them here (constructor, the
+        // isolation-carrying element) so no earlier test's state leaks in.
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
     }
 
     public void Dispose()
     {
         AlundraDialogueDirector.Instance.ResetForTests();
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
+
+        // D-T-14: hygiene, not covered by the acceptance (the constructor above is what carries
+        // isolation) - kept for symmetry with the existing session-singleton test classes.
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
     }
 
     /// <summary>Headless proxy whose <c>Update</c> is drivable - the exact montage

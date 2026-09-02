@@ -177,8 +177,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// runner's constructor call) so <see cref="Update"/> can read <see cref="AlundraGameState.PlayerControlFlags"/>
     /// for <see cref="RunMapEventsPass"/>'s own gate, mirroring how the original reads the SAME global
     /// (<c>g_playerControlFlags</c>) from both <c>RunMapEvents</c> and the opcode handlers alike.
+    ///
+    /// D-T-3 (docs/plan-transitions-carte.md, slice T1): this is no longer a field initializer - it is
+    /// this SESSION's own carrier (<see cref="AlundraGameState.Instance"/>), same shape as
+    /// <see cref="DialogueDirector"/>/<see cref="AlundraMusicPlayer.Instance"/>/<see cref="AlundraScreenFadeDirector.Instance"/>
+    /// below - so game flags, control flags, the last pad snapshot and the interact latch's own numeric
+    /// fields all survive a map change instead of being lost with the old, per-world instance (§1.4.c).
+    /// <see cref="AlundraGameState.InstallForMapEntry"/> applies this session's own map-entry disposition
+    /// (D-T-13), called from <see cref="InitializeWithWorld"/>.
     /// </summary>
-    internal readonly AlundraGameState GameState = new();
+    internal AlundraGameState GameState => AlundraGameState.Instance;
 
     /// <summary>
     /// The New Game hero entity, spawned once in <see cref="InitializeWithWorld"/> BEFORE every "Entities"
@@ -227,8 +235,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// class doc), read once and reused for every record this proxy spawns. Internal, not injected
     /// through the constructor - same reasoning as <see cref="EventProgramRunner"/>: <c>ElementFactory</c>
     /// constructs gameplay proxies parameterless, so tests swap this field directly.
+    ///
+    /// D-T-14 (docs/plan-transitions-carte.md, slice T1): resolved through <see cref="Alundra.Scripts.SpriteRecordCatalog.GetOrCreate"/>'s
+    /// session-scoped cache (keyed by <see cref="EngineEnvironment.ProjectPath"/>) rather than always
+    /// constructing a fresh catalog - two consecutive worlds over the same project now read
+    /// <c>Data/sprite-records.json</c> only once.
     /// </summary>
-    internal ISpriteRecordCatalog SpriteRecordCatalog = new SpriteRecordCatalog();
+    internal ISpriteRecordCatalog SpriteRecordCatalog = Alundra.Scripts.SpriteRecordCatalog.GetOrCreate(EngineEnvironment.ProjectPath);
 
     /// <summary>
     /// Port of the original global <c>g_activeCollisionEntity</c>: the entity currently involved in the
@@ -379,8 +392,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// Seam over <c>Sounds/sfx-manifest.json</c> lookups (see <see cref="Alundra.Scripts.AlundraSoundBank"/>'s
     /// class doc), read once and reused by <see cref="SoundPlayer"/> for every sfx it resolves. Internal,
     /// not injected through the constructor - same reasoning as <see cref="SpriteRecordCatalog"/> above.
+    ///
+    /// D-T-14 (docs/plan-transitions-carte.md, slice T1): resolved through <see cref="AlundraSoundBank.GetOrCreate"/>'s
+    /// session-scoped cache (keyed by <see cref="EngineEnvironment.ProjectPath"/>) - same rationale as
+    /// <see cref="SpriteRecordCatalog"/> above, so the sfx manifest is read only once for two consecutive
+    /// worlds over the same project.
     /// </summary>
-    internal AlundraSoundBank SoundBank = new AlundraSoundBank();
+    internal AlundraSoundBank SoundBank = AlundraSoundBank.GetOrCreate(EngineEnvironment.ProjectPath);
 
     /// <summary>
     /// E7.b (docs/plan-e7-mutation-tuiles.md): the visual + navigation applier subscribed to
@@ -501,6 +519,20 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         }
 
         _tileMapData = tileMapData;
+
+        // D-T-3 (docs/plan-transitions-carte.md, slice T1): the session carrier's own map-entry
+        // disposition (D-T-13) is applied HERE, at the very START of this installation block - strictly
+        // before InstallDialogueSystems below goes on to clean up PlayerControlFlags' own MessageBox/
+        // MenuOpen bits.
+        GameState.InstallForMapEntry();
+
+        // D-T-13's own point 4: ActiveCollisionEntity does not live on AlundraGameState (no such field
+        // there) - its real owner is THIS proxy (:239), so its map-entry reset lives here instead.
+        // Inert by construction today: this proxy is fully reconstructed per world, so the field is
+        // already null at this point - kept as an explicit statement (not a silent assumption) so a
+        // future session-scoped proxy inherits a working reset instead of a quiet gap. See
+        // AdoptPlayerPawn's own doc for the matching correction of its previously stale comment.
+        ActiveCollisionEntity = null;
 
         InstallCellAndOverlaySystems(world, tileMapComponent!, tileMapData);
         InstallAudioSystems(world);
@@ -982,8 +1014,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     ///
     /// Deliberately NOT ported (still out of E2's own scope - a real <c>InitializeGameState</c>/full
     /// <c>PlayerManager</c>): <c>Hp</c>/<c>HpMax</c> (<c>PlayerManager.GetPlayerHp/HpMax</c>),
-    /// <c>g_activeCollisionEntity = null</c> (this world's own <see cref="ActiveCollisionEntity"/> already
-    /// starts null), <c>g_currentWeaponFlags</c>/weapon item id, the warp timer/effect resets
+    /// <c>g_activeCollisionEntity = null</c> (this world's own <see cref="ActiveCollisionEntity"/> is now
+    /// reset explicitly, in <see cref="InitializeWithWorld"/>'s own installation block - D-T-13 point 4,
+    /// docs/plan-transitions-carte.md, slice T1; inert today only because this proxy is fully
+    /// reconstructed per world, not because nothing resets it), <c>g_currentWeaponFlags</c>/weapon item
+    /// id, the warp timer/effect resets
     /// (<c>g_playerWarpTimer</c>, <c>g_isWarpDisabled</c>, <c>g_playerWarpEffect</c>,
     /// <c>g_playerEffectTransitionCooldown</c>, <c>ResetWarpLockTimer</c>) - none of these have any
     /// observable effect on E2's own ported <see cref="AlundraPlayerManager.MovePlayer"/> subset. No
