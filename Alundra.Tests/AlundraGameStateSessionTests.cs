@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.IO;
 using Alundra.Scripts;
@@ -7,7 +7,7 @@ using Xunit;
 namespace Alundra.Tests;
 
 /// <summary>
-/// T1 acceptance (docs/plan-transitions-carte.md, slice "T1 - État de partie en session"): the SIX rows
+/// T1 acceptance (docs/plan-transitions-carte.md, slice "T1 - État de partie en session"): the SEVEN rows
 /// of D-T-13's own field-by-field disposition table, each asserted across two CONSECUTIVE map entries
 /// sharing the same session carrier (<see cref="AlundraGameState.Instance"/>) - the "two worlds share the
 /// singleton" shape T7 already established (<see cref="AlundraScreenFadeDirectorTests"/>:370-412), driven
@@ -36,7 +36,8 @@ public sealed class AlundraGameStateSessionTests : IDisposable
         AlundraSoundBank.ResetForTests();
     }
 
-    // ---- D-T-13's six rows, each across two consecutive map entries -------------------------------
+    // ---- D-T-13's seven rows, each across two consecutive map entries (the last test covers the
+    // interact-latch reference and its eight numeric fields together) -------------------------------
 
     [Fact]
     public void GameFlags_SurvivesTheNextMapEntry()

@@ -547,7 +547,7 @@ connu → comportement inchangé. **Les 18 échecs moteur connus inchangés, auc
    `null` à la construction) — hygiène et fidélité, non couverte par l'acceptation. Le commentaire
    périmé d'`AdoptPlayerPawn` (`AlundraWorldProxy.cs:985`) est corrigé en conséquence.
 
-**Acceptation [R3] — les SIX lignes du tableau D-T-13, chacune assertée**, sur un montage à deux
+**Acceptation [R3, libellé corrigé en R5] — les SEPT lignes du tableau D-T-13, chacune assertée**, sur un montage à deux
 mondes consécutifs partageant le singleton :
 
 | Ligne de D-T-13 | Assertion |
