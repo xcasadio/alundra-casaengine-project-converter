@@ -206,6 +206,215 @@ public class TileMapWriterTests
     }
 
     [Fact]
+    public void ConvertMaps_TwiceOverSameInput_ProducesIdenticalDeterministicIds()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory1 = CreateTempDirectory();
+        var outputDirectory2 = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            var tiledDirectory = Path.Combine(inputDirectory, "data", "tiled");
+            Directory.CreateDirectory(tiledDirectory);
+            WriteStaticMapFixture(tiledDirectory, mapIndex: 0);
+
+            var mapLocations = new Dictionary<int, MapLocation>
+            {
+                [0] = new MapLocation("TestZone", "Static Map-0"),
+            };
+
+            var catalog1 = ConvertAndReadCatalog(inputDirectory, outputDirectory1, mapLocations);
+            var catalog2 = ConvertAndReadCatalog(inputDirectory, outputDirectory2, mapLocations);
+
+            const string mapBaseName = "Static Map-0";
+            var tilemapDirectory = Path.Combine("Maps", "TestZone", mapBaseName, "tilemap");
+            var tmjRelativePath = Path.Combine(tilemapDirectory, $"{mapBaseName}.tmj");
+            var tileSetRelativePath = Path.Combine(tilemapDirectory, $"{mapBaseName}.tileset");
+            var rawTextureRelativePath = Path.Combine(tilemapDirectory, "map_0_tileset.png");
+            var wrapperRelativePath = Path.ChangeExtension(rawTextureRelativePath, ".texture");
+            var tileMapRelativePath = Path.Combine(tilemapDirectory, $"{mapBaseName}.tileMap");
+
+            // Phase 1's five per-map ids, plus the two texture ids they alias (raw PNG + wrapper
+            // are the same two entries under D-N-5's own prefixes) - all seven equal across the two
+            // independent runs, and all seven equal to the Ids.For value recomputed right here.
+            AssertIdenticalAndDeterministic(catalog1, catalog2, tmjRelativePath, "tmj:" + tmjRelativePath);
+            AssertIdenticalAndDeterministic(catalog1, catalog2, tileSetRelativePath, "tileset-doc:" + tileSetRelativePath);
+            AssertIdenticalAndDeterministic(catalog1, catalog2, rawTextureRelativePath, "texture-raw:" + rawTextureRelativePath);
+            AssertIdenticalAndDeterministic(catalog1, catalog2, wrapperRelativePath, "texture-wrapper:" + wrapperRelativePath);
+            AssertIdenticalAndDeterministic(catalog1, catalog2, tileMapRelativePath, "tilemap-doc:" + tileMapRelativePath);
+
+            // Regression guard for the Name spec (D-N-4): the pre-seeded "name" fields must match
+            // exactly what the pre-change engine naming produced, byte for byte.
+            Assert.Equal($"{mapBaseName}.tmj", catalog1[tmjRelativePath].Name);
+            Assert.Equal($"{mapBaseName}_TileSet", catalog1[tileSetRelativePath].Name);
+            Assert.Equal($"{mapBaseName}_map_0_tileset.png", catalog1[rawTextureRelativePath].Name);
+            Assert.Equal($"{mapBaseName}_map_0_tileset", catalog1[wrapperRelativePath].Name);
+            Assert.Equal(mapBaseName, catalog1[tileMapRelativePath].Name);
+
+            Assert.False(catalog1.ContainsKey("Phase1.IdSeedingSkipped"));
+
+            var tileSetJson = JObject.Parse(File.ReadAllText(Path.Combine(outputDirectory1, tileSetRelativePath)));
+            Assert.Equal(catalog1[tileSetRelativePath].Id.ToString(), (string)tileSetJson["id"]!);
+            var tileMapJson = JObject.Parse(File.ReadAllText(Path.Combine(outputDirectory1, tileMapRelativePath)));
+            Assert.Equal(catalog1[tileMapRelativePath].Id.ToString(), (string)tileMapJson["id"]!);
+            var wrapperJson = JObject.Parse(File.ReadAllText(Path.Combine(outputDirectory1, wrapperRelativePath)));
+            Assert.Equal(catalog1[wrapperRelativePath].Id.ToString(), (string)wrapperJson["id"]!);
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory1, recursive: true);
+            Directory.Delete(outputDirectory2, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void ConvertMaps_WithTmjReferencingTwoTilesets_SkipsSeedingAndCounts()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            var tiledDirectory = Path.Combine(inputDirectory, "data", "tiled");
+            Directory.CreateDirectory(tiledDirectory);
+            WriteTwoTilesetMapFixture(tiledDirectory, mapIndex: 0);
+
+            var mapLocations = new Dictionary<int, MapLocation>
+            {
+                [0] = new MapLocation("TestZone", "Two Tilesets Map-0"),
+            };
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+            ProjectWriter.CreateEmptyProject(outputDirectory, new ConversionReport());
+
+            var report = new ConversionReport();
+            TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
+
+            Assert.Equal(1, report.Counters["Maps"]);
+            Assert.Empty(report.Errors);
+            Assert.Equal(1, report.Counters["Phase1.IdSeedingSkipped"]);
+            Assert.Contains(report.Warnings, warning => warning.Contains("Phase 1 asset id pre-seeding skipped", StringComparison.Ordinal));
+
+            // The import itself still succeeds (falls back to Guid.NewGuid for this map only).
+            Assert.True(File.Exists(Path.Combine(
+                outputDirectory, "Maps", "TestZone", "Two Tilesets Map-0", "tilemap", "Two Tilesets Map-0.tileMap")));
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    private static void AssertIdenticalAndDeterministic(
+        Dictionary<string, (Guid Id, string Name)> catalog1,
+        Dictionary<string, (Guid Id, string Name)> catalog2,
+        string relativeFileName,
+        string idKey)
+    {
+        var expectedId = Ids.For(idKey);
+        Assert.Equal(expectedId, catalog1[relativeFileName].Id);
+        Assert.Equal(expectedId, catalog2[relativeFileName].Id);
+    }
+
+    private static Dictionary<string, (Guid Id, string Name)> ConvertAndReadCatalog(
+        string inputDirectory, string outputDirectory, IReadOnlyDictionary<int, MapLocation> mapLocations)
+    {
+        EngineEnvironment.ProjectPath = outputDirectory;
+        EditorAssetCatalogService.Clear();
+        ProjectWriter.CreateEmptyProject(outputDirectory, new ConversionReport());
+
+        var report = new ConversionReport();
+        TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
+        Assert.Empty(report.Errors);
+
+        var catalogPath = Path.Combine(outputDirectory, "AssetInfos.json");
+        var assetInfosArray = (JArray)JObject.Parse(File.ReadAllText(catalogPath))["asset_infos"]!;
+        var catalog = new Dictionary<string, (Guid Id, string Name)>();
+        foreach (var entry in assetInfosArray)
+        {
+            var fileName = (string)entry["file_name"]!;
+            catalog[fileName] = (Guid.Parse((string)entry["id"]!), (string)entry["name"]!);
+        }
+
+        return catalog;
+    }
+
+    private static void WriteTwoTilesetMapFixture(string tiledDirectory, int mapIndex)
+    {
+        var baseName = $"map_{mapIndex}";
+        File.WriteAllBytes(Path.Combine(tiledDirectory, $"{baseName}_tileset.png"), FakePngBytes);
+        File.WriteAllBytes(Path.Combine(tiledDirectory, $"{baseName}_tileset_b.png"), FakePngBytes);
+
+        File.WriteAllText(
+            Path.Combine(tiledDirectory, $"{baseName}_tileset.tsj"),
+            """
+            {
+                "type": "tileset",
+                "name": "tileset",
+                "tilewidth": 24,
+                "tileheight": 16,
+                "tilecount": 1,
+                "columns": 1,
+                "image": "map_INDEX_tileset.png",
+                "imagewidth": 24,
+                "imageheight": 16
+            }
+            """.Replace("INDEX", mapIndex.ToString()));
+
+        File.WriteAllText(
+            Path.Combine(tiledDirectory, $"{baseName}_tileset_b.tsj"),
+            """
+            {
+                "type": "tileset",
+                "name": "tileset_b",
+                "tilewidth": 24,
+                "tileheight": 16,
+                "tilecount": 1,
+                "columns": 1,
+                "image": "map_INDEX_tileset_b.png",
+                "imagewidth": 24,
+                "imageheight": 16
+            }
+            """.Replace("INDEX", mapIndex.ToString()));
+
+        File.WriteAllText(
+            Path.Combine(tiledDirectory, $"{baseName}.tmj"),
+            """
+            {
+                "type": "map",
+                "orientation": "orthogonal",
+                "infinite": false,
+                "width": 1,
+                "height": 1,
+                "tilewidth": 24,
+                "tileheight": 16,
+                "tilesets": [
+                    { "firstgid": 1, "source": "map_INDEX_tileset.tsj" },
+                    { "firstgid": 2, "source": "map_INDEX_tileset_b.tsj" }
+                ],
+                "layers": [
+                    {
+                        "type": "tilelayer",
+                        "name": "Render_0",
+                        "width": 1,
+                        "height": 1,
+                        "data": [1]
+                    }
+                ]
+            }
+            """.Replace("INDEX", mapIndex.ToString()));
+    }
+
+    [Fact]
     public void ConvertMaps_WithoutMapLocation_FallsBackToUncategorized()
     {
         var inputDirectory = CreateTempDirectory();

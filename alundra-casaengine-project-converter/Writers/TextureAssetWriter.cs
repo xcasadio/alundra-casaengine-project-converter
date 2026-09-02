@@ -50,11 +50,11 @@ public static class TextureAssetWriter
 
         var rawRelativePath = Path.Combine(relativeDirectory, fileName);
         var rawName = Path.GetFileNameWithoutExtension(fileName);
-        var rawAssetInfo = new AssetInfo(Guid.NewGuid()) { Name = rawName, FileName = rawRelativePath };
+        var rawAssetInfo = new AssetInfo(Ids.For("texture-raw:" + rawRelativePath)) { Name = rawName, FileName = rawRelativePath };
         EditorAssetCatalogService.Add(rawAssetInfo);
 
         var wrapperRelativePath = Path.ChangeExtension(rawRelativePath, ".texture");
-        var wrapperId = Guid.NewGuid();
+        var wrapperId = Ids.For("texture-wrapper:" + wrapperRelativePath);
         var wrapperDocument = new JObject
         {
             ["id"] = wrapperId.ToString(),
