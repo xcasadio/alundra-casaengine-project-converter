@@ -49,7 +49,13 @@ public static class AssetVerifier
         ["buttonsmapping"] = element => new ButtonsMapping().Load(element),
     };
 
-    public static bool Verify(string outputDirectory, ConversionReport report)
+    /// <summary>
+    /// <paramref name="isFullRun"/> is CliOptions.IsFullRun (D-N-3): a run with no --maps filter and a
+    /// --phase ceiling covering the last phase. Only then does Phase 0's from-scratch catalog rebuild
+    /// (fact 3) actually see every map/phase's output, so only then can a coverage gap be trusted as a
+    /// real defect rather than a --maps/--phase run skipping work by construction.
+    /// </summary>
+    public static bool Verify(string outputDirectory, ConversionReport report, bool isFullRun)
     {
         var catalogPath = Path.Combine(outputDirectory, "AssetInfos.json");
         if (!File.Exists(catalogPath))
@@ -72,7 +78,8 @@ public static class AssetVerifier
         var errorCountBefore = report.Errors.Count;
 
         CheckCatalogIntegrity(assetInfos, outputDirectory, report);
-        CheckCatalogCoverage(assetInfos, outputDirectory, report);
+        CheckCatalogCoverage(assetInfos, outputDirectory, report, isFullRun);
+        CheckTilemapPngWrappers(assetInfos, outputDirectory, report, isFullRun);
 
         report.Counters["Verify.Assets"] = assetInfos.Count;
 
@@ -91,13 +98,14 @@ public static class AssetVerifier
     /// the loadable files actually on disk are the floor it is measured against.
     ///
     /// An empty catalog is only legitimate when there is nothing to catalog - Phase 0 on its own
-    /// writes exactly that. Files on disk with no catalog entry are reported as a warning rather than
-    /// an error: converting into an already-populated directory leaves stale assets behind (the
-    /// engine's Tiled importer renames rather than overwrites, producing map_N_tileset_2.png), which
-    /// is worth surfacing but is not by itself a broken conversion.
+    /// writes exactly that. Files on disk with no catalog entry are reported as an error on a full
+    /// run (D-N-3) - Phase 1's purge (D-N-2) now keeps tilemap/ free of the engine Tiled importer's
+    /// renamed collisions (map_N_tileset_2.png), so an uncatalogued loadable is a real defect once
+    /// every map/phase actually ran. A partial run (--maps/--phase) leaves gaps by construction (a
+    /// filtered map's or skipped phase's output was never catalogued this run), so it stays a warning.
     /// </summary>
     private static void CheckCatalogCoverage(
-        List<AssetInfo> assetInfos, string outputDirectory, ConversionReport report)
+        List<AssetInfo> assetInfos, string outputDirectory, ConversionReport report, bool isFullRun)
     {
         var catalogued = new HashSet<string>(
             assetInfos.Select(assetInfo => NormalizeRelativePath(assetInfo.FileName)),
@@ -136,11 +144,79 @@ public static class AssetVerifier
         if (uncatalogued > 0)
         {
             report.Counters["Verify.UncataloguedFiles"] = uncatalogued;
-            report.Warnings.Add(
+            var message =
                 $"Verify: {uncatalogued} loadable asset file(s) on disk have no catalog entry and were not "
                 + "verified; they are most likely stale output from an earlier run. Convert into an empty "
-                + "directory to be sure of what the catalog describes.");
+                + "directory to be sure of what the catalog describes.";
+
+            if (isFullRun)
+            {
+                report.Errors.Add(message);
+            }
+            else
+            {
+                report.Warnings.Add(message);
+            }
         }
+    }
+
+    /// <summary>
+    /// D-N-3(b): every tileset PNG the Tiled importer writes under a map's tilemap/ directory must
+    /// have a catalogued .texture wrapper next to it (TextureAssetWriter.cs:56 - same relative path,
+    /// extension swapped) - a PNG the loader-based coverage check above can never see, since "png" is
+    /// not in <see cref="Loaders"/> (fact 5). Same full/partial scoping as (a): an error on a full
+    /// run, a warning otherwise.
+    /// </summary>
+    private static void CheckTilemapPngWrappers(
+        IReadOnlyList<AssetInfo> assetInfos, string outputDirectory, ConversionReport report, bool isFullRun)
+    {
+        var catalogued = new HashSet<string>(
+            assetInfos.Select(assetInfo => NormalizeRelativePath(assetInfo.FileName)),
+            StringComparer.OrdinalIgnoreCase);
+
+        var missingWrapperCount = 0;
+
+        foreach (var filePath in Directory.EnumerateFiles(outputDirectory, "*.png", SearchOption.AllDirectories))
+        {
+            var relativePath = NormalizeRelativePath(Path.GetRelativePath(outputDirectory, filePath));
+            if (!IsMapTilemapPng(relativePath))
+            {
+                continue;
+            }
+
+            var wrapperRelativePath = NormalizeRelativePath(Path.ChangeExtension(relativePath, ".texture"));
+            if (catalogued.Contains(wrapperRelativePath))
+            {
+                continue;
+            }
+
+            missingWrapperCount++;
+            var message =
+                $"Verify: '{relativePath}' has no catalogued .texture wrapper ('{wrapperRelativePath}').";
+
+            if (isFullRun)
+            {
+                report.Errors.Add(message);
+            }
+            else
+            {
+                report.Warnings.Add(message);
+            }
+        }
+
+        if (missingWrapperCount > 0)
+        {
+            report.Counters["Verify.TilemapPngsMissingWrapper"] = missingWrapperCount;
+        }
+    }
+
+    /// <summary>Matches "Maps/.../tilemap/*.png" - any depth of zone/map folders in between.</summary>
+    private static bool IsMapTilemapPng(string relativePath)
+    {
+        var segments = relativePath.Split('/');
+        return segments.Length > 0
+            && string.Equals(segments[0], "Maps", StringComparison.OrdinalIgnoreCase)
+            && segments.Contains("tilemap", StringComparer.OrdinalIgnoreCase);
     }
 
     private static string NormalizeRelativePath(string fileName)

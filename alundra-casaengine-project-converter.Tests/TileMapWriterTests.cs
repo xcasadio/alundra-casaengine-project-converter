@@ -137,6 +137,75 @@ public class TileMapWriterTests
     }
 
     [Fact]
+    public void ConvertMaps_WithStaleGenerationsInTilemapDirectory_PurgesThemAndCountsThem()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            var tiledDirectory = Path.Combine(inputDirectory, "data", "tiled");
+            Directory.CreateDirectory(tiledDirectory);
+            WriteStaticMapFixture(tiledDirectory, mapIndex: 0);
+
+            var mapLocations = new Dictionary<int, MapLocation>
+            {
+                [0] = new MapLocation("TestZone", "Static Map-0"),
+            };
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+            ProjectWriter.CreateEmptyProject(outputDirectory, new ConversionReport());
+
+            // Seed the destination tilemap/ directory as if a previous in-place run had already left
+            // behind the exact orphan generation D-N-2 targets: a suffixed tileset PNG + .texture
+            // wrapper the engine's Tiled importer produces on a collision (fact 1), plus a stale
+            // .tmj from an earlier run at the same path.
+            var tilemapDirectory = Path.Combine(outputDirectory, "Maps", "TestZone", "Static Map-0", "tilemap");
+            Directory.CreateDirectory(tilemapDirectory);
+            var staleFileNames = new[]
+            {
+                "Static Map-0_tileset_2.png",
+                "Static Map-0_tileset_2.texture",
+                "stale-leftover.tmj",
+            };
+            foreach (var staleFileName in staleFileNames)
+            {
+                File.WriteAllBytes(Path.Combine(tilemapDirectory, staleFileName), FakePngBytes);
+            }
+
+            var report = new ConversionReport();
+            TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
+
+            Assert.Equal(1, report.Counters["Maps"]);
+            Assert.Empty(report.Errors);
+            Assert.Equal(staleFileNames.Length, report.Counters["Phase1.StalePagesPurged"]);
+
+            foreach (var staleFileName in staleFileNames)
+            {
+                Assert.False(
+                    File.Exists(Path.Combine(tilemapDirectory, staleFileName)),
+                    $"stale file '{staleFileName}' should have been purged.");
+            }
+
+            // This run's fresh outputs, including the destination .tmj itself - the mutation-killer
+            // for a purge moved after the .tmj copy: that ordering would delete the freshly-copied
+            // .tmj right along with the stale files (D-N-2's own worked example).
+            Assert.True(File.Exists(Path.Combine(tilemapDirectory, "Static Map-0.tmj")));
+            Assert.True(File.Exists(Path.Combine(tilemapDirectory, "Static Map-0.tileMap")));
+            Assert.True(File.Exists(Path.Combine(tilemapDirectory, "Static Map-0.tileset")));
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    [Fact]
     public void ConvertMaps_WithoutMapLocation_FallsBackToUncategorized()
     {
         var inputDirectory = CreateTempDirectory();

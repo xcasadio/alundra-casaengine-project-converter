@@ -63,4 +63,40 @@ public class CliOptionsTests
     {
         Assert.Null(CliOptions.Parse(new[] { "data-extracted", "out", "--phase", "later" }));
     }
+
+    [Fact]
+    public void IsFullRun_WithNoMapsFilterAndNoPhaseCeiling_IsTrue()
+    {
+        var options = CliOptions.Parse(RequiredPositionals);
+
+        Assert.NotNull(options);
+        Assert.True(options.IsFullRun);
+    }
+
+    [Fact]
+    public void IsFullRun_WithAMapsFilter_IsFalse()
+    {
+        var options = CliOptions.Parse(new[] { "data-extracted", "out", "--maps", "4" });
+
+        Assert.NotNull(options);
+        Assert.False(options.IsFullRun);
+    }
+
+    [Fact]
+    public void IsFullRun_WithAPhaseCeilingBelowTheLastPhase_IsFalse()
+    {
+        var options = CliOptions.Parse(new[] { "data-extracted", "out", "--phase", "6" });
+
+        Assert.NotNull(options);
+        Assert.False(options.IsFullRun);
+    }
+
+    [Fact]
+    public void IsFullRun_WithAPhaseCeilingAtOrAboveTheLastPhase_IsTrue()
+    {
+        var options = CliOptions.Parse(new[] { "data-extracted", "out", "--phase", "9" });
+
+        Assert.NotNull(options);
+        Assert.True(options.IsFullRun);
+    }
 }

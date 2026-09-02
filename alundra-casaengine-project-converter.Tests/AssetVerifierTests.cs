@@ -19,7 +19,7 @@ public class AssetVerifierTests
     {
         RunOnAGeneratedProject((outputDirectory, report) =>
         {
-            var verified = AssetVerifier.Verify(outputDirectory, report);
+            var verified = AssetVerifier.Verify(outputDirectory, report, isFullRun: true);
 
             Assert.Empty(report.Errors);
             Assert.True(verified);
@@ -47,7 +47,7 @@ public class AssetVerifierTests
             File.WriteAllBytes(Path.Combine(outputDirectory, "Sounds", "sfx_0.wav"), new byte[] { 1, 2, 3, 4 });
             AddCatalogEntry(outputDirectory, Guid.NewGuid(), "sfx_0", Path.Combine("Sounds", "sfx_0.wav"));
 
-            Assert.True(AssetVerifier.Verify(outputDirectory, report));
+            Assert.True(AssetVerifier.Verify(outputDirectory, report, isFullRun: true));
 
             Assert.Equal(1, report.Counters["Verify.ExistenceChecked.wav"]);
             Assert.Equal(1, report.Counters["Verify.ExistenceChecked.png"]);
@@ -65,7 +65,7 @@ public class AssetVerifierTests
             File.WriteAllText(Path.Combine(outputDirectory, spriteRelativePath), "{ \"id\": \"1234");
             AddCatalogEntry(outputDirectory, Guid.NewGuid(), "broken", spriteRelativePath);
 
-            Assert.False(AssetVerifier.Verify(outputDirectory, report));
+            Assert.False(AssetVerifier.Verify(outputDirectory, report, isFullRun: true));
 
             var error = Assert.Single(report.Errors);
             Assert.Contains(spriteRelativePath, error, StringComparison.Ordinal);
@@ -82,7 +82,7 @@ public class AssetVerifierTests
             var missingRelativePath = Path.Combine("Maps", "vanished.tileMap");
             AddCatalogEntry(outputDirectory, Guid.NewGuid(), "vanished", missingRelativePath);
 
-            Assert.False(AssetVerifier.Verify(outputDirectory, report));
+            Assert.False(AssetVerifier.Verify(outputDirectory, report, isFullRun: true));
 
             var error = Assert.Single(report.Errors);
             Assert.Contains(missingRelativePath, error, StringComparison.Ordinal);
@@ -105,7 +105,7 @@ public class AssetVerifierTests
             AddCatalogEntry(outputDirectory, duplicatedId, "first", firstRelativePath);
             AddCatalogEntry(outputDirectory, duplicatedId, "second", secondRelativePath);
 
-            Assert.False(AssetVerifier.Verify(outputDirectory, report));
+            Assert.False(AssetVerifier.Verify(outputDirectory, report, isFullRun: true));
 
             var error = Assert.Single(report.Errors);
             Assert.Contains("duplicate asset id", error, StringComparison.Ordinal);
@@ -124,7 +124,7 @@ public class AssetVerifierTests
             AddCatalogEntry(outputDirectory, Guid.NewGuid(), "shared", relativePath);
             AddCatalogEntry(outputDirectory, Guid.NewGuid(), "shared-again", relativePath);
 
-            Assert.False(AssetVerifier.Verify(outputDirectory, report));
+            Assert.False(AssetVerifier.Verify(outputDirectory, report, isFullRun: true));
 
             var error = Assert.Single(report.Errors);
             Assert.Contains("duplicate asset file name", error, StringComparison.Ordinal);
@@ -141,7 +141,7 @@ public class AssetVerifierTests
         {
             File.WriteAllText(Path.Combine(outputDirectory, "AssetInfos.json"), "{ \"asset_infos\": [] }");
 
-            Assert.False(AssetVerifier.Verify(outputDirectory, report));
+            Assert.False(AssetVerifier.Verify(outputDirectory, report, isFullRun: true));
 
             Assert.Contains(
                 report.Errors,
@@ -152,22 +152,89 @@ public class AssetVerifierTests
     }
 
     [Fact]
-    public void Verify_OnALoadableFileMissingFromTheCatalog_WarnsWithoutFailing()
+    public void Verify_OnALoadableFileMissingFromTheCatalog_OnAPartialRun_WarnsWithoutFailing()
     {
-        // Stale output from an earlier run into the same directory: worth surfacing, but it does not
-        // make this run's own conversion wrong.
+        // D-N-3: a partial run (--maps/--phase) leaves gaps by construction - Phase 0 rebuilds the
+        // whole catalog from scratch but a filtered map's/phase's output was never catalogued this
+        // run - so this stays a warning rather than the error a full run would raise (see the
+        // full-run counterpart below).
         RunOnAGeneratedProject((outputDirectory, report) =>
         {
             File.WriteAllText(
                 Path.Combine(outputDirectory, "Maps", "leftover.tileMap"), "{ \"id\": \"whatever\" }");
 
-            Assert.True(AssetVerifier.Verify(outputDirectory, report));
+            Assert.True(AssetVerifier.Verify(outputDirectory, report, isFullRun: false));
 
             Assert.Empty(report.Errors);
             Assert.Equal(1, report.Counters["Verify.UncataloguedFiles"]);
             Assert.Contains(
                 report.Warnings,
                 warning => warning.Contains("no catalog entry", StringComparison.Ordinal));
+        });
+    }
+
+    [Fact]
+    public void Verify_OnALoadableFileMissingFromTheCatalog_OnAFullRun_Fails()
+    {
+        // Same scenario as the partial-run test above, but on a full run (D-N-3): Phase 1's purge
+        // (D-N-2) means tilemap/ no longer accumulates stale generations on its own, so an
+        // uncatalogued loadable is now a real defect once every map/phase actually ran.
+        RunOnAGeneratedProject((outputDirectory, report) =>
+        {
+            File.WriteAllText(
+                Path.Combine(outputDirectory, "Maps", "leftover.tileMap"), "{ \"id\": \"whatever\" }");
+
+            Assert.False(AssetVerifier.Verify(outputDirectory, report, isFullRun: true));
+
+            Assert.Equal(1, report.Counters["Verify.UncataloguedFiles"]);
+            Assert.Contains(
+                report.Errors,
+                error => error.Contains("no catalog entry", StringComparison.Ordinal));
+        });
+    }
+
+    [Fact]
+    public void Verify_OnATilemapPngWithoutACataloguedWrapper_OnAFullRun_Fails()
+    {
+        // D-N-3(b): a stale/orphaned tileset PNG under a map's tilemap/ with no catalogued .texture
+        // wrapper next to it - invisible to the loader-driven coverage check above, since "png" is
+        // not a loadable extension (fact 5).
+        RunOnAGeneratedProject((outputDirectory, report) =>
+        {
+            var tilemapDirectory = Directory
+                .EnumerateDirectories(outputDirectory, "tilemap", SearchOption.AllDirectories)
+                .Single();
+            var orphanPngPath = Path.Combine(tilemapDirectory, "map_4_tileset_orphan.png");
+            File.WriteAllBytes(orphanPngPath, FakePngBytes);
+
+            Assert.False(AssetVerifier.Verify(outputDirectory, report, isFullRun: true));
+
+            Assert.Equal(1, report.Counters["Verify.TilemapPngsMissingWrapper"]);
+            Assert.Contains(
+                report.Errors,
+                error => error.Contains("map_4_tileset_orphan.png", StringComparison.Ordinal)
+                         && error.Contains("no catalogued .texture wrapper", StringComparison.Ordinal));
+        });
+    }
+
+    [Fact]
+    public void Verify_OnATilemapPngWithoutACataloguedWrapper_OnAPartialRun_WarnsWithoutFailing()
+    {
+        RunOnAGeneratedProject((outputDirectory, report) =>
+        {
+            var tilemapDirectory = Directory
+                .EnumerateDirectories(outputDirectory, "tilemap", SearchOption.AllDirectories)
+                .Single();
+            var orphanPngPath = Path.Combine(tilemapDirectory, "map_4_tileset_orphan.png");
+            File.WriteAllBytes(orphanPngPath, FakePngBytes);
+
+            Assert.True(AssetVerifier.Verify(outputDirectory, report, isFullRun: false));
+
+            Assert.Empty(report.Errors);
+            Assert.Equal(1, report.Counters["Verify.TilemapPngsMissingWrapper"]);
+            Assert.Contains(
+                report.Warnings,
+                warning => warning.Contains("no catalogued .texture wrapper", StringComparison.Ordinal));
         });
     }
 
@@ -179,7 +246,7 @@ public class AssetVerifierTests
         {
             var report = new ConversionReport();
 
-            Assert.False(AssetVerifier.Verify(outputDirectory, report));
+            Assert.False(AssetVerifier.Verify(outputDirectory, report, isFullRun: true));
             Assert.Contains(report.Errors, error => error.Contains("asset catalog not found", StringComparison.Ordinal));
         }
         finally

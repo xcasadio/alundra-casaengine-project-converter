@@ -141,7 +141,7 @@ var verificationPassed = true;
 if (options.Verify)
 {
     Console.WriteLine("Verifying generated assets...");
-    report.RunPhase("Phase8.Verify", () => verificationPassed = AssetVerifier.Verify(options.OutputDirectory, report));
+    report.RunPhase("Phase8.Verify", () => verificationPassed = AssetVerifier.Verify(options.OutputDirectory, report, options.IsFullRun));
 }
 
 totalStopwatch.Stop();

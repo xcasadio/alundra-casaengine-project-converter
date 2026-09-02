@@ -2,10 +2,22 @@ namespace AlundraCasaEngineProjectConverter;
 
 public sealed class CliOptions
 {
+    /// <summary>The last phase Program.cs runs (Phase9.Backdrops) - see D-N-3.</summary>
+    private const int LastPhase = 9;
+
     public required string InputDirectory { get; init; }
     public required string OutputDirectory { get; init; }
     public int Phase { get; init; }
     public IReadOnlyList<int>? MapFilter { get; init; }
+
+    /// <summary>
+    /// A run is "full" when it neither filters maps nor caps out before the last phase - i.e. Phase 0
+    /// reconstructs the whole catalog (fact 3) and every phase that can populate it actually ran for
+    /// every map. AssetVerifier only escalates its coverage checks to errors on a full run (D-N-3):
+    /// any --maps filter or low --phase ceiling leaves, by construction, loadable files Phase 0 never
+    /// catalogued for maps/phases this run skipped.
+    /// </summary>
+    public bool IsFullRun => (MapFilter is null || MapFilter.Count == 0) && Phase >= LastPhase;
 
     /// <summary>
     /// Whether the run ends by loading every generated asset back through its engine class. On by

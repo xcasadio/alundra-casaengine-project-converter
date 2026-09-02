@@ -51,7 +51,10 @@ public static class TileMapWriter
         // MapLocation.TiledMapRelativePath is what lands the tilemap assets in the map's tilemap/
         // subfolder.
         var destinationTmjPath = Path.Combine(outputDirectory, location.TiledMapRelativePath);
-        Directory.CreateDirectory(Path.GetDirectoryName(destinationTmjPath)!);
+        var destinationDirectory = Path.GetDirectoryName(destinationTmjPath)!;
+        Directory.CreateDirectory(destinationDirectory);
+
+        PurgeStaleTilemapFiles(destinationDirectory, report);
 
         File.Copy(sourceTmjPath, destinationTmjPath, overwrite: true);
 
@@ -82,6 +85,32 @@ public static class TileMapWriter
         }
 
         report.Increment("Maps");
+    }
+
+    /// <summary>
+    /// Pre-cleans the map's tilemap/ directory before this run's Phase 1 outputs land in it. The
+    /// engine's TiledMapImporter suffixes ("_2", "_3"...) any imported texture whose destination
+    /// name already exists on disk and isn't the same source (avoidExistingDestinationFileCollisions),
+    /// so a stale copy from a previous run makes every re-run add one more generation of tileset PNG
+    /// + .texture wrapper that nothing ever removes. This directory is owned exclusively by Phase 1
+    /// (tmj/tileset/tileMap/png/texture are all rewritten every run), so a targeted delete of every
+    /// file in it - never a recursive sweep, never touching subdirectories - is safe. Same shape as
+    /// AlundraDataExtractor's DeleteStaleBgm.
+    /// </summary>
+    private static void PurgeStaleTilemapFiles(string tilemapDirectory, ConversionReport report)
+    {
+        var purgedCount = 0;
+
+        foreach (var filePath in Directory.EnumerateFiles(tilemapDirectory))
+        {
+            File.Delete(filePath);
+            purgedCount++;
+        }
+
+        if (purgedCount > 0)
+        {
+            report.Increment("Phase1.StalePagesPurged", purgedCount);
+        }
     }
 
     internal static MapLocation ResolveLocation(
