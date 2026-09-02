@@ -5,9 +5,23 @@ Chantier successeur d'E12.d. Il livre la moitié non délivrée d'E10
 portail, traverser le changement de monde du moteur, et arriver sur la carte suivante à la bonne
 tuile, dans la bonne orientation, avec le fondu d'entrée déjà câblé par E10.a.
 
-**Révision 3** — deux rondes de relecture indépendante en contexte neuf, une unité par relecteur.
-Ronde 1 : quinze blocages. Ronde 2 (clôture) : T0, T3 et T5 déclarées **prêtes** ; neuf blocages
-supplémentaires sur l'enveloppe, T1, T2 et T4. Vingt-quatre corrections au total, tracées en §1.7.
+**Révision 4** — trois rondes de relecture indépendante en contexte neuf, une unité par relecteur.
+
+| Unité | Statut |
+|---|---|
+| Enveloppe | **PRÊTE** (confirmée en ronde 3) |
+| T0 — moteur | **PRÊTE** (confirmée en ronde 1) |
+| T3 — détection | **PRÊTE** (confirmée en ronde 2) |
+| T5 — arrivée | **PRÊTE** (confirmée en ronde 2) |
+| T1 — état de session | corrigée en ronde 3, **correction non re-relue** |
+| T2 — gel global | corrigée en ronde 3, **correction non re-relue** |
+| T4 — départ | corrigée en ronde 3, **correction non re-relue** |
+
+Vingt-neuf blocages levés au total, tracés en §1.7. Le plafond de relecture est atteint pour T1, T2
+et T4 : leurs dernières corrections sont des rattachements d'oracle et des compléments de tableau,
+tous prescrits mot pour mot par les relecteurs, mais **elles n'ont pas été soumises à une relecture
+indépendante supplémentaire**. C'est signalé ici pour que l'approbation se fasse en connaissance de
+cause.
 
 **Priorité suivante non incluse ici** : E9 (backdrops dans le moteur) est la priorité utilisateur
 juste après ce chantier ; son périmètre exact (migration du composant moteur `ScrollParameters`
@@ -345,6 +359,18 @@ maintenant deux oracles séparés. La clause « ordre de classes randomisé » n
 était périmé. L'acceptation de T1 ne couvrait que la moitié du tableau D-T-13. Le directeur de warp
 n'était couvert par aucun câblage d'isolation.
 
+**Révision 4 (post-plafond, corrections prescrites non re-relues)** — cinq blocages de plus, tous de
+même nature : des acceptations qui nommaient un oracle incapable de les réfuter.
+xunit instancie une classe de test neuve par méthode, donc la remise à zéro en constructeur porte
+seule l'isolation et une mutation sur le seul `Dispose` était infalsifiable (D-T-14, T1).
+L'acceptation de dégel de T4 exigeait un déplacement du joueur qu'aucun montage à deux mondes ne
+produit, et une observation dans `AdoptPlayerPawn`, méthode privée derrière des retours anticipés
+qu'aucun test ne franchit : elle est reformulée sur des états lisibles directement sur le directeur.
+D-T-15 ne disposait que trois des six états du directeur — la **séquence de départ** manquante aurait
+reposé la porte de gel à la frame suivant sa levée. Enfin deux mutations de T2 visaient le mauvais
+oracle : l'avance de boîte n'est pas appelée depuis le site gardé dans le montage headless, et
+`SyncTransform` n'est pas atteint par la boucle du proxy de monde.
+
 ---
 
 ## 2. Décisions de conception
@@ -428,8 +454,14 @@ n'était couvert par aucun câblage d'isolation.
   `Alundra.Tests` sensible à l'ordre.
   **Correction du motif** : la révision 2 invoquait « collection xunit dédiée » pour éviter le
   parallélisme — c'est périmé, `Alundra.Tests/xunit.runner.json` pose déjà
-  `parallelizeTestCollections: false`. L'élément réellement porteur est **la remise à zéro en
-  constructeur ET en `Dispose`**, sur le modèle de `AlundraScreenFadeDirectorTests` (`:23-43`).
+  `parallelizeTestCollections: false`.
+  **[R4] L'élément porteur est la remise à zéro en CONSTRUCTEUR.** xunit instancie une classe de test
+  neuve par méthode, donc le constructeur s'exécute avant chaque test : c'est lui qui garantit
+  l'isolation. La remise à zéro en `Dispose` est conservée par symétrie avec le modèle
+  `AlundraScreenFadeDirectorTests` (`:23-43`), mais elle est **redondante dès lors que le
+  constructeur la porte partout** : elle est donc déclarée **hygiène, non couverte par
+  l'acceptation**, sur le modèle déjà employé par D-T-8, D-T-9 et le point 4 de T1. La révision 3
+  revendiquait à tort une mutation sur elle seule ; cette mutation était infalsifiable.
   **Portée** : les **quatre** porteurs de session introduits ou élargis par ce chantier —
   `AlundraGameState`, `SpriteRecordCatalog`, `AlundraSoundBank` (T1) et `AlundraWarpDirector` (T4).
   **Critère opérationnel** : *toute classe de test qui construit un `AlundraWorldProxy`*. Elles sont
@@ -447,8 +479,9 @@ n'était couvert par aucun câblage d'isolation.
      `dotnet test Alundra.Tests/Alundra.Tests.csproj --filter "FullyQualifiedName~<Classe>"` — ce qui
      prouve qu'aucune ne dépend d'un état laissé par une autre ;
   2. la suite complète passe.
-  La mutation « retirer la remise à zéro du `Dispose` d'un porteur » fait alors tomber un test
-  **nommé et reproductible** dans l'exécution complète, l'ordre étant déterministe.
+  **[R4] Mutation falsifiable** : retirer la remise à zéro **entière** (constructeur ET `Dispose`)
+  d'une classe câblée nommée fait tomber un test nommé et reproductible dans l'exécution complète,
+  l'ordre étant déterministe. Aucune mutation ne porte sur le seul `Dispose`, qui est hygiène.
 - **D-T-15 [R3] — Disposition d'entrée de carte du directeur de warp.** Même forme que D-T-13, et
   même motif : le directeur est de session, donc son état traverse la bascule.
 
@@ -457,6 +490,12 @@ n'était couvert par aucun câblage d'isolation.
   | `IsTransitionInProgress` (la porte de gel) | **remis à faux** | port de `_isWarpTransitionRunning = false` (`GameEngine.cs:302`), que l'original exécute avant la réinitialisation de carte. Sans cela, joueur et PNJ restent figés sur la carte d'arrivée |
   | enregistrement d'arrivée (position, animation, direction, id d'effet) | **CONSERVÉ** | il est consommé **après** les installations : `InstallScreenFadeSystems` et consorts tournent en `AlundraWorldProxy.cs:505-508`, `AdoptPlayerPawn` en `:531`. L'effacer à l'installation le détruirait avant son unique lecteur |
   | id d'effet de transition | **conservé jusqu'à consommation** | même raison ; lu par `InstallScreenFadeSystems` (T5) |
+  | **[R4]** demande de départ (le latch posé par la détection T3) | **remis à zéro** | sinon un départ serait ré-armé dès la carte d'arrivée, sur la tuile de portail réciproque où le joueur atterrit précisément (§1.1.f : les deux cellules d'arrivée portent `ground_property = 128`) |
+  | **[R4]** séquence de départ (compteur du fondu sortant, étape courante) | **remise à zéro** | une séquence encore en cours **repose la porte à la frame suivante** et annule la levée ci-dessus — c'est le trou que ce tableau prétend fermer |
+  | **[R4]** demande de changement de monde (chemin en attente) | **remise à zéro** | sinon un second `SetWorldToLoad` pourrait être ré-émis depuis la carte d'arrivée |
+
+  **[R4] Clause d'exhaustivité** : ce tableau couvre les **six** états que D-T-2 attribue au
+  directeur. Tout état supplémentaire ajouté à l'exécution doit y recevoir sa ligne.
 
   **Contrainte d'ordonnancement** : la levée de la porte et la conservation de l'enregistrement
   doivent cohabiter dans le **même** `InstallForMapEntry`. C'est le point que la mutation de T4 doit
@@ -555,12 +594,20 @@ ne tient que si le site de production porte son propre test ».
 
 **Acceptation en jeu** : pendant un dialogue avec un marin, Alundra ne se déplace plus et les PNJ ne
 bougent plus. C'est la correction du défaut que l'utilisateur a signalé et accepté de différer.
-**Mutations [R3], chacune rattachée à son oracle** : retirer la porte → l'assertion « PNJ figé »
-(oracle 1) tombe ; mettre `SyncAnimation` dehors → l'assertion « pas de commutation d'animation »
-(oracle 1) tombe ; élargir la porte à l'avance de boîte → l'assertion « la boîte avance » (oracle 1)
-tombe ; mettre le suivi caméra ou `SyncTransform` dedans → l'assertion correspondante de l'oracle 2
-tombe ; omettre les passes de motion de `AlundraEntityScriptProxy.Update` du côté gelé → une marche
-déjà lancée continue et l'assertion « PNJ figé » tombe.
+**[R4] Rattachement des mutations à l'oracle qui peut RÉELLEMENT les détecter.** La révision 3 en
+attribuait deux au mauvais oracle : l'avance de boîte n'est pas appelée depuis le site gardé dans le
+montage headless (le harnais appelle `Tick()` lui-même, hors de toute porte), et `SyncTransform` n'est
+jamais atteint par `AlundraWorldProxy.Update` — il vit en fin d'`AlundraEntityScriptProxy.Update`,
+que le moteur invoque avant l'update du proxy de monde.
+
+| Mutation | Oracle qui la détecte | Assertion qui tombe |
+|---|---|---|
+| retirer la porte | 1 | « PNJ figé » |
+| mettre `SyncAnimation` dehors | 1 | « pas de commutation d'animation » |
+| omettre les passes de motion de `AlundraEntityScriptProxy.Update` du côté gelé | 1 | « PNJ figé » — une marche déjà lancée continue |
+| **[R4]** mettre `SyncTransform` dedans | **1** | la position racine d'une entité portant un `RootComponent` et **pas** de `Controller` — seule forme où `SyncTransform` écrit (`AlundraFrameSyncPasses.cs:168-183`) — cesse d'être publiée pendant le gel. L'oracle 1 pilote bien `AlundraEntityScriptProxy.Update` |
+| **[R4]** élargir la porte à l'avance de boîte | **2** | « la boîte avance et se ferme » sous le vrai `AlundraWorldProxy.Update`, précédent `AlundraDialogueFramePassTests` qui pilote déjà `proxy.Update` avec une boîte `MenuOpen` ouverte |
+| mettre le suivi caméra dedans | 2 | « la caméra continue » |
 
 ### T3 — Détection des portails
 
@@ -622,20 +669,30 @@ non-régression `DestroyOnVramFlags` tombe.
   **cible `(10*24+12, 40*16+8) << 16` et `Z = 0`** avant clamp.
 - **Gel** : pendant les 16 ticks du fondu sortant, **au moins un PNJ et un programme d'événement
   d'entité n'avancent pas d'un tick**, et le joueur non plus.
-- **[R3] Dégel, sur montage à deux mondes partageant le singleton** : après l'entrée sur la carte
-  d'arrivée, `IsTransitionInProgress` est **faux dès la première frame**, un PNJ et le joueur
-  avancent de nouveau, **et** l'enregistrement d'arrivée est **encore présent** au moment où
-  `AdoptPlayerPawn` le consomme.
+- **[R4] Dégel — reformulé sur ce que les montages EXISTANTS peuvent réfuter.** La révision 3
+  demandait « le joueur avance de nouveau » et « l'enregistrement est présent quand
+  `AdoptPlayerPawn` le consomme » : ni l'un ni l'autre n'est atteignable, aucun montage à deux
+  mondes ne fait varier le joueur et `AdoptPlayerPawn` est privé derrière des retours anticipés
+  qu'aucun test ne franchit. Deux clauses le remplacent :
+  1. **Sur le montage à deux mondes de style T7** (`AlundraScreenFadeDirectorTests:370-412`) : après
+     le second `InstallForMapEntry`, `IsTransitionInProgress` est **faux**, la demande de départ, la
+     séquence et la demande de monde sont **remises à zéro**, **et** l'enregistrement d'arrivée plus
+     l'id d'effet sont **encore lisibles sur le directeur**. L'ordre qui rend cette conservation
+     nécessaire est justifié par des sites d'appel fixes : installations en
+     `AlundraWorldProxy.cs:505-508`, `AdoptPlayerPawn` en `:531`.
+  2. **Sur le site de production** (style oracle 2 de T2, vrai `AlundraWorldProxy.Update`) : une fois
+     la porte fausse, les passes gelées **retournent**.
 - **[R3] Isolation** : chacune des classes câblées passe seule sous `--filter`, suite complète verte.
 - **En jeu** : Alundra quitte la 389 sur un fondu au noir.
 
 **Mutations** : émettre la demande de monde avant stabilisation → le test d'ordre tombe ; verrou de
 persistance à zéro → le test « le noir survit à la frame de bascule » tombe ; retirer la porte du
 directeur → l'assertion PNJ/événement tombe (et pas seulement celle sur le joueur) ; **[R3]** retirer
-la fin de transition → le test de dégel tombe (joueur et PNJ figés sur la carte d'arrivée) ;
-**[R3]** effacer l'enregistrement d'arrivée dans le même `InstallForMapEntry` → le test « encore
-présent à la consommation » tombe ; **[R3]** retirer la remise à zéro du `Dispose` du directeur → un
-test nommé tombe dans l'exécution complète.
+la fin de transition → la clause 1 du dégel tombe ; **[R4]** effacer l'enregistrement d'arrivée dans
+le même `InstallForMapEntry` → la clause « encore lisible sur le directeur » tombe ; **[R4]** laisser
+la **séquence de départ armée** à l'entrée de carte → la porte se repose à la frame suivante et la
+clause 2 du dégel tombe ; **[R4]** retirer la remise à zéro **entière** (constructeur ET `Dispose`)
+du directeur dans une classe câblée nommée → un test nommé tombe dans l'exécution complète.
 
 ### T5 — Arrivée
 
