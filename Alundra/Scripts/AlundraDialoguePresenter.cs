@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using CasaEngine.Framework.Dialogue.Presentation;
@@ -42,8 +42,17 @@ public sealed class AlundraDialoguePresenter : IDialoguePresenter
     {
         ArgumentNullException.ThrowIfNull(uiView);
         _uiView = uiView;
-        _screen = new DialogueScreen(_service, RequestClose, fontFamily!);
+        // No "Close" button: Alundra's boxes are dismissed by the interact button (Square, D-E12-4) or
+        // by the auto-timer, both owned by AlundraDialogueDirector. The engine screen's own generic
+        // close affordance is an alien control here, and - as reported in play - shutting the window
+        // through it left the box logically OPEN with its MenuOpen flag still posted, so the whole
+        // entity pass stayed frozen until the player also pressed the interact button.
+        _screen = new DialogueScreen(_service, RequestClose, fontFamily!) { ShowCloseButton = false };
     }
+
+    /// <summary>Test-only seam: the screen this presenter owns, so a test can pin that Alundra opted OUT
+    /// of the engine's generic "Close" button (see the constructor).</summary>
+    internal DialogueScreen ScreenForTests => _screen;
 
     public DialogueRuntimeState State => _service.State;
     public DialogueLine CurrentLine => _service.CurrentLine;
@@ -124,10 +133,13 @@ public sealed class AlundraDialoguePresenter : IDialoguePresenter
         _pushed = false;
     }
 
-    /// <summary>The MGUI window's own close control (e.g. a title-bar X) - not part of Alundra's own
-    /// control scheme (the interact button drives every real close, via <see cref="AlundraDialogueDirector"/>),
-    /// but <see cref="DialogueScreen"/>'s constructor requires an <see cref="Action"/> regardless; wired to
-    /// this presenter's own <see cref="Close"/> so the UI stays consistent with itself if it is ever
-    /// triggered.</summary>
-    private void RequestClose() => Close();
+    /// <summary>The MGUI window's own close control (a title-bar X - the "Close" button itself is now
+    /// opted out of, see the constructor). Not part of Alundra's own control scheme: the interact button
+    /// drives every real close, through <see cref="AlundraDialogueDirector"/>. The wiring is SYMMETRIC on
+    /// purpose - it closes the LOGICAL box too, not just this presenter. Closing only the presenter is
+    /// exactly the defect reported in play: the window vanished while the director still held the box
+    /// open with MenuOpen posted, so NPCs stayed frozen and the player stayed uncontrollable until the
+    /// interact button was pressed as well. The director's own re-entry guard makes the resulting
+    /// director -> presenter -> director path terminate.</summary>
+    private void RequestClose() => AlundraDialogueDirector.Instance.NotifyPresenterClosed();
 }

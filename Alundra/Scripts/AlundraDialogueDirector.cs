@@ -301,6 +301,27 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
         _presenter?.ShowLine(new DialogueLine(page.DisplayText));
     }
 
+    /// <summary>
+    /// The UI closed the box out of band - the window's own close control, not Alundra's interact
+    /// button. Brings the LOGICAL box down with it so the control flags it posted are cleared and the
+    /// world resumes: without this the window vanished while this director still held the box open,
+    /// leaving MenuOpen posted with no visible box left to dismiss it, which froze NPCs and the player
+    /// until the interact button was pressed as well (reported in play, 2026-09-02).
+    ///
+    /// No-op when no box is open, which is also the re-entry guard: <see cref="Close"/> calls the
+    /// presenter's own Close, and a presenter that answers by calling back into here finds
+    /// <see cref="_isOpen"/> already false.
+    /// </summary>
+    internal void NotifyPresenterClosed()
+    {
+        if (!_isOpen)
+        {
+            return;
+        }
+
+        Close();
+    }
+
     private void Close()
     {
         _isOpen = false;
