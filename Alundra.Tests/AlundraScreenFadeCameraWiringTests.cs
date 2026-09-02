@@ -41,6 +41,7 @@ public class AlundraScreenFadeCameraWiringTests : IDisposable
         AlundraGameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
+        AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
     }
 
     public void Dispose()
@@ -50,6 +51,7 @@ public class AlundraScreenFadeCameraWiringTests : IDisposable
         AlundraGameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
+        AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
     }
 
     [Fact]

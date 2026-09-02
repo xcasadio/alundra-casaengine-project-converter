@@ -51,6 +51,7 @@ public class AlundraCellVisualSyncTests : IDisposable
         AlundraGameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
+        AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
     }
 
     public void Dispose()
@@ -60,6 +61,7 @@ public class AlundraCellVisualSyncTests : IDisposable
         AlundraGameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
+        AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
     }
 
     private readonly record struct OverlayEntrySnapshot(int TileSetIndex, int TileId, int GridX, int GridY, RenderSortKey2D SortKey);

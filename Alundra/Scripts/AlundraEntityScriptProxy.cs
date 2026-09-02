@@ -835,7 +835,11 @@ public class AlundraEntityScriptProxy : GameplayProxy
         // SyncTransform stays OUTSIDE (a pure render-position publish, the original's own
         // UpdateVisibleEntitiesZSort/sprite-publish half that runs after the `else`,
         // EntityManager.cs:394-408) - so it is the one call left unconditional below, after this block.
-        var gameplayBlocked = (ScriptHost.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0;
+        // T4 (docs/plan-transitions-carte.md §3, D-T-6): OR'd with AlundraWarpDirector's own gel gate -
+        // same "third mechanism" note as AlundraWorldProxy.Update's own T4 comment on its sibling
+        // gameplayBlocked local.
+        var gameplayBlocked = (ScriptHost.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
+            || AlundraWarpDirector.Instance.IsTransitionInProgress;
 
         // T2 REGRESSION FIX (softlock reported in play): the pad snapshot is "dehors", NOT "dedans".
         // It is the port of the original's g_padState1, which PadManager.UpdatePads refreshes from the

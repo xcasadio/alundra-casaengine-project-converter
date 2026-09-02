@@ -545,6 +545,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         InstallCellAndOverlaySystems(world, tileMapComponent!, tileMapData);
         InstallAudioSystems(world);
+        InstallWarpSystems(world);
         InstallScreenFadeSystems(world);
         InstallDialogueSystems(world);
 
@@ -826,6 +827,22 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // it to the in-game check alone. Ordering is unaffected: the original starts the BGM at the end
         // of its own map-entry block, but the start depends on nothing this method runs after.
         TriggerMapEntryMusic(world);
+    }
+
+    /// <summary>
+    /// T4 (docs/plan-transitions-carte.md §3, D-T-2): installs the warp-departure seam - re-points the
+    /// SESSION-scoped <see cref="AlundraWarpDirector.Instance"/> at this world's own
+    /// <c>world.Game.GameManager</c> (the <c>SetWorldToLoad</c> seam, §1.1.e/§1.3.e) and
+    /// <see cref="SoundPlayer"/> (the departure sfx channel, §1.2.d), THEN applies D-T-15's own map-entry
+    /// disposition. Called AFTER <see cref="InstallAudioSystems"/> (so <see cref="SoundPlayer"/> is
+    /// already populated) and BEFORE <see cref="AdoptPlayerPawn"/> (T5's own reader of the arrival record
+    /// this install deliberately leaves untouched, D-T-15) - same "extracted internal method, one call
+    /// site" precedent as <see cref="InstallScreenFadeSystems"/>/<see cref="InstallAudioSystems"/>.
+    /// </summary>
+    internal void InstallWarpSystems(World world)
+    {
+        AlundraWarpDirector.Instance.AttachToWorld(world.Game?.GameManager, SoundPlayer, EngineEnvironment.ProjectPath);
+        AlundraWarpDirector.Instance.InstallForMapEntry();
     }
 
     /// <summary>
@@ -1353,7 +1370,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // §1.5 keeps the "dehors" passes (map-event coalescing, RefreshUpdateProxiesAndCollidables, the
         // wall interleave, the camera/backdrop/fade/dialogue blocks and the contact probe's own inline
         // check further down) unconditional.
-        var gameplayBlocked = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0;
+        //
+        // T4 (D-T-6): OR'd with AlundraWarpDirector's own gel gate - the "third mechanism" (§1.5) that
+        // freezes the SAME "dedans" passes, at this SAME site, without ever posing a control-flag bit
+        // (the original's own AdvanceWarpTransitionFrame short-circuits its whole entity pipeline
+        // instead of testing a flag at all - see that class' own doc).
+        var gameplayBlocked = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
+            || AlundraWarpDirector.Instance.IsTransitionInProgress;
 
         // E12.a wiring fix: must run BEFORE the map-events pass below - a scripted dialogue opened
         // on this very frame has to find a live presenter (see the method's own doc).
@@ -1471,6 +1494,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         AlundraScreenFadeDirector.Instance.Advance(ticksThisFrame);
         AlundraScreenFadeDirector.Instance.PushToAttachedService();
 
+        // T4 (docs/plan-transitions-carte.md §3): the departure sequence itself is a "dehors" pass too
+        // (this class' own gel gate must keep running WHILE it holds other passes frozen) - placed right
+        // after the fade's own Advance so it observes THIS tick's just-updated IsSettled, never a
+        // frame-stale one (see AlundraWarpDirector.Advance's own doc).
+        AlundraWarpDirector.Instance.Advance(ticksThisFrame);
+
         // E12.a fix, found by the closing verifier (F1): the dialogue box's advance/close pass belongs
         // to the FRAME LOOP, exactly like the original's UIManager.ProcessEtcTextAdvance which runs
         // every main-loop frame INDEPENDENTLY of scripts (UI/UIManager.cs:855-880). It used to live
@@ -1494,7 +1523,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // mask (EntityManager.cs:377), so with a MenuOpen dialogue box up, the contact stays frozen
         // at its pre-open value exactly like the original's.
         if (PlayerEntity is { } contactProbeSubject
-            && (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) == 0)
+            && (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) == 0
+            && !AlundraWarpDirector.Instance.IsTransitionInProgress)
         {
             for (var contactTick = 0; contactTick < ticksThisFrame; contactTick++)
             {
@@ -1749,9 +1779,23 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     // interface's own default (empty) only covers hosts from OTHER slices/tests that never override it.
     IReadOnlyList<AlundraPortalRecord> IAlundraScriptHost.Portals => _portals;
 
-    // T3 deliberately does NOT override IAlundraScriptHost.OnPortalTriggerDetected here - the interface's
-    // own default no-op is exactly right for this slice (detection only, no fade, no world-change
-    // request). T4's AlundraWarpDirector is the one that will override it on this class.
+    // T4 (docs/plan-transitions-carte.md §3): the override T3's own comment (formerly here) named in
+    // advance - AlundraPlayerManager.MovePlayer calls this from INSIDE PlayerEntity's own Update, so
+    // AlundraWarpDirector.IsTransitionInProgress is already true before this SAME frame's
+    // AlundraWorldProxy.Update reads its own gel gate (see AlundraWarpDirector.BeginDeparture's own doc).
+    void IAlundraScriptHost.OnPortalTriggerDetected(AlundraPortalRecord portal, uint arrivalDirectionId)
+    {
+        if (PlayerEntity == null)
+        {
+            // Cannot happen on the production call path (MovePlayer's own caller is always PlayerEntity
+            // itself), but this interface member has no non-null guarantee of its own - degrade the same
+            // way every other "should never happen without a player" site in this class does.
+            Logs.WriteWarning("AlundraWorldProxy: OnPortalTriggerDetected fired with no PlayerEntity adopted; departure ignored.");
+            return;
+        }
+
+        AlundraWarpDirector.Instance.BeginDeparture(portal, arrivalDirectionId, PlayerEntity, GameState);
+    }
 
     /// <summary>
     /// Snapshot of <see cref="_spawnedEntities"/>'s own <see cref="AlundraEntityScriptProxy"/> proxies, in

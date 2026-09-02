@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,8 +21,25 @@ namespace Alundra.Tests;
 /// <see cref="AlundraPlayerManager.MovePlayer"/> call site. No transition is ever started here - see
 /// <see cref="AlundraPortalTrigger"/>'s own class doc.
 /// </summary>
-public class AlundraPortalDetectionTests
+public class AlundraPortalDetectionTests : IDisposable
 {
+    // D-T-14: this class constructs AlundraWorldProxy, so it meets the operational criterion and resets
+    // the session carriers in the constructor (the isolation-carrying half - xunit builds a fresh
+    // instance per test) and in Dispose (hygiene). Its own tests build private AlundraGameState
+    // instances rather than touching the session one, so nothing leaks today; the block is here so the
+    // criterion stays mechanical rather than something each new class has to re-reason about.
+    public AlundraPortalDetectionTests() => ResetSessionCarriers();
+
+    public void Dispose() => ResetSessionCarriers();
+
+    private static void ResetSessionCarriers()
+    {
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
+        AlundraWarpDirector.Instance.ResetForTests();
+    }
+
     // ---------------------------------------------------------------------------------------
     // Section A - AlundraPortalScanner.FindPortalAtTile (§1.2.b), pure, no map data needed.
     // ---------------------------------------------------------------------------------------

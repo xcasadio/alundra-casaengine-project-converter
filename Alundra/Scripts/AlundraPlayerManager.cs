@@ -472,6 +472,34 @@ public static class AlundraPlayerManager
     }
 
     /// <summary>
+    /// T4 ([R6] reserve #1, docs/plan-transitions-carte.md §3 T4/T2's own closing-verifier note): the
+    /// original freezes its WHOLE entity pipeline - physics included - the instant a warp departure
+    /// starts (§1.2.e: <c>AdvanceWarpTransitionFrame</c> replaces <c>UpdateEntities</c> outright, for
+    /// every entity, not just the scripted ones this DLL's own gel gate already covers). This port's
+    /// hero instead owns a continuous engine-driven <c>CharacterControllerComponent.Settings.Gravity</c>/
+    /// <c>MaxFallSpeed</c> integrator that the gel gate (<see cref="AlundraGameState.PlayerControlBits.GameplayBlockedMask"/>/
+    /// <see cref="AlundraWarpDirector.IsTransitionInProgress"/>) never touches - so a departure triggered
+    /// mid-air would keep falling for the whole 16-tick outgoing fade, importing that fall into the
+    /// arrival pose. CHOSEN FIX (not a deviation): reuse the exact same DLL-only mechanism
+    /// <see cref="SuspendGravityForClimb"/> already proves safe (zero Gravity/MaxFallSpeed +
+    /// <c>IsVerticalOwnedExternally</c>, no engine change) for the duration of the departure. No
+    /// restore counterpart, unlike <see cref="RestoreGravityAfterClimb"/>: this entity and its whole
+    /// world are torn down by the very map switch that ends the transition (§1.3.c), so nothing outlives
+    /// it to hand the flag back to.
+    /// </summary>
+    internal static void SuspendGravityForWarpDeparture(AlundraEntityScriptProxy player)
+    {
+        if (player.Controller == null)
+        {
+            return;
+        }
+
+        player.Controller.Settings.Gravity = 0f;
+        player.Controller.Settings.MaxFallSpeed = 0f;
+        player.Controller.IsVerticalOwnedExternally = true;
+    }
+
+    /// <summary>
     /// Runs <paramref name="ticks"/> whole 50 Hz kinematic ticks - port of
     /// <c>PhysicsEngine.UpdateEntityPhysics</c> (PhysicsEngine.cs:1579-1597), the <c>IncrementForce</c>
     /// calls (PhysicsEngine.cs:1445-1446/1490-1491), and the flat-ground half of <c>ApplyEntityForces</c>
