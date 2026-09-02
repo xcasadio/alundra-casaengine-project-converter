@@ -289,7 +289,8 @@ boucles, chacun une seule fois, d'un seul côté, avec la ligne de l'original qu
 |---|---|---|
 | rapatriement de la pose depuis le root + `IsOnGround` (`:857-868`) | **dedans** | pont de pose physique ; l'original gèle la physique (`EntityManager.cs:385`) |
 | branche PNJ : `PickEventTrigger`, `RunPickedEvent`, `AlundraScriptedMotion.TickScriptedNpc`, `EvaluateEntitySupport` (`:895-945`) | **dedans** | `UpdateEntitiesEvents` puis `UpdateEntitiesPhysics` (`EntityManager.cs:380,385`). **Ce sont ces passes qui déplacent réellement les PNJ** : les omettre laisserait une marche déjà lancée continuer |
-| branche joueur : publication de `LastPadState`, `MovePlayer`, `AlundraPlayerManager.Tick`, `UpdateGroundSlope`, `UpdateFloorHeight` (`:961-989`) | **dedans** | idem |
+| **[R7] publication de `LastPadState`** | **dehors** | **CORRIGÉ après régression en jeu.** C'est le port de `g_padState1`, rafraîchi par `PadManager.UpdatePads` depuis la boucle PRINCIPALE (`GameEngine.cs:1518`) et même depuis la boucle de transition de warp (`GameEngine.cs:280`) — jamais depuis `UpdateEntities`. L'original ne gèle donc JAMAIS sa manette. Le placer dedans a gelé l'entrée que la boîte de dialogue consomme pour avancer et se fermer, laissant `MenuOpen` posé à jamais : blocage complet observé en jeu |
+| branche joueur : `MovePlayer`, `AlundraPlayerManager.Tick`, `UpdateGroundSlope`, `UpdateFloorHeight` (`:961-989`) | **dedans** | idem |
 | `AlundraFrameSyncPasses.SyncAnimation` (`:993`) | **dedans** | **[R3] corrigé** — port d'`UpdateAnimation`, appelé par `UpdateEntitiesAnimation` **à l'intérieur** du `if` (`EntityManager.cs:384`). La révision 2 le plaçait dehors, ce qui aurait fait commuter d'animation, pendant le gel, une entité entrée avec `TargetAnimationId != CurrentAnimationId` |
 | `AlundraFrameSyncPasses.SyncTransform` (`:994`) | dehors | publication de rendu, équivalent d'`EntityManager.cs:394-408` |
 

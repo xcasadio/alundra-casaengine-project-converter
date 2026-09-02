@@ -837,6 +837,26 @@ public class AlundraEntityScriptProxy : GameplayProxy
         // EntityManager.cs:394-408) - so it is the one call left unconditional below, after this block.
         var gameplayBlocked = (ScriptHost.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0;
 
+        // T2 REGRESSION FIX (softlock reported in play): the pad snapshot is "dehors", NOT "dedans".
+        // It is the port of the original's g_padState1, which PadManager.UpdatePads refreshes from the
+        // MAIN LOOP (GameEngine.cs:1518) and even from inside the warp transition loop
+        // (GameEngine.cs:280) - never from UpdateEntities, so the original never freezes it, not even
+        // while its own gameplay gate is posed. Publishing it from inside the gated block below froze
+        // the very input the dialogue box's own advance/close pass consumes
+        // (AlundraDialogueDirector.Tick reads LastPadState.ButtonsJustPressed, :239): with the snapshot
+        // stuck on a frame that carried the interact bit the box flushed every page at once, and with
+        // one that did not it could never be advanced at all - leaving MenuOpen posted forever, so
+        // NPCs stayed frozen and the player stayed uncontrollable. §1.5's own table row is corrected
+        // accordingly.
+        if (IsPlayer)
+        {
+            var padSource = ScriptHost.PlayerController;
+            if (padSource != null)
+            {
+                ScriptHost.GameState.LastPadState = padSource.BuildPadState();
+            }
+        }
+
         if (!gameplayBlocked)
         {
             RunGameplayBlockableUpdate(elapsedTime);
@@ -985,14 +1005,12 @@ public class AlundraEntityScriptProxy : GameplayProxy
             var playerController = ScriptHost.PlayerController;
             if (playerController != null)
             {
-                var pad = playerController.BuildPadState();
-                // D-E7-8 (docs/plan-e7-mutation-tuiles.md, slice E7.c): publish this frame's pad snapshot
-                // BEFORE MovePlayer, matching the original's own g_padState1 global being fully populated
-                // before PlayerManager.MovePlayer ever runs - the smallest seam that lets event opcode
-                // 0x2F (Check pad buttons, AlundraEventProgramRunner.Dispatch case 0x2F) read a real pad
-                // without widening IEntityWorldContext or this runner's own constructor - see
-                // AlundraGameState.LastPadState's own doc.
-                ScriptHost.GameState.LastPadState = pad;
+                // D-E7-8 (docs/plan-e7-mutation-tuiles.md, slice E7.c): this frame's pad snapshot is
+                // already published, unconditionally, at the head of Update (see the T2 regression-fix
+                // comment there for why it may not live inside this gated block) - so MovePlayer here
+                // consumes exactly the value event opcode 0x2F and the dialogue director already saw
+                // this frame, which is the single-global behaviour the original has.
+                var pad = ScriptHost.GameState.LastPadState;
                 AlundraPlayerManager.MovePlayer(this, in pad, ScriptHost.GameState, ScriptHost);
                 var ticksThisFrame = ScriptHost.LogicTicksThisFrame(elapsedTime);
                 AlundraPlayerManager.Tick(this, ticksThisFrame);
