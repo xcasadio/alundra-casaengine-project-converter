@@ -1279,6 +1279,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     internal void BuildPortals(TileMapObjectLayerData? portalsLayer)
     {
+        // Rebuilt, never appended to: T4/T5 bring world reloads, and a second pass over a proxy that
+        // already holds records would duplicate every portal - and first-match-wins (§1.2.b) makes the
+        // scan order-sensitive, so duplicates are not merely wasteful.
+        _portals.Clear();
+
         if (portalsLayer == null)
         {
             return;

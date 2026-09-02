@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 
 namespace Alundra.Scripts;
 
@@ -30,7 +30,11 @@ public sealed class AlundraPortalRecord
     /// <see cref="AlundraPortalTrigger"/>'s own <c>RequiredInputByFacing</c> table (the port of
     /// <c>StaticVariables.SHORT_ARRAY_80022776</c>, address 0x80022776, <c>StaticVariables.cs:530</c>).
     /// </summary>
-    public uint RequiredFacingDirection => (uint)(Flags >> 14);
+    // Masked to the two bits the original's own ushort Flags can carry there (Portal.cs:32 shifts a
+    // ushort, so the result is 0..3 by construction). This port stores Flags as an int parsed from a
+    // string custom property, so the mask is what keeps this an in-range index into the four-entry
+    // required-input and cardinal-direction tables no matter what an export puts in the field.
+    public uint RequiredFacingDirection => (uint)((Flags >> 14) & 0x3);
 
     /// <summary>
     /// Bits 12-13 of <see cref="Flags"/> (<c>Portal.cs:38</c>) - direction (domain 0..3) the player

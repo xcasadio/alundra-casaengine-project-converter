@@ -496,6 +496,49 @@ public class AlundraPortalDetectionTests
         Assert.Equal(1, portalZero.WarpBehaviorId);
     }
 
+    [Fact]
+    public void BuildPortals_CalledTwice_RebuildsInsteadOfAppending()
+    {
+        var projectRoot = FindProjectRoot();
+        if (projectRoot == null)
+        {
+            return;
+        }
+
+        var tileMapData = LoadMap389TileMapData(projectRoot);
+        var portalsLayer = tileMapData.ObjectLayers.Find(layer => layer.Name == "Portals");
+        Assert.NotNull(portalsLayer);
+
+        var worldProxy = new AlundraWorldProxy();
+        worldProxy.BuildPortals(portalsLayer);
+        worldProxy.BuildPortals(portalsLayer);
+
+        // T4/T5 bring world reloads; appending would duplicate every portal, and first-match-wins
+        // (§1.2.b) makes the scan order-sensitive, so duplicates are not merely wasteful.
+        Assert.Equal(4, ((IAlundraScriptHost)worldProxy).Portals.Count);
+    }
+
+    [Fact]
+    public void RequiredFacingDirection_StaysAValidTableIndex_WhateverTheExportPutsInFlags()
+    {
+        // Flags is parsed from a string custom property into an int here, while the original reads a
+        // ushort (Portal.cs:32), where the shift is 0..3 by construction. The mask keeps this an
+        // in-range index into the four-entry required-input and cardinal-direction tables.
+        var portal = Portal(index: 0, x1: 0, y1: 0, x2: 0, y2: 0, destMapId: 1);
+        var wide = new AlundraPortalRecord
+        {
+            Index = portal.Index,
+            X1 = portal.X1,
+            Y1 = portal.Y1,
+            X2 = portal.X2,
+            Y2 = portal.Y2,
+            DestMapId = portal.DestMapId,
+            Flags = unchecked((int)0xDEAD5001),
+        };
+
+        Assert.InRange(wide.RequiredFacingDirection, 0u, 3u);
+    }
+
     // ---------------------------------------------------------------------------------------
     // Section F - AlundraPlayerManager.MovePlayer's own call site (§1.2.a/point 4 of the ticket): the
     // hole branch must fire even with an InputBlockedMask bit posed - proof the trigger predicate is
