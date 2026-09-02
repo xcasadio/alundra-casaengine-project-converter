@@ -123,6 +123,18 @@ public sealed class AlundraGameState
     public AlundraPadState LastPadState;
 
     /// <summary>
+    /// T3 (docs/plan-transitions-carte.md, point 5): port of the original's <c>g_isWarpDisabled</c>
+    /// global, tested at the head of <c>PlayerManager.HandleWarpTransition</c> (T4's own scope) and set
+    /// by event opcodes <c>0x9B</c>/<c>0x9C</c> (T7's own scope, out of this slice). T3's own
+    /// <see cref="AlundraPortalTrigger.TryGetTrigger"/> already respects it (folded into the predicate
+    /// itself - see that method's own doc on why), so the flag is wired here BEFORE either opcode exists.
+    /// Zero at construction (New Game default, same rationale as <see cref="PlayerControlFlags"/> above),
+    /// and reset to <c>false</c> at every map entry (<see cref="InstallForMapEntry"/>) - the original does
+    /// the same in <c>InitializeEntitySlots</c> (<c>GameEngine.cs</c>, New Game/map-load preamble).
+    /// </summary>
+    public bool IsWarpDisabled;
+
+    /// <summary>
     /// E12.d (D-E12D-3): the INTERACT LATCH - port of the original's <c>g_lastValidWarp*</c> globals
     /// (decompiler-artifact names; PlayerManager.cs:1605-1643 shows they are the interaction memory:
     /// while the player stands still against an InteractRequiresButton entity, contact may read null,
@@ -214,6 +226,12 @@ public sealed class AlundraGameState
         // latch fields (InteractLatchFacing/.../InteractLatchDirection) stay CONSERVED - they
         // self-invalidate via their own eight equality checks, exactly like the original.
         InteractLatchEntity = null;
+
+        // T3 (docs/plan-transitions-carte.md, point 5): IsWarpDisabled is reset here - port of the
+        // original's own InitializeEntitySlots preamble, which zeroes g_isWarpDisabled at every map
+        // entry. NOTE for the main session: this row is not yet reflected in D-T-13's own exhaustive
+        // table (that table predates this field) - it needs one.
+        IsWarpDisabled = false;
     }
 
     /// <summary>Test-only: restores this session carrier to its New-Game-equivalent construction state,
@@ -241,5 +259,8 @@ public sealed class AlundraGameState
         InteractLatchPlayerY = 0;
         InteractLatchPlayerZ = 0;
         InteractLatchDirection = 0;
+
+        // T3 (docs/plan-transitions-carte.md, point 5) - see InstallForMapEntry's own comment above.
+        IsWarpDisabled = false;
     }
 }

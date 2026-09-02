@@ -446,6 +446,7 @@ oracle : l'avance de boîte n'est pas appelée depuis le site gardé dans le mon
   | `LastPadState` | **conservé** | l'original est un global rafraîchi chaque frame ; conserver reproduit exactement ce que lirait un opcode 0x2F déclenché avant le premier update joueur de la carte d'arrivée |
   | `InteractLatchEntity` | **vidé** | référence FORTE vers un proxy du monde détruit : la conserver retiendrait tout le graphe du monde mort et pourrait faire courir une interaction sur une entité d'un monde nettoyé. L'original stocke un pointeur dans une table de slots que `InitializeEntitySlots` réinitialise à chaque entrée de carte : vider est donc **plus** fidèle que conserver |
   | 8 champs numériques du verrou (`InteractLatchFacing`, `…EntityX/Y/Z`, `…PlayerX/Y/Z`, `…Direction`) | **conservés** | valeurs pures, auto-invalidées par les huit tests d'égalité, exactement comme l'original |
+  | **[R8]** `IsWarpDisabled` (ajouté par T3) | **remis à `false`** | port de `g_isWarpDisabled`, que l'original remet à zéro dans `InitializeEntitySlots` à chaque entrée de carte. Posé/levé par les opcodes `0x9B`/`0x9C` (T7), déjà respecté par le prédicat de T3 |
 
   **`ActiveCollisionEntity` ne figure pas dans ce tableau** : il ne vit pas sur `AlundraGameState`
   mais sur le proxy de monde (`AlundraWorldProxy.cs:239`) et sur l'interface d'hôte
@@ -692,6 +693,14 @@ déclenchement tombent ; continuer le balayage après une destination nulle → 
 placer la sonde après la porte `InputBlockedMask` → le test de la branche trou tombe ; comparer
 `TargetDirection` → le test d'orientation tombe ; étendre la sonde à toutes les entités → le test de
 non-régression `DestroyOnVramFlags` tombe.
+
+**[R8] Déviation consignée à la livraison de T3.** `IsWarpDisabled` est testé **en amont**, dans le
+prédicat de détection, alors que l'original ne teste `g_isWarpDisabled` que dans
+`HandleWarpTransition`, en aval. L'effet observable est identique : dans l'original, la détection
+aboutit puis `HandleWarpTransition` sort immédiatement sans rien écrire. Le tester plus tôt évite
+qu'une couture déjà câblée ne se comporte mal avant que le directeur n'existe.
+**Conséquence pour T4 et T7** : le port de `HandleWarpTransition` **doit tout de même** porter le test,
+car l'opcode `0x53` (T7) appelle cette même fonction sans passer par le prédicat de détection.
 
 ### T4 — Départ
 

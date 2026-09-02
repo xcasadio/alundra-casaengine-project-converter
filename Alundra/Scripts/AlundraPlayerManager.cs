@@ -43,8 +43,10 @@ namespace Alundra.Scripts;
 /// NOT ported (out of E2's own scope, unconditionally, regardless of <c>TargetAnimationId</c>):
 /// <list type="bullet">
 /// <item><description><c>g_activeCollisionEntity = null</c>; weapon flags (<c>GetItemIdFromCurrentWeapon</c>,
-/// <c>g_currentWeaponFlags</c>); <c>CheckAndExecuteWarp</c> - PlayerManager.cs:23-29,61-79 (no weapon/warp
-/// system).</description></item>
+/// <c>g_currentWeaponFlags</c>) - PlayerManager.cs:23-27,61-79 (no weapon system). <c>CheckAndExecuteWarp</c>'s
+/// TRIGGER half (PlayerManager.cs:29,3424-3459) IS now ported (T3, docs/plan-transitions-carte.md §1.2.a) -
+/// see this method's own T3 comment at its call site; its TRANSFER half (<c>HandleWarpTransition</c>,
+/// PlayerManager.cs:3488-3541) is NOT ported (T4's own scope).</description></item>
 /// <item><description>HP==0 death branch - PlayerManager.cs:82-170 (no HP system wired to the player
 /// yet - <see cref="AlundraEntityScriptProxy.Hp"/> stays the C# default 0, which would otherwise
 /// immediately hit this branch every frame; skipping it entirely is the deliberate V1 choice, not an
@@ -158,6 +160,25 @@ public static class AlundraPlayerManager
         // CheckEntityInteraction below, a documented degraded mode the ~19 direct movement-only test
         // callers opt into EXPLICITLY with `host: null` (never silently by omission - the
         // green-and-inert family demands the skip be visible at the site). Production passes ScriptHost.
+
+        // T3 (docs/plan-transitions-carte.md §1.2.a/§3): the ORIGINAL calls CheckAndExecuteWarp at
+        // PlayerManager.cs:29 - BEFORE the BlockedByEntity return (:31) and BEFORE the InputBlockedMask
+        // gate (:38) below. This is that exact call site: placing it any later would make the "hole"
+        // branch unreachable the instant any InputBlockedMask bit is posed (a warp-departure/forced-
+        // sequence lock in particular), which is NOT what the original does. DETECTION ONLY (T3's whole
+        // scope) - AlundraPortalTrigger.TryGetTrigger is pure, and IAlundraScriptHost.OnPortalTriggerDetected's
+        // default implementation is a no-op, so this call starts no fade and requests no world change yet;
+        // it only reports a firing trigger through the seam T4's AlundraWarpDirector will fill in. A null
+        // host (the same degraded mode CheckEntityInteraction below documents) skips this entirely - no
+        // portal list to scan without a world.
+        if (host != null)
+        {
+            var trigger = AlundraPortalTrigger.TryGetTrigger(player, in pad, state, host.Portals);
+            if (trigger != null)
+            {
+                host.OnPortalTriggerDetected(trigger.Value.Portal, trigger.Value.ArrivalDirectionId);
+            }
+        }
 
         // PlayerManager.cs:31-36 (BlockedByEntity != null -> END). Nothing ported so far ever sets
         // BlockedByEntity (it stays the C# default null), so this is currently always false - ported

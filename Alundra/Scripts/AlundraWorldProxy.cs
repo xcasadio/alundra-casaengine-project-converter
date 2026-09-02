@@ -214,6 +214,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     private readonly List<AlundraMapEvent> _mapEvents = new();
 
+    /// <summary>
+    /// T3 (docs/plan-transitions-carte.md §1.1/§3): this world's own parsed "Portals" object-layer
+    /// records (see <see cref="BuildPortals"/>), in slot order - the exact list
+    /// <see cref="AlundraPortalScanner.FindPortalAtTile"/> scans (§1.2.b: first-match-wins is order-
+    /// sensitive, so this MUST stay in record order, never re-sorted). Empty (not null) when this world
+    /// has no "Portals" layer. Exposed as <see cref="IAlundraScriptHost.Portals"/>.
+    /// </summary>
+    private readonly List<AlundraPortalRecord> _portals = new();
+
     private bool _loggedNoHeroHeader;
 
     /// <summary>E3.d: logged once when the hero's engine-spawned pawn carries no
@@ -565,6 +574,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // MapEvents (port of InitializeMapEvents, GameEngine.cs:476-583) - always against PlayerEntity;
         // empty when there is none (see PlayerEntity's own doc).
         BuildMapEvents(mapEventsLayer);
+
+        // T3 (docs/plan-transitions-carte.md §1.1/§3): parse "Portals" - previously read only for its
+        // object count (§1.4.a). No PlayerEntity dependency (unlike BuildMapEvents above), so this could
+        // run earlier too, but sits here to stay next to its own sibling record-driven layer.
+        BuildPortals(portalsLayer);
 
         if (entitiesLayer == null)
         {
@@ -1255,6 +1269,51 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
+    /// T3 (docs/plan-transitions-carte.md §1.1/§3): parses the "Portals" object-layer into
+    /// <see cref="_portals"/>, one <see cref="AlundraPortalRecord"/> per object, in record order (§1.2.b
+    /// needs slot order preserved for its first-match-wins scan). Reads the 9 raw fields plus
+    /// <c>Index</c> - ALL exported as STRING custom properties (§1.1.b) - never the object's own
+    /// x/y/width/height rectangle. Left empty when there is no "Portals" layer - previously this layer
+    /// was read at init and only counted into a log line (§1.4.a); this is the first consumer that
+    /// actually parses it.
+    /// </summary>
+    internal void BuildPortals(TileMapObjectLayerData? portalsLayer)
+    {
+        if (portalsLayer == null)
+        {
+            return;
+        }
+
+        foreach (var record in portalsLayer.Objects)
+        {
+            AlundraEntitySpawnFactory.TryGetRecordInt(record, "Index", out var index);
+            AlundraEntitySpawnFactory.TryGetRecordInt(record, "X1", out var x1);
+            AlundraEntitySpawnFactory.TryGetRecordInt(record, "Y1", out var y1);
+            AlundraEntitySpawnFactory.TryGetRecordInt(record, "X2", out var x2);
+            AlundraEntitySpawnFactory.TryGetRecordInt(record, "Y2", out var y2);
+            AlundraEntitySpawnFactory.TryGetRecordInt(record, "DestMapId", out var destMapId);
+            AlundraEntitySpawnFactory.TryGetRecordInt(record, "DestTileX", out var destTileX);
+            AlundraEntitySpawnFactory.TryGetRecordInt(record, "DestTileY", out var destTileY);
+            AlundraEntitySpawnFactory.TryGetRecordInt(record, "ZLevel", out var zLevel);
+            AlundraEntitySpawnFactory.TryGetRecordInt(record, "Flags", out var flags);
+
+            _portals.Add(new AlundraPortalRecord
+            {
+                Index = index,
+                X1 = x1,
+                Y1 = y1,
+                X2 = x2,
+                Y2 = y2,
+                DestMapId = destMapId,
+                DestTileX = destTileX,
+                DestTileY = destTileY,
+                ZLevel = zLevel,
+                Flags = flags,
+            });
+        }
+    }
+
+    /// <summary>
     /// World-level half of the frame (decision D2/D3, docs/plan-conversion-totale.md §2): every spawned
     /// entity now picks/runs/syncs itself in its OWN <see cref="AlundraEntityScriptProxy.Update"/>, driven
     /// by the ENGINE's own entity update loop - which always runs BEFORE this world's own
@@ -1680,6 +1739,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     AlundraPlayerController? IAlundraScriptHost.PlayerController => _playerController;
 
     IReadOnlyList<AlundraEntityScriptProxy> IAlundraScriptHost.Collidables => _collidables;
+
+    // T3 (docs/plan-transitions-carte.md §3): production always exposes the real parsed list - the
+    // interface's own default (empty) only covers hosts from OTHER slices/tests that never override it.
+    IReadOnlyList<AlundraPortalRecord> IAlundraScriptHost.Portals => _portals;
+
+    // T3 deliberately does NOT override IAlundraScriptHost.OnPortalTriggerDetected here - the interface's
+    // own default no-op is exactly right for this slice (detection only, no fade, no world-change
+    // request). T4's AlundraWarpDirector is the one that will override it on this class.
 
     /// <summary>
     /// Snapshot of <see cref="_spawnedEntities"/>'s own <see cref="AlundraEntityScriptProxy"/> proxies, in

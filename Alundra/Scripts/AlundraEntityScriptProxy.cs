@@ -1023,6 +1023,17 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 // simplifie la conception").
                 UpdateGroundSlope();
 
+                // T3 (D-T-10, docs/plan-transitions-carte.md §1.6/§3): alimente CombinedVramFlagsOR/AND,
+                // same restriction, same gates and the exact same one-frame latency as UpdateGroundSlope
+                // just above (both read this same frame's freshly-integrated position, and both are what
+                // the ORIGINAL's own UpdateTileAttributes computes from the SAME corner loop at the end of
+                // its physics pass, PhysicsEngine.cs:1740-1768) - so next frame's MovePlayer (via
+                // AlundraPortalTrigger.TryGetTrigger) reads THIS frame's freshly computed value, exactly
+                // like the original's own CheckAndExecuteWarp reads the previous frame's
+                // CombinedVramFlagsAND (PlayerManager.cs:29 runs before UpdateTileAttributes has run again
+                // this frame).
+                UpdateVramFlags();
+
                 // E2 (docs/plan-echelles-chiffrage.md E2): alimente FloorHeight, same restriction and same
                 // one-frame latency as UpdateGroundSlope just above (see UpdateFloorHeight's own doc) - both
                 // are pure post-tick probes over this same frame's freshly-integrated position, independent
@@ -1366,6 +1377,81 @@ public class AlundraEntityScriptProxy : GameplayProxy
         AlundraTerrainProbe.ProbeSlopeCorner(cellsField, x2, y2, moddedPosZ, ref bestFlagMask);
 
         Slope_18c = (int)(bestFlagMask >> 9);
+    }
+
+    /// <summary>
+    /// T3 (D-T-10, docs/plan-transitions-carte.md §1.6/§3): port of the <c>CombinedVramFlagsOR</c>/
+    /// <c>CombinedVramFlagsAND</c> half of <c>PhysicsEngine.UpdateTileAttributes</c>'s gravity branch
+    /// (<c>PhysicsEngine.cs:1740-1768</c>, §1.6.b) - the SAME four-corner qualification
+    /// <see cref="UpdateGroundSlope"/> already ports, gathering the FULL per-corner <c>MapTile.Flags</c>
+    /// (§1.6.d, <c>walkability | (groundProperty &lt;&lt; 8)</c>) instead of that method's own masked
+    /// slope value. Kept as a SEPARATE method (not merged into <see cref="UpdateGroundSlope"/>) because
+    /// the two fields (<see cref="Slope_18c"/>, <see cref="CombinedVramFlagsOR"/>/<see cref="CombinedVramFlagsAND"/>)
+    /// have different consumers introduced at different chantiers - keeping them apart matches this
+    /// port's own convention of one probe per original consumer group (<see cref="UpdateFloorHeight"/>
+    /// alongside it is the same shape).
+    ///
+    /// Per corner: qualifies only when that corner's ground height (16.16, same rounding as
+    /// <see cref="AlundraTerrainProbe.ProbeVramFlagsCorner"/>) is exactly equal to <c>PosZ + ModZ</c>.
+    ///
+    /// DEVIATION FROM THE LITERAL ORIGINAL (deliberate, D-T-10, same rule as
+    /// <see cref="UpdateGroundSlope"/>'s own "DEVIATION" paragraph - read that one first): the original
+    /// compares <c>MapHeights[i] + 1 == ModdedPosZ</c> (<c>PhysicsEngine.cs:1748</c>); THIS port's own
+    /// resting invariant has no <c>+1</c> (<c>ModdedPosZ == TerrainHeight</c> exactly - see
+    /// <see cref="UpdateGroundSlope"/>'s own doc for the full derivation and the four golden-trace
+    /// measurements that confirm it). Porting the original's <c>+1</c> literally here would make this
+    /// qualification permanently unsatisfiable, exactly like it would for <see cref="Slope_18c"/>.
+    ///
+    /// <see cref="CombinedVramFlagsOR"/> is the OR of the four per-corner contributions,
+    /// <see cref="CombinedVramFlagsAND"/> their AND - a single disqualified corner contributes 0 to
+    /// both, which zeroes the AND outright (a qualifying corner can never beat a 0 with AND) but need
+    /// not zero the OR (the other three corners may still carry bits) - exactly the original's own
+    /// <c>tempFlags[0]|tempFlags[1]|tempFlags[2]|tempFlags[3]</c> /
+    /// <c>tempFlags[0]&amp;tempFlags[1]&amp;tempFlags[2]&amp;tempFlags[3]</c>
+    /// (<c>PhysicsEngine.cs:1764-1765</c>).
+    ///
+    /// RESTRICTION (D-T-12, PLAYER ONLY - same rationale, same single call site convention, and same
+    /// documentation shape as <see cref="UpdateGroundSlope"/>'s own restriction paragraph, which this one
+    /// intentionally mirrors almost verbatim): <see cref="CombinedVramFlagsOR"/> already has a LIVE
+    /// consumer for every entity, not just the player - the <c>DestroyOnVramFlags</c> transition tested
+    /// with mask <c>0x8004</c> a few lines below in <see cref="Update"/> (exactly the hole/portal-floor
+    /// bits this method writes). Alimenting this field for NPCs too would start destroying NPCs standing
+    /// on portal tiles, a behaviour change T3's own acceptance proves does NOT happen (D-T-12). Every
+    /// NPC's <see cref="CombinedVramFlagsOR"/>/<see cref="CombinedVramFlagsAND"/> therefore stay the C#
+    /// default 0 - see the single call site in <see cref="Update"/>'s <c>IsPlayer</c> branch.
+    ///
+    /// Same no-op gates as <see cref="UpdateGroundSlope"/> (no <see cref="EntityFlags.Gravity"/>, no
+    /// installed <see cref="AlundraCellsCollisionField"/>) - see that method's own doc for why.
+    /// </summary>
+    internal void UpdateVramFlags()
+    {
+        if ((Flags & EntityFlags.Gravity) == 0)
+        {
+            CombinedVramFlagsOR = 0;
+            CombinedVramFlagsAND = 0;
+            return;
+        }
+
+        if (Owner?.World?.CollisionField is not AlundraCellsCollisionField cellsField)
+        {
+            CombinedVramFlagsOR = 0;
+            CombinedVramFlagsAND = 0;
+            return;
+        }
+
+        var x1 = (PosX + ModX) >> 16;
+        var x2 = (PosX + ModX + Width) >> 16;
+        var y1 = (PosY + ModY) >> 16;
+        var y2 = (PosY + ModY + Height) >> 16;
+        var moddedPosZ = PosZ + ModZ;
+
+        AlundraTerrainProbe.ProbeVramFlagsCorner(cellsField, x1, y1, moddedPosZ, out var corner0);
+        AlundraTerrainProbe.ProbeVramFlagsCorner(cellsField, x2, y1, moddedPosZ, out var corner1);
+        AlundraTerrainProbe.ProbeVramFlagsCorner(cellsField, x1, y2, moddedPosZ, out var corner2);
+        AlundraTerrainProbe.ProbeVramFlagsCorner(cellsField, x2, y2, moddedPosZ, out var corner3);
+
+        CombinedVramFlagsOR = corner0 | corner1 | corner2 | corner3;
+        CombinedVramFlagsAND = corner0 & corner1 & corner2 & corner3;
     }
 
     /// <summary>

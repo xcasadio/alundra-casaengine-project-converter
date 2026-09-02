@@ -63,6 +63,42 @@ internal static class AlundraTerrainProbe
         bestFlagMask = 0;
     }
 
+    /// <summary>
+    /// T3 (docs/plan-transitions-carte.md D-T-10/§1.6): per-corner half of
+    /// <see cref="AlundraEntityScriptProxy.UpdateVramFlags"/> - port of the SAME qualification
+    /// <see cref="ProbeSlopeCorner"/> already uses (<c>PhysicsEngine.cs:1740-1768</c>'s gravity-branch
+    /// corner loop computes <see cref="AlundraEntityScriptProxy.Slope_18c"/> and
+    /// <see cref="AlundraEntityScriptProxy.CombinedVramFlagsOR"/>/<see cref="AlundraEntityScriptProxy.CombinedVramFlagsAND"/>
+    /// from the exact same four corners and the exact same per-corner qualification test in one pass -
+    /// see <see cref="AlundraEntityScriptProxy.UpdateVramFlags"/>'s own doc for why this port keeps them as
+    /// two separate probes instead of one combined method).
+    ///
+    /// A qualifying corner contributes the FULL reconstituted <c>MapTile.Flags</c>
+    /// (<c>walkability | (groundProperty &lt;&lt; 8)</c>, <c>AlundraCellsCollisionField.cs:295</c>) - NOT
+    /// the masked 0xe00 value <see cref="ProbeSlopeCorner"/> captures - since the caller needs the raw
+    /// 0x4 (hole)/0x8000 (portal floor) bits, which live outside that mask. A disqualified corner
+    /// contributes 0, exactly like <see cref="ProbeSlopeCorner"/>'s own <c>tempFlags[i] = 0</c> branch
+    /// (<c>PhysicsEngine.cs:1763</c>) - the caller ORs/ANDs the four contributions itself, since OR/AND
+    /// (unlike <see cref="ProbeSlopeCorner"/>'s running MIN) need all four values gathered first.
+    /// </summary>
+    internal static void ProbeVramFlagsCorner(AlundraCellsCollisionField field, int px, int py, int moddedPosZ, out uint tileFlags)
+    {
+        var position = new Vector3(px, py, 0f);
+        if (field.TrySampleGround(position, float.MaxValue, out var sample) && sample.HasGround)
+        {
+            var height = (int)Math.Round((double)sample.GroundHeight * 65536.0);
+            if (height == moddedPosZ)
+            {
+                var walkability = field.SampleRawWalkability(position);
+                var groundProperty = field.SampleGroundProperty(position);
+                tileFlags = (uint)(walkability | (groundProperty << 8));
+                return;
+            }
+        }
+
+        tileFlags = 0;
+    }
+
     internal static void SampleRawTileHeightCorner(AlundraCellsCollisionField field, int px, int py, ref int best)
     {
         var height = field.SampleRawCellHeight(new Vector3(px, py, 0f));
