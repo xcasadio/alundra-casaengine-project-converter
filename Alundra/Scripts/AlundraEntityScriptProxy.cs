@@ -825,6 +825,30 @@ public class AlundraEntityScriptProxy : GameplayProxy
             return;
         }
 
+        // T2 (docs/plan-transitions-carte.md §1.5/§3, D-T-6): port of EntityManager.cs:377's
+        // "g_playerControlFlags & GameplayBlockedMask" gate over UpdateEntities. The exhaustive table in
+        // §1.5 places every pass THIS method drives on one side or the other of that same gate: the pose
+        // repatriation from the root + IsOnGround below (physics, EntityManager.cs:385), the whole NPC
+        // pick/run/motion/support branch and the whole player MovePlayer/Tick/slope/floor-height branch
+        // (events then physics, EntityManager.cs:380/385), and SyncAnimation (the target-resolution half
+        // of UpdateAnimation, dispatched INSIDE the same `if`, EntityManager.cs:384) are all "dedans".
+        // SyncTransform stays OUTSIDE (a pure render-position publish, the original's own
+        // UpdateVisibleEntitiesZSort/sprite-publish half that runs after the `else`,
+        // EntityManager.cs:394-408) - so it is the one call left unconditional below, after this block.
+        var gameplayBlocked = (ScriptHost.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0;
+
+        if (!gameplayBlocked)
+        {
+            RunGameplayBlockableUpdate(elapsedTime);
+        }
+
+        AlundraFrameSyncPasses.SyncTransform(Owner);
+    }
+
+    /// <summary>Everything <see cref="Update"/> skips while <see cref="AlundraGameState.PlayerControlBits.GameplayBlockedMask"/>
+    /// is posed - see that method's own T2 doc for the exhaustive per-pass placement this reproduces.</summary>
+    private void RunGameplayBlockableUpdate(float elapsedTime)
+    {
         // E3.d ("DLL - propriete de la racine par frame" item 1, docs/plan-e3-collisions.md): for a
         // controller-driven entity the root is this frame's source of truth - CharacterMotionSystem
         // registers/updates controllers at the head of the SAME frame's World.Update, strictly before
@@ -990,8 +1014,12 @@ public class AlundraEntityScriptProxy : GameplayProxy
             }
         }
 
+        // T2 (docs/plan-transitions-carte.md §1.5): "dedans" - port of UpdateAnimation's target-
+        // resolution half, dispatched INSIDE the original's own GameplayBlockedMask `if`
+        // (EntityManager.cs:384). Runs at the end of THIS gameplay-blockable block, not from the
+        // caller (Update) below - so it is skipped, along with everything else above, whenever
+        // GameplayBlockedMask is posed (Update never calls this method at all in that case).
         AlundraFrameSyncPasses.SyncAnimation(Owner);
-        AlundraFrameSyncPasses.SyncTransform(Owner);
     }
 
     /// <summary>

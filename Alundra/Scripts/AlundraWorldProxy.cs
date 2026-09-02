@@ -1283,6 +1283,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // after it.
         var ticksThisFrame = LogicTicksThisFrame(elapsedTime);
 
+        // T2 (docs/plan-transitions-carte.md §1.5/§3, D-T-6): port of EntityManager.cs:377's
+        // "g_playerControlFlags & GameplayBlockedMask" gate over UpdateEntities, read once and reused by
+        // every "dedans" pass below (RunMapEventsPass, RunPendingEventTriggers) - the exhaustive table in
+        // §1.5 keeps the "dehors" passes (map-event coalescing, RefreshUpdateProxiesAndCollidables, the
+        // wall interleave, the camera/backdrop/fade/dialogue blocks and the contact probe's own inline
+        // check further down) unconditional.
+        var gameplayBlocked = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0;
+
         // E12.a wiring fix: must run BEFORE the map-events pass below - a scripted dialogue opened
         // on this very frame has to find a live presenter (see the method's own doc).
         TryWireDialoguePresenterOnce();
@@ -1293,7 +1301,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // camera-then-map-events (the previous, unmotivated order - see the plan's §1.2/1.3 for the
         // symptom this produced: the camera saw a scripted teleport/retarget one frame late, most
         // visibly at map load, where it showed up as a startup camera snap-then-correct).
-        if (PlayerEntity != null)
+        //
+        // T2 (§1.5's own table row): "dedans" - RunMapEventsPass ports RunMapEvents, itself gated by the
+        // SAME mask in the original (GameEngine.cs:1667-1671). This outer check covers the call site
+        // independently of RunMapEventsPass's own internal guard (below, near :1466) - a MenuOpen dialogue
+        // box must freeze this pass even if that internal guard's own shape ever changes.
+        if (PlayerEntity != null && !gameplayBlocked)
         {
             // Frame-counted map-event chronology (GameEngine.RunMapEvents originally ran once per the
             // fixed 50 Hz frame) - gated the same way as every entity's own pick/run pass.
@@ -1312,6 +1325,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         if (_spawnedEntities.Count != 0)
         {
+            // T2 (§1.5's own table row): "dehors" - port of UpdateEntityLists, which the original runs in
+            // the branch's own `else` (EntityManager.cs:391), i.e. unconditionally of the gate this same
+            // table gates RunPendingEventTriggers/RunMapEventsPass behind.
             RefreshUpdateProxiesAndCollidables();
 
             // Decision D3's own catch-up rescan - same frame-counted shape as RunMapEventsPass above (the
@@ -1320,9 +1336,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // phase-2 loop) is itself part of UpdateEntities, which the look-at update only follows at the
             // very end (see this method's own C1 comment above) - so anything a re-scanned entity's 0x67/
             // 0x64/0x69 does must be visible to THIS frame's camera too, not just the map-events pass'.
-            for (var tick = 0; tick < ticksThisFrame; tick++)
+            //
+            // T2 (§1.5's own table row): "dedans" - second boucle of UpdateEntitiesEvents
+            // (EntityManager.cs:380), frozen behind the same GameplayBlockedMask gate as the pass above.
+            if (!gameplayBlocked)
             {
-                RunPendingEventTriggers(_updateProxies, EventProgramRunner);
+                for (var tick = 0; tick < ticksThisFrame; tick++)
+                {
+                    RunPendingEventTriggers(_updateProxies, EventProgramRunner);
+                }
             }
 
             // Wall/sprite depth interleave (Slice B) - see WallPlacementOverlay's class doc. Gated on the
