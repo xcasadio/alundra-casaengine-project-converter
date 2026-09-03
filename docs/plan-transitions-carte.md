@@ -812,6 +812,30 @@ partageant les objets de session, et validation en jeu.
 le portail réciproque (arrivée en 389 à la tuile (18,38), `PosZ = 8 * 16 << 16` d'après §1.1.f),
 **et constater que l'intro du bateau ne rejoue pas**. Suite DLL verte.
 
+**[R11] T6 ACCEPTÉE EN JEU par l'utilisateur (2026-09-03).** L'aller-retour 389 → 390 → 389
+fonctionne : fondu de départ, arrivée à la bonne tuile et dans la bonne orientation, retour, et
+l'intro du bateau ne rejoue pas. **T0 à T6 sont donc closes.**
+
+**Deux défauts MOTEUR préexistants ont été découverts et corrigés pendant cette validation.** Ni l'un
+ni l'autre ne pouvait se voir avant ce chantier, puisque le jeu ne changeait jamais de monde.
+
+1. **Ressources de composants jamais libérées au démontage d'un monde** (moteur `183f7d87`, pointeur
+   `18b1691`). `Entity.Destroy` ne fait que lever des drapeaux ; rien ne détachait les composants, donc
+   les tampons GPU par bloc de `TileMapComponent` restaient enregistrés sur le périphérique à chaque
+   changement de carte. `ClearEntities` détache désormais l'arbre de composants des entités qu'il jette,
+   ce qui couvre aussi sprites animés, contrôleurs et émetteurs sonores. Les deux abandons de dessin
+   liés aux ressources journalisent maintenant une fois par composant au lieu de se taire.
+2. **Données de carte partagées et mutées** (moteur `1df1fa95`, pointeur `968d3dc`) — **c'était la cause
+   des tuiles disparues**. Le gestionnaire d'assets met les cartes en cache par identifiant et rien ne
+   décharge jamais, donc chaque monde recevait la MÊME instance, dans laquelle
+   `WallPlacementOverlay` retire les tuiles de murs et de sols pour les entrelacer en profondeur. Le
+   calque trié qui les recueille meurt avec le monde : à la deuxième visite les tuiles avaient déjà
+   été retirées, **774 placements de murs sur 774 et 582 de sols sur 582** ne correspondaient plus, et
+   1356 tuiles n'étaient plus dessinées. Le composant travaille désormais sur une copie par monde ;
+   seules les trois listes de tuiles par calque sont dupliquées, le reste est porté tel quel.
+   **Diagnostic obtenu par le journal de partie**, pas par déduction : les deux hypothèses précédentes
+   étaient fausses.
+
 ### T7 — Opcodes `0x53`, `0x9B`, `0x9C` *(tranche séparée, approuvable à part)*
 
 **Contenu** : les trois `case` dans le répartiteur, réutilisant le directeur de T4 ; `0x53` fournit
