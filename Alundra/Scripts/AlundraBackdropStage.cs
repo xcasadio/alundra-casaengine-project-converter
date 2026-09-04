@@ -117,9 +117,21 @@ internal sealed class AlundraBackdropStage
     /// <see cref="AlundraCameraMath.ToOriginalScrollSpace"/> - the single place in the codebase that
     /// performs this conversion - into the original's own <c>g_cameraScrollingX/Y</c> scroll space, fed
     /// to <see cref="BackdropRenderer.Draw"/> alongside the unconverted render-space camera (still
-    /// needed there to place the quads in world space).</summary>
-    internal void UpdateAndDrawBackdrop(float elapsedTime, World? world, Camera2dComponent? resolvedCamera)
+    /// needed there to place the quads in world space).
+    ///
+    /// D-E9-5 (docs/plan-e9-backdrops-residus.md §2, §3 slice B3): <see cref="BackdropRenderer.AdvanceAnimation"/>
+    /// is the FIRST instruction of this method, BEFORE both early-return guards below - it depends on
+    /// neither <paramref name="world"/>'s <c>Game</c> nor the engine's <see cref="SpriteRendererComponent"/>,
+    /// which is exactly what makes the V-animation cadence observable at this production call site
+    /// through a montage where both guards would otherwise short-circuit it (see
+    /// <c>AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World</c>'s own note on why - §1.4).
+    /// <paramref name="ticksThisFrame"/> is <c>AlundraWorldProxy.LogicTicksThisFrame</c>'s result, passed
+    /// in unchanged, same reasoning as every other per-tick advance on that call site (camera follow,
+    /// fade, warp, dialogue).</summary>
+    internal void UpdateAndDrawBackdrop(float elapsedTime, int ticksThisFrame, World? world, Camera2dComponent? resolvedCamera)
     {
+        _backdropRenderer.AdvanceAnimation(ticksThisFrame);
+
         if (!_backdropRenderer.HasContent || world?.Game == null)
         {
             return;

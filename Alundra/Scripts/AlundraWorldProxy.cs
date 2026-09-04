@@ -1517,7 +1517,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // delta (a)), and the resolved camera is passed in rather than re-looked-up (delta (a), the one
         // named for S3) since it is _cameraDirector's own state.
         _backdropStage.ApplyOriginalBackgroundClearColorOnce(_world);
-        _backdropStage.UpdateAndDrawBackdrop(elapsedTime, _world, _cameraDirector.ResolvedCamera);
+        _backdropStage.UpdateAndDrawBackdrop(elapsedTime, ticksThisFrame, _world, _cameraDirector.ResolvedCamera);
 
         // E10.b (docs/plan-e10-fondu.md, §1.6/D-E10-8): the fade pass - positioned here purely for
         // frame-order consistency with the camera/backdrop block above, NOT because it depends on

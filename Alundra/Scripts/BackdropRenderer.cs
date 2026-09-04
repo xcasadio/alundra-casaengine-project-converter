@@ -63,22 +63,46 @@ internal sealed class BackdropRenderer
     /// pins that layer's exact offset). Never read by production code.</summary>
     internal (float OffsetX, float OffsetY)? LastLayerOffsetForTests { get; private set; }
 
-    private readonly struct LayerRuntime
+    /// <summary>
+    /// One loaded Tiles layer. Mutable (unlike the previous <c>readonly struct</c>) purely because
+    /// <see cref="AnimFrameTimer"/>/<see cref="AnimFrameCounter"/> (D-E9-5,
+    /// docs/plan-e9-backdrops-residus.md §2/§3 slice B3) must persist and advance frame over frame for
+    /// the lifetime of the layer - a struct stored in <see cref="_layers"/> would need index-based
+    /// mutation throughout <see cref="AdvanceAnimation"/> for no benefit.
+    /// </summary>
+    private sealed class LayerRuntime
     {
-        public LayerRuntime(BackdropScrollarData scrollar, Texture2D texture, RenderSortKey2D sortKey, Color tint, SpriteBlendMode blendMode)
+        public LayerRuntime(BackdropScrollarData scrollar, Texture2D[] frames, int animTimer, RenderSortKey2D sortKey, Color tint, SpriteBlendMode blendMode)
         {
             Scrollar = scrollar;
-            Texture = texture;
+            Frames = frames;
+            AnimTimer = animTimer;
             SortKey = sortKey;
             Tint = tint;
             BlendMode = blendMode;
         }
 
         public BackdropScrollarData Scrollar { get; }
-        public Texture2D Texture { get; }
+
+        /// <summary>Every V-animation frame's texture, in order - <c>[0]</c> is the layer's original,
+        /// always-present texture. Length is at least 1 (see <see cref="ResolveFrameAssetIds"/>), so
+        /// <see cref="AnimFrameCounter"/> is always a valid index into this array.</summary>
+        public Texture2D[] Frames { get; }
+
+        /// <summary>The layer's own <see cref="BackdropLayerData.AnimTimer"/> (frames the counter holds
+        /// before advancing - §1.2.a).</summary>
+        public int AnimTimer { get; }
+
         public RenderSortKey2D SortKey { get; }
         public Color Tint { get; }
         public SpriteBlendMode BlendMode { get; }
+
+        /// <summary>Ticks accumulated since the counter last advanced (§1.2.a's <c>AnimFrameTimer</c>).</summary>
+        public int AnimFrameTimer { get; set; }
+
+        /// <summary>Index into <see cref="Frames"/> of the frame currently drawn (§1.2.a's
+        /// <c>AnimFrameCounter</c>).</summary>
+        public int AnimFrameCounter { get; set; }
     }
 
     private readonly List<LayerRuntime> _layers = new();
@@ -97,12 +121,79 @@ internal sealed class BackdropRenderer
     public bool HasContent => _layers.Count > 0 || _hasTint;
 
     /// <summary>
+    /// A layer's <see cref="BackdropLayerData.FrameTextureAssetIds"/>, resolved to the array of ids this
+    /// layer's frames actually load from (D-E9-9, docs/plan-e9-backdrops-residus.md §2/§3 slice B3) -
+    /// pure and static so it is testable without a <see cref="GraphicsDevice"/>. A layer with no (or an
+    /// empty) <see cref="BackdropLayerData.FrameTextureAssetIds"/> - every non-animated layer, and every
+    /// companion written before this feature existed - resolves to exactly one id,
+    /// <see cref="BackdropLayerData.TextureAssetId"/>; otherwise the array is returned as given (its
+    /// <c>[0]</c> already equals <see cref="BackdropLayerData.TextureAssetId"/> by construction on the
+    /// converter side).
+    /// </summary>
+    internal static string?[] ResolveFrameAssetIds(BackdropLayerData layer)
+    {
+        if (layer.FrameTextureAssetIds == null || layer.FrameTextureAssetIds.Length == 0)
+        {
+            return new[] { layer.TextureAssetId };
+        }
+
+        return layer.FrameTextureAssetIds;
+    }
+
+    /// <summary>
+    /// Loads one layer's frames in order through <paramref name="loadFrameTexture"/>, applying D-E9-9's
+    /// partial-failure rule: frame 0 failing to load skips the layer entirely (returns
+    /// <see langword="null"/>, same as today - "a layer = a failure = <c>continue</c>"); a later frame
+    /// (<c>f &gt;= 1</c>) failing leaves the layer with only frame 0 loaded, never a partial/sparse
+    /// array. Extracted as its own internal method, independent of <see cref="Texture2D"/>/
+    /// <see cref="World"/> loading machinery, specifically so this rule is testable with a synthetic
+    /// <paramref name="loadFrameTexture"/> delegate and no live <see cref="GraphicsDevice"/> - <see cref="Load"/>
+    /// itself cannot run headless (see its own doc).
+    /// </summary>
+    internal static Texture2D[]? LoadLayerFrames(
+        string?[] frameAssetIds, Func<string, Texture2D?> loadFrameTexture, string worldName, int layerId)
+    {
+        var frames = new List<Texture2D>(frameAssetIds.Length);
+
+        for (var frameIndex = 0; frameIndex < frameAssetIds.Length; frameIndex++)
+        {
+            var frameAssetId = frameAssetIds[frameIndex];
+            var texture2d = string.IsNullOrEmpty(frameAssetId) ? null : loadFrameTexture(frameAssetId);
+
+            if (texture2d == null)
+            {
+                if (frameIndex == 0)
+                {
+                    Logs.WriteWarning(
+                        $"BackdropRenderer: world '{worldName}' layer {layerId} frame 0 texture "
+                        + $"'{frameAssetId}' failed to load; layer skipped.");
+                    return null;
+                }
+
+                // D-E9-9: never a partial array - the frames already loaded after frame 0 are dropped
+                // too, so the layer freezes on frame 0 exactly as the warning says (FIX of the fresh
+                // verifier's F1: a bare `break` here kept frames 1..f-1 when f >= 2 failed).
+                Logs.WriteWarning(
+                    $"BackdropRenderer: world '{worldName}' layer {layerId} frame {frameIndex} texture "
+                    + $"'{frameAssetId}' failed to load; layer falls back to frame 0 only.");
+                return new[] { frames[0] };
+            }
+
+            frames.Add(texture2d);
+        }
+
+        return frames.ToArray();
+    }
+
+    /// <summary>
     /// Loads this world's backdrop companion (see <see cref="BackdropLoader"/>) and resolves each
-    /// Tiles-mode layer's texture through the same asset path every other converter texture uses
+    /// Tiles-mode layer's frame textures (D-E9-5/D-E9-9: <see cref="ResolveFrameAssetIds"/> then
+    /// <see cref="LoadLayerFrames"/>) through the same asset path every other converter texture uses
     /// (<see cref="Texture"/> wrapper -&gt; <c>AssetContentManager.Load&lt;Texture&gt;</c>, mirroring
     /// <c>Sprite.Load</c>/<c>TileMapComponent</c>'s own tile-sheet lookup). A layer whose texture id is
-    /// missing, unparsable, or fails to load is skipped with one warning; nothing else about the world
-    /// load is affected.
+    /// missing, unparsable, or whose frame 0 fails to load is skipped with one warning; a later frame
+    /// failing degrades the layer to frame 0 only (D-E9-9); nothing else about the world load is
+    /// affected.
     /// </summary>
     public void Load(World world, string projectPath)
     {
@@ -137,43 +228,44 @@ internal sealed class BackdropRenderer
                 continue;
             }
 
-            if (!Guid.TryParse(layer.TextureAssetId, out var textureAssetId))
+            Texture2D? LoadFrameTexture(string assetIdString)
             {
-                Logs.WriteWarning(
-                    $"BackdropRenderer: world '{world.Name}' layer {layer.LayerId} has an unparsable "
-                    + $"TextureAssetId '{layer.TextureAssetId}'; layer skipped.");
-                continue;
+                if (!Guid.TryParse(assetIdString, out var textureAssetId))
+                {
+                    Logs.WriteWarning(
+                        $"BackdropRenderer: world '{world.Name}' layer {layer.LayerId} has an unparsable "
+                        + $"TextureAssetId '{assetIdString}'.");
+                    return null;
+                }
+
+                try
+                {
+                    var wrapperTexture = world.Game.AssetContentManager.Load<CasaEngineTexture>(textureAssetId);
+
+                    // Two-step asset: Load<CasaEngineTexture> alone only reads the wrapper document -
+                    // its inner Texture2D is materialized by the SECOND call below, the exact call
+                    // TileMapComponent.cs:901-902 makes for tilesets. Skipping it left .Resource null
+                    // for EVERY backdrop layer on EVERY map since this renderer was written: the
+                    // degraded branch below fired each time, its warning went unread, and no headless
+                    // test can reach this line (it needs a live GraphicsDevice - the known-uncovered
+                    // link this file's tests document). Found when E10's witness-map check came back
+                    // "no additive effect" on Fairy cave (underwater)-159.
+                    wrapperTexture?.Load(world.Game.AssetContentManager);
+                    return wrapperTexture?.Resource;
+                }
+                catch (Exception ex)
+                {
+                    Logs.WriteWarning(
+                        $"BackdropRenderer: world '{world.Name}' layer {layer.LayerId} texture "
+                        + $"'{textureAssetId}' failed to load ({ex.Message}).");
+                    return null;
+                }
             }
 
-            Texture2D? texture2d;
-            try
+            var frameAssetIds = ResolveFrameAssetIds(layer);
+            var frames = LoadLayerFrames(frameAssetIds, LoadFrameTexture, world.Name, layer.LayerId);
+            if (frames == null)
             {
-                var wrapperTexture = world.Game.AssetContentManager.Load<CasaEngineTexture>(textureAssetId);
-
-                // Two-step asset: Load<CasaEngineTexture> alone only reads the wrapper document -
-                // its inner Texture2D is materialized by the SECOND call below, the exact call
-                // TileMapComponent.cs:901-902 makes for tilesets. Skipping it left .Resource null
-                // for EVERY backdrop layer on EVERY map since this renderer was written: the
-                // degraded branch below fired each time, its warning went unread, and no headless
-                // test can reach this line (it needs a live GraphicsDevice - the known-uncovered
-                // link this file's tests document). Found when E10's witness-map check came back
-                // "no additive effect" on Fairy cave (underwater)-159.
-                wrapperTexture?.Load(world.Game.AssetContentManager);
-                texture2d = wrapperTexture?.Resource;
-            }
-            catch (Exception ex)
-            {
-                Logs.WriteWarning(
-                    $"BackdropRenderer: world '{world.Name}' layer {layer.LayerId} texture "
-                    + $"'{textureAssetId}' failed to load ({ex.Message}); layer skipped.");
-                continue;
-            }
-
-            if (texture2d == null)
-            {
-                Logs.WriteWarning(
-                    $"BackdropRenderer: world '{world.Name}' layer {layer.LayerId} texture "
-                    + $"'{textureAssetId}' resolved to null; layer skipped.");
                 continue;
             }
 
@@ -182,7 +274,7 @@ internal sealed class BackdropRenderer
 
             var (blendMode, tint) = ResolveGroundLayerBlend(layer.Ground, layer.BlendMode);
 
-            _layers.Add(new LayerRuntime(layer.Scrollar, texture2d, sortKey, tint, blendMode));
+            _layers.Add(new LayerRuntime(layer.Scrollar, frames, layer.AnimTimer, sortKey, tint, blendMode));
         }
     }
 
@@ -231,6 +323,39 @@ internal sealed class BackdropRenderer
     public void Tick(float elapsedTime)
     {
         _elapsedTicks += elapsedTime * BackdropOffsetMath.TicksPerSecond;
+    }
+
+    /// <summary>
+    /// Replays the original's V-animation cadence (D-E9-5, docs/plan-e9-backdrops-residus.md §1.2.a/§2):
+    /// for each of <paramref name="ticks"/> logic ticks, for every layer, in timer-then-counter order -
+    /// <c>if (++AnimFrameTimer &gt; AnimTimer) { if (++AnimFrameCounter &gt;= animNum) AnimFrameCounter = 0; AnimFrameTimer = 0; }</c>
+    /// - exactly as the original applies it once per logic tick, BEFORE that tick's draw (see
+    /// <see cref="AlundraBackdropStage.UpdateAndDrawBackdrop"/>, which calls this first). The loop's
+    /// <c>animNum</c> is <see cref="LayerRuntime.Frames"/>' length, NEVER
+    /// <see cref="BackdropDocument.AnimNum"/> - it is therefore always at least 1 and
+    /// <see cref="LayerRuntime.AnimFrameCounter"/> is always a valid index, even for a companion whose
+    /// document-level <c>AnimNum</c> disagrees with how many frames actually got resolved/loaded. A
+    /// one-frame layer runs the same loop; its counter always resets back to 0.
+    /// </summary>
+    public void AdvanceAnimation(int ticks)
+    {
+        for (var tick = 0; tick < ticks; tick++)
+        {
+            foreach (var layer in _layers)
+            {
+                layer.AnimFrameTimer++;
+                if (layer.AnimFrameTimer > layer.AnimTimer)
+                {
+                    layer.AnimFrameCounter++;
+                    if (layer.AnimFrameCounter >= layer.Frames.Length)
+                    {
+                        layer.AnimFrameCounter = 0;
+                    }
+
+                    layer.AnimFrameTimer = 0;
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -321,6 +446,10 @@ internal sealed class BackdropRenderer
 
             var origins = BackdropOffsetMath.ComputeCoveringQuadOrigins(viewportWidth, viewportHeight, offsetX, offsetY);
 
+            // D-E9-5: draws the frame AdvanceAnimation's counter currently points at - advance-then-draw
+            // within the same tick, exactly like the original (§1.2.a precedes §1.2.b/GraphicManager.cs:943).
+            var frame = layer.Frames[layer.AnimFrameCounter];
+
             foreach (var origin in origins)
             {
                 var worldPosition = new Vector2(
@@ -328,8 +457,8 @@ internal sealed class BackdropRenderer
                     cameraPosition.Y + (halfHeight - origin.Y));
 
                 spriteRenderer.DrawSprite(
-                    layer.Texture,
-                    layer.Texture.Bounds,
+                    frame,
+                    frame.Bounds,
                     Point.Zero,
                     worldPosition,
                     0f,

@@ -139,7 +139,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
     private const string TileMapEntityName = "tileMap";
     private const int RenderLayerCount = 4;
 
-    private static string FindProjectRoot()
+    internal static string FindProjectRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory is not null)
@@ -158,7 +158,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
             + $"'{AppContext.BaseDirectory}' - the [R5] test needs the real converter export of map 389.");
     }
 
-    private static TileMapData LoadRealTileMapData(string projectRoot)
+    internal static TileMapData LoadRealTileMapData(string projectRoot)
     {
         var tileMapPath = Path.Combine(
             projectRoot, "Maps", "The Klark", "Ship Klark (beginning)-389", "tilemap",
@@ -173,7 +173,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
         return tileMapData;
     }
 
-    private static TileSetData LoadRealVisualTileSet(string projectRoot, TileMapData tileMapData)
+    internal static TileSetData LoadRealVisualTileSet(string projectRoot, TileMapData tileMapData)
     {
         var assetInfos = JObject.Parse(File.ReadAllText(Path.Combine(projectRoot, "AssetInfos.json")));
         var pathById = new Dictionary<Guid, string>();
@@ -194,28 +194,28 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
         return tileSetData;
     }
 
-    private static List<TileMapLayer> GetLayers(TileMapComponent component)
+    internal static List<TileMapLayer> GetLayers(TileMapComponent component)
     {
         var property = typeof(TileMapComponent).GetProperty("Layers", BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(property);
         return (List<TileMapLayer>)property!.GetValue(component)!;
     }
 
-    private static List<T> GetPrivateList<T>(TileMapComponent component, string fieldName)
+    internal static List<T> GetPrivateList<T>(TileMapComponent component, string fieldName)
     {
         var field = typeof(TileMapComponent).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(field);
         return (List<T>)field!.GetValue(component)!;
     }
 
-    private static void InvokeBuildChunks(TileMapComponent component, TileMapLayer layer, int layerIndex)
+    internal static void InvokeBuildChunks(TileMapComponent component, TileMapLayer layer, int layerIndex)
     {
         var method = typeof(TileMapComponent).GetMethod("BuildChunks", BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(method);
         method!.Invoke(component, new object[] { layer, layerIndex });
     }
 
-    private static void SetProperty<TTarget, TValue>(TTarget target, string propertyName, TValue value)
+    internal static void SetProperty<TTarget, TValue>(TTarget target, string propertyName, TValue value)
     {
         var property = typeof(TTarget).GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         Assert.NotNull(property);
@@ -227,7 +227,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
     /// class' own helpers are private) because THIS test needs the raw <see cref="World"/>/<see cref="Entity"/>
     /// BEFORE any proxy touches them, to call <see cref="AlundraWorldProxy.InitializeWithWorld"/> directly
     /// instead of <c>InstallCellAndOverlaySystems</c>.</summary>
-    private static (World World, Entity TileMapEntity) BuildRealMap389World()
+    internal static (World World, Entity TileMapEntity) BuildRealMap389World()
     {
         var projectRoot = FindProjectRoot();
         var tileMapData = LoadRealTileMapData(projectRoot);
@@ -271,7 +271,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
         return (world, tileMapEntity);
     }
 
-    private sealed class StubTile : Tile
+    internal sealed class StubTile : Tile
     {
         public StubTile() : base(null)
         {
