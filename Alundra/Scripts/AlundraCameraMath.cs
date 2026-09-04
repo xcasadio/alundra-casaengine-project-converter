@@ -47,8 +47,12 @@ internal static class AlundraCameraMath
     /// <c>StaticVariables.ScreenHeight</c> in the decompilation) - a DIFFERENT, framebuffer-crop constant
     /// this camera's own scroll math never reads.
     /// </summary>
-    private const float CameraVisibleWidth = 320f;
-    private const float CameraVisibleHeight = 240f;
+    // Internal since E9.a B5 (docs/plan-e9-backdrops-residus.md §5): the backdrop stage anchors its
+    // 640x480 canvas on the original's own 320x240 framebuffer, i.e. on these two constants in WORLD
+    // units - never on the window's pixel size (CasaEngineGame.ScreenSizeWidth/Height), which the
+    // camera zoom (ComputeCameraZoom) maps onto this very rectangle.
+    internal const float CameraVisibleWidth = 320f;
+    internal const float CameraVisibleHeight = 240f;
 
     /// <summary>
     /// FIX (fresh verifier of cc1fc60), investigated in <c>GraphicManager.cs</c>/<c>StaticVariables.cs</c>:

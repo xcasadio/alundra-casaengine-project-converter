@@ -256,6 +256,42 @@ public class BackdropRendererTests
         Assert.Equal(239f, offset.Value.OffsetY);
     }
 
+    /// <summary>
+    /// E9.a B5 (docs/plan-e9-backdrops-residus.md §5, map 159): the production site anchors the canvas
+    /// on the ORIGINAL's 320x240 framebuffer in world units, never on the window's pixel size. The
+    /// montage therefore gives the game the REAL window size in pixels (1280x944, the launcher's
+    /// DebugWidth/Height - the camera zoom of 4 maps it onto the 320x236 view): a screen-fixed layer
+    /// (parallax factors 0/1, the shape of map 159's band) at Target = (1087, -839) must be submitted
+    /// as exactly ONE covering quad whose top-left is the screen's top-left, Target + (-160, +120) =
+    /// (927, -719) (E5: Target is the framebuffer centre). With the pixel size the stage used to pass,
+    /// Draw took half-extents of (640, 472): four quads, the first at (447, -367) - the defect that put
+    /// map 159's band at screen row 126 instead of 0 (B4). The renderer stores a quad's centre,
+    /// top-left + (width / 2, -height / 2) in the Y-up world, hence the bounds terms.
+    /// </summary>
+    [Fact]
+    public void UpdateAndDrawBackdrop_ProductionSite_AnchorsTheCanvasOnTheOriginalScreen_NotOnTheWindowPixels()
+    {
+        var stage = new AlundraBackdropStage();
+        var renderer = GetStageBackdropRenderer(stage);
+        AddOneScreenFixedLayer(renderer);
+
+        var spriteRenderer = CreateSpriteRendererComponent();
+        var world = BuildWorldWithGame((CasaEngineGame)spriteRenderer.Game, viewportWidth: 1280, viewportHeight: 944);
+        var camera = new Camera2dComponent { Target = new Vector3(1087f, -839f, 0f) };
+
+        stage.UpdateAndDrawBackdrop(elapsedTime: 0f, ticksThisFrame: 0, world, camera);
+
+        var quad = Assert.Single(ReadLayerQuadTranslations(spriteRenderer));
+        var bounds = ((Texture2D)GetField(GetSpriteDatas(spriteRenderer)[0]!, "Texture")).Bounds;
+        Assert.Equal(1087f - 160f + bounds.Width / 2f, quad.X);
+        Assert.Equal(-839f + 120f - bounds.Height / 2f, quad.Y);
+
+        var offset = renderer.LastLayerOffsetForTests;
+        Assert.NotNull(offset);
+        Assert.Equal(0f, offset!.Value.OffsetX);
+        Assert.Equal(0f, offset.Value.OffsetY);
+    }
+
     // ---- D-E9-5/D-E9-9 (docs/plan-e9-backdrops-residus.md §3, slice B3): V-animation replay ----------
 
     /// <summary>
@@ -544,6 +580,34 @@ public class BackdropRendererTests
         {
             FactorXNum = 1, FactorXDenom = 1,
             FactorYNum = 1, FactorYDenom = 1,
+            ScrollXSpeed = 0, ScrollXPeriod = 0,
+            ScrollYSpeed = 0, ScrollYPeriod = 0,
+        };
+
+        var frames = new[] { CreateTexture() };
+        var sortKey = new RenderSortKey2D((int)RenderPass2D.Effects, 0, 0, 0, 0, 0, 0);
+
+        var layerRuntimeType = typeof(BackdropRenderer).GetNestedType("LayerRuntime", BindingFlags.NonPublic);
+        Assert.NotNull(layerRuntimeType);
+        var layer = Activator.CreateInstance(
+            layerRuntimeType!, scrollar, frames, 0, sortKey, Color.White, SpriteBlendMode.AlphaBlend);
+
+        var layersField = typeof(BackdropRenderer).GetField("_layers", BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.NotNull(layersField);
+        var layers = (System.Collections.IList)layersField!.GetValue(renderer)!;
+        layers.Add(layer);
+    }
+
+    /// <summary>
+    /// A screen-fixed layer - parallax factors 0/1 on both axes, no auto-scroll, the shape of map
+    /// 159's band - so the covering-quad origin is (0, 0) whatever the camera Target (E9.a B5).
+    /// </summary>
+    private static void AddOneScreenFixedLayer(BackdropRenderer renderer)
+    {
+        var scrollar = new BackdropScrollarData
+        {
+            FactorXNum = 0, FactorXDenom = 1,
+            FactorYNum = 0, FactorYDenom = 1,
             ScrollXSpeed = 0, ScrollXPeriod = 0,
             ScrollYSpeed = 0, ScrollYPeriod = 0,
         };

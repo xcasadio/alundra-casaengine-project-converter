@@ -147,8 +147,18 @@ internal sealed class AlundraBackdropStage
 
         var cameraPosition = resolvedCamera?.Target ?? Vector3.Zero;
         var scroll = AlundraCameraMath.ToOriginalScrollSpace(cameraPosition);
+
+        // E9.a B5 (docs/plan-e9-backdrops-residus.md §5, map 159): the view size handed to Draw is the
+        // ORIGINAL's 320x240 framebuffer in world units, not the window's pixel size. Draw uses it as
+        // world half-extents to anchor the canvas' top-left on the screen's top-left (E5: the camera
+        // Target is the framebuffer centre, so top-left = Target + (-160, +120)) and to tile the covering
+        // quads. With the window's 1280x944 pixels (zoom 4 maps them onto this same 320x236 view) the
+        // half-height became 472 world units: four canvas copies, and the one shifted by 480 put its
+        // row 0 at camera.Y - 8, i.e. the band of map 159 started at screen row 126 instead of 0 - an
+        // 8/640-pixel shift that the periodic clouds of map 389 could never show.
         _backdropRenderer.Draw(
-            spriteRenderer, scroll.X, scroll.Y, cameraPosition, world.Game.ScreenSizeWidth, world.Game.ScreenSizeHeight);
+            spriteRenderer, scroll.X, scroll.Y, cameraPosition,
+            (int)AlundraCameraMath.CameraVisibleWidth, (int)AlundraCameraMath.CameraVisibleHeight);
     }
 
     /// <summary>
