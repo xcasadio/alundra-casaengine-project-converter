@@ -520,7 +520,20 @@ trame 0 est illisible ; `LoadLayerFrames` sur un tableau vide rendrait `Texture2
 `AlundraWorldProxyGlobalFreezeTests` passées `internal` pour réutiliser le montage 389.
 
 **État du chantier** : B1, B2, B3 commis ; l'arbre `alundra-project/` est l'export corrigé (trames +
-texte décodé) et `Alundra.dll` y est déposée par le dernier build. **B4 en attente de l'utilisateur**
-(389 sans régression ; 159 avec `FirstWorldLoaded` pointé sur
-`Maps\Fairy cave\Fairy cave (underwater)-159\Fairy cave (underwater)-159.world` dans
-`alundra-project/AlundraGame.json`, ligne 8, par lui).
+texte décodé) et `Alundra.dll` y est déposée par le dernier build. `data-extracted/` rafraîchi depuis
+le remaster (décision utilisateur, miroir `robocopy` depuis PowerShell, identité prouvée 0/4450).
+
+**B4 (2026-09-04)** : **389 validée** par l'utilisateur, aucune régression. **159 : « juste un bout de
+l'effet »** — enquête en session, règle du journal d'abord : le journal est propre (les quatre
+trames de la couche 0 chargées, aucun repli). Les trames cuites n'ont du contenu que dans les 96 px
+du haut, dans les quatre phases. Mesuré sur la source : la grille 40×30 de la 159 n'a que **six
+lignes de tuiles** (rows 0-5, tuiles `05`/`01-04`/`11-14`/`21-24`/`31-34`, V-rows 0/16/32/48, le
+reste à zéro), et l'original saute lui aussi `tileVal == 0` (`GraphicManager.cs:971-973`) ; le
+calque est fixé à l'écran (`Scrollar` 0/1 sur les deux axes, aucun auto-défilement), `Ground = 1`,
+`BlendMode = 2` (overlay additif, `RenderPass2D.Effects`) ; les phases V décalent à peine le bord
+ondulé de la bande. `WaveLut` re-vérifié sous toutes les orthographes : lecteurs cellulaires
+seulement (`:1190-1209`, tick `:1011`). Ancrage DLL = original (tuile (0,0) en haut à gauche de
+l'écran, décalage 0). **Conclusion provisoire** : d'après les données, ce calque *est* une bande
+scintillante de 96 px en haut de l'écran ; l'attente « la lueur anime toute la caverne » héritée de
+la clôture d'E10 n'est **pas** soutenue par les données. Suite suspendue à l'utilisateur : capture du
+port, et ce que montre l'original sur la 159.
