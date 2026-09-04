@@ -572,3 +572,48 @@ un rectangle en pixels-machine qui ne signifie plus « tout l'écran » ; sans e
 240), à corriger en prenant le rectangle du périphérique plutôt que la taille de vue monde ; **A2 P4,
 préexistant** — le port affiche 236 des 240 lignes **centrées** (zoom `/236`, `Target` au centre
 d'une fenêtre de 240), l'original recadre peut-être asymétriquement : au plus deux lignes.
+
+---
+
+## 6. Clôture d'E9.a (2026-09-04)
+
+**Validé en jeu par l'utilisateur** : 389 sans régression, 159 conforme à la référence du jeu C#
+décompilé (brume en haut, pleine largeur, vague animée). Tranches livrées : B1 `82ad020`, B2
+`75dc032`, B3 `394cf55`, **B5 `14d94e0`** (ajout de chantier : ancrage de la toile, racine trouvée
+par capture d'écran et profil de luminosité). Suites : `Alundra.Tests` 782/782, convertisseur
+153/153 ; export corrigé en place (trames + texte décodé), `data-extracted/` rafraîchi et prouvé
+identique au remaster. `WaveLut` : hors périmètre, inscrit au chantier du mode cellulaire (D-E9-7).
+
+**Chasse contradictoire post-B5** (3 lentilles lecture seule, 2 sceptiques par candidat) : **aucun
+autre défaut pixels/monde visible** dans la DLL. Réfutés comme défauts visibles (mécanique exacte,
+effet nul) : le rectangle de ciseaux 320×240 (A1) ; l'overlay moteur `ScreenEffectComponent`
+(`SubmitOverlay(…, ScreenSizeWidth, ScreenSizeHeight)`) dimensionné en pixels pris pour des unités
+monde — correct par sur-couverture, chemin du fondu E10.b compris ; le zoom caméra dérivé une fois
+du viewport pixel et jamais rafraîchi (`OnScreenResized` ne réécrit que `_viewport`) — sans
+déclencheur atteignable dans le runtime Alundra.
+
+**Suites différées (à reprendre, par priorité)** :
+- **P3** — biais de centrage E5 : la vue moteur montre les lignes [2, 238) de la fenêtre de
+  défilement de 240 alors que l'original affiche [0, 236) — décalage uniforme de 2 px de toute la
+  scène (tuiles, entités, fond), propriété de la caméra E5, pas du fond ; à confronter au blit de
+  `Renderer.cs` décompilé si l'exactitude au pixel importe un jour.
+- **P3** — rectangle de ciseaux de `BackdropRenderer.Draw` (A1) : le prendre sur le périphérique
+  (ou ne pas le passer : les surcharges sans `scissorRectangle` prennent celui du device), et
+  séparer les deux rôles des paramètres de taille de `Draw` (demi-étendues monde vs ciseaux pixels).
+- **P3 (moteur, doc)** — `ScreenEffectComponent` sur-dimensionné en pixels-monde ; sa doc affirme
+  une parité avec le bloc de teinte de la DLL qui n'est plus vraie depuis B5.
+- **P4** — fenêtre redimensionnable (`AllowUserResizing`) : la couverture codée 320×240 suppose le
+  rapport 320:236 ; un rapport plus large laisserait les bords découverts ; le zoom n'est pas
+  recalculé. Décider si le port suit le redimensionnement ou verrouille le rapport.
+- **P4** — marge horizontale nulle : un `Target` fractionnaire (pan de débogage) peut découvrir une
+  colonne de 1 pixel-machine ; sans effet avec les `Target` entiers du suivi caméra.
+- **P4 (moteur, latent)** — overlay à z = 0 testé en profondeur contre les plans de tuiles
+  (0.1/0.2/0.3), sûr parce qu'E7 vide ces plans ; overlay mis en file une fois par `Update`, sûr
+  parce qu'`IsFixedTimeStep` est faux (1 Update : 1 Draw).
+- Les P4 de B1 (seam d'observation, test delta, doc de troncature), B2 (`isFullRun` O(n²),
+  constante de corpus 153) et B3 (double avertissement, tableau d'ids vide inatteignable).
+
+**Prochaine étape naturelle** : E9.b — migrer le rendu des fonds vers le composant moteur
+`ScrollParameters` (`docs/plan-conversion-totale.md:506-511`) avec **une seule horloge** (D-E9-6),
+en reprenant les suites P3 ci-dessus dans son périmètre ; les corrections B1–B5 en sont la
+référence visuelle et les pins de site de production (B1, B3, B5) ses tests de non-régression.
