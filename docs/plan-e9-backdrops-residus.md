@@ -537,3 +537,38 @@ l'écran, décalage 0). **Conclusion provisoire** : d'après les données, ce ca
 scintillante de 96 px en haut de l'écran ; l'attente « la lueur anime toute la caverne » héritée de
 la clôture d'E10 n'est **pas** soutenue par les données. Suite suspendue à l'utilisateur : capture du
 port, et ce que montre l'original sur la 159.
+
+**B5 — la toile ancrée sur l'écran de l'original (ajout de chantier, 2026-09-04).** L'utilisateur
+a fourni la référence (jeu C# décompilé) : brume **en haut** de l'écran, pleine largeur, bord
+ondulé animé — ce que les données décrivent. Capture du port par la session (lanceur lancé depuis
+PowerShell, `CopyFromScreen`) et **profil de luminosité par ligne** : la bande du port est complète
+(88 px, mélange additif juste : 98,7 sur le vide, ~130 sur le sol) mais commence à la ligne d'écran
+**126** au lieu de 0. Racine : `AlundraBackdropStage.UpdateAndDrawBackdrop` passait
+`world.Game.ScreenSizeWidth/Height` — la taille de la fenêtre en **pixels** (1280×944,
+`CasaEngineGame.ScreenSizeHeight` = BackBufferHeight) — que `BackdropRenderer.Draw` emploie comme
+demi-étendues en **unités monde** (le zoom `944 / 236 = 4` ramène la fenêtre sur la vue 320×236).
+D'où `halfHeight = 472` au lieu de 120, 2×2 copies de toile (`ComputeCoveringOrigins1D`), et la copie
+décalée de 480 dont la ligne 0 tombe à `camera.Y − 8`, soit la ligne d'écran 118 + 8 = 126 — au
+pixel près. Sur la 389 (nuages périodiques 640×480), les décalages de 640 en X et 8 en Y étaient
+invisibles. **Pourquoi le pin de B1 ne l'a pas vu** : son montage `BuildWorldWithGame(…, 320, 240)`
+donnait au jeu de test une taille « en unités monde » — famille « vert et inerte ».
+**Correction** : le stage passe `AlundraCameraMath.CameraVisibleWidth/Height` (320×240, passés
+`internal`) — coin haut-gauche de la toile = coin du framebuffer PSX = `Target + (−160, +120)` (E5) ;
+le quad de teinte suit. **Pin** `UpdateAndDrawBackdrop_ProductionSite_AnchorsTheCanvasOnTheOriginalScreen_NotOnTheWindowPixels`
+: jeu de test à **1280×944 pixels**, couche à facteur 0/1, `Target = (1087, −839)` → exactement **un**
+quad, coin haut-gauche (927, −719), offsets (0, 0). Mutation à la main (retour aux pixels) : le pin
+tombe — `Assert.Single` sur 4 éléments, `(447, −367), (1087, −367), (447, −847), (1087, −847)` —
+les valeurs prédites. `Alundra.Tests` **782/782**. Capture du port corrigé : bande de la ligne 0 à ~84,
+superposable à la référence. Le seam `LastLayerOffsetForTests` de B1 reste ; la mesure par capture
+d'écran est la méthode à réutiliser pour tout bug visuel de placement.
+**Vérification fraîche : CONFIRMED** (dérivation indépendante du coin depuis
+`ToOriginalScrollSpace` seule ; un seul quad prouvé par `ComputeCoveringOrigins1D(320, 0, 640)` ;
+ancrage à +120 et non +118 justifié — c'est l'origine du défilement passé au même appel ; quad de
+teinte = exactement le rectangle 320×240 de `RenderTileOverlayLayer` ; plus aucun lecteur de
+`ScreenSizeWidth/Height` dans la DLL hors commentaire). Deux avis différés : **A1 P3, introduit,
+inerte** — `Draw` passe `fullViewport = (0, 0, 320, 240)` comme rectangle de **ciseaux** aux sprites,
+un rectangle en pixels-machine qui ne signifie plus « tout l'écran » ; sans effet tant que
+`CullCounterClockwise` laisse `ScissorTestEnable` faux (capture : pixels bien au-delà de la ligne
+240), à corriger en prenant le rectangle du périphérique plutôt que la taille de vue monde ; **A2 P4,
+préexistant** — le port affiche 236 des 240 lignes **centrées** (zoom `/236`, `Target` au centre
+d'une fenêtre de 240), l'original recadre peut-être asymétriquement : au plus deux lignes.
