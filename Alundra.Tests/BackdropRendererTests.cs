@@ -7,6 +7,8 @@ using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Application.Components;
 using CasaEngine.Framework.Rendering.Depth;
+using CasaEngine.Framework.Scene.Entities.Components;
+using CasaEngine.Framework.Scene.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Xunit;
@@ -107,7 +109,7 @@ public class BackdropRendererTests
 
         var spriteRenderer = CreateSpriteRendererComponent();
 
-        renderer.Draw(spriteRenderer, cameraPosition: Vector3.Zero, viewportWidth: 320, viewportHeight: 240);
+        renderer.Draw(spriteRenderer, scrollX: 0, scrollY: 0, renderCamera: Vector3.Zero, viewportWidth: 320, viewportHeight: 240);
 
         var spriteDatas = GetSpriteDatas(spriteRenderer);
         Assert.Single(spriteDatas);
@@ -171,11 +173,14 @@ public class BackdropRendererTests
     /// The user's own bug report, first visible the day the backdrop textures finally loaded: "des que
     /// la camera se deplace verticalement les nuages bougent plus vite". Map 389's cloud layer has
     /// parallax factor 1/1 on BOTH axes - it must be GLUED TO THE WORLD, moving on screen exactly like
-    /// the tiles. The defect: Draw fed the RENDER-space camera Y (up-positive) into
-    /// ComputeLayerOffset, where the original consumes a WORLD-space scroll (down-positive,
-    /// g_cameraScrollingY) - so the vertical parallax term carried the wrong sign and the layer
-    /// drifted at TWICE the camera's vertical movement. X was fine (no flip on that axis), which is
-    /// why the symptom was vertical-only.
+    /// the tiles. The original defect (pre-D-E9-1) was Draw itself feeding the RENDER-space camera Y
+    /// (up-positive) into ComputeLayerOffset, where the original consumes a WORLD-space scroll
+    /// (down-positive, g_cameraScrollingY) - so the vertical parallax term carried the wrong sign and
+    /// the layer drifted at TWICE the camera's vertical movement. X was fine (no flip on that axis),
+    /// which is why the symptom was vertical-only. Since D-E9-1 that conversion lives solely in
+    /// <see cref="AlundraCameraMath.ToOriginalScrollSpace"/>, so this test now drives Draw the same way
+    /// the production call site does - through that conversion - rather than by feeding Draw a raw
+    /// render-space Y directly.
     ///
     /// Discriminating invariant, at the production call site (Draw): with factor 1/1 and no
     /// auto-scroll, the submitted quads' world positions must be IDENTICAL for two camera positions
@@ -192,12 +197,14 @@ public class BackdropRendererTests
         // Deltas chosen well inside one 480-px canvas period so no wrap boundary is crossed.
         var cameraA = new Vector3(0f, -100f, 0f);
         var cameraB = new Vector3(0f, -110f, 0f);
+        var scrollA = AlundraCameraMath.ToOriginalScrollSpace(cameraA);
+        var scrollB = AlundraCameraMath.ToOriginalScrollSpace(cameraB);
 
-        renderer.Draw(spriteRenderer, cameraA, viewportWidth: 320, viewportHeight: 240);
+        renderer.Draw(spriteRenderer, scrollA.X, scrollA.Y, cameraA, viewportWidth: 320, viewportHeight: 240);
         var quadsA = ReadLayerQuadTranslations(spriteRenderer);
         GetSpriteDatas(spriteRenderer).Clear();
 
-        renderer.Draw(spriteRenderer, cameraB, viewportWidth: 320, viewportHeight: 240);
+        renderer.Draw(spriteRenderer, scrollB.X, scrollB.Y, cameraB, viewportWidth: 320, viewportHeight: 240);
         var quadsB = ReadLayerQuadTranslations(spriteRenderer);
 
         Assert.NotEmpty(quadsA);
@@ -213,6 +220,95 @@ public class BackdropRendererTests
 
         // Horizontal guard: X was never affected and must stay world-glued too.
         Assert.Equal(Mod(quadsA[0].X, 640f), Mod(quadsB[0].X, 640f), precision: 3);
+    }
+
+    // ---- D-E9-1 (docs/plan-e9-backdrops-residus.md §3, slice B1): parallax on the clamped scroll ----
+
+    /// <summary>
+    /// Site-of-production pin: drives <see cref="AlundraBackdropStage.UpdateAndDrawBackdrop"/> itself
+    /// (not <see cref="BackdropRenderer.Draw"/> directly) with the resolved camera's render-space
+    /// <c>Target</c> set to the 389's own far corner (<c>(1087, -839, 0)</c>, the frozen E5 bound - see
+    /// <see cref="AlundraCameraMath.ToOriginalScrollSpace"/>'s own doc), a single factor-1/1 tiles
+    /// layer, and zero auto-scroll. Asserts the ABSOLUTE wrapped offset via
+    /// <see cref="BackdropRenderer.LastLayerOffsetForTests"/> (the observation seam this slice adds -
+    /// <see cref="BackdropRenderer.Draw"/>'s own quad world positions do not expose it without
+    /// inverting the covering-quad tiling math): <c>offsetX = (1087 - 160) mod 640 = 927 mod 640 =
+    /// 287</c>, <c>offsetY = (-(-839) - 120) mod 480 = 719 mod 480 = 239</c> - computed by D-E9-1's
+    /// formula and no other (see the plan's own mutation table: feeding the raw <c>Target</c> instead
+    /// of the converted scroll gives 447; a residual <c>-scrollY</c> in <c>Draw</c> gives 241).
+    /// </summary>
+    [Fact]
+    public void UpdateAndDrawBackdrop_ProductionSite_PinsAbsoluteParallaxOffset_OnClampedScroll()
+    {
+        var stage = new AlundraBackdropStage();
+        var renderer = GetStageBackdropRenderer(stage);
+        AddOneFactor1Layer(renderer);
+
+        var spriteRenderer = CreateSpriteRendererComponent();
+        var world = BuildWorldWithGame((CasaEngineGame)spriteRenderer.Game, viewportWidth: 320, viewportHeight: 240);
+        var camera = new Camera2dComponent { Target = new Vector3(1087f, -839f, 0f) };
+
+        stage.UpdateAndDrawBackdrop(elapsedTime: 0f, world, camera);
+
+        var offset = renderer.LastLayerOffsetForTests;
+        Assert.NotNull(offset);
+        Assert.Equal(287f, offset!.Value.OffsetX);
+        Assert.Equal(239f, offset.Value.OffsetY);
+    }
+
+    private static BackdropRenderer GetStageBackdropRenderer(AlundraBackdropStage stage)
+    {
+        var field = typeof(AlundraBackdropStage).GetField("_backdropRenderer", BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.NotNull(field);
+        return (BackdropRenderer)field!.GetValue(stage)!;
+    }
+
+    private static void AddOneFactor1Layer(BackdropRenderer renderer)
+    {
+        var scrollar = new BackdropScrollarData
+        {
+            FactorXNum = 1, FactorXDenom = 1,
+            FactorYNum = 1, FactorYDenom = 1,
+            ScrollXSpeed = 0, ScrollXPeriod = 0,
+            ScrollYSpeed = 0, ScrollYPeriod = 0,
+        };
+
+        var texture = CreateTexture();
+        var sortKey = new RenderSortKey2D((int)RenderPass2D.Effects, 0, 0, 0, 0, 0, 0);
+
+        var layerRuntimeType = typeof(BackdropRenderer).GetNestedType("LayerRuntime", BindingFlags.NonPublic);
+        Assert.NotNull(layerRuntimeType);
+        var layer = Activator.CreateInstance(
+            layerRuntimeType!, scrollar, texture, sortKey, Color.White, SpriteBlendMode.AlphaBlend);
+
+        var layersField = typeof(BackdropRenderer).GetField("_layers", BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.NotNull(layersField);
+        var layers = (System.Collections.IList)layersField!.GetValue(renderer)!;
+        layers.Add(layer);
+    }
+
+    /// <summary>
+    /// Builds a headless <see cref="World"/> whose <see cref="World.Game"/> is <paramref name="game"/>
+    /// (set via reflection - the property's setter is private) so
+    /// <see cref="AlundraBackdropStage.UpdateAndDrawBackdrop"/>'s two early-return guards
+    /// (<c>world?.Game == null</c>, then <c>GetGameComponent&lt;SpriteRendererComponent&gt;()</c>) both
+    /// clear without needing a live <c>GraphicsDevice</c>: <paramref name="game"/>'s
+    /// <c>ExecutionPolicy</c> is set to <see cref="GameplayExecutionPolicies.EditorPreview"/>
+    /// (<c>UseExternalViewManagement = true</c>) so <c>ScreenSizeWidth</c>/<c>Height</c> read the
+    /// private size fields set here instead of touching the uninitialized base <c>Game.Window</c>.
+    /// </summary>
+    private static World BuildWorldWithGame(CasaEngineGame game, int viewportWidth, int viewportHeight)
+    {
+        game.ExecutionPolicy = GameplayExecutionPolicies.EditorPreview;
+        SetPrivateField(game, "_screenSizeWidth", viewportWidth);
+        SetPrivateField(game, "_screenSizeHeight", viewportHeight);
+
+        var world = new World { Name = "TestWorld" };
+        var gameProperty = typeof(World).GetProperty("Game", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        Assert.NotNull(gameProperty);
+        gameProperty!.SetValue(world, game);
+
+        return world;
     }
 
     private static BackdropRenderer CreateRendererWithOneFactor1Layer()

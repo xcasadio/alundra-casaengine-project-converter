@@ -23,12 +23,18 @@ public static class BackdropOffsetMath
     public const float TicksPerSecond = 50f;
 
     /// <summary>
-    /// <c>cameraPosition * factorNum / factorDenom</c> - a zero denominator disables this layer's
-    /// camera parallax (contributes 0) instead of dividing by zero.
+    /// <c>scroll * factorNum / factorDenom</c>, in TRUNCATED INTEGER division - the original's own
+    /// arithmetic (docs/plan-e9-backdrops-residus.md §1.1.b, D-E9-1: <c>GraphicManager.cs:868-899</c>),
+    /// not a float division rounded afterwards (1/3 of scroll 5 is 1, not 1.667). <paramref name="scroll"/>
+    /// is the original's own <c>g_cameraScrollingX/Y</c> (see
+    /// <see cref="AlundraCameraMath.ToOriginalScrollSpace"/>, the sole producer), already clamped
+    /// non-negative, so this truncation matches the original's on every input actually reachable
+    /// (§1.1.b). A zero denominator disables this layer's camera parallax (contributes 0) instead of
+    /// dividing by zero.
     /// </summary>
-    public static float ComputeParallaxOffset(float cameraPosition, int factorNum, int factorDenom)
+    public static int ComputeParallaxOffset(int scroll, int factorNum, int factorDenom)
     {
-        return factorDenom == 0 ? 0f : cameraPosition * factorNum / factorDenom;
+        return factorDenom == 0 ? 0 : scroll * factorNum / factorDenom;
     }
 
     /// <summary>
@@ -58,14 +64,15 @@ public static class BackdropOffsetMath
     }
 
     /// <summary>
-    /// Combines <see cref="ComputeParallaxOffset"/> and <see cref="ComputeAutoScrollOffset"/>, wrapped
-    /// into <c>[0, canvasSize)</c> - the canvas-space coordinate visible at screen position 0 along
-    /// this axis.
+    /// Combines <see cref="ComputeParallaxOffset"/> (integer, on the original's own scroll space - see
+    /// its own doc) and <see cref="ComputeAutoScrollOffset"/> (float, its own clock kept as-is by
+    /// D-E9-6), wrapped into <c>[0, canvasSize)</c> - the canvas-space coordinate visible at screen
+    /// position 0 along this axis.
     /// </summary>
     public static float ComputeLayerOffset(
-        float cameraPosition, int factorNum, int factorDenom, int speed, int period, long tickCount, int canvasSize)
+        int scroll, int factorNum, int factorDenom, int speed, int period, long tickCount, int canvasSize)
     {
-        var offset = ComputeParallaxOffset(cameraPosition, factorNum, factorDenom)
+        var offset = ComputeParallaxOffset(scroll, factorNum, factorDenom)
             + ComputeAutoScrollOffset(speed, period, tickCount);
         return WrapOffset(offset, canvasSize);
     }

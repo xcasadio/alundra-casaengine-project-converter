@@ -289,6 +289,22 @@ internal static class AlundraCameraMath
     }
 
     /// <summary>
+    /// D-E9-1 (docs/plan-e9-backdrops-residus.md §2, §3 slice B1) - the ONE place in the whole
+    /// codebase that converts a render-space camera <c>Target</c> back into the original's own
+    /// <c>g_cameraScrollingX/Y</c> scroll space (§1.1.a-d): the clamped, smoothed, integer top-left of
+    /// the original's 320x240 view. Inverts <see cref="ComputeCameraLookAtRenderPosition"/>'s own two
+    /// frozen E5 relations (<c>renderX = scrollX + 160</c>, <c>renderY = -scrollY - 120</c>) - hence
+    /// <c>scrollX = renderX - 160</c> and <c>scrollY = -renderY - 120</c>. <paramref name="target"/> is
+    /// already integer-valued by construction (E5.c, <see cref="ClampCameraTargetToMap"/> plus one
+    /// <see cref="StepCameraScroll"/> step), so the cast here truncates nothing; every caller (backdrop
+    /// parallax, the only consumer so far) must go through this method rather than re-deriving the
+    /// relation locally. Verified against the 389's own frozen render bounds: <c>(160, -120)</c> (map
+    /// origin) -&gt; <c>(0, 0)</c>; <c>(1087, -839)</c> (far corner) -&gt; <c>(0x39f, 0x2cf)</c>.
+    /// </summary>
+    internal static (int X, int Y) ToOriginalScrollSpace(Vector3 target)
+        => ((int)target.X - 160, -(int)target.Y - 120);
+
+    /// <summary>
     /// FIX (fresh verifier of cc1fc60) - pure math factored out for unit testing: the camera's
     /// <see cref="Camera2dComponent.Zoom"/> that reproduces the original's own
     /// <see cref="CameraDisplayHeight"/>-tall (236, NOT <see cref="CameraVisibleHeight"/>'s 240 - see that

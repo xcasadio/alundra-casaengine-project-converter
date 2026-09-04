@@ -11,13 +11,21 @@ namespace Alundra.Tests;
 public class BackdropOffsetMathTests
 {
     [Theory]
-    [InlineData(100f, 1, 1, 100f)]
-    [InlineData(100f, 1, 2, 50f)]
-    [InlineData(-40f, 1, 2, -20f)]
-    [InlineData(100f, 1, 0, 0f)] // zero denominator disables parallax instead of dividing by zero.
-    public void ComputeParallaxOffset_AppliesFactorOrDisables(float cameraPosition, int factorNum, int factorDenom, float expected)
+    [InlineData(100, 1, 1, 100)]
+    [InlineData(100, 1, 2, 50)]
+    [InlineData(-40, 1, 2, -20)]
+    [InlineData(100, 1, 0, 0)] // zero denominator disables parallax instead of dividing by zero.
+    public void ComputeParallaxOffset_AppliesFactorOrDisables(int scroll, int factorNum, int factorDenom, int expected)
     {
-        Assert.Equal(expected, BackdropOffsetMath.ComputeParallaxOffset(cameraPosition, factorNum, factorDenom));
+        Assert.Equal(expected, BackdropOffsetMath.ComputeParallaxOffset(scroll, factorNum, factorDenom));
+    }
+
+    // D-E9-1 (docs/plan-e9-backdrops-residus.md §3, slice B1): truncated INTEGER division, not a float
+    // division rounded afterwards - 1/3 of scroll 5 is 1, never 1.667.
+    [Fact]
+    public void ComputeParallaxOffset_UsesTruncatedIntegerDivision_NotFloatDivision()
+    {
+        Assert.Equal(1, BackdropOffsetMath.ComputeParallaxOffset(scroll: 5, factorNum: 1, factorDenom: 3));
     }
 
     [Theory]
@@ -46,9 +54,9 @@ public class BackdropOffsetMathTests
     [Fact]
     public void ComputeLayerOffset_CombinesParallaxAndAutoScroll_ThenWraps()
     {
-        // cameraX=1280 * 1/1 = 1280 (parallax) + autoscroll(speed=0,period=10,ticks=605)=60 -> 1340, wrapped mod 640 = 60.
+        // scroll=1280 * 1/1 = 1280 (parallax) + autoscroll(speed=0,period=10,ticks=605)=60 -> 1340, wrapped mod 640 = 60.
         var offset = BackdropOffsetMath.ComputeLayerOffset(
-            cameraPosition: 1280f, factorNum: 1, factorDenom: 1, speed: 0, period: 10, tickCount: 605, canvasSize: 640);
+            scroll: 1280, factorNum: 1, factorDenom: 1, speed: 0, period: 10, tickCount: 605, canvasSize: 640);
 
         Assert.Equal(60f, offset);
     }

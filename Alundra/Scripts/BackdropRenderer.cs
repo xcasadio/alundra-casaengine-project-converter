@@ -57,6 +57,11 @@ namespace Alundra.Scripts;
 /// </summary>
 internal sealed class BackdropRenderer
 {
+    /// <summary>Test-only observation seam (docs/plan-e9-backdrops-residus.md §3, slice B1) - the last
+    /// layer's wrapped canvas offset computed by the most recent <see cref="Draw"/> call, set right
+    /// after <see cref="BackdropOffsetMath.ComputeLayerOffset"/> for each layer (so with one layer it
+    /// pins that layer's exact offset). Never read by production code.</summary>
+    internal (float OffsetX, float OffsetY)? LastLayerOffsetForTests { get; private set; }
 
     private readonly struct LayerRuntime
     {
@@ -235,7 +240,7 @@ internal sealed class BackdropRenderer
     /// <paramref name="viewportHeight"/> viewport with no gaps (see
     /// <see cref="BackdropOffsetMath.ComputeCoveringQuadOrigins"/>).
     ///
-    /// Each quad is positioned in world space as <paramref name="cameraPosition"/> plus a
+    /// Each quad is positioned in world space as <paramref name="renderCamera"/> plus a
     /// viewport-centered local offset, which cancels the camera's own view transform (screen =
     /// worldPos - cameraPosition for this engine's 2D camera) so the quad lands at the intended
     /// screen-space position regardless of where the camera currently is - the camera's own
@@ -243,13 +248,24 @@ internal sealed class BackdropRenderer
     /// <see cref="BackdropOffsetMath.ComputeParallaxOffset"/>. World Y is up-positive while screen Y
     /// is down-positive (see <see cref="AlundraEntitySpawnFactory.ResolveLogicalPosition"/>'s own note on this),
     /// hence the Y flip below; X needs no flip.
+    ///
+    /// <paramref name="scrollX"/>/<paramref name="scrollY"/> are the original's own
+    /// <c>g_cameraScrollingX/Y</c> (docs/plan-e9-backdrops-residus.md D-E9-1) - produced by
+    /// <see cref="AlundraCameraMath.ToOriginalScrollSpace"/>, the ONE place that converts render space
+    /// back to scroll space - and are fed to <see cref="BackdropOffsetMath.ComputeLayerOffset"/> AS-IS
+    /// on both axes: no negation happens here any more. <paramref name="renderCamera"/> is unrelated to
+    /// that parallax term; it is only the render-space camera position used to place the quads (and the
+    /// tint quad above) in world space.
     /// </summary>
-    public void Draw(SpriteRendererComponent spriteRenderer, Vector3 cameraPosition, int viewportWidth, int viewportHeight)
+    public void Draw(
+        SpriteRendererComponent spriteRenderer, int scrollX, int scrollY, Vector3 renderCamera, int viewportWidth, int viewportHeight)
     {
         if ((_layers.Count == 0 && !_hasTint) || viewportWidth <= 0 || viewportHeight <= 0)
         {
             return;
         }
+
+        var cameraPosition = renderCamera;
 
         var tickCount = (long)_elapsedTicks;
         var halfWidth = viewportWidth / 2f;
@@ -289,18 +305,19 @@ internal sealed class BackdropRenderer
             var scrollar = layer.Scrollar;
 
             var offsetX = BackdropOffsetMath.ComputeLayerOffset(
-                cameraPosition.X, scrollar.FactorXNum, scrollar.FactorXDenom,
+                scrollX, scrollar.FactorXNum, scrollar.FactorXDenom,
                 scrollar.ScrollXSpeed, scrollar.ScrollXPeriod, tickCount, BackdropOffsetMath.CanvasWidth);
-            // -cameraPosition.Y, not cameraPosition.Y: the offset math consumes a WORLD-space
-            // vertical scroll (down-positive - the original feeds g_cameraScrollingY), but this
-            // engine's render space is up-positive (see this method's own Y-flip note above), so the
-            // camera's render Y must be negated before it becomes a canvas coordinate. Fed raw, the
-            // parallax term carries the wrong sign and a factor-1/1 layer drifts at TWICE the
-            // camera's vertical movement - the user's "les nuages bougent plus vite" report, visible
-            // the very day the backdrop textures first loaded. X needs no negation.
             var offsetY = BackdropOffsetMath.ComputeLayerOffset(
-                -cameraPosition.Y, scrollar.FactorYNum, scrollar.FactorYDenom,
+                scrollY, scrollar.FactorYNum, scrollar.FactorYDenom,
                 scrollar.ScrollYSpeed, scrollar.ScrollYPeriod, tickCount, BackdropOffsetMath.CanvasHeight);
+
+            // Observation seam (docs/plan-e9-backdrops-residus.md §3, slice B1 acceptance): the quad
+            // world positions submitted below do not expose the wrapped canvas offset they were
+            // computed from without inverting the covering-quad tiling math, so the last layer's
+            // computed offset is recorded here for BackdropRendererTests to assert on directly at the
+            // production call site (AlundraBackdropStage.UpdateAndDrawBackdrop -> Draw). Test-only;
+            // never read by production code.
+            LastLayerOffsetForTests = (offsetX, offsetY);
 
             var origins = BackdropOffsetMath.ComputeCoveringQuadOrigins(viewportWidth, viewportHeight, offsetX, offsetY);
 

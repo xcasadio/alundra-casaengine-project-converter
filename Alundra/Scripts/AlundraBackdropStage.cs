@@ -110,7 +110,14 @@ internal sealed class AlundraBackdropStage
     /// rule delta (a), the one named for S3) - it reuses the same <c>Camera2dComponent</c> the debug pan
     /// drives (see <c>AlundraCameraDirector.UpdateDebugCameraPan</c>, which already ran earlier this frame
     /// and resolved it) - both are "the world's camera", and the runtime has no other camera reference yet
-    /// (E4 follow-up).</summary>
+    /// (E4 follow-up).
+    ///
+    /// D-E9-1 (docs/plan-e9-backdrops-residus.md §2, §3 slice B1): before drawing, the resolved
+    /// camera's render-space <c>Target</c> is converted through
+    /// <see cref="AlundraCameraMath.ToOriginalScrollSpace"/> - the single place in the codebase that
+    /// performs this conversion - into the original's own <c>g_cameraScrollingX/Y</c> scroll space, fed
+    /// to <see cref="BackdropRenderer.Draw"/> alongside the unconverted render-space camera (still
+    /// needed there to place the quads in world space).</summary>
     internal void UpdateAndDrawBackdrop(float elapsedTime, World? world, Camera2dComponent? resolvedCamera)
     {
         if (!_backdropRenderer.HasContent || world?.Game == null)
@@ -127,7 +134,9 @@ internal sealed class AlundraBackdropStage
         }
 
         var cameraPosition = resolvedCamera?.Target ?? Vector3.Zero;
-        _backdropRenderer.Draw(spriteRenderer, cameraPosition, world.Game.ScreenSizeWidth, world.Game.ScreenSizeHeight);
+        var scroll = AlundraCameraMath.ToOriginalScrollSpace(cameraPosition);
+        _backdropRenderer.Draw(
+            spriteRenderer, scroll.X, scroll.Y, cameraPosition, world.Game.ScreenSizeWidth, world.Game.ScreenSizeHeight);
     }
 
     /// <summary>
