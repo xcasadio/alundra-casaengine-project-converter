@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace AlundraCasaEngineProjectConverter.Readers;
 
@@ -85,6 +86,12 @@ public sealed class BackdropCellularDocument
 /// <see cref="DepthOrder"/> is GraphicManager.RenderLayerToBuffer's layerOrderOffset (1 for layer
 /// 0, 0 for layer 1): within the same <see cref="Ground"/> bucket, the layer with the larger value
 /// paints later - i.e. layer 0 sits above layer 1 whenever both are active and share a bucket.
+///
+/// <see cref="FrameTextureAssetIds"/> (D-E9-2/D-E9-3, docs/plan-e9-backdrops-residus.md) holds one
+/// texture id per V-animation frame when the map's <see cref="BackdropDocument.AnimNum"/> is greater
+/// than 1 for a Tiles layer - <c>[0]</c> is always equal to <see cref="TextureAssetId"/>. It is left
+/// null (and, thanks to the <see cref="JsonIgnoreAttribute"/> below, omitted from the JSON entirely)
+/// for every non-animated layer, so the hundreds of pre-existing companions serialize unchanged.
 /// </summary>
 public sealed class BackdropLayerDocument
 {
@@ -97,6 +104,10 @@ public sealed class BackdropLayerDocument
     public BackdropScrollarDocument? Scrollar { get; set; }
     public BackdropCellularDocument? Cellular { get; set; }
     public string? TextureAssetId { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string[]? FrameTextureAssetIds { get; set; }
+
     public int Width { get; set; }
     public int Height { get; set; }
 }
@@ -132,12 +143,17 @@ public sealed class BackdropLayerDocument
 ///
 /// Deferred (raw parameters exported, rendering not implemented here):
 ///  - WaveX cell tracks (Cellulars + <see cref="WaveLut"/>): a per-tick sine-like displacement
-///    table indexed by AWaveY/AWavePhase/AWaveAmp/BWaveY/BWavePhase/BWaveWeight.
+///    table indexed by AWaveY/AWavePhase/AWaveAmp/BWaveY/BWavePhase/BWaveWeight - out of scope for
+///    the Tiles-mode V-animation below since it is read only from the Cellular (mode 2) render path
+///    (GraphicManager.cs:1192,1202,1209); it belongs to the deferred cellular-mode work, not here.
 ///  - Cellular (mode 2) layers entirely: independently-moving sprite cells, not a tile grid.
 ///  - The extended (OverlayExt) 4-corner gradient tint variant (BGColorA &gt;= 0x65): unreached in
 ///    the corpus, see above.
-///  - Tile animation (LayerInfos.AnimTimer + the per-tile AnimFrameCounter that shifts sampled V):
-///    the exported texture is a single static frame (AnimFrameCounter == 0).
+///
+/// Tile animation (LayerInfos.AnimTimer + the per-tile AnimFrameCounter that shifts sampled V,
+/// GraphicManager.cs:871-979) IS exported, as one baked texture per frame, whenever the map's
+/// <see cref="AnimNum"/> is greater than 1 for a Tiles layer - see
+/// <see cref="BackdropLayerDocument.FrameTextureAssetIds"/>.
 /// </summary>
 public sealed class BackdropDocument
 {

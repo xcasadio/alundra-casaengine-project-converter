@@ -8,9 +8,11 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 /// <summary>
 /// Bakes one mode-1 ("Tiles") backdrop layer's tile grid into a static 640x480 RGBA PNG,
 /// replicating the pixel decode of AlundraEngine.Graphics.ScrollParameters.GetScrollBitmap and the
-/// tile addressing of GraphicManager.RenderLayerToBuffer (@ 0x8005B848), for a single fixed
-/// animation frame (AnimFrameCounter == 0, i.e. no per-tile vertical animation offset - see the
-/// deferred-items note on <see cref="Readers.BackdropDocument"/>).
+/// tile addressing of GraphicManager.RenderLayerToBuffer (@ 0x8005B848), for one fixed V-animation
+/// frame selected by <c>vAnim</c> (GraphicManager.cs:943,979 - see the class doc on
+/// <see cref="Readers.BackdropDocument"/> and docs/plan-e9-backdrops-residus.md D-E9-2). The default
+/// <c>vAnim = 0</c> is frame 0 (AnimFrameCounter == 0), byte-identical to every call made before this
+/// parameter existed.
 ///
 /// Each of the grid's 40x30 entries is 2 bytes: a tile index (0 means "no tile here", left fully
 /// transparent) whose low/high nibble select a 16px column/row in the 256x256 tile sheet, and a
@@ -30,7 +32,13 @@ public static class BackdropImageBuilder
     /// Returns null when every tile in the grid is empty (index 0) - an all-transparent PNG would
     /// only waste an asset entry for a layer that draws nothing.
     /// </summary>
-    public static Bitmap? Build(byte[] tileGrid, byte[] tileSheetImageData, ushort[][] paletteWords)
+    /// <param name="vAnim">
+    /// The frame's V offset (GraphicManager.cs:943, <c>vAnim = (AnimFrameCounter &lt;&lt; 8) / AnimNum</c>),
+    /// added to each tile's base V before wrapping: <c>V = ((tileVal &amp; 0xF0) + vAnim) &amp; 0xFF</c>
+    /// (:979). Defaults to 0 (frame 0), which reproduces exactly what this method computed before the
+    /// parameter existed.
+    /// </param>
+    public static Bitmap? Build(byte[] tileGrid, byte[] tileSheetImageData, ushort[][] paletteWords, int vAnim = 0)
     {
         if (tileGrid.Length == 0 || tileSheetImageData.Length == 0 || paletteWords.Length == 0)
         {
@@ -74,7 +82,7 @@ public static class BackdropImageBuilder
                     }
 
                     var sheetU = (tileVal & 0x0F) << 4;
-                    var sheetV = tileVal & 0xF0;
+                    var sheetV = ((tileVal & 0xF0) + vAnim) & 0xFF;
 
                     wroteAnyTile |= DrawTile(
                         pixels, stride, tileX * BackdropReader.TileSize, tileY * BackdropReader.TileSize,
@@ -92,6 +100,25 @@ public static class BackdropImageBuilder
         finally
         {
             bitmap.UnlockBits(bitmapData);
+        }
+
+        return bitmap;
+    }
+
+    /// <summary>
+    /// A fully transparent 640x480 RGBA bitmap, same size and format as <see cref="Build"/>'s
+    /// output. D-E9-4 (docs/plan-e9-backdrops-residus.md): the original still draws animation frame
+    /// <c>f &gt;= 1</c> even when every tile in it happens to be empty, so the converter must still
+    /// emit a texture for that frame rather than leave a hole in the per-layer frame array.
+    /// </summary>
+    public static Bitmap CreateTransparentFrame()
+    {
+        var width = BackdropReader.CanvasWidth;
+        var height = BackdropReader.CanvasHeight;
+        var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+        using (var graphics = Graphics.FromImage(bitmap))
+        {
+            graphics.Clear(Color.Transparent);
         }
 
         return bitmap;

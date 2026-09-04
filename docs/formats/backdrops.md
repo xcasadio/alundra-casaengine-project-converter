@@ -61,9 +61,16 @@ par-dessus toute la scène - un ciel qui s'assombrit, une teinte d'intérieur...
 ## Ce qui est exporté
 
 - Pour chaque couche `Mode 1` ("Tiles") non vide : une texture 640x480 pré-rendue (composition
-  tuiles + palette, un seul instantané - pas d'animation de tuile ni de scroll baked in),
-  enregistrée comme n'importe quelle texture du convertisseur (`.texture` + PNG brut au catalogue)
-  sous `Maps/{Zone}/{Name}-{id}/backdrop/{Name}-{id}-layer{N}.png`.
+  tuiles + palette ; le scroll n'est pas baked in), enregistrée comme n'importe quelle texture du
+  convertisseur (`.texture` + PNG brut au catalogue) sous
+  `Maps/{Zone}/{Name}-{id}/backdrop/{Name}-{id}-layer{N}.png`. Quand la map a `AnimNum > 1`
+  (docs/plan-e9-backdrops-residus.md D-E9-2), cette texture est la **trame 0** de l'animation de
+  tuile ; les trames `f >= 1` sont cuites en plus avec un décalage V (`vAnim = (f << 8) / AnimNum`,
+  `V = ((tileVal & 0xF0) + vAnim) & 0xFF`) sous
+  `Maps/{Zone}/{Name}-{id}/backdrop/{Name}-{id}-layer{N}-frame{f}.png` - la trame 0 garde son nom et
+  son id existants, rien n'est renommé. Une trame dont toutes les tuiles sont vides à ce décalage
+  produit quand même une texture, entièrement transparente, pour que le tableau de trames reste
+  dense.
 - Un compagnon JSON brut, **pas** un asset CasaEngine (même convention que `events.json`) :
   `Maps/{Zone}/{Name}-{id}/backdrop/{Name}-{id}.backdrop.json`, avec l'incrustation plein écran
   (`OverlayEnabled`/`OverlayColorR/G/B`, voir ci-dessus).
@@ -76,11 +83,11 @@ par-dessus toute la scène - un ciel qui s'assombrit, une teinte d'intérieur...
 - Les couches `Mode 2` ("Cellular") : sprites indépendants (oiseaux, nuages, écume...) déplacés par
   caméra/dérive périodique/piste sinusoïdale (`CellType.WaveX`, table `WaveLut`) - un système bien
   plus riche qu'une grille de tuiles. Les paramètres bruts (`Cellular`, `Cells[]`, `WaveLut` au
-  niveau map) sont exportés ; aucune texture n'est produite pour ces couches.
+  niveau map) sont exportés ; aucune texture n'est produite pour ces couches. `WaveLut` n'est lu que
+  par ce chemin cellulaire (jamais par les couches `Tiles`) : son rendu relève explicitement du
+  chantier cellulaire différé ci-dessus, pas de l'animation de tuile décrite plus haut.
 - La variante étendue (`OverlayExt`, dégradé 4 coins, `BGColorA >= 0x65`) : jamais atteinte dans le
   corpus, voir ci-dessus.
-- L'animation de tuile (`LayerInfos.AnimTimer` + le décalage V par `AnimFrameCounter`) : la texture
-  exportée correspond à l'image statique `AnimFrameCounter == 0`.
 
 ## Schéma
 
@@ -106,7 +113,8 @@ Racine :
 | `Ground` | bool | Bucket de profondeur (voir ci-dessus) |
 | `BlendMode` | int | `LayerInfos.BlendMode` (0=aucun, 1=moyenne, 2=additif, 3=soustractif, 4=additif atténué) |
 | `AnimTimer` | int | `LayerInfos.AnimTimer` |
-| `TextureAssetId` | guid? | Id catalogue du `.texture`, seulement pour `Mode == "Tiles"` non vide |
+| `TextureAssetId` | guid? | Id catalogue du `.texture` de la trame 0, seulement pour `Mode == "Tiles"` non vide |
+| `FrameTextureAssetIds` | guid[]? | Un id par trame d'animation V (`[0] == TextureAssetId`), longueur `AnimNum` ; **absent** (pas même `null`) si `AnimNum <= 1` ou si la couche n'est pas `Tiles` |
 | `Width` / `Height` | int | 640/480 pour une couche `Tiles` exportée, 0 sinon |
 | `Scrollar` | objet? | Facteurs de parallaxe et auto-scroll, seulement pour `Mode == "Tiles"` |
 | `Cellular` | objet? | Paramètres cellulaires + `Cells[]`, seulement pour `Mode == "Cellular"` |
@@ -126,7 +134,10 @@ Racine :
 - `Backdrop.Layers` : total de couches inspectées (2 par map ci-dessus, y compris désactivées).
 - `Backdrop.Layers.Tiles` / `.Cellular` / `.Disabled` : répartition par mode.
 - `Backdrop.LayersExported` : couches `Tiles` ayant produit une texture (une grille entièrement
-  vide, elle, ne produit ni texture ni erreur - il n'y a simplement rien à dessiner).
+  vide, elle, ne produit ni texture ni erreur - il n'y a simplement rien à dessiner). Compte la
+  trame 0 uniquement, pas les trames d'animation supplémentaires.
+- `Backdrop.FramesExported` : total de textures de trame écrites, trame 0 comprise - une couche non
+  animée compte pour 1 (comme `Backdrop.LayersExported`), une couche `AnimNum = N` compte pour `N`.
 - `Backdrop.OverlayTints` : maps dont `OverlayEnabled` est vrai (16 dans le corpus actuel).
 
 ## Extrait réel

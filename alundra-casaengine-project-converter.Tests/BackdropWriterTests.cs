@@ -123,6 +123,7 @@ public class BackdropWriterTests
             Assert.Empty(report.Errors);
             Assert.Equal(1, report.Counters["Backdrop.Maps"]);
             Assert.Equal(1, report.Counters["Backdrop.LayersExported"]);
+            Assert.Equal(1, report.Counters["Backdrop.FramesExported"]);
             Assert.Equal(2, report.Counters["Backdrop.Layers"]);
             Assert.Equal(1, report.Counters["Backdrop.Layers.Tiles"]);
             Assert.Equal(1, report.Counters["Backdrop.Layers.Disabled"]);
@@ -131,7 +132,14 @@ public class BackdropWriterTests
                 outputDirectory, "Maps", "TestZone", "Open Sea-389", "backdrop", "Open Sea-389.backdrop.json");
             Assert.True(File.Exists(companionPath));
 
-            var document = JsonDocument.Parse(File.ReadAllText(companionPath)).RootElement;
+            var companionText = File.ReadAllText(companionPath);
+
+            // AnimNum <= 1 (D-E9-2/D-E9-3): the companion must serialize exactly as it did before
+            // this slice - no new property, not even present as "null" (JsonIgnoreCondition.
+            // WhenWritingNull), or all the other non-animated companions would move too (§1.2.g).
+            Assert.DoesNotContain("FrameTextureAssetIds", companionText);
+
+            var document = JsonDocument.Parse(companionText).RootElement;
             Assert.Equal(389, document.GetProperty("MapIndex").GetInt32());
             Assert.True(document.GetProperty("Enabled").GetBoolean());
 
@@ -161,6 +169,11 @@ public class BackdropWriterTests
             var wrapperPath = Path.ChangeExtension(texturePath, ".texture");
             Assert.True(File.Exists(wrapperPath));
 
+            // AnimNum <= 1: no new frame file, of any number, ever appears.
+            var backdropDirectory = Path.GetDirectoryName(texturePath)!;
+            Assert.DoesNotContain(
+                Directory.GetFiles(backdropDirectory), path => Path.GetFileName(path).Contains("-frame"));
+
             // The texture must also be PERSISTED into AssetInfos.json: the in-memory catalog dies
             // with the process, and a texture the runtime cannot resolve through the catalog makes
             // the whole layer silently unrenderable (this exact gap shipped once - the runtime
@@ -171,6 +184,101 @@ public class BackdropWriterTests
             var textureAssetId = layer0.GetProperty("TextureAssetId").GetString();
             Assert.Contains(textureAssetId!, catalogText);
         });
+    }
+
+    [Fact]
+    public void ConvertBackdrops_ForAnAnimNum4Fixture_ExportsFourFramesWithTheShiftedVBand()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            var dataDirectory = Path.Combine(inputDirectory, "data");
+            Directory.CreateDirectory(dataDirectory);
+
+            const int mapIndex = 990;
+            const int animNum = 4;
+            WriteAnimatedMapFixture(dataDirectory, mapIndex, animNum);
+
+            var mapLocations = new Dictionary<int, MapLocation>
+            {
+                [mapIndex] = new MapLocation("TestZone", "Anim Layer-990"),
+            };
+            var mapFilter = new List<int> { mapIndex };
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            ProjectWriter.CreateEmptyProject(outputDirectory, report);
+            BackdropWriter.ConvertBackdrops(inputDirectory, outputDirectory, mapFilter, mapLocations, report);
+
+            Assert.Empty(report.Errors);
+            Assert.Equal(1, report.Counters["Backdrop.LayersExported"]);
+            Assert.Equal(animNum, report.Counters["Backdrop.FramesExported"]);
+
+            var backdropDirectory = Path.Combine(outputDirectory, "Maps", "TestZone", "Anim Layer-990", "backdrop");
+            var companionPath = Path.Combine(backdropDirectory, "Anim Layer-990.backdrop.json");
+            Assert.True(File.Exists(companionPath));
+
+            var document = JsonDocument.Parse(File.ReadAllText(companionPath)).RootElement;
+            var layer0 = document.GetProperty("Layers")[0];
+            var textureAssetId = layer0.GetProperty("TextureAssetId").GetString();
+            Assert.False(string.IsNullOrEmpty(textureAssetId));
+
+            var frameIds = layer0.GetProperty("FrameTextureAssetIds");
+            Assert.Equal(JsonValueKind.Array, frameIds.ValueKind);
+            Assert.Equal(animNum, frameIds.GetArrayLength());
+            Assert.Equal(textureAssetId, frameIds[0].GetString());
+            for (var frame = 1; frame < animNum; frame++)
+            {
+                Assert.False(string.IsNullOrEmpty(frameIds[frame].GetString()));
+            }
+
+            // Frame 0 keeps its pre-existing, un-suffixed name and id (D-E9-2) - nothing renamed.
+            var frame0Path = Path.Combine(backdropDirectory, "Anim Layer-990-layer0.png");
+            Assert.True(File.Exists(frame0Path));
+
+            // Frames 1..3 are new files.
+            var frame1Path = Path.Combine(backdropDirectory, "Anim Layer-990-layer0-frame1.png");
+            var frame2Path = Path.Combine(backdropDirectory, "Anim Layer-990-layer0-frame2.png");
+            var frame3Path = Path.Combine(backdropDirectory, "Anim Layer-990-layer0-frame3.png");
+            Assert.True(File.Exists(frame1Path));
+            Assert.True(File.Exists(frame2Path));
+            Assert.True(File.Exists(frame3Path));
+
+            // Pixel (§1.2.b, D-E9-2): frame 0 samples the tile sheet's V band [0, 64) -> green;
+            // frame 1's vAnim = (1 << 8) / 4 = 64 shifts the very same tile into band [64, 128) ->
+            // blue.
+            using (var frame0 = new Bitmap(frame0Path))
+            using (var frame1 = new Bitmap(frame1Path))
+            {
+                Assert.Equal(Color.FromArgb(255, 0, 248, 0), frame0.GetPixel(0, 0));
+                Assert.Equal(Color.FromArgb(255, 0, 0, 248), frame1.GetPixel(0, 0));
+            }
+
+            // Empty frame (D-E9-4): frames 2 and 3 (vAnim 128 and 192) land on an all-transparent
+            // quarter of the sheet, so BackdropImageBuilder.Build returns null for them - the
+            // converter must still emit a fully transparent 640x480 texture for each, rather than
+            // leave a hole in the frame array.
+            using (var frame2 = new Bitmap(frame2Path))
+            using (var frame3 = new Bitmap(frame3Path))
+            {
+                Assert.Equal(640, frame2.Width);
+                Assert.Equal(480, frame2.Height);
+                Assert.Equal(0, frame2.GetPixel(0, 0).A);
+                Assert.Equal(0, frame3.GetPixel(0, 0).A);
+            }
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
     }
 
     [Fact]
@@ -565,6 +673,132 @@ public class BackdropWriterTests
         writer.WriteEndObject();
     }
 
+    /// <summary>
+    /// Mirrors the 7 AnimNum=4 Tiles-mode maps of the corpus (§1.2.d): one grid cell holds a tile
+    /// whose base V band is [0, 64) (green, see <see cref="BuildAnimatedTileSheet"/>); the tile
+    /// sheet's [64, 128) band is a different colour (blue) so frame 1 (vAnim = 64) is distinguishable
+    /// pixel-for-pixel from frame 0, and bands [128, 256) are left all-zero (transparent) so frames 2
+    /// and 3 (vAnim 128 and 192) exercise the D-E9-4 "Build returns null" path.
+    /// </summary>
+    private static void WriteAnimatedMapFixture(string dataDirectory, int mapIndex, int animNum)
+    {
+        var data = BuildAnimatedDataBlob();
+        var tileSheet = BuildAnimatedTileSheet();
+        var paletteWords = BuildAnimatedPaletteWords();
+
+        using var stream = File.Create(Path.Combine(dataDirectory, $"map_{mapIndex}.json"));
+        using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = false });
+
+        writer.WriteStartObject();
+        writer.WritePropertyName("ScrollParameters");
+        writer.WriteStartObject();
+
+        writer.WriteNumber("Graphics", 0);
+        writer.WriteBoolean("HasGraphics", true);
+        writer.WriteNumber("Overlay", OverlayTestPointer);
+
+        writer.WritePropertyName("Infos");
+        writer.WriteStartObject();
+        writer.WriteNumber("Enabled", 1);
+        writer.WriteNumber("AnimNum", animNum);
+        writer.WriteNumber("BGColorA", 0);
+        writer.WritePropertyName("ModeLayer");
+        writer.WriteStartArray();
+        writer.WriteNumberValue(1);
+        writer.WriteNumberValue(0);
+        writer.WriteEndArray();
+        writer.WriteEndObject();
+
+        writer.WritePropertyName("LayerInfos");
+        writer.WriteStartArray();
+        writer.WriteStartObject();
+        writer.WriteNumber("AnimTimer", 4);
+        writer.WriteNumber("BlendMode", 1);
+        writer.WriteNumber("Ground", 0);
+        writer.WriteEndObject();
+        writer.WriteStartObject();
+        writer.WriteNumber("AnimTimer", 0);
+        writer.WriteNumber("BlendMode", 0);
+        writer.WriteNumber("Ground", 0);
+        writer.WriteEndObject();
+        writer.WriteEndArray();
+
+        writer.WritePropertyName("Scrollars");
+        writer.WriteStartArray();
+        writer.WriteStartObject();
+        writer.WriteNumber("FactorXNum", 1);
+        writer.WriteNumber("FactorXDenom", 1);
+        writer.WriteNumber("FactorYNum", 1);
+        writer.WriteNumber("FactorYDenom", 1);
+        writer.WriteNumber("ScrollXSpeed", 0);
+        writer.WriteNumber("ScrollXPeriod", 0);
+        writer.WriteNumber("ScrollYSpeed", 0);
+        writer.WriteNumber("ScrollYPeriod", 0);
+        writer.WriteEndObject();
+        writer.WriteStartObject();
+        writer.WriteNumber("FactorXNum", 0);
+        writer.WriteNumber("FactorXDenom", 0);
+        writer.WriteNumber("FactorYNum", 0);
+        writer.WriteNumber("FactorYDenom", 0);
+        writer.WriteNumber("ScrollXSpeed", 0);
+        writer.WriteNumber("ScrollXPeriod", 0);
+        writer.WriteNumber("ScrollYSpeed", 0);
+        writer.WriteNumber("ScrollYPeriod", 0);
+        writer.WriteEndObject();
+        writer.WriteEndArray();
+
+        writer.WritePropertyName("Cellulars");
+        writer.WriteStartArray();
+        for (var i = 0; i < 2; i++)
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("CountBase", 0);
+            writer.WriteNumber("AWaveY", 0);
+            writer.WriteNumber("AWavePhase", 0);
+            writer.WriteNumber("AWaveAmp", 0);
+            writer.WriteNumber("BWaveY", 0);
+            writer.WriteNumber("BWavePhase", 0);
+            writer.WriteNumber("BWaveWeight", 0);
+            writer.WriteNumber("Divisions", 0);
+            writer.WriteEndObject();
+        }
+
+        writer.WriteEndArray();
+
+        writer.WritePropertyName("Cells");
+        writer.WriteStartArray();
+        writer.WriteStartArray();
+        writer.WriteEndArray();
+        writer.WriteStartArray();
+        writer.WriteEndArray();
+        writer.WriteEndArray();
+
+        writer.WritePropertyName("WaveLut");
+        writer.WriteStartArray();
+        writer.WriteEndArray();
+
+        WriteIntArray(writer, "Data", data);
+        WriteIntArray(writer, "TileSheetImageData", tileSheet);
+
+        writer.WritePropertyName("PaletteWords");
+        writer.WriteStartArray();
+        foreach (var palette in paletteWords)
+        {
+            writer.WriteStartArray();
+            foreach (var word in palette)
+            {
+                writer.WriteNumberValue(word);
+            }
+
+            writer.WriteEndArray();
+        }
+
+        writer.WriteEndArray();
+
+        writer.WriteEndObject();
+        writer.WriteEndObject();
+    }
+
     private static void WriteDisabledMapFixture(string dataDirectory, int mapIndex)
     {
         File.WriteAllText(
@@ -628,6 +862,75 @@ public class BackdropWriterTests
         }
 
         palettes[0][PaletteEntry] = GreenPsxWord;
+        return palettes;
+    }
+
+    // Tile index 0x01: low nibble (U) = 1 -> sheetU = 16; high nibble (V) = 0 -> base sheetV = 0.
+    private const int AnimatedTileIndex = 0x01;
+    private const int AnimatedSheetU = 16;
+    private const int AnimatedPaletteEntryLowBand = 2; // V band [0, 64) -> green
+    private const int AnimatedPaletteEntryHighBand = 3; // V band [64, 128) -> blue
+    private const ushort BluePsxWord = 0x001F; // FromPsxColor -> (0, 0, 248)
+
+    private static byte[] BuildAnimatedDataBlob()
+    {
+        var data = new byte[BackdropReader.TileGridBaseOffset + BackdropReader.SecondTileGridOffset];
+        var grid = BuildAnimatedTileGrid();
+        Array.Copy(grid, 0, data, BackdropReader.TileGridBaseOffset, grid.Length);
+        return data;
+    }
+
+    /// <summary>Grid cell (0,0) = tile index <see cref="AnimatedTileIndex"/>, palette 0; everything
+    /// else empty.</summary>
+    private static byte[] BuildAnimatedTileGrid()
+    {
+        var grid = new byte[BackdropReader.GridRowStride * BackdropReader.GridHeightTiles];
+        grid[0] = AnimatedTileIndex;
+        grid[1] = 0;
+        return grid;
+    }
+
+    /// <summary>
+    /// 256x256 4bpp tile sheet: the 16px-wide column at <see cref="AnimatedSheetU"/> is nibble
+    /// <see cref="AnimatedPaletteEntryLowBand"/> for rows [0, 64), nibble
+    /// <see cref="AnimatedPaletteEntryHighBand"/> for rows [64, 128), and nibble 0 (transparent) for
+    /// rows [128, 256) - deliberately, so a frame whose vAnim lands in that range bakes to an
+    /// all-transparent (null) result. Everywhere else is nibble 0 too.
+    /// </summary>
+    private static byte[] BuildAnimatedTileSheet()
+    {
+        const int stride = 128; // 256 / 2
+        var sheet = new byte[stride * 256];
+
+        for (var y = 0; y < 64; y++)
+        {
+            for (var x = AnimatedSheetU; x < AnimatedSheetU + 16; x += 2)
+            {
+                sheet[y * stride + (x >> 1)] = (byte)(AnimatedPaletteEntryLowBand | (AnimatedPaletteEntryLowBand << 4));
+            }
+        }
+
+        for (var y = 64; y < 128; y++)
+        {
+            for (var x = AnimatedSheetU; x < AnimatedSheetU + 16; x += 2)
+            {
+                sheet[y * stride + (x >> 1)] = (byte)(AnimatedPaletteEntryHighBand | (AnimatedPaletteEntryHighBand << 4));
+            }
+        }
+
+        return sheet;
+    }
+
+    private static ushort[][] BuildAnimatedPaletteWords()
+    {
+        var palettes = new ushort[8][];
+        for (var i = 0; i < 8; i++)
+        {
+            palettes[i] = new ushort[16];
+        }
+
+        palettes[0][AnimatedPaletteEntryLowBand] = GreenPsxWord;
+        palettes[0][AnimatedPaletteEntryHighBand] = BluePsxWord;
         return palettes;
     }
 

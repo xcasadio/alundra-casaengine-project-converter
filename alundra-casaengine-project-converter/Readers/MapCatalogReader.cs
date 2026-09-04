@@ -51,6 +51,14 @@ public sealed record MapLocation(string ZoneFolder, string FileBaseName)
 
     public string BackdropLayerTextureFileName(int layerId) => $"{FileBaseName}-layer{layerId}.png";
 
+    /// <summary>
+    /// Name of one V-animation frame of a Tiles-mode backdrop layer (D-E9-2,
+    /// docs/plan-e9-backdrops-residus.md). Frame 0 keeps the original, un-suffixed name and id from
+    /// <see cref="BackdropLayerTextureFileName"/> - only <c>frame &gt;= 1</c> gets a new file.
+    /// </summary>
+    public string BackdropLayerFrameTextureFileName(int layerId, int frame) =>
+        frame == 0 ? BackdropLayerTextureFileName(layerId) : $"{FileBaseName}-layer{layerId}-frame{frame}.png";
+
     public string WorldRelativePath => Path.Combine(MapFolder, $"{FileBaseName}.world");
 
     /// <summary>

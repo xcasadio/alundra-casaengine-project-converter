@@ -31,6 +31,15 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 /// </summary>
 public static class BackdropWriter
 {
+    // The plan's D-E9-4 acceptance criterion (docs/plan-e9-backdrops-residus.md), enforced only on
+    // a full run - same reasoning as WorldWriter.CheckInvariants: with --maps the totals are a
+    // subset by construction. Backdrop.LayersExported is unchanged by this slice (still one texture
+    // per exported Tiles layer, frame 0 included); Backdrop.FramesExported additionally counts the
+    // 3 extra frames baked for each of the 7 AnimNum=4 Tiles layers (132 + 7 * 3 = 153).
+    private const int ExpectedMapCorpusSize = 483;
+    private const int ExpectedLayersExported = 132;
+    private const int ExpectedFramesExported = 153;
+
     public static void ConvertBackdrops(
         string inputDirectory,
         string outputDirectory,
@@ -38,7 +47,11 @@ public static class BackdropWriter
         IReadOnlyDictionary<int, MapLocation> mapLocations,
         ConversionReport report)
     {
-        var mapIndices = mapFilter is { Count: > 0 } ? mapFilter : MapDiscovery.DiscoverMapIndices(inputDirectory);
+        var discoveredMapIndices = MapDiscovery.DiscoverMapIndices(inputDirectory);
+        var mapIndices = mapFilter is { Count: > 0 } ? mapFilter : discoveredMapIndices;
+        var isFullRun = discoveredMapIndices.Count == ExpectedMapCorpusSize
+                        && discoveredMapIndices.All(mapIndices.Contains);
+
         var textureCache = new Dictionary<string, Guid>();
 
         foreach (var mapIndex in mapIndices.OrderBy(index => index))
@@ -52,6 +65,26 @@ public static class BackdropWriter
         // skipping it here silently dropped all 264 backdrop entries: the runtime then
         // resolved none of the textures and every layer was skipped at world load.
         EditorAssetCatalogService.Save();
+
+        if (isFullRun)
+        {
+            CheckInvariants(report);
+        }
+    }
+
+    private static void CheckInvariants(ConversionReport report)
+    {
+        CheckInvariant(report, "Backdrop.LayersExported", ExpectedLayersExported);
+        CheckInvariant(report, "Backdrop.FramesExported", ExpectedFramesExported);
+    }
+
+    private static void CheckInvariant(ConversionReport report, string counterName, int expected)
+    {
+        var actual = report.Counters.GetValueOrDefault(counterName);
+        if (actual != expected)
+        {
+            report.Errors.Add($"Backdrop: invariant '{counterName}' is {actual}, expected {expected}.");
+        }
     }
 
     private static void ConvertMap(
@@ -134,6 +167,37 @@ public static class BackdropWriter
 
                 layer.TextureAssetId = textureAssetId.ToString();
                 report.Increment("Backdrop.LayersExported");
+                report.Increment("Backdrop.FramesExported");
+
+                // D-E9-2/D-E9-3/D-E9-4 (docs/plan-e9-backdrops-residus.md): only maps with AnimNum >
+                // 1 get extra frames - a non-animated map (AnimNum <= 1) leaves FrameTextureAssetIds
+                // null, producing exactly what this method produced before this slice.
+                var animNum = result.Document.AnimNum;
+                if (animNum > 1)
+                {
+                    var frameTextureAssetIds = new string[animNum];
+                    frameTextureAssetIds[0] = textureAssetId.ToString();
+
+                    for (var frame = 1; frame < animNum; frame++)
+                    {
+                        var vAnim = (frame << 8) / animNum;
+                        using var frameBitmap =
+                            BackdropImageBuilder.Build(tileGrid, result.TileSheetImageData, result.PaletteWords, vAnim)
+                            ?? BackdropImageBuilder.CreateTransparentFrame();
+
+                        var frameFileName = location.BackdropLayerFrameTextureFileName(layer.LayerId, frame);
+                        var frameTempPath = Path.Combine(tempDirectory, frameFileName);
+                        frameBitmap.Save(frameTempPath, ImageFormat.Png);
+
+                        var frameTextureAssetId = TextureAssetWriter.EnsureTexture(
+                            frameTempPath, location.BackdropDirectory, outputDirectory, textureCache);
+
+                        frameTextureAssetIds[frame] = frameTextureAssetId.ToString();
+                        report.Increment("Backdrop.FramesExported");
+                    }
+
+                    layer.FrameTextureAssetIds = frameTextureAssetIds;
+                }
             }
 
             var companionPath = Path.Combine(outputDirectory, location.BackdropRelativePath);
