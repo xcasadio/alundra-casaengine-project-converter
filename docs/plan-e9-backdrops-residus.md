@@ -449,3 +449,78 @@ après les retours anticipés → le pin du site de production tombe.
 - la nécessité d'unifier l'horloge d'auto-défilement (contredit D-E9-6 — c'est E9.b) ;
 - un site nul **autre** qu'`ApplyOriginalBackgroundClearColorOnce` sur le chemin `proxy.Update` du
   montage réel 389 (B3, §1.4) — à rapporter, jamais à contourner par un appel direct au stage.
+
+---
+
+## 5. Journal d'exécution
+
+**Approbation utilisateur le 2026-09-04** : exécuter B1∥B2 → B3 → B4 ; D-E9-U1 tranché — le
+`WaveLut` sort du chantier (→ chantier cellulaire) ; mode AUTO jusqu'à B4. Ordonnancement retenu en
+session : **séquentiel** B1 → B2 → B3 (deux exécutants dans le même dépôt compileraient les projets
+moteur partagés en concurrence ; un export in-place pendant une suite `Alundra.Tests`, qui lit la
+389 réelle, serait instable ; les worktrees n'ont ni le sous-module ni `alundra-project/`). Les
+exports complets sont lancés **en session principale**, jamais par un exécutant.
+
+**B1 — CONFIRMED, commit `82ad020`** (2026-09-04). `Alundra.Tests` 768/768 (764 + 4). Mutation
+`−scrollY` vérifiée à la main par l'exécutant (239 → 241, test tombé, réverté). Trois avis P4 du
+vérificateur, **différés** : (1) `BackdropRenderer.LastLayerOffsetForTests`, seam d'observation
+écrit à chaque couche de chaque `Draw` — coût nul en pratique, à revoir quand E9.b porte le rendu
+dans un composant moteur ; (2) le test delta préexistant
+`Draw_Factor1Layer_IsGluedToWorld_WhenCameraMovesVertically` dérive désormais ses scrolls de
+`ToOriginalScrollSpace` et ne discrimine plus seul une erreur de signe — couvert par les deux tests
+purs et le pin absolu ; (3) la doc de `ComputeParallaxOffset` dit « déjà clampé non négatif » alors
+qu'une ligne `InlineData(-40, …)` exerce un négatif — nuance de doc, troncature vers zéro conforme.
+
+**B2 — CONFIRMED, commit `75dc032`** (2026-09-04). Le vérificateur a refait un **troisième export
+complet** depuis l'extraction corrigée et re-haché l'arbre entier lui-même (23 013 entrées, seul
+`report.json` diffère du second export), relu les quatre trames 640×480 de la 159 et la résolution de
+leurs ids dans `AssetInfos.json`, confirmé l'absence de `FrameTextureAssetIds` sur la 389 et sur
+tous les compagnons sauf sept, re-haché cinq PNG existants contre le baseline, 153/153 et 768/768.
+Deux avis P4 différés : `isFullRun` calculé en O(n²) sur 483 cartes (microsecondes) ; la constante
+de corpus `ExpectedFramesExported = 153` codée en dur, convention `WorldWriter` assumée par D-E9-4.
+Nuance relevée sur la table de mutations : « trame vide omise » est attrapé par les assertions de
+fichiers et d'ids autant que par la longueur (le tableau est pré-dimensionné à `AnimNum`).
+Convertisseur 153/153
+(152 + 1 ; le test 389-like étendu en place : `FramesExported == 1`, chaîne JSON sans
+`FrameTextureAssetIds`, aucun fichier `-frame*`). Mutations `vAnim` ignoré et `[JsonIgnore]` retiré
+vérifiées à la main par l'exécutant. **Découverte de chantier, hors B2** : le premier export complet
+depuis `data-extracted/` a montré, en plus de l'ensemble attendu, **~300 sorties de dialogue
+modifiées** (`Dialogues/control-codes.json` + les `*.strings.json`), byte-identiques à l'export du
+1er septembre — c'est-à-dire **au texte non décodé** (`o}i` pour « où »). Cause mesurée :
+`data-extracted/` du dépôt est l'extraction du **30 août, antérieure au correctif de décodage du 2
+septembre** (`a8598f4`) ; l'extraction corrigée vit dans `D:/development/repo/Alundra
+Remake/remaster-data-extracted` (2026-09-02 08:46 ; 300 JSON de `data/` diffèrent des 3386), et c'est
+elle qui a nourri l'export de référence du 2 septembre — preuve empirique : l'export depuis cette
+entrée reproduit **exactement** l'ensemble attendu de D-E9-8. **Déviation consignée** : la preuve a
+été faite avec `<inputDir> = …/remaster-data-extracted`, pas `data-extracted` comme l'écrit D-E9-8.
+Résultat (deux exports, 57 s et 62 s) : 42 ajouts (21 PNG + 21 `.texture`, tous sous les sept cartes
+animées), 0 suppression, 9 modifiés (7 compagnons + `AssetInfos.json` + `report.json`), 0 texture
+existante modifiée, double export ⊆ {`report.json`}, `Backdrop.LayersExported = 132`,
+`Backdrop.FramesExported = 153`, 0 erreur, 7 avertissements inchangés, `Alundra.Tests` 768/768
+(goldens). **À trancher par l'utilisateur** : rafraîchir `data-extracted/` depuis l'extraction
+corrigée (ou en faire une jonction) pour que la commande documentée redevienne juste.
+
+**B3 — CONFIRMED après une passe de récupération, commit `394cf55`** (2026-09-04). Livraison :
+`LayerRuntime` passé de `readonly struct` à `sealed class` (compteurs mutables), `Frames`/`AnimTimer`
+par couche, `ResolveFrameAssetIds` pure, `LoadLayerFrames(ids, loader, …)` — seam de chargement par
+délégué prévu par le plan, seul moyen de tester D-E9-9 sans `GraphicsDevice` —, `AdvanceAnimation`
+en première instruction du stage, `Draw` sur `Frames[AnimFrameCounter]`, site d'appel `:1520`.
+Mutations vérifiées à la main par l'exécutant : `>=` sur le timer (palier 5), avance après les deux
+gardes (pin 389 tombe). **Complément demandé en session** : la mutation « avance entre les deux
+gardes » ne tombait pas, le premier garde (`HasContent`/`Game`) ne s'activant pas sur le montage 389 ;
+second pin ajouté sur un monde sans `Game` (premier garde actif) — il tombe seul sur cette mutation.
+**Première vérification : REFUTED, F1 P2 introduit** — sur l'échec d'une trame `f ≥ 2`,
+`LoadLayerFrames` faisait `break` et rendait le préfixe partiel `[f0..f-1]` au lieu de `[frame0]`
+(D-E9-9) ; le test `f = 1` était aveugle par coïncidence. Corrigé en session principale (`return
+new[] { frames[0] }`), test `LoadLayerFrames_FrameThreeFails_FallsBackToFrameZeroOnly_NotToThePartialPrefix`
+ajouté (aurait rendu trois trames sur l'ancien code), **revérification fraîche : CONFIRMED**,
+`Alundra.Tests` **781/781** (768 + 13). Avis P4 différés : double avertissement quand l'id de la
+trame 0 est illisible ; `LoadLayerFrames` sur un tableau vide rendrait `Texture2D[0]` (inatteignable,
+`ResolveFrameAssetIds` garantit ≥ 1 et est le seul appelant). Huit aides de
+`AlundraWorldProxyGlobalFreezeTests` passées `internal` pour réutiliser le montage 389.
+
+**État du chantier** : B1, B2, B3 commis ; l'arbre `alundra-project/` est l'export corrigé (trames +
+texte décodé) et `Alundra.dll` y est déposée par le dernier build. **B4 en attente de l'utilisateur**
+(389 sans régression ; 159 avec `FirstWorldLoaded` pointé sur
+`Maps\Fairy cave\Fairy cave (underwater)-159\Fairy cave (underwater)-159.world` dans
+`alundra-project/AlundraGame.json`, ligne 8, par lui).
