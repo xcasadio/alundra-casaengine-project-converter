@@ -603,6 +603,23 @@ datée « plus tard » par son propre plan, plus un trou convertisseur : la tabl
 - **Dépendances** : E2, E6. **À valider** : nommage des nœuds, codes de contrôle (`\N`, `\C#`…) →
   balises Yarn, chasse fixe de la police.
 
+### E9.d — Mode cellulaire des fonds ⏳ (convertisseur + moteur + DLL) — **prochaine étape**
+
+- **But** : porter le second mode de rendu des fonds, le mode **cellulaire** (`Mode == 2`), que E9 n'a
+  pas touché. Aujourd'hui `docs/formats/backdrops.md:117` l'annonce : « paramètres bruts exportés,
+  rendu non implémenté » — les données sortent du convertisseur, rien ne les dessine.
+- **Pourquoi devant E13** : **84 cartes du corpus ont une couche cellulaire** et n'affichent donc
+  aucun fond. C'est le plus gros défaut visible qui subsiste, et il pèse plus lourd à l'écran que le
+  HUD ou la conversion hybride. E9 a pu se clore sans lui parce qu'aucune des trois cartes de recette
+  (389, 159, 321) n'exerce ce mode.
+- **Contenu** : les cellules et leurs types (dont `WaveX`), et le `WaveLut` — 256 entiers dont la
+  reconnaissance a établi qu'il n'a **aucun lecteur** dans le chemin des couches de tuiles et dont les
+  seuls consommateurs sont ces cellules (`plan-e9-backdrops-residus.md` §1.3).
+- **Acceptation** : à définir sur une carte cellulaire de recette, à choisir parmi les 84 — aucune des
+  cartes déjà validées ne convient.
+- **Dépendances** : aucune. Le mécanisme moteur de couches défilantes livré en E9.b est le point de
+  départ.
+
 ### E13 — HUD MGUI ⏳
 
 - **But** : cœurs/magie/argent (`HudManager`, `BALANCE.BIN` exporté en Phase 7).
@@ -656,6 +673,7 @@ datée « plus tard » par son propre plan, plus un trou convertisseur : la tabl
 | E10 fondu/transitions moteur | ✅ close (validée en jeu le 2026-09-01) | moteur `1f837ed6`, parent `96f440e` + `692ec4c` + `767e9e6` |
 | E11 audio | ✅ close (validée en jeu le 2026-08-30) — **E11.b reportée** sur décision utilisateur | `3b1eb24` ; `0b1d2d9` + analyseur `f216b32` |
 | E12 dialogues Yarn + MGUI | ✅ close (validée en jeu le 2026-09-02) — **E12.c** (fidélité fine) datée « plus tard » | E12.d `774255f` ; voir `plan-e12-dialogues.md` |
+| **E9.d mode cellulaire des fonds** | ⏳ **prochaine étape** (84 cartes sans fond) | |
 | E13 HUD | ⏳ | |
 | E14 IA native | ⏳ | |
 | E15 conversion hybride | ⏳ | |
