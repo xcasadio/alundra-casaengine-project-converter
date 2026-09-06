@@ -14,6 +14,11 @@ la source de taille de `ScreenEffectComponent`) dont la prescription minimale es
 l'utilisateur en l'état. Clarification ajoutée au même moment, non relue : D-E9b-3, une seconde
 poussée sans `Advance()` intermédiaire **écrase** la frame en attente.
 
+**Amendement du 2026-09-04 (§1.8), pendant l'exécution** : le critère visuel de D-E9b-13 a été
+mesuré avant d'être utilisé et sa première rédaction s'est révélée **non discriminante** ; il est
+remplacé par un protocole de rafale + médiane, calibré, dont les seuils sont désormais très
+inférieurs aux tailles d'effet à attraper. Le reste du plan est inchangé.
+
 ---
 
 ## 0. Cadre
@@ -297,6 +302,34 @@ montage headless et dont le repli `ScreenSizeWidth/Height` lève sur un jeu non 
 et mutation réécrits comme des appels directs. Clarification simultanée : `SetFrame` écrase la frame en
 attente (D-E9b-3).
 
+### 1.8 Mesure du critère visuel (2026-09-04, pendant l'exécution)
+
+Le critère visuel de D-E9b-13 a été **calibré avant usage**, sur le HEAD de S1 (visuellement inerte).
+Première rédaction : **non discriminante**. Deux exécutions du MÊME binaire donnaient
+`band_last_row` = [327, 327, 335, 943] sur la 159, un écart de 11 unités sur `sea_mean` de la 389 et
+de 21 sur les lignes pourtant statiques du sol de la 321 ; appliquer la clause d'élargissement du
+plan aurait produit des seuils vides de sens (un « après » entièrement faux serait passé).
+
+Diagnostic : l'animation est **déterministe**, pas bruitée. Deux clichés pris au **même décalage**
+après l'apparition de la fenêtre sont identiques au chiffre près (`red_fraction` de la 321 :
+0,040803571428571425 dans les deux runs) ; l'écart venait de comparer un cliché à 10 s avec un
+cliché à 20 s du même cycle. L'aberration `943` de la 159 n'était pas un fondu mais la sensibilité du
+seuil `> 8` à une dérive de quelques unités du noir de fond (4,7 → 10,3), qui reclasse d'un coup
+toutes les lignes sous la bande. Les lignes « statiques » du sol de la 321 portent en fait le boss
+animé (journal : entité `◆Zorgia`).
+
+Remède retenu : rafale de 12 images à 250 ms à partir de 12 s, réduite en **médiane par pixel**
+(déviation moyenne par trame à la médiane : 0,9 sur la 159, 5,2 sur la 321, 25,5 sur la 389 — la
+réduction a bien de quoi moyenner). Sur les médianes, la dispersion entre deux rafales tombe à 0
+(`band_last_row`), 0,007 (`band_plateau`), 0,020 (`sea_mean`) et 0,045 (`floor_row_means`), pour des
+tailles d'effet de 8, 4,07, 1,54 et 3,79 sur une toile décalée de 8 lignes : les seuils de D-E9b-13
+sont désormais dix à quarante fois inférieurs à ce qu'ils doivent attraper. Exception assumée : la
+médiane **détruit** le critère des nuages de la 321 (ils défilent et ne couvrent un pixel qu'une
+minorité de la rafale, la médiane rend 0,0) — il se lit donc sur les images brutes, où il est
+reproductible au chiffre près.
+
+---
+
 ---
 
 ## 2. Décisions de conception
@@ -451,22 +484,31 @@ attente (D-E9b-3).
   aucun export). Moteur : baseline `CasaEngine.Tests` re-mesurée **avant S0** (« mêmes noms d'échecs,
   aucun nouveau ») ; `dotnet build CasaEngine.Tests` explicite avant tout `--no-build`. DLL :
   `Alundra.Tests` verte à chaque tranche, comptes écrits d'avance (S1 : **791** ; S2 : **752**, sommes
-  terme à terme en §3). **Visuel (S2), critère décidable** : captures par la méthode B5 (lanceur depuis
-  PowerShell, `CopyFromScreen` ~10 s après l'apparition de la fenêtre, aucune entrée, `FirstWorldLoaded`
-  basculé par un script qui **sauvegarde et restaure** `AlundraGame.json`, zone client 1280×944 = 4× la
-  vue), **avant** = HEAD de S1 (S1 est visuellement inerte : rien n'est branché) et **après** = S2. Les
-  motifs défilent et s'animent, donc aucune tolérance par ligne : on compare des **statistiques
-  invariantes par phase**, toutes calculées par un script consigné dans le scratchpad —
-  (a) histogramme de luminance à 16 classes de la zone client entière, distance L1 normalisée ;
-  (b) régions structurelles par carte, en lignes de la zone client : **159** — première ligne dont la
-  moyenne sur la colonne du vide (x ∈ [20, 380]) dépasse 50 et dernière dont elle dépasse 8 (bande à
-  ±4 lignes), plateau de la bande sur le vide à ±3 ; **389** — moyenne globale de la zone mer à ±3 ;
-  **321** — moyennes par ligne des lignes [640, 944) (sol statique) à ±2, et **nuages présents** :
-  fraction des pixels des lignes [0, 560) (le vide au-dessus du sol, §1.5) vérifiant
-  `R − max(G, B) > 60`, qui doit rester ≥ 50 % de la plus petite des deux fractions « avant ».
-  **Calibration obligatoire** : deux captures « avant » consécutives (10 s d'écart) doivent tenir dans
-  tous ces seuils ; sinon les seuils sont élargis au double de l'écart mesuré et consignés avant toute
-  comparaison avant/après. Validation finale en jeu par l'utilisateur.
+  terme à terme en §3).
+  **Visuel (S2), protocole MESURÉ le 2026-09-04 — remplace la première rédaction (voir §1.8).**
+  L'animation du jeu est **déterministe** : deux captures prises au **même décalage** après
+  l'apparition de la fenêtre sont reproductibles au chiffre près, et toute la « dispersion » de la
+  première calibration venait de comparer des clichés de phases différentes (10 s contre 20 s du même
+  cycle). Protocole : `scratchpad/e9b_capture.ps1` bascule `FirstWorldLoaded` en **sauvegardant et
+  restaurant** `AlundraGame.json`, lance le jeu, **vérifie que `GetForegroundWindow` est la fenêtre du
+  jeu avant chaque cliché** (garde obligatoire : sans elle une capture peut prendre une autre fenêtre —
+  incident réel du 2026-09-04) et prend une **rafale de 12 images à 250 ms, à partir de 12 s** ;
+  `e9b_median.py` en tire la **médiane par pixel** (le défilement et les cycles s'annulent, la
+  géométrie fixe demeure). **avant** = HEAD de S1 (visuellement inerte), **après** = S2, mêmes
+  décalages. Critères, avec la dispersion mesurée entre deux rafales « avant » et la taille d'effet
+  d'une toile décalée de 8 lignes : **159** — sur la médiane, `band_last_row` (dispersion 0, effet 8)
+  à **±2 lignes** et `band_plateau` (dispersion 0,007, effet 4,07) à **±0,5** ; **389** — `sea_mean`
+  de la médiane (dispersion 0,020, effet 1,54) à **±0,1** ; **321** — `floor_row_means` des lignes
+  [640, 944) de la médiane (dispersion 0,045, effet 3,79) à **±0,5 par ligne**, et **présence des
+  nuages** mesurée sur les **images brutes au décalage correspondant** (`red_fraction` = fraction des
+  pixels des lignes [0, 560) vérifiant `R − max(G, B) > 60`, identique au chiffre près entre deux
+  runs) à **±0,005** — la médiane détruit ce critère (les nuages défilent et ne couvrent un pixel
+  qu'une minorité de la rafale), il se lit donc sur les images brutes. **Limites écrites** : sur la
+  389 le fond occupe toute la vue, aucune région n'en est exempte, donc `sea_mean` prouve l'ancrage
+  mais **pas** « le fond n'est plus dessiné du tout » ; sur la 321 les lignes du sol portent aussi le
+  boss animé. Ces deux trous sont couverts par le vrai oracle numérique, `BackdropEquivalenceTests`
+  (2 000 ticks, trame par trame, les trois cartes) — les captures sont un filet de sécurité.
+  Validation finale en jeu par l'utilisateur.
 - **D-E9b-14 — Gels documentés** (§0.2) : `0xA4`, secousse scriptée, marcheur de teinte, dénominateur
   0 ; aperçu éditeur sans fond ; vue unique (`ActiveView`) ; plafond 10 000 sprites (≤ 4 quads par
   couche + 1 teinte : sans risque).
