@@ -563,19 +563,36 @@ ouverture au passage du joueur, tuiles animées sans saut. Seule réserve, atten
   des fonds) `71c57da` ; C2 moteur (profondeur de fond distincte de la profondeur caméra) sous-module
   `0be1e9d2`, commit parent `0458c6b`. **Validée en jeu par l'utilisateur** (« tout est ok »).
 
-### E10 — Fondu, teinte, transitions dans le moteur ⏳ (moteur, plan-verifier)
+### E10 — Fondu, teinte, transitions dans le moteur ✅ CLOSE — **validée en jeu le 2026-09-01**
+
+Plan et tranches : `docs/plan-e10-fondu.md` §6. Fondu d'entrée validé sur la 389, puis les nuages
+après deux correctifs nés de la recette. Commits : moteur `1f837ed6`, parent `96f440e`, `692ec4c`,
+`767e9e6`. Restes dispositionnés en P3/P4 dans le plan, aucun bloquant.
 
 - **But** : `WarpPlayer` effet 0 (fondu 16 frames à l'entrée), teinte plein écran, transitions de map.
 - **Acceptation** : fondu d'entrée visible sur la 389.
 - **Dépendances** : aucune.
 
-### E11 — Audio ⏳ (DLL)
+### E11 — Audio ✅ CLOSE — **validée en jeu le 2026-08-30**
+
+Plans : `docs/plan-e11-audio.md` §6 (bruitages, `3b1eb24`) et `docs/plan-e11c-musique.md` §6
+(musique, `0b1d2d9` + analyseur `f216b32`), verifier CONFIRMED avant chaque validation. La réserve
+laissée par E7 est close : la trappe ne s'ouvre plus en silence. **Reste E11.b** — le solde des
+opcodes audio (`0xA5`, `0xAB`/`0xBF`, `0xA6`/`0xA7`, anti-doublon, table par carte) : plan rédigé et
+relu, **reporté sur décision de l'utilisateur**, et couplé à T7 pour le son de départ de warp.
 
 - **But** : BGM de la 389 (`LoadMapSounds`), SFX 44/45/46/61 de 0xBD, streaming.
 - **Acceptation** : sons audibles aux frames de la chronologie.
 - **Dépendances** : E1.
 
-### E12 — Dialogues Yarn + boîte MGUI ⏳ (convertisseur + moteur + DLL)
+### E12 — Dialogues Yarn + boîte MGUI ✅ CLOSE — **validée en jeu le 2026-09-02**
+
+Plans : `docs/plan-e12-dialogues.md` (E12.a dialogue jouable, E12.b largeurs proportionnelles) et
+`docs/plan-e12d-interaction-joueur.md` (`774255f`, verifier CONFIRMED). Le marin 12 pose sa question
+en `font3` proportionnel, en français, avec le choix OUI/NON complet, ouvert par l'appui Carré.
+**Reste E12.c** — la fidélité fine (machine à écrire, pagination, curseur, blips), explicitement
+datée « plus tard » par son propre plan, plus un trou convertisseur : la table de chaînes partagée
+`map_alundra.json` n'est pas exportée.
 
 - **But** : parler aux marins (slot F, Tick 140 gardé par 0x800C).
 - **Contenu** : convertisseur — `.yarn` par map, un nœud par chaîne (D6), `DialogueAsset` compilé ;
@@ -636,9 +653,9 @@ ouverture au passage du joueur, tuiles animées sans saut. Seule réserve, atten
 | E7 mutation de tuiles | ✅ close (validée en jeu) | `326917e`, `9493b78`, moteur `1c5bf445`+`1215f3b`, `e5d73bb` |
 | E8 profondeur murs/sols moteur | ✅ close (livrée par `AddSortedOverlayTile`, écrit en E9 ; variante par couche réfutée sur 483 cartes) | préalable `5d66e10` |
 | E9 backdrops moteur | ✅ close (validée en jeu) | E9.a `82ad020`,`75dc032`,`394cf55`,`14d94e0` ; E9.b moteur `dcbb55ff`+`29a84e2`, DLL `3798b75`, amendement `975248c`, bascule `e808568` ; E9.c `71c57da`, moteur `0be1e9d2`, parent `0458c6b` |
-| E10 fondu/transitions moteur | ⏳ | |
-| E11 audio | ⏳ | |
-| E12 dialogues Yarn + MGUI | ⏳ | |
+| E10 fondu/transitions moteur | ✅ close (validée en jeu le 2026-09-01) | moteur `1f837ed6`, parent `96f440e` + `692ec4c` + `767e9e6` |
+| E11 audio | ✅ close (validée en jeu le 2026-08-30) — **E11.b reportée** sur décision utilisateur | `3b1eb24` ; `0b1d2d9` + analyseur `f216b32` |
+| E12 dialogues Yarn + MGUI | ✅ close (validée en jeu le 2026-09-02) — **E12.c** (fidélité fine) datée « plus tard » | E12.d `774255f` ; voir `plan-e12-dialogues.md` |
 | E13 HUD | ⏳ | |
 | E14 IA native | ⏳ | |
 | E15 conversion hybride | ⏳ | |
