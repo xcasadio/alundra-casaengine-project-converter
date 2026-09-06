@@ -270,6 +270,32 @@ disparaît) ; `Alundra.Tests` **752 / 752** ; convertisseur **153 / 153**. La no
 portage est prouvée, pas supposée : le `CasaEngine.dll` contre lequel `Alundra.Tests` a tourné est
 horodaté 24 secondes **après** la modification de `WorldRuntimeSystems.cs`.
 
+### Vérification indépendante — CONFIRMED
+
+Le vérificateur a reproduit les trois suites lui-même (deux exécutions consécutives identiques pour
+`CasaEngine.Tests`), refait l'archéologie git de `fc66513c` sans se fier au message de commit, et
+tenté de falsifier le critère 7 en extrayant le corps du test supprimé depuis
+`git show 4224c44c^:…` pour l'apparier appel par appel avec le test restauré : **les 15
+correspondances y sont une à une dans le même ordre, et les 6 assertions de valeurs sont identiques
+au caractère près**. Il a aussi cherché un consommateur silencieux de l'ancien ordre : le seul
+producteur de coroutines en production est le système de cinématiques, exactement la paire que le
+correctif rétablit ; `StartCoroutine` est public mais le portage ne l'utilise pas.
+
+Il signale honnêtement une lacune qu'il n'a pas comblée : il n'a pas rejoué l'échec sur l'arbre
+d'avant correctif, ce qu'une contrainte de lecture seule interdisait.
+
+### Suites (P4, non traitées ici — les corriger invaliderait la couverture du verdict)
+
+- **[A1]** La section 7 du document d'extensibilité est gardée par un fragment là où elle en avait
+  deux : le troisième point réécrit (« `NvgSharp` ne survit que comme référence de paquet ») n'est
+  pas gardé et peut donc dériver en silence. Ajouter un fragment si la section compte.
+- **[A2]** Le correctif rétablit l'ordre **relatif**, pas la position absolue dans l'image. Avant
+  `fc66513c`, les coroutines tournaient tout en haut de `World.Update`, avant `GameMode.Tick`,
+  `InternalAddEntities` et les passes de préparation spatiale ; elles tournent aujourd'hui dans
+  `RuntimeSystems.Update` (`World.cs:476`), donc après. Ce décalage résiduel est **antérieur** au
+  chantier et n'est pas introduit par lui. Consigné pour qu'on ne le prenne pas plus tard pour une
+  restauration complète de la disposition d'image d'origine.
+
 ### Ce que le chantier a appris
 
 Le relecteur indépendant a bloqué une suppression que j'avais justifiée par une caractérisation
