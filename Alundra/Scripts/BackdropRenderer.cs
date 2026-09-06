@@ -293,29 +293,14 @@ internal sealed class BackdropRenderer
     /// Extracted as its own static, pure method (no <see cref="Texture2D"/>/<see cref="World"/> touched)
     /// specifically so it is testable with a synthetic document and no live <see cref="GraphicsDevice"/>
     /// (T8, docs/plan-e10-fondu.md).
+    ///
+    /// Plan E9.b (docs/plan-e9b-backdrops-moteur.md, D-E9b-8): the DEFINITION of this mapping moved to
+    /// <see cref="AlundraBackdropStage.ResolveGroundLayerBlend"/> - this method is now a plain forwarder,
+    /// signature UNCHANGED, so every existing T8 pin (<c>ResolveGroundLayerBlend_*</c> in
+    /// <c>BackdropRendererTests</c>) keeps calling this exact method and stays green unedited.
     /// </summary>
     internal static (SpriteBlendMode BlendMode, Color Tint) ResolveGroundLayerBlend(bool ground, int blendMode)
-    {
-        if (ground)
-        {
-            switch (blendMode)
-            {
-                case 1: // Average - unchanged (§1.8): true semi-transparency via AlphaBlend.
-                    return (SpriteBlendMode.AlphaBlend, new Color(255, 255, 255, 128));
-                case 2: // Additive white.
-                    return (SpriteBlendMode.Additive, Color.White);
-                case 3: // Subtractive white.
-                    return (SpriteBlendMode.Subtractive, Color.White);
-                case 4: // Additive, tint (63,63,63) - see this method's own doc on the 0.247 vs 0.25
-                        // quantization gap.
-                    return (SpriteBlendMode.Additive, new Color(63, 63, 63));
-            }
-        }
-
-        // Every other combination - including the deliberately untouched (Ground=false, BlendMode 1)
-        // bucket - keeps the pre-existing fixed behavior.
-        return (SpriteBlendMode.Opaque, Color.White);
-    }
+        => AlundraBackdropStage.ResolveGroundLayerBlend(ground, blendMode);
 
     /// <summary>Advances the shared tick clock every layer's auto-scroll reads from - see
     /// <see cref="BackdropOffsetMath.TicksPerSecond"/>. Recomputed from total accumulated time rather

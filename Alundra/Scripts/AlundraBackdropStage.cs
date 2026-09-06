@@ -13,6 +13,8 @@ using CasaEngine.Framework.Application.Components;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Physics;
+using CasaEngine.Framework.Rendering.Depth;
+using CasaEngine.Framework.Rendering.ScrollingLayers;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using CasaEngine.Framework.Scene.World;
@@ -65,6 +67,26 @@ internal sealed class AlundraBackdropStage
     /// <see cref="AlundraWorldProxy.Update"/>, mirroring <c>AlundraCameraDirector</c>'s own
     /// one-time-retry shape for the debug camera lookup.</summary>
     private bool _clearColorApplied;
+
+    /// <summary>
+    /// Plan E9.b (docs/plan-e9b-backdrops-moteur.md, D-E9b-2) - the engine-side mechanism this stage
+    /// pushes frame state to via <see cref="PushFrame"/>. Attached (never constructed here) by
+    /// <c>AlundraWorldProxy.InitializeWithWorld</c>, same acquisition shape as
+    /// <c>AlundraScreenFadeDirector.AttachToWorld</c>. S1 (this slice): nothing in production calls
+    /// <see cref="AttachService"/> yet, so this is always <see langword="null"/> at the one call site
+    /// that exists today - S2 wires it in and adds the null-with-live-Game warning (D-E9b-2's own
+    /// "arrêt" clause), deliberately not implemented here.
+    /// </summary>
+    private ScrollingLayerService? _service;
+
+    /// <summary>Attaches (or detaches, with <see langword="null"/>) this stage's engine-side scrolling-
+    /// layers mechanism - see <see cref="_service"/>'s own doc. Internal so <c>Alundra.Tests</c> (via
+    /// <c>InternalsVisibleTo</c>) can inject a real <see cref="ScrollingLayerService"/> on a headless
+    /// montage, exactly the shape D-E9b-2 specifies for production.</summary>
+    internal void AttachService(ScrollingLayerService? service)
+    {
+        _service = service;
+    }
 
     /// <summary>Faithful port (E2, docs/plan-e2-rendu.md) of the original engine's own background clear
     /// (<c>AlundraGame.Draw</c>'s <c>GraphicsDevice.Clear(Color.Black)</c>, both for the game's off-screen
@@ -169,4 +191,145 @@ internal sealed class AlundraBackdropStage
     /// callers reach through is not an extracted one (docs/plan-update-caracterisation.md, slice S3).
     /// </summary>
     internal void Load(World world, string projectPath) => _backdropRenderer.Load(world, projectPath);
+
+    /// <summary>
+    /// Plan E9.b (D-E9b-8) - PURE translation of a loaded <see cref="BackdropDocument"/> into the engine
+    /// mechanism's own data (<c>CasaEngine.Framework.Rendering.ScrollingLayers</c>), applying EXACTLY the
+    /// rules <see cref="BackdropRenderer.Load"/> applies today: a layer is translated only if
+    /// <c>Mode == "Tiles" &amp;&amp; Scrollar != null &amp;&amp; TextureAssetId</c> is non-empty (the same
+    /// two guards as <see cref="BackdropRenderer.Load"/>'s own early-`continue` - a <c>Disabled</c>/
+    /// <c>Cellular</c> layer, a <c>Tiles</c> layer with a null <see cref="BackdropScrollarData"/>, or one
+    /// with an empty <see cref="BackdropLayerData.TextureAssetId"/> is silently absent from the result,
+    /// never an exception); <c>Ground</c>/<c>BlendMode</c> resolve to (<c>Pass</c>, <c>Blend</c>,
+    /// <c>Tint</c>) through <see cref="ResolveGroundLayerBlend"/> (the definition this method now owns -
+    /// see that method's own doc); <c>SortingLayer</c> is always 0, <c>OrderInLayer</c> is
+    /// <see cref="BackdropLayerData.DepthOrder"/>, <c>StableId</c> is <see cref="BackdropLayerData.LayerId"/>;
+    /// frame ids reuse <see cref="BackdropRenderer.ResolveFrameAssetIds"/> (same
+    /// <c>FrameTextureAssetIds ?? [TextureAssetId]</c> fallback already tested there) then convert each
+    /// string to a <see cref="Guid"/> of the SAME LENGTH - a null, empty or unparsable id becomes
+    /// <see cref="Guid.Empty"/>, NEVER an exception and NEVER a shortened array (D-E9-9's own fallback
+    /// runs afterward, engine-side - see <see cref="ScrollingLayerComponent.ResolveTextures"/>). The
+    /// overlay tint is independent of any layer (mirrors <see cref="BackdropRenderer.HasContent"/>'s own
+    /// "layers and/or tint" contract) - <c>(R, G, B, 128)</c> at <see cref="RenderPass2D.Effects"/>
+    /// sorting −1, strictly below every <c>Ground=1</c> layer's <c>SortingLayer</c> 0 key. The
+    /// configuration is always the fixed 640x480 canvas / 320x240 view (D-E9b-5).
+    /// </summary>
+    internal static (ScrollingLayerDefinition[] Layers, ScrollingTintDefinition? Tint, ScrollingLayerConfiguration Configuration) BuildDefinitions(
+        BackdropDocument document)
+    {
+        var layers = new List<ScrollingLayerDefinition>();
+
+        foreach (var layer in document.Layers)
+        {
+            if (layer.Mode != "Tiles" || layer.Scrollar == null || string.IsNullOrEmpty(layer.TextureAssetId))
+            {
+                continue;
+            }
+
+            var scrollar = layer.Scrollar;
+            var (blendMode, tint) = ResolveGroundLayerBlend(layer.Ground, layer.BlendMode);
+            var renderPass = layer.Ground ? RenderPass2D.Effects : RenderPass2D.Background;
+
+            var frameAssetIds = BackdropRenderer.ResolveFrameAssetIds(layer);
+            var frameTextureAssetIds = new Guid[frameAssetIds.Length];
+            for (var frameIndex = 0; frameIndex < frameAssetIds.Length; frameIndex++)
+            {
+                frameTextureAssetIds[frameIndex] = ParseFrameAssetIdOrEmpty(frameAssetIds[frameIndex]);
+            }
+
+            layers.Add(new ScrollingLayerDefinition
+            {
+                FrameTextureAssetIds = frameTextureAssetIds,
+                FactorXNum = scrollar.FactorXNum,
+                FactorXDenom = scrollar.FactorXDenom,
+                FactorYNum = scrollar.FactorYNum,
+                FactorYDenom = scrollar.FactorYDenom,
+                ScrollXSpeed = scrollar.ScrollXSpeed,
+                ScrollXPeriod = scrollar.ScrollXPeriod,
+                ScrollYSpeed = scrollar.ScrollYSpeed,
+                ScrollYPeriod = scrollar.ScrollYPeriod,
+                AnimTimer = layer.AnimTimer,
+                Pass = renderPass,
+                SortingLayer = 0,
+                OrderInLayer = layer.DepthOrder,
+                StableId = layer.LayerId,
+                Blend = blendMode,
+                Tint = tint,
+            });
+        }
+
+        ScrollingTintDefinition? tintDefinition = null;
+        if (document.OverlayEnabled)
+        {
+            var tintColor = new Color(document.OverlayColorR, document.OverlayColorG, document.OverlayColorB, (byte)128);
+            var tintSortKey = new RenderSortKey2D((int)RenderPass2D.Effects, -1, 0, 0, 0, 0, 0);
+            tintDefinition = new ScrollingTintDefinition(tintColor, tintSortKey);
+        }
+
+        var configuration = new ScrollingLayerConfiguration(
+            BackdropOffsetMath.CanvasWidth, BackdropOffsetMath.CanvasHeight,
+            (int)AlundraCameraMath.CameraVisibleWidth, (int)AlundraCameraMath.CameraVisibleHeight);
+
+        return (layers.ToArray(), tintDefinition, configuration);
+    }
+
+    private static Guid ParseFrameAssetIdOrEmpty(string? assetIdString)
+    {
+        return Guid.TryParse(assetIdString, out var guid) ? guid : Guid.Empty;
+    }
+
+    /// <summary>
+    /// E10.b (docs/plan-e10-fondu.md §1.8) - the ORIGINAL's own backdrop blend mapping
+    /// (GraphicManager.cs:846-853): 1 = average, 2 = additive white, 3 = subtractive white, 4 = additive
+    /// tint (63,63,63). Only <paramref name="ground"/> == <see langword="true"/> layers are re-mapped -
+    /// the <c>(Ground = false, BlendMode 1)</c> bucket stays Opaque, untouched (out of scope - see
+    /// <see cref="BackdropRenderer.ResolveGroundLayerBlend"/>'s own doc, kept as the forwarding pin for
+    /// this method, for the full rationale). Moved here from <see cref="BackdropRenderer"/> (plan E9.b,
+    /// D-E9b-8: "la définition passe sur le stage") - <see cref="BackdropRenderer.ResolveGroundLayerBlend"/>
+    /// now forwards to this method with its own signature UNCHANGED, so the T8 pins stay green
+    /// unedited.
+    /// </summary>
+    internal static (SpriteBlendMode BlendMode, Color Tint) ResolveGroundLayerBlend(bool ground, int blendMode)
+    {
+        if (ground)
+        {
+            switch (blendMode)
+            {
+                case 1: // Average - true semi-transparency via AlphaBlend.
+                    return (SpriteBlendMode.AlphaBlend, new Color(255, 255, 255, 128));
+                case 2: // Additive white.
+                    return (SpriteBlendMode.Additive, Color.White);
+                case 3: // Subtractive white.
+                    return (SpriteBlendMode.Subtractive, Color.White);
+                case 4: // Additive, tint (63,63,63).
+                    return (SpriteBlendMode.Additive, new Color(63, 63, 63));
+            }
+        }
+
+        // Every other combination - including the deliberately untouched (Ground=false, BlendMode 1)
+        // bucket - keeps the pre-existing fixed behavior.
+        return (SpriteBlendMode.Opaque, Color.White);
+    }
+
+    /// <summary>
+    /// Plan E9.b (D-E9b-2) - pushes this frame's original-scroll-space state to <see cref="_service"/>
+    /// (a no-op while <see cref="_service"/> is <see langword="null"/> - S1 never attaches one in
+    /// production, see <see cref="_service"/>'s own doc). Mirrors
+    /// <see cref="UpdateAndDrawBackdrop"/>'s own scroll conversion exactly:
+    /// <see cref="AlundraCameraMath.ToOriginalScrollSpace"/> on <paramref name="resolvedCamera"/>'s
+    /// <c>Target</c> (or <see cref="Vector3.Zero"/> with no resolved camera, same fallback as
+    /// <see cref="UpdateAndDrawBackdrop"/>). NOT called by any production site yet (S1) - <see cref="Load"/>
+    /// and <see cref="UpdateAndDrawBackdrop"/> stay the only two members <c>AlundraWorldProxy</c> calls.
+    /// </summary>
+    internal void PushFrame(int ticksThisFrame, Camera2dComponent? resolvedCamera)
+    {
+        if (_service == null)
+        {
+            return;
+        }
+
+        var cameraTarget = resolvedCamera?.Target ?? Vector3.Zero;
+        var scroll = AlundraCameraMath.ToOriginalScrollSpace(cameraTarget);
+        _service.SetFrame(scroll.X, scroll.Y, ticksThisFrame, cameraTarget);
+    }
 }
