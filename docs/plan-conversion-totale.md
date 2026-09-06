@@ -104,7 +104,7 @@ le harnais simule la cinématique fidèle : l'oracle est à durées réelles, 0x
 (jalons 554/1034/1202/1704 — voir `plan-e4-deplacement-scripte.md` E4.f et la table §0
 d'intro-roadmap).
 
-### E1 — Scripts par entité, MapEvents dans le world ⏳ (DLL)
+### E1 — Scripts par entité, MapEvents dans le world ✅ (DLL — verifier CONFIRMED ; visuel runtime à valider par l'utilisateur)
 
 - **But** : appliquer D2 et D3 sans changer le comportement observable sur la map 389.
 - **Contenu** :
@@ -189,7 +189,7 @@ d'intro-roadmap).
   `GameInitializer.cs:363-367` à décaler de +4 dans `AlundraGameState`, et `FillDataFromCommand` ne remet pas à
   zéro `[1..9]` sur le chemin de fin de programme (inobservable : `RunOneScriptCall` sort sur 0xFF).
 
-### E2 — Héros : pawn possédé ⏳ (convertisseur + DLL)
+### E2 — Héros : pawn possédé ✅ (convertisseur + DLL — verifier CONFIRMED ; visuel runtime à valider par l'utilisateur)
 
 - **But** : le héros existe comme pawn du moteur, visible en (33,59) avec l'animation 54 vers le bas.
 - **Contenu** : convertisseur — `.gameMode` (`default_pawn_asset_id` = `Entities/Alundra.entity`,
@@ -517,7 +517,7 @@ ouverture au passage du joueur, tuiles animées sans saut. Seule réserve, atten
   antérieurs à E9.b (nuages rouges au lieu de bleus ; nuages passant devant les os de la rangée du
   haut au lieu de derrière). Corrigés : C1 convertisseur (inversion rouge/bleu du décodage palette
   des fonds) `71c57da` ; C2 moteur (profondeur de fond distincte de la profondeur caméra) sous-module
-  `0be1e9d2`, commit parent `0458c6b`. Validation en jeu par l'utilisateur en attente.
+  `0be1e9d2`, commit parent `0458c6b`. **Validée en jeu par l'utilisateur** (« tout est ok »).
 
 ### E10 — Fondu, teinte, transitions dans le moteur ⏳ (moteur, plan-verifier)
 
@@ -587,11 +587,11 @@ ouverture au passage du joueur, tuiles animées sans saut. Seule réserve, atten
 | E2 héros pawn | ✅ (verifier CONFIRMED ; visuel runtime à valider par l'utilisateur) | voir git log |
 | E3 collisions (E3.0/a/b/c/c-bis/d.0/d) | ✅ (verifiers CONFIRMED ; runtime à valider par l'utilisateur) | voir git log |
 | E4 déplacement scripté (E4.0/a/b/c/d/f) | ✅ (verifiers CONFIRMED ; runtime à valider par l'utilisateur) | voir git log ; moteur a9267735 |
-| E5 caméra | ✅ (verifier CONFIRMED ; runtime à valider par l'utilisateur) | cc1fc60 + 1507afc |
-| E6 contrôle joueur | ⏳ | |
+| E5 caméra | ✅ close (runtime VALIDÉ par l'utilisateur le 2026-08-26) | cc1fc60 + 1507afc |
+| E6 contrôle joueur | ✅ close (livrée par anticipation dans E4.c, le 2026-08-26) | voir E4.c |
 | E7 mutation de tuiles | ✅ close (validée en jeu) | `326917e`, `9493b78`, moteur `1c5bf445`+`1215f3b`, `e5d73bb` |
 | E8 profondeur murs/sols moteur | ⏳ | |
-| E9 backdrops moteur | ✅ close (validée en jeu) | E9.a `82ad020`,`75dc032`,`394cf55`,`14d94e0` ; E9.b moteur `dcbb55ff`+`29a84e2`, DLL `3798b75`, amendement `975248c`, bascule `e808568` |
+| E9 backdrops moteur | ✅ close (validée en jeu) | E9.a `82ad020`,`75dc032`,`394cf55`,`14d94e0` ; E9.b moteur `dcbb55ff`+`29a84e2`, DLL `3798b75`, amendement `975248c`, bascule `e808568` ; E9.c `71c57da`, moteur `0be1e9d2`, parent `0458c6b` |
 | E10 fondu/transitions moteur | ⏳ | |
 | E11 audio | ⏳ | |
 | E12 dialogues Yarn + MGUI | ⏳ | |

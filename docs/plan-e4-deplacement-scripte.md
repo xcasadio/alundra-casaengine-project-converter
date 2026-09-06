@@ -601,7 +601,7 @@ DLL / convertisseur / harnais (ce repo) :
 - **Tests** : DLL **421/421** (415 + 5 tests d'acceptation + 1 régression logic-level) ;
   convertisseur 137/137 ; builds 0 erreur.
 
-### E4.g — Moteur : propriété externe de la verticale ✅ (moteur 41119786, bump aa3a548, DLL 485765c)
+### E4.g — Moteur : propriété externe de la verticale ✅ (moteur 41119786, bump aa3a548, DLL 485765c — **verifier de sortie à passer**)
 
 - **Pourquoi (dette relevée le 2026-08-25)** : depuis `5c3bd58`, la DLL possède la verticale des PNJ
   scriptés (déplacement par tick via `Move`, port de `PosZ += ForceZ`). Mais `UpdateGround`
