@@ -222,4 +222,68 @@ vide), `docs/formats/backdrops.md` (convention de palette), journal de ce plan, 
 
 ## 5. Journal d'exécution
 
-*(vide — le plan est en relecture)*
+### C1 — La couleur (2026-09-06)
+
+- **Commit** `71c57da` (convertisseur). `BackdropImageBuilder.FromPsxColor` lit désormais le rouge
+  dans les bits 0-4, le vert dans les bits 5-9, le bleu dans les bits 10-14 du mot de palette 16
+  bits ; l'écriture des octets et l'expansion `<< 3` restent inchangées. Aucun autre chemin de
+  décodage n'a été touché : les chemins tileset et sprite inversent deux fois et s'annulaient déjà,
+  donc étaient déjà corrects.
+- **Correction faite pendant la tranche** : la constante de test qui déclarait `0x001F` comme
+  « bleu » a été corrigée (le bleu pur est `0x7C00`) ; le témoin vert `0x03E0 → (0, 248, 0)` est
+  resté inchangé et sert de preuve que seul l'axe rouge/bleu a bougé.
+- **Preuve** : suite convertisseur 153/153 ; export complet in-place dont le diff contre le
+  manifeste d'avant modification est exactement les 86 PNG de fond prédits par un balayage
+  pré-modification (sur 153 au total ; les 67 autres ont `R == B` partout et sont restés
+  bit-identiques), plus `report.json` ; second export ne différant que par `report.json` ; les six
+  goldens inchangés ; `Alundra.Tests` 752/752.
+- **Prédicat couleur** : le `-layer0.png` de la map 321 garde ses 15 couleurs opaques et ses
+  43 636 texels opaques, la dominante devenant `RGB(0, 56, 200)` sur 6 071 pixels — l'échange
+  rouge/bleu exact de l'ancien `RGB(200, 56, 0)` — et `RGB(0, 8, 0)`, qui vient du mot de palette
+  `0x0020` dont les quintets rouge et bleu sont tous deux nuls, reste invariant et présent.
+- **Mutations vérifiées à la main** : restaurer l'ancienne convention fait tomber le témoin bleu ;
+  inverser aussi le vert fait tomber le témoin vert.
+- **Verdict** : conforme à D-E9c-1 à D-E9c-4 et à l'acceptation de la tranche C1.
+
+### C2 — La profondeur (2026-09-06)
+
+- **Commits** : sous-module moteur `0be1e9d2`, commit parent `0458c6b` (bump du pointeur plus la
+  moitié gameplay).
+- **Contenu** : `ScrollingLayerConfiguration` gagne une profondeur de fond (`BackgroundDepth`,
+  défaut 1) ; `ScrollingLayerComponent` soumet une couche de passe `Background` à
+  `cameraTarget.Z − BackgroundDepth`, alors que toute autre passe et la teinte de couche restent à
+  la profondeur caméra ; `AlundraBackdropStage.BuildDefinitions` pousse la valeur, épinglée contre
+  le compagnon réel de la map 321. Une configuration à profondeur 0 reproduit le comportement
+  d'avant, ce qui prouve que la valeur est de la donnée et non une constante figée.
+- **Correction faite pendant la tranche** : `ScreenEffectComponent` codait en dur une profondeur
+  nulle pour le fondu plein écran ; il suit désormais la profondeur caméra comme la teinte de
+  couche, avec un nouveau test qui l'épingle à une profondeur caméra non nulle.
+- **Tests mis à jour délibérément** (comme prévu par le plan, §3 C2) : les deux tests moteur qui
+  épinglaient l'ancienne égalité de profondeur ; aucun autre test vert n'a été touché.
+- **Preuve** : suite moteur 1528 en succès avec les mêmes 17 échecs préexistants, nom pour nom ;
+  `Alundra.Tests` 752/752 ; les deux mutations du plan vérifiées à la main (profondeur laissée à
+  zéro, et profondeur appliquée à toutes les passes).
+- **Verdict** : conforme à D-E9c-5 et D-E9c-6.
+
+### Attribution
+
+Les deux défauts sont **antérieurs à la bascule E9.b** : les captures prises avant la bascule
+montraient déjà des nuages rouges, et le renderer retiré construisait la même clé de tri et
+passait la même profondeur nulle.
+
+### Encore ouvert
+
+L'utilisateur doit valider en jeu la map 321 (nuages bleus, et passant derrière les os de la
+rangée du haut) ainsi que l'absence de régression sur les maps 389 et 159. La comparaison
+automatisée de captures avant/après reste indisponible dans cet environnement : toute capture
+d'écran de la fenêtre du jeu revient noire, de façon reproductible, avec trois méthodes de
+capture différentes, y compris sur le code d'avant la bascule.
+
+### Avis différés (P4, aucun bloquant)
+
+- Le test de soumission côté moteur s'appuie sur la profondeur de fond par défaut plutôt que de
+  l'épingler explicitement (atténué par le test à profondeur nulle et par l'épingle côté
+  gameplay).
+- Hérités des tranches précédentes : les assertions de sous-chaîne trop larges du test de
+  journalisation, le harnais d'équivalence qui n'exerce jamais la teinte de surimpression, et la
+  ligne de mutation du plan « `SetLayers` sans `Clear` » qui ne mord pas.

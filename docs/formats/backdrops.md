@@ -92,6 +92,28 @@ par-dessus toute la scène - un ciel qui s'assombrit, une teinte d'intérieur...
   compagnon est écrit dès que `Enabled` est vrai, même sans aucune couche `Tiles` exportée - c'est
   le cas des 9 maps purement `Cellular` listées ci-dessus.
 
+## Décodage des couleurs (mot de palette PSX 16 bits)
+
+`BackdropImageBuilder.FromPsxColor` décode chaque mot de palette 16 bits (`STP` au bit 15, trois
+quintets de 5 bits) selon la **convention PSX**, bits bas → rouge :
+
+- `r = (paletteWord & 0x1F) << 3`
+- `g = ((paletteWord >> 5) & 0x1F) << 3`
+- `b = ((paletteWord >> 10) & 0x1F) << 3`
+
+L'expansion `<< 3` (5 bits → 8 bits, **sans** réplication des bits de poids fort) et l'ordre
+d'écriture des octets dans le tampon BGRA (`B, G, R, A`) sont indépendants de cette convention et ne
+changent pas. Les chemins **tilesets** et **sprites** appliquent la même convention rouge/bits-bas
+mais écrivent leurs octets dans l'ordre `R, G, B, A` d'un tampon `Format32bppArgb` (donc BGRA en
+mémoire) : les deux inversions se composent et s'annulent, si bien qu'un chemin qui prendrait la
+convention inverse ne s'y verrait pas — seul le chemin fond compare une écriture BGRA explicite à
+cette convention, ce qui l'a rendu seul vulnérable à l'inversion. Voir
+`docs/plan-e9c-defauts-321.md` §1.1 et D-E9c-1 : jusqu'au commit `71c57da`, `FromPsxColor` lisait le
+rouge dans les bits **hauts** et le bleu dans les bits bas (convention inversée), un défaut confiné
+aux fonds et invisible sur les couleurs où `R == B` (67 des 153 textures de fond exportées) ou sur
+les nuances de gris pur (maps 159 et 389) ; il a coloré en rouge 86 des 153 textures de fond
+exportées, dont les nuages bleus de la map 321.
+
 ## Différé (paramètres bruts exportés, rendu non implémenté)
 
 - Les couches `Mode 2` ("Cellular") : sprites indépendants (oiseaux, nuages, écume...) déplacés par

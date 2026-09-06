@@ -513,6 +513,11 @@ ouverture au passage du joueur, tuiles animées sans saut. Seule réserve, atten
   le moteur, `docs/plan-e9b-backdrops-moteur.md`) — S0 moteur `dcbb55ff` + bump `29a84e2`, S1 DLL
   `3798b75`, amendement du critère visuel `975248c`, S2 bascule `e808568`. Validé en jeu par
   l'utilisateur sur les maps 389, 159 et 321.
+- **E9.c** (`docs/plan-e9c-defauts-321.md`) : la validation en jeu de la 321 a révélé deux défauts
+  antérieurs à E9.b (nuages rouges au lieu de bleus ; nuages passant devant les os de la rangée du
+  haut au lieu de derrière). Corrigés : C1 convertisseur (inversion rouge/bleu du décodage palette
+  des fonds) `71c57da` ; C2 moteur (profondeur de fond distincte de la profondeur caméra) sous-module
+  `0be1e9d2`, commit parent `0458c6b`. Validation en jeu par l'utilisateur en attente.
 
 ### E10 — Fondu, teinte, transitions dans le moteur ⏳ (moteur, plan-verifier)
 
