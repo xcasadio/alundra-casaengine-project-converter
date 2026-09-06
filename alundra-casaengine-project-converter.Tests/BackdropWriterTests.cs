@@ -870,7 +870,7 @@ public class BackdropWriterTests
     private const int AnimatedSheetU = 16;
     private const int AnimatedPaletteEntryLowBand = 2; // V band [0, 64) -> green
     private const int AnimatedPaletteEntryHighBand = 3; // V band [64, 128) -> blue
-    private const ushort BluePsxWord = 0x001F; // FromPsxColor -> (0, 0, 248)
+    private const ushort BluePsxWord = 0x7C00; // FromPsxColor -> (0, 0, 248)
 
     private static byte[] BuildAnimatedDataBlob()
     {

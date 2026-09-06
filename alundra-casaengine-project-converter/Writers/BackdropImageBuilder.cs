@@ -169,12 +169,13 @@ public static class BackdropImageBuilder
     }
 
     // Mirrors AlundraEngine.Graphics.ImageHelper.FromPsxColor(int): 5 bits per channel, in BGR555
-    // order (bit 15 is the STP flag, not alpha - alpha/transparency is handled separately above).
+    // order (bit 15 is the STP flag, not alpha - alpha/transparency is handled separately above);
+    // red occupies the LOW bits and blue the HIGH bits of the 16-bit palette word.
     private static Color FromPsxColor(int paletteWord)
     {
-        var r = (paletteWord & (0x1F << 10)) >> 7;
-        var g = (paletteWord & (0x1F << 5)) >> 2;
-        var b = (paletteWord & 0x1F) << 3;
+        var r = (paletteWord & 0x1F) << 3;
+        var g = ((paletteWord >> 5) & 0x1F) << 3;
+        var b = ((paletteWord >> 10) & 0x1F) << 3;
         return Color.FromArgb(255, r, g, b);
     }
 }
