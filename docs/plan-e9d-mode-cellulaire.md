@@ -12,6 +12,13 @@ qui suit porte sa preuve.
 
 **Aucune ligne de code n'a été écrite.** Ce plan est soumis avant exécution.
 
+**Révision 2** — la révision 1 a été relue et a reçu deux blocages, tous deux retenus. (1) Le §1.5
+affirmait que le seau d'avant-plan était « l'inverse d'E9.b » : c'est faux, 86 des 132 couches du mode
+1 l'utilisent déjà et la politique existe. La section est corrigée et un septième point, P7, dispose
+explicitement de cette politique au lieu de la laisser sans propriétaire. (2) Le chiffrage de la
+réserve de P1 était **inversé** — la dérive continue concerne 17 cartes et non 8 — et aucune des trois
+cartes proposées n'exerçait le piège du OU de signes que le plan documente lui-même.
+
 ---
 
 ## 0. Ce que le tri a corrigé de nos propres plans
@@ -88,9 +95,20 @@ n'appartient pas au mode 1.
 
 **Les 92 couches cellulaires du corpus ont `Ground = true`** : elles atterrissent dans le seau
 d'avant-plan et sont dessinées **après** toutes les entités, tuiles et murs, juste sous l'interface.
-Aucune n'utilise le seau d'arrière-plan que les couches du mode 1 peuvent prendre. C'est l'inverse
-d'E9.b, où les fonds passaient derrière — la profondeur d'E9.d est un problème distinct, pas un
-réemploi.
+
+**Correction de relecture** : la première rédaction en concluait que c'était « l'inverse d'E9.b, où
+les fonds passaient derrière ». **C'est faux.** Mesuré sur les compagnons exportés : **86 des 132
+couches du mode 1 portent déjà `Ground = true`** (contre 46 à `false`), et `AlundraBackdropStage`
+route déjà ce cas — `Alundra/Scripts/AlundraBackdropStage.cs:196-197` :
+
+```csharp
+var (blendMode, tint) = ResolveGroundLayerBlend(layer.Ground, layer.BlendMode);
+var renderPass = layer.Ground ? RenderPass2D.Effects : RenderPass2D.Background;
+```
+
+Le seau d'avant-plan est donc le **chemin majoritaire déjà livré et validé en jeu**, pas une
+nouveauté. La politique de passe, de fusion et de teinte existe et fonctionne ; E9.d n'a pas à la
+réinventer. Voir P7.
 
 ### 1.6 Un effet, pas quatre-vingt-dix
 
@@ -133,16 +151,24 @@ sur 65 cartes** ; le bloc « pluie » `FallRespawn` est partagé par exactement 
 
 ## 2. Points à valider — je propose, tu tranches
 
-Ce plan ne va pas plus loin que ces six points : les tranches en dépendent.
+Ce plan ne va pas plus loin que ces **sept** points : les tranches en dépendent.
 
 - **P1 — Les cartes de recette.** Aucune carte déjà validée n'exerce ce mode. Je propose **420**
   (maison de la côte, Nava : cellulaire pure, 120 cellules `WaveX` de 160×4 empilées, fusion
   additive — **c'est le bloc des 65 cartes**), **391** (Ship Klark nuit : 55 cellules `FallRespawn`
   de 1×64, `DY` entre 7 et 10 — de la pluie, et **même zone que la 389** d'entrée de jeu), et **271**
   (Inoa : 15 cellules `Normal` de 40×40, parallaxe 1:1).
-  **Réserve** : `Normal` se scinde en deux variantes, période seule (la 271) et **dérive continue**,
-  qui concerne 8 cartes et ne serait couverte par aucune des trois. Faut-il une quatrième carte, ou
-  gèle-t-on cette variante ?
+  **Réserve, rectifiée par la relecture — le premier chiffrage était inversé.** `Normal` (450 cellules,
+  25 cartes) se scinde en **période seule : 120 cellules sur 8 cartes** (96, 97, 98, 99, **271**, 289,
+  357, 481) et **dérive continue : 330 cellules sur 17 cartes** (20, 55-60, 123, 124, 293, 443-448,
+  461). C'est donc la variante **majoritaire** qui serait non couverte, pas une variante marginale :
+  la geler gèlerait 17 cartes, pas 8.
+  **Et une seconde lacune, plus gênante** : le piège du OU de signes (§1.4) ne diverge du mode 1 que
+  lorsque `DX < 0 && PeriodX < 0` — 214 cellules sur 14 cartes en X, 215 sur 14 cartes en Y. **Aucune
+  des trois cartes proposées ne l'exerce** (la 271 a `DX = 0, PeriodX = -3`, où les deux formules
+  coïncident). Le piège que le plan documente n'aurait donc **aucun témoin en jeu**.
+  Je propose d'ajouter une **quatrième carte de recette prise parmi les 17**, la **443** ou la **20**,
+  choisie pour exercer à la fois la dérive continue et la divergence de signes.
 - **P2 — La cuisson.** Je propose la **planche entière par palette utilisée** : décoder une fois la
   planche 256×256 par `PalDex` employé, jusqu'à 8 textures par carte. Aucun remappage d'UV — les
   `U0/V0/U1/V1` existants restent valides tels quels. L'alternative, un atlas des seuls rectangles
@@ -161,10 +187,16 @@ Ce plan ne va pas plus loin que ces six points : les tranches en dépendent.
 - **P6 — Le générateur aléatoire de `FallRespawn`.** La réapparition tire un X au hasard. Il faut
   décider d'une source reproductible avant d'écrire la moindre acceptation sur la 391, sinon aucun
   test ne pourra épingler quoi que ce soit.
+- **P7 — La politique de passe et de fusion** (point ajouté par la relecture). Les 92 couches
+  cellulaires sont toutes `Ground = true`, cas déjà routé par `ResolveGroundLayerBlend` et
+  `RenderPass2D.Effects` pour 86 couches du mode 1, livré et validé en jeu. Je propose de **réemployer
+  cette politique telle quelle**, sans la dupliquer ni la paramétrer autrement. Elle devient un point
+  parce que c'est un choix, pas une évidence : si tu préfères que le mode cellulaire ait sa propre
+  politique, il faut le dire avant C2.
 
 ---
 
-## 3. Tranches — forme prévue, à figer après P1–P6
+## 3. Tranches — forme prévue, à figer après P1–P7
 
 - **C0 — le compte corrigé** : 84 → 90 dans les deux plans. Documentaire, sans code.
 - **C1 — convertisseur** : cuisson de la planche et des palettes, référence de texture sur la couche
