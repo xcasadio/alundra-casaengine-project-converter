@@ -305,6 +305,10 @@ public class BackdropStageDefinitionTests
         Assert.Equal(480, configuration.CanvasHeight);
         Assert.Equal(320, configuration.ViewWidth);
         Assert.Equal(240, configuration.ViewHeight);
+        // D-E9c-5: pushed explicitly by BuildDefinitions so a Background layer recedes to
+        // cameraTarget.Z - 1, reproducing the original's Ground=false-behind-everything policy -
+        // checked here for the real map-321 companion (§1.2 of plan-e9c-defauts-321.md).
+        Assert.Equal(1f, configuration.BackgroundDepth);
     }
 
     private static BackdropDocument LoadRealCompanion(string worldName, string zoneFolderIgnored)

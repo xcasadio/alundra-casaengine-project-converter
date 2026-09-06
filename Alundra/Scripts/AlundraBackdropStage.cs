@@ -235,8 +235,12 @@ internal sealed class AlundraBackdropStage
         // 640x480: the original's own wrapping canvas size (D-E9b-5) - was BackdropOffsetMath.CanvasWidth/
         // Height before that file's retirement (plan E9.b, S2); the engine's own ScrollingLayerService
         // carries no such constant since the canvas size is per-configuration, not fixed mechanism-side.
+        // BackgroundDepth 1: a Background-pass layer recedes to cameraTarget.Z - 1 (plan
+        // plan-e9c-defauts-321.md, D-E9c-5), reproducing the original's own policy of placing
+        // Ground=false layers behind every floor, wall and entity (GraphicManager.cs:825-826).
         var configuration = new ScrollingLayerConfiguration(
-            640, 480, (int)AlundraCameraMath.CameraVisibleWidth, (int)AlundraCameraMath.CameraVisibleHeight);
+            640, 480, (int)AlundraCameraMath.CameraVisibleWidth, (int)AlundraCameraMath.CameraVisibleHeight,
+            backgroundDepth: 1f);
 
         return (layers.ToArray(), tintDefinition, configuration);
     }

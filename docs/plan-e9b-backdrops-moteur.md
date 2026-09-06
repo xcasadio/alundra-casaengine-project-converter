@@ -255,6 +255,21 @@ inférieurs aux tailles d'effet à attraper. Le reste du plan est inchangé.
   documente la mécanique observée dans la page `docs/engine/` après lecture.
 - Le fondu (`ScreenEffects`, z = 0) couvre tous les quads (égalité, `LessEqual`).
 
+- **AMENDEMENT (E9.c, `docs/plan-e9c-defauts-321.md`, §1.2, D-E9c-5, 2026-09-06).** La mesure
+  ci-dessus ne regardait que le **vide** au-dessus du sol de la 321 : le sol du plan 0 « intact »
+  observé n'était que sa **moitié basse**, jamais la rangée la plus haute des os. E9.c a mesuré plus loin et trouvé que la 321 conserve 166 tuiles en
+  `Render_0` (z_offset 0.0, rangées 13-19, les doigts d'os les plus hauts) routées par
+  `TileMapComponent`/`SpriteRendererComponent.DrawStaticBatch` dans le lot statique **immédiat**,
+  dessiné pendant `World.Draw` **avant** le vidage de la file triée (où vit le fond) — à égalité de
+  profondeur, le dernier dessiné gagne, donc le fond gagnait déjà sur cette rangée-là, invisible
+  seulement parce que le reste des tuiles est dans la surimpression triée et gagne la même égalité
+  après le fond. **z = 0 pour tous les quads était donc un sous-correctif** : juste sur le vide, faux
+  sur toute tuile partageant le lot statique immédiat. E9.c corrige la politique Z (une couche
+  `Background` recule à `cameraTarget.Z − BackgroundDepth`, configuration `BackgroundDepth`, défaut 1)
+  et **D-E9b-4 est remplacée** par cette politique — voir `docs/engine/scrolling-layers.md` §4 pour le
+  détail et la justification par l'original (`GraphicManager.cs:825-826`). L'historique ci-dessus reste
+  tel quel : la mesure d'alors était honnête sur ce qu'elle a effectivement regardé.
+
 ### 1.6 Suites héritées qui entrent au périmètre
 
 - **Ciseaux** (A1) : `Draw` passe `(0,0,320,240)` comme rectangle de découpe en pixels-machine
@@ -395,6 +410,12 @@ reproductible au chiffre près.
   `:467`) pour tous les quads (couches et teinte), sous l'invariant `Target.Z == 0` (§0.2). Pinée par la
   translation Z des soumissions (= 0). La page `docs/engine/` consigne la mécanique observée qui fait
   passer le sol devant un fond à même z, après lecture en S0.
+  **AMENDÉE par D-E9c-5 (`docs/plan-e9c-defauts-321.md`) : une couche `Background` recule à
+  `cameraTarget.Z − BackgroundDepth` (configuration, défaut 1) ; les autres passes et la teinte restent
+  à `cameraTarget.Z`.** La mesure qui avait fixé z = 0 pour tout ne regardait que le vide au-dessus du
+  sol de la 321 (§1.5, amendement) ; la rangée de tuiles la plus haute, dans le lot statique immédiat,
+  était overpaintée depuis toujours. Voir §1.2.f et D-E9c-5 du plan E9.c pour la mesure et la
+  justification par l'original.
 - **D-E9b-5 — Ancrage et couverture inchangés (B1/B5).** Coin haut-gauche de la toile = `cameraTarget +
   (−viewWidth/2, +viewHeight/2)` avec la taille de vue **poussée en configuration** (320×240 : politique
   Alundra, E5) ; origines couvrantes = port de `ComputeCoveringOrigins1D` **sans allocation** (bornes
