@@ -31,7 +31,7 @@ dans la DLL.
 | D5 | **Navigation pour la marche scriptée aussi** : 0x1E/0x1F deviennent des `MoveTo` vers la destination (position + direction × distance) résolus par la grille de navigation construite depuis `AlundraCells` ; les PNJ contournent les obstacles (écart assumé). La navigation servira aussi à l'IA native plus tard. | Convertisseur : propriétés `navigation.*` sur une couche TileMap. |
 | D6 | **Dialogues : un nœud Yarn par chaîne** : un `.yarn` par map, un nœud par id de chaîne ; 0x0D démarre le nœud, 0x5C expose les choix Yarn. Pas de reconstruction de séquences depuis le bytecode. | Convertisseur : `strings.json` → `.yarn` (+ `DialogueAsset` compilé). |
 | D7 | **Particules : aucune conversion pour l'instant.** | Pas d'étape particules dans ce plan. |
-| D8 | **Pipeline graphique — vers le moteur** : profondeur murs/sols (overlay DLL → `TileMapComponent`/tri moteur), backdrops/parallaxe/ondes (`BackdropRenderer` DLL + `ScrollParameters` → composant moteur), fondu/teinte/transitions (→ post-process ou composant de transition moteur). Le palette swap reste hors plan. | Trois chantiers moteur, chacun avec plan-verifier. |
+| D8 | **Pipeline graphique — vers le moteur** : profondeur murs/sols (overlay DLL → `TileMapComponent`/tri moteur), backdrops/parallaxe/ondes (`BackdropRenderer` DLL + `ScrollParameters` → composant moteur), fondu/teinte/transitions (→ post-process ou composant de transition moteur). Le palette swap reste hors plan. | Trois chantiers moteur, chacun avec plan-verifier. **Bilan 2026-09-06** : la profondeur murs/sols (E8) est arrivée par `AddSortedOverlayTile` pendant E9, et non par un déplacement de code hors de la DLL — voir E8 pour la frontière retenue (D-E8-1). |
 | D9 | **UI en MGUI** : vues XML + `font3.fnt` (FontStashSharp) ; le `DialogueService`/Yarn y branche sa boîte et ses choix. | Moteur : les vues de dialogue (`DialogueBoxView`, `ChoiceListView`) sont encore planifiées (⏳). |
 
 ## 3. Architecture runtime cible
@@ -494,14 +494,58 @@ ouverture au passage du joueur, tuiles animées sans saut. Seule réserve, atten
   cassables (`CheckAndTriggerTileEffect`, combat) ; consommateur warp du bit `GroundProperty` 0x80
   (E10) ; les snapshots de pad `ButtonsReleased`/`ButtonsJustPressedByInterval`.
 
-### E8 — Profondeur murs/sols dans le moteur ⏳ (moteur, plan-verifier)
+### E8 — Profondeur murs/sols dans le moteur ✅ CLOSE — livrée par un autre chemin (2026-09-06)
 
-- **But** : retirer `WallPlacementOverlay` et l'interleave de la DLL ; le `TileMapComponent` / le tri de
-  profondeur moteur rendent murs, sols et sprites dans le bon ordre.
-- **Contenu** : à concevoir avec `CasaEngineMonogame/docs/engine/tilemaps-gestion-profondeur.md` ;
-  convertisseur — émettre la donnée de placement des murs sous la forme attendue par le moteur.
-- **Acceptation** : map 389 visuellement identique avant/après (captures comparées).
-- **Dépendances** : aucune (indépendant du gameplay).
+- **But d'origine** : retirer `WallPlacementOverlay` et l'interleave de la DLL ; le `TileMapComponent`
+  et le tri de profondeur moteur rendent murs, sols et sprites dans le bon ordre.
+- **Ce qui s'est réellement passé** : le but est atteint, mais pas par le chemin décrit ici. Le
+  mécanisme moteur existe, et il a été écrit pendant la lignée E9 :
+  `TileMapComponent.AddSortedOverlayTile` / `ClearSortedOverlayTiles`, documenté dans
+  `CasaEngineMonogame/docs/engine/tilemaps-gestion-profondeur.md:285` sous le titre « Overlay runtime
+  de tuiles triées **(implémenté)** », dont le texte nomme le cas d'usage visé : « le cas typique
+  étant des murs PSX qui doivent s'intercaler avec les personnages ».
+  **`WallPlacementOverlay` n'est donc pas un contournement dans la DLL** : c'est du code de jeu qui
+  pilote une API moteur conçue pour lui. Le tri des murs et des sols contre les entités passe déjà
+  par le moteur, via `RenderSortKey2D` et le chemin sprite trié.
+- **Pourquoi le reste ne bouge pas — D-E8-1** : ce qui subsiste dans la DLL est irréductiblement
+  spécifique au jeu — les constantes PSX (`RowStride = 16`, `WallDepthBias = 7`,
+  `EntityDepthSlot = 6`, `EntityRowMax = 0x3B`), le schéma `AlundraWallPlacements` /
+  `AlundraFloorPlacements`, et la boucle qui appelle déjà l'API moteur. Les porter dans le moteur
+  créerait un type générique **sans aucun consommateur moteur**, ce que `CasaEngineMonogame/AGENTS.md`
+  §9.2 interdit explicitement (« Pas d'abstraction pour un système simple »). La frontière passe donc
+  ici : le moteur fournit le tri, le jeu fournit ses constantes et ses données.
+- **La variante « rôles cuits par couche » est réfutée, pas reportée — D-E8-2** : elle consistait à
+  faire segréger murs et sols surélevés par le convertisseur dans leurs propres couches marquées
+  `depth.role`, pour que le classement par couche du moteur suffise. Mesuré sur les **483 cartes
+  exportées** : **85,4 %** des groupes `(carte, Plane)` de murs contiennent déjà au moins deux
+  `DepthSlot` distincts, donc un rôle par couche ne peut pas reproduire un slot par tuile ; la
+  fidélité complète demanderait **jusqu'à 12 couches par carte** au lieu de 2 (médiane 11) ; et la
+  389 a besoin de **jusqu'à 4 tuiles de même rôle sur une même cellule**, qu'une couche dense par
+  cellule perdrait en silence. Trois relecteurs indépendants ont tenté de réfuter ce constat en
+  re-dérivant les chiffres eux-mêmes ; les trois ont confirmé. Le document du moteur énonce d'ailleurs
+  l'inverse de la variante : « La TileMap ne doit pas tout trier tile par tile » — les couches fixes
+  restent chunkées, et l'overlay est l'exception prévue pour les tuiles individuelles.
+  La piste `depth.spawnAsEntity` est écartée sur le volume : **501 962 placements de murs** sur le
+  corpus.
+- **Acceptation** : sans objet sous cette forme — aucun rendu n'a changé. L'ordre murs/sols/entités
+  est celui validé en jeu par l'utilisateur lors d'E7 (mutation de tuiles, 2026-08-28) et d'E9
+  (backdrops, 2026-09-04), tous deux appuyés sur ce même chemin trié.
+- **Écart gelé — D-E8-3** : le tri des entités de l'original (`UpdateVisibleEntitiesZSort`,
+  `EntityManager.cs:1010`) propage la profondeur le long des plateformes et des entités collidables
+  (`EntityManager.cs:1042-1080`). Le portage n'en a que le seau grossier `PosY + IDSV`. Cet écart est
+  **définitif et assumé** ; il ne rouvre pas E8. Il redeviendra un chantier si un défaut visible
+  apparaît.
+- **Préalable livré** : le clamp de seau `0x3B` de l'original (`GraphicManager.cs:344`) manquait au
+  portage sans être documenté — un troisième écart non signalé, en plus des deux que le commentaire
+  de `ComputeEntityElevation` énumère. Corrigé en tranche séparée (`5d66e10`), avec deux tests qui
+  épinglent la borne. Le commentaire est corrigé au passage : le départage fin de l'original vient de
+  `PosZ >> 16` (`EntityManager.cs:1036`), pas des bits bas de `PosY`.
+- **Ce qui reste, et qui n'appartient pas à ce plan** : `TileMapDepthSettings` analyse `Elevation`,
+  `RenderPass`, `SortingLayer` et `SortAnchor`, et **rien ne les lit au rendu** — seul
+  `ShouldRenderTiles` est consommé (`TileMapComponent.cs:428,589,1655`, seuls sites). Ce sont les
+  étapes 4 et 5 de la migration que le moteur s'est lui-même écrite. C'est une dette **du moteur**,
+  utile à tous ses projets et sans rapport avec Alundra : elle relève d'un chantier dans
+  `CasaEngineMonogame/ai-agent/tasks/`, pas d'une étape de ce plan.
 
 ### E9 — Backdrops, parallaxe, ondes dans le moteur ✅ (moteur, plan-verifier)
 
@@ -590,7 +634,7 @@ ouverture au passage du joueur, tuiles animées sans saut. Seule réserve, atten
 | E5 caméra | ✅ close (runtime VALIDÉ par l'utilisateur le 2026-08-26) | cc1fc60 + 1507afc |
 | E6 contrôle joueur | ✅ close (livrée par anticipation dans E4.c, le 2026-08-26) | voir E4.c |
 | E7 mutation de tuiles | ✅ close (validée en jeu) | `326917e`, `9493b78`, moteur `1c5bf445`+`1215f3b`, `e5d73bb` |
-| E8 profondeur murs/sols moteur | ⏳ | |
+| E8 profondeur murs/sols moteur | ✅ close (livrée par `AddSortedOverlayTile`, écrit en E9 ; variante par couche réfutée sur 483 cartes) | préalable `5d66e10` |
 | E9 backdrops moteur | ✅ close (validée en jeu) | E9.a `82ad020`,`75dc032`,`394cf55`,`14d94e0` ; E9.b moteur `dcbb55ff`+`29a84e2`, DLL `3798b75`, amendement `975248c`, bascule `e808568` ; E9.c `71c57da`, moteur `0be1e9d2`, parent `0458c6b` |
 | E10 fondu/transitions moteur | ⏳ | |
 | E11 audio | ⏳ | |
