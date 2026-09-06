@@ -287,3 +287,10 @@ capture différentes, y compris sur le code d'avant la bascule.
 - Hérités des tranches précédentes : les assertions de sous-chaîne trop larges du test de
   journalisation, le harnais d'équivalence qui n'exerce jamais la teinte de surimpression, et la
   ligne de mutation du plan « `SetLayers` sans `Clear` » qui ne mord pas.
+
+**Validation en jeu par l'utilisateur (2026-09-04) : « tout est ok ».** Les deux défauts de la 321
+sont corrigés à l'écran — la fumée est bleue et passe derrière les os de la rangée haute — et les
+cartes 389 et 159 sont sans régression. **E9.c est CLOS.** La comparaison automatique par capture
+n'a pas pu être produite dans cet environnement (toute image de la fenêtre revient noire, avec trois
+méthodes, y compris au code d'avant la bascule) ; l'acceptation visuelle repose donc sur cette
+validation, les prédicats numériques ayant tenu séparément.

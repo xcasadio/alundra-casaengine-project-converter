@@ -808,3 +808,10 @@ trois maps (389, 159, 321) directement en jeu à la place de cette comparaison.
 
 Ces suites sont consignées pour qui les reprendra ; aucune n'entre dans le périmètre d'un chantier
 dédié à ce stade.
+
+**Validation en jeu par l'utilisateur (2026-09-04).** Un premier essai a donné « tout est bon sauf
+pour la map 321 », qui a ouvert le chantier correctif E9.c (`docs/plan-e9c-defauts-321.md`) : deux
+défauts **antérieurs à cette migration** — une inversion rouge/bleu dans le décodage des palettes des
+fonds, et une égalité de profondeur qui laissait le fond recouvrir les tuiles restées dans le lot
+statique. Après leurs correctifs, l'utilisateur a validé l'ensemble : « tout est ok ». **E9 est CLOS,
+validé en jeu sur les trois cartes d'acceptation.**
