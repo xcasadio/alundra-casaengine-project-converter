@@ -706,4 +706,84 @@ d'avertissement tombe (aucun avertissement émis) ; `SetLayers` sans `Clear` →
 
 ## 5. Journal d'exécution
 
-*(vide — le plan est en relecture de clôture)*
+### S0 — Le mécanisme dans le moteur
+
+Sous-module `CasaEngineMonogame`, commit `dcbb55ff` ; pointeur parent bumpé en `29a84e2`.
+`ScrollingLayerService` (sans type GPU : définitions de couches, état par tick, arithmétique
+d'offset pure, contrat de poussée `SetFrame`/`Advance` avec `PendingTicks`/`FramesPushed`/
+`LastPushedScrollX/Y`/`CameraTarget`/`HasPendingFrame`, `LayersVersion` strictement croissant) et
+`ScrollingLayerComponent` (résolution des textures par id d'asset avec le repli trame 0 / trame `f`
+et un avertissement sur les deux branches, `Advance` puis `Submit` par frame, rectangle de ciseaux
+reçu en paramètre, aucune soumission avant la première poussée reçue) livrés ensemble ;
+`CasaEngineGame.ScrollingLayerComponent` et `ComponentUpdateOrder.ScrollingLayers` ajoutés ;
+`ScreenEffectComponent` corrigé (taille de vue lue sur la caméra active via la couture pure
+`TryGetCameraViewSize`, repli sur la taille écran, paramètre de ciseaux optionnel en fin de
+signature). Nouvelle page `CasaEngineMonogame/docs/engine/scrolling-layers.md`, indexée dans le
+`docs/README.md` de ce dépôt.
+
+`CasaEngine.Tests` : 1524 verts, les 17 échecs préexistants inchangés nom pour nom par rapport à la
+baseline re-mesurée avant la tranche.
+
+Relecture de clôture : **REVISE** sur un seul blocage (le chemin de texture en échec était silencieux ;
+la prescription minimale — avertissement journalisé, testé par assertion sur le texte — a été
+appliquée sans nouvelle relecture, cap atteint). Verdict outcome-`verifier` : **CONFIRMED** après un
+tour de correction.
+
+### S1 — L'adaptateur DLL, non branché, et le harnais d'équivalence
+
+Commit `3798b75`. `AlundraBackdropStage` gagne `AttachService`, la fonction pure `BuildDefinitions`
+(traduction reprenant exactement les règles de `BackdropRenderer.Load`) et `PushFrame` ; la
+définition de `ResolveGroundLayerBlend` déménage sur le stage, le renderer devenant un simple relais.
+Rien n'est branché : le jeu en production est inchangé.
+
+Un harnais d'équivalence a fait tourner l'ancien chemin et le nouveau côte à côte sur les compagnons
+réels des maps 389, 159 et 321, sur 2000 ticks logiques, avec des frames de 0, 1, 2 et 4 ticks, en
+comparant offsets, identité de texture soumise, positions de quad, clés de tri, blend, couleurs et
+profondeur.
+
+`Alundra.Tests` : 791/791. Verdict outcome-`verifier` : **CONFIRMED** au premier tour.
+
+### Amendement du critère visuel
+
+Commit `975248c`. Le critère visuel de D-E9b-13 a été calibré avant usage et s'est révélé **non
+discriminant** : l'animation des fonds est en réalité déterministe, pas bruitée. Le critère a été
+remplacé par une rafale de 12 clichés réduite en médiane par pixel, avec des seuils désormais dix à
+quarante fois inférieurs aux tailles d'effet à attraper (détail de la mesure en §1.8). Le reste du
+plan est inchangé.
+
+### S2 — La bascule
+
+Commit `e808568`. Le service est attaché à l'entrée dans le monde, le stage l'alimente une fois par
+monde, et le site de production pousse désormais le contrat de frame au lieu de dessiner —
+inchangé dans l'ordre de frame, toujours hors de la porte de gel. `BackdropRenderer` et
+`BackdropOffsetMath` sont supprimés avec leurs tests ; chaque pin numérique survit, côté moteur ou
+dans la DLL, dont trois pins qui font tourner le montage réel de la map 389 à travers le site de
+production.
+
+`Alundra.Tests` : 752/752, exactement l'arithmétique prédite par le plan. Verdict outcome-`verifier` :
+**CONFIRMED** au premier tour.
+
+### Comparaison visuelle avant/après : non produite
+
+Toute capture de la fenêtre du jeu est revenue **noire**, de façon reproductible, avec trois méthodes
+de capture indépendantes — y compris après retour au code d'avant la bascule. Diagnostic retenu : une
+limitation d'environnement/affichage de la session, pas une régression du chantier (le journal du jeu
+ne montre aucun avertissement de texture, de fond ou de défilement absent). L'utilisateur a validé les
+trois maps (389, 159, 321) directement en jeu à la place de cette comparaison.
+
+### Suites différées (aucune bloquante, toutes P3/P4)
+
+- **S0** — les assertions d'identification de couche du test de journalisation sont des
+  correspondances de sous-chaîne larges ; un commentaire surestime ce que `Logs.Close()` détache
+  réellement.
+- **S1** — la boucle d'équivalence n'a pas d'assertion explicite de non-vacuité (non vacue en
+  pratique) ; le harnais n'exerce jamais le quad de teinte en surimpression (aucune map
+  d'acceptation ne l'active) ; sa trajectoire réutilise les bornes de la map 389 pour les trois
+  cartes.
+- **S2** — la ligne de mutation du plan « `SetLayers` sans `Clear()` » **n'est pas discriminante** :
+  le service remplace son tableau de couches plutôt que d'y ajouter, donc retirer `Clear()` laisse le
+  pin vert ; `Clear()` reste nécessaire malgré tout car il remet à zéro l'état de poussée. Quelques
+  mentions en prose des types retirés subsistent comme notes historiques.
+
+Ces suites sont consignées pour qui les reprendra ; aucune n'entre dans le périmètre d'un chantier
+dédié à ce stade.

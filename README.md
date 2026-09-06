@@ -43,7 +43,7 @@ alundra-casaengine-project-converter <inputDir> <outputDir> [--maps 0,4,10] [--p
 - `--phase N` — run phases **0 through N inclusive**, then stop. It does *not* run phase `N` alone
   — there is no way to run a single phase in isolation, because later phases generally depend on
   the assets earlier ones wrote (e.g. Phase 2 merges into the `.tileMap` files Phase 1 produced).
-  Omit the flag to run every phase (0–8, verification included).
+  Omit the flag to run every phase (0–9, verification included).
 - `--maps 0,4,10` — restrict every per-map phase (1, 2, 3's map-derived data, 5, 6) to this
   comma-separated list of Alundra map indices, instead of every map found in `data-extracted/`.
   Useful for fast iteration on one or a few maps. Phase 6's world-count invariant check (see below)
@@ -54,7 +54,7 @@ alundra-casaengine-project-converter <inputDir> <outputDir> [--maps 0,4,10] [--p
 Example invocations:
 
 ```
-# Full conversion, all 8 phases, verification included
+# Full conversion, all 9 phases, verification included
 alundra-casaengine-project-converter data-extracted out\AlundraGame
 
 # Iterate on just three maps, phases 0-3 only, no verification
@@ -64,7 +64,7 @@ alundra-casaengine-project-converter data-extracted out\AlundraGame --maps 0,4,1
 alundra-casaengine-project-converter data-extracted out\AlundraGame --no-verify
 ```
 
-## The 8 phases
+## The 9 phases
 
 | # | Reads | Writes |
 |---|---|---|
@@ -76,6 +76,7 @@ alundra-casaengine-project-converter data-extracted out\AlundraGame --no-verify
 | 5 | `data/ETC_RES.R.json`, `data/map_N.json` `Strings`, `ui/font3.json`, `ui/font3.png` | `Dialogues/global-strings.json`, `Maps/{Zone}/{Name}-{id}/dialogues/{Name}-{id}.strings.json`, `Dialogues/control-codes.json`, `UI/font3.fnt` + `UI/font3-charset.json`. |
 | 6 | `.tileMap` assets from Phase 1, `data/map_N.json` | One `.world` per map at the root of its map folder (`Maps/{Zone}/{Name}-{id}/{Name}-{id}.world`), the single shared `Entities/AlundraCamera.entity` every world references, `Maps/world-index.json`, the project's `FirstWorldLoaded`, and `Maps/{Zone}/{Name}-{id}/events/{Name}-{id}.events.json` (raw event bytecode). |
 | 7 | `ui/wind.json` + `ui/wind.png`, `memorycard/`, `closing/`, `data/loading_screen.png`, `data/BALANCE.BIN.json` | `UI/*.sprite` + `UI/wind-sprites.json`, catalogued screen textures under `UI/Textures/`, `Data/balance.json`. |
+| 9 | `data/map_N.json` `Map.ScrollParameters` | Per map, the scrolling background layers: a pre-rendered 640x480 texture per non-empty `Tiles` layer (plus one per animation frame) under `Maps/{Zone}/{Name}-{id}/backdrop/`, and a raw `{Name}-{id}.backdrop.json` companion (not a CasaEngine asset — same convention as `events.json`) carrying parallax/auto-scroll factors and the full-screen overlay tint. See `docs/formats/backdrops.md`. Runs after Phase 7, before Phase 8's verification. |
 | 8 | Every asset registered in `AssetInfos.json` | Nothing — loads each one back through its engine class (or existence-checks it) and records the result in `report.json`. Runs by default; `--no-verify` skips it. |
 
 ## Output layout

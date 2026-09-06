@@ -593,15 +593,15 @@ du viewport pixel et jamais rafraîchi (`OnScreenResized` ne réécrit que `_vie
 déclencheur atteignable dans le runtime Alundra.
 
 **Suites différées (à reprendre, par priorité)** :
-- **P3** — biais de centrage E5 : la vue moteur montre les lignes [2, 238) de la fenêtre de
-  défilement de 240 alors que l'original affiche [0, 236) — décalage uniforme de 2 px de toute la
-  scène (tuiles, entités, fond), propriété de la caméra E5, pas du fond ; à confronter au blit de
-  `Renderer.cs` décompilé si l'exactitude au pixel importe un jour.
-- **P3** — rectangle de ciseaux de `BackdropRenderer.Draw` (A1) : le prendre sur le périphérique
-  (ou ne pas le passer : les surcharges sans `scissorRectangle` prennent celui du device), et
-  séparer les deux rôles des paramètres de taille de `Draw` (demi-étendues monde vs ciseaux pixels).
-- **P3 (moteur, doc)** — `ScreenEffectComponent` sur-dimensionné en pixels-monde ; sa doc affirme
-  une parité avec le bloc de teinte de la DLL qui n'est plus vraie depuis B5.
+- **P3 — reprise par E9.b, close** : le rectangle de ciseaux de `BackdropRenderer.Draw` (A1) est
+  désormais reçu **en paramètre** par le mécanisme moteur (`ScrollingLayerComponent.Submit`), résolu
+  par l'appelant sur le périphérique quand un device existe (D-E9b-6) — plus de rectangle en unités
+  monde codé en dur. `ScreenEffectComponent` sur-dimensionné en pixels-monde est corrigé côté moteur
+  par la couture pure `TryGetCameraViewSize` (D-E9b-12), avec repli explicite si la caméra active est
+  nulle ; sa doc ne prétend plus une parité qui n'était plus vraie depuis B5. Voir
+  `docs/plan-e9b-backdrops-moteur.md` §2 (D-E9b-6, D-E9b-12) et §3 (S0).
+- **Restent hors périmètre** (décision utilisateur D-E9b-U4) : le biais de centrage E5 (2 px,
+  propriété de la caméra, pas du fond) et le fond noir via `environment` (changement convertisseur).
 - **P4** — fenêtre redimensionnable (`AllowUserResizing`) : la couverture codée 320×240 suppose le
   rapport 320:236 ; un rapport plus large laisserait les bords découverts ; le zoom n'est pas
   recalculé. Décider si le port suit le redimensionnement ou verrouille le rapport.
@@ -613,7 +613,8 @@ déclencheur atteignable dans le runtime Alundra.
 - Les P4 de B1 (seam d'observation, test delta, doc de troncature), B2 (`isFullRun` O(n²),
   constante de corpus 153) et B3 (double avertissement, tableau d'ids vide inatteignable).
 
-**Prochaine étape naturelle** : E9.b — migrer le rendu des fonds vers le composant moteur
-`ScrollParameters` (`docs/plan-conversion-totale.md:506-511`) avec **une seule horloge** (D-E9-6),
-en reprenant les suites P3 ci-dessus dans son périmètre ; les corrections B1–B5 en sont la
-référence visuelle et les pins de site de production (B1, B3, B5) ses tests de non-régression.
+**E9.b, clos** : le rendu des fonds a été migré vers le composant moteur de couches défilantes
+(`docs/plan-e9b-backdrops-moteur.md`), avec **une seule horloge** (D-E9-6/D-E9b-3) ; les corrections
+B1–B5 en ont été la référence visuelle et les pins de site de production (B1, B3, B5) ses tests de
+non-régression, re-hébergés dans `CasaEngine.Tests` et `Alundra.Tests` (D-E9b-11). Voir le journal
+d'exécution de ce plan, §5.

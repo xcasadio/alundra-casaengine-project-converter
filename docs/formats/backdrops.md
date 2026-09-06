@@ -5,6 +5,20 @@ Code : [`Readers/BackdropReader.cs`](../../alundra-casaengine-project-converter/
 [`Writers/BackdropWriter.cs`](../../alundra-casaengine-project-converter/Writers/BackdropWriter.cs)
 (Phase 9).
 
+## Consommation (E9.b)
+
+Le format du compagnon n'a pas changé (voir schéma ci-dessous) : le convertisseur continue de
+produire exactement les mêmes textures et le même `.backdrop.json`. Ce qui a changé, c'est le
+consommateur. Jusqu'à E9.a, la DLL Alundra lisait et dessinait elle-même ce compagnon
+(`BackdropRenderer`). Depuis E9.b, la DLL se contente de le **traduire** (`AlundraBackdropStage.
+BuildDefinitions`, une fonction pure qui reprend exactement les règles de l'ancien `BackdropRenderer.
+Load`) en définitions de couches défilantes, que le **moteur** dessine avec un service et un
+composant dédiés (`ScrollingLayerService` / `ScrollingLayerComponent`, horloge à tick entier,
+accumulateurs par couche comme l'original) — voir
+`CasaEngineMonogame/docs/engine/scrolling-layers.md`. Aucun changement convertisseur : zéro
+sérialisation ni éditeur en V1, la promotion des compagnons en assets moteur reste le chantier
+différé de `docs/editeur-couverture-dll.md:57-59`.
+
 ## Ce que c'est
 
 `Map.ScrollParameters` : les (jusqu'à deux) couches de décor défilant PSX d'une map - le fond

@@ -503,12 +503,16 @@ ouverture au passage du joueur, tuiles animées sans saut. Seule réserve, atten
 - **Acceptation** : map 389 visuellement identique avant/après (captures comparées).
 - **Dépendances** : aucune (indépendant du gameplay).
 
-### E9 — Backdrops, parallaxe, ondes dans le moteur ⏳ (moteur, plan-verifier)
+### E9 — Backdrops, parallaxe, ondes dans le moteur ✅ (moteur, plan-verifier)
 
 - **But** : retirer `BackdropRenderer` de la DLL ; un composant moteur de couches défilantes
   (`ScrollParameters` : vitesses, périodes, déformation).
 - **Acceptation** : map 389 (mer) identique avant/après.
 - **Dépendances** : aucune.
+- **Clos** : E9.a (résidus B1-B5, ancrage de la toile) puis E9.b (le mécanisme de rendu déménagé dans
+  le moteur, `docs/plan-e9b-backdrops-moteur.md`) — S0 moteur `dcbb55ff` + bump `29a84e2`, S1 DLL
+  `3798b75`, amendement du critère visuel `975248c`, S2 bascule `e808568`. Validé en jeu par
+  l'utilisateur sur les maps 389, 159 et 321.
 
 ### E10 — Fondu, teinte, transitions dans le moteur ⏳ (moteur, plan-verifier)
 
@@ -582,7 +586,7 @@ ouverture au passage du joueur, tuiles animées sans saut. Seule réserve, atten
 | E6 contrôle joueur | ⏳ | |
 | E7 mutation de tuiles | ✅ close (validée en jeu) | `326917e`, `9493b78`, moteur `1c5bf445`+`1215f3b`, `e5d73bb` |
 | E8 profondeur murs/sols moteur | ⏳ | |
-| E9 backdrops moteur | ⏳ | |
+| E9 backdrops moteur | ✅ close (validée en jeu) | E9.a `82ad020`,`75dc032`,`394cf55`,`14d94e0` ; E9.b moteur `dcbb55ff`+`29a84e2`, DLL `3798b75`, amendement `975248c`, bascule `e808568` |
 | E10 fondu/transitions moteur | ⏳ | |
 | E11 audio | ⏳ | |
 | E12 dialogues Yarn + MGUI | ⏳ | |
