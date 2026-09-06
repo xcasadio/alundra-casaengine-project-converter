@@ -8,7 +8,9 @@ namespace Alundra.Scripts;
 /// <c>AlundraCasaEngineProjectConverter.Readers.BackdropScrollarDocument</c> (see
 /// <c>docs/formats/backdrops.md</c>): camera parallax is <c>cameraX * FactorXNum / FactorXDenom</c>
 /// (and the Y equivalent), auto-scroll advances <c>ScrollXSpeed</c> per tick plus one extra pixel
-/// every <c>|ScrollXPeriod|</c> ticks - see <see cref="BackdropOffsetMath"/> for the actual formulas.
+/// every <c>|ScrollXPeriod|</c> ticks - see
+/// <c>CasaEngine.Framework.Rendering.ScrollingLayers.ScrollingLayerService</c> (parallax and
+/// auto-scroll advance, engine-side since E9.b) for the actual formulas.
 /// </summary>
 public sealed class BackdropScrollarData
 {
@@ -47,7 +49,7 @@ public sealed class BackdropLayerData
     /// <c>[0]</c> is always equal to <see cref="TextureAssetId"/>. Absent from a companion's JSON for
     /// every non-animated layer (the converter omits it via <c>JsonIgnoreCondition.WhenWritingNull</c>),
     /// which <see cref="System.Text.Json.JsonSerializer"/> leaves as <see langword="null"/> here - see
-    /// <see cref="BackdropRenderer.ResolveFrameAssetIds"/> for the fallback this resolves to.
+    /// <see cref="AlundraBackdropStage.ResolveFrameAssetIds"/> for the fallback this resolves to.
     /// </summary>
     public string[]? FrameTextureAssetIds { get; set; }
 
@@ -60,8 +62,10 @@ public sealed class BackdropLayerData
 /// <c>AlundraCasaEngineProjectConverter.Readers.BackdropDocument</c>, read back from the converter's
 /// own companion file (<c>Maps/{Zone}/{Name}-{id}/backdrop/{Name}-{id}.backdrop.json</c>), the same
 /// convention as <see cref="EventProgramDocument"/>/<see cref="MapEventProgramLoader"/>. See
-/// <see cref="BackdropLoader"/> for path resolution and <see cref="BackdropRenderer"/> for how this
-/// gets drawn.
+/// <see cref="BackdropLoader"/> for path resolution and <see cref="AlundraBackdropStage"/> (which
+/// builds engine-side <c>ScrollingLayerDefinition</c>s from this and pushes ticks to
+/// <c>CasaEngine.Framework.Rendering.ScrollingLayers.ScrollingLayerService</c>, since E9.b) for how
+/// this gets drawn.
 ///
 /// <see cref="OverlayEnabled"/>/<see cref="OverlayColorR"/>/G/B mirror the converter's own tint
 /// fields (see <c>docs/formats/backdrops.md</c>): a companion written before this feature existed

@@ -503,13 +503,17 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             LocalDialogueStrings = AlundraDialogueStringsLoader.Load(EngineEnvironment.ProjectPath, world.Name),
         };
 
-        // Scrolling background layers (see BackdropRenderer's class doc) - same degraded-mode shape as
+        // Scrolling background layers (see AlundraBackdropStage's class doc) - same degraded-mode shape as
         // the event-program document above: a world with no companion file (most of them - Scroll
         // Parameters.Infos.Enabled was false) simply renders nothing extra.
         // S3 (docs/plan-update-caracterisation.md): _backdropRenderer now lives on _backdropStage
         // (requalified field access, extended proof rule delta (b), same shape as S2's
         // _cameraDirector.ArmFirstFrameSnap()) - this Load call needs a live GraphicsDevice, so it stays
         // here rather than moving into the stage's own members.
+        // E9.b (docs/plan-e9b-backdrops-moteur.md, D-E9b-2): attach the engine-side mechanism BEFORE
+        // Load, same acquisition shape as InstallScreenFadeSystems - Load itself emits the one warning
+        // when the service is null but world.Game is not (§4 arrêt in production).
+        _backdropStage.AttachService(world.Game?.ScrollingLayerComponent?.Service);
         _backdropStage.Load(world, EngineEnvironment.ProjectPath);
 
         var tileMapEntity = world.Entities.FirstOrDefault(entity => entity.Name == TileMapEntityName);
@@ -1516,8 +1520,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // _backdropStage; _world is read here at USE TIME and passed in per frame (extended proof rule
         // delta (a)), and the resolved camera is passed in rather than re-looked-up (delta (a), the one
         // named for S3) since it is _cameraDirector's own state.
+        // E9.b (D-E9b-2): PushFrame replaces UpdateAndDrawBackdrop at this same site - same position in
+        // frame order (right after the camera resolve, before the fade push below), still unconditional
+        // and still outside the gameplay freeze gate: it depends on neither world.Game nor HasContent.
         _backdropStage.ApplyOriginalBackgroundClearColorOnce(_world);
-        _backdropStage.UpdateAndDrawBackdrop(elapsedTime, ticksThisFrame, _world, _cameraDirector.ResolvedCamera);
+        _backdropStage.PushFrame(ticksThisFrame, _cameraDirector.ResolvedCamera);
 
         // E10.b (docs/plan-e10-fondu.md, §1.6/D-E10-8): the fade pass - positioned here purely for
         // frame-order consistency with the camera/backdrop block above, NOT because it depends on

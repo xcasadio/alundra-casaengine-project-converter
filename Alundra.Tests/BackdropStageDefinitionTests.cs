@@ -15,15 +15,15 @@ using Xunit;
 namespace Alundra.Tests;
 
 /// <summary>
-/// Plan E9.b (docs/plan-e9b-backdrops-moteur.md, §3 "S1") - covers
+/// Plan E9.b (docs/plan-e9b-backdrops-moteur.md, §3 "S1"/"S2") - covers
 /// <see cref="AlundraBackdropStage.BuildDefinitions"/>, the PURE translation of a loaded
 /// <see cref="BackdropDocument"/> into the engine mechanism's own
 /// <see cref="ScrollingLayerDefinition"/>/<see cref="ScrollingTintDefinition"/>/
-/// <see cref="ScrollingLayerConfiguration"/> data, applying exactly the rules
-/// <see cref="BackdropRenderer.Load"/> applies today (D-E9b-8). Nothing here calls
-/// <see cref="AlundraBackdropStage.AttachService"/>/<see cref="AlundraBackdropStage.PushFrame"/> or
-/// touches production - see <see cref="BackdropEquivalenceTests"/> for the tick-by-tick comparison
-/// against the retired renderer.
+/// <see cref="ScrollingLayerConfiguration"/> data, applying exactly the rules the now-retired
+/// <c>BackdropRenderer.Load</c> applied (D-E9b-8), plus (S2) <see cref="AlundraBackdropStage.ResolveFrameAssetIds"/>
+/// and the tint sort key, both moved here from the same retired renderer's own tests. Nothing here
+/// calls <see cref="AlundraBackdropStage.AttachService"/>/<see cref="AlundraBackdropStage.PushFrame"/>
+/// or touches production.
 ///
 /// The three real-companion tests read <c>alundra-project/</c> (the converter's own export) and FAIL,
 /// rather than skip, when it is absent - the local convention documented at
@@ -246,6 +246,53 @@ public class BackdropStageDefinitionTests
         // fails to load (Guid.Empty never reaches the loader, resolves to null) -> falls back to
         // exactly [frame0].
         Assert.Equal(new[] { frame0Texture }, resolvedFrames);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Plan E9.b (§3 "S2") - re-homed from the now-retired BackdropRendererTests.
+    // -----------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Mirrors the retired renderer's own construction exactly (D-E9b-8's own tint sort key
+    /// paragraph): <c>SortingLayer = -1</c> for the tint vs. <c>SortingLayer = 0</c> for every
+    /// <c>Ground=1</c> layer - <see cref="RenderPass2D.Effects"/> is equal on both sides, so
+    /// <c>SortingLayer</c> alone must decide it, regardless of the layer's own <c>DepthOrder</c>.
+    /// </summary>
+    [Fact]
+    public void TintSortKey_IsStrictlyBelowAGround1LayerKey_RegardlessOfDepthOrder()
+    {
+        var tintKey = new RenderSortKey2D((int)RenderPass2D.Effects, -1, 0, 0, 0, 0, 0);
+
+        var ground1LayerKeyOrder0 = new RenderSortKey2D((int)RenderPass2D.Effects, 0, 0, 0, 0, 0, 1);
+        var ground1LayerKeyOrder1 = new RenderSortKey2D((int)RenderPass2D.Effects, 0, 1, 0, 0, 0, 0);
+
+        Assert.True(tintKey.CompareTo(ground1LayerKeyOrder0) < 0);
+        Assert.True(tintKey.CompareTo(ground1LayerKeyOrder1) < 0);
+
+        // Still above the Y-sorted world (every floor/wall/entity) and every Ground=0 backdrop.
+        var ySortedWorldKey = new RenderSortKey2D((int)RenderPass2D.YSortedWorld, 0, 0, 0, 0, 0, 0);
+        Assert.True(tintKey.CompareTo(ySortedWorldKey) > 0);
+    }
+
+    /// <summary>D-E9-9's fallback: a layer with no (or an empty) <c>FrameTextureAssetIds</c> resolves
+    /// to exactly <c>[TextureAssetId]</c> - one element, equal to the layer's own id.</summary>
+    [Fact]
+    public void ResolveFrameAssetIds_LayerWithNoFrameIds_ResolvesToExactlyTheTextureAssetId()
+    {
+        var layer = new BackdropLayerData { TextureAssetId = "layer-texture-id", FrameTextureAssetIds = null };
+        Assert.Equal(new[] { "layer-texture-id" }, AlundraBackdropStage.ResolveFrameAssetIds(layer));
+
+        var layerWithEmptyArray = new BackdropLayerData { TextureAssetId = "layer-texture-id", FrameTextureAssetIds = Array.Empty<string>() };
+        Assert.Equal(new[] { "layer-texture-id" }, AlundraBackdropStage.ResolveFrameAssetIds(layerWithEmptyArray));
+    }
+
+    /// <summary>A layer WITH resolved frame ids gets them back unchanged.</summary>
+    [Fact]
+    public void ResolveFrameAssetIds_LayerWithFrameIds_ReturnsThemAsGiven()
+    {
+        var frameIds = new[] { "id0", "id1", "id2", "id3" };
+        var layer = new BackdropLayerData { TextureAssetId = "id0", FrameTextureAssetIds = frameIds };
+        Assert.Same(frameIds, AlundraBackdropStage.ResolveFrameAssetIds(layer));
     }
 
     // -----------------------------------------------------------------------------------------
