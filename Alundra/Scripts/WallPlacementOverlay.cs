@@ -99,6 +99,14 @@ public static class WallPlacementOverlay
     private const int EntityDepthSlot = 6;
 
     /// <summary>
+    /// Highest row bucket the original clamps an entity to before indexing its ordering table
+    /// (<c>GraphicManager.cs:344</c>, <c>if (otIndex &gt; 0x3B) otIndex = 0x3B;</c>). Beyond it the original
+    /// reuses the last row rather than indexing past the table, so an entity far enough down the map
+    /// stops sinking in depth.
+    /// </summary>
+    private const int EntityRowMax = 0x3B;
+
+    /// <summary>
     /// Shared <see cref="RenderSortKey2D"/> bucket every wall-overlay tile and every spawned entity's
     /// <see cref="DepthSortable2DComponent"/> lands in by default (<c>SpriteWriter</c> attaches a bare,
     /// all-default <see cref="DepthSortable2DComponent"/> to every bank prefab): <see cref="RenderPass2D.YSortedWorld"/>
@@ -384,7 +392,13 @@ public static class WallPlacementOverlay
     /// </summary>
     internal static int ComputeEntityElevation(int posY, int idsv)
     {
-        return ((posY + (idsv << 16)) >> 20) * RowStride + EntityDepthSlot;
+        var rowIndex = (posY + (idsv << 16)) >> 20;
+        if (rowIndex > EntityRowMax)
+        {
+            rowIndex = EntityRowMax;
+        }
+
+        return rowIndex * RowStride + EntityDepthSlot;
     }
 
     /// <summary>
@@ -396,7 +410,7 @@ public static class WallPlacementOverlay
     /// read-only for this slice) or re-deriving the world transform every frame (out of scope, a separate
     /// follow-up per <see cref="AlundraWorldProxy"/>'s class doc). DEVIATION from the original: the fine order
     /// within a row therefore comes from <c>-worldY</c> (which folds in <c>PosZ</c>'s elevation offset via
-    /// <c>AlundraWorldProxy.ResolveLogicalPosition</c> + the policy's render projection) instead of the original's raw <c>PosY</c> low bits -
+    /// <c>AlundraWorldProxy.ResolveLogicalPosition</c> + the policy's render projection) instead of the original's <c>PosZ &gt;&gt; 16</c> screen-elevation low bits (<c>EntityManager.cs:1036</c>) -
     /// both still order correctly by row (the coarse <c>Elevation</c> bucket this method sets), only the
     /// tiebreak among entities sharing one row can diverge slightly from the original.
     ///

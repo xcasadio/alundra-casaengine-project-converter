@@ -236,6 +236,29 @@ public class WallPlacementOverlayTests
     }
 
     [Fact]
+    public void ComputeEntityElevation_RowBeyondTheLastBucket_ClampsInsteadOfSinkingFurther()
+    {
+        // GraphicManager.cs:344 clamps the row index to 0x3B before indexing the ordering table. Row 0x3C
+        // starts at pixel 0x3C * 16 = 960, so a PosY of 960 pixels is the first value the original folds
+        // back onto row 0x3B. Without the clamp this returned 0x3C * 16 + 6 = 966 and the entity kept
+        // sinking behind everything on rows it should have tied with.
+        const int firstClampedPosY = 960 * 0x10000;
+
+        Assert.Equal(0x3B * 16 + 6, WallPlacementOverlay.ComputeEntityElevation(firstClampedPosY, idsv: 0));
+        Assert.Equal(0x3B * 16 + 6, WallPlacementOverlay.ComputeEntityElevation(4000 * 0x10000, idsv: 0));
+    }
+
+    [Fact]
+    public void ComputeEntityElevation_LastUnclampedRow_IsUntouchedByTheClamp()
+    {
+        // Row 0x3B itself must still come through unchanged: the clamp is a ceiling, not an offset.
+        const int lastUnclampedPosY = 0x3B * 16 * 0x10000;
+
+        Assert.Equal(0x3B * 16 + 6, WallPlacementOverlay.ComputeEntityElevation(lastUnclampedPosY, idsv: 0));
+        Assert.Equal(0x3A * 16 + 6, WallPlacementOverlay.ComputeEntityElevation(0x3A * 16 * 0x10000, idsv: 0));
+    }
+
+    [Fact]
     public void ComputeEntityElevation_IdsvBias_CanCrossARowBoundary()
     {
         // PosY = 575 pixels (16.16 fixed): row bucket alone is 575 >> 4 = 35. Folding in an IDSV bias
