@@ -628,7 +628,15 @@ L'ordre ci-dessous prime sur la numérotation E13 → E15 tant qu'il n'est pas �
    elles n'attendaient qu'une approbation. Couplées : le son de départ de warp d'E11.b vit sur
    l'opcode `0x53` que T7 porte, donc T7 passe en premier.
 
-2. **Dette moteur : `TileMapDepthSettings` — LE PROCHAIN CHANTIER.**
+2. **Dette moteur : `TileMapDepthSettings` — FAIT le 2026-09-07.** Plan archivé dans le sous-module
+   (`ai-agent/tasks/archive/tilemap-depth-settings-tasks.md`), quatre tâches ✅, moteur 1618 verts,
+   portage 815 inchangé, verifier CONFIRMED sur les 484 `.tileMap` réels. Les étapes 4 et 5 sont
+   livrées telles que réellement conçues — la passe repliée dans le Z des couches chunkées, la file de
+   sprites existante pour les couches en tri dynamique — et l'étape 6 reste explicitement non faite.
+   **Pour le portage : rien ne bouge**, ses 483 cartes ne portent qu'un `depth.role = CollisionOnly`
+   sur leur couche de navigation. Une trouvaille hors chantier à garder : le pion du RPGDemo porte un
+   Z = 0,3 périmé qui masque la profondeur en jeu.
+   _(Texte d'origine : « LE PROCHAIN CHANTIER. »)_
    `CasaEngine/Framework/Assets/TileMap/TileMapDepthSettings.cs` analyse `Elevation`, `RenderPass`,
    `SortingLayer` et `SortAnchor`, les valide, les couvre de tests unitaires — et **le rendu n'en lit
    aucun** : seul `ShouldRenderTiles` est consommé, à trois sites de `TileMapComponent`. Ce sont les
