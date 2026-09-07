@@ -1595,6 +1595,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // early-returning before it - invariant (plan §3, point 2): CloseFrame runs exactly once.
         _logicClock.CloseFrame();
 
+        // B1 (docs/plan-e11b-opcodes-audio.md, D-B-4): flushes SoundPlayer's own per-frame anti-duplicate
+        // table (fact 5) - right next to CloseFrame, exactly once per RENDERED frame, AFTER every
+        // dispatch pass this frame ran (RunMapEventsPass/RunPendingEventTriggers above) - the port of the
+        // original's own FinalizeAudioBuffers, called once per its own 50 Hz frame after all dispatch.
+        // NOT at the head of a dispatch pass (a killed mutation, D-B-4's own cadence tests): that would
+        // let a same-tick, two-pass duplicate (map-events then the D3 catch-up rescan) through.
+        SoundPlayer?.FlushFrameSounds();
+
         // docs/plan-camera-premiere-frame.md §3, point 1: clears the sticky first-frame tick floor
         // exactly once, right next to CloseFrame - see _firstFrameStillOpen's own doc. Idempotent past
         // the very first frame (already false), so this unconditional write is safe on every later call.

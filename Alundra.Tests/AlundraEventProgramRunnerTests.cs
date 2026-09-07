@@ -101,7 +101,18 @@ public class AlundraEventProgramRunnerTests
     {
         public readonly List<int> Requests = new();
 
+        /// <summary>B1 (docs/plan-e11b-opcodes-audio.md): every 0xAB/0xBF RemixVoice call, in order - the
+        /// dispatch-level oracle for the exact (sfxId, left, right) each opcode derived.</summary>
+        public readonly List<(int SfxId, int Left, int Right)> RemixCalls = new();
+
         public void PlaySfx(int sfxId) => Requests.Add(sfxId);
+
+        public void RemixVoice(int sfxId, int left, int right) => RemixCalls.Add((sfxId, left, right));
+
+        public void FlushFrameSounds()
+        {
+            // No table to flush - this fake is a plain recorder (same shape as PlaySfx above).
+        }
     }
 
     [Fact]
@@ -2490,6 +2501,76 @@ public class AlundraEventProgramRunnerTests
         Assert.Equal(new[] { 42 }, soundPlayer.Requests);
     }
 
+    // B1 (docs/plan-e11b-opcodes-audio.md) - 0xAB/0xBF (RemixVoice).
+
+    [Fact]
+    public void RemixVoice_0xAB_Implemented_DerivesSfxIdMixLeftMixRight_InOperandOrder()
+    {
+        var soundPlayer = new FakeSoundPlayer();
+        var context = new FakeEntityWorldContext { SoundPlayer = soundPlayer };
+        // [op, sfxId, mixLeft, mixRight] = [0xAB, 61, 100, 20].
+        var document = NewDocument(0xAB, 61, 100, 20, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 42 };
+
+        var kind = CaptureKindForOpcode(runner, 0xAB, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(4, state.CodeIndex);
+        Assert.Equal(42, state.Result); // untouched - a side-effect-only opcode.
+        Assert.Single(soundPlayer.RemixCalls);
+        Assert.Equal((61, 100, 20), soundPlayer.RemixCalls[0]);
+    }
+
+    [Fact]
+    public void RemixVoice_0xAB_NullSoundPlayer_DegradedNoOp_SkipsBySize()
+    {
+        var document = NewDocument(0xAB, 61, 100, 20, 0xFF);
+        var runner = NewRunner(document); // no worldContext -> NoOpEntityWorldContext -> SoundPlayer null.
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0xAB, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Degraded, kind);
+        Assert.Equal(4, state.CodeIndex); // still skipped by its own real size.
+    }
+
+    [Fact]
+    public void RemixVoice_0xBF_Implemented_SkipsOperandTwo_DerivesSfxIdMixLeftMixRightFromOneThreeFour()
+    {
+        var soundPlayer = new FakeSoundPlayer();
+        var context = new FakeEntityWorldContext { SoundPlayer = soundPlayer };
+        // [op, sfxId, IGNORED, mixLeft, mixRight] = [0xBF, 61, 0xFF, 100, 20] - v[2]=0xFF must never
+        // reach RemixVoice (D-B-8: the decompiled handler ignores it).
+        var document = NewDocument(0xBF, 61, 0xFF, 100, 20, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0xBF, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(5, state.CodeIndex);
+        Assert.Single(soundPlayer.RemixCalls);
+        Assert.Equal((61, 100, 20), soundPlayer.RemixCalls[0]);
+    }
+
+    [Fact]
+    public void RemixVoice_0xBF_NullSoundPlayer_DegradedNoOp_SkipsBySize()
+    {
+        var document = NewDocument(0xBF, 61, 0xFF, 100, 20, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0xBF, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Degraded, kind);
+        Assert.Equal(5, state.CodeIndex);
+    }
+
     [Fact]
     public void IsSoundLoading_0xA8_AlwaysWritesResultZero_OverwritingAStalePredicateValue()
     {
@@ -2631,6 +2712,8 @@ public class AlundraEventProgramRunnerTests
     {
         public readonly List<int> Requests = new();
         public void PlaySfx(int sfxId) => Requests.Add(sfxId);
+        public void RemixVoice(int sfxId, int left, int right) { }
+        public void FlushFrameSounds() { }
     }
 
     private static AlundraEntityScriptProxy NewPlayerForWarp(uint targetAnimationId, uint targetDirection)

@@ -1,12 +1,15 @@
 ﻿using System;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Application.Components;
+using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Audio;
+using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
 
@@ -192,4 +195,169 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         // of what the bank could resolve.
         Assert.Null(proxy.SoundPlayer);
     }
+
+    // -----------------------------------------------------------------------------------------------
+    // B1 (docs/plan-e11b-opcodes-audio.md, D-B-4): the anti-duplicate table's own frame ownership,
+    // exercised through the REAL AlundraWorldProxy.Update path (not AlundraSoundPlayer directly) - the
+    // observable is the fake backend's own voices. Every setup below installs a REAL AlundraSoundPlayer
+    // over a REAL AudioService(FakeAudioBackend) and drives dispatch through a REAL
+    // AlundraEventProgramRunner, exactly like production.
+    // -----------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// One slot-B (map-event) program that plays <paramref name="sfxId"/> via 0x12 (PlaySound1) then
+    /// ends - wired as <paramref name="proxy"/>'s own <see cref="AlundraWorldProxy.EventProgramRunner"/>,
+    /// with <see cref="AlundraWorldProxy.PlayerEntity"/> seeded inside the map event's own zone (same
+    /// montage as <c>AlundraWorldProxyUpdateCharacterizationTests.MapEventTeleport_IsVisibleToCameraTarget_SameFrame</c>).
+    /// </summary>
+    private static AlundraEntityScriptProxy WireMapEventSoundTrigger(AlundraWorldProxy proxy, int sfxId)
+    {
+        var player = new AlundraEntityScriptProxy
+        {
+            Status = EntityStatus.Normal,
+            TileX = 0,
+            TileY = 0,
+        };
+        proxy.PlayerEntity = player;
+
+        var record = new TileMapObjectData();
+        record.CustomProperties["EventCodesBIndex"] = "129"; // masked 0x7f = 1, non-dud (see the
+                                                               // characterization test's own comment).
+        record.CustomProperties["Index"] = "1";
+        record.CustomProperties["X1"] = "0";
+        record.CustomProperties["Y1"] = "0";
+        record.CustomProperties["X2"] = "100";
+        record.CustomProperties["Y2"] = "100";
+        var mapEventsLayer = new TileMapObjectLayerData();
+        mapEventsLayer.Objects.Add(record);
+        proxy.BuildMapEvents(mapEventsLayer);
+
+        var document = new EventProgramDocument
+        {
+            MapIndex = 1,
+            EventCodesBTable = new[] { 0, 0 },
+            // PlaySound2(sfxId); End - 0xBD, not 0x12: 0x12's own id operand is a single byte (0-255),
+            // too narrow for sfxId 300 (0x12C) below (EventProgramDocument.Codes is byte-range data,
+            // see its own doc - a value over 255 there would just get truncated).
+            Codes = new[] { 0xBD, sfxId & 0xFF, (sfxId >> 8) & 0xFF, 0xFF },
+        };
+        proxy.EventProgramRunner = new AlundraEventProgramRunner(document, proxy.GameState, proxy);
+
+        return player;
+    }
+
+    /// <summary>
+    /// A SECOND entity, driven through <see cref="AlundraWorldProxy.RunPendingEventTriggers"/> (the D3
+    /// catch-up "rattrapage" pass, NOT <see cref="AlundraWorldProxy.RunMapEventsPass"/>'s own map-events
+    /// pass) - its own slot-C (Tick) program plays the SAME <paramref name="sfxId"/> via 0x12, so a
+    /// single tick dispatches it from a DIFFERENT pass than <see cref="WireMapEventSoundTrigger"/>'s own
+    /// map event. Added to <paramref name="proxy"/>'s own private <c>_spawnedEntities</c> by reflection
+    /// (no internal seam exists for it, unlike <see cref="AlundraWorldProxy.PlayerEntity"/>/<see
+    /// cref="AlundraWorldProxy.BuildMapEvents"/>) so <c>RefreshUpdateProxiesAndCollidables</c> picks it
+    /// up into <c>_updateProxies</c> on the next <see cref="AlundraWorldProxy.Update"/> call. The SAME
+    /// document/table shape as the map event (Table[1]=0, same 3-byte program) - slot C reads
+    /// <c>EventCodesCTable</c> instead of B, off the SAME underlying <c>Codes</c> array.
+    /// </summary>
+    private static void WireRescanSoundTrigger(AlundraWorldProxy proxy, int sfxId)
+    {
+        var document = (EventProgramDocument)typeof(AlundraEventProgramRunner)
+            .GetField("_document", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(proxy.EventProgramRunner)!;
+        document.EventCodesCTable = new[] { 0, 0 };
+
+        var entity = new Entity { GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        entity.Initialize();
+        var rescanProxy = (AlundraEntityScriptProxy)entity.GameplayProxy!;
+        rescanProxy.IsPlayer = false;
+        rescanProxy.ProgramIndexes[ScriptHelper.ProgramCTick] = 129; // masked 0x7f = 1, same Table[1]=0.
+        rescanProxy.EventTrigger = ScriptHelper.ProgramCTick;
+
+        var spawnedEntitiesField = typeof(AlundraWorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var spawnedEntities = (List<Entity>)spawnedEntitiesField.GetValue(proxy)!;
+        spawnedEntities.Add(entity);
+    }
+
+    /// <summary>Resolves <paramref name="sfxId"/> against <paramref name="proxy"/>'s own real
+    /// <see cref="AlundraSoundBank"/> and registers a fake clip for every one of its tones, so
+    /// <see cref="AlundraSoundPlayer.PlaySfx"/> can actually start a backend voice.</summary>
+    private static void RegisterClipsFor(AlundraWorldProxy proxy, FakeAudioClipProvider provider, int sfxId)
+    {
+        Assert.True(proxy.SoundBank.TryResolve(sfxId, soundGroup: null, out var resolution));
+        foreach (var tone in resolution.Tones)
+        {
+            provider.Register(tone.AssetId, new FakeAudioClip());
+        }
+    }
+
+    [Fact]
+    public void Update_TwoTicksInOneRenderedFrame_SameId_ProducesOnlyOneBackendVoice()
+    {
+        // D-B-4 cadence (a): the deviation ASSUMED (a same-tick, i.e. per-Update, anti-duplicate window
+        // instead of the original's own per-50Hz-frame one) and PROVEN here - RunMapEventsPass runs
+        // ONCE PER TICK (AlundraWorldProxy.Update's own ticksThisFrame loop), so a rendered frame
+        // carrying 2 logic ticks dispatches the SAME map event's 0x12 twice. The anti-duplicate table
+        // must still refuse the second dispatch: the mutation "flush at the head of RunMapEventsPass"
+        // (called once per TICK, not once per Update) fails this test by producing 2 voices.
+        var projectRoot = FindProjectRoot();
+        var backend = new FakeAudioBackend();
+        var provider = new FakeAudioClipProvider();
+        var world = new World();
+        var game = BuildGameWithAudio(backend, provider);
+        HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
+
+        var proxy = new AlundraWorldProxy { SoundBank = new AlundraSoundBank(projectRoot) };
+        proxy.InstallAudioSystems(world);
+        // sfxId 300: real manifest MaxVoices=2 (single tone) - high enough that the anti-duplicate
+        // table, not MaxVoices, is what has to be the thing refusing the second tick's request.
+        RegisterClipsFor(proxy, provider, sfxId: 300);
+        WireMapEventSoundTrigger(proxy, sfxId: 300);
+
+        // First Update() call ever on this proxy -> the sticky first-frame tick floor would force >=1
+        // tick regardless, but 0.04s/0.02s = 2 ticks already clears that floor on its own.
+        proxy.Update(0.04f);
+
+        Assert.Equal(1, backend.ActiveVoiceCount);
+    }
+
+    [Fact]
+    public void Update_SameTick_TwoDifferentDispatchPasses_SameId_ProducesOnlyOneVoice_AndReplaysNextFrame()
+    {
+        // D-B-4 cadence (b): within the SAME tick, RunMapEventsPass (map events) and
+        // RunPendingEventTriggers (the D3 "rattrapage" catch-up re-scan) BOTH dispatch a program that
+        // requests the same sfx id. The flush living at Update's own frame-close site (next to
+        // _logicClock.CloseFrame(), AFTER both passes) means the SECOND pass's request is refused - the
+        // mutation "flush at the head of a dispatch pass" (either one) would let it through instead.
+        var projectRoot = FindProjectRoot();
+        var backend = new FakeAudioBackend();
+        var provider = new FakeAudioClipProvider();
+        var world = new World();
+        var game = BuildGameWithAudio(backend, provider);
+        HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
+
+        var proxy = new AlundraWorldProxy { SoundBank = new AlundraSoundBank(projectRoot) };
+        proxy.InstallAudioSystems(world);
+        // sfxId 300: real manifest MaxVoices=2 - room for both the frame's own successful voice AND
+        // the "replays next frame" voice below, so MaxVoices never masks what the anti-duplicate table
+        // alone is responsible for.
+        RegisterClipsFor(proxy, provider, sfxId: 300);
+        WireMapEventSoundTrigger(proxy, sfxId: 300);
+        WireRescanSoundTrigger(proxy, sfxId: 300);
+
+        proxy.Update(0.02f); // exactly one tick: RunMapEventsPass, then RunPendingEventTriggers.
+
+        Assert.Equal(1, backend.ActiveVoiceCount); // the rescan's own duplicate request was refused.
+
+        // "Replays at the next rendered frame": Update's own frame-close flush already ran (right after
+        // both passes, same call above) - the SAME id must be playable again right now, through the
+        // SAME real SoundPlayer this Update call used. The mutation "flush never called" fails this
+        // assertion instead (the table would still hold id 300 from the frame above).
+        proxy.SoundPlayer!.PlaySfx(300);
+        Assert.Equal(2, backend.ActiveVoiceCount);
+    }
+
+    // Note: the "production site" acceptance (two requests for the same id within one rendered frame,
+    // driven through the REAL Update path, producing exactly one backend voice) is already the exact
+    // shape of Update_TwoTicksInOneRenderedFrame_SameId_ProducesOnlyOneBackendVoice above (the mutation
+    // "the proxy's own FlushFrameSounds call site removed" fails IT too - both ticks' requests would
+    // keep succeeding forever, never just once per frame) - not duplicated as a separate test.
 }

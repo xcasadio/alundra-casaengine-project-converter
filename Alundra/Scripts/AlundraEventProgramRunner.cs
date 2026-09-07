@@ -781,6 +781,39 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
                 return 2;
 
+            case 0xAB: // Play sound effect with tone/volume mix - Script_171_0AB
+                       // (EntityEventHandlers.cs:3201-3205, B1, docs/plan-e11b-opcodes-audio.md, fact 4):
+                       // sfxId=v[1], mix left=v[2], mix right=v[3]. The original NEVER starts new
+                       // playback here - it only remixes (recomputed stereo volume, applied to)
+                       // tone-voices ALREADY playing for this id; a non-audible/silent id is a total
+                       // no-op (see AlundraSoundPlayer.RemixVoice's own doc).
+                if (_worldContext.SoundPlayer is { } remixVoicePlayer)
+                {
+                    remixVoicePlayer.RemixVoice(v[1], v[2], v[3]);
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0xAB, "RemixVoice", "sound system");
+                }
+
+                return 4;
+
+            case 0xBF: // Play sound effect with tone/volume mix (bis) - EntityEventHandlers.cs:3613-3617
+                       // (B1, docs/plan-e11b-opcodes-audio.md, D-B-8): SAME handler as 0xAB above, but on
+                       // its own 5-byte instruction with v[2] ignored by the decompiled handler
+                       // (plausibly the id's high byte, by analogy with 0xBD - INFERENCE, ported verbatim
+                       // per repo rule): sfxId=v[1], mix left=v[3], mix right=v[4].
+                if (_worldContext.SoundPlayer is { } remixVoiceBisPlayer)
+                {
+                    remixVoiceBisPlayer.RemixVoice(v[1], v[3], v[4]);
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0xBF, "RemixVoiceBis", "sound system");
+                }
+
+                return 5;
+
             case 0xA8: // Is sound loading - Script_168_0A8 (D-E11-5, docs/plan-e11-audio.md): this DLL
                        // never streams sound effects from a CD, so this predicate is always false. Writes
                        // Result explicitly (unlike the old UnknownOpcode fallback, which does NOT clear

@@ -1103,6 +1103,20 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     /// headless harness.</summary>
     public void PlaySfx(int sfxId) => _soundRequests.Add((Frame, sfxId));
 
+    /// <summary>B1 (docs/plan-e11b-opcodes-audio.md): same plain-recorder shape as <see cref="PlaySfx"/>
+    /// above - no live AudioService here, so there is nothing to remix.</summary>
+    public void RemixVoice(int sfxId, int left, int right)
+    {
+    }
+
+    /// <summary>B1 (docs/plan-e11b-opcodes-audio.md): deliberately a no-op - this harness's own fake is a
+    /// plain recorder with NO 64-slot anti-duplicate table of its own (the production table lives in the
+    /// real <see cref="AlundraSoundPlayer"/>, exercised by <c>AlundraWorldProxyAudioInstallationTests</c>
+    /// instead - see this DLL's own plan for why duplicating it here would be pointless).</summary>
+    public void FlushFrameSounds()
+    {
+    }
+
     /// <summary>
     /// Dynamic spawn-by-record-id (opcodes 0x2D ActivateEntity, 0x8B SpawnEntityNextToEntity) - mirrors
     /// GameEngine.SpawnEntity (GameEngine.cs:684-760) called with notCheckSpawnZone=1, i.e. only

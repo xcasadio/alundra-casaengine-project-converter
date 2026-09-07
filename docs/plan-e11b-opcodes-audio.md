@@ -192,6 +192,29 @@ Sémantiques originales (sous-module `alundra-datas-analyser`) :
   site d'appel du vidage supprimé dans le proxy → le test au vrai `Update` tombe ; RemixVoice qui
   déclenche une lecture → le no-op tombe ; SetVoicePan poussant BaseParameters brut → le test de
   gain moteur tombe.
+**B1 LIVRÉE le 2026-09-07.** Moteur **1584 / 1584**, `Alundra.Tests` **791 / 791**, convertisseur
+intact à 156. L'exécuteur a vérifié ses mutations en vrai : vidage déplacé en tête de passe → les
+tests de cadence tombent, puis remis.
+
+**Le piège du gain est plus dur que le plan ne le disait, et la recette est donc plus précise.**
+`IAudioBackend` n'a **aucun `SetPan`** : le seul chemin pour changer le pan d'une voix vivante est
+`SetParameters`, qui pousse **tous** les paramètres, donc le volume — alors qu'`ApplyGain` ne pousse
+que le volume. `SetVoicePan` écrit donc explicitement `Volume × GetEffectiveGain(bus)` dans l'appel
+qui change le pan. Sans ça le gain de bus est écrasé, **invisible tant que le gain vaut 1** : d'où le
+test obligatoire à gain 0,5.
+
+**[B1-a] La projection du mix stéréo en (volume, pan) est une dérivation, et le restera.** Vérifié en
+session principale : l'original (`SoundManager.PlaySoundEffectWithToneVolumeMixCore`, `:5221-5275`)
+ne mixe pas une voix, il pilote le **matériel PSX tonalité par tonalité** — `SquarePlusOne(x) = (x+1)²`
+sur le mix gauche/droite et sur le volume de tonalité, multiplication par le volume de programme,
+poids de panoramique par tonalité (`tonePan < 0x41 ? 0x3f : 0x7f - tonePan`), puis deux mises à
+l'échelle en virgule fixe MIPS à constantes magiques (`0x80020009 >> 13`, `0x8418828d >> 11`), et
+enfin deux volumes matériels gauche/droite distincts. **Le port n'a qu'une voix par sfx** : la chaîne
+n'est pas transcriptible, elle est approximée. C'est ce que D-B-6 avait acté. **Noter la réponse
+quadratique** : appliquer la seule mise au carré sans le reste de la chaîne pourrait éloigner autant
+que rapprocher, donc rien n'est changé au jugé — l'oracle reste l'oreille sur le bateau (D-B-1), et
+la chaîne d'origine est désormais écrite ici pour qui devra y revenir.
+
 - **B2 — le trio BGM 0xA5/0xA6/0xA7 (DLL seule)** : la machine de fondu 120 pas en session (avance
   par tick depuis la passe de frame du proxy, patron E10/E12), `LoadBgm(0/non-0)`, `StopAllSound`
   fidèle (SFX stoppés SEULEMENT si l'état de fondu est armé, volumes restaurés, BGM relancé si
