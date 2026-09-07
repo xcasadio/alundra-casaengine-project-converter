@@ -35,7 +35,7 @@ Le « quart lumineux » de la 159 est dû à `AnimNum` **seul**. La clôture d'E
 recherche exhaustive : trois sites de lecture, tous dans `case CellType.WaveX`.
 
 **Recommandation** : sortir le `WaveLut` de ce chantier et l'inscrire au chantier du mode cellulaire
-(84 cartes du corpus en ont une couche). Ce plan est écrit sous cette hypothèse ; si l'utilisateur
+(90 cartes du corpus en ont une couche — chiffre corrigé le 2026-09-06, voir `plan-e9d-mode-cellulaire.md` §0). Ce plan est écrit sous cette hypothèse ; si l'utilisateur
 préfère l'y garder, il faut porter le mode cellulaire entier, ce qui est un autre chantier.
 
 ### 0.3 Référence de suites AVANT chantier (mesurée le 2026-09-03)

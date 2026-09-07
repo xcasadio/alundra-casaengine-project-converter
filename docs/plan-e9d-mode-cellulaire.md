@@ -201,12 +201,14 @@ résultat et le piège du §1.4 n'a aucun témoin. Les cartes qui l'exercent ré
 Statuts : ⏳ Todo · 🚧 In progress · 🧪 Needs testing · ✅ Done · ⚠️ Blocked.
 Une seule tranche à la fois ; la mise à jour de ce fichier va dans le commit de la tranche.
 
-### ⏳ C0 — Le compte corrigé
+### ✅ C0 — Le compte corrigé
 
 - Objectif : 84 → 90 partout où le nombre est écrit, avec la source du comptage.
 - Fichiers : `docs/plan-e9-backdrops-residus.md`, `docs/plan-conversion-totale.md`.
 - Validation : plus aucune occurrence de « 84 » désignant les cartes cellulaires.
 - Commit : `docs(alundra): correct the cellular map count to the measured 90`
+- **Fait le 2026-09-07.** Quatre occurrences corrigées : `plan-e9-backdrops-residus.md:38`, et
+  `plan-conversion-totale.md` lignes 611, 618, 676. Plus aucun « 84 » ne désigne les cartes cellulaires.
 
 ### ⏳ C1 — Convertisseur : la cuisson (D2, D4)
 
