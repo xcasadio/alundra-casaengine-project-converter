@@ -328,6 +328,28 @@ L'exécuteur a prouvé sa correction du plafond en vrai : filtre remis sur la fi
 `Maps/**/…` du plan n'est réalisée nulle part dans le code ; le seul précédent réel,
 `Maps/music-index.json`, est un fichier unique écrit une fois, indépendant du filtre `--maps`.
 
+## E11.b CLOSE — **validée en jeu par l'utilisateur le 2026-09-07**
+
+« pour moi c'est bon ». L'oracle choisi en D-B-1 est tenu : le bateau sonne comme avant.
+
+| Tranche | Livrée | Preuve |
+|---|---|---|
+| B1 | pan de voix vivante + anti-doublon + `0xAB`/`0xBF` | moteur 1584, portage 791, mutations vérifiées en vrai |
+| B2 | trio BGM `0xA5`/`0xA6`/`0xA7` | portage 808, jalons de rampe calculés à la main |
+| B3 | table carte→groupe + clé de plafond fidèle | convertisseur 159, portage 815, diff d'export prédit tenu |
+
+**Trois lectures corrigées en cours de route, toutes par retour au décompilé :** le piège du gain de
+bus est plus dur que le plan ne le disait (pas de `SetPan` du tout côté backend) ; `0xA6` **n'est pas
+un changement de piste** mais un fondu, une relance de la même musique et un retour ; et la projection
+du mix stéréo restera une approximation, l'original pilotant le matériel tonalité par tonalité.
+
+**Une mesure vaut d'être retenue : `0xAB` n'existe sur AUCUNE carte du corpus.** Des deux opcodes de
+remix portés par B1, seul `0xBF` sert réellement (71 cartes). Le port de `0xAB` est correct et
+inoffensif, mais c'est du code mort.
+
+**Suites ouvertes** : [B1-a] la projection du mix, et les deux simplifications déclarées de B2
+(`IsBgmActivated` non modélisée, garde d'index de carte toujours satisfaite). Aucune ne bloque.
+
 - **Acceptation** : suites au vert (`Alundra.Tests` 711+n, convertisseur 141+n, moteur inchangé ou
   +n si primitif pan), six goldens byte-identiques avec preuve d'exécution, verifiers de clôture par
   tranche ; **en jeu (utilisateur)** : le bateau sonne comme avant (ronflements, mouettes, trappe,

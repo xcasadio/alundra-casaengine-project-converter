@@ -866,6 +866,8 @@ désormais sur preuve chiffrée plutôt que sur l'absence de portail même-carte
 
 `0x9C` est employé six fois plus que `0x9B` : le drapeau est surtout **levé** défensivement.
 
+**Livrée et VALIDÉE EN JEU par l'utilisateur le 2026-09-07** (« pour moi c'est bon »).
+
 **Livrée le 2026-09-07.** `Alundra.Tests` **781 / 781** (775 + 6), sous-module intact. Les deux
 chemins convergent par un cœur privé partagé : le chemin par portail garde sa signature et son
 comportement, et `0x53` entre par une surcharge additive qui porte ses propres opérandes.
