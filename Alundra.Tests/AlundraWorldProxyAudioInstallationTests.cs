@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Alundra.Scripts;
+using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Application.Components;
 using CasaEngine.Framework.Assets.TileMap;
@@ -50,6 +51,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         AlundraGameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
+        AlundraSoundGroupIndexTable.ResetForTests(); // B3 (D-B-7): joins the session carriers this class resets.
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
     }
 
@@ -60,6 +62,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         AlundraGameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
+        AlundraSoundGroupIndexTable.ResetForTests(); // B3 (D-B-7): joins the session carriers this class resets.
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
     }
 
@@ -194,6 +197,78 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         // is null, so 0xBD/0xBE/0x12/0x75 can never reach AlundraSoundPlayer.PlaySfx at all, regardless
         // of what the bank could resolve.
         Assert.Null(proxy.SoundPlayer);
+    }
+
+    // -----------------------------------------------------------------------------------------------
+    // B3 (docs/plan-e11b-opcodes-audio.md, D-B-7): the sound group reaches AlundraSoundBank.TryResolve
+    // through the REAL InstallAudioSystems install site (not the direct-constructor tests in
+    // AlundraSoundPlayerTests) - a synthetic project fixture, isolated from the real "alundra-project"
+    // one every other test in this class reads, since Maps/sound-group-index.json is not re-exported by
+    // this slice.
+    // -----------------------------------------------------------------------------------------------
+
+    [Fact]
+    public void InstallAudioSystems_LoadsTheMapsOwnSoundGroup_SoPlaySfxRedirectsThroughRefSfxIdChain()
+    {
+        var projectPath = Path.Combine(Path.GetTempPath(), "AlundraWorldProxyAudioInstallationTests_Group_" + Guid.NewGuid());
+        var soundsDir = Path.Combine(projectPath, "Sounds");
+        var mapsDir = Path.Combine(projectPath, "Maps");
+        Directory.CreateDirectory(soundsDir);
+        Directory.CreateDirectory(mapsDir);
+
+        // Id 700's own vab_id (99) is foreign to map 389's own group (56, below) - InstallAudioSystems
+        // must resolve that group off Maps/sound-group-index.json and hand it to the real
+        // AlundraSoundPlayer it installs, so PlaySfx(700) follows RefSfxId to id 701 (vab_id 56).
+        var id701Tone0 = Guid.Parse("00000000-0000-0000-0000-000000000701");
+        File.WriteAllText(Path.Combine(soundsDir, "sfx-manifest.json"), $$"""
+        [
+          {
+            "id": 700, "vab_id": 99, "program_number": 0, "tone_number": 0, "note": 60,
+            "seq_num": -1, "ref_sfx_id": 701, "max_voices": 1, "num_tones": 1, "skip_reason": null,
+            "tones": [
+              { "tone_index": 0, "file": "sfx_0700.wav", "sample_rate": 11025, "loop_start": 0, "loop_end": 0, "repeat": false, "asset_id": "{{Guid.Empty}}" }
+            ]
+          },
+          {
+            "id": 701, "vab_id": 56, "program_number": 0, "tone_number": 0, "note": 60,
+            "seq_num": -1, "ref_sfx_id": 0, "max_voices": 1, "num_tones": 1, "skip_reason": null,
+            "tones": [
+              { "tone_index": 0, "file": "sfx_0701.wav", "sample_rate": 11025, "loop_start": 0, "loop_end": 0, "repeat": false, "asset_id": "{{id701Tone0}}" }
+            ]
+          }
+        ]
+        """);
+        File.WriteAllText(Path.Combine(mapsDir, "sound-group-index.json"), """{"389":56}""");
+
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+        EngineEnvironment.ProjectPath = projectPath; // InstallAudioSystems reads the group table off this.
+
+        try
+        {
+            var world = new World { Name = WorldName }; // "Ship Klark (beginning)-389" -> map id 389.
+            var backend = new FakeAudioBackend();
+            var provider = new FakeAudioClipProvider();
+            provider.Register(id701Tone0, new FakeAudioClip("sfx_0701", 11025));
+            var game = BuildGameWithAudio(backend, provider);
+            HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
+
+            var proxy = new AlundraWorldProxy { SoundBank = new AlundraSoundBank(projectPath) };
+            proxy.InstallAudioSystems(world);
+            Assert.NotNull(proxy.SoundPlayer);
+
+            proxy.SoundPlayer!.PlaySfx(700);
+
+            // The mutation this test kills: the group never passed (null) at the install site - id 700
+            // would then resolve to its OWN record (vab_id 99, no group to redirect against) and play
+            // sfx_0700's clip (unregistered here) instead of following the chain to 701.
+            Assert.Single(backend.PlayCalls);
+            Assert.Equal("sfx_0701", ((FakeAudioClip)backend.PlayCalls[0].Clip).Name);
+        }
+        finally
+        {
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(projectPath, recursive: true);
+        }
     }
 
     // -----------------------------------------------------------------------------------------------

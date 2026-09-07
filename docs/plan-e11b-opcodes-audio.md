@@ -287,6 +287,47 @@ non armé, SFX intacts » tombe ; garde `IsArmed` neutralisée dans `PlaySfx` �
   Manifeste avant/après le ré-export (D-B-7). **Mutations** : groupe jamais passé (null) → le test
   de redirection au site d'install tombe ; plafond filtrant par le VabId RÉSOLU → le test
   « redirection ⇒ plafond inopérant » tombe.
+**B3 — preuve par export, prédite AVANT exécution le 2026-09-07.** Ligne de base
+`b3-baseline-manifest.sha256`, **23 197 fichiers**. Attendu, et rien d'autre :
+
+1. **Ajouté** : `Maps/sound-group-index.json`, un fichier plat unique — le chemin a été résolu sur le
+   seul précédent réel, `Maps/music-index.json`, la formulation `Maps/**/…` du plan n'étant réalisée
+   nulle part dans le code.
+2. **Modifié** : `report.json`.
+3. **Possiblement modifié, et prévu cette fois** : `AlundraGame.json`. Le moteur y réécrit la taille de
+   fenêtre au runtime (`CasaEngineGame.cs:171,178`) et l'export y remet la constante du convertisseur —
+   or **le jeu a tourné depuis le dernier export** (recette en jeu d'E9.d). Ce n'est pas un effet de
+   B3. Leçon retenue de C1, où il avait échappé à la prédiction.
+4. **Possiblement modifié** : `AssetInfos.json`, **si et seulement si** le nouveau fichier passe par le
+   registre d'assets — auquel cas il doit contenir exactement **une** entrée de plus.
+5. **Rien d'autre.** Aucun PNG, aucun `.tileMap`, aucun `.backdrop.json`, aucun `.world`.
+
+Puis **second export** : diff ⊆ `{report.json}`.
+
+**Résultat, le 2026-09-07 — la prédiction tient, et plus serrée qu'elle.** Export complet,
+**vérification PASSED** (19 505 chargés, 2 378 vérifiés), 23 198 fichiers.
+
+| | Prédit | Mesuré |
+|---|---|---|
+| Ajouté | `Maps/sound-group-index.json` | **1**, exactement celui-là |
+| Modifié | `report.json` | **1** |
+| Modifié | `AlundraGame.json` *possible* | **aucun** |
+| Modifié | `AssetInfos.json` *possible* | **aucun** |
+| Supprimé | aucun | **0** |
+
+Les deux entrées prévues « au cas où » ne se sont pas produites : le jeu n'a pas réécrit son fichier
+de projet depuis le dernier export, et le nouveau JSON **ne passe pas par le registre d'assets** —
+comme `music-index.json`, il est écrit directement. **Second export : diff = `{report.json}`
+exactement.**
+
+**B3 LIVRÉE.** Convertisseur **159 / 159**, `Alundra.Tests` **815 / 815**, moteur intact.
+L'exécuteur a prouvé sa correction du plafond en vrai : filtre remis sur la fiche **résolue**, le test
+« sous redirection le plafond ne mord pas » tombe (`Expected: 3, Actual: 1`), puis remis correct.
+
+**Chemin résolu** : `Maps/sound-group-index.json`, **fichier plat unique**. La formulation
+`Maps/**/…` du plan n'est réalisée nulle part dans le code ; le seul précédent réel,
+`Maps/music-index.json`, est un fichier unique écrit une fois, indépendant du filtre `--maps`.
+
 - **Acceptation** : suites au vert (`Alundra.Tests` 711+n, convertisseur 141+n, moteur inchangé ou
   +n si primitif pan), six goldens byte-identiques avec preuve d'exécution, verifiers de clôture par
   tranche ; **en jeu (utilisateur)** : le bateau sonne comme avant (ronflements, mouettes, trappe,

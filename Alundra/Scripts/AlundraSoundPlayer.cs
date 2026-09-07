@@ -82,7 +82,20 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
     private readonly AudioService _audioService;
     private readonly AlundraSoundBank _soundBank;
     private readonly object _owner;
-    private readonly Dictionary<int, List<AudioVoiceHandle>> _liveVoicesBySfxId = new();
+    private readonly int? _soundGroup;
+
+    /// <summary>
+    /// B3 (docs/plan-e11b-opcodes-audio.md, D-B-7, fact 7 corrected): live voices, keyed by the
+    /// REQUESTED sfx id (same key the original's own <c>CountActiveVoicesForSfx</c> indexes
+    /// <c>g_soundEffectData</c> with), each voice tagged with the VabId of the RECORD IT WAS ACTUALLY
+    /// REGISTERED UNDER - the RESOLVED record's own <see cref="SfxResolution.VabId"/>
+    /// (<c>SoundManager.cs:3990-3995</c>). <see cref="PlaySfx"/>'s own polyphony ceiling then counts only
+    /// the entries whose tag equals the REQUESTED record's <see cref="SfxResolution.RequestedVabId"/>
+    /// (<c>:4025-4034/:4049</c>) - under redirection the two VabIds differ, so the count is always zero
+    /// and the ceiling never bites, faithfully. Without a group (or without redirection), tag and filter
+    /// are the same VabId, so nothing changes from the pre-B3 shape.
+    /// </summary>
+    private readonly Dictionary<int, List<(AudioVoiceHandle Handle, int VabId)>> _liveVoicesBySfxId = new();
 
     /// <summary>
     /// B1 (docs/plan-e11b-opcodes-audio.md, D-B-4, fact 5): port of the original's 64-slot
@@ -107,12 +120,20 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
     /// never match it by <c>ReferenceEquals</c>). A sound effect has no reason to outlive its world, so
     /// unlike <see cref="AlundraMusicPlayer"/> (session-owned, D-C-5's other half) this one always
     /// receives the world.
+    ///
+    /// <paramref name="soundGroup"/> (docs/plan-e11b-opcodes-audio.md, slice B3, D-B-7): this world's
+    /// own VAB group id, resolved by <see cref="AlundraWorldProxy.InstallAudioSystems"/> off
+    /// <see cref="AlundraSoundGroupIndexTable"/> for the world's map id, or <c>null</c> when that table
+    /// has no entry (degraded mode, or a world outside 0..482) - the exact pre-B3 shape, D-E11-6's own
+    /// deviation for as long as no group is known. Passed straight through to every
+    /// <see cref="AlundraSoundBank.TryResolve"/> call <see cref="PlaySfx"/> makes.
     /// </summary>
-    public AlundraSoundPlayer(AudioService audioService, AlundraSoundBank soundBank, object owner)
+    public AlundraSoundPlayer(AudioService audioService, AlundraSoundBank soundBank, object owner, int? soundGroup = null)
     {
         _audioService = audioService ?? throw new ArgumentNullException(nameof(audioService));
         _soundBank = soundBank ?? throw new ArgumentNullException(nameof(soundBank));
         _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+        _soundGroup = soundGroup;
     }
 
     public void PlaySfx(int sfxId)
@@ -131,7 +152,7 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
             return;
         }
 
-        if (!_soundBank.TryResolve(sfxId, soundGroup: null, out var resolution))
+        if (!_soundBank.TryResolve(sfxId, _soundGroup, out var resolution))
         {
             return;
         }
@@ -139,7 +160,18 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
         var liveVoices = GetLiveVoices(sfxId);
         PruneFinishedVoices(liveVoices);
 
-        if (liveVoices.Count >= resolution.MaxVoices)
+        // B3 (D-B-7, fact 7 corrected): count only the voices tagged with the REQUESTED record's own
+        // VabId, not the resolved one - see _liveVoicesBySfxId's own doc.
+        var activeCountForRequestedVab = 0;
+        foreach (var voice in liveVoices)
+        {
+            if (voice.VabId == resolution.RequestedVabId)
+            {
+                activeCountForRequestedVab++;
+            }
+        }
+
+        if (activeCountForRequestedVab >= resolution.MaxVoices)
         {
             return;
         }
@@ -163,7 +195,9 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
             var handle = _audioService.PlayClip(clip, AudioBusNames.Sfx, parameters, owner: _owner);
             if (handle.IsValid)
             {
-                liveVoices.Add(handle);
+                // Tagged with the RESOLVED record's own VabId (fact 7: registration uses the resolved
+                // VabId, filtering above uses the requested one).
+                liveVoices.Add((handle, resolution.VabId));
             }
         }
     }
@@ -199,8 +233,8 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
 
         foreach (var voice in liveVoices)
         {
-            _audioService.SetVoiceVolume(voice, volume);
-            _audioService.SetVoicePan(voice, pan);
+            _audioService.SetVoiceVolume(voice.Handle, volume);
+            _audioService.SetVoicePan(voice.Handle, pan);
         }
     }
 
@@ -217,7 +251,7 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
         {
             foreach (var voice in voices)
             {
-                _audioService.Stop(voice);
+                _audioService.Stop(voice.Handle);
             }
 
             voices.Clear();
@@ -264,22 +298,22 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
         return (volume, pan);
     }
 
-    private List<AudioVoiceHandle> GetLiveVoices(int sfxId)
+    private List<(AudioVoiceHandle Handle, int VabId)> GetLiveVoices(int sfxId)
     {
         if (!_liveVoicesBySfxId.TryGetValue(sfxId, out var voices))
         {
-            voices = new List<AudioVoiceHandle>();
+            voices = new List<(AudioVoiceHandle Handle, int VabId)>();
             _liveVoicesBySfxId[sfxId] = voices;
         }
 
         return voices;
     }
 
-    private void PruneFinishedVoices(List<AudioVoiceHandle> voices)
+    private void PruneFinishedVoices(List<(AudioVoiceHandle Handle, int VabId)> voices)
     {
         for (var i = voices.Count - 1; i >= 0; i--)
         {
-            if (!_audioService.IsAlive(voices[i]))
+            if (!_audioService.IsAlive(voices[i].Handle))
             {
                 voices.RemoveAt(i);
             }

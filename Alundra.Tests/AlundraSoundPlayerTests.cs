@@ -29,6 +29,12 @@ public class AlundraSoundPlayerTests : IDisposable
     private static readonly Guid Id302Tone1 = Guid.Parse("00000000-0000-0000-0000-000000030201");
     private static readonly Guid Id61Tone0 = Guid.Parse("00000000-0000-0000-0000-000000000061");
 
+    // B3 (docs/plan-e11b-opcodes-audio.md, D-B-7): a RefSfxId redirection pair for the ceiling-under-
+    // redirection tests below - id 500 (a FOREIGN vab_id, 99) redirects to its sibling id 501 (vab_id
+    // 56, the group these tests request).
+    private static readonly Guid Id500Tone0 = Guid.Parse("00000000-0000-0000-0000-000000000500");
+    private static readonly Guid Id501Tone0 = Guid.Parse("00000000-0000-0000-0000-000000000501");
+
     public AlundraSoundPlayerTests()
     {
         var soundsDirectory = Path.Combine(_projectPath, "Sounds");
@@ -57,6 +63,20 @@ public class AlundraSoundPlayerTests : IDisposable
             "tones": [
               { "tone_index": 0, "file": "sfx_0061.wav", "sample_rate": 18142, "loop_start": 28, "loop_end": 7867, "repeat": false, "asset_id": "{{Id61Tone0}}" }
             ]
+          },
+          {
+            "id": 500, "vab_id": 99, "program_number": 0, "tone_number": 0, "note": 60,
+            "seq_num": -1, "ref_sfx_id": 501, "max_voices": 1, "num_tones": 1, "skip_reason": null,
+            "tones": [
+              { "tone_index": 0, "file": "sfx_0500.wav", "sample_rate": 11025, "loop_start": 0, "loop_end": 0, "repeat": false, "asset_id": "{{Id500Tone0}}" }
+            ]
+          },
+          {
+            "id": 501, "vab_id": 56, "program_number": 0, "tone_number": 0, "note": 60,
+            "seq_num": -1, "ref_sfx_id": 0, "max_voices": 1, "num_tones": 1, "skip_reason": null,
+            "tones": [
+              { "tone_index": 0, "file": "sfx_0501.wav", "sample_rate": 11025, "loop_start": 0, "loop_end": 0, "repeat": false, "asset_id": "{{Id501Tone0}}" }
+            ]
           }
         ]
         """;
@@ -72,7 +92,8 @@ public class AlundraSoundPlayerTests : IDisposable
         }
     }
 
-    private AlundraSoundPlayer NewPlayer(out FakeAudioBackend backend, out AudioService service, object? owner = null)
+    private AlundraSoundPlayer NewPlayer(
+        out FakeAudioBackend backend, out AudioService service, object? owner = null, int? soundGroup = null)
     {
         backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
@@ -80,9 +101,11 @@ public class AlundraSoundPlayerTests : IDisposable
         provider.Register(Id302Tone0, new FakeAudioClip("sfx_0302_0", 11025));
         provider.Register(Id302Tone1, new FakeAudioClip("sfx_0302_1", 10401));
         provider.Register(Id61Tone0, new FakeAudioClip("sfx_0061", 18142));
+        provider.Register(Id500Tone0, new FakeAudioClip("sfx_0500", 11025));
+        provider.Register(Id501Tone0, new FakeAudioClip("sfx_0501", 11025));
 
         service = new AudioService(backend) { ClipProvider = provider };
-        return new AlundraSoundPlayer(service, new AlundraSoundBank(_projectPath), owner ?? new object());
+        return new AlundraSoundPlayer(service, new AlundraSoundBank(_projectPath), owner ?? new object(), soundGroup);
     }
 
     [Fact]
@@ -282,5 +305,70 @@ public class AlundraSoundPlayerTests : IDisposable
         // The trap this test kills: pushing RemixVoice's own (volume=1.0) raw, bypassing bus gain, would
         // leave the backend at 1.0 instead of the gain-applied 0.5.
         Assert.Equal(0.5f, applied.Volume, 4);
+    }
+
+    // -----------------------------------------------------------------------------------------------
+    // B3 (docs/plan-e11b-opcodes-audio.md, D-B-7): the sound group reaches AlundraSoundBank.TryResolve,
+    // the RefSfxId chain redirects for a foreign VabId, and the polyphony ceiling filters by the
+    // REQUESTED record's own VabId (fact 7 corrected) - inoperative under redirection, still biting
+    // without it.
+    // -----------------------------------------------------------------------------------------------
+
+    [Fact]
+    public void PlaySfx_Id500_ForeignVabId_WithMatchingSoundGroup_RedirectsThroughRefSfxIdChain_PlaysId501Tone()
+    {
+        // Id 500's own vab_id (99) does not match the player's soundGroup (56) - TryResolve must follow
+        // RefSfxId to id 501 (vab_id 56) and play THAT record's tone, not id 500's own.
+        var player = NewPlayer(out var backend, out _, soundGroup: 56);
+
+        player.PlaySfx(500);
+
+        Assert.Single(backend.PlayCalls);
+        Assert.Equal("sfx_0501", ((FakeAudioClip)backend.PlayCalls[0].Clip).Name);
+    }
+
+    [Fact]
+    public void PlaySfx_Id500_UnderRedirection_TheCeilingNeverBites_CountStaysZero()
+    {
+        // Fact 7 corrected: id 501's own MaxVoices is 1, so WITHOUT the fix a second request (a
+        // different rendered frame, so the anti-duplicate table is not what refuses it) would be
+        // blocked. Under redirection the original's own filter (by the REQUESTED record's VabId, 99)
+        // never matches a voice registered under the RESOLVED VabId (56), so the ceiling stays
+        // inoperative and every request keeps succeeding.
+        var player = NewPlayer(out var backend, out _, soundGroup: 56);
+
+        player.PlaySfx(500);
+        player.FlushFrameSounds();
+        player.PlaySfx(500);
+        player.FlushFrameSounds();
+        player.PlaySfx(500);
+
+        // The mutation this test kills: filtering by the RESOLVED VabId (56) instead of the requested
+        // one (99) would match every one of these voices and cap the count at MaxVoices=1 after the
+        // first call - producing 1 PlayCall instead of 3.
+        Assert.Equal(3, backend.PlayCalls.Count);
+    }
+
+    [Fact]
+    public void PlaySfx_Id501_DirectRequest_NoRedirection_TheCeilingStillBites()
+    {
+        // Requesting id 501 directly (its OWN vab_id, 56, already equals the group) never enters the
+        // RefSfxId branch - requested and resolved VabId are the same, so this is the "no redirection"
+        // control case fact 7 says must keep biting exactly as before.
+        var player = NewPlayer(out var backend, out var service, soundGroup: 56);
+
+        player.PlaySfx(501); // 1 voice live - MaxVoices=1 already saturated.
+        Assert.Single(backend.PlayCalls);
+
+        player.FlushFrameSounds(); // a different frame, so the anti-duplicate table is not the refusal.
+        player.PlaySfx(501); // refused by the ceiling - no new clip.
+        Assert.Single(backend.PlayCalls);
+
+        backend.CompleteAllVoices();
+        service.Update(0.016f);
+        player.FlushFrameSounds();
+
+        player.PlaySfx(501);
+        Assert.Equal(2, backend.PlayCalls.Count); // allowed again once the live voice finished.
     }
 }

@@ -833,9 +833,24 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         var audioService = world.Game?.AudioSystemComponent?.Service;
         if (audioService != null)
         {
+            // B3 (docs/plan-e11b-opcodes-audio.md, D-B-7): this world's own VAB group id, read off
+            // Maps/sound-group-index.json for this world's own map id - the same "trailing -{mapId} of
+            // World.Name" parse TriggerMapEntryMusic uses below. No entry (degraded table, or a world
+            // that is not a converted Alundra map) leaves the group null - AlundraSoundPlayer's own
+            // pre-B3 shape (D-E11-6).
+            int? soundGroup = null;
+            if (BackdropLoader.TryParseMapIndex(world.Name, out var soundGroupMapId))
+            {
+                var soundGroupTable = AlundraSoundGroupIndexTable.GetOrCreate(EngineEnvironment.ProjectPath);
+                if (soundGroupTable.TryGetGroup(soundGroupMapId, out var resolvedGroup))
+                {
+                    soundGroup = resolvedGroup;
+                }
+            }
+
             // D-C-5: owner: world, so World.Clear's own StopVoicesOwnedBy(world) actually stops these
             // voices (fact 1.7's fix - see AlundraSoundPlayer's own constructor doc).
-            SoundPlayer = new AlundraSoundPlayer(audioService, SoundBank, world);
+            SoundPlayer = new AlundraSoundPlayer(audioService, SoundBank, world, soundGroup);
 
             // D-C-6: AlundraMusicPlayer.Instance is SESSION-scoped, never rebuilt here - only
             // re-pointed at this world's own AudioService/project path. See that class's own doc for

@@ -41,6 +41,19 @@ public readonly struct SfxResolution
     /// did.</summary>
     public int ResolvedId { get; init; }
     public int VabId { get; init; }
+
+    /// <summary>
+    /// B3 (docs/plan-e11b-opcodes-audio.md, D-B-7, fact 7 corrected): the VabId of the RECORD ACTUALLY
+    /// REQUESTED (the <c>sfxId</c> parameter of <see cref="TryResolve"/>) - BEFORE any
+    /// <c>RefSfxId</c> redirection, so it equals <see cref="VabId"/> exactly when no redirection fired
+    /// and differs from it otherwise. <see cref="AlundraSoundPlayer"/>'s own polyphony ceiling filters
+    /// by THIS value, not <see cref="VabId"/> (the resolved record's own) - the original's
+    /// <c>CountActiveVoicesForSfx</c> indexes <c>g_soundEffectData</c> with the requested id and filters
+    /// by that record's VabId (<c>SoundManager.cs:4025-4034/:4049</c>), while voices are registered with
+    /// the RESOLVED record's VabId (<c>:3990-3995</c>) - so under redirection the filter never matches
+    /// and the ceiling is inoperative, faithfully.
+    /// </summary>
+    public int RequestedVabId { get; init; }
     public int MaxVoices { get; init; }
     public IReadOnlyList<SfxToneRecord> Tones { get; init; }
 }
@@ -137,6 +150,10 @@ public sealed class AlundraSoundBank
             return false;
         }
 
+        // B3 (D-B-7, fact 7 corrected): captured BEFORE the RefSfxId chain below may redirect to a
+        // different record - see SfxResolution.RequestedVabId's own doc.
+        var requestedVabId = record.VabId;
+
         if (soundGroup is { } group && record.VabId != -1 && record.VabId != group)
         {
             // Follow the RefSfxId chain looking for a sibling of the requested group - abandon the
@@ -195,6 +212,7 @@ public sealed class AlundraSoundBank
         {
             ResolvedId = record.Id,
             VabId = record.VabId,
+            RequestedVabId = requestedVabId,
             MaxVoices = record.MaxVoices,
             Tones = tones,
         };

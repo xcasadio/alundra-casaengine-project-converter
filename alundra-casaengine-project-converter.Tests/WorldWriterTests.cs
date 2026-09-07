@@ -437,6 +437,57 @@ public class WorldWriterTests
         }
     }
 
+    /// <summary>
+    /// B3 of docs/plan-e11b-opcodes-audio.md, D-B-7: <c>Maps/sound-group-index.json</c> is written next
+    /// to <c>music-index.json</c>, carries all 483 entries of <c>MapSoundGroupIndex.csv</c> (independent
+    /// of the narrowed <c>--maps</c> filter this fixture uses - same "whole table" behaviour as
+    /// <see cref="ConvertWorlds_WritesMusicIndex_AllEntries_Map389Is25"/> above, see
+    /// <see cref="WorldWriter.WriteSoundGroupIndex"/>'s own doc for why), and map 389's own entry is 56
+    /// (measured off the decompiled <c>VabIndexByMapId</c>, <c>SoundBin.cs:2335</c>).
+    /// </summary>
+    [Fact]
+    public void ConvertWorlds_WritesSoundGroupIndex_AllEntries_Map389Is56()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            WriteMapFixture(inputDirectory, NewGameMapIndex);
+            var mapLocations = new Dictionary<int, MapLocation>
+            {
+                [NewGameMapIndex] = new MapLocation("The Klark", "Ship Klark (beginning)-389"),
+            };
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            ProjectWriter.CreateEmptyProject(outputDirectory, report);
+            TileMapWriter.ConvertMaps(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
+            WorldWriter.ConvertWorlds(
+                inputDirectory, outputDirectory, mapFilter: new[] { NewGameMapIndex }, mapLocations,
+                TestGameModeAssetId, report);
+
+            Assert.Empty(report.Errors);
+
+            var soundGroupIndexPath = Path.Combine(outputDirectory, "Maps", "sound-group-index.json");
+            Assert.True(File.Exists(soundGroupIndexPath));
+
+            var soundGroupIndex = JObject.Parse(File.ReadAllText(soundGroupIndexPath));
+            Assert.Equal(483, soundGroupIndex.Properties().Count());
+            Assert.Equal(56, (int)soundGroupIndex["389"]!);
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
     private static Entity LoadEntity(JArray entityReferenceNodes, string entityName)
     {
         foreach (var entityReferenceNode in entityReferenceNodes)

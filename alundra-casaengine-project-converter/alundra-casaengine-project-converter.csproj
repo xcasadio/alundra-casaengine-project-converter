@@ -44,6 +44,12 @@
     <None Include="..\alundra-datas-analyser\AlundraTools\AlundraTools\EtcIndexTable.csv" Link="EtcIndexTable.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <!-- docs/plan-e11b-opcodes-audio.md, slice B3, D-B-7: same "linked, not copied" precedent as
+         MapMusicIndex.csv above - the analyser owns VabIndexByMapId (SoundBin.cs:2335), this
+         converter only reads it. -->
+    <None Include="..\alundra-datas-analyser\AlundraTools\AlundraTools\MapSoundGroupIndex.csv" Link="MapSoundGroupIndex.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

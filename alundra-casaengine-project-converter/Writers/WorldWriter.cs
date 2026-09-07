@@ -118,6 +118,7 @@ public static class WorldWriter
 {
     private const string WorldIndexFileName = "world-index.json";
     private const string MusicIndexFileName = "music-index.json";
+    private const string SoundGroupIndexFileName = "sound-group-index.json";
 
     // docs/guidelines-runtime-alundra-casaengine.md section 1: uniform over all 483 maps.
     private const int AlundraTileWidth = 24;
@@ -184,6 +185,7 @@ public static class WorldWriter
 
         WriteWorldIndex(outputDirectory, worldPathsByMapId, report);
         WriteMusicIndex(outputDirectory, report);
+        WriteSoundGroupIndex(outputDirectory, report);
         EditorAssetCatalogService.Save();
 
         SetFirstWorldLoaded(outputDirectory, worldPathsByMapId, report);
@@ -564,6 +566,47 @@ public static class WorldWriter
             indexNode.ToString());
 
         report.Increment("Worlds.MusicIndexed", result.RawIndexByMapId.Count);
+    }
+
+    /// <summary>
+    /// Maps/sound-group-index.json - the companion table docs/plan-e11b-opcodes-audio.md's slice B3
+    /// (D-B-7) asks for, same key shape and same "whole table, independent of the run's own
+    /// <c>--maps</c> filter" behaviour as <see cref="WriteMusicIndex"/> right above it: a flat
+    /// map-id -&gt; value JSON object keyed off the ENTIRE table (all 483 <c>map_id</c> rows of
+    /// <c>MapSoundGroupIndex.csv</c>), not just the maps this particular run converted - this table is
+    /// the original's own <c>VabIndexByMapId</c> republished whole, not a run artifact. Values are the
+    /// RAW ints the CSV carries (see <see cref="MapSoundGroupIndexCatalogReader"/>'s own doc for why); a
+    /// missing/unreadable CSV degrades to "no file written" plus one warning, the same shape
+    /// <see cref="WriteMusicIndex"/> already uses for its own MapMusicIndex.csv dependency.
+    /// </summary>
+    private static void WriteSoundGroupIndex(string outputDirectory, ConversionReport report)
+    {
+        var csvPath = Path.Combine(AppContext.BaseDirectory, "MapSoundGroupIndex.csv");
+        if (!File.Exists(csvPath))
+        {
+            report.Errors.Add(
+                $"MapSoundGroupIndex.csv not found at '{csvPath}'; Maps/sound-group-index.json not written.");
+            return;
+        }
+
+        var result = MapSoundGroupIndexCatalogReader.Read(csvPath);
+        foreach (var warning in result.Warnings)
+        {
+            report.Warnings.Add(warning);
+        }
+
+        var indexNode = new JObject();
+        foreach (var (mapId, groupId) in result.GroupIdByMapId.OrderBy(pair => pair.Key))
+        {
+            indexNode[mapId.ToString(CultureInfo.InvariantCulture)] = groupId;
+        }
+
+        Directory.CreateDirectory(Path.Combine(outputDirectory, MapLocation.MapsRootFolder));
+        File.WriteAllText(
+            Path.Combine(outputDirectory, MapLocation.MapsRootFolder, SoundGroupIndexFileName),
+            indexNode.ToString());
+
+        report.Increment("Worlds.SoundGroupIndexed", result.GroupIdByMapId.Count);
     }
 
     private static void SetFirstWorldLoaded(
