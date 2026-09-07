@@ -19,12 +19,23 @@ explicitement de cette politique au lieu de la laisser sans propriétaire. (2) L
 réserve de P1 était **inversé** — la dérive continue concerne 17 cartes et non 8 — et aucune des trois
 cartes proposées n'exerçait le piège du OU de signes que le plan documente lui-même.
 
+**Révision 3** — relecture de clôture, deux blocages de plus, tous deux retenus. (1) Parmi les deux
+quatrièmes cartes proposées, **la 20 n'exerce pas la divergence de signes** : toutes ses valeurs sont
+positives. D1 épingle la 443. (2) **La fenêtre source d'une cellule est animée** — `(V0 + phase) &
+0xFF` — mécanisme entier absent de la révision 2, désormais §1.5 bis, et qui tranche D2. Quatre
+corrections mineures de la relecture sont portées au fil du texte. Les sept points sont devenus les
+six décisions D1-D6 plus P6.
+
+**Plafond de relecture atteint** : deux verdicts REVISE consécutifs. Conformément à la règle, les
+blocages sont dispositionnés — tous en correction — et le plan n'est pas resoumis à un troisième
+tour ; il passe à l'auteur.
+
 ---
 
 ## 0. Ce que le tri a corrigé de nos propres plans
 
 **Le nombre de cartes concernées est faux partout où il est écrit : ce sont 90 cartes, pas 84.**
-Deux sources indépendantes concordent — le champ `ScrollParameters.Infos.ModeLayer` sur les 483
+Deux sources indépendantes concordent — le champ `ModeLayer` — `ScrollParameters.Infos` dans les données brutes, `LiningInfos.ModeLayer` côté convertisseur (`BackdropReader.cs:79`) — sur les 483
 cartes de `data-extracted`, et les 330 compagnons `*.backdrop.json` produits par le convertisseur —
 et un relecteur adverse a refait les deux comptages lui-même. Précisément : **90 cartes, 92 couches
 cellulaires, 8360 cellules**. À corriger dans `plan-e9-backdrops-residus.md:38` et dans
@@ -110,10 +121,25 @@ Le seau d'avant-plan est donc le **chemin majoritaire déjà livré et validé e
 nouveauté. La politique de passe, de fusion et de teinte existe et fonctionne ; E9.d n'a pas à la
 réinventer. Voir P7.
 
+### 1.5 bis La fenêtre source est animée, elle aussi
+
+**Manqué par la première rédaction, relevé par la relecture de clôture.** Les trois branches de
+dessin n'échantillonnent pas la planche à `V0`, mais à `(V0 + phase) & 0xFF`, avec
+`phase = (AnimFrameCounter[layerId] << 8) / AnimNum` — calculée en `GraphicManager.cs:1010`, appliquée
+en `:1099`, `:1185` et `:1219`.
+
+**`V0` seul ne détermine donc pas la fenêtre source** : elle défile verticalement et **enroule modulo
+256**. Le mécanisme est vivant sur deux des quatre cartes de recette retenues : la **271**
+(`AnimNum = 2`, phases 0 et 128) et la **391** (`AnimNum = 4`, phases 0, 64, 128, 192).
+
+**C'est le fait qui tranche la cuisson (D2).** Un atlas des seuls rectangles utilisés ne survivrait
+pas à un décalage V qui enroule — il faudrait re-packer à chaque phase. La planche entière l'encaisse
+sans rien remapper. La phase appartient à la tranche **C2**, qui la calcule par couche et par frame.
+
 ### 1.6 Un effet, pas quatre-vingt-dix
 
 Comparaison **octet par octet** des blocs `(Cellular + Cells[])` : **7 blocs distincts** dans tout le
-corpus, répartis en 65 / 13 / 8 / 2 / 2 / 1 / 1 cartes. Le bloc `WaveX` est réutilisé **à l'identique
+corpus, répartis en 65 / 13 / 8 / 2 / 2 / 1 / 1 **couches** (la somme fait 92 : les cartes 123 et 124 en portent deux chacune). Le bloc `WaveX` est réutilisé **à l'identique
 sur 65 cartes** ; le bloc « pluie » `FallRespawn` est partagé par exactement deux cartes, la 31 et la
 391 (égalité vérifiée par comparaison directe, pas par similitude de forme).
 
@@ -135,7 +161,7 @@ sur 65 cartes** ; le bloc « pluie » `FallRespawn` est partagé par exactement 
 
 ### 1.8 Ce que le moteur et la DLL font aujourd'hui
 
-- **Le moteur ne connaît pas le mot.** Zéro occurrence de `cellular` dans tout `CasaEngineMonogame`.
+- **Le moteur ne connaît pas le mot.** Aucune occurrence de `cellular` dans le **code** de `CasaEngineMonogame` — la seule du dépôt est en prose, `docs/engine/scrolling-layers.md:10`.
 - **Le mécanisme d'E9.b ne peut pas porter des cellules.** `ScrollingLayerDefinition` et
   `ScrollingLayerService.LayerRuntime` portent **un** accumulateur et **un** jeu de textures entières
   **par couche** ; `ScrollingLayerComponent.Submit` dessine toujours `frame.Bounds` — la texture
@@ -149,52 +175,38 @@ sur 65 cartes** ; le bloc « pluie » `FallRespawn` est partagé par exactement 
 
 ---
 
-## 2. Points à valider — je propose, tu tranches
+## 2. Décisions verrouillées (2026-09-06) et le point qui reste
 
-Ce plan ne va pas plus loin que ces **sept** points : les tranches en dépendent.
+Arbitrées par l'auteur après lecture de la révision 2. **Ce plan les applique, il ne les rediscute
+pas.**
 
-- **P1 — Les cartes de recette.** Aucune carte déjà validée n'exerce ce mode. Je propose **420**
-  (maison de la côte, Nava : cellulaire pure, 120 cellules `WaveX` de 160×4 empilées, fusion
-  additive — **c'est le bloc des 65 cartes**), **391** (Ship Klark nuit : 55 cellules `FallRespawn`
-  de 1×64, `DY` entre 7 et 10 — de la pluie, et **même zone que la 389** d'entrée de jeu), et **271**
-  (Inoa : 15 cellules `Normal` de 40×40, parallaxe 1:1).
-  **Réserve, rectifiée par la relecture — le premier chiffrage était inversé.** `Normal` (450 cellules,
-  25 cartes) se scinde en **période seule : 120 cellules sur 8 cartes** (96, 97, 98, 99, **271**, 289,
-  357, 481) et **dérive continue : 330 cellules sur 17 cartes** (20, 55-60, 123, 124, 293, 443-448,
-  461). C'est donc la variante **majoritaire** qui serait non couverte, pas une variante marginale :
-  la geler gèlerait 17 cartes, pas 8.
-  **Et une seconde lacune, plus gênante** : le piège du OU de signes (§1.4) ne diverge du mode 1 que
-  lorsque `DX < 0 && PeriodX < 0` — 214 cellules sur 14 cartes en X, 215 sur 14 cartes en Y. **Aucune
-  des trois cartes proposées ne l'exerce** (la 271 a `DX = 0, PeriodX = -3`, où les deux formules
-  coïncident). Le piège que le plan documente n'aurait donc **aucun témoin en jeu**.
-  Je propose d'ajouter une **quatrième carte de recette prise parmi les 17**, la **443** ou la **20**,
-  choisie pour exercer à la fois la dérive continue et la divergence de signes.
-- **P2 — La cuisson.** Je propose la **planche entière par palette utilisée** : décoder une fois la
-  planche 256×256 par `PalDex` employé, jusqu'à 8 textures par carte. Aucun remappage d'UV — les
-  `U0/V0/U1/V1` existants restent valides tels quels. L'alternative, un atlas des seuls rectangles
-  utilisés, exigerait d'écrire un empaqueteur de rectangles qui **n'existe nulle part** dans le
-  convertisseur. Correction de relecture à porter au budget : `BackdropImageBuilder.DrawTile`
-  (`:127-129`) n'a **pas** de paramètres largeur/hauteur — c'est une tuile 16×16 fixe. Sa
-  généralisation est un vrai petit changement, pas une réutilisation gratuite.
-- **P3 — L'architecture moteur.** Je propose un **couple service + composant distinct**
-  (`CellularLayerService` / `CellularLayerComponent`), partageant avec E9.b les seules fonctions
-  pures et la plomberie `RenderSortKey2D` / `SpriteBlendMode`. Étendre `ScrollingLayerDefinition`
-  pour porter un tableau de sous-sprites déformerait un mécanisme livré, validé en jeu et couvert.
-- **P4 — Le découpage.** Je propose la cuisson en **tranche préalable**, prouvée par manifeste et
-  double export avant qu'une ligne de moteur ne soit écrite : sans pixels, rien n'est observable.
-- **P5 — `ScriptTrack`.** Zéro occurrence sur 8360 cellules, et un `case` vide dans l'original. Je
-  propose de le **geler et le documenter**, comme D-E9b-14 a gelé `0xA4`.
-- **P6 — Le générateur aléatoire de `FallRespawn`.** La réapparition tire un X au hasard. Il faut
-  décider d'une source reproductible avant d'écrire la moindre acceptation sur la 391, sinon aucun
-  test ne pourra épingler quoi que ce soit.
-- **P7 — La politique de passe et de fusion** (point ajouté par la relecture). Les 92 couches
-  cellulaires sont toutes `Ground = true`, cas déjà routé par `ResolveGroundLayerBlend` et
-  `RenderPass2D.Effects` pour 86 couches du mode 1, livré et validé en jeu. Je propose de **réemployer
-  cette politique telle quelle**, sans la dupliquer ni la paramétrer autrement. Elle devient un point
-  parce que c'est un choix, pas une évidence : si tu préfères que le mode cellulaire ait sa propre
-  politique, il faut le dire avant C2.
+| Réf | Décision |
+|---|---|
+| **D1** | **Quatre cartes de recette** : **420** (bandeau `WaveX`, le bloc réutilisé sur 65 couches), **391** (pluie `FallRespawn`, même zone que la 389 d'entrée de jeu), **271** (`Normal` période seule), et **443** pour la dérive continue. |
+| **D2** | **Cuisson planche entière par palette utilisée** : décoder la planche 256×256 une fois par `PalDex` employé, jusqu'à 8 textures par carte. Aucun remappage d'UV. L'atlas des seuls rectangles utilisés est écarté. |
+| **D3** | **Couple service + composant distinct** (`CellularLayerService` / `CellularLayerComponent`), partageant avec E9.b les seules fonctions pures et la plomberie de tri et de fusion. Le mécanisme d'E9.b n'est pas déformé. |
+| **D4** | **La cuisson est une tranche préalable**, prouvée par manifeste et double export avant qu'une ligne de moteur ne soit écrite. |
+| **D5** | **`ScriptTrack` est gelé et documenté** — zéro occurrence sur 8360 cellules, `case` au corps vide dans l'original — comme D-E9b-14 a gelé `0xA4`. |
+| **D6** | **La politique de passe et de fusion d'E9.b est réemployée telle quelle** : `Ground = true` → `ResolveGroundLayerBlend` + `RenderPass2D.Effects`, déjà exercée par 86 couches du mode 1. |
 
----
+**Correction portée à D1 par la relecture de clôture** : la révision 2 proposait « la 443 **ou** la
+20 ». **La 20 ne convient pas** — ses 15 cellules ont toutes `DX` dans {1..5} avec `PeriodX = 3`, et
+`DY` dans {1..4} avec `PeriodY = 4` : toutes positives, donc le OU et le OU EXCLUSIF donnent le même
+résultat et le piège du §1.4 n'a aucun témoin. Les cartes qui l'exercent réellement sont 55-60,
+293, 443-448 et 461. **D1 retient la 443.**
+
+### Le seul point encore ouvert
+
+- **P6 — la source aléatoire de `FallRespawn`.** La relecture a rétréci la question : l'original
+  n'improvise pas, c'est un générateur congruentiel **entièrement spécifié et déterministe**
+  (`alundra-datas-analyser/AlundraTools/AlundraEngine/Random.cs:5,14` — graine `0xB017C93D`, suite
+  `seed = seed * 0x7d2b89dd + 0xe06a02e7`), consommé en `GraphicManager.cs:1172`. Le vrai choix qui
+  reste est donc étroit : **le fond partage-t-il ce flux global unique avec son autre consommateur
+  (`GraphicManager.cs:2105`), ou reçoit-il le sien ?** Partager est fidèle mais couple le fond au
+  reste du jeu et rend l'acceptation de la 391 dépendante de tout ce qui tire un aléa avant elle ;
+  un flux propre est testable mais s'écarte de l'original. **Je recommande le flux partagé pour la
+  fidélité, avec une acceptation qui n'épingle pas les positions absolues mais les invariants** (une
+  cellule qui passe le bas réapparaît en haut, à une abscisse dans les bornes de l'écran).
 
 ## 3. Tranches — forme prévue, à figer après P1–P7
 
