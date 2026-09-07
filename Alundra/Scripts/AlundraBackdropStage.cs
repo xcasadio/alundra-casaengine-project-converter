@@ -13,6 +13,7 @@ using CasaEngine.Framework.Application.Components;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Physics;
+using CasaEngine.Framework.Rendering.CellularLayers;
 using CasaEngine.Framework.Rendering.Depth;
 using CasaEngine.Framework.Rendering.ScrollingLayers;
 using CasaEngine.Framework.Scene.Entities;
@@ -75,6 +76,14 @@ internal sealed class AlundraBackdropStage
     /// </summary>
     private ScrollingLayerService? _service;
 
+    /// <summary>
+    /// D-E9d: the engine-side mechanism behind Cellular (mode 2) backdrop layers, sibling to
+    /// <see cref="_service"/> - same attach/load/push shape, same null-is-a-no-op contract. Attached
+    /// (never constructed here) by <c>AlundraWorldProxy.InitializeWithWorld</c> alongside
+    /// <see cref="_service"/>, BEFORE <see cref="Load"/> runs.
+    /// </summary>
+    private CellularLayerService? _cellularService;
+
     /// <summary>Attaches (or detaches, with <see langword="null"/>) this stage's engine-side scrolling-
     /// layers mechanism - see <see cref="_service"/>'s own doc. Internal so <c>Alundra.Tests</c> (via
     /// <c>InternalsVisibleTo</c>) can inject a real <see cref="ScrollingLayerService"/> on a headless
@@ -82,6 +91,15 @@ internal sealed class AlundraBackdropStage
     internal void AttachService(ScrollingLayerService? service)
     {
         _service = service;
+    }
+
+    /// <summary>Attaches (or detaches, with <see langword="null"/>) this stage's engine-side cellular-
+    /// layers mechanism - see <see cref="_cellularService"/>'s own doc. Internal so <c>Alundra.Tests</c>
+    /// (via <c>InternalsVisibleTo</c>) can inject a real <see cref="CellularLayerService"/> on a headless
+    /// montage, mirroring <see cref="AttachService(ScrollingLayerService?)"/>.</summary>
+    internal void AttachCellularService(CellularLayerService? service)
+    {
+        _cellularService = service;
     }
 
     /// <summary>Faithful port (E2, docs/plan-e2-rendu.md) of the original engine's own background clear
@@ -145,6 +163,7 @@ internal sealed class AlundraBackdropStage
         }
 
         _service.Clear();
+        _cellularService?.Clear();
 
         var document = BackdropLoader.Load(projectPath, world.Name);
         if (document == null)
@@ -156,6 +175,15 @@ internal sealed class AlundraBackdropStage
         _service.SetConfiguration(configuration);
         _service.SetLayers(layers);
         _service.SetTint(tint);
+
+        // D-E9d: same "always push, even with zero layers" contract as the sibling above - a world
+        // with no Cellular layer still clears out whatever the PREVIOUS world's cellular service held.
+        if (_cellularService != null)
+        {
+            var cellularLayers = BuildCellularDefinitions(document);
+            _cellularService.SetLayers(cellularLayers);
+            _cellularService.SetWaveLut(document.WaveLut ?? Array.Empty<int>());
+        }
     }
 
     /// <summary>
@@ -245,6 +273,97 @@ internal sealed class AlundraBackdropStage
         return (layers.ToArray(), tintDefinition, configuration);
     }
 
+    /// <summary>
+    /// D-E9d - PURE translation of a loaded <see cref="BackdropDocument"/> into the engine mechanism's
+    /// own <c>CellularLayerDefinition[]</c> (<c>CasaEngine.Framework.Rendering.CellularLayers</c>): a
+    /// layer is translated only if <c>Mode == "Cellular" &amp;&amp; Cellular != null</c> (same
+    /// early-<c>continue</c> shape <see cref="BuildDefinitions"/> applies for <c>Tiles</c>); <c>Ground</c>/
+    /// <c>BlendMode</c> resolve through the SAME <see cref="ResolveGroundLayerBlend"/> policy the
+    /// <c>Tiles</c> path uses (D6 - do not write a second policy); <c>SortingLayer</c> is always 0,
+    /// <c>OrderInLayer</c> is <see cref="BackdropLayerData.DepthOrder"/>, <c>LayerId</c> is
+    /// <see cref="BackdropLayerData.LayerId"/>.
+    ///
+    /// A MAPPING TRAP, verified against the original (<c>GraphicManager.cs:999</c>): <c>AnimNum</c> is
+    /// read at LINING level - <paramref name="document"/>'s own <see cref="BackdropDocument.AnimNum"/> -
+    /// while <c>AnimTimer</c> is read from the LAYER - <see cref="BackdropLayerData.AnimTimer"/>. Do NOT
+    /// swap these; they are two different scopes in the original despite both landing on the same
+    /// engine-side struct.
+    ///
+    /// <c>SheetTextureAssetIds</c> comes from the DOCUMENT-level
+    /// <see cref="BackdropDocument.CellularSheetTextureAssetIds"/> (the sheet and palettes are per map,
+    /// shared by both layers) - each entry parses the same way <see cref="ParseFrameAssetIdOrEmpty"/>
+    /// parses a frame id (null/empty/unparsable -&gt; <see cref="Guid.Empty"/>, never an exception). A
+    /// null document-level array (no Cellular layer in this map) yields an empty
+    /// <c>SheetTextureAssetIds</c>.
+    /// </summary>
+    internal static CellularLayerDefinition[] BuildCellularDefinitions(BackdropDocument document)
+    {
+        var layers = new List<CellularLayerDefinition>();
+
+        var sheetIds = document.CellularSheetTextureAssetIds;
+        var sheetGuids = sheetIds == null
+            ? Array.Empty<Guid>()
+            : sheetIds.Select(ParseFrameAssetIdOrEmpty).ToArray();
+
+        foreach (var layer in document.Layers)
+        {
+            if (layer.Mode != "Cellular" || layer.Cellular == null)
+            {
+                continue;
+            }
+
+            var cellular = layer.Cellular;
+            var (blendMode, tint) = ResolveGroundLayerBlend(layer.Ground, layer.BlendMode);
+
+            var cells = new CellularCellDefinition[cellular.Cells.Count];
+            for (var cellIndex = 0; cellIndex < cellular.Cells.Count; cellIndex++)
+            {
+                var cell = cellular.Cells[cellIndex];
+                cells[cellIndex] = new CellularCellDefinition
+                {
+                    PalDex = cell.PalDex,
+                    U0 = cell.U0,
+                    V0 = cell.V0,
+                    U1 = cell.U1,
+                    V1 = cell.V1,
+                    Type = (CellularCellType)cell.Type,
+                    X0 = cell.X0,
+                    Y0 = cell.Y0,
+                    CamXNum = cell.CamXNum,
+                    CamXDen = cell.CamXDen,
+                    CamYNum = cell.CamYNum,
+                    CamYDen = cell.CamYDen,
+                    DX = cell.DX,
+                    PeriodX = cell.PeriodX,
+                    DY = cell.DY,
+                    PeriodY = cell.PeriodY,
+                };
+            }
+
+            layers.Add(new CellularLayerDefinition
+            {
+                LayerId = layer.LayerId,
+                AnimTimer = layer.AnimTimer, // LAYER level (mapping trap - see class doc above).
+                AnimNum = document.AnimNum, // DOCUMENT level (mapping trap - see class doc above).
+                Ground = layer.Ground,
+                Blend = blendMode,
+                Tint = tint,
+                AWaveY = cellular.AWaveY,
+                AWavePhase = cellular.AWavePhase,
+                AWaveAmp = cellular.AWaveAmp,
+                BWaveY = cellular.BWaveY,
+                BWavePhase = cellular.BWavePhase,
+                BWaveWeight = cellular.BWaveWeight,
+                Cells = cells,
+                SheetTextureAssetIds = sheetGuids,
+                SortingLayer = 0,
+                OrderInLayer = layer.DepthOrder,
+            });
+        }
+
+        return layers.ToArray();
+    }
+
     private static Guid ParseFrameAssetIdOrEmpty(string? assetIdString)
     {
         return Guid.TryParse(assetIdString, out var guid) ? guid : Guid.Empty;
@@ -311,16 +430,17 @@ internal sealed class AlundraBackdropStage
     /// Called from <c>AlundraWorldProxy.Update</c> at the exact site the retired
     /// <c>UpdateAndDrawBackdrop</c> used to occupy (D-E9b-2, S2): unconditional, outside the gameplay
     /// freeze gate, independent of <c>world.Game</c> or of whether this world has any layers at all.
+    ///
+    /// D-E9d: also pushes the SAME <paramref name="ticksThisFrame"/>/scroll/target to
+    /// <see cref="_cellularService"/> (independently a no-op while <see langword="null"/>) - this is the
+    /// ONE push site for both mechanisms, never a second call site elsewhere.
     /// </summary>
     internal void PushFrame(int ticksThisFrame, Camera2dComponent? resolvedCamera)
     {
-        if (_service == null)
-        {
-            return;
-        }
-
         var cameraTarget = resolvedCamera?.Target ?? Vector3.Zero;
         var scroll = AlundraCameraMath.ToOriginalScrollSpace(cameraTarget);
-        _service.SetFrame(scroll.X, scroll.Y, ticksThisFrame, cameraTarget);
+
+        _service?.SetFrame(scroll.X, scroll.Y, ticksThisFrame, cameraTarget);
+        _cellularService?.SetFrame(scroll.X, scroll.Y, ticksThisFrame, cameraTarget);
     }
 }

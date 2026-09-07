@@ -514,6 +514,18 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // Load, same acquisition shape as InstallScreenFadeSystems - Load itself emits the one warning
         // when the service is null but world.Game is not (§4 arrêt in production).
         _backdropStage.AttachService(world.Game?.ScrollingLayerComponent?.Service);
+
+        // D-E9d: the sibling cellular mechanism - same attach-before-Load shape. D7: this world's
+        // FallRespawn cells (if any) draw from the game's ONE shared random stream, never a private
+        // generator - wired here, unconditionally, so it is never left unwired by the time a
+        // FallRespawn cell's Advance() actually needs it.
+        var cellularComponent = world.Game?.CellularLayerComponent;
+        _backdropStage.AttachCellularService(cellularComponent?.Service);
+        if (cellularComponent != null)
+        {
+            cellularComponent.RandomSource = () => (uint)AlundraRandom.Next();
+        }
+
         _backdropStage.Load(world, EngineEnvironment.ProjectPath);
 
         var tileMapEntity = world.Entities.FirstOrDefault(entity => entity.Name == TileMapEntityName);

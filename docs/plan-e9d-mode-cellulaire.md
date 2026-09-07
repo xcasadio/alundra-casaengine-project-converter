@@ -389,12 +389,47 @@ correctifs sont justes, pas seulement présents, et qu'aucun test n'épingle un 
 - **[A4, P4 — reporté]** le drapeau d'avertissement unique est statique, donc au processus : un second
   composant non câblé n'avertirait pas.
 
-### ⏳ C3 — DLL : la liaison
+### ✅ C3 — DLL : la liaison
 
 - Objectif : les propriétés manquantes sur le `BackdropDocument` de la DLL, la construction des
   cellules, la poussée par frame.
 - Validation : `Alundra.Tests` sans régression ; production épinglée headless.
 - Commit : `feat(alundra): feed the engine the cellular backdrop layers`
+
+**Deux faits établis avant d'écrire, en session principale :**
+
+1. **La DLL n'a aucun générateur aléatoire porté.** « Partager le flux » (D7) ne veut donc pas dire
+   se brancher sur un flux existant : il faut **porter le générateur une fois** comme flux global du
+   jeu. L'original (`alundra-datas-analyser/AlundraTools/AlundraEngine/Random.cs`) est un
+   congruentiel à graine `ulong` : la multiplication déborde sur 64 bits et `Next()` rend les
+   **32 bits de poids faible**. La couture du moteur attend un `Func<uint>` : ça correspond.
+2. **Le piège de correspondance signalé par [A2].** L'original lit `AnimNum` au niveau du *lining*
+   (`GraphicManager.cs:999`, donc l'`AnimNum` du **document**) et `AnimTimer` au niveau de la
+   **couche**. `CellularLayerDefinition` porte les deux par couche : C3 doit croiser correctement,
+   et un test l'épingle avec deux valeurs distinctes pour qu'une inversion future échoue.
+
+---
+
+**Fait le 2026-09-07.** `Alundra.Tests` **775 / 775** (754 + 21), zéro échec. Sous-module intact.
+
+Le piège [A2] est épinglé **deux fois** : sur données réelles — la 391 a `AnimNum = 4` au document
+contre `AnimTimer = 1` à la couche — et en isolation synthétique avec deux valeurs distinctes. Une
+inversion future échoue.
+
+Un seul site de poussée alimente les deux services, avec le même espace caméra. C'est fidèle :
+l'original passe le même `cameraX/cameraY` aux deux modes depuis la même fonction
+(`RenderLayerToBuffer`).
+
+**Deux points signalés par l'exécuteur, dispositionnés :**
+
+- **[C3-a] `AlundraRandom.Reset()` est porté mais jamais appelé.** Le site d'appel de l'original est
+  `GameEngine.cs:90`, dans `InitializeEngine` — un démarrage de moteur, pas un chargement de monde,
+  qui ne correspond donc à rien que `InitializeWithWorld` modélise. **Décision à part** : où, dans la
+  séquence de démarrage de la DLL, appeler `Reset()` une fois. Sans lui, la graine part de sa valeur
+  d'origine au chargement de l'assembly, ce qui est le comportement voulu pour une session unique.
+- **[C3-b, P4] pas d'avertissement symétrique** quand le service cellulaire est absent alors que le
+  jeu est vivant, là où le chemin des tuiles en émet un. L'ajouter casserait l'`Assert.Single` du test
+  existant. Reporté ; en production le composant existe toujours sur `CasaEngineGame`.
 
 ### ⏳ C4 — Recette en jeu (D1)
 
