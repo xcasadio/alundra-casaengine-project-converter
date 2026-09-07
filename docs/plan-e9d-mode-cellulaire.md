@@ -457,10 +457,41 @@ lecture en silence. **Ne pas propager le 88/80.**
 - **[A4]** `Reset()` n'est jamais appelé : la graine ne repart pas au début d'une partie. C'est
   [C3-a], une décision à part.
 
-### ⏳ C4 — Recette en jeu (D1)
+### ✅ C4 — Recette en jeu (D1)
 
 - Cartes **420**, **391**, **271**, **443**. Numérique d'abord, puis visuel avec la discipline de
   capture d'E9.b : rafale, médiane par pixel, garde de fenêtre au premier plan.
+
+**Validée en jeu par l'utilisateur le 2026-09-07** : « j'ai testé les cartes tout est OK ». Les quatre
+cartes de recette couvrent les trois types de cellules réellement présents dans le corpus et le piège
+du OU de signes. Aucune capture automatisée n'a été nécessaire : la validation humaine a suffi.
+
+---
+
+## 7. Clôture — E9.d est close
+
+**Le mode cellulaire est porté.** Les **90 cartes** qui n'affichaient aucun fond en ont un.
+
+| Tranche | Livrée | Preuve |
+|---|---|---|
+| C0 | compte corrigé, 84 → 90 | deux sources concordantes |
+| C1 | cuisson des planches | export complet, diff prédit, second export ⊆ `{report.json}` |
+| C2 | service et composant moteur | 1583 tests verts, verifier **CONFIRMED** |
+| C3 | liaison DLL | 775 tests verts, verifier **CONFIRMED** |
+| C4 | recette en jeu | validée par l'utilisateur sur 420, 391, 271, 443 |
+
+**Ce que le chantier a appris.** Quatre fois sur cinq, le cadrage initial était faux et c'est la
+relecture adverse qui l'a montré : le nombre de cartes, la variante majoritaire de `Normal`, la carte
+de recette qui n'exerçait pas ce qu'elle devait, et un mécanisme entier — la fenêtre source animée —
+absent de la première rédaction alors que le plan affirmait « tout ce qui suit porte sa preuve ». Ce
+dernier ne corrigeait pas seulement le texte : il **tranchait** la forme de la cuisson.
+
+Deux défauts ont été trouvés en relisant du code rendu, pas en le testant : une garde transcrite à
+l'envers par lecture fausse d'un `break` dans un `switch`, et une exception levée sur le chemin de
+rendu par frame. Aucun test ne les aurait attrapés — le premier passait, le second était épinglé.
+
+**Suites ouvertes** : [C3-a] où appeler `Reset()` au démarrage ; [A1] la configuration du service
+cellulaire ; [A2], [A3], [C3-b] mineurs. Aucune ne bloque.
 
 ## 4. Acceptation
 

@@ -603,7 +603,7 @@ datée « plus tard » par son propre plan, plus un trou convertisseur : la tabl
 - **Dépendances** : E2, E6. **À valider** : nommage des nœuds, codes de contrôle (`\N`, `\C#`…) →
   balises Yarn, chasse fixe de la police.
 
-### E9.d — Mode cellulaire des fonds ⏳ (convertisseur + moteur + DLL) — **prochaine étape**
+### E9.d — Mode cellulaire des fonds ✅ CLOSE — **validée en jeu le 2026-09-07**
 
 - **But** : porter le second mode de rendu des fonds, le mode **cellulaire** (`Mode == 2`), que E9 n'a
   pas touché. Aujourd'hui `docs/formats/backdrops.md:117` l'annonce : « paramètres bruts exportés,
@@ -673,7 +673,7 @@ datée « plus tard » par son propre plan, plus un trou convertisseur : la tabl
 | E10 fondu/transitions moteur | ✅ close (validée en jeu le 2026-09-01) | moteur `1f837ed6`, parent `96f440e` + `692ec4c` + `767e9e6` |
 | E11 audio | ✅ close (validée en jeu le 2026-08-30) — **E11.b reportée** sur décision utilisateur | `3b1eb24` ; `0b1d2d9` + analyseur `f216b32` |
 | E12 dialogues Yarn + MGUI | ✅ close (validée en jeu le 2026-09-02) — **E12.c** (fidélité fine) datée « plus tard » | E12.d `774255f` ; voir `plan-e12-dialogues.md` |
-| **E9.d mode cellulaire des fonds** | ⏳ **en cours** (90 cartes sans fond ; plan `plan-e9d-mode-cellulaire.md`, D1-D7 tranchées) | |
+| **E9.d mode cellulaire des fonds** | ✅ close (validée en jeu le 2026-09-07 sur 420, 391, 271, 443) | convertisseur `e1b9844`, moteur `53fed7df`+`342377a5`, DLL `ae30b42` |
 | E13 HUD | ⏳ | |
 | E14 IA native | ⏳ | |
 | E15 conversion hybride | ⏳ | |
