@@ -620,6 +620,32 @@ datée « plus tard » par son propre plan, plus un trou convertisseur : la tabl
 - **Dépendances** : aucune. Le mécanisme moteur de couches défilantes livré en E9.b est le point de
   départ.
 
+## File des chantiers après E9.d (arbitrée avec l'auteur le 2026-09-07)
+
+L'ordre ci-dessous prime sur la numérotation E13 → E15 tant qu'il n'est pas épuisé.
+
+1. **T7 et E11.b** — en cours. Les deux tranches sont rédigées et relues depuis le 2026-09-02 ;
+   elles n'attendaient qu'une approbation. Couplées : le son de départ de warp d'E11.b vit sur
+   l'opcode `0x53` que T7 porte, donc T7 passe en premier.
+
+2. **Dette moteur : `TileMapDepthSettings` — LE PROCHAIN CHANTIER.**
+   `CasaEngine/Framework/Assets/TileMap/TileMapDepthSettings.cs` analyse `Elevation`, `RenderPass`,
+   `SortingLayer` et `SortAnchor`, les valide, les couvre de tests unitaires — et **le rendu n'en lit
+   aucun** : seul `ShouldRenderTiles` est consommé, à trois sites de `TileMapComponent`. Ce sont les
+   **étapes 4 et 5** de la migration que le moteur s'est lui-même écrite dans
+   `CasaEngineMonogame/docs/engine/tilemaps-gestion-profondeur.md` (les étapes 1 à 3 sont faites).
+   **Ce chantier n'appartient pas au portage** : c'est une dette du moteur, utile à tous ses projets,
+   et son plan va donc dans `CasaEngineMonogame/ai-agent/tasks/` selon les conventions du sous-module,
+   pas ici. Découvert en creusant E8 (voir la clôture d'E8 pour la démonstration).
+
+3. **Les validations en jeu jamais enregistrées.** **E1 à E4** portent « visuel runtime à valider par
+   l'utilisateur » depuis leur clôture, et le chantier `docs/plan-camera-ordre-frame.md` finit sur
+   « reste la validation en jeu ». Le code est livré, testé, et pour E1-E4 confirmé par verifier :
+   **c'est la confirmation visuelle qui manque au dossier**, pas le travail. À solder en une passe.
+
+Ensuite seulement : E13, E14, E15 — sachant qu'E14 porte aussi le blocage physique entité↔entité,
+rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
+
 ### E13 — HUD MGUI ⏳
 
 - **But** : cœurs/magie/argent (`HudManager`, `BALANCE.BIN` exporté en Phase 7).
