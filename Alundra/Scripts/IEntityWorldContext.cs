@@ -120,6 +120,20 @@ public interface IEntityWorldContext
     IAlundraMusicPlayer? MusicPlayer => null;
 
     /// <summary>
+    /// This session's master BGM fade-machine seam (B2, docs/plan-e11b-opcodes-audio.md, D-B-5) - backs
+    /// opcodes 0xA5/0xA6 in <see cref="AlundraEventProgramRunner.Dispatch"/> (0xA7's own conditional
+    /// stop-all also goes through this, orchestrated at the dispatch site - see
+    /// <see cref="AlundraBgmFadeDirector"/>'s own class doc). A default interface member, same
+    /// "degraded, skip" shape as <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/> above, defaulting
+    /// to null so every EXISTING implementer keeps compiling unmodified.
+    /// <see cref="AlundraWorldProxy"/> installs the session-scoped
+    /// <see cref="AlundraBgmFadeDirector.Instance"/> (see that class's own doc for why it is a singleton
+    /// rather than a per-world instance - the same D-C-6/D-E10-6 lesson as
+    /// <see cref="AlundraMusicPlayer"/>/<see cref="AlundraScreenFadeDirector"/>).
+    /// </summary>
+    IAlundraBgmFadeDirector? BgmFadeDirector => null;
+
+    /// <summary>
     /// This session's screen fade/tint seam (E10.b, docs/plan-e10-fondu.md) - backs opcodes
     /// 0xAF/0xB0/0xB1 in <see cref="AlundraEventProgramRunner.Dispatch"/>. A default interface member,
     /// same "degraded, skip" shape as <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/> above,

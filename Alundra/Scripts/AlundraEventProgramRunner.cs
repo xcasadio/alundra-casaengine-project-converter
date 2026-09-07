@@ -798,6 +798,61 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
                 return 4;
 
+            case 0xA5: // Stop all sound - Script_165_0A5 (EntityEventHandlers.cs:3127-3131, B2,
+                       // docs/plan-e11b-opcodes-audio.md, fact 1): conditionally stops every live SFX
+                       // voice and disarms the master fade machine, then unconditionally restores the
+                       // master volume and restarts whatever BGM is currently resolved - see
+                       // AlundraBgmFadeDirector.StopAllSound's own doc for the exact ordering.
+                if (_worldContext.BgmFadeDirector is { } stopAllSoundDirector)
+                {
+                    stopAllSoundDirector.StopAllSound();
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0xA5, "StopAllSound", "bgm fade director");
+                }
+
+                return 1;
+
+            case 0xA6: // Load bgm - Script_166_0A6 (EntityEventHandlers.cs:3134-3138, B2, fact 2):
+                       // v[1] == 0 restarts the current BGM immediately, with no fade; any non-zero value
+                       // arms the 120-tick master fade machine (the operand's value beyond zero/non-zero
+                       // is unused, per the original).
+                if (_worldContext.BgmFadeDirector is { } loadBgmDirector)
+                {
+                    loadBgmDirector.LoadBgm(v[1]);
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0xA6, "LoadBgm", "bgm fade director");
+                }
+
+                return 2;
+
+            case 0xA7: // Play music - Script_167_0A7 (EntityEventHandlers.cs:3141-3145, B2, fact 3):
+                       // v[1] = raw music index into the SAME index space as bgm-manifest.json (< 0
+                       // ignored, == 0 stops, > 0 loads and plays - see
+                       // AlundraMusicPlayer.PlayFromRawIndex's own doc; deliberately NOT
+                       // PlayMapMusic's per-map guard/remap), v[2] = stop-all flag: when non-zero, the
+                       // original's own LoadMapSequenceCore runs StopAllSound AFTER the load (fact 3's
+                       // own "puis StopAllSound (drapeau) ou PlaySeq") - orchestrated here, at the
+                       // dispatch site, not inside either seam (D-B-5's own remarks).
+                if (_worldContext.MusicPlayer is { } playMusicPlayer)
+                {
+                    playMusicPlayer.PlayFromRawIndex(v[1]);
+
+                    if (v[2] != 0 && _worldContext.BgmFadeDirector is { } stopAllAfterLoadDirector)
+                    {
+                        stopAllAfterLoadDirector.StopAllSound();
+                    }
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0xA7, "PlayMusic", "music player");
+                }
+
+                return 3;
+
             case 0xBF: // Play sound effect with tone/volume mix (bis) - EntityEventHandlers.cs:3613-3617
                        // (B1, docs/plan-e11b-opcodes-audio.md, D-B-8): SAME handler as 0xAB above, but on
                        // its own 5-byte instruction with v[2] ignored by the decompiled handler

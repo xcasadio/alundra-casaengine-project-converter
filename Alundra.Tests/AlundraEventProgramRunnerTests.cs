@@ -76,6 +76,70 @@ public class AlundraEventProgramRunnerTests
         // E10.b (docs/plan-e10-fondu.md): same override shape as SoundPlayer above - overrides
         // IEntityWorldContext.ScreenFadeDirector's default-interface-member "=> null" for THIS class.
         public IAlundraScreenFadeDirector? ScreenFadeDirector { get; set; }
+
+        // B2 (docs/plan-e11b-opcodes-audio.md): same override shape as SoundPlayer above - overrides
+        // IEntityWorldContext.MusicPlayer's default-interface-member "=> null" for THIS class.
+        public IAlundraMusicPlayer? MusicPlayer { get; set; }
+
+        // B2 (docs/plan-e11b-opcodes-audio.md): same override shape as SoundPlayer above - overrides
+        // IEntityWorldContext.BgmFadeDirector's default-interface-member "=> null" for THIS class.
+        public IAlundraBgmFadeDirector? BgmFadeDirector { get; set; }
+    }
+
+    /// <summary>B2 (docs/plan-e11b-opcodes-audio.md): records every <see cref="PlayFromRawIndex"/> call,
+    /// in order - the dispatch-level oracle for opcode 0xA7's own operand extraction, isolated from the
+    /// REAL <see cref="AlundraMusicPlayer"/> singleton (see <see cref="AlundraBgmFadeDirectorTests"/> for
+    /// tests against the real one).</summary>
+    private sealed class FakeMusicPlayer : IAlundraMusicPlayer
+    {
+        private readonly List<string>? _callOrder;
+        public FakeMusicPlayer(List<string>? callOrder = null) => _callOrder = callOrder;
+
+        public readonly List<int> PlayFromRawIndexCalls = new();
+        public int RestartIfActiveCallCount;
+
+        public void PlayMapMusic(int mapId)
+        {
+        }
+
+        public void StopMusic()
+        {
+        }
+
+        public void PlayFromRawIndex(int rawIndex)
+        {
+            _callOrder?.Add("PlayFromRawIndex");
+            PlayFromRawIndexCalls.Add(rawIndex);
+        }
+
+        public void RestartIfActive() => RestartIfActiveCallCount++;
+    }
+
+    /// <summary>B2 (docs/plan-e11b-opcodes-audio.md): records every <see cref="StopAllSound"/>/
+    /// <see cref="LoadBgm"/> call, in order - the dispatch-level oracle for opcodes 0xA5/0xA6/0xA7's own
+    /// orchestration, isolated from the REAL <see cref="AlundraBgmFadeDirector"/> singleton (see
+    /// <see cref="AlundraBgmFadeDirectorTests"/> for tests against the real one).</summary>
+    private sealed class FakeBgmFadeDirector : IAlundraBgmFadeDirector
+    {
+        private readonly List<string>? _callOrder;
+        public FakeBgmFadeDirector(List<string>? callOrder = null) => _callOrder = callOrder;
+
+        public int StopAllSoundCallCount;
+        public readonly List<int> LoadBgmCalls = new();
+
+        public void StopAllSound()
+        {
+            _callOrder?.Add("StopAllSound");
+            StopAllSoundCallCount++;
+        }
+
+        public void LoadBgm(int bgmIndex) => LoadBgmCalls.Add(bgmIndex);
+
+        public bool IsArmed { get; set; }
+
+        public void Advance(int ticks)
+        {
+        }
     }
 
     /// <summary>Records every <see cref="BeginFadeEffect"/>/<see cref="SetWarpFadeDuration"/> call, in
@@ -113,6 +177,12 @@ public class AlundraEventProgramRunnerTests
         {
             // No table to flush - this fake is a plain recorder (same shape as PlaySfx above).
         }
+
+        /// <summary>B2 (docs/plan-e11b-opcodes-audio.md): counts calls - the dispatch-level oracle for
+        /// "0xA5 stopped the SFX side" (no live voices to actually track in this plain recorder).</summary>
+        public int StopAllSfxCallCount;
+
+        public void StopAllSfx() => StopAllSfxCallCount++;
     }
 
     [Fact]
@@ -2605,6 +2675,139 @@ public class AlundraEventProgramRunnerTests
     }
 
     // -----------------------------------------------------------------------------------------
+    // BGM fade-machine opcodes (0xA5/0xA6/0xA7) - B2, docs/plan-e11b-opcodes-audio.md. Dispatch-level
+    // only (operand extraction/orchestration against FakeBgmFadeDirector/FakeMusicPlayer) - the real
+    // 120-tick ramp machine and AlundraMusicPlayer.RestartIfActive/PlayFromRawIndex semantics are covered
+    // by AlundraBgmFadeDirectorTests instead.
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void StopAllSound_0xA5_Implemented_CallsBgmFadeDirectorStopAllSound()
+    {
+        var fadeDirector = new FakeBgmFadeDirector();
+        var context = new FakeEntityWorldContext { BgmFadeDirector = fadeDirector };
+        var document = NewDocument(0xA5, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0xA5, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(1, state.CodeIndex);
+        Assert.Equal(1, fadeDirector.StopAllSoundCallCount);
+    }
+
+    [Fact]
+    public void StopAllSound_0xA5_NullBgmFadeDirector_DegradedNoOp_SkipsBySize()
+    {
+        var document = NewDocument(0xA5, 0xFF);
+        var runner = NewRunner(document); // no worldContext -> NoOpEntityWorldContext -> null director.
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0xA5, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Degraded, kind);
+        Assert.Equal(1, state.CodeIndex);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(45)]
+    public void LoadBgm_0xA6_Implemented_ForwardsOperandVerbatim(int operand)
+    {
+        // Fact 2: the operand's value beyond zero/non-zero is unused by the ORIGINAL, but this port
+        // still forwards it verbatim to AlundraBgmFadeDirector.LoadBgm, which is itself the seam that
+        // only distinguishes zero from non-zero (see that class's own doc/tests) - the dispatch site
+        // must not pre-collapse the value.
+        var fadeDirector = new FakeBgmFadeDirector();
+        var context = new FakeEntityWorldContext { BgmFadeDirector = fadeDirector };
+        var document = NewDocument(0xA6, operand, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0xA6, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(2, state.CodeIndex);
+        Assert.Equal(new[] { operand }, fadeDirector.LoadBgmCalls);
+    }
+
+    [Fact]
+    public void LoadBgm_0xA6_NullBgmFadeDirector_DegradedNoOp_SkipsBySize()
+    {
+        var document = NewDocument(0xA6, 5, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0xA6, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Degraded, kind);
+        Assert.Equal(2, state.CodeIndex);
+    }
+
+    [Fact]
+    public void PlayMusic_0xA7_StopAllFlagZero_LoadsOnly_NeverCallsStopAllSound()
+    {
+        var musicPlayer = new FakeMusicPlayer();
+        var fadeDirector = new FakeBgmFadeDirector();
+        var context = new FakeEntityWorldContext { MusicPlayer = musicPlayer, BgmFadeDirector = fadeDirector };
+        // [op, rawIndex, stopAllFlag] = [0xA7, 25, 0].
+        var document = NewDocument(0xA7, 25, 0, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0xA7, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(3, state.CodeIndex);
+        Assert.Equal(new[] { 25 }, musicPlayer.PlayFromRawIndexCalls);
+        Assert.Equal(0, fadeDirector.StopAllSoundCallCount); // flag clear - StopAllSound never runs.
+    }
+
+    [Fact]
+    public void PlayMusic_0xA7_StopAllFlagSet_LoadsThenCallsStopAllSound_AfterTheLoad()
+    {
+        var callOrder = new List<string>();
+        var musicPlayer = new FakeMusicPlayer(callOrder);
+        var fadeDirector = new FakeBgmFadeDirector(callOrder);
+        var context = new FakeEntityWorldContext { MusicPlayer = musicPlayer, BgmFadeDirector = fadeDirector };
+        // [op, rawIndex, stopAllFlag] = [0xA7, 25, 1].
+        var document = NewDocument(0xA7, 25, 1, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0xA7, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(3, state.CodeIndex);
+        Assert.Equal(new[] { 25 }, musicPlayer.PlayFromRawIndexCalls);
+        Assert.Equal(1, fadeDirector.StopAllSoundCallCount);
+        // Fact 3's own ordering ("SetSeqVolume ... puis StopAllSound") - the load must precede the stop.
+        Assert.Equal(new[] { "PlayFromRawIndex", "StopAllSound" }, callOrder);
+    }
+
+    [Fact]
+    public void PlayMusic_0xA7_NullMusicPlayer_DegradedNoOp_SkipsBySize()
+    {
+        var document = NewDocument(0xA7, 25, 1, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0xA7, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Degraded, kind);
+        Assert.Equal(3, state.CodeIndex);
+    }
+
+    // -----------------------------------------------------------------------------------------
     // Screen fade opcodes (0xAF/0xB0/0xB1) - E10.b, docs/plan-e10-fondu.md.
     // -----------------------------------------------------------------------------------------
 
@@ -2714,6 +2917,7 @@ public class AlundraEventProgramRunnerTests
         public void PlaySfx(int sfxId) => Requests.Add(sfxId);
         public void RemixVoice(int sfxId, int left, int right) { }
         public void FlushFrameSounds() { }
+        public void StopAllSfx() { }
     }
 
     private static AlundraEntityScriptProxy NewPlayerForWarp(uint targetAnimationId, uint targetDirection)

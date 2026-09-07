@@ -37,6 +37,16 @@ public interface IAlundraSoundPlayer
     /// recorder fake with no table of its own (e.g. the intro trace harness) may leave this a no-op.
     /// </summary>
     void FlushFrameSounds();
+
+    /// <summary>
+    /// B2 (docs/plan-e11b-opcodes-audio.md, D-B-6): the SFX half of opcode 0xA5
+    /// (<see cref="AlundraBgmFadeDirector.StopAllSound"/>) and of the master fade machine's own
+    /// swap-tick key-off (fact 2's own "key-off all 24 voices") - stops every voice this player still
+    /// tracks as live, across every sfx id, and forgets them, so a fresh <see cref="PlaySfx"/> for the
+    /// SAME id is free to start again immediately. Never touches the per-frame anti-duplicate table
+    /// (<see cref="FlushFrameSounds"/>'s own concern, fact 5 - a distinct mechanism from this one).
+    /// </summary>
+    void StopAllSfx();
 }
 
 /// <summary>
@@ -107,6 +117,15 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
 
     public void PlaySfx(int sfxId)
     {
+        // B2 (docs/plan-e11b-opcodes-audio.md, D-B-5, fact 8): the master fade machine's own state gate -
+        // the ORIGINAL's very first guard in PlaySoundEffectCore (SoundManager.cs:3872-3877), checked
+        // BEFORE the anti-duplicate table below. Armed by 0xA6 (AlundraBgmFadeDirector.LoadBgm), cleared
+        // by 0xA5 (AlundraBgmFadeDirector.StopAllSound) - see that class's own doc.
+        if (AlundraBgmFadeDirector.Instance.IsArmed)
+        {
+            return;
+        }
+
         if (!TryRegisterForThisFrame(sfxId))
         {
             return;
@@ -189,6 +208,20 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
     public void FlushFrameSounds()
     {
         _frameSoundCount = 0;
+    }
+
+    /// <inheritdoc cref="IAlundraSoundPlayer.StopAllSfx"/>
+    public void StopAllSfx()
+    {
+        foreach (var voices in _liveVoicesBySfxId.Values)
+        {
+            foreach (var voice in voices)
+            {
+                _audioService.Stop(voice);
+            }
+
+            voices.Clear();
+        }
     }
 
     /// <summary>Port of <c>IsSoundEffectAlreadyPlaying</c> (fact 5): an id already registered this frame

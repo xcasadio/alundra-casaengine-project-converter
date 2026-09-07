@@ -209,11 +209,50 @@ ne mixe pas une voix, il pilote le **matériel PSX tonalité par tonalité** —
 sur le mix gauche/droite et sur le volume de tonalité, multiplication par le volume de programme,
 poids de panoramique par tonalité (`tonePan < 0x41 ? 0x3f : 0x7f - tonePan`), puis deux mises à
 l'échelle en virgule fixe MIPS à constantes magiques (`0x80020009 >> 13`, `0x8418828d >> 11`), et
-enfin deux volumes matériels gauche/droite distincts. **Le port n'a qu'une voix par sfx** : la chaîne
-n'est pas transcriptible, elle est approximée. C'est ce que D-B-6 avait acté. **Noter la réponse
+enfin deux volumes matériels gauche/droite distincts.
+
+**CORRECTION de première rédaction** : j'avais écrit « le port n'a qu'une voix par sfx ». **C'est
+faux.** `AlundraSoundPlayer.PlaySfx` (`:133-148`) boucle sur `resolution.Tones` et démarre **une voix
+par tonalité** ; le convertisseur exporte d'ailleurs chaque tonalité dans son propre fichier
+(`sfx_0057_0.wav`, `sfx_0057_1.wav`…). La **structure par tonalité de l'original est donc reproduite**.
+Mesuré sur le manifeste : 767 effets sur 961 n'ont qu'une seule tonalité, 120 en ont deux, 4 en ont
+trois.
+
+**Ce qui reste approximé est plus étroit que ça** : la projection, pour CHAQUE voix, du couple
+matériel (volume gauche, volume droite) sur le couple moteur (volume, pan) — et avec elle la réponse
+quadratique, le poids de panoramique par tonalité et les mises à l'échelle en virgule fixe. Chaque
+échantillon exporté est **mono 16 bits**, à sa fréquence naturelle (la hauteur PSX est cuite dans la
+fréquence), donc un pan est bien la seule façon de le placer dans l'image stéréo. **Noter la réponse
 quadratique** : appliquer la seule mise au carré sans le reste de la chaîne pourrait éloigner autant
-que rapprocher, donc rien n'est changé au jugé — l'oracle reste l'oreille sur le bateau (D-B-1), et
-la chaîne d'origine est désormais écrite ici pour qui devra y revenir.
+que rapprocher, donc rien n'est changé au jugé — l'oracle reste l'oreille sur le bateau (D-B-1), et la
+chaîne d'origine est écrite ici pour qui devra y revenir.
+
+**La machine de fondu, transcrite en session principale le 2026-09-07** (`FUN_8004b674`,
+`SoundManager.cs:3763-3801`) — le résumé du fait 2 était juste sur les jalons mais imprécis sur ce qui
+se passe en bas de rampe :
+
+```
+si etat == 0            -> rien, la machine est au repos
+n = etat - 1
+si n == 3      -> etat = 3    ; maitre(0x7f, 0x7f)                       // restauration
+si n == 0x3c   -> etat = 0x3c ; maitre(0, 0) ; InitializeBgm(seq EN COURS) ; key-off des 24 voix
+si n <  0x3d   -> etat = n                                                // descente silencieuse
+sinon          -> v = (etat - 0x3d) * 0x7f / 0x3c ; etat = n ; maitre(v, v)   // rampe
+```
+
+**Correction, en deux temps.** (1) Le fait 2 dit « à 0x3d stoppe le BGM » : le code n'arrête pas, il
+appelle `InitializeBgm(g_requestedSeqId)`. (2) Et `g_requestedSeqId` n'est PAS « la piste demandée »
+— c'est **la séquence actuellement chargée**, écrite au chargement de séquence
+(`SoundManager.cs:558`) et par le streaming (`:5573`). Donc en bas de rampe l'original **relance la
+piste en cours**.
+
+**`0xA6` n'est donc pas un changement de piste** : c'est un **fondu de sortie sur 59 tics, une relance
+de la même musique, puis le retour du volume**. Un reset musical, pas une transition. Il ne charge
+rien au moment où on l'appelle : il pose `etat = 0x78`, et tout se passe plus tard. La rampe se calcule sur l'état **avant** décrément, et ne
+tourne que tant que `etat >= 0x3e` : à `0x78` elle vaut 124, à `0x3e` elle vaut 2.
+
+Et le point observable : **`etat != 0` bloque tout départ de SFX** pendant les 120 tics ; `0xA5`, qui
+remet l'état à 0, les rouvre. C'est la moitié visible de `0xA6`.
 
 - **B2 — le trio BGM 0xA5/0xA6/0xA7 (DLL seule)** : la machine de fondu 120 pas en session (avance
   par tick depuis la passe de frame du proxy, patron E10/E12), `LoadBgm(0/non-0)`, `StopAllSound`
@@ -224,6 +263,21 @@ la chaîne d'origine est désormais écrite ici pour qui devra y revenir.
   production-site par simulation (programme synthétique dispatchant les trois par le vrai runner).
   **Mutations** : machine avançant par frame au lieu de par tick → jalons faux ; 0xA5
   inconditionnel → le test « fondu non armé = SFX intacts » tombe.
+**B2 LIVRÉE le 2026-09-07.** `Alundra.Tests` **808 / 808** (791 + 17), moteur et convertisseur
+intacts. Machine de fondu dans son propre directeur de session, avancée **par tic** depuis la passe de
+frame du proxy, à côté du directeur de fondu d'écran. Mutations vérifiées en vrai par l'exécuteur :
+avance par frame au lieu de par tic → les jalons tombent ; garde d'état retirée de `0xA5` → « fondu
+non armé, SFX intacts » tombe ; garde `IsArmed` neutralisée dans `PlaySfx` → le blocage tombe.
+
+**Deux simplifications déclarées, à connaître :**
+
+- **`IsBgmActivated`** — la bascule « musique activée/désactivée » de l'original — **n'est modélisée
+  nulle part dans la DLL** ; le port la traite comme toujours vraie. La branche
+  `LoadBgmCore:653-659` qu'elle commande est donc inatteignable.
+- **La garde externe `g_currentMapSoundIndex >= 0`** de `StopAllSound` n'est pas portée : l'index
+  correspondant du portage est un entier qui ne devient jamais négatif par construction, donc la
+  garde est toujours satisfaite.
+
 - **B3 — table carte→groupe (analyseur + convertisseur + DLL, ré-export complet)** : D-B-7. Tests :
   lecteur CSV/écrivain JSON (141+n convertisseur) ; DLL : groupe chargé à l'install, `PlaySfx`
   redirigé par la chaîne pour un VabId étranger (fixture existante), **plafond porté à la

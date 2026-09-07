@@ -1117,6 +1117,12 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     {
     }
 
+    /// <summary>B2 (docs/plan-e11b-opcodes-audio.md): deliberately a no-op, same rationale as
+    /// <see cref="FlushFrameSounds"/> above - a plain recorder with no live voices to stop.</summary>
+    public void StopAllSfx()
+    {
+    }
+
     /// <summary>
     /// Dynamic spawn-by-record-id (opcodes 0x2D ActivateEntity, 0x8B SpawnEntityNextToEntity) - mirrors
     /// GameEngine.SpawnEntity (GameEngine.cs:684-760) called with notCheckSpawnZone=1, i.e. only

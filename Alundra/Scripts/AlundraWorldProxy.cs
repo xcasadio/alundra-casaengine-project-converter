@@ -378,6 +378,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     public IAlundraMusicPlayer? MusicPlayer { get; private set; }
 
     /// <summary>
+    /// This session's master BGM fade-machine seam (B2, docs/plan-e11b-opcodes-audio.md, D-B-5) - the
+    /// SESSION-scoped <see cref="AlundraBgmFadeDirector.Instance"/> (see that class's own doc), NOT a
+    /// per-world instance. Always non-null (unlike <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/>):
+    /// attaching to a null <see cref="CasaEngine.Framework.Audio.AudioService"/>/<see cref="SoundPlayer"/>
+    /// is itself a tolerated, degraded state - <see cref="InstallAudioSystems"/> attaches it
+    /// unconditionally, same shape as <see cref="ScreenFadeDirector"/>.
+    /// </summary>
+    public IAlundraBgmFadeDirector BgmFadeDirector => AlundraBgmFadeDirector.Instance;
+
+    /// <summary>
     /// This session's screen fade/tint seam (E10.b, docs/plan-e10-fondu.md, D-E10-6) - the SESSION-scoped
     /// <see cref="AlundraScreenFadeDirector.Instance"/> (see that class's own doc), NOT a per-world
     /// instance. Always non-null (unlike <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/>): attaching
@@ -833,6 +843,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             AlundraMusicPlayer.Instance.AttachToWorld(audioService, EngineEnvironment.ProjectPath);
             MusicPlayer = AlundraMusicPlayer.Instance;
         }
+
+        // B2 (docs/plan-e11b-opcodes-audio.md, D-B-5): re-points the session-scoped master fade machine
+        // at this world's own AudioService/SoundPlayer - called UNCONDITIONALLY (even with audioService
+        // null), same "AttachToWorld tolerates null, never touches its own state" contract as
+        // AlundraMusicPlayer.AttachToWorld/AlundraScreenFadeDirector.AttachToWorld above.
+        AlundraBgmFadeDirector.Instance.AttachToWorld(audioService, SoundPlayer);
 
         // The map-entry music start lives HERE rather than at a second call site in
         // InitializeWithWorld, and that placement is the point: an outcome-verifier of slice C1 showed
@@ -1547,6 +1563,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // value one frame early).
         AlundraScreenFadeDirector.Instance.Advance(ticksThisFrame);
         AlundraScreenFadeDirector.Instance.PushToAttachedService();
+
+        // B2 (docs/plan-e11b-opcodes-audio.md, D-B-5): the master BGM fade machine - same tick-driven
+        // discipline as the screen fade above (LOGIC ticks, never rendered frames), no separate "push"
+        // step (it writes the engine's own Master bus volume directly, once per tick it actually steps).
+        AlundraBgmFadeDirector.Instance.Advance(ticksThisFrame);
 
         // T4 (docs/plan-transitions-carte.md §3): the departure sequence itself is a "dehors" pass too
         // (this class' own gel gate must keep running WHILE it holds other passes frozen) - placed right

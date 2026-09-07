@@ -33,6 +33,31 @@ public interface IAlundraMusicPlayer
     /// <see cref="PlayMapMusic"/>'s own <c>45</c>/guard-miss paths) - exposed for symmetry with
     /// <see cref="IAlundraSoundPlayer"/> and so a test can force silence between assertions.</summary>
     void StopMusic();
+
+    /// <summary>
+    /// B2 (docs/plan-e11b-opcodes-audio.md, D-B-6, fact 3): backs opcode 0xA7's own raw-index semantics -
+    /// DELIBERATELY NOT <see cref="PlayMapMusic"/>'s own table-driven guard/remap
+    /// (<see cref="AlundraMusicIndexTable.ResolvePlaybackDirective"/> is never called here, per the
+    /// plan's explicit "do not reuse" - the per-map table's own -1/45 remap has no equivalent in this
+    /// raw opcode). <paramref name="rawIndex"/> &lt; 0 is ignored outright; == 0 stops whatever is
+    /// playing; &gt; 0 ALWAYS (re)loads and starts a fresh voice for that raw index - unlike
+    /// <see cref="PlayMapMusic"/> there is no "same index already playing" guard here (the original's
+    /// own <c>LoadMapSequenceCore</c> always reloads the VAB and restarts the sequence unconditionally
+    /// for any positive index). Reads the SAME raw index space as <see cref="PlayMapMusic"/>'s own table
+    /// (fact 3) and shares its "current index" field (<see cref="_lastResolvedIndex"/>) - exactly like
+    /// the original's own <c>g_currentMapSoundIndex</c>, a single global both call sites write.
+    /// </summary>
+    void PlayFromRawIndex(int rawIndex);
+
+    /// <summary>
+    /// B2 (docs/plan-e11b-opcodes-audio.md, D-B-6, fact 2): port of the original's own
+    /// <c>InitializeBgm(g_requestedSeqId)</c> call - both <c>LoadBgm(0)</c> and the master fade
+    /// machine's own swap step (<see cref="AlundraBgmFadeDirector"/>) call this to restart WHATEVER is
+    /// currently resolved, in place, from the top; it never picks a new track (only
+    /// <see cref="PlayFromRawIndex"/>/<see cref="PlayMapMusic"/> ever change what "current" means). A
+    /// no-op when nothing is currently resolved.
+    /// </summary>
+    void RestartIfActive();
 }
 
 /// <summary>
@@ -121,10 +146,15 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
             return; // no table (never attached) or no entry: degraded, same as a real "0" (fact 1.1)
         }
 
-        PlayFromRawIndex(rawIndex);
+        PlayFromTableIndex(rawIndex);
     }
 
-    private void PlayFromRawIndex(int rawIndex)
+    /// <summary>The per-map table's OWN raw-index handling (fact 1.1) - guarded on "same index already
+    /// playing" and remapped through <see cref="AlundraMusicIndexTable.ResolvePlaybackDirective"/>. NOT
+    /// the same method as the public <see cref="PlayFromRawIndex"/> (B2, opcode 0xA7's own semantics,
+    /// which never guards on "already playing" and never remaps) - see that member's own doc on why the
+    /// two must not be merged.</summary>
+    private void PlayFromTableIndex(int rawIndex)
     {
         if (rawIndex == 0)
         {
@@ -152,6 +182,35 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
     {
         StopCurrentVoice();
         _lastResolvedIndex = 0;
+    }
+
+    /// <inheritdoc cref="IAlundraMusicPlayer.PlayFromRawIndex"/>
+    public void PlayFromRawIndex(int rawIndex)
+    {
+        if (rawIndex < 0)
+        {
+            return; // fact 3: ignored outright
+        }
+
+        StopCurrentVoice();
+        _lastResolvedIndex = rawIndex; // 0 too - fact 3's own "stops the sequence" (g_currentMapSoundIndex = 0)
+
+        if (rawIndex > 0)
+        {
+            StartVoice(rawIndex);
+        }
+    }
+
+    /// <inheritdoc cref="IAlundraMusicPlayer.RestartIfActive"/>
+    public void RestartIfActive()
+    {
+        if (_lastResolvedIndex == 0)
+        {
+            return; // nothing currently resolved - mirrors the original's own no-op on an unloaded seqId
+        }
+
+        StopCurrentVoice();
+        StartVoice(_lastResolvedIndex);
     }
 
     private void StartVoice(int soundIndex)
