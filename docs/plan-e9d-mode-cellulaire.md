@@ -136,6 +136,60 @@ en `:1099`, `:1185` et `:1219`.
 pas à un décalage V qui enroule — il faudrait re-packer à chaque phase. La planche entière l'encaisse
 sans rien remapper. La phase appartient à la tranche **C2**, qui la calcule par couche et par frame.
 
+### 1.5 ter Les formules, transcrites
+
+Lues en session principale dans `GraphicManager.cs:988-1225`. Écran : **320 × 240** (`:816-817`).
+Plafond : 200 cellules.
+
+**Cadence, une fois par couche et par frame rendue, avant la boucle des cellules :**
+
+```
+if (++AnimFrameTimer > AnimTimer) { if (++AnimFrameCounter >= AnimNum) AnimFrameCounter = 0; AnimFrameTimer = 0; }
+phase    = (AnimFrameCounter << 8) / AnimNum
+WaveTick = (byte)(WaveTick + 1)                    // enroule mod 256
+```
+
+Toute cellule échantillonne en `u = U0`, `v = (V0 + phase) & 0xFF`, de taille
+`(U1-U0+1) × (V1-V0+1)`.
+
+**`Normal` (0)** — état persistant `posX/posY/tickX/tickY` :
+
+```
+posX += DX ; posY += DY
+si PeriodX != 0 : stepX = (DX < 0 || PeriodX < 0) ? -1 : +1 ; si ++tickX >= |PeriodX| { posX += stepX ; tickX = 0 }
+   (idem en Y)
+baseX = CamXDen != 0 ? cameraX * CamXNum / CamXDen : 0        (idem baseY)
+sx = posX - baseX ; sy = posY - baseY
+minX = U0 - U1 ; si sx < minX { posX += 320 - minX } sinon si sx > 319 { posX += -320 + minX }
+minY = V0 - V1 ; si sy < minY { posY += 240 - minY } sinon si sy > 239 { posY += -240 + minY }
+```
+
+**`ScriptTrack` (1)** — `case` vide : ne dessine rien, n'avance aucun état. **Zéro occurrence.**
+
+**`FallRespawn` (2)** — même dérive, même enroulement en X, **aucun enroulement en Y**. À la place :
+
+```
+si sy > 239 { posX = (Random.Next() * 320) >> 32 ; posY += -240 + (V0 - V1) }
+```
+
+**`WaveX` (4)** — **sans état**, ignore la parallaxe caméra, ne bouge jamais en Y :
+
+```
+idxA1 = (Y0 * AWaveY) & 0xFF
+idxA2 = (WaveTick * AWavePhase) & 0xFF
+aW    = WaveLut[idxA1] * WaveLut[idxA2] * AWaveAmp ;  si aW < 0 : aW += 0x7F
+idxB  = (Y0 * BWaveY + WaveTick * BWavePhase) & 0xFF
+bW    = WaveLut[idxB] * BWaveWeight
+tSum  = (aW >> 7) + bW ;                              si tSum < 0 : tSum += 0x7F
+x     = X0 + (tSum >> 7) - 8   ;   y = Y0
+```
+
+**Les deux `+= 0x7F` ne sont pas du bruit** : c'est le correctif d'arrondi de la division signée du
+PSX — un décalage arithmétique d'un négatif arrondit vers moins l'infini, le correctif le ramène à
+une troncature vers zéro. Les simplifier changerait le résultat.
+
+**Amorçage** : au chargement, `posX/posY` de chaque cellule valent son `X0/Y0`.
+
 ### 1.6 Un effet, pas quatre-vingt-dix
 
 Comparaison **octet par octet** des blocs `(Cellular + Cells[])` : **7 blocs distincts** dans tout le
@@ -287,7 +341,7 @@ n'a pas rebougé, ce qui confirme l'explication ci-dessus.
 `[JsonIgnore(WhenWritingNull)]`, comme `FrameTextureAssetIds`. C'est ce qui garantit que les 393
 compagnons non cellulaires restent identiques à l'octet près — le diff mesuré le confirme.
 
-### ⏳ C2 — Moteur : le couple service et composant (D3, D5, D6)
+### ✅ C2 — Moteur : le couple service et composant (D3, D5, D6)
 
 - Objectif : `CellularLayerService` (sans MonoGame) et `CellularLayerComponent`.
 - Étapes : les formules pures d'abord — le pas de période en **OU** de signes (§1.4), la phase de
@@ -295,6 +349,45 @@ compagnons non cellulaires restent identiques à l'octet près — le diff mesur
   la soumission par la plomberie existante, en réemployant la politique de passe de D6.
 - Validation : `dotnet test CasaEngine.Tests` à zéro échec ; tests dédiés sur chaque formule.
 - Commit : `feat(rendering): cellular scrolling layers`
+
+---
+
+**Fait le 2026-09-07.** Sous-module `53fed7df` (mécanisme) + le correctif de documentation qui suit.
+`CasaEngine.Tests` **1583 / 1583**, `Alundra.Tests` **754 / 754**, tous deux à zéro échec.
+
+**Deux défauts trouvés en relisant le rendu de l'exécuteur, avant le commit :**
+
+1. **Écart de fidélité.** La garde « `WaveLut` vide » était un `return` abandonnant toute la couche,
+   avec un commentaire affirmant que c'était la transcription littérale. Lecture fausse : dans
+   l'original ce `break` est **dans un `switch`**, il sort du `switch` et **la boucle continue**
+   (`GraphicManager.cs:1190-1193`). Une couche mêlant `WaveX` et d'autres types continue donc de
+   traiter ces derniers. Code, commentaire et test corrigés.
+2. **Violation de la règle 9.10.** `RandomSource` levait une exception par défaut, sur le chemin de
+   rendu appelé à chaque frame, où le moteur interdit de lever comme de logguer par frame. Il
+   avertit désormais **une seule fois** et dégrade à l'abscisse 0.
+
+**Vérification indépendante : CONFIRMED** sur les quatre conditions, avec une comparaison formule par
+formule contre la décompilation — cadence, dérive, pas de période en OU de signes, parallaxe,
+enroulements et leurs expressions exactes, absence d'enroulement en Y pour `FallRespawn`, abscisse de
+réapparition, apatridie de `WaveX`, **les deux correctifs `0x7F` aux deux bons endroits**, fenêtre
+source pour tous les types. **Zéro divergence.** Le vérificateur a aussi confirmé que mes deux
+correctifs sont justes, pas seulement présents, et qu'aucun test n'épingle un comportement inventé.
+
+**Suites d'avis, dispositionnées :**
+
+- **[A3, P3 — CORRIGÉ]** la documentation décrivait encore le comportement d'avant correctif et citait
+  un nom de test inexistant. C'était le seul endroit où le défaut survivait, et c'est de la
+  documentation d'API publique que C3 aurait lue. Corrigé en commit séparé.
+- **[A1, P4 — reporté]** la cadence avance pour une couche à zéro cellule, là où l'original sort
+  avant (`GraphicManager.cs:993-997`). Sans effet sur le rendu : une telle couche ne dessine rien, et
+  sa cadence n'est lue que par ses cellules inexistantes.
+- **[A2, P4 — reporté, mais avec une note pour C3]** le clamp d'`AnimNum` est transcrit par
+  équivalence et non littéralement ; démontré identique pour toute entrée. **En revanche l'original
+  lit `AnimNum` au niveau du *lining* (`:999`) tandis qu'il lit `AnimTimer` au niveau de la couche.**
+  `CellularLayerDefinition` porte les deux par couche : **c'est à C3 de faire la correspondance
+  correctement.** À ne pas perdre.
+- **[A4, P4 — reporté]** le drapeau d'avertissement unique est statique, donc au processus : un second
+  composant non câblé n'avertirait pas.
 
 ### ⏳ C3 — DLL : la liaison
 
