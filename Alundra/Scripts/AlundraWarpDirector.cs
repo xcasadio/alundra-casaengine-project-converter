@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using System;
 using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Application;
 
@@ -282,17 +283,113 @@ public sealed class AlundraWarpDirector
         var tileX = deltaX / TileWidth;
         deltaY /= TileHeight;
 
+        BeginDepartureCore(
+            desiredMapIndex,
+            (tileX * TileWidth + TileWidth / 2) << 16,
+            (deltaY * TileHeight + TileHeight / 2) << 16,
+            portal.ZLevel << 20,
+            animationId: 0x36, // PlayerManager.cs:3480/3484's own literal (LoadingMap).
+            directionId: arrivalDirectionId,
+            effectId,
+            player,
+            // D-T-8 (§1.2.d): departure sound channel, structural - see PlayDepartureSound's own doc.
+            soundAction: () => PlayDepartureSound(desiredMapIndex, portal.WarpBehaviorId));
+    }
+
+    /// <summary>
+    /// T7 (docs/plan-transitions-carte.md, section "T7 - Opcodes 0x53, 0x9B, 0x9C"): additive overload
+    /// for opcode 0x53 (<c>Script_ChangeMap_053</c>, <c>EntityEventHandlers.cs:1554-1585</c>), which
+    /// carries its own map/tile/effect/sfx operands directly, no <see cref="AlundraPortalRecord"/> - so it
+    /// cannot call <see cref="BeginDeparture"/> itself. Converges on the SAME <see cref="BeginDepartureCore"/>
+    /// as the portal path so both share every side effect (arrival record, fade, gravity suspension,
+    /// world-path resolution, gel arming) byte for byte - WITHOUT touching <see cref="BeginDeparture"/>'s
+    /// own behaviour. Only two things differ from the portal path, and both are the point of this opcode
+    /// (T7): the arrival animation/direction come from the PLAYER's OWN CURRENT
+    /// <see cref="AlundraEntityScriptProxy.TargetAnimationId"/>/<see cref="AlundraEntityScriptProxy.TargetDirection"/>
+    /// (not the portal path's constant 0x36 animation / caller-supplied direction), and the departure sfx
+    /// is <paramref name="sfxId"/>, the opcode's own raw <c>v[7]</c> operand, played DIRECTLY - not looked
+    /// up through <see cref="WarpBehaviorTable"/> (there is no <c>WarpBehaviorId</c> here, no portal).
+    /// [R8]: the <see cref="AlundraGameState.IsWarpDisabled"/> test is repeated here too, exactly like
+    /// <see cref="BeginDeparture"/> - opcode 0x53 never goes through <see cref="AlundraPortalTrigger"/>'s
+    /// predicate.
+    ///
+    /// <paramref name="desiredMapIndex"/> is used AS-IS, unlike the portal path: the original assigns
+    /// <c>g_desiredMap</c> straight from the decoded operand (<c>EntityEventHandlers.cs:1557</c>) with NO
+    /// <c>MapIdToInternalMapIndexTable</c> lookup, unlike <c>PlayerManager.cs:3497</c>'s own portal-path
+    /// translation - so the caller (the 0x53 dispatcher case) must not translate it either.
+    ///
+    /// The original's own effect-3 same-map teleport branch (<c>EntityEventHandlers.cs:1564-1576</c>) is
+    /// FROZEN, not ported (T7's own corpus measurement: zero of 329 measured 0x53 occurrences use
+    /// effect 3) - this method assumes the caller has already skipped calling it for that case, exactly
+    /// like the 0x53 dispatcher case's own comment says.
+    /// </summary>
+    public void BeginDepartureFromChangeMapOpcode(
+        uint desiredMapIndex,
+        int posX,
+        int posY,
+        int posZ,
+        int effectId,
+        int sfxId,
+        AlundraEntityScriptProxy player,
+        AlundraGameState state)
+    {
+        if (state.IsWarpDisabled)
+        {
+            return;
+        }
+
+        Logs.WriteInfo(
+            $"AlundraWarpDirector: departure through opcode 0x53 (ChangeMap) to map index {desiredMapIndex}, "
+            + $"TransitionEffectId={effectId}.");
+
+        BeginDepartureCore(
+            desiredMapIndex,
+            posX,
+            posY,
+            posZ,
+            animationId: player.TargetAnimationId,
+            directionId: player.TargetDirection,
+            effectId,
+            player,
+            soundAction: () =>
+            {
+                AlundraMusicPlayer.Instance.PlayMapMusic((int)desiredMapIndex);
+                _soundPlayer?.PlaySfx(sfxId);
+            });
+    }
+
+    /// <summary>
+    /// Shared core both <see cref="BeginDeparture"/> (T4, portal path) and
+    /// <see cref="BeginDepartureFromChangeMapOpcode"/> (T7, opcode 0x53) converge on - every side effect
+    /// that does NOT depend on which of the two callers is departing: the arrival record, the outgoing
+    /// fade (D-T-5), the hero's gravity suspension ([R6] reserve #1), and the world-path resolution plus
+    /// gel arming (D-T-6). <paramref name="soundAction"/> is the one piece each caller supplies its own
+    /// way (<see cref="PlayDepartureSound"/> for the portal path, a direct
+    /// <see cref="AlundraMusicPlayer"/>/<see cref="IAlundraSoundPlayer.PlaySfx"/> pair for 0x53) - called
+    /// at the exact same point in the sequence <see cref="BeginDeparture"/> always called it, right after
+    /// the arrival record is written and before the fade starts.
+    /// </summary>
+    private void BeginDepartureCore(
+        uint desiredMapIndex,
+        int posX,
+        int posY,
+        int posZ,
+        uint animationId,
+        uint directionId,
+        int effectId,
+        AlundraEntityScriptProxy player,
+        Action soundAction)
+    {
         _arrivalMapIndex = desiredMapIndex;
-        _arrivalPosX = (tileX * TileWidth + TileWidth / 2) << 16;
-        _arrivalPosY = (deltaY * TileHeight + TileHeight / 2) << 16;
-        _arrivalPosZ = portal.ZLevel << 20;
-        _arrivalAnimationId = 0x36; // PlayerManager.cs:3480/3484's own literal (LoadingMap).
-        _arrivalDirectionId = arrivalDirectionId;
+        _arrivalPosX = posX;
+        _arrivalPosY = posY;
+        _arrivalPosZ = posZ;
+        _arrivalAnimationId = animationId;
+        _arrivalDirectionId = directionId;
         _arrivalEffectId = effectId;
         HasPendingArrival = true;
 
-        // D-T-8 (§1.2.d): departure sound channel, structural - see PlayDepartureSound's own doc.
-        PlayDepartureSound(desiredMapIndex, portal.WarpBehaviorId);
+        soundAction();
 
         // D-T-5: outgoing fade, persistence latch held through the map switch itself - validated line by
         // line in §1.4.f, no AlundraScreenFadeDirector change needed.

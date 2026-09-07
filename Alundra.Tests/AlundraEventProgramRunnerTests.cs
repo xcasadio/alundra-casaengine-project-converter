@@ -2619,4 +2619,202 @@ public class AlundraEventProgramRunnerTests
         Assert.Equal(1, state.CodeIndex);
         Assert.Equal(0, state.Result);
     }
+
+    // -----------------------------------------------------------------------------------------------
+    // T7 (docs/plan-transitions-carte.md, section "T7 - Opcodes 0x53, 0x9B, 0x9C"): opcode 0x53 (Change
+    // map, reuses AlundraWarpDirector, T4) and 0x9B/0x9C (warp-disabled writers). AlundraWarpDirector.
+    // Instance is a session-scoped singleton (same shape as AlundraWarpDepartureTests' own montages) - every
+    // test here resets it before AND after, so no state leaks into another test in this assembly.
+    // -----------------------------------------------------------------------------------------------
+
+    private sealed class FakeWarpSoundPlayer : IAlundraSoundPlayer
+    {
+        public readonly List<int> Requests = new();
+        public void PlaySfx(int sfxId) => Requests.Add(sfxId);
+    }
+
+    private static AlundraEntityScriptProxy NewPlayerForWarp(uint targetAnimationId, uint targetDirection)
+        => new() { TargetAnimationId = targetAnimationId, TargetDirection = targetDirection };
+
+    [Fact]
+    public void ChangeMap_0x53_KeepsPlayerCurrentAnimationAndDirection_NotThePortalPathConstant()
+    {
+        AlundraWarpDirector.Instance.ResetForTests();
+        try
+        {
+            // v1/v2 = map id (17 | 1<<8 = 273); v3/v4/v5 = tile x/y/z (5,6,2); v6 = effect (4); v7 = sfx (69).
+            var document = NewDocument(0x53, 17, 1, 5, 6, 2, 4, 69, 0xFF);
+            var player = NewPlayerForWarp(targetAnimationId: 7, targetDirection: 0x18);
+            var context = new FakeEntityWorldContext { PlayerEntity = player };
+            var runner = NewRunner(document, worldContext: context);
+            var entity = NewEntity();
+            var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+            runner.RunOneScriptCall(entity, state);
+
+            var record = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+            Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
+
+            // The whole point of T7: the player's OWN current animation/direction, never the portal
+            // path's constant 0x36 animation - a version that wrote 0x36 here instead fails this assert.
+            Assert.Equal(7u, record.AnimationId);
+            Assert.NotEqual(0x36u, record.AnimationId);
+            Assert.Equal(0x18u, record.DirectionId);
+        }
+        finally
+        {
+            AlundraWarpDirector.Instance.ResetForTests();
+        }
+    }
+
+    [Fact]
+    public void ChangeMap_0x53_DecodesMapIdTileEffectAndSfx_ExactValues()
+    {
+        AlundraWarpDirector.Instance.ResetForTests();
+        try
+        {
+            var soundPlayer = new FakeWarpSoundPlayer();
+            AlundraWarpDirector.Instance.AttachToWorld(gameManager: null, soundPlayer, projectPath: string.Empty);
+
+            // map id = (v2<<8)|v1 = (1<<8)|17 = 273; tile (5,6,2); effect 4; sfx 69 - same operands as the
+            // previous test, this one is purely about the decoded values (§ T7 "Ce que 0x53 fait vraiment").
+            var document = NewDocument(0x53, 17, 1, 5, 6, 2, 4, 69, 0xFF);
+            var player = NewPlayerForWarp(targetAnimationId: 0, targetDirection: 0);
+            var context = new FakeEntityWorldContext { PlayerEntity = player };
+            var runner = NewRunner(document, worldContext: context);
+            var entity = NewEntity();
+            var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+            var kind = CaptureKindForOpcode(runner, 0x53, () => runner.RunOneScriptCall(entity, state));
+
+            Assert.Equal(EventTraceKind.Implemented, kind);
+            Assert.Equal(8, state.CodeIndex); // advanced by its own size (8).
+
+            var record = AlundraWarpDirector.Instance.ArrivalRecordForTests;
+            Assert.Equal(273u, record.MapIndex);
+            Assert.Equal((5 * 24 + 12) << 16, record.PosX); // MapTileWidth = 24.
+            Assert.Equal((6 * 16 + 8) << 16, record.PosY); // MapTileHeight = 16.
+            Assert.Equal(2 << 20, record.PosZ);
+            Assert.Equal(4, record.EffectId);
+
+            // The raw v[7] operand is played directly - no WarpBehaviorTable lookup (there is no portal).
+            Assert.Equal(new[] { 69 }, soundPlayer.Requests);
+        }
+        finally
+        {
+            AlundraWarpDirector.Instance.ResetForTests();
+        }
+    }
+
+    [Fact]
+    public void ChangeMap_0x53_NoPlayerEntity_DegradedNoOp_SkipsBySize()
+    {
+        AlundraWarpDirector.Instance.ResetForTests();
+        try
+        {
+            var document = NewDocument(0x53, 17, 1, 5, 6, 2, 0, 69, 0xFF);
+            var runner = NewRunner(document); // no worldContext -> NoOpEntityWorldContext -> null player.
+            var entity = NewEntity();
+            var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+            var kind = CaptureKindForOpcode(runner, 0x53, () => runner.RunOneScriptCall(entity, state));
+
+            Assert.Equal(EventTraceKind.Degraded, kind);
+            Assert.Equal(8, state.CodeIndex);
+            Assert.False(AlundraWarpDirector.Instance.HasPendingArrival);
+        }
+        finally
+        {
+            AlundraWarpDirector.Instance.ResetForTests();
+        }
+    }
+
+    [Fact]
+    public void ChangeMap_0x53_WithIsWarpDisabled_DoesNothing()
+    {
+        // [R8]: the IsWarpDisabled test applies to 0x53 too, even though it never goes through
+        // AlundraPortalTrigger's predicate (which is what would normally test this upstream).
+        AlundraWarpDirector.Instance.ResetForTests();
+        try
+        {
+            var document = NewDocument(0x53, 17, 1, 5, 6, 2, 0, 69, 0xFF);
+            var player = NewPlayerForWarp(targetAnimationId: 7, targetDirection: 0x18);
+            var context = new FakeEntityWorldContext { PlayerEntity = player };
+            var gameState = new AlundraGameState { IsWarpDisabled = true };
+            var runner = NewRunner(document, gameState, context);
+            var entity = NewEntity();
+            var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+            runner.RunOneScriptCall(entity, state);
+
+            Assert.False(AlundraWarpDirector.Instance.HasPendingArrival);
+            Assert.False(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        }
+        finally
+        {
+            AlundraWarpDirector.Instance.ResetForTests();
+        }
+    }
+
+    [Fact]
+    public void SetWarpDisabled_0x9B_SetsFlag_AndBlocksASubsequentDeparture()
+    {
+        AlundraWarpDirector.Instance.ResetForTests();
+        try
+        {
+            var document = NewDocument(0x9B, 0xFF);
+            var gameState = new AlundraGameState();
+            var runner = NewRunner(document, gameState);
+            var entity = NewEntity();
+            var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+            var kind = CaptureKindForOpcode(runner, 0x9B, () => runner.RunOneScriptCall(entity, state));
+
+            Assert.Equal(EventTraceKind.Implemented, kind);
+            Assert.Equal(1, state.CodeIndex);
+            Assert.True(gameState.IsWarpDisabled);
+
+            // A subsequent departure through the SAME AlundraWarpDirector this flag already gates (T4's
+            // own [R8] test) must now do nothing.
+            var player = NewPlayerForWarp(targetAnimationId: 0, targetDirection: 0);
+            AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
+                desiredMapIndex: 1, posX: 0, posY: 0, posZ: 0, effectId: 0, sfxId: 0, player, gameState);
+
+            Assert.False(AlundraWarpDirector.Instance.HasPendingArrival);
+        }
+        finally
+        {
+            AlundraWarpDirector.Instance.ResetForTests();
+        }
+    }
+
+    [Fact]
+    public void SetWarpDisabled_0x9C_ClearsFlag_UnblocksADeparture()
+    {
+        AlundraWarpDirector.Instance.ResetForTests();
+        try
+        {
+            var document = NewDocument(0x9C, 0xFF);
+            var gameState = new AlundraGameState { IsWarpDisabled = true };
+            var runner = NewRunner(document, gameState);
+            var entity = NewEntity();
+            var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+            var kind = CaptureKindForOpcode(runner, 0x9C, () => runner.RunOneScriptCall(entity, state));
+
+            Assert.Equal(EventTraceKind.Implemented, kind);
+            Assert.Equal(1, state.CodeIndex);
+            Assert.False(gameState.IsWarpDisabled);
+
+            var player = NewPlayerForWarp(targetAnimationId: 0, targetDirection: 0);
+            AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
+                desiredMapIndex: 1, posX: 0, posY: 0, posZ: 0, effectId: 0, sfxId: 0, player, gameState);
+
+            Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
+        }
+        finally
+        {
+            AlundraWarpDirector.Instance.ResetForTests();
+        }
+    }
 }

@@ -949,6 +949,57 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 return 4;
             }
 
+            case 0x53: // Change map - Script_ChangeMap_053 (EntityEventHandlers.cs:1554-1585, T7,
+                       // docs/plan-transitions-carte.md, section "T7 - Opcodes 0x53, 0x9B, 0x9C"):
+                       // v[1]/v[2] = desired map INDEX (v[2]<<8|v[1] - already the internal index, no
+                       // MapIdToInternalMapIndexTable lookup, unlike the portal path's own DestMapId), v3/
+                       // v4/v5 = destination tile x/y/z, v6 = transition effect id, v7 = warp sound effect
+                       // id. Reuses AlundraWarpDirector (T4) through its additive
+                       // BeginDepartureFromChangeMapOpcode overload, which converges on the SAME core as
+                       // the portal path - see that method's own doc. [R8]: IsWarpDisabled is tested
+                       // inside that overload too - 0x53 never goes through AlundraPortalTrigger's
+                       // predicate. FROZEN (documented, corpus-proven unreachable - T7's own measurement):
+                       // the original's own "effect == 3 AND same map" same-map teleport branch - ZERO of
+                       // the 329 measured 0x53 occurrences in the corpus use effect 3, so it is not
+                       // implemented, only logged if a program ever carries it.
+                if (_worldContext.PlayerEntity is { } changeMapPlayer)
+                {
+                    if (v[6] == 3)
+                    {
+                        Logs.WriteWarning(
+                            "AlundraEventProgramRunner: opcode 0x53 (ChangeMap) carries transition effect "
+                            + "3 - frozen (T7, zero occurrences in the corpus), NOT the original's own "
+                            + "same-map teleport branch - treated as a plain skip, not a warp.");
+                    }
+                    else
+                    {
+                        var desiredMapIndex = (uint)((v[2] << 8) | v[1]);
+                        var posX = (v[3] * TileWidthPx + TileWidthPx / 2) << 16;
+                        var posY = (v[4] * TileHeightPx + TileHeightPx / 2) << 16;
+                        var posZ = v[5] << 20;
+                        AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
+                            desiredMapIndex, posX, posY, posZ, v[6], v[7], changeMapPlayer, _gameState);
+                    }
+                }
+                else
+                {
+                    LogDegradedNoPlayerOpcodeOnce(0x53, "ChangeMap");
+                }
+
+                return 8;
+
+            case 0x9B: // Set warp disabled = 1 - Script_155_09B (EntityEventHandlers.cs:2924-2929, T7):
+                       // posts AlundraGameState.IsWarpDisabled, already read by AlundraPortalTrigger's
+                       // predicate (T3) and by AlundraWarpDirector.BeginDeparture/
+                       // BeginDepartureFromChangeMapOpcode (T4/T7) - this opcode only gives it its writer.
+                _gameState.IsWarpDisabled = true;
+                return 1;
+
+            case 0x9C: // Set warp disabled = 0 - Script_156_09C (EntityEventHandlers.cs:2931-2936, T7):
+                       // the complementary writer to 0x9B above.
+                _gameState.IsWarpDisabled = false;
+                return 1;
+
             default:
                 return UnknownOpcode(command, state);
         }

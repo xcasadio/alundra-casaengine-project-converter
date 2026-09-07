@@ -847,6 +847,43 @@ le corpus se fait en analysant les tableaux `Codes`, jamais par recherche textue
 **Mutations** : `0x53` qui pose `0x36` au lieu de conserver l'animation courante → le test tombe ;
 `0x9B` sans effet → le test de blocage du déclenchement tombe.
 
+**Corpus mesuré le 2026-09-07**, en parcourant les tableaux `Codes` **au pas réel de chaque opcode**
+(table de 198 tailles portée dans `EventOpcodeSizeTable.cs`) et non octet par octet — un balayage
+naïf relirait les opérandes comme des opcodes :
+
+| Opcode | Occurrences | Cartes |
+|---|---|---|
+| `0x53` | **329** | 151 |
+| `0x9B` (pose) | **10** | 8 |
+| `0x9C` (lève) | **66** | 60 |
+
+**La branche « effet 3 » de `0x53` est inatteignable : ZÉRO occurrence sur 329.** Les effets employés
+sont 0 (265 fois), 4 (31), 2 (16), 5 (10), 1 (6), et une valeur isolée 57. Le handler d'origine
+(`EntityEventHandlers.cs:1564-1576`) téléporte le joueur sur place sans transition quand l'effet vaut
+3 **et** que la carte visée est la carte courante ; les deux conditions sont vides dans le corpus.
+**Cette branche est donc gelée et documentée**, comme T4 l'avait déjà déclarée hors périmètre — mais
+désormais sur preuve chiffrée plutôt que sur l'absence de portail même-carte.
+
+`0x9C` est employé six fois plus que `0x9B` : le drapeau est surtout **levé** défensivement.
+
+**Livrée le 2026-09-07.** `Alundra.Tests` **781 / 781** (775 + 6), sous-module intact. Les deux
+chemins convergent par un cœur privé partagé : le chemin par portail garde sa signature et son
+comportement, et `0x53` entre par une surcharge additive qui porte ses propres opérandes.
+
+**Un écart de l'original, transcrit et non unifié** : le chemin par portail traduit
+`portal.DestMapId` par `MapIdToInternalMapIndexTable` (`PlayerManager.cs:3497`), alors que `0x53`
+affecte `g_desiredMap` **directement depuis l'opérande décodé** (`EntityEventHandlers.cs:1557`).
+`g_desiredMap` est bien consommé comme un **index interne** (`GameEngine.cs:178`). Vérifié
+empiriquement plutôt que déduit : les **329 opérandes décodés tombent tous entre 1 et 482**, aucun
+hors plage — l'opérande de `0x53` est donc déjà un index, et ne doit pas être traduit. L'exécuteur a
+signalé la différence au lieu de l'aplanir, ce qui était le bon réflexe.
+
+**Ce que `0x53` fait vraiment** (`EntityEventHandlers.cs:1554-1585`) : il pose la carte visée depuis
+`(v[2] << 8) | v[1]`, l'effet depuis `v[6]`, le son depuis `v[7]`, la cible caméra depuis les tuiles
+`v[3]/v[4]/v[5]`, puis — c'est le point de la tranche — **`g_resetDirectionId` et `g_resetAnimationId`
+prennent la direction et l'animation COURANTES du joueur**, là où le chemin par portail impose une
+constante.
+
 ---
 
 ## 4. Arrêts
