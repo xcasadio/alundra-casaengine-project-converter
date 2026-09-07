@@ -188,6 +188,7 @@ pas.**
 | **D4** | **La cuisson est une tranche préalable**, prouvée par manifeste et double export avant qu'une ligne de moteur ne soit écrite. |
 | **D5** | **`ScriptTrack` est gelé et documenté** — zéro occurrence sur 8360 cellules, `case` au corps vide dans l'original — comme D-E9b-14 a gelé `0xA4`. |
 | **D6** | **La politique de passe et de fusion d'E9.b est réemployée telle quelle** : `Ground = true` → `ResolveGroundLayerBlend` + `RenderPass2D.Effects`, déjà exercée par 86 couches du mode 1. |
+| **D7** | **`FallRespawn` partage le flux aléatoire global de l'original** (`Random.cs:5,14`, graine `0xB017C93D`, `seed = seed * 0x7d2b89dd + 0xe06a02e7`), comme `GraphicManager.cs:1172` le fait. L'acceptation n'épingle pas les positions absolues mais les **invariants** : une cellule qui passe le bas réapparaît en haut, à une abscisse dans les bornes de l'écran. |
 
 **Correction portée à D1 par la relecture de clôture** : la révision 2 proposait « la 443 **ou** la
 20 ». **La 20 ne convient pas** — ses 15 cellules ont toutes `DX` dans {1..5} avec `PeriodX = 3`, et
@@ -195,29 +196,60 @@ pas.**
 résultat et le piège du §1.4 n'a aucun témoin. Les cartes qui l'exercent réellement sont 55-60,
 293, 443-448 et 461. **D1 retient la 443.**
 
-### Le seul point encore ouvert
+## 3. Tranches — figées, D1-D7 tranchées
 
-- **P6 — la source aléatoire de `FallRespawn`.** La relecture a rétréci la question : l'original
-  n'improvise pas, c'est un générateur congruentiel **entièrement spécifié et déterministe**
-  (`alundra-datas-analyser/AlundraTools/AlundraEngine/Random.cs:5,14` — graine `0xB017C93D`, suite
-  `seed = seed * 0x7d2b89dd + 0xe06a02e7`), consommé en `GraphicManager.cs:1172`. Le vrai choix qui
-  reste est donc étroit : **le fond partage-t-il ce flux global unique avec son autre consommateur
-  (`GraphicManager.cs:2105`), ou reçoit-il le sien ?** Partager est fidèle mais couple le fond au
-  reste du jeu et rend l'acceptation de la 391 dépendante de tout ce qui tire un aléa avant elle ;
-  un flux propre est testable mais s'écarte de l'original. **Je recommande le flux partagé pour la
-  fidélité, avec une acceptation qui n'épingle pas les positions absolues mais les invariants** (une
-  cellule qui passe le bas réapparaît en haut, à une abscisse dans les bornes de l'écran).
+Statuts : ⏳ Todo · 🚧 In progress · 🧪 Needs testing · ✅ Done · ⚠️ Blocked.
+Une seule tranche à la fois ; la mise à jour de ce fichier va dans le commit de la tranche.
 
-## 3. Tranches — forme prévue, à figer après P1–P7
+### ⏳ C0 — Le compte corrigé
 
-- **C0 — le compte corrigé** : 84 → 90 dans les deux plans. Documentaire, sans code.
-- **C1 — convertisseur** : cuisson de la planche et des palettes, référence de texture sur la couche
-  cellulaire, format documenté. Preuve par export complet et manifeste, double export ⊆ `{report.json}`.
-- **C2 — moteur** : le couple service + composant, sans MonoGame pour le service, testé sur les
-  formules pures — le pas de période en **OU** de signes (§1.4) mérite son propre test.
-- **C3 — DLL** : les propriétés manquantes sur son `BackdropDocument`, la construction des cellules,
-  la poussée par frame.
-- **C4 — recette en jeu** sur les cartes retenues en P1.
+- Objectif : 84 → 90 partout où le nombre est écrit, avec la source du comptage.
+- Fichiers : `docs/plan-e9-backdrops-residus.md`, `docs/plan-conversion-totale.md`.
+- Validation : plus aucune occurrence de « 84 » désignant les cartes cellulaires.
+- Commit : `docs(alundra): correct the cellular map count to the measured 90`
+
+### ⏳ C1 — Convertisseur : la cuisson (D2, D4)
+
+- Objectif : produire les pixels qui manquent. Sans eux, rien n'est observable.
+- Fichiers : `alundra-casaengine-project-converter/Writers/BackdropImageBuilder.cs`,
+  `.../Writers/BackdropWriter.cs`, `.../Readers/BackdropReader.cs`, `docs/formats/backdrops.md`,
+  et les tests du convertisseur.
+- Étapes :
+  1. Généraliser le décodage : `DrawTile` (`:127-129`) est figé en 16×16 et n'a pas de paramètres de
+     taille. Lui en donner, ou extraire un décodeur de rectangle arbitraire, **sans changer le chemin
+     du mode 1** — sa sortie doit rester identique au bit près.
+  2. Cuire, pour chaque carte portant une couche cellulaire, **une texture par `PalDex` employé** :
+     la planche 256×256 décodée entière. Nom **nouveau** (les 132 textures existantes ne changent pas
+     de nom : leur id dérive du chemin, les renommer changerait 132 ids).
+  3. Porter la ou les références de texture sur la couche cellulaire du document ; documenter le
+     champ dans `docs/formats/backdrops.md`, section « Différé » à réviser.
+  4. Tests : au moins un témoin de couleur sur le décodage généralisé, et un test qui prouve que le
+     mode 1 n'a pas bougé.
+- Validation : tests du convertisseur verts ; **export complet en place**, diff classé conforme à un
+  ensemble prédit à l'avance, **second export ⊆ `{report.json}`**, six traces d'or identiques au bit
+  près.
+- Commit : `feat(backdrops): bake the cellular tile sheet per used palette`
+
+### ⏳ C2 — Moteur : le couple service et composant (D3, D5, D6)
+
+- Objectif : `CellularLayerService` (sans MonoGame) et `CellularLayerComponent`.
+- Étapes : les formules pures d'abord — le pas de période en **OU** de signes (§1.4), la phase de
+  fenêtre source `(V0 + phase) & 0xFF` (§1.5 bis), la combinaison `WaveX` du `WaveLut` (§1.3) — puis
+  la soumission par la plomberie existante, en réemployant la politique de passe de D6.
+- Validation : `dotnet test CasaEngine.Tests` à zéro échec ; tests dédiés sur chaque formule.
+- Commit : `feat(rendering): cellular scrolling layers`
+
+### ⏳ C3 — DLL : la liaison
+
+- Objectif : les propriétés manquantes sur le `BackdropDocument` de la DLL, la construction des
+  cellules, la poussée par frame.
+- Validation : `Alundra.Tests` sans régression ; production épinglée headless.
+- Commit : `feat(alundra): feed the engine the cellular backdrop layers`
+
+### ⏳ C4 — Recette en jeu (D1)
+
+- Cartes **420**, **391**, **271**, **443**. Numérique d'abord, puis visuel avec la discipline de
+  capture d'E9.b : rafale, médiane par pixel, garde de fenêtre au premier plan.
 
 ## 4. Acceptation
 
