@@ -143,7 +143,7 @@ Données/DLL (ce repo) : les prefabs G2 ont racine `AnimatedSpriteComponent` + e
 - **Rollback** : revert dans le submodule. **Budget** : un commit, ≤ 1 demi-journée ; arrêt si la
   sérialisation générique n'accepte pas une sous-classe sans champ.
 
-### E3.a — Pose logique dans les prefabs et la DLL ✅ (verifier CONFIRMED ; tri murs/sprites à confirmer à l'œil par l'utilisateur)
+### E3.a — Pose logique dans les prefabs et la DLL ✅ (verifier CONFIRMED ; tri murs/sprites validé en jeu par l'utilisateur le 2026-09-07 — tri inchangé)
 
 - **Prérequis** : E3.0 commité et pointeur de submodule bumpé (le convertisseur référence le
   moteur pour écrire les prefabs).
@@ -179,6 +179,8 @@ Données/DLL (ce repo) : les prefabs G2 ont racine `AnimatedSpriteComponent` + e
   l'utilisateur) ; 304 tests DLL et 129 convertisseur verts ; harnais à 926. Les tests d'ordre et de
   bornes exigent un `World` dont `PhysicsWorld.SpacePolicy` est `TopDownElevation` : réutiliser le
   montage de `Alundra.Tests/WallPlacementOverlayTests.cs:566-580`.
+- **Validation en jeu (2026-09-07)** : observé par l'utilisateur en jouant la map 389 —
+  tri murs/sprites inchangé, aucun mur ni mât derrière un sprite qu'il devrait cacher, ni l'inverse.
 - **Rollback** : revert + export. **Budget** : un commit convertisseur + DLL ; arrêt si le tri de
   profondeur change à l'écran.
 
@@ -502,7 +504,7 @@ monde (pixels pour Alundra) ; les défauts « mètres » existants restent.
   `CasaEngine.Tests` sans nouvel échec. **Rollback** : revert submodule. **Budget** : un commit,
   ≤ 2 h.
 
-### E3.d — Branchement Alundra ✅ (verifier CONFIRMED ; runtime à valider par l'utilisateur ; différé P3 : le test des overrides recopie la formule au lieu d'appeler AdoptPlayerPawn)
+### E3.d — Branchement Alundra ✅ (verifier CONFIRMED ; validé en jeu par l'utilisateur le 2026-09-07 ; différé P3 : le test des overrides recopie la formule au lieu d'appeler AdoptPlayerPawn)
 
 - **Découpage** (un seul committeur par repo, ordre strict) : (1) **E3.d.0 moteur** —
   `EditorEntityJsonSerializer` (CasaEngine.EditorServices) ne sait pas sauver un
@@ -623,6 +625,9 @@ monde (pixels pour Alundra) ; les défauts « mètres » existants restent.
   4. Runtime (utilisateur) : Alundra marche sur le pont, bloquée par bastingages/mâts, suit les
      marches ; ne traverse pas les cellules non marchables. Contrôle disponible seulement après 0x11
      (fin de l'intro, qui s'arrête au bloc 18 jusqu'à E4) — voir non-goal « flag de debug ».
+     **Validé en jeu le 2026-09-07** : New Game sur la map 389, contrôle rendu après l'intro complète —
+     bastingages et mâts la bloquent, elle suit la hauteur des marches, aucune cellule non marchable
+     traversée.
 - **Rollback** : revert du commit moteur + pointeur ; revert du commit parent (+ export). **Budget** :
   trois commits, ≤ 1 journée ; au plus deux tours de correctifs. **Arrêt** : si le harnais change de
   trajectoire (IsOnGround/LoadingMap), si le mode `Player` ne peut pas être tenu après `Possess` sans
@@ -703,6 +708,11 @@ monde (pixels pour Alundra) ; les défauts « mètres » existants restent.
 - **Runtime (utilisateur)** : NON vérifié dans cette session (nécessite de lancer le jeu) — reste à
   faire, signalé comme écart à valider, pas deviné. Le non-goal « flag de debug ignorant 0x10 »
   n'est PAS implémenté (décision utilisateur toujours en attente).
+  **Correction datée (2026-09-07)** : les deux réserves ci-dessus sont levées. Le flag de debug
+  ignorant le verrou 0x10 a été livré et la décision utilisateur prise en E4-3
+  (`docs/plan-e4-deplacement-scripte.md:13`, 2026-08-24). Et la validation runtime a eu lieu : New
+  Game sur la map 389, Alundra marche sur le pont, bloquée par bastingages/mâts, suit la hauteur des
+  marches, ne traverse aucune cellule non marchable — « tout est OK ».
 
 ## 4. Ordre et dépendances
 

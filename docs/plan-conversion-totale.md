@@ -104,7 +104,7 @@ le harnais simule la cinématique fidèle : l'oracle est à durées réelles, 0x
 (jalons 554/1034/1202/1704 — voir `plan-e4-deplacement-scripte.md` E4.f et la table §0
 d'intro-roadmap).
 
-### E1 — Scripts par entité, MapEvents dans le world ✅ (DLL — verifier CONFIRMED ; visuel runtime à valider par l'utilisateur)
+### E1 — Scripts par entité, MapEvents dans le world ✅ (DLL — verifier CONFIRMED ; validé en jeu par l'utilisateur le 2026-09-07)
 
 - **But** : appliquer D2 et D3 sans changer le comportement observable sur la map 389.
 - **Contenu** :
@@ -131,6 +131,10 @@ d'intro-roadmap).
   au runtime : Loads joués comme avant, héros visible en (33,59) avec l'animation 54 vers le bas, rien
   de cassé. En production les prédicats non portés (0x07/0x70…) laissent `Result` inchangé : la chaîne
   de l'intro s'arrête au bloc 18 jusqu'à E4 — écart attendu, pas un bug d'E1.
+  **Correction datée (2026-09-07)** : E4 est désormais livré et clos, donc l'arrêt au bloc 18 n'est
+  plus le comportement attendu — l'intro se déroule maintenant jusqu'au bout, y compris la restitution
+  du contrôle après le bloc 18. Un arrêt au bloc 18 serait aujourd'hui une régression. Confirmé en jeu
+  le 2026-09-07 (New Game sur la map 389, chronologie complète jusqu'à la restitution du contrôle).
 - **Dépendances** : aucune. **Prochaine étape à lancer après validation.**
 
 **Réalisé — écarts (2026-08-23)** :
@@ -189,7 +193,7 @@ d'intro-roadmap).
   `GameInitializer.cs:363-367` à décaler de +4 dans `AlundraGameState`, et `FillDataFromCommand` ne remet pas à
   zéro `[1..9]` sur le chemin de fin de programme (inobservable : `RunOneScriptCall` sort sur 0xFF).
 
-### E2 — Héros : pawn possédé ✅ (convertisseur + DLL — verifier CONFIRMED ; visuel runtime à valider par l'utilisateur)
+### E2 — Héros : pawn possédé ✅ (convertisseur + DLL — verifier CONFIRMED ; validé en jeu par l'utilisateur le 2026-09-07)
 
 - **But** : le héros existe comme pawn du moteur, visible en (33,59) avec l'animation 54 vers le bas.
 - **Contenu** : convertisseur — `.gameMode` (`default_pawn_asset_id` = `Entities/Alundra.entity`,
@@ -369,7 +373,7 @@ d'intro-roadmap).
     reste figé jusqu'au déclenchement de la chaîne, `IntroTraceHarnessTests` toujours à la frame 926
     (ne dépend pas des animations, confirmé).
 
-### E3 — Collisions : champ de hauteur `AlundraCells` + mover conscient de la politique ✅ (plan et tranches : docs/plan-e3-collisions.md ; runtime à valider par l'utilisateur)
+### E3 — Collisions : champ de hauteur `AlundraCells` + mover conscient de la politique ✅ (plan et tranches : docs/plan-e3-collisions.md ; validé en jeu le 2026-09-07)
 
 - **But** : le héros marche sur le pont, est bloqué par les murs, suit la hauteur des cellules.
 - **Contenu** : moteur — mover conscient de la politique `TopDownElevation`, helper pied/demi-hauteur
@@ -382,7 +386,7 @@ d'intro-roadmap).
 - **Dépendances** : E2. **À valider avant lancement** : représentation exacte Z-élévation / unités
   (cf. `guidelines-runtime-alundra-casaengine.md` §2).
 
-### E4 — Déplacement scripté des entités ✅ (plan et tranches : docs/plan-e4-deplacement-scripte.md ; runtime à valider par l'utilisateur)
+### E4 — Déplacement scripté des entités ✅ (plan et tranches : docs/plan-e4-deplacement-scripte.md ; validé en jeu le 2026-09-07)
 
 - **But** : les marins de l'intro marchent, sautent, atterrissent (durées réelles).
 - **Contenu** : convertisseur — exporter `AnimSets[].Speed`, `Acceleration`, `IsZForceApplied`,
@@ -646,10 +650,15 @@ L'ordre ci-dessous prime sur la numérotation E13 → E15 tant qu'il n'est pas �
    et son plan va donc dans `CasaEngineMonogame/ai-agent/tasks/` selon les conventions du sous-module,
    pas ici. Découvert en creusant E8 (voir la clôture d'E8 pour la démonstration).
 
-3. **Les validations en jeu jamais enregistrées.** **E1 à E4** portent « visuel runtime à valider par
-   l'utilisateur » depuis leur clôture, et le chantier `docs/plan-camera-ordre-frame.md` finit sur
-   « reste la validation en jeu ». Le code est livré, testé, et pour E1-E4 confirmé par verifier :
-   **c'est la confirmation visuelle qui manque au dossier**, pas le travail. À solder en une passe.
+3. **Les validations en jeu jamais enregistrées — FAIT le 2026-09-07.** **E1 à E4** portaient « visuel
+   runtime à valider par l'utilisateur » depuis leur clôture ; l'auteur a joué une New Game sur la
+   map 389 et confirmé les neuf points attendus (chargement, héros, MapEvents, marins, intro jusqu'au
+   bout, tri profondeur, pad, collisions) — enregistré dans les sections E1-E4 ci-dessus et dans
+   `docs/plan-e3-collisions.md` / `docs/plan-e4-deplacement-scripte.md`. **Correction sur l'inventaire
+   lui-même** : ce point citait aussi `docs/plan-camera-ordre-frame.md` comme finissant sur « reste la
+   validation en jeu » — en réalité ce chantier (et le correctif de cadence qui l'accompagne) était
+   déjà validé en jeu le 2026-08-29, voir `plan-camera-premiere-frame.md:155` (« La caméra est bonne au
+   début de la map. »). C'est l'inventaire qui avait tort, pas le dossier.
 
 Ensuite seulement : E13, E14, E15 — sachant qu'E14 porte aussi le blocage physique entité↔entité,
 rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
@@ -695,10 +704,10 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 
 | Étape | Statut | Commit |
 |---|---|---|
-| E1 scripts par entité + MapEvents | ✅ (verifier CONFIRMED ; visuel runtime à valider par l'utilisateur) | 92f1be5 |
-| E2 héros pawn | ✅ (verifier CONFIRMED ; visuel runtime à valider par l'utilisateur) | voir git log |
-| E3 collisions (E3.0/a/b/c/c-bis/d.0/d) | ✅ (verifiers CONFIRMED ; runtime à valider par l'utilisateur) | voir git log |
-| E4 déplacement scripté (E4.0/a/b/c/d/f) | ✅ (verifiers CONFIRMED ; runtime à valider par l'utilisateur) | voir git log ; moteur a9267735 |
+| E1 scripts par entité + MapEvents | ✅ close (validée en jeu le 2026-09-07) | 92f1be5 |
+| E2 héros pawn | ✅ close (validée en jeu le 2026-09-07) | voir git log |
+| E3 collisions (E3.0/a/b/c/c-bis/d.0/d) | ✅ close (validée en jeu le 2026-09-07) | voir git log |
+| E4 déplacement scripté (E4.0/a/b/c/d/f) | ✅ close (validée en jeu le 2026-09-07) | voir git log ; moteur a9267735 |
 | E5 caméra | ✅ close (runtime VALIDÉ par l'utilisateur le 2026-08-26) | cc1fc60 + 1507afc |
 | E6 contrôle joueur | ✅ close (livrée par anticipation dans E4.c, le 2026-08-26) | voir E4.c |
 | E7 mutation de tuiles | ✅ close (validée en jeu) | `326917e`, `9493b78`, moteur `1c5bf445`+`1215f3b`, `e5d73bb` |

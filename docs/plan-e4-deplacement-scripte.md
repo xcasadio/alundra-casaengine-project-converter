@@ -144,6 +144,9 @@ DLL / convertisseur / harnais (ce repo) :
   `Assets.Animation2d 9620` inchangés ; harnais : nouvelle trace à durées réelles, ordre des jalons
   de la chronologie §0 conservé (0x83E8 → 0x83EA → 0x83E9 → 860 → 0x11), frames justifiées par
   calcul ; runtime (utilisateur) : l'intro se joue, les marins bougent, le pad répond après 0x11.
+  **Validé en jeu le 2026-09-07** : New Game sur la map 389, intro jouée jusqu'au bout (bloc 10
+  travelling, marin 11 regards/saut/marche, marin 15 trappe, marin 12 marche, bloc 18), puis contrôle
+  rendu et le pad déplace Alundra dans les quatre directions.
 - **Rollback** : une tranche = un commit ; revert (+ pointeur de submodule pour E4.0) ; les assets se
   régénèrent par export.
 - **Budget/arrêts** : un commit + un verifier frais par tranche, au plus deux tours de correctifs par
@@ -254,6 +257,8 @@ DLL / convertisseur / harnais (ce repo) :
   reproduits ; 383/383 réglages relus par `CharacterControllerSettings.Load` ; héros inchangé.
   Avis P4 différé : `TileMapComponent.Initialize` non exécuté end-to-end (GraphicsDevice requis) —
   à couvrir par la validation runtime utilisateur.
+  **Validé en jeu le 2026-09-07** : New Game sur la map 389, la couche Navigation ne s'affiche pas
+  (aucune tuile de navigation visible à l'écran) et la carte se charge sans plantage.
 
 ### E4.b — DLL : les PNJ bougent sur le mover ✅ (365946f + correctif de1eceb, verifier CONFIRMED)
 
@@ -329,6 +334,8 @@ DLL / convertisseur / harnais (ce repo) :
   (pas d'`AssetContentManager` sans jeu — couvert par la validation runtime utilisateur) ; le `+1`
   d'une unité 16.16 du clamp original (`PosZ = ground + 1`) n'est pas reproduit par `ClampToGround`
   (préexistant E3.d, aucun impact observé).
+  **Validé en jeu le 2026-09-07** : New Game sur la map 389, les marins se déplacent à une vitesse
+  cohérente avec leur animation — aucun marin figé à vitesse 0.
 
 ### E4.c — DLL : opcodes de flux, direction et contrôle ✅ (07be483, verifier CONFIRMED)
 
@@ -443,6 +450,7 @@ DLL / convertisseur / harnais (ce repo) :
 - **Différés (P4)** : wiring `InitializeWithWorld` de la grille vérifié par inspection (pas
   d'exécution headless possible — validation runtime utilisateur) ; les tests real-data passent
   silencieusement sans `alundra-project/` (patron auto-skip établi du repo).
+  **Validé en jeu le 2026-09-07** : New Game sur la map 389, le marin 11 termine sa marche.
 
 ### E4.e — Harnais : cinématique simulée fidèle + nouvel oracle ⏳ (harnais + docs)
 
