@@ -124,17 +124,67 @@ public static class BackdropImageBuilder
         return bitmap;
     }
 
+    /// <summary>
+    /// Bakes the WHOLE 256x256 per-map tile sheet for one palette, rather than an atlas of only the
+    /// rectangles a Cellular (mode 2) layer's cells reference. A cell samples its source window at
+    /// <c>(V0 + phase) &amp; 0xFF</c> at runtime (GraphicManager.RenderLayerToBuffer, @
+    /// 0x8005B848), so the window scrolls and WRAPS modulo 256 as the phase advances - baking the
+    /// full sheet once absorbs that wrap with no UV remapping at all, whereas an atlas of only the
+    /// cells' own rectangles would have to re-wrap and re-tile every frame. The sheet and its 8
+    /// palettes are shared by both layers of a map (<see cref="Readers.BackdropReadResult.TileSheetImageData"/>/
+    /// <see cref="Readers.BackdropReadResult.PaletteWords"/>), so one sheet per used palette is baked
+    /// at document level and shared by every Cellular cell that references that palette, regardless
+    /// of which layer it belongs to.
+    /// </summary>
+    /// <returns>Null when the palette decodes to no visible pixel at all - same rule as <see cref="Build"/>,
+    /// so a fully transparent palette costs no asset.</returns>
+    public static Bitmap? BuildTileSheet(byte[] tileSheetImageData, ushort[] palette)
+    {
+        if (tileSheetImageData.Length == 0 || palette.Length == 0)
+        {
+            return null;
+        }
+
+        var bitmap = new Bitmap(TileSheetWidth, TileSheetWidth, PixelFormat.Format32bppArgb);
+        var bounds = new Rectangle(0, 0, TileSheetWidth, TileSheetWidth);
+        var bitmapData = bitmap.LockBits(bounds, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+
+        try
+        {
+            var stride = bitmapData.Stride;
+            var pixels = new byte[stride * TileSheetWidth];
+
+            var wroteAnyPixel = DrawTile(
+                pixels, stride, destX: 0, destY: 0, sheetU: 0, sheetV: 0,
+                tileSheetImageData, palette, width: TileSheetWidth, height: TileSheetWidth);
+
+            if (!wroteAnyPixel)
+            {
+                return null;
+            }
+
+            Marshal.Copy(pixels, 0, bitmapData.Scan0, pixels.Length);
+        }
+        finally
+        {
+            bitmap.UnlockBits(bitmapData);
+        }
+
+        return bitmap;
+    }
+
     private static bool DrawTile(
         byte[] pixels, int stride, int destX, int destY, int sheetU, int sheetV,
-        byte[] tileSheetImageData, ushort[] palette)
+        byte[] tileSheetImageData, ushort[] palette,
+        int width = BackdropReader.TileSize, int height = BackdropReader.TileSize)
     {
         var wroteAnyPixel = false;
 
-        for (var y = 0; y < BackdropReader.TileSize; y++)
+        for (var y = 0; y < height; y++)
         {
             var sourceY = (sheetV + y) & 0xFF;
 
-            for (var x = 0; x < BackdropReader.TileSize; x++)
+            for (var x = 0; x < width; x++)
             {
                 var sourceX = (sheetU + x) & 0xFF;
                 var sourceIndex = sourceY * TileSheetStride + (sourceX >> 1);

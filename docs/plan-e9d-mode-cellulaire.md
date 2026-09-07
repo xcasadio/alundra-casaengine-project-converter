@@ -210,7 +210,7 @@ Une seule tranche à la fois ; la mise à jour de ce fichier va dans le commit d
 - **Fait le 2026-09-07.** Quatre occurrences corrigées : `plan-e9-backdrops-residus.md:38`, et
   `plan-conversion-totale.md` lignes 611, 618, 676. Plus aucun « 84 » ne désigne les cartes cellulaires.
 
-### ⏳ C1 — Convertisseur : la cuisson (D2, D4)
+### ✅ C1 — Convertisseur : la cuisson (D2, D4)
 
 - Objectif : produire les pixels qui manquent. Sans eux, rien n'est observable.
 - Fichiers : `alundra-casaengine-project-converter/Writers/BackdropImageBuilder.cs`,
@@ -231,6 +231,61 @@ Une seule tranche à la fois ; la mise à jour de ce fichier va dans le commit d
   ensemble prédit à l'avance, **second export ⊆ `{report.json}`**, six traces d'or identiques au bit
   près.
 - Commit : `feat(backdrops): bake the cellular tile sheet per used palette`
+
+**Ligne de base du manifeste** capturée avant toute modification, le 2026-09-07 :
+`e9d-baseline-manifest.sha256`, **23 013 fichiers**.
+
+**Diff prédit — écrit AVANT l'export, pas après.** Le classement devra correspondre exactement à cet
+ensemble ; toute entrée hors de cette liste est un arrêt.
+
+1. **Ajoutés** : `{FileBaseName}-cellsheet{palDex}.png` et leur asset, pour les 90 cartes
+   cellulaires et pour chaque `PalDex` réellement employé par leurs cellules — soit une à deux
+   planches par carte.
+2. **Modifiés** : les **90** compagnons `*.backdrop.json` des cartes cellulaires, qui gagnent
+   `CellularSheetTextureAssetIds`.
+3. **Modifié** : `report.json`, qui gagne ses compteurs.
+4. **Rien d'autre.** Aucun PNG existant, aucun `.tileMap`, et **aucun des 393 autres compagnons
+   `backdrop.json`** ne doit bouger d'un octet. Le mode 1 est inchangé au bit près : c'est le
+   critère d'acceptation.
+
+Puis **second export** : diff ⊆ `{report.json}`.
+
+---
+
+**Fait le 2026-09-07.** Tests du convertisseur **156 / 156** (153 + 3 nouveaux). Export complet en
+place, **vérification PASSED** (19 505 chargés, 2 378 vérifiés en existence), 23 197 fichiers.
+
+**Diff classé contre la prédiction :**
+
+| | Prédit | Mesuré | |
+|---|---|---|---|
+| Ajoutés | planches cellulaires | **184**, toutes `cellsheet` | ✅ |
+| Modifiés | 90 `backdrop.json` | **90** | ✅ |
+| Modifiés | `report.json` | 1 | ✅ |
+| Supprimés | aucun | **0** | ✅ |
+| Modifiés | — | `AssetInfos.json` | ⚠️ non prédit |
+| Modifiés | — | `AlundraGame.json` | ⚠️ non prédit |
+
+**Aucun PNG existant, aucun `.tileMap`, aucun des 393 autres compagnons n'a bougé.** Le mode 1 est
+inchangé au bit près : le critère d'acceptation est tenu.
+
+**Les deux entrées non prédites, élucidées plutôt qu'excusées :**
+
+- `AssetInfos.json` — légitime et de ma faute de prédiction : enregistrer 92 nouvelles textures
+  ajoute leurs entrées au registre. Vérifié : **368 occurrences de `cellsheet`**, soit exactement 92
+  assets à quatre champs. Rien d'autre.
+- `AlundraGame.json` — **sans rapport avec ce chantier.** Le convertisseur y écrit une constante
+  (`ProjectWriter.cs:72-73`, `AlundraDisplay.WindowWidth/Height`), mais le **moteur réécrit ce même
+  fichier au runtime** depuis l'affichage réel (`CasaEngineGame.cs:171,178`). Lancer le jeu modifie
+  donc le fichier de projet, et l'export suivant y remet la constante. Comportement préexistant, à
+  connaître : **tout export révoque silencieusement les réglages de fenêtre posés en jouant.**
+
+**Second export** : diff = `{report.json}` **exactement**. Déterminisme prouvé ; `AlundraGame.json`
+n'a pas rebougé, ce qui confirme l'explication ci-dessus.
+
+**Note de conception ajoutée à l'exécution** : le nouveau champ porte
+`[JsonIgnore(WhenWritingNull)]`, comme `FrameTextureAssetIds`. C'est ce qui garantit que les 393
+compagnons non cellulaires restent identiques à l'octet près — le diff mesuré le confirme.
 
 ### ⏳ C2 — Moteur : le couple service et composant (D3, D5, D6)
 

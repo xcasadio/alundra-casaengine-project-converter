@@ -56,6 +56,38 @@ public class BackdropWriterTests
     }
 
     [Fact]
+    public void BuildTileSheet_BakesTheWholeSheetAtItsOwnCoordinates()
+    {
+        var tileSheet = BuildTileSheet();
+        var paletteWords = BuildPaletteWords();
+
+        using var sheet = BackdropImageBuilder.BuildTileSheet(tileSheet, paletteWords[0]);
+
+        Assert.NotNull(sheet);
+        Assert.Equal(256, sheet!.Width);
+        Assert.Equal(256, sheet.Height);
+
+        // The 16x16 block at sheet (SheetU, SheetV) is opaque bright green, at its OWN sheet
+        // coordinates this time (BuildTileSheet draws at destX=0/destY=0, sheetU=0/sheetV=0, so
+        // sheet pixels land at the same coordinates they occupy in the source sheet).
+        Assert.Equal(Color.FromArgb(255, 0, 248, 0), sheet.GetPixel(SheetU, SheetV));
+        Assert.Equal(Color.FromArgb(255, 0, 248, 0), sheet.GetPixel(SheetU + 15, SheetV + 15));
+
+        // Everywhere else in the sheet is untouched nibble 0 -> transparent black.
+        Assert.Equal(0, sheet.GetPixel(0, 0).A);
+        Assert.Equal(0, sheet.GetPixel(255, 255).A);
+    }
+
+    [Fact]
+    public void BuildTileSheet_WithAPaletteThatDecodesToNothing_ReturnsNull()
+    {
+        var tileSheet = BuildTileSheet();
+        var emptyPalette = new ushort[16]; // every entry 0 -> transparent black everywhere
+
+        Assert.Null(BackdropImageBuilder.BuildTileSheet(tileSheet, emptyPalette));
+    }
+
+    [Fact]
     public void Build_WithAnAllEmptyGrid_ReturnsNull()
     {
         var tileSheet = BuildTileSheet();
@@ -400,6 +432,85 @@ public class BackdropWriterTests
         bgColorA: 0);
     }
 
+    [Fact]
+    public void ConvertBackdrops_ForACellularMapWithCells_ExportsOneSheetPerUsedPalette()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            var dataDirectory = Path.Combine(inputDirectory, "data");
+            Directory.CreateDirectory(dataDirectory);
+
+            const int mapIndex = 271;
+            WriteCellularWithCellsMapFixture(dataDirectory, mapIndex);
+
+            var mapLocations = new Dictionary<int, MapLocation>
+            {
+                [mapIndex] = new MapLocation("TestZone", "Cellular Cells-271"),
+            };
+            var mapFilter = new List<int> { mapIndex };
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            ProjectWriter.CreateEmptyProject(outputDirectory, report);
+            BackdropWriter.ConvertBackdrops(inputDirectory, outputDirectory, mapFilter, mapLocations, report);
+
+            Assert.Empty(report.Errors);
+            Assert.Equal(1, report.Counters["Backdrop.Maps"]);
+            Assert.Equal(1, report.Counters["Backdrop.CellularMapsHandled"]);
+
+            // Cells reference PalDex 0 twice and PalDex CellularSecondPalDex once: only the two
+            // DISTINCT palettes actually used ever get baked, never one sheet per cell.
+            Assert.Equal(2, report.Counters["Backdrop.CellularSheetsExported"]);
+
+            var backdropDirectory = Path.Combine(outputDirectory, "Maps", "TestZone", "Cellular Cells-271", "backdrop");
+            var companionPath = Path.Combine(backdropDirectory, "Cellular Cells-271.backdrop.json");
+            Assert.True(File.Exists(companionPath));
+
+            var document = JsonDocument.Parse(File.ReadAllText(companionPath)).RootElement;
+            var sheetIds = document.GetProperty("CellularSheetTextureAssetIds");
+            Assert.Equal(JsonValueKind.Array, sheetIds.ValueKind);
+            Assert.Equal(8, sheetIds.GetArrayLength());
+
+            Assert.False(string.IsNullOrEmpty(sheetIds[0].GetString()));
+            Assert.Equal(JsonValueKind.Null, sheetIds[1].ValueKind);
+            Assert.False(string.IsNullOrEmpty(sheetIds[CellularSecondPalDex].GetString()));
+
+            var sheet0Path = Path.Combine(backdropDirectory, "Cellular Cells-271-cellsheet0.png");
+            var sheet3Path = Path.Combine(
+                backdropDirectory, $"Cellular Cells-271-cellsheet{CellularSecondPalDex}.png");
+            Assert.True(File.Exists(sheet0Path));
+            Assert.True(File.Exists(sheet3Path));
+
+            using (var sheet0 = new Bitmap(sheet0Path))
+            using (var sheet3 = new Bitmap(sheet3Path))
+            {
+                Assert.Equal(256, sheet0.Width);
+                Assert.Equal(256, sheet0.Height);
+                Assert.Equal(Color.FromArgb(255, 0, 248, 0), sheet0.GetPixel(SheetU, SheetV));
+                Assert.Equal(Color.FromArgb(255, 0, 0, 248), sheet3.GetPixel(SheetU, SheetV));
+            }
+
+            // The catalog persisted both new sheet textures - same requirement as the layer textures.
+            var catalogPath = Path.Combine(outputDirectory, "AssetInfos.json");
+            var catalogText = File.ReadAllText(catalogPath);
+            Assert.Contains(sheetIds[0].GetString()!, catalogText);
+            Assert.Contains(sheetIds[CellularSecondPalDex].GetString()!, catalogText);
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
     private static void RunConversion(
         Action<Dictionary<int, MapLocation>> configureLocations,
         Action<string, ConversionReport> assert,
@@ -680,6 +791,140 @@ public class BackdropWriterTests
     /// pixel-for-pixel from frame 0, and bands [128, 256) are left all-zero (transparent) so frames 2
     /// and 3 (vAnim 128 and 192) exercise the D-E9-4 "Build returns null" path.
     /// </summary>
+    // PalDex used by the second cell of WriteCellularWithCellsMapFixture, distinct from PalDex 0.
+    private const int CellularSecondPalDex = 3;
+
+    /// <summary>
+    /// A Cellular (mode 2) layer whose 3 cells reference PalDex 0 twice and
+    /// <see cref="CellularSecondPalDex"/> once, backed by the same tile sheet/palette shape as
+    /// <see cref="BuildTileSheet"/> - palette <see cref="CellularSecondPalDex"/> resolves the sheet's
+    /// nibble <see cref="PaletteEntry"/> block to blue instead of green, so the two baked sheets are
+    /// pixel-distinguishable.
+    /// </summary>
+    private static void WriteCellularWithCellsMapFixture(string dataDirectory, int mapIndex)
+    {
+        var tileSheet = BuildTileSheet();
+        var paletteWords = BuildPaletteWords();
+        paletteWords[CellularSecondPalDex][PaletteEntry] = BluePsxWord;
+
+        using var stream = File.Create(Path.Combine(dataDirectory, $"map_{mapIndex}.json"));
+        using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = false });
+
+        writer.WriteStartObject();
+        writer.WritePropertyName("ScrollParameters");
+        writer.WriteStartObject();
+
+        writer.WriteNumber("Graphics", 0);
+        writer.WriteBoolean("HasGraphics", false);
+        writer.WriteNumber("Overlay", OverlayTestPointer);
+
+        writer.WritePropertyName("Infos");
+        writer.WriteStartObject();
+        writer.WriteNumber("Enabled", 1);
+        writer.WriteNumber("AnimNum", 1);
+        writer.WriteNumber("BGColorA", 0);
+        writer.WritePropertyName("ModeLayer");
+        writer.WriteStartArray();
+        writer.WriteNumberValue(0);
+        writer.WriteNumberValue(2);
+        writer.WriteEndArray();
+        writer.WriteEndObject();
+
+        writer.WritePropertyName("LayerInfos");
+        writer.WriteStartArray();
+        writer.WriteStartObject();
+        writer.WriteNumber("AnimTimer", 0);
+        writer.WriteNumber("BlendMode", 0);
+        writer.WriteNumber("Ground", 0);
+        writer.WriteEndObject();
+        writer.WriteStartObject();
+        writer.WriteNumber("AnimTimer", 0);
+        writer.WriteNumber("BlendMode", 0);
+        writer.WriteNumber("Ground", 0);
+        writer.WriteEndObject();
+        writer.WriteEndArray();
+
+        writer.WritePropertyName("Scrollars");
+        writer.WriteStartArray();
+        writer.WriteEndArray();
+
+        writer.WritePropertyName("Cellulars");
+        writer.WriteStartArray();
+        for (var i = 0; i < 2; i++)
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("CountBase", 0);
+            writer.WriteNumber("AWaveY", 0);
+            writer.WriteNumber("AWavePhase", 0);
+            writer.WriteNumber("AWaveAmp", 0);
+            writer.WriteNumber("BWaveY", 0);
+            writer.WriteNumber("BWavePhase", 0);
+            writer.WriteNumber("BWaveWeight", 0);
+            writer.WriteNumber("Divisions", 0);
+            writer.WriteEndObject();
+        }
+
+        writer.WriteEndArray();
+
+        writer.WritePropertyName("Cells");
+        writer.WriteStartArray();
+        writer.WriteStartArray(); // layer 0: no cells
+        writer.WriteEndArray();
+        writer.WriteStartArray(); // layer 1: 3 cells, PalDex 0, CellularSecondPalDex, 0
+        WriteCell(writer, palDex: 0);
+        WriteCell(writer, palDex: CellularSecondPalDex);
+        WriteCell(writer, palDex: 0);
+        writer.WriteEndArray();
+        writer.WriteEndArray();
+
+        writer.WritePropertyName("WaveLut");
+        writer.WriteStartArray();
+        writer.WriteEndArray();
+
+        WriteIntArray(writer, "Data", Array.Empty<byte>());
+        WriteIntArray(writer, "TileSheetImageData", tileSheet);
+
+        writer.WritePropertyName("PaletteWords");
+        writer.WriteStartArray();
+        foreach (var palette in paletteWords)
+        {
+            writer.WriteStartArray();
+            foreach (var word in palette)
+            {
+                writer.WriteNumberValue(word);
+            }
+
+            writer.WriteEndArray();
+        }
+
+        writer.WriteEndArray();
+
+        writer.WriteEndObject();
+        writer.WriteEndObject();
+    }
+
+    private static void WriteCell(Utf8JsonWriter writer, int palDex)
+    {
+        writer.WriteStartObject();
+        writer.WriteNumber("PalDex", palDex);
+        writer.WriteNumber("U0", 0);
+        writer.WriteNumber("V0", 0);
+        writer.WriteNumber("U1", 16);
+        writer.WriteNumber("V1", 16);
+        writer.WriteNumber("Type", 0);
+        writer.WriteNumber("X0", 0);
+        writer.WriteNumber("Y0", 0);
+        writer.WriteNumber("CamXNum", 1);
+        writer.WriteNumber("CamXDen", 1);
+        writer.WriteNumber("CamYNum", 1);
+        writer.WriteNumber("CamYDen", 1);
+        writer.WriteNumber("DX", 0);
+        writer.WriteNumber("PeriodX", 0);
+        writer.WriteNumber("DY", 0);
+        writer.WriteNumber("PeriodY", 0);
+        writer.WriteEndObject();
+    }
+
     private static void WriteAnimatedMapFixture(string dataDirectory, int mapIndex, int animNum)
     {
         var data = BuildAnimatedDataBlob();

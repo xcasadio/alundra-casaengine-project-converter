@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Text.Json;
 using AlundraCasaEngineProjectConverter.Readers;
 using CasaEngine.EditorServices;
@@ -197,6 +198,53 @@ public static class BackdropWriter
                     }
 
                     layer.FrameTextureAssetIds = frameTextureAssetIds;
+                }
+            }
+
+            var cellularPalDexes = result.Document.Layers
+                .Where(layer => layer.Mode == "Cellular" && layer.Cellular is not null)
+                .SelectMany(layer => layer.Cellular!.Cells)
+                .Select(cell => cell.PalDex)
+                .Distinct()
+                .OrderBy(palDex => palDex)
+                .ToList();
+
+            if (cellularPalDexes.Count > 0)
+            {
+                report.Increment("Backdrop.CellularMapsHandled");
+
+                var sheetTextureAssetIds = new string?[8];
+                var wroteAnySheet = false;
+
+                foreach (var palDex in cellularPalDexes)
+                {
+                    if ((uint)palDex >= (uint)result.PaletteWords.Length)
+                    {
+                        continue;
+                    }
+
+                    using var sheetBitmap = BackdropImageBuilder.BuildTileSheet(
+                        result.TileSheetImageData, result.PaletteWords[palDex]);
+                    if (sheetBitmap is null)
+                    {
+                        continue;
+                    }
+
+                    Directory.CreateDirectory(tempDirectory);
+                    var tempSheetPath = Path.Combine(tempDirectory, location.BackdropCellularSheetFileName(palDex));
+                    sheetBitmap.Save(tempSheetPath, ImageFormat.Png);
+
+                    var sheetTextureAssetId = TextureAssetWriter.EnsureTexture(
+                        tempSheetPath, location.BackdropDirectory, outputDirectory, textureCache);
+
+                    sheetTextureAssetIds[palDex] = sheetTextureAssetId.ToString();
+                    wroteAnySheet = true;
+                    report.Increment("Backdrop.CellularSheetsExported");
+                }
+
+                if (wroteAnySheet)
+                {
+                    result.Document.CellularSheetTextureAssetIds = sheetTextureAssetIds;
                 }
             }
 

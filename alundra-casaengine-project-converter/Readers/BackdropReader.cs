@@ -166,6 +166,18 @@ public sealed class BackdropDocument
     public byte OverlayColorB { get; set; }
     public int[]? WaveLut { get; set; }
     public List<BackdropLayerDocument> Layers { get; set; } = new();
+
+    /// <summary>
+    /// Catalog ids of the whole-256x256-tile-sheet textures baked for a Cellular (mode 2) layer's
+    /// cells (D-E9d), one per PalDex actually used by a cell, indexed by that PalDex (fixed length
+    /// 8, matching the map's 8 palettes) - null entries are unused palettes. Shared by both layers
+    /// of the map, since the tile sheet and palettes are per-map, not per-layer (see
+    /// <see cref="BackdropReadResult.TileSheetImageData"/>/<see cref="BackdropReadResult.PaletteWords"/>).
+    /// Left entirely null for a map with no Cellular layer, so every other companion serializes
+    /// byte-identical to before this field existed.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string?[]? CellularSheetTextureAssetIds { get; set; }
 }
 
 /// <summary>

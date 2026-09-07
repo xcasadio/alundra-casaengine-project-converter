@@ -114,14 +114,41 @@ aux fonds et invisible sur les couleurs où `R == B` (67 des 153 textures de fon
 les nuances de gris pur (maps 159 et 389) ; il a coloré en rouge 86 des 153 textures de fond
 exportées, dont les nuages bleus de la map 321.
 
-## Différé (paramètres bruts exportés, rendu non implémenté)
+## Pixels des couches `Cellular` (D-E9d)
 
-- Les couches `Mode 2` ("Cellular") : sprites indépendants (oiseaux, nuages, écume...) déplacés par
-  caméra/dérive périodique/piste sinusoïdale (`CellType.WaveX`, table `WaveLut`) - un système bien
-  plus riche qu'une grille de tuiles. Les paramètres bruts (`Cellular`, `Cells[]`, `WaveLut` au
-  niveau map) sont exportés ; aucune texture n'est produite pour ces couches. `WaveLut` n'est lu que
-  par ce chemin cellulaire (jamais par les couches `Tiles`) : son rendu relève explicitement du
-  chantier cellulaire différé ci-dessus, pas de l'animation de tuile décrite plus haut.
+Une couche `Mode 2` ("Cellular") ne dessine pas une grille de tuiles mais un ensemble de cellules
+indépendantes (`Cells[]`) : chaque cellule est un rectangle arbitraire `(U0,V0)-(U1,V1)` découpé
+dans la **même** feuille de tuiles 256x256 4bpp par map que le mode `Tiles` (
+`BackdropReadResult.TileSheetImageData`), avec un `PalDex` qui sélectionne l'une des 8 palettes de
+la map (`BackdropReadResult.PaletteWords`) - la feuille et les palettes sont donc portées par le
+document, pas par la couche, et sont partagées par les deux couches d'une même map. À l'exécution
+le point échantillonné est `(V0 + phase) & 0xFF` : la fenêtre source défile et **boucle modulo
+256**, ce qui a guidé le choix d'exporter : plutôt qu'un atlas des seuls rectangles utilisés (qu'il
+faudrait re-boucler et re-carreler à chaque frame), le convertisseur cuit la **feuille entière** une
+fois par palette effectivement utilisée par une cellule - la feuille entière absorbe le bouclage
+sans aucun remapping d'UV.
+
+- Une texture 256x256 (`BackdropImageBuilder.BuildTileSheet`, même décodage 4bpp/palette PSX que le
+  mode `Tiles` - voir la convention de couleur ci-dessus) est écrite sous
+  `Maps/{Zone}/{Name}-{id}/backdrop/{Name}-{id}-cellsheet{PalDex}.png` (+ `.texture`), une par
+  `PalDex` **distinct** réellement référencé par au moins une cellule d'au moins une des deux couches
+  de la map - jamais une par cellule. Une palette qui ne décode aucun pixel visible (que du noir
+  transparent) ne produit pas de texture, comme pour le mode `Tiles`.
+- Le compagnon porte `CellularSheetTextureAssetIds[8]`, indexé par `PalDex`, `null` aux index non
+  utilisés ; ce champ est **entièrement absent** (pas même `null`) pour toute map sans couche
+  `Cellular`, pour que les compagnons déjà générés restent identiques au bit près.
+- Chaque `Cells[]` continue de porter son rectangle `(U0,V0)-(U1,V1)` (index dans la feuille dont
+  l'id est ci-dessus) et son `PalDex` - c'est au consommateur de recomposer l'échantillonnage
+  bouclé décrit plus haut ; ce n'est pas re-calculé ni re-baked ici.
+
+## Différé (le RENDU, pas les données)
+
+- Les couches `Mode 2` ("Cellular") : les pixels sont désormais exportés (feuilles baked ci-dessus,
+  une par palette utilisée), mais leur **rendu** - positionnement des cellules, parallaxe caméra
+  (`CamXNum/Den`, `CamYNum/Den`), dérive périodique (`DX/PeriodX`, `DY/PeriodY`), et la piste
+  sinusoïdale `CellType.WaveX` (`AWaveY/AWavePhase/AWaveAmp`, `BWaveY/BWavePhase/BWaveWeight`, table
+  `WaveLut` au niveau map) - n'est implémenté ni par le moteur ni par la DLL. `WaveLut` n'est lu que
+  par ce chemin cellulaire (jamais par les couches `Tiles`).
 - La variante étendue (`OverlayExt`, dégradé 4 coins, `BGColorA >= 0x65`) : jamais atteinte dans le
   corpus, voir ci-dessus.
 
@@ -137,6 +164,7 @@ Racine :
 | `OverlayEnabled` | bool | `Infos.Enabled != 0 && Infos.BGColorA != 0` (voir la section incrustation ci-dessus) |
 | `OverlayColorR`/`G`/`B` | byte | Couleur lue à `Data[Overlay..Overlay+2]` ; 0 si `OverlayEnabled` est faux |
 | `WaveLut` | int[256]? | Table de la sinusoïde `WaveX`, partagée par les deux couches ; absente si `WaveLUT == 0` |
+| `CellularSheetTextureAssetIds` | (guid?)[8]? | Id catalogue de la feuille 256x256 baked par `PalDex` (voir section dédiée ci-dessus) ; `null` aux index de palette non utilisés ; **absent** (pas même `null`) si aucune couche n'est `Cellular` |
 | `Layers[]` | objet | Une entrée par couche (0 et 1, toujours 2 entrées) |
 
 `Layers[]` :
@@ -175,6 +203,10 @@ Racine :
 - `Backdrop.FramesExported` : total de textures de trame écrites, trame 0 comprise - une couche non
   animée compte pour 1 (comme `Backdrop.LayersExported`), une couche `AnimNum = N` compte pour `N`.
 - `Backdrop.OverlayTints` : maps dont `OverlayEnabled` est vrai (16 dans le corpus actuel).
+- `Backdrop.CellularMapsHandled` : maps ayant au moins une couche `Cellular` avec au moins une
+  cellule (donc au moins un `PalDex` à traiter).
+- `Backdrop.CellularSheetsExported` : total de feuilles 256x256 écrites, tous `PalDex`/toutes maps
+  confondus (une palette qui ne décode aucun pixel visible n'en produit aucune).
 
 ## Extrait réel
 

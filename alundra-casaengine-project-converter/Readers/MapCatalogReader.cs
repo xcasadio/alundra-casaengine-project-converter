@@ -52,6 +52,15 @@ public sealed record MapLocation(string ZoneFolder, string FileBaseName)
     public string BackdropLayerTextureFileName(int layerId) => $"{FileBaseName}-layer{layerId}.png";
 
     /// <summary>
+    /// Name of the whole 256x256 tile sheet baked for one of the map's 8 palettes, used by
+    /// Cellular-mode (mode 2) layers (D-E9d, see <see cref="Writers.BackdropImageBuilder.BuildTileSheet"/>).
+    /// One file per palette actually used by a cell, shared by both layers of the map - this is a
+    /// distinct name shape from <see cref="BackdropLayerTextureFileName"/> on purpose, so the 132
+    /// existing Tiles-mode textures (whose asset ids are derived from their file path) keep their ids.
+    /// </summary>
+    public string BackdropCellularSheetFileName(int palDex) => $"{FileBaseName}-cellsheet{palDex}.png";
+
+    /// <summary>
     /// Name of one V-animation frame of a Tiles-mode backdrop layer (D-E9-2,
     /// docs/plan-e9-backdrops-residus.md). Frame 0 keeps the original, un-suffixed name and id from
     /// <see cref="BackdropLayerTextureFileName"/> - only <c>frame &gt;= 1</c> gets a new file.
