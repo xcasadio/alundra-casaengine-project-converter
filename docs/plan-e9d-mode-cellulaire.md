@@ -431,6 +431,32 @@ l'original passe le même `cameraX/cameraY` aux deux modes depuis la même fonct
   jeu est vivant, là où le chemin des tuiles en émet un. L'ajouter casserait l'`Assert.Single` du test
   existant. Reporté ; en production le composant existe toujours sur `CasaEngineGame`.
 
+**Vérification indépendante : CONFIRMED** sur les cinq conditions. Le vérificateur a recalculé
+lui-même la suite du générateur et retrouvé les trois valeurs épinglées, confirmé que la
+correspondance `AnimNum`/`AnimTimer` ne peut pas passer par coïncidence, vérifié les 16 champs de
+cellule un à un, et établi qu'un second chargement de monde ne laisse aucun état rémanent.
+
+**Un chiffre du rapport était faux, et je l'ai retranché moi-même.** Il annonçait « 88 couches
+cellulaires sur 80 cartes ». Recompté en session principale sur les deux sources : **90 cartes, 92
+couches** — 330 compagnons et 484 cartes brutes donnent le même 90. Le plan avait raison ; l'écart
+vient probablement du piège d'outillage déjà signalé, où un chemin à parenthèses fait échouer la
+lecture en silence. **Ne pas propager le 88/80.**
+
+**Quatre avis P4, tous reportés :**
+
+- **[A1]** le service cellulaire ne reçoit jamais de `SetConfiguration`, là où le chemin des tuiles en
+  reçoit une : sa `BackgroundDepth` reste à 0 au lieu de 1. **Sans effet aujourd'hui**, vérifié par
+  moi : les **92** couches cellulaires sont à `Ground = true`, **zéro** à `false`, et cette
+  profondeur n'est lue que sur la passe d'arrière-plan. À corriger si une couche `Ground = false`
+  apparaît un jour.
+- **[A2]** le chargement cellulaire est derrière la garde du service des tuiles : un jeu qui aurait
+  l'un sans l'autre ne rendrait rien. Inatteignable en production, les deux composants sont
+  construits ensemble.
+- **[A3]** la conversion du type de cellule en énumération n'est pas contrôlée. Le corpus ne contient
+  que 0, 2 et 4 — jamais 1 ni 3.
+- **[A4]** `Reset()` n'est jamais appelé : la graine ne repart pas au début d'une partie. C'est
+  [C3-a], une décision à part.
+
 ### ⏳ C4 — Recette en jeu (D1)
 
 - Cartes **420**, **391**, **271**, **443**. Numérique d'abord, puis visuel avec la discipline de
