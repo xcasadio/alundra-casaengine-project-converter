@@ -574,6 +574,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         InstallWarpSystems(world);
         InstallScreenFadeSystems(world);
         InstallDialogueSystems(world);
+        InstallHudSystems();
 
         var entitiesLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == EntitiesLayerName);
         var portalsLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == PortalsLayerName);
@@ -926,6 +927,19 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 $"AlundraWorldProxy: world '{world.Name}' arrival transition effect id {arrivalEffectId} "
                 + "transported by the departing portal, reduced to effect 0 (D-T-7).");
         }
+    }
+
+    /// <summary>
+    /// E13 C1 (docs/plan-e13-hud.md): re-points the SESSION-scoped <see cref="AlundraHudDirector.Instance"/>
+    /// at this world's own <see cref="GameState"/>, then runs its (currently empty) map-entry hook -
+    /// same "AttachToWorld re-points, InstallForMapEntry is the separate map-entry call" shape as every
+    /// other session-scoped director in this DLL. No presenter, no UI view lookup: this director has no
+    /// view seam at all (see its own class doc).
+    /// </summary>
+    internal void InstallHudSystems()
+    {
+        AlundraHudDirector.Instance.AttachToWorld(GameState);
+        AlundraHudDirector.Instance.InstallForMapEntry();
     }
 
     /// <summary>
@@ -1601,6 +1615,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         for (var dialogueTick = 0; dialogueTick < ticksThisFrame; dialogueTick++)
         {
             AlundraDialogueDirector.Instance.Tick();
+        }
+
+        // E13 C1 (docs/plan-e13-hud.md, D-E13-8): the HUD director's own tick, right next to the
+        // dialogue pass above and for the exact same reason - it must keep rolling/rattraping while a
+        // modal dialogue box freezes the screens below it (see AlundraHudDirector's own class doc). One
+        // Tick() per LOGIC tick, never per rendered frame - D-E13-8, the tick logique owns all of the
+        // HUD's time.
+        for (var hudTick = 0; hudTick < ticksThisFrame; hudTick++)
+        {
+            AlundraHudDirector.Instance.Tick();
         }
 
         // E12.d (D-E12D-2): the player's entity-contact probe, once per logic tick - the port of

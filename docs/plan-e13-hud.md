@@ -328,7 +328,7 @@ documentés en §1.5 bis pour le chantier qui portera le combat.
 l'état courant **partagent la même instance**, conformément à §1.5 bis. Un test posant le jeu de
 valeurs de débogage et relisant 38 sur 45, 2 sur 3 et 2163. Suite `Alundra.Tests` verte.
 
-### ⏳ C1 — DLL : le directeur de session du HUD
+### ✅ C1 — DLL : le directeur de session du HUD (verifier CONFIRMED, 853/853)
 
 **But** : l'état animé du HUD vit et avance au tick logique, indépendamment de tout écran.
 
@@ -446,6 +446,11 @@ elle se referme avant un fondu. Suites `Alundra.Tests` et `CasaEngine.Tests` ver
    le cycle et expose un index d'image **par pip** derrière une table de phase constante ; C3 ne
    remplit cette table qu'après réponse de l'auteur sur `0x800a3238` et sur le type réel de
    `g_inventoryWeaponIconX`. Par défaut, C1 porte ce que la ligne active dit : l'unisson.
+5. **Les deux bruitages du rattrapage — hors périmètre d'E13 tel qu'écrit, à décider.** Relevé
+   pendant C1 : l'original joue `SoundEffect(8)` et `SoundEffect(9)` pendant le rattrapage de la vie
+   et de la magie (`HudManager.cs`, blocs de `DisplayLife` et `DisplayMp`). Ni la reconnaissance ni
+   le plan ne les avaient listés. Le directeur ne les joue pas ; le portage a pourtant un système
+   audio depuis E11. Une tranche courte suffirait, après E13 ou dedans si l'auteur le demande.
 
 ---
 
@@ -459,3 +464,4 @@ elle se referme avant un fondu. Suites `Alundra.Tests` et `CasaEngine.Tests` ver
 | 2026-09-18 | Première relecture adverse : **REVISE**, quatre blocages P2, tous acceptés et corrigés. (1) Cadence du pip de magie fausse, 10 images et non 4, §1.4 corrigé et citée. (2) Acceptation de C0 pointant un objet non défini, §1.5 bis ajoutée et revérifiée ligne à ligne. (3) Les images clés MGUI interpolent, donc le verbatim n'était pas atteignable par le moyen retenu : D-E13-8 ajoutée, §1.8 bis ajoutée, C1 et C3 réécrites, arrêts élargis. (4) Les 33 tuiles viennent de deux sites d'extraction et non d'un, §0.2 corrigé. Aucun blocage écarté. |
 | 2026-09-19 | **Exécution lancée** sur approbation de l'auteur, une tranche par workflow, executor sonnet, verifier opus, un commit par tranche. |
 | 2026-09-19 | **C0 livrée, verifier CONFIRMED, 840/840** (815 + 25). Nouveau type `AlundraPlayerStats`, une seule instance `readonly` sur `AlundraGameState` (aliasing de §1.5 bis reproduit par construction) ; les cinq setters bornés sur `AlundraPlayerManager`, là où l'original les met, transcrits avec `0x33`/`0x32` littéraux et l'ordre des tests d'origine ; `InitializeNewGameStats` et `LoadDebugStats` pour la recette. Verifier : chaque borne comparée ligne à ligne, sonde indépendante hors dépôt sur les bords, rien d'indexé, périmètre respecté. **P3 corrigé en session principale** : cinq citations décalées d'une ligne, vérifiées de mes yeux, suite relancée. **P4 différés** : identité d'instance non testée après remise à zéro ; abaisser un plafond ne re-borne pas la valeur courante, fidèle mais non verrouillé par un test. **Reconfirmation** de l'inversion et de la cadence faite en parallèle sur le C# translittéré, voir §6 points 2 et 4 : la cadence tient, la phase des pips est une question pour l'auteur. |
+| 2026-09-19 | **C1 livrée, verifier CONFIRMED, 853/853** (840 + 13). `AlundraHudDirector` sur le patron E12, états nommés par effet (`Idle` 0, `Displayed` 1, `Closing` 3, `Opening` 5), les trois branches du déclencheur dans l'ordre d'origine, la branche `0x400000` instantanée et la branche du loquet réarmée à chaque image, le tween entier avec troncature vers zéro, les quatre compteurs aux cadences de §1.4, index d'image par pip derrière la table d'unisson de §6 point 4. Accroche dans `AlundraWorldProxy` par `InstallHudSystems` et une boucle `Tick()` par tick logique, à la suite du dialogue. **Verifier** : sonde hors dépôt réimplémentant le tween depuis `UIManager.cs:968-993`, les deux tables de §1.3 retrouvées à l'entier près dans les deux sens et prouvées produites par le tween et non recopiées ; machine d'états comparée ligne à ligne à `GraphicManager.cs:1656-1672` et `HudManager.cs:223-239` ; cadences rejouées sans partager de constante. **P3 corrigés en session principale** : grappe de citations décalées dans le directeur, et résumé de documentation d'`InstallDialogueSystems` déplacé par erreur sous `InstallHudSystems`. **P4 accepté** : le test « écran modal » ouvre le directeur de dialogue plutôt qu'un vrai `IUIScreen`, la pile d'écrans n'étant pas pilotable sans tête ; la condition tient sur le fond, la boucle du HUD vivant hors de la pile. **Découverte** : bruitages 8 et 9 du rattrapage non portés, voir §6 point 5. |
