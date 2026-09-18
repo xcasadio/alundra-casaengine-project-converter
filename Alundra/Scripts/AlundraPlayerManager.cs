@@ -641,4 +641,146 @@ public static class AlundraPlayerManager
 
     public static void Tick(AlundraEntityScriptProxy player, int ticks)
         => AlundraScriptedMotion.TickPlayer(player, ticks);
+
+    // ---------------------------------------------------------------------------------------------
+    // E13 C0 (docs/plan-e13-hud.md): the five player-stat setters, ported from PlayerManager.cs's own
+    // SetPlayerHpMax/SetPlayerHp/SetPlayerMpMax/SetPlayerMp/SetMoney (address comments kept from that
+    // file). The IsGodMode overrides inside SetPlayerHpMax/SetPlayerHp (PlayerManager.cs:1725-1728,
+    // :1751-1754) are OUT OF SCOPE for C0 (docs/plan-e13-hud.md, C0's own "hors périmètre") - this DLL
+    // carries no IsGodMode flag yet, so there is nothing to gate on.
+    // ---------------------------------------------------------------------------------------------
+
+    /// <summary>PlayerManager.SetPlayerHpMax (0x8004dc68, PlayerManager.cs:1705-1731, IsGodMode override
+    /// at :1725-1729 excluded, see this method group's own header comment). Ceiling 50 (0x32/0x33 in the
+    /// original: any value &gt;= 51 becomes 50), floor 0.</summary>
+    public static int SetPlayerHpMax(AlundraGameState state, int hpMax)
+    {
+        var stats = state.PlayerStats;
+
+        if (hpMax < 0x33)
+        {
+            stats.HpMax = hpMax < 0 ? (short)0 : (short)hpMax;
+        }
+        else
+        {
+            stats.HpMax = 0x32;
+        }
+
+        return stats.HpMax;
+    }
+
+    /// <summary>PlayerManager.SetPlayerHp (0x8004dd30, PlayerManager.cs:1734-1761, IsGodMode override at
+    /// :1751-1755 excluded). Clamped to
+    /// <c>[0, HpMax]</c> - not to a fixed constant, to whatever <see cref="AlundraPlayerStats.HpMax"/>
+    /// currently holds.</summary>
+    public static int SetPlayerHp(AlundraGameState state, short amount)
+    {
+        var stats = state.PlayerStats;
+
+        if (stats.HpMax < amount)
+        {
+            stats.Hp = stats.HpMax;
+        }
+        else if (amount < 0)
+        {
+            stats.Hp = 0;
+        }
+        else
+        {
+            stats.Hp = amount;
+        }
+
+        return stats.Hp;
+    }
+
+    /// <summary>PlayerManager.SetPlayerMpMax (0x8004ddf4, PlayerManager.cs:1791-1811). Ceiling 4 (any
+    /// value &gt;= 5 becomes 4), floor 0, clamped on both sides per docs/plan-e13-hud.md §1.5.</summary>
+    public static int SetPlayerMpMax(AlundraGameState state, short mpMax)
+    {
+        var stats = state.PlayerStats;
+
+        if (mpMax < 5)
+        {
+            stats.MpMax = mpMax < 0 ? (short)0 : mpMax;
+        }
+        else
+        {
+            stats.MpMax = 4;
+        }
+
+        return stats.MpMax;
+    }
+
+    /// <summary>PlayerManager.SetPlayerMp (0x8004debc, PlayerManager.cs:1813-1829). Clamped to <c>[0,
+    /// MpMax]</c>, same shape as
+    /// <see cref="SetPlayerHp"/>.</summary>
+    public static int SetPlayerMp(AlundraGameState state, short amount)
+    {
+        var stats = state.PlayerStats;
+
+        if (stats.MpMax < amount)
+        {
+            stats.Mp = stats.MpMax;
+        }
+        else if (amount < 0)
+        {
+            stats.Mp = 0;
+        }
+        else
+        {
+            stats.Mp = amount;
+        }
+
+        return stats.Mp;
+    }
+
+    /// <summary>PlayerManager.SetMoney (0x8004df80, PlayerManager.cs:1671-1690). Clamped to
+    /// <c>[0, 9999]</c> - the original checks <c>amount &lt; 10000</c> then floors negative amounts at 0;
+    /// since <paramref name="amount"/> never legitimately exceeds 9999 in play, the net effect is the
+    /// symmetric clamp docs/plan-e13-hud.md §1.5 describes.</summary>
+    public static int SetMoney(AlundraGameState state, short amount)
+    {
+        var stats = state.PlayerStats;
+
+        if (amount < 10000)
+        {
+            stats.Money = amount < 0 ? (short)0 : amount;
+        }
+        else
+        {
+            stats.Money = 9999;
+        }
+
+        return stats.Money;
+    }
+
+    /// <summary>New Game stat reset - port of the <c>SlotData == 0</c> branch's own five setter calls
+    /// (GameInitializer.cs:372-376): <c>SetPlayerHpMax(10); SetPlayerHp(10); SetPlayerMpMax(0);
+    /// SetPlayerMp(0); SetMoney(0)</c>. <see cref="AlundraPlayerStats"/>'s own field initializers already
+    /// match this exact outcome, so this method exists for callers that need to reset stats on an
+    /// ALREADY-CONSTRUCTED <see cref="AlundraGameState"/> (e.g. a New-Game flow reusing the session
+    /// singleton) rather than relying on construction-time defaults.</summary>
+    public static void InitializeNewGameStats(AlundraGameState state)
+    {
+        SetPlayerHpMax(state, 10);
+        SetPlayerHp(state, 10);
+        SetPlayerMpMax(state, 0);
+        SetPlayerMp(state, 0);
+        SetMoney(state, 0);
+    }
+
+    /// <summary>The debugging stat set from GameInitializer.cs's own <c>else // unused, only for
+    /// debugging</c> branch (<c>SlotData != 0</c>, GameInitializer.cs:378-392): <c>SetPlayerHpMax(45);
+    /// SetPlayerHp(38); SetPlayerMpMax(3); SetPlayerMp(2); SetMoney(2163)</c>. Never reached by the
+    /// shipped game (no code path sets <c>SlotData</c> to that branch's value) - exposed here only so
+    /// E13's recette (docs/plan-e13-hud.md, D-E13-6) can exercise a long partial heart bar, a partial
+    /// magic gauge under its ceiling, and four non-zero money digits.</summary>
+    public static void LoadDebugStats(AlundraGameState state)
+    {
+        SetPlayerHpMax(state, 45);
+        SetPlayerHp(state, 38);
+        SetPlayerMpMax(state, 3);
+        SetPlayerMp(state, 2);
+        SetMoney(state, 2163);
+    }
 }

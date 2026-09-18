@@ -138,6 +138,12 @@ L'état animé vit dans `g_playerDataHud[10]`, distinct des vraies valeurs de je
 > **Réserve à lever en C0** : la ligne active de `:634-646` est une reconstruction du translittérateur,
 > l'original `BYTE_ARRAY_800a3238` étant commenté à `:644-645`. La cadence de 10 est donc à
 > reconfirmer sur le désassemblage brut en même temps que l'inversion de noms de §1.2.
+>
+> **Levée en C0 le 2026-09-19, autant qu'elle peut l'être sans Ghidra.** Le `/ 10` et le `% 4` sont
+> bien d'origine : `if (x < 0) x += 3` puis `% 4` est l'idiome Ghidra du modulo 4 signé, la ligne
+> commentée `:645` en porte la forme canonique, et `:650-654` recalculent le même index sans
+> l'utiliser, code mort typique du décompilateur. Ce qui est reconstruit, c'est la correspondance
+> phase → image, voir le point ouvert 4 de §6.
 
 ### 1.5 Ce qui varie, et de combien
 
@@ -302,7 +308,7 @@ Arbitrées avec l'auteur le 2026-09-18, avant rédaction. Ne pas re-débattre.
 
 Un committeur par dépôt, ordre strict. Une tranche égale un commit plus un verifier frais.
 
-### ⏳ C0 — DLL : l'état joueur
+### ✅ C0 — DLL : l'état joueur (verifier CONFIRMED, 840/840)
 
 **But** : les cinq grandeurs existent et se comportent comme l'original.
 
@@ -417,8 +423,29 @@ elle se referme avant un fondu. Suites `Alundra.Tests` et `CasaEngine.Tests` ver
 
 1. **Le propriétaire de l'échelle pixel.** `UIScaler` calcule une échelle appliquée à rien, MGUI met
    en page en pixels bruts, le projet est en 320×236 magnifié 4 fois. À trancher en C2.
-2. **L'inversion de noms** de §1.2, à reconfirmer en C0.
+2. **L'inversion de noms** de §1.2 — **reconfirmée en C0 le 2026-09-19**, mais sur le C# translittéré,
+   pas sur le désassemblage brut : aucun export texte n'existe dans le dépôt, seul le projet Ghidra
+   binaire. Trois dérivations indépendantes du tween convergent : les six appelants de
+   `InitializeHudPositionBeforeHide` sont tous des retours au jeu normal et les quatre de
+   `InitializeHudPosition` des sorties du jeu normal ; seule la première arme le rendu par
+   `SetTransitionType(1)` ; le loquet `GameFlags[0x33] & 0x40000000` est posé par la demande
+   d'activation qui appelle la première. Risque résiduel, non levable sans Ghidra : que le
+   translittérateur ait interverti les deux corps, peu crédible vu le commentaire d'adresse
+   `HudManager.cs:41`. **Les états du portage sont nommés par effet**, jamais par ces deux noms.
 3. **Le flash de palette commenté**, gelé par D-E13-7, à rouvrir seulement si la recette le réclame.
+4. **La phase des quatre pips de magie — QUESTION À L'AUTEUR, seule Ghidra tranche.** La cadence
+   (1 image / 10, cycle de 4) est bien d'origine : idiome Ghidra du modulo signé, code mort résiduel
+   à `HudManager.cs:650-654`. Mais la correspondance phase → image, elle, est une reconstruction :
+   la ligne active `u0 = phase * 8` remplace deux indirections commentées à `:644-645`,
+   `g_inventoryWeaponIconX[i * 4 + phase] * 20` dans `BYTE_ARRAY_800a3238`, cette dernière déclarée
+   commentée `//useless` à `StaticVariables.cs:12253-12254`. Or `g_inventoryWeaponIconX` existe
+   (`:12272-12275`) et ses seize premiers octets, relus en petit-boutien, donnent
+   `0,1,2,3 / 1,2,3,0 / 2,3,0,1 / 3,0,1,2` : une table de rotation, donc **un décalage de phase par
+   pip**, une ondulation. La reconstruction, elle, fait frétiller les quatre pips à l'unisson. Cette
+   relecture en octets d'un `short[]` est une **déduction**, pas une lecture. C1 fige la cadence et
+   le cycle et expose un index d'image **par pip** derrière une table de phase constante ; C3 ne
+   remplit cette table qu'après réponse de l'auteur sur `0x800a3238` et sur le type réel de
+   `g_inventoryWeaponIconX`. Par défaut, C1 porte ce que la ligne active dit : l'unisson.
 
 ---
 
@@ -430,3 +457,5 @@ elle se referme avant un fondu. Suites `Alundra.Tests` et `CasaEngine.Tests` ver
 | 2026-09-18 | D-E13-1 à D-E13-7 arbitrées avec l'auteur. Plan rédigé. |
 | 2026-09-18 | Relecture adverse de clôture : **REVISE**, un P1 et trois P2, **tous acceptés et corrigés**. (1) P1 — `g_playerStats` et `g_saveData.PlayerStats` sont le **même** objet, aliasé à `GameInitializer.cs:445` : ma mise en garde disait l'inverse, et les valeurs citées étaient fausses. §1.5 bis réécrite, acceptation de C0 retournée. (2) Les deux contournements sont sous garde `IsGodMode` : garde ajoutée, et C0 les met explicitement hors périmètre plutôt que de porter un drapeau qu'elle n'a pas. (3) D-E13-5 prescrivait encore les images clés que §1.8 bis réfute : amendée et supersédée sur ce point. (4) La fermeture ne produit **pas** l'ouverture à l'envers, la troncature entière penchant vers zéro : seconde table ajoutée en §1.3, recalculée à la main, et §4 et C3 pointent désormais une table par sens. **Deuxième REVISE consécutif : plafond atteint, pas de nouvelle soumission.** Le plan part à l'auteur avec ces corrections. |
 | 2026-09-18 | Première relecture adverse : **REVISE**, quatre blocages P2, tous acceptés et corrigés. (1) Cadence du pip de magie fausse, 10 images et non 4, §1.4 corrigé et citée. (2) Acceptation de C0 pointant un objet non défini, §1.5 bis ajoutée et revérifiée ligne à ligne. (3) Les images clés MGUI interpolent, donc le verbatim n'était pas atteignable par le moyen retenu : D-E13-8 ajoutée, §1.8 bis ajoutée, C1 et C3 réécrites, arrêts élargis. (4) Les 33 tuiles viennent de deux sites d'extraction et non d'un, §0.2 corrigé. Aucun blocage écarté. |
+| 2026-09-19 | **Exécution lancée** sur approbation de l'auteur, une tranche par workflow, executor sonnet, verifier opus, un commit par tranche. |
+| 2026-09-19 | **C0 livrée, verifier CONFIRMED, 840/840** (815 + 25). Nouveau type `AlundraPlayerStats`, une seule instance `readonly` sur `AlundraGameState` (aliasing de §1.5 bis reproduit par construction) ; les cinq setters bornés sur `AlundraPlayerManager`, là où l'original les met, transcrits avec `0x33`/`0x32` littéraux et l'ordre des tests d'origine ; `InitializeNewGameStats` et `LoadDebugStats` pour la recette. Verifier : chaque borne comparée ligne à ligne, sonde indépendante hors dépôt sur les bords, rien d'indexé, périmètre respecté. **P3 corrigé en session principale** : cinq citations décalées d'une ligne, vérifiées de mes yeux, suite relancée. **P4 différés** : identité d'instance non testée après remise à zéro ; abaisser un plafond ne re-borne pas la valeur courante, fidèle mais non verrouillé par un test. **Reconfirmation** de l'inversion et de la cadence faite en parallèle sur le C# translittéré, voir §6 points 2 et 4 : la cadence tient, la phase des pips est une question pour l'auteur. |

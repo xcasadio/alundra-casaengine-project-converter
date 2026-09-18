@@ -154,6 +154,15 @@ public sealed class AlundraGameState
     public int InteractLatchPlayerZ;
     public uint InteractLatchDirection;   // g_lastWarpDirection <- player.TargetDirection
 
+    /// <summary>
+    /// E13 C0 (docs/plan-e13-hud.md §1.5 bis): port of the original's <c>g_playerStats</c>/
+    /// <c>g_saveData.PlayerStats</c> - a SINGLE aliased object in the original (GameInitializer.cs:444-445),
+    /// so a single field here, never a separate "save" and "current" pair. See
+    /// <see cref="AlundraPlayerStats"/>'s own doc for why the object lives here and its setters live on
+    /// <see cref="AlundraPlayerManager"/>.
+    /// </summary>
+    public readonly AlundraPlayerStats PlayerStats = new();
+
     /// <summary>Persistent save-game flags (<c>g_saveData.GameFlags</c>) - all zero, matching New Game.</summary>
     public readonly uint[] GameFlags = new uint[WordCount];
 
@@ -262,5 +271,9 @@ public sealed class AlundraGameState
 
         // T3 (docs/plan-transitions-carte.md, point 5) - see InstallForMapEntry's own comment above.
         IsWarpDisabled = false;
+
+        // E13 C0: PlayerStats is a session-scoped object like everything else above - reset it too so
+        // tests do not leak stat values into each other through Instance.
+        PlayerStats.ResetForTests();
     }
 }
