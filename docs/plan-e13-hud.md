@@ -88,19 +88,33 @@ Le déplacement passe par le tween générique `UIManager.UpdateUiBoxesPosition`
 
 ### 1.3 La suite exacte des positions
 
-L'interpolation est en **arithmétique entière** (`UIManager.cs:989`). Avec les valeurs d'armement
-mesurées, la suite des ordonnées affichées est :
+L'interpolation est en **arithmétique entière** (`UIManager.cs:988-989`), avec troncature **vers
+zéro**. Chaque transition a donc **sa propre suite**, et la fermeture n'est **pas** l'ouverture à
+l'envers : sur un delta négatif la troncature penche dans l'autre sens.
+
+**Ouverture** — `y = -41`, `startY = 16`, `speed = 15` :
 
 ```
--41  -38  -34  -30  -26  -22  -19  -15  -11  -7  -3  0  4  8  12
+-41  -38  -34  -30  -26  -22  -19  -15  -11  -7  -3  0  4  8  12    puis 16
 ```
 
-puis **16**, atteint au 16e appel et tenu deux appels de plus. Les pas font 3 ou 4 pixels selon la
-troncature, **jamais uniformes**. Total : **18 images rendues** par transition, ouverture et
-fermeture confondues.
+**Fermeture** — `y = 16`, `startY = -41`, `speed = 15` :
+
+```
+16  13  9  5  1  -3  -6  -10  -14  -18  -22  -25  -29  -33  -37    puis -41
+```
+
+La valeur finale est atteinte au 16e appel et tenue deux appels de plus, dans les deux sens. Les pas
+font 3 ou 4 pixels selon la troncature, **jamais uniformes**. Total : **18 images rendues** par
+transition.
 
 C'est cette suite, et non la seule durée, qui décide si le verbatim est atteignable. Une
 interpolation continue ne la reproduit pas.
+
+> **Correction de relecture adverse (2026-09-18).** La première rédaction ne donnait qu'une table et
+> déclarait « ouverture et fermeture confondues ». C'est faux. Les deux suites ci-dessus ont été
+> recalculées à la main depuis la formule et les valeurs d'armement, indépendamment de la
+> reconnaissance. Une seule table aurait donné un test de fermeture sans référence juste.
 
 ### 1.4 Les cadences des compteurs
 
@@ -155,15 +169,27 @@ commenté suggère un flash de palette au gain ou à la perte : non confirmé ac
 Relevé en relecture adverse puis revérifié ligne à ligne le 2026-09-18. C'est la liste que
 l'acceptation de C0 doit couvrir, ni plus ni moins.
 
-| Site | Ce qu'il fait |
-|---|---|
-| `Gameplay/EntityManager.cs:373-374` | écrit `PlayerEntity.Hp = HpMax` et `g_playerStats.Mp = MpMax` **en direct**, sans passer par les setters, donc sans clamp |
-| `Gameplay/PlayerManager.cs:1725-1728` et `:1751-1754` | surcharge `IsGodMode` **à l'intérieur** des setters : remet `Hp` à `HpMax` après coup |
+**Les deux sites sont sous garde de mode invincible**, et seulement là. Ils sont hors périmètre d'E13
+(voir la note de C0), et relevés ici pour qui portera le combat.
 
-> **Piège à ne pas reproduire.** `GameInitializer.cs:446-450` remet vie, magie et argent à zéro, mais
-> il écrit `g_saveData.PlayerStats`, qui **n'est pas** `g_playerStats`. Ce sont deux objets distincts :
-> l'un est la sauvegarde, l'autre l'état courant lu par le HUD (§1.7). Le portage doit les garder
-> séparés, sans quoi la jauge affichera la sauvegarde.
+| Site | Garde | Ce qu'il fait |
+|---|---|---|
+| `Gameplay/EntityManager.cs:371-375` | `if (IsGodMode)` à `:371` | écrit `PlayerEntity.Hp = HpMax` et `g_playerStats.Mp = MpMax` **en direct**, sans passer par les setters, donc sans clamp |
+| `Gameplay/PlayerManager.cs:1725-1728` et `:1751-1754` | `if (IsGodMode)` | surcharge **à l'intérieur** des setters : remet `Hp` à `HpMax` après coup |
+
+> **Le vrai piège, et il est l'inverse de ce que j'avais écrit.** `g_playerStats` et
+> `g_saveData.PlayerStats` sont **le même objet**. `GameInitializer.cs:444-445` alloue
+> `g_saveData.PlayerStats = new PlayerStats()` puis pose immédiatement
+> `g_playerStats = g_saveData.PlayerStats`, et `PlayerStats` est un type référence
+> (`Gameplay/PlayerStats.cs:3`). Les écritures qui suivent en `:446-450` portent donc sur l'unique
+> instance partagée, et elles valent `HpMax = 1`, `Hp = 1`, `MpMax = 0`, `Mp = 0`, `MoneyAmount = 0`.
+>
+> **Règle pour le portage** : une seule instance possédée, partagée entre la sauvegarde et l'état
+> courant. Toute divergence serait un écart délibéré à justifier, pas un détail d'implémentation.
+>
+> La première rédaction affirmait deux objets distincts et des valeurs à zéro. Les deux étaient faux,
+> déduits d'une fenêtre de lecture qui commençait une ligne trop bas. Relecture adverse du
+> 2026-09-18, revérifiée ligne à ligne.
 
 **Le jeu de valeurs de débogage** dont dépend D-E13-6 vit dans la branche marquée
 `// unused, only for debugging` de `GameInitializer.cs:378-392` :
@@ -265,7 +291,7 @@ Arbitrées avec l'auteur le 2026-09-18, avant rédaction. Ne pas re-débattre.
 | D-E13-2 | **Aucune cuisson** : réemployer les `.sprite` déjà exportés | Le convertisseur n'est pas touché. Pas de nouvel actif, pas de preuve d'export à produire |
 | D-E13-3 | **Fidélité verbatim** de la machine d'ouverture et de fermeture | Les 18 images et la suite entière de positions sont reproduites, pas approchées |
 | D-E13-4 | **MGUI porte toutes les animations**, y compris les deux cycles de 4 images | Animation2d est écarté pour E13. Aucun pont, aucun émetteur à écrire |
-| D-E13-5 | **Le HUD est un élément dans une fenêtre hôte**, animé par images clés | Seule structure qui rend D-E13-3 atteignable |
+| D-E13-5 | **Le HUD est un élément dans une fenêtre hôte**, jamais une fenêtre | Une fenêtre n'honore pas `RenderTransform` et sa cible de translation est `internal` (§1.8). **Amendée le 2026-09-18** : la mention « animé par images clés » est retirée, supersédée sur ce point par D-E13-8. Seule la structure élément-dans-fenêtre-hôte subsiste |
 | D-E13-6 | **Recette par les valeurs de débogage** de l'initialisation | Aucun script ne crédite d'argent avant E14 |
 | D-E13-7 | **Le flash de palette commenté reste gelé** | Non confirmé actif, et ses tuiles intermédiaires sont absentes des pixels de `wind.png` |
 | D-E13-8 | **Le tick logique possède tout le temps du HUD. MGUI dessine.** | Ajoutée le 2026-09-18 après relecture adverse, voir §1.8 bis. Le directeur pose la translation et l'index d'image à chaque tick ; aucune animation MGUI n'est jouée pour la jauge. Rend D-E13-3 atteignable par construction, supprime la dérive entre l'horloge temps réel et le tick, et rend inutile le câblage de `IsPaused` |
@@ -288,9 +314,13 @@ plancher 0, clamp des deux côtés. Argent clampé à `[0, 9999]`. Initialisatio
 **Reconfirmer ici** : l'inversion de noms de §1.2, sur le désassemblage brut, avant que C1 ne fige les
 noms d'états.
 
-**Acceptation** : tests unitaires sur chaque borne de §1.5, plus un test par site de §1.5 bis
-montrant que le portage reproduit le contournement observé. Un test montrant que l'état courant et la
-sauvegarde restent deux objets distincts. Suite `Alundra.Tests` verte.
+**Hors périmètre, explicitement** : le mode invincible et les deux contournements de §1.5 bis. Ils ne
+sont pas requis pour afficher la jauge, et C0 ne porte pas le drapeau qui les active. Ils restent
+documentés en §1.5 bis pour le chantier qui portera le combat.
+
+**Acceptation** : tests unitaires sur chaque borne de §1.5. Un test montrant que la sauvegarde et
+l'état courant **partagent la même instance**, conformément à §1.5 bis. Un test posant le jeu de
+valeurs de débogage et relisant 38 sur 45, 2 sur 3 et 2163. Suite `Alundra.Tests` verte.
 
 ### ⏳ C1 — DLL : le directeur de session du HUD
 
@@ -335,10 +365,11 @@ table de §1.3, et pose `FrameIndex` pour le pip de magie et l'icône de pièce 
 La grille d'images de MGUI (`FrameGrid`) reste le moyen de rendu des deux cycles. **Aucune animation
 MGUI n'est jouée**, donc aucune horloge à câbler et aucune interpolation à neutraliser.
 
-**Acceptation** : un test relève les 18 valeurs successives produites par le directeur et les compare
-une à une à la suite de §1.3. **Égalité exacte exigée**, ce sont des entiers. Un second test relève
-les index d'image sur 40 ticks et vérifie les cadences de §1.4, pip de magie compris à sa valeur
-corrigée.
+**Acceptation** : **deux** tests de position, un par sens, comparant les 18 valeurs successives
+produites par le directeur à **sa** table de §1.3 — celle d'ouverture pour l'ouverture, celle de
+fermeture pour la fermeture. **Égalité exacte exigée**, ce sont des entiers, et les deux suites
+diffèrent. Un troisième test relève les index d'image sur 40 ticks et vérifie les cadences de §1.4,
+pip de magie compris à sa valeur corrigée.
 
 ### ⏳ C4 — Le HUD sous le fondu
 
@@ -360,9 +391,9 @@ l'argent, les deux transitions, la persistance pendant un dialogue, et la fermet
 ## 4. Acceptation d'ensemble
 
 E13 est close quand, en jeu : la jauge s'affiche aux bonnes positions avec les bons glyphes ; les
-compteurs rattrapent aux cadences de §1.4 ; les deux transitions reproduisent la suite de §1.3 ; la
-jauge continue de tourner pendant un dialogue ; elle se referme avant un fondu. Suites
-`Alundra.Tests` et `CasaEngine.Tests` vertes.
+compteurs rattrapent aux cadences de §1.4 ; **chaque transition reproduit sa propre table de §1.3**,
+l'ouverture la sienne et la fermeture la sienne ; la jauge continue de tourner pendant un dialogue ;
+elle se referme avant un fondu. Suites `Alundra.Tests` et `CasaEngine.Tests` vertes.
 
 ---
 
@@ -397,4 +428,5 @@ jauge continue de tourner pendant un dialogue ; elle se referme avant un fondu. 
 |---|---|
 | 2026-09-18 | Reconnaissance mesurée : 6 surfaces, 18 faits vérifiés indépendamment, 1 critique de complétude. Trois hypothèses de départ réfutées, voir §0. |
 | 2026-09-18 | D-E13-1 à D-E13-7 arbitrées avec l'auteur. Plan rédigé. |
+| 2026-09-18 | Relecture adverse de clôture : **REVISE**, un P1 et trois P2, **tous acceptés et corrigés**. (1) P1 — `g_playerStats` et `g_saveData.PlayerStats` sont le **même** objet, aliasé à `GameInitializer.cs:445` : ma mise en garde disait l'inverse, et les valeurs citées étaient fausses. §1.5 bis réécrite, acceptation de C0 retournée. (2) Les deux contournements sont sous garde `IsGodMode` : garde ajoutée, et C0 les met explicitement hors périmètre plutôt que de porter un drapeau qu'elle n'a pas. (3) D-E13-5 prescrivait encore les images clés que §1.8 bis réfute : amendée et supersédée sur ce point. (4) La fermeture ne produit **pas** l'ouverture à l'envers, la troncature entière penchant vers zéro : seconde table ajoutée en §1.3, recalculée à la main, et §4 et C3 pointent désormais une table par sens. **Deuxième REVISE consécutif : plafond atteint, pas de nouvelle soumission.** Le plan part à l'auteur avec ces corrections. |
 | 2026-09-18 | Première relecture adverse : **REVISE**, quatre blocages P2, tous acceptés et corrigés. (1) Cadence du pip de magie fausse, 10 images et non 4, §1.4 corrigé et citée. (2) Acceptation de C0 pointant un objet non défini, §1.5 bis ajoutée et revérifiée ligne à ligne. (3) Les images clés MGUI interpolent, donc le verbatim n'était pas atteignable par le moyen retenu : D-E13-8 ajoutée, §1.8 bis ajoutée, C1 et C3 réécrites, arrêts élargis. (4) Les 33 tuiles viennent de deux sites d'extraction et non d'un, §0.2 corrigé. Aucun blocage écarté. |
