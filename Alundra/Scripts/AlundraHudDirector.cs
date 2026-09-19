@@ -43,8 +43,13 @@ public sealed class AlundraHudDirector
     //   word 0x33 bit 30 (mask 0x40000000) -> id (0x33<<5)+30 = 1662 - the persistent "already armed" latch.
     // 1813 and 1814 share IndexOf (56 = 0x38, same word) - only their mask differs; 1662 is a separate
     // word (51 = 0x33). All three id < 0x8000, confirmed persistent-bank by AlundraGameState.cs:196.
-    private const uint ScriptOpenRequestFlag = 1813;
-    private const uint ScriptOpenRequestMask = 0x200000;
+    // internal (widened from private, S2's base extraction rule - same shape as AlundraWorldProxy's own
+    // DebugCameraPanEnabled): E13 C5.a's ALUNDRA_HUD_DEBUG recipe (AlundraWorldProxy.AdoptPlayerPawn)
+    // raises this exact request through AlundraGameState.AddFlag, exactly as a map script's opcode 0x05
+    // would - reusing these two constants keeps the flag id/mask a single source of truth between the
+    // consumer (here) and that one other producer.
+    internal const uint ScriptOpenRequestFlag = 1813;
+    internal const uint ScriptOpenRequestMask = 0x200000;
     private const uint ScriptCloseRequestFlag = 1814;
     private const uint ScriptCloseRequestMask = 0x400000;
     private const uint PersistentLatchFlag = 1662;
