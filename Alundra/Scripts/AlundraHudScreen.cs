@@ -16,10 +16,17 @@ namespace Alundra.Scripts;
 
 /// <summary>
 /// E13 C2 (docs/plan-e13-hud.md, tranche "Écran MGUI : la composition statique"): the non-modal screen
-/// that draws the permanent jauge from <see cref="AlundraHudDirector"/>'s own DISPLAYED state, read every
-/// frame in <see cref="Update"/> - this screen never ticks anything itself (mission item 2: "L'écran ne
-/// fait que dessiner"), and reads <see cref="AlundraHudDirector.MagicPipFrame"/>/<see cref="AlundraHudDirector.CoinIconFrame"/>
-/// only as already-computed inputs to <see cref="AlundraHudComposer"/>.
+/// that draws the permanent jauge from <see cref="AlundraHudDirector"/>'s own DISPLAYED state, and reads
+/// <see cref="AlundraHudDirector.MagicPipFrame"/>/<see cref="AlundraHudDirector.CoinIconFrame"/> only as
+/// already-computed inputs to <see cref="AlundraHudComposer"/>.
+///
+/// <b>E13 C3 update (D-E13-8)</b>: this screen no longer refreshes itself from <see cref="Update"/> - that
+/// method is now deliberately EMPTY (see its own doc). Every refresh is now PUSHED into this screen through
+/// <see cref="IAlundraHudView"/> by an external <see cref="AlundraHudPresenter"/>, ticked once per LOGIC
+/// tick from <see cref="AlundraWorldProxy.Update(float)"/> - never from this screen's own rendered-frame
+/// <c>Update</c>, which <see cref="CasaEngine.Framework.UI.ScreenStack"/> freezes for every screen below a
+/// modal one (<c>ScreenStack.cs:5-13</c>). This screen itself still owns the pool, the sprite lookup and
+/// the pixel-scale factor (D-E13-9) - only the DECISION of when to refresh moved out.
 ///
 /// <b>Why a single <see cref="MGCanvas"/> panel, D-E13-5</b>: the plan requires the jauge be ONE element
 /// inside its host window, because C3 will translate it via <c>RenderTransform.Translation</c>, which a
@@ -58,7 +65,7 @@ namespace Alundra.Scripts;
 /// actually used - this screen never constructs a <c>DrawSettings</c> of its own, so there is nothing here
 /// that could override that default to linear.
 /// </summary>
-public sealed class AlundraHudScreen : UIScreenBase
+public sealed class AlundraHudScreen : UIScreenBase, IAlundraHudView
 {
     // AlundraDisplay.cs:32 - "public const int NativeWidth = 320;" - re-declared, not referenced, this
     // DLL never depends on the converter project (mission's own "ne jamais toucher... converter").
@@ -92,10 +99,17 @@ public sealed class AlundraHudScreen : UIScreenBase
     private readonly MGImage[] _pool = new MGImage[MaxTileCount];
 
     private MGWindow? _window;
+    private MGCanvas? _canvas;
     private int _pixelScale = 1;
 
     public override UILayer Layer => UILayer.HUD;
     public override bool IsModal => false;
+
+    /// <summary>E13 C3 (docs/plan-e13-hud.md, <see cref="IAlundraHudView"/>): D-E13-9's own integer
+    /// pixel-scale factor, exposed so <see cref="AlundraHudPresenter"/> can fold it into the translation it
+    /// pushes - this screen still OWNS the factor (set once in <see cref="OnInitialize"/>), the presenter
+    /// only reads it.</summary>
+    int IAlundraHudView.PixelScale => _pixelScale;
 
     public AlundraHudScreen(AlundraHudDirector director, AssetContentManager assetContentManager)
     {
@@ -126,7 +140,7 @@ public sealed class AlundraHudScreen : UIScreenBase
         _window.BorderThickness = new Thickness(0);
         _window.BackgroundBrush.NormalValue = new MGSolidFillBrush(Color.Transparent);
 
-        var canvas = new MGCanvas(_window);
+        _canvas = new MGCanvas(_window);
 
         // Placeholder resource so the pool's MGImage constructor has a real (struct) MGTextureData to
         // start from - ApplyTile overwrites Source with the real sprite the first time each slot is
@@ -147,16 +161,36 @@ public sealed class AlundraHudScreen : UIScreenBase
             };
 
             _pool[i] = image;
-            canvas.TryAddChild(image, left: 0, top: 0);
+            _canvas.TryAddChild(image, left: 0, top: 0);
         }
 
-        _window.SetContent(canvas);
-        RefreshFromDirector();
+        _window.SetContent(_canvas);
+
+        // E13 C3: seed this screen's first rendered frame from the director's state AT WIRING TIME, so it
+        // does not show stale placeholder tiles for the one frame between this call and the presenter's
+        // own first Tick() (production call order: AlundraWorldProxy.TryWireHudScreenOnce pushes this
+        // screen and attaches the presenter in the SAME Update call, strictly BEFORE that call's own
+        // hudTick loop runs - see AlundraWorldProxy's own doc). Every LATER refresh belongs to the
+        // presenter alone (Update below is deliberately empty).
+        ((IAlundraHudView)this).SetVisible(_director.IsDrawn);
+        ApplyTiles(AlundraHudComposer.Compose(
+            _director.IsDrawn,
+            _director.Hp, _director.HpMax, _director.TrueHpMax, _director.HpDisplayPreviewIncrement,
+            _director.Mp, _director.MpMax, _director.MpDisplayPreviewIncrement,
+            _director.Money, _director.CoinIconFrame,
+            _director.MagicPipFrame));
     }
 
+    /// <summary>E13 C3 (docs/plan-e13-hud.md, D-E13-8, mission item 2): deliberately EMPTY.
+    /// <see cref="AlundraHudPresenter"/> now owns every refresh after the initial seed in
+    /// <see cref="OnInitialize"/>, ticked once per LOGIC tick from <see cref="AlundraWorldProxy.Update(float)"/> -
+    /// never from this rendered-frame callback, which <see cref="CasaEngine.Framework.UI.ScreenStack"/>
+    /// freezes for every screen below a modal one (<c>ScreenStack.cs:5-13</c>). That freeze is exactly what
+    /// used to gate this screen's own former <c>RefreshFromDirector</c> call here (C2's own left-behind P3):
+    /// a modal <c>DialogueScreen</c> would have frozen the jauge mid-catch-up for as long as the
+    /// conversation lasted.</summary>
     public override void Update(GameTime gameTime)
     {
-        RefreshFromDirector();
     }
 
     public override IEnumerable<MGWindow> GetWindows()
@@ -167,22 +201,40 @@ public sealed class AlundraHudScreen : UIScreenBase
         }
     }
 
-    /// <summary>Count of <see cref="RefreshFromDirector"/> calls where <see cref="AlundraHudComposer.Compose"/>
+    /// <summary>E13 C3 (<see cref="IAlundraHudView"/>): collapses/shows the WHOLE jauge element at once -
+    /// the porteur <see cref="MGCanvas"/> itself, not just the per-tile <see cref="Visibility.Collapsed"/>
+    /// an empty tile list already produces (mission item 4.d: both mechanisms agree when
+    /// <paramref name="visible"/> is false, this one is the explicit one the mission asks for).</summary>
+    void IAlundraHudView.SetVisible(bool visible)
+    {
+        if (_canvas != null)
+        {
+            _canvas.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+        }
+    }
+
+    /// <summary>E13 C3 (<see cref="IAlundraHudView"/>, D-E13-5): the porteur <see cref="MGCanvas"/> is an
+    /// <c>MGElement</c>, so it (unlike the host <see cref="MGWindow"/>) honours <c>RenderTransform</c>
+    /// (§1.8: "une fenêtre n'honore pas RenderTransform").</summary>
+    void IAlundraHudView.SetTranslation(Vector2 translation)
+    {
+        if (_canvas != null)
+        {
+            _canvas.RenderTransform.Translation = translation;
+        }
+    }
+
+    void IAlundraHudView.SetTiles(IReadOnlyList<AlundraHudTile> tiles) => ApplyTiles(tiles);
+
+    /// <summary>Count of <see cref="ApplyTiles"/> calls where <see cref="AlundraHudComposer.Compose"/>
     /// returned more tiles than <see cref="MaxTileCount"/> - E13 C2 fourth pass's "plus aucune tuile jetée
     /// en silence": a genuine overflow must be observable in every build configuration, not just under
     /// <see cref="Debug.Assert"/> (which no-ops in Release), so this counter is incremented unconditionally
     /// alongside the assert below. Internal so a test can observe it stays zero across a grid of inputs.</summary>
     internal int TileOverflowCount { get; private set; }
 
-    private void RefreshFromDirector()
+    private void ApplyTiles(IReadOnlyList<AlundraHudTile> tiles)
     {
-        var tiles = AlundraHudComposer.Compose(
-            _director.IsDrawn,
-            _director.Hp, _director.HpMax, _director.TrueHpMax, _director.HpDisplayPreviewIncrement,
-            _director.Mp, _director.MpMax, _director.MpDisplayPreviewIncrement,
-            _director.Money, _director.CoinIconFrame,
-            _director.MagicPipFrame);
-
         Debug.Assert(
             tiles.Count <= MaxTileCount,
             $"AlundraHudComposer.Compose returned {tiles.Count} tiles, over the {MaxTileCount}-slot pool " +

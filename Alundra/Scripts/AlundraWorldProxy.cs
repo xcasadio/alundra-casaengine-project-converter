@@ -284,6 +284,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// stays the session-scoped one, this flag only gates the VIEW wiring.</summary>
     private bool _hudScreenWired;
 
+    /// <summary>E13 C3 (docs/plan-e13-hud.md, D-E13-8): the presenter that pushes
+    /// <see cref="AlundraHudDirector"/>'s own per-tick state into whichever <see cref="IAlundraHudView"/> is
+    /// currently wired - null until <see cref="TryWireHudScreenOnce"/> succeeds (production), or until a
+    /// test attaches one directly via <see cref="AttachHudPresenterForTests"/> (the screen itself is not
+    /// constructible headless, same reason <see cref="AlundraDialoguePresenter"/>'s own tests double
+    /// <see cref="IUIViewRuntime"/> instead of a real <c>ScreenStack</c>). Per-proxy, same lifetime as
+    /// <see cref="_hudScreenWired"/> - a new world's screen gets a new presenter over the SAME session-scoped
+    /// <see cref="AlundraHudDirector.Instance"/>.</summary>
+    private AlundraHudPresenter? _hudPresenter;
+
     /// <summary>
     /// This world's own <see cref="TileMapData"/> (resolved once in <see cref="InitializeWithWorld"/>,
     /// same instance <see cref="AlundraCellsCollisionField"/>/<see cref="AdoptPlayerPawn"/> already read) -
@@ -1049,9 +1059,29 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             return; // retry next frame - same reason TryWireDialoguePresenterOnce retries.
         }
 
-        uiView.PushScreen(new AlundraHudScreen(AlundraHudDirector.Instance, assetContentManager));
+        var hudScreen = new AlundraHudScreen(AlundraHudDirector.Instance, assetContentManager);
+        uiView.PushScreen(hudScreen);
+
+        // E13 C3 (D-E13-8): attached in the SAME call as the push, strictly BEFORE this same Update's own
+        // hudTick loop runs (Update(float)'s own call order: TryWireHudScreenOnce, then the tick loop) - so
+        // the presenter's first Tick() this frame already has a live view to push into, matching
+        // AlundraHudScreen.OnInitialize's own "production call order" doc.
+        _hudPresenter = new AlundraHudPresenter(AlundraHudDirector.Instance, hudScreen);
         _hudScreenWired = true;
         Logs.WriteInfo("AlundraWorldProxy: HUD screen wired to the active UI view (post-bootstrap retry).");
+    }
+
+    /// <summary>Test-only seam: attaches an <see cref="AlundraHudPresenter"/> over the SAME session-scoped
+    /// <see cref="AlundraHudDirector.Instance"/> this proxy's own production wiring
+    /// (<see cref="TryWireHudScreenOnce"/>) would use, but against any <see cref="IAlundraHudView"/> -
+    /// typically a recording test double, since a real <see cref="AlundraHudScreen"/> is not constructible
+    /// headless (see <see cref="_hudPresenter"/>'s own doc). Lets a test drive <see cref="Update(float)"/>'s
+    /// real per-tick loop and observe that it keeps pushing into the view regardless of a modal dialogue,
+    /// without needing a live graphics stack - same shape as <see cref="InstallDialogueSystems"/> being
+    /// exposed internal for the identical reason.</summary>
+    internal void AttachHudPresenterForTests(IAlundraHudView view)
+    {
+        _hudPresenter = new AlundraHudPresenter(AlundraHudDirector.Instance, view);
     }
 
     /// <summary>
@@ -1673,6 +1703,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         for (var hudTick = 0; hudTick < ticksThisFrame; hudTick++)
         {
             AlundraHudDirector.Instance.Tick();
+
+            // E13 C3 (D-E13-8): the presenter, PER LOGIC TICK, right next to the director's own Tick()
+            // above and never gated behind any screen-stack Update - AlundraHudScreen's own Update is now
+            // empty (see its own doc) precisely so a modal dialogue's screen-stack freeze cannot reach the
+            // jauge through it. Null until a view is wired (TryWireHudScreenOnce production path, or
+            // AttachHudPresenterForTests in tests) - same tolerated degraded shape as every other
+            // missing-system seam in this DLL.
+            _hudPresenter?.Tick();
         }
 
         // E12.d (D-E12D-2): the player's entity-contact probe, once per logic tick - the port of
