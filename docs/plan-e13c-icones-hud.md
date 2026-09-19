@@ -1,12 +1,12 @@
 # Plan — E13.c : les icônes d'arme et d'accessoire du HUD
 
-**État** : ⏳ rédigé le 2026-09-19, en attente d'approbation. Aucune ligne de code écrite.
+**État** : 🚧 **approuvé par l'auteur le 2026-09-19**, exécution en cours.
 **Naissance** : l'auteur, ayant vu la jauge en jeu, a demandé les deux cases de gauche ; la
 reconnaissance a établi que leurs icônes ne sont **pas exportées** (voir `docs/plan-e13-hud.md`,
 D-E13-1 amendée, et `docs/plan-conversion-totale.md` §E13). Les fonds gouraud sont la tranche C6 du
 plan E13 ; ce plan-ci ne couvre que les icônes.
-**Branches** : `chantier/e13c-icones-hud` dans le parent, l'analyseur (`alundra-datas-analyser`,
-sous-module, branche depuis `master`) et le convertisseur, chacune créée à sa première tranche.
+**Branches** : `chantier/e13-hud` dans le parent, où ce plan vit déjà, et
+`chantier/e13c-portraits` dans l'analyseur, créée depuis `master` le 2026-09-19.
 
 ---
 
@@ -96,8 +96,11 @@ avec la même palette donnent les mêmes pixels (`GameMap.cs:139-152`) ; une int
 différente** est l'arrêt de D-E13C-3. Enfin **l'ordre de dessin est celui de première rencontre**
 (`:111-124`, `:137-141`) : les portraits doivent entrer **strictement après** toute la séquence
 d'`EnumerateImages`, sans quoi une signature déjà produite par les animations changerait de rang et
-pourrait renverser le gagnant d'une cellule partagée. S0 mesure les intersections, S1 fige l'ordre,
-S2 et S3 exigent une preuve au pixel sur toute la planche.
+pourrait renverser le gagnant d'une cellule partagée. S0 devait mesurer les intersections, S1 figer l'ordre,
+S2 et S3 prouver au pixel. **Tout cela est devenu sans objet** : S1.a a mesuré que les 88 portraits
+ont une signature **déjà présente** dans la planche, donc aucun rectangle nouveau, aucune
+intersection, aucun pixel ajouté. Cette section reste pour expliquer pourquoi le régime de preuve
+était si lourd, et pourquoi il ne l'est plus.
 
 `SiImage` (`SiImage.cs:5-22`) n'a **aucun marqueur** « portrait ». `SiImageSet` sait construire un
 jeu de portrait (`isPortrait: true`, `SiImageSet.cs:11, 18-21`, une seule image).
@@ -161,127 +164,157 @@ d'objets, aucune résolution d'icône. Le composeur de C2 ne connaît que 24 gly
 Un committeur par dépôt, ordre strict, une tranche = un commit + un verifier frais. Trois dépôts :
 l'analyseur (S1), le parent avec le convertisseur (S3) et la DLL (S4). Chaque dépôt sur sa branche.
 
-### ⏳ S0 — La mesure préalable (lecture seule)
+### ✅ S0 — La mesure préalable (lecture seule) — faite le 2026-09-19
 
-**But** : ne dimensionner qu'après avoir compté.
+**Résultats mesurés**, table à jour, tout vérifié en session principale sur les données réelles :
 
-**Contenu** : (1) relever les **trois bornes** de §1.3 avec leurs lignes : lignes de la table,
-`g_itemsCount`, entrées de déverrouillage ; lire la colonne 4 pour **toutes** les lignes et établir
-la convention « pas d'icône » (la ligne 0 porte `0xFFFF`, à confirmer sur l'ensemble) ; compter les
-portraits à extraire ; (2) pour chaque valeur d'icône : la **position** dans `SpriteRecords`, le
-`Sector5Id` de cet enregistrement, la clé de banque du convertisseur, et si ce `Sector5Id` est
-dupliqué dans `map_alundra.json`, donc ignoré par `SpriteBankReader` ; (3) pour chaque portrait :
-`Signature`, fenêtre VRAM, palette, taille ; marquer **nouvelle** ou **déjà présente** dans la planche
-et, si présente, quel dossier de banque possède aujourd'hui son `.sprite` ; et surtout **toute
-signature existante dont le rectangle intersecte, sur la même page, celui du portrait**, en
-distinguant même palette, autorisée, et **palette différente, arrêt** (§1.4) ; ainsi que le rang de
-première rencontre de chaque signature existante, pour que S1 prouve qu'il ne change pas ;
-(4) confirmer sur `CreateOriginalSpriteSheetLayout` qu'une image supplémentaire ne déplace aucune
-autre ; (5) relire le `launchSettings.json` de l'extracteur pour le chemin d'entrée réel ;
-(6) capturer le **manifeste baseline** d'`alundra-project/`, une copie de la planche
-`map_alundra_spritesheet.png` de référence, et un `diff -rq` de `data-extracted/` contre le
-miroir, avant toute modification.
+| Fait | Valeur | Source |
+|---|---|---|
+| Lignes de `g_itemsProperties` | **100** | `StaticVariables.cs:737-838` |
+| `g_itemsCount` | **99** | `GameInitializer.cs:470` |
+| Borne de la boucle de déverrouillage | **0x62 = 98**, dernier indice 97 | `GameInitializer.cs:408` |
+| Convention « pas d'icône » | **`0xFFFF` seule**, 11 lignes : 0 et 90 à 99 | `StaticVariables.cs:738`, `:828-837` |
+| Lignes à icône | **89**, contiguës : `icône = itemId + 30` | `:739` (0x1F), `:827` (0x77) |
+| Emplacements d'enregistrements | 257, dont **151 remplis** et 106 nuls | `map_alundra.json` |
+| Position contre `Sector5Id` | **identiques**, 0 divergence | mesuré sur les 151 |
+| `Sector5Id` dupliqués | **0**, donc aucun enregistrement ignoré | `SpriteBankReader.cs:275-289` |
+| Clé de banque | `alundra_<Sector5Id>` | `SpriteBankReader.cs:211`, `:276` |
+| Signatures uniques déjà dans la planche | **693** | ordre d'`EnumerateImages` |
+| Digest de l'ordre de première rencontre | `88616994556bab06a847ba03e37832cfeb1cdc49` | SHA-1 des 693 signatures dans l'ordre |
+| Recouvrements existants, même palette | **205** | entre signatures existantes |
+| Recouvrements existants, palettes différentes | **225** | idem, **état de base**, voir ci-dessous |
+| Planche | **256 × 2048**, taille **constante** | `GameMapHelper.cs:177`, `:226-227` |
+| SHA-1 de la planche de référence | `879197ed1695d366fa2ccf720e9826da601c5799` | copie dans le scratchpad |
+| Entrée de l'extracteur | `…\Alundra (France)\Alundra (France)_extracted` | `launchSettings.json:5` |
 
-**Acceptation** : une table dans ce plan portant, par icône, position / `Sector5Id` / clé de banque
-/ doublon, et par portrait, signature / nouvelle ou présente / dossier possesseur / intersections
-à même palette et à palette différente ; les trois bornes citées ; la preuve de stabilité de
-l'atlas ; l'ordre de première rencontre des signatures existantes ; le manifeste et la planche
-baseline datés. **Arrêts** : atlas instable ; position et `Sector5Id` qui divergent, ou un
-enregistrement désigné qui est un doublon ignoré ; une intersection à palette différente → retour à
-l'auteur.
+**Stabilité de la disposition : GO, prouvée par le code.** `GameMapHelper.cs:172-175` pose chaque
+signature à sa seule origine VRAM, sans curseur ni accumulateur, contrairement à la disposition
+compacte (`:197-212`) ; et la planche a une taille fixe (`:177`). Ajouter une image n'en déplace
+aucune et ne redimensionne pas la planche, donc aucun décalage de fichier ne bouge.
 
-### ⏳ S1 — Analyseur : l'extracteur lit les portraits et exporte la table des objets
+> **La règle d'arrêt sur les palettes, corrigée par la mesure.** La planche porte **déjà** 225
+> recouvrements à palettes différentes entre images existantes : « le dernier dessiné gagne » est son
+> régime normal, documenté par l'extracteur lui-même. Arrêter sur toute intersection à palette
+> différente aurait arrêté le chantier sur l'état de base. Ce qui compte est qu'un **portrait**,
+> dessiné en dernier, **change le gagnant** d'une cellule déjà occupée. D'où la règle effective : un
+> portrait ne doit intersecter aucune signature existante, sauf à palette identique, où les texels
+> sont les mêmes. Les recouvrements entre existantes ne bougent pas tant que le préfixe d'ordre est
+> préservé, ce que S1.a prouve par le digest ci-dessus.
 
-**But** : après ré-extraction, `map_alundra.json` porte le portrait de chaque objet à icône et la
-planche en contient les pixels ; la table des objets sort en CSV.
+**Deux blocages remontés à l'auteur, voir §6 points 5 et 6** : l'objet 42 désigne un enregistrement
+nul, et les rectangles des portraits ne sont pas mesurables avant l'instrumentation de l'extracteur,
+ce qui impose de scinder S1.
 
-**Contenu** : un marqueur portrait sur `SiImage` (ou une collection dédiée sur `SpriteRecord`,
-sérialisée), une énumération sœur d'`EnumerateImages` qui visite `GetPortraitImageset` pour les
-enregistrements désignés par la colonne 4, **concaténée strictement après** la séquence existante
-d'`EnumerateImages` pour que chaque signature existante garde son rang de première rencontre, donc
-sa place dans l'ordre de dessin (§1.4) ; `SaveSpriteSheet` les inclut sous la disposition
-`Original` ; deux CSV générés depuis les tableaux décompilés, `ItemsProperties.csv` (5 colonnes) et
-`ItemDropProperties.csv` (le drapeau de déverrouillage au moins), liés au projet comme
-`MapSoundGroupIndex.csv`. Tests si l'analyseur en a pour l'extracteur ; sinon, le dire.
+### ✅ S1.a — Relevé des portraits depuis le binaire — faite le 2026-09-19
 
-**Acceptation** : build de l'extracteur ; un run **à blanc vers un dossier temporaire hors dépôt**
-montre les nouveaux portraits dans le JSON et la planche, et **aucune autre différence** contre le
-miroir actuel ; le préfixe d'ordre de première rencontre des signatures existantes est **inchangé**,
-relevé contre celui de S0 ; et la planche produite est identique au pixel à la planche baseline
-**hors de l'ensemble exempté** défini en S2. Branche analyseur, remote vérifié avant tout push par l'auteur.
+**Le relevé.** Une commande de relevé ajoutée à l'extracteur derrière l'argument dédié
+`--probe-portraits`, sur le précédent des arguments existants `--trace-bgm` et `--extract-movies`
+(`AlundraDataExtractor/Program.cs:83-103`). Elle ouvre le binaire, appelle `GetPortraitImageset` pour
+les 89 valeurs d'icône et écrit son relevé **hors dépôt**. Elle ne modifie aucune sortie
+d'extraction : ni `data-extracted/`, ni le dossier du remaster, prouvé par les dates de leurs
+fichiers. C'est un instrument de mesure, il reste dans l'analyseur pour que la mesure soit refaisable.
 
-### ⏳ S2 — Ré-extraction et miroir (par l'auteur, D-E13C-5)
+**Ce qu'elle a mesuré, recalculé indépendamment par un verifier :**
 
-**Contenu** : l'auteur lance l'extracteur vers le remaster, puis `robocopy … /MIR` depuis PowerShell
-vers `data-extracted/`, puis `diff -rq` ; l'agent relit le diff.
+| Mesure | Valeur |
+|---|---|
+| Icônes sondées | 89, valeurs 31 à 119 |
+| Portraits exploitables | **88** |
+| Signatures distinctes | **85**, trois icônes partagent un portrait |
+| Signatures **déjà** parmi les 693 de la planche | **88 sur 88** |
+| Rectangles nouveaux | **0** |
+| Intersections à palette différente | **0** |
+| Verdict de D-E13C-3 | **GO** |
 
-**Acceptation** : le diff de `data-extracted/` se limite à `map_alundra.json` et
-`map_alundra_spritesheet.png`, et aux seuls ajouts prédits par S0 ; **et une comparaison au pixel
-sur toute la planche** contre la planche baseline de S0 montre **chaque pixel identique, sauf ceux
-de l'ensemble exempté** : les rectangles des signatures de portrait que S0 a marquées **nouvelles et
-n'intersectant aucune signature existante**. Un portrait déjà présent n'ajoute aucun pixel ; un
-portrait qui intersecte une signature à même palette n'en change aucun. **Arrêt** : toute autre
-différence, au fichier ou au pixel.
+**Et le fait qui change le chantier** : chaque signature de portrait a **déjà son fichier `.sprite`
+émis** par le convertisseur, 85 sur 85, toutes sous `alundra-project/Entities/`. Vérifié en session
+principale sur les 6908 `.sprite` du projet. L'objet 1, l'épée de base, a pour portrait exactement
+son sprite du monde, `sprite_34187962752519.sprite`, même signature.
 
-### ⏳ S3 — Convertisseur : lecteurs, émission, catalogue, preuve
+> **Correction d'une affirmation de la reconnaissance.** Elle soutenait que le portrait, lu à
+> `FramesPointer + 0`, était « une image distincte, absente de tout frame converti », et que
+> l'extraction ne le portait pas. La mesure dit le contraire : pour ces objets, le portrait coïncide
+> avec une image déjà atteinte par le parcours des animations. La reconnaissance raisonnait sur la
+> structure, la sonde a lu le binaire.
 
-**But** : l'export produit un `.sprite` par portrait, catalogué, et `Data/item-icon-index.json` plus
-`Data/items-properties.json` bruts.
+> **Correction du point ouvert 5, l'objet 42.** La sonde a lu l'emplacement 72 dans le binaire :
+> `SpriteInfo.cs:93-101` ne construit un enregistrement que si son entrée de table vaut autre chose
+> que 0 ou -1, et à cet indice la condition est fausse. **L'enregistrement n'existe pas dans les
+> données du jeu** ; ce n'est pas l'extraction qui l'aurait omis. L'objet 42 n'a donc réellement pas
+> d'icône, ce qui rejoint l'arbitrage de l'auteur : on livre les 88.
 
-**Contenu** : `ItemsPropertiesCatalogReader` et le lecteur de déverrouillage sur le modèle de
-`MapSoundGroupIndexCatalogReader`, republication brute ; `SpriteWriter` émet le portrait de chaque
-banque concernée avec la clé D-N-6 ; `AssetVerifier` satisfait (D-N-3) ; compteurs de
-`ConversionReport` ; tests (précédent `MapSoundGroupIndexCatalogReaderTests`).
+**Conséquence, actée** : l'extraction, la ré-extraction, le miroir et la preuve au pixel de la
+planche **n'ont plus d'objet**. Les tranches S1.b, S2 et S3 d'origine sont remplacées par les deux
+ci-dessous. D-E13C-2 sur les CSV, D-E13C-4 sur la correspondance et D-E13C-6 sur la chaîne fidèle
+tiennent ; D-E13C-1 se lit désormais « les 88 portraits exploitables » ; D-E13C-3 et D-E13C-5 sont
+**sans objet**, leur mesure ayant rendu GO et aucune ré-extraction n'étant nécessaire.
 
-**Acceptation, régime de preuve** : diff prédit écrit **avant** l'export : les N `.sprite`
-nouveaux, les deux JSON, **le catalogue d'actifs `AssetInfos.json`** que chaque nouveau `.sprite`
-réécrit (`SpriteWriter.cs:164`, `AssetVerifier.cs:96-105`), `report.json`, et **les déplacements de
-fichiers `.sprite` existants** que S0 a prédits quand un portrait est une signature déjà émise par
-une autre banque, chacun nommé ; rien d'autre. Export complet en place ; diff mesuré ⊆ prédit ;
-double export ⊆ `{report.json}` ; intégrité référentielle des nouveaux `.sprite` vers la texture de
-la planche ; et la planche exportée identique au pixel à celle de S2 hors de l'ensemble exempté
-défini en S2.
+### ⏳ S1.b — Analyseur : les deux tables en CSV
 
-### ⏳ S4 — DLL : l'arme équipée et son icône dans la case
+**But** : ce que seule la décompilation sait sort de l'analyseur, comme les précédents.
 
-**But** : F1 en jeu montre l'épée de base dans la case de gauche, sur son fond.
+**Contenu** : deux fichiers dans `AlundraTools/AlundraTools/`, liés au projet comme
+`MapSoundGroupIndex.csv`, générés depuis les tableaux décompilés et **bruts**, sans interprétation :
+- `ItemsProperties.csv`, séparateur `;`, en-tête ligne 0, **100 lignes**, colonnes
+  `item_id;slot;replace_flag;priority;max_count;icon`.
+- `ItemPortrait.csv`, `item_id;icon;signature`, **88 lignes**, la signature venant du relevé de S1.a.
+  C'est elle qui relie un objet à un `.sprite` déjà émis, et non le dossier de son prefab : l'objet
+  89 a son portrait sous `Entities/I34_Objet 034/`, parce que la déduplication des sprites est
+  globale entre banques et que le fichier vit sous la première banque qui a rencontré la signature.
 
-**Contenu** : `WeaponId` sur `AlundraPlayerStats` avec `SetPlayerWeaponId` et sa règle ; compteurs
-d'objets et boucle de déverrouillage de la nouvelle partie (objets 1, 17, 25) ; `GetWeaponIdBySlotId`
-et `GetItemIdFromSlotId` portés ligne à ligne ; lecture de `Data/items-properties.json` et
-`Data/item-icon-index.json` ; le composeur émet une tuile d'icône dynamique à (16, 16) natif, taille
-prise du sprite, au-dessus du fond de C6 ; l'écran charge le `.sprite` par identifiant, comme C2.
-La case d'accessoire : rien, fond seul (D-E13C-7). La recette F1 ne change pas.
+**Acceptation** : les deux CSV relus contre `StaticVariables.cs:737-838` et contre le relevé ;
+`ItemPortrait.csv` ne contient aucune signature absente des 85 mesurées ; l'objet 42 est absent.
 
-**Acceptation** : tests sur la règle de `SetPlayerWeaponId`, la résolution arme → objet → icône à
-la nouvelle partie (1 → 1 → 31), la sentinelle sans arme, la case d'accessoire vide ; suite verte ;
-capture en processus F1 : l'icône aux bonnes coordonnées sur le fond gouraud, nette.
+### ⏳ S2 — Convertisseur : les deux catalogues
 
-### ⏳ S5 — Recette en jeu
+**But** : le projet exporté porte la table des objets et la correspondance objet vers sprite.
+
+**Contenu** : deux lecteurs sur le modèle de `MapSoundGroupIndexCatalogReader.cs:1-54`, et deux
+sorties brutes, `Data/items-properties.json` et `Data/item-icon-index.json`, cette dernière
+associant chaque `item_id` à **l'identifiant d'actif du `.sprite` déjà émis** pour sa signature. Le
+convertisseur connaît cette correspondance pendant l'export, puisqu'il la construit lui-même
+(`SpriteWriter.cs:151`, `:819-839`). Compteurs ajoutés au rapport de conversion.
+
+**Acceptation, régime de preuve allégé par S1.a** : diff prédit écrit **avant** l'export : les deux
+JSON, le catalogue d'actifs `AssetInfos.json`, `report.json`, **et rien d'autre** ; en particulier
+**aucun `.sprite` nouveau, aucun déplacement de `.sprite`, et la planche inchangée**, puisque aucune
+image n'est ajoutée. Export complet en place, diff mesuré ⊆ prédit, double export ⊆ `{report.json}`,
+et chaque identifiant d'actif de `item-icon-index.json` pointe sur un `.sprite` existant.
+
+### ⏳ S3 — DLL : l'arme équipée et son icône dans la case
+
+**But** : F1 en jeu montre l'épée de base dans la case de gauche, sur son fond de C6.
+
+**Contenu** : `WeaponId` sur `AlundraPlayerStats` avec `SetPlayerWeaponId` et sa règle (§1.2 et le
+point ouvert 7) ; compteurs d'objets et boucle de déverrouillage de la nouvelle partie, objets 1, 17
+et 25 ; `GetWeaponIdBySlotId` et `GetItemIdFromSlotId` portés ligne à ligne ; lecture des deux JSON ;
+le composeur émet une tuile d'icône dynamique à (16, 16) natif, taille prise du sprite, au-dessus du
+fond ; l'écran charge le `.sprite` par identifiant, comme les 24 glyphes de C2. La case d'accessoire
+reste vide, fond seul (D-E13C-7).
+
+**Acceptation** : tests sur la règle du setter, sur la chaîne arme vers objet vers icône à la
+nouvelle partie, 1 vers 1 vers 31, sur la sentinelle sans arme, sur la case d'accessoire vide ;
+suite verte ; capture en processus F1 montrant l'icône aux bonnes coordonnées, nette, sur son fond.
+
+### ⏳ S4 — Recette en jeu
 
 **Contenu** : F1, l'épée de base apparaît dans la case de gauche ; la case de droite reste un fond
 vide ; les deux suivent le glissement.
 
----
-
 ## 4. Acceptation d'ensemble
 
-E13.c est close quand : le double export est prouvé ; `data-extracted/` est prouvé identique au
-miroir ; en jeu, F1 montre l'icône de l'épée de base sur son fond, nette, qui glisse avec la jauge ;
-suites `Alundra.Tests` et convertisseur vertes.
+E13.c est close quand : le double export du convertisseur est prouvé et se limite aux deux JSON, au
+catalogue d'actifs et au rapport ; en jeu, F1 montre l'icône de l'épée de base sur son fond, nette,
+qui glisse avec la jauge ; suites `Alundra.Tests` et convertisseur vertes.
 
 ## 5. Arrêts
 
-- S0 : atlas instable sous `Original` ; **intersection à palette différente** sur une page ;
-  position et `Sector5Id` qui divergent ou enregistrement désigné ignoré comme doublon ; convention
-  « pas d'icône » indéterminable → auteur.
-- S1 : le run à blanc change autre chose que les portraits, **ou le rang de première rencontre d'une
-  signature existante a changé**, ou un pixel change hors de l'ensemble exempté → arrêt avant tout
-  miroir.
-- S2 : le diff du miroir dépasse le prédit, **ou un pixel change hors de l'ensemble exempté** →
-  ne pas exporter.
-- S3 : diff mesuré hors du prédit, ou double export non inclus dans `{report.json}` → arrêt.
-- S4 : un besoin moteur → arrêt (D-E13C-8).
+- S1.b : une signature du relevé absente des 85 mesurées, ou une ligne de CSV qui ne correspond pas à
+  `StaticVariables.cs` → arrêt, le CSV est la source de vérité du convertisseur.
+- S2 : diff mesuré hors du prédit, en particulier **tout `.sprite` créé ou déplacé, ou toute
+  modification de la planche** : aucun n'est attendu, chacun signifierait que l'export fait autre
+  chose que ce que la mesure annonce → arrêt.
+- S3 : un besoin moteur → arrêt (D-E13C-8).
 
 ## 6. Points ouverts
 
@@ -291,7 +324,17 @@ suites `Alundra.Tests` et convertisseur vertes.
    marquée dans la liste ? S1 choisit, en visant la plus petite surface pour `SpriteBankReader`.
 3. `g_itemDropProperties` : n'exporter que le drapeau de déverrouillage, ou les cinq champs ? S1,
    après lecture de ce que `GetItemIdFromSlotId` consomme réellement.
-4. **`SetPlayerWeaponId` et la valeur 0 — question pour l'auteur.** La translittération accepte 0
+5. **L'objet 42 désigne un enregistrement nul — QUESTION POUR L'AUTEUR, bloquante pour lui seul.**
+   Mesuré : `StaticVariables.cs:780` donne à l'objet 42 l'icône `0x48 = 72`, or l'emplacement 72 des
+   enregistrements de sprites est **nul** dans `map_alundra.json`, au milieu d'une plage pourtant
+   remplie (71 et 73 existent). Les 88 autres icônes désignent chacune un enregistrement existant.
+   Deux lectures possibles, non tranchables sans Ghidra ou sans le `.BIN` : soit l'enregistrement
+   n'existe pas dans le jeu et l'objet 42 n'a réellement pas d'icône, soit l'extracteur ne l'a pas
+   peuplé et l'icône existe. **88 portraits sûrs, le 89e en suspens.**
+6. **Le relevé des portraits doit précéder le test d'intersection — corrigé par le découpage.** Les
+   rectangles des portraits n'existent que dans le `.BIN` : S1.a les relève avant que la mesure
+   décisive ne puisse s'exécuter. Le plan initial demandait cette mesure à S0, c'était impossible.
+7. **`SetPlayerWeaponId` et la valeur 0 — question pour l'auteur.** La translittération accepte 0
    (§1.2) là où l'original, comparaison non signée sur 32 bits, le rejetterait probablement. À
    vérifier dans Ghidra sur `0x8004ddf4` et voisins avant que S4 ne fige la règle ; en attendant S4
    porte le code cité et marque la ligne.
@@ -302,4 +345,6 @@ suites `Alundra.Tests` et convertisseur vertes.
 |---|---|
 | 2026-09-19 | Reconnaissance à trois surfaces (original, exports, MGUI) puis ciblée sur la chaîne d'extraction. Quatre arbitrages de l'auteur : E13.c avant E13.d, tous les portraits à icône, inventaire principal d'abord pour E13.d, fidélité stricte pour l'accessoire. Plan rédigé. |
 | 2026-09-19 | Première relecture adverse : **REVISE**, un P1 et quatre P2, tous acceptés. (1) P1 — la disposition `Original` place une image à sa fenêtre VRAM sans la palette alors que la signature l'inclut : un portrait pourrait repeindre un sprite exporté sans qu'un diff de fichiers le voie ; §1.4 corrigé, S0 mesure les collisions, D-E13C-3 en fait un arrêt, S2 et S3 exigent une preuve au pixel hors des rectangles ajoutés. (2) La table a 100 lignes et non 98, `g_itemsCount` vaut 99, 98 est la borne de la boucle de déverrouillage ; §1.3 corrigé, S0 relève les trois bornes. (3) L'original indexe les enregistrements par position, le convertisseur par `Sector5Id` en ignorant les doublons ; S0 mesure la correspondance, arrêt en cas de divergence. (4) `SetPlayerWeaponId` translittéré prend un `ushort`, la sentinelle est inatteignable et 0 est accepté ; §1.2 restaté, question auteur en §6 point 4. (5) Le diff prédit omettait le catalogue d'actifs et les déplacements de `.sprite` par déduplication globale entre banques ; S3 les prédit, S0 les mesure. |
+| 2026-09-19 | **S1.a exécutée, verifier CONFIRMED, et elle réduit le chantier de moitié.** Une commande de relevé derrière `--probe-portraits` lit le binaire et mesure les 89 icônes : 88 portraits exploitables, 85 signatures distinctes, **toutes déjà présentes** parmi les 693 de la planche, donc zéro rectangle nouveau et zéro intersection. Vérifié ensuite en session principale : **les 85 ont déjà leur `.sprite` émis**, sur les 6908 du projet. L'extraction, la ré-extraction, le miroir et la preuve au pixel n'ont plus d'objet ; S1.b, S2 et S3 d'origine sont remplacées par trois tranches : deux CSV, deux catalogues, la DLL. **Deux corrections de fond** : la reconnaissance affirmait que le portrait était une image distincte absente de tout frame converti, la mesure montre qu'il coïncide avec une image déjà extraite, l'épée de base ayant pour portrait exactement son sprite du monde ; et l'emplacement 72 n'existe pas dans les données du jeu, `SpriteInfo.cs:93-101` ne construisant un enregistrement que si son entrée de table n'est ni 0 ni -1, donc l'objet 42 n'a réellement pas d'icône. |
+| 2026-09-19 | **Approuvé par l'auteur. S0 exécutée**, partie en agent en lecture seule, partie en session principale sur les données réelles. Trois bornes confirmées, convention d'absence d'icône établie, position et identifiant de secteur identiques sans doublon, 693 signatures existantes avec leur digest d'ordre, planche de taille constante et sa référence copiée. **Trois corrections au plan** : la règle d'arrêt sur les palettes était trop large, la planche portant déjà 225 recouvrements à palettes différentes entre images existantes ; le relevé des portraits doit précéder le test d'intersection, d'où le découpage de S1 en S1.a et S1.b ; et l'objet 42 désigne un enregistrement nul, question remontée à l'auteur. |
 | 2026-09-19 | Relecture de clôture : **REVISE**, un P1 et un P2, tous deux acceptés. (1) P1 — le test de collision par égalité de cellule manquait les recouvrements partiels, chaque signature étant dessinée entière à sa propre origine et taille ; et l'acceptation au pixel exemptait justement les rectangles où le dommage tombe. Corrigé : intersection de rectangles par page contre toute signature existante, intersection à même palette autorisée avec sa justification, à palette différente arrêt ; ensemble exempté redéfini comme les seuls rectangles des portraits nouveaux et sans intersection, comparaison sur toute la planche. (2) P2 — l'ordre de dessin est celui de première rencontre et n'était pas figé ; S1 concatène les portraits strictement après la séquence existante, S0 relève les rangs, S1 prouve le préfixe inchangé, arrêt ajouté. **Deuxième REVISE consécutif, plafond atteint : disposition en session principale, pas de nouvelle soumission.** Le plan part à l'auteur pour approbation avec ces corrections. |
