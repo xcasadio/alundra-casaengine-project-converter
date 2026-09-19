@@ -98,6 +98,11 @@ public sealed class AlundraHudScreen : UIScreenBase, IAlundraHudView
     private readonly Dictionary<HudGlyph, Sprite> _sprites = new();
     private readonly MGImage[] _pool = new MGImage[MaxTileCount];
 
+    // E13 C6: the weapon/accessory box backgrounds - NOT part of the 26-slot tile pool above (they carry
+    // no glyph, AlundraHudComposer.ComposeEquipmentBackgrounds' own doc). Sized and filled once in
+    // OnInitialize from that same composer call's own Count, never resized afterwards.
+    private MGRectangle[] _equipmentBackgrounds = Array.Empty<MGRectangle>();
+
     private MGWindow? _window;
     private MGCanvas? _canvas;
     private int _pixelScale = 1;
@@ -141,6 +146,31 @@ public sealed class AlundraHudScreen : UIScreenBase, IAlundraHudView
         _window.BackgroundBrush.NormalValue = new MGSolidFillBrush(Color.Transparent);
 
         _canvas = new MGCanvas(_window);
+
+        // E13 C6: added to the SAME porteur canvas as the tile pool below, and BEFORE it, so these two
+        // quads paint - and therefore sit visually UNDER - every tile (C2's own "last added paints last,
+        // on top" ordering rule, restated at AlundraHudComposer.ComposeLife's own painting-order note).
+        // Static for the whole screen's lifetime: ComposeEquipmentBackgrounds takes no director state and
+        // the original itself never animates or repositions these two quads relative to the box (only the
+        // WHOLE jauge glides, via this canvas's own RenderTransform.Translation, which every canvas child -
+        // these two included - inherits automatically; they are not translated separately here).
+        var equipmentBackgrounds = AlundraHudComposer.ComposeEquipmentBackgrounds();
+        _equipmentBackgrounds = new MGRectangle[equipmentBackgrounds.Count];
+        for (var i = 0; i < equipmentBackgrounds.Count; i++)
+        {
+            var quad = equipmentBackgrounds[i];
+            _equipmentBackgrounds[i] = CreateEquipmentBackground(_window, quad);
+
+            // The real native position, scaled - passed straight to TryAddChild (unlike the tile pool
+            // below, which adds every slot at a placeholder left:0/top:0 and repositions it later through
+            // ApplyTile's own MGCanvas.SetLeft/SetTop): a background quad's position is fixed for the
+            // screen's whole lifetime, so there is no later call that would ever correct a placeholder
+            // left:0/top:0 here the way ApplyTiles corrects the pool's.
+            _canvas.TryAddChild(
+                _equipmentBackgrounds[i],
+                left: quad.NativeX * _pixelScale,
+                top: quad.NativeY * _pixelScale);
+        }
 
         // Placeholder resource so the pool's MGImage constructor has a real (struct) MGTextureData to
         // start from - ApplyTile overwrites Source with the real sprite the first time each slot is
@@ -256,6 +286,55 @@ public sealed class AlundraHudScreen : UIScreenBase, IAlundraHudView
             _pool[slot].Visibility = Visibility.Collapsed;
         }
     }
+
+    /// <summary>E13 C6: builds one weapon/accessory background quad from the composer's own NATIVE-pixel
+    /// <see cref="AlundraHudBackgroundQuad"/>, scaled by D-E13-9's integer <see cref="_pixelScale"/> exactly
+    /// like <see cref="ApplyTile"/> does for a textured tile.
+    ///
+    /// <b>Element choice (mission item 2, "MGBorder ? MGRectangle ? un MGElement de base ?")</b>:
+    /// <see cref="MGElement"/> itself is abstract (cannot be instantiated on its own) and
+    /// <see cref="MGBorder"/> is an <see cref="MGSingleContentHost"/> - it carries a whole unused
+    /// <c>Content</c>/<c>BorderBrush</c> slot for a plain filled rectangle. <see cref="MGRectangle"/> is
+    /// MGUI's own flat-colour-quad primitive - exactly the POLY_G4 shape this quad ports, nothing more -
+    /// and its <c>Fill</c> is drawn through the SAME <see cref="IFillBrush.Draw"/> call, under the SAME
+    /// per-element <c>DA</c> (<c>MGRectangle.cs:160</c>, <c>Fill?.Draw(DA, this, shape, geometry)</c>), as
+    /// <see cref="MGElement.Background"/> would use (<c>MGElement.cs:5305</c>'s own <c>DrawBackground</c>) -
+    /// both sit behind the SAME <c>DA.Opacity</c> multiplication done once per element
+    /// (<c>MGElement.cs:5142</c>, before either background or self is drawn), so choosing <c>Fill</c> over
+    /// <c>Background</c> changes nothing about the opacity mechanism below.
+    ///
+    /// <b>Opacity (mission item 3)</b>: <see cref="MGGradientFillBrush.Draw"/> multiplies each of its four
+    /// corner colours by <c>DA.Opacity</c> (<c>MGGradientFillBrush.cs:47-53</c>, "TopLeftColor * opacity"
+    /// etc. - straight, non-premultiplied scaling of a full-brightness colour), and <c>DA.Opacity</c> is
+    /// itself <c>DA.Opacity * Element.Opacity</c> (<c>MGElement.cs:5142</c>) - so setting THIS element's
+    /// own <see cref="MGElement.Opacity"/> to the quad's alpha reproduces
+    /// <c>AddQuadColor(polyG4, SpriteDepth.BackgroundUI, 0.5f)</c>'s own separate alpha parameter
+    /// (<c>Graphics/Renderer.cs:80</c>) exactly: colours stay at their full 0-255 value (as posed once by
+    /// <c>FUN_8004b770</c>) and the 50% blend with whatever is already drawn underneath comes from this one
+    /// opacity multiplication alone, not from halving the colours themselves.</summary>
+    private MGRectangle CreateEquipmentBackground(MGWindow window, AlundraHudBackgroundQuad quad)
+    {
+        var fill = new MGGradientFillBrush(
+            TopLeft: ToColor(quad.TopLeftColor),
+            TopRight: ToColor(quad.TopRightColor),
+            BottomRight: ToColor(quad.BottomRightColor),
+            BottomLeft: ToColor(quad.BottomLeftColor));
+
+        var rectangle = new MGRectangle(
+            window,
+            quad.NativeWidth * _pixelScale,
+            quad.NativeHeight * _pixelScale,
+            Color.Transparent,
+            StrokeThickness: 0,
+            Fill: fill)
+        {
+            Opacity = quad.Alpha,
+        };
+
+        return rectangle;
+    }
+
+    private static Color ToColor(HudRgb rgb) => new(rgb.R, rgb.G, rgb.B);
 
     private void ApplyTile(MGImage image, AlundraHudTile tile)
     {

@@ -375,4 +375,74 @@ public sealed class AlundraHudComposerTests
             }
         }
     }
+
+    /// <summary>
+    /// E13 C6 acceptance (docs/plan-e13-hud.md, "Les fonds des cases arme et accessoire"): the two
+    /// POLY_G4-equivalent background quads, re-derived directly from HudManager.cs's own citations, never
+    /// copied from <see cref="AlundraHudComposer"/> itself.
+    /// </summary>
+    public sealed class AlundraHudComposerEquipmentBackgroundsTests
+    {
+        [Fact]
+        public void ComposeEquipmentBackgrounds_ReturnsExactlyTwoQuads()
+        {
+            var quads = AlundraHudComposer.ComposeEquipmentBackgrounds();
+
+            Assert.Equal(2, quads.Count);
+        }
+
+        [Fact]
+        public void ComposeEquipmentBackgrounds_WeaponQuad_IsAtNativePosition16_16_24x32()
+        {
+            // HudManager.cs:180-187: X = UIBoxHud.X + g_inventoryWeaponIconX[8 + 0] = 0 + 0x10 = 16,
+            // Y = UIBoxHud.Y = 0x10 = 16. Graphics/POLY_G4.cs:3-32: 24x32 (0x18 x 0x20).
+            var weapon = AlundraHudComposer.ComposeEquipmentBackgrounds()[0];
+
+            Assert.Equal(16, weapon.NativeX);
+            Assert.Equal(16, weapon.NativeY);
+            Assert.Equal(24, weapon.NativeWidth);
+            Assert.Equal(32, weapon.NativeHeight);
+        }
+
+        [Fact]
+        public void ComposeEquipmentBackgrounds_AccessoryQuad_IsAtNativePosition48_16_24x32()
+        {
+            // HudManager.cs:180-187: X = UIBoxHud.X + g_inventoryWeaponIconX[8 + 1] = 0 + 0x30 = 48.
+            var accessory = AlundraHudComposer.ComposeEquipmentBackgrounds()[1];
+
+            Assert.Equal(48, accessory.NativeX);
+            Assert.Equal(16, accessory.NativeY);
+            Assert.Equal(24, accessory.NativeWidth);
+            Assert.Equal(32, accessory.NativeHeight);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void ComposeEquipmentBackgrounds_BothQuads_HaveTheSameFourCornerColoursAndAlpha(int index)
+        {
+            // FUN_8004b770:189-201, posed once and shared by both boxes: top-left (0,0,0), top-right
+            // (255,255,0), bottom-left (0,255,255), bottom-right (0,0,255). AddQuadColor(polyG4,
+            // SpriteDepth.BackgroundUI, 0.5f) at HudManager.cs:587/591: alpha 0.5.
+            var quad = AlundraHudComposer.ComposeEquipmentBackgrounds()[index];
+
+            Assert.Equal(new HudRgb(0, 0, 0), quad.TopLeftColor);
+            Assert.Equal(new HudRgb(255, 255, 0), quad.TopRightColor);
+            Assert.Equal(new HudRgb(0, 255, 255), quad.BottomLeftColor);
+            Assert.Equal(new HudRgb(0, 0, 255), quad.BottomRightColor);
+            Assert.Equal(0.5f, quad.Alpha);
+        }
+
+        [Fact]
+        public void ComposeEquipmentBackgrounds_QuadsAreNotCountedInMaxTileCount()
+        {
+            // C6's own mission item 1: "MaxTileCount ne change pas : ce ne sont pas des tuiles" - this
+            // pure function returns its own separate list type (AlundraHudBackgroundQuad, not
+            // AlundraHudTile), so it can never contribute to a Compose() tile-overflow count.
+            var quads = AlundraHudComposer.ComposeEquipmentBackgrounds();
+
+            Assert.All(quads, quad => Assert.IsType<AlundraHudBackgroundQuad>(quad));
+            Assert.Equal(26, AlundraHudScreen.MaxTileCount);
+        }
+    }
 }

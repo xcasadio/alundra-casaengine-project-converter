@@ -44,6 +44,25 @@ public enum HudGlyph
 /// this struct itself carries no notion of scale.</summary>
 public readonly record struct AlundraHudTile(HudGlyph Glyph, int NativeX, int NativeY);
 
+/// <summary>One gouraud-shaded corner colour (0-255 per channel). Not a graphics-library <c>Color</c> so
+/// this file stays free of any rendering dependency (this enum/struct file's own doc: "No MGUI type
+/// appears anywhere in this file" - kept true here for the same testability reason, mission item 7's
+/// "fonction pure"). <see cref="AlundraHudScreen"/> converts each one to its own <c>Color</c>.</summary>
+public readonly record struct HudRgb(byte R, byte G, byte B);
+
+/// <summary>E13 C6 (docs/plan-e13-hud.md, "Les fonds des cases arme et accessoire"): one untextured
+/// gouraud-shaded background quad, the port of a PSX <c>POLY_G4</c> (<c>Graphics/POLY_G4.cs:3-32</c>) -
+/// a rectangle in the SAME native-pixel/tile convention as <see cref="AlundraHudTile"/> (the screen
+/// multiplies every field but the four colours and <see cref="Alpha"/> by its own integer pixel-scale
+/// factor), plus its four independent corner colours and its alpha. Deliberately its OWN record, not an
+/// extension of <see cref="HudGlyph"/>/<see cref="AlundraHudTile"/> (C6's own mission item 1: "un type
+/// d'enregistrement dédié... qui restent les tuiles texturées de la jauge") - a background quad has no
+/// glyph/sprite at all, unlike every <see cref="AlundraHudTile"/>.</summary>
+public readonly record struct AlundraHudBackgroundQuad(
+    int NativeX, int NativeY, int NativeWidth, int NativeHeight,
+    HudRgb TopLeftColor, HudRgb TopRightColor, HudRgb BottomLeftColor, HudRgb BottomRightColor,
+    float Alpha);
+
 /// <summary>
 /// Pure port of the jauge's own composition logic - <c>HudManager.DisplayHpMaxWithNumber</c>
 /// (HudManager.cs:910-953), <c>DisplayLife</c> (:716-826), <c>DisplayMp</c> (:605-690 minus its own
@@ -285,5 +304,51 @@ public static class AlundraHudComposer
         tiles.Add(new AlundraHudTile(Digits[tens], BoxX + 0x100 + 2 * 8, BoxY));
         tiles.Add(new AlundraHudTile(Digits[units], BoxX + 0x100 + 3 * 8, BoxY));
         tiles.Add(new AlundraHudTile(CoinByFrame[coinIconFrame], BoxX + 0x100 + 4 * 8, BoxY)); // :883-884.
+    }
+
+    // g_inventoryWeaponIconX (StaticVariables.cs:12272-12275) - its own last two shorts, indices [8] and
+    // [9] ("g_inventoryWeaponIconX[8 + i]", HudManager.cs:180-187/301-316): weapon slot i=0 at 0x10=16,
+    // accessory slot i=1 at 0x30=48. Added to BoxX (0, HudManager.cs:180-187's own "UIBoxHud.X + ...")
+    // exactly like every X offset above, even though it stays 0 for this box (this class's own BoxX doc).
+    private const int WeaponBoxX = BoxX + 0x10;
+    private const int AccessoryBoxX = BoxX + 0x30;
+
+    // POLY_G4, Graphics/POLY_G4.cs:3-32 - 24x32 (0x18 x 0x20), same for both cases.
+    private const int EquipmentBoxWidth = 0x18;
+    private const int EquipmentBoxHeight = 0x20;
+
+    // AddQuadColor(polyG4, SpriteDepth.BackgroundUI, 0.5f) - HudManager.cs:587 (weapon) and :591
+    // (accessory) - the third parameter is the alpha (Graphics/Renderer.cs:80).
+    private const float EquipmentBoxAlpha = 0.5f;
+
+    // Vertex colours posed ONCE at arming time in FUN_8004b770 (HudManager.cs:189-201) and never changed
+    // afterwards - shared by both boxes, same as the original's own single colour-setup call covering both.
+    private static readonly HudRgb EquipmentBoxTopLeft = new(0, 0, 0);
+    private static readonly HudRgb EquipmentBoxTopRight = new(255, 255, 0);
+    private static readonly HudRgb EquipmentBoxBottomLeft = new(0, 255, 255);
+    private static readonly HudRgb EquipmentBoxBottomRight = new(0, 0, 255);
+
+    /// <summary>E13 C6: the two untextured background quads behind the weapon and accessory boxes -
+    /// port of the POLY_G4 half of <c>HudManager.cs:180-187</c> (position, repositioned identically at
+    /// every glide by <c>:301-316</c>) and <c>FUN_8004b770:189-201</c> (the four corner colours, posed
+    /// once). Unlike <see cref="Compose"/>, this takes NO director state at all: the original draws these
+    /// two quads unconditionally whenever the jauge itself is drawn, empty case slot or not, OUTSIDE both
+    /// of <c>HudManager.cs:584-592</c>'s own <c>if</c>s, and never animates them (mission item 5: function
+    /// :491-602 read in full, neither <c>INT_800a827c</c> nor <c>g_playerDataHud</c> is read here) - so the
+    /// jauge-wide draw/hide decision belongs to whoever hosts these quads (<see cref="AlundraHudScreen"/>'s
+    /// own canvas visibility), not to this pure function.</summary>
+    public static IReadOnlyList<AlundraHudBackgroundQuad> ComposeEquipmentBackgrounds()
+    {
+        return new[]
+        {
+            new AlundraHudBackgroundQuad(
+                WeaponBoxX, BoxY, EquipmentBoxWidth, EquipmentBoxHeight,
+                EquipmentBoxTopLeft, EquipmentBoxTopRight, EquipmentBoxBottomLeft, EquipmentBoxBottomRight,
+                EquipmentBoxAlpha),
+            new AlundraHudBackgroundQuad(
+                AccessoryBoxX, BoxY, EquipmentBoxWidth, EquipmentBoxHeight,
+                EquipmentBoxTopLeft, EquipmentBoxTopRight, EquipmentBoxBottomLeft, EquipmentBoxBottomRight,
+                EquipmentBoxAlpha),
+        };
     }
 }
