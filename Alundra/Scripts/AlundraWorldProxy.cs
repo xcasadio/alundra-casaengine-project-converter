@@ -275,6 +275,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// stays session-scoped.</summary>
     private bool _dialoguePresenterWired;
 
+    /// <summary>E13 C2 (docs/plan-e13-hud.md): true once <see cref="AlundraHudScreen"/> has been built and
+    /// pushed onto a live UI view - same "retry every frame until the post-bootstrap view exists" shape as
+    /// <see cref="_dialoguePresenterWired"/>/<see cref="TryWireDialoguePresenterOnce"/>, for the identical
+    /// reason (<see cref="InstallDialogueSystems"/>'s own doc: the ViewManager is empty by construction at
+    /// <see cref="InitializeWithWorld"/> time, every world load). Per-proxy, not session-scoped: a new
+    /// world needs its own screen pushed onto its own (new) view - <see cref="AlundraHudDirector"/> itself
+    /// stays the session-scoped one, this flag only gates the VIEW wiring.</summary>
+    private bool _hudScreenWired;
+
     /// <summary>
     /// This world's own <see cref="TileMapData"/> (resolved once in <see cref="InitializeWithWorld"/>,
     /// same instance <see cref="AlundraCellsCollisionField"/>/<see cref="AdoptPlayerPawn"/> already read) -
@@ -940,6 +949,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     {
         AlundraHudDirector.Instance.AttachToWorld(GameState);
         AlundraHudDirector.Instance.InstallForMapEntry();
+
+        // Eager attempt for hosts that pre-wire a view before install (same "serves the wiring test's
+        // montage, real game retries in Update" shape as InstallDialogueSystems's own eager lookup) -
+        // the real game's own view is created strictly AFTER this method returns (proven boot order,
+        // InstallDialogueSystems's own doc), so TryWireHudScreenOnce's per-frame retry in Update is what
+        // actually wires it there.
+        TryWireHudScreenOnce();
     }
 
     /// <summary>
@@ -1005,6 +1021,37 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         AlundraDialogueDirector.Instance.AttachToWorld(new AlundraDialoguePresenter(uiView), GameState);
         _dialoguePresenterWired = true;
         Logs.WriteInfo("AlundraWorldProxy: dialogue presenter wired to the active UI view (post-bootstrap retry).");
+    }
+
+    /// <summary>
+    /// E13 C2's own version of <see cref="TryWireDialoguePresenterOnce"/>: retry-until-success, once per
+    /// frame, because the UI view <see cref="AlundraHudScreen"/> is pushed onto is created strictly AFTER
+    /// <see cref="InitializeWithWorld"/> ran (same proven boot order, <see cref="InstallDialogueSystems"/>'s
+    /// own doc). Requires BOTH a live UI view AND <c>World.Game.AssetContentManager</c> (the screen loads
+    /// its 24 sprites the moment it is initialized, <see cref="AlundraHudScreen.OnInitialize"/>) - a
+    /// headless test world with no <c>Game</c> degrades to never wiring, the same tolerated shape as every
+    /// other missing-system seam in this DLL. The screen is NON-modal (D-E13-1/mission item 1) and pushed
+    /// once, never removed: it draws nothing itself while <see cref="AlundraHudDirector.IsDrawn"/> is false
+    /// (<see cref="AlundraHudComposer"/>'s own "IsDrawn faux -&gt; liste vide"), so there is no open/close
+    /// state to unwind here the way <see cref="AlundraDialoguePresenter"/> unwinds its own push/remove.
+    /// </summary>
+    private void TryWireHudScreenOnce()
+    {
+        if (_hudScreenWired)
+        {
+            return;
+        }
+
+        var uiView = _world?.Game?.GameManager?.ViewManager?.GetActiveUIView();
+        var assetContentManager = _world?.Game?.AssetContentManager;
+        if (uiView == null || assetContentManager == null)
+        {
+            return; // retry next frame - same reason TryWireDialoguePresenterOnce retries.
+        }
+
+        uiView.PushScreen(new AlundraHudScreen(AlundraHudDirector.Instance, assetContentManager));
+        _hudScreenWired = true;
+        Logs.WriteInfo("AlundraWorldProxy: HUD screen wired to the active UI view (post-bootstrap retry).");
     }
 
     /// <summary>
@@ -1477,6 +1524,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // E12.a wiring fix: must run BEFORE the map-events pass below - a scripted dialogue opened
         // on this very frame has to find a live presenter (see the method's own doc).
         TryWireDialoguePresenterOnce();
+        TryWireHudScreenOnce();
 
         // C1 (docs/plan-camera-ordre-frame.md §3): map-events run FIRST, before the camera block - a
         // faithful port of the original's own frame order (GameEngine.cs:1638-1664/1743-1753:

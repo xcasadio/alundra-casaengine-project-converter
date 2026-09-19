@@ -101,6 +101,16 @@ public sealed class AlundraHudDirector
     // ---- Rolled/displayed values - g_playerDataHud[0..9] (StaticVariables.cs:12278-12282) ----
     public int Hp { get; private set; } = 10; // [0] - New-Game-equivalent default, mirrors AlundraPlayerStats.Hp's own.
     public int HpMax { get; private set; } = 10; // [1]
+
+    /// <summary>E13 C2 (docs/plan-e13-hud.md, mission point 2): the TRUE current HP cap -
+    /// <c>DisplayLife</c>'s own empty-big-crystal count reads <c>GetPlayerHpMax()</c> here
+    /// (HudManager.cs:767), never the rolled/displayed <see cref="HpMax"/> every other Display* call
+    /// reads. Falls back to <see cref="HpMax"/> itself with no live <see cref="AlundraGameState"/>
+    /// attached (same degraded shape as every other missing-system seam in this DLL) - the two values
+    /// agree once <see cref="HpMax"/> has finished catching up (<see cref="_hpMaxSubStep"/>), and differ
+    /// only for the few ticks it still lags a just-raised true cap.</summary>
+    public int TrueHpMax => _gameState != null ? _gameState.PlayerStats.HpMax : HpMax;
+
     public int Mp { get; private set; } // [2]
     public int MpMax { get; private set; } // [3]
     public int Money { get; private set; } // [4]
@@ -112,6 +122,17 @@ public sealed class AlundraHudDirector
     /// <summary>Coin icon's animation frame (0..3) - [9]. Frozen at 0 while the money roll is settled
     /// (HudManager.cs:462), the "garée" behaviour the mission cites.</summary>
     public int CoinIconFrame { get; private set; }
+
+    /// <summary>E13 C2 (docs/plan-e13-hud.md, <see cref="AlundraHudComposer"/>): <c>DisplayLife</c>'s own
+    /// <c>g_playerDataHud[5] != 0 || g_playerDataHud[6] != 0</c> guard (HudManager.cs:729-730) - true while
+    /// either the current-HP or the HP-max catch-up sub-step is mid-cycle, which previews the drawn icon
+    /// composition one point ahead of <see cref="Hp"/> itself. Exposed read-only rather than the raw
+    /// sub-steps so the composer stays a plain bool port of the original's own condition.</summary>
+    public bool HpDisplayPreviewIncrement => _hpSubStep != 0 || _hpMaxSubStep != 0;
+
+    /// <summary>The MP counterpart of <see cref="HpDisplayPreviewIncrement"/> - <c>DisplayMp</c>'s own
+    /// <c>g_playerDataHud[7] != 0 || g_playerDataHud[8] != 0</c> guard (HudManager.cs:620-621).</summary>
+    public bool MpDisplayPreviewIncrement => _mpSubStep != 0 || _mpMaxSubStep != 0;
 
     /// <summary>Per-pip animation frame index (four entries, one per magic pip) - HudManager.cs:634-646
     /// (<c>DisplayMp</c>'s own animated-icon computation). Read-only view over the internal array so a

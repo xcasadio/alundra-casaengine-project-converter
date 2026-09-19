@@ -300,6 +300,9 @@ Arbitrées avec l'auteur le 2026-09-18, avant rédaction. Ne pas re-débattre.
 | D-E13-5 | **Le HUD est un élément dans une fenêtre hôte**, jamais une fenêtre | Une fenêtre n'honore pas `RenderTransform` et sa cible de translation est `internal` (§1.8). **Amendée le 2026-09-18** : la mention « animé par images clés » est retirée, supersédée sur ce point par D-E13-8. Seule la structure élément-dans-fenêtre-hôte subsiste |
 | D-E13-6 | **Recette par les valeurs de débogage** de l'initialisation | Aucun script ne crédite d'argent avant E14 |
 | D-E13-7 | **Le flash de palette commenté reste gelé** | Non confirmé actif, et ses tuiles intermédiaires sont absentes des pixels de `wind.png` |
+| D-E13-9 | **L'échelle pixel appartient à l'écran du HUD, dérivée du viewport** | Tranchée en C2 le 2026-09-19 : facteur entier `max(1, largeur du viewport / 320)`, 320 cité à `AlundraDisplay.cs:32`, confirmé à 4 en capture 1280×944. Si `PixelScale` change dans le convertisseur, le HUD suit sans troisième copie. `UIRoot.UIScale` n'est pas consommé |
+| D-E13-10 | **Recette : une variable d'environnement lue à la nouvelle partie** | Arbitrée le 2026-09-19. Si elle est posée, la nouvelle partie démarre avec le jeu de valeurs de débogage de D-E13-6 et lève la demande d'affichage, exactement comme un script de carte le ferait. Rien de pilotable en cours de partie. Tranche C5.a |
+| D-E13-11 | **C4 : changement moteur, l'effet d'écran se dessine au-dessus de l'interface** | Arbitrée le 2026-09-19 après réfutation de la prémisse (§6 point 6). Fidélité exacte : la jauge s'assombrit avec le décor comme dans l'original. Chantier `CasaEngineMonogame`, plan dans `ai-agent/tasks/`, branche et verifier propres, approbation de l'auteur. E13 attend sa livraison pour clore C4 |
 | D-E13-8 | **Le tick logique possède tout le temps du HUD. MGUI dessine.** | Ajoutée le 2026-09-18 après relecture adverse, voir §1.8 bis. Le directeur pose la translation et l'index d'image à chaque tick ; aucune animation MGUI n'est jouée pour la jauge. Rend D-E13-3 atteignable par construction, supprime la dérive entre l'horloge temps réel et le tick, et rend inutile le câblage de `IsPaused` |
 
 ---
@@ -347,7 +350,7 @@ chaque conversation.
 **Acceptation** : tests de cadence sur chaque compteur, test de la machine d'états sur les quatre
 valeurs, test montrant que le directeur avance alors qu'un écran modal est poussé.
 
-### ⏳ C2 — Écran MGUI : la composition statique
+### ✅ C2 — Écran MGUI : la composition statique (verifier CONFIRMED à la quatrième passe, 863/863)
 
 **But** : la jauge s'affiche, juste, au bon endroit, nette.
 
@@ -377,20 +380,49 @@ fermeture pour la fermeture. **Égalité exacte exigée**, ce sont des entiers, 
 diffèrent. Un troisième test relève les index d'image sur 40 ticks et vérifie les cadences de §1.4,
 pip de magie compris à sa valeur corrigée.
 
-### ⏳ C4 — Le HUD sous le fondu
+### ⏳ C4 — La jauge s'assombrit avec le décor (réécrite le 2026-09-19 sous D-E13-11)
 
-**But** : la jauge ne flotte pas au-dessus du fondu noir.
+**Ce que la première rédaction disait, et pourquoi c'était faux** : « l'original ferme le HUD avant
+le fondu ». Réfuté, voir §6 point 6 : au warp, l'original capture l'image avec la jauge et fond
+dessus. La jauge ne glisse pas, elle s'assombrit avec le décor.
 
-**Contenu** : l'ordre de rendu du moteur place les effets d'écran sous l'interface, donc aucun écran
-MGUI ne peut passer sous le fondu. L'original ferme le HUD **avant** le fondu. Porter cet appel et le
-rattacher au warp et au fondu du portage.
+**But** : au warp, la jauge s'assombrit avec la scène, comme dans l'original.
 
-**Acceptation** : en jeu, la jauge se referme avant que l'écran noircisse, à un warp.
+**C4.moteur** — chantier `CasaEngineMonogame`, hors de ce plan : l'effet d'écran obtient un mode qui
+se dessine **après l'interface**. Plan propre dans `CasaEngineMonogame/ai-agent/tasks/`, branche
+propre, plan-verifier, approbation de l'auteur, verifier de sortie, archivage. Le portage n'écrit
+rien dans le moteur depuis ce plan.
 
-### ⏳ C5 — Recette en jeu
+**C4.dll** — une fois C4.moteur livré et le pointeur de sous-module bumpé : le directeur de fondu du
+portage arme le mode « au-dessus de l'interface » pour le fondu de warp. Rien d'autre : le directeur
+du HUD reste intact, la jauge reste `Displayed` pendant le warp et réapparaît à l'arrivée sans
+glissement, exactement comme `g_drawFrameFlags` reste à 1 dans l'original.
 
-**Contenu** : poser les valeurs de débogage, vérifier l'affichage, le rattrapage, le roulement de
-l'argent, les deux transitions, la persistance pendant un dialogue, et la fermeture avant fondu.
+**Acceptation** : en jeu, à un warp, la jauge s'assombrit avec le décor et n'est jamais lisible sur
+fond noir ; à l'arrivée elle est déjà là, sans glissement. Capture en processus à mi-fondu.
+
+**Arrêt** : si C4.moteur révèle que l'interface MGUI n'est pas dessinée par le pipeline 2D mais après
+lui, le mode « au-dessus » doit se poser à cet endroit-là et non dans une passe ; c'est le plan
+moteur qui le dira, pas celui-ci.
+
+### ⏳ C5.a — DLL : l'activation de recette par variable d'environnement (D-E13-10)
+
+**But** : l'auteur peut voir la jauge sans attendre une carte qui la demande.
+
+**Contenu** : une variable d'environnement, nom à fixer dans la tranche et documenté dans le plan.
+Si elle est posée à la nouvelle partie, la DLL charge le jeu de valeurs de débogage de C0 et lève la
+demande d'affichage par le même drapeau qu'un script de carte, identifiant 1813, via
+`AlundraGameState.AddFlag`. Rien d'autre ne change : le directeur voit une demande ordinaire.
+Sans la variable, comportement d'origine, la jauge n'apparaît que sur demande de script.
+
+**Acceptation** : test sans tête sur les deux branches ; en jeu, avec la variable, la jauge apparaît
+sur la carte 389 à 38 sur 45, 2 sur 3 et 2163 ; sans, elle n'apparaît pas.
+
+### ⏳ C5.b — Recette en jeu
+
+**Contenu** : avec la variable de C5.a, vérifier l'affichage, le rattrapage, le roulement de
+l'argent, les deux transitions, la persistance pendant un dialogue, et, après C4, l'assombrissement
+de la jauge avec le décor au warp.
 
 ---
 
@@ -451,6 +483,40 @@ elle se referme avant un fondu. Suites `Alundra.Tests` et `CasaEngine.Tests` ver
    et de la magie (`HudManager.cs`, blocs de `DisplayLife` et `DisplayMp`). Ni la reconnaissance ni
    le plan ne les avaient listés. Le directeur ne les joue pas ; le portage a pourtant un système
    audio depuis E11. Une tranche courte suffirait, après E13 ou dedans si l'auteur le demande.
+6. **C4 : la prémisse « l'original ferme le HUD avant le fondu » est fausse pour le warp — DÉCISION
+   AUTEUR.** Vérification de niveau opus le 2026-09-19 sur les fonctions d'origine que le directeur
+   de warp cite comme sources. `PlayerManager.HandleWarpTransition` (`:3488-3541`, `0x80031340`) et
+   `Script_ChangeMap_053` (`EntityEventHandlers.cs:1554-1586`) n'ont **aucun contact avec le HUD** :
+   ni armement de glissement, ni remise à zéro, ni écriture des bits `0x38/0x200000`,
+   `0x38/0x400000` ou `0x33/0x40000000`. La fonction `StartFadeOut` (`GraphicManager.cs:1767-1783`)
+   que le critique avait citée ferme bien le HUD avant d'armer un fondu, mais ses deux seuls
+   appelants sont un menu de débogage (`MainInventoryManager.cs:474`) et un contrôle d'état
+   (`GraphicManager.cs:1697`), pas le warp. **Ce que l'original fait vraiment** : la dernière image
+   normale est rendue avec la jauge, puis `StartWarpTransition` (`GameEngine.cs:258`) appelle
+   `CaptureWarpTransitionFrame` (`GraphicManager.cs:30-34`, `Renderer.CaptureFrameBuffer()`) et arme
+   le fondu par `InitStandardWarpEffect` (`GameEngine.cs:1375-1385`, tpage 2, 16 ticks, ce que le
+   portage reproduit). Chaque image suivante passe par `AdvanceWarpTransitionFrame`
+   (`GameEngine.cs:277-294`), commentée « Warp rendering bypasses RenderScene() » (`:283`) : ni scène
+   ni interface ne sont redessinées, le fondu s'applique à la capture. **La jauge s'assombrit avec le
+   décor, en pixels figés, et n'est jamais peinte par-dessus le noir.** À l'arrivée, `WarpPlayer`
+   cas 0 (`GameEngine.cs:895-905`) rallume depuis `0xff0000` et la jauge réapparaît à la première
+   vraie image, sans glissement, puisque `g_drawFrameFlags` est resté à 1.
+
+   Le portage ne peut pas reproduire cela tel quel : `RenderPass2D.ScreenEffects = 750` se dessine
+   sous `UI = 1000` (`RenderPass2D.cs:13-17`), et `ScreenEffectComponent.cs:147` y pousse le fondu.
+   Une jauge MGUI flotterait donc au-dessus du noir pendant les 16 ticks. Trois voies, à trancher :
+   **(a)** changement moteur, un mode « au-dessus de l'interface » pour l'effet d'écran, fidélité
+   exacte, un chantier dans `CasaEngineMonogame/ai-agent/tasks/` ; **(b)** suppression au niveau du
+   présentateur pendant le fondu de warp, le directeur intact, la jauge disparaît au premier tick au
+   lieu de s'assombrir sur 16, aucun changement moteur, écart documenté ; **(c)** accepter le
+   flottement, écart visible. La tranche C4 telle qu'écrite, un glissement avant le fondu, est
+   abandonnée : l'original ne glisse pas au warp.
+
+   Réserve annexe : en image normale, la translittération place le fondu sous l'interface
+   (`SpriteDepth.FadeTransitionEffect = BackgroundUI - 1`, `SpriteDepth.cs:5-11`), mais ces
+   constantes sont un ajout du translittérateur, pas la table d'ordonnancement PSX. Pour les fondus
+   scriptés hors warp (opcode `0xAF`), l'ordre réel jauge/fondu n'est **pas établissable** depuis la
+   translittération.
 
 ---
 
@@ -465,3 +531,7 @@ elle se referme avant un fondu. Suites `Alundra.Tests` et `CasaEngine.Tests` ver
 | 2026-09-19 | **Exécution lancée** sur approbation de l'auteur, une tranche par workflow, executor sonnet, verifier opus, un commit par tranche. |
 | 2026-09-19 | **C0 livrée, verifier CONFIRMED, 840/840** (815 + 25). Nouveau type `AlundraPlayerStats`, une seule instance `readonly` sur `AlundraGameState` (aliasing de §1.5 bis reproduit par construction) ; les cinq setters bornés sur `AlundraPlayerManager`, là où l'original les met, transcrits avec `0x33`/`0x32` littéraux et l'ordre des tests d'origine ; `InitializeNewGameStats` et `LoadDebugStats` pour la recette. Verifier : chaque borne comparée ligne à ligne, sonde indépendante hors dépôt sur les bords, rien d'indexé, périmètre respecté. **P3 corrigé en session principale** : cinq citations décalées d'une ligne, vérifiées de mes yeux, suite relancée. **P4 différés** : identité d'instance non testée après remise à zéro ; abaisser un plafond ne re-borne pas la valeur courante, fidèle mais non verrouillé par un test. **Reconfirmation** de l'inversion et de la cadence faite en parallèle sur le C# translittéré, voir §6 points 2 et 4 : la cadence tient, la phase des pips est une question pour l'auteur. |
 | 2026-09-19 | **C1 livrée, verifier CONFIRMED, 853/853** (840 + 13). `AlundraHudDirector` sur le patron E12, états nommés par effet (`Idle` 0, `Displayed` 1, `Closing` 3, `Opening` 5), les trois branches du déclencheur dans l'ordre d'origine, la branche `0x400000` instantanée et la branche du loquet réarmée à chaque image, le tween entier avec troncature vers zéro, les quatre compteurs aux cadences de §1.4, index d'image par pip derrière la table d'unisson de §6 point 4. Accroche dans `AlundraWorldProxy` par `InstallHudSystems` et une boucle `Tick()` par tick logique, à la suite du dialogue. **Verifier** : sonde hors dépôt réimplémentant le tween depuis `UIManager.cs:968-993`, les deux tables de §1.3 retrouvées à l'entier près dans les deux sens et prouvées produites par le tween et non recopiées ; machine d'états comparée ligne à ligne à `GraphicManager.cs:1656-1672` et `HudManager.cs:223-239` ; cadences rejouées sans partager de constante. **P3 corrigés en session principale** : grappe de citations décalées dans le directeur, et résumé de documentation d'`InstallDialogueSystems` déplacé par erreur sous `InstallHudSystems`. **P4 accepté** : le test « écran modal » ouvre le directeur de dialogue plutôt qu'un vrai `IUIScreen`, la pile d'écrans n'étant pas pilotable sans tête ; la condition tient sur le fond, la boucle du HUD vivant hors de la pile. **Découverte** : bruitages 8 et 9 du rattrapage non portés, voir §6 point 5. |
+| 2026-09-19 | **C4 bloquée ⚠️ avant exécution : prémisse réfutée.** Une reconnaissance haiku puis une vérification opus sur les sources d'origine du directeur de warp établissent que l'original ne ferme pas la jauge au départ d'un warp : il capture l'image et fond dessus. Voir §6 point 6 pour les lignes et les trois voies. Décision auteur demandée ; C2 et C3 continuent. |
+| 2026-09-19 | **Trois décisions actées** : D-E13-9 échelle pixel dérivée du viewport (tranchée par C2) ; D-E13-10 variable d'environnement pour la recette, l'auteur ayant constaté que la jauge n'apparaît pas sur la 389, ce qui est le comportement d'origine ; D-E13-11 C4 devient un changement moteur, l'effet d'écran au-dessus de l'interface. C4 réécrite, C5 scindée en C5.a et C5.b. |
+| 2026-09-19 | **C2 en troisième passe.** Deux verifiers REFUTED sur le même P2 : l'ordre de recouvrement des grands cristaux, qui se chevauchent de 8 px, corrigé pour les pleins au premier tour mais pas pour les vides. La troisième passe traite aussi une erreur du brief de la session principale, le nombre de cristaux vides doit suivre la vraie vie maximale (`HudManager.cs:767`) et non la valeur roulée, et un débordement d'une tuile observé à 50 sur 50. Verdict en attente. |
+| 2026-09-19 | **C2 livrée, verifier CONFIRMED à la quatrième passe, 863/863** (853 + 10). Quatre passes, chacune matériellement différente. Passe 1 : REFUTED, ordre de recouvrement des grands cristaux pleins inversé, ils se chevauchent de 8 px. Passe 2 : REFUTED, même défaut non corrigé pour les vides. Passe 3 : REFUTED, les deux ordres exacts au sous-pixel, mais le clamp ajouté pour la rangée à 50 sur 50 n'existait pas dans l'original et le cas jugé inatteignable l'est, à pleine vie quand la vie maximale augmente. Passe 4 : clamp retiré, arithmétique de `HudManager.cs:727-782` portée sans borne, transitoire élucidé — l'original écrit un SPRT avant le tableau des cristaux, dans la seconde banque doublement tamponnée du tableau voisin, désaligné d'un en-tête, jamais dessiné comme cristal ; le composeur ne rend rien pour cet indice, avec la citation. `MaxTileCount = 26` désormais dérivé des cinq tableaux d'origine (3 + 4 + 10 + 4 + 5) ; `Debug.Assert` et compteur, plus aucune tuile jetée en silence. **Établi au passage** : parmi les quatre afficheurs, une seule lecture d'une vraie stat, `GetPlayerHpMax()` pour le nombre de cristaux vides (`:767`), tout le reste lit les valeurs roulées ; le directeur expose `TrueHpMax`. **D-E13-9 tranchée** : facteur entier dérivé du viewport. **Verifier** : les 24 index de sprite croisés avec `wind.json` et les UV, deux recaptures indépendantes à quatre pleins et à quatre vides, zéro écart au sous-pixel sur la zone des cristaux, `PointClamp` et facteur 4 confirmés. **P3 corrigé en session principale** : le commentaire justifiant l'indice négatif affirmait un trou mémoire non étiqueté ; les tableaux sont doublement tamponnés (`:760`, `:802`, pas d'adresses de `StaticVariables.cs:13148-13153`), commentaire réécrit sur ce que la source dit. **P4 rejeté** : le verifier tenait la citation `DrawSettings.cs:82` pour décalée ; vérifiée de mes yeux, la déclaration commence en 81 et le défaut `PointClamp` est bien en 82, la citation est juste. **P4 différé** : la boucle des vides n'a pas la garde de slot négatif de celle des pleins ; hors domaine, la vie maximale étant bornée à 50 par C0, et désormais attrapé par le compteur. **P3 de la passe 1, différé** : l'écran ne relit le directeur que dans son propre `Update`, gelé sous un écran modal ; c'est C3 qui fait pousser les valeurs par le tick, comme le plan l'exige. |
