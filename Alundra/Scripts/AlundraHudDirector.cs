@@ -52,8 +52,15 @@ public sealed class AlundraHudDirector
     internal const uint ScriptOpenRequestMask = 0x200000;
     private const uint ScriptCloseRequestFlag = 1814;
     private const uint ScriptCloseRequestMask = 0x400000;
-    private const uint PersistentLatchFlag = 1662;
-    private const uint PersistentLatchMask = 0x40000000;
+
+    // internal (widened from private, S2's base extraction rule - same shape as ScriptOpenRequestFlag/
+    // ScriptOpenRequestMask above): E13 C5.a2's F1 debug recipe (D-E13-12, AlundraWorldProxy.ToggleDebugHud)
+    // clears this exact latch through AlundraGameState.SetFlag with the complemented mask, exactly as a
+    // map script's opcode 0x06 ("Flag off", AlundraEventProgramRunner.cs:443-448) would for id 1662 -
+    // RunTriggerMachine's own branch (i) then re-arms the animated close on the very next Tick(), since
+    // it re-reads this SAME flag/mask pair every tick the latch is off (see RunTriggerMachine's own doc).
+    internal const uint PersistentLatchFlag = 1662;
+    internal const uint PersistentLatchMask = 0x40000000;
 
     // ---- Position tween (UIManager.UpdateUiBoxesPosition, 0x80047dd0, UIManager.cs:968-993) ----
     //
