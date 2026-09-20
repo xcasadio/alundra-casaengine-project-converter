@@ -487,4 +487,74 @@ public class AlundraScreenFadeDirectorTests : IDisposable
         // tick 17, which is exactly what the real T7 test's own final assertion (Assert.False) forbids.
         Assert.True(game1.ScreenEffectComponent.Service.Active, "the mutation's own signature: submission leaks past tick 17.");
     }
+
+    // ---- C4 (D-E13-11): which fades cover the interface -------------------------------------------
+    //
+    // The original does not close the HUD before a warp: it captures the frame WITH the gauge and fades
+    // over it, so the gauge darkens with the scenery rather than staying legible on black. Only the two
+    // warp fades do that; a fade driven by an event opcode stays below the interface.
+
+    [Fact]
+    public void C4_TheArrivalFade_DrawsAboveTheInterface()
+    {
+        var game = BuildGameWithScreenEffects();
+        var world = new World { Name = "TestWorld" };
+        HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
+
+        var proxy = new AlundraWorldProxy();
+        proxy.InstallScreenFadeSystems(world); // the real map-entry path, which arms effect 0.
+        proxy.Update(0.02f);
+
+        var service = game.ScreenEffectComponent.Service;
+        Assert.True(service.Active);
+        Assert.Equal(ScreenEffectLayer.AboveUI, service.Layer);
+    }
+
+    [Fact]
+    public void C4_TheDepartureFade_DrawsAboveTheInterface()
+    {
+        var service = BuildGameWithScreenEffects().ScreenEffectComponent.Service;
+        AlundraScreenFadeDirector.Instance.AttachToWorld(service);
+
+        // Exactly what AlundraWarpDirector issues when a portal is taken.
+        AlundraScreenFadeDirector.Instance.BeginWarpDepartureFade(0xff, 0xff, 0xff, tpage: 2, duration: 16, persistLock: 1);
+        AlundraScreenFadeDirector.Instance.Advance(1);
+        AlundraScreenFadeDirector.Instance.PushToAttachedService();
+
+        Assert.Equal(ScreenEffectLayer.AboveUI, service.Layer);
+    }
+
+    [Fact]
+    public void C4_AnOpcodeFade_StaysBelowTheInterface()
+    {
+        var service = BuildGameWithScreenEffects().ScreenEffectComponent.Service;
+        AlundraScreenFadeDirector.Instance.AttachToWorld(service);
+
+        // Opcode 0xAF: not a warp, so the interface must stay on top of it.
+        AlundraScreenFadeDirector.Instance.BeginFadeEffect(0xff, 0, 0, tpage: 1, duration: 8, persistLock: 0);
+        AlundraScreenFadeDirector.Instance.Advance(1);
+        AlundraScreenFadeDirector.Instance.PushToAttachedService();
+
+        Assert.Equal(ScreenEffectLayer.BelowUI, service.Layer);
+    }
+
+    [Fact]
+    public void C4_AnOpcodeFade_AfterAWarpFade_FallsBackBelowTheInterface()
+    {
+        // The reason BeginFadeEffect clears the flag rather than leaving it: without that, an opcode fade
+        // issued after any warp would silently inherit the warp's layer and darken the HUD for no reason.
+        var service = BuildGameWithScreenEffects().ScreenEffectComponent.Service;
+        AlundraScreenFadeDirector.Instance.AttachToWorld(service);
+
+        AlundraScreenFadeDirector.Instance.BeginWarpDepartureFade(0xff, 0xff, 0xff, tpage: 2, duration: 16, persistLock: 1);
+        AlundraScreenFadeDirector.Instance.Advance(1);
+        AlundraScreenFadeDirector.Instance.PushToAttachedService();
+        Assert.Equal(ScreenEffectLayer.AboveUI, service.Layer);
+
+        AlundraScreenFadeDirector.Instance.BeginFadeEffect(0, 0, 0xff, tpage: 1, duration: 4, persistLock: 0);
+        AlundraScreenFadeDirector.Instance.Advance(1);
+        AlundraScreenFadeDirector.Instance.PushToAttachedService();
+
+        Assert.Equal(ScreenEffectLayer.BelowUI, service.Layer);
+    }
 }

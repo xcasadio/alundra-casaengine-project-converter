@@ -392,8 +392,10 @@ public sealed class AlundraWarpDirector
         soundAction();
 
         // D-T-5: outgoing fade, persistence latch held through the map switch itself - validated line by
-        // line in §1.4.f, no AlundraScreenFadeDirector change needed.
-        AlundraScreenFadeDirector.Instance.BeginFadeEffect(0xff, 0xff, 0xff, tpage: 2, duration: 16, persistLock: 1);
+        // line in §1.4.f. C4 (D-E13-11) is the one thing added since: this fade covers the INTERFACE too,
+        // so the life gauge darkens with the scenery instead of staying legible on black - the original
+        // does not close the HUD before a warp, it fades over the frame the gauge is already in.
+        AlundraScreenFadeDirector.Instance.BeginWarpDepartureFade(0xff, 0xff, 0xff, tpage: 2, duration: 16, persistLock: 1);
 
         // [R6] reserve #1 (T2's own closing-verifier note, this class' own remarks): suspend the hero's
         // engine-driven gravity for the duration of the departure - see
