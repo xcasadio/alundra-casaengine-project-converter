@@ -154,6 +154,28 @@ public sealed class AlundraGameState
     public int InteractLatchPlayerZ;
     public uint InteractLatchDirection;   // g_lastWarpDirection <- player.TargetDirection
 
+    /// <summary>
+    /// E13 C0 (docs/plan-e13-hud.md §1.5 bis): port of the original's <c>g_playerStats</c>/
+    /// <c>g_saveData.PlayerStats</c> - a SINGLE aliased object in the original (GameInitializer.cs:444-445),
+    /// so a single field here, never a separate "save" and "current" pair. See
+    /// <see cref="AlundraPlayerStats"/>'s own doc for why the object lives here and its setters live on
+    /// <see cref="AlundraPlayerManager"/>.
+    /// </summary>
+    public readonly AlundraPlayerStats PlayerStats = new();
+
+    /// <summary>
+    /// E13 C5.a (docs/plan-e13-hud.md, D-E13-10): once-only session latch for the
+    /// <c>ALUNDRA_HUD_DEBUG</c> recipe (<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>) - set the first
+    /// (and only) time that recipe fires, at the one map entry it recognizes as a New Game (no pending
+    /// warp arrival - see that method's own doc). A defensive belt-and-suspenders latch, not the recipe's
+    /// primary gate: the real gate is "no pending arrival", which the original architecture only ever
+    /// satisfies once per session (every OTHER map entry is a warp, and a warp always leaves a
+    /// non-null arrival record) - this field just makes that "only once" hold even if a future change, or
+    /// a test, ever produces a second no-arrival entry in the same session. Reset alongside every other
+    /// session field in <see cref="ResetForTests"/>.
+    /// </summary>
+    public bool DebugHudRecipeApplied;
+
     /// <summary>Persistent save-game flags (<c>g_saveData.GameFlags</c>) - all zero, matching New Game.</summary>
     public readonly uint[] GameFlags = new uint[WordCount];
 
@@ -262,5 +284,13 @@ public sealed class AlundraGameState
 
         // T3 (docs/plan-transitions-carte.md, point 5) - see InstallForMapEntry's own comment above.
         IsWarpDisabled = false;
+
+        // E13 C0: PlayerStats is a session-scoped object like everything else above - reset it too so
+        // tests do not leak stat values into each other through Instance.
+        PlayerStats.ResetForTests();
+
+        // E13 C5.a: the ALUNDRA_HUD_DEBUG once-only latch is session state too - reset it so one test's
+        // recipe application cannot suppress another test's own attempt through Instance.
+        DebugHudRecipeApplied = false;
     }
 }
