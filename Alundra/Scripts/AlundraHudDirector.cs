@@ -153,21 +153,27 @@ public sealed class AlundraHudDirector
     private readonly int[] _magicPipFrame = new int[4];
 
     /// <summary>
-    /// Plan §6 point 4 (OPEN QUESTION, not this slice's to close): the ACTIVE line
-    /// (HudManager.cs:634-646) makes every pip share the exact same frame - the reconstruction replaced
-    /// two commented indirections through <c>g_inventoryWeaponIconX</c>/<c>BYTE_ARRAY_800a3238</c> with
-    /// a single computation that drops the per-pip term entirely. This table is that unison, ported as
-    /// the mission requires ("par défaut... l'unisson").
+    /// Per-pip animation phase offset, so the four magic pips ripple instead of blinking together.
     ///
-    /// <b>Candidate NOT ported</b> (documentation only, no code path reads it): <c>{ 0, 1, 2, 3 }</c>, a
-    /// rotation deduced by reading <c>g_inventoryWeaponIconX</c>'s first 16 bytes little-endian
-    /// (StaticVariables.cs:12272-12275, values <c>0x100, 0x302, 0x201, 0x3, 0x302, 0x100, 0x3, 0x201</c>
-    /// -> bytes <c>00,01,02,03 / 01,02,03,00 / 02,03,00,01 / 03,00,01,02</c>) - a byte-level reading of a
-    /// <c>short[]</c>, i.e. a DEDUCTION, not a read of active code. Only the author, from the raw
-    /// disassembly, can decide between the two - C3 fills this table only after that answer (plan §6
-    /// point 4).
+    /// <b>Settled by the author on 2026-09-20</b>, who played the original and reported the pips'
+    /// animations as offset from one another (plan §6 point 4). The transliteration could not settle
+    /// it: its ACTIVE line (HudManager.cs:634-646) gives every pip the same frame, because the
+    /// reconstruction replaced two commented indirections through <c>g_inventoryWeaponIconX</c> and
+    /// <c>BYTE_ARRAY_800a3238</c> with one computation that drops the per-pip term, and the latter
+    /// table is not transliterated at all (StaticVariables.cs:12253-12254, commented out as
+    /// "useless").
+    ///
+    /// The values below are the rotation that survives in <c>g_inventoryWeaponIconX</c>
+    /// (StaticVariables.cs:12272-12275, <c>0x100, 0x302, 0x201, 0x3, 0x302, 0x100, 0x3, 0x201</c>),
+    /// whose first sixteen bytes read little-endian give <c>00,01,02,03 / 01,02,03,00 /
+    /// 02,03,00,01 / 03,00,01,02</c>, i.e. <c>frame = (phase + pip) % 4</c> - an offset equal to the
+    /// pip's own index. Reading a <c>short[]</c> as bytes is a deduction, but the author's own
+    /// observation confirms the ripple it predicts.
+    ///
+    /// <b>Left to confirm in game</b>: the ripple's DIRECTION, which depends on which pip carries
+    /// index 0. If it runs the wrong way, reverse these four values - nothing else changes.
     /// </summary>
-    private static readonly int[] MagicPipPhaseOffset = { 0, 0, 0, 0 };
+    private static readonly int[] MagicPipPhaseOffset = { 0, 1, 2, 3 };
 
     /// <summary>Re-points this session-scoped instance at the current world's own
     /// <see cref="AlundraGameState"/> - same "re-point without touching state" contract as

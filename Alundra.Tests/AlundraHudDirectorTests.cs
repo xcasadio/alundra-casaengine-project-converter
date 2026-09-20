@@ -265,33 +265,43 @@ public sealed class AlundraHudDirectorTests : IDisposable
     }
 
     [Fact]
-    public void MagicPipFrame_AdvancesOnce_EveryTenActiveTicks_CycleOfFour_Unison()
+    public void MagicPipFrame_AdvancesOnce_EveryTenActiveTicks_CycleOfFour_RipplingByPipIndex()
     {
         var state = new AlundraGameState();
         var director = ArmedOpening(state);
 
         // FrameCounter counts every active tick starting at 1 (the very first Tick call). Phase per
         // HudManager.cs:634-638: (FrameCounter / 10) % 4 - checked at a representative point in each of
-        // the first four ten-tick windows.
+        // the first four ten-tick windows. Each pip shows (phase + its own index) % 4: the ripple the
+        // author confirmed on 2026-09-20 (plan §6 point 4), carried by MagicPipPhaseOffset.
         TickMany(director, 9); // FrameCounter == 9 -> phase (9/10)%4 == 0.
-        Assert.All(director.MagicPipFrame, frame => Assert.Equal(0, frame));
+        AssertRipple(director, basePhase: 0);
 
         TickMany(director, 10); // FrameCounter == 19 -> phase (19/10)%4 == 1.
-        Assert.All(director.MagicPipFrame, frame => Assert.Equal(1, frame));
+        AssertRipple(director, basePhase: 1);
 
         TickMany(director, 10); // FrameCounter == 29 -> phase (29/10)%4 == 2.
-        Assert.All(director.MagicPipFrame, frame => Assert.Equal(2, frame));
+        AssertRipple(director, basePhase: 2);
 
         TickMany(director, 10); // FrameCounter == 39 -> phase (39/10)%4 == 3.
-        Assert.All(director.MagicPipFrame, frame => Assert.Equal(3, frame));
+        AssertRipple(director, basePhase: 3);
 
         TickMany(director, 10); // FrameCounter == 49 -> phase (49/10)%4 == 0 again (wrapped).
-        Assert.All(director.MagicPipFrame, frame => Assert.Equal(0, frame));
+        AssertRipple(director, basePhase: 0);
+    }
 
-        // Unison by default (plan §6 point 4 - the active line, no per-pip rotation): all four entries
-        // always equal each other, never just equal to the same constant by coincidence.
+    /// <summary>The four pips are all different at any instant, and each one is exactly its own index
+    /// ahead of the base phase - which is what makes the row ripple rather than blink together.</summary>
+    private static void AssertRipple(AlundraHudDirector director, int basePhase)
+    {
         Assert.Equal(4, director.MagicPipFrame.Count);
-        Assert.True(director.MagicPipFrame.Distinct().Count() == 1);
+
+        for (var pip = 0; pip < 4; pip++)
+        {
+            Assert.Equal((basePhase + pip) % 4, director.MagicPipFrame[pip]);
+        }
+
+        Assert.Equal(4, director.MagicPipFrame.Distinct().Count());
     }
 
     [Fact]
