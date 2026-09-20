@@ -808,6 +808,20 @@ public static class SpriteWriter
         };
     }
 
+    /// <summary>
+    /// The deterministic id of the <c>.sprite</c> a given quad produces (D-N-6). The key is the pair
+    /// the deduplication itself uses: a <c>Signature</c> is only unique within one exported
+    /// spritesheet, so the sheet has to be part of it.
+    ///
+    /// It lives here, rather than inline, because a second consumer resolves an already emitted
+    /// sprite from nothing but a signature: <see cref="ItemsWriter"/> maps each item to its portrait
+    /// without any image being added to the atlas (docs/plan-e13c-icones-hud.md, slice S2).
+    /// </summary>
+    public static Guid SpriteAssetId(string spritesheetFileName, long signature)
+    {
+        return Ids.For($"sprite:{spritesheetFileName}:{signature}");
+    }
+
     private static Guid EnsureSpriteData(
         SpriteQuad quad,
         string spritesheetFileName,
@@ -822,7 +836,7 @@ public static class SpriteWriter
             return existingId;
         }
 
-        var spriteData = new SpriteData(Ids.For($"sprite:{spritesheetFileName}:{quad.Signature}"))
+        var spriteData = new SpriteData(SpriteAssetId(spritesheetFileName, quad.Signature))
         {
             SpriteSheetAssetId = textureAssetId,
             PositionInTexture = new Rectangle(quad.AtlasX, quad.AtlasY, quad.Width, quad.Height),

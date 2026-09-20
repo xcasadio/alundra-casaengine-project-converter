@@ -220,6 +220,13 @@ public sealed class SpriteBank
 /// </summary>
 public static class SpriteBankReader
 {
+    /// <summary>
+    /// The spritesheet every bank read out of <c>map_alundra.json</c> shares. It is half of the key
+    /// a sprite asset id is built from (<see cref="Writers.SpriteWriter.SpriteAssetId"/>), so a
+    /// consumer that only knows a signature from the hero table can still name the exact asset.
+    /// </summary>
+    public const string AlundraSpritesheetFileName = "map_alundra_spritesheet.png";
+
     public static IReadOnlyList<SpriteBank> ReadAllBanks(string inputDirectory, ConversionReport report)
     {
         var banksByKey = new Dictionary<string, SpriteBank>();
@@ -227,7 +234,7 @@ public static class SpriteBankReader
         var alundraPath = Path.Combine(inputDirectory, "data", "map_alundra.json");
         if (File.Exists(alundraPath))
         {
-            ReadMapSpriteRecords(alundraPath, mapIndex: -1, "map_alundra_spritesheet.png", isAlundraBank: true, banksByKey, report);
+            ReadMapSpriteRecords(alundraPath, mapIndex: -1, AlundraSpritesheetFileName, isAlundraBank: true, banksByKey, report);
         }
         else
         {

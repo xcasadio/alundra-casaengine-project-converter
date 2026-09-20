@@ -104,7 +104,9 @@ if (options.Phase >= 5)
 // gameMode above), the MapId -> world index, and the raw event bytecode companions. Map
 // entities/portals/map events stay in the .tileMap object layers Phase 1 wrote them to - see
 // WorldWriter's summary. The gameMode needs the hero prefab's asset id, which only Phase 3 knows, so
-// it must run after Phase 3 and before the worlds that reference it.
+// it must run after Phase 3 and before the worlds that reference it. Last, the two raw item tables -
+// see ItemsWriter - whose icon index resolves every item to a .sprite Phase 3 already emitted, so it
+// reads the asset catalog Phase 3 filled and must run after it too.
 var playerStartupSettingsAssetId = Guid.Empty;
 if (options.Phase >= 6)
 {
@@ -120,6 +122,8 @@ if (options.Phase >= 6)
             playerStartupSettingsAssetId, report));
     report.RunPhase("Phase6.Events", () =>
         EventCodeWriter.ConvertEvents(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report));
+    report.RunPhase("Phase6.Items", () =>
+        ItemsWriter.ConvertItems(options.OutputDirectory, report));
 }
 
 // Phase 7: UI sprites, standalone screen textures and the BALANCE.BIN table.

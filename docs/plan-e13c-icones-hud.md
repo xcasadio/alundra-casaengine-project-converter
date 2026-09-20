@@ -249,7 +249,7 @@ ci-dessous. D-E13C-2 sur les CSV, D-E13C-4 sur la correspondance et D-E13C-6 sur
 tiennent ; D-E13C-1 se lit désormais « les 88 portraits exploitables » ; D-E13C-3 et D-E13C-5 sont
 **sans objet**, leur mesure ayant rendu GO et aucune ré-extraction n'étant nécessaire.
 
-### ⏳ S1.b — Analyseur : les deux tables en CSV
+### ✅ S1.b — Analyseur : les deux tables en CSV — faite le 2026-09-19
 
 **But** : ce que seule la décompilation sait sort de l'analyseur, comme les précédents.
 
@@ -265,21 +265,55 @@ tiennent ; D-E13C-1 se lit désormais « les 88 portraits exploitables » ; D-E1
 **Acceptation** : les deux CSV relus contre `StaticVariables.cs:737-838` et contre le relevé ;
 `ItemPortrait.csv` ne contient aucune signature absente des 85 mesurées ; l'objet 42 est absent.
 
-### ⏳ S2 — Convertisseur : les deux catalogues
+### ✅ S2 — Convertisseur : les deux catalogues — faite le 2026-09-20
 
 **But** : le projet exporté porte la table des objets et la correspondance objet vers sprite.
 
-**Contenu** : deux lecteurs sur le modèle de `MapSoundGroupIndexCatalogReader.cs:1-54`, et deux
-sorties brutes, `Data/items-properties.json` et `Data/item-icon-index.json`, cette dernière
-associant chaque `item_id` à **l'identifiant d'actif du `.sprite` déjà émis** pour sa signature. Le
-convertisseur connaît cette correspondance pendant l'export, puisqu'il la construit lui-même
-(`SpriteWriter.cs:151`, `:819-839`). Compteurs ajoutés au rapport de conversion.
+**Ce qui a été fait.** Deux lecteurs sur le modèle de `MapSoundGroupIndexCatalogReader.cs`
+(`ItemsPropertiesCatalogReader.cs` et `ItemPortraitCatalogReader.cs`), les deux CSV liés au csproj
+« linked, not copied », un `ItemsWriter` appelé en `Phase6.Items`, et **deux extractions pures** qui ne
+changent aucun comportement : le littéral de la planche d'Alundra devient
+`SpriteBankReader.AlundraSpritesheetFileName` (`SpriteBankReader.cs:230`), et la formule
+d'identifiant déterministe devient `SpriteWriter.SpriteAssetId`. **La signature de `ConvertSprites`
+n'a pas bougé**, donc aucun fichier de test existant n'a été touché.
 
-**Acceptation, régime de preuve allégé par S1.a** : diff prédit écrit **avant** l'export : les deux
-JSON, le catalogue d'actifs `AssetInfos.json`, `report.json`, **et rien d'autre** ; en particulier
-**aucun `.sprite` nouveau, aucun déplacement de `.sprite`, et la planche inchangée**, puisque aucune
-image n'est ajoutée. Export complet en place, diff mesuré ⊆ prédit, double export ⊆ `{report.json}`,
-et chaque identifiant d'actif de `item-icon-index.json` pointe sur un `.sprite` existant.
+**Le fait qui a réduit la tranche** : toutes les banques lues dans `map_alundra.json` partagent **une
+seule planche**. La clé de déduplication d'un portrait est donc `(map_alundra_spritesheet.png,
+signature)`, sans ambiguïté — y compris pour les quatre objets dont le `.sprite` vit sous une autre
+banque que celle de leur icône (12, 57, 71 et 89), la déduplication étant globale et le fichier
+appartenant à la première banque rencontrée.
+
+**Ce qui n'est jamais supposé** : l'identifiant recalculé n'est publié que si le catalogue le porte
+**et** que l'entrée s'appelle `sprite_<signature>`. Un identifiant que nul sprite n'aurait enregistré
+devient une erreur du rapport, jamais une entrée fantôme.
+
+**Formes livrées**, arbitrées par l'auteur le 2026-09-20 : `Data/items-properties.json` est un tableau
+de **100 tableaux de 5**, l'index externe étant l'`item_id` et l'ordre interne celui des colonnes de
+l'original ; `Data/item-icon-index.json` est un objet à **88 entrées**, clé `item_id` en décimal
+croissant, valeur l'identifiant d'actif du `.sprite`, **objet 42 absent**.
+
+**Mesuré**
+
+| Preuve | Résultat |
+|---|---|
+| Build, suite du convertisseur | vert, **167/167**, aucun test existant modifié |
+| `Alundra.Tests` | **884/884** — le 888 du chantier inclut les 4 tests de C4, qui vivent sur sa branche |
+| Baseline, capturé avant toute modification | **23195 entrées** (23198 fichiers moins `Alundra.dll`, `Alundra.pdb`, `.casaeditor/`) |
+| Diff prédit, écrit avant l'export | les deux JSON ajoutés, `report.json` modifié, `AssetInfos.json` toléré |
+| Diff mesuré | **2 ajouts, 0 suppression, 1 modification : `report.json`** — ⊆ prédit |
+| `AssetInfos.json` | **inchangé au bit près** : la tranche n'enregistre aucun actif |
+| `.sprite` et PNG touchés | **0 et 0** |
+| Double export | diff ⊆ `{report.json}` (D-N-7) |
+| Rapport | **0 erreur**, `Items.PropertiesRows` 100, `Items.IconsIndexed` 88, `Items.IconsUnresolved` 0 |
+| Vérification interne | PASSED, 19505 chargés, 2378 vérifiés par existence |
+| **Appariement, indépendant de la formule** | **88/88** : l'identifiant publié désigne une entrée dont le nom de fichier porte la signature de **cette** ligne |
+| Signatures partagées | les trois paires (10/12, 21/57, 34/89) rendent bien **un seul** identifiant |
+| `items-properties.json` contre le CSV | 100 × 5, **0 écart** ; ligne 0 = `[0,0,0,0,65535]`, ligne 1 = `[1,1,0,1,31]` |
+
+> **Pourquoi l'appariement se prouve sans recalculer la formule.** Le nom d'un `.sprite` est
+> `sprite_<signature>` (`SpriteWriter.cs:830`). Rapprocher l'identifiant publié de ce nom relie donc
+> chaque objet à **sa** signature. Une colonne croisée, un dictionnaire clé par `icon` au lieu de
+> `item_id`, ou un décalage de ligne échouent, là où un simple « l'identifiant existe » passait.
 
 ### ⏳ S3 — DLL : l'arme équipée et son icône dans la case
 
@@ -338,6 +372,12 @@ qui glisse avec la jauge ; suites `Alundra.Tests` et convertisseur vertes.
    (§1.2) là où l'original, comparaison non signée sur 32 bits, le rejetterait probablement. À
    vérifier dans Ghidra sur `0x8004ddf4` et voisins avant que S4 ne fige la règle ; en attendant S4
    porte le code cité et marque la ligne.
+8. **`g_itemDropProperties` ne sort d'AUCUN des deux CSV — à traiter avant S3.** Le drapeau de
+   déverrouillage de la nouvelle partie (`Field3 & 0x80`, `StaticVariables.cs:841`, `:1234`) n'est
+   ni dans `ItemsProperties.csv` ni dans `ItemPortrait.csv`, alors que S3 en a besoin pour porter la
+   boucle de déverrouillage **sans raccourci** (D-E13C-6). Arbitrage de l'auteur du 2026-09-20 :
+   **S2 reste à deux catalogues** ; le manque se comble avant S3 par une tranche analyseur (un
+   troisième CSV) puis une extension du convertisseur sur le modèle exact de S2.
 
 ## 7. Journal
 
@@ -347,4 +387,5 @@ qui glisse avec la jauge ; suites `Alundra.Tests` et convertisseur vertes.
 | 2026-09-19 | Première relecture adverse : **REVISE**, un P1 et quatre P2, tous acceptés. (1) P1 — la disposition `Original` place une image à sa fenêtre VRAM sans la palette alors que la signature l'inclut : un portrait pourrait repeindre un sprite exporté sans qu'un diff de fichiers le voie ; §1.4 corrigé, S0 mesure les collisions, D-E13C-3 en fait un arrêt, S2 et S3 exigent une preuve au pixel hors des rectangles ajoutés. (2) La table a 100 lignes et non 98, `g_itemsCount` vaut 99, 98 est la borne de la boucle de déverrouillage ; §1.3 corrigé, S0 relève les trois bornes. (3) L'original indexe les enregistrements par position, le convertisseur par `Sector5Id` en ignorant les doublons ; S0 mesure la correspondance, arrêt en cas de divergence. (4) `SetPlayerWeaponId` translittéré prend un `ushort`, la sentinelle est inatteignable et 0 est accepté ; §1.2 restaté, question auteur en §6 point 4. (5) Le diff prédit omettait le catalogue d'actifs et les déplacements de `.sprite` par déduplication globale entre banques ; S3 les prédit, S0 les mesure. |
 | 2026-09-19 | **S1.a exécutée, verifier CONFIRMED, et elle réduit le chantier de moitié.** Une commande de relevé derrière `--probe-portraits` lit le binaire et mesure les 89 icônes : 88 portraits exploitables, 85 signatures distinctes, **toutes déjà présentes** parmi les 693 de la planche, donc zéro rectangle nouveau et zéro intersection. Vérifié ensuite en session principale : **les 85 ont déjà leur `.sprite` émis**, sur les 6908 du projet. L'extraction, la ré-extraction, le miroir et la preuve au pixel n'ont plus d'objet ; S1.b, S2 et S3 d'origine sont remplacées par trois tranches : deux CSV, deux catalogues, la DLL. **Deux corrections de fond** : la reconnaissance affirmait que le portrait était une image distincte absente de tout frame converti, la mesure montre qu'il coïncide avec une image déjà extraite, l'épée de base ayant pour portrait exactement son sprite du monde ; et l'emplacement 72 n'existe pas dans les données du jeu, `SpriteInfo.cs:93-101` ne construisant un enregistrement que si son entrée de table n'est ni 0 ni -1, donc l'objet 42 n'a réellement pas d'icône. |
 | 2026-09-19 | **Approuvé par l'auteur. S0 exécutée**, partie en agent en lecture seule, partie en session principale sur les données réelles. Trois bornes confirmées, convention d'absence d'icône établie, position et identifiant de secteur identiques sans doublon, 693 signatures existantes avec leur digest d'ordre, planche de taille constante et sa référence copiée. **Trois corrections au plan** : la règle d'arrêt sur les palettes était trop large, la planche portant déjà 225 recouvrements à palettes différentes entre images existantes ; le relevé des portraits doit précéder le test d'intersection, d'où le découpage de S1 en S1.a et S1.b ; et l'objet 42 désigne un enregistrement nul, question remontée à l'auteur. |
+| 2026-09-20 | **S2 exécutée, et une mesure l'a simplifiée avant qu'une ligne ne soit écrite.** Toutes les banques de `map_alundra.json` partageant une seule planche, `Ids.For("sprite:map_alundra_spritesheet.png:<signature>")` résout **88/88** contre l'`AssetInfos.json` réel : la correspondance se lit, elle ne s'extrait pas. Première relecture adverse : **REVISE**, trois P2, tous acceptés. (1) Changer le type de retour de `ConvertSprites` cassait quatre fichiers de tests existants que la portée ne listait pas — **conception changée** plutôt que rapiécée : la signature n'est plus touchée, le writer recalcule l'identifiant et le **prouve** contre le catalogue. (2) `banks.First(b => b.IsAlundraBank)` levait une exception sur les fixtures à `SpriteRecords` vide — disparu avec la conception. (3) L'acceptation pouvait passer alors que chaque objet pointait un sprite existant mais **faux** — remplaçee par une preuve d'appariement indépendante de la formule, par le nom de fichier. Relecture de clôture : **READY**. Export prouvé : diff mesuré = deux JSON + `report.json`, `AssetInfos.json` inchangé, zéro `.sprite`, double export ⊆ `{report.json}`. Trois arbitrages de l'auteur : branche neuve depuis `main`, `items-properties.json` en 100 tableaux de 5, S2 reste à deux catalogues (point ouvert 8). |
 | 2026-09-19 | Relecture de clôture : **REVISE**, un P1 et un P2, tous deux acceptés. (1) P1 — le test de collision par égalité de cellule manquait les recouvrements partiels, chaque signature étant dessinée entière à sa propre origine et taille ; et l'acceptation au pixel exemptait justement les rectangles où le dommage tombe. Corrigé : intersection de rectangles par page contre toute signature existante, intersection à même palette autorisée avec sa justification, à palette différente arrêt ; ensemble exempté redéfini comme les seuls rectangles des portraits nouveaux et sans intersection, comparaison sur toute la planche. (2) P2 — l'ordre de dessin est celui de première rencontre et n'était pas figé ; S1 concatène les portraits strictement après la séquence existante, S0 relève les rangs, S1 prouve le préfixe inchangé, arrêt ajouté. **Deuxième REVISE consécutif, plafond atteint : disposition en session principale, pas de nouvelle soumission.** Le plan part à l'auteur pour approbation avec ces corrections. |
