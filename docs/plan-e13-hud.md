@@ -381,7 +381,7 @@ fermeture pour la fermeture. **Égalité exacte exigée**, ce sont des entiers, 
 diffèrent. Un troisième test relève les index d'image sur 40 ticks et vérifie les cadences de §1.4,
 pip de magie compris à sa valeur corrigée.
 
-### 🧪 C4 — La jauge s'assombrit avec le décor (réécrite le 2026-09-19 sous D-E13-11)
+### ✅ C4 — La jauge s'assombrit avec le décor (réécrite le 2026-09-19 sous D-E13-11) — **validée en jeu par l'auteur le 2026-09-20**
 
 **Ce que la première rédaction disait, et pourquoi c'était faux** : « l'original ferme le HUD avant
 le fondu ». Réfuté, voir §6 point 6 : au warp, l'original capture l'image avec la jauge et fond
@@ -510,11 +510,14 @@ l'écran consomme. Le pool de 26 tuiles ne change pas : ce ne sont pas des tuile
 en jeu, capture en processus jauge affichée : deux quads aux bonnes positions, coins aux bonnes
 teintes, mélange à moitié avec le décor, sous la jauge, qui suivent le glissement.
 
-### ⏳ C5.b — Recette en jeu
+### ✅ C5.b — Recette en jeu — **passée par l'auteur le 2026-09-20**
 
 **Contenu** : avec la variable de C5.a, vérifier l'affichage, le rattrapage, le roulement de
 l'argent, les deux transitions, la persistance pendant un dialogue, et, après C4, l'assombrissement
 de la jauge avec le décor au warp.
+
+**Résultat, 2026-09-20** : l'auteur a passé les deux recettes et les déclare bonnes. C4 et C5.b sont
+closes. Aucune réserve remontée.
 
 ---
 
