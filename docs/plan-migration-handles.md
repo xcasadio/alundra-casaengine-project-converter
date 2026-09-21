@@ -1,0 +1,117 @@
+# Plan — Migration de la DLL Alundra vers les handles comptés du moteur
+
+Tranche consommatrice du chantier moteur
+[`CasaEngineMonogame/ai-agent/tasks/asset-handles-migration-tasks.md`](../CasaEngineMonogame/ai-agent/tasks/asset-handles-migration-tasks.md)
+(ADR-0037 du moteur). Les décisions ont été arbitrées avec l'auteur le 2026-09-21 et figurent dans le plan
+moteur (D1 → D9) : **ce plan les applique, il ne les rediscute pas**.
+
+Statuts : ⏳ Todo · 🚧 In progress · 🧪 Needs testing · ✅ Done · ⚠️ Blocked.
+
+## Objectif
+
+La DLL Alundra n'appelle plus que la nouvelle API du moteur :
+- **`Acquire<T>`** pour ce qu'elle partage, rendu quand son détenteur disparaît ;
+- **`LoadCopy<T>`** pour les modèles d'entités.
+
+Ensuite, une fois que le moteur a supprimé l'ancienne API, la recette en jeu prouve deux choses sur le
+parcours 389 → 390 → 389. Ce que les écrans tiennent n'est chargé qu'une fois. Ce qui n'appartient qu'à la
+389 est libéré en la quittant, puis rechargé au retour.
+
+## État vérifié (2026-09-21)
+
+**Git**
+- La branche sera `chantier/migration-handles`, créée depuis `chantier/e13d-inventaire` (`542344b`), non
+  mergée : c'est une branche empilée.
+- Sous-module moteur : branche `chantier/asset-handles-migration`.
+
+**Appels de la DLL** (`rg`, 2026-09-21)
+- `AlundraWorldProxy.cs:753` et `:2304` : `Load<Entity>(guid)`. Ce sont des modèles d'entités passés au
+  créateur d'entités, donc des copies.
+- `AlundraWorldProxy.cs:1442` : `Load<TileSetData>(assetId)`, dans la construction du monde.
+- `AlundraPlayerController.cs:147` : `Load<ButtonsMapping>`.
+- `AlundraHudScreen.cs:323` et `:482` : `Load<SpriteData>`, suivi de `Sprite.Create`.
+- `AlundraInventoryScreen.cs:437` : `Load<SpriteData>`, suivi de `Sprite.Create`.
+
+**Détenteurs existants**
+- `AlundraWorldProxy.OnEndPlay` est appelé par `World.Clear` et libère déjà l'écran d'inventaire (D5.f).
+- `AlundraInventoryScreen` est `IDisposable` ; `AlundraHudScreen` ne l'est pas.
+
+**Tests** : `AlundraWorldProxyUpdateCharacterizationTests` et `BackdropStageDefinitionTests` utilisent le
+gestionnaire. `Alundra.Tests` : 1047/1047.
+
+**Harnais de recette :** hors dépôt, dans le scratchpad de la session, `d6-font`. Il ouvre l'inventaire,
+passe un portail, et compte les lignes `Load asset` au niveau trace.
+
+## Règles
+
+- Branche `chantier/migration-handles`, jamais de commit sur `main`, jamais de push.
+- Un commit par tâche, avec la mise à jour de ce plan. Message en anglais `type(area): summary`.
+- Indexation fichier par fichier ; on ne touche ni `.serena/`, ni les modifications de l'auteur dans les
+  sous-modules.
+- Build `Alundra/Alundra.csproj` et `dotnet test Alundra.Tests/Alundra.Tests.csproj` avant toute tâche ✅.
+
+## Tâches
+
+### ⏳ M1 — Migrer la DLL (tâche T7.1 du plan moteur)
+
+**Prérequis :** tâches moteur T1.1 à T6.1 closes. La nouvelle API est présente, l'ancienne pas encore
+supprimée.
+
+**Étapes :**
+1. La référence du sous-module moteur passe au commit de T6.1.
+2. `Load<Entity>` → `LoadCopy<Entity>` (lignes 753, 2304).
+3. Tilesets : `Acquire<TileSetData>`. Le proxy garde les handles et les rend dans `OnEndPlay`.
+4. `ButtonsMapping` : `Acquire`, tenu par son propriétaire réel. Le vérifier dans le code : le
+   commentaire de `AlundraWorldProxy.cs:689` dit que les correspondances sont enregistrées une fois par
+   partie. L'écrire sous la tâche.
+5. Écrans :
+   - l'écran d'inventaire et l'écran du HUD tiennent leurs `SpriteData` par `Acquire`, et leurs `Sprite`
+     (devenus `IDisposable`, P1 du plan moteur) ;
+   - `AlundraHudScreen` devient `IDisposable`, et le proxy le libère dans `OnEndPlay` comme l'écran
+     d'inventaire.
+6. Adapter les deux fichiers de tests. Ajouter les tests de rendu :
+   - le HUD libéré par `OnEndPlay` ;
+   - les tilesets rendus.
+
+**Validation :** build ; `Alundra.Tests` = 1047 + nouveaux ; `rg "\.Load<|AddAsset\(|GetAsset<" Alundra`
+vide.
+
+**Commits :**
+- `chore(submodules): point at the engine migrated to counted handles (M1)` ;
+- `refactor(alundra): hold assets through the engine's handles (M1)`.
+
+### ⏳ M2 — Recette après la suppression
+
+**Prérequis :** tâche moteur T8.1 close.
+
+**Étapes :**
+1. La référence du sous-module moteur passe au commit de T8.1 ou du dernier commit du chantier. Build et
+   `Alundra.Tests` verts.
+2. **Prédiction écrite avant d'exécuter.** Le harnais est étendu : après la 390, il reprend un portail de la
+   390 vers la 389, rouvre l'inventaire, capture et compte.
+3. **Acceptation :**
+   - l'inventaire est en `font3` et les icônes du HUD sont affichées, sur chacune des trois étapes ;
+   - `UI\font3.fnt` et `UI\Textures\font3.png` sont chargés **une seule fois** sur tout le parcours ;
+   - à chaque changement de carte, la trace « assets freed » (P7 du plan moteur) est présente ;
+   - au changement 390 → 389, elle compte au moins une ressource libérée ;
+   - une planche de tuiles propre à la 389, identifiée dans le journal du premier passage, est chargée à
+     l'entrée sur la 389, **de nouveau** au retour, et pas entre les deux. Cela vaut pour son `.texture` et
+     pour son `.png` (lignes `Load asset …`). La carte de tuiles étant un composant racine, ce point prouve
+     aussi le détachement de tout l'arbre d'une entité (T1.2 du plan moteur) et la libération des `Texture`
+     (P10) ;
+   - ni exception, ni avertissement nouveau.
+4. Vérificateur frais sur l'ensemble du chantier : moteur et DLL.
+
+**Commit :** `docs(plan): close the handle migration with the in-game check (M2)`.
+
+## Points ouverts
+
+| Réf | Sujet |
+|---|---|
+| O1 | Si la 390 n'a aucun portail vers la 389, la recette prend un autre aller-retour entre deux cartes voisines, et le note. |
+| O2 | L'ordre des merges est la décision de l'auteur (plan moteur, O2). |
+
+## Hors périmètre
+
+- Le convertisseur, qui n'appelle pas le gestionnaire de ressources.
+- La recette D6 d'E13.d, qui reste à l'auteur.
