@@ -463,7 +463,7 @@ comme les fonds). Les six sprites, pour D5 :
 | Suites | convertisseur **182/182** (172 + 10) |
 | Vérificateur frais | **CONFIRMED** ; deux remarques P4 : la preuve au pixel ne regarde pas la palette (couverte par la recherche dans `wind.json` et `CellsWithoutTile` = 0) ; une boîte refusée lors d'un export ultérieur laisserait ses anciens fichiers, comme tout export en place |
 
-### ⏳ D4 — DLL : le directeur de l'inventaire
+### ✅ D4 — DLL : le directeur de l'inventaire — faite le 2026-09-21
 
 **Prérequis** : D0.5, D0.6, D0.7, D0.8, D0.10 (closes), D1, D2.
 Le directeur lit les fronts et la répétition de D1, au tick, jamais l'instantané par image rendue.
@@ -476,6 +476,41 @@ déroulant, **sons 1 à 5 par `PlaySfx`** aux lignes du §1.4, **HUD** : `ArmDis
 `ArmAppearance` à la fermeture, rendus appelables (§1.5), `Falcon`/`FalconTemp` à 0 (D-E13D-5) ; la
 recherche du nom et des deux lignes de description d'un objet ajoutée à `AlundraEtcStringTable`. Corrige
 au passage le commentaire périmé de `AlundraPlayerManager.cs:555-558`. Aucune dépendance MGUI.
+
+**Fait** (par un exécuteur, sur contrat de la session principale, après une reconnaissance à quatre
+surfaces) : `AlundraInventoryDirector`, porté fonction par fonction ; `AlundraHudDirector` gagne deux
+entrées internes, `InitializeHudPosition` et `InitializeHudPositionBeforeHide`, qui appliquent les gardes
+de l'original avant ses méthodes existantes ; `AlundraEtcStringTable` gagne le nom et les deux lignes de
+description d'un objet (`IndexTable[id + 0x200 / 0x280 / 0x300]`, confirmés dans `EtcResUsa.cs:57-106`) ;
+`Falcon`/`FalconTemp` à 0 ; le commentaire périmé corrigé. Le directeur tourne **dans la boucle de la
+manette au tick**, juste après `TickPad.Update`.
+
+**Ce que D5 lit** (sur `AlundraInventoryDirector.Instance`) : `IsActive`, `ForbiddenWarpFlag`,
+`BoxPosition(index)` (les sept boîtes, dans l'ordre de `DisplayUiBoxes`), `SelectedSlotId`,
+`CursorFrameDelay` (0 à `0x27`), `EquippedWeaponName`, `EquippedItemName`, `TextRevealState`,
+`NameVisiblePrefix`, `Description0VisiblePrefix`, `Description1VisiblePrefix`. **À l'image de la mise en
+place, `IsActive` est déjà vrai mais les boîtes sont encore à leur origine : l'original ne dessine rien à
+cette image-là** (remarque A4 de la vérification) ; D5 n'affiche qu'à partir de la suivante.
+
+**Ordre établi** : dans l'original, `RenderScene()` passe avant `Update(0)` (`GameEngine.cs:225-229`) ; le
+déclencheur est dans `Update` N, la mise en place dans le rendu N+1, le premier `FUN_80056598` dans le
+rendu N+2. Avec un tick du portage = un `Update` suivi du rendu suivant : déclencheur et mise en place au
+tick N, gestion par image dès N+1 ; `MenuOpen` est vu par la logique du tick N+1 dans les deux.
+
+**Gardes déclarées absentes**, chacune citée : `g_warpLockTimer` (aucun système de ce genre porté),
+`g_globalTransitionState` (menu de carte mémoire, non porté), et `g_warpDelayFrames` : le portage a le
+champ (`AlundraWarpDirector.WarpDelayFramesForTests`, 10 à chaque entrée de carte) mais **ne le décrémente
+jamais**, contrairement à `GameEngine.cs:1561-1564` ; le lire bloquerait l'inventaire pour toujours. **Écart
+qui en reste** : l'original refuse l'inventaire pendant les 10 premières images d'une carte (0,2 s), le
+portage non (§6 point 9).
+
+| Preuve | Résultat |
+|---|---|
+| Première vérification | **REFUTED**, un P1 reproduit : `global-strings.json` contient 562 valeurs `null` (la seconde ligne de description du Poignard, par exemple) que l'original lit comme vides (`?? string.Empty`, `MainInventoryManager.cs:972/:1010/:1041`) ; le portage levait une exception ~130 ticks après l'ouverture. Plus un P3 : les deux tables relues et analysées 50 fois par seconde |
+| Correctif | une valeur `null` devient une chaîne vide dans la table ; les deux tables en cache, rechargées si un fichier change ; les deux commentaires faux corrigés ; deux tests de régression |
+| Reproduction | le programme du vérificateur, sur l'export réel : état final `0xcf`, « Poignard », « Petit poignard. », seconde ligne vide, **aucune exception** |
+| Suites | `Alundra.Tests` **988/988** (959 + 29) |
+| Vérification neuve | **CONFIRMED** ; cache sans données périmées (changement de dossier, 200 réécritures), `TryResolveYesNo` inchangé ; deux remarques P4 reportées : le message de journal d'un échec parle encore de OUI/NON, et le cache n'est pas protégé contre des appels concurrents (aucun aujourd'hui) |
 
 ### ⏳ D5 — DLL : l'écran XAML, le présentateur, la capture
 
@@ -570,6 +605,10 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
 8. **`RepeatInterval` = 0** : porté avec sa valeur, la navigation répète à chaque tick après 20 ticks, soit
    50 cases par seconde en maintenant une direction. Si la recette le trouve trop rapide, chercher dans
    Ghidra un écrivain que la décompilation n'aurait pas transcrit, avant de toucher à la valeur.
+9. **Délai de warp non porté** (D4) : `AlundraWarpDirector.WarpDelayFramesForTests` est posé à 10 à chaque
+   entrée de carte mais jamais décrémenté ; l'original le décrémente à chaque image (`GameEngine.cs:1561-1564`)
+   et refuse l'inventaire tant qu'il ne vaut pas 0. Le portage ouvre l'inventaire dès la première image
+   d'une carte. À corriger avec le directeur des warps (T4), hors de ce plan.
 
 ## 7. Journal
 
@@ -595,6 +634,7 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
 | 2026-09-21 | **D3.a faite** (analyseur `64978f8`, branche `chantier/e13d-boites`) : 7 boîtes, 822 cases, acceptation passée par un script indépendant. Générateur et vérificateur ci-dessous. |
 | 2026-09-21 | **D3.b faite**, vérificateur **CONFIRMED** : six images cuites, prouvées par manifeste, double export et au pixel. |
 | 2026-09-21 | **D2 faite**, vérificateur **CONFIRMED** : contrôleurs et animations figés pendant tout `MenuOpen`, dégel exact ; passe placée en fin de mise à jour du monde, pour l'ordre du moteur. |
+| 2026-09-21 | **D4 faite** : une première vérification REFUTED (valeurs `null` des textes, P1 reproduit), corrigée, reproduction rejouée, vérification neuve **CONFIRMED**. |
 
 ### D0.1 — le script de mesure et sa sortie (2026-09-21)
 

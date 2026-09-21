@@ -663,6 +663,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         InstallScreenFadeSystems(world);
         InstallDialogueSystems(world);
         InstallHudSystems();
+        InstallInventorySystems();
 
         var entitiesLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == EntitiesLayerName);
         var portalsLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == PortalsLayerName);
@@ -1035,6 +1036,21 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // InstallDialogueSystems's own doc), so TryWireHudScreenOnce's per-frame retry in Update is what
         // actually wires it there.
         TryWireHudScreenOnce();
+    }
+
+    /// <summary>
+    /// E13.d D4 (docs/plan-e13d-inventaire.md): re-points the SESSION-scoped
+    /// <see cref="AlundraInventoryDirector.Instance"/> at this world's own <see cref="GameState"/>,
+    /// <see cref="ItemTables"/> and <see cref="SoundPlayer"/> - same "AttachToWorld re-points, no
+    /// separate map-entry reset" shape as <see cref="AlundraHudDirector"/> (this director has no
+    /// map-entry state either: <see cref="AlundraGameState.PlayerControlFlags"/>/<c>MenuOpen</c> already
+    /// survives a map change like every other <see cref="AlundraGameState"/> field, and the inventory
+    /// itself is never open across a map transition in the original - opening it requires the SAME
+    /// control-flag gate a warp/portal already poses).
+    /// </summary>
+    internal void InstallInventorySystems()
+    {
+        AlundraInventoryDirector.Instance.AttachToWorld(GameState, ItemTables, SoundPlayer);
     }
 
     /// <summary>
@@ -1806,9 +1822,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // AlundraEntityScriptProxy.Update, which runs before this proxy (World.cs:443-491). A consumer of
         // TickPad's edges must read them inside this same loop, right after each Update: after the loop,
         // a two-tick frame would have overwritten the first tick's edge.
+        // E13.d D4 (docs/plan-e13d-inventaire.md): the inventory director's own tick reads TickPad's
+        // edges - it runs RIGHT HERE, inside this same loop, immediately after each Update call, exactly
+        // as this loop's own comment above warns ("a consumer of TickPad's edges must read them inside
+        // this same loop... after the loop, a two-tick frame would have overwritten the first tick's
+        // edge") - it is the trigger check's own site too (GameEngine.cs:1567-1576 sits right after
+        // UpdateWorld(), and this per-tick loop is the closest the port's own structure gets to that).
         for (var padTick = 0; padTick < ticksThisFrame; padTick++)
         {
             GameState.TickPad.Update(GameState.LastPadState.ButtonsHold);
+            AlundraInventoryDirector.Instance.Tick(PlayerEntity);
         }
 
         // E12.a wiring fix: must run BEFORE the map-events pass below - a scripted dialogue opened
