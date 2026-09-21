@@ -1,12 +1,14 @@
 # Plan — E13.c : les icônes d'arme et d'accessoire du HUD
 
-**État** : 🚧 **approuvé par l'auteur le 2026-09-19**, exécution en cours.
+**État** : ✅ **clos le 2026-09-21** : approuvé par l'auteur le 2026-09-19, S0 à S3 livrées, S4 passée en
+jeu par l'auteur le 2026-09-21 ; mergé dans `main` le 2026-09-21.
 **Naissance** : l'auteur, ayant vu la jauge en jeu, a demandé les deux cases de gauche ; la
 reconnaissance a établi que leurs icônes ne sont **pas exportées** (voir `docs/plan-e13-hud.md`,
 D-E13-1 amendée, et `docs/plan-conversion-totale.md` §E13). Les fonds gouraud sont la tranche C6 du
 plan E13 ; ce plan-ci ne couvre que les icônes.
 **Branches** : `chantier/e13-hud` dans le parent, où ce plan vit déjà, et
-`chantier/e13c-portraits` dans l'analyseur, créée depuis `master` le 2026-09-19.
+`chantier/e13c-portraits` dans l'analyseur, créée depuis `master` le 2026-09-19 ; puis
+`chantier/e13c-suite` dans le parent et `chantier/e13c-drop-properties` dans l'analyseur pour S1.c à S4.
 
 ---
 
@@ -315,31 +317,110 @@ croissant, valeur l'identifiant d'actif du `.sprite`, **objet 42 absent**.
 > chaque objet à **sa** signature. Une colonne croisée, un dictionnaire clé par `icon` au lieu de
 > `item_id`, ou un décalage de ligne échouent, là où un simple « l'identifiant existe » passait.
 
-### ⏳ S3 — DLL : l'arme équipée et son icône dans la case
+### ✅ S1.c — Analyseur : la table de déverrouillage en CSV — faite le 2026-09-21
+
+**Pourquoi elle existe** : le point ouvert 8. S3 porte la boucle de déverrouillage de la nouvelle partie
+sans raccourci (D-E13C-6), or `g_itemDropProperties` ne sortait d'aucun des deux CSV de S1.b.
+
+**Mesuré d'abord** : **98 enregistrements**, exactement la borne de la boucle (`0x62`,
+`GameInitializer.cs:408`) ; `Field0` est une chaîne **vide sur les 98**, la décompilation ne l'a pas
+recouvrée ; `Field3` porte **deux** informations, son bit haut, lu à la nouvelle partie
+(`GameInitializer.cs:402`), et ses sept bits bas, lus à part par `PlayerManager` (`:1171`, `:1189`,
+`:1202`) ; les objets déverrouillés au départ sont **1, 17 et 25**.
+
+**Fait** : `ItemDropProperties.csv`, `item_id;field1;sound_sfx_index;field3;field4`, 98 lignes, les quatre
+octets bruts, `Field3` **entier**, `Field0` omis avec sa raison écrite dans le `.csproj` (arbitrage de
+l'auteur du 2026-09-21, point ouvert 3). Écrit par un premier analyseur clé sur les marqueurs `// [n]`,
+re-dérivé par un second écrit autrement : **392 valeurs, 0 écart**, identifiants contigus. MSBuild
+évalue le projet et liste la table. Analyseur, branche `chantier/e13c-drop-properties`, commit
+`c304201`.
+
+### ✅ S2.b — Convertisseur : la table de déverrouillage — faite le 2026-09-21
+
+**Fait** : `ItemDropPropertiesCatalogReader.cs` sur le modèle exact de S2, le CSV lié au `.csproj`, et
+`ItemsWriter` publie `Data/item-drop-properties.json`, 98 tableaux de 4, index externe `item_id`.
+L'écrivain de lignes de S2 est devenu commun aux deux tables brutes ; la troisième table résout son CSV
+**à part**, de sorte qu'un CSV manquant n'emporte qu'elle. Le parent pointe l'analyseur sur `c304201`,
+pour qu'un checkout propre ait le fichier que le `.csproj` lie.
+
+| Preuve | Résultat |
+|---|---|
+| Relecture adverse du contrat | **READY** du premier coup |
+| Build, suite du convertisseur | vert, **172/172** (+5) ; `Alundra.Tests` **888/888** |
+| Baseline | 23197 entrées, prouvé identique au dernier export de S2 |
+| Diff mesuré | **1 ajout** (`item-drop-properties.json`), **1 modification** (`report.json`) — ⊆ prédit |
+| `AssetInfos.json` et les deux JSON de S2 | **inchangés au bit près** : l'écrivain commun produit les mêmes octets |
+| `.sprite` et PNG | **0 et 0** |
+| Double export | ⊆ `{report.json}` |
+| Rapport | 0 erreur, 7 avertissements, `Items.DropPropertiesRows` 98, compteurs de S2 inchangés (100 / 88 / 0) |
+| Contenu contre le CSV | **392 cellules, 0 écart** ; ligne 1 = `[0,0,129,1]` ; déverrouillés = {1, 17, 25} |
+
+### ✅ S3 — DLL : l'arme équipée et son icône dans la case — faite le 2026-09-21
 
 **But** : F1 en jeu montre l'épée de base dans la case de gauche, sur son fond de C6.
 
-**Contenu** : `WeaponId` sur `AlundraPlayerStats` avec `SetPlayerWeaponId` et sa règle (§1.2 et le
-point ouvert 7) ; compteurs d'objets et boucle de déverrouillage de la nouvelle partie, objets 1, 17
-et 25 ; `GetWeaponIdBySlotId` et `GetItemIdFromSlotId` portés ligne à ligne ; lecture des deux JSON ;
-le composeur émet une tuile d'icône dynamique à (16, 16) natif, taille prise du sprite, au-dessus du
-fond ; l'écran charge le `.sprite` par identifiant, comme les 24 glyphes de C2. La case d'accessoire
-reste vide, fond seul (D-E13C-7).
+**Ce qui a été fait**, porté ligne à ligne avec ses citations :
+- `AlundraPlayerStats` gagne `WeaponId` et `ItemId` ; `AlundraGameState` gagne `NumberOfItems`
+  (`short[256]`, lu en `[itemId * 2 + 1]`) et un verrou de session `NewGameInventoryInitialized`.
+- `AlundraItemTables` lit les trois JSON de `Data/`, sur le modèle d'`AlundraSoundGroupIndexTable` : chemin
+  du projet injectable, cache de session, et **mode dégradé à zéro** qui fait rendre la sentinelle à
+  toutes les recherches plutôt que de lever.
+- `AlundraPlayerManager` porte `SetPlayerWeaponId` (la ligne du point ouvert 7 marquée),
+  `GetItemIdFromCurrentWeapon`, `GetWeaponIdBySlotId`, `GetItemIdFromSlotId`, `GetNumberOfItem`,
+  `SetCurrentItemId`, `SetItemIdFromCurrentItemId`, `AddOneItemIfUnlocked`, `GetItemTextureIdByItemId`,
+  et l'inventaire de la nouvelle partie.
+- L'inventaire de la nouvelle partie tourne dans `AdoptPlayerPawn` quand `arrivalRecord == null`,
+  **sans** la condition de la recette de débogage : c'est l'état du jeu, pas un outil de recette.
+- Le composeur émet les icônes en fonction pure ; le présentateur ne demande l'équipement **que si la
+  jauge est dessinée**, parce que la résolution de l'accessoire a un effet de bord, comme dans l'original ;
+  l'écran place les deux icônes entre les fonds de C6 et les tuiles, exactement comme une tuile.
 
-**Acceptation** : tests sur la règle du setter, sur la chaîne arme vers objet vers icône à la
-nouvelle partie, 1 vers 1 vers 31, sur la sentinelle sans arme, sur la case d'accessoire vide ;
-suite verte ; capture en processus F1 montrant l'icône aux bonnes coordonnées, nette, sur son fond.
+**Écart assumé** : l'écran du HUD reste construit en C#. Il précède ADR-0035, et migrer sa
+structure en XAML n'était pas l'objet de S3.
 
-### ⏳ S4 — Recette en jeu
+| Preuve | Résultat |
+|---|---|
+| Relecture adverse du contrat | **READY** du premier coup |
+| `Alundra.Tests` | **923/923** (888 + 35) ; suite du convertisseur 172/172 inchangée |
+| Chaîne de la nouvelle partie | arme 1 → objet 1 → icône 31 → l'identifiant d'actif de l'épée |
+| Déverrouillage | exactement les objets 1, 17 et 25, une fois chacun |
+| Règle du setter | 1 à 6 gardés, 0 gardé et marqué (point 7), 7 et au-delà rejetés |
+| Sentinelle et accessoire | aucune arme possédée → case vide ; accessoire vide à la nouvelle partie, `ItemId` intact |
+| Adoption | la nouvelle partie initialise une fois, pas une seconde, jamais sur une arrivée de warp |
+| **Capture en processus, F1** | harnais hors dépôt, fenêtre 1280×944, échelle 4 : **les 134 pixels opaques du sprite** se retrouvent chacun en bloc 4×4 uniforme et de la couleur exacte à partir de (64, 64) ; la rangée sous l'icône montre le dégradé du fond ; aucune couleur de l'épée dans la case d'accessoire |
 
-**Contenu** : F1, l'épée de base apparaît dans la case de gauche ; la case de droite reste un fond
-vide ; les deux suivent le glissement.
+> **La prédiction a été écrite avant la capture** : sprite de 24×31 dans une case de 24×32, donc une
+> rangée native de fond visible sous l'icône. C'est ce que la mesure a trouvé.
+
+**Amendement du 2026-09-21 : l'icône est centrée dans sa case.** L'auteur a décidé pour E13.d que les
+icônes sont centrées dans leur boîte parente, sans fidélité au pixel près (D-E13D-10,
+`docs/plan-e13d-inventaire.md`), et que cela vaut aussi pour les deux cases du HUD. L'original pose le
+coin haut-gauche de l'icône sur celui de la case ; le portage la centre désormais.
+- `AlundraHudIcon` porte le rectangle entier de sa case, celui du fond de C6, au lieu de sa seule
+  position ; `ScreenLeft` et `ScreenTop` centrent l'image **en pixels écran**, si bien qu'une rangée
+  native libre se partage en deux rangées écran de chaque côté à l'échelle 4 ; à une échelle impaire, le
+  pixel écran de trop va à droite ou en bas. Le centrage porte sur le rectangle de l'image, pas sur ses
+  seuls pixels opaques.
+- Tailles mesurées sur les 85 portraits distincts : 24×32 (48), 24×31 (11, dont l'épée), 24×24 (10),
+  23×32 (6), 16×15 (3), 16×24 (2), et 23×23, 24×23, 8×8, 24×16, 23×24 une fois chacune. **Aucune ne
+  dépasse la case**, donc aucun débordement à traiter.
+
+| Preuve | Résultat |
+|---|---|
+| `Alundra.Tests` | **930/930** (923 + 7 : les deux cases, cinq tailles, la case d'accessoire, l'échelle impaire) |
+| **Capture en processus, F1** | prédiction écrite avant le code : épée à **(64, 66)**, deux rangées écran de fond au-dessus et deux au-dessous. Mesuré : les 134 blocs 4×4 uniformes et de la couleur exacte à partir de (64, 66), 2 rangées de fond de chaque côté, aucune couleur de l'épée dans la case d'accessoire. La même capture lue à l'ancienne origine (64, 64) échoue (107 blocs non uniformes) |
+
+### ✅ S4 — Recette en jeu — passée par l'auteur le 2026-09-21
+
+**Contenu** : F1, l'épée de base apparaît **centrée** dans la case de gauche ; la case de droite reste un
+fond vide ; les deux suivent le glissement. **Validée par l'auteur** (« tout est ok »), après l'amendement
+du centrage.
 
 ## 4. Acceptation d'ensemble
 
 E13.c est close quand : le double export du convertisseur est prouvé et se limite aux deux JSON, au
-catalogue d'actifs et au rapport ; en jeu, F1 montre l'icône de l'épée de base sur son fond, nette,
-qui glisse avec la jauge ; suites `Alundra.Tests` et convertisseur vertes.
+catalogue d'actifs et au rapport ; en jeu, F1 montre l'icône de l'épée de base centrée sur son fond,
+nette, qui glisse avec la jauge ; suites `Alundra.Tests` et convertisseur vertes.
 
 ## 5. Arrêts
 
@@ -356,8 +437,10 @@ qui glisse avec la jauge ; suites `Alundra.Tests` et convertisseur vertes.
    c'est la seule valeur d'absence sur les 100 lignes.
 2. Le format exact du portrait dans `map_alundra.json` : champ sur l'enregistrement, ou image
    marquée dans la liste ? S1 choisit, en visant la plus petite surface pour `SpriteBankReader`.
-3. `g_itemDropProperties` : n'exporter que le drapeau de déverrouillage, ou les cinq champs ? S1,
-   après lecture de ce que `GetItemIdFromSlotId` consomme réellement.
+3. ~~`g_itemDropProperties` : n'exporter que le drapeau de déverrouillage, ou les cinq champs ?~~
+   **Résolu le 2026-09-21 par l'auteur** : les quatre octets bruts, `Field3` entier, `Field0` omis car
+   vide sur les 98 enregistrements. Le seul drapeau aurait perdu les sept bits bas de `Field3`, que
+   `PlayerManager` lit ailleurs. Voir S1.c.
 5. **L'objet 42 désigne un enregistrement nul — QUESTION POUR L'AUTEUR, bloquante pour lui seul.**
    Mesuré : `StaticVariables.cs:780` donne à l'objet 42 l'icône `0x48 = 72`, or l'emplacement 72 des
    enregistrements de sprites est **nul** dans `map_alundra.json`, au milieu d'une plage pourtant
@@ -372,7 +455,7 @@ qui glisse avec la jauge ; suites `Alundra.Tests` et convertisseur vertes.
    (§1.2) là où l'original, comparaison non signée sur 32 bits, le rejetterait probablement. À
    vérifier dans Ghidra sur `0x8004ddf4` et voisins avant que S4 ne fige la règle ; en attendant S4
    porte le code cité et marque la ligne.
-8. **`g_itemDropProperties` ne sort d'AUCUN des deux CSV — à traiter avant S3.** Le drapeau de
+8. ~~**`g_itemDropProperties` ne sort d'AUCUN des deux CSV — à traiter avant S3.**~~ **Résolu le 2026-09-21 par S1.c et S2.b.** Le drapeau de
    déverrouillage de la nouvelle partie (`Field3 & 0x80`, `StaticVariables.cs:841`, `:1234`) n'est
    ni dans `ItemsProperties.csv` ni dans `ItemPortrait.csv`, alors que S3 en a besoin pour porter la
    boucle de déverrouillage **sans raccourci** (D-E13C-6). Arbitrage de l'auteur du 2026-09-20 :
@@ -387,5 +470,9 @@ qui glisse avec la jauge ; suites `Alundra.Tests` et convertisseur vertes.
 | 2026-09-19 | Première relecture adverse : **REVISE**, un P1 et quatre P2, tous acceptés. (1) P1 — la disposition `Original` place une image à sa fenêtre VRAM sans la palette alors que la signature l'inclut : un portrait pourrait repeindre un sprite exporté sans qu'un diff de fichiers le voie ; §1.4 corrigé, S0 mesure les collisions, D-E13C-3 en fait un arrêt, S2 et S3 exigent une preuve au pixel hors des rectangles ajoutés. (2) La table a 100 lignes et non 98, `g_itemsCount` vaut 99, 98 est la borne de la boucle de déverrouillage ; §1.3 corrigé, S0 relève les trois bornes. (3) L'original indexe les enregistrements par position, le convertisseur par `Sector5Id` en ignorant les doublons ; S0 mesure la correspondance, arrêt en cas de divergence. (4) `SetPlayerWeaponId` translittéré prend un `ushort`, la sentinelle est inatteignable et 0 est accepté ; §1.2 restaté, question auteur en §6 point 4. (5) Le diff prédit omettait le catalogue d'actifs et les déplacements de `.sprite` par déduplication globale entre banques ; S3 les prédit, S0 les mesure. |
 | 2026-09-19 | **S1.a exécutée, verifier CONFIRMED, et elle réduit le chantier de moitié.** Une commande de relevé derrière `--probe-portraits` lit le binaire et mesure les 89 icônes : 88 portraits exploitables, 85 signatures distinctes, **toutes déjà présentes** parmi les 693 de la planche, donc zéro rectangle nouveau et zéro intersection. Vérifié ensuite en session principale : **les 85 ont déjà leur `.sprite` émis**, sur les 6908 du projet. L'extraction, la ré-extraction, le miroir et la preuve au pixel n'ont plus d'objet ; S1.b, S2 et S3 d'origine sont remplacées par trois tranches : deux CSV, deux catalogues, la DLL. **Deux corrections de fond** : la reconnaissance affirmait que le portrait était une image distincte absente de tout frame converti, la mesure montre qu'il coïncide avec une image déjà extraite, l'épée de base ayant pour portrait exactement son sprite du monde ; et l'emplacement 72 n'existe pas dans les données du jeu, `SpriteInfo.cs:93-101` ne construisant un enregistrement que si son entrée de table n'est ni 0 ni -1, donc l'objet 42 n'a réellement pas d'icône. |
 | 2026-09-19 | **Approuvé par l'auteur. S0 exécutée**, partie en agent en lecture seule, partie en session principale sur les données réelles. Trois bornes confirmées, convention d'absence d'icône établie, position et identifiant de secteur identiques sans doublon, 693 signatures existantes avec leur digest d'ordre, planche de taille constante et sa référence copiée. **Trois corrections au plan** : la règle d'arrêt sur les palettes était trop large, la planche portant déjà 225 recouvrements à palettes différentes entre images existantes ; le relevé des portraits doit précéder le test d'intersection, d'où le découpage de S1 en S1.a et S1.b ; et l'objet 42 désigne un enregistrement nul, question remontée à l'auteur. |
+| 2026-09-21 | **S3 exécutée.** Reconnaissance à trois surfaces (décompilation, HUD de la DLL, chargement et capture), contrat relu **READY**. Portage ligne à ligne de la chaîne arme → objet → icône et de l'inventaire de la nouvelle partie ; l'icône est une tuile de plus du canevas, entre les fonds de C6 et les tuiles. 923/923. Capture F1 en processus mesurée contre les pixels du sprite source : position, échelle, netteté et case d'accessoire vide conformes à la prédiction écrite avant. Reste S4, la recette de l'auteur. |
+| 2026-09-21 | **Amendement de S3 : l'icône centrée dans sa case**, sur décision de l'auteur (D-E13D-10, étendue par lui au HUD). L'icône porte le rectangle de sa case et l'écran la centre en pixels écran ; l'épée descend de deux pixels écran. 930/930 ; capture F1 mesurée contre la prédiction écrite avant le code. Aucune des 85 icônes ne dépasse la case. |
+| 2026-09-21 | **S4 passée en jeu par l'auteur : E13.c est close.** Merge de l'analyseur et du parent dans `main` demandé par l'auteur, en local, sans push. |
+| 2026-09-21 | **S1.c et S2.b exécutées, en mode AUTO choisi par l'auteur**, après le merge de C4 et de S2 dans `main`. L'auteur tranche le point 3 : les quatre octets bruts. Mesuré avant d'écrire : 98 enregistrements, `Field0` vide partout, `Field3` porteur de deux informations, déverrouillés {1, 17, 25}. Relecture adverse du contrat : **READY**. CSV re-dérivé par un second analyseur, 0 écart sur 392 valeurs. Export prouvé : un ajout, `report.json`, les deux JSON de S2 et `AssetInfos.json` inchangés au bit près, double export ⊆ `{report.json}`. Points ouverts 3 et 8 clos. |
 | 2026-09-20 | **S2 exécutée, et une mesure l'a simplifiée avant qu'une ligne ne soit écrite.** Toutes les banques de `map_alundra.json` partageant une seule planche, `Ids.For("sprite:map_alundra_spritesheet.png:<signature>")` résout **88/88** contre l'`AssetInfos.json` réel : la correspondance se lit, elle ne s'extrait pas. Première relecture adverse : **REVISE**, trois P2, tous acceptés. (1) Changer le type de retour de `ConvertSprites` cassait quatre fichiers de tests existants que la portée ne listait pas — **conception changée** plutôt que rapiécée : la signature n'est plus touchée, le writer recalcule l'identifiant et le **prouve** contre le catalogue. (2) `banks.First(b => b.IsAlundraBank)` levait une exception sur les fixtures à `SpriteRecords` vide — disparu avec la conception. (3) L'acceptation pouvait passer alors que chaque objet pointait un sprite existant mais **faux** — remplaçee par une preuve d'appariement indépendante de la formule, par le nom de fichier. Relecture de clôture : **READY**. Export prouvé : diff mesuré = deux JSON + `report.json`, `AssetInfos.json` inchangé, zéro `.sprite`, double export ⊆ `{report.json}`. Trois arbitrages de l'auteur : branche neuve depuis `main`, `items-properties.json` en 100 tableaux de 5, S2 reste à deux catalogues (point ouvert 8). |
 | 2026-09-19 | Relecture de clôture : **REVISE**, un P1 et un P2, tous deux acceptés. (1) P1 — le test de collision par égalité de cellule manquait les recouvrements partiels, chaque signature étant dessinée entière à sa propre origine et taille ; et l'acceptation au pixel exemptait justement les rectangles où le dommage tombe. Corrigé : intersection de rectangles par page contre toute signature existante, intersection à même palette autorisée avec sa justification, à palette différente arrêt ; ensemble exempté redéfini comme les seuls rectangles des portraits nouveaux et sans intersection, comparaison sur toute la planche. (2) P2 — l'ordre de dessin est celui de première rencontre et n'était pas figé ; S1 concatène les portraits strictement après la séquence existante, S0 relève les rangs, S1 prouve le préfixe inchangé, arrêt ajouté. **Deuxième REVISE consécutif, plafond atteint : disposition en session principale, pas de nouvelle soumission.** Le plan part à l'auteur pour approbation avec ces corrections. |

@@ -103,6 +103,13 @@ public sealed class AlundraHudScreen : UIScreenBase, IAlundraHudView
     // OnInitialize from that same composer call's own Count, never resized afterwards.
     private MGRectangle[] _equipmentBackgrounds = Array.Empty<MGRectangle>();
 
+    // E13.c S3 (docs/plan-e13c-icones-hud.md): one image per equipment box, at most - added to the canvas
+    // right after the C6 backgrounds above, so each paints over its box. Not part of the tile pool either:
+    // an icon is whichever item is equipped, loaded by asset id on first use and cached here (null caches a
+    // load that failed, so it is reported once rather than every tick).
+    private readonly MGImage?[] _equipmentIcons = new MGImage?[2];
+    private readonly Dictionary<Guid, Sprite?> _iconSprites = new();
+
     private MGWindow? _window;
     private MGCanvas? _canvas;
     private int _pixelScale = 1;
@@ -176,6 +183,25 @@ public sealed class AlundraHudScreen : UIScreenBase, IAlundraHudView
         // start from - ApplyTile overwrites Source with the real sprite the first time each slot is
         // actually used, exactly like every other field this screen only fills in once a tile is composed.
         var placeholder = _sprites[HudGlyph.Digit0];
+
+        // E13.c S3: the icon images, same construction as the pool's own below, added before it and after
+        // the backgrounds - so an icon is drawn over its box and nothing of the jauge is drawn over the icon.
+        for (var i = 0; i < _equipmentIcons.Length; i++)
+        {
+            var icon = new MGImage(
+                _window,
+                new CasaMonoGameImageResource(placeholder.Texture.Resource),
+                placeholder.SpriteData.PositionInTexture,
+                TextureColor: null,
+                Stretch: Stretch.Fill)
+            {
+                Visibility = Visibility.Collapsed,
+                UseLinearFilteringWhenDownscaling = false,
+            };
+
+            _equipmentIcons[i] = icon;
+            _canvas.TryAddChild(icon, left: 0, top: 0);
+        }
 
         for (var i = 0; i < MaxTileCount; i++)
         {
@@ -255,6 +281,66 @@ public sealed class AlundraHudScreen : UIScreenBase, IAlundraHudView
     }
 
     void IAlundraHudView.SetTiles(IReadOnlyList<AlundraHudTile> tiles) => ApplyTiles(tiles);
+
+    /// <summary>E13.c S3: shows each icon like <see cref="ApplyTile"/> shows a tile - the sprite's own source
+    /// rectangle, scaled by the integer pixel factor - but centred in its box (D-E13D-10,
+    /// <see cref="AlundraHudIcon.ScreenLeft"/>), and collapses any image left without an icon.</summary>
+    void IAlundraHudView.SetEquipmentIcons(IReadOnlyList<AlundraHudIcon> icons)
+    {
+        for (var i = 0; i < _equipmentIcons.Length; i++)
+        {
+            var image = _equipmentIcons[i];
+            if (image == null)
+            {
+                continue; // before OnInitialize: nothing to show into yet.
+            }
+
+            if (i < icons.Count && TryGetIconSprite(icons[i].AssetId, out var sprite))
+            {
+                var sourceRect = sprite.SpriteData.PositionInTexture;
+                image.Source = new MGTextureData(new CasaMonoGameImageResource(sprite.Texture.Resource), sourceRect);
+                image.PreferredWidth = sourceRect.Width * _pixelScale;
+                image.PreferredHeight = sourceRect.Height * _pixelScale;
+                image.Visibility = Visibility.Visible;
+
+                MGCanvas.SetLeft(image, icons[i].ScreenLeft(sourceRect.Width, _pixelScale));
+                MGCanvas.SetTop(image, icons[i].ScreenTop(sourceRect.Height, _pixelScale));
+            }
+            else
+            {
+                image.Visibility = Visibility.Collapsed;
+            }
+        }
+    }
+
+    private bool TryGetIconSprite(Guid assetId, out Sprite sprite)
+    {
+        if (!_iconSprites.TryGetValue(assetId, out var cached))
+        {
+            var reason = "no such asset";
+            try
+            {
+                var spriteData = _assetContentManager.Load<SpriteData>(assetId);
+                cached = spriteData == null ? null : Sprite.Create(spriteData, _assetContentManager);
+            }
+            catch (Exception ex)
+            {
+                reason = ex.Message;
+                cached = null;
+            }
+
+            if (cached == null)
+            {
+                CasaEngine.Core.Logging.Logs.WriteWarning(
+                    $"AlundraHudScreen: equipment icon sprite {assetId} failed to load ({reason}); its box stays empty.");
+            }
+
+            _iconSprites[assetId] = cached;
+        }
+
+        sprite = cached!;
+        return cached != null;
+    }
 
     /// <summary>Count of <see cref="ApplyTiles"/> calls where <see cref="AlundraHudComposer.Compose"/>
     /// returned more tiles than <see cref="MaxTileCount"/> - E13 C2 fourth pass's "plus aucune tuile jetée

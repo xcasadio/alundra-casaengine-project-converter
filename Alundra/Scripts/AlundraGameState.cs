@@ -176,6 +176,26 @@ public sealed class AlundraGameState
     /// </summary>
     public bool DebugHudRecipeApplied;
 
+    /// <summary>
+    /// E13.c S3 (docs/plan-e13c-icones-hud.md): port of <c>g_saveData.NumberOfItems</c>
+    /// (SaveData.cs:20, <c>short[256]</c>) - how many of each item the player owns, read and written at
+    /// <c>[itemId * 2 + 1]</c> everywhere (PlayerManager.cs:4342, :4388, :4677-4683); the even slot of each
+    /// pair is only ever zeroed. "Owned" means a count above zero - there is no separate bit. All zero at
+    /// construction, like the original after <c>InitializePlayerStatsAndItems</c> (GameInitializer.cs:469-479);
+    /// the New Game then fills it through <see cref="AlundraPlayerManager.InitializeNewGameInventory"/>.
+    /// </summary>
+    public readonly short[] NumberOfItems = new short[256];
+
+    /// <summary>
+    /// E13.c S3: once-only session latch for <see cref="AlundraPlayerManager.InitializeNewGameInventory"/>,
+    /// run by <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> at the map entry it recognizes as a New Game.
+    /// Same belt-and-suspenders role as <see cref="DebugHudRecipeApplied"/> right above: the real gate is
+    /// "no pending warp arrival", which a session satisfies once; this latch keeps the unlock loop from
+    /// running twice even if something ever produced a second such entry. Unlike that recipe, the inventory
+    /// is the game's own New Game state, so it is not gated on any debug switch.
+    /// </summary>
+    public bool NewGameInventoryInitialized;
+
     /// <summary>Persistent save-game flags (<c>g_saveData.GameFlags</c>) - all zero, matching New Game.</summary>
     public readonly uint[] GameFlags = new uint[WordCount];
 
@@ -292,5 +312,9 @@ public sealed class AlundraGameState
         // E13 C5.a: the ALUNDRA_HUD_DEBUG once-only latch is session state too - reset it so one test's
         // recipe application cannot suppress another test's own attempt through Instance.
         DebugHudRecipeApplied = false;
+
+        // E13.c S3: the item counters and their once-only latch are session state too.
+        Array.Clear(NumberOfItems);
+        NewGameInventoryInitialized = false;
     }
 }

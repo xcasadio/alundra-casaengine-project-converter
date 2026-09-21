@@ -47,6 +47,10 @@ public interface IAlundraHudView
     /// own return value, applied to the pool exactly like <see cref="AlundraHudScreen"/>'s own former
     /// per-frame <c>RefreshFromDirector</c> (C2) did.</summary>
     void SetTiles(IReadOnlyList<AlundraHudTile> tiles);
+
+    /// <summary>E13.c S3: the equipment icons for this tick - <see cref="AlundraHudComposer.ComposeEquipmentIcons"/>'s
+    /// own return value, at most one per box, empty when a box has nothing or the jauge is not drawn.</summary>
+    void SetEquipmentIcons(IReadOnlyList<AlundraHudIcon> icons);
 }
 
 /// <summary>
@@ -82,13 +86,21 @@ public sealed class AlundraHudPresenter
 
     private readonly AlundraHudDirector _director;
     private readonly IAlundraHudView _view;
+    private readonly Func<(Guid? Weapon, Guid? Accessory)> _equipmentSource;
 
-    public AlundraHudPresenter(AlundraHudDirector director, IAlundraHudView view)
+    /// <param name="equipmentSource">E13.c S3: what the two equipment boxes show, asked once per drawn tick -
+    /// in production <see cref="AlundraPlayerManager.ResolveHudEquipmentIcons"/> over the session state. Omitted,
+    /// both boxes stay empty, which is what every presenter built before S3 showed.</param>
+    public AlundraHudPresenter(
+        AlundraHudDirector director,
+        IAlundraHudView view,
+        Func<(Guid? Weapon, Guid? Accessory)>? equipmentSource = null)
     {
         ArgumentNullException.ThrowIfNull(director);
         ArgumentNullException.ThrowIfNull(view);
         _director = director;
         _view = view;
+        _equipmentSource = equipmentSource ?? (static () => (null, null));
     }
 
     /// <summary>
@@ -114,5 +126,11 @@ public sealed class AlundraHudPresenter
             _director.Mp, _director.MpMax, _director.MpDisplayPreviewIncrement,
             _director.Money, _director.CoinIconFrame,
             _director.MagicPipFrame));
+
+        // E13.c S3: asked only while the jauge is drawn. The original resolves both boxes inside the HUD's
+        // own draw (HudManager.DisplayHudWeaponAndItem), and the accessory lookup has a side effect
+        // (AlundraPlayerManager.SetItemIdFromCurrentItemId), so a hidden jauge must not run it.
+        var (weapon, accessory) = _director.IsDrawn ? _equipmentSource() : (null, null);
+        _view.SetEquipmentIcons(AlundraHudComposer.ComposeEquipmentIcons(_director.IsDrawn, weapon, accessory));
     }
 }

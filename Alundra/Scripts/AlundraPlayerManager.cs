@@ -783,4 +783,273 @@ public static class AlundraPlayerManager
         SetPlayerMp(state, 2);
         SetMoney(state, 2163);
     }
+
+    // ---- E13.c S3 (docs/plan-e13c-icones-hud.md): the item counters, the equipped weapon, and what the
+    // HUD's two equipment boxes show. Everything below is a line-by-line port of the cited original; the
+    // only systematic change is Breakpoint.TriggerBreak(), which becomes a warning here, the port's idiom.
+
+    /// <summary>Port of <c>g_itemsCount = 99</c>, set by <c>InitializePlayerStatsAndItems</c>
+    /// (GameInitializer.cs:470) and never changed afterwards - the bound item ids are checked against by
+    /// <see cref="GetNumberOfItem"/>, <see cref="SetCurrentItemId"/> and <see cref="AddOneItemIfUnlocked"/>.
+    /// One below the table's 100 rows, exactly as in the original.</summary>
+    public const int ItemsCount = 99;
+
+    /// <summary>The original's own "none" answer to an item or weapon lookup, <c>0xffffffff</c>.</summary>
+    public const uint NoItem = 0xffffffff;
+
+    /// <summary>
+    /// The New Game inventory: the counter reset of <c>InitializePlayerStatsAndItems</c>
+    /// (GameInitializer.cs:473-479), then the tail of <c>InitializeGameState</c>'s New Game branch
+    /// (GameInitializer.cs:395-411) - every item whose drop record carries the unlock bit is given once
+    /// (items 1, 17 and 25 in the shipped data), then the weapon is set to slot 1, the sword's.
+    /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> runs this once per session, at the New Game entry.
+    /// </summary>
+    public static void InitializeNewGameInventory(AlundraGameState state, AlundraItemTables tables)
+    {
+        // GameInitializer.cs:473-479: 0x80 pairs, both halves zeroed.
+        Array.Clear(state.NumberOfItems);
+
+        // GameInitializer.cs:400-408.
+        var iconIndex = 0;
+        do
+        {
+            var value = tables.DropField3[iconIndex];
+            if ((value & 0x80) != 0)
+            {
+                AddOneItemIfUnlocked(state, tables, iconIndex);
+            }
+
+            iconIndex += 1;
+        }
+        while (iconIndex < 0x62);
+
+        // GameInitializer.cs:410 - outside the real-game / debug if/else, so it always runs.
+        SetPlayerWeaponId(state, tables, 1);
+    }
+
+    /// <summary>Port of <c>SetPlayerWeaponId</c> (PlayerManager.cs:1832-1845, 8004e484): stores a weapon slot
+    /// 1..6 (or 0, see the marked line) and ends, as the original does, by resolving the weapon's item - a
+    /// lookup whose result the original discards too.</summary>
+    public static void SetPlayerWeaponId(AlundraGameState state, AlundraItemTables tables, ushort weaponId)
+    {
+        // docs/plan-e13c-icones-hud.md, open point 7 - THE MARKED LINE. Evaluated in int, as the cited code
+        // is: a ushort never equals 0xffffffff, and weaponId - 1 < 6 holds for 0..6, so 0 is accepted. On the
+        // PSX the same compare is unsigned 32-bit and most likely rejects 0. Kept as cited until Ghidra
+        // settles it (0x8004ddf4 and neighbours).
+        if ((uint)weaponId == NoItem || weaponId - 1 < 6)
+        {
+            state.PlayerStats.WeaponId = (short)weaponId;
+        }
+
+        GetItemIdFromCurrentWeapon(state, tables);
+    }
+
+    /// <summary>Port of <c>GetItemIdFromCurrentWeapon</c> (PlayerManager.cs:4462-4466, 8004e030): the item
+    /// the equipped weapon slot resolves to, or <see cref="NoItem"/>.</summary>
+    public static uint GetItemIdFromCurrentWeapon(AlundraGameState state, AlundraItemTables tables)
+    {
+        return GetWeaponIdBySlotId(state, tables, state.PlayerStats.WeaponId - 1);
+    }
+
+    /// <summary>Port of <c>GetWeaponIdBySlotId</c> (PlayerManager.cs:4433-4460). Each case of the original
+    /// calls its own <c>GetWeaponIdFromSlotN</c> (PlayerManager.cs:4468-4496), every one of which is nothing
+    /// but <c>GetItemIdFromSlotId(N)</c>; the call is written inline here, the case-to-slot mapping kept.</summary>
+    public static uint GetWeaponIdBySlotId(AlundraGameState state, AlundraItemTables tables, int slotId)
+    {
+        var itemId = NoItem;
+
+        switch (slotId)
+        {
+            case 0:
+                itemId = GetItemIdFromSlotId(state, tables, 1);
+                break;
+            case 1:
+                itemId = GetItemIdFromSlotId(state, tables, 2);
+                break;
+            case 2:
+                itemId = GetItemIdFromSlotId(state, tables, 3);
+                break;
+            case 3:
+                itemId = GetItemIdFromSlotId(state, tables, 4);
+                break;
+            case 4:
+                itemId = GetItemIdFromSlotId(state, tables, 5);
+                break;
+            case 5:
+                itemId = GetItemIdFromSlotId(state, tables, 6);
+                break;
+        }
+
+        return itemId;
+    }
+
+    /// <summary>Port of <c>GetItemIdFromSlotId</c> (PlayerManager.cs:4369-4419, 8004e18c): among the owned
+    /// items of an inventory slot, the one to use. The first owned match wins at once when its replacement
+    /// flag is clear; otherwise a later owned match replaces it only on a strictly higher replacement
+    /// priority. <see cref="NoItem"/> when nothing in the slot is owned.</summary>
+    public static uint GetItemIdFromSlotId(AlundraGameState state, AlundraItemTables tables, uint slotId)
+    {
+        if (slotId >= 0x20)
+        {
+            CasaEngine.Core.Logging.Logs.WriteWarning($"AlundraPlayerManager: invalid slotId {slotId}.");
+            return NoItem;
+        }
+
+        var properties = tables.ItemsProperties;
+        uint bestMatchIndex = NoItem;
+        uint currentIndex = 0;
+
+        while (currentIndex < 100)
+        {
+            var entrySectionId = properties[(int)(currentIndex * 5)];
+
+            if (entrySectionId == slotId)
+            {
+                var usageCount = state.NumberOfItems[currentIndex * 2 + 1];
+
+                if (usageCount > 0)
+                {
+                    if (bestMatchIndex == NoItem)
+                    {
+                        bestMatchIndex = currentIndex;
+
+                        var flags = properties[(int)(currentIndex * 5 + 1)];
+                        if ((flags & 0x1) == 0)
+                        {
+                            return currentIndex;
+                        }
+                    }
+                    else
+                    {
+                        var currentPriority = properties[(int)(currentIndex * 5 + 2)];
+                        var bestPriority = properties[(int)(bestMatchIndex * 5 + 2)];
+
+                        if (bestPriority < currentPriority)
+                        {
+                            bestMatchIndex = currentIndex;
+                        }
+                    }
+                }
+            }
+
+            currentIndex++;
+        }
+
+        return bestMatchIndex;
+    }
+
+    /// <summary>Port of <c>GetNumberOfItem</c> (PlayerManager.cs:4330-4346, 8004e428): how many of an item
+    /// the player owns, 0 for an id out of range.</summary>
+    public static int GetNumberOfItem(AlundraGameState state, int itemId)
+    {
+        int nbItem;
+
+        if (itemId < 0 || ItemsCount <= itemId)
+        {
+            nbItem = 0;
+        }
+        else
+        {
+            nbItem = state.NumberOfItems[itemId * 2 + 1];
+        }
+
+        return nbItem;
+    }
+
+    /// <summary>Port of <c>SetCurrentItemId</c> (PlayerManager.cs:4421-4431, 8004e4d8): equips an accessory,
+    /// refusing an id out of range.</summary>
+    public static void SetCurrentItemId(AlundraGameState state, uint itemId)
+    {
+        if ((int)itemId < 0 || itemId >= ItemsCount)
+        {
+            CasaEngine.Core.Logging.Logs.WriteWarning($"AlundraPlayerManager: invalid itemId {itemId} for SetCurrentItemId.");
+            return;
+        }
+
+        state.PlayerStats.ItemId = (short)itemId;
+    }
+
+    /// <summary>
+    /// Port of <c>SetItemIdFromCurrentItemId</c> (PlayerManager.cs:4350-4366, 8004e0f8), which the HUD calls
+    /// every frame for the accessory box. When the equipped accessory is owned, it re-resolves the best item
+    /// of that accessory's slot and equips it - a side effect, kept - then returns the accessory id it
+    /// STARTED from, not the re-resolved one, exactly as the original does. <see cref="NoItem"/> when the
+    /// equipped accessory is not owned, which is the New Game state: item 0, count 0, an empty box.
+    /// </summary>
+    public static uint SetItemIdFromCurrentItemId(AlundraGameState state, AlundraItemTables tables)
+    {
+        var currentItemId = state.PlayerStats.ItemId;
+        var numberOfItem = GetNumberOfItem(state, currentItemId);
+
+        if (numberOfItem == 0)
+        {
+            return NoItem;
+        }
+
+        var slotId = tables.ItemsProperties[currentItemId * 5];
+        var itemId = GetItemIdFromSlotId(state, tables, slotId);
+        SetCurrentItemId(state, itemId);
+
+        return (uint)currentItemId;
+    }
+
+    /// <summary>Port of <c>AddOneItemIfUnlocked</c> (PlayerManager.cs:4666-4688, 8004e530): gives one more of
+    /// an item unless the player already holds its max count (column 3). Returns the new count, or - as the
+    /// original does - the item id itself when the count was already at its max.</summary>
+    public static int AddOneItemIfUnlocked(AlundraGameState state, AlundraItemTables tables, int itemId)
+    {
+        if (itemId < 0 || itemId >= ItemsCount)
+        {
+            CasaEngine.Core.Logging.Logs.WriteWarning($"AlundraPlayerManager: invalid itemId {itemId} in AddOneItemIfUnlocked.");
+            return 0;
+        }
+
+        var itemIdIndex = itemId * 2;
+        var numberOfItem = state.NumberOfItems[itemIdIndex + 1];
+        var itemPropertyId = itemId * 5;
+        var unlockRequirement = tables.ItemsProperties[itemPropertyId + 3];
+
+        if (numberOfItem != unlockRequirement)
+        {
+            state.NumberOfItems[itemIdIndex + 1] = (short)(numberOfItem + 1);
+            return numberOfItem + 1;
+        }
+
+        return itemId;
+    }
+
+    /// <summary>Port of <c>GetItemTextureIdByItemId</c> (GraphicManager.cs:1910-1914, 8004e168): an item's
+    /// icon column, the sprite record whose portrait is its icon (31 for the sword). The HUD does not go
+    /// through it to find the icon's asset - the converter already resolved icon to asset, see
+    /// <see cref="AlundraItemTables.TryGetIconAssetId"/> - but it is the link the tests pin, item 1 to 31.</summary>
+    public static int GetItemTextureIdByItemId(AlundraItemTables tables, int itemId)
+    {
+        return tables.ItemsProperties[itemId * 5 + 4];
+    }
+
+    /// <summary>
+    /// What the HUD's two equipment boxes show this frame - the two lookups
+    /// <c>HudManager.DisplayHudWeaponAndItem</c> (HudManager.cs:490-602) makes every frame, in its order:
+    /// the weapon's item first, then the accessory through <see cref="SetItemIdFromCurrentItemId"/>, side
+    /// effect included. Each item that resolves is mapped to its portrait's asset id; a sentinel, or an item
+    /// without a portrait, leaves its box empty.
+    /// </summary>
+    public static (Guid? Weapon, Guid? Accessory) ResolveHudEquipmentIcons(AlundraGameState state, AlundraItemTables tables)
+    {
+        Guid? weapon = null;
+        var weaponItemId = GetItemIdFromCurrentWeapon(state, tables);
+        if (weaponItemId != NoItem && tables.TryGetIconAssetId((int)weaponItemId, out var weaponAssetId))
+        {
+            weapon = weaponAssetId;
+        }
+
+        Guid? accessory = null;
+        var accessoryItemId = SetItemIdFromCurrentItemId(state, tables);
+        if (accessoryItemId != NoItem && tables.TryGetIconAssetId((int)accessoryItemId, out var accessoryAssetId))
+        {
+            accessory = accessoryAssetId;
+        }
+
+        return (weapon, accessory);
+    }
 }
