@@ -394,7 +394,7 @@ premier (lecture ligne à ligne, sans appariement de crochets) : 7 boîtes, 822 
 0 en trop, même ordre**. La preuve au pixel de D3.b, qui recompose depuis `StaticVariables.cs` sans passer
 par les CSV, la confirmera une seconde fois.
 
-### ⏳ D3.b — Convertisseur : une image cuite par boîte
+### ✅ D3.b — Convertisseur : une image cuite par boîte — faite le 2026-09-21
 
 **Prérequis** : D3.a.
 - **Lecture** : `UiBoxLayoutReader` lit les deux CSV, liés dans le `.csproj` du convertisseur comme ceux
@@ -425,6 +425,28 @@ pixel pour pixel, à une composition indépendante faite par script depuis les `
 `StaticVariables.cs` et `wind.png`, sans passer par les CSV ni par le code du convertisseur — ce qui
 prouve aussi D3.a. Et **la boîte des armes cuite montre sa bordure droite** : le choix de A (D-E13D-14) se
 voit dans l'image, pas seulement dans le code.
+
+**Fait** : `UiBoxLayoutReader` (lecture brute), `UiBoxBaker` (cuisson pure, octets en entrée et en
+sortie, testable sans fichier), `UiBoxWriter` (phase `Phase7.UiBoxes`, entrées-sorties en `System.Drawing`
+comme les fonds). Les six sprites, pour D5 :
+
+| Boîte | Sprite | Taille |
+|---|---|---|
+| `g_UiBoxesInventoryWeaponBackground` | `c2447262-414f-5b78-9def-b54b080636f4` | 168×48 |
+| `g_UiBoxesInventoryItemBackground` | `615fe384-c2e5-5ad3-82ec-f0bd137c877a` | 168×104 |
+| `g_UiBoxesInventoryWeaponNameBackground` | `eb357d61-17ab-5ea1-a287-b98196a6e7e3` | 144×32 |
+| `g_UiBoxesInventoryItemNameBackground` | `1f5d5bab-7408-5da3-a8d6-20a02d3c0747` | 144×32 |
+| `g_UiBoxesInventoryMoneyFalconKeyIcons` | `e8d58247-f02b-57cb-9ebf-f1df2b9be874` | 24×72 |
+| `g_uiBoxesInventoryDescriptionBackground` | `973a9208-c867-57fe-bee3-cf30237221ef` | 288×56 |
+
+| Preuve | Résultat |
+|---|---|
+| Prédiction écrite avant le code | 18 ajouts (6 × `.png`, `.texture`, `.sprite`) + `AssetInfos.json` + `report.json` |
+| Export complet en place | **exactement** la prédiction ; aucun fichier existant touché ; `UiBoxes.Boxes` 6, `UiBoxes.Cells` 822, `UiBoxes.CellsWithoutTile` 0, aucune erreur |
+| Double export | `report.json` seul (encodage PNG déterministe) |
+| Preuve au pixel | **0 pixel différent** sur les six boîtes, en RGBA complet, contre une composition faite depuis `StaticVariables.cs` et `wind.png` seuls ; la boîte des armes a sa bordure droite |
+| Suites | convertisseur **182/182** (172 + 10) |
+| Vérificateur frais | **CONFIRMED** ; deux remarques P4 : la preuve au pixel ne regarde pas la palette (couverte par la recherche dans `wind.json` et `CellsWithoutTile` = 0) ; une boîte refusée lors d'un export ultérieur laisserait ses anciens fichiers, comme tout export en place |
 
 ### ⏳ D4 — DLL : le directeur de l'inventaire
 
@@ -556,6 +578,7 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
 | 2026-09-21 | **L'auteur réapprouve le plan révisé**, correction non relue comprise, et tranche : **portrait reporté** (D-E13D-12 amendée, D3.c et D5.p retirées) ; **gel sur tout `MenuOpen`** (D-E13D-15). Exécution reprise en mode AUTO : D1, D2, D3.a, D3.b, D4, D5. |
 | 2026-09-21 | **D1 faite**, vérificateur **CONFIRMED**. Export prouvé (diff mesuré = prédit, double export = `report.json`). |
 | 2026-09-21 | **D3.a faite** (analyseur `64978f8`, branche `chantier/e13d-boites`) : 7 boîtes, 822 cases, acceptation passée par un script indépendant. Générateur et vérificateur ci-dessous. |
+| 2026-09-21 | **D3.b faite**, vérificateur **CONFIRMED** : six images cuites, prouvées par manifeste, double export et au pixel. |
 
 ### D0.1 — le script de mesure et sa sortie (2026-09-21)
 
