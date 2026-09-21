@@ -50,6 +50,20 @@
     <None Include="..\alundra-datas-analyser\AlundraTools\AlundraTools\MapSoundGroupIndex.csv" Link="MapSoundGroupIndex.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <!-- docs/plan-e13c-icones-hud.md, slice S2, D-E13C-2: g_itemsProperties (StaticVariables.cs:737-838),
+         100 raw rows of that 5 ushort wide array. Same "linked, not copied" precedent as the tables
+         above: the analyser owns it, this converter only reads it and republishes it raw as
+         Data/items-properties.json. -->
+    <None Include="..\alundra-datas-analyser\AlundraTools\AlundraTools\ItemsProperties.csv" Link="ItemsProperties.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <!-- docs/plan-e13c-icones-hud.md, slice S2, D-E13C-4: the item to portrait signature correspondence,
+         88 rows, measured off the game binary by the analyser probe rather than ported from an array.
+         Read here to resolve every item to the .sprite this converter has already emitted for that
+         signature, republished raw as Data/item-icon-index.json. -->
+    <None Include="..\alundra-datas-analyser\AlundraTools\AlundraTools\ItemPortrait.csv" Link="ItemPortrait.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
