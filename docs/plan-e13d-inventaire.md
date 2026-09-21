@@ -558,7 +558,7 @@ pas ce que l'écran lit. **Curseur** : sa position vient du compteur **avant** l
 | Suites | `Alundra.Tests` **1039/1039** (988 + 51) |
 | Vérification neuve | **CONFIRMED** : les branches du texte et du curseur relues contre l'original, un tick à 0x4d et une image à deux ticks échantillonnés, l'empilement et le retrait de l'écran inchangés ; une remarque P4 : la capture en jeu ne passe pas par le cas du P2 (couvert par la reproduction et le test), à voir en D6 |
 
-### ⏳ D5.f — La police de l'inventaire survit aux changements de carte
+### 🚧 D5.f — La police de l'inventaire survit aux changements de carte
 
 **Le défaut, trouvé par l'auteur en recette (D6).** Après un changement de carte, le nom de l'arme et la
 description s'affichent en police TTF blanche, et non plus en `font3`.
@@ -581,6 +581,10 @@ description s'affichent en police TTF blanche, et non plus en `font3`.
 (qui enregistre lui-même MGUI). `git add CasaEngineMonogame` seul, après `git diff CasaEngineMonogame`. Les
 modifications de l'auteur dans le sous-module ne sont pas touchées. Commit :
 `chore(submodules): point at the engine with counted asset handles and bitmap font assets (D5.f.1)`.
+**Fait** :
+- la référence passe de `7413f54d` à `e7e19e8c` : chantier moteur T1.1 à T3.2 clos, et MGUI `3075d93`
+  enregistré par le moteur ;
+- `Alundra.Tests` 1039/1039 contre le nouveau moteur, la DLL encore inchangée.
 
 **D5.f.2 — DLL.**
 - `AlundraInventoryScreen` reçoit le registre de polices du jeu (`CasaEngineGame.UIFonts`).
