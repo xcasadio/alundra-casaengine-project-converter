@@ -448,31 +448,77 @@ public sealed class AlundraHudComposerTests
 
     // -----------------------------------------------------------------------------------------------
     // E13.c S3 (docs/plan-e13c-icones-hud.md): the equipment icons - g_inventoryWeaponIconX[8] = 16 and
-    // [9] = 48, both at UIBoxHud.Y = 16, the very positions of the two C6 backgrounds above.
+    // [9] = 48, both at UIBoxHud.Y = 16, the very boxes of the two C6 backgrounds above; each icon is
+    // centred in its box (D-E13D-10, docs/plan-e13d-inventaire.md).
     // -----------------------------------------------------------------------------------------------
 
     private static readonly System.Guid SwordIcon = System.Guid.Parse("aeebd7a0-faa7-57b0-a844-34470272a4eb");
     private static readonly System.Guid OtherIcon = System.Guid.Parse("11111111-2222-3333-4444-555555555555");
 
     [Fact]
-    public void ComposeEquipmentIcons_Weapon_IsAtNative16_16_ExactlyOnItsBackground()
+    public void ComposeEquipmentIcons_Weapon_CarriesItsBackgroundsWholeBox()
     {
         var icon = Assert.Single(AlundraHudComposer.ComposeEquipmentIcons(isDrawn: true, SwordIcon, null));
 
-        Assert.Equal(new AlundraHudIcon(SwordIcon, 16, 16), icon);
+        Assert.Equal(new AlundraHudIcon(SwordIcon, 16, 16, 24, 32), icon);
         var weaponBox = AlundraHudComposer.ComposeEquipmentBackgrounds()[0];
-        Assert.Equal(weaponBox.NativeX, icon.NativeX);
-        Assert.Equal(weaponBox.NativeY, icon.NativeY);
+        Assert.Equal(
+            (weaponBox.NativeX, weaponBox.NativeY, weaponBox.NativeWidth, weaponBox.NativeHeight),
+            (icon.BoxNativeX, icon.BoxNativeY, icon.BoxNativeWidth, icon.BoxNativeHeight));
     }
 
     [Fact]
-    public void ComposeEquipmentIcons_Accessory_IsAtNative48_16_ExactlyOnItsBackground()
+    public void ComposeEquipmentIcons_Accessory_CarriesItsBackgroundsWholeBox()
     {
         var icons = AlundraHudComposer.ComposeEquipmentIcons(isDrawn: true, SwordIcon, OtherIcon);
 
         Assert.Equal(2, icons.Count);
-        Assert.Equal(new AlundraHudIcon(OtherIcon, 48, 16), icons[1]);
-        Assert.Equal(AlundraHudComposer.ComposeEquipmentBackgrounds()[1].NativeX, icons[1].NativeX);
+        Assert.Equal(new AlundraHudIcon(OtherIcon, 48, 16, 24, 32), icons[1]);
+        var accessoryBox = AlundraHudComposer.ComposeEquipmentBackgrounds()[1];
+        Assert.Equal(
+            (accessoryBox.NativeX, accessoryBox.NativeY, accessoryBox.NativeWidth, accessoryBox.NativeHeight),
+            (icons[1].BoxNativeX, icons[1].BoxNativeY, icons[1].BoxNativeWidth, icons[1].BoxNativeHeight));
+    }
+
+    // Icon sizes below are those measured among the 85 distinct portraits of Data/item-icon-index.json on
+    // 2026-09-21: 24x32 (48 of them), 24x31 (11, the base sword among them), 24x24 (10), 23x32 (6), 16x15
+    // (3), 16x24 (2), and 23x23, 24x23, 8x8, 24x16, 23x24 once each. None is larger than the 24x32 box.
+
+    [Theory]
+    [InlineData(24, 32, 64, 64)]  // fills the box: no free space, the box's own top-left
+    [InlineData(24, 31, 64, 66)]  // the base sword: one free native row, two screen rows above and below
+    [InlineData(23, 32, 66, 64)]  // one free native column, split the same way
+    [InlineData(16, 15, 80, 98)]  // 8 free columns -> 16 px each side; 17 free rows -> 34 px each side
+    [InlineData(8, 8, 96, 112)]
+    public void ScreenPosition_AtScale4_CentresTheIconInTheWeaponBox(
+        int iconWidth, int iconHeight, int expectedLeft, int expectedTop)
+    {
+        var icon = Assert.Single(AlundraHudComposer.ComposeEquipmentIcons(isDrawn: true, SwordIcon, null));
+
+        Assert.Equal(expectedLeft, icon.ScreenLeft(iconWidth, pixelScale: 4));
+        Assert.Equal(expectedTop, icon.ScreenTop(iconHeight, pixelScale: 4));
+        // Centred: the free space left on each side is the same.
+        Assert.Equal(expectedLeft - 16 * 4, (16 + 24) * 4 - (expectedLeft + iconWidth * 4));
+        Assert.Equal(expectedTop - 16 * 4, (16 + 32) * 4 - (expectedTop + iconHeight * 4));
+    }
+
+    [Fact]
+    public void ScreenPosition_InTheAccessoryBox_IsCentredFromThatBoxsOwnLeftEdge()
+    {
+        var accessory = AlundraHudComposer.ComposeEquipmentIcons(isDrawn: true, null, OtherIcon)[0];
+
+        Assert.Equal(48 * 4 + 16, accessory.ScreenLeft(16, pixelScale: 4));
+        Assert.Equal(16 * 4 + 34, accessory.ScreenTop(15, pixelScale: 4));
+    }
+
+    [Fact]
+    public void ScreenPosition_AtAnOddScale_GivesTheExtraScreenPixelToTheFarSide()
+    {
+        // The sword at scale 3: 3 free screen rows, 1 above (48 + 1) and 2 below.
+        var icon = Assert.Single(AlundraHudComposer.ComposeEquipmentIcons(isDrawn: true, SwordIcon, null));
+
+        Assert.Equal(49, icon.ScreenTop(31, pixelScale: 3));
+        Assert.Equal(48, icon.ScreenLeft(24, pixelScale: 3));
     }
 
     [Fact]

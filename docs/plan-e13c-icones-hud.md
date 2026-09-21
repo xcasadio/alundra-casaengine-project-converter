@@ -390,16 +390,34 @@ structure en XAML n'était pas l'objet de S3.
 > **La prédiction a été écrite avant la capture** : sprite de 24×31 dans une case de 24×32, donc une
 > rangée native de fond visible sous l'icône. C'est ce que la mesure a trouvé.
 
+**Amendement du 2026-09-21 : l'icône est centrée dans sa case.** L'auteur a décidé pour E13.d que les
+icônes sont centrées dans leur boîte parente, sans fidélité au pixel près (D-E13D-10,
+`docs/plan-e13d-inventaire.md`), et que cela vaut aussi pour les deux cases du HUD. L'original pose le
+coin haut-gauche de l'icône sur celui de la case ; le portage la centre désormais.
+- `AlundraHudIcon` porte le rectangle entier de sa case, celui du fond de C6, au lieu de sa seule
+  position ; `ScreenLeft` et `ScreenTop` centrent l'image **en pixels écran**, si bien qu'une rangée
+  native libre se partage en deux rangées écran de chaque côté à l'échelle 4 ; à une échelle impaire, le
+  pixel écran de trop va à droite ou en bas. Le centrage porte sur le rectangle de l'image, pas sur ses
+  seuls pixels opaques.
+- Tailles mesurées sur les 85 portraits distincts : 24×32 (48), 24×31 (11, dont l'épée), 24×24 (10),
+  23×32 (6), 16×15 (3), 16×24 (2), et 23×23, 24×23, 8×8, 24×16, 23×24 une fois chacune. **Aucune ne
+  dépasse la case**, donc aucun débordement à traiter.
+
+| Preuve | Résultat |
+|---|---|
+| `Alundra.Tests` | **930/930** (923 + 7 : les deux cases, cinq tailles, la case d'accessoire, l'échelle impaire) |
+| **Capture en processus, F1** | prédiction écrite avant le code : épée à **(64, 66)**, deux rangées écran de fond au-dessus et deux au-dessous. Mesuré : les 134 blocs 4×4 uniformes et de la couleur exacte à partir de (64, 66), 2 rangées de fond de chaque côté, aucune couleur de l'épée dans la case d'accessoire. La même capture lue à l'ancienne origine (64, 64) échoue (107 blocs non uniformes) |
+
 ### ⏳ S4 — Recette en jeu
 
-**Contenu** : F1, l'épée de base apparaît dans la case de gauche ; la case de droite reste un fond
-vide ; les deux suivent le glissement.
+**Contenu** : F1, l'épée de base apparaît **centrée** dans la case de gauche ; la case de droite reste un
+fond vide ; les deux suivent le glissement.
 
 ## 4. Acceptation d'ensemble
 
 E13.c est close quand : le double export du convertisseur est prouvé et se limite aux deux JSON, au
-catalogue d'actifs et au rapport ; en jeu, F1 montre l'icône de l'épée de base sur son fond, nette,
-qui glisse avec la jauge ; suites `Alundra.Tests` et convertisseur vertes.
+catalogue d'actifs et au rapport ; en jeu, F1 montre l'icône de l'épée de base centrée sur son fond,
+nette, qui glisse avec la jauge ; suites `Alundra.Tests` et convertisseur vertes.
 
 ## 5. Arrêts
 
@@ -450,6 +468,7 @@ qui glisse avec la jauge ; suites `Alundra.Tests` et convertisseur vertes.
 | 2026-09-19 | **S1.a exécutée, verifier CONFIRMED, et elle réduit le chantier de moitié.** Une commande de relevé derrière `--probe-portraits` lit le binaire et mesure les 89 icônes : 88 portraits exploitables, 85 signatures distinctes, **toutes déjà présentes** parmi les 693 de la planche, donc zéro rectangle nouveau et zéro intersection. Vérifié ensuite en session principale : **les 85 ont déjà leur `.sprite` émis**, sur les 6908 du projet. L'extraction, la ré-extraction, le miroir et la preuve au pixel n'ont plus d'objet ; S1.b, S2 et S3 d'origine sont remplacées par trois tranches : deux CSV, deux catalogues, la DLL. **Deux corrections de fond** : la reconnaissance affirmait que le portrait était une image distincte absente de tout frame converti, la mesure montre qu'il coïncide avec une image déjà extraite, l'épée de base ayant pour portrait exactement son sprite du monde ; et l'emplacement 72 n'existe pas dans les données du jeu, `SpriteInfo.cs:93-101` ne construisant un enregistrement que si son entrée de table n'est ni 0 ni -1, donc l'objet 42 n'a réellement pas d'icône. |
 | 2026-09-19 | **Approuvé par l'auteur. S0 exécutée**, partie en agent en lecture seule, partie en session principale sur les données réelles. Trois bornes confirmées, convention d'absence d'icône établie, position et identifiant de secteur identiques sans doublon, 693 signatures existantes avec leur digest d'ordre, planche de taille constante et sa référence copiée. **Trois corrections au plan** : la règle d'arrêt sur les palettes était trop large, la planche portant déjà 225 recouvrements à palettes différentes entre images existantes ; le relevé des portraits doit précéder le test d'intersection, d'où le découpage de S1 en S1.a et S1.b ; et l'objet 42 désigne un enregistrement nul, question remontée à l'auteur. |
 | 2026-09-21 | **S3 exécutée.** Reconnaissance à trois surfaces (décompilation, HUD de la DLL, chargement et capture), contrat relu **READY**. Portage ligne à ligne de la chaîne arme → objet → icône et de l'inventaire de la nouvelle partie ; l'icône est une tuile de plus du canevas, entre les fonds de C6 et les tuiles. 923/923. Capture F1 en processus mesurée contre les pixels du sprite source : position, échelle, netteté et case d'accessoire vide conformes à la prédiction écrite avant. Reste S4, la recette de l'auteur. |
+| 2026-09-21 | **Amendement de S3 : l'icône centrée dans sa case**, sur décision de l'auteur (D-E13D-10, étendue par lui au HUD). L'icône porte le rectangle de sa case et l'écran la centre en pixels écran ; l'épée descend de deux pixels écran. 930/930 ; capture F1 mesurée contre la prédiction écrite avant le code. Aucune des 85 icônes ne dépasse la case. |
 | 2026-09-21 | **S1.c et S2.b exécutées, en mode AUTO choisi par l'auteur**, après le merge de C4 et de S2 dans `main`. L'auteur tranche le point 3 : les quatre octets bruts. Mesuré avant d'écrire : 98 enregistrements, `Field0` vide partout, `Field3` porteur de deux informations, déverrouillés {1, 17, 25}. Relecture adverse du contrat : **READY**. CSV re-dérivé par un second analyseur, 0 écart sur 392 valeurs. Export prouvé : un ajout, `report.json`, les deux JSON de S2 et `AssetInfos.json` inchangés au bit près, double export ⊆ `{report.json}`. Points ouverts 3 et 8 clos. |
 | 2026-09-20 | **S2 exécutée, et une mesure l'a simplifiée avant qu'une ligne ne soit écrite.** Toutes les banques de `map_alundra.json` partageant une seule planche, `Ids.For("sprite:map_alundra_spritesheet.png:<signature>")` résout **88/88** contre l'`AssetInfos.json` réel : la correspondance se lit, elle ne s'extrait pas. Première relecture adverse : **REVISE**, trois P2, tous acceptés. (1) Changer le type de retour de `ConvertSprites` cassait quatre fichiers de tests existants que la portée ne listait pas — **conception changée** plutôt que rapiécée : la signature n'est plus touchée, le writer recalcule l'identifiant et le **prouve** contre le catalogue. (2) `banks.First(b => b.IsAlundraBank)` levait une exception sur les fixtures à `SpriteRecords` vide — disparu avec la conception. (3) L'acceptation pouvait passer alors que chaque objet pointait un sprite existant mais **faux** — remplaçee par une preuve d'appariement indépendante de la formule, par le nom de fichier. Relecture de clôture : **READY**. Export prouvé : diff mesuré = deux JSON + `report.json`, `AssetInfos.json` inchangé, zéro `.sprite`, double export ⊆ `{report.json}`. Trois arbitrages de l'auteur : branche neuve depuis `main`, `items-properties.json` en 100 tableaux de 5, S2 reste à deux catalogues (point ouvert 8). |
 | 2026-09-19 | Relecture de clôture : **REVISE**, un P1 et un P2, tous deux acceptés. (1) P1 — le test de collision par égalité de cellule manquait les recouvrements partiels, chaque signature étant dessinée entière à sa propre origine et taille ; et l'acceptation au pixel exemptait justement les rectangles où le dommage tombe. Corrigé : intersection de rectangles par page contre toute signature existante, intersection à même palette autorisée avec sa justification, à palette différente arrêt ; ensemble exempté redéfini comme les seuls rectangles des portraits nouveaux et sans intersection, comparaison sur toute la planche. (2) P2 — l'ordre de dessin est celui de première rencontre et n'était pas figé ; S1 concatène les portraits strictement après la séquence existante, S0 relève les rangs, S1 prouve le préfixe inchangé, arrêt ajouté. **Deuxième REVISE consécutif, plafond atteint : disposition en session principale, pas de nouvelle soumission.** Le plan part à l'auteur pour approbation avec ces corrections. |

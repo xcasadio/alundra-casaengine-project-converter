@@ -282,9 +282,9 @@ public sealed class AlundraHudScreen : UIScreenBase, IAlundraHudView
 
     void IAlundraHudView.SetTiles(IReadOnlyList<AlundraHudTile> tiles) => ApplyTiles(tiles);
 
-    /// <summary>E13.c S3: shows each icon exactly like <see cref="ApplyTile"/> shows a tile - the sprite's own
-    /// source rectangle, scaled by the integer pixel factor, its top-left at the native position scaled the
-    /// same way - and collapses any image left without an icon.</summary>
+    /// <summary>E13.c S3: shows each icon like <see cref="ApplyTile"/> shows a tile - the sprite's own source
+    /// rectangle, scaled by the integer pixel factor - but centred in its box (D-E13D-10,
+    /// <see cref="AlundraHudIcon.ScreenLeft"/>), and collapses any image left without an icon.</summary>
     void IAlundraHudView.SetEquipmentIcons(IReadOnlyList<AlundraHudIcon> icons)
     {
         for (var i = 0; i < _equipmentIcons.Length; i++)
@@ -303,8 +303,8 @@ public sealed class AlundraHudScreen : UIScreenBase, IAlundraHudView
                 image.PreferredHeight = sourceRect.Height * _pixelScale;
                 image.Visibility = Visibility.Visible;
 
-                MGCanvas.SetLeft(image, icons[i].NativeX * _pixelScale);
-                MGCanvas.SetTop(image, icons[i].NativeY * _pixelScale);
+                MGCanvas.SetLeft(image, icons[i].ScreenLeft(sourceRect.Width, _pixelScale));
+                MGCanvas.SetTop(image, icons[i].ScreenTop(sourceRect.Height, _pixelScale));
             }
             else
             {

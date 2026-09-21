@@ -223,7 +223,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
         }
 
         Assert.True(director.IsDrawn);
-        Assert.Equal(new[] { new AlundraHudIcon(sword, 16, 16) }, view.IconCalls[^1]);
+        Assert.Equal(new[] { new AlundraHudIcon(sword, 16, 16, 24, 32) }, view.IconCalls[^1]);
         Assert.True(sourceCalls > 0);
         Assert.Equal(view.IconCalls.Count, view.TileCalls.Count); // one icon push per tile push
     }

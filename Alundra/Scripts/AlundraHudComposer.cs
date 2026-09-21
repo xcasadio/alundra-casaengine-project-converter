@@ -65,12 +65,29 @@ public readonly record struct AlundraHudBackgroundQuad(
     float Alpha);
 
 /// <summary>E13.c S3 (docs/plan-e13c-icones-hud.md): one equipment icon - the <c>.sprite</c> asset that is an
-/// item's portrait, drawn with its top-left at a NATIVE pixel position, same convention as
+/// item's portrait - and the box it is drawn in, as a NATIVE pixel rectangle, same convention as
 /// <see cref="AlundraHudTile"/>. Its own record rather than a new <see cref="HudGlyph"/>: the 24 glyphs are a
 /// fixed set loaded once, an icon is whichever item is equipped, known only as an asset id. Its size is not
 /// carried here - it is the sprite's own, as the original takes <c>Swidth</c>/<c>Sheight</c> straight from
-/// the image (GraphicManager.cs:1933-1934).</summary>
-public readonly record struct AlundraHudIcon(Guid AssetId, int NativeX, int NativeY);
+/// the image (GraphicManager.cs:1933-1934) - so the screen, which loads the sprite, centres it in the box
+/// through <see cref="ScreenLeft"/> and <see cref="ScreenTop"/>. The original draws the icon's top-left at
+/// the box's top-left instead; the author's D-E13D-10 (2026-09-21, docs/plan-e13d-inventaire.md) centres
+/// every icon in its parent box rather than matching the original to the pixel.</summary>
+public readonly record struct AlundraHudIcon(
+    Guid AssetId, int BoxNativeX, int BoxNativeY, int BoxNativeWidth, int BoxNativeHeight)
+{
+    /// <summary>The icon's left edge in screen pixels, centred in its box: the box's own left edge scaled
+    /// like every tile, plus half the scaled free width. Halved in screen pixels, not native ones, so the one
+    /// free native pixel of a 23-wide icon in the 24-wide box is still split evenly at any even scale; at an
+    /// odd scale the extra screen pixel goes to the right.</summary>
+    public int ScreenLeft(int iconNativeWidth, int pixelScale) =>
+        BoxNativeX * pixelScale + (BoxNativeWidth - iconNativeWidth) * pixelScale / 2;
+
+    /// <summary>The icon's top edge in screen pixels, centred in its box the same way as
+    /// <see cref="ScreenLeft"/>.</summary>
+    public int ScreenTop(int iconNativeHeight, int pixelScale) =>
+        BoxNativeY * pixelScale + (BoxNativeHeight - iconNativeHeight) * pixelScale / 2;
+}
 
 /// <summary>
 /// Pure port of the jauge's own composition logic - <c>HudManager.DisplayHpMaxWithNumber</c>
@@ -367,7 +384,8 @@ public static class AlundraHudComposer
     /// (HudManager.cs:490-602) - the weapon's portrait at <c>g_inventoryWeaponIconX[8]</c> and the
     /// accessory's at <c>[9]</c>, both at <c>UIBoxHud.Y</c>: the SAME two abscissas as the backgrounds above
     /// (<see cref="WeaponBoxX"/>, <see cref="AccessoryBoxX"/>) and the same baked <see cref="BoxY"/> every
-    /// tile uses, so the icon sits in its box and slides with the whole jauge through the canvas
+    /// tile uses. Each icon carries its background's whole rectangle, so the screen centres it in its box
+    /// (D-E13D-10, see <see cref="AlundraHudIcon"/>) and it slides with the whole jauge through the canvas
     /// translation. A null asset id is the original's sentinel branch - nothing drawn for that box. Empty
     /// when the jauge is not drawn, like <see cref="Compose"/>'s own tiles.
     /// </summary>
@@ -382,12 +400,12 @@ public static class AlundraHudComposer
         var icons = new List<AlundraHudIcon>(2);
         if (weaponIconAssetId is { } weapon)
         {
-            icons.Add(new AlundraHudIcon(weapon, WeaponBoxX, BoxY));
+            icons.Add(new AlundraHudIcon(weapon, WeaponBoxX, BoxY, EquipmentBoxWidth, EquipmentBoxHeight));
         }
 
         if (accessoryIconAssetId is { } accessory)
         {
-            icons.Add(new AlundraHudIcon(accessory, AccessoryBoxX, BoxY));
+            icons.Add(new AlundraHudIcon(accessory, AccessoryBoxX, BoxY, EquipmentBoxWidth, EquipmentBoxHeight));
         }
 
         return icons;
