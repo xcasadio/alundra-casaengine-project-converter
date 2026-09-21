@@ -1,9 +1,13 @@
 # Plan — E13.d : l'inventaire principal
 
-**État** : 🚧 **approuvé par l'auteur le 2026-09-21** (« tout est ok. fait toutes les taches »), exécution
-en mode **AUTO** : travail réversible dans le périmètre approuvé, ni push, ni merge, ni action externe.
-Relu **READY** ; décisions de l'auteur du 2026-09-21 au §2.2, dont les boîtes en **image cuite** depuis la
-copie A (D-E13D-13, D-E13D-14).
+**État** : ⚠️ **D0 close, plan révisé et resoumis à l'auteur** (arrêt propre à D0) ; la révision a reçu
+deux REVISE puis une relecture de clôture REVISE, toutes corrigées, **la dernière correction non relue**
+(§7) : deux mesures
+contredisent le §1 (le gel incomplet, §1.2 ; le sens du glissement de la jauge à l'ouverture, §1.5), et le
+portrait d'ouverture n'est pas exporté (§5). Approuvé une première fois le 2026-09-21 (« tout est ok. fait
+toutes les taches »), mode **AUTO** ; D1 à D5 attendent la nouvelle approbation, D2 la réponse au §6
+point 7, D3.c et D5.p celle au point 6. Décisions de l'auteur au §2.2, dont les boîtes en **image cuite** depuis la copie A
+(D-E13D-13, D-E13D-14).
 **Naissance** : `docs/plan-conversion-totale.md` §E13, E13.d — « porter l'original tel quel » ; découpage
 décidé par l'auteur le 2026-09-19 : **l'inventaire principal d'abord** (ouverture, fermeture, équipement),
 puis le sous-inventaire et la bascule L1/R1. Ce plan ne couvre que l'inventaire principal ; le
@@ -26,9 +30,24 @@ mesures reprises en session principale (marquées **[mesuré]**). Tout est cité
   personne ne tient le joueur, aucun verrou ni délai de warp, aucune transition globale, `Select` n'est
   **pas** maintenu, et l'un quelconque de `Start`, `L2` ou `R2` vient d'être pressé (`PadState.cs:22`,
   masque lu par ET binaire). **Il ne vérifie pas que le héros est au sol** : on peut ouvrir en plein saut.
+  Dans le portage, **le saut n'est pas porté** (`AlundraPlayerManager.cs:66-73`, `:286-289`, et aucun appel
+  à `RequestJump` dans la DLL) : le cas en l'air y est la **chute**, au bord d'un plateau.
 - **Ouverture** (`MainInventoryManager.DisplayInventory`, `:443-499`) : glissement du HUD
   (`HudManager.InitializeHudPosition`), armement de l'emplacement de rappel 6, portrait d'Alundra préparé
   pour l'effet d'ouverture, noms de l'équipement, **son 4**.
+- **[lu] Les gardes de l'ouverture** (D0.6) : `DisplayInventory` ne fait rien si `g_forbiddenWarpFlag != 0`
+  (`:445`), ni si l'emplacement de rappel **0** ou **0xb** est actif (`CheckSpecialWarpCondition`,
+  `GameEngine.cs:1590-1593`, lit `g_callbackTable[i].Flags & 1`, que `SetTransitionType(i)` pose,
+  `GraphicManager.cs:1714-1735`) : l'emplacement 0 est la **boîte de dialogue**, l'emplacement 0xb le menu
+  de débogage des drapeaux (`StaticVariables.cs:11388-11470`, `UIDebugManager.InitializeFlagsDebugMenu`).
+  Une branche de débogage (`g_cdIsReady == 0`, `:460-481`) est morte en jeu : `g_cdIsReady` passe à 1 après
+  l'initialisation du CD (`SoundManager.cs:331`). `StartFadeOut` (`GraphicManager.cs:1767-1783`), malgré son
+  nom, est une variante de l'ouverture appelée par cette branche morte (`:474`) et par un post-traitement
+  (`GraphicManager.cs:1697`) ; l'ouverture en jeu passe par `:484-495`.
+- **[lu] `g_forbiddenWarpFlag`** (D0.6) : 0 à l'initialisation (`:30`) ; **5** à la mise en place (`:505`) ;
+  **`|= 2`** au début de la fermeture (`:1903`) ; **`&= ~4`** (`:875`) puis **0** à la fin de la fermeture
+  (`:880`). Lectures : `== 0` pour pouvoir ouvrir (`:445`) ; `& 6` bloque la lecture de la manette pendant un
+  glissement (`:783`) ; `& 4` et `& 2` règlent la fin des glissements (`:873`, `:878`).
 - **Mise en place** (`FUN_80054f1c`, `:503-776`) : `MenuOpen` levé (`:507`), sept boîtes armées pour
   glisser de hors-écran à leur place en **15 ticks** ; puis la fonction de rendu est remplacée par
   `FUN_80056598` (`:775`).
@@ -37,7 +56,7 @@ mesures reprises en session principale (marquées **[mesuré]**). Tout est cité
   **son 5** (`FUN_800556dc`, `:1901-2158`), et `MenuOpen` n'est retiré qu'à la fin du glissement (`:896-899`).
   `L1`/`R1` (`:853-859`) passent au sous-inventaire : **hors de ce plan**.
 
-### 1.2 Le gel du monde — déjà porté **[mesuré]**
+### 1.2 Le gel du monde — porté en partie **[mesuré]**
 
 - **Original** : `MenuOpen` fait partie de `GameplayBlockedMask`. `EntityManager.UpdateEntities`
   (`EntityManager.cs:367-390`) saute alors, **pour toutes les entités, héros compris**, les évènements,
@@ -48,11 +67,36 @@ mesures reprises en session principale (marquées **[mesuré]**). Tout est cité
   `MovePlayer`, la physique et la synchronisation d'animation — que s'il est faux
   (`AlundraEntityScriptProxy.cs:828-867`, `:874-1020`) ; le monde porte la sienne
   (`AlundraWorldProxy.cs:1787-1856`). Un dialogue qui lève `MenuOpen` fige déjà héros et entités, constaté
-  en jeu (`AlundraEntityScriptProxy.cs:852-853`). **Lever `MenuOpen` suffit donc à figer le héros.**
-- **Reste à mesurer** : ce que la porte ne couvre pas, parce que le moteur le fait lui-même en dehors du
-  proxy — l'intégration de vitesse et de gravité du contrôleur de personnage (la porte n'y touche pas,
-  `AlundraPlayerManager.cs:476-482`), et la lecture d'animation de sprite côté moteur. D0 le mesure,
-  notamment pour une ouverture en plein saut.
+  en jeu (`AlundraEntityScriptProxy.cs:852-853`). La porte arrête bien le déplacement du héros, que
+  `MovePlayer` fait par `Controller.Move` (`AlundraEntityScriptProxy.cs:1730`).
+- **[mesuré] Mais la porte ne fige pas tout** (D0.3, corrige la phrase « lever `MenuOpen` suffit à figer
+  le héros » de la première rédaction) :
+  - **la gravité** : `CharacterControllerComponent.Update` (moteur, `:186-293`) intègre la vitesse
+    verticale à chaque image rendue, hors du proxy (`ApplyVerticalVelocity`, `:768-811`), sauf si
+    `IsVerticalOwnedExternally` est levé (`:770-774`) ; il l'est pour les PNJ (`AlundraEntitySpawnFactory.cs:586`),
+    pas pour le héros hors escalade et départ de warp. **Ouvert en pleine chute, le héros continuerait de
+    tomber** derrière l'inventaire (le saut n'étant pas porté, §1.1) ;
+  - **les animations de sprite** : `AnimatedSpriteComponent.Update` (moteur, `:195-217`) avance à chaque
+    image rendue, arrêté seulement par `IsPlaybackPaused` (`:54`, `:202`) ou la politique d'exécution.
+    **Toutes les entités continuent de s'animer** pendant un `MenuOpen` : pendant l'inventaire, et déjà
+    pendant les dialogues, alors que l'original fige tout (`EntityManager.cs:367-390`).
+  - Le moteur offre de quoi figer sans le modifier : `IsPlaybackPaused` pour les animations ; pour le
+    contrôleur, le mode `Disabled`, où `Update` sort avant toute intégration
+    (`CharacterControllerComponent.cs:202-208`) et `Move` ne fait rien (`:425`). Mais `ControlMode` n'a
+    qu'un accesseur privé en écriture (`:90`) : on ne le change que par `SetControlMode`, qui pour
+    `Disabled` appelle **`Stop()`** (`:597-605`), et `Stop()` **efface** la vitesse, l'intention de
+    déplacement, le saut demandé, les minuteries de saut, de coyote et de dash, et le déplacement vertical
+    externe (`:400-416`) ; revenir au mode précédent ne rend que `Grounded` ou `Falling` (`:608-611`), l'état
+    de saut est perdu. L'état complet se garde par **`CaptureStateSnapshot`** (`:530-554`) et se rend par
+    **`RestoreStateSnapshot`** (`:556-587`), qui remet position, orientation, `ControlMode`,
+    `MovementState`, `Velocity`, les minuteries et l'état de sol. Le précédent du portage,
+    `SuspendGravityForWarpDeparture` (`AlundraPlayerManager.cs:485-527`), lève `IsVerticalOwnedExternally` :
+    la composante verticale est alors retirée du déplacement (`:259-264`) puis la vitesse recalculée depuis
+    le déplacement effectif (`:285-286`), ce qui **perd la vitesse verticale** — sans conséquence pour un
+    départ de warp, gênant pour un saut qui doit reprendre. **D2 existe donc** (§3).
+  - Restent hors de la porte, à juste titre : la publication de position `SyncTransform`
+    (`AlundraEntityScriptProxy.cs:869`), l'échantillonnage de la manette (`:855-862`), les directeurs du
+    dialogue et du HUD, qui tournent au tick (`AlundraWorldProxy.cs:1940-1943`, `:1957-1968`).
 - **Commentaire périmé** : `AlundraPlayerManager.cs:555-558` affirme encore « our pipeline has no such
   global gate ». Il a trompé la reconnaissance puis la première rédaction de ce plan ; D4 le corrige,
   puisqu'elle touche ce fichier.
@@ -69,7 +113,13 @@ mesures reprises en session principale (marquées **[mesuré]**). Tout est cité
 - **Ces lectures utilisent la répétition des touches**, `ButtonsJustPressedByInterval`
   (`:785`, `:798`, `:810`, `:822`, `:834`, `:846`, `:853`) : un premier appui, puis après **20 images**
   maintenues une répétition toutes les `RepeatInterval` images, tant que l'état complet des boutons ne
-  change pas (`PadManager.cs:26-74`, `PadState.cs:24-31`). **Le portage ne calcule pas ce champ** :
+  change pas (`PadManager.cs:26-74`, `PadState.cs:24-31`).
+- **[lu] `RepeatInterval` vaut 0** (D0.4) : seule écriture, `GameInitializer.cs:169` ; `MaxNbFrameHeld` vaut
+  20 (`PadState.cs:25`). Tracé de `UpdatePad` (`PadManager.cs:27-74`) : l'image de l'appui donne le front ;
+  les 20 images suivantes rien ; puis **un front à chaque image** tant que l'état complet des boutons ne
+  change pas (`NumberOfFrameHold < 0` n'étant jamais vrai). Tout changement de l'état, ou aucun bouton,
+  remet à zéro. La manette est mise à jour en tête de boucle (`GameEngine.cs:1518`), avant `UpdateWorld`
+  (`:1560`). **Le portage ne calcule pas ce champ** :
   `AlundraPadState` n'a que `ButtonsHold` et `ButtonsJustPressed` (`AlundraPlayerController.cs:34-39`),
   et un opcode d'évènement le signale déjà comme manquant (`AlundraEventProgramRunner.cs:1723-1739`).
 - **Deux horloges** : l'original met la manette à jour une fois par image de sa boucle fixe à **50 Hz**
@@ -78,6 +128,13 @@ mesures reprises en session principale (marquées **[mesuré]**). Tout est cité
   logique avance en **ticks à 50 Hz**, zéro, un ou plusieurs par image rendue (`AlundraLogicClock.cs:5-16`).
   Un front d'appui et un compteur de répétition calculés par image rendue dépendraient donc de la cadence
   d'affichage, et un directeur qui tourne au tick verrait un même front deux fois, ou pas du tout.
+- **[lu] Table des horloges** (D0.10) : l'état est échantillonné **par image rendue** dans
+  `GameState.LastPadState` (`AlundraEntityScriptProxy.cs:855-862`, `AlundraGameState.cs:123`). Le héros le
+  lit **par image rendue** (`MovePlayer`, `:1017`) ; le directeur du dialogue **par tick**
+  (`AlundraDialogueDirector.cs:239`), l'opcode `0x2F` **par tick** (`AlundraEventProgramRunner.cs:1020-1029`),
+  tous deux sur le même instantané. Une image à **deux ticks** leur montre deux fois le même front (le
+  dialogue n'avale que l'appui d'ouverture, `AlundraDialogueDirector.cs:172-173`) ; une image à **zéro tick**
+  le leur fait perdre. D1 calcule donc fronts et répétition **une fois par tick**, pour l'inventaire.
 - **Équiper une arme** (`FUN_8005795c`, `:1618-1747`) : cinq appels à `SetPlayerWeaponId`, **son 2** à
   l'équipement, **son 3** pour une case vide. **Équiper un objet** (`FUN_80057854`, `:1796-1855`) :
   `SetCurrentItemId`, son 2. Toute la chaîne de données est **déjà portée** par E13.c S3.
@@ -123,16 +180,37 @@ mesures reprises en session principale (marquées **[mesuré]**). Tout est cité
 - **Derrière l'inventaire** (relevé du 2026-09-21, non revérifié en session principale) : la scène reste
   dessinée, figée, sans effacement ni assombrissement (`MainInventoryManager.cs:779-923`) ; les parties
   transparentes des boîtes, les bords roulés du parchemin, la laissent voir.
-- **Icônes** : même chaîne que le HUD (E13.c), déjà portée. **Curseur** : un sprite qui rebondit sur 4
-  phases de 10 images, pris dans sa propre table (`g_inventoryCursorTextureUVs`,
-  `MainInventoryManager.cs:108-138`), pas dans celles des boîtes. **Cadre de sélection** sur l'arme et sur
-  l'objet équipés (`u0 = 48`, `v0 = 0x98` dans l'atlas d'interface). **Aucune de ces sources n'est encore
-  rapprochée d'un actif exporté** : D0.9 le fait, pour elles, les chiffres et le portrait.
+- **Icônes** : même chaîne que le HUD (E13.c), déjà portée.
+- **[mesuré] Les graphismes hors des boîtes** (D0.9) :
+  - **Curseur** : 16×16 (`MainInventoryManager.cs:119-120`), `clut` 0, 4 phases de 10 images lues dans
+    `g_inventoryCursorTextureUVs` au pas de `0x28` (`:1600-1601`) : `(176, 160)`, `(192, 160)`,
+    `(208, 160)`, `(224, 160)` → **`wind_159`, `wind_182`, `wind_210`, `wind_237`**, à l'identique
+    (palette 0). Décalage par phase : `g_inventoryCursorAnimSpriteX/Y`.
+  - **Cadre de sélection** : `(48, 152)`, 24×32, `clut` 0 (`:1279-1288`) → **`wind_039`**, à l'identique.
+  - **Chiffres** : 0 à 9 en `(8 × n, 40)`, 8×16, `clut` 5 (`g_numbersSpriteSheetUVs`) → **`wind_000`,
+    `002`, `009`, `016`, `023`, `030`, `037`, `045`, `055`, `065`**, les glyphes déjà utilisés par le HUD.
+  - **Portrait d'ouverture : ABSENT de l'export.** `GetAnimationImageByIndex(0)`
+    (`GraphicManager.cs:1786-1793`) rend l'image de portrait de l'enregistrement de sprite 0, la même
+    fonction que les icônes d'objets. Mesuré dans le binaire par un programme jetable (§7) : signature
+    `61779762221058`, page 2, palette 16, source `(200, 56)`, **48×56**. Aucun `.sprite` ne porte cette
+    signature, et la planche exportée n'a **aucun pixel** à cet endroit (`(200, 568)` dans
+    `map_alundra_spritesheet.png`, 0 pixel opaque sur 2688) : le relevé de S1.a ne couvrait que les icônes
+    31 à 119. **Arrêt du §5 pour ce graphisme**, question au §6 point 6.
 - **Textes** : le nom équipé (`DisplayIconNames`, `:1750-1793`) ; nom puis deux lignes de description de
   la case survolée, **déroulés un caractère toutes les 3 images** (`:929-1154`, états 0 à `0xcf`). Source :
   `EtcRes` (`IndexTable[id + 0x200 / 0x280 / 0x300]`), **déjà exportée** en `Dialogues/etc-index.json` et
-  `Dialogues/global-strings.json` ; police `UI/font3.fnt` déjà exportée. **Si la DLL sait déjà les lire,
-  on l'ignore** : D0 le mesure.
+  `Dialogues/global-strings.json` ; police `UI/font3.fnt` déjà exportée. **[lu] La DLL lit déjà les deux
+  fichiers** (`AlundraEtcStringTable.cs:25-72`), mais n'expose que `TryResolveYesNo` : la recherche d'un nom
+  et de deux lignes de description est à ajouter (D4).
+- **[lu] Les sons 1 à 5** (D0.7) : présents dans `Sounds/sfx-manifest.json` (identifiants 1 à 5, une tonalité
+  chacun, banque système `vab_id` −1), dans le même espace d'identifiants que `SoundManager.PlaySoundEffect`
+  de l'original ; `IAlundraSoundPlayer.PlaySfx` les joue déjà (`AlundraSoundPlayer.cs:16-50`, `:139`). Seuls
+  manquent les appels de l'inventaire : son 1 `:794`, `:806`, `:818`, `:830` ; son 2 `:1651`, `:1675`,
+  `:1693`, `:1713`, `:1733`, `:1850` ; son 3 `:1745`, `:1818`, `:1836` ; son 4 `:495` ; son 5 `:1904`.
+- **[lu] Les objets 92 à 97 n'atteignent aucune case** (D0.8) : leur colonne de case vaut 0
+  (`StaticVariables.cs:831-836`), les objets fixes de `g_ItemIdBySlotIndex` sont 7, `0x24`, `0x29`, `0x25`,
+  `0x26`, `0x27`, `0x20`, `0x28`, `0x36`, `0x3B`, `0x1F` (`:12357-12360`), et la résolution par case
+  (`PlayerManager.cs:4370-4414`) ne cherche que des objets de la case demandée.
 - **Chiffres** : argent (4), clés (2, nombre de l'objet 61), faucons (2) — **le faucon n'est pas porté**
   (`AlundraPlayerStats.cs`).
 - **Portrait** : à l'ouverture, un quad du portrait d'Alundra grandit puis se résorbe (`:209-440`) ; ce
@@ -140,11 +218,22 @@ mesures reprises en session principale (marquées **[mesuré]**). Tout est cité
 
 ### 1.5 Le HUD autour de l'inventaire
 
-À l'ouverture, `InitializeHudPosition` fait **glisser la jauge vers sa place** si elle est cachée
-(`HudManager.cs:26-38`) ; à la fermeture, `InitializeHudPositionBeforeHide` la fait **ressortir** selon
-le verrou persistant et l'état du HUD (`:42-56`). Côté portage, `AlundraHudDirector` n'offre que deux
-drapeaux, 1813 (ouverture animée) et 1814 (fermeture **instantanée**) : la correspondance avec les
-conditions de l'original n'est **pas vérifiée**, D0 la mesure.
+**[lu] Corrigé par D0.5** : la première rédaction inversait l'ouverture. À l'ouverture
+(`MainInventoryManager.cs:484`), `InitializeHudPosition` **cache** la jauge, si elle est affichée et au
+repos (`(g_drawFrameFlags & 3) == 1`), par un glissement de 15 ticks de sa place vers le haut, puis
+`g_drawFrameFlags |= 2` (`HudManager.cs:26-39`). À la fermeture (`:850`), `InitializeHudPositionBeforeHide`
+la fait **revenir**, si elle est cachée (`g_drawFrameFlags == 0`) et que le verrou persistant est posé
+(`GameFlags[0x33] & 0x40000000`, drapeau 1662), avec `SetTransitionType(1)` et `g_drawFrameFlags = 5`
+(`:42-57`).
+
+| Original | Portage (`AlundraHudDirector`) |
+|---|---|
+| `InitializeHudPosition`, garde `(g_drawFrameFlags & 3) == 1` | **`ArmDisappearance`**, garde `((int)Phase & 3) == 1`, porté ligne à ligne (`:322-346`), privé |
+| `InitializeHudPositionBeforeHide`, gardes verrou 1662 et `g_drawFrameFlags == 0`, `SetTransitionType(1)` | **`ArmAppearance`** (`:350` et suivantes), privé, qui porte aussi l'effet de `FUN_8004b770` armé par `SetTransitionType(1)` ; la garde du verrou y est garantie par l'appelant |
+| — | aujourd'hui atteints seulement par les drapeaux 1813 (ouverture animée) et 1814 (fermeture instantanée) dans `RunTriggerMachine` (`:288-319`) |
+
+Rien ne manque : D4 rend ces deux ports appelables par l'inventaire, avec la garde du verrou pour
+`ArmAppearance`.
 
 ### 1.6 Côté portage : ce qui existe
 
@@ -177,7 +266,7 @@ conditions de l'original n'est **pas vérifiée**, D0 la mesure.
 |---|---|---|
 | D-E13D-10 | « **Les icônes doivent être centrées dans la boîte parente. On ne va pas respecter au pixel près le jeu original.** » | Une icône se centre dans sa case par alignement, au lieu d'être calée à la position de l'original ; **l'auteur l'étend aux deux cases du HUD** (§6 point 2, appliqué à S3 par `cdb7097`). Le patron case par case des boîtes n'est plus une obligation ; la façon de dessiner les boîtes est tranchée par D-E13D-13. |
 | D-E13D-11 | **Touches** : `Y` = `L2`, `U` = `L1`, `I` = `R1`, `O` = `R2`, `P` = `Select` ; à la manette, `LeftShoulder` = `L1`, `LeftTrigger` = `L2`, `RightShoulder` = `R1`, `RightTrigger` = `R2`, `Back` = `Select`. | D1 lie ces touches. |
-| D-E13D-12 | **Le portrait d'ouverture dès la première passe.** | D5 le porte. |
+| D-E13D-12 | **Le portrait d'ouverture dès la première passe.** | D5.p le porte ; suspendue à l'extraction du portrait, absent de l'export (§6 point 6). |
 | D-E13D-13 | « **Comment dessiner les boîtes : 1 avec image cuite.** » Le fond de chaque boîte a l'aspect de l'original, **cuit une fois par le convertisseur en une image par boîte**, après que l'auteur a vu la maquette des trois façons (§6 point 1). | D3 devient D3.a (le patron en CSV dans l'analyseur) et D3.b (la cuisson et six sprites dans le convertisseur) ; D5 affiche une image par boîte ; D0.1 et D0.2 sont closes (§1.4). La maquette superposait les copies A et B ; l'image cuite n'en prend qu'une (D-E13D-14). |
 | D-E13D-14 | « **Cuire la copie A seule.** » Confirmé par l'auteur le 2026-09-21 : chaque boîte est cuite depuis sa copie `SpritesA`, sans la superposer à B | le portage de la décompilation ne lit que A (`MainInventoryManager.cs:1254`) ; A et B sont identiques pour cinq boîtes sur six ; pour la boîte des armes, seule A donne un cadre complet (§1.4). Écart visible avec la maquette montrée à l'auteur : la bordure droite de la boîte des armes, que la superposition abîmait. D3.a n'exporte que A, D3.b ne cuit que A |
 
@@ -198,7 +287,7 @@ conditions de l'original n'est **pas vérifiée**, D0 la mesure.
 Un commit par tranche, un vérificateur frais par tranche à risque, régime de preuve par double export dès
 que le convertisseur est touché. **Chaque tranche ne commence que lorsque ses prérequis sont clos.**
 
-### 🚧 D0 — Les mesures (lecture seule)
+### ✅ D0 — Les mesures (lecture seule) — close le 2026-09-21
 
 **Prérequis** : aucun. **Livrable commun** : chaque résultat est reporté au §1 de ce plan, marqué
 **[mesuré]**, avec sa citation ; les scripts de mesure sont recopiés en entier dans le journal (§7), avec
@@ -208,17 +297,18 @@ leur sortie, pour que la mesure soit refaisable.
 |---|---|---|---|
 | D0.1 | ✅ *close le 2026-09-21, [mesuré] au §1.4, script au §7* — **Rapprochement des cases avec les `wind_NNN`** : un script relit tous les `new SPRT{…}` des tableaux `SpritesA`/`SpritesB` des sept boîtes et cherche chaque tuple `(u0, v0, w, h, clut)` **à l'identique** dans `alundra-project/UI/wind-sprites.json` `(u0, v0, width, height, palette_index)` ; la règle d'égalité, et toute table de passage entre `clut` et `palette_index` si elle existe, sont écrites avant de lancer le script | nombre de cases par boîte, nombre de tuples introuvables, et chaque tuple introuvable listé | le script a tourné sur les sept boîtes et son résultat est au §1.4 |
 | D0.2 | ✅ *close le 2026-09-21, [lu] et [mesuré] au §1.4 : deux copies, pas deux couches ; comparaison A/B au §7* — **Le mode de mélange** des couches A et B (bits de `code`/`tag` des `SPRT`, et ce que `Renderer.AddSprite` en fait) | le mode par couche, cité | chaque couche des sept boîtes a son mode |
-| D0.3 | **Ce qui tourne hors de la porte T2** pendant `MenuOpen` : vitesse et gravité du contrôleur de personnage côté moteur, lecture d'animation de sprite côté moteur ; et le cas d'une ouverture en plein saut | pour chacun : figé ou non, cité dans le code du moteur | la liste est complète et citée ; elle décide si une tranche de gel existe (voir D2) |
-| D0.4 | **La répétition des touches** : où l'original fixe `RepeatInterval` et sa valeur ; l'ordre de mise à jour dans la boucle | la cadence exacte | la valeur est citée |
-| D0.5 | **Le HUD** : correspondance entre `InitializeHudPosition`/`InitializeHudPositionBeforeHide` et leurs conditions, et les drapeaux 1813/1814 du directeur du portage | une table condition par condition | chaque condition a son équivalent, ou est déclarée manquante |
-| D0.6 | **`StartFadeOut`** et **`g_forbiddenWarpFlag`** : effet réel, sens des valeurs 0, 2, 5 et du test `& 6` | le sens de chaque bit, cité | chaque valeur a un sens établi par le code, ou est déclarée inconnue |
-| D0.7 | **Ce que la DLL sait déjà faire** : lire `etc-index.json`/`global-strings.json` (un équivalent d'`EtcRes`), jouer les sons 1 à 5 de l'interface | présent ou absent, cité | les deux questions ont une réponse |
-| D0.8 | **Les objets 92 à 97** (nom sans propriétés ni icône) : peuvent-ils atteindre une case de la grille ? | oui ou non, par la table et la résolution par case | la réponse est citée |
-| D0.9 | **Les graphismes hors des boîtes** : curseur (`g_inventoryCursorTextureUVs`), cadres de sélection, chiffres (`g_numbersSpriteSheetUVs`), portrait d'ouverture — leur source dans l'original, et l'actif exporté qui porte chacun | pour chaque graphisme : source citée et actif exporté, ou « absent → extraction » | chaque graphisme dessiné par D5 a sa ligne |
-| D0.10 | **Les horloges du portage** : où l'état des boutons est échantillonné, où chaque consommateur (héros, dialogue, opcode `0x2F`) le lit, sur quelle horloge ; et ce qu'un tick nul ou double fait à un front d'appui aujourd'hui | la table consommateur par consommateur, citée | la table est complète ; elle fixe où D1 met à jour fronts et répétition |
+| D0.3 | ✅ *close, §1.2 : gravité et animations tournent hors de la porte, D2 existe* — **Ce qui tourne hors de la porte T2** pendant `MenuOpen` : vitesse et gravité du contrôleur de personnage côté moteur, lecture d'animation de sprite côté moteur ; et le cas d'une ouverture en plein saut | pour chacun : figé ou non, cité dans le code du moteur | la liste est complète et citée ; elle décide si une tranche de gel existe (voir D2) |
+| D0.4 | ✅ *close, §1.3 : `RepeatInterval` = 0* — **La répétition des touches** : où l'original fixe `RepeatInterval` et sa valeur ; l'ordre de mise à jour dans la boucle | la cadence exacte | la valeur est citée |
+| D0.5 | ✅ *close, §1.5 : table faite, le §1.5 corrigé* — **Le HUD** : correspondance entre `InitializeHudPosition`/`InitializeHudPositionBeforeHide` et leurs conditions, et les drapeaux 1813/1814 du directeur du portage | une table condition par condition | chaque condition a son équivalent, ou est déclarée manquante |
+| D0.6 | ✅ *close, §1.1* — **`StartFadeOut`** et **`g_forbiddenWarpFlag`** : effet réel, sens des valeurs 0, 2, 5 et du test `& 6` | le sens de chaque bit, cité | chaque valeur a un sens établi par le code, ou est déclarée inconnue |
+| D0.7 | ✅ *close, §1.4 : lecture présente mais incomplète ; sons présents* — **Ce que la DLL sait déjà faire** : lire `etc-index.json`/`global-strings.json` (un équivalent d'`EtcRes`), jouer les sons 1 à 5 de l'interface | présent ou absent, cité | les deux questions ont une réponse |
+| D0.8 | ✅ *close, §1.4 : non* — **Les objets 92 à 97** (nom sans propriétés ni icône) : peuvent-ils atteindre une case de la grille ? | oui ou non, par la table et la résolution par case | la réponse est citée |
+| D0.9 | ✅ *close, §1.4 : tout exporté sauf le portrait* — **Les graphismes hors des boîtes** : curseur (`g_inventoryCursorTextureUVs`), cadres de sélection, chiffres (`g_numbersSpriteSheetUVs`), portrait d'ouverture — leur source dans l'original, et l'actif exporté qui porte chacun | pour chaque graphisme : source citée et actif exporté, ou « absent → extraction » | chaque graphisme dessiné par D5 a sa ligne |
+| D0.10 | ✅ *close, §1.3* — **Les horloges du portage** : où l'état des boutons est échantillonné, où chaque consommateur (héros, dialogue, opcode `0x2F`) le lit, sur quelle horloge ; et ce qu'un tick nul ou double fait à un front d'appui aujourd'hui | la table consommateur par consommateur, citée | la table est complète ; elle fixe où D1 met à jour fronts et répétition |
 
 **Arrêt propre à D0** : si une mesure contredit un fait du §1 ou une recommandation du §6, le plan est
-révisé et **resoumis à l'auteur avant** que D1, D2 ou D3 ne commence.
+révisé et **resoumis à l'auteur avant** que D1, D2 ou D3 ne commence. **Déclenché le 2026-09-21** : §1.2 et
+§1.5 contredits, corrigés ci-dessus ; resoumis (§7).
 
 ### ⏳ D1 — Manette : cinq boutons et la répétition
 
@@ -228,15 +318,45 @@ liaisons dans `PlayerSetupWriter` (clavier `U`, `Y`, `I`, `O`, `P` et manette `L
 `LeftTrigger`, `RightShoulder`, `RightTrigger`, `Back`, pour `L1`, `L2`, `R1`, `R2`, `Select`, D-E13D-11) ; et `ButtonsJustPressedByInterval` porté ligne à ligne depuis
 `PadManager.UpdatePad` (D-E13D-8), **mis à jour une fois par tick logique** (D-E13D-9). Tests, à cadence
 de rendu variable, avec des images à zéro tick et à deux ticks : un appui donne exactement un front ;
-une touche maintenue répète après 20 ticks, puis tous les `RepeatInterval` ticks ; un changement de
-l'état des boutons remet à zéro. Le convertisseur change :
+une touche maintenue se tait 20 ticks, puis répète **à chaque tick** (`RepeatInterval` = 0, porté avec sa
+valeur, §1.3) ; un changement de l'état des boutons remet à zéro. Les consommateurs existants (héros,
+dialogue, opcode `0x2F`) ne changent pas d'horloge (§6 point 4). Le convertisseur change :
 **régime de preuve complet**, diff prédit = `Data/Alundra.buttonsMapping` + `report.json`.
 
-### ⏳ D2 — Le gel, pour ce que la porte T2 ne couvre pas (conditionnelle)
+### ⏳ D2 — Le gel, pour ce que la porte T2 ne couvre pas
 
-**Prérequis** : D0.3. **N'existe que si D0.3 trouve un mécanisme du moteur qui continue de tourner hors
-de la porte** (par exemple la gravité du contrôleur pendant une ouverture en plein saut). Sinon elle est
-retirée du plan, avec la mesure qui le justifie.
+**Prérequis** : D0.3 (close : D2 existe) ; la portée tranchée par l'auteur (§6 point 7).
+DLL seule, sans changement moteur. Pendant que `GameplayBlockedMask` est posé (et lui seul : le gel du
+warp garde son propre mécanisme, T4) :
+- **les contrôleurs de personnage s'arrêtent** : sur chaque entité qui en a un, l'état est saisi par
+  `CaptureStateSnapshot`, puis `SetControlMode(Disabled)` ; à la levée du masque, `RestoreStateSnapshot`
+  rend tout (§1.2), si bien qu'**une chute reprend où elle s'était arrêtée**, vitesse verticale et état
+  `Falling` compris, comme dans l'original qui saute simplement `UpdateEntities`. Pas de suspension de gravité à la manière de
+  T4, qui perdrait la vitesse verticale. Ce que la restauration remet à zéro : le dernier contact et les
+  touches de collision et de marche (`_lastContact`, `_lastCollisionHit`, `_stepSupportHit`), recalculés
+  au pas suivant ; la référence au support dans l'état de sol, retrouvée par `UpdateGround` au pas
+  suivant ; la position, rendue à celle de l'instantané, que rien ne déplace pendant le gel puisque tout ce
+  qui la déplace est derrière la porte ; et **le déplacement vertical externe**, qui, lui, **n'est pas sans
+  effet** : `Stop()` et `RestoreStateSnapshot` le mettent à 0 (`CharacterControllerComponent.cs:483-492`,
+  `:586`), le moteur n'a pas d'accesseur pour le relire, et la DLL ne le redéclare **qu'une fois par tick**
+  (`AlundraScriptedMotion.cs:140-144`, `AlundraEntityScriptProxy.cs:670-688`). Sur une image de dégel sans
+  tick, le contrôleur tournerait avec `IsVerticalOwnedExternally` levé et une valeur nulle, donc
+  `UpdateGround` ramènerait au sol tout ce qui en est à moins de `GroundSnapDistance` — la régression déjà
+  mesurée une fois pour l'escalade (`AlundraScriptedMotion.cs:117-130`). **D2 le redéclare donc juste après
+  `RestoreStateSnapshot`**, avant la prochaine mise à jour du contrôleur, avec la valeur que son
+  propriétaire déclare : la sentinelle d'escalade pour un héros en `Climbing` ou `ClimbStill`
+  (`ClimbingExternalDisplacementSentinel`), `FinalForceZ / 65536f` pour un PNJ piloté par le contrôleur ;
+- **les animations de sprite s'arrêtent** : `IsPlaybackPaused` levé sur chaque entité, sa valeur
+  précédente gardée et rendue à la levée ; une entité créée pendant le gel est gelée à son tour.
+Détection du passage par comparaison avec l'état de l'image précédente, au même endroit que la porte
+(`AlundraEntityScriptProxy.Update`). **Tests** : gel puis dégel rendent exactement l'état d'avant
+(`ControlMode`, `MovementState`, `Velocity`, minuteries, pause d'animation) ; **une chute gelée en l'air
+reprend avec la même vitesse verticale et l'état `Falling`** ; sur le contrôleur seul, un saut demandé par
+`RequestJump` synthétique garde l'état `Jumping` à travers le gel ; une entité déjà en pause le reste ;
+l'escalade et le départ de warp ne sont pas dérangés ; **dégel sur une image à zéro tick** : un héros en
+`ClimbStill` à moins de `GroundSnapDistance` du sol garde sa position, un PNJ en montée reste en l'air. **Arrêt** : si l'une des remises à zéro ci-dessus a un effet visible
+(un pas de travers au dégel, une plateforme mobile qui décroche, une escalade qui lâche), ou si quelque
+chose déplace une entité pendant le gel, la tranche s'arrête et le consigne (D-E13D-4). **Vérificateur frais** (changement de comportement partagé par tout `MenuOpen`).
 
 ### ⏳ D3.a — Analyseur : le patron des boîtes en CSV
 
@@ -288,31 +408,52 @@ voit dans l'image, pas seulement dans le code.
 
 ### ⏳ D4 — DLL : le directeur de l'inventaire
 
-**Prérequis** : D0.5, D0.6, D0.7, D0.8, D0.10, D1 ; D2 si elle existe.
+**Prérequis** : D0.5, D0.6, D0.7, D0.8, D0.10 (closes), D1, D2.
 Le directeur lit les fronts et la répétition de D1, au tick, jamais l'instantané par image rendue.
-Machine à états au tick, portée ligne à ligne : déclencheur et ses gardes, glissement des sept boîtes en
-15 ticks, `MenuOpen` et son retrait en fin de glissement, curseur et bouclages sur la répétition des
-touches, équipement d'arme et d'objet par les fonctions d'E13.c, texte déroulant, sons 1 à 5, drapeaux du
-HUD, `Falcon`/`FalconTemp` à 0 (D-E13D-5). Corrige au passage le commentaire périmé de
-`AlundraPlayerManager.cs:555-558`. Aucune dépendance MGUI.
+Machine à états au tick, portée ligne à ligne : déclencheur et ses gardes (§1.1 : `g_forbiddenWarpFlag`,
+l'emplacement 0 porté par « une boîte de dialogue est ouverte », l'emplacement 0xb — menu de débogage non
+porté — déclaré toujours inactif, la branche `g_cdIsReady == 0` non portée), `g_forbiddenWarpFlag` et ses
+bits, glissement des sept boîtes en 15 ticks, `MenuOpen` et son retrait en fin de glissement, curseur et
+bouclages sur la répétition des touches, équipement d'arme et d'objet par les fonctions d'E13.c, texte
+déroulant, **sons 1 à 5 par `PlaySfx`** aux lignes du §1.4, **HUD** : `ArmDisappearance` à l'ouverture et
+`ArmAppearance` à la fermeture, rendus appelables (§1.5), `Falcon`/`FalconTemp` à 0 (D-E13D-5) ; la
+recherche du nom et des deux lignes de description d'un objet ajoutée à `AlundraEtcStringTable`. Corrige
+au passage le commentaire périmé de `AlundraPlayerManager.cs:555-558`. Aucune dépendance MGUI.
 
 ### ⏳ D5 — DLL : l'écran XAML, le présentateur, la capture
 
-**Prérequis** : D0.9, D3.b, D4.
+**Prérequis** : D0.9 (close), D3.b, D4.
 Écran XAML (**six images de boîte**, les sprites de D3.b, chacune à son `(X, Y)` natif et glissant pour son
-compte, grille d'icônes **centrées dans leur case** (D-E13D-10), curseur,
-cadres de sélection, textes en `font3`, chiffres, **portrait d'ouverture** (D-E13D-12)), présentateur
+compte, grille d'icônes **centrées dans leur case** (D-E13D-10), curseur (`wind_159`, `wind_182`,
+`wind_210`, `wind_237`), cadres de sélection (`wind_039`), textes en `font3`, chiffres (les glyphes du HUD)),
+**sans le portrait d'ouverture**, qui est D5.p ; présentateur
 branché comme celui du dialogue. Le XAML ne sait pas désigner un actif par identifiant : il nomme les
 images, le code leur donne leur source, avec les identifiants des six sprites en constantes, comme les 24
 glyphes du HUD (`AlundraHudScreen.cs:447-478`). Tests headless sur `MGDesktop` ; capture en
-processus de l'inventaire ouvert, **prédite avant d'être prise**.
+processus de l'inventaire ouvert, **prédite avant d'être prise**. **D5 se clôt sans le portrait**, quelle
+que soit la réponse au §6 point 6.
+
+### ⏸ D3.c — Extraction du portrait d'ouverture (conditionnelle, non définie)
+
+**N'existe que si l'auteur répond (a) au §6 point 6.** Elle écrit hors du dépôt (ré-extraction dans
+`Alundra Remake/remaster-data-extracted`, miroir vers `data-extracted/`, export complet) : même sur la
+réponse (a), **aucun travail ne commence avant une révision de ce plan qui la définit** — périmètre dans
+l'extracteur, prérequis, régime de preuve et diff prédit, preuve au pixel du portrait, retour arrière,
+arrêts — **et sa relecture fraîche**. Sur la réponse (b), elle est retirée.
+
+### ⏸ D5.p — Le portrait d'ouverture (conditionnelle)
+
+**Prérequis** : D3.c et D5. Le quad du portrait qui grandit puis se résorbe à l'ouverture (§1.1,
+`MainInventoryManager.cs:209-440`, 48×56), dans l'écran de D5. **Sur la réponse (b) au §6 point 6, elle
+est retirée et D-E13D-12 amendée** : l'inventaire est livré sans portrait.
 
 ### ⏳ D6 — Recette en jeu (l'auteur)
 
-**Prérequis** : D5.
+**Prérequis** : D5 (et D5.p si elle existe).
 Ouvrir par `Start`, `L2` ou `R2` ; naviguer, y compris en maintenant une direction ; équiper une arme et
-un objet ; lire le texte déroulant ; fermer ; le héros et le monde sont figés pendant ; le HUD se comporte
-comme dans l'original.
+un objet ; lire le texte déroulant ; fermer ; le héros et le monde sont figés pendant, **y compris ouvert
+en pleine chute**, et la chute reprend à la fermeture ; le HUD se cache à l'ouverture et revient à la
+fermeture, comme dans l'original.
 
 ---
 
@@ -321,7 +462,7 @@ comme dans l'original.
 E13.d (principal) est close quand, en jeu : l'inventaire s'ouvre et se ferme comme l'original, avec ses
 glissements, ses sons et le HUD ; on navigue sur les 24 cases, avec la répétition en maintenant une
 direction ; on équipe une arme et un objet, et la jauge reflète l'arme ; le monde et le héros sont figés
-tant qu'il est ouvert, y compris après une ouverture en plein saut ; les boîtes ont l'aspect de
+tant qu'il est ouvert, y compris après une ouverture en pleine chute ; les boîtes ont l'aspect de
 l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export prouvé par double export.
 
 ## 5. Arrêts
@@ -357,6 +498,20 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
 5. **Deux remarques P4 d'E13.c S3, reportées** : `InitializeNewGameInventory` ne remet pas `ItemId` à 0
    (sans effet dans une vraie session) ; la citation de la remise à zéro des compteurs dit `:473-479` pour
    `:469-479`.
+6. **Le portrait d'ouverture n'est pas exporté — QUESTION POUR L'AUTEUR.** Il faut une extraction :
+   l'extracteur doit émettre l'image de portrait de l'enregistrement 0 (48×56, page 2, palette 16) dans la
+   planche, puis ré-extraction dans `Alundra Remake/remaster-data-extracted`, miroir vers
+   `data-extracted/` et export complet — ce qui écrit hors du dépôt et, par le précédent D-E13C-5, se fait
+   avec l'accord de l'auteur. (a) L'autoriser : D3.c sera d'abord définie par une révision relue de ce
+   plan, puis D5.p ; (b) reporter le portrait et livrer l'inventaire sans lui, D-E13D-12 amendée. D5 n'en
+   dépend pas.
+7. **La portée du gel de D2 — QUESTION POUR L'AUTEUR.** Fidèle à l'original, le gel vaut pour tout
+   `MenuOpen`, donc aussi pendant les dialogues : les PNJ cesseraient de s'animer pendant qu'on leur parle,
+   ce qui change un comportement déjà vu en jeu. (a) Pour tout `GameplayBlockedMask` (fidèle,
+   recommandé) ; (b) seulement pendant l'inventaire.
+8. **`RepeatInterval` = 0** : porté avec sa valeur, la navigation répète à chaque tick après 20 ticks, soit
+   50 cases par seconde en maintenant une direction. Si la recette le trouve trop rapide, chercher dans
+   Ghidra un écrivain que la décompilation n'aurait pas transcrit, avant de toucher à la valeur.
 
 ## 7. Journal
 
@@ -373,6 +528,10 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
 | 2026-09-21 | Relecture neuve après la correction : **READY**. La révision part à l'auteur : D-E13D-13 enregistrée, D-E13D-14 proposée, D0.1 et D0.2 closes, D3.a et D3.b prêtes à l'approbation avec D0. |
 | 2026-09-21 | **L'auteur confirme D-E13D-14 : « cuire la copie A seule ».** La décision passe des proposées (§2.3) aux tranchées (§2.2). Le plan attend toujours son approbation et le feu vert pour D0. |
 | 2026-09-21 | **Approuvé par l'auteur** (« tout est ok. fait toutes les taches »), mode **AUTO** choisi ; S4 d'E13.c validée par lui du même mot. E13.c close et mergée dans `main` à sa demande (analyseur `c204009`, parent `ea633ad`), sans push ; cette branche rebasée sur `main`. D0 commence. |
+| 2026-09-21 | **D0 exécutée.** Huit mesures en lecture seule, par surface (original : manette, HUD, fondu ; original : contenu de l'inventaire ; portage : horloges et gel ; portage : HUD, textes, sons ; données exportées), chacune relue par un contradicteur ; puis faits porteurs de décision revérifiés en session principale, qui a corrigé trois relevés : le curseur fait 16×16 et ses quatre phases sont toutes exportées (le relevé comptait au pas de 8) ; le chiffre 9 est `wind_065` ; le sens du glissement de la jauge. Le portrait mesuré dans le binaire par un programme jetable (ci-dessous). **Arrêt propre à D0 déclenché** : §1.2 (le gel ne couvre ni la gravité ni les animations) et §1.5 (la jauge se cache à l'ouverture) contredits ; plan révisé, D2 concrétisée, D1 et D4 précisées, trois points ouverts (§6, 6 à 8). Relecture à venir, puis resoumission à l'auteur. |
+| 2026-09-21 | Relecture de la révision : **REVISE**, un blocage, accepté en **FIX**. D2 posait `ControlMode = Disabled` en affirmant que la vitesse restait intacte ; faux : le mode ne se change que par `SetControlMode`, qui appelle `Stop()` et efface vitesse, saut et minuteries. D2 saisit maintenant l'état par `CaptureStateSnapshot` et le rend par `RestoreStateSnapshot`, avec la liste de ce que la restauration remet à zéro et pourquoi, et un arrêt élargi. |
+| 2026-09-21 | Relecture neuve après cette correction : **REVISE**, deux blocages, tous deux acceptés en **FIX**. (1) **Le saut n'est pas porté** (`AlundraPlayerManager.cs:66-73`, `:286-289`, aucun `RequestJump` dans la DLL) : le cas « ouvert en plein saut » ne peut pas se produire dans le portage ; §1.1, §1.2, D2, §4 et D6 parlent maintenant de la chute, état `Falling`, avec un test du contrôleur seul pour l'état `Jumping`. (2) **D3.c n'était définie nulle part** alors qu'elle écrirait hors du dépôt : elle devient une tranche conditionnelle, qui ne commence qu'après une révision relue du plan ; le portrait sort de D5 en D5.p, et D5 se clôt sans lui. **Deuxième REVISE de cette révision : plafond atteint.** Disposition en session principale, puis une seule relecture de clôture. |
+| 2026-09-21 | **Relecture de clôture : REVISE**, un blocage, accepté en **FIX** : la restauration remet à zéro le déplacement vertical externe, que la DLL ne redéclare qu'une fois par tick ; sur une image de dégel sans tick, une escalade près du sol se serait fait ramener au sol. D2 le redéclare juste après `RestoreStateSnapshot`, avec la valeur de son propriétaire, et gagne un test de dégel à zéro tick. **La relecture de clôture étant la dernière autorisée, cette correction n'est pas relue** : le plan part à l'auteur sans READY, avec ce statut écrit. |
 
 ### D0.1 — le script de mesure et sa sortie (2026-09-21)
 
@@ -533,3 +692,62 @@ item-name: A=72 B=72 cells; equal 72; different 0
 money-falcon-key: A=27 B=27 cells; equal 27; different 0
 description: A=252 B=252 cells; equal 252; different 0
 ```
+
+### D0.9 — le portrait d'Alundra mesuré dans le binaire (2026-09-21)
+
+Programme jetable, hors dépôt, qui référence `AlundraEngine.csproj` et ouvre les `.BIN` du jeu comme `CreateGameEngine` de l'extracteur ; lancé depuis `AlundraTools/AlundraTools` avec le chemin `D:\development\repo\Alundra Remake\Alundra (France)\Alundra (France)_extracted`. Il n'écrit rien. L'enregistrement 31 sert de témoin : c'est l'épée de S3, même signature.
+
+```csharp
+// Read-only: opens the game's .BIN files like AlundraDataExtractor's CreateGameEngine and prints the
+// image GraphicManager.GetAnimationImageByIndex(0) returns (GraphicManager.cs:1786-1793), plus
+// records 1 and 31 as controls. Writes nothing.
+using AlundraEngine;
+using AlundraEngine.Balance;
+using AlundraEngine.DatasBin;
+using AlundraEngine.Editor;
+using AlundraEngine.Etc;
+using AlundraEngine.Sound;
+using AlundraEngine.Text;
+
+var gamePath = args[0];
+var dataFolder = Path.Combine(gamePath, "DATA");
+var datasBin = new DatasBin(Path.Combine(dataFolder, "DATAS.BIN"));
+var balanceBin = new BalanceBin(Path.Combine(dataFolder, "BALANCE.BIN"));
+var soundBin = new SoundBin(Path.Combine(dataFolder, "SOUND.BIN"));
+var font3 = new Font3(Path.Combine(dataFolder, "..", "TAKI", "SCREEN"));
+var etcResFileName = PathHelper.GetEtcFileName(dataFolder);
+EtcRes etcRes = Path.GetFileName(etcResFileName).Contains("usa", StringComparison.InvariantCultureIgnoreCase)
+    ? new EtcResUsa(etcResFileName)
+    : new EtcResR(etcResFileName);
+var engine = new GameEngine(datasBin, balanceBin, soundBin, etcRes, font3, null);
+engine.InitializeEngine();
+
+var records = engine.AlundraMap.SpriteInfo.SpriteRecords;
+using var br = engine.DatasBin.OpenBin();
+foreach (var index in new[] { 0, 1, 31 })
+{
+    var record = records[index];
+    if (record == null) { Console.WriteLine($"record {index}: null"); continue; }
+    var set = record.GetPortraitImageset(br);
+    Console.WriteLine($"record {index}: Sector5Id={record.Header.Sector5Id} portrait images={set.Images.Length}");
+    foreach (var image in set.Images)
+    {
+        Console.WriteLine($"  signature={image.Signature} spritesheet={image.Spritesheet} page={image.Spritesheet & 7} palette={image.Palette} " +
+                          $"Sx={image.Sx} Sy={image.Sy} SourceX={image.SourceX} SourceY={image.SourceY} Swidth={image.Swidth} Sheight={image.Sheight} " +
+                          $"mirX={image.IsMirroredX} mirY={image.IsMirroredY}");
+    }
+}
+```
+
+Sortie :
+
+```text
+record 0: Sector5Id=0 portrait images=1
+  signature=61779762221058 spritesheet=2 page=2 palette=16 Sx=200 Sy=56 SourceX=200 SourceY=56 Swidth=48 Sheight=56 mirX=False mirY=False
+record 1: Sector5Id=1 portrait images=1
+  signature=25391459210757 spritesheet=5 page=5 palette=22 Sx=232 Sy=232 SourceX=232 SourceY=232 Swidth=23 Sheight=23 mirX=False mirY=False
+record 31: Sector5Id=31 portrait images=1
+  signature=34187962752519 spritesheet=7 page=7 palette=30 Sx=96 Sy=1 SourceX=96 SourceY=1 Swidth=24 Sheight=31 mirX=False mirY=False
+```
+
+Puis : aucun `sprite_61779762221058.sprite` sous `alundra-project/`, aucune entrée du catalogue, et 0 pixel opaque sur 2688 dans `map_alundra_spritesheet.png` au rectangle `(200, 568, 48, 56)` (page 2 × 256 + 56), où la disposition `Original` le placerait.
