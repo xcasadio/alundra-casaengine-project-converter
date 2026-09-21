@@ -679,22 +679,22 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
     couleurs de sommet, semi-transparents, aux abscisses 16 et 48, qui suivent le glissement de la
     jauge et sont dessinés même quand la case est vide. DLL seule, aucune cuisson : MGUI peint un quad
     à quatre couleurs de coin. Tranche C6 du plan E13.
-  - **E13.c — Les icônes d'arme et d'accessoire 🚧 S0 à S3 faites ; reste S4, la recette de
-    l'auteur.** La reconnaissance pensait les portraits absents de l'export ; la mesure S1.a a montré
+  - **E13.c — Les icônes d'arme et d'accessoire ✅ close le 2026-09-21, S4 passée en jeu par
+    l'auteur, mergée dans `main` (`ea633ad`).** La reconnaissance pensait les portraits absents de l'export ; la mesure S1.a a montré
     que **les 88 portraits exploitables ont déjà leur `.sprite` émis**, si bien qu'il n'a fallu ni
     ré-extraction ni cuisson. Faits : les tables des objets, des portraits et du déverrouillage en CSV
     dans l'analyseur (S1.a `6176ea3`, S1.b `a0904b8`, S1.c `c304201`) ; les trois catalogues republiés
     bruts par le convertisseur, chacun prouvé par double export (S2 `0f1cfd4`, mergée ; S2.b `7018e6a`) ;
     dans la DLL, la chaîne arme → objet → icône et l'inventaire de la nouvelle partie portés ligne à
     ligne, l'épée dans la case gauche du HUD (S3 `0135c92`), centrée dans sa case sur décision de
-    l'auteur (`cdb7097`). S1.c, S2.b et S3 sont sur des branches
-    empilées **non mergées** (`chantier/e13c-drop-properties` dans l'analyseur, `chantier/e13c-suite`).
+    l'auteur (`cdb7097`). Analyseur mergé dans son `master` (`c204009`).
     Au démarrage : l'épée de base à gauche, la case d'accessoire vide comme dans l'original. **Décisions du 2026-09-19** : E13.c se fait avant E13.d
     et lui livre l'extraction, la table des objets et l'arme équipée ; on extrait le portrait de
     **tous** les objets dont la colonne d'icône est renseignée ; la recette ne force **aucun**
     accessoire équipé, fidélité stricte. Plan : `docs/plan-e13c-icones-hud.md`.
-  - **E13.d — La gestion de l'inventaire ⏳ planifiée** : plan `docs/plan-e13d-inventaire.md`, relu
-    READY, décisions de l'auteur du 2026-09-21 enregistrées ; D0 attend son feu vert. Décision du
+  - **E13.d — La gestion de l'inventaire 🚧 approuvée le 2026-09-21, en exécution (mode AUTO)** : plan
+    `docs/plan-e13d-inventaire.md`, relu READY, décisions de l'auteur du 2026-09-21 enregistrées, dont
+    les boîtes en image cuite depuis la copie A. Décision du
     2026-09-19 : porter l'original tel quel ; amendée le 2026-09-21 pour le dessin : pas au pixel près,
     icônes centrées dans leur boîte. Établi dans le code d'origine, masques lus par ET binaire donc
     « l'un quelconque » : en jeu, `Start`, `L2` ou `R2` ouvre l'inventaire principal
@@ -763,7 +763,7 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 | **E9.d mode cellulaire des fonds** | ✅ close (validée en jeu le 2026-09-07 sur 420, 391, 271, 443) | convertisseur `e1b9844`, moteur `53fed7df`+`342377a5`, DLL `ae30b42` |
 | E13.a HUD, la jauge permanente | ✅ close (validée en jeu ; C4 et C5.b le 2026-09-20) | parent `329b19b`, `d9fac87`, `3cf8dd9`, `babb16f`, `48df065`, `8cb52c9`, C4 `7d6a37a` mergée `8dcfd81` ; moteur `19fcd84c` |
 | E13.b HUD, fonds des cases arme et accessoire | ✅ close (C6, validée en jeu) | `ae8a24e` |
-| E13.c HUD, icônes d'arme et d'accessoire | 🚧 S0-S3 faites, S4 (recette) en attente ; S1.c, S2.b, S3 non mergées | analyseur `6176ea3`, `a0904b8`, `c304201` ; parent `0f1cfd4` (mergée `9b5fa32`), `7018e6a`, `0135c92`, `cdb7097` |
-| E13.d inventaire principal (puis sous-inventaire et L1/R1) | ⏳ planifiée, relue READY ; D0 attend le feu vert | `docs/plan-e13d-inventaire.md` |
+| E13.c HUD, icônes d'arme et d'accessoire | ✅ close (S4 passée en jeu le 2026-09-21) | analyseur `6176ea3`, `a0904b8`, `c304201`, mergé `c204009` ; parent `0f1cfd4`, `7018e6a`, `0135c92`, `cdb7097`, mergé `ea633ad` |
+| E13.d inventaire principal (puis sous-inventaire et L1/R1) | 🚧 approuvée le 2026-09-21, en exécution | `docs/plan-e13d-inventaire.md` |
 | E14 IA native | ⏳ | |
 | E15 conversion hybride | ⏳ | |

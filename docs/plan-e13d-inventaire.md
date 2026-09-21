@@ -1,18 +1,17 @@
 # Plan — E13.d : l'inventaire principal
 
-**État** : ⏳ rédigé le 2026-09-21, relu **READY** ; décisions de l'auteur du 2026-09-21 (§2.2), dont la
-dernière, les boîtes en **image cuite** (D-E13D-13), a fait réécrire D3 et clore D0.1 et D0.2 ; cette
-révision, corrigée après une relecture **REVISE** puis relue **READY** (§7), attend l'approbation de
-l'auteur ; D-E13D-14 confirmée par l'auteur ensuite. Aucune ligne de code écrite ; D0 attend le
-feu vert de l'auteur.
+**État** : 🚧 **approuvé par l'auteur le 2026-09-21** (« tout est ok. fait toutes les taches »), exécution
+en mode **AUTO** : travail réversible dans le périmètre approuvé, ni push, ni merge, ni action externe.
+Relu **READY** ; décisions de l'auteur du 2026-09-21 au §2.2, dont les boîtes en **image cuite** depuis la
+copie A (D-E13D-13, D-E13D-14).
 **Naissance** : `docs/plan-conversion-totale.md` §E13, E13.d — « porter l'original tel quel » ; découpage
 décidé par l'auteur le 2026-09-19 : **l'inventaire principal d'abord** (ouverture, fermeture, équipement),
 puis le sous-inventaire et la bascule L1/R1. Ce plan ne couvre que l'inventaire principal ; le
 sous-inventaire aura son propre plan, écrit après la recette de celui-ci.
 **Dépend de** : E13.c S3 (`AlundraItemTables`, les compteurs d'objets, `SetPlayerWeaponId` et la chaîne
-d'équipement portée ligne à ligne), sur `chantier/e13c-suite`, non mergée.
-**Branche** : `chantier/e13d-inventaire`, créée depuis `chantier/e13c-suite` (empilée) ; rebasée sur
-`main` quand E13.c y sera.
+d'équipement portée ligne à ligne), close et mergée dans `main` (`ea633ad`).
+**Branche** : `chantier/e13d-inventaire`, créée depuis `chantier/e13c-suite`, rebasée sur `main` le
+2026-09-21 après le merge d'E13.c (`ea633ad`).
 
 ---
 
@@ -199,7 +198,7 @@ conditions de l'original n'est **pas vérifiée**, D0 la mesure.
 Un commit par tranche, un vérificateur frais par tranche à risque, régime de preuve par double export dès
 que le convertisseur est touché. **Chaque tranche ne commence que lorsque ses prérequis sont clos.**
 
-### ⏳ D0 — Les mesures (lecture seule)
+### 🚧 D0 — Les mesures (lecture seule)
 
 **Prérequis** : aucun. **Livrable commun** : chaque résultat est reporté au §1 de ce plan, marqué
 **[mesuré]**, avec sa citation ; les scripts de mesure sont recopiés en entier dans le journal (§7), avec
@@ -242,8 +241,8 @@ retirée du plan, avec la mesure qui le justifie.
 ### ⏳ D3.a — Analyseur : le patron des boîtes en CSV
 
 **Prérequis** : D-E13D-13, D-E13D-14 ; D0.1 et D0.2 (closes).
-**Branche** : dans l'analyseur, empilée sur `chantier/e13c-drop-properties` comme le parent l'est sur
-`chantier/e13c-suite`, pour ne pas croiser la ligne de `ItemDropProperties.csv` dans `AlundraTools.csproj`.
+**Branche** : dans l'analyseur, `chantier/e13d-boites`, créée depuis `master` après le merge d'E13.c
+(`c204009`).
 Deux fichiers dans `AlundraTools/AlundraTools/`, liés au projet comme `ItemsProperties.csv`, générés depuis
 les tableaux décompilés et **bruts**, sans interprétation (précédent S1.b et S1.c) :
 - `UiBoxes.csv`, `box;x;y;width;height` : les **sept** boîtes de `StaticVariables.cs:11196-11267`, `box`
@@ -373,6 +372,7 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
 | 2026-09-21 | Relecture de la révision : **REVISE**, un blocage, accepté en **FIX**. La révision affirmait, marqué [lu], que la couche B se pose sur la couche A. Faux : `FUN_800548a4` n'appelle dans l'original que des macros d'initialisation ; A et B sont les deux copies d'un double tampon, et l'original n'en montre qu'une par image (`DisplayUiBoxes`, `0x80055d78`). Mesure ajoutée (script et sortie ci-dessous) : A et B égales pour cinq boîtes, le B du nom d'arme est un clone de la décompilation, et **la boîte des armes diffère sur 26 cases** ; dessinées séparément, A donne un cadre complet et B non, et la maquette montrée à l'auteur superposait les deux, avec ce défaut. D-E13D-14 : cuire A seule ; D3.a exporte 822 cases, D3.b recopie sans mélange, compteurs et tests ajustés. |
 | 2026-09-21 | Relecture neuve après la correction : **READY**. La révision part à l'auteur : D-E13D-13 enregistrée, D-E13D-14 proposée, D0.1 et D0.2 closes, D3.a et D3.b prêtes à l'approbation avec D0. |
 | 2026-09-21 | **L'auteur confirme D-E13D-14 : « cuire la copie A seule ».** La décision passe des proposées (§2.3) aux tranchées (§2.2). Le plan attend toujours son approbation et le feu vert pour D0. |
+| 2026-09-21 | **Approuvé par l'auteur** (« tout est ok. fait toutes les taches »), mode **AUTO** choisi ; S4 d'E13.c validée par lui du même mot. E13.c close et mergée dans `main` à sa demande (analyseur `c204009`, parent `ea633ad`), sans push ; cette branche rebasée sur `main`. D0 commence. |
 
 ### D0.1 — le script de mesure et sa sortie (2026-09-21)
 
