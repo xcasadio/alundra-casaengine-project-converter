@@ -2,18 +2,14 @@
 using System;
 using System.Reflection;
 using CasaEngine.Core.Logging;
-using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Assets.Sprites;
-using CasaEngine.Framework.Assets.Textures;
 using CasaEngine.Framework.UI;
 using CasaEngine.Framework.UI.Backend.MonoGame.Assets;
 using MGUI.Core.UI;
 using MGUI.Core.UI.Containers;
 using MGUI.Core.UI.XAML;
-using MGUI.FontStashSharp;
 using MGUI.Shared.Helpers;
-using MGUI.Shared.Text;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 
@@ -55,7 +51,7 @@ public interface IAlundraInventoryView
 /// same as the HUD's own images, so the default point sampler stays the one actually used at any integer
 /// scale.
 /// </summary>
-public sealed class AlundraInventoryScreen : XamlUIScreenBase, IAlundraInventoryView
+public sealed class AlundraInventoryScreen : XamlUIScreenBase, IAlundraInventoryView, IDisposable
 {
     private const string XamlResourceName = "Alundra.Screens.InventoryScreen.xaml";
 
@@ -122,21 +118,50 @@ public sealed class AlundraInventoryScreen : XamlUIScreenBase, IAlundraInventory
     // wind_039 - the selection frame, both boxes.
     private const string SelectionFrameAssetId = "5f56fba6-2abb-5163-bb1e-e5a4f6fdb499";
 
-    // The font3 texture asset the converter already writes (alundra-project/UI/Textures/font3.texture) -
-    // this DLL never depends on the converter project, only the id's VALUE is re-declared here, the same
+    // The font3 BMFont asset the converter already writes (alundra-project/UI/font3.fnt, type fnt) - this
+    // DLL never depends on the converter project, only the id's VALUE is re-declared here, the same
     // "re-declared, not referenced" shape as NativeWidth above.
-    private static readonly Guid Font3TextureAssetId = Guid.Parse("ef063d37-c2c7-583a-9d3f-53f86129ac6f");
-    private const string Font3FamilyName = "font3";
-    private static bool _font3RegistrationAttempted;
-    private static bool _font3Registered;
+    internal static readonly Guid Font3FontAssetId = Guid.Parse("d18a3985-004d-59cc-a080-ce51fa57da99");
 
     private readonly System.Collections.Generic.Dictionary<Guid, Sprite?> _iconSprites = new();
+    private IDisposable? _font3;
 
-    public AlundraInventoryScreen(AssetContentManager assetContentManager)
+    /// <summary>
+    /// D5.f (engine ADR-0036, plan D-E13D-18): the screen holds font3 through the game's UI font registry
+    /// from its construction to its <see cref="Dispose"/>. The registry gives it by reference to every UI
+    /// text engine - the engine rebuilds them with every world - so the XAML's <c>FontFamily="font3"</c>
+    /// resolves on whichever desktop this screen's window is built on, and the font is never reloaded
+    /// across a map change: the next world's screen takes it again while it is still pending.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">The export has no loadable font3 (no silent fallback).</exception>
+    public AlundraInventoryScreen(AssetContentManager assetContentManager, UIFontRegistry fonts)
         : base(EmbeddedXaml())
     {
         ArgumentNullException.ThrowIfNull(assetContentManager);
+        ArgumentNullException.ThrowIfNull(fonts);
         _assetContentManager = assetContentManager;
+
+        try
+        {
+            _font3 = fonts.Acquire(Font3FontAssetId);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException(
+                $"AlundraInventoryScreen: font3 ('UI\\font3.fnt', asset {Font3FontAssetId}) cannot be held; "
+                + "the export must provide it.", ex);
+        }
+    }
+
+    /// <summary>True once <see cref="Dispose"/> gave font3 back.</summary>
+    internal bool IsDisposed => _font3 == null;
+
+    /// <summary>Gives font3 back. Called by the world proxy that built this screen, when its world ends
+    /// (<c>AlundraWorldProxy.OnEndPlay</c>). Idempotent.</summary>
+    public void Dispose()
+    {
+        _font3?.Dispose();
+        _font3 = null;
     }
 
     public override UILayer Layer => UILayer.Menu;
@@ -217,78 +242,6 @@ public sealed class AlundraInventoryScreen : XamlUIScreenBase, IAlundraInventory
         ApplySprite(_boxDescription, "973a9208-c867-57fe-bee3-cf30237221ef");
         ApplySprite(_weaponSelectionFrame, SelectionFrameAssetId);
         ApplySprite(_itemSelectionFrame, SelectionFrameAssetId);
-
-        TryRegisterFont3(window);
-
-        if (_font3Registered)
-        {
-            _weaponNameText.TrySetFont(Font3FamilyName, _weaponNameText.FontSize);
-            _itemNameText.TrySetFont(Font3FamilyName, _itemNameText.FontSize);
-            _descriptionLine0Text.TrySetFont(Font3FamilyName, _descriptionLine0Text.FontSize);
-            _descriptionLine1Text.TrySetFont(Font3FamilyName, _descriptionLine1Text.FontSize);
-        }
-    }
-
-    /// <summary>E12.a's own engine mechanism (dialogue-choices-and-bitmap-fonts.md §2): a static bitmap
-    /// font needs a real <see cref="Microsoft.Xna.Framework.Graphics.Texture2D"/>, which needs a live
-    /// <see cref="Microsoft.Xna.Framework.Graphics.GraphicsDevice"/> - unavailable headless (confirmed by
-    /// the engine's own <c>FontStashSharpBitmapFontRegistrationTests</c>, which documents "two
-    /// constructibility walls" for this exact reason), but reachable here: this screen's own
-    /// <see cref="_assetContentManager"/> is the SAME live one every sprite on this screen already loads
-    /// through, and <c>Texture.Load</c> resolves a real <c>Texture2D</c> from it
-    /// (<c>CasaEngine/Framework/Assets/Textures/Texture.cs:62-67</c>) - the exact mechanism
-    /// <see cref="Sprite.Create"/> itself relies on. Registered once per process (static guard, like every
-    /// other "load once" cache in this DLL, e.g. <see cref="AlundraEtcStringTable"/>'s own table cache):
-    /// a second <see cref="AlundraInventoryScreen"/> (a second open) must not re-parse the font.
-    /// <para/>
-    /// D-E13D-4 (no workaround): if the project has no exported <c>UI/font3.fnt</c>, or the texture/BMFont
-    /// parse fails, this logs ONCE and leaves every TextBlock on the theme's default TTF font - reported
-    /// as a gap rather than worked around further.</summary>
-    private void TryRegisterFont3(MGWindow window)
-    {
-        if (_font3RegistrationAttempted)
-        {
-            return;
-        }
-
-        _font3RegistrationAttempted = true;
-
-        if (window.Desktop.TextEngine is not FontStashSharpTextEngine fontStashSharpTextEngine)
-        {
-            Logs.WriteWarning(
-                "AlundraInventoryScreen: the desktop's text engine is not a FontStashSharpTextEngine - "
-                + "font3 cannot be registered (D-E13D-4 gap); TextBlocks fall back to the default font.");
-            return;
-        }
-
-        try
-        {
-            var fntPath = System.IO.Path.Combine(EngineEnvironment.ProjectPath, "UI", "font3.fnt");
-            if (!System.IO.File.Exists(fntPath))
-            {
-                Logs.WriteWarning(
-                    $"AlundraInventoryScreen: '{fntPath}' does not exist - font3 cannot be registered "
-                    + "(D-E13D-4 gap); TextBlocks fall back to the default font.");
-                return;
-            }
-
-            var texture = _assetContentManager.Load<Texture>(Font3TextureAssetId);
-            texture.Load(_assetContentManager);
-
-            var fntContents = System.IO.File.ReadAllText(fntPath);
-            var font = FontStashSharp.StaticSpriteFont.FromBMFont(
-                fntContents,
-                _ => new FontStashSharp.TextureWithOffset(texture.Resource, Point.Zero));
-
-            fontStashSharpTextEngine.AddStaticFont(Font3FamilyName, CustomFontStyles.Normal, font);
-            _font3Registered = true;
-        }
-        catch (Exception ex)
-        {
-            Logs.WriteWarning(
-                "AlundraInventoryScreen: font3 registration failed (D-E13D-4 gap, reported not worked "
-                + $"around); TextBlocks fall back to the default font. {ex.Message}");
-        }
     }
 
     private System.Collections.Generic.IEnumerable<MGImage> AllImages()

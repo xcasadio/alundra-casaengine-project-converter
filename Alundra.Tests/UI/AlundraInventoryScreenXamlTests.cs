@@ -95,4 +95,18 @@ public sealed class AlundraInventoryScreenXamlTests
         Assert.True(window.TryGetElementByName(name, out MGElement element), $"missing '{name}'");
         Assert.IsType<MGTextBlock>(element);
     }
+
+    /// <summary>D5.f: the XAML names font3 itself; the screen only holds it through the engine's UI font
+    /// registry. The headless harness's text engine resolves every family, so this pins the declaration.</summary>
+    [Theory]
+    [InlineData("WeaponNameText")]
+    [InlineData("ItemNameText")]
+    [InlineData("DescriptionLine0Text")]
+    [InlineData("DescriptionLine1Text")]
+    public void NamedTextBlock_DeclaresFont3(string name)
+    {
+        var window = LoadWindow();
+        Assert.True(window.TryGetElementByName(name, out MGElement element), $"missing '{name}'");
+        Assert.Equal("font3", Assert.IsType<MGTextBlock>(element).FontFamily);
+    }
 }

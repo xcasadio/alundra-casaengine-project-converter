@@ -374,6 +374,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// succeeds (production), or until a test attaches one via <see cref="AttachInventoryPresenterForTests"/>.</summary>
     private AlundraInventoryPresenter? _inventoryPresenter;
 
+    /// <summary>D5.f (engine ADR-0036): the inventory screen this proxy built. It holds font3 from its
+    /// construction, and <see cref="OnEndPlay"/> disposes it so the hold is given back when this world ends;
+    /// the font then stays pending until the next world's screen takes it again.</summary>
+    private AlundraInventoryScreen? _inventoryScreen;
+
     /// <summary>
     /// This world's own <see cref="TileMapData"/> (resolved once in <see cref="InitializeWithWorld"/>,
     /// same instance <see cref="AlundraCellsCollisionField"/>/<see cref="AdoptPlayerPawn"/> already read) -
@@ -1199,12 +1204,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         var uiView = _world?.Game?.GameManager?.ViewManager?.GetActiveUIView();
         var assetContentManager = _world?.Game?.AssetContentManager;
-        if (uiView == null || assetContentManager == null)
+        var fonts = _world?.Game?.UIFonts;
+        if (uiView == null || assetContentManager == null || fonts == null)
         {
             return; // retry next frame - same reason TryWireHudScreenOnce retries.
         }
 
-        var inventoryScreen = new AlundraInventoryScreen(assetContentManager);
+        var inventoryScreen = new AlundraInventoryScreen(assetContentManager, fonts);
+        _inventoryScreen = inventoryScreen;
         _inventoryPresenter = new AlundraInventoryPresenter(
             AlundraInventoryDirector.Instance, GameState, ItemTables, inventoryScreen, inventoryScreen, uiView);
         _inventoryScreenWired = true;
@@ -2468,7 +2475,17 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
     public override void OnEndPlay(World world)
     {
-        //Nothing to tear down at world level yet.
+        // D5.f: the inventory screen gives font3 back as its world ends (World.Clear calls this). The engine
+        // keeps the font pending, so the next world's screen takes the same instance again, unreloaded.
+        _inventoryScreen?.Dispose();
+        _inventoryScreen = null;
+    }
+
+    /// <summary>Test-only seam: the inventory screen <see cref="OnEndPlay"/> disposes, as
+    /// <see cref="TryWireInventoryScreenOnce"/> would have built it (which needs a live game).</summary>
+    internal void AttachInventoryScreenForTests(AlundraInventoryScreen screen)
+    {
+        _inventoryScreen = screen;
     }
 
     public override IGameplayProxy Clone()

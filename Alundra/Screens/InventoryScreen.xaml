@@ -72,13 +72,14 @@
     <Image Name="KeyDigit0" />
     <Image Name="KeyDigit1" />
 
-    <!-- Equipped weapon/item names and the two description lines - ForegroundUI, font3 when
-         the DLL managed to register it (AlundraInventoryScreen.OnWindowLoaded), the theme
-         default TTF font otherwise (D-E13D-4: reported, not worked around). -->
-    <TextBlock Name="WeaponNameText" Text="" AllowsInlineFormatting="False" Foreground="White" />
-    <TextBlock Name="ItemNameText" Text="" AllowsInlineFormatting="False" Foreground="White" />
-    <TextBlock Name="DescriptionLine0Text" Text="" AllowsInlineFormatting="False" Foreground="White" />
-    <TextBlock Name="DescriptionLine1Text" Text="" AllowsInlineFormatting="False" Foreground="White" />
+    <!-- Equipped weapon/item names and the two description lines - ForegroundUI, in the
+         bitmap font font3. The screen holds font3 through the engine's UI font registry from
+         its construction (engine ADR-0036, plan D5.f), so the family is registered on this
+         desktop's text engine before this window is built. -->
+    <TextBlock Name="WeaponNameText" Text="" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="ItemNameText" Text="" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="DescriptionLine0Text" Text="" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="DescriptionLine1Text" Text="" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
 
     <!-- Selection frames (wind_039) over the equipped weapon and the equipped item -
          ForegroundUICursor. -->

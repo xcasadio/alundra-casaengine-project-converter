@@ -611,6 +611,12 @@ modifications de l'auteur dans le sous-module ne sont pas touchées. Commit :
   - le XAML chargé porte `FontFamily = "font3"` sur les quatre textes (harnais sans affichage, D-E13D-17).
 - Build, `Alundra.Tests` : la référence plus les nouveaux tests. Commit :
   `fix(inventory): hold font3 through the engine's font registry across map changes (D5.f.2)`.
+- **Fait** :
+  - `Alundra.Tests` 1047/1047, soit 1039 + 8 : quatre tests de police de l'écran, dont le changement de
+    carte à la frontière du moteur (même police résolue sur le nouveau moteur de texte, un seul
+    chargement), et le `FontFamily = "font3"` des quatre textes du XAML ;
+  - les `using` devenus inutiles sont retirés ;
+  - le proxy attend aussi `Game.UIFonts` avant de brancher l'écran.
 
 **D5.f.3 — Recette en jeu, prédite avant d'être prise.**
 - Le harnais `d6-font` est étendu : journal au niveau `LogVerbosity.Trace`, capture aussi sur la 389.
