@@ -1,13 +1,11 @@
 # Plan — E13.d : l'inventaire principal
 
-**État** : ⚠️ **D0 close, plan révisé et resoumis à l'auteur** (arrêt propre à D0) ; la révision a reçu
-deux REVISE puis une relecture de clôture REVISE, toutes corrigées, **la dernière correction non relue**
-(§7) : deux mesures
-contredisent le §1 (le gel incomplet, §1.2 ; le sens du glissement de la jauge à l'ouverture, §1.5), et le
-portrait d'ouverture n'est pas exporté (§5). Approuvé une première fois le 2026-09-21 (« tout est ok. fait
-toutes les taches »), mode **AUTO** ; D1 à D5 attendent la nouvelle approbation, D2 la réponse au §6
-point 7, D3.c et D5.p celle au point 6. Décisions de l'auteur au §2.2, dont les boîtes en **image cuite** depuis la copie A
-(D-E13D-13, D-E13D-14).
+**État** : 🚧 **réapprouvé par l'auteur le 2026-09-21 après D0**, exécution en mode **AUTO** (travail
+réversible dans le périmètre approuvé, ni push, ni merge, ni action externe). D0 close ; son arrêt propre
+a fait réviser le plan (§1.2 et §1.5 corrigés), dont la dernière correction n'a pas été relue, plafond
+atteint (§7) ; l'auteur l'a approuvée telle quelle. Décisions de l'auteur au §2.2 : boîtes en **image
+cuite** depuis la copie A (D-E13D-13, D-E13D-14), **portrait reporté** (D-E13D-12 amendée), **gel sur tout
+`MenuOpen`** (D-E13D-15).
 **Naissance** : `docs/plan-conversion-totale.md` §E13, E13.d — « porter l'original tel quel » ; découpage
 décidé par l'auteur le 2026-09-19 : **l'inventaire principal d'abord** (ouverture, fermeture, équipement),
 puis le sous-inventaire et la bascule L1/R1. Ce plan ne couvre que l'inventaire principal ; le
@@ -266,8 +264,9 @@ Rien ne manque : D4 rend ces deux ports appelables par l'inventaire, avec la gar
 |---|---|---|
 | D-E13D-10 | « **Les icônes doivent être centrées dans la boîte parente. On ne va pas respecter au pixel près le jeu original.** » | Une icône se centre dans sa case par alignement, au lieu d'être calée à la position de l'original ; **l'auteur l'étend aux deux cases du HUD** (§6 point 2, appliqué à S3 par `cdb7097`). Le patron case par case des boîtes n'est plus une obligation ; la façon de dessiner les boîtes est tranchée par D-E13D-13. |
 | D-E13D-11 | **Touches** : `Y` = `L2`, `U` = `L1`, `I` = `R1`, `O` = `R2`, `P` = `Select` ; à la manette, `LeftShoulder` = `L1`, `LeftTrigger` = `L2`, `RightShoulder` = `R1`, `RightTrigger` = `R2`, `Back` = `Select`. | D1 lie ces touches. |
-| D-E13D-12 | **Le portrait d'ouverture dès la première passe.** | D5.p le porte ; suspendue à l'extraction du portrait, absent de l'export (§6 point 6). |
+| D-E13D-12 | **Le portrait d'ouverture dès la première passe.** **Amendée par l'auteur le 2026-09-21** : « reporter le portrait », absent de l'export (§6 point 6). | L'inventaire est livré sans portrait d'ouverture ; D3.c et D5.p sont retirées ; le portrait reviendra avec une future extraction. |
 | D-E13D-13 | « **Comment dessiner les boîtes : 1 avec image cuite.** » Le fond de chaque boîte a l'aspect de l'original, **cuit une fois par le convertisseur en une image par boîte**, après que l'auteur a vu la maquette des trois façons (§6 point 1). | D3 devient D3.a (le patron en CSV dans l'analyseur) et D3.b (la cuisson et six sprites dans le convertisseur) ; D5 affiche une image par boîte ; D0.1 et D0.2 sont closes (§1.4). La maquette superposait les copies A et B ; l'image cuite n'en prend qu'une (D-E13D-14). |
+| D-E13D-15 | « **Tout `MenuOpen`** » (2026-09-21) : le gel de D2 vaut pour tout `GameplayBlockedMask`, fidèle à l'original | Les PNJ et le héros cessent aussi de s'animer pendant les dialogues, comme dans l'original ; D6 le vérifie aussi en dialogue. |
 | D-E13D-14 | « **Cuire la copie A seule.** » Confirmé par l'auteur le 2026-09-21 : chaque boîte est cuite depuis sa copie `SpritesA`, sans la superposer à B | le portage de la décompilation ne lit que A (`MainInventoryManager.cs:1254`) ; A et B sont identiques pour cinq boîtes sur six ; pour la boîte des armes, seule A donne un cadre complet (§1.4). Écart visible avec la maquette montrée à l'auteur : la bordure droite de la boîte des armes, que la superposition abîmait. D3.a n'exporte que A, D3.b ne cuit que A |
 
 ### 2.3 Proposées, sauf avis contraire
@@ -325,7 +324,7 @@ dialogue, opcode `0x2F`) ne changent pas d'horloge (§6 point 4). Le convertisse
 
 ### ⏳ D2 — Le gel, pour ce que la porte T2 ne couvre pas
 
-**Prérequis** : D0.3 (close : D2 existe) ; la portée tranchée par l'auteur (§6 point 7).
+**Prérequis** : D0.3 (close : D2 existe) ; portée tranchée par l'auteur : tout `MenuOpen` (D-E13D-15).
 DLL seule, sans changement moteur. Pendant que `GameplayBlockedMask` est posé (et lui seul : le gel du
 warp garde son propre mécanisme, T4) :
 - **les contrôleurs de personnage s'arrêtent** : sur chaque entité qui en a un, l'état est saisi par
@@ -433,7 +432,7 @@ glyphes du HUD (`AlundraHudScreen.cs:447-478`). Tests headless sur `MGDesktop` ;
 processus de l'inventaire ouvert, **prédite avant d'être prise**. **D5 se clôt sans le portrait**, quelle
 que soit la réponse au §6 point 6.
 
-### ⏸ D3.c — Extraction du portrait d'ouverture (conditionnelle, non définie)
+### ~~D3.c — Extraction du portrait d'ouverture~~ — retirée, portrait reporté (D-E13D-12 amendée)
 
 **N'existe que si l'auteur répond (a) au §6 point 6.** Elle écrit hors du dépôt (ré-extraction dans
 `Alundra Remake/remaster-data-extracted`, miroir vers `data-extracted/`, export complet) : même sur la
@@ -441,7 +440,7 @@ réponse (a), **aucun travail ne commence avant une révision de ce plan qui la 
 l'extracteur, prérequis, régime de preuve et diff prédit, preuve au pixel du portrait, retour arrière,
 arrêts — **et sa relecture fraîche**. Sur la réponse (b), elle est retirée.
 
-### ⏸ D5.p — Le portrait d'ouverture (conditionnelle)
+### ~~D5.p — Le portrait d'ouverture~~ — retirée, portrait reporté (D-E13D-12 amendée)
 
 **Prérequis** : D3.c et D5. Le quad du portrait qui grandit puis se résorbe à l'ouverture (§1.1,
 `MainInventoryManager.cs:209-440`, 48×56), dans l'écran de D5. **Sur la réponse (b) au §6 point 6, elle
@@ -449,11 +448,12 @@ est retirée et D-E13D-12 amendée** : l'inventaire est livré sans portrait.
 
 ### ⏳ D6 — Recette en jeu (l'auteur)
 
-**Prérequis** : D5 (et D5.p si elle existe).
+**Prérequis** : D5.
 Ouvrir par `Start`, `L2` ou `R2` ; naviguer, y compris en maintenant une direction ; équiper une arme et
 un objet ; lire le texte déroulant ; fermer ; le héros et le monde sont figés pendant, **y compris ouvert
 en pleine chute**, et la chute reprend à la fermeture ; le HUD se cache à l'ouverture et revient à la
-fermeture, comme dans l'original.
+fermeture, comme dans l'original ; **pendant un dialogue aussi, les PNJ et le héros sont figés**
+(D-E13D-15).
 
 ---
 
@@ -498,14 +498,14 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
 5. **Deux remarques P4 d'E13.c S3, reportées** : `InitializeNewGameInventory` ne remet pas `ItemId` à 0
    (sans effet dans une vraie session) ; la citation de la remise à zéro des compteurs dit `:473-479` pour
    `:469-479`.
-6. **Le portrait d'ouverture n'est pas exporté — QUESTION POUR L'AUTEUR.** Il faut une extraction :
+6. *Tranché par l'auteur le 2026-09-21 : reporter le portrait (b), D-E13D-12 amendée.* **Le portrait d'ouverture n'est pas exporté.** Il faut une extraction :
    l'extracteur doit émettre l'image de portrait de l'enregistrement 0 (48×56, page 2, palette 16) dans la
    planche, puis ré-extraction dans `Alundra Remake/remaster-data-extracted`, miroir vers
    `data-extracted/` et export complet — ce qui écrit hors du dépôt et, par le précédent D-E13C-5, se fait
    avec l'accord de l'auteur. (a) L'autoriser : D3.c sera d'abord définie par une révision relue de ce
    plan, puis D5.p ; (b) reporter le portrait et livrer l'inventaire sans lui, D-E13D-12 amendée. D5 n'en
    dépend pas.
-7. **La portée du gel de D2 — QUESTION POUR L'AUTEUR.** Fidèle à l'original, le gel vaut pour tout
+7. *Tranché par l'auteur le 2026-09-21 : tout `MenuOpen` (a), D-E13D-15.* **La portée du gel de D2.** Fidèle à l'original, le gel vaut pour tout
    `MenuOpen`, donc aussi pendant les dialogues : les PNJ cesseraient de s'animer pendant qu'on leur parle,
    ce qui change un comportement déjà vu en jeu. (a) Pour tout `GameplayBlockedMask` (fidèle,
    recommandé) ; (b) seulement pendant l'inventaire.
@@ -532,6 +532,7 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
 | 2026-09-21 | Relecture de la révision : **REVISE**, un blocage, accepté en **FIX**. D2 posait `ControlMode = Disabled` en affirmant que la vitesse restait intacte ; faux : le mode ne se change que par `SetControlMode`, qui appelle `Stop()` et efface vitesse, saut et minuteries. D2 saisit maintenant l'état par `CaptureStateSnapshot` et le rend par `RestoreStateSnapshot`, avec la liste de ce que la restauration remet à zéro et pourquoi, et un arrêt élargi. |
 | 2026-09-21 | Relecture neuve après cette correction : **REVISE**, deux blocages, tous deux acceptés en **FIX**. (1) **Le saut n'est pas porté** (`AlundraPlayerManager.cs:66-73`, `:286-289`, aucun `RequestJump` dans la DLL) : le cas « ouvert en plein saut » ne peut pas se produire dans le portage ; §1.1, §1.2, D2, §4 et D6 parlent maintenant de la chute, état `Falling`, avec un test du contrôleur seul pour l'état `Jumping`. (2) **D3.c n'était définie nulle part** alors qu'elle écrirait hors du dépôt : elle devient une tranche conditionnelle, qui ne commence qu'après une révision relue du plan ; le portrait sort de D5 en D5.p, et D5 se clôt sans lui. **Deuxième REVISE de cette révision : plafond atteint.** Disposition en session principale, puis une seule relecture de clôture. |
 | 2026-09-21 | **Relecture de clôture : REVISE**, un blocage, accepté en **FIX** : la restauration remet à zéro le déplacement vertical externe, que la DLL ne redéclare qu'une fois par tick ; sur une image de dégel sans tick, une escalade près du sol se serait fait ramener au sol. D2 le redéclare juste après `RestoreStateSnapshot`, avec la valeur de son propriétaire, et gagne un test de dégel à zéro tick. **La relecture de clôture étant la dernière autorisée, cette correction n'est pas relue** : le plan part à l'auteur sans READY, avec ce statut écrit. |
+| 2026-09-21 | **L'auteur réapprouve le plan révisé**, correction non relue comprise, et tranche : **portrait reporté** (D-E13D-12 amendée, D3.c et D5.p retirées) ; **gel sur tout `MenuOpen`** (D-E13D-15). Exécution reprise en mode AUTO : D1, D2, D3.a, D3.b, D4, D5. |
 
 ### D0.1 — le script de mesure et sa sortie (2026-09-21)
 
