@@ -668,39 +668,48 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 - **But d'origine** : cœurs/magie/argent (`HudManager`, `BALANCE.BIN` exporté en Phase 7).
 - **Dépendances** : E12 (infrastructure MGUI).
 - **Découpage** (plan détaillé : `docs/plan-e13-hud.md`) :
-  - **E13.a — La jauge permanente ✅ livrée, validée en jeu le 2026-09-19.** Cœurs, magie, argent :
-    état joueur, directeur au tick logique, écran MGUI composé des sprites déjà exportés, translation
-    au tick, touche F1 de recette. Reste dans E13.a : **C4, la jauge sous le fondu de warp**, qui attend
-    le chantier moteur « effet d'écran au-dessus de l'interface » (plan dans
-    `CasaEngineMonogame/ai-agent/tasks/`, en attente d'approbation).
-  - **E13.b — Les fonds des cases arme et accessoire ⏳.** Deux quads gouraud de 24×32 à quatre
+  - **E13.a — La jauge permanente ✅ close, validée en jeu.** Cœurs, magie, argent : état joueur,
+    directeur au tick logique, écran MGUI composé des sprites déjà exportés, translation au tick, touche
+    F1 de recette (validée le 2026-09-19). **C4**, la jauge qui s'assombrit avec le décor au warp, est
+    livrée sur le chantier moteur « effet d'écran au-dessus de l'interface » (moteur `19fcd84c`, parent
+    `7d6a37a`) et passée en jeu par l'auteur le 2026-09-20 avec la recette C5.b ; mergée dans `main` le
+    2026-09-21 (`8dcfd81`).
+  - **E13.b — Les fonds des cases arme et accessoire ✅ close, validée en jeu** (tranche C6, `ae8a24e`).
+    Deux quads gouraud de 24×32 à quatre
     couleurs de sommet, semi-transparents, aux abscisses 16 et 48, qui suivent le glissement de la
     jauge et sont dessinés même quand la case est vide. DLL seule, aucune cuisson : MGUI peint un quad
     à quatre couleurs de coin. Tranche C6 du plan E13.
-  - **E13.c — Les icônes d'arme et d'accessoire ⏳ (chantier à planifier).** Les icônes sont les images
-    « portrait » des objets dans la banque globale, que l'extracteur ne visite pas : elles ne sont
-    **pas exportées**. Il faut une lecture de plus dans l'extracteur (analyseur), une ré-extraction,
-    une émission dans le convertisseur avec export complet et preuve par double export, puis dans la
-    DLL l'identifiant d'arme, la colonne d'icône de la table des objets et la sélection du sprite.
-    Rouvre « aucune cuisson » pour cette seule étape. Au démarrage : l'épée de base à gauche, la case
-    d'accessoire vide comme dans l'original. **Décisions du 2026-09-19** : E13.c se fait avant E13.d
+  - **E13.c — Les icônes d'arme et d'accessoire 🚧 S0 à S3 faites ; reste S4, la recette de
+    l'auteur.** La reconnaissance pensait les portraits absents de l'export ; la mesure S1.a a montré
+    que **les 88 portraits exploitables ont déjà leur `.sprite` émis**, si bien qu'il n'a fallu ni
+    ré-extraction ni cuisson. Faits : les tables des objets, des portraits et du déverrouillage en CSV
+    dans l'analyseur (S1.a `6176ea3`, S1.b `a0904b8`, S1.c `c304201`) ; les trois catalogues republiés
+    bruts par le convertisseur, chacun prouvé par double export (S2 `0f1cfd4`, mergée ; S2.b `7018e6a`) ;
+    dans la DLL, la chaîne arme → objet → icône et l'inventaire de la nouvelle partie portés ligne à
+    ligne, l'épée dans la case gauche du HUD (S3 `0135c92`). S1.c, S2.b et S3 sont sur des branches
+    empilées **non mergées** (`chantier/e13c-drop-properties` dans l'analyseur, `chantier/e13c-suite`).
+    Au démarrage : l'épée de base à gauche, la case d'accessoire vide comme dans l'original. **Décisions du 2026-09-19** : E13.c se fait avant E13.d
     et lui livre l'extraction, la table des objets et l'arme équipée ; on extrait le portrait de
     **tous** les objets dont la colonne d'icône est renseignée ; la recette ne force **aucun**
     accessoire équipé, fidélité stricte. Plan : `docs/plan-e13c-icones-hud.md`.
-  - **E13.d — La gestion de l'inventaire ⏳ (chantier à planifier, décision prise le 2026-09-19 :
-    porter l'original tel quel).** Établi dans le code d'origine, masques lus par ET binaire donc
+  - **E13.d — La gestion de l'inventaire ⏳ planifiée** : plan `docs/plan-e13d-inventaire.md`, relu
+    READY, décisions de l'auteur du 2026-09-21 enregistrées ; D0 attend son feu vert. Décision du
+    2026-09-19 : porter l'original tel quel ; amendée le 2026-09-21 pour le dessin : pas au pixel près,
+    icônes centrées dans leur boîte. Établi dans le code d'origine, masques lus par ET binaire donc
     « l'un quelconque » : en jeu, `Start`, `L2` ou `R2` ouvre l'inventaire principal
     (`GameEngine.cs:1567-1576`, sous conditions : aucun verrou de contrôle, pas de warp, `Select` non
     maintenu) ; **L1 et R1 n'ont aucun gestionnaire en jeu** et ne servent qu'à basculer entre
     l'inventaire principal et le sous-inventaire une fois ouvert (`MainInventoryManager.cs:853-858`,
     `SubInventoryManager.cs:371-377`) ; `Start`, `L2` ou `R2` referment et la jauge réapparaît
     (`MainInventoryManager.cs:846-851`). Taille : deux gestionnaires d'environ 3300 lignes et seize
-    méthodes publiques, une table d'objets de 98 entrées vivant seulement dans la décompilation ; le
-    portage n'a ni écran d'inventaire, ni équipement, ni L1/L2/R1/R2/Select dans son état de pad
-    (`AlundraPlayerController.cs:12-19`). La table des objets, l'équipement et les écrans
+    méthodes publiques, une table d'objets de 100 lignes (et 98 enregistrements de déverrouillage)
+    vivant seulement dans la décompilation, republiées depuis par E13.c ; le portage n'a ni écran
+    d'inventaire, ni L1/L2/R1/R2/Select dans son état de pad (`AlundraPlayerController.cs:23-31`) ;
+    l'équipement et les compteurs d'objets, eux, existent depuis E13.c S3. La table des objets, l'équipement et les écrans
     d'inventaire n'avaient jusqu'ici aucune étape dans cette feuille de route. **Découpage décidé le
     2026-09-19** : l'inventaire principal d'abord, ouverture, fermeture et équipement, puis le
-    sous-inventaire et la bascule L1/R1. Plan à écrire après la livraison d'E13.c.
+    sous-inventaire et la bascule L1/R1. Le plan de l'inventaire principal est écrit ; celui du
+    sous-inventaire le sera après sa recette.
 
 ### E14 — IA native ⏳
 
@@ -751,9 +760,9 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 | E11 audio | ✅ close (validée en jeu le 2026-08-30) — **E11.b reportée** sur décision utilisateur | `3b1eb24` ; `0b1d2d9` + analyseur `f216b32` |
 | E12 dialogues Yarn + MGUI | ✅ close (validée en jeu le 2026-09-02) — **E12.c** (fidélité fine) datée « plus tard » | E12.d `774255f` ; voir `plan-e12-dialogues.md` |
 | **E9.d mode cellulaire des fonds** | ✅ close (validée en jeu le 2026-09-07 sur 420, 391, 271, 443) | convertisseur `e1b9844`, moteur `53fed7df`+`342377a5`, DLL `ae30b42` |
-| E13.a HUD, la jauge permanente | ✅ livrée, validée en jeu le 2026-09-19 ; C4 (fondu) en attente du chantier moteur | parent `329b19b`, `d9fac87`, `3cf8dd9`, `babb16f`, `48df065`, `8cb52c9` |
-| E13.b HUD, fonds des cases arme et accessoire | ⏳ | |
-| E13.c HUD, icônes d'arme et d'accessoire | ⏳ à planifier (extraction + convertisseur + DLL) | |
-| E13.d inventaire (L1/R1) | ⏳ à planifier après reconnaissance | |
+| E13.a HUD, la jauge permanente | ✅ close (validée en jeu ; C4 et C5.b le 2026-09-20) | parent `329b19b`, `d9fac87`, `3cf8dd9`, `babb16f`, `48df065`, `8cb52c9`, C4 `7d6a37a` mergée `8dcfd81` ; moteur `19fcd84c` |
+| E13.b HUD, fonds des cases arme et accessoire | ✅ close (C6, validée en jeu) | `ae8a24e` |
+| E13.c HUD, icônes d'arme et d'accessoire | 🚧 S0-S3 faites, S4 (recette) en attente ; S1.c, S2.b, S3 non mergées | analyseur `6176ea3`, `a0904b8`, `c304201` ; parent `0f1cfd4` (mergée `9b5fa32`), `7018e6a`, `0135c92` |
+| E13.d inventaire principal (puis sous-inventaire et L1/R1) | ⏳ planifiée, relue READY ; D0 attend le feu vert | `docs/plan-e13d-inventaire.md` |
 | E14 IA native | ⏳ | |
 | E15 conversion hybride | ⏳ | |
