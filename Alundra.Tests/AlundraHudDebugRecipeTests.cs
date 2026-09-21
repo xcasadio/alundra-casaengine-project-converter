@@ -231,4 +231,35 @@ public sealed class AlundraHudDebugRecipeTests : IDisposable
         Assert.False(HudScriptOpenRequestIsRaised());
         Assert.True(AlundraGameState.Instance.DebugHudRecipeApplied);
     }
+
+    // -----------------------------------------------------------------------------------------------
+    // E13.c S3 (docs/plan-e13c-icones-hud.md): the same New Game entry runs the game's own New Game
+    // inventory - not gated on the recipe, and latched once per session like the recipe is. Whatever item
+    // tables the proxy resolved, the unconditional SetPlayerWeaponId(1) puts the sword's slot in place.
+    // -----------------------------------------------------------------------------------------------
+
+    [Fact]
+    public void AdoptPlayerPawn_AtNewGameEntry_RunsTheNewGameInventory_WithoutTheRecipe()
+    {
+        InitializeNewGameEntryOnMap389();
+
+        Assert.False(AlundraGameState.Instance.DebugHudRecipeApplied);
+        Assert.True(AlundraGameState.Instance.NewGameInventoryInitialized);
+        Assert.Equal(1, AlundraGameState.Instance.PlayerStats.WeaponId);
+    }
+
+    [Fact]
+    public void AdoptPlayerPawn_DoesNotRerunTheNewGameInventory_AtASecondNoArrivalMapEntry()
+    {
+        InitializeNewGameEntryOnMap389();
+
+        // Were the inventory to run again, it would zero every counter and put the slot back to 1.
+        AlundraGameState.Instance.PlayerStats.WeaponId = 3;
+        AlundraGameState.Instance.NumberOfItems[4 * 2 + 1] = 1;
+
+        InitializeNewGameEntryOnMap389();
+
+        Assert.Equal(3, AlundraGameState.Instance.PlayerStats.WeaponId);
+        Assert.Equal(1, AlundraGameState.Instance.NumberOfItems[4 * 2 + 1]);
+    }
 }

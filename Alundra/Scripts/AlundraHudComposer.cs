@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 
 namespace Alundra.Scripts;
@@ -62,6 +63,14 @@ public readonly record struct AlundraHudBackgroundQuad(
     int NativeX, int NativeY, int NativeWidth, int NativeHeight,
     HudRgb TopLeftColor, HudRgb TopRightColor, HudRgb BottomLeftColor, HudRgb BottomRightColor,
     float Alpha);
+
+/// <summary>E13.c S3 (docs/plan-e13c-icones-hud.md): one equipment icon - the <c>.sprite</c> asset that is an
+/// item's portrait, drawn with its top-left at a NATIVE pixel position, same convention as
+/// <see cref="AlundraHudTile"/>. Its own record rather than a new <see cref="HudGlyph"/>: the 24 glyphs are a
+/// fixed set loaded once, an icon is whichever item is equipped, known only as an asset id. Its size is not
+/// carried here - it is the sprite's own, as the original takes <c>Swidth</c>/<c>Sheight</c> straight from
+/// the image (GraphicManager.cs:1933-1934).</summary>
+public readonly record struct AlundraHudIcon(Guid AssetId, int NativeX, int NativeY);
 
 /// <summary>
 /// Pure port of the jauge's own composition logic - <c>HudManager.DisplayHpMaxWithNumber</c>
@@ -350,5 +359,37 @@ public static class AlundraHudComposer
                 EquipmentBoxTopLeft, EquipmentBoxTopRight, EquipmentBoxBottomLeft, EquipmentBoxBottomRight,
                 EquipmentBoxAlpha),
         };
+    }
+
+    /// <summary>
+    /// E13.c S3 (docs/plan-e13c-icones-hud.md): the equipment icons, the port of the two
+    /// <c>InitializeSpriteWithImage</c> calls in <c>HudManager.DisplayHudWeaponAndItem</c>
+    /// (HudManager.cs:490-602) - the weapon's portrait at <c>g_inventoryWeaponIconX[8]</c> and the
+    /// accessory's at <c>[9]</c>, both at <c>UIBoxHud.Y</c>: the SAME two abscissas as the backgrounds above
+    /// (<see cref="WeaponBoxX"/>, <see cref="AccessoryBoxX"/>) and the same baked <see cref="BoxY"/> every
+    /// tile uses, so the icon sits in its box and slides with the whole jauge through the canvas
+    /// translation. A null asset id is the original's sentinel branch - nothing drawn for that box. Empty
+    /// when the jauge is not drawn, like <see cref="Compose"/>'s own tiles.
+    /// </summary>
+    public static IReadOnlyList<AlundraHudIcon> ComposeEquipmentIcons(
+        bool isDrawn, Guid? weaponIconAssetId, Guid? accessoryIconAssetId)
+    {
+        if (!isDrawn)
+        {
+            return Array.Empty<AlundraHudIcon>();
+        }
+
+        var icons = new List<AlundraHudIcon>(2);
+        if (weaponIconAssetId is { } weapon)
+        {
+            icons.Add(new AlundraHudIcon(weapon, WeaponBoxX, BoxY));
+        }
+
+        if (accessoryIconAssetId is { } accessory)
+        {
+            icons.Add(new AlundraHudIcon(accessory, AccessoryBoxX, BoxY));
+        }
+
+        return icons;
     }
 }

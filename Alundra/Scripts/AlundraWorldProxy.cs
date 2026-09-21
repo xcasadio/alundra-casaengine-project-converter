@@ -313,6 +313,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     internal ISpriteRecordCatalog SpriteRecordCatalog = Alundra.Scripts.SpriteRecordCatalog.GetOrCreate(EngineEnvironment.ProjectPath);
 
     /// <summary>
+    /// E13.c S3 (docs/plan-e13c-icones-hud.md): the three item tables the converter republishes under
+    /// <c>Data/</c> - see <see cref="AlundraItemTables"/>'s own doc. Resolved through the same kind of
+    /// session cache as <see cref="SpriteRecordCatalog"/> above, for the same reason: two consecutive worlds
+    /// over one project read the files once. Internal and assignable so tests swap in fixture tables, the
+    /// same seam <see cref="SpriteRecordCatalog"/> offers.
+    /// </summary>
+    internal AlundraItemTables ItemTables = AlundraItemTables.GetOrCreate(EngineEnvironment.ProjectPath);
+
+    /// <summary>
     /// Port of the original global <c>g_activeCollisionEntity</c>: the entity currently involved in the
     /// active collision pair, used by the pick phase to decide whether a touch downgrades all the way
     /// to an interact (slot F). Null in V1 (no collision system driving it yet); settable internally for
@@ -1126,7 +1135,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // hudTick loop runs (Update(float)'s own call order: TryWireHudScreenOnce, then the tick loop) - so
         // the presenter's first Tick() this frame already has a live view to push into, matching
         // AlundraHudScreen.OnInitialize's own "production call order" doc.
-        _hudPresenter = new AlundraHudPresenter(AlundraHudDirector.Instance, hudScreen);
+        _hudPresenter = new AlundraHudPresenter(
+            AlundraHudDirector.Instance, hudScreen, ResolveHudEquipmentIcons);
         _hudScreenWired = true;
         Logs.WriteInfo("AlundraWorldProxy: HUD screen wired to the active UI view (post-bootstrap retry).");
     }
@@ -1142,6 +1152,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     internal void AttachHudPresenterForTests(IAlundraHudView view)
     {
         _hudPresenter = new AlundraHudPresenter(AlundraHudDirector.Instance, view);
+    }
+
+    /// <summary>E13.c S3: the equipment source handed to the production presenter - the port of the two
+    /// lookups <c>HudManager.DisplayHudWeaponAndItem</c> makes every frame, over this proxy's own session
+    /// state and item tables (<see cref="AlundraPlayerManager.ResolveHudEquipmentIcons"/>).</summary>
+    private (Guid? Weapon, Guid? Accessory) ResolveHudEquipmentIcons()
+    {
+        return AlundraPlayerManager.ResolveHudEquipmentIcons(GameState, ItemTables);
     }
 
     /// <summary>True on the previous <see cref="Update(float)"/> call's own read of the F1 recipe key -
@@ -1468,6 +1486,17 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // non-warp map entry never reads this same stale record (see AlundraWarpDirector.ConsumeArrivalRecord's
         // own doc). Null falls back to the New Game constants exactly as before this slice.
         var arrivalRecord = AlundraWarpDirector.Instance.ConsumeArrivalRecord();
+
+        // E13.c S3 (docs/plan-e13c-icones-hud.md): the same "no pending arrival" signal the debug recipe
+        // below reads is the New Game, so this is where the original's own New Game inventory runs - item
+        // counters, the unlock loop, the weapon set to the sword's slot (GameInitializer.cs:395-411). Not
+        // gated on any debug switch: it is the game's own state. Latched once per session, the same belt and
+        // braces the recipe carries, and run before it so the gauge's first frame already has a weapon.
+        if (arrivalRecord == null && !GameState.NewGameInventoryInitialized)
+        {
+            GameState.NewGameInventoryInitialized = true;
+            AlundraPlayerManager.InitializeNewGameInventory(GameState, ItemTables);
+        }
 
         // E13 C5.a (docs/plan-e13-hud.md, D-E13-10): arrivalRecord == null here is precisely the "New
         // Game/Continue load" signal T5's own doc above already established - the only OTHER source of a

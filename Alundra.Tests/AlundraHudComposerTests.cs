@@ -445,4 +445,40 @@ public sealed class AlundraHudComposerTests
             Assert.Equal(26, AlundraHudScreen.MaxTileCount);
         }
     }
+
+    // -----------------------------------------------------------------------------------------------
+    // E13.c S3 (docs/plan-e13c-icones-hud.md): the equipment icons - g_inventoryWeaponIconX[8] = 16 and
+    // [9] = 48, both at UIBoxHud.Y = 16, the very positions of the two C6 backgrounds above.
+    // -----------------------------------------------------------------------------------------------
+
+    private static readonly System.Guid SwordIcon = System.Guid.Parse("aeebd7a0-faa7-57b0-a844-34470272a4eb");
+    private static readonly System.Guid OtherIcon = System.Guid.Parse("11111111-2222-3333-4444-555555555555");
+
+    [Fact]
+    public void ComposeEquipmentIcons_Weapon_IsAtNative16_16_ExactlyOnItsBackground()
+    {
+        var icon = Assert.Single(AlundraHudComposer.ComposeEquipmentIcons(isDrawn: true, SwordIcon, null));
+
+        Assert.Equal(new AlundraHudIcon(SwordIcon, 16, 16), icon);
+        var weaponBox = AlundraHudComposer.ComposeEquipmentBackgrounds()[0];
+        Assert.Equal(weaponBox.NativeX, icon.NativeX);
+        Assert.Equal(weaponBox.NativeY, icon.NativeY);
+    }
+
+    [Fact]
+    public void ComposeEquipmentIcons_Accessory_IsAtNative48_16_ExactlyOnItsBackground()
+    {
+        var icons = AlundraHudComposer.ComposeEquipmentIcons(isDrawn: true, SwordIcon, OtherIcon);
+
+        Assert.Equal(2, icons.Count);
+        Assert.Equal(new AlundraHudIcon(OtherIcon, 48, 16), icons[1]);
+        Assert.Equal(AlundraHudComposer.ComposeEquipmentBackgrounds()[1].NativeX, icons[1].NativeX);
+    }
+
+    [Fact]
+    public void ComposeEquipmentIcons_NothingEquipped_OrJaugeNotDrawn_IsEmpty()
+    {
+        Assert.Empty(AlundraHudComposer.ComposeEquipmentIcons(isDrawn: true, null, null));
+        Assert.Empty(AlundraHudComposer.ComposeEquipmentIcons(isDrawn: false, SwordIcon, OtherIcon));
+    }
 }

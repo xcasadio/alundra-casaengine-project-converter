@@ -58,12 +58,14 @@ public sealed class AlundraHudPresenterTests : IDisposable
         public readonly List<bool> VisibleCalls = new();
         public readonly List<Vector2> TranslationCalls = new();
         public readonly List<IReadOnlyList<AlundraHudTile>> TileCalls = new();
+        public readonly List<IReadOnlyList<AlundraHudIcon>> IconCalls = new();
 
         public RecordingHudView(int pixelScale) => PixelScale = pixelScale;
 
         public void SetVisible(bool visible) => VisibleCalls.Add(visible);
         public void SetTranslation(Vector2 translation) => TranslationCalls.Add(translation);
         public void SetTiles(IReadOnlyList<AlundraHudTile> tiles) => TileCalls.Add(tiles);
+        public void SetEquipmentIcons(IReadOnlyList<AlundraHudIcon> icons) => IconCalls.Add(icons);
     }
 
     private static AlundraHudDirector ArmedOpening(AlundraGameState state)
@@ -183,6 +185,65 @@ public sealed class AlundraHudPresenterTests : IDisposable
         // here through the tiles the PRESENTER pushed rather than the bare director field.
         Assert.Contains(view.TileCalls[18], t => t.Glyph == HudGlyph.MagicPipFull1);
         Assert.Equal(4, director.MpMax); // set instantly at ArmAppearance, C1.
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // E13.c S3 (docs/plan-e13c-icones-hud.md): the equipment icons ride the same tick as the tiles.
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void Tick_PushesTheEquipmentSourcesIcons_OnEveryDrawnTick_AndAsksTheSourceOnlyThen()
+    {
+        var sword = Guid.Parse("aeebd7a0-faa7-57b0-a844-34470272a4eb");
+        var state = new AlundraGameState();
+        var director = AlundraHudDirector.Instance;
+        director.AttachToWorld(state); // no open request: the jauge stays hidden
+
+        var sourceCalls = 0;
+        var view = new RecordingHudView(pixelScale: 2);
+        var presenter = new AlundraHudPresenter(director, view, () =>
+        {
+            sourceCalls++;
+            return (sword, null);
+        });
+
+        director.Tick();
+        presenter.Tick();
+
+        // Hidden: nothing shown, and the source - whose accessory lookup has a side effect - never asked.
+        Assert.False(director.IsDrawn);
+        Assert.Empty(view.IconCalls[0]);
+        Assert.Equal(0, sourceCalls);
+
+        state.AddFlag(ScriptOpenRequestFlag, ScriptOpenRequestMask);
+        for (var i = 0; i < 20; i++)
+        {
+            director.Tick();
+            presenter.Tick();
+        }
+
+        Assert.True(director.IsDrawn);
+        Assert.Equal(new[] { new AlundraHudIcon(sword, 16, 16) }, view.IconCalls[^1]);
+        Assert.True(sourceCalls > 0);
+        Assert.Equal(view.IconCalls.Count, view.TileCalls.Count); // one icon push per tile push
+    }
+
+    [Fact]
+    public void Tick_WithoutAnEquipmentSource_ShowsBothBoxesEmpty()
+    {
+        var state = new AlundraGameState();
+        var director = ArmedOpening(state);
+        var view = new RecordingHudView(pixelScale: 1);
+        var presenter = new AlundraHudPresenter(director, view);
+
+        for (var i = 0; i < 20; i++)
+        {
+            director.Tick();
+            presenter.Tick();
+        }
+
+        Assert.True(director.IsDrawn);
+        Assert.All(view.IconCalls, icons => Assert.Empty(icons));
     }
 
     // -----------------------------------------------------------------------------------------

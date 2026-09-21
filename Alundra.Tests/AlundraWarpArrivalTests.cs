@@ -505,6 +505,34 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         Assert.NotEqual(newGamePosY, hero.PosY);
     }
 
+    /// <summary>E13.c S3 (docs/plan-e13c-icones-hud.md): a warp arrival is not a New Game, so it must not
+    /// run the New Game inventory - no unlock loop, no weapon slot put back to the sword's.</summary>
+    [Fact]
+    public void AdoptPlayerPawn_WithPendingArrival_DoesNotRunTheNewGameInventory()
+    {
+        ArmPendingArrival();
+
+        var world = BuildRealMap390World();
+        var (heroEntity, _) = BuildHeroPawnEntity(world);
+        RegisterPlayerController(world, heroEntity);
+
+        var proxy = new AlundraWorldProxy();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+        EngineEnvironment.ProjectPath = FindProjectRoot();
+        try
+        {
+            proxy.InitializeWithWorld(world);
+        }
+        finally
+        {
+            EngineEnvironment.ProjectPath = previousProjectPath;
+        }
+
+        Assert.False(AlundraGameState.Instance.NewGameInventoryInitialized);
+        Assert.Equal(0, AlundraGameState.Instance.PlayerStats.WeaponId);
+        Assert.All(AlundraGameState.Instance.NumberOfItems, count => Assert.Equal(0, count));
+    }
+
     // -----------------------------------------------------------------------------------------------
     // Element 2 (D-T-7, §1.4.g): InstallScreenFadeSystems transports + logs the arrival's own effect id.
     // -----------------------------------------------------------------------------------------------
