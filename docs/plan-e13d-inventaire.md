@@ -371,7 +371,7 @@ l'escalade et le départ de warp ne sont pas dérangés ; **dégel sur une image
 (un pas de travers au dégel, une plateforme mobile qui décroche, une escalade qui lâche), ou si quelque
 chose déplace une entité pendant le gel, la tranche s'arrête et le consigne (D-E13D-4). **Vérificateur frais** (changement de comportement partagé par tout `MenuOpen`).
 
-### ⏳ D3.a — Analyseur : le patron des boîtes en CSV
+### ✅ D3.a — Analyseur : le patron des boîtes en CSV — faite le 2026-09-21 (analyseur `64978f8`)
 
 **Prérequis** : D-E13D-13, D-E13D-14 ; D0.1 et D0.2 (closes).
 **Branche** : dans l'analyseur, `chantier/e13d-boites`, créée depuis `master` après le merge d'E13.c
@@ -386,6 +386,13 @@ les tableaux décompilés et **bruts**, sans interprétation (précédent S1.b e
 
 **Acceptation** : un script indépendant relit `StaticVariables.cs` et retrouve chaque ligne des deux CSV,
 et rien de plus ; 7 boîtes, 822 cases.
+
+**Fait** : les deux CSV générés par un script (§7), dans l'ordre de dessin des sept appels à
+`DisplayUiBoxes` (`MainInventoryManager.cs:914-920`), déclarés dans `AlundraTools.csproj` (projet chargé par
+MSBuild, les deux éléments vus). **Acceptation passée** par un second script, écrit sans rien reprendre du
+premier (lecture ligne à ligne, sans appariement de crochets) : 7 boîtes, 822 cases relues, **0 manquante,
+0 en trop, même ordre**. La preuve au pixel de D3.b, qui recompose depuis `StaticVariables.cs` sans passer
+par les CSV, la confirmera une seconde fois.
 
 ### ⏳ D3.b — Convertisseur : une image cuite par boîte
 
@@ -548,6 +555,7 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
 | 2026-09-21 | **Relecture de clôture : REVISE**, un blocage, accepté en **FIX** : la restauration remet à zéro le déplacement vertical externe, que la DLL ne redéclare qu'une fois par tick ; sur une image de dégel sans tick, une escalade près du sol se serait fait ramener au sol. D2 le redéclare juste après `RestoreStateSnapshot`, avec la valeur de son propriétaire, et gagne un test de dégel à zéro tick. **La relecture de clôture étant la dernière autorisée, cette correction n'est pas relue** : le plan part à l'auteur sans READY, avec ce statut écrit. |
 | 2026-09-21 | **L'auteur réapprouve le plan révisé**, correction non relue comprise, et tranche : **portrait reporté** (D-E13D-12 amendée, D3.c et D5.p retirées) ; **gel sur tout `MenuOpen`** (D-E13D-15). Exécution reprise en mode AUTO : D1, D2, D3.a, D3.b, D4, D5. |
 | 2026-09-21 | **D1 faite**, vérificateur **CONFIRMED**. Export prouvé (diff mesuré = prédit, double export = `report.json`). |
+| 2026-09-21 | **D3.a faite** (analyseur `64978f8`, branche `chantier/e13d-boites`) : 7 boîtes, 822 cases, acceptation passée par un script indépendant. Générateur et vérificateur ci-dessous. |
 
 ### D0.1 — le script de mesure et sa sortie (2026-09-21)
 
@@ -767,3 +775,175 @@ record 31: Sector5Id=31 portrait images=1
 ```
 
 Puis : aucun `sprite_61779762221058.sprite` sous `alundra-project/`, aucune entrée du catalogue, et 0 pixel opaque sur 2688 dans `map_alundra_spritesheet.png` au rectangle `(200, 568, 48, 56)` (page 2 × 256 + 56), où la disposition `Original` le placerait.
+
+### D3.a — le générateur des CSV et son vérificateur indépendant (2026-09-21)
+
+Générateur :
+
+```python
+"""D3.a of docs/plan-e13d-inventaire.md: writes UiBoxes.csv and UiBoxCells.csv from the decompilation.
+
+The seven boxes are the seven DisplayUiBoxes calls of the main inventory's per-frame function, in their
+drawing order (MainInventoryManager.cs:914-920). For each, its UIBoxConfiguration literal
+(StaticVariables.cs:11196-11267) gives X, Y, Width, Height and SpritesA; the cells are the SPRT literals
+of SpritesA, raw, in array order (D-E13D-14: copy A only). Values are written as decimal integers, the
+convention of the analyser's other CSVs; ';' separator, header row, CRLF line endings, no BOM.
+"""
+import io
+import os
+import re
+
+ROOT = r'D:\development\repo\alundra-casaengine-project-converter\alundra-datas-analyser\AlundraTools'
+SRC = os.path.join(ROOT, r'AlundraEngine\StaticVariables.cs')
+INVENTORY = os.path.join(ROOT, r'AlundraEngine\UI\MainInventoryManager.cs')
+OUT = os.path.join(ROOT, 'AlundraTools')
+
+src = io.open(SRC, encoding='utf-8-sig').read()
+inventory = io.open(INVENTORY, encoding='utf-8-sig').read()
+
+# The drawing order: FUN_80056598's seven DisplayUiBoxes calls (MainInventoryManager.cs:914-920).
+calls = re.findall(r'DisplayUiBoxes\(_gameEngine\.StaticVariables\.(\w+)\)', inventory)
+assert len(calls) == 7, calls
+
+CONFIG_FIELD = re.compile(r'\b(X|Y|Width|Height|SpritesA)\s*=\s*([^,\n}]+)')
+SPRT = re.compile(r'new\s+SPRT\s*\{([^}]*)\}', re.S)
+SPRT_FIELD = re.compile(r'\b(x0|y0|u0|v0|w|h|clut)\s*=\s*(?:unchecked\s*\()?\s*(?:\(\w+\))?\s*(0x[0-9A-Fa-f]+|\d+)')
+
+
+def box_config(name):
+    start = src.index(name + ' = new UIBoxConfiguration')
+    body = src[src.index('{', start):src.index('};', start)]
+    fields = {k: v.strip() for k, v in CONFIG_FIELD.findall(body)}
+    return {k: (int(fields[k], 0) if k != 'SpritesA' else fields[k]) for k in ('X', 'Y', 'Width', 'Height', 'SpritesA')}
+
+
+def sprt_cells(array_name):
+    start = src.index('[', src.index(array_name + ' ='))
+    depth, end = 0, start
+    for end in range(start, len(src)):
+        depth += {'[': 1, ']': -1}.get(src[end], 0)
+        if depth == 0:
+            break
+    cells = []
+    for m in SPRT.finditer(src[start:end]):
+        fields = dict(SPRT_FIELD.findall(m.group(1)))
+        cells.append([int(fields[k], 0) for k in ('x0', 'y0', 'u0', 'v0', 'w', 'h', 'clut')])
+    return cells
+
+
+box_rows = ['box;x;y;width;height']
+cell_rows = ['box;cell;x0;y0;u0;v0;w;h;clut']
+for name in calls:
+    config = box_config(name)
+    box_rows.append(f"{name};{config['X']};{config['Y']};{config['Width']};{config['Height']}")
+    if config['SpritesA'] == 'null':
+        assert config['Width'] * config['Height'] == 0, name
+        continue
+    cells = sprt_cells(config['SpritesA'])
+    assert len(cells) == config['Width'] * config['Height'], (name, len(cells))
+    for index, cell in enumerate(cells):
+        cell_rows.append(';'.join([name, str(index)] + [str(v) for v in cell]))
+
+
+def write(file_name, rows):
+    path = os.path.join(OUT, file_name)
+    with io.open(path, 'wb') as handle:
+        handle.write(('\r\n'.join(rows) + '\r\n').encode('utf-8'))
+    print(f'{file_name}: {len(rows) - 1} rows')
+
+
+write('UiBoxes.csv', box_rows)
+write('UiBoxCells.csv', cell_rows)
+```
+
+Vérificateur, sans rien reprendre du générateur ; sortie : `boxes: 7; cells in csv: 822; cells re-read: 822; missing from csv: 0; extra in csv: 0; same order: True`.
+
+```python
+"""D3.a acceptance, independent of d3a_generate.py: re-reads StaticVariables.cs line by line (no bracket
+matching, no shared regex) and checks that every row of UiBoxes.csv and UiBoxCells.csv is found there,
+and that nothing is missing or extra."""
+import io
+import os
+
+ROOT = r'D:\development\repo\alundra-casaengine-project-converter\alundra-datas-analyser\AlundraTools'
+lines = io.open(os.path.join(ROOT, r'AlundraEngine\StaticVariables.cs'), encoding='utf-8-sig').read().splitlines()
+
+
+def number(text):
+    text = text.strip().rstrip(',').strip()
+    for prefix in ('unchecked(', '(short)', '(byte)', '(ushort)', '(uint)'):
+        text = text.replace(prefix, '')
+    text = text.rstrip(')').strip()
+    return int(text, 16) if text.lower().startswith('0x') else int(text)
+
+
+def fields_of(chunk):
+    """'a = 1, b = 0x2, ...' -> dict, splitting on commas at top level of the chunk."""
+    out = {}
+    for part in chunk.replace('{', ',').replace('}', ',').split(','):
+        if '=' in part:
+            key, value = part.split('=', 1)
+            key = key.strip().split()[-1] if key.strip() else ''
+            try:
+                out[key] = number(value)
+            except ValueError:
+                out[key] = value.strip()
+    return out
+
+
+def config(name):
+    i = next(k for k, l in enumerate(lines) if l.strip().startswith(name + ' = new UIBoxConfiguration'))
+    block = []
+    for l in lines[i + 1:]:
+        block.append(l)
+        if l.strip().startswith('};'):
+            break
+    return fields_of(' '.join(block))
+
+
+def array_cells(name):
+    i = next(k for k, l in enumerate(lines) if (name + ' =') in l and 'SPRT[]' in l)
+    cells, current = [], None
+    for l in lines[i + 1:]:
+        s = l.strip()
+        if s.startswith('new SPRT'):
+            current = ''
+            continue
+        if current is not None:
+            current += ' ' + s
+            if s.startswith('}'):
+                f = fields_of(current)
+                cells.append(tuple(f[k] for k in ('x0', 'y0', 'u0', 'v0', 'w', 'h', 'clut')))
+                current = None
+            continue
+        if s.startswith('];'):
+            break
+    return cells
+
+
+def rows(file_name):
+    data = io.open(os.path.join(ROOT, 'AlundraTools', file_name), 'rb').read()
+    assert not data.startswith(b'\xef\xbb\xbf') and data.endswith(b'\r\n') and b'\n' not in data.replace(b'\r\n', b'')
+    text = data.decode('utf-8').split('\r\n')[:-1]
+    return text[0], [r.split(';') for r in text[1:]]
+
+
+header, boxes = rows('UiBoxes.csv')
+assert header == 'box;x;y;width;height', header
+cell_header, cells = rows('UiBoxCells.csv')
+assert cell_header == 'box;cell;x0;y0;u0;v0;w;h;clut', cell_header
+
+expected_cells = []
+for name, x, y, w, h in boxes:
+    c = config(name)
+    assert (c['X'], c['Y'], c['Width'], c['Height']) == (int(x), int(y), int(w), int(h)), (name, c)
+    if c['SpritesA'] == 'null':
+        continue
+    for index, cell in enumerate(array_cells(c['SpritesA'])):
+        expected_cells.append([name, str(index)] + [str(v) for v in cell])
+
+missing = [r for r in expected_cells if r not in cells]
+extra = [r for r in cells if r not in expected_cells]
+print(f'boxes: {len(boxes)}; cells in csv: {len(cells)}; cells re-read: {len(expected_cells)}; '
+      f'missing from csv: {len(missing)}; extra in csv: {len(extra)}; same order: {cells == expected_cells}')
+```
