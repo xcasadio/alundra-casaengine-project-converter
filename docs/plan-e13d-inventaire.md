@@ -269,6 +269,7 @@ Rien ne manque : D4 rend ces deux ports appelables par l'inventaire, avec la gar
 | D-E13D-15 | « **Tout `MenuOpen`** » (2026-09-21) : le gel de D2 vaut pour tout `GameplayBlockedMask`, fidèle à l'original | Les PNJ et le héros cessent aussi de s'animer pendant les dialogues, comme dans l'original ; D6 le vérifie aussi en dialogue. |
 | D-E13D-16 | « **Dans la DLL** » (2026-09-21) : le XAML de l'écran d'inventaire vit dans `Alundra/Screens/`, embarqué dans `Alundra.dll` et chargé comme le `DialogueScreen` du moteur. Decisions: see ADR-0001 | Aucune modification du convertisseur ; l'écran ne s'ouvre pas comme `.uiscreen` dans l'éditeur |
 | D-E13D-17 | « **Harnais minimal dans Alundra.Tests** » (2026-09-21) : un `MGDesktop` sans affichage, copie réduite de celui de `CasaEngine.Tests`. Decisions: see ADR-0001 | Les tests de l'écran XAML tournent dans `Alundra.Tests`, sans modifier le moteur |
+| D-E13D-18 | **Police après un changement de carte** (2026-09-21, discussion d'architecture après le défaut de D6, §3 D5.f) : « pas de work around », une architecture moderne dans l'esprit de Godot, Unreal et Unity. Côté moteur : handles comptés sur une instance unique par ressource, libération différée au début de chaque changement de monde, `.fnt` comme ressource, registre de polices du jeu résolu par nom de famille, pas de portée « Session ». Côté jeu : la DLL charge `font3` par l'API du moteur, seulement quand un objet qui l'utilise existe. Decisions: see ADR-0036 du moteur | Le correctif provisoire (réenregistrer `font3` sur chaque moteur de texte) est écarté, c'était un contournement. Un chantier moteur `chantier/asset-handles` (`CasaEngineMonogame/ai-agent/tasks/asset-handles-tasks.md`) précède D5.f |
 | D-E13D-14 | « **Cuire la copie A seule.** » Confirmé par l'auteur le 2026-09-21 : chaque boîte est cuite depuis sa copie `SpritesA`, sans la superposer à B | le portage de la décompilation ne lit que A (`MainInventoryManager.cs:1254`) ; A et B sont identiques pour cinq boîtes sur six ; pour la boîte des armes, seule A donne un cadre complet (§1.4). Écart visible avec la maquette montrée à l'auteur : la bordure droite de la boîte des armes, que la superposition abîmait. D3.a n'exporte que A, D3.b ne cuit que A |
 
 ### 2.3 Proposées, sauf avis contraire
@@ -557,6 +558,74 @@ pas ce que l'écran lit. **Curseur** : sa position vient du compteur **avant** l
 | Suites | `Alundra.Tests` **1039/1039** (988 + 51) |
 | Vérification neuve | **CONFIRMED** : les branches du texte et du curseur relues contre l'original, un tick à 0x4d et une image à deux ticks échantillonnés, l'empilement et le retrait de l'écran inchangés ; une remarque P4 : la capture en jeu ne passe pas par le cas du P2 (couvert par la reproduction et le test), à voir en D6 |
 
+### ⏳ D5.f — La police de l'inventaire survit aux changements de carte
+
+**Le défaut, trouvé par l'auteur en recette (D6).** Après un changement de carte, le nom de l'arme et la
+description s'affichent en police TTF blanche, et non plus en `font3`.
+
+**Reproduit en jeu, avec cause établie.**
+- **Harnais :** hors dépôt, dans le scratchpad de la session (`d6-font`). Il ouvre et ferme l'inventaire sur
+  la 389, passe par le premier portail (vers la 390), puis rouvre l'inventaire.
+- **Résultat :** `FontFamily = 'font3'` sur la 389, `'Arial'` sur la 390, et une capture identique à celle
+  de l'auteur.
+- **Cause :** le moteur détruit et recrée le runtime d'interface à chaque monde
+  (`GameManager.UpdateWorld` → `ViewManager.Clear()`), donc un nouveau moteur de texte. La DLL, elle,
+  n'enregistrait `font3` qu'une fois par processus (garde statique d'`AlundraInventoryScreen`).
+- **Correctif provisoire écarté :** un réenregistrement par moteur de texte, 1041/1041 vert. C'était un
+  contournement, écarté sur décision de l'auteur (D-E13D-18).
+
+**Prérequis** : le chantier moteur `chantier/asset-handles`, T1.1 à T3.2 closes (ADR-0036 ; plan
+`CasaEngineMonogame/ai-agent/tasks/asset-handles-tasks.md`).
+
+**D5.f.1 — Référence du moteur.** La référence de `CasaEngineMonogame` pointe sur `chantier/asset-handles`
+(qui enregistre lui-même MGUI). `git add CasaEngineMonogame` seul, après `git diff CasaEngineMonogame`. Les
+modifications de l'auteur dans le sous-module ne sont pas touchées. Commit :
+`chore(submodules): point at the engine with counted asset handles and bitmap font assets (D5.f.1)`.
+
+**D5.f.2 — DLL.**
+- `AlundraInventoryScreen` reçoit le registre de polices du jeu (`CasaEngineGame.UIFonts`).
+  - Sa construction prend `font3` : `Acquire` de l'id `d18a3985-004d-59cc-a080-ce51fa57da99`, le `.fnt` du
+    catalogue.
+  - Il devient `IDisposable` et rend la police dans `Dispose`, qui est idempotent (D10 du plan moteur).
+- Les quatre `TextBlock` de `Alundra/Screens/InventoryScreen.xaml` (lignes 78 à 81) déclarent
+  `FontFamily="font3"`.
+- Le code de police de l'écran disparaît : `Font3TextureAssetId`, les deux gardes statiques,
+  `TryRegisterFont3`, et le bloc `TrySetFont` de `OnWindowLoaded` (`AlundraInventoryScreen.cs:125-131`,
+  `:221-229`, `:232-292`).
+- `AlundraWorldProxy` garde l'écran qu'il construit dans `TryWireInventoryScreenOnce` et le libère dans
+  `OnEndPlay`, vide aujourd'hui (`AlundraWorldProxy.cs:2469-2472`). `World.Clear` l'appelle
+  (`World.cs:110-113`), donc la police est rendue quand l'ancienne carte se vide. La libération différée la
+  garde jusqu'à ce que l'écran de la nouvelle carte la reprenne.
+- **Proposé, sauf avis contraire :** une police absente de l'export fait échouer la construction de l'écran
+  avec une exception qui nomme la ressource, sans repli silencieux. Aujourd'hui, un avertissement laisse la
+  police par défaut.
+- **Tests (`Alundra.Tests`) :**
+  - la construction prend la police, `Dispose` la rend, un second `Dispose` ne fait rien. Le registre est
+    adossé à un gestionnaire de ressources de test, avec une `BitmapFont` construite sur une police TTF
+    rasterisée par le processeur, prise dans `CasaEngineMonogame/CasaEngine/Content/Fonts/`.
+  - `OnEndPlay` libère l'écran ;
+  - le XAML chargé porte `FontFamily = "font3"` sur les quatre textes (harnais sans affichage, D-E13D-17).
+- Build, `Alundra.Tests` : la référence plus les nouveaux tests. Commit :
+  `fix(inventory): hold font3 through the engine's font registry across map changes (D5.f.2)`.
+
+**D5.f.3 — Recette en jeu, prédite avant d'être prise.**
+- Le harnais `d6-font` est étendu : journal au niveau `LogVerbosity.Trace`, capture aussi sur la 389.
+- Il est rejoué sur le parcours 389 (ouvrir, fermer), portail, 390 (rouvrir).
+- **Acceptation :**
+  - `FontFamily = 'font3'` sur les quatre textes, sur les deux cartes ;
+  - les deux captures montrent la police `font3`, comme la capture de D5 ;
+  - le journal compte **une seule** ligne `Load asset …\UI\font3.fnt` et **une seule**
+    `Load asset …\UI\Textures\font3.png` sur tout le parcours (trace écrite par
+    `AssetContentManager.cs:104`) ;
+  - ces deux lignes sont **après** `AlundraWorldProxy: world 'Ship Klark (beginning)-389' object layers`
+    (initialisation du monde, `AlundraWorldProxy.cs:683-687`, donc pas au lancement), et **avant** la
+    ligne `AlundraWorldProxy: inventory screen wired` qui la suit (`:1211`, écrite après la construction de
+    l'écran, `:1207`, qui prend la police) ;
+  - aucune ligne `Load asset` de `font3` après `AlundraWorldProxy: world 'Ship Klark (inner)-390' object
+    layers` ;
+  - aucun avertissement de police.
+- Puis un vérificateur frais, la tranche touchant trois dépôts.
+
 ### ~~D3.c — Extraction du portrait d'ouverture~~ — retirée, portrait reporté (D-E13D-12 amendée)
 
 **N'existe que si l'auteur répond (a) au §6 point 6.** Elle écrit hors du dépôt (ré-extraction dans
@@ -573,7 +642,8 @@ est retirée et D-E13D-12 amendée** : l'inventaire est livré sans portrait.
 
 ### ⏳ D6 — Recette en jeu (l'auteur)
 
-**Prérequis** : D5.
+**Prérequis** : D5, D5.f. La recette reprend le scénario de D5.f : changer de carte puis rouvrir
+l'inventaire, les textes restent en `font3`.
 Ouvrir par `Start`, `L2` ou `R2` ; naviguer, y compris en maintenant une direction ; équiper une arme et
 un objet ; lire le texte déroulant ; fermer ; le héros et le monde sont figés pendant, **y compris ouvert
 en pleine chute**, et la chute reprend à la fermeture ; le HUD se cache à l'ouverture et revient à la
@@ -670,6 +740,7 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
 | 2026-09-21 | **D4 faite** : une première vérification REFUTED (valeurs `null` des textes, P1 reproduit), corrigée, reproduction rejouée, vérification neuve **CONFIRMED**. |
 | 2026-09-21 | Reconnaissance de D5 à quatre surfaces (livraison d'un écran XAML par la DLL, police, tests sans affichage, écran du HUD) : MGUI sait dessiner une police BMFont (`AddStaticFont`, `StaticSpriteFont.FromBMFont`) et agrandir au rendu (`RenderTransform.Scale`, ADR-0006 du moteur) ; la DLL n'enregistre pas encore font3 ; `Alundra.Tests` ne peut pas construire de `MGDesktop`. **L'auteur tranche** : XAML dans la DLL (D-E13D-16), harnais minimal dans les tests (D-E13D-17), ADR-0001. |
 | 2026-09-21 | **D5 faite** : capture en processus conforme à sa prédiction ; une première vérification REFUTED (seconde ligne de description affichée sans condition, P2 reproduit), corrigée, reproduction et capture rejouées, vérification neuve **CONFIRMED**. Reste D6, la recette de l'auteur. |
+| 2026-09-21 | **Défaut trouvé par l'auteur en recette D6**, puis reproduit en jeu et expliqué : les textes de l'inventaire perdent `font3` après un changement de carte. Le correctif provisoire (réenregistrer par moteur de texte) est écarté, c'était un contournement. Discussion d'architecture sur les pratiques de Godot, Unreal et Unity, relevées dans leur documentation officielle et vérifiées par des contradicteurs. **L'auteur tranche** : handles comptés, libération différée, pas de Session, `.fnt` comme ressource, registre de polices du jeu (D-E13D-18, ADR-0036 du moteur). Chantier moteur `chantier/asset-handles` et tranche D5.f planifiés. Relecture de l'enveloppe : **REVISE**, un blocage accepté en **FIX** (l'ordre des lignes du journal exigé par la recette ne pouvait pas se produire : le constructeur de l'écran prend la police avant la ligne « inventory screen wired »), puis relecture neuve **READY** ; première tranche (T1.1, MGUI) **READY**. Soumis à l'auteur. |
 
 ### D0.1 — le script de mesure et sa sortie (2026-09-21)
 
