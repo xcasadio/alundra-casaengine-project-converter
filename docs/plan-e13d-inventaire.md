@@ -1,6 +1,7 @@
 # Plan — E13.d : l'inventaire principal
 
-**État** : ⏳ rédigé le 2026-09-21, **en attente d'approbation de l'auteur**. Aucune ligne de code écrite.
+**État** : ⏳ rédigé le 2026-09-21, relu **READY** ; trois décisions de l'auteur reçues le 2026-09-21 (§2.2).
+Aucune ligne de code écrite ; D0 attend le feu vert de l'auteur.
 **Naissance** : `docs/plan-conversion-totale.md` §E13, E13.d — « porter l'original tel quel » ; découpage
 décidé par l'auteur le 2026-09-19 : **l'inventaire principal d'abord** (ouverture, fermeture, équipement),
 puis le sous-inventaire et la bascule L1/R1. Ce plan ne couvre que l'inventaire principal ; le
@@ -136,17 +137,18 @@ conditions de l'original n'est **pas vérifiée**, D0 la mesure.
 
 | Réf | Décision |
 |---|---|
-| D-E13D-1 | **Porter l'original tel quel**, fonctions citées ligne à ligne, comme E13.c. |
+| D-E13D-1 | **Porter l'original tel quel**, fonctions citées ligne à ligne, comme E13.c — **pour la logique**. Amendée par l'auteur le 2026-09-21 pour le dessin : « on ne va pas respecter au pixel près le jeu original » (§2.2, point 1). |
 | D-E13D-2 | **L'inventaire principal d'abord** ; le sous-inventaire et L1/R1 dans un second plan. |
 | D-E13D-3 | **L'écran se déclare en XAML** (ADR-0035) ; le code retrouve par nom et pousse des valeurs. |
 | D-E13D-4 | **Aucun contournement** : un manque de MGUI ou du moteur se consigne et arrête la tranche. |
 
-### 2.2 À trancher par l'auteur — voir §6, points 1 à 3
+### 2.2 Tranchées par l'auteur le 2026-09-21
 
-1. **Le patron des boîtes** : export depuis l'analyseur puis composition dans la DLL (recommandé), cuisson
-   d'une image par boîte dans le convertisseur, ou littéraux recopiés dans la DLL.
-2. **Les touches** de `L1`, `L2`, `R1`, `R2`, `Select`.
-3. **Le portrait d'ouverture** : dans la première passe (recommandé) ou reporté.
+| Réf | Décision de l'auteur | Conséquence |
+|---|---|---|
+| D-E13D-10 | « **Les icônes doivent être centrées dans la boîte parente. On ne va pas respecter au pixel près le jeu original.** » | Une icône se centre dans sa case par alignement, au lieu d'être calée à la position de l'original. Le patron case par case des boîtes n'est plus une obligation ; **la façon de dessiner les boîtes reste à choisir** (§6, point 1), avant D3. |
+| D-E13D-11 | **Touches** : `Y` = `L2`, `U` = `L1`, `I` = `R1`, `O` = `R2`, `P` = `Select` ; à la manette, `LeftShoulder` = `L1`, `LeftTrigger` = `L2`, `RightShoulder` = `R1`, `RightTrigger` = `R2`, `Back` = `Select`. | D1 lie ces touches. |
+| D-E13D-12 | **Le portrait d'ouverture dès la première passe.** | D5 le porte. |
 
 ### 2.3 Proposées, sauf avis contraire
 
@@ -173,8 +175,8 @@ leur sortie, pour que la mesure soit refaisable.
 
 | # | Mesure | Livrable | Close quand |
 |---|---|---|---|
-| D0.1 | **Rapprochement des cases avec les `wind_NNN`** : un script relit tous les `new SPRT{…}` des tableaux `SpritesA`/`SpritesB` des sept boîtes et cherche chaque tuple `(u0, v0, w, h, clut)` **à l'identique** dans `alundra-project/UI/wind-sprites.json` `(u0, v0, width, height, palette_index)` ; la règle d'égalité, et toute table de passage entre `clut` et `palette_index` si elle existe, sont écrites avant de lancer le script | nombre de cases par boîte, nombre de tuples introuvables, et chaque tuple introuvable listé | le script a tourné sur les sept boîtes et son résultat est au §1.4 |
-| D0.2 | **Le mode de mélange** des couches A et B (bits de `code`/`tag` des `SPRT`, et ce que `Renderer.AddSprite` en fait) | le mode par couche, cité | chaque couche des sept boîtes a son mode |
+| D0.1 | *(seulement si les boîtes restent dessinées en tuiles, §6 point 1)* **Rapprochement des cases avec les `wind_NNN`** : un script relit tous les `new SPRT{…}` des tableaux `SpritesA`/`SpritesB` des sept boîtes et cherche chaque tuple `(u0, v0, w, h, clut)` **à l'identique** dans `alundra-project/UI/wind-sprites.json` `(u0, v0, width, height, palette_index)` ; la règle d'égalité, et toute table de passage entre `clut` et `palette_index` si elle existe, sont écrites avant de lancer le script | nombre de cases par boîte, nombre de tuples introuvables, et chaque tuple introuvable listé | le script a tourné sur les sept boîtes et son résultat est au §1.4 |
+| D0.2 | *(même condition)* **Le mode de mélange** des couches A et B (bits de `code`/`tag` des `SPRT`, et ce que `Renderer.AddSprite` en fait) | le mode par couche, cité | chaque couche des sept boîtes a son mode |
 | D0.3 | **Ce qui tourne hors de la porte T2** pendant `MenuOpen` : vitesse et gravité du contrôleur de personnage côté moteur, lecture d'animation de sprite côté moteur ; et le cas d'une ouverture en plein saut | pour chacun : figé ou non, cité dans le code du moteur | la liste est complète et citée ; elle décide si une tranche de gel existe (voir D2) |
 | D0.4 | **La répétition des touches** : où l'original fixe `RepeatInterval` et sa valeur ; l'ordre de mise à jour dans la boucle | la cadence exacte | la valeur est citée |
 | D0.5 | **Le HUD** : correspondance entre `InitializeHudPosition`/`InitializeHudPositionBeforeHide` et leurs conditions, et les drapeaux 1813/1814 du directeur du portage | une table condition par condition | chaque condition a son équivalent, ou est déclarée manquante |
@@ -189,10 +191,10 @@ révisé et **resoumis à l'auteur avant** que D1, D2 ou D3 ne commence.
 
 ### ⏳ D1 — Manette : cinq boutons et la répétition
 
-**Prérequis** : D0.4, D0.10 ; décision de l'auteur sur les touches (§6 point 2).
+**Prérequis** : D0.4, D0.10 ; touches fixées par D-E13D-11.
 Cinq bits sur `AlundraPadState` (`L1`, `L2`, `R1`, `R2`, `Select`), cinq lignes d'`ActionBits`, cinq
-liaisons dans `PlayerSetupWriter` (manette `LeftShoulder`, `LeftTrigger`, `RightShoulder`,
-`RightTrigger`, `Back`) ; et `ButtonsJustPressedByInterval` porté ligne à ligne depuis
+liaisons dans `PlayerSetupWriter` (clavier `U`, `Y`, `I`, `O`, `P` et manette `LeftShoulder`,
+`LeftTrigger`, `RightShoulder`, `RightTrigger`, `Back`, pour `L1`, `L2`, `R1`, `R2`, `Select`, D-E13D-11) ; et `ButtonsJustPressedByInterval` porté ligne à ligne depuis
 `PadManager.UpdatePad` (D-E13D-8), **mis à jour une fois par tick logique** (D-E13D-9). Tests, à cadence
 de rendu variable, avec des images à zéro tick et à deux ticks : un appui donne exactement un front ;
 une touche maintenue répète après 20 ticks, puis tous les `RepeatInterval` ticks ; un changement de
@@ -207,8 +209,8 @@ retirée du plan, avec la mesure qui le justifie.
 
 ### ⏳ D3 — Le patron des boîtes
 
-**Prérequis** : D0.1, D0.2 ; décision de l'auteur sur le patron (§6 point 1).
-Si l'export est retenu : l'analyseur sort les boîtes de l'inventaire principal et celle de description
+**Prérequis** : la façon de dessiner les boîtes (§6 point 1) ; D0.1 et D0.2 si elle garde les tuiles.
+Si l'export du patron est retenu : l'analyseur sort les boîtes de l'inventaire principal et celle de description
 (position, taille en cases, couches A et B case par case, mode de mélange) en CSV brut, sur le précédent
 de S1.b et S1.c ; le convertisseur publie un JSON brut où chaque case désigne l'identifiant d'actif du
 `wind_NNN` qui porte son tuple, comme S2 le fait pour les icônes. Régime de preuve complet.
@@ -225,9 +227,10 @@ HUD, `Falcon`/`FalconTemp` à 0 (D-E13D-5). Corrige au passage le commentaire p�
 
 ### ⏳ D5 — DLL : l'écran XAML, le présentateur, la capture
 
-**Prérequis** : D0.9, D3, D4 ; décision de l'auteur sur le portrait (§6 point 3).
-Écran XAML (boîtes composées depuis D3, grille d'icônes, curseur, cadres de sélection, textes en `font3`,
-chiffres), présentateur branché comme celui du dialogue. Tests headless sur `MGDesktop` ; capture en
+**Prérequis** : D0.9, D3, D4.
+Écran XAML (boîtes selon §6 point 1, grille d'icônes **centrées dans leur case** (D-E13D-10), curseur,
+cadres de sélection, textes en `font3`, chiffres, **portrait d'ouverture** (D-E13D-12)), présentateur
+branché comme celui du dialogue. Tests headless sur `MGDesktop` ; capture en
 processus de l'inventaire ouvert, **prédite avant d'être prise**.
 
 ### ⏳ D6 — Recette en jeu (l'auteur)
@@ -259,16 +262,14 @@ par double export.
 
 ## 6. Points ouverts
 
-1. **Le patron des boîtes — QUESTION POUR L'AUTEUR.** (a) CSV dans l'analyseur, JSON brut publié par le
-   convertisseur, boîtes composées case par case dans la DLL : le précédent de S1.b/S2, indifférent au mode
-   de mélange. (b) Même CSV, mais le convertisseur **cuit** une image par boîte : plus simple côté DLL, mais
-   impossible si D0.2 trouve un mélange PSX qui n'est pas un simple alpha. (c) Recopier les tableaux
-   décompilés dans la DLL : aucune donnée à exporter, mais environ 2700 littéraux dans le code.
-   **Recommandé : (a).**
-2. **Les touches — QUESTION POUR L'AUTEUR.** Proposition, sans conflit avec les touches actuelles :
-   `L1` = A, `R1` = S, `L2` = Q, `R2` = W, `Select` = Tab.
-3. **Le portrait d'ouverture — QUESTION POUR L'AUTEUR.** Le porter dès D5 (fidèle, recommandé), ou le
-   reporter pour livrer l'inventaire plus tôt.
+1. **La façon de dessiner les boîtes — QUESTION OUVERTE, à trancher avant D3.** D-E13D-10 retire
+   l'obligation du patron au pixel près sans en choisir un autre. Pistes : des panneaux XAML simples
+   (bordures et fonds MGUI) ; un cadre à neuf tranches pris dans quelques tuiles `wind_NNN` ; ou le patron
+   exact, exporté par l'analyseur et le convertisseur. D0.1 et D0.2 ne tournent que si les tuiles restent.
+2. **Le centrage vaut-il aussi pour le HUD de S3 ? — QUESTION OUVERTE.** L'épée y est calée en haut à
+   gauche comme l'original ; D-E13D-10 parle de « la boîte parente ». Rien n'est changé à S3 tant que ce
+   n'est pas tranché.
+3. *Touches et portrait : tranchés, D-E13D-11 et D-E13D-12.*
 4. **Défaut latent du dialogue, consigné et non corrigé** : `AlundraDialogueDirector` tourne au tick
    mais lit le front d'appui de l'instantané par image rendue (`AlundraDialogueDirector.cs:239`,
    `AlundraWorldProxy.cs:1940-1943`) : sur une image à deux ticks il le voit deux fois, sur une image à
@@ -285,3 +286,4 @@ par double export.
 | 2026-09-21 | Première relecture adverse : **REVISE**, un P1 et trois P2, tous acceptés. (1) **P1, une erreur de la première rédaction** : elle affirmait, marqué « mesuré », que lever `MenuOpen` ne figeait pas le héros. C'est faux : la porte d'`UpdateEntities` est portée depuis T2, et `MovePlayer` n'est appelé que hors d'elle. La mesure avait lu l'appel sans remonter à la fonction qui le contient, et un commentaire périmé l'y avait poussée. La question du gel posée à l'auteur est retirée ; D2 devient conditionnelle, sur la mesure de ce que la porte ne couvre pas (D0.3). (2) La navigation lit la répétition des touches, que le portage ne calcule pas : ajoutée à D1 (D-E13D-8). (3) D0 reçoit un livrable et un critère de clôture par mesure, la règle d'égalité du rapprochement, et son propre arrêt. (4) Chaque tranche reçoit ses prérequis. |
 | 2026-09-21 | Relecture de clôture : **REVISE**, deux P2, tous deux acceptés en **FIX**. Les quatre blocages précédents y sont confirmés résolus. (1) **L'horloge de la manette** : l'original compte à 50 Hz, le portage échantillonne par image rendue et fait tourner sa logique au tick ; une répétition portée telle quelle dépendrait de l'affichage. Décision D-E13D-9, mesure D0.10, tests de D1 à cadence variable, et un défaut latent du dialogue consigné sans être corrigé. (2) **Les graphismes hors des boîtes** (curseur, cadres, chiffres, portrait) n'avaient pas de source établie : mesure D0.9, prérequis de D5, arrêt élargi à tout graphisme. **Deuxième REVISE : plafond atteint.** Disposition en session principale, une seule relecture de clôture ensuite, sans nouvelle boucle. |
 | 2026-09-21 | Relecture de clôture, la seule autorisée après le plafond : **READY**. Le plan part à l'auteur avec trois questions (§6, points 1 à 3). |
+| 2026-09-21 | **Décisions de l'auteur.** Icônes centrées dans leur boîte, et pas de fidélité au pixel près pour le dessin (D-E13D-10, qui amende D-E13D-1 pour le dessin seulement) ; touches `Y`/`U`/`I`/`O`/`P` pour `L2`/`L1`/`R1`/`R2`/`Select` (D-E13D-11) ; portrait dès la première passe (D-E13D-12). Deux questions restent ouvertes, que l'auteur n'a pas tranchées : la façon de dessiner les boîtes, et le centrage dans le HUD de S3. |
