@@ -146,7 +146,7 @@ conditions de l'original n'est **pas vérifiée**, D0 la mesure.
 
 | Réf | Décision de l'auteur | Conséquence |
 |---|---|---|
-| D-E13D-10 | « **Les icônes doivent être centrées dans la boîte parente. On ne va pas respecter au pixel près le jeu original.** » | Une icône se centre dans sa case par alignement, au lieu d'être calée à la position de l'original. Le patron case par case des boîtes n'est plus une obligation ; **la façon de dessiner les boîtes reste à choisir** (§6, point 1), avant D3. |
+| D-E13D-10 | « **Les icônes doivent être centrées dans la boîte parente. On ne va pas respecter au pixel près le jeu original.** » | Une icône se centre dans sa case par alignement, au lieu d'être calée à la position de l'original ; **l'auteur l'étend aux deux cases du HUD** (§6 point 2, appliqué à S3 par `cdb7097`). Le patron case par case des boîtes n'est plus une obligation ; **la façon de dessiner les boîtes reste à choisir** (§6, point 1), avant D3. |
 | D-E13D-11 | **Touches** : `Y` = `L2`, `U` = `L1`, `I` = `R1`, `O` = `R2`, `P` = `Select` ; à la manette, `LeftShoulder` = `L1`, `LeftTrigger` = `L2`, `RightShoulder` = `R1`, `RightTrigger` = `R2`, `Back` = `Select`. | D1 lie ces touches. |
 | D-E13D-12 | **Le portrait d'ouverture dès la première passe.** | D5 le porte. |
 
@@ -262,13 +262,20 @@ par double export.
 
 ## 6. Points ouverts
 
-1. **La façon de dessiner les boîtes — QUESTION OUVERTE, à trancher avant D3.** D-E13D-10 retire
-   l'obligation du patron au pixel près sans en choisir un autre. Pistes : des panneaux XAML simples
-   (bordures et fonds MGUI) ; un cadre à neuf tranches pris dans quelques tuiles `wind_NNN` ; ou le patron
-   exact, exporté par l'analyseur et le convertisseur. D0.1 et D0.2 ne tournent que si les tuiles restent.
-2. **Le centrage vaut-il aussi pour le HUD de S3 ? — QUESTION OUVERTE.** L'épée y est calée en haut à
-   gauche comme l'original ; D-E13D-10 parle de « la boîte parente ». Rien n'est changé à S3 tant que ce
-   n'est pas tranché.
+1. **La façon de dessiner les boîtes — QUESTION OUVERTE, à trancher avant D3.** Le fond de chaque boîte
+   de l'inventaire (pierre pour les armes et les objets, parchemin pour les noms et la description) n'est
+   pas une image : l'original le pose case par case, environ 2 700 tuiles de 8×8 en deux couches, prises
+   dans l'atlas `wind`. Une maquette, composée le 2026-09-21 avec les tuiles exportées et les positions
+   décompilées (aucune case sans tuile, aucune position à palette ambiguë), montre trois façons de faire :
+   (a) **l'original** : soit la DLL pose les tuiles une à une d'après un patron exporté, soit le
+   convertisseur cuit une image par boîte et l'écran en affiche une seule — même rendu, pierre et
+   parchemin variés ; (b) **un cadre à neuf tranches** (quatre coins, quatre bords, une tuile de fond
+   répétée) : la pierre devient un motif répétitif et le parchemin des rayures, parce que ces fonds ne sont
+   pas réguliers (59 et 81 tuples distincts, mesure antérieure) ; (c) **des panneaux MGUI simples** (fond
+   uni et bordure) : rien à exporter, mais l'aspect d'Alundra est perdu. D0.1 et D0.2 ne tournent que pour
+   (a).
+2. *Le centrage vaut aussi pour le HUD : tranché par l'auteur le 2026-09-21 (« oui ») et appliqué à S3
+   par `cdb7097` ; voir `docs/plan-e13c-icones-hud.md`, amendement de S3.*
 3. *Touches et portrait : tranchés, D-E13D-11 et D-E13D-12.*
 4. **Défaut latent du dialogue, consigné et non corrigé** : `AlundraDialogueDirector` tourne au tick
    mais lit le front d'appui de l'instantané par image rendue (`AlundraDialogueDirector.cs:239`,
@@ -287,3 +294,4 @@ par double export.
 | 2026-09-21 | Relecture de clôture : **REVISE**, deux P2, tous deux acceptés en **FIX**. Les quatre blocages précédents y sont confirmés résolus. (1) **L'horloge de la manette** : l'original compte à 50 Hz, le portage échantillonne par image rendue et fait tourner sa logique au tick ; une répétition portée telle quelle dépendrait de l'affichage. Décision D-E13D-9, mesure D0.10, tests de D1 à cadence variable, et un défaut latent du dialogue consigné sans être corrigé. (2) **Les graphismes hors des boîtes** (curseur, cadres, chiffres, portrait) n'avaient pas de source établie : mesure D0.9, prérequis de D5, arrêt élargi à tout graphisme. **Deuxième REVISE : plafond atteint.** Disposition en session principale, une seule relecture de clôture ensuite, sans nouvelle boucle. |
 | 2026-09-21 | Relecture de clôture, la seule autorisée après le plafond : **READY**. Le plan part à l'auteur avec trois questions (§6, points 1 à 3). |
 | 2026-09-21 | **Décisions de l'auteur.** Icônes centrées dans leur boîte, et pas de fidélité au pixel près pour le dessin (D-E13D-10, qui amende D-E13D-1 pour le dessin seulement) ; touches `Y`/`U`/`I`/`O`/`P` pour `L2`/`L1`/`R1`/`R2`/`Select` (D-E13D-11) ; portrait dès la première passe (D-E13D-12). Deux questions restent ouvertes, que l'auteur n'a pas tranchées : la façon de dessiner les boîtes, et le centrage dans le HUD de S3. |
+| 2026-09-21 | **L'auteur tranche le §6 point 2 : le centrage vaut aussi pour les deux cases du HUD**, appliqué à S3 par `cdb7097` sur `chantier/e13c-suite`, puis cette branche réempilée dessus. Le point 1 reste ouvert : l'auteur n'a pas compris la question, reformulée avec une maquette des trois façons de dessiner les boîtes. |

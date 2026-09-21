@@ -686,7 +686,8 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
     dans l'analyseur (S1.a `6176ea3`, S1.b `a0904b8`, S1.c `c304201`) ; les trois catalogues republiés
     bruts par le convertisseur, chacun prouvé par double export (S2 `0f1cfd4`, mergée ; S2.b `7018e6a`) ;
     dans la DLL, la chaîne arme → objet → icône et l'inventaire de la nouvelle partie portés ligne à
-    ligne, l'épée dans la case gauche du HUD (S3 `0135c92`). S1.c, S2.b et S3 sont sur des branches
+    ligne, l'épée dans la case gauche du HUD (S3 `0135c92`), centrée dans sa case sur décision de
+    l'auteur (`cdb7097`). S1.c, S2.b et S3 sont sur des branches
     empilées **non mergées** (`chantier/e13c-drop-properties` dans l'analyseur, `chantier/e13c-suite`).
     Au démarrage : l'épée de base à gauche, la case d'accessoire vide comme dans l'original. **Décisions du 2026-09-19** : E13.c se fait avant E13.d
     et lui livre l'extraction, la table des objets et l'arme équipée ; on extrait le portrait de
@@ -762,7 +763,7 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 | **E9.d mode cellulaire des fonds** | ✅ close (validée en jeu le 2026-09-07 sur 420, 391, 271, 443) | convertisseur `e1b9844`, moteur `53fed7df`+`342377a5`, DLL `ae30b42` |
 | E13.a HUD, la jauge permanente | ✅ close (validée en jeu ; C4 et C5.b le 2026-09-20) | parent `329b19b`, `d9fac87`, `3cf8dd9`, `babb16f`, `48df065`, `8cb52c9`, C4 `7d6a37a` mergée `8dcfd81` ; moteur `19fcd84c` |
 | E13.b HUD, fonds des cases arme et accessoire | ✅ close (C6, validée en jeu) | `ae8a24e` |
-| E13.c HUD, icônes d'arme et d'accessoire | 🚧 S0-S3 faites, S4 (recette) en attente ; S1.c, S2.b, S3 non mergées | analyseur `6176ea3`, `a0904b8`, `c304201` ; parent `0f1cfd4` (mergée `9b5fa32`), `7018e6a`, `0135c92` |
+| E13.c HUD, icônes d'arme et d'accessoire | 🚧 S0-S3 faites, S4 (recette) en attente ; S1.c, S2.b, S3 non mergées | analyseur `6176ea3`, `a0904b8`, `c304201` ; parent `0f1cfd4` (mergée `9b5fa32`), `7018e6a`, `0135c92`, `cdb7097` |
 | E13.d inventaire principal (puis sous-inventaire et L1/R1) | ⏳ planifiée, relue READY ; D0 attend le feu vert | `docs/plan-e13d-inventaire.md` |
 | E14 IA native | ⏳ | |
 | E15 conversion hybride | ⏳ | |
