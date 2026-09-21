@@ -269,7 +269,7 @@ Rien ne manque : D4 rend ces deux ports appelables par l'inventaire, avec la gar
 | D-E13D-15 | « **Tout `MenuOpen`** » (2026-09-21) : le gel de D2 vaut pour tout `GameplayBlockedMask`, fidèle à l'original | Les PNJ et le héros cessent aussi de s'animer pendant les dialogues, comme dans l'original ; D6 le vérifie aussi en dialogue. |
 | D-E13D-16 | « **Dans la DLL** » (2026-09-21) : le XAML de l'écran d'inventaire vit dans `Alundra/Screens/`, embarqué dans `Alundra.dll` et chargé comme le `DialogueScreen` du moteur. Decisions: see ADR-0001 | Aucune modification du convertisseur ; l'écran ne s'ouvre pas comme `.uiscreen` dans l'éditeur |
 | D-E13D-17 | « **Harnais minimal dans Alundra.Tests** » (2026-09-21) : un `MGDesktop` sans affichage, copie réduite de celui de `CasaEngine.Tests`. Decisions: see ADR-0001 | Les tests de l'écran XAML tournent dans `Alundra.Tests`, sans modifier le moteur |
-| D-E13D-18 | **Police après un changement de carte** (2026-09-21, discussion d'architecture après le défaut de D6, §3 D5.f) : « pas de work around », une architecture moderne dans l'esprit de Godot, Unreal et Unity. Côté moteur : handles comptés sur une instance unique par ressource, libération différée au début de chaque changement de monde, `.fnt` comme ressource, registre de polices du jeu résolu par nom de famille, pas de portée « Session ». Côté jeu : la DLL charge `font3` par l'API du moteur, seulement quand un objet qui l'utilise existe. Decisions: see ADR-0036 du moteur | Le correctif provisoire (réenregistrer `font3` sur chaque moteur de texte) est écarté, c'était un contournement. Un chantier moteur `chantier/asset-handles` (`CasaEngineMonogame/ai-agent/tasks/asset-handles-tasks.md`) précède D5.f |
+| D-E13D-18 | **Police après un changement de carte** (2026-09-21, discussion d'architecture après le défaut de D6, §3 D5.f) : « pas de work around », une architecture moderne dans l'esprit de Godot, Unreal et Unity. Côté moteur : handles comptés sur une instance unique par ressource, libération différée au début de chaque changement de monde, `.fnt` comme ressource, registre de polices du jeu résolu par nom de famille, pas de portée « Session ». Côté jeu : la DLL charge `font3` par l'API du moteur, seulement quand un objet qui l'utilise existe. Decisions: see ADR-0036 du moteur | Le correctif provisoire (réenregistrer `font3` sur chaque moteur de texte) est écarté, c'était un contournement. Un chantier moteur `chantier/asset-handles` (`CasaEngineMonogame/ai-agent/tasks/archive/asset-handles-tasks.md`) précède D5.f |
 | D-E13D-14 | « **Cuire la copie A seule.** » Confirmé par l'auteur le 2026-09-21 : chaque boîte est cuite depuis sa copie `SpritesA`, sans la superposer à B | le portage de la décompilation ne lit que A (`MainInventoryManager.cs:1254`) ; A et B sont identiques pour cinq boîtes sur six ; pour la boîte des armes, seule A donne un cadre complet (§1.4). Écart visible avec la maquette montrée à l'auteur : la bordure droite de la boîte des armes, que la superposition abîmait. D3.a n'exporte que A, D3.b ne cuit que A |
 
 ### 2.3 Proposées, sauf avis contraire
@@ -558,7 +558,7 @@ pas ce que l'écran lit. **Curseur** : sa position vient du compteur **avant** l
 | Suites | `Alundra.Tests` **1039/1039** (988 + 51) |
 | Vérification neuve | **CONFIRMED** : les branches du texte et du curseur relues contre l'original, un tick à 0x4d et une image à deux ticks échantillonnés, l'empilement et le retrait de l'écran inchangés ; une remarque P4 : la capture en jeu ne passe pas par le cas du P2 (couvert par la reproduction et le test), à voir en D6 |
 
-### 🚧 D5.f — La police de l'inventaire survit aux changements de carte
+### ✅ D5.f — La police de l'inventaire survit aux changements de carte — faite le 2026-09-21
 
 **Le défaut, trouvé par l'auteur en recette (D6).** Après un changement de carte, le nom de l'arme et la
 description s'affichent en police TTF blanche, et non plus en `font3`.
@@ -575,7 +575,7 @@ description s'affichent en police TTF blanche, et non plus en `font3`.
   contournement, écarté sur décision de l'auteur (D-E13D-18).
 
 **Prérequis** : le chantier moteur `chantier/asset-handles`, T1.1 à T3.2 closes (ADR-0036 ; plan
-`CasaEngineMonogame/ai-agent/tasks/asset-handles-tasks.md`).
+`CasaEngineMonogame/ai-agent/tasks/archive/asset-handles-tasks.md`).
 
 **D5.f.1 — Référence du moteur.** La référence de `CasaEngineMonogame` pointe sur `chantier/asset-handles`
 (qui enregistre lui-même MGUI). `git add CasaEngineMonogame` seul, après `git diff CasaEngineMonogame`. Les
@@ -635,6 +635,26 @@ modifications de l'auteur dans le sous-module ne sont pas touchées. Commit :
     layers` ;
   - aucun avertissement de police.
 - Puis un vérificateur frais, la tranche touchant trois dépôts.
+
+**Fait** (recette du 2026-09-21, la prédiction écrite avant l'exécution) :
+
+| Preuve | Résultat |
+|---|---|
+| Police sur les deux cartes | `FontFamily = 'font3'` sur les quatre textes à l'ouverture sur la 389, et à la réouverture sur la 390 après le portail. Avant le correctif : `'Arial'` sur la 390 |
+| Captures | sur la 389 comme sur la 390, « Poignard » et « Petit poignard. » en `font3` (glyphes vert foncé), comme la capture de D5. Avant le correctif, sur la 390 : la police TTF blanche de la capture de l'auteur |
+| Chargements | **un seul** `Load asset …\UI\font3.fnt` (ligne 1181 du journal) et **un seul** `…\UI\Textures\font3.png` (1182) sur tout le parcours |
+| Ordre | les deux après l'initialisation de la 389 (`object layers`, 838) et avant « inventory screen wired » (1183) ; aucun après l'initialisation de la 390 (1290) |
+| Journal | aucun avertissement de police, aucune exception |
+| Suites | moteur `CasaEngine.Tests` 1738/1739 (seul échec préexistant, hors périmètre) ; `MGUI.Tests` 2989/2989 ; `Alundra.Tests` 1047/1047 |
+| Vérificateur frais | **CONFIRMED**, aucun défaut P0 à P2. Il a rejoué la recette lui-même (mêmes lignes, 1182-1183 dans son journal, mêmes captures), relu la séquence d'un changement de monde et la compatibilité. Il a aussi établi que le décalage de référence MGUI `b8765bc` → `fbd6280` a un diff vide |
+
+**Quatre remarques P4 reportées** (détail dans le plan moteur archivé) :
+- le journal du harnais lit la famille déclarée, et ce sont les captures qui prouvent le rendu ;
+- deux polices de même `face` se retireraient l'une l'autre ;
+- `Unload("default")` laisse une page de police en attente ;
+- `Texture.Dispose` libère une texture partagée : c'est antérieur, et hors du chemin des polices.
+
+La référence du moteur passe à `dceec487`, avec la doc (T4.1) et la clôture du plan moteur.
 
 ### ~~D3.c — Extraction du portrait d'ouverture~~ — retirée, portrait reporté (D-E13D-12 amendée)
 
@@ -751,6 +771,7 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
 | 2026-09-21 | Reconnaissance de D5 à quatre surfaces (livraison d'un écran XAML par la DLL, police, tests sans affichage, écran du HUD) : MGUI sait dessiner une police BMFont (`AddStaticFont`, `StaticSpriteFont.FromBMFont`) et agrandir au rendu (`RenderTransform.Scale`, ADR-0006 du moteur) ; la DLL n'enregistre pas encore font3 ; `Alundra.Tests` ne peut pas construire de `MGDesktop`. **L'auteur tranche** : XAML dans la DLL (D-E13D-16), harnais minimal dans les tests (D-E13D-17), ADR-0001. |
 | 2026-09-21 | **D5 faite** : capture en processus conforme à sa prédiction ; une première vérification REFUTED (seconde ligne de description affichée sans condition, P2 reproduit), corrigée, reproduction et capture rejouées, vérification neuve **CONFIRMED**. Reste D6, la recette de l'auteur. |
 | 2026-09-21 | **Défaut trouvé par l'auteur en recette D6**, puis reproduit en jeu et expliqué : les textes de l'inventaire perdent `font3` après un changement de carte. Le correctif provisoire (réenregistrer par moteur de texte) est écarté, c'était un contournement. Discussion d'architecture sur les pratiques de Godot, Unreal et Unity, relevées dans leur documentation officielle et vérifiées par des contradicteurs. **L'auteur tranche** : handles comptés, libération différée, pas de Session, `.fnt` comme ressource, registre de polices du jeu (D-E13D-18, ADR-0036 du moteur). Chantier moteur `chantier/asset-handles` et tranche D5.f planifiés. Relecture de l'enveloppe : **REVISE**, un blocage accepté en **FIX** (l'ordre des lignes du journal exigé par la recette ne pouvait pas se produire : le constructeur de l'écran prend la police avant la ligne « inventory screen wired »), puis relecture neuve **READY** ; première tranche (T1.1, MGUI) **READY**. Soumis à l'auteur. |
+| 2026-09-21 | **Chantier moteur `chantier/asset-handles` exécuté en mode AUTO et clos** (MGUI `3075d93`, moteur `70d17704` à `dceec487`), **D5.f faite** (`c1f0a69`, `21e2694`). Recette en jeu conforme à sa prédiction : font3 chargée une seule fois et gardée à travers le changement de carte. Vérificateur frais **CONFIRMED**. Reste D6, la recette de l'auteur. |
 
 ### D0.1 — le script de mesure et sa sortie (2026-09-21)
 
