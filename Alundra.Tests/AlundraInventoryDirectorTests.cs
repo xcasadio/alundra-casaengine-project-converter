@@ -696,6 +696,69 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         }
     }
 
+    /// <summary>
+    /// D5 verifier's F1 (P2, reproduced on the real export) and A1: the screen shows what the original's
+    /// DisplayInventoryDescription drew THIS tick (MainInventoryManager.cs:929-1064) - nothing on state 0 or
+    /// 0x4d, nothing on an empty or unowned slot, line 0 only up to 0x8e, both lines from 0x8f. The raw
+    /// prefixes keep their values across ticks that draw nothing, so a second line revealed on one item must
+    /// not stay on screen after the cursor moves.
+    /// </summary>
+    [Fact]
+    public void DrawnDescriptionLines_FollowWhatTheOriginalDrawsEachTick()
+    {
+        var etcPath = WriteEtcFixture(0x24, "Ab", "Cd", "Ef");
+        EngineEnvironment.ProjectPath = etcPath;
+        try
+        {
+            var state = NewState();
+            var director = NewDirector(state);
+            OpenAndSettle(state, director);
+            state.NumberOfItems[0x24 * 2 + 1] = 1;
+            Tick(state, director, AlundraPadState.Down); // slot 6, item 0x24 (owned)
+            Tick(state, director, 0);
+
+            // Name phase: line 0 is the name, line 1 nothing.
+            Assert.Equal("A", director.DrawnDescriptionLine0);
+            Assert.Equal(string.Empty, director.DrawnDescriptionLine1);
+
+            // The tick that runs state 0x4d draws nothing at all (:997-1005, no DisplayInventoryDescription).
+            TickUntil(state, director, () => director.TextRevealState == 0x4d);
+            Tick(state, director, 0);
+            Assert.Equal(0x4e, director.TextRevealState);
+            Assert.Equal(string.Empty, director.DrawnDescriptionLine0);
+            Assert.Equal(string.Empty, director.DrawnDescriptionLine1);
+
+            // First line only until 0x8e included, then both.
+            TickUntil(state, director, () => director.TextRevealState == 0x8e);
+            Tick(state, director, 0);
+            Assert.Equal("Cd", director.DrawnDescriptionLine0);
+            Assert.Equal(string.Empty, director.DrawnDescriptionLine1);
+            TickUntil(state, director, () => director.TextRevealState == 0xcf);
+            Tick(state, director, 0);
+            Assert.Equal("Cd", director.DrawnDescriptionLine0);
+            Assert.Equal("Ef", director.DrawnDescriptionLine1);
+
+            // Right to slot 7 (item 0x29, not owned): nothing drawn, although the prefixes keep "Cd"/"Ef".
+            Tick(state, director, AlundraPadState.Right);
+            Tick(state, director, 0);
+            Assert.Equal(7, director.SelectedSlotId);
+            Assert.Equal(string.Empty, director.DrawnDescriptionLine0);
+            Assert.Equal(string.Empty, director.DrawnDescriptionLine1);
+
+            // Back on the herbs: the name again on line 0, and still nothing on line 1.
+            Tick(state, director, AlundraPadState.Left);
+            Tick(state, director, 0);
+            Tick(state, director, 0);
+            Assert.Equal(6, director.SelectedSlotId);
+            Assert.Equal("A", director.DrawnDescriptionLine0);
+            Assert.Equal(string.Empty, director.DrawnDescriptionLine1);
+        }
+        finally
+        {
+            Directory.Delete(etcPath, recursive: true);
+        }
+    }
+
     [Fact]
     public void RevealedPrefix_NeverSplitsAnEscapePairAcrossTheBoundary()
     {

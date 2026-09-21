@@ -86,6 +86,20 @@ public sealed class AlundraInventoryDirector
     /// trigger".</summary>
     public bool IsActive => ForbiddenWarpFlag != 0;
 
+    /// <summary>D5 addition (docs/plan-e13d-inventaire.md, "Ce que D5 lit"): a minimal read-only fact
+    /// this class did not expose before - whether <see cref="RunPerFrame"/> has run at least once since
+    /// the current <see cref="RunDisplayInventory"/> setup. Added rather than changing any existing
+    /// logic: <see cref="RunDisplayInventory"/> now also clears this flag and <see cref="RunPerFrame"/>
+    /// sets it on entry, nothing else changes. Ports this class' own doc note ("At the setup tick,
+    /// IsActive is already true but the boxes are still at their origin: the original draws nothing at
+    /// this tick") into something D5's screen can read directly instead of re-deriving it: the screen
+    /// shows nothing while <see cref="IsActive"/> is true but this is still false, and hides again the
+    /// moment <see cref="IsActive"/> goes back to false (the AND below then evaluates false on its
+    /// own, with no extra write needed at close).</summary>
+    public bool IsDrawn => IsActive && _hasRunPerFrameSinceSetup;
+
+    private bool _hasRunPerFrameSinceSetup;
+
     private AlundraGameState? _gameState;
     private AlundraItemTables? _itemTables;
     private IAlundraSoundPlayer? _soundPlayer;
@@ -117,8 +131,11 @@ public sealed class AlundraInventoryDirector
         NameVisiblePrefix = string.Empty;
         Description0VisiblePrefix = string.Empty;
         Description1VisiblePrefix = string.Empty;
+        DrawnDescriptionLine0 = string.Empty;
+        DrawnDescriptionLine1 = string.Empty;
         _textRevealCountdown = 0;
         _pendingSubInventoryTransition = false;
+        _hasRunPerFrameSinceSetup = false;
 
         for (var i = 0; i < BoxLayout.Length; i++)
         {
@@ -271,6 +288,17 @@ public sealed class AlundraInventoryDirector
     public string Description0VisiblePrefix { get; private set; } = string.Empty;
     public string Description1VisiblePrefix { get; private set; } = string.Empty;
 
+    /// <summary>D5: the text the original's <c>DisplayInventoryDescription(0)</c> drew on THIS tick - the
+    /// name during its reveal and hold (states 1..0x4c), the first description line from 0x4e - and empty on
+    /// every tick it draws nothing on line 0: state 0, state 0x4d, an empty or unowned slot
+    /// (<c>MainInventoryManager.cs:929-1064</c>). The screen shows exactly this; the raw prefixes above keep
+    /// their values across ticks that draw nothing, which is why they are not what the screen reads.</summary>
+    public string DrawnDescriptionLine0 { get; private set; } = string.Empty;
+
+    /// <summary>D5: the text <c>DisplayInventoryDescription(1)</c> drew on THIS tick - the second description
+    /// line from state 0x8f - and empty otherwise (<c>MainInventoryManager.cs:1053-1062</c>).</summary>
+    public string DrawnDescriptionLine1 { get; private set; } = string.Empty;
+
     /// <summary>Port of <c>INT_8017fef0</c> (<c>MainInventoryManager.cs:1139-1154</c>, <c>FUN_80055f48</c>) -
     /// the shared 3-tick countdown (one character committed every 3rd tick), shared by both description
     /// lines exactly like the original's own single global.</summary>
@@ -409,11 +437,18 @@ public sealed class AlundraInventoryDirector
         // :505 - g_forbiddenWarpFlag = 5 (bits 0 + 2 - SetupBit | SlideOpenBit).
         ForbiddenWarpFlag = SetupBit | SlideOpenBit;
 
+        // D5 addition (this class' own IsDrawn doc): nothing is drawn on THIS tick - RunPerFrame (the
+        // per-frame handler FUN_80054f1c installs, this class' own doc on why it only starts NEXT tick)
+        // has not run yet for this open.
+        _hasRunPerFrameSinceSetup = false;
+
         // :506 - g_inventoryCursorText = 0 (name reveal restarts for whatever slot is selected).
         TextRevealState = 0;
         NameVisiblePrefix = string.Empty;
         Description0VisiblePrefix = string.Empty;
         Description1VisiblePrefix = string.Empty;
+        DrawnDescriptionLine0 = string.Empty;
+        DrawnDescriptionLine1 = string.Empty;
         _textRevealCountdown = 0;
 
         // :507 - g_playerControlFlags |= MenuOpen.
@@ -461,6 +496,10 @@ public sealed class AlundraInventoryDirector
     /// <summary>Port of <c>FUN_80056598</c> (<c>MainInventoryManager.cs:779-923</c>).</summary>
     private void RunPerFrame(AlundraGameState state)
     {
+        // D5 addition (this class' own IsDrawn doc): from this call on, this open's boxes/cursor/text are
+        // drawn - set unconditionally on entry, every call, cheap and idempotent.
+        _hasRunPerFrameSinceSetup = true;
+
         // :783 - (g_forbiddenWarpFlag & 6) == 0 -> read pad input; else -> advance the box slide.
         if ((ForbiddenWarpFlag & (SlideCloseBit | SlideOpenBit)) == 0)
         {
@@ -810,6 +849,39 @@ public sealed class AlundraInventoryDirector
         RunPostEquipItemCleanup();
     }
 
+    /// <summary>D5 addition (docs/plan-e13d-inventaire.md, "Ce que D5 lit"): a minimal read-only query
+    /// the director did not expose before, reusing the EXACT same two tables and resolution rule
+    /// <see cref="RunEquipItem"/>/<see cref="RunDisplayInventoryTexts"/> already use (no logic changed
+    /// on either of them) - what item, if any, grid slot <paramref name="slotIndex"/> (0..23) currently
+    /// shows: null for an empty slot (<c>g_ItemIdBySlotIndex</c> == 0) or an unowned one
+    /// (<c>GetNumberOfItem</c> == 0 for a fixed id, or the resolved slot id is
+    /// <see cref="AlundraPlayerManager.NoItem"/>), otherwise the resolved item id. D5's composer uses
+    /// this to draw the 24 grid icons and to find which slot currently holds the equipped weapon/item
+    /// (for the two selection frames), exactly the same resolution <c>DisplayWeaponAndItemIcons</c>
+    /// (<c>MainInventoryManager.cs:1267-1457</c>) performs inline, per slot, every frame.</summary>
+    public int? ResolveSlotItemId(int slotIndex)
+    {
+        if (_gameState == null || _itemTables == null)
+        {
+            return null;
+        }
+
+        var fixedId = GItemIdBySlotIndex[slotIndex];
+
+        if (fixedId == 0)
+        {
+            return null;
+        }
+
+        if (fixedId == -1)
+        {
+            var value = AlundraPlayerManager.GetItemIdFromSlotId(_gameState, _itemTables, (uint)SlotIdByInventorySlotIndex[slotIndex]);
+            return value == AlundraPlayerManager.NoItem ? null : (int)value;
+        }
+
+        return AlundraPlayerManager.GetNumberOfItem(_gameState, fixedId) == 0 ? null : fixedId;
+    }
+
     /// <summary>Port of <c>FUN_8005ac90</c> (<c>MainInventoryManager.cs:1858-1898</c>) - the CD read
     /// position for music-box-like items. HAS NO EFFECT IN THE PORT: the original's own C# already marks
     /// <c>SetCdReadPosition</c> unported ("PARTIAL: ... not ported in the current C# CD/audio backend",
@@ -853,6 +925,11 @@ public sealed class AlundraInventoryDirector
     /// reveal state machine, ticked once per active frame (see <see cref="RunPerFrame"/>'s own tail).</summary>
     private void RunDisplayInventoryTexts(AlundraGameState state)
     {
+        // What DisplayInventoryDescription draws THIS tick, set by the branches that call it and left
+        // empty by the ones that do not (see DrawnDescriptionLine0/1).
+        DrawnDescriptionLine0 = string.Empty;
+        DrawnDescriptionLine1 = string.Empty;
+
         if (_itemTables == null)
         {
             return;
@@ -913,6 +990,7 @@ public sealed class AlundraInventoryDirector
                 NameVisiblePrefix = RevealedPrefix(name, TextRevealState - 1);
             }
 
+            DrawnDescriptionLine0 = NameVisiblePrefix; // :983 DisplayInventoryDescription(0)
             return;
         }
 
@@ -920,6 +998,7 @@ public sealed class AlundraInventoryDirector
         if ((uint)(cursor - 0x11) < 0x3c)
         {
             TextRevealState = cursor + 1;
+            DrawnDescriptionLine0 = NameVisiblePrefix; // :992 DisplayInventoryDescription(0)
             return;
         }
 
@@ -947,6 +1026,7 @@ public sealed class AlundraInventoryDirector
                 Description0VisiblePrefix = RevealedPrefix(firstLine, TextRevealState - 0x4e);
             }
 
+            DrawnDescriptionLine0 = Description0VisiblePrefix; // :1022 DisplayInventoryDescription(0)
             return;
         }
 
@@ -956,6 +1036,7 @@ public sealed class AlundraInventoryDirector
             Description1VisiblePrefix = string.Empty;
             _textRevealCountdown = 0;
             TextRevealState = cursor + 1;
+            DrawnDescriptionLine0 = Description0VisiblePrefix; // :1032 DisplayInventoryDescription(0)
             return;
         }
 
@@ -974,10 +1055,17 @@ public sealed class AlundraInventoryDirector
                 Description1VisiblePrefix = RevealedPrefix(secondLine, TextRevealState - 0x8f);
             }
 
+            DrawnDescriptionLine0 = Description0VisiblePrefix; // :1053 DisplayInventoryDescription(0)
+            DrawnDescriptionLine1 = Description1VisiblePrefix; // :1054 DisplayInventoryDescription(1)
             return;
         }
 
-        // :cursor == 0xcf - both lines are complete, nothing more to advance.
+        // :1059-1062 - cursor == 0xcf: both lines are complete and drawn, nothing more to advance.
+        if (cursor == 0xcf)
+        {
+            DrawnDescriptionLine0 = Description0VisiblePrefix;
+            DrawnDescriptionLine1 = Description1VisiblePrefix;
+        }
     }
 
     /// <summary>Port of <c>FUN_80055f48</c> (<c>MainInventoryManager.cs:1139-1154</c>) - commits one

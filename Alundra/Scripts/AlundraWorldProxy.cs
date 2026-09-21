@@ -18,6 +18,7 @@ using CasaEngine.Framework.Physics;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using CasaEngine.Framework.Scene.World;
+using CasaEngine.Framework.UI;
 using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -362,6 +363,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <see cref="_hudScreenWired"/> - a new world's screen gets a new presenter over the SAME session-scoped
     /// <see cref="AlundraHudDirector.Instance"/>.</summary>
     private AlundraHudPresenter? _hudPresenter;
+
+    /// <summary>E13.d D5 (docs/plan-e13d-inventaire.md): same "per-proxy retry gate" shape as
+    /// <see cref="_hudScreenWired"/> - guards <see cref="TryWireInventoryScreenOnce"/>'s own view lookup,
+    /// never the session-scoped <see cref="AlundraInventoryDirector"/> itself.</summary>
+    private bool _inventoryScreenWired;
+
+    /// <summary>E13.d D5: the presenter that pushes/removes <see cref="AlundraInventoryScreen"/> and pushes
+    /// its per-tick <see cref="InventoryDisplayModel"/> - null until <see cref="TryWireInventoryScreenOnce"/>
+    /// succeeds (production), or until a test attaches one via <see cref="AttachInventoryPresenterForTests"/>.</summary>
+    private AlundraInventoryPresenter? _inventoryPresenter;
 
     /// <summary>
     /// This world's own <see cref="TileMapData"/> (resolved once in <see cref="InitializeWithWorld"/>,
@@ -1170,6 +1181,49 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         _hudPresenter = new AlundraHudPresenter(AlundraHudDirector.Instance, view);
     }
 
+    /// <summary>
+    /// E13.d D5's own version of <see cref="TryWireHudScreenOnce"/>: retry-until-success, once per frame,
+    /// same reason (the UI view is created strictly AFTER <see cref="InitializeWithWorld"/> ran). Unlike
+    /// the HUD's screen, <see cref="AlundraInventoryScreen"/> is NOT pushed here: it is modal
+    /// (<see cref="IUIScreen.IsModal"/>) and stays down until the director actually draws it, so the
+    /// presenter itself owns push/remove (dialogue precedent, <see cref="AlundraInventoryPresenter"/>'s
+    /// own class doc) - this method only constructs the presenter once a live view and asset content
+    /// manager exist.
+    /// </summary>
+    private void TryWireInventoryScreenOnce()
+    {
+        if (_inventoryScreenWired)
+        {
+            return;
+        }
+
+        var uiView = _world?.Game?.GameManager?.ViewManager?.GetActiveUIView();
+        var assetContentManager = _world?.Game?.AssetContentManager;
+        if (uiView == null || assetContentManager == null)
+        {
+            return; // retry next frame - same reason TryWireHudScreenOnce retries.
+        }
+
+        var inventoryScreen = new AlundraInventoryScreen(assetContentManager);
+        _inventoryPresenter = new AlundraInventoryPresenter(
+            AlundraInventoryDirector.Instance, GameState, ItemTables, inventoryScreen, inventoryScreen, uiView);
+        _inventoryScreenWired = true;
+        Logs.WriteInfo("AlundraWorldProxy: inventory screen wired to the active UI view (post-bootstrap retry).");
+    }
+
+    /// <summary>Test-only seam: attaches an <see cref="AlundraInventoryPresenter"/> over the SAME
+    /// session-scoped <see cref="AlundraInventoryDirector.Instance"/> this proxy's own production wiring
+    /// (<see cref="TryWireInventoryScreenOnce"/>) would use, but against any <see cref="IAlundraInventoryView"/>/
+    /// <see cref="IUIScreen"/>/<see cref="IUIViewRuntime"/> - typically recording test doubles, since a real
+    /// <see cref="AlundraInventoryScreen"/>'s window is not buildable headless. Lets a test drive
+    /// <see cref="Update(float)"/>'s real per-tick loop and observe push/remove/render timing without a live
+    /// graphics stack - same shape as <see cref="AttachHudPresenterForTests"/>.</summary>
+    internal void AttachInventoryPresenterForTests(IAlundraInventoryView view, IUIScreen screen, IUIViewRuntime? uiView = null)
+    {
+        _inventoryPresenter = new AlundraInventoryPresenter(
+            AlundraInventoryDirector.Instance, GameState, ItemTables, view, screen, uiView);
+    }
+
     /// <summary>E13.c S3: the equipment source handed to the production presenter - the port of the two
     /// lookups <c>HudManager.DisplayHudWeaponAndItem</c> makes every frame, over this proxy's own session
     /// state and item tables (<see cref="AlundraPlayerManager.ResolveHudEquipmentIcons"/>).</summary>
@@ -1832,12 +1886,22 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         {
             GameState.TickPad.Update(GameState.LastPadState.ButtonsHold);
             AlundraInventoryDirector.Instance.Tick(PlayerEntity);
+
+            // E13.d D5 (docs/plan-e13d-inventaire.md): the presenter, right after the director's own
+            // Tick() for this SAME tick - same "presenter runs immediately after its director, inside the
+            // per-tick loop" shape the HUD's own hudTick loop uses, needed here for the same reason this
+            // loop's own comment above already gives for the director itself (a consumer of TickPad's
+            // edges - and here, of the director's own per-tick state - must not wait until after the
+            // loop). Null until a view is wired (TryWireInventoryScreenOnce production path, or
+            // AttachInventoryPresenterForTests in tests).
+            _inventoryPresenter?.Tick();
         }
 
         // E12.a wiring fix: must run BEFORE the map-events pass below - a scripted dialogue opened
         // on this very frame has to find a live presenter (see the method's own doc).
         TryWireDialoguePresenterOnce();
         TryWireHudScreenOnce();
+        TryWireInventoryScreenOnce();
 
         // C1 (docs/plan-camera-ordre-frame.md §3): map-events run FIRST, before the camera block - a
         // faithful port of the original's own frame order (GameEngine.cs:1638-1664/1743-1753:

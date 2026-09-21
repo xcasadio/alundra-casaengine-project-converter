@@ -15,6 +15,14 @@
     <ProjectReference Include="..\CasaEngineMonogame\CasaEngine\CasaEngine.csproj" />
   </ItemGroup>
 
+  <!-- E13.d D5 (docs/plan-e13d-inventaire.md, D-E13D-16, ADR-0001): the main inventory screen's XAML
+       belongs to this DLL, embedded like the engine embeds DialogueScreen.xaml, loaded through
+       XamlDocumentSource from AlundraInventoryScreen - never exported by the converter into
+       alundra-project, never copied there by this project's own build. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Screens\InventoryScreen.xaml" />
+  </ItemGroup>
+
   <!-- The engine loads the gameplay DLL from the project root (see ProjectWriter.GameplayDllName
        and ProjectSettingsHelper.Load), so drop the built assembly there after every build. -->
   <Target Name="CopyGameplayDllToProject" AfterTargets="Build">

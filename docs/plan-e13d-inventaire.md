@@ -514,7 +514,7 @@ portage non (§6 point 9).
 | Suites | `Alundra.Tests` **988/988** (959 + 29) |
 | Vérification neuve | **CONFIRMED** ; cache sans données périmées (changement de dossier, 200 réécritures), `TryResolveYesNo` inchangé ; deux remarques P4 reportées : le message de journal d'un échec parle encore de OUI/NON, et le cache n'est pas protégé contre des appels concurrents (aucun aujourd'hui) |
 
-### ⏳ D5 — DLL : l'écran XAML, le présentateur, la capture
+### ✅ D5 — DLL : l'écran XAML, le présentateur, la capture — faite le 2026-09-21
 
 **Prérequis** : D0.9 (close), D3.b, D4.
 Écran XAML (**six images de boîte**, les sprites de D3.b, chacune à son `(X, Y)` natif et glissant pour son
@@ -526,6 +526,36 @@ images, le code leur donne leur source, avec les identifiants des six sprites en
 glyphes du HUD (`AlundraHudScreen.cs:447-478`). Tests headless sur `MGDesktop` ; capture en
 processus de l'inventaire ouvert, **prédite avant d'être prise**. **D5 se clôt sans le portrait**, quelle
 que soit la réponse au §6 point 6.
+
+**Fait** : `Alundra/Screens/InventoryScreen.xaml`, embarqué dans la DLL (D-E13D-16, ADR-0001) ;
+`AlundraInventoryScreen` (`XamlUIScreenBase`, couche `Menu`, modal, agrandi au rendu par
+`RenderTransform.Scale` ; enregistre font3 une fois par processus, et sinon journalise une fois et garde la
+police par défaut, sans contournement) ; `AlundraInventoryComposer`, pur, qui compose au tick l'affichage
+entier (boîtes, icônes centrées, cadres, curseur, textes, chiffres) ; `AlundraInventoryPresenter`, qui
+empile l'écran à la première image dessinée et le retire à la fin du glissement de fermeture ;
+`AlundraWorldProxy` le branche une fois et le fait tourner dans la boucle de la manette, juste après le
+directeur. Le directeur gagne `IsDrawn` (rien à l'image de la mise en place), `ResolveSlotItemId` et
+`DrawnDescriptionLine0/1` (ci-dessous). Tests : un harnais `MGDesktop` sans affichage dans
+`Alundra.Tests/UI` (D-E13D-17), le XAML chargé et ses éléments nommés trouvés, le compositeur et le
+présentateur sans MGUI.
+
+**Ce que l'écran montre du texte** : ce que `DisplayInventoryDescription` de l'original a dessiné **à ce
+tick-là**, publié par le directeur (`DrawnDescriptionLine0/1`) : rien à l'état 0 ni à 0x4d, rien sur une case
+vide ou un objet non possédé, la ligne 0 seule jusqu'à 0x8e, les deux lignes dès 0x8f
+(`MainInventoryManager.cs:929-1064`). Les préfixes bruts gardent leur valeur d'un tick à l'autre ; ce n'est
+pas ce que l'écran lit. **Curseur** : sa position vient du compteur **avant** l'incrément de ce tick
+(`:907-910`), son image du compteur après (`:1593-1601`).
+
+| Preuve | Résultat |
+|---|---|
+| Prédiction écrite avant la capture | fenêtre 1280×944, échelle 4 ; les six boîtes à leur place de repos, la bordure droite de la boîte des armes ; l'épée de base en case 0 à (64,96), le cadre de sélection dessus, le curseur vers (136,64) ; « Poignard » en nom d'arme ; `0000`, `00`, `00` ; capture A : le nom sur la ligne 0 ; capture B : « Petit poignard. », ligne 1 vide ; font3 enregistrée ou un avertissement |
+| Capture en processus (back-buffer, héros aux commandes, `Start` par la vraie entrée) | **conforme à la prédiction** : boîtes identiques à leurs images cuites hors des éléments posés dessus, épée et cadre à (64,96), curseur en phase 0 (A) et en phase 3, décalé de (-1,0) (B), « Poignard » puis « Petit poignard. », chiffres à zéro, font3 enregistrée (aucun avertissement) ; les objets 17 et 25 de la nouvelle partie ne sont pas dans la grille (ils vont au sous-inventaire) |
+| Première vérification | **REFUTED** : un P2 reproduit sur l'export réel, la seconde ligne de description affichée sans condition, donc restée à l'écran après un déplacement vers une case vide ou non possédée et pendant le déroulement du nom suivant ; un P3, la ligne 0 affichait un tick de trop à l'état 0x4d ; un P4, la position du curseur prenait le compteur après son incrément |
+| Correctif | le directeur publie ce qui est dessiné au tick (`DrawnDescriptionLine0/1`), le compositeur l'affiche tel quel ; phase de position du curseur `((d + 0x27) % 0x28) / 10` ; un test du directeur au tick près, des tests du compositeur sur les ticks de changement de phase |
+| Reproduction | le programme du vérificateur, sur l'export réel : après le déplacement, lignes 0 et 1 vides ; retour sur les herbes, le nom sur la ligne 0 et rien sur la ligne 1 |
+| Capture rejouée après le correctif | textes, nom d'arme, chiffres et case 0 **identiques au pixel** au premier passage ; seul le décor animé diffère |
+| Suites | `Alundra.Tests` **1039/1039** (988 + 51) |
+| Vérification neuve | **CONFIRMED** : les branches du texte et du curseur relues contre l'original, un tick à 0x4d et une image à deux ticks échantillonnés, l'empilement et le retrait de l'écran inchangés ; une remarque P4 : la capture en jeu ne passe pas par le cas du P2 (couvert par la reproduction et le test), à voir en D6 |
 
 ### ~~D3.c — Extraction du portrait d'ouverture~~ — retirée, portrait reporté (D-E13D-12 amendée)
 
@@ -548,7 +578,8 @@ Ouvrir par `Start`, `L2` ou `R2` ; naviguer, y compris en maintenant une directi
 un objet ; lire le texte déroulant ; fermer ; le héros et le monde sont figés pendant, **y compris ouvert
 en pleine chute**, et la chute reprend à la fermeture ; le HUD se cache à l'ouverture et revient à la
 fermeture, comme dans l'original ; **pendant un dialogue aussi, les PNJ et le héros sont figés**
-(D-E13D-15).
+(D-E13D-15). Et, laissé par la vérification de D5 : après avoir lu les deux lignes de description d'un
+objet, passer sur une case vide ou un objet non possédé, puis revenir : aucune ligne ne doit rester.
 
 ---
 
@@ -638,6 +669,7 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
 | 2026-09-21 | **D2 faite**, vérificateur **CONFIRMED** : contrôleurs et animations figés pendant tout `MenuOpen`, dégel exact ; passe placée en fin de mise à jour du monde, pour l'ordre du moteur. |
 | 2026-09-21 | **D4 faite** : une première vérification REFUTED (valeurs `null` des textes, P1 reproduit), corrigée, reproduction rejouée, vérification neuve **CONFIRMED**. |
 | 2026-09-21 | Reconnaissance de D5 à quatre surfaces (livraison d'un écran XAML par la DLL, police, tests sans affichage, écran du HUD) : MGUI sait dessiner une police BMFont (`AddStaticFont`, `StaticSpriteFont.FromBMFont`) et agrandir au rendu (`RenderTransform.Scale`, ADR-0006 du moteur) ; la DLL n'enregistre pas encore font3 ; `Alundra.Tests` ne peut pas construire de `MGDesktop`. **L'auteur tranche** : XAML dans la DLL (D-E13D-16), harnais minimal dans les tests (D-E13D-17), ADR-0001. |
+| 2026-09-21 | **D5 faite** : capture en processus conforme à sa prédiction ; une première vérification REFUTED (seconde ligne de description affichée sans condition, P2 reproduit), corrigée, reproduction et capture rejouées, vérification neuve **CONFIRMED**. Reste D6, la recette de l'auteur. |
 
 ### D0.1 — le script de mesure et sa sortie (2026-09-21)
 
