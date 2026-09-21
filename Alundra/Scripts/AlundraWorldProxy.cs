@@ -1798,6 +1798,19 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         var gameplayBlocked = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
             || AlundraWarpDirector.Instance.IsTransitionInProgress;
 
+        // E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-9): the pad the inventory reads, advanced once
+        // per LOGIC tick from this frame's sampled hold state. The original refreshes g_padState1 at the
+        // head of every 50 Hz frame, before anything reads it (GameEngine.cs:1518), so this pass runs
+        // first. "Dehors": the original never gates its pad update (PadManager.UpdatePads runs from the
+        // main loop), so neither does this. LastPadState was sampled THIS frame by the player's own
+        // AlundraEntityScriptProxy.Update, which runs before this proxy (World.cs:443-491). A consumer of
+        // TickPad's edges must read them inside this same loop, right after each Update: after the loop,
+        // a two-tick frame would have overwritten the first tick's edge.
+        for (var padTick = 0; padTick < ticksThisFrame; padTick++)
+        {
+            GameState.TickPad.Update(GameState.LastPadState.ButtonsHold);
+        }
+
         // E12.a wiring fix: must run BEFORE the map-events pass below - a scripted dialogue opened
         // on this very frame has to find a live presenter (see the method's own doc).
         TryWireDialoguePresenterOnce();

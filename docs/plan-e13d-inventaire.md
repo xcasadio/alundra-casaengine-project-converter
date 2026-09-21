@@ -309,7 +309,7 @@ leur sortie, pour que la mesure soit refaisable.
 révisé et **resoumis à l'auteur avant** que D1, D2 ou D3 ne commence. **Déclenché le 2026-09-21** : §1.2 et
 §1.5 contredits, corrigés ci-dessus ; resoumis (§7).
 
-### ⏳ D1 — Manette : cinq boutons et la répétition
+### ✅ D1 — Manette : cinq boutons et la répétition — faite le 2026-09-21
 
 **Prérequis** : D0.4, D0.10 ; touches fixées par D-E13D-11.
 Cinq bits sur `AlundraPadState` (`L1`, `L2`, `R1`, `R2`, `Select`), cinq lignes d'`ActionBits`, cinq
@@ -321,6 +321,20 @@ une touche maintenue se tait 20 ticks, puis répète **à chaque tick** (`Repeat
 valeur, §1.3) ; un changement de l'état des boutons remet à zéro. Les consommateurs existants (héros,
 dialogue, opcode `0x2F`) ne changent pas d'horloge (§6 point 4). Le convertisseur change :
 **régime de preuve complet**, diff prédit = `Data/Alundra.buttonsMapping` + `report.json`.
+
+**Fait** : `AlundraPadState` gagne `L1`, `L2`, `R1`, `R2`, `Select` aux valeurs de l'original ;
+`ActionBits` et `PlayerSetupWriter` les lient aux touches de l'auteur, ajoutées après les treize actions
+existantes ; `AlundraTickPad` porte `PadManager.UpdatePad` ligne à ligne, et `AlundraGameState.TickPad` avance
+une fois par tick en tête de `AlundraWorldProxy.Update`, hors de la porte. **Un consommateur de ses fronts
+doit les lire dans cette même boucle**, juste après chaque mise à jour (D4).
+
+| Preuve | Résultat |
+|---|---|
+| Prédiction écrite avant le code | diff = `Data/Alundra.buttonsMapping` + `report.json` |
+| Export complet en place, contre le manifeste de référence | **exactement** ces deux fichiers ; 18 liaisons, les 13 premières identiques à l'octet |
+| Double export | `report.json` seul |
+| Suites | convertisseur 172/172, `Alundra.Tests` **947/947** (930 + 17) |
+| Vérificateur frais | **CONFIRMED**, trois remarques P4 : la boucle de la manette n'est testée que par simulation (le sera par D4) ; l'arbre porte des changements hors D1, non indexés ; un appui plus court qu'une image sans tick se perd, par construction (D-E13D-9) |
 
 ### ⏳ D2 — Le gel, pour ce que la porte T2 ne couvre pas
 
@@ -533,6 +547,7 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
 | 2026-09-21 | Relecture neuve après cette correction : **REVISE**, deux blocages, tous deux acceptés en **FIX**. (1) **Le saut n'est pas porté** (`AlundraPlayerManager.cs:66-73`, `:286-289`, aucun `RequestJump` dans la DLL) : le cas « ouvert en plein saut » ne peut pas se produire dans le portage ; §1.1, §1.2, D2, §4 et D6 parlent maintenant de la chute, état `Falling`, avec un test du contrôleur seul pour l'état `Jumping`. (2) **D3.c n'était définie nulle part** alors qu'elle écrirait hors du dépôt : elle devient une tranche conditionnelle, qui ne commence qu'après une révision relue du plan ; le portrait sort de D5 en D5.p, et D5 se clôt sans lui. **Deuxième REVISE de cette révision : plafond atteint.** Disposition en session principale, puis une seule relecture de clôture. |
 | 2026-09-21 | **Relecture de clôture : REVISE**, un blocage, accepté en **FIX** : la restauration remet à zéro le déplacement vertical externe, que la DLL ne redéclare qu'une fois par tick ; sur une image de dégel sans tick, une escalade près du sol se serait fait ramener au sol. D2 le redéclare juste après `RestoreStateSnapshot`, avec la valeur de son propriétaire, et gagne un test de dégel à zéro tick. **La relecture de clôture étant la dernière autorisée, cette correction n'est pas relue** : le plan part à l'auteur sans READY, avec ce statut écrit. |
 | 2026-09-21 | **L'auteur réapprouve le plan révisé**, correction non relue comprise, et tranche : **portrait reporté** (D-E13D-12 amendée, D3.c et D5.p retirées) ; **gel sur tout `MenuOpen`** (D-E13D-15). Exécution reprise en mode AUTO : D1, D2, D3.a, D3.b, D4, D5. |
+| 2026-09-21 | **D1 faite**, vérificateur **CONFIRMED**. Export prouvé (diff mesuré = prédit, double export = `report.json`). |
 
 ### D0.1 — le script de mesure et sa sortie (2026-09-21)
 

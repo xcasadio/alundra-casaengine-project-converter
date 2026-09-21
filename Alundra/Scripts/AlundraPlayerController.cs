@@ -14,16 +14,21 @@ namespace Alundra.Scripts;
 /// for the full original bit layout), built once per frame by
 /// <see cref="AlundraPlayerController.BuildPadState"/> from the converted "AlundraButtons"
 /// <see cref="ButtonsMapping"/> (converter E2-A, <c>Data/Alundra.buttonsMapping</c>) and fed to
-/// <see cref="AlundraPlayerManager.MovePlayer"/>. Only the bits the 9 mapped actions can ever reach
-/// (Up/Right/Down/Left/Cross/Circle/Square/Triangle/Start) are ported here - L1/L2/R1/R2/Select have no
-/// mapped action, so those original PadState bits are never produced by this struct.
+/// <see cref="AlundraPlayerManager.MovePlayer"/>. Every bit a mapped action can reach is ported here, with
+/// the original's own values (PadState.cs:5-19): the nine gameplay buttons, and since E13.d D1
+/// (docs/plan-e13d-inventaire.md, D-E13D-11) L1/L2/R1/R2/Select, which open and switch the inventories.
 /// </summary>
 public readonly struct AlundraPadState
 {
+    public const uint L2 = 0x0001;
+    public const uint R2 = 0x0002;
+    public const uint L1 = 0x0004;
+    public const uint R1 = 0x0008;
     public const uint Triangle = 0x0010;
     public const uint Circle = 0x0020;
     public const uint Cross = 0x0040;
     public const uint Square = 0x0080;
+    public const uint Select = 0x0100;
     public const uint Start = 0x0800;
     public const uint Up = 0x1000;
     public const uint Right = 0x2000;
@@ -63,7 +68,7 @@ public sealed class AlundraPlayerController : PlayerController
     private const string ButtonsMappingCatalogName = "AlundraButtons";
 
     /// <summary>
-    /// Action name (from <c>Data/Alundra.buttonsMapping</c>'s own 9 actions, converter E2-A) -&gt; the
+    /// Action name (from <c>Data/Alundra.buttonsMapping</c>'s own actions, converter E2-A and E13.d D1) -&gt; the
     /// original PSX pad bit it feeds (see <see cref="AlundraPadState"/>'s own doc and
     /// <c>Alundra/Scripts/PlayerManager.cs:413/549/964/1904/430</c>, quoted by the converter's own E2-A
     /// note in <c>docs/plan-conversion-totale.md</c> §4 for the PSX-&gt;pad mapping this mirrors).
@@ -89,6 +94,15 @@ public sealed class AlundraPlayerController : PlayerController
         ("UseItem", AlundraPadState.Circle),
         ("Sprint", AlundraPadState.Triangle),
         ("Menu", AlundraPadState.Start),
+        // E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-11): the shoulder buttons and Select, bound by
+        // the converter to U/Y/I/O/P and LeftShoulder/LeftTrigger/RightShoulder/RightTrigger/Back. Start,
+        // L2 or R2 opens the main inventory (GameEngine.cs:1567-1576, PadState.OpenInventory), L1/R1
+        // switch to the sub-inventory once it is open.
+        ("L1", AlundraPadState.L1),
+        ("L2", AlundraPadState.L2),
+        ("R1", AlundraPadState.R1),
+        ("R2", AlundraPadState.R2),
+        ("Select", AlundraPadState.Select),
     };
 
     /// <summary>
@@ -99,7 +113,7 @@ public sealed class AlundraPlayerController : PlayerController
     /// survives across world reloads, so re-registering unconditionally would pile up duplicate mappings.
     /// Loads the "AlundraButtons" asset through <see cref="AssetContentManager"/> (the engine now
     /// registers an <c>AssetLoader&lt;ButtonsMapping&gt;</c> - CasaEngineMonogame commit fe19e1e6,
-    /// previously a gap this method had to route around) and registers each of its 9 mappings
+    /// previously a gap this method had to route around) and registers each of its mappings
     /// individually, keyed by name, via <see cref="RegisterMappings"/> (which is what actually guards
     /// against duplicates, per-name - <see cref="InputMappingManager.Contains"/>, also added in fe19e1e6).
     /// No-op (logged once by <see cref="AlundraWorldProxy"/>'s own caller pattern - see that class'
@@ -187,7 +201,7 @@ public sealed class AlundraPlayerController : PlayerController
     internal Func<AlundraPadState>? PadStateProviderForTests;
 
     /// <summary>
-    /// Builds this frame's <see cref="AlundraPadState"/> by OR-ing in each of the 9 mapped actions' bit
+    /// Builds this frame's <see cref="AlundraPadState"/> by OR-ing in each mapped action's bit
     /// (<see cref="ActionBits"/>) whenever <see cref="PlayerController.Input"/>'s
     /// <see cref="PlayerInput.GetButtonState"/> reports it held/just-pressed. Returns the zero state
     /// (nothing held - a safe no-op input for <see cref="AlundraPlayerManager.MovePlayer"/>) when
@@ -222,7 +236,7 @@ public sealed class AlundraPlayerController : PlayerController
 
     /// <summary>
     /// Pure core of <see cref="BuildPadState"/>, factored out for unit testing without a live
-    /// <see cref="CasaEngineGame"/>/<see cref="PlayerInput"/>: OR-ing in each of the 9 mapped actions' bit
+    /// <see cref="CasaEngineGame"/>/<see cref="PlayerInput"/>: OR-ing in each mapped action's bit
     /// (<see cref="ActionBits"/>) whenever <paramref name="inputMappingManager"/>
     /// <see cref="InputMappingManager.Contains">contains</see> that action's name AND
     /// <paramref name="getButtonState"/> reports it held/just-pressed. An action missing from

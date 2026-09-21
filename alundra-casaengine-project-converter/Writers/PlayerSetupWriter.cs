@@ -30,6 +30,9 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///  - Square (Attack)  -&gt; X       (PlayerManager.cs:549/964)
 ///  - Circle (UseItem) -&gt; B       (PlayerManager.cs:1904)
 ///  - Triangle (Sprint)-&gt; Y       (PlayerManager.cs:430)
+///  - L1 -&gt; U / LeftShoulder, L2 -&gt; Y / LeftTrigger, R1 -&gt; I / RightShoulder, R2 -&gt; O / RightTrigger,
+///    Select -&gt; P / Back (E13.d D1, docs/plan-e13d-inventaire.md, D-E13D-11: the author's keys; Start,
+///    L2 or R2 opens the main inventory, L1/R1 switch to the sub-inventory)
 /// D-pad and the Menu/Start binding have no PSX equivalent worth naming (Alundra has no analogue to a
 /// "pause with Select/Start" beyond the one worth carrying over).
 ///
@@ -98,8 +101,9 @@ public static class PlayerSetupWriter
     }
 
     /// <summary>
-    /// Writes Data/Alundra.buttonsMapping: 9 digital actions, keyboard + one gamepad alternative
-    /// each (see the class doc for the PSX-&gt;pad table and the single-alternative-slot choice).
+    /// Writes Data/Alundra.buttonsMapping: 14 digital actions, keyboard + one gamepad alternative
+    /// each (see the class doc for the PSX-&gt;pad table and the single-alternative-slot choice), plus the
+    /// four analog left-stick half-axes.
     /// GamePadNumber "One", Invert false and DeadZone 0.75 are the engine's own InputMapping
     /// defaults, kept explicit here since KeyButton/InputMapping.Load read every field
     /// unconditionally (see RPGDemo's buttonsMapping.buttonsMapping).
@@ -135,6 +139,13 @@ public static class PlayerSetupWriter
             // PSX Triangle (PlayerManager.cs:430).
             BuildDigitalBinding("Sprint", "LeftShift", "Y"),
             BuildDigitalBinding("Menu", "Escape", "Start"),
+            // E13.d D1 (D-E13D-11): appended after the existing actions so the thirteen entries above
+            // keep their exact bytes in the exported file.
+            BuildDigitalBinding("L1", "U", "LeftShoulder"),
+            BuildDigitalBinding("L2", "Y", "LeftTrigger"),
+            BuildDigitalBinding("R1", "I", "RightShoulder"),
+            BuildDigitalBinding("R2", "O", "RightTrigger"),
+            BuildDigitalBinding("Select", "P", "Back"),
         };
 
         var buttonsMappingNode = new JObject
