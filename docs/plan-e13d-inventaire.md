@@ -3,7 +3,7 @@
 **État** : ⏳ rédigé le 2026-09-21, relu **READY** ; décisions de l'auteur du 2026-09-21 (§2.2), dont la
 dernière, les boîtes en **image cuite** (D-E13D-13), a fait réécrire D3 et clore D0.1 et D0.2 ; cette
 révision, corrigée après une relecture **REVISE** puis relue **READY** (§7), attend l'approbation de
-l'auteur. Aucune ligne de code écrite ; D0 attend le
+l'auteur ; D-E13D-14 confirmée par l'auteur ensuite. Aucune ligne de code écrite ; D0 attend le
 feu vert de l'auteur.
 **Naissance** : `docs/plan-conversion-totale.md` §E13, E13.d — « porter l'original tel quel » ; découpage
 décidé par l'auteur le 2026-09-19 : **l'inventaire principal d'abord** (ouverture, fermeture, équipement),
@@ -180,6 +180,7 @@ conditions de l'original n'est **pas vérifiée**, D0 la mesure.
 | D-E13D-11 | **Touches** : `Y` = `L2`, `U` = `L1`, `I` = `R1`, `O` = `R2`, `P` = `Select` ; à la manette, `LeftShoulder` = `L1`, `LeftTrigger` = `L2`, `RightShoulder` = `R1`, `RightTrigger` = `R2`, `Back` = `Select`. | D1 lie ces touches. |
 | D-E13D-12 | **Le portrait d'ouverture dès la première passe.** | D5 le porte. |
 | D-E13D-13 | « **Comment dessiner les boîtes : 1 avec image cuite.** » Le fond de chaque boîte a l'aspect de l'original, **cuit une fois par le convertisseur en une image par boîte**, après que l'auteur a vu la maquette des trois façons (§6 point 1). | D3 devient D3.a (le patron en CSV dans l'analyseur) et D3.b (la cuisson et six sprites dans le convertisseur) ; D5 affiche une image par boîte ; D0.1 et D0.2 sont closes (§1.4). La maquette superposait les copies A et B ; l'image cuite n'en prend qu'une (D-E13D-14). |
+| D-E13D-14 | « **Cuire la copie A seule.** » Confirmé par l'auteur le 2026-09-21 : chaque boîte est cuite depuis sa copie `SpritesA`, sans la superposer à B | le portage de la décompilation ne lit que A (`MainInventoryManager.cs:1254`) ; A et B sont identiques pour cinq boîtes sur six ; pour la boîte des armes, seule A donne un cadre complet (§1.4). Écart visible avec la maquette montrée à l'auteur : la bordure droite de la boîte des armes, que la superposition abîmait. D3.a n'exporte que A, D3.b ne cuit que A |
 
 ### 2.3 Proposées, sauf avis contraire
 
@@ -189,7 +190,6 @@ conditions de l'original n'est **pas vérifiée**, D0 la mesure.
 | D-E13D-6 | Un **directeur** d'inventaire pur (machine à états au tick, sans MGUI), un **présentateur** qui pousse vers une vue, un **écran XAML** — le découpage du dialogue et du HUD | testable sans tête, déjà prouvé deux fois dans ce dépôt |
 | D-E13D-7 | L'écran en `UILayer.Menu`, `IsModal = true` | la couche que le moteur destine à l'inventaire, et le blocage des écrans inférieurs |
 | D-E13D-8 | **La répétition des touches est portée**, pas contournée : `ButtonsJustPressedByInterval` calculé comme `PadManager.UpdatePad` | la navigation de l'original en dépend ; l'opcode qui le lit en profite aussi |
-| D-E13D-14 | **Cuire la copie A seule** de chaque boîte, sans la superposer à B | le portage de la décompilation ne lit que A (`MainInventoryManager.cs:1254`) ; A et B sont identiques pour cinq boîtes sur six ; pour la boîte des armes, seule A donne un cadre complet (§1.4). Écart visible avec la maquette montrée à l'auteur : la bordure droite de la boîte des armes, que la superposition abîmait |
 | D-E13D-9 | **Fronts et répétition comptés au tick logique**, l'équivalent de l'image à 50 Hz de l'original : l'état des boutons reste échantillonné par image rendue, mais l'inventaire lit des fronts et une répétition mis à jour une fois par tick | un appui donne exactement un front, et 20 ticks valent 20 images de l'original, quelle que soit la cadence d'affichage |
 
 ---
@@ -372,6 +372,7 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
 | 2026-09-21 | **L'auteur tranche le §6 point 1 : « 1 avec image cuite » (D-E13D-13).** Reconnaissance en lecture seule à trois surfaces (analyseur, convertisseur, DLL et moteur), puis faits porteurs de décision revérifiés en session principale. Un relevé disait `clut` 3 partout : faux, la mesure trouve 0, 3, 5 et 6 ; un autre ne voyait pas de mode de mélange dans le code : les appels de l'original sont en commentaire, `SetSemiTrans(sprite, 0)`. D0.1 close par mesure (1644 cases sur 1644 retrouvées), D0.2 par lecture ; D3 réécrite en D3.a et D3.b ; D5 ajustée. Relecture à venir. |
 | 2026-09-21 | Relecture de la révision : **REVISE**, un blocage, accepté en **FIX**. La révision affirmait, marqué [lu], que la couche B se pose sur la couche A. Faux : `FUN_800548a4` n'appelle dans l'original que des macros d'initialisation ; A et B sont les deux copies d'un double tampon, et l'original n'en montre qu'une par image (`DisplayUiBoxes`, `0x80055d78`). Mesure ajoutée (script et sortie ci-dessous) : A et B égales pour cinq boîtes, le B du nom d'arme est un clone de la décompilation, et **la boîte des armes diffère sur 26 cases** ; dessinées séparément, A donne un cadre complet et B non, et la maquette montrée à l'auteur superposait les deux, avec ce défaut. D-E13D-14 : cuire A seule ; D3.a exporte 822 cases, D3.b recopie sans mélange, compteurs et tests ajustés. |
 | 2026-09-21 | Relecture neuve après la correction : **READY**. La révision part à l'auteur : D-E13D-13 enregistrée, D-E13D-14 proposée, D0.1 et D0.2 closes, D3.a et D3.b prêtes à l'approbation avec D0. |
+| 2026-09-21 | **L'auteur confirme D-E13D-14 : « cuire la copie A seule ».** La décision passe des proposées (§2.3) aux tranchées (§2.2). Le plan attend toujours son approbation et le feu vert pour D0. |
 
 ### D0.1 — le script de mesure et sa sortie (2026-09-21)
 
