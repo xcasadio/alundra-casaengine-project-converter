@@ -379,6 +379,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// the font then stays pending until the next world's screen takes it again.</summary>
     private AlundraInventoryScreen? _inventoryScreen;
 
+    /// <summary>Engine ADR-0037: the HUD screen this proxy built. It holds its glyph and icon sprites, and
+    /// <see cref="OnEndPlay"/> disposes it so they are given back when this world ends.</summary>
+    private AlundraHudScreen? _hudScreen;
+
     /// <summary>
     /// This world's own <see cref="TileMapData"/> (resolved once in <see cref="InitializeWithWorld"/>,
     /// same instance <see cref="AlundraCellsCollisionField"/>/<see cref="AdoptPlayerPawn"/> already read) -
@@ -749,8 +753,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
             try
             {
+                // Engine ADR-0037: an entity asset is a template, read fresh for every spawn.
                 var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(
-                    record, guid => world.Game.AssetContentManager.Load<Entity>(guid), SpriteRecordCatalog,
+                    record, guid => world.Game.AssetContentManager.LoadCopy<Entity>(guid), SpriteRecordCatalog,
                     tileMapData: _tileMapData);
                 var spawnedProxy = entity.GameplayProxy as AlundraEntityScriptProxy;
                 if (spawnedProxy != null)
@@ -1161,6 +1166,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         }
 
         var hudScreen = new AlundraHudScreen(AlundraHudDirector.Instance, assetContentManager);
+        _hudScreen = hudScreen;
         uiView.PushScreen(hudScreen);
 
         // E13 C3 (D-E13-8): attached in the SAME call as the push, strictly BEFORE this same Update's own
@@ -1431,32 +1437,52 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// or any tileset-resolution failure (missing asset id, catalog miss), the same tolerant shape as
     /// <see cref="AlundraCellsCollisionField.TryCreate"/> right above this method's own call site.
     /// </summary>
-    private static NavigationGrid2D? TryBuildNavigationGrid(World world, TileMapData tileMapData)
+    internal static NavigationGrid2D? TryBuildNavigationGrid(World world, TileMapData tileMapData)
     {
-        List<TileSetData> tileSets;
+        return TryBuildNavigationGrid(world.Name, world.Game.AssetContentManager, tileMapData);
+    }
+
+    /// <summary>Engine ADR-0037: the tilesets are held only while the grid is built - the grid copies what it
+    /// needs (<c>NavigationGrid2D.TryCreateFromTileMap</c>) - and given back right after; the map's own
+    /// <c>TileMapComponent</c> holds them for as long as the map lives.</summary>
+    internal static NavigationGrid2D? TryBuildNavigationGrid(string worldName, AssetContentManager assetContentManager, TileMapData tileMapData)
+    {
+        var tileSetHolds = new List<AssetHandle<TileSetData>>(tileMapData.TileSetDataAssetIds.Count);
         try
         {
-            tileSets = new List<TileSetData>(tileMapData.TileSetDataAssetIds.Count);
-            foreach (var assetId in tileMapData.TileSetDataAssetIds)
+            var tileSets = new List<TileSetData>(tileMapData.TileSetDataAssetIds.Count);
+            try
             {
-                tileSets.Add(world.Game.AssetContentManager.Load<TileSetData>(assetId));
+                foreach (var assetId in tileMapData.TileSetDataAssetIds)
+                {
+                    var hold = assetContentManager.Acquire<TileSetData>(assetId);
+                    tileSetHolds.Add(hold);
+                    tileSets.Add(hold.Asset);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logs.WriteWarning(
+                    $"AlundraWorldProxy: world '{worldName}' - failed to resolve its tilesets for "
+                    + $"navigation grid construction ({ex.Message}); navigation disabled (degraded mode).");
+                return null;
+            }
+
+            if (NavigationGrid2D.TryCreateFromTileMap(tileMapData, tileSets, cellSize: 1f, out var grid))
+            {
+                return grid;
             }
         }
-        catch (Exception ex)
+        finally
         {
-            Logs.WriteWarning(
-                $"AlundraWorldProxy: world '{world.Name}' - failed to resolve its tilesets for "
-                + $"navigation grid construction ({ex.Message}); navigation disabled (degraded mode).");
-            return null;
-        }
-
-        if (NavigationGrid2D.TryCreateFromTileMap(tileMapData, tileSets, cellSize: 1f, out var grid))
-        {
-            return grid;
+            foreach (var hold in tileSetHolds)
+            {
+                hold.Dispose();
+            }
         }
 
         Logs.WriteWarning(
-            $"AlundraWorldProxy: world '{world.Name}' has no navigation layer ('{NavigationGrid2D.NavigationRoleProperty}' "
+            $"AlundraWorldProxy: world '{worldName}' has no navigation layer ('{NavigationGrid2D.NavigationRoleProperty}' "
             + $"= '{NavigationGrid2D.NavigationRoleGrid}'); navigation disabled (degraded mode).");
         return null;
     }
@@ -2300,8 +2326,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         try
         {
+            // Engine ADR-0037: an entity asset is a template, read fresh for every spawn.
             var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(
-                record, guid => _world.Game.AssetContentManager.Load<Entity>(guid), SpriteRecordCatalog,
+                record, guid => _world.Game.AssetContentManager.LoadCopy<Entity>(guid), SpriteRecordCatalog,
                 parentEntity: logicEntity.LogicContextEntity, tileMapData: _tileMapData);
             var spawnedProxy = entity.GameplayProxy as AlundraEntityScriptProxy;
             if (spawnedProxy != null)
@@ -2479,6 +2506,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // keeps the font pending, so the next world's screen takes the same instance again, unreloaded.
         _inventoryScreen?.Dispose();
         _inventoryScreen = null;
+
+        // Engine ADR-0037: the HUD screen gives back its sprites the same way.
+        _hudScreen?.Dispose();
+        _hudScreen = null;
     }
 
     /// <summary>Test-only seam: the inventory screen <see cref="OnEndPlay"/> disposes, as
@@ -2486,6 +2517,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     internal void AttachInventoryScreenForTests(AlundraInventoryScreen screen)
     {
         _inventoryScreen = screen;
+    }
+
+    /// <summary>Test-only seam: the HUD screen <see cref="OnEndPlay"/> disposes, as
+    /// <see cref="TryWireHudScreenOnce"/> would have built it (which needs a live game).</summary>
+    internal void AttachHudScreenForTests(AlundraHudScreen screen)
+    {
+        _hudScreen = screen;
     }
 
     public override IGameplayProxy Clone()

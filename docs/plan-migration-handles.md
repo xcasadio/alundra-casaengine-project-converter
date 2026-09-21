@@ -52,7 +52,25 @@ passe un portail, et compte les lignes `Load asset` au niveau trace.
 
 ## Tâches
 
-### 🚧 M1 — Migrer la DLL (tâche T7.1 du plan moteur)
+### ✅ M1 — Migrer la DLL (tâche T7.1 du plan moteur)
+
+**Fait :**
+- **Modèles d'entités** (`AlundraWorldProxy.cs`, les deux créations d'entités) : `LoadCopy<Entity>`.
+- **Tilesets de la grille de navigation :** pris par `Acquire` le temps de la construction, puis rendus dans
+  un `finally`. `NavigationGrid2D.TryCreateFromTileMap` recopie ce qu'il lit, et la carte de tuiles tient
+  les tilesets pour toute sa vie. La méthode gagne une surcharge interne testable sans jeu.
+- **`ButtonsMapping` :** `LoadCopy`. Ses `InputMapping` sont confiés au gestionnaire d'entrées de la partie
+  par `RegisterMappings` : c'est lui le propriétaire, il n'y a rien à tenir ensuite. C'est l'écart assumé
+  au texte, qui prévoyait un `Acquire`.
+- **Écrans :**
+  - l'écran du HUD et l'écran d'inventaire tiennent leurs `SpriteData` par `Acquire` et rendent sprites et
+    handles dans `Dispose` ;
+  - l'écran du HUD devient `IDisposable`, et le proxy le libère dans `OnEndPlay` comme l'inventaire.
+- **Tests :** trois nouveaux — tilesets rendus après la construction de la grille, tileset tenu ailleurs
+  préservé, HUD libéré par `OnEndPlay`. La libération des sprites des écrans n'est pas testable sans
+  périphérique graphique (`Sprite.Create`) ; elle est couverte par M2.
+- **Résultats :** `Alundra.Tests` 1050/1050 ; `rg "\.Load<|AddAsset\(|GetAsset<" Alundra` ne rend plus que
+  des commentaires.
 
 **Étape 1 faite :** la référence du moteur passe de `dceec487` à `d7891342` (T6.1 close, ancienne API pas
 encore supprimée). `Alundra.Tests` reste à 1047/1047, DLL inchangée.
