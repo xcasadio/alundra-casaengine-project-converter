@@ -381,7 +381,7 @@ fermeture pour la fermeture. **Égalité exacte exigée**, ce sont des entiers, 
 diffèrent. Un troisième test relève les index d'image sur 40 ticks et vérifie les cadences de §1.4,
 pip de magie compris à sa valeur corrigée.
 
-### ⏳ C4 — La jauge s'assombrit avec le décor (réécrite le 2026-09-19 sous D-E13-11)
+### ✅ C4 — La jauge s'assombrit avec le décor (réécrite le 2026-09-19 sous D-E13-11) — **validée en jeu par l'auteur le 2026-09-20**
 
 **Ce que la première rédaction disait, et pourquoi c'était faux** : « l'original ferme le HUD avant
 le fondu ». Réfuté, voir §6 point 6 : au warp, l'original capture l'image avec la jauge et fond
@@ -405,6 +405,36 @@ fond noir ; à l'arrivée elle est déjà là, sans glissement. Capture en proce
 **Arrêt** : si C4.moteur révèle que l'interface MGUI n'est pas dessinée par le pipeline 2D mais après
 lui, le mode « au-dessus » doit se poser à cet endroit-là et non dans une passe ; c'est le plan
 moteur qui le dira, pas celui-ci.
+
+**C4.moteur : livré et mergé le 2026-09-20.** La couche `AboveUI` du `ScreenEffectService` (ADR-0033),
+plus son canal alpha et le voile qui ignore la profondeur (ADR-0034). L'arrêt ci-dessus ne s'est pas
+déclenché : le crochet s'est posé dans `IUICompositionService`, après la composition de l'interface,
+et couvre les trois pipelines d'un coup.
+
+**C4.dll : fait le 2026-09-20.** Build 0 erreur, suite **888/888** (+4, zéro régression).
+
+Ce que la lecture du code a imposé, et qui n'était pas dans la rédaction du plan : **il y a deux fondus
+de warp, pas un**. Le départ passe par `AlundraWarpDirector` → `BeginFadeEffect`, mais l'arrivée passe
+par `AlundraScreenFadeDirector.InstallForMapEntry`, armée à chaque entrée de carte. Les deux doivent
+couvrir l'interface — au départ la jauge s'assombrit, à l'arrivée elle s'éclaircit avec le décor.
+
+Deux pièges évités, tous deux vérifiés dans le code plutôt que supposés :
+
+1. **La couche ne peut pas se déduire de `_warpActive`.** Ce drapeau est celui de la **machine A**, dont
+   les couleurs sont mortes dans ce portage — `_warpCurrentR/G/B` est avancé mais jamais lu, et
+   `PushToAttachedService` ne pousse que la machine B. Keyer dessus aurait donné une couche qui ne
+   correspond à aucun fondu dessiné.
+2. **Un fondu d'opcode ne doit jamais hériter de la couche d'un warp.** `BeginFadeEffect` remet donc le
+   drapeau à zéro, et le départ passe par une porte dédiée, `BeginWarpDepartureFade`, qui fait les deux
+   d'un seul appel plutôt qu'un fondu suivi d'un drapeau qui pourraient se désynchroniser. Un test pince
+   précisément ce retour en arrière.
+
+L'interface `IAlundraScreenFadeDirector` est **inchangée** : le chemin des opcodes ne voit toujours que
+`BeginFadeEffect`, et seul le directeur de warp connaît la nouvelle porte.
+
+🧪 **Reste l'acceptation, qui ne passe pas par la suite** : en jeu, à un warp, vérifier que la jauge
+s'assombrit avec le décor et n'est jamais lisible sur fond noir, et qu'à l'arrivée elle est déjà là sans
+glissement. Capture en processus à mi-fondu.
 
 ### ✅ C5.a — DLL : l'activation de recette par variable d'environnement (D-E13-10) (verifier CONFIRMED, 873/873)
 
@@ -480,11 +510,14 @@ l'écran consomme. Le pool de 26 tuiles ne change pas : ce ne sont pas des tuile
 en jeu, capture en processus jauge affichée : deux quads aux bonnes positions, coins aux bonnes
 teintes, mélange à moitié avec le décor, sous la jauge, qui suivent le glissement.
 
-### ⏳ C5.b — Recette en jeu
+### ✅ C5.b — Recette en jeu — **passée par l'auteur le 2026-09-20**
 
 **Contenu** : avec la variable de C5.a, vérifier l'affichage, le rattrapage, le roulement de
 l'argent, les deux transitions, la persistance pendant un dialogue, et, après C4, l'assombrissement
 de la jauge avec le décor au warp.
+
+**Résultat, 2026-09-20** : l'auteur a passé les deux recettes et les déclare bonnes. C4 et C5.b sont
+closes. Aucune réserve remontée.
 
 ---
 

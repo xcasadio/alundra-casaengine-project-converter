@@ -118,6 +118,20 @@ public sealed class AlundraScreenFadeDirector : IAlundraScreenFadeDirector
     /// </summary>
     private bool _fadeGateActiveEnteringPush;
 
+    /// <summary>
+    /// Whether the fade machine B currently holds covers the INTERFACE as well as the scene (C4,
+    /// D-E13-11). True for the two warp fades and nothing else: the departure fade
+    /// (<see cref="BeginWarpDepartureFade"/>) and the arrival fade armed at every map entry
+    /// (<see cref="InstallForMapEntry"/>).
+    /// <para/>
+    /// The original does not close the HUD before a warp fade - it captures the frame WITH the gauge and
+    /// fades over it, so the gauge darkens with the scenery instead of staying legible on black. A fade
+    /// driven by an event opcode (<see cref="BeginFadeEffect"/>) is not a warp and stays below the
+    /// interface, which is why that method clears this flag: an opcode fade can never inherit a warp's
+    /// layer by accident.
+    /// </summary>
+    private bool _fadeCoversUi;
+
     // ---- Machine A: the warp timer - g_warpFadeColor*/g_fadeColor*_Target/g_warpFadeColor*_Step, plus
     // g_warpFlags. Colours are DEAD (see this class' own doc) - kept only for faithful flag/duration
     // timing.
@@ -169,6 +183,7 @@ public sealed class AlundraScreenFadeDirector : IAlundraScreenFadeDirector
                              // ApplyScreenFade (:972) calls BeginFadeEffect - so the original's own
                              // BeginFadeEffect ALWAYS observes the flag already 1 at this call site.
         _tpage = 2; // subtractive (GameEngine.cs:896's own drawPage for case 0).
+        _fadeCoversUi = true; // C4: the ARRIVAL fade of a warp - the gauge brightens with the scenery.
         ApplyDurationEdgeForFadeMachine(activeAtEntry: _fadeActive, duration: 16);
     }
 
@@ -184,7 +199,22 @@ public sealed class AlundraScreenFadeDirector : IAlundraScreenFadeDirector
         _persistLock = persistLock;
         _fadeActive = true; // written before the duration edge runs, same order as the opcode handler.
         _tpage = tpage;
+        _fadeCoversUi = false; // C4: an opcode fade is not a warp; it stays below the interface.
         ApplyDurationEdgeForFadeMachine(activeAtEntry: _fadeActive, duration);
+    }
+
+    /// <summary>
+    /// The warp DEPARTURE fade (C4): the same machine B fade as <see cref="BeginFadeEffect"/>, marked as
+    /// covering the interface so the life gauge darkens with the scenery instead of staying legible on
+    /// black. One call rather than a fade plus a flag, so the two can never drift apart.
+    /// <para/>
+    /// Deliberately not on <see cref="IAlundraScreenFadeDirector"/>: the event-opcode path must keep
+    /// reaching only <see cref="BeginFadeEffect"/>, and only <see cref="AlundraWarpDirector"/> departs.
+    /// </summary>
+    public void BeginWarpDepartureFade(int r, int g, int b, int tpage, int duration, int persistLock)
+    {
+        BeginFadeEffect(r, g, b, tpage, duration, persistLock);
+        _fadeCoversUi = true;
     }
 
     /// <inheritdoc/>
@@ -367,6 +397,9 @@ public sealed class AlundraScreenFadeDirector : IAlundraScreenFadeDirector
             _ => SpriteBlendMode.Opaque,
         };
 
+        // C4 (D-E13-11): a warp fade draws AFTER the interface is composed, so the gauge darkens with the
+        // scene. Set on every push rather than once, because the service keeps its layer across Clear.
+        _service.Layer = _fadeCoversUi ? ScreenEffectLayer.AboveUI : ScreenEffectLayer.BelowUI;
         _service.SetOverlay(r, g, b, blend);
     }
 
@@ -378,6 +411,7 @@ public sealed class AlundraScreenFadeDirector : IAlundraScreenFadeDirector
 
         _fadeActive = false;
         _fadeGateActiveEnteringPush = false;
+        _fadeCoversUi = false;
         _persistLock = 0;
         _currentR = _currentG = _currentB = 0;
         _targetR = _targetG = _targetB = 0;
