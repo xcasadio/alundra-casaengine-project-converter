@@ -64,6 +64,13 @@
     <None Include="..\alundra-datas-analyser\AlundraTools\AlundraTools\ItemPortrait.csv" Link="ItemPortrait.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <!-- docs/plan-e13c-icones-hud.md, slice S2.b, D-E13C-2: g_itemDropProperties (StaticVariables.cs:841),
+         98 raw rows of its four byte fields, Field0 left out as unrecovered. Same "linked, not copied"
+         precedent: the analyser owns it, this converter only reads it and republishes it raw as
+         Data/item-drop-properties.json. -->
+    <None Include="..\alundra-datas-analyser\AlundraTools\AlundraTools\ItemDropProperties.csv" Link="ItemDropProperties.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

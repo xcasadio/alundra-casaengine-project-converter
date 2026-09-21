@@ -7,8 +7,8 @@ using CasaEngine.Framework.Assets;
 namespace AlundraCasaEngineProjectConverter.Writers;
 
 /// <summary>
-/// Republishes the two item tables the analyser owns, raw, under <c>Data/</c>:
-/// docs/plan-e13c-icones-hud.md, slice S2, decisions D-E13C-2 and D-E13C-4.
+/// Republishes the three item tables the analyser owns, raw, under <c>Data/</c>:
+/// docs/plan-e13c-icones-hud.md, slices S2 and S2.b, decisions D-E13C-2 and D-E13C-4.
 ///
 ///  - <c>Data/items-properties.json</c> is <c>g_itemsProperties</c> as it stands: an array of 100
 ///    arrays of 5, outer index the <c>item_id</c>, inner order the original array's column order
@@ -16,6 +16,10 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///  - <c>Data/item-icon-index.json</c> maps each item that has a portrait to the asset id of the
 ///    <c>.sprite</c> this converter has ALREADY emitted for that portrait's image. 88 items; item 42
 ///    is absent because the game has no portrait record for it.
+///  - <c>Data/item-drop-properties.json</c> is <c>g_itemDropProperties</c> as it stands: an array of
+///    98 arrays of 4, outer index the <c>item_id</c>, inner order the original record's byte fields
+///    (field 1, sound effect index, field 3, field 4). Field 3 stays one byte: its high bit unlocks
+///    the item at the start of a new game and its low seven bits mean something else to the game.
 ///
 /// Nothing here extracts or writes an image. The portrait of an item turns out to be an image the
 /// animation pass already reached, so the whole correspondence is a lookup: the signature in
@@ -30,7 +34,7 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 /// signature, not merely to some existing sprite). Anything else is an error in the report and the
 /// item is dropped rather than published with a dangling id.
 ///
-/// Neither file is registered in the asset catalog, like every other raw companion this converter
+/// None of these files is registered in the asset catalog, like every other raw companion this converter
 /// writes (<c>sound-group-index.json</c>, <c>music-index.json</c>, <c>etc-index.json</c>,
 /// <c>sprite-records.json</c>, <c>balance.json</c>): <c>json</c> is not a CasaEngine asset type, so
 /// nothing loads them back and the verification pass does not look for them.
@@ -40,6 +44,7 @@ public static class ItemsWriter
     private const string DataRelativeDirectory = "Data";
     private const string ItemsPropertiesFileName = "items-properties.json";
     private const string ItemIconIndexFileName = "item-icon-index.json";
+    private const string ItemDropPropertiesFileName = "item-drop-properties.json";
 
     private static readonly JsonWriterOptions WriterOptions = new() { Indented = true };
 
@@ -78,14 +83,43 @@ public static class ItemsWriter
         var targetDirectory = Path.Combine(outputDirectory, DataRelativeDirectory);
         Directory.CreateDirectory(targetDirectory);
 
-        WriteItemsProperties(targetDirectory, properties.RowsByItemId, report);
+        WriteRowTable(targetDirectory, ItemsPropertiesFileName, properties.RowsByItemId);
+        report.Increment("Items.PropertiesRows", properties.RowsByItemId.Count);
         WriteItemIconIndex(targetDirectory, portraits.PortraitByItemId, report);
+        WriteItemDropProperties(targetDirectory, report);
     }
 
-    private static void WriteItemsProperties(
-        string targetDirectory, IReadOnlyList<IReadOnlyList<int>> rowsByItemId, ConversionReport report)
+    /// <summary>
+    /// The unlock table stands on its own: its CSV is resolved and checked here rather than with the two
+    /// above, so that a missing third table is reported as its own error and never takes down files
+    /// that do not depend on it.
+    /// </summary>
+    private static void WriteItemDropProperties(string targetDirectory, ConversionReport report)
     {
-        using (var stream = File.Create(Path.Combine(targetDirectory, ItemsPropertiesFileName)))
+        var dropCsvPath = Path.Combine(AppContext.BaseDirectory, "ItemDropProperties.csv");
+        if (!File.Exists(dropCsvPath))
+        {
+            report.Errors.Add(
+                $"ItemDropProperties.csv not found at '{dropCsvPath}'; "
+                + $"{DataRelativeDirectory}/{ItemDropPropertiesFileName} not written.");
+            return;
+        }
+
+        var drops = ItemDropPropertiesCatalogReader.Read(dropCsvPath);
+        foreach (var warning in drops.Warnings)
+        {
+            report.Warnings.Add(warning);
+        }
+
+        WriteRowTable(targetDirectory, ItemDropPropertiesFileName, drops.RowsByItemId);
+        report.Increment("Items.DropPropertiesRows", drops.RowsByItemId.Count);
+    }
+
+    /// <summary>A raw table: one JSON array per item, indexed by <c>item_id</c>, values as read.</summary>
+    private static void WriteRowTable(
+        string targetDirectory, string fileName, IReadOnlyList<IReadOnlyList<int>> rowsByItemId)
+    {
+        using (var stream = File.Create(Path.Combine(targetDirectory, fileName)))
         using (var writer = new Utf8JsonWriter(stream, WriterOptions))
         {
             writer.WriteStartArray();
@@ -102,8 +136,6 @@ public static class ItemsWriter
 
             writer.WriteEndArray();
         }
-
-        report.Increment("Items.PropertiesRows", rowsByItemId.Count);
     }
 
     private static void WriteItemIconIndex(
