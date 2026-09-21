@@ -52,7 +52,10 @@ passe un portail, et compte les lignes `Load asset` au niveau trace.
 
 ## Tâches
 
-### ⏳ M1 — Migrer la DLL (tâche T7.1 du plan moteur)
+### 🚧 M1 — Migrer la DLL (tâche T7.1 du plan moteur)
+
+**Étape 1 faite :** la référence du moteur passe de `dceec487` à `d7891342` (T6.1 close, ancienne API pas
+encore supprimée). `Alundra.Tests` reste à 1047/1047, DLL inchangée.
 
 **Prérequis :** tâches moteur T1.1 à T6.1 closes. La nouvelle API est présente, l'ancienne pas encore
 supprimée.
