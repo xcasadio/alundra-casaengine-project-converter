@@ -1,12 +1,14 @@
 # Plan — E13.c : les icônes d'arme et d'accessoire du HUD
 
-**État** : 🚧 **approuvé par l'auteur le 2026-09-19**, exécution en cours.
+**État** : ✅ **clos le 2026-09-21** : approuvé par l'auteur le 2026-09-19, S0 à S3 livrées, S4 passée en
+jeu par l'auteur le 2026-09-21 ; mergé dans `main` le 2026-09-21.
 **Naissance** : l'auteur, ayant vu la jauge en jeu, a demandé les deux cases de gauche ; la
 reconnaissance a établi que leurs icônes ne sont **pas exportées** (voir `docs/plan-e13-hud.md`,
 D-E13-1 amendée, et `docs/plan-conversion-totale.md` §E13). Les fonds gouraud sont la tranche C6 du
 plan E13 ; ce plan-ci ne couvre que les icônes.
 **Branches** : `chantier/e13-hud` dans le parent, où ce plan vit déjà, et
-`chantier/e13c-portraits` dans l'analyseur, créée depuis `master` le 2026-09-19.
+`chantier/e13c-portraits` dans l'analyseur, créée depuis `master` le 2026-09-19 ; puis
+`chantier/e13c-suite` dans le parent et `chantier/e13c-drop-properties` dans l'analyseur pour S1.c à S4.
 
 ---
 
@@ -408,10 +410,11 @@ coin haut-gauche de l'icône sur celui de la case ; le portage la centre désorm
 | `Alundra.Tests` | **930/930** (923 + 7 : les deux cases, cinq tailles, la case d'accessoire, l'échelle impaire) |
 | **Capture en processus, F1** | prédiction écrite avant le code : épée à **(64, 66)**, deux rangées écran de fond au-dessus et deux au-dessous. Mesuré : les 134 blocs 4×4 uniformes et de la couleur exacte à partir de (64, 66), 2 rangées de fond de chaque côté, aucune couleur de l'épée dans la case d'accessoire. La même capture lue à l'ancienne origine (64, 64) échoue (107 blocs non uniformes) |
 
-### ⏳ S4 — Recette en jeu
+### ✅ S4 — Recette en jeu — passée par l'auteur le 2026-09-21
 
 **Contenu** : F1, l'épée de base apparaît **centrée** dans la case de gauche ; la case de droite reste un
-fond vide ; les deux suivent le glissement.
+fond vide ; les deux suivent le glissement. **Validée par l'auteur** (« tout est ok »), après l'amendement
+du centrage.
 
 ## 4. Acceptation d'ensemble
 
@@ -469,6 +472,7 @@ nette, qui glisse avec la jauge ; suites `Alundra.Tests` et convertisseur vertes
 | 2026-09-19 | **Approuvé par l'auteur. S0 exécutée**, partie en agent en lecture seule, partie en session principale sur les données réelles. Trois bornes confirmées, convention d'absence d'icône établie, position et identifiant de secteur identiques sans doublon, 693 signatures existantes avec leur digest d'ordre, planche de taille constante et sa référence copiée. **Trois corrections au plan** : la règle d'arrêt sur les palettes était trop large, la planche portant déjà 225 recouvrements à palettes différentes entre images existantes ; le relevé des portraits doit précéder le test d'intersection, d'où le découpage de S1 en S1.a et S1.b ; et l'objet 42 désigne un enregistrement nul, question remontée à l'auteur. |
 | 2026-09-21 | **S3 exécutée.** Reconnaissance à trois surfaces (décompilation, HUD de la DLL, chargement et capture), contrat relu **READY**. Portage ligne à ligne de la chaîne arme → objet → icône et de l'inventaire de la nouvelle partie ; l'icône est une tuile de plus du canevas, entre les fonds de C6 et les tuiles. 923/923. Capture F1 en processus mesurée contre les pixels du sprite source : position, échelle, netteté et case d'accessoire vide conformes à la prédiction écrite avant. Reste S4, la recette de l'auteur. |
 | 2026-09-21 | **Amendement de S3 : l'icône centrée dans sa case**, sur décision de l'auteur (D-E13D-10, étendue par lui au HUD). L'icône porte le rectangle de sa case et l'écran la centre en pixels écran ; l'épée descend de deux pixels écran. 930/930 ; capture F1 mesurée contre la prédiction écrite avant le code. Aucune des 85 icônes ne dépasse la case. |
+| 2026-09-21 | **S4 passée en jeu par l'auteur : E13.c est close.** Merge de l'analyseur et du parent dans `main` demandé par l'auteur, en local, sans push. |
 | 2026-09-21 | **S1.c et S2.b exécutées, en mode AUTO choisi par l'auteur**, après le merge de C4 et de S2 dans `main`. L'auteur tranche le point 3 : les quatre octets bruts. Mesuré avant d'écrire : 98 enregistrements, `Field0` vide partout, `Field3` porteur de deux informations, déverrouillés {1, 17, 25}. Relecture adverse du contrat : **READY**. CSV re-dérivé par un second analyseur, 0 écart sur 392 valeurs. Export prouvé : un ajout, `report.json`, les deux JSON de S2 et `AssetInfos.json` inchangés au bit près, double export ⊆ `{report.json}`. Points ouverts 3 et 8 clos. |
 | 2026-09-20 | **S2 exécutée, et une mesure l'a simplifiée avant qu'une ligne ne soit écrite.** Toutes les banques de `map_alundra.json` partageant une seule planche, `Ids.For("sprite:map_alundra_spritesheet.png:<signature>")` résout **88/88** contre l'`AssetInfos.json` réel : la correspondance se lit, elle ne s'extrait pas. Première relecture adverse : **REVISE**, trois P2, tous acceptés. (1) Changer le type de retour de `ConvertSprites` cassait quatre fichiers de tests existants que la portée ne listait pas — **conception changée** plutôt que rapiécée : la signature n'est plus touchée, le writer recalcule l'identifiant et le **prouve** contre le catalogue. (2) `banks.First(b => b.IsAlundraBank)` levait une exception sur les fixtures à `SpriteRecords` vide — disparu avec la conception. (3) L'acceptation pouvait passer alors que chaque objet pointait un sprite existant mais **faux** — remplaçee par une preuve d'appariement indépendante de la formule, par le nom de fichier. Relecture de clôture : **READY**. Export prouvé : diff mesuré = deux JSON + `report.json`, `AssetInfos.json` inchangé, zéro `.sprite`, double export ⊆ `{report.json}`. Trois arbitrages de l'auteur : branche neuve depuis `main`, `items-properties.json` en 100 tableaux de 5, S2 reste à deux catalogues (point ouvert 8). |
 | 2026-09-19 | Relecture de clôture : **REVISE**, un P1 et un P2, tous deux acceptés. (1) P1 — le test de collision par égalité de cellule manquait les recouvrements partiels, chaque signature étant dessinée entière à sa propre origine et taille ; et l'acceptation au pixel exemptait justement les rectangles où le dommage tombe. Corrigé : intersection de rectangles par page contre toute signature existante, intersection à même palette autorisée avec sa justification, à palette différente arrêt ; ensemble exempté redéfini comme les seuls rectangles des portraits nouveaux et sans intersection, comparaison sur toute la planche. (2) P2 — l'ordre de dessin est celui de première rencontre et n'était pas figé ; S1 concatène les portraits strictement après la séquence existante, S0 relève les rangs, S1 prouve le préfixe inchangé, arrêt ajouté. **Deuxième REVISE consécutif, plafond atteint : disposition en session principale, pas de nouvelle soumission.** Le plan part à l'auteur pour approbation avec ces corrections. |
