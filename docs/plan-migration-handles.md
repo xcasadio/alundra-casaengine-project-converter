@@ -101,7 +101,36 @@ vide.
 - `chore(submodules): point at the engine migrated to counted handles (M1)` ;
 - `refactor(alundra): hold assets through the engine's handles (M1)`.
 
-### ⏳ M2 — Recette après la suppression
+### ✅ M2 — Recette après la suppression
+
+**Fait :**
+- **Référence du moteur :** `0b0abd05`, qui clôt le plan moteur et ne touche que sa documentation. Le code
+  recetté et vérifié est celui de `1e7a4e36` (T9.1 ; la suppression T8.1 est `1d2eaa60`). DLL buildée,
+  `Alundra.Tests` 1050/1050.
+- **Harnais `d6-font` étendu :** après la 390, il prend le premier portail de la 390 vers la 389 (la 390 en a
+  quatre, O1 est sans objet), rouvre l'inventaire et capture. Il capture aussi le HUD sur chaque carte, juste
+  avant d'ouvrir l'inventaire.
+- **Prédiction écrite avant chaque passage** (scratchpad, `d6-font/prediction-m2.md`).
+  - Premier passage : tout est tenu sauf le HUD, absent de toutes les captures. La cause est lue dans le
+    code, ce n'est pas un défaut : au début de la partie, le HUD est au repos ; il ne s'ouvre que sur
+    demande d'un script ou par la bascule F1 de débogage (`AlundraWorldProxy.ToggleDebugHud`).
+  - Second passage, sur une prédiction révisée écrite avant : le harnais appelle la bascule F1 sur la 389.
+- **Résultats** (second passage ; identiques au premier sur les points communs) :
+  - l'inventaire est en `font3` sur les trois étapes (douze `FontFamily = 'font3'`), icônes affichées ; le
+    HUD est affiché sur les trois étapes (phase `Displayed`) ;
+  - `UI\font3.fnt` et `UI\Textures\font3.png` sont chargés une seule fois, comme les 51 chargements de
+    `UI\…` (boîtes de l'inventaire, sprites `wind_*` du HUD et leurs textures), tous sur la première 389 ;
+  - trace « World change » : 0 au démarrage, 0 en 389 → 390, **31** en 390 → 389 ;
+  - `map_389_tileset.texture` et `.png` sont chargés à l'entrée sur la 389, **de nouveau** au retour, jamais
+    sur la 390 ; de même pour le monde, la carte de tuiles, le tileset et le fond de la 389 ;
+    `map_390_tileset` n'est chargé qu'une fois ;
+  - aucun avertissement, aucune erreur, aucune exception.
+- **Constat hors périmètre :** la 390 s'affiche en noir autour du héros. La capture de l'inventaire sur la
+  390 est identique au pixel près à celle d'avant la migration (D5.f) : ce comportement n'a pas changé.
+- **Vérificateur frais sur l'ensemble du chantier (moteur et DLL) :** **CONFIRMED**, sans constat P0 à P2.
+  - Il a reproduit les builds, les suites et la recette (sortie `run-verify`).
+  - Ses trois remarques (une P3, deux P4) sont reportées au plan moteur (O3 à O5). L'une des P4 (O4) vise
+    aussi des commentaires de la DLL et de ses tests qui nomment encore l'API supprimée.
 
 **Prérequis :** tâche moteur T8.1 close.
 
@@ -129,7 +158,7 @@ vide.
 
 | Réf | Sujet |
 |---|---|
-| O1 | Si la 390 n'a aucun portail vers la 389, la recette prend un autre aller-retour entre deux cartes voisines, et le note. |
+| O1 | ~~Si la 390 n'a aucun portail vers la 389, la recette prend un autre aller-retour entre deux cartes voisines, et le note.~~ Sans objet : la 390 a quatre portails vers la 389 (M2). |
 | O2 | L'ordre des merges est la décision de l'auteur (plan moteur, O2). |
 
 ## Hors périmètre
