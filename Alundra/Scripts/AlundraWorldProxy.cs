@@ -2000,6 +2000,21 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             }
         }
 
+        // E13.d D2 (docs/plan-e13d-inventaire.md, D-E13D-15): the freeze the T2 gate cannot reach - the
+        // engine's own gravity integration and sprite animation, frozen for every spawned entity while
+        // GameplayBlockedMask is posed and given back when it is lifted. Here, at the very end of the frame,
+        // because the engine updates controllers and sprites BEFORE the gameplay proxies and MenuOpen
+        // changes during them: the next engine update already sees the new state. See
+        // AlundraGameplayFreeze's own doc.
+        var worldFrozen = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0;
+        foreach (var spawnedEntity in _spawnedEntities)
+        {
+            if (spawnedEntity.GameplayProxy is AlundraEntityScriptProxy spawnedProxy)
+            {
+                AlundraGameplayFreeze.Apply(spawnedProxy, worldFrozen);
+            }
+        }
+
         // Closes this frame's logic-clock memo (see AlundraLogicClock's own class doc) - this proxy's own
         // Update always runs last (World.cs:443-491), so the next frame's first caller (an entity's own
         // Update, or this proxy again for a zero-entity world) recomputes fresh. C1 (plan §3): the old

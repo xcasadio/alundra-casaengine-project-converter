@@ -255,6 +255,15 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// </summary>
     public CharacterControllerComponent? Controller;
 
+    /// <summary>E13.d D2 (docs/plan-e13d-inventaire.md): what <see cref="AlundraGameplayFreeze"/> took away
+    /// from this entity's controller and sprite while a MenuOpen freezes the world, to give it back.</summary>
+    internal readonly AlundraGameplayFreeze.State FreezeState = new();
+
+    /// <summary>E13.d D2: this entity's animated sprite, if it has one - for
+    /// <see cref="AlundraGameplayFreeze"/>, which cannot reach the protected <c>Owner</c>. Looked up on
+    /// each call: only a freeze or a thaw asks, never a per-frame path.</summary>
+    internal AnimatedSpriteComponent? AnimatedSprite => Owner?.GetComponent<AnimatedSpriteComponent>();
+
     /// <summary>
     /// Engine-only, not part of the original struct: this entity's own map's Gravity/ZViscosity, already
     /// converted to the units <see cref="CharacterControllerSettings.Gravity"/>/<see cref="CharacterControllerSettings.MaxFallSpeed"/>

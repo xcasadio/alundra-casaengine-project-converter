@@ -336,7 +336,7 @@ doit les lire dans cette même boucle**, juste après chaque mise à jour (D4).
 | Suites | convertisseur 172/172, `Alundra.Tests` **947/947** (930 + 17) |
 | Vérificateur frais | **CONFIRMED**, trois remarques P4 : la boucle de la manette n'est testée que par simulation (le sera par D4) ; l'arbre porte des changements hors D1, non indexés ; un appui plus court qu'une image sans tick se perd, par construction (D-E13D-9) |
 
-### ⏳ D2 — Le gel, pour ce que la porte T2 ne couvre pas
+### ✅ D2 — Le gel, pour ce que la porte T2 ne couvre pas — faite le 2026-09-21
 
 **Prérequis** : D0.3 (close : D2 existe) ; portée tranchée par l'auteur : tout `MenuOpen` (D-E13D-15).
 DLL seule, sans changement moteur. Pendant que `GameplayBlockedMask` est posé (et lui seul : le gel du
@@ -369,7 +369,22 @@ reprend avec la même vitesse verticale et l'état `Falling`** ; sur le contrôl
 l'escalade et le départ de warp ne sont pas dérangés ; **dégel sur une image à zéro tick** : un héros en
 `ClimbStill` à moins de `GroundSnapDistance` du sol garde sa position, un PNJ en montée reste en l'air. **Arrêt** : si l'une des remises à zéro ci-dessus a un effet visible
 (un pas de travers au dégel, une plateforme mobile qui décroche, une escalade qui lâche), ou si quelque
-chose déplace une entité pendant le gel, la tranche s'arrête et le consigne (D-E13D-4). **Vérificateur frais** (changement de comportement partagé par tout `MenuOpen`).
+chose déplace une entité pendant le gel, la tranche s'arrête et le consigne (D-E13D-4).
+
+**Fait** : `AlundraGameplayFreeze` (gel, dégel, redéclaration du déplacement vertical externe), un état par
+entité sur `AlundraEntityScriptProxy`. **Écart avec le texte ci-dessus, pour la justesse** : la passe ne
+tourne pas dans `AlundraEntityScriptProxy.Update` mais **à la fin d'`AlundraWorldProxy.Update`**, sur toutes
+les entités créées. Le moteur met à jour contrôleurs et sprites **avant** les proxys de l'image
+(`World.Update` → `CharacterMotion` → `Entity.Update`, `Entity.cs:478-508`), et `MenuOpen` change pendant
+les proxys, dialogue compris (`AlundraDialogueDirector.Tick`, dans le proxy du monde) : appliqué par
+entité, le gel laisserait passer une image de chute de trop, et le dégel une image figée de trop ; appliqué
+en fin d'image, il prend effet dès la mise à jour suivante du moteur. Le gel du warp n'est pas touché (T4).
+
+| Preuve | Résultat |
+|---|---|
+| Tests | `Alundra.Tests` **959/959** (947 + 12) : gel et dégel exacts (`ControlMode`, `MovementState`, `Velocity`, minuteries), un seul instantané par gel, redéclaration pour un PNJ et pour le héros sur l'échelle, pause d'animation rendue, câblage par le vrai `AlundraWorldProxy.Update` ; en production, **une chute gelée reprend avec la même vitesse**, et **un dégel sur une image sans tick garde un héros agrippé à 3 px du sol** |
+| Mutation | la redéclaration retirée, le test de l'échelle et trois tests unitaires échouent ; code rendu à l'octet près |
+| Vérificateur frais | **CONFIRMED** ; ordre du moteur et écart de site confirmés dans le code ; cas limites sans régression (entité créée ou détruite pendant un gel, gel posé et levé dans la même image, `AnimationFinished`, passes hors porte, position restaurée) ; une remarque P4 : la restauration perd la référence au support de sol, sans effet sur Alundra dont le sol vient du champ de collision | **Vérificateur frais** (changement de comportement partagé par tout `MenuOpen`).
 
 ### ✅ D3.a — Analyseur : le patron des boîtes en CSV — faite le 2026-09-21 (analyseur `64978f8`)
 
@@ -579,6 +594,7 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
 | 2026-09-21 | **D1 faite**, vérificateur **CONFIRMED**. Export prouvé (diff mesuré = prédit, double export = `report.json`). |
 | 2026-09-21 | **D3.a faite** (analyseur `64978f8`, branche `chantier/e13d-boites`) : 7 boîtes, 822 cases, acceptation passée par un script indépendant. Générateur et vérificateur ci-dessous. |
 | 2026-09-21 | **D3.b faite**, vérificateur **CONFIRMED** : six images cuites, prouvées par manifeste, double export et au pixel. |
+| 2026-09-21 | **D2 faite**, vérificateur **CONFIRMED** : contrôleurs et animations figés pendant tout `MenuOpen`, dégel exact ; passe placée en fin de mise à jour du monde, pour l'ordre du moteur. |
 
 ### D0.1 — le script de mesure et sa sortie (2026-09-21)
 
