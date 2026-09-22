@@ -126,6 +126,10 @@ public sealed class AlundraInventoryScreen : XamlUIScreenBase, IAlundraInventory
     private readonly System.Collections.Generic.Dictionary<Guid, Sprite?> _iconSprites = new();
     private IDisposable? _font3;
 
+    // Engine ADR-0037: the SpriteData of every sprite in _iconSprites, held while this screen lives and
+    // given back in Dispose, with the sprites themselves (which hold their sheet texture).
+    private readonly System.Collections.Generic.List<IDisposable> _spriteDataHolds = new();
+
     /// <summary>
     /// D5.f (engine ADR-0036, plan D-E13D-18): the screen holds font3 through the game's UI font registry
     /// from its construction to its <see cref="Dispose"/>. The registry gives it by reference to every UI
@@ -156,12 +160,26 @@ public sealed class AlundraInventoryScreen : XamlUIScreenBase, IAlundraInventory
     /// <summary>True once <see cref="Dispose"/> gave font3 back.</summary>
     internal bool IsDisposed => _font3 == null;
 
-    /// <summary>Gives font3 back. Called by the world proxy that built this screen, when its world ends
+    /// <summary>Gives font3 back, and every sprite and sprite data this screen holds (engine ADR-0037).
+    /// Called by the world proxy that built this screen, when its world ends
     /// (<c>AlundraWorldProxy.OnEndPlay</c>). Idempotent.</summary>
     public void Dispose()
     {
         _font3?.Dispose();
         _font3 = null;
+
+        foreach (var sprite in _iconSprites.Values)
+        {
+            sprite?.Dispose();
+        }
+
+        foreach (var hold in _spriteDataHolds)
+        {
+            hold.Dispose();
+        }
+
+        _iconSprites.Clear();
+        _spriteDataHolds.Clear();
     }
 
     public override UILayer Layer => UILayer.Menu;
@@ -434,8 +452,18 @@ public sealed class AlundraInventoryScreen : XamlUIScreenBase, IAlundraInventory
             var reason = "no such asset";
             try
             {
-                var spriteData = _assetContentManager.Load<SpriteData>(assetId);
-                cached = spriteData == null ? null : Sprite.Create(spriteData, _assetContentManager);
+                // Engine ADR-0037: the sprite data is held for as long as this screen lives.
+                var spriteDataHold = _assetContentManager.Acquire<SpriteData>(assetId);
+                try
+                {
+                    cached = Sprite.Create(spriteDataHold.Asset, _assetContentManager);
+                    _spriteDataHolds.Add(spriteDataHold);
+                }
+                catch
+                {
+                    spriteDataHold.Dispose();
+                    throw;
+                }
             }
             catch (Exception ex)
             {

@@ -144,7 +144,9 @@ public sealed class AlundraPlayerController : PlayerController
         ButtonsMapping? buttonsMapping;
         try
         {
-            buttonsMapping = game!.AssetContentManager.Load<ButtonsMapping>(assetInfo.Id);
+            // Engine ADR-0037: a copy, whose mappings RegisterMappings hands over to the game-long
+            // InputMappingManager - nothing to hold afterwards.
+            buttonsMapping = game!.AssetContentManager.LoadCopy<ButtonsMapping>(assetInfo.Id);
         }
         catch (Exception ex)
         {

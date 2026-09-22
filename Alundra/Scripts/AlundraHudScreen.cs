@@ -65,7 +65,7 @@ namespace Alundra.Scripts;
 /// actually used - this screen never constructs a <c>DrawSettings</c> of its own, so there is nothing here
 /// that could override that default to linear.
 /// </summary>
-public sealed class AlundraHudScreen : UIScreenBase, IAlundraHudView
+public sealed class AlundraHudScreen : UIScreenBase, IAlundraHudView, IDisposable
 {
     // AlundraDisplay.cs:32 - "public const int NativeWidth = 320;" - re-declared, not referenced, this
     // DLL never depends on the converter project (mission's own "ne jamais toucher... converter").
@@ -109,6 +109,11 @@ public sealed class AlundraHudScreen : UIScreenBase, IAlundraHudView
     // load that failed, so it is reported once rather than every tick).
     private readonly MGImage?[] _equipmentIcons = new MGImage?[2];
     private readonly Dictionary<Guid, Sprite?> _iconSprites = new();
+
+    // Engine ADR-0037: the SpriteData of every glyph and icon above, held while this screen lives and given
+    // back in Dispose, with the sprites themselves (which hold their sheet texture).
+    private readonly List<IDisposable> _spriteDataHolds = new();
+    private bool _disposed;
 
     private MGWindow? _window;
     private MGCanvas? _canvas;
@@ -320,8 +325,7 @@ public sealed class AlundraHudScreen : UIScreenBase, IAlundraHudView
             var reason = "no such asset";
             try
             {
-                var spriteData = _assetContentManager.Load<SpriteData>(assetId);
-                cached = spriteData == null ? null : Sprite.Create(spriteData, _assetContentManager);
+                cached = CreateHeldSprite(assetId);
             }
             catch (Exception ex)
             {
@@ -479,7 +483,57 @@ public sealed class AlundraHudScreen : UIScreenBase, IAlundraHudView
 
     private void AddSprite(HudGlyph glyph, string assetId)
     {
-        var spriteData = _assetContentManager.Load<SpriteData>(Guid.Parse(assetId));
-        _sprites[glyph] = Sprite.Create(spriteData, _assetContentManager);
+        _sprites[glyph] = CreateHeldSprite(Guid.Parse(assetId));
+    }
+
+    /// <summary>Engine ADR-0037: holds the sprite's data for as long as this screen lives; the sprite holds
+    /// its sheet texture. Both are given back in <see cref="Dispose"/>.</summary>
+    private Sprite CreateHeldSprite(Guid spriteAssetId)
+    {
+        var spriteDataHold = _assetContentManager.Acquire<SpriteData>(spriteAssetId);
+        try
+        {
+            var sprite = Sprite.Create(spriteDataHold.Asset, _assetContentManager);
+            _spriteDataHolds.Add(spriteDataHold);
+            return sprite;
+        }
+        catch
+        {
+            spriteDataHold.Dispose();
+            throw;
+        }
+    }
+
+    /// <summary>True once <see cref="Dispose"/> gave the sprites back.</summary>
+    internal bool IsDisposed => _disposed;
+
+    /// <summary>Gives back every sprite and sprite data this screen holds (engine ADR-0037). Called by the
+    /// world proxy that built it, when its world ends (<c>AlundraWorldProxy.OnEndPlay</c>). Idempotent.</summary>
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        foreach (var sprite in _sprites.Values)
+        {
+            sprite.Dispose();
+        }
+
+        foreach (var sprite in _iconSprites.Values)
+        {
+            sprite?.Dispose();
+        }
+
+        foreach (var hold in _spriteDataHolds)
+        {
+            hold.Dispose();
+        }
+
+        _sprites.Clear();
+        _iconSprites.Clear();
+        _spriteDataHolds.Clear();
     }
 }
