@@ -61,6 +61,18 @@ public sealed class AlundraPlayerStats
     /// count for item 0).</summary>
     public short ItemId;
 
+    /// <summary>E13.d D4 (docs/plan-e13d-inventaire.md, D-E13D-5): port of <c>PlayerStats.Falcon</c> -
+    /// the falcon-key count <c>DisplayAmountOfMoneyFalconKeys</c> shows next to the regular key count
+    /// (MainInventoryManager.cs:1555-1587, <c>GetNumberOfFalcon()</c>). No falcon system exists in this
+    /// DLL yet (this class' own doc, above) - kept at 0, the value a New Game has, with no mechanic that
+    /// ever changes it (D-E13D-5: "affichés ; aucune mécanique de faucon").</summary>
+    public short Falcon;
+
+    /// <summary>E13.d D4: port of <c>PlayerStats.FalconTemp</c> - the original adds this to
+    /// <see cref="Falcon"/> for the inventory's displayed total (<c>GetNumberOfFalconTemp()</c>,
+    /// MainInventoryManager.cs:1556). Same "0, no mechanic" status as <see cref="Falcon"/>.</summary>
+    public short FalconTemp;
+
     /// <summary>Test-only: restores this object to its New-Game-equivalent construction state, the same
     /// seam every other session-singleton field on <see cref="AlundraGameState"/> gets from
     /// <see cref="AlundraGameState.ResetForTests"/>.</summary>
@@ -73,5 +85,7 @@ public sealed class AlundraPlayerStats
         Money = 0;
         WeaponId = 0;
         ItemId = 0;
+        Falcon = 0;
+        FalconTemp = 0;
     }
 }

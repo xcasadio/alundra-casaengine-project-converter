@@ -96,7 +96,7 @@ public class PlayerSetupWriterTests
     }
 
     [Fact]
-    public void WriteButtonsMapping_WritesTheNineDigitalActionsAndTheFourLeftStickAxes()
+    public void WriteButtonsMapping_WritesTheFourteenDigitalActionsAndTheFourLeftStickAxes()
     {
         var outputDirectory = CreateTempDirectory();
         var previousProjectPath = EngineEnvironment.ProjectPath;
@@ -111,7 +111,7 @@ public class PlayerSetupWriterTests
 
             Assert.Equal(Ids.For("buttonsMapping:alundra"), buttonsMappingAssetId);
             Assert.Equal(1, report.Counters["PlayerSetup.ButtonsMappings"]);
-            Assert.Equal(13, report.Counters["PlayerSetup.ButtonsMappingActions"]);
+            Assert.Equal(18, report.Counters["PlayerSetup.ButtonsMappingActions"]);
 
             var relativePath = Path.Combine("Data", "Alundra.buttonsMapping");
             var fullPath = Path.Combine(outputDirectory, relativePath);
@@ -127,7 +127,7 @@ public class PlayerSetupWriterTests
             var buttonsMapping = new CasaEngine.Framework.Input.ButtonsMapping();
             buttonsMapping.Load(document);
             Assert.Equal(buttonsMappingAssetId, buttonsMapping.Id);
-            Assert.Equal(13, buttonsMapping.Buttons.Count);
+            Assert.Equal(18, buttonsMapping.Buttons.Count);
 
             AssertBinding(buttonsMapping, "MoveUp", Microsoft.Xna.Framework.Input.Keys.Up, Microsoft.Xna.Framework.Input.Buttons.DPadUp);
             AssertBinding(buttonsMapping, "MoveDown", Microsoft.Xna.Framework.Input.Keys.Down, Microsoft.Xna.Framework.Input.Buttons.DPadDown);
@@ -142,8 +142,21 @@ public class PlayerSetupWriterTests
             // PSX Triangle (PlayerManager.cs:430).
             AssertBinding(buttonsMapping, "Sprint", Microsoft.Xna.Framework.Input.Keys.LeftShift, Microsoft.Xna.Framework.Input.Buttons.Y);
             AssertBinding(buttonsMapping, "Menu", Microsoft.Xna.Framework.Input.Keys.Escape, Microsoft.Xna.Framework.Input.Buttons.Start);
+            // E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-11): the author's keys for the shoulder
+            // buttons and Select.
+            AssertBinding(buttonsMapping, "L1", Microsoft.Xna.Framework.Input.Keys.U, Microsoft.Xna.Framework.Input.Buttons.LeftShoulder);
+            AssertBinding(buttonsMapping, "L2", Microsoft.Xna.Framework.Input.Keys.Y, Microsoft.Xna.Framework.Input.Buttons.LeftTrigger);
+            AssertBinding(buttonsMapping, "R1", Microsoft.Xna.Framework.Input.Keys.I, Microsoft.Xna.Framework.Input.Buttons.RightShoulder);
+            AssertBinding(buttonsMapping, "R2", Microsoft.Xna.Framework.Input.Keys.O, Microsoft.Xna.Framework.Input.Buttons.RightTrigger);
+            AssertBinding(buttonsMapping, "Select", Microsoft.Xna.Framework.Input.Keys.P, Microsoft.Xna.Framework.Input.Buttons.Back);
 
-            // The nine original actions stay digital...
+            // The five new actions come after the thirteen existing ones, which keep their order and so
+            // their exact bytes in the exported file.
+            Assert.Equal(
+                new[] { "Menu", "L1", "L2", "R1", "R2", "Select" },
+                buttonsMapping.Buttons.Skip(12).Select(b => b.Name).ToArray());
+
+            // Every action but the stick stays digital...
             Assert.All(
                 buttonsMapping.Buttons.Where(b => !b.Name.EndsWith("Stick", System.StringComparison.Ordinal)),
                 button => Assert.Equal(

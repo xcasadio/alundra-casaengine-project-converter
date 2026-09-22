@@ -1,9 +1,11 @@
 # Plan — E13 : la jauge permanente (HUD)
 
-**État** : ⏳ rédigé, en attente d'approbation. Aucune ligne de code écrite.
+**État** : ✅ **clos**. C0 à C6 livrées ; C4 et C5.b passées en jeu par l'auteur le 2026-09-20 ; mergé
+dans `main` le 2026-09-21 (`8dcfd81`). Les icônes des deux cases relèvent d'E13.c, voir
+`docs/plan-e13c-icones-hud.md`.
 **Rédigé le** : 2026-09-18, à partir d'une reconnaissance mesurée (25 agents, 6 surfaces, 18 faits
 passés en vérification indépendante, 1 critique de complétude).
-**Branche** : `chantier/e13-hud` (dépôt parent).
+**Branches** : `chantier/e13-hud` (dépôt parent), puis `chantier/e13-c4-fondu-au-dessus-ui` pour C4.
 
 ---
 
@@ -526,7 +528,8 @@ closes. Aucune réserve remontée.
 E13 est close quand, en jeu : la jauge s'affiche aux bonnes positions avec les bons glyphes ; les
 compteurs rattrapent aux cadences de §1.4 ; **chaque transition reproduit sa propre table de §1.3**,
 l'ouverture la sienne et la fermeture la sienne ; la jauge continue de tourner pendant un dialogue ;
-elle se referme avant un fondu. Suites `Alundra.Tests` et `CasaEngine.Tests` vertes.
+au warp, elle s'assombrit avec le décor (D-E13-11, qui a remplacé « elle se referme avant un fondu »,
+réfuté au §6 point 6). Suites `Alundra.Tests` et `CasaEngine.Tests` vertes.
 
 ---
 

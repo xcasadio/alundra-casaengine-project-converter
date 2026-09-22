@@ -44,6 +44,8 @@ public class AlundraPlayerControllerTests
         // both - they alias onto the same four PSX bits in AlundraPlayerController.ActionBits.
         "MoveUpStick", "MoveDownStick", "MoveRightStick", "MoveLeftStick",
         "Jump", "Attack", "UseItem", "Sprint", "Menu",
+        // E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-11): the shoulder buttons and Select.
+        "L1", "L2", "R1", "R2", "Select",
     };
 
     /// <summary>
@@ -55,7 +57,7 @@ public class AlundraPlayerControllerTests
     /// <see cref="IntroTraceHarnessTests"/>).
     /// </summary>
     [Fact]
-    public void AssetLoader_RealButtonsMappingFile_ParsesThirteenMappingsWithExpectedNames()
+    public void AssetLoader_RealButtonsMappingFile_ParsesEighteenMappingsWithExpectedNames()
     {
         var projectRoot = FindProjectRoot();
         if (projectRoot == null)
@@ -70,7 +72,7 @@ public class AlundraPlayerControllerTests
         var asset = (ButtonsMapping?)loader.LoadAsset(filePath, null!);
 
         Assert.NotNull(asset);
-        Assert.Equal(13, asset!.Buttons.Count);
+        Assert.Equal(18, asset!.Buttons.Count);
         Assert.Equal(ExpectedActionNames, asset.Buttons.Select(b => b.Name).ToArray());
     }
 
@@ -90,7 +92,7 @@ public class AlundraPlayerControllerTests
     }
 
     [Fact]
-    public void RegisterMappings_FreshManager_RegistersAllThirteen()
+    public void RegisterMappings_FreshManager_RegistersAllEighteen()
     {
         var manager = new InputMappingManager();
 
@@ -115,14 +117,14 @@ public class AlundraPlayerControllerTests
     }
 
     [Fact]
-    public void RegisterMappings_AppliedTwice_LeavesExactlyThirteenMappings()
+    public void RegisterMappings_AppliedTwice_LeavesExactlyEighteenMappings()
     {
         var manager = new InputMappingManager();
 
         AlundraPlayerController.RegisterMappings(NewButtonsMapping(), manager);
         AlundraPlayerController.RegisterMappings(NewButtonsMapping(), manager);
 
-        Assert.Equal(13, CountMappings(manager));
+        Assert.Equal(18, CountMappings(manager));
 
         foreach (var name in ExpectedActionNames)
         {
@@ -159,8 +161,29 @@ public class AlundraPlayerControllerTests
         Assert.Equal(
             AlundraPadState.Up | AlundraPadState.Down | AlundraPadState.Left | AlundraPadState.Right
             | AlundraPadState.Cross | AlundraPadState.Square | AlundraPadState.Circle | AlundraPadState.Triangle
-            | AlundraPadState.Start,
+            | AlundraPadState.Start
+            | AlundraPadState.L1 | AlundraPadState.L2 | AlundraPadState.R1 | AlundraPadState.R2 | AlundraPadState.Select,
             state.ButtonsHold);
+    }
+
+    /// <summary>E13.d D1: each new action lands on the original's own bit (PadState.cs:5-13) - the
+    /// inventory's trigger tests them by AND against PadState.OpenInventory (Start | L2 | R2).</summary>
+    [Theory]
+    [InlineData("L1", 0x0004u)]
+    [InlineData("L2", 0x0001u)]
+    [InlineData("R1", 0x0008u)]
+    [InlineData("R2", 0x0002u)]
+    [InlineData("Select", 0x0100u)]
+    public void ComputePadState_EachShoulderButtonAndSelect_SetsTheOriginalsOwnBit(string action, uint expectedBit)
+    {
+        var manager = new InputMappingManager();
+        AlundraPlayerController.RegisterMappings(NewButtonsMapping(), manager);
+
+        var state = AlundraPlayerController.ComputePadState(
+            manager, name => new ButtonState { IsKeyPressed = name == action, IsKeyJustPressed = name == action });
+
+        Assert.Equal(expectedBit, state.ButtonsHold);
+        Assert.Equal(expectedBit, state.ButtonsJustPressed);
     }
 
     /// <summary>

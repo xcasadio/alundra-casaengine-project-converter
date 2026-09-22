@@ -161,7 +161,11 @@ public class AlundraLadderClimbTests
         {
         }
 
-        public int LogicTicksThisFrame(float elapsedTime) => 1;
+        /// <summary>E13.d D2: settable so a test can run a rendered frame that carries NO logic tick - the
+        /// frame on which a per-tick declaration is missing.</summary>
+        public int TicksPerFrame { get; set; } = 1;
+
+        public int LogicTicksThisFrame(float elapsedTime) => TicksPerFrame;
     }
 
     /// <summary>Builds a hero pawn seeded on the real ladder cell (18, 36), at its own real ground height,
@@ -344,6 +348,90 @@ public class AlundraLadderClimbTests
         Assert.Equal(AlundraPlayerManager.ClimbStillAnimationId, proxy.TargetAnimationId);
         Assert.Equal(startPosZ, proxy.PosZ); // frozen - no vertical step while ClimbStill.
         Assert.Equal(0, proxy.ForceZ);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // E13.d D2 (docs/plan-e13d-inventaire.md, D-E13D-15): the world freeze of a MenuOpen, through the
+    // production pipeline. AlundraWorldProxy applies it at the end of its own Update, which this fixture has
+    // not got - the tests call AlundraGameplayFreeze.Apply at that same point of the frame, after World.Update.
+    // -----------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// The closing review's regression: RestoreStateSnapshot zeroes the controller's external vertical
+    /// latch, which the DLL declares only once per logic tick. A hero clinging to the ladder 3px above its
+    /// ground, thawed on a rendered frame that carries no tick, would otherwise be snapped to the ground by
+    /// UpdateGround (GroundSnapDistance 4px) - the very F1 regression AlundraScriptedMotion.cs:117-130 records.
+    /// </summary>
+    [Fact]
+    public void GameplayFreeze_ThawOnAZeroTickFrame_ClimbStillNearTheGround_KeepsItsHeight()
+    {
+        if (!TrySetUp(out var world, out var entity, out var proxy, out _, () => default))
+        {
+            return;
+        }
+
+        var host = (PlayerScriptHost)proxy.ScriptHost!;
+        SetElevatedPosZ(entity, proxy, LadderGroundHeightPx * 65536 + 3 * 0x10000);
+        proxy.TargetAnimationId = AlundraPlayerManager.ClimbingAnimationId;
+        proxy.Controller!.IsVerticalOwnedExternally = true;
+        proxy.Controller!.SetExternalVerticalDisplacement(1f);
+        world.Update(1f / 50f);
+        Assert.Equal(AlundraPlayerManager.ClimbStillAnimationId, proxy.TargetAnimationId);
+        var heldRootZ = entity.RootComponent!.LocalTransform.Position.Z;
+
+        host.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+        AlundraGameplayFreeze.Apply(proxy, gameplayBlocked: true);
+        world.Update(1f / 50f);
+        world.Update(1f / 50f);
+        Assert.Equal(heldRootZ, entity.RootComponent!.LocalTransform.Position.Z);
+
+        host.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+        AlundraGameplayFreeze.Apply(proxy, gameplayBlocked: false);
+        host.TicksPerFrame = 0;
+        world.Update(1f / 50f);
+
+        Assert.Equal(heldRootZ, entity.RootComponent!.LocalTransform.Position.Z);
+        Assert.Equal(AlundraPlayerManager.ClimbStillAnimationId, proxy.TargetAnimationId);
+    }
+
+    /// <summary>
+    /// A hero in mid-fall (the jump is not ported, so a fall is the port's airborne case, plan §1.1) holds its
+    /// height for as long as the world is frozen, then falls on with the vertical velocity it had.
+    /// </summary>
+    [Fact]
+    public void GameplayFreeze_MidFall_HeroHoldsItsHeight_ThenFallsOnWithTheSameVelocity()
+    {
+        if (!TrySetUp(out var world, out var entity, out var proxy, out _, () => default))
+        {
+            return;
+        }
+
+        var host = (PlayerScriptHost)proxy.ScriptHost!;
+        SetElevatedPosZ(entity, proxy, LadderGroundHeightPx * 65536 + 40 * 0x10000);
+        proxy.TargetAnimationId = 0u; // Idle, not climbing: the engine owns the vertical.
+        world.Update(1f / 50f);
+        world.Update(1f / 50f);
+        Assert.Equal(CasaEngine.Framework.Scene.Entities.Components.CharacterMovementState.Falling, proxy.Controller!.MovementState);
+        var fallingVelocity = proxy.Controller!.Velocity;
+        Assert.True(fallingVelocity.Z < 0f, $"expected a downward velocity, got {fallingVelocity}");
+        var frozenRootZ = entity.RootComponent!.LocalTransform.Position.Z;
+
+        host.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+        AlundraGameplayFreeze.Apply(proxy, gameplayBlocked: true);
+        for (var frame = 0; frame < 5; frame++)
+        {
+            world.Update(1f / 50f);
+        }
+
+        Assert.Equal(frozenRootZ, entity.RootComponent!.LocalTransform.Position.Z);
+
+        host.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+        AlundraGameplayFreeze.Apply(proxy, gameplayBlocked: false);
+        Assert.Equal(fallingVelocity, proxy.Controller!.Velocity);
+        Assert.Equal(CasaEngine.Framework.Scene.Entities.Components.CharacterMovementState.Falling, proxy.Controller!.MovementState);
+
+        world.Update(1f / 50f);
+        Assert.True(entity.RootComponent!.LocalTransform.Position.Z < frozenRootZ, "the fall resumes after the thaw");
     }
 
     // -----------------------------------------------------------------------------------------

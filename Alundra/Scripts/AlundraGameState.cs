@@ -122,6 +122,12 @@ public sealed class AlundraGameState
     /// </summary>
     public AlundraPadState LastPadState;
 
+    /// <summary>E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-9): the same pad advanced once per LOGIC
+    /// tick, with the original's press edges and key repeat - see <see cref="AlundraTickPad"/>'s own doc.
+    /// Fed from <see cref="LastPadState"/> by <see cref="AlundraWorldProxy.Update"/>'s own per-tick pad
+    /// pass; read by the per-tick consumers that need the original's frame-exact edges (the inventory).</summary>
+    public readonly AlundraTickPad TickPad = new();
+
     /// <summary>
     /// T3 (docs/plan-transitions-carte.md, point 5): port of the original's <c>g_isWarpDisabled</c>
     /// global, tested at the head of <c>PlayerManager.HandleWarpTransition</c> (T4's own scope) and set
@@ -291,6 +297,7 @@ public sealed class AlundraGameState
 
         PlayerControlFlags = 0;
         LastPadState = default;
+        TickPad.Reset();
 
         InteractLatchEntity = null;
         InteractLatchFacing = 0;

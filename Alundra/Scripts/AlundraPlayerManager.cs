@@ -554,8 +554,12 @@ public static class AlundraPlayerManager
     /// <paramref name="host"/> null = "no world" - skipped (degraded; see MovePlayer's own doc);
     /// GameplayBlockedMask posed - skipped, the narrowest equivalent of the original's whole-pipeline
     /// gate at EntityManager.cs:377 (with a MenuOpen box up, neither MovePlayer nor the pick nor the
-    /// physics ran at all there; our pipeline has no such global gate - E4.c only ported the map-events
-    /// one - so the interact computation carries it itself, D-E12D-5).
+    /// physics ran at all there). CORRECTED (E13.d D4, docs/plan-e13d-inventaire.md §1.2): the port DOES
+    /// have a global gate for this since T2 - <see cref="AlundraEntityScriptProxy.Update"/>'s own
+    /// <c>gameplayBlocked</c> computation (AlundraEntityScriptProxy.cs:828-867) only calls
+    /// <c>RunGameplayBlockableUpdate</c> - where <see cref="MovePlayer"/> itself lives - when it is
+    /// false; this method's own repeated check just carries the same gate one level deeper, narrowly,
+    /// the way D-E12D-5 chose - not because the port lacked one.
     /// </summary>
     internal static int CheckEntityInteraction(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IAlundraScriptHost? host)
     {

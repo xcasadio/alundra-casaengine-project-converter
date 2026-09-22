@@ -206,6 +206,45 @@ public sealed class AlundraHudDirector
     }
 
     /// <summary>
+    /// E13.d D4 (docs/plan-e13d-inventaire.md §1.5/D4): the inventory's own call to
+    /// <c>HudManager.InitializeHudPosition</c> (MainInventoryManager.cs:484, called from
+    /// <c>DisplayInventory</c> itself) - the minimum change to make <see cref="ArmDisappearance"/>
+    /// reachable from <see cref="AlundraInventoryDirector"/> without touching its own behaviour or the
+    /// dispatch table's own branch (i), which already calls it every tick the persistent latch is off.
+    /// The original guard (HudManager.cs:26-39, <c>(g_drawFrameFlags &amp; 3) == 1</c>) is already
+    /// re-checked inside <see cref="ArmDisappearance"/> itself, so this wrapper adds nothing but the
+    /// public name the plan's own §1.5 table gives this call site.
+    /// </summary>
+    internal void InitializeHudPosition()
+    {
+        ArmDisappearance();
+    }
+
+    /// <summary>
+    /// E13.d D4: the inventory's own call to <c>HudManager.InitializeHudPositionBeforeHide</c>
+    /// (MainInventoryManager.cs:850, called from <c>FUN_80056598</c> on Start/L2/R2). The original guard
+    /// is TWO conditions (HudManager.cs:42-57): the persistent latch (flag 1662/mask 0x40000000) AND
+    /// <c>g_drawFrameFlags == 0</c> - <see cref="ArmAppearance"/> only re-checks the second one itself
+    /// (<c>Phase != Idle</c>), because every OTHER call site reaches it right after branch (ii) sets the
+    /// latch itself (see <see cref="ArmAppearance"/>'s own doc) - so this wrapper checks the latch here,
+    /// the one guard <see cref="ArmAppearance"/> does not.
+    /// </summary>
+    internal void InitializeHudPositionBeforeHide()
+    {
+        if (_gameState == null)
+        {
+            return; // tolerated, same degraded shape as every other missing-system seam in this DLL.
+        }
+
+        if ((_gameState.GetFlag(PersistentLatchFlag) & PersistentLatchMask) == 0)
+        {
+            return;
+        }
+
+        ArmAppearance();
+    }
+
+    /// <summary>
     /// Test-only: restores this session singleton to construction-equivalent state, same seam as every
     /// other session-scoped director in this DLL.
     /// </summary>

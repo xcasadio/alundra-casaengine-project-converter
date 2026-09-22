@@ -130,6 +130,11 @@ if (options.Phase >= 6)
 if (options.Phase >= 7)
 {
     report.RunPhase("Phase7.Ui", () => UiWriter.ConvertUi(options.InputDirectory, options.OutputDirectory, report));
+
+    // E13.d D3.b (docs/plan-e13d-inventaire.md, D-E13D-13): the main inventory's background boxes, one
+    // baked image each, from the analyser's box layout and the wind atlas Phase7.Ui just registered.
+    report.RunPhase("Phase7.UiBoxes", () =>
+        UiBoxWriter.ConvertUiBoxes(options.InputDirectory, options.OutputDirectory, report));
 }
 
 // Phase 9: each map's scrolling background layers (the PSX parallax backdrop).

@@ -18,6 +18,7 @@ using CasaEngine.Framework.Physics;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using CasaEngine.Framework.Scene.World;
+using CasaEngine.Framework.UI;
 using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -363,6 +364,21 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <see cref="AlundraHudDirector.Instance"/>.</summary>
     private AlundraHudPresenter? _hudPresenter;
 
+    /// <summary>E13.d D5 (docs/plan-e13d-inventaire.md): same "per-proxy retry gate" shape as
+    /// <see cref="_hudScreenWired"/> - guards <see cref="TryWireInventoryScreenOnce"/>'s own view lookup,
+    /// never the session-scoped <see cref="AlundraInventoryDirector"/> itself.</summary>
+    private bool _inventoryScreenWired;
+
+    /// <summary>E13.d D5: the presenter that pushes/removes <see cref="AlundraInventoryScreen"/> and pushes
+    /// its per-tick <see cref="InventoryDisplayModel"/> - null until <see cref="TryWireInventoryScreenOnce"/>
+    /// succeeds (production), or until a test attaches one via <see cref="AttachInventoryPresenterForTests"/>.</summary>
+    private AlundraInventoryPresenter? _inventoryPresenter;
+
+    /// <summary>D5.f (engine ADR-0036): the inventory screen this proxy built. It holds font3 from its
+    /// construction, and <see cref="OnEndPlay"/> disposes it so the hold is given back when this world ends;
+    /// the font then stays pending until the next world's screen takes it again.</summary>
+    private AlundraInventoryScreen? _inventoryScreen;
+
     /// <summary>
     /// This world's own <see cref="TileMapData"/> (resolved once in <see cref="InitializeWithWorld"/>,
     /// same instance <see cref="AlundraCellsCollisionField"/>/<see cref="AdoptPlayerPawn"/> already read) -
@@ -663,6 +679,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         InstallScreenFadeSystems(world);
         InstallDialogueSystems(world);
         InstallHudSystems();
+        InstallInventorySystems();
 
         var entitiesLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == EntitiesLayerName);
         var portalsLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == PortalsLayerName);
@@ -1038,6 +1055,21 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
+    /// E13.d D4 (docs/plan-e13d-inventaire.md): re-points the SESSION-scoped
+    /// <see cref="AlundraInventoryDirector.Instance"/> at this world's own <see cref="GameState"/>,
+    /// <see cref="ItemTables"/> and <see cref="SoundPlayer"/> - same "AttachToWorld re-points, no
+    /// separate map-entry reset" shape as <see cref="AlundraHudDirector"/> (this director has no
+    /// map-entry state either: <see cref="AlundraGameState.PlayerControlFlags"/>/<c>MenuOpen</c> already
+    /// survives a map change like every other <see cref="AlundraGameState"/> field, and the inventory
+    /// itself is never open across a map transition in the original - opening it requires the SAME
+    /// control-flag gate a warp/portal already poses).
+    /// </summary>
+    internal void InstallInventorySystems()
+    {
+        AlundraInventoryDirector.Instance.AttachToWorld(GameState, ItemTables, SoundPlayer);
+    }
+
+    /// <summary>
     /// E12.a (docs/plan-e12-dialogues.md, item ③bis/④): installs the dialogue-flow seam - re-points the
     /// SESSION-scoped <see cref="AlundraDialogueDirector.Instance"/> at an <see cref="AlundraDialoguePresenter"/>
     /// wired to this world's own ACTIVE UI view (<c>world.Game.GameManager.ViewManager.GetActiveUIView()</c>
@@ -1152,6 +1184,51 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     internal void AttachHudPresenterForTests(IAlundraHudView view)
     {
         _hudPresenter = new AlundraHudPresenter(AlundraHudDirector.Instance, view);
+    }
+
+    /// <summary>
+    /// E13.d D5's own version of <see cref="TryWireHudScreenOnce"/>: retry-until-success, once per frame,
+    /// same reason (the UI view is created strictly AFTER <see cref="InitializeWithWorld"/> ran). Unlike
+    /// the HUD's screen, <see cref="AlundraInventoryScreen"/> is NOT pushed here: it is modal
+    /// (<see cref="IUIScreen.IsModal"/>) and stays down until the director actually draws it, so the
+    /// presenter itself owns push/remove (dialogue precedent, <see cref="AlundraInventoryPresenter"/>'s
+    /// own class doc) - this method only constructs the presenter once a live view and asset content
+    /// manager exist.
+    /// </summary>
+    private void TryWireInventoryScreenOnce()
+    {
+        if (_inventoryScreenWired)
+        {
+            return;
+        }
+
+        var uiView = _world?.Game?.GameManager?.ViewManager?.GetActiveUIView();
+        var assetContentManager = _world?.Game?.AssetContentManager;
+        var fonts = _world?.Game?.UIFonts;
+        if (uiView == null || assetContentManager == null || fonts == null)
+        {
+            return; // retry next frame - same reason TryWireHudScreenOnce retries.
+        }
+
+        var inventoryScreen = new AlundraInventoryScreen(assetContentManager, fonts);
+        _inventoryScreen = inventoryScreen;
+        _inventoryPresenter = new AlundraInventoryPresenter(
+            AlundraInventoryDirector.Instance, GameState, ItemTables, inventoryScreen, inventoryScreen, uiView);
+        _inventoryScreenWired = true;
+        Logs.WriteInfo("AlundraWorldProxy: inventory screen wired to the active UI view (post-bootstrap retry).");
+    }
+
+    /// <summary>Test-only seam: attaches an <see cref="AlundraInventoryPresenter"/> over the SAME
+    /// session-scoped <see cref="AlundraInventoryDirector.Instance"/> this proxy's own production wiring
+    /// (<see cref="TryWireInventoryScreenOnce"/>) would use, but against any <see cref="IAlundraInventoryView"/>/
+    /// <see cref="IUIScreen"/>/<see cref="IUIViewRuntime"/> - typically recording test doubles, since a real
+    /// <see cref="AlundraInventoryScreen"/>'s window is not buildable headless. Lets a test drive
+    /// <see cref="Update(float)"/>'s real per-tick loop and observe push/remove/render timing without a live
+    /// graphics stack - same shape as <see cref="AttachHudPresenterForTests"/>.</summary>
+    internal void AttachInventoryPresenterForTests(IAlundraInventoryView view, IUIScreen screen, IUIViewRuntime? uiView = null)
+    {
+        _inventoryPresenter = new AlundraInventoryPresenter(
+            AlundraInventoryDirector.Instance, GameState, ItemTables, view, screen, uiView);
     }
 
     /// <summary>E13.c S3: the equipment source handed to the production presenter - the port of the two
@@ -1798,10 +1875,40 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         var gameplayBlocked = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
             || AlundraWarpDirector.Instance.IsTransitionInProgress;
 
+        // E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-9): the pad the inventory reads, advanced once
+        // per LOGIC tick from this frame's sampled hold state. The original refreshes g_padState1 at the
+        // head of every 50 Hz frame, before anything reads it (GameEngine.cs:1518), so this pass runs
+        // first. "Dehors": the original never gates its pad update (PadManager.UpdatePads runs from the
+        // main loop), so neither does this. LastPadState was sampled THIS frame by the player's own
+        // AlundraEntityScriptProxy.Update, which runs before this proxy (World.cs:443-491). A consumer of
+        // TickPad's edges must read them inside this same loop, right after each Update: after the loop,
+        // a two-tick frame would have overwritten the first tick's edge.
+        // E13.d D4 (docs/plan-e13d-inventaire.md): the inventory director's own tick reads TickPad's
+        // edges - it runs RIGHT HERE, inside this same loop, immediately after each Update call, exactly
+        // as this loop's own comment above warns ("a consumer of TickPad's edges must read them inside
+        // this same loop... after the loop, a two-tick frame would have overwritten the first tick's
+        // edge") - it is the trigger check's own site too (GameEngine.cs:1567-1576 sits right after
+        // UpdateWorld(), and this per-tick loop is the closest the port's own structure gets to that).
+        for (var padTick = 0; padTick < ticksThisFrame; padTick++)
+        {
+            GameState.TickPad.Update(GameState.LastPadState.ButtonsHold);
+            AlundraInventoryDirector.Instance.Tick(PlayerEntity);
+
+            // E13.d D5 (docs/plan-e13d-inventaire.md): the presenter, right after the director's own
+            // Tick() for this SAME tick - same "presenter runs immediately after its director, inside the
+            // per-tick loop" shape the HUD's own hudTick loop uses, needed here for the same reason this
+            // loop's own comment above already gives for the director itself (a consumer of TickPad's
+            // edges - and here, of the director's own per-tick state - must not wait until after the
+            // loop). Null until a view is wired (TryWireInventoryScreenOnce production path, or
+            // AttachInventoryPresenterForTests in tests).
+            _inventoryPresenter?.Tick();
+        }
+
         // E12.a wiring fix: must run BEFORE the map-events pass below - a scripted dialogue opened
         // on this very frame has to find a live presenter (see the method's own doc).
         TryWireDialoguePresenterOnce();
         TryWireHudScreenOnce();
+        TryWireInventoryScreenOnce();
 
         // C1 (docs/plan-camera-ordre-frame.md §3): map-events run FIRST, before the camera block - a
         // faithful port of the original's own frame order (GameEngine.cs:1638-1664/1743-1753:
@@ -1984,6 +2091,21 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             {
                 contactProbeSubject.XCollisionEntity =
                     AlundraEntityCollision.FindEntityCollisionCandidate(contactProbeSubject, _collidables);
+            }
+        }
+
+        // E13.d D2 (docs/plan-e13d-inventaire.md, D-E13D-15): the freeze the T2 gate cannot reach - the
+        // engine's own gravity integration and sprite animation, frozen for every spawned entity while
+        // GameplayBlockedMask is posed and given back when it is lifted. Here, at the very end of the frame,
+        // because the engine updates controllers and sprites BEFORE the gameplay proxies and MenuOpen
+        // changes during them: the next engine update already sees the new state. See
+        // AlundraGameplayFreeze's own doc.
+        var worldFrozen = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0;
+        foreach (var spawnedEntity in _spawnedEntities)
+        {
+            if (spawnedEntity.GameplayProxy is AlundraEntityScriptProxy spawnedProxy)
+            {
+                AlundraGameplayFreeze.Apply(spawnedProxy, worldFrozen);
             }
         }
 
@@ -2353,7 +2475,17 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
     public override void OnEndPlay(World world)
     {
-        //Nothing to tear down at world level yet.
+        // D5.f: the inventory screen gives font3 back as its world ends (World.Clear calls this). The engine
+        // keeps the font pending, so the next world's screen takes the same instance again, unreloaded.
+        _inventoryScreen?.Dispose();
+        _inventoryScreen = null;
+    }
+
+    /// <summary>Test-only seam: the inventory screen <see cref="OnEndPlay"/> disposes, as
+    /// <see cref="TryWireInventoryScreenOnce"/> would have built it (which needs a live game).</summary>
+    internal void AttachInventoryScreenForTests(AlundraInventoryScreen screen)
+    {
+        _inventoryScreen = screen;
     }
 
     public override IGameplayProxy Clone()

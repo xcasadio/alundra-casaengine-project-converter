@@ -66,7 +66,7 @@ internal static class AlundraScriptedMotion
     /// <see cref="AlundraEntityScriptProxy.ForceZ"/> for that tick (verifier F1/F2 fix) - see that call
     /// site's own doc for the full rationale (the engine's own `UpdateGround` only reads this latch's SIGN,
     /// never its magnitude). Not a physical distance; any positive value would do.</summary>
-    private const float ClimbingExternalDisplacementSentinel = 1f;
+    internal const float ClimbingExternalDisplacementSentinel = 1f;
 
     /// <summary>Runs <paramref name="ticks"/> whole 50 Hz kinematic ticks for the hero pawn - the tick
     /// COUNT is owned entirely by the caller now (this class' own doc, ONE-CLOCK fix): it is always the
