@@ -346,11 +346,24 @@ prévisualise dans l'éditeur. **Vérificateur frais.**
     jeu qui ne les charge pas) : O5 corrigé ;
   - P4 : l'identité au pixel à +60 était une coïncidence de cadence : note corrigée ci-dessus.
 
-### ⏳ B5 — Clôture
+### ✅ B5 — Clôture
 
 Plan clos, mémoire à jour, rapport final ; merges laissés à l'auteur.
 
 **Commit :** `docs(plan): close the bound screens program`
+
+**Note de clôture (2026-09-24) :**
+- Tranches : B1 ✅, B2 🧪, B3 🧪, B4 ✅. B2 et B3 ne restent en 🧪 que pour l'enregistrement d'un écran depuis
+  l'éditeur (O4). Côté moteur, toutes les tâches sont faites ; T2.3, T4.3 et T5.1 attendent une vérification
+  visuelle ou la réponse à O6 du plan moteur (tableau de `CasaEngineMonogame/ai-agent/README.md`).
+- Chaque tranche et chaque tâche moteur à risque a eu son vérificateur frais, CONFIRMED au dernier passage. Un
+  défaut introduit par le programme a été trouvé après B3 et corrigé par la tâche moteur T5.2 : les bindings d'un
+  écran libéré restaient dans le registre de MGUI (G10).
+- Branches `chantier/bound-screens`, rien poussé ni mergé : parent (depuis `main`), moteur (depuis `main`), MGUI
+  (depuis `develop`). Le parent référence le moteur `14575337`, qui référence MGUI `0559e6b`. L'ordre des merges
+  revient à l'auteur (O2).
+- À arbitrer par l'auteur : O2 à O6 ci-dessous, et les points ouverts du plan moteur (O3 allocation des événements
+  faibles de WPF, O5 manque G7, O6 enregistrement des écrans dans l'éditeur).
 
 ## Points ouverts
 
