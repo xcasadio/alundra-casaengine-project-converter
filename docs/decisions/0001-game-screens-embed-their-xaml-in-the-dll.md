@@ -1,6 +1,6 @@
 # ADR-0001: The game's XAML screens embed their XAML in the Alundra DLL
 
-- **Status**: Accepted
+- **Status**: Superseded by [ADR-0002](0002-game-screens-are-project-assets-bound-to-view-models.md)
 - **Date**: 2026-09-21
 - **Source**: this chantier: `docs/plan-e13d-inventaire.md`, slice D5 (the main inventory screen), the author's answers of 2026-09-21
 

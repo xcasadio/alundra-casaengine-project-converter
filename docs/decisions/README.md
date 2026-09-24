@@ -14,4 +14,5 @@ This folder records the architecture decisions of this repository: architecture,
 
 | ADR | Title | Status | Date |
 |---|---|---|---|
-| ADR-0001 | The game's XAML screens embed their XAML in the Alundra DLL | Accepted | 2026-09-21 |
+| ADR-0001 | The game's XAML screens embed their XAML in the Alundra DLL | Superseded by ADR-0002 | 2026-09-21 |
+| ADR-0002 | The game's screens are project assets bound to observable view models | Accepted | 2026-09-24 |
