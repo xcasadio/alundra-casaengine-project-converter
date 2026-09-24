@@ -1,7 +1,7 @@
 # Plan — E13.d, seconde partie : le sous-inventaire et la bascule L1/R1
 
-**État** : 🚧 rédigé le 2026-09-24 (soir), relu **READY** au premier passage (relecteur frais), exécution en
-cours. **Mode d'exécution** : l'auteur a demandé, le
+**État** : 🧪 **SI1 à SI5 faites et vérifiées (2026-09-25) ; reste SI6, la recette de l'auteur**, et les points du
+§6. Rédigé le 2026-09-24 (soir), relu **READY** au premier passage (relecteur frais). **Mode d'exécution** : l'auteur a demandé, le
 2026-09-24 au soir, que la tâche soit faite en autonomie pendant son absence (« il faut que tu puisses faire
 tout ça tout seul »). Ce plan tient donc lieu d'approbation une fois relu **READY** : mode **AUTO** (travail
 réversible dans le périmètre écrit ici, un commit par tranche sur des branches dédiées, ni push, ni merge, ni
@@ -466,7 +466,7 @@ de l'éditeur, et y placent les icônes au coin de leur case plutôt que centré
 | Export | le convertisseur catalogue le nouvel écran : `AssetInfos.json` (+1 entrée) et `report.json` ; vérification PASSED (19 534 chargés, +1) ; double export = `report.json` seul |
 | Vérificateur frais | **CONFIRMED**, aucun défaut P0 à P2 : chaque liaison du XAML confrontée au view-model, le compositeur à `SubInventoryManager.cs`, les données de conception à une nouvelle partie au repos ; les captures de SI5 mesurées au pixel (cadres aux cases ×4 attendues, curseur, textes, chiffres). Trois remarques P4, **reportées** : aucun test ne garde l'ordre de dessin du XAML ; un cadre disparaît avec son icône si le sprite de l'icône ne se lit pas (jamais avec l'export actuel ; l'original dessine le cadre dès que l'objet existe) ; les données de conception placent les icônes au coin de leur case (aperçu de l'éditeur seulement) |
 
-### ⏳ SI5 — Recette en jeu par capture, prédite avant d'être prise
+### ✅ SI5 — Recette en jeu par capture, prédite avant d'être prise — faite le 2026-09-25
 
 **Prérequis** : SI4. Harnais hors dépôt, copie de `d6-font` (session du 2026-09-21), référence au moteur du
 worktree, projet du worktree. Parcours sur la 389 après la prise de contrôle : `Start` (principal), `R1`
@@ -498,6 +498,17 @@ de l'ouverture est compté) :
 | Écrans | jamais les deux empilés ; une image sans aucun inventaire à chaque bascule (tick Tc du §1.2), deux dans le sens sous-inventaire → principal |
 | Police | `font3` sur les quatre textes du sous-inventaire |
 | Journal | aucune erreur, aucun avertissement |
+
+Le vérificateur de l'ensemble prévu ici est celui de SI4, qui a lu cette recette (prédiction, journal, captures
+mesurées au pixel) en plus de l'écran ; la logique et la bascule avaient eu le leur en SI3. Tous deux
+**CONFIRMED**.
+
+Harnais (hors dépôt, `scratchpad/si5-harness`) : copie du harnais de D6, projet et moteur du worktree ;
+manette par `AlundraPlayerController.PadStateProviderForTests` ; un `DispatchProxy` autour du lecteur de sons du
+monde, rattaché aux deux directeurs par `AttachToWorld`, relève les sons ; à chaque image, un relevé (sur
+changement) de `MenuOpen`, des deux directeurs, du post-traitement, des deux présentateurs et de la jauge ;
+captures par `GetBackBufferData`. Lancé avec le `.json` du projet du worktree et le `Content` du lanceur
+(`CasaEngine.Launcher/bin/Release/net9.0-windows/Content`).
 
 ### 🧪 SI6 — Recette de l'auteur
 
@@ -562,6 +573,9 @@ suites vertes ; chaque export prouvé par double export.
 | 2026-09-24 | **Contre-vérification décompilation ↔ exécutable** de quinze fonctions (ouverture, fermeture, image par image, texte, icônes, armurerie, chiffres, branche `L1`/`R1` et fin de glissement du principal, post-traitement, `StartFadeOut`) : quatre relevés, chacun repris par un contradicteur qui a refait les lectures. Résultat ci-dessous. |
 | 2026-09-24 | Relecture du plan par un relecteur frais : **READY** au premier passage. Exécution lancée en mode AUTO, sur la demande d'autonomie de l'auteur. |
 | 2026-09-24 | **SI1 faite** (analyseur `8f403d5`, branche `chantier/e13d-sub-inventory-boxes`) : 12 boîtes, 1351 cases, vérificateur indépendant et contrôle négatif. **SI2 faite** : diff d'export exactement prédit, double export = `report.json`, 0 pixel différent sur les cinq images cuites. |
+| 2026-09-24 | **SI3.a faite** (`a3901af`) : `Triangle` ferme l'inventaire principal. |
+| 2026-09-25 | **SI3 faite** (`dc3fe1a`) : l'exécuteur s'est arrêté deux fois en attente d'un test lancé en arrière-plan — un de ses tests bouclait ; reprise en session principale, défauts de tests corrigés, mutations réelles ; vérificateur frais **CONFIRMED**. |
+| 2026-09-25 | **SI4 faite** (`5f12e53`) : une mutation survivante a révélé un site d'appel de production sans test (le présentateur dans la boucle du monde), comblé ; export prouvé ; vérificateur frais **CONFIRMED**. **SI5 faite** : recette en jeu conforme à sa prédiction. Reste SI6, la recette de l'auteur. |
 
 ### SI0 — la contre-vérification décompilation ↔ exécutable (2026-09-24)
 

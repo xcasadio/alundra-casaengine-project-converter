@@ -747,6 +747,10 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
    entrée de carte mais jamais décrémenté ; l'original le décrémente à chaque image (`GameEngine.cs:1561-1564`)
    et refuse l'inventaire tant qu'il ne vaut pas 0. Le portage ouvre l'inventaire dès la première image
    d'une carte. À corriger avec le directeur des warps (T4), hors de ce plan.
+10. **`Triangle` ferme aussi l'inventaire** (relevé le 2026-09-24 dans l'exécutable France, masque `0x813` en
+   `0x80056924`, que la décompilation avait perdu) : corrigé par la tranche SI3.a du plan du sous-inventaire
+   (`docs/plan-e13d-sous-inventaire.md`, `a3901af`). La recette D6 fermait par `Start`, `L2` ou `R2`, toujours
+   valables ; `Triangle` ferme désormais de la même façon et n'ouvre pas.
 
 ## 7. Journal
 
