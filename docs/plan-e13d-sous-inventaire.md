@@ -281,7 +281,7 @@ A = B) ; les onze tables et les cinq en-têtes contre l'exécutable ; la garde p
 icônes, noms et descriptions ; le cadre `wind_039` creux. **Contre-vérification décompilation ↔ exécutable** des
 fonctions du sous-inventaire, de la branche `L1`/`R1` du principal et du post-traitement : résultat au §7.
 
-### ⏳ SI1 — Analyseur : les cinq boîtes du sous-inventaire en CSV
+### ✅ SI1 — Analyseur : les cinq boîtes du sous-inventaire en CSV — faite le 2026-09-24 (analyseur `8f403d5`)
 
 **Prérequis** : SI0. **Dépôt** : l'analyseur, branche `chantier/e13d-sub-inventory-boxes` depuis `9adba14`.
 - Ajouter **à la fin** de `AlundraTools/AlundraTools/UiBoxes.csv` les cinq boîtes propres au sous-inventaire, dans
@@ -299,7 +299,16 @@ retrouve chaque ligne : 12 boîtes, 1351 cases (822 + 529), 0 manquante, 0 en tr
 que des lignes ajoutées en fin de fichier (et le commentaire du `.csproj`). Commit :
 `feat(tables): export the sub-inventory's box layout as CSV (E13.d SI1)`.
 
-### ⏳ SI2 — Parent : la référence de l'analyseur et l'export prouvé
+**Fait** : générateur et vérificateur au §7. Le générateur régénère les sept premières boîtes et leurs 822 cases
+**à l'octet près** puis ajoute les cinq nouvelles (5 lignes, 529 cases) ; le vérificateur indépendant rend
+`boxes: 12; cells in csv: 1351; cells re-read: 1351; missing from csv: 0; extra in csv: 0; same order: True`, et,
+sur une case corrompue exprès puis rendue à l'octet près, `missing 1; extra 1; same order: False` (contrôle
+négatif). `git diff` : 534 lignes ajoutées, aucune retirée, plus le commentaire du `.csproj`. Le projet est
+évalué par MSBuild et voit les deux CSV (`dotnet msbuild -getItem:None`) ; son build complet échoue dans ce
+worktree sur `AlundraGame.csproj`, faute du sous-module MGUI propre à l'analyseur, non cloné ici — sans lien avec
+la modification.
+
+### ✅ SI2 — Parent : la référence de l'analyseur et l'export prouvé — faite le 2026-09-24
 
 **Prérequis** : SI1. Aucune ligne du convertisseur ne change (§1.6).
 - **Prédiction écrite avant** : diff d'export = 15 fichiers ajoutés (`UI/Textures/<boîte>.png`,
@@ -312,6 +321,24 @@ que des lignes ajoutées en fin de fichier (et le commentaire du `.csproj`). Com
 - Suites : convertisseur 190/190.
 - Commit : `chore(submodules): point at the analyser with the sub-inventory boxes (E13.d SI2)`, avec ce plan
   (identifiants des cinq sprites relevés dans le `.sprite` exporté, pour SI4).
+
+**Fait** :
+
+| Preuve | Résultat |
+|---|---|
+| Prédiction écrite avant | 15 ajouts + `AssetInfos.json` + `report.json` |
+| Export complet en place | **exactement** la prédiction ; `UiBoxes.Boxes` 11, `UiBoxes.Cells` 1351, `UiBoxes.CellsWithoutTile` 0 ; 0 erreur ; vérification PASSED (19 533 chargés) |
+| Catalogue | 15 entrées ajoutées, toutes au nom d'une des cinq boîtes, aucune retirée, l'ordre des anciennes gardé |
+| Double export | `report.json` seul |
+| Preuve au pixel | **0 pixel différent** sur les cinq images, en RGBA complet, contre une composition faite depuis `StaticVariables.cs` et le `wind.png` de l'extracteur ; méthode contrôlée sur deux boîtes du principal (0 pixel) |
+| Suites | convertisseur 190/190 (aucune ligne du convertisseur changée) |
+
+Identifiants des sprites, pour SI4 : armurerie `UIBoxConfiguration_800af664` = `10eb721a-628f-549c-bcaa-2ab2f670dbc3` ;
+objets-clés `UIBoxConfiguration_800b06dc` = `af453798-29af-5757-aaa5-10f1ff92af49` ; nom de l'armure
+`UIBoxConfiguration_800b122c` = `d5a10996-bb74-5e48-967b-be8bdde2c148` ; nom des bottes
+`UIBoxConfiguration_800b1d7c` = `f7468bc4-faa0-5222-947b-037b12200759` ; icônes `UIBoxConfiguration_800b287c` =
+`1070d22e-b7e8-50d5-a58c-ccf80667185e` ; boîtes partagées : description `973a9208-c867-57fe-bee3-cf30237221ef`,
+argent/faucons/clés `e8d58247-f02b-57cb-9ebf-f1df2b9be874`.
 
 ### ⏳ SI3.a — DLL : `Triangle` ferme aussi l'inventaire principal (correction de D4)
 
@@ -469,6 +496,7 @@ suites vertes ; chaque export prouvé par double export.
 | 2026-09-24 | Mesures SI0 (scripts ci-dessous). **Garde perdue par la décompilation** dans la boucle des objets-clés, établie dans l'exécutable France. |
 | 2026-09-24 | **Contre-vérification décompilation ↔ exécutable** de quinze fonctions (ouverture, fermeture, image par image, texte, icônes, armurerie, chiffres, branche `L1`/`R1` et fin de glissement du principal, post-traitement, `StartFadeOut`) : quatre relevés, chacun repris par un contradicteur qui a refait les lectures. Résultat ci-dessous. |
 | 2026-09-24 | Relecture du plan par un relecteur frais : **READY** au premier passage. Exécution lancée en mode AUTO, sur la demande d'autonomie de l'auteur. |
+| 2026-09-24 | **SI1 faite** (analyseur `8f403d5`, branche `chantier/e13d-sub-inventory-boxes`) : 12 boîtes, 1351 cases, vérificateur indépendant et contrôle négatif. **SI2 faite** : diff d'export exactement prédit, double export = `report.json`, 0 pixel différent sur les cinq images cuites. |
 
 ### SI0 — la contre-vérification décompilation ↔ exécutable (2026-09-24)
 
@@ -540,3 +568,216 @@ boîtes, comparés aux littéraux de `StaticVariables.cs:12301-12340` et `:11279
 Cases des cinq boîtes contre l'atlas (sortie : 210, 105, 72, 72 et 70 cases, toutes trouvées, aucune hors de sa
 boîte ni mal placée, A = B) : script `d7_boxes_measure.py`, même règle que D0.1/D0.2 du plan principal, avec un
 lecteur qui accepte aussi la forme `new SPRT[] { … }` des tableaux du sous-inventaire.
+
+### SI1 — le générateur des CSV et son vérificateur indépendant (2026-09-24)
+
+Générateur (lancé avec `alundra-datas-analyser/AlundraTools` en entrée et `AlundraTools/AlundraTools` en sortie) :
+
+```python
+"""SI1 of docs/plan-e13d-sous-inventaire.md: writes UiBoxes.csv and UiBoxCells.csv from the decompilation.
+
+Extension of D3.a's generator (docs/plan-e13d-inventaire.md section 7). The first seven boxes are the seven
+DisplayUiBoxes calls of the main inventory's per-frame function, in their drawing order
+(MainInventoryManager.cs:914-920) - unchanged. Then the sub-inventory's own boxes: the FUN_80053270 calls of
+DisplaySubInventory (SubInventoryManager.cs:456-462), in their order, skipping the two boxes the main
+inventory already lists (description, money/falcon/key). For each box, its UIBoxConfiguration literal gives
+X, Y, Width, Height and SpritesA; the cells are the SPRT literals of SpritesA, raw, in array order (copy A
+only, D-E13D-14). Decimal integers, ';' separator, header row, CRLF line endings, no BOM.
+Usage: python si1_generate.py <analyser AlundraTools dir> <output dir>
+"""
+import io
+import os
+import re
+import sys
+
+ROOT = sys.argv[1]
+OUT = sys.argv[2]
+SRC = os.path.join(ROOT, 'AlundraEngine', 'StaticVariables.cs')
+MAIN = os.path.join(ROOT, 'AlundraEngine', 'UI', 'MainInventoryManager.cs')
+SUB = os.path.join(ROOT, 'AlundraEngine', 'UI', 'SubInventoryManager.cs')
+
+src = io.open(SRC, encoding='utf-8-sig').read()
+main_calls = re.findall(r'DisplayUiBoxes\(_gameEngine\.StaticVariables\.(\w+)\)', io.open(MAIN, encoding='utf-8-sig').read())
+assert len(main_calls) == 7, main_calls
+sub_calls = re.findall(r'FUN_80053270\(_gameEngine\.StaticVariables\.(\w+)\)', io.open(SUB, encoding='utf-8-sig').read())
+assert len(sub_calls) == 7, sub_calls
+calls = main_calls + [c for c in sub_calls if c not in main_calls]
+assert len(calls) == 12, calls
+
+CONFIG_FIELD = re.compile(r'\b(X|Y|Width|Height|SpritesA)\s*=\s*([^,\n}]+)')
+SPRT = re.compile(r'new\s+SPRT\s*\{([^}]*)\}', re.S)
+SPRT_FIELD = re.compile(r'\b(x0|y0|u0|v0|w|h|clut)\s*=\s*(?:unchecked\s*\()?\s*(?:\(\w+\))?\s*(0x[0-9A-Fa-f]+|\d+)')
+
+
+def box_config(name):
+    start = src.index(name + ' = new UIBoxConfiguration')
+    body = src[src.index('{', start):src.index('};', start)]
+    fields = {k: v.strip() for k, v in CONFIG_FIELD.findall(body)}
+    return {k: (int(fields[k], 0) if k != 'SpritesA' else fields[k]) for k in ('X', 'Y', 'Width', 'Height', 'SpritesA')}
+
+
+def sprt_cells(array_name):
+    # Two literal forms coexist in StaticVariables.cs: "X =\n[ ... ];" and "X = new SPRT[]\n{ ... };".
+    marker = re.search(r'\b' + re.escape(array_name) + r'\s*=\s*(new\s+SPRT\s*\[\s*\]\s*)?', src)
+    rest = src[marker.end():marker.end() + 40].lstrip()
+    opener = rest[0]
+    assert opener in '[{', (array_name, rest[:20])
+    closer = ']' if opener == '[' else '}'
+    start = src.index(opener, marker.end())
+    depth = 0
+    for end in range(start, len(src)):
+        depth += {opener: 1, closer: -1}.get(src[end], 0)
+        if depth == 0:
+            break
+    cells = []
+    for m in SPRT.finditer(src[start:end]):
+        fields = dict(SPRT_FIELD.findall(m.group(1)))
+        cells.append([int(fields[k], 0) for k in ('x0', 'y0', 'u0', 'v0', 'w', 'h', 'clut')])
+    return cells
+
+
+box_rows = ['box;x;y;width;height']
+cell_rows = ['box;cell;x0;y0;u0;v0;w;h;clut']
+for name in calls:
+    config = box_config(name)
+    box_rows.append(f"{name};{config['X']};{config['Y']};{config['Width']};{config['Height']}")
+    if config['SpritesA'] == 'null':
+        assert config['Width'] * config['Height'] == 0, name
+        continue
+    cells = sprt_cells(config['SpritesA'])
+    assert len(cells) == config['Width'] * config['Height'], (name, len(cells))
+    for index, cell in enumerate(cells):
+        cell_rows.append(';'.join([name, str(index)] + [str(v) for v in cell]))
+
+
+def write(file_name, rows):
+    path = os.path.join(OUT, file_name)
+    with io.open(path, 'wb') as handle:
+        handle.write(('\r\n'.join(rows) + '\r\n').encode('utf-8'))
+    print(f'{file_name}: {len(rows) - 1} rows')
+
+
+write('UiBoxes.csv', box_rows)
+write('UiBoxCells.csv', cell_rows)
+```
+
+Vérificateur, sans rien reprendre du générateur (liste des douze boîtes écrite à la main) :
+
+```python
+"""SI1 acceptance, independent of si1_generate.py: re-reads StaticVariables.cs line by line (no bracket
+matching, no shared regex, no call-site parsing: the expected box list is written out by hand from the
+decompiled call sites MainInventoryManager.cs:914-920 and SubInventoryManager.cs:456-462) and checks that
+every row of UiBoxes.csv and UiBoxCells.csv is found there, that nothing is missing or extra, and that the
+order is the same. Handles both literal forms: one SPRT per several lines, and "/*[i]*/ new SPRT { ... },"
+on one line. Usage: python si1_verify.py <analyser AlundraTools dir>"""
+import io
+import os
+import sys
+
+ROOT = sys.argv[1]
+lines = io.open(os.path.join(ROOT, 'AlundraEngine', 'StaticVariables.cs'), encoding='utf-8-sig').read().splitlines()
+
+EXPECTED_BOXES = [
+    'g_UiBoxesInventoryWeaponBackground', 'g_UiBoxesInventoryItemBackground',
+    'g_UiBoxesInventoryWeaponNameBackground', 'g_UiBoxesInventoryItemNameBackground', 'UIBoxConfiguration_800b9a10',
+    'g_UiBoxesInventoryMoneyFalconKeyIcons', 'g_uiBoxesInventoryDescriptionBackground',
+    'UIBoxConfiguration_800af664', 'UIBoxConfiguration_800b06dc', 'UIBoxConfiguration_800b122c',
+    'UIBoxConfiguration_800b1d7c', 'UIBoxConfiguration_800b287c',
+]
+
+
+def strip_comments(s):
+    while '/*' in s and '*/' in s:
+        a = s.index('/*')
+        b = s.index('*/', a) + 2
+        s = s[:a] + s[b:]
+    if '//' in s:
+        s = s[:s.index('//')]
+    return s
+
+
+def number(text):
+    text = text.strip().rstrip(',').strip()
+    for prefix in ('unchecked(', '(short)', '(byte)', '(ushort)', '(uint)'):
+        text = text.replace(prefix, '')
+    text = text.rstrip(')').strip()
+    return int(text, 16) if text.lower().startswith('0x') else int(text)
+
+
+def fields_of(chunk):
+    out = {}
+    for part in chunk.replace('{', ',').replace('}', ',').split(','):
+        if '=' in part:
+            key, value = part.split('=', 1)
+            key = key.strip().split()[-1] if key.strip() else ''
+            try:
+                out[key] = number(value)
+            except ValueError:
+                out[key] = value.strip()
+    return out
+
+
+def config(name):
+    i = next(k for k, l in enumerate(lines) if l.strip().startswith(name + ' = new UIBoxConfiguration'))
+    block = []
+    for l in lines[i + 1:]:
+        block.append(strip_comments(l))
+        if l.strip().startswith('};'):
+            break
+    return fields_of(' '.join(block))
+
+
+def array_cells(name):
+    i = next(k for k, l in enumerate(lines) if (name + ' =') in l and 'SPRT[]' in l)
+    cells, current = [], None
+    for l in lines[i + 1:]:
+        s = strip_comments(l).strip()
+        if s.startswith('new SPRT'):
+            body = s[len('new SPRT'):]
+            if '}' in body:  # one-line literal
+                f = fields_of(body)
+                cells.append(tuple(f[k] for k in ('x0', 'y0', 'u0', 'v0', 'w', 'h', 'clut')))
+                continue
+            current = body
+            continue
+        if current is not None:
+            current += ' ' + s
+            if s.startswith('}'):
+                f = fields_of(current)
+                cells.append(tuple(f[k] for k in ('x0', 'y0', 'u0', 'v0', 'w', 'h', 'clut')))
+                current = None
+            continue
+        if s.startswith('];') or s.startswith('};'):
+            break
+    return cells
+
+
+def rows(file_name):
+    data = io.open(os.path.join(ROOT, 'AlundraTools', file_name), 'rb').read()
+    assert not data.startswith(b'\xef\xbb\xbf') and data.endswith(b'\r\n') and b'\n' not in data.replace(b'\r\n', b'')
+    text = data.decode('utf-8').split('\r\n')[:-1]
+    return text[0], [r.split(';') for r in text[1:]]
+
+
+header, boxes = rows('UiBoxes.csv')
+assert header == 'box;x;y;width;height', header
+cell_header, cells = rows('UiBoxCells.csv')
+assert cell_header == 'box;cell;x0;y0;u0;v0;w;h;clut', cell_header
+assert [b[0] for b in boxes] == EXPECTED_BOXES, [b[0] for b in boxes]
+
+expected_cells = []
+for name, x, y, w, h in boxes:
+    c = config(name)
+    assert (c['X'], c['Y'], c['Width'], c['Height']) == (int(x), int(y), int(w), int(h)), (name, c)
+    if c['SpritesA'] == 'null':
+        continue
+    got = array_cells(c['SpritesA'])
+    assert len(got) == c['Width'] * c['Height'], (name, len(got))
+    for index, cell in enumerate(got):
+        expected_cells.append([name, str(index)] + [str(v) for v in cell])
+
+missing = [r for r in expected_cells if r not in cells]
+extra = [r for r in cells if r not in expected_cells]
+print(f'boxes: {len(boxes)}; cells in csv: {len(cells)}; cells re-read: {len(expected_cells)}; '
+      f'missing from csv: {len(missing)}; extra in csv: {len(extra)}; same order: {cells == expected_cells}')
+```
