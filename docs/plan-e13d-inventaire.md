@@ -9,7 +9,8 @@ cuite** depuis la copie A (D-E13D-13, D-E13D-14), **portrait reporté** (D-E13D-
 **Naissance** : `docs/plan-conversion-totale.md` §E13, E13.d — « porter l'original tel quel » ; découpage
 décidé par l'auteur le 2026-09-19 : **l'inventaire principal d'abord** (ouverture, fermeture, équipement),
 puis le sous-inventaire et la bascule L1/R1. Ce plan ne couvre que l'inventaire principal ; le
-sous-inventaire aura son propre plan, écrit après la recette de celui-ci.
+sous-inventaire a son propre plan, écrit le 2026-09-24 après la recette D6 :
+`docs/plan-e13d-sous-inventaire.md`.
 **Dépend de** : E13.c S3 (`AlundraItemTables`, les compteurs d'objets, `SetPlayerWeaponId` et la chaîne
 d'équipement portée ligne à ligne), close et mergée dans `main` (`ea633ad`).
 **Branche** : `chantier/e13d-inventaire`, créée depuis `chantier/e13c-suite`, rebasée sur `main` le
