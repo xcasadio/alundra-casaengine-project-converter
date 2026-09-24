@@ -119,7 +119,7 @@ indexer : aucune dans le parent en dehors du sous-module moteur (`CasaEngine.Lau
   catalogue privé de ses 3 nouvelles entrées est identique octet pour octet à la référence. Second export : seul
   `report.json` change.
 
-### 🧪 B2 — L'inventaire en asset lié
+### ✅ B2 — L'inventaire en asset lié
 
 **Étapes :**
 1. Déplacer `Alundra/Screens/InventoryScreen.xaml` vers `alundra-project/UI/Screens/InventoryScreen.xaml` (ses
@@ -200,8 +200,10 @@ indexer : aucune dans le parent en dehors du sous-module moteur (`CasaEngine.Lau
     documenté dans `UiAnimationWriter`, dans la tolérance de 20 ms.
 - **Reste en 🧪** : « un enregistrement sans modification laisse `git diff` vide » n'est pas vérifiable, l'éditeur
   n'enregistrant aucun écran (O4).
+- **Levé le 2026-09-24 par B6** : l'éditeur enregistre les écrans (T4.4) ; sur l'inventaire, un enregistrement
+  sans modification n'écrit rien et une modification remise à l'origine laisse `git diff` vide (CONFIRMED).
 
-### 🧪 B3 — Le HUD en XAML
+### ✅ B3 — Le HUD en XAML
 
 **Étapes :**
 1. `alundra-project/UI/Screens/HudScreen.xaml`, `.uiscreen` et `HudScreen.design.json` : 26 emplacements `Image`
@@ -281,6 +283,7 @@ indexer : aucune dans le parent en dehors du sous-module moteur (`CasaEngine.Lau
   HUD libérés sans binding restant) échouent sans la correction. `Alundra.Tests` 1084/1084 ; recette rejouée
   (`run-t52`) identique à `run-b3-clock`, sauf `inv-389` (même écart d'animation du monde qu'entre deux runs).
 - **Reste en 🧪** : l'enregistrement sans modification, comme B2 (O4).
+- **Levé le 2026-09-24 par B6**, comme B2, sur le HUD (CONFIRMED).
 
 ### ✅ B4 — La boîte de dialogue en asset
 
@@ -373,7 +376,7 @@ fichier de conception pour le dialogue (D15, écart de B4 validé) ; merges MGUI
 `main` après cette suite, sur feu vert (D16) ; confirmation avant de perdre un écran modifié (D17) ; Ctrl+S (D18).
 Plan relu (READY) et approuvé le 2026-09-24, mode AUTO. Le programme est rouvert pour cette suite.
 
-### 🚧 B6 — Enregistrer les écrans d'Alundra depuis l'éditeur
+### ✅ B6 — Enregistrer les écrans d'Alundra depuis l'éditeur
 
 **Prérequis :** tâche moteur T4.4 close.
 
@@ -410,8 +413,26 @@ octet des fichiers que « Save » réécrit aussi et des écrans versionnés, re
 - Fin de B6 : `git status` du parent sans changement dans `alundra-project/`, et manifeste final identique à celui
   de l'export de B4 (23 227 fichiers, 0 écart).
 - Commentaire de `UI/Screens/DialogueScreen.xaml` mis à jour pour D14 ; `AlundraDialogueScreenAssetTests` 5/5.
-- Reste : vérificateur frais sur T4.4 et B6 ; B2, B3 et T5.1 passent en ✅ après son verdict ; la partie de B6 qui
-  concerne T4.5 (sortie automatisée avec un écran modifié) viendra avec T4.5.
+- La vérification d'une sortie automatisée avec un écran modifié (T4.5) est faite avec T4.5, pas ici.
+- **Vérificateur frais sur T4.4 et B6 (2026-09-24) : CONFIRMED** sur le moteur `99e66ee0` (avec `96ceb976`) et le parent
+  `45de7e4`, sans constat P0 à P2 : writer déplacé tel quel (aucun test existant modifié) ; gardes de
+  `SaveCurrentProject` et titre sans astérisque constatés ; sondes ajoutées puis retirées, avec le vrai
+  `EditorDirtyStateService`, la vraie pile de commandes et le vrai `FileSystemWatcher` (annuler après un
+  enregistrement remarque l'écran, le second enregistrement réécrit l'original à l'octet ; une modification externe
+  après un enregistrement recharge ; un fichier en lecture seule donne un message sans exception ; deux panneaux
+  modifiés sont écrits, un propre garde sa date) ; mutation de `ShouldReload` reproduite ; `CasaEngine.Tests`
+  1876/1876 (trois passes), deux solutions, `Alundra.Tests` 1089/1089 ; **les neuf lancements de B6 rejoués** (mêmes
+  résultats, aucune alerte, `git status` de `alundra-project` vide). Remarques :
+  - P3 : le manifeste final de B6 avait été pris juste avant le commit qui change le commentaire de
+    `DialogueScreen.xaml` (D14) ; le fichier sur disque est bien la version commitée, et les lancements du
+    vérificateur ont porté sur elle. Référence désormais : `scratchpad/v-b6-manifest.sha256` (état à `45de7e4`) ;
+  - P4 (reportée, sans rapport) : `AudioServiceFadeTests.FadingVoices_DoNotAllocateDuringUpdate` a échoué une fois
+    sur une passe complète (7 888 octets au lieu de 0), vert seul et aux deux passes suivantes ;
+  - P4 (reportée, non reproduite) : si la relecture du fichier juste après une écriture réussie échouait,
+    `TrySaveDocument` signalerait un échec et l'écran resterait modifié ; le prochain enregistrement le réécrirait ;
+  - P4 (reportée, non reproduite) : `TrySaveDocument` ne rattrape que `IOException` et
+    `UnauthorizedAccessException` ; une autre exception du sérialiseur sortirait de `SaveCurrentProject`, que le
+    menu appelle sans `try`.
 
 ## Points ouverts
 
