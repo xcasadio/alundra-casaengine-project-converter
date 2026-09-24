@@ -692,7 +692,7 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
     et lui livre l'extraction, la table des objets et l'arme équipée ; on extrait le portrait de
     **tous** les objets dont la colonne d'icône est renseignée ; la recette ne force **aucun**
     accessoire équipé, fidélité stricte. Plan : `docs/plan-e13c-icones-hud.md`.
-  - **E13.d — La gestion de l'inventaire 🚧 approuvée le 2026-09-21, en exécution (mode AUTO)** : plan
+  - **E13.d — La gestion de l'inventaire : inventaire principal ✅ validé en jeu le 2026-09-24 (D6) ; restent le sous-inventaire et la bascule L1/R1 ⏳** (approuvée le 2026-09-21) : plan
     `docs/plan-e13d-inventaire.md`, relu READY, décisions de l'auteur du 2026-09-21 enregistrées, dont
     les boîtes en image cuite depuis la copie A. Décision du
     2026-09-19 : porter l'original tel quel ; amendée le 2026-09-21 pour le dessin : pas au pixel près,
@@ -764,6 +764,6 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 | E13.a HUD, la jauge permanente | ✅ close (validée en jeu ; C4 et C5.b le 2026-09-20) | parent `329b19b`, `d9fac87`, `3cf8dd9`, `babb16f`, `48df065`, `8cb52c9`, C4 `7d6a37a` mergée `8dcfd81` ; moteur `19fcd84c` |
 | E13.b HUD, fonds des cases arme et accessoire | ✅ close (C6, validée en jeu) | `ae8a24e` |
 | E13.c HUD, icônes d'arme et d'accessoire | ✅ close (S4 passée en jeu le 2026-09-21) | analyseur `6176ea3`, `a0904b8`, `c304201`, mergé `c204009` ; parent `0f1cfd4`, `7018e6a`, `0135c92`, `cdb7097`, mergé `ea633ad` |
-| E13.d inventaire principal (puis sous-inventaire et L1/R1) | 🚧 approuvée le 2026-09-21, en exécution | `docs/plan-e13d-inventaire.md` |
+| E13.d inventaire principal (puis sous-inventaire et L1/R1) | principal ✅ validé en jeu le 2026-09-24 ; sous-inventaire et L1/R1 ⏳ (plan à écrire) | `docs/plan-e13d-inventaire.md` |
 | E14 IA native | ⏳ | |
 | E15 conversion hybride | ⏳ | |

@@ -1,6 +1,6 @@
 # Plan — E13.d : l'inventaire principal
 
-**État** : 🚧 **réapprouvé par l'auteur le 2026-09-21 après D0**, exécution en mode **AUTO** (travail
+**État** : ✅ **inventaire principal validé en jeu par l'auteur le 2026-09-24 (D6)**. Historique : 🚧 **réapprouvé par l'auteur le 2026-09-21 après D0**, exécution en mode **AUTO** (travail
 réversible dans le périmètre approuvé, ni push, ni merge, ni action externe). D0 close ; son arrêt propre
 a fait réviser le plan (§1.2 et §1.5 corrigés), dont la dernière correction n'a pas été relue, plafond
 atteint (§7) ; l'auteur l'a approuvée telle quelle. Décisions de l'auteur au §2.2 : boîtes en **image
@@ -670,7 +670,7 @@ arrêts — **et sa relecture fraîche**. Sur la réponse (b), elle est retirée
 `MainInventoryManager.cs:209-440`, 48×56), dans l'écran de D5. **Sur la réponse (b) au §6 point 6, elle
 est retirée et D-E13D-12 amendée** : l'inventaire est livré sans portrait.
 
-### ⏳ D6 — Recette en jeu (l'auteur)
+### ✅ D6 — Recette en jeu (l'auteur) — validée le 2026-09-24
 
 **Prérequis** : D5, D5.f. La recette reprend le scénario de D5.f : changer de carte puis rouvrir
 l'inventaire, les textes restent en `font3`.
@@ -680,6 +680,10 @@ en pleine chute**, et la chute reprend à la fermeture ; le HUD se cache à l'ou
 fermeture, comme dans l'original ; **pendant un dialogue aussi, les PNJ et le héros sont figés**
 (D-E13D-15). Et, laissé par la vérification de D5 : après avoir lu les deux lignes de description d'un
 objet, passer sur une case vide ou un objet non possédé, puis revenir : aucune ligne ne doit rester.
+
+**Validée par l'auteur le 2026-09-24**, sur la version où l'inventaire est un asset lié à un view-model (programme
+bound-screens, `docs/plan-bound-screens.md`, B2) : ouverture par Start, L2 ou R2, navigation, équipement,
+description, fermeture, après un changement de carte, monde figé, y compris pendant une chute.
 
 ---
 
