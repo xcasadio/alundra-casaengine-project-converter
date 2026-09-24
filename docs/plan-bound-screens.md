@@ -274,6 +274,12 @@ indexer : aucune dans le parent en dehors du sous-module moteur (`CasaEngine.Lau
   - A3 (P4) : `IsMoneyRolling` reste vrai le tick où la pièce revient à l'image 0 et ne tombe qu'au tick suivant
     (branche soldée), comme sa documentation le dit : la pièce joue un tick de plus sur sa première image, sans
     effet visible, dans la tolérance de 20 ms.
+- **Constat postérieur (session principale, 2026-09-24), corrigé** : un écran libéré laissait ses bindings dans le
+  registre statique de MGUI, qui gardait l'ancienne fenêtre et son view-model atteignables ; l'inventaire (B2) et
+  le HUD (B3) étant reconstruits à chaque changement de monde, le registre grossissait à chaque changement. Corrigé
+  par la tâche moteur T5.2 (MGUI `0559e6b`, moteur `25400d4e`, manque G10) ; deux tests de la DLL (inventaire et
+  HUD libérés sans binding restant) échouent sans la correction. `Alundra.Tests` 1084/1084 ; recette rejouée
+  (`run-t52`) identique à `run-b3-clock`, sauf `inv-389` (même écart d'animation du monde qu'entre deux runs).
 - **Reste en 🧪** : l'enregistrement sans modification, comme B2 (O4).
 
 ### ⏳ B4 — La boîte de dialogue en asset

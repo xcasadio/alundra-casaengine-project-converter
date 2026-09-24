@@ -23,7 +23,7 @@ namespace Alundra.Tests.UI;
 /// </summary>
 public sealed class AlundraInventoryScreenFontTests
 {
-    private sealed class CpuFont3Loader : IAssetLoader
+    internal sealed class CpuFont3Loader : IAssetLoader
     {
         private readonly SpriteFontBase _font = BuildCpuFont();
         public int Loads;
