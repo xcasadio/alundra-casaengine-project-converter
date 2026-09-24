@@ -5,6 +5,7 @@ using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Gameplay;
 using CasaEngine.Framework.Input;
 using CasaEngine.Framework.Scene.Entities;
+using CasaEngine.Framework.UI.MGUI;
 using Newtonsoft.Json.Linq;
 using Texture = CasaEngine.Framework.Assets.Textures.Texture;
 using World = CasaEngine.Framework.Scene.World.World;
@@ -47,6 +48,9 @@ public static class AssetVerifier
         // game/graphics dependency - see PlayerSetupWriter.
         ["gamemode"] = element => new PlayerStartupSettings().Load(element),
         ["buttonsmapping"] = element => new ButtonsMapping().Load(element),
+        // A screen envelope (parent ADR-0002, versioned under UI/Screens/): UIScreenAsset.Load is a plain
+        // JObject reader. The files it names are checked by VerifyScreenFiles once it has loaded.
+        ["uiscreen"] = element => new UIScreenAsset().Load(element),
     };
 
     /// <summary>
@@ -297,7 +301,16 @@ public static class AssetVerifier
 
         try
         {
-            loader(JObject.Parse(File.ReadAllText(fullPath)));
+            var element = JObject.Parse(File.ReadAllText(fullPath));
+            loader(element);
+            if (string.Equals(extension, "uiscreen", StringComparison.OrdinalIgnoreCase)
+                && !VerifyScreenFiles(assetInfo, element, fullPath, outputDirectory, report))
+            {
+                report.Increment("Verify.Failed");
+                report.Increment($"Verify.Failed.{extension}");
+                return;
+            }
+
             report.Increment("Verify.Loaded");
             report.Increment($"Verify.Loaded.{extension}");
         }
@@ -307,6 +320,51 @@ public static class AssetVerifier
             report.Increment("Verify.Failed");
             report.Increment($"Verify.Failed.{extension}");
         }
+    }
+
+    /// <summary>
+    /// A screen envelope names its XAML (required) and, optionally, a design-time data file. Both resolve the way
+    /// the engine resolves them (UIScreenLoader.ResolveSourceXamlPath, UIScreenDesignTimeDataLoader): an absolute
+    /// path as given, otherwise next to the envelope, otherwise from the project root.
+    /// </summary>
+    private static bool VerifyScreenFiles(
+        AssetInfo assetInfo, JObject element, string envelopePath, string outputDirectory, ConversionReport report)
+    {
+        var screen = new UIScreenAsset();
+        screen.Load(element);
+
+        var valid = true;
+        if (string.IsNullOrWhiteSpace(screen.SourceXamlFile))
+        {
+            report.Errors.Add($"Verify: screen '{assetInfo.FileName}' names no source_xaml_file.");
+            valid = false;
+        }
+        else if (!ScreenFileExists(screen.SourceXamlFile, envelopePath, outputDirectory))
+        {
+            report.Errors.Add($"Verify: screen '{assetInfo.FileName}' names source_xaml_file '{screen.SourceXamlFile}', which does not exist.");
+            valid = false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(screen.DesignTimeDataFile)
+            && !ScreenFileExists(screen.DesignTimeDataFile, envelopePath, outputDirectory))
+        {
+            report.Errors.Add($"Verify: screen '{assetInfo.FileName}' names design_time_data_file '{screen.DesignTimeDataFile}', which does not exist.");
+            valid = false;
+        }
+
+        return valid;
+    }
+
+    private static bool ScreenFileExists(string fileName, string envelopePath, string outputDirectory)
+    {
+        if (Path.IsPathRooted(fileName))
+        {
+            return File.Exists(fileName);
+        }
+
+        var envelopeDirectory = Path.GetDirectoryName(envelopePath) ?? outputDirectory;
+        return File.Exists(Path.Combine(envelopeDirectory, fileName))
+            || File.Exists(Path.Combine(outputDirectory, fileName));
     }
 
     private static void VerifyExistenceOnly(

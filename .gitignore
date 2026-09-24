@@ -59,5 +59,9 @@ nunit-*.xml
 .vs/
 data-extracted/
 
-# Generated CasaEngine project (converter output)
-alundra-project/
+# Generated CasaEngine project (converter output), except the screens versioned in it (ADR-0002):
+# a negation cannot re-include a path under an ignored directory, so each level is re-opened in turn.
+alundra-project/*
+!alundra-project/UI/
+alundra-project/UI/*
+!alundra-project/UI/Screens/

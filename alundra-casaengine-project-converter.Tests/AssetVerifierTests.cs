@@ -75,6 +75,37 @@ public class AssetVerifierTests
     }
 
     [Fact]
+    public void Verify_OnAVersionedScreen_LoadsItsEnvelopeAndChecksTheFilesItNames()
+    {
+        RunOnAGeneratedProject((outputDirectory, report) =>
+        {
+            var screenRelativePath = WriteScreen(outputDirectory, "Good", writeXaml: true, designTimeDataFile: "Good.design.json");
+            File.WriteAllText(Path.Combine(outputDirectory, "UI", "Screens", "Good.design.json"), "{}");
+            AddCatalogEntry(outputDirectory, Guid.NewGuid(), "Good", screenRelativePath);
+
+            Assert.True(AssetVerifier.Verify(outputDirectory, report, isFullRun: true));
+            Assert.Equal(1, report.Counters["Verify.Loaded.uiscreen"]);
+        });
+    }
+
+    [Fact]
+    public void Verify_OnAScreenWhoseXamlOrDesignTimeDataIsMissing_FailsAndNamesTheFile()
+    {
+        RunOnAGeneratedProject((outputDirectory, report) =>
+        {
+            var screenRelativePath = WriteScreen(outputDirectory, "Broken", writeXaml: false, designTimeDataFile: "Broken.design.json");
+            AddCatalogEntry(outputDirectory, Guid.NewGuid(), "Broken", screenRelativePath);
+
+            Assert.False(AssetVerifier.Verify(outputDirectory, report, isFullRun: true));
+
+            Assert.Equal(2, report.Errors.Count);
+            Assert.Contains(report.Errors, error => error.Contains("'Broken.xaml', which does not exist", StringComparison.Ordinal));
+            Assert.Contains(report.Errors, error => error.Contains("'Broken.design.json', which does not exist", StringComparison.Ordinal));
+            Assert.Equal(1, report.Counters["Verify.Failed.uiscreen"]);
+        });
+    }
+
+    [Fact]
     public void Verify_OnACatalogEntryWithoutItsFile_FailsAndNamesTheAsset()
     {
         RunOnAGeneratedProject((outputDirectory, report) =>
@@ -290,6 +321,35 @@ public class AssetVerifierTests
             Directory.Delete(inputDirectory, recursive: true);
             Directory.Delete(outputDirectory, recursive: true);
         }
+    }
+
+    /// <summary>Writes UI/Screens/&lt;name&gt;.uiscreen naming &lt;name&gt;.xaml (written only when asked) and an optional
+    /// design-time data file, and returns the envelope's path relative to the project.</summary>
+    private static string WriteScreen(string outputDirectory, string name, bool writeXaml, string? designTimeDataFile)
+    {
+        var screensDirectory = Path.Combine(outputDirectory, "UI", "Screens");
+        Directory.CreateDirectory(screensDirectory);
+
+        var envelope = new JObject
+        {
+            ["id"] = Guid.NewGuid(),
+            ["name"] = name,
+            ["source_xaml_file"] = name + ".xaml",
+        };
+        if (designTimeDataFile != null)
+        {
+            envelope["design_time_data_file"] = designTimeDataFile;
+        }
+
+        File.WriteAllText(Path.Combine(screensDirectory, name + ".uiscreen"), envelope.ToString());
+        if (writeXaml)
+        {
+            File.WriteAllText(
+                Path.Combine(screensDirectory, name + ".xaml"),
+                "<Window xmlns=\"clr-namespace:MGUI.Core.UI.XAML;assembly=MGUI.Core\" />");
+        }
+
+        return Path.Combine("UI", "Screens", name + ".uiscreen");
     }
 
     /// <summary>

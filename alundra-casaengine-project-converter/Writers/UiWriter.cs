@@ -3,7 +3,9 @@ using AlundraCasaEngineProjectConverter.Readers;
 using CasaEngine.EditorServices;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Assets.Sprites;
+using CasaEngine.Framework.Configuration;
 using Microsoft.Xna.Framework;
+using Newtonsoft.Json.Linq;
 
 namespace AlundraCasaEngineProjectConverter.Writers;
 
@@ -36,12 +38,17 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    the top-level FileName: it is the absolute path of the .BIN on the extractor's own machine,
 ///    i.e. provenance of the extraction rather than game data, and keeping it would make the
 ///    converter's output depend on where the extraction happened.
+///  - The looping UI animations the screens name (cursor, magic pip, coin) are written from those sprites by
+///    <see cref="UiAnimationWriter"/>, under UI/Animations/.
+///  - UI/Screens/ holds screens versioned in git (parent ADR-0002): never written here, only catalogued again
+///    on every export, since AssetInfos.json is rebuilt from scratch.
 /// </summary>
 public static class UiWriter
 {
     private const string UiRelativeDirectory = "UI";
     private const string DataRelativeDirectory = "Data";
     private static readonly string UiTexturesRelativeDirectory = Path.Combine("UI", "Textures");
+    private static readonly string ScreensRelativeDirectory = Path.Combine("UI", "Screens");
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
@@ -53,7 +60,9 @@ public static class UiWriter
     {
         var textureAssetIdsBySourcePath = new Dictionary<string, Guid>(StringComparer.OrdinalIgnoreCase);
 
-        ConvertWindSprites(inputDirectory, outputDirectory, textureAssetIdsBySourcePath, report);
+        var writtenWindIndices = ConvertWindSprites(inputDirectory, outputDirectory, textureAssetIdsBySourcePath, report);
+        UiAnimationWriter.WriteUiAnimations(outputDirectory, writtenWindIndices, report);
+        RegisterVersionedScreens(outputDirectory, report);
         CopyStandaloneTextures(inputDirectory, outputDirectory, textureAssetIdsBySourcePath, report);
         ConvertBalance(inputDirectory, outputDirectory, report);
 
@@ -61,7 +70,8 @@ public static class UiWriter
         report.Increment("Assets.UiTexture", textureAssetIdsBySourcePath.Count);
     }
 
-    private static void ConvertWindSprites(
+    /// <returns>The wind.json indices whose sprite was written (empty when the table is missing).</returns>
+    private static HashSet<int> ConvertWindSprites(
         string inputDirectory,
         string outputDirectory,
         Dictionary<string, Guid> textureAssetIdsBySourcePath,
@@ -73,7 +83,7 @@ public static class UiWriter
         if (!File.Exists(windJsonPath))
         {
             report.Warnings.Add($"UI: '{windJsonPath}' not found; UI sprites skipped.");
-            return;
+            return new HashSet<int>();
         }
 
         Guid textureAssetId;
@@ -85,17 +95,18 @@ public static class UiWriter
         catch (Exception exception)
         {
             report.Errors.Add($"UI: failed to import wind.png - {exception.Message}");
-            return;
+            return new HashSet<int>();
         }
 
         var entries = UiSpriteReader.Read(windJsonPath);
         Directory.CreateDirectory(Path.Combine(outputDirectory, UiRelativeDirectory));
 
         var companionEntries = new List<UiSpriteManifestEntry>(entries.Count);
+        var writtenIndices = new HashSet<int>();
 
         foreach (var entry in entries)
         {
-            var spriteData = new SpriteData(Ids.For($"sprite-ui:wind_{entry.Index}"))
+            var spriteData = new SpriteData(WindSpriteId(entry.Index))
             {
                 SpriteSheetAssetId = textureAssetId,
                 PositionInTexture = new Rectangle(entry.U0, entry.V0, entry.Width, entry.Height),
@@ -110,6 +121,7 @@ public static class UiWriter
                 Name = spriteData.Name,
                 FileName = spriteData.FileName,
             });
+            writtenIndices.Add(entry.Index);
 
             companionEntries.Add(new UiSpriteManifestEntry
             {
@@ -129,6 +141,59 @@ public static class UiWriter
             JsonSerializer.Serialize(companionEntries, SerializerOptions));
 
         report.Increment("Assets.UiSprite", entries.Count);
+        return writtenIndices;
+    }
+
+    /// <summary>The id of the wind_NNN sprite for a wind.json index - stable across exports.</summary>
+    public static Guid WindSpriteId(int index) => Ids.For($"sprite-ui:wind_{index}");
+
+    /// <summary>
+    /// Catalogues the screens versioned in the project under UI/Screens/ (parent ADR-0002). Those files are
+    /// authored in git, not generated: the converter never writes there, but it rebuilds AssetInfos.json from
+    /// scratch on every export (ProjectWriter.CreateEmptyProject), so each .uiscreen must be registered again,
+    /// with the id its envelope carries. Only the .uiscreen is catalogued, as RPGDemo does: the .xaml and the
+    /// design-time data file are files the envelope names, not assets.
+    /// </summary>
+    private static void RegisterVersionedScreens(string outputDirectory, ConversionReport report)
+    {
+        var screensDirectory = Path.Combine(outputDirectory, ScreensRelativeDirectory);
+        if (!Directory.Exists(screensDirectory))
+        {
+            return;
+        }
+
+        var screenPaths = Directory
+            .EnumerateFiles(screensDirectory, "*" + Constants.FileNameExtensions.UIScreen, SearchOption.AllDirectories)
+            .OrderBy(path => path, StringComparer.Ordinal);
+
+        var registered = 0;
+        foreach (var screenPath in screenPaths)
+        {
+            var relativePath = Path.GetRelativePath(outputDirectory, screenPath);
+            try
+            {
+                var envelope = JObject.Parse(File.ReadAllText(screenPath));
+                if (!Guid.TryParse(envelope["id"]?.ToString(), out var screenId) || screenId == Guid.Empty)
+                {
+                    report.Errors.Add($"UI: versioned screen '{relativePath}' has no valid 'id'; not catalogued.");
+                    continue;
+                }
+
+                var name = envelope["name"]?.ToString();
+                EditorAssetCatalogService.Add(new AssetInfo(screenId)
+                {
+                    Name = string.IsNullOrWhiteSpace(name) ? Path.GetFileNameWithoutExtension(screenPath) : name,
+                    FileName = relativePath,
+                });
+                registered++;
+            }
+            catch (Exception exception)
+            {
+                report.Errors.Add($"UI: versioned screen '{relativePath}' could not be read - {exception.Message}");
+            }
+        }
+
+        report.Increment("Assets.UiScreen", registered);
     }
 
     private static void CopyStandaloneTextures(

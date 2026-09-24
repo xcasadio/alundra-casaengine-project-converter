@@ -58,7 +58,7 @@ indexer : aucune dans le parent en dehors du sous-module moteur (`CasaEngine.Lau
 
 ## Tâches
 
-### ⏳ B1 — Écrans versionnés et animations d'interface
+### ✅ B1 — Écrans versionnés et animations d'interface
 
 **Prérequis :** phases 1 à 4 du programme moteur closes ; la référence du moteur passe à leur dernier commit.
 
@@ -85,6 +85,39 @@ indexer : aucune dans le parent en dehors du sous-module moteur (`CasaEngine.Lau
 
 **Commits :** `chore(submodules): point at the engine with bound screens` ;
 `feat(convert): catalogue versioned screens and write the UI animation cycles`.
+
+**Fait (2026-09-24) :**
+- Relevé demandé à l'étape 2 : RPGDemo ne catalogue que le `.uiscreen` (`CasaEngineMonogame/Projects/RPGDemo/AssetInfos.json`) ;
+  le `.xaml`, désigné par l'enveloppe, n'est pas un asset. Le convertisseur fait de même, et ne catalogue pas non plus
+  le fichier de conception.
+- `.gitignore` en cascade. `git check-ignore -v` : `UI/Screens/*.xaml` et `*.uiscreen` ne sont pas ignorés ;
+  `UI/wind_001.sprite`, `UI/Animations/*.anim2d`, `AssetInfos.json` et `Maps/…` le sont. Preuve sur un vrai
+  fichier : un témoin créé sous `UI/Screens/` est le seul fichier d'`alundra-project/` que `git status` montre, puis
+  il est retiré.
+- `UiWriter` : `WindSpriteId(index)` partagé ; `RegisterVersionedScreens` catalogue chaque `.uiscreen` de
+  `UI/Screens/` avec l'identifiant de son enveloppe, sans jamais écrire dans ce dossier (aucun écran pour l'instant :
+  B2 y met l'inventaire).
+- `UiAnimationWriter` : `UI/Animations/ui_inventory_cursor`, `ui_hud_magic_pip` et `ui_hud_coin.anim2d`, une partie,
+  une piste de sprite en paliers et une image de fin qui répète la dernière ; identifiants `Ids.For("anim2d-ui:…")`.
+  Une animation dont un sprite n'a pas été écrit est sautée avec un avertissement.
+  - Pastille `wind_001/003/010/017` et pièce `wind_126/130/134/139`, relevés dans `AlundraHudScreen.cs:473-481`.
+  - **Convention constatée dans le code du moteur** : le lecteur d'animation de l'interface ajoute la position de la
+    partie, arrondie, à la position de dessin de l'image, en pixels d'écran, Y vers le bas
+    (`CasaUIAssetProvider.CasaUIAnimatedImage.CurrentDrawOffset`). Les décalages du curseur sont donc écrits Y vers le
+    bas, contrairement à une animation du monde (Y vers le haut). Rien ne documente cette convention côté moteur :
+    point à écrire dans la doc de T7.1.
+  - L'original déplace le curseur un tick après avoir changé son sprite ; ici les deux changent ensemble, soit un
+    décalage de 20 ms sur la position, dans la tolérance du programme.
+- `AssetVerifier` : un `.uiscreen` est chargé par `UIScreenAsset.Load`, et le XAML qu'il nomme (et son fichier de
+  conception s'il en nomme un) doit exister.
+- Tests du convertisseur : 188/188 (+6). Nouveaux : cadence et décalages des trois cycles, image de fin, durée, deux
+  identifiants de sprite recoupés avec ceux que la DLL cite déjà, octets identiques d'un export à l'autre,
+  animation sautée sans ses sprites, écran versionné catalogué avec son identifiant et jamais réécrit, et deux tests
+  du vérificateur. Une mutation de la cadence de la pièce fait échouer un test.
+- Export complet en place depuis `data-extracted/` : 0 erreur, vérification PASSED (19 520 chargés). Manifeste avant
+  et après : 3 ajouts (`UI/Animations/*.anim2d`), `AssetInfos.json` et `report.json` modifiés, rien d'autre ; le
+  catalogue privé de ses 3 nouvelles entrées est identique octet pour octet à la référence. Second export : seul
+  `report.json` change.
 
 ### ⏳ B2 — L'inventaire en asset lié
 

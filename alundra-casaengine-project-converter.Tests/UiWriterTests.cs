@@ -3,7 +3,9 @@ using AlundraCasaEngineProjectConverter;
 using AlundraCasaEngineProjectConverter.Writers;
 using CasaEngine.EditorServices;
 using CasaEngine.Engine.Environment;
+using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Assets.Sprites;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -87,6 +89,130 @@ public class UiWriterTests
     }
 
     [Fact]
+    public void ConvertUi_WritesTheLoopingUiAnimationsAtTheOriginalCadence()
+    {
+        RunConvertUi(inputDirectory => WriteUiFixture(inputDirectory, windEntryCount: 240), (outputDirectory, report) =>
+        {
+            Assert.Empty(report.Errors);
+            Assert.Equal(3, report.Counters["Assets.UiAnimation"]);
+
+            // The cursor: 4 x 10 PSX ticks, and the pixel offset of each phase (Y down, screen pixels).
+            var cursor = LoadAnimation(outputDirectory, UiAnimationWriter.InventoryCursorName);
+            Assert.Equal(UiAnimationWriter.AnimationId(UiAnimationWriter.InventoryCursorName), cursor.Id);
+            Assert.Equal(AnimationType.Loop, cursor.AnimationType);
+            var part = Assert.Single(cursor.Parts);
+            Assert.Equal(UiWriter.WindSpriteId(159), part.DefaultSpriteId);
+            AssertSpriteKeyframes(cursor, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f }, new[] { 159, 182, 210, 237, 237 });
+            var positions = cursor.Tracks.Single(track => track.Property == Animation2dTrackProperty.Position).PositionKeyframes;
+            Assert.Equal(
+                new[] { new Vector2(0, 0), new Vector2(0, 0), new Vector2(-1, 1), new Vector2(-1, 0), new Vector2(-1, 0) },
+                positions.Select(keyframe => keyframe.Value));
+            Assert.Equal(0.8f, cursor.GetDurationSeconds(), 5);
+
+            // The magic pip: 4 x 10 ticks, no offset.
+            var pip = LoadAnimation(outputDirectory, UiAnimationWriter.MagicPipName);
+            AssertSpriteKeyframes(pip, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f }, new[] { 1, 3, 10, 17, 17 });
+            Assert.DoesNotContain(pip.Tracks, track => track.Property == Animation2dTrackProperty.Position);
+
+            // The coin: 4 x 6 ticks.
+            var coin = LoadAnimation(outputDirectory, UiAnimationWriter.CoinName);
+            AssertSpriteKeyframes(coin, new[] { 0f, 0.12f, 0.24f, 0.36f, 0.48f }, new[] { 126, 130, 134, 139, 139 });
+            Assert.Equal(0.48f, coin.GetDurationSeconds(), 5);
+
+            // The sprite ids are the ones the Alundra DLL already names (AlundraInventoryScreen.cs,
+            // AlundraHudScreen.cs): wind_159 and wind_001.
+            Assert.Equal(Guid.Parse("6ed4380a-ba9c-5d0b-84db-22e1ddf61361"), UiWriter.WindSpriteId(159));
+            Assert.Equal(Guid.Parse("eb70224b-d6d5-558e-a1ef-438f072135f8"), UiWriter.WindSpriteId(1));
+
+            var catalog = JObject.Parse(File.ReadAllText(Path.Combine(outputDirectory, "AssetInfos.json")));
+            Assert.Contains(
+                (JArray)catalog["asset_infos"]!,
+                node => node["file_name"]!.ToString() == Path.Combine("UI", "Animations", "ui_hud_coin.anim2d"));
+        });
+    }
+
+    [Fact]
+    public void ConvertUi_WritesTheSameUiAnimationsOnEveryRun()
+    {
+        var first = new Dictionary<string, byte[]>();
+        RunConvertUi(inputDirectory => WriteUiFixture(inputDirectory, windEntryCount: 240), (outputDirectory, _) =>
+        {
+            foreach (var path in Directory.EnumerateFiles(Path.Combine(outputDirectory, "UI", "Animations")))
+            {
+                first[Path.GetFileName(path)] = File.ReadAllBytes(path);
+            }
+        });
+
+        RunConvertUi(inputDirectory => WriteUiFixture(inputDirectory, windEntryCount: 240), (outputDirectory, _) =>
+        {
+            var files = Directory.EnumerateFiles(Path.Combine(outputDirectory, "UI", "Animations")).ToList();
+            Assert.Equal(3, files.Count);
+            foreach (var path in files)
+            {
+                Assert.Equal(first[Path.GetFileName(path)], File.ReadAllBytes(path));
+            }
+        });
+    }
+
+    [Fact]
+    public void ConvertUi_SkipsAnAnimationWhoseSpritesWereNotWritten()
+    {
+        RunConvertUi(inputDirectory => WriteUiFixture(inputDirectory), (outputDirectory, report) =>
+        {
+            Assert.Empty(report.Errors);
+            Assert.Equal(0, report.Counters["Assets.UiAnimation"]);
+            Assert.Equal(3, report.Warnings.Count(warning => warning.Contains("skipped: sprite wind_", StringComparison.Ordinal)));
+            Assert.Empty(Directory.EnumerateFiles(Path.Combine(outputDirectory, "UI", "Animations")));
+        });
+    }
+
+    [Fact]
+    public void ConvertUi_CataloguesVersionedScreensWithTheirOwnIdAndNeverWritesThem()
+    {
+        var screenId = Guid.Parse("0d6f1a52-3b8e-4c7a-9f21-5e4b7c9a1d30");
+        byte[]? envelopeBytes = null;
+
+        RunConvertUi(
+            inputDirectory => WriteUiFixture(inputDirectory),
+            (outputDirectory, report) =>
+            {
+                Assert.Equal(1, report.Counters["Assets.UiScreen"]);
+                var error = Assert.Single(report.Errors);
+                Assert.Contains("NoId.uiscreen", error, StringComparison.Ordinal);
+
+                var catalog = JObject.Parse(File.ReadAllText(Path.Combine(outputDirectory, "AssetInfos.json")));
+                var entry = Assert.Single(
+                    (JArray)catalog["asset_infos"]!,
+                    node => node["id"]!.ToString() == screenId.ToString());
+                Assert.Equal(Path.Combine("UI", "Screens", "Inventory", "InventoryScreen.uiscreen"), entry["file_name"]!.ToString());
+                Assert.Equal("InventoryScreen", entry["name"]!.ToString());
+
+                // Only the envelope is an asset: the XAML is a file it names.
+                Assert.DoesNotContain(
+                    (JArray)catalog["asset_infos"]!,
+                    node => node["file_name"]!.ToString().EndsWith(".xaml", StringComparison.Ordinal));
+
+                var envelopePath = Path.Combine(outputDirectory, "UI", "Screens", "Inventory", "InventoryScreen.uiscreen");
+                Assert.Equal(envelopeBytes, File.ReadAllBytes(envelopePath));
+            },
+            outputDirectory =>
+            {
+                var screensDirectory = Path.Combine(outputDirectory, "UI", "Screens", "Inventory");
+                Directory.CreateDirectory(screensDirectory);
+                var envelope = new JObject
+                {
+                    ["id"] = screenId.ToString(),
+                    ["name"] = "InventoryScreen",
+                    ["source_xaml_file"] = "InventoryScreen.xaml",
+                };
+                envelopeBytes = System.Text.Encoding.UTF8.GetBytes(envelope.ToString());
+                File.WriteAllBytes(Path.Combine(screensDirectory, "InventoryScreen.uiscreen"), envelopeBytes);
+                File.WriteAllText(Path.Combine(screensDirectory, "InventoryScreen.xaml"), "<Window />");
+                File.WriteAllText(Path.Combine(outputDirectory, "UI", "Screens", "NoId.uiscreen"), "{ \"name\": \"NoId\" }");
+            });
+    }
+
+    [Fact]
     public void ConvertUi_BalanceKeepsUnknownFieldsAndDropsTheExtractorPath()
     {
         var inputDirectory = CreateTempDirectory();
@@ -136,6 +262,68 @@ public class UiWriterTests
             Directory.Delete(inputDirectory, recursive: true);
             Directory.Delete(outputDirectory, recursive: true);
         }
+    }
+
+    /// <summary>Runs ProjectWriter.CreateEmptyProject then UiWriter.ConvertUi on a fresh fixture, and hands the output
+    /// directory and report to <paramref name="assert"/>. <paramref name="prepareOutput"/> runs after the project
+    /// was created and before the conversion: where a file versioned in the project is put in place.</summary>
+    private static void RunConvertUi(
+        Action<string> writeInput, Action<string, ConversionReport> assert, Action<string>? prepareOutput = null)
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            writeInput(inputDirectory);
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            ProjectWriter.CreateEmptyProject(outputDirectory, report);
+            prepareOutput?.Invoke(outputDirectory);
+            UiWriter.ConvertUi(inputDirectory, outputDirectory, report);
+
+            assert(outputDirectory, report);
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    private static Animation2dData LoadAnimation(string outputDirectory, string name)
+    {
+        var animation = new Animation2dData();
+        animation.Load(JObject.Parse(File.ReadAllText(Path.Combine(outputDirectory, "UI", "Animations", name + ".anim2d"))));
+        return animation;
+    }
+
+    private static void AssertSpriteKeyframes(Animation2dData animation, float[] expectedTimes, int[] expectedWindIndices)
+    {
+        var keyframes = animation.Tracks.Single(track => track.Property == Animation2dTrackProperty.Sprite).SpriteKeyframes;
+        Assert.Equal(expectedTimes.Length, keyframes.Count);
+        for (var i = 0; i < expectedTimes.Length; i++)
+        {
+            Assert.Equal(expectedTimes[i], keyframes[i].TimeSeconds, 5);
+            Assert.Equal(UiWriter.WindSpriteId(expectedWindIndices[i]), keyframes[i].Value);
+        }
+    }
+
+    /// <summary>The fixture below with a wind.json of <paramref name="windEntryCount"/> distinct entries instead of
+    /// three: enough to reach the sprites the UI animations name (up to wind_237).</summary>
+    private static void WriteUiFixture(string inputDirectory, int windEntryCount)
+    {
+        WriteUiFixture(inputDirectory);
+
+        var entries = Enumerable.Range(0, windEntryCount)
+            .Select(index => $"{{ \"U0\": {index % 32 * 8}, \"V0\": {index / 32 * 8}, \"Width\": 8, \"Height\": 8, \"PaletteIndex\": 0 }}");
+        File.WriteAllText(Path.Combine(inputDirectory, "ui", "wind.json"), "[" + string.Join(",", entries) + "]");
     }
 
     private static void WriteUiFixture(string inputDirectory)
