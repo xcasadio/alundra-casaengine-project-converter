@@ -151,7 +151,9 @@ public sealed class InventoryTextViewModel : ViewModelBase
 public sealed class AlundraInventoryViewModel : ViewModelBase
 {
     // wind_000/002/009/016/023/030/037/045/055/065, the digit glyphs 0-9 (the same ids AlundraHudScreen resolves).
-    private static readonly Guid[] DigitAssetIds =
+    // Internal (not private): AlundraSubInventoryViewModel reuses this table as-is for its own money/falcon/key
+    // digits (E13.d SI4 brief - "reuse the main VM's, make it internal static shared if needed").
+    internal static readonly Guid[] DigitAssetIds =
     {
         Guid.Parse("bc300193-4244-5138-a27f-f242a150bed7"), Guid.Parse("01dbdef2-854c-5c76-a482-e19bc579fa80"),
         Guid.Parse("91a9c466-d267-5063-a60d-8f4b60cf2a41"), Guid.Parse("fc448c9c-7759-58dc-a85d-68c02bc09380"),

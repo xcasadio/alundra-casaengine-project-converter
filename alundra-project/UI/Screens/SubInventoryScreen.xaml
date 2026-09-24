@@ -1,0 +1,89 @@
+<Window xmlns="clr-namespace:MGUI.Core.UI.XAML;assembly=MGUI.Core"
+        xmlns:dataBinding="clr-namespace:MGUI.Core.UI.DataBinding;assembly=MGUI.Core"
+        Left="0" Top="0" Width="320" Height="240"
+        TitleText=""
+        IsTitleBarVisible="False"
+        IsTopmost="True"
+        IsUserResizable="False"
+        Padding="0"
+        Background="rgba(0,0,0,0)">
+
+  <!-- E13.d SI4 (docs/plan-e13d-sous-inventaire.md, D-E13D-20), versioned as a project asset since the
+       bound screens program (parent ADR-0002): this file, SubInventoryScreen.uiscreen and
+       SubInventoryScreen.design.json live in alundra-project/UI/Screens/, the only part of the
+       generated project kept in git; the converter catalogues the envelope and never writes here.
+       A full-screen transparent window whose sole content is a Canvas authored in NATIVE pixels
+       (320x240, AlundraDisplay NativeWidth/NativeHeight) - same shell as InventoryScreen.xaml, the
+       code (AlundraSubInventoryScreen) resizes this window to the real screen bounds and applies the
+       whole integer pixel scale ONCE as the canvas own RenderTransform.Scale (engine ADR-0006), so
+       every child below keeps native coordinates and sizes. Every value that changes is bound to the
+       window data context, an AlundraSubInventoryViewModel the presenter writes each logic tick; an
+       Image names its asset by id (engine ADR-0038), directly here when it never changes.
+
+       Draw order (back to front, plan §1.5's own last point): the seven baked box images, the two
+       selection frames (wind_039), the icons (armory, key items, armor, boots), the texts and digits,
+       the cursor. -->
+
+  <Canvas Name="RootCanvas" Width="320" Height="240" Visibility="{dataBinding:MGBinding Path=RootVisibility}">
+
+    <!-- Seven baked box sprites (D-E13D-13, plan §1.6/SI2): five own to the sub-inventory, two shared
+         with the main inventory (description, money/falcon/key) by the SAME fixed ids. -->
+    <Image Name="BoxArmory" Stretch="None" SourceName="10eb721a-628f-549c-bcaa-2ab2f670dbc3" CanvasLeft="{dataBinding:MGBinding Path=BoxArmory.Left}" CanvasTop="{dataBinding:MGBinding Path=BoxArmory.Top}" Visibility="{dataBinding:MGBinding Path=BoxArmory.Visibility}" />
+    <Image Name="BoxKeyItems" Stretch="None" SourceName="af453798-29af-5757-aaa5-10f1ff92af49" CanvasLeft="{dataBinding:MGBinding Path=BoxKeyItems.Left}" CanvasTop="{dataBinding:MGBinding Path=BoxKeyItems.Top}" Visibility="{dataBinding:MGBinding Path=BoxKeyItems.Visibility}" />
+    <Image Name="BoxArmorName" Stretch="None" SourceName="d5a10996-bb74-5e48-967b-be8bdde2c148" CanvasLeft="{dataBinding:MGBinding Path=BoxArmorName.Left}" CanvasTop="{dataBinding:MGBinding Path=BoxArmorName.Top}" Visibility="{dataBinding:MGBinding Path=BoxArmorName.Visibility}" />
+    <Image Name="BoxBootsName" Stretch="None" SourceName="f7468bc4-faa0-5222-947b-037b12200759" CanvasLeft="{dataBinding:MGBinding Path=BoxBootsName.Left}" CanvasTop="{dataBinding:MGBinding Path=BoxBootsName.Top}" Visibility="{dataBinding:MGBinding Path=BoxBootsName.Visibility}" />
+    <Image Name="BoxEquipmentIcons" Stretch="None" SourceName="1070d22e-b7e8-50d5-a58c-ccf80667185e" CanvasLeft="{dataBinding:MGBinding Path=BoxEquipmentIcons.Left}" CanvasTop="{dataBinding:MGBinding Path=BoxEquipmentIcons.Top}" Visibility="{dataBinding:MGBinding Path=BoxEquipmentIcons.Visibility}" />
+    <Image Name="BoxDescription" Stretch="None" SourceName="973a9208-c867-57fe-bee3-cf30237221ef" CanvasLeft="{dataBinding:MGBinding Path=BoxDescription.Left}" CanvasTop="{dataBinding:MGBinding Path=BoxDescription.Top}" Visibility="{dataBinding:MGBinding Path=BoxDescription.Visibility}" />
+    <Image Name="BoxMoneyFalconKey" Stretch="None" SourceName="e8d58247-f02b-57cb-9ebf-f1df2b9be874" CanvasLeft="{dataBinding:MGBinding Path=BoxMoneyFalconKey.Left}" CanvasTop="{dataBinding:MGBinding Path=BoxMoneyFalconKey.Top}" Visibility="{dataBinding:MGBinding Path=BoxMoneyFalconKey.Visibility}" />
+
+    <!-- Two selection frames (wind_039, same sprite InventoryScreen.xaml's own frames use) over the
+         equipped armor and boots icons (plan §1.5, FUN_80052fb4). -->
+    <Image Name="ArmorFrame" Stretch="None" SourceName="5f56fba6-2abb-5163-bb1e-e5a4f6fdb499" CanvasLeft="{dataBinding:MGBinding Path=ArmorFrame.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmorFrame.Top}" Visibility="{dataBinding:MGBinding Path=ArmorFrame.Visibility}" />
+    <Image Name="BootsFrame" Stretch="None" SourceName="5f56fba6-2abb-5163-bb1e-e5a4f6fdb499" CanvasLeft="{dataBinding:MGBinding Path=BootsFrame.Left}" CanvasTop="{dataBinding:MGBinding Path=BootsFrame.Top}" Visibility="{dataBinding:MGBinding Path=BootsFrame.Visibility}" />
+
+    <!-- The armory's seven crest icons (plan §1.5, FUN_80052dd8) - own to owned crests, centred in a
+         24x32 cell per D-E13D-23. -->
+    <Image Name="ArmoryIcon0" Stretch="None" SourceName="{dataBinding:MGBinding Path=ArmoryIcon0.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=ArmoryIcon0.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmoryIcon0.Top}" Visibility="{dataBinding:MGBinding Path=ArmoryIcon0.Visibility}" />
+    <Image Name="ArmoryIcon1" Stretch="None" SourceName="{dataBinding:MGBinding Path=ArmoryIcon1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=ArmoryIcon1.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmoryIcon1.Top}" Visibility="{dataBinding:MGBinding Path=ArmoryIcon1.Visibility}" />
+    <Image Name="ArmoryIcon2" Stretch="None" SourceName="{dataBinding:MGBinding Path=ArmoryIcon2.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=ArmoryIcon2.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmoryIcon2.Top}" Visibility="{dataBinding:MGBinding Path=ArmoryIcon2.Visibility}" />
+    <Image Name="ArmoryIcon3" Stretch="None" SourceName="{dataBinding:MGBinding Path=ArmoryIcon3.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=ArmoryIcon3.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmoryIcon3.Top}" Visibility="{dataBinding:MGBinding Path=ArmoryIcon3.Visibility}" />
+    <Image Name="ArmoryIcon4" Stretch="None" SourceName="{dataBinding:MGBinding Path=ArmoryIcon4.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=ArmoryIcon4.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmoryIcon4.Top}" Visibility="{dataBinding:MGBinding Path=ArmoryIcon4.Visibility}" />
+    <Image Name="ArmoryIcon5" Stretch="None" SourceName="{dataBinding:MGBinding Path=ArmoryIcon5.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=ArmoryIcon5.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmoryIcon5.Top}" Visibility="{dataBinding:MGBinding Path=ArmoryIcon5.Visibility}" />
+    <Image Name="ArmoryIcon6" Stretch="None" SourceName="{dataBinding:MGBinding Path=ArmoryIcon6.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=ArmoryIcon6.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmoryIcon6.Top}" Visibility="{dataBinding:MGBinding Path=ArmoryIcon6.Visibility}" />
+
+    <!-- The (up to) five key items found this tick (plan §1.5, FUN_80052c64) - centred in a 24x32 cell. -->
+    <Image Name="KeyItemIcon0" Stretch="None" SourceName="{dataBinding:MGBinding Path=KeyItemIcon0.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=KeyItemIcon0.Left}" CanvasTop="{dataBinding:MGBinding Path=KeyItemIcon0.Top}" Visibility="{dataBinding:MGBinding Path=KeyItemIcon0.Visibility}" />
+    <Image Name="KeyItemIcon1" Stretch="None" SourceName="{dataBinding:MGBinding Path=KeyItemIcon1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=KeyItemIcon1.Left}" CanvasTop="{dataBinding:MGBinding Path=KeyItemIcon1.Top}" Visibility="{dataBinding:MGBinding Path=KeyItemIcon1.Visibility}" />
+    <Image Name="KeyItemIcon2" Stretch="None" SourceName="{dataBinding:MGBinding Path=KeyItemIcon2.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=KeyItemIcon2.Left}" CanvasTop="{dataBinding:MGBinding Path=KeyItemIcon2.Top}" Visibility="{dataBinding:MGBinding Path=KeyItemIcon2.Visibility}" />
+    <Image Name="KeyItemIcon3" Stretch="None" SourceName="{dataBinding:MGBinding Path=KeyItemIcon3.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=KeyItemIcon3.Left}" CanvasTop="{dataBinding:MGBinding Path=KeyItemIcon3.Top}" Visibility="{dataBinding:MGBinding Path=KeyItemIcon3.Visibility}" />
+    <Image Name="KeyItemIcon4" Stretch="None" SourceName="{dataBinding:MGBinding Path=KeyItemIcon4.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=KeyItemIcon4.Left}" CanvasTop="{dataBinding:MGBinding Path=KeyItemIcon4.Top}" Visibility="{dataBinding:MGBinding Path=KeyItemIcon4.Visibility}" />
+
+    <!-- The equipped armor and boots icons (plan §1.5, FUN_80052fb4/FUN_80053144), same cell as their
+         own selection frames above. -->
+    <Image Name="ArmorIcon" Stretch="None" SourceName="{dataBinding:MGBinding Path=ArmorIcon.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=ArmorIcon.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmorIcon.Top}" Visibility="{dataBinding:MGBinding Path=ArmorIcon.Visibility}" />
+    <Image Name="BootsIcon" Stretch="None" SourceName="{dataBinding:MGBinding Path=BootsIcon.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=BootsIcon.Left}" CanvasTop="{dataBinding:MGBinding Path=BootsIcon.Top}" Visibility="{dataBinding:MGBinding Path=BootsIcon.Visibility}" />
+
+    <!-- Armor/boots names and the two description lines - font3, D-E13D-28: the second description
+         line is bound but never receives text (the director's own DrawnDescriptionLine1 stays empty). -->
+    <TextBlock Name="ArmorNameText" Text="{dataBinding:MGBinding Path=ArmorName.Text}" CanvasLeft="{dataBinding:MGBinding Path=ArmorName.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmorName.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="BootsNameText" Text="{dataBinding:MGBinding Path=BootsName.Text}" CanvasLeft="{dataBinding:MGBinding Path=BootsName.Left}" CanvasTop="{dataBinding:MGBinding Path=BootsName.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="DescriptionLine0Text" Text="{dataBinding:MGBinding Path=DescriptionLine0.Text}" CanvasLeft="{dataBinding:MGBinding Path=DescriptionLine0.Left}" CanvasTop="{dataBinding:MGBinding Path=DescriptionLine0.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="DescriptionLine1Text" Text="{dataBinding:MGBinding Path=DescriptionLine1.Text}" CanvasLeft="{dataBinding:MGBinding Path=DescriptionLine1.Left}" CanvasTop="{dataBinding:MGBinding Path=DescriptionLine1.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+
+    <!-- Money (4 digits), falcon (2) and key (2) counters - the main inventory's own places on the
+         SAME shared box (AlundraInventoryComposer.ComposeDigits). -->
+    <Image Name="MoneyDigit0" Stretch="None" SourceName="{dataBinding:MGBinding Path=MoneyDigit0.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=MoneyDigit0.Left}" CanvasTop="{dataBinding:MGBinding Path=MoneyDigit0.Top}" Visibility="{dataBinding:MGBinding Path=MoneyDigit0.Visibility}" />
+    <Image Name="MoneyDigit1" Stretch="None" SourceName="{dataBinding:MGBinding Path=MoneyDigit1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=MoneyDigit1.Left}" CanvasTop="{dataBinding:MGBinding Path=MoneyDigit1.Top}" Visibility="{dataBinding:MGBinding Path=MoneyDigit1.Visibility}" />
+    <Image Name="MoneyDigit2" Stretch="None" SourceName="{dataBinding:MGBinding Path=MoneyDigit2.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=MoneyDigit2.Left}" CanvasTop="{dataBinding:MGBinding Path=MoneyDigit2.Top}" Visibility="{dataBinding:MGBinding Path=MoneyDigit2.Visibility}" />
+    <Image Name="MoneyDigit3" Stretch="None" SourceName="{dataBinding:MGBinding Path=MoneyDigit3.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=MoneyDigit3.Left}" CanvasTop="{dataBinding:MGBinding Path=MoneyDigit3.Top}" Visibility="{dataBinding:MGBinding Path=MoneyDigit3.Visibility}" />
+    <Image Name="FalconDigit0" Stretch="None" SourceName="{dataBinding:MGBinding Path=FalconDigit0.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=FalconDigit0.Left}" CanvasTop="{dataBinding:MGBinding Path=FalconDigit0.Top}" Visibility="{dataBinding:MGBinding Path=FalconDigit0.Visibility}" />
+    <Image Name="FalconDigit1" Stretch="None" SourceName="{dataBinding:MGBinding Path=FalconDigit1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=FalconDigit1.Left}" CanvasTop="{dataBinding:MGBinding Path=FalconDigit1.Top}" Visibility="{dataBinding:MGBinding Path=FalconDigit1.Visibility}" />
+    <Image Name="KeyDigit0" Stretch="None" SourceName="{dataBinding:MGBinding Path=KeyDigit0.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=KeyDigit0.Left}" CanvasTop="{dataBinding:MGBinding Path=KeyDigit0.Top}" Visibility="{dataBinding:MGBinding Path=KeyDigit0.Visibility}" />
+    <Image Name="KeyDigit1" Stretch="None" SourceName="{dataBinding:MGBinding Path=KeyDigit1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=KeyDigit1.Left}" CanvasTop="{dataBinding:MGBinding Path=KeyDigit1.Top}" Visibility="{dataBinding:MGBinding Path=KeyDigit1.Visibility}" />
+
+    <!-- The cursor - always on top: the ui_inventory_cursor animation (D-E13D-27), same source as the
+         main inventory's own cursor, plays on the UI clock. -->
+    <Image Name="CursorImage" Stretch="None" SourceName="a1a280e0-4e0b-5578-a452-b3778d796b1d" CanvasLeft="{dataBinding:MGBinding Path=Cursor.Left}" CanvasTop="{dataBinding:MGBinding Path=Cursor.Top}" Visibility="{dataBinding:MGBinding Path=Cursor.Visibility}" />
+
+  </Canvas>
+</Window>

@@ -429,7 +429,7 @@ aucun code de production (une boucle simulée dans le test) : retirés au profit
 | Mutations réelles (un extrait remplacé, build, filtre, fichier rendu à l'octet) | **tuées** : garde des objets-clés retirée ; ligne 2 lue à `c − 0x8f` ; post-traitement retiré de la boucle ; le sous-inventaire efface `MenuOpen` sans condition ; mise en place du principal au tick de la tête ; `Triangle` retiré du masque du sous-inventaire. **Survivante, équivalente** : le principal efface `MenuOpen` sans condition à la fin de son glissement — le post-traitement du même tick ouvre le sous-inventaire et relève `MenuOpen` avant tout observateur (le gel D2 lit en fin d'image), comme dans l'original où `InitializeSubInventory` le relève dans le même rendu ; la garde est gardée pour la fidélité. |
 | Vérificateur frais | **CONFIRMED**, aucun défaut P0 à P2. Il a rejoué la suite et dix sondes à lui sur les vrais directeurs : l'horloge du §1.2 relevée tick par tick dans les deux sens ; `MenuOpen` jamais retombé pendant une bascule ; avec une jauge réellement affichée, aucune bascule ne la touche et la fermeture par `Start` la rappelle, depuis les deux inventaires ; `Start` et `R1` au même tick, `L1` et `R1` ensemble, une bascule demandée pendant un glissement d'ouverture (ignorée, comme l'original), une nouvelle partie sans bottes, un dialogue ouvert au moment de revenir au principal (la tête refuse et `MenuOpen` reste levé sans inventaire, exactement comme l'original) ; la mutation survivante est bien équivalente. Deux remarques P4 : un compte de tests faux d'une unité dans ce plan (corrigé) ; l'assertion « jauge ni rappelée ni recachée » du test aller-retour ne prouve rien, la jauge y restant au repos faute du verrou 1662 — **reportée** (le comportement est prouvé par la sonde du vérificateur ; lever le verrou dans ce test est une suite possible) |
 
-### ⏳ SI4 — L'écran du sous-inventaire (asset lié) et son présentateur
+### ✅ SI4 — L'écran du sous-inventaire (asset lié) et son présentateur — faite le 2026-09-25
 
 **Prérequis** : SI2 (identifiants des cinq sprites), SI3.
 - `alundra-project/UI/Screens/SubInventoryScreen.xaml`, `.uiscreen` (identifiant fixe, nouveau GUID) et
@@ -452,6 +452,20 @@ aucun code de production (une boucle simulée dans le test) : retirés au profit
 - Build, `Alundra.Tests`, convertisseur. **Vérificateur frais.** Commit :
   `feat(inventory): show the sub-inventory as a project asset bound to a view model (E13.d SI4)`.
 
+**Fait** (un exécuteur sur contrat, relu en session principale) : les trois fichiers de l'écran sous
+`alundra-project/UI/Screens/` (enveloppe `3314fd4e-d6c7-4316-b55f-c7349911d31a`), le compositeur, le view-model,
+le présentateur, l'écran, le câblage dans le monde ; `ComposeDigits` et la table des chiffres du principal passent
+de `private` à `internal` pour être réutilisés tels quels. Les données de conception sont écrites à la main depuis
+les formules du compositeur (l'exécuteur n'avait pas le droit de lancer l'export) : elles ne servent qu'à l'aperçu
+de l'éditeur, et y placent les icônes au coin de leur case plutôt que centrées.
+
+| Preuve | Résultat |
+|---|---|
+| Suites | `Alundra.Tests` **1215/1215** (1112 + 102 de l'exécuteur + 1 ajouté en session principale) |
+| Mutations réelles | **tuées** : curseur avec le `+0x12, −8` du principal ; décalage vertical de l'armure et des bottes ; pas des objets-clés ; présentateur qui empile sur `IsActive` au lieu d'`IsDrawn` ; `OnEndPlay` qui ne libère pas l'écran ; l'appel du présentateur retiré de la boucle du monde — **survivante d'abord** : aucun test ne traversait ce site d'appel de production, l'écran ne se serait jamais affiché en jeu ; tuée après l'ajout de `WorldUpdate_StartThenR1_PushesTheSubInventoryScreenThroughTheRealLoop` (le vrai `AlundraWorldProxy.Update`). Le présentateur du **principal** a le même trou, antérieur (§6, point 6) |
+| Export | le convertisseur catalogue le nouvel écran : `AssetInfos.json` (+1 entrée) et `report.json` ; vérification PASSED (19 534 chargés, +1) ; double export = `report.json` seul |
+| Vérificateur frais | **CONFIRMED**, aucun défaut P0 à P2 : chaque liaison du XAML confrontée au view-model, le compositeur à `SubInventoryManager.cs`, les données de conception à une nouvelle partie au repos ; les captures de SI5 mesurées au pixel (cadres aux cases ×4 attendues, curseur, textes, chiffres). Trois remarques P4, **reportées** : aucun test ne garde l'ordre de dessin du XAML ; un cadre disparaît avec son icône si le sprite de l'icône ne se lit pas (jamais avec l'export actuel ; l'original dessine le cadre dès que l'objet existe) ; les données de conception placent les icônes au coin de leur case (aperçu de l'éditeur seulement) |
+
 ### ⏳ SI5 — Recette en jeu par capture, prédite avant d'être prise
 
 **Prérequis** : SI4. Harnais hors dépôt, copie de `d6-font` (session du 2026-09-21), référence au moteur du
@@ -468,6 +482,22 @@ l'ordre : 4 (ouverture), 5 puis 4 (vers le sous-inventaire), 1 par déplacement,
 5 puis 4 (de nouveau vers le sous-inventaire), 5 (fermeture) ; `font3` partout.
 Puis **un vérificateur frais sur l'ensemble** (directeur, bascule, écran, recette), la tranche touchant la
 logique, l'asset et l'export.
+
+**Faite le 2026-09-25** (harnais `scratchpad/si5-harness`, prédiction `prediction-si5.md` écrite avant ; un point
+de la prédiction corrigé avant le lancement : l'espion des sons est posé avant le premier `Start`, donc le son 4
+de l'ouverture est compté) :
+
+| Attendu | Mesuré |
+|---|---|
+| Capture A | conforme : sept fonds à leur place, « Armure en tissu » et « Bottes courtes » en `font3`, leurs icônes centrées dans deux cadres `wind_039`, armurerie et objets-clés vides, 2163 / 00 / 00, curseur en position 0 |
+| Capture B | conforme : curseur en position 7, « Confortable protection en tissu. », aucune seconde ligne ; l'état du texte passe de 0x8f à 0xcf au tick suivant |
+| Capture C | conforme : l'inventaire principal comme à D5 (épée et cadre en case 0, « Poignard ») |
+| Capture D | conforme : inventaire fermé, jauge revenue (`Displayed`) |
+| Sons | **4, 5, 4, 1, 1, 5, 4, 5, 4, 5**, exactement la prédiction |
+| `MenuOpen` | levé sur 858 des 859 images surveillées ; la seule image à 0 est celle de la fin de la fermeture finale, que le compteur inclut (le relevé ligne à ligne ne montre `MenuOpen=False` qu'à cette image) |
+| Écrans | jamais les deux empilés ; une image sans aucun inventaire à chaque bascule (tick Tc du §1.2), deux dans le sens sous-inventaire → principal |
+| Police | `font3` sur les quatre textes du sous-inventaire |
+| Journal | aucune erreur, aucun avertissement |
 
 ### 🧪 SI6 — Recette de l'auteur
 
@@ -514,6 +544,13 @@ suites vertes ; chaque export prouvé par double export.
    chaînes ; pas fait ici.
 5. **`Triangle` ferme l'inventaire principal** depuis SI3.a (D-E13D-29) : un changement de comportement de
    l'inventaire principal déjà validé, à revoir en recette.
+6. **Le présentateur de l'inventaire principal n'a aucun test qui traverse son site d'appel de production** (la
+   boucle de la manette d'`AlundraWorldProxy.Update`) : la mutation qui retire son appel ne ferait échouer aucun
+   test. Même trou que celui trouvé et comblé pour le sous-inventaire en SI4. Antérieur à ce plan, non corrigé
+   ici ; une suite possible de quelques lignes.
+7. **L'assertion « jauge ni rappelée ni recachée » du test aller-retour de SI3 ne prouve rien** (la jauge y reste
+   au repos faute du verrou 1662) ; le comportement est prouvé par la sonde du vérificateur et par la recette SI5.
+   Reportée (P4).
 
 ## 7. Journal
 

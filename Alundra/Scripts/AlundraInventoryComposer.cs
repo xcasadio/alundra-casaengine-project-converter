@@ -262,8 +262,11 @@ public static class AlundraInventoryComposer
     }
 
     /// <summary>Port of the three identical digit loops in <c>DisplayAmountOfMoneyFalconKeys</c>
-    /// (<c>MainInventoryManager.cs:1478-1588</c>) - most significant digit first, 8 native pixels apart.</summary>
-    private static List<InventoryDigit> ComposeDigits(int value, int count, int startX, int y)
+    /// (<c>MainInventoryManager.cs:1478-1588</c>) - most significant digit first, 8 native pixels apart.
+    /// Internal (not private): <see cref="AlundraSubInventoryComposer"/> reuses it as-is, plan §1.5's own
+    /// "the main's places" for the sub-inventory's money/falcon/key digits, on the SAME shared box - a
+    /// one-line visibility change rather than a copy (E13.d SI4 brief).</summary>
+    internal static List<InventoryDigit> ComposeDigits(int value, int count, int startX, int y)
     {
         var digits = new List<InventoryDigit>(count);
         var divisor = 1;
