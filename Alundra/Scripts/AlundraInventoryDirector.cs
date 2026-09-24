@@ -576,7 +576,12 @@ public sealed class AlundraInventoryDirector
             }
         }
 
-        if ((pad.ButtonsJustPressedByInterval & (AlundraPadState.Start | AlundraPadState.L2 | AlundraPadState.R2)) != 0)
+        // :846-851 - the close branch. The executable's mask is 0x813 = Start | Triangle | R2 | L2
+        // (ALUN_CD.EXE France, `andi $v0, $v0, 0x813` at 0x80056924, and the same at 0x80053634 in the
+        // sub-inventory), not the decompilation's PadState.OpenInventory = 0x803 (PadState.cs:22), which
+        // lost Triangle. The OPENING trigger does test 0x803 (0x8002bcac): Triangle closes, never opens
+        // (docs/plan-e13d-sous-inventaire.md §1.1, D-E13D-29).
+        if ((pad.ButtonsJustPressedByInterval & (AlundraPadState.Start | AlundraPadState.Triangle | AlundraPadState.L2 | AlundraPadState.R2)) != 0)
         {
             _pendingSubInventoryTransition = false;
             RunCloseSetup(state);

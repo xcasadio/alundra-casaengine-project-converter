@@ -340,7 +340,7 @@ objets-clés `UIBoxConfiguration_800b06dc` = `af453798-29af-5757-aaa5-10f1ff92af
 `1070d22e-b7e8-50d5-a58c-ccf80667185e` ; boîtes partagées : description `973a9208-c867-57fe-bee3-cf30237221ef`,
 argent/faucons/clés `e8d58247-f02b-57cb-9ebf-f1df2b9be874`.
 
-### ⏳ SI3.a — DLL : `Triangle` ferme aussi l'inventaire principal (correction de D4)
+### ✅ SI3.a — DLL : `Triangle` ferme aussi l'inventaire principal (correction de D4) — faite le 2026-09-24
 
 **Prérequis** : SI0. Tranche à part, pour pouvoir être relue et, au besoin, annulée seule.
 - `AlundraInventoryDirector.RunInput` : le masque de fermeture devient `Start | Triangle | L2 | R2` (`0x813`,
@@ -349,6 +349,10 @@ argent/faucons/clés `e8d58247-f02b-57cb-9ebf-f1df2b9be874`.
   n'ouvre pas ; les tests existants de fermeture par `Start`/`L2`/`R2` inchangés et verts.
 - Build, `Alundra.Tests`. Pas de vérificateur séparé : SI3.a entre dans la vérification de SI3. Commit :
   `fix(inventory): Triangle closes the main inventory as in the executable (E13.d SI3.a)`.
+
+**Fait** : masque et citation dans `AlundraInventoryDirector.RunInput` ; deux tests,
+`Closing_Triangle_ClosesLikeStart` et `Trigger_Triangle_DoesNotOpen`. Mutation : le masque d'avant (`0x803`)
+rétabli, `Closing_Triangle_ClosesLikeStart` échoue ; code rendu. `Alundra.Tests` **1091/1091** (1089 + 2).
 
 ### ⏳ SI3 — DLL : le directeur du sous-inventaire et la bascule
 

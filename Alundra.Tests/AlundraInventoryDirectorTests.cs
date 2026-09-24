@@ -532,6 +532,46 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         Assert.Equal((8, 16), director.BoxPosition(0));
     }
 
+    /// <summary>E13.d SI3.a (docs/plan-e13d-sous-inventaire.md, D-E13D-29): the executable closes on
+    /// 0x813 = Start | Triangle | R2 | L2 (0x80056924), so Triangle closes exactly like Start.</summary>
+    [Fact]
+    public void Closing_Triangle_ClosesLikeStart()
+    {
+        var state = NewState();
+        var sound = new RecordingSoundPlayer();
+        var director = NewDirector(state, sound: sound);
+        OpenAndSettle(state, director);
+        sound.Requests.Clear();
+
+        Tick(state, director, AlundraPadState.Triangle);
+
+        Assert.Equal(new[] { 5 }, sound.Requests);
+        Assert.Equal(3u, director.ForbiddenWarpFlag); // bit0 (residual) | bit1 (SlideCloseBit).
+        Assert.True((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0);
+
+        for (var i = 0; i < 18; i++)
+        {
+            Tick(state, director, 0);
+        }
+
+        Assert.False(director.IsActive);
+        Assert.False((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0);
+    }
+
+    /// <summary>E13.d SI3.a: the opening trigger keeps the decompilation's 0x803 (0x8002bcac tests
+    /// ButtonsJustPressed & 0x803) - Triangle closes the inventory but never opens it.</summary>
+    [Fact]
+    public void Trigger_Triangle_DoesNotOpen()
+    {
+        var state = NewState();
+        var director = NewDirector(state);
+
+        Tick(state, director, AlundraPadState.Triangle);
+
+        Assert.False(director.IsActive);
+        Assert.Equal(0u, director.ForbiddenWarpFlag);
+    }
+
     [Fact]
     public void Closing_ArmsHudAppearance_OnlyWhenThePersistentLatchIsSet()
     {
