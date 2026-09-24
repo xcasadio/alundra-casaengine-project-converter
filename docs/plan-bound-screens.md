@@ -376,6 +376,15 @@ fichier de conception pour le dialogue (D15, écart de B4 validé) ; merges MGUI
 `main` après cette suite, sur feu vert (D16) ; confirmation avant de perdre un écran modifié (D17) ; Ctrl+S (D18).
 Plan relu (READY) et approuvé le 2026-09-24, mode AUTO. Le programme est rouvert pour cette suite.
 
+**Bilan de la suite (2026-09-24)** : tâches moteur T6.2 (dialogue incomplet gardé), T4.4 (« Save » enregistre les
+écrans), T4.5 (confirmation avant de perdre un écran modifié, avec un événement annulable ajouté au docking de MGUI)
+et T4.6 (Ctrl+S) faites, chacune vérifiée CONFIRMED par un vérificateur frais ; B6 ci-dessous prouve l'enregistrement
+sur les écrans d'Alundra et ferme B2 et B3. Une sortie automatisée de l'éditeur avec un écran modifié ne bloque pas
+et n'écrit rien dans le projet (run `t45-exit-modified`, rejoué par le vérificateur). Restent à l'auteur, en vrai
+lancement : les clics Yes/No/Cancel à la fermeture d'un écran modifié et à la sortie, un vrai Ctrl+S, et la présence
+du `*` après une modification (détail au plan moteur, T4.5 et T4.6). Moteur `b8cb9b85`, MGUI `6817691`, rien poussé
+ni mergé ; merges sur feu vert de l'auteur (D16).
+
 ### ✅ B6 — Enregistrer les écrans d'Alundra depuis l'éditeur
 
 **Prérequis :** tâche moteur T4.4 close.
