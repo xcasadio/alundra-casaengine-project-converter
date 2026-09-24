@@ -22,6 +22,8 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
     public AlundraInventoryPresenterTests()
     {
         AlundraInventoryDirector.Instance.ResetForTests();
+        AlundraSubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
+        AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
         AlundraGameState.Instance.ResetForTests();
@@ -33,6 +35,8 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
     public void Dispose()
     {
         AlundraInventoryDirector.Instance.ResetForTests();
+        AlundraSubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
+        AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
         AlundraGameState.Instance.ResetForTests();

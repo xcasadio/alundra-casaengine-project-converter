@@ -354,7 +354,7 @@ argent/faucons/clés `e8d58247-f02b-57cb-9ebf-f1df2b9be874`.
 `Closing_Triangle_ClosesLikeStart` et `Trigger_Triangle_DoesNotOpen`. Mutation : le masque d'avant (`0x803`)
 rétabli, `Closing_Triangle_ClosesLikeStart` échoue ; code rendu. `Alundra.Tests` **1091/1091** (1089 + 2).
 
-### ⏳ SI3 — DLL : le directeur du sous-inventaire et la bascule
+### ✅ SI3 — DLL : le directeur du sous-inventaire et la bascule — faite le 2026-09-25
 
 **Prérequis** : SI0, SI3.a. Indépendante de SI1/SI2 (aucun graphisme).
 - **`AlundraSubInventoryDirector`** (singleton de session, pur, sans MGUI, même forme que le principal) :
@@ -404,6 +404,30 @@ rétabli, `Closing_Triangle_ClosesLikeStart` échoue ; code rendu. `Alundra.Test
     mutation qui retire la passe du post-traitement de la boucle fait échouer un test.
 - Build, `Alundra.Tests` (tous verts). **Vérificateur frais.** Commit :
   `feat(inventory): port the sub-inventory director and the L1/R1 switch (E13.d SI3)`.
+
+**Fait** (un exécuteur sur contrat, repris et terminé en session principale après deux arrêts en attente d'un
+test lancé en arrière-plan) : `AlundraSubInventoryDirector` (ouverture par le seul post-traitement, glissements,
+manette, fermetures, table des objets-clés selon l'exécutable, texte déroulant à sa propre copie, seconde ligne
+jamais révélée, surface de lecture pour SI4) ; `AlundraInventoryPostProcess` (les deux `if` de
+`GraphicManager.cs:1691-1706`, l'état relu entre eux, « rappel libre » = `IsCallbackArmed` pour le principal,
+`State == 0` pour le sous-inventaire) ; le principal gagne la branche `L1`/`R1`, perd
+`_pendingSubInventoryTransition` et sépare tête et mise en place (`_setupPending`) ; la boucle de la manette du
+monde fait `TickPad`, principal, sous-inventaire, post-traitement, présentateur.
+
+Défauts trouvés en reprenant, tous dans les tests, aucun dans le code : un test de navigation bouclait sans fin
+(il rejoignait sa position de départ par `Right` seul, qui tourne en rond sur 0 → 2 → 7 → 1 ; il suit maintenant
+un plus court chemin sur les quatre tables) ; les tests d'objets-clés lisaient `ItemTablesFixture.LoadReal()`, un
+extrait des tables où aucun objet-clé n'a sa case (ils lisent les vraies tables exportées) ; un test de description
+laissait 20 ticks à un nom qui en demande ~45 ; un test de navigation attendait un texte qui avance sur une position
+vide (les positions y sont maintenant toutes possédées, et l'assertion vérifie l'état 1 après le déplacement : la
+remise à 0 puis l'état 0 de la queue du même tick, comme l'original) ; deux « tests de mutation » ne touchaient
+aucun code de production (une boucle simulée dans le test) : retirés au profit de vraies mutations.
+
+| Preuve | Résultat |
+|---|---|
+| Suites | `Alundra.Tests` **1112/1112** (1091 + 21), sous détecteur de blocage (`--blame-hang-timeout`) |
+| Mutations réelles (un extrait remplacé, build, filtre, fichier rendu à l'octet) | **tuées** : garde des objets-clés retirée ; ligne 2 lue à `c − 0x8f` ; post-traitement retiré de la boucle ; le sous-inventaire efface `MenuOpen` sans condition ; mise en place du principal au tick de la tête ; `Triangle` retiré du masque du sous-inventaire. **Survivante, équivalente** : le principal efface `MenuOpen` sans condition à la fin de son glissement — le post-traitement du même tick ouvre le sous-inventaire et relève `MenuOpen` avant tout observateur (le gel D2 lit en fin d'image), comme dans l'original où `InitializeSubInventory` le relève dans le même rendu ; la garde est gardée pour la fidélité. |
+| Vérificateur frais | **CONFIRMED**, aucun défaut P0 à P2. Il a rejoué la suite et dix sondes à lui sur les vrais directeurs : l'horloge du §1.2 relevée tick par tick dans les deux sens ; `MenuOpen` jamais retombé pendant une bascule ; avec une jauge réellement affichée, aucune bascule ne la touche et la fermeture par `Start` la rappelle, depuis les deux inventaires ; `Start` et `R1` au même tick, `L1` et `R1` ensemble, une bascule demandée pendant un glissement d'ouverture (ignorée, comme l'original), une nouvelle partie sans bottes, un dialogue ouvert au moment de revenir au principal (la tête refuse et `MenuOpen` reste levé sans inventaire, exactement comme l'original) ; la mutation survivante est bien équivalente. Deux remarques P4 : un compte de tests faux d'une unité dans ce plan (corrigé) ; l'assertion « jauge ni rappelée ni recachée » du test aller-retour ne prouve rien, la jauge y restant au repos faute du verrou 1662 — **reportée** (le comportement est prouvé par la sonde du vérificateur ; lever le verrou dans ce test est une suite possible) |
 
 ### ⏳ SI4 — L'écran du sous-inventaire (asset lié) et son présentateur
 

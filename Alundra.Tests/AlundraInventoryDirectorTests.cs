@@ -22,6 +22,8 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     public AlundraInventoryDirectorTests()
     {
         AlundraInventoryDirector.Instance.ResetForTests();
+        AlundraSubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
+        AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
         AlundraGameState.Instance.ResetForTests();
@@ -34,6 +36,8 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     public void Dispose()
     {
         AlundraInventoryDirector.Instance.ResetForTests();
+        AlundraSubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
+        AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
         AlundraGameState.Instance.ResetForTests();
@@ -600,24 +604,22 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     }
 
     [Fact]
-    public void SubInventoryShoulderButtons_Ignored_NoStateChange()
+    public void SubInventorySwitch_R1InMain_StartsTheSwitch()
     {
+        // E13.d SI3 (docs/plan-e13d-sous-inventaire.md): R1/L1 in the main inventory now START the switch
+        // to the sub-inventory - replaces the pre-SI3 "ignored" test (D-E13D-2 is now delivered).
         var state = NewState();
         var sound = new RecordingSoundPlayer();
         var director = NewDirector(state, sound: sound);
         OpenAndSettle(state, director);
         sound.Requests.Clear(); // drop the opening's own sound 4.
-        var flagBefore = director.ForbiddenWarpFlag;
-        var slotBefore = director.SelectedSlotId;
 
-        Tick(state, director, AlundraPadState.L1);
-        Tick(state, director, 0);
         Tick(state, director, AlundraPadState.R1);
 
-        Assert.Equal(flagBefore, director.ForbiddenWarpFlag);
-        Assert.Equal(slotBefore, director.SelectedSlotId);
-        Assert.True(director.IsActive); // never closed.
-        Assert.Empty(sound.Requests);
+        Assert.Equal(new[] { 5 }, sound.Requests); // FUN_800556dc's own sound - the close slide is armed.
+        Assert.Equal(3u, director.ForbiddenWarpFlag); // bit0 (residual) | bit1 (SlideCloseBit).
+        Assert.Equal(1, AlundraInventoryPostProcess.Instance.State);
+        Assert.True((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0);
     }
 
     // -----------------------------------------------------------------------------------------

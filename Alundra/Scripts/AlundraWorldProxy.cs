@@ -1075,6 +1075,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     internal void InstallInventorySystems()
     {
         AlundraInventoryDirector.Instance.AttachToWorld(GameState, ItemTables, SoundPlayer);
+
+        // E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-20): same "re-point without touching state"
+        // shape, right next to the main inventory's own director - the two are session singletons like it.
+        AlundraSubInventoryDirector.Instance.AttachToWorld(GameState, ItemTables, SoundPlayer);
     }
 
     /// <summary>
@@ -1922,10 +1926,19 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // this same loop... after the loop, a two-tick frame would have overwritten the first tick's
         // edge") - it is the trigger check's own site too (GameEngine.cs:1567-1576 sits right after
         // UpdateWorld(), and this per-tick loop is the closest the port's own structure gets to that).
+        //
+        // E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-21/22): the sub-inventory director's own
+        // Tick(), then the post-process, run right after - the port's equivalent of the original's own
+        // Update-then-render split (plan §1.2): the main inventory's trigger is the "Update" half, the two
+        // directors' per-frame work and AlundraInventoryPostProcess.Run the "render" half, the post-process
+        // AFTER both directors for THIS tick, as the original runs it after all thirteen of its callbacks
+        // (GraphicManager.cs:1677-1706 - its own post-process runs after its own callback-table loop).
         for (var padTick = 0; padTick < ticksThisFrame; padTick++)
         {
             GameState.TickPad.Update(GameState.LastPadState.ButtonsHold);
             AlundraInventoryDirector.Instance.Tick(PlayerEntity);
+            AlundraSubInventoryDirector.Instance.Tick();
+            AlundraInventoryPostProcess.Instance.Run();
 
             // E13.d D5 (docs/plan-e13d-inventaire.md): the presenter, right after the director's own
             // Tick() for this SAME tick - same "presenter runs immediately after its director, inside the

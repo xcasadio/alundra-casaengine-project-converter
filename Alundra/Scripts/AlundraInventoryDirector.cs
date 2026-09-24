@@ -52,9 +52,17 @@ namespace Alundra.Scripts;
 /// <c>g_inventoryCursorText</c>, so the seven-box slide and the text reveal run on their own clock,
 /// unaffected by the portrait's absence.</para>
 ///
-/// <para><b>L1/R1 (the sub-inventory switch, <c>MainInventoryManager.cs:853-859</c>)</b>: OUT OF SCOPE
-/// (D-E13D-2, a second plan). The press is read (so it still counts as "some input happened" for the
-/// repeat-interval bookkeeping D1 already owns) but otherwise ignored - no close, no state change.</para>
+/// <para><b>L1/R1 (the sub-inventory switch, <c>MainInventoryManager.cs:853-859</c>)</b> (E13.d SI3,
+/// docs/plan-e13d-sous-inventaire.md, D-E13D-21/22): closes the main inventory (<see cref="RunCloseSetup"/>,
+/// sound 5) and poses <see cref="AlundraInventoryPostProcess.State"/> = 1 - it does NOT call
+/// <see cref="AlundraHudDirector.InitializeHudPositionBeforeHide"/> (the gauge stays hidden, plan §1.1).
+/// <see cref="AlundraInventoryPostProcess.Run"/> then opens the sub-inventory once this closing slide
+/// settles (<see cref="IsCallbackArmed"/> false) - see that class' own doc for the two-tick clock (plan
+/// §1.2). The reverse switch (<see cref="AlundraSubInventoryDirector"/>'s own L1/R1) hands control back
+/// through <see cref="RunDisplayInventoryHeadFromPostProcess"/>: the HEAD of <c>DisplayInventory</c> runs
+/// on the post-process's own tick, and the SETUP (<c>FUN_80054f1c</c>) only on the NEXT one
+/// (<see cref="_setupPending"/>, D-E13D-22) - unlike the ordinary trigger path, where <see cref="Tick"/>
+/// runs both on the SAME tick (this class' own doc above).</para>
 /// </summary>
 public sealed class AlundraInventoryDirector
 {
@@ -85,6 +93,15 @@ public sealed class AlundraInventoryDirector
     /// closing slide) - <see cref="ForbiddenWarpFlag"/> != 0. The complement of "idle, waiting for the
     /// trigger".</summary>
     public bool IsActive => ForbiddenWarpFlag != 0;
+
+    /// <summary>E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-21): "is the main inventory's own
+    /// callback slot 6 armed" - what <see cref="AlundraInventoryPostProcess.Run"/> tests as "slot 6 free"
+    /// before opening the sub-inventory (state 1). Ported as <see cref="ForbiddenWarpFlag"/> != 0 (the
+    /// slide/residual bits) OR <see cref="_setupPending"/> (the callback is armed the instant
+    /// <c>SetTransitionType(6)</c> runs, inside <see cref="RunDisplayInventoryHead"/>/
+    /// <see cref="RunDisplayInventoryHeadFromPostProcess"/>, one tick BEFORE <see cref="ForbiddenWarpFlag"/>
+    /// itself is set by the setup - see <see cref="RunDisplayInventoryHeadFromPostProcess"/>'s own doc).</summary>
+    internal bool IsCallbackArmed => ForbiddenWarpFlag != 0 || _setupPending;
 
     /// <summary>D5 addition (docs/plan-e13d-inventaire.md, "Ce que D5 lit"): a minimal read-only fact
     /// this class did not expose before - whether <see cref="RunPerFrame"/> has run at least once since
@@ -134,7 +151,7 @@ public sealed class AlundraInventoryDirector
         DrawnDescriptionLine0 = string.Empty;
         DrawnDescriptionLine1 = string.Empty;
         _textRevealCountdown = 0;
-        _pendingSubInventoryTransition = false;
+        _setupPending = false;
         _hasRunPerFrameSinceSetup = false;
 
         for (var i = 0; i < BoxLayout.Length; i++)
@@ -304,7 +321,12 @@ public sealed class AlundraInventoryDirector
     /// lines exactly like the original's own single global.</summary>
     private int _textRevealCountdown;
 
-    private bool _pendingSubInventoryTransition;
+    /// <summary>E13.d SI3 (D-E13D-22): armed by <see cref="RunDisplayInventoryHeadFromPostProcess"/> when
+    /// the HEAD it just ran was not stopped by its own guard - <see cref="Tick"/> checks this FIRST, before
+    /// the trigger/idle branch, and runs the SETUP (<see cref="RunDisplayInventorySetup"/>) alone on that
+    /// next tick, no trigger and no per-frame work on it (see that method's own doc for why, plan §1.2's
+    /// own clock table).</summary>
+    private bool _setupPending;
 
     // =====================================================================================
     // Tick
@@ -319,6 +341,16 @@ public sealed class AlundraInventoryDirector
     {
         if (_gameState == null)
         {
+            return;
+        }
+
+        // D-E13D-22: a HEAD run by the post-process last tick has a SETUP still pending - run it alone,
+        // before the trigger/idle check (RunDisplayInventoryHeadFromPostProcess's own doc), no trigger and
+        // no per-frame work on this tick.
+        if (_setupPending)
+        {
+            _setupPending = false;
+            RunDisplayInventorySetup(_gameState);
             return;
         }
 
@@ -397,8 +429,23 @@ public sealed class AlundraInventoryDirector
 
     /// <summary>Port of <c>DisplayInventory</c> (<c>MainInventoryManager.cs:443-499</c>) followed
     /// immediately by <c>FUN_80054f1c</c> (<c>:503-776</c>) - see this class' own doc for why both run on
-    /// the same tick as the trigger.</summary>
+    /// the same tick as the trigger. The ORDINARY trigger path (<see cref="Tick"/>'s idle branch): the HEAD
+    /// and the SETUP always run together, unchanged since before E13.d SI3.</summary>
     private void RunDisplayInventory(AlundraGameState state)
+    {
+        if (RunDisplayInventoryHead(state))
+        {
+            RunDisplayInventorySetup(state);
+        }
+    }
+
+    /// <summary>E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-22): the HEAD half of
+    /// <c>DisplayInventory</c> only (<c>MainInventoryManager.cs:443-495</c>) - called from the post-process
+    /// (<see cref="RunDisplayInventoryHeadFromPostProcess"/>) on its own tick, and from
+    /// <see cref="RunDisplayInventory"/> (the ordinary trigger path) on the SAME tick as the setup. Returns
+    /// false when the dialogue guard stopped it (the caller must not run the setup either, on either
+    /// path).</summary>
+    private bool RunDisplayInventoryHead(AlundraGameState state)
     {
         // MainInventoryManager.cs:445 - g_forbiddenWarpFlag == 0: guaranteed here (this method only runs
         // from the Idle branch of Tick, i.e. ForbiddenWarpFlag == 0 already) - not re-tested.
@@ -408,7 +455,7 @@ public sealed class AlundraInventoryDirector
         // whenever a dialogue opens) - ported as "a dialogue box is open".
         if (AlundraDialogueDirector.Instance.IsOpen)
         {
-            return;
+            return false;
         }
 
         // MainInventoryManager.cs:454-458 - CheckSpecialWarpCondition(0xb): callback slot 0xb is the
@@ -432,8 +479,31 @@ public sealed class AlundraInventoryDirector
         // MainInventoryManager.cs:495 - SoundManager.PlaySoundEffect(4).
         _soundPlayer?.PlaySfx(4);
 
-        // ---- FUN_80054f1c (MainInventoryManager.cs:503-776): setup, same tick ----
+        return true;
+    }
 
+    /// <summary>E13.d SI3 (D-E13D-22): the post-process's own call site - runs the HEAD only
+    /// (<see cref="RunDisplayInventoryHead"/>) and, if it was not stopped by its own guard, arms
+    /// <see cref="_setupPending"/> so the NEXT <see cref="Tick"/> runs the SETUP alone (plan §1.2's own
+    /// clock table: "FUN_80054f1c (mise en place du principal) ... rien de dessiné" on the tick AFTER the
+    /// head). Called from <see cref="AlundraInventoryPostProcess.Run"/> only.</summary>
+    internal void RunDisplayInventoryHeadFromPostProcess()
+    {
+        if (_gameState == null)
+        {
+            return;
+        }
+
+        if (RunDisplayInventoryHead(_gameState))
+        {
+            _setupPending = true;
+        }
+    }
+
+    /// <summary>Port of <c>FUN_80054f1c</c> (<c>MainInventoryManager.cs:503-776</c>) - the setup half only
+    /// (arms <see cref="ForbiddenWarpFlag"/>, the text reset, <c>MenuOpen</c> and the seven box tweens).</summary>
+    private void RunDisplayInventorySetup(AlundraGameState state)
+    {
         // :505 - g_forbiddenWarpFlag = 5 (bits 0 + 2 - SetupBit | SlideOpenBit).
         ForbiddenWarpFlag = SetupBit | SlideOpenBit;
 
@@ -583,14 +653,20 @@ public sealed class AlundraInventoryDirector
         // (docs/plan-e13d-sous-inventaire.md §1.1, D-E13D-29).
         if ((pad.ButtonsJustPressedByInterval & (AlundraPadState.Start | AlundraPadState.Triangle | AlundraPadState.L2 | AlundraPadState.R2)) != 0)
         {
-            _pendingSubInventoryTransition = false;
             RunCloseSetup(state);
             AlundraHudDirector.Instance.InitializeHudPositionBeforeHide();
         }
 
-        // :853-859 - L1/R1 (OpenSubInventory): the sub-inventory switch is OUT OF SCOPE (D-E13D-2) -
-        // the press is read (above, implicitly, through the same TickPad the repeat-interval bookkeeping
-        // already advances) but otherwise ignored: no FUN_800556dc, no MenuOpen re-arm, no close.
+        // :853-859 - L1/R1 (OpenSubInventory): close (same FUN_800556dc/sound 5 as the branch above), but
+        // WITHOUT InitializeHudPositionBeforeHide (the gauge stays hidden, plan §1.1) - MenuOpen re-armed
+        // and AlundraInventoryPostProcess.State = 1 instead: AlundraInventoryPostProcess.Run opens the
+        // sub-inventory once this closing slide settles (this class' own IsCallbackArmed).
+        if ((pad.ButtonsJustPressedByInterval & (AlundraPadState.L1 | AlundraPadState.R1)) != 0)
+        {
+            RunCloseSetup(state);
+            state.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+            AlundraInventoryPostProcess.Instance.State = 1;
+        }
     }
 
     /// <summary>Port of the box-slide half of <c>FUN_80056598</c> (<c>:862-905</c>) - the seven
@@ -629,7 +705,9 @@ public sealed class AlundraInventoryDirector
                 _boxes[i] = new BoxState(_boxes[i].OriginX, _boxes[i].OriginY);
             }
 
-            if (!_pendingSubInventoryTransition)
+            // :896-899 - MenuOpen cleared ONLY if the post-process is not about to open the sub-inventory
+            // (E13.d SI3, D-E13D-21/22 - replaces the former _pendingSubInventoryTransition hook).
+            if ((AlundraInventoryPostProcess.Instance.State & 1) == 0)
             {
                 state.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
             }
