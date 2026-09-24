@@ -365,6 +365,54 @@ Plan clos, mémoire à jour, rapport final ; merges laissés à l'auteur.
 - À arbitrer par l'auteur : O2 à O6 ci-dessous, et les points ouverts du plan moteur (O3 allocation des événements
   faibles de WPF, O5 manque G7, O6 enregistrement des écrans dans l'éditeur).
 
+## Suite après les réponses de l'auteur (2026-09-24)
+
+Réponses de l'auteur aux questions de clôture, décisions D13 à D18 du plan moteur (phase 8) : « Save » enregistre
+les écrans (D13) ; un dialogue de remplacement incomplet reste affiché sans la partie manquante (D14) ; pas de
+fichier de conception pour le dialogue (D15, écart de B4 validé) ; merges MGUI `develop`, moteur `main`, parent
+`main` après cette suite, sur feu vert (D16) ; confirmation avant de perdre un écran modifié (D17) ; Ctrl+S (D18).
+Plan relu (READY) et approuvé le 2026-09-24, mode AUTO. Le programme est rouvert pour cette suite.
+
+### 🚧 B6 — Enregistrer les écrans d'Alundra depuis l'éditeur
+
+**Prérequis :** tâche moteur T4.4 close.
+
+**Étapes :** avec l'éditeur réel et les options d'automatisation de T4.4, pour `HudScreen`, `InventoryScreen` et
+`DialogueScreen` : (1) ouvrir puis enregistrer sans modification : le `.xaml` n'est pas écrit ; (2) changer une
+propriété simple puis enregistrer : `git diff` du fichier d'écran = exactement cet attribut, le panneau n'est pas
+rechargé ; (3) remettre la valeur d'origine puis enregistrer : `git diff` vide. Autour de **chaque** lancement :
+manifeste de tout `alundra-project` avant et après, copie octet pour octet des fichiers que « Save » réécrit aussi
+(`AlundraGame.json`, `AssetInfos.json`, le monde `FirstWorldLoaded`) et restauration ; tout autre fichier modifié
+arrête B6 (remise en état par un export complet en place, jamais par suppression). Mettre à jour le commentaire de
+`UI/Screens/DialogueScreen.xaml` pour D14.
+
+**Validation :** manifeste final identique au manifeste initial ; B2, B3 → ✅ ; T5.1 (moteur) → ✅. **Vérificateur
+frais** (avec T4.4).
+
+**Commit :** `docs(plan): validate saving Alundra's screens from the editor`
+
+**Note de validation (2026-09-24) :** moteur `99e66ee0` (T4.4, précédé de `96ceb976`), éditeur construit depuis ce
+code. Neuf lancements de l'éditeur réel (`--open-asset`, `--set-screen-property`, `--save-project`), chacun encadré
+par le script `scratchpad/b6_run.py` : manifeste sha256 de tout `alundra-project` avant et après, copie octet pour
+octet des fichiers que « Save » réécrit aussi et des écrans versionnés, restauration, troisième manifeste.
+- HUD (`WeaponBoxBackground.Opacity` 0.5 -> 0.6 -> 0.5), inventaire (`BoxWeapon.Stretch` None -> Uniform -> None),
+  dialogue (`lblLine.FontSize` 16 -> 18 -> 16) :
+  - (1) sans modification : le `.xaml` n'est pas écrit (octets et date inchangés) ; journal `dirty=False` ;
+  - (2) une propriété changée : `git diff` du fichier = exactement cette ligne, commentaires, bindings et mise en
+    forme intacts ; journal : marque effacée (`dirty=False`) et **même instance de document** 60 frames après
+    l'enregistrement (le panneau ne s'est pas rechargé depuis sa propre écriture) ;
+  - (3) valeur d'origine remise : `git diff` vide, le fichier est identique au fichier versionné.
+- Chaque lancement a réécrit `AlundraGame.json` et le monde `Ship Klark (beginning)-389.world` (écriture existante
+  de `SaveCurrentProject`, hors de D13) ; rien d'autre n'a bougé ; tous deux restaurés à chaque fois. Écarts
+  consignés : `AlundraGame.json` ne change que par l'ordre des champs (`DialogueScreenAsset` déplacé) ; le monde est
+  réécrit par l'écrivain de mondes de l'éditeur avec ses champs par défaut (politiques d'entité, bloc de script),
+  2 655 -> 5 446 octets. `AssetInfos.json` n'a pas changé.
+- Fin de B6 : `git status` du parent sans changement dans `alundra-project/`, et manifeste final identique à celui
+  de l'export de B4 (23 227 fichiers, 0 écart).
+- Commentaire de `UI/Screens/DialogueScreen.xaml` mis à jour pour D14 ; `AlundraDialogueScreenAssetTests` 5/5.
+- Reste : vérificateur frais sur T4.4 et B6 ; B2, B3 et T5.1 passent en ✅ après son verdict ; la partie de B6 qui
+  concerne T4.5 (sortie automatisée avec un écran modifié) viendra avec T4.5.
+
 ## Points ouverts
 
 | Réf | Sujet |
@@ -372,7 +420,7 @@ Plan clos, mémoire à jour, rapport final ; merges laissés à l'auteur.
 | O1 | ~~Chemins de binding imbriqués (`Slot0.SourceName`) : à confirmer par un test.~~ **Confirmé en B2** (test de liaison sans affichage, `IconSlot3.SourceName`, `MoneyDigit1.Left`, et un changement du sous-view-model seul suivi). |
 | O2 | L'ordre des merges est la décision de l'auteur (plan moteur, O2). |
 | O3 | **Observation, à arbitrer.** La première ouverture de l'inventaire dans un monde coûte deux frames longues (150,7 ms puis 80,8 ms, et 152,4 puis 97,1 ms au run du vérificateur) : construction de la fenêtre depuis l'asset, bindings, images et animation. L'horloge logique plafonnant à 4 ticks par frame, ces frames perdent des ticks. Leur effet sur la recette n'est pas isolé : le run de référence tournait environ trois fois plus lentement par frame, ce qui suffit à expliquer le retard du texte aux captures précoces. Pour trancher : refaire la référence (base `221185b`) avec la même cadence et la mesure des frames. Piste si le coût se confirme : construire la fenêtre au câblage de l'écran plutôt qu'à sa première poussée. **Lié, vu en B3 :** les pastilles de magie tournent sur l'horloge de l'UI depuis leur redémarrage, alors que le compteur du directeur perd les ticks des frames plafonnées ; c'est l'explication probable, non isolée, de leur phase différente sur `inv-hud-3` (un cycle décoratif, sans autre effet visible). |
-| O4 | **Question posée à l'auteur le 2026-09-24 (plan moteur, O6).** L'éditeur n'enregistre aucun écran ; la validation « enregistrement sans modification » de B2 et B3 attend sa décision. |
+| O4 | ~~Question posée à l'auteur le 2026-09-24 (plan moteur, O6).~~ **Répondue le 2026-09-24 : D13, tâche moteur T4.4 puis B6.** L'éditeur n'enregistre aucun écran ; la validation « enregistrement sans modification » de B2 et B3 attend sa décision. |
 | O5 | **Observation (B4), introduite par le programme.** Au premier dialogue, `CasaUIAssetProvider: cannot resolve UI image 'DockClose'` est journalisé. L'icône de fermeture de la barre de titre (`MGCloseIcon`, `MGUI/MGUI.Core/UI/UISymbolElements.cs:460-477`) essaie la texture facultative `DockClose`, et dessine sinon une croix vectorielle. MGUI n'enregistre `DockClose` et les autres icônes de docking que dans `MGDesktop.LoadDefaultResources` (`MGDesktop.cs:1287`), qu'appellent l'éditeur, `MGUI.Editor.Host` et `MGUI.Samples`, mais pas le runtime du jeu ; les icônes sont pourtant dans le contenu (`Content/Icons/docking/`). Depuis T3.1 (moteur `4d6906ae`), un nom inconnu est demandé à l'hôte, qui avertit. La texture manquant, `MGCloseIcon` dessine sa croix vectorielle (d'après son code ; même rendu dans les deux runs) : bruit de journal seulement. Pistes : ne pas demander à l'hôte un nom que MGUI sonde comme facultatif, ou charger ces icônes dans le runtime du jeu. |
 | O6 | **Observation (B4), préexistante, hors programme (E12).** Le premier message de la 389 s'affiche « bonne mine2222 » : `AlundraDialogueTextParser` ne traite que `\A`, `\N` et les codes numériques ; un code inconnu (`\W`, `\T`) est sauté sur deux caractères, mais le paramètre de `\W2` reste dans le texte (« 2 »). Identique avec le balisage embarqué. |
 

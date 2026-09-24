@@ -13,8 +13,9 @@
 
        The element names below are the engine dialogue screen's contract
        (CasaEngineMonogame/docs/engine/dialogue-choices-and-bitmap-fonts.md): pnlContent, lblLine and
-       pnlChoices must stay, with these types. A markup that breaks the contract is refused, with a warning,
-       and the built-in box is shown instead.
+       pnlChoices, with these types. One missing or declared with another type is not refused: the part it
+       drives is simply not shown, and one warning names every such problem (decision D14). Only a markup
+       that fails to load falls back to the built-in box.
 
        Left, Top and Height are starting values only. The screen centres the window horizontally, anchors it
        to the bottom, and sizes it to its content.
