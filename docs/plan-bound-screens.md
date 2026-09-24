@@ -252,9 +252,9 @@ indexer : aucune dans le parent en dehors du sous-module moteur (`CasaEngine.Lau
   - `inv-hud-1` et `inv-hud-2` **identiques au pixel**, pastilles et pièce comprises ; `inv-hud-3` identique hors de
     la boîte des pastilles, qui montrent une autre phase de leur cycle (1 008 pixels, même écart aux deux runs B3 ;
     voir O3).
-  - Captures de l'inventaire : `inv-a` à `inv-d` identiques ; `inv-389` diffère de 4 720 pixels sur toute l'image
-    (animation du monde), le même genre d'écart qu'entre deux runs du HUD en C# (`run-b2` contre `run-b2-times` :
-    6 720 pixels sur `inv-hud-1`).
+  - Captures de l'inventaire : `inv-a` à `inv-d` identiques ; `inv-389` diffère de 4 720 pixels hors des boîtes des
+    pastilles et de la pièce, sur toute l'image, et de 240 dedans (4 960 en tout ; animation du monde), le même genre
+    d'écart qu'entre deux runs du HUD en C# (`run-b2` contre `run-b2-times` : 6 720 pixels sur `inv-hud-1`).
   - Le run précédent (`run-b3`) montrait l'argent un tick en avance aux deux captures où il défile (1010 et 2150
     contre 1000 et 2140) ; le run avec le log montre l'argent du directeur à 1000 puis 2140 et les mêmes chiffres à
     l'écran. C'est la cadence, pas le rendu : le harnais ne fixe pas le nombre de ticks à une frame donnée. La
@@ -263,6 +263,17 @@ indexer : aucune dans le parent en dehors du sous-module moteur (`CasaEngine.Lau
 - Éditeur (automatisation, projet Alundra) : `HudScreen.uiscreen` s'ouvre sans erreur (« Loaded HudScreen.xaml »),
   l'aperçu montre les fonds en dégradé, les petits cœurs, « /10 », « 0000 » et la pièce des données de conception,
   la hiérarchie liste les rôles.
+- **Vérificateur frais (2026-09-24) : CONFIRMED** sur le parent `b9f3133`, le moteur `e78e14a9` et MGUI `09d0462`,
+  sans constat P0 à P2 : 122 chemins de binding confrontés au view-model (aucun manquant, types identiques à leurs
+  cibles) ; table des sprites et `.anim2d` confrontés à l'ancienne table C# ; `Alundra.Tests` 1082/1082 et
+  `CasaEngine.Tests` 1843/1843 reproduits ; recette rejouée (`vrun-b3`), identique au pixel à `run-b3-clock` et
+  aux mêmes `FrameCounter`/argent ; éditeur rejoué. Remarques :
+  - A1 (P3, reportée) : les pastilles restent déphasées entre deux redémarrages quand des ticks logiques sont
+    perdus ; décoratif, déjà consigné en hypothèse dans O3 ;
+  - A2 (P4) : le compte de `inv-389` ne donnait que les pixels hors boîtes : corrigé ci-dessus ;
+  - A3 (P4) : `IsMoneyRolling` reste vrai le tick où la pièce revient à l'image 0 et ne tombe qu'au tick suivant
+    (branche soldée), comme sa documentation le dit : la pièce joue un tick de plus sur sa première image, sans
+    effet visible, dans la tolérance de 20 ms.
 - **Reste en 🧪** : l'enregistrement sans modification, comme B2 (O4).
 
 ### ⏳ B4 — La boîte de dialogue en asset
