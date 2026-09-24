@@ -226,6 +226,11 @@ public sealed class AlundraInventoryComposerTests
         Assert.Equal(expectedSpritePhase, model.Cursor.Phase);
         Assert.Equal(0x08 + 0x08 + 0x12 + expectedOffsetX, model.Cursor.NativeX);
         Assert.Equal(0x10 + 0x08 - 8 + expectedOffsetY, model.Cursor.NativeY);
+
+        // The base position is the same without the phase offset, whatever the phase (the UI animation
+        // ui_inventory_cursor carries the offset itself).
+        Assert.Equal(0x08 + 0x08 + 0x12, model.Cursor.BaseNativeX);
+        Assert.Equal(0x10 + 0x08 - 8, model.Cursor.BaseNativeY);
     }
 
     [Fact]

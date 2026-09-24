@@ -119,7 +119,7 @@ indexer : aucune dans le parent en dehors du sous-module moteur (`CasaEngine.Lau
   catalogue privé de ses 3 nouvelles entrées est identique octet pour octet à la référence. Second export : seul
   `report.json` change.
 
-### ⏳ B2 — L'inventaire en asset lié
+### 🧪 B2 — L'inventaire en asset lié
 
 **Étapes :**
 1. Déplacer `Alundra/Screens/InventoryScreen.xaml` vers `alundra-project/UI/Screens/InventoryScreen.xaml` (ses
@@ -144,6 +144,48 @@ indexer : aucune dans le parent en dehors du sous-module moteur (`CasaEngine.Lau
 - **Vérificateur frais.**
 
 **Commit :** `feat(inventory): move the inventory screen to a project asset bound to a view model`
+
+**Fait (2026-09-24) :**
+- `alundra-project/UI/Screens/InventoryScreen.xaml` (déplacé par `git mv`, commentaires gardés, l'en-tête devenu faux
+  réécrit), `InventoryScreen.uiscreen` (identifiant fixe `d79fc172-…`) et `InventoryScreen.design.json`, produit à
+  partir d'un vrai inventaire au repos (état de début de partie, tables réelles) par un test jetable non commité.
+- Balisage : les sources fixes sont nommées dans le XAML (6 boîtes, 2 cadres `wind_039`, le curseur = l'animation
+  `ui_inventory_cursor`) ; tout le reste est lié (`{dataBinding:MGBinding …}`) : visibilité du canevas, positions,
+  visibilités, sources des icônes et des chiffres, textes. `Stretch="None"` : chaque image prend la taille de sa
+  source, comme les tailles que le code posait.
+- `AlundraInventoryViewModel` : des sous-view-models nommés par élément (`IconSlot0`, `MoneyDigit0`…), types
+  identiques à leurs cibles (`int?`, `Visibility`, `string`) pour le chemin de copie typée sans allocation ;
+  chaque setter ne notifie que sur changement, un identifiant n'est formaté que s'il change. Les icônes restent
+  centrées par le compositeur existant (D-E13D-10) : l'écran lit la taille des sprites d'icône (données tenues,
+  ADR-0037 moteur).
+- L'écran charge l'asset par son identifiant (`XamlUIScreenBase(AssetContentManager, id)`), pose le view-model comme
+  contexte de la fenêtre, et ne garde que le dimensionnement, l'échelle et le filtrage des images (manque G8 du
+  moteur : non déclarable en XAML). Le présentateur écrit le view-model ; `IAlundraInventoryView` disparaît ; la
+  ressource embarquée est retirée d'`Alundra.csproj`.
+- Le compositeur expose la position de base du curseur (`BaseNativeX/Y`), sans le décalage de phase que porte
+  désormais l'animation.
+- Moteur (`afa1bd4b`) : un identifiant d'écran est résolu par le gestionnaire d'assets et non plus par le catalogue
+  global, pour que les tests de la DLL construisent l'écran ; (`0b32f971`) l'automatisation de l'éditeur prend une
+  capture finale.
+- Tests `Alundra.Tests` 1059/1059 (+9) : présentateur sur le view-model ; XAML lu depuis l'asset versionné ;
+  enveloppe et données de conception ; sources fixes ; **liaison sans affichage par chemins imbriqués, qui confirme
+  O1** (une mutation qui retire le contexte fait échouer le test) ; aucune notification quand le même modèle revient ;
+  cadence du curseur (100 changements sur 25 cycles, tous à moins de 20 ms de k × 200 ms, image et décalage justes).
+- Export complet en place : seuls `AssetInfos.json` (+1 entrée, l'écran) et `report.json` changent ; vérification
+  PASSED (19 521 chargés, dont le `.uiscreen`).
+- Recette en jeu (`d6-font`, prédiction `prediction-b2.md` écrite avant) : `font3` sur 389, 390 et 389 ;
+  curseur sur l'animation à la position de base, sur des images différentes au fil du temps ; aucune ligne
+  au-dessus d'Info ; un seul chargement de l'enveloppe et de `font3`. Captures comparées à `run-m2-hud` sur les seuls
+  pixels de l'inventaire (masque pris sur fond noir, hors boîte du curseur) : `inv-b` et `inv-d` (au repos, +300)
+  **identiques au pixel**. Les captures précoces (`inv-389` à +120, `inv-a`/`inv-c` à +90) diffèrent de 5 456 pixels,
+  tous dans la ligne de description, qui montre encore « Poignard » au lieu de « Petit poignard. » : la révélation du
+  texte est en retard. Cause mesurée : à la première ouverture, les deux premières frames durent 150,7 ms et
+  80,8 ms, et l'horloge logique plafonne à 4 ticks par frame (`AlundraScriptedMotion.MaxTicksPerFrame`) : environ
+  3,5 ticks perdus. La prédiction 2, qui attendait `inv-389` identique, était fausse sur ce point (voir O3).
+- Éditeur (automatisation, projet Alundra) : l'écran s'ouvre, l'aperçu montre boîtes, icônes, chiffres des données de
+  conception et curseur, sans erreur.
+- **Reste en 🧪** : « un enregistrement sans modification laisse `git diff` vide » n'est pas vérifiable, l'éditeur
+  n'enregistrant aucun écran (O4).
 
 ### ⏳ B3 — Le HUD en XAML
 
@@ -186,8 +228,10 @@ Plan clos, mémoire à jour, rapport final ; merges laissés à l'auteur.
 
 | Réf | Sujet |
 |---|---|
-| O1 | Chemins de binding imbriqués (`Slot0.SourceName`) : supportés par le chemin à points de MGUI d'après l'exploration du 2026-09-23 ; à confirmer par un test en B3 avant d'écrire les 26 emplacements. |
+| O1 | ~~Chemins de binding imbriqués (`Slot0.SourceName`) : à confirmer par un test.~~ **Confirmé en B2** (test de liaison sans affichage, `IconSlot3.SourceName`, `MoneyDigit1.Left`, et un changement du sous-view-model seul suivi). |
 | O2 | L'ordre des merges est la décision de l'auteur (plan moteur, O2). |
+| O3 | **Observation, à arbitrer.** La première ouverture de l'inventaire dans un monde coûte deux frames longues (150,7 ms puis 80,8 ms mesurées) : construction de la fenêtre depuis l'asset, bindings, images et animation. L'horloge logique plafonnant à 4 ticks par frame, ~3,5 ticks sont perdus et la glissade et la révélation du texte démarrent ~70 ms plus tard que dans la recette de référence ; l'état au repos est identique. La durée de cette frame avant le programme n'a pas été mesurée. Piste : construire la fenêtre au câblage de l'écran plutôt qu'à sa première poussée. |
+| O4 | **Question posée à l'auteur le 2026-09-24 (plan moteur, O6).** L'éditeur n'enregistre aucun écran ; la validation « enregistrement sans modification » de B2 et B3 attend sa décision. |
 
 ## Hors périmètre
 

@@ -8,8 +8,9 @@ namespace Alundra.Scripts;
 /// E13.d D5 (docs/plan-e13d-inventaire.md, D-E13D-6): reads <see cref="AlundraInventoryDirector"/>'s own
 /// already-ticked state plus the item/stat lookups it does not own (<see cref="AlundraPlayerManager"/>,
 /// <see cref="AlundraItemTables"/>, <see cref="AlundraPlayerStats"/>), composes an
-/// <see cref="InventoryDisplayModel"/> through the pure <see cref="AlundraInventoryComposer"/>, and pushes
-/// it into an <see cref="IAlundraInventoryView"/> - one <see cref="Tick"/> call per LOGIC tick, made from
+/// <see cref="InventoryDisplayModel"/> through the pure <see cref="AlundraInventoryComposer"/>, and writes
+/// it into the screen's <see cref="AlundraInventoryViewModel"/> (parent ADR-0002), which the screen's XAML binds -
+/// one <see cref="Tick"/> call per LOGIC tick, made from
 /// <see cref="AlundraWorldProxy.Update(float)"/>'s own pad-tick loop, immediately after
 /// <see cref="AlundraInventoryDirector.Tick"/> (same site the director itself already reads its pad edges
 /// from - <c>AlundraWorldProxy.cs</c>'s own comment on why a consumer of those edges must run inside that
@@ -33,7 +34,7 @@ public sealed class AlundraInventoryPresenter
     private readonly AlundraInventoryDirector _director;
     private readonly AlundraGameState _gameState;
     private readonly AlundraItemTables _itemTables;
-    private readonly IAlundraInventoryView _view;
+    private readonly AlundraInventoryViewModel _viewModel;
     private readonly IUIScreen _screen;
     private readonly IUIViewRuntime? _uiView;
     private bool _pushed;
@@ -42,20 +43,20 @@ public sealed class AlundraInventoryPresenter
         AlundraInventoryDirector director,
         AlundraGameState gameState,
         AlundraItemTables itemTables,
-        IAlundraInventoryView view,
+        AlundraInventoryViewModel viewModel,
         IUIScreen screen,
         IUIViewRuntime? uiView)
     {
         ArgumentNullException.ThrowIfNull(director);
         ArgumentNullException.ThrowIfNull(gameState);
         ArgumentNullException.ThrowIfNull(itemTables);
-        ArgumentNullException.ThrowIfNull(view);
+        ArgumentNullException.ThrowIfNull(viewModel);
         ArgumentNullException.ThrowIfNull(screen);
 
         _director = director;
         _gameState = gameState;
         _itemTables = itemTables;
-        _view = view;
+        _viewModel = viewModel;
         _screen = screen;
         _uiView = uiView;
     }
@@ -69,7 +70,7 @@ public sealed class AlundraInventoryPresenter
         if (_director.IsDrawn)
         {
             PushScreenIfNeeded();
-            _view.Render(ComposeModel());
+            _viewModel.Apply(ComposeModel());
             return;
         }
 

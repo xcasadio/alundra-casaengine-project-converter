@@ -3,6 +3,7 @@ using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Assets.Fonts;
 using CasaEngine.Framework.UI;
+using CasaEngine.Framework.UI.MGUI;
 using FontStashSharp;
 using MGUI.FontStashSharp;
 using MGUI.Shared.Text;
@@ -56,19 +57,31 @@ public sealed class AlundraInventoryScreenFontTests
         }
     }
 
+    /// <summary>The screen's envelope, as the screen only needs it held (these tests never build its window).</summary>
+    private sealed class ScreenEnvelopeLoader : IAssetLoader
+    {
+        public object LoadAsset(string fileName, AssetContentManager assetContentManager)
+            => new UIScreenAsset { SourceXamlFile = "InventoryScreen.xaml" };
+
+        public bool IsFileSupported(string fileName) => true;
+    }
+
     private static UIFontRegistry NewFonts(out AssetContentManager assets, out CpuFont3Loader loader, bool withFont3 = true)
     {
         var font3 = new AssetInfo(AlundraInventoryScreen.Font3FontAssetId) { Name = "font3", FileName = @"UI\font3.fnt" };
+        var screenId = Guid.Parse(AlundraInventoryScreen.ScreenAssetId);
+        var screen = new AssetInfo(screenId) { Name = "InventoryScreen", FileName = @"UI\Screens\InventoryScreen.uiscreen" };
         assets = new AssetContentManager
         {
             RuntimeContext = new EngineRuntimeContext(
                 null,
                 Path.GetTempPath(),
-                id => withFont3 && id == AlundraInventoryScreen.Font3FontAssetId ? font3 : null),
+                id => withFont3 && id == AlundraInventoryScreen.Font3FontAssetId ? font3 : id == screenId ? screen : null),
         };
 
         loader = new CpuFont3Loader();
         assets.RegisterAssetLoader(typeof(BitmapFont), loader);
+        assets.RegisterAssetLoader(typeof(UIScreenAsset), new ScreenEnvelopeLoader());
         return new UIFontRegistry(assets);
     }
 
@@ -89,7 +102,7 @@ public sealed class AlundraInventoryScreenFontTests
         screen.Dispose();
         screen.Dispose(); // idempotent
         Assert.True(screen.IsDisposed);
-        Assert.Equal(1, assets.CollectUnreferenced());
+        Assert.Equal(2, assets.CollectUnreferenced()); // font3 and the screen's own envelope (parent ADR-0002)
         Assert.False(ResolvesFont3(textEngine));
     }
 

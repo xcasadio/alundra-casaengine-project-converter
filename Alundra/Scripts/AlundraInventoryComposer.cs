@@ -17,16 +17,18 @@ public readonly record struct InventoryDigit(int Value, int NativeX, int NativeY
 /// currently equipped (e.g. no accessory equipped at all, <see cref="AlundraPlayerManager.NoItem"/>).</summary>
 public readonly record struct InventorySelectionFrame(bool Visible, int NativeX, int NativeY);
 
-/// <summary>The cursor (<c>wind_159/182/210/237</c>) - <see cref="Phase"/> is 0..3, D5's screen picks the
-/// sprite by it.</summary>
-public readonly record struct InventoryCursorState(int NativeX, int NativeY, int Phase);
+/// <summary>The cursor (<c>wind_159/182/210/237</c>) - <see cref="Phase"/> is 0..3. <see cref="NativeX"/>/<see cref="NativeY"/>
+/// include the original's per-phase pixel offset; <see cref="BaseNativeX"/>/<see cref="BaseNativeY"/> are the same
+/// position without it, for a screen that plays the cursor as a UI animation carrying that offset itself
+/// (parent ADR-0002, the converter's <c>ui_inventory_cursor</c>).</summary>
+public readonly record struct InventoryCursorState(int NativeX, int NativeY, int Phase, int BaseNativeX, int BaseNativeY);
 
 /// <summary>One grid slot's icon - the slot it belongs to (0..23) plus the same centred-icon shape
 /// <see cref="AlundraHudComposer"/>'s own <see cref="AlundraHudIcon"/> uses (D-E13D-10).</summary>
 public readonly record struct InventorySlotIcon(int SlotIndex, AlundraHudIcon Icon);
 
 /// <summary>The whole inventory screen's display state for one tick - <see cref="AlundraInventoryComposer.Compose"/>'s
-/// own return value, pushed verbatim into <see cref="IAlundraInventoryView"/> by <see cref="AlundraInventoryPresenter"/>.
+/// own return value, written into <see cref="AlundraInventoryViewModel"/> by <see cref="AlundraInventoryPresenter"/>.
 /// <see cref="Visible"/> false means every other member is a default/empty placeholder - the screen must
 /// not read them (same "IsDrawn faux -&gt; liste vide" contract as <see cref="AlundraHudComposer"/>).</summary>
 public sealed class InventoryDisplayModel
@@ -222,10 +224,14 @@ public static class AlundraInventoryComposer
         // director has already incremented the counter this tick, so the position uses the previous value.
         var cursorPhase = Math.Clamp(cursorFrameDelay / 10, 0, 3);
         var cursorPositionPhase = Math.Clamp((cursorFrameDelay + 0x27) % 0x28 / 10, 0, 3);
+        var cursorBaseX = weaponBackground.X + OffsetX[selectedSlotId] + 0x12;
+        var cursorBaseY = weaponBackground.Y + OffsetY[selectedSlotId] - 8;
         var cursor = new InventoryCursorState(
-            weaponBackground.X + OffsetX[selectedSlotId] + 0x12 + CursorPhaseX[cursorPositionPhase],
-            weaponBackground.Y + OffsetY[selectedSlotId] - 8 + CursorPhaseY[cursorPositionPhase],
-            cursorPhase);
+            cursorBaseX + CursorPhaseX[cursorPositionPhase],
+            cursorBaseY + CursorPhaseY[cursorPositionPhase],
+            cursorPhase,
+            cursorBaseX,
+            cursorBaseY);
 
         return new InventoryDisplayModel
         {

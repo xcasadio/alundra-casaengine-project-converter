@@ -1,0 +1,190 @@
+{
+  "view_model_type": "AlundraInventoryViewModel",
+  "values": {
+    "RootVisibility": "Visible",
+    "BoxWeapon": {
+      "Left": 8,
+      "Top": 16,
+      "Visibility": "Visible"
+    },
+    "BoxItem": {
+      "Left": 8,
+      "Top": 64,
+      "Visibility": "Visible"
+    },
+    "BoxWeaponName": {
+      "Left": 176,
+      "Top": 16,
+      "Visibility": "Visible"
+    },
+    "BoxItemName": {
+      "Left": 176,
+      "Top": 64,
+      "Visibility": "Visible"
+    },
+    "BoxMoneyFalconKey": {
+      "Left": 176,
+      "Top": 96,
+      "Visibility": "Visible"
+    },
+    "BoxDescription": {
+      "Left": 16,
+      "Top": 168,
+      "Visibility": "Visible"
+    },
+    "IconSlot0": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot1": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot2": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot3": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot4": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot5": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot6": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot7": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot8": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot9": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot10": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot11": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot12": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot13": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot14": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot15": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot16": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot17": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot18": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot19": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot20": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot21": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot22": {
+      "Visibility": "Collapsed"
+    },
+    "IconSlot23": {
+      "Visibility": "Collapsed"
+    },
+    "HerbCountDigit": {
+      "Visibility": "Collapsed"
+    },
+    "MoneyDigit0": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 200,
+      "Top": 100,
+      "Visibility": "Visible"
+    },
+    "MoneyDigit1": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 208,
+      "Top": 100,
+      "Visibility": "Visible"
+    },
+    "MoneyDigit2": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 216,
+      "Top": 100,
+      "Visibility": "Visible"
+    },
+    "MoneyDigit3": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 224,
+      "Top": 100,
+      "Visibility": "Visible"
+    },
+    "FalconDigit0": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 216,
+      "Top": 124,
+      "Visibility": "Visible"
+    },
+    "FalconDigit1": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 224,
+      "Top": 124,
+      "Visibility": "Visible"
+    },
+    "KeyDigit0": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 216,
+      "Top": 148,
+      "Visibility": "Visible"
+    },
+    "KeyDigit1": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 224,
+      "Top": 148,
+      "Visibility": "Visible"
+    },
+    "WeaponName": {
+      "Text": "",
+      "Left": 192,
+      "Top": 24
+    },
+    "ItemName": {
+      "Text": "       ",
+      "Left": 192,
+      "Top": 72
+    },
+    "DescriptionLine0": {
+      "Text": "",
+      "Left": 32,
+      "Top": 180
+    },
+    "DescriptionLine1": {
+      "Text": "",
+      "Left": 32,
+      "Top": 196
+    },
+    "WeaponSelectionFrame": {
+      "Visibility": "Collapsed"
+    },
+    "ItemSelectionFrame": {
+      "Visibility": "Collapsed"
+    },
+    "Cursor": {
+      "Left": 34,
+      "Top": 16,
+      "Visibility": "Visible"
+    }
+  }
+}

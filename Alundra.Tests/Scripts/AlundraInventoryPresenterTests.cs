@@ -12,10 +12,10 @@ namespace Alundra.Tests;
 /// E13.d D5 (docs/plan-e13d-inventaire.md, D-E13D-6): <see cref="AlundraInventoryScreen"/> is not
 /// constructible headless (same reason <see cref="AlundraHudPresenterTests"/> and
 /// <see cref="AlundraDialoguePresenterWiringTests"/> give their own class docs), so this drives
-/// <see cref="AlundraInventoryPresenter"/> against a recording <see cref="IAlundraInventoryView"/>, a
-/// recording <see cref="IUIScreen"/> stand-in and a recording <see cref="IUIViewRuntime"/> - the value
-/// the presenter itself pushed/pushed-a-screen-for, exactly the pattern <see cref="AlundraHudPresenterTests"/>
-/// and <see cref="AlundraDialoguePresenterWiringTests"/> already establish.
+/// <see cref="AlundraInventoryPresenter"/> against a real <see cref="AlundraInventoryViewModel"/> (parent ADR-0002:
+/// the presenter writes the view model the screen's XAML binds), a recording <see cref="IUIScreen"/> stand-in and a
+/// recording <see cref="IUIViewRuntime"/> - the pattern <see cref="AlundraHudPresenterTests"/> and
+/// <see cref="AlundraDialoguePresenterWiringTests"/> already establish.
 /// </summary>
 public sealed class AlundraInventoryPresenterTests : IDisposable
 {
@@ -39,12 +39,6 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
-    }
-
-    private sealed class RecordingInventoryView : IAlundraInventoryView
-    {
-        public readonly List<InventoryDisplayModel> RenderCalls = new();
-        public void Render(InventoryDisplayModel model) => RenderCalls.Add(model);
     }
 
     private sealed class FakeInventoryScreen : IUIScreen
@@ -88,14 +82,15 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
     }
 
     private static (AlundraGameState State, AlundraInventoryDirector Director, AlundraInventoryPresenter Presenter,
-        RecordingInventoryView View, FakeInventoryScreen Screen, RecordingUIViewRuntime UiView) NewFixture()
+        AlundraInventoryViewModel View, FakeInventoryScreen Screen, RecordingUIViewRuntime UiView) NewFixture()
     {
         var state = AlundraGameState.Instance;
         var itemTables = ItemTablesFixture.LoadReal();
         var director = AlundraInventoryDirector.Instance;
         director.AttachToWorld(state, itemTables, null);
 
-        var view = new RecordingInventoryView();
+        // Every icon 16x16: its size only centres it in its cell.
+        var view = new AlundraInventoryViewModel(_ => new Point(16, 16));
         var screen = new FakeInventoryScreen();
         var uiView = new RecordingUIViewRuntime();
         var presenter = new AlundraInventoryPresenter(director, state, itemTables, view, screen, uiView);
@@ -112,7 +107,7 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
 
         Assert.True(director.IsActive);
         Assert.False(director.IsDrawn);
-        Assert.Empty(view.RenderCalls);
+        Assert.Equal(0, view.AppliedModelCount);
         Assert.Empty(uiView.Pushed);
     }
 
@@ -127,8 +122,9 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
         Assert.True(director.IsDrawn);
         Assert.Single(uiView.Pushed);
         Assert.Same(screen, uiView.Pushed[0]);
-        Assert.Single(view.RenderCalls);
-        Assert.True(view.RenderCalls[0].Visible);
+        Assert.Equal(1, view.AppliedModelCount);
+        Assert.Equal(MGUI.Core.UI.Visibility.Visible, view.RootVisibility);
+        Assert.Equal(MGUI.Core.UI.Visibility.Visible, view.Cursor.Visibility);
     }
 
     [Fact]
@@ -142,7 +138,7 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
             Tick(state, director, presenter, 0);
         }
 
-        Assert.Equal(10, view.RenderCalls.Count);
+        Assert.Equal(10, view.AppliedModelCount);
         Assert.Single(uiView.Pushed); // never pushed again once already up.
     }
 
@@ -181,7 +177,7 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
             Tick(state, director, presenter, 0);
         }
 
-        Assert.Empty(view.RenderCalls);
+        Assert.Equal(0, view.AppliedModelCount);
         Assert.Empty(uiView.Pushed);
         Assert.Empty(uiView.Removed);
     }

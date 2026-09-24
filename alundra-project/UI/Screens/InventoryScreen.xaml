@@ -1,0 +1,98 @@
+<Window xmlns="clr-namespace:MGUI.Core.UI.XAML;assembly=MGUI.Core"
+        xmlns:dataBinding="clr-namespace:MGUI.Core.UI.DataBinding;assembly=MGUI.Core"
+        Left="0" Top="0" Width="320" Height="240"
+        TitleText=""
+        IsTitleBarVisible="False"
+        IsTopmost="True"
+        IsUserResizable="False"
+        Padding="0"
+        Background="rgba(0,0,0,0)">
+
+  <!-- E13.d D5 (docs/plan-e13d-inventaire.md, D-E13D-16), versioned as a project asset since the
+       bound screens program (parent ADR-0002): this file, InventoryScreen.uiscreen and
+       InventoryScreen.design.json live in alundra-project/UI/Screens/, the only part of the
+       generated project kept in git; the converter catalogues the envelope and never writes here.
+       A full-screen transparent window whose sole content is a Canvas authored in NATIVE pixels
+       (320x240, AlundraDisplay NativeWidth/NativeHeight) - the code (AlundraInventoryScreen)
+       resizes this window to the real screen bounds and applies the whole integer pixel scale
+       ONCE as the canvas own RenderTransform.Scale (engine ADR-0006), so every child below keeps
+       native coordinates and sizes. Every value that changes is bound to the window data context,
+       an AlundraInventoryViewModel the presenter writes each logic tick; an Image names its asset
+       by id (engine ADR-0038), directly here when it never changes.
+
+       Draw order (back to front, MainInventoryManager.cs:914-922, plan 1.4): the six baked box
+       images (BackgroundUI), the grid icons/digits/names (ForegroundUI), the two selection
+       frames (ForegroundUICursor), the cursor (ForegroundUICursor2). -->
+
+  <Canvas Name="RootCanvas" Width="320" Height="240" Visibility="{dataBinding:MGBinding Path=RootVisibility}">
+
+    <!-- Six baked box sprites (D-E13D-13/D3.b) - BackgroundUI. No image for the 0x0 spacer
+         box (index 4 of AlundraInventoryDirector.BoxPosition): nothing to draw there. -->
+    <Image Name="BoxWeapon" Stretch="None" SourceName="c2447262-414f-5b78-9def-b54b080636f4" CanvasLeft="{dataBinding:MGBinding Path=BoxWeapon.Left}" CanvasTop="{dataBinding:MGBinding Path=BoxWeapon.Top}" Visibility="{dataBinding:MGBinding Path=BoxWeapon.Visibility}" />
+    <Image Name="BoxItem" Stretch="None" SourceName="615fe384-c2e5-5ad3-82ec-f0bd137c877a" CanvasLeft="{dataBinding:MGBinding Path=BoxItem.Left}" CanvasTop="{dataBinding:MGBinding Path=BoxItem.Top}" Visibility="{dataBinding:MGBinding Path=BoxItem.Visibility}" />
+    <Image Name="BoxWeaponName" Stretch="None" SourceName="eb357d61-17ab-5ea1-a287-b98196a6e7e3" CanvasLeft="{dataBinding:MGBinding Path=BoxWeaponName.Left}" CanvasTop="{dataBinding:MGBinding Path=BoxWeaponName.Top}" Visibility="{dataBinding:MGBinding Path=BoxWeaponName.Visibility}" />
+    <Image Name="BoxItemName" Stretch="None" SourceName="1f5d5bab-7408-5da3-a8d6-20a02d3c0747" CanvasLeft="{dataBinding:MGBinding Path=BoxItemName.Left}" CanvasTop="{dataBinding:MGBinding Path=BoxItemName.Top}" Visibility="{dataBinding:MGBinding Path=BoxItemName.Visibility}" />
+    <Image Name="BoxMoneyFalconKey" Stretch="None" SourceName="e8d58247-f02b-57cb-9ebf-f1df2b9be874" CanvasLeft="{dataBinding:MGBinding Path=BoxMoneyFalconKey.Left}" CanvasTop="{dataBinding:MGBinding Path=BoxMoneyFalconKey.Top}" Visibility="{dataBinding:MGBinding Path=BoxMoneyFalconKey.Visibility}" />
+    <Image Name="BoxDescription" Stretch="None" SourceName="973a9208-c867-57fe-bee3-cf30237221ef" CanvasLeft="{dataBinding:MGBinding Path=BoxDescription.Left}" CanvasTop="{dataBinding:MGBinding Path=BoxDescription.Top}" Visibility="{dataBinding:MGBinding Path=BoxDescription.Visibility}" />
+
+    <!-- 24 grid slot icons (row 0 weapons, rows 1-3 items) - ForegroundUI, centred in their
+         24x32 cell per D-E13D-10. -->
+    <Image Name="IconSlot0" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot0.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot0.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot0.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot0.Visibility}" />
+    <Image Name="IconSlot1" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot1.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot1.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot1.Visibility}" />
+    <Image Name="IconSlot2" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot2.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot2.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot2.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot2.Visibility}" />
+    <Image Name="IconSlot3" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot3.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot3.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot3.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot3.Visibility}" />
+    <Image Name="IconSlot4" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot4.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot4.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot4.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot4.Visibility}" />
+    <Image Name="IconSlot5" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot5.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot5.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot5.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot5.Visibility}" />
+    <Image Name="IconSlot6" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot6.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot6.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot6.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot6.Visibility}" />
+    <Image Name="IconSlot7" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot7.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot7.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot7.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot7.Visibility}" />
+    <Image Name="IconSlot8" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot8.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot8.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot8.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot8.Visibility}" />
+    <Image Name="IconSlot9" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot9.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot9.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot9.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot9.Visibility}" />
+    <Image Name="IconSlot10" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot10.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot10.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot10.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot10.Visibility}" />
+    <Image Name="IconSlot11" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot11.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot11.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot11.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot11.Visibility}" />
+    <Image Name="IconSlot12" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot12.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot12.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot12.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot12.Visibility}" />
+    <Image Name="IconSlot13" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot13.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot13.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot13.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot13.Visibility}" />
+    <Image Name="IconSlot14" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot14.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot14.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot14.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot14.Visibility}" />
+    <Image Name="IconSlot15" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot15.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot15.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot15.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot15.Visibility}" />
+    <Image Name="IconSlot16" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot16.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot16.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot16.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot16.Visibility}" />
+    <Image Name="IconSlot17" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot17.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot17.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot17.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot17.Visibility}" />
+    <Image Name="IconSlot18" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot18.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot18.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot18.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot18.Visibility}" />
+    <Image Name="IconSlot19" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot19.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot19.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot19.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot19.Visibility}" />
+    <Image Name="IconSlot20" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot20.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot20.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot20.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot20.Visibility}" />
+    <Image Name="IconSlot21" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot21.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot21.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot21.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot21.Visibility}" />
+    <Image Name="IconSlot22" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot22.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot22.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot22.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot22.Visibility}" />
+    <Image Name="IconSlot23" Stretch="None" SourceName="{dataBinding:MGBinding Path=IconSlot23.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=IconSlot23.Left}" CanvasTop="{dataBinding:MGBinding Path=IconSlot23.Top}" Visibility="{dataBinding:MGBinding Path=IconSlot23.Visibility}" />
+
+    <!-- The herb slot own count digit (MainInventoryManager.cs:1338-1370) - ForegroundUI. -->
+    <Image Name="HerbCountDigit" Stretch="None" SourceName="{dataBinding:MGBinding Path=HerbCountDigit.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=HerbCountDigit.Left}" CanvasTop="{dataBinding:MGBinding Path=HerbCountDigit.Top}" Visibility="{dataBinding:MGBinding Path=HerbCountDigit.Visibility}" />
+
+    <!-- Money (4 digits), falcon (2) and key (2) counters - ForegroundUI. -->
+    <Image Name="MoneyDigit0" Stretch="None" SourceName="{dataBinding:MGBinding Path=MoneyDigit0.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=MoneyDigit0.Left}" CanvasTop="{dataBinding:MGBinding Path=MoneyDigit0.Top}" Visibility="{dataBinding:MGBinding Path=MoneyDigit0.Visibility}" />
+    <Image Name="MoneyDigit1" Stretch="None" SourceName="{dataBinding:MGBinding Path=MoneyDigit1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=MoneyDigit1.Left}" CanvasTop="{dataBinding:MGBinding Path=MoneyDigit1.Top}" Visibility="{dataBinding:MGBinding Path=MoneyDigit1.Visibility}" />
+    <Image Name="MoneyDigit2" Stretch="None" SourceName="{dataBinding:MGBinding Path=MoneyDigit2.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=MoneyDigit2.Left}" CanvasTop="{dataBinding:MGBinding Path=MoneyDigit2.Top}" Visibility="{dataBinding:MGBinding Path=MoneyDigit2.Visibility}" />
+    <Image Name="MoneyDigit3" Stretch="None" SourceName="{dataBinding:MGBinding Path=MoneyDigit3.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=MoneyDigit3.Left}" CanvasTop="{dataBinding:MGBinding Path=MoneyDigit3.Top}" Visibility="{dataBinding:MGBinding Path=MoneyDigit3.Visibility}" />
+    <Image Name="FalconDigit0" Stretch="None" SourceName="{dataBinding:MGBinding Path=FalconDigit0.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=FalconDigit0.Left}" CanvasTop="{dataBinding:MGBinding Path=FalconDigit0.Top}" Visibility="{dataBinding:MGBinding Path=FalconDigit0.Visibility}" />
+    <Image Name="FalconDigit1" Stretch="None" SourceName="{dataBinding:MGBinding Path=FalconDigit1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=FalconDigit1.Left}" CanvasTop="{dataBinding:MGBinding Path=FalconDigit1.Top}" Visibility="{dataBinding:MGBinding Path=FalconDigit1.Visibility}" />
+    <Image Name="KeyDigit0" Stretch="None" SourceName="{dataBinding:MGBinding Path=KeyDigit0.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=KeyDigit0.Left}" CanvasTop="{dataBinding:MGBinding Path=KeyDigit0.Top}" Visibility="{dataBinding:MGBinding Path=KeyDigit0.Visibility}" />
+    <Image Name="KeyDigit1" Stretch="None" SourceName="{dataBinding:MGBinding Path=KeyDigit1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=KeyDigit1.Left}" CanvasTop="{dataBinding:MGBinding Path=KeyDigit1.Top}" Visibility="{dataBinding:MGBinding Path=KeyDigit1.Visibility}" />
+
+    <!-- Equipped weapon/item names and the two description lines - ForegroundUI, in the
+         bitmap font font3. The screen holds font3 through the engine's UI font registry from
+         its construction (engine ADR-0036, plan D5.f), so the family is registered on this
+         desktop's text engine before this window is built. -->
+    <TextBlock Name="WeaponNameText" Text="{dataBinding:MGBinding Path=WeaponName.Text}" CanvasLeft="{dataBinding:MGBinding Path=WeaponName.Left}" CanvasTop="{dataBinding:MGBinding Path=WeaponName.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="ItemNameText" Text="{dataBinding:MGBinding Path=ItemName.Text}" CanvasLeft="{dataBinding:MGBinding Path=ItemName.Left}" CanvasTop="{dataBinding:MGBinding Path=ItemName.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="DescriptionLine0Text" Text="{dataBinding:MGBinding Path=DescriptionLine0.Text}" CanvasLeft="{dataBinding:MGBinding Path=DescriptionLine0.Left}" CanvasTop="{dataBinding:MGBinding Path=DescriptionLine0.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="DescriptionLine1Text" Text="{dataBinding:MGBinding Path=DescriptionLine1.Text}" CanvasLeft="{dataBinding:MGBinding Path=DescriptionLine1.Left}" CanvasTop="{dataBinding:MGBinding Path=DescriptionLine1.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+
+    <!-- Selection frames (wind_039) over the equipped weapon and the equipped item -
+         ForegroundUICursor. -->
+    <Image Name="WeaponSelectionFrame" Stretch="None" SourceName="5f56fba6-2abb-5163-bb1e-e5a4f6fdb499" CanvasLeft="{dataBinding:MGBinding Path=WeaponSelectionFrame.Left}" CanvasTop="{dataBinding:MGBinding Path=WeaponSelectionFrame.Top}" Visibility="{dataBinding:MGBinding Path=WeaponSelectionFrame.Visibility}" />
+    <Image Name="ItemSelectionFrame" Stretch="None" SourceName="5f56fba6-2abb-5163-bb1e-e5a4f6fdb499" CanvasLeft="{dataBinding:MGBinding Path=ItemSelectionFrame.Left}" CanvasTop="{dataBinding:MGBinding Path=ItemSelectionFrame.Top}" Visibility="{dataBinding:MGBinding Path=ItemSelectionFrame.Visibility}" />
+
+    <!-- The cursor - ForegroundUICursor2, always on top: the ui_inventory_cursor animation
+         (wind_159/182/210/237, 200 ms each, with the per-phase pixel offset), written by the
+         converter and played on the UI clock. -->
+    <Image Name="CursorImage" Stretch="None" SourceName="a1a280e0-4e0b-5578-a452-b3778d796b1d" CanvasLeft="{dataBinding:MGBinding Path=Cursor.Left}" CanvasTop="{dataBinding:MGBinding Path=Cursor.Top}" Visibility="{dataBinding:MGBinding Path=Cursor.Visibility}" />
+
+  </Canvas>
+</Window>

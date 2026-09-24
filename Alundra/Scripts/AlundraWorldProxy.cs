@@ -1219,22 +1219,22 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         var inventoryScreen = new AlundraInventoryScreen(assetContentManager, fonts);
         _inventoryScreen = inventoryScreen;
         _inventoryPresenter = new AlundraInventoryPresenter(
-            AlundraInventoryDirector.Instance, GameState, ItemTables, inventoryScreen, inventoryScreen, uiView);
+            AlundraInventoryDirector.Instance, GameState, ItemTables, inventoryScreen.ViewModel, inventoryScreen, uiView);
         _inventoryScreenWired = true;
         Logs.WriteInfo("AlundraWorldProxy: inventory screen wired to the active UI view (post-bootstrap retry).");
     }
 
     /// <summary>Test-only seam: attaches an <see cref="AlundraInventoryPresenter"/> over the SAME
     /// session-scoped <see cref="AlundraInventoryDirector.Instance"/> this proxy's own production wiring
-    /// (<see cref="TryWireInventoryScreenOnce"/>) would use, but against any <see cref="IAlundraInventoryView"/>/
+    /// (<see cref="TryWireInventoryScreenOnce"/>) would use, but against any <see cref="AlundraInventoryViewModel"/>/
     /// <see cref="IUIScreen"/>/<see cref="IUIViewRuntime"/> - typically recording test doubles, since a real
     /// <see cref="AlundraInventoryScreen"/>'s window is not buildable headless. Lets a test drive
     /// <see cref="Update(float)"/>'s real per-tick loop and observe push/remove/render timing without a live
     /// graphics stack - same shape as <see cref="AttachHudPresenterForTests"/>.</summary>
-    internal void AttachInventoryPresenterForTests(IAlundraInventoryView view, IUIScreen screen, IUIViewRuntime? uiView = null)
+    internal void AttachInventoryPresenterForTests(AlundraInventoryViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
     {
         _inventoryPresenter = new AlundraInventoryPresenter(
-            AlundraInventoryDirector.Instance, GameState, ItemTables, view, screen, uiView);
+            AlundraInventoryDirector.Instance, GameState, ItemTables, viewModel, screen, uiView);
     }
 
     /// <summary>E13.c S3: the equipment source handed to the production presenter - the port of the two
