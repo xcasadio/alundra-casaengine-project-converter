@@ -179,11 +179,25 @@ indexer : aucune dans le parent en dehors du sous-module moteur (`CasaEngine.Lau
   pixels de l'inventaire (masque pris sur fond noir, hors boîte du curseur) : `inv-b` et `inv-d` (au repos, +300)
   **identiques au pixel**. Les captures précoces (`inv-389` à +120, `inv-a`/`inv-c` à +90) diffèrent de 5 456 pixels,
   tous dans la ligne de description, qui montre encore « Poignard » au lieu de « Petit poignard. » : la révélation du
-  texte est en retard. Cause mesurée : à la première ouverture, les deux premières frames durent 150,7 ms et
-  80,8 ms, et l'horloge logique plafonne à 4 ticks par frame (`AlundraScriptedMotion.MaxTicksPerFrame`) : environ
-  3,5 ticks perdus. La prédiction 2, qui attendait `inv-389` identique, était fausse sur ce point (voir O3).
-- Éditeur (automatisation, projet Alundra) : l'écran s'ouvre, l'aperçu montre boîtes, icônes, chiffres des données de
-  conception et curseur, sans erreur.
+  texte est en retard. La prédiction 2, qui attendait `inv-389` identique, était fausse sur ce point. Deux faits,
+  dont la part de chacun n'est pas isolée (voir O3) : le run de référence tournait environ trois fois plus lentement
+  par frame (un changement de monde y prend 11 frames contre 32 à 33 ici), donc ses captures à +90 et +120 frames
+  couvrent environ trois fois plus de temps de jeu ; et la première ouverture coûte ici deux frames de 150,7 ms et
+  80,8 ms, alors que l'horloge logique plafonne à 4 ticks par frame (`AlundraScriptedMotion.MaxTicksPerFrame`).
+  Même effet de cadence sur la capture du HUD de la 390, où l'argent défile encore (2140 contre 2163).
+- Éditeur (automatisation, projet Alundra) : l'écran s'ouvre, l'aperçu montre les boîtes (avec les icônes de la pièce,
+  du faucon et de la clé que porte leur image), les chiffres des données de conception et le curseur, sans erreur ;
+  aucune icône d'objet, les données de conception décrivant un début de partie.
+- **Vérificateur frais (2026-09-24) : CONFIRMED** sur le parent `79c0099`, le moteur `0b32f971` et MGUI `09d0462`, sans
+  constat P0 à P2 : 172 chemins de binding confrontés au view-model (aucun manquant, aucun type différent) ; zéro
+  octet alloué sur 10 000 `Apply` au repos ; `Alundra.dll` sans ressource embarquée ; suites et builds reproduits ;
+  recette rejouée (mêmes captures que `run-b2`). Remarques :
+  - A1 (P3) : l'attribution d'O3 n'était pas isolée (écart de cadence entre les runs) : note et O3 corrigées ;
+  - A2 (P4, reportée) : si `fonts` est null, le constructeur lève après avoir pris l'enveloppe, qui reste tenue ;
+    erreur de programmation seulement ;
+  - A3 (P4) : la note de l'aperçu disait « icônes » : corrigée ci-dessus ;
+  - A4 (P4) : le curseur change d'image et de décalage sur la même frame, l'original un tick plus tard : déjà
+    documenté dans `UiAnimationWriter`, dans la tolérance de 20 ms.
 - **Reste en 🧪** : « un enregistrement sans modification laisse `git diff` vide » n'est pas vérifiable, l'éditeur
   n'enregistrant aucun écran (O4).
 
@@ -230,7 +244,7 @@ Plan clos, mémoire à jour, rapport final ; merges laissés à l'auteur.
 |---|---|
 | O1 | ~~Chemins de binding imbriqués (`Slot0.SourceName`) : à confirmer par un test.~~ **Confirmé en B2** (test de liaison sans affichage, `IconSlot3.SourceName`, `MoneyDigit1.Left`, et un changement du sous-view-model seul suivi). |
 | O2 | L'ordre des merges est la décision de l'auteur (plan moteur, O2). |
-| O3 | **Observation, à arbitrer.** La première ouverture de l'inventaire dans un monde coûte deux frames longues (150,7 ms puis 80,8 ms mesurées) : construction de la fenêtre depuis l'asset, bindings, images et animation. L'horloge logique plafonnant à 4 ticks par frame, ~3,5 ticks sont perdus et la glissade et la révélation du texte démarrent ~70 ms plus tard que dans la recette de référence ; l'état au repos est identique. La durée de cette frame avant le programme n'a pas été mesurée. Piste : construire la fenêtre au câblage de l'écran plutôt qu'à sa première poussée. |
+| O3 | **Observation, à arbitrer.** La première ouverture de l'inventaire dans un monde coûte deux frames longues (150,7 ms puis 80,8 ms, et 152,4 puis 97,1 ms au run du vérificateur) : construction de la fenêtre depuis l'asset, bindings, images et animation. L'horloge logique plafonnant à 4 ticks par frame, ces frames perdent des ticks. Leur effet sur la recette n'est pas isolé : le run de référence tournait environ trois fois plus lentement par frame, ce qui suffit à expliquer le retard du texte aux captures précoces. Pour trancher : refaire la référence (base `221185b`) avec la même cadence et la mesure des frames. Piste si le coût se confirme : construire la fenêtre au câblage de l'écran plutôt qu'à sa première poussée. |
 | O4 | **Question posée à l'auteur le 2026-09-24 (plan moteur, O6).** L'éditeur n'enregistre aucun écran ; la validation « enregistrement sans modification » de B2 et B3 attend sa décision. |
 
 ## Hors périmètre
