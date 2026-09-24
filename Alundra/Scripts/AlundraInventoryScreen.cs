@@ -162,8 +162,9 @@ public sealed class AlundraInventoryScreen : XamlUIScreenBase, IAlundraInventory
 
     /// <summary>Gives font3 back, and every sprite and sprite data this screen holds (engine ADR-0037).
     /// Called by the world proxy that built this screen, when its world ends
-    /// (<c>AlundraWorldProxy.OnEndPlay</c>). Idempotent.</summary>
-    public void Dispose()
+    /// (<c>AlundraWorldProxy.OnEndPlay</c>). Idempotent. Overrides the screen base's release, so disposing the
+    /// screen through a base or <see cref="IDisposable"/> reference gives everything back too.</summary>
+    public override void Dispose()
     {
         _font3?.Dispose();
         _font3 = null;
@@ -180,6 +181,7 @@ public sealed class AlundraInventoryScreen : XamlUIScreenBase, IAlundraInventory
 
         _iconSprites.Clear();
         _spriteDataHolds.Clear();
+        base.Dispose();
     }
 
     public override UILayer Layer => UILayer.Menu;
