@@ -19,8 +19,9 @@ namespace Alundra.Tests.UI;
 /// to it.
 /// <para/>
 /// Loading this XAML creates MGUI bindings, which MGUI keeps in a static, single-threaded registry
-/// (<c>DataBindingManager</c>): every test that does so stays in this one class, whose tests xUnit runs one at a time.
+/// (<c>DataBindingManager</c>): this class runs in <see cref="MguiDataBindingCollection"/>.
 /// </summary>
+[Collection(MguiDataBindingCollection.Name)]
 public sealed class AlundraInventoryScreenXamlTests
 {
     private static string ScreensDirectory()

@@ -1,0 +1,199 @@
+{
+  "view_model_type": "AlundraHudViewModel",
+  "values": {
+    "RootVisibility": "Visible",
+    "HpMaxSlash": {
+      "SourceName": "55ad7755-c9a1-5be8-ba45-8dacaf4ca628",
+      "Left": 160,
+      "Top": 16,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "HpMaxTens": {
+      "SourceName": "01dbdef2-854c-5c76-a482-e19bc579fa80",
+      "Left": 168,
+      "Top": 16,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "HpMaxUnits": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 176,
+      "Top": 16,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "LifeBig0": {
+      "Visibility": "Collapsed",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "LifeBig1": {
+      "Visibility": "Collapsed",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "LifeBig2": {
+      "Visibility": "Collapsed",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "LifeBig3": {
+      "Visibility": "Collapsed",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "LifeSmall0": {
+      "SourceName": "1784c287-534c-5f7d-a2fc-5d81a22e7557",
+      "Left": 120,
+      "Top": 16,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "LifeSmall1": {
+      "SourceName": "1784c287-534c-5f7d-a2fc-5d81a22e7557",
+      "Left": 128,
+      "Top": 16,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "LifeSmall2": {
+      "SourceName": "1784c287-534c-5f7d-a2fc-5d81a22e7557",
+      "Left": 136,
+      "Top": 16,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "LifeSmall3": {
+      "SourceName": "1784c287-534c-5f7d-a2fc-5d81a22e7557",
+      "Left": 144,
+      "Top": 16,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "LifeSmall4": {
+      "SourceName": "1784c287-534c-5f7d-a2fc-5d81a22e7557",
+      "Left": 152,
+      "Top": 16,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "LifeSmall5": {
+      "SourceName": "1784c287-534c-5f7d-a2fc-5d81a22e7557",
+      "Left": 120,
+      "Top": 24,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "LifeSmall6": {
+      "SourceName": "1784c287-534c-5f7d-a2fc-5d81a22e7557",
+      "Left": 128,
+      "Top": 24,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "LifeSmall7": {
+      "SourceName": "1784c287-534c-5f7d-a2fc-5d81a22e7557",
+      "Left": 136,
+      "Top": 24,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "LifeSmall8": {
+      "SourceName": "1784c287-534c-5f7d-a2fc-5d81a22e7557",
+      "Left": 144,
+      "Top": 24,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "LifeSmall9": {
+      "SourceName": "1784c287-534c-5f7d-a2fc-5d81a22e7557",
+      "Left": 152,
+      "Top": 24,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "MagicPip0": {
+      "Visibility": "Collapsed",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "MagicPip1": {
+      "Visibility": "Collapsed",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "MagicPip2": {
+      "Visibility": "Collapsed",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "MagicPip3": {
+      "Visibility": "Collapsed",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "MoneyDigit0": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 256,
+      "Top": 16,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "MoneyDigit1": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 264,
+      "Top": 16,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "MoneyDigit2": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 272,
+      "Top": 16,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "MoneyDigit3": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 280,
+      "Top": 16,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "Coin": {
+      "Left": 288,
+      "Top": 16,
+      "Visibility": "Visible",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": false
+    },
+    "EquipmentIcon0": {
+      "Visibility": "Collapsed",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    },
+    "EquipmentIcon1": {
+      "Visibility": "Collapsed",
+      "AnimationStartOffset": "00:00:00",
+      "IsAnimationPlaying": true
+    }
+  }
+}

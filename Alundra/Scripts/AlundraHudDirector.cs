@@ -135,6 +135,12 @@ public sealed class AlundraHudDirector
     /// (HudManager.cs:462), the "garée" behaviour the mission cites.</summary>
     public int CoinIconFrame { get; private set; }
 
+    /// <summary>True while the money roll is not settled - the displayed money differs from the true amount, or the
+    /// coin is finishing its cycle back to frame 0 - i.e. while <see cref="CoinIconFrame"/> may advance; false once
+    /// the settled branch (HudManager.cs:460-464) has garaged the coin at frame 0. Lets a screen that plays the coin
+    /// as a UI animation (parent ADR-0002) know when to play it and when to hold its first frame.</summary>
+    public bool IsMoneyRolling { get; private set; }
+
     /// <summary>E13 C2 (docs/plan-e13-hud.md, <see cref="AlundraHudComposer"/>): <c>DisplayLife</c>'s own
     /// <c>g_playerDataHud[5] != 0 || g_playerDataHud[6] != 0</c> guard (HudManager.cs:729-730) - true while
     /// either the current-HP or the HP-max catch-up sub-step is mid-cycle, which previews the drawn icon
@@ -268,6 +274,7 @@ public sealed class AlundraHudDirector
         _mpSubStep = 0;
         _mpMaxSubStep = 0;
         CoinIconFrame = 0;
+        IsMoneyRolling = false;
         System.Array.Clear(_magicPipFrame, 0, _magicPipFrame.Length);
     }
 
@@ -595,6 +602,7 @@ public sealed class AlundraHudDirector
 
         if (target < Money || (Money == target && CoinIconFrame != 0))
         {
+            IsMoneyRolling = true;
             var minusTen = Money - 10;
             if (target < minusTen)
             {
@@ -610,9 +618,11 @@ public sealed class AlundraHudDirector
             if (target <= Money)
             {
                 CoinIconFrame = 0;
+                IsMoneyRolling = false;
                 return;
             }
 
+            IsMoneyRolling = true;
             var plusTen = Money + 10;
             if (plusTen < target)
             {

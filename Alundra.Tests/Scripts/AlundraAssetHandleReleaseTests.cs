@@ -2,6 +2,7 @@ using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Assets.TileMap;
+using CasaEngine.Framework.UI.MGUI;
 using Xunit;
 
 namespace Alundra.Tests.Scripts;
@@ -29,12 +30,25 @@ public sealed class AlundraAssetHandleReleaseTests
         public bool IsFileSupported(string fileName) => true;
     }
 
+    private static readonly Guid HudScreenId = Guid.Parse(AlundraHudScreen.ScreenAssetId);
+
+    /// <summary>The HUD screen's envelope, as the screen only needs it held (these tests never build its window).</summary>
+    private sealed class ScreenEnvelopeLoader : IAssetLoader
+    {
+        public object LoadAsset(string fileName, AssetContentManager assetContentManager)
+            => new UIScreenAsset { SourceXamlFile = "HudScreen.xaml" };
+
+        public bool IsFileSupported(string fileName) => true;
+    }
+
     private static AssetContentManager NewAssets(out TileSetLoader loader)
     {
         var infos = new Dictionary<Guid, AssetInfo>
         {
             [FirstTileSetId] = new AssetInfo(FirstTileSetId) { Name = "first", FileName = "first.tileset" },
             [SecondTileSetId] = new AssetInfo(SecondTileSetId) { Name = "second", FileName = "second.tileset" },
+            // The HUD screen's envelope (parent ADR-0002): the screen holds it from its construction.
+            [HudScreenId] = new AssetInfo(HudScreenId) { Name = "HudScreen", FileName = "HudScreen.uiscreen" },
         };
 
         var assets = new AssetContentManager
@@ -43,6 +57,7 @@ public sealed class AlundraAssetHandleReleaseTests
         };
         loader = new TileSetLoader();
         assets.RegisterAssetLoader(typeof(TileSetData), loader);
+        assets.RegisterAssetLoader(typeof(UIScreenAsset), new ScreenEnvelopeLoader());
         return assets;
     }
 

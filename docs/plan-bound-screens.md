@@ -201,7 +201,7 @@ indexer : aucune dans le parent en dehors du sous-module moteur (`CasaEngine.Lau
 - **Reste en 🧪** : « un enregistrement sans modification laisse `git diff` vide » n'est pas vérifiable, l'éditeur
   n'enregistrant aucun écran (O4).
 
-### ⏳ B3 — Le HUD en XAML
+### 🧪 B3 — Le HUD en XAML
 
 **Étapes :**
 1. `alundra-project/UI/Screens/HudScreen.xaml`, `.uiscreen` et `HudScreen.design.json` : 26 emplacements `Image`
@@ -218,6 +218,52 @@ indexer : aucune dans le parent en dehors du sous-module moteur (`CasaEngine.Lau
 `run-m2-hud` sur les trois étapes, pastilles et pièce animées ; éditeur comme en B2. **Vérificateur frais.**
 
 **Commit :** `feat(hud): rewrite the HUD as a project asset bound to a view model`
+
+**Note de validation (2026-09-24) :**
+- Livré : `alundra-project/UI/Screens/HudScreen.xaml`, `HudScreen.uiscreen` (identifiant fixe `37d8200e-…`) et
+  `HudScreen.design.json`, tiré d'une vraie jauge affichée par un test jetable non commité. Le XAML déclare les deux
+  fonds d'équipement (`Rectangle` en `GradientFillBrush`, valeurs du compositeur), les deux icônes et 26 images, une
+  par rôle de tuile (`HpMaxSlash`, `LifeBig0`…, `MagicPip0`…, `MoneyDigit0`…, `Coin`), en pixels natifs sous une
+  seule mise à l'échelle ; sources, positions et visibilités liées, plus le décalage et la lecture de l'animation
+  pour les pastilles ; la pièce nomme l'animation `ui_hud_coin`.
+- `AlundraHudViewModel` implémente `IAlundraHudView` : il range les tuiles du compositeur par rôle (d'après leur
+  glyphe) et ne notifie que sur changement. Les pastilles jouent `ui_hud_magic_pip`, redémarrée en phase avec
+  `FrameCounter` (décalage `(image × 10 + FC mod 10) × 20 ms`) quand leur ensemble change ou que la jauge réapparaît ;
+  la pièce joue tant que le directeur signale le défilement (`IsMoneyRolling`, nouveau), avec le décalage
+  `(image × 6 + FC mod 6) × 20 ms`, et reste sinon sur sa première image. Le présentateur pousse l'horloge du
+  directeur avant les tuiles ; la construction en C# est retirée.
+- Icônes d'équipement : centrées en pixels d'écran comme avant (`AlundraHudIcon.ScreenLeft`), donc une position
+  native plus un reste inférieur au pixel natif (`SubPixelOffset`), que l'écran pose sur le `RenderTransform` de
+  l'image. La première recette montrait l'épée décalée d'un demi-pixel natif, corrigé ainsi. Le `RenderTransform`
+  n'étant pas liable, l'écran pose aussi à la main l'échelle et le glissement du canevas (manque G9, moteur
+  `e78e14a9`). Moteur `afbb3cdc` : une image animée libérée n'est plus retenue par son fournisseur.
+- Tests `Alundra.Tests` 1082/1082 (+23) : équivalence de la grille avec les tuiles du compositeur (table de sprites
+  indépendante) ; pas de notification quand rien ne change ; redémarrages des pastilles ; réapparition ; pièce ;
+  icônes (dont la position à l'écran aux échelles 1, 3 et 4) ; timing des pastilles (trois compteurs) et de la
+  pièce (trois cas) confronté aux `.anim2d` exportés à moins de 20 ms (une mutation fait échouer trois tests) ;
+  XAML lu depuis l'asset versionné (enveloppe, données de conception, éléments, fonds, liaisons, colle de l'écran) ;
+  `IsMoneyRolling` du directeur.
+- Export complet en place : seuls `AssetInfos.json` et `report.json` changent ; vérification PASSED, les deux
+  `.uiscreen` chargés.
+- Recette en jeu (`d6-font`, prédiction `prediction-b3.md` écrite avant). Référence : `run-b2` (même harnais, même
+  cadence, HUD encore construit en C#), et non `run-m2-hud`, qui tournait environ trois fois plus lentement par frame
+  et diffère sur toute l'image (animation du monde, voir B2). Run retenu : `run-b3-clock`, harnais inchangé sauf une
+  ligne de log qui donne le `FrameCounter` et l'argent du directeur à chaque capture.
+  - `inv-hud-1` et `inv-hud-2` **identiques au pixel**, pastilles et pièce comprises ; `inv-hud-3` identique hors de
+    la boîte des pastilles, qui montrent une autre phase de leur cycle (1 008 pixels, même écart aux deux runs B3 ;
+    voir O3).
+  - Captures de l'inventaire : `inv-a` à `inv-d` identiques ; `inv-389` diffère de 4 720 pixels sur toute l'image
+    (animation du monde), le même genre d'écart qu'entre deux runs du HUD en C# (`run-b2` contre `run-b2-times` :
+    6 720 pixels sur `inv-hud-1`).
+  - Le run précédent (`run-b3`) montrait l'argent un tick en avance aux deux captures où il défile (1010 et 2150
+    contre 1000 et 2140) ; le run avec le log montre l'argent du directeur à 1000 puis 2140 et les mêmes chiffres à
+    l'écran. C'est la cadence, pas le rendu : le harnais ne fixe pas le nombre de ticks à une frame donnée. La
+    prédiction 1 (« l'argent aux mêmes valeurs ») tient pour le run retenu seulement.
+  - Aucune ligne au-dessus d'Info, aucune exception ; `HudScreen.uiscreen` chargé une seule fois.
+- Éditeur (automatisation, projet Alundra) : `HudScreen.uiscreen` s'ouvre sans erreur (« Loaded HudScreen.xaml »),
+  l'aperçu montre les fonds en dégradé, les petits cœurs, « /10 », « 0000 » et la pièce des données de conception,
+  la hiérarchie liste les rôles.
+- **Reste en 🧪** : l'enregistrement sans modification, comme B2 (O4).
 
 ### ⏳ B4 — La boîte de dialogue en asset
 
@@ -244,7 +290,7 @@ Plan clos, mémoire à jour, rapport final ; merges laissés à l'auteur.
 |---|---|
 | O1 | ~~Chemins de binding imbriqués (`Slot0.SourceName`) : à confirmer par un test.~~ **Confirmé en B2** (test de liaison sans affichage, `IconSlot3.SourceName`, `MoneyDigit1.Left`, et un changement du sous-view-model seul suivi). |
 | O2 | L'ordre des merges est la décision de l'auteur (plan moteur, O2). |
-| O3 | **Observation, à arbitrer.** La première ouverture de l'inventaire dans un monde coûte deux frames longues (150,7 ms puis 80,8 ms, et 152,4 puis 97,1 ms au run du vérificateur) : construction de la fenêtre depuis l'asset, bindings, images et animation. L'horloge logique plafonnant à 4 ticks par frame, ces frames perdent des ticks. Leur effet sur la recette n'est pas isolé : le run de référence tournait environ trois fois plus lentement par frame, ce qui suffit à expliquer le retard du texte aux captures précoces. Pour trancher : refaire la référence (base `221185b`) avec la même cadence et la mesure des frames. Piste si le coût se confirme : construire la fenêtre au câblage de l'écran plutôt qu'à sa première poussée. |
+| O3 | **Observation, à arbitrer.** La première ouverture de l'inventaire dans un monde coûte deux frames longues (150,7 ms puis 80,8 ms, et 152,4 puis 97,1 ms au run du vérificateur) : construction de la fenêtre depuis l'asset, bindings, images et animation. L'horloge logique plafonnant à 4 ticks par frame, ces frames perdent des ticks. Leur effet sur la recette n'est pas isolé : le run de référence tournait environ trois fois plus lentement par frame, ce qui suffit à expliquer le retard du texte aux captures précoces. Pour trancher : refaire la référence (base `221185b`) avec la même cadence et la mesure des frames. Piste si le coût se confirme : construire la fenêtre au câblage de l'écran plutôt qu'à sa première poussée. **Lié, vu en B3 :** les pastilles de magie tournent sur l'horloge de l'UI depuis leur redémarrage, alors que le compteur du directeur perd les ticks des frames plafonnées ; c'est l'explication probable, non isolée, de leur phase différente sur `inv-hud-3` (un cycle décoratif, sans autre effet visible). |
 | O4 | **Question posée à l'auteur le 2026-09-24 (plan moteur, O6).** L'éditeur n'enregistre aucun écran ; la validation « enregistrement sans modification » de B2 et B3 attend sa décision. |
 
 ## Hors périmètre

@@ -1,0 +1,82 @@
+<Window xmlns="clr-namespace:MGUI.Core.UI.XAML;assembly=MGUI.Core"
+        xmlns:dataBinding="clr-namespace:MGUI.Core.UI.DataBinding;assembly=MGUI.Core"
+        Left="0" Top="0" Width="320" Height="240"
+        TitleText=""
+        IsTitleBarVisible="False"
+        IsUserResizable="False"
+        Padding="0"
+        Background="rgba(0,0,0,0)">
+
+  <!-- E13 C2/C3 (docs/plan-e13-hud.md), a project asset since the bound screens program (parent ADR-0002):
+       this file, HudScreen.uiscreen and HudScreen.design.json live in alundra-project/UI/Screens/, the only
+       part of the generated project kept in git. A full-screen transparent window whose sole content is a
+       Canvas authored in NATIVE pixels; the code (AlundraHudScreen) resizes the window to the real screen
+       bounds, scales the canvas once by the integer pixel factor (RenderTransform.Scale, D-E13-9) and slides
+       it through the same transform (RenderTransform.Translation, which the XAML cannot bind). Everything
+       that changes is bound to the window data context, an AlundraHudViewModel the presenter writes each
+       logic tick.
+
+       Paint order (back to front): the two equipment background quads (E13 C6), the two equipment icons
+       (E13.c S3), then the jauge tiles by role, in the order the composer emits them (HP max, life, magic,
+       money) - one element per role instead of a pool, so an animated pip or the coin never changes
+       element. -->
+
+  <Canvas Name="RootCanvas" Width="320" Height="240" Visibility="{dataBinding:MGBinding Path=RootVisibility}">
+
+    <!-- The weapon and accessory box backgrounds (AlundraHudComposer.ComposeEquipmentBackgrounds): a POLY_G4
+         gouraud quad at half opacity (Graphics/Renderer.cs:80), static for the whole screen. -->
+    <Rectangle Name="WeaponBoxBackground" Width="24" Height="32" CanvasLeft="16" CanvasTop="16" StrokeThickness="0" Opacity="0.5">
+      <Rectangle.Fill>
+        <GradientFillBrush TopLeftColor="rgba(0,0,0,255)" TopRightColor="rgba(255,255,0,255)"
+                           BottomRightColor="rgba(0,0,255,255)" BottomLeftColor="rgba(0,255,255,255)" />
+      </Rectangle.Fill>
+    </Rectangle>
+    <Rectangle Name="AccessoryBoxBackground" Width="24" Height="32" CanvasLeft="48" CanvasTop="16" StrokeThickness="0" Opacity="0.5">
+      <Rectangle.Fill>
+        <GradientFillBrush TopLeftColor="rgba(0,0,0,255)" TopRightColor="rgba(255,255,0,255)"
+                           BottomRightColor="rgba(0,0,255,255)" BottomLeftColor="rgba(0,255,255,255)" />
+      </Rectangle.Fill>
+    </Rectangle>
+
+    <!-- The equipped weapon and accessory icons, centred in their box (D-E13D-10). -->
+    <Image Name="EquipmentIcon0" Stretch="None" SourceName="{dataBinding:MGBinding Path=EquipmentIcon0.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=EquipmentIcon0.Left}" CanvasTop="{dataBinding:MGBinding Path=EquipmentIcon0.Top}" Visibility="{dataBinding:MGBinding Path=EquipmentIcon0.Visibility}" />
+    <Image Name="EquipmentIcon1" Stretch="None" SourceName="{dataBinding:MGBinding Path=EquipmentIcon1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=EquipmentIcon1.Left}" CanvasTop="{dataBinding:MGBinding Path=EquipmentIcon1.Top}" Visibility="{dataBinding:MGBinding Path=EquipmentIcon1.Visibility}" />
+
+    <!-- HP max: the slash and two digits (DisplayHpMaxWithNumber, HudManager.cs:910-953). -->
+    <Image Name="HpMaxSlash" Stretch="None" SourceName="{dataBinding:MGBinding Path=HpMaxSlash.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=HpMaxSlash.Left}" CanvasTop="{dataBinding:MGBinding Path=HpMaxSlash.Top}" Visibility="{dataBinding:MGBinding Path=HpMaxSlash.Visibility}" />
+    <Image Name="HpMaxTens" Stretch="None" SourceName="{dataBinding:MGBinding Path=HpMaxTens.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=HpMaxTens.Left}" CanvasTop="{dataBinding:MGBinding Path=HpMaxTens.Top}" Visibility="{dataBinding:MGBinding Path=HpMaxTens.Visibility}" />
+    <Image Name="HpMaxUnits" Stretch="None" SourceName="{dataBinding:MGBinding Path=HpMaxUnits.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=HpMaxUnits.Left}" CanvasTop="{dataBinding:MGBinding Path=HpMaxUnits.Top}" Visibility="{dataBinding:MGBinding Path=HpMaxUnits.Visibility}" />
+
+    <!-- Life: up to four big crystals and the ten small ones (DisplayLife, HudManager.cs:716-826). -->
+    <Image Name="LifeBig0" Stretch="None" SourceName="{dataBinding:MGBinding Path=LifeBig0.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=LifeBig0.Left}" CanvasTop="{dataBinding:MGBinding Path=LifeBig0.Top}" Visibility="{dataBinding:MGBinding Path=LifeBig0.Visibility}" />
+    <Image Name="LifeBig1" Stretch="None" SourceName="{dataBinding:MGBinding Path=LifeBig1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=LifeBig1.Left}" CanvasTop="{dataBinding:MGBinding Path=LifeBig1.Top}" Visibility="{dataBinding:MGBinding Path=LifeBig1.Visibility}" />
+    <Image Name="LifeBig2" Stretch="None" SourceName="{dataBinding:MGBinding Path=LifeBig2.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=LifeBig2.Left}" CanvasTop="{dataBinding:MGBinding Path=LifeBig2.Top}" Visibility="{dataBinding:MGBinding Path=LifeBig2.Visibility}" />
+    <Image Name="LifeBig3" Stretch="None" SourceName="{dataBinding:MGBinding Path=LifeBig3.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=LifeBig3.Left}" CanvasTop="{dataBinding:MGBinding Path=LifeBig3.Top}" Visibility="{dataBinding:MGBinding Path=LifeBig3.Visibility}" />
+    <Image Name="LifeSmall0" Stretch="None" SourceName="{dataBinding:MGBinding Path=LifeSmall0.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=LifeSmall0.Left}" CanvasTop="{dataBinding:MGBinding Path=LifeSmall0.Top}" Visibility="{dataBinding:MGBinding Path=LifeSmall0.Visibility}" />
+    <Image Name="LifeSmall1" Stretch="None" SourceName="{dataBinding:MGBinding Path=LifeSmall1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=LifeSmall1.Left}" CanvasTop="{dataBinding:MGBinding Path=LifeSmall1.Top}" Visibility="{dataBinding:MGBinding Path=LifeSmall1.Visibility}" />
+    <Image Name="LifeSmall2" Stretch="None" SourceName="{dataBinding:MGBinding Path=LifeSmall2.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=LifeSmall2.Left}" CanvasTop="{dataBinding:MGBinding Path=LifeSmall2.Top}" Visibility="{dataBinding:MGBinding Path=LifeSmall2.Visibility}" />
+    <Image Name="LifeSmall3" Stretch="None" SourceName="{dataBinding:MGBinding Path=LifeSmall3.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=LifeSmall3.Left}" CanvasTop="{dataBinding:MGBinding Path=LifeSmall3.Top}" Visibility="{dataBinding:MGBinding Path=LifeSmall3.Visibility}" />
+    <Image Name="LifeSmall4" Stretch="None" SourceName="{dataBinding:MGBinding Path=LifeSmall4.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=LifeSmall4.Left}" CanvasTop="{dataBinding:MGBinding Path=LifeSmall4.Top}" Visibility="{dataBinding:MGBinding Path=LifeSmall4.Visibility}" />
+    <Image Name="LifeSmall5" Stretch="None" SourceName="{dataBinding:MGBinding Path=LifeSmall5.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=LifeSmall5.Left}" CanvasTop="{dataBinding:MGBinding Path=LifeSmall5.Top}" Visibility="{dataBinding:MGBinding Path=LifeSmall5.Visibility}" />
+    <Image Name="LifeSmall6" Stretch="None" SourceName="{dataBinding:MGBinding Path=LifeSmall6.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=LifeSmall6.Left}" CanvasTop="{dataBinding:MGBinding Path=LifeSmall6.Top}" Visibility="{dataBinding:MGBinding Path=LifeSmall6.Visibility}" />
+    <Image Name="LifeSmall7" Stretch="None" SourceName="{dataBinding:MGBinding Path=LifeSmall7.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=LifeSmall7.Left}" CanvasTop="{dataBinding:MGBinding Path=LifeSmall7.Top}" Visibility="{dataBinding:MGBinding Path=LifeSmall7.Visibility}" />
+    <Image Name="LifeSmall8" Stretch="None" SourceName="{dataBinding:MGBinding Path=LifeSmall8.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=LifeSmall8.Left}" CanvasTop="{dataBinding:MGBinding Path=LifeSmall8.Top}" Visibility="{dataBinding:MGBinding Path=LifeSmall8.Visibility}" />
+    <Image Name="LifeSmall9" Stretch="None" SourceName="{dataBinding:MGBinding Path=LifeSmall9.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=LifeSmall9.Left}" CanvasTop="{dataBinding:MGBinding Path=LifeSmall9.Top}" Visibility="{dataBinding:MGBinding Path=LifeSmall9.Visibility}" />
+
+    <!-- Magic: up to four pips (DisplayMp, HudManager.cs:605-690). A full pip plays ui_hud_magic_pip (wind_001/
+         003/010/017, 200 ms each), in phase with the others; an empty one shows wind_104. -->
+    <Image Name="MagicPip0" Stretch="None" SourceName="{dataBinding:MGBinding Path=MagicPip0.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=MagicPip0.Left}" CanvasTop="{dataBinding:MGBinding Path=MagicPip0.Top}" Visibility="{dataBinding:MGBinding Path=MagicPip0.Visibility}" AnimationStartOffset="{dataBinding:MGBinding Path=MagicPip0.AnimationStartOffset}" IsAnimationPlaying="{dataBinding:MGBinding Path=MagicPip0.IsAnimationPlaying}" />
+    <Image Name="MagicPip1" Stretch="None" SourceName="{dataBinding:MGBinding Path=MagicPip1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=MagicPip1.Left}" CanvasTop="{dataBinding:MGBinding Path=MagicPip1.Top}" Visibility="{dataBinding:MGBinding Path=MagicPip1.Visibility}" AnimationStartOffset="{dataBinding:MGBinding Path=MagicPip1.AnimationStartOffset}" IsAnimationPlaying="{dataBinding:MGBinding Path=MagicPip1.IsAnimationPlaying}" />
+    <Image Name="MagicPip2" Stretch="None" SourceName="{dataBinding:MGBinding Path=MagicPip2.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=MagicPip2.Left}" CanvasTop="{dataBinding:MGBinding Path=MagicPip2.Top}" Visibility="{dataBinding:MGBinding Path=MagicPip2.Visibility}" AnimationStartOffset="{dataBinding:MGBinding Path=MagicPip2.AnimationStartOffset}" IsAnimationPlaying="{dataBinding:MGBinding Path=MagicPip2.IsAnimationPlaying}" />
+    <Image Name="MagicPip3" Stretch="None" SourceName="{dataBinding:MGBinding Path=MagicPip3.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=MagicPip3.Left}" CanvasTop="{dataBinding:MGBinding Path=MagicPip3.Top}" Visibility="{dataBinding:MGBinding Path=MagicPip3.Visibility}" AnimationStartOffset="{dataBinding:MGBinding Path=MagicPip3.AnimationStartOffset}" IsAnimationPlaying="{dataBinding:MGBinding Path=MagicPip3.IsAnimationPlaying}" />
+
+    <!-- Money: four digits and the coin (DisplayMoney, HudManager.cs:863-906). The coin plays ui_hud_coin
+         (wind_126/130/134/139, 120 ms each) while the money rolls, and holds its first frame otherwise. -->
+    <Image Name="MoneyDigit0" Stretch="None" SourceName="{dataBinding:MGBinding Path=MoneyDigit0.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=MoneyDigit0.Left}" CanvasTop="{dataBinding:MGBinding Path=MoneyDigit0.Top}" Visibility="{dataBinding:MGBinding Path=MoneyDigit0.Visibility}" />
+    <Image Name="MoneyDigit1" Stretch="None" SourceName="{dataBinding:MGBinding Path=MoneyDigit1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=MoneyDigit1.Left}" CanvasTop="{dataBinding:MGBinding Path=MoneyDigit1.Top}" Visibility="{dataBinding:MGBinding Path=MoneyDigit1.Visibility}" />
+    <Image Name="MoneyDigit2" Stretch="None" SourceName="{dataBinding:MGBinding Path=MoneyDigit2.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=MoneyDigit2.Left}" CanvasTop="{dataBinding:MGBinding Path=MoneyDigit2.Top}" Visibility="{dataBinding:MGBinding Path=MoneyDigit2.Visibility}" />
+    <Image Name="MoneyDigit3" Stretch="None" SourceName="{dataBinding:MGBinding Path=MoneyDigit3.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=MoneyDigit3.Left}" CanvasTop="{dataBinding:MGBinding Path=MoneyDigit3.Top}" Visibility="{dataBinding:MGBinding Path=MoneyDigit3.Visibility}" />
+    <Image Name="Coin" Stretch="None" SourceName="aee15589-1e91-5a53-b5d0-6226e12256a9" CanvasLeft="{dataBinding:MGBinding Path=Coin.Left}" CanvasTop="{dataBinding:MGBinding Path=Coin.Top}" Visibility="{dataBinding:MGBinding Path=Coin.Visibility}" AnimationStartOffset="{dataBinding:MGBinding Path=Coin.AnimationStartOffset}" IsAnimationPlaying="{dataBinding:MGBinding Path=Coin.IsAnimationPlaying}" />
+
+  </Canvas>
+</Window>

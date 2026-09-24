@@ -6,7 +6,8 @@ using Microsoft.Xna.Framework;
 namespace Alundra.Scripts;
 
 /// <summary>
-/// E13 C3 (docs/plan-e13-hud.md, D-E13-8): the seam <see cref="AlundraHudScreen"/> implements so
+/// E13 C3 (docs/plan-e13-hud.md, D-E13-8): the seam <see cref="AlundraHudViewModel"/> implements (the screen's
+/// view model since the bound screens program, parent ADR-0002; <see cref="AlundraHudScreen"/> itself before) so
 /// <see cref="AlundraHudPresenter"/> can push state INTO it every LOGIC tick without <see cref="AlundraHudScreen"/>
 /// ever depending on <see cref="CasaEngine.Framework.UI.IUIScreen.Update"/> - the exact freeze C2's own
 /// class doc left as a P3 for this slice: a modal <c>DialogueScreen</c> stops
@@ -51,6 +52,12 @@ public interface IAlundraHudView
     /// <summary>E13.c S3: the equipment icons for this tick - <see cref="AlundraHudComposer.ComposeEquipmentIcons"/>'s
     /// own return value, at most one per box, empty when a box has nothing or the jauge is not drawn.</summary>
     void SetEquipmentIcons(IReadOnlyList<AlundraHudIcon> icons);
+
+    /// <summary>The director's clock for this tick, pushed before <see cref="SetTiles"/>: the magic pips and the coin
+    /// are UI animations (parent ADR-0002) and start in phase with the original's own counters -
+    /// <see cref="AlundraHudDirector.FrameCounter"/> (the pips step every 10 of its ticks, the coin every 6) - and
+    /// the coin plays only while <see cref="AlundraHudDirector.IsMoneyRolling"/>.</summary>
+    void SetAnimationClock(int frameCounter, bool moneyRolling);
 }
 
 /// <summary>
@@ -120,6 +127,7 @@ public sealed class AlundraHudPresenter
         var scaledDeltaY = nativeDeltaY * _view.PixelScale;
         _view.SetTranslation(new Vector2(0f, scaledDeltaY));
 
+        _view.SetAnimationClock(_director.FrameCounter, _director.IsMoneyRolling);
         _view.SetTiles(AlundraHudComposer.Compose(
             _director.IsDrawn,
             _director.Hp, _director.HpMax, _director.TrueHpMax, _director.HpDisplayPreviewIncrement,

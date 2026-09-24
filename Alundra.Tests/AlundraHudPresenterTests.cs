@@ -66,6 +66,8 @@ public sealed class AlundraHudPresenterTests : IDisposable
         public void SetTranslation(Vector2 translation) => TranslationCalls.Add(translation);
         public void SetTiles(IReadOnlyList<AlundraHudTile> tiles) => TileCalls.Add(tiles);
         public void SetEquipmentIcons(IReadOnlyList<AlundraHudIcon> icons) => IconCalls.Add(icons);
+        public readonly List<(int FrameCounter, bool MoneyRolling)> ClockCalls = new();
+        public void SetAnimationClock(int frameCounter, bool moneyRolling) => ClockCalls.Add((frameCounter, moneyRolling));
     }
 
     private static AlundraHudDirector ArmedOpening(AlundraGameState state)
@@ -102,6 +104,29 @@ public sealed class AlundraHudPresenterTests : IDisposable
         var expected = expectedY.Select(y => new Vector2(0f, (y - bakedBoxY) * scale)).ToArray();
         Assert.Equal(expected, view.TranslationCalls);
         Assert.Equal(AlundraHudDirector.HudPhase.Displayed, director.Phase);
+    }
+
+    /// <summary>The bound screens program: every tick pushes the director's clock (frame counter, money roll) before
+    /// the tiles, so the view model starts the pip and coin animations in phase with the original.</summary>
+    [Fact]
+    public void Tick_PushesTheDirectorsAnimationClock_BeforeTheTiles_EveryTick()
+    {
+        var state = new AlundraGameState();
+        var director = ArmedOpening(state);
+        AlundraPlayerManager.SetMoney(state, 1000);
+        var view = new RecordingHudView(1);
+        var presenter = new AlundraHudPresenter(director, view);
+
+        for (var i = 0; i < 12; i++)
+        {
+            director.Tick();
+            presenter.Tick();
+            Assert.Equal((director.FrameCounter, director.IsMoneyRolling), view.ClockCalls[^1]);
+        }
+
+        Assert.Equal(12, view.ClockCalls.Count);
+        Assert.Equal(12, view.TileCalls.Count);
+        Assert.True(view.ClockCalls[^1].MoneyRolling);
     }
 
     [Fact]

@@ -248,6 +248,40 @@ public sealed class AlundraHudDirectorTests : IDisposable
         Assert.Equal(0, director.CoinIconFrame);
     }
 
+    /// <summary>The bound screens program (parent ADR-0002): the HUD plays the coin as a UI animation while the money
+    /// rolls. <see cref="AlundraHudDirector.IsMoneyRolling"/> is true exactly while the coin frame may advance - the
+    /// displayed amount is moving, or the coin is finishing its cycle - and false once the roll settles with the coin
+    /// garaged at frame 0.</summary>
+    [Fact]
+    public void IsMoneyRolling_IsTrueWhileTheCoinMayAdvance_AndFalseOnceGaragedAtZero()
+    {
+        var state = new AlundraGameState();
+        var director = ArmedOpening(state);
+        TickMany(director, 18);
+        Assert.False(director.IsMoneyRolling); // nothing to roll: 0 == 0.
+
+        AlundraPlayerManager.SetMoney(state, 25);
+        director.Tick();
+        Assert.True(director.IsMoneyRolling);
+
+        // The flag says the roll ran this tick: it turns false on the tick after the amount and the coin are both
+        // home, when the settled branch runs.
+        var ticks = 0;
+        while (director.IsMoneyRolling && ticks < 60)
+        {
+            director.Tick();
+            ticks++;
+        }
+
+        Assert.False(director.IsMoneyRolling);
+        Assert.InRange(ticks, 1, 59);
+        Assert.Equal(25, director.Money);
+        Assert.Equal(0, director.CoinIconFrame);
+
+        TickMany(director, 20);
+        Assert.False(director.IsMoneyRolling);
+    }
+
     [Fact]
     public void CoinIconFrame_IsGaragedAtZero_OnceTheMoneyRollSettles()
     {

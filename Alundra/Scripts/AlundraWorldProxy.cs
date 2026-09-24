@@ -1174,7 +1174,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // the presenter's first Tick() this frame already has a live view to push into, matching
         // AlundraHudScreen.OnInitialize's own "production call order" doc.
         _hudPresenter = new AlundraHudPresenter(
-            AlundraHudDirector.Instance, hudScreen, ResolveHudEquipmentIcons);
+            AlundraHudDirector.Instance, hudScreen.ViewModel, ResolveHudEquipmentIcons);
         _hudScreenWired = true;
         Logs.WriteInfo("AlundraWorldProxy: HUD screen wired to the active UI view (post-bootstrap retry).");
     }
