@@ -282,7 +282,7 @@ indexer : aucune dans le parent en dehors du sous-module moteur (`CasaEngine.Lau
   (`run-t52`) identique à `run-b3-clock`, sauf `inv-389` (même écart d'animation du monde qu'entre deux runs).
 - **Reste en 🧪** : l'enregistrement sans modification, comme B2 (O4).
 
-### 🚧 B4 — La boîte de dialogue en asset
+### ✅ B4 — La boîte de dialogue en asset
 
 **Prérequis :** tâche moteur T6.1 close.
 
@@ -321,10 +321,12 @@ prévisualise dans l'éditeur. **Vérificateur frais.**
   exporté, l'autre avec le réglage vidé juste après le chargement du projet.
   - Le premier run utilise le remplacement (`AlundraDialogue`), le second le balisage embarqué ; mêmes bornes de
     fenêtre (716 × 150 en 280, 746).
-  - Capture à +60 frames **identique au pixel** sur toute l'image. À +300, la boîte diffère de 7 404 pixels, tous
-    d'au plus 13 niveaux par canal : c'est le monde animé, qui diffère ailleurs de 146 064 pixels, vu à travers la
-    boîte translucide (alpha 235) ; aucun écart de texte ni de cadre. La prédiction 2 n'avait pas prévu cette
-    transparence.
+  - À +60 frames, les deux captures de ce run sont identiques au pixel : coïncidence de cadence (les runs du
+    vérificateur y diffèrent de 7 219 pixels dans la boîte). À +300, la boîte diffère de 7 404 pixels, tous d'au
+    plus 13 niveaux par canal : c'est le monde animé, qui diffère ailleurs de 146 064 pixels, vu à travers la boîte
+    translucide (alpha 235) ; aucun écart de texte ni de cadre. La preuve tient à ce que l'écart A/B dans la boîte
+    reste dans le bruit de deux runs de la même configuration (au plus 13 niveaux). La prédiction 2 n'avait pas
+    prévu cette transparence.
   - Aucune erreur ni exception ; un seul avertissement par run, identique dans les deux, sans lien avec B4 (O5).
     `DialogueScreen.uiscreen` chargé une fois dans le premier run, jamais dans le second.
 - Éditeur (automatisation) : l'écran s'ouvre (« Loaded DialogueScreen.xaml »), la hiérarchie liste
@@ -333,6 +335,16 @@ prévisualise dans l'éditeur. **Vérificateur frais.**
 - Le constat P3 de la vérification de T6.1 (un identifiant d'un autre type d'asset déjà en cache lève au lieu d'un
   repli) a désormais un appelant ; le convertisseur écrit l'identifiant de l'enveloppe, donc le cas ne se produit
   que par une retouche fautive d'`AlundraGame.json`.
+- **Vérificateur frais (2026-09-24) : CONFIRMED** sur le parent `6327948` et le moteur `04a870b6`, sans constat P0 à
+  P2 : XAML comparé au balisage embarqué (trois différences exactement : nom de fenêtre, commentaire, `btnClose`) ;
+  raison de l'absence de fichier de conception confirmée dans `UIScreenDesignTimeDataLoader` ; `AlundraGame.json` et
+  `AssetInfos.json` ramenés au sha256 de référence en retirant le seul ajout ; manifeste de l'export revérifié
+  (23 227 fichiers) ; cycle de vie du présentateur tracé entre `OnEndPlay` et l'`AttachToWorld` suivant (aucun tick
+  ni opcode ne touche le présentateur libéré) ; trois mutations reproduites ; recette A/B et éditeur rejoués.
+  Remarques :
+  - P3 : la cause décrite dans O5 était inexacte (les icônes de docking sont dans le contenu ; c'est le runtime du
+    jeu qui ne les charge pas) : O5 corrigé ;
+  - P4 : l'identité au pixel à +60 était une coïncidence de cadence : note corrigée ci-dessus.
 
 ### ⏳ B5 — Clôture
 
@@ -348,7 +360,7 @@ Plan clos, mémoire à jour, rapport final ; merges laissés à l'auteur.
 | O2 | L'ordre des merges est la décision de l'auteur (plan moteur, O2). |
 | O3 | **Observation, à arbitrer.** La première ouverture de l'inventaire dans un monde coûte deux frames longues (150,7 ms puis 80,8 ms, et 152,4 puis 97,1 ms au run du vérificateur) : construction de la fenêtre depuis l'asset, bindings, images et animation. L'horloge logique plafonnant à 4 ticks par frame, ces frames perdent des ticks. Leur effet sur la recette n'est pas isolé : le run de référence tournait environ trois fois plus lentement par frame, ce qui suffit à expliquer le retard du texte aux captures précoces. Pour trancher : refaire la référence (base `221185b`) avec la même cadence et la mesure des frames. Piste si le coût se confirme : construire la fenêtre au câblage de l'écran plutôt qu'à sa première poussée. **Lié, vu en B3 :** les pastilles de magie tournent sur l'horloge de l'UI depuis leur redémarrage, alors que le compteur du directeur perd les ticks des frames plafonnées ; c'est l'explication probable, non isolée, de leur phase différente sur `inv-hud-3` (un cycle décoratif, sans autre effet visible). |
 | O4 | **Question posée à l'auteur le 2026-09-24 (plan moteur, O6).** L'éditeur n'enregistre aucun écran ; la validation « enregistrement sans modification » de B2 et B3 attend sa décision. |
-| O5 | **Observation (B4), introduite par le programme.** Au premier dialogue, `CasaUIAssetProvider: cannot resolve UI image 'DockClose'` est journalisé. L'icône de fermeture de la barre de titre (`MGCloseIcon`, `MGUI/MGUI.Core/UI/UISymbolElements.cs:460-477`) essaie la texture facultative `DockClose`, que MGUI n'enregistre que si `Icons/docking/x-white` existe dans le contenu (`MGDesktop.cs:1357-1380`), et dessine sinon une croix vectorielle. Depuis T3.1 (moteur `4d6906ae`), un nom inconnu est demandé à l'hôte, qui avertit. La texture manquant, `MGCloseIcon` dessine sa croix vectorielle (d'après son code ; même rendu dans les deux runs) : bruit de journal seulement. Pistes : ne pas demander à l'hôte un nom que MGUI sonde comme facultatif, ou livrer les icônes de docking dans le contenu du jeu. |
+| O5 | **Observation (B4), introduite par le programme.** Au premier dialogue, `CasaUIAssetProvider: cannot resolve UI image 'DockClose'` est journalisé. L'icône de fermeture de la barre de titre (`MGCloseIcon`, `MGUI/MGUI.Core/UI/UISymbolElements.cs:460-477`) essaie la texture facultative `DockClose`, et dessine sinon une croix vectorielle. MGUI n'enregistre `DockClose` et les autres icônes de docking que dans `MGDesktop.LoadDefaultResources` (`MGDesktop.cs:1287`), qu'appellent l'éditeur, `MGUI.Editor.Host` et `MGUI.Samples`, mais pas le runtime du jeu ; les icônes sont pourtant dans le contenu (`Content/Icons/docking/`). Depuis T3.1 (moteur `4d6906ae`), un nom inconnu est demandé à l'hôte, qui avertit. La texture manquant, `MGCloseIcon` dessine sa croix vectorielle (d'après son code ; même rendu dans les deux runs) : bruit de journal seulement. Pistes : ne pas demander à l'hôte un nom que MGUI sonde comme facultatif, ou charger ces icônes dans le runtime du jeu. |
 | O6 | **Observation (B4), préexistante, hors programme (E12).** Le premier message de la 389 s'affiche « bonne mine2222 » : `AlundraDialogueTextParser` ne traite que `\A`, `\N` et les codes numériques ; un code inconnu (`\W`, `\T`) est sauté sur deux caractères, mais le paramètre de `\W2` reste dans le texte (« 2 »). Identique avec le balisage embarqué. |
 
 ## Hors périmètre
