@@ -113,4 +113,28 @@ public static class ProjectWriter
 
         report.Messages.Add($"Project: FirstWorldLoaded set to '{worldRelativePath}'.");
     }
+
+    /// <summary>
+    /// Points the generated project at the dialogue screen versioned in the project (engine setting
+    /// DialogueScreenAsset, parent ADR-0002), which replaces the engine's built-in dialogue box. Separate from
+    /// <see cref="CreateEmptyProject"/> for the same reason as <see cref="SetFirstWorldLoaded"/>: the value is the
+    /// id its envelope carries, read when the UI phase catalogues the versioned screens. Only DialogueScreenAsset is
+    /// touched, through the same read/modify/write of the JObject.
+    /// </summary>
+    public static void SetDialogueScreenAsset(string outputDirectory, Guid screenId, ConversionReport report)
+    {
+        var projectFilePath = Path.Combine(outputDirectory, $"{ProjectName}.json");
+        if (!File.Exists(projectFilePath))
+        {
+            report.Warnings.Add(
+                $"Project: '{projectFilePath}' not found; DialogueScreenAsset not set (run Phase 0 first).");
+            return;
+        }
+
+        var rootElement = JObject.Parse(File.ReadAllText(projectFilePath));
+        rootElement["DialogueScreenAsset"] = screenId.ToString();
+        File.WriteAllText(projectFilePath, rootElement.ToString());
+
+        report.Messages.Add($"Project: DialogueScreenAsset set to '{screenId}'.");
+    }
 }

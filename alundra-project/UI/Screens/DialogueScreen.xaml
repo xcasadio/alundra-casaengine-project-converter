@@ -1,0 +1,36 @@
+<Window xmlns="clr-namespace:MGUI.Core.UI.XAML;assembly=MGUI.Core"
+        Name="AlundraDialogue"
+        Left="0" Top="0" Height="150"
+        TitleText="Dialogue"
+        IsTopmost="True"
+        IsUserResizable="False"
+        Padding="14"
+        Background="rgba(12,18,26,235)">
+
+  <!-- Alundra's dialogue box. It replaces the engine's built-in markup (CasaEngine's embedded
+       DialogueScreen.xaml, from which it was copied): AlundraGame.json names this screen in its
+       DialogueScreenAsset setting, written by the converter (parent ADR-0002, bound screens slice B4).
+
+       The element names below are the engine dialogue screen's contract
+       (CasaEngineMonogame/docs/engine/dialogue-choices-and-bitmap-fonts.md): pnlContent, lblLine and
+       pnlChoices must stay, with these types. A markup that breaks the contract is refused, with a warning,
+       and the built-in box is shown instead.
+
+       Left, Top and Height are starting values only. The screen centres the window horizontally, anchors it
+       to the bottom, and sizes it to its content.
+
+       No btnClose: Alundra's boxes are closed by the interact button or the auto timer, owned by
+       AlundraDialogueDirector, never by a button in the box (AlundraDialoguePresenter sets
+       ShowCloseButton to false). -->
+
+  <StackPanel Name="pnlContent" Orientation="Vertical" Spacing="8">
+
+    <!-- No PreferredHeight on the panel: it must report its CONTENT height so the window's resize-to-fit
+         measurement sees the real total. -->
+
+    <TextBlock Name="lblLine" Text="" WrapText="True" FontSize="16" Foreground="White" />
+
+    <StackPanel Name="pnlChoices" Orientation="Vertical" Spacing="4" />
+
+  </StackPanel>
+</Window>

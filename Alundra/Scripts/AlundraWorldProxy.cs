@@ -345,6 +345,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// stays session-scoped.</summary>
     private bool _dialoguePresenterWired;
 
+    // The presenter this world built, disposed when the world ends: its screen holds the project's dialogue markup.
+    private AlundraDialoguePresenter? _dialoguePresenter;
+
     /// <summary>E13 C2 (docs/plan-e13-hud.md): true once <see cref="AlundraHudScreen"/> has been built and
     /// pushed onto a live UI view - same "retry every frame until the post-bootstrap view exists" shape as
     /// <see cref="_dialoguePresenterWired"/>/<see cref="TryWireDialoguePresenterOnce"/>, for the identical
@@ -1100,7 +1103,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // before install (the wiring test's montage); the real game is wired by
         // TryWireDialoguePresenterOnce's per-frame retry in Update.
         var uiView = world.Game?.GameManager?.ViewManager?.GetActiveUIView();
-        IDialoguePresenter? presenter = uiView != null ? new AlundraDialoguePresenter(uiView) : null;
+        var presenter = uiView != null ? new AlundraDialoguePresenter(uiView, assetContentManager: world.Game?.AssetContentManager) : null;
+        _dialoguePresenter?.Dispose();
+        _dialoguePresenter = presenter;
         _dialoguePresenterWired = presenter != null;
 
         AlundraDialogueDirector.Instance.AttachToWorld(presenter, GameState);
@@ -1134,7 +1139,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             return; // retry next frame - the view appears once BootstrapViews has run.
         }
 
-        AlundraDialogueDirector.Instance.AttachToWorld(new AlundraDialoguePresenter(uiView), GameState);
+        _dialoguePresenter?.Dispose();
+        _dialoguePresenter = new AlundraDialoguePresenter(uiView, assetContentManager: _world?.Game?.AssetContentManager);
+        AlundraDialogueDirector.Instance.AttachToWorld(_dialoguePresenter, GameState);
         _dialoguePresenterWired = true;
         Logs.WriteInfo("AlundraWorldProxy: dialogue presenter wired to the active UI view (post-bootstrap retry).");
     }
@@ -2510,6 +2517,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // Engine ADR-0037: the HUD screen gives back its sprites the same way.
         _hudScreen?.Dispose();
         _hudScreen = null;
+
+        // Bound screens slice B4: the dialogue screen gives back the project's dialogue markup.
+        _dialoguePresenter?.Dispose();
+        _dialoguePresenter = null;
     }
 
     /// <summary>Test-only seam: the inventory screen <see cref="OnEndPlay"/> disposes, as
@@ -2524,6 +2535,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     internal void AttachHudScreenForTests(AlundraHudScreen screen)
     {
         _hudScreen = screen;
+    }
+
+    /// <summary>Test-only seam: the dialogue presenter <see cref="OnEndPlay"/> disposes, as
+    /// <see cref="TryWireDialoguePresenterOnce"/> would have built it (which needs a live game).</summary>
+    internal void AttachDialoguePresenterForTests(AlundraDialoguePresenter presenter)
+    {
+        _dialoguePresenter = presenter;
     }
 
     public override IGameplayProxy Clone()

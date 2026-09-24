@@ -50,6 +50,9 @@ public static class UiWriter
     private static readonly string UiTexturesRelativeDirectory = Path.Combine("UI", "Textures");
     private static readonly string ScreensRelativeDirectory = Path.Combine("UI", "Screens");
 
+    // The versioned screen that replaces the engine's built-in dialogue box (engine setting DialogueScreenAsset).
+    private static readonly string DialogueScreenRelativePath = Path.Combine(ScreensRelativeDirectory, "DialogueScreen.uiscreen");
+
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
@@ -152,7 +155,8 @@ public static class UiWriter
     /// authored in git, not generated: the converter never writes there, but it rebuilds AssetInfos.json from
     /// scratch on every export (ProjectWriter.CreateEmptyProject), so each .uiscreen must be registered again,
     /// with the id its envelope carries. Only the .uiscreen is catalogued, as RPGDemo does: the .xaml and the
-    /// design-time data file are files the envelope names, not assets.
+    /// design-time data file are files the envelope names, not assets. The project file is pointed at
+    /// UI/Screens/DialogueScreen.uiscreen, when it is there, as the replacement of the engine's dialogue box.
     /// </summary>
     private static void RegisterVersionedScreens(string outputDirectory, ConversionReport report)
     {
@@ -186,6 +190,11 @@ public static class UiWriter
                     FileName = relativePath,
                 });
                 registered++;
+
+                if (string.Equals(relativePath, DialogueScreenRelativePath, StringComparison.Ordinal))
+                {
+                    ProjectWriter.SetDialogueScreenAsset(outputDirectory, screenId, report);
+                }
             }
             catch (Exception exception)
             {

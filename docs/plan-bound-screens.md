@@ -282,7 +282,7 @@ indexer : aucune dans le parent en dehors du sous-module moteur (`CasaEngine.Lau
   (`run-t52`) identique à `run-b3-clock`, sauf `inv-389` (même écart d'animation du monde qu'entre deux runs).
 - **Reste en 🧪** : l'enregistrement sans modification, comme B2 (O4).
 
-### ⏳ B4 — La boîte de dialogue en asset
+### 🚧 B4 — La boîte de dialogue en asset
 
 **Prérequis :** tâche moteur T6.1 close.
 
@@ -294,6 +294,45 @@ conception ; renseigner le champ de réglage du projet qui le désigne (écrit p
 prévisualise dans l'éditeur. **Vérificateur frais.**
 
 **Commit :** `feat(dialogue): ship Alundra's dialogue screen as a project asset`
+
+**Note de validation (2026-09-24) :**
+- Livré : `alundra-project/UI/Screens/DialogueScreen.xaml`, copie du balisage embarqué du moteur (mêmes éléments,
+  mêmes valeurs) avec trois différences : ses commentaires, le nom de fenêtre `AlundraDialogue` (invisible, il
+  distingue le remplacement du balisage embarqué dans les tests et la hiérarchie de l'éditeur) et l'absence de
+  `btnClose`, qu'Alundra retire de toute façon (`ShowCloseButton` faux) et que le contrat rend facultatif dans ce
+  cas ; `DialogueScreen.uiscreen`, identifiant fixe `91273d6d-…`, aperçu 1280 × 944 (la fenêtre du jeu).
+- **Écart au plan : pas de fichier de conception.** Le format des données de conception exige un type de
+  view-model à peupler, et la boîte de dialogue n'en a pas : son code remplit des éléments nommés, rien n'y est lié.
+  Un fichier de conception n'y montrerait rien ; l'aperçu de l'éditeur montre la boîte vide.
+- Convertisseur : `UiWriter` pointe le projet sur `UI/Screens/DialogueScreen.uiscreen` quand il le catalogue
+  (`ProjectWriter.SetDialogueScreenAsset`, même lecture-modification-écriture du JSON que `SetFirstWorldLoaded`) :
+  l'identifiant vient de l'enveloppe, jamais d'une constante recopiée. Sans ce fichier, le réglage reste absent.
+- DLL : `AlundraDialoguePresenter` reçoit le gestionnaire d'assets du jeu et prend alors le nouveau constructeur
+  du moteur (T6.1) ; il devient `IDisposable` et rend son écran. Le proxy garde son présentateur et le libère dans
+  `OnEndPlay`, comme le HUD et l'inventaire ; il était jusque-là recréé à chaque monde sans être libéré.
+- Tests : `Alundra.Tests` 1089/1089 (+5 : enveloppe, balisage du projet utilisé et piloté, boîte embarquée sans
+  gestionnaire, libération par `Dispose` et par `OnEndPlay`) ; convertisseur 190/190 (+2 : le réglage écrit avec
+  l'identifiant de l'enveloppe, absent sans elle) ; trois mutations (présentateur sans gestionnaire, `OnEndPlay`
+  sans libération, XAML sans `lblLine`) font chacune échouer les tests qui les visent.
+- Export complet en place : seuls `AlundraGame.json` (+ `DialogueScreenAsset`), `AssetInfos.json` (+1 écran) et
+  `report.json` changent ; vérification PASSED, trois `.uiscreen` chargés.
+- Recette en jeu (harnais `dialogue-ab`, prédiction `prediction-b4.md` écrite avant) : même build, mêmes données,
+  deux runs qui ouvrent le premier message local de la 389 par `AlundraDialogueDirector.Open`, l'un avec le réglage
+  exporté, l'autre avec le réglage vidé juste après le chargement du projet.
+  - Le premier run utilise le remplacement (`AlundraDialogue`), le second le balisage embarqué ; mêmes bornes de
+    fenêtre (716 × 150 en 280, 746).
+  - Capture à +60 frames **identique au pixel** sur toute l'image. À +300, la boîte diffère de 7 404 pixels, tous
+    d'au plus 13 niveaux par canal : c'est le monde animé, qui diffère ailleurs de 146 064 pixels, vu à travers la
+    boîte translucide (alpha 235) ; aucun écart de texte ni de cadre. La prédiction 2 n'avait pas prévu cette
+    transparence.
+  - Aucune erreur ni exception ; un seul avertissement par run, identique dans les deux, sans lien avec B4 (O5).
+    `DialogueScreen.uiscreen` chargé une fois dans le premier run, jamais dans le second.
+- Éditeur (automatisation) : l'écran s'ouvre (« Loaded DialogueScreen.xaml »), la hiérarchie liste
+  `AlundraDialogue`, `pnlContent`, `lblLine` et `pnlChoices`, l'aperçu montre la boîte « Dialogue » vide ; journal sans
+  avertissement.
+- Le constat P3 de la vérification de T6.1 (un identifiant d'un autre type d'asset déjà en cache lève au lieu d'un
+  repli) a désormais un appelant ; le convertisseur écrit l'identifiant de l'enveloppe, donc le cas ne se produit
+  que par une retouche fautive d'`AlundraGame.json`.
 
 ### ⏳ B5 — Clôture
 
@@ -309,6 +348,8 @@ Plan clos, mémoire à jour, rapport final ; merges laissés à l'auteur.
 | O2 | L'ordre des merges est la décision de l'auteur (plan moteur, O2). |
 | O3 | **Observation, à arbitrer.** La première ouverture de l'inventaire dans un monde coûte deux frames longues (150,7 ms puis 80,8 ms, et 152,4 puis 97,1 ms au run du vérificateur) : construction de la fenêtre depuis l'asset, bindings, images et animation. L'horloge logique plafonnant à 4 ticks par frame, ces frames perdent des ticks. Leur effet sur la recette n'est pas isolé : le run de référence tournait environ trois fois plus lentement par frame, ce qui suffit à expliquer le retard du texte aux captures précoces. Pour trancher : refaire la référence (base `221185b`) avec la même cadence et la mesure des frames. Piste si le coût se confirme : construire la fenêtre au câblage de l'écran plutôt qu'à sa première poussée. **Lié, vu en B3 :** les pastilles de magie tournent sur l'horloge de l'UI depuis leur redémarrage, alors que le compteur du directeur perd les ticks des frames plafonnées ; c'est l'explication probable, non isolée, de leur phase différente sur `inv-hud-3` (un cycle décoratif, sans autre effet visible). |
 | O4 | **Question posée à l'auteur le 2026-09-24 (plan moteur, O6).** L'éditeur n'enregistre aucun écran ; la validation « enregistrement sans modification » de B2 et B3 attend sa décision. |
+| O5 | **Observation (B4), introduite par le programme.** Au premier dialogue, `CasaUIAssetProvider: cannot resolve UI image 'DockClose'` est journalisé. L'icône de fermeture de la barre de titre (`MGCloseIcon`, `MGUI/MGUI.Core/UI/UISymbolElements.cs:460-477`) essaie la texture facultative `DockClose`, que MGUI n'enregistre que si `Icons/docking/x-white` existe dans le contenu (`MGDesktop.cs:1357-1380`), et dessine sinon une croix vectorielle. Depuis T3.1 (moteur `4d6906ae`), un nom inconnu est demandé à l'hôte, qui avertit. La texture manquant, `MGCloseIcon` dessine sa croix vectorielle (d'après son code ; même rendu dans les deux runs) : bruit de journal seulement. Pistes : ne pas demander à l'hôte un nom que MGUI sonde comme facultatif, ou livrer les icônes de docking dans le contenu du jeu. |
+| O6 | **Observation (B4), préexistante, hors programme (E12).** Le premier message de la 389 s'affiche « bonne mine2222 » : `AlundraDialogueTextParser` ne traite que `\A`, `\N` et les codes numériques ; un code inconnu (`\W`, `\T`) est sauté sur deux caractères, mais le paramètre de `\W2` reste dans le texte (« 2 »). Identique avec le balisage embarqué. |
 
 ## Hors périmètre
 

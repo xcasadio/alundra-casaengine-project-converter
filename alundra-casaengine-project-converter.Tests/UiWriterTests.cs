@@ -212,6 +212,50 @@ public class UiWriterTests
             });
     }
 
+    /// <summary>The versioned UI/Screens/DialogueScreen.uiscreen replaces the engine's dialogue box: the project
+    /// file names it by the id its envelope carries, and leaves every other setting as Phase 0 wrote it.</summary>
+    [Fact]
+    public void ConvertUi_PointsTheProjectAtTheVersionedDialogueScreen()
+    {
+        var screenId = Guid.Parse("5e0c9a27-8f14-4b6d-a3c2-71d9e84f0b16");
+
+        RunConvertUi(
+            inputDirectory => WriteUiFixture(inputDirectory),
+            (outputDirectory, report) =>
+            {
+                Assert.Empty(report.Errors);
+                var project = JObject.Parse(File.ReadAllText(Path.Combine(outputDirectory, ProjectWriter.ProjectName + ".json")));
+                Assert.Equal(screenId.ToString(), project["DialogueScreenAsset"]!.ToString());
+                Assert.Equal(ProjectWriter.GameplayDllName, project["GameplayDllName"]!.ToString());
+                Assert.Contains(report.Messages, message => message.Contains("DialogueScreenAsset set", StringComparison.Ordinal));
+            },
+            outputDirectory =>
+            {
+                var screensDirectory = Path.Combine(outputDirectory, "UI", "Screens");
+                Directory.CreateDirectory(screensDirectory);
+                var envelope = new JObject
+                {
+                    ["id"] = screenId.ToString(),
+                    ["name"] = "DialogueScreen",
+                    ["source_xaml_file"] = "DialogueScreen.xaml",
+                };
+                File.WriteAllText(Path.Combine(screensDirectory, "DialogueScreen.uiscreen"), envelope.ToString());
+            });
+    }
+
+    /// <summary>Without a versioned dialogue screen, the project keeps the engine's built-in dialogue box.</summary>
+    [Fact]
+    public void ConvertUi_WithoutAVersionedDialogueScreen_LeavesTheSettingUnset()
+    {
+        RunConvertUi(
+            inputDirectory => WriteUiFixture(inputDirectory),
+            (outputDirectory, _) =>
+            {
+                var project = JObject.Parse(File.ReadAllText(Path.Combine(outputDirectory, ProjectWriter.ProjectName + ".json")));
+                Assert.Null(project["DialogueScreenAsset"]);
+            });
+    }
+
     [Fact]
     public void ConvertUi_BalanceKeepsUnknownFieldsAndDropsTheExtractorPath()
     {

@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Dialogue.Presentation;
 using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.Dialogue.UI;
@@ -31,14 +32,18 @@ namespace Alundra.Scripts;
 /// directly by <see cref="AlundraEventProgramRunner"/>, which only ever sees it through the generic
 /// <see cref="IDialoguePresenter"/> reference <see cref="AlundraDialogueDirector"/> was attached to.
 /// </summary>
-public sealed class AlundraDialoguePresenter : IDialoguePresenter
+public sealed class AlundraDialoguePresenter : IDialoguePresenter, IDisposable
 {
     private readonly DialogueService _service = new();
     private readonly IUIViewRuntime _uiView;
     private readonly DialogueScreen _screen;
     private bool _pushed;
 
-    public AlundraDialoguePresenter(IUIViewRuntime uiView, string? fontFamily = null)
+    /// <param name="assetContentManager">The game's asset manager. When given, the screen takes the markup the
+    /// project names in its DialogueScreenAsset setting (UI/Screens/DialogueScreen.uiscreen, written by the
+    /// converter; bound screens slice B4, engine T6.1) and holds it until <see cref="Dispose"/>; without it, or when
+    /// that markup cannot be used (the engine logs why), the engine's built-in box.</param>
+    public AlundraDialoguePresenter(IUIViewRuntime uiView, string? fontFamily = null, AssetContentManager? assetContentManager = null)
     {
         ArgumentNullException.ThrowIfNull(uiView);
         _uiView = uiView;
@@ -47,8 +52,14 @@ public sealed class AlundraDialoguePresenter : IDialoguePresenter
         // close affordance is an alien control here, and - as reported in play - shutting the window
         // through it left the box logically OPEN with its MenuOpen flag still posted, so the whole
         // entity pass stayed frozen until the player also pressed the interact button.
-        _screen = new DialogueScreen(_service, RequestClose, fontFamily!) { ShowCloseButton = false };
+        _screen = assetContentManager != null
+            ? new DialogueScreen(_service, RequestClose, fontFamily!, assetContentManager) { ShowCloseButton = false }
+            : new DialogueScreen(_service, RequestClose, fontFamily!) { ShowCloseButton = false };
     }
+
+    /// <summary>Gives back what the screen holds (the project's dialogue markup, engine ADR-0037), when its world
+    /// ends. Idempotent, like the screen's own <see cref="DialogueScreen.Dispose"/>.</summary>
+    public void Dispose() => _screen.Dispose();
 
     /// <summary>Test-only seam: the screen this presenter owns, so a test can pin that Alundra opted OUT
     /// of the engine's generic "Close" button (see the constructor).</summary>
