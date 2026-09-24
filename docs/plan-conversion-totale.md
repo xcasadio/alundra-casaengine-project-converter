@@ -581,9 +581,14 @@ après deux correctifs nés de la recette. Commits : moteur `1f837ed6`, parent `
 
 Plans : `docs/plan-e11-audio.md` §6 (bruitages, `3b1eb24`) et `docs/plan-e11c-musique.md` §6
 (musique, `0b1d2d9` + analyseur `f216b32`), verifier CONFIRMED avant chaque validation. La réserve
-laissée par E7 est close : la trappe ne s'ouvre plus en silence. **Reste E11.b** — le solde des
-opcodes audio (`0xA5`, `0xAB`/`0xBF`, `0xA6`/`0xA7`, anti-doublon, table par carte) : plan rédigé et
-relu, **reporté sur décision de l'utilisateur**, et couplé à T7 pour le son de départ de warp.
+laissée par E7 est close : la trappe ne s'ouvre plus en silence. **E11.b** — le solde des opcodes
+audio (`0xA5`, `0xAB`/`0xBF`, `0xA6`/`0xA7`, anti-doublon, table par carte) — **livrée et validée en
+jeu le 2026-09-07** (`docs/plan-e11b-opcodes-audio.md`, dernière section ; `3507527`, `1985846`,
+`e159d0d`, clôture `1f7e122`), avec T7 et le son de départ de warp (`docs/plan-transitions-carte.md`
+§T7, D-T-8). _(Ce paragraphe disait encore « reportée » jusqu'au 2026-09-24 : il n'avait pas été
+mis à jour après la livraison.)_ Suites ouvertes, déclarées non bloquantes par leur plan : la
+projection du mixage stéréo [B1-a], `IsBgmActivated` non modélisé, la garde d'index de carte
+toujours satisfaite, et `0xAB` absent du corpus.
 
 - **But** : BGM de la 389 (`LoadMapSounds`), SFX 44/45/46/61 de 0xBD, streaming.
 - **Acceptation** : sons audibles aux frames de la chronologie.
@@ -628,9 +633,13 @@ datée « plus tard » par son propre plan, plus un trou convertisseur : la tabl
 
 L'ordre ci-dessous prime sur la numérotation E13 → E15 tant qu'il n'est pas épuisé.
 
-1. **T7 et E11.b** — en cours. Les deux tranches sont rédigées et relues depuis le 2026-09-02 ;
-   elles n'attendaient qu'une approbation. Couplées : le son de départ de warp d'E11.b vit sur
-   l'opcode `0x53` que T7 porte, donc T7 passe en premier.
+1. **T7 et E11.b — FAIT le 2026-09-07.** Les deux tranches ont été livrées le jour même où cet ordre a
+   été arrêté, puis validées en jeu par l'auteur (« pour moi c'est bon ») : T7 `8773965`
+   (`docs/plan-transitions-carte.md` §T7), E11.b `3507527`, `1985846`, `e159d0d`
+   (`docs/plan-e11b-opcodes-audio.md`), clôture commune `1f7e122`. Le son de départ de warp est porté
+   dans sa structure (D-T-8), muet sur l'aller-retour 389 ↔ 390 par les données. _(Relevé le
+   2026-09-24 : ce point disait encore « en cours ». Branche « effet 3 » de `0x53` gelée, 0 occurrence
+   sur 329.)_
 
 2. **Dette moteur : `TileMapDepthSettings` — FAIT le 2026-09-07.** Plan archivé dans le sous-module
    (`ai-agent/tasks/archive/tilemap-depth-settings-tasks.md`), quatre tâches ✅, moteur 1618 verts,
@@ -692,7 +701,7 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
     et lui livre l'extraction, la table des objets et l'arme équipée ; on extrait le portrait de
     **tous** les objets dont la colonne d'icône est renseignée ; la recette ne force **aucun**
     accessoire équipé, fidélité stricte. Plan : `docs/plan-e13c-icones-hud.md`.
-  - **E13.d — La gestion de l'inventaire : inventaire principal ✅ validé en jeu le 2026-09-24 (D6) ; restent le sous-inventaire et la bascule L1/R1 ⏳** (approuvée le 2026-09-21) : plan
+  - **E13.d — La gestion de l'inventaire : inventaire principal ✅ validé en jeu le 2026-09-24 (D6) ; sous-inventaire et bascule L1/R1 🚧, plan `docs/plan-e13d-sous-inventaire.md` écrit le 2026-09-24** (approuvée le 2026-09-21) : plan
     `docs/plan-e13d-inventaire.md`, relu READY, décisions de l'auteur du 2026-09-21 enregistrées, dont
     les boîtes en image cuite depuis la copie A. Décision du
     2026-09-19 : porter l'original tel quel ; amendée le 2026-09-21 pour le dessin : pas au pixel près,
@@ -704,13 +713,15 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
     `SubInventoryManager.cs:371-377`) ; `Start`, `L2` ou `R2` referment et la jauge réapparaît
     (`MainInventoryManager.cs:846-851`). Taille : deux gestionnaires d'environ 3300 lignes et seize
     méthodes publiques, une table d'objets de 100 lignes (et 98 enregistrements de déverrouillage)
-    vivant seulement dans la décompilation, republiées depuis par E13.c ; le portage n'a ni écran
-    d'inventaire, ni L1/L2/R1/R2/Select dans son état de pad (`AlundraPlayerController.cs:23-31`) ;
+    vivant seulement dans la décompilation, republiées depuis par E13.c ; le portage n'avait (au
+    2026-09-19) ni écran d'inventaire, ni L1/L2/R1/R2/Select dans son état de pad — ajoutés par D1 et D5 ;
     l'équipement et les compteurs d'objets, eux, existent depuis E13.c S3. La table des objets, l'équipement et les écrans
     d'inventaire n'avaient jusqu'ici aucune étape dans cette feuille de route. **Découpage décidé le
     2026-09-19** : l'inventaire principal d'abord, ouverture, fermeture et équipement, puis le
     sous-inventaire et la bascule L1/R1. Le plan de l'inventaire principal est écrit ; celui du
-    sous-inventaire le sera après sa recette.
+    sous-inventaire l'est depuis le 2026-09-24, après la recette D6 : `docs/plan-e13d-sous-inventaire.md`.
+    Il établit dans l'exécutable France que `Triangle` referme aussi les deux inventaires (masque `0x813`,
+    que la décompilation avait perdu).
 
 ### E14 — IA native ⏳
 
@@ -758,12 +769,12 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 | E8 profondeur murs/sols moteur | ✅ close (livrée par `AddSortedOverlayTile`, écrit en E9 ; variante par couche réfutée sur 483 cartes) | préalable `5d66e10` |
 | E9 backdrops moteur | ✅ close (validée en jeu) | E9.a `82ad020`,`75dc032`,`394cf55`,`14d94e0` ; E9.b moteur `dcbb55ff`+`29a84e2`, DLL `3798b75`, amendement `975248c`, bascule `e808568` ; E9.c `71c57da`, moteur `0be1e9d2`, parent `0458c6b` |
 | E10 fondu/transitions moteur | ✅ close (validée en jeu le 2026-09-01) | moteur `1f837ed6`, parent `96f440e` + `692ec4c` + `767e9e6` |
-| E11 audio | ✅ close (validée en jeu le 2026-08-30) — **E11.b reportée** sur décision utilisateur | `3b1eb24` ; `0b1d2d9` + analyseur `f216b32` |
+| E11 audio | ✅ close (validée en jeu le 2026-08-30) ; **E11.b ✅ validée en jeu le 2026-09-07** avec T7 | `3b1eb24` ; `0b1d2d9` + analyseur `f216b32` ; E11.b `3507527`, `1985846`, `e159d0d` ; T7 `8773965` ; clôture `1f7e122` |
 | E12 dialogues Yarn + MGUI | ✅ close (validée en jeu le 2026-09-02) — **E12.c** (fidélité fine) datée « plus tard » | E12.d `774255f` ; voir `plan-e12-dialogues.md` |
 | **E9.d mode cellulaire des fonds** | ✅ close (validée en jeu le 2026-09-07 sur 420, 391, 271, 443) | convertisseur `e1b9844`, moteur `53fed7df`+`342377a5`, DLL `ae30b42` |
 | E13.a HUD, la jauge permanente | ✅ close (validée en jeu ; C4 et C5.b le 2026-09-20) | parent `329b19b`, `d9fac87`, `3cf8dd9`, `babb16f`, `48df065`, `8cb52c9`, C4 `7d6a37a` mergée `8dcfd81` ; moteur `19fcd84c` |
 | E13.b HUD, fonds des cases arme et accessoire | ✅ close (C6, validée en jeu) | `ae8a24e` |
 | E13.c HUD, icônes d'arme et d'accessoire | ✅ close (S4 passée en jeu le 2026-09-21) | analyseur `6176ea3`, `a0904b8`, `c304201`, mergé `c204009` ; parent `0f1cfd4`, `7018e6a`, `0135c92`, `cdb7097`, mergé `ea633ad` |
-| E13.d inventaire principal (puis sous-inventaire et L1/R1) | principal ✅ validé en jeu le 2026-09-24 ; sous-inventaire et L1/R1 ⏳ (plan à écrire) | `docs/plan-e13d-inventaire.md` |
+| E13.d inventaire principal (puis sous-inventaire et L1/R1) | principal ✅ validé en jeu le 2026-09-24 ; sous-inventaire et L1/R1 🚧 | `docs/plan-e13d-inventaire.md` ; `docs/plan-e13d-sous-inventaire.md` |
 | E14 IA native | ⏳ | |
 | E15 conversion hybride | ⏳ | |
