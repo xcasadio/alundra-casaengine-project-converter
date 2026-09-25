@@ -22,6 +22,8 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     public AlundraInventoryDirectorTests()
     {
         AlundraInventoryDirector.Instance.ResetForTests();
+        AlundraSubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
+        AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
         AlundraGameState.Instance.ResetForTests();
@@ -34,6 +36,8 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     public void Dispose()
     {
         AlundraInventoryDirector.Instance.ResetForTests();
+        AlundraSubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
+        AlundraInventoryPostProcess.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
         AlundraHudDirector.Instance.ResetForTests();
         AlundraDialogueDirector.Instance.ResetForTests();
         AlundraGameState.Instance.ResetForTests();
@@ -179,6 +183,31 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         director.Tick(player);
 
         Assert.False(director.IsActive);
+    }
+
+    /// <summary>Plan E13.d SI12 (D-E13D-36): after a map entry the trigger refuses for 0.2 s of logic time - the
+    /// first 9 ticks, as the executable does with its 10 frames decremented before the test (0x8002bc58) - and
+    /// opens on the 10th.</summary>
+    [Fact]
+    public void Trigger_Refused_DuringTheMapEntryDelay_OpensOnTheTenthTick()
+    {
+        var state = NewState();
+        var director = NewDirector(state);
+        AlundraWarpDirector.Instance.InstallForMapEntry();
+
+        for (var tick = 1; tick <= 8; tick++)
+        {
+            Tick(state, director, tick % 2 == 1 ? AlundraPadState.Start : 0u); // a fresh Start edge every other tick.
+            Assert.False(director.IsActive, $"tick {tick}");
+        }
+
+        Tick(state, director, AlundraPadState.Start); // tick 9: a fresh edge, 0.02 s of delay still left.
+        Assert.False(director.IsActive);
+        Assert.True(AlundraWarpDirector.Instance.IsWarpDelayRunning);
+
+        Tick(state, director, AlundraPadState.Start | AlundraPadState.L2); // tick 10: a fresh L2 edge, delay over.
+        Assert.False(AlundraWarpDirector.Instance.IsWarpDelayRunning);
+        Assert.True(director.IsActive);
     }
 
     [Fact]
@@ -422,10 +451,8 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         var director = NewDirector(state, tables, sound);
         OpenAndSettle(state, director);
 
-        // Equip slot 0 first (item 4, real): MainInventoryManager.cs:1639-1641 compares the EMPTY slot's
-        // NoItem against the CURRENTLY EQUIPPED weapon's item - with nothing equipped yet (WeaponId 0),
-        // both sides are NoItem and the original's own comparison reads "already equipped", not "empty"
-        // (ported faithfully - ActuallyAlreadyEquipped's own quirk). A real current weapon avoids that.
+        // Equip slot 0 first (item 4, real), so a real weapon is current; the case with no weapon resolving,
+        // where the original stays silent, is EquipWeapon_EmptySlot_NoWeaponResolving_PlaysSound3.
         state.NumberOfItems[4 * 2 + 1] = 1;
         Tick(state, director, AlundraPadState.Cross); // grid slot 0 -> weapon slot 1, equips item 4.
         sound.Requests.Clear();
@@ -436,6 +463,80 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
         Assert.Contains(3, sound.Requests);
         Assert.DoesNotContain(2, sound.Requests);
+    }
+
+    /// <summary>Plan E13.d SI9.d: DisplayInventory tests g_forbiddenWarpFlag first on every entry (0x80055574),
+    /// the post-process's call included - with the inventory already running, the head does nothing (no HUD
+    /// hide, no sound 4) and arms no setup.</summary>
+    [Fact]
+    public void HeadFromPostProcess_WhileTheInventoryRuns_DoesNothing()
+    {
+        var state = NewState();
+        var sound = new RecordingSoundPlayer();
+        var director = NewDirector(state, sound: sound);
+        OpenAndSettle(state, director);
+        Assert.NotEqual(0u, director.ForbiddenWarpFlag);
+        sound.Requests.Clear();
+
+        director.RunDisplayInventoryHeadFromPostProcess();
+
+        Assert.Empty(sound.Requests);
+        Tick(state, director, 0);
+        Assert.Empty(sound.Requests); // no setup pending either: nothing re-armed on the next tick.
+        Assert.True(director.IsDrawn);
+    }
+
+    /// <summary>A defect of the original, corrected (plan E13.d SI9.b): with no weapon resolving (a fresh state,
+    /// WeaponId 0), the executable compares the empty slot's -1 with the current weapon's -1 first and stays
+    /// silent; the port tests validity first and sounds the error.</summary>
+    [Fact]
+    public void EquipWeapon_EmptySlot_NoWeaponResolving_PlaysSound3()
+    {
+        var state = NewState();
+        var sound = new RecordingSoundPlayer();
+        var tables = ItemTablesFixture.LoadReal();
+        var director = NewDirector(state, tables, sound);
+        OpenAndSettle(state, director);
+        Assert.Equal(AlundraPlayerManager.NoItem, AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, tables));
+        sound.Requests.Clear();
+
+        Tick(state, director, AlundraPadState.Right); // grid slot 1 -> weapon slot 3 (empty in the fixture).
+        Tick(state, director, 0);
+        sound.Requests.Clear();
+        Tick(state, director, AlundraPadState.Cross);
+
+        Assert.Equal(new[] { 3 }, sound.Requests);
+        Assert.Equal(0, state.PlayerStats.WeaponId); // nothing equipped.
+    }
+
+    /// <summary>A defect of the original, corrected (plan E13.d SI9.b): once no weapon resolves, the weapon name
+    /// gets the same seven-space blank as the item, instead of keeping the previous weapon's name.</summary>
+    [Fact]
+    public void IconNames_NoWeaponResolving_BlanksTheWeaponName()
+    {
+        var etcPath = WriteEtcFixture(4, "Epee", "a", "b");
+        EngineEnvironment.ProjectPath = etcPath;
+        try
+        {
+            var state = NewState();
+            var tables = ItemTablesFixture.LoadReal();
+            var director = NewDirector(state, tables);
+            state.NumberOfItems[4 * 2 + 1] = 1;
+            AlundraPlayerManager.SetPlayerWeaponId(state, tables, 1); // weapon slot 1 resolves to item 4.
+            OpenAndSettle(state, director); // DisplayInventory -> DisplayIconNames.
+            Assert.Equal("Epee", director.EquippedWeaponName);
+
+            state.NumberOfItems[4 * 2 + 1] = 0; // the weapon no longer resolves.
+            Tick(state, director, AlundraPadState.Right); // grid slot 1 -> weapon slot 3 (empty).
+            Tick(state, director, 0);
+            Tick(state, director, AlundraPadState.Cross); // sound 3, then DisplayIconNames.
+
+            Assert.Equal("       ", director.EquippedWeaponName);
+        }
+        finally
+        {
+            Directory.Delete(etcPath, recursive: true);
+        }
     }
 
     // -----------------------------------------------------------------------------------------
@@ -532,6 +633,46 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         Assert.Equal((8, 16), director.BoxPosition(0));
     }
 
+    /// <summary>E13.d SI3.a (docs/plan-e13d-sous-inventaire.md, D-E13D-29): the executable closes on
+    /// 0x813 = Start | Triangle | R2 | L2 (0x80056924), so Triangle closes exactly like Start.</summary>
+    [Fact]
+    public void Closing_Triangle_ClosesLikeStart()
+    {
+        var state = NewState();
+        var sound = new RecordingSoundPlayer();
+        var director = NewDirector(state, sound: sound);
+        OpenAndSettle(state, director);
+        sound.Requests.Clear();
+
+        Tick(state, director, AlundraPadState.Triangle);
+
+        Assert.Equal(new[] { 5 }, sound.Requests);
+        Assert.Equal(3u, director.ForbiddenWarpFlag); // bit0 (residual) | bit1 (SlideCloseBit).
+        Assert.True((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0);
+
+        for (var i = 0; i < 18; i++)
+        {
+            Tick(state, director, 0);
+        }
+
+        Assert.False(director.IsActive);
+        Assert.False((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0);
+    }
+
+    /// <summary>E13.d SI3.a: the opening trigger keeps the decompilation's 0x803 (0x8002bcac tests
+    /// ButtonsJustPressed & 0x803) - Triangle closes the inventory but never opens it.</summary>
+    [Fact]
+    public void Trigger_Triangle_DoesNotOpen()
+    {
+        var state = NewState();
+        var director = NewDirector(state);
+
+        Tick(state, director, AlundraPadState.Triangle);
+
+        Assert.False(director.IsActive);
+        Assert.Equal(0u, director.ForbiddenWarpFlag);
+    }
+
     [Fact]
     public void Closing_ArmsHudAppearance_OnlyWhenThePersistentLatchIsSet()
     {
@@ -560,24 +701,22 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     }
 
     [Fact]
-    public void SubInventoryShoulderButtons_Ignored_NoStateChange()
+    public void SubInventorySwitch_R1InMain_StartsTheSwitch()
     {
+        // E13.d SI3 (docs/plan-e13d-sous-inventaire.md): R1/L1 in the main inventory now START the switch
+        // to the sub-inventory - replaces the pre-SI3 "ignored" test (D-E13D-2 is now delivered).
         var state = NewState();
         var sound = new RecordingSoundPlayer();
         var director = NewDirector(state, sound: sound);
         OpenAndSettle(state, director);
         sound.Requests.Clear(); // drop the opening's own sound 4.
-        var flagBefore = director.ForbiddenWarpFlag;
-        var slotBefore = director.SelectedSlotId;
 
-        Tick(state, director, AlundraPadState.L1);
-        Tick(state, director, 0);
         Tick(state, director, AlundraPadState.R1);
 
-        Assert.Equal(flagBefore, director.ForbiddenWarpFlag);
-        Assert.Equal(slotBefore, director.SelectedSlotId);
-        Assert.True(director.IsActive); // never closed.
-        Assert.Empty(sound.Requests);
+        Assert.Equal(new[] { 5 }, sound.Requests); // FUN_800556dc's own sound - the close slide is armed.
+        Assert.Equal(3u, director.ForbiddenWarpFlag); // bit0 (residual) | bit1 (SlideCloseBit).
+        Assert.Equal(1, AlundraInventoryPostProcess.Instance.State);
+        Assert.True((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0);
     }
 
     // -----------------------------------------------------------------------------------------
@@ -757,23 +896,6 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         {
             Directory.Delete(etcPath, recursive: true);
         }
-    }
-
-    [Fact]
-    public void RevealedPrefix_NeverSplitsAnEscapePairAcrossTheBoundary()
-    {
-        var method = typeof(AlundraInventoryDirector).GetMethod("RevealedPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-        Assert.NotNull(method);
-
-        // "A{b" with visibleLength 2 lands right after '{' - must back up to 1, not split the pair.
-        var result = (string)method!.Invoke(null, new object[] { "A{b", 2 })!;
-        Assert.Equal("A", result);
-
-        var resultClosing = (string)method.Invoke(null, new object[] { "A}b", 2 })!;
-        Assert.Equal("A", resultClosing);
-
-        var resultUnaffected = (string)method.Invoke(null, new object[] { "Abc", 2 })!;
-        Assert.Equal("Ab", resultUnaffected);
     }
 
     // -----------------------------------------------------------------------------------------

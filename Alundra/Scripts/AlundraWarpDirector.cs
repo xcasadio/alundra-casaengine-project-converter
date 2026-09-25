@@ -129,10 +129,36 @@ public sealed class AlundraWarpDirector
     /// </summary>
     public int PendingArrivalEffectId => HasPendingArrival ? _arrivalEffectId : 0;
 
-    /// <summary>Test-only mirror of the DÉCLARÉ INERTE warp-delay counter (see
-    /// <see cref="InstallForMapEntry"/>'s own doc) - internal, not part of this class' public surface,
-    /// since nothing in this port ever reads it.</summary>
-    internal int WarpDelayFramesForTests { get; private set; }
+    /// <summary>Port of <c>g_warpDelayFrames</c> (0x800dc4b4) as a DURATION (plan E13.d SI12, the author's
+    /// D-E13D-36): the executable sets 10 frames at every map entry (0x80044148) and the inventory trigger
+    /// decrements it before testing it (0x8002bc58-0x8002bcb8), refusing the first 9 evaluations. The port keeps
+    /// 0.2 s, consumed by elapsed logic time: the same 9 refused ticks at 50 Hz, and a delay that stays right
+    /// once the game no longer depends on its frame rate.</summary>
+    internal const float WarpDelaySeconds = 0.2f;
+
+    private float _warpDelayRemainingSeconds;
+
+    /// <summary>True while the map-entry delay still runs: the inventory trigger refuses to open
+    /// (<c>GameEngine.cs:1573</c>).</summary>
+    public bool IsWarpDelayRunning => _warpDelayRemainingSeconds > 0f;
+
+    /// <summary>Consumes <paramref name="elapsedSeconds"/> of logic time from the map-entry delay - the
+    /// original's own decrement (<c>GameEngine.cs:1562-1564</c>, 0x8002bc58-0x8002bc68), run every tick before
+    /// the trigger's test. What is left below 0.1 ms counts as nothing, so ten float steps of 1/50 s end the
+    /// 0.2 s exactly on the tenth tick.</summary>
+    internal void AdvanceWarpDelay(float elapsedSeconds)
+    {
+        if (_warpDelayRemainingSeconds <= 0f)
+        {
+            return;
+        }
+
+        _warpDelayRemainingSeconds -= elapsedSeconds;
+        if (_warpDelayRemainingSeconds < 1e-4f)
+        {
+            _warpDelayRemainingSeconds = 0f;
+        }
+    }
 
     /// <summary>
     /// T5 (D-T-4, [R9]): <c>AdoptPlayerPawn</c>'s sole consuming read of the arrival record - position,
@@ -226,15 +252,12 @@ public sealed class AlundraWarpDirector
         // reference to the departure map's now-dead player proxy.
         _gravitySuspendedPlayer = null;
 
-        // T5 (§1.2.f, DÉCLARÉ INERTE - same shape as D-T-8/D-T-9): port of WarpPlayer's own
-        // g_warpDelayFrames = 10 (GameEngine.cs:890), set at EVERY map entry regardless of warp-or-not -
-        // NOT one of D-T-15's own six states (that table's clause d'exhaustivité covers the departure
-        // sequence only), a separate, brand-new piece of structure T5 itself introduces. Its only two
-        // original consumers - the Start+Select combo and the inventory-open gate (GameEngine.cs:1523-1528
-        // and :1567-1574) - are NOT ported by this chantier (this port has no button-driven inventory
-        // path at all, MenuOpen is only ever posed by AlundraDialogueDirector), so nothing ever reads this
-        // field: posed here for structural fidelity only, never covered by acceptance.
-        WarpDelayFramesForTests = 10;
+        // T5 (§1.2.f): port of WarpPlayer's own g_warpDelayFrames = 10 (GameEngine.cs:890, 0x80044148), set
+        // at EVERY map entry regardless of warp-or-not - NOT one of D-T-15's own six states (that table's
+        // clause d'exhaustivité covers the departure sequence only). A duration since E13.d SI12
+        // (D-E13D-36, WarpDelaySeconds), read by the inventory trigger (GameEngine.cs:1567-1574); its other
+        // original consumer, the Start+Select combo (GameEngine.cs:1523-1528), is not ported.
+        _warpDelayRemainingSeconds = WarpDelaySeconds;
 
         // Arrival record + effect id: CONSERVED - see this class' own doc and D-T-15's own table.
     }
@@ -510,6 +533,6 @@ public sealed class AlundraWarpDirector
         _arrivalAnimationId = 0;
         _arrivalDirectionId = 0;
         _arrivalEffectId = 0;
-        WarpDelayFramesForTests = 0;
+        _warpDelayRemainingSeconds = 0f;
     }
 }

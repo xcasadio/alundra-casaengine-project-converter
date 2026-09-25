@@ -831,16 +831,16 @@ public static class AlundraPlayerManager
         SetPlayerWeaponId(state, tables, 1);
     }
 
-    /// <summary>Port of <c>SetPlayerWeaponId</c> (PlayerManager.cs:1832-1845, 8004e484): stores a weapon slot
-    /// 1..6 (or 0, see the marked line) and ends, as the original does, by resolving the weapon's item - a
-    /// lookup whose result the original discards too.</summary>
-    public static void SetPlayerWeaponId(AlundraGameState state, AlundraItemTables tables, ushort weaponId)
+    /// <summary>Port of <c>SetPlayerWeaponId</c> (PlayerManager.cs:1832-1845, 8004e484): stores -1 (no weapon) or
+    /// a weapon slot 1..6, rejects everything else (0 included), and ends, as the original does, by resolving the
+    /// weapon's item - a lookup whose result the original discards too.</summary>
+    public static void SetPlayerWeaponId(AlundraGameState state, AlundraItemTables tables, int weaponId)
     {
-        // docs/plan-e13c-icones-hud.md, open point 7 - THE MARKED LINE. Evaluated in int, as the cited code
-        // is: a ushort never equals 0xffffffff, and weaponId - 1 < 6 holds for 0..6, so 0 is accepted. On the
-        // PSX the same compare is unsigned 32-bit and most likely rejects 0. Kept as cited until Ghidra
-        // settles it (0x8004ddf4 and neighbours).
-        if ((uint)weaponId == NoItem || weaponId - 1 < 6)
+        // ALUN_CD.EXE (France) 0x8004e484 settles docs/plan-e13c-icones-hud.md open point 7: the argument is a
+        // 32-bit int; -1 is stored (beq at 0x8004e490), otherwise (weaponId - 1) <u 6 must hold (sltiu at
+        // 0x8004e49c), so 0 is rejected and logged ("SetEquipWeaponKind", 0x80026620). The decompilation's
+        // ushort parameter inverted both (never -1, 0 accepted) - plan E13.d SI9.b.
+        if (weaponId == -1 || (uint)(weaponId - 1) < 6)
         {
             state.PlayerStats.WeaponId = (short)weaponId;
         }

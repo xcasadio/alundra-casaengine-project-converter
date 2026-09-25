@@ -12,14 +12,12 @@ namespace Alundra.Scripts;
 /// need to draw is exposed as plain, read-only properties.
 ///
 /// <para><b>The trigger</b> - ported from <c>GameEngine.cs:1567-1576</c>, checked once per logic tick
-/// while the inventory is idle. Three of its six guards have no equivalent in this port and are
+/// while the inventory is idle. Two of its six guards have no equivalent in this port and are
 /// TREATED AS ALWAYS ZERO (never block the trigger), each declared where it is tested below:
 /// <c>g_warpLockTimer</c> (an item-use/magic-sequence lock, <c>PlayerManager.cs:1929-4013</c> - no such
-/// system is ported here at all), <c>g_warpDelayFrames</c> (<see cref="AlundraWarpDirector.WarpDelayFramesForTests"/>
-/// exists but is never decremented anywhere in this DLL - see that field's own doc, which already says
-/// its two original consumers, this trigger among them, were never wired up before this chantier), and
-/// <c>g_globalTransitionState</c> (the memory-card/save-menu state machine, <c>UI/MemoryCardManager.cs</c>
-/// - not ported at all).</para>
+/// system is ported here at all) and <c>g_globalTransitionState</c> (the memory-card/save-menu state machine,
+/// <c>UI/MemoryCardManager.cs</c> - not ported at all). The map-entry delay <c>g_warpDelayFrames</c> is
+/// ported since E13.d SI12, as a duration (<see cref="AlundraWarpDirector.IsWarpDelayRunning"/>).</para>
 ///
 /// <para><b>The setup callback's timing</b> (D4's own open point): <c>DisplayInventory</c>
 /// (<c>MainInventoryManager.cs:443-499</c>) only ARMS the setup callback, through
@@ -52,9 +50,17 @@ namespace Alundra.Scripts;
 /// <c>g_inventoryCursorText</c>, so the seven-box slide and the text reveal run on their own clock,
 /// unaffected by the portrait's absence.</para>
 ///
-/// <para><b>L1/R1 (the sub-inventory switch, <c>MainInventoryManager.cs:853-859</c>)</b>: OUT OF SCOPE
-/// (D-E13D-2, a second plan). The press is read (so it still counts as "some input happened" for the
-/// repeat-interval bookkeeping D1 already owns) but otherwise ignored - no close, no state change.</para>
+/// <para><b>L1/R1 (the sub-inventory switch, <c>MainInventoryManager.cs:853-859</c>)</b> (E13.d SI3,
+/// docs/plan-e13d-sous-inventaire.md, D-E13D-21/22): closes the main inventory (<see cref="RunCloseSetup"/>,
+/// sound 5) and poses <see cref="AlundraInventoryPostProcess.State"/> = 1 - it does NOT call
+/// <see cref="AlundraHudDirector.InitializeHudPositionBeforeHide"/> (the gauge stays hidden, plan §1.1).
+/// <see cref="AlundraInventoryPostProcess.Run"/> then opens the sub-inventory once this closing slide
+/// settles (<see cref="IsCallbackArmed"/> false) - see that class' own doc for the two-tick clock (plan
+/// §1.2). The reverse switch (<see cref="AlundraSubInventoryDirector"/>'s own L1/R1) hands control back
+/// through <see cref="RunDisplayInventoryHeadFromPostProcess"/>: the HEAD of <c>DisplayInventory</c> runs
+/// on the post-process's own tick, and the SETUP (<c>FUN_80054f1c</c>) only on the NEXT one
+/// (<see cref="_setupPending"/>, D-E13D-22) - unlike the ordinary trigger path, where <see cref="Tick"/>
+/// runs both on the SAME tick (this class' own doc above).</para>
 /// </summary>
 public sealed class AlundraInventoryDirector
 {
@@ -85,6 +91,15 @@ public sealed class AlundraInventoryDirector
     /// closing slide) - <see cref="ForbiddenWarpFlag"/> != 0. The complement of "idle, waiting for the
     /// trigger".</summary>
     public bool IsActive => ForbiddenWarpFlag != 0;
+
+    /// <summary>E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-21): "is the main inventory's own
+    /// callback slot 6 armed" - what <see cref="AlundraInventoryPostProcess.Run"/> tests as "slot 6 free"
+    /// before opening the sub-inventory (state 1). Ported as <see cref="ForbiddenWarpFlag"/> != 0 (the
+    /// slide/residual bits) OR <see cref="_setupPending"/> (the callback is armed the instant
+    /// <c>SetTransitionType(6)</c> runs, inside <see cref="RunDisplayInventoryHead"/>/
+    /// <see cref="RunDisplayInventoryHeadFromPostProcess"/>, one tick BEFORE <see cref="ForbiddenWarpFlag"/>
+    /// itself is set by the setup - see <see cref="RunDisplayInventoryHeadFromPostProcess"/>'s own doc).</summary>
+    internal bool IsCallbackArmed => ForbiddenWarpFlag != 0 || _setupPending;
 
     /// <summary>D5 addition (docs/plan-e13d-inventaire.md, "Ce que D5 lit"): a minimal read-only fact
     /// this class did not expose before - whether <see cref="RunPerFrame"/> has run at least once since
@@ -127,14 +142,8 @@ public sealed class AlundraInventoryDirector
         CursorFrameDelay = 0;
         EquippedWeaponName = string.Empty;
         EquippedItemName = string.Empty;
-        TextRevealState = 0;
-        NameVisiblePrefix = string.Empty;
-        Description0VisiblePrefix = string.Empty;
-        Description1VisiblePrefix = string.Empty;
-        DrawnDescriptionLine0 = string.Empty;
-        DrawnDescriptionLine1 = string.Empty;
-        _textRevealCountdown = 0;
-        _pendingSubInventoryTransition = false;
+        _textReveal.Reset();
+        _setupPending = false;
         _hasRunPerFrameSinceSetup = false;
 
         for (var i = 0; i < BoxLayout.Length; i++)
@@ -170,6 +179,9 @@ public sealed class AlundraInventoryDirector
     };
 
     private const int TweenSpeed = 0xf; // 15 - MainInventoryManager.cs:509,551,591,629,667,705,742 (all seven boxes).
+
+    // The literal seven-space blank DisplayIconNames builds for "no item" (0x80026850, "       \0").
+    private const string BlankName = "       ";
     private const short SlideInFromRightX = 0x140; // 320 - MainInventoryManager.cs:583,621,659,699 (boxes 2,3,4,5).
     private const short SlideOffscreenBelowY = 0xf0; // 240 - MainInventoryManager.cs:757 (box 6, open source / close target).
 
@@ -279,32 +291,32 @@ public sealed class AlundraInventoryDirector
     // Text reveal (DisplayInventoryTexts, MainInventoryManager.cs:929-1064)
     // =====================================================================================
 
-    /// <summary>Port of <c>g_inventoryCursorText</c> - the raw state value: 0 name setup, 1..0x10 name
-    /// reveal, 0x11..0x4c hold, 0x4d desc-line-0 setup, 0x4e..0x8d desc-line-0 reveal, 0x8e desc-line-1
-    /// setup, 0x8f..0xce desc-line-1 reveal, 0xcf done.</summary>
-    public int TextRevealState { get; private set; }
+    /// <summary>Port of <c>g_inventoryCursorText</c> - the raw state value of the text reveal
+    /// (<see cref="AlundraInventoryTextReveal.State"/>).</summary>
+    public int TextRevealState => _textReveal.State;
 
-    public string NameVisiblePrefix { get; private set; } = string.Empty;
-    public string Description0VisiblePrefix { get; private set; } = string.Empty;
-    public string Description1VisiblePrefix { get; private set; } = string.Empty;
+    public string NameVisiblePrefix => _textReveal.NameVisiblePrefix;
+    public string Description0VisiblePrefix => _textReveal.Description0VisiblePrefix;
+    public string Description1VisiblePrefix => _textReveal.Description1VisiblePrefix;
 
-    /// <summary>D5: the text the original's <c>DisplayInventoryDescription(0)</c> drew on THIS tick - the
-    /// name during its reveal and hold (states 1..0x4c), the first description line from 0x4e - and empty on
-    /// every tick it draws nothing on line 0: state 0, state 0x4d, an empty or unowned slot
-    /// (<c>MainInventoryManager.cs:929-1064</c>). The screen shows exactly this; the raw prefixes above keep
-    /// their values across ticks that draw nothing, which is why they are not what the screen reads.</summary>
-    public string DrawnDescriptionLine0 { get; private set; } = string.Empty;
+    /// <summary>D5: the text the original's <c>DisplayInventoryDescription(0)</c> drew on THIS tick
+    /// (<see cref="AlundraInventoryTextReveal.DrawnLine0"/>) - what the screen shows.</summary>
+    public string DrawnDescriptionLine0 => _textReveal.DrawnLine0;
 
-    /// <summary>D5: the text <c>DisplayInventoryDescription(1)</c> drew on THIS tick - the second description
-    /// line from state 0x8f - and empty otherwise (<c>MainInventoryManager.cs:1053-1062</c>).</summary>
-    public string DrawnDescriptionLine1 { get; private set; } = string.Empty;
+    /// <summary>D5: the text <c>DisplayInventoryDescription(1)</c> drew on THIS tick
+    /// (<see cref="AlundraInventoryTextReveal.DrawnLine1"/>).</summary>
+    public string DrawnDescriptionLine1 => _textReveal.DrawnLine1;
 
-    /// <summary>Port of <c>INT_8017fef0</c> (<c>MainInventoryManager.cs:1139-1154</c>, <c>FUN_80055f48</c>) -
-    /// the shared 3-tick countdown (one character committed every 3rd tick), shared by both description
-    /// lines exactly like the original's own single global.</summary>
-    private int _textRevealCountdown;
+    /// <summary><c>DisplayInventoryTexts</c>' state (<c>g_inventoryCursorText</c>, <c>INT_8017fef0</c>): the
+    /// machine both inventories share since E13.d SI11 (D-E13D-35), this director's own instance.</summary>
+    private readonly AlundraInventoryTextReveal _textReveal = new();
 
-    private bool _pendingSubInventoryTransition;
+    /// <summary>E13.d SI3 (D-E13D-22): armed by <see cref="RunDisplayInventoryHeadFromPostProcess"/> when
+    /// the HEAD it just ran was not stopped by its own guard - <see cref="Tick"/> checks this FIRST, before
+    /// the trigger/idle branch, and runs the SETUP (<see cref="RunDisplayInventorySetup"/>) alone on that
+    /// next tick, no trigger and no per-frame work on it (see that method's own doc for why, plan §1.2's
+    /// own clock table).</summary>
+    private bool _setupPending;
 
     // =====================================================================================
     // Tick
@@ -319,6 +331,20 @@ public sealed class AlundraInventoryDirector
     {
         if (_gameState == null)
         {
+            return;
+        }
+
+        // GameEngine.cs:1562-1564 (0x8002bc58-0x8002bc68): the map-entry delay is consumed every tick, open or
+        // not, before the trigger tests it - one logic tick of time (plan E13.d SI12, D-E13D-36).
+        AlundraWarpDirector.Instance.AdvanceWarpDelay(AlundraScriptedMotion.FixedTickSeconds);
+
+        // D-E13D-22: a HEAD run by the post-process last tick has a SETUP still pending - run it alone,
+        // before the trigger/idle check (RunDisplayInventoryHeadFromPostProcess's own doc), no trigger and
+        // no per-frame work on this tick.
+        if (_setupPending)
+        {
+            _setupPending = false;
+            RunDisplayInventorySetup(_gameState);
             return;
         }
 
@@ -364,19 +390,12 @@ public sealed class AlundraInventoryDirector
             return false;
         }
 
-        // GameEngine.cs:1573 - StaticVariables.g_warpDelayFrames == 0. NO PORT EQUIVALENT with real
-        // effect: AlundraWarpDirector.WarpDelayFramesForTests is set to 10 at every map entry
-        // (AlundraWarpDirector.cs:237) but is NEVER decremented anywhere in this DLL (confirmed by grep) -
-        // the original decrements it every single frame, unconditionally (GameEngine.cs:1562-1564),
-        // reaching 0 within 10 frames of any map entry. Reading the port's own stub as a real gate would
-        // introduce a NEW bug (the inventory permanently locked out after every map load, since nothing
-        // would ever bring it back to 0) rather than reproduce the original's brief 10-frame cooldown.
-        // AlundraWarpDirector's own doc (:230-238) already calls this field's only two original consumers,
-        // this trigger among them, unwired "for structural fidelity only" - so this trigger keeps it that
-        // way and treats the guard as always 0 (never blocks), per the brief's own allowance for an
-        // absent guard. BEHAVIOURAL DIFFERENCE this leaves (docs/plan-e13d-inventaire.md §6): the original
-        // refuses to open the inventory during the first 10 frames after a map entry (0.2 s); the port
-        // opens it. It disappears once the warp director decrements the field like GameEngine.cs:1562-1564.
+        // GameEngine.cs:1573 - StaticVariables.g_warpDelayFrames == 0 (0x8002bcb8, read after the decrement at
+        // the head of Tick): no opening while the map-entry delay runs - 0.2 s since E13.d SI12 (D-E13D-36).
+        if (AlundraWarpDirector.Instance.IsWarpDelayRunning)
+        {
+            return false;
+        }
 
         // GameEngine.cs:1574 - (StaticVariables.g_padState1.ButtonsHold & PadState.Select) == 0.
         if ((state.TickPad.ButtonsHold & AlundraPadState.Select) != 0)
@@ -389,35 +408,59 @@ public sealed class AlundraInventoryDirector
         // (UI/MemoryCardManager.cs, ~90 distinct assigned values) - not ported in this DLL at all (no
         // MemoryCardManager port exists). Declared absent, treated as always 0 (never blocks).
 
-        // GameEngine.cs:1576 - MainInventoryManager.DisplayInventory() == 0: DEAD in the original itself,
-        // not ported. DisplayInventory (below) returns 1 on every one of its own paths (:449/:456/:498),
-        // so this comparison can never be true in the decompilation either.
+        // GameEngine.cs:1576 - MainInventoryManager.DisplayInventory() == 0, then g_isGameEnding = 1
+        // (0x8002bcf4-0x8002bd00): not ported. DisplayInventory returns 0 on one path only, the debug
+        // branch's Left (:470, 0x800555f0), and that branch is dead in play (g_cdIsReady, see
+        // RunDisplayInventoryHead) and not ported - so this comparison never holds here.
         return true;
     }
 
     /// <summary>Port of <c>DisplayInventory</c> (<c>MainInventoryManager.cs:443-499</c>) followed
     /// immediately by <c>FUN_80054f1c</c> (<c>:503-776</c>) - see this class' own doc for why both run on
-    /// the same tick as the trigger.</summary>
+    /// the same tick as the trigger. The ORDINARY trigger path (<see cref="Tick"/>'s idle branch): the HEAD
+    /// and the SETUP always run together, unchanged since before E13.d SI3.</summary>
     private void RunDisplayInventory(AlundraGameState state)
     {
-        // MainInventoryManager.cs:445 - g_forbiddenWarpFlag == 0: guaranteed here (this method only runs
-        // from the Idle branch of Tick, i.e. ForbiddenWarpFlag == 0 already) - not re-tested.
+        if (RunDisplayInventoryHead(state))
+        {
+            RunDisplayInventorySetup(state);
+        }
+    }
+
+    /// <summary>E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-22): the HEAD half of
+    /// <c>DisplayInventory</c> only (<c>MainInventoryManager.cs:443-495</c>) - called from the post-process
+    /// (<see cref="RunDisplayInventoryHeadFromPostProcess"/>) on its own tick, and from
+    /// <see cref="RunDisplayInventory"/> (the ordinary trigger path) on the SAME tick as the setup. Returns
+    /// false when a guard stopped it - the inventory already running, or a dialogue open - and the caller
+    /// must not run the setup either, on either path.</summary>
+    private bool RunDisplayInventoryHead(AlundraGameState state)
+    {
+        // MainInventoryManager.cs:445 - g_forbiddenWarpFlag == 0, tested first on every entry (0x80055574,
+        // bnez 0x8005557c: return 1, nothing done). Guaranteed on the trigger path (Tick's Idle branch), but
+        // not from the post-process (RunDisplayInventoryHeadFromPostProcess) - tested here for both (plan
+        // E13.d SI9.d).
+        if (ForbiddenWarpFlag != 0)
+        {
+            return false;
+        }
 
         // MainInventoryManager.cs:447-452 - CheckSpecialWarpCondition(0): callback slot 0 is the dialogue
         // box (GameEngine.cs:1590-1593 reads g_callbackTable[0].Flags & 1, posed by SetTransitionType(0)
         // whenever a dialogue opens) - ported as "a dialogue box is open".
         if (AlundraDialogueDirector.Instance.IsOpen)
         {
-            return;
+            return false;
         }
 
         // MainInventoryManager.cs:454-458 - CheckSpecialWarpCondition(0xb): callback slot 0xb is the
         // debug flags menu (StaticVariables.cs:11388-11470, UIDebugManager.InitializeFlagsDebugMenu) -
         // NOT PORTED (no debug menu exists in this DLL), so this condition is always false/inactive.
 
-        // MainInventoryManager.cs:460-482 - the g_cdIsReady == 0 debug branch: DEAD IN PLAY
-        // (g_cdIsReady is set to 1 once the CD finishes initializing, SoundManager.cs:331, long before
-        // any player input is possible) - not ported, per the plan's own §1.1 finding.
+        // MainInventoryManager.cs:460-482 - the g_cdIsReady == 0 debug branch: DEAD IN PLAY - g_cdIsReady
+        // is set to 1 at the end of the CD init (0x8004e85c, run at boot), long before any player input is
+        // possible - not ported, per the plan's own §1.1 finding. (The C# InitializeSoundSystem's own
+        // "g_cdIsReady = 1", SoundManager.cs:331, is not in the executable: its CD-reset path stores 0 at
+        // 0x80048514 after the CD init, and no writer of the reset request 0x8009a858 was found.)
 
         // MainInventoryManager.cs:484 - HudManager.InitializeHudPosition().
         AlundraHudDirector.Instance.InitializeHudPosition();
@@ -432,8 +475,31 @@ public sealed class AlundraInventoryDirector
         // MainInventoryManager.cs:495 - SoundManager.PlaySoundEffect(4).
         _soundPlayer?.PlaySfx(4);
 
-        // ---- FUN_80054f1c (MainInventoryManager.cs:503-776): setup, same tick ----
+        return true;
+    }
 
+    /// <summary>E13.d SI3 (D-E13D-22): the post-process's own call site - runs the HEAD only
+    /// (<see cref="RunDisplayInventoryHead"/>) and, if it was not stopped by its own guard, arms
+    /// <see cref="_setupPending"/> so the NEXT <see cref="Tick"/> runs the SETUP alone (plan §1.2's own
+    /// clock table: "FUN_80054f1c (mise en place du principal) ... rien de dessiné" on the tick AFTER the
+    /// head). Called from <see cref="AlundraInventoryPostProcess.Run"/> only.</summary>
+    internal void RunDisplayInventoryHeadFromPostProcess()
+    {
+        if (_gameState == null)
+        {
+            return;
+        }
+
+        if (RunDisplayInventoryHead(_gameState))
+        {
+            _setupPending = true;
+        }
+    }
+
+    /// <summary>Port of <c>FUN_80054f1c</c> (<c>MainInventoryManager.cs:503-776</c>) - the setup half only
+    /// (arms <see cref="ForbiddenWarpFlag"/>, the text reset, <c>MenuOpen</c> and the seven box tweens).</summary>
+    private void RunDisplayInventorySetup(AlundraGameState state)
+    {
         // :505 - g_forbiddenWarpFlag = 5 (bits 0 + 2 - SetupBit | SlideOpenBit).
         ForbiddenWarpFlag = SetupBit | SlideOpenBit;
 
@@ -443,13 +509,7 @@ public sealed class AlundraInventoryDirector
         _hasRunPerFrameSinceSetup = false;
 
         // :506 - g_inventoryCursorText = 0 (name reveal restarts for whatever slot is selected).
-        TextRevealState = 0;
-        NameVisiblePrefix = string.Empty;
-        Description0VisiblePrefix = string.Empty;
-        Description1VisiblePrefix = string.Empty;
-        DrawnDescriptionLine0 = string.Empty;
-        DrawnDescriptionLine1 = string.Empty;
-        _textRevealCountdown = 0;
+        _textReveal.Reset();
 
         // :507 - g_playerControlFlags |= MenuOpen.
         state.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
@@ -537,7 +597,7 @@ public sealed class AlundraInventoryDirector
             var wrapped = SelectedSlotId - 0x12;
             SelectedSlotId = slot > 0x17 ? wrapped : slot;
             _soundPlayer?.PlaySfx(1);
-            TextRevealState = 0;
+            _textReveal.Restart();
         }
 
         if ((pad.ButtonsJustPressedByInterval & AlundraPadState.Up) != 0)
@@ -545,7 +605,7 @@ public sealed class AlundraInventoryDirector
             var slot = SelectedSlotId - 6;
             SelectedSlotId = slot < 0 ? SelectedSlotId + 0x12 : slot;
             _soundPlayer?.PlaySfx(1);
-            TextRevealState = 0;
+            _textReveal.Restart();
         }
 
         if ((pad.ButtonsJustPressedByInterval & AlundraPadState.Right) != 0)
@@ -553,7 +613,7 @@ public sealed class AlundraInventoryDirector
             var slot = SelectedSlotId + 1;
             SelectedSlotId = slot == slot / 6 * 6 ? SelectedSlotId - 5 : slot;
             _soundPlayer?.PlaySfx(1);
-            TextRevealState = 0;
+            _textReveal.Restart();
         }
 
         if ((pad.ButtonsJustPressedByInterval & AlundraPadState.Left) != 0)
@@ -561,7 +621,7 @@ public sealed class AlundraInventoryDirector
             var slot = SelectedSlotId - 1;
             SelectedSlotId = SelectedSlotId == SelectedSlotId / 6 * 6 ? SelectedSlotId + 5 : slot;
             _soundPlayer?.PlaySfx(1);
-            TextRevealState = 0;
+            _textReveal.Restart();
         }
 
         if ((pad.ButtonsJustPressedByInterval & AlundraPadState.Cross) != 0)
@@ -576,16 +636,27 @@ public sealed class AlundraInventoryDirector
             }
         }
 
-        if ((pad.ButtonsJustPressedByInterval & (AlundraPadState.Start | AlundraPadState.L2 | AlundraPadState.R2)) != 0)
+        // :846-851 - the close branch. The executable's mask is 0x813 = Start | Triangle | R2 | L2
+        // (ALUN_CD.EXE France, `andi $v0, $v0, 0x813` at 0x80056924, and the same at 0x80053634 in the
+        // sub-inventory), not the decompilation's PadState.OpenInventory = 0x803 (PadState.cs:22), which
+        // lost Triangle. The OPENING trigger does test 0x803 (0x8002bcac): Triangle closes, never opens
+        // (docs/plan-e13d-sous-inventaire.md §1.1, D-E13D-29).
+        if ((pad.ButtonsJustPressedByInterval & (AlundraPadState.Start | AlundraPadState.Triangle | AlundraPadState.L2 | AlundraPadState.R2)) != 0)
         {
-            _pendingSubInventoryTransition = false;
             RunCloseSetup(state);
             AlundraHudDirector.Instance.InitializeHudPositionBeforeHide();
         }
 
-        // :853-859 - L1/R1 (OpenSubInventory): the sub-inventory switch is OUT OF SCOPE (D-E13D-2) -
-        // the press is read (above, implicitly, through the same TickPad the repeat-interval bookkeeping
-        // already advances) but otherwise ignored: no FUN_800556dc, no MenuOpen re-arm, no close.
+        // :853-859 - L1/R1 (OpenSubInventory): close (same FUN_800556dc/sound 5 as the branch above), but
+        // WITHOUT InitializeHudPositionBeforeHide (the gauge stays hidden, plan §1.1) - MenuOpen re-armed
+        // and AlundraInventoryPostProcess.State = 1 instead: AlundraInventoryPostProcess.Run opens the
+        // sub-inventory once this closing slide settles (this class' own IsCallbackArmed).
+        if ((pad.ButtonsJustPressedByInterval & (AlundraPadState.L1 | AlundraPadState.R1)) != 0)
+        {
+            RunCloseSetup(state);
+            state.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+            AlundraInventoryPostProcess.Instance.State = 1;
+        }
     }
 
     /// <summary>Port of the box-slide half of <c>FUN_80056598</c> (<c>:862-905</c>) - the seven
@@ -624,7 +695,9 @@ public sealed class AlundraInventoryDirector
                 _boxes[i] = new BoxState(_boxes[i].OriginX, _boxes[i].OriginY);
             }
 
-            if (!_pendingSubInventoryTransition)
+            // :896-899 - MenuOpen cleared ONLY if the post-process is not about to open the sub-inventory
+            // (E13.d SI3, D-E13D-21/22 - replaces the former _pendingSubInventoryTransition hook).
+            if ((AlundraInventoryPostProcess.Instance.State & 1) == 0)
             {
                 state.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
             }
@@ -684,7 +757,13 @@ public sealed class AlundraInventoryDirector
     /// (NOT <see cref="AlundraPlayerManager.GetWeaponIdBySlotId"/>: that helper's own case order is a
     /// DIFFERENT, sequential 0-&gt;1,1-&gt;2,... mapping built for <c>GetItemIdFromCurrentWeapon</c>, not
     /// for this switch, whose own case order is 1,3,2,4,5 - <c>GetWeaponIdFromSlot1/3/2/4/5</c>,
-    /// :1627/1640/1661/1682/1702).</summary>
+    /// :1627/1640/1661/1682/1702).
+    /// <para>A defect of the original, corrected (plan E13.d SI9.b, D-E13D-30): the executable tests "already
+    /// equipped" (0x800579b0...) BEFORE "empty slot" (0x800579b8...), so with no weapon resolving (weapon id -1 or
+    /// 0, or no owned item in its slot - a New Game before the first sword) an empty weapon slot compares equal
+    /// (-1 == -1) and stays silent instead of sounding the error. Validity is tested first here, the order
+    /// FUN_80057854 already uses for items (0x800578b8, then 0x800578c8); the equipped weapon never resolves to
+    /// -1, so its own silent path is unchanged.</para></summary>
     private void RunEquipWeapon(AlundraGameState state)
     {
         if (_itemTables == null)
@@ -746,22 +825,22 @@ public sealed class AlundraInventoryDirector
                 break;
         }
 
+        if (!valid)
+        {
+            // :1745-1746 - the fall-through: an empty/invalid slot, tested first (see this method's own doc).
+            _soundPlayer?.PlaySfx(3);
+            RunDisplayIconNames(state);
+            return;
+        }
+
         if (alreadyEquipped)
         {
             RunDisplayIconNames(state);
             return;
         }
 
-        if (valid)
-        {
-            AlundraPlayerManager.SetPlayerWeaponId(state, _itemTables, weaponIdToSet);
-            _soundPlayer?.PlaySfx(2);
-            RunDisplayIconNames(state);
-            return;
-        }
-
-        // :1745-1746 - the fall-through: an empty/invalid slot.
-        _soundPlayer?.PlaySfx(3);
+        AlundraPlayerManager.SetPlayerWeaponId(state, _itemTables, weaponIdToSet);
+        _soundPlayer?.PlaySfx(2);
         RunDisplayIconNames(state);
     }
 
@@ -893,9 +972,11 @@ public sealed class AlundraInventoryDirector
     }
 
     /// <summary>Port of <c>DisplayIconNames</c> (<c>MainInventoryManager.cs:1750-1793</c>) - resolves the
-    /// equipped weapon/item id to a display string. Only <see cref="EquippedWeaponName"/>: the original
-    /// leaves the weapon name UNCHANGED (does not clear it) when no weapon is equipped (:1757 skips the
-    /// whole block) - ported the same way, by simply not writing it on that path.</summary>
+    /// equipped weapon/item id to a display string.
+    /// <para>A defect of the original, corrected (plan E13.d SI9.b, D-E13D-30): when no weapon resolves, the
+    /// executable skips the whole weapon block (0x80055c9c) and leaves glyph row 0 as it was - the previous
+    /// weapon's name, or text another screen built there (0x80059538) - while the item gets its seven-space
+    /// blank (0x80026850). The weapon gets the same blank here.</para></summary>
     private void RunDisplayIconNames(AlundraGameState state)
     {
         if (_itemTables == null)
@@ -904,8 +985,11 @@ public sealed class AlundraInventoryDirector
         }
 
         var currentWeaponItem = AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, _itemTables);
-        if (currentWeaponItem != AlundraPlayerManager.NoItem
-            && AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, (int)currentWeaponItem, out var weaponName))
+        if (currentWeaponItem == AlundraPlayerManager.NoItem)
+        {
+            EquippedWeaponName = BlankName; // corrected defect, see this method's own doc.
+        }
+        else if (AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, (int)currentWeaponItem, out var weaponName))
         {
             EquippedWeaponName = weaponName;
         }
@@ -913,7 +997,7 @@ public sealed class AlundraInventoryDirector
         var currentItemId = AlundraPlayerManager.SetItemIdFromCurrentItemId(state, _itemTables);
         if (currentItemId == AlundraPlayerManager.NoItem)
         {
-            EquippedItemName = "       "; // :1774-1777 - the literal seven-space blank.
+            EquippedItemName = BlankName; // :1774-1777
         }
         else if (AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, (int)currentItemId, out var itemName))
         {
@@ -922,180 +1006,33 @@ public sealed class AlundraInventoryDirector
     }
 
     /// <summary>Port of <c>DisplayInventoryTexts</c> (<c>MainInventoryManager.cs:929-1064</c>) - the text
-    /// reveal state machine, ticked once per active frame (see <see cref="RunPerFrame"/>'s own tail).</summary>
-    private void RunDisplayInventoryTexts(AlundraGameState state)
-    {
-        // What DisplayInventoryDescription draws THIS tick, set by the branches that call it and left
-        // empty by the ones that do not (see DrawnDescriptionLine0/1).
-        DrawnDescriptionLine0 = string.Empty;
-        DrawnDescriptionLine1 = string.Empty;
+    /// reveal, ticked once per active frame (see <see cref="RunPerFrame"/>'s own tail), on the item the selected
+    /// slot describes.</summary>
+    private void RunDisplayInventoryTexts(AlundraGameState state) => _textReveal.Tick(ResolveDescribedItem(state));
 
+    /// <summary><c>DisplayInventoryTexts</c>' own item resolution (<c>:936-951</c>, 0x80056010-0x80056058): the
+    /// slot's fixed item if owned, or the item its slot id resolves to; null for an empty or unowned slot, which
+    /// draws nothing and freezes the reveal.</summary>
+    private int? ResolveDescribedItem(AlundraGameState state)
+    {
         if (_itemTables == null)
         {
-            return;
+            return null;
         }
 
         var slotItemId = GItemIdBySlotIndex[SelectedSlotId];
 
         if (slotItemId == 0)
         {
-            return;
+            return null;
         }
-
-        int itemId;
 
         if (slotItemId == -1)
         {
             var value = AlundraPlayerManager.GetItemIdFromSlotId(state, _itemTables, (uint)SlotIdByInventorySlotIndex[SelectedSlotId]);
-            if (value == AlundraPlayerManager.NoItem)
-            {
-                return;
-            }
-
-            itemId = (int)value;
-        }
-        else if (AlundraPlayerManager.GetNumberOfItem(state, slotItemId) == 0)
-        {
-            return;
-        }
-        else
-        {
-            itemId = slotItemId;
+            return value == AlundraPlayerManager.NoItem ? null : (int)value;
         }
 
-        var cursor = TextRevealState;
-        var projectPath = EngineEnvironment.ProjectPath;
-
-        // :959-967 - state 0: load the name, nothing revealed yet.
-        if (cursor == 0)
-        {
-            NameVisiblePrefix = string.Empty;
-            _textRevealCountdown = 0;
-            TextRevealState = cursor + 1;
-            return;
-        }
-
-        // :970-986 - states 1..0x10: reveal the name one character at a time.
-        if ((uint)(cursor - 1) < 0x10)
-        {
-            AlundraEtcStringTable.TryResolveItemName(projectPath, itemId, out var name);
-
-            if (cursor - 1 >= name.Length)
-            {
-                TextRevealState = 0x11;
-            }
-            else
-            {
-                AdvanceTextReveal(name[cursor - 1]);
-                NameVisiblePrefix = RevealedPrefix(name, TextRevealState - 1);
-            }
-
-            DrawnDescriptionLine0 = NameVisiblePrefix; // :983 DisplayInventoryDescription(0)
-            return;
-        }
-
-        // :989-994 - states 0x11..0x4c: hold the name on screen.
-        if ((uint)(cursor - 0x11) < 0x3c)
-        {
-            TextRevealState = cursor + 1;
-            DrawnDescriptionLine0 = NameVisiblePrefix; // :992 DisplayInventoryDescription(0)
-            return;
-        }
-
-        // :997-1005 - state 0x4d: switch line 0 from the name to the first description line.
-        if (cursor == 0x4d)
-        {
-            Description0VisiblePrefix = string.Empty;
-            _textRevealCountdown = 0;
-            TextRevealState = cursor + 1;
-            return;
-        }
-
-        // :1008-1024 - states 0x4e..0x8d: reveal the first description line.
-        if ((uint)(cursor - 0x4e) < 0x40)
-        {
-            AlundraEtcStringTable.TryResolveItemDescriptionLine0(projectPath, itemId, out var firstLine);
-
-            if (cursor - 0x4e >= firstLine.Length)
-            {
-                TextRevealState = 0x8e;
-            }
-            else
-            {
-                AdvanceTextReveal(firstLine[cursor - 0x4e]);
-                Description0VisiblePrefix = RevealedPrefix(firstLine, TextRevealState - 0x4e);
-            }
-
-            DrawnDescriptionLine0 = Description0VisiblePrefix; // :1022 DisplayInventoryDescription(0)
-            return;
-        }
-
-        // :1027-1036 - state 0x8e: switch to the second description line.
-        if (cursor == 0x8e)
-        {
-            Description1VisiblePrefix = string.Empty;
-            _textRevealCountdown = 0;
-            TextRevealState = cursor + 1;
-            DrawnDescriptionLine0 = Description0VisiblePrefix; // :1032 DisplayInventoryDescription(0)
-            return;
-        }
-
-        // :1039-1056 - states 0x8f..0xce: reveal the second description line.
-        if ((uint)(cursor - 0x8f) < 0x40)
-        {
-            AlundraEtcStringTable.TryResolveItemDescriptionLine1(projectPath, itemId, out var secondLine);
-
-            if (cursor - 0x8f >= secondLine.Length)
-            {
-                TextRevealState = 0xcf;
-            }
-            else
-            {
-                AdvanceTextReveal(secondLine[cursor - 0x8f]);
-                Description1VisiblePrefix = RevealedPrefix(secondLine, TextRevealState - 0x8f);
-            }
-
-            DrawnDescriptionLine0 = Description0VisiblePrefix; // :1053 DisplayInventoryDescription(0)
-            DrawnDescriptionLine1 = Description1VisiblePrefix; // :1054 DisplayInventoryDescription(1)
-            return;
-        }
-
-        // :1059-1062 - cursor == 0xcf: both lines are complete and drawn, nothing more to advance.
-        if (cursor == 0xcf)
-        {
-            DrawnDescriptionLine0 = Description0VisiblePrefix;
-            DrawnDescriptionLine1 = Description1VisiblePrefix;
-        }
-    }
-
-    /// <summary>Port of <c>FUN_80055f48</c> (<c>MainInventoryManager.cs:1139-1154</c>) - commits one
-    /// character every third tick. The original also widens the glyph-strip sprite by the character's
-    /// pixel width (<c>g_fontCharWidthTable</c>) - irrelevant here, D5 measures its own font.</summary>
-    private void AdvanceTextReveal(char c)
-    {
-        _ = c; // kept as a parameter for the port's own signature symmetry with the original.
-
-        if (_textRevealCountdown != 0)
-        {
-            _textRevealCountdown -= 1;
-            return;
-        }
-
-        _textRevealCountdown = 2;
-        TextRevealState += 1;
-    }
-
-    /// <summary>Port of <c>RenderRevealedLine</c>'s own clamp (<c>MainInventoryManager.cs:1069-1094</c>) -
-    /// never split an escape pair (<c>{x</c>/<c>}x</c>) across the visible/hidden boundary.</summary>
-    private static string RevealedPrefix(string text, int visibleLength)
-    {
-        visibleLength = Math.Clamp(visibleLength, 0, text.Length);
-
-        if (visibleLength > 0 && (text[visibleLength - 1] == '{' || text[visibleLength - 1] == '}'))
-        {
-            visibleLength -= 1;
-        }
-
-        return text.Substring(0, visibleLength);
+        return AlundraPlayerManager.GetNumberOfItem(state, slotItemId) == 0 ? null : slotItemId;
     }
 }

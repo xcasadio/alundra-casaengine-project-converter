@@ -1,0 +1,172 @@
+{
+  "view_model_type": "AlundraSubInventoryViewModel",
+  "values": {
+    "RootVisibility": "Visible",
+    "BoxArmory": {
+      "Left": 8,
+      "Top": 16,
+      "Visibility": "Visible"
+    },
+    "BoxKeyItems": {
+      "Left": 8,
+      "Top": 128,
+      "Visibility": "Visible"
+    },
+    "BoxArmorName": {
+      "Left": 176,
+      "Top": 16,
+      "Visibility": "Visible"
+    },
+    "BoxBootsName": {
+      "Left": 176,
+      "Top": 64,
+      "Visibility": "Visible"
+    },
+    "BoxEquipmentIcons": {
+      "Left": 136,
+      "Top": 16,
+      "Visibility": "Visible"
+    },
+    "BoxDescription": {
+      "Left": 16,
+      "Top": 168,
+      "Visibility": "Visible"
+    },
+    "BoxMoneyFalconKey": {
+      "Left": 176,
+      "Top": 96,
+      "Visibility": "Visible"
+    },
+    "ArmorFrame": {
+      "Left": 144,
+      "Top": 40,
+      "Visibility": "Visible"
+    },
+    "BootsFrame": {
+      "Left": 144,
+      "Top": 80,
+      "Visibility": "Visible"
+    },
+    "ArmoryIcon0": {
+      "Visibility": "Collapsed"
+    },
+    "ArmoryIcon1": {
+      "Visibility": "Collapsed"
+    },
+    "ArmoryIcon2": {
+      "Visibility": "Collapsed"
+    },
+    "ArmoryIcon3": {
+      "Visibility": "Collapsed"
+    },
+    "ArmoryIcon4": {
+      "Visibility": "Collapsed"
+    },
+    "ArmoryIcon5": {
+      "Visibility": "Collapsed"
+    },
+    "ArmoryIcon6": {
+      "Visibility": "Collapsed"
+    },
+    "KeyItemIcon0": {
+      "Visibility": "Collapsed"
+    },
+    "KeyItemIcon1": {
+      "Visibility": "Collapsed"
+    },
+    "KeyItemIcon2": {
+      "Visibility": "Collapsed"
+    },
+    "KeyItemIcon3": {
+      "Visibility": "Collapsed"
+    },
+    "KeyItemIcon4": {
+      "Visibility": "Collapsed"
+    },
+    "ArmorIcon": {
+      "SourceName": "b7360988-5826-5b58-9dcb-3e5e86811dd6",
+      "Left": 144,
+      "Top": 40,
+      "Visibility": "Visible"
+    },
+    "BootsIcon": {
+      "SourceName": "6138a7aa-e847-557c-9669-f28d10b9facb",
+      "Left": 144,
+      "Top": 80,
+      "Visibility": "Visible"
+    },
+    "MoneyDigit0": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 200,
+      "Top": 100,
+      "Visibility": "Visible"
+    },
+    "MoneyDigit1": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 208,
+      "Top": 100,
+      "Visibility": "Visible"
+    },
+    "MoneyDigit2": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 216,
+      "Top": 100,
+      "Visibility": "Visible"
+    },
+    "MoneyDigit3": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 224,
+      "Top": 100,
+      "Visibility": "Visible"
+    },
+    "FalconDigit0": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 216,
+      "Top": 124,
+      "Visibility": "Visible"
+    },
+    "FalconDigit1": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 224,
+      "Top": 124,
+      "Visibility": "Visible"
+    },
+    "KeyDigit0": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 216,
+      "Top": 148,
+      "Visibility": "Visible"
+    },
+    "KeyDigit1": {
+      "SourceName": "bc300193-4244-5138-a27f-f242a150bed7",
+      "Left": 224,
+      "Top": 148,
+      "Visibility": "Visible"
+    },
+    "ArmorName": {
+      "Text": "Armure en tissu",
+      "Left": 192,
+      "Top": 24
+    },
+    "BootsName": {
+      "Text": "Bottes courtes",
+      "Left": 192,
+      "Top": 72
+    },
+    "DescriptionLine0": {
+      "Text": "",
+      "Left": 32,
+      "Top": 180
+    },
+    "DescriptionLine1": {
+      "Text": "",
+      "Left": 32,
+      "Top": 196
+    },
+    "Cursor": {
+      "Left": 74,
+      "Top": 12,
+      "Visibility": "Visible"
+    }
+  }
+}

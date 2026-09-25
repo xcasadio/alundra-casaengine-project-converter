@@ -14,7 +14,8 @@ namespace Alundra.Tests.UI;
 /// </summary>
 public sealed class AlundraCursorAnimationTimingTests
 {
-    // wind_159/182/210/237, the cursor's four phases, and the pixel offset of each (AlundraInventoryComposer.cs:103-106).
+    // wind_159/182/210/237, the cursor's four phases, and the pixel offset of each (ALUN_CD.EXE 0x800a82c8/0x800a82d8,
+    // AlundraInventoryComposer's CursorPhaseX/Y).
     private static readonly Guid[] PhaseSprites =
     {
         Guid.Parse("6ed4380a-ba9c-5d0b-84db-22e1ddf61361"),
@@ -23,7 +24,7 @@ public sealed class AlundraCursorAnimationTimingTests
         Guid.Parse("366c35dc-c165-5e6a-a4fc-897fe877391e"),
     };
 
-    private static readonly Vector2[] PhaseOffsets = { new(0, 0), new(0, 0), new(-1, 1), new(-1, 0) };
+    private static readonly Vector2[] PhaseOffsets = { new(0, 0), new(-1, 1), new(-2, 2), new(-2, 2) };
 
     private const float FrameSeconds = 1f / 60f;
     private const float PhaseSeconds = 0.2f;

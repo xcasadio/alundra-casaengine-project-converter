@@ -382,6 +382,21 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// the font then stays pending until the next world's screen takes it again.</summary>
     private AlundraInventoryScreen? _inventoryScreen;
 
+    /// <summary>E13.d SI4 (docs/plan-e13d-sous-inventaire.md): same "per-proxy retry gate" shape as
+    /// <see cref="_inventoryScreenWired"/> - guards <see cref="TryWireSubInventoryScreenOnce"/>'s own view
+    /// lookup, never the session-scoped <see cref="AlundraSubInventoryDirector"/> itself.</summary>
+    private bool _subInventoryScreenWired;
+
+    /// <summary>E13.d SI4: the presenter that pushes/removes <see cref="AlundraSubInventoryScreen"/> and pushes
+    /// its per-tick <see cref="SubInventoryDisplayModel"/> - null until <see cref="TryWireSubInventoryScreenOnce"/>
+    /// succeeds (production), or until a test attaches one via <see cref="AttachSubInventoryPresenterForTests"/>.</summary>
+    private AlundraSubInventoryPresenter? _subInventoryPresenter;
+
+    /// <summary>E13.d SI4 (engine ADR-0036): the sub-inventory screen this proxy built. It holds font3 from
+    /// its construction, and <see cref="OnEndPlay"/> disposes it the same way <see cref="_inventoryScreen"/>
+    /// does.</summary>
+    private AlundraSubInventoryScreen? _subInventoryScreen;
+
     /// <summary>Engine ADR-0037: the HUD screen this proxy built. It holds its glyph and icon sprites, and
     /// <see cref="OnEndPlay"/> disposes it so they are given back when this world ends.</summary>
     private AlundraHudScreen? _hudScreen;
@@ -1075,6 +1090,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     internal void InstallInventorySystems()
     {
         AlundraInventoryDirector.Instance.AttachToWorld(GameState, ItemTables, SoundPlayer);
+
+        // E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-20): same "re-point without touching state"
+        // shape, right next to the main inventory's own director - the two are session singletons like it.
+        AlundraSubInventoryDirector.Instance.AttachToWorld(GameState, ItemTables, SoundPlayer);
     }
 
     /// <summary>
@@ -1244,6 +1263,46 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             AlundraInventoryDirector.Instance, GameState, ItemTables, viewModel, screen, uiView);
     }
 
+    /// <summary>
+    /// E13.d SI4's own version of <see cref="TryWireInventoryScreenOnce"/> - same retry-until-success shape,
+    /// same reason. <see cref="AlundraSubInventoryScreen"/> is modal too, and stays down until its own
+    /// director actually draws it (D-E13D-26): this method only constructs the presenter once a live view
+    /// and asset content manager exist.
+    /// </summary>
+    private void TryWireSubInventoryScreenOnce()
+    {
+        if (_subInventoryScreenWired)
+        {
+            return;
+        }
+
+        var uiView = _world?.Game?.GameManager?.ViewManager?.GetActiveUIView();
+        var assetContentManager = _world?.Game?.AssetContentManager;
+        var fonts = _world?.Game?.UIFonts;
+        if (uiView == null || assetContentManager == null || fonts == null)
+        {
+            return; // retry next frame - same reason TryWireInventoryScreenOnce retries.
+        }
+
+        var subInventoryScreen = new AlundraSubInventoryScreen(assetContentManager, fonts);
+        _subInventoryScreen = subInventoryScreen;
+        _subInventoryPresenter = new AlundraSubInventoryPresenter(
+            AlundraSubInventoryDirector.Instance, GameState, ItemTables, subInventoryScreen.ViewModel, subInventoryScreen, uiView);
+        _subInventoryScreenWired = true;
+        Logs.WriteInfo("AlundraWorldProxy: sub-inventory screen wired to the active UI view (post-bootstrap retry).");
+    }
+
+    /// <summary>Test-only seam: attaches an <see cref="AlundraSubInventoryPresenter"/> over the SAME
+    /// session-scoped <see cref="AlundraSubInventoryDirector.Instance"/> this proxy's own production wiring
+    /// (<see cref="TryWireSubInventoryScreenOnce"/>) would use, but against any
+    /// <see cref="AlundraSubInventoryViewModel"/>/<see cref="IUIScreen"/>/<see cref="IUIViewRuntime"/> -
+    /// same shape as <see cref="AttachInventoryPresenterForTests"/>.</summary>
+    internal void AttachSubInventoryPresenterForTests(AlundraSubInventoryViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
+    {
+        _subInventoryPresenter = new AlundraSubInventoryPresenter(
+            AlundraSubInventoryDirector.Instance, GameState, ItemTables, viewModel, screen, uiView);
+    }
+
     /// <summary>E13.c S3: the equipment source handed to the production presenter - the port of the two
     /// lookups <c>HudManager.DisplayHudWeaponAndItem</c> makes every frame, over this proxy's own session
     /// state and item tables (<see cref="AlundraPlayerManager.ResolveHudEquipmentIcons"/>).</summary>
@@ -1355,7 +1414,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     {
         var director = AlundraHudDirector.Instance;
 
-        if (director.Phase is AlundraHudDirector.HudPhase.Opening or AlundraHudDirector.HudPhase.Closing)
+        if (director.Phase is AlundraHudDirector.HudPhase.Opening or AlundraHudDirector.HudPhase.Closing
+            or AlundraHudDirector.HudPhase.ClosingDuringOpening)
         {
             Logs.WriteInfo(
                 $"AlundraWorldProxy: F1 debug HUD toggle ignored - director mid-transition (phase={director.Phase}).");
@@ -1922,10 +1982,19 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // this same loop... after the loop, a two-tick frame would have overwritten the first tick's
         // edge") - it is the trigger check's own site too (GameEngine.cs:1567-1576 sits right after
         // UpdateWorld(), and this per-tick loop is the closest the port's own structure gets to that).
+        //
+        // E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-21/22): the sub-inventory director's own
+        // Tick(), then the post-process, run right after - the port's equivalent of the original's own
+        // Update-then-render split (plan §1.2): the main inventory's trigger is the "Update" half, the two
+        // directors' per-frame work and AlundraInventoryPostProcess.Run the "render" half, the post-process
+        // AFTER both directors for THIS tick, as the original runs it after all thirteen of its callbacks
+        // (GraphicManager.cs:1677-1706 - its own post-process runs after its own callback-table loop).
         for (var padTick = 0; padTick < ticksThisFrame; padTick++)
         {
             GameState.TickPad.Update(GameState.LastPadState.ButtonsHold);
             AlundraInventoryDirector.Instance.Tick(PlayerEntity);
+            AlundraSubInventoryDirector.Instance.Tick();
+            AlundraInventoryPostProcess.Instance.Run();
 
             // E13.d D5 (docs/plan-e13d-inventaire.md): the presenter, right after the director's own
             // Tick() for this SAME tick - same "presenter runs immediately after its director, inside the
@@ -1935,6 +2004,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // loop). Null until a view is wired (TryWireInventoryScreenOnce production path, or
             // AttachInventoryPresenterForTests in tests).
             _inventoryPresenter?.Tick();
+
+            // E13.d SI4: the sub-inventory's own presenter, right after the main's, same tick - the two
+            // screens are never pushed together (D-E13D-26), so their push/remove order here never matters,
+            // but running both inside the loop keeps every presenter reading this SAME tick's director state.
+            _subInventoryPresenter?.Tick();
         }
 
         // E12.a wiring fix: must run BEFORE the map-events pass below - a scripted dialogue opened
@@ -1942,6 +2016,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         TryWireDialoguePresenterOnce();
         TryWireHudScreenOnce();
         TryWireInventoryScreenOnce();
+        TryWireSubInventoryScreenOnce();
 
         // C1 (docs/plan-camera-ordre-frame.md §3): map-events run FIRST, before the camera block - a
         // faithful port of the original's own frame order (GameEngine.cs:1638-1664/1743-1753:
@@ -2514,6 +2589,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         _inventoryScreen?.Dispose();
         _inventoryScreen = null;
 
+        // E13.d SI4: the sub-inventory screen gives font3 back the same way.
+        _subInventoryScreen?.Dispose();
+        _subInventoryScreen = null;
+
         // Engine ADR-0037: the HUD screen gives back its sprites the same way.
         _hudScreen?.Dispose();
         _hudScreen = null;
@@ -2528,6 +2607,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     internal void AttachInventoryScreenForTests(AlundraInventoryScreen screen)
     {
         _inventoryScreen = screen;
+    }
+
+    /// <summary>Test-only seam: the sub-inventory screen <see cref="OnEndPlay"/> disposes, as
+    /// <see cref="TryWireSubInventoryScreenOnce"/> would have built it (which needs a live game).</summary>
+    internal void AttachSubInventoryScreenForTests(AlundraSubInventoryScreen screen)
+    {
+        _subInventoryScreen = screen;
     }
 
     /// <summary>Test-only seam: the HUD screen <see cref="OnEndPlay"/> disposes, as

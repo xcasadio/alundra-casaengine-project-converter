@@ -9,7 +9,8 @@ cuite** depuis la copie A (D-E13D-13, D-E13D-14), **portrait reporté** (D-E13D-
 **Naissance** : `docs/plan-conversion-totale.md` §E13, E13.d — « porter l'original tel quel » ; découpage
 décidé par l'auteur le 2026-09-19 : **l'inventaire principal d'abord** (ouverture, fermeture, équipement),
 puis le sous-inventaire et la bascule L1/R1. Ce plan ne couvre que l'inventaire principal ; le
-sous-inventaire aura son propre plan, écrit après la recette de celui-ci.
+sous-inventaire a son propre plan, écrit le 2026-09-24 après la recette D6 :
+`docs/plan-e13d-sous-inventaire.md`.
 **Dépend de** : E13.c S3 (`AlundraItemTables`, les compteurs d'objets, `SetPlayerWeaponId` et la chaîne
 d'équipement portée ligne à ligne), close et mergée dans `main` (`ea633ad`).
 **Branche** : `chantier/e13d-inventaire`, créée depuis `chantier/e13c-suite`, rebasée sur `main` le
@@ -505,7 +506,8 @@ tick N, gestion par image dès N+1 ; `MenuOpen` est vu par la logique du tick N+
 champ (`AlundraWarpDirector.WarpDelayFramesForTests`, 10 à chaque entrée de carte) mais **ne le décrémente
 jamais**, contrairement à `GameEngine.cs:1561-1564` ; le lire bloquerait l'inventaire pour toujours. **Écart
 qui en reste** : l'original refuse l'inventaire pendant les 10 premières images d'une carte (0,2 s), le
-portage non (§6 point 9).
+portage non (§6 point 9). **Comblé le 2026-09-25** (`docs/plan-e13d-sous-inventaire.md` SI12, D-E13D-36) : un
+délai de 0,2 s consommé par le temps logique, testé par le déclencheur ; 9 ticks refusés, ouverture au 10ᵉ.
 
 | Preuve | Résultat |
 |---|---|
@@ -746,6 +748,10 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
    entrée de carte mais jamais décrémenté ; l'original le décrémente à chaque image (`GameEngine.cs:1561-1564`)
    et refuse l'inventaire tant qu'il ne vaut pas 0. Le portage ouvre l'inventaire dès la première image
    d'une carte. À corriger avec le directeur des warps (T4), hors de ce plan.
+10. **`Triangle` ferme aussi l'inventaire** (relevé le 2026-09-24 dans l'exécutable France, masque `0x813` en
+   `0x80056924`, que la décompilation avait perdu) : corrigé par la tranche SI3.a du plan du sous-inventaire
+   (`docs/plan-e13d-sous-inventaire.md`, `a3901af`). La recette D6 fermait par `Start`, `L2` ou `R2`, toujours
+   valables ; `Triangle` ferme désormais de la même façon et n'ouvre pas.
 
 ## 7. Journal
 
