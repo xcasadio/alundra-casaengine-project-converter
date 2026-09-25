@@ -451,10 +451,12 @@ nette, qui glisse avec la jauge ; suites `Alundra.Tests` et convertisseur vertes
 6. **Le relevé des portraits doit précéder le test d'intersection — corrigé par le découpage.** Les
    rectangles des portraits n'existent que dans le `.BIN` : S1.a les relève avant que la mesure
    décisive ne puisse s'exécuter. Le plan initial demandait cette mesure à S0, c'était impossible.
-7. **`SetPlayerWeaponId` et la valeur 0 — question pour l'auteur.** La translittération accepte 0
+7. ~~**`SetPlayerWeaponId` et la valeur 0 — question pour l'auteur.** La translittération accepte 0
    (§1.2) là où l'original, comparaison non signée sur 32 bits, le rejetterait probablement. À
    vérifier dans Ghidra sur `0x8004ddf4` et voisins avant que S4 ne fige la règle ; en attendant S4
-   porte le code cité et marque la ligne.
+   porte le code cité et marque la ligne.~~ **Tranché le 2026-09-25 par l'exécutable** (`0x8004e484`,
+   `docs/plan-e13d-sous-inventaire.md` SI9.b) : l'argument est un entier 32 bits, −1 est rangé, 0 est
+   refusé (`sltiu` à `0x8004e49c`) ; le portage suit l'exécutable.
 8. ~~**`g_itemDropProperties` ne sort d'AUCUN des deux CSV — à traiter avant S3.**~~ **Résolu le 2026-09-21 par S1.c et S2.b.** Le drapeau de
    déverrouillage de la nouvelle partie (`Field3 & 0x80`, `StaticVariables.cs:841`, `:1234`) n'est
    ni dans `ItemsProperties.csv` ni dans `ItemPortrait.csv`, alors que S3 en a besoin pour porter la

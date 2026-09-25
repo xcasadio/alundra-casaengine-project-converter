@@ -187,6 +187,9 @@ public sealed class AlundraInventoryDirector
     };
 
     private const int TweenSpeed = 0xf; // 15 - MainInventoryManager.cs:509,551,591,629,667,705,742 (all seven boxes).
+
+    // The literal seven-space blank DisplayIconNames builds for "no item" (0x80026850, "       \0").
+    private const string BlankName = "       ";
     private const short SlideInFromRightX = 0x140; // 320 - MainInventoryManager.cs:583,621,659,699 (boxes 2,3,4,5).
     private const short SlideOffscreenBelowY = 0xf0; // 240 - MainInventoryManager.cs:757 (box 6, open source / close target).
 
@@ -767,7 +770,13 @@ public sealed class AlundraInventoryDirector
     /// (NOT <see cref="AlundraPlayerManager.GetWeaponIdBySlotId"/>: that helper's own case order is a
     /// DIFFERENT, sequential 0-&gt;1,1-&gt;2,... mapping built for <c>GetItemIdFromCurrentWeapon</c>, not
     /// for this switch, whose own case order is 1,3,2,4,5 - <c>GetWeaponIdFromSlot1/3/2/4/5</c>,
-    /// :1627/1640/1661/1682/1702).</summary>
+    /// :1627/1640/1661/1682/1702).
+    /// <para>A defect of the original, corrected (plan E13.d SI9.b, D-E13D-30): the executable tests "already
+    /// equipped" (0x800579b0...) BEFORE "empty slot" (0x800579b8...), so with no weapon resolving (weapon id -1 or
+    /// 0, or no owned item in its slot - a New Game before the first sword) an empty weapon slot compares equal
+    /// (-1 == -1) and stays silent instead of sounding the error. Validity is tested first here, the order
+    /// FUN_80057854 already uses for items (0x800578b8, then 0x800578c8); the equipped weapon never resolves to
+    /// -1, so its own silent path is unchanged.</para></summary>
     private void RunEquipWeapon(AlundraGameState state)
     {
         if (_itemTables == null)
@@ -829,22 +838,22 @@ public sealed class AlundraInventoryDirector
                 break;
         }
 
+        if (!valid)
+        {
+            // :1745-1746 - the fall-through: an empty/invalid slot, tested first (see this method's own doc).
+            _soundPlayer?.PlaySfx(3);
+            RunDisplayIconNames(state);
+            return;
+        }
+
         if (alreadyEquipped)
         {
             RunDisplayIconNames(state);
             return;
         }
 
-        if (valid)
-        {
-            AlundraPlayerManager.SetPlayerWeaponId(state, _itemTables, weaponIdToSet);
-            _soundPlayer?.PlaySfx(2);
-            RunDisplayIconNames(state);
-            return;
-        }
-
-        // :1745-1746 - the fall-through: an empty/invalid slot.
-        _soundPlayer?.PlaySfx(3);
+        AlundraPlayerManager.SetPlayerWeaponId(state, _itemTables, weaponIdToSet);
+        _soundPlayer?.PlaySfx(2);
         RunDisplayIconNames(state);
     }
 
@@ -976,9 +985,11 @@ public sealed class AlundraInventoryDirector
     }
 
     /// <summary>Port of <c>DisplayIconNames</c> (<c>MainInventoryManager.cs:1750-1793</c>) - resolves the
-    /// equipped weapon/item id to a display string. Only <see cref="EquippedWeaponName"/>: the original
-    /// leaves the weapon name UNCHANGED (does not clear it) when no weapon is equipped (:1757 skips the
-    /// whole block) - ported the same way, by simply not writing it on that path.</summary>
+    /// equipped weapon/item id to a display string.
+    /// <para>A defect of the original, corrected (plan E13.d SI9.b, D-E13D-30): when no weapon resolves, the
+    /// executable skips the whole weapon block (0x80055c9c) and leaves glyph row 0 as it was - the previous
+    /// weapon's name, or text another screen built there (0x80059538) - while the item gets its seven-space
+    /// blank (0x80026850). The weapon gets the same blank here.</para></summary>
     private void RunDisplayIconNames(AlundraGameState state)
     {
         if (_itemTables == null)
@@ -987,8 +998,11 @@ public sealed class AlundraInventoryDirector
         }
 
         var currentWeaponItem = AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, _itemTables);
-        if (currentWeaponItem != AlundraPlayerManager.NoItem
-            && AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, (int)currentWeaponItem, out var weaponName))
+        if (currentWeaponItem == AlundraPlayerManager.NoItem)
+        {
+            EquippedWeaponName = BlankName; // corrected defect, see this method's own doc.
+        }
+        else if (AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, (int)currentWeaponItem, out var weaponName))
         {
             EquippedWeaponName = weaponName;
         }
@@ -996,7 +1010,7 @@ public sealed class AlundraInventoryDirector
         var currentItemId = AlundraPlayerManager.SetItemIdFromCurrentItemId(state, _itemTables);
         if (currentItemId == AlundraPlayerManager.NoItem)
         {
-            EquippedItemName = "       "; // :1774-1777 - the literal seven-space blank.
+            EquippedItemName = BlankName; // :1774-1777
         }
         else if (AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, (int)currentItemId, out var itemName))
         {

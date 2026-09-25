@@ -426,10 +426,8 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         var director = NewDirector(state, tables, sound);
         OpenAndSettle(state, director);
 
-        // Equip slot 0 first (item 4, real): MainInventoryManager.cs:1639-1641 compares the EMPTY slot's
-        // NoItem against the CURRENTLY EQUIPPED weapon's item - with nothing equipped yet (WeaponId 0),
-        // both sides are NoItem and the original's own comparison reads "already equipped", not "empty"
-        // (ported faithfully - ActuallyAlreadyEquipped's own quirk). A real current weapon avoids that.
+        // Equip slot 0 first (item 4, real), so a real weapon is current; the case with no weapon resolving,
+        // where the original stays silent, is EquipWeapon_EmptySlot_NoWeaponResolving_PlaysSound3.
         state.NumberOfItems[4 * 2 + 1] = 1;
         Tick(state, director, AlundraPadState.Cross); // grid slot 0 -> weapon slot 1, equips item 4.
         sound.Requests.Clear();
@@ -440,6 +438,59 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
         Assert.Contains(3, sound.Requests);
         Assert.DoesNotContain(2, sound.Requests);
+    }
+
+    /// <summary>A defect of the original, corrected (plan E13.d SI9.b): with no weapon resolving (a fresh state,
+    /// WeaponId 0), the executable compares the empty slot's -1 with the current weapon's -1 first and stays
+    /// silent; the port tests validity first and sounds the error.</summary>
+    [Fact]
+    public void EquipWeapon_EmptySlot_NoWeaponResolving_PlaysSound3()
+    {
+        var state = NewState();
+        var sound = new RecordingSoundPlayer();
+        var tables = ItemTablesFixture.LoadReal();
+        var director = NewDirector(state, tables, sound);
+        OpenAndSettle(state, director);
+        Assert.Equal(AlundraPlayerManager.NoItem, AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, tables));
+        sound.Requests.Clear();
+
+        Tick(state, director, AlundraPadState.Right); // grid slot 1 -> weapon slot 3 (empty in the fixture).
+        Tick(state, director, 0);
+        sound.Requests.Clear();
+        Tick(state, director, AlundraPadState.Cross);
+
+        Assert.Equal(new[] { 3 }, sound.Requests);
+        Assert.Equal(0, state.PlayerStats.WeaponId); // nothing equipped.
+    }
+
+    /// <summary>A defect of the original, corrected (plan E13.d SI9.b): once no weapon resolves, the weapon name
+    /// gets the same seven-space blank as the item, instead of keeping the previous weapon's name.</summary>
+    [Fact]
+    public void IconNames_NoWeaponResolving_BlanksTheWeaponName()
+    {
+        var etcPath = WriteEtcFixture(4, "Epee", "a", "b");
+        EngineEnvironment.ProjectPath = etcPath;
+        try
+        {
+            var state = NewState();
+            var tables = ItemTablesFixture.LoadReal();
+            var director = NewDirector(state, tables);
+            state.NumberOfItems[4 * 2 + 1] = 1;
+            AlundraPlayerManager.SetPlayerWeaponId(state, tables, 1); // weapon slot 1 resolves to item 4.
+            OpenAndSettle(state, director); // DisplayInventory -> DisplayIconNames.
+            Assert.Equal("Epee", director.EquippedWeaponName);
+
+            state.NumberOfItems[4 * 2 + 1] = 0; // the weapon no longer resolves.
+            Tick(state, director, AlundraPadState.Right); // grid slot 1 -> weapon slot 3 (empty).
+            Tick(state, director, 0);
+            Tick(state, director, AlundraPadState.Cross); // sound 3, then DisplayIconNames.
+
+            Assert.Equal("       ", director.EquippedWeaponName);
+        }
+        finally
+        {
+            Directory.Delete(etcPath, recursive: true);
+        }
     }
 
     // -----------------------------------------------------------------------------------------

@@ -614,9 +614,11 @@ de l'inventaire principal »). Quatre sous-tranches :
   = `UI/Animations/ui_inventory_cursor.anim2d` et `report.json` exactement, comme prédit ; double export =
   `report.json` seul ; vérification des assets PASSED ; octets relus dans l'exécutable en session principale.
   `Alundra.Tests` 1220/1220, convertisseur 190/190.
-- ⏳ **SI9.b — L'équipement** (relevés 3, 4, 5) : une case d'arme vide sonne l'erreur même sans arme résolue
-  (validité testée avant « déjà équipée », comme `FUN_80057854`) ; le nom d'arme s'efface quand aucune arme ne se
-  résout ; `SetPlayerWeaponId` accepte −1 et refuse 0, comme l'exécutable.
+- ✅ **SI9.b — L'équipement** (relevés 3, 4, 5) : une case d'arme vide sonne l'erreur même sans arme résolue
+  (validité testée avant « déjà équipée », comme `FUN_80057854`) ; le nom d'arme reçoit le blanc de sept espaces
+  quand aucune arme ne se résout ; `SetPlayerWeaponId` prend un entier, range −1 et refuse 0, comme l'exécutable
+  (relu en session principale à `0x8004e484`) — ce qui tranche le point ouvert 7 de `docs/plan-e13c-icones-hud.md`.
+  Trois tests ajoutés, un retourné (0 refusé) ; quatre mutations réelles tuées. `Alundra.Tests` 1223/1223.
 - ⏳ **SI9.c — La jauge relancée pendant son ouverture** (relevés 6, 7) : la phase 7 (`Opening | 2`) glisse et se
   termine comme dans l'original (`& 6`, puis `& 2` → 0) ; défaut de l'original corrigé : la disparition part de la
   position courante, pas de 0x10.
@@ -690,6 +692,7 @@ suites vertes ; chaque export prouvé par double export.
 | 2026-09-25 | **SI8 faite** : quatre trous de tests comblés, quatre mutations réelles tuées ; les icônes des données de conception étaient déjà centrées (mesure). |
 | 2026-09-25 | Nouvelles réponses de l'auteur : D-E13D-34 à D-E13D-37 ; tranches SI10, SI11 et SI12 ajoutées ; l'audio part dans une tâche séparée. |
 | 2026-09-25 | **Contre-vérification SI9** : cinq relevés, chacun repris par un contradicteur (10 agents) ; résultat ci-dessous. **SI9.a faite** : les décalages du curseur, export prouvé. |
+| 2026-09-25 | **SI9.b faite** : l'équipement (arme vide sonore, nom d'arme effacé, `SetPlayerWeaponId` fidèle à l'exécutable). |
 
 ### SI9 — la contre-vérification de l'inventaire principal (2026-09-25)
 

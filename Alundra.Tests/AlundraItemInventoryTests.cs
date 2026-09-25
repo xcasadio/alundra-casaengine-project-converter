@@ -226,17 +226,31 @@ public class AlundraItemInventoryTests
     }
 
     [Fact]
-    public void SetPlayerWeaponId_KeepsZero_AsTheCitedCodeDoes_OpenPoint7()
+    public void SetPlayerWeaponId_RejectsZero_AsTheExecutableDoes_OpenPoint7()
     {
-        // docs/plan-e13c-icones-hud.md, open point 7: evaluated in int, 0 - 1 < 6 holds. The PSX most likely
-        // rejects 0; if Ghidra settles it that way, this test is the one to flip.
+        // docs/plan-e13c-icones-hud.md, open point 7, settled by ALUN_CD.EXE 0x8004e49c (plan E13.d SI9.b):
+        // (0 - 1) <u 6 fails, so 0 is rejected and the current slot is kept.
         var tables = ItemTablesFixture.LoadReal();
         var state = new AlundraGameState();
         state.PlayerStats.WeaponId = 3;
 
         AlundraPlayerManager.SetPlayerWeaponId(state, tables, 0);
 
-        Assert.Equal(0, state.PlayerStats.WeaponId);
+        Assert.Equal(3, state.PlayerStats.WeaponId);
+    }
+
+    [Fact]
+    public void SetPlayerWeaponId_StoresMinusOne_TheNoWeaponValue()
+    {
+        // ALUN_CD.EXE 0x8004e490: -1 is stored before the range test (the decompilation's ushort never saw it).
+        var tables = ItemTablesFixture.LoadReal();
+        var state = new AlundraGameState();
+        state.PlayerStats.WeaponId = 3;
+
+        AlundraPlayerManager.SetPlayerWeaponId(state, tables, -1);
+
+        Assert.Equal(-1, state.PlayerStats.WeaponId);
+        Assert.Equal(AlundraPlayerManager.NoItem, AlundraPlayerManager.GetItemIdFromCurrentWeapon(state, tables));
     }
 
     [Theory]
