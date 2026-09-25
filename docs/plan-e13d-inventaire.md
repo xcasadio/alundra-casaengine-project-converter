@@ -747,7 +747,10 @@ l'original, chacune une image cuite (D-E13D-13) ; suites vertes ; chaque export 
 9. **Délai de warp non porté** (D4) : `AlundraWarpDirector.WarpDelayFramesForTests` est posé à 10 à chaque
    entrée de carte mais jamais décrémenté ; l'original le décrémente à chaque image (`GameEngine.cs:1561-1564`)
    et refuse l'inventaire tant qu'il ne vaut pas 0. Le portage ouvre l'inventaire dès la première image
-   d'une carte. À corriger avec le directeur des warps (T4), hors de ce plan.
+   d'une carte. À corriger avec le directeur des warps (T4), hors de ce plan. **Comblé le 2026-09-25**
+   (`docs/plan-e13d-sous-inventaire.md` SI12, D-E13D-36) : un délai de 0,2 s posé à chaque entrée de carte et
+   consommé par le temps logique (`AlundraWarpDirector.WarpDelaySeconds`, `IsWarpDelayRunning`) ; 9 ticks
+   refusés, ouverture au 10ᵉ, comme l'exécutable.
 10. **`Triangle` ferme aussi l'inventaire** (relevé le 2026-09-24 dans l'exécutable France, masque `0x813` en
    `0x80056924`, que la décompilation avait perdu) : corrigé par la tranche SI3.a du plan du sous-inventaire
    (`docs/plan-e13d-sous-inventaire.md`, `a3901af`). La recette D6 fermait par `Start`, `L2` ou `R2`, toujours

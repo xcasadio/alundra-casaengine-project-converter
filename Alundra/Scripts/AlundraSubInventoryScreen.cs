@@ -33,7 +33,6 @@ public sealed class AlundraSubInventoryScreen : XamlUIScreenBase, IDisposable
     // already uses.
     private const int NativeWidth = 320;
 
-    private readonly AssetContentManager _assetContentManager;
     private MGCanvas? _rootCanvas;
     private IDisposable? _font3;
 
@@ -47,7 +46,6 @@ public sealed class AlundraSubInventoryScreen : XamlUIScreenBase, IDisposable
         : base(assetContentManager, ScreenAssetId)
     {
         ArgumentNullException.ThrowIfNull(fonts);
-        _assetContentManager = assetContentManager;
         ViewModel = new AlundraSubInventoryViewModel();
 
         try

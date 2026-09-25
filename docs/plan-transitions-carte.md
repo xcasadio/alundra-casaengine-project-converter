@@ -802,7 +802,9 @@ qu'un remaniement de dernière minute. Aucune n'est atteignable sur l'export liv
   exactement `AlundraGameState.ResetAnimationId`, donc muter la ligne vers la constante New Game ne
   fait tomber aucun test. La valeur reste juste ; c'est la couverture qui est nulle sur cet élément.
 - **`WarpDelayFramesForTests` est écrit par le code de production** alors que son nom annonce un
-  miroir de test. À renommer le jour où le champ sera lu.
+  miroir de test. À renommer le jour où le champ sera lu. **Fait le 2026-09-25**
+  (`docs/plan-e13d-sous-inventaire.md` SI12) : le champ est devenu une durée lue par le déclencheur de
+  l'inventaire (`AlundraWarpDirector.WarpDelaySeconds`, `IsWarpDelayRunning`).
 
 ### T6 — Intégration : aller-retour en jeu
 

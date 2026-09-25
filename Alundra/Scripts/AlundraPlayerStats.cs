@@ -46,8 +46,10 @@ public sealed class AlundraPlayerStats
     /// <summary>Money. New Game default 0 - port of <c>SetMoney(0)</c> (GameInitializer.cs:376).</summary>
     public short Money;
 
-    /// <summary>The equipped weapon, as a 1-based weapon slot: 1 is the sword's slot, 0 means none.
-    /// Port of <c>PlayerStats.WeaponId</c> (PlayerStats.cs:9, a <c>short</c>). Constructed at 0, the
+    /// <summary>The equipped weapon, as a 1-based weapon slot (1 is the sword's slot, up to 6); -1 means none,
+    /// the value <see cref="AlundraPlayerManager.SetPlayerWeaponId"/> stores for no weapon, and it rejects 0
+    /// (ALUN_CD.EXE 0x8004e484, plan E13.d SI9.b) - 0 is only the constructed default, which resolves to no
+    /// weapon too. Port of <c>PlayerStats.WeaponId</c> (PlayerStats.cs:9, a <c>short</c>). Constructed at 0, the
     /// value <c>new PlayerStats()</c> gives it; the New Game then sets 1 through
     /// <see cref="AlundraPlayerManager.SetPlayerWeaponId"/> (GameInitializer.cs:410), called by
     /// <see cref="AlundraPlayerManager.InitializeNewGameInventory"/>. Not baked in as 1 like <see cref="Hp"/>
