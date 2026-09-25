@@ -506,7 +506,8 @@ tick N, gestion par image dès N+1 ; `MenuOpen` est vu par la logique du tick N+
 champ (`AlundraWarpDirector.WarpDelayFramesForTests`, 10 à chaque entrée de carte) mais **ne le décrémente
 jamais**, contrairement à `GameEngine.cs:1561-1564` ; le lire bloquerait l'inventaire pour toujours. **Écart
 qui en reste** : l'original refuse l'inventaire pendant les 10 premières images d'une carte (0,2 s), le
-portage non (§6 point 9).
+portage non (§6 point 9). **Comblé le 2026-09-25** (`docs/plan-e13d-sous-inventaire.md` SI12, D-E13D-36) : un
+délai de 0,2 s consommé par le temps logique, testé par le déclencheur ; 9 ticks refusés, ouverture au 10ᵉ.
 
 | Preuve | Résultat |
 |---|---|

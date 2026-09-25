@@ -12,14 +12,12 @@ namespace Alundra.Scripts;
 /// need to draw is exposed as plain, read-only properties.
 ///
 /// <para><b>The trigger</b> - ported from <c>GameEngine.cs:1567-1576</c>, checked once per logic tick
-/// while the inventory is idle. Three of its six guards have no equivalent in this port and are
+/// while the inventory is idle. Two of its six guards have no equivalent in this port and are
 /// TREATED AS ALWAYS ZERO (never block the trigger), each declared where it is tested below:
 /// <c>g_warpLockTimer</c> (an item-use/magic-sequence lock, <c>PlayerManager.cs:1929-4013</c> - no such
-/// system is ported here at all), <c>g_warpDelayFrames</c> (<see cref="AlundraWarpDirector.WarpDelayFramesForTests"/>
-/// exists but is never decremented anywhere in this DLL - see that field's own doc, which already says
-/// its two original consumers, this trigger among them, were never wired up before this chantier), and
-/// <c>g_globalTransitionState</c> (the memory-card/save-menu state machine, <c>UI/MemoryCardManager.cs</c>
-/// - not ported at all).</para>
+/// system is ported here at all) and <c>g_globalTransitionState</c> (the memory-card/save-menu state machine,
+/// <c>UI/MemoryCardManager.cs</c> - not ported at all). The map-entry delay <c>g_warpDelayFrames</c> is
+/// ported since E13.d SI12, as a duration (<see cref="AlundraWarpDirector.IsWarpDelayRunning"/>).</para>
 ///
 /// <para><b>The setup callback's timing</b> (D4's own open point): <c>DisplayInventory</c>
 /// (<c>MainInventoryManager.cs:443-499</c>) only ARMS the setup callback, through
@@ -336,6 +334,10 @@ public sealed class AlundraInventoryDirector
             return;
         }
 
+        // GameEngine.cs:1562-1564 (0x8002bc58-0x8002bc68): the map-entry delay is consumed every tick, open or
+        // not, before the trigger tests it - one logic tick of time (plan E13.d SI12, D-E13D-36).
+        AlundraWarpDirector.Instance.AdvanceWarpDelay(AlundraScriptedMotion.FixedTickSeconds);
+
         // D-E13D-22: a HEAD run by the post-process last tick has a SETUP still pending - run it alone,
         // before the trigger/idle check (RunDisplayInventoryHeadFromPostProcess's own doc), no trigger and
         // no per-frame work on this tick.
@@ -388,19 +390,12 @@ public sealed class AlundraInventoryDirector
             return false;
         }
 
-        // GameEngine.cs:1573 - StaticVariables.g_warpDelayFrames == 0. NO PORT EQUIVALENT with real
-        // effect: AlundraWarpDirector.WarpDelayFramesForTests is set to 10 at every map entry
-        // (AlundraWarpDirector.cs:237) but is NEVER decremented anywhere in this DLL (confirmed by grep) -
-        // the original decrements it every single frame, unconditionally (GameEngine.cs:1562-1564),
-        // reaching 0 within 10 frames of any map entry. Reading the port's own stub as a real gate would
-        // introduce a NEW bug (the inventory permanently locked out after every map load, since nothing
-        // would ever bring it back to 0) rather than reproduce the original's brief 10-frame cooldown.
-        // AlundraWarpDirector's own doc (:230-238) already calls this field's only two original consumers,
-        // this trigger among them, unwired "for structural fidelity only" - so this trigger keeps it that
-        // way and treats the guard as always 0 (never blocks), per the brief's own allowance for an
-        // absent guard. BEHAVIOURAL DIFFERENCE this leaves (docs/plan-e13d-inventaire.md §6): the original
-        // refuses to open the inventory during the first 10 frames after a map entry (0.2 s); the port
-        // opens it. It disappears once the warp director decrements the field like GameEngine.cs:1562-1564.
+        // GameEngine.cs:1573 - StaticVariables.g_warpDelayFrames == 0 (0x8002bcb8, read after the decrement at
+        // the head of Tick): no opening while the map-entry delay runs - 0.2 s since E13.d SI12 (D-E13D-36).
+        if (AlundraWarpDirector.Instance.IsWarpDelayRunning)
+        {
+            return false;
+        }
 
         // GameEngine.cs:1574 - (StaticVariables.g_padState1.ButtonsHold & PadState.Select) == 0.
         if ((state.TickPad.ButtonsHold & AlundraPadState.Select) != 0)

@@ -610,7 +610,14 @@ alors que l'original n'a qu'une fonction (`UpdateUiBoxesPosition`) — hors de l
 - Acceptation : les suites des deux inventaires passent **sans modification de leurs tests** ; mutations réelles
   sur la classe partagée tuées par les deux suites.
 
-#### ⏳ SI12 — Le délai de warp en temps (D-E13D-36)
+#### ✅ SI12 — Le délai de warp en temps (D-E13D-36) — faite le 2026-09-25
+
+**Fait** : `AlundraWarpDirector` pose `WarpDelaySeconds` (0,2 s) à chaque entrée de carte, `AdvanceWarpDelay`
+le consomme d'un tick logique en tête de `AlundraInventoryDirector.Tick` (ouvert ou non, comme le décrément de
+l'original), et le déclencheur refuse tant que `IsWarpDelayRunning`. Un reliquat sous 0,1 ms compte pour rien :
+sans cette tolérance, dix pas flottants de 1/50 s laissent quelques nanosecondes et retardent l'ouverture d'un
+tick (mutation tuée). Test `Trigger_Refused_DuringTheMapEntryDelay_OpensOnTheTenthTick` ; quatre mutations
+réelles tuées (garde retirée, délai jamais consommé, tolérance retirée, 0,22 s). `Alundra.Tests` 1228/1228.
 
 - `AlundraWarpDirector` pose 0,2 s à chaque entrée de carte (à la place du compteur de 10 images inerte) et les
   consomme par le temps logique écoulé, à chaque tick, avant le test du déclencheur (ordre de `0x8002bc58`) ; le
@@ -721,6 +728,7 @@ suites vertes ; chaque export prouvé par double export.
 | 2026-09-25 | **SI9.d faite**, **SI9 close** : chaque relevé de la contre-vérification a sa disposition (tableau ci-dessous). |
 | 2026-09-25 | **SI10 faite** : les icônes du sous-inventaire au coin d'origine, sans lecture de taille de sprite. |
 | 2026-09-25 | **SI11 faite** : une seule machine de texte déroulant ; deux trous de tests du sous-inventaire comblés en passant. |
+| 2026-09-25 | **SI12 faite** : le délai de warp de 0,2 s après chaque entrée de carte. |
 
 ### SI9 — la contre-vérification de l'inventaire principal (2026-09-25)
 

@@ -185,6 +185,31 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         Assert.False(director.IsActive);
     }
 
+    /// <summary>Plan E13.d SI12 (D-E13D-36): after a map entry the trigger refuses for 0.2 s of logic time - the
+    /// first 9 ticks, as the executable does with its 10 frames decremented before the test (0x8002bc58) - and
+    /// opens on the 10th.</summary>
+    [Fact]
+    public void Trigger_Refused_DuringTheMapEntryDelay_OpensOnTheTenthTick()
+    {
+        var state = NewState();
+        var director = NewDirector(state);
+        AlundraWarpDirector.Instance.InstallForMapEntry();
+
+        for (var tick = 1; tick <= 8; tick++)
+        {
+            Tick(state, director, tick % 2 == 1 ? AlundraPadState.Start : 0u); // a fresh Start edge every other tick.
+            Assert.False(director.IsActive, $"tick {tick}");
+        }
+
+        Tick(state, director, AlundraPadState.Start); // tick 9: a fresh edge, 0.02 s of delay still left.
+        Assert.False(director.IsActive);
+        Assert.True(AlundraWarpDirector.Instance.IsWarpDelayRunning);
+
+        Tick(state, director, AlundraPadState.Start | AlundraPadState.L2); // tick 10: a fresh L2 edge, delay over.
+        Assert.False(AlundraWarpDirector.Instance.IsWarpDelayRunning);
+        Assert.True(director.IsActive);
+    }
+
     [Fact]
     public void Trigger_Refused_WhenSelectIsHeld()
     {
