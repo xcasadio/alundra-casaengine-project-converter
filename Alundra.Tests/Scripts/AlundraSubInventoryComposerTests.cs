@@ -235,11 +235,11 @@ public sealed class AlundraSubInventoryComposerTests
     }
 
     [Fact]
-    public void DescriptionLines_ShowExactlyWhatTheDirectorDrew_LineOneAlwaysEmpty()
+    public void DescriptionLines_ShowExactlyWhatTheDirectorDrew()
     {
-        var model = ComposeAtRest(line0: "Confortable protection en tissu.", line1: "");
+        var model = ComposeAtRest(line0: "Confortable protection en tissu.", line1: "Faible capacité de protection.");
         Assert.Equal("Confortable protection en tissu.", model.DescriptionLine0);
-        Assert.Equal(string.Empty, model.DescriptionLine1);
+        Assert.Equal("Faible capacité de protection.", model.DescriptionLine1);
 
         Assert.Equal(0x10 + 0x10, model.DescriptionLine0X);
         Assert.Equal(0xA8 + 0xc, model.DescriptionLine0Y);

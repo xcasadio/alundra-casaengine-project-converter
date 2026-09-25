@@ -489,11 +489,12 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     }
 
     // -----------------------------------------------------------------------------------------
-    // 5: description - armor 17 at position 7, name then line 0, NEVER line 1 (D-E13D-28).
+    // 5: description - armor 17 at position 7: name, then both description lines (D-E13D-30: the original's
+    // one-byte-early read of the second line is corrected).
     // -----------------------------------------------------------------------------------------
 
     [Fact]
-    public void Description_Armor17AtPosition7_NameThenLine0_NeverLine1()
+    public void Description_Armor17AtPosition7_NameThenBothLines()
     {
         var projectPath = WriteEtcFixture(17, "Armure en tissu", "Confortable protection en tissu.", "Faible capacite de protection.");
         try
@@ -516,21 +517,32 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
 
             TickUntil(state, () => AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0 == "Confortable protection en tissu.", maxTicks: 300);
 
-            // D-E13D-28: at 0x8f the executable reads the byte BEFORE the second line (0 for every item), so the
-            // very next tick ends the reveal at 0xcf; a machine reading line2[c - 0x8f], like the main
-            // inventory's, would still be revealing (0x8f, 0x90...) on that tick.
+            // D-E13D-30: the second line is revealed one character every third tick from state 0x8f, like the main
+            // inventory. The executable reads line2[c - 0x90] and would end the reveal at 0xcf on the very next
+            // tick with nothing shown (the byte before every second line is 0): this port corrects that defect.
             TickUntil(state, () => AlundraSubInventoryDirector.Instance.TextRevealState == 0x8f, maxTicks: 100);
             Tick(state, 0);
-            Assert.Equal(0xcf, AlundraSubInventoryDirector.Instance.TextRevealState);
+            Assert.NotEqual(0xcf, AlundraSubInventoryDirector.Instance.TextRevealState);
 
-            for (var i = 0; i < 300; i++)
+            // Mid-reveal, the second line is drawn as a growing prefix, as the first one is.
+            TickUntil(state, () => AlundraSubInventoryDirector.Instance.TextRevealState >= 0x95, maxTicks: 30);
+            Assert.True(AlundraSubInventoryDirector.Instance.TextRevealState < 0xcf);
+            var partial = AlundraSubInventoryDirector.Instance.DrawnDescriptionLine1;
+            Assert.NotEqual(string.Empty, partial);
+            Assert.StartsWith(partial, "Faible capacite de protection.");
+            Assert.NotEqual("Faible capacite de protection.", partial);
+
+            TickUntil(state, () => AlundraSubInventoryDirector.Instance.DrawnDescriptionLine1 == "Faible capacite de protection.", maxTicks: 120);
+            TickUntil(state, () => AlundraSubInventoryDirector.Instance.TextRevealState == 0xcf, maxTicks: 10);
+
+            // Both lines stay drawn once the reveal is done.
+            for (var i = 0; i < 50; i++)
             {
                 Tick(state, 0);
-                Assert.Equal(string.Empty, AlundraSubInventoryDirector.Instance.DrawnDescriptionLine1);
             }
 
-            Assert.Equal(0xcf, AlundraSubInventoryDirector.Instance.TextRevealState);
             Assert.Equal("Confortable protection en tissu.", AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0);
+            Assert.Equal("Faible capacite de protection.", AlundraSubInventoryDirector.Instance.DrawnDescriptionLine1);
         }
         finally
         {

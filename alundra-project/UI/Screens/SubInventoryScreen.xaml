@@ -63,8 +63,8 @@
     <Image Name="ArmorIcon" Stretch="None" SourceName="{dataBinding:MGBinding Path=ArmorIcon.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=ArmorIcon.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmorIcon.Top}" Visibility="{dataBinding:MGBinding Path=ArmorIcon.Visibility}" />
     <Image Name="BootsIcon" Stretch="None" SourceName="{dataBinding:MGBinding Path=BootsIcon.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=BootsIcon.Left}" CanvasTop="{dataBinding:MGBinding Path=BootsIcon.Top}" Visibility="{dataBinding:MGBinding Path=BootsIcon.Visibility}" />
 
-    <!-- Armor/boots names and the two description lines - font3, D-E13D-28: the second description
-         line is bound but never receives text (the director's own DrawnDescriptionLine1 stays empty). -->
+    <!-- Armor/boots names and the two description lines - font3. The second line shows the item's
+         second description line (D-E13D-30: the original's one-byte-early read, which hid it, is corrected). -->
     <TextBlock Name="ArmorNameText" Text="{dataBinding:MGBinding Path=ArmorName.Text}" CanvasLeft="{dataBinding:MGBinding Path=ArmorName.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmorName.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
     <TextBlock Name="BootsNameText" Text="{dataBinding:MGBinding Path=BootsName.Text}" CanvasLeft="{dataBinding:MGBinding Path=BootsName.Left}" CanvasTop="{dataBinding:MGBinding Path=BootsName.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
     <TextBlock Name="DescriptionLine0Text" Text="{dataBinding:MGBinding Path=DescriptionLine0.Text}" CanvasLeft="{dataBinding:MGBinding Path=DescriptionLine0.Left}" CanvasTop="{dataBinding:MGBinding Path=DescriptionLine0.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />

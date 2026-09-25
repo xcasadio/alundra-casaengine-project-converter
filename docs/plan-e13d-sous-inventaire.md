@@ -266,6 +266,15 @@ tout `MenuOpen`), D-E13D-18 (police `font3` tenue par le registre du moteur).
 
 ---
 
+### 2.3 Tranchées par l'auteur le 2026-09-25 (réponses au rapport de SI5)
+
+| Réf | Décision de l'auteur | Conséquence |
+|---|---|---|
+| D-E13D-30 | « **Corrige le jeu original et ne reproduis pas le bug** » (§6 point 3) ; étendu à la vérification de l'inventaire principal contre le binaire : « **corrige le jeu original s'il le faut** » | Un défaut avéré de l'original se corrige dans le portage, écrit en commentaire et dans le plan avec sa preuve ; il ne se reproduit plus. **D-E13D-28 est renversée** : le sous-inventaire montre la seconde ligne de description, comme le principal (SI7) |
+| D-E13D-31 | « **On garde le rythme par caractère** » (§6 point 4) | Le texte continue de se dérouler par caractère décodé ; l'écart avec l'octet par octet de l'original est accepté, point clos |
+| D-E13D-32 | « **Corrige les trous** » (remarques de tests reportées de SI3 et SI4) | SI8 : assertion de la jauge rendue probante, ordre de dessin du XAML gardé par un test, cadre de l'armure et des bottes dessiné dès que l'objet existe, données de conception centrées |
+| D-E13D-33 | « **Fais-le** » : la contre-vérification complète de l'inventaire principal contre l'exécutable (§6, rapport du 2026-09-25 point 2) | SI9 : relevés par groupe de fonctions, chacun repris par un contradicteur ; chaque écart qui touche le portage est corrigé, et chaque défaut de l'original corrigé selon D-E13D-30 |
+
 ## 3. Tranches
 
 Un commit par tranche, avec la mise à jour de ce plan ; un vérificateur frais par tranche à risque ; régime de
@@ -518,6 +527,47 @@ y retourner ; fermer par `Start` depuis le sous-inventaire : la jauge revient ; 
 fin, sans une image de reprise pendant la bascule ; après un changement de carte, les textes restent en `font3`.
 Et trancher les points du §6.
 
+### Suites du 2026-09-25 (décisions du §2.3)
+
+Branche `chantier/e13d-sub-inventory-followups`, empilée sur `chantier/e13d-sub-inventory` (`274b189`), dans un
+second worktree `.claude/worktrees/e13d-followups` : l'auteur teste SI6 depuis le premier, qu'il ne faut pas
+reconstruire sous ses pieds.
+
+#### ✅ SI7 — Le sous-inventaire montre la seconde ligne de description (D-E13D-30) — faite le 2026-09-25
+
+**Fait** : lecture à `c − 0x8f`, ligne publiée pendant son déroulement puis à 0xcf, défaut de l'exécutable cité en
+commentaire ; test retourné (`Description_Armor17AtPosition7_NameThenBothLines` : la ligne grandit par préfixe puis
+reste affichée) ; test du compositeur ajusté ; commentaire du XAML corrigé. Mutations réelles tuées : la lecture de
+l'original rétablie (`c − 0x90`) ; la ligne non publiée pendant son déroulement (survivante d'abord, le test
+n'attendait que la ligne complète ; tuée après l'ajout de l'assertion sur le préfixe). `Alundra.Tests` 1216/1216.
+
+`AlundraSubInventoryDirector` lit la seconde ligne à `c − 0x8f`, comme le principal, et la publie
+(`Description1VisiblePrefix`, `DrawnDescriptionLine1` dès l'état 0x8f, les deux lignes à 0xcf) ; le défaut de
+l'exécutable (`lbu -0x90` en `0x80054314`) reste cité en commentaire comme défaut corrigé. Tests : l'armure 17
+montre « Faible capacité de protection. » en seconde ligne ; le test qui exigeait l'absence de la ligne est
+retourné ; mutation : la lecture à `c − 0x90` rétablie fait échouer le test. Le compositeur et le XAML passent déjà
+la ligne 1 telle quelle (`DescriptionLine1Text`).
+
+#### ⏳ SI8 — Les trous de tests (D-E13D-32)
+
+- Le test aller-retour de SI3 lève le verrou 1662 et affiche la jauge avant la bascule, pour que « jauge ni
+  rappelée ni recachée » puisse échouer ; mutation : une bascule qui appelle `InitializeHudPositionBeforeHide`.
+- Un test garde l'ordre de dessin du XAML du sous-inventaire (fonds, cadres, icônes, textes et chiffres, curseur) ;
+  mutation : le curseur déplacé en tête.
+- `AlundraSubInventoryViewModel` dessine le cadre de l'armure et des bottes dès que l'objet existe, même si la
+  taille de l'icône ne se lit pas (l'original dessine le cadre dans `FUN_80052fb4` dès que l'objet est résolu) ;
+  test dédié.
+- `SubInventoryScreen.design.json` : icônes de l'armure et des bottes centrées dans leur cadre, avec la taille réelle
+  des sprites 17 et 25.
+
+#### ⏳ SI9 — La contre-vérification complète de l'inventaire principal (D-E13D-33)
+
+Cinq groupes de fonctions de `MainInventoryManager.cs` (ouverture et fermeture avec le déclencheur et la jauge ;
+image par image et curseur ; texte ; icônes, tables et chiffres ; équipement avec les fonctions de
+`PlayerManager.cs` qu'il appelle) comparés à `ALUN_CD.EXE`, puis au portage ; chaque relevé repris par un
+contradicteur. Chaque écart confirmé qui touche le portage devient une correction avec son test et sa mutation ;
+chaque défaut de l'original est corrigé (D-E13D-30). Résultat et dispositions au §7.
+
 ---
 
 ## 4. Acceptation d'ensemble
@@ -541,18 +591,15 @@ suites vertes ; chaque export prouvé par double export.
 
 ## 6. Points ouverts (pour l'auteur)
 
-1. **D-E13D-20 à D-E13D-29** (§2.2) sont appliquées sauf avis contraire ; D-E13D-23 (centrage des armoiries et des
-   objets-clés dans une case de 24 × 32 à leur place d'origine) est la plus visible.
+1. **D-E13D-20 à D-E13D-27** (§2.2) sont appliquées sauf avis contraire ; D-E13D-23 (centrage des armoiries et des
+   objets-clés dans une case de 24 × 32 à leur place d'origine) est la plus visible. Explications données à
+   l'auteur le 2026-09-25, réponse attendue sur D-E13D-23 et D-E13D-25.
 2. **Factoriser le texte déroulant** du principal et du sous-inventaire (D-E13D-25) : deux copies aujourd'hui,
-   comme l'original.
-3. **La seconde ligne de description du sous-inventaire** (D-E13D-28) : le jeu français ne la montre jamais, par
-   un décalage d'un octet de l'exécutable. Le portage fait de même. (a) Garder cette fidélité ; (b) la montrer comme
-   le principal (une constante). Recommandé : (a), la règle du portage, sauf si l'auteur tient cet écart pour un
-   défaut que le portage doit corriger.
-4. **Le déroulé du texte octet par octet** (§1.5, dernier point) : l'original compte les paires d'accent pour deux,
-   le portage (principal compris, validé en D6) pour un. Écart de rythme (une lettre accentuée s'affiche en 3 images
-   au lieu de 6), sans autre effet aujourd'hui. Le corriger toucherait les deux inventaires et la lecture des
-   chaînes ; pas fait ici.
+   comme l'original. Réponse attendue.
+3. ~~**La seconde ligne de description du sous-inventaire**~~ **Tranché le 2026-09-25** : corriger le défaut de
+   l'original (D-E13D-30), SI7.
+4. ~~**Le déroulé du texte octet par octet**~~ **Tranché le 2026-09-25** : on garde le rythme par caractère
+   (D-E13D-31).
 5. **`Triangle` ferme l'inventaire principal** depuis SI3.a (D-E13D-29) : un changement de comportement de
    l'inventaire principal déjà validé, à revoir en recette.
 6. ~~**Le présentateur de l'inventaire principal n'a aucun test qui traverse son site d'appel de production** (la
@@ -566,7 +613,11 @@ suites vertes ; chaque export prouvé par double export.
    restauré. Alundra.Tests 1216/1216.
 7. **L'assertion « jauge ni rappelée ni recachée » du test aller-retour de SI3 ne prouve rien** (la jauge y reste
    au repos faute du verrou 1662) ; le comportement est prouvé par la sonde du vérificateur et par la recette SI5.
-   Reportée (P4).
+   ~~Reportée (P4).~~ À combler en SI8 (D-E13D-32).
+8. **Le délai de warp** (point 9 du plan principal) : l'original refuse d'ouvrir l'inventaire pendant les 10
+   premières images d'une carte (le compteur `g_warpDelayFrames`, décrémenté à chaque image) ; le portage pose le
+   compteur mais ne le décrémente jamais, et son déclencheur l'ignore. Correction proposée à l'auteur le
+   2026-09-25 : décrémenter au tick dans le directeur des warps et le relire dans le déclencheur. Réponse attendue.
 
 ## 7. Journal
 

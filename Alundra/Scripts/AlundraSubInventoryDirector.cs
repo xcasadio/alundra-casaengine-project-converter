@@ -21,17 +21,14 @@ namespace Alundra.Scripts;
 /// for the main inventory, <c>FUN_80053fdc</c>/<c>INT_8017f788</c> here) - this port keeps that split
 /// rather than factoring a shared machine (plan §6 point 2: a future reflection point, not done here).</para>
 ///
-/// <para><b>The second description line is never revealed</b> (D-E13D-28, <c>[binaire]</c>): at states
+/// <para><b>A defect of the original, corrected</b> (D-E13D-30, reversing D-E13D-28): at states
 /// <c>0x8f..0xce</c> the executable reads <c>line2[c - 0x90]</c> (<c>0x80054314</c>/<c>0x80054330</c>), one
-/// byte EARLIER than the correct <c>c - 0x8f</c> the main inventory's own machine uses (and the
-/// decompilation of BOTH machines writes, <c>SubInventoryManager.cs:608/614</c>). At <c>c == 0x8f</c> that
-/// reads the byte immediately BEFORE the string - the previous string's own null terminator - measured 0
-/// for all 98 items of <c>DATA/ETC_RES.R</c> (plan §7's own script). So the very first tick of this state
-/// range already sees "index &lt; 0", which this port treats the same way the original's own byte-early
-/// read effectively behaves: end of string, state jumps straight to <c>0xcf</c>, nothing is ever committed
-/// to line 1. <see cref="DrawnDescriptionLine1"/> is therefore NEVER written anywhere in this class and
-/// always reads empty - the French game itself never shows a second description line in the
-/// sub-inventory.</para>
+/// byte EARLIER than the <c>c - 0x8f</c> the main inventory's own machine uses (<c>0x80056274</c>). At
+/// <c>c == 0x8f</c> that reads the byte just before the string, the previous string's null terminator,
+/// measured 0 for all 98 items of <c>DATA/ETC_RES.R</c>: the state jumps to <c>0xcf</c> and the French
+/// sub-inventory never shows a second description line. The author chose to fix it: this port reads
+/// <c>c - 0x8f</c>, like the main inventory and like the decompilation of both machines
+/// (<c>SubInventoryManager.cs:608/614</c>), and shows both lines.</para>
 /// </summary>
 public sealed class AlundraSubInventoryDirector
 {
@@ -347,20 +344,21 @@ public sealed class AlundraSubInventoryDirector
     /// <summary>Port of <c>INT_8017f788</c> - same state shape as
     /// <see cref="AlundraInventoryDirector.TextRevealState"/> (0 name setup, 1..0x10 name reveal,
     /// 0x11..0x4c hold, 0x4d desc-line-0 setup, 0x4e..0x8d desc-line-0 reveal, 0x8e desc-line-1 setup,
-    /// 0x8f..0xce desc-line-1 "reveal" - see this class' own doc, D-E13D-28, 0xcf done).</summary>
+    /// 0x8f..0xce desc-line-1 reveal (read at c - 0x8f, the original's defect corrected - this class' own doc,
+    /// D-E13D-30), 0xcf done).</summary>
     public int TextRevealState { get; private set; }
 
     public string NameVisiblePrefix { get; private set; } = string.Empty;
     public string Description0VisiblePrefix { get; private set; } = string.Empty;
 
-    /// <summary>D-E13D-28: NEVER written to anything but the empty string - see this class' own doc.</summary>
     public string Description1VisiblePrefix { get; private set; } = string.Empty;
 
     /// <summary>SI4: what this tick drew on line 0 - the name during its reveal/hold, the first
     /// description line from state 0x4e, empty otherwise.</summary>
     public string DrawnDescriptionLine0 { get; private set; } = string.Empty;
 
-    /// <summary>D-E13D-28: ALWAYS empty - the sub-inventory never draws a second description line.</summary>
+    /// <summary>What this tick drew on line 1 - the second description line from state 0x8f, empty otherwise
+    /// (the main inventory's own D5 rule, <see cref="AlundraInventoryDirector.DrawnDescriptionLine1"/>).</summary>
     public string DrawnDescriptionLine1 { get; private set; } = string.Empty;
 
     /// <summary>Port of <c>INT_8017f78c</c> (<c>FUN_80053f3c</c>) - this machine's OWN 3-tick countdown,
@@ -423,6 +421,7 @@ public sealed class AlundraSubInventoryDirector
     private void RunTextReveal()
     {
         DrawnDescriptionLine0 = string.Empty;
+        DrawnDescriptionLine1 = string.Empty;
 
         if (!TryResolveDescribedItem(out var itemId))
         {
@@ -496,7 +495,7 @@ public sealed class AlundraSubInventoryDirector
             return;
         }
 
-        // :592-601 - state 0x8e: switch to the second description line (never actually revealed - below).
+        // :592-601 - state 0x8e: switch to the second description line.
         if (cursor == 0x8e)
         {
             Description1VisiblePrefix = string.Empty;
@@ -506,38 +505,34 @@ public sealed class AlundraSubInventoryDirector
             return;
         }
 
-        // :604-621 - states 0x8f..0xce: D-E13D-28 - the executable reads line2[c - 0x90], one byte before
-        // the intended c - 0x8f. At c == 0x8f that index is -1 (the previous string's own null
-        // terminator, measured 0 for all 98 items - plan §7): treated as immediate end of string, so the
-        // state jumps straight to 0xcf and DrawnDescriptionLine1/Description1VisiblePrefix are never
-        // written to anything but empty. The rest of this branch (c > 0x8f) is dead code in practice, same
-        // as in the original: once c == 0x8f jumps to 0xcf, this range is never entered again for this
-        // item's reveal.
+        // :604-621 - states 0x8f..0xce: reveal the second description line. DEFECT OF THE ORIGINAL, CORRECTED
+        // (D-E13D-30): the executable reads line2[c - 0x90] (lbu -0x90 at 0x80054314/0x80054330), one byte
+        // early, so at c == 0x8f it reads the previous string's null terminator and never shows this line;
+        // this port reads c - 0x8f, like the main inventory (lbu -0x8f at 0x80056274) and the decompilation.
         if ((uint)(cursor - 0x8f) < 0x40)
         {
-            var index = cursor - 0x90;
+            AlundraEtcStringTable.TryResolveItemDescriptionLine1(projectPath, itemId, out var secondLine);
 
-            if (index < 0
-                || !AlundraEtcStringTable.TryResolveItemDescriptionLine1(projectPath, itemId, out var secondLine)
-                || index >= secondLine.Length)
+            if (cursor - 0x8f >= secondLine.Length)
             {
                 TextRevealState = 0xcf;
             }
             else
             {
                 AdvanceTextReveal();
-                // Intentionally NOT assigned to Description1VisiblePrefix/DrawnDescriptionLine1 - D-E13D-28:
-                // the sub-inventory never shows a second description line in the French game.
+                Description1VisiblePrefix = RevealedPrefix(secondLine, TextRevealState - 0x8f);
             }
 
-            DrawnDescriptionLine0 = Description0VisiblePrefix;
+            DrawnDescriptionLine0 = Description0VisiblePrefix; // :618 FUN_80053e54(0)
+            DrawnDescriptionLine1 = Description1VisiblePrefix; // :619 FUN_80053e54(1)
             return;
         }
 
-        // :624-628 - cursor == 0xcf: line 0 is complete and drawn; line 1 stays empty (D-E13D-28).
+        // :624-628 - cursor == 0xcf: both lines are complete and drawn.
         if (cursor == 0xcf)
         {
             DrawnDescriptionLine0 = Description0VisiblePrefix;
+            DrawnDescriptionLine1 = Description1VisiblePrefix;
         }
     }
 
