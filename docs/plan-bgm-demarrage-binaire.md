@@ -583,9 +583,28 @@ fin.**
   `plan-transitions-carte.md` (D-T-8 : le départ ne charge jamais la musique), `plan-conversion-totale.md`
   (paragraphe et ligne E11). Aucun caractère de contrôle dans les fichiers écrits. Rédaction en session principale.
 
-### ⏳ T3.2 — Recette de l'auteur
+### 🧪 T3.2 — Recette de l'auteur
 
 - Lancement : Launcher du worktree sur `alundra-project/AlundraGame.json` du checkout principal (projet inchangé).
+  **Corrigé à l'exécution (2026-09-25)** : tel qu'écrit, ce lancement aurait chargé l'**ancienne** DLL. Le jeu charge
+  `Alundra.dll` depuis le dossier du projet (`GameplayDllName`), le build copie la nouvelle dans
+  `alundra-project/` **du worktree** (`Alundra.csproj`, cible `CopyGameplayDllToProject`), et celle du checkout
+  principal (SHA-1 `314d8a66…`) est celle de `main`. Préparé : copie du projet exporté du checkout principal dans
+  `alundra-project/` du worktree (`robocopy /E`, sans `/MIR`, sans `Alundra.dll`/`.pdb` ni `UI/Screens` suivis ;
+  23 235 fichiers, 0 échec ; `diff -rq` : identique hors DLL et fins de ligne des écrans), la DLL du worktree
+  (SHA-1 `50a22c1e…`, celle du dernier build) en place. Rien n'est écrit dans le checkout principal. Lancement :
+
+  ```
+  D:\development\repo\alundra-casaengine-project-converter\.claude\worktrees\silly-mayer-47d565\CasaEngineMonogame\CasaEngine.Launcher\bin\Debug\net9.0-windows\CasaEngine.Launcher.exe "D:\development\repo\alundra-casaengine-project-converter\.claude\worktrees\silly-mayer-47d565\alundra-project\AlundraGame.json"
+  ```
+
+  Le son n'est pas coupé (`IsAudioMuted` absent). Pour démarrer sur une autre carte, changer `FirstWorldLoaded`
+  dans `AlundraGame.json` **de la copie du worktree** : 289 `Maps\Inoa\Inoa (night)-289\Inoa (night)-289.world`,
+  393 `Maps\Water Mill\Water Mill-393\Water Mill-393.world`, 416 `Maps\Coast\Coast beginning-416\Coast beginning-416.world`,
+  123 `Maps\Kline's Nightmare\Kline's Nightmare-123\Kline's Nightmare-123.world`,
+  25 `Maps\Lars' Crypt\Lars' Crypt-25\Lars' Crypt-25.world`, 226 `Maps\Inoa\Inoa-226\Inoa-226.world`,
+  138 `Maps\Cave\Cave-138\Cave-138.world` (les séquences de corpus dépendent des drapeaux de l'histoire : elles ne
+  se déclenchent pas forcément en démarrant directement sur la carte).
 - À écouter :
   - le bateau (389, 390) : la musique démarre à l'entrée, ne redémarre pas entre les deux cartes ;
   - une carte `-1` (Inoa de nuit 289, moulin 393 ou côte du début 416) : silence (P2), à comparer au jeu réel si
@@ -597,6 +616,9 @@ fin.**
   - `AlundraGame` (analyseur) : indisponible tant que `Alundra.sln` ne builde pas (O5 du plan audio) ; si l'auteur l'a
     réparé entre-temps, les mêmes cartes, facultativement.
 - Commit : `docs(plan): close the executable-faithful BGM start, stop and restart`
+- **État (2026-09-25)** : 🧪, recette préparée, écoute de l'auteur en attente. Branches : parent
+  `chantier/bgm-demarrage-binaire` (dans le dépôt partagé), analyseur `chantier/bgm-demarrage-binaire` `e495d7f`
+  rapatrié par `git fetch` dans le checkout principal. Rien n'est poussé ni mergé.
 
 ---
 
@@ -929,3 +951,4 @@ for a in (0x800a82b0, 0x8009a858):
 | 2026-09-25 | Second relecteur frais : **REVISE**, trois blocages, tous **retenus**. (1) Le plan audio est désormais approuvé et en exécution (AUTO) : P1 récrit, exécution après son merge dans `main` par défaut, contrôle et arrêt en T0.1, variante encadrée. (2) `Alundra.sln` échoue déjà à `bbf33962` (4 × NU1605, mesuré par le plan audio) : validation ramenée au build d'`AlundraEngine` et d'`AlundraDataExtractor`, échec de la solution inchangé, recette `AlundraGame` indisponible. (3) L'état 1 du streaming n'avait pas de preuve binaire : désassemblé (`0x8004b280`-`0x8004b2a4`, table `0x80026538`), il confirme l'arrêt de l'ancienne séquence ; ajouté à B9 et B13. Deux REVISE : la révision suivante ouvre une seule relecture de clôture. |
 | 2026-09-25 | Relecteur frais de clôture : **READY**. Plan soumis ; l'auteur retient les options proposées de P1, P2, P3 et P7 (D5 à D8). |
 | 2026-09-25 | Plan approuvé, mode AUTO. T0.1 ⚠️ Blocked à l'étape 1 : plan audio non mergé dans `main` (O3). Arrêt. |
+| 2026-09-25 | Plan audio mergé par l'auteur ; reprise en AUTO. T0.1 à T3.1 ✅ (`acba5ea`, analyseur `e495d7f`, `7ebc93e`, `6012bb0`, `417d766`, `cb1387a`), T2.3 CONFIRMED (vérificateur et critique de complétude). Écart de `main` consigné (O4). T3.2 🧪 : recette préparée dans le worktree. |
