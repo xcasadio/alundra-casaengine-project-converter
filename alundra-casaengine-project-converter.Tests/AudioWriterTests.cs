@@ -129,6 +129,94 @@ public class AudioWriterTests
         }
     }
 
+    // P9 of docs/plan-audio-mix-exact-muet.md: the VAB volume/pan attributes are carried as nullable ints.
+    // A missing field must stay null in the manifest, never become 0, so the DLL can tell "unknown" from a
+    // real 0 (tone 1 of sound 162 has a volume of 0 in the original).
+    [Fact]
+    public void ConvertAudio_CarriesTheVabAttributesAndKeepsMissingOnesNull()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            WriteSoundFixture(inputDirectory);
+            File.WriteAllText(
+                Path.Combine(inputDirectory, "sound", "sfx.json"),
+                """
+                [
+                    {
+                        "Id": 1, "VabId": -2, "ProgramNumber": 0, "ToneNumber": 0, "Note": 60,
+                        "SeqNum": -1, "RefSfxId": 0, "MaxVoices": 0, "NumTones": 0,
+                        "SkipReason": "invalid (VabId=-2)", "Tones": [],
+                        "VabMasterVolume": null, "ProgramVolume": null, "ProgramPan": null
+                    },
+                    {
+                        "Id": 2, "VabId": -1, "ProgramNumber": 0, "ToneNumber": 1, "Note": 61,
+                        "SeqNum": -1, "RefSfxId": 0, "MaxVoices": 2, "NumTones": 1, "SkipReason": null,
+                        "Tones": [
+                            { "ToneIndex": 0, "File": "sfx_0002.wav", "SampleRate": 24214, "LoopStart": 28, "LoopEnd": 5655, "Repeat": false }
+                        ]
+                    },
+                    {
+                        "Id": 3, "VabId": -1, "ProgramNumber": 0, "ToneNumber": 2, "Note": 62,
+                        "SeqNum": -1, "RefSfxId": 0, "MaxVoices": 1, "NumTones": 2, "SkipReason": null,
+                        "Tones": [
+                            { "ToneIndex": 0, "File": "sfx_0003.wav", "SampleRate": 4274, "LoopStart": 28, "LoopEnd": 923, "Repeat": false, "Volume": 127, "Pan": 64 },
+                            { "ToneIndex": 1, "File": "sfx_0004.wav", "SampleRate": 11025, "LoopStart": 0, "LoopEnd": 100, "Repeat": true, "Volume": 0, "Pan": 0 }
+                        ],
+                        "VabMasterVolume": 127, "ProgramVolume": 120, "ProgramPan": 0
+                    }
+                ]
+                """);
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            ProjectWriter.CreateEmptyProject(outputDirectory, report);
+            AudioWriter.ConvertAudio(inputDirectory, outputDirectory, report);
+
+            using var sfxManifest = JsonDocument.Parse(
+                File.ReadAllText(Path.Combine(outputDirectory, "Sounds", "sfx-manifest.json")));
+            var records = sfxManifest.RootElement.EnumerateArray().ToArray();
+
+            // Unresolved record: null in the source, null in the manifest.
+            AssertNull(records[0], "vab_master_volume", "program_volume", "program_pan");
+
+            // Source written before the attributes existed: the keys are absent, the manifest says null.
+            AssertNull(records[1], "vab_master_volume", "program_volume", "program_pan");
+            AssertNull(records[1].GetProperty("tones")[0], "volume", "pan");
+
+            // Resolved record: exact values, a real 0 included.
+            var resolved = records[2];
+            Assert.Equal(127, resolved.GetProperty("vab_master_volume").GetInt32());
+            Assert.Equal(120, resolved.GetProperty("program_volume").GetInt32());
+            Assert.Equal(0, resolved.GetProperty("program_pan").GetInt32());
+            Assert.Equal(127, resolved.GetProperty("tones")[0].GetProperty("volume").GetInt32());
+            Assert.Equal(64, resolved.GetProperty("tones")[0].GetProperty("pan").GetInt32());
+            Assert.Equal(0, resolved.GetProperty("tones")[1].GetProperty("volume").GetInt32());
+            Assert.Equal(0, resolved.GetProperty("tones")[1].GetProperty("pan").GetInt32());
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    private static void AssertNull(JsonElement element, params string[] propertyNames)
+    {
+        foreach (var propertyName in propertyNames)
+        {
+            Assert.True(element.TryGetProperty(propertyName, out var value), $"'{propertyName}' is missing from the manifest.");
+            Assert.Equal(JsonValueKind.Null, value.ValueKind);
+        }
+    }
+
     private static void WriteSoundFixture(string inputDirectory)
     {
         var soundDirectory = Path.Combine(inputDirectory, "sound");

@@ -662,7 +662,7 @@ changée, avec un commentaire qui cite `0x80041CA0`.
 convertisseur **193 / 193**. Les traces `docs/hero-trace-389-*.txt`, réécrites en LF par les tests, sont remises à
 leur état suivi.
 
-### ⏳ T3.3 — Le convertisseur porte les attributs, export prouvé
+### ✅ T3.3 — Le convertisseur porte les attributs, export prouvé — faite le 2026-09-25
 
 - Fichiers : `alundra-casaengine-project-converter/Readers/SoundManifestReader.cs` (`SfxRecord`, `SfxTone`) ; tests du
   convertisseur ; ADR parent `docs/decisions/` (format de `sfx-manifest.json`, P9), par le skill `adr`.
@@ -679,7 +679,25 @@ leur état suivi.
 - Validation : tests du convertisseur = ligne de base + n ; diff mesuré ⊆ prédit ; second export ⊆ `{report.json}`.
 - Commit : `feat(audio): carry the VAB volume and pan attributes into the sound effect manifest`
 
-### ⏳ T3.4 — Vérification de la frontière de données
+**Note de validation (2026-09-25).**
+
+- **Code.** `SfxRecord` gagne `VabMasterVolume`, `ProgramVolume` et `ProgramPan`, et `SfxTone` gagne `Volume` et
+  `Pan`, tous en `int?`. `GetNullableInt32` rend `null` pour une propriété absente ou `null`.
+- **Tests.** Convertisseur **194 / 194**, dont `ConvertAudio_CarriesTheVabAttributesAndKeepsMissingOnesNull` sur une
+  fiche non résolue, un ancien format sans les champs, et une fiche avec un vrai 0.
+- **Mutations réelles**, toutes tuées : absent lu comme 0 ; volume de tonalité non lu.
+- **ADR.** ADR-0003 du parent enregistre le format.
+- **Exports.** Prédiction écrite avant (`scratchpad/export_t33.sh`, relevés dans `scratchpad/t33/`). Vérification
+  PASSED aux deux exports.
+  - Base → A : `Sounds/sfx-manifest.json` et `report.json` seulement.
+  - A → B : `{report.json}`.
+- **Manifeste.**
+  - 162 : `(127, 64)` puis `(0, 0)`, la tonalité muette de l'original.
+  - 302 : `(100, 34)` et `(100, 94)`.
+  - 790 : `(90, 64)`, valeurs de la sœur 869.
+  - Aucune fiche jouée n'a de champ `null`.
+
+### 🚧 T3.4 — Vérification de la frontière de données
 
 - Objectif : un `verifier` frais sur la chaîne extracteur → `sfx.json` → manifeste. Les cinq champs doivent égaler
   les octets du VAB, du programme et des tonalités de la **fiche résolue**, lus indépendamment, pour quelques

@@ -39,6 +39,11 @@ public sealed class SfxTone
     public int LoopEnd { get; set; }
     public bool Repeat { get; set; }
     public Guid AssetId { get; set; }
+
+    // VagAtr.Vol/Pan of the tone (docs/plan-audio-mix-exact-muet.md, P9). Null when the source sfx.json does not
+    // carry them, never 0: a real 0 exists (a silent tone) and must stay distinguishable from "unknown".
+    public int? Volume { get; set; }
+    public int? Pan { get; set; }
 }
 
 /// <summary>
@@ -62,6 +67,12 @@ public sealed class SfxRecord
     public int NumTones { get; set; }
     public string? SkipReason { get; set; }
     public List<SfxTone> Tones { get; set; } = new();
+
+    // VabHdr.Mvol and ProgAtr.Mvol/Mpan of the record whose samples were exported (P9). Null for a record the
+    // extractor could not resolve, or when the source sfx.json predates these fields.
+    public int? VabMasterVolume { get; set; }
+    public int? ProgramVolume { get; set; }
+    public int? ProgramPan { get; set; }
 }
 
 /// <summary>
@@ -118,6 +129,9 @@ public static class SoundManifestReader
                 MaxVoices = GetInt32(element, "MaxVoices"),
                 NumTones = GetInt32(element, "NumTones"),
                 SkipReason = GetNullableString(element, "SkipReason"),
+                VabMasterVolume = GetNullableInt32(element, "VabMasterVolume"),
+                ProgramVolume = GetNullableInt32(element, "ProgramVolume"),
+                ProgramPan = GetNullableInt32(element, "ProgramPan"),
             };
 
             if (element.TryGetProperty("Tones", out var tonesElement)
@@ -133,6 +147,8 @@ public static class SoundManifestReader
                         LoopStart = GetInt32(toneElement, "LoopStart"),
                         LoopEnd = GetInt32(toneElement, "LoopEnd"),
                         Repeat = GetBoolean(toneElement, "Repeat"),
+                        Volume = GetNullableInt32(toneElement, "Volume"),
+                        Pan = GetNullableInt32(toneElement, "Pan"),
                     });
                 }
 
@@ -150,6 +166,11 @@ public static class SoundManifestReader
         => element.TryGetProperty(propertyName, out var value) && value.ValueKind == JsonValueKind.Number
             ? value.GetInt32()
             : 0;
+
+    private static int? GetNullableInt32(JsonElement element, string propertyName)
+        => element.TryGetProperty(propertyName, out var value) && value.ValueKind == JsonValueKind.Number
+            ? value.GetInt32()
+            : null;
 
     private static double GetDouble(JsonElement element, string propertyName)
         => element.TryGetProperty(propertyName, out var value) && value.ValueKind == JsonValueKind.Number
