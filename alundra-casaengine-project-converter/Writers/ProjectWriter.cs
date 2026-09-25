@@ -2,6 +2,7 @@ using AlundraCasaEngineProjectConverter.Readers;
 using CasaEngine.EditorServices;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Configuration.Project;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AlundraCasaEngineProjectConverter.Writers;
@@ -54,6 +55,8 @@ public static class ProjectWriter
 
         EngineEnvironment.ProjectPath = outputDirectory;
 
+        var projectFilePath = Path.Combine(outputDirectory, $"{ProjectName}.json");
+
         var projectSettings = new ProjectSettings
         {
             WindowTitle = "Alundra",
@@ -71,9 +74,13 @@ public static class ProjectWriter
             // wrong scale. See AlundraDisplay - the window size and the camera zoom are one setting.
             DebugWidth = AlundraDisplay.WindowWidth,
             DebugHeight = AlundraDisplay.WindowHeight,
+
+            // The one setting the author edits by hand in the generated project (engine ADR-0040): kept
+            // across exports, since this phase otherwise rebuilds the file from constants.
+            IsAudioMuted = ReadExistingAudioMute(projectFilePath, report),
         };
 
-        ProjectSettingsHelper.Save(Path.Combine(outputDirectory, $"{ProjectName}.json"), projectSettings);
+        ProjectSettingsHelper.Save(projectFilePath, projectSettings);
         report.Counters["ProjectFiles"] = 1;
         report.Messages.Add($"Created project file '{ProjectName}.json' in '{outputDirectory}'.");
 
@@ -81,6 +88,32 @@ public static class ProjectWriter
         EditorAssetCatalogService.Save();
         report.Counters["Assets"] = 0;
         report.Messages.Add("Created empty AssetInfos.json.");
+    }
+
+    /// <summary>
+    /// Reads IsAudioMuted from the project file a previous export left in place, with the same
+    /// read-only JObject access as <see cref="SetFirstWorldLoaded"/> (no ProjectSettingsHelper.Load and its
+    /// side effects). No file, no key: false. A file that cannot be read is recreated without the key, and
+    /// the report says so rather than silently dropping a mute the author asked for.
+    /// </summary>
+    private static bool ReadExistingAudioMute(string projectFilePath, ConversionReport report)
+    {
+        if (!File.Exists(projectFilePath))
+        {
+            return false;
+        }
+
+        try
+        {
+            var rootElement = JObject.Parse(File.ReadAllText(projectFilePath));
+            return rootElement["IsAudioMuted"]?.Value<bool>() ?? false;
+        }
+        catch (Exception exception) when (exception is JsonException or IOException or FormatException or InvalidCastException)
+        {
+            report.Warnings.Add(
+                $"Project: '{projectFilePath}' could not be read, its IsAudioMuted setting is not kept ({exception.Message}).");
+            return false;
+        }
     }
 
     /// <summary>

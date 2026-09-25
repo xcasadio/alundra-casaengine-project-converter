@@ -478,7 +478,7 @@ chaque groupe concordent sur chaque point retenu.
   - `HeroTraceHarnessTests` réécrit les quatre `docs/hero-trace-389-*.txt` à chaque passage. Le contenu est
     identique, seules les fins de ligne changent ; les fichiers sont remis à leur état suivi.
 
-### ⏳ T1.5 — Le convertisseur garde le réglage « son coupé » à l'export
+### ✅ T1.5 — Le convertisseur garde le réglage « son coupé » à l'export — faite le 2026-09-25
 
 - Objectif : P6, côté convertisseur : un `"IsAudioMuted": true` posé à la main dans `AlundraGame.json` survit à
   l'export.
@@ -496,6 +496,24 @@ chaque groupe concordent sur chaque point retenu.
      `"IsAudioMuted": true` posé à la main : la clé est toujours là après l'export.
 - Validation : tests du convertisseur = ligne de base + n ; les preuves d'export écrites sous la tâche.
 - Commit : `feat(project): keep the project's mute setting across exports`
+
+**Note de validation (2026-09-25).**
+
+- **Code.** `ProjectWriter.CreateEmptyProject` relit `IsAudioMuted` dans le fichier existant avant de le recréer
+  (`ReadExistingAudioMute`, lecture du `JObject` comme `SetFirstWorldLoaded`). Un fichier illisible est recréé sans la
+  clé, avec un avertissement dans le rapport ; seules les exceptions de lecture sont capturées.
+- **Tests.** Les trois tests échouaient ou passaient comme prévu avant le changement (2 échecs, 1 déjà vert).
+  Convertisseur **193 / 193** (190 + 3). Mutation réelle « relecture retirée » : tuée.
+- **Exports.** Trois exports complets vers le projet du worktree, prédiction écrite avant
+  (`scratchpad/export_t15.sh`, relevés dans `scratchpad/t15/`). Vérification PASSED à chaque export.
+  - Base → A : `{report.json}`.
+  - A → B : `{report.json}`.
+  - `AlundraGame.json` identique à l'octet, puisque le projet n'a pas la clé.
+  - Avec `"IsAudioMuted": true` posé à la main, l'export C garde la clé (`True`), puis le fichier est restauré à
+    l'octet (SHA-1 `65e33ec4…`).
+- **Trace à part.** Le manifeste de base comptait un fichier de plus que celui de T0.1 : `editor-diagnostics.txt`,
+  écrit dans le projet par les lancements de l'éditeur en automatisation de T1.3. Ce n'est pas une sortie du
+  convertisseur ; il a été supprimé.
 
 ---
 
