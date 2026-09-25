@@ -26,6 +26,14 @@ public readonly struct SfxToneRecord
     public int LoopEnd { get; init; }
     public bool Repeat { get; init; }
     public Guid AssetId { get; init; }
+
+    /// <summary>
+    /// <c>VagAtr.Vol</c>/<c>Pan</c> of this tone (docs/plan-audio-mix-exact-muet.md, ADR-0003), read by the
+    /// original's key-on (<c>FUN_80090C58</c>) and remix (<c>0x80049794</c>) volume paths. Null when the
+    /// manifest does not carry them - never 0, since a silent tone (volume 0) exists.
+    /// </summary>
+    public int? Volume { get; init; }
+    public int? Pan { get; init; }
 }
 
 /// <summary>
@@ -56,6 +64,15 @@ public readonly struct SfxResolution
     public int RequestedVabId { get; init; }
     public int MaxVoices { get; init; }
     public IReadOnlyList<SfxToneRecord> Tones { get; init; }
+
+    /// <summary>
+    /// <c>VabHdr.Mvol</c> and <c>ProgAtr.Mvol</c>/<c>Mpan</c> of the RESOLVED record - the one whose
+    /// <see cref="Tones"/> are played, i.e. the program the original hands to <c>TriggerVoice</c> and reads back
+    /// in its remix (docs/plan-audio-mix-exact-muet.md, T4.1, ADR-0003). Null when the manifest does not carry them.
+    /// </summary>
+    public int? VabMasterVolume { get; init; }
+    public int? ProgramVolume { get; init; }
+    public int? ProgramPan { get; init; }
 }
 
 /// <summary>
@@ -205,6 +222,8 @@ public sealed class AlundraSoundBank
                 LoopEnd = tone.LoopEnd,
                 Repeat = tone.Repeat,
                 AssetId = assetGuid,
+                Volume = tone.Volume,
+                Pan = tone.Pan,
             };
         }
 
@@ -215,6 +234,9 @@ public sealed class AlundraSoundBank
             RequestedVabId = requestedVabId,
             MaxVoices = record.MaxVoices,
             Tones = tones,
+            VabMasterVolume = record.VabMasterVolume,
+            ProgramVolume = record.ProgramVolume,
+            ProgramPan = record.ProgramPan,
         };
         return true;
     }
@@ -254,6 +276,9 @@ public sealed class AlundraSoundBank
         [JsonPropertyName("ref_sfx_id")] public int RefSfxId { get; set; }
         [JsonPropertyName("max_voices")] public int MaxVoices { get; set; }
         [JsonPropertyName("tones")] public List<ManifestTone>? Tones { get; set; }
+        [JsonPropertyName("vab_master_volume")] public int? VabMasterVolume { get; set; }
+        [JsonPropertyName("program_volume")] public int? ProgramVolume { get; set; }
+        [JsonPropertyName("program_pan")] public int? ProgramPan { get; set; }
     }
 
     private sealed class ManifestTone
@@ -265,5 +290,7 @@ public sealed class AlundraSoundBank
         [JsonPropertyName("loop_end")] public int LoopEnd { get; set; }
         [JsonPropertyName("repeat")] public bool Repeat { get; set; }
         [JsonPropertyName("asset_id")] public string? AssetId { get; set; }
+        [JsonPropertyName("volume")] public int? Volume { get; set; }
+        [JsonPropertyName("pan")] public int? Pan { get; set; }
     }
 }

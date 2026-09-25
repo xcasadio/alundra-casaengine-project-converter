@@ -697,7 +697,7 @@ leur état suivi.
   - 790 : `(90, 64)`, valeurs de la sœur 869.
   - Aucune fiche jouée n'a de champ `null`.
 
-### 🚧 T3.4 — Vérification de la frontière de données
+### ✅ T3.4 — Vérification de la frontière de données — faite le 2026-09-25
 
 - Objectif : un `verifier` frais sur la chaîne extracteur → `sfx.json` → manifeste. Les cinq champs doivent égaler
   les octets du VAB, du programme et des tonalités de la **fiche résolue**, lus indépendamment, pour quelques
@@ -708,18 +708,50 @@ leur état suivi.
   puis ⚠️ Blocked.
 - Validation : verdict et SHA-1 consignés. Pas de commit si rien ne change (note versée au commit suivant).
 
+**Note de validation (2026-09-25).**
+
+- **Vérificateur frais : CONFIRMED.** Son propre script (`scratchpad/t34-verify/check.py`) lit les octets bruts de
+  `SOUND.BIN` et refait la résolution de l'extracteur. Couverture complète, pas un échantillon : les 961 fiches (879
+  résolues, 82 non résolues) et les 996 tonalités, **0 écart**.
+  - Les chaînes redirigées se limitent aux six connues. Les 82 fiches non résolues ont `null` ; les 9 fiches sans
+    tonalité ont leurs vraies valeurs.
+  - WAV identiques ; le fichier sans les cinq champs redonne `d5f5ae02…` ; le manifeste est égal à `sfx.json` champ
+    par champ ; convertisseur 194 / 194.
+- **Deux remarques P4, reportées.** Les valeurs au niveau de la fiche sont uniformes (127/127/64) et ne peuvent donc
+  pas trahir un mauvais programme ; seules les tonalités le peuvent, et elles concordent toutes. Le manifeste n'est pas
+  suivi par git, mais son contenu est celui que produit `ea1dbfd`.
+- **Sur CONFIRMED, copie vers le remaster.** `Alundra Remake/remaster-data-extracted/sound/sfx.json` passe de
+  `d5f5ae02…` à `de01c95f1a003b78e013f5fdadf022bcc970f8d4`, identique à `data-extracted/`. Plus aucune écriture hors
+  dépôt n'est prévue ; la sauvegarde reste dans `scratchpad/t3.1-backup/`.
+
 ---
 
 ## Phase 4 — DLL (`Alundra`)
 
-### ⏳ T4.1 — La banque de sons lit les attributs
+### ✅ T4.1 — La banque de sons lit les attributs — faite le 2026-09-25
 
 - Fichiers : `Alundra/Scripts/AlundraSoundBank.cs` (`SfxToneRecord`, `SfxResolution`, enregistrement du manifeste) ;
   `Alundra.Tests/AlundraSoundBankTests.cs`.
-- Étapes : tests d'abord (lecture des cinq champs, fiche résolue par `RefSfxId`, manifeste sans les champs → mode
-  dégradé de P9), puis code.
+- Étapes : tests d'abord, puis code.
+  - Les cinq champs sont lus en `int?`, comme ils sont écrits (ADR-0003).
+  - `SfxResolution` porte les attributs de programme de la fiche **résolue**, celle dont les tonalités sont jouées. Sous
+    redirection par `RefSfxId`, ce sont ceux de la sœur, jamais ceux de la fiche demandée. C'est la fiche que
+    l'original passe à `FUN_800901a8` et à `TriggerVoice`.
+  - Tests : lecture des cinq champs ; fiche résolue par la chaîne, dont les attributs sont ceux de la sœur ; manifeste
+    sans les champs ou avec `null`, qui donne des attributs absents (le mode dégradé de P9 est appliqué en T4.2).
 - Validation : `Alundra.Tests` vert.
 - Commit : `feat(audio): read the VAB volume and pan attributes of each sound effect`
+
+**Note de validation (2026-09-25).**
+
+- **Code.** `SfxToneRecord.Volume`/`Pan` et `SfxResolution.VabMasterVolume`/`ProgramVolume`/`ProgramPan`, en `int?`,
+  pris sur la fiche résolue.
+- **Tests.** Tests d'abord. `Alundra.Tests` **1235 / 1235** (1228 + 7) :
+  - sur le vrai manifeste : 302 (pans 34/94) ; 303 sous le groupe 56, qui prend les pans 34/94 de sa sœur 835 et non
+    ses propres 0/127 ; 162, dont la tonalité muette reste à 0 ;
+  - sur un jeu de données synthétique (valeurs de programme distinctes, absentes des vraies données) : attributs de
+    la sœur sous redirection, attributs propres sans redirection, champs absents ou `null` qui restent absents.
+- **Mutations réelles**, toutes tuées : attributs de programme pris sur la fiche demandée ; volume de tonalité non lu.
 
 ### ⏳ T4.2 — Le départ d'une voix suit l'original
 
@@ -731,12 +763,43 @@ leur état suivi.
 - Étapes :
   1. Porter `FUN_80090c58` pour une voix de bruitage : clé `0x21`, volume `0x7f`, pan de voix `0x40`, stéréo (P11).
      Les éventuels écarts ou défauts relevés en T0.2 sont appliqués selon D2. Gains = registre / 16 384 (P2).
-  2. Valeurs attendues **calculées à la main dans ce plan avant le code**, pour trois tonalités réelles : les
-     bruitages du bateau (300, 301, 302) avec leurs attributs issus de T3.1. Plus un cas `tonePan < 0x40`, un cas
-     `> 0x40` et un `ProgramPan ≠ 0x40`.
-  3. Tests : ces valeurs ; `PlaySfx` crée une voix stéréo par tonalité avec ces gains ; plafond de polyphonie,
-     anti-doublon, garde de fondu 0xA6 et arrêt par monde inchangés (tests existants verts).
-  4. Mutations en vrai : sans mise au carré ; pan du programme ignoré ; ÷ 0x3fff au lieu de ÷ 0x4000.
+  2. Valeurs attendues **calculées à la main dans ce plan avant le code**, pour des tonalités réelles du bateau avec
+     leurs attributs issus de T3.1. `scratchpad/spu_expected.py` recopie la décompilation vérifiée en T0.2, et la
+     tonalité 0 du son 302 a été refaite à la main. VAB 127, programme 127 et pan de programme 64 pour toutes.
+
+     | Son, tonalité | Volume, pan de tonalité | SPU gauche, droite | Gains (/16 384) |
+     |---|---|---|---|
+     | 300 t0 | 80, 64 | 6 500, 6 500 | 0,396729 / 0,396729 |
+     | 301 t0 | 110, 64 | 12 290, 12 290 | 0,750122 / 0,750122 |
+     | 302 t0 | 100, 34 (`< 0x40`) | 10 157, 2 957 | 0,619934 / 0,180481 |
+     | 302 t1 | 100, 94 (`> 0x40`) | 2 786, 10 157 | 0,170044 / 0,619934 |
+     | 162 t0 | 127, 64 | 16 383, 16 383 | 0,999939 / 0,999939 |
+     | 162 t1 | 0, 0 | 0, 0 | 0 / 0 (tonalité muette de l'original) |
+
+     Détail pour 302 t0 : 127 × ((127 << 14) − 127) / 16 129 = 16 383, puis 16 383 × 127 × 100 / 16 129 = 12 900,
+     D = 12 900 × 34 / 63 = 6 961, G = 12 900² / 16 383 = 10 157, D = 6 961² / 16 383 = 2 957.
+
+     Un `ProgramPan ≠ 0x40` n'existe pas dans les données (64 partout, T2.3). Il est testé par un cas synthétique, en
+     plus des cas réels : programme 127, pan de programme 32, tonalité 127/64. Valeur attendue calculée par le même
+     script dans le test, et écrite à la main dans le test.
+     Valeurs synthétiques, contrôlées à la main (programme 127, tonalité 127/64) :
+     - pan de programme 32 : SPU 16 383 / 4 226 (D = 16 383 × 32 / 63 = 8 321, puis 8 321² / 16 383 = 4 226) ;
+     - pan de programme 100 : SPU 3 008 / 16 383.
+  3. Replis, jamais le silence :
+     - un attribut `null` sur la fiche jouée ;
+     - un clip qui n'expose pas ses échantillons (`IAudioClipSamples` absent ou vide ; aucun cas en production, où
+       tous les WAV d'Alundra sont en PCM 16 bits mono).
+
+     Dans ces deux cas, la voix part comme aujourd'hui (`PlayClip`, volume 1, centrée), et une ligne est écrite une
+     seule fois dans le journal. Le choix du chemin se fait avant l'appel : la DLL teste le clip, sans déduire la cause
+     d'un `None`.
+  4. Registre des voix vivantes : chaque entrée garde son index de tonalité (rang dans la fiche résolue) et un numéro
+     d'ordre de départ, pour P7.
+  5. Tests : ces valeurs ; `PlaySfx` crée une voix stéréo par tonalité avec ces gains ; les deux replis ; plafond de
+     polyphonie, anti-doublon, garde de fondu 0xA6 et arrêt par monde inchangés. Les tests existants qui figent
+     l'ancien comportement (volume 1 et pan 0 au départ) sont mis à jour et listés dans la note de validation.
+  6. Mutations en vrai : sans mise au carré ; pan du programme ignoré ; ÷ 0x3fff au lieu de ÷ 0x4000 ; repli du
+     `null` retiré (la voix partirait muette).
 - Validation : `Alundra.Tests` vert, six goldens identiques.
 - Commit : `feat(audio): start sound effect voices with the executable's per-tone stereo volumes`
 
@@ -749,8 +812,23 @@ leur état suivi.
   1. Porter `0x80049794` avec ses constantes : `(x+1)²−1`, ÷ 16 383 et ÷ 3 969 par multiplication magique comme le
      binaire, poids de pan au carré. Résolution de la fiche avec le groupe courant ; rien si aucune tonalité ou pas
      de programme ; pour chaque tonalité de la fiche résolue, la voix la plus ancienne de (id demandé, tonalité) (P7)
-     reçoit `SetVoiceStereoGains`. Toujours aucune lecture déclenchée.
-  2. Valeurs attendues calculées à la main dans ce plan avant le code (deux mixes, dont un asymétrique).
+     reçoit `SetVoiceStereoGains`. Toujours aucune lecture déclenchée. Les attributs de programme et de tonalité sont
+     ceux de la fiche résolue.
+     - Une voix partie par un repli de T4.2 est mono et ne peut pas recevoir de gains G/D. Elle n'est pas remixée ;
+       une ligne est écrite une seule fois dans le journal. Même chose si un attribut de la fiche est `null`.
+  2. Valeurs attendues calculées à la main dans ce plan avant le code (`scratchpad/spu_expected.py`, même source).
+
+     | Son, tonalité | Mix G, D | SPU gauche, droite | Gains |
+     |---|---|---|---|
+     | 302 t0 | 0x40, 0x40 (carte 390) | 2 629, 765 | 0,160461 / 0,046692 |
+     | 302 t1 | 0x40, 0x40 (carte 390) | 721, 2 629 | 0,044006 / 0,160461 |
+     | 200 t0 | 0x50, 0x50 (Inoa 162) | 6 560, 6 560 | 0,400391 / 0,400391 |
+     | 200 t0 | 0x14, 0x14 | 440, 440 | 0,026855 / 0,026855 |
+     | 200 t0 | 0, 0 | 0, 0 | 0 / 0 |
+     | 302 t0 | 0x7f, 0x20 (asymétrique) | 10 200, 197 | 0,622559 / 0,012024 |
+     | 302 t1 | 0x7f, 0x20 (asymétrique) | 2 798, 677 | 0,170776 / 0,041321 |
+
+     Contrôle : pour une tonalité 127/64, un mix 0x7f/0x7f redonne exactement les volumes du départ (16 383, 16 383).
   3. Tests : valeurs ; seule la voix la plus ancienne d'une tonalité change ; id inaudible → aucun appel ; `0xBF`
      avec `v[2] = 1` vise l'id `v[1] + 256` par le vrai runner ; `0xAB` inchangé.
   4. Mutations en vrai : `v[2]` ignoré ; toutes les instances remixées ; `>> 12` au lieu de `>> 11`.
