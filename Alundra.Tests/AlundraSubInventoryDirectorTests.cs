@@ -576,6 +576,79 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         }
     }
 
+    /// <summary>E13.d SI11: the sub-inventory's own wiring of the shared text reveal keeps FUN_80053f3c's cadence -
+    /// once the first character is committed, one more every third tick.</summary>
+    [Fact]
+    public void Description_OneCharacterEveryThirdTick()
+    {
+        var projectPath = WriteEtcFixture(17, "Armure en tissu", "a", "b");
+        try
+        {
+            EngineEnvironment.ProjectPath = projectPath;
+            var tables = ItemTablesFixture.LoadReal();
+            var state = NewGameState(tables); // New Game owns item 17 (armor slot 7).
+            AttachAll(state, tables, null);
+            OpenSubInventoryDirectly(state);
+            foreach (var button in PathTo(AlundraSubInventoryDirector.Instance.SelectedPosition, 7))
+            {
+                Tick(state, button);
+                Tick(state, 0);
+            }
+
+            TickUntil(state, () => AlundraSubInventoryDirector.Instance.TextRevealState == 2, maxTicks: 10);
+            Assert.Equal("A", AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0);
+
+            Tick(state, 0);
+            Tick(state, 0);
+            Assert.Equal(2, AlundraSubInventoryDirector.Instance.TextRevealState);
+            Tick(state, 0);
+            Assert.Equal(3, AlundraSubInventoryDirector.Instance.TextRevealState);
+            Assert.Equal("Ar", AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0);
+        }
+        finally
+        {
+            Directory.Delete(projectPath, recursive: true);
+        }
+    }
+
+    /// <summary>E13.d SI11: a position whose item is not owned draws nothing - the line drawn at the previous
+    /// position does not stay on screen.</summary>
+    [Fact]
+    public void Description_UnownedPosition_DrawsNothing()
+    {
+        var projectPath = WriteEtcFixture(17, "Armure en tissu", "a", "b");
+        try
+        {
+            EngineEnvironment.ProjectPath = projectPath;
+            var tables = ItemTablesFixture.LoadReal();
+            var state = NewGameState(tables);
+            AttachAll(state, tables, null);
+            OpenSubInventoryDirectly(state);
+            foreach (var button in PathTo(AlundraSubInventoryDirector.Instance.SelectedPosition, 7))
+            {
+                Tick(state, button);
+                Tick(state, 0);
+            }
+
+            TickUntil(state, () => AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0 == "Armure en tissu", maxTicks: 80);
+            Assert.False(AlundraSubInventoryDirector.Instance.ArmoryOwned(0)); // a New Game owns no crest.
+
+            foreach (var button in PathTo(7, 0))
+            {
+                Tick(state, button);
+                Tick(state, 0);
+            }
+
+            Assert.Equal(0, AlundraSubInventoryDirector.Instance.SelectedPosition);
+            Assert.Equal(string.Empty, AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0);
+            Assert.Equal(string.Empty, AlundraSubInventoryDirector.Instance.DrawnDescriptionLine1);
+        }
+        finally
+        {
+            Directory.Delete(projectPath, recursive: true);
+        }
+    }
+
     // -----------------------------------------------------------------------------------------
     // 6: New Game names - "Armure en tissu", "Bottes courtes" (real exported tables).
     // -----------------------------------------------------------------------------------------

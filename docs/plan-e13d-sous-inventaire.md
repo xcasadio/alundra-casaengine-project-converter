@@ -590,7 +590,19 @@ corrigés. Mutations réelles tuées : centrage rétabli pour les emplacements, 
 - Tests : positions des icônes égales aux positions d'origine quelle que soit la taille du sprite ; le test des
   données de conception de SI8 devient « icône au coin de son cadre ». Mutation : le centrage rétabli.
 
-#### ⏳ SI11 — Une seule machine de texte déroulant (D-E13D-35)
+#### ✅ SI11 — Une seule machine de texte déroulant (D-E13D-35) — faite le 2026-09-25
+
+**Fait** : `AlundraInventoryTextReveal` porte la machine (états, préfixes, lignes dessinées, décompte de trois
+ticks) ; chaque directeur en possède une instance, garde ses propriétés publiques en lecture directe et ne
+conserve que la résolution de l'objet décrit et les remises à zéro (`Reset` aux mises en place, `Restart` aux
+déplacements du curseur) ; les deux directeurs perdent 387 lignes, la classe partagée en compte 198. La garde d'échappement des accents, morte
+(0 chaîne sur 354 exportées contient une accolade, relevé 11 de SI9), part avec le seul test qui la visait par
+réflexion. Tous les autres tests passent **inchangés**. Mutations réelles sur la classe partagée : décompte,
+préfixe de la ligne 2 et effacement des lignes dessinées, chacune contre les deux suites ; les deux qui
+survivaient côté sous-inventaire (cadence, position vide) ont révélé deux trous, comblés par deux tests
+(`Description_OneCharacterEveryThirdTick`, `Description_UnownedPosition_DrawsNothing`) : les six sont tuées.
+`Alundra.Tests` 1227/1227. Reste une copie assumée : l'interpolation des boîtes, dupliquée par le sous-inventaire
+alors que l'original n'a qu'une fonction (`UpdateUiBoxesPosition`) — hors de la décision de l'auteur, signalée.
 
 - La machine d'états du texte (nom, puis ligne 1, puis ligne 2 ; un caractère décodé toutes les trois images ;
   préfixes visibles et lignes « dessinées » de l'image) sort des deux directeurs dans une classe partagée ; chaque
@@ -708,6 +720,7 @@ suites vertes ; chaque export prouvé par double export.
 | 2026-09-25 | **SI9.c faite** : la jauge relancée pendant son ouverture glisse depuis sa position et se cache. |
 | 2026-09-25 | **SI9.d faite**, **SI9 close** : chaque relevé de la contre-vérification a sa disposition (tableau ci-dessous). |
 | 2026-09-25 | **SI10 faite** : les icônes du sous-inventaire au coin d'origine, sans lecture de taille de sprite. |
+| 2026-09-25 | **SI11 faite** : une seule machine de texte déroulant ; deux trous de tests du sous-inventaire comblés en passant. |
 
 ### SI9 — la contre-vérification de l'inventaire principal (2026-09-25)
 

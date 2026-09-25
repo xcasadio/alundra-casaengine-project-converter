@@ -873,23 +873,6 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         }
     }
 
-    [Fact]
-    public void RevealedPrefix_NeverSplitsAnEscapePairAcrossTheBoundary()
-    {
-        var method = typeof(AlundraInventoryDirector).GetMethod("RevealedPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-        Assert.NotNull(method);
-
-        // "A{b" with visibleLength 2 lands right after '{' - must back up to 1, not split the pair.
-        var result = (string)method!.Invoke(null, new object[] { "A{b", 2 })!;
-        Assert.Equal("A", result);
-
-        var resultClosing = (string)method.Invoke(null, new object[] { "A}b", 2 })!;
-        Assert.Equal("A", resultClosing);
-
-        var resultUnaffected = (string)method.Invoke(null, new object[] { "Abc", 2 })!;
-        Assert.Equal("Ab", resultUnaffected);
-    }
-
     // -----------------------------------------------------------------------------------------
     // World wiring
     // -----------------------------------------------------------------------------------------

@@ -16,17 +16,18 @@ namespace Alundra.Scripts;
 /// (plan §1.1/§1.2). Its own L1/R1 (<see cref="RunInput"/>) closes it and hands control BACK to the main
 /// inventory the same way, through <see cref="AlundraInventoryPostProcess.State"/> = 2.</para>
 ///
-/// <para><b>The text-reveal machine has its own copy</b> (D-E13D-25): the original has two distinct
-/// functions and two distinct sets of globals (<c>DisplayInventoryTexts</c>/<c>g_inventoryCursorText</c>
-/// for the main inventory, <c>FUN_80053fdc</c>/<c>INT_8017f788</c> here) - this port keeps that split
-/// rather than factoring a shared machine (plan §6 point 2: a future reflection point, not done here).</para>
+/// <para><b>The text reveal is the machine both inventories share</b> (<see cref="AlundraInventoryTextReveal"/>,
+/// D-E13D-35, SI11): the original has two distinct functions and two sets of globals
+/// (<c>DisplayInventoryTexts</c>/<c>g_inventoryCursorText</c> for the main inventory, <c>FUN_80053fdc</c>/
+/// <c>INT_8017f788</c> here); this director owns its own instance, and keeps what is its own - the item described
+/// (<see cref="TryResolveDescribedItem"/>) and when the reveal restarts.</para>
 ///
 /// <para><b>A defect of the original, corrected</b> (D-E13D-30, reversing D-E13D-28): at states
 /// <c>0x8f..0xce</c> the executable reads <c>line2[c - 0x90]</c> (<c>0x80054314</c>/<c>0x80054330</c>), one
 /// byte EARLIER than the <c>c - 0x8f</c> the main inventory's own machine uses (<c>0x80056274</c>). At
 /// <c>c == 0x8f</c> that reads the byte just before the string, the previous string's null terminator,
 /// measured 0 for all 98 items of <c>DATA/ETC_RES.R</c>: the state jumps to <c>0xcf</c> and the French
-/// sub-inventory never shows a second description line. The author chose to fix it: this port reads
+/// sub-inventory never shows a second description line. The author chose to fix it: the shared machine reads
 /// <c>c - 0x8f</c>, like the main inventory and like the decompilation of both machines
 /// (<c>SubInventoryManager.cs:608/614</c>), and shows both lines.</para>
 /// </summary>
@@ -88,13 +89,7 @@ public sealed class AlundraSubInventoryDirector
         SelectedPosition = 0; // plan §1.3: not reset between openings, but 0 at session start.
         ArmorName = null;
         BootsName = null;
-        TextRevealState = 0;
-        NameVisiblePrefix = string.Empty;
-        Description0VisiblePrefix = string.Empty;
-        Description1VisiblePrefix = string.Empty;
-        DrawnDescriptionLine0 = string.Empty;
-        DrawnDescriptionLine1 = string.Empty;
-        _textRevealCountdown = 0;
+        _textReveal.Reset();
 
         for (var i = 0; i < KeyItemIds.Length; i++)
         {
@@ -178,8 +173,7 @@ public sealed class AlundraSubInventoryDirector
     /// point 31).</summary>
     public (int X, int Y) BoxPosition(int boxIndex) => (_boxes[boxIndex].CurrentX, _boxes[boxIndex].CurrentY);
 
-    /// <summary>Own copy of <see cref="AlundraInventoryDirector"/>'s own <c>AdvanceBoxTween</c> (D-E13D-25's
-    /// "own copy" philosophy applied to the box tween too, not just the text machine) - port of
+    /// <summary>Own copy of <see cref="AlundraInventoryDirector"/>'s own <c>AdvanceBoxTween</c> - port of
     /// <c>UIManager.UpdateUiBoxesPosition</c>, same 18-call shape: returns true exactly when
     /// <see cref="BoxTween.Mode"/> was ALREADY 0 on entry.</summary>
     private static bool AdvanceBoxTween(ref BoxState box, ref BoxTween tween)
@@ -338,32 +332,26 @@ public sealed class AlundraSubInventoryDirector
     }
 
     // =====================================================================================
-    // Text reveal (FUN_80053fdc, SubInventoryManager.cs:468-629) - own copy, D-E13D-25.
+    // Text reveal (FUN_80053fdc, SubInventoryManager.cs:468-629) - the shared machine, D-E13D-35.
     // =====================================================================================
 
-    /// <summary>Port of <c>INT_8017f788</c> - same state shape as
-    /// <see cref="AlundraInventoryDirector.TextRevealState"/> (0 name setup, 1..0x10 name reveal,
-    /// 0x11..0x4c hold, 0x4d desc-line-0 setup, 0x4e..0x8d desc-line-0 reveal, 0x8e desc-line-1 setup,
-    /// 0x8f..0xce desc-line-1 reveal (read at c - 0x8f, the original's defect corrected - this class' own doc,
-    /// D-E13D-30), 0xcf done).</summary>
-    public int TextRevealState { get; private set; }
+    /// <summary>Port of <c>INT_8017f788</c> - the raw state value of the text reveal
+    /// (<see cref="AlundraInventoryTextReveal.State"/>).</summary>
+    public int TextRevealState => _textReveal.State;
 
-    public string NameVisiblePrefix { get; private set; } = string.Empty;
-    public string Description0VisiblePrefix { get; private set; } = string.Empty;
+    public string NameVisiblePrefix => _textReveal.NameVisiblePrefix;
+    public string Description0VisiblePrefix => _textReveal.Description0VisiblePrefix;
+    public string Description1VisiblePrefix => _textReveal.Description1VisiblePrefix;
 
-    public string Description1VisiblePrefix { get; private set; } = string.Empty;
+    /// <summary>SI4: what this tick drew on line 0 (<see cref="AlundraInventoryTextReveal.DrawnLine0"/>).</summary>
+    public string DrawnDescriptionLine0 => _textReveal.DrawnLine0;
 
-    /// <summary>SI4: what this tick drew on line 0 - the name during its reveal/hold, the first
-    /// description line from state 0x4e, empty otherwise.</summary>
-    public string DrawnDescriptionLine0 { get; private set; } = string.Empty;
+    /// <summary>What this tick drew on line 1 (<see cref="AlundraInventoryTextReveal.DrawnLine1"/>).</summary>
+    public string DrawnDescriptionLine1 => _textReveal.DrawnLine1;
 
-    /// <summary>What this tick drew on line 1 - the second description line from state 0x8f, empty otherwise
-    /// (the main inventory's own D5 rule, <see cref="AlundraInventoryDirector.DrawnDescriptionLine1"/>).</summary>
-    public string DrawnDescriptionLine1 { get; private set; } = string.Empty;
-
-    /// <summary>Port of <c>INT_8017f78c</c> (<c>FUN_80053f3c</c>) - this machine's OWN 3-tick countdown,
-    /// not shared with <see cref="AlundraInventoryDirector"/>'s own (D-E13D-25).</summary>
-    private int _textRevealCountdown;
+    /// <summary><c>FUN_80053fdc</c>'s state (<c>INT_8017f788</c>, <c>INT_8017f78c</c>): the machine both
+    /// inventories share since E13.d SI11 (D-E13D-35), this director's own instance.</summary>
+    private readonly AlundraInventoryTextReveal _textReveal = new();
 
     /// <summary>Port of <c>FUN_80053fdc</c>'s own item resolution (<c>:474-516</c>) - see this class' own
     /// doc for the 14-entry table. <c>value &lt; -7</c> is UNREACHABLE with this table (the decompiled
@@ -418,151 +406,7 @@ public sealed class AlundraSubInventoryDirector
         return true;
     }
 
-    private void RunTextReveal()
-    {
-        DrawnDescriptionLine0 = string.Empty;
-        DrawnDescriptionLine1 = string.Empty;
-
-        if (!TryResolveDescribedItem(out var itemId))
-        {
-            return; // :479-486/501-505/512-515 - unowned/empty position: nothing drawn, text state frozen.
-        }
-
-        var cursor = TextRevealState;
-        var projectPath = EngineEnvironment.ProjectPath;
-
-        // :522-530 - state 0: load the name, nothing revealed yet.
-        if (cursor == 0)
-        {
-            NameVisiblePrefix = string.Empty;
-            _textRevealCountdown = 0;
-            TextRevealState = cursor + 1;
-            return;
-        }
-
-        // :533-549 - states 1..0x10: reveal the name one character at a time.
-        if ((uint)(cursor - 1) < 0x10)
-        {
-            AlundraEtcStringTable.TryResolveItemName(projectPath, itemId, out var name);
-
-            if (cursor - 1 >= name.Length)
-            {
-                TextRevealState = 0x11;
-            }
-            else
-            {
-                AdvanceTextReveal();
-                NameVisiblePrefix = RevealedPrefix(name, TextRevealState - 1);
-            }
-
-            DrawnDescriptionLine0 = NameVisiblePrefix;
-            return;
-        }
-
-        // :552-559 - states 0x11..0x4c: hold the name on screen.
-        if ((uint)(cursor - 0x11) < 0x3c)
-        {
-            TextRevealState = cursor + 1;
-            DrawnDescriptionLine0 = NameVisiblePrefix;
-            return;
-        }
-
-        // :562-570 - state 0x4d: switch line 0 from the name to the first description line.
-        if (cursor == 0x4d)
-        {
-            Description0VisiblePrefix = string.Empty;
-            _textRevealCountdown = 0;
-            TextRevealState = cursor + 1;
-            return;
-        }
-
-        // :573-589 - states 0x4e..0x8d: reveal the first description line.
-        if ((uint)(cursor - 0x4e) < 0x40)
-        {
-            AlundraEtcStringTable.TryResolveItemDescriptionLine0(projectPath, itemId, out var firstLine);
-
-            if (cursor - 0x4e >= firstLine.Length)
-            {
-                TextRevealState = 0x8e;
-            }
-            else
-            {
-                AdvanceTextReveal();
-                Description0VisiblePrefix = RevealedPrefix(firstLine, TextRevealState - 0x4e);
-            }
-
-            DrawnDescriptionLine0 = Description0VisiblePrefix;
-            return;
-        }
-
-        // :592-601 - state 0x8e: switch to the second description line.
-        if (cursor == 0x8e)
-        {
-            Description1VisiblePrefix = string.Empty;
-            _textRevealCountdown = 0;
-            TextRevealState = cursor + 1;
-            DrawnDescriptionLine0 = Description0VisiblePrefix;
-            return;
-        }
-
-        // :604-621 - states 0x8f..0xce: reveal the second description line. DEFECT OF THE ORIGINAL, CORRECTED
-        // (D-E13D-30): the executable reads line2[c - 0x90] (lbu -0x90 at 0x80054314/0x80054330), one byte
-        // early, so at c == 0x8f it reads the previous string's null terminator and never shows this line;
-        // this port reads c - 0x8f, like the main inventory (lbu -0x8f at 0x80056274) and the decompilation.
-        if ((uint)(cursor - 0x8f) < 0x40)
-        {
-            AlundraEtcStringTable.TryResolveItemDescriptionLine1(projectPath, itemId, out var secondLine);
-
-            if (cursor - 0x8f >= secondLine.Length)
-            {
-                TextRevealState = 0xcf;
-            }
-            else
-            {
-                AdvanceTextReveal();
-                Description1VisiblePrefix = RevealedPrefix(secondLine, TextRevealState - 0x8f);
-            }
-
-            DrawnDescriptionLine0 = Description0VisiblePrefix; // :618 FUN_80053e54(0)
-            DrawnDescriptionLine1 = Description1VisiblePrefix; // :619 FUN_80053e54(1)
-            return;
-        }
-
-        // :624-628 - cursor == 0xcf: both lines are complete and drawn.
-        if (cursor == 0xcf)
-        {
-            DrawnDescriptionLine0 = Description0VisiblePrefix;
-            DrawnDescriptionLine1 = Description1VisiblePrefix;
-        }
-    }
-
-    /// <summary>Port of <c>FUN_80053f3c</c>'s own countdown (<c>SubInventoryManager.cs:662-691</c>) -
-    /// commits one character every third tick, this machine's own countdown (D-E13D-25).</summary>
-    private void AdvanceTextReveal()
-    {
-        if (_textRevealCountdown != 0)
-        {
-            _textRevealCountdown -= 1;
-            return;
-        }
-
-        _textRevealCountdown = 2;
-        TextRevealState += 1;
-    }
-
-    /// <summary>Same clamp as <see cref="AlundraInventoryDirector"/>'s own <c>RevealedPrefix</c> - never
-    /// split an escape pair across the visible/hidden boundary.</summary>
-    private static string RevealedPrefix(string text, int visibleLength)
-    {
-        visibleLength = Math.Clamp(visibleLength, 0, text.Length);
-
-        if (visibleLength > 0 && (text[visibleLength - 1] == '{' || text[visibleLength - 1] == '}'))
-        {
-            visibleLength -= 1;
-        }
-
-        return text.Substring(0, visibleLength);
-    }
+    private void RunTextReveal() => _textReveal.Tick(TryResolveDescribedItem(out var itemId) ? itemId : null);
 
     // =====================================================================================
     // Open (post-process only) / Tick
@@ -585,13 +429,7 @@ public sealed class AlundraSubInventoryDirector
         AlundraHudDirector.Instance.InitializeHudPosition();
 
         State = StateResidual | StateOpening;
-        TextRevealState = 0;
-        NameVisiblePrefix = string.Empty;
-        Description0VisiblePrefix = string.Empty;
-        Description1VisiblePrefix = string.Empty;
-        DrawnDescriptionLine0 = string.Empty;
-        DrawnDescriptionLine1 = string.Empty;
-        _textRevealCountdown = 0;
+        _textReveal.Reset();
         _hasTickedSinceOpen = false;
 
         _gameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
@@ -650,28 +488,28 @@ public sealed class AlundraSubInventoryDirector
         if ((pad.ButtonsJustPressedByInterval & AlundraPadState.Right) != 0)
         {
             SelectedPosition = NavRight[SelectedPosition];
-            TextRevealState = 0;
+            _textReveal.Restart();
             _soundPlayer?.PlaySfx(1);
         }
 
         if ((pad.ButtonsJustPressedByInterval & AlundraPadState.Left) != 0)
         {
             SelectedPosition = NavLeft[SelectedPosition];
-            TextRevealState = 0;
+            _textReveal.Restart();
             _soundPlayer?.PlaySfx(1);
         }
 
         if ((pad.ButtonsJustPressedByInterval & AlundraPadState.Up) != 0)
         {
             SelectedPosition = NavUp[SelectedPosition];
-            TextRevealState = 0;
+            _textReveal.Restart();
             _soundPlayer?.PlaySfx(1);
         }
 
         if ((pad.ButtonsJustPressedByInterval & AlundraPadState.Down) != 0)
         {
             SelectedPosition = NavDown[SelectedPosition];
-            TextRevealState = 0;
+            _textReveal.Restart();
             _soundPlayer?.PlaySfx(1);
         }
 
