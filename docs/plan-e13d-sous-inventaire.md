@@ -1,7 +1,7 @@
 # Plan — E13.d, seconde partie : le sous-inventaire et la bascule L1/R1
 
-**État** : 🧪 **SI1 à SI5 faites et vérifiées (2026-09-25) ; reste SI6, la recette de l'auteur**, et les points du
-§6. Rédigé le 2026-09-24 (soir), relu **READY** au premier passage (relecteur frais). **Mode d'exécution** : l'auteur a demandé, le
+**État** : ✅ **Close le 2026-09-25** : SI1 à SI12 faites et vérifiées, recette de l'auteur validée (« tout
+fonctionne »), branche des suites mergée par l'auteur dans `main`. Les points restants du §6 sont consignés. Rédigé le 2026-09-24 (soir), relu **READY** au premier passage (relecteur frais). **Mode d'exécution** : l'auteur a demandé, le
 2026-09-24 au soir, que la tâche soit faite en autonomie pendant son absence (« il faut que tu puisses faire
 tout ça tout seul »). Ce plan tient donc lieu d'approbation une fois relu **READY** : mode **AUTO** (travail
 réversible dans le périmètre écrit ici, un commit par tranche sur des branches dédiées, ni push, ni merge, ni
@@ -523,7 +523,10 @@ changement) de `MenuOpen`, des deux directeurs, du post-traitement, des deux pr�
 captures par `GetBackBufferData`. Lancé avec le `.json` du projet du worktree et le `Content` du lanceur
 (`CasaEngine.Launcher/bin/Release/net9.0-windows/Content`).
 
-### 🧪 SI6 — Recette de l'auteur
+### ✅ SI6 — Recette de l'auteur — validée le 2026-09-25
+
+**Validée** par l'auteur sur le checkout principal après le merge des suites (« j'ai testé tout fonctionne »),
+export et DLL refaits, branche de l'analyseur rapatriée et `master` de l'analyseur avancé sur `8f403d5`.
 
 `Start` puis `R1` (touche `I`) ou `L1` (touche `U`) : le sous-inventaire glisse ; naviguer dans les 14 positions,
 en maintenant une direction ; lire la description de l'armure et des bottes ; revenir au principal par `L1`/`R1`,
@@ -729,6 +732,7 @@ suites vertes ; chaque export prouvé par double export.
 | 2026-09-25 | **SI10 faite** : les icônes du sous-inventaire au coin d'origine, sans lecture de taille de sprite. |
 | 2026-09-25 | **SI11 faite** : une seule machine de texte déroulant ; deux trous de tests du sous-inventaire comblés en passant. |
 | 2026-09-25 | **SI12 faite** : le délai de warp de 0,2 s après chaque entrée de carte. |
+| 2026-09-25 | Vérificateur frais sur SI7 à SI12 : **CONFIRMED**, quatre remarques P4. L'auteur merge les suites dans `main`, rapatrie la branche de l'analyseur, refait l'export et la DLL : **recette validée** (« tout fonctionne »), SI6 close. Les quatre remarques P4 corrigées sur `chantier/e13d-p4-cleanups` (commentaire de `TryTrigger`, doc de `WeaponId`, champ inutilisé de l'écran du sous-inventaire, deux plans). |
 
 ### SI9 — la contre-vérification de l'inventaire principal (2026-09-25)
 

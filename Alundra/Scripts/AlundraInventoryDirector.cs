@@ -362,7 +362,7 @@ public sealed class AlundraInventoryDirector
     }
 
     /// <summary>Port of the trigger (<c>GameEngine.cs:1567-1576</c>) - see this class' own doc for the
-    /// three guards with no port equivalent, each declared absent/always-0 right where it is tested.</summary>
+    /// two guards with no port equivalent, each declared absent/always-0 right where it is tested.</summary>
     private static bool TryTrigger(AlundraGameState state, AlundraEntityScriptProxy? player)
     {
         // GameEngine.cs:1568 - StaticVariables.g_playerControlFlags == 0.
