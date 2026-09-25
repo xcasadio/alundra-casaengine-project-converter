@@ -424,9 +424,10 @@ public sealed class AlundraInventoryDirector
         // (UI/MemoryCardManager.cs, ~90 distinct assigned values) - not ported in this DLL at all (no
         // MemoryCardManager port exists). Declared absent, treated as always 0 (never blocks).
 
-        // GameEngine.cs:1576 - MainInventoryManager.DisplayInventory() == 0: DEAD in the original itself,
-        // not ported. DisplayInventory (below) returns 1 on every one of its own paths (:449/:456/:498),
-        // so this comparison can never be true in the decompilation either.
+        // GameEngine.cs:1576 - MainInventoryManager.DisplayInventory() == 0, then g_isGameEnding = 1
+        // (0x8002bcf4-0x8002bd00): not ported. DisplayInventory returns 0 on one path only, the debug
+        // branch's Left (:470, 0x800555f0), and that branch is dead in play (g_cdIsReady, see
+        // RunDisplayInventoryHead) and not ported - so this comparison never holds here.
         return true;
     }
 
@@ -446,12 +447,18 @@ public sealed class AlundraInventoryDirector
     /// <c>DisplayInventory</c> only (<c>MainInventoryManager.cs:443-495</c>) - called from the post-process
     /// (<see cref="RunDisplayInventoryHeadFromPostProcess"/>) on its own tick, and from
     /// <see cref="RunDisplayInventory"/> (the ordinary trigger path) on the SAME tick as the setup. Returns
-    /// false when the dialogue guard stopped it (the caller must not run the setup either, on either
-    /// path).</summary>
+    /// false when a guard stopped it - the inventory already running, or a dialogue open - and the caller
+    /// must not run the setup either, on either path.</summary>
     private bool RunDisplayInventoryHead(AlundraGameState state)
     {
-        // MainInventoryManager.cs:445 - g_forbiddenWarpFlag == 0: guaranteed here (this method only runs
-        // from the Idle branch of Tick, i.e. ForbiddenWarpFlag == 0 already) - not re-tested.
+        // MainInventoryManager.cs:445 - g_forbiddenWarpFlag == 0, tested first on every entry (0x80055574,
+        // bnez 0x8005557c: return 1, nothing done). Guaranteed on the trigger path (Tick's Idle branch), but
+        // not from the post-process (RunDisplayInventoryHeadFromPostProcess) - tested here for both (plan
+        // E13.d SI9.d).
+        if (ForbiddenWarpFlag != 0)
+        {
+            return false;
+        }
 
         // MainInventoryManager.cs:447-452 - CheckSpecialWarpCondition(0): callback slot 0 is the dialogue
         // box (GameEngine.cs:1590-1593 reads g_callbackTable[0].Flags & 1, posed by SetTransitionType(0)
@@ -465,9 +472,11 @@ public sealed class AlundraInventoryDirector
         // debug flags menu (StaticVariables.cs:11388-11470, UIDebugManager.InitializeFlagsDebugMenu) -
         // NOT PORTED (no debug menu exists in this DLL), so this condition is always false/inactive.
 
-        // MainInventoryManager.cs:460-482 - the g_cdIsReady == 0 debug branch: DEAD IN PLAY
-        // (g_cdIsReady is set to 1 once the CD finishes initializing, SoundManager.cs:331, long before
-        // any player input is possible) - not ported, per the plan's own §1.1 finding.
+        // MainInventoryManager.cs:460-482 - the g_cdIsReady == 0 debug branch: DEAD IN PLAY - g_cdIsReady
+        // is set to 1 at the end of the CD init (0x8004e85c, run at boot), long before any player input is
+        // possible - not ported, per the plan's own §1.1 finding. (The C# InitializeSoundSystem's own
+        // "g_cdIsReady = 1", SoundManager.cs:331, is not in the executable: its CD-reset path stores 0 at
+        // 0x80048514 after the CD init, and no writer of the reset request 0x8009a858 was found.)
 
         // MainInventoryManager.cs:484 - HudManager.InitializeHudPosition().
         AlundraHudDirector.Instance.InitializeHudPosition();

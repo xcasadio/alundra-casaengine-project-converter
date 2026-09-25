@@ -440,6 +440,27 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         Assert.DoesNotContain(2, sound.Requests);
     }
 
+    /// <summary>Plan E13.d SI9.d: DisplayInventory tests g_forbiddenWarpFlag first on every entry (0x80055574),
+    /// the post-process's call included - with the inventory already running, the head does nothing (no HUD
+    /// hide, no sound 4) and arms no setup.</summary>
+    [Fact]
+    public void HeadFromPostProcess_WhileTheInventoryRuns_DoesNothing()
+    {
+        var state = NewState();
+        var sound = new RecordingSoundPlayer();
+        var director = NewDirector(state, sound: sound);
+        OpenAndSettle(state, director);
+        Assert.NotEqual(0u, director.ForbiddenWarpFlag);
+        sound.Requests.Clear();
+
+        director.RunDisplayInventoryHeadFromPostProcess();
+
+        Assert.Empty(sound.Requests);
+        Tick(state, director, 0);
+        Assert.Empty(sound.Requests); // no setup pending either: nothing re-armed on the next tick.
+        Assert.True(director.IsDrawn);
+    }
+
     /// <summary>A defect of the original, corrected (plan E13.d SI9.b): with no weapon resolving (a fresh state,
     /// WeaponId 0), the executable compares the empty slot's -1 with the current weapon's -1 first and stays
     /// silent; the port tests validity first and sounds the error.</summary>

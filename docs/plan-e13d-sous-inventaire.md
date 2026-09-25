@@ -598,7 +598,7 @@ replié avec l'icône, icône de l'armure décalée de 4 px dans les données. `
 - Tests : après une entrée de carte, `Start` est refusé aux ticks 1 à 9 et accepté au 10ᵉ ; mutation : le test du
   délai retiré du déclencheur.
 
-#### 🚧 SI9 — La contre-vérification complète de l'inventaire principal (D-E13D-33)
+#### ✅ SI9 — La contre-vérification complète de l'inventaire principal (D-E13D-33) — faite le 2026-09-25
 
 Cinq groupes de fonctions de `MainInventoryManager.cs` (ouverture et fermeture avec le déclencheur et la jauge ;
 image par image et curseur ; texte ; icônes, tables et chiffres ; équipement avec les fonctions de
@@ -624,8 +624,10 @@ de l'inventaire principal »). Quatre sous-tranches :
   `&= ~4`, relus en session principale à `0x8004bec0`-`0x8004bf18`) ; défaut de l'original corrigé : la
   disparition part de la position courante, pas de 0x10 (`0x8004bde4`) — identique quand la jauge est affichée ;
   F1 ignore aussi la phase 7. Deux tests ajoutés ; quatre mutations réelles tuées. `Alundra.Tests` 1225/1225.
-- ⏳ **SI9.d — La garde du post-traitement et les commentaires** (relevés 8, 9) : la tête relancée par le
-  post-traitement teste `g_forbiddenWarpFlag` comme `DisplayInventory` ; trois commentaires faux corrigés.
+- ✅ **SI9.d — La garde du post-traitement et les commentaires** (relevés 8, 9) : la tête de `DisplayInventory`
+  teste `g_forbiddenWarpFlag` en premier, pour ses deux appelants ; trois commentaires faux corrigés. Un test
+  ajouté ; mutation réelle tuée (seul le nouveau test échoue : la garde n'est atteinte par aucun parcours réel,
+  comme relevé). `Alundra.Tests` 1226/1226.
 
 ---
 
@@ -696,6 +698,7 @@ suites vertes ; chaque export prouvé par double export.
 | 2026-09-25 | **Contre-vérification SI9** : cinq relevés, chacun repris par un contradicteur (10 agents) ; résultat ci-dessous. **SI9.a faite** : les décalages du curseur, export prouvé. |
 | 2026-09-25 | **SI9.b faite** : l'équipement (arme vide sonore, nom d'arme effacé, `SetPlayerWeaponId` fidèle à l'exécutable). |
 | 2026-09-25 | **SI9.c faite** : la jauge relancée pendant son ouverture glisse depuis sa position et se cache. |
+| 2026-09-25 | **SI9.d faite**, **SI9 close** : chaque relevé de la contre-vérification a sa disposition (tableau ci-dessous). |
 
 ### SI9 — la contre-vérification de l'inventaire principal (2026-09-25)
 
