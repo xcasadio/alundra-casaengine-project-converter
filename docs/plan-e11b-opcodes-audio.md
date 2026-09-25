@@ -350,6 +350,12 @@ inoffensif, mais c'est du code mort.
 **Suites ouvertes** : [B1-a] la projection du mix, et les deux simplifications déclarées de B2
 (`IsBgmActivated` non modélisée, garde d'index de carte toujours satisfaite). Aucune ne bloque.
 
+**Décision de l'auteur du 2026-09-25** (`docs/plan-e13d-sous-inventaire.md`, D-E13D-37), à faire dans une tâche
+dédiée, hors E13.d : ne plus approcher le mixage stéréo ([B1-a], appliquer le mix tonalité par tonalité comme
+l'original) ; apprendre au moteur à rendre le son muet ; supprimer `IsBgmActivated` (analyseur :
+`AlundraEngine/Sound/SoundManager.cs`, `AlundraEngine/StaticVariables.cs`), qui ne servait qu'à couper la musique
+quand elle n'était encore que du bruit.
+
 - **Acceptation** : suites au vert (`Alundra.Tests` 711+n, convertisseur 141+n, moteur inchangé ou
   +n si primitif pan), six goldens byte-identiques avec preuve d'exécution, verifiers de clôture par
   tranche ; **en jeu (utilisateur)** : le bateau sonne comme avant (ronflements, mouettes, trappe,

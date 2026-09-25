@@ -274,6 +274,10 @@ tout `MenuOpen`), D-E13D-18 (police `font3` tenue par le registre du moteur).
 | D-E13D-31 | « **On garde le rythme par caractère** » (§6 point 4) | Le texte continue de se dérouler par caractère décodé ; l'écart avec l'octet par octet de l'original est accepté, point clos |
 | D-E13D-32 | « **Corrige les trous** » (remarques de tests reportées de SI3 et SI4) | SI8 : assertion de la jauge rendue probante, ordre de dessin du XAML gardé par un test, cadre de l'armure et des bottes dessiné dès que l'objet existe, données de conception centrées |
 | D-E13D-33 | « **Fais-le** » : la contre-vérification complète de l'inventaire principal contre l'exécutable (§6, rapport du 2026-09-25 point 2) | SI9 : relevés par groupe de fonctions, chacun repris par un contradicteur ; chaque écart qui touche le portage est corrigé, et chaque défaut de l'original corrigé selon D-E13D-30 |
+| D-E13D-34 | Sur D-E13D-23 : « **au plus simple** » — c'est la seule fois où la disposition des icônes n'est pas standard, le centrage ne s'applique pas ici | SI10 : les icônes du sous-inventaire (armurerie, objets-clés, armure, bottes) se dessinent coin haut-gauche à leur position d'origine, sans centrage ni lecture de la taille du sprite. **D-E13D-23 est remplacée** ; D-E13D-10 reste la règle de l'inventaire principal |
+| D-E13D-35 | Sur D-E13D-25 : « **il faut factoriser** » | SI11 : une seule machine de texte déroulant, partagée par les deux directeurs ; comportement inchangé, prouvé par les suites des deux inventaires et par mutation. **D-E13D-25 est remplacée** |
+| D-E13D-36 | Sur le délai de warp (§6 point 8) : « **fais la correction** », au plus simple : le compteur revient à 0 après 0,2 s, pour préparer un jeu indépendant du nombre d'images | SI12 : un délai en secondes (0,2 s) posé à chaque entrée de carte, consommé par le temps logique écoulé ; le déclencheur refuse l'ouverture tant qu'il en reste. À 50 Hz : 9 ticks refusés et ouverture au 10ᵉ, exactement comme l'exécutable (décrément avant le test, `0x8002bc58`) |
+| D-E13D-37 | Sur l'audio (rapport du 2026-09-25 point 7) : « **à faire dans une autre tâche** » | Hors E13.d, consigné dans `docs/plan-e11b-opcodes-audio.md` : ne plus approcher le mixage stéréo ([B1-a]) ; le moteur apprend à rendre le son muet ; `IsBgmActivated` est supprimé (il ne servait qu'à couper un son qui n'était que du bruit) |
 
 ## 3. Tranches
 
@@ -569,6 +573,31 @@ replié avec l'icône, icône de l'armure décalée de 4 px dans les données. `
 - `SubInventoryScreen.design.json` : icônes de l'armure et des bottes centrées dans leur cadre, avec la taille réelle
   des sprites 17 et 25.
 
+#### ⏳ SI10 — Les icônes du sous-inventaire à leur position d'origine (D-E13D-34)
+
+- Le compositeur et le modèle de vue du sous-inventaire posent chaque icône (armurerie, objets-clés, armure, bottes)
+  coin haut-gauche à la position de l'original, sans centrage ; la lecture de la taille des sprites disparaît de
+  l'écran du sous-inventaire (et avec elle les maintiens de `SpriteData` qu'elle prenait). Le cadre `wind_039` ne
+  bouge pas.
+- Tests : positions des icônes égales aux positions d'origine quelle que soit la taille du sprite ; le test des
+  données de conception de SI8 devient « icône au coin de son cadre ». Mutation : le centrage rétabli.
+
+#### ⏳ SI11 — Une seule machine de texte déroulant (D-E13D-35)
+
+- La machine d'états du texte (nom, puis ligne 1, puis ligne 2 ; un caractère décodé toutes les trois images ;
+  préfixes visibles et lignes « dessinées » de l'image) sort des deux directeurs dans une classe partagée ; chaque
+  directeur ne garde que ce qui lui est propre (la source des chaînes, la remise à zéro par la navigation).
+- Acceptation : les suites des deux inventaires passent **sans modification de leurs tests** ; mutations réelles
+  sur la classe partagée tuées par les deux suites.
+
+#### ⏳ SI12 — Le délai de warp en temps (D-E13D-36)
+
+- `AlundraWarpDirector` pose 0,2 s à chaque entrée de carte (à la place du compteur de 10 images inerte) et les
+  consomme par le temps logique écoulé, à chaque tick, avant le test du déclencheur (ordre de `0x8002bc58`) ; le
+  déclencheur de l'inventaire refuse tant qu'il reste du temps.
+- Tests : après une entrée de carte, `Start` est refusé aux ticks 1 à 9 et accepté au 10ᵉ ; mutation : le test du
+  délai retiré du déclencheur.
+
 #### ⏳ SI9 — La contre-vérification complète de l'inventaire principal (D-E13D-33)
 
 Cinq groupes de fonctions de `MainInventoryManager.cs` (ouverture et fermeture avec le déclencheur et la jauge ;
@@ -600,11 +629,9 @@ suites vertes ; chaque export prouvé par double export.
 
 ## 6. Points ouverts (pour l'auteur)
 
-1. **D-E13D-20 à D-E13D-27** (§2.2) sont appliquées sauf avis contraire ; D-E13D-23 (centrage des armoiries et des
-   objets-clés dans une case de 24 × 32 à leur place d'origine) est la plus visible. Explications données à
-   l'auteur le 2026-09-25, réponse attendue sur D-E13D-23 et D-E13D-25.
-2. **Factoriser le texte déroulant** du principal et du sous-inventaire (D-E13D-25) : deux copies aujourd'hui,
-   comme l'original. Réponse attendue.
+1. ~~**D-E13D-20 à D-E13D-27**~~ **Tranché le 2026-09-25** : D-E13D-23 remplacée par D-E13D-34 (icônes au coin,
+   SI10), D-E13D-25 par D-E13D-35 (factoriser, SI11) ; les autres restent appliquées.
+2. ~~**Factoriser le texte déroulant**~~ **Tranché le 2026-09-25** : oui (D-E13D-35, SI11).
 3. ~~**La seconde ligne de description du sous-inventaire**~~ **Tranché le 2026-09-25** : corriger le défaut de
    l'original (D-E13D-30), SI7.
 4. ~~**Le déroulé du texte octet par octet**~~ **Tranché le 2026-09-25** : on garde le rythme par caractère
@@ -626,7 +653,8 @@ suites vertes ; chaque export prouvé par double export.
 8. **Le délai de warp** (point 9 du plan principal) : l'original refuse d'ouvrir l'inventaire pendant les 10
    premières images d'une carte (le compteur `g_warpDelayFrames`, décrémenté à chaque image) ; le portage pose le
    compteur mais ne le décrémente jamais, et son déclencheur l'ignore. Correction proposée à l'auteur le
-   2026-09-25 : décrémenter au tick dans le directeur des warps et le relire dans le déclencheur. Réponse attendue.
+   2026-09-25 : décrémenter au tick dans le directeur des warps et le relire dans le déclencheur. **Tranché le
+   2026-09-25** : corrigé, en temps plutôt qu'en images (D-E13D-36, SI12).
 
 ## 7. Journal
 
@@ -643,6 +671,7 @@ suites vertes ; chaque export prouvé par double export.
 | 2026-09-25 | **SI4 faite** (`5f12e53`) : une mutation survivante a révélé un site d'appel de production sans test (le présentateur dans la boucle du monde), comblé ; export prouvé ; vérificateur frais **CONFIRMED**. **SI5 faite** : recette en jeu conforme à sa prédiction. Reste SI6, la recette de l'auteur. |
 | 2026-09-25 | Réponses de l'auteur aux points du rapport : D-E13D-30 à D-E13D-33. **SI7 faite** (`4e411ef`) : la seconde ligne de description s'affiche. |
 | 2026-09-25 | **SI8 faite** : quatre trous de tests comblés, quatre mutations réelles tuées ; les icônes des données de conception étaient déjà centrées (mesure). |
+| 2026-09-25 | Nouvelles réponses de l'auteur : D-E13D-34 à D-E13D-37 ; tranches SI10, SI11 et SI12 ajoutées ; l'audio part dans une tâche séparée. |
 
 ### SI0 — la contre-vérification décompilation ↔ exécutable (2026-09-24)
 
