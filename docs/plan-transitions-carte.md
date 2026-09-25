@@ -419,6 +419,13 @@ oracle : l'avance de boîte n'est pas appelée depuis le site gardé dans le mon
   d'acceptation.** Mesuré en §1.2.d : même index de musique des deux côtés, et sfx de départ sans
   échantillon jouable. **Aucune régression audio possible sur l'acceptation** — c'est une mesure, pas
   une prédiction.
+  > **Correction du 2026-09-25, lue dans `ALUN_CD.EXE`** (`docs/plan-bgm-demarrage-binaire.md`, B17 ;
+  > ADR-0004) : la « bascule BGM » de §1.2.d ne charge **jamais** la musique de destination. `HandleMapSoundEffects`
+  > arme le fondu (son de warp muet : `SeqNum == -1` et `MaxVoices == 0`) ou arrête la musique (`LoadBgm(0)`), et
+  > seulement si l'index de destination diffère ; la piste de destination part à l'arrivée. Il s'exécute après la
+  > boucle de frame (`0x8002c46c`). Le port chargeait la destination au départ par `PlayMapMusic` : corrigé
+  > (`6012bb0`), la moitié musique du départ est évaluée à la fermeture de frame. La moitié « bruitages » est
+  > inchangée.
 - **D-T-9 — Pas d'attente sur le son.** L'attente « son inactif + 2 frames » n'est pas portée : notre
   `AudioService` n'expose pas l'état d'inactivité que la condition teste, et sur le chemin
   d'acceptation aucune voix n'est en cours. Déviation consignée.

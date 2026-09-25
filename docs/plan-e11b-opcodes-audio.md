@@ -34,6 +34,13 @@ Sémantiques originales (sous-module `alundra-datas-analyser`) :
    StopAllSound (drapeau) ou PlaySeq. **Écart de sémantique vs la table par-carte d'E11.c** : ici
    0 = stop (pas « ne rien toucher »), pas de remap −1→1 ni 45→stop — ne PAS réutiliser
    `ResolvePlaybackDirective`.
+
+> **Correction des faits 1 à 3, 2026-09-25, lue dans `ALUN_CD.EXE`** (`docs/plan-bgm-demarrage-binaire.md`,
+> B2-B14 ; ADR-0004) : `StopAllSound` appelle `PlaySeq` sans condition, mais `PlaySeq` ne relance pas une séquence
+> qui joue (il ne touche pas la position) : il **joue la séquence chargée si elle est muette**. `LoadBgm(0)` et
+> `InitializeBgm` sont des **arrêts**. `LoadMapSequence` et le streaming ne jouent **jamais** : `0xA7 n,0` charge
+> sans jouer (le corpus joue la piste ensuite par `0xA5`), `0xA7 n,1` joue par `StopAllSound`. Le chemin actif de
+> `0xA7` est le streaming (`g_cdIsReady = 1` au démarrage). Les opérandes sont des octets non signés.
 4. **0xAB** (taille 4, `:3201-3205`) → `PlaySoundEffectWithToneVolumeMix(v[1]=sfxId, v[2]=mix G,
    v[3]=mix D)` ; **0xBF** (taille 5, `:3613-3617`) → LA MÊME fonction avec `v[1], v[3], v[4]` —
    **v[2] est ignoré par le handler décompilé** (par analogie avec 0xBD, plausiblement l'octet haut
@@ -254,6 +261,13 @@ tourne que tant que `etat >= 0x3e` : à `0x78` elle vaut 124, à `0x3e` elle vau
 Et le point observable : **`etat != 0` bloque tout départ de SFX** pendant les 120 tics ; `0xA5`, qui
 remet l'état à 0, les rouvre. C'est la moitié visible de `0xA6`.
 
+> **Correction du 2026-09-25, lue dans `ALUN_CD.EXE`** (`docs/plan-bgm-demarrage-binaire.md`, B5, B15 ;
+> ADR-0004) : `InitializeBgm` (`0x8008f458` → `0x8008f2e8`) **arrête** la séquence (bit « joue » effacé, bit
+> « stop » posé, position rembobinée) ; il ne la relance pas. En bas de rampe, l'original **arrête** donc la
+> musique, qui reste muette après le retour du maître, jusqu'à `0xA5` ou à la prochaine entrée de carte.
+> `0xA6` est un **fondu de sortie suivi d'un arrêt**, pas un reset musical. Le port suit désormais le binaire
+> (`6012bb0`).
+
 - **B2 — le trio BGM 0xA5/0xA6/0xA7 (DLL seule)** : la machine de fondu 120 pas en session (avance
   par tick depuis la passe de frame du proxy, patron E10/E12), `LoadBgm(0/non-0)`, `StopAllSound`
   fidèle (SFX stoppés SEULEMENT si l'état de fondu est armé, volumes restaurés, BGM relancé si
@@ -375,8 +389,10 @@ moteur et de l'analyseur ; recette de l'auteur en attente) :
   - le remix touche la voix vivante la plus ancienne de chaque tonalité, et non le premier emplacement SPU.
 
   Inchangées : la boucle du clip entier (déviation n°2 d'E11.a), et pas d'enveloppe ADSR.
-- **Suite ouverte S1** : `PlaySeq` est absent de `LoadMapSequence` et du cas 5 du streaming dans l'exécutable. Par
-  déduction, `0xA7` jouerait la musique là où l'original ne fait que la charger. À vérifier dans une suite dédiée.
+- ~~**Suite ouverte S1** : `PlaySeq` est absent de `LoadMapSequence` et du cas 5 du streaming dans l'exécutable. Par
+  déduction, `0xA7` jouerait la musique là où l'original ne fait que la charger. À vérifier dans une suite dédiée.~~
+  **Fermée le 2026-09-25** par `docs/plan-bgm-demarrage-binaire.md` (ADR-0004) : l'inférence était juste, et
+  l'écart plus large (`0xA5`, `0xA6`, entrée de carte, cartes `−1`, départ de warp) ; analyseur et DLL alignés.
 
 - **Acceptation** : suites au vert (`Alundra.Tests` 711+n, convertisseur 141+n, moteur inchangé ou
   +n si primitif pan), six goldens byte-identiques avec preuve d'exécution, verifiers de clôture par

@@ -29,6 +29,13 @@ ma première rédaction en donnait une fausse. `LoadMapSoundsCore` filtre dans c
 concernées jouent la piste 1. L'erreur était dans un §1 que je présentais comme lu dans la
 décompilation ; elle serait partie dans la table exportée **et dans un test**.
 
+> **Correction du 2026-09-25, lue dans `ALUN_CD.EXE`** (`docs/plan-bgm-demarrage-binaire.md`, B2, B7, B16 ;
+> ADR-0004) : la ligne `−1` ne décrit que le **chargement**. `LoadMapSequence` remet l'index courant à `−1` brut
+> (`0x80049cf4`), et `StopAllSound`, seul chemin qui joue la BGM, sort aussitôt sur un index négatif
+> (`0x80049b04`) : **les 21 cartes `−1` sont muettes dans l'original.** La première lecture (« pas de musique »)
+> était juste en effet. La colonne « joue » des lignes « autre » veut dire « charge, puis la fin de la première
+> frame joue » (B10). Le port suit désormais le binaire (`6012bb0`).
+
 **La garde d'index est ce qui compte le plus ici** : les cartes **389 et 390** partagent l'index 25.
 Sans elle, passer de l'une à l'autre **redémarrerait** le thème du navire, ce que l'original ne fait
 jamais — et le correctif de propriété du §1.7 rend ce défaut certain plutôt que théorique.
@@ -49,6 +56,10 @@ La piste démarre donc **à plein volume dès le premier tick**.
 Le fondu visible à l'entrée de carte est le fondu **d'écran** (`WarpPlayer`), pas un fondu audio.
 **Implémenter un fondu d'entrée serait MOINS fidèle, pas plus.**
 
+> **Précision du 2026-09-25** (`docs/plan-bgm-demarrage-binaire.md`, B7, B11) : dans l'exécutable,
+> `LoadMapSequence` n'appelle pas `SetSeqVolume` ; la rampe est un crescendo de séquence (`FUN_8008f808`). La
+> conclusion tient pour une autre raison : `StopAllSound` pose le volume de séquence à `0x7f` juste avant `PlaySeq`.
+
 ### 1.4 Quand elle démarre, et le faux second départ
 
 `LoadMapSounds` est l'avant-dernière instruction du bloc d'entrée de carte, juste avant le premier
@@ -62,6 +73,13 @@ demandait de la porter « idempotente », mais aucun item de la tranche ne créa
 critère « elle n'en produit pas une seconde » n'aurait rien pu échouer et sa mutation aurait été
 **inexécutable**. Ne pas la porter est fidèle *en effet* — elle ne produit aucun son — et supprime la
 vacuité au lieu de la contourner.
+
+> **Correction du 2026-09-25, lue dans `ALUN_CD.EXE`** (`docs/plan-bgm-demarrage-binaire.md`, B1, B7, B9, B10 ;
+> ADR-0004) : il n'y a **pas** de premier `PlaySeq` dans `LoadMapSequence` ; celui de la décompilation n'existe pas
+> dans le binaire. Le passage par `g_resetSoundFlag` est **le seul départ** : la fonction de frame, appelée juste
+> après `LoadMapSounds` dans le bloc d'entrée (`0x8002c3e4`), exécute les scripts puis `HandleMapSoundStreaming`,
+> qui consomme le drapeau par `StopAllSound` (`0x8002bd04`). Le port le porte désormais : la musique d'entrée part à
+> la fermeture de la première frame (`6012bb0`).
 
 ### 1.5 Rien ne change la musique pendant l'intro
 

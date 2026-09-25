@@ -17,3 +17,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0001 | The game's XAML screens embed their XAML in the Alundra DLL | Superseded by ADR-0002 | 2026-09-21 |
 | ADR-0002 | The game's screens are project assets bound to observable view models | Accepted | 2026-09-24 |
 | ADR-0003 | The sound effect manifest carries the VAB volume and pan attributes | Accepted | 2026-09-25 |
+| ADR-0004 | Background music follows the executable's sequence state | Accepted | 2026-09-25 |

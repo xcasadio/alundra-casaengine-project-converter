@@ -14,6 +14,8 @@ d'alignement (analyseur et DLL), validation en jeu par l'auteur.
 **Modèle** : sections du modèle du skill `plan` (identique à `CasaEngineMonogame/ai-agent/plan-template.md`). Le dépôt
 parent n'a ni `AGENTS.md` ni `ai-agent/` ; ses plans vivent dans `docs/plan-*.md`, ce plan aussi.
 
+Decisions: see ADR-0004 (`docs/decisions/0004-bgm-follows-the-executables-sequence-state.md`).
+
 Ce fichier doit être mis à jour pendant le travail : l'icône au début de chaque tâche indique son statut courant.
 
 ## Réponse courte
@@ -545,17 +547,27 @@ fin.**
   `PlayFromRawIndex` qui joue → tombe ; bas de rampe qui relance → tombe (`PlaySequence` qui relance une voix
   vivante ne concerne pas ce scénario et reste tuée par le test g de T2.1).
 
-### ⏳ T2.3 — Vérification indépendante
+### ✅ T2.3 — Vérification indépendante
 
 - Objectif : un `verifier` frais sur T2.1 et T2.2 : la revendication est le tableau « Réponse courte », colonne
   « Original », pour la DLL ; il reçoit ce plan, le diff et les commandes.
 - Validation : verdict **CONFIRMED** consigné ; tout autre verdict traité par priorité avant T3.
+- **Validation (2026-09-25)** : deux regards frais en parallèle sur `6012bb0` et `417d766`. **Vérificateur :
+  CONFIRMED**, les huit lignes tiennent, chacune par un test qui passe par le site de production et qui tomberait
+  sous le mauvais comportement ; build 0 erreur, `Alundra.Tests` 1282 / 1282 sur deux passages, goldens identiques
+  à l'octet (réécrits par les tests de trace, `git status` propre), diff limité à `Alundra/`, `Alundra.Tests/` et
+  ce plan ; il a relu dans `ALUN_CD.EXE` l'ordre de la boucle principale (fonction de frame, sortie de boucle en
+  `0x8002c45c`, `HandleMapSoundEffects` en `0x8002c46c`, `StartWarpTransition` en `0x8002c478`, désormais dans
+  `bgm_disasm_4.txt`). **Critique de complétude : CONFIRMED** : un seul `PlayClip` sur le bus `Music`, atteint par
+  `PlaySequence` seul ; toutes les autres voies passent par les coutures modélisées. Constats : P3 et P4 sans
+  retouche du candidat confirmé (règle : pas de boucle de correction pour un P3/P4), consignés en S3 et S4 ; les
+  autres P4 (son 379, déjà S1 ; deux départs dans une frame, impossible par le chemin de production) sans suite.
 
 ---
 
 ## Phase 3 — Documentation et recette
 
-### ⏳ T3.1 — Doc, ADR, plans corrigés
+### ✅ T3.1 — Doc, ADR, plans corrigés
 
 - Fichiers : `docs/decisions/` (ADR « BGM playback follows the executable's sequence state », par le skill `adr`) ;
   `docs/plan-e11c-musique.md` (§1.1 ligne `-1`, §1.3 origine du plein volume, §1.4 le passage par le drapeau est le
@@ -564,6 +576,12 @@ fin.**
   `docs/plan-conversion-totale.md` (ligne E11) ; ce plan (bilan).
 - Validation : relecture ; index des ADR à jour ; aucun caractère de contrôle dans les fichiers écrits.
 - Commit : `docs(audio): record the executable's BGM sequence model and correct the E11 plans`
+- **Validation (2026-09-25)** : ADR-0004 « Background music follows the executable's sequence state » (Accepted),
+  index de `docs/decisions/` à jour. Notes datées, texte d'origine gardé : `plan-e11c-musique.md` (§1.1 ligne `−1` :
+  cartes muettes ; §1.3 : pas de `SetSeqVolume` dans `LoadMapSequence`, conclusion tenue ; §1.4 : le drapeau est le
+  seul départ), `plan-e11b-opcodes-audio.md` (faits 1 à 3 ; `InitializeBgm` est un arrêt ; S1 fermée),
+  `plan-transitions-carte.md` (D-T-8 : le départ ne charge jamais la musique), `plan-conversion-totale.md`
+  (paragraphe et ligne E11). Aucun caractère de contrôle dans les fichiers écrits. Rédaction en session principale.
 
 ### ⏳ T3.2 — Recette de l'auteur
 
@@ -599,6 +617,12 @@ fin.**
   `PlaySfx` quand `IsWarpSoundSilent` est vrai.
 - **S2** — `SimulateFrameClose` (`AlundraMusicPlayerTests`) recopie le bloc de fermeture de frame pour trois tests
   qui pilotent les singletons ; le site réel reste couvert par les tests qui passent par `AlundraWorldProxy.Update`.
+- **S3** — Aucun test ne couvre la moitié musique du départ par `0x53` (`AlundraWarpDirector.cs:387`) ; son code est
+  identique à celui du portail (`:466`), couvert par les tests n, o, p et 74. Remède : un test de départ `0x53` au
+  niveau du proxy, son muet puis son audible, et la mutation « `PlayMapMusic` en `:387` » qui doit le faire tomber.
+- **S4** — Le commentaire en ligne d'`InstallAudioSystems` (`AlundraWorldProxy.cs:997-1004`) dit encore que la
+  musique d'entrée démarre à cet endroit ; elle démarre à la fermeture de frame (B9, B10). La doc XML de
+  `TriggerMapEntryMusic` est juste. Documentation seule.
 
 ## Hors périmètre
 
