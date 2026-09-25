@@ -523,7 +523,7 @@ fin.**
     est toujours déjà consommé quand le départ est évalué).
   - Différés, avec raison, dans « Suites consignées » : S1 et S2.
 
-### ⏳ T2.2 — Le schéma canonique du corpus, au site de production
+### ✅ T2.2 — Le schéma canonique du corpus, au site de production
 
 - Objectif : prouver le bloc `A6(1)` / `A7(42,0)` / `A5` / `A7(0,0)` par le vrai runner, le vrai lecteur et le faux
   backend du moteur (précédent : `ProductionSite_SyntheticProgram…` d'E11.b).
@@ -535,6 +535,15 @@ fin.**
   `PlayFromRawIndex` qui démarre une voix → le test tombe.
 - Validation : `Alundra.Tests` vert, goldens identiques.
 - Commit : `test(audio): pin the corpus fade, silent load and 0xA5 start sequence through the real runner`
+- **Validation (2026-09-25)** : test
+  `AlundraBgmFadeDirectorTests.ProductionSite_CorpusFadeSilentLoadThenA5Start_TheMostFrequentBlock_DrivenThroughTheRealRunner`,
+  vrai runner, vrais singletons, faux backend du moteur, un tic de fondu par appel de script comme en production.
+  Relevés : voix initiale vivante jusqu'au tic 60 (bas de rampe), puis morte, y compris après la restauration du
+  maître (tic 117) et à la fin de l'attente de 140 ; aucune voix après `A7 42,0` ni après l'attente de 30 ; après
+  `A5` une voix, piste 42, bouclée, bus `Music`, deux lectures au total ; après `A7 0,0`, aucune voix, toujours deux
+  lectures. `Alundra.Tests` **1282 / 1282** sur trois passages. Mutations en vrai, filtrées sur ce test :
+  `PlayFromRawIndex` qui joue → tombe ; bas de rampe qui relance → tombe (`PlaySequence` qui relance une voix
+  vivante ne concerne pas ce scénario et reste tuée par le test g de T2.1).
 
 ### ⏳ T2.3 — Vérification indépendante
 

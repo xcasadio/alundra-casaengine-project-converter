@@ -340,6 +340,143 @@ public class AlundraBgmFadeDirectorTests : IDisposable
     }
 
     // -----------------------------------------------------------------------------------------------
+    // T2.2 (docs/plan-bgm-demarrage-binaire.md): the corpus's own MOST FREQUENT BGM sequence - 22
+    // sites, every boss/dream ending (corpus report, "Enchaînements relevés") - A6(1) / A7(42,0) / A5 /
+    // A7(0,0), driven end to end through the REAL runner and the REAL AlundraMusicPlayer.Instance /
+    // AlundraBgmFadeDirector.Instance session singletons, precedent: ProductionSite_SyntheticProgram
+    // above.
+    // -----------------------------------------------------------------------------------------------
+
+    [Fact]
+    public void ProductionSite_CorpusFadeSilentLoadThenA5Start_TheMostFrequentBlock_DrivenThroughTheRealRunner()
+    {
+        // The block: A6(1) arms the fade (initial track keeps playing until the swap tick, 60 ticks
+        // later); while it is still ramping down/silent, A7(42,0) LOADS track 42 WITHOUT playing it
+        // (B13 - the runner's own v[2]=0 branch never calls StopAllSound); A8/03 is the original's
+        // "wait for load" busy loop, but this port's 0xA8 always sets Result=0 (D-E11-5), so 03's
+        // "if true goto -2" never branches - it proves the encoding is dead code here, not a real
+        // retry; A5 is where track 42 ACTUALLY starts; A7(0,0) stops and closes it again. Ticks
+        // between opcodes come from the corpus's own 0x37 Wait instructions (140, 30, 10), driven the
+        // same way production drives both the runner and the fade director every rendered frame
+        // (AlundraWorldProxy.cs:2136-2148: AlundraBgmFadeDirector.Instance.Advance(ticksThisFrame) runs
+        // alongside the event program) - so the swap (60 ticks after arm) and the master-restore (117
+        // ticks after arm) both land while the 140-tick Wait is still suspended, proving the initial
+        // track is stopped and NEVER restarted underneath it. Exact tick counts below were derived from
+        // AlundraEventProgramRunner.Wait's own contract (suspends until v[1] additional calls have
+        // elapsed since the first time a given CodeIndex is reached) and cross-checked against a live
+        // run of this exact program before being written into the assertions.
+        var projectPath = BuildFixtureProjectWithInitialTrackAndTrack42(out var assetInitial, out var asset42);
+        var backend = new FakeAudioBackend();
+        var provider = new FakeAudioClipProvider();
+        provider.Register(assetInitial, new FakeAudioClip("bgm_initial", 44100));
+        provider.Register(asset42, new FakeAudioClip("bgm_042", 44100));
+        var service = new AudioService(backend) { ClipProvider = provider };
+
+        AlundraMusicPlayer.Instance.AttachToWorld(service, projectPath);
+        var sfx = new FakeSoundPlayerForFade();
+        AlundraBgmFadeDirector.Instance.AttachToWorld(service, sfx);
+
+        // Precondition: a track is already playing, the production way - 0xA7 n,1 (load, then the
+        // runner's own dispatch calls StopAllSound right after, since v[2] != 0).
+        AlundraMusicPlayer.Instance.PlayFromRawIndex(7);
+        AlundraBgmFadeDirector.Instance.StopAllSound();
+        Assert.Single(backend.PlayCalls);
+        Assert.True(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
+
+        // A6(1), 37(140 = 0x8C), A7(42,0), 37(30 = 0x1E), A8, 03(-2 = 0xFE,0xFF), A5, 37(10 = 0x0A),
+        // A7(0,0), End - byte for byte, per EventOpcodeSizeTable.cs (0x03:3, 0x37:2, 0xA5:1, 0xA6:2,
+        // 0xA7:3, 0xA8:1).
+        var codes = new[]
+        {
+            0xA6, 0x01,
+            0x37, 0x8C,
+            0xA7, 0x2A, 0x00,
+            0x37, 0x1E,
+            0xA8,
+            0x03, 0xFE, 0xFF,
+            0xA5,
+            0x37, 0x0A,
+            0xA7, 0x00, 0x00,
+            0xFF,
+        };
+        var runner = NewRunner(codes, out var entity, out var state);
+
+        void Tick(int count)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                AlundraBgmFadeDirector.Instance.Advance(1); // production's own per-frame Advance call.
+                runner.RunOneScriptCall(entity, state);
+            }
+        }
+
+        // Prime: dispatches 0xA6 (arms the fade) then the FIRST entry into the 140-tick Wait, which
+        // always suspends without counting a tick (Wait's own contract) - so ticks below count purely
+        // from the moment 0xA6 armed the machine.
+        runner.RunOneScriptCall(entity, state);
+        Assert.True(AlundraBgmFadeDirector.Instance.IsArmed);
+        Assert.True(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive); // not swapped yet.
+        Assert.Single(backend.PlayCalls);
+
+        // 60 ticks after arming: the swap tick - the INITIAL track's voice is stopped.
+        Tick(60);
+        Assert.False(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
+        Assert.Single(backend.PlayCalls); // stopped, not restarted.
+
+        // 117 ticks after arming (57 more): the master-restore tick - still no voice, master back to
+        // full, and still no new play call anywhere.
+        Tick(57);
+        Assert.Equal(1f, MasterVolume(service), 5);
+        Assert.False(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
+        Assert.Single(backend.PlayCalls);
+
+        // 24 more ticks (141 total) resolve the 140-tick Wait; the SAME dispatch call then runs
+        // A7(42,0) - a SILENT load (B13, v[2]=0) - and suspends again at the FIRST entry into the
+        // 30-tick Wait: still no voice, and still just the one original play call.
+        Tick(24);
+        Assert.False(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
+        Assert.Single(backend.PlayCalls);
+        Assert.Equal(42, AlundraMusicPlayer.Instance.CurrentMapSoundIndex); // loaded, not yet playing.
+
+        // 31 more ticks resolve the 30-tick Wait; the SAME call then runs A8 (Result = 0), 03 (falls
+        // through - the goto is dead in this port), and A5 - which is where track 42 ACTUALLY starts -
+        // then suspends at the FIRST entry into the 10-tick Wait.
+        Tick(31);
+        Assert.True(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
+        Assert.Equal(2, backend.PlayCalls.Count); // exactly one NEW play call, at A5.
+        Assert.Equal("bgm_042", ((FakeAudioClip)backend.PlayCalls[1].Clip).Name);
+        Assert.True(backend.PlayCalls[1].Parameters.IsLooped);
+        Assert.Equal(AudioBusNames.Music, service.GetVoiceBus(AlundraMusicPlayer.Instance.CurrentVoiceForTests));
+
+        // 11 more ticks resolve the 10-tick Wait; the SAME call then runs A7(0,0) - stop and close - and
+        // hits End: no live voice, and STILL no restart hiding behind it (the whole point of tracking
+        // the total play-call count at every step above).
+        Tick(11);
+        Assert.False(AlundraMusicPlayer.Instance.IsCurrentVoiceAlive);
+        Assert.Equal(0, AlundraMusicPlayer.Instance.CurrentMapSoundIndex);
+        Assert.Equal(2, backend.PlayCalls.Count);
+    }
+
+    private string BuildFixtureProjectWithInitialTrackAndTrack42(out Guid assetInitial, out Guid asset42)
+    {
+        var root = Path.Combine(Path.GetTempPath(), "AlundraBgmFadeDirectorTests_Corpus_" + Guid.NewGuid());
+        _tempDirs.Add(root);
+
+        var musicsDir = Path.Combine(root, "Musics");
+        Directory.CreateDirectory(musicsDir);
+        assetInitial = Guid.Parse("00000000-0000-0000-0000-000000000007");
+        asset42 = Guid.Parse("00000000-0000-0000-0000-000000000042");
+        var manifest = $$"""[{"sound_index": 7, "asset_id": "{{assetInitial}}"}, {"sound_index": 42, "asset_id": "{{asset42}}"}]""";
+        File.WriteAllText(Path.Combine(musicsDir, "bgm-manifest.json"), manifest);
+
+        var mapsDir = Path.Combine(root, "Maps");
+        Directory.CreateDirectory(mapsDir);
+        File.WriteAllText(Path.Combine(mapsDir, "music-index.json"), "{}");
+
+        return root;
+    }
+
+    // -----------------------------------------------------------------------------------------------
     // T2.1 acceptance (docs/plan-bgm-demarrage-binaire.md): opcode 0xA7's own load-only semantics
     // (d/e/f), driven through the REAL runner, exactly like ProductionSite_SyntheticProgram above.
     // -----------------------------------------------------------------------------------------------
