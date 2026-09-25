@@ -41,8 +41,8 @@
     <Image Name="ArmorFrame" Stretch="None" SourceName="5f56fba6-2abb-5163-bb1e-e5a4f6fdb499" CanvasLeft="{dataBinding:MGBinding Path=ArmorFrame.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmorFrame.Top}" Visibility="{dataBinding:MGBinding Path=ArmorFrame.Visibility}" />
     <Image Name="BootsFrame" Stretch="None" SourceName="5f56fba6-2abb-5163-bb1e-e5a4f6fdb499" CanvasLeft="{dataBinding:MGBinding Path=BootsFrame.Left}" CanvasTop="{dataBinding:MGBinding Path=BootsFrame.Top}" Visibility="{dataBinding:MGBinding Path=BootsFrame.Visibility}" />
 
-    <!-- The armory's seven crest icons (plan §1.5, FUN_80052dd8) - own to owned crests, centred in a
-         24x32 cell per D-E13D-23. -->
+    <!-- The armory's seven crest icons (plan §1.5, FUN_80052dd8) - owned crests only, at the original's own
+         top-left (D-E13D-34, no centring). -->
     <Image Name="ArmoryIcon0" Stretch="None" SourceName="{dataBinding:MGBinding Path=ArmoryIcon0.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=ArmoryIcon0.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmoryIcon0.Top}" Visibility="{dataBinding:MGBinding Path=ArmoryIcon0.Visibility}" />
     <Image Name="ArmoryIcon1" Stretch="None" SourceName="{dataBinding:MGBinding Path=ArmoryIcon1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=ArmoryIcon1.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmoryIcon1.Top}" Visibility="{dataBinding:MGBinding Path=ArmoryIcon1.Visibility}" />
     <Image Name="ArmoryIcon2" Stretch="None" SourceName="{dataBinding:MGBinding Path=ArmoryIcon2.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=ArmoryIcon2.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmoryIcon2.Top}" Visibility="{dataBinding:MGBinding Path=ArmoryIcon2.Visibility}" />
@@ -51,7 +51,7 @@
     <Image Name="ArmoryIcon5" Stretch="None" SourceName="{dataBinding:MGBinding Path=ArmoryIcon5.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=ArmoryIcon5.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmoryIcon5.Top}" Visibility="{dataBinding:MGBinding Path=ArmoryIcon5.Visibility}" />
     <Image Name="ArmoryIcon6" Stretch="None" SourceName="{dataBinding:MGBinding Path=ArmoryIcon6.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=ArmoryIcon6.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmoryIcon6.Top}" Visibility="{dataBinding:MGBinding Path=ArmoryIcon6.Visibility}" />
 
-    <!-- The (up to) five key items found this tick (plan §1.5, FUN_80052c64) - centred in a 24x32 cell. -->
+    <!-- The (up to) five key items found this tick (plan §1.5, FUN_80052c64) - at the original's own top-left. -->
     <Image Name="KeyItemIcon0" Stretch="None" SourceName="{dataBinding:MGBinding Path=KeyItemIcon0.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=KeyItemIcon0.Left}" CanvasTop="{dataBinding:MGBinding Path=KeyItemIcon0.Top}" Visibility="{dataBinding:MGBinding Path=KeyItemIcon0.Visibility}" />
     <Image Name="KeyItemIcon1" Stretch="None" SourceName="{dataBinding:MGBinding Path=KeyItemIcon1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=KeyItemIcon1.Left}" CanvasTop="{dataBinding:MGBinding Path=KeyItemIcon1.Top}" Visibility="{dataBinding:MGBinding Path=KeyItemIcon1.Visibility}" />
     <Image Name="KeyItemIcon2" Stretch="None" SourceName="{dataBinding:MGBinding Path=KeyItemIcon2.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=KeyItemIcon2.Left}" CanvasTop="{dataBinding:MGBinding Path=KeyItemIcon2.Top}" Visibility="{dataBinding:MGBinding Path=KeyItemIcon2.Visibility}" />

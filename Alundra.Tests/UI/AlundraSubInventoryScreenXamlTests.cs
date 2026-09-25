@@ -99,29 +99,17 @@ public sealed class AlundraSubInventoryScreenXamlTests
         Assert.Equal("Bottes courtes", viewModel.BootsName.Text);
     }
 
-    /// <summary>The design-time armor and boots icons (items 17 and 25) sit centred in their frame's 24x32 cell,
-    /// computed from their real exported sprites the way production does (<see cref="AlundraHudIcon"/>),
-    /// so the editor preview shows what the game draws (D-E13D-32).</summary>
+    /// <summary>The design-time armor and boots icons sit at their frame's own position, as the game draws them
+    /// (D-E13D-34: the original's top-left, no centring), so the editor preview shows what the game draws.</summary>
     [Theory]
     [InlineData("ArmorIcon", "ArmorFrame")]
     [InlineData("BootsIcon", "BootsFrame")]
-    public void DesignTimeData_EquipmentIcons_AreCentredInTheirFrameCell(string iconName, string frameName)
+    public void DesignTimeData_EquipmentIcons_SitAtTheirFramePosition(string iconName, string frameName)
     {
         var values = JObject.Parse(File.ReadAllText(Path.Combine(ScreensDirectory(), "SubInventoryScreen.design.json")))["values"]!;
-        var sourceId = values[iconName]!["SourceName"]!.ToString();
 
-        var entities = Path.Combine(Directory.GetParent(Directory.GetParent(ScreensDirectory())!.FullName)!.FullName, "Entities");
-        var sprite = Directory.EnumerateFiles(entities, "*.sprite", SearchOption.AllDirectories)
-            .Select(path => JObject.Parse(File.ReadAllText(path)))
-            .Single(json => json["id"]!.ToString() == sourceId);
-        var width = (int)sprite["location"]!["w"]!;
-        var height = (int)sprite["location"]!["h"]!;
-
-        var frameLeft = (int)values[frameName]!["Left"]!;
-        var frameTop = (int)values[frameName]!["Top"]!;
-        var centred = new AlundraHudIcon(Guid.Parse(sourceId), frameLeft, frameTop, 0x18, 0x20);
-        Assert.Equal(centred.ScreenLeft(width, 1), (int)values[iconName]!["Left"]!);
-        Assert.Equal(centred.ScreenTop(height, 1), (int)values[iconName]!["Top"]!);
+        Assert.Equal((int)values[frameName]!["Left"]!, (int)values[iconName]!["Left"]!);
+        Assert.Equal((int)values[frameName]!["Top"]!, (int)values[iconName]!["Top"]!);
     }
 
     /// <summary>What never changes is named in the XAML itself: the seven boxes (by their fixed SI2 ids),
@@ -151,7 +139,7 @@ public sealed class AlundraSubInventoryScreenXamlTests
     public void Bindings_PushTheViewModel_AndFollowItsNestedChanges()
     {
         var window = LoadWindow(out var desktop);
-        var viewModel = new AlundraSubInventoryViewModel(_ => new Point(16, 16));
+        var viewModel = new AlundraSubInventoryViewModel();
         window.WindowDataContext = viewModel;
 
         viewModel.Apply(SampleModel());
@@ -198,7 +186,7 @@ public sealed class AlundraSubInventoryScreenXamlTests
     [Fact]
     public void ViewModel_ApplyingTheSameModelAgain_NotifiesNothing()
     {
-        var viewModel = new AlundraSubInventoryViewModel(_ => new Point(16, 16));
+        var viewModel = new AlundraSubInventoryViewModel();
         viewModel.Apply(SampleModel());
 
         var notifications = 0;
@@ -217,27 +205,33 @@ public sealed class AlundraSubInventoryScreenXamlTests
         Assert.Equal(1, notifications); // Cursor.Left alone
     }
 
-    /// <summary>FUN_80052fb4 draws the armor's frame as soon as the item resolves (D-E13D-32): an icon whose
-    /// size cannot be read hides the icon alone, never its frame, which keeps its own cell position.</summary>
+    /// <summary>D-E13D-34: every icon is drawn at the original's own top-left, whatever its sprite's size (the
+    /// view model reads none); FUN_80052fb4 draws the armor's frame at the icon's own position as soon as the
+    /// item resolves.</summary>
     [Fact]
-    public void ViewModel_EquipmentIconSizeUnreadable_HidesTheIconButDrawsTheFrame()
+    public void ViewModel_Icons_AtTheOriginalTopLeft_FrameWithTheArmor()
     {
-        var viewModel = new AlundraSubInventoryViewModel(_ => null);
+        var viewModel = new AlundraSubInventoryViewModel();
         viewModel.Apply(SampleModel());
 
-        Assert.Equal(Visibility.Collapsed, viewModel.ArmorIcon.Visibility);
+        Assert.Equal(0x08 + 0x08, viewModel.ArmoryIcon3.Left);
+        Assert.Equal(0x10 + 0x44, viewModel.ArmoryIcon3.Top);
+        Assert.Equal(Visibility.Visible, viewModel.ArmorIcon.Visibility);
+        Assert.Equal(144, viewModel.ArmorIcon.Left);
+        Assert.Equal(40, viewModel.ArmorIcon.Top);
         Assert.Equal(Visibility.Visible, viewModel.ArmorFrame.Visibility);
         Assert.Equal(144, viewModel.ArmorFrame.Left);
         Assert.Equal(40, viewModel.ArmorFrame.Top);
-        Assert.Equal(Visibility.Collapsed, viewModel.BootsFrame.Visibility); // no boots in the model
+        Assert.Equal(Visibility.Collapsed, viewModel.BootsIcon.Visibility); // no boots in the model
+        Assert.Equal(Visibility.Collapsed, viewModel.BootsFrame.Visibility);
     }
 
     private static SubInventoryDisplayModel SampleModel(int cursorX = 74) => new()
     {
         Visible = true,
         Boxes = new[] { new SubInventoryBoxSprite(0, 8, 16) },
-        ArmoryIcons = new[] { new SubInventorySlotIcon(3, new AlundraHudIcon(ItemTablesFixture.SwordIconAssetId, 0x08 + 0x08, 0x10 + 0x44, 24, 32)) },
-        Armor = new SubInventoryEquipmentIcon(new AlundraHudIcon(ItemTablesFixture.SwordIconAssetId, 144, 40, 24, 32), 144, 40),
+        ArmoryIcons = new[] { new SubInventorySlotIcon(3, new SubInventoryIcon(ItemTablesFixture.SwordIconAssetId, 0x08 + 0x08, 0x10 + 0x44)) },
+        Armor = new SubInventoryEquipmentIcon(ItemTablesFixture.SwordIconAssetId, 144, 40),
         MoneyDigits = new[] { new InventoryDigit(0, 200, 100), new InventoryDigit(1, 212, 100) },
         ArmorName = "Armure en tissu",
         ArmorNameX = 192,

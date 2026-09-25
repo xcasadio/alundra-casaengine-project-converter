@@ -1,9 +1,7 @@
 #nullable enable
 using System;
 using System.Linq;
-using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Assets;
-using CasaEngine.Framework.Assets.Sprites;
 using CasaEngine.Framework.UI;
 using MGUI.Core.UI;
 using MGUI.Core.UI.Containers;
@@ -39,10 +37,6 @@ public sealed class AlundraSubInventoryScreen : XamlUIScreenBase, IDisposable
     private MGCanvas? _rootCanvas;
     private IDisposable? _font3;
 
-    // Engine ADR-0037: the SpriteData of every icon whose size was read, held while this screen lives and given
-    // back in Dispose. A null entry is an icon whose sprite could not be read (warned once).
-    private readonly System.Collections.Generic.Dictionary<Guid, AssetHandle<SpriteData>?> _iconSprites = new();
-
     /// <summary>
     /// D5.f (engine ADR-0036, plan D-E13D-18): same "holds font3 from construction to Dispose, through the
     /// game's UI font registry" contract as <see cref="AlundraInventoryScreen"/>.
@@ -54,7 +48,7 @@ public sealed class AlundraSubInventoryScreen : XamlUIScreenBase, IDisposable
     {
         ArgumentNullException.ThrowIfNull(fonts);
         _assetContentManager = assetContentManager;
-        ViewModel = new AlundraSubInventoryViewModel(ReadIconSize);
+        ViewModel = new AlundraSubInventoryViewModel();
 
         try
         {
@@ -75,20 +69,13 @@ public sealed class AlundraSubInventoryScreen : XamlUIScreenBase, IDisposable
     /// <summary>True once <see cref="Dispose"/> gave font3 back.</summary>
     internal bool IsDisposed => _font3 == null;
 
-    /// <summary>Gives font3 back, every icon sprite data this screen holds (engine ADR-0037) and the screen asset
-    /// itself. Called by the world proxy that built this screen, when its world ends
+    /// <summary>Gives font3 back and the screen asset itself. Called by the world proxy that built this screen, when its world ends
     /// (<c>AlundraWorldProxy.OnEndPlay</c>). Idempotent.</summary>
     public override void Dispose()
     {
         _font3?.Dispose();
         _font3 = null;
 
-        foreach (var hold in _iconSprites.Values)
-        {
-            hold?.Dispose();
-        }
-
-        _iconSprites.Clear();
         base.Dispose();
     }
 
@@ -119,33 +106,5 @@ public sealed class AlundraSubInventoryScreen : XamlUIScreenBase, IDisposable
         }
 
         window.WindowDataContext = ViewModel;
-    }
-
-    /// <summary>The native size of an icon sprite, read once from its sprite data and held (engine ADR-0037), or
-    /// null when the sprite cannot be read: its slot then stays hidden, as it always did.</summary>
-    private Point? ReadIconSize(Guid assetId)
-    {
-        if (!_iconSprites.TryGetValue(assetId, out var hold))
-        {
-            try
-            {
-                hold = _assetContentManager.Acquire<SpriteData>(assetId);
-            }
-            catch (Exception ex)
-            {
-                Logs.WriteWarning($"AlundraSubInventoryScreen: icon sprite {assetId} failed to load ({ex.Message}); its slot stays empty.");
-                hold = null;
-            }
-
-            _iconSprites[assetId] = hold;
-        }
-
-        if (hold == null)
-        {
-            return null;
-        }
-
-        var rect = hold.Asset.PositionInTexture;
-        return new Point(rect.Width, rect.Height);
     }
 }

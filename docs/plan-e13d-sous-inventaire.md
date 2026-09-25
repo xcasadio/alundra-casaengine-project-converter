@@ -573,7 +573,15 @@ replié avec l'icône, icône de l'armure décalée de 4 px dans les données. `
 - `SubInventoryScreen.design.json` : icônes de l'armure et des bottes centrées dans leur cadre, avec la taille réelle
   des sprites 17 et 25.
 
-#### ⏳ SI10 — Les icônes du sous-inventaire à leur position d'origine (D-E13D-34)
+#### ✅ SI10 — Les icônes du sous-inventaire à leur position d'origine (D-E13D-34) — faite le 2026-09-25
+
+**Fait** : `SubInventoryIcon(AssetId, NativeX, NativeY)` remplace la case centrée dans le modèle ; le modèle de vue
+pose chaque icône et le cadre de l'armure et des bottes au coin d'origine ; l'écran ne lit plus aucune taille de
+sprite et ne garde plus de `SpriteData` (une image introuvable est déjà tolérée par le fournisseur d'assets de
+l'interface : avertissement unique, rien de dessiné). Le test de SI8 « cadre sans taille d'icône » devient « icônes
+au coin d'origine » ; celui des données de conception, « icône à la position de son cadre ». Commentaires du XAML
+corrigés. Mutations réelles tuées : centrage rétabli pour les emplacements, puis pour l'armure. `Alundra.Tests`
+1226/1226.
 
 - Le compositeur et le modèle de vue du sous-inventaire posent chaque icône (armurerie, objets-clés, armure, bottes)
   coin haut-gauche à la position de l'original, sans centrage ; la lecture de la taille des sprites disparaît de
@@ -699,6 +707,7 @@ suites vertes ; chaque export prouvé par double export.
 | 2026-09-25 | **SI9.b faite** : l'équipement (arme vide sonore, nom d'arme effacé, `SetPlayerWeaponId` fidèle à l'exécutable). |
 | 2026-09-25 | **SI9.c faite** : la jauge relancée pendant son ouverture glisse depuis sa position et se cache. |
 | 2026-09-25 | **SI9.d faite**, **SI9 close** : chaque relevé de la contre-vérification a sa disposition (tableau ci-dessous). |
+| 2026-09-25 | **SI10 faite** : les icônes du sous-inventaire au coin d'origine, sans lecture de taille de sprite. |
 
 ### SI9 — la contre-vérification de l'inventaire principal (2026-09-25)
 

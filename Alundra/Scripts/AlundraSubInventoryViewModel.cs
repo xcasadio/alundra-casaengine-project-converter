@@ -1,6 +1,5 @@
 #nullable enable
 using System;
-using Microsoft.Xna.Framework;
 using MGUI.Core.UI;
 using MGUI.Shared.Helpers;
 
@@ -21,26 +20,12 @@ namespace Alundra.Scripts;
 /// </summary>
 public sealed class AlundraSubInventoryViewModel : ViewModelBase
 {
-    private readonly Func<Guid, Point?>? _iconSize;
     private readonly InventoryImageViewModel[] _armoryIcons = { new(), new(), new(), new(), new(), new(), new() };
     private readonly InventoryImageViewModel[] _keyItemIcons = { new(), new(), new(), new(), new() };
     private readonly InventoryImageViewModel[] _moneyDigits = { new(), new(), new(), new() };
     private readonly InventoryImageViewModel[] _falconDigits = { new(), new() };
     private readonly InventoryImageViewModel[] _keyDigits = { new(), new() };
     private Visibility _rootVisibility = Visibility.Collapsed;
-
-    /// <summary>A view model with no icon sizes: the editor's design-time data, which gives every position itself.</summary>
-    public AlundraSubInventoryViewModel()
-        : this(null)
-    {
-    }
-
-    /// <param name="iconSize">The native size of an icon sprite, or null when it cannot be read: an icon is
-    /// centred in its cell from its size (D-E13D-23), and stays hidden without one.</param>
-    public AlundraSubInventoryViewModel(Func<Guid, Point?>? iconSize)
-    {
-        _iconSize = iconSize;
-    }
 
     /// <summary>How many models <see cref="Apply"/> received: one per logic tick while the sub-inventory is
     /// drawn.</summary>
@@ -182,17 +167,12 @@ public sealed class AlundraSubInventoryViewModel : ViewModelBase
                 }
 
                 var icon = slotIcon.Icon;
-                var size = _iconSize?.Invoke(icon.AssetId);
-                if (size == null)
-                {
-                    break;
-                }
-
                 var image = slots[slot];
                 image.SetSource(icon.AssetId);
 
-                // The canvas is scaled once as a whole, so every position here is native: pixel scale 1.
-                image.Show(icon.ScreenLeft(size.Value.X, 1), icon.ScreenTop(size.Value.Y, 1));
+                // D-E13D-34: the original's own top-left, no centring. The canvas is scaled once as a whole, so
+                // every position here is native.
+                image.Show(icon.NativeX, icon.NativeY);
                 shown = true;
                 break;
             }
@@ -204,7 +184,7 @@ public sealed class AlundraSubInventoryViewModel : ViewModelBase
         }
     }
 
-    private void ApplyEquipmentIcon(InventoryImageViewModel iconImage, InventoryImageViewModel frameImage, SubInventoryEquipmentIcon? equipment)
+    private static void ApplyEquipmentIcon(InventoryImageViewModel iconImage, InventoryImageViewModel frameImage, SubInventoryEquipmentIcon? equipment)
     {
         if (equipment == null)
         {
@@ -213,21 +193,13 @@ public sealed class AlundraSubInventoryViewModel : ViewModelBase
             return;
         }
 
-        // FUN_80052fb4: the frame is visible whenever the item resolves, at the box cell itself (not
-        // centred - the same "hollow frame" the main inventory's own selection frames sit at) - even when the
-        // icon's own size cannot be read, since only the icon needs it to centre itself (D-E13D-32).
-        frameImage.Show(equipment.Value.FrameNativeX, equipment.Value.FrameNativeY);
-
-        var icon = equipment.Value.Icon;
-        var size = _iconSize?.Invoke(icon.AssetId);
-        if (size == null)
-        {
-            iconImage.Visibility = Visibility.Collapsed;
-            return;
-        }
-
-        iconImage.SetSource(icon.AssetId);
-        iconImage.Show(icon.ScreenLeft(size.Value.X, 1), icon.ScreenTop(size.Value.Y, 1));
+        // FUN_80052fb4: the frame is visible whenever the item resolves, at the icon's own position - the same
+        // "hollow frame" the main inventory's own selection frames are. D-E13D-34: both at the original's
+        // top-left, no centring.
+        var (assetId, x, y) = equipment.Value;
+        frameImage.Show(x, y);
+        iconImage.SetSource(assetId);
+        iconImage.Show(x, y);
     }
 
     private static void ApplyDigit(InventoryImageViewModel image, InventoryDigit digit)

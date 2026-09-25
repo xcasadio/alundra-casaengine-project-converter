@@ -98,14 +98,14 @@ public sealed class AlundraSubInventoryComposerTests
         Assert.Equal(72, model.BootsNameY);  // 0x40 + 8
 
         Assert.NotNull(model.Armor);
-        Assert.Equal(144, model.Armor!.Value.FrameNativeX); // icons.X (0x88) + 8
-        Assert.Equal(40, model.Armor.Value.FrameNativeY);   // icons.Y (0x10) + 0*0x28 + 0x18
-        Assert.Equal(armorIcon, model.Armor.Value.Icon.AssetId);
+        Assert.Equal(144, model.Armor!.Value.NativeX); // icons.X (0x88) + 8
+        Assert.Equal(40, model.Armor.Value.NativeY);   // icons.Y (0x10) + 0*0x28 + 0x18
+        Assert.Equal(armorIcon, model.Armor.Value.AssetId);
 
         Assert.NotNull(model.Boots);
-        Assert.Equal(144, model.Boots!.Value.FrameNativeX);
-        Assert.Equal(80, model.Boots.Value.FrameNativeY);   // icons.Y (0x10) + 1*0x28 + 0x18
-        Assert.Equal(bootsIcon, model.Boots.Value.Icon.AssetId);
+        Assert.Equal(144, model.Boots!.Value.NativeX);
+        Assert.Equal(80, model.Boots.Value.NativeY);   // icons.Y (0x10) + 1*0x28 + 0x18
+        Assert.Equal(bootsIcon, model.Boots.Value.AssetId);
     }
 
     [Fact]
@@ -153,10 +153,8 @@ public sealed class AlundraSubInventoryComposerTests
         var icon = Assert.Single(model.ArmoryIcons);
         Assert.Equal(index, icon.SlotIndex);
         Assert.Equal(iconId, icon.Icon.AssetId);
-        Assert.Equal(0x08 + offsetX, icon.Icon.BoxNativeX);
-        Assert.Equal(0x10 + offsetY, icon.Icon.BoxNativeY);
-        Assert.Equal(24, icon.Icon.BoxNativeWidth);
-        Assert.Equal(32, icon.Icon.BoxNativeHeight);
+        Assert.Equal(0x08 + offsetX, icon.Icon.NativeX);
+        Assert.Equal(0x10 + offsetY, icon.Icon.NativeY);
     }
 
     [Fact]
@@ -182,8 +180,8 @@ public sealed class AlundraSubInventoryComposerTests
 
         var icon = Assert.Single(model.KeyItemIcons);
         Assert.Equal(index, icon.SlotIndex);
-        Assert.Equal(0x08 + index * 0x20 + 8, icon.Icon.BoxNativeX); // key items box X (0x08)
-        Assert.Equal(0x80 + 4, icon.Icon.BoxNativeY);                // key items box Y (0x80)
+        Assert.Equal(0x08 + index * 0x20 + 8, icon.Icon.NativeX); // key items box X (0x08)
+        Assert.Equal(0x80 + 4, icon.Icon.NativeY);                // key items box Y (0x80)
     }
 
     [Fact]
@@ -281,19 +279,17 @@ public sealed class AlundraSubInventoryComposerTests
         Assert.Equal(boxY + offsetY, model.Cursor.NativeY);
     }
 
+    /// <summary>D-E13D-34: an icon's position is the original's own top-left, nothing derived from a cell or from
+    /// the sprite's size - the model carries no size at all.</summary>
     [Fact]
-    public void Icon_CentresInItsCell_AtVariousIconSizes()
+    public void Icon_IsAtTheOriginalTopLeft_NoCell()
     {
         var iconId = Guid.Parse("77777777-7777-7777-7777-777777777777");
         var armoryIcons = (Guid?[])NoArmoryIcons.Clone();
         armoryIcons[0] = iconId;
 
         var model = ComposeAtRest(armoryIconAssetIds: armoryIcons);
-        var icon = Assert.Single(model.ArmoryIcons).Icon;
 
-        // Same centring formula AlundraHudIcon already carries (D-E13D-10/D-E13D-23): an icon smaller than
-        // 24x32 lands centred in its cell (16x15 -> (4, 8) offset at scale 1).
-        Assert.Equal(icon.BoxNativeX + 4, icon.ScreenLeft(16, pixelScale: 1));
-        Assert.Equal(icon.BoxNativeY + 8, icon.ScreenTop(15, pixelScale: 1));
+        Assert.Equal(new SubInventoryIcon(iconId, 0x08 + 0x30, 0x10 + 0x04), Assert.Single(model.ArmoryIcons).Icon);
     }
 }

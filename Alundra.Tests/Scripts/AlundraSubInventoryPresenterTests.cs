@@ -92,7 +92,7 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
         director.AttachToWorld(state, itemTables, null);
 
         // Every icon 16x16: its size only centres it in its cell.
-        var view = new AlundraSubInventoryViewModel(_ => new Point(16, 16));
+        var view = new AlundraSubInventoryViewModel();
         var screen = new FakeSubInventoryScreen();
         var uiView = new RecordingUIViewRuntime();
         var presenter = new AlundraSubInventoryPresenter(director, state, itemTables, view, screen, uiView);
@@ -206,7 +206,7 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
         var mainUiView = new RecordingUIViewRuntime();
         var mainPresenter = new AlundraInventoryPresenter(mainDirector, state, itemTables, mainView, mainScreen, mainUiView);
 
-        var subView = new AlundraSubInventoryViewModel(_ => new Point(16, 16));
+        var subView = new AlundraSubInventoryViewModel();
         var subScreen = new FakeSubInventoryScreen();
         var subUiView = new RecordingUIViewRuntime();
         var subPresenter = new AlundraSubInventoryPresenter(subDirector, state, itemTables, subView, subScreen, subUiView);
@@ -272,7 +272,7 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
         AlundraInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null);
         AlundraSubInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null);
 
-        var view = new AlundraSubInventoryViewModel(_ => new Point(16, 16));
+        var view = new AlundraSubInventoryViewModel();
         var screen = new FakeSubInventoryScreen();
         var ui = new RecordingUIViewRuntime();
         worldProxy.AttachSubInventoryPresenterForTests(view, screen, ui);

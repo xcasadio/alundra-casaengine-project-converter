@@ -9,15 +9,19 @@ namespace Alundra.Scripts;
 /// 0 armory, 1 key items, 2 armor name, 3 boots name, 4 icons, 5 description, 6 money/falcon/key.</summary>
 public readonly record struct SubInventoryBoxSprite(int BoxIndex, int NativeX, int NativeY);
 
-/// <summary>One armory crest icon (0..6, Rubis..Diamant) or key-item icon (0..4) - the slot it belongs to
-/// plus the same centred-icon shape <see cref="AlundraHudComposer"/>'s own <see cref="AlundraHudIcon"/> uses
-/// (D-E13D-23).</summary>
-public readonly record struct SubInventorySlotIcon(int SlotIndex, AlundraHudIcon Icon);
+/// <summary>An icon drawn with its top-left at the native position the original itself draws it at - no
+/// centring (D-E13D-34: the sub-inventory is the one screen whose icons are not laid out in the standard
+/// 24x32 cells, so the main inventory's D-E13D-10 centring does not apply).</summary>
+public readonly record struct SubInventoryIcon(Guid AssetId, int NativeX, int NativeY);
 
-/// <summary>The armor or boots equipment icon plus its selection frame (<c>wind_039</c>) at the SAME native
+/// <summary>One armory crest icon (0..6, Rubis..Diamant) or key-item icon (0..4) - the slot it belongs to
+/// plus the icon at its original position.</summary>
+public readonly record struct SubInventorySlotIcon(int SlotIndex, SubInventoryIcon Icon);
+
+/// <summary>The armor or boots equipment icon, with its selection frame (<c>wind_039</c>) at the SAME native
 /// position (plan §1.5, <c>FUN_80052fb4</c>: the frame is visible only when the item resolves) - null when
 /// nothing is equipped there, matching <see cref="AlundraSubInventoryDirector.ArmorItemId"/>/<c>BootsItemId</c>.</summary>
-public readonly record struct SubInventoryEquipmentIcon(AlundraHudIcon Icon, int FrameNativeX, int FrameNativeY);
+public readonly record struct SubInventoryEquipmentIcon(Guid AssetId, int NativeX, int NativeY);
 
 /// <summary>The cursor's base native position (plan §1.5: <c>PTR_ARRAY_800b44b8</c>/<c>INT_ARRAY_800b4368</c>/
 /// <c>800b43a0</c>) - unlike the main inventory's own <see cref="InventoryCursorState"/>, there is no
@@ -68,16 +72,12 @@ public sealed class SubInventoryDisplayModel
 /// input is either a director-exposed value or a value the caller (SI4's presenter) already resolved through
 /// <see cref="AlundraItemTables"/>/<see cref="AlundraGameState"/>.
 ///
-/// <b>D-E13D-23 (icons centred, at their ORIGINAL top-left)</b>: armory and key-item icons are centred in a
-/// 24x32 cell whose top-left is the position the original itself draws them at (extension of D-E13D-10:
-/// there is no dedicated frame for these two, unlike armor/boots which DO have <c>wind_039</c>) - the SAME
-/// <see cref="AlundraHudIcon"/> centring formula, just without a frame image alongside it.
+/// <b>D-E13D-34 (icons at their original top-left, no centring)</b>: every icon - armory, key items, armor,
+/// boots - is drawn where the original draws it, whatever its sprite's size; the author's "au plus simple",
+/// replacing D-E13D-23's centring in an invisible 24x32 cell.
 /// </summary>
 public static class AlundraSubInventoryComposer
 {
-    private const int CellWidth = 0x18;  // 24 - same "cell" as the main inventory's own D-E13D-10.
-    private const int CellHeight = 0x20; // 32
-
     // StaticVariables.cs (INT_ARRAY_800b42f8/800b4314), plan §1.5's own table - the armory's seven crest
     // offsets (Rubis..Diamant), duplicated here so this composer stays a pure function of plain data (same
     // "duplicated citation, not a cross-file constant" shape AlundraInventoryComposer's own OffsetX/Y use).
@@ -146,7 +146,7 @@ public static class AlundraSubInventoryComposer
 
             var cellX = armoryBox.X + ArmoryOffsetX[i];
             var cellY = armoryBox.Y + ArmoryOffsetY[i];
-            armoryIcons.Add(new SubInventorySlotIcon(i, new AlundraHudIcon(assetId.Value, cellX, cellY, CellWidth, CellHeight)));
+            armoryIcons.Add(new SubInventorySlotIcon(i, new SubInventoryIcon(assetId.Value, cellX, cellY)));
         }
 
         var keyItemsBox = boxPositions[1];
@@ -161,7 +161,7 @@ public static class AlundraSubInventoryComposer
 
             var cellX = keyItemsBox.X + i * 0x20 + 8;
             var cellY = keyItemsBox.Y + 4;
-            keyItemIcons.Add(new SubInventorySlotIcon(i, new AlundraHudIcon(assetId.Value, cellX, cellY, CellWidth, CellHeight)));
+            keyItemIcons.Add(new SubInventorySlotIcon(i, new SubInventoryIcon(assetId.Value, cellX, cellY)));
         }
 
         var iconsBox = boxPositions[4];
@@ -215,8 +215,8 @@ public static class AlundraSubInventoryComposer
             return null;
         }
 
-        var cellX = iconsBox.X + EquipmentIconOffsetX;
-        var cellY = iconsBox.Y + slot * EquipmentIconSlotStride + EquipmentIconOffsetY;
-        return new SubInventoryEquipmentIcon(new AlundraHudIcon(assetId.Value, cellX, cellY, CellWidth, CellHeight), cellX, cellY);
+        var x = iconsBox.X + EquipmentIconOffsetX;
+        var y = iconsBox.Y + slot * EquipmentIconSlotStride + EquipmentIconOffsetY;
+        return new SubInventoryEquipmentIcon(assetId.Value, x, y);
     }
 }
