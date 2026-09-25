@@ -555,10 +555,15 @@ suites vertes ; chaque export prouvé par double export.
    chaînes ; pas fait ici.
 5. **`Triangle` ferme l'inventaire principal** depuis SI3.a (D-E13D-29) : un changement de comportement de
    l'inventaire principal déjà validé, à revoir en recette.
-6. **Le présentateur de l'inventaire principal n'a aucun test qui traverse son site d'appel de production** (la
+6. ~~**Le présentateur de l'inventaire principal n'a aucun test qui traverse son site d'appel de production** (la
    boucle de la manette d'`AlundraWorldProxy.Update`) : la mutation qui retire son appel ne ferait échouer aucun
    test. Même trou que celui trouvé et comblé pour le sous-inventaire en SI4. Antérieur à ce plan, non corrigé
-   ici ; une suite possible de quelques lignes.
+   ici ; une suite possible de quelques lignes.~~ **Comblé le 2026-09-25** par
+   `AlundraInventoryPresenterTests.WorldUpdate_Start_PushesTheInventoryScreenThroughTheRealLoop` : vrai
+   `AlundraWorldProxy`, directeurs attachés, `Start` par `LastPadState` puis `Update(0.02f)` jusqu'au dessin du
+   principal ; l'écran est poussé une fois et le modèle de vue est visible. Mutation réelle : sans
+   `_inventoryPresenter?.Tick();` dans la boucle, le test échoue (directeur dessiné, aucun écran poussé) ; appel
+   restauré. Alundra.Tests 1216/1216.
 7. **L'assertion « jauge ni rappelée ni recachée » du test aller-retour de SI3 ne prouve rien** (la jauge y reste
    au repos faute du verrou 1662) ; le comportement est prouvé par la sonde du vérificateur et par la recette SI5.
    Reportée (P4).
