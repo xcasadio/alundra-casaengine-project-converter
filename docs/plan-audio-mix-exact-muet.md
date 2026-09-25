@@ -359,7 +359,7 @@ chaque groupe concordent sur chaque point retenu.
 
 ## Phase 1 — Moteur (sous-module `CasaEngineMonogame`)
 
-### ⏳ T1.1 — Plan moteur et ADR
+### ✅ T1.1 — Plan moteur et ADR — faite le 2026-09-25 (moteur `7968a608`)
 
 - Objectif : le plan moteur exigé par l'`AGENTS.md` du moteur, et les deux décisions en ADR.
 - Fichiers (moteur) : `ai-agent/tasks/audio-stereo-voices-mute-tasks.md` (copie des tâches T1.2 et T1.3,
@@ -369,7 +369,7 @@ chaque groupe concordent sur chaque point retenu.
 - Validation : relecture ; les index sont à jour.
 - Commit (moteur) : `docs(audio): plan and record the software stereo voices and the persisted mute`
 
-### ⏳ T1.2 — Voix stéréo logicielle
+### ✅ T1.2 — Voix stéréo logicielle — faite le 2026-09-25 (moteur `7c017ae5`, note dans le plan moteur)
 
 - Objectif : jouer un clip mono sur une voix stéréo dont les gains gauche et droit sont exacts, et modifiables
   pendant la lecture.
@@ -408,7 +408,7 @@ chaque groupe concordent sur chaque point retenu.
 - Validation : les deux solutions du moteur buildent ; `CasaEngine.Tests` = ligne de base + n, zéro nouvel échec.
 - Commit (moteur) : `feat(audio): play mono clips on software stereo voices with exact left/right gains`
 
-### ⏳ T1.3 — Son coupé, réglage du projet
+### 🧪 T1.3 — Son coupé, réglage du projet — faite le 2026-09-25 (moteur `af5246ca`) ; contrôle en direct de l'éditeur non observable par l'agent, reporté à T5.3 (note dans le plan moteur)
 
 - Objectif : D4 avec P6, côté moteur.
 - Fichiers (moteur) :
@@ -456,13 +456,27 @@ chaque groupe concordent sur chaque point retenu.
   passe à la recette T5.3.
 - Commit (moteur) : `feat(audio): mute the whole mix from the project settings`
 
-### ⏳ T1.4 — Vérification du moteur et pointeur
+### ✅ T1.4 — Vérification du moteur et pointeur — faite le 2026-09-25 (moteur `716c02c7`)
 
 - Objectif : un `verifier` frais sur T1.2 et T1.3 (contrat ci-dessus, diff du moteur, tests), puis le pointeur du
   moteur dans le parent.
 - Étapes : verdict traité par priorité ; puis bump du pointeur ; build du parent ; `Alundra.Tests` inchangé.
 - Validation : verdict **CONFIRMED** consigné ; comptes du parent identiques à T0.1.
 - Commit : `chore(submodules): point at the engine with software stereo voices and the project mute setting`
+
+**Note de validation (2026-09-25).**
+
+- **Vérificateur frais : CONFIRMED.** Portée : les commits moteur `7968a608`, `7c017ae5` et `af5246ca` contre la base
+  `43688074`. Il a rejoué les builds (0 erreur) et les tests (`CasaEngine.Tests` 1914 / 1914). Aucun constat P0 à P2.
+- **Deux remarques reportées**, consignées en O1 et O2 du plan moteur (`716c02c7`) :
+  - A1, P3 : `GetVoiceStereoGains` peut encore répondre `true` pour une voix arrêtée, jusqu'au `Update` suivant. Le
+    portage écarte les voix mortes avant tout remix : sans effet ici.
+  - A2, P4 : l'abonné de l'éditeur manque le tout premier chargement de projet. Le constructeur
+    d'`AudioSystemComponent` applique alors le réglage déjà chargé : comportement juste.
+- **Parent sur le nouveau moteur.** `alundra-casaengine-project-converter.slnx` : 0 erreur. `Alundra.Tests`
+  **1228 / 1228** et convertisseur **190 / 190**, inchangés depuis T0.1.
+  - `HeroTraceHarnessTests` réécrit les quatre `docs/hero-trace-389-*.txt` à chaque passage. Le contenu est
+    identique, seules les fins de ligne changent ; les fichiers sont remis à leur état suivi.
 
 ### ⏳ T1.5 — Le convertisseur garde le réglage « son coupé » à l'export
 
