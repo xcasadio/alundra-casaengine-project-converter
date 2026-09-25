@@ -753,7 +753,7 @@ leur état suivi.
     la sœur sous redirection, attributs propres sans redirection, champs absents ou `null` qui restent absents.
 - **Mutations réelles**, toutes tuées : attributs de programme pris sur la fiche demandée ; volume de tonalité non lu.
 
-### ⏳ T4.2 — Le départ d'une voix suit l'original
+### ✅ T4.2 — Le départ d'une voix suit l'original — faite le 2026-09-25
 
 - Objectif : D2, première moitié.
 - Fichiers : `Alundra/Scripts/` (calcul pur des volumes SPU, sans état : départ et remix, fonctions et tests
@@ -802,6 +802,24 @@ leur état suivi.
      `null` retiré (la voix partirait muette).
 - Validation : `Alundra.Tests` vert, six goldens identiques.
 - Commit : `feat(audio): start sound effect voices with the executable's per-tone stereo volumes`
+
+**Note de validation (2026-09-25).**
+
+- **Implémentation.** Par un exécuteur, tests d'abord. Deux relectures indépendantes en lecture seule, fidélité au
+  binaire et régressions : aucun constat.
+  - `AlundraSpuVoiceVolume.ComputeKeyOn` et `ToGain` (÷ 16 384).
+  - `PlaySfx` démarre chaque tonalité par `PlayClipStereo` avec les gains du départ ; replis journalisés une fois par
+    cause (`PlayClip`, volume 1, centré).
+  - Registre `LiveVoice` : handle, VabId, rang de tonalité, ordre de départ.
+  - `FakeAudioClip` expose des échantillons.
+- **Tests.** `Alundra.Tests` **1250 / 1250** (1235 + 15).
+  - Les huit lignes du tableau de T4.2, codées en dur.
+  - 302 démarre deux voix stéréo aux gains attendus ; la tonalité muette de 162 donne une voix vivante à 0/0 ; les
+    deux replis donnent une voix mono.
+  - Aucun ancien test modifié : leur jeu de données sans attributs passe par le repli, inchangé.
+  - Six goldens identiques : les traces réécrites ne diffèrent que par les fins de ligne, et sont remises à leur état
+    suivi.
+- **Mutations réelles**, toutes tuées : sans mise au carré ; pan de programme ignoré ; ÷ 16 383 ; repli supprimé.
 
 ### ⏳ T4.3 — Le remix suit l'original, et l'id de `0xBF`
 

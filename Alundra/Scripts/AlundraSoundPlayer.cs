@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Audio;
 using CasaEngine.Framework.Audio.Mixing;
 
@@ -94,8 +95,27 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
     /// (<c>:4025-4034/:4049</c>) - under redirection the two VabIds differ, so the count is always zero
     /// and the ceiling never bites, faithfully. Without a group (or without redirection), tag and filter
     /// are the same VabId, so nothing changes from the pre-B3 shape.
+    ///
+    /// T4.2 (docs/plan-audio-mix-exact-muet.md): each entry also carries the tone's own rank in the
+    /// resolved record (<see cref="LiveVoice.ToneIndex"/>) and a monotonically increasing start sequence
+    /// number (<see cref="LiveVoice.StartSequence"/>), so T4.3's own "oldest live voice for a given
+    /// (requested id, tone)" can be found without changing what prune/ceiling/StopAllSfx already do with
+    /// this table.
     /// </summary>
-    private readonly Dictionary<int, List<(AudioVoiceHandle Handle, int VabId)>> _liveVoicesBySfxId = new();
+    private readonly Dictionary<int, List<LiveVoice>> _liveVoicesBySfxId = new();
+
+    /// <summary>T4.2: next value handed out by <see cref="LiveVoice.StartSequence"/> - increases by one
+    /// per voice actually started by <see cref="PlaySfx"/>, across every sfx id.</summary>
+    private int _nextVoiceStartSequence;
+
+    /// <summary>One live voice this player is still tracking - see <see cref="_liveVoicesBySfxId"/>'s own doc.</summary>
+    private readonly struct LiveVoice
+    {
+        public required AudioVoiceHandle Handle { get; init; }
+        public required int VabId { get; init; }
+        public required int ToneIndex { get; init; }
+        public required int StartSequence { get; init; }
+    }
 
     /// <summary>
     /// B1 (docs/plan-e11b-opcodes-audio.md, D-B-4, fact 5): port of the original's 64-slot
@@ -182,25 +202,86 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
             return;
         }
 
-        foreach (var tone in resolution.Tones)
+        for (var toneIndex = 0; toneIndex < resolution.Tones.Count; toneIndex++)
         {
+            var tone = resolution.Tones[toneIndex];
             var clip = clipProvider.GetClip(tone.AssetId);
             if (clip == null)
             {
                 continue;
             }
 
-            var parameters = new AudioVoiceParameters(
-                AudioVoiceParameters.MaxVolume, 0f, 0f, tone.Repeat);
-            var handle = _audioService.PlayClip(clip, AudioBusNames.Sfx, parameters, owner: _owner);
+            var handle = StartVoice(clip, tone, resolution);
             if (handle.IsValid)
             {
                 // Tagged with the RESOLVED record's own VabId (fact 7: registration uses the resolved
                 // VabId, filtering above uses the requested one).
-                liveVoices.Add((handle, resolution.VabId));
+                liveVoices.Add(new LiveVoice
+                {
+                    Handle = handle,
+                    VabId = resolution.VabId,
+                    ToneIndex = toneIndex,
+                    StartSequence = _nextVoiceStartSequence++,
+                });
             }
         }
     }
+
+    /// <summary>
+    /// T4.2 (docs/plan-audio-mix-exact-muet.md, ADR-0039, ADR-0003): starts ONE tone's voice, with the
+    /// original's own key-on left/right SPU volumes (<see cref="AlundraSpuVoiceVolume.ComputeKeyOn"/>)
+    /// when every attribute the formula needs survived the export AND the clip can actually be played in
+    /// stereo (<see cref="IAudioClipSamples"/>, non-empty samples - ADR-0039). Falls back to the
+    /// pre-T4.2 shape (<see cref="AudioService.PlayClip"/>, unit volume, centred pan) otherwise - NEVER
+    /// silence - logging each distinct fallback cause once for this player's whole lifetime
+    /// (<see cref="_loggedMissingAttributes"/>/<see cref="_loggedClipWithoutSamples"/>).
+    /// </summary>
+    private AudioVoiceHandle StartVoice(IAudioClip clip, SfxToneRecord tone, SfxResolution resolution)
+    {
+        if (resolution.VabMasterVolume is { } vabMasterVolume
+            && resolution.ProgramVolume is { } programVolume
+            && resolution.ProgramPan is { } programPan
+            && tone.Volume is { } toneVolume
+            && tone.Pan is { } tonePan)
+        {
+            if (clip is IAudioClipSamples { MonoSamples.IsEmpty: false })
+            {
+                var (left, right) = AlundraSpuVoiceVolume.ComputeKeyOn(
+                    vabMasterVolume, programVolume, programPan, toneVolume, tonePan);
+                var stereoParameters = new AudioVoiceParameters(
+                    AudioVoiceParameters.MaxVolume, 0f, 0f, tone.Repeat);
+                return _audioService.PlayClipStereo(
+                    clip, AudioBusNames.Sfx, stereoParameters,
+                    AlundraSpuVoiceVolume.ToGain(left), AlundraSpuVoiceVolume.ToGain(right), _owner);
+            }
+
+            if (!_loggedClipWithoutSamples)
+            {
+                _loggedClipWithoutSamples = true;
+                Logs.WriteWarning(
+                    "AlundraSoundPlayer: a sound effect clip exposes no samples for the key-on stereo "
+                    + "volume path (T4.2); falling back to unit volume, centred pan.");
+            }
+        }
+        else if (!_loggedMissingAttributes)
+        {
+            _loggedMissingAttributes = true;
+            Logs.WriteWarning(
+                "AlundraSoundPlayer: a sound effect record is missing its VAB volume/pan attributes "
+                + "(ADR-0003); falling back to unit volume, centred pan.");
+        }
+
+        var parameters = new AudioVoiceParameters(AudioVoiceParameters.MaxVolume, 0f, 0f, tone.Repeat);
+        return _audioService.PlayClip(clip, AudioBusNames.Sfx, parameters, owner: _owner);
+    }
+
+    /// <summary>T4.2: whether the "missing attributes" fallback cause has already been logged once, for
+    /// this player's whole lifetime - see <see cref="StartVoice"/>'s own doc.</summary>
+    private bool _loggedMissingAttributes;
+
+    /// <summary>T4.2: whether the "clip without samples" fallback cause has already been logged once,
+    /// for this player's whole lifetime - see <see cref="StartVoice"/>'s own doc.</summary>
+    private bool _loggedClipWithoutSamples;
 
     /// <summary>
     /// B1 (docs/plan-e11b-opcodes-audio.md, D-B-6, fact 4): backs opcodes 0xAB/0xBF. The original resolves
@@ -298,18 +379,18 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
         return (volume, pan);
     }
 
-    private List<(AudioVoiceHandle Handle, int VabId)> GetLiveVoices(int sfxId)
+    private List<LiveVoice> GetLiveVoices(int sfxId)
     {
         if (!_liveVoicesBySfxId.TryGetValue(sfxId, out var voices))
         {
-            voices = new List<(AudioVoiceHandle Handle, int VabId)>();
+            voices = new List<LiveVoice>();
             _liveVoicesBySfxId[sfxId] = voices;
         }
 
         return voices;
     }
 
-    private void PruneFinishedVoices(List<(AudioVoiceHandle Handle, int VabId)> voices)
+    private void PruneFinishedVoices(List<LiveVoice> voices)
     {
         for (var i = voices.Count - 1; i >= 0; i--)
         {
