@@ -161,8 +161,11 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
     {
         // B2 (docs/plan-e11b-opcodes-audio.md, D-B-5, fact 8): the master fade machine's own state gate -
         // the ORIGINAL's very first guard in PlaySoundEffectCore (SoundManager.cs:3872-3877), checked
-        // BEFORE the anti-duplicate table below. Armed by 0xA6 (AlundraBgmFadeDirector.LoadBgm), cleared
-        // by 0xA5 (AlundraBgmFadeDirector.StopAllSound) - see that class's own doc.
+        // BEFORE the anti-duplicate table below. Armed by 0xA6 (AlundraBgmFadeDirector.LoadBgm) and, since
+        // F2/B17 (docs/plan-bgm-demarrage-binaire.md), also by a warp departure with a silent warp sound
+        // (AlundraMusicPlayer.EvaluatePendingWarpDeparture -> AlundraBgmFadeDirector.ArmFadeForWarpDeparture);
+        // disarmed by 0xA5 and by the frame-close site's own StopAllSound call (B9, when ResetSoundFlag
+        // was armed - AlundraWorldProxy.Update) - see AlundraBgmFadeDirector's own doc.
         if (AlundraBgmFadeDirector.Instance.IsArmed)
         {
             return;

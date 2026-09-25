@@ -415,7 +415,7 @@ fin.**
 
 ## Phase 2 — DLL (`Alundra`)
 
-### ⏳ T2.1 — Le modèle de séquence de l'exécutable
+### ✅ T2.1 — Le modèle de séquence de l'exécutable
 
 - Objectif : D1 côté DLL, selon P2, P3, P4, P5, P7, P8.
 - Fichiers : `Alundra/Scripts/AlundraMusicPlayer.cs`, `AlundraBgmFadeDirector.cs`, `AlundraWorldProxy.cs` (fermeture
@@ -494,6 +494,34 @@ fin.**
      exécutable avec un son à séquence, 74 ou 76, sinon consigné).
 - Validation : parent buildé ; `Alundra.Tests` vert ; six goldens identiques.
 - Commit : `fix(audio): start, stop and restart background music as the executable does`
+- **Validation (2026-09-25)** : parent 0 erreur, 0 avertissement ; `Alundra.Tests` **1281 / 1281** (1264 + 17),
+  treize passages verts consécutifs au total, goldens verts (fichiers dorés hors du diff). Exécution par workflow :
+  un exécuteur (tests d'abord), trois relecteurs frais en lecture seule (fidélité, tests, régressions), corrections,
+  puis deux relecteurs frais (fidélité et ordre, tests et isolation) : aucun constat P0-P2 au second tour.
+  - Tests par résultat attendu : a et b `AlundraMusicPlayerTests.T1_…`, `T1bis_…` ; c `MapEntry_NegativeIndexMaps_AreSilent_ThenARealIndexPlays` ;
+    d à i et k `AlundraBgmFadeDirectorTests` (`PlayMusic_0xA7_…`, `StopAllSound_TrackAlreadyPlaying_NeverRestartsIt`,
+    `LoadBgm_…`, `OnANegativeIndexMap_…`) ; j, l, m `AlundraMusicPlayerTests.MapEntry_…` ; n, o, p et le cas 74
+    `AlundraWarpDepartureTests.WarpDeparture_…`. Dix tests existants réécrits sur les nouvelles valeurs et le faux
+    lecteur du runner adapté ; aucun test supprimé.
+  - **Décisions prises pendant la tâche, depuis le binaire** : (1) la moitié musique du départ de warp est
+    **différée** à la fermeture de frame, **après** la consommation du drapeau : dans l'exécutable,
+    `HandleMapSoundEffects` (`0x8002c46c`) ne s'exécute qu'après la boucle de frame, dont la fonction de frame
+    consomme `g_resetSoundFlag` (`0x8002bd04`) ; le son de warp reste joué au moment du départ, comme avant.
+    (2) `0xA7` d'index 0 n'appelle plus `StopAllSound` même avec `v[2] ≠ 0` : la branche 0 de `FUN_8004b114` ne
+    lit pas le drapeau (`0x8004b130`-`0x8004b168`) ; seul changement de logique du runner. (3) Sans table de
+    musique attachée (chemin dégradé), le départ n'enregistre rien.
+  - Isolation : `AlundraWarpArrivalTests` et `AlundraHudDebugRecipeTests` rejoignent la collection des singletons
+    musicaux ; elles, et `AlundraWorldProxyAudioInstallationTests`, remettent à zéro le fondu et le lecteur ;
+    `AlundraMusicPlayer.ResetForTests` vide aussi sa table.
+  - **Mutations en vrai** (`mutate.py` et `t21_mutations.py` du scratchpad, fichiers rendus à l'octet) : 15 tuées
+    sur 15 attendues — `PlaySequence` qui relance, `StopSequence` qui relance, index remappé stocké, garde `< 0`
+    retirée, drapeau jamais consommé, `LoadBgm` qui garde le drapeau, `PlayFromRawIndex` qui joue, qui garde le
+    drapeau, départ qui joue la destination, son de warp muet sans `seq_num`, départ évalué avant le drapeau,
+    `0xA7 0,1` qui appelle `StopAllSound`, garde « même index » retirée, bas de rampe qui relance, départ qui agit
+    à index égal. **Deux équivalentes, consignées** : drapeau consommé après le vidage de l'anti-doublon (les deux
+    touchent des états disjoints) ; fondu du départ armé par `LoadBgm(1)` au lieu de l'écriture directe (le drapeau
+    est toujours déjà consommé quand le départ est évalué).
+  - Différés, avec raison, dans « Suites consignées » : S1 et S2.
 
 ### ⏳ T2.2 — Le schéma canonique du corpus, au site de production
 
@@ -553,6 +581,15 @@ fin.**
 | O2 | P1, P2, P3, P7 tranchés (D5 à D8, 2026-09-25) ; P4, P5, P6, P8 appliqués tels quels par l'approbation du 2026-09-25. | T0.1, T2.1 |
 | O3 | ~~Le plan audio n'est pas mergé dans `main`.~~ Levé le 2026-09-25 : mergé (`063594b`). | T0.1 |
 | O4 | Le pointeur du moteur dans `main` (`43688074`, `fbe8cf5`) est antérieur à l'API stéréo que la DLL de `main` appelle : `main` ne builde pas tel qu'enregistré. Ce plan builde contre `716c02c7` sans toucher au pointeur ; à corriger par l'auteur dans `main`. | toutes |
+
+## Suites consignées (hors de cette tâche)
+
+- **S1** — Un son de warp « muet » au sens de B17 mais jouable (seul cas du manifeste : 379, une tonalité) est encore
+  joué par le port au départ, via `0x53` ; l'original met le son à 0 (`0x80049f78`) et ne le joue pas. Moitié
+  « bruitages » du départ, hors périmètre ; le port le jouait déjà avant ce chantier. Remède : ne pas appeler
+  `PlaySfx` quand `IsWarpSoundSilent` est vrai.
+- **S2** — `SimulateFrameClose` (`AlundraMusicPlayerTests`) recopie le bloc de fermeture de frame pour trois tests
+  qui pilotent les singletons ; le site réel reste couvert par les tests qui passent par `AlundraWorldProxy.Update`.
 
 ## Hors périmètre
 

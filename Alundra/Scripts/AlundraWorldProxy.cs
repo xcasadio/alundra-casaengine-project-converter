@@ -1450,14 +1450,17 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
-    /// docs/plan-e11c-musique.md, slice C1, item 4: the equivalent of the original's own
-    /// <c>LoadMapSounds</c> map-entry call (fact 1.4: the second-to-last instruction of the map-entry
-    /// block, right before the first <c>Update</c>) - this world's own map id, read the same way
-    /// <see cref="BackdropLoader"/>/<see cref="MapEventProgramLoader"/> already do (trailing "-{mapId}"
-    /// of <see cref="World.Name"/>), a no-op when the name carries none (not a converted Alundra map
-    /// world) or when <see cref="MusicPlayer"/> was never installed (no <c>Game</c> - degraded, same
-    /// shape as every other missing-system seam in this DLL). Internal so a test can drive it directly
-    /// (same precedent as <see cref="InstallAudioSystems"/>/<see cref="InstallCellAndOverlaySystems"/>).
+    /// docs/plan-e11c-musique.md, slice C1, item 4 (B9/B10, docs/plan-bgm-demarrage-binaire.md): the
+    /// equivalent of the original's own <c>LoadMapSounds</c> map-entry call (fact 1.4: the second-to-last
+    /// instruction of the map-entry block, right before the first <c>Update</c>) - this world's own map
+    /// id, read the same way <see cref="BackdropLoader"/>/<see cref="MapEventProgramLoader"/> already do
+    /// (trailing "-{mapId}" of <see cref="World.Name"/>), a no-op when the name carries none (not a
+    /// converted Alundra map world) or when <see cref="MusicPlayer"/> was never installed (no
+    /// <c>Game</c> - degraded, same shape as every other missing-system seam in this DLL). This call
+    /// only LOADS the destination track and arms <c>ResetSoundFlag</c> (B7) - it never starts a voice by
+    /// itself; the voice starts at the end of the entry's first frame close, when that flag is consumed
+    /// (B9/B10, this class' own <see cref="Update"/>). Internal so a test can drive it directly (same
+    /// precedent as <see cref="InstallAudioSystems"/>/<see cref="InstallCellAndOverlaySystems"/>).
     /// </summary>
     private void TriggerMapEntryMusic(World world)
     {
@@ -2225,6 +2228,20 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // early-returning before it - invariant (plan §3, point 2): CloseFrame runs exactly once.
         _logicClock.CloseFrame();
 
+        // B9/P3 (docs/plan-bgm-demarrage-binaire.md, T2.1): consumes MusicPlayer's own ResetSoundFlag -
+        // the port of HandleMapSoundStreaming's own "if (g_resetSoundFlag) StopAllSound(); flag = 0"
+        // (B9), run right BEFORE FlushFrameSounds below, exactly once per rendered frame. This is the
+        // ONLY site that starts the music voice a map entry's own PlayMapMusic armed (B7) - a positive
+        // 0xA7 load does NOT arm this flag, it CLEARS it (P8, B13's own second branch: "chargée sans
+        // être jouée", no voice starts from that path at all) - see AlundraMusicPlayer's own class doc.
+        // No allocation, no LINQ, no closure: a straight field read and two virtual calls on the
+        // per-frame path.
+        if (MusicPlayer is { ResetSoundFlag: true } musicPlayer)
+        {
+            BgmFadeDirector.StopAllSound();
+            musicPlayer.ClearResetSoundFlag();
+        }
+
         // B1 (docs/plan-e11b-opcodes-audio.md, D-B-4): flushes SoundPlayer's own per-frame anti-duplicate
         // table (fact 5) - right next to CloseFrame, exactly once per RENDERED frame, AFTER every
         // dispatch pass this frame ran (RunMapEventsPass/RunPendingEventTriggers above) - the port of the
@@ -2232,6 +2249,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // NOT at the head of a dispatch pass (a killed mutation, D-B-4's own cadence tests): that would
         // let a same-tick, two-pass duplicate (map-events then the D3 catch-up rescan) through.
         SoundPlayer?.FlushFrameSounds();
+
+        // F2 (docs/plan-bgm-demarrage-binaire.md): evaluates whatever warp departure
+        // AlundraMusicPlayer.HandleWarpDeparture recorded this frame - AFTER the reset-flag block above
+        // (which already consumed ResetSoundFlag, B9) and after FlushFrameSounds, mirroring the binary's
+        // own main-loop ordering (the frame function that consumes g_resetSoundFlag runs to completion
+        // BEFORE HandleMapSoundEffects, the departure's music half, ever runs). Cast, not an interface
+        // member: only the real AlundraMusicPlayer.Instance is ever installed here (AttachToWorld), and
+        // the opcode-runner's own fakes never reach this proxy-level site.
+        (MusicPlayer as AlundraMusicPlayer)?.EvaluatePendingWarpDeparture();
 
         // docs/plan-camera-premiere-frame.md §3, point 1: clears the sticky first-frame tick floor
         // exactly once, right next to CloseFrame - see _firstFrameStillOpen's own doc. Idempotent past

@@ -96,7 +96,8 @@ public class AlundraEventProgramRunnerTests
         public FakeMusicPlayer(List<string>? callOrder = null) => _callOrder = callOrder;
 
         public readonly List<int> PlayFromRawIndexCalls = new();
-        public int RestartIfActiveCallCount;
+        public int StopSequenceCallCount;
+        public int PlaySequenceCallCount;
 
         public void PlayMapMusic(int mapId)
         {
@@ -112,7 +113,11 @@ public class AlundraEventProgramRunnerTests
             PlayFromRawIndexCalls.Add(rawIndex);
         }
 
-        public void RestartIfActive() => RestartIfActiveCallCount++;
+        public void StopSequence() => StopSequenceCallCount++;
+        public void PlaySequence() => PlaySequenceCallCount++;
+        public int CurrentMapSoundIndex { get; private set; }
+        public bool ResetSoundFlag { get; private set; }
+        public void ClearResetSoundFlag() => ResetSoundFlag = false;
     }
 
     /// <summary>B2 (docs/plan-e11b-opcodes-audio.md): records every <see cref="StopAllSound"/>/
@@ -2698,8 +2703,8 @@ public class AlundraEventProgramRunnerTests
     // -----------------------------------------------------------------------------------------
     // BGM fade-machine opcodes (0xA5/0xA6/0xA7) - B2, docs/plan-e11b-opcodes-audio.md. Dispatch-level
     // only (operand extraction/orchestration against FakeBgmFadeDirector/FakeMusicPlayer) - the real
-    // 120-tick ramp machine and AlundraMusicPlayer.RestartIfActive/PlayFromRawIndex semantics are covered
-    // by AlundraBgmFadeDirectorTests instead.
+    // 120-tick ramp machine and AlundraMusicPlayer.StopSequence/PlaySequence/PlayFromRawIndex semantics
+    // are covered by AlundraBgmFadeDirectorTests instead.
     // -----------------------------------------------------------------------------------------
 
     [Fact]
@@ -2812,6 +2817,29 @@ public class AlundraEventProgramRunnerTests
         Assert.Equal(1, fadeDirector.StopAllSoundCallCount);
         // Fact 3's own ordering ("SetSeqVolume ... puis StopAllSound") - the load must precede the stop.
         Assert.Equal(new[] { "PlayFromRawIndex", "StopAllSound" }, callOrder);
+    }
+
+    [Fact]
+    public void PlayMusic_0xA7_ZeroIndex_StopAllFlagSet_NeverCallsStopAllSound()
+    {
+        // F1 (docs/plan-bgm-demarrage-binaire.md): B13's zero branch (FUN_8004b114 with index 0,
+        // 0x8004b130-0x8004b168) never reads the stop-all flag at all - StopAllSound only runs when
+        // v[1] > 0 AND v[2] != 0.
+        var musicPlayer = new FakeMusicPlayer();
+        var fadeDirector = new FakeBgmFadeDirector();
+        var context = new FakeEntityWorldContext { MusicPlayer = musicPlayer, BgmFadeDirector = fadeDirector };
+        // [op, rawIndex, stopAllFlag] = [0xA7, 0, 1].
+        var document = NewDocument(0xA7, 0, 1, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0xA7, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(3, state.CodeIndex);
+        Assert.Equal(new[] { 0 }, musicPlayer.PlayFromRawIndexCalls);
+        Assert.Equal(0, fadeDirector.StopAllSoundCallCount); // index 0 - flag never read, StopAllSound never runs.
     }
 
     [Fact]

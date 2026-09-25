@@ -53,6 +53,8 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         AlundraSoundBank.ResetForTests();
         AlundraSoundGroupIndexTable.ResetForTests(); // B3 (D-B-7): joins the session carriers this class resets.
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
+        AlundraMusicPlayer.Instance.ResetForTests(); // BGM T2.1: a warp departure recorded by another class must not reach this class's frame close.
+        AlundraBgmFadeDirector.Instance.ResetForTests(); // BGM T2.1: nor a fade another class left armed (it gates PlaySfx).
     }
 
     public void Dispose()
@@ -64,6 +66,8 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         AlundraSoundBank.ResetForTests();
         AlundraSoundGroupIndexTable.ResetForTests(); // B3 (D-B-7): joins the session carriers this class resets.
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
+        AlundraMusicPlayer.Instance.ResetForTests(); // BGM T2.1: a warp departure recorded by another class must not reach this class's frame close.
+        AlundraBgmFadeDirector.Instance.ResetForTests(); // BGM T2.1: nor a fade another class left armed (it gates PlaySfx).
     }
 
     private static string FindProjectRoot()

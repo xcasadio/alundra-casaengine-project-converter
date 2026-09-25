@@ -17,25 +17,27 @@ public interface IAlundraBgmFadeDirector
 {
     /// <summary>
     /// Opcode 0xA5 (Script_165_0A5, EntityEventHandlers.cs:3127-3131) -&gt; <c>SoundManager.StopAllSound</c>
-    /// (fact 1): when the master fade machine is currently armed (<see cref="IsArmed"/>), stops every
-    /// live SFX voice (<see cref="IAlundraSoundPlayer.StopAllSfx"/>) and disarms the machine
-    /// (<see cref="IsArmed"/> becomes <see langword="false"/>) - both steps are skipped when the machine
-    /// was already at rest (the "fade not armed =&gt; SFX untouched" test this class's own doc calls
-    /// out). Restoring the master volume to full and restarting whatever BGM is currently resolved
-    /// (<see cref="IAlundraMusicPlayer.RestartIfActive"/>) happen UNCONDITIONALLY, regardless of the
-    /// armed state - the original's own <c>g_currentMapSoundIndex &gt;= 0</c> outer guard is not
-    /// modeled (this port's own "current index" is never negative by construction, see
-    /// <see cref="AlundraMusicPlayer"/>'s own doc), so this port treats that guard as always satisfied.
+    /// (B2, docs/plan-bgm-demarrage-binaire.md): when <see cref="AlundraMusicPlayer.CurrentMapSoundIndex"/>
+    /// is negative, an IMMEDIATE, TOTAL no-op (B2's own <c>bltz</c> guard - nothing below runs at all,
+    /// not even the SFX stop or the master restore). Otherwise: when the master fade machine is currently
+    /// armed (<see cref="IsArmed"/>), stops every live SFX voice (<see cref="IAlundraSoundPlayer.StopAllSfx"/>)
+    /// and disarms the machine - both skipped when already at rest (the "fade not armed =&gt; SFX
+    /// untouched" test this class's own doc calls out). Restoring the master volume to full and calling
+    /// <see cref="IAlundraMusicPlayer.PlaySequence"/> (B4: plays only if a track is loaded and silent -
+    /// NEVER restarts a track already playing) happen UNCONDITIONALLY past the index guard, regardless of
+    /// the armed state.
     /// </summary>
     void StopAllSound();
 
     /// <summary>
     /// Opcode 0xA6 (Script_166_0A6, EntityEventHandlers.cs:3134-3138) -&gt; <c>SoundManager.LoadBgm</c>
-    /// (fact 2): <paramref name="bgmIndex"/> == 0 restarts whatever BGM is currently resolved
-    /// IMMEDIATELY, with no fade (<see cref="IAlundraMusicPlayer.RestartIfActive"/> directly - the
-    /// armed state, if any, is left untouched, exactly like the original's own <c>LoadBgmCore</c>);
-    /// any NON-ZERO value arms the 120-tick master fade machine (<see cref="IsArmed"/> becomes
-    /// <see langword="true"/>) - the operand's value beyond zero/non-zero is unused, per the original.
+    /// (B14, docs/plan-bgm-demarrage-binaire.md): <see cref="IAlundraMusicPlayer.ClearResetSoundFlag"/>
+    /// runs UNCONDITIONALLY first, exactly like the original's own <c>g_resetSoundFlag = 0</c>. Then:
+    /// <paramref name="bgmIndex"/> == 0 STOPS whatever BGM is currently loaded, immediately
+    /// (<see cref="IAlundraMusicPlayer.StopSequence"/> - an arrêt, never a relaunch; the armed state, if
+    /// any, is left untouched, exactly like the original's own <c>LoadBgmCore</c>); any NON-ZERO value
+    /// arms the 120-tick master fade machine (<see cref="IsArmed"/> becomes <see langword="true"/>) - the
+    /// operand's value beyond zero/non-zero is unused, per the original.
     /// </summary>
     void LoadBgm(int bgmIndex);
 
@@ -69,7 +71,7 @@ public interface IAlundraBgmFadeDirector
 /// n = state - 1
 /// if n == 3      -&gt; state = 3    ; master(0x7f, 0x7f)                       // restore
 /// if n == 0x3c   -&gt; state = 0x3c ; master(0, 0) ;
-///                    InitializeBgm(requestedSeqId) ; key-off all 24 voices   // the BGM SWAP
+///                    InitializeBgm(requestedSeqId) ; key-off all 24 voices   // the BGM STOP (B15)
 /// if n &lt; 0x3d    -&gt; state = n                                              // silent descent
 /// else           -&gt; v = (state - 0x3d) * 0x7f / 0x3c ; state = n ; master(v, v)  // rampe
 /// </code>
@@ -80,8 +82,9 @@ public interface IAlundraBgmFadeDirector
 /// FIRST tick computes its ramp value off the PRE-decrement state 120: <c>(120-0x3d)*0x7f/0x3c =
 /// 59*127/60 = 124</c> (truncating). The ramp keeps running down to pre-tick state <c>0x3e</c> (62):
 /// <c>(62-0x3d)*0x7f/0x3c = 1*127/60 = 2</c>. The NEXT tick (pre-tick state <c>0x3d</c> = 61) is the
-/// swap: master mutes to 0, the current BGM restarts in place, all 24 SFX voices are key-offed. The
-/// machine then counts down SILENTLY (no master call at all) until pre-tick state <c>4</c>, where it
+/// swap (B15): master mutes to 0, the current BGM STOPS (never restarts - <c>InitializeBgm</c> is an
+/// arrêt), all 24 SFX voices are key-offed. The machine then counts down SILENTLY (no master call at
+/// all) until pre-tick state <c>4</c>, where it
 /// restores the master to full (<c>0x7f</c>) and keeps counting down silently to <c>0</c> (rest) - 120
 /// ticks total from arming to rest.
 /// </summary>
@@ -92,13 +95,14 @@ public interface IAlundraBgmFadeDirector
 /// every live voice on every bus, exactly matching the original's own single hardware SPU master
 /// register affecting BGM and SFX alike). No new engine primitive is added for this slice.</para>
 ///
-/// <para><b>What "restart the BGM in place" means in this port</b> (fact 2's own <c>InitializeBgm</c>
-/// call, and fact 1's own "RELANCE le BGM"): the original's <c>InitializeBgm</c> resets a SEQUENCE
-/// STATE structure (position, flags) without itself choosing a new track, and <c>PlaySeq</c>
-/// (re)starts playback of whatever sequence id is already loaded - this port has no separate
-/// "loaded-but-not-playing" sequence state, so both collapse onto
-/// <see cref="IAlundraMusicPlayer.RestartIfActive"/>: stop the current voice, if any, and start a
-/// fresh one for the SAME resolved index - see that member's own doc.</para>
+/// <para><b>What <c>InitializeBgm</c> means in this port</b> (B5, docs/plan-bgm-demarrage-binaire.md):
+/// the original's <c>InitializeBgm</c> resets a SEQUENCE STATE structure (position, flags) without
+/// itself choosing a new track OR restarting playback - it is an ARRÊT. This port models that
+/// separation directly: a track is LOADED (<c>AlundraMusicPlayer</c>'s own loaded-track state) or not,
+/// independently of whether a voice is currently alive, so <c>InitializeBgm</c> maps onto
+/// <see cref="IAlundraMusicPlayer.StopSequence"/> (stop the voice, keep the track loaded) and
+/// <c>PlaySeq</c> onto <see cref="IAlundraMusicPlayer.PlaySequence"/> (start a voice for the loaded
+/// track ONLY IF none is already alive) - see either member's own doc.</para>
 ///
 /// <para><b>0xA7's own stop-all flag is NOT handled here</b> (D-B-6): <see cref="StopAllSound"/> is
 /// still the method 0xA7's dispatch calls when its flag operand is set (fact 3's own "StopAllSound
@@ -151,7 +155,14 @@ public sealed class AlundraBgmFadeDirector : IAlundraBgmFadeDirector
     /// <inheritdoc/>
     public void StopAllSound()
     {
-        // Fact 1: the SFX stop + state reset are CONDITIONAL on the machine being armed - the test this
+        // B2: g_currentMapSoundIndex < 0 -> IMMEDIATE, TOTAL return (bltz 0x80049b04) - nothing below
+        // this line runs at all, not even the SFX stop or the master restore.
+        if (AlundraMusicPlayer.Instance.CurrentMapSoundIndex < 0)
+        {
+            return;
+        }
+
+        // B2: the SFX stop + state reset are CONDITIONAL on the machine being armed - the test this
         // class's own doc calls "fade not armed => SFX untouched". An unconditional stop here is the
         // named mutation the plan's own tests kill.
         if (_state != 0)
@@ -160,23 +171,37 @@ public sealed class AlundraBgmFadeDirector : IAlundraBgmFadeDirector
             _state = 0;
         }
 
-        // Fact 1: master restore + BGM restart are UNCONDITIONAL (this port's own simplification of the
-        // original's "g_currentMapSoundIndex >= 0" outer guard - see this class's own remarks).
+        // B2: master restore + PlaySeq are UNCONDITIONAL past the index guard above.
         SetMasterVolume(FullScaleVolume);
-        AlundraMusicPlayer.Instance.RestartIfActive();
+        AlundraMusicPlayer.Instance.PlaySequence();
     }
 
     /// <inheritdoc/>
     public void LoadBgm(int bgmIndex)
     {
+        // B14: g_resetSoundFlag = 0 runs UNCONDITIONALLY, before either branch below.
+        AlundraMusicPlayer.Instance.ClearResetSoundFlag();
+
         if (bgmIndex == 0)
         {
-            // Fact 2: LoadBgmCore's own "bgmIndex == 0" branch never touches g_soundEffectState - an
-            // already-armed ramp (if any) keeps running untouched, independently of this restart.
-            AlundraMusicPlayer.Instance.RestartIfActive();
+            // B14: LoadBgmCore's own "bgmIndex == 0" branch calls InitializeBgm - an arrêt, never a
+            // restart. An already-armed ramp (if any) keeps running untouched, independently of this.
+            AlundraMusicPlayer.Instance.StopSequence();
             return;
         }
 
+        _state = ArmedState;
+    }
+
+    /// <summary>
+    /// B17/P7 (docs/plan-bgm-demarrage-binaire.md, D8): arms the master fade machine directly, the way
+    /// the warp-departure path writes <c>g_soundEffectState</c> WITHOUT going through <c>LoadBgmCore</c>
+    /// - so, unlike <see cref="LoadBgm"/>, <see cref="AlundraMusicPlayer.ResetSoundFlag"/> is left
+    /// UNTOUCHED (B17's own "drapeau de reset intact"). Called only by
+    /// <see cref="AlundraMusicPlayer.HandleWarpDeparture"/>.
+    /// </summary>
+    internal void ArmFadeForWarpDeparture()
+    {
         _state = ArmedState;
     }
 
@@ -209,7 +234,7 @@ public sealed class AlundraBgmFadeDirector : IAlundraBgmFadeDirector
         {
             _state = n;
             SetMasterVolume(0);
-            AlundraMusicPlayer.Instance.RestartIfActive();
+            AlundraMusicPlayer.Instance.StopSequence(); // B15: InitializeBgm - an arrêt, never a restart.
             _soundPlayer?.StopAllSfx(); // key-off all 24 voices, unconditional at this exact tick.
             return;
         }

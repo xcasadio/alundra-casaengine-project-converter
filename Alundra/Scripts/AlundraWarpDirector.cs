@@ -74,6 +74,11 @@ public sealed class AlundraWarpDirector
     private IAlundraSoundPlayer? _soundPlayer;
     private AlundraWorldIndexTable? _worldIndex;
 
+    /// <summary>B17 (docs/plan-bgm-demarrage-binaire.md, D8/P7): the SAME session-cached bank
+    /// <see cref="AlundraSoundBank.GetOrCreate"/> hands every other reader - read-only here, to test the
+    /// departure sfx's own <c>SeqNum</c>/<c>MaxVoices</c> (<see cref="IsWarpSoundSilent"/>).</summary>
+    private AlundraSoundBank? _soundBank;
+
     /// <summary>The gel gate - see this class' own doc. Re-derived from <see cref="_sequenceTicks"/> by
     /// <see cref="Advance"/> every tick it runs; only ever written to <see langword="false"/> by
     /// <see cref="InstallForMapEntry"/>.</summary>
@@ -210,6 +215,7 @@ public sealed class AlundraWarpDirector
         _gameManager = gameManager;
         _soundPlayer = soundPlayer;
         _worldIndex = new AlundraWorldIndexTable(projectPath);
+        _soundBank = AlundraSoundBank.GetOrCreate(projectPath); // B17: departure sound silence test
     }
 
     /// <summary>
@@ -376,7 +382,9 @@ public sealed class AlundraWarpDirector
             player,
             soundAction: () =>
             {
-                AlundraMusicPlayer.Instance.PlayMapMusic((int)desiredMapIndex);
+                // B17/P7: same BGM half as the portal path's own PlayDepartureSound - see that method's
+                // own doc.
+                AlundraMusicPlayer.Instance.HandleWarpDeparture((int)desiredMapIndex, IsWarpSoundSilent(sfxId));
                 _soundPlayer?.PlaySfx(sfxId);
             });
     }
@@ -441,24 +449,45 @@ public sealed class AlundraWarpDirector
     }
 
     /// <summary>
-    /// D-T-8/§1.2.d, structural: "coupure des voix, bascule BGM si l'index musical de destination
-    /// diffère, lecture du sfx de départ". This port has no persistent SFX-voice concept the original's
-    /// own <c>ResetSoundEffectRuntime</c> voice-stop loop would have anything to cut (<see cref="AlundraSoundPlayer"/>
-    /// plays fire-and-forget one-shots, never a long-running voice a later frame must silence) - so
-    /// "coupure" reduces to whatever <see cref="AlundraMusicPlayer.PlayMapMusic"/> already does to ITS
-    /// own current voice when the destination's music index differs (it stops-then-restarts, fact 1.1's
-    /// own guard), called unconditionally here exactly like the original calls
-    /// <c>HandleMapSoundEffects</c> unconditionally. Measured inert on the 389&lt;-&gt;390 acceptance
-    /// path (D-T-8): identical music index 25 both sides, and warp-behaviour-1's own sfx 69 has zero
-    /// playable tones (<c>sfx-manifest.json</c>) - so <see cref="IAlundraSoundPlayer.PlaySfx"/> is a
-    /// guaranteed no-op there too, without this method needing to special-case it.
+    /// B17/P7/F2 (docs/plan-bgm-demarrage-binaire.md, D8), the BGM half of <c>HandleMapSoundEffects</c>:
+    /// the departure NEVER loads the destination track. <see cref="AlundraMusicPlayer.HandleWarpDeparture"/>
+    /// only RECORDS this request now (F2) - the actual decision (arm the fade for a silent warp sound,
+    /// stop the current sequence outright for an audible one, or do nothing when the destination's raw
+    /// music index equals <see cref="AlundraMusicPlayer.CurrentMapSoundIndex"/>) runs later, at the
+    /// departing world's own frame-close site, AFTER its reset-flag consumption - see
+    /// <see cref="AlundraMusicPlayer.EvaluatePendingWarpDeparture"/>'s own doc for why. The destination
+    /// track itself only starts at ARRIVAL, through that map's own
+    /// <see cref="AlundraMusicPlayer.PlayMapMusic"/> call (B10) - see B17's own fact for why loading at
+    /// departure, as this port used to, is unfaithful.
     /// </summary>
     private void PlayDepartureSound(uint desiredMapIndex, int warpBehaviorId)
     {
-        AlundraMusicPlayer.Instance.PlayMapMusic((int)desiredMapIndex);
-
         var sfxId = WarpBehaviorTable[warpBehaviorId & 0xF];
+        AlundraMusicPlayer.Instance.HandleWarpDeparture((int)desiredMapIndex, IsWarpSoundSilent(sfxId));
         _soundPlayer?.PlaySfx(sfxId);
+    }
+
+    /// <summary>
+    /// B17 (docs/plan-bgm-demarrage-binaire.md): whether the departing warp sound is "nul" - id
+    /// <c>0</c>, a manifest miss (fiche absente, treated as silent, same degraded shape as every other
+    /// seam in this DLL), or <c>SeqNum == -1</c> AND <c>MaxVoices == 0</c> (the original's own
+    /// <c>HandleMapSoundEffectsCore</c> test, <c>0x80049f58</c>-<c>0x80049f78</c>) - decides whether
+    /// <see cref="AlundraMusicPlayer.HandleWarpDeparture"/> only fades (silent) or stops outright
+    /// (audible, <c>LoadBgm(0)</c>).
+    /// </summary>
+    private bool IsWarpSoundSilent(int sfxId)
+    {
+        if (sfxId == 0)
+        {
+            return true;
+        }
+
+        if (_soundBank == null || !_soundBank.TryGetSeqNumAndMaxVoices(sfxId, out var seqNum, out var maxVoices))
+        {
+            return true;
+        }
+
+        return seqNum == -1 && maxVoices == 0;
     }
 
     /// <summary>
@@ -517,6 +546,7 @@ public sealed class AlundraWarpDirector
         _gameManager = null;
         _soundPlayer = null;
         _worldIndex = null;
+        _soundBank = null;
 
         IsTransitionInProgress = false;
         _sequenceTicks = 0;

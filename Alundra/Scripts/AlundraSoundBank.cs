@@ -266,6 +266,29 @@ public sealed class AlundraSoundBank
     /// another through <see cref="GetOrCreate"/> - same seam as <see cref="SpriteRecordCatalog.ResetForTests"/>.</summary>
     internal static void ResetForTests() => SessionCacheByProjectPath.Clear();
 
+    /// <summary>
+    /// B17 (docs/plan-bgm-demarrage-binaire.md, D8/P7): the raw <c>SeqNum</c>/<c>MaxVoices</c> off the
+    /// record itself - NOT run through <see cref="TryResolve"/>'s own <c>RefSfxId</c> chain or tone
+    /// requirements (a manifest record can have zero tones and still be a valid "is this warp sound
+    /// silent" test subject - id 69, warp behaviour 1's own sfx, is exactly such a record). Read
+    /// directly off <c>Sounds/sfx-manifest.json</c>'s own <c>seq_num</c> field (table <c>0x800a82e8</c>
+    /// in the original, the warp-departure sound record - NOT the <c>0x16</c> table the analyser's own
+    /// pre-T1.1 bug read instead). False for an id absent from the manifest.
+    /// </summary>
+    public bool TryGetSeqNumAndMaxVoices(int sfxId, out int seqNum, out int maxVoices)
+    {
+        if (_recordsById.TryGetValue(sfxId, out var record))
+        {
+            seqNum = record.SeqNum;
+            maxVoices = record.MaxVoices;
+            return true;
+        }
+
+        seqNum = 0;
+        maxVoices = 0;
+        return false;
+    }
+
     private static readonly JsonSerializerOptions SerializerOptions = new();
 
     // Field names match AudioWriter's own JSON contract exactly (snake_case - see that writer's doc).
@@ -275,6 +298,10 @@ public sealed class AlundraSoundBank
         [JsonPropertyName("vab_id")] public int VabId { get; set; }
         [JsonPropertyName("ref_sfx_id")] public int RefSfxId { get; set; }
         [JsonPropertyName("max_voices")] public int MaxVoices { get; set; }
+
+        /// <summary>B17 (docs/plan-bgm-demarrage-binaire.md): additive read of the manifest's own
+        /// <c>seq_num</c> field - see <see cref="TryGetSeqNumAndMaxVoices"/>.</summary>
+        [JsonPropertyName("seq_num")] public int SeqNum { get; set; }
         [JsonPropertyName("tones")] public List<ManifestTone>? Tones { get; set; }
         [JsonPropertyName("vab_master_volume")] public int? VabMasterVolume { get; set; }
         [JsonPropertyName("program_volume")] public int? ProgramVolume { get; set; }

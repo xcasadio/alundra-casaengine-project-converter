@@ -34,7 +34,13 @@ namespace Alundra.Tests;
 /// The environment variable itself is NEVER written by these tests - only
 /// <see cref="AlundraWorldProxy.SetDebugHudRecipeEnabledOverrideForTests"/>, the seam that exists exactly
 /// so a headless run never touches this process' real environment (see that seam's own doc).
+///
+/// <para>F5 (docs/plan-bgm-demarrage-binaire.md): the real map 389 install below writes the
+/// SESSION-scoped <see cref="AlundraMusicPlayer.Instance"/> (map entry arms its reset flag, B7) - so
+/// this class shares <see cref="AlundraMusicPlayerSingletonCollection"/> with every other class touching
+/// that same shared instance, and resets <see cref="AlundraBgmFadeDirector.Instance"/> too.</para>
 /// </summary>
+[Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraHudDebugRecipeTests : IDisposable
 {
     public AlundraHudDebugRecipeTests()
@@ -45,6 +51,7 @@ public sealed class AlundraHudDebugRecipeTests : IDisposable
         AlundraWarpDirector.Instance.ResetForTests();
         AlundraScreenFadeDirector.Instance.ResetForTests();
         AlundraMusicPlayer.Instance.ResetForTests();
+        AlundraBgmFadeDirector.Instance.ResetForTests(); // F5: joins the music-player singleton collection.
     }
 
     public void Dispose()
@@ -56,6 +63,7 @@ public sealed class AlundraHudDebugRecipeTests : IDisposable
         AlundraWarpDirector.Instance.ResetForTests();
         AlundraScreenFadeDirector.Instance.ResetForTests();
         AlundraMusicPlayer.Instance.ResetForTests();
+        AlundraBgmFadeDirector.Instance.ResetForTests();
     }
 
     // -----------------------------------------------------------------------------------------------

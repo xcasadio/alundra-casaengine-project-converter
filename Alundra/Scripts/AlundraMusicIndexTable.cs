@@ -134,7 +134,10 @@ public sealed class AlundraMusicIndexTable
     /// Port of <c>LoadMapSoundsCore</c>'s own value interpretation (fact 1.1, <c>SoundManager.cs</c>
     /// lines 5168/5183/5186) - NOT the "same as currently playing" guard (fact 1.1's second row), which
     /// is session state this pure table has no business holding (D-C-6) and which <see cref="AlundraMusicPlayer"/>
-    /// applies itself, against <paramref name="rawIndex"/> directly, before calling this method.
+    /// applies itself, against <paramref name="rawIndex"/> directly, before calling this method. "Play"
+    /// here means LOADS the track (<c>-1</c> remaps to track 1, B7 of docs/plan-bgm-demarrage-binaire.md)
+    /// - it does NOT start a voice: loading never plays (B6/B7) - see <see cref="AlundraMusicPlayer"/>'s
+    /// own class doc for the sequence-state model that actually starts one.
     /// </summary>
     public static MusicPlaybackDirective ResolvePlaybackDirective(int rawIndex)
     {

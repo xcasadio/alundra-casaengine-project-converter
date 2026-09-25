@@ -799,9 +799,11 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 return 4;
 
             case 0xA5: // Stop all sound - Script_165_0A5 (EntityEventHandlers.cs:3127-3131, B2,
-                       // docs/plan-e11b-opcodes-audio.md, fact 1): conditionally stops every live SFX
-                       // voice and disarms the master fade machine, then unconditionally restores the
-                       // master volume and restarts whatever BGM is currently resolved - see
+                       // docs/plan-bgm-demarrage-binaire.md, D8): does nothing at all on a negative
+                       // CurrentMapSoundIndex (B2's own immediate-return guard); otherwise conditionally
+                       // stops every live SFX voice and disarms the master fade machine, unconditionally
+                       // restores the master volume, then plays the loaded sequence - but ONLY IF it was
+                       // silent (B4's own "a live voice is left alone") - see
                        // AlundraBgmFadeDirector.StopAllSound's own doc for the exact ordering.
                 if (_worldContext.BgmFadeDirector is { } stopAllSoundDirector)
                 {
@@ -814,10 +816,11 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
                 return 1;
 
-            case 0xA6: // Load bgm - Script_166_0A6 (EntityEventHandlers.cs:3134-3138, B2, fact 2):
-                       // v[1] == 0 restarts the current BGM immediately, with no fade; any non-zero value
-                       // arms the 120-tick master fade machine (the operand's value beyond zero/non-zero
-                       // is unused, per the original).
+            case 0xA6: // Load bgm - Script_166_0A6 (EntityEventHandlers.cs:3134-3138, B14,
+                       // docs/plan-bgm-demarrage-binaire.md, D8): v[1] == 0 STOPS the current BGM outright
+                       // (InitializeBgm, B14/B5 - not a restart); any non-zero value arms the 120-tick
+                       // master fade machine instead (the operand's value beyond zero/non-zero is unused,
+                       // per the original). Either branch clears the pending reset flag (B14).
                 if (_worldContext.BgmFadeDirector is { } loadBgmDirector)
                 {
                     loadBgmDirector.LoadBgm(v[1]);
@@ -829,19 +832,22 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
                 return 2;
 
-            case 0xA7: // Play music - Script_167_0A7 (EntityEventHandlers.cs:3141-3145, B2, fact 3):
-                       // v[1] = raw music index into the SAME index space as bgm-manifest.json (< 0
-                       // ignored, == 0 stops, > 0 loads and plays - see
-                       // AlundraMusicPlayer.PlayFromRawIndex's own doc; deliberately NOT
-                       // PlayMapMusic's per-map guard/remap), v[2] = stop-all flag: when non-zero, the
-                       // original's own LoadMapSequenceCore runs StopAllSound AFTER the load (fact 3's
-                       // own "puis StopAllSound (drapeau) ou PlaySeq") - orchestrated here, at the
-                       // dispatch site, not inside either seam (D-B-5's own remarks).
+            case 0xA7: // Play music - Script_167_0A7 (EntityEventHandlers.cs:3141-3145, B12/B13, D8):
+                       // v[1] = raw music index, unsigned byte (B12: the "< 0 ignored" branch of B13 is
+                       // unreachable from this opcode) - 0 stops and closes, loads and closes otherwise
+                       // (AlundraMusicPlayer.PlayFromRawIndex's own doc; deliberately NOT PlayMapMusic's
+                       // per-map guard/remap; NEVER starts a voice either way, B13's own "chargée sans
+                       // être jouée"). v[2] = the streaming path's own g_forceStopAllSound (B13's active,
+                       // > 0 branch): StopAllSound only runs when v[1] > 0 AND v[2] != 0 - B13's zero
+                       // branch (FUN_8004b114 with index 0) never reads it at all
+                       // (0x8004b130-0x8004b168), so a zero index leaves any pending BGM alone regardless
+                       // of v[2] - orchestrated here, at the dispatch site, not inside either seam (D-B-5's
+                       // own remarks).
                 if (_worldContext.MusicPlayer is { } playMusicPlayer)
                 {
                     playMusicPlayer.PlayFromRawIndex(v[1]);
 
-                    if (v[2] != 0 && _worldContext.BgmFadeDirector is { } stopAllAfterLoadDirector)
+                    if (v[1] > 0 && v[2] != 0 && _worldContext.BgmFadeDirector is { } stopAllAfterLoadDirector)
                     {
                         stopAllAfterLoadDirector.StopAllSound();
                     }
