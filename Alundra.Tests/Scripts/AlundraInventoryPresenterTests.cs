@@ -185,4 +185,46 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
         Assert.Empty(uiView.Pushed);
         Assert.Empty(uiView.Removed);
     }
+
+    /// <summary>
+    /// The production call site: every test above ticks the presenter by hand, so removing
+    /// <c>_inventoryPresenter?.Tick()</c> from <see cref="AlundraWorldProxy.Update(float)"/>'s per-tick pad loop
+    /// left them all green (docs/plan-e13d-sous-inventaire.md §6 point 6). This one goes through that real loop -
+    /// the main inventory's version of
+    /// <c>AlundraSubInventoryPresenterTests.WorldUpdate_StartThenR1_PushesTheSubInventoryScreenThroughTheRealLoop</c>.
+    /// </summary>
+    [Fact]
+    public void WorldUpdate_Start_PushesTheInventoryScreenThroughTheRealLoop()
+    {
+        var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
+        var worldProxy = new AlundraWorldProxy();
+        worldProxy.InitializeWithWorld(world);
+        worldProxy.PlayerEntity = new AlundraEntityScriptProxy();
+
+        var tables = ItemTablesFixture.LoadReal();
+        AlundraPlayerManager.InitializeNewGameInventory(worldProxy.GameState, tables);
+        AlundraInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null);
+        AlundraSubInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null); // the loop ticks it too.
+
+        var view = new AlundraInventoryViewModel(_ => new Point(16, 16));
+        var screen = new FakeInventoryScreen();
+        var uiView = new RecordingUIViewRuntime();
+        worldProxy.AttachInventoryPresenterForTests(view, screen, uiView);
+
+        void Frame(uint hold)
+        {
+            worldProxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = hold };
+            worldProxy.Update(0.02f);
+        }
+
+        Frame(AlundraPadState.Start);
+        for (var i = 0; i < 20 && !AlundraInventoryDirector.Instance.IsDrawn; i++)
+        {
+            Frame(0);
+        }
+
+        Assert.True(AlundraInventoryDirector.Instance.IsDrawn);
+        Assert.Equal(new IUIScreen[] { screen }, uiView.Pushed);
+        Assert.Equal(MGUI.Core.UI.Visibility.Visible, view.RootVisibility);
+    }
 }
