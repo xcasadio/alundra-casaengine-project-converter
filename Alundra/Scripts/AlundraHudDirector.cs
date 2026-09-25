@@ -89,6 +89,12 @@ public sealed class AlundraHudDirector
         Displayed = 1,
         Closing = 3,
         Opening = 5,
+
+        /// <summary><c>InitializeHudPosition</c> armed while <see cref="Opening"/> (5 | 2): the executable
+        /// slides it (<c>&amp; 6</c>, 0x8004bec0) and ends it at <see cref="Idle"/> (<c>&amp; 2</c> -&gt; 0,
+        /// 0x8004befc), like <see cref="Closing"/>. Reached when the persistent latch is cleared during
+        /// the opening slide (a map script's flag opcode) - plan E13.d SI9.c.</summary>
+        ClosingDuringOpening = 7,
     }
 
     private AlundraGameState? _gameState;
@@ -302,16 +308,26 @@ public sealed class AlundraHudDirector
             return;
         }
 
-        // HudManager.cs:225 - "(g_drawFrameFlags & 6) != 0" - true only for Opening(5)/Closing(3), never
-        // Displayed(1) (1 & 6 == 0): the jauge sits still, un-tweened, while merely displayed.
-        if (Phase == HudPhase.Opening || Phase == HudPhase.Closing)
+        // HudManager.cs:225 - "(g_drawFrameFlags & 6) != 0" (0x8004bec0) - true for Opening(5), Closing(3)
+        // and ClosingDuringOpening(7), never Displayed(1) (1 & 6 == 0): the jauge sits still, un-tweened,
+        // while merely displayed. Tested on the bits, literally (plan E13.d SI9.c): comparing the two named
+        // values alone left phase 7 stuck forever.
+        if (((int)Phase & 6) != 0)
         {
             if (AdvancePositionTween())
             {
-                // HudManager.cs:229-239 - "value == 1": Closing(3, bit1 set) collapses to Idle(0);
-                // Opening(5, bit2 set) collapses to Displayed(1). Never both - the two states test
-                // disjoint bits (3 & 4 == 0, 5 & 2 == 0).
-                Phase = Phase == HudPhase.Closing ? HudPhase.Idle : HudPhase.Displayed;
+                // HudManager.cs:229-239 (0x8004bef0-0x8004bf18) - "value == 1", two tests in a row on the
+                // re-read flags: "& 2" -> 0, then "& 4" -> "&= ~4". Closing(3) and ClosingDuringOpening(7)
+                // end at Idle(0); Opening(5) ends at Displayed(1).
+                if (((int)Phase & 2) != 0)
+                {
+                    Phase = HudPhase.Idle;
+                }
+
+                if (((int)Phase & 4) != 0)
+                {
+                    Phase = (HudPhase)((int)Phase & ~4);
+                }
             }
         }
 
@@ -367,15 +383,16 @@ public sealed class AlundraHudDirector
     /// <summary>
     /// Port of <c>HudManager.InitializeHudPosition</c> (0x8004bd9c, HudManager.cs:26-38). Named by
     /// EFFECT (plan §6 point 2): despite its original name this ARMS THE DISAPPEARANCE - guard
-    /// <c>(g_drawFrameFlags &amp; 3) == 1</c>, tween from the current visible ordinate
-    /// (<see cref="OpenTargetY"/>) to <see cref="ClosedY"/>, then <c>g_drawFrameFlags |= 2</c>
-    /// (HudManager.cs:37) - literal OR against whatever <see cref="Phase"/> already holds, ported
-    /// verbatim rather than "corrected": in practice this only ever runs while <see cref="Phase"/> is
-    /// <see cref="HudPhase.Displayed"/> (1 | 2 = 3, Closing) because <see cref="RunTriggerMachine"/>'s
-    /// own branch (i) only calls this while the persistent latch is OFF, and the latch is exactly what
-    /// <see cref="ArmAppearance"/> sets the instant it arms <see cref="HudPhase.Opening"/> - so the guard
-    /// admitting <see cref="HudPhase.Opening"/> too (5 &amp; 3 == 1) is a dead path here, not a bug this
-    /// port should paper over (mission: "ne suppose aucune symétrie").
+    /// <c>(g_drawFrameFlags &amp; 3) == 1</c>, tween to <see cref="ClosedY"/>, then
+    /// <c>g_drawFrameFlags |= 2</c> (HudManager.cs:37) - literal OR against whatever <see cref="Phase"/>
+    /// already holds. The guard admits <see cref="HudPhase.Opening"/> too (5 &amp; 3 == 1), giving
+    /// <see cref="HudPhase.ClosingDuringOpening"/> (7): reached when the persistent latch is cleared during
+    /// the 17-tick opening slide (a map script's flag opcode; F1 and the inventory cannot, plan E13.d SI9).
+    /// <para>A defect of the original, corrected (plan E13.d SI9.c, D-E13D-30): the executable always
+    /// starts the tween at y = 0x10 (0x8004bde4), so a disappearance armed mid-opening jumps the jauge down
+    /// to its displayed ordinate before sliding it out. The tween starts at the CURRENT ordinate here - the
+    /// same value whenever the jauge is <see cref="HudPhase.Displayed"/>, the only case the original draws
+    /// correctly.</para>
     /// </summary>
     private void ArmDisappearance()
     {
@@ -386,9 +403,8 @@ public sealed class AlundraHudDirector
 
         _tweenMode = 2;
         _tweenTick = 0;
-        _tweenYStart = OpenTargetY;
+        _tweenYStart = Y;
         _tweenYTarget = ClosedY;
-        Y = OpenTargetY;
         Phase = (HudPhase)((int)Phase | 2);
     }
 

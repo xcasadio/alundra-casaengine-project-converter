@@ -174,6 +174,27 @@ public sealed class AlundraDebugHudToggleKeyTests : IDisposable
         Assert.Equal(latchBefore, PersistentLatchIsSet()); // untouched.
     }
 
+    /// <summary>Plan E13.d SI9.c: the third sliding phase, a disappearance armed during the opening (5 | 2 = 7),
+    /// is mid-transition too - a press there must not re-raise the open request nor touch the latch.</summary>
+    [Fact]
+    public void ToggleDebugHud_PressWhileClosingDuringOpening_IsIgnored()
+    {
+        AlundraHudDirector.Instance.AttachToWorld(AlundraGameState.Instance);
+        var proxy = new AlundraWorldProxy();
+
+        proxy.ToggleDebugHud(); // first press - opens.
+        TickHudDirector(3); // mid-opening.
+        AlundraGameState.Instance.SetFlag(PersistentLatchFlag, ~PersistentLatchMask); // a map script's flag opcode.
+        TickHudDirector(1);
+        Assert.Equal(AlundraHudDirector.HudPhase.ClosingDuringOpening, AlundraHudDirector.Instance.Phase);
+
+        proxy.ToggleDebugHud(); // pressed again, mid-transition.
+
+        Assert.False(ScriptOpenRequestIsRaised());
+        Assert.False(PersistentLatchIsSet());
+        Assert.Equal(AlundraHudDirector.HudPhase.ClosingDuringOpening, AlundraHudDirector.Instance.Phase);
+    }
+
     // -----------------------------------------------------------------------------------------------
     // Mission item 4, fourth bullet: rising-edge detection - a key held for 10 straight frames toggles
     // exactly once, via the injectable seam, never Keyboard.GetState/a real KeyboardState.

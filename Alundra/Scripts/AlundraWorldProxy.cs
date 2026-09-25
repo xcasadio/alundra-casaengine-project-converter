@@ -1414,7 +1414,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     {
         var director = AlundraHudDirector.Instance;
 
-        if (director.Phase is AlundraHudDirector.HudPhase.Opening or AlundraHudDirector.HudPhase.Closing)
+        if (director.Phase is AlundraHudDirector.HudPhase.Opening or AlundraHudDirector.HudPhase.Closing
+            or AlundraHudDirector.HudPhase.ClosingDuringOpening)
         {
             Logs.WriteInfo(
                 $"AlundraWorldProxy: F1 debug HUD toggle ignored - director mid-transition (phase={director.Phase}).");

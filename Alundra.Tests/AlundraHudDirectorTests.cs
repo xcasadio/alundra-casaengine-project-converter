@@ -155,6 +155,42 @@ public sealed class AlundraHudDirectorTests : IDisposable
         Assert.Equal(AlundraHudDirector.HudPhase.Idle, director.Phase);
     }
 
+    /// <summary>Plan E13.d SI9.c: the persistent latch cleared during the opening slide arms the disappearance
+    /// on top of it (5 | 2 = 7). The executable slides phase 7 out and ends it at Idle; the port used to leave it
+    /// stuck. The slide starts where the jauge is (a defect of the original corrected: it restarted at y = 16).</summary>
+    [Fact]
+    public void LatchClearedDuringOpening_SlidesOutFromWhereItIs_ThenIdle()
+    {
+        var state = new AlundraGameState();
+        var director = ArmedOpening(state);
+        TickMany(director, 5); // Opening, mid-slide: -41, -38, -34, -30, -26.
+        Assert.Equal(AlundraHudDirector.HudPhase.Opening, director.Phase);
+        var yWhenArmed = director.Y;
+        Assert.Equal(-26, yWhenArmed);
+
+        state.SetFlag(PersistentLatchFlag, ~PersistentLatchMask); // a map script's flag opcode.
+        director.Tick();
+        Assert.Equal(AlundraHudDirector.HudPhase.ClosingDuringOpening, director.Phase);
+
+        // Never back down toward 16: every step goes from where it was toward the closed ordinate.
+        var previous = yWhenArmed;
+        var ticks = 1;
+        Assert.True(director.Y <= previous, $"tick 1: {director.Y} > {previous}");
+        previous = director.Y;
+        while (director.Phase != AlundraHudDirector.HudPhase.Idle && ticks < 40)
+        {
+            director.Tick();
+            ticks++;
+            Assert.True(director.Y <= previous, $"tick {ticks}: {director.Y} > {previous}");
+            previous = director.Y;
+        }
+
+        Assert.Equal(AlundraHudDirector.HudPhase.Idle, director.Phase);
+        Assert.Equal(18, ticks); // the same 18-call tween shape as every other slide.
+        Assert.Equal(-41, director.Y);
+        Assert.False(director.IsDrawn);
+    }
+
     [Fact]
     public void BranchThree_HidesInstantly_NoAnimation_UnlikeBranchOnesAnimatedClose()
     {

@@ -619,9 +619,11 @@ de l'inventaire principal »). Quatre sous-tranches :
   quand aucune arme ne se résout ; `SetPlayerWeaponId` prend un entier, range −1 et refuse 0, comme l'exécutable
   (relu en session principale à `0x8004e484`) — ce qui tranche le point ouvert 7 de `docs/plan-e13c-icones-hud.md`.
   Trois tests ajoutés, un retourné (0 refusé) ; quatre mutations réelles tuées. `Alundra.Tests` 1223/1223.
-- ⏳ **SI9.c — La jauge relancée pendant son ouverture** (relevés 6, 7) : la phase 7 (`Opening | 2`) glisse et se
-  termine comme dans l'original (`& 6`, puis `& 2` → 0) ; défaut de l'original corrigé : la disparition part de la
-  position courante, pas de 0x10.
+- ✅ **SI9.c — La jauge relancée pendant son ouverture** (relevés 6, 7) : la phase 7 (`ClosingDuringOpening`,
+  `Opening | 2`) glisse et se termine à l'état caché comme dans l'original (test `& 6`, puis `& 2` → 0 et `& 4` →
+  `&= ~4`, relus en session principale à `0x8004bec0`-`0x8004bf18`) ; défaut de l'original corrigé : la
+  disparition part de la position courante, pas de 0x10 (`0x8004bde4`) — identique quand la jauge est affichée ;
+  F1 ignore aussi la phase 7. Deux tests ajoutés ; quatre mutations réelles tuées. `Alundra.Tests` 1225/1225.
 - ⏳ **SI9.d — La garde du post-traitement et les commentaires** (relevés 8, 9) : la tête relancée par le
   post-traitement teste `g_forbiddenWarpFlag` comme `DisplayInventory` ; trois commentaires faux corrigés.
 
@@ -693,6 +695,7 @@ suites vertes ; chaque export prouvé par double export.
 | 2026-09-25 | Nouvelles réponses de l'auteur : D-E13D-34 à D-E13D-37 ; tranches SI10, SI11 et SI12 ajoutées ; l'audio part dans une tâche séparée. |
 | 2026-09-25 | **Contre-vérification SI9** : cinq relevés, chacun repris par un contradicteur (10 agents) ; résultat ci-dessous. **SI9.a faite** : les décalages du curseur, export prouvé. |
 | 2026-09-25 | **SI9.b faite** : l'équipement (arme vide sonore, nom d'arme effacé, `SetPlayerWeaponId` fidèle à l'exécutable). |
+| 2026-09-25 | **SI9.c faite** : la jauge relancée pendant son ouverture glisse depuis sa position et se cache. |
 
 ### SI9 — la contre-vérification de l'inventaire principal (2026-09-25)
 
