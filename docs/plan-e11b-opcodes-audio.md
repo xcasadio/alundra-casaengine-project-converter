@@ -347,14 +347,36 @@ du mix stéréo restera une approximation, l'original pilotant le matériel tona
 remix portés par B1, seul `0xBF` sert réellement (71 cartes). Le port de `0xAB` est correct et
 inoffensif, mais c'est du code mort.
 
-**Suites ouvertes** : [B1-a] la projection du mix, et les deux simplifications déclarées de B2
-(`IsBgmActivated` non modélisée, garde d'index de carte toujours satisfaite). Aucune ne bloque.
+**Suites ouvertes** : ~~[B1-a] la projection du mix~~, et les deux simplifications déclarées de B2
+(~~`IsBgmActivated` non modélisée~~, garde d'index de carte toujours satisfaite). Aucune ne bloque. [B1-a] et
+`IsBgmActivated` sont fermés le 2026-09-25 (ci-dessous) ; reste la garde d'index.
 
 **Décision de l'auteur du 2026-09-25** (`docs/plan-e13d-sous-inventaire.md`, D-E13D-37), à faire dans une tâche
 dédiée, hors E13.d : ne plus approcher le mixage stéréo ([B1-a], appliquer le mix tonalité par tonalité comme
 l'original) ; apprendre au moteur à rendre le son muet ; supprimer `IsBgmActivated` (analyseur :
 `AlundraEngine/Sound/SoundManager.cs`, `AlundraEngine/StaticVariables.cs`), qui ne servait qu'à couper la musique
 quand elle n'était encore que du bruit.
+
+**Fait le 2026-09-25** (`docs/plan-audio-mix-exact-muet.md`, branches `chantier/audio-mix-exact` du parent, du
+moteur et de l'analyseur ; recette de l'auteur en attente) :
+
+- **[B1-a] fermé.** Chaque tonalité démarre avec les volumes gauche et droit que `FUN_80090C58` écrit dans le SPU, et
+  `0xAB`/`0xBF` les recalculent comme `0x80049794`. Le moteur les applique canal par canal, par des voix stéréo
+  logicielles (ADR-0039 du moteur). La projection sur (volume, pan) de B1 est supprimée. La déviation assumée n°1
+  d'E11.a (toutes les voix à volume 1, centrées) est fermée avec.
+- **`0xBF` lit l'id sur deux octets** (`v[1] | (v[2] << 8)`), dans la DLL et dans l'analyseur, comme l'exécutable.
+  Sur la carte 390, `0xBF 302, 0x40, 0x40` visait jusqu'ici l'id 46.
+- **`IsBgmActivated` supprimé** de l'analyseur, sans changer ce qu'il fait.
+- **Son coupé** par `"IsAudioMuted": true` dans `AlundraGame.json` (ADR-0040 du moteur), gardé par le convertisseur à
+  l'export.
+- **Nouvelles déviations déclarées** :
+  - les 73 tonalités hors de 8 000 à 48 000 Hz sont rééchantillonnées par un facteur entier ;
+  - un changement de gain s'entend jusqu'à environ 60 ms plus tard ;
+  - le remix touche la voix vivante la plus ancienne de chaque tonalité, et non le premier emplacement SPU.
+
+  Inchangées : la boucle du clip entier (déviation n°2 d'E11.a), et pas d'enveloppe ADSR.
+- **Suite ouverte S1** : `PlaySeq` est absent de `LoadMapSequence` et du cas 5 du streaming dans l'exécutable. Par
+  déduction, `0xA7` jouerait la musique là où l'original ne fait que la charger. À vérifier dans une suite dédiée.
 
 - **Acceptation** : suites au vert (`Alundra.Tests` 711+n, convertisseur 141+n, moteur inchangé ou
   +n si primitif pan), six goldens byte-identiques avec preuve d'exécution, verifiers de clôture par

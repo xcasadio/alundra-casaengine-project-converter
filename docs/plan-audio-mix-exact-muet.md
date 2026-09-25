@@ -1,6 +1,7 @@
 # Plan — Audio : mixage stéréo exact, son coupé, retrait d'`IsBgmActivated`
 
-**État** : 🚧 **approuvé et en exécution** (mode AUTO) depuis le 2026-09-25. Rédigé et révisé le même jour ; enveloppe
+**État** : ✅ **livré le 2026-09-25** (mode AUTO), vérificateur final **CONFIRMED** (T5.1). Restent à l'auteur la
+recette (T5.3), le rapatriement des branches des sous-modules (T5.2) et le merge. Rédigé et révisé le même jour ; enveloppe
 **READY** (relecteur frais, après la révision de P6) ; tranche des phases 0 et 1 **READY** (relecteur frais, après la
 correction du chemin éditeur de T1.3).
 **Naissance** : décision de l'auteur du 2026-09-25, D-E13D-37 (`docs/plan-e13d-sous-inventaire.md` et
@@ -878,7 +879,7 @@ leur état suivi.
 
 ## Phase 5 — Clôture
 
-### ⏳ T5.1 — Validation globale et vérification finale
+### ✅ T5.1 — Validation globale et vérification finale — faite le 2026-09-25
 
 - Étapes : validation globale ; `verifier` frais sur l'intégration :
   - un bruitage réel joué par le vrai `Update` du monde donne dans le backend les gains de T4.2, puis `0xBF` ceux de
@@ -887,7 +888,38 @@ leur état suivi.
     démarre avec le bus `Master` coupé (T1.3).
 - Validation : verdict **CONFIRMED** consigné.
 
-### ⏳ T5.2 — Documentation et rapatriement
+**Note de validation (2026-09-25).**
+
+- **Validation globale** (`scratchpad/final_validation.sh`).
+  - Builds du parent, des deux solutions du moteur, de `CasaEngine.Tests`, d'`AlundraEngine` et
+    d'`AlundraDataExtractor` : 0 erreur. `Alundra.sln` : les mêmes 4 erreurs NU1605 qu'à la base (O5).
+  - `Alundra.Tests` **1264 / 1264** (1228 + 36). Convertisseur **194 / 194** (190 + 4). `CasaEngine.Tests`
+    **1914 / 1914** (1888 + 26). Aucun échec.
+  - Six goldens identiques à `main` : `git diff --stat main` vide sur les six fichiers, une fois les fins de ligne
+    remises.
+- **Vérificateur frais : CONFIRMED**, sans constat. Ses preuves sont dans `scratchpad/verify-t51/`.
+  - **Mixage, par le vrai `Update` du monde.** Aucun test existant ne couvre ce chemin de bout en bout : la simulation
+    d'intro remplace le lecteur de sons, et les tests d'`Update` du proxy ne vérifient aucun gain. Un harnais jetable,
+    hors dépôt, monte donc la carte 390 avec du code de production seulement :
+    - le vrai proxy et sa banque de sons, avec le groupe 56 ;
+    - les événements et le programme de la carte (`BD 2E 01 BF 2E 01 40 40`) ;
+    - les vrais WAV, par le vrai chargeur.
+
+    Un seul `proxy.Update` suffit.
+    - `0xBD` démarre deux voix stéréo aux registres 10 157 / 2 957 et 2 786 / 10 157.
+    - `0xBF` les remixe à 2 629 / 765 et 721 / 2 629, sans démarrer de voix.
+    - Les tampons soumis au backend égalent `round(échantillon × gain)` à l'échantillon près.
+    - Les 996 tonalités du manifeste se chargent avec leurs échantillons : aucune ne passe par le repli mono.
+  - **Son coupé.**
+    - Deux exports complets vers le scratchpad. Un `AlundraGame.json` qui porte `"IsAudioMuted": true` garde la clé ;
+      un fichier sans la clé n'en reçoit pas.
+    - Le démarrage du Launcher (`CasaEngineGame.Initialize` : les réglages du projet, puis `AudioSystemComponent`) est
+      rejoué sur chaque fichier exporté. Projet coupé : `Master` coupé, voix à volume 0. Projet non coupé : volume 1.
+    - Aucune fenêtre n'a été ouverte. Le son coupé du vrai Launcher reste une déduction tirée de l'ordre des appels.
+      L'éditeur est contrôlé à la recette T5.3.
+  - Arbres de travail propres ; `alundra-project/AlundraGame.json` inchangé.
+
+### ✅ T5.2 — Documentation et rapatriement — faite le 2026-09-25 ; rapatriement laissé à l'auteur
 
 - Fichiers : ce plan (bilan) ; `docs/plan-e11b-opcodes-audio.md` (« Suites ouvertes » : [B1-a] fermé,
   `IsBgmActivated` supprimé, déviation n°1 d'E11.a fermée ; P3 et P4 nouvelles déviations déclarées ; S1 ouverte) ;
@@ -895,7 +927,23 @@ leur état suivi.
 - Étapes : puis `git fetch` des branches des sous-modules dans les dépôts du checkout principal (aucun push).
 - Commit : `docs(plan): close the exact stereo mix, the persisted mute and the IsBgmActivated removal`
 
-### ⏳ T5.3 — Recette de l'auteur
+**Note de validation (2026-09-25).**
+
+- **`docs/plan-e11b-opcodes-audio.md`.** [B1-a] et `IsBgmActivated` sont barrés dans « Suites ouvertes ». Un
+  paragraphe « Fait le 2026-09-25 » les ferme, avec la déviation n°1 d'E11.a, l'id de `0xBF`, le son coupé, les
+  nouvelles déviations P3, P4 et P7, et la suite S1.
+- **`docs/plan-conversion-totale.md`.** Section E11 et ligne E11 du tableau.
+- **Plan moteur inchangé.** Sa T3 reste 🧪 jusqu'au contrôle de l'éditeur (recette T5.3). Il sera archivé ensuite.
+- **Rapatriement : à lancer par l'auteur.** La garde d'isolation de la session refuse `git -C` sur le checkout
+  principal. La branche parent est déjà dans le dépôt principal, que le worktree partage. Les branches des deux
+  sous-modules n'existent que dans les clones de ce worktree ; MGUI et NvgSharp n'ont pas bougé. Les commandes :
+
+  ```bash
+  git -C D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame fetch D:/development/repo/alundra-casaengine-project-converter/.claude/worktrees/nostalgic-kapitsa-11fb13/CasaEngineMonogame chantier/audio-mix-exact:chantier/audio-mix-exact
+  git -C D:/development/repo/alundra-casaengine-project-converter/alundra-datas-analyser fetch D:/development/repo/alundra-casaengine-project-converter/.claude/worktrees/nostalgic-kapitsa-11fb13/alundra-datas-analyser chantier/audio-mix-exact:chantier/audio-mix-exact
+  ```
+
+### ⏳ T5.3 — Recette de l'auteur — à l'auteur
 
 - Lancement : Launcher du worktree sur `alundra-project/AlundraGame.json` du worktree (précédent SI6).
 - À écouter :
@@ -910,11 +958,40 @@ leur état suivi.
 
 ---
 
+## Bilan (2026-09-25)
+
+- **Livré** : les trois suites de D-E13D-37, et l'id de `0xBF`.
+  - Mixage stéréo exact au départ et au remix (T4.2, T4.3), sur des voix stéréo logicielles du moteur (T1.2, ADR-0039
+    du moteur).
+  - Son coupé par `ProjectSettings.IsAudioMuted` (T1.3, ADR-0040 du moteur), gardé à l'export (T1.5).
+  - `IsBgmActivated` supprimé (T2.1). Id de `0xBF` sur deux octets, dans l'analyseur (T2.2) et dans la DLL (T4.3).
+  - Attributs VAB exportés par l'extracteur, portés par le convertisseur et lus par la DLL (T2.3, T3.1 à T4.1,
+    ADR-0003).
+- **Commits** (rien de mergé ni de poussé) :
+  - parent, 10 : `b76454b`, `6db4614`, `6e151ba`, `f06b1bd`, `5392679`, `ea1dbfd`, `6363619`, `d310b1d`, `88c19ce`,
+    et la clôture ;
+  - moteur, 4 : `7968a608`, `7c017ae5`, `af5246ca`, `716c02c7`. Un de plus que le budget : la note de vérification de
+    T1.4 ;
+  - analyseur, 3 : `18a8546`, `8348d7f`, `b79b45a`.
+- **Tests.** `Alundra.Tests` 1228 → 1264, convertisseur 190 → 194, `CasaEngine.Tests` 1888 → 1914. Zéro échec ; six
+  goldens identiques.
+- **Vérifications fraîches** : T1.4, T3.4 et T5.1, toutes **CONFIRMED**.
+- **Écritures hors dépôt (P10)** : le seul `sound/sfx.json`, dans `data-extracted/` et dans le remaster, égal à
+  `de01c95f…` des deux côtés. Sauvegarde de `d5f5ae02…` dans `scratchpad/t3.1-backup/`.
+- **Déviations déclarées** :
+  - nouvelles : P3 (rééchantillonnage des 73 tonalités hors plage), P4 (un gain change jusqu'à environ 60 ms plus
+    tard), P7 (la voix la plus ancienne) ;
+  - inchangées : P8 (boucle du clip entier), pas d'ADSR, de réverbération ni de plafond de 24 voix.
+- **Reporté** : O1 et O2 du plan moteur (P3 et P4 du vérificateur de T1.4) ; les deux P4 de T3.4 ; O5 ; S1.
+- **Reste à l'auteur** : la recette T5.3, dont le contrôle de l'éditeur (T1.3 🧪) ; le rapatriement (T5.2) ; le merge.
+
+---
+
 ## Points ouverts
 
 | Réf | Sujet | Tâche concernée |
 |---|---|---|
-| O1 | Lecture de « corriges aussi le jeu original » (D2) : à confirmer par l'auteur à l'approbation. | toutes |
+| O1 | ~~Lecture de « corriges aussi le jeu original » (D2) : à confirmer par l'auteur à l'approbation.~~ **Fermé à l'approbation** : aucune objection, appliqué. | toutes |
 | O2 | ~~Écarts ou défauts du chemin de départ dans le binaire.~~ **Fermé en T0.2** : identique à la décompilation pour une voix de bruitage. | T0.2 → T4.2 |
 | O3 | ~~Carte de recette pour `0xBF`.~~ **Fermé en T0.2** : Ship Klark (intérieur) 390, id 302, mix `0x40`/`0x40` ; puis Inoa 162 (fondus de 200 et 203). | T0.2 → T5.3 |
 | O5 | `Alundra.sln` (analyseur) ne builde pas à `bbf33962` : NU1605, MonoGame 3.8.4.1 dans `AlundraGame`/`AlundraTools` contre 3.8.5.1 exigé par le MGUI amené par « update MGUI ». Préexistant, hors périmètre ; à trancher par l'auteur (aligner les paquets de l'analyseur). | signalé |
@@ -951,3 +1028,4 @@ Exports complets : la référence en T0.1, puis T1.5 et T3.3, chacun prouvé par
 | 2026-09-25 | Relecteur frais de clôture sur la tranche des phases 0 et 1 : **READY**. Début de l'exécution (T0.1). |
 | 2026-09-25 | Relecteur frais de la tranche des phases 2 et 3 : **REVISE**, deux constats. (1) T2.3 ne disait pas d'où viennent les attributs : `DecodeSfxTones` résout par une fonction privée et ne rend que les échantillons. Désormais `SoundBin.cs` est dans le périmètre de T2.3, qui rend les attributs de la fiche résolue, avec un contrôle croisé fiche directe et fiche redirigée. (2) Le lecteur du convertisseur rendait 0 pour un champ absent. Désormais champs nullables de bout en bout, `null` jamais 0 (P9, T3.3). Mesures ajoutées : aucune tonalité abandonnée ; 443 fiches à chaîne (O6). Nouvelle époque de relecture pour la tranche. |
 | 2026-09-25 | Relecteur frais de clôture sur la tranche des phases 2 et 3 : **READY**. Début de T2.1. |
+| 2026-09-25 | Phases 2 à 4 faites. Validation globale verte ; vérificateur final **CONFIRMED** (T5.1) ; documentation et clôture (T5.2). Restent à l'auteur la recette (T5.3), le rapatriement des branches des sous-modules et le merge. |
