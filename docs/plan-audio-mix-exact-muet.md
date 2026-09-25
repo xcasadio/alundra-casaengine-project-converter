@@ -177,7 +177,7 @@ le pointeur MGUI. Dans le checkout principal, le moteur porte une modification d
 | P6 | Champ `ProjectSettings.IsAudioMuted` (catégorie « Audio », faux par défaut, hors `#if !FINAL`). Lu avec `?? false` ; **écrit seulement s'il est vrai**, comme `DialogueScreenAsset`, pour qu'un projet non coupé garde un fichier identique à l'octet. Appliqué au bus `Master` à la construction d'`AudioSystemComponent` (runtime) et à l'ouverture d'un projet dans l'éditeur. Le setter `IsMuted` coupe le bus et met à jour les réglages du projet en mémoire, les deux instances comme `ApplyDisplaySettings`, pour qu'un enregistrement de l'éditeur le garde. Le runtime n'écrit jamais le fichier. On bascule le réglage en éditant `AlundraGame.json` (aucune interface, D4). Couper `Master` coupe aussi l'aperçu des sons dans l'éditeur (le bus `Editor` en descend). **Le convertisseur garde le réglage** : sa phase 0 relit `IsAudioMuted` dans le fichier existant avant de le recréer (T1.5). | D4 : le réglage vit dans le projet. Sans la relecture en phase 0, chaque export l'effacerait (`ProjectWriter.cs:46-84`). |
 | P7 | Plusieurs instances vivantes du même bruitage : le remix touche, pour chaque tonalité, **la voix vivante la plus ancienne** de ce (id demandé, tonalité). Approximation de « le premier emplacement SPU » de l'original, que le port ne peut pas reproduire : les voix de la séquence musicale y occupent aussi les emplacements. T0.2 mesure si une cible de `0xBF` a `MaxVoices > 1`. Si aucune, la question ne se pose pas. | Aujourd'hui le port remixe toutes les instances, ce que l'original ne fait pas. |
 | P8 | La boucle reste « tout le clip » (déviation n°2 d'E11.a inchangée), même si le nourrisseur rendrait les points de boucle faciles. | Hors des trois suites demandées. Consigné en suite. |
-| P9 | Nouveaux champs de `sfx.json` : par enregistrement `VabMasterVolume`, `ProgramVolume`, `ProgramPan` ; par tonalité `Volume`, `Pan` (snake_case dans `sfx-manifest.json`). Si le manifeste n'a pas ces champs, la DLL revient au jeu d'aujourd'hui (volume 1, centré) et l'écrit une fois dans le journal. | Format de données : ADR parent en T3.3. Un champ absent ne doit pas rendre le jeu muet en silence. |
+| P9 | Nouveaux champs de `sfx.json` : par enregistrement `VabMasterVolume`, `ProgramVolume`, `ProgramPan` ; par tonalité `Volume`, `Pan` (snake_case dans `sfx-manifest.json`). **Valeurs de la fiche résolue** : celles du VAB, du programme et des tonalités dont les échantillons ont été exportés (T2.3). **Représentation de l'absence** : entiers nullables d'un bout à l'autre. `null` dans `sfx.json` pour une fiche **non résolue** (`SkipReason` « invalid », « map VAB not resolvable », « sequence-triggered »), alors qu'une fiche résolue sans tonalité (« no tones ») garde les vraies valeurs de son programme ; `null` dans `sfx-manifest.json` quand le `sfx.json` source n'a pas le champ ; jamais 0 par défaut. Même forme que `skip_reason: null` aujourd'hui. Si un champ est `null` pour une fiche jouée, la DLL revient au jeu d'aujourd'hui (volume 1, centré) et l'écrit une fois dans le journal. | Format de données : ADR parent en T3.3. Un champ absent ne doit pas rendre le jeu muet en silence (relecture de la tranche 2-3). |
 | P10 | **Écritures hors dépôt** (précédent D-E13C-5), avec sauvegarde et retour arrière : l'agent lance l'extraction des seuls bruitages vers le scratchpad ; il sauvegarde les deux `sfx.json` actuels avec leur SHA-1 ; il vérifie qu'ils sont identiques ; il copie **le seul `sound/sfx.json`** dans `data-extracted/sound/` (T3.1), puis dans `Alundra Remake/remaster-data-extracted/sound/` **seulement après le verdict CONFIRMED de T3.4**. Jamais de `robocopy /MIR`. L'auteur l'autorise en approuvant ce plan, ou exécute T3.1 lui-même. | Le remaster a régressé ; seul ce fichier doit bouger, et il doit pouvoir revenir à l'octet près. |
 | P11 | Le drapeau mono de l'original (`DAT_sound_801f7658 == 1`, `FUN_80090c58`) n'est pas porté : stéréo toujours. | Option du jeu, sans équivalent dans le port. |
 
@@ -519,7 +519,7 @@ chaque groupe concordent sur chaque point retenu.
 
 ## Phase 2 — Analyseur (sous-module `alundra-datas-analyser`)
 
-### ⏳ T2.1 — Retrait d'`IsBgmActivated`
+### ✅ T2.1 — Retrait d'`IsBgmActivated` — faite le 2026-09-25 (analyseur `18a8546`)
 
 - Objectif : D5, sans changer le comportement de l'analyseur.
 - Fichiers : `AlundraTools/AlundraEngine/StaticVariables.cs` ; `AlundraTools/AlundraEngine/Sound/SoundManager.cs`.
@@ -531,35 +531,96 @@ chaque groupe concordent sur chaque point retenu.
      dit que l'exécutable n'a pas cet appel (adresses), renvoyant à la suite S1.
 - Validation : `rg IsBgmActivated alundra-datas-analyser` vide ; `AlundraEngine` et `AlundraDataExtractor` buildent ;
   `Alundra.sln` garde son échec préexistant à l'identique.
+
+**Note de validation (2026-09-25).** `rg IsBgmActivated alundra-datas-analyser` ne rend rien. `AlundraEngine` et
+`AlundraDataExtractor` : 0 erreur. `Alundra.sln` : les mêmes 4 erreurs NU1605 qu'à la base, sur `AlundraGame` et
+`AlundraTools`, rien d'autre. Diff : `SoundManager.cs` (−26/+9), `StaticVariables.cs` (−1).
 - Commit (analyseur) : `refactor(sound): remove the IsBgmActivated switch the executable never had`
 
-### ⏳ T2.2 — Id de `0xBF` sur deux octets
+### ✅ T2.2 — Id de `0xBF` sur deux octets — faite le 2026-09-25 (analyseur `8348d7f`)
 
 - Fichiers : `AlundraTools/AlundraEngine/Gameplay/Scripts/EntityEventHandlers.cs:3612-3617`.
 - Étapes : `variables[1] | (variables[2] << 8)`, commentaire [binaire] `0x80041ca0`.
 - Validation : `AlundraEngine` builde ; `Alundra.sln` garde son échec préexistant à l'identique.
+
+**Note de validation (2026-09-25).** `AlundraEngine` : 0 erreur ; `Alundra.sln` : les mêmes 4 erreurs NU1605. Une ligne
+changée, avec un commentaire qui cite `0x80041CA0`.
 - Commit (analyseur) : `fix(scripts): opcode 0xBF reads a 16-bit sound effect id as the executable does`
 
-### ⏳ T2.3 — Attributs VAB dans `sfx.json`, et extraction des seuls bruitages
+### ✅ T2.3 — Attributs VAB dans `sfx.json`, et extraction des seuls bruitages — faite le 2026-09-25
 
 - Objectif : P9 côté source, et une sous-commande qui n'écrit que `sound/sfx.json` et les WAV des bruitages.
-- Fichiers : `AlundraTools/AlundraDataExtractor/Program.cs`.
+- Fichiers :
+  - `AlundraTools/AlundraEngine/Sound/SoundBin.cs` : la résolution vit là (`TryResolveSfxVab` est privée et suit la
+    chaîne `RefSfxId`) ;
+  - `AlundraTools/AlundraDataExtractor/Program.cs`.
+- Mécanisme (relecture de la tranche 2-3) :
+  - Côté `SoundBin.cs`, en ajouts seulement :
+    - `SfxToneSample` gagne `Volume` et `Pan`, les octets `VagAtr.Vol`/`Pan` de la tonalité décodée ;
+    - une surcharge `DecodeSfxTones(int sfxid, out SfxProgramAttributes attributes, bool is8Bit = false)` rend aussi,
+      pour la fiche **résolue**, son id, `VabHdr.Mvol` du VAB dont viennent les échantillons, et
+      `ProgAtr.Mvol`/`Mpan` de son programme ;
+    - la signature existante est gardée et appelle la surcharge ;
+    - `TryResolveSfxVab` rend en plus l'index de la fiche résolue (paramètre privé ajouté).
+  - Côté `Program.cs` :
+    - `SfxToneExport` gagne `int? Volume, int? Pan` ;
+    - `SfxExportRecord` gagne `int? VabMasterVolume, int? ProgramVolume, int? ProgramPan`, ajoutés **en fin de
+      record** pour ne pas déplacer les champs existants ;
+    - les valeurs viennent de la surcharge, donc de la fiche résolue, jamais de `SfxRecords[sfxid]` non résolue ;
+    - une fiche non résolue (`SkipReason`) reçoit `null` partout ;
+    - l'extraction affiche le nombre de fiches exportées depuis une fiche sœur de la chaîne (id résolu ≠ id
+      demandé), et combien ont changé de VAB en route. Mesure seulement : l'ordre d'ouverture des VAB qui décide de
+      la sœur est un comportement préexistant, consigné en O6 s'il y a des cas.
 - Étapes :
-  1. `SfxExportRecord` gagne `VabMasterVolume`, `ProgramVolume`, `ProgramPan`, et `SfxToneExport` gagne `Volume` et
-     `Pan`. Lus sur l'en-tête VAB, le `ProgAtr` et le `VagAtr` qu'utilise déjà `DecodeSfxTones`, du même VAB que les
-     échantillons. Pour une tonalité, relever aussi `Vag == 0xff` (chemin `FUN_800914cc`) si T0.2 l'exige.
+  1. Code `SoundBin.cs`, puis `Program.cs`.
   2. Sous-commande `--extract-sfx <gamePath> <outputPath>`, sur le modèle de `--render-bgm`, qui ne fait que l'export
-     des bruitages.
-- Validation : `AlundraEngine` et `AlundraDataExtractor` buildent ; la sous-commande tourne vers le scratchpad (chemin du jeu relu dans le
-  `launchSettings.json` de l'extracteur). Les nouveaux champs sont présents sur les 996 tonalités ; l'histogramme des
-  valeurs est écrit sous la tâche.
+     des bruitages (même fonction `ExtractDataFromSoundBin`).
+- Validation :
+  - `AlundraEngine` et `AlundraDataExtractor` buildent ; `Alundra.sln` garde son échec préexistant à l'identique.
+  - La sous-commande tourne vers le scratchpad (chemin du jeu relu dans le `launchSettings.json` de l'extracteur).
+  - Les cinq champs sont présents et non nuls sur toutes les fiches qui ont des tonalités, et `null` sur les fiches
+    `SkipReason`. L'histogramme des valeurs et le compte des fiches sœurs sont écrits sous la tâche.
+  - Contrôle croisé indépendant (harnais hors dépôt, lecture des en-têtes VAB par des offsets bruts) sur au moins une
+    fiche directe et une fiche redirigée par la chaîne : les cinq champs égalent les octets du VAB, du programme et
+    des tonalités de la fiche résolue.
+  - Tonalités abandonnées : aucune aujourd'hui. Mesuré le 2026-09-25 : chaque fiche résolue exporte exactement
+    `NumTones` tonalités, donc aucune tonalité `Vag == 0xff` ; le compte est refait sur le nouveau `sfx.json`.
 - Commit (analyseur) : `feat(extractor): export the VAB volume and pan attributes of every sound effect`
+
+**Note de validation (2026-09-25).**
+
+- **Code.**
+  - `SoundBin.cs` : `SfxToneSample` gagne `Volume`/`Pan` ; `SfxProgramAttributes` ; surcharge
+    `DecodeSfxTones(sfxid, out attributes)`, la signature d'origine étant gardée ; `TryResolveSfxVab` rend l'index
+    résolu (l'ancienne surcharge privée, devenue sans appelant, est retirée).
+  - `Program.cs` : les cinq champs ajoutés en fin de record, avec `null` si la fiche n'est pas résolue ; sous-commande
+    `--extract-sfx`, qui passe par le même `CreateGameEngine`/`InitializeEngine`/`ExtractDataFromSoundBin` que
+    l'extraction complète ; ligne de console qui compte les fiches sœurs.
+- **Builds.** `AlundraEngine` et `AlundraDataExtractor` : 0 erreur. `Alundra.sln` : les mêmes 4 erreurs NU1605.
+- **Extraction** vers `scratchpad/t31-extract`, depuis `AlundraTools/AlundraTools` (le `log.txt` qu'elle y laisse est
+  supprimé). Résultat : 870 / 961 bruitages, 996 WAV, les mêmes comptes qu'avant.
+- **Contrôle croisé indépendant** (`scratchpad/t23_crosscheck.py`, octets bruts de `SOUND.BIN` aux offsets du format
+  VAB). Les cinq champs égalent le VAB, le programme et les tonalités de la fiche résolue sur :
+  - des fiches directes : 1 et 61 (VAB global), 300 et 302 (VAB 56), 162 (VAB 12) ;
+  - des fiches redirigées : 790→869 (VAB 63) et 795→854 (VAB 60).
+- **Présence des champs.** Les 870 fiches à tonalités ont les cinq champs non nuls. Les 82 fiches non résolues sont
+  `null` partout. Les 9 fiches résolues sans tonalité gardent leurs valeurs, d'où la précision apportée à P9. Chaque
+  fiche résolue exporte exactement `NumTones` tonalités, donc aucune tonalité abandonnée.
+- **Histogramme [mesuré].**
+  - `VabMasterVolume`, `ProgramVolume` et `ProgramPan` valent **127, 127 et 64 sur toutes les fiches**.
+  - Seuls le volume et le pan de tonalité varient. Volume de tonalité : de 0 à 127 ; **15 tonalités à 0**, dont la
+    seconde du son 162 à 172 610 Hz, que le port joue aujourd'hui à plein volume. Pan de tonalité : 64 sur 768
+    tonalités, de 0 à 127 sur les autres.
+- **O6 [mesuré].** 6 fiches ont reçu les échantillons d'une sœur d'un autre VAB : 791→803, 793→810, 792→832, 800→834,
+  795→854, 790→869, toutes du VAB 50 vers les VAB 52 à 63. **Aucune carte n'utilise le groupe 50**
+  (`Maps/sound-group-index.json`). Ces entrées ne sont donc jamais jouées telles quelles : l'original comme la DLL
+  suivent la chaîne jusqu'au groupe courant. O6 est fermé sans décision de l'auteur.
 
 ---
 
 ## Phase 3 — Données et convertisseur (parent)
 
-### ⏳ T3.1 — Ré-extraction ciblée et copie prouvée (P10)
+### ✅ T3.1 — Ré-extraction ciblée et copie prouvée (P10) — faite le 2026-09-25
 
 - Objectif : un `sfx.json` enrichi dans `data-extracted/`, sans rien toucher d'autre, et restaurable à l'octet près.
 - Fait du 2026-09-25 : les deux copies actuelles sont identiques, SHA-1 `d5f5ae023276beeeb10b1ded955265f00fec0630`
@@ -580,18 +641,38 @@ chaque groupe concordent sur chaque point retenu.
 - Validation : SHA-1 avant et après la copie, et les deux preuves, écrits sous la tâche. Pas de commit propre
   (données hors git) ; la note part dans le commit de T3.2.
 
-### ⏳ T3.2 — Pointeur de l'analyseur
+**Note de validation (2026-09-25).**
+
+1. **Extraction.** `--extract-sfx` (analyseur `b79b45a`) vers `scratchpad/t31-extract` : 870 / 961 bruitages,
+   996 WAV.
+2. **Sauvegarde.** `scratchpad/t3.1-backup/` : `data-extracted.sfx.json` et `remaster.sfx.json`, avec `SHA1SUMS`.
+3. **Garde.** Les deux SHA-1 sont égaux : `d5f5ae023276beeeb10b1ded955265f00fec0630`.
+4. **Preuves.** `diff -rq` ne trouve aucune différence entre les 996 WAV régénérés et ceux de
+   `data-extracted/sound/sfx/`. Le nouveau `sfx.json`, une fois retirés les cinq champs, est identique à l'ancien
+   (`jq -S`).
+5. **Copie** dans `data-extracted/sound/sfx.json` seulement : SHA-1 `de01c95f1a003b78e013f5fdadf022bcc970f8d4`. Le
+   remaster reste à `d5f5ae02…` jusqu'au verdict de T3.4.
+
+### ✅ T3.2 — Pointeur de l'analyseur — faite le 2026-09-25
 
 - Validation : parent buildé ; `Alundra.Tests` et convertisseur inchangés.
 - Commit : `chore(submodules): point at the analyser without IsBgmActivated and with the VAB attributes`
+
+**Note de validation (2026-09-25).** Analyseur `b79b45a`. Parent : 0 erreur ; `Alundra.Tests` **1228 / 1228** ;
+convertisseur **193 / 193**. Les traces `docs/hero-trace-389-*.txt`, réécrites en LF par les tests, sont remises à
+leur état suivi.
 
 ### ⏳ T3.3 — Le convertisseur porte les attributs, export prouvé
 
 - Fichiers : `alundra-casaengine-project-converter/Readers/SoundManifestReader.cs` (`SfxRecord`, `SfxTone`) ; tests du
   convertisseur ; ADR parent `docs/decisions/` (format de `sfx-manifest.json`, P9), par le skill `adr`.
 - Étapes :
-  1. Tests : lecture puis écriture d'un enregistrement portant les cinq champs, et d'un ancien `sfx.json` sans eux.
-  2. Champs ajoutés.
+  1. Tests :
+     - un enregistrement portant les cinq champs → `sfx-manifest.json` porte les valeurs exactes, y compris un vrai 0 ;
+     - un ancien `sfx.json` sans ces champs → `sfx-manifest.json` les écrit à `null`, jamais à 0 ;
+     - une fiche `SkipReason` avec `null` → `null`.
+  2. Champs ajoutés, en `int?` dans `SfxRecord`/`SfxTone`, avec un lecteur qui rend `null` pour une propriété absente
+     ou `null` (le `GetInt32` actuel rend 0). L'ADR parent enregistre cette représentation (P9).
   3. Prédiction écrite **avant** l'export : modifiés `Sounds/sfx-manifest.json` et `report.json` ; possible
      `AlundraGame.json` (leçon de B3) ; rien d'autre.
   4. Export complet, diff du manifeste, second export.
@@ -600,8 +681,10 @@ chaque groupe concordent sur chaque point retenu.
 
 ### ⏳ T3.4 — Vérification de la frontière de données
 
-- Objectif : un `verifier` frais sur la chaîne extracteur → `sfx.json` → manifeste : les champs sont ceux de
-  l'exécutable pour quelques bruitages tirés au hasard, lus dans le VAB.
+- Objectif : un `verifier` frais sur la chaîne extracteur → `sfx.json` → manifeste. Les cinq champs doivent égaler
+  les octets du VAB, du programme et des tonalités de la **fiche résolue**, lus indépendamment, pour quelques
+  bruitages tirés au hasard. Parmi eux, au moins une fiche directe et une fiche redirigée par la chaîne. Et les
+  `null` doivent aller là où P9 les attend.
 - Étapes : sur **CONFIRMED** seulement, copier le `sfx.json` de T3.1 dans `remaster-data-extracted/sound/` et vérifier
   que son SHA-1 est égal à celui de `data-extracted/sound/sfx.json`. Sur tout autre verdict : retour arrière de T3.1,
   puis ⚠️ Blocked.
@@ -700,7 +783,8 @@ chaque groupe concordent sur chaque point retenu.
 | O2 | ~~Écarts ou défauts du chemin de départ dans le binaire.~~ **Fermé en T0.2** : identique à la décompilation pour une voix de bruitage. | T0.2 → T4.2 |
 | O3 | ~~Carte de recette pour `0xBF`.~~ **Fermé en T0.2** : Ship Klark (intérieur) 390, id 302, mix `0x40`/`0x40` ; puis Inoa 162 (fondus de 200 et 203). | T0.2 → T5.3 |
 | O5 | `Alundra.sln` (analyseur) ne builde pas à `bbf33962` : NU1605, MonoGame 3.8.4.1 dans `AlundraGame`/`AlundraTools` contre 3.8.5.1 exigé par le MGUI amené par « update MGUI ». Préexistant, hors périmètre ; à trancher par l'auteur (aligner les paquets de l'analyseur). | signalé |
-| O4 | ~~`FUN_800914cc` croise les canaux : défaut de l'original ou de la décompilation ?~~ **Fermé en T0.2** : défaut de décompilation (le binaire atténue chaque canal par lui-même, sans mise au carré). Le port ne rencontre pas ce chemin (tonalités `Vag == 0xff` non exportées, compté en T2.3). | T0.2 → T2.3 |
+| O6 | ~~Une fiche de carte peut recevoir les échantillons d'une sœur d'un autre VAB.~~ **Fermé en T2.3** : 6 cas, tous du VAB 50, qu'aucune carte n'utilise ; ces entrées ne sont jamais jouées telles quelles. | T2.3 |
+| O4 | ~~`FUN_800914cc` croise les canaux : défaut de l'original ou de la décompilation ?~~ **Fermé en T0.2** : défaut de décompilation (le binaire atténue chaque canal par lui-même, sans mise au carré). Le port ne rencontre pas ce chemin : aucune tonalité abandonnée dans `sfx.json` (mesuré le 2026-09-25), refait en T2.3. | T0.2 → T2.3 |
 
 ## Suites consignées (hors de cette tâche)
 
@@ -730,3 +814,5 @@ Exports complets : la référence en T0.1, puis T1.5 et T3.3, chacun prouvé par
 | 2026-09-25 | Relecteur frais de l'enveloppe révisée : **READY**. Contre-vérification des faits cités : trois plages de lignes corrigées (`ProjectSettingsHelper`, `ProjectWriter`) ; un « faux » (l'éditeur sans runtime audio) réfuté en session principale, le fichier existe (`SoundAssetInspectorPanel.cs:289`). L'auteur autorise P10, choisit le mode AUTO. `main` a avancé à `2e3506e` (merge d'E13.d) : bases mises à jour, aucun fichier du périmètre changé. |
 | 2026-09-25 | Relecteur frais de la tranche des phases 0 et 1 : **REVISE**. Le chemin éditeur de T1.3 n'avait pas de preuve unique : son repli rendait la mutation « branchement retiré » impossible. Corrigé par l'option (a) : un abonné de `CasaEngine.EditorServices`, testé par le vrai `LoadProject`. La ligne de câblage de `GameEditor` est déclarée hors tests et prouvée en direct (T1.3, sinon 🧪) puis par la recette T5.3. Nouvelle époque ; relecture de clôture. |
 | 2026-09-25 | Relecteur frais de clôture sur la tranche des phases 0 et 1 : **READY**. Début de l'exécution (T0.1). |
+| 2026-09-25 | Relecteur frais de la tranche des phases 2 et 3 : **REVISE**, deux constats. (1) T2.3 ne disait pas d'où viennent les attributs : `DecodeSfxTones` résout par une fonction privée et ne rend que les échantillons. Désormais `SoundBin.cs` est dans le périmètre de T2.3, qui rend les attributs de la fiche résolue, avec un contrôle croisé fiche directe et fiche redirigée. (2) Le lecteur du convertisseur rendait 0 pour un champ absent. Désormais champs nullables de bout en bout, `null` jamais 0 (P9, T3.3). Mesures ajoutées : aucune tonalité abandonnée ; 443 fiches à chaîne (O6). Nouvelle époque de relecture pour la tranche. |
+| 2026-09-25 | Relecteur frais de clôture sur la tranche des phases 2 et 3 : **READY**. Début de T2.1. |
