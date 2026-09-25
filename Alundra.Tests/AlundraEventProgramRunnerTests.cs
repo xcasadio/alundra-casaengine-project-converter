@@ -2608,13 +2608,13 @@ public class AlundraEventProgramRunnerTests
     }
 
     [Fact]
-    public void RemixVoice_0xBF_Implemented_SkipsOperandTwo_DerivesSfxIdMixLeftMixRightFromOneThreeFour()
+    public void RemixVoice_0xBF_Implemented_LowIdByte_DerivesSfxIdMixLeftMixRightFromOneThreeFour()
     {
         var soundPlayer = new FakeSoundPlayer();
         var context = new FakeEntityWorldContext { SoundPlayer = soundPlayer };
-        // [op, sfxId, IGNORED, mixLeft, mixRight] = [0xBF, 61, 0xFF, 100, 20] - v[2]=0xFF must never
-        // reach RemixVoice (D-B-8: the decompiled handler ignores it).
-        var document = NewDocument(0xBF, 61, 0xFF, 100, 20, 0xFF);
+        // [op, sfxId, idHighByte, mixLeft, mixRight] = [0xBF, 61, 0, 100, 20] - id high byte 0 leaves the
+        // id at v[1] alone.
+        var document = NewDocument(0xBF, 61, 0, 100, 20, 0xFF);
         var runner = NewRunner(document, worldContext: context);
         var entity = NewEntity();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
@@ -2625,6 +2625,27 @@ public class AlundraEventProgramRunnerTests
         Assert.Equal(5, state.CodeIndex);
         Assert.Single(soundPlayer.RemixCalls);
         Assert.Equal((61, 100, 20), soundPlayer.RemixCalls[0]);
+    }
+
+    [Fact]
+    public void RemixVoice_0xBF_Implemented_NonZeroIdHighByte_ReachesRemixVoiceAsId_V1_Plus_256()
+    {
+        // T4.3 (docs/plan-audio-mix-exact-muet.md), binary check of 2026-09-25 (0x80041CA0): v[2] is the
+        // id's own high byte - [op, sfxId, idHighByte, mixLeft, mixRight] = [0xBF, 61, 1, 100, 20] must
+        // reach RemixVoice as id 61 | (1 << 8) = 317.
+        var soundPlayer = new FakeSoundPlayer();
+        var context = new FakeEntityWorldContext { SoundPlayer = soundPlayer };
+        var document = NewDocument(0xBF, 61, 1, 100, 20, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        var kind = CaptureKindForOpcode(runner, 0xBF, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(5, state.CodeIndex);
+        Assert.Single(soundPlayer.RemixCalls);
+        Assert.Equal((317, 100, 20), soundPlayer.RemixCalls[0]);
     }
 
     [Fact]

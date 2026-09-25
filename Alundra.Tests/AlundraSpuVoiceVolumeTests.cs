@@ -52,4 +52,37 @@ public class AlundraSpuVoiceVolumeTests
     {
         Assert.Equal(expectedGain, AlundraSpuVoiceVolume.ToGain(spuVolume), 6);
     }
+
+    // T4.3 (docs/plan-audio-mix-exact-muet.md): every row of the plan's own remix table, hard-coded -
+    // program volume 127 throughout (the only value the real data ever carries, T2.3).
+    [Theory]
+    [InlineData(0x40, 0x40, 100, 34, 2629, 765)] // 302 t0, Ship Klark (intérieur) card 390.
+    [InlineData(0x40, 0x40, 100, 94, 721, 2629)] // 302 t1, card 390.
+    [InlineData(0x50, 0x50, 127, 64, 6560, 6560)] // 200 t0, Inoa 162.
+    [InlineData(0x14, 0x14, 127, 64, 440, 440)] // 200 t0.
+    [InlineData(0, 0, 127, 64, 0, 0)] // 200 t0, silence.
+    [InlineData(0x7f, 0x20, 100, 34, 10200, 197)] // 302 t0, asymmetric mix.
+    [InlineData(0x7f, 0x20, 100, 94, 2798, 677)] // 302 t1, asymmetric mix.
+    public void ComputeRemix_MatchesThePlanTable_WithProgramVolume127(
+        int leftMix, int rightMix, int toneVolume, int tonePan, int expectedLeft, int expectedRight)
+    {
+        var (left, right) = AlundraSpuVoiceVolume.ComputeRemix(leftMix, rightMix, programVolume: 127, toneVolume, tonePan);
+
+        Assert.Equal(expectedLeft, left);
+        Assert.Equal(expectedRight, right);
+    }
+
+    // Control (plan's own T4.3 table): a full mix (0x7f/0x7f) on a 127/64 tone must reproduce exactly
+    // the key-on volumes for that same tone (VAB 127, program 127, program pan 64 - the identity path).
+    [Fact]
+    public void ComputeRemix_FullMix_MatchesComputeKeyOn_ForTheSameTone()
+    {
+        var (remixLeft, remixRight) = AlundraSpuVoiceVolume.ComputeRemix(
+            leftMix: 0x7f, rightMix: 0x7f, programVolume: 127, toneVolume: 127, tonePan: 64);
+        var (keyOnLeft, keyOnRight) = AlundraSpuVoiceVolume.ComputeKeyOn(
+            vabMasterVolume: 127, programVolume: 127, programPan: 64, toneVolume: 127, tonePan: 64);
+
+        Assert.Equal((16383, 16383), (remixLeft, remixRight));
+        Assert.Equal((keyOnLeft, keyOnRight), (remixLeft, remixRight));
+    }
 }

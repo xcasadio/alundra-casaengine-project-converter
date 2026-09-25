@@ -821,7 +821,7 @@ leur état suivi.
     suivi.
 - **Mutations réelles**, toutes tuées : sans mise au carré ; pan de programme ignoré ; ÷ 16 383 ; repli supprimé.
 
-### ⏳ T4.3 — Le remix suit l'original, et l'id de `0xBF`
+### ✅ T4.3 — Le remix suit l'original, et l'id de `0xBF` — faite le 2026-09-25
 
 - Objectif : D2, seconde moitié, et D5 côté DLL.
 - Fichiers : le calcul pur ; `AlundraSoundPlayer.cs` (`RemixVoice` ; suppression de `ProjectMixToVolumeAndPan`) ;
@@ -852,6 +852,27 @@ leur état suivi.
   4. Mutations en vrai : `v[2]` ignoré ; toutes les instances remixées ; `>> 12` au lieu de `>> 11`.
 - Validation : `Alundra.Tests` vert, six goldens identiques.
 - Commit : `feat(audio): remix live voices tone by tone as the executable does, with 0xBF's 16-bit id`
+
+**Note de validation (2026-09-25).**
+
+- **Implémentation.** Par un exécuteur, tests d'abord. Deux relectures indépendantes, fidélité et régressions :
+  aucun constat.
+  - `ComputeRemix` : `(x+1)²−1`, poids de pan au carré, S13 puis S11 par multiplication magique en int32 signé, comme
+    `0x80049794`.
+  - `RemixVoice` résout la fiche avec le groupe courant et prend les attributs de la fiche résolue. Pour chaque
+    tonalité, il remixe la voix vivante la plus ancienne (id demandé, rang de tonalité). Il saute les voix mono de
+    repli et les attributs absents, avec une ligne de journal une seule fois. Il ne lance jamais de lecture.
+  - `ProjectMixToVolumeAndPan` est supprimée.
+  - Le runner lit l'id de `0xBF` comme `v[1] | (v[2] << 8)` ; `0xAB` et les tailles ne changent pas.
+- **Tests.** `Alundra.Tests` **1264 / 1264** (1250 + 14).
+  - Les sept lignes du tableau de T4.3 et le contrôle 0x7f/0x7f = départ.
+  - 302 remixé aux gains attendus ; gain de bus intact ; seule la plus ancienne de deux instances change ; voix mono
+    et attribut absent sautés ; `0xBF` avec `v[2] = 1` → id `v[1] + 256`.
+  - Deux tests réécrits, qui figeaient l'ancienne sémantique : la projection du remix sur une voix vivante, devenu
+    « la voix mono n'est pas touchée, sous gain de bus » ; « `0xBF` ignore `v[2]` ».
+  - Six goldens identiques (fins de ligne seulement, remises à leur état suivi).
+- **Mutations réelles**, toutes tuées : `v[2]` ignoré ; la voix la plus récente remixée au lieu de la plus ancienne ;
+  `>> 12` au lieu de `>> 11`.
 
 ---
 

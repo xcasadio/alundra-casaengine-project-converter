@@ -854,13 +854,14 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 return 3;
 
             case 0xBF: // Play sound effect with tone/volume mix (bis) - EntityEventHandlers.cs:3613-3617
-                       // (B1, docs/plan-e11b-opcodes-audio.md, D-B-8): SAME handler as 0xAB above, but on
-                       // its own 5-byte instruction with v[2] ignored by the decompiled handler
-                       // (plausibly the id's high byte, by analogy with 0xBD - INFERENCE, ported verbatim
-                       // per repo rule): sfxId=v[1], mix left=v[3], mix right=v[4].
+                       // (B1, docs/plan-e11b-opcodes-audio.md, D-B-8; T4.3, docs/plan-audio-mix-exact-muet.md):
+                       // SAME handler as 0xAB above, but on its own 5-byte instruction whose opcode 0xBF
+                       // reads its operands as (v1, v2, v3, v4) - the binary check of 2026-09-25
+                       // (0x80041CA0) confirmed v[2] is the id's own high byte, NOT ignored: sfxId =
+                       // v[1] | (v[2] << 8), mix left=v[3], mix right=v[4].
                 if (_worldContext.SoundPlayer is { } remixVoiceBisPlayer)
                 {
-                    remixVoiceBisPlayer.RemixVoice(v[1], v[3], v[4]);
+                    remixVoiceBisPlayer.RemixVoice(v[1] | (v[2] << 8), v[3], v[4]);
                 }
                 else
                 {

@@ -285,26 +285,29 @@ public class AlundraSoundPlayerTests : IDisposable
     }
 
     [Fact]
-    public void RemixVoice_OnALiveVoice_ChangesPan_AndLeavesTheEffectiveVolumeIntactUnderBusGain()
+    public void RemixVoice_OnAMonoFallbackVoice_NeverTouchesItsVolumeOrPan_UnderBusGain()
     {
+        // T4.3 (docs/plan-audio-mix-exact-muet.md): this fixture's records carry no VAB volume/pan
+        // attributes, so PlaySfx(300) starts through T4.2's own mono fallback (AudioService.PlayClip,
+        // unit volume, centred pan). RemixVoice on such a voice has no stereo gains to remix
+        // (GetVoiceStereoGains returns false) - it is skipped entirely, never falling back to the old
+        // SetVoiceVolume/SetVoicePan projection (removed in T4.3). The trap this test kills: a leftover
+        // call to either would move Volume/Pan away from their as-started values.
         var player = NewPlayer(out var backend, out var service);
         service.Mixer.GetBus(AudioBusNames.Sfx).Volume = 0.5f;
 
-        player.PlaySfx(300); // one voice, full pre-gain volume (1.0) -> backend sees 1.0 * 0.5 = 0.5.
+        player.PlaySfx(300); // one mono voice, full pre-gain volume (1.0) -> backend sees 1.0 * 0.5 = 0.5.
         Assert.Single(backend.PlayCalls);
+        var beforeApplied = backend.GetParameters(new AudioVoiceHandle(0, 0));
+        Assert.Equal(0f, beforeApplied.Pan);
+        Assert.Equal(0.5f, beforeApplied.Volume, 4);
 
-        // Full-left mix: left=127 (max), right=0 - volume stays "full" (max(127,0)/127 = 1.0), pan goes
-        // hard left (-1.0).
         player.RemixVoice(300, left: 127, right: 0);
 
-        // AlundraSoundPlayer never hands the raw AudioVoiceHandle back to the caller, so the applied
-        // parameters are read straight off the backend's only live slot instead.
         Assert.Equal(1, backend.ActiveVoiceCount);
-        var applied = backend.GetParameters(new AudioVoiceHandle(0, 0));
-        Assert.Equal(-1f, applied.Pan, 4);
-        // The trap this test kills: pushing RemixVoice's own (volume=1.0) raw, bypassing bus gain, would
-        // leave the backend at 1.0 instead of the gain-applied 0.5.
-        Assert.Equal(0.5f, applied.Volume, 4);
+        var afterApplied = backend.GetParameters(new AudioVoiceHandle(0, 0));
+        Assert.Equal(0f, afterApplied.Pan); // unchanged - never remixed.
+        Assert.Equal(0.5f, afterApplied.Volume, 4); // unchanged - bus gain still the only factor.
     }
 
     // -----------------------------------------------------------------------------------------------

@@ -23,11 +23,12 @@ public interface IAlundraSoundPlayer
     void PlaySfx(int sfxId);
 
     /// <summary>
-    /// B1 (docs/plan-e11b-opcodes-audio.md, D-B-6): backs opcodes 0xAB/0xBF - remixes the volume/pan of
-    /// every voice ALREADY PLAYING for <paramref name="sfxId"/> from a stereo mix
-    /// (<paramref name="left"/>/<paramref name="right"/> channel gains); NEVER starts new playback (fact
-    /// 4 - a non-audible/silent id is a total no-op). See <see cref="AlundraSoundPlayer"/>'s own doc for
-    /// the exact (volume, pan) projection.
+    /// B1 (docs/plan-e11b-opcodes-audio.md, D-B-6), T4.3 (docs/plan-audio-mix-exact-muet.md): backs
+    /// opcodes 0xAB/0xBF - remixes the stereo gains of the OLDEST voice ALREADY PLAYING for each tone of
+    /// <paramref name="sfxId"/>'s resolved record, from the original's own SPU volume computation
+    /// (<see cref="AlundraSpuVoiceVolume.ComputeRemix"/>) over <paramref name="left"/>/<paramref name="right"/>
+    /// (the opcode's own mix operands); NEVER starts new playback (fact 4 - a non-audible/silent id is a
+    /// total no-op). See <see cref="AlundraSoundPlayer"/>'s own doc for the exact rules.
     /// </summary>
     void RemixVoice(int sfxId, int left, int right);
 
@@ -284,21 +285,43 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
     private bool _loggedClipWithoutSamples;
 
     /// <summary>
-    /// B1 (docs/plan-e11b-opcodes-audio.md, D-B-6, fact 4): backs opcodes 0xAB/0xBF. The original resolves
-    /// the fiche for the current sound group and remixes each TONE's own already-playing voice
-    /// individually (<c>FindVoiceBySfxIdAndToneIndex</c>); this seam is never handed a group (same
-    /// deviation as <see cref="PlaySfx"/> - D-E11-6), so it simply remixes every voice this player is
-    /// still tracking as live for the REQUESTED id - a no-op (zero backend calls) when none are.
+    /// B1 (docs/plan-e11b-opcodes-audio.md, D-B-6, fact 4), T4.3 (docs/plan-audio-mix-exact-muet.md):
+    /// backs opcodes 0xAB/0xBF. Port of <c>PlaySoundEffectWithToneVolumeMixCore</c> (<c>0x80049794</c>):
+    /// resolves <paramref name="sfxId"/> for THIS player's own sound group exactly like
+    /// <see cref="PlaySfx"/>, and, for each tone of the RESOLVED record, remixes the OLDEST voice this
+    /// player is still tracking as live for the REQUESTED id whose tone index matches
+    /// (<c>FindVoiceBySfxIdAndToneIndex</c> - the original's own first-slot-wins scan; the DLL keeps
+    /// <see cref="LiveVoice.StartSequence"/> instead, since it has no fixed 24-voice slot table to scan in
+    /// order). Unresolvable id, or no live voice at all for the REQUESTED id -> a total no-op (zero
+    /// backend calls, fact 4). Never starts new playback.
     ///
-    /// Deviation (fact 11, D-B-1 oracle simulé): the original recomputes independent left/right gains
-    /// from MIPS magic constants (SoundManager.cs:5276-5298) this engine's mono volume+pan voice model
-    /// cannot reproduce. Projected instead onto (volume, pan) via <see cref="ProjectMixToVolumeAndPan"/>,
-    /// applied through <see cref="AudioService.SetVoiceVolume"/>/<see cref="AudioService.SetVoicePan"/> -
-    /// both already bus-gain-safe (see <see cref="AudioService.SetVoicePan"/>'s own doc on the trap a raw
-    /// <c>SetParameters</c> push would fall into), so neither call clobbers the other's gain handling.
+    /// A resolution missing its <see cref="SfxResolution.ProgramVolume"/> (ADR-0003 - the formula needs
+    /// it for every tone alike), or a tone missing its own <see cref="SfxToneRecord.Volume"/>/
+    /// <see cref="SfxToneRecord.Pan"/>, remixes nothing for the whole call / that one tone respectively -
+    /// logged once for this player's whole lifetime (<see cref="_loggedMissingRemixAttributes"/>), never
+    /// silence and never a crash. A voice started through T4.2's own mono fallback
+    /// (<see cref="AudioService.PlayClip"/>) has no stereo gains to remix
+    /// (<see cref="AudioService.GetVoiceStereoGains"/> returns false) - skipped, logged once for this
+    /// player's whole lifetime (<see cref="_loggedMonoFallbackVoiceSkipped"/>).
     /// </summary>
     public void RemixVoice(int sfxId, int left, int right)
     {
+        if (!_soundBank.TryResolve(sfxId, _soundGroup, out var resolution))
+        {
+            return;
+        }
+
+        if (resolution.Tones.Count == 0)
+        {
+            return;
+        }
+
+        if (resolution.ProgramVolume is not { } programVolume)
+        {
+            LogMissingRemixAttributesOnce();
+            return;
+        }
+
         if (!_liveVoicesBySfxId.TryGetValue(sfxId, out var liveVoices) || liveVoices.Count == 0)
         {
             return;
@@ -310,13 +333,79 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
             return;
         }
 
-        var (volume, pan) = ProjectMixToVolumeAndPan(left, right);
-
-        foreach (var voice in liveVoices)
+        for (var toneIndex = 0; toneIndex < resolution.Tones.Count; toneIndex++)
         {
-            _audioService.SetVoiceVolume(voice.Handle, volume);
-            _audioService.SetVoicePan(voice.Handle, pan);
+            var tone = resolution.Tones[toneIndex];
+            if (tone.Volume is not { } toneVolume || tone.Pan is not { } tonePan)
+            {
+                LogMissingRemixAttributesOnce();
+                continue;
+            }
+
+            LiveVoice? oldest = null;
+            foreach (var voice in liveVoices)
+            {
+                if (voice.ToneIndex != toneIndex)
+                {
+                    continue;
+                }
+
+                if (oldest is not { } current || voice.StartSequence < current.StartSequence)
+                {
+                    oldest = voice;
+                }
+            }
+
+            if (oldest is not { } oldestVoice)
+            {
+                continue;
+            }
+
+            if (!_audioService.GetVoiceStereoGains(oldestVoice.Handle, out _, out _))
+            {
+                LogMonoFallbackVoiceSkippedOnce();
+                continue;
+            }
+
+            var (spuLeft, spuRight) = AlundraSpuVoiceVolume.ComputeRemix(left, right, programVolume, toneVolume, tonePan);
+            _audioService.SetVoiceStereoGains(
+                oldestVoice.Handle, AlundraSpuVoiceVolume.ToGain(spuLeft), AlundraSpuVoiceVolume.ToGain(spuRight));
         }
+    }
+
+    /// <summary>T4.3: whether the "missing remix attributes" fallback cause (either
+    /// <see cref="SfxResolution.ProgramVolume"/> or a tone's own volume/pan) has already been logged
+    /// once, for this player's whole lifetime.</summary>
+    private bool _loggedMissingRemixAttributes;
+
+    private void LogMissingRemixAttributesOnce()
+    {
+        if (_loggedMissingRemixAttributes)
+        {
+            return;
+        }
+
+        _loggedMissingRemixAttributes = true;
+        Logs.WriteWarning(
+            "AlundraSoundPlayer: a sound effect record is missing its VAB program/tone volume or pan "
+            + "attributes (ADR-0003); skipping the remix for the affected tone(s).");
+    }
+
+    /// <summary>T4.3: whether the "mono fallback voice" skip cause has already been logged once, for
+    /// this player's whole lifetime.</summary>
+    private bool _loggedMonoFallbackVoiceSkipped;
+
+    private void LogMonoFallbackVoiceSkippedOnce()
+    {
+        if (_loggedMonoFallbackVoiceSkipped)
+        {
+            return;
+        }
+
+        _loggedMonoFallbackVoiceSkipped = true;
+        Logs.WriteWarning(
+            "AlundraSoundPlayer: a live voice has no stereo gains to remix (T4.2's own mono fallback); "
+            + "skipping it.");
     }
 
     /// <inheritdoc cref="IAlundraSoundPlayer.FlushFrameSounds"/>
@@ -359,24 +448,6 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
         }
 
         return true;
-    }
-
-    private static (float Volume, float Pan) ProjectMixToVolumeAndPan(int left, int right)
-    {
-        // 0x7f (127) is this DLL's own "full" reference for these byte-range operands (fact 1:
-        // StopAllSound restores the master/sequencer volumes to 0x7f).
-        const float fullScale = 127f;
-        var clampedLeft = Math.Clamp(left, 0, 127);
-        var clampedRight = Math.Clamp(right, 0, 127);
-
-        var volume = Math.Clamp(Math.Max(clampedLeft, clampedRight) / fullScale, 0f, 1f);
-
-        var sum = clampedLeft + clampedRight;
-        var pan = sum > 0
-            ? Math.Clamp((clampedRight - clampedLeft) / (float)sum, -1f, 1f)
-            : 0f;
-
-        return (volume, pan);
     }
 
     private List<LiveVoice> GetLiveVoices(int sfxId)
