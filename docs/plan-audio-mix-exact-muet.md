@@ -286,7 +286,7 @@ T3.1 a déjà copié, retour arrière de T3.1 d'abord ; puis ⚠️ Blocked, que
   - Sens de l'écart vérifié avant l'export : `data-extracted/data/map_389.json` a le texte décodé, le remaster a
     `o}i`. C'est bien le remaster qui a régressé.
 
-### ⏳ T0.2 — Mesures dans le binaire et dans le corpus
+### ✅ T0.2 — Mesures dans le binaire et dans le corpus — faite le 2026-09-25
 
 - Objectif : fermer les faits dont dépendent T2.3, T4.2 et T4.3, avant tout code.
 - Sources : `ALUN_CD.EXE` (France) avec capstone, scripts dans le scratchpad ; décompilation ; programmes d'événements
@@ -303,6 +303,57 @@ T3.1 a déjà copié, retour arrière de T3.1 d'abord ; puis ⚠️ Blocked, que
   4. Choisir une carte atteignable où `0xBF` s'exécute, pour la recette de l'auteur (O3).
 - Validation : chaque fait marqué [binaire] ou [mesuré], avec adresse ou commande.
 - Commit : `docs(plan): record the binary checks of the voice key-on path and the 0xBF corpus`
+
+**Note de validation (2026-09-25).** Méthode : un workflow de cinq agents en lecture seule. Deux lecteurs à l'aveugle
+par groupe de fonctions binaires, un balayeur de corpus ; scripts et relevés dans `scratchpad/t02/`. Rapports
+complets : `scratchpad/t02-readers.txt`. Réconciliation et conclusions en session principale ; les deux lecteurs de
+chaque groupe concordent sur chaque point retenu.
+
+1. **Départ d'une voix de bruitage [binaire].**
+   - `TriggerVoice` (`0x80094660`) : les deux appels de bruitage passent `(0, 0x7f, 0x7f)`. La branche « égal » pose
+     donc toujours volume de voix `0x7f` et pan de voix `0x40`. Volume et pan de programme sont lus aux octets +1 et
+     +4 de `ProgAtr`, volume et pan de tonalité aux octets +2 et +3 de `VagAtr`, **comme dans la décompilation**.
+   - `FUN_80090c58` (`0x80090c58`) : volume maître du VAB = octet `+0x18` de l'en-tête (`lbu`). Chaîne
+     `(0x7f × ((Mvol << 14) − Mvol)) / 0x3f01`, puis `× ProgMvol × ToneVol / 0x3f01`, puis les pans de tonalité, de
+     programme et de voix, chacun sur son propre canal, puis le drapeau mono, puis `v² / 0x3fff` sur chaque canal.
+     **Identique à la décompilation, étape par étape.**
+   - Écarts sans effet sur des entrées de 0 à 0x7f : la première division est signée (`div`) et les autres non
+     signées (`divu`) ; la garde d'entrée de la décompilation (`voiceId`, `TryGetCurrentVabContext`) n'existe pas
+     dans le binaire ; la branche `sequenceKey != 0x21` ajoute `(clé >> 8) × 172` au pointeur, mais une voix de
+     bruitage ne la prend jamais (`TriggerVoice` pose la clé `0x21`).
+   - **O2 fermé : aucun défaut, aucune perte à corriger sur ce chemin.**
+2. **Drapeau mono `DAT_sound_801f7658` [binaire].** Trois écritures dans tout l'exécutable :
+   - `FUN_8009299c` à `0x80092c84`, qui le met à 0 ;
+   - `FUN_8008f994`, qui le met à 0, appelé une seule fois par `InitializeSoundSystem` à `0x800485b4` (la
+     décompilation a commenté cet appel) ;
+   - `FUN_8008f980`, qui le met à 1, mais **n'a aucun appelant** (ni `jal`, ni `j`, ni pointeur littéral dans le
+     fichier).
+
+   Le chemin mono est donc mort dans cet exécutable : **P11 (stéréo toujours) est fidèle.**
+3. **`FUN_800914cc` (tonalité `Vag == 0xff`) [binaire].** La décompilation se trompe :
+   - le binaire atténue chaque canal par lui-même (`0x800915f8`, `0x80091664`, `0x80091698`) là où le C# croise les
+     canaux (`SoundManager.cs:4971`, `:4981`, `:4985`) ;
+   - le binaire n'a **aucune** mise au carré, alors que le C# en fait une dans le bloc mono (`:5009-5010`).
+
+   **O4 fermé : défaut de décompilation, pas de l'original.** Le port ne rencontre pas ce chemin : pour
+   `Vag == 0xff`, l'extracteur ne trouve pas d'échantillon (`TryGetVagBodyRange`) et abandonne la tonalité
+   (`SoundBin.cs:411-415`). T2.3 le confirme par un comptage.
+4. **Corpus [mesuré].** 483 fichiers d'événements, balayage structuré (entrées A à F, branches suivies, tailles lues
+   dans `EventOpcodeSizeTable.cs`).
+   - **`0xAB` : 0 occurrence atteignable.** Les 68 octets 0xAB du balayage naïf sont tous des opérandes ou du code
+     mort.
+   - **`0xBF` : 672 occurrences sur 68 cartes.** `v[2]` vaut 0 dans 643 cas, 1 dans 21, 2 dans 8. Six ids changent
+     avec D5 : 302 (le port lit 46), 303 (47), 306 (50), 352 (96), 391 (135), 514 (2).
+   - 21 ids distincts sont ciblés. `MaxVoices > 1` pour trois d'entre eux, 30 (3), 45 (4) et 154 (2) : P7 s'applique
+     à ceux-là.
+5. **Scène de recette (O3) [mesuré, vérifié à l'octet en session principale].**
+   - **Ship Klark (intérieur) — 390**, la pièce atteinte depuis le pont du bateau : un seul `0xBF` à l'octet 735,
+     `2E 01 40 40`, donc **id 302** (le son bouclé du bateau) et mix `0x40`/`0x40`. Le port actuel remixe l'id 46.
+   - **Inoa — 162** : les ambiances 200 et 203 descendent par paliers (`C8 00 50 50` → `3C` → `28` → `14` → `00`) ;
+     `0xBF` y sert de fondu de sortie.
+6. **À part, hors périmètre.** `TriggerVoice` range dans `DAT_801f76aa/ab` les octets +6/+7 de `VagAtr`, que
+   `SoundBin.cs` nomme `Min`/`Max`, alors que la décompilation les étiquette `Pbmin`/`Pbmax` (+0x0C/+0x0D). Sans effet
+   sur le volume ; consigné pour la plage de pitch-bend.
 
 ---
 
@@ -600,7 +651,8 @@ T3.1 a déjà copié, retour arrière de T3.1 d'abord ; puis ⚠️ Blocked, que
 - À écouter :
   - le bateau (389) : ronflements, mouettes, trappe fidèles à l'original (référence : l'analyseur, `AlundraGame`, dont
     le mélangeur SPU applique les mêmes volumes) ; musique comme avant ;
-  - la carte de T0.2 où `0xBF` s'exécute ;
+  - Ship Klark (intérieur) 390 : le son bouclé 302 baisse de moitié à l'entrée (`0xBF 302, 0x40, 0x40`, jusqu'ici
+    appliqué par erreur à l'id 46) ; puis Inoa 162 : les ambiances 200 et 203 s'éteignent par paliers ;
   - `"IsAudioMuted": true` ajouté à `alundra-project/AlundraGame.json` → silence, même après un nouvel export ; clé
     retirée → son ;
   - le même projet ouvert dans l'éditeur du worktree : l'aperçu d'un son est muet, puis s'entend une fois la clé
@@ -613,10 +665,10 @@ T3.1 a déjà copié, retour arrière de T3.1 d'abord ; puis ⚠️ Blocked, que
 | Réf | Sujet | Tâche concernée |
 |---|---|---|
 | O1 | Lecture de « corriges aussi le jeu original » (D2) : à confirmer par l'auteur à l'approbation. | toutes |
-| O2 | Écarts ou défauts du chemin de départ dans le binaire. | T0.2 → T4.2 |
-| O3 | Carte de recette pour `0xBF`. | T0.2 → T5.3 |
+| O2 | ~~Écarts ou défauts du chemin de départ dans le binaire.~~ **Fermé en T0.2** : identique à la décompilation pour une voix de bruitage. | T0.2 → T4.2 |
+| O3 | ~~Carte de recette pour `0xBF`.~~ **Fermé en T0.2** : Ship Klark (intérieur) 390, id 302, mix `0x40`/`0x40` ; puis Inoa 162 (fondus de 200 et 203). | T0.2 → T5.3 |
 | O5 | `Alundra.sln` (analyseur) ne builde pas à `bbf33962` : NU1605, MonoGame 3.8.4.1 dans `AlundraGame`/`AlundraTools` contre 3.8.5.1 exigé par le MGUI amené par « update MGUI ». Préexistant, hors périmètre ; à trancher par l'auteur (aligner les paquets de l'analyseur). | signalé |
-| O4 | `FUN_800914cc` (tonalité `Vag == 0xff`) croise les canaux : `rightVolume = leftVolume × pan / 0x3f` (`SoundManager.cs:4971`, `:4981`) et `leftVolume = rightVolume × … ` (`:4985`), là où `FUN_80090c58` garde chaque canal. Défaut de l'original ou de la décompilation ? À trancher en T0.2 si une tonalité de bruitage est concernée. | T0.2 → T4.2 |
+| O4 | ~~`FUN_800914cc` croise les canaux : défaut de l'original ou de la décompilation ?~~ **Fermé en T0.2** : défaut de décompilation (le binaire atténue chaque canal par lui-même, sans mise au carré). Le port ne rencontre pas ce chemin (tonalités `Vag == 0xff` non exportées, compté en T2.3). | T0.2 → T2.3 |
 
 ## Suites consignées (hors de cette tâche)
 
