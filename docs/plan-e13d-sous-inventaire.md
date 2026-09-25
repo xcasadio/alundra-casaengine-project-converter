@@ -598,13 +598,30 @@ replié avec l'icône, icône de l'armure décalée de 4 px dans les données. `
 - Tests : après une entrée de carte, `Start` est refusé aux ticks 1 à 9 et accepté au 10ᵉ ; mutation : le test du
   délai retiré du déclencheur.
 
-#### ⏳ SI9 — La contre-vérification complète de l'inventaire principal (D-E13D-33)
+#### 🚧 SI9 — La contre-vérification complète de l'inventaire principal (D-E13D-33)
 
 Cinq groupes de fonctions de `MainInventoryManager.cs` (ouverture et fermeture avec le déclencheur et la jauge ;
 image par image et curseur ; texte ; icônes, tables et chiffres ; équipement avec les fonctions de
 `PlayerManager.cs` qu'il appelle) comparés à `ALUN_CD.EXE`, puis au portage ; chaque relevé repris par un
 contradicteur. Chaque écart confirmé qui touche le portage devient une correction avec son test et sa mutation ;
-chaque défaut de l'original est corrigé (D-E13D-30). Résultat et dispositions au §7.
+chaque défaut de l'original est corrigé (D-E13D-30). Relevés et dispositions au §7 (« SI9 — la contre-vérification
+de l'inventaire principal »). Quatre sous-tranches :
+
+- ✅ **SI9.a — Les décalages du curseur** (relevé 1) : `AlundraInventoryComposer.CursorPhaseX/Y` et l'animation
+  `ui_inventory_cursor` du convertisseur passent à (0,0) (−1,+1) (−2,+2) (−2,+2), les tables de mots de
+  l'exécutable. Tests retournés (compositeur, convertisseur, cadence de l'animation exportée) ; mutations réelles
+  tuées (tables en demi-mots rétablies dans le compositeur, puis dans le convertisseur). **Export prouvé** : diff
+  = `UI/Animations/ui_inventory_cursor.anim2d` et `report.json` exactement, comme prédit ; double export =
+  `report.json` seul ; vérification des assets PASSED ; octets relus dans l'exécutable en session principale.
+  `Alundra.Tests` 1220/1220, convertisseur 190/190.
+- ⏳ **SI9.b — L'équipement** (relevés 3, 4, 5) : une case d'arme vide sonne l'erreur même sans arme résolue
+  (validité testée avant « déjà équipée », comme `FUN_80057854`) ; le nom d'arme s'efface quand aucune arme ne se
+  résout ; `SetPlayerWeaponId` accepte −1 et refuse 0, comme l'exécutable.
+- ⏳ **SI9.c — La jauge relancée pendant son ouverture** (relevés 6, 7) : la phase 7 (`Opening | 2`) glisse et se
+  termine comme dans l'original (`& 6`, puis `& 2` → 0) ; défaut de l'original corrigé : la disparition part de la
+  position courante, pas de 0x10.
+- ⏳ **SI9.d — La garde du post-traitement et les commentaires** (relevés 8, 9) : la tête relancée par le
+  post-traitement teste `g_forbiddenWarpFlag` comme `DisplayInventory` ; trois commentaires faux corrigés.
 
 ---
 
@@ -672,6 +689,39 @@ suites vertes ; chaque export prouvé par double export.
 | 2026-09-25 | Réponses de l'auteur aux points du rapport : D-E13D-30 à D-E13D-33. **SI7 faite** (`4e411ef`) : la seconde ligne de description s'affiche. |
 | 2026-09-25 | **SI8 faite** : quatre trous de tests comblés, quatre mutations réelles tuées ; les icônes des données de conception étaient déjà centrées (mesure). |
 | 2026-09-25 | Nouvelles réponses de l'auteur : D-E13D-34 à D-E13D-37 ; tranches SI10, SI11 et SI12 ajoutées ; l'audio part dans une tâche séparée. |
+| 2026-09-25 | **Contre-vérification SI9** : cinq relevés, chacun repris par un contradicteur (10 agents) ; résultat ci-dessous. **SI9.a faite** : les décalages du curseur, export prouvé. |
+
+### SI9 — la contre-vérification de l'inventaire principal (2026-09-25)
+
+Désassemblage de `ALUN_CD.EXE` (France) par le même script ; chaque relevé repris par un contradicteur qui a refait
+les lectures. Groupes : ouverture et fermeture (`DisplayInventory`, `FUN_80054f1c`, `FUN_800556dc`, déclencheur,
+`InitializeHudPosition`, `InitializeHudPositionBeforeHide`, post-traitement) ; image par image (`FUN_80056598`,
+`UpdateCursorSpritePosition`, `DisplayInventoryCursor`, `FUN_80050998`) ; texte (`DisplayInventoryTexts`,
+`FUN_80055f48`, `DisplayInventoryDescription`, `FUN_800562dc`, `DisplayIconNames`) ; icônes et chiffres
+(`DisplayWeaponAndItemIcons`, tables des cases, `DisplayAmountOfMoneyFalconKeys`, `DisplayUiBoxes`) ; équipement
+(`FUN_8005795c`, `FUN_80057854`, `FUN_8005ac90` et les fonctions de `PlayerManager` appelées). Tout le reste est
+**équivalent** à l'exécutable.
+
+| # | Relevé | Nature | Disposition |
+|---|---|---|---|
+| 1 | `UpdateCursorSpritePosition` (`0x80050908`) lit ses décalages en **mots** à `0x800a82c8`/`0x800a82d8` : (0,0) (−1,+1) (−2,+2) (−2,+2) ; la décompilation les lit en demi-mots : (0,0) (0,0) (−1,+1) (−1,0) | perte de la décompilation, héritée par le compositeur et par l'animation du convertisseur | **corrigé, SI9.a** |
+| 2 | La position du curseur suit son image d'un tick (`0x800569e0` avant `0x800569e8`) | ordre confirmé, défaut non prouvé | aucun changement : l'animation affichée change les deux ensemble ; le compositeur garde l'état au tick |
+| 3 | `FUN_8005795c` teste « déjà équipée » (`0x800579b0`…) avant « case vide » (`0x800579b8`…) : sans arme résolue, une case vide ne sonne pas l'erreur | défaut de l'original, atteignable (nouvelle partie : arme 1 sans objet de la case 1) | **à corriger, SI9.b** |
+| 4 | `DisplayIconNames` (`0x80055c9c`) ne réécrit pas le nom d'arme quand aucune arme ne se résout, alors que l'objet reçoit sept espaces | défaut de l'original, hérité | **à corriger, SI9.b** |
+| 5 | `SetPlayerWeaponId` (`0x8004e484`) range −1 et refuse 0 ; la décompilation et le portage (`ushort`) font l'inverse | perte de la décompilation, héritée ; non atteinte par l'équipement | **à corriger, SI9.b** |
+| 6 | `InitializeHudPosition` accepte la jauge en ouverture (5 → 7) et l'original la fait glisser (`& 6`, `0x8004bec0`) ; le portage reste bloqué en phase 7 | écart du portage ; atteignable seulement par un script de carte qui efface le drapeau 1662 pendant les 17 ticks d'ouverture (F1 et l'inventaire réfutés par le contradicteur) | **à corriger, SI9.c** |
+| 7 | `InitializeHudPosition` part toujours de y = 0x10 (`0x8004bde4`) : relancée pendant l'ouverture, la jauge saute | défaut de l'original, hérité | **à corriger, SI9.c** (partir de la position courante) |
+| 8 | La tête relancée par le post-traitement ne teste pas `g_forbiddenWarpFlag`, que `DisplayInventory` teste en premier (`0x80055574`) | écart du portage, non atteignable aujourd'hui | **à corriger, SI9.d** |
+| 9 | Trois commentaires faux du directeur : `DisplayInventory` renvoie 0 sur la branche de débogage (`0x800555f0`) ; la garde « garantie » ne l'est pas depuis le post-traitement ; `SoundManager.cs:331` ne pose pas `g_cdIsReady = 1` sur le chemin de remise à zéro | documentation | **à corriger, SI9.d** |
+| 10 | Branche de débogage (`g_cdIsReady == 0`) : la décompilation a perdu l'appel de `Left` (`0x800555e4`) | débogage seulement, branche non portée | aucune action |
+| 11 | Les paires d'accents sont comptées octet par octet (deux pas, largeur en avance, limite de 16 octets) | défaut de l'original, **non hérité** : le portage déroule des chaînes décodées (D-E13D-31) | aucune action ; la garde d'échappement de `RevealedPrefix` est du code mort, retirée en SI11 |
+| 12 | Rectangle de découpe de `FUN_800562dc` (coupe à x = 0x140 pendant le glissement des noms) | non porté ; sans effet tant que le canevas fait 320 de large | consigné |
+| 13 | `SetItemIdFromCurrentItemId` appelée à chaque case dessinée, une fois par composition dans le portage | le cadre de l'objet peut apparaître un tick plus tard dans un cas limite ; placement identique | consigné (P4) |
+| 14 | `GetItemIdFromSlotId` boucle jusqu'à 0x80 et lit au-delà de la table ; priorité comparée signée | défaut de l'original sans effet ; le portage (borne 100, `ushort`) est correct sur les vraies données | aucune action |
+| 15 | Index ≥ 6 dans `FUN_8005795c` : silence dans l'exécutable, erreur dans le portage | inatteignable (garde `SelectedSlotId < 6`) | aucune action |
+| 16 | Règle de résolution par case (cases 0, 15 et 28 : le premier possédé sans le bit 0 l'emporte) | données confirmées, atteignabilité incertaine (hors grille principale) | consigné |
+| 17 | `g_warpDelayFrames` est décrémenté avant le test : 10 bloque 9 évaluations | précision | reprise par SI12 |
+| 18 | Ordre des tables d'affichage (cadres au-dessus ou au-dessous des icônes) | incertain, non vérifié | consigné |
 
 ### SI0 — la contre-vérification décompilation ↔ exécutable (2026-09-24)
 

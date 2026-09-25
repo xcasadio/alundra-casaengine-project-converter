@@ -102,10 +102,13 @@ public static class AlundraInventoryComposer
         0x70, 0x70, 0x70, 0x70, 0x70, 0x70,
     };
 
-    // StaticVariables.cs:71-80 (g_inventoryCursorAnimSpriteX/Y) - only phases 0-3 are ever addressed
-    // (MainInventoryManager.cs:137-138, index = FrameDelay/10, FrameDelay in 0..0x27).
-    private static readonly int[] CursorPhaseX = { 0x0000, 0x0000, -1, -1 };
-    private static readonly int[] CursorPhaseY = { 0x0000, 0x0000, 1, 0x0000 };
+    // UpdateCursorSpritePosition (0x80050908, ALUN_CD.EXE France) reads the phase offsets as WORDS, index
+    // FrameDelay/10 shifted left by 2, from 0x800a82c8 (X) and 0x800a82d8 (Y): (0,0) (-1,+1) (-2,+2) (-2,+2).
+    // The decompilation lost the stride (StaticVariables.cs:71-80 keeps the same bytes as short[] halves and
+    // MainInventoryManager.cs:137-138 indexes them with a 2-byte stride, which reads (0,0) (0,0) (-1,+1) (-1,0));
+    // the executable is the reference (plan E13.d SI9).
+    private static readonly int[] CursorPhaseX = { 0, -1, -2, -2 };
+    private static readonly int[] CursorPhaseY = { 0, 1, 2, 2 };
 
     /// <param name="isDrawn">Director's own <see cref="AlundraInventoryDirector.IsDrawn"/> - false makes
     /// every other argument irrelevant (nothing is read), matching the setup tick's own "nothing drawn yet".</param>

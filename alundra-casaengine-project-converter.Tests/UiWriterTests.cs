@@ -105,7 +105,7 @@ public class UiWriterTests
             AssertSpriteKeyframes(cursor, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f }, new[] { 159, 182, 210, 237, 237 });
             var positions = cursor.Tracks.Single(track => track.Property == Animation2dTrackProperty.Position).PositionKeyframes;
             Assert.Equal(
-                new[] { new Vector2(0, 0), new Vector2(0, 0), new Vector2(-1, 1), new Vector2(-1, 0), new Vector2(-1, 0) },
+                new[] { new Vector2(0, 0), new Vector2(-1, 1), new Vector2(-2, 2), new Vector2(-2, 2), new Vector2(-2, 2) },
                 positions.Select(keyframe => keyframe.Value));
             Assert.Equal(0.8f, cursor.GetDurationSeconds(), 5);
 

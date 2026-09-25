@@ -21,8 +21,9 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    cursor only). The engine's UI player adds a part's position, rounded, to the image's draw position in
 ///    screen pixels (CasaUIAssetProvider.CasaUIAnimatedImage.CurrentDrawOffset), so these offsets are screen
 ///    pixels, Y down - unlike a world animation, whose part positions are Y up.
-///  - The cycles, from the original's own counters: cursor 4 x 10 ticks with offsets (0,0) (0,0) (-1,+1) (-1,0)
-///    (AlundraInventoryDirector.cs:520-524, AlundraInventoryComposer.cs:103-106); magic pip 4 x 10 ticks
+///  - The cycles, from the original's own counters: cursor 4 x 10 ticks with offsets (0,0) (-1,+1) (-2,+2) (-2,+2)
+///    (AlundraInventoryDirector.cs:520-524; the offsets are the executable's word tables at 0x800a82c8/0x800a82d8,
+///    which the decompilation misread as half-words - AlundraInventoryComposer's CursorPhaseX/Y, plan E13.d SI9); magic pip 4 x 10 ticks
 ///    (AlundraHudDirector.cs:461-468); coin 4 x 6 ticks (AlundraHudDirector.cs:627-634). The original moves the
 ///    cursor one tick after it changes its sprite (the composer's position phase lags the sprite phase); here
 ///    both change together, one 20 ms tick earlier for the offset, within the program's 20 ms tolerance.
@@ -43,7 +44,7 @@ public static class UiAnimationWriter
     {
         new(InventoryCursorName, TicksPerFrame: 10,
             new[] { 159, 182, 210, 237 },
-            new[] { new Point(0, 0), new Point(0, 0), new Point(-1, 1), new Point(-1, 0) }),
+            new[] { new Point(0, 0), new Point(-1, 1), new Point(-2, 2), new Point(-2, 2) }),
         new(MagicPipName, TicksPerFrame: 10, new[] { 1, 3, 10, 17 }, Offsets: null),
         new(CoinName, TicksPerFrame: 6, new[] { 126, 130, 134, 139 }, Offsets: null),
     };

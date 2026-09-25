@@ -214,9 +214,9 @@ public sealed class AlundraInventoryComposerTests
     /// sprite (:1593-1601). On the tick the counter enters a new phase, the sprite is already the new phase's
     /// and the position still the previous phase's.</summary>
     [Theory]
-    [InlineData(20, 2, 0, 0)]   // enters phase 2: sprite 2, position phase 1 (0,0)
-    [InlineData(30, 3, -1, 1)]  // enters phase 3: sprite 3, position phase 2 (-1,+1)
-    [InlineData(0, 0, -1, 0)]   // wrapped to 0: sprite 0, position phase 3 (-1,0)
+    [InlineData(20, 2, -1, 1)]  // enters phase 2: sprite 2, position phase 1 (-1,+1)
+    [InlineData(30, 3, -2, 2)]  // enters phase 3: sprite 3, position phase 2 (-2,+2)
+    [InlineData(0, 0, -2, 2)]   // wrapped to 0: sprite 0, position phase 3 (-2,+2)
     [InlineData(10, 1, 0, 0)]   // enters phase 1: sprite 1, position phase 0 (0,0)
     public void Cursor_OnThePhaseChangeTick_SpriteIsTheNewPhase_PositionThePrevious(
         int frameDelay, int expectedSpritePhase, int expectedOffsetX, int expectedOffsetY)
@@ -243,11 +243,12 @@ public sealed class AlundraInventoryComposerTests
         Assert.Equal(0x08 + 0x08 + 0x12 + 0, phase0.Cursor.NativeX);
         Assert.Equal(0x10 + 0x08 - 8 + 0, phase0.Cursor.NativeY);
 
-        // Phase 2 (FrameDelay 21-29, position from 20-28): offset (-1, +1).
+        // Phase 2 (FrameDelay 21-29, position from 20-28): offset (-2, +2), the executable's word table
+        // (0x800a82c8/0x800a82d8), not the decompilation's half-word reading (-1, +1).
         var phase2 = ComposeAtRest(selectedSlotId: 0, cursorFrameDelay: 25);
         Assert.Equal(2, phase2.Cursor.Phase);
-        Assert.Equal(0x08 + 0x08 + 0x12 - 1, phase2.Cursor.NativeX);
-        Assert.Equal(0x10 + 0x08 - 8 + 1, phase2.Cursor.NativeY);
+        Assert.Equal(0x08 + 0x08 + 0x12 - 2, phase2.Cursor.NativeX);
+        Assert.Equal(0x10 + 0x08 - 8 + 2, phase2.Cursor.NativeY);
 
         // A different selected slot (slot 7: row 1, col 1) moves the cursor with it.
         var otherSlot = ComposeAtRest(selectedSlotId: 7, cursorFrameDelay: 5);
