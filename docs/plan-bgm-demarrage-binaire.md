@@ -379,7 +379,7 @@ fin.**
 
 ## Phase 1 — Analyseur (sous-module `alundra-datas-analyser`)
 
-### ⏳ T1.1 — Les deux `PlaySeq` et le `SetSeqVolume` absents du binaire, le test du son de warp
+### ✅ T1.1 — Les deux `PlaySeq` et le `SetSeqVolume` absents du binaire, le test du son de warp
 
 - Objectif : `LoadMapSequenceCore` et le cas 5 du streaming comme B7 et B9 ; le test « son nul » de
   `HandleMapSoundEffectsCore` comme B17.
@@ -400,8 +400,13 @@ fin.**
   bruitage (`:4511`) et `PlayLoaderBgm` (`:180`, lecteur du `LOADER.EXE`, propre à l'analyseur).
   L'analyseur n'a pas de tests ; pas de recette dans `AlundraGame` tant que O5 du plan audio n'est pas tranché.
 - Commit (analyseur) : `fix(sound): load map sequences without playing them and test warp sounds as the executable does`
+- **Validation (2026-09-25)** : analyseur `e495d7f` sur `chantier/bgm-demarrage-binaire` (depuis `4c0542b`).
+  `AlundraEngine` et `AlundraDataExtractor` : 0 erreur ; `Alundra.sln` : les 4 erreurs NU1605 de T0.1, à l'identique
+  (`diff` des messages). `rg -n "PlaySeq\(" SoundManager.cs` : `:180` (`PlayLoaderBgm`), `:3725` (`StopAllSoundCore`),
+  `:4503` (séquence de bruitage), plus la définition `:3556`. Le test du son de warp lit `SfxRecords[id].SeqNum` et
+  `.MaxVoices`.
 
-### ⏳ T1.2 — Pointeur de l'analyseur
+### ✅ T1.2 — Pointeur de l'analyseur
 
 - Validation : parent buildé ; `Alundra.Tests` au compte de T0.1.
 - Commit : `chore(submodules): point at the analyser whose sequence loads no longer play`
