@@ -161,24 +161,46 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         AttachAll(state, ItemTablesFixture.LoadReal(), sound);
         AlundraHudDirector.Instance.AttachToWorld(state);
 
+        // The gauge really displayed, with the persistent latch (flag 1662) set: otherwise the gauge sits at rest,
+        // InitializeHudPositionBeforeHide can do nothing, and "neither recalled nor re-hidden" below would prove
+        // nothing (plan SI8, D-E13D-32).
+        state.AddFlag(AlundraHudDirector.PersistentLatchFlag, AlundraHudDirector.PersistentLatchMask);
+        AlundraHudDirector.Instance.InitializeHudPositionBeforeHide();
+        for (var i = 0; i < 40; i++)
+        {
+            AlundraHudDirector.Instance.Tick();
+        }
+
+        Assert.Equal(AlundraHudDirector.HudPhase.Displayed, AlundraHudDirector.Instance.Phase);
+
         var menuOpenEveryTick = new List<bool>();
         var hudPhaseEveryTick = new List<AlundraHudDirector.HudPhase>();
 
         void RecordAndTick(uint hold)
         {
             Tick(state, hold);
+            AlundraHudDirector.Instance.Tick();
             menuOpenEveryTick.Add((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0);
             hudPhaseEveryTick.Add(AlundraHudDirector.Instance.Phase);
         }
 
-        // Open the main inventory first (Start), settle its opening slide, exactly like D6's own flow.
+        // Open the main inventory first (Start), settle its opening slide, exactly like D6's own flow; the gauge
+        // hides (InitializeHudPosition at the opening).
         RecordAndTick(AlundraPadState.Start);
         for (var i = 0; i < 18; i++)
         {
             RecordAndTick(0);
         }
+
+        for (var i = 0; i < 40 && AlundraHudDirector.Instance.Phase != AlundraHudDirector.HudPhase.Idle; i++)
+        {
+            RecordAndTick(0);
+        }
+
         Assert.True(AlundraInventoryDirector.Instance.IsActive);
         var hudPhaseBeforeSwitch = AlundraHudDirector.Instance.Phase;
+        Assert.Equal(AlundraHudDirector.HudPhase.Idle, hudPhaseBeforeSwitch); // hidden by the opening.
+        hudPhaseEveryTick.Clear(); // from here on, only the switch: the gauge must not move.
         sound.Requests.Clear();
 
         // T0 (main -> sub): R1 read, close armed, sound 5, post-process state 1. The gauge is NOT
@@ -270,6 +292,10 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
 
         Tick(state, AlundraPadState.Start);
         Assert.True((state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0); // still, mid-slide.
+
+        // The final close recalls the gauge (InitializeHudPositionBeforeHide, latch set) - the one call the switch
+        // itself never makes.
+        Assert.Equal(AlundraHudDirector.HudPhase.Opening, AlundraHudDirector.Instance.Phase);
 
         var stillOpen = true;
         var ticksToClose = 0;

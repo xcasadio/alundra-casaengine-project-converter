@@ -548,7 +548,16 @@ montre « Faible capacité de protection. » en seconde ligne ; le test qui exig
 retourné ; mutation : la lecture à `c − 0x90` rétablie fait échouer le test. Le compositeur et le XAML passent déjà
 la ligne 1 telle quelle (`DescriptionLine1Text`).
 
-#### ⏳ SI8 — Les trous de tests (D-E13D-32)
+#### ✅ SI8 — Les trous de tests (D-E13D-32) — faite le 2026-09-25
+
+**Fait** : le test aller-retour lève le verrou 1662, affiche la jauge (40 ticks du HUD) et exige qu'elle reste
+affichée pendant la bascule puis reparte en ouverture au `Start` final ; `RootCanvas_DrawOrder_…` garde l'ordre
+du XAML (fonds, cadres, icônes, textes et chiffres, curseur en dernier) ; le modèle de vue montre le cadre avant de
+lire la taille de l'icône, et une taille illisible ne replie plus que l'icône (test dédié). **Données de
+conception** : mesure faite, les sprites 17 et 25 font 24×32, exactement la case ; les positions (144,40) et
+(144,80) étaient déjà centrées, le fichier ne change pas ; un test recalcule le centrage depuis les sprites exportés
+et le garde. Quatre mutations réelles tuées : bascule qui rappelle la jauge, curseur en tête du canevas, cadre
+replié avec l'icône, icône de l'armure décalée de 4 px dans les données. `Alundra.Tests` 1220/1220.
 
 - Le test aller-retour de SI3 lève le verrou 1662 et affiche la jauge avant la bascule, pour que « jauge ni
   rappelée ni recachée » puisse échouer ; mutation : une bascule qui appelle `InitializeHudPositionBeforeHide`.
@@ -613,7 +622,7 @@ suites vertes ; chaque export prouvé par double export.
    restauré. Alundra.Tests 1216/1216.
 7. **L'assertion « jauge ni rappelée ni recachée » du test aller-retour de SI3 ne prouve rien** (la jauge y reste
    au repos faute du verrou 1662) ; le comportement est prouvé par la sonde du vérificateur et par la recette SI5.
-   ~~Reportée (P4).~~ À combler en SI8 (D-E13D-32).
+   ~~Reportée (P4).~~ Comblé en SI8 (D-E13D-32).
 8. **Le délai de warp** (point 9 du plan principal) : l'original refuse d'ouvrir l'inventaire pendant les 10
    premières images d'une carte (le compteur `g_warpDelayFrames`, décrémenté à chaque image) ; le portage pose le
    compteur mais ne le décrémente jamais, et son déclencheur l'ignore. Correction proposée à l'auteur le
@@ -632,6 +641,8 @@ suites vertes ; chaque export prouvé par double export.
 | 2026-09-24 | **SI3.a faite** (`a3901af`) : `Triangle` ferme l'inventaire principal. |
 | 2026-09-25 | **SI3 faite** (`dc3fe1a`) : l'exécuteur s'est arrêté deux fois en attente d'un test lancé en arrière-plan — un de ses tests bouclait ; reprise en session principale, défauts de tests corrigés, mutations réelles ; vérificateur frais **CONFIRMED**. |
 | 2026-09-25 | **SI4 faite** (`5f12e53`) : une mutation survivante a révélé un site d'appel de production sans test (le présentateur dans la boucle du monde), comblé ; export prouvé ; vérificateur frais **CONFIRMED**. **SI5 faite** : recette en jeu conforme à sa prédiction. Reste SI6, la recette de l'auteur. |
+| 2026-09-25 | Réponses de l'auteur aux points du rapport : D-E13D-30 à D-E13D-33. **SI7 faite** (`4e411ef`) : la seconde ligne de description s'affiche. |
+| 2026-09-25 | **SI8 faite** : quatre trous de tests comblés, quatre mutations réelles tuées ; les icônes des données de conception étaient déjà centrées (mesure). |
 
 ### SI0 — la contre-vérification décompilation ↔ exécutable (2026-09-24)
 

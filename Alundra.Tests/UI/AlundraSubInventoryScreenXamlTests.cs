@@ -99,6 +99,31 @@ public sealed class AlundraSubInventoryScreenXamlTests
         Assert.Equal("Bottes courtes", viewModel.BootsName.Text);
     }
 
+    /// <summary>The design-time armor and boots icons (items 17 and 25) sit centred in their frame's 24x32 cell,
+    /// computed from their real exported sprites the way production does (<see cref="AlundraHudIcon"/>),
+    /// so the editor preview shows what the game draws (D-E13D-32).</summary>
+    [Theory]
+    [InlineData("ArmorIcon", "ArmorFrame")]
+    [InlineData("BootsIcon", "BootsFrame")]
+    public void DesignTimeData_EquipmentIcons_AreCentredInTheirFrameCell(string iconName, string frameName)
+    {
+        var values = JObject.Parse(File.ReadAllText(Path.Combine(ScreensDirectory(), "SubInventoryScreen.design.json")))["values"]!;
+        var sourceId = values[iconName]!["SourceName"]!.ToString();
+
+        var entities = Path.Combine(Directory.GetParent(Directory.GetParent(ScreensDirectory())!.FullName)!.FullName, "Entities");
+        var sprite = Directory.EnumerateFiles(entities, "*.sprite", SearchOption.AllDirectories)
+            .Select(path => JObject.Parse(File.ReadAllText(path)))
+            .Single(json => json["id"]!.ToString() == sourceId);
+        var width = (int)sprite["location"]!["w"]!;
+        var height = (int)sprite["location"]!["h"]!;
+
+        var frameLeft = (int)values[frameName]!["Left"]!;
+        var frameTop = (int)values[frameName]!["Top"]!;
+        var centred = new AlundraHudIcon(Guid.Parse(sourceId), frameLeft, frameTop, 0x18, 0x20);
+        Assert.Equal(centred.ScreenLeft(width, 1), (int)values[iconName]!["Left"]!);
+        Assert.Equal(centred.ScreenTop(height, 1), (int)values[iconName]!["Top"]!);
+    }
+
     /// <summary>What never changes is named in the XAML itself: the seven boxes (by their fixed SI2 ids),
     /// the two selection frames (wind_039) and the cursor, which plays the converter's ui_inventory_cursor
     /// animation.</summary>
@@ -192,6 +217,21 @@ public sealed class AlundraSubInventoryScreenXamlTests
         Assert.Equal(1, notifications); // Cursor.Left alone
     }
 
+    /// <summary>FUN_80052fb4 draws the armor's frame as soon as the item resolves (D-E13D-32): an icon whose
+    /// size cannot be read hides the icon alone, never its frame, which keeps its own cell position.</summary>
+    [Fact]
+    public void ViewModel_EquipmentIconSizeUnreadable_HidesTheIconButDrawsTheFrame()
+    {
+        var viewModel = new AlundraSubInventoryViewModel(_ => null);
+        viewModel.Apply(SampleModel());
+
+        Assert.Equal(Visibility.Collapsed, viewModel.ArmorIcon.Visibility);
+        Assert.Equal(Visibility.Visible, viewModel.ArmorFrame.Visibility);
+        Assert.Equal(144, viewModel.ArmorFrame.Left);
+        Assert.Equal(40, viewModel.ArmorFrame.Top);
+        Assert.Equal(Visibility.Collapsed, viewModel.BootsFrame.Visibility); // no boots in the model
+    }
+
     private static SubInventoryDisplayModel SampleModel(int cursorX = 74) => new()
     {
         Visible = true,
@@ -278,5 +318,31 @@ public sealed class AlundraSubInventoryScreenXamlTests
         var window = LoadWindow();
         Assert.True(window.TryGetElementByName(name, out MGElement element), $"missing '{name}'");
         Assert.Equal("font3", Assert.IsType<MGTextBlock>(element).FontFamily);
+    }
+
+    /// <summary>Plan §1.5 ("l'ordre de dessin") and SI8: the canvas draws its children in order, so the XAML's own
+    /// order is the draw order - the seven boxes, then the two frames, then the icons, then the texts and digits,
+    /// the cursor last (on top of everything).</summary>
+    [Fact]
+    public void RootCanvas_DrawOrder_BoxesFramesIconsTextsDigitsCursor()
+    {
+        var window = LoadWindow();
+        var canvas = Element<MGCanvas>(window, "RootCanvas");
+
+        static int Group(string name) =>
+            name.StartsWith("Box", StringComparison.Ordinal) ? 0
+            : name.EndsWith("Frame", StringComparison.Ordinal) ? 1
+            : name.Contains("Icon", StringComparison.Ordinal) ? 2
+            : name.EndsWith("Text", StringComparison.Ordinal) || name.Contains("Digit", StringComparison.Ordinal) ? 3
+            : name == "CursorImage" ? 4
+            : -1;
+
+        var names = canvas.Children.Select(child => child.Name ?? string.Empty).ToList();
+        var groups = names.Select(Group).ToList();
+
+        Assert.DoesNotContain(-1, groups);
+        Assert.Equal(groups.OrderBy(g => g).ToList(), groups);
+        Assert.Equal("CursorImage", names[^1]);
+        Assert.Equal(7, groups.Count(g => g == 0));
     }
 }

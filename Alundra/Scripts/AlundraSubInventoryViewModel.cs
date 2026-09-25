@@ -213,21 +213,21 @@ public sealed class AlundraSubInventoryViewModel : ViewModelBase
             return;
         }
 
+        // FUN_80052fb4: the frame is visible whenever the item resolves, at the box cell itself (not
+        // centred - the same "hollow frame" the main inventory's own selection frames sit at) - even when the
+        // icon's own size cannot be read, since only the icon needs it to centre itself (D-E13D-32).
+        frameImage.Show(equipment.Value.FrameNativeX, equipment.Value.FrameNativeY);
+
         var icon = equipment.Value.Icon;
         var size = _iconSize?.Invoke(icon.AssetId);
         if (size == null)
         {
             iconImage.Visibility = Visibility.Collapsed;
-            frameImage.Visibility = Visibility.Collapsed;
             return;
         }
 
         iconImage.SetSource(icon.AssetId);
         iconImage.Show(icon.ScreenLeft(size.Value.X, 1), icon.ScreenTop(size.Value.Y, 1));
-
-        // FUN_80052fb4: the frame is visible whenever the item resolves, at the box cell itself (not
-        // centred - the same "hollow frame" the main inventory's own selection frames sit at).
-        frameImage.Show(equipment.Value.FrameNativeX, equipment.Value.FrameNativeY);
     }
 
     private static void ApplyDigit(InventoryImageViewModel image, InventoryDigit digit)
