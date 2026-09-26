@@ -18,3 +18,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0002 | The game's screens are project assets bound to observable view models | Accepted | 2026-09-24 |
 | ADR-0003 | The sound effect manifest carries the VAB volume and pan attributes | Accepted | 2026-09-25 |
 | ADR-0004 | Background music follows the executable's sequence state | Accepted | 2026-09-25 |
+| ADR-0005 | The inventory's opening portrait reaches the DLL through map_alundra.json and a one-id index | Accepted | 2026-09-26 |
