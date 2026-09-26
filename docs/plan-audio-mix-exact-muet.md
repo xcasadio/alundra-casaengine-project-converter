@@ -1,7 +1,9 @@
 # Plan — Audio : mixage stéréo exact, son coupé, retrait d'`IsBgmActivated`
 
-**État** : ✅ **livré le 2026-09-25** (mode AUTO), vérificateur final **CONFIRMED** (T5.1). Restent à l'auteur la
-recette (T5.3), le rapatriement des branches des sous-modules (T5.2) et le merge. Rédigé et révisé le même jour ; enveloppe
+**État** : ✅ **clos le 2026-09-26.** Livré le 2026-09-25 (mode AUTO), vérificateur final **CONFIRMED** (T5.1),
+mergé par l'auteur le 2026-09-25, **validé en jeu par l'auteur le 2026-09-26** (T5.3). Reste à merger la branche de
+clôture `chantier/audio-mix-exact-closure` (parent et moteur), qui répare aussi le pointeur du moteur dans `main`.
+Rédigé et révisé le 2026-09-25 ; enveloppe
 **READY** (relecteur frais, après la révision de P6) ; tranche des phases 0 et 1 **READY** (relecteur frais, après la
 correction du chemin éditeur de T1.3).
 **Naissance** : décision de l'auteur du 2026-09-25, D-E13D-37 (`docs/plan-e13d-sous-inventaire.md` et
@@ -363,7 +365,8 @@ chaque groupe concordent sur chaque point retenu.
 ### ✅ T1.1 — Plan moteur et ADR — faite le 2026-09-25 (moteur `7968a608`)
 
 - Objectif : le plan moteur exigé par l'`AGENTS.md` du moteur, et les deux décisions en ADR.
-- Fichiers (moteur) : `ai-agent/tasks/audio-stereo-voices-mute-tasks.md` (copie des tâches T1.2 et T1.3,
+- Fichiers (moteur) : `ai-agent/tasks/audio-stereo-voices-mute-tasks.md`, archivé le 2026-09-26 dans
+  `ai-agent/tasks/archive/` (copie des tâches T1.2 et T1.3,
   consommateur : ce plan) ; `ai-agent/README.md` (ligne du tableau) ; `docs/decisions/` : une ADR « voix stéréo
   logicielles » (D3, P3, P4, P5), une ADR « son coupé, réglage du projet » (D4, P6 : champ additif de
   `ProjectSettings`, écrit seulement s'il est vrai), par le skill `adr`.
@@ -409,7 +412,7 @@ chaque groupe concordent sur chaque point retenu.
 - Validation : les deux solutions du moteur buildent ; `CasaEngine.Tests` = ligne de base + n, zéro nouvel échec.
 - Commit (moteur) : `feat(audio): play mono clips on software stereo voices with exact left/right gains`
 
-### 🧪 T1.3 — Son coupé, réglage du projet — faite le 2026-09-25 (moteur `af5246ca`) ; contrôle en direct de l'éditeur non observable par l'agent, reporté à T5.3 (note dans le plan moteur)
+### ✅ T1.3 — Son coupé, réglage du projet — faite le 2026-09-25 (moteur `af5246ca`) ; contrôle en direct de l'éditeur fait par l'auteur à la recette T5.3, le 2026-09-26
 
 - Objectif : D4 avec P6, côté moteur.
 - Fichiers (moteur) :
@@ -943,7 +946,14 @@ leur état suivi.
   git -C D:/development/repo/alundra-casaengine-project-converter/alundra-datas-analyser fetch D:/development/repo/alundra-casaengine-project-converter/.claude/worktrees/nostalgic-kapitsa-11fb13/alundra-datas-analyser chantier/audio-mix-exact:chantier/audio-mix-exact
   ```
 
-### ⏳ T5.3 — Recette de l'auteur — à l'auteur
+- **Rapatriement et merge, faits par l'auteur le 2026-09-25.** Le parent a été mergé en avance rapide sur `ed276e3`
+  **avant** le rapatriement des sous-modules. Le commit `fbe8cf5 update submodule` a alors enregistré l'ancien moteur
+  `43688074` (et l'ancien analyseur), et `main` ne compilait plus : 5 erreurs, des API du moteur absentes.
+  - L'auteur a ensuite rapatrié les deux branches, avancé `main` du moteur et `master` de l'analyseur.
+  - `063594b` a remis l'analyseur à jour. Le moteur est resté à `43688074`.
+  - La branche de clôture enregistre le moteur à jour (`84c81e3`).
+
+### ✅ T5.3 — Recette de l'auteur — validée le 2026-09-26
 
 - Lancement : Launcher du worktree sur `alundra-project/AlundraGame.json` du worktree (précédent SI6).
 - À écouter :
@@ -956,6 +966,14 @@ leur état suivi.
   - le même projet ouvert dans l'éditeur du worktree : l'aperçu d'un son est muet, puis s'entend une fois la clé
     retirée et le projet rouvert.
 
+**Note de validation (2026-09-26).** L'auteur valide la recette en jeu :
+- le bateau 389 ;
+- la carte 390, où le son 302 baisse ;
+- Inoa 162 ;
+- le son coupé, dans le Launcher et dans l'éditeur.
+
+Le contrôle de l'éditeur ferme T1.3 et la T3 du plan moteur, qui est archivé (moteur `9a487baf`).
+
 ---
 
 ## Bilan (2026-09-25)
@@ -967,12 +985,14 @@ leur état suivi.
   - `IsBgmActivated` supprimé (T2.1). Id de `0xBF` sur deux octets, dans l'analyseur (T2.2) et dans la DLL (T4.3).
   - Attributs VAB exportés par l'extracteur, portés par le convertisseur et lus par la DLL (T2.3, T3.1 à T4.1,
     ADR-0003).
-- **Commits** (rien de mergé ni de poussé) :
+- **Commits** (mergés par l'auteur le 2026-09-25, rien de poussé) :
   - parent, 10 : `b76454b`, `6db4614`, `6e151ba`, `f06b1bd`, `5392679`, `ea1dbfd`, `6363619`, `d310b1d`, `88c19ce`,
     et la clôture ;
   - moteur, 4 : `7968a608`, `7c017ae5`, `af5246ca`, `716c02c7`. Un de plus que le budget : la note de vérification de
     T1.4 ;
-  - analyseur, 3 : `18a8546`, `8348d7f`, `b79b45a`.
+  - analyseur, 3 : `18a8546`, `8348d7f`, `b79b45a` ;
+  - clôture, sur `chantier/audio-mix-exact-closure` : moteur `9a487baf` (plan moteur archivé, depuis `main` du moteur
+    `b02d3e86`) ; parent `84c81e3` (pointeur du moteur), puis ce bilan.
 - **Tests.** `Alundra.Tests` 1228 → 1264, convertisseur 190 → 194, `CasaEngine.Tests` 1888 → 1914. Zéro échec ; six
   goldens identiques.
 - **Vérifications fraîches** : T1.4, T3.4 et T5.1, toutes **CONFIRMED**.
@@ -983,7 +1003,9 @@ leur état suivi.
     tard), P7 (la voix la plus ancienne) ;
   - inchangées : P8 (boucle du clip entier), pas d'ADSR, de réverbération ni de plafond de 24 voix.
 - **Reporté** : O1 et O2 du plan moteur (P3 et P4 du vérificateur de T1.4) ; les deux P4 de T3.4 ; O5 ; S1.
-- **Reste à l'auteur** : la recette T5.3, dont le contrôle de l'éditeur (T1.3 🧪) ; le rapatriement (T5.2) ; le merge.
+- **Recette validée par l'auteur le 2026-09-26** : bateau 389, carte 390, Inoa 162, et le son coupé dans le
+  Launcher et dans l'éditeur, ce qui ferme T1.3.
+- **Reste à l'auteur** : merger la branche de clôture, dans le moteur puis dans le parent.
 
 ---
 
@@ -1029,3 +1051,5 @@ Exports complets : la référence en T0.1, puis T1.5 et T3.3, chacun prouvé par
 | 2026-09-25 | Relecteur frais de la tranche des phases 2 et 3 : **REVISE**, deux constats. (1) T2.3 ne disait pas d'où viennent les attributs : `DecodeSfxTones` résout par une fonction privée et ne rend que les échantillons. Désormais `SoundBin.cs` est dans le périmètre de T2.3, qui rend les attributs de la fiche résolue, avec un contrôle croisé fiche directe et fiche redirigée. (2) Le lecteur du convertisseur rendait 0 pour un champ absent. Désormais champs nullables de bout en bout, `null` jamais 0 (P9, T3.3). Mesures ajoutées : aucune tonalité abandonnée ; 443 fiches à chaîne (O6). Nouvelle époque de relecture pour la tranche. |
 | 2026-09-25 | Relecteur frais de clôture sur la tranche des phases 2 et 3 : **READY**. Début de T2.1. |
 | 2026-09-25 | Phases 2 à 4 faites. Validation globale verte ; vérificateur final **CONFIRMED** (T5.1) ; documentation et clôture (T5.2). Restent à l'auteur la recette (T5.3), le rapatriement des branches des sous-modules et le merge. |
+| 2026-09-25 | Merge par l'auteur, avant le rapatriement des sous-modules. `fbe8cf5` puis `063594b` laissent `main` sur le moteur `43688074`, et `main` ne compile plus. Cause établie en session (5 erreurs reproduites) ; procédure rejouée sur répliques et relue par deux relecteurs contradictoires. |
+| 2026-09-26 | Recette validée par l'auteur (T5.3), dont le contrôle de l'éditeur (T1.3 ✅). Clôture sur `chantier/audio-mix-exact-closure` : plan moteur archivé (`9a487baf`), pointeur du moteur à jour dans le parent (`84c81e3`). Build à 0 erreur ; sur `main` du moteur `b02d3e86`, `Alundra.Tests` 1264, convertisseur 194, `CasaEngine.Tests` 1957. |

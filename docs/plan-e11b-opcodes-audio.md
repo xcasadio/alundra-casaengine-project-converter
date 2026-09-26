@@ -372,7 +372,7 @@ l'original) ; apprendre au moteur à rendre le son muet ; supprimer `IsBgmActiva
 quand elle n'était encore que du bruit.
 
 **Fait le 2026-09-25** (`docs/plan-audio-mix-exact-muet.md`, branches `chantier/audio-mix-exact` du parent, du
-moteur et de l'analyseur ; recette de l'auteur en attente) :
+moteur et de l'analyseur ; validé en jeu par l'auteur le 2026-09-26) :
 
 - **[B1-a] fermé.** Chaque tonalité démarre avec les volumes gauche et droit que `FUN_80090C58` écrit dans le SPU, et
   `0xAB`/`0xBF` les recalculent comme `0x80049794`. Le moteur les applique canal par canal, par des voix stéréo
