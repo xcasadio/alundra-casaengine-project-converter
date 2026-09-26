@@ -589,8 +589,8 @@ jeu le 2026-09-07** (`docs/plan-e11b-opcodes-audio.md`, dernière section ; `350
 mis à jour après la livraison.)_ Suites ouvertes, déclarées non bloquantes par leur plan : la
 projection du mixage stéréo [B1-a], `IsBgmActivated` non modélisé, la garde d'index de carte
 toujours satisfaite, et `0xAB` absent du corpus. **[B1-a] et `IsBgmActivated` sont fermés le
-2026-09-25** (`docs/plan-audio-mix-exact-muet.md`, décision D-E13D-37 ; recette de l'auteur en
-attente) : mixage stéréo exact tonalité par tonalité, son coupé par réglage du projet, id de `0xBF`
+2026-09-25** (`docs/plan-audio-mix-exact-muet.md`, décision D-E13D-37 ; validés en jeu par
+l'auteur le 2026-09-26) : mixage stéréo exact tonalité par tonalité, son coupé par réglage du projet, id de `0xBF`
 sur deux octets. Restent la garde d'index, `0xAB` absent du corpus, et la suite S1 de ce
 chantier (`0xA7` jouerait la musique là où l'original la charge seulement).
 
@@ -773,7 +773,7 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 | E8 profondeur murs/sols moteur | ✅ close (livrée par `AddSortedOverlayTile`, écrit en E9 ; variante par couche réfutée sur 483 cartes) | préalable `5d66e10` |
 | E9 backdrops moteur | ✅ close (validée en jeu) | E9.a `82ad020`,`75dc032`,`394cf55`,`14d94e0` ; E9.b moteur `dcbb55ff`+`29a84e2`, DLL `3798b75`, amendement `975248c`, bascule `e808568` ; E9.c `71c57da`, moteur `0be1e9d2`, parent `0458c6b` |
 | E10 fondu/transitions moteur | ✅ close (validée en jeu le 2026-09-01) | moteur `1f837ed6`, parent `96f440e` + `692ec4c` + `767e9e6` |
-| E11 audio | ✅ close (validée en jeu le 2026-08-30) ; **E11.b ✅ validée en jeu le 2026-09-07** avec T7 ; **suites D-E13D-37 (mixage stéréo exact, son coupé, `IsBgmActivated`) livrées le 2026-09-25, recette de l'auteur en attente** | `3b1eb24` ; `0b1d2d9` + analyseur `f216b32` ; E11.b `3507527`, `1985846`, `e159d0d` ; T7 `8773965` ; clôture `1f7e122` ; suites : `docs/plan-audio-mix-exact-muet.md`, parent `f06b1bd`…`88c19ce`, moteur `7c017ae5`, `af5246ca`, analyseur `18a8546`, `8348d7f`, `b79b45a` |
+| E11 audio | ✅ close (validée en jeu le 2026-08-30) ; **E11.b ✅ validée en jeu le 2026-09-07** avec T7 ; **suites D-E13D-37 (mixage stéréo exact, son coupé, `IsBgmActivated`) livrées le 2026-09-25, validées en jeu le 2026-09-26** | `3b1eb24` ; `0b1d2d9` + analyseur `f216b32` ; E11.b `3507527`, `1985846`, `e159d0d` ; T7 `8773965` ; clôture `1f7e122` ; suites : `docs/plan-audio-mix-exact-muet.md`, parent `f06b1bd`…`88c19ce`, moteur `7c017ae5`, `af5246ca`, analyseur `18a8546`, `8348d7f`, `b79b45a` |
 | E12 dialogues Yarn + MGUI | ✅ close (validée en jeu le 2026-09-02) — **E12.c** (fidélité fine) datée « plus tard » | E12.d `774255f` ; voir `plan-e12-dialogues.md` |
 | **E9.d mode cellulaire des fonds** | ✅ close (validée en jeu le 2026-09-07 sur 420, 391, 271, 443) | convertisseur `e1b9844`, moteur `53fed7df`+`342377a5`, DLL `ae30b42` |
 | E13.a HUD, la jauge permanente | ✅ close (validée en jeu ; C4 et C5.b le 2026-09-20) | parent `329b19b`, `d9fac87`, `3cf8dd9`, `babb16f`, `48df065`, `8cb52c9`, C4 `7d6a37a` mergée `8dcfd81` ; moteur `19fcd84c` |
