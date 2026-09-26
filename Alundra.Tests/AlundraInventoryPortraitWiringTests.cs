@@ -257,6 +257,30 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
         Assert.Equal(Vector2.One, viewModel.Portrait.Scale);
     }
 
+    /// <summary>A quad with no area is the original's 0x0 quad, written as a zero scale: the element never collapses
+    /// and shows again, which would run the window's layout twice per flight (plan D3: render-only).</summary>
+    [Fact]
+    public void ViewModel_AQuadWithNoArea_IsAZeroScale_NeverACollapse()
+    {
+        var portrait = new AlundraInventoryPortrait();
+        var viewModel = new InventoryPortraitViewModel();
+        var source = Guid.Parse("19436250-bfec-529a-bf3f-23d258f82db6");
+
+        viewModel.Apply(portrait, source); // idle
+        Assert.Equal(Visibility.Visible, viewModel.Visibility);
+        Assert.Equal(Vector2.Zero, viewModel.Scale);
+
+        portrait.Start(160, 120);
+        portrait.Step(); // call 1: 0x0
+        viewModel.Apply(portrait, source);
+        Assert.Equal(Visibility.Visible, viewModel.Visibility);
+        Assert.Equal(Vector2.Zero, viewModel.Scale);
+
+        portrait.Step(); // call 2: 3x3, the element was already visible and laid out
+        viewModel.Apply(portrait, source);
+        Assert.Equal(new Vector2(3f / 48f, 3f / 56f), viewModel.Scale);
+    }
+
     [Fact]
     public void Presenter_WithoutAPortraitIndex_KeepsThePortraitHidden()
     {

@@ -161,11 +161,14 @@ public sealed class InventoryPortraitViewModel : ViewModelBase
         }
     }
 
-    /// <summary>Writes the quad <paramref name="portrait"/> drew this tick. Without a source (degraded export) the
-    /// portrait stays hidden.</summary>
+    /// <summary>Writes the quad <paramref name="portrait"/> drew this tick. A quad with no area (idle, the first
+    /// opening call, the last return call) is a scale of zero, exactly the original's 0x0 quad, and never a
+    /// visibility change: collapsing and showing the element would run the window's layout twice per flight, which the
+    /// render-only transform exists to avoid (plan D3, MGUI ADR-0006). Only a missing source (degraded export)
+    /// collapses the element.</summary>
     internal void Apply(AlundraInventoryPortrait portrait, Guid? sourceId)
     {
-        if (!sourceId.HasValue || !portrait.IsVisible)
+        if (!sourceId.HasValue)
         {
             Visibility = Visibility.Collapsed;
             return;
