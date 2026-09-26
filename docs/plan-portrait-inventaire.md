@@ -335,7 +335,7 @@ moteur abandonnables, `develop` et `main` intacts). Commits : MGUI
 `feat(xaml): bind the translation and scale of a render transform`, puis `docs(decisions): …` ; moteur
 `chore(submodules): point MGUI at bindable render transforms`.
 
-### ⏳ PI4 — Analyseur : le portrait dans l'atlas et dans `map_alundra.json`
+### ✅ PI4 — Analyseur : le portrait dans l'atlas et dans `map_alundra.json` — faite le 2026-09-26 (analyseur `e4f3033`)
 
 **Prérequis** : PI2. **Dépôt** : l'analyseur, branche `chantier/portrait-inventaire`.
 - Un champ `InventoryPortrait` (`SiImage`, nul par défaut) sur le `GameMap` (P2), marqué
@@ -351,6 +351,30 @@ moteur abandonnables, `develop` et `main` intacts). Commits : MGUI
 index au §7) ; `map_alundra.json` ne diffère que par le champ ajouté ; les `map_<n>.json` des autres cartes sont
 identiques ; le rectangle ne recoupe sur la page 2 aucune signature de palette différente (D-E13C-3, script au §7).
 Build de l'extracteur. Commit : `feat(extractor): export the inventory portrait of sprite record 0`.
+
+**Fait le 2026-09-26** (analyseur `e4f3033`, trois fichiers) :
+- `GameMap.InventoryPortrait` (`AlundraEngine/DatasBin/GameMap.cs`), `[JsonIgnore(Condition = WhenWritingNull)]` ;
+- rempli après `datasBin.AlundraGameMap.Load(br)` (`AlundraDataExtractor/Program.cs:1365-1367`) ;
+- rendu en dernier par `EnumerateImages` (`GameMapHelper.cs`).
+
+Build de l'extracteur : 0 erreur ; ses avertissements sont préexistants. L'extraction de l'étape 1 de PI6, faite dès
+PI4 vers un dossier neuf, sert d'acceptation (script `pi4_proof.py` au §7) :
+
+| Preuve | Résultat |
+|---|---|
+| Portrait ↔ référence, fichier par fichier | 4450 / 4450 ; **2 différents** : `data/map_alundra.json`, `data/map_alundra_spritesheet.png` (prédit) ; `o}i`/`s}kr` : 0 |
+| Atlas hors du rectangle (200, 568)–(248, 624) | 0 pixel différent (RGBA) |
+| Atlas de référence dans le rectangle | 0 pixel opaque |
+| Rectangle ↔ décodage indépendant de `DATAS.BIN` | **0 texel différent sur 2688** ; histogramme des index {0: 565, 1: 189, 2: 189, 3: 207, 4: 203, 5: 153, 6: 179, 7: 144, 8: 126, 9: 99, 10: 52, 11: 68, 12: 75, 13: 71, 14: 88, 15: 280} |
+| `map_alundra.json` sans le champ ajouté | identique à la référence |
+| Champ ajouté | page 2, palette 16, source (200, 56), 48×56, signature `61779762221058`, atlas (200, 568) |
+| D-E13C-3, page 2 | 88 images distinctes, **aucune** ne recoupe le portrait |
+
+**Mesuré au passage** : l'atlas écrit ses couleurs dans l'ordre natif de la PS1 (rouge = bits 0-4).
+- La première version de la preuve supposait l'ordre qu'on lit dans `ImageHelper.FromPsxColor(int)` (rouge =
+  bits 10-14), et chaque texel opaque différait.
+- Les 15 couleurs du rectangle sont ensuite apparues dans l'ordre natif, chacune avec le compte exact de son index.
+  C'est le même chemin (`GenerateSpriteBitmap`) que tous les sprites déjà validés en jeu.
 
 ### ⏳ PI5 — Convertisseur : le sprite du portrait et son index
 
@@ -508,3 +532,234 @@ texte décodé ; chaque export est prouvé par double export ; toutes les suites
 | 2026-09-26 | Relecture fraîche : **REVISE**, trois blocages, tous acceptés (FIX). (1) Un champ nul ajouté au `GameMap` serait écrit dans chaque `map_<n>.json` : P2 et PI4 l'omettent quand il est nul (`JsonIgnoreCondition.WhenWritingNull`, `AlundraEngine` cible `net9.0-windows`). (2) La voie des objets imbriqués liables ne s'applique pas à `UIRenderTransform` : P1 et PI3 retiennent deux attributs d'élément renommés vers le chemin cible imbriqué `RenderTransform.Translation`/`.Scale`, cible et type de valeur nommés, poussée par copie typée (§1.5, lu en session principale). (3) Ni retour arrière ni budget : §5.1 et §5.2 ajoutés, sauvegardes de `data-extracted/` et d'`alundra-project/` avant réécriture (PI6). |
 | 2026-09-26 | Second relecteur frais, sur le plan révisé : **READY**. Soumis à l'auteur. |
 | 2026-09-26 | **Approuvé par l'auteur, P1 à P5 compris, mode AUTO.** Branches créées (en-tête). |
+| 2026-09-26 | PI2 faite : extraction de référence identique à `data-extracted/` ; cause du remaster établie. PI4 faite (analyseur `e4f3033`), prouvée par l'étape 1 de PI6. PI1 et PI3 lancées en parallèle (agent indépendant, exécutant). |
+
+### PI2, PI6 — `compare_trees.py` (comparaison de deux extractions)
+
+```python
+"""Compare two extraction trees file by file (SHA-1), and count undecoded-text markers.
+
+Usage: python compare_trees.py <left> <right> [--markers]
+Prints: counts, files only in left/right, files that differ. Exit code 0 when identical.
+"""
+import hashlib
+import os
+import sys
+
+MARKERS = ['o}i', 's}kr']
+
+
+def sha1(path):
+    h = hashlib.sha1()
+    with open(path, 'rb') as f:
+        for chunk in iter(lambda: f.read(1 << 20), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def walk(root):
+    files = {}
+    for dirpath, _, names in os.walk(root):
+        for name in names:
+            full = os.path.join(dirpath, name)
+            rel = os.path.relpath(full, root).replace('\\', '/')
+            files[rel] = full
+    return files
+
+
+def main():
+    left, right = sys.argv[1], sys.argv[2]
+    lf, rf = walk(left), walk(right)
+    only_l = sorted(set(lf) - set(rf))
+    only_r = sorted(set(rf) - set(lf))
+    common = sorted(set(lf) & set(rf))
+    differ = [rel for rel in common if os.path.getsize(lf[rel]) != os.path.getsize(rf[rel]) or sha1(lf[rel]) != sha1(rf[rel])]
+    print(f'left={len(lf)} right={len(rf)} common={len(common)} only_left={len(only_l)} only_right={len(only_r)} differ={len(differ)}')
+    for rel in only_l:
+        print('ONLY_LEFT ', rel)
+    for rel in only_r:
+        print('ONLY_RIGHT', rel)
+    for rel in differ:
+        print('DIFFER    ', rel)
+    if '--markers' in sys.argv:
+        for label, files in (('left', lf), ('right', rf)):
+            counts = {m: 0 for m in MARKERS}
+            hit_files = 0
+            for rel, full in files.items():
+                if not rel.endswith('.json'):
+                    continue
+                with open(full, 'rb') as f:
+                    text = f.read().decode('utf-8', errors='replace')
+                hit = False
+                for m in MARKERS:
+                    c = text.count(m)
+                    counts[m] += c
+                    hit = hit or c > 0
+                hit_files += 1 if hit else 0
+            print(f'MARKERS {label}: ' + ', '.join(f'{m!r}={c}' for m, c in counts.items()) + f', files with markers={hit_files}')
+    sys.exit(0 if not (only_l or only_r or differ) else 1)
+
+
+if __name__ == '__main__':
+    main()
+```
+
+### PI4, PI6 — `pi4_proof.py` (preuve au texel, JSON, règle D-E13C-3)
+
+```python
+"""PI4/PI6 step 1 proof, read-only. Compares the reference extraction and the portrait extraction:
+1. the two atlases are identical outside the portrait rectangle (RGBA, pixel by pixel);
+2. the reference atlas is fully transparent inside the rectangle;
+3. inside the new atlas, each texel equals an INDEPENDENT decode of sprite record 0's portrait from
+   DATAS.BIN (index map read straight from the file), coloured by the extractor's own convention
+   (DATAS.BIN little-endian palette words in the native PS1 order, as the atlas stores them);
+4. map_alundra.json differs only by the added InventoryPortrait field;
+5. D-E13C-3: on page 2, no other image rectangle of a different palette intersects the portrait's.
+Usage: python pi4_proof.py <reference_dir> <portrait_dir>"""
+import json
+import struct
+import sys
+
+from PIL import Image
+
+REF, NEW = sys.argv[1], sys.argv[2]
+DATAS = r"D:/development/repo/Alundra Remake/Alundra (France)/Alundra (France)_extracted/DATA/DATAS.BIN"
+
+# ---- independent decode of record 0's portrait (layout as in the decompilation's readers) ----
+f = open(DATAS, 'rb')
+
+
+def u32(off):
+    f.seek(off)
+    return struct.unpack('<I', f.read(4))[0]
+
+
+def i32(off):
+    f.seek(off)
+    return struct.unpack('<i', f.read(4))[0]
+
+
+spr_rec, sheet_off, sheet_end = u32(0), u32(4), u32(0x14)
+table_ptr, effects_ptr, pal_ptr = i32(spr_rec + 0xc), i32(spr_rec + 0x10), i32(spr_rec + 0x14)
+table = [i32(spr_rec + table_ptr + 4 * k) for k in range((effects_ptr - table_ptr) // 4)]
+f.seek(spr_rec + pal_ptr)
+raw = f.read(41 * 32)
+pals = [[struct.unpack_from('<H', raw, (p * 16 + c) * 2)[0] for c in range(16)] for p in range(41)]
+f.seek(sheet_off + 6)
+data = f.read(sheet_end - sheet_off - 6)
+vram = bytearray(256 * 256 * 8 // 2)
+i = b = 0
+while i < len(vram) and b < len(data):
+    v = data[b]
+    b += 1
+    if v == 0xad:
+        seek = data[b]
+        b += 1
+        if seek == 0:
+            vram[i] = v
+            i += 1
+        else:
+            ln = data[b]
+            b += 1
+            s = i - seek
+            for _ in range(ln):
+                vram[i] = vram[s]
+                i += 1
+                s += 1
+    else:
+        vram[i] = v
+        i += 1
+
+rec = spr_rec + table[0]
+frames_ptr = i32(rec + 0xc)
+f.seek(spr_rec + frames_ptr)
+f.read(2)
+img = f.read(14)
+page, pal, sx, sy, w, h = img[:6]
+page &= 7
+print(f'record 0 portrait: page={page} palette={pal} source=({sx},{sy}) size={w}x{h}')
+assert (page, pal, sx, sy, w, h) == (2, 16, 200, 56, 48, 56), 'D0.9 measurement not reproduced'
+
+
+def extractor_rgba(c):
+    # Measured on the written atlas (2026-09-26): its texels follow the native PS1 order, R = bits 0-4,
+    # G = bits 5-9, B = bits 10-14, each << 3, and the colour 0x0000 is transparent. (A first run of this
+    # script assumed ImageHelper.FromPsxColor's R = bits 10-14 and found every opaque texel off; the
+    # 15 colours then matched the native order with the exact index counts.)
+    return ((c & 0x1f) << 3, ((c >> 5) & 0x1f) << 3, ((c >> 10) & 0x1f) << 3, 255 if c != 0 else 0)
+
+
+expected = {}
+hist = {}
+for yy in range(h):
+    for xx in range(w):
+        px, py = sx + xx, page * 256 + sy + yy
+        byte = vram[py * 128 + px // 2]
+        idx = (byte >> 4) if (px & 1) else (byte & 0xf)
+        hist[idx] = hist.get(idx, 0) + 1
+        expected[(px, py)] = extractor_rgba(pals[pal][idx])
+print('index histogram', dict(sorted(hist.items())))
+
+# ---- atlases ----
+ra = Image.open(f'{REF}/data/map_alundra_spritesheet.png').convert('RGBA')
+na = Image.open(f'{NEW}/data/map_alundra_spritesheet.png').convert('RGBA')
+assert ra.size == na.size, (ra.size, na.size)
+rx0, ry0, rx1, ry1 = sx, page * 256 + sy, sx + w, page * 256 + sy + h
+rp, np_ = ra.load(), na.load()
+outside_diff = inside_ref_opaque = inside_mismatch = 0
+for y in range(ra.size[1]):
+    for x in range(ra.size[0]):
+        inside = rx0 <= x < rx1 and ry0 <= y < ry1
+        if not inside:
+            if rp[x, y] != np_[x, y]:
+                outside_diff += 1
+        else:
+            if rp[x, y][3] != 0:
+                inside_ref_opaque += 1
+            e = expected[(x, y)]
+            got = np_[x, y]
+            # A transparent texel carries no colour: compare alpha only there.
+            if (e[3] == 0 and got[3] != 0) or (e[3] != 0 and got != e):
+                inside_mismatch += 1
+print(f'atlas size={ra.size} rect=({rx0},{ry0})-({rx1},{ry1})')
+print(f'outside rectangle: {outside_diff} differing pixels (expected 0)')
+print(f'reference inside rectangle: {inside_ref_opaque} opaque pixels (expected 0)')
+print(f'new inside rectangle vs independent decode: {inside_mismatch} mismatching texels of {w * h} (expected 0)')
+
+# ---- JSON ----
+rj = json.load(open(f'{REF}/data/map_alundra.json', encoding='utf-8'))
+nj = json.load(open(f'{NEW}/data/map_alundra.json', encoding='utf-8'))
+portrait = nj.pop('InventoryPortrait', None)
+print('map_alundra.json: InventoryPortrait present:', portrait is not None)
+print('map_alundra.json: identical once the field is removed:', rj == nj)
+if portrait is not None:
+    keys = ['Spritesheet', 'Palette', 'SourceX', 'SourceY', 'Swidth', 'Sheight', 'Signature', 'AtlasX', 'AtlasY']
+    print('InventoryPortrait:', {k: portrait.get(k) for k in keys})
+
+# ---- D-E13C-3 on page 2 ----
+hits = []
+
+
+def walk_images(node):
+    if isinstance(node, dict):
+        if 'Signature' in node and 'Spritesheet' in node and 'SourceX' in node:
+            yield node
+        for v in node.values():
+            yield from walk_images(v)
+    elif isinstance(node, list):
+        for v in node:
+            yield from walk_images(v)
+
+
+seen = set()
+for im in walk_images(rj):
+    if im['Signature'] in seen or (im['Spritesheet'] & 7) != page:
+        continue
+    seen.add(im['Signature'])
+    ax0, ay0, ax1, ay1 = im['SourceX'], im['SourceY'], im['SourceX'] + im['Swidth'], im['SourceY'] + im['Sheight']
+    if ax0 < sx + w and sx < ax1 and ay0 < sy + h and sy < ay1:
+        hits.append((im['Signature'], im['Palette'], (ax0, ay0, ax1, ay1)))
+print(f'page {page}: {len(seen)} distinct images; intersecting the portrait: {len(hits)}')
+for s_, p_, r_ in hits:
+    print('   signature', s_, 'palette', p_, 'rect', r_, 'DIFFERENT PALETTE' if p_ != pal else 'same palette')
+```
