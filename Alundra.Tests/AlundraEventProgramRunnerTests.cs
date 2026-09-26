@@ -3007,14 +3007,21 @@ public class AlundraEventProgramRunnerTests
     public void ChangeMap_0x53_DecodesMapIdTileEffectAndSfx_ExactValues()
     {
         AlundraWarpDirector.Instance.ResetForTests();
+        var projectRoot = FindProjectRootForRealMap389();
         try
         {
             var soundPlayer = new FakeWarpSoundPlayer();
-            AlundraWarpDirector.Instance.AttachToWorld(gameManager: null, soundPlayer, projectPath: string.Empty);
+            // T4.4 (docs/plan-bgm-demarrage-binaire.md, S1): a real project path, so IsWarpSoundSilent
+            // reads real manifest data instead of treating every sfxId as silent (manifest miss) - sfx 69
+            // (seq_num -1, max_voices 0, real manifest) is genuinely silent (B17) and would never reach
+            // PlaySfx regardless of project path, so this test's own "raw v[7] forwarded" claim now needs
+            // an AUDIBLE sfx (55, same fixture as acceptance item (o)) to still exercise it.
+            AlundraWarpDirector.Instance.AttachToWorld(gameManager: null, soundPlayer, projectRoot);
 
-            // map id = (v2<<8)|v1 = (1<<8)|17 = 273; tile (5,6,2); effect 4; sfx 69 - same operands as the
-            // previous test, this one is purely about the decoded values (§ T7 "Ce que 0x53 fait vraiment").
-            var document = NewDocument(0x53, 17, 1, 5, 6, 2, 4, 69, 0xFF);
+            // map id = (v2<<8)|v1 = (1<<8)|17 = 273; tile (5,6,2); effect 4; sfx 55 - same operands as the
+            // previous test (bar sfx), this one is purely about the decoded values (§ T7 "Ce que 0x53 fait
+            // vraiment").
+            var document = NewDocument(0x53, 17, 1, 5, 6, 2, 4, 55, 0xFF);
             var player = NewPlayerForWarp(targetAnimationId: 0, targetDirection: 0);
             var context = new FakeEntityWorldContext { PlayerEntity = player };
             var runner = NewRunner(document, worldContext: context);
@@ -3033,8 +3040,9 @@ public class AlundraEventProgramRunnerTests
             Assert.Equal(2 << 20, record.PosZ);
             Assert.Equal(4, record.EffectId);
 
-            // The raw v[7] operand is played directly - no WarpBehaviorTable lookup (there is no portal).
-            Assert.Equal(new[] { 69 }, soundPlayer.Requests);
+            // The raw v[7] operand is played directly - no WarpBehaviorTable lookup (there is no portal) -
+            // when it is not silent (T4.4).
+            Assert.Equal(new[] { 55 }, soundPlayer.Requests);
         }
         finally
         {

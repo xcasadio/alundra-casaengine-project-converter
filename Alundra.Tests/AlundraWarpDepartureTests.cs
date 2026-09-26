@@ -841,6 +841,53 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         }
     }
 
+    /// <summary>Records every <see cref="IAlundraSoundPlayer.PlaySfx"/> request - same shape as
+    /// <c>AlundraEventProgramRunnerTests.FakeWarpSoundPlayer</c>, local to this class since T4.4's own
+    /// test needs it here too.</summary>
+    private sealed class FakeWarpSoundPlayer : IAlundraSoundPlayer
+    {
+        public readonly List<int> Requests = new();
+        public void PlaySfx(int sfxId) => Requests.Add(sfxId);
+        public void RemixVoice(int sfxId, int left, int right) { }
+        public void FlushFrameSounds() { }
+        public void StopAllSfx() { }
+    }
+
+    [Fact]
+    public void Warp0x53Departure_SilentWarpSound379_NeverStartsItsVoice_AudibleWarpSoundStillDoes()
+    {
+        // T4.4 (docs/plan-bgm-demarrage-binaire.md, S1): sound 379 (real manifest: seq_num -1, max_voices
+        // 0, ONE playable tone - B17's own silent test is seq_num/max_voices, not tone count) must never
+        // reach PlaySfx, exactly like the executable's own 0x80049f78 zeroing. Sound 55 (seq_num -1,
+        // max_voices 4: audible, same fixture as acceptance item (o)) still does.
+        var projectRoot = FindProjectRoot();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+        EngineEnvironment.ProjectPath = projectRoot;
+        try
+        {
+            var soundPlayer = new FakeWarpSoundPlayer();
+            AlundraWarpDirector.Instance.AttachToWorld(gameManager: null, soundPlayer, projectRoot);
+
+            var player = NewPlayer(posXPixels: 18 * 24 + 12, posYPixels: 38 * 16 + 8);
+
+            AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
+                desiredMapIndex: 45, posX: 10 * 24, posY: 40 * 16, posZ: 0, effectId: 0, sfxId: 379,
+                player, AlundraGameState.Instance);
+
+            Assert.DoesNotContain(379, soundPlayer.Requests); // silent - never played.
+
+            AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
+                desiredMapIndex: 45, posX: 10 * 24, posY: 40 * 16, posZ: 0, effectId: 0, sfxId: 55,
+                player, AlundraGameState.Instance);
+
+            Assert.Contains(55, soundPlayer.Requests); // audible - still played.
+        }
+        finally
+        {
+            EngineEnvironment.ProjectPath = previousProjectPath;
+        }
+    }
+
     /// <summary>The real <c>Musics/bgm-manifest.json</c>'s own asset id for sound index 25 (389/390's
     /// own track) - same lookup T1 (<c>AlundraMusicPlayerTests</c>) performs.</summary>
     private static Guid Track25AssetId(string projectRoot)

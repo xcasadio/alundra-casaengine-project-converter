@@ -669,7 +669,7 @@ test de S3. Même branche `chantier/bgm-demarrage-binaire`.
   `Warp0x53Departure_SilentWarpSound_ArmsFadeOnly_NeverLoadsDestination_ThenArrivalPlaysIt` et
   `Warp0x53Departure_AudibleWarpSound_StopsTheDepartingBgm_NeverArmsTheFade_ThenArrivalPlaysDestination`.
 
-### ⏳ T4.4 — S1 : un son de warp muet n'est jamais joué
+### ✅ T4.4 — S1 : un son de warp muet n'est jamais joué
 
 - Objectif : aux deux sites de départ, le son de warp n'est joué que s'il n'est pas muet au sens de B17 : l'original
   met le son à 0 (`0x80049f78`) et ne le joue dans aucune branche. Seul cas réel : 379 (`seq_num` -1, `max_voices`
@@ -678,6 +678,13 @@ test de S3. Même branche `chantier/bgm-demarrage-binaire`.
   voix de 379 ; un son audible (55) joue toujours.
 - Validation : `Alundra.Tests` vert ; mutation en vrai : `PlaySfx` sans la garde fait tomber le test.
 - Commit : `fix(audio): a silent warp sound is never played, as the executable does`
+- **Validation (2026-09-26)** : build 0 erreur ; `Alundra.Tests` 1285/1285 (1284 + 1 nouveau) ; mutation en vrai
+  (retrait de la garde `if (!isSilent)` au site `0x53`) fait tomber le nouveau test ; test ajouté dans
+  `Alundra.Tests/AlundraWarpDepartureTests.cs` :
+  `Warp0x53Departure_SilentWarpSound379_NeverStartsItsVoice_AudibleWarpSoundStillDoes` (sons 379 et 55, manifeste
+  réel) ; test existant modifié dans `Alundra.Tests/AlundraEventProgramRunnerTests.cs` :
+  `ChangeMap_0x53_DecodesMapIdTileEffectAndSfx_ExactValues` (son 69 muet remplacé par 55 audible + chemin projet
+  réel, sinon la garde neuve le fait tomber puisque 69 est muet dans le vrai manifeste).
 
 ### ⏳ T4.5 — Pointeur du moteur sur `b02d3e86` (D9)
 

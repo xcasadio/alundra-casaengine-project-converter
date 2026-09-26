@@ -383,9 +383,15 @@ public sealed class AlundraWarpDirector
             soundAction: () =>
             {
                 // B17/P7: same BGM half as the portal path's own PlayDepartureSound - see that method's
-                // own doc.
-                AlundraMusicPlayer.Instance.HandleWarpDeparture((int)desiredMapIndex, IsWarpSoundSilent(sfxId));
-                _soundPlayer?.PlaySfx(sfxId);
+                // own doc. T4.4 (S1): the executable zeroes a silent warp sound (0x80049f78) and never
+                // plays it in any branch - IsWarpSoundSilent is computed exactly once and the SAME value
+                // feeds both HandleWarpDeparture (the BGM decision) and the PlaySfx guard below.
+                var isSilent = IsWarpSoundSilent(sfxId);
+                AlundraMusicPlayer.Instance.HandleWarpDeparture((int)desiredMapIndex, isSilent);
+                if (!isSilent)
+                {
+                    _soundPlayer?.PlaySfx(sfxId);
+                }
             });
     }
 
@@ -458,13 +464,21 @@ public sealed class AlundraWarpDirector
     /// <see cref="AlundraMusicPlayer.EvaluatePendingWarpDeparture"/>'s own doc for why. The destination
     /// track itself only starts at ARRIVAL, through that map's own
     /// <see cref="AlundraMusicPlayer.PlayMapMusic"/> call (B10) - see B17's own fact for why loading at
-    /// departure, as this port used to, is unfaithful.
+    /// departure, as this port used to, is unfaithful. T4.4 (S1): a silent warp sound (in the B17 sense
+    /// <see cref="IsWarpSoundSilent"/> already decides) is never played - the executable zeroes it
+    /// (<c>0x80049f78</c>) and never plays it in any branch; the SAME <see cref="IsWarpSoundSilent"/>
+    /// value feeds both this guard and <see cref="AlundraMusicPlayer.HandleWarpDeparture"/>'s own BGM
+    /// decision.
     /// </summary>
     private void PlayDepartureSound(uint desiredMapIndex, int warpBehaviorId)
     {
         var sfxId = WarpBehaviorTable[warpBehaviorId & 0xF];
-        AlundraMusicPlayer.Instance.HandleWarpDeparture((int)desiredMapIndex, IsWarpSoundSilent(sfxId));
-        _soundPlayer?.PlaySfx(sfxId);
+        var isSilent = IsWarpSoundSilent(sfxId);
+        AlundraMusicPlayer.Instance.HandleWarpDeparture((int)desiredMapIndex, isSilent);
+        if (!isSilent)
+        {
+            _soundPlayer?.PlaySfx(sfxId);
+        }
     }
 
     /// <summary>
