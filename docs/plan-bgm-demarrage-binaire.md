@@ -1,6 +1,6 @@
 # Plan — BGM : démarrer, arrêter et relancer la musique comme l'exécutable
 
-**État** : ⏳ rédigé le 2026-09-25, relu par des relecteurs frais (REVISE, REVISE, puis **READY** en clôture) ;
+**État** : ✅ **CLOS le 2026-09-26, validé en jeu par l'auteur.** Rédigé le 2026-09-25, relu par des relecteurs frais (REVISE, REVISE, puis **READY** en clôture) ;
 arbitrages P1, P2, P3, P7 tranchés par l'auteur (D5 à D8), les autres points à valider restent des propositions.
 **Approuvé par l'auteur le 2026-09-25, mode AUTO** (travail réversible dans le périmètre de ce plan, un commit par
 tâche sur les branches dédiées, ni push ni merge). T0.1 bloquée puis débloquée le même jour, après le merge du plan
@@ -583,7 +583,7 @@ fin.**
   `plan-transitions-carte.md` (D-T-8 : le départ ne charge jamais la musique), `plan-conversion-totale.md`
   (paragraphe et ligne E11). Aucun caractère de contrôle dans les fichiers écrits. Rédaction en session principale.
 
-### 🧪 T3.2 — Recette de l'auteur
+### ✅ T3.2 — Recette de l'auteur
 
 - Lancement : Launcher du worktree sur `alundra-project/AlundraGame.json` du checkout principal (projet inchangé).
   **Corrigé à l'exécution (2026-09-25)** : tel qu'écrit, ce lancement aurait chargé l'**ancienne** DLL. Le jeu charge
@@ -616,7 +616,8 @@ fin.**
   - `AlundraGame` (analyseur) : indisponible tant que `Alundra.sln` ne builde pas (O5 du plan audio) ; si l'auteur l'a
     réparé entre-temps, les mêmes cartes, facultativement.
 - Commit : `docs(plan): close the executable-faithful BGM start, stop and restart`
-- **État (2026-09-25)** : 🧪, recette préparée, écoute de l'auteur en attente. Branches : parent
+- **Validation (2026-09-26)** : **validé en jeu par l'auteur** (« ok valider »), sur la recette ci-dessus.
+- **État (2026-09-25)** : recette préparée. Branches : parent
   `chantier/bgm-demarrage-binaire` (dans le dépôt partagé), analyseur `chantier/bgm-demarrage-binaire` `e495d7f`
   rapatrié par `git fetch` dans le checkout principal. Rien n'est poussé ni mergé.
 
@@ -952,3 +953,4 @@ for a in (0x800a82b0, 0x8009a858):
 | 2026-09-25 | Relecteur frais de clôture : **READY**. Plan soumis ; l'auteur retient les options proposées de P1, P2, P3 et P7 (D5 à D8). |
 | 2026-09-25 | Plan approuvé, mode AUTO. T0.1 ⚠️ Blocked à l'étape 1 : plan audio non mergé dans `main` (O3). Arrêt. |
 | 2026-09-25 | Plan audio mergé par l'auteur ; reprise en AUTO. T0.1 à T3.1 ✅ (`acba5ea`, analyseur `e495d7f`, `7ebc93e`, `6012bb0`, `417d766`, `cb1387a`), T2.3 CONFIRMED (vérificateur et critique de complétude). Écart de `main` consigné (O4). T3.2 🧪 : recette préparée dans le worktree. |
+| 2026-09-26 | Recette validée en jeu par l'auteur. T3.2 ✅, **chantier clos**. Restent à l'auteur : le pointeur moteur de `main` (O4), le merge des branches `chantier/bgm-demarrage-binaire` (parent et analyseur), et les suites S1 à S4. |
