@@ -686,7 +686,7 @@ test de S3. Même branche `chantier/bgm-demarrage-binaire`.
   `ChangeMap_0x53_DecodesMapIdTileEffectAndSfx_ExactValues` (son 69 muet remplacé par 55 audible + chemin projet
   réel, sinon la garde neuve le fait tomber puisque 69 est muet dans le vrai manifeste).
 
-### ⏳ T4.5 — Pointeur du moteur sur `b02d3e86` (D9)
+### ✅ T4.5 — Pointeur du moteur sur `b02d3e86` (D9)
 
 - Objectif : `main` compile une fois mergé. Le gitlink du moteur passe de `43688074` à `b02d3e86` (`main` du moteur,
   descendant de `716c02c7`), enregistré par `update-index --cacheinfo`, **sans `git add`** (le moteur du checkout
@@ -696,6 +696,18 @@ test de S3. Même branche `chantier/bgm-demarrage-binaire`.
 - Validation : build 0 erreur ; `Alundra.Tests` et convertisseur verts ; `git ls-tree HEAD CasaEngineMonogame` =
   `b02d3e86`.
 - Commit : `chore(submodules): point at the engine main that carries the stereo voices`
+- **Validation (2026-09-26)** : moteur du worktree extrait à `b02d3e86` (MGUI `7a801e8`, NvgSharp `9c0da03`, les
+  commits qu'il enregistre ; 17 commits après `716c02c7`, aucun dans `CasaEngine/Framework/Audio`). Build du parent
+  0 erreur ; `Alundra.Tests` **1285 / 1285** ; tests du convertisseur **194 / 194** ; goldens identiques (contenu
+  normalisé égal à l'index, fins de ligne rendues). Gitlink enregistré par `update-index --cacheinfo`, sans
+  `git add`.
+- **Contrôles de la session principale sur T4.1 à T4.4** : deux relecteurs frais, aucun constat P0-P2 ; mutations
+  refaites en vrai (`t4_mutations.py`) : méthode extraite qui ne consomme plus le drapeau → 6 tests de
+  `AlundraMusicPlayerTests` tombent ; site `0x53` qui charge la destination → les 2 tests `Warp0x53Departure_*`
+  tombent ; son muet joué au site `0x53` → le test 379 tombe. **Les tests de trace réécrivent les fichiers
+  dorés en LF** : `git status` les montre modifiés alors que leur contenu normalisé est égal à l'index (vérifié
+  par `git hash-object --path`) ; ils ont été rendus par `git checkout`. Artefact préexistant du harnais, à
+  connaître.
 
 ### ⏳ T4.6 — Vérification et merge
 
@@ -717,18 +729,22 @@ test de S3. Même branche `chantier/bgm-demarrage-binaire`.
 
 ## Suites consignées (hors de cette tâche)
 
-- **S1** — Un son de warp « muet » au sens de B17 mais jouable (seul cas du manifeste : 379, une tonalité) est encore
+- **S1** (fait : T4.4, `253e36d`) — Un son de warp « muet » au sens de B17 mais jouable (seul cas du manifeste : 379, une tonalité) est encore
   joué par le port au départ, via `0x53` ; l'original met le son à 0 (`0x80049f78`) et ne le joue pas. Moitié
   « bruitages » du départ, hors périmètre ; le port le jouait déjà avant ce chantier. Remède : ne pas appeler
   `PlaySfx` quand `IsWarpSoundSilent` est vrai.
-- **S2** — `SimulateFrameClose` (`AlundraMusicPlayerTests`) recopie le bloc de fermeture de frame pour trois tests
+- **S2** (fait : T4.2, `62faa3e`) — `SimulateFrameClose` (`AlundraMusicPlayerTests`) recopie le bloc de fermeture de frame pour trois tests
   qui pilotent les singletons ; le site réel reste couvert par les tests qui passent par `AlundraWorldProxy.Update`.
-- **S3** — Aucun test ne couvre la moitié musique du départ par `0x53` (`AlundraWarpDirector.cs:387`) ; son code est
+- **S3** (fait : T4.3, `3f8dc59`) — Aucun test ne couvre la moitié musique du départ par `0x53` (`AlundraWarpDirector.cs:387`) ; son code est
   identique à celui du portail (`:466`), couvert par les tests n, o, p et 74. Remède : un test de départ `0x53` au
   niveau du proxy, son muet puis son audible, et la mutation « `PlayMapMusic` en `:387` » qui doit le faire tomber.
-- **S4** — Le commentaire en ligne d'`InstallAudioSystems` (`AlundraWorldProxy.cs:997-1004`) dit encore que la
+- **S4** (fait : T4.1, `5a59de7`) — Le commentaire en ligne d'`InstallAudioSystems` (`AlundraWorldProxy.cs:997-1004`) dit encore que la
   musique d'entrée démarre à cet endroit ; elle démarre à la fermeture de frame (B9, B10). La doc XML de
   `TriggerMapEntryMusic` est juste. Documentation seule.
+- **S5** — La garde « son muet non joué » du site portail (`AlundraWarpDirector.cs:478`) n'a pas de test : avec les
+  données réelles, les sons muets des portails (69, 75) n'ont aucune tonalité, rien n'est observable ; seul un faux
+  manifeste le permettrait. Aussi : un son absent du manifeste compte désormais comme muet et n'est plus joué
+  (mode dégradé seulement ; le lecteur de sons ne pourrait pas le jouer non plus). P4, sans suite prévue.
 
 ## Hors périmètre
 
