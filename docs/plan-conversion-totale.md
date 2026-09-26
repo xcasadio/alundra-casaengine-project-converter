@@ -711,7 +711,7 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
     accessoire équipé, fidélité stricte. Plan : `docs/plan-e13c-icones-hud.md`.
   - **E13.d — La gestion de l'inventaire : ✅ close, validée en jeu** — son portrait d'ouverture, reporté le
     2026-09-21 (D-E13D-12 amendée), est repris le 2026-09-26 par `docs/plan-portrait-inventaire.md` (approuvé, mode
-    AUTO ; livré et vérifié le 2026-09-26, recette de l'auteur en attente) — inventaire principal le 2026-09-24 (D6) ; sous-inventaire et bascule L1/R1 le 2026-09-25 (`docs/plan-e13d-sous-inventaire.md`, SI1 à SI12 : sous-inventaire, bascule, puis contre-vérification complète de l'inventaire principal contre l'exécutable, défauts de l'original corrigés, texte déroulant partagé, délai de warp de 0,2 s) (approuvée le 2026-09-21) : plan
+    AUTO ; livré, vérifié et **validé en jeu par l'auteur le 2026-09-26**) — inventaire principal le 2026-09-24 (D6) ; sous-inventaire et bascule L1/R1 le 2026-09-25 (`docs/plan-e13d-sous-inventaire.md`, SI1 à SI12 : sous-inventaire, bascule, puis contre-vérification complète de l'inventaire principal contre l'exécutable, défauts de l'original corrigés, texte déroulant partagé, délai de warp de 0,2 s) (approuvée le 2026-09-21) : plan
     `docs/plan-e13d-inventaire.md`, relu READY, décisions de l'auteur du 2026-09-21 enregistrées, dont
     les boîtes en image cuite depuis la copie A. Décision du
     2026-09-19 : porter l'original tel quel ; amendée le 2026-09-21 pour le dessin : pas au pixel près,
