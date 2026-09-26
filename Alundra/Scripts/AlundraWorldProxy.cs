@@ -994,14 +994,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // AlundraMusicPlayer.AttachToWorld/AlundraScreenFadeDirector.AttachToWorld above.
         AlundraBgmFadeDirector.Instance.AttachToWorld(audioService, SoundPlayer);
 
-        // The map-entry music start lives HERE rather than at a second call site in
+        // The map-entry music TRIGGER lives HERE rather than at a second call site in
         // InitializeWithWorld, and that placement is the point: an outcome-verifier of slice C1 showed
         // that deleting a separate `TriggerMapEntryMusic(world);` line left all 637 tests green - the
         // whole slice would have gone inert in the real game with a fully green suite. This method is
         // already driven end-to-end by AlundraWorldProxyAudioInstallationTests on the real install
         // path, so folding the trigger into it puts the last wiring link under test instead of leaving
-        // it to the in-game check alone. Ordering is unaffected: the original starts the BGM at the end
-        // of its own map-entry block, but the start depends on nothing this method runs after.
+        // it to the in-game check alone. This call only loads the destination track and arms
+        // ResetSoundFlag (B7); the voice itself starts at the end of the entry's first frame close, when
+        // that flag is consumed (B9/B10) - and a script's own 0xA6 within that same frame can still
+        // cancel it before it starts.
         TriggerMapEntryMusic(world);
     }
 

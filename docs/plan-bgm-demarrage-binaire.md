@@ -630,7 +630,7 @@ Demande de l'auteur du 2026-09-26 : « merge et fais les suites S1 à S4 » ; po
 `b02d3e86` » (D9). Les remèdes sont ceux de « Suites consignées ». Ordre : S4, S2, S3, puis S1, qui s'appuie sur le
 test de S3. Même branche `chantier/bgm-demarrage-binaire`.
 
-### ⏳ T4.1 — S4 : commentaire d'`InstallAudioSystems`
+### ✅ T4.1 — S4 : commentaire d'`InstallAudioSystems`
 
 - Objectif : le commentaire en ligne d'`InstallAudioSystems` (`AlundraWorldProxy.cs:997-1004`) dit que la musique
   d'entrée est chargée ici et démarre à la première fermeture de frame (B9, B10), et qu'un `0xA6` de cette frame peut
@@ -638,6 +638,7 @@ test de S3. Même branche `chantier/bgm-demarrage-binaire`.
 - Fichiers : `Alundra/Scripts/AlundraWorldProxy.cs` (commentaire seul).
 - Validation : build 0 erreur ; `Alundra.Tests` inchangé.
 - Commit : `docs(audio): the map-entry comment says the music starts at the first frame close`
+- **Validation (2026-09-26)** : build 0 erreur ; `Alundra.Tests` 1282/1282, aucun test ajouté ni modifié (commentaire seul).
 
 ### ⏳ T4.2 — S2 : le test passe par le code de fermeture de frame de production
 
