@@ -653,7 +653,7 @@ test de S3. Même branche `chantier/bgm-demarrage-binaire`.
   extraite vidée) fait tomber 11 tests, dont `SimulateFrameClose`-driven et `Update`-driven ; aucun test ajouté,
   `SimulateFrameClose` modifié pour appeler `AlundraWorldProxy.ConsumeMusicResetSoundFlagOnFrameClose`.
 
-### ⏳ T4.3 — S3 : la moitié musique du départ par `0x53`, testée
+### ✅ T4.3 — S3 : la moitié musique du départ par `0x53`, testée
 
 - Objectif : un test au niveau du proxy qui fait partir un warp par `0x53` (`BeginDepartureFromChangeMapOpcode`,
   `AlundraWarpDirector.cs:387`) vers une carte d'index musical différent, avec un son muet puis avec un son audible,
@@ -663,6 +663,11 @@ test de S3. Même branche `chantier/bgm-demarrage-binaire`.
 - Validation : `Alundra.Tests` vert ; mutation en vrai : `PlayMapMusic` à la place de `HandleWarpDeparture` en
   `:387` seulement fait tomber ce test.
 - Commit : `test(audio): pin the music half of the 0x53 warp departure`
+- **Validation (2026-09-26)** : build 0 erreur ; `Alundra.Tests` 1284/1284 (1282 + 2 nouveaux) ; mutation en vrai
+  (`PlayMapMusic` à la place de `HandleWarpDeparture` en `:387`) fait tomber exactement les 2 nouveaux tests ; tests
+  ajoutés dans `Alundra.Tests/AlundraWarpDepartureTests.cs` :
+  `Warp0x53Departure_SilentWarpSound_ArmsFadeOnly_NeverLoadsDestination_ThenArrivalPlaysIt` et
+  `Warp0x53Departure_AudibleWarpSound_StopsTheDepartingBgm_NeverArmsTheFade_ThenArrivalPlaysDestination`.
 
 ### ⏳ T4.4 — S1 : un son de warp muet n'est jamais joué
 

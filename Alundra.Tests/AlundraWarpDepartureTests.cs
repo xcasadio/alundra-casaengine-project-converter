@@ -717,6 +717,130 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         }
     }
 
+    // -----------------------------------------------------------------------------------------------
+    // T4.3 (docs/plan-bgm-demarrage-binaire.md, S3): the SAME music half as (n)/(o) above, but through
+    // the 0x53 path (BeginDepartureFromChangeMapOpcode, AlundraWarpDirector.cs:387) instead of the
+    // portal path (:466, PlayDepartureSound). The 0x53 path has no WarpBehaviorTable - sfxId is the raw
+    // v[7] operand, so 69/55 are passed directly (silent/audible, same real manifest fixtures as (n)/(o)).
+    // A mutation that swaps :387's own HandleWarpDeparture call for a direct PlayMapMusic must fail these
+    // two tests only.
+    // -----------------------------------------------------------------------------------------------
+
+    [Fact]
+    public void Warp0x53Departure_SilentWarpSound_ArmsFadeOnly_NeverLoadsDestination_ThenArrivalPlaysIt()
+    {
+        // Sound 69 (seq_num -1, max_voices 0: "none", same real manifest fixture as acceptance item (n)).
+        // Destination map index 45 -> raw music index 30 (real music-index.json, != map 389's own 25).
+        var projectRoot = FindProjectRoot();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+        EngineEnvironment.ProjectPath = projectRoot;
+        try
+        {
+            var backend = new FakeAudioBackend();
+            var provider = new FakeAudioClipProvider();
+            provider.Register(Track25AssetId(projectRoot), new FakeAudioClip("bgm_025", 44100));
+            provider.Register(Guid.Parse("84951c69-5db3-52ed-beb0-265839a9bcbb"), new FakeAudioClip("bgm_030", 44100));
+            var game = BuildGameWithAudioAndGameManager(backend, provider, out _);
+
+            var world389 = new World { Name = "Ship-389" };
+            HeroWorldFixture.SetProperty(world389, nameof(World.Game), game);
+            var proxy389 = new AlundraWorldProxy();
+            proxy389.InstallAudioSystems(world389);
+            proxy389.InstallWarpSystems(world389);
+            proxy389.Update(0.02f); // frame close: track 25 starts.
+            Assert.Single(backend.PlayCalls);
+
+            var player = NewPlayer(posXPixels: 18 * 24 + 12, posYPixels: 38 * 16 + 8);
+            proxy389.PlayerEntity = player;
+
+            // The 0x53 path itself, not the portal path: v[7]'s raw sfx id (69), no WarpBehaviorTable.
+            AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
+                desiredMapIndex: 45, posX: 10 * 24, posY: 40 * 16, posZ: 0, effectId: 0, sfxId: 69,
+                player, AlundraGameState.Instance);
+
+            // F2: the departure only RECORDS the request - nothing armed yet, same frame it was requested.
+            Assert.Single(backend.PlayCalls);
+            Assert.False(AlundraBgmFadeDirector.Instance.IsArmed);
+
+            proxy389.Update(0.02f); // the departing world's own next frame close: evaluates the pending
+                                     // departure (F2), AFTER the reset-flag consumption (B9).
+            Assert.Single(backend.PlayCalls); // still just track 25's own play.
+            Assert.True(AlundraBgmFadeDirector.Instance.IsArmed);
+            Assert.True(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive); // track 25 still alive.
+
+            var world45 = new World { Name = "Dest-45" };
+            HeroWorldFixture.SetProperty(world45, nameof(World.Game), game);
+            var proxy45 = new AlundraWorldProxy();
+            proxy45.InstallAudioSystems(world45); // loads 30 (differs from 25) - stops the old voice.
+            proxy45.Update(0.02f); // arrival's own first frame close.
+
+            Assert.False(AlundraBgmFadeDirector.Instance.IsArmed); // disarmed by StopAllSound.
+            Assert.Equal(2, backend.PlayCalls.Count);
+            Assert.Equal("bgm_030", ((FakeAudioClip)backend.PlayCalls[1].Clip).Name);
+            Assert.True(((AlundraMusicPlayer)proxy45.MusicPlayer!).IsCurrentVoiceAlive);
+        }
+        finally
+        {
+            EngineEnvironment.ProjectPath = previousProjectPath;
+        }
+    }
+
+    [Fact]
+    public void Warp0x53Departure_AudibleWarpSound_StopsTheDepartingBgm_NeverArmsTheFade_ThenArrivalPlaysDestination()
+    {
+        // Sound 55 (seq_num -1, max_voices 4: NOT none, same real manifest fixture as acceptance item (o)).
+        var projectRoot = FindProjectRoot();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+        EngineEnvironment.ProjectPath = projectRoot;
+        try
+        {
+            var backend = new FakeAudioBackend();
+            var provider = new FakeAudioClipProvider();
+            provider.Register(Track25AssetId(projectRoot), new FakeAudioClip("bgm_025", 44100));
+            provider.Register(Guid.Parse("84951c69-5db3-52ed-beb0-265839a9bcbb"), new FakeAudioClip("bgm_030", 44100));
+            var game = BuildGameWithAudioAndGameManager(backend, provider, out _);
+
+            var world389 = new World { Name = "Ship-389" };
+            HeroWorldFixture.SetProperty(world389, nameof(World.Game), game);
+            var proxy389 = new AlundraWorldProxy();
+            proxy389.InstallAudioSystems(world389);
+            proxy389.InstallWarpSystems(world389);
+            proxy389.Update(0.02f);
+            Assert.Single(backend.PlayCalls);
+
+            var player = NewPlayer(posXPixels: 18 * 24 + 12, posYPixels: 38 * 16 + 8);
+            proxy389.PlayerEntity = player;
+
+            AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
+                desiredMapIndex: 45, posX: 10 * 24, posY: 40 * 16, posZ: 0, effectId: 0, sfxId: 55,
+                player, AlundraGameState.Instance);
+
+            // F2: the departure only RECORDS the request - the voice is still playing right after it.
+            Assert.True(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
+            Assert.Single(backend.PlayCalls);
+
+            proxy389.Update(0.02f); // frame close: evaluates the pending departure (F2), AFTER the
+                                     // reset-flag consumption (B9).
+            Assert.False(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
+            Assert.False(AlundraBgmFadeDirector.Instance.IsArmed);
+            Assert.Single(backend.PlayCalls); // no new play at departure either.
+
+            var world45 = new World { Name = "Dest-45" };
+            HeroWorldFixture.SetProperty(world45, nameof(World.Game), game);
+            var proxy45 = new AlundraWorldProxy();
+            proxy45.InstallAudioSystems(world45);
+            proxy45.Update(0.02f);
+
+            Assert.Equal(2, backend.PlayCalls.Count);
+            Assert.Equal("bgm_030", ((FakeAudioClip)backend.PlayCalls[1].Clip).Name);
+            Assert.True(((AlundraMusicPlayer)proxy45.MusicPlayer!).IsCurrentVoiceAlive);
+        }
+        finally
+        {
+            EngineEnvironment.ProjectPath = previousProjectPath;
+        }
+    }
+
     /// <summary>The real <c>Musics/bgm-manifest.json</c>'s own asset id for sound index 25 (389/390's
     /// own track) - same lookup T1 (<c>AlundraMusicPlayerTests</c>) performs.</summary>
     private static Guid Track25AssetId(string projectRoot)
