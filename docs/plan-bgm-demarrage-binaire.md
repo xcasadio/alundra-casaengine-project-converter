@@ -1,6 +1,6 @@
 # Plan — BGM : démarrer, arrêter et relancer la musique comme l'exécutable
 
-**État** : ✅ phases 0 à 3 **closes le 2026-09-26, validées en jeu par l'auteur** ; 🚧 phase 4 (suites, pointeur, merge) demandée le 2026-09-26. Rédigé le 2026-09-25, relu par des relecteurs frais (REVISE, REVISE, puis **READY** en clôture) ;
+**État** : ✅ **CLOS et mergé le 2026-09-26** : phases 0 à 3 validées en jeu par l'auteur ; phase 4 (suites S1 à S4, pointeur du moteur sur `b02d3e86`, merge en avance rapide) faite le même jour. Rédigé le 2026-09-25, relu par des relecteurs frais (REVISE, REVISE, puis **READY** en clôture) ;
 arbitrages P1, P2, P3, P7 tranchés par l'auteur (D5 à D8), les autres points à valider restent des propositions.
 **Approuvé par l'auteur le 2026-09-25, mode AUTO** (travail réversible dans le périmètre de ce plan, un commit par
 tâche sur les branches dédiées, ni push ni merge). T0.1 bloquée puis débloquée le même jour, après le merge du plan
@@ -709,12 +709,21 @@ test de S3. Même branche `chantier/bgm-demarrage-binaire`.
   par `git hash-object --path`) ; ils ont été rendus par `git checkout`. Artefact préexistant du harnais, à
   connaître.
 
-### ⏳ T4.6 — Vérification et merge
+### ✅ T4.6 — Vérification et merge
 
 - Objectif : un vérificateur frais sur T4.1 à T4.5, puis les avances rapides : `master` de l'analyseur sur
   `e495d7f`, `main` du parent sur la tête de la branche. Aucun push.
 - Validation : verdict CONFIRMED ; `git merge --ff-only` réussi des deux côtés ; `main` = tête de la branche.
 - Commit : `docs(plan): record the follow-ups, the engine pointer and the merge` (avant les avances rapides).
+- **Validation (2026-09-26)** : deux regards frais. **Vérificateur : CONFIRMED** (build 0 erreur contre
+  `b02d3e86`, `Alundra.Tests` 1285 / 1285, convertisseur 194 / 194, goldens au contenu inchangé, portée du diff
+  conforme ; deux P4 déjà consignés en S5). **Contrôle du merge : CONFIRMED** : avances rapides réelles (parent
+  `main` `063594b` → tête de la branche, analyseur `master` `4c0542b` → `e495d7f`), aucune modification locale
+  du checkout principal sur un chemin touché ; son moteur, extrait par une autre session sur
+  `chantier/mgui-message-boxes` (`d44fc029`), n'est pas touché : seul le gitlink enregistré change, et
+  `git status` du checkout principal continuera d'y montrer ` M CasaEngineMonogame`.
+- **Merge (2026-09-26, à la demande de l'auteur)** : juste après ce commit, `git merge --ff-only` dans l'analyseur
+  du checkout principal (`master` → `e495d7f`) puis dans le parent (`main` → ce commit). Aucun push.
 
 ---
 
@@ -725,7 +734,7 @@ test de S3. Même branche `chantier/bgm-demarrage-binaire`.
 | O1 | Carte de recette atteignable pour la séquence de corpus : candidates `Inoa-226` (`A7(4,0)` @1119 puis `A5` @1131 ; `A6(0)` + `A7(10,1)` @417), `Cave-138` (`A6(1)` @620, `A7(36,0)` @624 ; `A7(12,1)` @773), `Kline's Nightmare-123`, `Lars' Crypt-25`. L'auteur choisit. | T3.2 |
 | O2 | P1, P2, P3, P7 tranchés (D5 à D8, 2026-09-25) ; P4, P5, P6, P8 appliqués tels quels par l'approbation du 2026-09-25. | T0.1, T2.1 |
 | O3 | ~~Le plan audio n'est pas mergé dans `main`.~~ Levé le 2026-09-25 : mergé (`063594b`). | T0.1 |
-| O4 | Le pointeur du moteur dans `main` (`43688074`, `fbe8cf5`) est antérieur à l'API stéréo que la DLL de `main` appelle : `main` ne builde pas tel qu'enregistré. Ce plan builde contre `716c02c7` sans toucher au pointeur ; à corriger par l'auteur dans `main`. | toutes |
+| O4 | ~~Le pointeur du moteur dans `main` (`43688074`, `fbe8cf5`) est antérieur à l'API stéréo que la DLL de `main` appelle.~~ Levé le 2026-09-26 par T4.5 (`b02d3e86`, D9). | toutes |
 
 ## Suites consignées (hors de cette tâche)
 
@@ -1053,3 +1062,4 @@ for a in (0x800a82b0, 0x8009a858):
 | 2026-09-25 | Plan approuvé, mode AUTO. T0.1 ⚠️ Blocked à l'étape 1 : plan audio non mergé dans `main` (O3). Arrêt. |
 | 2026-09-25 | Plan audio mergé par l'auteur ; reprise en AUTO. T0.1 à T3.1 ✅ (`acba5ea`, analyseur `e495d7f`, `7ebc93e`, `6012bb0`, `417d766`, `cb1387a`), T2.3 CONFIRMED (vérificateur et critique de complétude). Écart de `main` consigné (O4). T3.2 🧪 : recette préparée dans le worktree. |
 | 2026-09-26 | Recette validée en jeu par l'auteur. T3.2 ✅, **chantier clos**. Restent à l'auteur : le pointeur moteur de `main` (O4), le merge des branches `chantier/bgm-demarrage-binaire` (parent et analyseur), et les suites S1 à S4. |
+| 2026-09-26 | Demande de l'auteur : « merge et fais les suites S1 à S4 », pointeur sur `b02d3e86` (D9). T4.1 à T4.4 (`5a59de7`, `62faa3e`, `3f8dc59`, `253e36d`), T4.5 (`bf7908e`), T4.6 vérifiée CONFIRMED ; O4 levé ; merge en avance rapide de `master` (analyseur) et de `main` (parent). |
