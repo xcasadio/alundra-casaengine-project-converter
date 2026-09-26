@@ -640,7 +640,7 @@ test de S3. Même branche `chantier/bgm-demarrage-binaire`.
 - Commit : `docs(audio): the map-entry comment says the music starts at the first frame close`
 - **Validation (2026-09-26)** : build 0 erreur ; `Alundra.Tests` 1282/1282, aucun test ajouté ni modifié (commentaire seul).
 
-### ⏳ T4.2 — S2 : le test passe par le code de fermeture de frame de production
+### ✅ T4.2 — S2 : le test passe par le code de fermeture de frame de production
 
 - Objectif : `SimulateFrameClose` (`AlundraMusicPlayerTests.cs:87`) ne recopie plus le bloc de production : le bloc
   « drapeau de reset » de `AlundraWorldProxy.Update` est extrait dans une méthode `internal` sans allocation,
@@ -649,6 +649,9 @@ test de S3. Même branche `chantier/bgm-demarrage-binaire`.
 - Validation : build ; `Alundra.Tests` vert, même compte ; goldens identiques ; mutation en vrai : la méthode extraite
   qui ne consomme plus le drapeau fait tomber au moins un test **qui passait par l'utilitaire**.
 - Commit : `refactor(audio): tests close the frame through the production reset-flag code`
+- **Validation (2026-09-26)** : build 0 erreur ; `Alundra.Tests` 1282/1282 (même compte) ; mutation en vrai (méthode
+  extraite vidée) fait tomber 11 tests, dont `SimulateFrameClose`-driven et `Update`-driven ; aucun test ajouté,
+  `SimulateFrameClose` modifié pour appeler `AlundraWorldProxy.ConsumeMusicResetSoundFlagOnFrameClose`.
 
 ### ⏳ T4.3 — S3 : la moitié musique du départ par `0x53`, testée
 

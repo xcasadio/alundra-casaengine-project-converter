@@ -80,17 +80,14 @@ public class AlundraMusicPlayerTests : IDisposable
         }
     }
 
-    /// <summary>Mirrors the frame-close site (P3, AlundraWorldProxy.Update, right before
-    /// SoundPlayer.FlushFrameSounds): consumes MusicPlayer's own ResetSoundFlag, if set, by calling
-    /// StopAllSound then clearing it - for tests that drive the singletons directly instead of a real
+    /// <summary>Drives the frame-close site's OWN production code (T4.2,
+    /// <see cref="AlundraWorldProxy.ConsumeMusicResetSoundFlagOnFrameClose"/> - the exact block
+    /// <see cref="AlundraWorldProxy.Update"/> runs right before <c>SoundPlayer.FlushFrameSounds</c>, P3)
+    /// against the session singletons directly, for tests that drive them without a real
     /// AlundraWorldProxy.Update tick.</summary>
     private static void SimulateFrameClose()
     {
-        if (AlundraMusicPlayer.Instance.ResetSoundFlag)
-        {
-            AlundraBgmFadeDirector.Instance.StopAllSound();
-            AlundraMusicPlayer.Instance.ClearResetSoundFlag();
-        }
+        AlundraWorldProxy.ConsumeMusicResetSoundFlagOnFrameClose(AlundraMusicPlayer.Instance, AlundraBgmFadeDirector.Instance);
     }
 
     // ---- fixtures -------------------------------------------------------------------------------

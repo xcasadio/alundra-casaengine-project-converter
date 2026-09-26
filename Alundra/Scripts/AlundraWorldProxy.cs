@@ -2236,13 +2236,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // ONLY site that starts the music voice a map entry's own PlayMapMusic armed (B7) - a positive
         // 0xA7 load does NOT arm this flag, it CLEARS it (P8, B13's own second branch: "chargée sans
         // être jouée", no voice starts from that path at all) - see AlundraMusicPlayer's own class doc.
-        // No allocation, no LINQ, no closure: a straight field read and two virtual calls on the
-        // per-frame path.
-        if (MusicPlayer is { ResetSoundFlag: true } musicPlayer)
-        {
-            BgmFadeDirector.StopAllSound();
-            musicPlayer.ClearResetSoundFlag();
-        }
+        // T4.2 (docs/plan-bgm-demarrage-binaire.md, S2): extracted to ConsumeMusicResetSoundFlagOnFrameClose
+        // so Alundra.Tests' own frame-close helper (AlundraMusicPlayerTests.SimulateFrameClose) drives this
+        // SAME code instead of a copy of it - the singleton-driven tests pass AlundraMusicPlayer.Instance/
+        // AlundraBgmFadeDirector.Instance directly (no AlundraWorldProxy in scope there).
+        ConsumeMusicResetSoundFlagOnFrameClose(MusicPlayer, BgmFadeDirector);
 
         // B1 (docs/plan-e11b-opcodes-audio.md, D-B-4): flushes SoundPlayer's own per-frame anti-duplicate
         // table (fact 5) - right next to CloseFrame, exactly once per RENDERED frame, AFTER every
@@ -2265,6 +2263,25 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // exactly once, right next to CloseFrame - see _firstFrameStillOpen's own doc. Idempotent past
         // the very first frame (already false), so this unconditional write is safe on every later call.
         _firstFrameStillOpen = false;
+    }
+
+    /// <summary>
+    /// T4.2 (docs/plan-bgm-demarrage-binaire.md, S2): the frame-close reset-flag block this class' own
+    /// <see cref="Update"/> runs right before <c>SoundPlayer.FlushFrameSounds</c> (B9/P3) - extracted so
+    /// <c>Alundra.Tests</c>' own frame-close test helper can drive this EXACT production code instead of
+    /// a hand-copied version of it. Static and allocation-free (no closure, straight parameter reads and
+    /// two virtual calls), so a test can call it directly with the session singletons
+    /// (<see cref="AlundraMusicPlayer.Instance"/>/<see cref="AlundraBgmFadeDirector.Instance"/>) with no
+    /// <see cref="AlundraWorldProxy"/> in scope, exactly like <see cref="Update"/> calls it with this
+    /// instance's own <see cref="MusicPlayer"/>/<see cref="BgmFadeDirector"/>.
+    /// </summary>
+    internal static void ConsumeMusicResetSoundFlagOnFrameClose(IAlundraMusicPlayer? musicPlayer, IAlundraBgmFadeDirector bgmFadeDirector)
+    {
+        if (musicPlayer is { ResetSoundFlag: true } activeMusicPlayer)
+        {
+            bgmFadeDirector.StopAllSound();
+            activeMusicPlayer.ClearResetSoundFlag();
+        }
     }
 
     /// <summary>
