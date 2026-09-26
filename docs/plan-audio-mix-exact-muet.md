@@ -1,8 +1,10 @@
 # Plan — Audio : mixage stéréo exact, son coupé, retrait d'`IsBgmActivated`
 
 **État** : ✅ **clos le 2026-09-26.** Livré le 2026-09-25 (mode AUTO), vérificateur final **CONFIRMED** (T5.1),
-mergé par l'auteur le 2026-09-25, **validé en jeu par l'auteur le 2026-09-26** (T5.3). Reste à merger la branche de
-clôture `chantier/audio-mix-exact-closure` (parent et moteur), qui répare aussi le pointeur du moteur dans `main`.
+mergé par l'auteur le 2026-09-25, **validé en jeu par l'auteur le 2026-09-26** (T5.3). Branche de clôture
+`chantier/audio-mix-exact-closure` mergée le 2026-09-26 à la demande de l'auteur, dans le moteur (`93160f45`) puis
+dans le parent (`016dd50`) ; le pointeur du moteur de `main` avait déjà été réparé par le merge du chantier BGM
+(`023103d`).
 Rédigé et révisé le 2026-09-25 ; enveloppe
 **READY** (relecteur frais, après la révision de P6) ; tranche des phases 0 et 1 **READY** (relecteur frais, après la
 correction du chemin éditeur de T1.3).
@@ -1005,7 +1007,8 @@ Le contrôle de l'éditeur ferme T1.3 et la T3 du plan moteur, qui est archivé 
 - **Reporté** : O1 et O2 du plan moteur (P3 et P4 du vérificateur de T1.4) ; les deux P4 de T3.4 ; O5 ; S1.
 - **Recette validée par l'auteur le 2026-09-26** : bateau 389, carte 390, Inoa 162, et le son coupé dans le
   Launcher et dans l'éditeur, ce qui ferme T1.3.
-- **Reste à l'auteur** : merger la branche de clôture, dans le moteur puis dans le parent.
+- **Branche de clôture mergée le 2026-09-26** à la demande de l'auteur : moteur `93160f45`, parent `016dd50`,
+  pointeur du moteur à jour. Rien n'est poussé.
 
 ---
 
@@ -1053,3 +1056,4 @@ Exports complets : la référence en T0.1, puis T1.5 et T3.3, chacun prouvé par
 | 2026-09-25 | Phases 2 à 4 faites. Validation globale verte ; vérificateur final **CONFIRMED** (T5.1) ; documentation et clôture (T5.2). Restent à l'auteur la recette (T5.3), le rapatriement des branches des sous-modules et le merge. |
 | 2026-09-25 | Merge par l'auteur, avant le rapatriement des sous-modules. `fbe8cf5` puis `063594b` laissent `main` sur le moteur `43688074`, et `main` ne compile plus. Cause établie en session (5 erreurs reproduites) ; procédure rejouée sur répliques et relue par deux relecteurs contradictoires. |
 | 2026-09-26 | Recette validée par l'auteur (T5.3), dont le contrôle de l'éditeur (T1.3 ✅). Clôture sur `chantier/audio-mix-exact-closure` : plan moteur archivé (`9a487baf`), pointeur du moteur à jour dans le parent (`84c81e3`). Build à 0 erreur ; sur `main` du moteur `b02d3e86`, `Alundra.Tests` 1264, convertisseur 194, `CasaEngine.Tests` 1957. |
+| 2026-09-26 | Merge de la branche de clôture à la demande de l'auteur, avec les merges MGUI et moteur du même jour : moteur `93160f45` (plan moteur archivé `9a487baf`), parent `016dd50`, pointeur du moteur à jour. Conflit sur la ligne E11 de `docs/plan-conversion-totale.md`, résolu en gardant la suite S1 de `main` et la validation en jeu de la branche. Build à 0 erreur ; `Alundra.Tests` 1285, convertisseur 194, `CasaEngine.Tests` 1957, `MGUI.Tests` 3090. |
