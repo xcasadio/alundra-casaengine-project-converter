@@ -247,7 +247,7 @@ de la contre-vérification (PI1) sera recopié au §7.
 **Acceptation** : chaque fait retrouvé, ou l'écart écrit. **Arrêt** : un écart qui change D1 ou une tranche → le plan
 est corrigé et relu avant PI7. **Budget et retour** : §5.1, §5.2 (aucune écriture hors de ce plan). Commit : `docs(plan): cross-check the inventory portrait against the executable`.
 
-### ⏳ PI2 — Analyseur : la cause du texte non décodé et l'extraction de référence (écrit hors du dépôt, dossier neuf)
+### ✅ PI2 — Analyseur : la cause du texte non décodé et l'extraction de référence (écrit hors du dépôt, dossier neuf) — faite le 2026-09-26
 
 **Prérequis** : approbation (D4). **Aucun code modifié.**
 1. Relever les suites de référence (`Alundra.Tests`, convertisseur, `MGUI.Tests`, `CasaEngine.Tests`) et les têtes
@@ -266,6 +266,46 @@ est corrigé et relu avant PI7. **Budget et retour** : §5.1, §5.2 (aucune écr
 écrite. **Arrêt** : un écart inexpliqué → ⚠️, question à l'auteur. **Budget et retour** : §5.1, §5.2 (dossier neuf,
 rien d'écrasé). Commit (parent) :
 `docs(plan): establish the reference extraction and the cause of the undecoded remaster text`.
+
+**Prédiction, écrite le 2026-09-26 avant l'extraction.**
+- Commits de l'analyseur postérieurs à `a8598f4` qui touchent l'extracteur ou `AlundraEngine` : `6176ea3` (sonde
+  `--probe-portraits`, sans effet sur l'extraction), `18a8546` et `e495d7f` (moteur de son à l'exécution), `8348d7f`
+  (lecture de l'opcode `0xBF` à l'exécution), `b79b45a` (attributs VAB de `sound/sfx.json`, déjà recopiés dans
+  `data-extracted/` par T3.1 du plan audio le 2026-09-25). **Aucun ne change la sortie de l'extraction face à
+  `data-extracted/`.**
+- Le `FileName` de `data/BALANCE.BIN.json` recopie le chemin du jeu tel qu'il est passé à l'extracteur ;
+  `data-extracted/` porte `D:/development/repo/Alundra Remake/Alundra (France)/Alundra (France)_extracted\\DATA\\…`
+  (barres obliques) : l'extraction est lancée avec ce chemin écrit ainsi, sans le profil de lancement (qui l'écrit avec
+  des contre-obliques et vise directement le remaster).
+- **Écart prédit face à `data-extracted/` : aucun** (4450 fichiers identiques). Face au remaster : ses ~301 fichiers
+  au texte non décodé et `BALANCE.BIN.json`.
+- Indices déjà relevés : la DLL Debug de l'extracteur de l'**ancien checkout** (`926dcb8`, sans `a8598f4`) a été
+  construite le 2026-09-19 à 11:46, la minute des fichiers du remaster (`map_1.json` 11:46), et son profil de
+  lancement écrit dans le remaster ; la DLL Release du sous-module date du 2026-09-02 à 08:45, la minute de
+  `data-extracted/data/BALANCE.BIN.json`.
+
+**Fait le 2026-09-26.**
+- Extracteur du sous-module construit en Release (`chantier/portrait-inventaire` = `master` `d1c9de7`, 0 erreur), puis
+  `dotnet run --no-build --no-launch-profile -c Release --project AlundraDataExtractor/AlundraDataExtractor.csproj --
+  "D:/development/repo/Alundra Remake/Alundra (France)/Alundra (France)_extracted"
+  "D:/development/repo/Alundra Remake/extraction-reference-2026-09-26"` : 47 s, code 0 (870/961 bruitages, 46/46
+  musiques).
+- Comparaison fichier par fichier (SHA-1, script `compare_trees.py` recopié au §7) :
+
+| Comparaison | Fichiers | Seulement d'un côté | Différents | `o}i` / `s}kr` |
+|---|---|---|---|---|
+| Référence ↔ `data-extracted/` | 4450 / 4450 | 0 | **0** | 0 / 0 des deux côtés |
+| Référence ↔ remaster | 4450 / 4450 | 0 | **301** : `data/BALANCE.BIN.json` et 300 `data/map_*.json` | remaster 234 / 143 (207 fichiers) ; référence 0 / 0 |
+
+- **Prédiction tenue** : écart nul face à `data-extracted/`.
+- **Cause établie** : l'extraction du remaster du 2026-09-19 vient de l'ancien checkout de l'analyseur, sans le
+  correctif `a8598f4`. Preuves : sa DLL date de la même minute que les fichiers du remaster ; son profil de lancement
+  écrit dans le remaster avec des contre-obliques, ce qui donne le `FileName` du remaster. L'extracteur du sous-module
+  redonne exactement `data-extracted/`.
+- **Suites de référence** : non relevées ici, parce que PI3 construit le moteur et MGUI en parallèle dans le même
+  checkout. Dernier relevé connu, le 2026-09-26 au matin sur `eb9d6c8` : `Alundra.Tests` 1285, convertisseur 194,
+  `MGUI.Tests` 3090, `CasaEngine.Tests` 1957. Le relevé fait après PI3 sert de base aux tranches suivantes.
+- Aucun code modifié ; le dossier `extraction-reference-2026-09-26/` reste en place (§5.2).
 
 ### ⏳ PI3 — MGUI : la transformation de rendu liable (G9)
 
