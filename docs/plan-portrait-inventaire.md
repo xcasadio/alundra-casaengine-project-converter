@@ -581,7 +581,8 @@ Tests `AlundraInventoryPortraitTests` (7) :
 - **L'ordre des éléments des deux écrans** suit la table d'ordre de l'original. Dans les écrans actuels, les textes
   (noms, description) sont déclarés **après** les icônes et les chiffres. L'original les dessine avant (entrées 1-2
   contre 4-5, PI1). Ils sont donc déplacés **avant** les icônes, et le portrait se place entre eux et les icônes. Au
-  repos, textes et icônes ne se recouvrent pas : rien ne change à l'image hors des vols ; à vérifier par capture (PI9).
+  repos, textes et icônes ne se recouvrent pas. *(Première rédaction : « rien ne change à l'image hors des vols ». C'est
+  faux pour les cadres de sélection de l'écran principal : voir la vérification de PI8 et PI9.)*
 - Les deux écrans : une `Image` du portrait placée dans l'ordre de dessin du §1.1 (après les boîtes et les textes,
   avant les icônes, les chiffres et le curseur), en `CanvasLeft = 248`, `CanvasTop = 104`, sa source liée à
   l'identifiant de `Data/inventory-portrait.json`, sa translation (X − 248, Y − 104) et son échelle (W/48, H/56) liées
@@ -621,8 +622,16 @@ inventories`.
     ses cadres, et `0x800543d8` → 5 pour ses chiffres.
   - L'ordre retenu : boîtes et cadres, puis textes, portrait, icônes, chiffres, curseur. Dans l'écran principal, les
     cadres et les textes passent donc avant les icônes ; dans le sous-inventaire, les textes.
+  - **Conséquence au repos, écran principal** (relevée par le vérificateur de PI8 et PI9) : les cadres de sélection
+    `wind_039` (24×32, opaques aux quatre coins seulement) sont maintenant **sous** les icônes.
+    - Avant PI8, ils étaient dessinés par-dessus ; l'exécutable les dessine dessous (cadre en entrée 0,
+      `0x80057614`/`0x800576dc` ; icône en entrée 4, `0x80057784`).
+    - L'icône équipée cache donc désormais une partie des coins de son cadre. C'est le cas de 31 des 88 icônes, de 1 à
+      38 pixels natifs chacune : la lame de la dague de départ, par exemple.
+    - C'est l'image fidèle ; elle change par rapport à E13.d. Le sous-inventaire, lui, dessinait déjà ses cadres sous
+      ses icônes.
 - **Tests.**
-  - `AlundraInventoryPortraitWiringTests` (6), par le vrai `AlundraWorldProxy.Update` :
+  - `AlundraInventoryPortraitWiringTests` (6, puis 7 avec `8a95561`), par le vrai `AlundraWorldProxy.Update` :
     - ouverture déclenchée : 0×0 au tick T, 3×3 à T+1, 44×52 à T+14, repos à T+15 ;
     - fermeture : premier pas dans le tick même, état 0 à M+15, écran encore dessiné ;
     - bascule vers le sous-inventaire : il s'ouvre **18 ticks** après le début du retour, soit une marge de 3 ticks sur
@@ -633,7 +642,8 @@ inventories`.
   - Tests d'écran (2) : présence, repos, liaison de la transformation, place entre textes et icônes.
   - Le test d'ordre du sous-inventaire (SI8) est mis à jour vers la table d'ordre : c'est un changement voulu par le
     portrait.
-- **Suites.** `Alundra.Tests` **1300/1300** (1292 + 6 + 2) ; solution parente à 0 erreur.
+- **Suites.** `Alundra.Tests` **1300/1300** (1292 + 6 + 2), puis **1301/1301** avec le test d'échelle nulle
+  (`8a95561`) ; solution parente à 0 erreur.
 - **Mutations réelles** (fichier restauré puis reconstruit à chaque fois) :
 
 | Mutation | Tests qui échouent |
@@ -706,13 +716,51 @@ recette. Commit : `docs(plan): record the predicted captures of the inventory po
 
 - Translation et échelle de l'élément égales à (X − 248, Y − 104) et (W/48, H/56) sur chaque capture.
 - Le portrait visible est bien Alundra : buste aux cheveux blonds et vêtements bleus, vu sur les captures.
-- **Non observé** : l'ordre de dessin pendant un vol. Aucun vol de ce parcours ne croise une icône ni un chiffre : la
-  tête est au centre de l'écran et le trajet reste hors des cases et des chiffres. L'ordre est prouvé par les tests
-  d'écran (PI8) et par la mesure dans l'exécutable.
+- **Ordre de dessin pendant un vol, en partie observé.** Aucun vol de ce parcours ne croise une icône de la grille. Le
+  vérificateur a cependant vu, sur la capture de retour du sous-inventaire, le portrait **couvrir** le faucon peint dans
+  la boîte (entrée 0) et passer **sous** le « x » et les chiffres (entrée 5). Le reste de l'ordre est prouvé par les
+  tests d'écran (PI8) et par la mesure dans l'exécutable. *(Première rédaction : « Non observé ».)*
 - Plusieurs ticks passent parfois dans une seule image, surtout à l'ouverture, qui coûte une image longue (déjà
   relevé en D6/B2). La recette le prend en compte : chaque capture se juge sur le pas relevé.
 
+**Vérificateur frais de PI8 et PI9 : REFUTED, sur une seule affirmation.** Le code est confirmé.
+
+Ce qu'il a confirmé :
+- **Branchements** : les départs et les retours, désassemblés dans `ALUN_CD.EXE`, dans le même ordre. Aux bascules,
+  l'écriture de `MenuOpen` se trouve dans le créneau de retard du `jal 0x80057b84`, avant le corps du retour.
+- **Horloge** : prouvée par les tests.
+- **Mémoire** : aucune allocation par tick.
+- **Écrans** :
+  - les six adresses de la table d'ordre, re-mesurées ;
+  - les `UI/Screens` identiques à `HEAD`.
+- **Tests** :
+  - `Alundra.Tests` 1301/1301, deux fois ;
+  - trois mutations refaites par lui, dont le pas déplacé en début de tick : 5 tests sur 7 tombent.
+- **Recette** : `analyse_pi9.py` rejouée sur ses propres captures, **ALL OK**. Selon lui, la mesure en triplet est saine,
+  et la géométrie comme la liaison sont prouvées indépendamment de la DLL ; le pas relevé, lui, vient de la DLL.
+
+Le constat et sa correction :
+- **F1 (P2, une affirmation, pas le code)** : « rien ne change à l'image au repos » est faux pour les cadres de
+  sélection de l'écran principal, désormais sous les icônes (voir PI8). Le nouvel ordre est celui de l'exécutable, et
+  il est gardé (D1). L'affirmation est corrigée dans ce plan et dans les commentaires des deux XAML, et signalée à
+  l'auteur pour PI10. Aucun code ne change.
+- **L'explication de l'image de poussée est confirmée par le code du moteur, mais la preuve que j'en donnais était
+  faible** : l'absence des boîtes ne prouve rien, puisqu'elles glissent encore. `CasaEngineGame.Update` met à jour
+  les vues de l'interface (`CasaEngineGame.cs:498-502`) avant le monde (`:519`), et `ScreenStack.Push` ajoute les
+  fenêtres tout de suite (`ScreenStack.cs:57-70`).
+
+Remarques P4, reportées (§6) :
+- **A1** : les retours et les départs du post-traitement lisent la caméra avec un pas de lissage de retard sur
+  l'original (au plus 0 à 1 pixel, et seulement pendant la convergence de la caméra).
+- **A2** : dans une partie à un tick par image, le 3×3 de chaque ouverture n'apparaît jamais à l'écran, à cause du
+  délai de poussée préexistant ; le portrait se voit à partir de 6×7.
+- **A3** : les compteurs de tests de la note de PI8 sont corrigés (7 tests, 1301).
+
 ### ⏳ PI10 — Recette de l'auteur
+
+**À regarder en plus** (vérification de PI8 et PI9) : au repos, dans l'inventaire principal, l'icône équipée recouvre
+maintenant une partie des coins de son cadre de sélection, comme dans l'original. Avant ce chantier, le cadre passait
+par-dessus.
 
 Ouvrir l'inventaire, basculer L1/R1 dans les deux sens, fermer ; vérifier que le portrait est bien Alundra, qu'il part
 de sa tête, reste à droite au milieu et y revient. Validation → ✅ et clôture : plan maître
@@ -768,8 +816,14 @@ texte décodé ; chaque export est prouvé par double export ; toutes les suites
 ## 6. Points ouverts et hors périmètre
 
 000. **Préexistant, relevé par PI9** : l'image où un écran d'inventaire est poussé ne montre encore rien de cet écran,
-     ni boîtes ni portrait ; il s'affiche à l'image suivante. C'est un délai d'une image, commun à tout l'inventaire
-     depuis E13.d, hors de ce chantier.
+     ni boîtes ni portrait ; il s'affiche à l'image suivante. La cause : `CasaEngineGame.Update` met à jour les vues de
+     l'interface avant le monde, et l'écran poussé pendant le monde est dessiné sans jamais avoir été mis à jour.
+     C'est un délai d'une image, commun à tout l'inventaire depuis E13.d, hors de ce chantier. Conséquence pour le
+     portrait (A2) : à un tick par image, son 3×3 d'ouverture ne se voit jamais, il apparaît à 6×7.
+0000. **A1 (P4)** : les retours et les départs par le post-traitement lisent la caméra avant son pas de lissage de
+     l'image, alors que l'original lisse d'abord (`RenderTiles`, `0x8002bdb8`, avant les rappels). L'écart est au plus
+     d'un pas (0 à 1 pixel), et seulement tant que la caméra converge. Remède possible : rafraîchir le point de la tête
+     après la caméra.
 
 00. **Dossiers laissés hors du dépôt** (§5.2), à supprimer ou garder selon l'auteur : `extraction-reference-2026-09-26`,
     `extraction-portrait-2026-09-26`, `verify-pi6-extraction`, `remaster-data-extracted.bak-2026-09-19`,

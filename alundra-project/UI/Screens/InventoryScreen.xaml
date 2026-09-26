@@ -23,8 +23,9 @@
        Draw order (back to front) follows the original's UI ordering table, entry 0 first
        (ALUN_CD.EXE, measured for docs/plan-portrait-inventaire.md PI1/PI8): 0 the six baked boxes and
        the two selection frames, 1-2 the description and the names, 3 the opening portrait, 4 the grid
-       icons, 5 the digits and the cursor. (Before PI8 the texts and the frames came after the icons;
-       at rest nothing overlaps, so only the portrait's flight shows the difference.) -->
+       icons, 5 the digits and the cursor. (Before PI8 the texts and the frames came after the icons.
+       The texts never overlap an icon; the selection frames do: at rest the equipped weapon's and
+       item's icons now cover part of their frames' corners, as the original draws them.) -->
 
   <Canvas Name="RootCanvas" Width="320" Height="240" Visibility="{dataBinding:MGBinding Path=RootVisibility}">
 

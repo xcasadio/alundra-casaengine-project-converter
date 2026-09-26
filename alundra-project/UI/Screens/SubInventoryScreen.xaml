@@ -24,7 +24,8 @@
        entries as the main inventory (ALUN_CD.EXE, measured for docs/plan-portrait-inventaire.md PI8):
        0 the seven baked boxes and the two selection frames (wind_039), 1-2 the description and the
        names, 3 the opening portrait, 4 the icons (armory, key items, armor, boots), 5 the digits and
-       the cursor. (Before PI8 the texts came after the icons; at rest nothing overlaps.) -->
+       the cursor. (Before PI8 the texts came after the icons; the texts never overlap an icon, and
+       the frames already came before the icons, so the image at rest does not change.) -->
 
   <Canvas Name="RootCanvas" Width="320" Height="240" Visibility="{dataBinding:MGBinding Path=RootVisibility}">
 
