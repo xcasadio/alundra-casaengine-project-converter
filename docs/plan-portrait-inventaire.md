@@ -33,7 +33,8 @@ la DLL.
 - **Un système partagé.** Le portrait est une instance d'un système « portrait de personnage » à un seul quad, que les
   portraits des dialogues utilisent aussi. Bloc d'état `0x80180070..0x80180100` : l'état (`short`, +0), deux
   `POLY_FT4` en double tampon, cinq **pointeurs** vers les positions du joueur et de la caméra, la cible, la position
-  courante, l'écart, le pas, la demi-taille, le repos. Point d'entrée de l'inventaire `0x80057c18` : repos
+  courante, l'écart, le pas, la taille (48×56 en `+0x84`/`+0x88` ; la première rédaction disait « demi-taille »,
+  corrigé par PI1), le repos. Point d'entrée de l'inventaire `0x80057c18` : repos
   `(0xf8, 0x68)` = **(248, 104)**, taille **48×56** en dur. Point d'entrée des dialogues `0x80057c84` (repos (8, 116),
   appelé de `0x8003d634`, `0x8003f0f8`, `0x80041e84`) : **hors périmètre** (E12.c, §6).
 - **Démarrage à l'ouverture de l'inventaire principal.** `DisplayInventory` (`0x80055570`) appelle, dans l'ordre :
@@ -68,12 +69,21 @@ la DLL.
   sous-inventaire `0x80053634` → `0x800526cc`, puis `0x80053648`, puis `0x80053650`. Bascule L1/R1 : principal
   `0x80056950` → `0x800556dc`, puis `0x80056974` (retour), post-traitement = 1 ; sous-inventaire `0x80053660` →
   `0x800526cc`, puis `0x80053684`, post-traitement = 2. `0x800556dc` et `0x800526cc` n'ont pas d'autre appelant.
-- **L'horloge.** Chaque itération de la boucle principale exécute `RenderScene` (`0x8002c3fc`) **avant** `Update`
-  (`0x8002c404`). `RenderScene` → `DisplayUserInterface` (`0x80044c5c`) → `DisplayInventoryCharacterPortrait`
-  (`0x80058134`) : si l'état est non nul, un pas (`0x80057ebc`) puis l'ajout du quad. Un départ demandé pendant
-  l'`Update` de l'image N fait donc son premier pas (0×0) dans le rendu de l'image N+1 ; la croissance est visible dès
-  N+2 et le repos dès N+16. Le retour dure lui aussi 16 appels ; il se termine avant la fin du glissement de sortie
-  (~18 images), si bien que le départ du menu suivant trouve toujours l'état à 0.
+- **L'horloge** (précisée par PI1). Chaque itération de la boucle principale exécute `RenderScene` (`0x8002c3fc`)
+  **avant** `Update` (`0x8002c404`). `RenderScene` lance d'abord les rappels et le post-traitement (`0x80048054`,
+  appelée en `0x8002be5c` : le rappel du principal `0x80056598`, celui du sous-inventaire `0x80053328`, puis le
+  post-traitement), **puis** `DisplayUserInterface` (`0x80044c5c`, appelée en `0x8002be64`) →
+  `DisplayInventoryCharacterPortrait` (`0x80058134`) : si l'état est non nul, un pas (`0x80057ebc`) puis l'ajout du quad.
+  Deux cas donc :
+  - **l'ouverture principale par le déclenchement** est appelée par `Update` (`0x8002bcec`) : un départ à l'image N
+    fait son premier pas (0×0) dans le rendu de N+1, croissance visible dès N+2, repos dès N+16 ;
+  - **les deux ouvertures par le post-traitement** (`0x800481a8`, `0x800481d4`) **et les quatre retours** (rappels
+    `0x80056598`, `0x80053328`) s'exécutent dans `RenderScene`, avant `DisplayUserInterface` : leur premier pas tombe
+    dans **la même image**.
+
+  Un retour lancé à l'image M revient à l'état 0 dans le dessin de M+15 ; le départ suivant, exécuté lui aussi avant le
+  dessin, ne trouve l'état à 0 que s'il a lieu à M+16 ou plus tard. Le glissement de sortie dure ~18 images d'après la
+  décompilation (non revérifié dans le binaire par PI1) : marge d'environ deux images, testée en PI8.
 - **Géométrie.** Ancre = **coin haut-gauche** : sommets (X, Y), (X+W, Y), (X, Y+H), (X+W, Y+H) ; UV fixes
   (u, v)–(u+48, v+56) : l'image entière est mise à l'échelle, jamais retournée. Au repos, elle est affichée 1:1.
 - **Couleur.** Quad texturé **non semi-transparent** (`SetPolyFT4`, code `0x2c`), modulé par la couleur du sommet :
@@ -217,7 +227,7 @@ d'`alundra-project/`.
 | P1 | **API MGUI** : deux nouveaux attributs XAML de l'élément, `RenderTransformTranslation` et `RenderTransformScale`, de type chaîne au DTO (littéral `"x,y"` analysé par `AnimationXamlParser.ParseVector2` et appliqué à `MGElement.RenderTransform` après le DTO `RenderTransform`). Liés, ils sont renommés par `BindingPathMappings` en `RenderTransform.Translation` et `RenderTransform.Scale`. **Cible d'exécution** : l'instance `UIRenderTransform` de l'élément, atteinte par le chemin imbriqué (aucun changement de hiérarchie de type, `UIRenderTransform` reste `sealed`). **Type de valeur** : `Vector2` côté view-model comme côté cible, donc copie typée sans conversion. Le DTO `RenderTransform` et l'attribut `RenderScale` ne changent pas. ADR de MGUI. | La voie des objets imbriqués liables exigerait que `UIRenderTransform` dérive de `XAMLBindableBase` (§1.5) ; celle-ci réutilise le chemin cible imbriqué qui existe déjà et pousse sans allocation (ADR-0016 de MGUI). |
 | P2 | **Chemin des données** : l'extracteur ajoute au `GameMap` un champ `InventoryPortrait` (le `SiImage` de l'enregistrement 0), rempli **pour la carte globale seulement** et marqué `[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]` : il est écrit dans `map_alundra.json` et **omis** de chaque `map_<n>.json`, qui reste identique à l'octet. Le portrait entre aussi dans l'atlas. Le convertisseur en fait un `.sprite` par le chemin existant et écrit `Data/inventory-portrait.json` (l'identifiant du sprite), que la DLL lit comme `item-icon-index.json`. ADR du dépôt parent, qui consigne aussi l'omission des valeurs nulles. | Changement minimal ; aucune autre carte ni aucun autre portrait ne bouge ; même contrat que les icônes d'objets. |
 | P3 | **Un seul état de portrait**, partagé par les deux directeurs, comme le bloc unique de l'original. | Un départ du sous-inventaire doit voir l'état laissé par le retour du principal. |
-| P4 | **Le pas du portrait se fait au début du tick, avant les directeurs**, comme `RenderScene` avant `Update` ; le présentateur pousse la valeur du pas après les directeurs. | Premier pas au tick N+1 d'un départ au tick N, croissance visible dès N+2, repos dès N+16, comme l'original. |
+| P4 | **Révisée après PI1.** Le pas du portrait se fait **une fois par tick, juste après `AlundraInventoryPostProcess.Run` et avant les présentateurs**, comme `DisplayUserInterface` après les rappels et le post-traitement dans `RenderScene`. Le tick du portage est « moitié Update, puis moitié rendu » (`AlundraWorldProxy.cs:1991-1999`) ; les présentateurs poussent la valeur du pas. *(Première rédaction : « au début du tick, avant les directeurs », ce qui aurait retardé d'une image les retours et l'ouverture du sous-inventaire.)* | Ouverture principale déclenchée au tick T : 0×0 au tick T, visible dès T+1, repos dès T+15, comme N+1, N+2, N+16 de l'original. Retours et ouvertures par le post-traitement : premier pas dans leur propre tick, comme dans l'original. |
 | P5 | **Rien n'est supprimé hors du dépôt** : l'ancien remaster est renommé `remaster-data-extracted.bak-2026-09-19` ; `data-extracted/` et `alundra-project/` sont sauvegardés avant d'être réécrits ; les dossiers d'extraction restent en place (§5.2). | Retour arrière possible à chaque étape. |
 
 ---
@@ -233,7 +243,7 @@ cours · 🧪 à tester · ✅ fait · ⚠️ bloqué.
 Tout le §1. Scripts de mesure de la reconnaissance dans le scratchpad de la session (`portrait-discovery/`) ; celui
 de la contre-vérification (PI1) sera recopié au §7.
 
-### ⏳ PI1 — Contre-vérification indépendante des faits [binaire] (lecture seule)
+### ✅ PI1 — Contre-vérification indépendante des faits [binaire] (lecture seule) — faite le 2026-09-26
 
 **Prérequis** : approbation. **Aucun dépôt modifié** (sauf ce plan).
 - Un agent **qui n'a pas produit le §1.1** relit `ALUN_CD.EXE` avec son propre script (capstone) et retrouve, avec
@@ -246,6 +256,24 @@ de la contre-vérification (PI1) sera recopié au §7.
 
 **Acceptation** : chaque fait retrouvé, ou l'écart écrit. **Arrêt** : un écart qui change D1 ou une tranche → le plan
 est corrigé et relu avant PI7. **Budget et retour** : §5.1, §5.2 (aucune écriture hors de ce plan). Commit : `docs(plan): cross-check the inventory portrait against the executable`.
+
+**Fait le 2026-09-26.** Agent indépendant (sans accès aux scripts de la reconnaissance).
+- **Méthode.** Il exécute le code MIPS d'origine (départ, pas, retour, `DisplayUserInterface`, `ClearOTag`) dans un
+  petit interpréteur R3000, compare le résultat aux formules du plan, et décode appels, immédiats et encodages.
+- **Résultat : 50 vérifications, 0 échec.** Script recopié au §7 ; la session principale l'a relancé et retrouve une
+  sortie identique. Tout le §1.1 est confirmé : les quatre départs et les quatre retours et leur ordre, la garde, les
+  valeurs initiales, la formule du point de la tête sans « +2 », les deux tables de 16 appels pour un écart positif
+  et négatif (troncature vers zéro), l'ancre, les UV fixes, le code `0x2c`, l'entrée 3 de la table d'ordre (parcours
+  exécuté : OT[0] > OT[1] > OT[2] > OT[3] > portrait > OT[4] > OT[5]), aucun son.
+- **Deux écarts, corrigés dans ce plan** :
+  1. libellé « demi-taille » (§1.1) : les champs `+0x84`/`+0x88` portent la taille entière ;
+  2. horloge incomplète : seuls les départs appelés par `Update` font leur premier pas à l'image suivante ; ceux du
+     post-traitement et les quatre retours le font dans la même image (§1.1). **P4 est révisée en conséquence** et PI8
+     ajustée. La tranche PI8 révisée repasse devant un relecteur frais avant son exécution. PI7 (logique pure) n'en
+     dépend pas.
+- **Remarques hors périmètre** :
+  - `0x80052618` a un second appelant, `0x800555fc`, une branche de débogage de `DisplayInventory` normalement morte ;
+  - `0x80057b84` a un cinquième appelant, `0x80045f08`, dans les dialogues (E12.c).
 
 ### ✅ PI2 — Analyseur : la cause du texte non décodé et l'extraction de référence (écrit hors du dépôt, dossier neuf) — faite le 2026-09-26
 
@@ -435,13 +463,22 @@ portrait`.
   l'équivalent d'`InitializeHudPosition`/`SetTransitionType(6)`, avant les noms et le son 4 ; sous-inventaire :
   `OpenFromPostProcess`, même place). Retour aux quatre sorties (deux fermetures, deux bascules), après le glissement de
   sortie et avant `InitializeHudPositionBeforeHide`, comme l'original.
-- Le pas au début du tick, avant les directeurs (P4) ; le présentateur pousse X, Y, W, H, visible.
+- Le départ du principal se place dans sa tête (`RunDisplayInventoryHead`), qui sert les deux chemins (déclenchement
+  et post-traitement), après l'équivalent d'`InitializeHudPosition`/`SetTransitionType(6)`.
+- Le pas une fois par tick, juste après `AlundraInventoryPostProcess.Run` et avant les présentateurs, dans la boucle
+  par tick d'`AlundraWorldProxy` (P4 révisée) ; le présentateur pousse X, Y, W, H, visible.
+- **L'ordre des éléments des deux écrans** suit la table d'ordre de l'original. Dans les écrans actuels, les textes
+  (noms, description) sont déclarés **après** les icônes et les chiffres. L'original les dessine avant (entrées 1-2
+  contre 4-5, PI1). Ils sont donc déplacés **avant** les icônes, et le portrait se place entre eux et les icônes. Au
+  repos, textes et icônes ne se recouvrent pas : rien ne change à l'image hors des vols ; à vérifier par capture (PI9).
 - Les deux écrans : une `Image` du portrait placée dans l'ordre de dessin du §1.1 (après les boîtes et les textes,
   avant les icônes, les chiffres et le curseur), en `CanvasLeft = 248`, `CanvasTop = 104`, sa source liée à
   l'identifiant de `Data/inventory-portrait.json`, sa translation (X − 248, Y − 104) et son échelle (W/48, H/56) liées
   (PI3), sa visibilité liée ; données de conception mises à jour.
-- Tests : le tick du premier pas (départ en N → 0×0 en N+1, visible en N+2, repos en N+16) ; le retour se termine avant
-  que l'écran ne soit retiré ; bascule dans les deux sens (le départ du menu suivant trouve l'état à 0) ; portrait
+- Tests : l'ouverture principale déclenchée au tick T dessine 0×0 au tick T, est visible dès T+1, au repos dès T+15 ;
+  un retour et une ouverture par le post-traitement font leur premier pas dans leur propre tick ; le retour se termine
+  (état 0) avant que l'écran ne soit retiré ; bascule dans les deux sens (le départ du menu suivant trouve l'état à 0,
+  avec la marge mesurée) ; portrait
   absent de l'index → inventaire sans portrait, sans exception ; tests existants des directeurs et présentateurs
   inchangés.
 - La doc de classe du directeur (« Not ported ») est mise à jour.
@@ -533,6 +570,7 @@ texte décodé ; chaque export est prouvé par double export ; toutes les suites
 | 2026-09-26 | Second relecteur frais, sur le plan révisé : **READY**. Soumis à l'auteur. |
 | 2026-09-26 | **Approuvé par l'auteur, P1 à P5 compris, mode AUTO.** Branches créées (en-tête). |
 | 2026-09-26 | PI2 faite : extraction de référence identique à `data-extracted/` ; cause du remaster établie. PI4 faite (analyseur `e4f3033`), prouvée par l'étape 1 de PI6. PI1 et PI3 lancées en parallèle (agent indépendant, exécutant). |
+| 2026-09-26 | PI1 faite : 50 vérifications, 0 échec ; deux écarts (libellé, horloge). §1.1, P4 et PI8 révisés ; relecture fraîche de la tranche PI8 révisée avant son exécution. |
 
 ### PI2, PI6 — `compare_trees.py` (comparaison de deux extractions)
 
@@ -762,4 +800,687 @@ for im in walk_images(rj):
 print(f'page {page}: {len(seen)} distinct images; intersecting the portrait: {len(hits)}')
 for s_, p_, r_ in hits:
     print('   signature', s_, 'palette', p_, 'rect', r_, 'DIFFERENT PALETTE' if p_ != pal else 'same palette')
+```
+
+### PI1 — `pi1_crosscheck.py` (contre-vérification dans `ALUN_CD.EXE`, sha256 `b638ff45…827a`)
+
+```python
+#!/usr/bin/env python3
+# PI1 - independent cross-check of docs/plan-portrait-inventaire.md section 1.1 against ALUN_CD.EXE (France).
+# Read only: the executable is opened for reading, nothing is written anywhere.
+# Two kinds of evidence:
+#   1. static: raw decoding of the instructions (jal targets, immediates, encodings), capstone for the text;
+#   2. dynamic: the ORIGINAL MIPS code of the portrait (start, step, return, draw, UI ordering table) is executed
+#      in a small R3000 interpreter (load-delay hazards are detected, not silently accepted), and the results are
+#      compared with the formulas of the plan.
+# Usage: python pi1_crosscheck.py [--listing]
+import struct
+import sys
+from capstone import Cs, CS_ARCH_MIPS, CS_MODE_MIPS32, CS_MODE_LITTLE_ENDIAN
+
+EXE = r"D:/development/repo/Alundra Remake/Alundra (France)/Alundra (France)_extracted/ALUN_CD.EXE"
+RAW = open(EXE, "rb").read()
+assert RAW[:8] == b"PS-X EXE"
+T_ADDR, T_SIZE = struct.unpack_from("<II", RAW, 0x18)
+assert (T_ADDR, T_SIZE) == (0x80020000, 0xAA800), (hex(T_ADDR), hex(T_SIZE))
+TEXT = RAW[0x800:0x800 + T_SIZE]            # file offset = 0x800 + addr - 0x80020000
+M32 = 0xFFFFFFFF
+MD = Cs(CS_ARCH_MIPS, CS_MODE_MIPS32 + CS_MODE_LITTLE_ENDIAN)
+
+NAMES = {  # names from the //8xxxxxxx comments of the decompilation (labels only, never used as evidence)
+    0x8004BD9C: "InitializeHudPosition", 0x80047F94: "SetTransitionType", 0x80057B40: "GetAnimationImageByIndex",
+    0x80057C18: "PortraitStart(inventory)", 0x80057C84: "PortraitStart(dialogue)", 0x80057CF0: "PortraitInit",
+    0x80055C84: "DisplayIconNames", 0x800490FC: "PlaySoundEffect", 0x80052618: "StartFadeOut(opens sub-inventory)",
+    0x80055570: "DisplayInventory", 0x800556DC: "MainSlideOut", 0x800526CC: "SubSlideOut",
+    0x80057B84: "UpdateHudTransitionState(portrait return)", 0x8004BE0C: "InitializeHudPositionBeforeHide",
+    0x8002BD60: "RenderScene", 0x8002BAEC: "Update", 0x80044C5C: "DisplayUserInterface",
+    0x80058134: "DisplayInventoryCharacterPortrait", 0x80057EBC: "PortraitStep", 0x80048054: "UiCallbacksAndPostProcess",
+    0x8008511C: "ClearOTag", 0x800852CC: "DrawOTag", 0x800843B0: "SetPolyFT4", 0x800859C8: "libgpu 800859c8",
+    0x80085A70: "SetDrawArea", 0x80057B64: "PortraitReset",
+}
+
+
+def word(a):
+    return struct.unpack_from("<I", TEXT, a - T_ADDR)[0]
+
+
+def text(a):
+    ins = next(MD.disasm(TEXT[a - T_ADDR:a - T_ADDR + 4], a))
+    return (ins.mnemonic + " " + ins.op_str).strip()
+
+
+def s16(v):
+    v &= 0xFFFF
+    return v - 0x10000 if v & 0x8000 else v
+
+
+def s32(v):
+    v &= M32
+    return v - 0x100000000 if v & 0x80000000 else v
+
+
+def jal_target(a):
+    w = word(a)
+    if (w >> 26) != 3:
+        return None
+    return ((a + 4) & 0xF0000000) | ((w & 0x03FFFFFF) << 2)
+
+
+def jals(lo, hi):
+    return [(p, jal_target(p)) for p in range(lo, hi, 4) if jal_target(p) is not None]
+
+
+ALL_JALS = {}
+for _k in range(T_SIZE // 4):
+    _p = T_ADDR + 4 * _k
+    _t = jal_target(_p)
+    if _t is not None:
+        ALL_JALS.setdefault(_t, []).append(_p)
+
+
+def callers(t):
+    return sorted(ALL_JALS.get(t, []))
+
+
+def delay_a0(p):
+    """Constant put in $a0 by the delay slot of the jal at p, or None."""
+    w = word(p + 4)
+    if w == 0x00002021:                      # move $a0, $zero
+        return 0
+    if (w >> 16) == 0x2404:                  # addiu $a0, $zero, imm
+        return s16(w)
+    return None
+
+
+def func_start(a):
+    p = a
+    while p > T_ADDR + 8:
+        w = word(p)
+        if (w & 0xFFFF8000) == 0x27BD8000 and word(p - 8) == 0x03E00008:
+            return p
+        p -= 4
+    return None
+
+
+def fmt_call(p, t):
+    a0 = delay_a0(p)
+    return "%08x jal %s%s" % (p, NAMES.get(t, "%08x" % t), "" if a0 is None else "(a0=%d)" % a0)
+
+
+RESULTS = []
+
+
+def check(item, cond, msg):
+    RESULTS.append((item, bool(cond), msg))
+    print("  %s [%s] %s" % ("OK  " if cond else "FAIL", item, msg))
+
+
+def listing(lo, hi):
+    for p in range(lo, hi, 4):
+        print("    %08x: %08x  %s" % (p, word(p), text(p)))
+
+
+# ----------------------------------------------------------------------------------------------------------
+# A small R3000 interpreter (MIPS I subset used by the code below), executing the bytes of the executable.
+# ----------------------------------------------------------------------------------------------------------
+class Hazard(Exception):
+    pass
+
+
+class CPU:
+    SENT = 0xFFFFFFF0
+
+    def __init__(self):
+        self.r = [0] * 32
+        self.hi = self.lo = 0
+        self.mem = {}                         # written bytes; unwritten text reads the file, BSS reads 0
+
+    def rb(self, a):
+        a &= M32
+        v = self.mem.get(a)
+        if v is not None:
+            return v
+        if T_ADDR <= a < T_ADDR + T_SIZE:
+            return TEXT[a - T_ADDR]
+        return 0
+
+    def wb(self, a, v):
+        self.mem[a & M32] = v & 0xFF
+
+    def rh(self, a):
+        return self.rb(a) | (self.rb(a + 1) << 8)
+
+    def rw(self, a):
+        return self.rh(a) | (self.rh(a + 2) << 16)
+
+    def wh(self, a, v):
+        self.wb(a, v)
+        self.wb(a + 1, v >> 8)
+
+    def ww(self, a, v):
+        self.wh(a, v)
+        self.wh(a + 2, v >> 16)
+
+    def snapshot(self, lo, hi):
+        return bytes(self.rb(a) for a in range(lo, hi))
+
+    def run(self, entry, stop=(), stubs=None, sp=0x801FF000, max_steps=200000):
+        stubs = stubs or {}
+        r = self.r
+        r[31] = self.SENT
+        r[29] = sp
+        pc, npc = entry, entry + 4
+        last_load = 0
+        for _ in range(max_steps):
+            if pc == self.SENT or pc in stop:
+                return pc
+            if pc in stubs:                   # stub = the callee returns at once (after its effect, if any)
+                stubs[pc](self)
+                pc, npc = r[31], r[31] + 4
+                last_load = 0
+                continue
+            w = self.rw(pc)
+            op, rs, rt, rd = w >> 26, (w >> 21) & 31, (w >> 16) & 31, (w >> 11) & 31
+            sa, fn, imm = (w >> 6) & 31, w & 63, w & 0xFFFF
+            simm = s16(imm)
+            if op == 0:
+                reads = (rt,) if fn in (0, 2, 3) else (rs,) if fn in (8, 9, 0x11, 0x13) else () if fn in (0x10, 0x12) else (rs, rt)
+            elif op in (1, 6, 7) or 8 <= op <= 0xE or 0x20 <= op <= 0x25:
+                reads = (rs,)
+            elif op in (4, 5) or op >= 0x28:
+                reads = (rs, rt)
+            else:
+                reads = ()
+            if last_load and last_load in reads:
+                raise Hazard("load-delay hazard at %08x" % pc)
+            a, b = r[rs], r[rt]
+            target = None
+            load = 0
+            if op == 0:
+                if fn == 0: r[rd] = (b << sa) & M32
+                elif fn == 2: r[rd] = b >> sa
+                elif fn == 3: r[rd] = (s32(b) >> sa) & M32
+                elif fn == 4: r[rd] = (b << (a & 31)) & M32
+                elif fn == 6: r[rd] = b >> (a & 31)
+                elif fn == 7: r[rd] = (s32(b) >> (a & 31)) & M32
+                elif fn == 8: target = a
+                elif fn == 9: r[rd] = pc + 8; target = a
+                elif fn == 0x10: r[rd] = self.hi
+                elif fn == 0x11: self.hi = a
+                elif fn == 0x12: r[rd] = self.lo
+                elif fn == 0x13: self.lo = a
+                elif fn == 0x18:
+                    prod = s32(a) * s32(b)
+                    self.lo, self.hi = prod & M32, (prod >> 32) & M32
+                elif fn == 0x19:
+                    prod = a * b
+                    self.lo, self.hi = prod & M32, (prod >> 32) & M32
+                elif fn in (0x20, 0x21): r[rd] = (a + b) & M32
+                elif fn in (0x22, 0x23): r[rd] = (a - b) & M32
+                elif fn == 0x24: r[rd] = a & b
+                elif fn == 0x25: r[rd] = a | b
+                elif fn == 0x26: r[rd] = a ^ b
+                elif fn == 0x27: r[rd] = ~(a | b) & M32
+                elif fn == 0x2A: r[rd] = int(s32(a) < s32(b))
+                elif fn == 0x2B: r[rd] = int(a < b)
+                else: raise NotImplementedError("special %x at %08x" % (fn, pc))
+            elif op == 1:
+                if rt in (0x10, 0x11): r[31] = pc + 8
+                if (s32(a) < 0) if rt in (0, 0x10) else (s32(a) >= 0):
+                    target = (pc + 4 + (simm << 2)) & M32
+            elif op in (2, 3):
+                if op == 3: r[31] = pc + 8
+                target = ((pc + 4) & 0xF0000000) | ((w & 0x03FFFFFF) << 2)
+            elif op in (4, 5, 6, 7):
+                if {4: a == b, 5: a != b, 6: s32(a) <= 0, 7: s32(a) > 0}[op]:
+                    target = (pc + 4 + (simm << 2)) & M32
+            elif op in (8, 9): r[rt] = (a + simm) & M32
+            elif op == 0xA: r[rt] = int(s32(a) < simm)
+            elif op == 0xB: r[rt] = int(a < (simm & M32))
+            elif op == 0xC: r[rt] = a & imm
+            elif op == 0xD: r[rt] = a | imm
+            elif op == 0xE: r[rt] = a ^ imm
+            elif op == 0xF: r[rt] = imm << 16
+            elif op in (0x20, 0x21, 0x23, 0x24, 0x25):
+                ea = (a + simm) & M32
+                if op == 0x20: v = self.rb(ea); v = (v - 0x100 if v & 0x80 else v) & M32
+                elif op == 0x21: v = s16(self.rh(ea)) & M32
+                elif op == 0x23: v = self.rw(ea)
+                elif op == 0x24: v = self.rb(ea)
+                else: v = self.rh(ea)
+                r[rt] = v
+                load = rt
+            elif op == 0x28: self.wb(a + simm, b)
+            elif op == 0x29: self.wh(a + simm, b)
+            elif op == 0x2B: self.ww(a + simm, b)
+            else:
+                raise NotImplementedError("op %x at %08x" % (op, pc))
+            r[0] = 0
+            last_load = load
+            pc, npc = npc, (target if target is not None else npc + 4)
+        raise RuntimeError("step limit")
+
+
+PORT = 0x80180070          # portrait block (state halfword at +0)
+IDX = 0x80146F50           # double-buffer index
+UI_OT = 0x80146F58         # UI ordering table, 2 x 10 entries
+POS = 0x80127E44           # player PosX/PosY/PosZ (16.16)
+SCROLL_X, SCROLL_Y = 0x800E4328, 0x800E432C
+REST = (248, 104)
+NOP = lambda cpu: None
+STUBS = {0x800859C8: lambda c: c.r.__setitem__(2, c.r[4]),   # libgpu helpers of the draw path: not modelled
+         0x80085A70: NOP,
+         0x800481F8: NOP}                                     # the rest of the UI (boxes, texts, icons): not modelled
+
+
+def place_head(cpu, hx, hy, sx=37, sy=21, pz=9):
+    """Player/camera such that PosX_hi - scrollX = hx and PosY_hi - scrollY - PosZ_hi - 32 = hy.
+    The low (fractional) halfwords are non-zero on purpose."""
+    cpu.ww(POS, (((hx + sx) << 16) | 0x8000) & M32)
+    cpu.ww(POS + 4, (((hy + 32 + pz + sy) << 16) | 0x4000) & M32)
+    cpu.ww(POS + 8, ((pz << 16) | 0x1234) & M32)
+    cpu.ww(SCROLL_X, sx & M32)
+    cpu.ww(SCROLL_Y, sy & M32)
+
+
+def install_image(cpu, u=0x40, v=0x80):
+    """Minimal data for GetAnimationImageByIndex(0): [[[0x80126ecc]] + 0xc] + 2 -> image record."""
+    cpu.ww(0x80126ECC, 0x80190000)
+    cpu.ww(0x80190000, 0x80190100)
+    cpu.ww(0x8019010C, 0x80190200)
+    for i, b in enumerate((0x03, 0x05, u, v)):
+        cpu.wb(0x80190202 + i, b)
+
+
+def start_main(cpu):          # DisplayInventory from GetAnimationImageByIndex(0) to just after the portrait start
+    cpu.run(0x80055634, stop={0x800556B8})
+
+
+def start_sub(cpu):           # StartFadeOut (sub-inventory open), same stretch
+    cpu.run(0x80052630, stop={0x800526B4})
+
+
+def fields(cpu):
+    g = lambda o: s32(cpu.rw(PORT + o))
+    return dict(state=s16(cpu.rh(PORT)), ptrs=[cpu.rw(PORT + o) for o in (0x54, 0x58, 0x5C, 0x60, 0x64)],
+                p68=(g(0x68), g(0x6C)), p70=(g(0x70), g(0x74)), delta=(g(0x78), g(0x7C)), step=g(0x80),
+                size=(g(0x84), g(0x88)), rest=(g(0x8C), g(0x90)))
+
+
+def quad(cpu, idx):
+    p = PORT + 4 + idx * 40
+    xs = [s16(cpu.rh(p + o)) for o in (8, 16, 24, 32)]
+    ys = [s16(cpu.rh(p + o)) for o in (10, 18, 26, 34)]
+    uv = [(cpu.rb(p + o), cpu.rb(p + o + 1)) for o in (12, 20, 28, 36)]
+    return dict(p=p, xs=xs, ys=ys, uv=uv, rgb=(cpu.rb(p + 4), cpu.rb(p + 5), cpu.rb(p + 6)), code=cpu.rb(p + 7),
+                X=xs[0], Y=ys[0], W=xs[1] - xs[0], H=ys[2] - ys[0])
+
+
+def walk(cpu, ot):
+    nodes, a = [], ot
+    for _ in range(100):
+        nodes.append(a)
+        nxt = cpu.rw(a) & 0xFFFFFF
+        if nxt == 0xFFFFFF:
+            break
+        a = 0x80000000 | nxt
+        if a == 0x800C81F0:                    # ClearOTag's terminator
+            nodes.append(a)
+            break
+    return nodes
+
+
+def label(a):
+    if UI_OT <= a < UI_OT + 80:
+        return "OT[%d]" % (((a - UI_OT) % 40) // 4)
+    if a in (PORT + 4, PORT + 44):
+        return "PORTRAIT"
+    if 0x80180108 <= a < 0x80180120:
+        return "drawarea"
+    if 0x80146E60 <= a < UI_OT:
+        return "dr%d" % (((a - 0x80146E60) % 120) // 12)
+    if a == 0x800C81F0:
+        return "END"
+    return "%08x" % a
+
+
+def render_frame(cpu):
+    """ClearOTag of the current UI buffer (0x80044f48), then DisplayUserInterface (0x80044c5c) for real,
+    which calls DisplayInventoryCharacterPortrait (0x80058134) -> PortraitStep (0x80057ebc) and flips the buffer."""
+    idx = cpu.rw(IDX)
+    cpu.run(0x80044F48)
+    cpu.run(0x80044C5C, stubs=STUBS)
+    ot = cpu.r[2]
+    assert ot == UI_OT + idx * 40 and cpu.rw(IDX) == idx ^ 1
+    return idx, ot
+
+
+def tdiv(a, b):
+    q = abs(a) // abs(b)
+    return q if (a < 0) == (b < 0) else -q
+
+
+def open_formula(k, hx, hy):
+    s = 16 - k
+    if s == 0:
+        return (248, 104, 48, 56, 128)
+    return (248 + tdiv(s * (hx - 248), 15), 104 + tdiv(s * (hy - 104), 15),
+            tdiv(48 * (15 - s), 15), tdiv(56 * (15 - s), 15), 127 + tdiv(128 * s, 15))
+
+
+def return_formula(k, hx, hy):
+    s = 16 - k
+    if s == 0:
+        return (248, 104, 0, 0, 0)
+    return (hx + tdiv(s * (248 - hx), 15), hy + tdiv(s * (104 - hy), 15),
+            tdiv(48 * s, 15), tdiv(56 * s, 15), 127 + tdiv(128 * (15 - s), 15))
+
+
+def floor_open(k, hx, hy):
+    s = 16 - k
+    if s == 0:
+        return (248, 104)
+    return (248 + (s * (hx - 248)) // 15, 104 + (s * (hy - 104)) // 15)
+
+
+def frame_row(cpu, k, formula, hx, hy):
+    idx, ot = render_frame(cpu)
+    q = quad(cpu, idx)
+    f = fields(cpu)
+    nodes = walk(cpu, ot)
+    linked = q["p"] in nodes
+    got = (q["X"], q["Y"], q["W"], q["H"], q["rgb"][0])
+    exp = formula(k, hx, hy)
+    anchor = q["xs"] == [q["X"], q["X"] + q["W"], q["X"], q["X"] + q["W"]] and \
+        q["ys"] == [q["Y"], q["Y"], q["Y"] + q["H"], q["Y"] + q["H"]]
+    grey = q["rgb"][0] == q["rgb"][1] == q["rgb"][2]
+    return dict(k=k, s=16 - k, state=f["state"], step=f["step"], got=got, exp=exp, linked=linked, anchor=anchor,
+                uv=q["uv"], code=q["code"], grey=grey, nodes=nodes)
+
+
+def print_table(title, rows):
+    print("\n%s\n" % title)
+    print("| call | s | state after | X | Y | W | H | colour | = plan formula |")
+    print("|---|---|---|---|---|---|---|---|---|")
+    for r in rows:
+        X, Y, W, H, c = r["got"]
+        print("| %d | %d | %d | %d | %d | %d | %d | %d | %s |" % (r["k"], r["s"], r["state"], X, Y, W, H, c,
+                                                               "yes" if r["got"] == r["exp"] else "NO %s" % (r["exp"],)))
+
+
+def scenario(hx, hy):
+    cpu = CPU()
+    install_image(cpu)
+    cpu.ww(IDX, 0)
+    place_head(cpu, hx, hy)
+    start_main(cpu)
+    f0 = fields(cpu)
+    opening = [frame_row(cpu, k, open_formula, hx, hy) for k in range(1, 17)]
+    rest_rows = [frame_row(cpu, 16, open_formula, hx, hy) for _ in range(30)]
+    rest_nodes = rest_rows[-1]["nodes"]
+    # guard: a start while state == 4 changes nothing
+    snap = cpu.snapshot(PORT, PORT + 0x94)
+    place_head(cpu, 10, 20)
+    start_main(cpu)
+    guard4 = cpu.snapshot(PORT, PORT + 0x94) == snap
+    place_head(cpu, hx, hy)
+    cpu.run(0x80057B84)                                   # the return, called directly
+    f2 = fields(cpu)
+    ret = []
+    guard2 = None
+    for k in range(1, 17):
+        ret.append(frame_row(cpu, k, return_formula, hx, hy))
+        if k == 5:                                        # a start during the return is ignored
+            snap = cpu.snapshot(PORT, PORT + 0x94)
+            start_main(cpu)
+            guard2 = cpu.snapshot(PORT, PORT + 0x94) == snap
+    after = [render_frame(cpu) for _ in range(2)]
+    gone = all(PORT + 4 + i * 40 not in walk(cpu, ot) for i, ot in after) and fields(cpu)["state"] == 0
+    snap = cpu.snapshot(PORT, PORT + 0x94)
+    cpu.run(0x80057B84)
+    guard_ret0 = cpu.snapshot(PORT, PORT + 0x94) == snap
+    return dict(f0=f0, opening=opening, rest_rows=rest_rows, rest_nodes=rest_nodes, guard4=guard4, f2=f2, ret=ret,
+                guard2=guard2, gone=gone, guard_ret0=guard_ret0)
+
+
+def abs_refs(lo, hi, kinds):
+    """Instructions that address [lo, hi) through a lui-based register (linear sweep, walks through j, stops
+    after the delay slot of jr, forgets caller-saved registers at jal)."""
+    n = T_SIZE // 4
+    out = []
+    for k in range(n):
+        w = word(T_ADDR + 4 * k)
+        if (w >> 26) != 0x0F:
+            continue
+        regs = {(w >> 16) & 31: (w & 0xFFFF) << 16}
+        last = False
+        for j in range(k + 1, min(n, k + 48)):
+            p = T_ADDR + 4 * j
+            x = word(p)
+            op, rs, rt = x >> 26, (x >> 21) & 31, (x >> 16) & 31
+            if op in kinds and rs in regs and lo <= ((regs[rs] + s16(x)) & M32) < hi:
+                out.append((p, (regs[rs] + s16(x)) & M32))
+            if last:                            # delay slot of a jr processed: stop
+                break
+            if op == 0x09 and rs in regs:
+                regs[rt] = (regs[rs] + s16(x)) & M32
+                continue
+            if op == 0 and (x & 63) == 8:       # jr: end of the function; a j inside the function is walked through
+                last = True
+                continue
+            if op == 3:
+                for q in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 24, 25, 31):
+                    regs.pop(q, None)
+            if op == 0:
+                regs.pop((x >> 11) & 31, None)
+            elif op in (0x20, 0x21, 0x23, 0x24, 0x25) or 0x08 <= op <= 0x0F:
+                regs.pop(rt, None)
+            if not regs:
+                break
+    return sorted(set(out))
+
+
+def lui_addiu_refs(t):
+    n = T_SIZE // 4
+    out = []
+    for k in range(n):
+        w = word(T_ADDR + 4 * k)
+        if (w >> 26) != 0x0F:
+            continue
+        rt, hi = (w >> 16) & 31, (w & 0xFFFF) << 16
+        for j in range(k + 1, min(n, k + 12)):
+            x = word(T_ADDR + 4 * j)
+            if (x >> 26) == 0x09 and ((x >> 21) & 31) == rt and ((hi + s16(x)) & M32) == t:
+                out.append(T_ADDR + 4 * j)
+    return sorted(set(out))
+
+
+def main():
+    if "--listing" in sys.argv:
+        for lo, hi in ((0x80055624, 0x800556C8), (0x80052618, 0x800526C8), (0x80048178, 0x800481DC),
+                       (0x80056918, 0x8005698C), (0x8005362C, 0x8005369C), (0x80057B64, 0x80058200),
+                       (0x80044C5C, 0x80044CC4), (0x8002C3F4, 0x8002C460), (0x8002BE54, 0x8002BE70)):
+            print("  ---- %08x-%08x" % (lo, hi))
+            listing(lo, hi)
+
+    print("(a) the four portrait starts")
+    exp = [(0x80055624, 0x8004BD9C), (0x8005562C, 0x80047F94), (0x80055634, 0x80057B40), (0x800556B0, 0x80057C18),
+           (0x800556B8, 0x80055C84), (0x800556C0, 0x800490FC)]
+    got = jals(0x80055624, 0x800556C8)
+    check("a", got == exp and [delay_a0(p) for p, _ in got] == [None, 6, 0, None, None, 4],
+          "DisplayInventory: " + "; ".join(fmt_call(p, t) for p, t in got))
+    print("    DisplayInventory, earlier jals (guards and debug branches): " +
+          "; ".join(fmt_call(p, t) for p, t in jals(0x80055570, 0x80055624)))
+    exp = [(0x80052620, 0x8004BD9C), (0x80052628, 0x80047F94), (0x80052630, 0x80057B40), (0x800526AC, 0x80057C18),
+           (0x800526B4, 0x800490FC)]
+    got = jals(0x80052618, 0x800526C8)
+    check("a", got == exp and [delay_a0(p) for p, _ in got] == [None, 4, 0, None, 4],
+          "StartFadeOut 0x80052618: " + "; ".join(fmt_call(p, t) for p, t in got))
+    got = jals(0x80048178, 0x800481DC)
+    check("a", got == [(0x800481A8, 0x80052618), (0x800481D4, 0x80055570)]
+          and word(0x80048188) == 0x24020001 and word(0x80048190) == 0x24020002
+          and text(0x8004818C) == "bne $v1, $v0, 0x800481bc" and text(0x800481BC) == "bne $v1, $v0, 0x800481dc",
+          "post-process [0x80153194]: ==1 -> %s ; ==2 -> %s" % (fmt_call(*got[0]), fmt_call(*got[1])))
+    check("a", callers(0x80057C18) == [0x800526AC, 0x800556B0], "callers of 0x80057c18: %s" % [hex(c) for c in callers(0x80057C18)])
+    check("a", callers(0x80052618) == [0x800481A8, 0x800555FC],
+          "callers of 0x80052618: %s (0x800555fc = DisplayInventory debug branch)" % [hex(c) for c in callers(0x80052618)])
+    check("a", callers(0x80055570) == [0x8002BCEC, 0x800481D4], "callers of 0x80055570: %s" % [hex(c) for c in callers(0x80055570)])
+
+    print("(b) the four returns")
+    for item_lo, item_hi, mask_at, mask, exp, extra in (
+            (0x80056924, 0x80056948, 0x80056924, 0x813, [(0x80056930, 0x800556DC), (0x80056938, 0x80057B84), (0x80056940, 0x8004BE0C)], None),
+            (0x80056950, 0x8005698C, 0x80056950, 0x00C, [(0x8005695C, 0x800556DC), (0x80056974, 0x80057B84)], (0x80056980, 1)),
+            (0x80053634, 0x80053658, 0x80053634, 0x813, [(0x80053640, 0x800526CC), (0x80053648, 0x80057B84), (0x80053650, 0x8004BE0C)], None),
+            (0x80053660, 0x8005369C, 0x80053660, 0x00C, [(0x8005366C, 0x800526CC), (0x80053684, 0x80057B84)], (0x80053690, 2))):
+        got = jals(item_lo, item_hi)
+        ok = got == exp and word(mask_at) == (0x30420000 | mask)
+        post = ""
+        if extra:
+            ok = ok and word(extra[0]) == (0x24020000 | extra[1]) and word(extra[0] + 4) == 0xAC623194
+            post = "; %08x post-process [0x80153194] = %d" % (extra[0] + 4, extra[1])
+        check("b", ok, "%08x andi 0x%x -> %s%s" % (mask_at, mask, "; ".join(fmt_call(p, t) for p, t in got), post))
+    check("b", callers(0x800556DC) == [0x80056930, 0x8005695C] and callers(0x800526CC) == [0x80053640, 0x8005366C],
+          "0x800556dc callers %s ; 0x800526cc callers %s" % ([hex(c) for c in callers(0x800556DC)], [hex(c) for c in callers(0x800526CC)]))
+    print("    callers of 0x80057b84: %s ; 0x80045f08 lies in function %08x (not an inventory path)"
+          % ([hex(c) for c in callers(0x80057B84)], func_start(0x80045F08)))
+    print("    callers of 0x8004be0c: %s" % [hex(c) for c in callers(0x8004BE0C)])
+
+    print("(c)-(h) execution of the original code")
+    check("c", text(0x80057D08) == "lh $v0, 0x70($v1)" and text(0x80057D30) == "bnez $v0, 0x80057e88"
+          and text(0x80057E88) == "lw $ra, 0x3c($sp)", "guard: 0x80057d08 lh state; 0x80057d30 bnez -> 0x80057e88 (epilogue)")
+    check("c", word(0x80057C38) == 0x240200F8 and word(0x80057C44) == 0x24020068 and word(0x80057C4C) == 0x24020030
+          and word(0x80057C54) == 0x24020038 and word(0x80057D74) == 0x24020005 and word(0x80057E5C) == 0x2403000F
+          and word(0x80057E4C) == 0x24030030 and word(0x80057E54) == 0x24030038,
+          "0x80057c38 rest X 0xf8, 0x80057c44 rest Y 0x68, 0x80057c4c/54 args 0x30/0x38, 0x80057d74 state 5, "
+          "0x80057e5c step 15, 0x80057e4c/54 size 0x30/0x38")
+    check("d", all(text(p).startswith("lh ") and ", 2($" in text(p) for p in
+                   (0x80057E20, 0x80057E40, 0x80057E48, 0x80057BAC, 0x80057BC4, 0x80057BCC))
+          and all(text(p).startswith("lw ") and ", ($" in text(p) for p in (0x80057E24, 0x80057E3C, 0x80057BB0, 0x80057BC8))
+          and word(0x80057E78) == 0x2484FFE0 and word(0x80057BFC) == 0x2463FFE0,
+          "Pos read by lh 2(ptr) at 80057e20/40/48 and 80057bac/c4/cc; scroll by lw 0(ptr) at 80057e24/3c and "
+          "80057bb0/c8; -0x20 only on Y at 80057e78 / 80057bfc")
+    cpu = CPU()
+    install_image(cpu)
+    place_head(cpu, 160, 120)
+    start_main(cpu)
+    f = fields(cpu)
+    check("d", f["ptrs"] == [0x80127E44, 0x80127E48, 0x80127E4C, 0x800E4328, 0x800E432C],
+          "pointers stored by the start from DisplayInventory's real argument set-up: %s" % [hex(x) for x in f["ptrs"]])
+    cpu2 = CPU()
+    install_image(cpu2)
+    place_head(cpu2, 160, 120)
+    start_sub(cpu2)
+    check("a", cpu2.snapshot(PORT, PORT + 0x94) == cpu.snapshot(PORT, PORT + 0x94),
+          "sub-inventory open (0x80052630..) leaves the block byte-identical to the main open")
+
+    tables = {}
+    for hx, hy in ((160, 120), (300, 60)):
+        sc = scenario(hx, hy)
+        tables[(hx, hy)] = sc
+        f0, f2 = sc["f0"], sc["f2"]
+        tag = "head (%d,%d)" % (hx, hy)
+        check("c", f0["state"] == 5 and f0["step"] == 15 and f0["rest"] == REST and f0["size"] == (48, 56),
+              "%s after start: state %d, step %d, rest %s, size %s" % (tag, f0["state"], f0["step"], f0["rest"], f0["size"]))
+        check("d", f0["p68"] == (hx, hy) and f0["p70"] == REST and f0["delta"] == (hx - 248, hy - 104),
+              "%s start: +0x68 = %s (head point, no +2), +0x70 = %s, +0x78 = %s" % (tag, f0["p68"], f0["p70"], f0["delta"]))
+        check("e", all(r["got"] == r["exp"] for r in sc["opening"]), "%s opening: 16 calls equal the plan formula" % tag)
+        check("e", f2["state"] == 2 and f2["step"] == 15 and f2["p70"] == (hx, hy) and f2["p68"] == REST
+              and f2["delta"] == (248 - hx, 104 - hy),
+              "%s return: state %d, step %d, +0x70 = %s (head re-read), +0x68 = %s" % (tag, f2["state"], f2["step"], f2["p70"], f2["p68"]))
+        check("e", all(r["got"] == r["exp"] for r in sc["ret"]), "%s return: 16 calls equal the plan formula" % tag)
+        fl = [r["k"] for r in sc["opening"] if floor_open(r["k"], hx, hy) != r["got"][:2]]
+        print("    %s: a floor division would give other X/Y at opening calls %s" % (tag, fl))
+        check("f", all(r["state"] == 4 and r["got"] == (248, 104, 48, 56, 128) and r["linked"] for r in sc["rest_rows"])
+              and sc["opening"][-1]["state"] == 4,
+              "%s: state 4 from call 16, then 30 more frames unchanged at (248,104) 48x56, drawn" % tag)
+        check("f", sc["ret"][-1]["state"] == 0 and all(r["state"] == 2 for r in sc["ret"][:-1]) and sc["gone"],
+              "%s: state 2 for calls 1-15, 0 at call 16, then nothing linked" % tag)
+        check("c", sc["guard4"] and sc["guard2"] and sc["guard_ret0"],
+              "%s: start ignored in state 4 and in state 2; return ignored in state 0" % tag)
+        rows = sc["opening"] + sc["rest_rows"] + sc["ret"]
+        check("g", all(r["anchor"] for r in rows) and all(r["uv"] == [(0x40, 0x80), (0x70, 0x80), (0x40, 0xB8), (0x70, 0xB8)] for r in rows),
+              "%s: vertices (X,Y) (X+W,Y) (X,Y+H) (X+W,Y+H); UVs fixed (u,v)-(u+48,v+56) on every call" % tag)
+        check("h", all(r["code"] == 0x2C and r["grey"] for r in rows),
+              "%s: code byte 0x2c on every call; colour ramps open %s, return %s" %
+              (tag, [r["got"][4] for r in sc["opening"]], [r["got"][4] for r in sc["ret"]]))
+        check("i", [label(a) for a in sc["rest_nodes"]][:13] ==
+              ["OT[0]", "dr0", "OT[1]", "dr1", "OT[2]", "dr2", "OT[3]", "drawarea", "dr3", "PORTRAIT", "OT[4]", "dr4", "OT[5]"],
+              "%s: UI OT walk from entry 0: %s" % (tag, " > ".join(label(a) for a in sc["rest_nodes"])))
+
+    cpu = CPU()                                           # re-read at exit: the head moves before the return
+    install_image(cpu)
+    place_head(cpu, 160, 120)
+    start_main(cpu)
+    for _ in range(20):
+        render_frame(cpu)
+    place_head(cpu, 40, 200, sx=-5, sy=300, pz=-3)
+    cpu.run(0x80057B84)
+    rows = [frame_row(cpu, k, return_formula, 40, 200) for k in range(1, 17)]
+    check("e", fields(cpu)["state"] == 0 and all(r["got"] == r["exp"] for r in rows),
+          "return re-reads the player and the camera at exit: head (160,120) at open, (40,200) at exit -> return "
+          "table of (40,200); call 15 = %s" % (rows[14]["got"],))
+
+    print("(g)/(h) static")
+    check("h", word(0x800843B0) == 0x34020009 and word(0x800843B8) == 0x3402002C and word(0x800843C0) == 0xA0820007
+          and jal_target(0x80057D80) == 0x800843B0,
+          "SetPolyFT4 0x800843b0: len 9, code 0x2c (bit1 = 0: no semi-transparency; bit0 = 0: modulated)")
+    print("    jal targets inside 0x80057b40-0x80058200: %s" % sorted({hex(t) for _, t in jals(0x80057B40, 0x80058200)}))
+    st = [p for p, a in abs_refs(PORT, PORT + 2, (0x29,))]
+    check("f", st == [0x80057B68, 0x80057B98, 0x80057BE8, 0x80057D78, 0x80057F04, 0x80057F20],
+          "all 'sh' to the state 0x80180070: %s" % [hex(p) for p in st])
+    print("    0x80057b64 (reset: state 0, rest (8,120)) callers %s in function %08x, itself called from %s"
+          % ([hex(c) for c in callers(0x80057B64)], func_start(0x80044C40), [hex(c) for c in callers(func_start(0x80044C40))]))
+
+    print("(i) the UI ordering table")
+    check("i", text(0x80044C88) == "lui $s0, 0x8014" and text(0x80044C90) == "addiu $s0, $s0, 0x6f58"
+          and text(0x80044CAC) == "addiu $s1, $s0, 0xc" and jal_target(0x80044CBC) == 0x80058134
+          and text(0x80044CC0) == "addu $a0, $a0, $s1",
+          "DisplayUserInterface passes OT 0x80146f58 + 0xc (entry 3) + idx*40 to 0x80058134 (0x80044cac/0x80044cbc)")
+    ot_ok = RAW[0x800 + 0x8002A1B0 - T_ADDR:].startswith(b"ClearOTag(") and RAW[0x800 + 0x8002A1E0 - T_ADDR:].startswith(b"DrawOTag(")
+    check("i", ot_ok and text(0x8008517C) == "addiu $a0, $s0, 4" and jal_target(0x80044F70) == 0x8008511C
+          and word(0x80044F5C) == 0x2405000A,
+          "0x8008511c = ClearOTag (libgpu string at 0x8002a1b0), forward: ot[i] -> &ot[i+1] (0x8008517c); UI OT cleared with n = 10")
+    check("i", [jal_target(p) for p in (0x8002BA6C, 0x8002BA74, 0x8002BA7C, 0x8002BA84, 0x8002BA8C, 0x8002BA9C)] == [0x800852CC] * 6
+          and text(0x8002BA98) == "lw $a0, -0x3f68($v0)" and text(0x8002BE70) == "sw $v0, -0x3f68($v1)"
+          and jal_target(0x8002BE64) == 0x80044C5C,
+          "0x800852cc = DrawOTag (string at 0x8002a1e0): five world OTs, then DrawOTag(UI OT entry 0) at 0x8002ba9c "
+          "(pointer 0x800dc098 = DisplayUserInterface's return, stored at 0x8002be70)")
+    per_entry = {k: [] for k in range(10)}
+    for p, a in abs_refs(UI_OT, UI_OT + 80, (0x09,)):
+        if (a - UI_OT) % 4 == 0:
+            per_entry[((a - UI_OT) % 40) // 4].append(p)
+    for k in range(10):
+        print("    constant address of OT[%d] (lui + addiu chain): %s" % (k, " ".join("%08x" % p for p in per_entry[k])))
+    check("i", per_entry[3] == [0x80044CAC], "OT[3] is formed as a constant only at 0x80044cac (DisplayUserInterface)")
+    check("i", word(0x800851A8) == 0x3C02800D and word(0x800851AC) == 0x244281F0,
+          "ClearOTag closes the table on 0x800c81f0 (0x800851a8/ac)")
+
+    print("(j) the clock")
+    check("j", jal_target(0x8002C3FC) == 0x8002BD60 and jal_target(0x8002C404) == 0x8002BAEC and word(0x8002C408) == 0x00002021
+          and text(0x8002C45C) == "beqz $v0, 0x8002c3f4" and jal_target(0x8002C3E4) == 0x8002BAEC and delay_a0(0x8002C3E4) == 1,
+          "loop 0x8002c3f4..0x8002c45c: 0x8002c3fc RenderScene, then 0x8002c404 Update(0); Update(1) once before at 0x8002c3e4")
+    check("j", jal_target(0x8002BE5C) == 0x80048054 and jal_target(0x8002BE64) == 0x80044C5C
+          and text(0x80058180) == "lh $v1, 0x70($v0)" and text(0x80058188) == "beqz $v1, 0x800581e8"
+          and jal_target(0x80058190) == 0x80057EBC,
+          "RenderScene: 0x8002be5c UiCallbacksAndPostProcess, 0x8002be64 DisplayUserInterface -> 0x80058134: state != 0 -> step 0x80058190")
+    check("j", func_start(0x8002BCEC) == 0x8002BAEC and func_start(0x800481A8) == 0x80048054
+          and func_start(0x800481D4) == 0x80048054,
+          "the main open (jal DisplayInventory at 0x8002bcec) is inside Update 0x8002baec; the post-process starts "
+          "(0x800481a8, 0x800481d4) are inside 0x80048054, called by RenderScene at 0x8002be5c")
+    check("j", text(0x80048138) == "addiu $s0, $v0, 0x3028" and text(0x80048150) == "lw $v0, 0x14($s0)"
+          and text(0x80048160) == "jalr $v0" and word(0x8004816C) == 0x2A22000D
+          and text(0x80048174) == "addiu $s0, $s0, 0x1c" and lui_addiu_refs(0x80056598) == [0x80055560]
+          and text(0x80055564) == "sw $v0, 0x14($v1)" and word(0x800A73A0) == 0x80053328
+          and func_start(0x80056924) == 0x80056598 and func_start(0x80053634) == 0x80053328,
+          "0x80048054 runs 13 callback slots (0x80153028, stride 0x1c, fn at +0x14, jalr 0x80048160) BEFORE the post-process; "
+          "the close/L1R1 code lives in callbacks 0x80056598 (installed at 0x80055564) and 0x80053328 (descriptor 0x800a73a0)")
+
+    print("\nsummary: %d checks, %d failed" % (len(RESULTS), sum(1 for r in RESULTS if not r[1])))
+    for (hx, hy), sc in tables.items():
+        print_table("Opening, head point (%d,%d), span X %+d Y %+d" % (hx, hy, hx - 248, hy - 104), sc["opening"])
+        print_table("Return, head point (%d,%d) re-read at exit" % (hx, hy), sc["ret"])
+
+
+if __name__ == "__main__":
+    main()
 ```
