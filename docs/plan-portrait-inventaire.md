@@ -461,7 +461,7 @@ its index`, `docs(adr): record the inventory portrait data path`, puis le pointe
 - ADR-0005 du dépôt (`docs/decisions/0005-inventory-portrait-data-path.md`). Le pointeur de l'analyseur est déjà
   enregistré (`d0bd4a7`, PI4).
 
-### 🧪 PI6 — Ré-extraction complète, copie, export prouvé (écrit hors du dépôt, D4) — faite le 2026-09-26, vérification en cours
+### ✅ PI6 — Ré-extraction complète, copie, export prouvé (écrit hors du dépôt, D4) — faite le 2026-09-26
 
 **Prérequis** : PI4, PI5.
 1. Extraction complète avec l'extracteur de PI4 vers un dossier neuf
@@ -512,6 +512,24 @@ portrait`.
 | Double export | écart = `report.json` seul. |
 | Texte | 161 fichiers exportés contiennent « où », 0 contient `o}i` ou `s}kr` (recherche sans le filtre `.gitignore` : `rg -uu`). |
 | 5 | `Alundra.Tests` 1292/1292, convertisseur 197/197, après l'export. |
+
+**Vérificateur frais de la chaîne PI4-PI6 : CONFIRMED**, sans constat P0 à P2.
+- Il a tout refait lui-même :
+  - une nouvelle extraction à `e4f3033`, identique à `extraction-portrait-2026-09-26` ;
+  - `pi4_proof.py` : chiffres identiques, et son propre contrôle D-E13C-3 en coordonnées d'atlas, sur 803 signatures ;
+  - les manifestes, et chaque source de retour du §5.2, présente et identique à l'état qu'elle doit restaurer ;
+  - l'identifiant du sprite, recalculé en UUID v5 indépendamment ;
+  - une mutation du convertisseur, qui fait tomber le test attendu.
+- Il confirme depuis le code l'ordre des couleurs de l'atlas : `FromPsxColor` et le tampon `Format32bppArgb`
+  échangent tous deux rouge et bleu, et les deux échanges s'annulent.
+- Il juge suffisants les indices sur la cause du remaster : les 300 cartes diffèrent toutes par des paires
+  d'échappement non décodées.
+- Remarques P4, reportées :
+  1. un export fait en place depuis une extraction antérieure à PI4 garderait un ancien `Data/inventory-portrait.json`,
+     car rien ne l'efface (hypothèse non reproduite) ;
+  2. la convention de couleur de `pi4_proof.py` a été fixée après un premier essai, mais il l'a confirmée depuis le code ;
+  3. l'arbre de travail a changé pendant sa vérification : ce sont les modifications de PI8, pas une dérive de l'export.
+- Le dossier `verify-pi6-extraction` (≈ 3,4 Go), créé par cette vérification, reste en place.
 ### ✅ PI7 — DLL : la machine du portrait (logique pure, testée) — faite le 2026-09-26
 
 **Prérequis** : PI1. **Dépôt** : parent.
@@ -646,6 +664,10 @@ texte décodé ; chaque export est prouvé par double export ; toutes les suites
   commit sur `main` ou `develop` ; un push.
 
 ## 6. Points ouverts et hors périmètre
+
+00. **Dossiers laissés hors du dépôt** (§5.2), à supprimer ou garder selon l'auteur : `extraction-reference-2026-09-26`,
+    `extraction-portrait-2026-09-26`, `verify-pi6-extraction`, `remaster-data-extracted.bak-2026-09-19`,
+    `data-extracted.bak-2026-09-26`, `alundra-project.bak-2026-09-26`, sous `D:/development/repo/Alundra Remake/`.
 
 0. **Suite de PI3** (remarques P3/P4 du vérificateur) : resserrer quatre tests de `RenderTransformBindingTests` (le test
    d'invalidation qui ne vérifie rien, trois tests qui ne passent pas par le binding) et corriger la phrase « les seuls
