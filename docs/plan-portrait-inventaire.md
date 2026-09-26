@@ -458,7 +458,7 @@ its index`, `docs(adr): record the inventory portrait data path`, puis le pointe
 écart hors prédiction. Commit (parent) : `docs(plan): record the re-extraction and the export with the inventory
 portrait`.
 
-### ⏳ PI7 — DLL : la machine du portrait (logique pure, testée)
+### ✅ PI7 — DLL : la machine du portrait (logique pure, testée) — faite le 2026-09-26
 
 **Prérequis** : PI1. **Dépôt** : parent.
 - Une classe `AlundraInventoryPortrait`, port du bloc `0x80057b64..0x800581fc` : états 0/5/4/2 ; `Start(tête)` avec la
@@ -471,6 +471,29 @@ portrait`.
   valeurs choisies. Chaque test échoue sous sa mutation (script, jamais simulée dans le test).
 
 **Acceptation** : `Alundra.Tests` vert. Commit : `feat(inventory): port the opening portrait's state machine`.
+
+**Fait le 2026-09-26.** `Alundra/Scripts/AlundraInventoryPortrait.cs` :
+- états 0/5/4/2, `Start` gardé par « état = 0 », `BeginReturn` ignoré à l'état 0, `Step` ;
+- `ComputeHeadPoint` : parties entières par décalage de 16, sans « +2 » ;
+- une instance partagée `Instance` (P3).
+
+Tests `AlundraInventoryPortraitTests` (7) :
+- les deux tables de 16 appels écrites en dur, identiques à celles que PI1 a exécutées dans le binaire ;
+- les positions pour les têtes (160, 120) et (300, 60) (troncature vers zéro) ;
+- le repos qui dure 100 appels ;
+- le retour vers la tête relue ;
+- la garde ;
+- le retour ignoré à l'état 0 ;
+- le point de la tête.
+
+`Alundra.Tests` **1292/1292** (1285 + 7). Mutations réelles, fichier restauré puis reconstruit à chaque fois :
+
+| Mutation | Test qui échoue |
+|---|---|
+| Arrondi par défaut en Y | troncature (tête (300, 60)) et retour |
+| Garde du départ retirée | garde |
+| « +2 » en X | point de la tête |
+| Taille de retour à l'ouverture | table d'ouverture |
 
 ### ⏳ PI8 — DLL : le branchement et les deux écrans
 
