@@ -1,6 +1,7 @@
 # Plan — Le portrait d'ouverture de l'inventaire (report de D-E13D-12)
 
-**État** : 🚧 **approuvé par l'auteur le 2026-09-26, P1 à P5 compris, en mode AUTO** (« oui AUTO ») : travail
+**État** : 🧪 **PI0 à PI9 faites et vérifiées le 2026-09-26 ; reste la recette de l'auteur (PI10).** Approuvé par
+l'auteur le 2026-09-26, P1 à P5 compris, en mode AUTO (« oui AUTO ») : travail
 réversible dans le périmètre écrit ici, un commit par tranche sur les branches du chantier, ni commit sur `main` ou
 `develop`, ni push, ni fusion, ni action externe hors de celles que D4 autorise. Rédigé le 2026-09-26, relu **REVISE**
 puis révisé, relu **READY** par un second relecteur frais (§7).
@@ -655,7 +656,7 @@ inventories`.
 | Liaison d'échelle retirée du XAML | le test d'écran |
 | Portrait supprimé, puis déplacé après les icônes | le test d'écran (les deux fois) |
 
-### 🧪 PI9 — Recette par capture, prédite avant d'être prise — faite le 2026-09-26, vérification en cours
+### ✅ PI9 — Recette par capture, prédite avant d'être prise — faite le 2026-09-26
 
 **Prérequis** : PI8. Harnais **hors dépôt** (précédent de SI5 du sous-inventaire), captures par le back-buffer en
 processus seulement.
@@ -756,11 +757,21 @@ Remarques P4, reportées (§6) :
   délai de poussée préexistant ; le portrait se voit à partir de 6×7.
 - **A3** : les compteurs de tests de la note de PI8 sont corrigés (7 tests, 1301).
 
+**Relecture de clôture (vérificateur frais, `6b03234`) : CONFIRMED.**
+- Le commit ne change que des commentaires dans les deux XAML, et le plan.
+- Aucun texte ne peut recouvrir une icône au repos, dans l'un ou l'autre écran :
+  - les noms commencent à x ≥ 193 et les descriptions à y ≥ 181, alors que toute icône finit à x ≤ 168 et y ≤ 164 ;
+  - `font3` : hauteur de ligne 16, aucun décalage de glyphe.
+- 31 des 88 icônes recouvrent des pixels du cadre, ce qu'il a retrouvé.
+- **Remarque P3, reportée à la recette** : quand les herbes sont équipées (case 6), leur chiffre de compte (entrée 5)
+  recouvre aussi le coin inférieur droit du cadre (entrée 0), désormais dessiné dessous. C'est fidèle à l'original ;
+  ajouté à PI10.
+
 ### ⏳ PI10 — Recette de l'auteur
 
 **À regarder en plus** (vérification de PI8 et PI9) : au repos, dans l'inventaire principal, l'icône équipée recouvre
 maintenant une partie des coins de son cadre de sélection, comme dans l'original. Avant ce chantier, le cadre passait
-par-dessus.
+par-dessus. De même, quand les herbes sont équipées, leur chiffre de compte recouvre le coin inférieur droit du cadre.
 
 Ouvrir l'inventaire, basculer L1/R1 dans les deux sens, fermer ; vérifier que le portrait est bien Alundra, qu'il part
 de sa tête, reste à droite au milieu et y revient. Validation → ✅ et clôture : plan maître
@@ -851,6 +862,7 @@ texte décodé ; chaque export est prouvé par double export ; toutes les suites
 | 2026-09-26 | PI2 faite : extraction de référence identique à `data-extracted/` ; cause du remaster établie. PI4 faite (analyseur `e4f3033`), prouvée par l'étape 1 de PI6. PI1 et PI3 lancées en parallèle (agent indépendant, exécutant). |
 | 2026-09-26 | PI1 faite : 50 vérifications, 0 échec ; deux écarts (libellé, horloge). §1.1, P4 et PI8 révisés ; relecture fraîche de la tranche PI8 révisée avant son exécution. |
 | 2026-09-26 | PI5, PI7 faites. PI3 : vérificateur frais **CONFIRMED** (remarques P3/P4 reportées). Tranche PI8 révisée : relecteur frais **READY**. PI6 faite ; vérificateur frais de la chaîne PI4-PI6 lancé. |
+| 2026-09-26 | Chaîne PI4-PI6 : **CONFIRMED**. PI8 faite (`d6879dc`, puis `8a95561`). PI9 faite (`3c34f22`) : prédiction tenue sur toutes les captures où l'écran est affiché. Vérificateur de PI8 et PI9 : **REFUTED** sur l'affirmation « rien ne change au repos » (F1, P2) ; affirmation corrigée (`6b03234`), relecture de clôture **CONFIRMED**. Reste PI10, la recette de l'auteur. |
 
 ### PI2, PI6 — `compare_trees.py` (comparaison de deux extractions)
 
