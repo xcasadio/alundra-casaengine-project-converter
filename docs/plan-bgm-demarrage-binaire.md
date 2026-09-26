@@ -1,6 +1,6 @@
 # Plan — BGM : démarrer, arrêter et relancer la musique comme l'exécutable
 
-**État** : ✅ **CLOS le 2026-09-26, validé en jeu par l'auteur.** Rédigé le 2026-09-25, relu par des relecteurs frais (REVISE, REVISE, puis **READY** en clôture) ;
+**État** : ✅ phases 0 à 3 **closes le 2026-09-26, validées en jeu par l'auteur** ; 🚧 phase 4 (suites, pointeur, merge) demandée le 2026-09-26. Rédigé le 2026-09-25, relu par des relecteurs frais (REVISE, REVISE, puis **READY** en clôture) ;
 arbitrages P1, P2, P3, P7 tranchés par l'auteur (D5 à D8), les autres points à valider restent des propositions.
 **Approuvé par l'auteur le 2026-09-25, mode AUTO** (travail réversible dans le périmètre de ce plan, un commit par
 tâche sur les branches dédiées, ni push ni merge). T0.1 bloquée puis débloquée le même jour, après le merge du plan
@@ -256,6 +256,7 @@ cartes (boss et rêves), **chacun suivi d'un `A5`** dans les 14 instructions dé
 | D6 | P2 : les 21 cartes `-1` sont **muettes, comme l'original** (auteur, 2026-09-25). |
 | D7 | P3 : `g_resetSoundFlag` est **porté**, consommé au site de fermeture de frame avant `FlushFrameSounds`, effacé par `LoadBgm` (auteur, 2026-09-25). |
 | D8 | P7 : le départ de warp suit **l'original** : aucun chargement ; fondu si le son de warp est nul, `LoadBgm(0)` sinon ; la piste de destination part à l'arrivée (auteur, 2026-09-25). |
+| D9 | Merge et suites S1 à S4 demandés ; le merge répare aussi le pointeur du moteur de `main`, sur `b02d3e86` (auteur, 2026-09-26). |
 
 ## Points à valider par l'auteur (arbitrages proposés)
 
@@ -620,6 +621,72 @@ fin.**
 - **État (2026-09-25)** : recette préparée. Branches : parent
   `chantier/bgm-demarrage-binaire` (dans le dépôt partagé), analyseur `chantier/bgm-demarrage-binaire` `e495d7f`
   rapatrié par `git fetch` dans le checkout principal. Rien n'est poussé ni mergé.
+
+---
+
+## Phase 4 — Suites S1 à S4, pointeur du moteur, merge
+
+Demande de l'auteur du 2026-09-26 : « merge et fais les suites S1 à S4 » ; pointeur du moteur : « Oui, moteur
+`b02d3e86` » (D9). Les remèdes sont ceux de « Suites consignées ». Ordre : S4, S2, S3, puis S1, qui s'appuie sur le
+test de S3. Même branche `chantier/bgm-demarrage-binaire`.
+
+### ⏳ T4.1 — S4 : commentaire d'`InstallAudioSystems`
+
+- Objectif : le commentaire en ligne d'`InstallAudioSystems` (`AlundraWorldProxy.cs:997-1004`) dit que la musique
+  d'entrée est chargée ici et démarre à la première fermeture de frame (B9, B10), et qu'un `0xA6` de cette frame peut
+  l'annuler.
+- Fichiers : `Alundra/Scripts/AlundraWorldProxy.cs` (commentaire seul).
+- Validation : build 0 erreur ; `Alundra.Tests` inchangé.
+- Commit : `docs(audio): the map-entry comment says the music starts at the first frame close`
+
+### ⏳ T4.2 — S2 : le test passe par le code de fermeture de frame de production
+
+- Objectif : `SimulateFrameClose` (`AlundraMusicPlayerTests.cs:87`) ne recopie plus le bloc de production : le bloc
+  « drapeau de reset » de `AlundraWorldProxy.Update` est extrait dans une méthode `internal` sans allocation,
+  appelée par `Update` et par l'utilitaire de test. Ordre et comportement de `Update` inchangés.
+- Fichiers : `Alundra/Scripts/AlundraWorldProxy.cs`, `Alundra.Tests/AlundraMusicPlayerTests.cs`.
+- Validation : build ; `Alundra.Tests` vert, même compte ; goldens identiques ; mutation en vrai : la méthode extraite
+  qui ne consomme plus le drapeau fait tomber au moins un test **qui passait par l'utilitaire**.
+- Commit : `refactor(audio): tests close the frame through the production reset-flag code`
+
+### ⏳ T4.3 — S3 : la moitié musique du départ par `0x53`, testée
+
+- Objectif : un test au niveau du proxy qui fait partir un warp par `0x53` (`BeginDepartureFromChangeMapOpcode`,
+  `AlundraWarpDirector.cs:387`) vers une carte d'index musical différent, avec un son muet puis avec un son audible,
+  et qui vérifie après la fermeture de frame du monde quitté : fondu armé et voix vivante (muet), voix arrêtée et
+  fondu non armé (audible) ; à l'arrivée, la piste de destination.
+- Fichiers : `Alundra.Tests/` (fichier des tests de départ ou du runner).
+- Validation : `Alundra.Tests` vert ; mutation en vrai : `PlayMapMusic` à la place de `HandleWarpDeparture` en
+  `:387` seulement fait tomber ce test.
+- Commit : `test(audio): pin the music half of the 0x53 warp departure`
+
+### ⏳ T4.4 — S1 : un son de warp muet n'est jamais joué
+
+- Objectif : aux deux sites de départ, le son de warp n'est joué que s'il n'est pas muet au sens de B17 : l'original
+  met le son à 0 (`0x80049f78`) et ne le joue dans aucune branche. Seul cas réel : 379 (`seq_num` -1, `max_voices`
+  0, une tonalité).
+- Fichiers : `Alundra/Scripts/AlundraWarpDirector.cs` ; test sur le chemin `0x53` de T4.3 avec le son 379 : aucune
+  voix de 379 ; un son audible (55) joue toujours.
+- Validation : `Alundra.Tests` vert ; mutation en vrai : `PlaySfx` sans la garde fait tomber le test.
+- Commit : `fix(audio): a silent warp sound is never played, as the executable does`
+
+### ⏳ T4.5 — Pointeur du moteur sur `b02d3e86` (D9)
+
+- Objectif : `main` compile une fois mergé. Le gitlink du moteur passe de `43688074` à `b02d3e86` (`main` du moteur,
+  descendant de `716c02c7`), enregistré par `update-index --cacheinfo`, **sans `git add`** (le moteur du checkout
+  principal est sur le chantier d'une autre session ; mémoire du dépôt).
+- Étapes : moteur du worktree extrait à `b02d3e86`, MGUI et NvgSharp aux commits qu'il enregistre ; build du parent ;
+  `Alundra.Tests` et tests du convertisseur ; puis le commit du pointeur.
+- Validation : build 0 erreur ; `Alundra.Tests` et convertisseur verts ; `git ls-tree HEAD CasaEngineMonogame` =
+  `b02d3e86`.
+- Commit : `chore(submodules): point at the engine main that carries the stereo voices`
+
+### ⏳ T4.6 — Vérification et merge
+
+- Objectif : un vérificateur frais sur T4.1 à T4.5, puis les avances rapides : `master` de l'analyseur sur
+  `e495d7f`, `main` du parent sur la tête de la branche. Aucun push.
+- Validation : verdict CONFIRMED ; `git merge --ff-only` réussi des deux côtés ; `main` = tête de la branche.
+- Commit : `docs(plan): record the follow-ups, the engine pointer and the merge` (avant les avances rapides).
 
 ---
 
