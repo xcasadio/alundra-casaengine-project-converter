@@ -38,17 +38,15 @@ namespace Alundra.Scripts;
 /// <c>DisplayInventory</c> and <c>FUN_80054f1c</c> bodies all synchronously on the SAME call when the
 /// trigger fires, and the box-slide/input dispatch (<c>FUN_80056598</c>) only from the NEXT call.</para>
 ///
-/// <para><b>Not ported</b> (D-E13D-12 amended, portrait reporter): <c>InitializeHudTransitionVariablesAndSetStart</c>/
-/// <c>InitializeHudTransitionVariables</c>/<c>UpdateHudTransitionVariables</c>/<c>UpdateHudTransitionState</c>
-/// and the portrait quad draw (<c>MainInventoryManager.cs:197-440</c>) - the opening portrait is absent
-/// from the export (plan §1.4, D0.9) and its own slices D3.c/D5.p were retired. Whether skipping it
-/// delayed anything in the original's own timeline: NO - <c>InitializeHudTransitionVariables</c>
-/// (:209-299) only ever WRITES portrait-local state (the polygon corners, <c>g_hudTransitionState</c>,
-/// <c>g_hudCurrentX/Y</c>, ...) and is never read by anything this director's own state machine reads;
-/// <c>UpdateHudTransitionState</c> (:403-418, called from <c>FUN_80056598</c> on close) is the SAME -
-/// portrait-local only. Neither one touches <c>g_forbiddenWarpFlag</c>, the box tweens, or
-/// <c>g_inventoryCursorText</c>, so the seven-box slide and the text reveal run on their own clock,
-/// unaffected by the portrait's absence.</para>
+/// <para><b>The opening portrait</b> (docs/plan-portrait-inventaire.md, PI8; deferred by D-E13D-12 until then):
+/// <c>InitializeHudTransitionVariablesAndSetStart</c>/<c>InitializeHudTransitionVariables</c>/
+/// <c>UpdateHudTransitionVariables</c>/<c>UpdateHudTransitionState</c> and the portrait quad
+/// (<c>MainInventoryManager.cs:197-440</c>) are <see cref="AlundraInventoryPortrait"/>, one instance shared with
+/// <see cref="AlundraSubInventoryDirector"/>. This class starts it in <see cref="RunDisplayInventoryHead"/> and
+/// starts its return in both exits (close and L1/R1) right after <see cref="RunCloseSetup"/>, as the executable
+/// orders them; the world steps it once per tick after the post-process. It only ever touches portrait-local
+/// state: <c>g_forbiddenWarpFlag</c>, the box tweens and <c>g_inventoryCursorText</c> are not affected, so the
+/// seven-box slide and the text reveal keep their own clock.</para>
 ///
 /// <para><b>L1/R1 (the sub-inventory switch, <c>MainInventoryManager.cs:853-859</c>)</b> (E13.d SI3,
 /// docs/plan-e13d-sous-inventaire.md, D-E13D-21/22): closes the main inventory (<see cref="RunCloseSetup"/>,
@@ -466,8 +464,10 @@ public sealed class AlundraInventoryDirector
         AlundraHudDirector.Instance.InitializeHudPosition();
 
         // MainInventoryManager.cs:485-493 - SetTransitionType(6) (the setup callback's own arming,
-        // reproduced by this class' own Tick ordering, not by a stored callback) and the portrait's own
-        // InitializeHudTransitionVariablesAndSetStart: NOT PORTED (D-E13D-12 amended - see class doc).
+        // reproduced by this class' own Tick ordering, not by a stored callback), then the portrait's own
+        // start (GetAnimationImageByIndex(0), 0x80057c18 called at 0x800556b0): the flight from the head,
+        // ignored unless the shared portrait is idle (docs/plan-portrait-inventaire.md, PI8).
+        AlundraInventoryPortrait.Instance.StartFromHead();
 
         // MainInventoryManager.cs:494 - DisplayIconNames().
         RunDisplayIconNames(state);
@@ -644,6 +644,7 @@ public sealed class AlundraInventoryDirector
         if ((pad.ButtonsJustPressedByInterval & (AlundraPadState.Start | AlundraPadState.Triangle | AlundraPadState.L2 | AlundraPadState.R2)) != 0)
         {
             RunCloseSetup(state);
+            AlundraInventoryPortrait.Instance.ReturnToHead(); // 0x80056938, between the slide-out and the gauge.
             AlundraHudDirector.Instance.InitializeHudPositionBeforeHide();
         }
 
@@ -655,6 +656,7 @@ public sealed class AlundraInventoryDirector
         {
             RunCloseSetup(state);
             state.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+            AlundraInventoryPortrait.Instance.ReturnToHead(); // 0x80056974, before the post-process state (0x80056984).
             AlundraInventoryPostProcess.Instance.State = 1;
         }
     }

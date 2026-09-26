@@ -20,9 +20,11 @@
        window data context, an AlundraSubInventoryViewModel the presenter writes each logic tick; an
        Image names its asset by id (engine ADR-0038), directly here when it never changes.
 
-       Draw order (back to front, plan §1.5's own last point): the seven baked box images, the two
-       selection frames (wind_039), the icons (armory, key items, armor, boots), the texts and digits,
-       the cursor. -->
+       Draw order (back to front) follows the original's UI ordering table, entry 0 first, the same
+       entries as the main inventory (ALUN_CD.EXE, measured for docs/plan-portrait-inventaire.md PI8):
+       0 the seven baked boxes and the two selection frames (wind_039), 1-2 the description and the
+       names, 3 the opening portrait, 4 the icons (armory, key items, armor, boots), 5 the digits and
+       the cursor. (Before PI8 the texts came after the icons; at rest nothing overlaps.) -->
 
   <Canvas Name="RootCanvas" Width="320" Height="240" Visibility="{dataBinding:MGBinding Path=RootVisibility}">
 
@@ -40,6 +42,20 @@
          equipped armor and boots icons (plan §1.5, FUN_80052fb4). -->
     <Image Name="ArmorFrame" Stretch="None" SourceName="5f56fba6-2abb-5163-bb1e-e5a4f6fdb499" CanvasLeft="{dataBinding:MGBinding Path=ArmorFrame.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmorFrame.Top}" Visibility="{dataBinding:MGBinding Path=ArmorFrame.Visibility}" />
     <Image Name="BootsFrame" Stretch="None" SourceName="5f56fba6-2abb-5163-bb1e-e5a4f6fdb499" CanvasLeft="{dataBinding:MGBinding Path=BootsFrame.Left}" CanvasTop="{dataBinding:MGBinding Path=BootsFrame.Top}" Visibility="{dataBinding:MGBinding Path=BootsFrame.Visibility}" />
+
+    <!-- Armor/boots names and the two description lines - font3. The second line shows the item's
+         second description line (D-E13D-30: the original's one-byte-early read, which hid it, is corrected). -->
+    <TextBlock Name="ArmorNameText" Text="{dataBinding:MGBinding Path=ArmorName.Text}" CanvasLeft="{dataBinding:MGBinding Path=ArmorName.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmorName.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="BootsNameText" Text="{dataBinding:MGBinding Path=BootsName.Text}" CanvasLeft="{dataBinding:MGBinding Path=BootsName.Left}" CanvasTop="{dataBinding:MGBinding Path=BootsName.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="DescriptionLine0Text" Text="{dataBinding:MGBinding Path=DescriptionLine0.Text}" CanvasLeft="{dataBinding:MGBinding Path=DescriptionLine0.Left}" CanvasTop="{dataBinding:MGBinding Path=DescriptionLine0.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="DescriptionLine1Text" Text="{dataBinding:MGBinding Path=DescriptionLine1.Text}" CanvasLeft="{dataBinding:MGBinding Path=DescriptionLine1.Left}" CanvasTop="{dataBinding:MGBinding Path=DescriptionLine1.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+
+    <!-- The opening portrait (docs/plan-portrait-inventaire.md, PI8): the original's single portrait quad,
+         UI ordering-table entry 3 - above the boxes, the frames and the texts, below the icons, the
+         digits and the cursor. It sits at its rest position (248, 104); the flight from Alundra's head
+         moves and scales it through the bindable render transform (MGUI ADR-0020), anchored at its
+         top-left corner, so the layout never runs for it. -->
+    <Image Name="PortraitImage" Stretch="None" SourceName="{dataBinding:MGBinding Path=Portrait.SourceName}" CanvasLeft="248" CanvasTop="104" RenderTransformTranslation="{dataBinding:MGBinding Path=Portrait.Translation}" RenderTransformScale="{dataBinding:MGBinding Path=Portrait.Scale}" Visibility="{dataBinding:MGBinding Path=Portrait.Visibility}" />
 
     <!-- The armory's seven crest icons (plan §1.5, FUN_80052dd8) - owned crests only, at the original's own
          top-left (D-E13D-34, no centring). -->
@@ -62,13 +78,6 @@
          own selection frames above. -->
     <Image Name="ArmorIcon" Stretch="None" SourceName="{dataBinding:MGBinding Path=ArmorIcon.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=ArmorIcon.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmorIcon.Top}" Visibility="{dataBinding:MGBinding Path=ArmorIcon.Visibility}" />
     <Image Name="BootsIcon" Stretch="None" SourceName="{dataBinding:MGBinding Path=BootsIcon.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=BootsIcon.Left}" CanvasTop="{dataBinding:MGBinding Path=BootsIcon.Top}" Visibility="{dataBinding:MGBinding Path=BootsIcon.Visibility}" />
-
-    <!-- Armor/boots names and the two description lines - font3. The second line shows the item's
-         second description line (D-E13D-30: the original's one-byte-early read, which hid it, is corrected). -->
-    <TextBlock Name="ArmorNameText" Text="{dataBinding:MGBinding Path=ArmorName.Text}" CanvasLeft="{dataBinding:MGBinding Path=ArmorName.Left}" CanvasTop="{dataBinding:MGBinding Path=ArmorName.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
-    <TextBlock Name="BootsNameText" Text="{dataBinding:MGBinding Path=BootsName.Text}" CanvasLeft="{dataBinding:MGBinding Path=BootsName.Left}" CanvasTop="{dataBinding:MGBinding Path=BootsName.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
-    <TextBlock Name="DescriptionLine0Text" Text="{dataBinding:MGBinding Path=DescriptionLine0.Text}" CanvasLeft="{dataBinding:MGBinding Path=DescriptionLine0.Left}" CanvasTop="{dataBinding:MGBinding Path=DescriptionLine0.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
-    <TextBlock Name="DescriptionLine1Text" Text="{dataBinding:MGBinding Path=DescriptionLine1.Text}" CanvasLeft="{dataBinding:MGBinding Path=DescriptionLine1.Left}" CanvasTop="{dataBinding:MGBinding Path=DescriptionLine1.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
 
     <!-- Money (4 digits), falcon (2) and key (2) counters - the main inventory's own places on the
          SAME shared box (AlundraInventoryComposer.ComposeDigits). -->

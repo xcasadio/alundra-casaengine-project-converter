@@ -1305,6 +1305,24 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             AlundraSubInventoryDirector.Instance, GameState, ItemTables, viewModel, screen, uiView);
     }
 
+    /// <summary>docs/plan-portrait-inventaire.md PI8: refreshes <see cref="AlundraInventoryPortrait"/>'s head point
+    /// for this tick, before the inventory directors, from the player's 16.16 position and the original's
+    /// <c>g_cameraScrollingX/Y</c>, obtained through <see cref="AlundraCameraMath.ToOriginalScrollSpace"/> (the one
+    /// sanctioned conversion, same fallback to <see cref="Vector3.Zero"/> as the backdrop stage when no camera is
+    /// resolved). Integer arithmetic only: nothing allocated per tick.</summary>
+    private void UpdateInventoryPortraitHeadPoint()
+    {
+        var player = PlayerEntity;
+        if (player == null)
+        {
+            return;
+        }
+
+        var scroll = AlundraCameraMath.ToOriginalScrollSpace(_cameraDirector.ResolvedCamera?.Target ?? Vector3.Zero);
+        var head = AlundraInventoryPortrait.ComputeHeadPoint(player.PosX, player.PosY, player.PosZ, scroll.X, scroll.Y);
+        AlundraInventoryPortrait.Instance.SetHeadPoint(head.X, head.Y);
+    }
+
     /// <summary>E13.c S3: the equipment source handed to the production presenter - the port of the two
     /// lookups <c>HudManager.DisplayHudWeaponAndItem</c> makes every frame, over this proxy's own session
     /// state and item tables (<see cref="AlundraPlayerManager.ResolveHudEquipmentIcons"/>).</summary>
@@ -1997,9 +2015,18 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         for (var padTick = 0; padTick < ticksThisFrame; padTick++)
         {
             GameState.TickPad.Update(GameState.LastPadState.ButtonsHold);
+            UpdateInventoryPortraitHeadPoint();
             AlundraInventoryDirector.Instance.Tick(PlayerEntity);
             AlundraSubInventoryDirector.Instance.Tick();
             AlundraInventoryPostProcess.Instance.Run();
+
+            // docs/plan-portrait-inventaire.md P4/PI8: the portrait steps once per tick HERE, after both
+            // directors' per-frame work and the post-process and before the presenters - the original's own
+            // DisplayUserInterface (0x8002be64) runs right after the callbacks and the post-process
+            // (0x80048054 at 0x8002be5c) inside RenderScene. A start or a return made in this tick's render
+            // half therefore steps in this same tick, and the trigger's opening (this tick's Update half)
+            // too, which is the original's next render.
+            AlundraInventoryPortrait.Instance.Step();
 
             // E13.d D5 (docs/plan-e13d-inventaire.md): the presenter, right after the director's own
             // Tick() for this SAME tick - same "presenter runs immediately after its director, inside the

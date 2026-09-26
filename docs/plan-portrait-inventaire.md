@@ -567,7 +567,7 @@ Tests `AlundraInventoryPortraitTests` (7) :
 | « +2 » en X | point de la tête |
 | Taille de retour à l'ouverture | table d'ouverture |
 
-### ⏳ PI8 — DLL : le branchement et les deux écrans
+### ✅ PI8 — DLL : le branchement et les deux écrans — faite le 2026-09-26
 
 **Prérequis** : PI3, PI6, PI7. **Dépôt** : parent (et les écrans versionnés d'`alundra-project/UI/Screens/`).
 - Un seul état partagé (P3), attaché au monde comme les directeurs. Départ aux deux ouvertures (principal : après
@@ -596,6 +596,54 @@ Tests `AlundraInventoryPortraitTests` (7) :
 
 **Acceptation** : `Alundra.Tests` vert ; build de la DLL. Commit : `feat(inventory): fly the opening portrait in both
 inventories`.
+
+**Fait le 2026-09-26** (session principale).
+
+- **Portrait.** `AlundraInventoryPortrait` retient le point de la tête du tick : `SetHeadPoint`, `StartFromHead`,
+  `ReturnToHead`. `AlundraWorldProxy.UpdateInventoryPortraitHeadPoint` le calcule à chaque tick, avant les directeurs,
+  depuis le joueur et `ToOriginalScrollSpace(ResolvedCamera.Target)`. `Step()` s'exécute après
+  `AlundraInventoryPostProcess.Run` (P4 révisée).
+- **Directeurs.**
+  - Départs : `RunDisplayInventoryHead`, qui sert le déclenchement et le post-traitement, et
+    `OpenFromPostProcess`, juste avant le son 4.
+  - Retours : les deux fermetures, juste après le glissement et avant la jauge ; les deux bascules, après
+    `MenuOpen` et avant l'état du post-traitement. C'est l'ordre du binaire.
+- **Présentateurs et view-models.** `InventoryPortraitViewModel` expose une translation et une échelle en `Vector2`,
+  la source et la visibilité, et le présentateur le pousse sans allocation. L'identifiant vient de
+  `AlundraItemTables.TryGetInventoryPortraitAssetId`, qui lit `Data/inventory-portrait.json`. S'il manque, le
+  portrait reste caché et un avertissement unique est émis.
+- **Écrans.**
+  - `PortraitImage` est en (248, 104), avec la source, la translation, l'échelle et la visibilité liées. Les données
+    de conception montrent le portrait au repos.
+  - **L'ordre des éléments suit la table d'ordre**, mesurée dans `ALUN_CD.EXE` pour les deux inventaires : les
+    adresses d'entrée chargées par chaque fonction, par exemple `0x80052d50`/`0x80052e9c` → entrée 4 pour les icônes du
+    sous-inventaire, `0x80053e94` → 1 pour sa description, `0x800531a4` → 2 pour ses noms, `0x80053090` → 0 pour
+    ses cadres, et `0x800543d8` → 5 pour ses chiffres.
+  - L'ordre retenu : boîtes et cadres, puis textes, portrait, icônes, chiffres, curseur. Dans l'écran principal, les
+    cadres et les textes passent donc avant les icônes ; dans le sous-inventaire, les textes.
+- **Tests.**
+  - `AlundraInventoryPortraitWiringTests` (6), par le vrai `AlundraWorldProxy.Update` :
+    - ouverture déclenchée : 0×0 au tick T, 3×3 à T+1, 44×52 à T+14, repos à T+15 ;
+    - fermeture : premier pas dans le tick même, état 0 à M+15, écran encore dessiné ;
+    - bascule vers le sous-inventaire : il s'ouvre **18 ticks** après le début du retour, soit une marge de 3 ticks sur
+      la garde, et le départ fait son premier pas dans ce tick ;
+    - bascule retour : départ dans le tick de la tête lancée par le post-traitement ;
+    - présentateur : translation, échelle, source ;
+    - index absent : portrait caché.
+  - Tests d'écran (2) : présence, repos, liaison de la transformation, place entre textes et icônes.
+  - Le test d'ordre du sous-inventaire (SI8) est mis à jour vers la table d'ordre : c'est un changement voulu par le
+    portrait.
+- **Suites.** `Alundra.Tests` **1300/1300** (1292 + 6 + 2) ; solution parente à 0 erreur.
+- **Mutations réelles** (fichier restauré puis reconstruit à chaque fois) :
+
+| Mutation | Tests qui échouent |
+|---|---|
+| Pas déplacé au début du tick, l'ancienne P4 | 5 tests sur 6 |
+| Départ du sous-inventaire retiré | les 2 bascules |
+| Poussée du présentateur retirée | le test du présentateur |
+| Point de la tête non mis à jour | 3 tests |
+| Liaison d'échelle retirée du XAML | le test d'écran |
+| Portrait supprimé, puis déplacé après les icônes | le test d'écran (les deux fois) |
 
 ### ⏳ PI9 — Recette par capture, prédite avant d'être prise
 

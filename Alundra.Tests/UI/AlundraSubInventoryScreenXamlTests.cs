@@ -314,11 +314,13 @@ public sealed class AlundraSubInventoryScreenXamlTests
         Assert.Equal("font3", Assert.IsType<MGTextBlock>(element).FontFamily);
     }
 
-    /// <summary>Plan §1.5 ("l'ordre de dessin") and SI8: the canvas draws its children in order, so the XAML's own
-    /// order is the draw order - the seven boxes, then the two frames, then the icons, then the texts and digits,
-    /// the cursor last (on top of everything).</summary>
+    /// <summary>The canvas draws its children in order, so the XAML's own order is the draw order. Since
+    /// docs/plan-portrait-inventaire.md PI8 it follows the original's UI ordering table, measured in ALUN_CD.EXE: the
+    /// seven boxes and the two frames (entry 0), the texts (entries 1-2), the opening portrait (entry 3), the icons
+    /// (entry 4), then the digits and the cursor last (entry 5). (Plan SI8 had the icons before the texts; at rest
+    /// nothing overlaps, only the portrait's flight shows the order.)</summary>
     [Fact]
-    public void RootCanvas_DrawOrder_BoxesFramesIconsTextsDigitsCursor()
+    public void RootCanvas_DrawOrder_FollowsTheOriginalOrderingTable()
     {
         var window = LoadWindow();
         var canvas = Element<MGCanvas>(window, "RootCanvas");
@@ -326,9 +328,11 @@ public sealed class AlundraSubInventoryScreenXamlTests
         static int Group(string name) =>
             name.StartsWith("Box", StringComparison.Ordinal) ? 0
             : name.EndsWith("Frame", StringComparison.Ordinal) ? 1
-            : name.Contains("Icon", StringComparison.Ordinal) ? 2
-            : name.EndsWith("Text", StringComparison.Ordinal) || name.Contains("Digit", StringComparison.Ordinal) ? 3
-            : name == "CursorImage" ? 4
+            : name.EndsWith("Text", StringComparison.Ordinal) ? 2
+            : name == "PortraitImage" ? 3
+            : name.Contains("Icon", StringComparison.Ordinal) ? 4
+            : name.Contains("Digit", StringComparison.Ordinal) ? 5
+            : name == "CursorImage" ? 6
             : -1;
 
         var names = canvas.Children.Select(child => child.Name ?? string.Empty).ToList();
@@ -338,5 +342,44 @@ public sealed class AlundraSubInventoryScreenXamlTests
         Assert.Equal(groups.OrderBy(g => g).ToList(), groups);
         Assert.Equal("CursorImage", names[^1]);
         Assert.Equal(7, groups.Count(g => g == 0));
+    }
+
+    /// <summary>docs/plan-portrait-inventaire.md PI8: the opening portrait sits at its rest position (248, 104) and its
+    /// flight reaches the element's render transform through the two bindable attributes (MGUI ADR-0020); in the
+    /// canvas it comes after the boxes, the frames and the texts and before the icons, the digits and the cursor
+    /// (the original's UI ordering-table entry 3).</summary>
+    [Fact]
+    public void PortraitImage_SitsAtRest_BindsItsRenderTransform_AndSitsAtEntryThree()
+    {
+        var window = LoadWindow(out var desktop);
+        var viewModel = new AlundraSubInventoryViewModel();
+        window.WindowDataContext = viewModel;
+
+        var portrait = Element<MGImage>(window, "PortraitImage");
+        Assert.Equal(248, portrait.CanvasLeft);
+        Assert.Equal(104, portrait.CanvasTop);
+
+        viewModel.Portrait.SourceName = "19436250-bfec-529a-bf3f-23d258f82db6";
+        viewModel.Portrait.Translation = new Vector2(-88, 16);
+        viewModel.Portrait.Scale = new Vector2(3f / 48f, 3f / 56f);
+        viewModel.Portrait.Visibility = Visibility.Visible;
+        desktop.Update();
+
+        Assert.Equal("19436250-bfec-529a-bf3f-23d258f82db6", portrait.SourceName);
+        Assert.Equal(new Vector2(-88, 16), portrait.RenderTransform.Translation);
+        Assert.Equal(new Vector2(3f / 48f, 3f / 56f), portrait.RenderTransform.Scale);
+        Assert.Equal(Visibility.Visible, portrait.Visibility);
+
+        var names = Element<MGCanvas>(window, "RootCanvas").Children.Select(child => child.Name ?? string.Empty).ToList();
+        var portraitIndex = names.IndexOf("PortraitImage");
+        foreach (var name in new[] { "BoxArmory", "BoxMoneyFalconKey", "ArmorFrame", "BootsFrame", "ArmorNameText", "BootsNameText", "DescriptionLine0Text", "DescriptionLine1Text" })
+        {
+            Assert.True(names.IndexOf(name) >= 0 && names.IndexOf(name) < portraitIndex, $"'{name}' must come before the portrait");
+        }
+
+        foreach (var name in new[] { "ArmoryIcon0", "KeyItemIcon4", "ArmorIcon", "BootsIcon", "MoneyDigit0", "CursorImage" })
+        {
+            Assert.True(names.IndexOf(name) > portraitIndex, $"'{name}' must come after the portrait");
+        }
     }
 }

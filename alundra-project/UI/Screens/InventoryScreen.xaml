@@ -20,9 +20,11 @@
        an AlundraInventoryViewModel the presenter writes each logic tick; an Image names its asset
        by id (engine ADR-0038), directly here when it never changes.
 
-       Draw order (back to front, MainInventoryManager.cs:914-922, plan 1.4): the six baked box
-       images (BackgroundUI), the grid icons/digits/names (ForegroundUI), the two selection
-       frames (ForegroundUICursor), the cursor (ForegroundUICursor2). -->
+       Draw order (back to front) follows the original's UI ordering table, entry 0 first
+       (ALUN_CD.EXE, measured for docs/plan-portrait-inventaire.md PI1/PI8): 0 the six baked boxes and
+       the two selection frames, 1-2 the description and the names, 3 the opening portrait, 4 the grid
+       icons, 5 the digits and the cursor. (Before PI8 the texts and the frames came after the icons;
+       at rest nothing overlaps, so only the portrait's flight shows the difference.) -->
 
   <Canvas Name="RootCanvas" Width="320" Height="240" Visibility="{dataBinding:MGBinding Path=RootVisibility}">
 
@@ -34,6 +36,27 @@
     <Image Name="BoxItemName" Stretch="None" SourceName="1f5d5bab-7408-5da3-a8d6-20a02d3c0747" CanvasLeft="{dataBinding:MGBinding Path=BoxItemName.Left}" CanvasTop="{dataBinding:MGBinding Path=BoxItemName.Top}" Visibility="{dataBinding:MGBinding Path=BoxItemName.Visibility}" />
     <Image Name="BoxMoneyFalconKey" Stretch="None" SourceName="e8d58247-f02b-57cb-9ebf-f1df2b9be874" CanvasLeft="{dataBinding:MGBinding Path=BoxMoneyFalconKey.Left}" CanvasTop="{dataBinding:MGBinding Path=BoxMoneyFalconKey.Top}" Visibility="{dataBinding:MGBinding Path=BoxMoneyFalconKey.Visibility}" />
     <Image Name="BoxDescription" Stretch="None" SourceName="973a9208-c867-57fe-bee3-cf30237221ef" CanvasLeft="{dataBinding:MGBinding Path=BoxDescription.Left}" CanvasTop="{dataBinding:MGBinding Path=BoxDescription.Top}" Visibility="{dataBinding:MGBinding Path=BoxDescription.Visibility}" />
+
+    <!-- Selection frames (wind_039) over the equipped weapon and the equipped item - UI ordering-table
+         entry 0, drawn with the boxes (ALUN_CD.EXE, docs/plan-portrait-inventaire.md PI8). -->
+    <Image Name="WeaponSelectionFrame" Stretch="None" SourceName="5f56fba6-2abb-5163-bb1e-e5a4f6fdb499" CanvasLeft="{dataBinding:MGBinding Path=WeaponSelectionFrame.Left}" CanvasTop="{dataBinding:MGBinding Path=WeaponSelectionFrame.Top}" Visibility="{dataBinding:MGBinding Path=WeaponSelectionFrame.Visibility}" />
+    <Image Name="ItemSelectionFrame" Stretch="None" SourceName="5f56fba6-2abb-5163-bb1e-e5a4f6fdb499" CanvasLeft="{dataBinding:MGBinding Path=ItemSelectionFrame.Left}" CanvasTop="{dataBinding:MGBinding Path=ItemSelectionFrame.Top}" Visibility="{dataBinding:MGBinding Path=ItemSelectionFrame.Visibility}" />
+
+    <!-- Equipped weapon/item names and the two description lines - ForegroundUI, in the
+         bitmap font font3. The screen holds font3 through the engine's UI font registry from
+         its construction (engine ADR-0036, plan D5.f), so the family is registered on this
+         desktop's text engine before this window is built. -->
+    <TextBlock Name="WeaponNameText" Text="{dataBinding:MGBinding Path=WeaponName.Text}" CanvasLeft="{dataBinding:MGBinding Path=WeaponName.Left}" CanvasTop="{dataBinding:MGBinding Path=WeaponName.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="ItemNameText" Text="{dataBinding:MGBinding Path=ItemName.Text}" CanvasLeft="{dataBinding:MGBinding Path=ItemName.Left}" CanvasTop="{dataBinding:MGBinding Path=ItemName.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="DescriptionLine0Text" Text="{dataBinding:MGBinding Path=DescriptionLine0.Text}" CanvasLeft="{dataBinding:MGBinding Path=DescriptionLine0.Left}" CanvasTop="{dataBinding:MGBinding Path=DescriptionLine0.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="DescriptionLine1Text" Text="{dataBinding:MGBinding Path=DescriptionLine1.Text}" CanvasLeft="{dataBinding:MGBinding Path=DescriptionLine1.Left}" CanvasTop="{dataBinding:MGBinding Path=DescriptionLine1.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+
+    <!-- The opening portrait (docs/plan-portrait-inventaire.md, PI8): the original's single portrait quad,
+         UI ordering-table entry 3 - above the boxes, the frames and the texts, below the icons, the
+         digits and the cursor. It sits at its rest position (248, 104); the flight from Alundra's head
+         moves and scales it through the bindable render transform (MGUI ADR-0020), anchored at its
+         top-left corner, so the layout never runs for it. -->
+    <Image Name="PortraitImage" Stretch="None" SourceName="{dataBinding:MGBinding Path=Portrait.SourceName}" CanvasLeft="248" CanvasTop="104" RenderTransformTranslation="{dataBinding:MGBinding Path=Portrait.Translation}" RenderTransformScale="{dataBinding:MGBinding Path=Portrait.Scale}" Visibility="{dataBinding:MGBinding Path=Portrait.Visibility}" />
 
     <!-- 24 grid slot icons (row 0 weapons, rows 1-3 items) - ForegroundUI, centred in their
          24x32 cell per D-E13D-10. -->
@@ -74,20 +97,6 @@
     <Image Name="FalconDigit1" Stretch="None" SourceName="{dataBinding:MGBinding Path=FalconDigit1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=FalconDigit1.Left}" CanvasTop="{dataBinding:MGBinding Path=FalconDigit1.Top}" Visibility="{dataBinding:MGBinding Path=FalconDigit1.Visibility}" />
     <Image Name="KeyDigit0" Stretch="None" SourceName="{dataBinding:MGBinding Path=KeyDigit0.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=KeyDigit0.Left}" CanvasTop="{dataBinding:MGBinding Path=KeyDigit0.Top}" Visibility="{dataBinding:MGBinding Path=KeyDigit0.Visibility}" />
     <Image Name="KeyDigit1" Stretch="None" SourceName="{dataBinding:MGBinding Path=KeyDigit1.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=KeyDigit1.Left}" CanvasTop="{dataBinding:MGBinding Path=KeyDigit1.Top}" Visibility="{dataBinding:MGBinding Path=KeyDigit1.Visibility}" />
-
-    <!-- Equipped weapon/item names and the two description lines - ForegroundUI, in the
-         bitmap font font3. The screen holds font3 through the engine's UI font registry from
-         its construction (engine ADR-0036, plan D5.f), so the family is registered on this
-         desktop's text engine before this window is built. -->
-    <TextBlock Name="WeaponNameText" Text="{dataBinding:MGBinding Path=WeaponName.Text}" CanvasLeft="{dataBinding:MGBinding Path=WeaponName.Left}" CanvasTop="{dataBinding:MGBinding Path=WeaponName.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
-    <TextBlock Name="ItemNameText" Text="{dataBinding:MGBinding Path=ItemName.Text}" CanvasLeft="{dataBinding:MGBinding Path=ItemName.Left}" CanvasTop="{dataBinding:MGBinding Path=ItemName.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
-    <TextBlock Name="DescriptionLine0Text" Text="{dataBinding:MGBinding Path=DescriptionLine0.Text}" CanvasLeft="{dataBinding:MGBinding Path=DescriptionLine0.Left}" CanvasTop="{dataBinding:MGBinding Path=DescriptionLine0.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
-    <TextBlock Name="DescriptionLine1Text" Text="{dataBinding:MGBinding Path=DescriptionLine1.Text}" CanvasLeft="{dataBinding:MGBinding Path=DescriptionLine1.Left}" CanvasTop="{dataBinding:MGBinding Path=DescriptionLine1.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
-
-    <!-- Selection frames (wind_039) over the equipped weapon and the equipped item -
-         ForegroundUICursor. -->
-    <Image Name="WeaponSelectionFrame" Stretch="None" SourceName="5f56fba6-2abb-5163-bb1e-e5a4f6fdb499" CanvasLeft="{dataBinding:MGBinding Path=WeaponSelectionFrame.Left}" CanvasTop="{dataBinding:MGBinding Path=WeaponSelectionFrame.Top}" Visibility="{dataBinding:MGBinding Path=WeaponSelectionFrame.Visibility}" />
-    <Image Name="ItemSelectionFrame" Stretch="None" SourceName="5f56fba6-2abb-5163-bb1e-e5a4f6fdb499" CanvasLeft="{dataBinding:MGBinding Path=ItemSelectionFrame.Left}" CanvasTop="{dataBinding:MGBinding Path=ItemSelectionFrame.Top}" Visibility="{dataBinding:MGBinding Path=ItemSelectionFrame.Visibility}" />
 
     <!-- The cursor - ForegroundUICursor2, always on top: the ui_inventory_cursor animation
          (wind_159/182/210/237, 200 ms each, with the per-phase pixel offset), written by the

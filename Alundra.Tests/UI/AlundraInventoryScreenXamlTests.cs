@@ -262,4 +262,43 @@ public sealed class AlundraInventoryScreenXamlTests
         Assert.True(window.TryGetElementByName(name, out MGElement element), $"missing '{name}'");
         Assert.Equal("font3", Assert.IsType<MGTextBlock>(element).FontFamily);
     }
+
+    /// <summary>docs/plan-portrait-inventaire.md PI8: the opening portrait sits at its rest position (248, 104) and its
+    /// flight reaches the element's render transform through the two bindable attributes (MGUI ADR-0020); in the
+    /// canvas it comes after the boxes, the frames and the texts and before the icons, the digits and the cursor
+    /// (the original's UI ordering-table entry 3).</summary>
+    [Fact]
+    public void PortraitImage_SitsAtRest_BindsItsRenderTransform_AndSitsAtEntryThree()
+    {
+        var window = LoadWindow(out var desktop);
+        var viewModel = new AlundraInventoryViewModel();
+        window.WindowDataContext = viewModel;
+
+        var portrait = Element<MGImage>(window, "PortraitImage");
+        Assert.Equal(248, portrait.CanvasLeft);
+        Assert.Equal(104, portrait.CanvasTop);
+
+        viewModel.Portrait.SourceName = "19436250-bfec-529a-bf3f-23d258f82db6";
+        viewModel.Portrait.Translation = new Vector2(-88, 16);
+        viewModel.Portrait.Scale = new Vector2(3f / 48f, 3f / 56f);
+        viewModel.Portrait.Visibility = Visibility.Visible;
+        desktop.Update();
+
+        Assert.Equal("19436250-bfec-529a-bf3f-23d258f82db6", portrait.SourceName);
+        Assert.Equal(new Vector2(-88, 16), portrait.RenderTransform.Translation);
+        Assert.Equal(new Vector2(3f / 48f, 3f / 56f), portrait.RenderTransform.Scale);
+        Assert.Equal(Visibility.Visible, portrait.Visibility);
+
+        var names = Element<MGCanvas>(window, "RootCanvas").Children.Select(child => child.Name ?? string.Empty).ToList();
+        var portraitIndex = names.IndexOf("PortraitImage");
+        foreach (var name in new[] { "BoxWeapon", "BoxDescription", "WeaponSelectionFrame", "ItemSelectionFrame", "WeaponNameText", "ItemNameText", "DescriptionLine0Text", "DescriptionLine1Text" })
+        {
+            Assert.True(names.IndexOf(name) >= 0 && names.IndexOf(name) < portraitIndex, $"'{name}' must come before the portrait");
+        }
+
+        foreach (var name in new[] { "IconSlot0", "IconSlot23", "HerbCountDigit", "MoneyDigit0", "KeyDigit1", "CursorImage" })
+        {
+            Assert.True(names.IndexOf(name) > portraitIndex, $"'{name}' must come after the portrait");
+        }
+    }
 }

@@ -23,6 +23,8 @@ namespace Alundra.Scripts;
 /// <item><c>item-icon-index.json</c> - each item that has a portrait, mapped to the asset id of the
 /// <c>.sprite</c> the converter already emitted for it (88 items). Read through
 /// <see cref="TryGetIconAssetId"/>.</item>
+/// <item><c>inventory-portrait.json</c> - the asset id of the inventory's opening portrait sprite (parent ADR-0005,
+/// docs/plan-portrait-inventaire.md PI8). Read through <see cref="TryGetInventoryPortraitAssetId"/>.</item>
 /// </list>
 ///
 /// <b>Degraded mode</b>: a file that is missing, unparsable or shorter than its table logs one warning and
@@ -36,6 +38,7 @@ public sealed class AlundraItemTables
     private const string PropertiesFileName = "items-properties.json";
     private const string DropPropertiesFileName = "item-drop-properties.json";
     private const string IconIndexFileName = "item-icon-index.json";
+    private const string InventoryPortraitFileName = "inventory-portrait.json";
 
     /// <summary>Rows of <c>g_itemsProperties</c>: 100, item ids 0..99 (StaticVariables.cs:737-838).</summary>
     public const int ItemRowCount = 100;
@@ -55,6 +58,7 @@ public sealed class AlundraItemTables
     private readonly ushort[] _itemsProperties = new ushort[ItemRowCount * ItemColumnCount];
     private readonly byte[] _dropField3 = new byte[DropRecordCount];
     private readonly Dictionary<int, Guid> _iconAssetIdByItemId = new();
+    private Guid? _inventoryPortraitAssetId;
 
     /// <summary>Loads from <c>Data/</c> under <see cref="EngineEnvironment.ProjectPath"/>.</summary>
     public AlundraItemTables() : this(EngineEnvironment.ProjectPath)
@@ -84,6 +88,45 @@ public sealed class AlundraItemTables
             () => Array.Clear(_dropField3));
 
         LoadIconIndex(Path.Combine(dataPath, IconIndexFileName));
+        LoadInventoryPortrait(Path.Combine(dataPath, InventoryPortraitFileName));
+    }
+
+    /// <summary>The inventory's opening portrait sprite (<c>Data/inventory-portrait.json</c>, parent ADR-0005), or
+    /// false in degraded mode: the inventories then open without their portrait.</summary>
+    public bool TryGetInventoryPortraitAssetId(out Guid assetId)
+    {
+        assetId = _inventoryPortraitAssetId ?? Guid.Empty;
+        return _inventoryPortraitAssetId.HasValue;
+    }
+
+    private void LoadInventoryPortrait(string filePath)
+    {
+        try
+        {
+            if (!File.Exists(filePath))
+            {
+                Logs.WriteWarning($"AlundraItemTables: '{filePath}' not found; the inventories open without their portrait (degraded mode).");
+                return;
+            }
+
+            using var document = JsonDocument.Parse(File.ReadAllText(filePath));
+            if (document.RootElement.ValueKind == JsonValueKind.Object
+                && document.RootElement.TryGetProperty("SpriteAssetId", out var idElement)
+                && idElement.ValueKind == JsonValueKind.String
+                && Guid.TryParse(idElement.GetString(), out var assetId))
+            {
+                _inventoryPortraitAssetId = assetId;
+                return;
+            }
+
+            Logs.WriteWarning($"AlundraItemTables: '{filePath}' has no valid SpriteAssetId; the inventories open without their portrait (degraded mode).");
+        }
+        catch (Exception ex)
+        {
+            _inventoryPortraitAssetId = null;
+            Logs.WriteWarning(
+                $"AlundraItemTables: failed to load '{filePath}' ({ex.Message}); the inventories open without their portrait (degraded mode).");
+        }
     }
 
     /// <summary><c>g_itemsProperties</c> flattened, read as <c>[itemId * 5 + column]</c> exactly like the

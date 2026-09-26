@@ -37,6 +37,9 @@ public sealed class AlundraInventoryPresenter
     private readonly AlundraInventoryViewModel _viewModel;
     private readonly IUIScreen _screen;
     private readonly IUIViewRuntime? _uiView;
+
+    // docs/plan-portrait-inventaire.md PI8: the portrait sprite, resolved once (null in degraded mode).
+    private readonly Guid? _portraitAssetId;
     private bool _pushed;
 
     public AlundraInventoryPresenter(
@@ -59,6 +62,7 @@ public sealed class AlundraInventoryPresenter
         _viewModel = viewModel;
         _screen = screen;
         _uiView = uiView;
+        _portraitAssetId = itemTables.TryGetInventoryPortraitAssetId(out var portraitAssetId) ? portraitAssetId : null;
     }
 
     /// <summary>Test-only seam: whether this presenter currently believes its screen is pushed - so a
@@ -71,6 +75,7 @@ public sealed class AlundraInventoryPresenter
         {
             PushScreenIfNeeded();
             _viewModel.Apply(ComposeModel());
+            _viewModel.Portrait.Apply(AlundraInventoryPortrait.Instance, _portraitAssetId);
             return;
         }
 

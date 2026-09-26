@@ -88,6 +88,9 @@ public sealed class AlundraSubInventoryViewModel : ViewModelBase
 
     public InventoryImageViewModel Cursor { get; } = new();
 
+    /// <summary>The opening portrait, shared with the main inventory (docs/plan-portrait-inventaire.md, PI8).</summary>
+    public InventoryPortraitViewModel Portrait { get; } = new();
+
     /// <summary>Writes one tick's composed display into the bound members. Mirrors
     /// <see cref="AlundraInventoryViewModel.Apply"/>: a box or an icon absent from the model stays as it was,
     /// or hidden.</summary>

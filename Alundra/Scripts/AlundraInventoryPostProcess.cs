@@ -55,7 +55,7 @@ public sealed class AlundraInventoryPostProcess
     public void Run()
     {
         // :1693-1697 - state 1, main inventory's own rappel free -> open the sub-inventory (StartFadeOut's
-        // body, minus the portrait - AlundraSubInventoryDirector.OpenFromPostProcess).
+        // body, portrait start included - AlundraSubInventoryDirector.OpenFromPostProcess).
         if (State == 1 && !AlundraInventoryDirector.Instance.IsCallbackArmed)
         {
             State = 0;

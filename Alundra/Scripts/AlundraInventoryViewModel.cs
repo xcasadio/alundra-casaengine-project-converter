@@ -91,6 +91,99 @@ public sealed class InventoryImageViewModel : ViewModelBase
     }
 }
 
+/// <summary>
+/// The opening portrait as both inventory screens bind it (docs/plan-portrait-inventaire.md, PI8): the image sits at
+/// its rest position (<see cref="AlundraInventoryPortrait.RestX"/>, <see cref="AlundraInventoryPortrait.RestY"/>) in
+/// the XAML, and the flight moves and scales it through the bindable render transform (MGUI ADR-0020): the
+/// translation is the quad's top-left minus the rest position, the scale its size over 48x56, anchored at the
+/// top-left corner. <see cref="Vector2"/> on both sides, so each push is a typed copy. Every setter notifies only on
+/// an actual change: a portrait at rest pushes nothing.
+/// </summary>
+public sealed class InventoryPortraitViewModel : ViewModelBase
+{
+    private string? _sourceName;
+    private Guid _sourceId;
+    private Vector2 _translation;
+    private Vector2 _scale = Vector2.One;
+    private Visibility _visibility = Visibility.Collapsed;
+
+    /// <summary>The portrait sprite's asset id (<c>Data/inventory-portrait.json</c>), null until known.</summary>
+    public string? SourceName
+    {
+        get => _sourceName;
+        set
+        {
+            if (_sourceName != value)
+            {
+                _sourceName = value;
+                _sourceId = Guid.TryParse(value, out var id) ? id : Guid.Empty;
+                NotifyPropertyChanged();
+            }
+        }
+    }
+
+    public Vector2 Translation
+    {
+        get => _translation;
+        set
+        {
+            if (_translation != value)
+            {
+                _translation = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
+
+    public Vector2 Scale
+    {
+        get => _scale;
+        set
+        {
+            if (_scale != value)
+            {
+                _scale = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
+
+    public Visibility Visibility
+    {
+        get => _visibility;
+        set
+        {
+            if (_visibility != value)
+            {
+                _visibility = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>Writes the quad <paramref name="portrait"/> drew this tick. Without a source (degraded export) the
+    /// portrait stays hidden.</summary>
+    internal void Apply(AlundraInventoryPortrait portrait, Guid? sourceId)
+    {
+        if (!sourceId.HasValue || !portrait.IsVisible)
+        {
+            Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        if (_sourceId != sourceId.Value || _sourceName == null)
+        {
+            SourceName = sourceId.Value.ToString("D");
+        }
+
+        Translation = new Vector2(portrait.X - AlundraInventoryPortrait.RestX, portrait.Y - AlundraInventoryPortrait.RestY);
+        Scale = new Vector2(
+            portrait.DrawnWidth / (float)AlundraInventoryPortrait.FullWidth,
+            portrait.DrawnHeight / (float)AlundraInventoryPortrait.FullHeight);
+        Visibility = Visibility.Visible;
+    }
+}
+
 /// <summary>One text line of the inventory screen as its XAML binds it: its text and native canvas position.</summary>
 public sealed class InventoryTextViewModel : ViewModelBase
 {
@@ -252,6 +345,9 @@ public sealed class AlundraInventoryViewModel : ViewModelBase
     public InventoryImageViewModel WeaponSelectionFrame { get; } = new();
     public InventoryImageViewModel ItemSelectionFrame { get; } = new();
     public InventoryImageViewModel Cursor { get; } = new();
+
+    /// <summary>The opening portrait (docs/plan-portrait-inventaire.md, PI8), written by the presenter.</summary>
+    public InventoryPortraitViewModel Portrait { get; } = new();
 
     /// <summary>Writes one tick's composed display into the bound members. Mirrors what the screen used to push
     /// into its controls directly: a box or an icon absent from the model stays as it was, or hidden.</summary>

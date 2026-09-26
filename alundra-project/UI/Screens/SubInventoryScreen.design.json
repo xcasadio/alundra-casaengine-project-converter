@@ -167,6 +167,10 @@
       "Left": 74,
       "Top": 12,
       "Visibility": "Visible"
+    },
+    "Portrait": {
+      "SourceName": "19436250-bfec-529a-bf3f-23d258f82db6",
+      "Visibility": "Visible"
     }
   }
 }

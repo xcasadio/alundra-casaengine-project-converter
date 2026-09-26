@@ -77,6 +77,30 @@ public sealed class AlundraInventoryPortrait
         return ((posX >> 16) - scrollX, (posY >> 16) - scrollY - (posZ >> 16) - HeadOffsetY);
     }
 
+    /// <summary>The player's head point as of the current tick (<see cref="SetHeadPoint"/>). The original stores
+    /// POINTERS to the player's and the camera's positions and dereferences them when a flight starts or returns
+    /// (<c>0x80057d58-0x80057d70</c>, <c>0x80057b9c-0x80057bf0</c>); the port refreshes this point every tick instead
+    /// and reads it at those same two moments.</summary>
+    public int HeadX { get; private set; }
+
+    public int HeadY { get; private set; }
+
+    /// <summary>Called by the world every tick, before the inventory directors, with
+    /// <see cref="ComputeHeadPoint"/>'s result for the player and the camera of that tick.</summary>
+    public void SetHeadPoint(int headX, int headY)
+    {
+        HeadX = headX;
+        HeadY = headY;
+    }
+
+    /// <summary>The inventories' start (<c>DisplayInventory</c> <c>0x800556b0</c>, <c>StartFadeOut</c>
+    /// <c>0x800526ac</c>): <see cref="Start"/> from the current head point.</summary>
+    public void StartFromHead() => Start(HeadX, HeadY);
+
+    /// <summary>The inventories' exits (<c>UpdateHudTransitionState</c> at <c>0x80056938</c>, <c>0x80056974</c>,
+    /// <c>0x80053648</c>, <c>0x80053684</c>): <see cref="BeginReturn"/> to the current head point.</summary>
+    public void ReturnToHead() => BeginReturn(HeadX, HeadY);
+
     /// <summary>Starts the opening flight from <paramref name="headX"/>, <paramref name="headY"/> to the rest position
     /// (<c>0x80057cf0</c>); ignored unless idle, like the original.</summary>
     public void Start(int headX, int headY)
@@ -174,5 +198,7 @@ public sealed class AlundraInventoryPortrait
         Y = 0;
         DrawnWidth = 0;
         DrawnHeight = 0;
+        HeadX = 0;
+        HeadY = 0;
     }
 }

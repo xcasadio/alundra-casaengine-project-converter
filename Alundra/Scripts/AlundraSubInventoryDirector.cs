@@ -412,9 +412,9 @@ public sealed class AlundraSubInventoryDirector
     // Open (post-process only) / Tick
     // =====================================================================================
 
-    /// <summary>Port of <c>StartFadeOut</c> (<c>GraphicManager.cs:1767-1783</c>) WITHOUT the portrait
-    /// (D-E13D-12 amended, same choice <see cref="AlundraInventoryDirector"/> already made) - called ONLY
-    /// from <see cref="AlundraInventoryPostProcess.Run"/>, never directly. <see cref="AlundraHudDirector.InitializeHudPosition"/>
+    /// <summary>Port of <c>StartFadeOut</c> (<c>GraphicManager.cs:1767-1783</c>), portrait included since
+    /// docs/plan-portrait-inventaire.md PI8 (<see cref="AlundraInventoryPortrait"/>, started just before sound 4 as at
+    /// <c>0x800526ac</c>) - called ONLY from <see cref="AlundraInventoryPostProcess.Run"/>, never directly. <see cref="AlundraHudDirector.InitializeHudPosition"/>
     /// first (a guarded no-op while the gauge is hidden, same call <c>DisplayInventory</c>'s own head
     /// makes), then <c>InitializeSubInventory</c> (<c>SubInventoryManager.cs:21-294</c>, plan §1.3): state
     /// 5, text state reset, MenuOpen raised, the seven boxes' opening tweens armed, then the armor/boots
@@ -445,6 +445,10 @@ public sealed class AlundraSubInventoryDirector
         BootsName = bootsId.HasValue && AlundraEtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, bootsId.Value, out var bootsName)
             ? bootsName
             : null;
+
+        // StartFadeOut 0x800526ac: the portrait's flight from the head, after SetTransitionType(4) and
+        // GetAnimationImageByIndex(0), before sound 4 - ignored unless the shared portrait is idle.
+        AlundraInventoryPortrait.Instance.StartFromHead();
 
         _soundPlayer?.PlaySfx(4);
     }
@@ -518,6 +522,7 @@ public sealed class AlundraSubInventoryDirector
         if ((pad.ButtonsJustPressedByInterval & (AlundraPadState.Start | AlundraPadState.Triangle | AlundraPadState.L2 | AlundraPadState.R2)) != 0)
         {
             RunCloseSetup();
+            AlundraInventoryPortrait.Instance.ReturnToHead(); // 0x80053648, between the slide-out and the gauge.
             AlundraHudDirector.Instance.InitializeHudPositionBeforeHide();
         }
 
@@ -526,6 +531,7 @@ public sealed class AlundraSubInventoryDirector
         {
             RunCloseSetup();
             _gameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+            AlundraInventoryPortrait.Instance.ReturnToHead(); // 0x80053684, before the post-process state (0x80053694).
             AlundraInventoryPostProcess.Instance.State = 2;
         }
     }
