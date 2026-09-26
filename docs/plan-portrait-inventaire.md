@@ -645,7 +645,7 @@ inventories`.
 | Liaison d'échelle retirée du XAML | le test d'écran |
 | Portrait supprimé, puis déplacé après les icônes | le test d'écran (les deux fois) |
 
-### ⏳ PI9 — Recette par capture, prédite avant d'être prise
+### 🧪 PI9 — Recette par capture, prédite avant d'être prise — faite le 2026-09-26, vérification en cours
 
 **Prérequis** : PI8. Harnais **hors dépôt** (précédent de SI5 du sous-inventaire), captures par le back-buffer en
 processus seulement.
@@ -657,6 +657,60 @@ processus seulement.
 
 **Acceptation** : chaque capture tient sa prédiction ; **vérificateur frais CONFIRMED** sur le branchement et la
 recette. Commit : `docs(plan): record the predicted captures of the inventory portrait`.
+
+**Faite le 2026-09-26.**
+
+*Montage.*
+- Harnais hors dépôt `scratchpad/pi9-harness` (`Pi9Portrait`) : copie du harnais de D6, moteur du chantier, `Content` du
+  lanceur. Le projet exporté est lancé avec sa DLL, identique à `Alundra/bin/Debug` (SHA-1 contrôlé).
+- La manette passe par `PadStateProviderForTests` : prise de contrôle sur la 389, puis `Start`, `L1`, `L1`, `Start`.
+- **Prédiction écrite avant tout lancement** : `prediction-pi9.md`.
+
+*Méthode.*
+- Chaque capture est **un triplet** pris dans la même image : A normal, B redessiné avec le portrait à opacité 0, C
+  redessiné avec le portrait visible.
+- Le portrait est ce que A et C ont en commun et que B n'a pas. Le décor, qui bouge d'un dessin à l'autre, s'élimine
+  ainsi.
+- Journal JSON de chaque capture : entrées brutes (joueur, caméra, limites de l'écran, pas du portrait) et état de
+  l'élément.
+- Analyse par `analyse_pi9.py` (§7), **code indépendant de la DLL** : il recalcule le point de la tête et le rectangle à
+  partir de ces entrées brutes.
+
+*Mise au point de la mesure, avant le résultat retenu.*
+- La première paire A/B seule mesurait aussi le décor qui bouge entre deux dessins ; d'où le passage au triplet.
+- Une échelle écrite avec la virgule française était mal relue ; elle est maintenant écrite en culture invariante.
+- Les deux captures « ouverture précoce » ne montraient **aucun** pixel du portrait. La cause, établie sur la capture
+  entière : c'est l'image où l'écran de l'inventaire est poussé, et **l'écran entier**, boîtes comprises, ne
+  s'affiche qu'à l'image suivante. Ce comportement préexistant d'E13.d n'est pas propre au portrait (§6). La recette
+  capture désormais cette image à part (« -first »), puis l'image suivante.
+- Au passage, un quad sans surface devient une échelle nulle plutôt qu'un masquage (`8a95561`, test et mutation).
+  L'élément ne relance jamais la mise en page. Ce n'était pas la cause de l'absence, mais c'est ce que veut D3.
+
+*Résultat retenu* (run `run4`) : fenêtre 1280×944, échelle S = 4 ; point de la tête (160, 119), prédit = relevé.
+
+| Capture | État, pas | Quad (DLL = prédiction) | Rectangle prédit à l'écran | Pixels du portrait |
+|---|---|---|---|---|
+| ouverture, image de la poussée | 5, s 14 | 3×3 | (664, 472)–(676, 484) | 0 (écran pas encore affiché, attendu) |
+| ouverture, image suivante | 5, s 10 | (190, 114) 16×18 | (760, 456)–(824, 528) | boîte englobante **identique**, 0 hors du rectangle |
+| ouverture, milieu | 5, s 6 | (213, 110) 28×33 | (852, 440)–(964, 572) | identique, 0 hors |
+| repos, principal | 4 | (248, 104) 48×56 | (992, 416)–(1184, 640) | identique ; **2123 texels opaques, 0 pixel différent de l'atlas** |
+| retour vers le sous-inventaire | 2, s 7 | (201, 112) 22×26 | (804, 448)–(892, 552) | identique, 0 hors |
+| sous-inventaire, poussée | 5, s 13 | 6×7 | (688, 468)–(712, 496) | 0 (écran pas encore affiché) |
+| sous-inventaire, image suivante | 5, s 9 | (196, 113) 19×22 | (784, 452)–(860, 540) | identique, 0 hors |
+| repos, sous-inventaire | 4 | 48×56 | (992, 416)–(1184, 640) | identique, 0 pixel différent de l'atlas |
+| retour vers le principal | 2, s 8 | (206, 111) 25×29 | (824, 444)–(924, 560) | identique, 0 hors |
+| principal rouvert | 5, s 10 | (190, 114) 16×18 | (760, 456)–(824, 528) | identique, 0 hors |
+| repos, principal | 4 | 48×56 | (992, 416)–(1184, 640) | identique, 0 pixel différent de l'atlas |
+| fermeture | 2, s 8 | (206, 111) 25×29 | (824, 444)–(924, 560) | identique, 0 hors |
+| fermé | 0 | — | — | 0 (A = B partout) |
+
+- Translation et échelle de l'élément égales à (X − 248, Y − 104) et (W/48, H/56) sur chaque capture.
+- Le portrait visible est bien Alundra : buste aux cheveux blonds et vêtements bleus, vu sur les captures.
+- **Non observé** : l'ordre de dessin pendant un vol. Aucun vol de ce parcours ne croise une icône ni un chiffre : la
+  tête est au centre de l'écran et le trajet reste hors des cases et des chiffres. L'ordre est prouvé par les tests
+  d'écran (PI8) et par la mesure dans l'exécutable.
+- Plusieurs ticks passent parfois dans une seule image, surtout à l'ouverture, qui coûte une image longue (déjà
+  relevé en D6/B2). La recette le prend en compte : chaque capture se juge sur le pas relevé.
 
 ### ⏳ PI10 — Recette de l'auteur
 
@@ -712,6 +766,10 @@ texte décodé ; chaque export est prouvé par double export ; toutes les suites
   commit sur `main` ou `develop` ; un push.
 
 ## 6. Points ouverts et hors périmètre
+
+000. **Préexistant, relevé par PI9** : l'image où un écran d'inventaire est poussé ne montre encore rien de cet écran,
+     ni boîtes ni portrait ; il s'affiche à l'image suivante. C'est un délai d'une image, commun à tout l'inventaire
+     depuis E13.d, hors de ce chantier.
 
 00. **Dossiers laissés hors du dépôt** (§5.2), à supprimer ou garder selon l'auteur : `extraction-reference-2026-09-26`,
     `extraction-portrait-2026-09-26`, `verify-pi6-extraction`, `remaster-data-extracted.bak-2026-09-19`,
@@ -1651,4 +1709,115 @@ def main():
 
 if __name__ == "__main__":
     main()
+```
+
+### PI9 — `analyse_pi9.py` (prédiction indépendante et mesure sur les triplets de captures)
+
+Le harnais `Pi9Portrait` (≈ 330 lignes) et la prédiction `prediction-pi9.md` restent dans
+`scratchpad/pi9-harness/` de la session.
+
+```python
+"""PI9 analysis (docs/plan-portrait-inventaire.md): for each capture pair written by Pi9Portrait, recompute the
+portrait's predicted screen rectangle from the RAW inputs the harness logged (player 16.16 position, camera target,
+screen bounds, the step the portrait was at), with code independent of the DLL, and compare it with the pixels
+that differ between A (drawn) and B (portrait at opacity 0). At rest, also compare every opaque texel with the
+exported atlas. Usage: python analyse_pi9.py <prefix> <atlas.png>"""
+import json
+import sys
+
+from PIL import Image
+
+prefix, atlas_path = sys.argv[1], sys.argv[2]
+atlas = Image.open(atlas_path).convert('RGBA')
+portrait = atlas.crop((200, 568, 248, 624))
+tex = portrait.load()
+
+
+def trunc_div(a, b):
+    q = abs(a) // abs(b)
+    return q if (a >= 0) == (b > 0) else -q
+
+
+def predicted(rec):
+    sx, sy = int(rec['cameraX']) - 160, -int(rec['cameraY']) - 120
+    hx = (rec['posX'] >> 16) - sx
+    hy = (rec['posY'] >> 16) - sy - (rec['posZ'] >> 16) - 32
+    state, s = rec['state'], rec['step'] + 1
+    if state == 4:
+        return (hx, hy), (248, 104, 48, 56)
+    if state == 5:
+        return (hx, hy), (248 + trunc_div(s * (hx - 248), 15), 104 + trunc_div(s * (hy - 104), 15),
+                          trunc_div(48 * (15 - s), 15), trunc_div(56 * (15 - s), 15))
+    if state == 2:
+        return (hx, hy), (hx + trunc_div(s * (248 - hx), 15), hy + trunc_div(s * (104 - hy), 15),
+                          trunc_div(48 * s, 15), trunc_div(56 * s, 15))
+    return (hx, hy), None
+
+
+ok_all = True
+for line in open(prefix + '-captures.jsonl', encoding='utf-8'):
+    rec = json.loads(line)
+    label = rec['label']
+    a = Image.open(f"{prefix}-{label}-A.png").convert('RGB')
+    b = Image.open(f"{prefix}-{label}-B.png").convert('RGB')
+    c = Image.open(f"{prefix}-{label}-C.png").convert('RGB')
+    pa, pb, pc = a.load(), b.load(), c.load()
+    width, height = a.size
+    # The portrait: stable between the two visible draws (A, C), absent from the hidden one (B). Pixels the scene
+    # itself changed between draws differ between A and C and are left out.
+    diff = [(x, y) for y in range(height) for x in range(width) if pa[x, y] == pc[x, y] and pa[x, y] != pb[x, y]]
+    unstable = sum(1 for y in range(height) for x in range(width) if pa[x, y] != pc[x, y])
+    head, rect = predicted(rec)
+    scale = rec['boundsW'] // 320 if rec['boundsW'] else 0
+    print(f"== {label}: state {rec['state']} step {rec['step']} | head predicted {head} logged ({rec['headX']}, {rec['headY']}) | "
+          f"DLL quad ({rec['x']}, {rec['y']}, {rec['w']}, {rec['h']}) | S {scale} bounds ({rec['boundsX']}, {rec['boundsY']}, {rec['boundsW']}x{rec['boundsH']})")
+    checks = []
+    checks.append(('head point', head == (rec['headX'], rec['headY'])))
+    if rect is None:
+        checks.append(('no portrait pixel (A == B everywhere)', len(diff) == 0))
+    else:
+        checks.append(('DLL quad = prediction', rect == (rec['x'], rec['y'], rec['w'], rec['h'])))
+        tx, ty = rect[0] - 248, rect[1] - 104
+        et = rec['elementTranslation']
+        es = rec['elementScale']
+        checks.append(('element translation', et is not None and tuple(float(v) for v in et.split(';')) == (float(tx), float(ty))))
+        checks.append(('element scale', es is not None and all(abs(float(v) - e) < 1e-6 for v, e in zip(es.split(';'), (rect[2] / 48, rect[3] / 56)))))
+        rx0 = rec['boundsX'] + scale * rect[0]
+        ry0 = rec['boundsY'] + scale * rect[1]
+        rx1, ry1 = rx0 + scale * rect[2], ry0 + scale * rect[3]
+        outside = [(x, y) for (x, y) in diff if not (rx0 - 1 <= x < rx1 + 1 and ry0 - 1 <= y < ry1 + 1)]
+        if diff:
+            bx0, by0 = min(x for x, _ in diff), min(y for _, y in diff)
+            bx1, by1 = max(x for x, _ in diff) + 1, max(y for _, y in diff) + 1
+        else:
+            bx0 = by0 = bx1 = by1 = None
+        print(f"   predicted screen rect ({rx0}, {ry0})-({rx1}, {ry1}); portrait pixels {len(diff)}, bbox ({bx0}, {by0})-({bx1}, {by1}); outside {len(outside)}; scene pixels changed between draws {unstable}")
+        checks.append(('diff inside the predicted rectangle (+-1)', len(outside) == 0))
+        if label.endswith('-first'):
+            # The frame the screen is pushed: nothing of the inventory is drawn yet (pre-existing, not the portrait's).
+            print('   screen push frame: portrait pixels expected 0 (the whole inventory screen shows from the next frame)')
+        else:
+            checks.append(('portrait visible', len(diff) > 0 or rect[2] == 0 or rect[3] == 0))
+        if rec['state'] == 4 and scale > 0:
+            opaque = mismatch = covered = 0
+            for ty_ in range(56):
+                for tx_ in range(48):
+                    texel = tex[tx_, ty_]
+                    if texel[3] == 0:
+                        continue
+                    opaque += 1
+                    for dy in range(scale):
+                        for dx in range(scale):
+                            px, py = rx0 + tx_ * scale + dx, ry0 + ty_ * scale + dy
+                            if pa[px, py] != texel[:3]:
+                                mismatch += 1
+                            if pa[px, py] == pb[px, py]:
+                                covered += 1
+            print(f"   at rest: {opaque} opaque texels, {mismatch} screen pixels differing from the atlas, {covered} equal in A and B")
+            checks.append(('rest pixels equal the atlas texels', mismatch == 0))
+    for name, passed in checks:
+        print(f"   [{'ok' if passed else 'FAIL'}] {name}")
+        ok_all = ok_all and passed
+
+print('ALL OK' if ok_all else 'SOME CHECK FAILED')
 ```
