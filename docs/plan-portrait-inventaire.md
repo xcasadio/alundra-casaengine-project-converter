@@ -337,7 +337,7 @@ rien d'écrasé). Commit (parent) :
   `MGUI.Tests` 3090, `CasaEngine.Tests` 1957. Le relevé fait après PI3 sert de base aux tranches suivantes.
 - Aucun code modifié ; le dossier `extraction-reference-2026-09-26/` reste en place (§5.2).
 
-### ⏳ PI3 — MGUI : la transformation de rendu liable (G9)
+### ✅ PI3 — MGUI : la transformation de rendu liable (G9) — faite le 2026-09-26 (MGUI `333bd3a`, `422ebbc` ; moteur `d995bc49`)
 
 **Prérequis** : approbation (D3, P1). **Dépôt** : MGUI, branche `chantier/render-transform-bindings` depuis `develop`.
 - Le DTO `Element` (`MGUI.Core/UI/XAML/Element.cs`) reçoit les attributs `RenderTransformTranslation` et
@@ -364,6 +364,33 @@ rien d'écrasé). Commit (parent) :
 moteur abandonnables, `develop` et `main` intacts). Commits : MGUI
 `feat(xaml): bind the translation and scale of a render transform`, puis `docs(decisions): …` ; moteur
 `chore(submodules): point MGUI at bindable render transforms`.
+
+**Fait le 2026-09-26** (exécutant, relu par la session principale, commité par elle).
+- MGUI `333bd3a` : `Element.cs` (deux attributs, application après le DTO, deux entrées de `BindingPathMappings`) ;
+  `Animation.cs` (le nom qualifié du message d'erreur, même texte pour le DTO) ; 14 tests
+  `MGUI.Tests/Architecture/RenderTransformBindingTests.cs` ; sample `Features/RenderTransformBinding` (embarqué,
+  inscrit au compendium) ; `Docs/animation-architecture.md`.
+- MGUI `422ebbc` : ADR-0020. Moteur `d995bc49` : pointeur de MGUI et G9 marquée corrigée.
+- Suites : `MGUI.Tests` **3105/3105** (base 3090 + 14 de cette tâche + 1 de l'auteur) ; `CasaEngine.Tests` 1957/1957 ;
+  `MGUI.Samples` et les deux solutions du moteur à 0 erreur.
+
+**Vérificateur frais : CONFIRMED**, sans constat P0 à P2 :
+- une sonde a confirmé la poussée en direct, la composition sous une échelle 3, l'échelle 0, l'absence de relance de
+  la mise en page (`IsLayoutValid` reste vrai), et la libération des bindings (`RemoveDataBindings`, appelé par
+  `XamlUIScreenBase.cs:202`) ;
+- mutations reproduites : mapping retiré (5 tests tombent), ordre DTO/littéraux inversé, allocation ajoutée.
+
+**Remarques consignées, reportées** (P3/P4, la règle ne rouvre pas un candidat confirmé pour elles) :
+- P3 : le test « pas d'invalidation » ne vérifie rien (il lit `QueueLayoutRefresh` sur un élément non attaché) ;
+- P3 : trois tests (composition, échelle 0, ancre) posent `RenderTransform` directement et testent le code d'ADR-0006,
+  pas le binding ; `Literal_RenderScale_…` n'affirme que `NotNull`. La note de l'exécutant (« chaque test échoue sous
+  une mutation ») est donc **fausse pour quatre tests sur quatorze** ; le comportement lui-même est confirmé par la
+  sonde ;
+- P4 : le sample n'a pas été lancé (à voir par l'auteur dans le compendium) ;
+- P4 : l'ADR-0020 et la note G9 disent que `Width`/`Height` sont « les seuls » attributs liables qui relancent la mise
+  en page ; il faut lire « à la différence de `Width`/`Height` ».
+
+Suite possible, hors de ce chantier : resserrer ces quatre tests et corriger la phrase (§6).
 
 ### ✅ PI4 — Analyseur : le portrait dans l'atlas et dans `map_alundra.json` — faite le 2026-09-26 (analyseur `e4f3033`)
 
@@ -434,7 +461,7 @@ its index`, `docs(adr): record the inventory portrait data path`, puis le pointe
 - ADR-0005 du dépôt (`docs/decisions/0005-inventory-portrait-data-path.md`). Le pointeur de l'analyseur est déjà
   enregistré (`d0bd4a7`, PI4).
 
-### ⏳ PI6 — Ré-extraction complète, copie, export prouvé (écrit hors du dépôt, D4)
+### 🧪 PI6 — Ré-extraction complète, copie, export prouvé (écrit hors du dépôt, D4) — faite le 2026-09-26, vérification en cours
 
 **Prérequis** : PI4, PI5.
 1. Extraction complète avec l'extracteur de PI4 vers un dossier neuf
@@ -458,6 +485,33 @@ its index`, `docs(adr): record the inventory portrait data path`, puis le pointe
 écart hors prédiction. Commit (parent) : `docs(plan): record the re-extraction and the export with the inventory
 portrait`.
 
+**Prédictions, écrites le 2026-09-26 avant les étapes 2 à 5.**
+- Étape 1 : déjà faite avec PI4 (écart = les deux fichiers du portrait, prouvé).
+- Étape 2 : l'ancien remaster est renommé ; la nouvelle extraction est **copiée** (et non déplacée, le dossier
+  `extraction-portrait-2026-09-26/` reste, §5.2) vers `remaster-data-extracted`, preuve `compare_trees.py` = 0.
+- Étape 3 : `data-extracted/` ↔ nouveau remaster = exactement `data/map_alundra.json` et
+  `data/map_alundra_spritesheet.png` (PI2 a prouvé la référence identique à `data-extracted/`).
+- Étape 4, export en place, face au manifeste d'avant :
+  - ajoutés : `UI/Portraits/sprite_61779762221058.sprite` et `Data/inventory-portrait.json` ;
+  - modifiés : `Sprites/Textures/map_alundra_spritesheet.png`, `AssetInfos.json`, `report.json` ;
+  - rien d'autre, en particulier `Sprites/Textures/map_alundra_spritesheet.texture` inchangé (il ne porte ni taille
+    ni empreinte de l'image) ;
+  - compteurs : `Sprites.InventoryPortrait` = 1, `Assets.Sprite` + 1 ; 0 erreur.
+- Double export ⊆ `{report.json}`.
+
+**Fait le 2026-09-26.** Scripts `compare_trees.py`, `pi4_proof.py` et `manifest.py`/`diff_manifests.py` du scratchpad.
+
+| Étape | Mesuré |
+|---|---|
+| 1 | Fait avec PI4 : deux fichiers, preuve au texel. |
+| 2 | Remaster renommé `remaster-data-extracted.bak-2026-09-19` ; `extraction-portrait-2026-09-26` copiée (`robocopy /E`, PowerShell) en `remaster-data-extracted` : 4450/4450 identiques. |
+| 3 | `data-extracted/` sauvegardé en `data-extracted.bak-2026-09-26` : 4450/4450 identiques. Écart face au nouveau remaster : **exactement** les deux fichiers prédits. `robocopy /MIR` (PowerShell) puis comparaison : 0 différence ; `o}i`/`s}kr` : 0. |
+| 4 | `alundra-project/` sauvegardé en `alundra-project.bak-2026-09-26` : 23 248/23 248 identiques. Manifeste d'avant : 23 245 entrées. Export en place (`dotnet run --no-build --no-launch-profile`, 70 s, code 0, vérification **PASSED**, 19 535 chargés) : **ajoutés** `Data/inventory-portrait.json`, `UI/Portraits/sprite_61779762221058.sprite` ; **modifiés** `AssetInfos.json`, `Sprites/Textures/map_alundra_spritesheet.png`, `report.json` ; rien d'autre (le `.texture` inchangé). |
+| Compteurs | `Assets.Sprite` 6908 → 6909, `Sprites.InventoryPortrait` 1, `Verify.Loaded` +1 ; erreurs 0 → 0, avertissements 7 → 7. Catalogue : 21 923 → 21 924, une entrée ajoutée (`sprite_61779762221058`, `UI\Portraits\…`), aucune modifiée. |
+| Sprite | id `19436250-bfec-529a-bf3f-23d258f82db6` (= `Data/inventory-portrait.json`), texture de la planche `f6692753-…`, rectangle (200, 568, 48, 56). |
+| Double export | écart = `report.json` seul. |
+| Texte | 161 fichiers exportés contiennent « où », 0 contient `o}i` ou `s}kr` (recherche sans le filtre `.gitignore` : `rg -uu`). |
+| 5 | `Alundra.Tests` 1292/1292, convertisseur 197/197, après l'export. |
 ### ✅ PI7 — DLL : la machine du portrait (logique pure, testée) — faite le 2026-09-26
 
 **Prérequis** : PI1. **Dépôt** : parent.
@@ -593,6 +647,10 @@ texte décodé ; chaque export est prouvé par double export ; toutes les suites
 
 ## 6. Points ouverts et hors périmètre
 
+0. **Suite de PI3** (remarques P3/P4 du vérificateur) : resserrer quatre tests de `RenderTransformBindingTests` (le test
+   d'invalidation qui ne vérifie rien, trois tests qui ne passent pas par le binding) et corriger la phrase « les seuls
+   attributs liables qui relancent la mise en page » de l'ADR-0020 de MGUI et de la fiche G9 ; lancer le sample.
+
 1. **Les portraits des dialogues** (même système, point d'entrée `0x80057c84`) : E12.c, hors périmètre. Si E12.c les
    porte, l'état unique du portrait devra être partagé aussi avec eux (un seul quad dans l'original).
 2. **La glue du HUD** (`AlundraHudScreen`, translation recopiée en C#) pourra passer au binding de PI3 : suite
@@ -610,6 +668,7 @@ texte décodé ; chaque export est prouvé par double export ; toutes les suites
 | 2026-09-26 | **Approuvé par l'auteur, P1 à P5 compris, mode AUTO.** Branches créées (en-tête). |
 | 2026-09-26 | PI2 faite : extraction de référence identique à `data-extracted/` ; cause du remaster établie. PI4 faite (analyseur `e4f3033`), prouvée par l'étape 1 de PI6. PI1 et PI3 lancées en parallèle (agent indépendant, exécutant). |
 | 2026-09-26 | PI1 faite : 50 vérifications, 0 échec ; deux écarts (libellé, horloge). §1.1, P4 et PI8 révisés ; relecture fraîche de la tranche PI8 révisée avant son exécution. |
+| 2026-09-26 | PI5, PI7 faites. PI3 : vérificateur frais **CONFIRMED** (remarques P3/P4 reportées). Tranche PI8 révisée : relecteur frais **READY**. PI6 faite ; vérificateur frais de la chaîne PI4-PI6 lancé. |
 
 ### PI2, PI6 — `compare_trees.py` (comparaison de deux extractions)
 
