@@ -222,6 +222,8 @@ d'`alundra-project/`.
 
 ### 2.3 Proposées, à valider à l'approbation
 
+Decisions: see ADR-0005 (P2) of this repository and ADR-0020 of MGUI (P1).
+
 | Réf | Proposition | Raison |
 |---|---|---|
 | P1 | **API MGUI** : deux nouveaux attributs XAML de l'élément, `RenderTransformTranslation` et `RenderTransformScale`, de type chaîne au DTO (littéral `"x,y"` analysé par `AnimationXamlParser.ParseVector2` et appliqué à `MGElement.RenderTransform` après le DTO `RenderTransform`). Liés, ils sont renommés par `BindingPathMappings` en `RenderTransform.Translation` et `RenderTransform.Scale`. **Cible d'exécution** : l'instance `UIRenderTransform` de l'élément, atteinte par le chemin imbriqué (aucun changement de hiérarchie de type, `UIRenderTransform` reste `sealed`). **Type de valeur** : `Vector2` côté view-model comme côté cible, donc copie typée sans conversion. Le DTO `RenderTransform` et l'attribut `RenderScale` ne changent pas. ADR de MGUI. | La voie des objets imbriqués liables exigerait que `UIRenderTransform` dérive de `XAMLBindableBase` (§1.5) ; celle-ci réutilise le chemin cible imbriqué qui existe déjà et pousse sans allocation (ADR-0016 de MGUI). |
@@ -404,7 +406,7 @@ PI4 vers un dossier neuf, sert d'acceptation (script `pi4_proof.py` au §7) :
 - Les 15 couleurs du rectangle sont ensuite apparues dans l'ordre natif, chacune avec le compte exact de son index.
   C'est le même chemin (`GenerateSpriteBitmap`) que tous les sprites déjà validés en jeu.
 
-### ⏳ PI5 — Convertisseur : le sprite du portrait et son index
+### ✅ PI5 — Convertisseur : le sprite du portrait et son index — faite le 2026-09-26
 
 **Prérequis** : PI4. **Dépôt** : parent.
 - `SpriteBankReader` lit `InventoryPortrait` de `map_alundra.json` ; `SpriteWriter` en fait un `.sprite` par le chemin
@@ -417,6 +419,20 @@ PI4 vers un dossier neuf, sert d'acceptation (script `pi4_proof.py` au §7) :
 
 **Acceptation** : suite du convertisseur verte. Commits : `feat(converter): export the inventory portrait sprite and
 its index`, `docs(adr): record the inventory portrait data path`, puis le pointeur de l'analyseur.
+
+**Fait le 2026-09-26.**
+- `SpriteBankReader.ReadInventoryPortrait` (+ `InventoryPortraitPropertyName`) et `SpriteWriter.ConvertInventoryPortrait`,
+  appelé après la boucle des banques et avant l'enregistrement du catalogue : le `.sprite` va dans `UI/Portraits/`
+  (`sprite_61779762221058.sprite`, identifiant `SpriteAssetId`, texture de la planche `map_alundra`), l'index dans
+  `Data/inventory-portrait.json` (`{ "SpriteAssetId": "…" }`), compteur `Sprites.InventoryPortrait` ; champ absent →
+  avertissement, pas d'index.
+- Tests `SpriteWriterInventoryPortraitTests` (3) : portrait présent (sprite, rectangle (200, 568, 48, 56), catalogue,
+  texture de la planche, index), absent (avertissement, ni index ni dossier), identique à l'octet d'un export à l'autre.
+  Convertisseur **197/197** (194 + 3).
+- Mutations réelles (script `mutate.py`, fichier restauré à l'octet puis reconstruit) : l'appel retiré → les 3 tests
+  échouent ; l'avertissement retiré → le test « absent » échoue.
+- ADR-0005 du dépôt (`docs/decisions/0005-inventory-portrait-data-path.md`). Le pointeur de l'analyseur est déjà
+  enregistré (`d0bd4a7`, PI4).
 
 ### ⏳ PI6 — Ré-extraction complète, copie, export prouvé (écrit hors du dépôt, D4)
 

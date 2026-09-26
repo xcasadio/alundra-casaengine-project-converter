@@ -161,6 +161,8 @@ public static class SpriteWriter
                 headerFieldsByPrefabId, idsvAnimDirsByPrefabId, animSetHeadersByPrefabId, report);
         }
 
+        ConvertInventoryPortrait(inputDirectory, outputDirectory, textureAssetIdsBySpritesheet, spriteAssetIdsByKey, report);
+
         EditorAssetCatalogService.Save();
 
         report.Increment("Assets.Sprite", spriteAssetIdsByKey.Count);
@@ -820,6 +822,67 @@ public static class SpriteWriter
     public static Guid SpriteAssetId(string spritesheetFileName, long signature)
     {
         return Ids.For($"sprite:{spritesheetFileName}:{signature}");
+    }
+
+    /// <summary>The folder of the inventory portrait's <c>.sprite</c>: a UI image, owned by no entity bank.</summary>
+    public static readonly string InventoryPortraitRelativeDirectory = Path.Combine("UI", "Portraits");
+
+    /// <summary>The file the gameplay DLL reads the inventory portrait's sprite asset id from.</summary>
+    public static readonly string InventoryPortraitIndexRelativePath = Path.Combine("Data", "inventory-portrait.json");
+
+    /// <summary>
+    /// The inventory's opening portrait is sprite record 0's portrait image, which no animation uses,
+    /// so no bank emits it: the extractor exports it as <c>map_alundra.json</c>'s
+    /// <see cref="SpriteBankReader.InventoryPortraitPropertyName"/>. This emits its <c>.sprite</c> through
+    /// the same path, name and deterministic id as every quad (<see cref="EnsureSpriteData"/>,
+    /// <see cref="SpriteAssetId"/>) and writes <see cref="InventoryPortraitIndexRelativePath"/>, the one
+    /// id the gameplay DLL reads (docs/plan-portrait-inventaire.md, P2). A missing field is a warning,
+    /// not an error: the inventory then opens without its portrait.
+    /// </summary>
+    private static void ConvertInventoryPortrait(
+        string inputDirectory,
+        string outputDirectory,
+        Dictionary<string, Guid> textureAssetIdsBySpritesheet,
+        Dictionary<(string Spritesheet, long Signature), Guid> spriteAssetIdsByKey,
+        ConversionReport report)
+    {
+        var portrait = SpriteBankReader.ReadInventoryPortrait(inputDirectory);
+        if (portrait == null)
+        {
+            report.Warnings.Add(
+                $"map_alundra.json carries no {SpriteBankReader.InventoryPortraitPropertyName}: "
+                + $"{InventoryPortraitIndexRelativePath} is not written and the inventory opens without its portrait.");
+            return;
+        }
+
+        Guid textureAssetId;
+        try
+        {
+            textureAssetId = EnsureSpritesheetTexture(
+                inputDirectory, outputDirectory, SpriteBankReader.AlundraSpritesheetFileName, textureAssetIdsBySpritesheet);
+        }
+        catch (Exception exception)
+        {
+            report.Errors.Add($"inventory portrait: failed to import spritesheet texture - {exception.Message}");
+            return;
+        }
+
+        Directory.CreateDirectory(Path.Combine(outputDirectory, InventoryPortraitRelativeDirectory));
+        var spriteAssetId = EnsureSpriteData(
+            portrait, SpriteBankReader.AlundraSpritesheetFileName, textureAssetId, InventoryPortraitRelativeDirectory,
+            spriteAssetIdsByKey, outputDirectory);
+
+        var indexPath = Path.Combine(outputDirectory, InventoryPortraitIndexRelativePath);
+        Directory.CreateDirectory(Path.GetDirectoryName(indexPath)!);
+        using (var stream = File.Create(indexPath))
+        using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true }))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("SpriteAssetId", spriteAssetId.ToString());
+            writer.WriteEndObject();
+        }
+
+        report.Increment("Sprites.InventoryPortrait");
     }
 
     private static Guid EnsureSpriteData(

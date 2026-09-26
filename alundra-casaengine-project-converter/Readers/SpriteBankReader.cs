@@ -227,6 +227,34 @@ public static class SpriteBankReader
     /// </summary>
     public const string AlundraSpritesheetFileName = "map_alundra_spritesheet.png";
 
+    /// <summary>
+    /// The top-level field of <c>map_alundra.json</c> that carries the inventory's opening portrait,
+    /// sprite record 0's portrait image (the extractor's <c>GameMap.InventoryPortrait</c>). No
+    /// animation uses that image, so no bank's quads reach it (docs/plan-portrait-inventaire.md, P2).
+    /// </summary>
+    public const string InventoryPortraitPropertyName = "InventoryPortrait";
+
+    /// <summary>
+    /// Reads <c>map_alundra.json</c>'s <see cref="InventoryPortraitPropertyName"/> as a quad of the
+    /// <see cref="AlundraSpritesheetFileName"/> atlas, or null when the file or the field is absent
+    /// (an extraction made before the extractor exported the portrait).
+    /// </summary>
+    public static SpriteQuad? ReadInventoryPortrait(string inputDirectory)
+    {
+        var alundraPath = Path.Combine(inputDirectory, "data", "map_alundra.json");
+        if (!File.Exists(alundraPath))
+        {
+            return null;
+        }
+
+        using var stream = File.OpenRead(alundraPath);
+        using var document = JsonDocument.Parse(stream);
+        return document.RootElement.TryGetProperty(InventoryPortraitPropertyName, out var portraitElement)
+               && portraitElement.ValueKind == JsonValueKind.Object
+            ? ReadQuad(portraitElement)
+            : null;
+    }
+
     public static IReadOnlyList<SpriteBank> ReadAllBanks(string inputDirectory, ConversionReport report)
     {
         var banksByKey = new Dictionary<string, SpriteBank>();
