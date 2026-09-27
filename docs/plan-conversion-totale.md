@@ -90,6 +90,7 @@ frame près (écart documenté).
 | `SpriteEventHandlers` (IA native) | navigation (steering/poursuite) + scripts C# par type de sprite | E14 |
 | Tables de texte (cartes, `map_alundra`, ETC) et codes de `TextInterpreter` | fichiers Yarn compilés (`.yarn` + `.dialogue`) joués par `YarnDialogueRunner` | E15 |
 | Programme B 129 (cinématique) | `.cutscene` (`CutsceneDirector`) — conversion hybride (D1) | E17 |
+| `GetFlag`/`AddFlag`/`SetFlag`/`XorFlag`, `g_temporaryFlags`, `g_saveData`, `InitializeGameState` (`SlotData == 1`), `MemoryCardManager` | `AlundraGameState` (DLL) ; persistance à décider | E16 |
 
 ## 4. Étapes
 
@@ -782,6 +783,84 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
   actions manquantes.
 - **Dépendances** : E15, E16.
 
+### E16 — État de partie : drapeaux et sauvegarde ⏳ (proposée le 2026-09-27, à valider par l'auteur)
+
+- **But** : terminer la gestion des deux banques de drapeaux, `GameFlags` (persistants, sauvegardés)
+  et `TemporaryFlags` (vidés à chaque entrée de carte), puis leur donner une vie au-delà de la
+  session : sauvegarder et recharger une partie comme l'original (`g_saveData`, carte mémoire).
+- **Pourquoi une étape** : aucune étape de cette feuille de route ne portait les drapeaux. Ils sont
+  arrivés par morceaux (E1, transitions, E13), et la sauvegarde n'a jamais été planifiée.
+- **Déjà livré** (constaté le 2026-09-27) :
+  - stockage et API : `AlundraGameState` (`AlundraGameState.cs:205-248`), port de `GetFlag`,
+    `AddFlag`, `SetFlag` et `XorFlag` (`GameEngine.cs:2828-2926`), banque choisie par le bit `0x8000`
+    de l'id ;
+  - cycle de vie : `TemporaryFlags` vidé et `GameFlags` conservé à chaque entrée de carte
+    (`InstallForMapEntry`, D-T-13 de `plan-transitions-carte.md`), pinné par
+    `AlundraGameStateSessionTests` et `AlundraWorldProxySessionStateTests` ;
+  - lecteurs et écrivains : l'interpréteur (`0x05`, `0x06`, `0x30`, `0x31`, `0x33`, `0x36`), les codes
+    numériques du texte de dialogue (banque temporaire, `AlundraDialogueDirector.cs:298`), la jauge
+    (drapeaux 1662, 1813 et 1814, `AlundraHudDirector`) et le monde (`AlundraWorldProxy.cs:1449`,
+    `:1466`, `:1712`).
+- **Manques constatés** :
+  1. **Opcodes de drapeaux non portés**, aujourd'hui sautés par taille : `0x32` (bascule par
+     `XorFlag`, `EntityEventHandlers.cs:1102`), `0x34` (vrai si aucun des quatre drapeaux n'est posé,
+     `:1132`), `0x35` (attend qu'un drapeau retombe à 0, `:1152`), `0x7B`, `0x7C`, `0x80` et `0x81`
+     (sauts conditionnels à paramètre mémorisé, `:2264-2373`). `XorFlag` existe dans la DLL mais n'a
+     aucun appelant.
+  2. **Tailles** : l'original déclare `GameFlags` sur **64 mots**, soit 2048 drapeaux
+     (`SaveData.cs:17`), et `ClearTemporaryFlags` ne vide que 64 mots de `g_temporaryFlags`
+     (`GameEngine.cs:429-438`). La DLL dimensionne les deux banques à 1024 mots, la borne de
+     l'indexation `& 0x3ff`. Sans effet tant qu'aucun id ne dépasse 2047 : à mesurer sur le corpus.
+  3. **Aucune persistance** : ni la branche « charger » d'`InitializeGameState` (`SlotData == 1`,
+     `GameInitializer.cs:350-356`) ni la carte mémoire (`MemoryCardManager` : un bloc, en-tête `SC`,
+     somme de contrôle sur `0x1ffc` octets, `:163-180`) ne sont portées, pas plus que le temps de jeu
+     (`SaveData.GameTime`). Le moteur n'offre aucun service de sauvegarde : à l'exécution, seuls les
+     réglages d'affichage et de projet s'écrivent sur disque (`DisplaySettingsPersistence`,
+     `ProjectSettingsHelper`).
+  4. **Aucun nom** : les drapeaux restent des nombres. La seule table sémantique connue est
+     `ChapterFlags.cs` : 41 drapeaux de fin de chapitre, qui donnent le chapitre affiché par
+     l'écran de chargement (`SaveData.CurrentFlagName`).
+- **Qui lit les drapeaux** (question de l'auteur du 2026-09-27) : le moteur de script d'Alundra est
+  l'interpréteur de la DLL (D1). C'est lui, avec les directeurs de la DLL, qui lit et écrit les
+  drapeaux, et cela ne change pas. Les systèmes de script **du moteur** ne les voient pas :
+  `YarnDialogueRunner` crée son propre `MemoryVariableStore` (`YarnDialogueRunner.cs:74`), Yarn
+  n'est plus dans le chemin des dialogues depuis la route directe d'E12
+  (`plan-e12-dialogues.md:4`), et `CutsceneDirector` n'a ni condition ni commande de drapeau
+  (`SetGameFlag` n'est qu'une commande recommandée,
+  `CasaEngineMonogame/docs/engine/cutscene_commandes_sequentielles_async_coroutine.md:1906`).
+  **Proposition** : `AlundraGameState` reste l'unique propriétaire des drapeaux. Le pont vers Yarn et
+  les cutscenes (un stockage de variables Yarn fourni par la DLL, une commande de condition sur une
+  interface que la DLL implémente) se construit en **E15**, quand un programme converti en a besoin.
+  E16 ne touche pas le moteur pour les drapeaux.
+- **Découpage proposé** :
+  - **E16.0 — Mesure** (lecture seule, analyseur et corpus) : ids de drapeaux réellement utilisés
+    (programmes, codes du texte, champ `ContentsGameFlag` des records), plus grand id persistant,
+    nombre d'occurrences de chaque opcode du manque 1 ; tailles des deux banques et disposition de
+    `g_saveData` relues dans `ALUN_CD.EXE`, qui tranche.
+  - **E16.a — Opcodes de drapeaux** (DLL) : ceux du manque 1 présents dans le corpus, un test par
+    opcode contre la décompilation.
+  - **E16.b — Instantané de partie** (DLL) : port de `SaveData` (carte et tuile de reprise, temps de
+    jeu, `GameFlags`, `MapIdToInternalMapIndexTable`, stats, objets, index d'emplacement), écriture
+    et relecture, tests aller-retour.
+  - **E16.c — Chargement** (DLL) : port de la branche `SlotData == 1` d'`InitializeGameState` ; point
+    d'entrée de recette par touche de debug, faute d'écran titre.
+  - **E16.d — Sauvegarde en jeu** : l'écran de sauvegarde de l'original (choix d'emplacement) en XAML
+    MGUI, et ce qui l'ouvre en jeu. À découper après E16.0.
+- **Hors périmètre** : les lecteurs de `ContentsGameFlag` de l'IA native (coffres, `FunctionTypeA.cs:236-264`)
+  → E14 ; le pont vers Yarn et les cutscenes → E15 ; l'écran titre.
+- **Dépendances** : aucune. Les stats et les objets à sauvegarder existent dans la DLL depuis E13.c.
+- **À valider** avant le plan détaillé (`docs/plan-e16-etat-partie.md`, relu par un plan-verifier
+  puisque la sauvegarde fixe un format de données) :
+  1. Périmètre : drapeaux seuls (E16.0 et E16.a), drapeaux puis sauvegarde et chargement (jusqu'à
+     E16.c), ou tout, écran de sauvegarde compris (E16.d) ?
+  2. Format du fichier : JSON lisible (comme `SaveData.SaveToJson` de l'analyseur), bloc binaire
+     fidèle de la carte mémoire (qui permettrait de relire une vraie sauvegarde PS1), ou les deux ?
+  3. Propriétaire du code de sauvegarde : la DLL seule, ou un service générique de sauvegarde dans le
+     moteur, qui n'en a aucun ?
+  4. Pont vers le moteur : confirmer que les drapeaux restent dans la DLL et que le pont vers Yarn et
+     les cutscenes attend E15.
+  5. Place dans la file : avant ou après E14 et E15 ?
+
 ## 5. Règles de travail
 
 - Fidélité **de comportement observable** dès qu'un système moteur remplace un système original ;
@@ -824,4 +903,5 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 | E13.d inventaire principal (puis sous-inventaire et L1/R1) | ✅ close (principal validé en jeu le 2026-09-24 ; sous-inventaire, L1/R1 et suites SI7-SI12 validés le 2026-09-25, mergés par l'auteur dans `main`) | `docs/plan-e13d-inventaire.md` ; `docs/plan-e13d-sous-inventaire.md` : analyseur `8f403d5`, parent `45bb0e2`, `a3901af`, `dc3fe1a`, `5f12e53`, suites `4e411ef`…`192f497`, merge `3537807` |
 | E14 IA native | ⏳ | |
 | E15 le texte en Yarn | ✅ close (recette en jeu validée le 2026-09-28) | `docs/plan-e15-yarn.md` ; parent `chantier/e15-yarn`, moteur `chantier/yarn-extension-points` |
+| E16 état de partie (drapeaux, sauvegarde) | ⏳ proposée le 2026-09-27, questions « À valider » ouvertes | |
 | E17 cinématiques en `.cutscene` | ⏳ ouverte le 2026-09-27, prérequis moteur | |
