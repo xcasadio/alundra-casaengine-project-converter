@@ -84,6 +84,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CasaEngineMonogame\CasaEngine\CasaEngine.csproj" />
+    <!-- docs/plan-e15-yarn.md, slice E15.b, T1: the engine's Yarn compiler (YarnDialogueCompiler),
+         used to compile the emitted .yarn sources into catalogued .dialogue assets. -->
+    <ProjectReference Include="..\CasaEngineMonogame\CasaEngine.Compiler\CasaEngine.Compiler.csproj" />
     <ProjectReference Include="..\CasaEngineMonogame\CasaEngine.EditorServices\CasaEngine.EditorServices.csproj" />
     <ProjectReference Include="..\CasaEngineMonogame\MGUI\MGUI.Core\MGUI.Core.csproj" />
     <ProjectReference Include="..\CasaEngineMonogame\MGUI\MGUI.FontStashSharp\MGUI.FontStashSharp.csproj" />

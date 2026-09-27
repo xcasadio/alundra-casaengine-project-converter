@@ -360,10 +360,14 @@ puis `flag 100` ; appels `category_threshold` puis `category_item_name` ; aucun 
 de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Release` à 0 erreur et
 tests du convertisseur sans échec avant chaque ✅ ; **aucun export avant T7**) :
 
-- ⏳ **T1 — Référence au compilateur.** Fichier : `alundra-casaengine-project-converter/alundra-casaengine-project-converter.csproj`.
+- ✅ **T1 — Référence au compilateur.** Fichier : `alundra-casaengine-project-converter/alundra-casaengine-project-converter.csproj`.
   Ajouter la `ProjectReference` à `CasaEngine.Compiler` (§5.4 : `net9.0`, seul paquet
   `YarnSpinner.Compiler`). Validation : build, tests du convertisseur 197/197. Commit :
-  `build(converter): reference the engine's Yarn compiler`.
+  `build(converter): reference the engine's Yarn compiler`. **Réalisé le 2026-09-27** : build
+  Release de `alundra-casaengine-project-converter.slnx` à 0 erreur (5 avertissements préexistants,
+  aucun dans le convertisseur) ; `CasaEngine.Compiler.dll`, `YarnSpinner.Compiler.dll`,
+  `YarnSpinner.dll` et `Antlr4.Runtime.Standard.dll` copiés dans la sortie du convertisseur ; tests
+  du convertisseur 197/197.
 - ⏳ **T2 — Décodeur de référence.** Fichiers : `alundra-casaengine-project-converter.Tests/Text/ReferenceTextDecoder.cs`,
   `ReferenceTextDecoderTests.cs` (nouveaux). Le décodeur rend le quadruplet de l'oracle pour chaque
   page ; indépendant de l'émetteur (T3), il ne partage aucun code avec lui. Validation : un test par
