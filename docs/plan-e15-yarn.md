@@ -4,7 +4,8 @@
 directement des dialogues Yarn Spinner pour tout le texte du jeu, la DLL les joue sur le runner Yarn
 du moteur, et les fichiers de texte brut disparaissent du projet exporté.
 
-**Statut** : proposé le 2026-09-27, **en attente d'approbation**. **Révision 3.** Première relecture
+**Statut** : **approuvé par l'auteur le 2026-09-27** (enveloppe et E15.0, avec le plan moteur d'E15.a,
+branche moteur `chantier/yarn-extension-points`). **Révision 3.** Première relecture
 (REVISE, sept P2 corrigés : sens de `\Y` et effets de `\X`, pages vides et espaces, `:` de Yarn,
 oracle d'équivalence, lecteurs oubliés, retour arrière de l'export, E15.0 vraiment en lecture seule) ;
 deuxième relecture (REVISE, un P2 corrigé : `\W` dessine un glyphe visible, qui doit être gardé) ;
