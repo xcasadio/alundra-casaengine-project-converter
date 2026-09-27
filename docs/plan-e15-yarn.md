@@ -175,11 +175,12 @@ tableau pour la lisibilité.
 | Page (séparée par `\A`) | une ligne Yarn, identifiant `#line:{nœud}_p{k}` stable et déterministe |
 | Page sans texte visible (fin de chaîne par `\A` : 37 ; page qui ne pose qu'un drapeau : 58) | une ligne réduite à `[empty/]`, que la DLL affiche comme une boîte vide : **le rythme des dialogues ne change pas** (le défilement fin de l'original, `TextDecoder.cs:330-334`, `:688-715`, relève d'E12.c) ; vérifié : `[empty/]` seul compile et donne un texte vide |
 | `\N` | `[br/]` |
-| `\<chiffres>` | commande `<<flag n>>` juste avant la ligne de sa page, valeur normalisée (`\0999` et `\999` sont le même drapeau, comme le `uint.Parse` de l'original) |
+| `\<chiffres>` | commande `<<flag n>>` avant la ligne de sa page, valeur normalisée (`\0999` et `\999` sont le même drapeau, comme le `uint.Parse` de l'original) ; chaque code numérique donne sa commande |
+| Ordre des commandes d'une page | les commandes placées avant la ligne suivent l'**ordre de première apparition** de leur code dans le texte de la page : une commande `flag` au rang de son code, la commande `falcon_update` au rang du premier `\X` |
 | `\Y` | rien : la page continue |
 | `\W<c>` | `[glyph id=N/]`, dessiné par la DLL (D-E15-6), avec `N = c − 0x20` pour un chiffre et `c − 0x27` pour une lettre (formule d'`ALUN_CD.EXE`, `0x800462e0`–`0x800462f0`) : `\W0` 16 •, `\W2` 18 …, `\W3` 19 “, `\W4` 20 ”, `\W5` 21 ☆, `\W6` 22 →, `\W7` 23 ←, `\W8` 24 ↑, `\W9` 25 ↓, `\WA` 26 □, `\WD` 29 ✕ ; jamais retiré |
 | Octets bruts `0x1A`/`0x1C` des descriptions d'objets (ETC) | `[glyph id=26/]` □ / `[glyph id=28/]` ○ |
-| Ligne qui contient un `\X` | commande `<<falcon_update>>` avant la ligne (D-E15-9) : elle relève le nombre de faucons temporaires, puis met à jour le nombre de faucons et la progression (`UpdateNumberOfFalcon`, `UpdatePlayerProgressState`), comme l'original |
+| Ligne qui contient un `\X` | **une seule** commande `<<falcon_update>>` avant la ligne, quel que soit le nombre de `\X` de la page (D-E15-9 ; les deux mises à jour sont idempotentes, §5.4) : elle relève le nombre de faucons temporaires, puis met à jour le nombre de faucons et la progression (`UpdateNumberOfFalcon`, `UpdatePlayerProgressState`), comme l'original |
 | `\X0`, `\X1`, `\X2`/`\X4`, `\X3`, `\X5` | fonctions sans effet de bord : `{falcon_temp()}` (valeur relevée avant la mise à jour), `{falcon()}`, `{category_item_name()}`, `{category_threshold()}`, `{category_remaining()}` |
 | `\V<n>` | `{game_var(n)}` |
 | `\B` … `\G`, `\H`, `\T` | marqueurs gardés pour E12.c : `[voice id=-1…4/]`, `[center/]`, `[slow/]` (`\M\CE` n'apparaît nulle part dans le corpus : pas de correspondance) |
@@ -269,7 +270,9 @@ moteur.
 - **Revue** : première relecture REVISE (six P2 : pas de découpage en tâches, chemin d'écriture de
   l'asset impossible, ensemble des nœuds non fixé, types des fonctions non fixés, oracle imprécis,
   chargement non prouvé) ; cette révision les corrige, avec les choix de l'auteur D-E15-10 et
-  D-E15-11.
+  D-E15-11. Deuxième relecture REVISE (un P2 : ordre et nombre des commandes d'une page à plusieurs
+  `\X` et un drapeau, cas réel `M134_S019_p0`) ; corrigé sur décision de l'auteur (une seule
+  `falcon_update` par page, ordre de première apparition, huitième cas nommé).
 
 **Contrat des fichiers et des nœuds** (D-E15-10, D-E15-11) :
 
@@ -305,7 +308,9 @@ déclarent pas au compilateur (Yarn les compile comme du texte).
    espaces de bord retirés (D-E15-8) ;
 2. la liste ordonnée des **marqueurs** : nom, propriétés (hors `trimwhitespace`), position dans le
    texte visible ; `glyph` compris, avec son identifiant ;
-3. la liste ordonnée des **commandes** exécutées avant la ligne : nom et arguments ;
+3. la liste ordonnée des **commandes** exécutées avant la ligne : nom et arguments ; côté original,
+   une commande `flag` par code numérique et une seule `falcon_update` pour tous les `\X` de la page,
+   dans l'ordre de première apparition de leur code dans le texte (§1) ;
 4. la liste ordonnée des **appels de fonctions** : nom et arguments.
 
 Côté original, le **décodeur de référence** (tests du convertisseur) suit `TextDecoder.cs`, la formule
@@ -324,7 +329,12 @@ rencontré un Nirude. », saut de ligne, « Les Gazeck ont été taillés dans l
 ligne, `<<flag 401>>` avant elle) ; une chaîne de la carte 324 contenant ` : ` (aucun `Speaker`) ; une
 page `\A\999\Y\A` (`<<flag 999>>`, puis `[empty/]`) ; une chaîne `\X2` de la carte 134
 (`<<falcon_update>>`, puis `category_item_name`) ; une chaîne `\V` du pub 472 ; une description d'objet
-ETC contenant l'octet `0x1A` (marqueur `glyph` 26).
+ETC contenant l'octet `0x1A` (marqueur `glyph` 26) ; la ligne `M134_S019_p0` de l'église, source
+`\CRamène-moi \X3 Statuettes de faucons\Net je te récompenserai avec cela :\N\X4.\0100\Y` (texte
+« Ramène-moi 90003 Statuettes de faucons », saut de ligne, « et je te récompenserai avec cela : »,
+saut de ligne, « ⟦objet⟧. » ; marqueur `voice` d'identifiant 0 en tête ; commandes `falcon_update`
+puis `flag 100` ; appels `category_threshold` puis `category_item_name` ; aucun `Speaker` malgré le
+` : `).
 
 **Tâches** (branche `chantier/e15-yarn` ; une tâche à la fois, un commit par tâche avec la mise à jour
 de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Release` à 0 erreur et
@@ -344,7 +354,8 @@ tests du convertisseur sans échec avant chaque ✅ ; **aucun export avant T7**)
   déclarations du contrat), `alundra-casaengine-project-converter.Tests/Text/YarnTextEmitterTests.cs`
   (nouveaux). L'émetteur rend le source Yarn d'une table selon §1 (échappements `\:` et `\#`,
   `trimwhitespace=false` sur chaque marqueur autofermant, `[empty/]`, `<<flag n>>` normalisé avant sa
-  ligne, `<<falcon_update>>` avant toute ligne à `\X`, identifiants de ligne du contrat). Validation :
+  ligne, une seule `<<falcon_update>>` avant toute ligne à `\X`, commandes dans l'ordre de première
+  apparition de leur code, identifiants de ligne du contrat). Validation :
   un test par ligne de §1 ; chaque exemple émis compile par `YarnDialogueCompiler` avec
   `AlundraYarnFunctions`, sans diagnostic ; une ligne qui utilise chacune des six fonctions compile.
   Commit : `feat(converter): emit Alundra text as Yarn source`.
