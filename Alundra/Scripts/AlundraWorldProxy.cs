@@ -129,63 +129,6 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         => _debugCameraPanEnabledOverrideForTests = value;
 
     /// <summary>
-    /// E13 C5.a (docs/plan-e13-hud.md, D-E13-10): name fixed by the orchestrating session for this slice.
-    /// Active when set to exactly "1"; unset or any other value leaves it inactive - same "== '1', never
-    /// active by default" convention as <see cref="AlundraPlayerManager.DebugIgnoreControlLockEnvVar"/>
-    /// (deliberately the STRICTER convention of this file's own two debug flags, unlike
-    /// <see cref="DebugCameraPanEnabledEnvVar"/>'s "enabled by default": this one lets the recipe skip the
-    /// normal script-driven trigger of docs/plan-e13-hud.md §1.6, so it must be opted into explicitly).
-    /// When active, <see cref="AdoptPlayerPawn"/> applies the debug stat set of <see cref="AlundraPlayerManager.LoadDebugStats"/>
-    /// and raises the HUD's own "please appear" request (<see cref="AlundraHudDirector.ScriptOpenRequestFlag"/>/
-    /// <see cref="AlundraHudDirector.ScriptOpenRequestMask"/>) at the one map entry recognized as a New
-    /// Game - see that method's own doc for exactly which entry that is and why only once.
-    ///
-    /// D-E13-12 (2026-09-19) added an F1 key as the author-facing trigger of this same recipe, because a
-    /// variable set in the launching shell did not reach the launcher's own process environment. The F1
-    /// key only served to validate the HUD and was removed at the author's request on 2026-09-27; this
-    /// variable path is now the recipe's only trigger.
-    /// </summary>
-    internal const string DebugHudRecipeEnvVar = "ALUNDRA_HUD_DEBUG";
-
-    /// <summary>Real-world value of <see cref="DebugHudRecipeEnvVar"/> - the environment variable read
-    /// exactly once (static readonly, evaluated on this type's first use) and logged exactly once when it
-    /// evaluates active - see that field's own doc.</summary>
-    private static readonly bool DebugHudRecipeEnabledFromEnvironment = ReadDebugHudRecipeEnabledFromEnvironment();
-
-    /// <summary>Test-only seam over <see cref="DebugHudRecipeEnabledFromEnvironment"/> - same rationale as
-    /// <see cref="_debugCameraPanEnabledOverrideForTests"/>/<see cref="AlundraPlayerManager"/>'s own
-    /// <c>_debugIgnoreControlLockOverrideForTests</c>: a headless test never writes this process' real
-    /// environment (a shared xunit host cannot guarantee this type's static field has not already latched
-    /// its one-time read before a test could set it) - it forces this override instead. Never read or
-    /// written by production code paths.</summary>
-    private static bool? _debugHudRecipeEnabledOverrideForTests;
-
-    /// <summary>Internal (widened from private, S2's base extraction rule, same shape as
-    /// <see cref="DebugCameraPanEnabled"/>) so <see cref="AdoptPlayerPawn"/> can read it.</summary>
-    internal static bool DebugHudRecipeEnabled
-        => _debugHudRecipeEnabledOverrideForTests ?? DebugHudRecipeEnabledFromEnvironment;
-
-    private static bool ReadDebugHudRecipeEnabledFromEnvironment()
-    {
-        var active = Environment.GetEnvironmentVariable(DebugHudRecipeEnvVar) == "1";
-
-        if (active)
-        {
-            Logs.WriteWarning(
-                $"AlundraWorldProxy: {DebugHudRecipeEnvVar}=1 - New Game will load the debug stat set "
-                + "(38/45, 2/3, 2163) and raise the HUD's own script-open request (debug-only, never "
-                + "active by default).");
-        }
-
-        return active;
-    }
-
-    /// <summary>Test-only seam - see <see cref="_debugHudRecipeEnabledOverrideForTests"/>'s own doc. Pass
-    /// null to restore the real environment-variable-derived value.</summary>
-    internal static void SetDebugHudRecipeEnabledOverrideForTests(bool? value)
-        => _debugHudRecipeEnabledOverrideForTests = value;
-
-    /// <summary>
     /// Entities spawned by this proxy in <see cref="InitializeWithWorld"/> (both the prefab-clone and
     /// bare-fallback paths), in creation order - <see cref="Update"/> drives their status machine in
     /// this same order, mirroring the original manager's single flat entity-slot array.
@@ -1539,36 +1482,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // own doc). Null falls back to the New Game constants exactly as before this slice.
         var arrivalRecord = AlundraWarpDirector.Instance.ConsumeArrivalRecord();
 
-        // E13.c S3 (docs/plan-e13c-icones-hud.md): the same "no pending arrival" signal the debug recipe
-        // below reads is the New Game, so this is where the original's own New Game inventory runs - item
-        // counters, the unlock loop, the weapon set to the sword's slot (GameInitializer.cs:395-411). Not
-        // gated on any debug switch: it is the game's own state. Latched once per session, the same belt and
-        // braces the recipe carries, and run before it so the gauge's first frame already has a weapon.
+        // E13.c S3 (docs/plan-e13c-icones-hud.md): "no pending arrival" is the New Game - the only other
+        // source of a map entry is a warp, and a warp always leaves a non-null record - so this is where the
+        // original's own New Game inventory runs: item counters, the unlock loop, the weapon set to the
+        // sword's slot (GameInitializer.cs:395-411). Not gated on any debug switch: it is the game's own
+        // state. Latched once per session as a belt and braces (see NewGameInventoryInitialized's own doc).
         if (arrivalRecord == null && !GameState.NewGameInventoryInitialized)
         {
             GameState.NewGameInventoryInitialized = true;
             AlundraPlayerManager.InitializeNewGameInventory(GameState, ItemTables);
-        }
-
-        // E13 C5.a (docs/plan-e13-hud.md, D-E13-10): arrivalRecord == null here is precisely the "New
-        // Game/Continue load" signal T5's own doc above already established - the only OTHER source of a
-        // map entry is a warp, and a warp always leaves a non-null record (AlundraWarpDirector.BeginDeparture).
-        // There is no Continue-load path in this DLL yet (AlundraGameState's own class doc: only the New
-        // Game branch of GameInitializer.InitializeGameState is ported), so today this branch means
-        // exactly "New Game" - reached at most once per session in the real architecture, and defended
-        // against a hypothetical second time by GameState.DebugHudRecipeApplied (see that field's own doc).
-        // Gated on ALUNDRA_HUD_DEBUG so the shipped default (no variable) reproduces the original exactly:
-        // the HUD stays hidden until a map script's own opcode 0x05 asks for it (§1.6).
-        if (arrivalRecord == null && DebugHudRecipeEnabled && !GameState.DebugHudRecipeApplied)
-        {
-            GameState.DebugHudRecipeApplied = true;
-            AlundraPlayerManager.LoadDebugStats(GameState);
-            // Reproduces AlundraEventProgramRunner's own opcode 0x05 handler verbatim
-            // (AlundraEventProgramRunner.cs:437-441: flag = id, mask = 1 << (id & 0x1f), AddFlag) for id
-            // 1813 - AlundraHudDirector.ScriptOpenRequestFlag/ScriptOpenRequestMask, the same word (0x38)
-            // and bit (21, mask 0x200000) that director consumes (C1) - so the director sees an ordinary
-            // script-raised "please appear" request, nothing else about it distinguishable from one.
-            GameState.AddFlag(AlundraHudDirector.ScriptOpenRequestFlag, AlundraHudDirector.ScriptOpenRequestMask);
         }
 
         proxy.PosX = arrivalRecord?.PosX ?? (AlundraGameState.CameraTileX * TileWidth + TileWidth / 2) << 16;

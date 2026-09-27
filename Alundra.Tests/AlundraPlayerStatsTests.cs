@@ -208,23 +208,4 @@ public class AlundraPlayerStatsTests
         Assert.Equal(0, state.PlayerStats.MpMax);
         Assert.Equal(0, state.PlayerStats.Money);
     }
-
-    // -----------------------------------------------------------------------------------------
-    // Debug value set - 38/45 HP, 2/3 MP, 2163 money (GameInitializer.cs:378-392's own "unused, only
-    // for debugging" branch).
-    // -----------------------------------------------------------------------------------------
-
-    [Fact]
-    public void LoadDebugStats_SetsTheGameInitializerDebugValueSet()
-    {
-        var state = new AlundraGameState();
-
-        AlundraPlayerManager.LoadDebugStats(state);
-
-        Assert.Equal(38, state.PlayerStats.Hp);
-        Assert.Equal(45, state.PlayerStats.HpMax);
-        Assert.Equal(2, state.PlayerStats.Mp);
-        Assert.Equal(3, state.PlayerStats.MpMax);
-        Assert.Equal(2163, state.PlayerStats.Money);
-    }
 }

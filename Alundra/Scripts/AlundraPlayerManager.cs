@@ -773,21 +773,6 @@ public static class AlundraPlayerManager
         SetMoney(state, 0);
     }
 
-    /// <summary>The debugging stat set from GameInitializer.cs's own <c>else // unused, only for
-    /// debugging</c> branch (<c>SlotData != 0</c>, GameInitializer.cs:378-392): <c>SetPlayerHpMax(45);
-    /// SetPlayerHp(38); SetPlayerMpMax(3); SetPlayerMp(2); SetMoney(2163)</c>. Never reached by the
-    /// shipped game (no code path sets <c>SlotData</c> to that branch's value) - exposed here only so
-    /// E13's recette (docs/plan-e13-hud.md, D-E13-6) can exercise a long partial heart bar, a partial
-    /// magic gauge under its ceiling, and four non-zero money digits.</summary>
-    public static void LoadDebugStats(AlundraGameState state)
-    {
-        SetPlayerHpMax(state, 45);
-        SetPlayerHp(state, 38);
-        SetPlayerMpMax(state, 3);
-        SetPlayerMp(state, 2);
-        SetMoney(state, 2163);
-    }
-
     // ---- E13.c S3 (docs/plan-e13c-icones-hud.md): the item counters, the equipped weapon, and what the
     // HUD's two equipment boxes show. Everything below is a line-by-line port of the cited original; the
     // only systematic change is Breakpoint.TriggerBreak(), which becomes a warning here, the port's idiom.
