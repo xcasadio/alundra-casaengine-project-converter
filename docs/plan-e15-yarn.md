@@ -58,6 +58,12 @@ Réponses de l'auteur à la mesure d'E15.0 (2026-09-27) :
 - **D-E15-9 — Les effets de bord de `\X` passent par une commande** placée avant la ligne, les
   valeurs par des fonctions sans effet de bord.
 
+Réponses de l'auteur à la relecture d'E15.b (2026-09-27) :
+
+- **D-E15-10 — Un emplacement vide n'a pas de nœud** ; si un script l'ouvre, la DLL ouvre une boîte
+  vide, comme aujourd'hui.
+- **D-E15-11 — Les nœuds de la table ETC portent l'index ETC en décimal** (`Etc_0067`, `Etc_0512`).
+
 Decisions: see ADR-0006 (`docs/decisions/0006-alundra-text-is-authored-as-yarn.md`).
 
 - Rappel des décisions antérieures : **D6** (un fichier Yarn par carte, un nœud par chaîne, pas de
@@ -162,9 +168,10 @@ tableau pour la lisibilité.
 
 | Source | Yarn |
 |---|---|
-| Table d'une carte, chaîne `n` | fichier `Maps/…/dialogues/{carte}.yarn`, nœud `M{carte}_S{nnn}` |
+| Table d'une carte, chaîne `n` non vide | fichier `{Nom}-{id}.yarn` du dossier `dialogues` de la carte, nœud `M{id}_S{nnn}` (contrat détaillé en E15.b) |
 | `map_alundra`, chaîne `n` | fichier `Dialogues/Shared.yarn`, nœud `Shared_S{nnn}` |
-| Table ETC, entrée `i` | fichier `Dialogues/Etc.yarn`, nœud `Etc_{iiii}` (une ligne) |
+| Table ETC, index `i` non nul | fichier `Dialogues/Etc.yarn`, nœud `Etc_{iiii}`, index en décimal sur quatre chiffres (D-E15-11) |
+| Emplacement vide | aucun nœud ; la DLL ouvre une boîte vide comme aujourd'hui (D-E15-10) |
 | Page (séparée par `\A`) | une ligne Yarn, identifiant `#line:{nœud}_p{k}` stable et déterministe |
 | Page sans texte visible (fin de chaîne par `\A` : 37 ; page qui ne pose qu'un drapeau : 58) | une ligne réduite à `[empty/]`, que la DLL affiche comme une boîte vide : **le rythme des dialogues ne change pas** (le défilement fin de l'original, `TextDecoder.cs:330-334`, `:688-715`, relève d'E12.c) ; vérifié : `[empty/]` seul compile et donne un texte vide |
 | `\N` | `[br/]` |
@@ -255,38 +262,131 @@ moteur.
   Alundra dans le moteur.
 - **Dépendances** : aucune dans ce plan (peut avancer en parallèle d'E15.0).
 
-### E15.b — Le convertisseur émet le Yarn ⏳ (convertisseur)
+### E15.b — Le convertisseur émet le Yarn ⏳ (convertisseur ; révisée le 2026-09-27 après sa relecture)
 
 - **But** : un `.yarn` et un `.dialogue` catalogué par carte, plus `Shared` et `Etc`, **à côté** des
   anciens fichiers, que la DLL lit encore.
-- **Contenu** : référence à `CasaEngine.Compiler` ; un writer Yarn qui applique la correspondance
-  d'E15.0, échappe le texte, compile par `YarnDialogueCompiler` **en lui passant les déclarations des
-  fonctions d'Alundra** (`falcon_temp`, `falcon`, `category_item_name`, `category_threshold`,
-  `category_remaining`, `game_var` ; surcharge ajoutée par E15.a T1.3, décision de l'auteur du
-  2026-09-27 sur O4 du plan moteur), écrit l'asset par le sérialiseur
-  d'éditeur, l'inscrit au catalogue et appelle `EditorAssetCatalogService.Save()` ; compteurs dans
-  `report.json`, dont l'inventaire des codes qui remplacera `control-codes.json` ; le décodeur de
-  référence dans les tests.
-- **Acceptation** :
-  - **équivalence sur tout le corpus contre le décodeur de référence** (§1) : pour chaque chaîne, les
-    lignes compilées, markup analysé, `[br/]` rendu en saut de ligne, marqueurs retirés, égalent les
-    pages du décodeur ; pages vides et pages à drapeau seul comparées par leur représentation
-    arrêtée en E15.0 ; espaces comparés selon la règle d'E15.0 ; drapeaux, fonctions et marqueurs
-    reconstruits égaux aux codes de la chaîne ; **le glyphe de `\W` présent là où la chaîne avait
-    `\W<c>`** (un marqueur de glyphe, s'il est retenu en E15.0, n'est jamais retiré dans cette
-    comparaison) ; nommément couvertes : `\401\Ydétruite.` (une seule page), les chaînes de la
-    carte 324 (` : `), et, dans la table de la carte 323, la chaîne d'**index 95** (base 0, ligne 97
-    du fichier), **page 4** (base 0, ligne Yarn `M323_S095_p4`) : son texte, marqueurs retirés, est
-    « Tu en as rencontré un Nirude. », saut de ligne, « Les Gazeck ont été taillés dans la pierre »,
-    saut de ligne, « par d'anciens humains. », avec un attribut `glyph` d'identifiant 18 juste après
-    « un » ;
-  - aucune erreur de compilation Yarn sur le corpus ; identifiants de ligne stables d'un export à
-    l'autre ; aucun `Speaker` produit par l'analyse d'une ligne du corpus ;
-  - export complet sur place, `report.json` à 0 erreur, manifeste = seulement des ajouts `.yarn` et
-    `.dialogue` (plus le catalogue et `report.json`), double export identique hormis `report.json` ;
-  - tests du convertisseur sans échec.
-- **Arrêt** : une chaîne dont l'équivalence échoue → cause établie avant toute correction.
-- **Dépendances** : E15.0.
+- **Revue** : première relecture REVISE (six P2 : pas de découpage en tâches, chemin d'écriture de
+  l'asset impossible, ensemble des nœuds non fixé, types des fonctions non fixés, oracle imprécis,
+  chargement non prouvé) ; cette révision les corrige, avec les choix de l'auteur D-E15-10 et
+  D-E15-11.
+
+**Contrat des fichiers et des nœuds** (D-E15-10, D-E15-11) :
+
+| Asset | Fichier | Nœuds | Identifiant de ligne | Nom au catalogue | Clé `Ids.For` |
+|---|---|---|---|---|---|
+| Table d'une carte | `{Nom}-{id}.yarn` et `.dialogue`, dans `MapLocation.DialoguesDirectory` (le dossier de l'actuel `.strings.json`) | `M{id}_S{nnn}`, **seulement pour les chaînes non vides** (`#Disuse` compris), `{id}` l'identifiant de la carte, `{nnn}` l'index 0-127 sur trois chiffres | `{nœud}_p{k}`, `k` le rang de la page | `dialogue_{id}` | `dialogue:map:{id}` |
+| `map_alundra` | `Dialogues/Shared.yarn` et `.dialogue` | `Shared_S{nnn}`, les 128 entrées (toutes non vides) | idem | `dialogue_shared` | `dialogue:shared` |
+| Table ETC | `Dialogues/Etc.yarn` et `.dialogue` | `Etc_{iiii}`, `{iiii}` **l'index ETC en décimal sur quatre chiffres** (0000-1023), résolu par `EtcIndexTable.csv` vers son décalage ; **seulement les index non nuls** (353) | idem (une ligne `_p0`, sauf `\A`) | `dialogue_etc` | `dialogue:etc` |
+
+Un emplacement vide n'a pas de nœud : si un script l'ouvre, E15.c ouvre une boîte vide, comme la DLL
+le fait aujourd'hui (`AlundraEventProgramRunner.cs:1115`, `:1137`). Une carte sans aucune chaîne non
+vide n'aurait pas de fichier ; il n'y en a aucune dans le corpus (les 483 cartes en ont au moins une,
+mesuré le 2026-09-27), d'où 485 fichiers en tout. Tous les index ETC qui partagent
+un décalage pointent sur des entrées nulles (§5.1) : aucun nœud dupliqué.
+
+**Contrat des fonctions** (déclarées au compilateur par le convertisseur, enregistrées à l'exécution
+par la DLL en E15.c avec les mêmes types) :
+
+| Fonction | Code | Paramètres | Retour Yarn | Délégué C# |
+|---|---|---|---|---|
+| `falcon_temp` | `\X0` | — | nombre | `Func<float>` |
+| `falcon` | `\X1` | — | nombre | `Func<float>` |
+| `category_item_name` | `\X2`, `\X4` | — | texte | `Func<string>` |
+| `category_threshold` | `\X3` | — | nombre | `Func<float>` |
+| `category_remaining` | `\X5` | — | nombre | `Func<float>` |
+| `game_var` | `\V<n>` | `n` : nombre | nombre | `Func<float, float>` |
+
+Les commandes `flag` (un argument, la valeur normalisée) et `falcon_update` (aucun argument) ne se
+déclarent pas au compilateur (Yarn les compile comme du texte).
+
+**Oracle d'équivalence** (tâche T6). Pour chaque page, la sortie comparée est un quadruplet :
+1. le **texte visible** : substitutions faites, markup analysé, `[br/]` rendu par un saut de ligne,
+   espaces de bord retirés (D-E15-8) ;
+2. la liste ordonnée des **marqueurs** : nom, propriétés (hors `trimwhitespace`), position dans le
+   texte visible ; `glyph` compris, avec son identifiant ;
+3. la liste ordonnée des **commandes** exécutées avant la ligne : nom et arguments ;
+4. la liste ordonnée des **appels de fonctions** : nom et arguments.
+
+Côté original, le **décodeur de référence** (tests du convertisseur) suit `TextDecoder.cs`, la formule
+de `\W` de l'exécutable (§1) et les octets bruts `0x1A`/`0x1C` de l'ETC (glyphes 26 et 28) ; il rend
+chaque `\X`/`\V` par la valeur témoin de sa fonction. Côté compilé, la page est **observée en jouant**
+le `.dialogue` compilé sur le `YarnDialogueRunner` d'E15.a : gestionnaires de commandes qui
+enregistrent, fonctions témoins qui rendent une valeur distincte (`falcon_temp` 90001, `falcon` 90002,
+`category_threshold` 90003, `category_remaining` 90004, `game_var(n)` 91000 + n,
+`category_item_name` « ⟦objet⟧ ») et enregistrent leur appel, présentateur qui enregistre texte et
+attributs. Une page `[empty/]` a un texte vide et un seul marqueur `empty`.
+
+**Corpus** : les 24 303 chaînes non vides des 483 cartes (`#Disuse` compris), les 128 entrées de
+`map_alundra`, les 353 index ETC non nuls. **Cas nommés** : la ligne `M323_S095_p4` (texte « Tu en as
+rencontré un Nirude. », saut de ligne, « Les Gazeck ont été taillés dans la pierre », saut de ligne,
+« par d'anciens humains. », marqueur `glyph` 18 juste après « un ») ; `\401\Ydétruite.` (une seule
+ligne, `<<flag 401>>` avant elle) ; une chaîne de la carte 324 contenant ` : ` (aucun `Speaker`) ; une
+page `\A\999\Y\A` (`<<flag 999>>`, puis `[empty/]`) ; une chaîne `\X2` de la carte 134
+(`<<falcon_update>>`, puis `category_item_name`) ; une chaîne `\V` du pub 472 ; une description d'objet
+ETC contenant l'octet `0x1A` (marqueur `glyph` 26).
+
+**Tâches** (branche `chantier/e15-yarn` ; une tâche à la fois, un commit par tâche avec la mise à jour
+de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Release` à 0 erreur et
+tests du convertisseur sans échec avant chaque ✅ ; **aucun export avant T7**) :
+
+- ⏳ **T1 — Référence au compilateur.** Fichier : `alundra-casaengine-project-converter/alundra-casaengine-project-converter.csproj`.
+  Ajouter la `ProjectReference` à `CasaEngine.Compiler` (§5.4 : `net9.0`, seul paquet
+  `YarnSpinner.Compiler`). Validation : build, tests du convertisseur 197/197. Commit :
+  `build(converter): reference the engine's Yarn compiler`.
+- ⏳ **T2 — Décodeur de référence.** Fichiers : `alundra-casaengine-project-converter.Tests/Text/ReferenceTextDecoder.cs`,
+  `ReferenceTextDecoderTests.cs` (nouveaux). Le décodeur rend le quadruplet de l'oracle pour chaque
+  page ; indépendant de l'émetteur (T3), il ne partage aucun code avec lui. Validation : un test par
+  code de §1 et un par cas nommé, sur le texte attendu écrit à la main. Commit :
+  `test(converter): add the reference decoder of the original text`.
+- ⏳ **T3 — Émetteur Yarn.** Fichiers : `alundra-casaengine-project-converter/Text/YarnTextEmitter.cs`,
+  `alundra-casaengine-project-converter/Text/AlundraYarnFunctions.cs` (la `Yarn.Library` de
+  déclarations du contrat), `alundra-casaengine-project-converter.Tests/Text/YarnTextEmitterTests.cs`
+  (nouveaux). L'émetteur rend le source Yarn d'une table selon §1 (échappements `\:` et `\#`,
+  `trimwhitespace=false` sur chaque marqueur autofermant, `[empty/]`, `<<flag n>>` normalisé avant sa
+  ligne, `<<falcon_update>>` avant toute ligne à `\X`, identifiants de ligne du contrat). Validation :
+  un test par ligne de §1 ; chaque exemple émis compile par `YarnDialogueCompiler` avec
+  `AlundraYarnFunctions`, sans diagnostic ; une ligne qui utilise chacune des six fonctions compile.
+  Commit : `feat(converter): emit Alundra text as Yarn source`.
+- ⏳ **T4 — Writer et catalogue.** Fichiers : `alundra-casaengine-project-converter/Writers/YarnDialogueWriter.cs`
+  (nouveau), `Program.cs` (appel juste après le texte actuel, avant la vérification de la phase 8),
+  `alundra-casaengine-project-converter.Tests/YarnDialogueWriterTests.cs` (nouveau). Pour chaque
+  asset : `.yarn` écrit, compilé avec `AlundraYarnFunctions`, `DialogueAsset.FromCompiledProgram`,
+  JSON produit par `DialogueAssetJsonSerializer.Save`, **son `id` remplacé par `Ids.For(clé)`**, écrit
+  par `EditorAssetWriterService.SaveDocument`, inscrit par `EditorAssetCatalogService.Add(new
+  AssetInfo(id) { Name, FileName })`, puis `EditorAssetCatalogService.Save()`. Compteurs de
+  `report.json` : fichiers, nœuds, lignes, pages `[empty/]`, marqueurs `glyph`, commandes `flag` et
+  `falcon_update`, appels de fonctions, emplacements vides sans nœud, et l'inventaire des codes par
+  code (qui remplacera `control-codes.json`). Une erreur de compilation Yarn est une erreur de
+  `report.json`. Validation : un `.dialogue` écrit deux fois est identique octet pour octet ; l'`id`
+  du fichier égale celui du catalogue et `Ids.For(clé)` ; l'ensemble des nœuds d'`Etc`, de `Shared`
+  (128) et d'une carte d'exemple suit le contrat, emplacement vide et index ETC à décalage partagé
+  compris ; `Etc_0067`, `Etc_0068` et `Etc_{0512 + id}` se lisent par `DialogueAsset.TryGetLineText`
+  avec l'identifiant de ligne du contrat. Commit :
+  `feat(converter): write compiled Yarn dialogues for every text table`.
+- ⏳ **T5 — Vérification du chargement.** Fichiers : `alundra-casaengine-project-converter/AssetVerifier.cs`,
+  son test. **Dans le périmètre** : entrée `["dialogue"]` dans `Loaders` qui charge l'asset
+  (`DialogueAsset.Load`) et exige un programme compilé et des `LineTexts` non vides. Validation : un
+  `.dialogue` valide se charge et est compté ; un `.dialogue` corrompu donne une erreur. Commit :
+  `feat(converter): verify exported Yarn dialogues by loading them`.
+- ⏳ **T6 — Équivalence sur tout le corpus.** Fichier :
+  `alundra-casaengine-project-converter.Tests/Text/YarnCorpusEquivalenceTests.cs` (nouveau). Sur le
+  corpus lu dans `data-extracted/` (jamais rafraîchi par ce chantier), l'émetteur et le compilateur
+  produisent chaque asset, joué comme décrit par l'oracle, comparé page par page au décodeur de
+  référence ; les cas nommés sont des tests séparés. Validation : zéro écart ; aucune erreur de
+  compilation ; aucun `Speaker`. Commit :
+  `test(converter): prove the Yarn text equivalent to the original on the whole corpus`.
+- ⏳ **T7 — Export complet et preuves.** Fichiers : `docs/formats/dialogues-yarn.md` (nouveau, le
+  format), ce plan. Étapes, **jamais pendant une suite `Alundra.Tests`** : manifeste d'avant par le
+  script de §5.4, comparé à la référence (tout écart est noté et expliqué avant d'aller plus loin) ;
+  export complet sur place `dotnet run --project alundra-casaengine-project-converter -- data-extracted alundra-project` ;
+  `report.json` à 0 erreur, et 485 `.dialogue` chargés par la phase 8 ; manifeste d'après = seulement
+  les 485 `.yarn` et 485 `.dialogue` ajoutés, `AssetInfos.json` et `report.json` ; second export
+  identique au premier hormis `report.json`. Commit : `docs(e15): record the Yarn export proof`.
+- **Arrêts propres à E15.b** : une page dont l'équivalence échoue, ou un manifeste qui montre un autre
+  changement que ceux de T7 → cause établie avant toute correction ; aucune correction dans le moteur
+  (D-E15-2).
+- **Dépendances** : E15.0, E15.a.
 
 ### E15.c — La DLL lit le Yarn ⏳ (DLL)
 
@@ -294,8 +394,10 @@ moteur.
   fichier de texte brut.
 - **Contenu** :
   - le directeur de dialogue démarre le nœud dans l'asset de la carte ou dans l'asset partagé selon le
-    bit `0x80`, et fait avancer le runner à chaque page ; modes de fermeture, blocage du joueur,
+    bit `0x80`, et fait avancer le runner à chaque page ; un nœud absent (emplacement vide, D-E15-10)
+    ouvre une boîte vide comme aujourd'hui ; modes de fermeture, blocage du joueur,
     `0x39`/`0x44`/`0x50`/`0x51` inchangés ;
+  - les fonctions enregistrées avec les types exacts du contrat d'E15.b ;
   - les commandes `flag` et `falcon_update`, les fonctions de `\X` et `\V`, et un stockage de variables
     adossé à `AlundraGameState` (D-E16-6), tous enregistrés par la DLL ; le port de
     `UpdateNumberOfFalcon`, `UpdatePlayerProgressState` et de la table des seuils (§5.4) ;
