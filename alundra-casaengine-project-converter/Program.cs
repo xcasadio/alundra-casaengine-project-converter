@@ -90,11 +90,15 @@ if (options.Phase >= 4)
         AudioWriter.ConvertAudio(options.InputDirectory, options.OutputDirectory, report));
 }
 
-// Phase 5: string tables (global + per map), their control-code inventory, and the bitmap font.
+// Phase 5: string tables (global + per map), their control-code inventory, the compiled Yarn
+// dialogue assets (docs/plan-e15-yarn.md, E15.b) written next to those raw tables, and the bitmap
+// font.
 if (options.Phase >= 5)
 {
     report.RunPhase("Phase5.Text", () =>
         TextWriter.ConvertText(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report));
+    report.RunPhase("Phase5.Yarn", () =>
+        YarnDialogueWriter.ConvertDialogues(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report));
     report.RunPhase("Phase5.Font", () =>
         FontWriter.ConvertFont(options.InputDirectory, options.OutputDirectory, report));
 }

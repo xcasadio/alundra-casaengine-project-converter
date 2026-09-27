@@ -428,7 +428,7 @@ tests du convertisseur sans échec avant chaque ✅ ; **aucun export avant T7**)
     position (`M135_S090_p3`) ;
   - 87 tests ; build Release de la solution à 0 erreur, aucun avertissement dans ces fichiers ;
     tests du convertisseur 365/365.
-- ⏳ **T4 — Writer et catalogue.** Fichiers : `alundra-casaengine-project-converter/Writers/YarnDialogueWriter.cs`
+- ✅ **T4 — Writer et catalogue.** Fichiers : `alundra-casaengine-project-converter/Writers/YarnDialogueWriter.cs`
   (nouveau), `Program.cs` (appel juste après le texte actuel, avant la vérification de la phase 8),
   `alundra-casaengine-project-converter.Tests/YarnDialogueWriterTests.cs` (nouveau). Pour chaque
   asset : `.yarn` écrit, compilé avec `AlundraYarnFunctions`, `DialogueAsset.FromCompiledProgram`,
@@ -443,7 +443,24 @@ tests du convertisseur sans échec avant chaque ✅ ; **aucun export avant T7**)
   (128) et d'une carte d'exemple suit le contrat, emplacement vide et index ETC à décalage partagé
   compris ; `Etc_0067`, `Etc_0068` et `Etc_{0512 + id}` se lisent par `DialogueAsset.TryGetLineText`
   avec l'identifiant de ligne du contrat. Commit :
-  `feat(converter): write compiled Yarn dialogues for every text table`.
+  `feat(converter): write compiled Yarn dialogues for every text table`. **Réalisé le 2026-09-27** :
+  - `YarnDialogueWriter.ConvertDialogues`, appelé par la phase `Phase5.Yarn` juste après
+    `Phase5.Text` (filtre `--maps` respecté ; `Shared` et `Etc` toujours écrits) ; départ de chaque
+    asset sur son premier nœud ; identifiants de ligne sous la forme de Yarn, `line:{nœud}_p{k}` ;
+    une erreur d'émission ou de compilation est une erreur de `report.json` qui nomme le `.yarn`, et
+    un fichier qui ne compile pas n'est ni écrit en `.dialogue` ni catalogué ; compteurs `Yarn.*` et
+    inventaire `Yarn.Code.<code>` ;
+  - sur les vraies données, dans un projet temporaire (aucune écriture dans `alundra-project/`) :
+    485 fichiers, 24 784 nœuds, 31 757 lignes, 95 pages vides, 11 182 glyphes, 932 `flag`,
+    7 `falcon_update`, 20 appels, 38 192 emplacements vides sans nœud, 0 erreur, 0 avertissement ;
+    chaque `.dialogue` catalogué se recharge ; `line:Etc_0067_p0` donne « OUI », `line:Etc_0068_p0`
+    « NON » ; deux exécutions identiques octet pour octet ;
+  - vérification : deux relectures neuves CONFIRMED ; leurs remarques P3/P4 corrigées (message
+    d'erreur qui nomme le fichier, ensemble exact des nœuds et tous les compteurs dans le test du jeu
+    d'essai) ; les avertissements de lecture d'`EtcIndexTable.csv` sont aussi émis par `TextWriter`
+    tant qu'il existe (E15.d retire ce doublon) ;
+  - 6 tests ; build Release de la solution à 0 erreur et 0 avertissement ; tests du convertisseur
+    371/371.
 - ⏳ **T5 — Vérification du chargement.** Fichiers : `alundra-casaengine-project-converter/AssetVerifier.cs`,
   son test. **Dans le périmètre** : entrée `["dialogue"]` dans `Loaders` qui charge l'asset
   (`DialogueAsset.Load`) et exige un programme compilé et des `LineTexts` non vides. Validation : un
@@ -478,6 +495,9 @@ tests du convertisseur sans échec avant chaque ✅ ; **aucun export avant T7**)
     ouvre une boîte vide comme aujourd'hui ; modes de fermeture, blocage du joueur,
     `0x39`/`0x44`/`0x50`/`0x51` inchangés ;
   - les fonctions enregistrées avec les types exacts du contrat d'E15.b ;
+  - tout texte lu hors dialogue par `DialogueAsset.TryGetLineText` (OUI/NON, noms et descriptions
+    d'objets) passe par `YarnLineTextParser` : le texte brut d'une ligne garde ses échappements
+    (`\:` y reste, constaté en T4 ; c'est le `LineParser` qui le retire) ;
   - les commandes `flag` et `falcon_update`, les fonctions de `\X` et `\V`, et un stockage de variables
     adossé à `AlundraGameState` (D-E16-6), tous enregistrés par la DLL ; le port de
     `UpdateNumberOfFalcon`, `UpdatePlayerProgressState` et de la table des seuils (§5.4) ;
