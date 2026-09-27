@@ -472,13 +472,34 @@ tests du convertisseur sans échec avant chaque ✅ ; **aucun export avant T7**)
   comme les autres formats chargeables. Trois tests (`.dialogue` compilé chargé et compté dans
   `Verify.Loaded.dialogue`, fichier tronqué, programme vide) ; build Release à 0 erreur ; tests du
   convertisseur 374/374.
-- ⏳ **T6 — Équivalence sur tout le corpus.** Fichier :
+- ✅ **T6 — Équivalence sur tout le corpus.** Fichier :
   `alundra-casaengine-project-converter.Tests/Text/YarnCorpusEquivalenceTests.cs` (nouveau). Sur le
   corpus lu dans `data-extracted/` (jamais rafraîchi par ce chantier), l'émetteur et le compilateur
   produisent chaque asset, joué comme décrit par l'oracle, comparé page par page au décodeur de
   référence ; les cas nommés sont des tests séparés. Validation : zéro écart ; aucune erreur de
   compilation ; aucun `Speaker`. Commit :
   `test(converter): prove the Yarn text equivalent to the original on the whole corpus`.
+  **Réalisé le 2026-09-27** :
+  - chaîne réelle : `YarnDialogueWriter` sur tout `data-extracted/` dans un projet temporaire, chaque
+    `.dialogue` catalogué relu **depuis le disque**, chaque nœud joué sur le `YarnDialogueRunner` avec
+    les sept fonctions témoins, les deux commandes et un présentateur qui relève texte, marqueurs
+    (toutes leurs propriétés sauf `trimwhitespace`, longueur nulle exigée), commandes et appels
+    rattachés à leur ligne, `Speaker` ; côté original, lecture indépendante du corpus et
+    `ReferenceTextDecoder` ; un seul comparateur, partagé par le test du corpus et les tests
+    négatifs ;
+  - résultat : 485 assets, 24 784 nœuds, 31 757 pages, **0 écart**, 0 `Speaker`, 0 commande non
+    gérée, 0 nœud manquant, en trop, mal placé ou dupliqué entre assets ; index ETC à 1 024 entrées ;
+  - les neuf cas nommés comparés à la fois au décodeur et à une valeur écrite à la main ; treize
+    tests négatifs (glyphe changé, `flag` retiré, `[br/]` retiré, lecture « avant » échangée, nœud
+    retiré, nœud en trop, page en trop, nœud dans le mauvais asset ou dupliqué, propriété de marqueur
+    en trop, marqueur non nul en longueur, commande restée après la dernière ligne, `Speaker` venu
+    d'un `:` non échappé) qui prouvent que le comparateur voit chaque écart ;
+  - vérification : deux relectures REFUTED sur la solidité des tests (valeurs écrites à la main
+    manquantes, tests négatifs hors du comparateur, ensemble des nœuds non vérifié par asset,
+    propriétés de marqueurs ignorées), corrigées ; revérification REFUTED sur deux tests négatifs
+    manquants, ajoutés ensuite ; suite reportée (P3) : faire partir toutes les corruptions de la sortie
+    de l'émetteur plutôt que d'un Yarn écrit à la main ;
+  - build Release de la solution à 0 erreur et 0 avertissement ; tests du convertisseur 399/399.
 - ⏳ **T7 — Export complet et preuves.** Fichiers : `docs/formats/dialogues-yarn.md` (nouveau, le
   format), ce plan. Étapes, **jamais pendant une suite `Alundra.Tests`** : manifeste d'avant par le
   script de §5.4, comparé à la référence (tout écart est noté et expliqué avant d'aller plus loin) ;
