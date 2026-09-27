@@ -47,6 +47,19 @@ Cette approbation couvre l'enveloppe et E15.0 ; chaque tranche suivante est appr
 - **D-E15-5 — `\X` (nom d'objet, quantités) et `\V` (variable numérique) deviennent des fonctions
   Yarn** fournies par la DLL ; les codes numériques (`\999`, drapeau temporaire) deviennent une
   commande Yarn fournie par la DLL.
+Réponses de l'auteur à la mesure d'E15.0 (2026-09-27) :
+
+- **D-E15-6 — Les symboles de `\W` deviennent des marqueurs** `[glyph id=N/]` que la DLL dessine ;
+  la police `font3` ne change pas. Les octets bruts `0x1A`/`0x1C` des descriptions d'objets
+  deviennent le même marqueur.
+- **D-E15-7 — Les emplacements `#Disuse` sont gardés** (écrits `\#Disuse`).
+- **D-E15-8 — Les espaces de début et de fin de page sont perdus**, comme Yarn les retire ; c'est
+  documenté, aucun lecteur actuel n'en dépend.
+- **D-E15-9 — Les effets de bord de `\X` passent par une commande** placée avant la ligne, les
+  valeurs par des fonctions sans effet de bord.
+
+Decisions: see ADR-0006 (`docs/decisions/0006-alundra-text-is-authored-as-yarn.md`).
+
 - Rappel des décisions antérieures : **D6** (un fichier Yarn par carte, un nœud par chaîne, pas de
   reconstruction de séquences depuis le bytecode : la logique reste dans l'interpréteur) ; **D-E16-6**
   (les drapeaux restent la propriété de la DLL ; le pont vers Yarn passe par le stockage injecté).
@@ -141,7 +154,11 @@ Un export sur place **ne supprime pas** les fichiers qu'il ne produit plus.
 
 ---
 
-## 1. Correspondance proposée (arrêtée par E15.0)
+## 1. Correspondance arrêtée (E15.0, 2026-09-27)
+
+Chaque marqueur autofermant porte `trimwhitespace=false` : sans lui, Yarn avale l'espace qui suit
+(« Humm[br/] Rien » donne « HummRien », vérifié contre Yarn Spinner 3.2.1). Il est omis dans le
+tableau pour la lisibilité.
 
 | Source | Yarn |
 |---|---|
@@ -149,33 +166,37 @@ Un export sur place **ne supprime pas** les fichiers qu'il ne produit plus.
 | `map_alundra`, chaîne `n` | fichier `Dialogues/Shared.yarn`, nœud `Shared_S{nnn}` |
 | Table ETC, entrée `i` | fichier `Dialogues/Etc.yarn`, nœud `Etc_{iiii}` (une ligne) |
 | Page (séparée par `\A`) | une ligne Yarn, identifiant `#line:{nœud}_p{k}` stable et déterministe |
-| Page vide (fin de chaîne par `\A`, page qui ne pose qu'un drapeau) | une ligne réduite à un marqueur, par exemple `[empty/]`, que la DLL affiche comme une boîte vide ; à confirmer en E15.0 (compilation et rendu), sinon question à l'auteur |
-| `\N` | marqueur `[br/]` |
-| `\<chiffres>` | commande `<<flag n>>` juste avant la ligne de sa page (drapeau posé à l'affichage) |
+| Page sans texte visible (fin de chaîne par `\A` : 37 ; page qui ne pose qu'un drapeau : 58) | une ligne réduite à `[empty/]`, que la DLL affiche comme une boîte vide : **le rythme des dialogues ne change pas** (le défilement fin de l'original, `TextDecoder.cs:330-334`, `:688-715`, relève d'E12.c) ; vérifié : `[empty/]` seul compile et donne un texte vide |
+| `\N` | `[br/]` |
+| `\<chiffres>` | commande `<<flag n>>` juste avant la ligne de sa page, valeur normalisée (`\0999` et `\999` sont le même drapeau, comme le `uint.Parse` de l'original) |
 | `\Y` | rien : la page continue |
-| `\V<n>` | fonction Yarn de la DLL, par exemple `{game_var(n)}` |
-| `\X0` … `\X5` | fonctions Yarn de la DLL, par exemple `{falcon_temp()}`, `{category_item_name()}` ; **leurs effets de bord** (`UpdateNumberOfFalcon`, `UpdatePlayerProgressState`) : dans la fonction, évaluée à la livraison de la ligne, ou dans une commande placée avant la ligne — choix arrêté en E15.0 |
-| `\W<c>` | **le caractère que dessine le glyphe `c − '0' + 16` de `font3`**, établi par opérande en E15.0 (par exemple `…`) ; s'il n'a pas d'équivalent Unicode dans la police exportée, un marqueur `[glyph id=…/]` **que la DLL dessine** ; jamais retiré |
-| `\B` … `\G`, `\H`, `\M\CE`, `\T` | marqueurs gardés pour E12.c, par exemple `[voice id=0/]`, `[center/]`, `[auto_advance/]`, `[slow/]` |
-| Espaces de début et de fin (remplissage des enregistrements ETC) | gardés si E15.0 montre qu'un lecteur en dépend (échappement ou marqueur), sinon retirés et documentés ; à décider par l'auteur si un lecteur en dépend |
-| Caractères spéciaux de Yarn dans le texte (`[`, `]`, `{`, `}`, `#`, `//`, `<<`, `\`, **`:`**) | échappés ; le `:` pour que le `LineParser` n'en fasse pas un nom de personnage |
+| `\W<c>` | `[glyph id=N/]`, dessiné par la DLL (D-E15-6), avec `N = c − 0x20` pour un chiffre et `c − 0x27` pour une lettre (formule d'`ALUN_CD.EXE`, `0x800462e0`–`0x800462f0`) : `\W0` 16 •, `\W2` 18 …, `\W3` 19 “, `\W4` 20 ”, `\W5` 21 ☆, `\W6` 22 →, `\W7` 23 ←, `\W8` 24 ↑, `\W9` 25 ↓, `\WA` 26 □, `\WD` 29 ✕ ; jamais retiré |
+| Octets bruts `0x1A`/`0x1C` des descriptions d'objets (ETC) | `[glyph id=26/]` □ / `[glyph id=28/]` ○ |
+| Ligne qui contient un `\X` | commande `<<falcon_update>>` avant la ligne (D-E15-9) : elle relève le nombre de faucons temporaires, puis met à jour le nombre de faucons et la progression (`UpdateNumberOfFalcon`, `UpdatePlayerProgressState`), comme l'original |
+| `\X0`, `\X1`, `\X2`/`\X4`, `\X3`, `\X5` | fonctions sans effet de bord : `{falcon_temp()}` (valeur relevée avant la mise à jour), `{falcon()}`, `{category_item_name()}`, `{category_threshold()}`, `{category_remaining()}` |
+| `\V<n>` | `{game_var(n)}` |
+| `\B` … `\G`, `\H`, `\T` | marqueurs gardés pour E12.c : `[voice id=-1…4/]`, `[center/]`, `[slow/]` (`\M\CE` n'apparaît nulle part dans le corpus : pas de correspondance) |
+| `:` | `\:` (sinon Yarn fait du début de ligne un nom de personnage, même avec une espace avant le `:`) |
+| `#` (seulement dans `#Disuse`) | `\#` ; les `#Disuse` sont gardés (D-E15-7) |
+| Espaces de début et de fin de page | perdus, Yarn les retire à la compilation (D-E15-8) |
+| `[`, `]`, `{`, `}`, `//`, `<<`, `\` isolé | absents du corpus ; le writer les échappe quand même |
 
 Chaque fichier est compilé en un `.dialogue` catalogué à côté de sa source `.yarn`. Le bytecode
 désigne déjà une chaîne par son numéro : la DLL démarre le nœud dans l'asset de la carte ou dans
 l'asset partagé selon le bit `0x80`. Aucune référence entre fichiers, aucune shadow line.
 
 **Oracle d'équivalence** (utilisé par E15.b) : un **décodeur de référence** écrit dans les tests du
-convertisseur d'après `TextDecoder.cs`, qui découpe les pages, consomme les opérandes de `\W`, `\V`
-et `\X` comme l'original, et **émet le glyphe de `\W`**. On ne compare pas à la sortie actuelle de la
-DLL, qui affiche un chiffre à la place du glyphe : E15 corrige ce défaut du portage, et c'est un
-**changement visible** (« Urrr2 Tu es agile » devient « Urrr… Tu es agile », avec le glyphe établi en
-E15.0).
+convertisseur d'après `TextDecoder.cs` et la formule de `\W` de l'exécutable, qui découpe les pages,
+consomme les opérandes de `\W`, `\V` et `\X` comme l'original, et **émet le glyphe de `\W`** (sous la
+forme de son marqueur). On ne compare pas à la sortie actuelle de la DLL, qui affiche un chiffre à la
+place du glyphe : E15 corrige ce défaut du portage, et c'est un **changement visible** (« Urrr2 Tu es
+agile » devient « Urrr… Tu es agile »).
 
 ---
 
 ## 2. Tranches
 
-### E15.0 — Mesure et correspondance ⏳ (lecture seule)
+### E15.0 — Mesure et correspondance ✅ (lecture seule, faite le 2026-09-27, résultats au §5)
 
 - **But** : les chiffres et les choix qui fixent E15.b et E15.c.
 - **Contenu** :
@@ -208,8 +229,9 @@ E15.0).
 - **Budget** : par question, une passe dans le code et le corpus ; au-delà, « non trouvé ».
 - **Arrêt** : un code, une forme de page ou un effet de bord dont la correspondance reste ouverte, ou
   une mesure qui contredit une décision D-E15 → question à l'auteur, plan corrigé et relu avant E15.b.
-- **Retour** : un seul commit de documentation, annulable par `git revert`.
-- **Commit** : `docs(e15): record the text measurements and the Yarn mapping`.
+- **Retour** : deux commits de documentation (l'ADR, puis les mesures), annulables par `git revert`.
+- **Commit** : `docs(adr): record that all Alundra text is authored as Yarn`, puis
+  `docs(e15): record the text measurements and the Yarn mapping`.
 
 ### E15.a — Points d'extension Yarn du moteur ⏳ (moteur)
 
@@ -244,10 +266,10 @@ E15.0).
     `\W<c>`** (un marqueur de glyphe, s'il est retenu en E15.0, n'est jamais retiré dans cette
     comparaison) ; nommément couvertes : `\401\Ydétruite.` (une seule page), les chaînes de la
     carte 324 (` : `), et, dans la table de la carte 323, la chaîne d'**index 95** (base 0, ligne 97
-    du fichier), **page 4** (base 0, ligne Yarn `M323_S095_p4`) : son texte est égal à
-    « Tu en as rencontré un<glyphe> Nirude. », saut de ligne, « Les Gazeck ont été taillés dans la
-    pierre », saut de ligne, « par d'anciens humains. », où `<glyphe>` est le caractère établi en
-    E15.0 pour `\W2` ;
+    du fichier), **page 4** (base 0, ligne Yarn `M323_S095_p4`) : son texte, marqueurs retirés, est
+    « Tu en as rencontré un Nirude. », saut de ligne, « Les Gazeck ont été taillés dans la pierre »,
+    saut de ligne, « par d'anciens humains. », avec un attribut `glyph` d'identifiant 18 juste après
+    « un » ;
   - aucune erreur de compilation Yarn sur le corpus ; identifiants de ligne stables d'un export à
     l'autre ; aucun `Speaker` produit par l'analyse d'une ligne du corpus ;
   - export complet sur place, `report.json` à 0 erreur, manifeste = seulement des ajouts `.yarn` et
@@ -264,22 +286,22 @@ E15.0).
   - le directeur de dialogue démarre le nœud dans l'asset de la carte ou dans l'asset partagé selon le
     bit `0x80`, et fait avancer le runner à chaque page ; modes de fermeture, blocage du joueur,
     `0x39`/`0x44`/`0x50`/`0x51` inchangés ;
-  - la commande `flag`, les fonctions de `\X` et `\V` avec leurs effets de bord à la place arrêtée en
-    E15.0, et un stockage de variables adossé à `AlundraGameState` (D-E16-6), tous enregistrés par la
-    DLL ;
-  - `[br/]` rendu en saut de ligne, la page vide rendue en boîte vide, le glyphe de `\W` affiché (un
-    caractère du texte, ou un marqueur `[glyph/]` que la DLL dessine) ; les marqueurs d'E12.c ignorés
-    à l'affichage mais présents dans les données ;
+  - les commandes `flag` et `falcon_update`, les fonctions de `\X` et `\V`, et un stockage de variables
+    adossé à `AlundraGameState` (D-E16-6), tous enregistrés par la DLL ; le port de
+    `UpdateNumberOfFalcon`, `UpdatePlayerProgressState` et de la table des seuils (§5.4) ;
+  - `[br/]` rendu en saut de ligne, `[empty/]` en boîte vide, `[glyph id=N/]` dessiné par la DLL
+    (glyphe `N` de `font3`) ; les marqueurs d'E12.c ignorés à l'affichage mais présents dans les
+    données ;
   - OUI/NON et tous les noms et descriptions d'objets (inventaire, arme, objet, armure, bottes) lus
     dans l'asset `Etc` par identifiant de ligne ;
   - **le harnais de l'intro résout son texte par Yarn**, et le vérifie ;
   - les tests qui fabriquaient des fichiers texte bruts fabriquent des assets.
 - **Acceptation** : `Alundra.Tests` sans échec ; oracle de l'intro inchangé (`0x11` à la frame 1704)
-  **avec un harnais qui passe par Yarn** ; **recette en jeu** : marin 12 à l'identique (texte,
-  OUI/NON, drapeau `\999`), marin 13 (une ligne, fermeture au bouton), la phrase partagée et le texte
-  `\X`/`\V` repérés en E15.0, noms et descriptions de l'inventaire, de l'arme, de l'objet, de
-  l'armure et des bottes inchangés ; **une ligne à `\W2` montre le glyphe établi en E15.0**, ni rien
-  ni « 2 ».
+  **avec un harnais qui passe par Yarn** ; **recette en jeu** (cibles au §5.5) : marin 12 à l'identique
+  (texte, OUI/NON, drapeau `\999`), marin 13 (une ligne, fermeture au bouton), la phrase partagée, le
+  texte `\X` du marin de la carte 134, le panneau aux boutons de la carte 143, noms et descriptions de
+  l'inventaire, de l'arme, de l'objet, de l'armure et des bottes inchangés ; **une ligne à `\W2` montre
+  « … »**, ni rien ni « 2 ». `\V` est vérifié par test (mini-jeux non portés).
 - **Arrêt** : un écart de texte ou de déroulement en jeu → cause établie avant toute correction.
 - **Dépendances** : E15.a, E15.b.
 
@@ -304,7 +326,7 @@ E15.0).
 
 | Réf | Sujet | Tranche |
 |---|---|---|
-| O-E15-1 | La correspondance du §1 (noms des fonctions, de la commande, des marqueurs, pages vides, espaces, effets de bord de `\X`) se fixe en E15.0 ; un choix sans réponse dans le code remonte à l'auteur. | E15.0 |
+| O-E15-1 | ~~La correspondance du §1~~ — **arrêtée le 2026-09-27** (§1, D-E15-6 à D-E15-9, ADR-0006). | E15.0 |
 | O-E15-2 | `EtcIndexTable.csv`, entrée du convertisseur venue de l'analyseur, reste une entrée : seule la **sortie** `etc-index.json` disparaît. | E15.d |
 | O-E15-3 | Numéros d'ADR : ce plan passe avant E16, il prend l'ADR-0006 du portage et la prochaine ADR du moteur ; les plans d'E16 renverront au numéro libre au moment de leur écriture. | E15.0, E15.a |
 
@@ -322,9 +344,108 @@ E15.0).
 - Les shadow lines et la déduplication des phrases identiques entre cartes.
 - L'import `.yarn` dans l'éditeur (tâche 17 du plan Yarn du moteur).
 
-## 5. Mesures
+## 5. Mesures (E15.0, 2026-09-27)
 
-_(Remplie par E15.0.)_
+Quatre mesures en lecture seule, chacune recalculée par un agent neuf avec ses propres scripts ; un
+programme de test contre Yarn Spinner 3.2.1 sur les formes réelles ; scripts et sorties dans le
+dossier temporaire de la session (`scratchpad/e15-0/`). Aucun fichier suivi n'a été modifié hors de
+ce plan et de l'ADR-0006.
+
+**5.1 Corpus**
+
+| Table | Emplacements | Non vides | `#Disuse` | Textes réels |
+|---|---:|---:|---:|---:|
+| Cartes (483 fichiers) | 61 824 | 24 303 | 14 435 (dont 5 en minuscules, Lars' Crypt 21-25) | 9 868 |
+| `map_alundra` | 128 | 128 | 29 | 99 |
+| ETC | 1 024 | 353 | 5 | 348 |
+
+- Codes, tables des cartes : `\A` 6 972, `\B` 17 063 (2 906 hors `#Disuse`), `\C` 3 725, `\D` 1 751,
+  `\E` 1 078, `\F` 686, `\G` 0, `\H` 732, `\N` 24 593, `\T` 5 319, `\Y` 921, numériques 931 (43
+  graphies, 33 valeurs ; `999` ×417), `\W` 11 099. `map_alundra` : `\A` 1, `\B` 126, `\C` 2, `\H` 91,
+  `\N` 95, `\Y` 1, `\999` 1, `\W` 71. ETC : `\N` seul, 19 fois. `\M\CE` et codes inconnus : 0.
+- `\W` par opérande (toutes tables) : `2` 10 515, `3` 181, `4` 179, `0` 108, `8` 41, `9` 40, `D` 33,
+  `A` 32, `7` 21, `5` 10, `6` 10 ; aucun `1`, `B`, `C`. `\W3`/`\W4` ouvrent et ferment une citation
+  (180 fois sur 181 ; deux chaînes déséquilibrées dans les données d'origine, Inoa 178 et 260).
+- `\X` : seulement « Church (lobby)-134 » (`\X0` 1, `\X1` 2, `\X2` 2, `\X3` 1, `\X4` 1, `\X5` 1).
+  `\V` : seulement les pubs 472, 473, 474 (4 chacun).
+- Pages : 37 chaînes finissent par `\A` ; 167 pages sans texte une fois les codes retirés, dont 58 ne
+  portent qu'un code numérique et `\Y` (toutes au milieu d'une chaîne) et 72 ne portent que `\W`/`\T`
+  (elles dessinent des glyphes : ce ne sont pas des pages vides). `\Y` suit un code numérique 920 fois
+  sur 921.
+- Espaces : 108 pages de cartes finissent par une espace et 2 commencent par une espace, une fois les
+  codes numériques déplacés ; ETC : 56 et 2, dont les 42 titres de chapitre de `0x000`–`0x02F`
+  remplis à 31 caractères.
+- Caractères spéciaux de Yarn : `[`, `]`, `{`, `}`, `//`, `<<`, `>>`, `\` isolé : 0 ; `#` seulement dans
+  `#Disuse` ; `:` 442 occurrences sur 381 pages, **toutes** lues comme nom de personnage par le
+  `LineParser` de Yarn 3.2.1 (motif `^((?:[^:\\]|\\.)*):\s*`), espace avant ou non. Paires `{x`/`}x`
+  non décodées : 0. `%` : 1 (ETC `0x2A9`, sans effet hors des marqueurs de Yarn).
+- Textes de l'inventaire (ETC `0x43`, `0x44`, `0x200`–`0x261`, `0x280`–`0x2E1`, `0x300`–`0x361`) :
+  aucun code `\` ; octets bruts `0x1A` (□) 7 fois et `0x1C` (○) 2 fois.
+
+**5.2 Glyphes de `\W`**
+
+La police exportée (`alundra-project/UI/font3.fnt`) donne à chaque glyphe sous 128 son propre code
+comme point de code : les glyphes 16 à 29 sont des caractères de contrôle, sans équivalent Unicode
+utilisable. Le binaire France (`ALUN_CD.EXE`, `0x800462e0`–`0x800462f0`) calcule le glyphe par
+`c − 0x20` pour un chiffre et `c − 0x27` pour une lettre ; la décompilation (`TextDecoder.cs:442-443`)
+a perdu la branche des lettres et dessinerait `!` et `$`. Glyphes lus dans `font3.png` : 16 •, 18 …,
+19 “, 20 ”, 21 ☆, 22 →, 23 ←, 24 ↑, 25 ↓, 26 □, 27 △, 28 ○, 29 ✕ (boutons de manette en couleur).
+Décision D-E15-6 : des marqueurs dessinés par la DLL.
+
+**5.3 Lecteurs des fichiers de texte brut**
+
+| Fichier | Lecteurs et écrivains |
+|---|---|
+| `{carte}.strings.json` | écrit par `TextWriter.cs:225-242` ; chemin `MapCatalogReader.StringsRelativePath` (`:46`), testé par `MapLocationTests.cs:32-55` ; lu par `AlundraDialogueStringsLoader.cs:29-101` (branché en `AlundraWorldProxy.cs:579` sur `AlundraEventProgramRunner.LocalDialogueStrings`) et par le harnais `IntroTraceHarnessTests.cs:731-749` ; `AlundraDialogueOpcodeDispatchTests.cs:46` injecte des chaînes par le même point |
+| `global-strings.json`, `etc-index.json` | écrits par `TextWriter.cs:104-121`, `:305-315` ; lus par `AlundraEtcStringTable.cs:32-100` (OUI/NON `0x43`/`0x44` ; noms `0x200 + id`, descriptions `0x280 + id` et `0x300 + id`), appelé par `AlundraInventoryTextReveal`, `AlundraInventoryDirector.cs:994-1004` (arme, objet), `AlundraSubInventoryDirector.cs:440-445` (armure, bottes) ; faux fichiers écrits par `AlundraInventoryDirectorTests.cs:79-81` et `AlundraSubInventoryDirectorTests.cs:78-80` ; relus par `TextWriterTests.cs` |
+| `control-codes.json` | écrit par `TextWriter.cs:262-265`, relu seulement par `TextWriterTests.cs` |
+| Entrées du convertisseur (restent) | `StringTableReader.cs:38-84`, `EtcIndexCatalogReader.cs:26-60` |
+
+**5.4 Faisabilité**
+
+- `CasaEngine.Compiler` cible `net9.0` (`$(BaseTargetFramework)`, `Directory.Build.props:3-5`) et ne
+  tire que `YarnSpinner.Compiler` : le convertisseur (`net9.0-windows`) peut le référencer sans
+  changer de cadre cible.
+- `AssetVerifier` n'a aucun chargeur pour `.dialogue` ni `.yarn` (`AssetVerifier.cs:32-54`) : sur un
+  export complet, un tel fichier non catalogué est ignoré (`:124`), un fichier catalogué est seulement
+  vérifié présent et non vide (`:288-292`, `:370-401`). Le retour arrière d'E15.b laisserait donc ses
+  fichiers sans erreur. E15.b peut ajouter un chargeur `.dialogue` (le moteur en a un).
+- Suites de référence (branche `chantier/e15-yarn`, 2026-09-27) : `Alundra.Tests` 1 291/1 291,
+  tests du convertisseur 197/197, `CasaEngine.Tests` 1 957/1 957.
+- Manifeste de référence d'`alundra-project/` (hors `Alundra.dll`, `Alundra.pdb`, `.casaeditor/`) :
+  23 247 fichiers, empreinte SHA-1 du manifeste `331c0e3fcf82020792b72e97fd9fd7c18b10e7d0`. E15.b
+  reprend son propre manifeste juste avant son premier export et le compare à celui-ci.
+- `\X` : `UpdateNumberOfFalcon` (`PlayerManager.cs:5188-5199`) et `UpdatePlayerProgressState`
+  (`TextDecoder.cs:1098-1172`) sont idempotentes après un premier appel (compteur temporaire à 0,
+  progression calculée des seuls drapeaux) : une commande par ligne vaut les appels répétés de
+  l'original. Aucune des deux n'est portée dans la DLL : E15.c les porte, avec
+  `g_categoryThresholdTable` et l'indice de catégorie. `\V` lit `INT_ARRAY_80191908`, écrit par les
+  mini-jeux du pub, non portés : `game_var(n)` rend la valeur portée, 0 tant qu'aucun mini-jeu ne
+  l'écrit.
+
+**5.5 Cibles de recette (E15.c)**
+
+- **Phrase partagée** : le coffre d'Anzes (carte 163, programme F7 de l'entité 9 : `0D 09 00; FF`,
+  chaîne partagée 9, avec un `\W2`), atteint tôt par la tempête (391 → 416 → 163) ; ou un panneau
+  indicateur (carte 12 entité 1, carte 10 entité 99, chaînes partagées 34 et 31, avec les flèches
+  `\W6`–`\W9`). Ces trois programmes tournent sans opcode manquant dans la DLL.
+- **`\X`** : l'entité 0 de la carte 134 (un marin, « Marin-passager-mouette »), chaînes 13 à 16
+  (`\X0`, `\X1`, `\X2`). Les chaînes 19 et 20 (`\X3`, `\X4`, `\X5`) passent par l'opcode `0x78`, que la
+  DLL ne porte pas : hors d'atteinte en jeu aujourd'hui.
+- **`\V`** : carte 473, map-events 4 à 8 (chaîne 11), dans un mini-jeu non porté : vérifié par test
+  seulement.
+- **`\W2`** : carte 389, entité 15 (programme F15) ; ou carte 390, entité 2.
+- **Boutons** : carte 143 (« Coast house (nava's cave entrance) »), « Appuie sur □ pour l'écouter ».
+- **Inventaire** : noms et descriptions, arme, objet, armure, bottes ; une description avec □ ou ○.
+
+**5.6 À noter pour la suite**
+
+- L'opcode `0xC4` (dialogue avec un nom) ouvre aussi du texte (26 sites atteignables) ; la DLL ne le
+  porte pas : il lira les mêmes assets le jour où il sera porté (E12.c).
+- Les chaînes partagées 5 et 120 sont des `#Disuse` ouverts par 7 sites atteignables (par exemple 135
+  C6 → 120) : elles doivent exister (D-E15-7).
+- Sites qui ouvrent la table partagée : 347 par parcours linéaire, 342 sur 174 cartes une fois le code
+  mort retiré (les « ~345 » du plan E12 ne correspondent à aucun des deux).
 
 ## 6. Arrêts, budgets et retours arrière
 
