@@ -395,7 +395,7 @@ tests du convertisseur sans échec avant chaque ✅ ; **aucun export avant T7**)
     règle) ;
   - build Release à 0 erreur, aucun avertissement dans les deux fichiers ; tests du convertisseur
     278/278.
-- ⏳ **T3 — Émetteur Yarn.** Fichiers : `alundra-casaengine-project-converter/Text/YarnTextEmitter.cs`,
+- ✅ **T3 — Émetteur Yarn.** Fichiers : `alundra-casaengine-project-converter/Text/YarnTextEmitter.cs`,
   `alundra-casaengine-project-converter/Text/AlundraYarnFunctions.cs` (la `Yarn.Library` de
   déclarations du contrat), `alundra-casaengine-project-converter.Tests/Text/YarnTextEmitterTests.cs`
   (nouveaux). L'émetteur rend le source Yarn d'une table selon §1 (échappements `\:` et `\#`,
@@ -406,7 +406,28 @@ tests du convertisseur sans échec avant chaque ✅ ; **aucun export avant T7**)
   un test par ligne de §1, dont `\X2` en tête de page et `\X4` après `\X3` ; chaque exemple émis
   compile par `YarnDialogueCompiler` avec `AlundraYarnFunctions`, sans diagnostic ; une ligne qui
   utilise chacune des sept fonctions compile.
-  Commit : `feat(converter): emit Alundra text as Yarn source`.
+  Commit : `feat(converter): emit Alundra text as Yarn source`. **Réalisé le 2026-09-27** :
+  - API : `YarnTextEmitter.Emit(entrées titre + source)` rend le source d'un fichier (fins de ligne
+    LF), les erreurs par nœud et des statistiques (nœuds, lignes, pages vides, glyphes, `flag`,
+    `falcon_update`, appels, inventaire des codes) ; `AlundraYarnFunctions.CreateDeclarations()` et
+    les noms des sept fonctions en constantes ; écrit sans lire le décodeur de T2 (indépendance de
+    l'oracle) ;
+  - échappements prouvés contre Yarn Spinner 3.2.1 (compilés sans diagnostic, relus au caractère
+    près, sans `Speaker` ni attribut) : `\:`, `\#`, `\[` `\]`, `\{` `\}`, `\/` (chaque barre, sinon
+    `//` coupe la ligne en commentaire), `\<` `\>` ; `id=-1` est lu comme un entier ; un code sans
+    correspondance, un code numérique hors de l'entier 32 bits non signé, ou une ligne qui
+    commencerait par `===`, `---`, `->`, `=>` (absent du corpus) écarte le nœud avec une erreur qui
+    nomme le code et la page, sans exception ;
+  - vérification : relecture de la correspondance REFUTED sur un P2 (les drapeaux répétés dans une
+    page étaient fusionnés, contrairement au contrat ; 30 pages, 872 commandes au lieu de 932) et des
+    tests trop faibles, corrigés puis revérifiés CONFIRMED ; **avant-première de T6 sur tout le
+    corpus**, hors du dépôt : 485 fichiers, 24 784 nœuds, 31 757 pages jouées sur le
+    `YarnDialogueRunner` et comparées au décodeur de T2, **0 écart**, 0 erreur d'émission, 0
+    diagnostic, 0 `Speaker`, somme des statistiques 932 `flag` / 7 `falcon_update` / 20 appels /
+    95 pages vides / 11 182 glyphes ; Yarn garde l'ordre du source pour plusieurs marqueurs à la même
+    position (`M135_S090_p3`) ;
+  - 87 tests ; build Release de la solution à 0 erreur, aucun avertissement dans ces fichiers ;
+    tests du convertisseur 365/365.
 - ⏳ **T4 — Writer et catalogue.** Fichiers : `alundra-casaengine-project-converter/Writers/YarnDialogueWriter.cs`
   (nouveau), `Program.cs` (appel juste après le texte actuel, avant la vérification de la phase 8),
   `alundra-casaengine-project-converter.Tests/YarnDialogueWriterTests.cs` (nouveau). Pour chaque
