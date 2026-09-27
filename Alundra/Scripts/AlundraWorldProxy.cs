@@ -21,7 +21,6 @@ using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.UI;
 using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 
 namespace Alundra.Scripts;
 
@@ -128,65 +127,6 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// null to restore the real environment-variable-derived value.</summary>
     internal static void SetDebugCameraPanEnabledOverrideForTests(bool? value)
         => _debugCameraPanEnabledOverrideForTests = value;
-
-    /// <summary>
-    /// E13 C5.a (docs/plan-e13-hud.md, D-E13-10): name fixed by the orchestrating session for this slice.
-    /// Active when set to exactly "1"; unset or any other value leaves it inactive - same "== '1', never
-    /// active by default" convention as <see cref="AlundraPlayerManager.DebugIgnoreControlLockEnvVar"/>
-    /// (deliberately the STRICTER convention of this file's own two debug flags, unlike
-    /// <see cref="DebugCameraPanEnabledEnvVar"/>'s "enabled by default": this one lets the recipe skip the
-    /// normal script-driven trigger of docs/plan-e13-hud.md §1.6, so it must be opted into explicitly).
-    /// When active, <see cref="AdoptPlayerPawn"/> applies the debug stat set of <see cref="AlundraPlayerManager.LoadDebugStats"/>
-    /// and raises the HUD's own "please appear" request (<see cref="AlundraHudDirector.ScriptOpenRequestFlag"/>/
-    /// <see cref="AlundraHudDirector.ScriptOpenRequestMask"/>) at the one map entry recognized as a New
-    /// Game - see that method's own doc for exactly which entry that is and why only once.
-    ///
-    /// D-E13-12 (2026-09-19, supersedes D-E13-10 as the recipe's PRIMARY trigger - this variable path
-    /// stays, never removed): the author found that setting this variable in the shell that launches the
-    /// game does not reach the launcher's own process environment, so no HUD ever appeared. F1 is the
-    /// author-facing replacement - see <see cref="ToggleDebugHud"/>, which shares this same
-    /// <see cref="AlundraGameState.DebugHudRecipeApplied"/> "only once" latch for its own first press, so
-    /// the two triggers never load the debug stat set twice in the same session.
-    /// </summary>
-    internal const string DebugHudRecipeEnvVar = "ALUNDRA_HUD_DEBUG";
-
-    /// <summary>Real-world value of <see cref="DebugHudRecipeEnvVar"/> - the environment variable read
-    /// exactly once (static readonly, evaluated on this type's first use) and logged exactly once when it
-    /// evaluates active - see that field's own doc.</summary>
-    private static readonly bool DebugHudRecipeEnabledFromEnvironment = ReadDebugHudRecipeEnabledFromEnvironment();
-
-    /// <summary>Test-only seam over <see cref="DebugHudRecipeEnabledFromEnvironment"/> - same rationale as
-    /// <see cref="_debugCameraPanEnabledOverrideForTests"/>/<see cref="AlundraPlayerManager"/>'s own
-    /// <c>_debugIgnoreControlLockOverrideForTests</c>: a headless test never writes this process' real
-    /// environment (a shared xunit host cannot guarantee this type's static field has not already latched
-    /// its one-time read before a test could set it) - it forces this override instead. Never read or
-    /// written by production code paths.</summary>
-    private static bool? _debugHudRecipeEnabledOverrideForTests;
-
-    /// <summary>Internal (widened from private, S2's base extraction rule, same shape as
-    /// <see cref="DebugCameraPanEnabled"/>) so <see cref="AdoptPlayerPawn"/> can read it.</summary>
-    internal static bool DebugHudRecipeEnabled
-        => _debugHudRecipeEnabledOverrideForTests ?? DebugHudRecipeEnabledFromEnvironment;
-
-    private static bool ReadDebugHudRecipeEnabledFromEnvironment()
-    {
-        var active = Environment.GetEnvironmentVariable(DebugHudRecipeEnvVar) == "1";
-
-        if (active)
-        {
-            Logs.WriteWarning(
-                $"AlundraWorldProxy: {DebugHudRecipeEnvVar}=1 - New Game will load the debug stat set "
-                + "(38/45, 2/3, 2163) and raise the HUD's own script-open request (debug-only, never "
-                + "active by default).");
-        }
-
-        return active;
-    }
-
-    /// <summary>Test-only seam - see <see cref="_debugHudRecipeEnabledOverrideForTests"/>'s own doc. Pass
-    /// null to restore the real environment-variable-derived value.</summary>
-    internal static void SetDebugHudRecipeEnabledOverrideForTests(bool? value)
-        => _debugHudRecipeEnabledOverrideForTests = value;
 
     /// <summary>
     /// Entities spawned by this proxy in <see cref="InitializeWithWorld"/> (both the prefab-clone and
@@ -1331,144 +1271,6 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         return AlundraPlayerManager.ResolveHudEquipmentIcons(GameState, ItemTables);
     }
 
-    /// <summary>True on the previous <see cref="Update(float)"/> call's own read of the F1 recipe key -
-    /// <see cref="UpdateDebugHudToggleKey"/>'s own rising-edge memory. Deliberately hand-rolled here
-    /// (current-and-not-previous, the exact idiom <c>KeyboardManager.IsKeyJustPressed</c> already uses
-    /// internally, CasaEngineMonogame/CasaEngine/Engine/Input/KeyboardManager.cs:12-15) rather than
-    /// delegated to that method, so <see cref="DebugHudToggleKeyHeldProviderForTests"/> below can drive the
-    /// SAME edge-detection code a headless test exercises, without a live <c>KeyboardState</c>/
-    /// <c>Keyboard.GetState</c> (mission item 4: "jamais Keyboard.GetState dans les tests").</summary>
-    private bool _debugHudToggleKeyWasHeld;
-
-    /// <summary>Test-only seam over this frame's raw "is F1 held" reading - same rationale as
-    /// <see cref="AlundraPlayerController.PadStateProviderForTests"/>/<see cref="_debugCameraPanEnabledOverrideForTests"/>:
-    /// a headless test has no live <c>CasaEngineGame</c>/<c>KeyboardManager</c> to press a real key on.
-    /// Returns the HELD state for the current call, not an edge - <see cref="UpdateDebugHudToggleKey"/>
-    /// does the edge detection itself, on both the real and the test path alike. Never read or written by
-    /// production code paths.</summary>
-    internal Func<bool>? DebugHudToggleKeyHeldProviderForTests;
-
-    /// <summary>
-    /// E13 C5.a2 (docs/plan-e13-hud.md, D-E13-12): reads F1's "held" state once per RENDERED frame - same
-    /// per-frame cadence as <see cref="AlundraCameraDirector.UpdateDebugCameraPan"/>'s own stick read, and
-    /// for the identical reason: <see cref="CasaEngine.Engine.Input.KeyboardManager"/> only updates once
-    /// per rendered frame (<c>InputComponent.Update</c>), so sampling it from inside the HUD's own
-    /// per-LOGIC-TICK loop (<see cref="Update(float)"/>'s <c>hudTick</c> loop, which can run more than once
-    /// a frame - see <see cref="LogicTicksThisFrame"/>) would read the SAME held state on every tick of a
-    /// multi-tick frame and fire <see cref="ToggleDebugHud"/> once per tick instead of once per press -
-    /// exactly the "rafale par image" the mission warns against.
-    ///
-    /// Reused pattern (mission item 1): <c>world.Game.InputComponent.KeyboardManager</c> is the same
-    /// reachable-off-<see cref="_world"/> input manager <see cref="AlundraCameraDirector.UpdateDebugCameraPan"/>
-    /// already reads (<c>GamePadManager</c> there, <c>KeyboardManager</c> here) rather than MonoGame's
-    /// <c>Keyboard.GetState</c> directly - no engine change needed, this reader is already public.
-    /// <see cref="CasaEngine.Engine.Input.KeyboardManager.IsKeyPressed"/> (the raw HELD query, not its own
-    /// <c>IsKeyJustPressed</c>) is read here on purpose: the rising-edge test itself lives in this method,
-    /// see <see cref="_debugHudToggleKeyWasHeld"/>'s own doc.
-    /// </summary>
-    internal void UpdateDebugHudToggleKey()
-    {
-        bool held;
-        if (DebugHudToggleKeyHeldProviderForTests != null)
-        {
-            held = DebugHudToggleKeyHeldProviderForTests();
-        }
-        else
-        {
-            var keyboardManager = _world?.Game?.InputComponent?.KeyboardManager;
-            if (keyboardManager == null)
-            {
-                return;
-            }
-
-            held = keyboardManager.IsKeyPressed(Keys.F1);
-        }
-
-        var justPressed = held && !_debugHudToggleKeyWasHeld;
-        _debugHudToggleKeyWasHeld = held;
-
-        if (justPressed)
-        {
-            ToggleDebugHud();
-        }
-    }
-
-    /// <summary>
-    /// E13 C5.a2 (docs/plan-e13-hud.md, D-E13-12): F1's own semantics, aligned on §1.6's original
-    /// script-driven trigger so <see cref="AlundraHudDirector"/> only ever sees ordinary requests - it has
-    /// no idea F1 exists. Internal (rather than private) so both <see cref="UpdateDebugHudToggleKey"/> (the
-    /// real key) and tests/the in-process capture harness can call it directly - "chemin de production sauf
-    /// la touche elle-même" (mission item 2/5).
-    ///
-    /// Three branches, checked in this order:
-    /// <list type="number">
-    /// <item><description><b>First press of the session</b> (<see cref="AlundraGameState.DebugHudRecipeApplied"/>
-    /// false - shared with the <see cref="DebugHudRecipeEnvVar"/> path, D-E13-12's own doc): load the debug
-    /// stat set (<see cref="AlundraPlayerManager.LoadDebugStats"/>) and raise the script's "please appear"
-    /// request (<see cref="AlundraHudDirector.ScriptOpenRequestFlag"/>/<see cref="AlundraHudDirector.ScriptOpenRequestMask"/>),
-    /// exactly like C5.a's own env-var branch in <see cref="AdoptPlayerPawn"/>.</description></item>
-    /// <item><description><b>Jauge affichée</b> (<see cref="AlundraHudDirector.Phase"/> ==
-    /// <see cref="AlundraHudDirector.HudPhase.Displayed"/>): clear the persistent "already armed" latch
-    /// (<see cref="AlundraHudDirector.PersistentLatchFlag"/>/<see cref="AlundraHudDirector.PersistentLatchMask"/>)
-    /// through the SAME path a map script's "Flag off" opcode 0x06 would
-    /// (<c>AlundraEventProgramRunner.cs:443-448</c>, <c>SetFlag(flag, ~mask)</c>) - VERIFIED against
-    /// <see cref="AlundraHudDirector.RunTriggerMachine"/>'s own branch (i): it re-reads this exact
-    /// flag/mask pair every <see cref="AlundraHudDirector.Tick"/> the latch is off and arms the ANIMATED
-    /// close whenever <see cref="AlundraHudDirector.Phase"/> is <see cref="AlundraHudDirector.HudPhase.Displayed"/>
-    /// (its own <c>ArmDisappearance</c> guard, <c>(Phase &amp; 3) == 1</c>) - so this branch produces the
-    /// verbatim animated close, no instant-hide (1814) fallback needed.</description></item>
-    /// <item><description><b>Jauge cachée</b> (<see cref="AlundraHudDirector.Phase"/> ==
-    /// <see cref="AlundraHudDirector.HudPhase.Idle"/>): re-raise 1813 alone, WITHOUT reloading the debug
-    /// stats - they were never cleared, they simply stay whatever the first press (or the env-var path)
-    /// left them at.</description></item>
-    /// </list>
-    ///
-    /// A press while <see cref="AlundraHudDirector.Phase"/> is <see cref="AlundraHudDirector.HudPhase.Opening"/>
-    /// or <see cref="AlundraHudDirector.HudPhase.Closing"/> is ignored (logged, not silently dropped):
-    /// clearing the latch mid-Opening would hit <c>ArmDisappearance</c>'s own documented DEAD PATH (its
-    /// guard <c>(Phase &amp; 3) == 1</c> is ALSO true for Opening = 5, a case that doc says never happens in
-    /// the original's own script-driven flow because the latch is set the SAME tick Opening is armed) -
-    /// this port must not be the first caller to reach it.
-    /// </summary>
-    internal void ToggleDebugHud()
-    {
-        var director = AlundraHudDirector.Instance;
-
-        if (director.Phase is AlundraHudDirector.HudPhase.Opening or AlundraHudDirector.HudPhase.Closing
-            or AlundraHudDirector.HudPhase.ClosingDuringOpening)
-        {
-            Logs.WriteInfo(
-                $"AlundraWorldProxy: F1 debug HUD toggle ignored - director mid-transition (phase={director.Phase}).");
-            return;
-        }
-
-        if (!GameState.DebugHudRecipeApplied)
-        {
-            GameState.DebugHudRecipeApplied = true;
-            AlundraPlayerManager.LoadDebugStats(GameState);
-            GameState.AddFlag(AlundraHudDirector.ScriptOpenRequestFlag, AlundraHudDirector.ScriptOpenRequestMask);
-            Logs.WriteInfo(
-                "AlundraWorldProxy: F1 debug HUD toggle - first press this session, loaded the debug stat "
-                + "set (38/45, 2/3, 2163) and raised the HUD's script-open request (flag 1813/0x200000).");
-            return;
-        }
-
-        if (director.Phase == AlundraHudDirector.HudPhase.Displayed)
-        {
-            GameState.SetFlag(AlundraHudDirector.PersistentLatchFlag, ~AlundraHudDirector.PersistentLatchMask);
-            Logs.WriteInfo(
-                "AlundraWorldProxy: F1 debug HUD toggle - gauge displayed, clearing the persistent latch "
-                + "(flag 1662/0x40000000) to request the animated close, same path as a map script's own "
-                + "'Flag off' opcode (0x06).");
-            return;
-        }
-
-        GameState.AddFlag(AlundraHudDirector.ScriptOpenRequestFlag, AlundraHudDirector.ScriptOpenRequestMask);
-        Logs.WriteInfo(
-            "AlundraWorldProxy: F1 debug HUD toggle - gauge hidden, re-raising the HUD's script-open "
-            + "request (flag 1813/0x200000), stats left unchanged.");
-    }
-
     /// <summary>
     /// docs/plan-e11c-musique.md, slice C1, item 4 (B9/B10, docs/plan-bgm-demarrage-binaire.md): the
     /// equivalent of the original's own <c>LoadMapSounds</c> map-entry call (fact 1.4: the second-to-last
@@ -1680,36 +1482,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // own doc). Null falls back to the New Game constants exactly as before this slice.
         var arrivalRecord = AlundraWarpDirector.Instance.ConsumeArrivalRecord();
 
-        // E13.c S3 (docs/plan-e13c-icones-hud.md): the same "no pending arrival" signal the debug recipe
-        // below reads is the New Game, so this is where the original's own New Game inventory runs - item
-        // counters, the unlock loop, the weapon set to the sword's slot (GameInitializer.cs:395-411). Not
-        // gated on any debug switch: it is the game's own state. Latched once per session, the same belt and
-        // braces the recipe carries, and run before it so the gauge's first frame already has a weapon.
+        // E13.c S3 (docs/plan-e13c-icones-hud.md): "no pending arrival" is the New Game - the only other
+        // source of a map entry is a warp, and a warp always leaves a non-null record - so this is where the
+        // original's own New Game inventory runs: item counters, the unlock loop, the weapon set to the
+        // sword's slot (GameInitializer.cs:395-411). Not gated on any debug switch: it is the game's own
+        // state. Latched once per session as a belt and braces (see NewGameInventoryInitialized's own doc).
         if (arrivalRecord == null && !GameState.NewGameInventoryInitialized)
         {
             GameState.NewGameInventoryInitialized = true;
             AlundraPlayerManager.InitializeNewGameInventory(GameState, ItemTables);
-        }
-
-        // E13 C5.a (docs/plan-e13-hud.md, D-E13-10): arrivalRecord == null here is precisely the "New
-        // Game/Continue load" signal T5's own doc above already established - the only OTHER source of a
-        // map entry is a warp, and a warp always leaves a non-null record (AlundraWarpDirector.BeginDeparture).
-        // There is no Continue-load path in this DLL yet (AlundraGameState's own class doc: only the New
-        // Game branch of GameInitializer.InitializeGameState is ported), so today this branch means
-        // exactly "New Game" - reached at most once per session in the real architecture, and defended
-        // against a hypothetical second time by GameState.DebugHudRecipeApplied (see that field's own doc).
-        // Gated on ALUNDRA_HUD_DEBUG so the shipped default (no variable) reproduces the original exactly:
-        // the HUD stays hidden until a map script's own opcode 0x05 asks for it (§1.6).
-        if (arrivalRecord == null && DebugHudRecipeEnabled && !GameState.DebugHudRecipeApplied)
-        {
-            GameState.DebugHudRecipeApplied = true;
-            AlundraPlayerManager.LoadDebugStats(GameState);
-            // Reproduces AlundraEventProgramRunner's own opcode 0x05 handler verbatim
-            // (AlundraEventProgramRunner.cs:437-441: flag = id, mask = 1 << (id & 0x1f), AddFlag) for id
-            // 1813 - AlundraHudDirector.ScriptOpenRequestFlag/ScriptOpenRequestMask, the same word (0x38)
-            // and bit (21, mask 0x200000) that director consumes (C1) - so the director sees an ordinary
-            // script-raised "please appear" request, nothing else about it distinguishable from one.
-            GameState.AddFlag(AlundraHudDirector.ScriptOpenRequestFlag, AlundraHudDirector.ScriptOpenRequestMask);
         }
 
         proxy.PosX = arrivalRecord?.PosX ?? (AlundraGameState.CameraTileX * TileWidth + TileWidth / 2) << 16;
@@ -2188,13 +1969,6 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         {
             AlundraDialogueDirector.Instance.Tick();
         }
-
-        // E13 C5.a2 (docs/plan-e13-hud.md, D-E13-12): F1's own rising-edge read, once per RENDERED frame -
-        // see UpdateDebugHudToggleKey's own doc on why this must sit OUTSIDE the hudTick loop below (a
-        // multi-tick frame would otherwise fire ToggleDebugHud once per tick). Placed BEFORE that loop so
-        // a flag this same call just raised/cleared is consumed by THIS frame's own Tick()s, exactly like
-        // a map script's opcode raising it earlier in the frame (RunMapEventsPass, above) would be.
-        UpdateDebugHudToggleKey();
 
         // E13 C1 (docs/plan-e13-hud.md, D-E13-8): the HUD director's own tick, right next to the
         // dialogue pass above and for the exact same reason - it must keep rolling/rattraping while a

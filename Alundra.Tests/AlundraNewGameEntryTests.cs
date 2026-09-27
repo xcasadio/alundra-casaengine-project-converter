@@ -17,23 +17,16 @@ using World = CasaEngine.Framework.Scene.World.World;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E13 C5.a (docs/plan-e13-hud.md, D-E13-10): the <c>ALUNDRA_HUD_DEBUG</c> recipe in
-/// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> - a New Game entry (no pending warp arrival) loads
-/// <see cref="AlundraPlayerManager.LoadDebugStats"/> and raises the same "please appear" request a map
-/// script's own opcode 0x05 would (<see cref="AlundraHudDirector.ScriptOpenRequestFlag"/>/
-/// <see cref="AlundraHudDirector.ScriptOpenRequestMask"/>), gated by
-/// <see cref="AlundraWorldProxy.DebugHudRecipeEnabled"/> and never replayed twice in the same session
-/// (<see cref="AlundraGameState.DebugHudRecipeApplied"/>).
+/// The New Game entry in <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> (no pending warp arrival): the
+/// original's New Game stats and inventory, and a HUD that stays hidden until a map script asks for it
+/// (docs/plan-e13-hud.md §1.6). This class used to test the <c>ALUNDRA_HUD_DEBUG</c> recipe too (E13 C5.a,
+/// D-E13-10), removed at the author's request on 2026-09-27; the tests of the game's own behaviour stay.
 ///
 /// Drives the real <see cref="AlundraWorldProxy.InitializeWithWorld"/> through its full installation
-/// block against map 389 (the recipe's own target map) - same real-map/hand-built-pawn montage as
+/// block against map 389 (the New Game map) - same real-map/hand-built-pawn montage as
 /// <see cref="AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World"/> (reused directly, internal in
 /// the same assembly) and <see cref="AlundraWarpArrivalTests"/>'s own hero-pawn/player-controller
 /// fixtures (re-built here, since those are private to that class).
-///
-/// The environment variable itself is NEVER written by these tests - only
-/// <see cref="AlundraWorldProxy.SetDebugHudRecipeEnabledOverrideForTests"/>, the seam that exists exactly
-/// so a headless run never touches this process' real environment (see that seam's own doc).
 ///
 /// <para>F5 (docs/plan-bgm-demarrage-binaire.md): the real map 389 install below writes the
 /// SESSION-scoped <see cref="AlundraMusicPlayer.Instance"/> (map entry arms its reset flag, B7) - so
@@ -41,9 +34,9 @@ namespace Alundra.Tests;
 /// that same shared instance, and resets <see cref="AlundraBgmFadeDirector.Instance"/> too.</para>
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraHudDebugRecipeTests : IDisposable
+public sealed class AlundraNewGameEntryTests : IDisposable
 {
-    public AlundraHudDebugRecipeTests()
+    public AlundraNewGameEntryTests()
     {
         AlundraGameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -56,7 +49,6 @@ public sealed class AlundraHudDebugRecipeTests : IDisposable
 
     public void Dispose()
     {
-        AlundraWorldProxy.SetDebugHudRecipeEnabledOverrideForTests(null);
         AlundraGameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
@@ -122,7 +114,7 @@ public sealed class AlundraHudDebugRecipeTests : IDisposable
         list.Add(controller);
     }
 
-    /// <summary>Builds map 389 (this recipe's own target map, D-E13-6/D-E13-10) with a real player
+    /// <summary>Builds map 389 (the New Game map) with a real player
     /// controller adopted, then runs <see cref="AlundraWorldProxy.InitializeWithWorld"/> end to end -
     /// <c>EngineEnvironment.ProjectPath</c> is set/restored around the call exactly like
     /// <see cref="AlundraWarpArrivalTests"/>'s own acceptance tests, since map events/dialogue strings load
@@ -152,35 +144,12 @@ public sealed class AlundraHudDebugRecipeTests : IDisposable
         => (AlundraGameState.Instance.GetFlag(AlundraHudDirector.ScriptOpenRequestFlag) & AlundraHudDirector.ScriptOpenRequestMask) != 0;
 
     // -----------------------------------------------------------------------------------------------
-    // Acceptance: variable active -> debug stats + HUD request, exactly D-E13-10's own two deliverables.
+    // Comportement d'origine : stats de nouvelle partie, et la jauge n'apparaît que sur demande de script.
     // -----------------------------------------------------------------------------------------------
 
     [Fact]
-    public void AdoptPlayerPawn_WithRecipeEnabled_AtNewGameEntry_LoadsDebugStatsAndRaisesHudOpenRequest()
+    public void AdoptPlayerPawn_AtNewGameEntry_KeepsNewGameDefaultsAndNoHudRequest()
     {
-        AlundraWorldProxy.SetDebugHudRecipeEnabledOverrideForTests(true);
-
-        InitializeNewGameEntryOnMap389();
-
-        var stats = AlundraGameState.Instance.PlayerStats;
-        Assert.Equal(38, stats.Hp);
-        Assert.Equal(45, stats.HpMax);
-        Assert.Equal(2, stats.Mp);
-        Assert.Equal(3, stats.MpMax);
-        Assert.Equal(2163, stats.Money);
-
-        Assert.True(HudScriptOpenRequestIsRaised());
-        Assert.True(AlundraGameState.Instance.DebugHudRecipeApplied);
-    }
-
-    // -----------------------------------------------------------------------------------------------
-    // Sans la variable: comportement d'origine, inchangé - la jauge n'apparaît que sur demande de script.
-    // -----------------------------------------------------------------------------------------------
-
-    [Fact]
-    public void AdoptPlayerPawn_WithRecipeNotSet_AtNewGameEntry_KeepsNewGameDefaultsAndNoHudRequest()
-    {
-        // Default is inactive - no override forced, same as an unset environment variable.
         InitializeNewGameEntryOnMap389();
 
         var stats = AlundraGameState.Instance.PlayerStats;
@@ -191,67 +160,19 @@ public sealed class AlundraHudDebugRecipeTests : IDisposable
         Assert.Equal(0, stats.Money);
 
         Assert.False(HudScriptOpenRequestIsRaised());
-        Assert.False(AlundraGameState.Instance.DebugHudRecipeApplied);
-    }
-
-    [Fact]
-    public void AdoptPlayerPawn_WithRecipeExplicitlyDisabled_AtNewGameEntry_KeepsNewGameDefaultsAndNoHudRequest()
-    {
-        AlundraWorldProxy.SetDebugHudRecipeEnabledOverrideForTests(false);
-
-        InitializeNewGameEntryOnMap389();
-
-        var stats = AlundraGameState.Instance.PlayerStats;
-        Assert.Equal(10, stats.Hp);
-        Assert.Equal(10, stats.HpMax);
-        Assert.Equal(0, stats.Mp);
-        Assert.Equal(0, stats.MpMax);
-        Assert.Equal(0, stats.Money);
-
-        Assert.False(HudScriptOpenRequestIsRaised());
-    }
-
-    // -----------------------------------------------------------------------------------------------
-    // "L'activation ne doit jouer QU'UNE FOIS, à la nouvelle partie, jamais à chaque carte" (D-E13-10) -
-    // proven by forcing a SECOND no-pending-arrival entry in the same session (GameState.Instance is the
-    // session carrier, D-T-3) and showing the recipe does not fire again, even though its own gate
-    // ("no pending arrival") would otherwise be satisfied a second time too.
-    // -----------------------------------------------------------------------------------------------
-
-    [Fact]
-    public void AdoptPlayerPawn_WithRecipeEnabled_DoesNotReplayAtASecondNoArrivalMapEntry()
-    {
-        AlundraWorldProxy.SetDebugHudRecipeEnabledOverrideForTests(true);
-
-        InitializeNewGameEntryOnMap389();
-        Assert.True(AlundraGameState.Instance.DebugHudRecipeApplied);
-
-        // Simulate the player having since changed HP away from the debug value, and the HUD having since
-        // been closed by its own machine (clear the request bit the same way AlundraHudDirector consumes
-        // it, GameState.SetFlag with the complemented mask, C1's own shape) - if the recipe replayed on
-        // the entry below, both would be stomped back to the debug set/raised again.
-        AlundraPlayerManager.SetPlayerHp(AlundraGameState.Instance, 5);
-        AlundraGameState.Instance.SetFlag(AlundraHudDirector.ScriptOpenRequestFlag, ~AlundraHudDirector.ScriptOpenRequestMask);
-
-        InitializeNewGameEntryOnMap389();
-
-        Assert.Equal(5, AlundraGameState.Instance.PlayerStats.Hp);
-        Assert.False(HudScriptOpenRequestIsRaised());
-        Assert.True(AlundraGameState.Instance.DebugHudRecipeApplied);
     }
 
     // -----------------------------------------------------------------------------------------------
     // E13.c S3 (docs/plan-e13c-icones-hud.md): the same New Game entry runs the game's own New Game
-    // inventory - not gated on the recipe, and latched once per session like the recipe is. Whatever item
-    // tables the proxy resolved, the unconditional SetPlayerWeaponId(1) puts the sword's slot in place.
+    // inventory, latched once per session. Whatever item tables the proxy resolved, the unconditional
+    // SetPlayerWeaponId(1) puts the sword's slot in place.
     // -----------------------------------------------------------------------------------------------
 
     [Fact]
-    public void AdoptPlayerPawn_AtNewGameEntry_RunsTheNewGameInventory_WithoutTheRecipe()
+    public void AdoptPlayerPawn_AtNewGameEntry_RunsTheNewGameInventory()
     {
         InitializeNewGameEntryOnMap389();
 
-        Assert.False(AlundraGameState.Instance.DebugHudRecipeApplied);
         Assert.True(AlundraGameState.Instance.NewGameInventoryInitialized);
         Assert.Equal(1, AlundraGameState.Instance.PlayerStats.WeaponId);
     }

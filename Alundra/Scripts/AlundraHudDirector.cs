@@ -44,21 +44,20 @@ public sealed class AlundraHudDirector
     // 1813 and 1814 share IndexOf (56 = 0x38, same word) - only their mask differs; 1662 is a separate
     // word (51 = 0x33). All three id < 0x8000, confirmed persistent-bank by AlundraGameState.cs:196.
     // internal (widened from private, S2's base extraction rule - same shape as AlundraWorldProxy's own
-    // DebugCameraPanEnabled): E13 C5.a's ALUNDRA_HUD_DEBUG recipe (AlundraWorldProxy.AdoptPlayerPawn)
-    // raises this exact request through AlundraGameState.AddFlag, exactly as a map script's opcode 0x05
-    // would - reusing these two constants keeps the flag id/mask a single source of truth between the
-    // consumer (here) and that one other producer.
+    // DebugCameraPanEnabled): tests read this exact request (AlundraNewGameEntryTests) - reusing these two
+    // constants keeps the flag id/mask a single source of truth between the consumer (here) and the tests.
+    // In the game only a map script raises it, through opcode 0x05.
     internal const uint ScriptOpenRequestFlag = 1813;
     internal const uint ScriptOpenRequestMask = 0x200000;
     private const uint ScriptCloseRequestFlag = 1814;
     private const uint ScriptCloseRequestMask = 0x400000;
 
     // internal (widened from private, S2's base extraction rule - same shape as ScriptOpenRequestFlag/
-    // ScriptOpenRequestMask above): E13 C5.a2's F1 debug recipe (D-E13-12, AlundraWorldProxy.ToggleDebugHud)
-    // clears this exact latch through AlundraGameState.SetFlag with the complemented mask, exactly as a
-    // map script's opcode 0x06 ("Flag off", AlundraEventProgramRunner.cs:443-448) would for id 1662 -
-    // RunTriggerMachine's own branch (i) then re-arms the animated close on the very next Tick(), since
-    // it re-reads this SAME flag/mask pair every tick the latch is off (see RunTriggerMachine's own doc).
+    // ScriptOpenRequestMask above): tests set this exact latch through AlundraGameState.AddFlag
+    // (AlundraSubInventoryDirectorTests), exactly as a map script's flag opcodes would for id 1662. Clearing
+    // it (opcode 0x06, "Flag off", AlundraEventProgramRunner.cs:443-448) makes RunTriggerMachine's own
+    // branch (i) re-arm the animated close on the very next Tick(), since it re-reads this SAME flag/mask
+    // pair every tick the latch is off (see RunTriggerMachine's own doc).
     internal const uint PersistentLatchFlag = 1662;
     internal const uint PersistentLatchMask = 0x40000000;
 
@@ -387,7 +386,7 @@ public sealed class AlundraHudDirector
     /// <c>g_drawFrameFlags |= 2</c> (HudManager.cs:37) - literal OR against whatever <see cref="Phase"/>
     /// already holds. The guard admits <see cref="HudPhase.Opening"/> too (5 &amp; 3 == 1), giving
     /// <see cref="HudPhase.ClosingDuringOpening"/> (7): reached when the persistent latch is cleared during
-    /// the 17-tick opening slide (a map script's flag opcode; F1 and the inventory cannot, plan E13.d SI9).
+    /// the 17-tick opening slide (a map script's flag opcode; the inventory cannot, plan E13.d SI9).
     /// <para>A defect of the original, corrected (plan E13.d SI9.c, D-E13D-30): the executable always
     /// starts the tween at y = 0x10 (0x8004bde4), so a disappearance armed mid-opening jumps the jauge down
     /// to its displayed ordinate before sliding it out. The tween starts at the CURRENT ordinate here - the
