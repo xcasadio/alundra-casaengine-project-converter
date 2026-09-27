@@ -233,7 +233,14 @@ agile » devient « Urrr… Tu es agile »).
 - **Commit** : `docs(adr): record that all Alundra text is authored as Yarn`, puis
   `docs(e15): record the text measurements and the Yarn mapping`.
 
-### E15.a — Points d'extension Yarn du moteur ⏳ (moteur)
+### E15.a — Points d'extension Yarn du moteur ✅ (moteur, faite le 2026-09-27)
+
+**Réalisé** : plan moteur exécuté (T0.1 à T2.2, branche moteur `chantier/yarn-extension-points`,
+ADR-0042 et ADR-0043 du moteur) ; T1.3 révisée sur décision de l'auteur (le compilateur reçoit les
+déclarations de fonctions du jeu) ; vérificateur de clôture REFUTED sur trois lignes de validation
+sans test, corrigé, revérification ciblée **CONFIRMED** ; `CasaEngine.Tests` 1991/1991. Pointeur du
+sous-module déplacé ; `Alundra.Tests` 1291/1291 et tests du convertisseur 197/197 sans échec avec ce
+moteur.
 
 - **But** : exécuter le plan moteur `yarn-extension-points-tasks.md`, puis déplacer le pointeur du
   sous-module.
