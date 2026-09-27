@@ -739,7 +739,8 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
 ### E14 — IA native ⏳
 
 - **But** : `SpriteEventHandlers` (~120 handlers) en scripts C# par type de sprite, sur la navigation
-  (poursuite, patrouille). Hors intro : seuls A0/E0 sont requis avant (E1).
+  (poursuite, patrouille). Hors intro : seuls A0/E0 sont requis avant (E1). **Sauf** le gestionnaire
+  du livre de sauvegarde (`AI_ProcessWarpTransitionState`), porté par E16.e (D-E16-12, 2026-09-27).
 - **Dépendances** : E4, E5.
 
 ### E15 — Tout le texte d'Alundra en Yarn ✅ (close le 2026-09-28, recette en jeu validée : `docs/plan-e15-yarn.md`)
@@ -837,8 +838,10 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
   deux formats au choix, JSON lisible et binaire compact ; un **service de sauvegarde générique
   dans le moteur**, inspiré de Godot, Unity et Unreal, auquel la DLL confie un objet de sauvegarde
   (modèle Unreal) ; fichiers dans le dossier de l'utilisateur ; les drapeaux restent dans la DLL et
-  le pont vers Yarn et les cutscenes attend E15 ; **E16 passe après E15**. Détail : D-E16-1 à
-  D-E16-7 du plan détaillé.
+  le pont vers Yarn et les cutscenes attend E15 ; **E16 passe après E15**. Puis, après la relecture
+  READY : §9.9 du moteur précisé, écran « Continuer » plus tard, touches F5/F6/F9 gardées par
+  `ALUNDRA_SAVE_DEBUG`, livre de sauvegarde porté par E16.e, touche F1 de la jauge supprimée.
+  Détail : D-E16-1 à D-E16-13 du plan détaillé.
 - **Découpage** (plan détaillé `docs/plan-e16-etat-partie.md`) :
   - **E16.0 — Mesure** (lecture seule) : ids de drapeaux utilisés, occurrences des opcodes du
     manque 1, disposition de `g_saveData` et unité du temps de jeu dans `ALUN_CD.EXE`, déclencheur de

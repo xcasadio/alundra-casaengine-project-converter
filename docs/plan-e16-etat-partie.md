@@ -43,6 +43,21 @@ les revues de sa ligne.
   programme converti en a besoin.
 - **D-E16-7 — E16 passe après E15.**
 
+Réponses de l'auteur aux points ouverts (2026-09-27, après la relecture READY) :
+
+- **D-E16-8 — §9.9 du moteur précisé** (O1 du plan moteur, O-E16-4) : les assets restent à
+  l'éditeur, la sauvegarde de partie du joueur est un service runtime. Le prérequis du plan moteur est
+  levé.
+- **D-E16-9 — La modification en cours de l'auteur** (`CasaEngine.Launcher/Program.cs`) suit la
+  branche du chantier moteur dans l'arbre de travail, jamais indexée (O4 du plan moteur).
+- **D-E16-10 — Charger au démarrage : plus tard** (O-E16-1). Ni écran « Continuer » ni écran titre
+  dans E16 ; d'ici là, on ne charge que par la touche de recette.
+- **D-E16-11 — Touches de recette** (O-E16-2) : F5 sauvegarde en binaire, F6 en JSON, F9 charge
+  l'emplacement le plus récent, actives seulement avec `ALUNDRA_SAVE_DEBUG=1`.
+- **D-E16-12 — E16.e porte le gestionnaire du livre de sauvegarde** (O-E16-5) ; E14 le laisse de côté.
+- **D-E16-13 — La touche F1 de la recette de la jauge est supprimée** : elle ne servait qu'à valider
+  le HUD. Chantier séparé, hors de ce plan.
+
 ### 0.2 Faits établis (2026-09-27)
 
 Chaque fait a été relu dans le code ou le binaire cité ; les recherches larges ont été contre-vérifiées
@@ -120,7 +135,9 @@ par un agent neuf.
 - Arrivée sur une carte à une tuile donnée : `AlundraWarpDirector.ConsumeArrivalRecord`
   (`:177-186`), appliquée au héros en `AlundraWorldProxy.cs:1715-1732` ; départ par opcode
   `BeginDepartureFromChangeMapOpcode` (`:355-396`).
-- Touche de recette existante : F1 (`AlundraWorldProxy.cs:1352-1394`).
+- Recette gardée par une variable d'environnement : `ALUNDRA_HUD_DEBUG`
+  (`AlundraWorldProxy.cs:156-189`), modèle des touches de sauvegarde. La touche F1 de la jauge
+  (`:1352-1394`) est supprimée par D-E16-13.
 
 **Moteur** : aucun service de sauvegarde, runtime en lecture seule par contrat (§9.9 de son
 `AGENTS.md`) ; détail et proposition dans le plan moteur.
@@ -275,7 +292,7 @@ par un agent neuf.
      l'objet, départ sur `InitialMapId` à la tuile `CameraTileX/Y/Z` par le chemin d'arrivée des warps,
      reprise du temps de jeu.
 
-  **Touches de recette** (O-E16-2) gardées par la variable d'environnement `ALUNDRA_SAVE_DEBUG=1`,
+  **Touches de recette** (D-E16-11) gardées par la variable d'environnement `ALUNDRA_SAVE_DEBUG=1`,
   lue une fois et journalisée quand elle est active, avec un point d'injection pour les tests, comme
   `ALUNDRA_HUD_DEBUG` (`AlundraWorldProxy.cs:156-189`). La capture est refusée hors d'un état que
   l'original sauvegarde : aucune transition, aucun dialogue, aucun menu, `PlayerControlFlags == 0`,
@@ -299,7 +316,7 @@ par un agent neuf.
 
 - **But** : le joueur sauvegarde lui-même, comme dans l'original.
 - **Contenu** : le gestionnaire du livre de sauvegarde (`AI_ProcessWarpTransitionState`, question
-  oui/non puis `UpdateSavedData`), selon la réponse à O-E16-5, et le flux de `MemoryCardManager`
+  oui/non puis `UpdateSavedData`), porté ici (D-E16-12), et le flux de `MemoryCardManager`
   (choix de l'emplacement, confirmation d'écrasement, messages de réussite et d'échec) ; écran
   déclaré en XAML (règle de l'auteur). Le gestionnaire d'origine fait environ 2 800 lignes : **cette
   tranche aura son propre plan**, écrit après E16.0, avec ce prérequis de sécurité : les métadonnées
@@ -307,7 +324,7 @@ par un agent neuf.
   de MGUI désactivé (`MGTextBlock.cs:837`), ou recalculé depuis une sauvegarde validée.
 - **Arrêt** : un manque de MGUI ou du moteur → consigné dans le rapport dédié, la tranche s'arrête
   (règle de l'auteur : signaler, jamais contourner).
-- **Dépendances** : E16.0, E16.d, et O-E16-5 tranché.
+- **Dépendances** : E16.0, E16.d.
 
 ---
 
@@ -321,23 +338,22 @@ _(Remplie par E16.0.)_
 
 | Réf | Sujet | Tranche |
 |---|---|---|
-| O-E16-1 | **Charger au démarrage** : sans écran titre, on ne charge que par la touche de recette, et celle-ci est gardée par `ALUNDRA_SAVE_DEBUG` : un jeu livré n'a donc **aucun moyen de charger** avant E16.e ou un écran titre. Ajouter à E16 un écran minimal « Continuer », ou le laisser à une étape « écran titre » (le `LOADER.EXE` de l'original) ? | E16.d |
-| O-E16-2 | Touches de recette proposées, actives seulement avec `ALUNDRA_SAVE_DEBUG=1` : **F5** sauvegarde en binaire, **F6** en JSON, **F9** charge l'emplacement le plus récent. | E16.d |
+| O-E16-1 | ~~Charger au démarrage~~ — **tranché : plus tard** (D-E16-10). Conséquence connue : un jeu livré n'a aucun moyen de charger avant un écran titre. | E16.d |
+| O-E16-2 | ~~Touches de recette~~ — **tranché** (D-E16-11). | E16.d |
 | O-E16-3 | Seulement si E16.0 trouve un id persistant ≥ 2048 : l'original écrirait au-delà de `GameFlags`, dans `MapIdToInternalMapIndexTable`. Reproduire, ou corriger (règle « corriger les défauts de l'original ») ? | E16.c |
-| O-E16-4 | §9.9 du moteur (« la sauvegarde appartient à l'éditeur ») : O1 du plan moteur, à trancher avant E16.b. | E16.b |
-| O-E16-5 | **Qui porte le gestionnaire du livre de sauvegarde ?** C'est de l'IA native, attribuée à E14. Proposition : E16.e le porte lui-même (un seul gestionnaire, qui n'a de sens qu'avec l'écran de sauvegarde), et E14 le laisse de côté. | E16.e |
+| O-E16-4 | ~~§9.9 du moteur~~ — **tranché** (D-E16-8). | E16.b |
+| O-E16-5 | ~~Qui porte le gestionnaire du livre de sauvegarde ?~~ — **tranché : E16.e** (D-E16-12). | E16.e |
 
 ## 4. Hors périmètre
 
-- Écran titre et choix d'une sauvegarde au démarrage (sauf réponse contraire à O-E16-1).
+- Écran titre et choix d'une sauvegarde au démarrage (D-E16-10 : plus tard).
 - Relecture des vraies sauvegardes de carte mémoire PS1 (non retenue le 2026-09-27).
 - Pont des drapeaux vers Yarn et les cinématiques : E15 (D-E16-6).
 - Lecteurs de `ContentsGameFlag` de l'IA native (coffres, `FunctionTypeA.cs:236-264`) : E14.
 - Noms lisibles pour les drapeaux, au-delà des 41 drapeaux de chapitre.
 - **Risques résiduels acceptés** (jeu solo) : le sens des drapeaux ne peut pas être validé, donc une
   sauvegarde éditée peut casser la suite de l'histoire ou bloquer le joueur ; une tuile dans les
-  bornes mais dans un mur est acceptée ; les stats de recette de F1 peuvent finir dans une
-  sauvegarde faite avec F5.
+  bornes mais dans un mur est acceptée.
 
 ## 5. Arrêts, budgets et retours arrière
 
@@ -392,6 +408,6 @@ appliqué ici, en E16.c.
 | S10 | P3 | Pas de revue de sécurité ni de verifier par tranche | FIX | Tableau des unités en tête ; §5.3 |
 | S11 | P4 | Risques résiduels à écrire | FIX (texte) | §4 |
 
-Relevé en passant, hors de ce plan : la touche F1 de la recette de la jauge n'a aucune garde
+Relevé en passant, hors de ce plan : la touche F1 de la recette de la jauge n'avait aucune garde
 (`AlundraWorldProxy.cs:2197`, `:1369-1394`), contrairement à la recette par variable
-d'environnement.
+d'environnement. L'auteur a demandé sa suppression le 2026-09-27 (D-E16-13, chantier séparé).
