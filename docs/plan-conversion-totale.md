@@ -680,7 +680,8 @@ L'ordre ci-dessous prime sur la numérotation E13 → E15 tant qu'il n'est pas �
    début de la map. »). C'est l'inventaire qui avait tort, pas le dossier.
 
 Ensuite seulement : E13, E14, E15 — sachant qu'E14 porte aussi le blocage physique entité↔entité,
-rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
+rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16 vient après E15
+(décision de l'auteur du 2026-09-27).
 
 ### E13 — HUD MGUI 🚧 (découpée en quatre étapes le 2026-09-19, sur décision de l'auteur)
 
@@ -783,7 +784,7 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
   actions manquantes.
 - **Dépendances** : E15, E16.
 
-### E16 — État de partie : drapeaux et sauvegarde ⏳ (proposée le 2026-09-27, à valider par l'auteur)
+### E16 — État de partie : drapeaux et sauvegarde ⏳ (plan détaillé proposé le 2026-09-27 : `docs/plan-e16-etat-partie.md`)
 
 - **But** : terminer la gestion des deux banques de drapeaux, `GameFlags` (persistants, sauvegardés)
   et `TemporaryFlags` (vidés à chaque entrée de carte), puis leur donner une vie au-delà de la
@@ -828,38 +829,30 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
   (`plan-e12-dialogues.md:4`), et `CutsceneDirector` n'a ni condition ni commande de drapeau
   (`SetGameFlag` n'est qu'une commande recommandée,
   `CasaEngineMonogame/docs/engine/cutscene_commandes_sequentielles_async_coroutine.md:1906`).
-  **Proposition** : `AlundraGameState` reste l'unique propriétaire des drapeaux. Le pont vers Yarn et
+  **Décision (D-E16-6)** : `AlundraGameState` reste l'unique propriétaire des drapeaux. Le pont vers Yarn et
   les cutscenes (un stockage de variables Yarn fourni par la DLL, une commande de condition sur une
   interface que la DLL implémente) se construit en **E15**, quand un programme converti en a besoin.
   E16 ne touche pas le moteur pour les drapeaux.
-- **Découpage proposé** :
-  - **E16.0 — Mesure** (lecture seule, analyseur et corpus) : ids de drapeaux réellement utilisés
-    (programmes, codes du texte, champ `ContentsGameFlag` des records), plus grand id persistant,
-    nombre d'occurrences de chaque opcode du manque 1 ; tailles des deux banques et disposition de
-    `g_saveData` relues dans `ALUN_CD.EXE`, qui tranche.
-  - **E16.a — Opcodes de drapeaux** (DLL) : ceux du manque 1 présents dans le corpus, un test par
-    opcode contre la décompilation.
-  - **E16.b — Instantané de partie** (DLL) : port de `SaveData` (carte et tuile de reprise, temps de
-    jeu, `GameFlags`, `MapIdToInternalMapIndexTable`, stats, objets, index d'emplacement), écriture
-    et relecture, tests aller-retour.
-  - **E16.c — Chargement** (DLL) : port de la branche `SlotData == 1` d'`InitializeGameState` ; point
-    d'entrée de recette par touche de debug, faute d'écran titre.
-  - **E16.d — Sauvegarde en jeu** : l'écran de sauvegarde de l'original (choix d'emplacement) en XAML
-    MGUI, et ce qui l'ouvre en jeu. À découper après E16.0.
+- **Décisions de l'auteur (2026-09-27)** : tout, en tranches, écran de sauvegarde en jeu compris ;
+  deux formats au choix, JSON lisible et binaire compact ; un **service de sauvegarde générique
+  dans le moteur**, inspiré de Godot, Unity et Unreal, auquel la DLL confie un objet de sauvegarde
+  (modèle Unreal) ; fichiers dans le dossier de l'utilisateur ; les drapeaux restent dans la DLL et
+  le pont vers Yarn et les cutscenes attend E15 ; **E16 passe après E15**. Détail : D-E16-1 à
+  D-E16-7 du plan détaillé.
+- **Découpage** (plan détaillé `docs/plan-e16-etat-partie.md`) :
+  - **E16.0 — Mesure** (lecture seule) : ids de drapeaux utilisés, occurrences des opcodes du
+    manque 1, disposition de `g_saveData` et unité du temps de jeu dans `ALUN_CD.EXE`, déclencheur de
+    l'écran de sauvegarde.
+  - **E16.a — Opcodes de drapeaux** (DLL).
+  - **E16.b — Service de sauvegarde** (moteur) : plan
+    `CasaEngineMonogame/ai-agent/tasks/save-game-service-tasks.md`.
+  - **E16.c — Objet de sauvegarde d'Alundra** (DLL).
+  - **E16.d — Chargement et recette** (DLL).
+  - **E16.e — Écran de sauvegarde en jeu** (DLL, MGUI en XAML), avec son propre plan après E16.0.
 - **Hors périmètre** : les lecteurs de `ContentsGameFlag` de l'IA native (coffres, `FunctionTypeA.cs:236-264`)
-  → E14 ; le pont vers Yarn et les cutscenes → E15 ; l'écran titre.
-- **Dépendances** : aucune. Les stats et les objets à sauvegarder existent dans la DLL depuis E13.c.
-- **À valider** avant le plan détaillé (`docs/plan-e16-etat-partie.md`, relu par un plan-verifier
-  puisque la sauvegarde fixe un format de données) :
-  1. Périmètre : drapeaux seuls (E16.0 et E16.a), drapeaux puis sauvegarde et chargement (jusqu'à
-     E16.c), ou tout, écran de sauvegarde compris (E16.d) ?
-  2. Format du fichier : JSON lisible (comme `SaveData.SaveToJson` de l'analyseur), bloc binaire
-     fidèle de la carte mémoire (qui permettrait de relire une vraie sauvegarde PS1), ou les deux ?
-  3. Propriétaire du code de sauvegarde : la DLL seule, ou un service générique de sauvegarde dans le
-     moteur, qui n'en a aucun ?
-  4. Pont vers le moteur : confirmer que les drapeaux restent dans la DLL et que le pont vers Yarn et
-     les cutscenes attend E15.
-  5. Place dans la file : avant ou après E14 et E15 ?
+  → E14 ; le pont vers Yarn et les cutscenes → E15 ; l'écran titre (point ouvert O-E16-1) ; la
+  relecture des vraies sauvegardes PS1.
+- **Dépendances** : aucune technique ; position dans la file décidée par l'auteur, après E15.
 
 ## 5. Règles de travail
 
@@ -903,5 +896,5 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 | E13.d inventaire principal (puis sous-inventaire et L1/R1) | ✅ close (principal validé en jeu le 2026-09-24 ; sous-inventaire, L1/R1 et suites SI7-SI12 validés le 2026-09-25, mergés par l'auteur dans `main`) | `docs/plan-e13d-inventaire.md` ; `docs/plan-e13d-sous-inventaire.md` : analyseur `8f403d5`, parent `45bb0e2`, `a3901af`, `dc3fe1a`, `5f12e53`, suites `4e411ef`…`192f497`, merge `3537807` |
 | E14 IA native | ⏳ | |
 | E15 le texte en Yarn | ✅ close (recette en jeu validée le 2026-09-28) | `docs/plan-e15-yarn.md` ; parent `chantier/e15-yarn`, moteur `chantier/yarn-extension-points` |
-| E16 état de partie (drapeaux, sauvegarde) | ⏳ proposée le 2026-09-27, questions « À valider » ouvertes | |
+| E16 état de partie (drapeaux, sauvegarde) | ⏳ plan détaillé proposé le 2026-09-27, en attente d'approbation ; après E15 | `docs/plan-e16-etat-partie.md` |
 | E17 cinématiques en `.cutscene` | ⏳ ouverte le 2026-09-27, prérequis moteur | |
