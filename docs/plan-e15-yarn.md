@@ -253,7 +253,10 @@ agile » devient « Urrr… Tu es agile »).
 - **But** : un `.yarn` et un `.dialogue` catalogué par carte, plus `Shared` et `Etc`, **à côté** des
   anciens fichiers, que la DLL lit encore.
 - **Contenu** : référence à `CasaEngine.Compiler` ; un writer Yarn qui applique la correspondance
-  d'E15.0, échappe le texte, compile par `YarnDialogueCompiler`, écrit l'asset par le sérialiseur
+  d'E15.0, échappe le texte, compile par `YarnDialogueCompiler` **en lui passant les déclarations des
+  fonctions d'Alundra** (`falcon_temp`, `falcon`, `category_item_name`, `category_threshold`,
+  `category_remaining`, `game_var` ; surcharge ajoutée par E15.a T1.3, décision de l'auteur du
+  2026-09-27 sur O4 du plan moteur), écrit l'asset par le sérialiseur
   d'éditeur, l'inscrit au catalogue et appelle `EditorAssetCatalogService.Save()` ; compteurs dans
   `report.json`, dont l'inventaire des codes qui remplacera `control-codes.json` ; le décodeur de
   référence dans les tests.
