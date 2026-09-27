@@ -687,7 +687,7 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 - **Découpage** (plan détaillé : `docs/plan-e13-hud.md`) :
   - **E13.a — La jauge permanente ✅ close, validée en jeu.** Cœurs, magie, argent : état joueur,
     directeur au tick logique, écran MGUI composé des sprites déjà exportés, translation au tick, touche
-    F1 de recette (validée le 2026-09-19). **C4**, la jauge qui s'assombrit avec le décor au warp, est
+    F1 de recette (validée le 2026-09-19, supprimée le 2026-09-27 à la demande de l’auteur). **C4**, la jauge qui s'assombrit avec le décor au warp, est
     livrée sur le chantier moteur « effet d'écran au-dessus de l'interface » (moteur `19fcd84c`, parent
     `7d6a37a`) et passée en jeu par l'auteur le 2026-09-20 avec la recette C5.b ; mergée dans `main` le
     2026-09-21 (`8dcfd81`).
