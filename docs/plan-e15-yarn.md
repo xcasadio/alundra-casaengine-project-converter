@@ -461,11 +461,17 @@ tests du convertisseur sans échec avant chaque ✅ ; **aucun export avant T7**)
     tant qu'il existe (E15.d retire ce doublon) ;
   - 6 tests ; build Release de la solution à 0 erreur et 0 avertissement ; tests du convertisseur
     371/371.
-- ⏳ **T5 — Vérification du chargement.** Fichiers : `alundra-casaengine-project-converter/AssetVerifier.cs`,
+- ✅ **T5 — Vérification du chargement.** Fichiers : `alundra-casaengine-project-converter/AssetVerifier.cs`,
   son test. **Dans le périmètre** : entrée `["dialogue"]` dans `Loaders` qui charge l'asset
   (`DialogueAsset.Load`) et exige un programme compilé et des `LineTexts` non vides. Validation : un
   `.dialogue` valide se charge et est compté ; un `.dialogue` corrompu donne une erreur. Commit :
-  `feat(converter): verify exported Yarn dialogues by loading them`.
+  `feat(converter): verify exported Yarn dialogues by loading them`. **Réalisé le 2026-09-27** : le
+  chargeur fait comme le `DialogueAssetLoader` du moteur (analyse du JSON puis `DialogueAsset.Load`)
+  et lève une erreur sans programme compilé ou sans texte de ligne ; conséquence voulue : sur un
+  export complet, un `.dialogue` présent sur le disque mais absent du catalogue devient une erreur,
+  comme les autres formats chargeables. Trois tests (`.dialogue` compilé chargé et compté dans
+  `Verify.Loaded.dialogue`, fichier tronqué, programme vide) ; build Release à 0 erreur ; tests du
+  convertisseur 374/374.
 - ⏳ **T6 — Équivalence sur tout le corpus.** Fichier :
   `alundra-casaengine-project-converter.Tests/Text/YarnCorpusEquivalenceTests.cs` (nouveau). Sur le
   corpus lu dans `data-extracted/` (jamais rafraîchi par ce chantier), l'émetteur et le compilateur

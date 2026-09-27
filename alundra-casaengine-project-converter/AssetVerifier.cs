@@ -2,6 +2,7 @@ using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Assets.Sprites;
 using CasaEngine.Framework.Assets.TileMap;
+using CasaEngine.Framework.Dialogue.Assets;
 using CasaEngine.Framework.Gameplay;
 using CasaEngine.Framework.Input;
 using CasaEngine.Framework.Scene.Entities;
@@ -27,7 +28,8 @@ public static class AssetVerifier
     /// <summary>
     /// Extensions (lower case, without the dot) whose asset can be materialised without a
     /// GraphicsDevice or a running CasaEngineGame. Verified against AssetLoaderRegistry: every type
-    /// here is registered there with a plain AssetLoader&lt;T&gt;, i.e. a JObject-driven Load().
+    /// here is registered there with a plain AssetLoader&lt;T&gt;, i.e. a JObject-driven Load(), except
+    /// DialogueAsset, whose DialogueAssetLoader does the same parse-then-Load().
     /// </summary>
     private static readonly Dictionary<string, Action<JObject>> Loaders = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -51,6 +53,18 @@ public static class AssetVerifier
         // A screen envelope (parent ADR-0002, versioned under UI/Screens/): UIScreenAsset.Load is a plain
         // JObject reader. The files it names are checked by VerifyScreenFiles once it has loaded.
         ["uiscreen"] = element => new UIScreenAsset().Load(element),
+        // docs/plan-e15-yarn.md, E15.b T5: the engine's DialogueAssetLoader parses the file and calls
+        // DialogueAsset.Load, a plain JObject reader. A dialogue with no compiled program or no line
+        // text still loads without complaint but gives the game nothing to play, so both are required.
+        ["dialogue"] = element =>
+        {
+            var dialogue = new DialogueAsset();
+            dialogue.Load(element);
+            if (!dialogue.HasCompiledProgram || dialogue.LineTexts.Count == 0)
+            {
+                throw new InvalidDataException("the dialogue has no compiled program or no line text.");
+            }
+        },
     };
 
     /// <summary>

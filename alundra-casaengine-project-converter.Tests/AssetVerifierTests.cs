@@ -1,7 +1,10 @@
 using AlundraCasaEngineProjectConverter.Readers;
 using AlundraCasaEngineProjectConverter.Writers;
+using CasaEngine.Compiler.Dialogue;
 using CasaEngine.EditorServices;
 using CasaEngine.Engine.Environment;
+using CasaEngine.Framework.Dialogue.Assets;
+using CasaEngine.Framework.Dialogue.Serialization;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -71,6 +74,62 @@ public class AssetVerifierTests
             Assert.Contains(spriteRelativePath, error, StringComparison.Ordinal);
             Assert.Contains("failed to load as .sprite", error, StringComparison.Ordinal);
             Assert.Equal(1, report.Counters["Verify.Failed.sprite"]);
+        });
+    }
+
+    [Fact]
+    public void Verify_OnACompiledDialogue_LoadsItAndCountsIt()
+    {
+        RunOnAGeneratedProject((outputDirectory, report) =>
+        {
+            var dialogueRelativePath = WriteDialogue(outputDirectory, "Test", "title: Start\n---\nBonjour. #line:Start_p0\n===\n");
+            AddCatalogEntry(outputDirectory, Guid.NewGuid(), "dialogue_test", dialogueRelativePath);
+
+            Assert.True(AssetVerifier.Verify(outputDirectory, report, isFullRun: true));
+
+            Assert.Empty(report.Errors);
+            Assert.Equal(1, report.Counters["Verify.Loaded.dialogue"]);
+            Assert.False(report.Counters.ContainsKey("Verify.ExistenceChecked.dialogue"));
+        });
+    }
+
+    [Fact]
+    public void Verify_OnATruncatedDialogue_FailsAndNamesTheAsset()
+    {
+        RunOnAGeneratedProject((outputDirectory, report) =>
+        {
+            var dialogueRelativePath = WriteDialogue(outputDirectory, "Broken", "title: Start\n---\nBonjour. #line:Start_p0\n===\n");
+            var fullPath = Path.Combine(outputDirectory, dialogueRelativePath);
+            File.WriteAllText(fullPath, File.ReadAllText(fullPath)[..40]);
+            AddCatalogEntry(outputDirectory, Guid.NewGuid(), "dialogue_broken", dialogueRelativePath);
+
+            Assert.False(AssetVerifier.Verify(outputDirectory, report, isFullRun: true));
+
+            var error = Assert.Single(report.Errors);
+            Assert.Contains(dialogueRelativePath, error, StringComparison.Ordinal);
+            Assert.Contains("failed to load as .dialogue", error, StringComparison.Ordinal);
+            Assert.Equal(1, report.Counters["Verify.Failed.dialogue"]);
+        });
+    }
+
+    [Fact]
+    public void Verify_OnADialogueWithoutACompiledProgram_Fails()
+    {
+        RunOnAGeneratedProject((outputDirectory, report) =>
+        {
+            var dialogueRelativePath = WriteDialogue(outputDirectory, "Empty", "title: Start\n---\nBonjour. #line:Start_p0\n===\n");
+            var fullPath = Path.Combine(outputDirectory, dialogueRelativePath);
+            var element = JObject.Parse(File.ReadAllText(fullPath));
+            element["program_base64"] = string.Empty;
+            File.WriteAllText(fullPath, element.ToString());
+            AddCatalogEntry(outputDirectory, Guid.NewGuid(), "dialogue_empty", dialogueRelativePath);
+
+            Assert.False(AssetVerifier.Verify(outputDirectory, report, isFullRun: true));
+
+            var error = Assert.Single(report.Errors);
+            Assert.Contains(dialogueRelativePath, error, StringComparison.Ordinal);
+            Assert.Contains("no compiled program", error, StringComparison.Ordinal);
+            Assert.Equal(1, report.Counters["Verify.Failed.dialogue"]);
         });
     }
 
@@ -350,6 +409,23 @@ public class AssetVerifierTests
         }
 
         return Path.Combine("UI", "Screens", name + ".uiscreen");
+    }
+
+    /// <summary>Writes Dialogues/&lt;name&gt;.dialogue the way YarnDialogueWriter does (compile, FromCompiledProgram,
+    /// DialogueAssetJsonSerializer.Save) and returns its path relative to the project.</summary>
+    private static string WriteDialogue(string outputDirectory, string name, string yarnSource)
+    {
+        var compilation = new YarnDialogueCompiler().CompileString(yarnSource, name + ".yarn");
+        Assert.False(compilation.ContainsErrors);
+
+        var asset = DialogueAsset.FromCompiledProgram(name, "Start", compilation.ProgramBytes, compilation.LineTexts);
+        var element = new JObject();
+        DialogueAssetJsonSerializer.Save(asset, element);
+
+        var relativePath = Path.Combine("Dialogues", name + ".dialogue");
+        Directory.CreateDirectory(Path.Combine(outputDirectory, "Dialogues"));
+        File.WriteAllText(Path.Combine(outputDirectory, relativePath), element.ToString());
+        return relativePath;
     }
 
     /// <summary>
