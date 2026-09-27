@@ -755,6 +755,10 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 - **Découpage** : E15.0 mesure et correspondance des codes ; E15.a points d'extension du moteur (plan
   `CasaEngineMonogame/ai-agent/tasks/yarn-extension-points-tasks.md`) ; E15.b le convertisseur émet
   le Yarn ; E15.c la DLL le lit ; E15.d suppression du texte brut.
+- **Avancement (2026-09-27)** : E15.0, E15.a et **E15.b faites** (branche `chantier/e15-yarn`, rien
+  poussé) : l'export écrit 485 `.yarn` et `.dialogue` catalogués à côté des tables brutes, prouvés
+  équivalents au texte original sur les 31 757 pages ; format dans `docs/formats/dialogues-yarn.md`.
+  Suivante : E15.c.
 - **Dépendances** : E5, E6, E12.
 
 ### E17 — Cinématiques en `.cutscene` ⏳ (ouverte le 2026-09-27, non planifiée)

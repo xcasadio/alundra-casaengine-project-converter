@@ -267,10 +267,17 @@ moteur.
   Alundra dans le moteur.
 - **Dépendances** : aucune dans ce plan (peut avancer en parallèle d'E15.0).
 
-### E15.b — Le convertisseur émet le Yarn ⏳ (convertisseur ; révisée le 2026-09-27 après sa relecture)
+### E15.b — Le convertisseur émet le Yarn ✅ (convertisseur, faite le 2026-09-27)
 
 - **But** : un `.yarn` et un `.dialogue` catalogué par carte, plus `Shared` et `Etc`, **à côté** des
   anciens fichiers, que la DLL lit encore.
+- **Clôture (2026-09-27)** : T1 à T7 faites (`c0be220` à `d0c7bf0`) ; vérification finale neuve de
+  toute la tranche **CONFIRMED** : 485 assets rechargés depuis `alundra-project/` avec les ids, noms,
+  chemins, nœuds et identifiants de ligne du contrat (ensembles de nœuds recalculés depuis
+  `data-extracted/`, 0 écart) ; équivalence 0 écart sur 31 757 pages ; manifestes (avant = référence,
+  +970 fichiers, second export identique hormis `report.json`) recontrôlés ; tables brutes intactes ;
+  aucun changement du moteur, de la DLL ni de `data-extracted/` ; build à 0 erreur, tests du
+  convertisseur 399/399, `Alundra.Tests` 1 291/1 291 avec le projet exporté ; rien poussé.
 - **Revue** : première relecture REVISE (six P2 : pas de découpage en tâches, chemin d'écriture de
   l'asset impossible, ensemble des nœuds non fixé, types des fonctions non fixés, oracle imprécis,
   chargement non prouvé) ; cette révision les corrige, avec les choix de l'auteur D-E15-10 et
