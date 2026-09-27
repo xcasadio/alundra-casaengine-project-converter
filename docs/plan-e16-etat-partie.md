@@ -53,10 +53,13 @@ Réponses de l'auteur aux points ouverts (2026-09-27, après la relecture READY)
 - **D-E16-10 — Charger au démarrage : plus tard** (O-E16-1). Ni écran « Continuer » ni écran titre
   dans E16 ; d'ici là, on ne charge que par la touche de recette.
 - **D-E16-11 — Touches de recette** (O-E16-2) : F5 sauvegarde en binaire, F6 en JSON, F9 charge
-  l'emplacement le plus récent, actives seulement avec `ALUNDRA_SAVE_DEBUG=1`.
+  l'emplacement le plus récent, inactives par défaut et activées par un interrupteur de débogage. Le
+  mécanisme de cet interrupteur reste à choisir (O-E16-6) : une variable d'environnement
+  (`ALUNDRA_SAVE_DEBUG=1`, proposée d'abord) risque de ne jamais atteindre le processus du jeu.
 - **D-E16-12 — E16.e porte le gestionnaire du livre de sauvegarde** (O-E16-5) ; E14 le laisse de côté.
-- **D-E16-13 — La touche F1 de la recette de la jauge est supprimée** : elle ne servait qu'à valider
-  le HUD. Chantier séparé, hors de ce plan.
+- **D-E16-13 — La touche F1 de la recette de la jauge est supprimée**, et la recette
+  `ALUNDRA_HUD_DEBUG` avec elle : elles ne servaient qu'à valider le HUD. Chantier séparé, hors de ce
+  plan (branche `chantier/remove-f1-hud-key`).
 
 ### 0.2 Faits établis (2026-09-27)
 
@@ -136,8 +139,10 @@ par un agent neuf.
   (`:177-186`), appliquée au héros en `AlundraWorldProxy.cs:1715-1732` ; départ par opcode
   `BeginDepartureFromChangeMapOpcode` (`:355-396`).
 - Recette gardée par une variable d'environnement : `ALUNDRA_HUD_DEBUG`
-  (`AlundraWorldProxy.cs:156-189`), modèle des touches de sauvegarde. La touche F1 de la jauge
-  (`:1352-1394`) est supprimée par D-E16-13.
+  (`AlundraWorldProxy.cs:156-189` sur `main`), lue une fois, journalisée, avec un point d'injection
+  pour les tests. **Elle n'atteignait pas le processus du lanceur** (D-E13-12 de
+  `plan-e13-hud.md`) ; elle est supprimée avec la touche F1 par D-E16-13. Seul son modèle de code
+  (lecture unique, journal, point d'injection) sert encore de référence pour l'interrupteur d'E16.d.
 
 **Moteur** : aucun service de sauvegarde, runtime en lecture seule par contrat (§9.9 de son
 `AGENTS.md`) ; détail et proposition dans le plan moteur.
@@ -292,9 +297,10 @@ par un agent neuf.
      l'objet, départ sur `InitialMapId` à la tuile `CameraTileX/Y/Z` par le chemin d'arrivée des warps,
      reprise du temps de jeu.
 
-  **Touches de recette** (D-E16-11) gardées par la variable d'environnement `ALUNDRA_SAVE_DEBUG=1`,
-  lue une fois et journalisée quand elle est active, avec un point d'injection pour les tests, comme
-  `ALUNDRA_HUD_DEBUG` (`AlundraWorldProxy.cs:156-189`). La capture est refusée hors d'un état que
+  **Touches de recette** (D-E16-11) gardées par un interrupteur de débogage dont le mécanisme est
+  tranché avant cette tranche (O-E16-6), lu une fois et journalisé quand il est actif, avec un point
+  d'injection pour les tests. **Acceptation propre à l'interrupteur** : activé par le moyen retenu, il
+  est vu par le jeu lancé depuis le lanceur, et le journal du jeu en porte la trace. La capture est refusée hors d'un état que
   l'original sauvegarde : aucune transition, aucun dialogue, aucun menu, `PlayerControlFlags == 0`,
   héros au sol. Chaque résultat du service autre que « chargé » et chaque refus laissent la partie en
   cours intacte, avec un message ; aucun ne fait planter le jeu.
@@ -302,7 +308,7 @@ par un agent neuf.
   précondition non tenue (dialogue, inventaire, transition, verrou de script) → refus, état
   identique à l'instantané ; warp désactivé, transition en cours, monde introuvable → refus, état
   identique ; un fichier au nom invalide posé dans le dossier de sauvegarde → aucune exception ;
-  variable d'environnement absente → F5, F6 et F9 sans effet.
+  interrupteur inactif → F5, F6 et F9 sans effet.
 - **Acceptation en jeu** (lancée hors de l'app Claude, O3 du plan moteur) : nouvelle partie sur la
   389, intro jusqu'au bout, passage sur la 390, sauvegarde ; quitter ; relancer, charger → sur la 390
   à la même tuile, stats et objets identiques ; retour sur la 389 **sans** que l'intro rejoue. La même
@@ -343,6 +349,7 @@ _(Remplie par E16.0.)_
 | O-E16-3 | Seulement si E16.0 trouve un id persistant ≥ 2048 : l'original écrirait au-delà de `GameFlags`, dans `MapIdToInternalMapIndexTable`. Reproduire, ou corriger (règle « corriger les défauts de l'original ») ? | E16.c |
 | O-E16-4 | ~~§9.9 du moteur~~ — **tranché** (D-E16-8). | E16.b |
 | O-E16-5 | ~~Qui porte le gestionnaire du livre de sauvegarde ?~~ — **tranché : E16.e** (D-E16-12). | E16.e |
+| O-E16-6 | **Comment activer les touches de recette ?** Une variable d'environnement (`ALUNDRA_SAVE_DEBUG=1`) risque le même sort que `ALUNDRA_HUD_DEBUG`, qui n'a jamais atteint le processus du lanceur (D-E13-12). Pistes à comparer en E16.d, sur ce que le lanceur transmet vraiment au jeu : un argument de ligne de commande du lanceur, un réglage du projet, un fichier de configuration à côté du jeu. À trancher par l'auteur **avant E16.d**. | E16.d |
 
 ## 4. Hors périmètre
 
@@ -410,4 +417,4 @@ appliqué ici, en E16.c.
 
 Relevé en passant, hors de ce plan : la touche F1 de la recette de la jauge n'avait aucune garde
 (`AlundraWorldProxy.cs:2197`, `:1369-1394`), contrairement à la recette par variable
-d'environnement. L'auteur a demandé sa suppression le 2026-09-27 (D-E16-13, chantier séparé).
+d'environnement. L'auteur a demandé sa suppression le 2026-09-27, avec celle de la recette par variable (D-E16-13, chantier séparé).

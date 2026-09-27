@@ -840,7 +840,8 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
   (modèle Unreal) ; fichiers dans le dossier de l'utilisateur ; les drapeaux restent dans la DLL et
   le pont vers Yarn et les cutscenes attend E15 ; **E16 passe après E15**. Puis, après la relecture
   READY : §9.9 du moteur précisé, écran « Continuer » plus tard, touches F5/F6/F9 gardées par
-  `ALUNDRA_SAVE_DEBUG`, livre de sauvegarde porté par E16.e, touche F1 de la jauge supprimée.
+  un interrupteur de débogage (mécanisme à choisir, O-E16-6), livre de sauvegarde porté par E16.e,
+  touche F1 et recette `ALUNDRA_HUD_DEBUG` de la jauge supprimées.
   Détail : D-E16-1 à D-E16-13 du plan détaillé.
 - **Découpage** (plan détaillé `docs/plan-e16-etat-partie.md`) :
   - **E16.0 — Mesure** (lecture seule) : ids de drapeaux utilisés, occurrences des opcodes du
