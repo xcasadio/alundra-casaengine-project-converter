@@ -368,11 +368,33 @@ tests du convertisseur sans échec avant chaque ✅ ; **aucun export avant T7**)
   aucun dans le convertisseur) ; `CasaEngine.Compiler.dll`, `YarnSpinner.Compiler.dll`,
   `YarnSpinner.dll` et `Antlr4.Runtime.Standard.dll` copiés dans la sortie du convertisseur ; tests
   du convertisseur 197/197.
-- ⏳ **T2 — Décodeur de référence.** Fichiers : `alundra-casaengine-project-converter.Tests/Text/ReferenceTextDecoder.cs`,
+- ✅ **T2 — Décodeur de référence.** Fichiers : `alundra-casaengine-project-converter.Tests/Text/ReferenceTextDecoder.cs`,
   `ReferenceTextDecoderTests.cs` (nouveaux). Le décodeur rend le quadruplet de l'oracle pour chaque
   page ; indépendant de l'émetteur (T3), il ne partage aucun code avec lui. Validation : un test par
   code de §1 et un par cas nommé, sur le texte attendu écrit à la main. Commit :
-  `test(converter): add the reference decoder of the original text`.
+  `test(converter): add the reference decoder of the original text`. **Réalisé le 2026-09-27** :
+  - contrat précisé pour T6 : `\N` est un vrai saut de ligne dans le texte (pas un marqueur) ; les
+    positions des marqueurs comptent ces sauts ; les marqueurs gardent l'ordre du source ; une page
+    est vide quand, codes numériques et `\Y` retirés, il ne reste rien ou que des espaces ; le retrait
+    des bords ne touche que des espaces U+0020, jamais un saut de ligne ; tout code absent du corpus
+    (`\M`, lettre inconnue, `{`, `}`, caractère de contrôle autre que `0x1A`/`0x1C`, `\X0` après un
+    autre `\X`) lève une exception qui cite la page ; forme canonique `ToCanonicalString()` des
+    quatre parties, que T6 comparera ;
+  - 81 tests : un par code et règle, les neuf cas nommés sur le quadruplet complet (le cas « chaîne de
+    la carte 324 » est `M324_S041_p0`, le cas `\401\Ydétruite.` est `M135_S090_p3`, la description ETC
+    est `Etc_0770`, avec `Etc_0140` pour `0x1C`), une garde qui compare les sources des cas nommés à
+    `data-extracted/`, et un recensement du corpus entier qui retrouve les chiffres mesurés à part en
+    Python : 24 303 / 128 / 353 chaînes, 31 757 pages dont 95 vides, 24 431 voix, 823 `center`,
+    5 319 `slow`, 11 182 glyphes, 24 707 sauts de ligne, 932 `flag`, 7 `falcon_update`, 20 appels ;
+    décodage déterministe ;
+  - vérification : quatre relectures neuves CONFIRMED (fidélité à `TextDecoder.cs` et au binaire,
+    cas nommés et recensement recalculés indépendamment, périmètre et indépendance, 13 mutants sur 13
+    tués) ; leurs cinq remarques P3/P4 corrigées sur décision de l'auteur (cas 7 comparé en entier,
+    recensement en échec si `EtcIndexTable.csv` manque — vérifié en le retirant —, messages qui
+    citent la page, un `falcon_update` par page vérifié, positions vérifiées dans les tests par
+    règle) ;
+  - build Release à 0 erreur, aucun avertissement dans les deux fichiers ; tests du convertisseur
+    278/278.
 - ⏳ **T3 — Émetteur Yarn.** Fichiers : `alundra-casaengine-project-converter/Text/YarnTextEmitter.cs`,
   `alundra-casaengine-project-converter/Text/AlundraYarnFunctions.cs` (la `Yarn.Library` de
   déclarations du contrat), `alundra-casaengine-project-converter.Tests/Text/YarnTextEmitterTests.cs`
