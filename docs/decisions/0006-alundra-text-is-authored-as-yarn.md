@@ -1,6 +1,6 @@
 # ADR-0006: All Alundra text is authored as Yarn and the raw text tables are no longer exported
 
-- **Status**: Accepted
+- **Status**: Accepted; the `\X` bullet is superseded by ADR-0007
 - **Date**: 2026-09-27
 - **Source**: this chantier: `docs/plan-e15-yarn.md` §0.1 (D-E15-1 to D-E15-5, approved by the author on 2026-09-27) and §1/§5 (D-E15-6 to D-E15-9, the author's answers to the E15.0 measurement on 2026-09-27)
 
