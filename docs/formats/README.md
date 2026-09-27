@@ -15,6 +15,7 @@ provient), et un extrait réel tiré d'une conversion complète.
 | [`cells-companion.md`](cells-companion.md) | Métadonnées de gameplay par cellule (walkabilité, pente, murs empilés), fusionnées dans `TileMapData.CustomProperties["AlundraCells"]`. |
 | [`audio-manifests.md`](audio-manifests.md) | `Sounds/sfx-manifest.json` et `Musics/bgm-manifest.json` : les tables BGM/SFX de l'extracteur, enrichies de l'id catalogue de chaque WAV. |
 | [`text-tables.md`](text-tables.md) | `Dialogues/global-strings.json`, les `*.strings.json` par map (sous `Maps/{Zone}/{Name}-{id}/dialogues/`), et `Dialogues/control-codes.json`. |
+| [`dialogues-yarn.md`](dialogues-yarn.md) | Les `.yarn` et `.dialogue` catalogués : tout le texte en Yarn (une par carte, `Dialogues/Shared`, `Dialogues/Etc`), codes de contrôle en marqueurs, commandes et fonctions. |
 | [`font.md`](font.md) | `UI/font3.fnt` (BMFont) et `UI/font3-charset.json` : la police bitmap et la table code brut → point de code Unicode. |
 | [`events.md`](events.md) | `Maps/{Zone}/{Name}-{id}/events/{Name}-{id}.events.json` : le bytecode d'évènements de map, non interprété. |
 | [`backdrops.md`](backdrops.md) | `Maps/{Zone}/{Name}-{id}/backdrop/{Name}-{id}.backdrop.json` : les couches de décor défilant PSX (parallaxe, auto-scroll, cellulaire différé), plus les textures pré-rendues. |

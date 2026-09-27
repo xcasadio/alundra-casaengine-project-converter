@@ -27,6 +27,10 @@ dans le bytecode de map, qui n'est pas encore décodé (voir [`events.md`](event
 ce que représente la source, donc une table est ce qui est écrit — la structure de dialogue viendra
 une fois le bytecode compris.
 
+Depuis E15.b, le même texte est aussi écrit en Yarn, compilé et catalogué, à côté de ces tables
+(voir [`dialogues-yarn.md`](dialogues-yarn.md)) ; la DLL lit encore les tables brutes jusqu'à E15.c,
+et E15.d les retire de l'export.
+
 ## `global-strings.json`
 
 Un objet JSON qui reflète `data/ETC_RES.R.json` : mêmes clés, mêmes valeurs.

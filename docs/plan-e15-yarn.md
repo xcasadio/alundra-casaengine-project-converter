@@ -500,13 +500,26 @@ tests du convertisseur sans échec avant chaque ✅ ; **aucun export avant T7**)
     manquants, ajoutés ensuite ; suite reportée (P3) : faire partir toutes les corruptions de la sortie
     de l'émetteur plutôt que d'un Yarn écrit à la main ;
   - build Release de la solution à 0 erreur et 0 avertissement ; tests du convertisseur 399/399.
-- ⏳ **T7 — Export complet et preuves.** Fichiers : `docs/formats/dialogues-yarn.md` (nouveau, le
+- ✅ **T7 — Export complet et preuves.** Fichiers : `docs/formats/dialogues-yarn.md` (nouveau, le
   format), ce plan. Étapes, **jamais pendant une suite `Alundra.Tests`** : manifeste d'avant par le
   script de §5.4, comparé à la référence (tout écart est noté et expliqué avant d'aller plus loin) ;
   export complet sur place `dotnet run --project alundra-casaengine-project-converter -- data-extracted alundra-project` ;
   `report.json` à 0 erreur, et 485 `.dialogue` chargés par la phase 8 ; manifeste d'après = seulement
   les 485 `.yarn` et 485 `.dialogue` ajoutés, `AssetInfos.json` et `report.json` ; second export
   identique au premier hormis `report.json`. Commit : `docs(e15): record the Yarn export proof`.
+  **Réalisé le 2026-09-27** (aucun processus du jeu, du lanceur ni de test ne tenait le projet) :
+  - manifeste d'avant : 23 247 fichiers, empreinte `331c0e3fcf82020792b72e97fd9fd7c18b10e7d0`,
+    **identique** à la référence de §5.4 ;
+  - premier export complet sur place (65 s, dont `Phase5.Yarn` 6,5 s) : `report.json` à **0 erreur**
+    (7 avertissements, tous des catégories antérieures sans rapport : noms d'entités, `maps.json`,
+    police, un sprite) ; compteurs `Yarn.*` exacts (485 fichiers, 24 784 nœuds, 31 757 lignes,
+    95 pages vides, 11 182 glyphes, 932 `flag`, 7 `falcon_update`, 20 appels, 38 192 emplacements
+    vides) ; phase 8 PASSED, `Verify.Loaded.dialogue` = 485 ;
+  - manifeste d'après : 24 217 fichiers ; **exactement** 970 ajouts (485 `.yarn` et 485 `.dialogue`,
+    tous par paires), aucune suppression, seuls `AssetInfos.json` et `report.json` modifiés ;
+  - second export : manifeste identique au premier hormis `report.json` (déterminisme au bit près) ;
+  - format documenté dans `docs/formats/dialogues-yarn.md` (index `docs/formats/README.md`, renvoi
+    depuis `text-tables.md`).
 - **Arrêts propres à E15.b** : une page dont l'équivalence échoue, ou un manifeste qui montre un autre
   changement que ceux de T7 → cause établie avant toute correction ; aucune correction dans le moteur
   (D-E15-2).
