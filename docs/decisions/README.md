@@ -19,3 +19,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0003 | The sound effect manifest carries the VAB volume and pan attributes | Accepted | 2026-09-25 |
 | ADR-0004 | Background music follows the executable's sequence state | Accepted | 2026-09-25 |
 | ADR-0005 | The inventory's opening portrait reaches the DLL through map_alundra.json and a one-id index | Accepted | 2026-09-26 |
+| ADR-0006 | All Alundra text is authored as Yarn and the raw text tables are no longer exported | Accepted | 2026-09-27 |
