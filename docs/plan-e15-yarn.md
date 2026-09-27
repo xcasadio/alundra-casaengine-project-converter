@@ -56,7 +56,10 @@ Réponses de l'auteur à la mesure d'E15.0 (2026-09-27) :
 - **D-E15-8 — Les espaces de début et de fin de page sont perdus**, comme Yarn les retire ; c'est
   documenté, aucun lecteur actuel n'en dépend.
 - **D-E15-9 — Les effets de bord de `\X` passent par une commande** placée avant la ligne, les
-  valeurs par des fonctions sans effet de bord.
+  valeurs par des fonctions sans effet de bord. Précisée le 2026-09-27 à la relecture de clôture
+  d'E15.b (ADR-0007) : la commande garde l'état qu'elle va changer (faucons temporaires, indice de
+  catégorie) ; ce que l'original lit **avant** de mettre à jour (`\X0`, et `\X2`/`\X4` en tête de
+  page) vient de cet état.
 
 Réponses de l'auteur à la relecture d'E15.b (2026-09-27) :
 
@@ -64,7 +67,8 @@ Réponses de l'auteur à la relecture d'E15.b (2026-09-27) :
   vide, comme aujourd'hui.
 - **D-E15-11 — Les nœuds de la table ETC portent l'index ETC en décimal** (`Etc_0067`, `Etc_0512`).
 
-Decisions: see ADR-0006 (`docs/decisions/0006-alundra-text-is-authored-as-yarn.md`).
+Decisions: see ADR-0006 (`docs/decisions/0006-alundra-text-is-authored-as-yarn.md`) and ADR-0007
+(`docs/decisions/0007-falcon-update-keeps-the-state-it-replaces.md`).
 
 - Rappel des décisions antérieures : **D6** (un fichier Yarn par carte, un nœud par chaîne, pas de
   reconstruction de séquences depuis le bytecode : la logique reste dans l'interpréteur) ; **D-E16-6**
@@ -180,8 +184,8 @@ tableau pour la lisibilité.
 | `\Y` | rien : la page continue |
 | `\W<c>` | `[glyph id=N/]`, dessiné par la DLL (D-E15-6), avec `N = c − 0x20` pour un chiffre et `c − 0x27` pour une lettre (formule d'`ALUN_CD.EXE`, `0x800462e0`–`0x800462f0`) : `\W0` 16 •, `\W2` 18 …, `\W3` 19 “, `\W4` 20 ”, `\W5` 21 ☆, `\W6` 22 →, `\W7` 23 ←, `\W8` 24 ↑, `\W9` 25 ↓, `\WA` 26 □, `\WD` 29 ✕ ; jamais retiré |
 | Octets bruts `0x1A`/`0x1C` des descriptions d'objets (ETC) | `[glyph id=26/]` □ / `[glyph id=28/]` ○ |
-| Ligne qui contient un `\X` | **une seule** commande `<<falcon_update>>` avant la ligne, quel que soit le nombre de `\X` de la page (D-E15-9 ; les deux mises à jour sont idempotentes, §5.4) : elle relève le nombre de faucons temporaires, puis met à jour le nombre de faucons et la progression (`UpdateNumberOfFalcon`, `UpdatePlayerProgressState`), comme l'original |
-| `\X0`, `\X1`, `\X2`/`\X4`, `\X3`, `\X5` | fonctions sans effet de bord : `{falcon_temp()}` (valeur relevée avant la mise à jour), `{falcon()}`, `{category_item_name()}`, `{category_threshold()}`, `{category_remaining()}` |
+| Ligne qui contient un `\X` | **une seule** commande `<<falcon_update>>` avant la ligne, quel que soit le nombre de `\X` de la page (D-E15-9, ADR-0007) : elle **garde l'état qu'elle va changer** (nombre de faucons temporaires, indice de catégorie `g_textCategoryIndex`), puis met à jour le nombre de faucons et la progression (`UpdateNumberOfFalcon`, `UpdatePlayerProgressState`), comme l'original ; une mise à jour de plus dans la page ne changerait rien (§5.4) |
+| `\X0` … `\X5` | fonctions sans effet de bord, choisies par le code **et par sa place dans la page**, pour lire ce que l'original lit à cet endroit (`TextDecoder.cs:505-565` : `\X0`, `\X2`, `\X4` lisent puis mettent à jour ; `\X1`, `\X3`, `\X5` mettent à jour puis lisent) : `\X0` en tête de page (premier `\X` de la page) → `{falcon_temp()}` (état gardé) ; `\X2`/`\X4` en tête de page → `{category_item_name_before()}` (état gardé) ; `\X2`/`\X4` après un autre `\X` de la page → `{category_item_name()}` ; `\X1` → `{falcon()}`, `\X3` → `{category_threshold()}`, `\X5` → `{category_remaining()}` (état mis à jour) ; un `\X0` après un autre `\X` de la page est une erreur de `report.json` (aucun dans le corpus, §5.4) |
 | `\V<n>` | `{game_var(n)}` |
 | `\B` … `\G`, `\H`, `\T` | marqueurs gardés pour E12.c : `[voice id=-1…4/]`, `[center/]`, `[slow/]` (`\M\CE` n'apparaît nulle part dans le corpus : pas de correspondance) |
 | `:` | `\:` (sinon Yarn fait du début de ligne un nom de personnage, même avec une espace avant le `:`) |
@@ -272,7 +276,12 @@ moteur.
   chargement non prouvé) ; cette révision les corrige, avec les choix de l'auteur D-E15-10 et
   D-E15-11. Deuxième relecture REVISE (un P2 : ordre et nombre des commandes d'une page à plusieurs
   `\X` et un drapeau, cas réel `M134_S019_p0`) ; corrigé sur décision de l'auteur (une seule
-  `falcon_update` par page, ordre de première apparition, huitième cas nommé).
+  `falcon_update` par page, ordre de première apparition, huitième cas nommé). Relecture de clôture
+  REVISE (un P2 : `\X2`/`\X4` lisent le nom **avant** la mise à jour, `TextDecoder.cs:530-538`, donc
+  une page qui s'ouvre sur `\X2` lisait le mauvais indice de catégorie) ; corrigé sur décision de
+  l'auteur (ADR-0007 : la commande garde l'état d'avant, fonction `category_item_name_before()`),
+  avec la précision P3 de l'oracle sur les sauts de ligne en bord de page ; une relecture de plus
+  autorisée par l'auteur.
 
 **Contrat des fichiers et des nœuds** (D-E15-10, D-E15-11) :
 
@@ -291,21 +300,23 @@ un décalage pointent sur des entrées nulles (§5.1) : aucun nœud dupliqué.
 **Contrat des fonctions** (déclarées au compilateur par le convertisseur, enregistrées à l'exécution
 par la DLL en E15.c avec les mêmes types) :
 
-| Fonction | Code | Paramètres | Retour Yarn | Délégué C# |
-|---|---|---|---|---|
-| `falcon_temp` | `\X0` | — | nombre | `Func<float>` |
-| `falcon` | `\X1` | — | nombre | `Func<float>` |
-| `category_item_name` | `\X2`, `\X4` | — | texte | `Func<string>` |
-| `category_threshold` | `\X3` | — | nombre | `Func<float>` |
-| `category_remaining` | `\X5` | — | nombre | `Func<float>` |
-| `game_var` | `\V<n>` | `n` : nombre | nombre | `Func<float, float>` |
+| Fonction | Code (§1) | Valeur lue | Paramètres | Retour Yarn | Délégué C# |
+|---|---|---|---|---|---|
+| `falcon_temp` | `\X0` en tête de page | faucons temporaires gardés par `falcon_update` avant sa mise à jour | — | nombre | `Func<float>` |
+| `falcon` | `\X1` | faucons après la mise à jour | — | nombre | `Func<float>` |
+| `category_item_name_before` | `\X2`, `\X4` en tête de page | nom de l'objet de l'indice de catégorie gardé avant la mise à jour | — | texte | `Func<string>` |
+| `category_item_name` | `\X2`, `\X4` après un autre `\X` de la page | nom de l'objet de l'indice courant | — | texte | `Func<string>` |
+| `category_threshold` | `\X3` | seuil de l'indice courant | — | nombre | `Func<float>` |
+| `category_remaining` | `\X5` | seuil de l'indice courant moins les faucons | — | nombre | `Func<float>` |
+| `game_var` | `\V<n>` | `INT_ARRAY_80191908[n]` | `n` : nombre | nombre | `Func<float, float>` |
 
 Les commandes `flag` (un argument, la valeur normalisée) et `falcon_update` (aucun argument) ne se
 déclarent pas au compilateur (Yarn les compile comme du texte).
 
 **Oracle d'équivalence** (tâche T6). Pour chaque page, la sortie comparée est un quadruplet :
 1. le **texte visible** : substitutions faites, markup analysé, `[br/]` rendu par un saut de ligne,
-   espaces de bord retirés (D-E15-8) ;
+   espaces de bord retirés (D-E15-8) ; ce retrait ne touche que des espaces, jamais un saut de
+   ligne : un `\N` en bord de page reste un saut de ligne, des deux côtés ;
 2. la liste ordonnée des **marqueurs** : nom, propriétés (hors `trimwhitespace`), position dans le
    texte visible ; `glyph` compris, avec son identifiant ;
 3. la liste ordonnée des **commandes** exécutées avant la ligne : nom et arguments ; côté original,
@@ -315,20 +326,29 @@ déclarent pas au compilateur (Yarn les compile comme du texte).
 
 Côté original, le **décodeur de référence** (tests du convertisseur) suit `TextDecoder.cs`, la formule
 de `\W` de l'exécutable (§1) et les octets bruts `0x1A`/`0x1C` de l'ETC (glyphes 26 et 28) ; il rend
-chaque `\X`/`\V` par la valeur témoin de sa fonction. Côté compilé, la page est **observée en jouant**
-le `.dialogue` compilé sur le `YarnDialogueRunner` d'E15.a : gestionnaires de commandes qui
-enregistrent, fonctions témoins qui rendent une valeur distincte (`falcon_temp` 90001, `falcon` 90002,
-`category_threshold` 90003, `category_remaining` 90004, `game_var(n)` 91000 + n,
-`category_item_name` « ⟦objet⟧ ») et enregistrent leur appel, présentateur qui enregistre texte et
-attributs. Une page `[empty/]` a un texte vide et un seul marqueur `empty`.
+chaque `\X`/`\V` par la valeur témoin de sa fonction. Pour `\X`, il rejoue l'ordre de l'original
+dans la page, déduit des cas de `TextDecoder.cs:505-565` et jamais de la règle de l'émetteur : un
+`\X` lu avant toute mise à jour de la page prend la valeur témoin de l'état gardé, les autres celle
+de l'état mis à jour ; un `\X0` lu après une mise à jour est signalé hors contrat. Côté compilé, la
+page est **observée en jouant** le `.dialogue` compilé sur le `YarnDialogueRunner` d'E15.a :
+gestionnaires de commandes qui enregistrent, fonctions témoins qui rendent une valeur distincte
+(`falcon_temp` 90001, `falcon` 90002, `category_threshold` 90003, `category_remaining` 90004,
+`game_var(n)` 91000 + n, `category_item_name_before` « ⟦objet d'avant⟧ », `category_item_name`
+« ⟦objet⟧ ») et enregistrent leur appel, présentateur qui enregistre texte et attributs. Une page
+`[empty/]` a un texte vide et un seul marqueur `empty`.
 
 **Corpus** : les 24 303 chaînes non vides des 483 cartes (`#Disuse` compris), les 128 entrées de
 `map_alundra`, les 353 index ETC non nuls. **Cas nommés** : la ligne `M323_S095_p4` (texte « Tu en as
 rencontré un Nirude. », saut de ligne, « Les Gazeck ont été taillés dans la pierre », saut de ligne,
 « par d'anciens humains. », marqueur `glyph` 18 juste après « un ») ; `\401\Ydétruite.` (une seule
 ligne, `<<flag 401>>` avant elle) ; une chaîne de la carte 324 contenant ` : ` (aucun `Speaker`) ; une
-page `\A\999\Y\A` (`<<flag 999>>`, puis `[empty/]`) ; une chaîne `\X2` de la carte 134
-(`<<falcon_update>>`, puis `category_item_name`) ; une chaîne `\V` du pub 472 ; une description d'objet
+page `\A\999\Y\A` (`<<flag 999>>`, puis `[empty/]`) ; la ligne `M134_S016_p0` de l'église, source
+`\CJe pense que tu trouveras ce(t) \X2\Ntout à fait utile. Fais-en bon usage,\NAlundra !` (texte
+« Je pense que tu trouveras ce(t) ⟦objet d'avant⟧ », saut de ligne, « tout à fait utile. Fais-en bon
+usage, », saut de ligne, « Alundra ! » ; marqueur `voice` d'identifiant 0 en tête ; commande
+`falcon_update` ; appel `category_item_name_before`) ; la ligne `M134_S012_p1`, source
+`Je suis un homme heureux. Merci,\NAlundra !\N` (texte « Je suis un homme heureux. Merci, », saut
+de ligne, « Alundra ! », puis le saut de ligne final, gardé) ; une chaîne `\V` du pub 472 ; une description d'objet
 ETC contenant l'octet `0x1A` (marqueur `glyph` 26) ; la ligne `M134_S019_p0` de l'église, source
 `\CRamène-moi \X3 Statuettes de faucons\Net je te récompenserai avec cela :\N\X4.\0100\Y` (texte
 « Ramène-moi 90003 Statuettes de faucons », saut de ligne, « et je te récompenserai avec cela : »,
@@ -355,9 +375,11 @@ tests du convertisseur sans échec avant chaque ✅ ; **aucun export avant T7**)
   (nouveaux). L'émetteur rend le source Yarn d'une table selon §1 (échappements `\:` et `\#`,
   `trimwhitespace=false` sur chaque marqueur autofermant, `[empty/]`, `<<flag n>>` normalisé avant sa
   ligne, une seule `<<falcon_update>>` avant toute ligne à `\X`, commandes dans l'ordre de première
-  apparition de leur code, identifiants de ligne du contrat). Validation :
-  un test par ligne de §1 ; chaque exemple émis compile par `YarnDialogueCompiler` avec
-  `AlundraYarnFunctions`, sans diagnostic ; une ligne qui utilise chacune des six fonctions compile.
+  apparition de leur code, fonction de chaque `\X` choisie par sa place dans la page, `\X0` après un
+  autre `\X` rendu comme erreur, identifiants de ligne du contrat). Validation :
+  un test par ligne de §1, dont `\X2` en tête de page et `\X4` après `\X3` ; chaque exemple émis
+  compile par `YarnDialogueCompiler` avec `AlundraYarnFunctions`, sans diagnostic ; une ligne qui
+  utilise chacune des sept fonctions compile.
   Commit : `feat(converter): emit Alundra text as Yarn source`.
 - ⏳ **T4 — Writer et catalogue.** Fichiers : `alundra-casaengine-project-converter/Writers/YarnDialogueWriter.cs`
   (nouveau), `Program.cs` (appel juste après le texte actuel, avant la vérification de la phase 8),
@@ -412,6 +434,10 @@ tests du convertisseur sans échec avant chaque ✅ ; **aucun export avant T7**)
   - les commandes `flag` et `falcon_update`, les fonctions de `\X` et `\V`, et un stockage de variables
     adossé à `AlundraGameState` (D-E16-6), tous enregistrés par la DLL ; le port de
     `UpdateNumberOfFalcon`, `UpdatePlayerProgressState` et de la table des seuils (§5.4) ;
+    `falcon_update` garde l'état qu'elle va changer (faucons temporaires, indice de catégorie) avant
+    de mettre à jour (ADR-0007) ; la DLL porte l'indice de catégorie comme l'original, sa valeur de
+    départ et sa persistance établies depuis le binaire ; un test montre que `M134_S016_p0` lit le
+    nom de l'indice d'avant la mise à jour et `M134_S019_p0` celui d'après ;
   - `[br/]` rendu en saut de ligne, `[empty/]` en boîte vide, `[glyph id=N/]` dessiné par la DLL
     (glyphe `N` de `font3`) ; les marqueurs d'E12.c ignorés à l'affichage mais présents dans les
     données ;
@@ -539,9 +565,17 @@ Décision D-E15-6 : des marqueurs dessinés par la DLL.
   23 247 fichiers, empreinte SHA-1 du manifeste `331c0e3fcf82020792b72e97fd9fd7c18b10e7d0`. E15.b
   reprend son propre manifeste juste avant son premier export et le compare à celui-ci.
 - `\X` : `UpdateNumberOfFalcon` (`PlayerManager.cs:5188-5199`) et `UpdatePlayerProgressState`
-  (`TextDecoder.cs:1098-1172`) sont idempotentes après un premier appel (compteur temporaire à 0,
-  progression calculée des seuls drapeaux) : une commande par ligne vaut les appels répétés de
-  l'original. Aucune des deux n'est portée dans la DLL : E15.c les porte, avec
+  (`TextDecoder.cs:1098-1183`) ne changent plus rien à un deuxième appel si ni les faucons ni
+  `GameFlags[0x2c]` n'ont changé (compteur temporaire remis à 0 ; progression et indice de catégorie
+  recalculés de `GameFlags[0x2c]`). Entre deux `\X` d'une même page, l'original ne fait que rendre du
+  texte et, au plus, poser des drapeaux temporaires (`g_temporaryFlags`, `TextDecoder.cs:324-326`) :
+  une seule commande par page vaut donc ses appels répétés **pour tout ce qui est lu après la
+  première mise à jour de la page**. Ce qui est lu avant elle, `\X0` (`TextDecoder.cs:508-517`) et
+  `\X2`/`\X4` (`:530-540`) en tête de page, vient de l'état gardé par la commande (ADR-0007). Mesure
+  du corpus (2026-09-27) : 7 pages à `\X`, toutes sur la carte 134 (chaînes 13 à 20), aucune dans
+  l'ETC ; `\X0` ouvre la page 13, `\X2` les pages 16 et 17, `\X1` les pages 14 et 15, `\X5` la page
+  20 ; seule la page 19 a deux `\X` (`\X3` puis `\X4`) ; aucun `\X0` après un autre `\X`. Aucune des
+  deux mises à jour n'est portée dans la DLL : E15.c les porte, avec
   `g_categoryThresholdTable` et l'indice de catégorie. `\V` lit `INT_ARRAY_80191908`, écrit par les
   mini-jeux du pub, non portés : `game_var(n)` rend la valeur portée, 0 tant qu'aucun mini-jeu ne
   l'écrit.
