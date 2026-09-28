@@ -756,19 +756,79 @@ de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Re
 - **Dépendances** : E15.a (branche moteur `chantier/yarn-extension-points`, pointée par le dépôt),
   E15.b.
 
-### E15.d — Suppression du texte brut ⏳ (convertisseur, DLL, docs)
+### E15.d — Suppression du texte brut ⏳ (convertisseur, DLL, docs ; détaillée le 2026-09-28)
 
-- **But** : D-E15-4.
-- **Contenu** : le convertisseur ne produit plus les quatre fichiers et **retire** ceux d'un export
-  précédent (liste fermée, comptée dans `report.json`) ; retrait de `TextWriter`, de
-  `MapCatalogReader.StringsRelativePath`, du chargeur et de la table ETC de la DLL, des tests devenus
-  sans objet ; `docs/formats/text-tables.md` remplacé par un document du format Yarn.
-- **Acceptation** : export complet sur place, 0 erreur ; manifeste = seulement la disparition des
-  quatre familles de fichiers ; dans `alundra-project/`, aucun `*.strings.json`,
-  `global-strings.json`, `etc-index.json`, `control-codes.json` ; **recherche dans tous les projets**
-  (DLL, `Alundra.Tests`, convertisseur et ses tests) : aucun lecteur de ces fichiers ; recette en jeu
-  d'E15.c refaite.
-- **Arrêt** : un lecteur de ces fichiers retrouvé après la suppression → la tranche s'arrête.
+- **But** : D-E15-4 — le projet exporté ne contient plus les tables de texte brut, et aucun code ne les
+  lit ni ne les écrit.
+
+**Faits établis** (recherche du 2026-09-28, après E15.c) :
+
+- *Convertisseur* : `Writers/TextWriter.cs` écrit les quatre familles (`Dialogues/global-strings.json`,
+  `Dialogues/etc-index.json`, `Dialogues/control-codes.json`, `{carte}/dialogues/{Nom}-{id}.strings.json`),
+  appelé par `Program.cs:98-99` (`Phase5.Text`) et testé par `TextWriterTests.cs` ;
+  `MapCatalogReader.StringsRelativePath` (`Readers/MapCatalogReader.cs:46`) n'est utilisé que par
+  `TextWriter.cs:222` et `MapLocationTests.cs:33`, `:55`. `YarnDialogueWriter` lit ses entrées dans
+  `data-extracted/` et `EtcIndexTable.csv`, jamais dans les fichiers bruts ; il émet aussi les
+  avertissements de lecture d'`EtcIndexTable.csv` en double avec `TextWriter` (`YarnDialogueWriter.cs:192-193`).
+  Mentions en commentaire : `YarnDialogueWriter.cs:23`, `Text/YarnTextEmitter.cs:35`,
+  `Readers/EtcIndexCatalogReader.cs:14-19`, `Readers/StringTableReader.cs:26`, `Writers/EventCodeWriter.cs:15`,
+  `Writers/ItemsWriter.cs:38`.
+- *DLL* : `AlundraDialogueStringsLoader` (seul lecteur de fichier restant, **aucun appelant**) et
+  `AlundraDialogueTextParser` (avec `AlundraDialoguePage`, plus appelé en production) ; tests :
+  `AlundraDialogueTextParserTests.cs` et l'appel `AlundraDialogueTextParser.ResetCountersForTests()` de
+  `AlundraDialogueOpcodeDispatchTests.cs:31` ; mentions en commentaire : `AlundraWorldProxy.cs:1060-1062`,
+  `AlundraWorldIndexTable.cs:16`. `AlundraEtcStringTable` ne lit plus aucun fichier (T6).
+- *Documentation courante* (les anciens plans restent tels quels, comme historique) :
+  `docs/formats/text-tables.md`, sa ligne dans `docs/formats/README.md`, `docs/formats/events.md:24`,
+  `docs/formats/dialogues-yarn.md` (« à côté des tables brutes »), `README.md:76`, `:95`, `:111-112`,
+  `:173`, `docs/guidelines-runtime-alundra-casaengine.md:161`, `:167`.
+- *Export actuel* : 483 `*.strings.json` et les trois fichiers de `Dialogues/`, soit **486 fichiers**,
+  aucun catalogué (`AssetInfos.json` ne change pas).
+
+**Contrat** :
+
+1. Le convertisseur n'écrit plus aucune des quatre familles : `TextWriter` et son appel `Phase5.Text`
+   disparaissent (la phase 5 garde `Phase5.Yarn` et `Phase5.Font`), avec `TextWriterTests` et
+   `MapCatalogReader.StringsRelativePath` ; l'inventaire des codes vit dans les compteurs
+   `Yarn.Code.<code>` de `report.json` (E15.b).
+2. Il **retire** ceux d'un export précédent, par une **liste fermée** : les trois fichiers de
+   `Dialogues/` à chaque exécution, et `{MapLocation.DialoguesDirectory}/{FileBaseName}.strings.json`
+   pour chaque carte traitée (le filtre `--maps` s'applique) ; un fichier absent n'est pas une erreur ;
+   rien d'autre n'est jamais supprimé (pas de joker, pas de dossier) ; compteur
+   `Yarn.RawTextFilesRemoved`, et une erreur de `report.json` si une suppression échoue.
+3. La DLL perd `AlundraDialogueStringsLoader`, `AlundraDialogueTextParser` et `AlundraDialoguePage`, avec
+   leurs tests et les appels de test qui ne servaient qu'à eux.
+4. Les commentaires qui décrivent encore les tables brutes comme vivantes sont mis à jour ; la
+   documentation courante décrit le Yarn seul : `text-tables.md` supprimé (remplacé par
+   `dialogues-yarn.md`, déjà écrit), index des formats, `events.md`, `README.md`, guide runtime.
+
+**Tâches** (une à la fois, un commit par tâche avec la mise à jour de ce plan ; build de la solution à 0
+erreur, tests du convertisseur et `Alundra.Tests` sans échec avant chaque ✅) :
+
+- ⏳ **T1 — Convertisseur.** Contrat 1 et 2 : retrait de `TextWriter`, de son appel et de ses tests, de
+  `StringsRelativePath` (et `MapLocationTests` ajusté) ; nettoyage de l'export précédent dans
+  `Phase5.Yarn` ; tests : un projet temporaire contenant les quatre familles et un fichier voisin
+  (par exemple un `.dialogue` et un autre `.json` du dossier `dialogues`) → seules les quatre familles
+  disparaissent, le compteur vaut leur nombre ; `--maps` ne retire que les cartes filtrées (et les trois
+  fichiers de `Dialogues/`) ; fichier absent sans erreur ; commentaires du convertisseur mis à jour.
+- ⏳ **T2 — DLL.** Contrat 3 : suppression des deux classes, du type, de leurs tests ; commentaires mis à
+  jour ; recherche : aucune occurrence de ces noms hors des documents historiques.
+- ⏳ **T3 — Documentation.** Contrat 4.
+- ⏳ **T4 — Export complet et preuves** (jamais pendant une suite `Alundra.Tests` ; lanceur et jeu
+  fermés) : manifeste d'avant comparé au manifeste d'après de T7 d'E15.b (`scratchpad/t7/manifest-after2.txt`,
+  tout écart est noté et expliqué avant d'aller plus loin) ; export complet sur place ; `report.json` à
+  0 erreur, `Yarn.RawTextFilesRemoved` = 486, phase 8 PASSED avec 485 `.dialogue` chargés ; manifeste
+  d'après = **exactement** la disparition des 486 fichiers et la modification de `report.json` ; second
+  export identique hormis `report.json`, avec `Yarn.RawTextFilesRemoved` = 0 ; **recherche dans tous les
+  projets** (DLL, `Alundra.Tests`, convertisseur et ses tests) : aucun lecteur ni écrivain de ces
+  fichiers.
+- ⏳ **T5 — Recette en jeu** (auteur) : celle d'E15.c (T8), faite une seule fois sur le projet final.
+
+- **Acceptation** : T1 à T4 ; recette en jeu T5 ; vérification finale neuve d'E15.
+- **Arrêts** : un lecteur de ces fichiers retrouvé après la suppression ; un manifeste qui montre une
+  autre disparition que les 486 fichiers → cause établie avant tout ; une suppression hors de la liste
+  fermée → arrêt immédiat.
+- **Retour arrière** : revert des commits d'E15.d, puis export complet (les tables brutes reviennent).
 - **Dépendances** : E15.c.
 
 ---
