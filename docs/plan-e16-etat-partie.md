@@ -970,7 +970,11 @@ plan ; `Alundra.Tests` sans échec à chaque commit)
 
     Le départ d'une jauge en plein rattrapage des PM max relève d'E16.d, qui remet la jauge à zéro
     (SC1).
-- ⏳ **T5 — Documentation et ADR** :
+- ✅ **T5 — Documentation et ADR** (fait le 2026-09-28 en session principale : ADR-0012
+  `docs/decisions/0012-alundra-save-game-content-and-validation.md`, page
+  `docs/formats/save-game.md`, index des deux dossiers, tableau de suivi du plan maître ; le §3 de ce
+  plan n'avait rien à changer ; la doc d'`AlundraPlayerStats`, qui disait les faucons « non portés »,
+  est remise à jour) :
   - ADR-0012 de ce dépôt : contenu de la sauvegarde d'Alundra (champs, 64 mots de drapeaux, champs
     exclus, compteur de reprises, unité du temps de jeu, domaines, métadonnées ; D-E16-22, D-E16-23,
     D-E16-31, D-E16-32) ;
