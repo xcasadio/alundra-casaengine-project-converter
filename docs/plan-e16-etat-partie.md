@@ -1116,9 +1116,14 @@ relecture de plan (`ad07ae4`) : **REVISE**, deux bloquants corrigés. Les mutati
 pas détectables : aucune lecture des valeurs chargées pendant l'installation, les premiers lecteurs
 sont au premier tick (G5, K8, T5). « Portrait au repos » était ambigu, désormais `StateIdle` (K6,
 K7, T3). Remarques mineures corrigées aussi : source de `mapId`, action sonore vide,
-`ResetDisplayForLoad(stats)`. Reste une relecture de clôture jusqu'à READY, avant l'exécution par
-un `security-executor` ; ensuite,
-vérification par un `verifier` frais. La recette en jeu reste à l'auteur.
+`ResetDisplayForLoad(stats)`. Relecture de clôture (`73504cf`) : **REVISE**, un bloquant. Les règles
+de production vérifient le catalogue d'assets, vide dans les tests, donc tout chemin de succès de T3
+à T5 aurait été refusé. Correction : `RulesFactoryForTests` (K1), avec les règles de chaque test
+nommées (T3 à T5, SD15). Remarques corrigées aussi : `FrameCounter` gardé, sens de la dépendance à
+l'abandon, tuile du test de bout en bout. C'est le deuxième REVISE : cette correction ouvre une
+seule relecture de clôture ; un nouveau REVISE met la tranche en pause. Ensuite, exécution par un
+`security-executor`, puis vérification par un `verifier` frais. La recette en jeu reste à
+l'auteur.
 
 **Faits établis à la planification** (exploration en lecture seule, chaque rapport recontrôlé par
 un second agent ; scripts et rapports dans `scratchpad/e16def/`)
@@ -1143,6 +1148,17 @@ un second agent ; scripts et rapports dans `scratchpad/e16def/`)
 - **K1 — Un directeur de session**, `AlundraSaveGameDirector` (`Alundra/Scripts/`, `Instance` et
   `ResetForTests` comme les autres). Il porte l'interrupteur, les touches, le service, le
   chargement en attente et son application.
+  - **Règles de validation injectables** (relecture de clôture du 2026-09-28) : le directeur
+    obtient ses règles par `internal Func<AlundraSaveGameRules>? RulesFactoryForTests`, nul par
+    défaut, sur le modèle `...OverrideForTests` de G10. Nul, il construit les règles de
+    production `new AlundraSaveGameRules(EngineEnvironment.ProjectPath, path =>
+    AssetCatalog.GetByFileName(path) != null, ItemTables)`. Raison : dans le processus de
+    `Alundra.Tests`, le catalogue d'assets est vide et ne se remplit que par des membres internes
+    au moteur ou par un `AssetCatalog.Load` global qui remplace tout
+    (`AssetCatalog.cs:17`, `:44-58`, `:169`). Sans ce point, toute validation refuserait
+    `InitialMapId` en test. Les tests existants d'E16.c passent déjà un prédicat `_ => true`
+    (`AlundraSaveGameProductionTests.cs:117`, `:209`). Le point n'est atteignable que par du code
+    déjà dans le processus, comme SD14 ; aucune donnée ne l'atteint.
 - **K2 — Interrupteur (D-E16-33)** : `internal static bool RecipeKeysEnabled`, vrai par `#if DEBUG`
   et faux sinon, avec un `...OverrideForTests` nullable sur le modèle de G10. Il est journalisé une
   fois (`Logs.WriteInfo`), au premier passage du directeur, quand il est actif. Inactif, le
@@ -1191,9 +1207,8 @@ un second agent ; scripts et rapports dans `scratchpad/e16def/`)
      `StateAtRest`, qui est le portrait affiché pendant un menu) (SD12) ; aucune transition ; aucun fondu maître de la musique armé
      (`AlundraBgmFadeDirector.Instance.IsArmed`, SD4) ; `PlayerControlFlags == 0` ;
   2. `TryCaptureFromWorld(GameState, world.Name, PlayerEntity)` (contrat de C5 d'E16.c) ;
-  3. `TryValidate` avec les règles de production, `AlundraSaveGameRules(EngineEnvironment.ProjectPath,
-     path => AssetCatalog.GetByFileName(path) != null, ItemTables)` : un objet qui ne se chargerait
-     pas n'est jamais écrit ;
+  3. `TryValidate` avec les règles du directeur (K1 : celles de production hors tests) : un objet
+     qui ne se chargerait pas n'est jamais écrit ;
   4. `Save(emplacement, objet, format, objet.BuildMetadata())`, puis le résultat au journal.
 - **K7 — Chargement (F9)**, dans cet ordre ; seule l'étape 7 change l'état vivant, et seulement à
   l'arrivée :
@@ -1203,7 +1218,7 @@ un second agent ; scripts et rapports dans `scratchpad/e16def/`)
      aucune transition ; aucun fondu maître de la musique armé (SD4) ; `PlayerControlFlags == 0` ;
   2. emplacement le plus récent (K5) ;
   3. `TryLoad` : tout état autre que `Loaded` est un refus ;
-  4. `TryValidate` avec les règles de production ;
+  4. `TryValidate` avec les règles du directeur (K1) ;
   5. **contrôle du départ**, pour que la garde d'abandon ne puisse jamais se déclencher sur un
      chargement. Deux nouveautés internes et en lecture seule du directeur des warps y servent : un
      indicateur « `GameManager` attaché », et `TryResolveWorldPath(mapId, out path)` sur sa propre
@@ -1246,8 +1261,9 @@ un second agent ; scripts et rapports dans `scratchpad/e16def/`)
     3. `AlundraHudDirector.ResetDisplayForLoad(AlundraPlayerStats stats)`, avec les stats de l'état
        qui vient d'être chargé (la jauge peut ne pas avoir d'état attaché) : les valeurs affichées (PV, PV max, PM, PM max,
        argent) prennent les valeurs chargées, les quatre sous-étapes à 0, `CoinIconFrame` à 0,
-       `IsMoneyRolling` à faux, images des cases de magie à 0. La phase, `Y`, le glissement et
-       `_gameState` ne changent pas : une jauge ouverte reste ouverte, sans saut (SC1) ;
+       `IsMoneyRolling` à faux, images des cases de magie à 0. La phase, `Y`, le glissement,
+       `FrameCounter` et `_gameState` ne changent pas : une jauge ouverte reste ouverte, sans
+       saut (SC1) ;
     4. `ResetSessionForLoad()` des directeurs d'inventaire et de sous-inventaire (tout ce que remet
        leur `ResetForTests`, sauf les trois attaches `_gameState`, `_itemTables` et `_soundPlayer`),
        du post-traitement et du portrait (tout ce que remet leur `ResetForTests`) : curseurs et
@@ -1256,8 +1272,10 @@ un second agent ; scripts et rapports dans `scratchpad/e16def/`)
 
     Le dialogue est remis par sa propre entrée de carte (G8), et le héros est placé par l'arrivée
     du warp (G6).
-  - `AlundraWarpDirector.AbortDeparture` abandonne aussi le chargement en attente, avec un message :
-    un départ avorté ne laisse aucune attente appliquée plus tard à une autre arrivée.
+  - `AlundraWarpDirector.AbortDeparture` (privée) abandonne aussi le chargement en attente, avec un
+    message, en appelant `AlundraSaveGameDirector.Instance.AbandonPendingLoad(raison)` : le
+    directeur des warps dépend du directeur de sauvegarde, jamais l'inverse. Un départ avorté ne
+    laisse aucune attente appliquée plus tard à une autre arrivée.
 - **K9 — Messages** : chaque refus, chaque résultat du service et chaque succès donnent une ligne de
   journal (`Logs.WriteWarning` pour un refus, `Logs.WriteInfo` pour un succès). La DLL n'a pas
   d'affichage à l'écran (G12), et ces touches ne servent qu'à la recette.
@@ -1288,7 +1306,11 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
     `dotnet test -c Release --filter` (SD7) ;
   - un service simulé qui lève à chaque méthode, derrière l'adaptateur : F5, F6 et F9 donnent un
     refus, sans exception, état identique (SD6).
-- ⏳ **T3 — Sauvegarde F5/F6** (K6). Tests, sur un service simulé :
+- ⏳ **T3 — Sauvegarde F5/F6** (K6). Tests, sur un service simulé, avec des règles injectées par
+  `RulesFactoryForTests` : le vrai dossier du projet exporté, un prédicat de catalogue `_ => true`
+  et les tables d'objets réelles (le test échoue en nommant l'export s'il manque). Un test de refus
+  par `TryValidate` garde ce prédicat qui accepte, pour que le refus vienne bien du champ hors
+  domaine :
   - chaque précondition non tenue (héros absent, en l'air, dialogue, inventaire, sous-inventaire,
     post-traitement actif, portrait autre que `StateIdle` (ouverture, affiché, retour), transition,
     fondu maître de la musique armé,
@@ -1299,7 +1321,8 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   - un objet que `TryValidate` refuse (par exemple une stat hors domaine posée dans l'état) → aucun
     appel à `Save` ;
   - chaque état de sauvegarde autre que `Saved` → une ligne de journal, aucune exception.
-- ⏳ **T4 — Chargement F9 jusqu'au départ** (K7). Tests, sur un service simulé :
+- ⏳ **T4 — Chargement F9 jusqu'au départ** (K7). Tests, sur un service simulé, avec les mêmes
+  règles injectées qu'au T3 :
   - chaque précondition non tenue (celles de K7, étape 1, dont un chargement déjà en attente et un
     fondu maître armé) → refus, aucun appel à `TryLoad`, état identique ;
   - aucun emplacement lisible → refus ;
@@ -1316,7 +1339,8 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   - succès : attente posée, départ armé vers `InitialMapId` à la position de la tuile, état de jeu
     encore inchangé ;
   - départ avorté par la garde d'abandon → attente abandonnée.
-- ⏳ **T5 — Application à l'arrivée** (K8). Tests :
+- ⏳ **T5 — Application à l'arrivée** (K8). Tests, avec les mêmes règles injectées qu'au T3 ; le
+  test de bout en bout atteint `ApplyPendingLoad` sans toucher au catalogue d'assets :
   - après `ApplyPendingLoad`, l'état est celui de la sauvegarde, champ par champ ;
     `TemporaryFlags` est vide (entrée de carte) ; `TextCategoryIndex` et `GameVariables` valent 0
     alors qu'ils ne l'étaient pas avant (D-E16-19) ;
@@ -1336,7 +1360,10 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
       et non celle de la session. `0x31` saute quand le drapeau est éteint (`FlagBranch`,
       `AlundraEventProgramRunner.cs:1416`) : drapeau posé, leur placement `0x64` qui suit s'exécute,
       et l'entité est à la position qu'il donne ;
-    - le héros est à la tuile sauvegardée ;
+    - le héros est à la tuile sauvegardée, choisie pour que les entités de ces programmes
+      apparaissent : la tuile de la nouvelle partie, (33, 59, 0), si elles y apparaissent comme
+      dans le harnais de l'intro ; sinon l'exécuteur établit une tuile qui convient et l'inscrit ;
+      le test vérifie d'abord que ces entités sont apparues ;
     - l'inventaire de nouvelle partie ne tourne pas.
 
     Deux mutations du code de production, faites puis défaites par un script, doivent chacune faire
@@ -1401,6 +1428,7 @@ La remise de session couvre tous les singletons, sauf le fondu maître de la mus
 | SD12 | P4 | Post-traitement et portrait absents des préconditions ; `Hp ≥ 1` absent de K6 ; scripts de carte non verrouillés admis | FIX les deux premiers ; DEFER le reste | K6, K7 ; `Hp` → E18 (SC8), le reste → E16.e |
 | SD13 | P4 | Refuser F9 si une attente existe ; une touche maintenue pendant le changement de monde ne doit pas repartir | FIX | K3, K7 étape 1, T2 |
 | SD14 | P4 | Le forçage de test est atteignable en Release par `InternalsVisibleTo` | REJECT | seul du code déjà dans le processus peut s'en servir |
+| SD15 | — | Ajout de la relecture de clôture : `RulesFactoryForTests` (K1), autre point d'injection de test ; il ne remplace que les règles, jamais le parcours de validation | même raison que SD14 | K1 |
 
 **Arrêts** : ceux de la section E16.d ci-dessus ; une exception qui sort d'une touche ou de
 `ApplyPendingLoad` ; un test existant qui change pour une autre raison ; l'oracle de l'intro qui
