@@ -678,7 +678,18 @@ de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Re
   `GameFlags[0x2d]` compris), les seuils, l'indice de catégorie, `INT_ARRAY_80191908`, dans la DLL,
   selon la sémantique **confirmée par le binaire au §5 (T2)** et avec ses valeurs ; tests de chaque
   branche, du plafond `0x32` et des bits `0x400`, `0x800` et `0x100`, qui citent l'entrée du §5.
-- ⏳ **T4 — Liaisons Yarn.** Enregistrement des deux commandes et des sept fonctions sur un
+- ✅ **T4 — Liaisons Yarn** (fait le 2026-09-28 : `AlundraYarnBindings` enregistre `flag`,
+  `falcon_update` (copie de l'état d'avant dans la commande même, puis les deux mises à jour de T3) et
+  les sept fonctions aux types du contrat, noms en constantes à garder identiques à ceux du
+  convertisseur ; `game_var` hors de 0..3 → 0 et un avertissement unique ; commande inconnue
+  journalisée une fois ; `CreateDeclarations()` pour les tests ; `Alundra.Tests` référence
+  `CasaEngine.Compiler` ; 19 tests qui compilent et jouent du Yarn sur le runner du moteur, dont les
+  lignes exportées `M134_S016_p0` (nom d'avant) et `M134_S019_p0` (seuil et nom d'après) ; contrôle
+  neuf REFUTED sur un P2 (le constructeur copiait déjà l'état, ce qui masquait la copie de la
+  commande) corrigé : copie seulement dans la commande, deux tests d'état changé après construction
+  et de deux `falcon_update` sur le même runner, mutation vérifiée (retirer la copie fait échouer 3
+  tests) ; `Alundra.Tests` 1 344/1 344. Les noms d'objets de ces tests passent encore par les tables
+  brutes : T6 les migre.) Enregistrement des deux commandes et des sept fonctions sur un
   `YarnDialogueRunner` ; `Alundra.Tests` référence `CasaEngine.Compiler` (tests seulement) pour
   compiler des Yarn d'essai ; tests : chaque commande et chaque fonction, `M134_S016_p0` lit le nom
   d'avant la mise à jour et `M134_S019_p0` celui d'après, commande inconnue journalisée.

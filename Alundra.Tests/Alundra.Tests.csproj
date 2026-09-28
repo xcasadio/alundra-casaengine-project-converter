@@ -29,6 +29,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Alundra\Alundra.csproj" />
+    <!-- E15.c T4 (docs/plan-e15-yarn.md): compiles Yarn fixtures in AlundraYarnBindingsTests via
+         YarnDialogueCompiler.CompileString. Tests only - Alundra.csproj itself never references the
+         compiler. -->
+    <ProjectReference Include="..\CasaEngineMonogame\CasaEngine.Compiler\CasaEngine.Compiler.csproj" />
   </ItemGroup>
 
   <ItemGroup>
