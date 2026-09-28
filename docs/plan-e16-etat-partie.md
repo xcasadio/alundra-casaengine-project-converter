@@ -32,7 +32,10 @@ après la mort (« Réessayer »), sans remettre la BSS à zéro. Corrections :
 - D-E16-20 renvoie « Réessayer » à l'étape E18 du plan maître ;
 - E16.d, étapes 1 et 4, ne s'appuie plus sur le processus neuf.
 
-Deuxième relecture neuve de l'enveloppe et d'E16.0 (révision 3, `b9a0d85`) : **READY**.
+Deuxième relecture neuve de l'enveloppe et d'E16.0 (révision 3, `b9a0d85`) : **READY**. Enveloppe et
+E16.0 approuvées par l'auteur le 2026-09-28. E16.0 est faite (`59fac90`, §2) ; une vérification neuve
+du §2 a rendu **CONFIRMED** ; ses quatre remarques P4 (bornes de `_10`, taille de la copie après
+sauvegarde, impasses du recomptage, copie lue par `0xC2`) sont corrigées dans le texte.
 
 | Unité | Revue avant approbation | Après exécution |
 |---|---|---|
@@ -561,7 +564,7 @@ Mesuré le 2026-09-28 (E16.0), en lecture seule. Méthode :
 - **`<<flag n>>` du Yarn** : 932 occurrences, 33 ids distincts, id max 1005 (mot 31), tous dans la
   banque temporaire, et tous déjà vus par les opcodes.
 - **`ContentsGameFlag`** : propriété `_10` de la couche `Entities` des `.tmj`. Elle est présente sur
-  9 741 enregistrements, avec 367 valeurs non nulles distinctes de 1 à 2000 (mot 62), toutes dans
+  9 741 enregistrements, avec 367 valeurs non nulles distinctes de 185 à 2000 (mot 62), toutes dans
   `GameFlags`, aucune invalidée par `EntityRecordMapper.cs:170-175`.
 - **Union** : `GameFlags` 1357 ids, max 2047 ; `TemporaryFlags` 469 ids, max 2047. **Aucun id
   persistant ≥ 2048** : O-E16-3 est sans objet, et `GameFlags` s'écrit sur 64 mots (E16.c).
@@ -597,8 +600,10 @@ Mesuré le 2026-09-28 (E16.0), en lecture seule. Méthode :
   tables, et décodait donc des octets de table comme du code. Son exemple « Cave-145, décalage 2 » est
   dans les tables ; ses chiffres et ceux de son contradicteur, construit sur la même hypothèse, sont
   écartés.
-- **Cohérence du recomptage** : avec `0x78` sur 3 octets, tout le corpus ne donne qu'une impasse ;
-  avec 4 octets, il en donne 126, et de faux ids persistants jusqu'à 30726.
+- **Cohérence du recomptage** : avec `0x78` sur 3 octets, les rares impasses restantes (opcodes de
+  taille 0, chemins qui sortent du flux) sont toutes sur des cartes à extraction dégénérée
+  (`EventCodesFSize` négatif) ou à `Codes` minuscule. Avec 4 octets, on obtient 126 cibles invalides
+  et de faux ids persistants jusqu'à 30726.
 - **Enchaînement** : `0x78` (toujours), `0x79`/`0x7A` (selon `Result`) et `0x7B`/`0x7C` (selon un
   drapeau) écrivent `_34`, à `CodeIndex + 3` ou `+ 5`. `0x7D` (toujours), `0x7E`/`0x7F` et
   `0x80`/`0x81` y sautent. Le motif dominant est `0x78` … `0x7D` : un bloc de dialogue à choix, puis le
@@ -696,8 +701,8 @@ Mesuré le 2026-09-28 (E16.0), en lecture seule. Méthode :
     `INT_ARRAY_80191908` (`0x800643E0`–`0x80064E60`). `TemporaryFlags` est hors de la copie.
 - **`g_saveDataInRam`** (`0x80010000`, pointeur en `0x80029BC4`) n'est pas figé :
   - `InitializeGameState` y copie `g_saveData` au démarrage (`0x8008153C`, appelé en `0x8003189C`) ;
-  - chaque sauvegarde réussie y recopie le bloc sauvegardé (`0x8006163C`–`0x800616A8`, 0x760
-    octets) ;
+  - chaque sauvegarde réussie y recopie le bloc sauvegardé (`0x8006163C`–`0x800616A8`, 0x76C
+    octets, soit 0x14 de plus que la structure) ;
   - une fonction non décompilée y copie un enregistrement d'emplacement de carte mémoire (4 × 0x76C
     octets, `0x8005F2B8`–`0x8005F348`), probablement la lecture d'un emplacement (conditions non
     établies) ;
@@ -708,7 +713,9 @@ Mesuré le 2026-09-28 (E16.0), en lecture seule. Méthode :
     nouvelle partie (`0x80031860`) ; il est sauvegardé avec le reste ;
   - il est lu par `Script_187_0BB`, pour le journal de débogage « Retry = » ;
   - il est lu par l'**opcode `0xC2`** (`0x80041D34`), qui pose `Result = 0` si `SaveSlotIndex` est
-    inférieur à un octet de paramètre, 1 sinon. Le corpus a un seul `0xC2`, sur Overworld 1,2-7
+    inférieur à un octet de paramètre, 1 sinon. `0xC2` lit la copie de `g_saveData` (`0x801EBA3E`),
+    pas celle de `g_saveDataInRam` ; le rechargement recopie l'une dans l'autre juste après
+    l'incrément. Le corpus a un seul `0xC2`, sur Overworld 1,2-7
     (décalage 1508, seuil 20).
 - **Désaccords** :
   - `0xC2` ne lit qu'un octet de paramètre, alors que `EntityEventHandlers.cs:3630-3652` en combine
