@@ -900,6 +900,16 @@ erreur, tests du convertisseur et `Alundra.Tests` sans échec avant chaque ✅) 
 
 ### E15.e — Les accents de `font3` 🧪 (convertisseur, docs ; ouverte le 2026-09-28 pendant la recette ; T1-T2 faites, reste la recette T3)
 
+- **Vérification finale (2026-09-28)** : relecture neuve de toute la tranche **CONFIRMED** (plus de
+  CP850 dans `FontWriter` ; `.fnt` exporté relu : 145 lignes, les 17 caractères à leur case CP1252 avec
+  l'avance de `FontCharWidths.csv` ; atlas découpé et agrandi : chaque case montre bien son caractère,
+  la 130 une virgule ; les caractères non ASCII des `map_*.json`, d'`ETC_RES.R.json` et des 485 `.yarn`
+  sont exactement les 17 ; tests du convertisseur 400/400, `Alundra.Tests` 1 361/1 361 sans test sauté ;
+  ni la DLL, ni le texte, ni le moteur ne changent). Remarques P4, reportées : `{B` (apostrophe CP1252,
+  case 0x92) est décodé en `'` ASCII et dessiné depuis la case 0x27 — préexistant, sans glyphe manquant,
+  l'écart visuel entre les deux cases n'est pas établi ; la case 0x9C (« œ ») est une ligature peu
+  lisible à 16 px, la recette T3 tranchera.
+
 - **Constat de l'auteur** (recette, 2026-09-28) : dans la boîte de dialogue, désormais en `font3`
   (D-E15-12), les lettres accentuées s'affichent avec de mauvais glyphes (« oublié où » → une virgule
   puis un pointillé ; « répète » illisible).
