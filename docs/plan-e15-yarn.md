@@ -4,7 +4,9 @@
 directement des dialogues Yarn Spinner pour tout le texte du jeu, la DLL les joue sur le runner Yarn
 du moteur, et les fichiers de texte brut disparaissent du projet exporté.
 
-**Statut** : **approuvé par l'auteur le 2026-09-27** (enveloppe et E15.0, avec le plan moteur d'E15.a,
+**Statut** : **E15 close le 2026-09-28** : toutes les tranches faites et vérifiées, recette en jeu
+unique (E15.c T8, E15.d T5, E15.e T3) validée par l'auteur le 2026-09-28.
+**Approuvé par l'auteur le 2026-09-27** (enveloppe et E15.0, avec le plan moteur d'E15.a,
 branche moteur `chantier/yarn-extension-points`). **Révision 3.** Première relecture
 (REVISE, sept P2 corrigés : sens de `\Y` et effets de `\X`, pages vides et espaces, `:` de Yarn,
 oracle d'équivalence, lecteurs oubliés, retour arrière de l'export, E15.0 vraiment en lecture seule) ;
@@ -540,7 +542,7 @@ tests du convertisseur sans échec avant chaque ✅ ; **aucun export avant T7**)
   (D-E15-2).
 - **Dépendances** : E15.0, E15.a.
 
-### E15.c — La DLL lit le Yarn 🧪 (DLL ; T1 à T7 faites et vérifiées le 2026-09-28, recette en jeu T8 en attente)
+### E15.c — La DLL lit le Yarn ✅ (DLL ; T1 à T7 faites et vérifiées le 2026-09-28, recette en jeu T8 validée par l'auteur le 2026-09-28)
 
 - **Vérification finale (2026-09-28)** : relecture neuve de toute la tranche **CONFIRMED** : une sonde
   hors dépôt joue les vrais `.dialogue` exportés sur le directeur réel (`M134_S016` affiche « Anneau
@@ -759,8 +761,9 @@ de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Re
   que `installDialogueDirector` n'est pas demandé, `IntroTraceHarnessTests.cs:389-396`), qui joue
   désormais le Yarn sans affichage (contrat, item 8) ; le chemin du directeur est couvert par les
   tests de T5 ; recherche dans la DLL et `Alundra.Tests` : plus aucun lecteur de texte brut appelé.
-- ⏳ **T8 — Recette en jeu** (auteur) : cibles du §5.5, plus « … » visible (`M416_S007_p1` et une
+- ✅ **T8 — Recette en jeu** (auteur) : cibles du §5.5, plus « … » visible (`M416_S007_p1` et une
   ligne à `\W2` au milieu), boîte en `font3`, une phrase partagée (coffre d'Anzes ou panneau).
+  **Validée par l'auteur le 2026-09-28**, sur le projet final (après E15.d et E15.e).
 
 - **Acceptation** : `Alundra.Tests` sans échec ; oracle de l'intro inchangé **avec un harnais qui
   passe par Yarn** ; recette en jeu T8 ; vérification finale neuve de la tranche.
@@ -772,7 +775,7 @@ de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Re
 - **Dépendances** : E15.a (branche moteur `chantier/yarn-extension-points`, pointée par le dépôt),
   E15.b.
 
-### E15.d — Suppression du texte brut 🧪 (convertisseur, DLL, docs ; T1 à T4 faites et vérifiées le 2026-09-28, recette en jeu T5 en attente)
+### E15.d — Suppression du texte brut ✅ (convertisseur, DLL, docs ; T1 à T4 faites et vérifiées le 2026-09-28, recette en jeu T5 validée par l'auteur le 2026-09-28)
 
 - **Vérification finale (2026-09-28)** : relecture neuve de toute la tranche **CONFIRMED** (manifeste
   recalculé : identique au second export, aucun fichier brut restant dans `alundra-project/`, 486
@@ -889,7 +892,8 @@ erreur, tests du convertisseur et `Alundra.Tests` sans échec avant chaque ✅) 
   export identique hormis `report.json`, avec `Yarn.RawTextFilesRemoved` = 0 ; **recherche dans tous les
   projets** (DLL, `Alundra.Tests`, convertisseur et ses tests) : aucun lecteur ni écrivain de ces
   fichiers.
-- ⏳ **T5 — Recette en jeu** (auteur) : celle d'E15.c (T8), faite une seule fois sur le projet final.
+- ✅ **T5 — Recette en jeu** (auteur) : celle d'E15.c (T8), faite une seule fois sur le projet final.
+  **Validée par l'auteur le 2026-09-28.**
 
 - **Acceptation** : T1 à T4 ; recette en jeu T5 ; vérification finale neuve d'E15.
 - **Arrêts** : un lecteur de ces fichiers retrouvé après la suppression ; un manifeste qui montre une
@@ -898,7 +902,7 @@ erreur, tests du convertisseur et `Alundra.Tests` sans échec avant chaque ✅) 
 - **Retour arrière** : revert des commits d'E15.d, puis export complet (les tables brutes reviennent).
 - **Dépendances** : E15.c.
 
-### E15.e — Les accents de `font3` 🧪 (convertisseur, docs ; ouverte le 2026-09-28 pendant la recette ; T1-T2 faites, reste la recette T3)
+### E15.e — Les accents de `font3` ✅ (convertisseur, docs ; ouverte le 2026-09-28 pendant la recette ; T1-T2 faites et vérifiées, recette T3 validée par l'auteur le 2026-09-28)
 
 - **Vérification finale (2026-09-28)** : relecture neuve de toute la tranche **CONFIRMED** (plus de
   CP850 dans `FontWriter` ; `.fnt` exporté relu : 145 lignes, les 17 caractères à leur case CP1252 avec
@@ -973,8 +977,8 @@ convertisseur et `Alundra.Tests` sans échec avant chaque ✅) :
   127 à leur propre case, aucun autre point de code au-dessus de 127, 111 cases sans caractère avec
   `"no proven character"` ; export 2 identique hormis `report.json` (manifeste `e6f640d9…`) ;
   `Alundra.Tests` 1361/1361 avec le test « é » actif.
-- ⏳ **T3 — Recette en jeu** (auteur) : fusionnée avec celle d'E15.d (T5) : accents justes dans la boîte
-  de dialogue et dans l'inventaire.
+- ✅ **T3 — Recette en jeu** (auteur) : fusionnée avec celle d'E15.d (T5) : accents justes dans la boîte
+  de dialogue et dans l'inventaire. **Validée par l'auteur le 2026-09-28.**
 
 - **Arrêts** : un caractère du texte sans case prouvée ; un manifeste qui montre un autre changement
   que ces trois fichiers → cause établie avant tout.

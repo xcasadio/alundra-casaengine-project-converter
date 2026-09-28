@@ -740,7 +740,7 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
   (poursuite, patrouille). Hors intro : seuls A0/E0 sont requis avant (E1).
 - **Dépendances** : E4, E5.
 
-### E15 — Tout le texte d'Alundra en Yarn ⏳ (plan détaillé proposé le 2026-09-27 : `docs/plan-e15-yarn.md`)
+### E15 — Tout le texte d'Alundra en Yarn ✅ (close le 2026-09-28, recette en jeu validée : `docs/plan-e15-yarn.md`)
 
 - **But** (D1, D6) : le convertisseur produit directement des dialogues Yarn Spinner pour tout le
   texte du jeu — tables des cartes, table partagée `map_alundra`, table ETC — et la DLL les joue sur
@@ -762,8 +762,10 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
   DLL joue tous les textes depuis le Yarn (dialogues de carte et table partagée, OUI/NON, inventaire),
   boîte de dialogue en `font3` avec les glyphes de l'original (« … », flèches, boutons : le chiffre
   parasite de `\W2` a disparu), état des faucons porté depuis le binaire ; les tables de texte brut ne
-  sont plus exportées ni lues. **Reste la recette en jeu de l'auteur** (E15.d T5) ; puis merge de la
-  branche moteur `chantier/yarn-extension-points` avant celle-ci.
+  sont plus exportées ni lues. E15.e (même jour) : les accents de `font3` sont pris dans la case de
+  leur octet CP1252, caractères prouvés seulement (ADR-0009). **Recette en jeu validée par l'auteur
+  le 2026-09-28 : E15 close.** Merge : branche moteur `chantier/yarn-extension-points` d'abord, puis
+  celle-ci.
 - **Dépendances** : E5, E6, E12.
 
 ### E17 — Cinématiques en `.cutscene` ⏳ (ouverte le 2026-09-27, non planifiée)
@@ -821,5 +823,5 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 | E13.c HUD, icônes d'arme et d'accessoire | ✅ close (S4 passée en jeu le 2026-09-21) | analyseur `6176ea3`, `a0904b8`, `c304201`, mergé `c204009` ; parent `0f1cfd4`, `7018e6a`, `0135c92`, `cdb7097`, mergé `ea633ad` |
 | E13.d inventaire principal (puis sous-inventaire et L1/R1) | ✅ close (principal validé en jeu le 2026-09-24 ; sous-inventaire, L1/R1 et suites SI7-SI12 validés le 2026-09-25, mergés par l'auteur dans `main`) | `docs/plan-e13d-inventaire.md` ; `docs/plan-e13d-sous-inventaire.md` : analyseur `8f403d5`, parent `45bb0e2`, `a3901af`, `dc3fe1a`, `5f12e53`, suites `4e411ef`…`192f497`, merge `3537807` |
 | E14 IA native | ⏳ | |
-| E15 le texte en Yarn | ⏳ plan détaillé proposé le 2026-09-27, en attente d'approbation | `docs/plan-e15-yarn.md` |
+| E15 le texte en Yarn | ✅ close (recette en jeu validée le 2026-09-28) | `docs/plan-e15-yarn.md` ; parent `chantier/e15-yarn`, moteur `chantier/yarn-extension-points` |
 | E17 cinématiques en `.cutscene` | ⏳ ouverte le 2026-09-27, prérequis moteur | |
