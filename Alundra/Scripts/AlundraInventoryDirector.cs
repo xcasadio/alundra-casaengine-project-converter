@@ -128,13 +128,27 @@ public sealed class AlundraInventoryDirector
         _soundPlayer = soundPlayer;
     }
 
-    /// <summary>Test-only: restores this session singleton to construction-equivalent state.</summary>
+    /// <summary>Test-only: restores this session singleton to construction-equivalent state - the three
+    /// attachments, then <see cref="ResetSessionForLoad"/>, so the list of session state exists once.</summary>
     internal void ResetForTests()
     {
         _gameState = null;
         _itemTables = null;
         _soundPlayer = null;
 
+        ResetSessionForLoad();
+    }
+
+    /// <summary>
+    /// E16.d K8, step 4 (docs/plan-e16-etat-partie.md): the main inventory's half of loading a save, run on
+    /// the arrival map. Puts every piece of session state back to its start-of-session value - the inventory
+    /// closed and idle, cursor, names, text reveal, boxes and tweens - but keeps the three attachments
+    /// (<see cref="_gameState"/>, <see cref="_itemTables"/>, <see cref="_soundPlayer"/>), which the arrival map's
+    /// own install has just re-pointed. The map entry resets none of this (no <c>InstallForMapEntry</c> here),
+    /// and an inventory opened during the load's fade (SD5) must not survive into the loaded game.
+    /// </summary>
+    internal void ResetSessionForLoad()
+    {
         ForbiddenWarpFlag = 0;
         SelectedSlotId = 0;
         CursorFrameDelay = 0;

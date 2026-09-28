@@ -360,6 +360,52 @@ public sealed class AlundraGameState
         IsWarpDisabled = false;
     }
 
+    /// <summary>
+    /// E16.d K8, step 1 (docs/plan-e16-etat-partie.md, D-E16-19, SC7): the session half of loading a save -
+    /// run by <c>AlundraSaveGameDirector.ApplyPendingLoad</c> on the arrival map, right after
+    /// <see cref="InstallForMapEntry"/> and BEFORE <see cref="AlundraSaveGame.ApplyTo"/>. It puts back what a
+    /// fresh process would hold for the fields the save does NOT carry, so nothing of the session in progress
+    /// leaks into the loaded game - the original only loads from a fresh process (<c>LOADER.EXE</c>) or after
+    /// death ("Retry"), never from the middle of a session (§0.2):
+    /// <list type="bullet">
+    /// <item><description><see cref="PlayerControlFlags"/> 0, <see cref="LastPadState"/> default,
+    /// <see cref="TickPad"/> reset;</description></item>
+    /// <item><description>the interact latch, its entity and its eight numbers;</description></item>
+    /// <item><description><see cref="IsWarpDisabled"/> false;</description></item>
+    /// <item><description><see cref="TextCategoryIndex"/> 0 and <see cref="GameVariables"/> zeroed (D-E16-19:
+    /// both are BSS outside <c>g_saveData</c>, zero in the fresh process the original loads from);</description></item>
+    /// <item><description><see cref="NewGameInventoryInitialized"/> TRUE, unlike a New Game (SC7): a later map
+    /// entry without a warp arrival must not run the New Game inventory over the loaded items
+    /// (<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>).</description></item>
+    /// </list>
+    /// Nothing the save carries is touched here (flags, map table, item counters, stats, game time, death
+    /// retries): <see cref="AlundraSaveGame.ApplyTo"/> writes them next. <see cref="TemporaryFlags"/> is already
+    /// cleared by <see cref="InstallForMapEntry"/>.
+    /// </summary>
+    internal void ResetSessionForLoad()
+    {
+        PlayerControlFlags = 0;
+        LastPadState = default;
+        TickPad.Reset();
+
+        InteractLatchEntity = null;
+        InteractLatchFacing = 0;
+        InteractLatchEntityX = 0;
+        InteractLatchEntityY = 0;
+        InteractLatchEntityZ = 0;
+        InteractLatchPlayerX = 0;
+        InteractLatchPlayerY = 0;
+        InteractLatchPlayerZ = 0;
+        InteractLatchDirection = 0;
+
+        IsWarpDisabled = false;
+
+        TextCategoryIndex = 0;
+        Array.Clear(GameVariables);
+
+        NewGameInventoryInitialized = true;
+    }
+
     /// <summary>Test-only: restores this session carrier to its New-Game-equivalent construction state,
     /// so tests do not leak state into each other through <see cref="Instance"/> - same seam as
     /// <see cref="AlundraMusicPlayer.ResetForTests"/>/<see cref="AlundraScreenFadeDirector.ResetForTests"/>.</summary>

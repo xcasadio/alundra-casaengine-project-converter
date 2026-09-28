@@ -1291,7 +1291,7 @@ un second agent ; scripts et rapports dans `scratchpad/e16def/`)
 **Tâches** (branche `chantier/e16-proposition` ; un commit par tâche, avec la mise à jour de ce
 plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé)
 
-- ⏳ **T1 — Remises de session pour un chargement** (K8, étapes 1, 3 et 4). Tests :
+- ✅ **T1 — Remises de session pour un chargement** (fait le 2026-09-28 : `AlundraGameState.ResetSessionForLoad`, `AlundraHudDirector.ResetDisplayForLoad(stats)` avec un accès de test aux quatre sous-étapes, et `ResetSessionForLoad` des deux directeurs d'inventaire, du post-traitement et du portrait, que leur `ResetForTests` appelle désormais ; la jauge SC1 est fermée par la demande « cacher tout de suite » du script (drapeau 1814), qui fige la sous-étape ; 5 tests dans `AlundraSaveGameLoadResetTests` ; `Alundra.Tests` 1690/1690) (K8, étapes 1, 3 et 4). Tests :
   - `ResetSessionForLoad` de l'état de jeu : chaque champ listé revient à sa valeur, et aucun champ
     porté par la sauvegarde ne change ;
   - la jauge en plein rattrapage des PM max (affichés 3, vrais 4, `_mpMaxSubStep` non nul), puis des

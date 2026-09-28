@@ -77,13 +77,25 @@ public sealed class AlundraSubInventoryDirector
         _soundPlayer = soundPlayer;
     }
 
-    /// <summary>Test-only: restores this session singleton to construction-equivalent state.</summary>
+    /// <summary>Test-only: restores this session singleton to construction-equivalent state - the three
+    /// attachments, then <see cref="ResetSessionForLoad"/>, so the list of session state exists once.</summary>
     internal void ResetForTests()
     {
         _gameState = null;
         _itemTables = null;
         _soundPlayer = null;
 
+        ResetSessionForLoad();
+    }
+
+    /// <summary>
+    /// E16.d K8, step 4 (docs/plan-e16-etat-partie.md): the sub-inventory's half of loading a save, run on the
+    /// arrival map - every piece of session state back to its start-of-session value (closed, cursor at 0,
+    /// names, key items, text reveal, boxes and tweens), the three attachments kept, same contract as
+    /// <see cref="AlundraInventoryDirector.ResetSessionForLoad"/>.
+    /// </summary>
+    internal void ResetSessionForLoad()
+    {
         State = 0;
         _hasTickedSinceOpen = false;
         SelectedPosition = 0; // plan §1.3: not reset between openings, but 0 at session start.

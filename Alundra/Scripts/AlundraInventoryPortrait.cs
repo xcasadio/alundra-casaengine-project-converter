@@ -185,8 +185,16 @@ public sealed class AlundraInventoryPortrait
         _step--;
     }
 
-    /// <summary>Test-only: restores the idle state.</summary>
+    /// <summary>Test-only: restores the idle state, through <see cref="ResetSessionForLoad"/>.</summary>
     internal void ResetForTests()
+    {
+        ResetSessionForLoad();
+    }
+
+    /// <summary>E16.d K8, step 4 (docs/plan-e16-etat-partie.md): loading a save puts the portrait back to
+    /// <see cref="StateIdle"/> with nothing drawn - a flight started during the load's fade (SD5) must not
+    /// survive into the loaded game. The head point is refreshed by the world every tick anyway.</summary>
+    internal void ResetSessionForLoad()
     {
         State = StateIdle;
         _step = 0;
