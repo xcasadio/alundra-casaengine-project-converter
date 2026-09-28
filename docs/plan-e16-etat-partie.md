@@ -896,7 +896,7 @@ par un `verifier` frais.
 **Tâches** (branche `chantier/e16-proposition` ; un commit par tâche, avec la mise à jour de ce
 plan ; `Alundra.Tests` sans échec à chaque commit)
 
-- ⏳ **T1 — Temps de jeu et compteur de reprises** (C1, C8). Tests :
+- ✅ **T1 — Temps de jeu et compteur de reprises** (fait le 2026-09-28 : `GameTime`, `DeathRetryCount`, `AdvanceGameTime` et son reste fractionnaire dans `AlundraGameState`, appel en tête d'`AlundraWorldProxy.Update` ; 23 tests dans `AlundraGameTimeTests`, dont une durée qui passe juste 2^32 unités, ajoutée après une mutation « conversion avant le plafond » que les durées `1e12` et `float.MaxValue` ne voyaient pas (conversion saturante de .NET 9) ; `Alundra.Tests` 1452/1452, oracle de l'intro inchangé) (C1, C8). Tests :
   - une seconde ajoute 60, en 60 pas de 1/60 s comme en un pas de 1 s ;
   - 120 pas de 1/120 s ajoutent 60 ;
   - le compteur s'arrête à `0x14996C4` ;

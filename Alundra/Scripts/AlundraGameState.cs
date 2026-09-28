@@ -230,6 +230,70 @@ public sealed class AlundraGameState
     /// </summary>
     public readonly ushort[] MapIdToInternalMapIndexTable = CreateIdentityMapIndexTable();
 
+    /// <summary>E16.c C8 (docs/plan-e16-etat-partie.md, D-E16-23): game-time units per real second. The
+    /// original's end-of-frame function (<c>0x80042798</c>) adds one unit per displayed frame, and
+    /// <c>UpdateMenuStatusText</c> (<c>0x800311D4</c>) shows the counter in sixtieths of a second (§2, Q3);
+    /// the author settled the port on 60 units per real second.</summary>
+    public const int GameTimeUnitsPerSecond = 60;
+
+    /// <summary>E16.c C8: the counter's ceiling, <c>0x14996C4</c> = 99:59:59 in sixtieths of a second -
+    /// the cap of the original's end-of-frame increment (<c>0x80042834</c>, <c>GameEngine.cs:1471-1474</c>).</summary>
+    public const uint GameTimeMax = 0x14996C4;
+
+    /// <summary>
+    /// E16.c C1/C8 (docs/plan-e16-etat-partie.md, D-E16-23): port of <c>g_gameplayTime</c> @ 0x8013FB4C,
+    /// saved as <c>g_saveData.GameTime</c> (<c>+0x048</c>) by <c>UpdateSavedData</c>. Counts sixtieths of a
+    /// second, capped at <see cref="GameTimeMax"/>; advanced only by <see cref="AdvanceGameTime"/>. Part of
+    /// <c>g_saveData</c>, so <see cref="InstallForMapEntry"/> keeps it (F9: this DLL had no game time before).
+    /// </summary>
+    public uint GameTime;
+
+    /// <summary>
+    /// E16.c C1 (docs/plan-e16-etat-partie.md, D-E16-22): port of <c>g_saveData.SaveSlotIndex</c>
+    /// (<c>+0x756</c>, one byte), renamed after what it counts: the retries after death. The original
+    /// increments it only in <c>InitializeMapWarpPosition</c> (<c>0x800315B0</c>, capped at <c>0xFF</c>),
+    /// zeroes it at New Game (<c>0x80031860</c>), and reads it in opcode <c>0xC2</c> (<c>0x80041D34</c>) and in
+    /// <c>Script_187_0BB</c>'s "Retry =" debug log (§2, Q4). Nothing increments it before E18 ("Retry" is not
+    /// ported); it is saved and restored. Kept by <see cref="InstallForMapEntry"/>, like the rest of
+    /// <c>g_saveData</c>.
+    /// </summary>
+    public byte DeathRetryCount;
+
+    /// <summary>E16.c C8: the fraction of a game-time unit <see cref="AdvanceGameTime"/> has not yet passed
+    /// to <see cref="GameTime"/>. Not saved; zeroed by <see cref="ResetGameTimeFraction"/>.</summary>
+    private double _gameTimeFraction;
+
+    /// <summary>
+    /// E16.c C8 (docs/plan-e16-etat-partie.md, D-E16-23): advances <see cref="GameTime"/> by
+    /// <paramref name="elapsedSeconds"/> real seconds, at <see cref="GameTimeUnitsPerSecond"/> units per second.
+    /// Called once per frame at the head of <see cref="AlundraWorldProxy.Update"/>. The DLL's logic clock runs
+    /// at 50 Hz (F9, <see cref="AlundraLogicClock"/>), so the units are counted on elapsed time, not on ticks.
+    /// A non-finite, zero or negative duration adds nothing. The whole units are passed on and the counter is
+    /// capped at <see cref="GameTimeMax"/> in <see cref="double"/>, BEFORE the conversion to <see cref="uint"/>,
+    /// so a huge finite duration reaches the cap instead of wrapping (SC11).
+    /// </summary>
+    public void AdvanceGameTime(float elapsedSeconds)
+    {
+        if (!float.IsFinite(elapsedSeconds) || elapsedSeconds <= 0f)
+        {
+            return;
+        }
+
+        _gameTimeFraction += elapsedSeconds * (double)GameTimeUnitsPerSecond;
+        var wholeUnits = Math.Floor(_gameTimeFraction);
+        _gameTimeFraction -= wholeUnits;
+
+        var total = GameTime + wholeUnits;
+        GameTime = total >= GameTimeMax ? GameTimeMax : (uint)total;
+    }
+
+    /// <summary>E16.c C6/C8: drops the unsaved fraction of a game-time unit - used when a save's
+    /// <see cref="GameTime"/> is applied (<c>AlundraSaveGame.ApplyTo</c>, E16.c C6) and by <see cref="ResetForTests"/>.</summary>
+    internal void ResetGameTimeFraction()
+    {
+        _gameTimeFraction = 0d;
+    }
+
     private static ushort[] CreateIdentityMapIndexTable()
     {
         var table = new ushort[500];
@@ -270,6 +334,9 @@ public sealed class AlundraGameState
     /// <item><description><see cref="GameFlags"/>, <see cref="MapIdToInternalMapIndexTable"/>,
     /// <see cref="PlayerControlFlags"/>, <see cref="LastPadState"/> and the eight numeric interact-latch
     /// fields all stay CONSERVED - nothing to do here for them.</description></item>
+    /// <item><description>E16.c C8: <see cref="GameTime"/> (with its unsaved fraction) and
+    /// <see cref="DeathRetryCount"/> stay CONSERVED too - both are in <c>g_saveData</c>, which no map entry
+    /// of the original touches.</description></item>
     /// </list>
     /// </summary>
     public void InstallForMapEntry()
@@ -338,5 +405,10 @@ public sealed class AlundraGameState
         // binary's (lack of) reset.
         TextCategoryIndex = 0;
         Array.Clear(GameVariables);
+
+        // E16.c C8: the game time, its unsaved fraction and the death-retry counter are session state.
+        GameTime = 0;
+        DeathRetryCount = 0;
+        ResetGameTimeFraction();
     }
 }

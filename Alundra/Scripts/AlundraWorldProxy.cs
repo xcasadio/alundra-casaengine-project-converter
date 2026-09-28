@@ -1823,6 +1823,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     public override void Update(float elapsedTime)
     {
+        // E16.c C8 (docs/plan-e16-etat-partie.md, D-E16-23): the game-time counter, once per frame and
+        // before anything else. Ungated, like the original's end-of-frame increment (0x80042798), which
+        // counts every displayed frame - dialogues, menus and transitions included (§2, Q3). Counted on
+        // this frame's elapsed real time, not on logic ticks (F9).
+        GameState.AdvanceGameTime(elapsedTime);
+
         // Bug fix (AlundraLogicClock's own class doc): this world's ONE shared logic clock. Reads the SAME
         // cached value every spawned entity's own Update already advanced/read this frame (this proxy's
         // own Update always runs LAST - World.cs:443-491) - or, for a world with no entities at all (the
