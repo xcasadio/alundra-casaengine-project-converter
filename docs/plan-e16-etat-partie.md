@@ -121,6 +121,23 @@ Réponses de l'auteur sur le chargement (2026-09-28, après la première relectu
     à renommer avec ses lecteurs ;
   - tout le chemin est à vérifier contre le binaire.
 
+Réponses de l'auteur aux questions d'E16.0 (2026-09-28, §2 et §3) :
+
+- **D-E16-21 — `0x78` fait 3 octets, dans les deux tables** (O-E16-8) : E16.a corrige
+  `EventOpcodeSizeTable.cs` dans la DLL et `EventCodeDebugger.cs` dans l'analyseur, sur une branche
+  dédiée du sous-module analyseur.
+- **D-E16-22 — `SaveSlotIndex` est sauvegardé et restitué** (O-E16-9), dans le domaine 0..255,
+  comme l'original. La DLL le nomme d'après ce qu'il compte, les reprises après la mort. Cette
+  décision remplace, pour ce champ, la disposition S8 du §6 (« non repris du fichier »), qui le
+  prenait pour un numéro d'emplacement.
+- **D-E16-23 — Le temps de jeu compte 60 unités par seconde réelle** (O-E16-10). L'affichage divise
+  par 60, le plafond reste `0x14996C4` = 99:59:59, et le format est celui de l'original.
+- **D-E16-24 — Les autres désaccords de décompilation relevés par E16.0 sont corrigés en E18**
+  (O-E16-11) : la division par 60 d'`UpdateMenuStatusText`, `displayMenu` d'`UpdateSavedData`,
+  `Offset` de `SaveData.cs`, `0xC2` sur un octet et la valeur rendue par `UpdateMemoryCardProcess`.
+  Ils s'ajoutent à `SaveSlotIndex` et au chemin « Réessayer » (D-E16-20). Le port de la DLL suit
+  le binaire dès E16.c, sans attendre ces corrections.
+
 ### 0.2 Faits établis (2026-09-27, citations du code remises à jour le 2026-09-28)
 
 Chaque fait a été relu dans le code ou le binaire cité ; les recherches larges ont été contre-vérifiées
@@ -229,6 +246,8 @@ par un agent neuf.
 - **Temps de jeu, contradiction à trancher** : le compteur prend +1 à chaque appel de `EndGame`
   (`GameEngine.cs:1471-1474`, fin d'image) et plafonne à `0x14996C4` = 21 599 940 = 99:59:59 × 60 ;
   l'analyseur l'affiche pourtant comme un nombre de secondes (`GameEngine.cs:2724-2733`).
+  *Tranché par E16.0* : le binaire l'affiche en soixantièmes de seconde, et la décompilation a perdu
+  la division par 60 (§2, Q3) ; le port compte 60 unités par seconde réelle (D-E16-23).
 - **Chaîne de la sauvegarde en jeu** (relevée à la relecture du 2026-09-27) :
   1. le livre de sauvegarde est une entité d'**IA native** : `AI_ProcessWarpTransitionState`
      (`@ 0x8007B998`, `FunctionTypeC.cs:6824-6931`, entité nommée « SaveBook » dans l'analyseur) ;
@@ -318,6 +337,10 @@ par un agent neuf.
     présents dans le corpus sont portés ensemble, avec l'écriture de `EventProgramState._34`. Si
     E16.0 montre que `0x7B`, `0x7C`, `0x80` et `0x81` n'apparaissent pas, la famille entière est
     exclue d'E16, avec cette raison écrite ici.
+    *E16.0 (§2, Q2)* : ils apparaissent tous, donc la famille entre. `0x7A` n'apparaît pas ;
+  - **`0x78` sur 3 octets** (D-E16-21), dans `EventOpcodeSizeTable.cs:151` et dans
+    `EventCodeDebugger.cs` de l'analyseur (branche dédiée du sous-module, pointeur déplacé dans ce
+    dépôt).
 - **Acceptation** : un test par opcode contre la décompilation ; un **test de séquence** sur un
   programme réel du corpus qui écrit `_34` puis y revient (opcode d'écriture jusqu'à l'opcode de
   retour) ; `Alundra.Tests` sans échec ; oracle de l'intro inchangé (`0x11` à la frame 1704) ; plus
@@ -342,10 +365,13 @@ par un agent neuf.
 - **But** : `AlundraSaveGame`, l'objet que la DLL confie au service (D-E16-4).
 - **Contenu** :
   - les champs de `SaveData` : `GameTime`, `InitialMapId`, `CameraTileX/Y/Z`, `GameFlags`,
-    `MapIdToInternalMapIndexTable`, les neuf stats, `NumberOfItems`. `LastMapId`, `Field_757` et
-    `Offset` seulement si E16.0 leur trouve un lecteur (la DLL n'en a aucun aujourd'hui).
-    `SaveSlotIndex` n'est pas repris du fichier : l'identité d'un emplacement est son nom dans le
-    service, un fichier copié ne peut pas se réclamer d'un autre emplacement ;
+    `MapIdToInternalMapIndexTable`, les neuf stats, `NumberOfItems`, et le compteur de reprises
+    après la mort, `SaveSlotIndex` dans l'original (D-E16-22). La DLL n'a pas encore ce compteur :
+    E16.c l'ajoute à `AlundraGameState`, sous un nom qui dit ce qu'il compte. Rien ne l'incrémente
+    avant E18.
+    `LastMapId`, `Field_757` et `Offset` ne sont pas écrits : E16.0 ne leur trouve aucun lecteur, et
+    `Offset` n'existe pas dans l'original (§2, Q3). L'identité d'un emplacement reste son nom dans le
+    service ;
   - `GameFlags` écrit sur **64 mots** comme l'original si E16.0 ne trouve aucun id persistant ≥ 2048
     (sinon O-E16-3) ; la banque en mémoire garde ses 1024 mots, et la restitution **met les 1024 mots
     à zéro avant de copier les 64** (sinon des drapeaux de la session en cours survivraient) ;
@@ -357,7 +383,9 @@ par un agent neuf.
     E16.f) ;
   - le chapitre et le résumé `HP xx TIME hh:mm:ss` vont dans les **métadonnées** de l'emplacement,
     que la liste lit sans décoder la sauvegarde ;
-  - le port du compteur de temps de jeu, dans l'unité mesurée en E16.0 ;
+  - le port du compteur de temps de jeu (D-E16-23) : 60 unités par seconde réelle, plafond
+    `0x14996C4`. Le résumé divise par 60 comme le binaire (`0x800311D4`, §2, Q3), et non comme
+    `GameEngine.cs:2724` ;
   - capture depuis `AlundraGameState` ; la capture suit les sources d'`UpdateSavedData`
     (`GameEngine.cs:2648-2662`) : carte courante, tuile du joueur, texte de l'emplacement, temps de
     jeu ;
@@ -378,18 +406,19 @@ par un agent neuf.
   | `Money` | 0..9999 | `SetMoney` (`:746-757`) ; un montant négatif fait lever la jauge (`AlundraHudComposer.cs:320-331`) |
   | `WeaponId` | -1 ou 1..6 | `SetPlayerWeaponId` (`:822-834`) |
   | `ItemId` | 0..98 | `ItemsCount = 99` (`:784`) |
-  | `Falcon`, `FalconTemp` | ≥ 0, borne haute d'E16.0 | E16.0 question 6 |
-  | `NumberOfItems` | indices impairs dans [0, plafond de l'objet] ; indices pairs et indices ≥ 198 à 0 | `AlundraGameState.cs:173-180` ; plafond d'E16.0 question 6 |
+  | `Falcon`, `FalconTemp` | 0..50 | `IncreaseFalcon2` (`0x8004E6EC`) et `UpdateNumberOfFalcon` (`0x8004E738`) plafonnent à `0x32` (§2, Q6) |
+  | `NumberOfItems` | indices impairs `id × 2 + 1` dans [0, `ItemsProperties[id × 5 + 3]`] ; indices pairs et indices ≥ 198 à 0 | `AlundraGameState.cs:173-180` ; plafond par objet, `Data/items-properties.json`, déjà chargé (`AlundraItemTables.cs:132-134`) (§2, Q6) |
+  | compteur de reprises (`SaveSlotIndex`) | 0..255 | un octet, plafonné à `0xFF` par `InitializeMapWarpPosition` (§2, Q4 ; D-E16-22) |
   | `MapIdToInternalMapIndexTable` | chaque valeur est une clé de `world-index.json` | `AlundraWorldIndexTable.Resolve` (`:88`) ; une valeur inconnue ferait avorter à jamais le portail qui la lit (`AlundraWarpDirector.cs:304`) |
   | `InitialMapId` | clé de `world-index.json`, monde présent au catalogue | idem |
-  | `CameraTileX/Y/Z` | dans les dimensions de la carte, et sans débordement de `(tuile × largeur + largeur / 2) << 16` ni de `Z << 20` | `AlundraWorldProxy.cs:1563-1565` ; dimensions et Z maximal d'E16.0 question 6 |
-  | `GameTime` | 0..`0x14996C4` | plafond du compteur (`GameEngine.cs:1471-1474`) |
+  | `CameraTileX/Y/Z` | dans les dimensions de la carte, et sans débordement de `(tuile × largeur + largeur / 2) << 16` ni de `Z << 20` | `AlundraWorldProxy.cs:1563-1565` ; dimensions lues dans `tilemap/<nom>.tileMap` de la carte (§2, Q6). Pour `CameraTileZ`, la hauteur de tuile est un octet (+1 en pente), le maximum observé sur un sol est 55, et le débordement commence à 2048 : borne haute arrêtée dans le plan détaillé d'E16.c |
+  | `GameTime` | 0..`0x14996C4` | plafond du compteur (`GameEngine.cs:1471-1474`, `0x80042834`) ; soixantièmes de seconde (D-E16-23) |
 
 - **Acceptation** : tests —
   - aller-retour identique en JSON et en binaire ; capture puis application donnent un état identique
     champ par champ ; `TemporaryFlags` inchangé ; ni `TemporaryFlags`, ni `TextCategoryIndex`, ni
     `GameVariables` dans aucun des deux formats ; texte du résumé comparé au calcul
-    d'`UpdateMenuStatusText` ; capture sur un héros placé à une tuile connue d'une carte connue →
+    d'`UpdateMenuStatusText` du binaire (division par 60) ; capture sur un héros placé à une tuile connue d'une carte connue →
     `InitialMapId` et `CameraTileX/Y/Z` égaux à ces valeurs ;
   - **pour chaque ligne du tableau, dans les deux formats**, une sauvegarde portant la valeur
     minimale, maximale et maximale + 1 (ou minimale − 1) ; hors domaine → refus nommant le champ ;
@@ -772,10 +801,10 @@ tests du convertisseur 400/400, `Alundra.Tests` 1361/1361.
 | O-E16-5 | ~~Qui porte le gestionnaire du livre de sauvegarde ?~~ — **tranché : E16.e** (D-E16-12). | E16.e |
 | O-E16-6 | **Comment activer les touches de recette ?** Une variable d'environnement (`ALUNDRA_SAVE_DEBUG=1`) risque le même sort que `ALUNDRA_HUD_DEBUG`, qui n'a jamais atteint le processus du lanceur (D-E13-12). Pistes à comparer en E16.d, sur ce que le lanceur transmet vraiment au jeu : un argument de ligne de commande du lanceur, un réglage du projet, un fichier de configuration à côté du jeu. À trancher par l'auteur **avant E16.d**. | E16.d |
 | O-E16-7 | Seulement si E16.f T1 montre que la machine virtuelle de Yarn lève une exception sur une lecture refusée, ou qu'un dialogue exporté a besoin de variables internes de Yarn : erreur visible (dialogue interrompu), valeur initiale du `Program` avec journal, ou autre ? | E16.f |
-| O-E16-8 | **Taille de `0x78`** (§2, Q2) : le binaire consomme 3 octets, `EventOpcodeSizeTable.cs:151` en déclare 4, recopiés de `EventCodeDebugger.cs` de l'analyseur. E16.a corrige la table de la DLL à 3 ; corrige-t-elle aussi la table de l'analyseur ? | E16.a |
-| O-E16-9 | **`SaveSlotIndex`** (§2, Q4) : ce n'est pas un numéro d'emplacement mais le nombre de reprises après la mort, sauvegardé et lu par l'opcode `0xC2` (une occurrence, Overworld 1,2-7). E16.c prévoyait de ne pas le reprendre du fichier (S8). Le sauvegarder et le restituer, domaine 0..255 ? | E16.c |
-| O-E16-10 | **Unité du temps de jeu** (§2, Q3) : l'original ajoute 1 par image affichée et affiche le compteur comme des soixantièmes de seconde. Comment le port compte-t-il `GameTime`, et l'affiche-t-il divisé par 60 ? | E16.c |
-| O-E16-11 | **Désaccords de décompilation relevés** (§2) hors du chemin « Réessayer », déjà confié à E18 : division par 60 perdue dans `UpdateMenuStatusText`, `displayMenu` fantôme d'`UpdateSavedData`, `Offset` de `SaveData.cs`, taille de `0x78` dans `EventCodeDebugger.cs`, `0xC2` sur un octet, valeur rendue par `UpdateMemoryCardProcess`. Quel chantier les corrige ? | E16.c, E18 |
+| O-E16-8 | ~~Taille de `0x78`~~ — **tranché** (D-E16-21) : 3 octets, dans la DLL et dans l'analyseur. | E16.a |
+| O-E16-9 | ~~`SaveSlotIndex`~~ — **tranché** (D-E16-22) : sauvegardé et restitué, 0..255. | E16.c |
+| O-E16-10 | ~~Unité du temps de jeu~~ — **tranché** (D-E16-23) : 60 unités par seconde réelle, affichage divisé par 60. | E16.c |
+| O-E16-11 | ~~Désaccords de décompilation~~ — **tranché** (D-E16-24) : tous corrigés en E18. | E18 |
 
 ## 4. Hors périmètre
 
@@ -843,7 +872,7 @@ appliqué ici, en E16.c.
 | S5 | P2 | Touches de debug non gardées, capture dans des états que l'original ne sauvegarde pas | FIX ; choix produit → O-E16-1 | E16.d « Touches de recette », tests ; O-E16-1, O-E16-2 |
 | S6 | P3 | Le binaire a besoin des mêmes contrôles que le JSON | FIX | E16.c « dans les deux formats », tests ; §5.3 |
 | S7 | P3 | Métadonnées non fiables à l'affichage | DEFER vers le plan d'E16.e, prérequis écrit | E16.e |
-| S8 | P3 | `SaveSlotIndex`, `LastMapId` et `GameTime` repris du fichier | FIX | E16.c champs et tableau |
+| S8 | P3 | `SaveSlotIndex`, `LastMapId` et `GameTime` repris du fichier | FIX | E16.c champs et tableau ; pour `SaveSlotIndex`, remplacé par D-E16-22 après E16.0 (c'est un compteur de reprises, pas un numéro d'emplacement) |
 | S9 | P3 | Nom de fichier invalide dans le dossier et « emplacement le plus récent » | FIX (le plan moteur filtre la liste par la même règle) | E16.d tests |
 | S10 | P3 | Pas de revue de sécurité ni de verifier par tranche | FIX | Tableau des unités en tête ; §5.3 |
 | S11 | P4 | Risques résiduels à écrire | FIX (texte) | §4 |

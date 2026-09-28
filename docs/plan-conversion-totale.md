@@ -844,9 +844,9 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
   - l'indice de catégorie et les variables `\V` sont remis à zéro au chargement ;
   - le rechargement après la mort (« Réessayer ») devient l'étape E18.
 
-  Détail : D-E16-1 à D-E16-20 du plan détaillé.
+  Détail : D-E16-1 à D-E16-24 du plan détaillé ; mesures d'E16.0 au §2.
 - **Découpage** (plan détaillé `docs/plan-e16-etat-partie.md`) :
-  - **E16.0 — Mesure** (lecture seule) : ids de drapeaux utilisés, occurrences des opcodes du
+  - **E16.0 — Mesure** ✅ (faite le 2026-09-28, vérifiée) (lecture seule) : ids de drapeaux utilisés, occurrences des opcodes du
     manque 1, disposition de `g_saveData` et unité du temps de jeu dans `ALUN_CD.EXE`, déclencheur de
     l'écran de sauvegarde.
   - **E16.a — Opcodes de drapeaux** (DLL).
@@ -889,7 +889,18 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
     dans `ALUN_CD.EXE`, puis à renommer avec ses lecteurs ;
   - tout le chemin est à vérifier contre le binaire (`Script_187_0BB`, l'effet 10 en
     `GameEngine.cs:326-333`, `InitializeMapWarpPosition` en `:1480-1498`), et chaque écart à
-    corriger.
+    corriger ;
+  - les autres désaccords relevés par la mesure E16.0 (D-E16-24, §2 du plan E16) :
+    - la division par 60 perdue dans `UpdateMenuStatusText` (`GameEngine.cs:2724`) ;
+    - le paramètre fantôme `displayMenu` d'`UpdateSavedData` ;
+    - le champ `Offset` de `SaveData.cs`, absent de l'original ;
+    - `0xC2` (`Script_194_0C2`), qui ne lit qu'un octet de paramètre ;
+    - la valeur rendue par `UpdateMemoryCardProcess` dans les états 1 et 2, à recontrôler.
+
+  La taille de `0x78` dans `EventCodeDebugger.cs` est corrigée par E16.a (D-E16-21).
+- **Faits établis par E16.0** : `SaveSlotIndex` compte les reprises après la mort (un octet, plafonné
+  à `0xFF`), il est sauvegardé et lu par l'opcode `0xC2`. Chaque sauvegarde réussie recopie la
+  sauvegarde dans `g_saveDataInRam`, que « Réessayer » restaure.
 - **Faits déjà établis** : ce chemin ne remet pas la BSS à zéro. L'indice de catégorie du texte et les
   variables `\V` y gardent leur valeur (§5.7 de `plan-e15-yarn.md`), alors qu'un chargement d'E16
   les remet à zéro (D-E16-19). E16.0 confirme ces faits dans le binaire.
