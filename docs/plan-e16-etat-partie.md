@@ -637,7 +637,7 @@ boucle sans attente, il tournerait sans fin.
 **Retour arrière** : branche du chantier (§5.2) ; branche de l'analyseur gardée et pointeur ramené à
 celui de `main` (§5.2).
 
-### E16.b — Service de sauvegarde du moteur ⏳ (moteur ; plan moteur révisé le 2026-09-28, relu READY, en attente d'approbation)
+### E16.b — Service de sauvegarde du moteur ✅ (moteur ; approuvée le 2026-09-28, « fait tout E16 », mode ASK ; faite et vérifiée CONFIRMED le même jour)
 
 - **But** : exécuter le plan moteur `save-game-service-tasks.md` (T0.1 à T4.2), puis déplacer le
   pointeur du sous-module.
@@ -645,6 +645,21 @@ celui de `main` (§5.2).
   citations restent justes ; son ADR devient l'ADR-0044 du moteur (0042 et 0043 sont prises par Yarn) ;
   la ligne citée du document Yarn devient `:164` ; une note renvoie les variables Yarn d'Alundra à E16.f.
   Le fichier reste non suivi dans le sous-module jusqu'à T0.1.
+- **Fait le 2026-09-28** : plan moteur exécuté sur `chantier/save-game-service` (`f6220b8e` à
+  `c6e8e2aa`) :
+  - T0.1 : ADR-0044 du moteur et précision de sa règle §9.9 ;
+  - T1.1 : stockage ;
+  - T2.1 : archive symétrique ;
+  - T2.2 : formats JSON et binaire ;
+  - T3.1 : `SaveGameService` public, par `GameSettings.SaveGames` ;
+  - T4.1 : documentation ;
+  - T4.2 : vérification de clôture **CONFIRMED**, sans P0 à P2, trois P4 reportés (O6 à O8 du plan
+    moteur).
+  `CasaEngine.Tests` 2355/2355. Le pointeur du sous-module est déplacé ; ce dépôt compile à 0 erreur,
+  avec `Alundra.Tests` 1429/1429 et le convertisseur 400/400. Rien n'est poussé, et la modification
+  de l'auteur (`Program.cs`) reste non indexée.
+  **Pour E16.c** : les constructeurs du service sont internes au moteur, donc les tests de la DLL ne
+  peuvent pas construire un service sur un dossier temporaire. À trancher à la planification d'E16.c.
 - **Acceptation** : plan moteur clos, verifier **CONFIRMED** ; ce dépôt compile avec le nouveau
   pointeur.
 - **Arrêt** : O1 du plan moteur refusé → le plan moteur s'arrête et se replanifie, E16.c à E16.e
