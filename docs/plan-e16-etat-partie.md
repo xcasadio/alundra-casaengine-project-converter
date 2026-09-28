@@ -1314,7 +1314,7 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
     `dotnet test -c Release --filter` (SD7) ;
   - un service simulé qui lève à chaque méthode, derrière l'adaptateur : F5, F6 et F9 donnent un
     refus, sans exception, état identique (SD6).
-- ⏳ **T3 — Sauvegarde F5/F6** (K6). Tests, sur un service simulé, avec des règles injectées par
+- ✅ **T3 — Sauvegarde F5/F6** (fait le 2026-09-28 : préconditions de K6 dans `AlundraSaveGameDirector` (`FindSaveBlocker`, puis `FindSessionBlocker`, commun à K7), chacune testée seule et nommée dans la ligne de refus ; les inventaires posent `MenuOpen` en s'ouvrant, remis à 0 dans leurs cas pour que seul l'inventaire refuse ; 34 tests dans `AlundraSaveGameDirectorSaveTests` (12 préconditions × F5/F6, succès F5 et F6 à la tuile (20, 30, 1) de la 389 avec métadonnées, capture refusée par `playerStats.money = -1`, monde sans id, cinq états de service autres que `Saved`) ; `Alundra.Tests` 1738/1738) (K6). Tests, sur un service simulé, avec des règles injectées par
   `RulesFactoryForTests` : le vrai dossier du projet exporté, un prédicat de catalogue `_ => true`
   et les tables d'objets réelles (le test échoue en nommant l'export s'il manque). Un test de refus
   par `TryValidate` garde ce prédicat qui accepte, pour que le refus vienne bien du champ hors

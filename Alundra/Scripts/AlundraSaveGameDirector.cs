@@ -174,10 +174,19 @@ public sealed class AlundraSaveGameDirector
 
     // ---- K6: save ---------------------------------------------------------------------------------------------
 
-    /// <summary>K6 (F5/F6): capture, validate, then write - nothing is written at the first refusal.</summary>
+    /// <summary>K6 (F5/F6): preconditions, capture, validate, then write - nothing is written at the first
+    /// refusal.</summary>
     private void SaveToSlot(string slot, SaveGameFormat format, AlundraGameState state, string? worldName, AlundraEntityScriptProxy? player)
     {
         var key = format == SaveGameFormat.Binary ? SaveBinaryKey : SaveJsonKey;
+
+        // K6 step 1: only from a state the original saves.
+        var blocker = FindSaveBlocker(state, player);
+        if (blocker != null)
+        {
+            Refuse(key, blocker);
+            return;
+        }
 
         // K6 step 2: the capture contract of E16.c C5 - the current world's name and the hero.
         if (!AlundraSaveGame.TryCaptureFromWorld(state, worldName ?? string.Empty, player, out var save) || save == null)
@@ -298,6 +307,81 @@ public sealed class AlundraSaveGameDirector
     }
 
     // ---- Shared -----------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// K6 step 1: the save preconditions - the hero present and on the ground, then
+    /// <see cref="FindSessionBlocker"/>. Each one is tested on its own (G7): none implies another. Null when the
+    /// save may proceed, otherwise the reason of the refusal.
+    /// </summary>
+    private static string? FindSaveBlocker(AlundraGameState state, AlundraEntityScriptProxy? player)
+    {
+        if (player == null)
+        {
+            return "no hero in this world.";
+        }
+
+        if (player.IsOnGround == 0)
+        {
+            return "the hero is not on the ground.";
+        }
+
+        return FindSessionBlocker(state);
+    }
+
+    /// <summary>
+    /// K6 step 1 and K7 step 1: what both keys refuse, each tested on its own (G7) - a dialogue box open
+    /// (<see cref="AlundraDialogueDirector.IsOpen"/>: a box with a control mode other than 0 or 1 leaves
+    /// <see cref="AlundraGameState.PlayerControlFlags"/> untouched); the main or the sub-inventory active; the
+    /// inventory post-process not idle, or the portrait not <see cref="AlundraInventoryPortrait.StateIdle"/>
+    /// (<see cref="AlundraInventoryPortrait.StateAtRest"/> is the portrait shown DURING a menu, SD12); a warp
+    /// transition in progress (not implied by the control flags); the master BGM fade armed (opcode
+    /// <c>0xA6</c>: it would survive the load and could cut the arrival map's music, SD4); any bit of
+    /// <see cref="AlundraGameState.PlayerControlFlags"/>.
+    /// </summary>
+    private static string? FindSessionBlocker(AlundraGameState state)
+    {
+        if (AlundraDialogueDirector.Instance.IsOpen)
+        {
+            return "a dialogue box is open.";
+        }
+
+        if (AlundraInventoryDirector.Instance.IsActive)
+        {
+            return "the inventory is open.";
+        }
+
+        if (AlundraSubInventoryDirector.Instance.IsActive)
+        {
+            return "the sub-inventory is open.";
+        }
+
+        if (AlundraInventoryPostProcess.Instance.State != 0)
+        {
+            return $"the inventory post-process is pending (state {AlundraInventoryPostProcess.Instance.State}).";
+        }
+
+        if (AlundraInventoryPortrait.Instance.State != AlundraInventoryPortrait.StateIdle)
+        {
+            return $"the inventory portrait is not idle (state {AlundraInventoryPortrait.Instance.State}).";
+        }
+
+        if (AlundraWarpDirector.Instance.IsTransitionInProgress)
+        {
+            return "a map transition is in progress.";
+        }
+
+        if (AlundraBgmFadeDirector.Instance.IsArmed)
+        {
+            return "the master music fade (opcode 0xA6) is armed.";
+        }
+
+        if (state.PlayerControlFlags != 0)
+        {
+            return $"PlayerControlFlags = 0x{state.PlayerControlFlags:X2}, not 0.";
+        }
+
+        return null;
+    }
 
     /// <summary>K1: the rules of the validation - <see cref="RulesFactoryForTests"/> when set, the production
     /// rules otherwise. A failure to build them (no project path, an unreadable table) is a refusal, never an
