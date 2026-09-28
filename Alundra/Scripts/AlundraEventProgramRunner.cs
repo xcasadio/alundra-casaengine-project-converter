@@ -52,9 +52,9 @@ public enum EventTraceKind
 
     /// <summary>Diagnostic-only kind, never produced in production: <see cref="AlundraEventProgramRunner.MaxIterationsPerCall"/>
     /// forcibly ended this script call after too many dispatched opcodes without reaching 0xFF/0x00/a
-    /// suspend - almost always an unimplemented suspending opcode (e.g. 0x35/0x36 wait-flag, skipped
-    /// instead of suspending - see this runner's own class doc) sitting inside a Goto loop that never
-    /// exits. Diagnostic only - not a fidelity concern for slot A (the only slot production code
+    /// suspend - almost always an unimplemented suspending opcode (skipped instead of suspending - see
+    /// this runner's own class doc) sitting inside a Goto loop that never exits. Diagnostic only - not a
+    /// fidelity concern for slot A (the only slot production code
     /// actually interprets), which never hits this in practice.</summary>
     LoopBudgetExceeded,
 }
@@ -557,6 +557,17 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             case 0x31: // If flag off - Script_49_031
                 return FlagBranch(v, wantSet: false);
 
+            case 0x32: // Toggle flag - Script_50_032 @ 0x8003DEFC (EntityEventHandlers.cs:1102-1109):
+                       // XorFlag(flag, 1 << (v1 & 0x1f)) - the FIRST caller of
+                       // AlundraGameState.XorFlag (bank chosen by bit 0x8000 of the flag id, as its own
+                       // BankFor already does). Always returns 3 (instruction size).
+            {
+                var flag = (uint)((v[2] << 8) | v[1]);
+                var mask = (uint)(1 << (v[1] & 0x1f));
+                _gameState.XorFlag(flag, mask);
+                return 3;
+            }
+
             case 0x37: // Wait - Script_55_037
                 return Wait(v, state);
 
@@ -564,6 +575,12 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // EventCodeDebugger/EventOpcodeSizeTable names this "Wait flag off", which is misleading -
                        // it returns 3 (advance) when the flag bit IS SET, and 0 (suspend) when it is clear.
                 return WaitUntilFlagOn(v);
+
+            case 0x35: // Wait flag on - Script_53_035 @ 0x8003E2DC (EntityEventHandlers.cs:1152-1163): the
+                       // mirror image of 0x36 above, and the size table's name for THIS one reads
+                       // backwards for exactly the same reason - it returns 3 (advance) once the flag bit
+                       // IS CLEAR, and 0 (suspend, re-tested next call) while it is SET.
+                return WaitUntilFlagOff(v);
 
             case 0x2D: // Activate entity - Script_45_02D
                 ActivateEntity(entity, v);
@@ -575,6 +592,13 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
             case 0x33: // Check flags on - Script_51_033
                 return CheckFlagsOn(v, state);
+
+            case 0x34: // Check flags off - Script_52_034 @ 0x8003E128 (EntityEventHandlers.cs:1132-1149):
+                       // tests the SAME four (flag,bit) pairs from v[1..8] as CheckFlagsOn (0x33), but
+                       // the OPPOSITE polarity: Result=0 as soon as ANY tested bit is SET (short-circuit,
+                       // in order), Result=1 only if every bit is clear. Always returns 9 regardless of
+                       // Result.
+                return CheckFlagsOff(v, state);
 
             case 0x38: // Set save map-id -> internal map index - Script_SetSaveMapIdToInternalMapIndex_038
                        // (EntityEventHandlers.cs:1202-1207): MapIdToInternalMapIndexTable[v2<<8|v1] =
@@ -1240,6 +1264,16 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         return (_gameState.GetFlag(flag) & mask) != 0 ? 3 : 0;
     }
 
+    /// <summary>Script_53_035 (0x35) - mirror image of <see cref="WaitUntilFlagOn"/> (0x36): returns 3
+    /// (advance) once the flag bit is CLEAR, 0 (suspend, retry next frame) while it is SET. See case
+    /// 0x35's own comment on <see cref="Dispatch"/> for the size table's backwards name.</summary>
+    private int WaitUntilFlagOff(int[] v)
+    {
+        var flag = (uint)((v[2] << 8) | v[1]);
+        var mask = 1u << (v[1] & 0x1f);
+        return (_gameState.GetFlag(flag) & mask) != 0 ? 0 : 3;
+    }
+
     /// <summary>Script_51_033 (0x33 CheckFlagsOn) - tests FOUR (flag,bit) pairs from v[1..8]:
     /// Result=1 only if ALL FOUR bits are set, Result=0 (short-circuit on the first clear pair)
     /// otherwise. Always returns 9 (instruction size) regardless of Result - unlike FlagBranch,
@@ -1253,6 +1287,28 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             var mask = 1u << (int)(flag & 0x1f);
 
             if ((_gameState.GetFlag(flag) & mask) == 0)
+            {
+                state.Result = 0;
+                return 9;
+            }
+        }
+
+        state.Result = 1;
+        return 9;
+    }
+
+    /// <summary>Script_52_034 (0x34 CheckFlagsOff) - tests the SAME four (flag,bit) pairs from v[1..8]
+    /// as <see cref="CheckFlagsOn"/> (0x33), but the OPPOSITE polarity: Result=0 as soon as ANY tested
+    /// bit is SET (short-circuit on the first set pair), Result=1 only if every bit is clear. Always
+    /// returns 9 (instruction size) regardless of Result.</summary>
+    private int CheckFlagsOff(int[] v, EventProgramState state)
+    {
+        for (var i = 0; i < 4; i++)
+        {
+            var flag = (uint)(v[i * 2 + 1] + (v[i * 2 + 2] << 8));
+            var mask = 1u << (int)(flag & 0x1f);
+
+            if ((_gameState.GetFlag(flag) & mask) != 0)
             {
                 state.Result = 0;
                 return 9;

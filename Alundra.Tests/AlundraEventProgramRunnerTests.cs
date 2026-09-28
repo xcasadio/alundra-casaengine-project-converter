@@ -627,6 +627,162 @@ public class AlundraEventProgramRunnerTests
     }
 
     [Fact]
+    public void ToggleFlag_0x32_TogglesClearBitOnThenOff_PersistentBank()
+    {
+        // flag = v1 + v2*0x100 = 44 + 1*0x100 = 300 (below 0x8000, persistent bank); bit = 44&0x1f = 12.
+        var document = NewDocument(0x32, 44, 1, 0xFF);
+        var gameState = new AlundraGameState();
+        gameState.AddFlag(300, 0xFFFFFFFFu & ~(1u << 12)); // every other bit of the word already set.
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1u << 12, gameState.GetFlag(300) & (1u << 12)); // toggled on
+        Assert.Equal(0xFFFFFFFFu, gameState.GetFlag(300)); // every other bit of the word untouched
+        Assert.Equal(3, state.CodeIndex);
+
+        var again = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, again);
+
+        Assert.Equal(0u, gameState.GetFlag(300) & (1u << 12)); // toggled back off
+        Assert.Equal(0xFFFFFFFFu & ~(1u << 12), gameState.GetFlag(300));
+        Assert.Equal(3, again.CodeIndex);
+    }
+
+    [Fact]
+    public void ToggleFlag_0x32_TogglesClearBitOnThenOff_TemporaryBank()
+    {
+        // flag id | 0x8000 selects the session-only temporary bank (AlundraGameState's own doc);
+        // v2=0x81 -> flag = 44 + 0x81*0x100 = 0x8100 + 44 = 0x812C; bit = 44&0x1f = 12.
+        var document = NewDocument(0x32, 44, 0x81, 0xFF);
+        var gameState = new AlundraGameState();
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1u << 12, gameState.GetFlag(0x812C) & (1u << 12));
+        Assert.Equal(0u, gameState.GetFlag(300) & (1u << 12)); // the PERSISTENT bank's same word untouched
+        Assert.Equal(3, state.CodeIndex);
+
+        var again = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, again);
+
+        Assert.Equal(0u, gameState.GetFlag(0x812C) & (1u << 12));
+        Assert.Equal(3, again.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckFlagsOff_0x34_NoBitsSet_SetsResult1()
+    {
+        // Same four (flag,bit) pairs as CheckFlagsOn's own tests, all clear.
+        var document = NewDocument(0x34, 12, 0, 13, 0, 14, 0, 15, 0, 0xFF);
+        var gameState = new AlundraGameState();
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(9, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckFlagsOff_0x34_OnlyFirstBitSet_SetsResult0()
+    {
+        var document = NewDocument(0x34, 12, 0, 13, 0, 14, 0, 15, 0, 0xFF);
+        var gameState = new AlundraGameState();
+        gameState.AddFlag(12, 1u << 12);
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.Result);
+        Assert.Equal(9, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckFlagsOff_0x34_OnlyFourthBitSet_SetsResult0()
+    {
+        var document = NewDocument(0x34, 12, 0, 13, 0, 14, 0, 15, 0, 0xFF);
+        var gameState = new AlundraGameState();
+        gameState.AddFlag(15, 1u << 15);
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.Result);
+        Assert.Equal(9, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckFlagsOff_0x34_AllFourBitsSet_SetsResult0()
+    {
+        var document = NewDocument(0x34, 12, 0, 13, 0, 14, 0, 15, 0, 0xFF);
+        var gameState = new AlundraGameState();
+        gameState.AddFlag(12, 1u << 12);
+        gameState.AddFlag(13, 1u << 13);
+        gameState.AddFlag(14, 1u << 14);
+        gameState.AddFlag(15, 1u << 15);
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.Result);
+        Assert.Equal(9, state.CodeIndex);
+    }
+
+    [Fact]
+    public void WaitUntilFlagOff_0x35_FlagSet_SuspendsAtSameCodeIndex()
+    {
+        // flag = v2<<8|v1 = 1<<8|44 = 300; bit = 44&0x1f = 12 - the OPPOSITE polarity from 0x36's own
+        // test (WaitUntilFlagOn_FlagClear_SuspendsAtSameCodeIndex): here it is the SET bit that suspends.
+        var document = NewDocument(0x35, 44, 1, 0x1A, 9, 0xFF);
+        var gameState = new AlundraGameState();
+        gameState.AddFlag(300, 1u << (44 & 0x1f));
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+        runner.RunOneScriptCall(entity, state);
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.CodeIndex); // still suspended - never advanced past the 0x35 instruction
+        Assert.Equal(0u, entity.TargetAnimationId); // SetAnim(9) never reached
+
+        gameState.SetFlag(300, ~(1u << 12));
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(9u, entity.TargetAnimationId); // advanced past 0x35 (size 3) and ran SetAnim(9)
+        Assert.Equal(5, state.CodeIndex);
+    }
+
+    [Fact]
+    public void WaitUntilFlagOff_0x35_FlagClear_AdvancesByThree()
+    {
+        var document = NewDocument(0x35, 44, 1, 0x1A, 9, 0xFF);
+        var runner = NewRunner(document); // fresh AlundraGameState: flag 300 bit 12 starts clear
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(9u, entity.TargetAnimationId);
+        Assert.Equal(5, state.CodeIndex);
+    }
+
+    [Fact]
     public void DestroyEntity_0x2E_DestroysEveryMatch_AndSetsResult1()
     {
         // v1=0x80 -> functionId 0 ("get owner"): the owner itself is the only match.
@@ -3160,5 +3316,140 @@ public class AlundraEventProgramRunnerTests
         {
             AlundraWarpDirector.Instance.ResetForTests();
         }
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // 0x32/0x34/0x35 real corpus occurrences (docs/plan-e16-etat-partie.md, E16.a T1) - self-skips like
+    // Map389LoadProgramsTests when alundra-project/ is absent (regenerable converter output, not
+    // guaranteed on a fresh clone). RunOneScriptCall's own loop does not stop after one dispatch (it
+    // keeps fetching until 0xFF/0x00/a suspend - see its own doc), and the real program bytes keep going
+    // past the single instruction under test - so each test here asserts the real bytes at their
+    // documented offset, then isolates just that instruction into its own tiny, 0xFF-terminated buffer
+    // (same "NewDocument ending in 0xFF" shape every synthetic test above already uses) before running
+    // it through the SAME RunOneScriptCall seam. No new seam needed.
+    // -----------------------------------------------------------------------------------------
+
+    private static string? FindProjectRootForRealOpcodeOccurrences()
+    {
+        var directory = new System.IO.DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = System.IO.Path.Combine(directory.FullName, "alundra-project");
+            if (System.IO.Directory.Exists(System.IO.Path.Combine(candidate, "Maps")))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        return null; // self-skip: alundra-project/ not present in this checkout
+    }
+
+    [Fact]
+    public void ToggleFlag_0x32_RealOccurrence_AncientShrine26()
+    {
+        var projectRoot = FindProjectRootForRealOpcodeOccurrences();
+        if (projectRoot == null)
+        {
+            return; // self-skip
+        }
+
+        var document = MapEventProgramLoader.Load(projectRoot, "Ancient Shrine-26");
+        Assert.NotNull(document);
+
+        // Table D (Touch), index 1: entry point 1528 (a leading 0x2B check, not part of this test);
+        // instruction offset 1529, right after it: bytes "32 07 80".
+        Assert.Equal(1528, document!.EventCodesDTable[1]);
+        var codeBytes = document.CodesAsBytes();
+        var instructionBytes = codeBytes[1529..1532];
+        Assert.Equal(new byte[] { 0x32, 0x07, 0x80 }, instructionBytes);
+
+        // flag = v1 + v2*0x100 = 7 + 0x80*0x100 = 0x8007 (temporary bank); bit = 7&0x1f = 7. Isolated
+        // into its own 0xFF-terminated buffer (the real program keeps going past it).
+        var gameState = new AlundraGameState();
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = instructionBytes.Append((byte)0xFF).ToArray() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1u << 7, gameState.GetFlag(0x8007) & (1u << 7));
+        Assert.Equal(3, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckFlagsOff_0x34_RealOccurrence_ChurchBasementHolySword137()
+    {
+        var projectRoot = FindProjectRootForRealOpcodeOccurrences();
+        if (projectRoot == null)
+        {
+            return; // self-skip
+        }
+
+        var document = MapEventProgramLoader.Load(projectRoot, "Church (basement, Holy sword)-137");
+        Assert.NotNull(document);
+
+        // Table B (Map), index 5: entry point 436 (a lead-in of Wait instructions, not part of this
+        // test); instruction offset 451: bytes "34 0A 80 0B 80 0C 80 0D 80" - four pairs, each flag =
+        // v(2i+1) + v(2i+2)*0x100 = 0x800A/0x800B/0x800C/0x800D (temporary bank).
+        Assert.Equal(436, document!.EventCodesBTable[5]);
+        var codeBytes = document.CodesAsBytes();
+        var instructionBytes = codeBytes[451..460];
+        Assert.Equal(
+            new byte[] { 0x34, 0x0A, 0x80, 0x0B, 0x80, 0x0C, 0x80, 0x0D, 0x80 },
+            instructionBytes);
+
+        var gameState = new AlundraGameState();
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+        var isolatedCodes = instructionBytes.Append((byte)0xFF).ToArray();
+
+        // All four clear -> Result=1.
+        var clearState = new EventProgramState { Codes = isolatedCodes };
+        runner.RunOneScriptCall(entity, clearState);
+        Assert.Equal(1, clearState.Result);
+        Assert.Equal(9, clearState.CodeIndex);
+
+        // Set one of the four bits -> Result=0.
+        gameState.AddFlag(0x800B, 1u << (0x0B & 0x1f));
+        var setState = new EventProgramState { Codes = isolatedCodes };
+        runner.RunOneScriptCall(entity, setState);
+        Assert.Equal(0, setState.Result);
+        Assert.Equal(9, setState.CodeIndex);
+    }
+
+    [Fact]
+    public void WaitUntilFlagOff_0x35_RealOccurrence_AncientShrine28()
+    {
+        var projectRoot = FindProjectRootForRealOpcodeOccurrences();
+        if (projectRoot == null)
+        {
+            return; // self-skip
+        }
+
+        var document = MapEventProgramLoader.Load(projectRoot, "Ancient Shrine-28");
+        Assert.NotNull(document);
+
+        // Table C (Tick), index 14, instruction offset 738: bytes "35 5A 80".
+        var codeBytes = document!.CodesAsBytes();
+        var instructionBytes = codeBytes[738..741];
+        Assert.Equal(new byte[] { 0x35, 0x5A, 0x80 }, instructionBytes);
+
+        // flag = v1 + v2*0x100 = 0x5A + 0x80*0x100 = 0x805A (temporary bank); bit = 0x5A&0x1f = 0x1A.
+        var gameState = new AlundraGameState();
+        gameState.AddFlag(0x805A, 1u << 0x1A);
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = instructionBytes.Append((byte)0xFF).ToArray() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.CodeIndex); // bit set - suspended
+
+        gameState.SetFlag(0x805A, ~(1u << 0x1A));
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(3, state.CodeIndex); // bit clear - advanced by 3
     }
 }

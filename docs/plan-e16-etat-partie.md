@@ -349,7 +349,7 @@ par un agent neuf.
   commit de documentation, annulable par `git revert`.
 - **Commit** : `docs(e16): record the flag and save-data measurements`.
 
-### E16.a — Opcodes de drapeaux ⏳ (DLL)
+### E16.a — Opcodes de drapeaux 🚧 (DLL, analyseur ; approuvée le 2026-09-28, mode ASK)
 
 - **But** : porter les opcodes de drapeaux qui apparaissent dans le corpus d'après E16.0.
 - **Contenu** :
@@ -379,7 +379,7 @@ Relectures :
 - correction : D-E16-30 (`6398fa0`) ;
 - seconde : **READY**.
 
-Le plan attend l'approbation de l'auteur.
+**Approuvé par l'auteur le 2026-09-28** (mode ASK : arrêt sur les vraies décisions, P3/P4 corrigés dans la tâche et rapportés).
 
 **Faits établis par la reconnaissance** (lecture seule, deux passes contre-vérifiées ; scripts dans
 `scratchpad/e16a/` et `scratchpad/e16a-prod/`) :
@@ -500,7 +500,7 @@ Le plan attend l'approbation de l'auteur.
 **Tâches** (un commit par tâche avec la mise à jour de ce plan ; build à 0 erreur et `Alundra.Tests`
 sans échec avant chaque ✅) :
 
-- ⏳ **T1 — Drapeaux `0x32`, `0x34`, `0x35`** (DLL). Tests sur programmes synthétiques
+- ✅ **T1 — Drapeaux `0x32`, `0x34`, `0x35`** (DLL ; fait le 2026-09-28 : trois `case` et deux aides, `WaitUntilFlagOff` et `CheckFlagsOff` ; 11 tests, dont un par occurrence réelle, qui vérifient les octets du corpus puis exécutent l'instruction ; `Alundra.Tests` 1372/1372). Tests sur programmes synthétiques
   (`NewDocument`, `AlundraEventProgramRunnerTests.cs:18`) : bascule par `XorFlag` (`0x32` donne son
   premier appelant à `XorFlag`), `Result` de `0x34` pour 0 à 4 bits posés, `0x35` qui attend puis
   avance. Un test par opcode sur son occurrence réelle :
