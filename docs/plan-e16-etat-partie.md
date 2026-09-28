@@ -1463,7 +1463,7 @@ La remise de session couvre tous les singletons, sauf le fondu maître de la mus
 `ApplyPendingLoad` ; un test existant qui change pour une autre raison ; l'oracle de l'intro qui
 bouge.
 
-### E16.e — Écran de sauvegarde en jeu ⏳ (DLL, MGUI en XAML)
+### E16.e — Écran de sauvegarde en jeu ⚠️ (DLL, MGUI en XAML ; préparée le 2026-09-28 en mode AUTO, en pause : choix de l'auteur O-E16-13 à O-E16-16)
 
 - **But** : le joueur sauvegarde lui-même, comme dans l'original.
 - **Contenu** : le gestionnaire du livre de sauvegarde (`AI_ProcessWarpTransitionState`, question
@@ -1478,6 +1478,38 @@ bouge.
 - **Arrêt** : un manque de MGUI ou du moteur → consigné dans le rapport dédié, la tranche s'arrête
   (règle de l'auteur : signaler, jamais contourner).
 - **Dépendances** : E16.0, E16.d.
+
+#### Préparation d'E16.e (2026-09-28, mode AUTO) — ⚠️ en pause : choix de l'auteur
+
+L'auteur a demandé de faire tout E16 en autonomie. E16.e demande pourtant des choix de produit
+qu'aucun fait du code ne tranche (règle : « Ask user only for product/authority choice »). La
+tranche s'arrête donc ici, préparée, avec les questions ci-dessous (points O-E16-13 à O-E16-16 du
+§3).
+
+**Faits établis** (exploration du 2026-09-28, recontrôlée ; désassemblage de la session principale)
+
+| Réf | Fait | Source |
+|---|---|---|
+| H1 | Le gestionnaire du livre, `AI_ProcessWarpTransitionState` (`0x8007B998`), est un petit automate : environ 130 lignes décompilées, états 1 à 6, dont le 3 est un simple retour. État 1 : si `0x80045004` rend non nul, abandon ; sinon message ETC `0x40` (`InitializeDialogMessage(texte, 1)`, `SetEtcAnimationMode(4)`), attente de 60 images. État 2 : question oui/non (ETC `0x41`/`0x42`, `InitializeAsyncOperation`). État 4 : réponse ; autre que « oui » → abandon. État 5 : 60 images, puis `UpdateSavedData`. État 6 : attente de `g_globalTransitionState == 0`, puis remise. L'abandon et la remise effacent le bit `ControlLocked`, posé par l'entrée d'interaction (`SpriteEventHandlers.cs:270-277`). | désassemblage `0x8007B998`–`0x8007BB2C`, table `0x80028204` ; `FunctionTypeC.cs:6823-6951` |
+| H2 | **Défaut de l'original** : si `InitializeAsyncOperation` échoue (retour 0), l'état passe à 3, qui ne fait rien : le livre est gelé et le héros reste verrouillé (`ControlLocked`). La double écriture de la décompilation est bien dans le binaire (`0x8007BA5C`–`0x8007BA7C`). Selon la règle de l'auteur, le port corrige : échec → abandon. | idem |
+| H3 | Le flux de carte mémoire, `MemoryCardManager` (`0x8005EC98`), occupe un fichier décompilé de 2 848 lignes et environ 90 états ; il lit 38 textes ETC distincts, dont 8 n'ont aucun nœud dans `Dialogues/Etc.yarn` exporté (`0x88`, `0x9F`, `0xA0`, `0xA4`, `0xA6`, `0xAA`, `0xAE`, `0xB2`), et deux chaînes japonaises en dur, sur un chemin gardé par l'état `0x2710` qui ressemble à un test. Une partie des états ne sert que le matériel PS1 (présence, format et corruption de la carte, icône, somme de contrôle). | `MemoryCardManager.cs` de l'analyseur ; `alundra-project/Dialogues/Etc.yarn` |
+| H4 | Dans la DLL, le livre (type de sprite 237, 65 cartes) apparaît comme toute entité, mais son IA native ne tourne pas : `RunSpriteEvent` est un « no-op » compté pour les ~120 gestionnaires natifs (E14). Le point d'accroche le plus petit est `AlundraEntityScriptProxy.RunPickedEvent` (`:1192-1198`), sur `SpriteProgramIndexes[ProgramCTick]` = 72 ; les champs d'état (`Bytes`, `DelayOrAngleOrEntityId`) existent déjà. | `AlundraEventProgramRunner.cs:16-21`, `:268-279` ; `AlundraEntityScriptProxy.cs:789-790`, `:1185-1205` |
+| H5 | La DLL sait poser une question oui/non Yarn (`AlundraDialogueDirector.OpenChoice`/`TakeChoiceResult`) mais n'a pas d'équivalent du couple « message ETC + attente » de l'original. `AlundraEtcStringTable` résout tout texte ETC 0..1023 en privé, sans accès générique public. Quatre écrans XAML existent déjà (dialogue, jauge, inventaire, sous-inventaire), sur le modèle Window + Canvas + MGBinding + font3, avec `AllowsInlineFormatting="False"` pour du texte non fiable. | `AlundraDialogueDirector.cs:393-428` ; `AlundraEtcStringTable.cs:111-181` ; `alundra-project/UI/Screens/*.xaml` |
+| H6 | Le service du moteur a des emplacements nommés libres ; l'original avait 4 blocs par carte, et le choix d'une sauvegarde au démarrage appartenait à `LOADER.EXE`. E16.c écrit déjà les métadonnées `chapter` et `summary`. | `SaveGameNames.cs` ; `LoaderSaveSlots.cs:83` ; C7 d'E16.c |
+
+**Questions à l'auteur** (réponses nécessaires avant le plan détaillé) :
+- **O-E16-13 — Aspect** : reproduire les écrans de carte mémoire de l'original (liste des blocs,
+  icônes, messages de carte absente, pleine ou abîmée), ou un flux simplifié qui garde les temps
+  visibles (message du livre, question oui/non, choix de l'emplacement, confirmation d'écrasement,
+  réussite ou échec) et abandonne les états propres au matériel PS1 ?
+- **O-E16-14 — Emplacements** : 4 emplacements fixes comme une carte mémoire, un seul emplacement
+  implicite, ou une liste libre ?
+- **O-E16-15 — Libellé d'un emplacement** : chapitre et résumé (`HP xx TIME hh:mm:ss`) recalculés
+  depuis la sauvegarde validée, date d'écriture, numéro, ou une combinaison ?
+- **O-E16-16 — Textes** : quels messages de l'original garder (textes ETC), et que faire des 8
+  textes absents de l'export et des chaînes japonaises en dur ?
+
+Défaut H2 : corrigé par défaut (règle « corriger les défauts de l'original »), sauf avis contraire.
 
 ### E16.f — Variables Yarn adossées aux drapeaux ✅ (DLL, docs ; relecture REVISE puis READY le 2026-09-28 ; exécutée en mode AUTO, « fait tout E16 de façon autonome » ; faite et vérifiée CONFIRMED le même jour, `82ab618` à `c4ff1d5`)
 
@@ -1886,6 +1918,10 @@ tests du convertisseur 400/400, `Alundra.Tests` 1361/1361.
 | O-E16-10 | ~~Unité du temps de jeu~~ — **tranché** (D-E16-23) : 60 unités par seconde réelle, affichage divisé par 60. | E16.c |
 | O-E16-11 | ~~Désaccords de décompilation~~ — **tranché** (D-E16-24) : tous corrigés en E18. | E18 |
 | O-E16-12 | Seulement si E16.a T3.1 ne retrouve pas, dans le binaire, que la hauteur de terrain (`TerrainHeight`, `+0x138`) d'une entité que `0x8D` teste (joueur, PNJ avec ou sans contrôleur, dès l'apparition) vaut celle que la sonde de la DLL (`ComputeTerrainHeight`) peut calculer, au même moment de l'image : quelle source prendre pour `0x8D` ? | E16.a |
+| O-E16-13 | **Aspect de l'écran de sauvegarde** : écrans de carte mémoire de l'original (blocs, icônes, messages de carte absente, pleine ou abîmée), ou flux simplifié qui garde les temps visibles (message du livre, oui/non, choix de l'emplacement, écrasement, réussite ou échec) sans les états propres au matériel PS1 ? | E16.e |
+| O-E16-14 | **Emplacements** : 4 fixes comme une carte mémoire, un seul implicite, ou une liste libre ? | E16.e |
+| O-E16-15 | **Libellé d'un emplacement** : chapitre et résumé recalculés depuis la sauvegarde validée, date d'écriture, numéro, ou une combinaison ? | E16.e |
+| O-E16-16 | **Textes** : quels messages ETC de l'original garder, et que faire des 8 textes absents de l'export et des chaînes japonaises en dur ? | E16.e |
 
 ## 4. Hors périmètre
 
