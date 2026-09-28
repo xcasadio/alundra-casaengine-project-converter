@@ -1045,7 +1045,7 @@ max `0x6A2`, mot 53) et arithmétique de C3.
 | SC11 | P4 | Une durée finie énorme pourrait faire reboucler le compteur de temps avant le plafond | FIX | T1 |
 | SC12 | P4 | Les valeurs de la table des cartes ne sont pas contrôlées contre le catalogue | REJECT | même exposition que les opcodes `0x38` et `0x53` ; les 483 mondes existent (F3) ; risque résiduel au §4 |
 
-### E16.d — Chargement et recette ⏳ (DLL ; plan détaillé plus bas, proposé le 2026-09-28 en mode AUTO)
+### E16.d — Chargement et recette 🚧 (DLL ; plan détaillé plus bas, READY le 2026-09-28, exécuté en mode AUTO)
 
 - **But** : reprendre une partie sauvegardée.
 - **Contenu** : port de la branche `SlotData == 1` d'`InitializeGameState`, dans cet ordre, dont
@@ -1121,9 +1121,17 @@ de production vérifient le catalogue d'assets, vide dans les tests, donc tout c
 à T5 aurait été refusé. Correction : `RulesFactoryForTests` (K1), avec les règles de chaque test
 nommées (T3 à T5, SD15). Remarques corrigées aussi : `FrameCounter` gardé, sens de la dépendance à
 l'abandon, tuile du test de bout en bout. C'est le deuxième REVISE : cette correction ouvre une
-seule relecture de clôture ; un nouveau REVISE met la tranche en pause. Ensuite, exécution par un
-`security-executor`, puis vérification par un `verifier` frais. La recette en jeu reste à
-l'auteur.
+seule relecture de clôture ; un nouveau REVISE met la tranche en pause. Relecture de clôture
+(`9a70844`) : **READY**. Ses remarques P3 sont passées comme précisions à l'exécuteur, sans changer
+le plan :
+- les tables d'objets des règles de production sont `AlundraItemTables.GetOrCreate(EngineEnvironment.ProjectPath)`,
+  l'instance de session de `AlundraWorldProxy.ItemTables` ;
+- `AlundraSlotEntry.IsReadable` vient de `SaveGameSlotInfo.IsReadable` (`Status == Loaded`) ;
+- le test « départ avorté » force la garde d'abandon en rattachant le directeur des warps sans
+  `GameManager` après l'armement.
+
+Exécution par un `security-executor`, puis vérification par un `verifier` frais et un
+contradicteur. La recette en jeu reste à l'auteur.
 
 **Faits établis à la planification** (exploration en lecture seule, chaque rapport recontrôlé par
 un second agent ; scripts et rapports dans `scratchpad/e16def/`)
