@@ -7,10 +7,18 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Alundra.Scripts;
 using CasaEngine.Core.Logging;
+using CasaEngine.Engine.Environment;
+using CasaEngine.Engine.Geometry;
+using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Application;
+using CasaEngine.Framework.Gameplay;
+using CasaEngine.Framework.Scene.Entities;
+using CasaEngine.Framework.Scene.Entities.Components;
+using Microsoft.Xna.Framework;
 using CasaEngine.Framework.SaveGames;
 using Microsoft.Xna.Framework.Input;
 using Xunit;
+using World = CasaEngine.Framework.Scene.World.World;
 
 namespace Alundra.Tests;
 
@@ -241,6 +249,54 @@ internal static class SaveGameDirectorTestSupport
     {
         var field = typeof(AlundraMusicPlayer).GetField("_pendingWarpDeparture", BindingFlags.Instance | BindingFlags.NonPublic)!;
         return field.GetValue(AlundraMusicPlayer.Instance);
+    }
+
+    /// <summary>Hand-built hero pawn possessed by a real <see cref="AlundraPlayerController"/> registered into the
+    /// world's private controller list - the fixture of <c>AlundraNewGameEntryTests</c>/<c>AlundraWarpArrivalTests</c>
+    /// (private there), so <see cref="AlundraWorldProxy.InitializeWithWorld"/> adopts it as the hero.</summary>
+    internal static Entity AddHeroPawn(World world)
+    {
+        var root = new TransformComponent();
+        var collisionComponent = new CollisionComponent();
+        collisionComponent.Fixtures.Add(new ColliderFixture
+        {
+            Shape = new Box { Size = new Vector3(21f, 15f, 32f) },
+            LocalPosition = new Vector3(0.5f, 0.5f, 16f),
+            LocalRotation = Quaternion.Identity,
+        });
+        root.AddChildComponent(collisionComponent);
+
+        var entity = new Entity
+        {
+            Name = "AlundraHeroTestPawn",
+            RootComponent = root,
+            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+        };
+        entity.Initialize();
+        var worldProperty = typeof(Entity).GetProperty(nameof(Entity.World), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)!;
+        worldProperty.SetValue(entity, world);
+
+        var controller = new AlundraPlayerController();
+        controller.Possess(entity);
+        var field = typeof(World).GetField("_playerControllers", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        ((List<PlayerController>)field.GetValue(world)!).Add(controller);
+        return entity;
+    }
+
+    /// <summary>Runs <see cref="AlundraWorldProxy.InitializeWithWorld"/> with <c>EngineEnvironment.ProjectPath</c>
+    /// on the real export, restored afterwards (the convention of <c>AlundraNewGameEntryTests</c>).</summary>
+    internal static void InitializeWithRealProject(AlundraWorldProxy proxy, World world)
+    {
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+        EngineEnvironment.ProjectPath = AlundraWorldProxyGlobalFreezeTests.FindProjectRoot();
+        try
+        {
+            proxy.InitializeWithWorld(world);
+        }
+        finally
+        {
+            EngineEnvironment.ProjectPath = previousProjectPath;
+        }
     }
 
     /// <summary>A key-held provider over a mutable set of held keys, counting every read.</summary>

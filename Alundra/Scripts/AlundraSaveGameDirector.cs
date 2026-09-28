@@ -231,7 +231,7 @@ public sealed class AlundraSaveGameDirector
     /// <summary>
     /// K7 (F9): preconditions, the most recent readable slot, loaded and validated, the departure checked, then
     /// the load made PENDING and the departure armed through the warp path. Nothing of the live state changes
-    /// here: the load is applied on the arrival map (K8, <c>ApplyPendingLoad</c>).
+    /// here: the load is applied on the arrival map (K8, <see cref="ApplyPendingLoad"/>).
     /// </summary>
     private void LoadMostRecent(AlundraGameState state, AlundraEntityScriptProxy? player)
     {
@@ -339,6 +339,64 @@ public sealed class AlundraSaveGameDirector
         Logs.WriteInfo(
             LogPrefix + $"{LoadKey}: slot '{slot}' loaded and validated; departing to map {save.InitialMapId} tile "
             + $"({save.CameraTileX}, {save.CameraTileY}, {save.CameraTileZ}), applied on arrival.");
+    }
+
+    // ---- K8: application on the arrival map ------------------------------------------------------------------
+
+    /// <summary>
+    /// K8 (docs/plan-e16-etat-partie.md, G5): applies the pending load on its arrival map. Called from
+    /// <see cref="AlundraWorldProxy.InitializeWithWorld"/> right after <see cref="AlundraGameState.InstallForMapEntry"/>,
+    /// so during the arrival world's installation and BEFORE its first tick, where the entities' programs (their
+    /// load program, slot A) and the map events are the first readers of the loaded values. Nothing before
+    /// <c>InstallForMapEntry</c> reads the session state, and nothing after it overwrites the loaded values.
+    /// <list type="bullet">
+    /// <item><description>Without a pending load, it does nothing.</description></item>
+    /// <item><description>It empties the pending load BEFORE anything else: a load is never applied twice
+    /// (SD9).</description></item>
+    /// <item><description>On an arrival map other than the save's <c>InitialMapId</c> (or a world name without a map
+    /// id, <paramref name="arrivalMapId"/> null), it abandons the load with a warning and applies
+    /// nothing.</description></item>
+    /// <item><description>Otherwise, in this order and without throwing (the array lengths are fixed on both
+    /// sides, E16.c C6): <see cref="AlundraGameState.ResetSessionForLoad"/> (step 1); the save's
+    /// <see cref="AlundraSaveGame.ApplyTo"/> (step 2: flags, map table, item counters, stats, death retries,
+    /// game time, which resumes from there); <see cref="AlundraHudDirector.ResetDisplayForLoad"/> with the stats
+    /// just loaded (step 3, SC1); and the <c>ResetSessionForLoad</c> of both inventory directors, the
+    /// post-process and the portrait (step 4, SD5).</description></item>
+    /// </list>
+    /// The dialogue is reset by its own map entry, which runs next (G8), and the hero is placed by the warp
+    /// arrival (G6).
+    /// </summary>
+    internal void ApplyPendingLoad(AlundraGameState state, int? arrivalMapId)
+    {
+        ArgumentNullException.ThrowIfNull(state);
+
+        var save = _pendingLoad;
+        if (save == null)
+        {
+            return;
+        }
+
+        _pendingLoad = null; // SD9: first, whatever follows.
+
+        if (arrivalMapId != save.InitialMapId)
+        {
+            Logs.WriteWarning(
+                LogPrefix + $"pending load of map {save.InitialMapId} abandoned: the departure arrived on "
+                + (arrivalMapId.HasValue ? $"map {arrivalMapId.Value}" : "a world without a map id") + ".");
+            return;
+        }
+
+        state.ResetSessionForLoad();
+        save.ApplyTo(state);
+        AlundraHudDirector.Instance.ResetDisplayForLoad(state.PlayerStats);
+        AlundraInventoryDirector.Instance.ResetSessionForLoad();
+        AlundraSubInventoryDirector.Instance.ResetSessionForLoad();
+        AlundraInventoryPostProcess.Instance.ResetSessionForLoad();
+        AlundraInventoryPortrait.Instance.ResetSessionForLoad();
+
+        Logs.WriteInfo(
+            LogPrefix + $"load applied on map {save.InitialMapId}, tile ({save.CameraTileX}, {save.CameraTileY}, "
+            + $"{save.CameraTileZ}).");
     }
 
     /// <summary>

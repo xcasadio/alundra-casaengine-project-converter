@@ -622,6 +622,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         if (tileMapEntity == null)
         {
             Logs.WriteWarning($"AlundraWorldProxy: no '{TileMapEntityName}' entity found in world '{world.Name}'; no entity spawned.");
+
+            // E16.d K8/SD9: a load pending on this departure can never be applied here - drop it now, so it is
+            // not applied later at some other arrival.
+            AlundraSaveGameDirector.Instance.AbandonPendingLoad($"world '{world.Name}' has no '{TileMapEntityName}' entity");
             return;
         }
 
@@ -630,6 +634,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         if (tileMapData == null)
         {
             Logs.WriteWarning($"AlundraWorldProxy: entity '{TileMapEntityName}' has no loaded TileMapData in world '{world.Name}'; no entity spawned.");
+            AlundraSaveGameDirector.Instance.AbandonPendingLoad($"world '{world.Name}' has no loaded tile map"); // E16.d SD9.
             return;
         }
 
@@ -640,6 +645,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // before InstallDialogueSystems below goes on to clean up PlayerControlFlags' own MessageBox/
         // MenuOpen bits.
         GameState.InstallForMapEntry();
+
+        // E16.d K8 (docs/plan-e16-etat-partie.md, G5): a load carried by this arrival is applied HERE - after
+        // the map entry's own disposition, during this installation and so BEFORE this world's first tick,
+        // where the entities' load programs and the map events are the first readers of the loaded flags and
+        // stats. The installs below only re-attach state, and AdoptPlayerPawn places the hero from the warp
+        // arrival the load departed with. No-op without a pending load.
+        AlundraSaveGameDirector.Instance.ApplyPendingLoad(
+            GameState,
+            world.Name != null && BackdropLoader.TryParseMapIndex(world.Name, out var arrivalMapId) ? arrivalMapId : null);
 
         // D-T-13's own point 4: ActiveCollisionEntity does not live on AlundraGameState (no such field
         // there) - its real owner is THIS proxy (:239), so its map-entry reset lives here instead.
