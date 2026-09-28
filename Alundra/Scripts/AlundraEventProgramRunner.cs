@@ -1211,6 +1211,30 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 return 3;
             }
 
+            case 0x8D: // Check any match on/under terrain - Script_141_08D @ 0x800404A8
+                       // (EntityEventHandlers.cs:2597-2615): Result = 1 if ANY v[1]-matched entity has
+                       // PosZ <= (that MATCH's OWN) TerrainHeight + 1, else 0 - the same per-entity
+                       // TerrainHeight E16.a now maintains for every entity (D-E16-29/D-E16-30). The
+                       // binary's own loop walks its matching-entity buffer BACKWARD; the decompilation
+                       // above walks it forward - no observable difference (a plain OR across matches,
+                       // never order-dependent), so ported here as a forward foreach like every other
+                       // matched-entity opcode in this file.
+            {
+                var groundCheckMatches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+                state.Result = 0;
+
+                foreach (var groundCheckMatch in groundCheckMatches)
+                {
+                    if (groundCheckMatch.PosZ <= groundCheckMatch.TerrainHeight + 1)
+                    {
+                        state.Result = 1;
+                        break;
+                    }
+                }
+
+                return 2;
+            }
+
             default:
                 return UnknownOpcode(command, state);
         }

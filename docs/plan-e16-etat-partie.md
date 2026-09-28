@@ -522,7 +522,7 @@ sans échec avant chaque ✅) :
   - `0x6E` : Ancient Shrine-27, en 546 ;
   - `0xAD` : Inoa (inner)-164, en 100 ;
   - `0xB8` : Arena Black Dragon (Boss)-323, B[2], en 108.
-- ⏳ **T3 — Hauteur de terrain de toute entité, puis `0x8D`** (DLL, D-E16-29 et D-E16-30). Deux
+- ✅ **T3 — Hauteur de terrain de toute entité, puis `0x8D`** (DLL, D-E16-29 et D-E16-30). Deux
   temps :
   1. **Mesure** :
      - dans le binaire : où l'original écrit `TerrainHeight` (`+0x138`) pour toute entité, joueur
@@ -547,6 +547,51 @@ sans échec avant chaque ✅) :
      - une entité testée par un programme de chargement avant sa première mise à jour ;
      - `TerrainHeight` de chacune après un tick ;
      - occurrence réelle : Arena Zorgia (Boss)-321, B[1], `8D 81` en 69.
+
+  **Résultats de T3.1** (2026-09-28 ; deux lectures indépendantes du binaire, concordantes, et un
+  relevé du corpus ; scripts dans `scratchpad/e16a-t3/`) : **reproductible, pas d'arrêt.**
+  - **Où l'original pose `TerrainHeight`** (`+0x138`) :
+    - à l'apparition de **toute** entité : `InitializeEntity` (`0x80039D04`, `EntityManager.cs:127-128`)
+      appelle `ComputeEntityGroundHeight` (`0x800370C4`) et range le résultat (`0x80039EF8`). Aucun
+      script ne tourne dans cette fonction ; le programme de chargement vient plus tard ;
+    - à chaque image, pour toute entité active (statut `Normal` ou `Deactivated`, sans
+      `BlockedByEntity`, joueur et sprites seuls compris ; `UpdateEntityLists`, `0x800384F4`) :
+      `UpdateEntitiesPhysics` (`0x80038364`) → `MoveEntity` (`0x80037E34`) → `ComputeZPosition`
+      (`0x80037604`, `0x8003768C`) et `ComputeXYPosition` (`0x80037844`, `0x80037DF8`), qui
+      recalculent `ComputeEntityGroundHeight` ; la dernière écriture est faite à la position finale ;
+    - une entité portée par une plateforme (`PlatformEntity`) reprend la valeur de la plateforme
+      sans la recalculer (`MoveEntity`, `0x80037E88`–`0x80037E90`) ;
+    - un gestionnaire d'IA native (fonction de type C, cas 10, `0x8006AD0C`) décale la valeur quand
+      le mouvement a été contrarié. L'IA native n'est pas portée (E14) : hors de cette tranche.
+  - **Quand** : les scripts tournent avant la physique dans l'image (`UpdateEntities`, `0x8003B388` :
+    événements puis physique). Un script lit donc la valeur de l'image précédente, ou celle de
+    l'apparition. Aucun script ne peut voir une valeur jamais calculée.
+  - **Même valeur** : `ComputeTerrainHeight` (`AlundraEntityScriptProxy.cs:1286-1304`) porte la même
+    formule : maximum sur les quatre coins de l'emprise, pentes comprises, repli à 0.
+  - **Cibles de `0x8D`** (corpus) :
+    - tables B (110) et C (73), jamais A : aucun test pendant le chargement ;
+    - types de recherche : identifiant d'enregistrement 61, propriétaire 58, joueur 41, enfants du
+      propriétaire 23 ;
+    - aucune des 160 cibles résolues n'est sans contrôleur. Les 23 recherches « enfants du
+      propriétaire » ne se résolvent pas statiquement.
+
+    Tenir `TerrainHeight` pour toute entité, comme l'original, couvre tous ces cas.
+  - **Écart de moment connu** : la DLL enchaîne scripts et physique entité par entité (`Update`,
+    `:927-1001`), là où l'original fait tous les scripts puis toute la physique. Un script peut donc
+    lire la valeur de cette image pour une entité déjà mise à jour. C'est la même classe d'écart que
+    celle déjà documentée pour `FloorHeight`.
+  **Fait le 2026-09-28 (T3.2)** :
+  - aucun code de la DLL ne lisait `TerrainHeight` avant `0x8D` (relevé avant modification) : l'élargir
+    ne change rien d'autre ;
+  - `EvaluateEntitySupport` écrit désormais `TerrainHeight` pour toute entité, à l'apparition et à
+    chaque tick. La valeur locale qui alimente l'atterrissage garde sa garde d'origine. Le joueur
+    l'écrit dans `UpdateFloorHeight` (chaque tick) et dans `AdoptPlayerPawn` (apparition) ;
+  - héritage par plateforme non implémenté : la DLL n'assigne jamais `PlatformEntity`, il n'y a donc
+    rien à hériter ;
+  - `0x8D` est porté ;
+  - 12 tests, dont l'occurrence réelle d'Arena Zorgia ; l'écriture du joueur à l'apparition n'est
+    vérifiée qu'à la lecture du code, `AdoptPlayerPawn` n'étant pas atteignable sans moteur ;
+  - `Alundra.Tests` 1410/1410, oracle de l'intro inchangé.
 - ⏳ **T4 — Famille `0x78` à `0x81`** (DLL, D-E16-21). Taille de `0x78` à 3 ; un test par opcode (saut
   pris et non pris, écriture et relecture de `_34`) ; `EventProgramState.cs` et `ImplementedOpcodes`
   mis à jour (tous les opcodes de T1 à T4). **Trois tests de séquence** sur des programmes réels, du

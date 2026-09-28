@@ -529,11 +529,24 @@ public class AlundraEntityScriptProxy : GameplayProxy
         // ports faithfully for every controller-less entity - reused here (shape (b) of the two
         // a750256's own doc originally weighed, declined there only because the engine's own velocity-
         // driven ground snap covered it at the time; that coupling is exactly what this fix removes).
+        // E16.a (D-E16-29/D-E16-30, docs/plan-e16-etat-partie.md, T3.1 "Résultats"): the original writes
+        // TerrainHeight (+0x138) for EVERY entity, every tick, at that tick's own final position
+        // (MoveEntity -> ComputeZPosition/ComputeXYPosition -> ComputeEntityGroundHeight,
+        // PhysicsEngine.cs:180-187/0x80037E34), and again at spawn (InitializeEntity,
+        // 0x80039D04/EntityManager.cs:127-128) BEFORE any script runs - regardless of Controller or
+        // immediateAtSpawn. Written UNCONDITIONALLY here - this call's own single write site for every
+        // entity that reaches it (a controller-driven NPC's per-tick call, a controller-less sprite's
+        // per-tick call, and the one-shot immediateAtSpawn evaluation at spawn) - deliberately lifting the
+        // FORMER `Controller != null && !immediateAtSpawn` gate for THIS WRITE ONLY. `terrainHeight` below
+        // (the LOCAL feeding the controller-driven landing clamp a few lines down) keeps that exact same
+        // gate: it drives different, unrelated physics (the entity-support seed/landing test), out of this
+        // task's scope (contract item 3: "rien d'autre ne change dans la physique").
+        TerrainHeight = ComputeTerrainHeight();
+
         var terrainHeight = 0;
         if (Controller != null && !immediateAtSpawn)
         {
-            terrainHeight = ComputeTerrainHeight();
-            TerrainHeight = terrainHeight;
+            terrainHeight = TerrainHeight;
         }
 
         // Verifier A1 (PhysicsEngine.cs:180-187): the FULL original conjunct - this tick's own natural
@@ -1539,6 +1552,15 @@ public class AlundraEntityScriptProxy : GameplayProxy
     internal void UpdateFloorHeight()
     {
         var terrainHeight = ComputeTerrainHeight();
+
+        // E16.a (D-E16-29, docs/plan-e16-etat-partie.md): the player's own per-tick TerrainHeight (+0x138)
+        // write - the original computes it from the SAME ComputeEntityGroundHeight probe this method
+        // already calls for FloorHeight (T3.1's own "même valeur" finding), it only KEEPS the two in
+        // separate fields (TerrainHeight AND FloorHeight, the latter FloorHeight's own +1-shifted seed
+        // half). This is the hero's one per-tick call site into this probe (see this method's own call
+        // site in Update's IsPlayer branch) - FloorHeight is unchanged.
+        TerrainHeight = terrainHeight;
+
         var seed = terrainHeight + 1;
 
         var supportTopZ = 0;

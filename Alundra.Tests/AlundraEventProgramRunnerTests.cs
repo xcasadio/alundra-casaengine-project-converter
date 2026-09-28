@@ -4,6 +4,7 @@ using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
+using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
 using Xunit;
 
@@ -3960,5 +3961,181 @@ public class AlundraEventProgramRunnerTests
 
         Assert.Equal(1, state.Result);
         Assert.Equal(3, state.CodeIndex);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // 0x8D - Check any match on/under terrain (docs/plan-e16-etat-partie.md, E16.a T3, D-E16-29/
+    // D-E16-30). Every case below justifies its own expected Result against the original's
+    // `entity.PosZ <= entity.TerrainHeight + 1` test (EntityEventHandlers.cs:2597-2615).
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void CheckAnyMatchOnGround_0x8D_PlayerAtTerrainHeightPlusOne_SetsResult1()
+    {
+        // v1=0x81 -> functionId 1 ("get player"). The "+1" in the original's own test is ONE RAW 16.16
+        // UNIT (the resting-on-terrain invariant, ModdedPosZ == TerrainHeight + 1 - see
+        // AlundraEntityScriptProxy.ComputeTerrainHeight's own doc), never one pixel. PosZ ==
+        // TerrainHeight + 1 satisfies "<=" exactly at its own upper bound -> Result = 1.
+        var document = NewDocument(0x8D, 0x81, 0xFF);
+        var player = new AlundraEntityScriptProxy { IsPlayer = true, TerrainHeight = 5 << 16, PosZ = (5 << 16) + 1 };
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(2, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckAnyMatchOnGround_0x8D_PlayerAtTerrainHeight_SetsResult1()
+    {
+        // PosZ == TerrainHeight (one unit BELOW the +1 bound checked above) still satisfies "<=" ->
+        // Result = 1 - the original's test has no lower bound, only the +1 upper one.
+        var document = NewDocument(0x8D, 0x81, 0xFF);
+        var player = new AlundraEntityScriptProxy { IsPlayer = true, TerrainHeight = 5 << 16, PosZ = 5 << 16 };
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(2, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckAnyMatchOnGround_0x8D_PlayerInAir_SetsResult0()
+    {
+        // A full pixel above TerrainHeight + 1 (the "<=" bound) - well past it, so clearly in the air ->
+        // Result = 0.
+        var document = NewDocument(0x8D, 0x81, 0xFF);
+        var player = new AlundraEntityScriptProxy { IsPlayer = true, TerrainHeight = 5 << 16, PosZ = (6 << 16) + 1 };
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.Result);
+        Assert.Equal(2, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckAnyMatchOnGround_0x8D_NpcWithController_UsesItsOwnTerrainHeight_SetsResult1()
+    {
+        // v1=0x80 -> functionId 0 ("get owner"): the owner itself is always exactly one match. Carries a
+        // Controller (E16.a lifts EvaluateEntitySupport's former Controller!=null gate for the
+        // TerrainHeight WRITE only - this opcode's own READ never looked at Controller at all, the
+        // original struct field is the same regardless) - on the ground -> Result = 1.
+        var document = NewDocument(0x8D, 0x80, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.Controller = new CharacterControllerComponent();
+        entity.TerrainHeight = 12 << 16;
+        entity.PosZ = 12 << 16;
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(2, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckAnyMatchOnGround_0x8D_ControllerLessEntity_UsesItsOwnTerrainHeight_SetsResult1()
+    {
+        // Same owner search, no Controller at all (a controller-less sprite-only entity, D-E16-30's own
+        // widened scope) - D-E16-30 established the original maintains TerrainHeight for this entity kind
+        // too (T3.1's own per-tick finding, "toute entité active ... joueur et sprites seuls compris"),
+        // so the same ground test applies unchanged.
+        var document = NewDocument(0x8D, 0x80, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        Assert.Null(entity.Controller);
+        entity.TerrainHeight = 12 << 16;
+        entity.PosZ = 12 << 16;
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(2, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckAnyMatchOnGround_0x8D_TestedRightAfterSpawn_BeforeAnyTick_UsesSpawnTerrainHeight()
+    {
+        // D-E16-30/T3.1: InitializeEntity (0x80039D04) writes TerrainHeight at spawn, before any script
+        // ever runs - a Load program can test 0x8D on an entity that has never ticked. This test does not
+        // re-exercise EvaluateEntitySupport's own spawn write (covered by AlundraTerrainHeightTests) - it
+        // simulates its OUTCOME directly (TerrainHeight already carries the spawn-time value, PosZ still
+        // at its spawn pose, no tick has run) and checks 0x8D reads exactly that value, matching a
+        // loading program's own testable moment.
+        var document = NewDocument(0x8D, 0x80, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.TerrainHeight = 40 << 16; // as if InitializeEntity just computed/wrote this at spawn.
+        entity.PosZ = (40 << 16) + 1; // spawn pose, ModdedPosZ == TerrainHeight + 1 (one raw unit) - resting on arrival.
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(2, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckAnyMatchOnGround_0x8D_NoMatch_SetsResult0()
+    {
+        // v1=0x81 ("get player"), no player spawned -> matches.Count == 0 -> the loop never runs ->
+        // Result stays at its own default-to-0 (D-E16-27's own "default to 0" shape, same as 0xAD/0xB8).
+        var document = NewDocument(0x8D, 0x81, 0xFF);
+        var runner = NewRunner(document); // no worldContext -> no player
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.Result);
+        Assert.Equal(2, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckAnyMatchOnGround_0x8D_RealOccurrence_ArenaZorgiaBoss321()
+    {
+        var projectRoot = FindProjectRootForRealOpcodeOccurrences();
+        if (projectRoot == null)
+        {
+            return; // self-skip
+        }
+
+        var document = MapEventProgramLoader.Load(projectRoot, "Arena Zorgia (Boss)-321");
+        Assert.NotNull(document);
+
+        // Table B (Map), index 1: entry point 36 (not part of this test); instruction offset 69: bytes
+        // "8D 81".
+        Assert.Equal(36, document!.EventCodesBTable[1]);
+        var codeBytes = document.CodesAsBytes();
+        var instructionBytes = codeBytes[69..71];
+        Assert.Equal(new byte[] { 0x8D, 0x81 }, instructionBytes);
+
+        // v1=0x81 (player): a player set exactly on the ground (ModdedPosZ == TerrainHeight + 1 raw
+        // 16.16 unit) gives a meaningful true case off the real operand.
+        var gameState = new AlundraGameState();
+        var player = new AlundraEntityScriptProxy { IsPlayer = true, TerrainHeight = 20 << 16, PosZ = (20 << 16) + 1 };
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = NewRunner(document, gameState, context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = instructionBytes.Append((byte)0xFF).ToArray(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(2, state.CodeIndex);
     }
 }

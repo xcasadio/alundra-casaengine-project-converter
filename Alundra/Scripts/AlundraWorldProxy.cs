@@ -1621,6 +1621,18 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 + $"'{world.Name}'; Flags/SpriteProgramIndexes/AnimSetsByAnim left at their defaults.");
         }
 
+        // E16.a (D-E16-30, docs/plan-e16-etat-partie.md, T3.1): the hero's own spawn-time TerrainHeight
+        // (+0x138) write - port of InitializeEntity (0x80039D04, EntityManager.cs:127-128), which the
+        // original runs for EVERY entity, player slot 0 included, right after its position/footprint are
+        // set and BEFORE any script (the loading program in particular) can ever run on it. Placed here,
+        // AFTER the position (ClampToGround above) and footprint (Mod*/Width/Height, just set above) are
+        // both final, and BEFORE this proxy is added to _spawnedEntities/reachable by any script below -
+        // AdoptPlayerPawn's own equivalent of the map-load spawn loop's
+        // `EvaluateEntitySupport(..., immediateAtSpawn: true)` call (AlundraWorldProxy.cs, map-load/dynamic
+        // spawn paths above), which the hero does not go through (it never calls EvaluateEntitySupport at
+        // all - E2 drives it through AlundraPlayerManager instead).
+        proxy.TerrainHeight = proxy.ComputeTerrainHeight();
+
         // E3.d ("DLL - adoption", docs/plan-e3-collisions.md): overrides the converter-exported
         // Gravity/MaxFallSpeed/WalkabilityMask - the only three CharacterControllerSettings the
         // converter cannot bake in, since they depend on this MAP's own properties and this ENTITY's
