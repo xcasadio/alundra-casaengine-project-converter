@@ -1111,8 +1111,13 @@ max `0x6A2`, mot 53) et arithmétique de C3.
 #### Plan détaillé d'E16.d (2026-09-28)
 
 **Statut** : proposé en mode AUTO (l'auteur, le 2026-09-28 au soir : « fait tout E16 de façon
-autonome »). Revue de sécurité faite (tableau en fin de section, constats intégrés) ; reste la
-relecture de plan jusqu'à READY, avant l'exécution par un `security-executor` ; ensuite,
+autonome »). Revue de sécurité faite (tableau en fin de section, constats intégrés). Première
+relecture de plan (`ad07ae4`) : **REVISE**, deux bloquants corrigés. Les mutations de T5 n'étaient
+pas détectables : aucune lecture des valeurs chargées pendant l'installation, les premiers lecteurs
+sont au premier tick (G5, K8, T5). « Portrait au repos » était ambigu, désormais `StateIdle` (K6,
+K7, T3). Remarques mineures corrigées aussi : source de `mapId`, action sonore vide,
+`ResetDisplayForLoad(stats)`. Reste une relecture de clôture jusqu'à READY, avant l'exécution par
+un `security-executor` ; ensuite,
 vérification par un `verifier` frais. La recette en jeu reste à l'auteur.
 
 **Faits établis à la planification** (exploration en lecture seule, chaque rapport recontrôlé par
@@ -1124,7 +1129,7 @@ un second agent ; scripts et rapports dans `scratchpad/e16def/`)
 | G2 | Aucune des deux ne se protège d'un départ déjà armé : `BeginDepartureCore` écrase l'arrivée en attente. Toutes deux ne font rien si `IsWarpDisabled`. | `AlundraWarpDirector.cs:409-455`, `:290-293`, `:365-368` |
 | G3 | Le chemin du monde est résolu dès l'armement ; le changement de monde a lieu plus tard, dans `Advance`, une fois le fondu stabilisé. La garde d'abandon ne se déclenche que sans chemin ou sans `GameManager` attaché. | `AlundraWarpDirector.cs:450`, `:514-554` |
 | G4 | Un départ vers la carte courante recharge tout le monde : le moteur n'a pas de raccourci pour le même chemin. | `GameManager.cs:98-144`, `:154-157` |
-| G5 | À l'arrivée, `InitializeWithWorld` exécute `GameState.InstallForMapEntry()` au tout début de son installation, puis installe les systèmes (cellules, audio, warp, fondu, dialogue, jauge, inventaires), adopte le héros (`AdoptPlayerPawn`, qui consomme l'arrivée en attente), bâtit les évènements de carte et les portails, et fait enfin apparaître les entités. Tout ce qui suit l'appel à `InstallForMapEntry` lit donc l'état de jeu. | `AlundraWorldProxy.cs:642-739` |
+| G5 | À l'arrivée, `InitializeWithWorld` exécute `GameState.InstallForMapEntry()` au tout début de son installation, puis installe les systèmes (cellules, audio, warp, fondu, dialogue, jauge, inventaires), adopte le héros (`AdoptPlayerPawn`, qui consomme l'arrivée en attente), bâtit les évènements de carte et les portails, et fait enfin apparaître les entités. Les installeurs ne font que rattacher l'état, et `AdoptPlayerPawn` ne lit `NewGameInventoryInitialized` que sans arrivée en attente : les premiers lecteurs des valeurs chargées sont les programmes des entités (dont leur programme de chargement, créneau A) et les évènements de carte, au premier tick du monde d'arrivée, après toute l'installation. Exemple sur la carte 389 : plusieurs programmes de chargement testent le drapeau 860 par `0x31` (`docs/intro-programs-389.txt`, décalages 143, 180, 234). | `AlundraWorldProxy.cs:642-739` |
 | G6 | `AdoptPlayerPawn` ne distingue une nouvelle partie d'un warp que par l'absence d'arrivée en attente. Un chargement parti par le chemin des warps est vu comme un warp : l'inventaire de nouvelle partie ne se relance pas, et le héros est placé à la position de l'arrivée. | `AlundraWorldProxy.cs:1546-1561` |
 | G7 | Préconditions disponibles : `AlundraDialogueDirector.Instance.IsOpen`, `AlundraInventoryDirector.Instance.IsActive`, `AlundraSubInventoryDirector.Instance.IsActive`, `AlundraWarpDirector.Instance.IsTransitionInProgress`, `AlundraGameState.PlayerControlFlags`, `IsWarpDisabled`, `AlundraEntityScriptProxy.IsOnGround` (tenu depuis le contrôleur à chaque image). La transition n'est pas impliquée par `PlayerControlFlags` ; un dialogue ouvert avec un mode de contrôle autre que 0 ou 1 laisse `PlayerControlFlags` intact (`ApplyControlMode` n'a pas de cas par défaut). Chaque précondition se teste donc à part. | `AlundraDialogueDirector.cs:134`, `:258-274` ; `AlundraInventoryDirector.cs:91` ; `AlundraSubInventoryDirector.cs:55` ; `AlundraWarpDirector.cs:85` ; `AlundraEntityScriptProxy.cs:191`, `:937` |
 | G8 | Déjà remis par l'arrivée : `AlundraGameState.InstallForMapEntry` (`TemporaryFlags`, l'entité du verrou d'interaction, `IsWarpDisabled`) et `AlundraDialogueDirector.InstallForMapEntry` (tout l'état du dialogue). Pas remis : les directeurs d'inventaire, le post-traitement et le portrait (aucune remise d'entrée de carte), ni la jauge (`InstallForMapEntry` vide, voulu). `ResetForTests` de la jauge pose les valeurs de nouvelle partie (10/10/0/0/0) et détache l'état : il ne convient pas à un chargement. | `AlundraGameState.cs` (`InstallForMapEntry`) ; `AlundraDialogueDirector.cs:183-201` ; `AlundraInventoryDirector.cs:132-152` ; `AlundraSubInventoryDirector.cs:81-104` ; `AlundraInventoryPostProcess.cs:46-49` ; `AlundraInventoryPortrait.cs:189-203` ; `AlundraHudDirector.cs:200-217`, `:262-284` |
@@ -1180,8 +1185,10 @@ un second agent ; scripts et rapports dans `scratchpad/e16def/`)
   Le choix d'un emplacement par le joueur relève d'E16.e.
 - **K6 — Sauvegarde (F5/F6)**, dans cet ordre, sans rien écrire au moindre refus :
   1. **préconditions**, chacune testée à part (G7) : héros présent, au sol ; aucun dialogue ; aucun
-     inventaire ni sous-inventaire ; post-traitement de l'inventaire à l'état 0 et portrait au
-     repos (SD12) ; aucune transition ; aucun fondu maître de la musique armé
+     inventaire ni sous-inventaire ; post-traitement de l'inventaire à l'état 0
+     (`AlundraInventoryPostProcess.Instance.State == 0`) et portrait inactif
+     (`AlundraInventoryPortrait.Instance.State == AlundraInventoryPortrait.StateIdle`, et non
+     `StateAtRest`, qui est le portrait affiché pendant un menu) (SD12) ; aucune transition ; aucun fondu maître de la musique armé
      (`AlundraBgmFadeDirector.Instance.IsArmed`, SD4) ; `PlayerControlFlags == 0` ;
   2. `TryCaptureFromWorld(GameState, world.Name, PlayerEntity)` (contrat de C5 d'E16.c) ;
   3. `TryValidate` avec les règles de production, `AlundraSaveGameRules(EngineEnvironment.ProjectPath,
@@ -1191,7 +1198,8 @@ un second agent ; scripts et rapports dans `scratchpad/e16def/`)
 - **K7 — Chargement (F9)**, dans cet ordre ; seule l'étape 7 change l'état vivant, et seulement à
   l'arrivée :
   1. préconditions : héros présent ; aucun chargement déjà en attente (SD13) ; aucun dialogue ;
-     aucun inventaire ni sous-inventaire ; post-traitement à l'état 0 et portrait au repos (SD12) ;
+     aucun inventaire ni sous-inventaire ; post-traitement à l'état 0 et portrait à `StateIdle`,
+     comme en K6 (SD12) ;
      aucune transition ; aucun fondu maître de la musique armé (SD4) ; `PlayerControlFlags == 0` ;
   2. emplacement le plus récent (K5) ;
   3. `TryLoad` : tout état autre que `Loaded` est un refus ;
@@ -1206,7 +1214,9 @@ un second agent ; scripts et rapports dans `scratchpad/e16def/`)
   6. le chargement devient **en attente** (`_pendingLoad`), puis
      `BeginDepartureForLoad(InitialMapId, (X × 24 + 12) << 16, (Y × 16 + 8) << 16, Z << 20,
      PlayerEntity)`. Ce nouveau départ interne passe par `BeginDepartureCore`, avec l'animation
-     `ResetAnimationId` (`0x36`), la direction `ResetDirectionId` (0), l'effet 0 et sans son, comme
+     `ResetAnimationId` (`0x36`), la direction `ResetDirectionId` (0), l'effet 0 et une action sonore
+     vide (ni effet sonore, ni `AlundraMusicPlayer.HandleWarpDeparture` : c'est le `PlayMapMusic` de
+     l'arrivée qui règle la musique), comme
      le départ d'une nouvelle partie ou d'un chargement de l'original (`AlundraGameState.cs:53-59`),
      et non avec l'animation en cours du héros, que `BeginDepartureFromChangeMapOpcode` recopierait
      (`AlundraWarpDirector.cs:379-380`, SD2). La position suit la formule de la nouvelle partie
@@ -1214,9 +1224,11 @@ un second agent ; scripts et rapports dans `scratchpad/e16def/`)
      (`IsTransitionInProgress` faux), l'attente est abandonnée, avec un message ;
   7. application à l'arrivée (K8).
 - **K8 — Application à l'entrée de la carte d'arrivée**. `AlundraSaveGameDirector.ApplyPendingLoad(
-  GameState, mapId)` est appelé dans `InitializeWithWorld`, juste après `GameState.InstallForMapEntry()`
-  (G5) : tout ce que l'installation lit ensuite (systèmes, héros, évènements, entités) voit l'état
-  chargé.
+  GameState, mapId)` est appelé dans `InitializeWithWorld`, juste après `GameState.InstallForMapEntry()`.
+  La contrainte réelle (G5) : l'application a lieu pendant l'installation du monde d'arrivée, donc
+  avant son premier tick, où les programmes des entités et les évènements de carte lisent les
+  valeurs chargées. `mapId` vient de `BackdropLoader.TryParseMapIndex(world.Name, …)`, comme dans
+  `TryCaptureFromWorld` ; un nom sans id compte comme « carte d'arrivée ≠ `InitialMapId` ».
   - Sans chargement en attente, il ne fait rien.
   - Il **vide l'attente avant toute autre chose** : un chargement ne s'applique jamais deux fois
     (SD9).
@@ -1231,7 +1243,8 @@ un second agent ; scripts et rapports dans `scratchpad/e16def/`)
        `NewGameInventoryInitialized` à **vrai** (SC7). Rien de ce que porte la sauvegarde ;
     2. `ApplyTo` de l'objet (E16.c, C6) : drapeaux, table, compteurs, stats, compteur de reprises,
        temps de jeu ;
-    3. `AlundraHudDirector.ResetDisplayForLoad()` : les valeurs affichées (PV, PV max, PM, PM max,
+    3. `AlundraHudDirector.ResetDisplayForLoad(AlundraPlayerStats stats)`, avec les stats de l'état
+       qui vient d'être chargé (la jauge peut ne pas avoir d'état attaché) : les valeurs affichées (PV, PV max, PM, PM max,
        argent) prennent les valeurs chargées, les quatre sous-étapes à 0, `CoinIconFrame` à 0,
        `IsMoneyRolling` à faux, images des cases de magie à 0. La phase, `Y`, le glissement et
        `_gameState` ne changent pas : une jauge ouverte reste ouverte, sans saut (SC1) ;
@@ -1277,7 +1290,8 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
     refus, sans exception, état identique (SD6).
 - ⏳ **T3 — Sauvegarde F5/F6** (K6). Tests, sur un service simulé :
   - chaque précondition non tenue (héros absent, en l'air, dialogue, inventaire, sous-inventaire,
-    post-traitement actif, portrait hors repos, transition, fondu maître de la musique armé,
+    post-traitement actif, portrait autre que `StateIdle` (ouverture, affiché, retour), transition,
+    fondu maître de la musique armé,
     `PlayerControlFlags` non nul) → aucun appel à `Save`, état identique à un instantané ;
   - succès : `Save` reçoit `debug-binary` en binaire (F5) ou `debug-json` en JSON (F6), l'objet et
     ses métadonnées ; héros placé à une tuile connue de la carte 389 → objet capturé à cette carte et
@@ -1313,14 +1327,27 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
     réapplique rien (SD9) ;
   - Start appuyé pendant le fondu du chargement : après `ApplyPendingLoad`, les deux inventaires au
     repos, `PlayerControlFlags` à 0, puis N ticks sans exception (SD5) ;
-  - **de bout en bout, obligatoire** (SD8), sur le chemin de l'installation réelle
-    (`InitializeWithWorld`, comme `AlundraWorldProxySessionStateTests` et les tests de production
-    de la carte 389) : F9 sur une session, puis l'installation du monde d'arrivée → un drapeau
-    chargé est vu par le filtre d'apparition des entités et par les évènements de carte, le héros
-    est à la tuile sauvegardée, l'inventaire de nouvelle partie ne tourne pas. Deux mutations du
-    code de production, faites puis défaites par un script : appeler `ApplyPendingLoad` après
-    `AdoptPlayerPawn`, puis avant `GameState.InstallForMapEntry()`. Chacune doit faire échouer un
-    test.
+  - **de bout en bout, obligatoire** (SD8), sur le chemin de l'installation réelle de la carte 389
+    (`InitializeWithWorld` puis le premier `Update`, comme les tests de production de la carte 389
+    et `AlundraWorldProxySessionStateTests`) : F9 sur une session où le drapeau 860 est éteint,
+    d'une sauvegarde où il est posé, arrivée sur la 389, puis premier tick. Assertions :
+    - les programmes de chargement qui testent le drapeau 860 par `0x31`
+      (`docs/intro-programs-389.txt`, décalages 143, 180, 234) prennent la branche du drapeau chargé,
+      et non celle de la session. `0x31` saute quand le drapeau est éteint (`FlagBranch`,
+      `AlundraEventProgramRunner.cs:1416`) : drapeau posé, leur placement `0x64` qui suit s'exécute,
+      et l'entité est à la position qu'il donne ;
+    - le héros est à la tuile sauvegardée ;
+    - l'inventaire de nouvelle partie ne tourne pas.
+
+    Deux mutations du code de production, faites puis défaites par un script, doivent chacune faire
+    échouer ce test :
+    - supprimer l'appel à `ApplyPendingLoad` → l'état n'est pas chargé ;
+    - déplacer l'appel à la fin du premier `Update` du monde d'arrivée, après la passe des entités →
+      les programmes de chargement ont lu l'ancien drapeau.
+
+    La mutation « avant `GameState.InstallForMapEntry()` » est un mutant équivalent : cette méthode
+    ne touche que `TemporaryFlags`, que `ApplyTo` n'écrit pas, et l'entité du verrou et
+    `IsWarpDisabled`, que `ResetSessionForLoad` remet de toute façon. Elle n'est donc pas demandée.
 - ⏳ **T6 — Documentation et ADR** : ADR-0013 de ce dépôt (le chargement part par le chemin des
   warps et s'applique à l'entrée de la carte d'arrivée ; touches de recette en Debug seulement,
   D-E16-33, la DLL déployée étant celle du dernier build ; le service derrière une interface de la
