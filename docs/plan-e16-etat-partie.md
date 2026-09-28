@@ -418,14 +418,21 @@ par un agent neuf.
     `0x2C`, `0x8D` et `0xB8` ;
   - `PosX/PosY/PosZ` (`AlundraEntityScriptProxy.cs:134-136`), `RidingEntity` (`:140`),
     `CurrentAnimationId` (`:87`) et `ForceAdjusted` (`:171`) sont déjà tenus à jour ;
-  - `TerrainHeight` (`:148`) n'est écrit qu'en `:536`, pour les PNJ. Le joueur calcule la hauteur de
-    son terrain dans `UpdateFloorHeight` (`:1539-1552`) mais ne la garde que dans `FloorHeight`.
-    `0x8D` teste le joueur dans 41 de ses 183 usages ;
+  - `TerrainHeight` (`:148`) n'est écrit qu'en `:536`, sous la garde
+    `Controller != null && !immediateAtSpawn` (`:532-537`). Il n'est donc tenu que pour les PNJ qui
+    ont un contrôleur, et seulement après leur première mise à jour de support. Il reste à 0 pour le
+    joueur, pour les entités sans contrôleur (sprites seuls, qui existent en production :
+    `:986-990`) et pour toute entité avant sa première mise à jour, par exemple quand un programme
+    de chargement la teste dès son apparition. Le joueur calcule bien la hauteur de son terrain dans
+    `UpdateFloorHeight` (`:1539-1552`), mais ne la garde que dans `FloorHeight`. `0x8D` teste le
+    joueur dans 41 de ses 183 usages, et d'autres entités dans les 142 autres ;
   - `FillDataFromCommand` ne lit que des octets non signés (`AlundraEventProgramRunner.cs:403-427`) :
     `0xAD` doit convertir ses trois premiers décalages en octets signés ;
   - modèles déjà portés : `0x05`/`0x06` (`:445-459`), `FlagBranch`, `WaitUntilFlagOn`, `CheckFlagsOn`
-    (`:1222-1264`), `DestroyMatchingEntities` (`0x2E`, `:1319-1331`), `EntityInArea` (`0x07`,
-    `:1799-1826`), `0x70` (`:992-996`), `LogDegradedNoPlayerOpcodeOnce` (`:1767`) ;
+    (`:1222-1264`), `DestroyMatchingEntities` (`0x2E`, `:1322`), `EntityInArea` (`0x07`, `:1804`),
+    `0x70` (`:992-996`), `LogDegradedNoPlayerOpcodeOnce` (`:1767`) ;
+  - les programmes B et C gardent leur état d'un appel à l'autre, donc `_34` survit à une attente
+    (`0x1E`, `0x37`) ; A, D, E et F partagent un état de travail ;
   - `EventProgramState.cs:16-18` dit encore que `_34` n'est lu par aucun opcode porté ;
   - `HeadlessIntroSimulation.ImplementedOpcodes` (`Alundra.Tests/IntroTraceHarnessTests.cs:319-323`)
     recopie à la main l'ensemble des opcodes portés ; il a déjà pris du retard deux fois.
@@ -460,6 +467,10 @@ par un agent neuf.
 - **D-E16-29** — E16.a tient à jour `TerrainHeight` du joueur, à partir de sa sonde de sol existante,
   après avoir vérifié dans le binaire que c'est la même valeur que l'original. Sinon, arrêt et
   question à l'auteur.
+- **D-E16-30** (réponse de l'auteur après la relecture d'E16.a) — D-E16-29 s'étend à **toutes les
+  entités** que `0x8D` peut tester : joueur, PNJ avec ou sans contrôleur, dès leur apparition. T3.1
+  vérifie dans le binaire où et quand l'original pose `TerrainHeight` pour toute entité ; E16.a le
+  pose de même, depuis la même sonde. Si le binaire diffère, arrêt (O-E16-12).
 
 **Contrat** :
 
@@ -467,7 +478,8 @@ par un agent neuf.
    n'est sauté par taille. Chaque `case` cite son gestionnaire (adresse) et sa ligne de décompilation,
    et signale l'écart quand elle diverge.
 2. `0x78` fait 3 octets dans `EventOpcodeSizeTable.cs` ; `0xB8` s'y appelle « Check CurrentAnimationId ».
-3. `TerrainHeight` du joueur est tenu à jour selon D-E16-29 ; rien d'autre ne change dans la physique.
+3. `TerrainHeight` de toute entité est tenu à jour selon D-E16-29 et D-E16-30, là et quand
+   l'original le pose ; rien d'autre ne change dans la physique.
 4. `EventProgramState.cs` décrit `_34` tel qu'il est désormais utilisé ;
    `HeadlessIntroSimulation.ImplementedOpcodes` contient tous les opcodes portés.
 5. L'analyseur, sur la branche `chantier/e16a-opcodes` de son sous-module :
@@ -502,16 +514,30 @@ sans échec avant chaque ✅) :
   - `0x6E` : Ancient Shrine-27, en 546 ;
   - `0xAD` : Inoa (inner)-164, en 100 ;
   - `0xB8` : Arena Black Dragon (Boss)-323, B[2], en 108.
-- ⏳ **T3 — Hauteur de terrain du joueur, puis `0x8D`** (DLL, D-E16-29). Deux temps :
-  1. **Mesure dans le binaire** : où l'original écrit `TerrainHeight` (`+0x138`) pour le joueur
-     (slot 0), avec quelle valeur et à quel moment de l'image par rapport aux scripts. Comparer avec
-     `ComputeTerrainHeight` de `UpdateFloorHeight`. Résultat consigné ici, sourcé. S'ils diffèrent, la
-     tâche s'arrête (O-E16-12).
-  2. Si la valeur concorde :
-     - `TerrainHeight` du joueur est posé au même endroit du cycle ;
-     - `0x8D` est porté ;
-     - tests : `0x8D` pour un PNJ et pour le joueur, au sol et en l'air, et `TerrainHeight` du joueur
-       après un tick ;
+- ⏳ **T3 — Hauteur de terrain de toute entité, puis `0x8D`** (DLL, D-E16-29 et D-E16-30). Deux
+  temps :
+  1. **Mesure** :
+     - dans le binaire : où l'original écrit `TerrainHeight` (`+0x138`) pour toute entité, joueur
+       compris, avec quelle valeur, à quel moment de l'image par rapport aux scripts, et dès
+       l'apparition ou non ;
+     - comparaison avec `ComputeTerrainHeight`, que calcule déjà `UpdateFloorHeight` ;
+     - dans le corpus : les entités que visent les usages de `0x8D` autres que le joueur (types de
+       recherche `0x80`, `0x89` et ids d'enregistrement), avec les programmes qui les testent dès leur
+       apparition.
+
+     Résultats consignés ici, sourcés. Si la valeur ou le moment diffèrent de ce que la DLL peut
+     reproduire, la tâche s'arrête (O-E16-12).
+  2. Si la mesure concorde :
+     - `TerrainHeight` de toute entité est posé au même endroit du cycle que l'original, dès
+       l'apparition si l'original le fait ;
+     - `0x8D` est porté.
+
+     Tests de `0x8D`, chacun avec le `Result` attendu justifié par l'original :
+     - le joueur au sol et en l'air ;
+     - un PNJ avec contrôleur ;
+     - une entité sans contrôleur ;
+     - une entité testée par un programme de chargement avant sa première mise à jour ;
+     - `TerrainHeight` de chacune après un tick ;
      - occurrence réelle : Arena Zorgia (Boss)-321, B[1], `8D 81` en 69.
 - ⏳ **T4 — Famille `0x78` à `0x81`** (DLL, D-E16-21). Taille de `0x78` à 3 ; un test par opcode (saut
   pris et non pris, écriture et relecture de `_34`) ; `EventProgramState.cs` et `ImplementedOpcodes`
@@ -519,11 +545,13 @@ sans échec avant chaque ✅) :
   point d'entrée jusqu'au retour :
   - A : Lake Shrine (inner)-337, B[2] (entrée 512) : `0x78` en 807 saute en 822 sur `0x81` ;
   - B : Cave-140, B[4] (entrée 744) : `0x78` en 773, puis `0x5B`, `0x1E` et `0x7D` en 1361, qui
-    revient en 776 ;
+    revient en 776. `0x1E` (marche) ne se termine qu'une fois l'entité déplacée : le test fait
+    avancer le mouvement (ticks, ou position pilotée) pour atteindre le `0x7D` ;
   - C : Lizardman's Lair (Boss)-411, B[9] (entrée 1712) : `0x7B` en 1713 (drapeau `0x807A`), puis
     `0x37`, `0x07` et `0x7E` en 1747, dont le `Result` vient du `0x07`.
-- ⏳ **T5 — Analyseur** (contrat 5, D-E16-28). Branche `chantier/e16a-opcodes` créée depuis `master` du
-  sous-module ; build d'`AlundraEngine.csproj` à 0 erreur ; commit dans le sous-module, puis commit du
+- ⏳ **T5 — Analyseur** (contrat 5, D-E16-28). Branche `chantier/e16a-opcodes` créée depuis le commit
+  que le parent enregistre pour le sous-module (`118c6c5`, égal à `master` au 2026-09-28 ; s'ils ont
+  divergé, arrêt et question) ; build d'`AlundraEngine.csproj` à 0 erreur ; commit dans le sous-module, puis commit du
   pointeur dans ce dépôt. Rien n'est poussé.
 - ⏳ **T6 — Vérification finale** : `Alundra.Tests` et tests du convertisseur sans échec ; oracle de
   l'intro inchangé ; vérificateur neuf sur toute la tranche.
@@ -537,8 +565,16 @@ sans échec avant chaque ✅) :
 (`0x11` à la frame 1704) ; aucun opcode de la tranche sauté par taille ; analyseur compilé ;
 vérification finale neuve **CONFIRMED**.
 
+**Limite connue** : 4 occurrences de `0x7F` (Coast house-143) ne sont atteintes que par un saut
+dynamique (`_34`), et leur producteur de `Result` n'est pas établi. Si ce producteur n'est pas porté,
+ces `0x7F` lisent un `Result` périmé. La tranche ne peut pas le corriger sans le connaître : la limite
+est consignée. Le runner n'a pas de borne d'itérations en production (`MaxIterationsPerCall` n'est
+posé que par les tests, `AlundraEventProgramRunner.cs:98`, `:332`) : si l'un de ces chemins formait une
+boucle sans attente, il tournerait sans fin.
+
 **Arrêts** :
-- T3.1 ne retrouve pas dans le binaire la valeur de `TerrainHeight` du joueur (O-E16-12) ;
+- T3.1 ne retrouve pas dans le binaire la valeur ou le moment de `TerrainHeight` pour une entité que
+  `0x8D` teste (O-E16-12) ;
 - un opcode dont le binaire contredit à nouveau la décompilation sur un point non tranché ;
 - l'oracle de l'intro qui bouge ;
 - un test existant qui devrait changer pour une autre raison que la tranche ;
@@ -1006,7 +1042,7 @@ tests du convertisseur 400/400, `Alundra.Tests` 1361/1361.
 | O-E16-9 | ~~`SaveSlotIndex`~~ — **tranché** (D-E16-22) : sauvegardé et restitué, 0..255. | E16.c |
 | O-E16-10 | ~~Unité du temps de jeu~~ — **tranché** (D-E16-23) : 60 unités par seconde réelle, affichage divisé par 60. | E16.c |
 | O-E16-11 | ~~Désaccords de décompilation~~ — **tranché** (D-E16-24) : tous corrigés en E18. | E18 |
-| O-E16-12 | Seulement si E16.a T3.1 ne retrouve pas, dans le binaire, que la hauteur de terrain du joueur (`TerrainHeight`, `+0x138`) vaut celle que calcule `UpdateFloorHeight` au même moment de l'image : quelle source prendre pour `0x8D` sur le joueur ? | E16.a |
+| O-E16-12 | Seulement si E16.a T3.1 ne retrouve pas, dans le binaire, que la hauteur de terrain (`TerrainHeight`, `+0x138`) d'une entité que `0x8D` teste (joueur, PNJ avec ou sans contrôleur, dès l'apparition) vaut celle que la sonde de la DLL (`ComputeTerrainHeight`) peut calculer, au même moment de l'image : quelle source prendre pour `0x8D` ? | E16.a |
 
 ## 4. Hors périmètre
 
