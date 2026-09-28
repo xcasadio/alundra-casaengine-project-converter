@@ -898,7 +898,7 @@ erreur, tests du convertisseur et `Alundra.Tests` sans échec avant chaque ✅) 
 - **Retour arrière** : revert des commits d'E15.d, puis export complet (les tables brutes reviennent).
 - **Dépendances** : E15.c.
 
-### E15.e — Les accents de `font3` 🚧 (convertisseur, docs ; ouverte le 2026-09-28 pendant la recette)
+### E15.e — Les accents de `font3` 🧪 (convertisseur, docs ; ouverte le 2026-09-28 pendant la recette ; T1-T2 faites, reste la recette T3)
 
 - **Constat de l'auteur** (recette, 2026-09-28) : dans la boîte de dialogue, désormais en `font3`
   (D-E15-12), les lettres accentuées s'affichent avec de mauvais glyphes (« oublié où » → une virgule
@@ -950,12 +950,19 @@ convertisseur et `Alundra.Tests` sans échec avant chaque ✅) :
   qui vérifie aussi que « é » est pris dans la case 233, x = 144, y = 224) lit le `font3.fnt` exporté :
   il est écrit mais sauté jusqu'à l'export de T2, qui l'active (le contrôle de T1 a réfuté un test actif
   qui aurait lu l'ancien export).
-- ⏳ **T2 — Export et preuves** (jamais pendant une suite `Alundra.Tests` ; lanceur et jeu fermés) :
+- ✅ **T2 — Export et preuves** (jamais pendant une suite `Alundra.Tests` ; lanceur et jeu fermés) :
   manifeste d'avant = manifeste d'après d'E15.d (`scratchpad/e15d/manifest-after2.txt`) ; export complet
   sur place ; `report.json` à 0 erreur, sans l'avertissement de doublons de police ; manifeste d'après =
   **seulement** `UI/font3.fnt`, `UI/font3-charset.json` et `report.json` modifiés ; second export
   identique hormis `report.json` ; dans le `.fnt` exporté, chacun des 17 caractères pointe vers sa case
   CP1252 ; puis le test « é » de la DLL est activé et `Alundra.Tests` passe.
+  **Fait le 2026-09-28** : manifeste d'avant recapturé, identique à celui d'E15.d (23 731 fichiers,
+  `59735368…`) ; export 1 : 0 erreur, aucun avertissement de police, vérification PASSED, même liste de
+  fichiers, seuls les trois fichiers attendus changent ; `Font.Glyphs` = 145 ; les 17 caractères du
+  corpus ont leur ligne `char` à la case de leur octet CP1252 avec l'avance de cette case, les codes 0 à
+  127 à leur propre case, aucun autre point de code au-dessus de 127, 111 cases sans caractère avec
+  `"no proven character"` ; export 2 identique hormis `report.json` (manifeste `e6f640d9…`) ;
+  `Alundra.Tests` 1361/1361 avec le test « é » actif.
 - ⏳ **T3 — Recette en jeu** (auteur) : fusionnée avec celle d'E15.d (T5) : accents justes dans la boîte
   de dialogue et dans l'inventaire.
 
