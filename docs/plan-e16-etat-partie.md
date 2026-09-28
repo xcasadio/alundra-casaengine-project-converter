@@ -754,7 +754,8 @@ type d'`InitialMapId`, `TryValidate` partout, stats à plat. Relecture de clôtu
 **REVISE**, un bloquant (FIX). Sans valeur de départ, `LoadedDataVersion` aurait valu 0 sur tout objet
 capturé, donc toute capture aurait été refusée ; valeur de départ fixée à 1 (C2), avec un test
 « capture valide acceptée » (T4). C'est le deuxième REVISE : cette correction ouvre une seule
-relecture de clôture ; un nouveau REVISE met la tranche en pause. Ensuite, approbation de l'auteur. Exécution par un `security-executor` (entrée non fiable), vérification
+relecture de clôture ; un nouveau REVISE met la tranche en pause. Relecture de clôture (`393dec3`) :
+**READY**. Reste l'approbation de l'auteur. Exécution par un `security-executor` (entrée non fiable), vérification
 par un `verifier` frais.
 
 **Réponses de l'auteur à la planification (2026-09-28)**
