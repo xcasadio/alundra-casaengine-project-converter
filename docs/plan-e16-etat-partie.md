@@ -507,7 +507,7 @@ sans échec avant chaque ✅) :
   - `0x32` : Ancient Shrine-26, D[1], octets `32 07 80` en 1529 ;
   - `0x34` : Church (basement, Holy sword)-137, B[5], en 451 ;
   - `0x35` : Ancient Shrine-28, C[14], `35 5A 80` en 738.
-- ⏳ **T2 — Producteurs `0x2C`, `0x3E`, `0x6E`, `0xAD`, `0xB8`** (DLL, D-E16-26 et D-E16-27). Tests :
+- ✅ **T2 — Producteurs `0x2C`, `0x3E`, `0x6E`, `0xAD`, `0xB8`** (DLL, D-E16-26 et D-E16-27 ; fait le 2026-09-28 : cinq `case`, `0xAD` et `0xB8` selon le binaire, `0xB8` renommé dans la table ; 26 tests, dont les cinq occurrences réelles ; relecture : `0x6E` recopie `ForceAdjusted` tel quel, comme le binaire ; `Alundra.Tests` 1398/1398). Tests :
   - `0x2C` : aucune entité, puis une ;
   - `0x3E` : joueur sur l'entité, sur une autre, et sans joueur (chemin dégradé journalisé) ;
   - `0x6E` : `ForceAdjusted` à 0 puis à 1 ;

@@ -1127,6 +1127,90 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 _gameState.IsWarpDisabled = false;
                 return 1;
 
+            case 0x2C: // Check no entity by function id - Script_44_02C @ 0x8003DC84
+                       // (EntityEventHandlers.cs:1008-1014): Result = 1 if v[1]'s search type matches NO
+                       // entity, 0 otherwise (the OPPOSITE polarity of 0x2E DestroyMatchingEntities' own
+                       // Result above - "no match" is the true case here). Same search call as every other
+                       // matched-entity opcode (EntitySearchService.GetMatchingEntitiesBySearchType).
+            {
+                var noEntityMatches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+                state.Result = noEntityMatches.Count == 0 ? 1 : 0;
+                return 2;
+            }
+
+            case 0x3E: // Is player riding entity - Script_62_03E @ 0x8003E708
+                       // (EntityEventHandlers.cs:1298-1310): Result = 1 iff the player's own RidingEntity
+                       // points back at THIS entity (the executing one, not a searched match) - same
+                       // ReferenceEquals(player.RidingEntity, candidate.LogicContextEntity) idiom
+                       // EntitySearchService's own function ids 5/6 already use (EntitySearchService.cs:
+                       // 174/186), here compared directly against the executing entity's own
+                       // LogicContextEntity instead of a searched candidate. No PlayerEntity spawned this
+                       // session -> Result = 0, degraded no-op (once-logged warning), same "nothing to
+                       // search" shape as 0x3B/0x27 above.
+                if (_worldContext.PlayerEntity is { } ridingCheckPlayer)
+                {
+                    state.Result = ReferenceEquals(ridingCheckPlayer.RidingEntity, entity.LogicContextEntity) ? 1 : 0;
+                }
+                else
+                {
+                    state.Result = 0;
+                    LogDegradedNoPlayerOpcodeOnce(0x3E, "IsPlayerRidingEntity");
+                }
+
+                return 1;
+
+            case 0x6E: // Is force adjusted - Script_110_06E @ 0x8003F9D4 (EntityEventHandlers.cs:2146-2151):
+                       // Result = entity.ForceAdjusted, copied as is like the binary does
+                       // (`lw $v0,0x13c($a0)` / `sw $v0,0x2c($a3)`) - see ForceAdjusted's own doc (E4.d)
+                       // for how/when it is set (this port only ever writes 0 or 1).
+                state.Result = entity.ForceAdjusted;
+                return 1;
+
+            case 0xAD: // Check entity in AABB - Script_173_0AD @ 0x80041344 (EntityEventHandlers.cs:
+                       // 3221-3278), PER THE BINARY (D-E16-27 - the decompilation disagrees on three
+                       // points, all corrected here):
+                       // 1) its `while (i > 0)` loop over the candidate buffer never tests index 0 - the
+                       //    binary tests every candidate, index 0 included (ported below as a plain
+                       //    forward foreach, no skip);
+                       // 2) it never writes Result = 0 when the second search is empty, nor when the loop
+                       //    exhausts with no candidate inside the box - both paths leave a stale Result;
+                       //    the binary writes 0 on both. Ported here as one single "default to 0, only ever
+                       //    raised to 1" flow;
+                       // 3) offsets v[3]/v[4]/v[5] are read as SIGNED bytes by the binary, even though
+                       //    FillDataFromCommand (see its own doc above) zero-extends every operand byte -
+                       //    ported with an explicit (sbyte) cast; v[6]/v[7]/v[8] stay unsigned.
+                       // Box construction (32-bit int arithmetic, matching the original): the FIRST search
+                       // (v[1]) yields the base entity (no match -> Result = 0, return 9, second search
+                       // never runs); minX/Y/Z = base position + signed-offset*scale, maxX/Y/Z = min +
+                       // unsigned-offset*scale (X uses a *3 factor the original itself applies, unlike
+                       // Y/Z). The SECOND search (v[2]) yields the candidates tested against that box
+                       // (inclusive bounds).
+                return CheckEntityInAabb(entity, v, state);
+
+            case 0xB8: // Check CurrentAnimationId - Script_184_0B8 @ 0x80041988 (EntityEventHandlers.cs:
+                       // 3471-3494), PER THE BINARY (D-E16-27): compares each v[1]-matched entity's
+                       // CurrentAnimationId (+0x90, AlundraEntityScriptProxy.cs:87) against v[2]. The
+                       // decompilation instead reads TargetAnimationId (+0x88) and both size tables name
+                       // this opcode "Check TargetDirection" - both wrong, corrected here and in
+                       // EventOpcodeSizeTable (contract 2). Result = 1 if ANY match's CurrentAnimationId
+                       // equals v[2], else 0.
+            {
+                var animCheckMatches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+                var wantedAnimationId = (uint)v[2];
+                state.Result = 0;
+
+                foreach (var animCheckMatch in animCheckMatches)
+                {
+                    if (animCheckMatch.CurrentAnimationId == wantedAnimationId)
+                    {
+                        state.Result = 1;
+                        break;
+                    }
+                }
+
+                return 3;
+            }
+
             default:
                 return UnknownOpcode(command, state);
         }
@@ -1879,6 +1963,61 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         }
 
         return false;
+    }
+
+    /// <summary>Script_173_0AD (0xAD CheckEntityInAabb) - see the 0xAD case's own doc on
+    /// <see cref="Dispatch"/> for the three binary-vs-decompilation disagreements this corrects
+    /// (D-E16-27). Both searches use raw fixed-point <see cref="AlundraEntityScriptProxy.PosX"/>/PosY/PosZ
+    /// (NOT the tile-quantized TileX/TileY/TileZ 0x07/0x3B use), matching the original's own field
+    /// reads (AlundraEntityScriptProxy.cs:134-136).</summary>
+    private int CheckEntityInAabb(AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
+    {
+        state.Result = 0;
+
+        var baseMatches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+        if (baseMatches.Count == 0)
+        {
+            return 9;
+        }
+
+        var baseX = baseMatches[0].PosX;
+        var baseY = baseMatches[0].PosY;
+        var baseZ = baseMatches[0].PosZ;
+
+        // v[3]/v[4]/v[5] are SIGNED bytes in the binary; FillDataFromCommand zero-extends every operand,
+        // so the signedness must be recovered explicitly here (unlike v[6]/v[7]/v[8], which stay unsigned).
+        var dx0 = (sbyte)v[3];
+        var dy0 = (sbyte)v[4];
+        var dz0 = (sbyte)v[5];
+        var dx1 = v[6];
+        var dy1 = v[7];
+        var dz1 = v[8];
+
+        var minX = baseX + ((dx0 * 3) << 19);
+        var minY = baseY + (dy0 << 20);
+        var minZ = baseZ + (dz0 << 20);
+        var maxX = minX + ((dx1 * 3) << 19);
+        var maxY = minY + (dy1 << 20);
+        var maxZ = minZ + (dz1 << 20);
+
+        var candidates = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[2], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+        if (candidates.Count == 0)
+        {
+            return 9;
+        }
+
+        foreach (var candidate in candidates)
+        {
+            if (candidate.PosX >= minX && candidate.PosX <= maxX
+                && candidate.PosY >= minY && candidate.PosY <= maxY
+                && candidate.PosZ >= minZ && candidate.PosZ <= maxZ)
+            {
+                state.Result = 1;
+                break;
+            }
+        }
+
+        return 9;
     }
 
     private readonly HashSet<int> _loggedOutOfRangeMapIndexes = new();

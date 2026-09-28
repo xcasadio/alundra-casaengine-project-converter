@@ -3,6 +3,7 @@ using System.Linq;
 using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Assets.TileMap;
+using CasaEngine.Framework.Scene.Entities;
 using Microsoft.Xna.Framework;
 using Xunit;
 
@@ -3451,5 +3452,513 @@ public class AlundraEventProgramRunnerTests
         runner.RunOneScriptCall(entity, state);
 
         Assert.Equal(3, state.CodeIndex); // bit clear - advanced by 3
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // 0x2C/0x3E/0x6E/0xAD/0xB8 - Result producers (docs/plan-e16-etat-partie.md, E16.a T2, D-E16-26 and
+    // D-E16-27). Synthetic tests first, then one real corpus occurrence each, same "isolate the real
+    // instruction bytes into a 0xFF-terminated buffer" pattern the 0x32/0x34/0x35 real tests above use.
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void CheckNoEntityByFunctionId_0x2C_NoMatches_SetsResult1()
+    {
+        // v1=0x81 -> functionId 1 ("get player"): no player spawned -> matches.Count == 0.
+        var document = NewDocument(0x2C, 0x81, 0xFF);
+        var runner = NewRunner(document); // no worldContext -> NoOpEntityWorldContext.PlayerEntity == null
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(2, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckNoEntityByFunctionId_0x2C_OneMatch_SetsResult0()
+    {
+        // v1=0x80 -> functionId 0 ("get owner"): the owner itself is always exactly one match.
+        var document = NewDocument(0x2C, 0x80, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.Result);
+        Assert.Equal(2, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckNoEntityByFunctionId_0x2C_RealOccurrence_AncientShrineGolem34()
+    {
+        var projectRoot = FindProjectRootForRealOpcodeOccurrences();
+        if (projectRoot == null)
+        {
+            return; // self-skip
+        }
+
+        var document = MapEventProgramLoader.Load(projectRoot, "Ancient Shrine - Golem-34");
+        Assert.NotNull(document);
+
+        // Instruction offset 83: bytes "2C 00".
+        var codeBytes = document!.CodesAsBytes();
+        var instructionBytes = codeBytes[83..85];
+        Assert.Equal(new byte[] { 0x2C, 0x00 }, instructionBytes);
+
+        // v1=0 (raw entity-record-id search, 0x80 clear): no spawned entity carries EntityRefId 0 in
+        // this isolated fixture -> matches empty -> Result=1 ("no entity").
+        var gameState = new AlundraGameState();
+        var context = new FakeEntityWorldContext();
+        var runner = NewRunner(document, gameState, context);
+        var entity = NewEntity();
+        entity.Status = EntityStatus.Normal; // gates the raw-id search on the owner's own status
+        var state = new EventProgramState { Codes = instructionBytes.Append((byte)0xFF).ToArray(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(2, state.CodeIndex);
+    }
+
+    [Fact]
+    public void IsPlayerRidingEntity_0x3E_PlayerRidingThisEntity_SetsResult1()
+    {
+        var document = NewDocument(0x3E, 0xFF);
+        var entity = NewEntity();
+        entity.LogicContextEntity = new Entity { Name = "logic" };
+        var player = new AlundraEntityScriptProxy { IsPlayer = true, RidingEntity = entity.LogicContextEntity };
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = NewRunner(document, worldContext: context);
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(1, state.CodeIndex);
+    }
+
+    [Fact]
+    public void IsPlayerRidingEntity_0x3E_PlayerRidingAnotherEntity_SetsResult0()
+    {
+        var document = NewDocument(0x3E, 0xFF);
+        var entity = NewEntity();
+        entity.LogicContextEntity = new Entity { Name = "logic" };
+        var player = new AlundraEntityScriptProxy { IsPlayer = true, RidingEntity = new Entity { Name = "other" } };
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = NewRunner(document, worldContext: context);
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.Result);
+        Assert.Equal(1, state.CodeIndex);
+    }
+
+    [Fact]
+    public void IsPlayerRidingEntity_0x3E_NoPlayerSpawned_ResultZero_DegradedKind()
+    {
+        var document = NewDocument(0x3E, 0xFF);
+        var runner = NewRunner(document); // no worldContext -> no player
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 };
+
+        var kind = CaptureKindForOpcode(runner, 0x3E, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(0, state.Result);
+        Assert.Equal(EventTraceKind.Degraded, kind);
+        Assert.Equal(1, state.CodeIndex);
+    }
+
+    [Fact]
+    public void IsPlayerRidingEntity_0x3E_RealOccurrence_AncientShrine26()
+    {
+        var projectRoot = FindProjectRootForRealOpcodeOccurrences();
+        if (projectRoot == null)
+        {
+            return; // self-skip
+        }
+
+        var document = MapEventProgramLoader.Load(projectRoot, "Ancient Shrine-26");
+        Assert.NotNull(document);
+
+        // Table C (Tick), index 28: entry point 1188 (not part of this test); instruction offset 1189:
+        // byte "3E".
+        Assert.Equal(1188, document!.EventCodesCTable[28]);
+        var codeBytes = document.CodesAsBytes();
+        var instructionBytes = codeBytes[1189..1190];
+        Assert.Equal(new byte[] { 0x3E }, instructionBytes);
+
+        var entity = NewEntity();
+        entity.LogicContextEntity = new Entity { Name = "logic" };
+        var player = new AlundraEntityScriptProxy { IsPlayer = true, RidingEntity = entity.LogicContextEntity };
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = NewRunner(document, worldContext: context);
+        var state = new EventProgramState { Codes = instructionBytes.Append((byte)0xFF).ToArray(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(1, state.CodeIndex);
+    }
+
+    [Fact]
+    public void IsForceAdjusted_0x6E_ZeroForceAdjusted_SetsResult0()
+    {
+        var document = NewDocument(0x6E, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.ForceAdjusted = 0;
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.Result);
+        Assert.Equal(1, state.CodeIndex);
+    }
+
+    [Fact]
+    public void IsForceAdjusted_0x6E_NonZeroForceAdjusted_SetsResult1()
+    {
+        var document = NewDocument(0x6E, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.ForceAdjusted = 1;
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(1, state.CodeIndex);
+    }
+
+    [Fact]
+    public void IsForceAdjusted_0x6E_RealOccurrence_AncientShrine27()
+    {
+        var projectRoot = FindProjectRootForRealOpcodeOccurrences();
+        if (projectRoot == null)
+        {
+            return; // self-skip
+        }
+
+        var document = MapEventProgramLoader.Load(projectRoot, "Ancient Shrine-27");
+        Assert.NotNull(document);
+
+        // Instruction offset 546: byte "6E".
+        var codeBytes = document!.CodesAsBytes();
+        var instructionBytes = codeBytes[546..547];
+        Assert.Equal(new byte[] { 0x6E }, instructionBytes);
+
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.ForceAdjusted = 1;
+        var state = new EventProgramState { Codes = instructionBytes.Append((byte)0xFF).ToArray(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(1, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckEntityInAabb_0xAD_SingleCandidateAtIndexZero_Inside_SetsResult1()
+    {
+        // v1=0x80 (owner itself, base); v2=0x82 (all entities) with exactly ONE spawned candidate - the
+        // decompiled `while (i > 0)` loop never tests index 0 (D-E16-27); the binary tests it, so this
+        // is the exact case the decompilation gets wrong.
+        var document = NewDocument(0xAD, 0x80, 0x82, 0, 0, 0, 1, 1, 1, 0xFF);
+        var candidate = NewEntity();
+        candidate.Status = EntityStatus.Normal;
+        candidate.PosX = 100;
+        candidate.PosY = 100;
+        candidate.PosZ = 100;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(candidate);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity(); // owner/base, PosX/Y/Z default to 0,0,0
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(9, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckEntityInAabb_0xAD_SeveralCandidates_OnlyLastInside_SetsResult1()
+    {
+        var document = NewDocument(0xAD, 0x80, 0x82, 0, 0, 0, 1, 1, 1, 0xFF);
+        var outsideA = NewEntity();
+        outsideA.Status = EntityStatus.Normal;
+        outsideA.PosX = 5_000_000;
+        var outsideB = NewEntity();
+        outsideB.Status = EntityStatus.Normal;
+        outsideB.PosY = 5_000_000;
+        var insideLast = NewEntity();
+        insideLast.Status = EntityStatus.Normal;
+        insideLast.PosX = 100;
+        insideLast.PosY = 100;
+        insideLast.PosZ = 100;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(outsideA);
+        context.SpawnedEntitiesList.Add(outsideB);
+        context.SpawnedEntitiesList.Add(insideLast);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+    }
+
+    [Fact]
+    public void CheckEntityInAabb_0xAD_SeveralCandidates_OnlyFirstInside_SetsResult1()
+    {
+        var document = NewDocument(0xAD, 0x80, 0x82, 0, 0, 0, 1, 1, 1, 0xFF);
+        var insideFirst = NewEntity();
+        insideFirst.Status = EntityStatus.Normal;
+        insideFirst.PosX = 100;
+        insideFirst.PosY = 100;
+        insideFirst.PosZ = 100;
+        var outsideA = NewEntity();
+        outsideA.Status = EntityStatus.Normal;
+        outsideA.PosX = 5_000_000;
+        var outsideB = NewEntity();
+        outsideB.Status = EntityStatus.Normal;
+        outsideB.PosY = 5_000_000;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(insideFirst);
+        context.SpawnedEntitiesList.Add(outsideA);
+        context.SpawnedEntitiesList.Add(outsideB);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+    }
+
+    [Fact]
+    public void CheckEntityInAabb_0xAD_NoCandidateInside_SetsResult0_EvenIfResultWasOne()
+    {
+        var document = NewDocument(0xAD, 0x80, 0x82, 0, 0, 0, 1, 1, 1, 0xFF);
+        var outsideA = NewEntity();
+        outsideA.Status = EntityStatus.Normal;
+        outsideA.PosX = 5_000_000;
+        var outsideB = NewEntity();
+        outsideB.Status = EntityStatus.Normal;
+        outsideB.PosY = 5_000_000;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(outsideA);
+        context.SpawnedEntitiesList.Add(outsideB);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 }; // proves the loop-exhausted exit overwrites a stale 1
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.Result);
+        Assert.Equal(9, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckEntityInAabb_0xAD_NegativeOffsets_PlaceBoxAroundBase_SetsResult1()
+    {
+        // dx0=dy0=-3 (bytes 0xFD), dz0=0, dx1=dy1=6, dz1=0x3B - the real Inoa (inner)-164 operands
+        // (see the real-occurrence test below). Owner/base and candidate both at the origin: the
+        // negative offsets must place the box STRADDLING the base, not entirely past it.
+        var document = NewDocument(0xAD, 0x80, 0x82, 0xFD, 0xFD, 0, 6, 6, 0x3B, 0xFF);
+        var candidate = NewEntity();
+        candidate.Status = EntityStatus.Normal;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(candidate);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+    }
+
+    [Theory]
+    [InlineData(0, 0, 0, 1)] // exactly at min on every axis - inside (inclusive)
+    [InlineData(1_572_864, 1_048_576, 1_048_576, 1)] // exactly at max on every axis - inside (inclusive)
+    [InlineData(-1, 0, 0, 0)] // one unit below minX - outside
+    [InlineData(1_572_865, 1_048_576, 1_048_576, 0)] // one unit past maxX - outside
+    public void CheckEntityInAabb_0xAD_BoundsAreInclusive(int posX, int posY, int posZ, int expectedResult)
+    {
+        // Box built from dx0=dy0=dz0=0, dx1=dy1=dz1=1 around a base at the origin: X in [0, 3<<19],
+        // Y and Z in [0, 1<<20].
+        var document = NewDocument(0xAD, 0x80, 0x82, 0, 0, 0, 1, 1, 1, 0xFF);
+        var candidate = NewEntity();
+        candidate.Status = EntityStatus.Normal;
+        candidate.PosX = posX;
+        candidate.PosY = posY;
+        candidate.PosZ = posZ;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(candidate);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(expectedResult, state.Result);
+    }
+
+    [Fact]
+    public void CheckEntityInAabb_0xAD_EmptyFirstSearch_SetsResult0()
+    {
+        // v1=0x81 (get player) - no player spawned -> the base search is empty; return 9 immediately,
+        // never running the second search.
+        var document = NewDocument(0xAD, 0x81, 0x82, 0, 0, 0, 1, 1, 1, 0xFF);
+        var runner = NewRunner(document); // no worldContext -> no player
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.Result);
+        Assert.Equal(9, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckEntityInAabb_0xAD_EmptySecondSearch_SetsResult0()
+    {
+        // v1=0x80 (owner - always matches); v2=0x81 (get player) - no player spawned -> the second
+        // search is empty.
+        var document = NewDocument(0xAD, 0x80, 0x81, 0, 0, 0, 1, 1, 1, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.Result);
+        Assert.Equal(9, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckEntityInAabb_0xAD_RealOccurrence_InoaInner164()
+    {
+        var projectRoot = FindProjectRootForRealOpcodeOccurrences();
+        if (projectRoot == null)
+        {
+            return; // self-skip
+        }
+
+        var document = MapEventProgramLoader.Load(projectRoot, "Inoa (inner)-164");
+        Assert.NotNull(document);
+
+        // Instruction offset 100: bytes "AD 80 81 FD FD 00 06 06 3B".
+        var codeBytes = document!.CodesAsBytes();
+        var instructionBytes = codeBytes[100..109];
+        Assert.Equal(new byte[] { 0xAD, 0x80, 0x81, 0xFD, 0xFD, 0x00, 0x06, 0x06, 0x3B }, instructionBytes);
+
+        // v1=0x80 (owner itself), v2=0x81 (player): place the owner and the player at the SAME position
+        // so the player lands inside the box the real offsets build around the owner (D-E16-27's own
+        // worked example).
+        var gameState = new AlundraGameState();
+        var player = new AlundraEntityScriptProxy { IsPlayer = true };
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = NewRunner(document, gameState, context);
+        var entity = NewEntity(); // owner, PosX/Y/Z default to 0,0,0, same as the player above
+        var state = new EventProgramState { Codes = instructionBytes.Append((byte)0xFF).ToArray(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(9, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckCurrentAnimationId_0xB8_Equal_SetsResult1()
+    {
+        var document = NewDocument(0xB8, 0x80, 5, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.CurrentAnimationId = 5;
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(3, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckCurrentAnimationId_0xB8_Different_SetsResult0()
+    {
+        var document = NewDocument(0xB8, 0x80, 5, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.CurrentAnimationId = 7;
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.Result);
+        Assert.Equal(3, state.CodeIndex);
+    }
+
+    [Fact]
+    public void CheckCurrentAnimationId_0xB8_TargetAnimationIdEqual_CurrentAnimationIdDifferent_SetsResult0()
+    {
+        // The decompilation reads TargetAnimationId (+0x88); the binary reads CurrentAnimationId (+0x90)
+        // (D-E16-27) - this proves the port follows the binary, not the decompilation.
+        var document = NewDocument(0xB8, 0x80, 5, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.TargetAnimationId = 5;
+        entity.CurrentAnimationId = 7;
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.Result);
+    }
+
+    [Fact]
+    public void CheckCurrentAnimationId_0xB8_RealOccurrence_ArenaBlackDragonBoss323()
+    {
+        var projectRoot = FindProjectRootForRealOpcodeOccurrences();
+        if (projectRoot == null)
+        {
+            return; // self-skip
+        }
+
+        var document = MapEventProgramLoader.Load(projectRoot, "Arena Black Dragon (Boss)-323");
+        Assert.NotNull(document);
+
+        // Table B (Map), index 2: entry point 100 (not part of this test); instruction offset 108:
+        // bytes "B8 00 00".
+        Assert.Equal(100, document!.EventCodesBTable[2]);
+        var codeBytes = document.CodesAsBytes();
+        var instructionBytes = codeBytes[108..111];
+        Assert.Equal(new byte[] { 0xB8, 0x00, 0x00 }, instructionBytes);
+
+        // v1=0 (raw entity-record-id search, 0x80 clear), v2=0 (wanted CurrentAnimationId): one spawned
+        // candidate with EntityRefId 0 and CurrentAnimationId 0 gives a meaningful true case off the
+        // real operands.
+        var gameState = new AlundraGameState();
+        var candidate = NewEntity();
+        candidate.Status = EntityStatus.Normal;
+        candidate.EntityRefId = 0;
+        candidate.CurrentAnimationId = 0;
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(candidate);
+        var runner = NewRunner(document, gameState, context);
+        var entity = NewEntity();
+        entity.Status = EntityStatus.Normal; // gates the raw-id search on the owner's own status
+        var state = new EventProgramState { Codes = instructionBytes.Append((byte)0xFF).ToArray(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Equal(3, state.CodeIndex);
     }
 }

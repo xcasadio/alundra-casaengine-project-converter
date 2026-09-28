@@ -17,6 +17,10 @@ namespace Alundra.Scripts;
 /// GetCommandsOnlyAtOffset/GetCommands decoders treat size &lt; 1 the same way this port's
 /// unknown-opcode fallback does (cannot safely advance), so they are intentionally NOT special-cased
 /// here; they fall through the same "unknown size -&gt; terminate" path as a truly unlisted byte.
+///
+/// One name deviates from the source table: <c>0xB8</c> is named "Check CurrentAnimationId" here, not
+/// the source's "Check TargetDirection" - the binary shows this opcode compares CurrentAnimationId, not
+/// TargetDirection (D-E16-27, docs/plan-e16-etat-partie.md).
 /// </summary>
 public static class EventOpcodeSizeTable
 {
@@ -212,7 +216,7 @@ public static class EventOpcodeSizeTable
         { 0xB5, new(2, "Check ForceZ >= 0") },
         { 0xB6, new(2, "Check ForceZ != 0") },
         { 0xB7, new(3, "Check TargetAnimation") },
-        { 0xB8, new(3, "Check TargetDirection") },
+        { 0xB8, new(3, "Check CurrentAnimationId") },
         { 0xB9, new(2, "Start CD streaming") },
         { 0xBA, new(1, "Check if loading from CD") },
         { 0xBB, new(1, "Check retry or title screen") },
