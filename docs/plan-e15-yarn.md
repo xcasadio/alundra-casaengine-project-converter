@@ -772,7 +772,14 @@ de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Re
 - **Dépendances** : E15.a (branche moteur `chantier/yarn-extension-points`, pointée par le dépôt),
   E15.b.
 
-### E15.d — Suppression du texte brut ⏳ (convertisseur, DLL, docs ; détaillée le 2026-09-28)
+### E15.d — Suppression du texte brut 🧪 (convertisseur, DLL, docs ; T1 à T4 faites et vérifiées le 2026-09-28, recette en jeu T5 en attente)
+
+- **Vérification finale (2026-09-28)** : relecture neuve de toute la tranche **CONFIRMED** (manifeste
+  recalculé : identique au second export, aucun fichier brut restant dans `alundra-project/`, 486
+  disparitions exactes ; nettoyage à liste fermée relu ; build à 0 erreur, tests du convertisseur
+  399/399, `Alundra.Tests` 1 360/1 360 ; moteur inchangé, rien poussé). Remarques P4 : le chemin
+  d'échec d'une suppression n'a pas de test (correct à la lecture) ; `ResolveLocation` est appelé avant
+  le test d'existence de `map_N.json` (aucune erreur sur l'export réel).
 
 - **But** : D-E15-4 — le projet exporté ne contient plus les tables de texte brut, et aucun code ne les
   lit ni ne les écrit.

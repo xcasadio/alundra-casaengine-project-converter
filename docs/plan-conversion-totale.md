@@ -758,7 +758,12 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 - **Avancement (2026-09-27)** : E15.0, E15.a et **E15.b faites** (branche `chantier/e15-yarn`, rien
   poussé) : l'export écrit 485 `.yarn` et `.dialogue` catalogués à côté des tables brutes, prouvés
   équivalents au texte original sur les 31 757 pages ; format dans `docs/formats/dialogues-yarn.md`.
-  Suivante : E15.c.
+- **Avancement (2026-09-28)** : **E15.c et E15.d faites et vérifiées** (même branche, rien poussé) : la
+  DLL joue tous les textes depuis le Yarn (dialogues de carte et table partagée, OUI/NON, inventaire),
+  boîte de dialogue en `font3` avec les glyphes de l'original (« … », flèches, boutons : le chiffre
+  parasite de `\W2` a disparu), état des faucons porté depuis le binaire ; les tables de texte brut ne
+  sont plus exportées ni lues. **Reste la recette en jeu de l'auteur** (E15.d T5) ; puis merge de la
+  branche moteur `chantier/yarn-extension-points` avant celle-ci.
 - **Dépendances** : E5, E6, E12.
 
 ### E17 — Cinématiques en `.cutscene` ⏳ (ouverte le 2026-09-27, non planifiée)
