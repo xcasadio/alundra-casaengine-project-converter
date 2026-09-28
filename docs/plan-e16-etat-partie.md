@@ -1459,7 +1459,8 @@ Relectures du 2026-09-28 :
      (`AlundraDialogueDirector.cs:171-172`), donc pour tous les dialogues.
   10. Rien ne change dans le moteur, le convertisseur ni le Yarn exporté (aucune variable, §0.2).
 - **Tâches** (un commit par tâche avec la mise à jour de ce plan) :
-  - **T1 — Mesure du comportement de Yarn** (tests exploratoires, aucun code de production). Sur un
+  - **T1 — Mesure du comportement de Yarn** ✅ (`AlundraYarnVariableStorageProbeTests`, 4 tests,
+    aucun code de production ; confirme l'indice préalable). Sur un
     runner réel avec un stockage de test qui refuse tout, établir trois points :
     - ce que la machine virtuelle de Yarn 3.2.1 fait d'une lecture refusée (exception, valeur
       initiale du `Program`, autre chose) et d'une écriture refusée ;
@@ -1469,18 +1470,25 @@ Relectures du 2026-09-28 :
 
     Les résultats vont dans cette tranche, sourcés par les tests.
 
-    **Indice préalable (2026-09-28, à confirmer par T1)** : une sonde jetable, hors du dépôt, sur les
-    paquets 3.2.1 épinglés par le moteur, avec un stockage qui refuse tout et une variable booléenne
-    non déclarée dans `<<if>>` et `<<set>>`, a donné :
-    - une lecture refusée vaut faux, sans exception, et le dialogue va au bout ;
-    - `TryGetValue` est demandé avec `T = IConvertible`, pas `bool` ; `<<set $x to true>>` passe par
-      `SetValue(string, bool)` ;
-    - aucun `Clear()` et aucune variable `$Yarn.Internal.*` sur tout le dialogue.
+    **Résultats (2026-09-28, confirmés par T1 - `AlundraYarnVariableStorageProbeTests`, 4 tests
+    dans `Alundra.Tests`)**, sur un vrai `YarnDialogueRunner`/`Yarn.Dialogue` (paquets 3.2.1 épinglés
+    par le moteur) et un `IVariableStorage` de test qui refuse tout (`RecordingRefusingStorage`,
+    `TryGetValue` rend toujours faux, `SetValue`/`Clear` sont enregistrés sans lever) :
+    - `RefusedRead_IsFalse_NoExceptionAndDialogueRunsToTheEnd` : une lecture refusée vaut faux, sans
+      exception, et le dialogue va au bout ;
+    - `RefusedWrite_NoExceptionAndDialogueRunsToTheEnd` : une écriture refusée (`<<set $x to true>>`)
+      n'écrit rien d'accepté par le stockage et ne lève pas non plus ;
+    - `BooleanRead_RequestsIConvertible_NotBool` : `TryGetValue` est demandé avec `T = IConvertible`,
+      jamais `bool`, pour lire une variable dans `<<if>>` ;
+    - `PlainDialogueWithoutVisited_NeverCallsClearOrTouchesInternalVariables` : sur un dialogue avec
+      `<<set>>` et `<<if>>`/`<<else>>` mais sans `visited()`, aucun `Clear()` et aucun nom lu ou écrit
+      ne commence par `$Yarn.Internal.`.
 
-    La même sonde montre que le constructeur de `Yarn.Dialogue` pose `SmartVariableEvaluator` mais
-    pas `Program`. Seul `SetProgram` le pose, et `YarnDialogueRunner.Start` l'appelle toujours
-    (`YarnDialogueRunner.cs:109`). Le contexte de l'ADR-0042 du moteur dit le contraire : écart à
-    signaler au moteur, sans effet sur E16.f.
+    Confirmé aussi en écrivant `RecordingRefusingStorage` : `Yarn.IVariableAccess` déclare une
+    propriété `Program` (type `Yarn.Program`) en plus de `SmartVariableEvaluator` - un stockage doit
+    l'implémenter pour compiler contre l'interface, même s'il ne s'en sert pas (contrat item 8, T2).
+    Ce point n'a pas été mesuré à l'exécution (quel appelant la pose, à quel moment) : sans effet sur
+    E16.f, qui la garde telle que Yarn la pose.
 
     Le corpus exporté ne déclare, ne lit ni n'écrit aucune variable, et ses 24 784 nœuds n'ont que
     l'en-tête `title:` (aucun `tracking:`).
