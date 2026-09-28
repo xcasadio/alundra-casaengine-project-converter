@@ -29,9 +29,6 @@ public class MapLocationTests
             Combine(Location.MapFolder, "tilemap", "Ship Klark (beginning)-389.tmj"),
             Location.TiledMapRelativePath);
         Assert.Equal(
-            Combine(Location.MapFolder, "dialogues", "Ship Klark (beginning)-389.strings.json"),
-            Location.StringsRelativePath);
-        Assert.Equal(
             Combine(Location.MapFolder, "events", "Ship Klark (beginning)-389.events.json"),
             Location.EventsRelativePath);
 
@@ -52,7 +49,6 @@ public class MapLocationTests
             Location.EventsDirectory,
             Location.TileMapRelativePath,
             Location.TiledMapRelativePath,
-            Location.StringsRelativePath,
             Location.EventsRelativePath,
             Location.WorldRelativePath,
         };

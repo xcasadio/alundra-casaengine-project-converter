@@ -12,8 +12,7 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    tilemap/, dialogues/ and .world. <see cref="MapLocation"/> owns that layout.
 ///  - The file is a plain JSON companion, not a CasaEngine asset, and is therefore NOT registered
 ///    in the asset catalog: there is no engine type that could load it. It is data for the future
-///    gameplay DLL's interpreter, exactly like Dialogues/*.strings.json is data for a future
-///    dialogue system.
+///    gameplay DLL's interpreter - nothing decodes this bytecode yet.
 ///  - Nothing is interpreted. Alundra's event programs A-F are a bytecode whose opcodes are not
 ///    decoded yet; the six tables and the Codes blob are copied with their source field names and
 ///    source order. Imposing structure now would bake a guess into the converted project, and the

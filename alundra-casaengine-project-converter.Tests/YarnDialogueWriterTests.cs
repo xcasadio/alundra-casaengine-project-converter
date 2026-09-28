@@ -295,6 +295,300 @@ public class YarnDialogueWriterTests
         }
     }
 
+    // ---- Source-encoding check (docs/plan-e15-yarn.md, E15.d contract item 1): moved here from
+    // TextWriterTests, on the same sources (the ETC table for the accent check; the ETC table and the
+    // map tables for U+FFFD) with the same warning texts and message. ----------------------------------
+
+    [Fact]
+    public void ConvertDialogues_EtcTableWithNoAccentedCharacter_WarnsOfTheWrongEncoding()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            var dataDirectory = Path.Combine(inputDirectory, "data");
+            Directory.CreateDirectory(dataDirectory);
+            WriteEmptyMapAlundraAndEtc(dataDirectory); // ETC_RES.R.json: only "OUI" - no accents.
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            YarnDialogueWriter.ConvertDialogues(inputDirectory, outputDirectory, mapFilter: null, new Dictionary<int, MapLocation>(), report);
+
+            Assert.Contains(
+                report.Warnings,
+                warning => warning.Contains("no accented character found", StringComparison.Ordinal)
+                    && warning.Contains("wrong encoding", StringComparison.Ordinal));
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void ConvertDialogues_NoEtcTableToRead_GivesNoEncodingVerdict()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            // No data/ETC_RES.R.json at all: its absence is an error of its own, and the encoding check
+            // must not add a misleading "wrong encoding" warning about a table it never read.
+            Directory.CreateDirectory(Path.Combine(inputDirectory, "data"));
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            YarnDialogueWriter.ConvertDialogues(inputDirectory, outputDirectory, mapFilter: null, new Dictionary<int, MapLocation>(), report);
+
+            Assert.Contains(report.Errors, error => error.Contains("ETC_RES.R.json", StringComparison.Ordinal));
+            Assert.DoesNotContain(report.Warnings, warning => warning.Contains("wrong encoding", StringComparison.Ordinal));
+            Assert.DoesNotContain(report.Messages, message => message.Contains("accented French", StringComparison.Ordinal));
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void ConvertDialogues_EtcTableWithAnAccentedCharacter_ReportsTheAccentedFrenchMessage()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            var dataDirectory = Path.Combine(inputDirectory, "data");
+            Directory.CreateDirectory(dataDirectory);
+            var sharedStrings = string.Join(
+                ",", Enumerable.Range(0, 128).Select(i => $"\"Shared text {i.ToString(CultureInfo.InvariantCulture)}\""));
+            File.WriteAllText(Path.Combine(dataDirectory, "map_alundra.json"), $$"""{ "Strings": [ {{sharedStrings}} ] }""");
+            File.WriteAllText(
+                Path.Combine(dataDirectory, "ETC_RES.R.json"),
+                """{ "3656": "Un Nouveau Départ" }""");
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            YarnDialogueWriter.ConvertDialogues(inputDirectory, outputDirectory, mapFilter: null, new Dictionary<int, MapLocation>(), report);
+
+            Assert.Contains(
+                report.Messages,
+                message => message.Contains("accented French read as UTF-8", StringComparison.Ordinal)
+                    && message.Contains("Un Nouveau Départ", StringComparison.Ordinal));
+            Assert.DoesNotContain(report.Warnings, warning => warning.Contains("wrong encoding", StringComparison.Ordinal));
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void ConvertDialogues_MapStringWithReplacementCharacter_WarnsOfMangledText()
+    {
+        // � in the JSON source decodes to the actual U+FFFD replacement character: this is what a
+        // wrong encoding anywhere upstream leaves behind.
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            var dataDirectory = Path.Combine(inputDirectory, "data");
+            var tiledDirectory = Path.Combine(dataDirectory, "tiled");
+            Directory.CreateDirectory(tiledDirectory);
+            File.WriteAllText(Path.Combine(tiledDirectory, "map_7.tmj"), "{}");
+            File.WriteAllText(
+                Path.Combine(dataDirectory, "map_7.json"), """{ "Strings": [ "mang�e" ] }""");
+            WriteEmptyMapAlundraAndEtc(dataDirectory); // ETC_RES.R.json has "OUI" -> irrelevant here.
+
+            var mapLocations = new Dictionary<int, MapLocation> { [7] = new("TestZone", "Test Map-7") };
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            YarnDialogueWriter.ConvertDialogues(inputDirectory, outputDirectory, new[] { 7 }, mapLocations, report);
+
+            Assert.Contains(
+                report.Warnings,
+                warning => warning.Contains("U+FFFD", StringComparison.Ordinal)
+                    && warning.Contains("already lost upstream", StringComparison.Ordinal));
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    // ---- Previous export's raw text-table cleanup (docs/plan-e15-yarn.md, E15.d contract item 2):
+    // a closed list of four file families, never a wildcard, never a directory. ------------------------
+
+    [Fact]
+    public void ConvertDialogues_RemovesThePreviousExportsRawTextFiles_AndCountsThem()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            WriteFixture(inputDirectory);
+            var mapLocations = new Dictionary<int, MapLocation> { [4] = new("TestZone", "Test Map-4") };
+
+            // A previous export's four raw-text families...
+            var dialoguesDirectory = Path.Combine(outputDirectory, "Dialogues");
+            Directory.CreateDirectory(dialoguesDirectory);
+            File.WriteAllText(Path.Combine(dialoguesDirectory, "global-strings.json"), "{}");
+            File.WriteAllText(Path.Combine(dialoguesDirectory, "etc-index.json"), "[]");
+            File.WriteAllText(Path.Combine(dialoguesDirectory, "control-codes.json"), "[]");
+            var map4DialoguesDirectory = Path.Combine(outputDirectory, "Maps", "TestZone", "Test Map-4", "dialogues");
+            Directory.CreateDirectory(map4DialoguesDirectory);
+            File.WriteAllText(Path.Combine(map4DialoguesDirectory, "Test Map-4.strings.json"), "[]");
+
+            // ...plus neighbour files that must survive: not part of the closed list.
+            File.WriteAllText(Path.Combine(dialoguesDirectory, "README.txt"), "not part of the closed list");
+            File.WriteAllText(Path.Combine(map4DialoguesDirectory, "Test Map-4.other.json"), "{}");
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            YarnDialogueWriter.ConvertDialogues(inputDirectory, outputDirectory, new[] { 4 }, mapLocations, report);
+
+            Assert.Empty(report.Errors);
+            Assert.False(File.Exists(Path.Combine(dialoguesDirectory, "global-strings.json")));
+            Assert.False(File.Exists(Path.Combine(dialoguesDirectory, "etc-index.json")));
+            Assert.False(File.Exists(Path.Combine(dialoguesDirectory, "control-codes.json")));
+            Assert.False(File.Exists(Path.Combine(map4DialoguesDirectory, "Test Map-4.strings.json")));
+
+            // The four families disappeared; nothing else did.
+            Assert.True(File.Exists(Path.Combine(dialoguesDirectory, "README.txt")));
+            Assert.True(File.Exists(Path.Combine(map4DialoguesDirectory, "Test Map-4.other.json")));
+
+            Assert.Equal(4, report.Counters["Yarn.RawTextFilesRemoved"]);
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void ConvertDialogues_MapsFilterAppliesToCleanupToo_OnlyTheFilteredMapsStringsFileIsRemoved()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            WriteFixture(inputDirectory);
+            var mapLocations = new Dictionary<int, MapLocation>
+            {
+                [4] = new("TestZone", "Test Map-4"),
+                [5] = new("TestZone", "Test Map-5"),
+            };
+
+            var dialoguesDirectory = Path.Combine(outputDirectory, "Dialogues");
+            Directory.CreateDirectory(dialoguesDirectory);
+            File.WriteAllText(Path.Combine(dialoguesDirectory, "global-strings.json"), "{}");
+            File.WriteAllText(Path.Combine(dialoguesDirectory, "etc-index.json"), "[]");
+            File.WriteAllText(Path.Combine(dialoguesDirectory, "control-codes.json"), "[]");
+
+            var map4DialoguesDirectory = Path.Combine(outputDirectory, "Maps", "TestZone", "Test Map-4", "dialogues");
+            var map5DialoguesDirectory = Path.Combine(outputDirectory, "Maps", "TestZone", "Test Map-5", "dialogues");
+            Directory.CreateDirectory(map4DialoguesDirectory);
+            Directory.CreateDirectory(map5DialoguesDirectory);
+            File.WriteAllText(Path.Combine(map4DialoguesDirectory, "Test Map-4.strings.json"), "[]");
+            File.WriteAllText(Path.Combine(map5DialoguesDirectory, "Test Map-5.strings.json"), "[]");
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            // Only map 4 is in scope: its strings.json goes, map 5's does not, the three Dialogues/
+            // files go regardless of the filter.
+            YarnDialogueWriter.ConvertDialogues(inputDirectory, outputDirectory, new[] { 4 }, mapLocations, report);
+
+            Assert.False(File.Exists(Path.Combine(dialoguesDirectory, "global-strings.json")));
+            Assert.False(File.Exists(Path.Combine(dialoguesDirectory, "etc-index.json")));
+            Assert.False(File.Exists(Path.Combine(dialoguesDirectory, "control-codes.json")));
+            Assert.False(File.Exists(Path.Combine(map4DialoguesDirectory, "Test Map-4.strings.json")));
+            Assert.True(File.Exists(Path.Combine(map5DialoguesDirectory, "Test Map-5.strings.json")));
+
+            Assert.Equal(4, report.Counters["Yarn.RawTextFilesRemoved"]);
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void ConvertDialogues_NoPreviousExportFiles_NoErrorAndTheCounterIsZero()
+    {
+        var inputDirectory = CreateTempDirectory();
+        var outputDirectory = CreateTempDirectory();
+        var previousProjectPath = EngineEnvironment.ProjectPath;
+
+        try
+        {
+            WriteFixture(inputDirectory);
+            var mapLocations = new Dictionary<int, MapLocation>
+            {
+                [4] = new("TestZone", "Test Map-4"),
+                [5] = new("TestZone", "Test Map-5"),
+            };
+
+            EngineEnvironment.ProjectPath = outputDirectory;
+            EditorAssetCatalogService.Clear();
+
+            var report = new ConversionReport();
+            YarnDialogueWriter.ConvertDialogues(inputDirectory, outputDirectory, mapFilter: null, mapLocations, report);
+
+            Assert.DoesNotContain(report.Errors, error => error.Contains("remove previous export", StringComparison.Ordinal));
+            Assert.True(report.Counters.ContainsKey("Yarn.RawTextFilesRemoved"));
+            Assert.Equal(0, report.Counters["Yarn.RawTextFilesRemoved"]);
+        }
+        finally
+        {
+            EditorAssetCatalogService.Clear();
+            EngineEnvironment.ProjectPath = previousProjectPath;
+            Directory.Delete(inputDirectory, recursive: true);
+            Directory.Delete(outputDirectory, recursive: true);
+        }
+    }
+
     // ---- Compile-error path: CompileWriteAndCatalog is exercised directly with a hand-written,
     // deliberately invalid Yarn source, since YarnTextEmitter's own escaping (T3, proven against the
     // whole corpus with zero diagnostics) makes it impossible to reach a real compiler error through

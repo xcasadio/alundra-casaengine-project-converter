@@ -21,9 +21,9 @@ public sealed record GlobalStringEntry(string Key, int? Offset, string? Value);
 ///
 /// Values are returned exactly as they are in the source, including the trailing space padding
 /// (ETC_RES rows are fixed-width records: "Un Nouveau Depart              ") and the raw control
-/// codes. Trimming would silently change record widths the game's own code may rely on, and
-/// rewriting control codes needs a mapping table that does not exist yet (see
-/// Dialogues/control-codes.json, which this data feeds).
+/// codes. Trimming would silently change record widths the game's own code may rely on; the control
+/// codes themselves are turned into Yarn markup by <see cref="Text.YarnTextEmitter"/>, which this
+/// data feeds (via <see cref="Writers.YarnDialogueWriter"/>).
 ///
 /// The extractor already decoded the text to Unicode, so reading is plain UTF-8 JSON; no CP850
 /// conversion happens here (that lives in FontWriter, for the font atlas only).

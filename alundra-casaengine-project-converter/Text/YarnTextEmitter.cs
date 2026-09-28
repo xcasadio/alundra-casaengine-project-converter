@@ -32,9 +32,7 @@ public sealed record YarnEmitError(string Title, int PageIndex, string Message)
 /// whether or not its node ended up written - keyed exactly as docs/plan-e15-yarn.md's E15.b task T3
 /// names them (<c>"\A"</c>, <c>"\B"</c> … <c>"\N"</c>, <c>"\T"</c>, <c>"\Y"</c>, <c>"\W&lt;c&gt;"</c>,
 /// <c>"\X&lt;c&gt;"</c>, <c>"\V&lt;c&gt;"</c>, <c>"\digits"</c> for a numeric code, <c>"U+001A"</c>,
-/// <c>"U+001C"</c>). This mirrors <c>Writers/TextWriter.cs</c>'s <c>ControlCodeInventory</c>, which it
-/// replaces for the Yarn tables (D-E15-4): over-reporting a scanned code beats hiding one behind a
-/// node that failed to emit.
+/// <c>"U+001C"</c>). Over-reporting a scanned code beats hiding one behind a node that failed to emit.
 /// </summary>
 public sealed class YarnEmitStatistics
 {

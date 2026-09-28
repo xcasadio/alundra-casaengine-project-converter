@@ -11,13 +11,13 @@ namespace AlundraCasaEngineProjectConverter.Readers;
 /// "linked, not copied" precedent regardless: the analyser owns it (a one-shot dump straight off
 /// <c>ETC_RES.R</c> at the game path - see
 /// <c>alundra-datas-analyser/AlundraTools/AlundraTools/EtcIndexTable.csv</c>), this converter only
-/// reads it and republishes it as <c>Dialogues/etc-index.json</c> (<see cref="Writers.TextWriter"/>).
+/// reads it and uses it to resolve the ETC table's Yarn dialogue asset
+/// (<see cref="Writers.YarnDialogueWriter"/>, <c>Dialogues/Etc.dialogue</c>).
 ///
 /// <c>GetEtcString(id) = StringByIndex[IndexTable[id]]</c>: the DLL resolves a global string (e.g.
 /// the OUI/NON labels at index 0x43/0x44) by looking up this table for the offset, then looking that
-/// offset up in <c>Dialogues/global-strings.json</c>. Exported RAW on purpose - resolving offsets to
-/// strings here would duplicate global-strings.json's own content and drift the moment either side
-/// changes.
+/// offset up in <c>data/ETC_RES.R.json</c> - which is exactly what <see cref="Writers.YarnDialogueWriter"/>
+/// does at conversion time to give each resolved string its own Yarn node (<c>Etc_&lt;index&gt;</c>).
 /// </summary>
 public static class EtcIndexCatalogReader
 {

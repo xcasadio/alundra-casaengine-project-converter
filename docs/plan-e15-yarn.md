@@ -833,7 +833,17 @@ de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Re
 **Tâches** (une à la fois, un commit par tâche avec la mise à jour de ce plan ; build de la solution à 0
 erreur, tests du convertisseur et `Alundra.Tests` sans échec avant chaque ✅) :
 
-- ⏳ **T1 — Convertisseur.** Contrat 1 et 2 : retrait de `TextWriter`, de son appel et de ses tests, de
+- ✅ **T1 — Convertisseur** (fait le 2026-09-28 : `TextWriter`, `Phase5.Text`, `TextWriterTests` et
+  `StringsRelativePath` retirés ; nouveau `Writers/RawTextCleanup.cs` : suppression par `File.Delete` des
+  seuls trois noms fixes de `Dialogues/` et du `{FileBaseName}.strings.json` de chaque carte traitée,
+  jamais de joker ni de dossier, fichier absent sans erreur, échec = erreur de `report.json`,
+  `Yarn.RawTextFilesRemoved` toujours écrit ; contrôle d'encodage dans `YarnDialogueWriter`, mêmes
+  textes. **Correction d'un fait du plan** : l'ancien `TextWriter` ne cherchait U+FFFD que dans l'ETC ;
+  le nouveau contrôle regarde aussi les cartes, ce qui est plus strict, et son avertissement dit
+  « string(s) » au lieu de « global string(s) » ; il ne conclut rien quand la table ETC n'a pas pu être
+  lue (l'échec est déjà une erreur). 7 tests de `TextWriter` retirés, 7 ajoutés (trois d'encodage, un
+  sans table ETC, trois de nettoyage avec fichiers voisins qui survivent et filtre `--maps`) ; contrôle
+  neuf CONFIRMED ; tests du convertisseur 399/399.) Contrat 1 et 2 : retrait de `TextWriter`, de son appel et de ses tests, de
   `StringsRelativePath` (et `MapLocationTests` ajusté) ; nettoyage de l'export précédent dans
   `Phase5.Yarn` ; tests : un projet temporaire contenant les quatre familles et un fichier voisin
   (par exemple un `.dialogue` et un autre `.json` du dossier `dialogues`) → seules les quatre familles

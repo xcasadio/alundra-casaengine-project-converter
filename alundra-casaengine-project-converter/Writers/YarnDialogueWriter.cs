@@ -19,10 +19,12 @@ using Newtonsoft.Json.Linq;
 namespace AlundraCasaEngineProjectConverter.Writers;
 
 /// <summary>
-/// Phase 5 (docs/plan-e15-yarn.md, E15.b task T4): compiles every Alundra text table into a Yarn
-/// dialogue asset, next to the raw <c>.strings.json</c> tables <see cref="TextWriter"/> still writes
-/// (D-E15-4 removes those in E15.d, not here). One asset per table (E15.b "Contrat des fichiers et des
-/// nœuds"):
+/// Phase 5 (docs/plan-e15-yarn.md, E15.b task T4, extended by E15.d): compiles every Alundra text
+/// table into a Yarn dialogue asset. Nothing writes the raw text tables any more (D-E15-4): this is
+/// now the sole reader of the source data, it also removes any of those tables a previous export left
+/// behind (<see cref="RawTextCleanup"/>), and it carries the source-encoding check that used to live in
+/// the writer that produced them (see the encoding check further down). One asset per table (E15.b
+/// "Contrat des fichiers et des nœuds"):
 ///  - each map's 128-string table -&gt; <c>{MapLocation.FileBaseName}.yarn</c>/<c>.dialogue</c> in the
 ///    map's own <see cref="MapLocation.DialoguesDirectory"/>, nodes <c>M{id}_S{nnn}</c>;
 ///  - the shared <c>map_alundra.json</c> table -&gt; <c>Dialogues/Shared.yarn</c>/<c>.dialogue</c>,
@@ -56,9 +58,13 @@ public static class YarnDialogueWriter
         IReadOnlyDictionary<int, MapLocation> mapLocations,
         ConversionReport report)
     {
-        ConvertMapTables(inputDirectory, outputDirectory, mapFilter, mapLocations, report);
+        RawTextCleanup.RemoveDialoguesFolderFiles(outputDirectory, report);
+
+        var encodingCheck = new SourceEncodingCheck();
+        ConvertMapTables(inputDirectory, outputDirectory, mapFilter, mapLocations, encodingCheck, report);
         ConvertSharedTable(inputDirectory, outputDirectory, report);
-        ConvertEtcTable(inputDirectory, outputDirectory, report);
+        ConvertEtcTable(inputDirectory, outputDirectory, encodingCheck, report);
+        encodingCheck.Report(report);
 
         // One save for the whole phase: every table above may have added a catalog entry, and the
         // catalog is only meant to be flushed once all of them are known (E15.b task T4).
@@ -78,13 +84,14 @@ public static class YarnDialogueWriter
         string outputDirectory,
         IReadOnlyList<int>? mapFilter,
         IReadOnlyDictionary<int, MapLocation> mapLocations,
+        SourceEncodingCheck encodingCheck,
         ConversionReport report)
     {
         var mapIndices = mapFilter is { Count: > 0 } ? mapFilter : MapDiscovery.DiscoverMapIndices(inputDirectory);
 
         foreach (var mapIndex in mapIndices.OrderBy(index => index))
         {
-            ConvertMapTable(inputDirectory, outputDirectory, mapIndex, mapLocations, report);
+            ConvertMapTable(inputDirectory, outputDirectory, mapIndex, mapLocations, encodingCheck, report);
         }
     }
 
@@ -93,8 +100,15 @@ public static class YarnDialogueWriter
         string outputDirectory,
         int mapIndex,
         IReadOnlyDictionary<int, MapLocation> mapLocations,
+        SourceEncodingCheck encodingCheck,
         ConversionReport report)
     {
+        // Resolved, and its previous export's raw table cleaned up, before the existence check below:
+        // a map this run processes may have lost its map_N.json since the last export, but its stale
+        // {FileBaseName}.strings.json (E15.d, D-E15-4) still needs to go.
+        var location = TileMapWriter.ResolveLocation(mapIndex, mapLocations, report);
+        RawTextCleanup.RemoveMapStringsFile(outputDirectory, location, report);
+
         var mapJsonPath = Path.Combine(inputDirectory, "data", $"map_{mapIndex}.json");
         if (!File.Exists(mapJsonPath))
         {
@@ -119,7 +133,14 @@ public static class YarnDialogueWriter
             return;
         }
 
-        var location = TileMapWriter.ResolveLocation(mapIndex, mapLocations, report);
+        foreach (var value in strings)
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                encodingCheck.ScanForMangledText(value);
+            }
+        }
+
         var entries = BuildEntries(strings, index => $"M{mapIndex}_S{index:000}");
         report.Increment("Yarn.EmptySlots", strings.Count - entries.Count);
 
@@ -179,7 +200,8 @@ public static class YarnDialogueWriter
 
     // ---- ETC table (EtcIndexTable.csv -> data/ETC_RES.R.json) --------------------------------------
 
-    private static void ConvertEtcTable(string inputDirectory, string outputDirectory, ConversionReport report)
+    private static void ConvertEtcTable(
+        string inputDirectory, string outputDirectory, SourceEncodingCheck encodingCheck, ConversionReport report)
     {
         var csvPath = Path.Combine(AppContext.BaseDirectory, "EtcIndexTable.csv");
         if (!File.Exists(csvPath))
@@ -189,8 +211,6 @@ public static class YarnDialogueWriter
         }
 
         var indexResult = EtcIndexCatalogReader.Read(csvPath);
-        // EtcIndexTable.csv's own warnings (duplicate/invalid rows) are also reported by TextWriter,
-        // which reads the same CSV; E15.d removes TextWriter's copy, so this duplication is temporary.
         foreach (var warning in indexResult.Warnings)
         {
             report.Warnings.Add(warning);
@@ -222,12 +242,23 @@ public static class YarnDialogueWriter
             return;
         }
 
+        encodingCheck.MarkEtcTableRead();
+
         var valueByOffset = new Dictionary<int, string?>();
         foreach (var entry in globalEntries)
         {
             if (entry.Offset is int offset)
             {
                 valueByOffset[offset] = entry.Value;
+            }
+
+            // The source-encoding check (docs/plan-e15-yarn.md, E15.d contract item 1): a table with
+            // no accented character at all, or one carrying U+FFFD, means an encoding was lost
+            // somewhere. This used to be TextWriter's only job; it moved here because this is now the
+            // only reader of ETC_RES.R.json.
+            if (!string.IsNullOrWhiteSpace(entry.Value))
+            {
+                encodingCheck.ScanEtcValue(entry.Value);
             }
         }
 
@@ -410,5 +441,78 @@ public static class YarnDialogueWriter
         });
 
         return true;
+    }
+
+    /// <summary>
+    /// Source-encoding check (docs/plan-e15-yarn.md, E15.d contract item 1): asserts by warning that
+    /// the accented French survived the extraction and this converter's own reading as real Unicode.
+    /// This used to be the only job <c>TextWriter</c> did beyond copying text; it moves here because
+    /// this is now the sole reader of the ETC table (<c>data/ETC_RES.R.json</c>) and the per-map
+    /// tables (<c>data/map_N.json</c>).
+    ///
+    /// The accented-character check runs against the ETC table only: it is large enough (916 rows)
+    /// for "not a single accented character" to be meaningful, whereas a small map table may
+    /// legitimately have none. The U+FFFD (replacement character) check runs against both the ETC
+    /// table and every map table, since a mangled encoding can hit either source.
+    /// </summary>
+    private sealed class SourceEncodingCheck
+    {
+        private bool _etcTableRead;
+        private string? _accentedSample;
+        private int _mangledCount;
+
+        /// <summary>The ETC table was read: only then can "no accented character" mean a lost
+        /// encoding. When it was not (a missing CSV or source file), that failure is already an error
+        /// and no encoding verdict is given.</summary>
+        public void MarkEtcTableRead() => _etcTableRead = true;
+
+        public void ScanEtcValue(string value)
+        {
+            if (StringTableReader.ContainsReplacementCharacter(value))
+            {
+                _mangledCount++;
+            }
+            else if (_accentedSample is null && StringTableReader.ContainsNonAscii(value))
+            {
+                _accentedSample = value;
+            }
+        }
+
+        public void ScanForMangledText(string value)
+        {
+            if (StringTableReader.ContainsReplacementCharacter(value))
+            {
+                _mangledCount++;
+            }
+        }
+
+        public void Report(ConversionReport report)
+        {
+            // Assert-by-warning that the accented French survived as UTF-8 end to end: the source is
+            // known to contain rows such as "Un Nouveau Départ", so a table with no non-ASCII
+            // character at all means an encoding was lost somewhere.
+            if (!_etcTableRead)
+            {
+                // Nothing to judge: the ETC table was never read, and why is already an error.
+            }
+            else if (_accentedSample is null)
+            {
+                report.Warnings.Add(
+                    "Text: no accented character found in the global string table; the source contains "
+                    + "rows such as \"Un Nouveau Départ\", so the text was probably read with the wrong encoding.");
+            }
+            else
+            {
+                report.Messages.Add(
+                    $"Text: accented French read as UTF-8, e.g. \"{StringTableReader.Excerpt(_accentedSample)}\".");
+            }
+
+            if (_mangledCount > 0)
+            {
+                report.Warnings.Add(
+                    $"Text: {_mangledCount} string(s) contain U+FFFD (replacement character); "
+                    + "their original characters were already lost upstream.");
+            }
+        }
     }
 }
