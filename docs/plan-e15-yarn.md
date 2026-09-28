@@ -540,7 +540,19 @@ tests du convertisseur sans échec avant chaque ✅ ; **aucun export avant T7**)
   (D-E15-2).
 - **Dépendances** : E15.0, E15.a.
 
-### E15.c — La DLL lit le Yarn ⏳ (DLL ; détaillée le 2026-09-28, à approuver)
+### E15.c — La DLL lit le Yarn 🧪 (DLL ; T1 à T7 faites et vérifiées le 2026-09-28, recette en jeu T8 en attente)
+
+- **Vérification finale (2026-09-28)** : relecture neuve de toute la tranche **CONFIRMED** : une sonde
+  hors dépôt joue les vrais `.dialogue` exportés sur le directeur réel (`M134_S016` affiche « Anneau
+  d'Olga », le nom d'avant la mise à jour, puis l'état des faucons évolue comme prévu ; `M134_S019`
+  affiche le seuil et le nom d'après et pose le drapeau 100 ; `M416_S007` montre le caractère 18 et plus
+  aucun « 2 » ; `M323_S097` : minuterie, masques, avalement du bouton, page vide et drapeau 999 posé à
+  l'affichage de sa page ; table partagée affichée par `0x0D` ; chemin dégradé) ; corpus : identifiants
+  de ligne contigus, aucune commande après la dernière ligne, aucune option ; build à 0 erreur,
+  `Alundra.Tests` 1 366/1 366, tests du convertisseur 399/399 ; moteur inchangé, rien poussé. Remarques
+  P4 notées : l'avertissement de repli de police revient à chaque monde ; la lecture sans affichage
+  bouclerait sur un nœud à options (aucun dans le corpus, à surveiller pour E12.c et E17). La recette en
+  jeu est faite une seule fois, sur le projet final, en E15.d T5.
 
 - **But** : les dialogues, OUI/NON et l'inventaire lisent les assets Yarn ; le jeu ne lit plus aucun
   fichier de texte brut ; les glyphes de l'original (« … », flèches, boutons) sont dessinés, et les
@@ -727,8 +739,12 @@ de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Re
   reparsé, plus un index hors de 0..1023 qui rend faux comme avant) ; helper
   `DialogueTestAssets.BuildEtc`/`BuildMultiNode`/`LoadFromDisk` partagé. Plus aucun lecteur
   de `etc-index.json`/`global-strings.json` dans `Alundra`/`Alundra.Tests` (`AlundraEtcStringTable` n'a plus
-  de code fichier du tout) ; contrôle neuf CONFIRMED (0 écart de résultat avec l'ancien code sur les
-  1 024 index réels) ; `Alundra.Tests` 1 366/1 366 après les corrections de T5 et T6. Reste à E15.d : le convertisseur ne produit plus
+  de code fichier du tout) ; contrôle neuf CONFIRMED ; comparaison de l'ancienne lecture avec la
+  nouvelle sur les 1 024 index (vérification finale) : 957 identiques, 54 qui ne diffèrent que par des
+  espaces de bord (D-E15-8), 13 autres toutes sous `0x200`, hors des appelants actuels (`\N` devenu un
+  vrai saut de ligne, espace de tête retirée) ; dans les plages utilisées (`0x200`-`0x37F`), seules
+  `0x206`, `0x239` et `0x2A6` perdent une espace finale, soit un caractère de moins à révéler dans
+  l'inventaire ; `Alundra.Tests` 1 366/1 366 après les corrections de T5 et T6. Reste à E15.d : le convertisseur ne produit plus
   les quatre familles de fichiers et retire ceux d'un export précédent ; retrait de `TextWriter`, de
   `MapCatalogReader.StringsRelativePath` et d'`AlundraDialogueStringsLoader`/`AlundraDialogueTextParser`
   (déjà déconnectés de la production par T5/T7, code encore présent).)
