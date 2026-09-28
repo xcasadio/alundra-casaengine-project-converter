@@ -669,7 +669,12 @@ de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Re
   `0x400` et `0x800`, plafond `0x32`. Résultats au §5 (« identique » ou la liste des écarts) ; un
   écart avec la décompilation est tranché par le binaire ; un point qui change le contrat est une
   question à l'auteur. **Arrêt** si les seuils ne se trouvent pas dans le binaire à `0x8009A834`.
-- ⏳ **T3 — État de texte porté.** `UpdateNumberOfFalcon`, `UpdatePlayerProgressState` (bits de
+- ✅ **T3 — État de texte porté** (fait le 2026-09-28 : `AlundraTextProgress` (seuils, table catégorie
+  → objet, `UpdateNumberOfFalcon`, `UpdatePlayerProgressState` avec le test du bit de signe du binaire),
+  `TextCategoryIndex` et `GameVariables` sur la session `AlundraGameState.Instance`, jamais remis à zéro
+  en production (seul le point d'entrée des tests `ResetForTests` les efface) ; 26 tests citant le
+  §5.7 ; contrôle neuf CONFIRMED contre le désassemblage de T2, ses remarques P3 ajoutées (ordre des
+  bits bas, masque sur `0x1fe`, faucons négatifs) ; `Alundra.Tests` sans échec.) `UpdateNumberOfFalcon`, `UpdatePlayerProgressState` (bits de
   `GameFlags[0x2d]` compris), les seuils, l'indice de catégorie, `INT_ARRAY_80191908`, dans la DLL,
   selon la sémantique **confirmée par le binaire au §5 (T2)** et avec ses valeurs ; tests de chaque
   branche, du plafond `0x32` et des bits `0x400`, `0x800` et `0x100`, qui citent l'entrée du §5.
