@@ -21,3 +21,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0005 | The inventory's opening portrait reaches the DLL through map_alundra.json and a one-id index | Accepted | 2026-09-26 |
 | ADR-0006 | All Alundra text is authored as Yarn and the raw text tables are no longer exported | Accepted; `\X` bullet superseded by ADR-0007 | 2026-09-27 |
 | ADR-0007 | The falcon update command keeps the state it replaces, and each `\X` reads on the original's side of the update | Accepted | 2026-09-27 |
+| ADR-0008 | The dialogue box uses font3 and draws each glyph marker as the matching font3 character | Accepted | 2026-09-28 |
