@@ -56,7 +56,8 @@ public sealed class AlundraYarnVariableCorpusTests
     private static string[] FindExportedDialogueFiles(string projectRoot)
     {
         var files = Directory.GetFiles(projectRoot, "*.dialogue", SearchOption.AllDirectories);
-        Assert.NotEmpty(files);
+        Assert.True(files.Length == 485,
+            $"AlundraYarnVariableCorpusTests: found {files.Length} '.dialogue' file(s) under '{projectRoot}', expected 485 (docs/plan-e16-etat-partie.md, slice E16.f).");
         return files;
     }
 

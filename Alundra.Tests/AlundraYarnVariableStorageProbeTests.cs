@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Alundra.Scripts;
 using CasaEngine.Compiler.Dialogue;
 using CasaEngine.Framework.Dialogue.Assets;
 using CasaEngine.Framework.Dialogue.Presentation;
@@ -46,7 +47,7 @@ public sealed class AlundraYarnVariableStorageProbeTests
     // -----------------------------------------------------------------------------------------
 
     [Fact]
-    public void RefusedRead_IsFalse_NoExceptionAndDialogueRunsToTheEnd()
+    public void RefusedRead_FallsBackToProgramInitialValue_NoExceptionAndDialogueRunsToTheEnd()
     {
         var storage = new RecordingRefusingStorage();
         var (runner, presenter) = NewRunner(storage);
@@ -64,8 +65,66 @@ public sealed class AlundraYarnVariableStorageProbeTests
         var exception = Record.Exception(() => runner.Start(asset));
 
         Assert.Null(exception);
+        // $mystery is never <<declare>>d, so the compiler implicitly declares it with a false initial
+        // value (point (b) below) - the false branch comes from Program.InitialValues, not directly
+        // from the storage's own refusal (see RefusedRead_OfADeclaredVariable_ReadsProgramInitialValue,
+        // which proves this with an initial value of true).
         Assert.Equal("False branch.", presenter.CurrentLine.Text);
         Assert.Contains("$mystery", storage.ReadNames);
+    }
+
+    /// <summary>Proves the VM falls back to <c>Program.InitialValues</c>, and does not always read
+    /// false, by declaring <c>$foo</c>'s initial value as <c>true</c>: a storage that refuses every
+    /// read still takes the true branch, because the pushed value comes from the Program's declared
+    /// initial value, never from the storage (decompiled <c>VirtualMachine.cs</c>, <c>PushVariable</c>
+    /// case - the VM only throws <see cref="InvalidOperationException"/> when the refused name is also
+    /// absent from <c>Program.InitialValues</c>).</summary>
+    [Fact]
+    public void RefusedRead_OfADeclaredVariable_ReadsProgramInitialValue()
+    {
+        var storage = new RecordingRefusingStorage();
+        var (runner, presenter) = NewRunner(storage);
+        DialogueAsset asset = CompileAsset("RefusedReadDeclaredTrue", """
+            title: Start
+            ---
+            <<declare $foo = true>>
+            <<if $foo>>
+            True branch.
+            <<else>>
+            False branch.
+            <<endif>>
+            ===
+            """);
+
+        var exception = Record.Exception(() => runner.Start(asset));
+
+        Assert.Null(exception);
+        Assert.Equal("True branch.", presenter.CurrentLine.Text);
+        Assert.Contains("$foo", storage.ReadNames);
+    }
+
+    /// <summary>Proves every variable a compiled program reads gets an implicit declaration - the VM's
+    /// exception path (<c>Program.InitialValues</c> missing the refused name) is therefore unreachable
+    /// for compiler-produced programs, so O-E16-7 is not triggered by a refused read alone.</summary>
+    [Fact]
+    public void UndeclaredVariable_GetsAnImplicitInitialValueInTheCompiledProgram()
+    {
+        var compiler = new YarnDialogueCompiler();
+        YarnDialogueCompilationResult result = compiler.CompileString("""
+            title: Start
+            ---
+            <<if $x>>
+            True branch.
+            <<else>>
+            False branch.
+            <<endif>>
+            ===
+            """, "UndeclaredVariable.yarn", AlundraYarnBindings.CreateDeclarations());
+        Assert.True(result.Success, string.Join(Environment.NewLine, result.Diagnostics.Select(d => d.Message)));
+
+        var program = Program.Parser.ParseFrom(result.ProgramBytes);
+
+        Assert.True(program.InitialValues.ContainsKey("$x"));
     }
 
     [Fact]

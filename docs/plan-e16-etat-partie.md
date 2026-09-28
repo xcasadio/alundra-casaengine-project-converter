@@ -1487,7 +1487,7 @@ Relectures du 2026-09-28 :
      (`AlundraDialogueDirector.cs:171-172`), donc pour tous les dialogues.
   10. Rien ne change dans le moteur, le convertisseur ni le Yarn exporté (aucune variable, §0.2).
 - **Tâches** (un commit par tâche avec la mise à jour de ce plan) :
-  - **T1 — Mesure du comportement de Yarn** ✅ (`AlundraYarnVariableStorageProbeTests`, 4 tests,
+  - **T1 — Mesure du comportement de Yarn** ✅ (`AlundraYarnVariableStorageProbeTests`, 6 tests,
     aucun code de production ; confirme l'indice préalable). Sur un
     runner réel avec un stockage de test qui refuse tout, établir trois points :
     - ce que la machine virtuelle de Yarn 3.2.1 fait d'une lecture refusée (exception, valeur
@@ -1498,12 +1498,21 @@ Relectures du 2026-09-28 :
 
     Les résultats vont dans cette tranche, sourcés par les tests.
 
-    **Résultats (2026-09-28, confirmés par T1 - `AlundraYarnVariableStorageProbeTests`, 4 tests
+    **Résultats (2026-09-28, confirmés par T1 - `AlundraYarnVariableStorageProbeTests`, 6 tests
     dans `Alundra.Tests`)**, sur un vrai `YarnDialogueRunner`/`Yarn.Dialogue` (paquets 3.2.1 épinglés
     par le moteur) et un `IVariableStorage` de test qui refuse tout (`RecordingRefusingStorage`,
     `TryGetValue` rend toujours faux, `SetValue`/`Clear` sont enregistrés sans lever) :
-    - `RefusedRead_IsFalse_NoExceptionAndDialogueRunsToTheEnd` : une lecture refusée vaut faux, sans
-      exception, et le dialogue va au bout ;
+    - `RefusedRead_FallsBackToProgramInitialValue_NoExceptionAndDialogueRunsToTheEnd` : une lecture
+      refusée n'est pas directement fausse - la machine virtuelle retombe sur la valeur initiale
+      déclarée du `Program` (ici `false`, la valeur implicite que le compilateur donne à `$mystery`,
+      jamais `<<declare>>`é), sans exception, et le dialogue va au bout ;
+    - `RefusedRead_OfADeclaredVariable_ReadsProgramInitialValue` : avec `<<declare $foo = true>>`,
+      la même lecture refusée prend la branche VRAIE - la valeur vient bien de la valeur initiale
+      déclarée du `Program`, jamais du stockage, qui continue de rendre faux sans lever ;
+    - `UndeclaredVariable_GetsAnImplicitInitialValueInTheCompiledProgram` : compiler un script qui lit
+      `$x` sans le déclarer donne un `Program` dont `InitialValues` contient `$x` - toute variable lue
+      reçoit une déclaration implicite du compilateur (`AlundraYarnBindings.CreateDeclarations()`,
+      comme la DLL) ;
     - `RefusedWrite_NoExceptionAndDialogueRunsToTheEnd` : une écriture refusée (`<<set $x to true>>`)
       n'écrit rien d'accepté par le stockage et ne lève pas non plus ;
     - `BooleanRead_RequestsIConvertible_NotBool` : `TryGetValue` est demandé avec `T = IConvertible`,
@@ -1511,6 +1520,18 @@ Relectures du 2026-09-28 :
     - `PlainDialogueWithoutVisited_NeverCallsClearOrTouchesInternalVariables` : sur un dialogue avec
       `<<set>>` et `<<if>>`/`<<else>>` mais sans `visited()`, aucun `Clear()` et aucun nom lu ou écrit
       ne commence par `$Yarn.Internal.`.
+
+    **Correction du 2026-09-28 (relecture de vérification, P2) :** le résultat 1 disait « une lecture
+    refusée vaut faux, sans exception », ce qui confondait le refus du stockage avec la valeur
+    initiale du `Program`. La décompilation de `VirtualMachine.cs` (cas `PushVariable`) montre que la
+    machine virtuelle, quand `IVariableStorage.TryGetValue<IConvertible>` échoue, retombe sur
+    `Program.InitialValues[nom]` et ne lève `InvalidOperationException("Variable storage returned a
+    null value for variable ...")` que si ce nom en est aussi absent. Ce chemin d'exception est
+    inatteignable pour un programme produit par le compilateur : toute variable lue reçoit une
+    déclaration implicite (`UndeclaredVariable_GetsAnImplicitInitialValueInTheCompiledProgram`) -
+    O-E16-7 n'est donc pas déclenché par une simple lecture refusée. Une lecture refusée d'une
+    variable déclarée lit sa valeur initiale déclarée, journalisée par le stockage comme un nom
+    refusé (`RefusedRead_OfADeclaredVariable_ReadsProgramInitialValue`).
 
     Confirmé aussi en écrivant `RecordingRefusingStorage` : `Yarn.IVariableAccess` déclare une
     propriété `Program` (type `Yarn.Program`) en plus de `SmartVariableEvaluator` - un stockage doit
