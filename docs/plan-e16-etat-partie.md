@@ -1422,7 +1422,13 @@ bouge.
   (règle de l'auteur : signaler, jamais contourner).
 - **Dépendances** : E16.0, E16.d.
 
-### E16.f — Variables Yarn adossées aux drapeaux ⏳ (DLL, docs)
+### E16.f — Variables Yarn adossées aux drapeaux 🚧 (DLL, docs ; relecture REVISE puis READY le 2026-09-28 ; exécutée en mode AUTO, « fait tout E16 de façon autonome »)
+
+Relectures du 2026-09-28 :
+- première relecture fraîche (`775d7d9`) : **REVISE**, un P2. La ligne « les 485 dialogues exportés
+  toujours joués » ne nommait aucun test ; elle est remplacée par le test de corpus
+  `AlundraYarnVariableCorpusTests` (`ad07ae4`) ;
+- relecture de clôture : **READY**.
 
 - **But** : D-E16-14 à D-E16-18 (ADR-0010). Un texte Yarn lit et écrit les drapeaux d'Alundra comme
   des variables, sans que le moteur ni Yarn ne gardent d'état à eux.
