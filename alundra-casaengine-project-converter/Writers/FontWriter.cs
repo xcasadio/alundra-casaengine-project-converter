@@ -22,31 +22,34 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    Phase 7 gives every other UI texture, so the font's page is a catalogued asset and not a
 ///    stray file. The .fnt itself is catalogued too, as a plain file entry: it is not a CasaEngine
 ///    asset type, but a runtime needs a way to address it by id.
-///  - char id is the UNICODE CODEPOINT, not the raw game code. Alundra indexes its atlas by a
-///    CP850-ish byte, but the extracted strings are already decoded to Unicode, so a .fnt keyed on
-///    raw game codes could not render a single one of them - looking up 'é' (U+00E9) would miss the
-///    glyph stored at code 130. The conversion is a port of
-///    AlundraEngine.Text.TextDecoder.ConvertCp850ToLatin1: identity below 128, and the CP850 to
-///    Latin-1 table above it. Only that branch is ported; the same function has a "cp850 - 0x10"
-///    branch for the USA release, and the data being converted here is the French/PAL release.
+///  - char id is the UNICODE CODEPOINT, not the raw game code. Below 128 the raw code is its own
+///    codepoint, identity, glyphs 16-29 included. From 128 to 255, docs/plan-e15-yarn.md E15.e
+///    (D-E15-14 to D-E15-16, ADR-0009) established that the CP850 table this class used to apply
+///    (AlundraEngine.Text.TextDecoder.ConvertCp850ToLatin1) does not match the atlas: the original
+///    game draws an escape pair '{'+c at glyph 0x50+c and '}'+c at glyph 0x90+c
+///    (TextDecoder.cs's TextInterpreter, and its own comment on the Tokens table), which lines up
+///    with CP1252/Latin-1 - not with CP850 - and the exported atlas confirms it by eye (cell 130 is a
+///    comma, cell 233 is 'é'). Only the 17 non-ASCII characters actually proven to occur in the
+///    corpus this way are given a cell (see <see cref="ProvenHighCodepoints"/>); every other cell from
+///    128 to 255 is left out of font3.fnt entirely - nothing "falls back to its own byte value" any
+///    more, since a byte this class cannot point at a real character would be a guess, not evidence.
 ///  - The raw code stays recoverable through UI/font3-charset.json, which lists all 256 source
-///    records with the codepoint each produced and whether it made it into the .fnt.
-///  - Codes above 127 that the CP850 table does not mention keep their own value as a codepoint
-///    (that is what the game's function does). Several of those collide with a code the table does
-///    map - raw 130 and raw 233 both mean U+00E9 'é' - and a duplicate "char id" line is invalid
-///    BMFont and would make the count line lie, so one code has to win. A code the table names wins
-///    over one that only fell through to identity, because the table is evidence and the fallback is
-///    a guess; between two codes of equal standing the lower one wins. The losers are dropped with a
-///    warning and "chars count" is recomputed from the lines actually written.
+///    records with the codepoint each produced (or none) and whether it made it into the .fnt, plus a
+///    short reason when it did not.
+///  - Because only 17 proven, pairwise-distinct code points are produced above 128 (identity below
+///    128 cannot collide with any of them - they are all either above the ASCII range or, for 'œ'
+///    U+0153, not a Latin-1 code point at all), no two raw codes can ever claim the same codepoint any
+///    more: there is no duplicate resolution left to do, and no "chars count" mismatch to recompute
+///    around. <see cref="CharsetRow.DuplicateOfRawCode"/> is kept in the JSON shape (always null) for
+///    docs/formats/font.md's existing schema rather than removed outright.
 ///
 ///  - PROPORTIONAL WIDTHS (docs/plan-e12-dialogues.md, slice E12.b, D-E12-2): each glyph's
 ///    <c>xadvance</c> comes from <c>FontCharWidths.csv</c> (<see cref="FontCharWidthCatalogReader"/>),
 ///    the RAW port of the game's own <c>g_fontCharWidthTable</c>, looked up by the glyph's own raw
-///    game code - not by its resolved Unicode codepoint, and not by whichever raw code happens to be
-///    the "canonical" winner of a CP850 duplicate collision. Every row (winner and dropped duplicate
-///    alike) carries its own <c>RawCode</c>, so a duplicate glyph never steals the width the table
-///    lists for the code that actually reached the .fnt. A code the CSV has no row for (should not
-///    happen - it lists all 256 raw codes) falls back to the 16px cell width, reported as a warning.
+///    game code - not by its resolved Unicode codepoint. Every row, whether or not it has a proven
+///    character, carries its own <c>RawCode</c> and its own advance from the table. A code the CSV
+///    has no row for (should not happen - it lists all 256 raw codes) falls back to the 16px cell
+///    width, reported as a warning.
 /// </summary>
 public static class FontWriter
 {
@@ -64,59 +67,31 @@ public static class FontWriter
         WriteIndented = true,
     };
 
-    // Port of AlundraEngine.Text.TextDecoder.Cp850ToLatin1 (French/PAL branch). Latin-1 code points
-    // are Unicode code points, so these values need no further conversion.
-    private static readonly Dictionary<int, int> Cp850ToLatin1 = new()
+    // D-E15-16 (docs/plan-e15-yarn.md, E15.e; ADR-0009): the only 17 raw codes from 128 to 255 that
+    // get a character, each keyed by its own CP1252 byte value - which is also the atlas cell the
+    // original game draws for it (TextDecoder.cs's '{'/'}' escape formula, corpus + atlas evidence).
+    // For every entry but 'œ' the raw code, the CP1252 byte and the Unicode code point are the same
+    // number; 'œ' is the one case where CP1252 0x9C is not a Latin-1/Unicode code point (U+009C is a
+    // control character), so it alone needs an explicit, different codepoint (U+0153).
+    private static readonly Dictionary<int, int> ProvenHighCodepoints = new()
     {
-        { 128, 199 }, // Ç
-        { 129, 252 }, // ü
-        { 130, 233 }, // é
-        { 131, 226 }, // â
-        { 132, 228 }, // ä
-        { 133, 224 }, // à
-        { 134, 229 }, // å
-        { 135, 231 }, // ç
-        { 136, 234 }, // ê
-        { 137, 235 }, // ë
-        { 138, 232 }, // è
-        { 139, 239 }, // ï
-        { 140, 238 }, // î
-        { 141, 236 }, // ì
-        { 142, 196 }, // Ä
-        { 143, 197 }, // Å
-        { 144, 201 }, // É
-        { 145, 230 }, // æ
-        { 146, 198 }, // Æ
-        { 147, 244 }, // ô
-        { 148, 246 }, // ö
-        { 149, 242 }, // ò
-        { 150, 251 }, // û
-        { 151, 249 }, // ù
-        { 152, 255 }, // ÿ
-        { 153, 214 }, // Ö
-        { 154, 220 }, // Ü
-        { 155, 162 }, // ¢
-        { 156, 163 }, // £
-        { 157, 165 }, // ¥
-        { 160, 225 }, // á
-        { 161, 237 }, // í
-        { 162, 243 }, // ó
-        { 163, 250 }, // ú
-        { 164, 241 }, // ñ
-        { 165, 209 }, // Ñ
-        { 166, 170 }, // ª
-        { 167, 186 }, // º
-        { 168, 191 }, // ¿
-        { 170, 172 }, // ¬
-        { 171, 189 }, // ½
-        { 172, 188 }, // ¼
-        { 173, 161 }, // ¡
-        { 174, 171 }, // «
-        { 175, 187 }, // »
-        { 181, 193 }, // Á
-        { 182, 194 }, // Â
-        { 183, 192 }, // À
-        { 184, 169 }, // ©
+        { 0xE9, 0x00E9 }, // é
+        { 0xE0, 0x00E0 }, // à
+        { 0xE8, 0x00E8 }, // è
+        { 0xEA, 0x00EA }, // ê
+        { 0xE7, 0x00E7 }, // ç
+        { 0xEE, 0x00EE }, // î
+        { 0xF4, 0x00F4 }, // ô
+        { 0xE2, 0x00E2 }, // â
+        { 0x9C, 0x0153 }, // œ
+        { 0xFB, 0x00FB }, // û
+        { 0xF9, 0x00F9 }, // ù
+        { 0xC7, 0x00C7 }, // Ç
+        { 0xB0, 0x00B0 }, // °
+        { 0xEF, 0x00EF }, // ï
+        { 0xAB, 0x00AB }, // «
+        { 0xBB, 0x00BB }, // »
+        { 0xC9, 0x00C9 }, // É
     };
 
     public static void ConvertFont(string inputDirectory, string outputDirectory, ConversionReport report)
@@ -212,19 +187,8 @@ public static class FontWriter
         List<FontGlyphRecord> records, IReadOnlyDictionary<int, int> advanceByRawCode, ConversionReport report)
     {
         var rows = new List<CharsetRow>(records.Count);
-        var ownerByCodepoint = new Dictionary<int, int>();
-        var duplicateCount = 0;
 
-        // Two passes, so a code the CP850 table actually names beats one that only fell through to
-        // the identity branch. Raw 184 IS '©' per the table while raw 169 merely keeps its own byte
-        // value; taking them in plain ascending order would hand U+00A9 to the guess and drop the
-        // known glyph. Within a pass the lower code still wins - at that point the two candidates
-        // carry the same weight of evidence.
-        var byConfidence = records
-            .OrderBy(record => Cp850ToLatin1.ContainsKey(record.Code) ? 0 : 1)
-            .ThenBy(record => record.Code);
-
-        foreach (var record in byConfidence)
+        foreach (var record in records)
         {
             var expectedX = record.Code % 16 * CellSize;
             var expectedY = record.Code / 16 * CellSize;
@@ -236,11 +200,9 @@ public static class FontWriter
                     + $"not the expected 16x16 cell at ({expectedX},{expectedY}); its own rectangle was used.");
             }
 
-            var codepoint = ConvertCp850ToLatin1(record.Code);
-
-            // Looked up by this glyph's OWN raw code, never by the codepoint or by whichever raw
-            // code wins the CP850 duplicate-collision resolution below - a dropped duplicate's
-            // advance must never leak onto the code that actually reaches the .fnt, and vice versa.
+            // Looked up by this glyph's OWN raw code, regardless of whether that code has a proven
+            // character - xadvance is unchanged by D-E15-16 (docs/plan-e15-yarn.md, E15.e, contract
+            // item 1).
             if (!advanceByRawCode.TryGetValue(record.Code, out var advance))
             {
                 advance = CellSize;
@@ -249,58 +211,46 @@ public static class FontWriter
                     + $"falling back to the fixed {CellSize}px cell width.");
             }
 
-            var row = new CharsetRow
+            var hasCharacter = TryGetCodepoint(record.Code, out var codepoint);
+
+            rows.Add(new CharsetRow
             {
                 RawCode = record.Code,
-                Codepoint = codepoint,
+                Codepoint = hasCharacter ? codepoint : null,
                 X = record.X,
                 Y = record.Y,
                 Width = record.Width,
                 Height = record.Height,
                 Palette = record.Palette,
                 Advance = advance,
-                InFont = true,
-            };
-
-            if (ownerByCodepoint.TryGetValue(codepoint, out var owner))
-            {
-                row.InFont = false;
-                row.DuplicateOfRawCode = owner;
-                duplicateCount++;
-            }
-            else
-            {
-                ownerByCodepoint[codepoint] = record.Code;
-            }
-
-            rows.Add(row);
+                InFont = hasCharacter,
+                DuplicateOfRawCode = null,
+                Reason = hasCharacter ? null : "no proven character",
+            });
         }
 
-        // Ordered by raw code, so the charset file reads as the source table it mirrors rather than
-        // in the resolution order above.
+        // Ordered by raw code, so the charset file reads as the source table it mirrors.
         rows.Sort((left, right) => left.RawCode.CompareTo(right.RawCode));
-
-        if (duplicateCount > 0)
-        {
-            report.Warnings.Add(
-                $"Font: {duplicateCount} of {records.Count} glyph codes map to a code point another code "
-                + "already claimed (CP850 130 and the unmapped byte 233 both mean U+00E9). A code the "
-                + "CP850 table names wins over one that only kept its own byte value, and the lower code "
-                + "wins between equals; the losers are listed in UI/font3-charset.json with "
-                + "duplicate_of_raw_code set and are not reachable through the .fnt.");
-        }
 
         return rows;
     }
 
-    // Port of AlundraEngine.Text.TextDecoder.ConvertCp850ToLatin1, French/PAL branch only: identity
-    // below 128, table lookup above, and unmapped high bytes keep their own value.
-    private static int ConvertCp850ToLatin1(int code)
-        => code >= 128 && Cp850ToLatin1.TryGetValue(code, out var mapped) ? mapped : code;
+    // D-E15-16: identity below 128 (glyphs 16-29 included), the 17 proven CP1252 cells from 128 to
+    // 255, nothing else.
+    private static bool TryGetCodepoint(int code, out int codepoint)
+    {
+        if (code < 128)
+        {
+            codepoint = code;
+            return true;
+        }
+
+        return ProvenHighCodepoints.TryGetValue(code, out codepoint);
+    }
 
     private static void WriteFontFile(string outputDirectory, List<CharsetRow> rows, ConversionReport report)
     {
-        var emitted = rows.Where(row => row.InFont).OrderBy(row => row.Codepoint).ToList();
+        var emitted = rows.Where(row => row.InFont).OrderBy(row => row.Codepoint!.Value).ToList();
 
         var builder = new StringBuilder();
         builder.AppendLine(
@@ -323,7 +273,7 @@ public static class FontWriter
         {
             builder.AppendLine(string.Create(
                 CultureInfo.InvariantCulture,
-                $"char id={row.Codepoint} x={row.X} y={row.Y} width={row.Width} height={row.Height} "
+                $"char id={row.Codepoint!.Value} x={row.X} y={row.Y} width={row.Width} height={row.Height} "
                 + $"xoffset=0 yoffset=0 xadvance={row.Advance} page=0 chnl=15"));
         }
 
@@ -368,15 +318,17 @@ public static class FontWriter
     }
 
     /// <summary>
-    /// One row of UI/font3-charset.json: the raw game code, the code point it was mapped to, its
-    /// cell in the atlas, the source palette (which has nowhere to live in a .fnt) and whether the
-    /// row produced a "char id" line - so the raw code and everything the .fnt cannot hold stays
-    /// recoverable.
+    /// One row of UI/font3-charset.json: the raw game code, the code point it was mapped to (null when
+    /// D-E15-16 has no proven character for this cell), its cell in the atlas, the source palette
+    /// (which has nowhere to live in a .fnt) and whether the row produced a "char id" line - so the raw
+    /// code and everything the .fnt cannot hold stays recoverable. <see cref="DuplicateOfRawCode"/> is
+    /// always null now that no two raw codes can claim the same codepoint (see the class doc comment);
+    /// it is kept only so the JSON shape docs/formats/font.md documents does not change.
     /// </summary>
     private sealed class CharsetRow
     {
         public int RawCode { get; set; }
-        public int Codepoint { get; set; }
+        public int? Codepoint { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
         public int Width { get; set; }
@@ -385,5 +337,9 @@ public static class FontWriter
         public int Advance { get; set; }
         public bool InFont { get; set; }
         public int? DuplicateOfRawCode { get; set; }
+
+        /// <summary>Short, readable reason a cell has no character, e.g. "no proven character". Null
+        /// when <see cref="InFont"/> is true.</summary>
+        public string? Reason { get; set; }
     }
 }

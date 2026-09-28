@@ -56,6 +56,21 @@ namespace Alundra.Tests;
 /// <see cref="ITextMeasurementEngine"/> is a REAL <c>MGUI.FontStashSharp.FontStashSharpTextEngine</c>
 /// (not the fake, deterministic measuring engine that harness uses for other tests), so glyph advances come
 /// from font3 itself, not a placeholder metric.
+/// <para/>
+/// E15.e, T1 (docs/plan-e15-yarn.md, "E15.e - Les accents de font3", D-E15-16) adds one more case:
+/// <see cref="AccentedGlyph_MeasuredAdvance_MatchesTheExportedXAdvance"/> measures 'é' the same way,
+/// through <c>alundra-project/UI/font3.fnt</c>. The preferred way to prove D-E15-16 immediately - build
+/// font3 itself by calling <c>FontWriter.ConvertFont</c> straight from <c>data-extracted/</c> into a
+/// throwaway temp project - is NOT used here: <c>FontWriter</c> lives in the
+/// <c>alundra-casaengine-project-converter</c> project, which this test project (<c>Alundra.Tests</c>)
+/// does not reference, and this task's scope is limited to
+/// <c>alundra-casaengine-project-converter/Writers/FontWriter.cs</c>,
+/// <c>alundra-casaengine-project-converter.Tests/FontWriterTests.cs</c> and this file - it excludes
+/// adding a <c>ProjectReference</c> to <c>Alundra.Tests.csproj</c>. This test instead reads the checked-in
+/// export, exactly like every other test in this file, and is marked <c>Skip</c> (naming this task's T2,
+/// docs/plan-e15-yarn.md's E15.e) because that export was confirmed STILL STALE (the old CP850 mapping:
+/// <c>char id=233</c> currently sits at x=32,y=128, not D-E15-16's x=144,y=224) when this test was
+/// written - T2 has not run yet. Remove the <c>Skip</c> once T2's export lands.
 /// </summary>
 public sealed class AlundraFont3GlyphTests
 {
@@ -482,6 +497,52 @@ public sealed class AlundraFont3GlyphTests
             Assert.False(
                 anyLineStartsRightAfterTheGlyph,
                 "the font3 glyph acted as a word-wrap delimiter exactly like the control space did - it must not.");
+        });
+    }
+
+    /// <summary>
+    /// E15.e, T1 (docs/plan-e15-yarn.md, "E15.e - Les accents de font3"; D-E15-16; ADR-0009): 'é' (U+00E9,
+    /// raw code 0xE9 = 233 under D-E15-16, cell x=144,y=224) must measure, through the REAL dialogue box
+    /// text path, to exactly font3.fnt's own declared xadvance for that cell - not a value re-typed by
+    /// hand. <c>Skip</c>ped (see the class doc comment): the checked-in <c>alundra-project/UI/font3.fnt</c>
+    /// was confirmed still built by the OLD CP850 mapping when this test was written (T2,
+    /// docs/plan-e15-yarn.md's E15.e, has not exported yet) - remove the <c>Skip</c> once it has.
+    /// </summary>
+    [Fact(Skip = "docs/plan-e15-yarn.md E15.e T2 has not exported font3.fnt with D-E15-16's mapping yet " +
+        "(alundra-project/UI/font3.fnt still has 'é' at the old CP850 cell, not x=144,y=224); remove this " +
+        "Skip once T2 lands.")]
+    public void AccentedGlyph_MeasuredAdvance_MatchesTheExportedXAdvance()
+    {
+        const int codepoint = 0xE9; // 'é', D-E15-16: raw code 0xE9 -> codepoint U+00E9 (identity).
+
+        // The exported .fnt must draw 'é' from cell 233 (x=144, y=224), where the original's '}Y' draws
+        // it - not from CP850's cell 130 (x=32, y=128), a comma-like glyph.
+        var cellLine = File.ReadLines(Font3FntPath).Single(l => l.StartsWith($"char id={codepoint} ", StringComparison.Ordinal));
+        Assert.Contains(" x=144 ", cellLine, StringComparison.Ordinal);
+        Assert.Contains(" y=224 ", cellLine, StringComparison.Ordinal);
+
+        var xadvances = ReadXAdvances(Font3FntPath, new[] { codepoint });
+        (MGDesktop desktop, string fontFamily) = NewFont3Desktop(640, 480, Font3FntPath, Font3PagePath);
+
+        GpuThread.Instance.Invoke(() =>
+        {
+            MGTextBlock line = ShowLine(desktop, fontFamily, "seed");
+
+            char glyph = (char)codepoint;
+            string with = "a" + glyph + "b";
+            string without = "ab";
+
+            float widthWith = line.MeasureText(with, false, false).X;
+            float widthWithout = line.MeasureText(without, false, false).X;
+            float measuredAdvance = widthWith - widthWithout;
+
+            Assert.True(
+                Math.Abs(measuredAdvance - xadvances[codepoint]) < 0.5f,
+                $"'é' (cell {codepoint}): measured advance {measuredAdvance} does not match font3.fnt's own "
+                + $"xadvance {xadvances[codepoint]} for that cell "
+                + $"(\"a{{(char){codepoint}}}b\"={widthWith} vs \"ab\"={widthWithout}).");
+
+            Assert.True(measuredAdvance > 0.5f, "'é' measured advance is ~0 - it reads as dropped or zero-width.");
         });
     }
 }

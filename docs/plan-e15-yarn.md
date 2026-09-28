@@ -898,7 +898,7 @@ erreur, tests du convertisseur et `Alundra.Tests` sans échec avant chaque ✅) 
 - **Retour arrière** : revert des commits d'E15.d, puis export complet (les tables brutes reviennent).
 - **Dépendances** : E15.c.
 
-### E15.e — Les accents de `font3` ⏳ (convertisseur, docs ; ouverte le 2026-09-28 pendant la recette)
+### E15.e — Les accents de `font3` 🚧 (convertisseur, docs ; ouverte le 2026-09-28 pendant la recette)
 
 - **Constat de l'auteur** (recette, 2026-09-28) : dans la boîte de dialogue, désormais en `font3`
   (D-E15-12), les lettres accentuées s'affichent avec de mauvais glyphes (« oublié où » → une virgule
@@ -943,16 +943,19 @@ erreur, tests du convertisseur et `Alundra.Tests` sans échec avant chaque ✅) 
 **Tâches** (un commit par tâche avec la mise à jour de ce plan ; build à 0 erreur, tests du
 convertisseur et `Alundra.Tests` sans échec avant chaque ✅) :
 
-- ⏳ **T1 — Table de `font3`.** `FontWriter` et `FontWriterTests` : chacun des 17 caractères vers sa
+- ✅ **T1 — Table de `font3`.** `FontWriter` et `FontWriterTests` : chacun des 17 caractères vers sa
   case (position x, y vérifiée), la case 130 absente, « œ » présent, ASCII et glyphes 16 à 29
-  inchangés, aucune collision ; `AlundraFont3GlyphTests` mesure aussi « é » (avance de la case 233) à
-  travers la boîte ; `docs/formats/font.md` et ADR-0009.
+  inchangés, aucune collision ; `docs/formats/font.md` et ADR-0009. Le test de la DLL qui mesure « é »
+  à travers la boîte (`AlundraFont3GlyphTests.AccentedGlyph_MeasuredAdvance_MatchesTheExportedXAdvance`,
+  qui vérifie aussi que « é » est pris dans la case 233, x = 144, y = 224) lit le `font3.fnt` exporté :
+  il est écrit mais sauté jusqu'à l'export de T2, qui l'active (le contrôle de T1 a réfuté un test actif
+  qui aurait lu l'ancien export).
 - ⏳ **T2 — Export et preuves** (jamais pendant une suite `Alundra.Tests` ; lanceur et jeu fermés) :
   manifeste d'avant = manifeste d'après d'E15.d (`scratchpad/e15d/manifest-after2.txt`) ; export complet
   sur place ; `report.json` à 0 erreur, sans l'avertissement de doublons de police ; manifeste d'après =
   **seulement** `UI/font3.fnt`, `UI/font3-charset.json` et `report.json` modifiés ; second export
   identique hormis `report.json` ; dans le `.fnt` exporté, chacun des 17 caractères pointe vers sa case
-  CP1252.
+  CP1252 ; puis le test « é » de la DLL est activé et `Alundra.Tests` passe.
 - ⏳ **T3 — Recette en jeu** (auteur) : fusionnée avec celle d'E15.d (T5) : accents justes dans la boîte
   de dialogue et dans l'inventaire.
 
