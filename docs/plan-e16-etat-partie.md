@@ -23,6 +23,15 @@ tranchés au §6), puis relecture fraîche de clôture de l'enveloppe et d'E16.0
   sauvegarde et remis à zéro au chargement ; `DebugHudRecipeApplied`, supprimé avec F1, sort de la
   remise à zéro.
 
+La première relecture de la révision 3 a rendu **REVISE**, sur un P2. Le plan disait que l'original
+ne charge que dans un processus neuf ; or il recharge aussi la sauvegarde dans le processus en cours,
+après la mort (« Réessayer »), sans remettre la BSS à zéro. Corrections :
+- §0.2 décrit ce chemin ;
+- E16.0 le confirme dans le binaire (question 4) ;
+- D-E16-19 fixe la remise à zéro au chargement ;
+- D-E16-20 renvoie « Réessayer » à l'étape E18 du plan maître ;
+- E16.d, étapes 1 et 4, ne s'appuie plus sur le processus neuf.
+
 | Unité | Revue avant approbation | Après exécution |
 |---|---|---|
 | Enveloppe (ce plan) + E16.0 (mesure, première tranche exécutable) | plan-verifier ; revue de sécurité faite (§6) | commit de documentation |
@@ -96,6 +105,17 @@ Réponses de l'auteur sur les variables Yarn (2026-09-28, après le merge d'E15)
 Decisions: see ADR-0010 (`docs/decisions/0010-game-flags-stay-in-the-dll-and-yarn-reads-them-as-variables.md`),
 qui consigne aussi D-E16-6.
 
+Réponses de l'auteur sur le chargement (2026-09-28, après la première relecture de la révision 3) :
+
+- **D-E16-19 — Au chargement, `TextCategoryIndex` et `GameVariables` sont remis à zéro**, comme au
+  démarrage d'un processus neuf et comme le veut S4 : un chargement ne garde rien de la session en
+  cours. Le rechargement après la mort de l'original les garde, lui (§0.2) ; il relève d'E18.
+- **D-E16-20 — Le rechargement après la mort (« Réessayer ») n'est pas dans E16.** Il devient
+  l'étape **E18** du plan maître, qui corrige aussi la décompilation C# de ce chemin :
+  - le champ `SaveSlotIndex`, qui semble compter les essais, est à confirmer dans `ALUN_CD.EXE`, puis
+    à renommer avec ses lecteurs ;
+  - tout le chemin est à vérifier contre le binaire.
+
 ### 0.2 Faits établis (2026-09-27, citations du code remises à jour le 2026-09-28)
 
 Chaque fait a été relu dans le code ou le binaire cité ; les recherches larges ont été contre-vérifiées
@@ -126,7 +146,11 @@ par un agent neuf.
 - Autres lecteurs et écrivains :
   - la commande `<<flag n>>` du texte Yarn (E15), qui pose `n | 0x8000` dans la banque temporaire
     (`AlundraYarnBindings.cs:142-153`) ;
-  - la jauge : drapeaux 1662, 1813 et 1814 (`AlundraHudDirector.cs:250`, `:357-378`).
+  - la jauge : drapeaux 1662, 1813 et 1814 (`AlundraHudDirector.cs:250`, `:357-378`) ;
+  - la progression des faucons (E15), qui accède directement aux mots de `GameFlags`, sans passer par
+    l'API : elle efface un bit de `GameFlags[0x2d]` (`AlundraTextProgress.cs:60`), lit
+    `GameFlags[0x2c]` et réécrit `GameFlags[0x2d]` (`:80-86` et la suite de
+    `UpdatePlayerProgressState`).
 
   Le monde n'en écrit plus aucun. Ses trois écritures (`AlundraWorldProxy.cs:1449`, `:1466`, `:1712`
   à `cbda4f8`) appartenaient à la recette `ALUNDRA_HUD_DEBUG` et à la touche F1, supprimées par
@@ -178,6 +202,22 @@ par un agent neuf.
 - Branche « charger » d'`InitializeGameState` (`GameInitializer.cs:350-356`) : copie de la
   sauvegarde (`UpdateSaveData`, `GameEngine.cs:2688-2692`), puis départ sur `InitialMapId` à la
   tuile `CameraTileX/Y/Z`, temps de jeu repris (`GameInitializer.cs:417-424`).
+- **Rechargement dans le processus en cours, après la mort** (relevé à la relecture du 2026-09-28,
+  lu dans la décompilation ; à confirmer par E16.0 question 4) :
+  - sur la carte `0x1DD`, `Script_187_0BB` (opcode `0xBB`, « Menu after died », `@ 0x80041A74`,
+    `EntityEventHandlers.cs:3513-3553`) pose `g_mapTransitionEffectId = 10` ;
+  - l'effet 10 (`GameEngine.cs:326-333`) appelle `InitializeMapWarpPosition` (`@ 0x800315b0`,
+    `GameEngine.cs:1480-1498`), qui fait `InitializePlayerStatsAndItems`, puis `UpdateSaveData`
+    (copie de `g_saveDataInRam` dans `g_saveData`), puis repart sur `InitialMapId` à la tuile
+    `CameraTileX/Y/Z` ;
+  - aucun point d'entrée ne tourne, donc la BSS n'est pas remise à zéro : `g_textCategoryIndex` et
+    `INT_ARRAY_80191908` gardent leur valeur de la session (§5.7 de `plan-e15-yarn.md` : « jamais
+    remis à zéro ») ;
+  - la décompilation journalise `SaveSlotIndex + 1` sous le nom « Retry = »
+    (`EntityEventHandlers.cs:3527-3537`) et incrémente ce champ à chaque essai
+    (`GameEngine.cs:1482-1485`). Son sens (compteur d'essais ?) est à établir ;
+  - la DLL ne porte pas ce chemin : `0xBB` est sauté par taille (`EventOpcodeSizeTable.cs:218`).
+    Il relève d'E18 (D-E16-20).
 - Texte d'un emplacement (`UpdateMenuStatusText`, `GameEngine.cs:2695-2747`) : le chapitre, tiré
   des 41 drapeaux de fin de chapitre (`ChapterFlags.cs`), et `HP xx TIME hh:mm:ss`, calculé depuis
   `HpMax` et le temps de jeu.
@@ -236,9 +276,16 @@ par un agent neuf.
   3. Dans `ALUN_CD.EXE` (France, qui tranche) : disposition et taille de `g_saveData`, taille de
      `g_temporaryFlags`, site et unité du compteur de temps de jeu, conversion faite par
      `UpdateMenuStatusText`.
-  4. **Confirmer dans `ALUN_CD.EXE`** la chaîne de sauvegarde du §0.2 (`@ 0x8007B998` →
-     `@ 0x8003153C` → `@ 0x8005EC44`), et lister les types de sprite et les cartes qui portent le
-     gestionnaire du livre de sauvegarde.
+  4. **Confirmer dans `ALUN_CD.EXE`** :
+     - la chaîne de sauvegarde du §0.2 (`@ 0x8007B998` → `@ 0x8003153C` → `@ 0x8005EC44`), et
+       lister les types de sprite et les cartes qui portent le gestionnaire du livre de sauvegarde ;
+     - le rechargement après la mort du §0.2 (`@ 0x80041A74` → effet 10 → `@ 0x800315b0` →
+       `UpdateSaveData`) : tout ce qu'il remet ou non à zéro, dont `g_textCategoryIndex` et
+       `INT_ARRAY_80191908` ;
+     - l'écrivain qui remplit `g_saveDataInRam` pendant la partie, et le sens du champ
+       `SaveSlotIndex`, qu'E16.c écarte du fichier.
+
+     Ces constats servent E16.c et E18 ; la correction de la décompilation reste à E18 (D-E16-20).
   5. Suites de référence avant chantier : `Alundra.Tests`, tests du convertisseur, `CasaEngine.Tests`.
   6. Domaines encore inconnus des champs restitués (E16.c) : plafond du compteur de chaque objet
      (source lue par la DLL), bornes de `Falcon` et `FalconTemp`, **source des dimensions de chaque
@@ -359,9 +406,10 @@ par un agent neuf.
 - **But** : reprendre une partie sauvegardée.
 - **Contenu** : port de la branche `SlotData == 1` d'`InitializeGameState`, dans cet ordre, dont
   seule la dernière étape modifie l'état vivant :
-  1. **préconditions** d'un chargement en cours de partie (l'original ne charge qu'au démarrage d'un
-     processus neuf, par `LOADER.EXE`) : aucun dialogue, aucun inventaire ouvert, aucune transition
-     en cours, `PlayerControlFlags == 0` ; sinon refus avec un message ;
+  1. **préconditions** d'un chargement en cours de partie. L'original ne charge qu'à deux moments :
+     au démarrage d'un processus neuf, par `LOADER.EXE`, et après la mort, par « Réessayer » (§0.2) ;
+     jamais librement en pleine partie. Préconditions : aucun dialogue, aucun inventaire ouvert,
+     aucune transition en cours, `PlayerControlFlags == 0`. Sinon, refus avec un message ;
   2. chargement par le service, puis `Validate()` d'E16.c ;
   3. **contrôle du départ** : monde de `InitialMapId` résolu et présent au catalogue, aucune transition
      en cours, warp non désactivé (`AlundraWarpDirector.cs:365-368`) et garde d'abandon non
@@ -372,9 +420,8 @@ par un agent neuf.
        de production de `ResetForTests` (`AlundraGameState.cs:299-341`). Elle couvre
        `PlayerControlFlags`, le verrou d'interaction et ses huit nombres, `NewGameInventoryInitialized`,
        les états des directeurs de dialogue et d'inventaire et les valeurs affichées de la jauge. Elle
-       couvre aussi **`TextCategoryIndex` à 0 et `GameVariables` à zéro** : l'original ne charge que
-       dans un processus neuf, lancé par `LOADER.EXE` (§0.2), dont le point d'entrée met la BSS à
-       zéro (état ajouté par E15, §0.2). La liste exacte est arrêtée et testée ici ;
+       couvre aussi **`TextCategoryIndex` à 0 et `GameVariables` à zéro** (D-E16-19). La liste
+       exacte est arrêtée et testée ici ;
      - la copie de l'objet ;
      - le départ sur `InitialMapId` à la tuile `CameraTileX/Y/Z`, par le chemin d'arrivée des warps ;
      - la reprise du temps de jeu.
@@ -391,7 +438,7 @@ par un agent neuf.
   identique à l'instantané ; warp désactivé, transition en cours, monde introuvable → refus, état
   identique ; un fichier au nom invalide posé dans le dossier de sauvegarde → aucune exception ;
   interrupteur inactif → F5, F6 et F9 sans effet ; chargement réussi depuis une session où
-  `TextCategoryIndex` et `GameVariables` ne sont pas nuls → les deux valent 0 après.
+  `TextCategoryIndex` et `GameVariables` ne sont pas nuls → les deux valent 0 après (D-E16-19).
 - **Acceptation en jeu** (lancée hors de l'app Claude, O3 du plan moteur) : nouvelle partie sur la
   389, intro jusqu'au bout, passage sur la 390, sauvegarde ; quitter ; relancer, charger → sur la 390
   à la même tuile, stats et objets identiques ; retour sur la 389 **sans** que l'intro rejoue. La même
@@ -514,6 +561,9 @@ _(Remplie par E16.0.)_
   vers Yarn est dans E16 (E16.f).
 - Variables Yarn autres que les drapeaux (`visited()`, variables déclarées ou calculées) : refusées
   (D-E16-18).
+- Le rechargement après la mort (« Réessayer », opcode `0xBB`, effet 10) et la correction de la
+  décompilation C# de ce chemin : étape E18 du plan maître (D-E16-20). E16.0 en confirme seulement
+  les faits.
 - Lecteurs de `ContentsGameFlag` de l'IA native (coffres, `FunctionTypeA.cs:236-264`) : E14.
 - Noms lisibles pour les drapeaux, au-delà des 41 drapeaux de chapitre.
 - **Risques résiduels acceptés** (jeu solo) : le sens des drapeaux ne peut pas être validé, donc une

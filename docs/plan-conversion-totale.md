@@ -840,8 +840,11 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
   READY : §9.9 du moteur précisé, écran « Continuer » plus tard, touches F5/F6/F9 gardées par
   un interrupteur de débogage (mécanisme à choisir, O-E16-6), livre de sauvegarde porté par E16.e,
   touche F1 et recette `ALUNDRA_HUD_DEBUG` de la jauge supprimées. Le 2026-09-28, après E15 :
-  variables Yarn adossées aux drapeaux dans E16 (E16.f).
-  Détail : D-E16-1 à D-E16-18 du plan détaillé.
+  - les variables Yarn adossées aux drapeaux vont dans E16 (E16.f) ;
+  - l'indice de catégorie et les variables `\V` sont remis à zéro au chargement ;
+  - le rechargement après la mort (« Réessayer ») devient l'étape E18.
+
+  Détail : D-E16-1 à D-E16-20 du plan détaillé.
 - **Découpage** (plan détaillé `docs/plan-e16-etat-partie.md`) :
   - **E16.0 — Mesure** (lecture seule) : ids de drapeaux utilisés, occurrences des opcodes du
     manque 1, disposition de `g_saveData` et unité du temps de jeu dans `ALUN_CD.EXE`, déclencheur de
@@ -854,8 +857,8 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
   - **E16.e — Écran de sauvegarde en jeu** (DLL, MGUI en XAML), avec son propre plan après E16.0.
   - **E16.f — Variables Yarn adossées aux drapeaux** (DLL), après E16.0, indépendante des autres.
 - **Hors périmètre** : les lecteurs de `ContentsGameFlag` de l'IA native (coffres, `FunctionTypeA.cs:236-264`)
-  → E14 ; le pont vers les cutscenes → E17 ; l'écran titre (point ouvert O-E16-1) ; la
-  relecture des vraies sauvegardes PS1.
+  → E14 ; le pont vers les cutscenes → E17 ; le rechargement après la mort → E18 ; l'écran titre
+  (point ouvert O-E16-1) ; la relecture des vraies sauvegardes PS1.
 - **Dépendances** : aucune technique ; position dans la file décidée par l'auteur, après E15.
 
 ### E17 — Cinématiques en `.cutscene` ⏳ (ouverte le 2026-09-27, non planifiée)
@@ -871,6 +874,26 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
 - **Prérequis** : un chantier moteur qui rend les cinématiques extensibles par le jeu et ajoute les
   actions manquantes.
 - **Dépendances** : E15, E16.
+
+### E18 — Mort et « Réessayer » ⏳ (ouverte le 2026-09-28, non planifiée)
+
+- **But** : porter le rechargement après la mort. Sur la carte `0x1DD`, l'opcode `0xBB` (« Check retry
+  or title screen », `Script_187_0BB` à `0x80041A74`) déclenche l'effet de transition 10, qui
+  recharge la dernière sauvegarde gardée en mémoire (`InitializeMapWarpPosition` à `0x800315b0`,
+  `UpdateSaveData` : `g_saveDataInRam` copiée dans `g_saveData`), puis repart du point de sauvegarde.
+  La DLL saute aujourd'hui `0xBB` par taille (`Alundra/Scripts/EventOpcodeSizeTable.cs:218`).
+- **Correction de la décompilation C#** (décision de l'auteur du 2026-09-28, D-E16-20 de
+  `docs/plan-e16-etat-partie.md`) :
+  - le champ `SaveSlotIndex` semble compter les essais : journalisé « Retry = »
+    (`EntityEventHandlers.cs:3527-3537`), +1 à chaque essai (`GameEngine.cs:1482-1485`). À confirmer
+    dans `ALUN_CD.EXE`, puis à renommer avec ses lecteurs ;
+  - tout le chemin est à vérifier contre le binaire (`Script_187_0BB`, l'effet 10 en
+    `GameEngine.cs:326-333`, `InitializeMapWarpPosition` en `:1480-1498`), et chaque écart à
+    corriger.
+- **Faits déjà établis** : ce chemin ne remet pas la BSS à zéro. L'indice de catégorie du texte et les
+  variables `\V` y gardent leur valeur (§5.7 de `plan-e15-yarn.md`), alors qu'un chargement d'E16
+  les remet à zéro (D-E16-19). E16.0 confirme ces faits dans le binaire.
+- **Dépendances** : E16 (sauvegarde et chargement), le chantier qui portera la mort du héros.
 
 ## 5. Règles de travail
 
@@ -914,5 +937,6 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
 | E13.d inventaire principal (puis sous-inventaire et L1/R1) | ✅ close (principal validé en jeu le 2026-09-24 ; sous-inventaire, L1/R1 et suites SI7-SI12 validés le 2026-09-25, mergés par l'auteur dans `main`) | `docs/plan-e13d-inventaire.md` ; `docs/plan-e13d-sous-inventaire.md` : analyseur `8f403d5`, parent `45bb0e2`, `a3901af`, `dc3fe1a`, `5f12e53`, suites `4e411ef`…`192f497`, merge `3537807` |
 | E14 IA native | ⏳ | |
 | E15 le texte en Yarn | ✅ close (recette en jeu validée le 2026-09-28) | `docs/plan-e15-yarn.md` ; parent `chantier/e15-yarn`, moteur `chantier/yarn-extension-points` |
-| E16 état de partie (drapeaux, sauvegarde) | ⏳ plan détaillé proposé le 2026-09-27, en attente d'approbation ; après E15 | `docs/plan-e16-etat-partie.md` |
+| E16 état de partie (drapeaux, sauvegarde) | ⏳ plan détaillé proposé le 2026-09-27, révision 3 le 2026-09-28, en attente d'approbation | `docs/plan-e16-etat-partie.md` |
 | E17 cinématiques en `.cutscene` | ⏳ ouverte le 2026-09-27, prérequis moteur | |
+| E18 mort et « Réessayer » (avec correction de la décompilation) | ⏳ ouverte le 2026-09-28, non planifiée | |
