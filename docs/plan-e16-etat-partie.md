@@ -1450,13 +1450,33 @@ bouge.
   (règle de l'auteur : signaler, jamais contourner).
 - **Dépendances** : E16.0, E16.d.
 
-### E16.f — Variables Yarn adossées aux drapeaux 🚧 (DLL, docs ; relecture REVISE puis READY le 2026-09-28 ; exécutée en mode AUTO, « fait tout E16 de façon autonome »)
+### E16.f — Variables Yarn adossées aux drapeaux ✅ (DLL, docs ; relecture REVISE puis READY le 2026-09-28 ; exécutée en mode AUTO, « fait tout E16 de façon autonome » ; faite et vérifiée CONFIRMED le même jour, `82ab618` à `c4ff1d5`)
 
 Relectures du 2026-09-28 :
 - première relecture fraîche (`775d7d9`) : **REVISE**, un P2. La ligne « les 485 dialogues exportés
   toujours joués » ne nommait aucun test ; elle est remplacée par le test de corpus
   `AlundraYarnVariableCorpusTests` (`ad07ae4`) ;
 - relecture de clôture : **READY**.
+
+Vérification du 2026-09-28, sur `3e58ad9` :
+- `verifier` frais : **CONFIRMED**, `Alundra.Tests` 1683/1683 ;
+- contradicteur : **REFUTED**, un P2. Le premier constat de T1 attribuait au stockage le « faux » d'une
+  lecture refusée. En réalité, la machine de Yarn prend alors la valeur initiale du programme compilé
+  (`VirtualMachine.cs`, cas `PushVariable`, décompilé depuis le paquet 3.2.1), et ne lève que pour un
+  nom absent de ces valeurs.
+  - Correction `c4ff1d5` : deux tests de T1 le prouvent (variable déclarée à vrai, lue vraie malgré le
+    refus ; variable non déclarée, qui reçoit une valeur initiale implicite du compilateur), et le
+    test de corpus compte exactement 485 fichiers ;
+  - revérification ciblée : **CONFIRMED**, 1685/1685.
+
+Reportés, sans effet tant que le corpus n'a pas de variable :
+- (P3) le chemin dégradé `AlundraEventProgramRunner.PlayNodeHeadlessToEnd` crée son runner sans ce
+  stockage ; limite écrite dans `docs/formats/dialogues-yarn.md` ;
+- (P4) `TryGetValue<T>` refuse d'autres types auxquels un booléen s'affecte (`bool?`,
+  `IComparable`…), que Yarn 3.2.1 ne demande jamais ;
+- (P4) le test de `Clear()` ne vérifie pas la ligne de journal, que le code écrit.
+
+Écarté : `Clear()` se journalise à chaque appel, ce que demande le point 7 du contrat.
 
 - **But** : D-E16-14 à D-E16-18 (ADR-0010). Un texte Yarn lit et écrit les drapeaux d'Alundra comme
   des variables, sans que le moteur ni Yarn ne gardent d'état à eux.
@@ -1542,13 +1562,15 @@ Relectures du 2026-09-28 :
     Le corpus exporté ne déclare, ne lit ni n'écrit aucune variable, et ses 24 784 nœuds n'ont que
     l'en-tête `title:` (aucun `tracking:`).
   - **T2 — Stockage et branchement** ✅ (`AlundraYarnVariableStorage` + branchement dans
-    `AlundraDialogueDirector.AttachToWorld` ; `AlundraYarnVariableStorageTests` 34 tests couvrant
+    `AlundraDialogueDirector.AttachToWorld` ; `AlundraYarnVariableStorageTests` 33 cas de test (10 faits, 6 théories à 23 cas ; corrigé en T3, la note disait 34) couvrant
     lecture/écriture/bornes/refus/`Clear()`/directeur/cycle de vie/sauvegarde, et
     `AlundraYarnVariableCorpusTests` sur les 485 `.dialogue` exportés) : contrat 1 à 9, avec les tests
     d'acceptation. `TryGetValue<T>` rend la valeur d'un drapeau pour tout `T` auquel un booléen
     s'affecte (`bool`, `IConvertible`, `object`) ; pour un autre `T`, le refus est journalisé comme une
     valeur non booléenne.
-  - **T3 — Documentation** : section « Variables » de `docs/formats/dialogues-yarn.md` (noms, types,
+  - **T3 — Documentation** ✅ (faite le 2026-09-28 en session principale : section « Variables » de
+    `docs/formats/dialogues-yarn.md`, dont le repli de Yarn sur la valeur initiale et la limite du
+    chemin dégradé) : section « Variables » de `docs/formats/dialogues-yarn.md` (noms, types,
     refus, cycle de vie, rien dans la sauvegarde).
 - **Acceptation** : tests d'`Alundra.Tests` sur des Yarn de test compilés avec les déclarations de
   la DLL (`AlundraYarnBindings.CreateDeclarations`) :
