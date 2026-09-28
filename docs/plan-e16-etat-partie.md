@@ -371,6 +371,183 @@ par un agent neuf.
   avant de le porter ; l'oracle de l'intro qui bouge → la tranche s'arrête.
 - **Dépendances** : E16.0.
 
+#### Plan détaillé d'E16.a (2026-09-28)
+
+**Faits établis par la reconnaissance** (lecture seule, deux passes contre-vérifiées ; scripts dans
+`scratchpad/e16a/` et `scratchpad/e16a-prod/`) :
+
+- **Sémantique des opcodes de la tranche**, confirmée dans le binaire :
+
+  | Opcode | Gestionnaire | Lit | Écrit | Rend |
+  |---|---|---|---|---|
+  | `0x32` | `0x8003DEFC`, `EntityEventHandlers.cs:1102-1109` | drapeau `(b2 << 8) \| b1` | `XorFlag(id, 1 << (b1 & 0x1f))` | 3 |
+  | `0x34` | `0x8003E128`, `:1132-1149` | 4 drapeaux | `Result = 0` au premier bit posé, sinon 1 | 9 |
+  | `0x35` | `0x8003E2DC`, `:1152-1163` | 1 drapeau | rien | 3 si le bit est effacé ; 0 (attendre) s'il est posé |
+  | `0x78` | `0x8003FB10` | b1, b2 | `_34 = CodeIndex + 3` | saut signé 16 bits (toujours) |
+  | `0x79` | `0x8003FB44` | b1, b2 (si saut) | `_34 = CodeIndex + 3` si `Result != 0` | saut si `Result != 0`, sinon 3 |
+  | `0x7B` / `0x7C` | `0x8003FBD4` / `0x8003FC74` | drapeau (b1, b2), saut (b3, b4) | `_34 = CodeIndex + 5` si le bit est posé / effacé | saut, sinon 5 |
+  | `0x7D` | `0x8003FD14` | rien | rien | `_34 − CodeIndex` |
+  | `0x7E` / `0x7F` | `0x8003FD24` / `0x8003FD4C` | `Result` | rien | `_34 − CodeIndex` si `Result != 0` / `== 0`, sinon 1 |
+  | `0x80` / `0x81` | `0x8003FD74` / `0x8003FDF8` | drapeau | rien | `_34 − CodeIndex` si le bit est posé / effacé, sinon 3 |
+  | `0x2C` | `0x8003DC84`, `:1008-1014` | type de recherche (b1) | `Result = 1` si aucune entité, sinon 0 | 2 |
+  | `0x3E` | `0x8003E708`, `:1298-1310` | rien | `Result = 1` si le joueur chevauche l'entité | 1 |
+  | `0x6E` | `0x8003F9D4`, `:2146-2151` | rien | `Result = ForceAdjusted` de l'entité | 1 |
+  | `0x8D` | `0x800404A8`, `:2597-2615` | type de recherche (b1) | `Result = 1` si une entité trouvée a `PosZ <= TerrainHeight + 1`, sinon 0 | 2 |
+  | `0xAD` | `0x80041344`, `:3221-3278` | 2 types de recherche, 3 octets **signés**, 3 octets non signés | `Result = 1` si une entité de la 2e recherche est dans la boîte, sinon 0 | 9 |
+  | `0xB8` | `0x80041988`, `:3471-3494` | type de recherche (b1), valeur (b2) | `Result = 1` si une entité trouvée a `CurrentAnimationId == b2` (`+0x90`), sinon 0 | 3 |
+
+  Les tailles d'`EventOpcodeSizeTable.cs` sont justes pour tous, sauf `0x78` (D-E16-21). `0x7A`
+  n'apparaît pas dans le corpus : il reste non porté.
+- **Désaccords avec la décompilation**, tranchés selon le binaire (D-E16-27) :
+  - `0xAD` : sa boucle `while (i > 0)` ne teste jamais l'entité d'indice 0. Le binaire les teste toutes
+    (boucle testée en bas). Dans 54 usages sur 67, la 2e recherche ne trouve que le joueur : portée
+    telle quelle, `0xAD` rendrait presque toujours faux. La décompilation oublie aussi `Result = 0`
+    quand la 2e recherche est vide et quand la boucle s'épuise ;
+  - `0xB8` : le binaire compare `CurrentAnimationId` (`+0x90`), alors que la décompilation dit
+    `TargetAnimationId` et que les deux tables l'appellent « Check TargetDirection » ;
+  - vus en passant, sans être portés ici : `0xB7` passe `variables[1]`, et non `variables[2]`, comme
+    type de recherche, et a la même boucle que `0xAD` ; `0x8D` parcourt ses entités à rebours (sans
+    effet) ; `0x7D` calcule une variable jamais lue.
+- **Producteurs de `Result`** : ce sont ces six opcodes qui précèdent 61 des 77 occurrences de `0x79`,
+  `0x7E` et `0x7F` : `0xAD` ×48, `0x2C` ×5, `0x3E` ×4, `0x8D` ×2, `0x6E` et `0xB8` ×1. Leurs autres
+  producteurs (`0x07`, `0x2F`, `0x3B`) sont déjà portés. Le producteur des 4 derniers `0x7F` n'est
+  atteint que par un saut dynamique (`_34`) : non établi. Aujourd'hui, `UnknownOpcode` saute ces
+  opcodes sans toucher `Result` (`AlundraEventProgramRunner.cs:1698-1724`).
+- **Côté DLL** :
+  - `EntitySearchService.GetMatchingEntitiesBySearchType` (`EntitySearchService.cs:98`) sert `0xAD`,
+    `0x2C`, `0x8D` et `0xB8` ;
+  - `PosX/PosY/PosZ` (`AlundraEntityScriptProxy.cs:134-136`), `RidingEntity` (`:140`),
+    `CurrentAnimationId` (`:87`) et `ForceAdjusted` (`:171`) sont déjà tenus à jour ;
+  - `TerrainHeight` (`:148`) n'est écrit qu'en `:536`, pour les PNJ. Le joueur calcule la hauteur de
+    son terrain dans `UpdateFloorHeight` (`:1539-1552`) mais ne la garde que dans `FloorHeight`.
+    `0x8D` teste le joueur dans 41 de ses 183 usages ;
+  - `FillDataFromCommand` ne lit que des octets non signés (`AlundraEventProgramRunner.cs:403-427`) :
+    `0xAD` doit convertir ses trois premiers décalages en octets signés ;
+  - modèles déjà portés : `0x05`/`0x06` (`:445-459`), `FlagBranch`, `WaitUntilFlagOn`, `CheckFlagsOn`
+    (`:1222-1264`), `DestroyMatchingEntities` (`0x2E`, `:1319-1331`), `EntityInArea` (`0x07`,
+    `:1799-1826`), `0x70` (`:992-996`), `LogDegradedNoPlayerOpcodeOnce` (`:1767`) ;
+  - `EventProgramState.cs:16-18` dit encore que `_34` n'est lu par aucun opcode porté ;
+  - `HeadlessIntroSimulation.ImplementedOpcodes` (`Alundra.Tests/IntroTraceHarnessTests.cs:319-323`)
+    recopie à la main l'ensemble des opcodes portés ; il a déjà pris du retard deux fois.
+- **Intro** : aucun opcode de la tranche, producteurs et lecteurs compris, n'est atteignable sur la
+  carte 389, seule carte du harnais de l'intro (`IntroTraceHarnessTests.cs:50`) ; l'oracle ne peut
+  pas bouger par eux.
+- **Occurrences dans le corpus** : `0x2C` 772 (117 cartes), `0x3E` 458 (82), `0x6E` 210 (98), `0x8D`
+  183 (105), `0xB8` 95 (22), `0xAD` 67 (34), plus celles du §2 pour la famille et `0x32`/`0x34`/
+  `0x35`. Porter ces opcodes change donc le comportement de nombreuses cartes, dans le sens de
+  l'original.
+- **Analyseur** : `EventCodeDebugger.cs:248` (`0x78`, taille 4) et `:312` (`0xB8`, nom). Ni le
+  convertisseur ni la DLL ne le référencent, donc l'export ne change pas. L'analyseur n'a pas de tests
+  pour ces fichiers ; son projet est `AlundraTools/AlundraEngine/AlundraEngine.csproj`. Le sous-module
+  est sur `master`.
+
+**Décisions de l'auteur pour E16.a** (2026-09-28) :
+
+- **D-E16-26** — E16.a porte aussi les six producteurs de `Result` : `0xAD`, `0x2C`, `0x3E`, `0x8D`,
+  `0x6E`, `0xB8`.
+- **D-E16-27** — Là où le binaire contredit la décompilation, la DLL suit le binaire. `0xAD` teste
+  toutes les entités et pose `Result = 0` sur chaque sortie sans résultat ; `0xB8` compare
+  `CurrentAnimationId` et s'appelle « Check CurrentAnimationId » dans la table de la DLL.
+- **D-E16-28** — E16.a corrige aussi la décompilation de ces opcodes dans l'analyseur, sur la même
+  branche que la taille de `0x78` :
+  - la boucle et les `Result = 0` de `0xAD` ;
+  - le champ et le nom de `0xB8` ;
+  - le paramètre et la boucle de `0xB7` ;
+  - l'ordre de parcours de `0x8D` ;
+  - la variable morte de `0x7D`.
+
+  Les désaccords d'E16.0 restent à E18 (D-E16-24).
+- **D-E16-29** — E16.a tient à jour `TerrainHeight` du joueur, à partir de sa sonde de sol existante,
+  après avoir vérifié dans le binaire que c'est la même valeur que l'original. Sinon, arrêt et
+  question à l'auteur.
+
+**Contrat** :
+
+1. Chaque opcode de la tranche a un `case` dans `Dispatch` qui suit le tableau ci-dessus ; plus aucun
+   n'est sauté par taille. Chaque `case` cite son gestionnaire (adresse) et sa ligne de décompilation,
+   et signale l'écart quand elle diverge.
+2. `0x78` fait 3 octets dans `EventOpcodeSizeTable.cs` ; `0xB8` s'y appelle « Check CurrentAnimationId ».
+3. `TerrainHeight` du joueur est tenu à jour selon D-E16-29 ; rien d'autre ne change dans la physique.
+4. `EventProgramState.cs` décrit `_34` tel qu'il est désormais utilisé ;
+   `HeadlessIntroSimulation.ImplementedOpcodes` contient tous les opcodes portés.
+5. L'analyseur, sur la branche `chantier/e16a-opcodes` de son sous-module :
+   - `EventCodeDebugger.cs` : `0x78` fait 3 octets, `0xB8` s'appelle « Check CurrentAnimationId » ;
+   - `EntityEventHandlers.cs` suit le binaire pour `0xAD`, `0xB8`, `0xB7`, `0x8D` et `0x7D`
+     (D-E16-28) ;
+   - le projet `AlundraEngine` compile ; le pointeur du sous-module est déplacé dans ce dépôt.
+6. Rien ne change dans le moteur, le convertisseur ni l'export.
+
+**Tâches** (un commit par tâche avec la mise à jour de ce plan ; build à 0 erreur et `Alundra.Tests`
+sans échec avant chaque ✅) :
+
+- ⏳ **T1 — Drapeaux `0x32`, `0x34`, `0x35`** (DLL). Tests sur programmes synthétiques
+  (`NewDocument`, `AlundraEventProgramRunnerTests.cs:18`) : bascule par `XorFlag` (`0x32` donne son
+  premier appelant à `XorFlag`), `Result` de `0x34` pour 0 à 4 bits posés, `0x35` qui attend puis
+  avance. Un test par opcode sur son occurrence réelle :
+  - `0x32` : Ancient Shrine-26, D[1], octets `32 07 80` en 1529 ;
+  - `0x34` : Church (basement, Holy sword)-137, B[5], en 451 ;
+  - `0x35` : Ancient Shrine-28, C[14], `35 5A 80` en 738.
+- ⏳ **T2 — Producteurs `0x2C`, `0x3E`, `0x6E`, `0xAD`, `0xB8`** (DLL, D-E16-26 et D-E16-27). Tests :
+  - `0x2C` : aucune entité, puis une ;
+  - `0x3E` : joueur sur l'entité, sur une autre, et sans joueur (chemin dégradé journalisé) ;
+  - `0x6E` : `ForceAdjusted` à 0 puis à 1 ;
+  - `0xAD` : une seule entité trouvée (l'indice 0 est testé), plusieurs, aucune ; décalages négatifs ;
+    bornes incluses ; `Result = 0` sur les trois sorties sans résultat, même si `Result` valait 1
+    avant ;
+  - `0xB8` : `CurrentAnimationId` égal et différent, et `TargetAnimationId` égal sans effet.
+
+  Plus une occurrence réelle chacun :
+  - `0x2C` : Ancient Shrine - Golem-34, `2C 00` en 83 ;
+  - `0x3E` : Ancient Shrine-26, C[28], en 1189 ;
+  - `0x6E` : Ancient Shrine-27, en 546 ;
+  - `0xAD` : Inoa (inner)-164, en 100 ;
+  - `0xB8` : Arena Black Dragon (Boss)-323, B[2], en 108.
+- ⏳ **T3 — Hauteur de terrain du joueur, puis `0x8D`** (DLL, D-E16-29). Deux temps :
+  1. **Mesure dans le binaire** : où l'original écrit `TerrainHeight` (`+0x138`) pour le joueur
+     (slot 0), avec quelle valeur et à quel moment de l'image par rapport aux scripts. Comparer avec
+     `ComputeTerrainHeight` de `UpdateFloorHeight`. Résultat consigné ici, sourcé. S'ils diffèrent, la
+     tâche s'arrête (O-E16-12).
+  2. Si la valeur concorde :
+     - `TerrainHeight` du joueur est posé au même endroit du cycle ;
+     - `0x8D` est porté ;
+     - tests : `0x8D` pour un PNJ et pour le joueur, au sol et en l'air, et `TerrainHeight` du joueur
+       après un tick ;
+     - occurrence réelle : Arena Zorgia (Boss)-321, B[1], `8D 81` en 69.
+- ⏳ **T4 — Famille `0x78` à `0x81`** (DLL, D-E16-21). Taille de `0x78` à 3 ; un test par opcode (saut
+  pris et non pris, écriture et relecture de `_34`) ; `EventProgramState.cs` et `ImplementedOpcodes`
+  mis à jour (tous les opcodes de T1 à T4). **Trois tests de séquence** sur des programmes réels, du
+  point d'entrée jusqu'au retour :
+  - A : Lake Shrine (inner)-337, B[2] (entrée 512) : `0x78` en 807 saute en 822 sur `0x81` ;
+  - B : Cave-140, B[4] (entrée 744) : `0x78` en 773, puis `0x5B`, `0x1E` et `0x7D` en 1361, qui
+    revient en 776 ;
+  - C : Lizardman's Lair (Boss)-411, B[9] (entrée 1712) : `0x7B` en 1713 (drapeau `0x807A`), puis
+    `0x37`, `0x07` et `0x7E` en 1747, dont le `Result` vient du `0x07`.
+- ⏳ **T5 — Analyseur** (contrat 5, D-E16-28). Branche `chantier/e16a-opcodes` créée depuis `master` du
+  sous-module ; build d'`AlundraEngine.csproj` à 0 erreur ; commit dans le sous-module, puis commit du
+  pointeur dans ce dépôt. Rien n'est poussé.
+- ⏳ **T6 — Vérification finale** : `Alundra.Tests` et tests du convertisseur sans échec ; oracle de
+  l'intro inchangé ; vérificateur neuf sur toute la tranche.
+- ⏳ **T7 — Recette en jeu** (auteur, proposée) : trois lieux qui exercent la tranche, si les systèmes
+  qu'ils demandent par ailleurs le permettent (sinon, on consigne ce qui est atteignable) :
+  - l'arène de Zorgia (321), attente de l'atterrissage du joueur (`0x8D`) ;
+  - le repaire des Lizardmen (411), boucle `0x7B` → `0x7E` ;
+  - un buggy de Torla (55 à 60), test de chevauchement (`0x3E`).
+
+**Acceptation** : tous les tests ci-dessus ; `Alundra.Tests` sans échec ; oracle de l'intro inchangé
+(`0x11` à la frame 1704) ; aucun opcode de la tranche sauté par taille ; analyseur compilé ;
+vérification finale neuve **CONFIRMED**.
+
+**Arrêts** :
+- T3.1 ne retrouve pas dans le binaire la valeur de `TerrainHeight` du joueur (O-E16-12) ;
+- un opcode dont le binaire contredit à nouveau la décompilation sur un point non tranché ;
+- l'oracle de l'intro qui bouge ;
+- un test existant qui devrait changer pour une autre raison que la tranche ;
+- un producteur qui demande un sous-système non porté ;
+- le build de l'analyseur qui échoue pour une autre raison que la tranche.
+
+**Retour arrière** : branche du chantier (§5.2) ; branche de l'analyseur gardée et pointeur ramené à
+celui de `main` (§5.2).
+
 ### E16.b — Service de sauvegarde du moteur ⏳ (moteur)
 
 - **But** : exécuter le plan moteur `save-game-service-tasks.md` (T0.1 à T4.2), puis déplacer le
@@ -829,6 +1006,7 @@ tests du convertisseur 400/400, `Alundra.Tests` 1361/1361.
 | O-E16-9 | ~~`SaveSlotIndex`~~ — **tranché** (D-E16-22) : sauvegardé et restitué, 0..255. | E16.c |
 | O-E16-10 | ~~Unité du temps de jeu~~ — **tranché** (D-E16-23) : 60 unités par seconde réelle, affichage divisé par 60. | E16.c |
 | O-E16-11 | ~~Désaccords de décompilation~~ — **tranché** (D-E16-24) : tous corrigés en E18. | E18 |
+| O-E16-12 | Seulement si E16.a T3.1 ne retrouve pas, dans le binaire, que la hauteur de terrain du joueur (`TerrainHeight`, `+0x138`) vaut celle que calcule `UpdateFloorHeight` au même moment de l'image : quelle source prendre pour `0x8D` sur le joueur ? | E16.a |
 
 ## 4. Hors périmètre
 
