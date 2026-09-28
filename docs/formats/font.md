@@ -28,31 +28,41 @@ standardisée.
 
 ## `char id` = point de code Unicode, pas le code brut du jeu
 
-Alundra indexe son atlas par un octet proche de CP850, mais les chaînes déjà extraites sont en
-Unicode : un `.fnt` indexé sur les codes bruts du jeu ne pourrait afficher aucune d'entre elles — la
-recherche de `'é'` (U+00E9) manquerait le glyphe stocké au code 130. La conversion est un portage de
-`AlundraEngine.Text.TextDecoder.ConvertCp850ToLatin1` : identité en dessous de 128, table CP850 →
-Latin-1 au-dessus. Seule cette branche est portée (celle de la version France/PAL) ; la même
-fonction a une branche différente (`cp850 - 0x10`) pour la version USA, non pertinente pour les
-données converties ici.
+Les chaînes extraites sont déjà en Unicode (l'extracteur convertit les paires d'échappement `{c` et
+`}c` en UTF-8, `TextDecoder.DecodeString`) : le `.fnt` doit donc associer chaque case de l'atlas au
+caractère Unicode qu'elle dessine. Decisions: see ADR-0009 (`docs/plan-e15-yarn.md`, E15.e,
+D-E15-14 à D-E15-16).
 
-Les codes au-delà de 127 absents de la table CP850 gardent leur propre valeur comme point de code
-(c'est ce que fait la fonction du jeu). Certains entrent alors en collision avec un code que la
-table mappe déjà (le code brut 130 et le code brut 233 signifient tous deux U+00E9 'é') ; un `char
-id` dupliqué serait un BMFont invalide, donc un des deux doit céder. Un code que la table nomme
-l'emporte sur un code qui ne fait que garder sa propre valeur par défaut (la table est une preuve,
-le repli est une supposition) ; entre deux codes de même statut, le plus petit l'emporte. Les
-perdants ne produisent pas de ligne `char` mais restent visibles dans `font3-charset.json` avec
-`duplicate_of_raw_code` renseigné. Sur les 256 glyphes source, 42 sont ainsi des doublons non
-atteignables via le `.fnt` (`Font.Glyphs` = 214 dans `report.json`).
+- **En dessous de 128** : le code brut est son propre point de code (identité), glyphes 16 à 29
+  compris (les marqueurs `[glyph id=N/]`, ADR-0008).
+- **De 128 à 255** : seuls les 17 caractères non ASCII du texte ont une case, celle de leur octet
+  CP1252 — c'est la case que dessine le jeu original (`}c` → case `0x90 + c`, `{c` → case
+  `0x50 + c`), et l'atlas le confirme (case 233 = « é », case 130 = une virgule) :
 
-## Limitation connue : rendu monospace
+  | Caractère | Case (octet CP1252) | Point de code |
+  |---|---|---|
+  | é à è ê ç î ô â | 0xE9 0xE0 0xE8 0xEA 0xE7 0xEE 0xF4 0xE2 | identique à la case |
+  | û ù ï | 0xFB 0xF9 0xEF | identique à la case |
+  | Ç É ° « » | 0xC7 0xC9 0xB0 0xAB 0xBB | identique à la case |
+  | œ | 0x9C | U+0153 (0x9C n'est pas un caractère en Unicode) |
 
-Chaque `xadvance` du `.fnt` vaut 16px fixe, la largeur de cellule de l'atlas. Alundra dessine le
-texte en proportionnel, en avançant de `g_fontCharWidthTable[code * 5]` — une table qui vit dans
-l'exécutable du jeu et ne fait **pas** partie de `data-extracted`. C'est un vrai écart de fidélité,
-pas un détail d'arrondi : du dialogue mis en page avec ces avances sera bien plus large et plus
-lâchement espacé que l'original. Extraire cette table est le correctif.
+- **Toute autre case de 128 à 255** n'a aucun caractère : elle n'a pas de ligne `char` dans le
+  `.fnt` et reste listée dans `font3-charset.json` avec `codepoint` à `null` et `reason` à
+  `"no proven character"`. Rien n'est deviné : un caractère que le texte n'utilise pas encore n'a
+  pas de glyphe tant que sa case n'est pas prouvée.
+
+L'ancienne correspondance CP850 (portage de `TextDecoder.ConvertCp850ToLatin1`) est abandonnée :
+elle prenait « é » dans la case 130, une virgule, dessinait faux 15 des 17 caractères non ASCII du
+texte et n'avait aucun glyphe pour « œ » ; seul « ° » était juste. Comme les 17 points de code sont distincts et hors ASCII, aucune collision n'est
+possible : `duplicate_of_raw_code` vaut toujours `null`. Sur les 256 glyphes source, 145 ont une
+ligne `char` (`Font.Glyphs` = 145 dans `report.json`).
+
+## Largeurs proportionnelles
+
+Chaque `xadvance` vient de `FontCharWidths.csv` (livré avec le convertisseur, portage brut de la
+table `g_fontCharWidthTable` de l'exécutable, `docs/plan-e12-dialogues.md`, E12.b), lu par le code
+brut de la case et non par son point de code. Un code absent du CSV retombe sur la largeur de
+cellule (16px) avec un avertissement dans `report.json`.
 
 ## Schéma — `font3.fnt` (BMFont, format texte)
 
@@ -61,10 +71,10 @@ Sections standard BMFont :
 - `info` — `face="font3" size=16 ...`.
 - `common` — `lineHeight=16 base=16 scaleW=256 scaleH=256 pages=1 ...`.
 - `page id=0 file="Textures/font3.png"` — chemin relatif au `.fnt`, avec des slashs directs.
-- `chars count=N` — recalculé à partir des lignes réellement écrites (donc jamais faux même si des
-  doublons ont été abandonnés).
-- une ligne `char id=... x=... y=... width=... height=... xoffset=0 yoffset=0 xadvance=16 page=0 chnl=15`
-  par glyphe retenu, `id` étant le point de code Unicode.
+- `chars count=N` — recalculé à partir des lignes réellement écrites.
+- une ligne `char id=... x=... y=... width=... height=... xoffset=0 yoffset=0 xadvance=... page=0 chnl=15`
+  par case qui a un caractère, `id` étant le point de code Unicode et `xadvance` la largeur
+  proportionnelle de la case.
 
 ## Schéma — `font3-charset.json`
 
@@ -73,12 +83,14 @@ Un tableau, une entrée par glyphe source (256 entrées, triées par code brut) 
 | Champ | Type | Signification | Champ source |
 |---|---|---|---|
 | `raw_code` | int | Code brut du jeu (0–255) | `Code` (`ui/font3.json`) |
-| `codepoint` | int | Point de code Unicode produit par la conversion CP850 → Latin-1 | dérivé de `Code` |
+| `codepoint` | int ou null | Point de code Unicode de la case (règle ci-dessus), `null` si la case n'a pas de caractère prouvé | dérivé de `Code` |
 | `x`, `y` | int | Position du glyphe dans l'atlas 256×256 | `X`, `Y` |
 | `width`, `height` | int | Dimensions du glyphe (16×16 attendu) | `Width`, `Height` |
 | `palette` | int | Palette source (n'a nulle part où vivre dans un `.fnt`) | `Palette` |
-| `in_font` | bool | Ce code a-t-il produit une ligne `char` dans le `.fnt` | dérivé (faux si un autre code a déjà pris ce point de code) |
-| `duplicate_of_raw_code` | int ou null | Si `in_font` est faux, le code brut gagnant qui porte ce point de code | dérivé |
+| `advance` | int | Largeur proportionnelle de la case (`xadvance` du `.fnt`) | `FontCharWidths.csv` |
+| `in_font` | bool | Ce code a-t-il produit une ligne `char` dans le `.fnt` | dérivé (faux si `codepoint` est `null`) |
+| `duplicate_of_raw_code` | null | Toujours `null` depuis E15.e (plus de collision possible), gardé pour la forme du fichier | — |
+| `reason` | string ou null | Pourquoi la case n'a pas de ligne `char` (`"no proven character"`), `null` sinon | dérivé |
 
 ## Extraits réels
 
@@ -93,8 +105,10 @@ Un tableau, une entrée par glyphe source (256 entrées, triées par code brut) 
   "width": 16,
   "height": 16,
   "palette": 8,
+  "advance": 16,
   "in_font": true,
-  "duplicate_of_raw_code": null
+  "duplicate_of_raw_code": null,
+  "reason": null
 }
 ```
 
@@ -104,5 +118,5 @@ Un tableau, une entrée par glyphe source (256 entrées, triées par code brut) 
 info face="font3" size=16 bold=0 italic=0 charset="" unicode=1 stretchH=100 smooth=0 aa=1 padding=0,0,0,0 spacing=0,0 outline=0
 common lineHeight=16 base=16 scaleW=256 scaleH=256 pages=1 packed=0 alphaChnl=0 redChnl=0 greenChnl=0 blueChnl=0
 page id=0 file="Textures/font3.png"
-chars count=214
+chars count=145
 ```

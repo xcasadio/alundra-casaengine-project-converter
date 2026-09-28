@@ -16,6 +16,16 @@ public class FontWriterTests
     // The writer copies the PNG verbatim and never decodes it; the 8-byte signature is enough.
     private static readonly byte[] FakePngBytes = { 137, 80, 78, 71, 13, 10, 26, 10 };
 
+    // D-E15-16 (docs/plan-e15-yarn.md, E15.e): the 17 proven non-ASCII characters, each keyed by its
+    // own CP1252 raw code (= codepoint, except 'œ') so the cell can be checked against the grid
+    // formula x = (code % 16) * 16, y = (code / 16) * 16.
+    private static readonly (char Character, int RawCode)[] ProvenHighCharacters =
+    {
+        ('é', 0xE9), ('à', 0xE0), ('è', 0xE8), ('ê', 0xEA), ('ç', 0xE7), ('î', 0xEE), ('ô', 0xF4),
+        ('â', 0xE2), ('œ', 0x9C), ('û', 0xFB), ('ù', 0xF9), ('Ç', 0xC7), ('°', 0xB0), ('ï', 0xEF),
+        ('«', 0xAB), ('»', 0xBB), ('É', 0xC9),
+    };
+
     [Fact]
     public void ConvertFont_KeysGlyphsOnUnicodeCodepointsNotRawGameCodes()
     {
@@ -33,13 +43,12 @@ public class FontWriterTests
             Assert.Equal(1, font.Pages);
             Assert.Equal("Textures/font3.png", font.PageFile);
 
-            // The extracted strings are already Unicode, so a glyph must be reachable by code point.
-            // 'é' U+00E9 lives at raw code 130 -> cell (130 % 16, 130 / 16) = (2, 8).
-            AssertGlyph(font, 'é', 2 * 16, 8 * 16);
-            // 'à' U+00E0 <- raw 133 -> cell (5, 8).
-            AssertGlyph(font, 'à', 5 * 16, 8 * 16);
-            // 'Ç' U+00C7 <- raw 128 -> cell (0, 8).
-            AssertGlyph(font, 'Ç', 0, 8 * 16);
+            // Each of the 17 proven characters (D-E15-16) points at its own CP1252 cell.
+            foreach (var (character, rawCode) in ProvenHighCharacters)
+            {
+                AssertGlyph(font, character, rawCode % 16 * 16, rawCode / 16 * 16);
+            }
+
             // ASCII is identity: 'A' is raw 65 -> cell (1, 4).
             AssertGlyph(font, 'A', 1 * 16, 4 * 16);
         });
@@ -71,7 +80,7 @@ public class FontWriterTests
     }
 
     [Fact]
-    public void ConvertFont_DropsDuplicateCodepointsAndKeepsTheCountHonest()
+    public void ConvertFont_OnlyThe17ProvenHighCellsGetACharacter_AndTheCountIsHonest()
     {
         RunConversion((outputDirectory, report) =>
         {
@@ -82,7 +91,9 @@ public class FontWriterTests
             Assert.Equal(font.DeclaredCount, font.Chars.Count);
             Assert.Equal(font.Chars.Count, font.CharLineCount);
             Assert.Equal(font.Chars.Count, report.Counters["Font.Glyphs"]);
-            Assert.True(font.Chars.Count < 256, "the CP850 table must collide with the identity range");
+
+            // 128 ASCII/control codes (identity, D-E15-16) + the 17 proven high cells.
+            Assert.Equal(128 + ProvenHighCharacters.Length, font.Chars.Count);
 
             using var document = JsonDocument.Parse(
                 File.ReadAllText(Path.Combine(outputDirectory, "UI", "font3-charset.json"), Encoding.UTF8));
@@ -91,16 +102,38 @@ public class FontWriterTests
 
             // All 256 source records are listed, so the raw code stays recoverable.
             Assert.Equal(256, rows.Count);
-            Assert.Equal(233, rows[130].GetProperty("codepoint").GetInt32());
-            Assert.True(rows[130].GetProperty("in_font").GetBoolean());
 
-            // Raw 233 has no CP850 entry, so it keeps its own value and collides with raw 130's
-            // 'é'. The lower code wins; the loser stays in the charset with its owner recorded.
+            // Raw 233 ('é' by CP1252) is proven and in_font.
             Assert.Equal(233, rows[233].GetProperty("codepoint").GetInt32());
-            Assert.False(rows[233].GetProperty("in_font").GetBoolean());
-            Assert.Equal(130, rows[233].GetProperty("duplicate_of_raw_code").GetInt32());
+            Assert.True(rows[233].GetProperty("in_font").GetBoolean());
+            Assert.Equal(JsonValueKind.Null, rows[233].GetProperty("duplicate_of_raw_code").ValueKind);
 
-            Assert.Contains(report.Warnings, warning => warning.Contains("code point", StringComparison.Ordinal));
+            // Cell 130, which the old CP850 table wrongly sent 'é' to, has no proven character any
+            // more: codepoint null, in_font false, a readable reason, and no line in the .fnt points
+            // at its cell (x=32, y=128).
+            Assert.Equal(JsonValueKind.Null, rows[130].GetProperty("codepoint").ValueKind);
+            Assert.False(rows[130].GetProperty("in_font").GetBoolean());
+            Assert.False(string.IsNullOrWhiteSpace(rows[130].GetProperty("reason").GetString()));
+            Assert.DoesNotContain(font.Chars.Values, glyph => glyph.X == 32 && glyph.Y == 128);
+
+            // No collision warning any more.
+            Assert.DoesNotContain(report.Warnings, warning => warning.Contains("code point", StringComparison.Ordinal));
+            Assert.DoesNotContain(report.Warnings, warning => warning.Contains("duplicate", StringComparison.OrdinalIgnoreCase));
+        });
+    }
+
+    [Fact]
+    public void ConvertFont_MapsOeToItsCp1252Codepoint_NotItsRawByteValue()
+    {
+        RunConversion((outputDirectory, _) =>
+        {
+            var font = ParseBmFont(Path.Combine(outputDirectory, "UI", "font3.fnt"));
+
+            // 'œ' U+0153 <- raw 0x9C (156). CP1252 byte 0x9C is 'œ', but as a bare Latin-1/Unicode
+            // code point U+009C is a control character - the one case that is not raw-code-equals-
+            // codepoint (D-E15-16, FontWriter class doc comment).
+            AssertGlyph(font, 'œ', 0x9C % 16 * 16, 0x9C / 16 * 16);
+            Assert.False(font.Chars.ContainsKey(0x9C), "raw code 0x9C must not appear as a codepoint on its own");
         });
     }
 
@@ -141,12 +174,13 @@ public class FontWriterTests
             Assert.NotNull(font);
             Assert.Equal(16, font.LineHeight);
 
+            // 'é' U+00E9 <- raw 233 (D-E15-16) -> cell (233 % 16, 233 / 16) = (9, 14).
             var glyph = font.Glyphs['é'];
             Assert.NotNull(glyph);
-            Assert.Equal(2 * 16, glyph!.TextureRectangle.X);
-            Assert.Equal(8 * 16, glyph.TextureRectangle.Y);
+            Assert.Equal(9 * 16, glyph!.TextureRectangle.X);
+            Assert.Equal(14 * 16, glyph.TextureRectangle.Y);
             Assert.Equal(16, glyph.TextureRectangle.Width);
-            Assert.Equal(5, glyph.XAdvance); // FontCharWidths.csv row "130;5"
+            Assert.Equal(5, glyph.XAdvance); // FontCharWidths.csv row "233;5"
 
             Assert.NotNull(font.Glyphs['à']);
             Assert.NotNull(font.Glyphs['Ç']);

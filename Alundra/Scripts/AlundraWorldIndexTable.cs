@@ -12,10 +12,10 @@ namespace Alundra.Scripts;
 /// T4 (docs/plan-transitions-carte.md §1.1.e/§3): the FORWARD half of <c>Maps/world-index.json</c> -
 /// map id to world path - the direction <see cref="AlundraWarpDirector"/> needs to resolve
 /// <c>g_desiredMap</c> into the string <c>GameManager.SetWorldToLoad(string)</c> takes. Every existing
-/// reader of this same file (<see cref="MapEventProgramLoader"/>, <c>BackdropLoader</c>,
-/// <c>AlundraDialogueStringsLoader</c>) goes the OTHER way (a world's own trailing "-{mapId}" name to
-/// its map id, to find sibling data next to that world) - none of them expose the raw path itself, so
-/// this is a new, minimal reader rather than a fourth copy of theirs.
+/// reader of this same file (<see cref="MapEventProgramLoader"/>, <c>BackdropLoader</c>, and the old
+/// <c>AlundraDialogueStringsLoader</c>, removed in E15.d) goes the OTHER way (a world's own trailing
+/// "-{mapId}" name to its map id, to find sibling data next to that world) - none of them expose the
+/// raw path itself, so this is a new, minimal reader rather than a fourth copy of theirs.
 ///
 /// §1.1.e (verified): the file's values are already exactly the <c>file_name</c>
 /// <c>AssetCatalog.GetByFileName</c>/<c>GameManager.SetWorldToLoad(string)</c> expect

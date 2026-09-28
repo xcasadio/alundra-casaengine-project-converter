@@ -54,7 +54,7 @@ public sealed class AlundraDialogueOutOfBandCloseTests : IDisposable
 
         // controlMode 0 is the "world closes" box: it posts MenuOpen, which T2 freezes the entity pass
         // behind (AlundraDialogueDirector.SetControlFlags).
-        AlundraDialogueDirector.Instance.Open("Bonjour.", controlMode: 0);
+        AlundraDialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Bonjour", "Bonjour."), "Start", controlMode: 0);
         Assert.True(AlundraDialogueDirector.Instance.IsOpen);
         Assert.NotEqual(0u, state.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask);
 

@@ -499,7 +499,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
 
         // controlMode 0 = MenuOpen (AlundraGameState.PlayerControlBits.MenuOpen) - the original's own
         // "map events/world updates pause too" mode, the STRICTEST kind of dialogue freeze there is.
-        dialogue.Open("bonjour", controlMode: 0);
+        dialogue.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 0);
         Assert.True(dialogue.IsOpen);
         Assert.Equal(0, hud.FrameCounter);
         Assert.False(hud.IsDrawn);

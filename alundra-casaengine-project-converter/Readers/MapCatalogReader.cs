@@ -17,7 +17,7 @@ namespace AlundraCasaEngineProjectConverter.Readers;
 /// <code>
 /// Maps/{Zone}/{Name}-{id}/
 ///     tilemap/    {Name}-{id}.tileMap, .tileset, .tmj, map_{id}_tileset.png, .texture
-///     dialogues/  {Name}-{id}.strings.json
+///     dialogues/  {Name}-{id}.yarn, {Name}-{id}.dialogue
 ///     events/     {Name}-{id}.events.json
 ///     backdrop/   {Name}-{id}.backdrop.json, {Name}-{id}-layer{N}.png, .texture
 ///     {Name}-{id}.world
@@ -42,8 +42,6 @@ public sealed record MapLocation(string ZoneFolder, string FileBaseName)
     public string TileMapRelativePath => Path.Combine(TileMapDirectory, $"{FileBaseName}.tileMap");
 
     public string TiledMapRelativePath => Path.Combine(TileMapDirectory, $"{FileBaseName}.tmj");
-
-    public string StringsRelativePath => Path.Combine(DialoguesDirectory, $"{FileBaseName}.strings.json");
 
     public string EventsRelativePath => Path.Combine(EventsDirectory, $"{FileBaseName}.events.json");
 

@@ -191,6 +191,31 @@ public sealed class AlundraGameState
     /// <summary>Persistent save-game flags (<c>g_saveData.GameFlags</c>) - all zero, matching New Game.</summary>
     public readonly uint[] GameFlags = new uint[WordCount];
 
+    /// <summary>
+    /// E15.c T3 (docs/plan-e15-yarn.md §5.7, T2): port of <c>g_textCategoryIndex</c> @ 0x80149CD8. The
+    /// original places this in the BSS, zeroed once at boot by the entry point (0x8008b538) and never
+    /// again - not by New Game, not by loading a save, since it is NOT part of <c>g_saveData</c>
+    /// (0x801EB2E8-0x801EBA40). It is written only by <see cref="AlundraTextProgress.UpdatePlayerProgressState"/>
+    /// and read only by the <c>\X2</c>/<c>\X3</c>/<c>\X4</c>/<c>\X5</c> text codes (via
+    /// <see cref="AlundraTextProgress"/>'s functions), so this field is process-lifetime state like the
+    /// rest of this class' construction-time defaults - PRODUCTION never resets it (no New Game reset
+    /// path touches it in the binary either); <see cref="ResetForTests"/> resets it anyway, because that
+    /// method is a TEST-ONLY seam whose job is to leave <see cref="Instance"/> clean between tests that
+    /// mutate it through the public API, not to reproduce the binary's own (lack of) reset.
+    /// </summary>
+    public int TextCategoryIndex;
+
+    /// <summary>
+    /// E15.c T3 (docs/plan-e15-yarn.md §5.7, T2): port of <c>INT_ARRAY_80191908</c>, 4 ints in the BSS,
+    /// zero at boot and never reset - also outside <c>g_saveData</c>. Written only by the two mini-game
+    /// programs the decompilation names (<c>AI_FUN_80064294</c>, <c>AI_FUN_80064d90</c>), neither of
+    /// which is ported yet, so nothing in this DLL writes it; read only by the <c>\V&lt;n&gt;</c> text
+    /// code (<c>game_var(n)</c>, docs/plan-e15-yarn.md §1/§5.7), unchecked bounds like the original
+    /// (<c>c - '0'</c>). PRODUCTION never resets this array either; like <see cref="TextCategoryIndex"/>
+    /// above, only the TEST-ONLY <see cref="ResetForTests"/> seam clears it.
+    /// </summary>
+    public readonly int[] GameVariables = new int[4];
+
     /// <summary>Session-only flags (<c>g_temporaryFlags</c>) - all zero at construction.</summary>
     public readonly uint[] TemporaryFlags = new uint[WordCount];
 
@@ -305,5 +330,13 @@ public sealed class AlundraGameState
         // E13.c S3: the item counters and their once-only latch are session state too.
         Array.Clear(NumberOfItems);
         NewGameInventoryInitialized = false;
+
+        // E15.c T3: TextCategoryIndex/GameVariables are BSS in the original, never reset by any
+        // production code path (see their own field docs) - but this method is a TEST-ONLY seam meant
+        // to reset everything a test can mutate through Instance, so tests do not leak state into each
+        // other through it. Resetting them here is this seam's own job, not a reproduction of the
+        // binary's (lack of) reset.
+        TextCategoryIndex = 0;
+        Array.Clear(GameVariables);
     }
 }

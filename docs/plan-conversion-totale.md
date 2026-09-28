@@ -88,7 +88,8 @@ frame près (écart documenté).
 | 0x0D/0x39/0x44/0x50/0x51/0x5C, `UIManager` boîte de message | `YarnDialogueRunner` + `DialogueService` + vues MGUI | E12 |
 | HUD (`HudManager`) | vues MGUI | E13 |
 | `SpriteEventHandlers` (IA native) | navigation (steering/poursuite) + scripts C# par type de sprite | E14 |
-| Programme B 129 (cinématique) | `.cutscene` (`CutsceneDirector`) — conversion hybride (D1) | E15 |
+| Tables de texte (cartes, `map_alundra`, ETC) et codes de `TextInterpreter` | fichiers Yarn compilés (`.yarn` + `.dialogue`) joués par `YarnDialogueRunner` | E15 |
+| Programme B 129 (cinématique) | `.cutscene` (`CutsceneDirector`) — conversion hybride (D1) | E17 |
 
 ## 4. Étapes
 
@@ -739,12 +740,47 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
   (poursuite, patrouille). Hors intro : seuls A0/E0 sont requis avant (E1).
 - **Dépendances** : E4, E5.
 
-### E15 — Conversion hybride des programmes simples ⏳ (convertisseur)
+### E15 — Tout le texte d'Alundra en Yarn ✅ (close le 2026-09-28, recette en jeu validée : `docs/plan-e15-yarn.md`)
 
-- **But** (D1) : traduire en assets moteur les programmes qui s'y prêtent — programme B 129 →
-  `.cutscene` (`CutsceneDirector` : Wait, MoveTo, Sequence/Parallel existent ; caméra/dialogue/gates
-  ⏳), dialogues → Yarn (E12).
-- **Dépendances** : E5, E6, E12 et les commandes de cutscene manquantes côté moteur.
+- **But** (D1, D6) : le convertisseur produit directement des dialogues Yarn Spinner pour tout le
+  texte du jeu — tables des cartes, table partagée `map_alundra`, table ETC — et la DLL les joue sur
+  le runner Yarn du moteur. La logique reste dans le bytecode interprété (D6 : un nœud par chaîne,
+  pas de reconstruction de séquences).
+- **Décisions de l'auteur (2026-09-27)** : E15 se limite au texte, la cinématique d'intro passe en
+  **E17** ; le moteur ne reçoit que des points d'extension génériques (stockage de variables
+  injectable, registre de commandes, fonctions), jamais de code Alundra ; phrases partagées et table
+  ETC dans des fichiers Yarn partagés ; **les fichiers de texte brut disparaissent du projet
+  exporté** ; `\X` et `\V` deviennent des fonctions Yarn de la DLL, les codes numériques une commande.
+  Détail : D-E15-1 à D-E15-5 du plan détaillé.
+- **Découpage** : E15.0 mesure et correspondance des codes ; E15.a points d'extension du moteur (plan
+  `CasaEngineMonogame/ai-agent/tasks/yarn-extension-points-tasks.md`) ; E15.b le convertisseur émet
+  le Yarn ; E15.c la DLL le lit ; E15.d suppression du texte brut.
+- **Avancement (2026-09-27)** : E15.0, E15.a et **E15.b faites** (branche `chantier/e15-yarn`, rien
+  poussé) : l'export écrit 485 `.yarn` et `.dialogue` catalogués à côté des tables brutes, prouvés
+  équivalents au texte original sur les 31 757 pages ; format dans `docs/formats/dialogues-yarn.md`.
+- **Avancement (2026-09-28)** : **E15.c et E15.d faites et vérifiées** (même branche, rien poussé) : la
+  DLL joue tous les textes depuis le Yarn (dialogues de carte et table partagée, OUI/NON, inventaire),
+  boîte de dialogue en `font3` avec les glyphes de l'original (« … », flèches, boutons : le chiffre
+  parasite de `\W2` a disparu), état des faucons porté depuis le binaire ; les tables de texte brut ne
+  sont plus exportées ni lues. E15.e (même jour) : les accents de `font3` sont pris dans la case de
+  leur octet CP1252, caractères prouvés seulement (ADR-0009). **Recette en jeu validée par l'auteur
+  le 2026-09-28 : E15 close.** Merge : branche moteur `chantier/yarn-extension-points` d'abord, puis
+  celle-ci.
+- **Dépendances** : E5, E6, E12.
+
+### E17 — Cinématiques en `.cutscene` ⏳ (ouverte le 2026-09-27, non planifiée)
+
+- **But** (D1) : traduire en `.cutscene` les programmes qui s'y prêtent, à commencer par le programme
+  B 129 de l'intro.
+- **Pourquoi à part** (décision de l'auteur du 2026-09-27) : le module de cinématiques du moteur n'est
+  pas prêt. La liste de ses actions est fermée (`CutsceneActionCoroutineFactory`, un jeu ne peut pas
+  en ajouter), et il manque la caméra, l'attente sur une condition, l'activation et l'animation
+  d'entités, et le dialogue (tâche 16 du plan Yarn du moteur). L'intro ne contient aucun dialogue :
+  elle orchestre les marins par des drapeaux, qu'une cinématique devrait lire et poser dans les deux
+  sens (D-E16-6).
+- **Prérequis** : un chantier moteur qui rend les cinématiques extensibles par le jeu et ajoute les
+  actions manquantes.
+- **Dépendances** : E15, E16.
 
 ## 5. Règles de travail
 
@@ -787,4 +823,5 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 | E13.c HUD, icônes d'arme et d'accessoire | ✅ close (S4 passée en jeu le 2026-09-21) | analyseur `6176ea3`, `a0904b8`, `c304201`, mergé `c204009` ; parent `0f1cfd4`, `7018e6a`, `0135c92`, `cdb7097`, mergé `ea633ad` |
 | E13.d inventaire principal (puis sous-inventaire et L1/R1) | ✅ close (principal validé en jeu le 2026-09-24 ; sous-inventaire, L1/R1 et suites SI7-SI12 validés le 2026-09-25, mergés par l'auteur dans `main`) | `docs/plan-e13d-inventaire.md` ; `docs/plan-e13d-sous-inventaire.md` : analyseur `8f403d5`, parent `45bb0e2`, `a3901af`, `dc3fe1a`, `5f12e53`, suites `4e411ef`…`192f497`, merge `3537807` |
 | E14 IA native | ⏳ | |
-| E15 conversion hybride | ⏳ | |
+| E15 le texte en Yarn | ✅ close (recette en jeu validée le 2026-09-28) | `docs/plan-e15-yarn.md` ; parent `chantier/e15-yarn`, moteur `chantier/yarn-extension-points` |
+| E17 cinématiques en `.cutscene` | ⏳ ouverte le 2026-09-27, prérequis moteur | |

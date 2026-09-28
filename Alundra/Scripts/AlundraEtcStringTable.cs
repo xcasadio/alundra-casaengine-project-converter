@@ -1,174 +1,183 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
 using CasaEngine.Core.Logging;
+using CasaEngine.Framework.Assets;
+using CasaEngine.Framework.Dialogue.Assets;
+using CasaEngine.Framework.Dialogue.Yarn;
 
 namespace Alundra.Scripts;
 
 /// <summary>
-/// Resolves opcode 0x44's own OUI/NON choice labels (docs/plan-e12-dialogues.md, D-E12-6): the GLOBAL
-/// strings table (<c>Dialogues/global-strings.json</c>, keyed by decimal ETC_RES offset) addressed
-/// through the ETC index table (<c>Dialogues/etc-index.json</c>, 1024 raw entries, E12.b's own export -
-/// see that decision's own doc for why the converter needed a brand-new one-shot analyser dump for this,
-/// the region never having been extracted before). <c>GetEtcString(id) = global-strings[etc-index[id]]</c>;
-/// 0x44's own OUI/NON pair sits at ids 0x43/0x44 (confirmed on real data: etc-index[0x43]=3656 -&gt;
-/// global-strings["3656"]="OUI", etc-index[0x44]=3660 -&gt; "NON").
+/// E15.c T6 (docs/plan-e15-yarn.md, contract items 5/6; ADR-0006, `docs/formats/dialogues-yarn.md`):
+/// resolves opcode 0x44's own OUI/NON choice labels (D-E12-6) and the inventory's item names and
+/// descriptions from the <c>dialogue_etc</c> Yarn asset (the compiled <c>Dialogues/Etc.dialogue</c>),
+/// keeping this class' own public API from before the port
+/// (<see cref="TryResolveYesNo"/>/<see cref="TryResolveItemName"/>/
+/// <see cref="TryResolveItemDescriptionLine0"/>/<see cref="TryResolveItemDescriptionLine1"/> and their
+/// signatures) so none of this DLL's eight call sites need to change. <c>projectPath</c> is no longer
+/// read by this class - the asset comes from the catalog/asset manager (<see cref="EnsureLoaded"/>),
+/// which is global to the one project a running game has loaded - but the parameter stays so every
+/// caller (all of which still pass <c>EngineEnvironment.ProjectPath</c> or a fixture directory) keeps
+/// compiling unchanged.
 ///
-/// Degraded mode (mirrors every other project-data loader in this DLL): a missing/malformed/short
-/// etc-index.json, a missing/malformed global-strings.json, or a missing key in either logs exactly one
-/// warning and returns false - <see cref="AlundraEventProgramRunner"/>'s own dispatch case 0x44 then
-/// falls back to its OWN degraded behaviour for this one dialogue instance (optimistic Result=1), same
-/// as if no presenter were attached at all.
+/// <b>Loading (contract item 5)</b>: <see cref="EnsureLoaded"/> is this table's ONE production entry
+/// point - called once per game from <see cref="AlundraWorldProxy.InitializeWithWorld"/>, the same
+/// "idempotent, called every world load" shape as
+/// <see cref="AlundraPlayerController.EnsureInputMappingsRegistered"/> - and resolves the catalogued
+/// <c>dialogue_etc</c> asset through <see cref="AssetCatalog.Get"/> and
+/// <see cref="AssetContentManager.LoadCopy{T}"/> (ADR-0037's own "read once to derive an instance"
+/// shape: this table has no per-world owner to give a counted handle back to - the ETC texts are read
+/// across the whole session, not one world's lifetime, so a plain, uncounted copy is enough). A missing
+/// asset or a failed load degrades exactly like a missing project file used to: one warning, then every
+/// <c>TryResolve*</c> call returns <see langword="false"/>.
+///
+/// <b>Reading a line</b>: an ETC index becomes the node <c>Etc_{index:0000}</c> (decimal, four digits -
+/// same convention as the converter's own <c>EtcIndexTable</c>-resolved nodes,
+/// `docs/formats/dialogues-yarn.md`), read as <c>line:{node}_p0</c> through
+/// <see cref="DialogueAsset.TryGetLineText"/>, expanded and parsed by <see cref="YarnLineTextParser"/>
+/// (no substitutions expected on any ETC line) and turned into <c>font3</c> text by
+/// <see cref="AlundraDialogueCapturePresenter.ToFont3Text"/> - the SAME glyph/<c>[br/]</c> conversion
+/// T5's dialogue capture presenter already applies to dialogue-box lines, kept as the one
+/// implementation. An index with no node (the converter only emits one for a non-null ETC entry) gives
+/// what a null <c>global-strings.json</c> entry gave before this port: <see langword="true"/> and an
+/// empty string, never a failure.
+///
+/// <b>Cache</b>: the inventory's text reveal asks for a name/description on every logic tick while it
+/// types (50 per second, <see cref="AlundraInventoryTextReveal"/>) - each line's already-converted
+/// <c>font3</c> text is kept in <see cref="_parsedTextCache"/> the first time it is read, so
+/// <see cref="YarnLineTextParser"/> parses it only once per session, never once per tick.
 /// </summary>
 public static class AlundraEtcStringTable
 {
+    private const string EtcCatalogName = "dialogue_etc";
+
     private const int YesIndex = 0x43;
     private const int NoIndex = 0x44;
 
-    private static bool _loggedFailureOnce;
-
-    public static bool TryResolveYesNo(string projectPath, out string yesLabel, out string noLabel)
-    {
-        yesLabel = string.Empty;
-        noLabel = string.Empty;
-
-        try
-        {
-            var etcIndexPath = Path.Combine(projectPath, "Dialogues", "etc-index.json");
-            var globalStringsPath = Path.Combine(projectPath, "Dialogues", "global-strings.json");
-
-            if (!File.Exists(etcIndexPath) || !File.Exists(globalStringsPath))
-            {
-                LogFailureOnce($"'{etcIndexPath}' or '{globalStringsPath}' not found");
-                return false;
-            }
-
-            var etcIndex = JsonSerializer.Deserialize<int[]>(File.ReadAllText(etcIndexPath));
-            var globalStrings = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(globalStringsPath));
-
-            if (etcIndex == null || globalStrings == null || etcIndex.Length <= NoIndex)
-            {
-                LogFailureOnce("etc-index.json/global-strings.json parsed to nothing, or etc-index has fewer than 0x45 entries");
-                return false;
-            }
-
-            if (!globalStrings.TryGetValue(etcIndex[YesIndex].ToString(), out yesLabel!)
-                || !globalStrings.TryGetValue(etcIndex[NoIndex].ToString(), out noLabel!))
-            {
-                LogFailureOnce("etc-index[0x43]/[0x44] do not resolve to keys present in global-strings.json");
-                return false;
-            }
-
-            return true;
-        }
-        catch (Exception ex)
-        {
-            LogFailureOnce(ex.Message);
-            return false;
-        }
-    }
-
-    // E13.d D4 (docs/plan-e13d-inventaire.md, §1.4/§6 point 3): the inventory's own three string lookups -
-    // GetItemName/GetItemDescription/GetItemDescriptionSecondLine (alundra-datas-analyser
-    // AlundraTools/AlundraEngine/Etc/EtcRes.cs:25-31). Confirmed in EtcResUsa.cs:83-107 (the only concrete
-    // EtcRes today): GetItemName(id) reads StringByIndex[IndexTable[id + 0x200]] (via the IconNames[id*2]
-    // cache built by the same loop, EtcResUsa.cs:57-63 - the loop variable equals id, so the cache is just
-    // that one indirection); GetItemDescription(itemId) reads IndexTable[itemId + 0x280]
-    // (EtcResUsa.cs:65-71/98-101); GetItemDescriptionSecondLine(itemId) reads IndexTable[itemId + 0x300]
-    // (EtcResUsa.cs:73-79/103-106) - matching the plan's own "id + 0x200 / 0x280 / 0x300". All three share
-    // the same etc-index.json/global-strings.json pair TryResolveYesNo already loads, so they share its
-    // degraded-mode discipline (one warning, false) through the private helper below.
     private const int ItemNameOffset = 0x200;
     private const int ItemDescriptionLine0Offset = 0x280;
     private const int ItemDescriptionLine1Offset = 0x300;
 
+    private const int MinEtcIndex = 0;
+    private const int MaxEtcIndex = 1023;
+
+    private static bool _loggedFailureOnce;
+    private static bool _loadAttempted;
+    private static DialogueAsset? _etcAsset;
+
+    // The inventory's text reveal asks for a string on every logic tick while it types (50 per second):
+    // each line is parsed into font3 text once and kept, keyed by its compiled line id.
+    private static readonly Dictionary<string, string> _parsedTextCache = new(StringComparer.Ordinal);
+
+    /// <summary>
+    /// This table's one production entry point (contract item 5): loads <c>dialogue_etc</c> from the
+    /// catalog through <paramref name="assetContentManager"/> the first time it is called with a
+    /// non-null one, and does nothing on every later call (idempotent, same shape as
+    /// <see cref="AlundraPlayerController.EnsureInputMappingsRegistered"/>) - so a per-world caller such
+    /// as <see cref="AlundraWorldProxy.InitializeWithWorld"/> can call it unconditionally on every world
+    /// load. A null <paramref name="assetContentManager"/> (headless/editor-preview, no
+    /// <see cref="CasaEngine.Framework.Application.CasaEngineGame"/>) is a no-op, exactly like
+    /// <see cref="AlundraPlayerController.EnsureInputMappingsRegistered"/>'s own null-game gate: every
+    /// <c>TryResolve*</c> call then degrades (one warning, <see langword="false"/>) until a later call
+    /// with a real game succeeds.
+    /// </summary>
+    public static void EnsureLoaded(AssetContentManager? assetContentManager)
+    {
+        if (_loadAttempted || assetContentManager == null)
+        {
+            return;
+        }
+
+        _loadAttempted = true;
+
+        var assetInfo = AssetCatalog.Get(EtcCatalogName);
+        if (assetInfo == null)
+        {
+            LogFailureOnce($"no '{EtcCatalogName}' asset in the catalog");
+            return;
+        }
+
+        try
+        {
+            _etcAsset = assetContentManager.LoadCopy<DialogueAsset>(assetInfo.Id);
+        }
+        catch (Exception ex)
+        {
+            LogFailureOnce($"'{EtcCatalogName}' ({assetInfo.Id}) failed to load: {ex.GetType().Name}: {ex.Message}");
+        }
+    }
+
+    public static bool TryResolveYesNo(string projectPath, out string yesLabel, out string noLabel)
+    {
+        var yesOk = TryGetEtcText(YesIndex, out yesLabel);
+        var noOk = TryGetEtcText(NoIndex, out noLabel);
+        return yesOk && noOk;
+    }
+
     /// <summary>Port of <c>EtcRes.GetItemName</c> (EtcResUsa.cs:83-91) - the weapon/item name shown in the
     /// inventory's two name boxes (MainInventoryManager.cs:1750-1793).</summary>
     public static bool TryResolveItemName(string projectPath, int itemId, out string name) =>
-        TryResolveIndexedString(projectPath, itemId + ItemNameOffset, out name);
+        TryGetEtcText(itemId + ItemNameOffset, out name);
 
     /// <summary>Port of <c>EtcRes.GetItemDescription</c> (EtcResUsa.cs:98-101) - the description box's
     /// first line (MainInventoryManager.cs:1008-1024, state <c>0x4e..0x8d</c>).</summary>
     public static bool TryResolveItemDescriptionLine0(string projectPath, int itemId, out string line) =>
-        TryResolveIndexedString(projectPath, itemId + ItemDescriptionLine0Offset, out line);
+        TryGetEtcText(itemId + ItemDescriptionLine0Offset, out line);
 
     /// <summary>Port of <c>EtcRes.GetItemDescriptionSecondLine</c> (EtcResUsa.cs:103-106) - the description
     /// box's second line (MainInventoryManager.cs:1039-1056, state <c>0x8f..0xce</c>).</summary>
     public static bool TryResolveItemDescriptionLine1(string projectPath, int itemId, out string line) =>
-        TryResolveIndexedString(projectPath, itemId + ItemDescriptionLine1Offset, out line);
+        TryGetEtcText(itemId + ItemDescriptionLine1Offset, out line);
 
-    // The inventory's text reveal asks for a string on every logic tick while it types (50 per second):
-    // the two tables are parsed once and kept, re-read only when either file changes on disk.
-    private static string? _cachedEtcIndexPath;
-    private static DateTime _cachedEtcIndexWriteTime;
-    private static DateTime _cachedGlobalStringsWriteTime;
-    private static int[]? _cachedEtcIndex;
-    private static Dictionary<string, string?>? _cachedGlobalStrings;
-
-    private static (int[]? EtcIndex, Dictionary<string, string?>? GlobalStrings) LoadCached(
-        string etcIndexPath, string globalStringsPath)
+    /// <summary>
+    /// Reads ETC index <paramref name="etcIndex"/> as node <c>Etc_{etcIndex:0000}</c>'s single page
+    /// (contract item 5): the compiled asset's raw line text, expanded (no substitutions on any ETC
+    /// line), parsed and turned into <c>font3</c> text, cached by line id. Returns
+    /// <see langword="false"/> only when no <c>dialogue_etc</c> asset could be loaded at all, or for an
+    /// index outside the table's own <c>0..1023</c> range (a caller error, never produced by the
+    /// converter) - a valid index with no node (an ETC entry the converter left empty) returns
+    /// <see langword="true"/> and an empty string, the same result a null <c>global-strings.json</c>
+    /// entry gave before this port.
+    /// </summary>
+    private static bool TryGetEtcText(int etcIndex, out string text)
     {
-        var etcIndexWriteTime = File.GetLastWriteTimeUtc(etcIndexPath);
-        var globalStringsWriteTime = File.GetLastWriteTimeUtc(globalStringsPath);
+        text = string.Empty;
 
-        if (_cachedEtcIndexPath != etcIndexPath
-            || _cachedEtcIndexWriteTime != etcIndexWriteTime
-            || _cachedGlobalStringsWriteTime != globalStringsWriteTime)
+        if (_etcAsset == null)
         {
-            _cachedEtcIndex = JsonSerializer.Deserialize<int[]>(File.ReadAllText(etcIndexPath));
-            _cachedGlobalStrings = JsonSerializer.Deserialize<Dictionary<string, string?>>(File.ReadAllText(globalStringsPath));
-            _cachedEtcIndexPath = etcIndexPath;
-            _cachedEtcIndexWriteTime = etcIndexWriteTime;
-            _cachedGlobalStringsWriteTime = globalStringsWriteTime;
-        }
-
-        return (_cachedEtcIndex, _cachedGlobalStrings);
-    }
-
-    private static bool TryResolveIndexedString(string projectPath, int index, out string value)
-    {
-        value = string.Empty;
-
-        try
-        {
-            var etcIndexPath = Path.Combine(projectPath, "Dialogues", "etc-index.json");
-            var globalStringsPath = Path.Combine(projectPath, "Dialogues", "global-strings.json");
-
-            if (!File.Exists(etcIndexPath) || !File.Exists(globalStringsPath))
-            {
-                LogFailureOnce($"'{etcIndexPath}' or '{globalStringsPath}' not found");
-                return false;
-            }
-
-            var (etcIndex, globalStrings) = LoadCached(etcIndexPath, globalStringsPath);
-
-            if (etcIndex == null || globalStrings == null || index < 0 || etcIndex.Length <= index)
-            {
-                LogFailureOnce("etc-index.json/global-strings.json parsed to nothing, or index out of range");
-                return false;
-            }
-
-            if (etcIndex[index] < 0 || !globalStrings.TryGetValue(etcIndex[index].ToString(), out var found))
-            {
-                LogFailureOnce($"etc-index[{index}] does not resolve to a key present in global-strings.json");
-                return false;
-            }
-
-            // global-strings.json holds a JSON null for every offset with no text (562 of them - for
-            // instance the base dagger's second description line): the original reads those as
-            // "no text" and replaces them with an empty string at every inventory call site
-            // (MainInventoryManager.cs:972/:1010/:1041, "?? string.Empty"). Same here, once, for every
-            // caller: a present key never yields null.
-            value = found ?? string.Empty;
-            return true;
-        }
-        catch (Exception ex)
-        {
-            LogFailureOnce(ex.Message);
+            LogFailureOnce($"no '{EtcCatalogName}' asset loaded ({nameof(EnsureLoaded)} was not called, or it failed)");
             return false;
         }
+
+        if (etcIndex < MinEtcIndex || etcIndex > MaxEtcIndex)
+        {
+            LogFailureOnce($"ETC index {etcIndex} is out of range ({MinEtcIndex}..{MaxEtcIndex})");
+            return false;
+        }
+
+        var lineId = $"line:Etc_{etcIndex:D4}_p0";
+        if (_parsedTextCache.TryGetValue(lineId, out var cached))
+        {
+            text = cached;
+            return true;
+        }
+
+        // D-E15-10/contract item 5: an index whose entry was empty in the original has no node in the
+        // exported asset - that is not a failure, it is what an empty entry already rendered as.
+        if (!_etcAsset.TryGetLineText(lineId, out var rawText))
+        {
+            _parsedTextCache[lineId] = string.Empty;
+            return true;
+        }
+
+        var expanded = YarnLineTextParser.ExpandSubstitutions(rawText, Array.Empty<string>());
+        var line = YarnLineTextParser.Parse(expanded);
+        var font3Text = AlundraDialogueCapturePresenter.ToFont3Text(line);
+
+        _parsedTextCache[lineId] = font3Text;
+        text = font3Text;
+        return true;
     }
 
     private static void LogFailureOnce(string reason)
@@ -180,11 +189,30 @@ public static class AlundraEtcStringTable
 
         _loggedFailureOnce = true;
         Logs.WriteWarning(
-            $"AlundraEtcStringTable: could not resolve the OUI/NON choice labels ({reason}) - opcode 0x44 "
-            + "will fall back to its own degraded mode for this dialogue.");
+            $"AlundraEtcStringTable: could not resolve an ETC text ({reason}) - OUI/NON and every item "
+            + "name/description fall back to their own caller's degraded mode.");
     }
 
-    /// <summary>Test-only: clears the one-shot warning latch so successive tests can each observe their
-    /// own failure log.</summary>
-    internal static void ResetForTests() => _loggedFailureOnce = false;
+    /// <summary>Test-only entry point (contract item 5's "seul point d'entrée des tests"): injects a
+    /// compiled ETC asset directly, bypassing <see cref="AssetCatalog"/>/<see cref="AssetContentManager"/>
+    /// entirely - build one with <c>DialogueTestAssets</c>, nodes named <c>Etc_{index:0000}</c> (same
+    /// shape as <see cref="EnsureLoaded"/> would have loaded from the catalog). Marks the table as
+    /// already loaded, so a later production <see cref="EnsureLoaded"/> call in the same process (there
+    /// is none in tests) would be a no-op.</summary>
+    internal static void SetEtcDialogueAssetForTests(DialogueAsset? asset)
+    {
+        _etcAsset = asset;
+        _loadAttempted = true;
+        _parsedTextCache.Clear();
+    }
+
+    /// <summary>Test-only: clears the one-shot warning latch, the loaded/injected asset and the parsed-text
+    /// cache so successive tests start from the same "nothing loaded yet" state.</summary>
+    internal static void ResetForTests()
+    {
+        _loggedFailureOnce = false;
+        _loadAttempted = false;
+        _etcAsset = null;
+        _parsedTextCache.Clear();
+    }
 }

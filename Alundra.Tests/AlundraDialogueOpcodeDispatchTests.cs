@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Alundra.Scripts;
+using CasaEngine.Compiler.Dialogue;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.AI.Navigation;
+using CasaEngine.Framework.Dialogue.Assets;
 using CasaEngine.Framework.Dialogue.Runtime;
 using Xunit;
 
@@ -25,10 +28,14 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     public AlundraDialogueOpcodeDispatchTests()
     {
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraDialogueTextParser.ResetCountersForTests();
+        AlundraEtcStringTable.ResetForTests(); // E15.c T6: the 0x44 choice-flow tests inject an ETC asset.
     }
 
-    public void Dispose() => AlundraDialogueDirector.Instance.ResetForTests();
+    public void Dispose()
+    {
+        AlundraDialogueDirector.Instance.ResetForTests();
+        AlundraEtcStringTable.ResetForTests();
+    }
 
     private static EventProgramDocument NewDocument(params int[] codes)
     {
@@ -42,10 +49,23 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
 
     private static AlundraEventProgramRunner NewRunner(
         EventProgramDocument document, AlundraGameState gameState, IEntityWorldContext? worldContext,
-        IReadOnlyList<string>? localStrings = null)
-        => new(document, gameState, worldContext) { LocalDialogueStrings = localStrings };
+        DialogueAsset? mapAsset = null)
+        => new(document, gameState, worldContext) { MapDialogueAsset = mapAsset };
 
     private static AlundraEntityScriptProxy NewEntity() => new();
+
+    /// <summary>E15.c T5: builds a map-134 (see <see cref="NewDocument"/>'s own <c>MapIndex = 1</c>) Yarn
+    /// asset with one single-page node <c>M1_S{index:000}</c> per entry - replaces the pre-E15.c raw
+    /// <c>LocalDialogueStrings</c> array these dispatch tests used to inject directly.</summary>
+    private static DialogueAsset MapAsset(params (int Index, string Text)[] entries)
+    {
+        var compiler = new YarnDialogueCompiler();
+        var source = string.Concat(entries.Select(e =>
+            $"title: M1_S{e.Index:000}\n---\n{e.Text} #line:M1_S{e.Index:000}_p0\n===\n"));
+        var result = compiler.CompileString(source, "MapAsset.yarn", AlundraYarnBindings.CreateDeclarations());
+        Assert.True(result.Success, string.Join(Environment.NewLine, result.Diagnostics.Select(d => d.Message)));
+        return DialogueAsset.FromCompiledProgram("MapAsset", $"M1_S{entries[0].Index:000}", result.ProgramBytes, result.LineTexts);
+    }
 
     private sealed class FakeEntityWorldContext : IEntityWorldContext
     {
@@ -98,7 +118,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         // that opened a second time would be invisible on TEXT alone - the codeIndex-not-advancing
         // assertion below is what a "just open a second box" mutation actually breaks).
         var document = NewDocument(0x0D, 0x81, 1, 0x02, 0xFD, 0xFF);
-        var runner = NewRunner(document, gameState, context, localStrings: new[] { "zero", "FIRST" });
+        var runner = NewRunner(document, gameState, context, MapAsset((1, "FIRST")));
         var entity = NewEntity();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
@@ -118,7 +138,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         NewRealDialogueContext(gameState);
         var director = AlundraDialogueDirector.Instance;
 
-        director.Open("hello", controlMode: 1);
+        director.Open(DialogueTestAssets.SinglePage("Hello", "hello"), "Start", controlMode: 1);
         Assert.Equal(3, director.CloseMaskForTests);
 
         gameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
@@ -134,7 +154,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         NewRealDialogueContext(gameState);
         var director = AlundraDialogueDirector.Instance;
 
-        director.Open("hello", controlMode: 1);
+        director.Open(DialogueTestAssets.SinglePage("Hello", "hello"), "Start", controlMode: 1);
         director.SetCloseMask(4);
 
         gameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
@@ -153,14 +173,14 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         NewRealDialogueContext(gameState);
         var director = AlundraDialogueDirector.Instance;
 
-        director.Open("first", controlMode: 1);
+        director.Open(DialogueTestAssets.SinglePage("First", "first"), "Start", controlMode: 1);
         director.SetCloseMask(4);
         Assert.True(director.RequestScriptClose());
         Assert.False(director.IsOpen);
 
         // Mutation target (T3): "ne pas remettre -> T3 tombe" - a SECOND open must reset the mask back
         // to 3, not inherit the 4 the FIRST dialogue left behind.
-        director.Open("second", controlMode: 1);
+        director.Open(DialogueTestAssets.SinglePage("Second", "second"), "Start", controlMode: 1);
         Assert.Equal(3, director.CloseMaskForTests);
     }
 
@@ -205,7 +225,16 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         var gameState = new AlundraGameState();
         var context = new FakeEntityWorldContext { DialogueDirector = null };
         var document = NewDocument(0x0D, 0x81, 1, 0xFF);
-        var runner = NewRunner(document, gameState, context, localStrings: new[] { "zero", "line\\999end" });
+        // The original's "\999" mid-string numeric code becomes a <<flag 999>> command before the line
+        // (docs/plan-e15-yarn.md §1) - item 8's headless play must still run it before advancing.
+        var compiler = new YarnDialogueCompiler();
+        var result = compiler.CompileString(
+            "title: M1_S001\n---\n<<flag 999>>\nline end #line:M1_S001_p0\n===\n",
+            "Map1S001.yarn",
+            AlundraYarnBindings.CreateDeclarations());
+        Assert.True(result.Success, string.Join(Environment.NewLine, result.Diagnostics.Select(d => d.Message)));
+        var mapAsset = DialogueAsset.FromCompiledProgram("Map1S001", "M1_S001", result.ProgramBytes, result.LineTexts);
+        var runner = NewRunner(document, gameState, context, mapAsset);
         var entity = NewEntity();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
@@ -243,7 +272,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         NewRealDialogueContext(gameState);
         var director = AlundraDialogueDirector.Instance;
 
-        director.Open("box", controlMode: 1);
+        director.Open(DialogueTestAssets.SinglePage("Box", "box"), "Start", controlMode: 1);
         Assert.Equal(
             AlundraGameState.PlayerControlBits.MessageBox,
             gameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MessageBox);
@@ -254,7 +283,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
             0u,
             gameState.PlayerControlFlags & (AlundraGameState.PlayerControlBits.MessageBox | AlundraGameState.PlayerControlBits.MenuOpen));
 
-        director.Open("menu box", controlMode: 0);
+        director.Open(DialogueTestAssets.SinglePage("MenuBox", "menu box"), "Start", controlMode: 0);
         Assert.Equal(
             AlundraGameState.PlayerControlBits.MenuOpen,
             gameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
@@ -273,10 +302,10 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     {
         var gameState = new AlundraGameState();
         var context = NewRealDialogueContext(gameState);
-        var localStrings = new[] { "index0", "index1", "index2" };
+        var mapAsset = MapAsset((0, "index0"), (1, "index1"), (2, "index2"));
         // textId = 0x82 -> masked 0x82 & 0x7f = 2 -> "index2".
         var document = NewDocument(0x0D, 0x82, 1, 0xFF);
-        var runner = NewRunner(document, gameState, context, localStrings);
+        var runner = NewRunner(document, gameState, context, mapAsset);
         var entity = NewEntity();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
@@ -285,7 +314,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         Assert.Equal("index2", AlundraDialogueDirector.Instance.CurrentLineForTests?.Text);
     }
 
-    // ---- 0x44 choice flow, using the real etc-index/global-strings data --------------------------
+    // ---- 0x44 choice flow, using the real exported Dialogues/Etc.dialogue --------------------------
 
     private static string FindProjectRoot()
     {
@@ -307,68 +336,57 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     [Fact]
     public void Choice_0x44_FirstEntry_OpensRealOuiNonLabels_ThenBlocksUntilSelected_ThenWritesResult()
     {
-        var previousProjectPath = EngineEnvironment.ProjectPath;
-        EngineEnvironment.ProjectPath = FindProjectRoot();
-        try
-        {
-            var gameState = new AlundraGameState();
-            var context = NewRealDialogueContext(gameState);
-            AlundraDialogueDirector.Instance.Open("question", controlMode: 1);
+        // E15.c T6: OUI/NON now come from the real exported dialogue_etc asset, injected directly -
+        // AlundraEtcStringTable no longer reads Dialogues/etc-index.json/global-strings.json off
+        // EngineEnvironment.ProjectPath.
+        AlundraEtcStringTable.SetEtcDialogueAssetForTests(
+            DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
+        var gameState = new AlundraGameState();
+        var context = NewRealDialogueContext(gameState);
+        AlundraDialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Question", "question"), "Start", controlMode: 1);
 
-            var document = NewDocument(0x44, 0xFF);
-            var runner = NewRunner(document, gameState, context);
-            var entity = NewEntity();
-            var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        var document = NewDocument(0x44, 0xFF);
+        var runner = NewRunner(document, gameState, context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
-            // First dispatch: opens the choice, must suspend (CodeIndex stays 0).
-            runner.RunOneScriptCall(entity, state);
-            Assert.Equal(0, state.CodeIndex);
-            Assert.True(AlundraDialogueDirector.Instance.IsAwaitingChoice);
-            Assert.Equal(new[] { "OUI", "NON" }, AlundraDialogueDirector.Instance.ChoicesForTests);
+        // First dispatch: opens the choice, must suspend (CodeIndex stays 0).
+        runner.RunOneScriptCall(entity, state);
+        Assert.Equal(0, state.CodeIndex);
+        Assert.True(AlundraDialogueDirector.Instance.IsAwaitingChoice);
+        Assert.Equal(new[] { "OUI", "NON" }, AlundraDialogueDirector.Instance.ChoicesForTests);
 
-            // Second dispatch, still no selection: must keep suspending.
-            runner.RunOneScriptCall(entity, state);
-            Assert.Equal(0, state.CodeIndex);
+        // Second dispatch, still no selection: must keep suspending.
+        runner.RunOneScriptCall(entity, state);
+        Assert.Equal(0, state.CodeIndex);
 
-            // Simulate the player picking the SECOND option (NON).
-            Assert.True(AlundraDialogueDirector.Instance.SelectChoiceForTests(1));
+        // Simulate the player picking the SECOND option (NON).
+        Assert.True(AlundraDialogueDirector.Instance.SelectChoiceForTests(1));
 
-            runner.RunOneScriptCall(entity, state);
-            Assert.Equal(1, state.CodeIndex); // advances (instruction size 1).
-            Assert.Equal(0, state.Result); // NOT the first option.
-        }
-        finally
-        {
-            EngineEnvironment.ProjectPath = previousProjectPath;
-        }
+        runner.RunOneScriptCall(entity, state);
+        Assert.Equal(1, state.CodeIndex); // advances (instruction size 1).
+        Assert.Equal(0, state.Result); // NOT the first option.
     }
 
     [Fact]
     public void Choice_0x44_FirstOptionSelected_ResultOne()
     {
-        var previousProjectPath = EngineEnvironment.ProjectPath;
-        EngineEnvironment.ProjectPath = FindProjectRoot();
-        try
-        {
-            var gameState = new AlundraGameState();
-            var context = NewRealDialogueContext(gameState);
-            AlundraDialogueDirector.Instance.Open("question", controlMode: 1);
+        AlundraEtcStringTable.SetEtcDialogueAssetForTests(
+            DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
+        var gameState = new AlundraGameState();
+        var context = NewRealDialogueContext(gameState);
+        AlundraDialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Question", "question"), "Start", controlMode: 1);
 
-            var document = NewDocument(0x44, 0xFF);
-            var runner = NewRunner(document, gameState, context);
-            var entity = NewEntity();
-            var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        var document = NewDocument(0x44, 0xFF);
+        var runner = NewRunner(document, gameState, context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
-            runner.RunOneScriptCall(entity, state); // opens
-            Assert.True(AlundraDialogueDirector.Instance.SelectChoiceForTests(0)); // OUI
+        runner.RunOneScriptCall(entity, state); // opens
+        Assert.True(AlundraDialogueDirector.Instance.SelectChoiceForTests(0)); // OUI
 
-            runner.RunOneScriptCall(entity, state);
-            Assert.Equal(1, state.CodeIndex);
-            Assert.Equal(1, state.Result);
-        }
-        finally
-        {
-            EngineEnvironment.ProjectPath = previousProjectPath;
-        }
+        runner.RunOneScriptCall(entity, state);
+        Assert.Equal(1, state.CodeIndex);
+        Assert.Equal(1, state.Result);
     }
 }

@@ -21,8 +21,8 @@ map sont regroupées au même endroit. La disposition est définie par `MapLocat
 
 Ce fichier est une simple donnée compagnon JSON, **pas** enregistrée dans le catalogue d'assets :
 aucun type du moteur ne saurait la charger. C'est une donnée pour le futur interpréteur de la DLL
-de gameplay, exactement comme `dialogues/*.strings.json` est une donnée pour un futur système de
-dialogue.
+de gameplay, au même titre que les autres fichiers compagnons de ce dossier ; le texte, lui, est
+exporté en Yarn (voir [`dialogues-yarn.md`](dialogues-yarn.md)).
 
 ## Pourquoi rien n'est interprété
 

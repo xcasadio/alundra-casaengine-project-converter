@@ -35,9 +35,9 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 /// item is dropped rather than published with a dangling id.
 ///
 /// None of these files is registered in the asset catalog, like every other raw companion this converter
-/// writes (<c>sound-group-index.json</c>, <c>music-index.json</c>, <c>etc-index.json</c>,
-/// <c>sprite-records.json</c>, <c>balance.json</c>): <c>json</c> is not a CasaEngine asset type, so
-/// nothing loads them back and the verification pass does not look for them.
+/// writes (<c>sound-group-index.json</c>, <c>music-index.json</c>, <c>sprite-records.json</c>,
+/// <c>balance.json</c>): <c>json</c> is not a CasaEngine asset type, so nothing loads them back and
+/// the verification pass does not look for them.
 /// </summary>
 public static class ItemsWriter
 {

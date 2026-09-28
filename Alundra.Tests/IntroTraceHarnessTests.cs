@@ -5,7 +5,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Assets.TileMap;
@@ -408,7 +407,6 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     private readonly SortedSet<int> _referencedCTick = new();
     private readonly SortedSet<int> _referencedFInteract = new();
 
-    private List<string>? _dialogueStrings;
     private AlundraEntityScriptProxy _player = null!;
     private string _context = "";
     private bool _contextIsPlayerMapEvent;
@@ -728,25 +726,43 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
             proxy.EvaluateEntitySupport(_collidables, immediateAtSpawn: true);
         }
 
-        // Best-effort dialog text resolution (opcodes 0x0D/0x5C) off the map's own exported strings.
-        var dialoguePath = Directory.GetFiles(
-            Path.Combine(_projectRoot, "Maps"), $"{_worldName}.strings.json", SearchOption.AllDirectories).FirstOrDefault();
-        if (dialoguePath != null)
+        // E15.c T5/T7 (docs/plan-e15-yarn.md): opcode 0x0D/0x5C's own text resolution (both the real
+        // dispatch AND this harness's own TryResolveDialogText trace annotation, T7) goes through the
+        // REAL AlundraEventProgramRunner.MapDialogueAsset/SharedDialogueAsset seam - production wiring is
+        // AlundraWorldProxy.InitializeWithWorld's own InstallDialogueAssets (AssetCatalog + the game's
+        // asset manager); this harness has neither, so it loads the SAME compiled `.dialogue` files the
+        // real export already wrote next to the map's own directory, directly off disk, with the
+        // engine's own loader (no AssetCatalog/AssetContentManager needed for a single known file path).
+        // No more best-effort `{world}.strings.json`/`_dialogueStrings` read here (T7 removed it): the
+        // degraded path (contract item 8, no director) already plays this SAME asset headless through
+        // AlundraEventProgramRunner.OpenDialog/PlayNodeHeadlessToEnd, so the trace annotation now reads
+        // the identical Yarn text instead of a second, now-nonexistent source.
+        _runner.MapDialogueAsset = LoadDialogueAssetBestEffort(
+            Directory.GetFiles(Path.Combine(_projectRoot, "Maps"), $"{_worldName}.dialogue", SearchOption.AllDirectories).FirstOrDefault());
+        _runner.SharedDialogueAsset = LoadDialogueAssetBestEffort(
+            Path.Combine(_projectRoot, "Dialogues", "Shared.dialogue"));
+    }
+
+    /// <summary>Loads a single, already-compiled <c>.dialogue</c> file straight off disk (the engine's own
+    /// <see cref="CasaEngine.Framework.Assets.Loaders.DialogueAssetLoader"/>, which needs no
+    /// <c>AssetContentManager</c> for this) - null when the path is null/missing or fails to load,
+    /// best-effort only.</summary>
+    private static CasaEngine.Framework.Dialogue.Assets.DialogueAsset? LoadDialogueAssetBestEffort(string? fullPath)
+    {
+        if (fullPath == null || !File.Exists(fullPath))
         {
-            try
-            {
-                _dialogueStrings = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(dialoguePath));
-            }
-            catch
-            {
-                _dialogueStrings = null; // best-effort only
-            }
+            return null;
         }
 
-        // E12.a (docs/plan-e12-dialogues.md): the SAME real local-strings array feeds opcode 0x0D/0x5C's
-        // own text resolution through the REAL AlundraEventProgramRunner.LocalDialogueStrings seam -
-        // production wiring (AlundraWorldProxy.InitializeWithWorld), not a separate parse.
-        _runner.LocalDialogueStrings = _dialogueStrings;
+        try
+        {
+            return new CasaEngine.Framework.Assets.Loaders.DialogueAssetLoader().LoadAsset(fullPath, null!)
+                as CasaEngine.Framework.Dialogue.Assets.DialogueAsset;
+        }
+        catch
+        {
+            return null; // best-effort only.
+        }
     }
 
     private void RecordMapEntrySystemsOnce()
@@ -1531,7 +1547,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
 
     private string? TryResolveDialogText(int opcode, byte[]? parameters)
     {
-        if (_dialogueStrings == null || parameters == null)
+        if (parameters == null)
         {
             return null;
         }
@@ -1541,28 +1557,51 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         // dialog id is the SECOND parameter byte (best-effort - see this file's own class doc caveat).
         // E12.a fix (docs/plan-e12-dialogues.md, item ⑥): parameters[0]/[1] is the RAW textId operand,
         // whose bit 0x80 selects local vs shared text (see AlundraEventProgramRunner's own dispatch case
-        // 0x0D) - masking with 0x7F here is what the real opcode does before indexing _dialogueStrings;
-        // without it, every local id >= 128 (i.e. every real textId, which always carries bit 0x80 set)
-        // resolved to null.
-        var id = opcode switch
+        // 0x0D) - kept RAW here (not masked) since T7 (docs/plan-e15-yarn.md, contract item 1) needs that
+        // same bit to resolve the SAME asset/node AlundraEventProgramRunner.ResolveDialogNode resolves for
+        // the real dispatch.
+        var textId = opcode switch
         {
-            0x0D when parameters.Length >= 1 => (int)parameters[0] & 0x7f,
-            0x5C when parameters.Length >= 2 => (int)parameters[1] & 0x7f,
+            0x0D when parameters.Length >= 1 => (int)parameters[0],
+            0x5C when parameters.Length >= 2 => (int)parameters[1],
             _ => -1,
         };
 
-        if (id < 0 || id >= _dialogueStrings.Count)
+        if (textId < 0)
         {
             return null;
         }
 
-        var text = _dialogueStrings[id].Replace("\\N", " ").Replace("\\C", "").Replace('\n', ' ');
+        // T7: mirrors AlundraEventProgramRunner.ResolveDialogNode's own bit test and node-name formulas
+        // (contract item 1), off the SAME MapDialogueAsset/SharedDialogueAsset BuildInitialState above
+        // loaded - the same two assets the degraded path (contract item 8) plays headless - so this trace
+        // annotation always names the node the real dispatch actually resolves and plays.
+        CasaEngine.Framework.Dialogue.Assets.DialogueAsset? asset;
+        string node;
+        if ((textId & 0x80) != 0)
+        {
+            asset = _runner.MapDialogueAsset;
+            node = $"M{_document.MapIndex}_S{textId & 0x7f:000}";
+        }
+        else
+        {
+            asset = _runner.SharedDialogueAsset;
+            node = $"Shared_S{textId:000}";
+        }
+
+        if (asset == null || !asset.TryGetLineText($"line:{node}_p0", out var rawText))
+        {
+            return null;
+        }
+
+        var expanded = CasaEngine.Framework.Dialogue.Yarn.YarnLineTextParser.ExpandSubstitutions(rawText, Array.Empty<string>());
+        var text = CasaEngine.Framework.Dialogue.Yarn.YarnLineTextParser.Parse(expanded).Text.Replace('\n', ' ');
         if (text.Length > 70)
         {
             text = text[..70] + "...";
         }
 
-        return $"#{id} \"{text}\"";
+        return $"#{textId} \"{text}\" ({node})";
     }
 
     private void RecordSystemOnce(string name, string fileLine, string role)

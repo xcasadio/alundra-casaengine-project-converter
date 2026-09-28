@@ -158,13 +158,13 @@ main.
 |---|---|---|
 | TileMap / TileSet / texture | `Maps/<Zone>/<Nom>-<MapId>/tilemap/<Nom>-<MapId>.{tileMap,tileset,tmj}` + `map_<MapId>_tileset.{png,texture}` | `Maps/The Klark/Ship Klark (beginning)-389/tilemap/Ship Klark (beginning)-389.tileMap` |
 | World | `Maps/<Zone>/<Nom>-<MapId>/<Nom>-<MapId>.world` | `Maps/The Klark/Ship Klark (beginning)-389/Ship Klark (beginning)-389.world` |
-| Table de chaînes de la map | `Maps/<Zone>/<Nom>-<MapId>/dialogues/<Nom>-<MapId>.strings.json` | — |
+| Texte de la map (Yarn) | `Maps/<Zone>/<Nom>-<MapId>/dialogues/<Nom>-<MapId>.{yarn,dialogue}` | catalogué `dialogue_<MapId>` |
 | Bytecode d'évènements de la map | `Maps/<Zone>/<Nom>-<MapId>/events/<Nom>-<MapId>.events.json` | — |
 | Index des worlds | `Maps/world-index.json` | `MapId` → chemin du `.world` |
 | Caméra (partagée par les 483 worlds) | `Entities/AlundraCamera.entity` | `Camera2dComponent`, `Target` (624, −480, 0), `Zoom` 1, `PixelSnap` |
 | Banque de sprites | `Entities/<NomEntité>/` d'après `EntityNames.csv` ; repli `Entities/bank_<Clé>/` | `Entities/Alundra/`, `Entities/bank_hero_5/` |
 | Animation 2D | `bank<Key>_anim<AnimSetIndex>_<down\|up\|left\|right>.anim2d` | `bankhero_0_anim54_down.anim2d` |
-| Tables de chaînes globales | `Dialogues/{global-strings,control-codes}.json` | — |
+| Texte partagé et table ETC (Yarn) | `Dialogues/{Shared,Etc}.{yarn,dialogue}` | catalogués `dialogue_shared`, `dialogue_etc` |
 
 `<Zone>` vient de `alundra-casaengine-project-converter/maps.json` (embarqué avec le convertisseur,
 pas avec `data-extracted`) ; les maps absentes de ce fichier tombent dans `Uncategorized`.

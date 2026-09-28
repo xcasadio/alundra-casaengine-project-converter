@@ -30,6 +30,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
+        AlundraEtcStringTable.ResetForTests(); // E15.c T6: this class' own SetEtcFixture leaves an injected asset behind.
         _previousProjectPath = EngineEnvironment.ProjectPath;
     }
 
@@ -44,6 +45,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
+        AlundraEtcStringTable.ResetForTests(); // E15.c T6: same reason as the constructor.
         EngineEnvironment.ProjectPath = _previousProjectPath!;
     }
 
@@ -60,28 +62,17 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         public void StopAllSfx() { }
     }
 
-    /// <summary>Writes a synthetic <c>Dialogues/etc-index.json</c>/<c>global-strings.json</c> pair
-    /// resolving item <paramref name="itemId"/>'s name and two description lines - same JSON shape
-    /// <see cref="AlundraEtcStringTable"/> reads (<c>int[]</c>/<c>Dictionary&lt;string,string&gt;</c>).
-    /// Returns the temp project path; the caller deletes it.</summary>
-    private static string WriteEtcFixture(int itemId, string name, string desc0, string desc1)
+    /// <summary>E15.c T6 (docs/plan-e15-yarn.md, contract items 5/6): injects a <c>dialogue_etc</c>-shaped
+    /// asset resolving item <paramref name="itemId"/>'s name and two description lines - migrated off the
+    /// pre-Yarn JSON fixture (this class used to write <c>Dialogues/etc-index.json</c>/
+    /// <c>global-strings.json</c>) onto <see cref="DialogueTestAssets.BuildEtc"/> and
+    /// <see cref="AlundraEtcStringTable.SetEtcDialogueAssetForTests"/>, the table's own test entry point.</summary>
+    private static void SetEtcFixture(int itemId, string name, string desc0, string desc1)
     {
-        var projectPath = Path.Combine(Path.GetTempPath(), "AlundraInventoryDirectorEtcFixture_" + Guid.NewGuid());
-        var dialoguesPath = Path.Combine(projectPath, "Dialogues");
-        Directory.CreateDirectory(dialoguesPath);
-
-        var etcIndex = new int[1024];
-        Array.Fill(etcIndex, -1);
-        etcIndex[itemId + 0x200] = 100;
-        etcIndex[itemId + 0x280] = 101;
-        etcIndex[itemId + 0x300] = 102;
-
-        File.WriteAllText(Path.Combine(dialoguesPath, "etc-index.json"), "[" + string.Join(",", etcIndex) + "]");
-        File.WriteAllText(
-            Path.Combine(dialoguesPath, "global-strings.json"),
-            $"{{\"100\":\"{name}\",\"101\":\"{desc0}\",\"102\":\"{desc1}\"}}");
-
-        return projectPath;
+        AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc(
+            (itemId + 0x200, name),
+            (itemId + 0x280, desc0),
+            (itemId + 0x300, desc1)));
     }
 
     private static AlundraGameState NewState() => new();
@@ -227,7 +218,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         var state = NewState();
         var director = NewDirector(state);
         AlundraDialogueDirector.Instance.AttachToWorld(null, state); // no view needed - IsOpen flips regardless (Open's own doc).
-        AlundraDialogueDirector.Instance.Open("hello", 0);
+        AlundraDialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Hello", "hello"), "Start", 0);
         Assert.True(AlundraDialogueDirector.Instance.IsOpen);
 
         Tick(state, director, AlundraPadState.Start);
@@ -355,26 +346,18 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     public void Navigation_ResetsTextRevealState()
     {
         var state = NewState();
-        var etcPath = WriteEtcFixture(0x24, "Herb", "d0", "d1");
-        EngineEnvironment.ProjectPath = etcPath;
-        try
-        {
-            var director = NewDirector(state);
-            OpenAndSettle(state, director);
-            Tick(state, director, AlundraPadState.Down); // select slot 6 (fixed item 0x24, owned below).
-            Tick(state, director, 0);
+        SetEtcFixture(0x24, "Herb", "d0", "d1");
+        var director = NewDirector(state);
+        OpenAndSettle(state, director);
+        Tick(state, director, AlundraPadState.Down); // select slot 6 (fixed item 0x24, owned below).
+        Tick(state, director, 0);
 
-            state.NumberOfItems[0x24 * 2 + 1] = 1; // own it, so the text machine actually advances.
-            Tick(state, director, 0); // state 0 -> 1.
-            Assert.Equal(1, director.TextRevealState);
+        state.NumberOfItems[0x24 * 2 + 1] = 1; // own it, so the text machine actually advances.
+        Tick(state, director, 0); // state 0 -> 1.
+        Assert.Equal(1, director.TextRevealState);
 
-            Tick(state, director, AlundraPadState.Right); // moves off slot 6 and back is irrelevant - only the reset matters.
-            Assert.Equal(0, director.TextRevealState);
-        }
-        finally
-        {
-            Directory.Delete(etcPath, recursive: true);
-        }
+        Tick(state, director, AlundraPadState.Right); // moves off slot 6 and back is irrelevant - only the reset matters.
+        Assert.Equal(0, director.TextRevealState);
     }
 
     [Fact]
@@ -514,29 +497,21 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     [Fact]
     public void IconNames_NoWeaponResolving_BlanksTheWeaponName()
     {
-        var etcPath = WriteEtcFixture(4, "Epee", "a", "b");
-        EngineEnvironment.ProjectPath = etcPath;
-        try
-        {
-            var state = NewState();
-            var tables = ItemTablesFixture.LoadReal();
-            var director = NewDirector(state, tables);
-            state.NumberOfItems[4 * 2 + 1] = 1;
-            AlundraPlayerManager.SetPlayerWeaponId(state, tables, 1); // weapon slot 1 resolves to item 4.
-            OpenAndSettle(state, director); // DisplayInventory -> DisplayIconNames.
-            Assert.Equal("Epee", director.EquippedWeaponName);
+        SetEtcFixture(4, "Epee", "a", "b");
+        var state = NewState();
+        var tables = ItemTablesFixture.LoadReal();
+        var director = NewDirector(state, tables);
+        state.NumberOfItems[4 * 2 + 1] = 1;
+        AlundraPlayerManager.SetPlayerWeaponId(state, tables, 1); // weapon slot 1 resolves to item 4.
+        OpenAndSettle(state, director); // DisplayInventory -> DisplayIconNames.
+        Assert.Equal("Epee", director.EquippedWeaponName);
 
-            state.NumberOfItems[4 * 2 + 1] = 0; // the weapon no longer resolves.
-            Tick(state, director, AlundraPadState.Right); // grid slot 1 -> weapon slot 3 (empty).
-            Tick(state, director, 0);
-            Tick(state, director, AlundraPadState.Cross); // sound 3, then DisplayIconNames.
+        state.NumberOfItems[4 * 2 + 1] = 0; // the weapon no longer resolves.
+        Tick(state, director, AlundraPadState.Right); // grid slot 1 -> weapon slot 3 (empty).
+        Tick(state, director, 0);
+        Tick(state, director, AlundraPadState.Cross); // sound 3, then DisplayIconNames.
 
-            Assert.Equal("       ", director.EquippedWeaponName);
-        }
-        finally
-        {
-            Directory.Delete(etcPath, recursive: true);
-        }
+        Assert.Equal("       ", director.EquippedWeaponName);
     }
 
     // -----------------------------------------------------------------------------------------
@@ -726,113 +701,79 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     [Fact]
     public void TextReveal_OneCharacterEveryThreeTicks_ThenHolds_ThenBothDescriptionLines()
     {
-        var etcPath = WriteEtcFixture(0x24, "Ab", "Cd", "Ef");
-        EngineEnvironment.ProjectPath = etcPath;
-        try
-        {
-            var state = NewState();
-            var director = NewDirector(state);
-            OpenAndSettle(state, director);
-            state.NumberOfItems[0x24 * 2 + 1] = 1;
-            Tick(state, director, AlundraPadState.Down); // select slot 6 (item 0x24) - the tail this
-            Tick(state, director, 0);                    // same tick, and the release tick, already run
-                                                           // the state-0 setup AND the first char's reveal
-                                                           // (its own countdown starts at 0 - commits with
-                                                           // no delay, MainInventoryManager.cs:962/1147).
-            Assert.Equal(2, director.TextRevealState);
-            Assert.Equal("A", director.NameVisiblePrefix);
+        SetEtcFixture(0x24, "Ab", "Cd", "Ef");
+        var state = NewState();
+        var director = NewDirector(state);
+        OpenAndSettle(state, director);
+        state.NumberOfItems[0x24 * 2 + 1] = 1;
+        Tick(state, director, AlundraPadState.Down); // select slot 6 (item 0x24) - the tail this
+        Tick(state, director, 0);                    // same tick, and the release tick, already run
+                                                       // the state-0 setup AND the first char's reveal
+                                                       // (its own countdown starts at 0 - commits with
+                                                       // no delay, MainInventoryManager.cs:962/1147).
+        Assert.Equal(2, director.TextRevealState);
+        Assert.Equal("A", director.NameVisiblePrefix);
 
-            // The SECOND character is delayed the full 3 ticks (countdown reset to 2 after the first
-            // commit) - MainInventoryManager.cs:1147, "one character every 3 ticks" from here on.
-            Tick(state, director, 0);
-            Tick(state, director, 0);
-            Assert.Equal(2, director.TextRevealState); // not yet committed.
-            Tick(state, director, 0);
-            Assert.Equal(3, director.TextRevealState);
-            Assert.Equal("Ab", director.NameVisiblePrefix);
+        // The SECOND character is delayed the full 3 ticks (countdown reset to 2 after the first
+        // commit) - MainInventoryManager.cs:1147, "one character every 3 ticks" from here on.
+        Tick(state, director, 0);
+        Tick(state, director, 0);
+        Assert.Equal(2, director.TextRevealState); // not yet committed.
+        Tick(state, director, 0);
+        Assert.Equal(3, director.TextRevealState);
+        Assert.Equal("Ab", director.NameVisiblePrefix);
 
-            TickUntil(state, director, () => director.TextRevealState == 0x11); // name fully revealed -> hold.
-            TickUntil(state, director, () => director.TextRevealState == 0x4d); // hold elapsed -> line 0 setup.
-            Assert.Equal(string.Empty, director.Description0VisiblePrefix);
+        TickUntil(state, director, () => director.TextRevealState == 0x11); // name fully revealed -> hold.
+        TickUntil(state, director, () => director.TextRevealState == 0x4d); // hold elapsed -> line 0 setup.
+        Assert.Equal(string.Empty, director.Description0VisiblePrefix);
 
-            TickUntil(state, director, () => director.Description0VisiblePrefix == "Cd");
-            TickUntil(state, director, () => director.TextRevealState == 0x8e); // line 0 done -> line 1 setup.
-            Assert.Equal(string.Empty, director.Description1VisiblePrefix);
+        TickUntil(state, director, () => director.Description0VisiblePrefix == "Cd");
+        TickUntil(state, director, () => director.TextRevealState == 0x8e); // line 0 done -> line 1 setup.
+        Assert.Equal(string.Empty, director.Description1VisiblePrefix);
 
-            TickUntil(state, director, () => director.Description1VisiblePrefix == "Ef");
-            TickUntil(state, director, () => director.TextRevealState == 0xcf); // both lines complete.
+        TickUntil(state, director, () => director.Description1VisiblePrefix == "Ef");
+        TickUntil(state, director, () => director.TextRevealState == 0xcf); // both lines complete.
 
-            Tick(state, director, 0); // held forever once done.
-            Assert.Equal(0xcf, director.TextRevealState);
-        }
-        finally
-        {
-            Directory.Delete(etcPath, recursive: true);
-        }
+        Tick(state, director, 0); // held forever once done.
+        Assert.Equal(0xcf, director.TextRevealState);
     }
 
     /// <summary>
-    /// Closing verifier's F1 (P1, reproduced on the real export): global-strings.json holds a JSON null for
-    /// every offset with no text - the base dagger's second description line among them - and the original
-    /// reads it as an empty string (MainInventoryManager.cs:972/:1010/:1041, "?? string.Empty"). The reveal
-    /// must run through to 0xcf without throwing, the empty lines staying empty.
+    /// Closing verifier's F1 (P1, reproduced on the real export), migrated to Yarn (E15.c T6): an ETC
+    /// offset with no text has no node at all in the compiled asset - the base dagger's second description
+    /// line among them - and <see cref="AlundraEtcStringTable"/> reads that the same way it read a JSON
+    /// <see langword="null"/> before the port (MainInventoryManager.cs:972/:1010/:1041, "?? string.Empty").
+    /// The reveal must run through to 0xcf without throwing, the empty lines staying empty.
     /// </summary>
     [Fact]
-    public void TextReveal_NullDescriptionLines_ReadAsEmpty_RunToTheEndWithoutThrowing()
+    public void TextReveal_DescriptionOffsetsWithoutNode_ReadAsEmpty_RunToTheEndWithoutThrowing()
     {
-        var etcPath = Path.Combine(Path.GetTempPath(), "AlundraInventoryDirectorEtcFixture_" + Guid.NewGuid());
-        var dialoguesPath = Path.Combine(etcPath, "Dialogues");
-        Directory.CreateDirectory(dialoguesPath);
-        var etcIndex = new int[1024];
-        Array.Fill(etcIndex, -1);
-        etcIndex[0x24 + 0x200] = 100;
-        etcIndex[0x24 + 0x280] = 101;
-        etcIndex[0x24 + 0x300] = 102;
-        File.WriteAllText(Path.Combine(dialoguesPath, "etc-index.json"), "[" + string.Join(",", etcIndex) + "]");
-        File.WriteAllText(Path.Combine(dialoguesPath, "global-strings.json"), "{\"100\":\"Ab\",\"101\":null,\"102\":null}");
-        EngineEnvironment.ProjectPath = etcPath;
-        try
-        {
-            var state = NewState();
-            var director = NewDirector(state);
-            OpenAndSettle(state, director);
-            state.NumberOfItems[0x24 * 2 + 1] = 1;
-            Tick(state, director, AlundraPadState.Down); // slot 6, item 0x24
+        AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc((0x24 + 0x200, "Ab")));
+        var state = NewState();
+        var director = NewDirector(state);
+        OpenAndSettle(state, director);
+        state.NumberOfItems[0x24 * 2 + 1] = 1;
+        Tick(state, director, AlundraPadState.Down); // slot 6, item 0x24
 
-            var exception = Record.Exception(() =>
-                TickUntil(state, director, () => director.TextRevealState == 0xcf, maxTicks: 600));
+        var exception = Record.Exception(() =>
+            TickUntil(state, director, () => director.TextRevealState == 0xcf, maxTicks: 600));
 
-            Assert.Null(exception);
-            Assert.Equal("Ab", director.NameVisiblePrefix);
-            Assert.Equal(string.Empty, director.Description0VisiblePrefix);
-            Assert.Equal(string.Empty, director.Description1VisiblePrefix);
-        }
-        finally
-        {
-            Directory.Delete(etcPath, recursive: true);
-        }
+        Assert.Null(exception);
+        Assert.Equal("Ab", director.NameVisiblePrefix);
+        Assert.Equal(string.Empty, director.Description0VisiblePrefix);
+        Assert.Equal(string.Empty, director.Description1VisiblePrefix);
     }
 
+    /// <summary>E15.c T6: an index without a node (never emitted by the converter for a null ETC entry)
+    /// resolves to an empty string, not a failure - same contract as a present-but-null JSON entry gave
+    /// before the port.</summary>
     [Fact]
-    public void EtcStringTable_JsonNullValue_ResolvesToAnEmptyString()
+    public void EtcStringTable_IndexWithoutNode_ResolvesToAnEmptyString()
     {
-        var etcPath = Path.Combine(Path.GetTempPath(), "AlundraEtcStringTableNullFixture_" + Guid.NewGuid());
-        var dialoguesPath = Path.Combine(etcPath, "Dialogues");
-        Directory.CreateDirectory(dialoguesPath);
-        var etcIndex = new int[1024];
-        Array.Fill(etcIndex, -1);
-        etcIndex[7 + 0x300] = 102;
-        File.WriteAllText(Path.Combine(dialoguesPath, "etc-index.json"), "[" + string.Join(",", etcIndex) + "]");
-        File.WriteAllText(Path.Combine(dialoguesPath, "global-strings.json"), "{\"102\":null}");
-        try
-        {
-            Assert.True(AlundraEtcStringTable.TryResolveItemDescriptionLine1(etcPath, 7, out var line));
-            Assert.Equal(string.Empty, line);
-        }
-        finally
-        {
-            Directory.Delete(etcPath, recursive: true);
-        }
+        AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc());
+
+        Assert.True(AlundraEtcStringTable.TryResolveItemDescriptionLine1(EngineEnvironment.ProjectPath, 7, out var line));
+        Assert.Equal(string.Empty, line);
     }
 
     /// <summary>
@@ -845,57 +786,49 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     [Fact]
     public void DrawnDescriptionLines_FollowWhatTheOriginalDrawsEachTick()
     {
-        var etcPath = WriteEtcFixture(0x24, "Ab", "Cd", "Ef");
-        EngineEnvironment.ProjectPath = etcPath;
-        try
-        {
-            var state = NewState();
-            var director = NewDirector(state);
-            OpenAndSettle(state, director);
-            state.NumberOfItems[0x24 * 2 + 1] = 1;
-            Tick(state, director, AlundraPadState.Down); // slot 6, item 0x24 (owned)
-            Tick(state, director, 0);
+        SetEtcFixture(0x24, "Ab", "Cd", "Ef");
+        var state = NewState();
+        var director = NewDirector(state);
+        OpenAndSettle(state, director);
+        state.NumberOfItems[0x24 * 2 + 1] = 1;
+        Tick(state, director, AlundraPadState.Down); // slot 6, item 0x24 (owned)
+        Tick(state, director, 0);
 
-            // Name phase: line 0 is the name, line 1 nothing.
-            Assert.Equal("A", director.DrawnDescriptionLine0);
-            Assert.Equal(string.Empty, director.DrawnDescriptionLine1);
+        // Name phase: line 0 is the name, line 1 nothing.
+        Assert.Equal("A", director.DrawnDescriptionLine0);
+        Assert.Equal(string.Empty, director.DrawnDescriptionLine1);
 
-            // The tick that runs state 0x4d draws nothing at all (:997-1005, no DisplayInventoryDescription).
-            TickUntil(state, director, () => director.TextRevealState == 0x4d);
-            Tick(state, director, 0);
-            Assert.Equal(0x4e, director.TextRevealState);
-            Assert.Equal(string.Empty, director.DrawnDescriptionLine0);
-            Assert.Equal(string.Empty, director.DrawnDescriptionLine1);
+        // The tick that runs state 0x4d draws nothing at all (:997-1005, no DisplayInventoryDescription).
+        TickUntil(state, director, () => director.TextRevealState == 0x4d);
+        Tick(state, director, 0);
+        Assert.Equal(0x4e, director.TextRevealState);
+        Assert.Equal(string.Empty, director.DrawnDescriptionLine0);
+        Assert.Equal(string.Empty, director.DrawnDescriptionLine1);
 
-            // First line only until 0x8e included, then both.
-            TickUntil(state, director, () => director.TextRevealState == 0x8e);
-            Tick(state, director, 0);
-            Assert.Equal("Cd", director.DrawnDescriptionLine0);
-            Assert.Equal(string.Empty, director.DrawnDescriptionLine1);
-            TickUntil(state, director, () => director.TextRevealState == 0xcf);
-            Tick(state, director, 0);
-            Assert.Equal("Cd", director.DrawnDescriptionLine0);
-            Assert.Equal("Ef", director.DrawnDescriptionLine1);
+        // First line only until 0x8e included, then both.
+        TickUntil(state, director, () => director.TextRevealState == 0x8e);
+        Tick(state, director, 0);
+        Assert.Equal("Cd", director.DrawnDescriptionLine0);
+        Assert.Equal(string.Empty, director.DrawnDescriptionLine1);
+        TickUntil(state, director, () => director.TextRevealState == 0xcf);
+        Tick(state, director, 0);
+        Assert.Equal("Cd", director.DrawnDescriptionLine0);
+        Assert.Equal("Ef", director.DrawnDescriptionLine1);
 
-            // Right to slot 7 (item 0x29, not owned): nothing drawn, although the prefixes keep "Cd"/"Ef".
-            Tick(state, director, AlundraPadState.Right);
-            Tick(state, director, 0);
-            Assert.Equal(7, director.SelectedSlotId);
-            Assert.Equal(string.Empty, director.DrawnDescriptionLine0);
-            Assert.Equal(string.Empty, director.DrawnDescriptionLine1);
+        // Right to slot 7 (item 0x29, not owned): nothing drawn, although the prefixes keep "Cd"/"Ef".
+        Tick(state, director, AlundraPadState.Right);
+        Tick(state, director, 0);
+        Assert.Equal(7, director.SelectedSlotId);
+        Assert.Equal(string.Empty, director.DrawnDescriptionLine0);
+        Assert.Equal(string.Empty, director.DrawnDescriptionLine1);
 
-            // Back on the herbs: the name again on line 0, and still nothing on line 1.
-            Tick(state, director, AlundraPadState.Left);
-            Tick(state, director, 0);
-            Tick(state, director, 0);
-            Assert.Equal(6, director.SelectedSlotId);
-            Assert.Equal("A", director.DrawnDescriptionLine0);
-            Assert.Equal(string.Empty, director.DrawnDescriptionLine1);
-        }
-        finally
-        {
-            Directory.Delete(etcPath, recursive: true);
-        }
+        // Back on the herbs: the name again on line 0, and still nothing on line 1.
+        Tick(state, director, AlundraPadState.Left);
+        Tick(state, director, 0);
+        Tick(state, director, 0);
+        Assert.Equal(6, director.SelectedSlotId);
+        Assert.Equal("A", director.DrawnDescriptionLine0);
+        Assert.Equal(string.Empty, director.DrawnDescriptionLine1);
     }
 
     // -----------------------------------------------------------------------------------------

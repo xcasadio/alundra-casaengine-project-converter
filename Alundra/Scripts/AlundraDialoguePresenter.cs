@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Dialogue.Presentation;
 using CasaEngine.Framework.Dialogue.Runtime;
@@ -34,19 +35,48 @@ namespace Alundra.Scripts;
 /// </summary>
 public sealed class AlundraDialoguePresenter : IDialoguePresenter, IDisposable
 {
+    /// <summary>D-E15-12/ADR-0008: the font family name every project screen that shows font3 names in
+    /// its markup (e.g. <c>FontFamily="font3"</c> in <c>InventoryScreen.xaml</c>) - passed to
+    /// <see cref="DialogueScreen"/>'s own <c>fontFamily</c> parameter once font3 is held.</summary>
+    internal const string Font3FontFamily = "font3";
+
     private readonly DialogueService _service = new();
     private readonly IUIViewRuntime _uiView;
     private readonly DialogueScreen _screen;
+    private IDisposable? _font3;
     private bool _pushed;
 
+    /// <param name="fonts">The game's UI font registry (engine ADR-0036). When given, this presenter holds
+    /// font3 from construction to <see cref="Dispose"/> the same way <see cref="AlundraInventoryScreen"/> does
+    /// (D-E15-12, ADR-0008) and passes it to <see cref="DialogueScreen"/> as <c>fontFamily</c>; when null, or
+    /// when font3 cannot be held (logged once), the box falls back to the theme's default font, as before
+    /// E15.c.</param>
     /// <param name="assetContentManager">The game's asset manager. When given, the screen takes the markup the
     /// project names in its DialogueScreenAsset setting (UI/Screens/DialogueScreen.uiscreen, written by the
     /// converter; bound screens slice B4, engine T6.1) and holds it until <see cref="Dispose"/>; without it, or when
     /// that markup cannot be used (the engine logs why), the engine's built-in box.</param>
-    public AlundraDialoguePresenter(IUIViewRuntime uiView, string? fontFamily = null, AssetContentManager? assetContentManager = null)
+    public AlundraDialoguePresenter(IUIViewRuntime uiView, UIFontRegistry? fonts = null, AssetContentManager? assetContentManager = null)
     {
         ArgumentNullException.ThrowIfNull(uiView);
         _uiView = uiView;
+
+        string? fontFamily = null;
+        if (fonts != null)
+        {
+            try
+            {
+                _font3 = fonts.Acquire(AlundraInventoryScreen.Font3FontAssetId);
+                fontFamily = Font3FontFamily;
+            }
+            catch (Exception ex)
+            {
+                Logs.WriteWarning(
+                    $"AlundraDialoguePresenter: font3 ('UI\\font3.fnt', asset {AlundraInventoryScreen.Font3FontAssetId}) "
+                    + $"could not be held ({ex.GetType().Name}: {ex.Message}); the dialogue box falls back to the "
+                    + "default font.");
+            }
+        }
+
         // No "Close" button: Alundra's boxes are dismissed by the interact button (Square, D-E12-4) or
         // by the auto-timer, both owned by AlundraDialogueDirector. The engine screen's own generic
         // close affordance is an alien control here, and - as reported in play - shutting the window
@@ -57,9 +87,14 @@ public sealed class AlundraDialoguePresenter : IDialoguePresenter, IDisposable
             : new DialogueScreen(_service, RequestClose, fontFamily!) { ShowCloseButton = false };
     }
 
-    /// <summary>Gives back what the screen holds (the project's dialogue markup, engine ADR-0037), when its world
-    /// ends. Idempotent, like the screen's own <see cref="DialogueScreen.Dispose"/>.</summary>
-    public void Dispose() => _screen.Dispose();
+    /// <summary>Gives font3 back (when held) and what the screen holds (the project's dialogue markup, engine
+    /// ADR-0037), when its world ends. Idempotent, like the screen's own <see cref="DialogueScreen.Dispose"/>.</summary>
+    public void Dispose()
+    {
+        _font3?.Dispose();
+        _font3 = null;
+        _screen.Dispose();
+    }
 
     /// <summary>Test-only seam: the screen this presenter owns, so a test can pin that Alundra opted OUT
     /// of the engine's generic "Close" button (see the constructor).</summary>

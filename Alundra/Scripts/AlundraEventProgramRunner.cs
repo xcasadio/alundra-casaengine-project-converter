@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.AI.Navigation;
+using CasaEngine.Framework.Dialogue.Assets;
+using CasaEngine.Framework.Dialogue.Presentation;
+using CasaEngine.Framework.Dialogue.Runtime;
+using CasaEngine.Framework.Dialogue.Yarn;
 using Microsoft.Xna.Framework;
 
 namespace Alundra.Scripts;
@@ -94,16 +98,20 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     internal int? MaxIterationsPerCall { get; set; }
 
     /// <summary>
-    /// This world's own local dialogue-string table (E12.a, docs/plan-e12-dialogues.md §1.5) - loaded by
-    /// <see cref="AlundraWorldProxy.InitializeWithWorld"/> via <see cref="AlundraDialogueStringsLoader"/>
-    /// and handed here as a plain settable property (rather than a constructor parameter) so every
-    /// EXISTING call site of this runner's constructor (17 of them across this DLL and its tests) keeps
-    /// compiling unmodified - null means "not loaded/unavailable", the same degraded fallback opcode
-    /// 0x0D's own <c>textId &amp; 0x80</c> branch already has for an out-of-range index.
+    /// E15.c T5 (docs/plan-e15-yarn.md, contract item 1): this world's own <c>dialogue_{mapId}</c> Yarn
+    /// asset (map table, text-id bit 0x80 set), held by <see cref="AlundraWorldProxy.InitializeWithWorld"/>
+    /// through <c>AssetCatalog</c>/the game's asset manager and handed here as a plain settable property
+    /// (same "17 existing call sites keep compiling" reasoning as the pre-E15.c <c>LocalDialogueStrings</c>
+    /// this supersedes) - null means "this world's map has no dialogue asset", the same degraded fallback
+    /// opcode 0x0D's own resolution already had for a missing local table.
     /// </summary>
-    internal IReadOnlyList<string>? LocalDialogueStrings { get; set; }
+    internal DialogueAsset? MapDialogueAsset { get; set; }
 
-    private bool _loggedSharedDialogTableOnce;
+    /// <summary>
+    /// E15.c T5: the shared <c>map_alundra</c> Yarn asset (<c>dialogue_shared</c>, text-id bit 0x80
+    /// clear) - held once per project the same way. Null only when the export has none.
+    /// </summary>
+    internal DialogueAsset? SharedDialogueAsset { get; set; }
 
     private readonly EventProgramDocument? _document;
     private readonly byte[]? _codes;
@@ -577,8 +585,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
             case 0x0D: // Dialog - Script_OpenDialog_13_00D (E12.a, docs/plan-e12-dialogues.md): opens a
                        // dialogue box. v[1]=textId (bit 0x80 -> LOCAL Strings[textId&0x7F], clear -> the
-                       // SHARED map_alundra table, not exported by the converter yet - degrades, once
-                       // warned); v[2]=controlMode (1 -> MessageBox, 0 -> MenuOpen, see
+                       // SHARED dialogue_shared Yarn asset, E15.c T5 - degrades, once warned, when it is
+                       // not loaded); v[2]=controlMode (1 -> MessageBox, 0 -> MenuOpen, see
                        // AlundraDialogueDirector.Open's own doc). Dispatch itself owns the reentrancy
                        // guard (T2): a dialogue already open makes this retry (return 0) rather than
                        // stomping a second one open.
@@ -606,8 +614,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // First entry (not yet awaiting a choice) opens OUI/NON (labels = GLOBAL strings
                        // via the ETC index table, D-E12-6 - never local/map strings) and blocks; once the
                        // player selects, Result = 1 iff the FIRST option, else 0, and this instruction
-                       // finally advances (1). Degraded (no presenter, or no etc-index/global-strings
-                       // data): Result = 1 unconditionally and advances immediately - the old
+                       // finally advances (1). Degraded (no presenter, or no dialogue_etc data): Result
+                       // = 1 unconditionally and advances immediately - the old
                        // optimistic-forcing behaviour the harness used to apply by hand (§1.6/item ⑦),
                        // now a real, documented degraded mode so this predicate can never deadlock a
                        // script with no dialogue system installed.
@@ -625,7 +633,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                     if (!AlundraEtcStringTable.TryResolveYesNo(EngineEnvironment.ProjectPath, out var yesLabel, out var noLabel))
                     {
                         state.Result = 1;
-                        LogDegradedOpcodeOnce(0x44, "WaitDialogChoice", "etc-index/global-strings data");
+                        LogDegradedOpcodeOnce(0x44, "WaitDialogChoice", "dialogue_etc data");
                         return 1;
                     }
 
@@ -1101,28 +1109,26 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     }
 
     /// <summary>
-    /// Shared "open" half of opcodes 0x0D and 0x5C (E12.a, docs/plan-e12-dialogues.md): resolves
-    /// <paramref name="textIdParam"/> (see <see cref="ResolveDialogText"/>), then either opens the real
-    /// dialogue through <see cref="AlundraDialogueDirector"/> (Dispatch's own reentrancy guard - T2 -
-    /// already ran BEFORE this is called, via <see cref="IAlundraDialogueDirector.IsOpen"/>) or degrades:
-    /// still parses the text and applies every numeric control-code flag it contains (D-E12-4's own P0
-    /// correction - "le mode dégradé pose AUSSI les drapeaux numériques", or a later <c>0x36</c> waiting
-    /// on one of them would suspend forever) before advancing by <paramref name="instructionSize"/>
-    /// regardless.
+    /// Shared "open" half of opcodes 0x0D and 0x5C (E12.a, docs/plan-e12-dialogues.md; E15.c
+    /// docs/plan-e15-yarn.md contract items 1/2/8): resolves <paramref name="textIdParam"/> to a Yarn
+    /// asset/node (see <see cref="ResolveDialogNode"/>), then either opens the real dialogue through
+    /// <see cref="AlundraDialogueDirector"/> (Dispatch's own reentrancy guard - T2 - already ran BEFORE
+    /// this is called, via <see cref="IAlundraDialogueDirector.IsOpen"/>) or degrades: item 8 plays the
+    /// resolved node HEADLESS to its end on a runner carrying the same commands/functions, so every
+    /// page's flag (and falcon_update) still runs in page order (D-E12-4's own P0 correction - "le mode
+    /// dégradé pose AUSSI les drapeaux numériques", or a later <c>0x36</c> waiting on one of them would
+    /// suspend forever) - before advancing by <paramref name="instructionSize"/> regardless.
     /// </summary>
     private int OpenDialog(int textIdParam, int controlMode, int instructionSize, int opcode, string opcodeName)
     {
-        var text = ResolveDialogText(textIdParam) ?? string.Empty;
+        var (asset, node) = ResolveDialogNode(textIdParam);
         var director = _worldContext.DialogueDirector;
 
         if (director == null || !director.HasPresenter)
         {
-            foreach (var page in AlundraDialogueTextParser.SplitIntoPages(text))
+            if (asset != null && node != null)
             {
-                foreach (var n in page.NumericCodes)
-                {
-                    _gameState.AddFlag((uint)(n | 0x8000), 1u << (n & 0x1f));
-                }
+                PlayNodeHeadlessToEnd(asset, node);
             }
 
             LogDegradedOpcodeOnce(opcode, opcodeName, "dialogue presenter");
@@ -1134,40 +1140,83 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             return 0; // T2: a dialogue is already open - retry rather than opening a second one.
         }
 
-        director.Open(text, controlMode);
+        director.Open(asset, node, controlMode);
         return instructionSize;
     }
 
     /// <summary>
-    /// Resolves opcode 0x0D/0x5C's own textId operand (§1.3): bit 0x80 set -&gt; this world's LOCAL
-    /// <see cref="LocalDialogueStrings"/>[textId &amp; 0x7F] (null if the table was never loaded, or the
-    /// masked index is out of range); bit clear -&gt; the SHARED <c>map_alundra</c> table, which the
-    /// converter does not export yet (E12.c) - always null here, logged once.
+    /// Resolves opcode 0x0D/0x5C's own textId operand to a Yarn asset/node (docs/plan-e15-yarn.md,
+    /// contract item 1): bit 0x80 set -&gt; <see cref="MapDialogueAsset"/>'s node
+    /// <c>M{mapId}_S{textId &amp; 0x7F:000}</c> (null when this world has no map dialogue asset, or this
+    /// runner's own document never resolved a map id); bit clear -&gt; <see cref="SharedDialogueAsset"/>'s
+    /// node <c>Shared_S{textId:000}</c> (null only when the export has no shared asset). A resolved
+    /// (asset, node) pair may still name a node the asset does not have (an empty original slot,
+    /// D-E15-10) - <see cref="AlundraDialogueDirector.Open"/> and <see cref="PlayNodeHeadlessToEnd"/> both
+    /// degrade to nothing/an empty box for that case, exactly like a null asset here.
     /// </summary>
-    private string? ResolveDialogText(int textIdParam)
+    private (DialogueAsset? Asset, string? Node) ResolveDialogNode(int textIdParam)
     {
         if ((textIdParam & 0x80) != 0)
         {
-            var localIndex = textIdParam & 0x7f;
-            var localStrings = LocalDialogueStrings;
-            if (localStrings != null && localIndex >= 0 && localIndex < localStrings.Count)
+            var mapAsset = MapDialogueAsset;
+            var mapId = _document?.MapIndex;
+            if (mapAsset == null || mapId == null)
             {
-                return localStrings[localIndex];
+                return (null, null);
             }
 
-            return null;
+            return (mapAsset, $"M{mapId.Value}_S{textIdParam & 0x7f:000}");
         }
 
-        if (!_loggedSharedDialogTableOnce)
+        var sharedAsset = SharedDialogueAsset;
+        return sharedAsset == null ? (null, null) : (sharedAsset, $"Shared_S{textIdParam:000}");
+    }
+
+    /// <summary>
+    /// E15.c T5 (docs/plan-e15-yarn.md, contract item 8): plays <paramref name="node"/> of
+    /// <paramref name="asset"/> to its end on a throwaway <see cref="YarnDialogueRunner"/> built on a
+    /// no-op presenter, with the same commands/functions the real dialogue director registers
+    /// (<see cref="AlundraYarnBindings"/>) - so every page's <c>flag</c> (and <c>falcon_update</c>) still
+    /// runs, in page order, exactly as a box shown then immediately closed would. A no-op when
+    /// <paramref name="node"/> does not exist on <paramref name="asset"/> (an empty original slot,
+    /// D-E15-10).
+    /// </summary>
+    private void PlayNodeHeadlessToEnd(DialogueAsset asset, string node)
+    {
+        var runner = new YarnDialogueRunner(NullDialoguePresenter.Instance);
+        new AlundraYarnBindings(_gameState).Register(runner);
+
+        if (!runner.Start(asset, node))
         {
-            _loggedSharedDialogTableOnce = true;
-            Logs.WriteWarning(
-                "AlundraEventProgramRunner: dialog opcode referenced the SHARED table (map_alundra, "
-                + "textId bit 0x80 clear), which the converter does not export yet (E12.c) - degraded, "
-                + "empty text.");
+            return;
         }
 
-        return null;
+        while (runner.IsRunning)
+        {
+            runner.Continue();
+        }
+    }
+
+    /// <summary>Throwaway <see cref="IDialoguePresenter"/> for <see cref="PlayNodeHeadlessToEnd"/>: shows
+    /// nothing, closes nothing, never throws - the degraded path only cares about the commands/functions
+    /// a Yarn dialogue runs while it plays, never what it would have displayed.</summary>
+    private sealed class NullDialoguePresenter : IDialoguePresenter
+    {
+        public static readonly NullDialoguePresenter Instance = new();
+
+        public DialogueRuntimeState State => DialogueRuntimeState.Closed;
+        public DialogueLine CurrentLine => DialogueLine.Empty;
+        public bool IsOpen => false;
+        public IReadOnlyList<string> Choices { get; } = Array.Empty<string>();
+        public bool HasChoices => false;
+
+        public event EventHandler<DialoguePresentationChangedEventArgs>? PresentationChanged { add { } remove { } }
+        public event EventHandler<DialogueChoiceSelectedEventArgs>? ChoiceSelected { add { } remove { } }
+
+        public bool ShowLine(DialogueLine line) => true;
+        public bool ShowChoices(IReadOnlyList<string> labels) => true;
+        public bool SelectChoice(int index) => false;
+        public bool Close() => true;
     }
 
     /// <summary>Shared shape of Script_48_030 (If flag on) / Script_49_031 (If flag off).</summary>
