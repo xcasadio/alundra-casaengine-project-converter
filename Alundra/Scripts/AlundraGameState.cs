@@ -198,10 +198,11 @@ public sealed class AlundraGameState
     /// (0x801EB2E8-0x801EBA40). It is written only by <see cref="AlundraTextProgress.UpdatePlayerProgressState"/>
     /// and read only by the <c>\X2</c>/<c>\X3</c>/<c>\X4</c>/<c>\X5</c> text codes (via
     /// <see cref="AlundraTextProgress"/>'s functions), so this field is process-lifetime state like the
-    /// rest of this class' construction-time defaults - PRODUCTION never resets it (no New Game reset
-    /// path touches it in the binary either); <see cref="ResetForTests"/> resets it anyway, because that
-    /// method is a TEST-ONLY seam whose job is to leave <see cref="Instance"/> clean between tests that
-    /// mutate it through the public API, not to reproduce the binary's own (lack of) reset.
+    /// rest of this class' construction-time defaults - no New Game path resets it (nor does the binary).
+    /// The one production reset is a save load: <see cref="ResetSessionForLoad"/> zeroes it, as a fresh
+    /// process would (D-E16-19, docs/plan-e16-etat-partie.md E16.d); the in-process "Retry" reload of
+    /// the original keeps it and belongs to E18. <see cref="ResetForTests"/> resets it too, as the
+    /// TEST-ONLY seam that leaves <see cref="Instance"/> clean between tests.
     /// </summary>
     public int TextCategoryIndex;
 
@@ -211,8 +212,9 @@ public sealed class AlundraGameState
     /// programs the decompilation names (<c>AI_FUN_80064294</c>, <c>AI_FUN_80064d90</c>), neither of
     /// which is ported yet, so nothing in this DLL writes it; read only by the <c>\V&lt;n&gt;</c> text
     /// code (<c>game_var(n)</c>, docs/plan-e15-yarn.md §1/§5.7), unchecked bounds like the original
-    /// (<c>c - '0'</c>). PRODUCTION never resets this array either; like <see cref="TextCategoryIndex"/>
-    /// above, only the TEST-ONLY <see cref="ResetForTests"/> seam clears it.
+    /// (<c>c - '0'</c>). Like <see cref="TextCategoryIndex"/> above, only a save load
+    /// (<see cref="ResetSessionForLoad"/>, D-E16-19) and the TEST-ONLY <see cref="ResetForTests"/> seam
+    /// clear it.
     /// </summary>
     public readonly int[] GameVariables = new int[4];
 

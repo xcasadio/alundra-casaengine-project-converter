@@ -1045,7 +1045,7 @@ max `0x6A2`, mot 53) et arithmétique de C3.
 | SC11 | P4 | Une durée finie énorme pourrait faire reboucler le compteur de temps avant le plafond | FIX | T1 |
 | SC12 | P4 | Les valeurs de la table des cartes ne sont pas contrôlées contre le catalogue | REJECT | même exposition que les opcodes `0x38` et `0x53` ; les 483 mondes existent (F3) ; risque résiduel au §4 |
 
-### E16.d — Chargement et recette 🚧 (DLL ; plan détaillé plus bas, READY le 2026-09-28, exécuté en mode AUTO)
+### E16.d — Chargement et recette 🧪 (DLL ; plan détaillé plus bas, READY le 2026-09-28, exécuté en mode AUTO ; T1 à T7 faites et vérifiées CONFIRMED le 2026-09-29, `f2cc8be` à `00746c7` ; reste la recette en jeu T8 de l'auteur)
 
 - **But** : reprendre une partie sauvegardée.
 - **Contenu** : port de la branche `SlotData == 1` d'`InitializeGameState`, dans cet ordre, dont
@@ -1383,14 +1383,35 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
     La mutation « avant `GameState.InstallForMapEntry()` » est un mutant équivalent : cette méthode
     ne touche que `TemporaryFlags`, que `ApplyTo` n'écrit pas, et l'entité du verrou et
     `IsWarpDisabled`, que `ResetSessionForLoad` remet de toute façon. Elle n'est donc pas demandée.
-- ⏳ **T6 — Documentation et ADR** : ADR-0013 de ce dépôt (le chargement part par le chemin des
+- ✅ **T6 — Documentation et ADR** (fait le 2026-09-29 en session principale : ADR-0013
+  `docs/decisions/0013-save-loads-go-through-the-warp-path.md`, sections « Chargement » et « Touches
+  de recette » de `docs/formats/save-game.md`, doc d'`AlundraGameState.TextCategoryIndex` et
+  `GameVariables`, que `ResetSessionForLoad` remet désormais, tableau de suivi du plan maître) : ADR-0013 de ce dépôt (le chargement part par le chemin des
   warps et s'applique à l'entrée de la carte d'arrivée ; touches de recette en Debug seulement,
   D-E16-33, la DLL déployée étant celle du dernier build ; le service derrière une interface de la
   DLL ; limites du choix du plus récent, SD11) ; section « Chargement et touches de
   recette » de `docs/formats/save-game.md` ; tableau de suivi du plan maître.
-- ⏳ **T7 — Vérification** : un `verifier` frais sur l'acceptation ci-dessous, et un contradicteur
+- ✅ **T7 — Vérification** : un `verifier` frais sur l'acceptation ci-dessous, et un contradicteur
   sur les chemins hostiles (fichier refusé, départ impossible, arrivée inattendue).
-- ⏳ **T8 — Recette en jeu** (l'auteur, hors de l'app Claude) : l'acceptation en jeu ci-dessus, avec
+
+  Fait le 2026-09-29 sur `00746c7` :
+  - `verifier` frais : build Release et Debug à 0 erreur, test de la valeur par défaut en Release,
+    `Alundra.Tests` 1778/1778, oracle de l'intro inchangé, les deux mutations de T5 établies à la
+    lecture : **CONFIRMED** ;
+  - contradicteur, en lecture seule : **CONFIRMED**, aucun P0 à P2.
+
+  Reportés :
+  - (P3) si l'inventaire s'ouvre pendant le fondu d'un chargement, la jauge peut rester cachée à
+    l'arrivée. `ResetSessionForLoad` referme l'inventaire sans son chemin de fermeture, et
+    `ResetDisplayForLoad` garde la phase. Même trou préexistant sur les warps ordinaires (SD5).
+    Cosmétique, rattrapable, Debug seulement ; écrit dans les limites de `save-game.md` et de
+    l'ADR-0013 ;
+  - (P4) seul l'adaptateur de production absorbe les exceptions du service ; le directeur se fie à
+    l'interface ;
+  - (P4) le chargement n'exige pas le héros au sol, contrairement à la sauvegarde (conforme à K7) ;
+    le départ pose l'animation `0x36`.
+- 🧪 **T8 — Recette en jeu** (l'auteur, hors de l'app Claude ; la DLL Debug est déployée dans
+  `alundra-project/` par le dernier build de T5) : l'acceptation en jeu ci-dessus, avec
   la DLL compilée en Debug ; le journal montre la ligne de l'interrupteur.
 
 **Acceptation d'E16.d** :

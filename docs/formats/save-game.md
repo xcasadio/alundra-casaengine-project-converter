@@ -63,6 +63,38 @@ vivant. Une seule valeur hors domaine, ou une version de données autre que 1, r
 chargement avec un message qui nomme le champ. L'application (`ApplyTo`) efface les 1024 mots de la
 banque `GameFlags` avant de copier les 64 sauvegardés.
 
+Le chargement passe par le chemin des warps (ADR-0013, `AlundraSaveGameDirector`) :
+1. préconditions : héros présent, aucun chargement en attente, aucun dialogue, aucun inventaire,
+   post-traitement et portrait inactifs, aucune transition, aucun fondu maître de la musique armé,
+   `PlayerControlFlags == 0` ;
+2. emplacement lisible le plus récent, lecture, puis validation ;
+3. contrôle du départ : warp actif, `GameManager` attaché, carte de départ résolue par la table du
+   directeur des warps ;
+4. le chargement est mis en attente, puis un départ part vers `InitialMapId` à la tuile sauvegardée
+   (animation `0x36`, direction 0, sans son) ;
+5. à l'entrée de la carte d'arrivée, juste après `GameState.InstallForMapEntry()`, donc avant le
+   premier tick : l'attente est vidée, la carte vérifiée, la session remise à zéro (indicateurs de
+   contrôle, verrou d'interaction, indice de catégorie et variables `\V`, inventaires), puis
+   `ApplyTo` et la remise de la jauge sur les valeurs chargées.
+
+Un refus, une erreur du service, un départ avorté ou une arrivée sur une autre carte laissent la
+partie intacte, avec une ligne de journal.
+
+## Touches de recette
+
+Actives quand `Alundra.dll` est compilée en Debug (D-E16-33), inactives en Release ; le journal
+note une fois qu'elles sont actives. La DLL recopiée dans `alundra-project/` est celle du dernier
+build.
+
+| Touche | Action | Emplacement |
+|---|---|---|
+| F5 | sauvegarde en binaire | `debug-binary` |
+| F6 | sauvegarde en JSON | `debug-json` |
+| F9 | charge l'emplacement lisible le plus récent | le plus récent par date d'écriture |
+
+Une sauvegarde n'est écrite que si le héros est au sol, sans dialogue, menu ni transition, et si
+l'objet capturé passe la validation.
+
 ## Limites
 
 - Le sens des drapeaux ne se valide pas : une sauvegarde éditée peut casser l'histoire, bloquer le
@@ -70,3 +102,8 @@ banque `GameFlags` avant de copier les 64 sauvegardés.
 - Une tuile dans les bornes mais dans un mur est acceptée.
 - `Hp = 0` est accepté jusqu'à E18.
 - Le temps de jeu n'avance pas pendant le chargement d'un monde.
+- « Le plus récent » de F9 : une date future gagne toujours, et un emplacement récent dont l'en-tête
+  s'ouvre mais dont les données sont abîmées bloque F9, sans repli sur le précédent.
+- Si l'inventaire s'ouvre pendant le fondu d'un chargement, la jauge peut rester cachée à
+  l'arrivée, jusqu'à la prochaine ouverture de l'inventaire ou demande d'un script. Le même trou
+  existe sur les warps ordinaires.
