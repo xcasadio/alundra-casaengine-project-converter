@@ -771,21 +771,7 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
   celle-ci.
 - **Dépendances** : E5, E6, E12.
 
-### E17 — Cinématiques en `.cutscene` ⏳ (ouverte le 2026-09-27, non planifiée)
-
-- **But** (D1) : traduire en `.cutscene` les programmes qui s'y prêtent, à commencer par le programme
-  B 129 de l'intro.
-- **Pourquoi à part** (décision de l'auteur du 2026-09-27) : le module de cinématiques du moteur n'est
-  pas prêt. La liste de ses actions est fermée (`CutsceneActionCoroutineFactory`, un jeu ne peut pas
-  en ajouter), et il manque la caméra, l'attente sur une condition, l'activation et l'animation
-  d'entités, et le dialogue (tâche 16 du plan Yarn du moteur). L'intro ne contient aucun dialogue :
-  elle orchestre les marins par des drapeaux, qu'une cinématique devrait lire et poser dans les deux
-  sens (D-E16-6).
-- **Prérequis** : un chantier moteur qui rend les cinématiques extensibles par le jeu et ajoute les
-  actions manquantes.
-- **Dépendances** : E15, E16.
-
-### E16 — État de partie : drapeaux et sauvegarde ⏳ (plan détaillé proposé le 2026-09-27 : `docs/plan-e16-etat-partie.md`)
+### E16 — État de partie : drapeaux et sauvegarde ⏳ (plan détaillé proposé le 2026-09-27, révision 3 le 2026-09-28 : `docs/plan-e16-etat-partie.md`)
 
 - **But** : terminer la gestion des deux banques de drapeaux, `GameFlags` (persistants, sauvegardés)
   et `TemporaryFlags` (vidés à chaque entrée de carte), puis leur donner une vie au-delà de la
@@ -793,16 +779,19 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
 - **Pourquoi une étape** : aucune étape de cette feuille de route ne portait les drapeaux. Ils sont
   arrivés par morceaux (E1, transitions, E13), et la sauvegarde n'a jamais été planifiée.
 - **Déjà livré** (constaté le 2026-09-27) :
-  - stockage et API : `AlundraGameState` (`AlundraGameState.cs:205-248`), port de `GetFlag`,
+  - stockage et API : `AlundraGameState` (`AlundraGameState.cs:192`, `:220`, `:244-259`), port de `GetFlag`,
     `AddFlag`, `SetFlag` et `XorFlag` (`GameEngine.cs:2828-2926`), banque choisie par le bit `0x8000`
     de l'id ;
   - cycle de vie : `TemporaryFlags` vidé et `GameFlags` conservé à chaque entrée de carte
     (`InstallForMapEntry`, D-T-13 de `plan-transitions-carte.md`), pinné par
     `AlundraGameStateSessionTests` et `AlundraWorldProxySessionStateTests` ;
-  - lecteurs et écrivains : l'interpréteur (`0x05`, `0x06`, `0x30`, `0x31`, `0x33`, `0x36`), les codes
-    numériques du texte de dialogue (banque temporaire, `AlundraDialogueDirector.cs:298`), la jauge
-    (drapeaux 1662, 1813 et 1814, `AlundraHudDirector`) et le monde (`AlundraWorldProxy.cs:1449`,
-    `:1466`, `:1712`).
+  - lecteurs et écrivains (citations remises à jour le 2026-09-28) :
+    - l'interpréteur (`0x05`, `0x06`, `0x30`, `0x31`, `0x33`, `0x36`) ;
+    - la commande `<<flag n>>` du texte Yarn, qui écrit dans la banque temporaire
+      (`AlundraYarnBindings.cs:142-153`, E15) ;
+    - la jauge : drapeaux 1662, 1813 et 1814 (`AlundraHudDirector`).
+
+    Le monde n'en écrit plus depuis la suppression de la recette `ALUNDRA_HUD_DEBUG` et de F1.
 - **Manques constatés** :
   1. **Opcodes de drapeaux non portés**, aujourd'hui sautés par taille : `0x32` (bascule par
      `XorFlag`, `EntityEventHandlers.cs:1102`), `0x34` (vrai si aucun des quatre drapeaux n'est posé,
@@ -834,6 +823,15 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
   les cutscenes (un stockage de variables Yarn fourni par la DLL, une commande de condition sur une
   interface que la DLL implémente) se construit en **E15**, quand un programme converti en a besoin.
   E16 ne touche pas le moteur pour les drapeaux.
+  *Mise à jour du 2026-09-28* : depuis E15, la DLL joue tout le texte sur `YarnDialogueRunner`, dont
+  le stockage de variables est injectable (`YarnDialogueRunner.VariableStorage`, ADR-0042 du moteur).
+  E15 n'a pas construit le pont (D-E15-13 : aucun texte n'utilise de variable). L'auteur l'a mis dans
+  E16, tranche E16.f :
+  - `$flag_n` et `$tmp_flag_n` pour les deux banques, en lecture et en écriture ;
+  - tout autre nom est refusé ;
+  - décisions D-E16-14 à D-E16-18, ADR-0010.
+
+  Le pont des cinématiques revient à E17.
 - **Décisions de l'auteur (2026-09-27)** : tout, en tranches, écran de sauvegarde en jeu compris ;
   deux formats au choix, JSON lisible et binaire compact ; un **service de sauvegarde générique
   dans le moteur**, inspiré de Godot, Unity et Unreal, auquel la DLL confie un objet de sauvegarde
@@ -841,8 +839,9 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
   le pont vers Yarn et les cutscenes attend E15 ; **E16 passe après E15**. Puis, après la relecture
   READY : §9.9 du moteur précisé, écran « Continuer » plus tard, touches F5/F6/F9 gardées par
   un interrupteur de débogage (mécanisme à choisir, O-E16-6), livre de sauvegarde porté par E16.e,
-  touche F1 et recette `ALUNDRA_HUD_DEBUG` de la jauge supprimées.
-  Détail : D-E16-1 à D-E16-13 du plan détaillé.
+  touche F1 et recette `ALUNDRA_HUD_DEBUG` de la jauge supprimées. Le 2026-09-28, après E15 :
+  variables Yarn adossées aux drapeaux dans E16 (E16.f).
+  Détail : D-E16-1 à D-E16-18 du plan détaillé.
 - **Découpage** (plan détaillé `docs/plan-e16-etat-partie.md`) :
   - **E16.0 — Mesure** (lecture seule) : ids de drapeaux utilisés, occurrences des opcodes du
     manque 1, disposition de `g_saveData` et unité du temps de jeu dans `ALUN_CD.EXE`, déclencheur de
@@ -853,10 +852,25 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
   - **E16.c — Objet de sauvegarde d'Alundra** (DLL).
   - **E16.d — Chargement et recette** (DLL).
   - **E16.e — Écran de sauvegarde en jeu** (DLL, MGUI en XAML), avec son propre plan après E16.0.
+  - **E16.f — Variables Yarn adossées aux drapeaux** (DLL), après E16.0, indépendante des autres.
 - **Hors périmètre** : les lecteurs de `ContentsGameFlag` de l'IA native (coffres, `FunctionTypeA.cs:236-264`)
-  → E14 ; le pont vers Yarn et les cutscenes → E15 ; l'écran titre (point ouvert O-E16-1) ; la
+  → E14 ; le pont vers les cutscenes → E17 ; l'écran titre (point ouvert O-E16-1) ; la
   relecture des vraies sauvegardes PS1.
 - **Dépendances** : aucune technique ; position dans la file décidée par l'auteur, après E15.
+
+### E17 — Cinématiques en `.cutscene` ⏳ (ouverte le 2026-09-27, non planifiée)
+
+- **But** (D1) : traduire en `.cutscene` les programmes qui s'y prêtent, à commencer par le programme
+  B 129 de l'intro.
+- **Pourquoi à part** (décision de l'auteur du 2026-09-27) : le module de cinématiques du moteur n'est
+  pas prêt. La liste de ses actions est fermée (`CutsceneActionCoroutineFactory`, un jeu ne peut pas
+  en ajouter), et il manque la caméra, l'attente sur une condition, l'activation et l'animation
+  d'entités, et le dialogue (tâche 16 du plan Yarn du moteur). L'intro ne contient aucun dialogue :
+  elle orchestre les marins par des drapeaux, qu'une cinématique devrait lire et poser dans les deux
+  sens (D-E16-6).
+- **Prérequis** : un chantier moteur qui rend les cinématiques extensibles par le jeu et ajoute les
+  actions manquantes.
+- **Dépendances** : E15, E16.
 
 ## 5. Règles de travail
 

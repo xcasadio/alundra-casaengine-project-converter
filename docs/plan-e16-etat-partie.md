@@ -5,10 +5,23 @@ deux banques de drapeaux, puis permet de sauvegarder et de recharger une partie 
 sur un service de sauvegarde générique ajouté au moteur.
 
 **Statut** : proposé le 2026-09-27, **en attente d'approbation**. Position dans la file : **après
-E15** (D-E16-7).
+E15** (D-E16-7) ; E15 est close et mergée dans `main` le 2026-09-28 (`2b0283b`, moteur `793d1ee8`).
 
 **Révision 2** : relecture de plan (REVISE, trois P2 corrigés), revue de sécurité (constats
 tranchés au §6), puis relecture fraîche de clôture de l'enveloppe et d'E16.0 : **READY**.
+
+**Révision 3 (2026-09-28)**, après le merge d'E15 ; la relecture de plan est à refaire :
+
+- plan rebasé sur `main` ;
+- **variables Yarn** : E15 a laissé à E16 le stockage des variables Yarn adossé aux drapeaux
+  (D-E15-13). Réponses de l'auteur D-E16-14 à D-E16-18, nouvelle tranche **E16.f**, ADR-0010 ;
+- **ADR** : l'ADR prévue en E16.0 sous le numéro 0006 est l'ADR-0010, écrite à cette révision (E15 a
+  pris les numéros 0006 à 0009) ;
+- **citations** : celles du code sont remises à jour, E15 et la suppression de F1 ayant déplacé ou
+  retiré des lignes. Le monde n'écrit plus aucun drapeau ;
+- **E16.c et E16.d** : l'indice de catégorie et les variables `\V`, ajoutés par E15, sont exclus de la
+  sauvegarde et remis à zéro au chargement ; `DebugHudRecipeApplied`, supprimé avec F1, sort de la
+  remise à zéro.
 
 | Unité | Revue avant approbation | Après exécution |
 |---|---|---|
@@ -18,6 +31,7 @@ tranchés au §6), puis relecture fraîche de clôture de l'enveloppe et d'E16.0
 | E16.c — objet de sauvegarde | **revue de sécurité** puis plan-verifier, approuvée après E16.0 | verifier frais sur l'acceptation « entrée non fiable » |
 | E16.d — chargement | **revue de sécurité** puis plan-verifier, approuvée après E16.c | verifier frais sur l'acceptation « entrée non fiable » |
 | E16.e — écran de sauvegarde (plan propre) | **revue de sécurité** puis plan-verifier | verifier frais |
+| E16.f — variables Yarn adossées aux drapeaux | plan-verifier, approuvée après E16.0 | verifier frais |
 
 Cette approbation couvre l'enveloppe et E16.0 ; chaque tranche suivante est approuvée à part, avec
 les revues de sa ligne.
@@ -41,6 +55,9 @@ les revues de sa ligne.
   qui est le moteur de script d'Alundra (D1), et les directeurs de la DLL les lisent et les écrivent.
   Le pont vers les systèmes de script du moteur (Yarn, cinématiques) se construit en E15, quand un
   programme converti en a besoin.
+  *Mise à jour du 2026-09-28* : E15 n'a pas construit le pont Yarn. Aucun texte exporté n'utilise de
+  variable, et le runner a gardé son stockage par défaut (D-E15-13 de `plan-e15-yarn.md`). Le pont
+  Yarn revient à E16 (D-E16-14, tranche E16.f), celui des cinématiques à E17.
 - **D-E16-7 — E16 passe après E15.**
 
 Réponses de l'auteur aux points ouverts (2026-09-27, après la relecture READY) :
@@ -59,22 +76,43 @@ Réponses de l'auteur aux points ouverts (2026-09-27, après la relecture READY)
 - **D-E16-12 — E16.e porte le gestionnaire du livre de sauvegarde** (O-E16-5) ; E14 le laisse de côté.
 - **D-E16-13 — La touche F1 de la recette de la jauge est supprimée**, et la recette
   `ALUNDRA_HUD_DEBUG` avec elle : elles ne servaient qu'à valider le HUD. Chantier séparé, hors de ce
-  plan (branche `chantier/remove-f1-hud-key`).
+  plan (branche `chantier/remove-f1-hud-key`, mergée dans `main` le 2026-09-27, `cb37168`).
 
-### 0.2 Faits établis (2026-09-27)
+Réponses de l'auteur sur les variables Yarn (2026-09-28, après le merge d'E15) :
+
+- **D-E16-14 — Le stockage des variables Yarn adossé aux drapeaux se construit dans E16**, dans sa
+  propre tranche (E16.f), bien qu'aucun texte exporté n'utilise encore de variable.
+- **D-E16-15 — Il n'expose que les deux banques de drapeaux.** Les faucons et les variables `\V`
+  restent lus par les fonctions d'E15.
+- **D-E16-16 — Noms** : `$flag_n` est le drapeau `n` de `GameFlags`, `$tmp_flag_n` le drapeau `n` de
+  `TemporaryFlags`. `n` s'écrit en décimal, de 0 à 32767, sans le bit de banque `0x8000` : c'est le
+  même `n` que `<<flag n>>` pour la banque temporaire.
+- **D-E16-17 — Lecture et écriture** : un drapeau est un booléen Yarn ; `true` pose le bit comme
+  l'opcode `0x05`, `false` l'efface comme l'opcode `0x06`.
+- **D-E16-18 — Tout autre nom est refusé et journalisé**, variables internes de Yarn comprises, tout
+  comme un nom de drapeau hors bornes ou une valeur non booléenne rangée sous un nom de drapeau.
+  Seul un drapeau est une variable ; rien ne se perd en silence au chargement.
+
+Decisions: see ADR-0010 (`docs/decisions/0010-game-flags-stay-in-the-dll-and-yarn-reads-them-as-variables.md`),
+qui consigne aussi D-E16-6.
+
+### 0.2 Faits établis (2026-09-27, citations du code remises à jour le 2026-09-28)
 
 Chaque fait a été relu dans le code ou le binaire cité ; les recherches larges ont été contre-vérifiées
 par un agent neuf.
 
 **Drapeaux, côté DLL**
 
-- Stockage et API : `AlundraGameState.cs:205-248`, port de `GetFlag`/`AddFlag`/`SetFlag`/`XorFlag`
-  (`GameEngine.cs:2828-2926`) ; banque choisie par le bit `0x8000`, mot `(id >> 5) & 0x3ff`.
+- Stockage et API : banques `GameFlags` et `TemporaryFlags` de 1024 mots (`AlundraGameState.cs:192`,
+  `:220`), port de `GetFlag`/`AddFlag`/`SetFlag`/`XorFlag` (`:244-259`, `GameEngine.cs:2828-2926`) ;
+  banque choisie par le bit `0x8000`, mot `(id >> 5) & 0x3ff`.
 - Cycle de vie : `InstallForMapEntry` vide `TemporaryFlags` et garde `GameFlags`
-  (`AlundraGameState.cs:264-283`, D-T-13), pinné par `AlundraGameStateSessionTests` et
+  (`AlundraGameState.cs:275-294`, D-T-13), pinné par `AlundraGameStateSessionTests` et
   `AlundraWorldProxySessionStateTests`.
 - Opcodes portés : `0x05`, `0x06`, `0x30`, `0x31`, `0x33`, `0x36`
-  (`AlundraEventProgramRunner.cs:437-451`, `:546-570`).
+  (`AlundraEventProgramRunner.cs:445-459`, `:554-577`) ; `0x05` pose le bit `1 << (id & 0x1f)` par
+  `AddFlag` (`:449`), `0x06` l'efface par `SetFlag(id, ~masque)` (`:457`), la lecture teste
+  `GetFlag(id) & masque` (`:1227`, `:1240`, `:1255`).
 - **Opcodes non portés**, sautés par taille : `0x32` bascule par `XorFlag`
   (`EntityEventHandlers.cs:1102`), `0x34` vrai si aucun des quatre drapeaux n'est posé (`:1132`),
   `0x35` avance quand le drapeau est à 0 (`:1152`), `0x7B`/`0x7C`/`0x80`/`0x81` sauts conditionnels à
@@ -85,9 +123,14 @@ par un agent neuf.
   (`:2324-2382`). La DLL n'en porte aucun, et `EventProgramState._34` existe sans écrivain
   (`Alundra/Scripts/EventProgramState.cs:33`). Porter une partie de la famille enverrait l'exécution
   vers un retour encore sauté par taille, ou vers un `_34` jamais posé.
-- Autres lecteurs et écrivains : codes numériques du texte (`AlundraDialogueDirector.cs:298`, banque
-  temporaire), jauge (drapeaux 1662, 1813, 1814, `AlundraHudDirector`), monde
-  (`AlundraWorldProxy.cs:1449`, `:1466`, `:1712`).
+- Autres lecteurs et écrivains :
+  - la commande `<<flag n>>` du texte Yarn (E15), qui pose `n | 0x8000` dans la banque temporaire
+    (`AlundraYarnBindings.cs:142-153`) ;
+  - la jauge : drapeaux 1662, 1813 et 1814 (`AlundraHudDirector.cs:250`, `:357-378`).
+
+  Le monde n'en écrit plus aucun. Ses trois écritures (`AlundraWorldProxy.cs:1449`, `:1466`, `:1712`
+  à `cbda4f8`) appartenaient à la recette `ALUNDRA_HUD_DEBUG` et à la touche F1, supprimées par
+  D-E16-13.
 - Tailles : la DLL dimensionne les deux banques à 1024 mots ; l'original déclare `GameFlags` sur
   64 mots (`SaveData.cs:17`) et `ClearTemporaryFlags` n'en vide que 64 (`GameEngine.cs:429-438`).
 
@@ -103,6 +146,32 @@ par un agent neuf.
 | `SlotData`, `LastMapId`, `CurrentFlagName`, `GameStateDescription`, `GameTime`, `SaveSlotIndex`, `Field_757`, `Offset` | absents |
 
 `TemporaryFlags` n'appartient pas à `SaveData` : l'original ne le sauvegarde pas.
+
+**État ajouté par E15** (§5.7 de `plan-e15-yarn.md`, lu dans `ALUN_CD.EXE`)
+
+- L'indice de catégorie `TextCategoryIndex` (`AlundraGameState.cs:206`, `g_textCategoryIndex` à
+  `0x80149CD8`) et les quatre variables `\V` `GameVariables` (`:217`, `INT_ARRAY_80191908`) sont dans
+  la BSS de l'original, **hors de `g_saveData`** (`0x801EB2E8`–`0x801EBA40`). Le point d'entrée
+  `0x8008b538` met cette BSS à zéro, et rien ne la remet à zéro ensuite. Le port ne les remet à zéro
+  que dans `ResetForTests` (`AlundraGameState.cs:299-341`).
+- `Falcon` et `FalconTemp` sont dans `g_playerStats` (`g_saveData + 0x544`, champs `+0x10` et `+0x0E`),
+  donc déjà dans les stats sauvegardées.
+
+**Yarn, depuis E15**
+
+- La DLL crée le runner sans stockage de variables (`AlundraDialogueDirector.cs:171-172`). Le moteur
+  donne alors à chaque dialogue un `Yarn.MemoryVariableStore` neuf ; un jeu peut injecter le sien
+  par `YarnDialogueRunner.VariableStorage` (`CasaEngineMonogame/CasaEngine/Framework/Dialogue/Yarn/YarnDialogueRunner.cs:25-32`,
+  `:142`, ADR-0042 du moteur).
+- Les 485 `.yarn` exportés ne déclarent, ne lisent ni n'écrivent aucune variable. Leurs seules
+  commandes sont `<<flag>>` (932) et `<<falcon_update>>` (7).
+- Contrat de stockage de Yarn Spinner 3.2.1 (documentation XML du paquet) :
+  - `Yarn.IVariableAccess` : `TryGetValue<T>`, `GetVariableKind`, `Program`, `SmartVariableEvaluator` ;
+  - `Yarn.IVariableStorage` : `SetValue` pour un texte, un nombre ou un booléen, et `Clear`.
+
+  Selon cette documentation, `TryGetValue` lit la valeur dans le stockage, dans les valeurs
+  initiales du `Program` ou dans une variable calculée. Ce que la machine virtuelle de Yarn fait
+  quand `TryGetValue` échoue n'est pas établi (E16.f, T1).
 
 **Chargement et texte de l'emplacement dans l'original**
 
@@ -133,16 +202,17 @@ par un agent neuf.
 
 **Accroches dans la DLL**
 
-- Nouvelle partie : `AlundraWorldProxy.AdoptPlayerPawn` (`:1688-1691`), quand aucune arrivée de warp
+- Nouvelle partie : `AlundraWorldProxy.AdoptPlayerPawn` (`:1557-1561`), quand aucune arrivée de warp
   n'est en attente.
 - Arrivée sur une carte à une tuile donnée : `AlundraWarpDirector.ConsumeArrivalRecord`
-  (`:177-186`), appliquée au héros en `AlundraWorldProxy.cs:1715-1732` ; départ par opcode
-  `BeginDepartureFromChangeMapOpcode` (`:355-396`).
-- Recette gardée par une variable d'environnement : `ALUNDRA_HUD_DEBUG`
-  (`AlundraWorldProxy.cs:156-189` sur `main`), lue une fois, journalisée, avec un point d'injection
-  pour les tests. **Elle n'atteignait pas le processus du lanceur** (D-E13-12 de
-  `plan-e13-hud.md`) ; elle est supprimée avec la touche F1 par D-E16-13. Seul son modèle de code
-  (lecture unique, journal, point d'injection) sert encore de référence pour l'interrupteur d'E16.d.
+  (`AlundraWarpDirector.cs:177-186`), lue en `AlundraWorldProxy.cs:1550` et appliquée au héros en
+  `:1563-1580` ; départ par opcode `AlundraWarpDirector.BeginDepartureFromChangeMapOpcode`
+  (`AlundraWarpDirector.cs:355-396`).
+- Recette gardée par une variable d'environnement : `ALUNDRA_HUD_DEBUG` (`AlundraWorldProxy.cs:156-189`
+  à `cbda4f8`), lue une fois, journalisée, avec un point d'injection pour les tests. **Elle
+  n'atteignait pas le processus du lanceur** (D-E13-12 de `plan-e13-hud.md`) ; elle a été supprimée
+  avec la touche F1 par D-E16-13 (`cb37168`). Seul son modèle de code (lecture unique, journal, point
+  d'injection), lisible à `cbda4f8`, sert encore de référence pour l'interrupteur d'E16.d.
 
 **Moteur** : aucun service de sauvegarde, runtime en lecture seule par contrat (§9.9 de son
 `AGENTS.md`) ; détail et proposition dans le plan moteur.
@@ -155,11 +225,11 @@ par un agent neuf.
 
 - **But** : les chiffres qui fixent le reste du plan.
 - **Contenu** :
-  0. ADR-0006 du portage : D-E16-6 (les drapeaux restent dans la DLL, le pont vers le moteur attend
-     E15). Correction de `intro-roadmap.md:321`, qui dit encore `ClearTemporaryFlags` « non porté ».
+  0. Correction de `intro-roadmap.md:321`, qui dit encore `ClearTemporaryFlags` « non porté ».
+     (D-E16-6 est consignée dans l'ADR-0010, écrite à la révision 3.)
   1. Ids de drapeaux réellement utilisés : arguments des opcodes de drapeaux dans tous les programmes
-     exportés, codes numériques du texte, champ `ContentsGameFlag` des records. Plus grand id de
-     chaque banque ; **existe-t-il un id persistant ≥ 2048 ?**
+     exportés, commandes `<<flag n>>` du Yarn exporté, champ `ContentsGameFlag` des records. Plus
+     grand id de chaque banque ; **existe-t-il un id persistant ≥ 2048 ?**
   2. Nombre d'occurrences dans le corpus de `0x32`, `0x34`, `0x35` et des **dix** opcodes de la
      famille du paramètre mémorisé (`0x78` à `0x81`), et comment ils s'y enchaînent : quel opcode
      écrit `_34`, lequel le relit ensuite, dans quels programmes.
@@ -182,8 +252,8 @@ par un agent neuf.
   dans `ALUN_CD.EXE` ; au-delà, la réponse s'écrit « non trouvé » avec les recherches faites.
 - **Arrêt** : une mesure qui contredit une décision D-E16 ou qui change une tranche suivante → la
   tranche s'arrête, la question va au §3, le plan est corrigé et relu avant E16.a.
-- **Retour** : les seules écritures sont ce plan, l'ADR-0006 et la ligne d'`intro-roadmap.md`, dans
-  un seul commit de documentation, annulable par `git revert`.
+- **Retour** : les seules écritures sont ce plan et la ligne d'`intro-roadmap.md`, dans un seul
+  commit de documentation, annulable par `git revert`.
 - **Commit** : `docs(e16): record the flag and save-data measurements`.
 
 ### E16.a — Opcodes de drapeaux ⏳ (DLL)
@@ -228,6 +298,11 @@ par un agent neuf.
     (sinon O-E16-3) ; la banque en mémoire garde ses 1024 mots, et la restitution **met les 1024 mots
     à zéro avant de copier les 64** (sinon des drapeaux de la session en cours survivraient) ;
   - `TemporaryFlags` n'est pas sauvegardé, comme dans l'original ;
+  - `TextCategoryIndex` et `GameVariables` ne sont pas sauvegardés non plus : ils sont hors de
+    `g_saveData` dans l'original (§0.2, état ajouté par E15). `Falcon` et `FalconTemp` le sont, avec
+    les neuf stats ;
+  - l'objet ne porte aucun champ propre à Yarn : les variables Yarn sont les drapeaux (D-E16-15,
+    E16.f) ;
   - le chapitre et le résumé `HP xx TIME hh:mm:ss` vont dans les **métadonnées** de l'emplacement,
     que la liste lit sans décoder la sauvegarde ;
   - le port du compteur de temps de jeu, dans l'unité mesurée en E16.0 ;
@@ -236,7 +311,7 @@ par un agent neuf.
     jeu ;
   - **l'objet possède ses propres tableaux** : au chargement, le service remplit ceux de
     `AlundraSaveGame`, jamais ceux d'`AlundraGameState.Instance` (dont les tableaux sont `readonly`,
-    `AlundraGameState.cs:170-220`) ; l'état vivant n'est touché qu'à l'application (E16.d) ;
+    `AlundraGameState.cs:170-231`) ; l'état vivant n'est touché qu'à l'application (E16.d) ;
   - **une sauvegarde est une donnée non fiable, dans les deux formats** (le CRC-32 du binaire se
     recalcule, le JSON s'édite à la main) : `Validate()` contrôle chaque champ contre le domaine
     ci-dessous ; une seule valeur hors domaine refuse tout le chargement, avec un message qui la
@@ -246,21 +321,22 @@ par un agent neuf.
   |---|---|---|
   | `HpMax` | 0..50 | `SetPlayerHpMax` (`AlundraPlayerManager.cs:660-671`) |
   | `Hp` | 0..`HpMax` | règle croisée |
-  | `MpMax` | 0..4 | `SetPlayerMpMax` (`:704-714`) ; la jauge n'a que 4 cases de magie (`AlundraHudDirector.cs:165`) |
+  | `MpMax` | 0..4 | `SetPlayerMpMax` (`:704-714`) ; la jauge n'a que 4 cases de magie (`AlundraHudDirector.cs:164`) |
   | `Mp` | 0..`MpMax` | règle croisée |
   | `Money` | 0..9999 | `SetMoney` (`:746-757`) ; un montant négatif fait lever la jauge (`AlundraHudComposer.cs:320-331`) |
-  | `WeaponId` | -1 ou 1..6 | `SetPlayerWeaponId` (`:840-846`) |
-  | `ItemId` | 0..98 | `ItemsCount = 99` (`:799`) |
+  | `WeaponId` | -1 ou 1..6 | `SetPlayerWeaponId` (`:822-834`) |
+  | `ItemId` | 0..98 | `ItemsCount = 99` (`:784`) |
   | `Falcon`, `FalconTemp` | ≥ 0, borne haute d'E16.0 | E16.0 question 6 |
-  | `NumberOfItems` | indices impairs dans [0, plafond de l'objet] ; indices pairs et indices ≥ 198 à 0 | `AlundraGameState.cs:186-190` ; plafond d'E16.0 question 6 |
+  | `NumberOfItems` | indices impairs dans [0, plafond de l'objet] ; indices pairs et indices ≥ 198 à 0 | `AlundraGameState.cs:173-180` ; plafond d'E16.0 question 6 |
   | `MapIdToInternalMapIndexTable` | chaque valeur est une clé de `world-index.json` | `AlundraWorldIndexTable.Resolve` (`:88`) ; une valeur inconnue ferait avorter à jamais le portail qui la lit (`AlundraWarpDirector.cs:304`) |
   | `InitialMapId` | clé de `world-index.json`, monde présent au catalogue | idem |
-  | `CameraTileX/Y/Z` | dans les dimensions de la carte, et sans débordement de `(tuile × largeur + largeur / 2) << 16` ni de `Z << 20` | `AlundraWorldProxy.cs:1715-1717` ; dimensions et Z maximal d'E16.0 question 6 |
+  | `CameraTileX/Y/Z` | dans les dimensions de la carte, et sans débordement de `(tuile × largeur + largeur / 2) << 16` ni de `Z << 20` | `AlundraWorldProxy.cs:1563-1565` ; dimensions et Z maximal d'E16.0 question 6 |
   | `GameTime` | 0..`0x14996C4` | plafond du compteur (`GameEngine.cs:1471-1474`) |
 
 - **Acceptation** : tests —
   - aller-retour identique en JSON et en binaire ; capture puis application donnent un état identique
-    champ par champ ; `TemporaryFlags` inchangé ; texte du résumé comparé au calcul
+    champ par champ ; `TemporaryFlags` inchangé ; ni `TemporaryFlags`, ni `TextCategoryIndex`, ni
+    `GameVariables` dans aucun des deux formats ; texte du résumé comparé au calcul
     d'`UpdateMenuStatusText` ; capture sur un héros placé à une tuile connue d'une carte connue →
     `InitialMapId` et `CameraTileX/Y/Z` égaux à ces valeurs ;
   - **pour chaque ligne du tableau, dans les deux formats**, une sauvegarde portant la valeur
@@ -269,7 +345,9 @@ par un agent neuf.
     (tableau de mauvaise longueur) : l'état d'`AlundraGameState` (tous les tableaux, les neuf stats,
     `PlayerControlFlags`) est identique octet pour octet à un instantané pris avant ;
   - aux bornes du domaine, une restitution suivie d'un tick du directeur de la jauge, du compositeur
-    de la jauge et des compositeurs de l'inventaire → aucune exception.
+    de la jauge et des compositeurs de l'inventaire → aucune exception ;
+  - si E16.f est livrée : un `$flag_n` posé par Yarn fait l'aller-retour, un `$tmp_flag_n` non.
+    Sinon, E16.f ajoute ce test.
 - **Arrêt** : un champ dont E16.0 n'a pas établi la source, l'unité ou le domaine n'est pas écrit dans
   le format ; question au §3. **Si E16.0 ne trouve aucune source des dimensions de carte lisible
   avant de charger le monde**, la promesse « état inchangé » ne couvre pas la tuile : arrêt, question
@@ -289,13 +367,17 @@ par un agent neuf.
      en cours, warp non désactivé (`AlundraWarpDirector.cs:365-368`) et garde d'abandon non
      déclenchable (`:540-548`) ; sinon refus ;
   4. **application en une étape qui ne lève pas** (copies de tableaux de longueurs déjà contrôlées),
-     de préférence à l'entrée de la carte d'arrivée : remise des singletons de session à un état
-     équivalent à une nouvelle partie (contrepartie de production de `ResetForTests`,
-     `AlundraGameState.cs:288-326` : `PlayerControlFlags`, verrou d'interaction et ses huit nombres,
-     `NewGameInventoryInitialized`, `DebugHudRecipeApplied`, états des directeurs de dialogue et
-     d'inventaire, valeurs affichées de la jauge ; liste exacte arrêtée et testée ici), copie de
-     l'objet, départ sur `InitialMapId` à la tuile `CameraTileX/Y/Z` par le chemin d'arrivée des warps,
-     reprise du temps de jeu.
+     de préférence à l'entrée de la carte d'arrivée. Elle enchaîne quatre choses :
+     - la remise des singletons de session à un état équivalent à une nouvelle partie, contrepartie
+       de production de `ResetForTests` (`AlundraGameState.cs:299-341`). Elle couvre
+       `PlayerControlFlags`, le verrou d'interaction et ses huit nombres, `NewGameInventoryInitialized`,
+       les états des directeurs de dialogue et d'inventaire et les valeurs affichées de la jauge. Elle
+       couvre aussi **`TextCategoryIndex` à 0 et `GameVariables` à zéro** : l'original ne charge que
+       dans un processus neuf, lancé par `LOADER.EXE` (§0.2), dont le point d'entrée met la BSS à
+       zéro (état ajouté par E15, §0.2). La liste exacte est arrêtée et testée ici ;
+     - la copie de l'objet ;
+     - le départ sur `InitialMapId` à la tuile `CameraTileX/Y/Z`, par le chemin d'arrivée des warps ;
+     - la reprise du temps de jeu.
 
   **Touches de recette** (D-E16-11) gardées par un interrupteur de débogage dont le mécanisme est
   tranché avant cette tranche (O-E16-6), lu une fois et journalisé quand il est actif, avec un point
@@ -308,7 +390,8 @@ par un agent neuf.
   précondition non tenue (dialogue, inventaire, transition, verrou de script) → refus, état
   identique à l'instantané ; warp désactivé, transition en cours, monde introuvable → refus, état
   identique ; un fichier au nom invalide posé dans le dossier de sauvegarde → aucune exception ;
-  interrupteur inactif → F5, F6 et F9 sans effet.
+  interrupteur inactif → F5, F6 et F9 sans effet ; chargement réussi depuis une session où
+  `TextCategoryIndex` et `GameVariables` ne sont pas nuls → les deux valent 0 après.
 - **Acceptation en jeu** (lancée hors de l'app Claude, O3 du plan moteur) : nouvelle partie sur la
   389, intro jusqu'au bout, passage sur la 390, sauvegarde ; quitter ; relancer, charger → sur la 390
   à la même tuile, stats et objets identiques ; retour sur la 389 **sans** que l'intro rejoue. La même
@@ -332,6 +415,77 @@ par un agent neuf.
   (règle de l'auteur : signaler, jamais contourner).
 - **Dépendances** : E16.0, E16.d.
 
+### E16.f — Variables Yarn adossées aux drapeaux ⏳ (DLL, docs)
+
+- **But** : D-E16-14 à D-E16-18 (ADR-0010). Un texte Yarn lit et écrit les drapeaux d'Alundra comme
+  des variables, sans que le moteur ni Yarn ne gardent d'état à eux.
+- **Contrat** :
+  1. Un stockage de la DLL, `AlundraYarnVariableStorage`, implémente `Yarn.IVariableStorage` sur
+     `AlundraGameState` et ne garde aucune donnée propre.
+  2. **Noms** (D-E16-16) :
+     - `$flag_n` est le drapeau d'id `n` de `GameFlags` ; `$tmp_flag_n` est le drapeau d'id
+       `n | 0x8000`, dans `TemporaryFlags` ;
+     - `n` est un décimal de 0 à 32767, écrit sans zéro de tête, pour qu'un drapeau n'ait qu'un seul
+       nom.
+  3. **Lecture** : la valeur est le booléen `(GetFlag(id) & (1 << (n & 0x1f))) != 0`, le test des
+     opcodes `0x30` et `0x31` (`AlundraEventProgramRunner.cs:1227`).
+  4. **Écriture** (D-E16-17) : `true` fait `AddFlag(id, masque)`, comme `0x05` (`:449`) ; `false`
+     fait `SetFlag(id, ~masque)`, comme `0x06` (`:457`). Les autres bits du mot ne changent pas.
+  5. **Refus** (D-E16-18) : les cas suivants sont journalisés une fois par nom, sans exception levée
+     par le stockage et sans changement d'état :
+     - tout autre nom ;
+     - un `n` hors bornes ou écrit autrement ;
+     - une valeur texte ou nombre rangée sous un nom de drapeau ;
+     - la lecture d'un nom refusé.
+  6. `GetVariableKind` rend `Stored` pour un nom de drapeau et `Unknown` sinon.
+  7. **`Clear()` ne touche pas les banques** : leur cycle de vie reste à `AlundraGameState` (entrée de
+     carte, nouvelle partie, chargement), conformément à D-E16-6 ; l'appel est journalisé.
+  8. `Program` et `SmartVariableEvaluator` sont gardés tels que Yarn les pose ; ils ne servent à
+     aucun drapeau.
+  9. `AlundraDialogueDirector` pose ce stockage sur chaque runner qu'il crée
+     (`AlundraDialogueDirector.cs:171-172`), donc pour tous les dialogues.
+  10. Rien ne change dans le moteur, le convertisseur ni le Yarn exporté (aucune variable, §0.2).
+- **Tâches** (un commit par tâche avec la mise à jour de ce plan) :
+  - **T1 — Mesure du comportement de Yarn** (tests exploratoires, aucun code de production). Sur un
+    runner réel avec un stockage de test qui refuse tout, établir trois points :
+    - ce que la machine virtuelle de Yarn 3.2.1 fait d'une lecture refusée (exception, valeur
+      initiale du `Program`, autre chose) et d'une écriture refusée ;
+    - quel type `T` elle demande à `TryGetValue` ;
+    - si un dialogue sans `visited()` écrit des variables internes (`$Yarn.Internal.*`) ou appelle
+      `Clear()`.
+
+    Les résultats vont dans cette tranche, sourcés par les tests.
+  - **T2 — Stockage et branchement** : contrat 1 à 9, avec les tests d'acceptation.
+  - **T3 — Documentation** : section « Variables » de `docs/formats/dialogues-yarn.md` (noms, types,
+    refus, cycle de vie, rien dans la sauvegarde).
+- **Acceptation** : tests d'`Alundra.Tests` sur des Yarn de test compilés avec les déclarations de
+  la DLL (`AlundraYarnBindings.CreateDeclarations`) :
+  - **lecture** :
+    - un bit posé par l'opcode `0x05` est lu vrai par `<<if $flag_n>>` ;
+    - `$tmp_flag_n` lit la banque temporaire ;
+    - le même `n` dans les deux banques donne deux drapeaux distincts ;
+  - **écriture** :
+    - `<<set $flag_n to true>>` est vu par l'opcode `0x30` ; `false` n'efface que ce bit ;
+    - aux bornes `n` = 0, 31, 32 et 32767, dans les deux banques, l'état obtenu est identique à celui
+      des opcodes `0x05` et `0x06` sur le même id ;
+  - **refus** : `$flag_32768`, `$flag_07`, `$foo`, `$tmp_flag_x` et un nombre rangé sous
+    `$flag_5` donnent une seule ligne de journal par nom, un état des deux banques identique à un
+    instantané, et aucune exception levée par le stockage ;
+  - **`Clear()`** : banques identiques ;
+  - **directeur** : le runner qu'il crée utilise ce stockage ;
+  - **cycle de vie** : à l'entrée de carte, un `$tmp_flag_n` posé par Yarn disparaît et un
+    `$flag_n` reste (`InstallForMapEntry`) ;
+  - **sauvegarde** : si E16.c est livrée, un `$flag_n` posé par Yarn fait l'aller-retour et un
+    `$tmp_flag_n` non. Sinon, E16.c ajoute ce test ;
+  - **non-régression** : `Alundra.Tests` sans échec, oracle de l'intro inchangé (`0x11` à la
+    frame 1704), les 485 dialogues exportés toujours joués.
+- **Arrêts** :
+  - T1 montre que la machine virtuelle lève une exception sur une lecture refusée, ou qu'un dialogue
+    exporté a besoin de variables internes : la tranche s'arrête et la question va à l'auteur
+    (O-E16-7) ;
+  - Yarn exige du stockage un comportement que l'ADR-0010 ne couvre pas : question à l'auteur.
+- **Dépendances** : E16.0 (suites de référence). Indépendante d'E16.a à E16.e.
+
 ---
 
 ## 2. Mesures
@@ -350,12 +504,16 @@ _(Remplie par E16.0.)_
 | O-E16-4 | ~~§9.9 du moteur~~ — **tranché** (D-E16-8). | E16.b |
 | O-E16-5 | ~~Qui porte le gestionnaire du livre de sauvegarde ?~~ — **tranché : E16.e** (D-E16-12). | E16.e |
 | O-E16-6 | **Comment activer les touches de recette ?** Une variable d'environnement (`ALUNDRA_SAVE_DEBUG=1`) risque le même sort que `ALUNDRA_HUD_DEBUG`, qui n'a jamais atteint le processus du lanceur (D-E13-12). Pistes à comparer en E16.d, sur ce que le lanceur transmet vraiment au jeu : un argument de ligne de commande du lanceur, un réglage du projet, un fichier de configuration à côté du jeu. À trancher par l'auteur **avant E16.d**. | E16.d |
+| O-E16-7 | Seulement si E16.f T1 montre que la machine virtuelle de Yarn lève une exception sur une lecture refusée, ou qu'un dialogue exporté a besoin de variables internes de Yarn : erreur visible (dialogue interrompu), valeur initiale du `Program` avec journal, ou autre ? | E16.f |
 
 ## 4. Hors périmètre
 
 - Écran titre et choix d'une sauvegarde au démarrage (D-E16-10 : plus tard).
 - Relecture des vraies sauvegardes de carte mémoire PS1 (non retenue le 2026-09-27).
-- Pont des drapeaux vers Yarn et les cinématiques : E15 (D-E16-6).
+- Pont des drapeaux vers les cinématiques : E17 (mise à jour de D-E16-6 du 2026-09-28). Le pont
+  vers Yarn est dans E16 (E16.f).
+- Variables Yarn autres que les drapeaux (`visited()`, variables déclarées ou calculées) : refusées
+  (D-E16-18).
 - Lecteurs de `ContentsGameFlag` de l'IA native (coffres, `FunctionTypeA.cs:236-264`) : E14.
 - Noms lisibles pour les drapeaux, au-delà des 41 drapeaux de chapitre.
 - **Risques résiduels acceptés** (jeu solo) : le sens des drapeaux ne peut pas être validé, donc une
@@ -366,7 +524,7 @@ _(Remplie par E16.0.)_
 
 ### 5.1 Budgets
 
-- Chaque tranche d'exécution (E16.a, E16.c, E16.d, E16.e) a au plus **deux tentatives** au même
+- Chaque tranche d'exécution (E16.a, E16.c, E16.d, E16.e, E16.f) a au plus **deux tentatives** au même
   niveau d'exécutant ; ensuite la session principale reprend ou l'exécution monte d'un niveau, jamais
   de troisième tentative identique.
 - Chaque frontière à risque (E16.b côté moteur, E16.c pour le format, E16.d pour la recette) a au
@@ -379,8 +537,9 @@ _(Remplie par E16.0.)_
 
 | Mutation | Tranche | Retour |
 |---|---|---|
-| Documentation (ce plan, ADR-0006, `intro-roadmap.md`) | E16.0 | `git revert` du commit de documentation. |
-| Code de la DLL et tests | E16.a, E16.c, E16.d, E16.e | Branche du chantier abandonnée (`git switch main`) ; rien n'est fusionné sans l'auteur. |
+| Documentation (ce plan, `intro-roadmap.md`) | E16.0 | `git revert` du commit de documentation. |
+| ADR-0010 | révision 3 | `git revert` de son commit ; D-E16-6 et D-E16-14 à D-E16-18 restent dans ce plan. |
+| Code de la DLL et tests | E16.a, E16.c, E16.d, E16.e, E16.f | Branche du chantier abandonnée (`git switch main`) ; rien n'est fusionné sans l'auteur. |
 | Pointeur du sous-module moteur | E16.b | Revenir au pointeur de `main` du parent ; la branche moteur est gardée. |
 | Fichiers de sauvegarde écrits par la recette | E16.d | Hors du dépôt, dans le dossier de l'utilisateur ; supprimés par l'auteur s'il le souhaite. |
 
@@ -416,5 +575,5 @@ appliqué ici, en E16.c.
 | S11 | P4 | Risques résiduels à écrire | FIX (texte) | §4 |
 
 Relevé en passant, hors de ce plan : la touche F1 de la recette de la jauge n'avait aucune garde
-(`AlundraWorldProxy.cs:2197`, `:1369-1394`), contrairement à la recette par variable
+(`AlundraWorldProxy.cs:2197`, `:1369-1394` à `cbda4f8`), contrairement à la recette par variable
 d'environnement. L'auteur a demandé sa suppression le 2026-09-27, avec celle de la recette par variable (D-E16-13, chantier séparé).
