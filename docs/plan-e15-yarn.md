@@ -644,7 +644,14 @@ ciblées en session principale) :
 de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Release` à 0 erreur et
 `Alundra.Tests` sans échec avant chaque ✅ ; **jamais d'export pendant une suite `Alundra.Tests`**) :
 
-- ⏳ **T1 — Preuve `font3`.** Un test montre que le chemin même de la boîte (`lblLine` :
+- ✅ **T1 — Preuve `font3`** (faite le 2026-09-28 : `Alundra.Tests/AlundraFont3GlyphTests.cs`, 8 cas ;
+  le vrai `font3.fnt` exporté, une vraie `DialogueScreen` et son `lblLine`, un vrai `GraphicsDevice`
+  sur un fil dédié comme les tests GPU de MGUI ; pour 16, 18, 22, 26, 28 et 29 : largeur mesurée =
+  avance de `font3`, caractère gardé tel quel en tête, au milieu et en fin, une seule ligne ; un glyphe
+  entre deux mots ne crée pas de coupure là où une espace en crée une ; **MGUI passe, aucun manque**.
+  Le premier jet de l'exécuteur se bloquait (appel imbriqué au fil GPU) et posait deux prémisses
+  fausses (`char.IsWhiteSpace` vaut faux pour 28 et 29 sur .NET 9 ; largeur trop grande pour forcer
+  une coupure) : corrigés et rejoués ; `Alundra.Tests` 1 299/1 299.) Un test montre que le chemin même de la boîte (`lblLine` :
   `SetText` avec balisage, retour à la ligne actif, `DialogueScreen.cs:358-367`), en `font3`, garde et
   mesure un caractère 16 à 29 comme un glyphe de la police (largeur = avance de `font3-charset.json`),
   **glyphes 28 et 29 compris** (le `char.IsWhiteSpace` de .NET peut les traiter comme des blancs,
