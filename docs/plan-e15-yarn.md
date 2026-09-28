@@ -67,6 +67,14 @@ Réponses de l'auteur à la relecture d'E15.b (2026-09-27) :
   vide, comme aujourd'hui.
 - **D-E15-11 — Les nœuds de la table ETC portent l'index ETC en décimal** (`Etc_0067`, `Etc_0512`).
 
+Réponses de l'auteur à la préparation d'E15.c (2026-09-28) :
+
+- **D-E15-12 — La boîte de dialogue passe en `font3` et chaque `[glyph id=N/]` devient le caractère
+  `N` de `font3`** : même police et même glyphe que l'original, et même méthode que l'inventaire,
+  déjà en `font3` (ADR-0008). Conforme à D-E12-2, qui voulait déjà `font3` pour la boîte.
+- **D-E15-13 — Le stockage de variables Yarn adossé à `AlundraGameState` (D-E16-6) passe en E16** :
+  le Yarn exporté ne déclare ni ne lit aucune variable ; E15.c garde le stockage par défaut du runner.
+
 Decisions: see ADR-0006 (`docs/decisions/0006-alundra-text-is-authored-as-yarn.md`) and ADR-0007
 (`docs/decisions/0007-falcon-update-keeps-the-state-it-replaces.md`).
 
@@ -532,41 +540,130 @@ tests du convertisseur sans échec avant chaque ✅ ; **aucun export avant T7**)
   (D-E15-2).
 - **Dépendances** : E15.0, E15.a.
 
-### E15.c — La DLL lit le Yarn ⏳ (DLL)
+### E15.c — La DLL lit le Yarn ⏳ (DLL ; détaillée le 2026-09-28, à approuver)
 
 - **But** : les dialogues, OUI/NON et l'inventaire lisent les assets Yarn ; le jeu ne lit plus aucun
-  fichier de texte brut.
-- **Contenu** :
-  - le directeur de dialogue démarre le nœud dans l'asset de la carte ou dans l'asset partagé selon le
-    bit `0x80`, et fait avancer le runner à chaque page ; un nœud absent (emplacement vide, D-E15-10)
-    ouvre une boîte vide comme aujourd'hui ; modes de fermeture, blocage du joueur,
-    `0x39`/`0x44`/`0x50`/`0x51` inchangés ;
-  - les fonctions enregistrées avec les types exacts du contrat d'E15.b ;
-  - tout texte lu hors dialogue par `DialogueAsset.TryGetLineText` (OUI/NON, noms et descriptions
-    d'objets) passe par `YarnLineTextParser` : le texte brut d'une ligne garde ses échappements
-    (`\:` y reste, constaté en T4 ; c'est le `LineParser` qui le retire) ;
-  - les commandes `flag` et `falcon_update`, les fonctions de `\X` et `\V`, et un stockage de variables
-    adossé à `AlundraGameState` (D-E16-6), tous enregistrés par la DLL ; le port de
-    `UpdateNumberOfFalcon`, `UpdatePlayerProgressState` et de la table des seuils (§5.4) ;
-    `falcon_update` garde l'état qu'elle va changer (faucons temporaires, indice de catégorie) avant
-    de mettre à jour (ADR-0007) ; la DLL porte l'indice de catégorie comme l'original, sa valeur de
-    départ et sa persistance établies depuis le binaire ; un test montre que `M134_S016_p0` lit le
-    nom de l'indice d'avant la mise à jour et `M134_S019_p0` celui d'après ;
-  - `[br/]` rendu en saut de ligne, `[empty/]` en boîte vide, `[glyph id=N/]` dessiné par la DLL
-    (glyphe `N` de `font3`) ; les marqueurs d'E12.c ignorés à l'affichage mais présents dans les
-    données ;
-  - OUI/NON et tous les noms et descriptions d'objets (inventaire, arme, objet, armure, bottes) lus
-    dans l'asset `Etc` par identifiant de ligne ;
-  - **le harnais de l'intro résout son texte par Yarn**, et le vérifie ;
-  - les tests qui fabriquaient des fichiers texte bruts fabriquent des assets.
-- **Acceptation** : `Alundra.Tests` sans échec ; oracle de l'intro inchangé (`0x11` à la frame 1704)
-  **avec un harnais qui passe par Yarn** ; **recette en jeu** (cibles au §5.5) : marin 12 à l'identique
-  (texte, OUI/NON, drapeau `\999`), marin 13 (une ligne, fermeture au bouton), la phrase partagée, le
-  texte `\X` du marin de la carte 134, le panneau aux boutons de la carte 143, noms et descriptions de
-  l'inventaire, de l'arme, de l'objet, de l'armure et des bottes inchangés ; **une ligne à `\W2` montre
-  « … »**, ni rien ni « 2 ». `\V` est vérifié par test (mini-jeux non portés).
-- **Arrêt** : un écart de texte ou de déroulement en jeu → cause établie avant toute correction.
-- **Dépendances** : E15.a, E15.b.
+  fichier de texte brut ; les glyphes de l'original (« … », flèches, boutons) sont dessinés, et les
+  textes de la table partagée s'affichent.
+- **Décisions** : D-E15-12 (boîte en `font3`, glyphe = caractère `N` de `font3`, ADR-0008), D-E15-13
+  (variables Yarn en E16).
+
+**Faits établis** (découverte en lecture seule du 2026-09-28, six terrains, puis vérifications
+ciblées en session principale) :
+
+- *Dialogue* : les opcodes `0x0D`/`0x5C` appellent `OpenDialog(textId)`, qui résout le texte par
+  `ResolveDialogText` (`AlundraEventProgramRunner.cs:1147-1171`) : bit `0x80` posé →
+  `LocalDialogueStrings[textId & 0x7F]`, chargé à l'entrée de carte par
+  `AlundraDialogueStringsLoader` (`AlundraWorldProxy.cs:579`) ; bit clair → table partagée, **non
+  exportée en brut : la boîte s'ouvre vide aujourd'hui** ; emplacement vide → boîte vide (`:1115`).
+- `AlundraDialogueDirector.Open(rawText, controlMode)` (`:169`) découpe en pages par
+  `AlundraDialogueTextParser` ; `Tick` (`:230-270`) : le bouton tourne la page tant qu'il en reste,
+  sinon ferme si le masque le permet ; la minuterie ne ferme que la dernière page et ne tourne jamais
+  de page ; `ShowCurrentPage` (`:281-302`) pose les drapeaux de la page à son affichage
+  (`AddFlag(n | 0x8000, 1 << (n & 0x1f))`) puis appelle `ShowLine` du présentateur.
+- *Affichage* : `AlundraDialoguePresenter` enveloppe le `DialogueScreen` du moteur, dont
+  `RefreshLine` passe `line.Text` à un `MGTextBlock` qui interprète le balisage MGUI et ignore les
+  attributs (`DialogueScreen.cs:358-367`). Aucune police n'est passée depuis E12.a (`1c89427`), et
+  `lblLine` d'`UI/Screens/DialogueScreen.xaml` n'a pas de `FontFamily` : la boîte est dans la police
+  TTF par défaut. L'inventaire tient `font3` par `UIFontRegistry` (`AlundraInventoryScreen.cs:57-74`,
+  `Font3FontAssetId`) et ses `TextBlock` sont en `font3` sans balisage. `font3.fnt` a les glyphes
+  16 à 29 à leur propre code (`font3-charset.json` : 18 en x=32 y=16, avance 11 ; 26 et 28 aussi).
+- *ETC* : `AlundraEtcStringTable` (`:32-100`) lit `global-strings.json` et `etc-index.json` ;
+  appelants : `AlundraEventProgramRunner.cs:625` (OUI/NON), `AlundraInventoryTextReveal` (`:87`,
+  `:123`, `:153`), `AlundraInventoryDirector.cs:994-1004`, `AlundraSubInventoryDirector.cs:440-445`.
+- *État* : `AlundraGameState.TemporaryFlags` et `GameFlags` (`:192-221`), `AlundraPlayerStats.Falcon`
+  et `FalconTemp` (`:71`, `:76`) existent. Ne sont pas portés : `UpdateNumberOfFalcon`
+  (`PlayerManager.cs:5188-5199`), `UpdatePlayerProgressState` (`TextDecoder.cs:1098-1183`),
+  `g_categoryThresholdTable` (`StaticVariables.cs:12217`, `0x8009A834`, **déclarée sans valeurs dans
+  la décompilation**), `g_textCategoryIndex` (`:13088`, `0x80149CD8`), `INT_ARRAY_80191908`
+  (`:13508`, 4 entiers). `\X2`/`\X4` lisent `EtcRes.GetItemName(g_textCategoryIndex)`, soit
+  `IconNames[id * 2]` (`EtcResR.cs:70-72`) : le nom de l'objet d'identifiant égal à l'indice de
+  catégorie, **à confirmer sur le binaire**.
+- *Assets* : la DLL retrouve un asset par son nom de catalogue (`AssetCatalog.Get`,
+  `AlundraPlayerController.cs:135`) ; le moteur charge un `.dialogue` par `DialogueAssetLoader`.
+- *Tests* : `Alundra.Tests` ne référence pas `CasaEngine.Compiler`. Lisent ou fabriquent du texte
+  brut : `IntroTraceHarnessTests.cs:731-749`, `AlundraDialogueOpcodeDispatchTests.cs:46` (injection de
+  `LocalDialogueStrings`), `AlundraDialogueOpcodesProductionTests`, `AlundraInventoryDirectorTests.cs:79-81`,
+  `AlundraSubInventoryDirectorTests.cs:78-80`, `AlundraDialogueTextParserTests`.
+
+**Contrat** :
+
+1. *Résolution* : à l'entrée de carte, la DLL tient l'asset `dialogue_{mapId}` (s'il existe),
+   `dialogue_shared` et `dialogue_etc`, obtenus par `AssetCatalog.Get(nom)` et le gestionnaire
+   d'assets du jeu, à la place d'`AlundraDialogueStringsLoader`. Numéro de texte à bit `0x80` posé →
+   nœud `M{mapId}_S{(id & 0x7F):000}` de l'asset de la carte ; bit clair → `Shared_S{id:000}` de
+   l'asset partagé. **Changement visible voulu** : les textes de la table partagée, vides aujourd'hui,
+   s'affichent (342 sites d'appel, §5.6).
+2. *Lecture page par page* : le directeur joue le nœud sur un `YarnDialogueRunner` qu'il possède. Le
+   nombre de pages est celui des identifiants `line:{nœud}_p{k}` de l'asset (déterministes, E15.b),
+   ce qui garde la règle d'aujourd'hui : le bouton tourne la page tant qu'il en reste, la minuterie ne
+   ferme que la dernière. La page suivante n'est demandée au runner (`Continue`) qu'au moment où la page
+   tourne : ses commandes et ses fonctions s'exécutent à son affichage, comme les drapeaux aujourd'hui
+   et comme l'original. Nœud absent ou asset absent → boîte vide, comme aujourd'hui (D-E15-10). Modes
+   de fermeture, blocage du joueur, avalement du bouton d'ouverture, `0x39`, `0x44`, `0x50`, `0x51`,
+   `0x5C` inchangés.
+3. *Commandes et fonctions*, enregistrées par la DLL avec les noms et les types du contrat d'E15.b :
+   `flag n` → même écriture qu'aujourd'hui (`AddFlag(n | 0x8000, 1 << (n & 0x1f))`) ; `falcon_update`
+   → garde les faucons temporaires et l'indice de catégorie, puis lance `UpdateNumberOfFalcon` et
+   `UpdatePlayerProgressState` portés (ADR-0007) ; les sept fonctions lisent cet état ; `game_var(n)`
+   lit `INT_ARRAY_80191908[n]` porté (0 tant qu'aucun mini-jeu ne l'écrit). Une commande inconnue est
+   journalisée une fois, jamais une exception.
+4. *Affichage* (D-E15-12) : la ligne reçue devient du texte `font3` : `[br/]` → saut de ligne,
+   `[glyph id=N/]` → caractère `N` inséré à sa position ; `voice`, `center`, `slow`, `empty` ignorés à
+   l'affichage (E12.c) ; un `Speaker` non vide est journalisé (E15.b prouve qu'il n'en arrive pas). La
+   boîte passe en `font3` : le présentateur tient `font3` par `UIFontRegistry`, comme l'inventaire, et
+   le donne à `DialogueScreen` par son paramètre `fontFamily` existant (texte et libellés OUI/NON).
+5. *ETC* : `AlundraEtcStringTable` garde son API et lit l'asset `dialogue_etc` : ligne
+   `line:Etc_{i:0000}_p0` par `DialogueAsset.TryGetLineText`, passée par `YarnLineTextParser` (le texte
+   brut garde ses échappements, `\:` compris), glyphes 26 et 28 rendus en caractères `font3`, comme les
+   octets bruts aujourd'hui ; un index sans nœud rend ce que rend une entrée vide aujourd'hui.
+6. Plus aucune lecture de `*.strings.json`, `global-strings.json` ni `etc-index.json` par la DLL ou par
+   `Alundra.Tests` ; `AlundraDialogueStringsLoader`, `AlundraDialogueTextParser` et la lecture de
+   fichiers d'`AlundraEtcStringTable` ne sont plus appelés (leur suppression reste à E15.d).
+7. Moteur inchangé (D-E15-2) ; variables Yarn : stockage par défaut (D-E15-13).
+
+**Tâches** (branche `chantier/e15-yarn` ; une tâche à la fois, un commit par tâche avec la mise à jour
+de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Release` à 0 erreur et
+`Alundra.Tests` sans échec avant chaque ✅ ; **jamais d'export pendant une suite `Alundra.Tests`**) :
+
+- ⏳ **T1 — Preuve `font3`.** Un test montre qu'un `MGTextBlock` en `font3` garde et mesure un
+  caractère 16 à 29 comme un glyphe de la police (largeur = avance de `font3-charset.json`), avec un
+  `MGDesktop`, jamais un `UIRoot`. **Échec → arrêt** : manque MGUI consigné dans un rapport dédié, et
+  question à l'auteur (ne pas contourner).
+- ⏳ **T2 — Faits du binaire** (lecture seule, `ALUN_CD.EXE` France, capstone) : les 8 seuils à
+  `0x8009A834` ; `g_textCategoryIndex` (`0x80149CD8`) : valeur de départ, écrivains, sauvegardé ou
+  non ; ce que lisent `\X2`/`\X4` (fonction, table, indice). Résultats au §5 ; un écart avec la
+  décompilation est tranché par le binaire, un point qui change le contrat est une question à
+  l'auteur.
+- ⏳ **T3 — État de texte porté.** `UpdateNumberOfFalcon`, `UpdatePlayerProgressState` (bits de
+  `GameFlags[0x2d]` compris), les seuils, l'indice de catégorie, `INT_ARRAY_80191908`, dans la DLL,
+  avec les valeurs de T2 ; tests de chaque branche de `TextDecoder.cs:1104-1182`, du plafond `0x32` et
+  du bit `0x800`.
+- ⏳ **T4 — Liaisons Yarn.** Enregistrement des deux commandes et des sept fonctions sur un
+  `YarnDialogueRunner` ; `Alundra.Tests` référence `CasaEngine.Compiler` (tests seulement) pour
+  compiler des Yarn d'essai ; tests : chaque commande et chaque fonction, `M134_S016_p0` lit le nom
+  d'avant la mise à jour et `M134_S019_p0` celui d'après, commande inconnue journalisée.
+- ⏳ **T5 — Dialogues.** Résolution des assets (carte, partagé), lecture page par page, rendu `font3`
+  des glyphes et des sauts de ligne, boîte en `font3`, boîte vide pour un nœud ou un asset absent ;
+  tests d'opcodes adaptés (assets injectés au lieu de chaînes) ; tests : `\W2` → caractère 18,
+  `[br/]` → saut de ligne, page `[empty/]`, drapeaux posés à l'affichage de leur page et pas avant,
+  masques de fermeture et minuterie inchangés.
+- ⏳ **T6 — ETC.** `AlundraEtcStringTable` sur `dialogue_etc` ; OUI/NON, noms et descriptions ; tests
+  d'inventaire et de sous-inventaire sur un asset au lieu de JSON, dont une description à □ (glyphe 26).
+- ⏳ **T7 — Harnais de l'intro.** Le harnais lit son texte par Yarn ; oracle `0x11` à la frame 1704
+  inchangé ; recherche dans la DLL et `Alundra.Tests` : plus aucun lecteur de texte brut appelé.
+- ⏳ **T8 — Recette en jeu** (auteur) : cibles du §5.5, plus « … » visible (`M416_S007_p1` et une
+  ligne à `\W2` au milieu), boîte en `font3`, une phrase partagée (coffre d'Anzes ou panneau).
+
+- **Acceptation** : `Alundra.Tests` sans échec ; oracle de l'intro inchangé **avec un harnais qui
+  passe par Yarn** ; recette en jeu T8 ; vérification finale neuve de la tranche.
+- **Arrêts** : MGUI ne dessine pas un caractère 16-29 de `font3` (T1) ; le binaire change un point du
+  contrat (T2) ; un écart de texte ou de déroulement en jeu → cause établie avant correction ; aucune
+  correction dans le moteur.
+- **Retour arrière** : revert des commits d'E15.c ; la DLL relit les tables brutes, toujours exportées
+  jusqu'à E15.d.
+- **Dépendances** : E15.a (branche moteur `chantier/yarn-extension-points`, pointée par le dépôt),
+  E15.b.
 
 ### E15.d — Suppression du texte brut ⏳ (convertisseur, DLL, docs)
 
