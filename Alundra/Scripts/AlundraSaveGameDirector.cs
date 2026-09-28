@@ -52,6 +52,10 @@ public sealed class AlundraSaveGameDirector
 
     private const string LogPrefix = "AlundraSaveGameDirector: ";
 
+    // The New Game position formula's tile size (AlundraWorldProxy.AdoptPlayerPawn, :1563-1565).
+    private const int TileWidth = 24;
+    private const int TileHeight = 16;
+
     // ---- K2: the debug switch (D-E16-33) --------------------------------------------------------------------
 
     /// <summary>K2/D-E16-33: whether the build turns the recipe keys on - true in a DLL compiled in Debug, false in
@@ -224,9 +228,33 @@ public sealed class AlundraSaveGameDirector
 
     // ---- K7: load ---------------------------------------------------------------------------------------------
 
-    /// <summary>K7 (F9): the most recent readable slot, loaded and validated.</summary>
+    /// <summary>
+    /// K7 (F9): preconditions, the most recent readable slot, loaded and validated, the departure checked, then
+    /// the load made PENDING and the departure armed through the warp path. Nothing of the live state changes
+    /// here: the load is applied on the arrival map (K8, <c>ApplyPendingLoad</c>).
+    /// </summary>
     private void LoadMostRecent(AlundraGameState state, AlundraEntityScriptProxy? player)
     {
+        // K7 step 1: the original never loads freely in the middle of a session (§0.2).
+        if (player == null)
+        {
+            Refuse(LoadKey, "no hero in this world.");
+            return;
+        }
+
+        if (_pendingLoad != null)
+        {
+            Refuse(LoadKey, "a load is already pending."); // SD13.
+            return;
+        }
+
+        var blocker = FindSessionBlocker(state);
+        if (blocker != null)
+        {
+            Refuse(LoadKey, blocker);
+            return;
+        }
+
         // K7 step 2 (K5).
         var chosen = SelectMostRecent(SaveSlots.ListSlots());
         if (chosen == null)
@@ -264,7 +292,70 @@ public sealed class AlundraSaveGameDirector
             return;
         }
 
-        Logs.WriteInfo(LogPrefix + $"{LoadKey}: slot '{slot}' loaded and validated (map {save.InitialMapId}).");
+        // K7 step 5 (SD1): the departure must be one the abort guard can never end - that guard lifts the gate
+        // but leaves the fade (persistence latch 1) and the sound, both started before the path is resolved.
+        var warp = AlundraWarpDirector.Instance;
+        if (state.IsWarpDisabled)
+        {
+            Refuse(LoadKey, "the warp is disabled on this map.");
+            return;
+        }
+
+        if (warp.IsTransitionInProgress)
+        {
+            Refuse(LoadKey, "a map transition is in progress.");
+            return;
+        }
+
+        if (!warp.IsGameManagerAttached)
+        {
+            Refuse(LoadKey, "no GameManager attached to change the world.");
+            return;
+        }
+
+        if (!warp.TryResolveWorldPath(save.InitialMapId, out _))
+        {
+            Refuse(LoadKey, $"map {save.InitialMapId} has no world in the warp director's world-index.json.");
+            return;
+        }
+
+        // K7 step 6: pending, then the departure - the New Game position formula
+        // (AlundraWorldProxy.AdoptPlayerPawn); C3 bounds the tile so every shift fits an int.
+        _pendingLoad = save;
+        warp.BeginDepartureForLoad(
+            (uint)save.InitialMapId,
+            (save.CameraTileX * TileWidth + TileWidth / 2) << 16,
+            (save.CameraTileY * TileHeight + TileHeight / 2) << 16,
+            save.CameraTileZ << 20,
+            player,
+            state);
+
+        if (!warp.IsTransitionInProgress)
+        {
+            AbandonPendingLoad("its departure did not arm");
+            return;
+        }
+
+        Logs.WriteInfo(
+            LogPrefix + $"{LoadKey}: slot '{slot}' loaded and validated; departing to map {save.InitialMapId} tile "
+            + $"({save.CameraTileX}, {save.CameraTileY}, {save.CameraTileZ}), applied on arrival.");
+    }
+
+    /// <summary>
+    /// K8/SD9: drops the pending load, with a warning naming <paramref name="reason"/> - called by the warp
+    /// director's abort guard (a departure that will reach no arrival), and by this director when a departure
+    /// did not arm or reached another map. A no-op without a pending load.
+    /// </summary>
+    internal void AbandonPendingLoad(string reason)
+    {
+        if (_pendingLoad == null)
+        {
+            return;
+        }
+
+        var mapId = _pendingLoad.InitialMapId;
+        _pendingLoad = null;
+        Logs.WriteWarning(LogPrefix + $"pending load of map {mapId} abandoned: {reason}.");
     }
 
     /// <summary>

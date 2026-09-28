@@ -4,13 +4,33 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Alundra.Scripts;
 using CasaEngine.Core.Logging;
+using CasaEngine.Framework.Application;
 using CasaEngine.Framework.SaveGames;
 using Microsoft.Xna.Framework.Input;
 using Xunit;
 
 namespace Alundra.Tests;
+
+/// <summary>E16.d T3/T4 (K6 and K7 step 1): one precondition of the recipe keys, posed on its own by
+/// <see cref="SaveGameDirectorTestSupport.PoseBlocker"/>.</summary>
+public enum SaveGameBlocker
+{
+    NoHero,
+    HeroInTheAir,
+    DialogueOpen,
+    InventoryOpen,
+    SubInventoryOpen,
+    PostProcessPending,
+    PortraitOpening,
+    PortraitAtRest,
+    PortraitReturning,
+    TransitionInProgress,
+    MasterMusicFadeArmed,
+    ControlFlagsNonZero,
+}
 
 /// <summary>
 /// E16.d (docs/plan-e16-etat-partie.md, T2 to T5): shared plumbing of the save-game director's tests - a fake
@@ -92,6 +112,135 @@ internal static class SaveGameDirectorTestSupport
         AlundraBgmFadeDirector.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
+    }
+
+    /// <summary>Poses one blocker and only that one, and returns the hero to pass and a fragment of the refusal's
+    /// log line naming it. Inventories set <c>MenuOpen</c> as they open: the flags are cleared again, so the
+    /// refusal can only come from the inventory itself.</summary>
+    internal static (AlundraEntityScriptProxy? Hero, string Reason) PoseBlocker(SaveGameBlocker blocker)
+    {
+        var hero = HeroAt();
+        switch (blocker)
+        {
+            case SaveGameBlocker.NoHero:
+                return (null, "no hero");
+            case SaveGameBlocker.HeroInTheAir:
+                hero.IsOnGround = 0;
+                return (hero, "not on the ground");
+            case SaveGameBlocker.DialogueOpen:
+                // A control mode other than 0 or 1 leaves PlayerControlFlags untouched (G7).
+                AlundraDialogueDirector.Instance.Open(null, null, controlMode: 5);
+                Assert.True(AlundraDialogueDirector.Instance.IsOpen);
+                return (hero, "dialogue box is open");
+            case SaveGameBlocker.InventoryOpen:
+            case SaveGameBlocker.SubInventoryOpen:
+            {
+                var tables = ItemTablesFixture.LoadReal();
+                AlundraInventoryDirector.Instance.AttachToWorld(AlundraGameState.Instance, tables, null);
+                AlundraSubInventoryDirector.Instance.AttachToWorld(AlundraGameState.Instance, tables, null);
+                InventoryTick(AlundraPadState.Start);
+                InventoryTicks(20);
+                if (blocker == SaveGameBlocker.SubInventoryOpen)
+                {
+                    InventoryTick(AlundraPadState.R1);
+                    InventoryTicks(40);
+                    Assert.True(AlundraSubInventoryDirector.Instance.IsActive);
+                    Assert.False(AlundraInventoryDirector.Instance.IsActive);
+                }
+                else
+                {
+                    Assert.True(AlundraInventoryDirector.Instance.IsActive);
+                }
+
+                // Only the inventory blocks: the portrait (shared by both menus) and the flags are put back.
+                AlundraInventoryPortrait.Instance.ResetSessionForLoad();
+                AlundraGameState.Instance.PlayerControlFlags = 0;
+                return (hero, blocker == SaveGameBlocker.SubInventoryOpen ? "sub-inventory is open" : "the inventory is open");
+            }
+
+            case SaveGameBlocker.PostProcessPending:
+                AlundraInventoryPostProcess.Instance.State = 1;
+                return (hero, "post-process is pending");
+            case SaveGameBlocker.PortraitOpening:
+                AlundraInventoryPortrait.Instance.Start(100, 100);
+                Assert.Equal(AlundraInventoryPortrait.StateOpening, AlundraInventoryPortrait.Instance.State);
+                return (hero, "portrait is not idle");
+            case SaveGameBlocker.PortraitAtRest:
+                AlundraInventoryPortrait.Instance.Start(100, 100);
+                for (var i = 0; i < 20; i++)
+                {
+                    AlundraInventoryPortrait.Instance.Step();
+                }
+
+                Assert.Equal(AlundraInventoryPortrait.StateAtRest, AlundraInventoryPortrait.Instance.State);
+                return (hero, "portrait is not idle");
+            case SaveGameBlocker.PortraitReturning:
+                AlundraInventoryPortrait.Instance.Start(100, 100);
+                AlundraInventoryPortrait.Instance.BeginReturn(100, 100);
+                Assert.Equal(AlundraInventoryPortrait.StateReturning, AlundraInventoryPortrait.Instance.State);
+                return (hero, "portrait is not idle");
+            case SaveGameBlocker.TransitionInProgress:
+                AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(390, 0, 0, 0, 0, 0, HeroAt(), new AlundraGameState());
+                Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
+                return (hero, "map transition is in progress");
+            case SaveGameBlocker.MasterMusicFadeArmed:
+                AlundraBgmFadeDirector.Instance.LoadBgm(1);
+                Assert.True(AlundraBgmFadeDirector.Instance.IsArmed);
+                return (hero, "master music fade");
+            case SaveGameBlocker.ControlFlagsNonZero:
+                AlundraGameState.Instance.PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked;
+                return (hero, "PlayerControlFlags");
+            default:
+                throw new ArgumentOutOfRangeException(nameof(blocker));
+        }
+    }
+
+    internal static void InventoryTick(uint hold)
+    {
+        AlundraGameState.Instance.TickPad.Update(hold);
+        AlundraInventoryDirector.Instance.Tick(null);
+        AlundraSubInventoryDirector.Instance.Tick();
+        AlundraInventoryPostProcess.Instance.Run();
+        AlundraInventoryPortrait.Instance.Step();
+    }
+
+    internal static void InventoryTicks(int count)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            InventoryTick(0);
+        }
+    }
+
+    /// <summary>A headless game with a real <see cref="GameManager"/> - same recipe as
+    /// <c>AlundraWarpDepartureTests.BuildGameWithGameManager</c> (G3: the warp director needs one attached to hand
+    /// a world change to).</summary>
+    internal static GameManager BuildGameManager()
+    {
+        var game = (CasaEngineGame)RuntimeHelpers.GetUninitializedObject(typeof(CasaEngineGame));
+        var componentsField = typeof(Microsoft.Xna.Framework.Game).GetField("_components", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        componentsField.SetValue(game, new Microsoft.Xna.Framework.GameComponentCollection());
+
+        var gameManager = new GameManager(game);
+        var gameManagerField = typeof(CasaEngineGame).GetField("<GameManager>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        gameManagerField.SetValue(game, gameManager);
+        return gameManager;
+    }
+
+    /// <summary>The world path the engine was asked to load, read from the manager's private field (same
+    /// reflection as <c>AlundraWarpDepartureTests.GetPendingWorldToLoad</c>).</summary>
+    internal static string? GetPendingWorldToLoad(GameManager gameManager)
+    {
+        var field = typeof(GameManager).GetField("_worldToLoad", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        return (string?)field.GetValue(gameManager);
+    }
+
+    /// <summary>The music player's recorded warp departure (private, read by reflection): null when no departure
+    /// asked it for anything.</summary>
+    internal static object? GetMusicPendingWarpDeparture()
+    {
+        var field = typeof(AlundraMusicPlayer).GetField("_pendingWarpDeparture", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        return field.GetValue(AlundraMusicPlayer.Instance);
     }
 
     /// <summary>A key-held provider over a mutable set of held keys, counting every read.</summary>
@@ -228,6 +377,24 @@ internal static class SaveGameDirectorTestSupport
                 AlundraWarpDirector.Instance.HasPendingArrival,
                 AlundraScreenFadeDirector.Instance.IsSettled,
                 AlundraSaveGameDirector.Instance.HasPendingLoad);
+        }
+
+        /// <summary>Only the game state's own fields - what a pending load must leave untouched until the
+        /// arrival (K7: "seule l'étape 7 change l'état vivant").</summary>
+        public void AssertSameGameStateAs(StateSnapshot other)
+        {
+            Assert.Equal(other.GameFlags, GameFlags);
+            Assert.Equal(other.TemporaryFlags, TemporaryFlags);
+            Assert.Equal(other.MapTable, MapTable);
+            Assert.Equal(other.Items, Items);
+            Assert.Equal(other.Stats, Stats);
+            Assert.Equal(other.PlayerControlFlags, PlayerControlFlags);
+            Assert.Equal(other.GameTime, GameTime);
+            Assert.Equal(other.DeathRetryCount, DeathRetryCount);
+            Assert.Equal(other.TextCategoryIndex, TextCategoryIndex);
+            Assert.Equal(other.GameVariables, GameVariables);
+            Assert.Equal(other.NewGameInventoryInitialized, NewGameInventoryInitialized);
+            Assert.Equal(other.IsWarpDisabled, IsWarpDisabled);
         }
 
         public void AssertSameAs(StateSnapshot other)

@@ -56,148 +56,34 @@ public sealed class AlundraSaveGameDirectorSaveTests : IDisposable
 
     // ---- Preconditions (K6 step 1) ------------------------------------------------------------------------------
 
-    public enum Blocker
-    {
-        NoHero,
-        HeroInTheAir,
-        DialogueOpen,
-        InventoryOpen,
-        SubInventoryOpen,
-        PostProcessPending,
-        PortraitOpening,
-        PortraitAtRest,
-        PortraitReturning,
-        TransitionInProgress,
-        MasterMusicFadeArmed,
-        ControlFlagsNonZero,
-    }
-
-    /// <summary>Poses one blocker and only that one, and returns the hero to pass and a fragment of the refusal's
-    /// log line naming it. Inventories set <c>MenuOpen</c> as they open: the flags are cleared again, so the
-    /// refusal can only come from the inventory itself.</summary>
-    private static (AlundraEntityScriptProxy? Hero, string Reason) Pose(Blocker blocker)
-    {
-        var hero = HeroAt();
-        switch (blocker)
-        {
-            case Blocker.NoHero:
-                return (null, "no hero");
-            case Blocker.HeroInTheAir:
-                hero.IsOnGround = 0;
-                return (hero, "not on the ground");
-            case Blocker.DialogueOpen:
-                // A control mode other than 0 or 1 leaves PlayerControlFlags untouched (G7).
-                AlundraDialogueDirector.Instance.Open(null, null, controlMode: 5);
-                Assert.True(AlundraDialogueDirector.Instance.IsOpen);
-                return (hero, "dialogue box is open");
-            case Blocker.InventoryOpen:
-            case Blocker.SubInventoryOpen:
-            {
-                var tables = ItemTablesFixture.LoadReal();
-                AlundraInventoryDirector.Instance.AttachToWorld(State, tables, null);
-                AlundraSubInventoryDirector.Instance.AttachToWorld(State, tables, null);
-                InventoryTick(AlundraPadState.Start);
-                InventoryTicks(20);
-                if (blocker == Blocker.SubInventoryOpen)
-                {
-                    InventoryTick(AlundraPadState.R1);
-                    InventoryTicks(40);
-                    Assert.True(AlundraSubInventoryDirector.Instance.IsActive);
-                    Assert.False(AlundraInventoryDirector.Instance.IsActive);
-                }
-                else
-                {
-                    Assert.True(AlundraInventoryDirector.Instance.IsActive);
-                }
-
-                // Only the inventory blocks: the portrait (shared by both menus) and the flags are put back.
-                AlundraInventoryPortrait.Instance.ResetSessionForLoad();
-                State.PlayerControlFlags = 0;
-                return (hero, blocker == Blocker.SubInventoryOpen ? "sub-inventory is open" : "the inventory is open");
-            }
-
-            case Blocker.PostProcessPending:
-                AlundraInventoryPostProcess.Instance.State = 1;
-                return (hero, "post-process is pending");
-            case Blocker.PortraitOpening:
-                AlundraInventoryPortrait.Instance.Start(100, 100);
-                Assert.Equal(AlundraInventoryPortrait.StateOpening, AlundraInventoryPortrait.Instance.State);
-                return (hero, "portrait is not idle");
-            case Blocker.PortraitAtRest:
-                AlundraInventoryPortrait.Instance.Start(100, 100);
-                for (var i = 0; i < 20; i++)
-                {
-                    AlundraInventoryPortrait.Instance.Step();
-                }
-
-                Assert.Equal(AlundraInventoryPortrait.StateAtRest, AlundraInventoryPortrait.Instance.State);
-                return (hero, "portrait is not idle");
-            case Blocker.PortraitReturning:
-                AlundraInventoryPortrait.Instance.Start(100, 100);
-                AlundraInventoryPortrait.Instance.BeginReturn(100, 100);
-                Assert.Equal(AlundraInventoryPortrait.StateReturning, AlundraInventoryPortrait.Instance.State);
-                return (hero, "portrait is not idle");
-            case Blocker.TransitionInProgress:
-                AlundraWarpDirector.Instance.BeginDepartureFromChangeMapOpcode(390, 0, 0, 0, 0, 0, HeroAt(), new AlundraGameState());
-                Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
-                return (hero, "map transition is in progress");
-            case Blocker.MasterMusicFadeArmed:
-                AlundraBgmFadeDirector.Instance.LoadBgm(1);
-                Assert.True(AlundraBgmFadeDirector.Instance.IsArmed);
-                return (hero, "master music fade");
-            case Blocker.ControlFlagsNonZero:
-                State.PlayerControlFlags = AlundraGameState.PlayerControlBits.ControlLocked;
-                return (hero, "PlayerControlFlags");
-            default:
-                throw new ArgumentOutOfRangeException(nameof(blocker));
-        }
-    }
-
-    private static void InventoryTick(uint hold)
-    {
-        State.TickPad.Update(hold);
-        AlundraInventoryDirector.Instance.Tick(null);
-        AlundraSubInventoryDirector.Instance.Tick();
-        AlundraInventoryPostProcess.Instance.Run();
-        AlundraInventoryPortrait.Instance.Step();
-    }
-
-    private static void InventoryTicks(int count)
-    {
-        for (var i = 0; i < count; i++)
-        {
-            InventoryTick(0);
-        }
-    }
-
     [Theory]
-    [InlineData(Blocker.NoHero, Keys.F5)]
-    [InlineData(Blocker.HeroInTheAir, Keys.F5)]
-    [InlineData(Blocker.DialogueOpen, Keys.F5)]
-    [InlineData(Blocker.InventoryOpen, Keys.F5)]
-    [InlineData(Blocker.SubInventoryOpen, Keys.F5)]
-    [InlineData(Blocker.PostProcessPending, Keys.F5)]
-    [InlineData(Blocker.PortraitOpening, Keys.F5)]
-    [InlineData(Blocker.PortraitAtRest, Keys.F5)]
-    [InlineData(Blocker.PortraitReturning, Keys.F5)]
-    [InlineData(Blocker.TransitionInProgress, Keys.F5)]
-    [InlineData(Blocker.MasterMusicFadeArmed, Keys.F5)]
-    [InlineData(Blocker.ControlFlagsNonZero, Keys.F5)]
-    [InlineData(Blocker.NoHero, Keys.F6)]
-    [InlineData(Blocker.HeroInTheAir, Keys.F6)]
-    [InlineData(Blocker.DialogueOpen, Keys.F6)]
-    [InlineData(Blocker.InventoryOpen, Keys.F6)]
-    [InlineData(Blocker.SubInventoryOpen, Keys.F6)]
-    [InlineData(Blocker.PostProcessPending, Keys.F6)]
-    [InlineData(Blocker.PortraitOpening, Keys.F6)]
-    [InlineData(Blocker.PortraitAtRest, Keys.F6)]
-    [InlineData(Blocker.PortraitReturning, Keys.F6)]
-    [InlineData(Blocker.TransitionInProgress, Keys.F6)]
-    [InlineData(Blocker.MasterMusicFadeArmed, Keys.F6)]
-    [InlineData(Blocker.ControlFlagsNonZero, Keys.F6)]
-    public void EachPreconditionNotHeld_WritesNothing_AndLeavesTheStateIdentical(Blocker blocker, Keys key)
+    [InlineData(SaveGameBlocker.NoHero, Keys.F5)]
+    [InlineData(SaveGameBlocker.HeroInTheAir, Keys.F5)]
+    [InlineData(SaveGameBlocker.DialogueOpen, Keys.F5)]
+    [InlineData(SaveGameBlocker.InventoryOpen, Keys.F5)]
+    [InlineData(SaveGameBlocker.SubInventoryOpen, Keys.F5)]
+    [InlineData(SaveGameBlocker.PostProcessPending, Keys.F5)]
+    [InlineData(SaveGameBlocker.PortraitOpening, Keys.F5)]
+    [InlineData(SaveGameBlocker.PortraitAtRest, Keys.F5)]
+    [InlineData(SaveGameBlocker.PortraitReturning, Keys.F5)]
+    [InlineData(SaveGameBlocker.TransitionInProgress, Keys.F5)]
+    [InlineData(SaveGameBlocker.MasterMusicFadeArmed, Keys.F5)]
+    [InlineData(SaveGameBlocker.ControlFlagsNonZero, Keys.F5)]
+    [InlineData(SaveGameBlocker.NoHero, Keys.F6)]
+    [InlineData(SaveGameBlocker.HeroInTheAir, Keys.F6)]
+    [InlineData(SaveGameBlocker.DialogueOpen, Keys.F6)]
+    [InlineData(SaveGameBlocker.InventoryOpen, Keys.F6)]
+    [InlineData(SaveGameBlocker.SubInventoryOpen, Keys.F6)]
+    [InlineData(SaveGameBlocker.PostProcessPending, Keys.F6)]
+    [InlineData(SaveGameBlocker.PortraitOpening, Keys.F6)]
+    [InlineData(SaveGameBlocker.PortraitAtRest, Keys.F6)]
+    [InlineData(SaveGameBlocker.PortraitReturning, Keys.F6)]
+    [InlineData(SaveGameBlocker.TransitionInProgress, Keys.F6)]
+    [InlineData(SaveGameBlocker.MasterMusicFadeArmed, Keys.F6)]
+    [InlineData(SaveGameBlocker.ControlFlagsNonZero, Keys.F6)]
+    public void EachPreconditionNotHeld_WritesNothing_AndLeavesTheStateIdentical(SaveGameBlocker blocker, Keys key)
     {
-        var (hero, reason) = Pose(blocker);
+        var (hero, reason) = PoseBlocker(blocker);
         var before = StateSnapshot.Take(State);
         using var log = LogCapture.Install();
 

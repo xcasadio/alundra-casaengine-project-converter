@@ -1329,7 +1329,7 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   - un objet que `TryValidate` refuse (par exemple une stat hors domaine posée dans l'état) → aucun
     appel à `Save` ;
   - chaque état de sauvegarde autre que `Saved` → une ligne de journal, aucune exception.
-- ⏳ **T4 — Chargement F9 jusqu'au départ** (K7). Tests, sur un service simulé, avec les mêmes
+- ✅ **T4 — Chargement F9 jusqu'au départ** (fait le 2026-09-28 : préconditions de K7 (héros, attente, puis `FindSessionBlocker` commun à K6), contrôle du départ et `_pendingLoad` dans `AlundraSaveGameDirector`, avec `AbandonPendingLoad` ; côté directeur des warps, `IsGameManagerAttached`, `TryResolveWorldPath` et `BeginDepartureForLoad` (`0x36`, direction 0, effet 0, action sonore vide), et `AbortDeparture` qui abandonne l'attente ; la précondition « héros en l'air » ne bloque pas F9 (K7 n'en a pas), un test le fixe ; le cas « `InitialMapId` non résolu » attache le directeur des warps à un dossier sans `world-index.json` ; les aides de blocage de T3 sont passées dans `SaveGameDirectorTestSupport` ; 32 tests dans `AlundraSaveGameDirectorLoadTests` ; `Alundra.Tests` 1770/1770) (K7). Tests, sur un service simulé, avec les mêmes
   règles injectées qu'au T3 :
   - chaque précondition non tenue (celles de K7, étape 1, dont un chargement déjà en attente et un
     fondu maître armé) → refus, aucun appel à `TryLoad`, état identique ;
