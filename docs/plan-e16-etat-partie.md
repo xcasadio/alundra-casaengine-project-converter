@@ -373,6 +373,14 @@ par un agent neuf.
 
 #### Plan détaillé d'E16.a (2026-09-28)
 
+Relectures :
+- première (`464e5ab`) : **REVISE**, un P2 : `TerrainHeight` manque aussi aux entités sans
+  contrôleur et avant leur première mise à jour ;
+- correction : D-E16-30 (`6398fa0`) ;
+- seconde : **READY**.
+
+Le plan attend l'approbation de l'auteur.
+
 **Faits établis par la reconnaissance** (lecture seule, deux passes contre-vérifiées ; scripts dans
 `scratchpad/e16a/` et `scratchpad/e16a-prod/`) :
 
