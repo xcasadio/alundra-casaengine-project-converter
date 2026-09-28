@@ -667,7 +667,7 @@ celui de `main` (§5.2).
 - **Dépendances** : aucune dans ce plan ; la question O1 du plan moteur (§9.9) doit être tranchée
   avant.
 
-### E16.c — Objet de sauvegarde d'Alundra ⏳ (DLL)
+### E16.c — Objet de sauvegarde d'Alundra ⏳ (DLL ; plan détaillé proposé le 2026-09-28, plus bas)
 
 - **But** : `AlundraSaveGame`, l'objet que la DLL confie au service (D-E16-4).
 - **Contenu** :
@@ -721,7 +721,7 @@ celui de `main` (§5.2).
   | `CameraTileX/Y/Z` | dans les dimensions de la carte, et sans débordement de `(tuile × largeur + largeur / 2) << 16` ni de `Z << 20` | `AlundraWorldProxy.cs:1563-1565` ; dimensions lues dans `tilemap/<nom>.tileMap` de la carte (§2, Q6). Pour `CameraTileZ`, la hauteur de tuile est un octet (+1 en pente), le maximum observé sur un sol est 55, et le débordement commence à 2048 : borne haute arrêtée dans le plan détaillé d'E16.c |
   | `GameTime` | 0..`0x14996C4` | plafond du compteur (`GameEngine.cs:1471-1474`, `0x80042834`) ; soixantièmes de seconde (D-E16-23) |
 
-- **Acceptation** : tests —
+- **Acceptation** (réduite par D-E16-31 : voir l'acceptation du plan détaillé ci-dessous) : tests —
   - aller-retour identique en JSON et en binaire ; capture puis application donnent un état identique
     champ par champ ; `TemporaryFlags` inchangé ; ni `TemporaryFlags`, ni `TextCategoryIndex`, ni
     `GameVariables` dans aucun des deux formats ; texte du résumé comparé au calcul
@@ -743,6 +743,193 @@ celui de `main` (§5.2).
   avant de charger le monde**, la promesse « état inchangé » ne couvre pas la tuile : arrêt, question
   à l'auteur.
 - **Dépendances** : E16.0, E16.b.
+
+#### Plan détaillé d'E16.c (2026-09-28)
+
+**Statut** : proposé. Revue de sécurité, puis relecture de plan, puis approbation de l'auteur.
+Exécution par un `security-executor` (entrée non fiable), vérification par un `verifier` frais.
+
+**Réponses de l'auteur à la planification (2026-09-28)**
+
+- **D-E16-31 — Pas d'aller-retour par le service dans les tests de la DLL.**
+  - Obstacle : les constructeurs de `SaveGameService` sont internes au moteur
+    (`SaveGameService.cs:40-55`), et celui de `SaveGameArchive` est `private protected`
+    (`SaveGameArchive.cs:77`). La DLL ne peut donc ni créer un service sur un dossier temporaire, ni
+    sérialiser sans service. Le seul service public, `GameSettings.SaveGames`, écrit sous le vrai
+    `LocalApplicationData`, ce qui est interdit aux tests (O3 du plan moteur).
+  - Les tests d'E16.c couvrent la capture, la validation et l'application. Les deux formats restent
+    couverts par les tests du moteur (`CasaEngine.Tests/SaveGames/`). Aucun changement du moteur.
+  - Conséquence acceptée : `AlundraSaveGame.Serialize` (noms, ordre et longueurs des champs) ne tourne
+    pour la première fois qu'à la recette en jeu d'E16.d, en JSON et en binaire.
+- **D-E16-32 — Les dimensions de la carte sont lues dans `tilemap/<nom>.tileMap`** (`map_size`), au
+  moment de la validation, comme le prévoyait le tableau des domaines.
+
+**Faits établis à la planification** (lus dans le code, le corpus ou `ALUN_CD.EXE` ; scripts dans
+`scratchpad/e16c/`)
+
+| Réf | Fait | Source |
+|---|---|---|
+| F1 | La table des cartes de la DLL part de l'identité sur 500 entrées, mais `world-index.json` n'a que les clés 0 à 482. Les entrées 483 à 499 d'une nouvelle partie ne sont donc pas des clés : le domaine « chaque valeur est une clé » refuserait toute sauvegarde. Corrigé en C3. | `AlundraGameState.cs:231-242` ; `Maps/world-index.json` de l'export |
+| F2 | Les 66 `0x38` atteignables du corpus écrivent 10 indices (de 5 à 439) et 51 valeurs, toutes clés de `world-index.json`. | parcours d'E16.0, `op38.py` |
+| F3 | Chacune des 483 cartes a son `tilemap/<nom>.tileMap`, au chemin déduit de `world-index.json` : dossier du `.world`, sous-dossier `tilemap`, même nom. `map_size` y vaut 52 × 60 partout. | `sizes.py` ; même dérivation qu'`EventProgramDocument.cs:107-117` |
+| F4 | La DLL lit la carte courante dans le suffixe « -{id} » du nom du monde. C'est aussi l'id qu'un warp charge, par `AlundraWorldIndexTable.Resolve`. | `AlundraWorldProxy.cs:1072`, `:1361` ; `AlundraWarpDirector.cs:304` |
+| F5 | La tuile du héros est dans `TileX`, `TileY` et `TileZ` de son proxy, avec `TileZ = PosZ >> 20`. | `AlundraWorldProxy.cs:1575-1577` |
+| F6 | `UpdateMenuStatusText` (`0x80030FC8`) garde en dernier le modèle de `0x80022C38`, `"  HP 00       TIME 00:00:00   "` (30 caractères). Il écrit les PV en 5-6, sans borne ; les heures, `t / 216000 % 100`, en 19-20 ; les minutes, `t / 3600 − 60 × (t / 216000)`, en 22-23 ; les secondes, `t / 60 − 60 × (t / 3600)`, en 25-26. | désassemblage `0x80030FC8`–`0x8003132C` |
+| F7 | Les PV du résumé sont `g_entitySlots[0].HpMax` (`0x80127D48`), pas `g_playerStats.HpMax`. Le héros les reçoit des stats à chaque réinitialisation (`ResetEntityState`, `0x800319F8`–`0x80031A04`), et les stats les reprennent du héros à la fin de chaque `MovePlayer` (`0x80032920`–`0x80032930`, `PlayerManager.cs:947-950`). La DLL ne porte pas cette recopie : ses PV n'existent que dans `PlayerStats`. Le résumé du port lit donc `PlayerStats.HpMax`. | binaire ; `AlundraPlayerManager.cs:393` |
+| F8 | Le chapitre vient de `GetFirstEnabledFlagIndex` (`0x800813B0`). La fonction parcourt des enregistrements de 0x22 octets (texte, puis id), dont le premier id est en `0x8002962E`. Un id nul compte comme posé, un id ≥ `0x8000` arrête le parcours. Elle rend de 0 à 41 et recopie le texte de l'enregistrement, qui commence par l'indice sur quatre chiffres ASCII (`"0000"`, `"0001"`…). Les 41 ids lus dans le binaire sont ceux de `ChapterFlags.cs`. | désassemblage `0x800813B0`–`0x8008149C` ; `ChapterFlags.cs:24-32` de l'analyseur |
+| F9 | La DLL n'a ni temps de jeu ni chapitre. Son horloge logique tourne à 50 Hz : les 60 unités par seconde réelle de D-E16-23 se comptent sur le temps écoulé, pas sur les ticks. | `rg` ; `AlundraLogicClock.cs:9` ; `AlundraWorldProxy.cs:526` |
+| F10 | `WeaponId` vaut 0 à la construction, puis 1 dès l'entrée en nouvelle partie, avant tout tick. Le domaine « −1 ou 1..6 » ne refuse donc aucune capture faite en jeu. | `AlundraPlayerStats.cs:58` ; `AlundraWorldProxy.cs:1557-1561` ; `AlundraPlayerManager.cs:816` |
+| F11 | Sans `items-properties.json`, `ItemsProperties` vaut 0 partout (mode dégradé) : tout compteur d'objet non nul serait alors refusé. | `AlundraItemTables.cs:132-134` |
+
+**Choix du plan (à approuver)**
+
+- **C1 — Noms** (DLL, `Alundra/Scripts/`) :
+  - `AlundraSaveGame` : l'objet, qui implémente `ISaveGameData` ;
+  - `AlundraSaveGameRules` : ce que la validation consulte (table des mondes, dossier du projet,
+    présence au catalogue, table des objets) ; le catalogue est un prédicat injecté, que la
+    production branchera sur `AssetCatalog.GetByFileName` en E16.d ;
+  - `AlundraMapSizeReader` : lecture de `map_size` ;
+  - `AlundraChapterFlags` : port de `GetFirstEnabledFlagIndex` ;
+  - dans `AlundraGameState` : `GameTime` (`uint`), `DeathRetryCount` (`byte`, le `SaveSlotIndex` de
+    l'original, D-E16-22) et `AdvanceGameTime(float elapsedSeconds)`.
+- **C2 — Contenu et ordre**. Version de données 1 ; l'ordre compte pour le binaire, qui est
+  positionnel :
+  1. `gameTime` ;
+  2. `initialMapId` ;
+  3. `cameraTileX`, `cameraTileY`, `cameraTileZ` ;
+  4. `gameFlags` (64 mots) ;
+  5. `mapIdToInternalMapIndexTable` (500) ;
+  6. un objet `playerStats` : `hp`, `hpMax`, `mp`, `mpMax`, `money`, `weaponId`, `itemId`,
+     `falconTemp`, `falcon` ;
+  7. `numberOfItems` (256) ;
+  8. `deathRetryCount`.
+
+  C'est l'ordre de `g_saveData` (§2, Q3), sans `SlotData`, `LastMapId`, `CurrentFlagName`,
+  `GameStateDescription`, `Field_757` ni `Offset`. Les types sont ceux de la DLL.
+- **C3 — Domaines arrêtés ou corrigés** (le reste du tableau d'E16.c ne change pas) :
+  - `MapIdToInternalMapIndexTable[i]` : une clé de `world-index.json`, **ou `i` lui-même** (F1). Une
+    entrée identité au-delà de 482 ne mène nulle part, comme en nouvelle partie : le portail qui la
+    lirait tombe dans la garde d'abandon (`AlundraWarpDirector.cs:540-553`) ;
+  - `InitialMapId` : clé de `world-index.json`, monde présent au catalogue, `.tileMap` lisible, avec
+    une largeur `w` et une hauteur `h` d'au moins 1 ;
+  - `CameraTileX` : 0 ≤ X < `w`, et X ≤ 1364 pour que `(X × 24 + 12) << 16` tienne dans un `int` ;
+  - `CameraTileY` : 0 ≤ Y < `h`, et Y ≤ 2047 pour `(Y × 16 + 8) << 16` ;
+  - `CameraTileZ` : de 0 à 256, soit la hauteur d'une tuile (un octet), plus 1 en pente (§2, Q6), bien
+    en dessous de 2048, où `Z << 20` déborde. Au-dessus du sol, le héros apparaît en l'air : risque
+    accepté, comme une tuile dans un mur (§4).
+- **C4 — Validation** : `bool TryValidate(AlundraSaveGameRules rules, out string error)`, sans état et
+  sans exception, quel que soit le contenu de l'objet :
+  - elle contrôle chaque champ ; au premier champ hors domaine, elle rend `false` avec un message qui
+    nomme le champ, sa valeur et le domaine (par exemple `playerStats.money = -1, outside 0..9999`) ;
+  - elle ne lit que le `.tileMap` de `InitialMapId` ; une erreur de lecture est un refus.
+- **C5 — Capture** : `static AlundraSaveGame Capture(AlundraGameState state, int currentMapId, int
+  tileX, int tileY, int tileZ)` :
+  - elle recopie les mots 0 à 63 de `GameFlags`, la table, les compteurs, les stats, `GameTime` et
+    `DeathRetryCount`, dans des tableaux propres à l'objet ;
+  - elle ne valide pas. Contrat pour E16.d : la sauvegarde n'est écrite qu'après une validation
+    réussie de l'objet capturé, pour ne jamais écrire ce qu'un chargement refuserait.
+- **C6 — Application** : `void ApplyTo(AlundraGameState state)`, sur un objet déjà validé :
+  - elle efface les 1024 mots de `GameFlags`, puis copie les 64 ;
+  - elle copie la table (500), les compteurs (256), les neuf stats, `DeathRetryCount` et `GameTime`,
+    et remet à zéro le reste fractionnaire du temps ;
+  - elle ne touche ni `TemporaryFlags`, ni `TextCategoryIndex`, ni `GameVariables`, ni
+    `PlayerControlFlags`, ni le reste de la session : c'est l'étape 4 d'E16.d ;
+  - les longueurs des tableaux sont fixées à la construction, donc elle ne lève pas.
+- **C7 — Métadonnées** : `IReadOnlyDictionary<string, string> BuildMetadata()` rend deux entrées,
+  calculées depuis l'objet lui-même :
+  - `chapter` : l'indice de F8 sur quatre chiffres (`"0000"` à `"0041"`), comme la charge utile de
+    `CurrentFlagName` ;
+  - `summary` : le texte de F6, calculé sur `hpMax` et `gameTime`.
+
+  Le nom du chapitre et l'affichage relèvent d'E16.e.
+- **C8 — Temps de jeu** : `AdvanceGameTime(elapsedSeconds)` est appelé une fois par image, en tête
+  d'`AlundraWorldProxy.Update` (`:1824`). Il ignore une durée non finie, nulle ou négative. Sinon, il
+  ajoute `elapsedSeconds × 60` à un reste fractionnaire (`double`), passe les unités entières au
+  compteur et plafonne à `0x14996C4`.
+  - Le compteur avance pendant les dialogues, les menus et les transitions, comme l'original, qui
+    compte chaque image affichée (§2, Q3). Il n'avance pas pendant le chargement d'un monde, faute de
+    proxy.
+  - Le reste fractionnaire n'est pas sauvegardé.
+  - `InstallForMapEntry` garde `GameTime` et `DeathRetryCount`, qui sont dans `g_saveData` ;
+    `ResetForTests` les remet à zéro, avec le reste fractionnaire.
+
+**Tâches** (branche `chantier/e16-proposition` ; un commit par tâche, avec la mise à jour de ce
+plan ; `Alundra.Tests` sans échec à chaque commit)
+
+- ⏳ **T1 — Temps de jeu et compteur de reprises** (C1, C8). Tests :
+  - une seconde ajoute 60, en 60 pas de 1/60 s comme en un pas de 1 s ;
+  - 120 pas de 1/120 s ajoutent 60 ;
+  - le compteur s'arrête à `0x14996C4` ;
+  - une durée NaN, infinie, nulle ou négative n'ajoute rien ;
+  - `InstallForMapEntry` garde les deux champs ; `ResetForTests` les remet à zéro ;
+  - un `Update` du proxy fait avancer le compteur ;
+  - oracle de l'intro inchangé.
+- ⏳ **T2 — Chapitre et résumé** (C1, C7, F6 à F8). `AlundraChapterFlags` porte les 41 ids et le
+  parcours. Tests :
+  - aucun drapeau posé → 0 ; le premier seul → 1 ; tous → 41 ; un trou au milieu → l'indice du trou ;
+  - un id de chapitre posé dans `TemporaryFlags` n'est pas vu ;
+  - le texte pour les temps 0, 59, 60, 3599, 3600, 215 999, 216 000 et `0x14996C4` (→ `99:59:59`), et
+    pour les PV 0, 10 et 50, comparé à un calcul écrit dans le test selon les formules de F6.
+- ⏳ **T3 — Objet, capture, application, métadonnées** (C2, C5, C6, C7). Tests :
+  - capture puis `ApplyTo` sur un état neuf → état identique champ par champ (mots 0 à 63 de
+    `GameFlags`, table, compteurs, neuf stats, `GameTime`, `DeathRetryCount`) ;
+  - un mot de `GameFlags` d'indice ≥ 64 posé dans l'état cible est effacé par `ApplyTo` ;
+  - `TemporaryFlags`, `TextCategoryIndex`, `GameVariables` et `PlayerControlFlags` de l'état cible ne
+    changent pas ;
+  - l'objet n'a aucun membre pour eux : ses champs publics sont exactement ceux de C2 (test par
+    réflexion) ;
+  - la capture ne partage aucun tableau avec l'état : modifier l'état après la capture ne change pas
+    l'objet ;
+  - capture d'un héros placé à une tuile connue d'une carte connue → `InitialMapId` et
+    `CameraTileX/Y/Z` égaux à ces valeurs ;
+  - métadonnées : `chapter` et `summary` égaux au calcul de T2.
+- ⏳ **T4 — Validation** (C3, C4, D-E16-32). `AlundraMapSizeReader` et `AlundraSaveGameRules`
+  travaillent sur un dossier de projet donné ; les tests utilisent un dossier temporaire avec un
+  `world-index.json` et des `.tileMap` de test, et un catalogue injecté. Tests :
+  - pour chaque ligne du tableau d'E16.c, corrigé par C3 : minimum, maximum, puis maximum + 1 (ou
+    minimum − 1) → refus nommant le champ ; pour `Hp`, `Mp` et les compteurs d'objets, la borne vient
+    de la règle croisée ou de la table ;
+  - `MapIdToInternalMapIndexTable` : la table d'une nouvelle partie est acceptée (F1) ; une valeur qui
+    n'est ni une clé ni son propre indice est refusée ;
+  - `InitialMapId` absente de l'index, monde absent du catalogue, `.tileMap` absent, JSON invalide,
+    `map_size` absent ou non entier, `w` ou `h` ≤ 0 → refus, sans exception ;
+  - la vraie carte 389 de l'export se lit en 52 × 60 ; sans export, le test échoue en le nommant
+    (convention d'`AlundraCellStoreProductionTests.cs:21-45`) ;
+  - `ItemsProperties` en mode dégradé → tout compteur non nul est refusé ;
+  - une valeur invalide dans le dernier champ contrôlé (`numberOfItems`) → refus, et l'état
+    d'`AlundraGameState` (tous les tableaux, les neuf stats, `PlayerControlFlags`, `GameTime`,
+    `DeathRetryCount`) est identique à un instantané pris avant ;
+  - aux bornes (tous les champs au minimum, puis au maximum) : `ApplyTo`, puis
+    `AlundraHudDirector.Tick`, `AlundraHudComposer.Compose`, `AlundraInventoryComposer.Compose` et
+    `AlundraSubInventoryComposer.Compose` → aucune exception.
+- ⏳ **T5 — Documentation et ADR** :
+  - ADR-0012 de ce dépôt : contenu de la sauvegarde d'Alundra (champs, 64 mots de drapeaux, champs
+    exclus, compteur de reprises, unité du temps de jeu, domaines, métadonnées ; D-E16-22, D-E16-23,
+    D-E16-31, D-E16-32) ;
+  - page `docs/formats/save-game.md` : champs, noms, domaines, métadonnées, limites ;
+  - mise à jour du §3 de ce plan et du tableau de suivi du plan maître.
+- ⏳ **T6 — Vérification** : `verifier` frais sur l'acceptation ci-dessous, en particulier l'entrée
+  non fiable.
+
+**Acceptation d'E16.c**, réduite par D-E16-31 :
+- les tests de T1 à T4 passent ; `Alundra.Tests` est sans échec, l'oracle de l'intro inchangé ; le
+  build est à 0 erreur ;
+- la DLL ne lit ni n'écrit aucun fichier de sauvegarde : E16.c n'appelle pas le service ;
+- le verifier rend **CONFIRMED**.
+
+Retirés par D-E16-31, et couverts par les tests du moteur : l'aller-retour JSON et binaire, et la faute
+détectée par le moteur (tableau de mauvaise longueur). Reporté : E16.f n'étant pas livrée, le test
+« `$flag_n` fait l'aller-retour » revient à E16.f, sur la capture et l'application.
+
+**Arrêts** :
+- un champ dont la source, l'unité ou le domaine n'est pas établi ;
+- une exception qui sort de `TryValidate`, de `Capture` ou d'`ApplyTo` ;
+- un test qui aurait besoin du service (D-E16-31) ;
+- un test existant qui change pour une autre raison, ou l'oracle de l'intro qui bouge.
+
+**Conséquence pour E16.d** : ses tests « chaque résultat du service autre que « chargé » » butent sur
+le même obstacle que D-E16-31. À trancher à sa planification, par exemple avec une interface de la
+DLL devant le service, simulée dans les tests.
 
 ### E16.d — Chargement et recette ⏳ (DLL)
 
