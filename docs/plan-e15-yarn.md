@@ -864,7 +864,16 @@ erreur, tests du convertisseur et `Alundra.Tests` sans échec avant chaque ✅) 
   retrait des tables brutes (`Yarn.RawTextFilesRemoved`) ; `events.md`, `README.md` (phase 5,
   arborescence, ce que la phase 8 ne couvre pas) et le guide runtime mis à jour ; recherche dans la
   documentation courante : il ne reste que l'ADR-0006, historique, et la description du retrait.)
-- ⏳ **T4 — Export complet et preuves** (jamais pendant une suite `Alundra.Tests` ; lanceur et jeu
+- ✅ **T4 — Export complet et preuves** (fait le 2026-09-28, aucun processus du jeu, du lanceur ni de
+  test ne tenait le projet : manifeste d'avant = manifeste d'après d'E15.b (24 217 fichiers,
+  `f0e968d2…`) ; premier export : `report.json` à 0 erreur (les 7 avertissements connus), aucun compteur
+  `Text.*`, `Yarn.RawTextFilesRemoved` = 486, message « accented French read as UTF-8, e.g. "Un Nouveau
+  Départ" », phase 8 PASSED avec 485 `.dialogue` chargés ; manifeste d'après : 23 731 fichiers,
+  **exactement** 486 disparitions (483 `*.strings.json`, `global-strings.json`, `etc-index.json`,
+  `control-codes.json`), aucun ajout, seul `report.json` modifié ; second export : 0 erreur,
+  `Yarn.RawTextFilesRemoved` = 0, manifeste identique au premier hormis `report.json` ; recherche dans
+  tous les projets hors moteur : plus aucun lecteur ni écrivain de ces fichiers, seul le nettoyage à
+  liste fermée et ses tests en dossiers temporaires les nomment.) (jamais pendant une suite `Alundra.Tests` ; lanceur et jeu
   fermés) : manifeste d'avant comparé au manifeste d'après de T7 d'E15.b (`scratchpad/t7/manifest-after2.txt`,
   tout écart est noté et expliqué avant d'aller plus loin) ; export complet sur place ; `report.json` à
   0 erreur, `Yarn.RawTextFilesRemoved` = 486, le message « accented French read as UTF-8 » présent,
