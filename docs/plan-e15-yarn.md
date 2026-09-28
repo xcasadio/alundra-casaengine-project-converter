@@ -898,6 +898,69 @@ erreur, tests du convertisseur et `Alundra.Tests` sans échec avant chaque ✅) 
 - **Retour arrière** : revert des commits d'E15.d, puis export complet (les tables brutes reviennent).
 - **Dépendances** : E15.c.
 
+### E15.e — Les accents de `font3` ⏳ (convertisseur, docs ; ouverte le 2026-09-28 pendant la recette)
+
+- **Constat de l'auteur** (recette, 2026-09-28) : dans la boîte de dialogue, désormais en `font3`
+  (D-E15-12), les lettres accentuées s'affichent avec de mauvais glyphes (« oublié où » → une virgule
+  puis un pointillé ; « répète » illisible).
+- **Cause établie** : le texte est juste — l'extracteur remplace déjà les paires PSX par de l'UTF-8
+  (`TextDecoder.DecodeString`, appelé par `GameMap.cs:132` et `EtcRes.cs:46` ; `}Y` → « é »). C'est la
+  **table caractère → case de `font3`** qui est fausse : `FontWriter` (`Writers/FontWriter.cs:26-46`,
+  `:67-69`, `:218-298`) associe chaque case à un caractère par la page **CP850**
+  (`TextDecoder.ConvertCp850ToLatin1`), alors que l'atlas du jeu est rangé en **CP1252/Latin-1** :
+  l'original dessine `}c` avec la case `0x90 + c` et `{c` avec la case `0x50 + c`
+  (`TextDecoder.cs:216-260`, commentaire `:8-16` : `}Y` = `0xE9` = « é », `{L` = `0x9C` = « œ »).
+  L'atlas le confirme à l'œil : la case 130 (où l'export envoie « é ») est une virgule, la 233 est
+  « é » ; la 151 (« ù » à l'export) est un pointillé, la 249 est « ù » ; de même 138/232 (« è ») et
+  147/244 (« ô »).
+- **Ampleur** (corpus complet) : les 17 caractères non ASCII du texte — é (16 281), à (4 149), è
+  (3 374), ê (2 013), ç (1 156), î (590), ô (577), â (573), œ (473, **aucun glyphe** aujourd'hui), û
+  (333), ù (285), Ç (125), ° (70), ï (28), « (2), » (2), É (1) — sont tous envoyés vers la mauvaise
+  case, sauf « ° ». L'inventaire (déjà en `font3`) a le même défaut. Seul `FontWriter` utilise CP850
+  (les autres « 850 » de la DLL sont des adresses de l'original).
+- **Décisions de l'auteur (2026-09-28)** :
+  - **D-E15-14** — les textes restent tels quels : la conversion des paires PSX en UTF-8 faite à
+    l'extraction est la bonne ;
+  - **D-E15-15** — l'association « case de `font3` ↔ caractère Unicode » se fait dans le convertisseur
+    (`FontWriter`), pas dans l'extracteur ;
+  - **D-E15-16** — seuls les caractères **prouvés** sont associés : les codes inférieurs à 128 comme
+    aujourd'hui (identité, glyphes 16 à 29 compris), plus les 17 caractères non ASCII du texte, chacun
+    vers la case de son code CP1252 (é `0xE9`, à `0xE0`, è `0xE8`, ê `0xEA`, ç `0xE7`, î `0xEE`, ô
+    `0xF4`, â `0xE2`, œ `0x9C`, û `0xFB`, ù `0xF9`, Ç `0xC7`, ° `0xB0`, ï `0xEF`, « `0xAB`, » `0xBB`, É
+    `0xC9`) ; les autres cases de 128 à 255 n'ont pas de caractère.
+  - ADR-0009.
+
+**Contrat** :
+
+1. `FontWriter` associe chaque case selon D-E15-16 et n'utilise plus CP850 ; plus aucune collision,
+   donc plus d'avertissement de doublons ; l'avance de chaque glyphe reste celle de son code brut
+   (`FontCharWidths.csv`), inchangée.
+2. `UI/font3.fnt` ne contient que les cases associées ; `UI/font3-charset.json` garde les 256 cases,
+   avec `codepoint` vide et `in_font` faux pour une case sans caractère, et une raison lisible
+   (format documenté dans `docs/formats/font.md`).
+3. Rien ne change dans les textes, la DLL ni le moteur.
+
+**Tâches** (un commit par tâche avec la mise à jour de ce plan ; build à 0 erreur, tests du
+convertisseur et `Alundra.Tests` sans échec avant chaque ✅) :
+
+- ⏳ **T1 — Table de `font3`.** `FontWriter` et `FontWriterTests` : chacun des 17 caractères vers sa
+  case (position x, y vérifiée), la case 130 absente, « œ » présent, ASCII et glyphes 16 à 29
+  inchangés, aucune collision ; `AlundraFont3GlyphTests` mesure aussi « é » (avance de la case 233) à
+  travers la boîte ; `docs/formats/font.md` et ADR-0009.
+- ⏳ **T2 — Export et preuves** (jamais pendant une suite `Alundra.Tests` ; lanceur et jeu fermés) :
+  manifeste d'avant = manifeste d'après d'E15.d (`scratchpad/e15d/manifest-after2.txt`) ; export complet
+  sur place ; `report.json` à 0 erreur, sans l'avertissement de doublons de police ; manifeste d'après =
+  **seulement** `UI/font3.fnt`, `UI/font3-charset.json` et `report.json` modifiés ; second export
+  identique hormis `report.json` ; dans le `.fnt` exporté, chacun des 17 caractères pointe vers sa case
+  CP1252.
+- ⏳ **T3 — Recette en jeu** (auteur) : fusionnée avec celle d'E15.d (T5) : accents justes dans la boîte
+  de dialogue et dans l'inventaire.
+
+- **Arrêts** : un caractère du texte sans case prouvée ; un manifeste qui montre un autre changement
+  que ces trois fichiers → cause établie avant tout.
+- **Retour arrière** : revert des commits d'E15.e puis export complet.
+- **Dépendances** : E15.d.
+
 ---
 
 ## 3. Points ouverts
