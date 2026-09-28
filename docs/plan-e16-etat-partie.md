@@ -746,8 +746,9 @@ celui de `main` (§5.2).
 
 #### Plan détaillé d'E16.c (2026-09-28)
 
-**Statut** : proposé. Revue de sécurité, puis relecture de plan, puis approbation de l'auteur.
-Exécution par un `security-executor` (entrée non fiable), vérification par un `verifier` frais.
+**Statut** : proposé. Revue de sécurité faite (tableau en fin de section, constats intégrés) ; reste
+la relecture de plan, puis l'approbation de l'auteur. Exécution par un `security-executor` (entrée
+non fiable), vérification par un `verifier` frais.
 
 **Réponses de l'auteur à la planification (2026-09-28)**
 
@@ -806,6 +807,14 @@ Exécution par un `security-executor` (entrée non fiable), vérification par un
 
   C'est l'ordre de `g_saveData` (§2, Q3), sans `SlotData`, `LastMapId`, `CurrentFlagName`,
   `GameStateDescription`, `Field_757` ni `Offset`. Les types sont ceux de la DLL.
+
+  - `Serialize` suit la disposition de la version 1 quelle que soit `archive.DataVersion`. Il ne se
+    branche sur aucune valeur lue et ne lève jamais de lui-même, car une exception du jeu sort de
+    `TryLoad` (`SaveGameService.cs:165-176`). Au chargement, il retient `archive.DataVersion` dans une
+    propriété non sérialisée, `LoadedDataVersion`, que `TryValidate` contrôle (C4). Raison : le moteur
+    charge toute version ≤ `LatestDataVersion`, 0 compris (SC2).
+  - Les trois tableaux sont des champs `readonly`, initialisés à leur longueur. Ni `TryValidate` ni
+    `ApplyTo` ne peuvent donc trouver un tableau nul ou de mauvaise longueur (SC4).
 - **C3 — Domaines arrêtés ou corrigés** (le reste du tableau d'E16.c ne change pas) :
   - `MapIdToInternalMapIndexTable[i]` : une clé de `world-index.json`, **ou `i` lui-même** (F1). Une
     entrée identité au-delà de 482 ne mène nulle part, comme en nouvelle partie : le portail qui la
@@ -821,7 +830,12 @@ Exécution par un `security-executor` (entrée non fiable), vérification par un
   sans exception, quel que soit le contenu de l'objet :
   - elle contrôle chaque champ ; au premier champ hors domaine, elle rend `false` avec un message qui
     nomme le champ, sa valeur et le domaine (par exemple `playerStats.money = -1, outside 0..9999`) ;
-  - elle ne lit que le `.tileMap` de `InitialMapId` ; une erreur de lecture est un refus.
+  - elle refuse d'abord un `LoadedDataVersion` autre que 1 (SC2) ;
+  - elle ne lit que le `.tileMap` de `InitialMapId`, et seulement après avoir trouvé la clé dans
+    `world-index.json` : le chemin vient toujours de ce fichier, jamais de la sauvegarde ;
+  - toute exception du lecteur ou du prédicat du catalogue devient un refus (entrées-sorties, accès,
+    JSON), et les entiers de `map_size` se lisent par des lectures « Try », sans conversion qui lève
+    (SC6).
 - **C5 — Capture** : `static AlundraSaveGame Capture(AlundraGameState state, int currentMapId, int
   tileX, int tileY, int tileZ)` :
   - elle recopie les mots 0 à 63 de `GameFlags`, la table, les compteurs, les stats, `GameTime` et
@@ -861,6 +875,8 @@ plan ; `Alundra.Tests` sans échec à chaque commit)
   - 120 pas de 1/120 s ajoutent 60 ;
   - le compteur s'arrête à `0x14996C4` ;
   - une durée NaN, infinie, nulle ou négative n'ajoute rien ;
+  - une durée finie énorme (`1e12`, `float.MaxValue`) mène au plafond sans repli du compteur : la
+    borne s'applique en `double` avant la conversion (SC11) ;
   - `InstallForMapEntry` garde les deux champs ; `ResetForTests` les remet à zéro ;
   - un `Update` du proxy fait avancer le compteur ;
   - oracle de l'intro inchangé.
@@ -878,6 +894,8 @@ plan ; `Alundra.Tests` sans échec à chaque commit)
     changent pas ;
   - l'objet n'a aucun membre pour eux : ses champs publics sont exactement ceux de C2 (test par
     réflexion) ;
+  - un objet neuf a ses trois tableaux non nuls, de longueurs 64, 500 et 256, déclarés `readonly`
+    (réflexion : champs en lecture seule), et `LatestDataVersion` vaut 1 (SC3, SC4) ;
   - la capture ne partage aucun tableau avec l'état : modifier l'état après la capture ne change pas
     l'objet ;
   - capture d'un héros placé à une tuile connue d'une carte connue → `InitialMapId` et
@@ -893,15 +911,28 @@ plan ; `Alundra.Tests` sans échec à chaque commit)
     n'est ni une clé ni son propre indice est refusée ;
   - `InitialMapId` absente de l'index, monde absent du catalogue, `.tileMap` absent, JSON invalide,
     `map_size` absent ou non entier, `w` ou `h` ≤ 0 → refus, sans exception ;
+  - un dossier à la place du `.tileMap`, un `map_size` flottant, texte ou trop grand pour un `int`, et
+    un prédicat de catalogue qui lève → refus, sans exception (SC6) ;
+  - `LoadedDataVersion` à 0 ou à 2, posé directement sur l'objet → refus nommant la version (SC2) ;
   - la vraie carte 389 de l'export se lit en 52 × 60 ; sans export, le test échoue en le nommant
     (convention d'`AlundraCellStoreProductionTests.cs:21-45`) ;
   - `ItemsProperties` en mode dégradé → tout compteur non nul est refusé ;
   - une valeur invalide dans le dernier champ contrôlé (`numberOfItems`) → refus, et l'état
     d'`AlundraGameState` (tous les tableaux, les neuf stats, `PlayerControlFlags`, `GameTime`,
     `DeathRetryCount`) est identique à un instantané pris avant ;
-  - aux bornes (tous les champs au minimum, puis au maximum) : `ApplyTo`, puis
-    `AlundraHudDirector.Tick`, `AlundraHudComposer.Compose`, `AlundraInventoryComposer.Compose` et
-    `AlundraSubInventoryComposer.Compose` → aucune exception.
+  - aux bornes (tous les champs au minimum, puis au maximum) : `ApplyTo`, puis la jauge et les
+    inventaires, **avec des valeurs réellement dessinées** (SC5). Un appel des compositeurs avec des
+    arguments choisis à la main ne teste rien, puisque ce sont les présentateurs qui calculent ces
+    arguments depuis l'état. Le test doit donc :
+    - ouvrir la jauge par sa demande d'affichage et faire tourner `AlundraHudDirector.Tick` jusqu'à la
+      fin des roulements (l'argent roule de 10 par tick, soit environ 1000 ticks pour 9999) ;
+    - passer par les calculs des présentateurs (`AlundraHudPresenter`, `AlundraInventoryPresenter`,
+      `AlundraSubInventoryPresenter`), état dessiné à vrai, résolution des icônes d'équipement
+      comprise ;
+    - n'obtenir aucune exception.
+
+    Le départ d'une jauge en plein rattrapage des PM max relève d'E16.d, qui remet la jauge à zéro
+    (SC1).
 - ⏳ **T5 — Documentation et ADR** :
   - ADR-0012 de ce dépôt : contenu de la sauvegarde d'Alundra (champs, 64 mots de drapeaux, champs
     exclus, compteur de reprises, unité du temps de jeu, domaines, métadonnées ; D-E16-22, D-E16-23,
@@ -909,7 +940,12 @@ plan ; `Alundra.Tests` sans échec à chaque commit)
   - page `docs/formats/save-game.md` : champs, noms, domaines, métadonnées, limites ;
   - mise à jour du §3 de ce plan et du tableau de suivi du plan maître.
 - ⏳ **T6 — Vérification** : `verifier` frais sur l'acceptation ci-dessous, en particulier l'entrée
-  non fiable.
+  non fiable. Faute d'aller-retour (D-E16-31), il relit `Serialize` contre cette liste (SC3) :
+  - appels dans l'ordre de C2 ;
+  - noms uniques dans chaque objet ;
+  - `BeginObject` et `EndObject` équilibrés ;
+  - aucun branchement sur `DataVersion` ni sur une valeur lue ;
+  - `LoadedDataVersion` posée au chargement seulement.
 
 **Acceptation d'E16.c**, réduite par D-E16-31 :
 - les tests de T1 à T4 passent ; `Alundra.Tests` est sans échec, l'oracle de l'intro inchangé ; le
@@ -931,6 +967,26 @@ détectée par le moteur (tableau de mauvaise longueur). Reporté : E16.f n'éta
 le même obstacle que D-E16-31. À trancher à sa planification, par exemple avec une interface de la
 DLL devant le service, simulée dans les tests.
 
+**Revue de sécurité d'E16.c (2026-09-28)** : `security-reviewer` frais, en lecture seule, sur
+`503950b`. Aucun P0 ni P1. Pour chaque lecteur de la DLL, les domaines corrigés par C3 tiennent :
+`ItemId`, `WeaponId`, compteurs d'objets, chiffres de la jauge, faucons, parcours des chapitres (id
+max `0x6A2`, mot 53) et arithmétique de C3.
+
+| Réf | Prio | Constat | Décision | Où |
+|---|---|---|---|---|
+| SC1 | P2 | Un `_mpMaxSubStep` resté non nul (la jauge refermée pendant le rattrapage des PM max, puis `ArmAppearance`, qui ne remet que les max) garde l'aperçu actif ; avec 4 PM, `ComposeMagic` lit `magicPipFrame[4]` et lève. Un chargement qui ne remet pas les sous-étapes y mène (`AlundraHudDirector.cs:158`, `:426-445`, `:584-598` ; `AlundraHudComposer.cs:304-310`). Contrôlé à la lecture par la session principale. | FIX | E16.d étape 4 (remise exacte de la jauge) et ses tests. Le même chemin sans chargement (fermeture scriptée pendant le rattrapage) est un défaut préexistant de la jauge : signalé à part, hors E16 |
+| SC2 | P3 | Le moteur charge toute version ≤ `LatestDataVersion`, 0 compris ; une exception de `Serialize` sort de `TryLoad` | FIX | C2, C4, T4 |
+| SC3 | P3 | Sans aller-retour, des invariants de `Serialize` restent testables ; le §5.3 exige une couverture par format que D-E16-31 retire | FIX | T3, T6, §5.3 ; E16.d : un emplacement binaire hostile dans la recette |
+| SC4 | P3 | « Ne lève pas » suppose des tableaux non réassignables | FIX | C2 (`readonly`), T3 |
+| SC5 | P3 | Le test « bornes, puis jauge et inventaires » peut passer sans rien dessiner | FIX | T4 |
+| SC6 | P3 | Exceptions d'entrée-sortie, de JSON et du catalogue à absorber ; aucune traversée de chemin possible (la sauvegarde ne donne qu'une clé entière) | FIX | C4, T4 |
+| SC7 | P3 | Après un chargement, `NewGameInventoryInitialized` doit valoir vrai, sinon une entrée de carte sans arrivée de warp relancerait l'inventaire de nouvelle partie et effacerait les objets chargés (`AlundraWorldProxy.cs:1550-1561`) | FIX | E16.d étape 4 et ses tests |
+| SC8 | P3 | `Hp = 0` est dans le domaine ; sans effet tant que la mort n'est pas portée, mais « Réessayer » rechargerait une sauvegarde à 0 PV en boucle | DEFER | E18 : trancher `Hp ≥ 1` d'après le binaire, ou casser la boucle |
+| SC9 | P3 | E16.e doit borner `chapter` avant de s'en servir comme indice | FIX | prérequis d'E16.e |
+| SC10 | P4 | Une combinaison de drapeaux pourrait figer l'interpréteur (hypothèse, aucun script trouvé) | FIX | §4 : risque accepté, écrit |
+| SC11 | P4 | Une durée finie énorme pourrait faire reboucler le compteur de temps avant le plafond | FIX | T1 |
+| SC12 | P4 | Les valeurs de la table des cartes ne sont pas contrôlées contre le catalogue | REJECT | même exposition que les opcodes `0x38` et `0x53` ; les 483 mondes existent (F3) ; risque résiduel au §4 |
+
 ### E16.d — Chargement et recette ⏳ (DLL)
 
 - **But** : reprendre une partie sauvegardée.
@@ -948,10 +1004,17 @@ DLL devant le service, simulée dans les tests.
      de préférence à l'entrée de la carte d'arrivée. Elle enchaîne quatre choses :
      - la remise des singletons de session à un état équivalent à une nouvelle partie, contrepartie
        de production de `ResetForTests` (`AlundraGameState.cs:299-341`). Elle couvre
-       `PlayerControlFlags`, le verrou d'interaction et ses huit nombres, `NewGameInventoryInitialized`,
-       les états des directeurs de dialogue et d'inventaire et les valeurs affichées de la jauge. Elle
-       couvre aussi **`TextCategoryIndex` à 0 et `GameVariables` à zéro** (D-E16-19). La liste
-       exacte est arrêtée et testée ici ;
+       `PlayerControlFlags`, le verrou d'interaction et ses huit nombres, et les états des directeurs
+       de dialogue et d'inventaire. Elle couvre aussi **`TextCategoryIndex` à 0 et `GameVariables` à
+       zéro** (D-E16-19). La liste exacte est arrêtée et testée ici, avec deux points fixés par la
+       revue de sécurité d'E16.c :
+       - **la jauge est remise entièrement** : valeurs affichées de PV, PV max, PM, PM max et argent,
+         les quatre compteurs de sous-étapes, `CoinIconFrame`, `IsMoneyRolling` et les images des
+         cases de magie, soit le contenu d'`AlundraHudDirector.ResetForTests` hors `_gameState` et la
+         phase (SC1) ;
+       - **`NewGameInventoryInitialized` vaut vrai après un chargement**, et non faux comme en
+         nouvelle partie : sinon, une entrée de carte sans arrivée de warp relancerait l'inventaire
+         de nouvelle partie et effacerait les objets chargés (SC7) ;
      - la copie de l'objet ;
      - le départ sur `InitialMapId` à la tuile `CameraTileX/Y/Z`, par le chemin d'arrivée des warps ;
      - la reprise du temps de jeu.
@@ -968,12 +1031,17 @@ DLL devant le service, simulée dans les tests.
   identique à l'instantané ; warp désactivé, transition en cours, monde introuvable → refus, état
   identique ; un fichier au nom invalide posé dans le dossier de sauvegarde → aucune exception ;
   interrupteur inactif → F5, F6 et F9 sans effet ; chargement réussi depuis une session où
-  `TextCategoryIndex` et `GameVariables` ne sont pas nuls → les deux valent 0 après (D-E16-19).
+  `TextCategoryIndex` et `GameVariables` ne sont pas nuls → les deux valent 0 après (D-E16-19) ;
+  chargement depuis une jauge en plein rattrapage des PM max (affichés 3, vrais 4, `_mpMaxSubStep`
+  non nul) d'une sauvegarde à 4 PM sur 4, puis jauge rouverte et roulements finis → aucune exception
+  (SC1) ; après un chargement, une entrée de carte sans arrivée de warp garde les objets chargés
+  (SC7).
 - **Acceptation en jeu** (lancée hors de l'app Claude, O3 du plan moteur) : nouvelle partie sur la
   389, intro jusqu'au bout, passage sur la 390, sauvegarde ; quitter ; relancer, charger → sur la 390
   à la même tuile, stats et objets identiques ; retour sur la 389 **sans** que l'intro rejoue. La même
   recette réussit avec un emplacement JSON et avec un emplacement binaire. Une sauvegarde JSON éditée à
-  la main (`Money: -1`, `MpMax: 9`, carte 9999) → message de refus, le jeu continue.
+  la main (`Money: -1`, `MpMax: 9`, carte 9999) → message de refus, le jeu continue. De même pour un
+  emplacement binaire hostile, édité hors du dépôt avec son CRC-32 recalculé (SC3).
 - **Arrêt** : l'intro qui rejoue au retour sur la 389, ou un écart de stats ou d'objets après
   chargement → la tranche s'arrête, cause établie avant toute correction.
 - **Dépendances** : E16.c.
@@ -987,7 +1055,9 @@ DLL devant le service, simulée dans les tests.
   déclaré en XAML (règle de l'auteur). Le gestionnaire d'origine fait environ 2 800 lignes : **cette
   tranche aura son propre plan**, écrit après E16.0, avec ce prérequis de sécurité : les métadonnées
   d'un emplacement sont du texte non fiable, affiché borné en longueur et avec le formatage en ligne
-  de MGUI désactivé (`MGTextBlock.cs:837`), ou recalculé depuis une sauvegarde validée.
+  de MGUI désactivé (`MGTextBlock.cs:837`), ou recalculé depuis une sauvegarde validée. Avant de
+  servir d'indice, `chapter` est lu en culture invariante et borné à 0..41, ou recalculé depuis une
+  sauvegarde validée (SC9).
 - **Arrêt** : un manque de MGUI ou du moteur → consigné dans le rapport dédié, la tranche s'arrête
   (règle de l'auteur : signaler, jamais contourner).
 - **Dépendances** : E16.0, E16.d.
@@ -1005,7 +1075,7 @@ DLL devant le service, simulée dans les tests.
      - `n` est un décimal de 0 à 2047, écrit sans zéro de tête, pour qu'un drapeau n'ait qu'un seul
        nom.
   3. **Lecture** : la valeur est le booléen `(GetFlag(id) & (1 << (n & 0x1f))) != 0`, le test des
-     opcodes `0x30` et `0x31` (`AlundraEventProgramRunner.cs:1227`).
+     opcodes `0x30` et `0x31` (`FlagBranch`, `AlundraEventProgramRunner.cs:1416`).
   4. **Écriture** (D-E16-17) : `true` fait `AddFlag(id, masque)`, comme `0x05` (`:449`) ; `false`
      fait `SetFlag(id, ~masque)`, comme `0x06` (`:457`). Les autres bits du mot ne changent pas.
   5. **Refus** (D-E16-18) : les cas suivants sont journalisés une fois par nom, sans exception levée
@@ -1317,8 +1387,11 @@ tests du convertisseur 400/400, `Alundra.Tests` 1361/1361.
 - Lecteurs de `ContentsGameFlag` de l'IA native (coffres, `FunctionTypeA.cs:236-264`) : E14.
 - Noms lisibles pour les drapeaux, au-delà des 41 drapeaux de chapitre.
 - **Risques résiduels acceptés** (jeu solo) : le sens des drapeaux ne peut pas être validé, donc une
-  sauvegarde éditée peut casser la suite de l'histoire ou bloquer le joueur ; une tuile dans les
-  bornes mais dans un mur est acceptée.
+  sauvegarde éditée peut casser la suite de l'histoire, bloquer le joueur, ou même figer
+  l'interpréteur de scripts, qui n'a pas de budget de boucle (SC10, hypothèse sans script connu) ; une
+  tuile dans les bornes mais dans un mur est acceptée ; une valeur de la table des cartes qui est une
+  clé de `world-index.json` n'est pas contrôlée contre le catalogue, comme pour les opcodes `0x38` et
+  `0x53` (SC12).
 
 ## 5. Arrêts, budgets et retours arrière
 
@@ -1353,7 +1426,9 @@ tests du convertisseur 400/400, `Alundra.Tests` 1361/1361.
 - Un contrôle qui ne peut s'exécuter qu'après avoir modifié l'état vivant.
 - Une exception qui s'échappe d'une capture ou d'une restitution.
 - La DLL qui lit ou écrit un fichier de sauvegarde sans passer par le service.
-- Un cas de refus couvert dans un seul des deux formats.
+- Un cas de refus couvert dans un seul des deux formats. Depuis D-E16-31, les refus d'E16.c portent
+  sur l'objet décodé et ne dépendent pas du format ; la couverture par format repose sur les tests du
+  moteur et sur la recette d'E16.d, qui essaie un emplacement hostile dans chaque format (SC3).
 
 ## 6. Revue de sécurité (2026-09-27)
 

@@ -905,6 +905,10 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
 - **Faits déjà établis** : ce chemin ne remet pas la BSS à zéro. L'indice de catégorie du texte et les
   variables `\V` y gardent leur valeur (§5.7 de `plan-e15-yarn.md`), alors qu'un chargement d'E16
   les remet à zéro (D-E16-19). E16.0 confirme ces faits dans le binaire.
+- **Prérequis venu de la revue de sécurité d'E16.c** (SC8, `docs/plan-e16-etat-partie.md`) : la
+  validation d'E16.c accepte `Hp = 0`. Une fois la mort portée, « Réessayer » rechargerait en boucle
+  une sauvegarde éditée à 0 PV. À trancher avant d'écrire ce chemin : `Hp ≥ 1` exigé au chargement,
+  d'après ce que le binaire permet de sauvegarder, ou une autre coupure de la boucle.
 - **Dépendances** : E16 (sauvegarde et chargement), le chantier qui portera la mort du héros.
 
 ## 5. Règles de travail
