@@ -263,7 +263,7 @@ par un agent neuf.
 
 ## 1. Tranches
 
-### E16.0 — Mesure ⏳ (lecture seule, analyseur, corpus, `ALUN_CD.EXE`)
+### E16.0 — Mesure ✅ (lecture seule, analyseur, corpus, `ALUN_CD.EXE` ; faite le 2026-09-28, résultats au §2, questions O-E16-8 à O-E16-11 à l'auteur avant E16.a et E16.c)
 
 - **But** : les chiffres qui fixent le reste du plan.
 - **Contenu** :
@@ -539,7 +539,218 @@ par un agent neuf.
 
 ## 2. Mesures
 
-_(Remplie par E16.0.)_
+Mesuré le 2026-09-28 (E16.0), en lecture seule. Méthode :
+- binaire (questions 3 et 4) : deux lectures indépendantes d'`ALUN_CD.EXE` (France, capstone) ; chaque
+  désaccord entre elles a été tranché par un désassemblage de la session principale ;
+- corpus et domaines (questions 1, 2 et 6) : un relevé, puis un contradicteur qui refait tout de zéro,
+  puis un recomptage par la session principale pour la question 2 ;
+- scripts et sorties dans le dossier temporaire de la session (`scratchpad/e16-0/`).
+
+Étiquettes : [binaire], [décompilation], [corpus], [code DLL].
+
+**Q1 — Ids de drapeaux utilisés** [corpus]
+
+- **Lecture des programmes.** Les six tables A à F sont les premiers octets de `Codes`
+  (`SpriteInfoEventCodes.cs:16-108` : le même décalage sert à lire les tables puis `Codes`). Une
+  entrée plus petite que la taille cumulée des six tables ne désigne donc aucun programme (0 est la
+  sentinelle courante). Les programmes sont parcourus en largeur depuis chaque entrée valide, avec les
+  tailles d'`EventOpcodeSizeTable.cs`, sauf `0x78`, qui fait 3 octets (Q2). Toutes les issues d'un
+  branchement sont suivies, et l'adresse qui suit un `0x78` aussi (le `0x7D` y revient).
+- **Opcodes** : `GameFlags` a 1013 ids distincts, id max 2047 (mot 63) ; `TemporaryFlags` 469 ids,
+  id max 2047 (mot 63).
+- **`<<flag n>>` du Yarn** : 932 occurrences, 33 ids distincts, id max 1005 (mot 31), tous dans la
+  banque temporaire, et tous déjà vus par les opcodes.
+- **`ContentsGameFlag`** : propriété `_10` de la couche `Entities` des `.tmj`. Elle est présente sur
+  9 741 enregistrements, avec 367 valeurs non nulles distinctes de 1 à 2000 (mot 62), toutes dans
+  `GameFlags`, aucune invalidée par `EntityRecordMapper.cs:170-175`.
+- **Union** : `GameFlags` 1357 ids, max 2047 ; `TemporaryFlags` 469 ids, max 2047. **Aucun id
+  persistant ≥ 2048** : O-E16-3 est sans objet, et `GameFlags` s'écrit sur 64 mots (E16.c).
+- **Limite, « non trouvé »** : un index de programme sans le bit `0x80` lit la table globale de
+  `map_alundra` (`EntityEventHandlers.cs:420-445`) ; la DLL retombe alors sur la table de la carte
+  (`AlundraEventProgramRunner.cs:287-294`). La zone de programmes de `map_alundra` est dégénérée à
+  l'extraction (`Codes` de 10 octets, `EventCodesFSize = −10`), donc ses ids ne sont pas mesurés.
+- **Contre-vérification** : mêmes ensembles d'ids et mêmes maxima. Deux écarts restent sans effet sur
+  les ensembles : 7874 entrées valides contre 7419, et 1420 ids distincts pour `0x05` contre 1425.
+
+**Q2 — `0x32`, `0x34`, `0x35` et la famille `0x78` à `0x81`** [corpus, binaire]
+
+- **Occurrences** : adresses atteignables distinctes, sommées sur les cartes ; recomptage par la
+  session principale avec le parcours de Q1.
+
+  | Opcode | Occurrences | Cartes |
+  |---|---|---|
+  | `0x32` | 113 | 21 |
+  | `0x34` | 8 | 3 |
+  | `0x35` | 725 | 111 |
+  | `0x78` | 1075 | 132 |
+  | `0x79` | 9 | 2 |
+  | `0x7A` | 0 | 0 |
+  | `0x7B` | 43 | 3 |
+  | `0x7C` | 4 | 2 |
+  | `0x7D` | 317 | 130 |
+  | `0x7E` | 58 | 30 |
+  | `0x7F` | 10 | 4 |
+  | `0x80` | 4 | 4 |
+  | `0x81` | 6 | 1 |
+
+- **Premier relevé rejeté.** Il démarrait aussi des programmes sur des entrées qui tombent dans les
+  tables, et décodait donc des octets de table comme du code. Son exemple « Cave-145, décalage 2 » est
+  dans les tables ; ses chiffres et ceux de son contradicteur, construit sur la même hypothèse, sont
+  écartés.
+- **Cohérence du recomptage** : avec `0x78` sur 3 octets, tout le corpus ne donne qu'une impasse ;
+  avec 4 octets, il en donne 126, et de faux ids persistants jusqu'à 30726.
+- **Enchaînement** : `0x78` (toujours), `0x79`/`0x7A` (selon `Result`) et `0x7B`/`0x7C` (selon un
+  drapeau) écrivent `_34`, à `CodeIndex + 3` ou `+ 5`. `0x7D` (toujours), `0x7E`/`0x7F` et
+  `0x80`/`0x81` y sautent. Le motif dominant est `0x78` … `0x7D` : un bloc de dialogue à choix, puis le
+  retour après le `0x78`. Exemples vérifiés, octets et entrées de table :
+  - `Ancient Shrine - Golem-34`, B[2] (entrée 68) : `78 5E 00` en 89, saut en 183, `0x7D` en 237 ;
+  - `Lizardman's Lair (Boss)-411`, B[9] (entrée 1712) : `7B 7A 80 18 00` en 1713 (drapeau `0x807A`) ;
+  - `Fairy cave (underwater)-160`, C[25] (entrée 1480) : `0x7C` en 1489, `0x7D` en 1597.
+- **Présence** : `0x7B`, `0x7C`, `0x80` et `0x81` apparaissent tous, donc la famille entière entre
+  dans E16.a ; `0x7A` n'apparaît pas.
+- **Binaire** : les dix gestionnaires (`0x8003FB10`–`0x8003FE7C`) suivent la décompilation
+  instruction par instruction ; `0x7B`/`0x7C` choisissent la banque entre `0x801EBA40` et `0x801EB344`.
+- **Désaccord** [binaire] : `0x78` fait **3 octets**. Il ne lit que les octets +1 et +2, puis écrit
+  `_34 = CodeIndex + 3` (`0x8003FB10`). `EventOpcodeSizeTable.cs:151`, recopié de la table
+  `EventCodeDebugger.cs` de l'analyseur, dit 4. Aujourd'hui, la DLL saute les opcodes non portés par
+  leur taille : elle saute donc un `0x78` de 4 octets.
+
+**Q3 — `g_saveData`, `g_temporaryFlags`, temps de jeu** [binaire]
+
+- **`g_saveData`** (`0x801EB2E8`, **0x758 octets**) :
+
+  | Décalage | Champ | Taille |
+  |---|---|---|
+  | `+0x000` | `SlotData` | 4 |
+  | `+0x004` | `LastMapId` | 4 |
+  | `+0x008` | `CurrentFlagName` | 32 |
+  | `+0x028` | `GameStateDescription` | 32 |
+  | `+0x048` | `GameTime` | 4 |
+  | `+0x04C` | `InitialMapId` | 4 |
+  | `+0x050`, `+0x054`, `+0x058` | `CameraTileX`, `CameraTileY`, `CameraTileZ` | 4 chacun |
+  | `+0x05C` | `GameFlags` | 64 × 4 |
+  | `+0x15C` | `MapIdToInternalMapIndexTable` | 500 × 2 |
+  | `+0x544` | `PlayerStats` : `Hp`, `HpMax`, `Mp`, `MpMax`, `MoneyAmount`, `WeaponId`, `ItemId`, `FalconTemp`, `Falcon` | 9 × 2 |
+  | `+0x556` | `NumberOfItems` | 256 × 2 |
+  | `+0x756` | `SaveSlotIndex` | 1 |
+  | `+0x757` | `Field_757` | 1 |
+
+  Sources dans le binaire :
+  - la taille littérale `0x758` passée par `UpdateSavedData` (`0x80031588`) ;
+  - les boucles `0x800814A4`–`0x800814DC` (64 mots de drapeaux, 500 entrées de table) ;
+  - les deux copies de 0x758 octets (`0x800814E8`, `0x8008153C`) ;
+  - `g_temporaryFlags`, qui commence juste après, à `0x801EBA40`.
+- **Désaccords** :
+  - le `short Offset` final de `SaveData.cs` n'existe pas dans la structure : c'est un champ du seul
+    port (`MemoryCardManager.cs:226`) ;
+  - `UpdateSavedData` n'a pas le paramètre `displayMenu` : son appel à `InitializeSaveDataCopy` est
+    inconditionnel (`0x80031594`).
+- **Champs sans lecteur** :
+  - `LastMapId` est seulement écrit (−1 en nouvelle partie, `0x8003185C`) et recopié avec le reste de
+    la structure ;
+  - `Field_757` n'a aucune référence.
+
+  E16.c ne les écrit donc pas, ni `Offset`.
+- **`g_temporaryFlags`** : 64 mots à `0x801EBA40`. `ClearTemporaryFlags` (`0x8008159C`) en vide
+  64, comme `GameEngine.cs:429-438` ; la DLL en vide 1024, sans effet puisque le mot max est 63 (Q1).
+- **Temps de jeu.** `g_gameplayTime` est à `0x8013FB4C`. La fonction de fin d'image (`0x80042798`)
+  attend un VSync (plus `n − 1` si `n > 1`), puis ajoute 1 au compteur, plafonné à `0x14996C4`. Elle
+  est appelée une fois par tour de la boucle de jeu (`0x8002C3F4`–`0x8002C45C`) et dans les boucles
+  de transition (`0x8002C4B0`, puis `0x8004288C` en `0x8002C4C8`). Le compteur avance donc **d'une
+  unité par image affichée**. La cadence réelle en PAL (50 Hz si le jeu tient un VSync par image)
+  n'est pas mesurée.
+- **Affichage** : `UpdateMenuStatusText` (`0x800311D4`–`0x80031328`) calcule les heures par
+  `t / 216000` (`0x9B583739`, décalage 17), les minutes par `t / 3600` (`0x91A2B3C5`) et les secondes
+  par `t / 60` (`0x88888889`). **Le compteur s'affiche en soixantièmes de seconde**, et
+  `0x14996C4` = 99:59:59. **Désaccord** : `GameEngine.cs:2724` le lit comme des secondes, la division
+  par 60 est perdue.
+
+**Q4 — Sauvegarde, rechargement après la mort, `g_saveDataInRam`, `SaveSlotIndex`** [binaire]
+
+- **Chaîne de sauvegarde, confirmée** :
+  - le gestionnaire du livre est l'entrée 72 de la table `ProgramCTick` (`0x800C4F34`, mot
+    `0x800C5054` = `0x8007B998`, `SpriteEventHandlers.cs:122`) ;
+  - à l'état 5 (`0x8007BAD8`), il appelle `UpdateSavedData`, qui pose `InitialMapId`,
+    `CameraTileX/Y/Z`, le texte (`UpdateMenuStatusText`) et `GameTime`, puis appelle
+    `InitializeSaveDataCopy(g_saveData, 0x758, 1)` ;
+  - `InitializeSaveDataCopy` pose `g_globalTransitionState = 10000` et `g_postProcessingState = 1` ;
+  - l'état 6 attend `g_globalTransitionState == 0`, puis efface le bit 4 de `g_playerControlFlags`.
+- **Livre de sauvegarde** : une seule entité, « SaveBook (Ne pas toucher !) », type de sprite 237,
+  posée sur 65 cartes : 17, 48, 52, 53, 54, 140, 147, 158, 159, 160, 163, 170, 177, 184, 187, 194,
+  199, 206, 213, 220, 227, 231, 238, 242, 249, 253, 260, 267, 272, 276, 283, 290, 294, 298, 302,
+  333, 358, 365, 372, 381, 394, 424, 439, 443, 447, 448, 452 à 470.
+- **Second appelant d'`UpdateSavedData`** (`0x8002ADA4`) : il est dans une fonction non décompilée,
+  qui pose aussi des bits de `g_debugFlags` (`0x800DC05C`) selon la manette. C'est probablement une
+  fonction de débogage (non établi).
+- **Rechargement après la mort, confirmé par les deux lectures** :
+  - sur la carte `0x1DD` (« Continue Screen-477 »), `Script_187_0BB` renvoie au menu principal si
+    le bit 2 du mot 0 de `g_temporaryFlags` est posé (effet `0xB`) ; sinon, après 60 images, il pose
+    l'effet 10 ;
+  - l'effet 10 (`0x8002C590`) appelle `LoadBgm(0)`, met `g_playerControlFlags` à 0, puis appelle
+    `InitializeMapWarpPosition` (`0x800315B0`) ;
+  - celle-ci incrémente `SaveSlotIndex` dans `g_saveDataInRam` (plafonné à `0xFF`), appelle
+    `InitializePlayerStatsAndItems`, puis copie les 0x758 octets de `g_saveDataInRam` dans
+    `g_saveData` (`UpdateSaveData`, `0x800814E8`), et repart de `InitialMapId`/`CameraTile*` ;
+  - `g_textCategoryIndex` et `INT_ARRAY_80191908` ne sont pas touchés : leurs 20 références sont
+    dans le code du texte (`0x80046400`–`0x800476C0`) et dans les programmes de mini-jeu qui écrivent
+    `INT_ARRAY_80191908` (`0x800643E0`–`0x80064E60`). `TemporaryFlags` est hors de la copie.
+- **`g_saveDataInRam`** (`0x80010000`, pointeur en `0x80029BC4`) n'est pas figé :
+  - `InitializeGameState` y copie `g_saveData` au démarrage (`0x8008153C`, appelé en `0x8003189C`) ;
+  - chaque sauvegarde réussie y recopie le bloc sauvegardé (`0x8006163C`–`0x800616A8`, 0x760
+    octets) ;
+  - une fonction non décompilée y copie un enregistrement d'emplacement de carte mémoire (4 × 0x76C
+    octets, `0x8005F2B8`–`0x8005F348`), probablement la lecture d'un emplacement (conditions non
+    établies) ;
+  - « Réessayer » repart donc de la dernière sauvegarde réussie de la session, ou de l'état du
+    démarrage.
+- **`SaveSlotIndex`** (`+0x756`, 1 octet) **compte les reprises après la mort** :
+  - il est incrémenté seulement par `InitializeMapWarpPosition`, plafonné à `0xFF`, et remis à 0 en
+    nouvelle partie (`0x80031860`) ; il est sauvegardé avec le reste ;
+  - il est lu par `Script_187_0BB`, pour le journal de débogage « Retry = » ;
+  - il est lu par l'**opcode `0xC2`** (`0x80041D34`), qui pose `Result = 0` si `SaveSlotIndex` est
+    inférieur à un octet de paramètre, 1 sinon. Le corpus a un seul `0xC2`, sur Overworld 1,2-7
+    (décalage 1508, seuil 20).
+- **Désaccords** :
+  - `0xC2` ne lit qu'un octet de paramètre, alors que `EntityEventHandlers.cs:3630-3652` en combine
+    deux ;
+  - `Script_187_0BB` calcule la valeur « Retry » sans condition (sans effet) ;
+  - selon une seule lecture, non recontrôlée : `UpdateMemoryCardProcess` renvoie la valeur de
+    `StartMemoryCardProcess` dans les états 1 et 2, là où la décompilation force 1.
+
+**Q5 — Suites de référence** : parent `26183ed`, moteur `793d1ee8` : `CasaEngine.Tests` 1991/1991,
+tests du convertisseur 400/400, `Alundra.Tests` 1361/1361.
+
+**Q6 — Domaines des champs restitués**
+
+- **`NumberOfItems[id × 2 + 1]`** [binaire, code DLL] : de 0 à `ItemsProperties[id × 5 + 3]`, colonne
+  « nombre maximal » de `Data/items-properties.json`. La DLL la charge déjà (`AlundraItemTables.cs:132-134`)
+  et l'applique dans `AddOneItemIfUnlocked`. Ses 500 valeurs sont identiques à `g_itemsProperties`
+  (`0x800B9FE8`).
+- **`Falcon` et `FalconTemp`** [binaire] : `short`, de 0 à 50. `IncreaseFalcon2` (`0x8004E6EC`)
+  plafonne `FalconTemp` à `0x32`, `UpdateNumberOfFalcon` (`0x8004E738`) plafonne `Falcon` au même
+  seuil. Ce sont leurs seuls écrivains ; aucune instruction ne pose de plancher.
+- **Dimensions de chaque carte** [corpus] : `tilemap/<nom>.tileMap` (`map_size`) et `.tmj`
+  (`width`, `height`). Leur chemin se déduit de `world-index.json` comme le fait
+  `MapEventProgramLoader` (`EventProgramDocument.cs:107-117`). Les 483 cartes en ont, avec des valeurs
+  identiques à `Map.Width/Height` de `data-extracted`.
+- **`CameraTileZ`** [binaire, corpus] : `CameraTileZ` vaut `PosZ >> 20`. Au sol, `PosZ` vaut la
+  hauteur de la tuile décalée de 20 bits (`ComputeEntityGroundHeight`, `0x800370C4`, octet `+3` de
+  la tuile). La hauteur est un octet de 0 à 255 ; une pente peut ajouter 1 (non vérifié dans le
+  binaire). Valeurs observées :
+  - 55 sur une tuile de sol réelle (carte 329) ;
+  - 60 sur une tuile quelconque (carte 160) ;
+  - `ZLevel` des portails : 34 au plus.
+
+  `Z << 20` déborde à partir de 2048. Qu'un héros puisse se tenir sur la tuile de hauteur 55 n'est pas
+  établi.
+
+**Conséquences pour les tranches suivantes** (questions au §3, avant E16.a et E16.c) :
+- E16.a : la famille `0x78` à `0x81` entre entière, avec `0x78` sur 3 octets (O-E16-8) ;
+- E16.c : `SaveSlotIndex` est un état de jeu lu par un script (O-E16-9) ; l'unité du temps de jeu
+  est à trancher (O-E16-10) ;
+- E16.c : les domaines de `NumberOfItems`, `Falcon`, `FalconTemp` et `CameraTileZ` sont connus ;
+- E16.c ne sérialise ni `LastMapId`, ni `Field_757`, ni `Offset`, et garde `GameFlags` sur 64 mots ;
+- E18 : des désaccords de décompilation sont à ranger (O-E16-11).
 
 ---
 
@@ -549,11 +760,15 @@ _(Remplie par E16.0.)_
 |---|---|---|
 | O-E16-1 | ~~Charger au démarrage~~ — **tranché : plus tard** (D-E16-10). Conséquence connue : un jeu livré n'a aucun moyen de charger avant un écran titre. | E16.d |
 | O-E16-2 | ~~Touches de recette~~ — **tranché** (D-E16-11). | E16.d |
-| O-E16-3 | Seulement si E16.0 trouve un id persistant ≥ 2048 : l'original écrirait au-delà de `GameFlags`, dans `MapIdToInternalMapIndexTable`. Reproduire, ou corriger (règle « corriger les défauts de l'original ») ? | E16.c |
+| O-E16-3 | **Sans objet** : E16.0 ne trouve aucun id persistant ≥ 2048 (§2, Q1). Question d'origine : seulement si E16.0 trouve un id persistant ≥ 2048 : l'original écrirait au-delà de `GameFlags`, dans `MapIdToInternalMapIndexTable`. Reproduire, ou corriger (règle « corriger les défauts de l'original ») ? | E16.c |
 | O-E16-4 | ~~§9.9 du moteur~~ — **tranché** (D-E16-8). | E16.b |
 | O-E16-5 | ~~Qui porte le gestionnaire du livre de sauvegarde ?~~ — **tranché : E16.e** (D-E16-12). | E16.e |
 | O-E16-6 | **Comment activer les touches de recette ?** Une variable d'environnement (`ALUNDRA_SAVE_DEBUG=1`) risque le même sort que `ALUNDRA_HUD_DEBUG`, qui n'a jamais atteint le processus du lanceur (D-E13-12). Pistes à comparer en E16.d, sur ce que le lanceur transmet vraiment au jeu : un argument de ligne de commande du lanceur, un réglage du projet, un fichier de configuration à côté du jeu. À trancher par l'auteur **avant E16.d**. | E16.d |
 | O-E16-7 | Seulement si E16.f T1 montre que la machine virtuelle de Yarn lève une exception sur une lecture refusée, ou qu'un dialogue exporté a besoin de variables internes de Yarn : erreur visible (dialogue interrompu), valeur initiale du `Program` avec journal, ou autre ? | E16.f |
+| O-E16-8 | **Taille de `0x78`** (§2, Q2) : le binaire consomme 3 octets, `EventOpcodeSizeTable.cs:151` en déclare 4, recopiés de `EventCodeDebugger.cs` de l'analyseur. E16.a corrige la table de la DLL à 3 ; corrige-t-elle aussi la table de l'analyseur ? | E16.a |
+| O-E16-9 | **`SaveSlotIndex`** (§2, Q4) : ce n'est pas un numéro d'emplacement mais le nombre de reprises après la mort, sauvegardé et lu par l'opcode `0xC2` (une occurrence, Overworld 1,2-7). E16.c prévoyait de ne pas le reprendre du fichier (S8). Le sauvegarder et le restituer, domaine 0..255 ? | E16.c |
+| O-E16-10 | **Unité du temps de jeu** (§2, Q3) : l'original ajoute 1 par image affichée et affiche le compteur comme des soixantièmes de seconde. Comment le port compte-t-il `GameTime`, et l'affiche-t-il divisé par 60 ? | E16.c |
+| O-E16-11 | **Désaccords de décompilation relevés** (§2) hors du chemin « Réessayer », déjà confié à E18 : division par 60 perdue dans `UpdateMenuStatusText`, `displayMenu` fantôme d'`UpdateSavedData`, `Offset` de `SaveData.cs`, taille de `0x78` dans `EventCodeDebugger.cs`, `0xC2` sur un octet, valeur rendue par `UpdateMemoryCardProcess`. Quel chantier les corrige ? | E16.c, E18 |
 
 ## 4. Hors périmètre
 
