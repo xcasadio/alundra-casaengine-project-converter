@@ -931,7 +931,7 @@ plan ; `Alundra.Tests` sans échec à chaque commit)
     `Ship Klark (beginning)-389` → `InitialMapId` = 389 et `CameraTileX/Y/Z` égaux à la tuile ; un
     nom sans id, ou un héros nul → `false`, sans exception ;
   - métadonnées : `chapter` et `summary` égaux au calcul de T2.
-- ⏳ **T4 — Validation** (C3, C4, D-E16-32). `AlundraMapSizeReader` et `AlundraSaveGameRules`
+- ✅ **T4 — Validation** (fait le 2026-09-28 : `AlundraSaveGame.TryValidate`, `AlundraSaveGameRules` (dossier du projet, `world-index.json` lu depuis ce dossier, prédicat du catalogue et table des objets injectés) et `AlundraMapSizeReader` ; ordre des contrôles : version, `gameTime`, `initialMapId` (clé, catalogue, `.tileMap`, taille ≥ 1), tuile, table des cartes, stats (max avant la valeur qu'il borne), `numberOfItems` ; 129 tests dans `AlundraSaveGameValidationTests` (dossier temporaire) et `AlundraSaveGameProductionTests` (vrai export : clés 0 à 482, carte 389 en 52 × 60, capture de nouvelle partie acceptée, bornes puis jauge et inventaires dessinés) ; mutations de production vérifiées : version `>` au lieu de `!=`, plafond 1364 retiré, règle « son propre indice » retirée, chacune refusée par un test ; un doublon `-0f` retiré des tests de T1 (22 tests) ; `Alundra.Tests` 1645/1645, oracle de l'intro inchangé) (C3, C4, D-E16-32). `AlundraMapSizeReader` et `AlundraSaveGameRules`
   travaillent sur un dossier de projet donné ; les tests utilisent un dossier temporaire avec un
   `world-index.json` et des `.tileMap` de test, et un catalogue injecté. Tests :
   - pour chaque ligne du tableau d'E16.c, corrigé par C3 : minimum, maximum, puis maximum + 1 (ou

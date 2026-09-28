@@ -47,6 +47,40 @@ public sealed class AlundraSaveGame : ISaveGameData
     /// (F6): 30 characters.</summary>
     private const string SummaryTemplate = "  HP 00       TIME 00:00:00   ";
 
+    // ---- Domains of the validation (C3, C4; the E16.c domain table) ------------------------------------
+
+    /// <summary><c>SetPlayerHpMax</c> ceiling, 0x32 (<c>AlundraPlayerManager.cs:660-671</c>).</summary>
+    internal const int MaxHpMax = 50;
+
+    /// <summary><c>SetPlayerMpMax</c> ceiling (<c>AlundraPlayerManager.cs:704-714</c>); the jauge has 4 magic
+    /// boxes (<c>AlundraHudDirector.cs:164</c>).</summary>
+    internal const int MaxMpMax = 4;
+
+    /// <summary><c>SetMoney</c> ceiling (<c>AlundraPlayerManager.cs:746-757</c>); a negative amount makes the
+    /// jauge throw (<c>AlundraHudComposer.cs:320-331</c>).</summary>
+    internal const int MaxMoney = 9999;
+
+    /// <summary><c>SetPlayerWeaponId</c> accepts -1 or a slot 1..6 (<c>AlundraPlayerManager.cs:822-834</c>).</summary>
+    internal const int MaxWeaponId = 6;
+
+    /// <summary><c>IncreaseFalcon2</c> (0x8004E6EC) and <c>UpdateNumberOfFalcon</c> (0x8004E738) cap both
+    /// counters at 0x32 (§2, Q6).</summary>
+    internal const int MaxFalcon = 50;
+
+    /// <summary>C3: a tile height is a byte, plus 1 on a slope (§2, Q6), well below 2048 where
+    /// <c>Z &lt;&lt; 20</c> overflows.</summary>
+    internal const int MaxCameraTileZ = 256;
+
+    /// <summary>C3: <c>(X * 24 + 12) &lt;&lt; 16</c> fits an <see cref="int"/> up to X = 1364
+    /// (<c>AlundraWorldProxy.cs:1563-1565</c>).</summary>
+    internal const int MaxCameraTileX = 1364;
+
+    /// <summary>C3: <c>(Y * 16 + 8) &lt;&lt; 16</c> fits an <see cref="int"/> up to Y = 2047.</summary>
+    internal const int MaxCameraTileY = 2047;
+
+    /// <summary>The "maximum count" column of <c>ItemsProperties</c> (<c>[id * 5 + 3]</c>, §2 Q6).</summary>
+    private const int MaxCountColumn = 3;
+
     /// <summary><c>g_saveData.GameTime</c> (<c>+0x048</c>): sixtieths of a second (D-E16-23).</summary>
     public uint GameTime;
 
@@ -219,6 +253,211 @@ public sealed class AlundraSaveGame : ISaveGameData
 
         save = Capture(state, mapId, player.TileX, player.TileY, player.TileZ);
         return true;
+    }
+
+    /// <summary>
+    /// C4 (docs/plan-e16-etat-partie.md, D-E16-32): checks every field against its domain (the E16.c domain
+    /// table, corrected by C3), stateless and without throwing whatever this object holds. A save is untrusted
+    /// in both formats, so this runs after every load and before <see cref="ApplyTo"/>; E16.d also runs it on a
+    /// capture before writing it. At the first value outside its domain it returns <c>false</c> with a message
+    /// naming the field (with its serialized path), its value and the domain - for example
+    /// <c>playerStats.money = -1, outside 0..9999</c>. In order:
+    /// <list type="number">
+    /// <item><description><see cref="LoadedDataVersion"/> must be 1: the engine loads any version up to
+    /// <see cref="LatestDataVersion"/>, 0 included (SC2);</description></item>
+    /// <item><description><c>gameTime</c>: 0..<see cref="AlundraGameState.GameTimeMax"/>;</description></item>
+    /// <item><description><c>initialMapId</c>: a key of <c>world-index.json</c>, whose world is in the catalog and
+    /// whose <c>.tileMap</c> gives a width and a height of at least 1. Only that one <c>.tileMap</c> is read, only
+    /// after the key is found: its path always comes from <c>world-index.json</c>, never from the save. An
+    /// exception of the catalog predicate, and any read failure, is a refusal (SC6);</description></item>
+    /// <item><description><c>cameraTileX</c>: 0 to <c>min(w - 1, 1364)</c>; <c>cameraTileY</c>: 0 to
+    /// <c>min(h - 1, 2047)</c>; <c>cameraTileZ</c>: 0..256 (C3);</description></item>
+    /// <item><description><c>mapIdToInternalMapIndexTable[i]</c>: a key of <c>world-index.json</c>, or
+    /// <c>i</c> itself (C3, F1: the New Game table is the identity over 500 entries, the index has 483
+    /// keys);</description></item>
+    /// <item><description><c>playerStats</c>: <c>hpMax</c> 0..50 then <c>hp</c> 0..<c>hpMax</c>, <c>mpMax</c>
+    /// 0..4 then <c>mp</c> 0..<c>mpMax</c>, <c>money</c> 0..9999, <c>weaponId</c> -1 or 1..6, <c>itemId</c>
+    /// 0..98 (<see cref="AlundraPlayerManager.ItemsCount"/>), <c>falconTemp</c> and <c>falcon</c>
+    /// 0..50;</description></item>
+    /// <item><description><c>numberOfItems</c>, the last field checked: at <c>id * 2 + 1</c> for an item id below
+    /// <see cref="AlundraPlayerManager.ItemsCount"/>, 0..<c>ItemsProperties[id * 5 + 3]</c>; every even index and
+    /// every index from 198 up, 0.</description></item>
+    /// </list>
+    /// <c>gameFlags</c> has no domain, and <c>deathRetryCount</c>'s domain, 0..255, is its type's (D-E16-22).
+    /// </summary>
+    public bool TryValidate(AlundraSaveGameRules rules, out string error)
+    {
+        ArgumentNullException.ThrowIfNull(rules);
+
+        error = FindFirstInvalidField(rules) ?? string.Empty;
+        return error.Length == 0;
+    }
+
+    private string? FindFirstInvalidField(AlundraSaveGameRules rules)
+    {
+        if (LoadedDataVersion != DataVersion1)
+        {
+            return Format($"data version {LoadedDataVersion} is not supported, only {DataVersion1}");
+        }
+
+        if (GameTime > AlundraGameState.GameTimeMax)
+        {
+            return OutsideRange("gameTime", GameTime, 0, AlundraGameState.GameTimeMax);
+        }
+
+        var mapError = CheckInitialMap(rules, out var mapWidth, out var mapHeight);
+        if (mapError != null)
+        {
+            return mapError;
+        }
+
+        if (CameraTileX < 0 || CameraTileX > Math.Min(mapWidth - 1, MaxCameraTileX))
+        {
+            return OutsideRange("cameraTileX", CameraTileX, 0, Math.Min(mapWidth - 1, MaxCameraTileX));
+        }
+
+        if (CameraTileY < 0 || CameraTileY > Math.Min(mapHeight - 1, MaxCameraTileY))
+        {
+            return OutsideRange("cameraTileY", CameraTileY, 0, Math.Min(mapHeight - 1, MaxCameraTileY));
+        }
+
+        if (CameraTileZ < 0 || CameraTileZ > MaxCameraTileZ)
+        {
+            return OutsideRange("cameraTileZ", CameraTileZ, 0, MaxCameraTileZ);
+        }
+
+        for (var i = 0; i < MapIdToInternalMapIndexTable.Length; i++)
+        {
+            var value = MapIdToInternalMapIndexTable[i];
+            if (value != i && rules.WorldIndex.Resolve(value) == null)
+            {
+                return Format($"mapIdToInternalMapIndexTable[{i}] = {value}, neither a key of world-index.json nor its own index");
+            }
+        }
+
+        var statsError = CheckPlayerStats();
+        if (statsError != null)
+        {
+            return statsError;
+        }
+
+        var itemsProperties = rules.ItemTables.ItemsProperties;
+        for (var i = 0; i < NumberOfItems.Length; i++)
+        {
+            var itemId = (i - 1) / 2;
+            var max = i % 2 == 1 && itemId < AlundraPlayerManager.ItemsCount
+                ? itemsProperties[itemId * AlundraItemTables.ItemColumnCount + MaxCountColumn]
+                : 0;
+
+            if (NumberOfItems[i] < 0 || NumberOfItems[i] > max)
+            {
+                return OutsideRange($"numberOfItems[{i}]", NumberOfItems[i], 0, max);
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>C3/C4/D-E16-32: <c>initialMapId</c> - a key, in the catalog, with a readable size of at least
+    /// 1 x 1. Null when valid, with the map's size.</summary>
+    private string? CheckInitialMap(AlundraSaveGameRules rules, out int width, out int height)
+    {
+        width = 0;
+        height = 0;
+
+        var worldPath = rules.WorldIndex.Resolve(InitialMapId);
+        if (worldPath == null)
+        {
+            return Format($"initialMapId = {InitialMapId}, not a key of world-index.json");
+        }
+
+        bool inCatalog;
+        try
+        {
+            inCatalog = rules.IsWorldInCatalog(worldPath);
+        }
+        catch (Exception ex)
+        {
+            return Format($"initialMapId = {InitialMapId}, the catalog lookup of '{worldPath}' failed ({ex.GetType().Name}: {ex.Message})");
+        }
+
+        if (!inCatalog)
+        {
+            return Format($"initialMapId = {InitialMapId}, world '{worldPath}' is not in the asset catalog");
+        }
+
+        if (!AlundraMapSizeReader.TryRead(rules.ProjectPath, worldPath, out width, out height, out var readError))
+        {
+            return Format($"initialMapId = {InitialMapId}, map size unreadable: {readError}");
+        }
+
+        if (width < 1 || height < 1)
+        {
+            return Format($"initialMapId = {InitialMapId}, map size {width} x {height}, width and height must be at least 1");
+        }
+
+        return null;
+    }
+
+    /// <summary>The nine stats, maxima before the values they bound (the cross rules of the domain table).</summary>
+    private string? CheckPlayerStats()
+    {
+        if (HpMax < 0 || HpMax > MaxHpMax)
+        {
+            return OutsideRange("playerStats.hpMax", HpMax, 0, MaxHpMax);
+        }
+
+        if (Hp < 0 || Hp > HpMax)
+        {
+            return OutsideRange("playerStats.hp", Hp, 0, HpMax);
+        }
+
+        if (MpMax < 0 || MpMax > MaxMpMax)
+        {
+            return OutsideRange("playerStats.mpMax", MpMax, 0, MaxMpMax);
+        }
+
+        if (Mp < 0 || Mp > MpMax)
+        {
+            return OutsideRange("playerStats.mp", Mp, 0, MpMax);
+        }
+
+        if (Money < 0 || Money > MaxMoney)
+        {
+            return OutsideRange("playerStats.money", Money, 0, MaxMoney);
+        }
+
+        if (WeaponId != -1 && (WeaponId < 1 || WeaponId > MaxWeaponId))
+        {
+            return Format($"playerStats.weaponId = {WeaponId}, outside -1 or 1..{MaxWeaponId}");
+        }
+
+        if (ItemId < 0 || ItemId >= AlundraPlayerManager.ItemsCount)
+        {
+            return OutsideRange("playerStats.itemId", ItemId, 0, AlundraPlayerManager.ItemsCount - 1);
+        }
+
+        if (FalconTemp < 0 || FalconTemp > MaxFalcon)
+        {
+            return OutsideRange("playerStats.falconTemp", FalconTemp, 0, MaxFalcon);
+        }
+
+        if (Falcon < 0 || Falcon > MaxFalcon)
+        {
+            return OutsideRange("playerStats.falcon", Falcon, 0, MaxFalcon);
+        }
+
+        return null;
+    }
+
+    private static string OutsideRange(string field, long value, long min, long max)
+    {
+        return Format($"{field} = {value}, outside {min}..{max}");
+    }
+
+    private static string Format(FormattableString message)
+    {
+        return message.ToString(System.Globalization.CultureInfo.InvariantCulture);
     }
 
     /// <summary>

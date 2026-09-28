@@ -95,7 +95,6 @@ public sealed class AlundraGameTimeTests : IDisposable
     [InlineData(float.PositiveInfinity)]
     [InlineData(float.NegativeInfinity)]
     [InlineData(0f)]
-    [InlineData(-0f)]
     [InlineData(-1f)]
     [InlineData(-float.Epsilon)]
     [InlineData(float.MinValue)]
