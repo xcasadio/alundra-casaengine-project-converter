@@ -168,7 +168,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
         // right after this from the same install call and resets open/page state anyway, so there is no
         // Yarn state worth preserving across this rebuild.
         _capturePresenter = new AlundraDialogueCapturePresenter(presenter);
-        _runner = new YarnDialogueRunner(_capturePresenter);
+        _runner = new YarnDialogueRunner(_capturePresenter) { VariableStorage = new AlundraYarnVariableStorage(gameState) };
         new AlundraYarnBindings(gameState).Register(_runner);
         _boundGameState = gameState;
     }

@@ -1492,9 +1492,13 @@ Relectures du 2026-09-28 :
 
     Le corpus exporté ne déclare, ne lit ni n'écrit aucune variable, et ses 24 784 nœuds n'ont que
     l'en-tête `title:` (aucun `tracking:`).
-  - **T2 — Stockage et branchement** : contrat 1 à 9, avec les tests d'acceptation. `TryGetValue<T>`
-    rend la valeur d'un drapeau pour tout `T` auquel un booléen s'affecte (`bool`, `IConvertible`,
-    `object`) ; pour un autre `T`, le refus est journalisé comme une valeur non booléenne.
+  - **T2 — Stockage et branchement** ✅ (`AlundraYarnVariableStorage` + branchement dans
+    `AlundraDialogueDirector.AttachToWorld` ; `AlundraYarnVariableStorageTests` 34 tests couvrant
+    lecture/écriture/bornes/refus/`Clear()`/directeur/cycle de vie/sauvegarde, et
+    `AlundraYarnVariableCorpusTests` sur les 485 `.dialogue` exportés) : contrat 1 à 9, avec les tests
+    d'acceptation. `TryGetValue<T>` rend la valeur d'un drapeau pour tout `T` auquel un booléen
+    s'affecte (`bool`, `IConvertible`, `object`) ; pour un autre `T`, le refus est journalisé comme une
+    valeur non booléenne.
   - **T3 — Documentation** : section « Variables » de `docs/formats/dialogues-yarn.md` (noms, types,
     refus, cycle de vie, rien dans la sauvegarde).
 - **Acceptation** : tests d'`Alundra.Tests` sur des Yarn de test compilés avec les déclarations de
