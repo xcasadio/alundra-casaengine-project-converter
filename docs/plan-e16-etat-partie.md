@@ -1045,7 +1045,7 @@ max `0x6A2`, mot 53) et arithmétique de C3.
 | SC11 | P4 | Une durée finie énorme pourrait faire reboucler le compteur de temps avant le plafond | FIX | T1 |
 | SC12 | P4 | Les valeurs de la table des cartes ne sont pas contrôlées contre le catalogue | REJECT | même exposition que les opcodes `0x38` et `0x53` ; les 483 mondes existent (F3) ; risque résiduel au §4 |
 
-### E16.d — Chargement et recette ⏳ (DLL)
+### E16.d — Chargement et recette ⏳ (DLL ; plan détaillé plus bas, proposé le 2026-09-28 en mode AUTO)
 
 - **But** : reprendre une partie sauvegardée.
 - **Contenu** : port de la branche `SlotData == 1` d'`InitializeGameState`, dans cet ordre, dont
@@ -1061,7 +1061,7 @@ max `0x6A2`, mot 53) et arithmétique de C3.
   4. **application en une étape qui ne lève pas** (copies de tableaux de longueurs déjà contrôlées),
      de préférence à l'entrée de la carte d'arrivée. Elle enchaîne quatre choses :
      - la remise des singletons de session à un état équivalent à une nouvelle partie, contrepartie
-       de production de `ResetForTests` (`AlundraGameState.cs:299-341`). Elle couvre
+       de production de `ResetForTests` (`AlundraGameState.cs:366`, à `24bde7a`). Elle couvre
        `PlayerControlFlags`, le verrou d'interaction et ses huit nombres, et les états des directeurs
        de dialogue et d'inventaire. Elle couvre aussi **`TextCategoryIndex` à 0 et `GameVariables` à
        zéro** (D-E16-19). La liste exacte est arrêtée et testée ici, avec deux points fixés par la
@@ -1107,6 +1107,191 @@ max `0x6A2`, mot 53) et arithmétique de C3.
 - **Arrêt** : l'intro qui rejoue au retour sur la 389, ou un écart de stats ou d'objets après
   chargement → la tranche s'arrête, cause établie avant toute correction.
 - **Dépendances** : E16.c.
+
+#### Plan détaillé d'E16.d (2026-09-28)
+
+**Statut** : proposé en mode AUTO (l'auteur, le 2026-09-28 au soir : « fait tout E16 de façon
+autonome »). Revue de sécurité, puis relecture de plan jusqu'à READY, avant l'exécution par un
+`security-executor` ; ensuite, vérification par un `verifier` frais. La recette en jeu reste à
+l'auteur.
+
+**Faits établis à la planification** (exploration en lecture seule, chaque rapport recontrôlé par
+un second agent ; scripts et rapports dans `scratchpad/e16def/`)
+
+| Réf | Fait | Source |
+|---|---|---|
+| G1 | `AlundraWarpDirector` a deux entrées publiques de départ, sans lien avec l'interpréteur : `BeginDeparture` (portail) et `BeginDepartureFromChangeMapOpcode(desiredMapIndex, posX, posY, posZ, effectId, sfxId, player, state)`. La seconde prend l'id de carte tel quel, sans la table des cartes, et le résout dans `world-index.json` : le même fichier que celui qui a validé `InitialMapId` (E16.c). | `AlundraWarpDirector.cs:280-326`, `:355-396`, `:374-382` ; `AlundraWorldIndexTable.cs:88` |
+| G2 | Aucune des deux ne se protège d'un départ déjà armé : `BeginDepartureCore` écrase l'arrivée en attente. Toutes deux ne font rien si `IsWarpDisabled`. | `AlundraWarpDirector.cs:409-455`, `:290-293`, `:365-368` |
+| G3 | Le chemin du monde est résolu dès l'armement ; le changement de monde a lieu plus tard, dans `Advance`, une fois le fondu stabilisé. La garde d'abandon ne se déclenche que sans chemin ou sans `GameManager` attaché. | `AlundraWarpDirector.cs:450`, `:514-554` |
+| G4 | Un départ vers la carte courante recharge tout le monde : le moteur n'a pas de raccourci pour le même chemin. | `GameManager.cs:98-144`, `:154-157` |
+| G5 | À l'arrivée, `InitializeWithWorld` exécute `GameState.InstallForMapEntry()` au tout début de son installation, puis installe les systèmes (cellules, audio, warp, fondu, dialogue, jauge, inventaires), adopte le héros (`AdoptPlayerPawn`, qui consomme l'arrivée en attente), bâtit les évènements de carte et les portails, et fait enfin apparaître les entités. Tout ce qui suit l'appel à `InstallForMapEntry` lit donc l'état de jeu. | `AlundraWorldProxy.cs:642-739` |
+| G6 | `AdoptPlayerPawn` ne distingue une nouvelle partie d'un warp que par l'absence d'arrivée en attente. Un chargement parti par le chemin des warps est vu comme un warp : l'inventaire de nouvelle partie ne se relance pas, et le héros est placé à la position de l'arrivée. | `AlundraWorldProxy.cs:1546-1561` |
+| G7 | Préconditions disponibles : `AlundraDialogueDirector.Instance.IsOpen`, `AlundraInventoryDirector.Instance.IsActive`, `AlundraSubInventoryDirector.Instance.IsActive`, `AlundraWarpDirector.Instance.IsTransitionInProgress`, `AlundraGameState.PlayerControlFlags`, `IsWarpDisabled`, `AlundraEntityScriptProxy.IsOnGround` (tenu depuis le contrôleur à chaque image). La transition n'est pas impliquée par `PlayerControlFlags` ; un dialogue ouvert avec un mode de contrôle autre que 0 ou 1 laisse `PlayerControlFlags` intact (`ApplyControlMode` n'a pas de cas par défaut). Chaque précondition se teste donc à part. | `AlundraDialogueDirector.cs:134`, `:258-274` ; `AlundraInventoryDirector.cs:91` ; `AlundraSubInventoryDirector.cs:55` ; `AlundraWarpDirector.cs:85` ; `AlundraEntityScriptProxy.cs:191`, `:937` |
+| G8 | Déjà remis par l'arrivée : `AlundraGameState.InstallForMapEntry` (`TemporaryFlags`, l'entité du verrou d'interaction, `IsWarpDisabled`) et `AlundraDialogueDirector.InstallForMapEntry` (tout l'état du dialogue). Pas remis : les directeurs d'inventaire, le post-traitement et le portrait (aucune remise d'entrée de carte), ni la jauge (`InstallForMapEntry` vide, voulu). `ResetForTests` de la jauge pose les valeurs de nouvelle partie (10/10/0/0/0) et détache l'état : il ne convient pas à un chargement. | `AlundraGameState.cs` (`InstallForMapEntry`) ; `AlundraDialogueDirector.cs:183-201` ; `AlundraInventoryDirector.cs:132-152` ; `AlundraSubInventoryDirector.cs:81-104` ; `AlundraInventoryPostProcess.cs:46-49` ; `AlundraInventoryPortrait.cs:189-203` ; `AlundraHudDirector.cs:200-217`, `:262-284` |
+| G9 | La DLL lisait la touche F1 par `world.Game.InputComponent.KeyboardManager.IsKeyPressed`, une fois par image rendue (hors de la boucle des ticks), avec son propre front montant et un fournisseur pour les tests (`DebugHudToggleKeyHeldProviderForTests`). `KeyboardManager` avance une fois par image rendue : lue dans la boucle des ticks, une touche compterait une fois par tick. | `git show cbda4f8:Alundra/Scripts/AlundraWorldProxy.cs` ; `KeyboardManager.cs:12-30`, `:109-113` |
+| G10 | Aucun `#if DEBUG` dans la DLL ; `Alundra.csproj` garde les configurations Debug et Release du SDK. `dotnet test` sans `-c` compile la DLL en Debug : la branche « inactif » a besoin d'un point d'injection pour être testée. Modèle « lu une fois, journalisé » : `AlundraPlayerManager.DebugIgnoreControlLockFromEnvironment` et son `...OverrideForTests`. | `Alundra/Alundra.csproj` ; `AlundraPlayerManager.cs:109-147` |
+| G11 | Les types de résultat du service (`SaveGameSaveResult`, `SaveGameLoadResult`, `SaveGameSlotInfo`) n'ont que des constructeurs internes au moteur, mais leurs énumérations d'état (`SaveGameSaveStatus`, `SaveGameLoadStatus`) sont publiques. `ListSlots` rend les emplacements par nom, avec `LastWriteTimeUtc` éventuellement nul ; aucun « plus récent » n'est fourni. Les noms d'emplacement suivent `^[a-z0-9_-]{1,32}$`. | `SaveGameSaveResult.cs:44`, `SaveGameLoadResult.cs:48`, `SaveGameSlotInfo.cs:65-85` ; `SaveGameService.cs:216-241` ; `SaveGameNames.cs` |
+| G12 | La DLL n'a aucun affichage de message à l'écran ; ses refus passent par `Logs.WriteInfo` et `Logs.WriteWarning`. Le lanceur écrit le journal dans `log.txt`, relatif au dossier de travail du processus. | `Logs.cs` ; `CasaEngine.Launcher/Program.cs:13-14` ; `FileLogger.cs:13-17` |
+
+**Choix du plan** :
+
+- **K1 — Un directeur de session**, `AlundraSaveGameDirector` (`Alundra/Scripts/`, `Instance` et
+  `ResetForTests` comme les autres). Il porte l'interrupteur, les touches, le service, le
+  chargement en attente et son application.
+- **K2 — Interrupteur (D-E16-33)** : `internal static bool RecipeKeysEnabled`, vrai par `#if DEBUG`
+  et faux sinon, avec un `...OverrideForTests` nullable sur le modèle de G10. Il est journalisé une
+  fois (`Logs.WriteInfo`), au premier passage du directeur, quand il est actif. Inactif, le
+  directeur ne lit même pas le clavier.
+- **K3 — Touches** : F5 sauvegarde en binaire dans l'emplacement `debug-binary`, F6 en JSON dans
+  `debug-json`, et F9 charge l'emplacement lisible le plus récent. Elles sont lues une fois par image
+  rendue, dans `AlundraWorldProxy.Update` et hors de la boucle des ticks (G9), par
+  `KeyboardManager.IsKeyPressed`, avec un front montant propre au directeur et un fournisseur
+  `Func<Keys, bool>? KeyHeldProviderForTests`. Une seule touche est traitée par image, dans l'ordre
+  F5, F6, F9.
+- **K4 — Service derrière une interface de la DLL** : `IAlundraSaveSlots` (interne) expose `Save`,
+  `TryLoad` et `ListSlots`. Ses résultats sont des types de la DLL, sur les énumérations publiques du
+  moteur (G11) :
+  - `AlundraSaveOutcome(SaveGameSaveStatus Status, string Message)` ;
+  - `AlundraLoadOutcome(SaveGameLoadStatus Status, string Message)` ;
+  - `AlundraSlotEntry(string Name, bool IsReadable, DateTime? LastWriteTimeUtc)`.
+
+  L'adaptateur de production, `AlundraEngineSaveSlots`, délègue à `GameSettings.SaveGames` et
+  recopie ses résultats. Les tests en simulent tous les états (D-E16-31).
+- **K5 — Plus récent** : parmi les emplacements lisibles dont l'heure est connue, celui dont
+  `LastWriteTimeUtc` est la plus grande ; à égalité, le nom le plus grand en ordre ordinal. Aucun
+  emplacement de ce genre → refus « aucune sauvegarde lisible ».
+- **K6 — Sauvegarde (F5/F6)**, dans cet ordre, sans rien écrire au moindre refus :
+  1. **préconditions**, chacune testée à part (G7) : héros présent, au sol ; aucun dialogue ; aucun
+     inventaire ni sous-inventaire ; aucune transition ; `PlayerControlFlags == 0` ;
+  2. `TryCaptureFromWorld(GameState, world.Name, PlayerEntity)` (contrat de C5 d'E16.c) ;
+  3. `TryValidate` avec les règles de production, `AlundraSaveGameRules(EngineEnvironment.ProjectPath,
+     path => AssetCatalog.GetByFileName(path) != null, ItemTables)` : un objet qui ne se chargerait
+     pas n'est jamais écrit ;
+  4. `Save(emplacement, objet, format, objet.BuildMetadata())`, puis le résultat au journal.
+- **K7 — Chargement (F9)**, dans cet ordre ; seule l'étape 7 change l'état vivant, et seulement à
+  l'arrivée :
+  1. préconditions : héros présent ; aucun dialogue ; aucun inventaire ni sous-inventaire ; aucune
+     transition ; `PlayerControlFlags == 0` ;
+  2. emplacement le plus récent (K5) ;
+  3. `TryLoad` : tout état autre que `Loaded` est un refus ;
+  4. `TryValidate` avec les règles de production ;
+  5. contrôle du départ : warp non désactivé, aucune transition, `GameManager` attaché au directeur
+     des warps (nouvelle propriété interne en lecture seule, pour que la garde d'abandon ne puisse
+     pas se déclencher) ;
+  6. le chargement devient **en attente** (`_pendingLoad`), puis
+     `BeginDepartureFromChangeMapOpcode(InitialMapId, (X × 24 + 12) << 16, (Y × 16 + 8) << 16,
+     Z << 20, effectId: 0, sfxId: 0, PlayerEntity, GameState)`, la formule de la nouvelle partie
+     (`AlundraWorldProxy.cs:1563-1565`). Si le départ n'est pas armé ensuite
+     (`IsTransitionInProgress` faux), l'attente est abandonnée, avec un message ;
+  7. application à l'arrivée (K8).
+- **K8 — Application à l'entrée de la carte d'arrivée**. `AlundraSaveGameDirector.ApplyPendingLoad(
+  GameState, mapId)` est appelé dans `InitializeWithWorld`, juste après `GameState.InstallForMapEntry()`
+  (G5) : tout ce que l'installation lit ensuite (systèmes, héros, évènements, entités) voit l'état
+  chargé.
+  - Sans chargement en attente, il ne fait rien.
+  - Si la carte d'arrivée n'est pas `InitialMapId`, il abandonne l'attente avec un avertissement,
+    sans rien appliquer.
+  - Sinon, dans cet ordre, sans lever :
+    1. `AlundraGameState.ResetSessionForLoad()` : `PlayerControlFlags` à 0, `LastPadState` par
+       défaut, `TickPad.Reset()`, le verrou d'interaction (entité et huit nombres), `IsWarpDisabled`
+       à faux, `TextCategoryIndex` à 0, `GameVariables` à zéro (D-E16-19),
+       `NewGameInventoryInitialized` à **vrai** (SC7). Rien de ce que porte la sauvegarde ;
+    2. `ApplyTo` de l'objet (E16.c, C6) : drapeaux, table, compteurs, stats, compteur de reprises,
+       temps de jeu ;
+    3. `AlundraHudDirector.ResetDisplayForLoad()` : les valeurs affichées (PV, PV max, PM, PM max,
+       argent) prennent les valeurs chargées, les quatre sous-étapes à 0, `CoinIconFrame` à 0,
+       `IsMoneyRolling` à faux, images des cases de magie à 0. La phase, `Y`, le glissement et
+       `_gameState` ne changent pas : une jauge ouverte reste ouverte, sans saut (SC1) ;
+    4. `ResetSessionForLoad()` des directeurs d'inventaire et de sous-inventaire (tout ce que remet
+       leur `ResetForTests`, sauf les trois attaches `_gameState`, `_itemTables` et `_soundPlayer`),
+       du post-traitement et du portrait (tout ce que remet leur `ResetForTests`) : curseurs et
+       états à leur valeur de début de session. Chaque `ResetForTests` appelle désormais cette
+       méthode, pour que la liste n'existe qu'une fois.
+
+    Le dialogue est remis par sa propre entrée de carte (G8), et le héros est placé par l'arrivée
+    du warp (G6).
+  - `AlundraWarpDirector.AbortDeparture` abandonne aussi le chargement en attente, avec un message :
+    un départ avorté ne laisse aucune attente appliquée plus tard à une autre arrivée.
+- **K9 — Messages** : chaque refus, chaque résultat du service et chaque succès donnent une ligne de
+  journal (`Logs.WriteWarning` pour un refus, `Logs.WriteInfo` pour un succès). La DLL n'a pas
+  d'affichage à l'écran (G12), et ces touches ne servent qu'à la recette.
+
+**Tâches** (branche `chantier/e16-proposition` ; un commit par tâche, avec la mise à jour de ce
+plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé)
+
+- ⏳ **T1 — Remises de session pour un chargement** (K8, étapes 1, 3 et 4). Tests :
+  - `ResetSessionForLoad` de l'état de jeu : chaque champ listé revient à sa valeur, et aucun champ
+    porté par la sauvegarde ne change ;
+  - la jauge en plein rattrapage des PM max (affichés 3, vrais 4, `_mpMaxSubStep` non nul), puis des
+    stats à 4 PM sur 4 et `ResetDisplayForLoad`, puis l'ouverture de la jauge et la fin des
+    roulements → aucune exception (SC1), sur le chemin de la présentation réelle comme au T4
+    d'E16.c ;
+  - `ResetDisplayForLoad` garde la phase, `Y` et l'état attaché ;
+  - les remises d'inventaire gardent les attaches ; les tests existants de `ResetForTests` passent
+    sans changement.
+- ⏳ **T2 — Interrupteur, service et choix de l'emplacement** (K1 à K5). Tests :
+  - interrupteur forcé actif puis inactif ; journal une seule fois, quand il est actif ;
+  - inactif : aucune lecture du clavier, F5, F6 et F9 sans effet ;
+  - front montant : une touche maintenue dix images n'agit qu'une fois, et la même touche, relâchée
+    puis rappuyée, agit de nouveau ;
+  - K5 : heures différentes, heures égales (ordre des noms), heures nulles écartées, emplacements
+    illisibles écartés, aucun emplacement.
+- ⏳ **T3 — Sauvegarde F5/F6** (K6). Tests, sur un service simulé :
+  - chaque précondition non tenue (héros absent, en l'air, dialogue, inventaire, sous-inventaire,
+    transition, `PlayerControlFlags` non nul) → aucun appel à `Save`, état identique à un
+    instantané ;
+  - succès : `Save` reçoit `debug-binary` en binaire (F5) ou `debug-json` en JSON (F6), l'objet et
+    ses métadonnées ; héros placé à une tuile connue de la carte 389 → objet capturé à cette carte et
+    à cette tuile ;
+  - un objet que `TryValidate` refuse (par exemple une stat hors domaine posée dans l'état) → aucun
+    appel à `Save` ;
+  - chaque état de sauvegarde autre que `Saved` → une ligne de journal, aucune exception.
+- ⏳ **T4 — Chargement F9 jusqu'au départ** (K7). Tests, sur un service simulé :
+  - chaque précondition non tenue → refus, aucun appel à `TryLoad`, état identique ;
+  - aucun emplacement lisible → refus ;
+  - chaque état de chargement autre que `Loaded` (`NotFound`, `TooLarge`, `Corrupted`,
+    `UnsupportedContainer`, `NewerDataVersion`, `InvalidData`, `IoError`) → refus, état identique ;
+  - un objet que `TryValidate` refuse → refus, état identique, aucun départ ;
+  - warp désactivé, transition en cours, `GameManager` absent → refus, état identique, aucun
+    départ, aucune attente ;
+  - succès : attente posée, départ armé vers `InitialMapId` à la position de la tuile, état de jeu
+    encore inchangé ;
+  - départ avorté par la garde d'abandon → attente abandonnée.
+- ⏳ **T5 — Application à l'arrivée** (K8). Tests :
+  - après `ApplyPendingLoad`, l'état est celui de la sauvegarde, champ par champ ;
+    `TemporaryFlags` est vide (entrée de carte) ; `TextCategoryIndex` et `GameVariables` valent 0
+    alors qu'ils ne l'étaient pas avant (D-E16-19) ;
+  - `NewGameInventoryInitialized` vaut vrai, et une entrée de carte suivante sans arrivée de warp
+    garde les objets chargés (SC7) ;
+  - carte d'arrivée différente de `InitialMapId` → rien n'est appliqué, attente abandonnée ;
+  - `ApplyPendingLoad` sans attente ne change rien ;
+  - de bout en bout, sur le chemin de l'installation réelle si les tests existants le permettent
+    (`AlundraWorldProxySessionStateTests`) : F9 sur une session, puis l'installation du monde
+    d'arrivée → état chargé, héros à la tuile sauvegardée.
+- ⏳ **T6 — Documentation et ADR** : ADR-0013 de ce dépôt (le chargement part par le chemin des
+  warps et s'applique à l'entrée de la carte d'arrivée ; touches de recette en Debug seulement,
+  D-E16-33 ; le service derrière une interface de la DLL) ; section « Chargement et touches de
+  recette » de `docs/formats/save-game.md` ; tableau de suivi du plan maître.
+- ⏳ **T7 — Vérification** : un `verifier` frais sur l'acceptation ci-dessous, et un contradicteur
+  sur les chemins hostiles (fichier refusé, départ impossible, arrivée inattendue).
+- ⏳ **T8 — Recette en jeu** (l'auteur, hors de l'app Claude) : l'acceptation en jeu ci-dessus, avec
+  la DLL compilée en Debug ; le journal montre la ligne de l'interrupteur.
+
+**Acceptation d'E16.d** :
+- les tests de T1 à T5 passent ; `Alundra.Tests` est sans échec, l'oracle de l'intro inchangé ; le
+  build est à 0 erreur, en Debug et en Release (`-c Release` : la DLL compile sans les touches) ;
+- le verifier et le contradicteur rendent **CONFIRMED** ;
+- T8 reste 🧪 tant que l'auteur n'a pas joué la recette.
+
+Adaptations dues à D-E16-31, et couvertes ailleurs :
+- « dans les deux formats » : les refus de la DLL portent sur l'objet décodé et ne dépendent pas du
+  format ; la recette en jeu essaie les deux formats, un emplacement hostile compris ;
+- « un fichier au nom invalide dans le dossier » : `ListSlots` du moteur le signale comme illisible
+  (tests du moteur), et la DLL écarte les emplacements illisibles (T2).
+
+**Arrêts** : ceux de la section E16.d ci-dessus ; une exception qui sort d'une touche ou de
+`ApplyPendingLoad` ; un test existant qui change pour une autre raison ; l'oracle de l'intro qui
+bouge.
 
 ### E16.e — Écran de sauvegarde en jeu ⏳ (DLL, MGUI en XAML)
 
@@ -1164,7 +1349,25 @@ max `0x6A2`, mot 53) et arithmétique de C3.
       `Clear()`.
 
     Les résultats vont dans cette tranche, sourcés par les tests.
-  - **T2 — Stockage et branchement** : contrat 1 à 9, avec les tests d'acceptation.
+
+    **Indice préalable (2026-09-28, à confirmer par T1)** : une sonde jetable, hors du dépôt, sur les
+    paquets 3.2.1 épinglés par le moteur, avec un stockage qui refuse tout et une variable booléenne
+    non déclarée dans `<<if>>` et `<<set>>`, a donné :
+    - une lecture refusée vaut faux, sans exception, et le dialogue va au bout ;
+    - `TryGetValue` est demandé avec `T = IConvertible`, pas `bool` ; `<<set $x to true>>` passe par
+      `SetValue(string, bool)` ;
+    - aucun `Clear()` et aucune variable `$Yarn.Internal.*` sur tout le dialogue.
+
+    La même sonde montre que le constructeur de `Yarn.Dialogue` pose `SmartVariableEvaluator` mais
+    pas `Program`. Seul `SetProgram` le pose, et `YarnDialogueRunner.Start` l'appelle toujours
+    (`YarnDialogueRunner.cs:109`). Le contexte de l'ADR-0042 du moteur dit le contraire : écart à
+    signaler au moteur, sans effet sur E16.f.
+
+    Le corpus exporté ne déclare, ne lit ni n'écrit aucune variable, et ses 24 784 nœuds n'ont que
+    l'en-tête `title:` (aucun `tracking:`).
+  - **T2 — Stockage et branchement** : contrat 1 à 9, avec les tests d'acceptation. `TryGetValue<T>`
+    rend la valeur d'un drapeau pour tout `T` auquel un booléen s'affecte (`bool`, `IConvertible`,
+    `object`) ; pour un autre `T`, le refus est journalisé comme une valeur non booléenne.
   - **T3 — Documentation** : section « Variables » de `docs/formats/dialogues-yarn.md` (noms, types,
     refus, cycle de vie, rien dans la sauvegarde).
 - **Acceptation** : tests d'`Alundra.Tests` sur des Yarn de test compilés avec les déclarations de
@@ -1185,7 +1388,9 @@ max `0x6A2`, mot 53) et arithmétique de C3.
   - **cycle de vie** : à l'entrée de carte, un `$tmp_flag_n` posé par Yarn disparaît et un
     `$flag_n` reste (`InstallForMapEntry`) ;
   - **sauvegarde** : si E16.c est livrée, `$flag_0` et `$flag_2047` posés par Yarn font
-    l'aller-retour, `$tmp_flag_0` et `$tmp_flag_2047` non. Sinon, E16.c ajoute ce test ;
+    l'aller-retour, `$tmp_flag_0` et `$tmp_flag_2047` non. Sinon, E16.c ajoute ce test. E16.c est
+    livrée : l'aller-retour passe par `AlundraSaveGame.Capture` puis `ApplyTo` sur un état neuf,
+    sans le service (D-E16-31) ;
   - **non-régression** : `Alundra.Tests` sans échec, oracle de l'intro inchangé (`0x11` à la
     frame 1704), les 485 dialogues exportés toujours joués.
 - **Arrêts** :
