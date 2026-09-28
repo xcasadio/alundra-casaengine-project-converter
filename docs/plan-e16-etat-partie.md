@@ -1111,9 +1111,9 @@ max `0x6A2`, mot 53) et arithmétique de C3.
 #### Plan détaillé d'E16.d (2026-09-28)
 
 **Statut** : proposé en mode AUTO (l'auteur, le 2026-09-28 au soir : « fait tout E16 de façon
-autonome »). Revue de sécurité, puis relecture de plan jusqu'à READY, avant l'exécution par un
-`security-executor` ; ensuite, vérification par un `verifier` frais. La recette en jeu reste à
-l'auteur.
+autonome »). Revue de sécurité faite (tableau en fin de section, constats intégrés) ; reste la
+relecture de plan jusqu'à READY, avant l'exécution par un `security-executor` ; ensuite,
+vérification par un `verifier` frais. La recette en jeu reste à l'auteur.
 
 **Faits établis à la planification** (exploration en lecture seule, chaque rapport recontrôlé par
 un second agent ; scripts et rapports dans `scratchpad/e16def/`)
@@ -1148,6 +1148,12 @@ un second agent ; scripts et rapports dans `scratchpad/e16def/`)
   `KeyboardManager.IsKeyPressed`, avec un front montant propre au directeur et un fournisseur
   `Func<Keys, bool>? KeyHeldProviderForTests`. Une seule touche est traitée par image, dans l'ordre
   F5, F6, F9.
+  - **Emplacement de l'appel** : en tête d'`AlundraWorldProxy.Update`, juste après
+    `AdvanceGameTime` et avant le calcul de `gameplayBlocked`. Un départ armé par F9 fige donc les
+    passes « dedans » dès cette image : aucun évènement de carte ni `0x53` scripté ne peut, dans la
+    même image, écraser le départ du chargement ou ouvrir un dialogue (SD3).
+  - Le front montant vit dans le directeur de session : une touche maintenue pendant le changement
+    de monde n'agit pas une seconde fois (SD13).
 - **K4 — Service derrière une interface de la DLL** : `IAlundraSaveSlots` (interne) expose `Save`,
   `TryLoad` et `ListSlots`. Ses résultats sont des types de la DLL, sur les énumérations publiques du
   moteur (G11) :
@@ -1157,12 +1163,26 @@ un second agent ; scripts et rapports dans `scratchpad/e16def/`)
 
   L'adaptateur de production, `AlundraEngineSaveSlots`, délègue à `GameSettings.SaveGames` et
   recopie ses résultats. Les tests en simulent tous les états (D-E16-31).
+  - Il attrape **toute** exception du service : `InvalidOperationException` (nom de projet invalide,
+    dossier local introuvable), `ArgumentException` et les autres. Il la journalise par
+    `Logs.WriteError` et rend un état `IoError`, ou une liste vide pour `ListSlots` : un problème
+    d'environnement ne fait jamais planter le jeu (SD6).
+  - Un `Loaded` accompagné d'un objet nul est un refus.
 - **K5 — Plus récent** : parmi les emplacements lisibles dont l'heure est connue, celui dont
   `LastWriteTimeUtc` est la plus grande ; à égalité, le nom le plus grand en ordre ordinal. Aucun
-  emplacement de ce genre → refus « aucune sauvegarde lisible ».
+  emplacement de ce genre → refus « aucune sauvegarde lisible ». Limites acceptées pour une touche
+  de recette et consignées dans l'ADR-0013 (SD11) :
+  - une heure dans le futur gagne toujours ;
+  - « lisible » ne veut dire que l'en-tête ouvert : un emplacement le plus récent mais abîmé bloque
+    F9, sans repli sur le précédent ;
+  - `ListSlots` lit chaque emplacement en entier (1 Mio au plus).
+
+  Le choix d'un emplacement par le joueur relève d'E16.e.
 - **K6 — Sauvegarde (F5/F6)**, dans cet ordre, sans rien écrire au moindre refus :
   1. **préconditions**, chacune testée à part (G7) : héros présent, au sol ; aucun dialogue ; aucun
-     inventaire ni sous-inventaire ; aucune transition ; `PlayerControlFlags == 0` ;
+     inventaire ni sous-inventaire ; post-traitement de l'inventaire à l'état 0 et portrait au
+     repos (SD12) ; aucune transition ; aucun fondu maître de la musique armé
+     (`AlundraBgmFadeDirector.Instance.IsArmed`, SD4) ; `PlayerControlFlags == 0` ;
   2. `TryCaptureFromWorld(GameState, world.Name, PlayerEntity)` (contrat de C5 d'E16.c) ;
   3. `TryValidate` avec les règles de production, `AlundraSaveGameRules(EngineEnvironment.ProjectPath,
      path => AssetCatalog.GetByFileName(path) != null, ItemTables)` : un objet qui ne se chargerait
@@ -1170,17 +1190,26 @@ un second agent ; scripts et rapports dans `scratchpad/e16def/`)
   4. `Save(emplacement, objet, format, objet.BuildMetadata())`, puis le résultat au journal.
 - **K7 — Chargement (F9)**, dans cet ordre ; seule l'étape 7 change l'état vivant, et seulement à
   l'arrivée :
-  1. préconditions : héros présent ; aucun dialogue ; aucun inventaire ni sous-inventaire ; aucune
-     transition ; `PlayerControlFlags == 0` ;
+  1. préconditions : héros présent ; aucun chargement déjà en attente (SD13) ; aucun dialogue ;
+     aucun inventaire ni sous-inventaire ; post-traitement à l'état 0 et portrait au repos (SD12) ;
+     aucune transition ; aucun fondu maître de la musique armé (SD4) ; `PlayerControlFlags == 0` ;
   2. emplacement le plus récent (K5) ;
   3. `TryLoad` : tout état autre que `Loaded` est un refus ;
   4. `TryValidate` avec les règles de production ;
-  5. contrôle du départ : warp non désactivé, aucune transition, `GameManager` attaché au directeur
-     des warps (nouvelle propriété interne en lecture seule, pour que la garde d'abandon ne puisse
-     pas se déclencher) ;
+  5. **contrôle du départ**, pour que la garde d'abandon ne puisse jamais se déclencher sur un
+     chargement. Deux nouveautés internes et en lecture seule du directeur des warps y servent : un
+     indicateur « `GameManager` attaché », et `TryResolveWorldPath(mapId, out path)` sur sa propre
+     table. Conditions : warp non désactivé ; aucune transition ; `GameManager` attaché ;
+     `InitialMapId` résolu par la table du directeur en un chemin non nul. Raison : un départ fait
+     partir le fondu (verrou de persistance 1) et le son avant de résoudre son chemin, et
+     `AbortDeparture` ne les défait pas (`AlundraWarpDirector.cs:409-455`, `:234-247`, SD1) ;
   6. le chargement devient **en attente** (`_pendingLoad`), puis
-     `BeginDepartureFromChangeMapOpcode(InitialMapId, (X × 24 + 12) << 16, (Y × 16 + 8) << 16,
-     Z << 20, effectId: 0, sfxId: 0, PlayerEntity, GameState)`, la formule de la nouvelle partie
+     `BeginDepartureForLoad(InitialMapId, (X × 24 + 12) << 16, (Y × 16 + 8) << 16, Z << 20,
+     PlayerEntity)`. Ce nouveau départ interne passe par `BeginDepartureCore`, avec l'animation
+     `ResetAnimationId` (`0x36`), la direction `ResetDirectionId` (0), l'effet 0 et sans son, comme
+     le départ d'une nouvelle partie ou d'un chargement de l'original (`AlundraGameState.cs:53-59`),
+     et non avec l'animation en cours du héros, que `BeginDepartureFromChangeMapOpcode` recopierait
+     (`AlundraWarpDirector.cs:379-380`, SD2). La position suit la formule de la nouvelle partie
      (`AlundraWorldProxy.cs:1563-1565`). Si le départ n'est pas armé ensuite
      (`IsTransitionInProgress` faux), l'attente est abandonnée, avec un message ;
   7. application à l'arrivée (K8).
@@ -1189,8 +1218,12 @@ un second agent ; scripts et rapports dans `scratchpad/e16def/`)
   (G5) : tout ce que l'installation lit ensuite (systèmes, héros, évènements, entités) voit l'état
   chargé.
   - Sans chargement en attente, il ne fait rien.
+  - Il **vide l'attente avant toute autre chose** : un chargement ne s'applique jamais deux fois
+    (SD9).
   - Si la carte d'arrivée n'est pas `InitialMapId`, il abandonne l'attente avec un avertissement,
     sans rien appliquer.
+  - Les retours anticipés d'`InitializeWithWorld` qui précèdent l'appel (`AlundraWorldProxy.cs:621-634`)
+    abandonnent aussi l'attente, avec un message (SD9).
   - Sinon, dans cet ordre, sans lever :
     1. `AlundraGameState.ResetSessionForLoad()` : `PlayerControlFlags` à 0, `LastPadState` par
        défaut, `TickPad.Reset()`, le verrou d'interaction (entité et huit nombres), `IsWarpDisabled`
@@ -1233,13 +1266,19 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   - interrupteur forcé actif puis inactif ; journal une seule fois, quand il est actif ;
   - inactif : aucune lecture du clavier, F5, F6 et F9 sans effet ;
   - front montant : une touche maintenue dix images n'agit qu'une fois, et la même touche, relâchée
-    puis rappuyée, agit de nouveau ;
+    puis rappuyée, agit de nouveau ; F9 maintenue pendant le changement de monde n'agit pas une
+    seconde fois (SD13) ;
   - K5 : heures différentes, heures égales (ordre des noms), heures nulles écartées, emplacements
-    illisibles écartés, aucun emplacement.
+    illisibles écartés, aucun emplacement ;
+  - valeur par défaut de l'interrupteur, sans forçage : vrai dans une DLL compilée en Debug, faux en
+    Release. Le test porte un `#if DEBUG` du projet de test, et se lance aussi avec
+    `dotnet test -c Release --filter` (SD7) ;
+  - un service simulé qui lève à chaque méthode, derrière l'adaptateur : F5, F6 et F9 donnent un
+    refus, sans exception, état identique (SD6).
 - ⏳ **T3 — Sauvegarde F5/F6** (K6). Tests, sur un service simulé :
   - chaque précondition non tenue (héros absent, en l'air, dialogue, inventaire, sous-inventaire,
-    transition, `PlayerControlFlags` non nul) → aucun appel à `Save`, état identique à un
-    instantané ;
+    post-traitement actif, portrait hors repos, transition, fondu maître de la musique armé,
+    `PlayerControlFlags` non nul) → aucun appel à `Save`, état identique à un instantané ;
   - succès : `Save` reçoit `debug-binary` en binaire (F5) ou `debug-json` en JSON (F6), l'objet et
     ses métadonnées ; héros placé à une tuile connue de la carte 389 → objet capturé à cette carte et
     à cette tuile ;
@@ -1247,8 +1286,14 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
     appel à `Save` ;
   - chaque état de sauvegarde autre que `Saved` → une ligne de journal, aucune exception.
 - ⏳ **T4 — Chargement F9 jusqu'au départ** (K7). Tests, sur un service simulé :
-  - chaque précondition non tenue → refus, aucun appel à `TryLoad`, état identique ;
+  - chaque précondition non tenue (celles de K7, étape 1, dont un chargement déjà en attente et un
+    fondu maître armé) → refus, aucun appel à `TryLoad`, état identique ;
   - aucun emplacement lisible → refus ;
+  - `InitialMapId` que la table du directeur des warps ne résout pas → refus, et ni fondu, ni
+    changement de musique, ni arrivée en attente (SD1) ;
+  - F9 pendant une attaque ou un saut : l'arrivée porte l'animation `0x36` et la direction 0 (SD2) ;
+  - F9 sur une image où un évènement de carte partirait : l'évènement ne tourne pas dans cette
+    image (SD3) ;
   - chaque état de chargement autre que `Loaded` (`NotFound`, `TooLarge`, `Corrupted`,
     `UnsupportedContainer`, `NewerDataVersion`, `InvalidData`, `IoError`) → refus, état identique ;
   - un objet que `TryValidate` refuse → refus, état identique, aucun départ ;
@@ -1264,13 +1309,22 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   - `NewGameInventoryInitialized` vaut vrai, et une entrée de carte suivante sans arrivée de warp
     garde les objets chargés (SC7) ;
   - carte d'arrivée différente de `InitialMapId` → rien n'est appliqué, attente abandonnée ;
-  - `ApplyPendingLoad` sans attente ne change rien ;
-  - de bout en bout, sur le chemin de l'installation réelle si les tests existants le permettent
-    (`AlundraWorldProxySessionStateTests`) : F9 sur une session, puis l'installation du monde
-    d'arrivée → état chargé, héros à la tuile sauvegardée.
+  - `ApplyPendingLoad` sans attente ne change rien, et un second appel après une application ne
+    réapplique rien (SD9) ;
+  - Start appuyé pendant le fondu du chargement : après `ApplyPendingLoad`, les deux inventaires au
+    repos, `PlayerControlFlags` à 0, puis N ticks sans exception (SD5) ;
+  - **de bout en bout, obligatoire** (SD8), sur le chemin de l'installation réelle
+    (`InitializeWithWorld`, comme `AlundraWorldProxySessionStateTests` et les tests de production
+    de la carte 389) : F9 sur une session, puis l'installation du monde d'arrivée → un drapeau
+    chargé est vu par le filtre d'apparition des entités et par les évènements de carte, le héros
+    est à la tuile sauvegardée, l'inventaire de nouvelle partie ne tourne pas. Deux mutations du
+    code de production, faites puis défaites par un script : appeler `ApplyPendingLoad` après
+    `AdoptPlayerPawn`, puis avant `GameState.InstallForMapEntry()`. Chacune doit faire échouer un
+    test.
 - ⏳ **T6 — Documentation et ADR** : ADR-0013 de ce dépôt (le chargement part par le chemin des
   warps et s'applique à l'entrée de la carte d'arrivée ; touches de recette en Debug seulement,
-  D-E16-33 ; le service derrière une interface de la DLL) ; section « Chargement et touches de
+  D-E16-33, la DLL déployée étant celle du dernier build ; le service derrière une interface de la
+  DLL ; limites du choix du plus récent, SD11) ; section « Chargement et touches de
   recette » de `docs/formats/save-game.md` ; tableau de suivi du plan maître.
 - ⏳ **T7 — Vérification** : un `verifier` frais sur l'acceptation ci-dessous, et un contradicteur
   sur les chemins hostiles (fichier refusé, départ impossible, arrivée inattendue).
@@ -1278,16 +1332,48 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   la DLL compilée en Debug ; le journal montre la ligne de l'interrupteur.
 
 **Acceptation d'E16.d** :
-- les tests de T1 à T5 passent ; `Alundra.Tests` est sans échec, l'oracle de l'intro inchangé ; le
-  build est à 0 erreur, en Debug et en Release (`-c Release` : la DLL compile sans les touches) ;
+- les tests de T1 à T5 passent ; `Alundra.Tests` est sans échec, l'oracle de l'intro inchangé ;
+- build à 0 erreur, **dans cet ordre** (SD7). Chaque build d'`Alundra.csproj` recopie sa DLL dans
+  `alundra-project/`, et le jeu charge la dernière recopiée :
+  1. `-c Release`, avec les touches compilées mais inactives par défaut, et le test de la valeur par
+     défaut lancé en Release ;
+  2. Debug, puis les tests, en dernier : la DLL laissée dans le projet pour la recette est celle de
+     Debug ;
 - le verifier et le contradicteur rendent **CONFIRMED** ;
 - T8 reste 🧪 tant que l'auteur n'a pas joué la recette.
 
 Adaptations dues à D-E16-31, et couvertes ailleurs :
 - « dans les deux formats » : les refus de la DLL portent sur l'objet décodé et ne dépendent pas du
   format ; la recette en jeu essaie les deux formats, un emplacement hostile compris ;
-- « un fichier au nom invalide dans le dossier » : `ListSlots` du moteur le signale comme illisible
-  (tests du moteur), et la DLL écarte les emplacements illisibles (T2).
+- « un fichier au nom invalide dans le dossier » : `ListSlots` du moteur ne le liste pas du tout
+  (`SaveGameFileStorage.cs:280-284`, SD10), donc la DLL ne le voit jamais ; elle écarte aussi les
+  emplacements illisibles (T2).
+
+**Revue de sécurité d'E16.d (2026-09-28)** : `security-reviewer` frais, en lecture seule, sur
+`775d7d9`. Aucun P0 à P2. L'ordre et l'atomicité de K7 et K8 tiennent :
+- rien de ce qui précède `InstallForMapEntry` ne lit l'état de session ;
+- rien de ce qui suit n'écrase les valeurs chargées ;
+- un second F9 est refusé par la porte de la transition ;
+- une arrivée sur une autre carte abandonne l'attente.
+
+La remise de session couvre tous les singletons, sauf le fondu maître de la musique (SD4).
+
+| Réf | Prio | Constat | Décision | Où |
+|---|---|---|---|---|
+| SD1 | P3 | Un départ avorté par la garde d'abandon laisse l'écran blanc et la musique en fondu : fondu et son partent avant la résolution du chemin, que la table du directeur des warps fait seule | FIX (contrôlé en session principale) | K7 étape 5 (`TryResolveWorldPath`), T4 |
+| SD2 | P3 | Le départ de `0x53` recopie l'animation en cours du héros ; l'original charge avec `0x36` et la direction 0 | FIX | K7 étape 6 (`BeginDepartureForLoad`), T4 |
+| SD3 | P3 | Emplacement des touches dans `Update` non fixé : un F9 après le calcul de `gameplayBlocked` laisserait tourner les évènements de la même image | FIX | K3, T4 |
+| SD4 | P3 | Un fondu maître de la musique (`0xA6`) armé survit au chargement et peut couper la musique de la carte d'arrivée | FIX | K6 et K7 étape 1, T3, T4 |
+| SD5 | P3 | L'inventaire peut s'ouvrir pendant le fondu d'un départ (probable) ; pour un chargement, K8 nettoie | FIX (test) | T5. Le même trou sur les warps ordinaires est préexistant : signalé à part, hors E16 |
+| SD6 | P3 | Une exception du service (environnement) sortirait dans `Update` | FIX | K4, T2 |
+| SD7 | P3 | La configuration active dépend du dernier build : un build Release éteint les touches de la recette, un `dotnet test` redéploie une DLL Debug | FIX | acceptation (ordre), T2 (valeur par défaut), ADR-0013 |
+| SD8 | P3 | Le test de bout en bout de l'ordre d'application n'était que conditionnel | FIX | T5 (obligatoire, deux mutations) |
+| SD9 | P4 | L'attente n'est pas vidée d'abord, ni abandonnée sur un retour anticipé | FIX | K8, T5 |
+| SD10 | P4 | Un nom de fichier invalide n'est pas listé du tout, et non « illisible » | FIX | texte des adaptations |
+| SD11 | P4 | K5 : heure future, emplacement récent abîmé sans repli, lecture complète | DEFER | ADR-0013 ; E16.e porte le choix d'emplacement |
+| SD12 | P4 | Post-traitement et portrait absents des préconditions ; `Hp ≥ 1` absent de K6 ; scripts de carte non verrouillés admis | FIX les deux premiers ; DEFER le reste | K6, K7 ; `Hp` → E18 (SC8), le reste → E16.e |
+| SD13 | P4 | Refuser F9 si une attente existe ; une touche maintenue pendant le changement de monde ne doit pas repartir | FIX | K3, K7 étape 1, T2 |
+| SD14 | P4 | Le forçage de test est atteignable en Release par `InternalsVisibleTo` | REJECT | seul du code déjà dans le processus peut s'en servir |
 
 **Arrêts** : ceux de la section E16.d ci-dessus ; une exception qui sort d'une touche ou de
 `ApplyPendingLoad` ; un test existant qui change pour une autre raison ; l'oracle de l'intro qui
@@ -1392,7 +1478,23 @@ bouge.
     livrée : l'aller-retour passe par `AlundraSaveGame.Capture` puis `ApplyTo` sur un état neuf,
     sans le service (D-E16-31) ;
   - **non-régression** : `Alundra.Tests` sans échec, oracle de l'intro inchangé (`0x11` à la
-    frame 1704), les 485 dialogues exportés toujours joués.
+    frame 1704) ;
+  - **corpus** (relecture de plan du 2026-09-28, P2) : un test obligatoire, `AlundraYarnVariableCorpusTests`,
+    prouve qu'aucun dialogue exporté ne consulte le stockage. Aucun test existant ne joue le corpus, et
+    le runner du moteur n'avance pas seul les choix (`YarnDialogueRunner.cs:169-171`) : le test
+    examine donc les programmes compilés, sans les jouer :
+    - **fichiers** : chaque `.dialogue` exporté sous `alundra-project/`, les 485 ; le test échoue en
+      nommant l'export s'il manque (convention d'`AlundraCellStoreProductionTests.cs:21-45`) ;
+    - **chargement** : comme la DLL, par `DialogueTestAssets.LoadFromDisk`. Si le programme Yarn
+      compilé n'est pas accessible depuis l'asset, le `.yarn` voisin est recompilé avec
+      `AlundraYarnBindings.CreateDeclarations()`, comme `DialogueTestAssets.BuildRaw` ;
+    - **prédicat**, pour chaque programme : aucune valeur initiale de variable, et aucune instruction
+      qui lit ou écrit une variable, sur tous les nœuds. Les genres d'instruction de Yarn Spinner
+      3.2.1 qui lisent ou écrivent une variable sont relevés par T1 et cités dans le test ;
+    - **conséquence** : aucun dialogue exporté ne lit ni n'écrit de variable, Yarn ou interne. Le
+      stockage n'est donc jamais consulté par le corpus, et l'arrêt « un dialogue exporté a besoin de
+      variables internes » devient vérifiable. Que `Clear()` ne soit jamais appelé repose sur T1 et
+      sur le runner, qui ne l'appelle pas (`YarnDialogueRunner.cs`, lu en entier).
 - **Arrêts** :
   - T1 montre que la machine virtuelle lève une exception sur une lecture refusée, ou qu'un dialogue
     exporté a besoin de variables internes : la tranche s'arrête et la question va à l'auteur
