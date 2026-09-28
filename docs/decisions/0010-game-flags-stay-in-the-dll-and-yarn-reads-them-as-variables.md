@@ -1,6 +1,6 @@
 # ADR-0010: Game flags stay in the DLL, and Yarn reads and writes them as `$flag_n` and `$tmp_flag_n`
 
-- **Status**: Accepted
+- **Status**: Accepted; D-E16-16 range superseded by ADR-0011
 - **Date**: 2026-09-28
 - **Source**: this chantier: `docs/plan-e16-etat-partie.md` §0.1 (D-E16-6 of 2026-09-27; D-E16-14 to D-E16-18, the author's answers of 2026-09-28) and `docs/plan-e15-yarn.md` §0.1 (D-E15-13)
 

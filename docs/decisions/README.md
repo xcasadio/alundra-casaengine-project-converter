@@ -23,4 +23,5 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0007 | The falcon update command keeps the state it replaces, and each `\X` reads on the original's side of the update | Accepted | 2026-09-27 |
 | ADR-0008 | The dialogue box uses font3 and draws each glyph marker as the matching font3 character | Accepted | 2026-09-28 |
 | ADR-0009 | font3 cells map to Unicode through their CP1252 byte, for proven characters only | Accepted | 2026-09-28 |
-| ADR-0010 | Game flags stay in the DLL, and Yarn reads and writes them as `$flag_n` and `$tmp_flag_n` | Accepted | 2026-09-28 |
+| ADR-0010 | Game flags stay in the DLL, and Yarn reads and writes them as `$flag_n` and `$tmp_flag_n` | Accepted; D-E16-16 range superseded by ADR-0011 | 2026-09-28 |
+| ADR-0011 | Yarn flag variables cover only the original's 64-word banks (ids 0 to 2047) | Accepted | 2026-09-28 |
