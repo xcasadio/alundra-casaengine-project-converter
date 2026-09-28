@@ -1301,7 +1301,7 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   - `ResetDisplayForLoad` garde la phase, `Y` et l'état attaché ;
   - les remises d'inventaire gardent les attaches ; les tests existants de `ResetForTests` passent
     sans changement.
-- ⏳ **T2 — Interrupteur, service et choix de l'emplacement** (K1 à K5). Tests :
+- ✅ **T2 — Interrupteur, service et choix de l'emplacement** (fait le 2026-09-28 : `AlundraSaveGameDirector` (interrupteur `#if DEBUG` et son forçage, touches lues par `UpdateRecipeKeys` en tête d'`AlundraWorldProxy.Update` juste après le temps de jeu, fronts montants, `RulesFactoryForTests`, `SelectMostRecent`), `IAlundraSaveSlots` et ses trois types de résultat, `AlundraEngineSaveSlots` (qui prend une fonction rendant le service, pour que le test SD6 y branche un service qui lève) ; F5/F6 capturent, valident et écrivent, F9 choisit, charge et valide : préconditions de K6 et K7, départ et application viennent aux T3 à T5 ; 14 tests dans `AlundraSaveGameDirectorKeysTests`, plomberie commune dans `SaveGameDirectorTestSupport` ; `Alundra.Tests` 1704/1704 ; le test de la valeur par défaut en Release est lancé à l'acceptation) (K1 à K5). Tests :
   - interrupteur forcé actif puis inactif ; journal une seule fois, quand il est actif ;
   - inactif : aucune lecture du clavier, F5, F6 et F9 sans effet ;
   - front montant : une touche maintenue dix images n'agit qu'une fois, et la même touche, relâchée

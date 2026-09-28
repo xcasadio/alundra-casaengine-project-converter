@@ -1829,6 +1829,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // this frame's elapsed real time, not on logic ticks (F9).
         GameState.AdvanceGameTime(elapsedTime);
 
+        // E16.d K3 (docs/plan-e16-etat-partie.md, D-E16-11, D-E16-33): the save-game recipe keys, once per
+        // RENDERED frame (the engine's keyboard advances once per frame, G9), right after the game time and
+        // BEFORE gameplayBlocked is computed below (SD3): a load armed by F9 posts the warp gate at once, so
+        // this frame's "dedans" passes (map events, scripted 0x53) are already frozen and cannot overwrite the
+        // load's departure or open a box. A no-op, reading no key, unless Alundra.dll is compiled in Debug.
+        AlundraSaveGameDirector.Instance.UpdateRecipeKeys(_world?.Game?.InputComponent?.KeyboardManager, GameState, _world?.Name, PlayerEntity);
+
         // Bug fix (AlundraLogicClock's own class doc): this world's ONE shared logic clock. Reads the SAME
         // cached value every spawned entity's own Update already advanced/read this frame (this proxy's
         // own Update always runs LAST - World.cs:443-491) - or, for a world with no entities at all (the
