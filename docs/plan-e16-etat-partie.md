@@ -700,7 +700,7 @@ celui de `main` (§5.2).
     `AlundraSaveGame`, jamais ceux d'`AlundraGameState.Instance` (dont les tableaux sont `readonly`,
     `AlundraGameState.cs:170-231`) ; l'état vivant n'est touché qu'à l'application (E16.d) ;
   - **une sauvegarde est une donnée non fiable, dans les deux formats** (le CRC-32 du binaire se
-    recalcule, le JSON s'édite à la main) : `Validate()` contrôle chaque champ contre le domaine
+    recalcule, le JSON s'édite à la main) : `TryValidate` (C4) contrôle chaque champ contre le domaine
     ci-dessous ; une seule valeur hors domaine refuse tout le chargement, avec un message qui la
     nomme.
 
@@ -746,9 +746,13 @@ celui de `main` (§5.2).
 
 #### Plan détaillé d'E16.c (2026-09-28)
 
-**Statut** : proposé. Revue de sécurité faite (tableau en fin de section, constats intégrés) ; reste
-la relecture de plan, puis l'approbation de l'auteur. Exécution par un `security-executor` (entrée
-non fiable), vérification par un `verifier` frais.
+**Statut** : proposé. Revue de sécurité faite (tableau en fin de section, constats intégrés).
+Première relecture de plan (`727d6d4`) : **REVISE**, un bloquant. La capture prenait la carte et la
+tuile en entiers : aucun test ne prouvait qu'elles viennent de la carte courante et du héros. Corrigé
+par `TryCaptureFromWorld` (C5, T3), avec le contrat d'E16.d. Remarques mineures corrigées aussi :
+type d'`InitialMapId`, `TryValidate` partout, stats à plat. Reste une relecture de clôture, puis
+l'approbation de l'auteur. Exécution par un `security-executor` (entrée non fiable), vérification
+par un `verifier` frais.
 
 **Réponses de l'auteur à la planification (2026-09-28)**
 
@@ -836,12 +840,26 @@ non fiable), vérification par un `verifier` frais.
   - toute exception du lecteur ou du prédicat du catalogue devient un refus (entrées-sorties, accès,
     JSON), et les entiers de `map_size` se lisent par des lectures « Try », sans conversion qui lève
     (SC6).
-- **C5 — Capture** : `static AlundraSaveGame Capture(AlundraGameState state, int currentMapId, int
-  tileX, int tileY, int tileZ)` :
-  - elle recopie les mots 0 à 63 de `GameFlags`, la table, les compteurs, les stats, `GameTime` et
-    `DeathRetryCount`, dans des tableaux propres à l'objet ;
-  - elle ne valide pas. Contrat pour E16.d : la sauvegarde n'est écrite qu'après une validation
-    réussie de l'objet capturé, pour ne jamais écrire ce qu'un chargement refuserait.
+- **C5 — Capture**, en deux méthodes statiques d'`AlundraSaveGame` :
+  - `Capture(AlundraGameState state, int currentMapId, int tileX, int tileY, int tileZ)` recopie les
+    mots 0 à 63 de `GameFlags`, la table, les compteurs, les stats, `GameTime` et `DeathRetryCount`,
+    dans des tableaux propres à l'objet, puis pose `InitialMapId` et `CameraTileX/Y/Z` avec les
+    valeurs données ;
+  - `bool TryCaptureFromWorld(AlundraGameState state, string worldName, AlundraEntityScriptProxy?
+    player, out AlundraSaveGame? save)` lit les sources d'`UpdateSavedData`, puis appelle `Capture` :
+    - la carte courante vient du suffixe « -{id} » du nom du monde, par
+      `BackdropLoader.TryParseMapIndex` (F4, `BackdropLoader.cs:110`) ;
+    - la tuile vient de `TileX`, `TileY` et `TileZ` du proxy du héros (F5).
+
+    Elle rend `false` sans lever quand le nom n'a pas d'id ou quand le héros manque.
+  - Aucune des deux ne valide. Contrat pour E16.d :
+    - la touche de sauvegarde capture par `TryCaptureFromWorld`, avec le nom du monde courant et
+      `AlundraWorldProxy.PlayerEntity` (`AlundraWorldProxy.cs:208`) ;
+    - la sauvegarde n'est écrite qu'après une validation réussie de l'objet capturé, pour ne jamais
+      écrire ce qu'un chargement refuserait.
+  - Types : `InitialMapId` est un `int`, comme l'id que rend `TryParseMapIndex` et comme les clés de
+    `world-index.json`. Les neuf stats sont des champs à plat de l'objet ; l'archive les range sous
+    l'objet `playerStats` (C2).
 - **C6 — Application** : `void ApplyTo(AlundraGameState state)`, sur un objet déjà validé :
   - elle efface les 1024 mots de `GameFlags`, puis copie les 64 ;
   - elle copie la table (500), les compteurs (256), les neuf stats, `DeathRetryCount` et `GameTime`,
@@ -892,14 +910,18 @@ plan ; `Alundra.Tests` sans échec à chaque commit)
   - un mot de `GameFlags` d'indice ≥ 64 posé dans l'état cible est effacé par `ApplyTo` ;
   - `TemporaryFlags`, `TextCategoryIndex`, `GameVariables` et `PlayerControlFlags` de l'état cible ne
     changent pas ;
-  - l'objet n'a aucun membre pour eux : ses champs publics sont exactement ceux de C2 (test par
-    réflexion) ;
+  - l'objet n'a aucun membre pour eux. Ses champs publics sont exactement `GameTime`, `InitialMapId`,
+    `CameraTileX`, `CameraTileY`, `CameraTileZ`, `GameFlags`, `MapIdToInternalMapIndexTable`, `Hp`,
+    `HpMax`, `Mp`, `MpMax`, `Money`, `WeaponId`, `ItemId`, `FalconTemp`, `Falcon`, `NumberOfItems`
+    et `DeathRetryCount` (test par réflexion). `LoadedDataVersion` est une propriété ;
   - un objet neuf a ses trois tableaux non nuls, de longueurs 64, 500 et 256, déclarés `readonly`
     (réflexion : champs en lecture seule), et `LatestDataVersion` vaut 1 (SC3, SC4) ;
   - la capture ne partage aucun tableau avec l'état : modifier l'état après la capture ne change pas
     l'objet ;
-  - capture d'un héros placé à une tuile connue d'une carte connue → `InitialMapId` et
-    `CameraTileX/Y/Z` égaux à ces valeurs ;
+  - `TryCaptureFromWorld` sur un vrai `AlundraEntityScriptProxy` placé à une tuile connue
+    (`TileX`, `TileY`, `TileZ` posés), avec le nom de monde réel de la carte 389,
+    `Ship Klark (beginning)-389` → `InitialMapId` = 389 et `CameraTileX/Y/Z` égaux à la tuile ; un
+    nom sans id, ou un héros nul → `false`, sans exception ;
   - métadonnées : `chapter` et `summary` égaux au calcul de T2.
 - ⏳ **T4 — Validation** (C3, C4, D-E16-32). `AlundraMapSizeReader` et `AlundraSaveGameRules`
   travaillent sur un dossier de projet donné ; les tests utilisent un dossier temporaire avec un
@@ -954,7 +976,8 @@ plan ; `Alundra.Tests` sans échec à chaque commit)
 - le verifier rend **CONFIRMED**.
 
 Retirés par D-E16-31, et couverts par les tests du moteur : l'aller-retour JSON et binaire, et la faute
-détectée par le moteur (tableau de mauvaise longueur). Reporté : E16.f n'étant pas livrée, le test
+détectée par le moteur (tableau de mauvaise longueur). La capture depuis le héros et la carte
+courante reste dans l'acceptation : `TryCaptureFromWorld` la prouve sur un vrai proxy (T3). Reporté : E16.f n'étant pas livrée, le test
 « `$flag_n` fait l'aller-retour » revient à E16.f, sur la capture et l'application.
 
 **Arrêts** :
@@ -996,7 +1019,7 @@ max `0x6A2`, mot 53) et arithmétique de C3.
      au démarrage d'un processus neuf, par `LOADER.EXE`, et après la mort, par « Réessayer » (§0.2) ;
      jamais librement en pleine partie. Préconditions : aucun dialogue, aucun inventaire ouvert,
      aucune transition en cours, `PlayerControlFlags == 0`. Sinon, refus avec un message ;
-  2. chargement par le service, puis `Validate()` d'E16.c ;
+  2. chargement par le service, puis `TryValidate` d'E16.c ;
   3. **contrôle du départ** : monde de `InitialMapId` résolu et présent au catalogue, aucune transition
      en cours, warp non désactivé (`AlundraWarpDirector.cs:365-368`) et garde d'abandon non
      déclenchable (`:540-548`) ; sinon refus ;
@@ -1035,7 +1058,8 @@ max `0x6A2`, mot 53) et arithmétique de C3.
   chargement depuis une jauge en plein rattrapage des PM max (affichés 3, vrais 4, `_mpMaxSubStep`
   non nul) d'une sauvegarde à 4 PM sur 4, puis jauge rouverte et roulements finis → aucune exception
   (SC1) ; après un chargement, une entrée de carte sans arrivée de warp garde les objets chargés
-  (SC7).
+  (SC7) ; la touche de sauvegarde, héros placé à une tuile connue d'une carte connue, capture cette
+  carte et cette tuile par `TryCaptureFromWorld` (contrat de C5 d'E16.c).
 - **Acceptation en jeu** (lancée hors de l'app Claude, O3 du plan moteur) : nouvelle partie sur la
   389, intro jusqu'au bout, passage sur la 390, sauvegarde ; quitter ; relancer, charger → sur la 390
   à la même tuile, stats et objets identiques ; retour sur la 389 **sans** que l'intro rejoue. La même
