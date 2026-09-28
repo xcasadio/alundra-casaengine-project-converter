@@ -38,6 +38,12 @@ E16.0 approuvées par l'auteur le 2026-09-28. E16.0 est faite (`59fac90`, §2) ;
 du §2 a rendu **CONFIRMED** ; ses quatre remarques P4 (bornes de `_10`, taille de la copie après
 sauvegarde, impasses du recomptage, copie lue par `0xC2`) sont corrigées dans le texte.
 
+Relecture du plan corrigé après E16.0, exigée par la règle d'arrêt d'E16.0 :
+- première relecture de `2d1f333` : **REVISE**, un P2 : un `$flag_n` au-delà de 2047 aurait été
+  perdu sans message au chargement ;
+- correction : D-E16-25 et ADR-0011 (`a7c020b`, `7bceb48`) ;
+- relecture de clôture : **READY**.
+
 | Unité | Revue avant approbation | Après exécution |
 |---|---|---|
 | Enveloppe (ce plan) + E16.0 (mesure, première tranche exécutable) | plan-verifier ; revue de sécurité faite (§6) | commit de documentation |
