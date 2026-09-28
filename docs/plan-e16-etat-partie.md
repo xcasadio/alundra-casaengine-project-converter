@@ -667,7 +667,7 @@ celui de `main` (§5.2).
 - **Dépendances** : aucune dans ce plan ; la question O1 du plan moteur (§9.9) doit être tranchée
   avant.
 
-### E16.c — Objet de sauvegarde d'Alundra 🚧 (DLL ; plan détaillé plus bas, READY, approuvé par l'auteur le 2026-09-28, mode ASK)
+### E16.c — Objet de sauvegarde d'Alundra ✅ (DLL ; plan détaillé plus bas, READY, approuvé par l'auteur le 2026-09-28 ; faite et vérifiée CONFIRMED le même jour, `b5ae0f2` à `24bde7a`)
 
 - **But** : `AlundraSaveGame`, l'objet que la DLL confie au service (D-E16-4).
 - **Contenu** :
@@ -980,7 +980,22 @@ plan ; `Alundra.Tests` sans échec à chaque commit)
     D-E16-31, D-E16-32) ;
   - page `docs/formats/save-game.md` : champs, noms, domaines, métadonnées, limites ;
   - mise à jour du §3 de ce plan et du tableau de suivi du plan maître.
-- ⏳ **T6 — Vérification** : `verifier` frais sur l'acceptation ci-dessous, en particulier l'entrée
+- ✅ **T6 — Vérification** (faite le 2026-09-28 sur `24bde7a`, deux contrôles neufs et indépendants) :
+  - un `verifier` a rejoué le build (0 erreur) et `Alundra.Tests` (1645/1645, dont les 218 tests
+    d'E16.c et l'oracle de l'intro), puis il a relu chaque ligne du tableau des domaines,
+    `ApplyTo`, `TryCaptureFromWorld` et `Serialize` contre la liste ci-dessous : **CONFIRMED** ;
+  - un contradicteur a cherché, en lecture seule, une sauvegarde hostile qui fasse lever la
+    validation, l'application ou un lecteur de l'état appliqué, ou qui passe hors du domaine :
+    **CONFIRMED**, aucun P0 à P2.
+
+  Deux P4 sont reportés :
+  - les quatre méthodes lèvent `ArgumentNullException` sur un état ou des règles nuls. Aucun contenu
+    de sauvegarde n'y mène : c'est un contrat de l'appelant, à respecter par E16.d ;
+  - `BuildSummary` écrit des caractères non numériques pour des PV max hors de 0..99, comme
+    l'original. Seul un objet validé est écrit (contrat de C5), et E16.e traite les métadonnées
+    comme du texte non fiable.
+
+  Énoncé d'origine de la tâche : `verifier` frais sur l'acceptation ci-dessous, en particulier l'entrée
   non fiable. Faute d'aller-retour (D-E16-31), il relit `Serialize` contre cette liste (SC3) :
   - appels dans l'ordre de C2 ;
   - noms uniques dans chaque objet ;
