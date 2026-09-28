@@ -602,7 +602,7 @@ sans échec avant chaque ✅) :
     avancer le mouvement (ticks, ou position pilotée) pour atteindre le `0x7D` ;
   - C : Lizardman's Lair (Boss)-411, B[9] (entrée 1712) : `0x7B` en 1713 (drapeau `0x807A`), puis
     `0x37`, `0x07` et `0x7E` en 1747, dont le `Result` vient du `0x07`.
-- ⏳ **T5 — Analyseur** (contrat 5, D-E16-28). Branche `chantier/e16a-opcodes` créée depuis le commit
+- ✅ **T5 — Analyseur** (fait le 2026-09-28 : `82f1718` sur `chantier/e16a-opcodes` du sous-module ; `EventCodeDebugger.cs` et cinq fonctions d'`EntityEventHandlers.cs` suivent le binaire ; `0xB7` contrôlé dans le binaire avant correction, `variables[1]` ; `AlundraEngine` compile à 0 erreur ; le `Breakpoint.TriggerBreak()` en tête de `0xB7` est laissé tel quel, hors de la demande) (contrat 5, D-E16-28). Branche `chantier/e16a-opcodes` créée depuis le commit
   que le parent enregistre pour le sous-module (`118c6c5`, égal à `master` au 2026-09-28 ; s'ils ont
   divergé, arrêt et question) ; build d'`AlundraEngine.csproj` à 0 erreur ; commit dans le sous-module, puis commit du
   pointeur dans ce dépôt. Rien n'est poussé.
