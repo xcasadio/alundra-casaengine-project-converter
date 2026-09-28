@@ -22,3 +22,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0006 | All Alundra text is authored as Yarn and the raw text tables are no longer exported | Accepted; `\X` bullet superseded by ADR-0007 | 2026-09-27 |
 | ADR-0007 | The falcon update command keeps the state it replaces, and each `\X` reads on the original's side of the update | Accepted | 2026-09-27 |
 | ADR-0008 | The dialogue box uses font3 and draws each glyph marker as the matching font3 character | Accepted | 2026-09-28 |
+| ADR-0009 | font3 cells map to Unicode through their CP1252 byte, for proven characters only | Accepted | 2026-09-28 |
