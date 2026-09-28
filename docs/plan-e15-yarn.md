@@ -732,7 +732,13 @@ de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Re
   les quatre familles de fichiers et retire ceux d'un export précédent ; retrait de `TextWriter`, de
   `MapCatalogReader.StringsRelativePath` et d'`AlundraDialogueStringsLoader`/`AlundraDialogueTextParser`
   (déjà déconnectés de la production par T5/T7, code encore présent).)
-- ⏳ **T7 — Harnais de l'intro.** Le harnais lit son texte par Yarn ; oracle `0x11` à la frame 1704
+- ✅ **T7 — Harnais de l'intro** (fait le 2026-09-28 : le harnais ne lit plus aucun `*.strings.json` ;
+  son chemin par défaut (dégradé) joue les `.dialogue` exportés de la carte et de `Shared` sans
+  affichage, et son annotation de trace lit `line:{nœud}_p0` par Yarn ; **oracle identique** : drapeaux
+  `0x83E8` à la frame 554, `0x83EA` à 1034, `0x83E9` à 1202, `860` et l'opcode `0x11` à 1704 ;
+  recherche dans `Alundra` et `Alundra.Tests` : un seul lecteur de fichier brut reste,
+  `AlundraDialogueStringsLoader`, sans aucun appelant (supprimé en E15.d) ; `Alundra.Tests`
+  1 366/1 366.) Le harnais lit son texte par Yarn ; oracle `0x11` à la frame 1704
   inchangé, **sur le chemin que le harnais prend par défaut, le chemin dégradé** (sans directeur tant
   que `installDialogueDirector` n'est pas demandé, `IntroTraceHarnessTests.cs:389-396`), qui joue
   désormais le Yarn sans affichage (contrat, item 8) ; le chemin du directeur est couvert par les
