@@ -4,7 +4,8 @@ Code : [`Text/YarnTextEmitter.cs`](../../alundra-casaengine-project-converter/Te
 (le texte original vers le source Yarn),
 [`Text/AlundraYarnFunctions.cs`](../../alundra-casaengine-project-converter/Text/AlundraYarnFunctions.cs)
 (les déclarations des fonctions), [`Writers/YarnDialogueWriter.cs`](../../alundra-casaengine-project-converter/Writers/YarnDialogueWriter.cs)
-(phase `Phase5.Yarn`, juste après `Phase5.Text`), et le chargeur `dialogue` d'`AssetVerifier` (phase 8).
+(phase `Phase5.Yarn`), [`Writers/RawTextCleanup.cs`](../../alundra-casaengine-project-converter/Writers/RawTextCleanup.cs)
+(retrait des tables brutes d'un export précédent), et le chargeur `dialogue` d'`AssetVerifier` (phase 8).
 Décisions : [ADR-0006](../decisions/0006-alundra-text-is-authored-as-yarn.md),
 [ADR-0007](../decisions/0007-falcon-update-keeps-the-state-it-replaces.md) ; plan :
 [`plan-e15-yarn.md`](../plan-e15-yarn.md).
@@ -16,8 +17,11 @@ des objets) est écrit en source [Yarn Spinner](https://yarnspinner.dev) 3.2.1, 
 `DialogueAsset` du moteur. Les codes de contrôle de l'original deviennent des marqueurs, des
 commandes et des fonctions que la DLL Alundra interprète ; le moteur ne connaît rien d'Alundra.
 
-Ces fichiers sont écrits **à côté** des tables de texte brut ([`text-tables.md`](text-tables.md)),
-que la DLL lit encore ; E15.c fait lire le Yarn à la DLL, E15.d retire les tables brutes.
+C'est le seul format du texte dans le projet exporté (D-E15-4) : les anciennes tables de texte brut
+(`Dialogues/global-strings.json`, `Dialogues/etc-index.json`, `Dialogues/control-codes.json` et les
+`{Nom}-{id}.strings.json` de chaque carte) ne sont plus écrites, et un export sur place retire celles
+d'un export précédent, par une liste fermée (compteur `Yarn.RawTextFilesRemoved`). La DLL lit
+dialogues, OUI/NON et textes de l'inventaire dans ces assets (E15.c).
 
 ## Où c'est écrit
 
@@ -94,9 +98,10 @@ Commandes (non déclarées au compilateur) : `<<flag n>>` pose le drapeau tempor
 ## Compteurs de `report.json`
 
 `Yarn.Files`, `Yarn.Nodes`, `Yarn.Lines`, `Yarn.EmptyPages`, `Yarn.GlyphMarkers`,
-`Yarn.FlagCommands`, `Yarn.FalconUpdateCommands`, `Yarn.FunctionCalls`, `Yarn.EmptySlots`, et
+`Yarn.FlagCommands`, `Yarn.FalconUpdateCommands`, `Yarn.FunctionCalls`, `Yarn.EmptySlots`,
+`Yarn.RawTextFilesRemoved` (tables brutes retirées d'un export précédent, toujours écrit), et
 l'inventaire des codes `Yarn.Code.<code>` (`Yarn.Code.\A`, `Yarn.Code.\W2`, `Yarn.Code.U+001A`…),
-qui remplacera `Dialogues/control-codes.json`. Valeurs sur le corpus complet : 485 fichiers,
+qui remplace l'ancien `Dialogues/control-codes.json`. Valeurs sur le corpus complet : 485 fichiers,
 24 784 nœuds, 31 757 lignes, 95 pages vides, 11 182 glyphes, 932 `flag`, 7 `falcon_update`,
 20 appels de fonctions, 38 192 emplacements vides sans nœud. La phase 8 charge chaque `.dialogue`
 (programme compilé et textes de ligne exigés) : `Verify.Loaded.dialogue`.
@@ -155,4 +160,3 @@ tête, et aucun `Speaker`.
 - Les marqueurs `voice`, `center`, `slow` sont gardés pour la fidélité des dialogues (E12.c) ; la DLL
   les ignore à l'affichage tant qu'E12.c n'est pas faite.
 - Le pluriel français intégré de Yarn Spinner 3.2.1 est faux : ne pas s'en servir.
-- Les tables de texte brut restent exportées jusqu'à E15.d.

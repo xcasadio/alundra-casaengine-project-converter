@@ -73,7 +73,7 @@ alundra-casaengine-project-converter data-extracted out\AlundraGame --no-verify
 | 2 | `data/tiled/map_N.alundra.json` + `data/map_N.json` | Merges per-cell gameplay metadata into each `.tileMap`'s `CustomProperties["AlundraCells"]`. |
 | 3 | `data/map_N.json` `SpriteInfo.SpriteRecords`, `data/map_alundra.json`, `EntityNames.csv` | `Entities/<EntityName>/*.sprite` + `*.anim2d`, spritesheets under `Sprites/Textures/`, hero effects under `Sprites/hero/`. |
 | 4 | `sound/bgm.json`, `sound/sfx.json`, `sound/bgm/*.wav`, `sound/sfx/*.wav` | Raw WAV copies under `Musics/` / `Sounds/`, plus their manifests. |
-| 5 | `data/ETC_RES.R.json`, `data/map_N.json` `Strings`, `ui/font3.json`, `ui/font3.png` | `Dialogues/global-strings.json`, `Maps/{Zone}/{Name}-{id}/dialogues/{Name}-{id}.strings.json`, `Dialogues/control-codes.json`, `UI/font3.fnt` + `UI/font3-charset.json`. |
+| 5 | `data/ETC_RES.R.json`, `data/map_N.json` `Strings`, `data/map_alundra.json` `Strings`, `EtcIndexTable.csv`, `ui/font3.json`, `ui/font3.png` | All the game's text as Yarn: per map `Maps/{Zone}/{Name}-{id}/dialogues/{Name}-{id}.yarn` + its compiled, catalogued `.dialogue`, plus `Dialogues/Shared` and `Dialogues/Etc` (see `docs/formats/dialogues-yarn.md`); raw text tables left by an older export are removed. Then `UI/font3.fnt` + `UI/font3-charset.json`. |
 | 6 | `.tileMap` assets from Phase 1, `data/map_N.json` | One `.world` per map at the root of its map folder (`Maps/{Zone}/{Name}-{id}/{Name}-{id}.world`), the single shared `Entities/AlundraCamera.entity` every world references, `Maps/world-index.json`, the project's `FirstWorldLoaded`, and `Maps/{Zone}/{Name}-{id}/events/{Name}-{id}.events.json` (raw event bytecode). |
 | 7 | `ui/wind.json` + `ui/wind.png`, `memorycard/`, `closing/`, `data/loading_screen.png`, `data/BALANCE.BIN.json` | `UI/*.sprite` + `UI/wind-sprites.json`, catalogued screen textures under `UI/Textures/`, `Data/balance.json`. |
 | 9 | `data/map_N.json` `Map.ScrollParameters` | Per map, the scrolling background layers: a pre-rendered 640x480 texture per non-empty `Tiles` layer (plus one per animation frame) under `Maps/{Zone}/{Name}-{id}/backdrop/`, and a raw `{Name}-{id}.backdrop.json` companion (not a CasaEngine asset — same convention as `events.json`) carrying parallax/auto-scroll factors and the full-screen overlay tint. See `docs/formats/backdrops.md`. Runs after Phase 7, before Phase 8's verification. |
@@ -92,7 +92,7 @@ Top-level folders of a converted project (from a real full run):
     world-index.json       MapId -> relative path of that map's .world
     {Zone}/{Name}-{id}/    one folder per map, grouped by the zone its maps.json entry names
       tilemap/              {Name}-{id}.tmj / .tileMap / .tileset / .texture + map_{id}_tileset.png
-      dialogues/            {Name}-{id}.strings.json — that map's 128 dialogue lines
+      dialogues/            {Name}-{id}.yarn + .dialogue — that map's dialogue text as Yarn
       events/               {Name}-{id}.events.json — raw event bytecode (not a CasaEngine asset)
       {Name}-{id}.world     the map's world, at the root of its folder
   Entities/
@@ -107,9 +107,9 @@ Top-level folders of a converted project (from a real full run):
     hero/hero_effects.json companion: hero SpriteEffectRecords, not converted to sprites in V1
   Sounds/                 sfx_NNNN.wav + sfx-manifest.json
   Musics/                 bgm_NNN.wav + bgm-manifest.json
-  Dialogues/              only the two tables that belong to no single map
-    global-strings.json    the ETC_RES.R string table
-    control-codes.json     inventory of control-code tokens found in the strings
+  Dialogues/              the text that belongs to no single map
+    Shared.yarn/.dialogue  the shared map_alundra table
+    Etc.yarn/.dialogue     the ETC_RES.R table (menus, items, yes/no)
   UI/
     font3.fnt, font3-charset.json     bitmap font + raw-code/codepoint mapping
     *.sprite, wind-sprites.json       UI element crops from ui/wind.png
@@ -170,9 +170,9 @@ so that it cannot be silently blind:
   into an empty directory** if you want the catalog to describe exactly what is there. On a clean
   full run this count is 0 and `Verify.LoadableFilesOnDisk == Verify.Loaded`.
 
-What the pass does **not** cover: the companion JSON files (the ~980 per-map `*.strings.json` and
+What the pass does **not** cover: the companion JSON files (the per-map
 `*.events.json` under `Maps/`, plus the audio manifests, `wind-sprites.json`, `font3-charset.json`, `balance.json`,
-`world-index.json`). They are not CasaEngine asset types and are not catalogued, so nothing loads
+`world-index.json`), and the `.yarn` sources next to each catalogued `.dialogue`. They are not CasaEngine asset types and are not catalogued, so nothing loads
 them back — their formats are documented in [`docs/formats/`](docs/formats/README.md) and covered by
 unit tests instead.
 

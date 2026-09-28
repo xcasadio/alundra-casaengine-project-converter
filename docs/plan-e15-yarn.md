@@ -859,7 +859,11 @@ erreur, tests du convertisseur et `Alundra.Tests` sans échec avant chaque ✅) 
   T1 et ses jeux d'essai en dossiers temporaires ; contrôle neuf CONFIRMED ; `Alundra.Tests`
   1 360/1 360, soit 1 366 moins les 6 tests du parseur.) Contrat 3 : suppression des deux classes, du type, de leurs tests ; commentaires mis à
   jour ; recherche : aucune occurrence de ces noms hors des documents historiques.
-- ⏳ **T3 — Documentation.** Contrat 4.
+- ✅ **T3 — Documentation.** Contrat 4. (Fait le 2026-09-28 : `docs/formats/text-tables.md` supprimé et
+  retiré de l'index des formats ; `dialogues-yarn.md` décrit le Yarn comme seul format du texte et le
+  retrait des tables brutes (`Yarn.RawTextFilesRemoved`) ; `events.md`, `README.md` (phase 5,
+  arborescence, ce que la phase 8 ne couvre pas) et le guide runtime mis à jour ; recherche dans la
+  documentation courante : il ne reste que l'ADR-0006, historique, et la description du retrait.)
 - ⏳ **T4 — Export complet et preuves** (jamais pendant une suite `Alundra.Tests` ; lanceur et jeu
   fermés) : manifeste d'avant comparé au manifeste d'après de T7 d'E15.b (`scratchpad/t7/manifest-after2.txt`,
   tout écart est noté et expliqué avant d'aller plus loin) ; export complet sur place ; `report.json` à
