@@ -906,7 +906,7 @@ plan ; `Alundra.Tests` sans échec à chaque commit)
   - `InstallForMapEntry` garde les deux champs ; `ResetForTests` les remet à zéro ;
   - un `Update` du proxy fait avancer le compteur ;
   - oracle de l'intro inchangé.
-- ⏳ **T2 — Chapitre et résumé** (C1, C7, F6 à F8). `AlundraChapterFlags` porte les 41 ids et le
+- ✅ **T2 — Chapitre et résumé** (fait le 2026-09-28 : `AlundraChapterFlags` (41 ids, parcours, `FormatChapter` sur quatre chiffres) et `AlundraSaveGame.BuildSummary`, statique, posé dans le fichier de l'objet que T3 complète ; des PV max hors de 0..99, refusés par la validation, donnent des caractères non numériques comme l'original, sans exception ni surrogate ; 39 tests dans `AlundraChapterFlagsTests`, dont les résumés attendus écrits en clair ; `Alundra.Tests` 1491/1491) (C1, C7, F6 à F8). `AlundraChapterFlags` porte les 41 ids et le
   parcours. Tests :
   - aucun drapeau posé → 0 ; le premier seul → 1 ; tous → 41 ; un trou au milieu → l'indice du trou ;
   - un id de chapitre posé dans `TemporaryFlags` n'est pas vu ;
