@@ -852,7 +852,12 @@ erreur, tests du convertisseur et `Alundra.Tests` sans échec avant chaque ✅) 
   ETC sans aucun caractère accentué donne l'avertissement de mauvais encodage, une chaîne à U+FFFD
   donne son avertissement, une table correcte donne le message « accented French read as UTF-8 ») ;
   commentaires du convertisseur mis à jour (alias et commentaire de `Program.cs` compris).
-- ⏳ **T2 — DLL.** Contrat 3 : suppression des deux classes, du type, de leurs tests ; commentaires mis à
+- ✅ **T2 — DLL** (fait le 2026-09-28 : `AlundraDialogueStringsLoader.cs`, `AlundraDialogueTextParser.cs`
+  (avec `AlundraDialoguePage`) et `AlundraDialogueTextParserTests.cs` supprimés, l'appel de remise à
+  zéro retiré des tests d'opcodes, commentaires mis à jour ; recherche dans tout le dépôt hors moteur et
+  plans historiques : plus aucun lecteur ni écrivain de ces fichiers, sauf le nettoyage à liste fermée de
+  T1 et ses jeux d'essai en dossiers temporaires ; contrôle neuf CONFIRMED ; `Alundra.Tests`
+  1 360/1 360, soit 1 366 moins les 6 tests du parseur.) Contrat 3 : suppression des deux classes, du type, de leurs tests ; commentaires mis à
   jour ; recherche : aucune occurrence de ces noms hors des documents historiques.
 - ⏳ **T3 — Documentation.** Contrat 4.
 - ⏳ **T4 — Export complet et preuves** (jamais pendant une suite `Alundra.Tests` ; lanceur et jeu

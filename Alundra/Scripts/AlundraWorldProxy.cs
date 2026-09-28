@@ -1057,9 +1057,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// Yarn asset (by name, through <c>AssetCatalog</c> and the game's asset manager - the same route
     /// <see cref="AlundraPlayerController.EnsureInputMappingsRegistered"/> already uses for a catalogued
     /// asset) and the shared <c>dialogue_shared</c> asset, and hands both to <paramref name="runner"/>.
-    /// Supersedes <see cref="AlundraDialogueStringsLoader"/> for opcodes 0x0D/0x5C. A no-op (both stay
-    /// null) when this world has no <see cref="World.Game"/> or asset manager yet - the same degraded
-    /// shape <see cref="MapEventProgramLoader"/>/<see cref="AlundraDialogueStringsLoader"/> already had.
+    /// Supersedes the old <c>AlundraDialogueStringsLoader</c> (removed in E15.d) for opcodes 0x0D/0x5C.
+    /// A no-op (both stay null) when this world has no <see cref="World.Game"/> or asset manager yet -
+    /// the same degraded shape <see cref="MapEventProgramLoader"/> already had.
     /// </summary>
     private void InstallDialogueAssets(World world, AlundraEventProgramRunner runner)
     {

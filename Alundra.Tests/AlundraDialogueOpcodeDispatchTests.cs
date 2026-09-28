@@ -28,7 +28,6 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
     public AlundraDialogueOpcodeDispatchTests()
     {
         AlundraDialogueDirector.Instance.ResetForTests();
-        AlundraDialogueTextParser.ResetCountersForTests();
         AlundraEtcStringTable.ResetForTests(); // E15.c T6: the 0x44 choice-flow tests inject an ETC asset.
     }
 
@@ -315,7 +314,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         Assert.Equal("index2", AlundraDialogueDirector.Instance.CurrentLineForTests?.Text);
     }
 
-    // ---- 0x44 choice flow, using the real etc-index/global-strings data --------------------------
+    // ---- 0x44 choice flow, using the real exported Dialogues/Etc.dialogue --------------------------
 
     private static string FindProjectRoot()
     {
