@@ -770,7 +770,14 @@ de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Re
   `TextWriter.cs:222` et `MapLocationTests.cs:33`, `:55`. `YarnDialogueWriter` lit ses entrées dans
   `data-extracted/` et `EtcIndexTable.csv`, jamais dans les fichiers bruts ; il émet aussi les
   avertissements de lecture d'`EtcIndexTable.csv` en double avec `TextWriter` (`YarnDialogueWriter.cs:192-193`).
-  Mentions en commentaire : `YarnDialogueWriter.cs:23`, `Text/YarnTextEmitter.cs:35`,
+  **`TextWriter` porte aussi le seul contrôle d'encodage du texte source** (`TextWriter.cs:123-170`) :
+  avertissement si la table ETC ne contient aucun caractère accentué (« lu avec le mauvais encodage »),
+  avertissement pour les chaînes qui contiennent U+FFFD, et message « accented French read as UTF-8 » ;
+  `StringTableReader.ContainsNonAscii`, `ContainsReplacementCharacter` et `Excerpt`
+  (`Readers/StringTableReader.cs:90`, `:107`, `:114`) ne sont appelés que là (`TextWriter.cs:137`, `:141`,
+  `:162`). Ce garde-fou compte : le remaster ré-extrait le 2026-09-19 avait son texte non décodé.
+  Mentions en commentaire : `Program.cs:5-6` (l'alias `TextWriter`) et `:93-95`,
+  `YarnDialogueWriter.cs:23`, `Text/YarnTextEmitter.cs:35`, `Readers/MapCatalogReader.cs:20`,
   `Readers/EtcIndexCatalogReader.cs:14-19`, `Readers/StringTableReader.cs:26`, `Writers/EventCodeWriter.cs:15`,
   `Writers/ItemsWriter.cs:38`.
 - *DLL* : `AlundraDialogueStringsLoader` (seul lecteur de fichier restant, **aucun appelant**) et
@@ -780,7 +787,8 @@ de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Re
   `AlundraWorldIndexTable.cs:16`. `AlundraEtcStringTable` ne lit plus aucun fichier (T6).
 - *Documentation courante* (les anciens plans restent tels quels, comme historique) :
   `docs/formats/text-tables.md`, sa ligne dans `docs/formats/README.md`, `docs/formats/events.md:24`,
-  `docs/formats/dialogues-yarn.md` (« à côté des tables brutes »), `README.md:76`, `:95`, `:111-112`,
+  `docs/formats/dialogues-yarn.md` (`:7` « juste après `Phase5.Text` », `:19` « à côté des tables brutes »,
+  `:99` « qui remplacera `control-codes.json` »), `README.md:76`, `:95`, `:111-112`,
   `:173`, `docs/guidelines-runtime-alundra-casaengine.md:161`, `:167`.
 - *Export actuel* : 483 `*.strings.json` et les trois fichiers de `Dialogues/`, soit **486 fichiers**,
   aucun catalogué (`AssetInfos.json` ne change pas).
@@ -790,12 +798,16 @@ de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Re
 1. Le convertisseur n'écrit plus aucune des quatre familles : `TextWriter` et son appel `Phase5.Text`
    disparaissent (la phase 5 garde `Phase5.Yarn` et `Phase5.Font`), avec `TextWriterTests` et
    `MapCatalogReader.StringsRelativePath` ; l'inventaire des codes vit dans les compteurs
-   `Yarn.Code.<code>` de `report.json` (E15.b).
+   `Yarn.Code.<code>` de `report.json` (E15.b). **Le contrôle d'encodage de `TextWriter` passe dans
+   `YarnDialogueWriter`**, sur les mêmes sources (table ETC, et tables des cartes pour U+FFFD), avec les
+   mêmes avertissements et le même message ; son test passe de `TextWriterTests` à
+   `YarnDialogueWriterTests`.
 2. Il **retire** ceux d'un export précédent, par une **liste fermée** : les trois fichiers de
    `Dialogues/` à chaque exécution, et `{MapLocation.DialoguesDirectory}/{FileBaseName}.strings.json`
    pour chaque carte traitée (le filtre `--maps` s'applique) ; un fichier absent n'est pas une erreur ;
    rien d'autre n'est jamais supprimé (pas de joker, pas de dossier) ; compteur
-   `Yarn.RawTextFilesRemoved`, et une erreur de `report.json` si une suppression échoue.
+   `Yarn.RawTextFilesRemoved`, **toujours écrit, même à 0**, et une erreur de `report.json` si une
+   suppression échoue.
 3. La DLL perd `AlundraDialogueStringsLoader`, `AlundraDialogueTextParser` et `AlundraDialoguePage`, avec
    leurs tests et les appels de test qui ne servaient qu'à eux.
 4. Les commentaires qui décrivent encore les tables brutes comme vivantes sont mis à jour ; la
@@ -810,14 +822,18 @@ erreur, tests du convertisseur et `Alundra.Tests` sans échec avant chaque ✅) 
   `Phase5.Yarn` ; tests : un projet temporaire contenant les quatre familles et un fichier voisin
   (par exemple un `.dialogue` et un autre `.json` du dossier `dialogues`) → seules les quatre familles
   disparaissent, le compteur vaut leur nombre ; `--maps` ne retire que les cartes filtrées (et les trois
-  fichiers de `Dialogues/`) ; fichier absent sans erreur ; commentaires du convertisseur mis à jour.
+  fichiers de `Dialogues/`) ; fichier absent sans erreur ; **contrôle d'encodage déplacé** (une table
+  ETC sans aucun caractère accentué donne l'avertissement de mauvais encodage, une chaîne à U+FFFD
+  donne son avertissement, une table correcte donne le message « accented French read as UTF-8 ») ;
+  commentaires du convertisseur mis à jour (alias et commentaire de `Program.cs` compris).
 - ⏳ **T2 — DLL.** Contrat 3 : suppression des deux classes, du type, de leurs tests ; commentaires mis à
   jour ; recherche : aucune occurrence de ces noms hors des documents historiques.
 - ⏳ **T3 — Documentation.** Contrat 4.
 - ⏳ **T4 — Export complet et preuves** (jamais pendant une suite `Alundra.Tests` ; lanceur et jeu
   fermés) : manifeste d'avant comparé au manifeste d'après de T7 d'E15.b (`scratchpad/t7/manifest-after2.txt`,
   tout écart est noté et expliqué avant d'aller plus loin) ; export complet sur place ; `report.json` à
-  0 erreur, `Yarn.RawTextFilesRemoved` = 486, phase 8 PASSED avec 485 `.dialogue` chargés ; manifeste
+  0 erreur, `Yarn.RawTextFilesRemoved` = 486, le message « accented French read as UTF-8 » présent,
+  phase 8 PASSED avec 485 `.dialogue` chargés ; manifeste
   d'après = **exactement** la disparition des 486 fichiers et la modification de `report.json` ; second
   export identique hormis `report.json`, avec `Yarn.RawTextFilesRemoved` = 0 ; **recherche dans tous les
   projets** (DLL, `Alundra.Tests`, convertisseur et ses tests) : aucun lecteur ni écrivain de ces
@@ -1024,7 +1040,7 @@ Le point d'entrée `0x8008b538` met à zéro la BSS `[0x800CA0E8, 0x801F7F20)`.
 | Code du convertisseur, de la DLL, tests | E15.b, E15.c, E15.d | Branche du chantier abandonnée ; rien n'est fusionné sans l'auteur. |
 | Pointeur du sous-module moteur | E15.a | Revenir au pointeur de `main` du parent ; la branche moteur est gardée. |
 | `alundra-project/` après E15.b (ajouts) | E15.b | Export depuis `data-extracted/` avec le convertisseur de `main` ; la preuve est le manifeste de référence d'E15.0 **plus la liste énumérée des `.yarn` et `.dialogue` ajoutés par E15.b** (relevée dans le manifeste d'E15.b), qui restent sur le disque, non catalogués. Si l'`AssetVerifier` de `main` refuse ces fichiers non catalogués (constat d'E15.0), leur retrait, limité à cette liste et jamais au dossier, se fait avec l'accord de l'auteur. |
-| `alundra-project/` après E15.d (suppressions) | E15.d | Export depuis `data-extracted/` avec le convertisseur d'avant E15.d : il réécrit les quatre familles de fichiers ; preuve contre le manifeste de fin d'E15.c. |
+| `alundra-project/` après E15.d (suppressions) | E15.d | Export depuis `data-extracted/` avec le convertisseur d'avant E15.d : il réécrit les quatre familles de fichiers ; preuve contre le manifeste d'avant pris en T4 d'E15.d (`scratchpad/e15d/manifest-before.txt`). |
 
 ### 6.3 Arrêts communs
 
