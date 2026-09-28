@@ -750,8 +750,11 @@ celui de `main` (§5.2).
 Première relecture de plan (`727d6d4`) : **REVISE**, un bloquant. La capture prenait la carte et la
 tuile en entiers : aucun test ne prouvait qu'elles viennent de la carte courante et du héros. Corrigé
 par `TryCaptureFromWorld` (C5, T3), avec le contrat d'E16.d. Remarques mineures corrigées aussi :
-type d'`InitialMapId`, `TryValidate` partout, stats à plat. Reste une relecture de clôture, puis
-l'approbation de l'auteur. Exécution par un `security-executor` (entrée non fiable), vérification
+type d'`InitialMapId`, `TryValidate` partout, stats à plat. Relecture de clôture (`1851162`) :
+**REVISE**, un bloquant (FIX). Sans valeur de départ, `LoadedDataVersion` aurait valu 0 sur tout objet
+capturé, donc toute capture aurait été refusée ; valeur de départ fixée à 1 (C2), avec un test
+« capture valide acceptée » (T4). C'est le deuxième REVISE : cette correction ouvre une seule
+relecture de clôture ; un nouveau REVISE met la tranche en pause. Ensuite, approbation de l'auteur. Exécution par un `security-executor` (entrée non fiable), vérification
 par un `verifier` frais.
 
 **Réponses de l'auteur à la planification (2026-09-28)**
@@ -817,6 +820,10 @@ par un `verifier` frais.
     `TryLoad` (`SaveGameService.cs:165-176`). Au chargement, il retient `archive.DataVersion` dans une
     propriété non sérialisée, `LoadedDataVersion`, que `TryValidate` contrôle (C4). Raison : le moteur
     charge toute version ≤ `LatestDataVersion`, 0 compris (SC2).
+  - `LoadedDataVersion` vaut `LatestDataVersion` (1) sur un objet construit ou capturé. Seul
+    `Serialize`, quand `archive.IsLoading` est vrai, le remplace par `archive.DataVersion`. Sans cette
+    valeur de départ, tout objet capturé porterait 0 et serait refusé, ce qui bloquerait toute
+    sauvegarde (relecture de clôture).
   - Les trois tableaux sont des champs `readonly`, initialisés à leur longueur. Ni `TryValidate` ni
     `ApplyTo` ne peuvent donc trouver un tableau nul ou de mauvaise longueur (SC4).
 - **C3 — Domaines arrêtés ou corrigés** (le reste du tableau d'E16.c ne change pas) :
@@ -936,6 +943,13 @@ plan ; `Alundra.Tests` sans échec à chaque commit)
   - un dossier à la place du `.tileMap`, un `map_size` flottant, texte ou trop grand pour un `int`, et
     un prédicat de catalogue qui lève → refus, sans exception (SC6) ;
   - `LoadedDataVersion` à 0 ou à 2, posé directement sur l'objet → refus nommant la version (SC2) ;
+  - **capture valide acceptée** : `TryCaptureFromWorld` sur un état de nouvelle partie (après
+    `InitializeNewGameInventory`), héros à la tuile (33, 59, 0), nom de monde
+    `Ship Klark (beginning)-389` → `TryValidate` rend vrai, et l'objet capturé porte
+    `LoadedDataVersion` = 1. Les règles s'appuient sur le vrai export, dont les 483 clés de
+    `world-index.json` couvrent la table identité de la nouvelle partie (F1). Elles utilisent les mêmes
+    tables d'objets que l'inventaire de nouvelle partie, et un prédicat de catalogue qui répond vrai.
+    Sans export, le test échoue en le nommant ;
   - la vraie carte 389 de l'export se lit en 52 × 60 ; sans export, le test échoue en le nommant
     (convention d'`AlundraCellStoreProductionTests.cs:21-45`) ;
   - `ItemsProperties` en mode dégradé → tout compteur non nul est refusé ;
@@ -967,7 +981,8 @@ plan ; `Alundra.Tests` sans échec à chaque commit)
   - noms uniques dans chaque objet ;
   - `BeginObject` et `EndObject` équilibrés ;
   - aucun branchement sur `DataVersion` ni sur une valeur lue ;
-  - `LoadedDataVersion` posée au chargement seulement.
+  - `LoadedDataVersion` vaut 1 à la construction, et `Serialize` ne la remplace qu'au chargement,
+    par `archive.DataVersion`.
 
 **Acceptation d'E16.c**, réduite par D-E16-31 :
 - les tests de T1 à T4 passent ; `Alundra.Tests` est sans échec, l'oracle de l'intro inchangé ; le
