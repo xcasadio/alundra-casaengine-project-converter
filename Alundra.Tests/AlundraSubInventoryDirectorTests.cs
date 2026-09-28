@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
+using CasaEngine.Framework.Dialogue.Assets;
 using Xunit;
 
 namespace Alundra.Tests;
@@ -31,6 +32,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
+        AlundraEtcStringTable.ResetForTests(); // E15.c T6: this class' own SetEtcFixture leaves an injected asset behind.
         _previousProjectPath = EngineEnvironment.ProjectPath;
     }
 
@@ -45,6 +47,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
+        AlundraEtcStringTable.ResetForTests(); // E15.c T6: same reason as the constructor.
         EngineEnvironment.ProjectPath = _previousProjectPath!;
     }
 
@@ -61,26 +64,16 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         public void StopAllSfx() { }
     }
 
-    /// <summary>Same synthetic <c>Dialogues/etc-index.json</c>/<c>global-strings.json</c> shape
-    /// <see cref="AlundraInventoryDirectorTests"/> already writes.</summary>
-    private static string WriteEtcFixture(int itemId, string name, string desc0, string desc1)
+    /// <summary>E15.c T6 (docs/plan-e15-yarn.md, contract items 5/6): same migration as
+    /// <see cref="AlundraInventoryDirectorTests"/>'s own <c>SetEtcFixture</c> - a <c>dialogue_etc</c>-shaped
+    /// asset injected through <see cref="AlundraEtcStringTable.SetEtcDialogueAssetForTests"/>, replacing the
+    /// old <c>Dialogues/etc-index.json</c>/<c>global-strings.json</c> pair this class used to write.</summary>
+    private static void SetEtcFixture(int itemId, string name, string desc0, string desc1)
     {
-        var projectPath = Path.Combine(Path.GetTempPath(), "AlundraSubInventoryDirectorEtcFixture_" + Guid.NewGuid());
-        var dialoguesPath = Path.Combine(projectPath, "Dialogues");
-        Directory.CreateDirectory(dialoguesPath);
-
-        var etcIndex = new int[1024];
-        Array.Fill(etcIndex, -1);
-        etcIndex[itemId + 0x200] = 100;
-        etcIndex[itemId + 0x280] = 101;
-        etcIndex[itemId + 0x300] = 102;
-
-        File.WriteAllText(Path.Combine(dialoguesPath, "etc-index.json"), "[" + string.Join(",", etcIndex) + "]");
-        File.WriteAllText(
-            Path.Combine(dialoguesPath, "global-strings.json"),
-            $"{{\"100\":\"{name}\",\"101\":\"{desc0}\",\"102\":\"{desc1}\"}}");
-
-        return projectPath;
+        AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc(
+            (itemId + 0x200, name),
+            (itemId + 0x280, desc0),
+            (itemId + 0x300, desc1)));
     }
 
     /// <summary>The real project's own <c>Dialogues/</c> - for the New Game names test (D-E13D's own "use
@@ -104,6 +97,11 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
             $"AlundraSubInventoryDirectorTests: no 'alundra-project/Dialogues' directory found above "
             + $"'{AppContext.BaseDirectory}' (docs/plan-e13d-sous-inventaire.md).");
     }
+
+    /// <summary>E15.c T6: the real exported <c>Dialogues/Etc.dialogue</c>, off <see cref="DialogueTestAssets.LoadFromDisk"/> -
+    /// for the New Game names test, which needs the real exported item names rather than a synthetic fixture.</summary>
+    private static DialogueAsset LoadRealEtcDialogueAsset(string projectPath)
+        => DialogueTestAssets.LoadFromDisk(Path.Combine(projectPath, "Dialogues", "Etc.dialogue"));
 
     private static AlundraGameState NewGameState(AlundraItemTables tables)
     {
@@ -522,58 +520,50 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     [Fact]
     public void Description_Armor17AtPosition7_NameThenBothLines()
     {
-        var projectPath = WriteEtcFixture(17, "Armure en tissu", "Confortable protection en tissu.", "Faible capacite de protection.");
-        try
+        SetEtcFixture(17, "Armure en tissu", "Confortable protection en tissu.", "Faible capacite de protection.");
+        var tables = ItemTablesFixture.LoadReal();
+        var state = NewGameState(tables); // New Game owns item 17 (armor slot 7).
+        AttachAll(state, tables, null);
+        OpenSubInventoryDirectly(state);
+
+        // Walk to position 7 (armor/boots icons).
+        while (AlundraSubInventoryDirector.Instance.SelectedPosition != 7)
         {
-            EngineEnvironment.ProjectPath = projectPath;
-            var tables = ItemTablesFixture.LoadReal();
-            var state = NewGameState(tables); // New Game owns item 17 (armor slot 7).
-            AttachAll(state, tables, null);
-            OpenSubInventoryDirectly(state);
-
-            // Walk to position 7 (armor/boots icons).
-            while (AlundraSubInventoryDirector.Instance.SelectedPosition != 7)
-            {
-                Tick(state, AlundraPadState.Right);
-                Tick(state, 0);
-            }
-
-            // One character every third tick: 15 characters take about 45 ticks.
-            TickUntil(state, () => AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0 == "Armure en tissu", maxTicks: 80);
-
-            TickUntil(state, () => AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0 == "Confortable protection en tissu.", maxTicks: 300);
-
-            // D-E13D-30: the second line is revealed one character every third tick from state 0x8f, like the main
-            // inventory. The executable reads line2[c - 0x90] and would end the reveal at 0xcf on the very next
-            // tick with nothing shown (the byte before every second line is 0): this port corrects that defect.
-            TickUntil(state, () => AlundraSubInventoryDirector.Instance.TextRevealState == 0x8f, maxTicks: 100);
+            Tick(state, AlundraPadState.Right);
             Tick(state, 0);
-            Assert.NotEqual(0xcf, AlundraSubInventoryDirector.Instance.TextRevealState);
-
-            // Mid-reveal, the second line is drawn as a growing prefix, as the first one is.
-            TickUntil(state, () => AlundraSubInventoryDirector.Instance.TextRevealState >= 0x95, maxTicks: 30);
-            Assert.True(AlundraSubInventoryDirector.Instance.TextRevealState < 0xcf);
-            var partial = AlundraSubInventoryDirector.Instance.DrawnDescriptionLine1;
-            Assert.NotEqual(string.Empty, partial);
-            Assert.StartsWith(partial, "Faible capacite de protection.");
-            Assert.NotEqual("Faible capacite de protection.", partial);
-
-            TickUntil(state, () => AlundraSubInventoryDirector.Instance.DrawnDescriptionLine1 == "Faible capacite de protection.", maxTicks: 120);
-            TickUntil(state, () => AlundraSubInventoryDirector.Instance.TextRevealState == 0xcf, maxTicks: 10);
-
-            // Both lines stay drawn once the reveal is done.
-            for (var i = 0; i < 50; i++)
-            {
-                Tick(state, 0);
-            }
-
-            Assert.Equal("Confortable protection en tissu.", AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0);
-            Assert.Equal("Faible capacite de protection.", AlundraSubInventoryDirector.Instance.DrawnDescriptionLine1);
         }
-        finally
+
+        // One character every third tick: 15 characters take about 45 ticks.
+        TickUntil(state, () => AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0 == "Armure en tissu", maxTicks: 80);
+
+        TickUntil(state, () => AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0 == "Confortable protection en tissu.", maxTicks: 300);
+
+        // D-E13D-30: the second line is revealed one character every third tick from state 0x8f, like the main
+        // inventory. The executable reads line2[c - 0x90] and would end the reveal at 0xcf on the very next
+        // tick with nothing shown (the byte before every second line is 0): this port corrects that defect.
+        TickUntil(state, () => AlundraSubInventoryDirector.Instance.TextRevealState == 0x8f, maxTicks: 100);
+        Tick(state, 0);
+        Assert.NotEqual(0xcf, AlundraSubInventoryDirector.Instance.TextRevealState);
+
+        // Mid-reveal, the second line is drawn as a growing prefix, as the first one is.
+        TickUntil(state, () => AlundraSubInventoryDirector.Instance.TextRevealState >= 0x95, maxTicks: 30);
+        Assert.True(AlundraSubInventoryDirector.Instance.TextRevealState < 0xcf);
+        var partial = AlundraSubInventoryDirector.Instance.DrawnDescriptionLine1;
+        Assert.NotEqual(string.Empty, partial);
+        Assert.StartsWith(partial, "Faible capacite de protection.");
+        Assert.NotEqual("Faible capacite de protection.", partial);
+
+        TickUntil(state, () => AlundraSubInventoryDirector.Instance.DrawnDescriptionLine1 == "Faible capacite de protection.", maxTicks: 120);
+        TickUntil(state, () => AlundraSubInventoryDirector.Instance.TextRevealState == 0xcf, maxTicks: 10);
+
+        // Both lines stay drawn once the reveal is done.
+        for (var i = 0; i < 50; i++)
         {
-            Directory.Delete(projectPath, recursive: true);
+            Tick(state, 0);
         }
+
+        Assert.Equal("Confortable protection en tissu.", AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0);
+        Assert.Equal("Faible capacite de protection.", AlundraSubInventoryDirector.Instance.DrawnDescriptionLine1);
     }
 
     /// <summary>E13.d SI11: the sub-inventory's own wiring of the shared text reveal keeps FUN_80053f3c's cadence -
@@ -581,34 +571,26 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     [Fact]
     public void Description_OneCharacterEveryThirdTick()
     {
-        var projectPath = WriteEtcFixture(17, "Armure en tissu", "a", "b");
-        try
+        SetEtcFixture(17, "Armure en tissu", "a", "b");
+        var tables = ItemTablesFixture.LoadReal();
+        var state = NewGameState(tables); // New Game owns item 17 (armor slot 7).
+        AttachAll(state, tables, null);
+        OpenSubInventoryDirectly(state);
+        foreach (var button in PathTo(AlundraSubInventoryDirector.Instance.SelectedPosition, 7))
         {
-            EngineEnvironment.ProjectPath = projectPath;
-            var tables = ItemTablesFixture.LoadReal();
-            var state = NewGameState(tables); // New Game owns item 17 (armor slot 7).
-            AttachAll(state, tables, null);
-            OpenSubInventoryDirectly(state);
-            foreach (var button in PathTo(AlundraSubInventoryDirector.Instance.SelectedPosition, 7))
-            {
-                Tick(state, button);
-                Tick(state, 0);
-            }
-
-            TickUntil(state, () => AlundraSubInventoryDirector.Instance.TextRevealState == 2, maxTicks: 10);
-            Assert.Equal("A", AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0);
-
+            Tick(state, button);
             Tick(state, 0);
-            Tick(state, 0);
-            Assert.Equal(2, AlundraSubInventoryDirector.Instance.TextRevealState);
-            Tick(state, 0);
-            Assert.Equal(3, AlundraSubInventoryDirector.Instance.TextRevealState);
-            Assert.Equal("Ar", AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0);
         }
-        finally
-        {
-            Directory.Delete(projectPath, recursive: true);
-        }
+
+        TickUntil(state, () => AlundraSubInventoryDirector.Instance.TextRevealState == 2, maxTicks: 10);
+        Assert.Equal("A", AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0);
+
+        Tick(state, 0);
+        Tick(state, 0);
+        Assert.Equal(2, AlundraSubInventoryDirector.Instance.TextRevealState);
+        Tick(state, 0);
+        Assert.Equal(3, AlundraSubInventoryDirector.Instance.TextRevealState);
+        Assert.Equal("Ar", AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0);
     }
 
     /// <summary>E13.d SI11: a position whose item is not owned draws nothing - the line drawn at the previous
@@ -616,37 +598,29 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     [Fact]
     public void Description_UnownedPosition_DrawsNothing()
     {
-        var projectPath = WriteEtcFixture(17, "Armure en tissu", "a", "b");
-        try
+        SetEtcFixture(17, "Armure en tissu", "a", "b");
+        var tables = ItemTablesFixture.LoadReal();
+        var state = NewGameState(tables);
+        AttachAll(state, tables, null);
+        OpenSubInventoryDirectly(state);
+        foreach (var button in PathTo(AlundraSubInventoryDirector.Instance.SelectedPosition, 7))
         {
-            EngineEnvironment.ProjectPath = projectPath;
-            var tables = ItemTablesFixture.LoadReal();
-            var state = NewGameState(tables);
-            AttachAll(state, tables, null);
-            OpenSubInventoryDirectly(state);
-            foreach (var button in PathTo(AlundraSubInventoryDirector.Instance.SelectedPosition, 7))
-            {
-                Tick(state, button);
-                Tick(state, 0);
-            }
-
-            TickUntil(state, () => AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0 == "Armure en tissu", maxTicks: 80);
-            Assert.False(AlundraSubInventoryDirector.Instance.ArmoryOwned(0)); // a New Game owns no crest.
-
-            foreach (var button in PathTo(7, 0))
-            {
-                Tick(state, button);
-                Tick(state, 0);
-            }
-
-            Assert.Equal(0, AlundraSubInventoryDirector.Instance.SelectedPosition);
-            Assert.Equal(string.Empty, AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0);
-            Assert.Equal(string.Empty, AlundraSubInventoryDirector.Instance.DrawnDescriptionLine1);
+            Tick(state, button);
+            Tick(state, 0);
         }
-        finally
+
+        TickUntil(state, () => AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0 == "Armure en tissu", maxTicks: 80);
+        Assert.False(AlundraSubInventoryDirector.Instance.ArmoryOwned(0)); // a New Game owns no crest.
+
+        foreach (var button in PathTo(7, 0))
         {
-            Directory.Delete(projectPath, recursive: true);
+            Tick(state, button);
+            Tick(state, 0);
         }
+
+        Assert.Equal(0, AlundraSubInventoryDirector.Instance.SelectedPosition);
+        Assert.Equal(string.Empty, AlundraSubInventoryDirector.Instance.DrawnDescriptionLine0);
+        Assert.Equal(string.Empty, AlundraSubInventoryDirector.Instance.DrawnDescriptionLine1);
     }
 
     // -----------------------------------------------------------------------------------------
@@ -656,7 +630,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     [Fact]
     public void NewGame_ArmorAndBootsNames_AreTheRealExportedStrings()
     {
-        EngineEnvironment.ProjectPath = FindAlundraProjectPath();
+        AlundraEtcStringTable.SetEtcDialogueAssetForTests(LoadRealEtcDialogueAsset(FindAlundraProjectPath()));
         var tables = ItemTablesFixture.LoadReal();
         var state = NewGameState(tables);
         AttachAll(state, tables, null);

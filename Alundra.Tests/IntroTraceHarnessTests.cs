@@ -743,10 +743,39 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
             }
         }
 
-        // E12.a (docs/plan-e12-dialogues.md): the SAME real local-strings array feeds opcode 0x0D/0x5C's
-        // own text resolution through the REAL AlundraEventProgramRunner.LocalDialogueStrings seam -
-        // production wiring (AlundraWorldProxy.InitializeWithWorld), not a separate parse.
-        _runner.LocalDialogueStrings = _dialogueStrings;
+        // E15.c T5 (docs/plan-e15-yarn.md): opcode 0x0D/0x5C's own text resolution now goes through the
+        // REAL AlundraEventProgramRunner.MapDialogueAsset/SharedDialogueAsset seam - production wiring is
+        // AlundraWorldProxy.InitializeWithWorld's own InstallDialogueAssets (AssetCatalog + the game's
+        // asset manager); this harness has neither, so it loads the SAME compiled `.dialogue` files the
+        // real export already wrote next to the map's own directory, directly off disk, with the
+        // engine's own loader (no AssetCatalog/AssetContentManager needed for a single known file path -
+        // same "best-effort off the real export" shape as _dialogueStrings above).
+        _runner.MapDialogueAsset = LoadDialogueAssetBestEffort(
+            Directory.GetFiles(Path.Combine(_projectRoot, "Maps"), $"{_worldName}.dialogue", SearchOption.AllDirectories).FirstOrDefault());
+        _runner.SharedDialogueAsset = LoadDialogueAssetBestEffort(
+            Path.Combine(_projectRoot, "Dialogues", "Shared.dialogue"));
+    }
+
+    /// <summary>Loads a single, already-compiled <c>.dialogue</c> file straight off disk (the engine's own
+    /// <see cref="CasaEngine.Framework.Assets.Loaders.DialogueAssetLoader"/>, which needs no
+    /// <c>AssetContentManager</c> for this) - null when the path is null/missing or fails to load,
+    /// best-effort only, exactly like <see cref="_dialogueStrings"/>'s own JSON read above.</summary>
+    private static CasaEngine.Framework.Dialogue.Assets.DialogueAsset? LoadDialogueAssetBestEffort(string? fullPath)
+    {
+        if (fullPath == null || !File.Exists(fullPath))
+        {
+            return null;
+        }
+
+        try
+        {
+            return new CasaEngine.Framework.Assets.Loaders.DialogueAssetLoader().LoadAsset(fullPath, null!)
+                as CasaEngine.Framework.Dialogue.Assets.DialogueAsset;
+        }
+        catch
+        {
+            return null; // best-effort only.
+        }
     }
 
     private void RecordMapEntrySystemsOnce()

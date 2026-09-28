@@ -84,7 +84,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         var director = AlundraDialogueDirector.Instance;
 
         // The sailor-13 shape: controlMode 0 -> MenuOpen posed, and NO script left running to pump 0x39.
-        director.Open("bonjour", controlMode: 0);
+        director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 0);
         Assert.True(director.IsOpen);
         Assert.NotEqual(0u, proxy.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
 
@@ -109,7 +109,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         var proxy = BuildProxyWithAttachedDirector();
         var director = AlundraDialogueDirector.Instance;
 
-        director.Open("bonjour", controlMode: 1);
+        director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 1);
         Assert.True(director.IsOpen);
 
         // 0.06 s frames = 3 logic ticks each (cap is 4). The default close mask's auto-timer fires at
@@ -145,7 +145,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         var director = AlundraDialogueDirector.Instance;
         director.AttachToWorld(new DialogueService(), proxy.GameState);
 
-        director.Open("bonjour", controlMode: 0);
+        director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 0);
         Assert.True(director.IsOpen);
         Assert.NotEqual(0u, proxy.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
 
@@ -169,7 +169,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         director.AttachToWorld(new DialogueService(), gameState);
 
         gameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
-        director.Open("bonjour", controlMode: 0);
+        director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 0);
         Assert.True(director.IsOpen);
 
         director.Tick(); // same still-live snapshot: swallowed, the box must survive.
@@ -182,7 +182,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         // And the timer half: same swallowed opening, then NO button ever again - the 360-tick
         // auto-close (mask bit0) must still fire, proving the swallow only ate the button, not time.
         gameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
-        director.Open("bonjour", controlMode: 0);
+        director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 0);
         gameState.LastPadState = default;
         for (var tick = 0; tick < 359; tick++)
         {
@@ -204,7 +204,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         var director = AlundraDialogueDirector.Instance;
         director.AttachToWorld(new DialogueService(), gameState);
 
-        director.Open("page un\\Apage deux", controlMode: 1);
+        director.Open(DialogueTestAssets.Build("TwoPage", "Start", "page un", "page deux"), "Start", controlMode: 1);
         Assert.True(director.IsOpen);
 
         var rePointedPresenter = new DialogueService();

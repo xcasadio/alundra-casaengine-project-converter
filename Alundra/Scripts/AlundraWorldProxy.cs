@@ -13,6 +13,7 @@ using CasaEngine.Framework.Application.Components;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Audio;
+using CasaEngine.Framework.Dialogue.Assets;
 using CasaEngine.Framework.Dialogue.Presentation;
 using CasaEngine.Framework.Physics;
 using CasaEngine.Framework.Scene.Entities;
@@ -287,6 +288,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
     // The presenter this world built, disposed when the world ends: its screen holds the project's dialogue markup.
     private AlundraDialoguePresenter? _dialoguePresenter;
+
+    /// <summary>E15.c T5 (docs/plan-e15-yarn.md, contract item 1): this world's own <c>dialogue_{mapId}</c>
+    /// Yarn asset, held through the catalog and the game's asset manager (ADR-0037, same hold/give-back
+    /// shape as the inventory screen's own font3) and given back in <see cref="OnEndPlay"/>. Null when this
+    /// world's map has no dialogue asset, or when there is no game to resolve one through.</summary>
+    private AssetHandle<DialogueAsset>? _mapDialogueAssetHandle;
+
+    /// <summary>E15.c T5: the shared <c>dialogue_shared</c> (<c>map_alundra</c>) Yarn asset, held once per
+    /// project the same way.</summary>
+    private AssetHandle<DialogueAsset>? _sharedDialogueAssetHandle;
 
     /// <summary>E13 C2 (docs/plan-e13-hud.md): true once <see cref="AlundraHudScreen"/> has been built and
     /// pushed onto a live UI view - same "retry every frame until the post-bootstrap view exists" shape as
@@ -572,12 +583,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // failed to parse" and AlundraEventProgramRunner degrades to a counted no-op for slot A too, the
         // same shape as SpriteRecordCatalog's own degraded mode.
         var eventProgramDocument = MapEventProgramLoader.Load(EngineEnvironment.ProjectPath, world.Name);
-        EventProgramRunner = new AlundraEventProgramRunner(eventProgramDocument, GameState, this)
-        {
-            // E12.a (docs/plan-e12-dialogues.md §1.5): this world's own local dialogue-string table -
-            // null (degraded) when this world has none, same shape as eventProgramDocument above.
-            LocalDialogueStrings = AlundraDialogueStringsLoader.Load(EngineEnvironment.ProjectPath, world.Name),
-        };
+        var eventProgramRunner = new AlundraEventProgramRunner(eventProgramDocument, GameState, this);
+        InstallDialogueAssets(world, eventProgramRunner);
+        EventProgramRunner = eventProgramRunner;
+
+        // E15.c T6 (docs/plan-e15-yarn.md, contract item 5): load the ETC dialogue asset once per game
+        // (idempotent across world reloads, same shape as AlundraPlayerController's own
+        // EnsureInputMappingsRegistered) - OUI/NON and the inventory's item names/descriptions read it
+        // through AlundraEtcStringTable for the rest of the session.
+        AlundraEtcStringTable.EnsureLoaded(world.Game?.AssetContentManager);
 
         // Scrolling background layers (see AlundraBackdropStage's class doc) - same degraded-mode shape as
         // the event-program document above: a world with no companion file (most of them - Scroll
@@ -1039,6 +1053,57 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
+    /// E15.c T5 (docs/plan-e15-yarn.md, contract item 1): holds this world's own <c>dialogue_{mapId}</c>
+    /// Yarn asset (by name, through <c>AssetCatalog</c> and the game's asset manager - the same route
+    /// <see cref="AlundraPlayerController.EnsureInputMappingsRegistered"/> already uses for a catalogued
+    /// asset) and the shared <c>dialogue_shared</c> asset, and hands both to <paramref name="runner"/>.
+    /// Supersedes <see cref="AlundraDialogueStringsLoader"/> for opcodes 0x0D/0x5C. A no-op (both stay
+    /// null) when this world has no <see cref="World.Game"/> or asset manager yet - the same degraded
+    /// shape <see cref="MapEventProgramLoader"/>/<see cref="AlundraDialogueStringsLoader"/> already had.
+    /// </summary>
+    private void InstallDialogueAssets(World world, AlundraEventProgramRunner runner)
+    {
+        var assetContentManager = world.Game?.AssetContentManager;
+        if (assetContentManager == null)
+        {
+            return;
+        }
+
+        if (BackdropLoader.TryParseMapIndex(world.Name, out var mapId))
+        {
+            _mapDialogueAssetHandle = AcquireDialogueAsset(assetContentManager, $"dialogue_{mapId}");
+            runner.MapDialogueAsset = _mapDialogueAssetHandle?.Asset;
+        }
+
+        _sharedDialogueAssetHandle = AcquireDialogueAsset(assetContentManager, "dialogue_shared");
+        runner.SharedDialogueAsset = _sharedDialogueAssetHandle?.Asset;
+    }
+
+    /// <summary>Acquires the catalogued dialogue asset named <paramref name="catalogName"/>, or null (logged
+    /// once per call site's own caller, same tolerant shape as every other missing/failing catalogued asset
+    /// in this DLL) when it is not in the catalog or fails to load.</summary>
+    private static AssetHandle<DialogueAsset>? AcquireDialogueAsset(AssetContentManager assetContentManager, string catalogName)
+    {
+        var assetInfo = AssetCatalog.Get(catalogName);
+        if (assetInfo == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            return assetContentManager.Acquire<DialogueAsset>(assetInfo.Id);
+        }
+        catch (Exception ex)
+        {
+            Logs.WriteWarning(
+                $"AlundraWorldProxy: dialogue asset '{catalogName}' ({assetInfo.Id}) failed to load "
+                + $"({ex.GetType().Name}: {ex.Message}); its dialogues degrade to an empty box.");
+            return null;
+        }
+    }
+
+    /// <summary>
     /// E12.a (docs/plan-e12-dialogues.md, item ③bis/④): installs the dialogue-flow seam - re-points the
     /// SESSION-scoped <see cref="AlundraDialogueDirector.Instance"/> at an <see cref="AlundraDialoguePresenter"/>
     /// wired to this world's own ACTIVE UI view (<c>world.Game.GameManager.ViewManager.GetActiveUIView()</c>
@@ -1064,7 +1129,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // before install (the wiring test's montage); the real game is wired by
         // TryWireDialoguePresenterOnce's per-frame retry in Update.
         var uiView = world.Game?.GameManager?.ViewManager?.GetActiveUIView();
-        var presenter = uiView != null ? new AlundraDialoguePresenter(uiView, assetContentManager: world.Game?.AssetContentManager) : null;
+        var presenter = uiView != null
+            ? new AlundraDialoguePresenter(uiView, world.Game?.UIFonts, world.Game?.AssetContentManager)
+            : null;
         _dialoguePresenter?.Dispose();
         _dialoguePresenter = presenter;
         _dialoguePresenterWired = presenter != null;
@@ -1101,7 +1168,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         }
 
         _dialoguePresenter?.Dispose();
-        _dialoguePresenter = new AlundraDialoguePresenter(uiView, assetContentManager: _world?.Game?.AssetContentManager);
+        _dialoguePresenter = new AlundraDialoguePresenter(uiView, _world?.Game?.UIFonts, _world?.Game?.AssetContentManager);
         AlundraDialogueDirector.Instance.AttachToWorld(_dialoguePresenter, GameState);
         _dialoguePresenterWired = true;
         Logs.WriteInfo("AlundraWorldProxy: dialogue presenter wired to the active UI view (post-bootstrap retry).");
@@ -2446,6 +2513,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // Bound screens slice B4: the dialogue screen gives back the project's dialogue markup.
         _dialoguePresenter?.Dispose();
         _dialoguePresenter = null;
+
+        // E15.c T5 (contract item 1): give the map's and the shared Yarn dialogue assets back.
+        _mapDialogueAssetHandle?.Dispose();
+        _mapDialogueAssetHandle = null;
+        _sharedDialogueAssetHandle?.Dispose();
+        _sharedDialogueAssetHandle = null;
     }
 
     /// <summary>Test-only seam: the inventory screen <see cref="OnEndPlay"/> disposes, as

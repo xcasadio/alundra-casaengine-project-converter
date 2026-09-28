@@ -1,8 +1,10 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using CasaEngine.Framework.Dialogue.Assets;
 using CasaEngine.Framework.Dialogue.Presentation;
 using CasaEngine.Framework.Dialogue.Runtime;
+using CasaEngine.Framework.Dialogue.Yarn;
 
 namespace Alundra.Scripts;
 
@@ -35,12 +37,16 @@ public interface IAlundraDialogueDirector
     /// <summary>
     /// Opcode 0x0D/0x5C's own "open" half (Dispatch itself owns the reentrancy guard - see that method's
     /// own doc on why 0x0D checks <see cref="IsOpen"/> BEFORE calling this, T2): resets the close-mode
-    /// mask to 3 (§1.2/T3), splits <paramref name="rawText"/> into pages (<see cref="AlundraDialogueTextParser"/>),
-    /// applies <paramref name="controlMode"/>'s <see cref="AlundraGameState.PlayerControlBits.MessageBox"/>/
-    /// <see cref="AlundraGameState.PlayerControlBits.MenuOpen"/> bit, and shows the first page (applying
-    /// its own numeric control-code flags immediately, D-E12-4).
+    /// mask to 3 (§1.2/T3), applies <paramref name="controlMode"/>'s
+    /// <see cref="AlundraGameState.PlayerControlBits.MessageBox"/>/
+    /// <see cref="AlundraGameState.PlayerControlBits.MenuOpen"/> bit, and starts <paramref name="node"/>
+    /// of <paramref name="asset"/> on this director's own Yarn runner (docs/plan-e15-yarn.md, E15.c
+    /// contract item 2), which delivers its first page immediately - the page's own commands/functions
+    /// run at that moment, as the numeric control-code flags did before E15.c (D-E12-4). Either
+    /// <paramref name="asset"/> null, <paramref name="node"/> null, or a node absent from the asset opens
+    /// an empty box instead (D-E15-10), exactly as an out-of-range/never-loaded local string did before.
     /// </summary>
-    void Open(string rawText, int controlMode);
+    void Open(DialogueAsset? asset, string? node, int controlMode);
 
     /// <summary>Opcode 0x50 - sets the close-mode mask (bit0 auto-timer/bit1 button/bit2 script, §1.2).</summary>
     void SetCloseMask(int mask);
@@ -103,9 +109,20 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
     private IDialoguePresenter? _presenter;
     private AlundraGameState? _gameState;
 
+    // E15.c T5 (docs/plan-e15-yarn.md, contract item 2): this director's own Yarn runner, built on a
+    // capture presenter (AlundraDialogueCapturePresenter) that forwards every transformed line to
+    // _presenter (the world's own presenter, above) - NEVER built directly on _presenter, which is
+    // reattached on every AttachToWorld while these two persist. Rebuilt only when the game state
+    // actually changes (a new world/map - InstallForMapEntry resets open/page state right after anyway);
+    // a same-game-state re-point (TryWireDialoguePresenterOnce's "presenter appears later this frame")
+    // just re-points the capture presenter's own WorldPresenter, keeping any dialogue already running.
+    private AlundraDialogueCapturePresenter? _capturePresenter;
+    private YarnDialogueRunner? _runner;
+    private AlundraGameState? _boundGameState;
+
     private bool _isOpen;
     private int _closeMask = DefaultCloseMask;
-    private IReadOnlyList<AlundraDialoguePage>? _pages;
+    private int _pageCount;
     private int _pageIndex;
     private uint _ticksSinceOpenOrPage;
 
@@ -119,7 +136,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
 
     /// <summary>Re-points this session-scoped instance at the current world's own presenter/game state -
     /// called by <see cref="AlundraWorldProxy.InstallDialogueSystems"/> on every world install. Deliberately
-    /// does NOT touch <see cref="_isOpen"/>/<see cref="_closeMask"/>/<see cref="_pages"/>/choice state (same
+    /// does NOT touch <see cref="_isOpen"/>/<see cref="_closeMask"/>/<see cref="_pageCount"/>/choice state (same
     /// contract as <see cref="AlundraMusicPlayer.AttachToWorld"/>/<see cref="AlundraScreenFadeDirector.AttachToWorld"/>)
     /// - only <see cref="InstallForMapEntry"/> does that. <paramref name="presenter"/> null is a valid,
     /// tolerated value (no UI view available for this world's active render view) - <see cref="HasPresenter"/>
@@ -128,6 +145,32 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
     {
         _presenter = presenter;
         _gameState = gameState;
+
+        if (presenter == null || gameState == null)
+        {
+            _capturePresenter = null;
+            _runner = null;
+            _boundGameState = null;
+            return;
+        }
+
+        if (_capturePresenter != null && ReferenceEquals(_boundGameState, gameState))
+        {
+            // Same world's game state, a presenter appearing/changing this frame (production's own
+            // TryWireDialoguePresenterOnce retry): re-point the capture presenter's target only, so any
+            // dialogue already running on _runner keeps its Yarn state (docs/plan-e15-yarn.md, contract
+            // item 2 - "présentateur du monde rebranché à chaque rattachement", never the runner itself).
+            _capturePresenter.WorldPresenter = presenter;
+            return;
+        }
+
+        // First attach, or a genuinely different game state (a new world/map) - InstallForMapEntry runs
+        // right after this from the same install call and resets open/page state anyway, so there is no
+        // Yarn state worth preserving across this rebuild.
+        _capturePresenter = new AlundraDialogueCapturePresenter(presenter);
+        _runner = new YarnDialogueRunner(_capturePresenter);
+        new AlundraYarnBindings(gameState).Register(_runner);
+        _boundGameState = gameState;
     }
 
     /// <summary>Map-entry reset (mirrors <see cref="AlundraScreenFadeDirector.InstallForMapEntry"/>'s own
@@ -148,12 +191,13 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
 
         _isOpen = false;
         _closeMask = DefaultCloseMask;
-        _pages = null;
+        _pageCount = 0;
         _pageIndex = 0;
         _ticksSinceOpenOrPage = 0;
         _awaitingChoice = false;
         _pendingChoiceResult = null;
         _swallowOpeningButtonPress = false;
+        _runner?.Stop();
     }
 
     /// <summary>E12.d (D-E12D-6): true when the interact button was ALREADY just-pressed in the pad
@@ -166,12 +210,11 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
     private bool _swallowOpeningButtonPress;
 
     /// <inheritdoc/>
-    public void Open(string rawText, int controlMode)
+    public void Open(DialogueAsset? asset, string? node, int controlMode)
     {
         _closeMask = DefaultCloseMask; // §1.2/T3: every open resets the close-mode mask to 3.
         _swallowOpeningButtonPress =
             _gameState != null && (_gameState.LastPadState.ButtonsJustPressed & InteractButtonBit) != 0;
-        _pages = AlundraDialogueTextParser.SplitIntoPages(rawText);
         _pageIndex = 0;
         _ticksSinceOpenOrPage = 0;
         _isOpen = true;
@@ -179,7 +222,37 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
         _pendingChoiceResult = null;
 
         ApplyControlMode(controlMode);
-        ShowCurrentPage();
+
+        var pageCount = asset != null && node != null ? CountPages(asset, node) : 0;
+        if (pageCount > 0 && _runner != null)
+        {
+            _pageCount = pageCount;
+            _runner.Start(asset!, node!); // delivers page 0 - its own commands/functions run right now.
+        }
+        else
+        {
+            // D-E15-10: absent node/asset (or no runner attached at all) opens an empty box, same as an
+            // out-of-range/never-loaded local string did before E15.c.
+            _pageCount = 1;
+            _capturePresenter?.ShowLine(DialogueLine.Empty);
+        }
+    }
+
+    /// <summary>
+    /// docs/plan-e15-yarn.md, E15.c contract item 2: "le nombre de pages est celui des identifiants
+    /// <c>line:{nœud}_p{k}</c> de l'asset" - counts the contiguous <c>line:{node}_p0</c>,
+    /// <c>line:{node}_p1</c>... keys E15.b's emitter guarantees are deterministic and gap-free, without
+    /// scanning every key of the asset.
+    /// </summary>
+    private static int CountPages(DialogueAsset asset, string node)
+    {
+        var count = 0;
+        while (asset.LineTexts.ContainsKey($"line:{node}_p{count}"))
+        {
+            count++;
+        }
+
+        return count;
     }
 
     private void ApplyControlMode(int controlMode)
@@ -269,36 +342,17 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
         }
     }
 
-    private bool HasMorePages() => _pages != null && _pageIndex + 1 < _pages.Count;
+    private bool HasMorePages() => _pageIndex + 1 < _pageCount;
 
+    /// <summary>Turns the page: only ever called while a real Yarn dialogue is running (the empty-box
+    /// path of <see cref="Open"/> sets <see cref="_pageCount"/> to 1, so <see cref="HasMorePages"/> is
+    /// never true there). Item 2: the runner is asked to continue ONLY when the page actually turns, so
+    /// each page's own commands/functions run exactly at its display - never earlier.</summary>
     private void AdvancePage()
     {
         _pageIndex++;
         _ticksSinceOpenOrPage = 0;
-        ShowCurrentPage();
-    }
-
-    private void ShowCurrentPage()
-    {
-        if (_pages == null || _pageIndex >= _pages.Count)
-        {
-            return;
-        }
-
-        var page = _pages[_pageIndex];
-
-        // D-E12-4: apply THIS page's numeric control-code flags the moment it is displayed - proven
-        // equivalent to the decompiled TextDecoder.cs:259-307 write (index=((n>>3)&0xffc)>>2,
-        // bit=n&0x1f) via AddFlag(n | 0x8000, 1 << (n & 0x1f)): AddFlag's own IndexOf is (flag>>5)&0x3ff,
-        // and (n|0x8000)>>5 == (n>>5) with bit 10 forced then masked back off by &0x3ff, i.e. exactly
-        // (n>>5)&0x3ff == ((n>>3)&0xffc)>>2 for every n - and 0x8000 never touches the low 5 bits the
-        // mask itself reads.
-        foreach (var n in page.NumericCodes)
-        {
-            _gameState?.AddFlag((uint)(n | 0x8000), 1u << (n & 0x1f));
-        }
-
-        _presenter?.ShowLine(new DialogueLine(page.DisplayText));
+        _runner?.Continue();
     }
 
     /// <summary>
@@ -325,10 +379,14 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
     private void Close()
     {
         _isOpen = false;
-        _pages = null;
+        _pageCount = 0;
         _pageIndex = 0;
         ClearControlFlags();
-        _presenter?.Close();
+        // Item 2: closing the box calls the runner's own Stop - which stops any Yarn dialogue still
+        // active and unconditionally closes the capture presenter, which forwards to the world's own
+        // presenter (the same effect _presenter?.Close() had before E15.c, for the empty-box path too:
+        // Open shows DialogueLine.Empty on the SAME capture presenter, never _presenter directly).
+        _runner?.Stop();
     }
 
     /// <inheritdoc/>
@@ -385,9 +443,12 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
         UnsubscribeChoiceHandler();
         _presenter = null;
         _gameState = null;
+        _capturePresenter = null;
+        _runner = null;
+        _boundGameState = null;
         _isOpen = false;
         _closeMask = DefaultCloseMask;
-        _pages = null;
+        _pageCount = 0;
         _pageIndex = 0;
         _ticksSinceOpenOrPage = 0;
         _awaitingChoice = false;
@@ -400,7 +461,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
 
     /// <summary>Test-only accessor: how many pages the currently open dialogue was split into (0 when
     /// closed).</summary>
-    internal int PageCountForTests => _pages?.Count ?? 0;
+    internal int PageCountForTests => _pageCount;
 
     /// <summary>Test-only accessor: the zero-based index of the page currently shown.</summary>
     internal int PageIndexForTests => _pageIndex;

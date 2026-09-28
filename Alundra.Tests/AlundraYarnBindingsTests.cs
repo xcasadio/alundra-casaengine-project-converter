@@ -20,9 +20,10 @@ namespace Alundra.Tests;
 /// seven functions of the E15.b function contract registered on a real <see cref="YarnDialogueRunner"/>,
 /// against real Yarn scripts compiled by <see cref="YarnDialogueCompiler"/> (same pattern as
 /// <c>CasaEngine.Tests.Dialogue.YarnDialogueRunnerTests</c>). Item names come through the DLL's own
-/// <see cref="AlundraEtcStringTable"/> fixture convention (same JSON shape as
-/// <see cref="AlundraInventoryDirectorTests"/>'s own <c>WriteEtcFixture</c>) - never a raw-file reader
-/// of this test's own.
+/// <see cref="AlundraEtcStringTable"/>, on a <c>dialogue_etc</c>-shaped asset built with
+/// <see cref="DialogueTestAssets.BuildEtc"/> and injected through
+/// <see cref="AlundraEtcStringTable.SetEtcDialogueAssetForTests"/> (E15.c T6 migration off this class' own
+/// former JSON fixture writer) - never a raw-file reader of this test's own.
 /// </summary>
 public sealed class AlundraYarnBindingsTests : IDisposable
 {
@@ -34,33 +35,12 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     // Fixtures
     // -----------------------------------------------------------------------------------------
 
-    /// <summary>Writes a synthetic <c>Dialogues/etc-index.json</c>/<c>global-strings.json</c> pair
-    /// resolving the reward item names this test needs (same shape as
-    /// <see cref="AlundraInventoryDirectorTests"/>'s <c>WriteEtcFixture</c>) - never a raw-file reader
-    /// of its own, only the JSON <see cref="AlundraEtcStringTable"/> already reads.</summary>
-    private static string WriteItemNameFixture(params (int ItemId, string Name)[] items)
+    /// <summary>Injects a <c>dialogue_etc</c>-shaped asset resolving the reward item names this test
+    /// needs (T6 migration off the old JSON etc-index/global-strings pair).</summary>
+    private static void SetItemNameFixture(params (int ItemId, string Name)[] items)
     {
-        var projectPath = Path.Combine(Path.GetTempPath(), "AlundraYarnBindingsFixture_" + Guid.NewGuid());
-        var dialoguesPath = Path.Combine(projectPath, "Dialogues");
-        Directory.CreateDirectory(dialoguesPath);
-
-        var etcIndex = new int[1024];
-        Array.Fill(etcIndex, -1);
-        var globalStrings = new Dictionary<string, string>();
-        var nextKey = 100;
-        foreach (var (itemId, name) in items)
-        {
-            etcIndex[itemId + 0x200] = nextKey;
-            globalStrings[nextKey.ToString()] = name;
-            nextKey++;
-        }
-
-        File.WriteAllText(Path.Combine(dialoguesPath, "etc-index.json"), "[" + string.Join(",", etcIndex) + "]");
-        File.WriteAllText(
-            Path.Combine(dialoguesPath, "global-strings.json"),
-            "{" + string.Join(",", globalStrings.Select(pair => $"\"{pair.Key}\":\"{pair.Value}\"")) + "}");
-
-        return projectPath;
+        AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.BuildEtc(
+            items.Select(item => (item.ItemId + 0x200, item.Name)).ToArray()));
     }
 
     private static DialogueAsset CompileAsset(string name, string source, global::Yarn.Library? functionDeclarations = null)
@@ -194,35 +174,28 @@ public sealed class AlundraYarnBindingsTests : IDisposable
         // bindings/runner must report the category the FIRST falcon_update left behind (1, item 0x33),
         // not category 0's item (0x53) - which is what a constructor-time-only snapshot (or one taken
         // once and never refreshed by the falcon_update handler) would still report.
-        var projectPath = WriteItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"), (0x35, "Bouclier"));
-        try
-        {
-            var gameState = new AlundraGameState(); // TextCategoryIndex starts at 0 -> reward item 0x53
-            gameState.GameFlags[0x2c] = 0x2000000; // first falcon_update moves to category 1 (item 0x33)
-            var bindings = new AlundraYarnBindings(gameState, projectPath);
-            var (runner, presenter) = NewRunner(bindings);
-            DialogueAsset asset = CompileAsset("CategoryItemNameBeforeTwice", """
-                title: Start
-                ---
-                <<falcon_update>>
-                {category_item_name_before()}
-                <<falcon_update>>
-                {category_item_name_before()}
-                ===
-                """);
+        SetItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"), (0x35, "Bouclier"));
+        var gameState = new AlundraGameState(); // TextCategoryIndex starts at 0 -> reward item 0x53
+        gameState.GameFlags[0x2c] = 0x2000000; // first falcon_update moves to category 1 (item 0x33)
+        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var (runner, presenter) = NewRunner(bindings);
+        DialogueAsset asset = CompileAsset("CategoryItemNameBeforeTwice", """
+            title: Start
+            ---
+            <<falcon_update>>
+            {category_item_name_before()}
+            <<falcon_update>>
+            {category_item_name_before()}
+            ===
+            """);
 
-            runner.Start(asset);
-            Assert.Equal("Vaisseau de vie", presenter.CurrentLine.Text);
+        runner.Start(asset);
+        Assert.Equal("Vaisseau de vie", presenter.CurrentLine.Text);
 
-            gameState.GameFlags[0x2c] = 0x8000000; // second falcon_update moves to category 3 (item 0x35)
-            runner.Continue();
+        gameState.GameFlags[0x2c] = 0x8000000; // second falcon_update moves to category 3 (item 0x35)
+        runner.Continue();
 
-            Assert.Equal("Anneau d'Olga", presenter.CurrentLine.Text);
-        }
-        finally
-        {
-            Directory.Delete(projectPath, recursive: true);
-        }
+        Assert.Equal("Anneau d'Olga", presenter.CurrentLine.Text);
     }
 
     [Fact]
@@ -249,57 +222,43 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     [Fact]
     public void CategoryItemNameBefore_ReadsTheKeptCategorysItem()
     {
-        var projectPath = WriteItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"));
-        try
-        {
-            var gameState = new AlundraGameState(); // TextCategoryIndex starts at 0 -> reward item 0x53
-            gameState.GameFlags[0x2c] = 0x2000000; // moves to category 1 (reward item 0x33) on update
-            var bindings = new AlundraYarnBindings(gameState, projectPath);
-            var (runner, presenter) = NewRunner(bindings);
-            DialogueAsset asset = CompileAsset("CategoryItemNameBefore", """
-                title: Start
-                ---
-                <<falcon_update>>
-                {category_item_name_before()}
-                ===
-                """);
+        SetItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"));
+        var gameState = new AlundraGameState(); // TextCategoryIndex starts at 0 -> reward item 0x53
+        gameState.GameFlags[0x2c] = 0x2000000; // moves to category 1 (reward item 0x33) on update
+        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var (runner, presenter) = NewRunner(bindings);
+        DialogueAsset asset = CompileAsset("CategoryItemNameBefore", """
+            title: Start
+            ---
+            <<falcon_update>>
+            {category_item_name_before()}
+            ===
+            """);
 
-            runner.Start(asset);
+        runner.Start(asset);
 
-            Assert.Equal("Vaisseau de vie", presenter.CurrentLine.Text);
-        }
-        finally
-        {
-            Directory.Delete(projectPath, recursive: true);
-        }
+        Assert.Equal("Vaisseau de vie", presenter.CurrentLine.Text);
     }
 
     [Fact]
     public void CategoryItemName_ReadsTheCurrentCategorysItem()
     {
-        var projectPath = WriteItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"));
-        try
-        {
-            var gameState = new AlundraGameState();
-            gameState.GameFlags[0x2c] = 0x2000000; // moves to category 1 (reward item 0x33) on update
-            var bindings = new AlundraYarnBindings(gameState, projectPath);
-            var (runner, presenter) = NewRunner(bindings);
-            DialogueAsset asset = CompileAsset("CategoryItemName", """
-                title: Start
-                ---
-                <<falcon_update>>
-                {category_item_name()}
-                ===
-                """);
+        SetItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"));
+        var gameState = new AlundraGameState();
+        gameState.GameFlags[0x2c] = 0x2000000; // moves to category 1 (reward item 0x33) on update
+        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var (runner, presenter) = NewRunner(bindings);
+        DialogueAsset asset = CompileAsset("CategoryItemName", """
+            title: Start
+            ---
+            <<falcon_update>>
+            {category_item_name()}
+            ===
+            """);
 
-            runner.Start(asset);
+        runner.Start(asset);
 
-            Assert.Equal("Anneau d'Olga", presenter.CurrentLine.Text);
-        }
-        finally
-        {
-            Directory.Delete(projectPath, recursive: true);
-        }
+        Assert.Equal("Anneau d'Olga", presenter.CurrentLine.Text);
     }
 
     [Fact]
@@ -398,65 +357,51 @@ public sealed class AlundraYarnBindingsTests : IDisposable
     [Fact]
     public void ChurchM134S016_ShowsTheCategoryItemNameBeforeTheUpdate()
     {
-        var projectPath = WriteItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"));
-        try
-        {
-            var gameState = new AlundraGameState(); // TextCategoryIndex starts at 0 -> reward item 0x53
-            gameState.GameFlags[0x2c] = 0x2000000; // the update this page triggers moves to category 1
-            var bindings = new AlundraYarnBindings(gameState, projectPath);
-            var (runner, presenter) = NewRunner(bindings);
-            DialogueAsset asset = CompileAsset("M134_S016", """
-                title: Start
-                ---
-                <<falcon_update>>
-                [voice id=0 trimwhitespace=false/]Je pense que tu trouveras ce(t) {category_item_name_before()}[br trimwhitespace=false/]tout à fait utile. Fais-en bon usage,[br trimwhitespace=false/]Alundra ! #line:M134_S016_p0
-                ===
-                """);
+        SetItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"));
+        var gameState = new AlundraGameState(); // TextCategoryIndex starts at 0 -> reward item 0x53
+        gameState.GameFlags[0x2c] = 0x2000000; // the update this page triggers moves to category 1
+        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var (runner, presenter) = NewRunner(bindings);
+        DialogueAsset asset = CompileAsset("M134_S016", """
+            title: Start
+            ---
+            <<falcon_update>>
+            [voice id=0 trimwhitespace=false/]Je pense que tu trouveras ce(t) {category_item_name_before()}[br trimwhitespace=false/]tout à fait utile. Fais-en bon usage,[br trimwhitespace=false/]Alundra ! #line:M134_S016_p0
+            ===
+            """);
 
-            runner.Start(asset);
+        runner.Start(asset);
 
-            // [br/]/[voice/] markup is stripped here (the DLL's font3 presenter re-inserts line breaks
-            // at those positions, out of this test's T4 scope) - only the substituted item name matters.
-            Assert.Contains("Vaisseau de vie", presenter.CurrentLine.Text);
-            Assert.DoesNotContain("category_item_name_before", presenter.CurrentLine.Text);
-        }
-        finally
-        {
-            Directory.Delete(projectPath, recursive: true);
-        }
+        // [br/]/[voice/] markup is stripped here (the DLL's font3 presenter re-inserts line breaks
+        // at those positions, out of this test's T4 scope) - only the substituted item name matters.
+        Assert.Contains("Vaisseau de vie", presenter.CurrentLine.Text);
+        Assert.DoesNotContain("category_item_name_before", presenter.CurrentLine.Text);
     }
 
     [Fact]
     public void ChurchM134S019_ShowsTheThresholdAndCategoryItemNameAfterTheUpdate()
     {
-        var projectPath = WriteItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"));
-        try
-        {
-            var gameState = new AlundraGameState();
-            gameState.GameFlags[0x2c] = 0x2000000; // moves to category 1: threshold 20, item 0x33
-            var bindings = new AlundraYarnBindings(gameState, projectPath);
-            var (runner, presenter) = NewRunner(bindings);
-            DialogueAsset asset = CompileAsset("M134_S019", """
-                title: Start
-                ---
-                <<falcon_update>>
-                <<flag 100>>
-                [voice id=0 trimwhitespace=false/]Ramène-moi {category_threshold()} Statuettes de faucons[br trimwhitespace=false/]et je te récompenserai avec cela \:[br trimwhitespace=false/]{category_item_name()}. #line:M134_S019_p0
-                ===
-                """);
+        SetItemNameFixture((0x53, "Vaisseau de vie"), (0x33, "Anneau d'Olga"));
+        var gameState = new AlundraGameState();
+        gameState.GameFlags[0x2c] = 0x2000000; // moves to category 1: threshold 20, item 0x33
+        var bindings = new AlundraYarnBindings(gameState, Path.GetTempPath());
+        var (runner, presenter) = NewRunner(bindings);
+        DialogueAsset asset = CompileAsset("M134_S019", """
+            title: Start
+            ---
+            <<falcon_update>>
+            <<flag 100>>
+            [voice id=0 trimwhitespace=false/]Ramène-moi {category_threshold()} Statuettes de faucons[br trimwhitespace=false/]et je te récompenserai avec cela \:[br trimwhitespace=false/]{category_item_name()}. #line:M134_S019_p0
+            ===
+            """);
 
-            runner.Start(asset);
+        runner.Start(asset);
 
-            // Same markup-stripping caveat as ChurchM134S016 above.
-            Assert.Contains("20", presenter.CurrentLine.Text);
-            Assert.Contains("Anneau d'Olga", presenter.CurrentLine.Text);
-            var mask = 1u << (100 & 0x1f);
-            Assert.Equal(mask, gameState.GetFlag(100u | 0x8000) & mask);
-        }
-        finally
-        {
-            Directory.Delete(projectPath, recursive: true);
-        }
+        // Same markup-stripping caveat as ChurchM134S016 above.
+        Assert.Contains("20", presenter.CurrentLine.Text);
+        Assert.Contains("Anneau d'Olga", presenter.CurrentLine.Text);
+        var mask = 1u << (100 & 0x1f);
+        Assert.Equal(mask, gameState.GetFlag(100u | 0x8000) & mask);
     }
 
     // -----------------------------------------------------------------------------------------

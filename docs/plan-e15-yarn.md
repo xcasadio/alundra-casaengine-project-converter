@@ -693,15 +693,45 @@ de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Re
   `YarnDialogueRunner` ; `Alundra.Tests` référence `CasaEngine.Compiler` (tests seulement) pour
   compiler des Yarn d'essai ; tests : chaque commande et chaque fonction, `M134_S016_p0` lit le nom
   d'avant la mise à jour et `M134_S019_p0` celui d'après, commande inconnue journalisée.
-- ⏳ **T5 — Dialogues.** Résolution des assets (carte, partagé), lecture page par page, rendu `font3`
+- ✅ **T5 — Dialogues** (fait le 2026-09-28, commité avec T6 car les deux tâches, menées à la suite,
+  modifient les mêmes fichiers (`AlundraWorldProxy`, tests d'opcodes) : le mandataire du monde tient
+  `dialogue_{mapId}` et `dialogue_shared` (`AssetCatalog` + `AssetContentManager.Acquire`, rendus à la
+  fin du monde) à la place d'`AlundraDialogueStringsLoader` ; `AlundraEventProgramRunner` résout
+  `M{mapId}_S{id & 0x7F:000}` ou `Shared_S{id:000}` ; le directeur joue le nœud sur son propre runner,
+  bâti sur `AlundraDialogueCapturePresenter` (conversion `[br/]` → saut de ligne, `[glyph id=N/]` →
+  caractère `N`, insertion par la fin), pages comptées sur les identifiants de ligne, `Continue`
+  seulement quand la page tourne, `Stop` à la fermeture ; boîte en `font3` tenue par le registre de
+  polices (repli sur la police par défaut avec un avertissement unique si `font3` manque) ; chemin
+  dégradé joué sans affichage jusqu'au bout ; les tests d'opcodes injectent des assets compilés ; le
+  harnais de l'intro charge les `.dialogue` exportés pour ses cas au directeur. Contrôle neuf
+  CONFIRMED ; remarques corrigées (commentaire XML déplacé, commentaires périmés, test à plusieurs
+  marqueurs à la même position, test prouvant que `lblLine` reçoit `font3`).) Résolution des assets (carte, partagé), lecture page par page, rendu `font3`
   des glyphes et des sauts de ligne, boîte en `font3`, boîte vide pour un nœud ou un asset absent ;
   tests d'opcodes adaptés (assets injectés au lieu de chaînes) ; tests : `\W2` → caractère 18,
   `[br/]` → saut de ligne, page `[empty/]`, drapeaux posés à l'affichage de leur page et pas avant,
   masques de fermeture et minuterie inchangés, **chemin dégradé** : un `0x0D` sans directeur sur un
   nœud qui pose `<<flag n>>` en page 0 et `<<flag m>>` sur une page suivante pose les deux drapeaux,
   et une page à `\X` y lance `falcon_update`.
-- ⏳ **T6 — ETC.** `AlundraEtcStringTable` sur `dialogue_etc` ; OUI/NON, noms et descriptions ; tests
-  d'inventaire et de sous-inventaire sur un asset au lieu de JSON, dont une description à □ (glyphe 26).
+- ✅ **T6 — ETC** (fait le 2026-09-28 : `AlundraEtcStringTable` garde son API publique (`projectPath` reçu
+  mais plus lu) et lit l'asset `dialogue_etc`, chargé une fois par session par `EnsureLoaded` (`AssetCatalog`
+  + le gestionnaire d'assets du jeu, appelé depuis `AlundraWorldProxy.InitializeWithWorld`, idempotent comme
+  `EnsureInputMappingsRegistered`) ; un index ETC devient le nœud `Etc_{index:0000}` puis
+  `line:{nœud}_p0` par `DialogueAsset.TryGetLineText`, `YarnLineTextParser` puis la conversion glyphe/`[br/]`
+  partagée avec le présentateur de capture de T5 (`AlundraDialogueCapturePresenter.ToFont3Text`, une seule
+  implémentation) ; textes déjà convertis gardés en cache par identifiant de ligne ; un index sans nœud rend
+  `true` + chaîne vide, comme une entrée nulle aujourd'hui ; injection de test dédiée
+  (`SetEtcDialogueAssetForTests`). Tests migrés hors JSON (`AlundraInventoryDirectorTests`,
+  `AlundraSubInventoryDirectorTests`, `AlundraYarnBindingsTests`, `AlundraDialogueOpcodeDispatchTests`,
+  `AlundraDialogueOpcodesProductionTests`), nouveau `AlundraEtcStringTableTests` (7 tests : OUI/NON sur
+  `Etc_0067`/`Etc_0068`, nom, description, glyphe 26, index sans nœud, aucun asset chargé, cache non
+  reparsé, plus un index hors de 0..1023 qui rend faux comme avant) ; helper
+  `DialogueTestAssets.BuildEtc`/`BuildMultiNode`/`LoadFromDisk` partagé. Plus aucun lecteur
+  de `etc-index.json`/`global-strings.json` dans `Alundra`/`Alundra.Tests` (`AlundraEtcStringTable` n'a plus
+  de code fichier du tout) ; contrôle neuf CONFIRMED (0 écart de résultat avec l'ancien code sur les
+  1 024 index réels) ; `Alundra.Tests` 1 366/1 366 après les corrections de T5 et T6. Reste à E15.d : le convertisseur ne produit plus
+  les quatre familles de fichiers et retire ceux d'un export précédent ; retrait de `TextWriter`, de
+  `MapCatalogReader.StringsRelativePath` et d'`AlundraDialogueStringsLoader`/`AlundraDialogueTextParser`
+  (déjà déconnectés de la production par T5/T7, code encore présent).)
 - ⏳ **T7 — Harnais de l'intro.** Le harnais lit son texte par Yarn ; oracle `0x11` à la frame 1704
   inchangé, **sur le chemin que le harnais prend par défaut, le chemin dégradé** (sans directeur tant
   que `installDialogueDirector` n'est pas demandé, `IntroTraceHarnessTests.cs:389-396`), qui joue

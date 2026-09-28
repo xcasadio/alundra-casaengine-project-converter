@@ -36,9 +36,14 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
     public AlundraDialogueOpcodesProductionTests()
     {
         AlundraDialogueDirector.Instance.ResetForTests();
+        AlundraEtcStringTable.ResetForTests(); // E15.c T6: the OUI/NON flow injects the real ETC asset.
     }
 
-    public void Dispose() => AlundraDialogueDirector.Instance.ResetForTests();
+    public void Dispose()
+    {
+        AlundraDialogueDirector.Instance.ResetForTests();
+        AlundraEtcStringTable.ResetForTests();
+    }
 
     private static string FindProjectRoot()
     {
@@ -68,6 +73,10 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
         var projectRoot = FindProjectRoot();
         var document = MapEventProgramLoader.Load(projectRoot, WorldName);
         Assert.NotNull(document);
+
+        // E15.c T6: OUI/NON now come from the real exported dialogue_etc asset, injected directly.
+        AlundraEtcStringTable.SetEtcDialogueAssetForTests(
+            DialogueTestAssets.LoadFromDisk(Path.Combine(projectRoot, "Dialogues", "Etc.dialogue")));
 
         var previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = projectRoot;

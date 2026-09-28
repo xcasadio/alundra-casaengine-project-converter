@@ -305,7 +305,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
 
         // controlMode 0 = MenuOpen (AlundraGameState.PlayerControlBits.MenuOpen) - the strictest freeze,
         // same choice as AlundraHudDirectorTests's own Update_AdvancesTheHudDirector_... test.
-        dialogue.Open("bonjour", controlMode: 0);
+        dialogue.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 0);
         Assert.True(dialogue.IsOpen);
         Assert.Empty(view.VisibleCalls);
 
