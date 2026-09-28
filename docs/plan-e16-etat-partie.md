@@ -637,10 +637,14 @@ boucle sans attente, il tournerait sans fin.
 **Retour arrière** : branche du chantier (§5.2) ; branche de l'analyseur gardée et pointeur ramené à
 celui de `main` (§5.2).
 
-### E16.b — Service de sauvegarde du moteur ⏳ (moteur)
+### E16.b — Service de sauvegarde du moteur ⏳ (moteur ; plan moteur révisé le 2026-09-28, relu READY, en attente d'approbation)
 
 - **But** : exécuter le plan moteur `save-game-service-tasks.md` (T0.1 à T4.2), puis déplacer le
   pointeur du sous-module.
+- **Révision 3 du plan moteur (2026-09-28)**, après le merge Yarn du moteur (`793d1ee8`) : ses
+  citations restent justes ; son ADR devient l'ADR-0044 du moteur (0042 et 0043 sont prises par Yarn) ;
+  la ligne citée du document Yarn devient `:164` ; une note renvoie les variables Yarn d'Alundra à E16.f.
+  Le fichier reste non suivi dans le sous-module jusqu'à T0.1.
 - **Acceptation** : plan moteur clos, verifier **CONFIRMED** ; ce dépôt compile avec le nouveau
   pointeur.
 - **Arrêt** : O1 du plan moteur refusé → le plan moteur s'arrête et se replanifie, E16.c à E16.e
