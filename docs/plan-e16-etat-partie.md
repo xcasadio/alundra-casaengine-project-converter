@@ -32,6 +32,8 @@ après la mort (« Réessayer »), sans remettre la BSS à zéro. Corrections :
 - D-E16-20 renvoie « Réessayer » à l'étape E18 du plan maître ;
 - E16.d, étapes 1 et 4, ne s'appuie plus sur le processus neuf.
 
+Deuxième relecture neuve de l'enveloppe et d'E16.0 (révision 3, `b9a0d85`) : **READY**.
+
 | Unité | Revue avant approbation | Après exécution |
 |---|---|---|
 | Enveloppe (ce plan) + E16.0 (mesure, première tranche exécutable) | plan-verifier ; revue de sécurité faite (§6) | commit de documentation |
