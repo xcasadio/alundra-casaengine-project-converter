@@ -912,7 +912,7 @@ plan ; `Alundra.Tests` sans échec à chaque commit)
   - un id de chapitre posé dans `TemporaryFlags` n'est pas vu ;
   - le texte pour les temps 0, 59, 60, 3599, 3600, 215 999, 216 000 et `0x14996C4` (→ `99:59:59`), et
     pour les PV 0, 10 et 50, comparé à un calcul écrit dans le test selon les formules de F6.
-- ⏳ **T3 — Objet, capture, application, métadonnées** (C2, C5, C6, C7). Tests :
+- ✅ **T3 — Objet, capture, application, métadonnées** (fait le 2026-09-28 : `AlundraSaveGame` implémente `ISaveGameData` dans l'ordre de C2, avec `Capture`, `TryCaptureFromWorld`, `ApplyTo` et `BuildMetadata` ; les longueurs et la version 1 sont des constantes internes, pour que les champs publics d'instance soient exactement ceux de la liste ; `LoadedDataVersion` a un setter interne, pour les tests de T4 ; un nom de monde nul rend aussi `false` ; 26 tests dans `AlundraSaveGameTests` ; `Alundra.Tests` 1517/1517) (C2, C5, C6, C7). Tests :
   - capture puis `ApplyTo` sur un état neuf → état identique champ par champ (mots 0 à 63 de
     `GameFlags`, table, compteurs, neuf stats, `GameTime`, `DeathRetryCount`) ;
   - un mot de `GameFlags` d'indice ≥ 64 posé dans l'état cible est effacé par `ApplyTo` ;
