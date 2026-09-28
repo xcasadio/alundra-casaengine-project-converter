@@ -667,7 +667,7 @@ celui de `main` (§5.2).
 - **Dépendances** : aucune dans ce plan ; la question O1 du plan moteur (§9.9) doit être tranchée
   avant.
 
-### E16.c — Objet de sauvegarde d'Alundra ⏳ (DLL ; plan détaillé proposé le 2026-09-28, plus bas)
+### E16.c — Objet de sauvegarde d'Alundra 🚧 (DLL ; plan détaillé plus bas, READY, approuvé par l'auteur le 2026-09-28, mode ASK)
 
 - **But** : `AlundraSaveGame`, l'objet que la DLL confie au service (D-E16-4).
 - **Contenu** :
@@ -1060,7 +1060,10 @@ max `0x6A2`, mot 53) et arithmétique de C3.
 
   **Touches de recette** (D-E16-11) gardées par un interrupteur de débogage dont le mécanisme est
   tranché avant cette tranche (O-E16-6), lu une fois et journalisé quand il est actif, avec un point
-  d'injection pour les tests. **Acceptation propre à l'interrupteur** : activé par le moyen retenu, il
+  d'injection pour les tests. **D-E16-33** (réponse de l'auteur du 2026-09-28 à O-E16-6) : les touches
+  sont actives quand `Alundra.dll` est compilée en Debug, inactives en Release. Faits qui ont écarté
+  les autres pistes : le lanceur est démarré depuis l'IDE, sa modification locale par l'auteur ignore
+  ses arguments, et une variable d'environnement n'a jamais atteint le jeu (D-E13-12). **Acceptation propre à l'interrupteur** : activé par le moyen retenu, il
   est vu par le jeu lancé depuis le lanceur, et le journal du jeu en porte la trace. La capture est refusée hors d'un état que
   l'original sauvegarde : aucune transition, aucun dialogue, aucun menu, `PlayerControlFlags == 0`,
   héros au sol. Chaque résultat du service autre que « chargé » et chaque refus laissent la partie en
@@ -1405,7 +1408,7 @@ tests du convertisseur 400/400, `Alundra.Tests` 1361/1361.
 | O-E16-3 | **Sans objet** : E16.0 ne trouve aucun id persistant ≥ 2048 (§2, Q1). Question d'origine : seulement si E16.0 trouve un id persistant ≥ 2048 : l'original écrirait au-delà de `GameFlags`, dans `MapIdToInternalMapIndexTable`. Reproduire, ou corriger (règle « corriger les défauts de l'original ») ? | E16.c |
 | O-E16-4 | ~~§9.9 du moteur~~ — **tranché** (D-E16-8). | E16.b |
 | O-E16-5 | ~~Qui porte le gestionnaire du livre de sauvegarde ?~~ — **tranché : E16.e** (D-E16-12). | E16.e |
-| O-E16-6 | **Comment activer les touches de recette ?** Une variable d'environnement (`ALUNDRA_SAVE_DEBUG=1`) risque le même sort que `ALUNDRA_HUD_DEBUG`, qui n'a jamais atteint le processus du lanceur (D-E13-12). Pistes à comparer en E16.d, sur ce que le lanceur transmet vraiment au jeu : un argument de ligne de commande du lanceur, un réglage du projet, un fichier de configuration à côté du jeu. À trancher par l'auteur **avant E16.d**. | E16.d |
+| O-E16-6 | ~~Touches de recette~~ — **tranché** (D-E16-33) : actives quand `Alundra.dll` est compilée en Debug. Question d'origine : **Comment activer les touches de recette ?** Une variable d'environnement (`ALUNDRA_SAVE_DEBUG=1`) risque le même sort que `ALUNDRA_HUD_DEBUG`, qui n'a jamais atteint le processus du lanceur (D-E13-12). Pistes à comparer en E16.d, sur ce que le lanceur transmet vraiment au jeu : un argument de ligne de commande du lanceur, un réglage du projet, un fichier de configuration à côté du jeu. À trancher par l'auteur **avant E16.d**. | E16.d |
 | O-E16-7 | Seulement si E16.f T1 montre que la machine virtuelle de Yarn lève une exception sur une lecture refusée, ou qu'un dialogue exporté a besoin de variables internes de Yarn : erreur visible (dialogue interrompu), valeur initiale du `Program` avec journal, ou autre ? | E16.f |
 | O-E16-8 | ~~Taille de `0x78`~~ — **tranché** (D-E16-21) : 3 octets, dans la DLL et dans l'analyseur. | E16.a |
 | O-E16-9 | ~~`SaveSlotIndex`~~ — **tranché** (D-E16-22) : sauvegardé et restitué, 0..255. | E16.c |
