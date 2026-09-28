@@ -21,6 +21,9 @@ namespace Alundra.Scripts;
 /// One name deviates from the source table: <c>0xB8</c> is named "Check CurrentAnimationId" here, not
 /// the source's "Check TargetDirection" - the binary shows this opcode compares CurrentAnimationId, not
 /// TargetDirection (D-E16-27, docs/plan-e16-etat-partie.md).
+///
+/// One size deviates from the source table: <c>0x78</c> is 3 bytes here, not the source's 4 - the binary
+/// (0x8003FB10) reads only v[1]/v[2] (D-E16-21, docs/plan-e16-etat-partie.md).
 /// </summary>
 public static class EventOpcodeSizeTable
 {
@@ -152,7 +155,9 @@ public static class EventOpcodeSizeTable
         { 0x75, new(2, "Play sound effect") },
         { 0x76, new(0, "not implemented") },
         { 0x77, new(0, "not implemented") },
-        { 0x78, new(4, "Store choice param and jump") },
+        { 0x78, new(3, "Store choice param and jump") }, // D-E16-21: 3 octets, not the source's 4 - the
+                                                          // binary (0x8003FB10) reads only v[1]/v[2] and
+                                                          // sets _34 = CodeIndex + 3.
         { 0x79, new(3, "Jump if choice accepted") },
         { 0x7A, new(3, "Jump if choice rejected") },
         { 0x7B, new(5, "Jump if flag set store param") },

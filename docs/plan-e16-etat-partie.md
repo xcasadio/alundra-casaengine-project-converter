@@ -592,7 +592,7 @@ sans échec avant chaque ✅) :
   - 12 tests, dont l'occurrence réelle d'Arena Zorgia ; l'écriture du joueur à l'apparition n'est
     vérifiée qu'à la lecture du code, `AdoptPlayerPawn` n'étant pas atteignable sans moteur ;
   - `Alundra.Tests` 1410/1410, oracle de l'intro inchangé.
-- ⏳ **T4 — Famille `0x78` à `0x81`** (DLL, D-E16-21). Taille de `0x78` à 3 ; un test par opcode (saut
+- ✅ **T4 — Famille `0x78` à `0x81`** (fait le 2026-09-28 : neuf `case`, `0x7A` non porté, `0x78` à 3 octets dans la table, doc de `_34` et `ImplementedOpcodes` à jour pour T1 à T4 ; 19 tests, dont les trois séquences réelles A, B et C de bout en bout ; `Alundra.Tests` 1429/1429, oracle de l'intro inchangé) (DLL, D-E16-21). Taille de `0x78` à 3 ; un test par opcode (saut
   pris et non pris, écriture et relecture de `_34`) ; `EventProgramState.cs` et `ImplementedOpcodes`
   mis à jour (tous les opcodes de T1 à T4). **Trois tests de séquence** sur des programmes réels, du
   point d'entrée jusqu'au retour :

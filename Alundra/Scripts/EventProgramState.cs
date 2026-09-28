@@ -13,9 +13,14 @@ namespace Alundra.Scripts;
 /// true/false outcome a condition opcode left behind for a following conditional-goto to consume
 /// (<see cref="Result"/>).
 ///
-/// Fields <see cref="_30"/>/<see cref="_34"/> are carried over unused (as in the original, whose own
-/// name for them is just the struct offset) - kept for field-layout fidelity, not read by any ported
-/// opcode handler.
+/// Field <see cref="_30"/> is carried over unused (as in the original, whose own name for it is just the
+/// struct offset) - kept for field-layout fidelity, not read by any ported opcode handler.
+///
+/// <see cref="_34"/> IS read (E16.a T4, D-E16-21): the "stored choice param" family's own remembered
+/// return point. <c>0x78</c>/<c>0x79</c>/<c>0x7B</c>/<c>0x7C</c> write it (to <c>CodeIndex</c> + their
+/// own instruction size, right after themselves) when they take their jump; <c>0x7D</c>/<c>0x7E</c>/
+/// <c>0x7F</c>/<c>0x80</c>/<c>0x81</c> read it back to jump there (<c>_34 - CodeIndex</c>), the dominant
+/// pattern being a <c>0x78</c> ... <c>0x7D</c> pair around a dialogue-choice block.
 /// </summary>
 public sealed class EventProgramState
 {

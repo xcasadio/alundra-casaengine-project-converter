@@ -600,6 +600,63 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // Result.
                 return CheckFlagsOff(v, state);
 
+            case 0x78: // Store choice param and jump - Script_120_078 @ 0x8003FB10 (D-E16-21, E16.a T4):
+                       // ALWAYS jumps. Per the binary, reads only v[1]/v[2] and writes
+                       // state._34 = CodeIndex + 3 (its OWN size, 3 bytes - NOT the 4 the decompilation's
+                       // own dead v[3] read would suggest, see EventOpcodeSizeTable's own note) before
+                       // returning the signed 16-bit jump delta.
+                state._34 = state.CodeIndex + 3;
+                return SignExtend16((v[2] << 8) | v[1]);
+
+            case 0x79: // Store choice param and jump if true - Script_121_079 @ 0x8003FB44
+                       // (EntityEventHandlers.cs:2242-2256, agrees with the binary): only jumps (and
+                       // remembers the return point, _34 = CodeIndex + 3) when Result != 0; otherwise
+                       // just advances by its own size (3).
+                if (state.Result != 0)
+                {
+                    state._34 = state.CodeIndex + 3;
+                    return SignExtend16((v[2] << 8) | v[1]);
+                }
+
+                return 3;
+
+            case 0x7B: // Jump if flag set, store param - Script_123_07B @ 0x8003FBD4
+                       // (EntityEventHandlers.cs:2286-... , agrees with the binary): flag id/bit from
+                       // v[1]/v[2] (same (word&lt;&lt;5)+bit/bank-by-0x8000 shape as 0x05/0x30/etc.); when
+                       // the bit is SET, remembers the return point (_34 = CodeIndex + 5, its own size)
+                       // and jumps by the signed 16-bit delta in v[3]/v[4]; otherwise just advances (5).
+                return FlagBranchAndRemember(v, state, wantSet: true);
+
+            case 0x7C: // Jump if flag clear, store param - Script_124_07C @ 0x8003FC74
+                       // (EntityEventHandlers.cs:2316-...): mirror of 0x7B above - jumps (and remembers
+                       // _34 = CodeIndex + 5) when the bit is CLEAR, else advances (5).
+                return FlagBranchAndRemember(v, state, wantSet: false);
+
+            case 0x7D: // Jump relative from stored param - Script_125_07D @ 0x8003FD14
+                       // (EntityEventHandlers.cs:2326): ALWAYS returns to the point 0x78/0x79/0x7B/0x7C
+                       // last remembered (state._34 - CodeIndex). Per the binary this reads NO operand -
+                       // the decompilation's own v[0]/v[1]-derived local here is dead code (never used),
+                       // so it is not ported.
+                return state._34 - state.CodeIndex;
+
+            case 0x7E: // Conditional jump if true - Script_126_07E @ 0x8003FD24: returns to the
+                       // remembered point (state._34 - CodeIndex) when Result != 0, else just advances
+                       // (1, its own size).
+                return state.Result != 0 ? state._34 - state.CodeIndex : 1;
+
+            case 0x7F: // Conditional jump if false - Script_127_07F @ 0x8003FD4C: mirror of 0x7E above -
+                       // returns to the remembered point when Result == 0, else advances (1).
+                return state.Result == 0 ? state._34 - state.CodeIndex : 1;
+
+            case 0x80: // Jump from param if flag set - Script_128_080 @ 0x8003FD74: flag id/bit from
+                       // v[1]/v[2], same shape as 0x7B/0x7C. Returns to the remembered point
+                       // (state._34 - CodeIndex) when the bit is SET, else advances (3, its own size).
+                return FlagReturnToMark(v, state, wantSet: true);
+
+            case 0x81: // Jump from param if flag clear - Script_129_081 @ 0x8003FDF8: mirror of 0x80
+                       // above - returns to the remembered point when the bit is CLEAR, else advances (3).
+                return FlagReturnToMark(v, state, wantSet: false);
+
             case 0x38: // Set save map-id -> internal map index - Script_SetSaveMapIdToInternalMapIndex_038
                        // (EntityEventHandlers.cs:1202-1207): MapIdToInternalMapIndexTable[v2<<8|v1] =
                        // v4<<8|v3. Real map-389 operand (docs/intro-programs-389.txt offset 305):
@@ -1358,6 +1415,38 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         var mask = 1 << (v[1] & 0x1f);
         var isSet = (_gameState.GetFlag(flag) & mask) != 0;
         return isSet == wantSet ? SignExtend16((v[4] << 8) | v[3]) : 5;
+    }
+
+    /// <summary>Shared shape of Script_123_07B (0x7B, "jump if flag set") / Script_124_07C (0x7C, "jump
+    /// if flag clear") - same flag test as <see cref="FlagBranch"/>, but the goto is stored/returned via
+    /// <see cref="EventProgramState._34"/> (own size, 5) rather than taken directly, so a later
+    /// 0x7D/0x7E/0x7F/0x80/0x81 can return to right after this instruction (E16.a T4, D-E16-21).</summary>
+    private int FlagBranchAndRemember(int[] v, EventProgramState state, bool wantSet)
+    {
+        var flag = (uint)((v[2] << 8) | v[1]);
+        var mask = 1 << (v[1] & 0x1f);
+        var isSet = (_gameState.GetFlag(flag) & mask) != 0;
+
+        if (isSet == wantSet)
+        {
+            state._34 = state.CodeIndex + 5;
+            return SignExtend16((v[4] << 8) | v[3]);
+        }
+
+        return 5;
+    }
+
+    /// <summary>Shared shape of Script_128_080 (0x80, "jump from param if flag set") / Script_129_081
+    /// (0x81, "jump from param if flag clear") - same flag test as <see cref="FlagBranch"/>/
+    /// <see cref="FlagBranchAndRemember"/>, but the jump itself is always back to the point a previous
+    /// 0x78/0x79/0x7B/0x7C remembered (<c>state._34 - state.CodeIndex</c>), never an operand-encoded
+    /// delta (E16.a T4, D-E16-21).</summary>
+    private int FlagReturnToMark(int[] v, EventProgramState state, bool wantSet)
+    {
+        var flag = (uint)((v[2] << 8) | v[1]);
+        var mask = 1 << (v[1] & 0x1f);
+        var isSet = (_gameState.GetFlag(flag) & mask) != 0;
+        return isSet == wantSet ? state._34 - state.CodeIndex : 3;
     }
 
     /// <summary>Script_54_036 (0x36) - a pure-flag suspend/advance test, same shape as

@@ -4138,4 +4138,439 @@ public class AlundraEventProgramRunnerTests
         Assert.Equal(1, state.Result);
         Assert.Equal(2, state.CodeIndex);
     }
+
+    // -----------------------------------------------------------------------------------------
+    // 0x78/0x79/0x7B/0x7C/0x7D/0x7E/0x7F/0x80/0x81 - the "stored choice param" family (docs/plan-e16-
+    // etat-partie.md, E16.a T4, D-E16-21). 0x78/0x79/0x7B/0x7C write EventProgramState._34 to
+    // CodeIndex + their own size when they take their jump; 0x7D/0x7E/0x7F/0x80/0x81 read it back
+    // (_34 - CodeIndex) to return there. Synthetic per-opcode tests first, then three real corpus
+    // sequence tests (same "load the real events file, assert the key bytes, then drive execution with
+    // the SAME RunOneScriptCall seam" pattern as the 0x32/0x34/0x35 real tests above).
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void StoreChoiceParamAndJump_0x78_AlwaysJumps_SetsMarkToCodeIndexPlusThree()
+    {
+        // 0x78 is 3 bytes (D-E16-21), not the source table's 4 - if it were wrongly treated as 4 here,
+        // the marker right after it (reached via the 0x7D return below) would misalign by one byte and
+        // decode garbage instead of 0x1A/42.
+        var document = NewDocument(0x78, 6, 0, /*3*/ 0x1A, 42, /*5*/ 0xFF, /*6*/ 0x7D, /*7*/ 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(3, state._34); // CodeIndex (0) + the instruction's own size (3), not 4.
+        Assert.Equal(42u, entity.TargetAnimationId); // proves the 0x7D return landed exactly on the
+                                                      // marker right after the 3-byte 0x78, not one byte off.
+        Assert.Equal(5, state.CodeIndex); // 0x1A (size 2) advanced from 3 to 5, then 0xFF ended the call.
+    }
+
+    [Fact]
+    public void StoreChoiceParamAndJumpIfTrue_0x79_ResultNonzero_JumpsAndSetsMark()
+    {
+        var document = NewDocument(0x79, 4, 0, 0xFF, /*4*/ 0x1A, 42, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(3, state._34);
+        Assert.Equal(42u, entity.TargetAnimationId);
+    }
+
+    [Fact]
+    public void StoreChoiceParamAndJumpIfTrue_0x79_ResultZero_AdvancesBySize_MarkUntouched()
+    {
+        var document = NewDocument(0x79, 4, 0, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state._34); // never written - not taken.
+        Assert.Equal(3, state.CodeIndex);
+    }
+
+    [Fact]
+    public void JumpIfFlagSet_0x7B_FlagSet_JumpsAndSetsMark_GameBank()
+    {
+        // Flag id 0x0007 (bit 0x8000 clear -> GAME bank, not temporary).
+        var document = NewDocument(0x7B, 7, 0, 6, 0, 0xFF, /*6*/ 0x1A, 42, 0xFF);
+        var gameState = new AlundraGameState();
+        gameState.AddFlag(0x0007, 1u << (7 & 0x1f));
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(5, state._34); // CodeIndex (0) + size (5).
+        Assert.Equal(42u, entity.TargetAnimationId);
+    }
+
+    [Fact]
+    public void JumpIfFlagSet_0x7B_FlagClear_AdvancesBySize_MarkUntouched()
+    {
+        var document = NewDocument(0x7B, 7, 0, 6, 0, 0xFF);
+        var runner = NewRunner(document); // fresh AlundraGameState -> flag clear
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state._34);
+        Assert.Equal(5, state.CodeIndex);
+    }
+
+    [Fact]
+    public void JumpIfFlagClear_0x7C_FlagClear_JumpsAndSetsMark_TemporaryBank()
+    {
+        // Flag id 0x8007 (bit 0x8000 set -> TEMPORARY bank) - left at its default clear state.
+        var document = NewDocument(0x7C, 0x07, 0x80, 6, 0, 0xFF, /*6*/ 0x1A, 42, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(5, state._34);
+        Assert.Equal(42u, entity.TargetAnimationId);
+    }
+
+    [Fact]
+    public void JumpIfFlagClear_0x7C_FlagSet_AdvancesBySize_MarkUntouched()
+    {
+        var document = NewDocument(0x7C, 0x07, 0x80, 6, 0, 0xFF);
+        var gameState = new AlundraGameState();
+        gameState.AddFlag(0x8007, 1u << (0x07 & 0x1f));
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state._34);
+        Assert.Equal(5, state.CodeIndex);
+    }
+
+    [Fact]
+    public void JumpRelativeFromStoredParam_0x7D_AlwaysReturnsToMark()
+    {
+        var document = NewDocument(/*0*/ 0xFF, /*1*/ 0x01, /*2*/ 0x01, /*3*/ 0x7D, /*4*/ 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), CodeIndex = 3, _34 = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(0, state.CodeIndex); // 0 - 3 = -3, landed on the 0xFF at index 0 and ended.
+    }
+
+    [Fact]
+    public void ConditionalJumpIfTrue_0x7E_ResultNonzero_ReturnsToMark()
+    {
+        var document = NewDocument(/*0*/ 0x01, 0x01, /*2*/ 0xFF, 0x01, 0x01, /*5*/ 0x7E, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), CodeIndex = 5, _34 = 2, Result = 1 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(2, state.CodeIndex); // 2 - 5 = -3, landed on the 0xFF at index 2 and ended.
+    }
+
+    [Fact]
+    public void ConditionalJumpIfTrue_0x7E_ResultZero_AdvancesByOne()
+    {
+        var document = NewDocument(0x01, 0x01, 0xFF, 0x01, 0x01, /*5*/ 0x7E, /*6*/ 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), CodeIndex = 5, _34 = 2, Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(6, state.CodeIndex);
+    }
+
+    [Fact]
+    public void ConditionalJumpIfFalse_0x7F_ResultZero_ReturnsToMark()
+    {
+        var document = NewDocument(0x01, 0x01, /*2*/ 0xFF, 0x01, 0x01, /*5*/ 0x7F, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), CodeIndex = 5, _34 = 2, Result = 0 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(2, state.CodeIndex);
+    }
+
+    [Fact]
+    public void ConditionalJumpIfFalse_0x7F_ResultNonzero_AdvancesByOne()
+    {
+        var document = NewDocument(0x01, 0x01, 0xFF, 0x01, 0x01, /*5*/ 0x7F, /*6*/ 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), CodeIndex = 5, _34 = 2, Result = 1 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(6, state.CodeIndex);
+    }
+
+    [Fact]
+    public void JumpFromParamIfFlagSet_0x80_FlagSet_ReturnsToMark_TemporaryBank()
+    {
+        var document = NewDocument(0x01, 0x01, /*2*/ 0xFF, 0x01, 0x01, /*5*/ 0x80, 7, 0x80, /*8*/ 0xFF);
+        var gameState = new AlundraGameState();
+        gameState.AddFlag(0x8007, 1u << (7 & 0x1f));
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), CodeIndex = 5, _34 = 2 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(2, state.CodeIndex); // 2 - 5 = -3, landed on the 0xFF at index 2 and ended.
+    }
+
+    [Fact]
+    public void JumpFromParamIfFlagSet_0x80_FlagClear_AdvancesBySize()
+    {
+        var document = NewDocument(0x01, 0x01, 0xFF, 0x01, 0x01, /*5*/ 0x80, 7, 0x80, /*8*/ 0xFF);
+        var runner = NewRunner(document); // fresh AlundraGameState -> flag clear
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), CodeIndex = 5, _34 = 2 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(8, state.CodeIndex); // advanced by 3 (its own size) from 5.
+    }
+
+    [Fact]
+    public void JumpFromParamIfFlagClear_0x81_FlagClear_ReturnsToMark_GameBank()
+    {
+        var document = NewDocument(0x01, 0x01, /*2*/ 0xFF, 0x01, 0x01, /*5*/ 0x81, 7, 0, /*8*/ 0xFF);
+        var runner = NewRunner(document); // fresh AlundraGameState -> flag clear -> taken
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), CodeIndex = 5, _34 = 2 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(2, state.CodeIndex);
+    }
+
+    [Fact]
+    public void JumpFromParamIfFlagClear_0x81_FlagSet_AdvancesBySize()
+    {
+        var document = NewDocument(0x01, 0x01, 0xFF, 0x01, 0x01, /*5*/ 0x81, 7, 0, /*8*/ 0xFF);
+        var gameState = new AlundraGameState();
+        gameState.AddFlag(0x0007, 1u << (7 & 0x1f));
+        var runner = NewRunner(document, gameState);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), CodeIndex = 5, _34 = 2 };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(8, state.CodeIndex);
+    }
+
+    /// <summary>Snapshot of one dispatched opcode, copied out of <see cref="EventTraceRecord"/> at trace
+    /// time - <see cref="EventTraceRecord.State"/> is a LIVE reference (see that field's own doc), so a
+    /// later instruction in the same real program can overwrite <c>_34</c>/<c>Result</c> before a test
+    /// gets to inspect them; only a value copied out immediately survives that.</summary>
+    private readonly record struct FamilyTraceSnapshot(int CodeIndex, int Opcode, int ThirtyFour, int Result);
+
+    private static List<FamilyTraceSnapshot> RunWithFamilyTrace(AlundraEventProgramRunner runner, AlundraEntityScriptProxy entity, EventProgramState state, int callCount)
+    {
+        var records = new List<FamilyTraceSnapshot>();
+        runner.TraceSink = record => records.Add(new FamilyTraceSnapshot(record.CodeIndex, record.Opcode, record.State._34, record.State.Result));
+
+        for (var i = 0; i < callCount; i++)
+        {
+            runner.RunOneScriptCall(entity, state);
+        }
+
+        runner.TraceSink = null;
+        return records;
+    }
+
+    [Fact]
+    public void StoredChoiceParamFamily_0x78_0x81_RealSequence_LakeShrineInner337()
+    {
+        var projectRoot = FindProjectRootForRealOpcodeOccurrences();
+        if (projectRoot == null)
+        {
+            return; // self-skip
+        }
+
+        var document = MapEventProgramLoader.Load(projectRoot, "Lake Shrine (inner)-337");
+        Assert.NotNull(document);
+
+        // Table B (Map), index 2: entry point 512. Instruction offset 807: bytes "78 0F 00" (jump +15 ->
+        // 822); offset 822: bytes "81 FC 03" (flag id 0x03FC).
+        Assert.Equal(512, document!.EventCodesBTable[2]);
+        var codeBytes = document.CodesAsBytes();
+        Assert.Equal(new byte[] { 0x78, 0x0F, 0x00 }, codeBytes[807..810]);
+        Assert.Equal(new byte[] { 0x81, 0xFC, 0x03 }, codeBytes[822..825]);
+
+        // The six 0x30 (if-flag-on) checks right after the entry point all fall through to a Goto that
+        // skips this whole choice block unless at least one of their own flags is set - flag 0x045A
+        // (the FIRST check's own operand) picks the branch that reaches offset 807. Flag 0x03FC (the
+        // 0x81's own operand, bit 0x8000 clear -> GAME bank) is left at its default CLEAR state, so the
+        // 0x81 takes its branch.
+        var gameState = new AlundraGameState();
+        gameState.AddFlag(0x045A, 1u << (0x5A & 0x1f));
+        var runner = new AlundraEventProgramRunner(document, gameState, null);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = codeBytes, CodeIndex = 512 };
+
+        // Two real 0x37 Wait(80) gates sit between the entry point and offset 807 - drive enough calls to
+        // clear both (RunOneScriptCall only advances one frame's worth of waiting per call) and reach well
+        // past the 0x78/0x81 pair.
+        var records = RunWithFamilyTrace(runner, entity, state, 200);
+
+        var jump = Assert.Single(records, r => r.CodeIndex == 807 && r.Opcode == 0x78);
+        Assert.Equal(810, jump.ThirtyFour); // _34 = CodeIndex (807) + the instruction's own size (3).
+
+        // The 0x81 at 822 is dispatched more than once (the program loops back through this same choice
+        // block after landing at 810 - not this task's concern): the FIRST one is the one the 0x78 above
+        // directly set up, so it is asserted by position, not uniqueness.
+        var returnJump = records.First(r => r.CodeIndex == 822 && r.Opcode == 0x81);
+        Assert.Equal(810, returnJump.ThirtyFour); // reads the SAME mark the 0x78 above wrote.
+
+        // The decisive signal: an instruction is later dispatched at CodeIndex 810 itself - the 0x81 could
+        // only reach it by returning there (state._34 - state.CodeIndex = 810 - 822 = -12).
+        Assert.Contains(records, r => r.CodeIndex == 810);
+    }
+
+    [Fact]
+    public void StoredChoiceParamFamily_0x78_0x5B_0x1E_0x7D_RealSequence_Cave140()
+    {
+        var projectRoot = FindProjectRootForRealOpcodeOccurrences();
+        if (projectRoot == null)
+        {
+            return; // self-skip
+        }
+
+        var document = MapEventProgramLoader.Load(projectRoot, "Cave-140");
+        Assert.NotNull(document);
+
+        // Table B (Map), index 4: entry point 744. Instruction offset 773: bytes "78 45 02" (jump +581 ->
+        // 1354); offset 1354: "5B 80 02 43" (turn+anim); offset 1358: "1E 18 00" (walk, threshold 24px);
+        // offset 1361: "7D" (return to 776, right after the 3-byte 0x78 at 773).
+        Assert.Equal(744, document!.EventCodesBTable[4]);
+        var codeBytes = document.CodesAsBytes();
+        Assert.Equal(new byte[] { 0x78, 0x45, 0x02 }, codeBytes[773..776]);
+        Assert.Equal(new byte[] { 0x5B, 0x80, 0x02, 0x43 }, codeBytes[1354..1358]);
+        Assert.Equal(new byte[] { 0x1E, 0x18, 0x00 }, codeBytes[1358..1361]);
+        Assert.Equal(0x7D, codeBytes[1361]);
+
+        // The entry point's own lead-in: 0x36 (wait until flag 0x83EC is on) at 744, then 0x06 (flag off,
+        // consuming the same flag) at 747, an unimplemented 0x43 (skipped by size) at 750, a real Break at
+        // 752 (resumes next call at 753), an unimplemented 0x73 at 753, a real 0x37 Wait(1) at 755, then
+        // 0x3B (Check player in area, box [40,40,17,17,1,1]) at 757, whose Result gates the 0x03 (if true
+        // goto) at 764 that reaches offset 773.
+        var gameState = new AlundraGameState();
+        gameState.AddFlag(0x83EC, 1u << (0xEC & 0x1f));
+        var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 40, TileY = 17, TileZ = 1 };
+        var context = new FakeEntityWorldContext { PlayerEntity = player };
+        var runner = new AlundraEventProgramRunner(document, gameState, context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = codeBytes, CodeIndex = 744 };
+
+        var records = new List<FamilyTraceSnapshot>();
+        runner.TraceSink = record => records.Add(new FamilyTraceSnapshot(record.CodeIndex, record.Opcode, record.State._34, record.State.Result));
+
+        for (var i = 0; i < 5; i++)
+        {
+            if (i > 0)
+            {
+                // Drive the 0x1E walk (threshold 24px) forward once it starts memorizing its own start
+                // position - same "advance PosX between calls" shape AlundraNpcCharacterControllerMoverTests'
+                // own real-walk scenarios use.
+                entity.PosX += 30 << 16;
+            }
+
+            runner.RunOneScriptCall(entity, state);
+        }
+
+        runner.TraceSink = null;
+
+        var jump = Assert.Single(records, r => r.CodeIndex == 773 && r.Opcode == 0x78);
+        Assert.Equal(776, jump.ThirtyFour); // _34 = CodeIndex (773) + the instruction's own size (3).
+        Assert.Contains(records, r => r.CodeIndex == 1354 && r.Opcode == 0x5B);
+        Assert.Contains(records, r => r.CodeIndex == 1358 && r.Opcode == 0x1E);
+
+        var returnDispatch = Assert.Single(records, r => r.CodeIndex == 1361 && r.Opcode == 0x7D);
+        Assert.Equal(776, returnDispatch.ThirtyFour);
+
+        // The decisive signal: an instruction is later dispatched at CodeIndex 776 itself - the 0x7D could
+        // only reach it by returning there (state._34 - state.CodeIndex = 776 - 1361 = -585).
+        Assert.Contains(records, r => r.CodeIndex == 776);
+    }
+
+    [Fact]
+    public void StoredChoiceParamFamily_0x7B_0x7E_RealSequence_LizardmansLairBoss411()
+    {
+        var projectRoot = FindProjectRootForRealOpcodeOccurrences();
+        if (projectRoot == null)
+        {
+            return; // self-skip
+        }
+
+        var document = MapEventProgramLoader.Load(projectRoot, "Lizardman's Lair (Boss)-411");
+        Assert.NotNull(document);
+
+        // Table B (Map), index 9: entry point 1712 (itself a real Break, resumes next call at 1713).
+        // Instruction offset 1713: bytes "7B 7A 80 18 00" (flag id 0x807A, jump +24 -> 1737); offset 1737:
+        // "37 0A" (Wait 10 frames); offset 1739: "07 1A 00 21 24 3B 00 06" (Check entity in area, search
+        // type 0x1A - raw entity-record-id 26, box [0,33]x[36,59]x[0,6]); offset 1747: "7E" (return to
+        // 1718, right after the 5-byte 0x7B at 1713, when Result != 0).
+        Assert.Equal(1712, document!.EventCodesBTable[9]);
+        var codeBytes = document.CodesAsBytes();
+        Assert.Equal(0x00, codeBytes[1712]);
+        Assert.Equal(new byte[] { 0x7B, 0x7A, 0x80, 0x18, 0x00 }, codeBytes[1713..1718]);
+        Assert.Equal(new byte[] { 0x37, 0x0A }, codeBytes[1737..1739]);
+        Assert.Equal(new byte[] { 0x07, 0x1A, 0x00, 0x21, 0x24, 0x3B, 0x00, 0x06 }, codeBytes[1739..1747]);
+        Assert.Equal(0x7E, codeBytes[1747]);
+
+        var gameState = new AlundraGameState();
+        gameState.AddFlag(0x807A, 1u << (0x7A & 0x1f));
+        var owner = NewEntity();
+        owner.Status = EntityStatus.Normal; // gates the raw-id search on the owner's own status
+        var candidate = new AlundraEntityScriptProxy
+        {
+            Status = EntityStatus.Normal,
+            EntityRefId = 0x1A,
+            TileX = 10,
+            TileY = 40,
+            TileZ = 3,
+        };
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.Add(candidate);
+        var runner = new AlundraEventProgramRunner(document, gameState, context);
+        var state = new EventProgramState { Codes = codeBytes, CodeIndex = 1712 };
+
+        // The real Break at the entry point (1712) ends the first call by itself; the 0x37 Wait(10) at
+        // 1737 needs ten more calls beyond the one that first reaches it.
+        var records = RunWithFamilyTrace(runner, owner, state, 15);
+
+        var flagJump = Assert.Single(records, r => r.CodeIndex == 1713 && r.Opcode == 0x7B);
+        Assert.Equal(1718, flagJump.ThirtyFour); // _34 = CodeIndex (1713) + the instruction's own size (5).
+
+        var areaCheck = Assert.Single(records, r => r.CodeIndex == 1739 && r.Opcode == 0x07);
+        Assert.Equal(1, areaCheck.Result); // the candidate above matches search type 0x1A inside the box.
+
+        var returnJump = Assert.Single(records, r => r.CodeIndex == 1747 && r.Opcode == 0x7E);
+        Assert.Equal(1718, returnJump.ThirtyFour);
+
+        // The decisive signal: an instruction is later dispatched at CodeIndex 1718 itself - the 0x7E
+        // could only reach it by returning there (state._34 - state.CodeIndex = 1718 - 1747 = -29) because
+        // Result != 0 from the 0x07 check above.
+        Assert.Contains(records, r => r.CodeIndex == 1718);
+    }
 }
