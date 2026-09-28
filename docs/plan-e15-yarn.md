@@ -650,7 +650,11 @@ de ce plan ; build `dotnet build alundra-casaengine-project-converter.slnx -c Re
   **glyphes 28 et 29 compris** (le `char.IsWhiteSpace` de .NET peut les traiter comme des blancs,
   donc comme des coupures de ligne), avec un `MGDesktop`, jamais un `UIRoot`. **Échec → arrêt** :
   manque MGUI consigné dans un rapport dédié, et question à l'auteur (ne pas contourner).
-- ⏳ **T2 — Faits du binaire** (lecture seule, `ALUN_CD.EXE` France, capstone) : les 8 seuils à
+- ✅ **T2 — Faits du binaire** (faite le 2026-09-28, résultats au §5.7 : seuils 15 à 50 ; indice de
+  catégorie à 0 au démarrage, jamais remis à zéro, hors sauvegarde ; `\X2`/`\X4` lisent un objet par
+  une table catégorie → objet que la décompilation a perdue ; `UpdatePlayerProgressState` identique
+  sauf le test du bit de signe, `UpdateNumberOfFalcon` identique ; aucun arrêt) (lecture seule,
+  `ALUN_CD.EXE` France, capstone) : les 8 seuils à
   `0x8009A834` ; `g_textCategoryIndex` (`0x80149CD8`) : valeur de départ, écrivains, sauvegardé ou
   non ; ce que lisent `\X2`/`\X4` (fonction, table, indice) ; **comparaison de `0x8004754c`
   (`UpdatePlayerProgressState`) et de `0x8004e738` (`UpdateNumberOfFalcon`) avec la décompilation** :
@@ -842,6 +846,46 @@ Décision D-E15-6 : des marqueurs dessinés par la DLL.
   C6 → 120) : elles doivent exister (D-E15-7).
 - Sites qui ouvrent la table partagée : 347 par parcours linéaire, 342 sur 174 cartes une fois le code
   mort retiré (les « ~345 » du plan E12 ne correspondent à aucun des deux).
+
+**5.7 Faits du binaire pour E15.c (T2, 2026-09-28)** [binaire]
+
+Deux lectures indépendantes d'`ALUN_CD.EXE` (France, capstone), concordantes point par point ;
+scripts et sorties dans le dossier temporaire de la session (`scratchpad/e15c-t2-a/`, `e15c-t2-b/`).
+Le point d'entrée `0x8008b538` met à zéro la BSS `[0x800CA0E8, 0x801F7F20)`.
+
+- **Seuils** `g_categoryThresholdTable` (`0x8009A834`, décalage de fichier `0x7B034`) : donnée
+  initialisée, **15, 20, 25, 30, 35, 40, 45, 50**, jamais écrite ; lue par `\X3` (`0x800467fc`,
+  `0x80046844`), `\X5` (`0x8004690c`) et `UpdatePlayerProgressState` (`0x800476cc`).
+- **Indice de catégorie** `g_textCategoryIndex` (`0x80149CD8`) : dans la BSS, donc **0 au
+  démarrage** ; écrit seulement par `UpdatePlayerProgressState` (8 `sw`, `0x800475c4`–`0x800476ac`) ;
+  lu par `\X2`/`\X4` (`0x80046748`, **avant** la mise à jour), `\X3`, `\X5` et
+  `UpdatePlayerProgressState` ; **jamais remis à zéro** (ni nouvelle partie ni chargement), **hors de
+  la sauvegarde** (`g_saveData` = `0x801EB2E8`–`0x801EBA40`). `UpdatePlayerProgressState` et
+  `UpdateNumberOfFalcon` ne sont appelées que par les quatre sites `\X` du texte.
+- **`\X2`/`\X4` — écart avec la décompilation** : le nom vient d'une table de 8 pointeurs à
+  `0x8009A814` (lue seulement en `0x8004674c`) vers des enregistrements de `g_itemDropProperties`
+  (`0x800C5F7C`, pas de 8 octets, champ 0 = nom, rempli au démarrage par `ETC + IndexTable[0x200 + i]`,
+  `0x8002c674`–`0x8002c6ac`). Correspondance **catégorie → objet** : `[0x53, 0x33, 0x53, 0x35, 0x53,
+  0x37, 0x53, 0x07]`, soit les entrées ETC `0x253` « Vaisseau de vie », `0x233` « Anneau d'Olga »,
+  `0x253`, `0x235` « Super bracelet », `0x253`, `0x237` « Super anneau », `0x253`, `0x207` « Bâton
+  magique ». La décompilation (`TextDecoder.cs:536`, `GetItemName(catégorie)`) prend la catégorie
+  pour un identifiant d'objet : c'est faux. Le port lit l'entrée ETC `0x200 + objet[catégorie]`, soit
+  le nœud `Etc_{0x200 + objet}`.
+- **`UpdatePlayerProgressState` (`0x8004754c`)** : identique à `TextDecoder.cs:1097-1183` (masque
+  `0xfffffe01`, ordre des tests, bits `0x100` à `0x2` et indices 7 à 0, seuil par `slt` signé et
+  **strict** : `falcon < seuil` → `& 0xfffff7ff`, sinon `| 0x800`), **sauf un écart** : le premier test
+  est le **bit de signe** de `GameFlags[0x2c]` (`bgez` en `0x800475a8`) ; la décompilation l'écrit
+  `GameFlags[0x2c] < 0` sur un `uint`, toujours faux, ce qui rend la catégorie 7 inatteignable. Le
+  port teste le bit 31. `GameFlags[0x2c]` et `[0x2d]` sont à `0x801EB3F4` et `0x801EB3F8`.
+- **`UpdateNumberOfFalcon` (`0x8004e738`)** : **identique** à `PlayerManager.cs:5187-5200`
+  (`Falcon += FalconTemp` sur 16 bits, `FalconTemp = 0`, plafond `0x32` si `Falcon ≥ 0x33`,
+  `GameFlags[0x2d] &= 0xfffffbff`) ; `Falcon` et `FalconTemp` sont à `+0x10` et `+0x0E` de
+  `g_playerStats` (`g_saveData + 0x544`). Le bit `0x400` n'est posé que par `IncreaseFalcon2`
+  (`0x8004e6ec`).
+- **`INT_ARRAY_80191908`** : 4 entiers dans la BSS, **0 au démarrage**, jamais remis à zéro, hors
+  sauvegarde ; écrits seulement par deux programmes de mini-jeu (`AI_FUN_80064294` : `[0]`, `[1]`,
+  `[2] = max([0] − [1], 0)` ; `AI_FUN_80064d90` : `[0]`), `[3]` jamais écrit ; seul lecteur `\V`,
+  **sans contrôle de borne** (`c − '0'`). Le corpus n'a que `\V0` à `\V2`.
 
 ## 6. Arrêts, budgets et retours arrière
 
