@@ -4,7 +4,8 @@
 deux banques de drapeaux, puis permet de sauvegarder et de recharger une partie comme l'original,
 sur un service de sauvegarde générique ajouté au moteur.
 
-**Statut** : proposé le 2026-09-27, **en attente d'approbation**. Position dans la file : **après
+**Statut** : proposé le 2026-09-27 ; **enveloppe et E16.0 approuvées le 2026-09-28**, E16.0 faite
+(§2) ; chaque tranche suivante se planifie et s'approuve à part. Position dans la file : **après
 E15** (D-E16-7) ; E15 est close et mergée dans `main` le 2026-09-28 (`2b0283b`, moteur `793d1ee8`).
 
 **Révision 2** : relecture de plan (REVISE, trois P2 corrigés), revue de sécurité (constats
@@ -100,7 +101,7 @@ Réponses de l'auteur sur les variables Yarn (2026-09-28, après le merge d'E15)
   restent lus par les fonctions d'E15.
 - **D-E16-16 — Noms** : `$flag_n` est le drapeau `n` de `GameFlags`, `$tmp_flag_n` le drapeau `n` de
   `TemporaryFlags`. `n` s'écrit en décimal, de 0 à 32767, sans le bit de banque `0x8000` : c'est le
-  même `n` que `<<flag n>>` pour la banque temporaire.
+  même `n` que `<<flag n>>` pour la banque temporaire. *Plage ramenée à 0..2047 par D-E16-25.*
 - **D-E16-17 — Lecture et écriture** : un drapeau est un booléen Yarn ; `true` pose le bit comme
   l'opcode `0x05`, `false` l'efface comme l'opcode `0x06`.
 - **D-E16-18 — Tout autre nom est refusé et journalisé**, variables internes de Yarn comprises, tout
@@ -137,6 +138,21 @@ Réponses de l'auteur aux questions d'E16.0 (2026-09-28, §2 et §3) :
   `Offset` de `SaveData.cs`, `0xC2` sur un octet et la valeur rendue par `UpdateMemoryCardProcess`.
   Ils s'ajoutent à `SaveSlotIndex` et au chemin « Réessayer » (D-E16-20). Le port de la DLL suit
   le binaire dès E16.c, sans attendre ces corrections.
+
+Réponse de l'auteur après la relecture qui a suivi E16.0 (2026-09-28) :
+
+- **D-E16-25 — `$flag_n` et `$tmp_flag_n` n'acceptent que `n` de 0 à 2047**, les ids des deux
+  banques de 64 mots de l'original (§2, Q1 et Q3). Un `n` plus grand est refusé comme tout autre nom
+  (D-E16-18). Avec l'ancienne plage de D-E16-16, un `$flag_n` au-delà du mot 63 aurait été posé en
+  mémoire mais jamais sauvegardé, puis perdu sans message au chargement. Les banques de la DLL gardent
+  leurs 1024 mots en mémoire.
+
+Decisions: see ADR-0011 (`docs/decisions/0011-yarn-flag-variables-cover-the-original-64-word-banks.md`),
+which supersedes the range of D-E16-16 in ADR-0010.
+
+Note sur D-E16-23 : c'est un **écart voulu** avec l'original, qui ajoute une unité par image affichée,
+transitions comprises (§2, Q3). Le port compte le temps réel, dans l'unité que l'affichage de
+l'original suppose.
 
 ### 0.2 Faits établis (2026-09-27, citations du code remises à jour le 2026-09-28)
 
@@ -427,8 +443,10 @@ par un agent neuf.
     `PlayerControlFlags`) est identique octet pour octet à un instantané pris avant ;
   - aux bornes du domaine, une restitution suivie d'un tick du directeur de la jauge, du compositeur
     de la jauge et des compositeurs de l'inventaire → aucune exception ;
-  - si E16.f est livrée : un `$flag_n` posé par Yarn fait l'aller-retour, un `$tmp_flag_n` non.
-    Sinon, E16.f ajoute ce test.
+  - si E16.f est livrée : `$flag_0` et `$flag_2047` posés par Yarn font l'aller-retour,
+    `$tmp_flag_0` et `$tmp_flag_2047` non (D-E16-25). Sinon, E16.f ajoute ce test ;
+  - temps de jeu (D-E16-23) : sur une horloge de test, une seconde de jeu ajoute 60 unités, et le
+    compteur s'arrête à `0x14996C4`.
 - **Arrêt** : un champ dont E16.0 n'a pas établi la source, l'unité ou le domaine n'est pas écrit dans
   le format ; question au §3. **Si E16.0 ne trouve aucune source des dimensions de carte lisible
   avant de charger le monde**, la promesse « état inchangé » ne couvre pas la tuile : arrêt, question
@@ -503,10 +521,10 @@ par un agent neuf.
 - **Contrat** :
   1. Un stockage de la DLL, `AlundraYarnVariableStorage`, implémente `Yarn.IVariableStorage` sur
      `AlundraGameState` et ne garde aucune donnée propre.
-  2. **Noms** (D-E16-16) :
+  2. **Noms** (D-E16-16, plage de D-E16-25) :
      - `$flag_n` est le drapeau d'id `n` de `GameFlags` ; `$tmp_flag_n` est le drapeau d'id
        `n | 0x8000`, dans `TemporaryFlags` ;
-     - `n` est un décimal de 0 à 32767, écrit sans zéro de tête, pour qu'un drapeau n'ait qu'un seul
+     - `n` est un décimal de 0 à 2047, écrit sans zéro de tête, pour qu'un drapeau n'ait qu'un seul
        nom.
   3. **Lecture** : la valeur est le booléen `(GetFlag(id) & (1 << (n & 0x1f))) != 0`, le test des
      opcodes `0x30` et `0x31` (`AlundraEventProgramRunner.cs:1227`).
@@ -547,17 +565,17 @@ par un agent neuf.
     - le même `n` dans les deux banques donne deux drapeaux distincts ;
   - **écriture** :
     - `<<set $flag_n to true>>` est vu par l'opcode `0x30` ; `false` n'efface que ce bit ;
-    - aux bornes `n` = 0, 31, 32 et 32767, dans les deux banques, l'état obtenu est identique à celui
+    - aux bornes `n` = 0, 31, 32 et 2047, dans les deux banques, l'état obtenu est identique à celui
       des opcodes `0x05` et `0x06` sur le même id ;
-  - **refus** : `$flag_32768`, `$flag_07`, `$foo`, `$tmp_flag_x` et un nombre rangé sous
-    `$flag_5` donnent une seule ligne de journal par nom, un état des deux banques identique à un
-    instantané, et aucune exception levée par le stockage ;
+  - **refus** : `$flag_2048`, `$tmp_flag_2048`, `$flag_32768`, `$flag_07`, `$foo`, `$tmp_flag_x` et
+    un nombre rangé sous `$flag_5` donnent une seule ligne de journal par nom, un état des deux banques
+    identique à un instantané, et aucune exception levée par le stockage ;
   - **`Clear()`** : banques identiques ;
   - **directeur** : le runner qu'il crée utilise ce stockage ;
   - **cycle de vie** : à l'entrée de carte, un `$tmp_flag_n` posé par Yarn disparaît et un
     `$flag_n` reste (`InstallForMapEntry`) ;
-  - **sauvegarde** : si E16.c est livrée, un `$flag_n` posé par Yarn fait l'aller-retour et un
-    `$tmp_flag_n` non. Sinon, E16.c ajoute ce test ;
+  - **sauvegarde** : si E16.c est livrée, `$flag_0` et `$flag_2047` posés par Yarn font
+    l'aller-retour, `$tmp_flag_0` et `$tmp_flag_2047` non. Sinon, E16.c ajoute ce test ;
   - **non-régression** : `Alundra.Tests` sans échec, oracle de l'intro inchangé (`0x11` à la
     frame 1704), les 485 dialogues exportés toujours joués.
 - **Arrêts** :
@@ -844,6 +862,7 @@ tests du convertisseur 400/400, `Alundra.Tests` 1361/1361.
 | ADR-0010 | révision 3 | `git revert` de son commit ; D-E16-6 et D-E16-14 à D-E16-18 restent dans ce plan. |
 | Code de la DLL et tests | E16.a, E16.c, E16.d, E16.e, E16.f | Branche du chantier abandonnée (`git switch main`) ; rien n'est fusionné sans l'auteur. |
 | Pointeur du sous-module moteur | E16.b | Revenir au pointeur de `main` du parent ; la branche moteur est gardée. |
+| Table `EventCodeDebugger.cs` de l'analyseur et pointeur du sous-module analyseur | E16.a | Revenir au pointeur de `main` du parent ; la branche de l'analyseur est gardée. Le convertisseur n'utilise pas cette table, donc l'export n'est pas touché. |
 | Fichiers de sauvegarde écrits par la recette | E16.d | Hors du dépôt, dans le dossier de l'utilisateur ; supprimés par l'auteur s'il le souhaite. |
 
 ### 5.3 Arrêts communs

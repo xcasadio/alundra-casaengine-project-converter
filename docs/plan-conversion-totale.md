@@ -884,9 +884,10 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
   La DLL saute aujourd'hui `0xBB` par taille (`Alundra/Scripts/EventOpcodeSizeTable.cs:218`).
 - **Correction de la décompilation C#** (décision de l'auteur du 2026-09-28, D-E16-20 de
   `docs/plan-e16-etat-partie.md`) :
-  - le champ `SaveSlotIndex` semble compter les essais : journalisé « Retry = »
-    (`EntityEventHandlers.cs:3527-3537`), +1 à chaque essai (`GameEngine.cs:1482-1485`). À confirmer
-    dans `ALUN_CD.EXE`, puis à renommer avec ses lecteurs ;
+  - le champ `SaveSlotIndex` compte les reprises après la mort, ce que E16.0 a confirmé dans
+    `ALUN_CD.EXE` (§2 du plan E16). Il est journalisé « Retry = » (`EntityEventHandlers.cs:3527-3537`)
+    et prend +1 à chaque essai (`GameEngine.cs:1482-1485`). Il reste à le renommer, avec ses
+    lecteurs ;
   - tout le chemin est à vérifier contre le binaire (`Script_187_0BB`, l'effet 10 en
     `GameEngine.cs:326-333`, `InitializeMapWarpPosition` en `:1480-1498`), et chaque écart à
     corriger ;
@@ -948,6 +949,6 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
 | E13.d inventaire principal (puis sous-inventaire et L1/R1) | ✅ close (principal validé en jeu le 2026-09-24 ; sous-inventaire, L1/R1 et suites SI7-SI12 validés le 2026-09-25, mergés par l'auteur dans `main`) | `docs/plan-e13d-inventaire.md` ; `docs/plan-e13d-sous-inventaire.md` : analyseur `8f403d5`, parent `45bb0e2`, `a3901af`, `dc3fe1a`, `5f12e53`, suites `4e411ef`…`192f497`, merge `3537807` |
 | E14 IA native | ⏳ | |
 | E15 le texte en Yarn | ✅ close (recette en jeu validée le 2026-09-28) | `docs/plan-e15-yarn.md` ; parent `chantier/e15-yarn`, moteur `chantier/yarn-extension-points` |
-| E16 état de partie (drapeaux, sauvegarde) | ⏳ plan détaillé proposé le 2026-09-27, révision 3 le 2026-09-28, en attente d'approbation | `docs/plan-e16-etat-partie.md` |
+| E16 état de partie (drapeaux, sauvegarde) | ⏳ enveloppe et E16.0 approuvées le 2026-09-28, E16.0 faite (mesures au §2) ; tranches suivantes à planifier une à une | `docs/plan-e16-etat-partie.md` |
 | E17 cinématiques en `.cutscene` | ⏳ ouverte le 2026-09-27, prérequis moteur | |
 | E18 mort et « Réessayer » (avec correction de la décompilation) | ⏳ ouverte le 2026-09-28, non planifiée | |
