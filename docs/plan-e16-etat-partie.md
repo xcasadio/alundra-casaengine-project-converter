@@ -349,7 +349,7 @@ par un agent neuf.
   commit de documentation, annulable par `git revert`.
 - **Commit** : `docs(e16): record the flag and save-data measurements`.
 
-### E16.a — Opcodes de drapeaux 🚧 (DLL, analyseur ; approuvée le 2026-09-28, mode ASK)
+### E16.a — Opcodes de drapeaux 🧪 (DLL, analyseur ; approuvée le 2026-09-28, mode ASK ; T1 à T6 faites et vérifiées CONFIRMED, reste la recette en jeu T7 proposée)
 
 - **But** : porter les opcodes de drapeaux qui apparaissent dans le corpus d'après E16.0.
 - **Contenu** :
@@ -606,7 +606,7 @@ sans échec avant chaque ✅) :
   que le parent enregistre pour le sous-module (`118c6c5`, égal à `master` au 2026-09-28 ; s'ils ont
   divergé, arrêt et question) ; build d'`AlundraEngine.csproj` à 0 erreur ; commit dans le sous-module, puis commit du
   pointeur dans ce dépôt. Rien n'est poussé.
-- ⏳ **T6 — Vérification finale** : `Alundra.Tests` et tests du convertisseur sans échec ; oracle de
+- ✅ **T6 — Vérification finale** (faite le 2026-09-28 : vérificateur neuf **CONFIRMED**, sans constat P0 à P2 ; `Alundra.Tests` 1429/1429, convertisseur 400/400, oracle de l'intro inchangé, analyseur compilé. Remarque P3 corrigée ici : `ImplementedOpcodes` omettait 23 opcodes portés par des tranches antérieures ; la liste égale désormais les `case` de `Dispatch`, et l'annexe régénérée `docs/intro-programs-389.txt` ne change que 17 étiquettes « [NOT IMPLEMENTED] » en « [implemented] ». Remarque P4 reportée : `0xAD` prend comme base la première entité trouvée, comme le binaire ; un écart n'apparaîtrait que si l'ordre de recherche de la DLL différait de celui de l'original et que la première recherche trouvait plusieurs entités). Contrat : `Alundra.Tests` et tests du convertisseur sans échec ; oracle de
   l'intro inchangé ; vérificateur neuf sur toute la tranche.
 - ⏳ **T7 — Recette en jeu** (auteur, proposée) : trois lieux qui exercent la tranche, si les systèmes
   qu'ils demandent par ailleurs le permettent (sinon, on consigne ce qui est atteignable) :
