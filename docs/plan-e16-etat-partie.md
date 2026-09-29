@@ -1531,8 +1531,11 @@ Défaut H2 : corrigé par défaut (règle « corriger les défauts de l'original
 deux bloquants corrigés : le propriétaire du OUI/NON du choix (L5 : `OpenChoice`) et l'ouverture et
 la fermeture du carrousel (J4, T3), avec l'attente de Carré en `0x3f5`. Remarques P3/P4 corrigées
 aussi : animation du héros, états sans objet nommés, chemin de NON, état `0x16`, propriété de la
-boîte par `OpenSerial`, source des emplacements, 61 ticks. Reste une relecture de clôture, puis
-l'exécution ; vérification par un `verifier` frais et un
+boîte par `OpenSerial`, source des emplacements, 61 ticks. Relecture de clôture (`dcdeb65`) :
+**REVISE**, un bloquant. Le choix seul du sélecteur n'était jamais refermé ; correction :
+`CloseStandaloneChoice` (L5, T3, T4), qui ferme sans toucher `MenuOpen`, avec Croix sans
+présentateur valant NON. C'est le deuxième REVISE : une seule relecture de clôture suit, et un
+nouveau REVISE met la tranche en pause. Ensuite, l'exécution ; vérification par un `verifier` frais et un
 contradicteur. Exploration du 2026-09-29 en lecture seule, chaque surface recontrôlée par un second
 agent (`scratchpad/e16def/e16e-*.md`).
 
@@ -1673,7 +1676,26 @@ agent (`scratchpad/e16def/e16e-*.md`).
     de l'écran ignore ses propres touches (Haut/Bas/Croix) ;
   - `TakeChoiceResult` : 1 (premier choix) = OUI, 0 = NON, comme `g_asyncOperationResult` 1 et 2 ;
   - pendant la question, la boîte des messages de l'écran montre `0x84`
-    (`:2337-2344`) ; la fermeture de J4 part à la réponse.
+    (`:2337-2344`) ; la fermeture de J4 part à la réponse ;
+  - **fermeture de la question** (relecture de clôture du 2026-09-29). Rien ne ferme aujourd'hui un
+    choix ouvert sans `Open` : après la réponse, `DialogueService.SelectChoice` laisse le service
+    ouvert (`DialogueService.cs:76-98`), et l'écran de dialogue ne se retire qu'à `Close`
+    (`AlundraDialoguePresenter.cs:136-158`). Or le `Close` privé du directeur efface `MessageBox` et
+    `MenuOpen` (`AlundraDialogueDirector.cs:276-285`, `:380-390`), alors que l'écran de sauvegarde
+    garde `MenuOpen` jusqu'à `0x63`. Il faut donc une nouvelle méthode,
+    `AlundraDialogueDirector.CloseStandaloneChoice()` :
+    - elle ne fait rien et rend faux si une boîte est ouverte (`IsOpen`), car ce n'est pas un
+      choix seul ;
+    - sinon, elle efface le choix en attente et le résultat non lu, se désabonne, et ferme le
+      présentateur pour retirer l'écran de dialogue ;
+    - elle **ne touche jamais `PlayerControlFlags`** et ne passe pas par le `Close` privé. Le retour
+      du présentateur (`NotifyPresenterClosed`) ne fait rien, puisque `IsOpen` est faux ;
+    - l'écran de sauvegarde l'appelle juste après que `TakeChoiceResult` a rendu la réponse, avant
+      la fermeture de J4, et sur tout arrêt pendant que le choix est en attente (fin de l'écran,
+      changement de monde de SE3) ;
+  - Croix sans présentateur (`!HasPresenter`) : aucun choix n'est ouvert, ce qui vaut NON (chemin
+    de NON, rien d'écrit), avec une ligne de journal. `OpenChoice` sans présentateur attendrait sans
+    fin (`AlundraDialogueDirector.cs:393-401`).
 
   Les emplacements passent par `AlundraSaveGameDirector.SaveSlots`
   (`AlundraSaveGameDirector.cs:113`), le même point d'injection qu'E16.d.
@@ -1734,6 +1756,12 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
     choisit) : OUI → écriture dans `slot{n}` en binaire, avec l'objet capturé et ses métadonnées,
     puis « Histoire enregistrée. », qui **attend Carré** (aucun passage seul en N ticks) ; NON →
     rien d'écrit, chemin de NON de L2 ;
+  - après la réponse (OUI, puis NON) : `CloseStandaloneChoice` a fermé le présentateur,
+    `IsAwaitingChoice` est faux, et `MenuOpen` reste posé jusqu'à `0x63` ; de même quand le monde
+    change pendant que le choix attend (SE3) ; Croix sans présentateur → chemin de NON, rien
+    d'écrit ;
+  - `CloseStandaloneChoice` ne fait rien quand une boîte est ouverte (le choix du livre), et ne
+    touche jamais `PlayerControlFlags` ;
   - chaque état de sauvegarde autre que `Saved`, et une exception du service simulé derrière
     l'adaptateur → message d'échec `0x15`, aucune exception ;
   - `IsActive` et `MenuOpen` sur tout le parcours ; l'inventaire ne s'ouvre pas pendant l'écran.
@@ -1755,7 +1783,9 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
     le directeur (positions, teintes, textes) ; un `MGDesktop` de test charge l'écran sans erreur
     (règle de l'auteur : jamais un `UIRoot`) ; chaque `MGTextBlock` de `SaveScreen.xaml` a
     `AllowsInlineFormatting` à faux (SE10) ; pendant OUI/NON, l'écran de dialogue (couche `Modal`)
-    est poussé au-dessus de l'écran de sauvegarde (couche `Menu`) sans le retirer.
+    est poussé au-dessus de l'écran de sauvegarde (couche `Menu`) sans le retirer ; avec un
+    `IUIViewRuntime` qui enregistre, après la réponse, l'écran de dialogue est retiré et l'écran de
+    sauvegarde reste poussé jusqu'à sa fin.
   - Ensuite, **export complet en place**, pour cataloguer le nouvel écran. Il ne doit changer que
     le catalogue et le rapport (preuve par diff des manifestes) ; jamais pendant que `Alundra.Tests`
     tourne.
