@@ -65,6 +65,10 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   le moteur.
 - **D-E19-7** — **Effets visuels après le bateau** : les opcodes `0x90`-`0x94` et `0xA0`-`0xA3`
   forment une tranche de la phase 2 (E19.g).
+- **D-E19-8 à D-E19-11** (2026-09-29, après la recette d'E19.a) : un pas bloqué sur le champ de
+  cellules avance jusqu'au contact, dans le moteur ; le glissement le long des murs vient avec E19.h ;
+  `ForceAdjusted` garde la règle de la DLL ; dans le moteur, les drapeaux « curtailed » signifient
+  « raccourci ». Détail au §1.2b (E19.a2), ADR-0016.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -286,6 +290,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | Tranche | Contenu | Arcs de test (§1.3) | Recette en jeu |
 |---|---|---|---|
 | **E19.a** | Entité de contexte (`0x42`, `0x43`, et tous les opcodes sur l'entité logique), `0x59`, garde de boucle (D-E19-3), support des arcs | A0, A0b, A1 | Le capitaine sort par l'escalier et réapparaît en pièce B ; sommeil, puis 476 |
+| E19.a2 | Moteur : sur le champ de cellules, un pas bloqué avance jusqu'au contact (D-E19-8) ; épingles et traces de référence du héros re-mesurées ; la cabine testée avec un vrai contrôleur | cabine seule, A1c | La cabine : Alundra s'endort, puis la 476 se charge |
 | E19.b | Carte 476 : `0xC4` sans nom (D-E19-5), `0x8A` (bloc caméra), `0x4C` gardé pour la machine à écrire | A2, A4 | La vision de Lars et Melzas jusqu'à 478, puis jusqu'à 392 |
 | E19.c | Carte 478 et marches : `0x0B` avec détour (D-E19-6), `0x1C`/`0x1D` (compteur du binaire, Chain et Hold), `0x5E`, `0x08`, `0x0C`, `0x3A`, `0x89`, `0x73`/`0x74` | A3, A7 | La vision de 478 va au bout ; la plage 416 mène à Inoa |
 | E19.d | Fin de chaîne : `0x24` sur l'entité logique, `0x40`/`0x41` sur l'entité logique, reste de 392, 391 et 163 | A5, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
@@ -465,6 +470,39 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
 5. Un verifier frais rend CONFIRMED sur 1 à 4.
 6. La recette T7 de l'auteur. Tant qu'elle n'est pas faite, la tranche reste 🧪.
 
+#### Recette en jeu T7 (auteur, 2026-09-29)
+
+- **Points 1 à 3 validés** : le capitaine monte l'escalier et disparaît dans le trou, la main revient, puis
+  on le retrouve en pièce B.
+- **O-E19-1 réglé** : le journal de la partie montre le passage du trou (portail 5, même carte), qui
+  charge la pièce B.
+- **Point 4 bloqué** : dans la cabine, Alundra reste à côté de son lit, et la 476 ne se charge pas.
+
+Diagnostic, reproduit en rejouant la vraie cabine avec le vrai contrôleur de collision du héros (test
+temporaire, non commité) :
+
+- **Les rails.** Les quinze `0x54` de B2 posent des « rails » (`W |= 1`) qui bloquent le héros. Il porte
+  ClassB, donc son masque vaut `0x41`, comme dans `GetCollisionFlagsWithPlayer` (`0x80037488`).
+  Ensuite, B2 fait marcher le héros de 80, 48, 80 puis 32 px, avec des attentes `0x1E`.
+- **La seconde marche nord** finit contre la butée `(42,12)` :
+  - l'original avance le pas bloqué jusqu'au contact en coupant la force en deux
+    (`ComputeXYPosition`, `0x80037730`), et la marche mesure 80 px ;
+  - le contrôleur du moteur rejette le pas bloqué en entier (champ de cellules, « no partial
+    displacement »). Alundra s'arrête à y = 216,34, soit 78,8 px, et `0x1E @658` attend indéfiniment.
+- **Preuve.** En posant Alundra au point de contact de l'original (y = 215,0), toute la fin de B2 se
+  joue : il entre dans le lit, s'endort, puis le `0x53 @688` part vers 476.
+- **Ce que les tests d'E19.a ne pouvaient pas voir** : leur montage fait marcher des entités nues, sans
+  collision.
+
+Décisions de l'auteur (2026-09-29) :
+- **D-E19-8** — le défaut se corrige dans le moteur. Sur le champ de cellules, un pas bloqué avance
+  jusqu'au contact, sans marge sur la grille, comme les contrôleurs modernes et comme l'original. Nouvelle
+  tranche **E19.a2**.
+- **D-E19-9** — le glissement le long d'un mur quand un seul coin touche (`didAdjustForObstacle`) vient
+  plus tard, dans E19.h.
+
+E19.a reste 🧪 jusqu'à ce que la recette T7 repasse après E19.a2.
+
 #### Vérification d'E19.a (2026-09-29)
 
 Commits `cab5e4c` (T1), `ef8e509` (T2), `08f5a40` (T3), `55af880` (T4) et `db59cc9` (T5).
@@ -515,6 +553,125 @@ Commits `cab5e4c` (T1), `ef8e509` (T2), `08f5a40` (T3), `55af880` (T4) et `db59c
   déclenchement suivant. C'est journalisé, et préférable
   à un jeu figé.
 
+### 1.2b E19.a2 — Un pas bloqué avance jusqu'au contact ⏳ (proposée le 2026-09-29)
+
+**But.** Dans la cabine de la 390, Alundra finit ses quatre marches, s'endort, et la 476 se charge (point 4
+de la recette T7). Plus généralement : sur le champ de cellules, un pas bloqué avance jusqu'au contact,
+comme dans l'original, au lieu d'être rejeté en entier.
+
+**Décisions de l'auteur (2026-09-29)**, consignées dans l'ADR-0016 :
+- **D-E19-8** — correction dans le moteur. Sur le champ de cellules, un pas bloqué avance jusqu'au contact,
+  sans marge sur la grille.
+- **D-E19-9** — le glissement le long d'un mur quand un seul coin touche vient dans E19.h.
+- **D-E19-10** — la DLL garde sa règle pour `ForceAdjusted` : le pas a manqué plus de 0,01 px. Le drapeau
+  se lève donc au tick du contact, un tick avant l'original, qui ne le lève qu'au tick sans aucune avance
+  (`0x80037d54`, sauté par la garde de `0x800379a4`). L'écart est consigné ; E19.h aligne le drapeau sur
+  le binaire, avec le glissement.
+- **D-E19-11** — dans le moteur, `H1Curtailed`/`H2Curtailed` signifient désormais « pas raccourci sur cet
+  axe », qu'il reste nul ou non.
+
+**Faits établis** (découverte en lecture seule du 2026-09-29, trois volets contre-vérifiés ; émulations en
+flottant 32 bits dans le scratchpad `e19a2/`) :
+
+- **L'original** (`ComputeXYPosition`, `0x80037730`, relu dans le binaire) coupe en deux la force entière
+  (dx et dy ensemble, décalage arithmétique, -1 ramené à 0). Il réessaie depuis la dernière position
+  acceptée et cumule les demi-pas acceptés. Dans la cabine, il finit exactement en y = 215,0 **[binaire]**.
+- **Le moteur** rejette l'axe bloqué en entier et n'applique aucune marge sur le champ
+  (`CharacterControllerComponent.cs:1102-1194`). Le balayage rigide, lui, va déjà au contact.
+- **Les marches de la cabine sont bornées par des murs** :
+  - la première marche nord finit à 80 px (y ≤ 296), au plus tard contre la cellule (44,17), de hauteur 5,
+    dont le contact est y = 295,0. La marche vers l'ouest longe la même rangée. La seconde marche nord part
+    donc de y dans [295,0 ; 296,0] ;
+  - elle finit contre le rail (42,12), dont le contact est y = 215,0 ;
+  - avec un contact exact, elle mesure donc au moins 80 px, quelle que soit la cadence d'image.
+- **La précision compte.** Une marge de 0,16 px suffit à reproduire le blocage (hero `SkinWidth` = 0,5).
+  Le contact doit donc être exact : bisection sur la position de la racine, 24 itérations. Une bisection
+  sur le centre peut finir 1 à 2 ULP dans le mur.
+- **Portée.** Seule Alundra installe un champ. Le héros et chaque PNJ à contrôleur s'arrêtent désormais
+  jusqu'à un pas plus près des murs (1,25 à 2,44 px), ce qui est plus proche de l'original.
+- **Ce qui bouge côté DLL** :
+  - `AlundraCharacterControllerAdoptionTests.cs` : `Mask_ClassBMaskOnEqualHeightCells_BlocksTheMove`
+    (`:344`, attendu (565,632,80)) et `Cliff_HeightAboveStepHeight_BlocksTheMoveRegardlessOfMask`
+    (`:392`, attendu (397,264,0)) ;
+  - l'épingle de `HeroTraceHarnessTests.cs:748` (36956160 → 36831232 ; la première image au mur reste 98) ;
+  - les quatre traces `docs/hero-trace-389-*.txt`, colonne `posX` à partir de l'image 98 (spawn) et 39
+    (highground) ;
+  - les commentaires `AlundraEntityScriptProxy.cs:1762-1770`, `:1881-1887` et la doc de `ForceAdjusted`
+    (`:175-190`).
+- **Ce qui ne bouge pas** : les tests de PNJ contre un mur (ils n'épinglent pas de position), les arcs
+  (entités nues), l'intro (sa propre physique).
+- **Pourquoi E19.a ne l'a pas vu** : ses arcs font marcher un héros nu, sans contrôleur. Le test du parcours
+  doit donc aussi exister avec un vrai contrôleur.
+
+**Tâches.**
+
+- **T1 — Moteur** : plan `CasaEngineMonogame/ai-agent/tasks/field-move-to-contact-tasks.md` (T0.1 branche,
+  plan et ADR-0045 du moteur ; T1.1 bisection et tests ; T1.2 docs), sur la branche moteur
+  `chantier/field-move-to-contact`.
+- **T2 — Pointeur et épingles du parent**, en un seul commit compilable :
+  - le pointeur du sous-module suit la branche moteur ;
+  - relancer `HeroTraceHarnessTests`. Il réécrit les quatre traces : vérifier que le `git diff` ne touche
+    que la colonne `posX` à partir des images 98 et 39, puis mettre l'épingle `:748` à la valeur mesurée
+    (attendu 36831232) ;
+  - ajouter une épingle chiffrée pour le premier contact de la trace highground (attendu 27394048) ;
+  - mettre les deux tests d'adoption à (565,632,80) et (397,264,0), et les renommer (« StopsAtContact ») ;
+  - mettre à jour les commentaires de `AlundraEntityScriptProxy.cs` cités plus haut, dont l'écart
+    D-E19-10 dans la doc de `ForceAdjusted` ;
+  - toute autre épingle qui bouge est un arrêt : elle se signale, elle ne s'adapte pas en silence.
+- **T3 — La cabine avec un vrai contrôleur, en deux niveaux de test** :
+  - **cabine seule** : un test durable sur les vraies cellules de la 390, avec les rails posés par le
+    tableau aliasé, l'en-tête et les réglages réels du héros, le masque `0x41` vérifié, et les quatre
+    marches. Il vérifie `PosY == 215 << 16` à la fin de la troisième marche et l'achèvement de la
+    quatrième, à dt 0,02 et 1/60. Les aides dupliquées (`LoadHeroControllerSettings`, `LoadHeroHeader`)
+    rejoignent `HeroWorldFixture` ;
+  - **arc A1c** : `ArcRun` gagne un mode « vrai contrôleur » :
+    - un monde physique avec la politique d'exécution du jeu ;
+    - un héros muni d'un `CharacterControllerComponent` réglé comme l'export et ajouté au monde ;
+    - l'en-tête du héros, puis `ResyncControllerFromFlags`, avec le masque vérifié ;
+    - `PushLogicalPositionToRoot` après le placement ;
+    - chaque image = `world.Update`, puis `Proxy.Update`.
+
+    A1c part de (44,23,4) avec `G866`, `G869`, `G870` et `G871`, ferme le dialogue de B3 et exécute
+    `0x53 @688`, en moins de 900 images à dt 0,02. Sur l'ancien pointeur moteur, il doit échouer dans sa
+    limite en nommant `0x1E @658` (constat consigné) ;
+  - le P3 reporté du constructeur d'`ArcRun` (état global sali si une étape échoue) se corrige ici, parce
+    que le mode « vrai contrôleur » rend un échec dans le constructeur plus probable ;
+  - les deux diagnostics temporaires `Alundra.Tests/ZzDiagE19Cabin*.cs`, jamais commités, sont supprimés.
+- **T4 — Docs du parent** :
+  - l'ADR-0016 (déjà écrite) ;
+  - une ligne « Mise à jour 2026-09-29 » dans `docs/plan-e3-collisions.md` (C5),
+    `docs/plan-moteur-character-motion.md` (sens des drapeaux M2) et `docs/plan-e4-deplacement-scripte.md`
+    (D5), sans réécrire ces plans ;
+  - ce plan et la ligne E19 du plan maître.
+- **T5 — Recette en jeu (auteur)** : rejouer T7 d'E19.a. Le capitaine sort, on le retrouve en pièce B,
+  Alundra s'endort dans la cabine, et la 476 se charge, puis s'arrête au premier `0xC4`, ce qui est attendu
+  jusqu'à E19.b.
+
+**Acceptation d'E19.a2.**
+1. Moteur : T1.1 et T1.2 faites. Le test de la cabine rend y == 215,0 exactement. La suite du moteur
+   passe à 0 échec.
+2. Parent : les deux niveaux de test de T3 passent. A1c échouait sur l'ancien pointeur, nommant
+   `0x1E @658`.
+3. Parent : `Alundra.Tests` et les tests du convertisseur passent à 0 échec. Les seules épingles qui
+   bougent sont celles de T2 ; les quatre traces ne changent que dans la colonne `posX`, aux images
+   annoncées.
+4. Un verifier frais rend CONFIRMED sur 1 à 3.
+5. La recette T5 de l'auteur. Tant qu'elle n'est pas faite, E19.a et E19.a2 restent 🧪.
+
+**Risques.**
+- **Changements ailleurs que dans la cabine.** Le héros et les PNJ s'arrêtent désormais plus près des murs.
+  Les portails et les zones testés par case peuvent se déclencher un pas plus tôt, ce qui est plus proche
+  de l'original.
+- **Escaliers.** Sur un escalier, l'avance jusqu'à la limite de `StepHeight` peut changer l'allure. La
+  trace highground le montrera (T2).
+- **Pas de glissement le long des murs** (D-E19-9). Une marche en diagonale contre un coin reste différente
+  de l'original jusqu'à E19.h.
+- **Marge de la cabine.** Elle ne tient que si le contact est exact. Le test de la cabine l'épingle
+  (y == 215,0), pas seulement « au moins 80 px ».
+
+**Revues** : plan-verifier sur cette section et sur le plan moteur, avant approbation ; verifier frais
+après exécution. Budgets et arrêts : ceux du §5.
+
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
 Chaque arc part d'une carte chargée seule, avec des drapeaux posés et le héros placé. Les valeurs
@@ -553,7 +710,7 @@ Réservé aux mesures faites en exécutant les tranches.
 
 | Réf | Sujet | Tranche |
 |---|---|---|
-| O-E19-1 | Les portails trou et escalier de la 390 (portails 4 et 5, même carte, effet 0) n'ont jamais été essayés sur les vraies cellules : `plan-transitions-carte.md:97` les déclarait hors périmètre. Si la recette d'E19.a montre que le héros ne suit pas le capitaine par là, faut-il corriger dans E19 (le passage est sur la chaîne) ou dans un chantier de transitions ? | E19.a (recette) |
+| O-E19-1 | ~~Portails trou et escalier de la 390~~ — **réglé par la recette du 2026-09-29** : le journal montre le passage par le portail 5, qui charge la pièce B. Question d'origine : si la recette d'E19.a montre que le héros ne suit pas le capitaine par là, faut-il corriger dans E19 ou dans un chantier de transitions ? | E19.a (recette) |
 | O-E19-2 | Nouveaux écarts de la décompilation relevés dans le binaire : `0x5F` (entité et taille), `0x66` (sens de la copie), compteur de `0x1C`, `y` de la boîte de nom, portrait de `Script_196_0C4`, test de zone de `GetMapEffectRecord`, `AddOneItemIfUnlocked`, `InitializeEventData`. Le portage suit le binaire. Faut-il aussi corriger la décompilation dans l'analyseur, comme pour la taille de `0x78` en E16.a ? | E19.m |
 | O-E19-3 | Déplacement vertical des entités nues dans le support d'arcs (A3, A6) : dupliquer la passe du harnais de l'intro, l'extraire (le fichier de trace épinglé serait touché), ou ouvrir en production un point d'entrée du chargeur de préfabs pour que le montage ait de vrais contrôleurs ? | E19.c |
 | O-E19-4 | Le gestionnaire natif du créneau E (`0x8007ED10`, destruction après `Deactivated`, 417 enregistrements sur 85 cartes) : E14, ou une tranche d'E19 ? Sur la chaîne, il ne touche que l'oiseau de la 389 et des PNJ d'Inoa. | E14 |

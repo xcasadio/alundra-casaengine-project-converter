@@ -29,3 +29,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0013 | A save is loaded through the warp departure path and applied at the arrival map's entry; the recipe keys exist only in Debug builds | Accepted | 2026-09-28 |
 | ADR-0014 | The save book reproduces the original's memory-card save screens over four file slots | Accepted | 2026-09-29 |
 | ADR-0015 | The event interpreter ports the missing opcodes from the binary, with a production loop guard and the E4.d detour for scripted walks | Accepted | 2026-09-29 |
+| ADR-0016 | A blocked step on the cell field advances to contact, and ForceAdjusted keeps its shortfall rule | Accepted | 2026-09-29 |
