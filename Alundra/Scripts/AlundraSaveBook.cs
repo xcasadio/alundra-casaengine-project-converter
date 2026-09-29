@@ -112,7 +112,11 @@ public sealed class AlundraSaveBook
     /// L4/L5: the save screen, as the book sees it - the session's <see cref="AlundraSaveScreenDirector"/> (E16.e T3).
     /// Null makes state 5 abandon (nothing can be shown), logged. Tests pose a fake.
     /// </summary>
-    internal IAlundraSaveBookScreen? Screen { get; set; } = AlundraSaveScreenDirector.Instance;
+    internal IAlundraSaveBookScreen? Screen { get; set; } = ProductionScreen;
+
+    /// <summary>E16.e T5: the production screen, one source for the default and for <see cref="ResetForTests"/> - so
+    /// the end-to-end test, which never replaces it, pins the production wiring.</summary>
+    private static IAlundraSaveBookScreen ProductionScreen => AlundraSaveScreenDirector.Instance;
 
     /// <summary>L4/SE1: <see cref="AlundraDialogueDirector.OpenSerial"/> right after the book's own
     /// <see cref="AlundraDialogueDirector.Open"/>, or null when the book owns no box.</summary>
@@ -425,6 +429,6 @@ public sealed class AlundraSaveBook
     internal void ResetForTests()
     {
         ForgetFlow();
-        Screen = AlundraSaveScreenDirector.Instance;
+        Screen = ProductionScreen;
     }
 }

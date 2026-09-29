@@ -1923,11 +1923,22 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
     le catalogue et le rapport (preuve par diff des manifestes) ; jamais pendant que `Alundra.Tests`
     tourne.
   - Un manque de MGUI ou du moteur est consigné dans le rapport dédié, et la tâche s'arrête.
-- ⏳ **T5 — Bout en bout** : sur la vraie carte 17 (un des 65 livres), interaction avec le livre (Carré si son drapeau
+- ✅ **T5 — Bout en bout** : sur la vraie carte 17 (un des 65 livres), interaction avec le livre (Carré si son drapeau
   `InteractRequiresButton` l'exige, sinon au contact), message,
   OUI, écran, choix de `slot2`, OUI → `Save` reçoit `slot2` en binaire. Puis le libellé de `slot2`
   recalculé, sur un service simulé qui rend ce qu'il a reçu, montre le chapitre et le résumé de la
   partie.
+  *Fait le 2026-09-29 : `AlundraSaveBookEndToEndTests`, sur l'installation réelle de la carte 17
+  (`InitializeWithWorld`), les images réelles (`Update` de chaque entité, héros compris, puis du monde),
+  un présentateur de dialogue réel. Le livre demande Carré (`InteractRequiresButton`) ; OUI, écran, Bas,
+  Croix, OUI → `slot2`, binaire, carte 17 et tuile du héros ; Carré, livre au repos, drapeaux à 0 ; le
+  libellé de `slot2` montre « Wendell Succombe » et le résumé de la partie. Constat : le livre de la carte
+  17 n'apparaît pas au chargement (son `SpriteDirection` n'a pas le bit `0x40`) ; c'est le programme de
+  carte B[1] qui le pose (opcode `0x8B` en `0xFA`, `SpawnEntityNextToEntity(0)`, derrière des drapeaux
+  d'histoire) : le test le fait apparaître par le même chemin de production, `SpawnEntityByRecordId`.
+  Harnais sans jeu réel : l'en-tête de sprite du héros est appliqué depuis le catalogue exporté, et
+  l'animation d'entrée de carte (`0x36`) est terminée à la main (`Idle`). `AlundraSaveBook.Screen` a une
+  seule source de production, que le test fige (mutation tuée). `Alundra.Tests` 1882/1882.*
 - ⏳ **T6 — Documentation et ADR** (session principale) : ADR-0014 (écran de sauvegarde du livre :
   états conservés, adaptés et sans objet, emplacements, libellés recalculés, correction de H2) ;
   `docs/formats/save-game.md` ; plan maître.
