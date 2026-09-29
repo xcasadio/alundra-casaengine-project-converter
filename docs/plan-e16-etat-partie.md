@@ -1527,7 +1527,11 @@ Défaut H2 : corrigé par défaut (règle « corriger les défauts de l'original
 #### Plan détaillé d'E16.e (2026-09-29)
 
 **Statut** : proposé en mode AUTO (« fait tout E16 de façon autonome ») ; revue de sécurité faite
-(tableau en fin de section, constats intégrés), puis relecture de plan jusqu'à READY, avant
+(tableau en fin de section, constats intégrés). Première relecture de plan (`9ecf73d`) : **REVISE**,
+deux bloquants corrigés : le propriétaire du OUI/NON du choix (L5 : `OpenChoice`) et l'ouverture et
+la fermeture du carrousel (J4, T3), avec l'attente de Carré en `0x3f5`. Remarques P3/P4 corrigées
+aussi : animation du héros, états sans objet nommés, chemin de NON, état `0x16`, propriété de la
+boîte par `OpenSerial`, source des emplacements, 61 ticks. Reste une relecture de clôture, puis
 l'exécution ; vérification par un `verifier` frais et un
 contradicteur. Exploration du 2026-09-29 en lecture seule, chaque surface recontrôlée par un second
 agent (`scratchpad/e16def/e16e-*.md`).
@@ -1539,7 +1543,7 @@ agent (`scratchpad/e16def/e16e-*.md`).
 | J1 | Seul `UpdateSavedData` (état 5 du livre) arme le flux de carte mémoire : `InitializeSaveDataCopy(g_saveData, 0x758, 1)` pose `g_globalTransitionState = 0x2710` et `g_postProcessingState = 1` ; `UpdateMemoryCardProcess` part alors dans `StartMemoryCardProcess`. La voie `g_postProcessingState == 3` (`UpdateSaveGameTransition`, avec les chaînes japonaises de test) n'est jamais armée. | désassemblage `0x8005EC44`, `0x8005EC98` ; `MemoryCardManager.cs:99-132`, `:580-586` ; `GameEngine.cs:2649-2680` |
 | J2 | Le flux de sauvegarde de `StartMemoryCardProcess` (`0x8005F458`, une cinquantaine d'états) se classe en trois familles, tableau complet dans `scratchpad/e16def/e16e-flow.md` : (a) les états visibles du joueur, conservés par L2 ; (b) les états qui ne servent que la carte PS1 : examen des ports, formatage, place libre et suppression d'une partie quand la carte est pleine, réservation d'un bloc, icône et somme de contrôle, carte absente ou changée ; (c) la chaîne de fin commune. L'examen des ports est asymétrique dans le binaire lui-même : une carte trouvée au seul port 2 mène à « Insère une Carte Mémoire. » sans jamais sauvegarder. | `MemoryCardManager.cs:592-1737` ; désassemblage `0x8005F7F4`–`0x8005F8AC` |
 | J3 | L'écran de choix (état `0x0C`) remplit quatre entrées : pour une partie existante, ligne 1 = résumé (`GameStateDescription`), ligne 2 = chapitre (`CurrentFlagName`) ; pour une entrée vide, `"{n}."` et une ligne vide. Titre : ETC `0x83`/`0x84`. Le sélecteur (`DisplayMemoryCardMenu`, rendu de la transition 10) lit Haut/Bas (au rythme de répétition) et Croix : Croix ouvre OUI/NON (ETC `0x4A`/`0x4B`) ; OUI retient l'entrée, NON annule tout le choix (pas de retour au choix). | `MemoryCardManager.cs:1229-1269`, `:2128-2480` |
-| J4 | Le sélecteur est un **carrousel** de quatre boîtes (288 × 56, même dessin que la boîte de description de l'inventaire, déjà exportée) : les quatre enregistrements tournent sur les hauteurs `-1, 0, 64, 128, 240` (`SHORT_ARRAY_800C436C`), glissent par `UpdateUiBoxesPosition` (déjà porté trois fois dans la DLL) et changent de teinte RVB sur 15 images (`InitializeUIMemoryFileBox`, cible `0x80` pour l'entrée du milieu). Le texte : deux lignes par boîte, à `(X + 16, Y + 8)` et `(X + 16, Y + 32)`, en font3. La boîte des messages est `g_uiBoxesInventoryDescriptionBackground` (16, 168). L'icône de carte mémoire n'est jamais dessinée à l'écran : elle ne va que dans l'en-tête du fichier PS1. | `MemoryCardManager.cs:2128-2480`, `:2599-2699`, `:1758-1813` ; `StaticVariables.cs:11195-11203`, `:11329-11386`, `:12406` ; `MGImage.cs:220-230` (`TextureColor`) |
+| J4 | Le sélecteur est un **carrousel** de quatre boîtes (288 × 56, même dessin que la boîte de description de l'inventaire, déjà exportée) : les quatre enregistrements tournent sur les hauteurs `-1, 0, 64, 128, 240` (`SHORT_ARRAY_800C436C`), glissent par `UpdateUiBoxesPosition` (déjà porté trois fois dans la DLL) et changent de teinte RVB sur 15 images (`InitializeUIMemoryFileBox`, cible `0x80` pour l'entrée du milieu). Le texte : deux lignes par boîte, à `(X + 16, Y + 8)` et `(X + 16, Y + 32)`, en font3. La boîte des messages est `g_uiBoxesInventoryDescriptionBackground` (16, 168). L'icône de carte mémoire n'est jamais dessinée à l'écran : elle ne va que dans l'en-tête du fichier PS1. **Ouverture** (`InitializeMemoryCardMenu`, `0x800583EC`, `MemoryCardManager.cs:1823-2060`) : l'enregistrement i est posé à la hauteur `SHORT_ARRAY_800C436C[i + 1]` (0, 64, 128, 240) et marqué vide ; les textes glissent depuis y = 240 ; teintes de 0 vers `0x40`, `0x80`, `0x40`, `0x40` en 15 images ; l'anneau part de l'indice 1, remplit deux entrées (l'entrée 0 dans l'enregistrement 1, au milieu, la plus claire ; l'entrée 1 dans l'enregistrement 2, en dessous), sélection 0 ; la boîte des messages affiche le texte `0x84` et glisse depuis y = 240. **Fermeture** après OUI/NON (`:2349-2478`) : les trois enregistrements qui suivent l'indice d'anneau montent à Y = -1, leurs teintes retombent de `0x40`/`0x80`/`0x40` à 0 en 15 images, la boîte des messages redescend vers y = 240 ; le résultat n'est rendu qu'à la fin de ce glissement (NON → -2, OUI → l'indice choisi). Les boucles de défilement et de fermeture sont marquées `PARTIAL` dans la décompilation (`:2158-2159`, `:2244`, `:2358`) : la rotation exacte des enregistrements se lit dans le désassemblage de `DisplayMemoryCardMenu` (`0x80058F24`). | `MemoryCardManager.cs:1823-2060`, `:2128-2480`, `:2599-2699`, `:1758-1813` ; `StaticVariables.cs:11195-11203`, `:11329-11386`, `:12406` ; `MGImage.cs:220-230` (`TextureColor`) |
 | J5 | Les 8 textes absents de l'export sont vides dans `ETC_RES.R` lui-même (vérifié octet par octet dans le fichier d'origine) : 6 secondes lignes vides et une paire vide (`0x9F`/`0xA0`). Les noms des 42 chapitres sont les textes ETC 0 à 41 (`Etc_0000` « Un Nouveau Départ » … `Etc_0041`). | `EtcIndexTable.csv` ; `data-extracted/data/ETC_RES.R.json` ; `alundra-project/Dialogues/Etc.yarn` |
 | J6 | La DLL : le livre atteint son créneau F (interaction) par `PickEventTrigger`, puis `RunPickedEvent` appelle `RunSpriteEvent`, un « no-op » compté pour toute IA native. Le code F 1 de l'original (`Script_FInteract_FUN_8007fc64`) verrouille le héros (`ControlLocked`) : le porter pour toute entité de code F 1 verrouillerait le héros devant des entités dont l'IA de tick n'est pas portée. | `AlundraEntityScriptProxy.cs:1140-1205` ; `AlundraEventProgramRunner.cs:268-279` ; `SpriteEventHandlers.cs:233-234`, `:270-277` |
 | J7 | Message ETC et oui/non dans la DLL : `AlundraDialogueDirector.Open(asset, nœud, 1)` sur l'asset `dialogue_etc` (nœuds `Etc_{index:D4}` en décimal) ; `SetCloseMask` est l'opcode `0x50`, que l'original appelle `SetEtcAnimationMode` ; `OpenChoice`/`TakeChoiceResult` pour OUI/NON. `AlundraEtcStringTable` charge `dialogue_etc` mais n'expose ni l'asset ni un texte ETC quelconque. | `AlundraDialogueDirector.cs:98-103`, `:213-343`, `:393-428` ; `AlundraEtcStringTable.cs:51-181` |
@@ -1569,15 +1573,26 @@ agent (`scratchpad/e16def/e16e-*.md`).
     - `0x10` : écriture ;
     - `0x3fe` : message `0xB1` « Histoire enregistrée. » ;
     - `0x3fd`/`0x15` : message `0xAF`/`0xB0` d'échec ;
-    - la chaîne de fin `0x3f5` (Carré ou automatique), `0x0D`, `0x3f6`, `0x0E` (remise de la jauge
-      avant de la cacher), `0x44B`, `0x63` ;
+    - la chaîne de fin `0x3f5`, `0x0D`, `0x3f6`, `0x0E` (remise de la jauge avant de la cacher),
+      `0x44B`, `0x63`. `0x3f5` attend **Carré** ; il ne passe seul que si le message était vide
+      (`g_openMemoryCardState == 1000`, posé par `TryOpenMemoryCardMenu` quand les deux lignes sont
+      vides, `MemoryCardManager.cs:505-530`), ce qui n'arrive dans aucun état conservé : la réussite
+      et l'échec attendent Carré ;
+    - chemin de NON : `0x3f8` → `0x10` → `0x3f6` → `0x0E` → `0x44B` → `0x63`, sans `0x3f5` ni `0x0D`
+      (`:1282-1289`, `:1318-1324`) ;
+    - la réussite passe par `0x3fe` puis `0x16`, qui affiche `0xB1` (`:1393-1413`, `:1714-1723`) ;
   - adapté : `0x10` écrit l'objet capturé à l'état 5 du livre dans l'emplacement `slot{n}` (n = 1 à
     4), en binaire, par `IAlundraSaveSlots.Save` avec `BuildMetadata`. Tout état autre que `Saved`
     mène à l'échec `0x15` ;
   - sans objet, car le port écrit des fichiers : examen des ports, formatage, place libre,
     suppression quand la carte est pleine, réservation d'un bloc, icône et somme de contrôle, et les
     messages de carte absente, changée, non formatable. Avec quatre emplacements fixes, la carte
-    n'est jamais pleine.
+    n'est jamais pleine. Sont nommés sans objet : examen des ports (`1`, `2`, `3`, `4`, `0x3ec`,
+    `0x3ea`, `0x3eb`, `0x3fa`), formatage (`5`, `6`, `7`, `0x69`, `0x6b`, `0x3ed`, `0x3ee`, `0x3ef`,
+    `0x3f0`), place et suppression (`8`, `9`, `0x3f1`, `0x3f2`, `0x0A`, `0x3f7`, `0x0F`), réservation
+    d'un bloc (`0x3ff` et son message `0xB3`/`0xB4` « Réservation d'un volume… », `0x17`, `0x3f3`,
+    `0x0B`, `:1150-1201`, `:1415-1455`), cartes absente, changée ou non formatable (`0x11` à `0x14`,
+    `0x3f9`, `0x3fb`, `0x3fc`).
 
   Les attentes gardent les durées de l'original (`AdvanceFadeOldCheck` : `0x13`, `0x1c`, `0x0B`
   images). Ce sont des temporisations, pas des fondus (J4).
@@ -1604,27 +1619,31 @@ agent (`scratchpad/e16def/e16e-*.md`).
   ouverte ou un choix en attente.
   - **créneau F** : si l'état du livre n'est pas 0, ne rien faire (écart voulu : l'original remet
     toujours l'état à 1, et un second appui relancerait le livre en plein flux, SE7). Sinon :
-    `Bytes` à 1, 0, 0, 0 ; `TargetAnimationId` à 0 ; `ControlLocked` posé ; le directeur de l'écran
+    `Bytes` à 1, 0, 0, 0 ; `TargetAnimationId` **du héros** à 0 (`PlayerEntity`,
+    `SpriteEventHandlers.cs:276`) ; `ControlLocked` posé ; le directeur de l'écran
     note qu'un flux du livre est en cours (L5) ;
   - **état 1** : abandon, sans ouvrir de boîte, si la boîte de dialogue n'a pas de présentateur
     (`!HasPresenter`), si un dialogue est déjà ouvert ou un choix déjà en attente, ou si le texte
     `0x40` ne se résout pas (l'équivalent de `0x80045004`, SE2). Sinon :
     `Open(dialogue_etc, "Etc_0064", 1)`, `SetCloseMask` avec le seul bit de script ; le livre
-    retient qu'il possède cette boîte ; attente de 60 ticks ;
+    retient qu'il possède cette boîte par le numéro d'ouverture du directeur de dialogue (nouveau
+    compteur `OpenSerial`, incrémenté à chaque `Open`) ; attente de 61 ticks (de `0x3C` à -1,
+    `FunctionTypeC.cs:6858-6868`) ;
   - **état 2** : abandon si pas de présentateur ou si `0x41`/`0x42` ne se résolvent pas (SE2) ;
     sinon `OpenChoice` avec ces deux textes. Ce sont les seuls échecs observables de
     l'ouverture : l'abandon remplace le blocage de l'original à l'état 3 (H2) ;
   - **état 4** : si `TakeChoiceResult()` est nul et que plus aucun choix n'est en attente (un autre
     `Open` l'a effacé), abandon (SE2). Réponse reçue : **d'abord fermer la boîte du livre**
     (`RequestScriptClose`, port de `TryActivateTextHoldState`, `FunctionTypeC.cs:6893`, SE1), puis
-    NON → abandon ; OUI → 60 ticks ;
+    NON → abandon ; OUI → 61 ticks (`:6901-6913`) ;
   - **état 5** : capture par `TryCaptureFromWorld`, puis `TryValidate`.
     - Refus : `AlundraSaveScreenDirector.StartFailure()` montre le message d'échec `0x15` puis la
       chaîne de fin commune ; rien n'est écrit (SE8).
     - Sinon : `Start(objet capturé)`. S'il rend faux (écran déjà actif), abandon (SE7).
   - **état 6** : attend la condition `!AlundraSaveScreenDirector.Instance.IsActive`, puis remise
     (SE7) ;
-  - **abandon et remise** : fermer la boîte que le livre possède ; annuler un choix en attente par
+  - **abandon et remise** : fermer la boîte que le livre possède, seulement si `OpenSerial` n'a pas
+    changé depuis son `Open` (une autre ouverture l'a remplacée sinon, et elle n'est pas au livre) ; annuler un choix en attente par
     une nouvelle méthode `AlundraDialogueDirector.CancelChoice()`, qui efface `_awaitingChoice` et
     `_pendingChoiceResult` et se désabonne ; effacer `ControlLocked` ; état 0 ; fin du flux au
     directeur (SE1). Le livre ne recopie pas la règle de l'opcode `0x44`, qui prend l'absence de
@@ -1644,6 +1663,20 @@ agent (`scratchpad/e16def/e16e-*.md`).
     messages et pour les quatre boîtes du carrousel (même dessin, J4) ;
   - teinte par `TextureColor` ;
   - Haut/Bas/Croix/Carré lus sur `TickPad`.
+
+  **OUI/NON du choix** (relecture du 2026-09-29) : l'original passe par `InitializeAsyncOperation`,
+  comme la question du livre (`MemoryCardManager.cs:2331-2347`). Le port passe donc par
+  `AlundraDialogueDirector.OpenChoice` avec les textes `0x4A`/`0x4B`, sans boîte de message :
+  - l'écran de dialogue vit sur la couche `Modal` (`DialogueScreen.cs:130`), au-dessus de la couche
+    `Menu` de l'écran de sauvegarde : le choix s'affiche par-dessus ;
+  - les touches du choix sont celles du dialogue ; tant que le choix est en attente, le directeur
+    de l'écran ignore ses propres touches (Haut/Bas/Croix) ;
+  - `TakeChoiceResult` : 1 (premier choix) = OUI, 0 = NON, comme `g_asyncOperationResult` 1 et 2 ;
+  - pendant la question, la boîte des messages de l'écran montre `0x84`
+    (`:2337-2344`) ; la fermeture de J4 part à la réponse.
+
+  Les emplacements passent par `AlundraSaveGameDirector.SaveSlots`
+  (`AlundraSaveGameDirector.cs:113`), le même point d'injection qu'E16.d.
 
   Garde-fous du directeur (revue de sécurité) :
   - **flux du livre** : le directeur sait qu'un flux du livre est en cours, du créneau F jusqu'à la
@@ -1693,11 +1726,14 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   - libellés : un emplacement valide montre son résumé et son chapitre recalculés, et des
     métadonnées fausses dans le fichier n'y changent rien ; un emplacement vide, illisible ou refusé
     montre `"{n}."` ;
-  - carrousel : Haut/Bas au rythme de répétition, positions et teintes de J4, bornes (pas de
-    défilement au-delà de la première et de la quatrième entrée) ;
-  - Croix → OUI : écriture dans `slot{n}` en binaire, avec l'objet capturé et ses métadonnées,
-    puis « Histoire enregistrée. » ; NON : annulation, rien d'écrit, fin directe par la chaîne de
-    fin ;
+  - carrousel, sur les valeurs de J4 : disposition et teintes à l'ouverture ; Haut/Bas au rythme de
+    répétition, positions et teintes après un défilement, bornes (pas de défilement au-delà de la
+    première et de la quatrième entrée) ; disposition et teintes à la fermeture, et résultat rendu
+    seulement à la fin du glissement de la boîte des messages ;
+  - Croix ouvre OUI/NON par `OpenChoice` (directeur de dialogue réel, présentateur simulé qui
+    choisit) : OUI → écriture dans `slot{n}` en binaire, avec l'objet capturé et ses métadonnées,
+    puis « Histoire enregistrée. », qui **attend Carré** (aucun passage seul en N ticks) ; NON →
+    rien d'écrit, chemin de NON de L2 ;
   - chaque état de sauvegarde autre que `Saved`, et une exception du service simulé derrière
     l'adaptateur → message d'échec `0x15`, aucune exception ;
   - `IsActive` et `MenuOpen` sur tout le parcours ; l'inventaire ne s'ouvre pas pendant l'écran.
@@ -1718,7 +1754,8 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   - Tests : le présentateur pousse l'écran à l'activation et le retire à la fin ; la vue-modèle suit
     le directeur (positions, teintes, textes) ; un `MGDesktop` de test charge l'écran sans erreur
     (règle de l'auteur : jamais un `UIRoot`) ; chaque `MGTextBlock` de `SaveScreen.xaml` a
-    `AllowsInlineFormatting` à faux (SE10).
+    `AllowsInlineFormatting` à faux (SE10) ; pendant OUI/NON, l'écran de dialogue (couche `Modal`)
+    est poussé au-dessus de l'écran de sauvegarde (couche `Menu`) sans le retirer.
   - Ensuite, **export complet en place**, pour cataloguer le nouvel écran. Il ne doit changer que
     le catalogue et le rapport (preuve par diff des manifestes) ; jamais pendant que `Alundra.Tests`
     tourne.
@@ -1748,6 +1785,7 @@ diff ne touche que le catalogue et le rapport ; verifier et contradicteur **CONF
 **Arrêts** :
 - un état de l'original dont la classe (conservé, adapté, sans objet) n'est pas établie par le code
   ou le binaire ;
+- une rotation `PARTIAL` du carrousel que le désassemblage de `0x80058F24` ne tranche pas ;
 - un manque de MGUI ou du moteur (rapport dédié, règle de l'auteur) ;
 - une exception qui sort du livre ou de l'écran ;
 - un test existant qui change pour une autre raison, ou l'oracle de l'intro qui bouge.
