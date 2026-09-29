@@ -228,6 +228,9 @@ l'intro) ; **caméra, MapEvents et rattrapage D3 hors périmètre** (§1.3) ; au
    la gravité moteur fait échouer `Assert.Equal(232, landingLine.Frame)` alors que le compteur `fall`
    serait resté > 0 (il passait de 10 à 20). La garde `git status` sur les quatre traces ne vaut qu'une
    fois les fichiers commités.
+   > **Mise à jour 2026-09-29 (E19.a2)** : le moteur avance un pas bloqué jusqu'au contact. `posX` au
+   > mur vaut désormais 36831232 (ancienne valeur 36956160) ; les quatre traces ne changent que dans la
+   > colonne `posX`, dès l'image 98 (spawn) et 39 (highground, 27394048). La première image au mur reste 98.
 2. **Angles morts verticaux.** Deux constantes du contrôleur ne sont pas couvertes : la distance
    d'accrochage au sol (`GroundSnapDistance`, 4 px — muter à 2 px ne change aucune trace, parce que le
    mur fait 16 px et la falaise 32 px) et le plafond de vitesse de chute (`MaxFallSpeed` = 800 px/s,

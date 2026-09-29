@@ -147,6 +147,10 @@ Deux classes de bugs ont coûté une journée entière et ont la même racine :
 - **Non-goals** : porter la sémantique Alundra (`ForceAdjusted`, `CollidedWithEntityZ`,
   `RidingEntity`) dans le moteur — noms de jeu ; la DLL les dérivera du rapport plus tard (M-3).
   M2 **publie**, ne décide pas : aucun changement de la résolution elle-même.
+  > **Mise à jour 2026-09-29 (E19.a2, ADR-0045 du moteur)** : le sens des drapeaux change.
+  > `H1Curtailed`/`H2Curtailed` disent « le pas demandé a été raccourci sur cet axe », qu'il reste nul ou non :
+  > un axe bloqué avance jusqu'au contact, donc `ActualH1Amount`/`ActualH2Amount` peuvent être non nuls
+  > alors que le drapeau est vrai. La signature du rapport ne change pas.
 - **Rollback** : revert du commit moteur. **Budget** : un commit moteur. **Arrêt** : si publier le
   détail par axe imposait malgré tout de restructurer la résolution.
 

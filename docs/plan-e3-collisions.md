@@ -429,6 +429,10 @@ monde (pixels pour Alundra) ; les défauts « mètres » existants restent.
   `PhysicsEngine.cs:364-475`) si un coin a `!HasGround` (hors champ) ou `!IsWalkable` ou
   `GroundHeight > pied + StepHeight` (port de « cellule bloquante si hauteur ≥ Z » `:1159`, avec la
   marche de 3 px `:436-475`). Puis sweeps contre les corps physiques comme aujourd'hui.
+  > **Mise à jour 2026-09-29 (E19.a2, ADR-0045 du moteur)** : la règle « pas de déplacement partiel » est
+  > levée. Sur le champ, un axe bloqué avance désormais jusqu'au contact (bisection sur la position de la
+  > racine, sans marge sur la grille), comme `ComputeXYPosition` (`0x80037730`) dans l'original ; `Move` et
+  > les deux déplacements de `Update` sont concernés. Le texte ci-dessus reste celui de la décision d'origine.
 - **C6 — Verticale** : `v_up −= Gravity × dt` ; si `MaxFallSpeed > 0`, `v_up ≥ −MaxFallSpeed` ;
   atterrissage par C4 ; saut inchangé (sur up).
 - **C7 — Réglages** (`CharacterControllerSettings.cs` : propriété, constructeur de copie

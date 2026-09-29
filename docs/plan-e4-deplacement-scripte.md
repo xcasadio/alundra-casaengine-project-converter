@@ -408,6 +408,10 @@ DLL / convertisseur / harnais (ce repo) :
   atteinte ou collision ») ; PAS de contournement pour 0x1F (l'original sort, la navigation ne
   s'applique qu'à 0x1E). Écart documenté : l'original teste le `ForceAdjusted` de la frame, la DLL
   teste le dernier sous-pas.
+  > **Mise à jour 2026-09-29 (E19.a2, D-E19-10)** : le moteur avance désormais un pas bloqué jusqu'au
+  > contact. Le drapeau `ForceAdjusted` de la DLL (manque de plus de 0,01 px) se lève donc au tick qui
+  > atteint le contact, un tick avant l'original, qui ne le lève qu'au premier tick sans aucune avance.
+  > Écart consigné ; E19.h aligne le drapeau sur le binaire.
 - **Acceptation** : (1) 0x1F réel du marin 11 (programme 139 — relever seuil/direction) sur la 389 :
   fin à la frame calculée (distance/vitesse AnimSet réels) ; (2) 0x1E avec obstacle (cellules
   bloquées réelles ou monde synthétique) : contournement par waypoints, fin à distance atteinte —
