@@ -490,7 +490,7 @@ Static disassembly of every program map 389 ("Ship Klark (beginning)-389") refer
   1364: 0x00 Break [implemented - Break, handled by the main loop] params=[]
   1365: 0x36 Wait flag off [implemented] params=[12,128]
   1368: 0x10 Player lose control [implemented] params=[]
-  1369: 0x59 Set entity anim [NOT IMPLEMENTED] params=[129,0]
+  1369: 0x59 Set entity anim [implemented] params=[129,0]
   1372: 0x27 Face player [implemented] params=[]
   1373: 0x31 If flag off [implemented] params=[103,3,17,0]
   1378: 0x0D Dialog [implemented] params=[137,1]

@@ -351,6 +351,71 @@ public class AlundraEventProgramRunnerLogicEntityTests
         Assert.Equal(0u, hero.TargetAnimationId);
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // T3: 0x59
+    // ---------------------------------------------------------------------------------------------
+
+    [Fact]
+    public void SetEntityAnim_0x59_OnTheHero_0x81_SetsItsTargetAnimation_AndAdvancesBy3()
+    {
+        // 0x59 [0x81, 3]; 0x1A [7]; end: the hero "at rest" idiom, then the next instruction at +3.
+        var document = NewDocument(0x59, 0x81, 3, 0x1A, 7, 0xFF);
+        var world = new FakeWorld();
+        var hero = new AlundraEntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal };
+        world.PlayerEntity = hero;
+        var runner = NewRunner(document, world);
+        var owner = Entity(1);
+
+        runner.RunOneScriptCall(owner, StateFor(document));
+
+        Assert.Equal(3u, hero.TargetAnimationId);
+        Assert.Equal(7u, owner.TargetAnimationId);
+    }
+
+    [Fact]
+    public void SetEntityAnim_0x59_ById_SetsEveryMatch_AndTakesTheLogicEntityAsReference()
+    {
+        var document = NewDocument(0x59, 5, 4, 0xFF);
+        var world = new FakeWorld();
+        var a = Entity(5);
+        var b = Entity(5);
+        var other = Entity(6);
+        world.Spawned.Add(a);
+        world.Spawned.Add(b);
+        world.Spawned.Add(other);
+        var runner = NewRunner(document, world);
+        var owner = Entity(1);
+
+        runner.RunOneScriptCall(owner, StateFor(document));
+
+        Assert.Equal(4u, a.TargetAnimationId);
+        Assert.Equal(4u, b.TargetAnimationId);
+        Assert.Equal(0u, other.TargetAnimationId);
+
+        // A destroyed logic entity is the reference: the id search finds nothing.
+        a.TargetAnimationId = 0;
+        b.TargetAnimationId = 0;
+        owner.LogicEntity = Entity(2, EntityStatus.FlagToDestroy);
+        runner.RunOneScriptCall(owner, StateFor(document));
+        Assert.Equal(0u, a.TargetAnimationId);
+        Assert.Equal(0u, b.TargetAnimationId);
+    }
+
+    [Fact]
+    public void SetEntityAnim_0x59_GetOwner_0x80_SetsTheLogicEntity()
+    {
+        var document = NewDocument(0x59, 0x80, 9, 0xFF);
+        var runner = NewRunner(document, new FakeWorld());
+        var owner = Entity(1);
+        var logic = Entity(2);
+        owner.LogicEntity = logic;
+
+        runner.RunOneScriptCall(owner, StateFor(document));
+
+        Assert.Equal(9u, logic.TargetAnimationId);
+        Assert.Equal(0u, owner.TargetAnimationId);
+    }
+
     [Fact]
     public void Clone_DoesNotCopyTheLogicEntity_ANewEntityStartsOnItself()
     {

@@ -352,9 +352,10 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
     - Rend 2 dans les deux cas.
     - `0x43 [0x80]` reste un changement sans effet sur le contexte, avec `Result = 1`, comme le
       binaire.
-- ⏳ **T3 — `0x59`** (`0x8003EE8C`, taille 3) : pour chaque entité trouvée par `v1` (référence :
+- ✅ **T3 — `0x59`** (`0x8003EE8C`, taille 3) : pour chaque entité trouvée par `v1` (référence :
   l'entité logique), `TargetAnimationId = v2`. Rend 3. Ce cas couvre 669 sites « héros au repos »
   `[129,0]`, dont 390 `@515` et 389 `@1369`.
+  *(fait le 2026-09-29 : cas `0x59` de `Dispatch` ; 3 tests unitaires (17 au total dans `AlundraEventProgramRunnerLogicEntityTests`) ; `ImplementedOpcodes` gagne `0x59`, `docs/intro-programs-389.txt` régénéré : seul le libellé de `0x59 @1369` change, `docs/intro-trace-389.txt` et les points épinglés de l'intro ne bougent pas.)*
 - ⏳ **T4 — Garde de boucle** (D-E19-3).
   - Le budget d'un appel est `MaxIterationsPerCall ?? ProductionLoopBudget`, avec
     `ProductionLoopBudget = 1024` : 8,5 fois la pire boucle mesurée, 19,7 fois la plus longue suite

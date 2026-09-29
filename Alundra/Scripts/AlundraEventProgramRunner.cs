@@ -803,6 +803,20 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // instruction (size 1, see EventOpcodeSizeTable).
                 return state.Result == 0 ? state.Parameters[0] - state.CodeIndex : 1;
 
+            case 0x59: // Set entity anim - Script_89_059 @ 0x8003EE8C (E19.a T3, docs/plan-e19-opcodes.md):
+                       // for every entity matched by v1's search type (reference: the logic entity),
+                       // TargetAnimationId = v2. Size 3. Covers the 669 "hero at rest" sites [0x81, 0]
+                       // (390 @515, 389 @1369, ...).
+            {
+                var animMatches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+                foreach (var animMatch in animMatches)
+                {
+                    animMatch.TargetAnimationId = (uint)v[2];
+                }
+
+                return 3;
+            }
+
             case 0x5A: // Turn entity - Script_90_05A (EntityEventHandlers.cs:1694-1710): for every entity
                        // matched by v1's search type, TargetDirection = ResolveDirectionFromParam(v2).
                 TurnMatchingEntities(entity, v[1], (uint)v[2], animationId: null);
