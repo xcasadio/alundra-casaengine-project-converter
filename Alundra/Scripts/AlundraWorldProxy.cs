@@ -672,6 +672,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         InstallWarpSystems(world);
         InstallScreenFadeSystems(world);
         InstallDialogueSystems(world);
+        InstallSaveScreenSystems();
         InstallHudSystems();
         InstallInventorySystems();
 
@@ -1049,6 +1050,19 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // InstallDialogueSystems's own doc), so TryWireHudScreenOnce's per-frame retry in Update is what
         // actually wires it there.
         TryWireHudScreenOnce();
+    }
+
+    /// <summary>
+    /// E16.e L5/SE3 (docs/plan-e16-etat-partie.md): re-points the SESSION-scoped
+    /// <see cref="AlundraSaveScreenDirector.Instance"/> at this world's <see cref="GameState"/> and
+    /// <see cref="SoundPlayer"/>, then runs its map entry - which ends, without writing, a save flow a world change
+    /// cut. Called from <see cref="InitializeWithWorld"/> right AFTER <see cref="InstallDialogueSystems"/>: the
+    /// dialogue director's own map entry has already dropped its box and choice and rebuilt its runner.
+    /// </summary>
+    internal void InstallSaveScreenSystems()
+    {
+        AlundraSaveScreenDirector.Instance.AttachToWorld(GameState, SoundPlayer);
+        AlundraSaveScreenDirector.Instance.InstallForMapEntry();
     }
 
     /// <summary>
@@ -1923,6 +1937,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             AlundraInventoryDirector.Instance.Tick(PlayerEntity);
             AlundraSubInventoryDirector.Instance.Tick();
             AlundraInventoryPostProcess.Instance.Run();
+
+            // E16.e L5 (docs/plan-e16-etat-partie.md): the save screen - its state machine then its transition's
+            // render, as UpdateMemoryCardProcess then UpdateUserInterface in the original's RenderScene
+            // (GraphicManager.cs:62-63). It reads TickPad's edges, so it runs inside this loop too. Never open
+            // together with an inventory: the inventory's trigger refuses while it is active (J9).
+            AlundraSaveScreenDirector.Instance.Tick();
 
             // docs/plan-portrait-inventaire.md P4/PI8: the portrait steps once per tick HERE, after both
             // directors' per-frame work and the post-process and before the presenters - the original's own

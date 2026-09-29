@@ -1463,7 +1463,7 @@ La remise de session couvre tous les singletons, sauf le fondu maître de la mus
 `ApplyPendingLoad` ; un test existant qui change pour une autre raison ; l'oracle de l'intro qui
 bouge.
 
-### E16.e — Écran de sauvegarde en jeu 🚧 (DLL, MGUI en XAML ; plan détaillé du 2026-09-29 ; mis en pause après un troisième REVISE, repris sur la réponse de l'auteur, D-E16-38 ; relecture de clôture fraîche sur `c91e4e1` : READY ; exécution en mode AUTO ; T1 et T2 faites le 2026-09-29 ; T3 arrêtée sur O-E16-18, tranchée par la règle « le binaire tranche » ; relecture de clôture du plan corrigé (`97f0054`) : REVISE, des attentes « n. » restées en L3, T3 et T8, corrigées ; EN PAUSE jusqu'à l'accord de l'auteur pour une relecture finale puis T3 à T5)
+### E16.e — Écran de sauvegarde en jeu 🚧 (DLL, MGUI en XAML ; plan détaillé du 2026-09-29 ; mis en pause après un troisième REVISE, repris sur la réponse de l'auteur, D-E16-38 ; relecture de clôture fraîche sur `c91e4e1` : READY ; exécution en mode AUTO ; T1 et T2 faites le 2026-09-29 ; T3 arrêtée sur O-E16-18, tranchée par la règle « le binaire tranche » ; relecture de clôture du plan corrigé (`97f0054`) : REVISE, des attentes « n. » restées en L3, T3 et T8, corrigées ; reprise pour T3 à T5 sur le contrat corrigé (`ec7fbbe`) ; T3 faite le 2026-09-29)
 
 - **But** : le joueur sauvegarde lui-même, comme dans l'original.
 - **Contenu** : le gestionnaire du livre de sauvegarde (`AI_ProcessWarpTransitionState`, question
@@ -1796,10 +1796,31 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   - créneau F repris aux états 2, 4 et 6 ; `Start` pendant que l'écran est actif (SE7) ;
   - refus de la capture : en un nombre borné de ticks, livre à l'état 0, `PlayerControlFlags == 0`,
     `IsActive` faux, `MenuOpen` effacé (SE8).
-- ⏳ **T3 — Directeur de l'écran** (L2, L3, L5, sans MGUI). **Reprise** : O-E16-18 est tranchée par
+- ✅ **T3 — Directeur de l'écran** (L2, L3, L5, sans MGUI). **Reprise** : O-E16-18 est tranchée par
   la règle de l'auteur « le binaire France tranche » (mémoire du projet ; D-E16-36 dit « comme
   l'original ») : `0x83` à l'ouverture, `0x84` à la question, ligne 1 = chapitre, ligne 2 = résumé ;
   J3, J4 et L3 sont corrigés, et le texte d'un emplacement vide est à établir dans le binaire (L3).
+  *Faite le 2026-09-29 (reprise sur le contrat corrigé, `ec7fbbe`).*
+  - *Emplacement vide, établi dans le binaire (L3)* : `FUN_800818e4` rend le bloc lui-même quand son
+    premier octet est nul (`0x800818F0`-`0x80081904`), la ligne 2 est `bloc + 0x20`, et
+    `BuildDataAndSaveInMemoryCard` met à zéro les quatre blocs à la création du fichier
+    (`0x80061124`-`0x80061140`) : **deux lignes vides**. Les pointeurs ne sont pas nuls, donc
+    `FUN_80058b28` (`0x80058B5C`) marque l'enregistrement dessiné : une boîte vide. Le `"{n}."` est bien
+    l'adaptation « bureau » de la décompilation, qui teste aussi une chaîne vide au lieu d'un pointeur nul.
+  - *Code* : `AlundraSaveScreenDirector` (implémente `IAlundraSaveBookScreen`, branché par défaut sur
+    `AlundraSaveBook.Screen`) : états conservés de L2 (`0x2711` mène droit à `0x3f4`, les états de la
+    carte PS1 étant sans objet), boîte des messages (transition 9, texte en (X + 16, Y + 12), deuxième
+    ligne + 16, son 5 à la fermeture), carrousel (transition 10) porté du désassemblage de
+    `0x80058F24`, libellés à l'entrée de `0x0C`, écriture binaire de l'objet capturé dans `slot{n}`,
+    `InstallForMapEntry` (SE3) appelé par `InitializeWithWorld` juste après la boîte de dialogue, garde
+    de l'inventaire (J9), `AlundraDialogueDirector.CloseStandaloneChoice`.
+  - *Correction d'un défaut de l'original* (règle de l'auteur) : la teinte des boîtes
+    (`FUN_80059e0c`, `0x80059E1C`) ne se fixe sur sa cible que si le compteur ÉGALE la durée, puis
+    continue d'interpoler au-delà (18/15 après l'ouverture, 17/15 après un défilement : la boîte du
+    milieu reste à `0x99` ou `0x8C` au lieu de `0x80`). Le port garde la cible dès la durée atteinte.
+  - `AlundraSaveScreenDirectorTests` : 42 tests ; 8 mutations par script, 7 tuées, la 8ᵉ (lire la
+    sélection au lieu de l'entrée figée) équivalente, Haut/Bas étant ignorés pendant OUI/NON ;
+    `Alundra.Tests` 1868/1868.
   *Arrêtée le 2026-09-29 avant tout code :
   deux faits du plan sont contredits par le binaire (règle : un fait du plan contredit arrête la tâche).
   Rien n'est commité pour T3 hors de cette note.*

@@ -12,12 +12,13 @@ namespace Alundra.Scripts;
 /// need to draw is exposed as plain, read-only properties.
 ///
 /// <para><b>The trigger</b> - ported from <c>GameEngine.cs:1567-1576</c>, checked once per logic tick
-/// while the inventory is idle. Two of its six guards have no equivalent in this port and are
-/// TREATED AS ALWAYS ZERO (never block the trigger), each declared where it is tested below:
+/// while the inventory is idle. One of its six guards has no equivalent in this port and is
+/// TREATED AS ALWAYS ZERO (never blocks the trigger), declared where it is tested below:
 /// <c>g_warpLockTimer</c> (an item-use/magic-sequence lock, <c>PlayerManager.cs:1929-4013</c> - no such
-/// system is ported here at all) and <c>g_globalTransitionState</c> (the memory-card/save-menu state machine,
-/// <c>UI/MemoryCardManager.cs</c> - not ported at all). The map-entry delay <c>g_warpDelayFrames</c> is
-/// ported since E13.d SI12, as a duration (<see cref="AlundraWarpDirector.IsWarpDelayRunning"/>).</para>
+/// system is ported here at all). <c>g_globalTransitionState</c> (the memory-card/save-menu state machine,
+/// <c>UI/MemoryCardManager.cs</c>) is ported since E16.e as <see cref="AlundraSaveScreenDirector.IsActive"/>.
+/// The map-entry delay <c>g_warpDelayFrames</c> is ported since E13.d SI12, as a duration
+/// (<see cref="AlundraWarpDirector.IsWarpDelayRunning"/>).</para>
 ///
 /// <para><b>The setup callback's timing</b> (D4's own open point): <c>DisplayInventory</c>
 /// (<c>MainInventoryManager.cs:443-499</c>) only ARMS the setup callback, through
@@ -415,10 +416,14 @@ public sealed class AlundraInventoryDirector
             return false;
         }
 
-        // GameEngine.cs:1575 - StaticVariables.g_globalTransitionState == 0. NO PORT EQUIVALENT:
-        // g_globalTransitionState (StaticVariables.cs:12484) is the memory-card/save-menu state machine
-        // (UI/MemoryCardManager.cs, ~90 distinct assigned values) - not ported in this DLL at all (no
-        // MemoryCardManager port exists). Declared absent, treated as always 0 (never blocks).
+        // GameEngine.cs:1575 - StaticVariables.g_globalTransitionState == 0. g_globalTransitionState
+        // (StaticVariables.cs:12484) is the memory-card/save-menu state machine (UI/MemoryCardManager.cs); its
+        // port since E16.e L5 (docs/plan-e16-etat-partie.md, J9) is the save screen, active exactly while that
+        // state is not 0.
+        if (AlundraSaveScreenDirector.Instance.IsActive)
+        {
+            return false;
+        }
 
         // GameEngine.cs:1576 - MainInventoryManager.DisplayInventory() == 0, then g_isGameEnding = 1
         // (0x8002bcf4-0x8002bd00): not ported. DisplayInventory returns 0 on one path only, the debug

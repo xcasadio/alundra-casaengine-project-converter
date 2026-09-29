@@ -449,6 +449,31 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
         UnsubscribeChoiceHandler();
     }
 
+    /// <summary>
+    /// E16.e L5 (docs/plan-e16-etat-partie.md, the closing review of 2026-09-29): closes a choice list asked WITHOUT
+    /// a box (<see cref="OpenChoice"/> with no <see cref="Open"/> before it) - the save screen's OUI/NON. After an
+    /// answer the engine's service stays open (<c>DialogueService.SelectChoice</c>) and nothing else removes the
+    /// dialogue screen, while the private <see cref="Close"/> would clear <c>MessageBox</c>/<c>MenuOpen</c>, which the
+    /// save screen keeps until its state <c>0x63</c>. So this clears the choice in waiting and any result not yet
+    /// taken, stops listening to the presenter, and closes the presenter (<c>_presenter?.Close()</c>, which removes
+    /// the screen). It never touches <see cref="AlundraGameState.PlayerControlFlags"/> and never goes through
+    /// <see cref="Close"/>: the presenter's call back (<see cref="NotifyPresenterClosed"/>) finds no box open.
+    /// Returns false, doing nothing, while a box is open (<see cref="IsOpen"/>): that choice is not a lone one.
+    /// </summary>
+    internal bool CloseStandaloneChoice()
+    {
+        if (_isOpen)
+        {
+            return false;
+        }
+
+        _awaitingChoice = false;
+        _pendingChoiceResult = null;
+        UnsubscribeChoiceHandler();
+        _presenter?.Close();
+        return true;
+    }
+
     private void UnsubscribeChoiceHandler()
     {
         if (_presenter != null && _choiceHandler != null)

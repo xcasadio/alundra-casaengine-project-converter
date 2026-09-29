@@ -109,10 +109,10 @@ public sealed class AlundraSaveBook
     private const string LogPrefix = "AlundraSaveBook: ";
 
     /// <summary>
-    /// L4/L5: the save screen, as the book sees it. Null until E16.e T3 wires the screen's director: state 5 then
-    /// abandons (nothing can be shown), logged. Tests pose a fake.
+    /// L4/L5: the save screen, as the book sees it - the session's <see cref="AlundraSaveScreenDirector"/> (E16.e T3).
+    /// Null makes state 5 abandon (nothing can be shown), logged. Tests pose a fake.
     /// </summary>
-    internal IAlundraSaveBookScreen? Screen { get; set; }
+    internal IAlundraSaveBookScreen? Screen { get; set; } = AlundraSaveScreenDirector.Instance;
 
     /// <summary>L4/SE1: <see cref="AlundraDialogueDirector.OpenSerial"/> right after the book's own
     /// <see cref="AlundraDialogueDirector.Open"/>, or null when the book owns no box.</summary>
@@ -421,10 +421,10 @@ public sealed class AlundraSaveBook
         _choiceOpened = false;
     }
 
-    /// <summary>Test-only: clears the session state and the screen seam.</summary>
+    /// <summary>Test-only: clears the session state and puts the production screen back.</summary>
     internal void ResetForTests()
     {
         ForgetFlow();
-        Screen = null;
+        Screen = AlundraSaveScreenDirector.Instance;
     }
 }

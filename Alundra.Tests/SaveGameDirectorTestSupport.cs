@@ -107,6 +107,7 @@ internal static class SaveGameDirectorTestSupport
     {
         AlundraSaveGameDirector.Instance.ResetForTests();
         AlundraSaveGameDirector.RecipeKeysEnabledOverrideForTests = null;
+        AlundraSaveScreenDirector.Instance.ResetForTests();
         AlundraInventoryDirector.Instance.ResetForTests();
         AlundraSubInventoryDirector.Instance.ResetForTests();
         AlundraInventoryPostProcess.Instance.ResetForTests();
