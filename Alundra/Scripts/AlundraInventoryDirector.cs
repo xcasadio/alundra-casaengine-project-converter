@@ -17,7 +17,10 @@ namespace Alundra.Scripts;
 /// <c>g_warpLockTimer</c> (an item-use/magic-sequence lock, <c>PlayerManager.cs:1929-4013</c> - no such
 /// system is ported here at all) and <c>g_globalTransitionState</c> (the memory-card/save-menu state machine,
 /// <c>UI/MemoryCardManager.cs</c> - not ported at all). The map-entry delay <c>g_warpDelayFrames</c> is
-/// ported since E13.d SI12, as a duration (<see cref="AlundraWarpDirector.IsWarpDelayRunning"/>).</para>
+/// ported since E13.d SI12, as a duration (<see cref="AlundraWarpDirector.IsWarpDelayRunning"/>). One guard has no
+/// line in the original: no opening while a warp transition runs (<see cref="AlundraWarpDirector.IsTransitionInProgress"/>,
+/// SD5, D-E13D-38) - the original simply never runs the trigger during its transition loop; see
+/// <see cref="TryTrigger"/>.</para>
 ///
 /// <para><b>The setup callback's timing</b> (D4's own open point): <c>DisplayInventory</c>
 /// (<c>MainInventoryManager.cs:443-499</c>) only ARMS the setup callback, through
@@ -360,7 +363,8 @@ public sealed class AlundraInventoryDirector
     }
 
     /// <summary>Port of the trigger (<c>GameEngine.cs:1567-1576</c>) - see this class' own doc for the
-    /// two guards with no port equivalent, each declared absent/always-0 right where it is tested.</summary>
+    /// two guards with no port equivalent, each declared absent/always-0 right where it is tested, and for
+    /// the warp-transition guard this port adds.</summary>
     private static bool TryTrigger(AlundraGameState state, AlundraEntityScriptProxy? player)
     {
         // GameEngine.cs:1568 - StaticVariables.g_playerControlFlags == 0.
@@ -384,6 +388,21 @@ public sealed class AlundraInventoryDirector
         // NOT ByInterval - a straight edge, read from the per-tick pad D1 built (AlundraTickPad), never
         // AlundraGameState.LastPadState (plan §1.3, D0.10 - the inventory needs the tick-exact edge).
         if ((state.TickPad.ButtonsJustPressed & (AlundraPadState.Start | AlundraPadState.L2 | AlundraPadState.R2)) == 0)
+        {
+            return false;
+        }
+
+        // No GameEngine.cs line: this port's own guard (SD5, D-E13D-38) - no opening while a warp transition runs.
+        // The original needs none [binaire]: once a warp has posed g_isGameEnding, the main loop leaves for the
+        // transition loop (0x8002c490-0x8002c4c0), which refreshes the pad (0x8002e38c) and draws the effect
+        // (0x80044440) but never calls Update (0x8002baec), where this trigger lives (0x8002bc6c-0x8002bd00), until
+        // the arrival map's own Update(1) (0x8002c3e4). This port keeps ticking through its departure fade, and the
+        // warp poses no PlayerControlFlags bit (D-T-6), so the trigger tests the gel itself. It also refuses the
+        // departure tick, unlike the original: HandleWarpTransition (0x80031340) is reached from the entity and
+        // event pass inside UpdateWorld (0x8002bc4c, the last link through handler tables per the decompilation),
+        // before this test, so a press on that exact frame armed the inventory, which then opened on the arrival
+        // map - a defect of the original, corrected (D-E13D-30).
+        if (AlundraWarpDirector.Instance.IsTransitionInProgress)
         {
             return false;
         }

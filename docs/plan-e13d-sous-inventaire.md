@@ -279,6 +279,39 @@ tout `MenuOpen`), D-E13D-18 (police `font3` tenue par le registre du moteur).
 | D-E13D-36 | Sur le délai de warp (§6 point 8) : « **fais la correction** », au plus simple : le compteur revient à 0 après 0,2 s, pour préparer un jeu indépendant du nombre d'images | SI12 : un délai en secondes (0,2 s) posé à chaque entrée de carte, consommé par le temps logique écoulé ; le déclencheur refuse l'ouverture tant qu'il en reste. À 50 Hz : 9 ticks refusés et ouverture au 10ᵉ, exactement comme l'exécutable (décrément avant le test, `0x8002bc58`) |
 | D-E13D-37 | Sur l'audio (rapport du 2026-09-25 point 7) : « **à faire dans une autre tâche** » | Hors E13.d, consigné dans `docs/plan-e11b-opcodes-audio.md` : ne plus approcher le mixage stéréo ([B1-a]) ; le moteur apprend à rendre le son muet ; `IsBgmActivated` est supprimé (il ne servait qu'à couper un son qui n'était que du bruit) |
 
+### 2.4 Tranchée par l'auteur le 2026-09-29, après la clôture (constat SD5)
+
+| Réf | Décision de l'auteur | Conséquence |
+|---|---|---|
+| D-E13D-38 | Sur l'inventaire ouvrable pendant un warp (constat SD5 de la revue de sécurité d'E16.d, reproduit par un test rouge sur `main` `2b0283b`) : « **toute la transition** » | Le déclencheur refuse tant que `AlundraWarpDirector.IsTransitionInProgress` est vrai (`AlundraInventoryDirector.TryTrigger`), frame du portail comprise. Le fondu suit l'original ; la frame du portail est un défaut de l'original, corrigé (D-E13D-30). Tests : `Trigger_Refused_OnTheWarpDepartureTick_ADefectOfTheOriginalCorrected` et `WorldUpdate_StartPressedDuringAWarpDepartureFade_NeverOpensTheInventory` |
+
+Faits **[binaire]** (script de désassemblage du §7, et un relevé des `jal` de tout le segment de texte) :
+- Une fois `g_isGameEnding` (`0x800dc4c4`) posé, la boucle principale sort de sa boucle d'images (`beqz` en
+  `0x8002c45c`) et entre dans la boucle de transition (`0x8002c490`-`0x8002c4c0`). Celle-ci appelle seulement
+  `UpdatePads` (`0x8002e38c`), l'effet (`0x80044440`), le streaming du son (`0x8004b1d4`), la fin d'image
+  (`0x80042798`) et une fonction vide (`0x800815e4`). Elle n'appelle ni `Update` (`0x8002baec`) ni `RenderScene`
+  (`0x8002bd60`). Or `DisplayInventory` (`0x80055570`) n'est atteinte que par ces deux-là : par le déclencheur,
+  dans `Update` (`0x8002bcec`), et par le post-traitement de la bascule (`0x80048054`, appelé par `RenderScene`
+  en `0x8002be5c`). `Update` n'a que deux appelants, `0x8002c3e4` (le `Update(1)` du rechargement de carte) et
+  `0x8002c404` (la boucle d'images) ; `RenderScene` n'en a qu'un, `0x8002c3fc` (la boucle d'images). L'original
+  n'ouvre donc jamais l'inventaire pendant le fondu. Au `Update(1)` de l'arrivée, le délai de 10 images (posé par
+  `WarpPlayer`, `0x800440fc`) refuse l'ouverture.
+- Le warp ne pose aucun bit de `g_playerControlFlags` (D-T-6). Aucun test du déclencheur (`0x8002bc6c`-`0x8002bd00`)
+  ne lit `g_isGameEnding`. Le portage continue de tourner pendant son fondu : il teste donc le gel lui-même.
+- La frame du portail. `HandleWarpTransition` (`0x80031340`) est atteinte depuis la passe des entités et des
+  événements, dans `UpdateWorld` (appelée en `0x8002bc4c`). Ses deux appelants directs sont un gestionnaire
+  d'opcode d'événement (`0x8003eb20`) et `CheckAndExecuteWarp` (`0x8002f120`) ; le dernier maillon passe par des
+  tables de gestionnaires, d'après la décompilation. Elle tourne donc avant le test du même `Update`. Un appui sur
+  cette frame exacte appelle `DisplayInventory` (`0x80055570`), qui arme le rappel 6. La table des rappels
+  (`0x80153028`) n'est initialisée qu'au démarrage : `0x80047c50`, appelée seulement depuis `0x80044be4`, elle-même
+  appelée en `0x8002c238`, avant l'étiquette de rechargement `0x8002c2b8`. Le relevé des adresses de la table ne
+  montre aucune autre écriture directe que `SetTransitionType`. L'inventaire s'ouvre donc au premier `RenderScene`
+  de la carte d'arrivée (déduit de ce relevé ; une écriture indirecte par pointeur n'est pas exclue, cela ne change
+  pas la décision).
+- Sur `chantier/e16-proposition`, `BeginDepartureForLoad` pose le même drapeau, et F9 est traité avant la boucle de
+  l'inventaire (`UpdateRecipeKeys`). La garde ferme donc aussi SD5 côté chargement. La remise à zéro des
+  inventaires par `ApplyPendingLoad` devient une défense de plus.
+
 ## 3. Tranches
 
 Un commit par tranche, avec la mise à jour de ce plan ; un vérificateur frais par tranche à risque ; régime de
@@ -733,6 +766,7 @@ suites vertes ; chaque export prouvé par double export.
 | 2026-09-25 | **SI11 faite** : une seule machine de texte déroulant ; deux trous de tests du sous-inventaire comblés en passant. |
 | 2026-09-25 | **SI12 faite** : le délai de warp de 0,2 s après chaque entrée de carte. |
 | 2026-09-25 | Vérificateur frais sur SI7 à SI12 : **CONFIRMED**, quatre remarques P4. L'auteur merge les suites dans `main`, rapatrie la branche de l'analyseur, refait l'export et la DLL : **recette validée** (« tout fonctionne »), SI6 close. Les quatre remarques P4 corrigées sur `chantier/e13d-p4-cleanups` (commentaire de `TryTrigger`, doc de `WeaponId`, champ inutilisé de l'écran du sous-inventaire, deux plans). |
+| 2026-09-29 | Après la clôture : le constat SD5 (revue de sécurité d'E16.d) est reproduit par un test rouge sur `main` `2b0283b` (Start pendant le fondu de départ d'un warp ouvre l'inventaire). Mesure dans le binaire (§2.4). L'auteur choisit « toute la transition » (D-E13D-38) ; garde ajoutée au déclencheur sur `chantier/inventory-warp-gate`. |
 
 ### SI9 — la contre-vérification de l'inventaire principal (2026-09-25)
 
