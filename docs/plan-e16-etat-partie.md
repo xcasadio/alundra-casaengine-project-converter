@@ -1463,7 +1463,7 @@ La remise de session couvre tous les singletons, sauf le fondu maître de la mus
 `ApplyPendingLoad` ; un test existant qui change pour une autre raison ; l'oracle de l'intro qui
 bouge.
 
-### E16.e — Écran de sauvegarde en jeu 🚧 (DLL, MGUI en XAML ; plan détaillé du 2026-09-29 ; mis en pause après un troisième REVISE, repris sur la réponse de l'auteur, D-E16-38 ; relecture de clôture fraîche sur `c91e4e1` : READY ; exécution en mode AUTO ; T1 et T2 faites le 2026-09-29, T3 en pause sur O-E16-18)
+### E16.e — Écran de sauvegarde en jeu 🚧 (DLL, MGUI en XAML ; plan détaillé du 2026-09-29 ; mis en pause après un troisième REVISE, repris sur la réponse de l'auteur, D-E16-38 ; relecture de clôture fraîche sur `c91e4e1` : READY ; exécution en mode AUTO ; T1 et T2 faites le 2026-09-29 ; T3 arrêtée sur O-E16-18, tranchée par la règle « le binaire tranche », plan corrigé et relu avant la reprise)
 
 - **But** : le joueur sauvegarde lui-même, comme dans l'original.
 - **Contenu** : le gestionnaire du livre de sauvegarde (`AI_ProcessWarpTransitionState`, question
@@ -1583,8 +1583,8 @@ agent (`scratchpad/e16def/e16e-*.md`).
 |---|---|---|
 | J1 | Seul `UpdateSavedData` (état 5 du livre) arme le flux de carte mémoire : `InitializeSaveDataCopy(g_saveData, 0x758, 1)` pose `g_globalTransitionState = 0x2710` et `g_postProcessingState = 1` ; `UpdateMemoryCardProcess` part alors dans `StartMemoryCardProcess`. La voie `g_postProcessingState == 3` (`UpdateSaveGameTransition`, avec les chaînes japonaises de test) n'est jamais armée. | désassemblage `0x8005EC44`, `0x8005EC98` ; `MemoryCardManager.cs:99-132`, `:580-586` ; `GameEngine.cs:2649-2680` |
 | J2 | Le flux de sauvegarde de `StartMemoryCardProcess` (`0x8005F458`, une cinquantaine d'états) se classe en trois familles, tableau complet dans `scratchpad/e16def/e16e-flow.md` : (a) les états visibles du joueur, conservés par L2 ; (b) les états qui ne servent que la carte PS1 : examen des ports, formatage, place libre et suppression d'une partie quand la carte est pleine, réservation d'un bloc, icône et somme de contrôle, carte absente ou changée ; (c) la chaîne de fin commune. L'examen des ports est asymétrique dans le binaire lui-même : une carte trouvée au seul port 2 mène à « Insère une Carte Mémoire. » sans jamais sauvegarder. | `MemoryCardManager.cs:592-1737` ; désassemblage `0x8005F7F4`–`0x8005F8AC` |
-| J3 | L'écran de choix (état `0x0C`) remplit quatre entrées : pour une partie existante, ligne 1 = résumé (`GameStateDescription`), ligne 2 = chapitre (`CurrentFlagName`) ; pour une entrée vide, `"{n}."` et une ligne vide. Titre : ETC `0x83`/`0x84`. Le sélecteur (`DisplayMemoryCardMenu`, rendu de la transition 10) lit Haut/Bas (au rythme de répétition) et Croix : Croix ouvre OUI/NON (ETC `0x4A`/`0x4B`) ; OUI retient l'entrée, NON annule tout le choix (pas de retour au choix). | `MemoryCardManager.cs:1229-1269`, `:2128-2480` |
-| J4 | Le sélecteur est un **carrousel** de quatre boîtes (288 × 56, même dessin que la boîte de description de l'inventaire, déjà exportée) : les quatre enregistrements tournent sur les hauteurs `-1, 0, 64, 128, 240` (`SHORT_ARRAY_800C436C`), glissent par `UpdateUiBoxesPosition` (déjà porté trois fois dans la DLL) et changent de teinte RVB sur 15 images (`InitializeUIMemoryFileBox`, cible `0x80` pour l'entrée du milieu). Le texte : deux lignes par boîte, à `(X + 16, Y + 8)` et `(X + 16, Y + 32)`, en font3. La boîte des messages est `g_uiBoxesInventoryDescriptionBackground` (16, 168). L'icône de carte mémoire n'est jamais dessinée à l'écran : elle ne va que dans l'en-tête du fichier PS1. **Ouverture** (`InitializeMemoryCardMenu`, `0x800583EC`, `MemoryCardManager.cs:1823-2060`) : l'enregistrement i est posé à la hauteur `SHORT_ARRAY_800C436C[i + 1]` (0, 64, 128, 240) et marqué vide ; les textes glissent depuis y = 240 ; teintes de 0 vers `0x40`, `0x80`, `0x40`, `0x40` en 15 images ; l'anneau part de l'indice 1, remplit deux entrées (l'entrée 0 dans l'enregistrement 1, au milieu, la plus claire ; l'entrée 1 dans l'enregistrement 2, en dessous), sélection 0 ; la boîte des messages affiche le texte `0x84` et glisse depuis y = 240. **Fermeture** après OUI/NON (`:2349-2478`) : les trois enregistrements qui suivent l'indice d'anneau montent à Y = -1, leurs teintes retombent de `0x40`/`0x80`/`0x40` à 0 en 15 images, la boîte des messages redescend vers y = 240 ; le résultat n'est rendu qu'à la fin de ce glissement (NON → -2, OUI → l'indice choisi). Les boucles de défilement et de fermeture sont marquées `PARTIAL` dans la décompilation (`:2158-2159`, `:2244`, `:2358`) : la rotation exacte des enregistrements se lit dans le désassemblage de `DisplayMemoryCardMenu` (`0x80058F24`). | `MemoryCardManager.cs:1823-2060`, `:2128-2480`, `:2599-2699`, `:1758-1813` ; `StaticVariables.cs:11195-11203`, `:11329-11386`, `:12406` ; `MGImage.cs:220-230` (`TextureColor`) |
+| J3 | L'écran de choix (état `0x0C`) remplit quatre entrées. **Selon le binaire** (O-E16-18, `0x80060128`-`0x80060134`, `0x80058D74`-`0x80058DC4`) : ligne 1 (en Y + 8) = nom du chapitre, `FUN_800818e4(bloc)` qui lit les quatre chiffres du chapitre et rend le texte ETC ; ligne 2 (en Y + 32) = résumé (`bloc + 0x20`). La décompilation inverse les deux (`MemoryCardManager.cs:1250-1254`). `FUN_800818e4` rend une chaîne vide quand le premier octet du bloc est nul (`0x800818F0`-`0x80081904`) ; le `"{n}."` de la décompilation vient de son adaptation « bureau » et n'est pas établi dans le binaire. Titre : ETC `0x83`/`0x84`. Le sélecteur (`DisplayMemoryCardMenu`, rendu de la transition 10) lit Haut/Bas (au rythme de répétition) et Croix : Croix ouvre OUI/NON (ETC `0x4A`/`0x4B`) ; OUI retient l'entrée, NON annule tout le choix (pas de retour au choix). | `MemoryCardManager.cs:1229-1269`, `:2128-2480` |
+| J4 | Le sélecteur est un **carrousel** de quatre boîtes (288 × 56, même dessin que la boîte de description de l'inventaire, déjà exportée) : les quatre enregistrements tournent sur les hauteurs `-1, 0, 64, 128, 240` (`SHORT_ARRAY_800C436C`), glissent par `UpdateUiBoxesPosition` (déjà porté trois fois dans la DLL) et changent de teinte RVB sur 15 images (`InitializeUIMemoryFileBox`, cible `0x80` pour l'entrée du milieu). Le texte : deux lignes par boîte, à `(X + 16, Y + 8)` et `(X + 16, Y + 32)`, en font3. La boîte des messages est `g_uiBoxesInventoryDescriptionBackground` (16, 168). L'icône de carte mémoire n'est jamais dessinée à l'écran : elle ne va que dans l'en-tête du fichier PS1. **Ouverture** (`InitializeMemoryCardMenu`, `0x800583EC`, `MemoryCardManager.cs:1823-2060`) : l'enregistrement i est posé à la hauteur `SHORT_ARRAY_800C436C[i + 1]` (0, 64, 128, 240) et marqué vide ; les textes glissent depuis y = 240 ; teintes de 0 vers `0x40`, `0x80`, `0x40`, `0x40` en 15 images ; l'anneau part de l'indice 1, remplit deux entrées (l'entrée 0 dans l'enregistrement 1, au milieu, la plus claire ; l'entrée 1 dans l'enregistrement 2, en dessous), sélection 0 ; la boîte des messages affiche l'en-tête `+0`, le texte ETC `0x83` « Sélectionne une fente pour l'enregistrement. » (`0x800589A8`), et glisse depuis y = 240 ; `0x84` ne le remplace qu'à la question (`0x80059534`), la décompilation lisant `field_0x4` aux deux endroits. **Fermeture** après OUI/NON (`:2349-2478`) : les trois enregistrements qui suivent l'indice d'anneau montent à Y = -1, leurs teintes retombent de `0x40`/`0x80`/`0x40` à 0 en 15 images, la boîte des messages redescend vers y = 240 ; le résultat n'est rendu qu'à la fin de ce glissement (NON → -2, OUI → l'indice choisi). Les boucles de défilement et de fermeture sont marquées `PARTIAL` dans la décompilation (`:2158-2159`, `:2244`, `:2358`) : la rotation exacte des enregistrements se lit dans le désassemblage de `DisplayMemoryCardMenu` (`0x80058F24`). | `MemoryCardManager.cs:1823-2060`, `:2128-2480`, `:2599-2699`, `:1758-1813` ; `StaticVariables.cs:11195-11203`, `:11329-11386`, `:12406` ; `MGImage.cs:220-230` (`TextureColor`) |
 | J5 | Les 8 textes absents de l'export sont vides dans `ETC_RES.R` lui-même (vérifié octet par octet dans le fichier d'origine) : 6 secondes lignes vides et une paire vide (`0x9F`/`0xA0`). Les noms des 42 chapitres sont les textes ETC 0 à 41 (`Etc_0000` « Un Nouveau Départ » … `Etc_0041`). | `EtcIndexTable.csv` ; `data-extracted/data/ETC_RES.R.json` ; `alundra-project/Dialogues/Etc.yarn` |
 | J6 | La DLL : le livre atteint son créneau F (interaction) par `PickEventTrigger`, puis `RunPickedEvent` appelle `RunSpriteEvent`, un « no-op » compté pour toute IA native. Le code F 1 de l'original (`Script_FInteract_FUN_8007fc64`) verrouille le héros (`ControlLocked`) : le porter pour toute entité de code F 1 verrouillerait le héros devant des entités dont l'IA de tick n'est pas portée. | `AlundraEntityScriptProxy.cs:1140-1205` ; `AlundraEventProgramRunner.cs:268-279` ; `SpriteEventHandlers.cs:233-234`, `:270-277` |
 | J7 | Message ETC et oui/non dans la DLL : `AlundraDialogueDirector.Open(asset, nœud, 1)` sur l'asset `dialogue_etc` (nœuds `Etc_{index:D4}` en décimal) ; `SetCloseMask` est l'opcode `0x50`, que l'original appelle `SetEtcAnimationMode` ; `OpenChoice`/`TakeChoiceResult` pour OUI/NON. `AlundraEtcStringTable` charge `dialogue_etc` mais n'expose ni l'asset ni un texte ETC quelconque. | `AlundraDialogueDirector.cs:98-103`, `:213-343`, `:393-428` ; `AlundraEtcStringTable.cs:51-181` |
@@ -1639,11 +1639,13 @@ agent (`scratchpad/e16def/e16e-*.md`).
   images). Ce sont des temporisations, pas des fondus (J4).
 - **L3 — Libellés** (D-E16-36). À l'ouverture du choix, pour chaque emplacement `slot1` à `slot4` :
   `TryLoad` puis `TryValidate` avec les règles de production (injectables comme au K1 d'E16.d).
-  - Réussite : ligne 1 = `AlundraSaveGame.BuildSummary(hpMax, gameTime)` ; ligne 2 = le nom du
-    chapitre, texte ETC d'indice `AlundraChapterFlags.GetFirstEnabledFlagIndex(GameFlags)` (0 à 41,
-    J5).
-  - Tout autre cas (vide, illisible, refusé) : `"{n}."` et une ligne vide, comme un emplacement vide
-    de l'original. L'emplacement reste écrasable.
+  - Réussite : ligne 1 = le nom du chapitre, texte ETC d'indice
+    `AlundraChapterFlags.GetFirstEnabledFlagIndex(GameFlags)` (0 à 41, J5) ; ligne 2 =
+    `AlundraSaveGame.BuildSummary(hpMax, gameTime)`. C'est l'ordre du binaire (J3, O-E16-18).
+  - Tout autre cas (vide, illisible, refusé) : les deux lignes d'un emplacement vide de l'original.
+    T3 établit dans le binaire ce que contient alors le bloc lu par `FindSaveFileInMemoryCard`
+    (`0x8005DC94`) avant `FUN_800818e4`, dont la décompilation est une adaptation « bureau » ; s'il
+    ne le tranche pas, T3 s'arrête (arrêt ajouté). L'emplacement reste écrasable.
   - Les métadonnées du fichier ne sont jamais lues.
   - Les textes affichés viennent du jeu (textes ETC, résumé calculé), sont bornés en longueur, et
     passent par des `TextBlock` font3 avec `AllowsInlineFormatting="False"`.
@@ -1794,7 +1796,11 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   - créneau F repris aux états 2, 4 et 6 ; `Start` pendant que l'écran est actif (SE7) ;
   - refus de la capture : en un nombre borné de ticks, livre à l'état 0, `PlayerControlFlags == 0`,
     `IsActive` faux, `MenuOpen` effacé (SE8).
-- ⚠️ **T3 — Directeur de l'écran** (L2, L3, L5, sans MGUI). *Arrêtée le 2026-09-29 avant tout code :
+- ⏳ **T3 — Directeur de l'écran** (L2, L3, L5, sans MGUI). **Reprise** : O-E16-18 est tranchée par
+  la règle de l'auteur « le binaire France tranche » (mémoire du projet ; D-E16-36 dit « comme
+  l'original ») : `0x83` à l'ouverture, `0x84` à la question, ligne 1 = chapitre, ligne 2 = résumé ;
+  J3, J4 et L3 sont corrigés, et le texte d'un emplacement vide est à établir dans le binaire (L3).
+  *Arrêtée le 2026-09-29 avant tout code :
   deux faits du plan sont contredits par le binaire (règle : un fait du plan contredit arrête la tâche).
   Rien n'est commité pour T3 hors de cette note.*
   - *Rotation `PARTIAL` du carrousel (J4) : tranchée par le désassemblage de `DisplayMemoryCardMenu`
@@ -1829,7 +1835,7 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
     rend l'entrée `+0` dans le sprite `+0x24` et l'entrée `+4` dans le sprite `+0x4C` ; `FUN_80058c44`
     les place en (X + 16, Y + 8) et (X + 16, Y + 32) (`0x80058D74`-`0x80058DC4`). La décompilation
     (`MemoryCardManager.cs:1250-1254`, et `:153-154`) inverse les deux champs, et J3 et L3 la suivent.
-  - **Question O-E16-18** : suivre le binaire, c'est-à-dire ETC `0x83` à l'ouverture puis `0x84` à la
+  - **Question O-E16-18** (tranchée, voir la reprise ci-dessus) : suivre le binaire, c'est-à-dire ETC `0x83` à l'ouverture puis `0x84` à la
     question, et ligne 1 = nom du chapitre, ligne 2 = résumé (D-E16-36 dit « comme l'original ») ?
     Recommandation : oui, selon la règle « le binaire tranche ».
 
@@ -1909,6 +1915,7 @@ diff ne touche que le catalogue et le rapport ; verifier et contradicteur **CONF
 - un état de l'original dont la classe (conservé, adapté, sans objet) n'est pas établie par le code
   ou le binaire ;
 - une rotation `PARTIAL` du carrousel que le désassemblage de `0x80058F24` ne tranche pas ;
+- le texte d'un emplacement vide, si le binaire (`0x8005DC94`, `0x800818E4`) ne le tranche pas ;
 - un manque de MGUI ou du moteur (rapport dédié, règle de l'auteur) ;
 - une exception qui sort du livre ou de l'écran ;
 - un test existant qui change pour une autre raison, ou l'oracle de l'intro qui bouge.
