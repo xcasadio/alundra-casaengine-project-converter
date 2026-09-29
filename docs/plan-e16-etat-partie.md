@@ -1526,8 +1526,9 @@ Défaut H2 : corrigé par défaut (règle « corriger les défauts de l'original
 
 #### Plan détaillé d'E16.e (2026-09-29)
 
-**Statut** : proposé en mode AUTO (« fait tout E16 de façon autonome ») ; revue de sécurité, puis
-relecture de plan jusqu'à READY, avant l'exécution ; vérification par un `verifier` frais et un
+**Statut** : proposé en mode AUTO (« fait tout E16 de façon autonome ») ; revue de sécurité faite
+(tableau en fin de section, constats intégrés), puis relecture de plan jusqu'à READY, avant
+l'exécution ; vérification par un `verifier` frais et un
 contradicteur. Exploration du 2026-09-29 en lecture seule, chaque surface recontrôlée par un second
 agent (`scratchpad/e16def/e16e-*.md`).
 
@@ -1553,6 +1554,11 @@ agent (`scratchpad/e16def/e16e-*.md`).
   répartition minimale, sur (créneau, code), qui ne connaît que le créneau F code 1 et le créneau C
   code 72, **et seulement pour cette entité**. Toute autre IA native reste un « no-op » compté,
   comme aujourd'hui.
+  - Le type de sprite est retenu sur le proxy par les deux chemins d'apparition
+    (`AlundraEntitySpawnFactory.cs:590-595`, `AlundraWorldProxy.cs:1614-1619`), qui ne recopient
+    aujourd'hui que les codes de programme (SE6) ;
+  - la répartition exige ensemble : type 237, `ProgramIndexes[créneau] & 0x7f == 0`, et
+    (créneau, code) ∈ {(F, 1), (C, 72)}.
 - **L2 — États conservés, adaptés, sans objet** (D-E16-34) :
   - conservés, dans l'ordre de l'original :
     - `0x2710` : message ETC `0x87` « Examen de la Carte Mémoire . . . » ;
@@ -1585,19 +1591,44 @@ agent (`scratchpad/e16def/e16e-*.md`).
   - Les métadonnées du fichier ne sont jamais lues.
   - Les textes affichés viennent du jeu (textes ETC, résumé calculé), sont bornés en longueur, et
     passent par des `TextBlock` font3 avec `AllowsInlineFormatting="False"`.
-- **L4 — Livre (port de `0x8007B998`, avec le défaut H2 corrigé)** :
-  - **créneau F** : `Bytes` à 1, 0, 0, 0 ; `TargetAnimationId` à 0 ; `ControlLocked` posé ;
-  - **état 1** : si un dialogue est déjà ouvert, abandon (l'équivalent de `0x80045004`) ; sinon
-    `Open(dialogue_etc, "Etc_0064", 1)` (ETC `0x40`), `SetCloseMask` avec le bit de script, 60
-    ticks, puis fermeture par le script ;
-  - **état 2** : `OpenChoice` avec les textes ETC `0x41`/`0x42`. Si l'ouverture échoue, **abandon**,
-    au lieu de rester à l'état 3 comme l'original (H2) ;
-  - **état 4** : `TakeChoiceResult`. Autre que OUI : abandon. OUI : 60 ticks ;
-  - **état 5** : capture par `TryCaptureFromWorld` (la carte courante et la tuile du héros, comme
-    `UpdateSavedData`), puis `TryValidate`. Refus : message d'échec `0x15`, sans écriture. Sinon :
-    démarrage de l'écran de sauvegarde avec l'objet capturé ;
-  - **état 6** : attente de la fin de l'écran, puis remise (état 0, `ControlLocked` effacé) ;
-  - l'abandon efface `ControlLocked` comme `ResetWarpState`.
+  - Les quatre objets chargés ne vivent que dans le calcul des libellés, puis sont jetés : jamais
+    passés à `ApplyTo` ni à `Save` (SE4).
+  - Les règles viennent de la fabrique gardée d'E16.d (`TryCreateRules`, rendue interne et
+    partagée, `RulesFactoryForTests` compris), construites une fois par ouverture. Si elles ne se
+    construisent pas, les quatre libellés sont `"{n}."` et la capture de l'état 5 est refusée
+    (SE4).
+  - Les quatre lectures ont lieu une fois par ouverture, à l'entrée de `0x0C`, derrière le
+    message « Examen », jamais pendant le carrousel (SE9).
+- **L4 — Livre (port de `0x8007B998`, avec le défaut H2 corrigé)**. Revu après la revue de
+  sécurité (SE1, SE2, SE7, SE8) : aucun chemin ne doit laisser le héros verrouillé, une boîte
+  ouverte ou un choix en attente.
+  - **créneau F** : si l'état du livre n'est pas 0, ne rien faire (écart voulu : l'original remet
+    toujours l'état à 1, et un second appui relancerait le livre en plein flux, SE7). Sinon :
+    `Bytes` à 1, 0, 0, 0 ; `TargetAnimationId` à 0 ; `ControlLocked` posé ; le directeur de l'écran
+    note qu'un flux du livre est en cours (L5) ;
+  - **état 1** : abandon, sans ouvrir de boîte, si la boîte de dialogue n'a pas de présentateur
+    (`!HasPresenter`), si un dialogue est déjà ouvert ou un choix déjà en attente, ou si le texte
+    `0x40` ne se résout pas (l'équivalent de `0x80045004`, SE2). Sinon :
+    `Open(dialogue_etc, "Etc_0064", 1)`, `SetCloseMask` avec le seul bit de script ; le livre
+    retient qu'il possède cette boîte ; attente de 60 ticks ;
+  - **état 2** : abandon si pas de présentateur ou si `0x41`/`0x42` ne se résolvent pas (SE2) ;
+    sinon `OpenChoice` avec ces deux textes. Ce sont les seuls échecs observables de
+    l'ouverture : l'abandon remplace le blocage de l'original à l'état 3 (H2) ;
+  - **état 4** : si `TakeChoiceResult()` est nul et que plus aucun choix n'est en attente (un autre
+    `Open` l'a effacé), abandon (SE2). Réponse reçue : **d'abord fermer la boîte du livre**
+    (`RequestScriptClose`, port de `TryActivateTextHoldState`, `FunctionTypeC.cs:6893`, SE1), puis
+    NON → abandon ; OUI → 60 ticks ;
+  - **état 5** : capture par `TryCaptureFromWorld`, puis `TryValidate`.
+    - Refus : `AlundraSaveScreenDirector.StartFailure()` montre le message d'échec `0x15` puis la
+      chaîne de fin commune ; rien n'est écrit (SE8).
+    - Sinon : `Start(objet capturé)`. S'il rend faux (écran déjà actif), abandon (SE7).
+  - **état 6** : attend la condition `!AlundraSaveScreenDirector.Instance.IsActive`, puis remise
+    (SE7) ;
+  - **abandon et remise** : fermer la boîte que le livre possède ; annuler un choix en attente par
+    une nouvelle méthode `AlundraDialogueDirector.CancelChoice()`, qui efface `_awaitingChoice` et
+    `_pendingChoiceResult` et se désabonne ; effacer `ControlLocked` ; état 0 ; fin du flux au
+    directeur (SE1). Le livre ne recopie pas la règle de l'opcode `0x44`, qui prend l'absence de
+    présentateur pour un OUI (`AlundraEventProgramRunner.cs:704-710`).
 - **L5 — Directeur et écran**. `AlundraSaveScreenDirector`, directeur logique singleton de session,
   sans MGUI, sur le modèle de l'inventaire (J8). Il remplace l'état global `g_globalTransitionState`
   de l'original :
@@ -1613,6 +1644,17 @@ agent (`scratchpad/e16def/e16e-*.md`).
     messages et pour les quatre boîtes du carrousel (même dessin, J4) ;
   - teinte par `TextureColor` ;
   - Haut/Bas/Croix/Carré lus sur `TickPad`.
+
+  Garde-fous du directeur (revue de sécurité) :
+  - **flux du livre** : le directeur sait qu'un flux du livre est en cours, du créneau F jusqu'à la
+    remise. Son `InstallForMapEntry`, appelé par `InitializeWithWorld`, voit un flux resté en cours
+    quand le monde change (un évènement de carte, une autre entité ou un portail pendant les états
+    1 à 5) : il efface `ControlLocked` (et `MenuOpen` si l'écran l'a posé), termine l'écran sans
+    écrire, oublie le flux et le journalise (SE3) ;
+  - **emplacement retenu** : l'indice est figé à l'appui de Croix ; Haut/Bas sont ignorés tant que
+    OUI/NON est affiché ; le nom de l'emplacement vient d'une table constante `slot1` … `slot4`,
+    indexée par l'indice figé (SE5) ;
+  - **un seul écran** : `Start` rend faux tant que `IsActive` (SE7).
 - **L6 — Textes ETC**. `AlundraEtcStringTable` gagne un accès public générique,
   `TryResolveText(int etcIndex, out string text)`, et l'accès à son asset chargé pour
   `AlundraDialogueDirector.Open`. Les textes absents (J5) rendent une ligne vide, comme l'original.
@@ -1629,6 +1671,8 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
     `0x4A`/`0x4B`, « Un Nouveau Départ » pour 0 ; une ligne vide pour `0x88` ; faux hors de 0..1023 ;
   - une entité de type 237 atteint le livre porté par ses créneaux F et C ; une autre entité de code
     F 1 reste un « no-op » compté (aucun `ControlLocked`).
+  - le type 237 avec d'autres codes → « no-op » ; un autre type avec F 1 ou C 72 → « no-op »
+    compté ; les deux chemins d'apparition posent le type (SE6).
 - ⏳ **T2 — Livre** (L4). Tests, sur le directeur de dialogue réel :
   - chaque transition des états 1, 2, 4, 5 et 6, avec les durées de 60 ticks ;
   - NON → abandon, `ControlLocked` effacé ;
@@ -1636,6 +1680,14 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   - échec de l'ouverture du choix → abandon, et non blocage à l'état 3 (H2) ;
   - OUI → capture à la carte et à la tuile du héros, puis démarrage de l'écran (directeur simulé) ;
   - capture refusée par `TryValidate` → message d'échec, aucune écriture.
+  - après **chaque** abandon et après la fin normale : `PlayerControlFlags == 0` (le champ entier),
+    `IsOpen` faux, `IsAwaitingChoice` faux ; puis N ticks où le héros bouge et où l'inventaire
+    peut s'ouvrir (SE1) ;
+  - pas de présentateur à l'état 1, puis à l'état 2 ; un autre `Open` pendant l'état 4 : chacun
+    mène à un abandon, avec les assertions ci-dessus et aucun démarrage d'écran (SE2) ;
+  - créneau F repris aux états 2, 4 et 6 ; `Start` pendant que l'écran est actif (SE7) ;
+  - refus de la capture : en un nombre borné de ticks, livre à l'état 0, `PlayerControlFlags == 0`,
+    `IsActive` faux, `MenuOpen` effacé (SE8).
 - ⏳ **T3 — Directeur de l'écran** (L2, L3, L5, sans MGUI). Tests, sur un service simulé :
   - la suite des états conservés, les temporisations, les textes affichés ;
   - libellés : un emplacement valide montre son résumé et son chapitre recalculés, et des
@@ -1649,11 +1701,24 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   - chaque état de sauvegarde autre que `Saved`, et une exception du service simulé derrière
     l'adaptateur → message d'échec `0x15`, aucune exception ;
   - `IsActive` et `MenuOpen` sur tout le parcours ; l'inventaire ne s'ouvre pas pendant l'écran.
+  - libellés sur des emplacements hostiles : chaque état de chargement autre que `Loaded`,
+    `Loaded` avec un objet nul, `LoadedDataVersion` à 0, un champ hors domaine → `"{n}."` ; un
+    instantané de l'état de jeu identique après l'ouverture de l'écran sur quatre emplacements
+    hostiles ; `Save` reçoit l'instance capturée elle-même (`ReferenceEquals`) ; une fabrique de
+    règles qui lève, et un service derrière l'adaptateur qui lève sur `TryLoad` : aucune exception,
+    libellés `"{n}."`, aucune écriture (SE4) ;
+  - Bas pendant OUI/NON, puis OUI : `Save` reçoit l'emplacement figé, et un seul `Save` par flux
+    (SE5) ;
+  - un service simulé compteur : `TryLoad` appelé 4 fois par ouverture, jamais pendant le
+    carrousel (SE9) ;
+  - livre à l'état 2, puis installation d'un monde : drapeaux à 0, `IsActive` faux, aucun `Save`
+    (SE3).
 - ⏳ **T4 — Écran XAML et présentation** (L5). `SaveScreen.xaml`, `.uiscreen`, `.design.json`,
   présentateur et vue-modèle, câblés comme l'inventaire.
   - Tests : le présentateur pousse l'écran à l'activation et le retire à la fin ; la vue-modèle suit
     le directeur (positions, teintes, textes) ; un `MGDesktop` de test charge l'écran sans erreur
-    (règle de l'auteur : jamais un `UIRoot`).
+    (règle de l'auteur : jamais un `UIRoot`) ; chaque `MGTextBlock` de `SaveScreen.xaml` a
+    `AllowsInlineFormatting` à faux (SE10).
   - Ensuite, **export complet en place**, pour cataloguer le nouvel écran. Il ne doit changer que
     le catalogue et le rapport (preuve par diff des manifestes) ; jamais pendant que `Alundra.Tests`
     tourne.
@@ -1668,7 +1733,13 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   `docs/formats/save-game.md` ; plan maître.
 - ⏳ **T7 — Vérification** : un `verifier` frais et un contradicteur.
 - ⏳ **T8 — Recette en jeu** (l'auteur) : un livre, sauvegarde dans chacun des 4 emplacements,
-  libellés relus ; F9 recharge la plus récente.
+  libellés relus ; F9 recharge la plus récente. Trois emplacements hostiles aussi (SE11) :
+  - un JSON aux métadonnées forgées (`chapter` « 9999 », un `summary` de 500 caractères avec du
+    balisage) mais aux données valides : le libellé montre les valeurs recalculées ;
+  - un `hpMax` hors domaine : `"{n}."` ;
+  - un binaire avec un octet inversé : `"{n}."`.
+
+  Puis écraser l'un d'eux depuis le livre et le recharger par F9.
 
 **Acceptation d'E16.e** : les tests de T1 à T5 passent ; `Alundra.Tests` sans échec, oracle de
 l'intro inchangé ; build Release puis Debug à 0 erreur (Debug en dernier) ; export en place dont le
@@ -1680,6 +1751,27 @@ diff ne touche que le catalogue et le rapport ; verifier et contradicteur **CONF
 - un manque de MGUI ou du moteur (rapport dédié, règle de l'auteur) ;
 - une exception qui sort du livre ou de l'écran ;
 - un test existant qui change pour une autre raison, ou l'oracle de l'intro qui bouge.
+
+**Revue de sécurité d'E16.e (2026-09-29)** : `security-reviewer` frais, en lecture seule, sur
+`92fe9b1`. Aucun P0 ni P1. Ce qui tient : les libellés ne peuvent pas afficher de texte du
+fichier ; l'écriture ne touche que l'emplacement donné et rien au moindre refus ; pendant le flux,
+l'inventaire et les touches de recette sont refusés, et `MenuOpen` fige les passes.
+
+| Réf | Prio | Constat | Décision | Où |
+|---|---|---|---|---|
+| SE1 | P2 | Un abandon après l'état 1 pouvait laisser la boîte du livre ouverte (`MessageBox`, fermeture par script seulement) ou un choix en attente : héros verrouillé | FIX (contrôlé en session principale : `FunctionTypeC.cs:6893`, `AlundraDialogueDirector.cs:213-238`) | L4, T2 |
+| SE2 | P2 | L'échec d'ouverture du choix n'était pas observable, et un choix effacé par un autre `Open` gelait le livre | FIX | L4, T2 |
+| SE3 | P3 | Un changement de monde pendant les états 1 à 5 laissait `ControlLocked` posé | FIX | L5, T3 |
+| SE4 | P3 | Le sort des objets chargés pour les libellés et les exceptions des règles n'étaient pas fixés | FIX | L3, T3 |
+| SE5 | P3 | L'emplacement confirmé n'était pas figé face à Haut/Bas pendant OUI/NON | FIX | L5, T3 |
+| SE6 | P3 | Le type de sprite n'est pas retenu sur le proxy | FIX | L1, T1 |
+| SE7 | P3 | Rien n'empêchait de relancer le livre en plein flux | FIX | L4, L5, T2 |
+| SE8 | P3 | Le chemin d'un refus de capture ne menait nulle part de défini | FIX | L4, T2 |
+| SE9 | P4 | Quatre lectures complètes à chaque ouverture (≤ 4 Mio, une fois) | DEFER, avec un test de compte | L3, T3 |
+| SE10 | P4 | Formatage en ligne actif par défaut dans MGUI | FIX (test) | T4 |
+| SE11 | P4 | La recette n'avait pas d'emplacement hostile | FIX | T8 |
+| SE12 | P4 | Si E14 porte `TouchingEntity`, le livre pourrait choisir le créneau D et cesser d'avancer | DEFER | §4 : prérequis d'E14 |
+| SE13 | — | Valider une seconde fois l'objet juste avant l'écriture | REJECT | objet privé, validé à l'état 5 (C5) ; `ReferenceEquals` de SE4 couvre la remise |
 
 ### E16.f — Variables Yarn adossées aux drapeaux ✅ (DLL, docs ; relecture REVISE puis READY le 2026-09-28 ; exécutée en mode AUTO, « fait tout E16 de façon autonome » ; faite et vérifiée CONFIRMED le même jour, `82ab618` à `c4ff1d5`)
 
@@ -2105,6 +2197,9 @@ tests du convertisseur 400/400, `Alundra.Tests` 1361/1361.
   décompilation C# de ce chemin : étape E18 du plan maître (D-E16-20). E16.0 en confirme seulement
   les faits.
 - Lecteurs de `ContentsGameFlag` de l'IA native (coffres, `FunctionTypeA.cs:236-264`) : E14.
+- Prérequis pour E14 (SE12 d'E16.e) : `TouchingEntity` n'est jamais posé dans la DLL, donc le livre
+  de sauvegarde choisit toujours son créneau C. Si E14 le porte, un héros collé au livre lui ferait
+  choisir le créneau D et arrêterait son automate : à traiter avec ce portage.
 - Noms lisibles pour les drapeaux, au-delà des 41 drapeaux de chapitre.
 - **Risques résiduels acceptés** (jeu solo) : le sens des drapeaux ne peut pas être validé, donc une
   sauvegarde éditée peut casser la suite de l'histoire, bloquer le joueur, ou même figer
