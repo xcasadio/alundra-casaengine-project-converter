@@ -324,6 +324,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         0x70, 0x78, 0x79, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F, 0x80, 0x81, 0x85, 0x8B, 0x8D, 0xAC, 0xAD, 0xB8,
         0x0D, 0x12, 0x39, 0x44, 0x50, 0x51, 0x53, 0x5C, 0x75, 0x9B, 0x9C, 0xA5, 0xA6, 0xA7, 0xA8, 0xAB,
         0xAF, 0xB0, 0xB1, 0xBA, 0xBD, 0xBE, 0xBF,
+        0x42, 0x43,
         // E16.a T6 (docs/plan-e16-etat-partie.md, contract item 4): the 23 opcodes on the line above were
         // ported by earlier slices (dialogue, map change, HUD, audio, ...) and already have a Dispatch
         // case, but were never added here - the same staleness the notes below describe. Checked by
@@ -353,6 +354,8 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         // buttons, D-E7-7 relabel) newly implemented (AlundraEventProgramRunner.Dispatch cases 0x3B/0x2F)
         // - see PessimisticPredicateOpcodes/OptimisticPredicateOpcodes' own updated docs above for why
         // this changes only labels, never a Result, on map 389.
+        // E19.a (docs/plan-e19-opcodes.md T2): 0x42/0x43 (logic entity) newly implemented; map 389 has no
+        // site of either, so no line of the annexes changes.
     };
 
     private readonly string _projectRoot;

@@ -4470,7 +4470,9 @@ public class AlundraEventProgramRunnerTests
         Assert.Equal(0x7D, codeBytes[1361]);
 
         // The entry point's own lead-in: 0x36 (wait until flag 0x83EC is on) at 744, then 0x06 (flag off,
-        // consuming the same flag) at 747, an unimplemented 0x43 (skipped by size) at 750, a real Break at
+        // consuming the same flag) at 747, a 0x43 [17] at 750 (E19.a: it searches record 17, finds nothing
+        // in this world, so Result = 0 and the logic entity does not change - the 0x3B at 757 rewrites
+        // Result before the 0x03 at 764), a real Break at
         // 752 (resumes next call at 753), an unimplemented 0x73 at 753, a real 0x37 Wait(1) at 755, then
         // 0x3B (Check player in area, box [40,40,17,17,1,1]) at 757, whose Result gates the 0x03 (if true
         // goto) at 764 that reaches offset 773.

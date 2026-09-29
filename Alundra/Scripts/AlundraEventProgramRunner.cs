@@ -1257,6 +1257,45 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
                 return 1;
 
+            case 0x42: // Set logic entity to the player - Script_66_042 @ 0x8003E808 (E19.a T2, D-E19-2,
+                       // docs/plan-e19-opcodes.md §0.2.3), PER THE BINARY: writes the OWNER's word (+0x230) -
+                       // the one every later instruction reads its logic entity from - with the HERO
+                       // (0x80127D30), never with the owner itself, and returns its own size (1). No PlayerEntity
+                       // spawned for this world: the word is left as it is, degraded no-op (once-logged warning),
+                       // the same shape as 0x3B/0x3E/0x53.
+                if (_worldContext.PlayerEntity is { } logicPlayer)
+                {
+                    owner.LogicEntity = logicPlayer;
+                }
+                else
+                {
+                    LogDegradedNoPlayerOpcodeOnce(0x42, "SetLogicEntityToPlayer");
+                }
+
+                return 1;
+
+            case 0x43: // Set logic entity by search - Script_67_043 @ 0x8003E81C (E19.a T2), PER THE BINARY:
+                       // searches by v1 with the current LOGIC entity as the reference. With at least one match
+                       // the owner's word takes the LAST one found and Result = 1; with none, Result = 0 and the
+                       // word is left as it is - a decompilation that only writes Result on one path is wrong
+                       // here. Returns 2 (its own size) on both paths. `0x43 [0x80]` searches "get owner", which
+                       // returns the reference itself: the context does not change, Result = 1 (2 sites, map
+                       // 476 B5 @90 and @107).
+            {
+                var logicMatches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+                if (logicMatches.Count > 0)
+                {
+                    owner.LogicEntity = logicMatches[^1];
+                    state.Result = 1;
+                }
+                else
+                {
+                    state.Result = 0;
+                }
+
+                return 2;
+            }
+
             case 0x6E: // Is force adjusted - Script_110_06E @ 0x8003F9D4 (EntityEventHandlers.cs:2146-2151):
                        // Result = entity.ForceAdjusted, copied as is like the binary does
                        // (`lw $v0,0x13c($a0)` / `sw $v0,0x2c($a3)`) - see ForceAdjusted's own doc (E4.d)

@@ -185,6 +185,172 @@ public class AlundraEventProgramRunnerLogicEntityTests
         Assert.Same(npc, mapEvent.Entity);
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // T2: 0x42 and 0x43
+    // ---------------------------------------------------------------------------------------------
+
+    [Fact]
+    public void SetLogicEntityByMatch_0x43_Found_TakesTheLastMatch_SetsResult1_AndAdvancesBy2()
+    {
+        // 0x43 [5]; 0x1A [7]; end. Two entities carry record id 5: the LAST one found becomes the context.
+        var document = NewDocument(0x43, 5, 0x1A, 7, 0xFF);
+        var world = new FakeWorld();
+        var first = Entity(5);
+        var last = Entity(5);
+        world.Spawned.Add(first);
+        world.Spawned.Add(last);
+        var runner = NewRunner(document, world);
+        var owner = Entity(1);
+        var state = StateFor(document);
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Same(last, owner.LogicEntity);
+        Assert.Equal(1, state.Result);
+        Assert.Equal(7u, last.TargetAnimationId); // the next instruction (at +2) ran on the new logic entity.
+        Assert.Equal(0u, first.TargetAnimationId);
+        Assert.Equal(0u, owner.TargetAnimationId);
+    }
+
+    [Fact]
+    public void SetLogicEntityByMatch_0x43_NotFound_SetsResult0_KeepsTheContext_AndAdvancesBy2()
+    {
+        var document = NewDocument(0x43, 9, 0x1A, 7, 0xFF);
+        var world = new FakeWorld();
+        world.Spawned.Add(Entity(5));
+        var runner = NewRunner(document, world);
+        var owner = Entity(1);
+        var kept = Entity(2);
+        owner.LogicEntity = kept;
+        var state = StateFor(document);
+        state.Result = 1;
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal(0, state.Result);
+        Assert.Same(kept, owner.LogicEntity);
+        Assert.Equal(7u, kept.TargetAnimationId);
+    }
+
+    [Fact]
+    public void SetLogicEntityByMatch_0x43_GetOwner_0x80_LeavesTheContextAlone_ButSetsResult1()
+    {
+        // The search 0x80 returns its reference: the logic entity itself.
+        var document = NewDocument(0x43, 0x80, 0xFF);
+        var runner = NewRunner(document, new FakeWorld());
+        var owner = Entity(1);
+        var kept = Entity(2);
+        owner.LogicEntity = kept;
+        var state = StateFor(document);
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal(1, state.Result);
+        Assert.Same(kept, owner.LogicEntity);
+
+        // With the context still on the owner, the owner remains its own logic entity.
+        var self = Entity(3);
+        state = StateFor(document);
+        runner.RunOneScriptCall(self, state);
+        Assert.Equal(1, state.Result);
+        Assert.Same(self, self.LogicEntity ?? self);
+    }
+
+    [Fact]
+    public void SetLogicEntityToPlayer_0x42_SetsTheHero_NotTheOwner_AndAdvancesBy1()
+    {
+        // The owner retargeted itself on an NPC, then 0x42 gives the context back to the hero.
+        var document = NewDocument(0x42, 0x1A, 7, 0xFF);
+        var world = new FakeWorld();
+        var hero = new AlundraEntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal };
+        world.PlayerEntity = hero;
+        var runner = NewRunner(document, world);
+        var owner = Entity(1);
+        owner.LogicEntity = Entity(2);
+        var state = StateFor(document);
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Same(hero, owner.LogicEntity);
+        Assert.Equal(7u, hero.TargetAnimationId);
+        Assert.Equal(0u, owner.TargetAnimationId);
+    }
+
+    [Fact]
+    public void SetLogicEntityToPlayer_0x42_WithoutAHero_LeavesTheContext_IsDegraded_AndAdvancesBy1()
+    {
+        var document = NewDocument(0x42, 0x1A, 7, 0xFF);
+        var runner = NewRunner(document, new FakeWorld());
+        var kinds = new List<EventTraceKind>();
+        runner.TraceSink = record => kinds.Add(record.Kind);
+        var owner = Entity(1);
+        var kept = Entity(2);
+        owner.LogicEntity = kept;
+
+        runner.RunOneScriptCall(owner, StateFor(document));
+
+        Assert.Same(kept, owner.LogicEntity);
+        Assert.Equal(7u, kept.TargetAnimationId);
+        Assert.Equal(EventTraceKind.Degraded, kinds[0]);
+    }
+
+    [Fact]
+    public void TheContext_PersistsBetweenCalls_AfterABreak_AndFromOneSlotToTheNextOfTheSameEntity()
+    {
+        // Slot C: 0x43 [5]; Break; 0x1A [7]; end. Slot F: 0x1A [8]; end.
+        var document = new EventProgramDocument
+        {
+            EventCodesCTable = new[] { 0 },
+            EventCodesFTable = new[] { 6 },
+            Codes = new[] { 0x43, 5, 0x00, 0x1A, 7, 0xFF, 0x1A, 8, 0xFF },
+        };
+        var world = new FakeWorld();
+        var target = Entity(5);
+        world.Spawned.Add(target);
+        var runner = NewRunner(document, world);
+        var owner = Entity(1);
+        owner.ProgramIndexes[ScriptHelper.ProgramCTick] = 0x80;
+        owner.ProgramIndexes[ScriptHelper.ProgramFInteract] = 0x80;
+
+        runner.RunScript(owner, ScriptHelper.ProgramCTick); // 0x43, then the Break.
+        Assert.Same(target, owner.LogicEntity);
+        Assert.Equal(0u, target.TargetAnimationId);
+
+        runner.RunScript(owner, ScriptHelper.ProgramCTick); // resumed: 0x1A [7] acts on the context kept across the Break.
+        Assert.Equal(7u, target.TargetAnimationId);
+        Assert.Equal(0u, owner.TargetAnimationId);
+
+        runner.RunScript(owner, ScriptHelper.ProgramFInteract); // another slot of the same entity: the same context.
+        Assert.Equal(8u, target.TargetAnimationId);
+        Assert.Equal(0u, owner.TargetAnimationId);
+        Assert.Same(target, owner.LogicEntity);
+    }
+
+    [Fact]
+    public void AMapEvent_ThatRetargetsItsContext_KeepsItForItsNextFrame()
+    {
+        // 0x43 [5]; Break; 0x1A [7]; end - run as a map event of the hero.
+        var document = new EventProgramDocument
+        {
+            EventCodesBTable = new[] { 99, 0 },
+            Codes = new[] { 0x43, 5, 0x00, 0x1A, 7, 0xFF },
+        };
+        var world = new FakeWorld();
+        var npc = Entity(5);
+        world.Spawned.Add(npc);
+        var runner = NewRunner(document, world);
+        var hero = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 5, TileY = 5, Status = EntityStatus.Normal };
+        world.PlayerEntity = hero;
+        var mapEvent = new AlundraMapEvent { Id = 0, X1 = 0, Y1 = 0, X2 = 10, Y2 = 10, ProgramBMap = 129, Entity = hero };
+
+        AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
+        Assert.Same(npc, mapEvent.Entity);
+
+        AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
+        Assert.Equal(7u, npc.TargetAnimationId);
+        Assert.Equal(0u, hero.TargetAnimationId);
+    }
+
     [Fact]
     public void Clone_DoesNotCopyTheLogicEntity_ANewEntityStartsOnItself()
     {

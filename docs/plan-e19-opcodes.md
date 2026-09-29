@@ -343,7 +343,7 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
     `0x66` : `RunMapEventsPass` pose déjà ces champs (`AlundraWorldProxy.cs:2326-2334`).
   - `EntitySearchService.cs:86-91` dit que la référence de recherche est toujours l'entité elle-même :
     c'est faux après T1, à corriger.
-- ⏳ **T2 — `0x42` et `0x43`** (`0x8003E808`, `0x8003E81C`).
+- ✅ **T2 — `0x42` et `0x43`** (`0x8003E808`, `0x8003E81C`). *(fait le 2026-09-29 : cas `0x42` et `0x43` de `Dispatch`, taille 1 et 2 ; 7 tests unitaires ajoutés à `AlundraEventProgramRunnerLogicEntityTests` (14 au total avec T1) ; `IntroTraceHarnessTests.ImplementedOpcodes` gagne `0x42` et `0x43`, annexes de trace régénérées sans aucun écart (la 389 n'a aucun site) ; commentaire du test Cave 140 mis à jour. Le contexte reste sur l'owner à travers un Break et d'un créneau à l'autre.)*
   - `0x42` : `owner.LogicEntity = PlayerEntity`. Rend 1. Sans héros (contexte dégradé), rien ne
     change, et le cas passe par `LogDegradedNoPlayerOpcodeOnce`, comme `0x3B`, `0x3E` et `0x53`.
   - `0x43` : la recherche `v1` prend l'entité logique pour référence (`EntitySearchService`).
