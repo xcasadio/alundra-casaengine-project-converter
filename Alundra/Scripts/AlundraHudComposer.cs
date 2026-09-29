@@ -122,6 +122,10 @@ public static class AlundraHudComposer
         HudGlyph.MagicPipFull0, HudGlyph.MagicPipFull1, HudGlyph.MagicPipFull2, HudGlyph.MagicPipFull3,
     };
 
+    // g_MpIconSprites (ALUN_CD.EXE 0x801760b8): four pip primitives per display bank, banks 0x50 bytes apart - the
+    // same four as SetPlayerMpMax's ceiling and AlundraHudDirector.MagicPipFrame's length.
+    private const int MagicPipSlots = 4;
+
     private static readonly HudGlyph[] CoinByFrame =
     {
         HudGlyph.Coin0, HudGlyph.Coin1, HudGlyph.Coin2, HudGlyph.Coin3,
@@ -301,7 +305,17 @@ public static class AlundraHudComposer
     private static void ComposeMagic(
         List<AlundraHudTile> tiles, int mp, int mpMaxDisplayed, bool catchUpPreview, IReadOnlyList<int> magicPipFrame)
     {
-        var displayedMp = mp + (catchUpPreview ? 1 : 0); // :617-624.
+        // :617-624, bounded to the four pip slots: a defect of the original, corrected (D-E13-13,
+        // docs/plan-e13-hud.md). Closing the jauge during the MP-max catch-up strands its sub-step [8]: reopening
+        // snaps the displayed max to the true one (FUN_8004b770 writes [1] and [3] only, ALUN_CD.EXE
+        // 0x8004b7b0/0x8004b7c4) and [8] only moves while that max lags, so the preview stays on. At 4 MP, DisplayMp
+        // (0x8004d3cc) then loops to a fifth pip with no bound (0x8004d5b0) and writes it at
+        // 0x801760b8 + bank * 0x50 + 4 * 0x14, outside its bank; the port read past MagicPipFrame and threw. Only
+        // that overflow is corrected, on the author's choice (2026-09-29): below 4 MP the stranded preview still
+        // draws the original's extra pip, and a stranded HP-max sub-step [6] its extra heart in ComposeLife.
+        // Bounded by the slot count, never by mpMaxDisplayed: a normal MP-max catch-up previews the incoming pip
+        // one past mpMaxDisplayed, which that bound would erase (the same trap as ComposeLife's removed clamp).
+        var displayedMp = Math.Min(mp + (catchUpPreview ? 1 : 0), MagicPipSlots);
 
         for (var i = 0; i < displayedMp; i++) // :628-668.
         {
