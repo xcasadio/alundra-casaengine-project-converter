@@ -1759,7 +1759,13 @@ agent (`scratchpad/e16def/e16e-*.md`).
 **Tâches** (branche `chantier/e16-proposition` ; un commit par tâche, avec la mise à jour de ce
 plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé)
 
-- ⏳ **T1 — Textes ETC et répartition du livre** (L1, L6). Tests :
+- ✅ **T1 — Textes ETC et répartition du livre** (L1, L6). *Fait le 2026-09-29 :
+  `AlundraEtcStringTable.TryResolveText` et `EtcDialogueAsset` ; champ `SpriteType` du proxy (type de
+  l'original : `SpriteTableIndex`, plus `0x100` pour un sprite de carte, `GameEngine.cs:732-737`), posé par
+  la fabrique d'apparition et par le héros (0, via `ApplyHeroSpriteHeader`), recopié par `Clone` ;
+  `RunSpriteEvent` répartit vers `AlundraSaveBook` sur (237, créneau natif, (F, 1) ou (C, 72)), compté dans
+  `SaveBookEventRunCount` ; les deux gestionnaires du livre restent vides jusqu'à T2.
+  `AlundraSaveBookDispatchTests` : 32 tests ; `Alundra.Tests` 1810/1810.* Tests :
   - `TryResolveText` rend « Enregistrer tes progrès? » pour `0x40`, « OUI »/« NON » pour
     `0x4A`/`0x4B`, « Un Nouveau Départ » pour 0 ; une ligne vide pour `0x88` ; faux hors de 0..1023 ;
   - une entité de type 237 atteint le livre porté par ses créneaux F et C ; une autre entité de code

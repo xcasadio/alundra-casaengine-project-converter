@@ -80,6 +80,21 @@ public class AlundraEntityScriptProxy : GameplayProxy
     public readonly int[] ProgramIndexes = new int[6]; //4c
     //public SpriteRecord? SpriteRecord;
     public uint SpriteTableIndex;
+
+    /// <summary>
+    /// E16.e L1/SE6 (docs/plan-e16-etat-partie.md): the original's own sprite type, what
+    /// <c>EntityManager.InitializeEntity</c> (0x80039D04) stores in <c>entity.SpriteTableIndex</c> - the record's
+    /// <see cref="SpriteTableIndex"/> with <c>0x100</c> added for a map sprite (<c>SpriteDirection &amp; 0x80</c>,
+    /// <c>GameEngine.SpawnEntity</c>, GameEngine.cs:732-737), 0 for the hero (<c>ResetEntityState</c>,
+    /// 0x80031974). <see cref="SpriteTableIndex"/> keeps the raw record value, as the record mapper always did.
+    /// Written by the two spawn paths (<see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>,
+    /// <see cref="AlundraWorldProxy"/>'s hero adoption) next to <see cref="SpriteProgramIndexes"/>; -1 when no
+    /// header resolved (degraded spawn, no native handler can apply). Read by
+    /// <see cref="AlundraEventProgramRunner.RunSpriteEvent"/> to recognise the save book (type
+    /// <see cref="AlundraSaveBook.SpriteType"/>).
+    /// </summary>
+    public int SpriteType = -1;
+
     public uint Flags;//6c
     public readonly int[] SpriteProgramIndexes = new int[6]; //70
     public uint TargetAnimationId; //88
@@ -1912,6 +1927,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
             ContentsGameFlag = ContentsGameFlag,
             EntityRefId = EntityRefId,
             SpriteTableIndex = SpriteTableIndex,
+            SpriteType = SpriteType,
             Flags = Flags,
             TargetAnimationId = TargetAnimationId,
             TargetDirection = TargetDirection,

@@ -1461,6 +1461,34 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
+    /// The hero's share of <c>EntityManager.InitializeEntity</c> (0x80039D04) that needs its sprite header - the
+    /// block <see cref="AdoptPlayerPawn"/> runs once the hero prefab's header resolves, kept in one method so a
+    /// test can pin it without a loaded asset catalog (E16.e SE6).
+    /// </summary>
+    internal static void ApplyHeroSpriteHeader(AlundraEntityScriptProxy proxy, SpriteRecordHeader header)
+    {
+        proxy.Flags = (uint)(header.MoreFlags | (header.CanPickup << 8) | (header.FlagsPortraitShadowType << 16));
+        // E16.e L1/SE6 (docs/plan-e16-etat-partie.md): ResetEntityState (0x80031974, GameEngine.cs:650-652)
+        // initializes the hero with sprite table index 0, not a map sprite.
+        proxy.SpriteType = 0;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramALoad] = header.ProgramLoad;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramBMap] = 0;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramCTick] = header.ProgramTick;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramDTouch] = header.ProgramTouch;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate] = header.ProgramDeactivate;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramFInteract] = header.ProgramInteract;
+        proxy.IdsvByAnimDirection = AlundraEntitySpawnFactory.BuildIdsvByAnimDirection(header.IdsvAnimDirs);
+        proxy.AnimationEndByAnimDirection = AlundraEntitySpawnFactory.BuildAnimationEndByAnimDirection(header.IdsvAnimDirs);
+        proxy.AnimSetsByAnim = header.AnimSets;
+        // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): the hero's own logical
+        // Mod*/Width/Height/Depth, same port (SetEntityDimensions, EntityManager.cs:160-199) every
+        // record-spawned NPC already gets from ApplySpawnInitialization - needed so the hero counts as
+        // a valid EntitySupport candidate/target (e.g. a future entity standing on the hero, or the
+        // hero itself queried by EntitySearchService) with real dimensions instead of all-zero ones.
+        AlundraEntitySpawnFactory.SetEntityDimensions(proxy, header.OffsetX, header.OffsetY, header.OffsetZ, header.SizeX, header.SizeY, header.SizeZ);
+    }
+
+    /// <summary>
     /// E2 replacement for the old <c>SpawnPlayerEntity</c> (which used to clone a SECOND hero prefab
     /// itself): the ENGINE now spawns the hero pawn and possesses it with an <see cref="AlundraPlayerController"/>
     /// (<c>World.LoadContent</c> -&gt; <c>InitializePlayerControllers</c>, CasaEngineMonogame/CasaEngine/Framework/Scene/World/World.cs:221-252/282-297,
@@ -1610,22 +1638,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         var assetInfo = AssetCatalog.Get(HeroAssetName);
         if (assetInfo != null && SpriteRecordCatalog != null && SpriteRecordCatalog.TryGet(assetInfo.Id, out var header))
         {
-            proxy.Flags = (uint)(header.MoreFlags | (header.CanPickup << 8) | (header.FlagsPortraitShadowType << 16));
-            proxy.SpriteProgramIndexes[ScriptHelper.ProgramALoad] = header.ProgramLoad;
-            proxy.SpriteProgramIndexes[ScriptHelper.ProgramBMap] = 0;
-            proxy.SpriteProgramIndexes[ScriptHelper.ProgramCTick] = header.ProgramTick;
-            proxy.SpriteProgramIndexes[ScriptHelper.ProgramDTouch] = header.ProgramTouch;
-            proxy.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate] = header.ProgramDeactivate;
-            proxy.SpriteProgramIndexes[ScriptHelper.ProgramFInteract] = header.ProgramInteract;
-            proxy.IdsvByAnimDirection = AlundraEntitySpawnFactory.BuildIdsvByAnimDirection(header.IdsvAnimDirs);
-            proxy.AnimationEndByAnimDirection = AlundraEntitySpawnFactory.BuildAnimationEndByAnimDirection(header.IdsvAnimDirs);
-            proxy.AnimSetsByAnim = header.AnimSets;
-            // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): the hero's own logical
-            // Mod*/Width/Height/Depth, same port (SetEntityDimensions, EntityManager.cs:160-199) every
-            // record-spawned NPC already gets from ApplySpawnInitialization - needed so the hero counts as
-            // a valid EntitySupport candidate/target (e.g. a future entity standing on the hero, or the
-            // hero itself queried by EntitySearchService) with real dimensions instead of all-zero ones.
-            AlundraEntitySpawnFactory.SetEntityDimensions(proxy, header.OffsetX, header.OffsetY, header.OffsetZ, header.SizeX, header.SizeY, header.SizeZ);
+            ApplyHeroSpriteHeader(proxy, header);
         }
         else if (!_loggedNoHeroHeader)
         {

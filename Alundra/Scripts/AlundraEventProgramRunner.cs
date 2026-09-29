@@ -80,6 +80,10 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     public int ScriptRunCount { get; private set; }
     public int SpriteEventRunCount { get; private set; }
 
+    /// <summary>E16.e L1: how many of the <see cref="SpriteEventRunCount"/> calls were dispatched to the save book
+    /// (<see cref="AlundraSaveBook.TryMatch"/>); every other one stays a counted no-op.</summary>
+    public int SaveBookEventRunCount { get; private set; }
+
     /// <summary>
     /// Trace seam for the headless intro trace harness (Alundra.Tests/IntroTraceHarnessTests.cs) - null
     /// by default (zero cost: a single null-check per dispatched opcode, no allocation) and never set by
@@ -265,9 +269,34 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// </summary>
     internal bool ClearProgramStateRequested;
 
+    /// <summary>
+    /// Port of <c>GameEngine.RunSpriteEvent</c> (GameEngine.cs:2224-2228) and of its table lookup
+    /// (<c>g_entityEventFunctionsByType</c>, 0x800C4F34, <c>SpriteEventHandlers.RunSpriteEvent</c>) restricted, by
+    /// E16.e L1 (docs/plan-e16-etat-partie.md), to ONE entity: the save book (<see cref="AlundraSaveBook"/>),
+    /// whose slot F code 1 (<c>Script_FInteract_FUN_8007fc64</c>) and slot C code 72
+    /// (<c>AI_ProcessWarpTransitionState</c>, 0x8007B998) are dispatched to it, and only when
+    /// <see cref="AlundraSaveBook.TryMatch"/> holds all together (type 237, a native slot, a book code). Every call
+    /// is counted in <see cref="SpriteEventRunCount"/>; every other native handler (the ~120 of E14) stays a
+    /// counted no-op, as before E16.e.
+    /// </summary>
     public void RunSpriteEvent(AlundraEntityScriptProxy entity)
     {
         SpriteEventRunCount++;
+
+        if (AlundraSaveBook.TryMatch(entity, out var bookSlot))
+        {
+            SaveBookEventRunCount++;
+            if (bookSlot == ScriptHelper.ProgramFInteract)
+            {
+                AlundraSaveBook.Instance.RunInteract(entity, _worldContext, _gameState);
+            }
+            else
+            {
+                AlundraSaveBook.Instance.RunTick(entity, _worldContext, _gameState);
+            }
+
+            return;
+        }
 
         if (!_loggedSpriteEventOnce)
         {

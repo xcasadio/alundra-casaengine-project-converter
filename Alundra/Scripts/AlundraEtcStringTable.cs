@@ -108,6 +108,25 @@ public static class AlundraEtcStringTable
         }
     }
 
+    /// <summary>
+    /// E16.e L6 (docs/plan-e16-etat-partie.md): the compiled <c>dialogue_etc</c> asset this table loaded
+    /// (<see cref="EnsureLoaded"/>) or was given (<see cref="SetEtcDialogueAssetForTests"/>), or null when none
+    /// is loaded - what the save book hands <see cref="AlundraDialogueDirector.Open"/> to show ETC <c>0x40</c>
+    /// through the ordinary box (node <c>Etc_0064</c>), as the original's <c>InitializeDialogMessage</c> does
+    /// (<c>AI_ProcessWarpTransitionState</c>, 0x8007B998, state 1).
+    /// </summary>
+    public static DialogueAsset? EtcDialogueAsset => _etcAsset;
+
+    /// <summary>
+    /// E16.e L6 (docs/plan-e16-etat-partie.md): public, generic port of <c>EtcRes.GetEtcString</c>
+    /// (0x800816D4) - ETC text <paramref name="etcIndex"/>, read, cached and converted to <c>font3</c> text
+    /// exactly like the item names (<see cref="TryGetEtcText"/>). An index whose entry is empty in the
+    /// original (the 8 save-flow texts of J5, <c>0x88</c> among them, empty in <c>ETC_RES.R</c> itself) gives
+    /// <see langword="true"/> and an empty line, as the original draws nothing for them; <see langword="false"/>
+    /// only without a loaded asset or outside <c>0..1023</c>.
+    /// </summary>
+    public static bool TryResolveText(int etcIndex, out string text) => TryGetEtcText(etcIndex, out text);
+
     public static bool TryResolveYesNo(string projectPath, out string yesLabel, out string noLabel)
     {
         var yesOk = TryGetEtcText(YesIndex, out yesLabel);

@@ -586,6 +586,11 @@ internal static class AlundraEntitySpawnFactory
             proxy.Controller.IsVerticalOwnedExternally = true;
         }
 
+        // E16.e L1/SE6 (docs/plan-e16-etat-partie.md): the sprite type EntityManager.cs:69 stores
+        // (entity.SpriteTableIndex, with SpawnEntity's 0x100 for a map sprite), kept next to the program codes
+        // below so RunSpriteEvent can recognise the save book by (type, slot, code).
+        proxy.SpriteType = EntityRecordMapper.ResolveSpriteType(record);
+
         // EntityManager.cs:95-100.
         proxy.SpriteProgramIndexes[ScriptHelper.ProgramALoad] = header.ProgramLoad;
         proxy.SpriteProgramIndexes[ScriptHelper.ProgramBMap] = 0;
