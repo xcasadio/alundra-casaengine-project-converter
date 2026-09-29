@@ -114,6 +114,3 @@ l'objet capturé passe la validation.
 - Le temps de jeu n'avance pas pendant le chargement d'un monde.
 - « Le plus récent » de F9 : une date future gagne toujours, et un emplacement récent dont l'en-tête
   s'ouvre mais dont les données sont abîmées bloque F9, sans repli sur le précédent.
-- Si l'inventaire s'ouvre pendant le fondu d'un chargement, la jauge peut rester cachée à
-  l'arrivée, jusqu'à la prochaine ouverture de l'inventaire ou demande d'un script. Le même trou
-  existe sur les warps ordinaires.

@@ -1405,7 +1405,10 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
     l'arrivée. `ResetSessionForLoad` referme l'inventaire sans son chemin de fermeture, et
     `ResetDisplayForLoad` garde la phase. Même trou préexistant sur les warps ordinaires (SD5).
     Cosmétique, rattrapable, Debug seulement ; écrit dans les limites de `save-game.md` et de
-    l'ADR-0013 ;
+    l'ADR-0013. **Levé au merge dans `main` (2026-09-29)** : le correctif SD5 (`ef1bbfa`) refuse
+    l'ouverture de l'inventaire pendant toute transition de warp, donc pendant le fondu d'un
+    chargement ; le test de T5 est adapté dans le merge (`63e8a5f`) et la limite retirée de
+    `save-game.md` ;
   - (P4) seul l'adaptateur de production absorbe les exceptions du service ; le directeur se fie à
     l'interface ;
   - (P4) le chargement n'exige pas le héros au sol, contrairement à la sauvegarde (conforme à K7) ;
