@@ -630,7 +630,8 @@ flottant 32 bits dans le scratchpad `e19a2/`) :
   - mettre à jour les commentaires de `AlundraEntityScriptProxy.cs` cités plus haut, dont l'écart
     D-E19-10 dans la doc de `ForceAdjusted` ;
   - toute autre épingle qui bouge est un arrêt : elle se signale, elle ne s'adapte pas en silence.
-- **T3 — La cabine avec un vrai contrôleur, en deux niveaux de test** :
+- ✅ **T3 — La cabine avec un vrai contrôleur, en deux niveaux de test** :
+  *(fait le 2026-09-29 : `AlundraCabinWalkTests` (2 cas, dt 0,02 et 1/60, rails posés comme B2, masque `0x41` vérifié, `PosY == 215 << 16` après la troisième marche, les quatre marches atteignent leur distance) ; `ArcSpec.RealController` et le mode « vrai contrôleur » d'`ArcRun` (politique `Runtime`, `PhysicsWorld`, héros à contrôleur, `ResyncControllerFromFlags`, `PushLogicalPositionToRoot`, `world.Update` seul) ; A1c vert à dt 0,02 dans la limite de 900 images ; `LoadHeroControllerSettings` et `LoadHeroHeader` dans `HeroWorldFixture` ; P3 du constructeur d'`ArcRun` corrigé (nettoyage sur échec) avec un test dédié, vu rouge sans le correctif ; les deux diagnostics `Zz*` supprimés. Mutation réelle côté moteur (rejet entier remis, code restauré à l'octet près) : A1c échoue en nommant `0x1E @658`, le test de la cabine attend 14090240 et lit 14098432, les épingles des traces et des deux tests d'adoption échouent. `Alundra.Tests` 1916/1916.)*
   - **cabine seule** : un test durable sur les vraies cellules de la 390, avec l'en-tête et les réglages
     réels du héros, le masque `0x41` vérifié, et les quatre marches.
     - Les rails sont posés comme B2 les pose, par `records.Walkability[y * largeur + x] |= 1` sur le

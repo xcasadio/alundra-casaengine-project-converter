@@ -1,6 +1,8 @@
 #nullable enable
+using System;
 using System.Linq;
 using Alundra.Scripts;
+using CasaEngine.Engine.Environment;
 using Xunit;
 
 namespace Alundra.Tests;
@@ -154,6 +156,46 @@ public sealed class AlundraShipArcTests
         }
 
         Assert.False(arc.Has(BProgram, 698, 0x53));
+        Assert.Empty(arc.SkippedOrExceeded.ToList());
+        Assert.True(arc.Frame < 900);
+    }
+
+    /// <summary>A failing <see cref="ArcRun"/> constructor never reaches <c>Dispose</c>: it restores the global state
+    /// itself, or a failing arc would dirty the tests that follow (the P3 deferred by the E19.a verification).</summary>
+    [Fact]
+    public void ArcRun_AConstructorThatFails_RestoresTheGlobalState()
+    {
+        var projectPathBefore = EngineEnvironment.ProjectPath;
+        var missingMap = new ArcSpec("missing", Zone, "No such map-0", Array.Empty<int>(), 0, 0, 0, 10);
+
+        Assert.ThrowsAny<Exception>(() => new ArcRun(missingMap));
+
+        Assert.Equal(projectPathBefore, EngineEnvironment.ProjectPath);
+    }
+
+    /// <summary>
+    /// A1c (E19.a2 T0/T3, docs/plan-e19-opcodes.md §1.2b): the arc A1 again, but with a REAL hero controller and the
+    /// world's own <c>Update</c>. B2 walks the hero 80, 48, 80 then 32 px between the rails it lays with the fifteen
+    /// <c>0x54</c>; the second north walk ends against the rail (42,12) and its <c>0x1E @658</c> waits for the
+    /// 80 px. On a controller that rejects the blocked step whole, the hero stops 78.8 px away and the wait never ends;
+    /// with the step advanced to contact (y = 215.0) the sleep starts and <c>0x53 @688</c> departs towards 476.
+    /// </summary>
+    [Fact]
+    public void A1c_TheCabinWithARealController_TheSecondNorthWalkReachesItsContact_ThenTheWarpToMap476Departs()
+    {
+        var flags = new[] { 866, 869, 870, 871 };
+        using var arc = new ArcRun(new ArcSpec("A1c", Zone, Map390, flags, 44, 23, 4, 900, RealController: true));
+        Assert.Equal(228u, ArcRun.State.GameFlags[27]);
+
+        arc.RunUntil(() => AlundraDialogueDirector.Instance.IsOpen, "the dialogue of B3 opens (0x0D @724)");
+        Assert.True(arc.Has(BProgram, 724, 0x0D));
+        arc.CloseDialogueWithTheButton("the dialogue of B3 closes with the button");
+
+        arc.RunUntil(() => arc.Has(BProgram, 688, 0x53), "B2 executes 0x53 @688 towards map 476 (the walk of 0x1E @658 ends at its contact)");
+
+        Assert.NotEqual(0u, ArcRun.State.GetFlag(1640) & (1u << (1640 & 0x1f)));
+        Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
+        Assert.Equal(476u, AlundraWarpDirector.Instance.ArrivalRecordForTests.MapIndex);
         Assert.Empty(arc.SkippedOrExceeded.ToList());
         Assert.True(arc.Frame < 900);
     }

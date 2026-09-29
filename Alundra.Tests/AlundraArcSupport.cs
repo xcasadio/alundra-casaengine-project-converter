@@ -6,7 +6,12 @@ using System.Linq;
 using System.Reflection;
 using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
+using CasaEngine.Engine.Geometry;
+using CasaEngine.Engine.Physics;
+using CasaEngine.Framework.Application;
+using CasaEngine.Framework.Application.Components.Physics;
 using CasaEngine.Framework.Assets.TileMap;
+using CasaEngine.Framework.Gameplay;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework.Graphics;
@@ -29,8 +34,13 @@ namespace Alundra.Tests;
 /// <param name="HeroTileY">See <paramref name="HeroTileX"/>.</param>
 /// <param name="HeroTileZ">See <paramref name="HeroTileX"/>; <c>TileZ = PosZ &gt;&gt; 20</c> exactly.</param>
 /// <param name="FrameLimit">The frame budget of the arc.</param>
+/// <param name="RealController">E19.a2: the hero is a real <see cref="CharacterControllerComponent"/> set like the
+/// export's, and every frame is the world's own <c>Update</c> (which moves the entities), so walks meet the map's
+/// cells and rails. Off (the default), the entities are bare and <see cref="ArcRun.OneFrame"/> updates them one by
+/// one.</param>
 internal sealed record ArcSpec(
-    string Name, string Zone, string WorldName, int[] Flags, int HeroTileX, int HeroTileY, int HeroTileZ, int FrameLimit);
+    string Name, string Zone, string WorldName, int[] Flags, int HeroTileX, int HeroTileY, int HeroTileZ, int FrameLimit,
+    bool RealController = false);
 
 /// <summary>One instruction of the arc's trace: the frame it ran in, the program it belongs to (slot and start
 /// code index, the identity a trace record can give without its owner), and its outcome.</summary>
@@ -62,6 +72,7 @@ internal sealed class ArcRun : IDisposable
     private readonly Dictionary<(int Slot, int ProgramStart), ArcInstruction> _lastByProgram = new();
     private readonly string _previousProjectPath;
     private uint _hold;
+    private readonly World? _realWorld;
 
     public ArcSpec Spec { get; }
 
@@ -92,53 +103,88 @@ internal sealed class ArcRun : IDisposable
         _previousProjectPath = EngineEnvironment.ProjectPath;
         EngineEnvironment.ProjectPath = root; // the sprite record catalog is resolved when the proxy is built.
 
-        foreach (var flag in spec.Flags)
+        try
         {
-            State.AddFlag((uint)flag, 1u << (flag & 0x1f));
+            foreach (var flag in spec.Flags)
+            {
+                State.AddFlag((uint)flag, 1u << (flag & 0x1f));
+            }
+
+            var uiView = new AlundraSaveBookTests.RecordingUIViewRuntime();
+            var world = BuildWorld(root, spec, uiView);
+            Entity heroEntity;
+            if (spec.RealController)
+            {
+                // The game's execution policy (without it World.Update does not run the entities' scripts) and a
+                // physics world (the controller needs one), both before InitializeWithWorld.
+                world.Game!.ExecutionPolicy = GameplayExecutionPolicies.Runtime;
+                HeroWorldFixture.SetProperty(world, nameof(World.PhysicsWorld), new PhysicsWorld(false, new TopDownElevationSimulationSpacePolicy()));
+                heroEntity = AddControllerHeroPawn(world, HeroWorldFixture.LoadHeroControllerSettings(root));
+                _realWorld = world;
+            }
+            else
+            {
+                heroEntity = AddHeroPawn(world);
+            }
+
+            var controller = world.PlayerControllers.OfType<AlundraPlayerController>().Single();
+            controller.PadStateProviderForTests = () => new AlundraPadState { ButtonsHold = _hold, ButtonsJustPressed = _hold };
+
+            Proxy = new AlundraWorldProxy();
+            Proxy.InitializeWithWorld(world);
+            typeof(AlundraBackdropStage).GetField("_clearColorApplied", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .SetValue(Proxy._backdropStage, true); // the headless montage has no view for the clear colour.
+
+            Runner = Assert.IsType<AlundraEventProgramRunner>(Proxy.EventProgramRunner);
+            Runner.TraceSink = Record;
+
+            // The headless game has no asset manager: the map's dialogues, the shared ones and the ETC texts come from
+            // the export on disk.
+            var mapFolder = Path.Combine(root, "Maps", spec.Zone, spec.WorldName);
+            Runner.MapDialogueAsset = DialogueTestAssets.LoadFromDisk(Path.Combine(mapFolder, "dialogues", spec.WorldName + ".dialogue"));
+            Runner.SharedDialogueAsset = DialogueTestAssets.LoadFromDisk(Path.Combine(root, "Dialogues", "Shared.dialogue"));
+            AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.LoadFromDisk(Path.Combine(root, "Dialogues", "Etc.dialogue")));
+            Assert.True(AlundraDialogueDirector.Instance.HasPresenter);
+
+            Hero = Assert.IsType<AlundraEntityScriptProxy>(heroEntity.GameplayProxy);
+
+            // The hero's sprite header (flags, programs, body box): AdoptPlayerPawn resolves it through the asset
+            // catalog, empty in the test process - the same block, from the export's own catalog file.
+            Assert.True(Proxy.SpriteRecordCatalog.TryGet(HeroPrefabId(root), out var heroHeader));
+            AlundraWorldProxy.ApplyHeroSpriteHeader(Hero, heroHeader);
+            if (spec.RealController)
+            {
+                // In this process AdoptPlayerPawn derived the walkability mask BEFORE the header (empty catalog):
+                // the controller is re-synced from the flags now. ClassB gives 0x41.
+                Hero.ResyncControllerFromFlags();
+                Assert.Equal(0x41u, Hero.Controller!.Settings.WalkabilityMask);
+            }
+
+            // The map-entry animation (0x36) ends through the animation chain (anim 54 -> 0), which the headless
+            // montage never plays: the hero is put at its end, Idle.
+            Assert.Equal(AlundraGameState.ResetAnimationId, Hero.TargetAnimationId);
+            Hero.TargetAnimationId = 0;
+
+            // Position and tile together, before the first frame: AdoptPlayerPawn puts the hero on the New Game tile
+            // and computes its Tile* once, and the zone tests (0x3B) read TileX/Y/Z.
+            Hero.PosX = (spec.HeroTileX * 24 + 12) << 16;
+            Hero.PosY = (spec.HeroTileY * 16 + 8) << 16;
+            Hero.PosZ = spec.HeroTileZ << 20;
+            Hero.TileX = spec.HeroTileX;
+            Hero.TileY = spec.HeroTileY;
+            Hero.TileZ = Hero.PosZ >> 20;
+            if (spec.RealController)
+            {
+                Hero.PushLogicalPositionToRoot(); // the controller moves the root: it starts where the hero was placed.
+            }
         }
-
-        var uiView = new AlundraSaveBookTests.RecordingUIViewRuntime();
-        var world = BuildWorld(root, spec, uiView);
-        var heroEntity = AddHeroPawn(world);
-        var controller = world.PlayerControllers.OfType<AlundraPlayerController>().Single();
-        controller.PadStateProviderForTests = () => new AlundraPadState { ButtonsHold = _hold, ButtonsJustPressed = _hold };
-
-        Proxy = new AlundraWorldProxy();
-        Proxy.InitializeWithWorld(world);
-        typeof(AlundraBackdropStage).GetField("_clearColorApplied", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .SetValue(Proxy._backdropStage, true); // the headless montage has no view for the clear colour.
-
-        Runner = Assert.IsType<AlundraEventProgramRunner>(Proxy.EventProgramRunner);
-        Runner.TraceSink = Record;
-
-        // The headless game has no asset manager: the map's dialogues, the shared ones and the ETC texts come from
-        // the export on disk.
-        var mapFolder = Path.Combine(root, "Maps", spec.Zone, spec.WorldName);
-        Runner.MapDialogueAsset = DialogueTestAssets.LoadFromDisk(Path.Combine(mapFolder, "dialogues", spec.WorldName + ".dialogue"));
-        Runner.SharedDialogueAsset = DialogueTestAssets.LoadFromDisk(Path.Combine(root, "Dialogues", "Shared.dialogue"));
-        AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.LoadFromDisk(Path.Combine(root, "Dialogues", "Etc.dialogue")));
-        Assert.True(AlundraDialogueDirector.Instance.HasPresenter);
-
-        Hero = Assert.IsType<AlundraEntityScriptProxy>(heroEntity.GameplayProxy);
-
-        // The hero's sprite header (flags, programs, body box): AdoptPlayerPawn resolves it through the asset
-        // catalog, empty in the test process - the same block, from the export's own catalog file.
-        Assert.True(Proxy.SpriteRecordCatalog.TryGet(HeroPrefabId(root), out var heroHeader));
-        AlundraWorldProxy.ApplyHeroSpriteHeader(Hero, heroHeader);
-
-        // The map-entry animation (0x36) ends through the animation chain (anim 54 -> 0), which the headless
-        // montage never plays: the hero is put at its end, Idle.
-        Assert.Equal(AlundraGameState.ResetAnimationId, Hero.TargetAnimationId);
-        Hero.TargetAnimationId = 0;
-
-        // Position and tile together, before the first frame: AdoptPlayerPawn puts the hero on the New Game tile
-        // and computes its Tile* once, and the zone tests (0x3B) read TileX/Y/Z.
-        Hero.PosX = (spec.HeroTileX * 24 + 12) << 16;
-        Hero.PosY = (spec.HeroTileY * 16 + 8) << 16;
-        Hero.PosZ = spec.HeroTileZ << 20;
-        Hero.TileX = spec.HeroTileX;
-        Hero.TileY = spec.HeroTileY;
-        Hero.TileZ = Hero.PosZ >> 20;
+        catch
+        {
+            // Dispose is never called on a constructor that throws: the global state is restored here, or a failing
+            // arc would dirty the tests that follow.
+            Dispose();
+            throw;
+        }
     }
 
     public void Dispose()
@@ -196,12 +242,22 @@ internal sealed class ArcRun : IDisposable
     }
 
     /// <summary>One frame the engine's way: every spawned entity's own <c>Update</c> - the hero's included, whose
-    /// controller samples the pad - then the world's.</summary>
+    /// controller samples the pad - then the world's. In <see cref="ArcSpec.RealController"/> mode the world's own
+    /// <c>Update</c> runs instead of the entity loop.</summary>
     public void OneFrame()
     {
-        foreach (var entity in Entities.ToList())
+        if (_realWorld is not null)
         {
-            entity.Update(0.02f);
+            // The world already updates every entity added with AddEntity, the spawned ones included: the loop below
+            // would update them twice.
+            _realWorld.Update(0.02f);
+        }
+        else
+        {
+            foreach (var entity in Entities.ToList())
+            {
+                entity.Update(0.02f);
+            }
         }
 
         Proxy.Update(0.02f);
@@ -257,6 +313,38 @@ internal sealed class ArcRun : IDisposable
             Press(AlundraPadState.Square);
             return !AlundraDialogueDirector.Instance.IsOpen;
         }, signal);
+    }
+
+    /// <summary>The hero pawn of <see cref="ArcSpec.RealController"/> mode: the box of the export's hero (21x15x32, local
+    /// (0.5, 0.5, 16)) and a <see cref="CharacterControllerComponent"/> with the export's settings, added to the world
+    /// (which registers it with the motion system), then possessed by a real player controller.</summary>
+    private static Entity AddControllerHeroPawn(World world, CharacterControllerSettings settings)
+    {
+        var root = new TransformComponent();
+        var collisionComponent = new CollisionComponent();
+        collisionComponent.Fixtures.Add(new ColliderFixture
+        {
+            Shape = new Box { Size = new Microsoft.Xna.Framework.Vector3(21f, 15f, 32f) },
+            LocalPosition = new Microsoft.Xna.Framework.Vector3(0.5f, 0.5f, 16f),
+            LocalRotation = Microsoft.Xna.Framework.Quaternion.Identity,
+        });
+        root.AddChildComponent(collisionComponent);
+
+        var entity = new Entity
+        {
+            Name = "AlundraHeroTestPawn",
+            RootComponent = root,
+            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+        };
+        entity.AddComponent(new CharacterControllerComponent { Settings = settings });
+        entity.Initialize();
+        world.AddEntity(entity);
+
+        var controller = new AlundraPlayerController();
+        controller.Possess(entity);
+        var field = typeof(World).GetField("_playerControllers", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        ((List<PlayerController>)field.GetValue(world)!).Add(controller);
+        return entity;
     }
 
     private static Guid HeroPrefabId(string root)
