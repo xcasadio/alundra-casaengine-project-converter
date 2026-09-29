@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Linq;
 using Alundra.Scripts;
 using Xunit;
 
@@ -192,6 +193,37 @@ public sealed class AlundraHudComposerTests
 
         Assert.Equal(10, smallFull);
         Assert.DoesNotContain(tiles, t => t.Glyph is HudGlyph.BigHeartFull or HudGlyph.BigHeartEmpty);
+    }
+
+    [Fact]
+    public void Compose_MpPreview_IsBoundedByTheFourPipSlots_NotByTheDisplayedMax()
+    {
+        static bool IsFullPip(AlundraHudTile tile) =>
+            tile.Glyph is HudGlyph.MagicPipFull0 or HudGlyph.MagicPipFull1 or HudGlyph.MagicPipFull2
+                or HudGlyph.MagicPipFull3;
+
+        // D-E13-13 (docs/plan-e13-hud.md): a stranded MP-max sub-step keeps the preview on at 4 / 4 MP. DisplayMp
+        // (:617-624) asks for a fifth pip; g_MpIconSprites holds four per bank, so the composition stops at four.
+        var atFour = AlundraHudComposer.Compose(
+            isDrawn: true,
+            hp: 10, hpMax: 10, hpMaxTrue: 10, hpCatchUpPreview: false,
+            mp: 4, mpMax: 4, mpCatchUpPreview: true,
+            money: 0, coinIconFrame: 0,
+            magicPipFrame: UnisonPipFrame0);
+
+        Assert.Equal(new[] { 0xd8, 0xe0, 0xe8, 0xf0 }, atFour.Where(IsFullPip).Select(t => t.NativeX));
+        Assert.DoesNotContain(atFour, t => t.Glyph == HudGlyph.MagicPipEmpty);
+
+        // A normal MP-max catch-up (HudManager.cs:421-433) only starts once the displayed MP has reached the
+        // displayed max, and previews the incoming pip one past it: the bound is the slot count, never mpMax.
+        var growing = AlundraHudComposer.Compose(
+            isDrawn: true,
+            hp: 10, hpMax: 10, hpMaxTrue: 10, hpCatchUpPreview: false,
+            mp: 3, mpMax: 3, mpCatchUpPreview: true,
+            money: 0, coinIconFrame: 0,
+            magicPipFrame: UnisonPipFrame0);
+
+        Assert.Equal(4, growing.Count(IsFullPip));
     }
 
     [Fact]

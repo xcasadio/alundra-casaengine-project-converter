@@ -28,6 +28,10 @@ public sealed class AlundraHudPresenterTests : IDisposable
     private const uint ScriptOpenRequestFlag = 1813;
     private const uint ScriptOpenRequestMask = 0x200000;
 
+    // word 0x38 bit 22 -> (0x38 &lt;&lt; 5) + 22 = 1814, mask 0x400000 - "hide instantly".
+    private const uint ScriptCloseRequestFlag = 1814;
+    private const uint ScriptCloseRequestMask = 0x400000;
+
     // word 0x33 bit 30 -> (0x33 &lt;&lt; 5) + 30 = 1662, mask 0x40000000 - the persistent "already armed" latch.
     private const uint PersistentLatchFlag = 1662;
     private const uint PersistentLatchMask = 0x40000000;
@@ -210,6 +214,84 @@ public sealed class AlundraHudPresenterTests : IDisposable
         // here through the tiles the PRESENTER pushed rather than the bare director field.
         Assert.Contains(view.TileCalls[18], t => t.Glyph == HudGlyph.MagicPipFull1);
         Assert.Equal(4, director.MpMax); // set instantly at ArmAppearance, C1.
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // A scripted close during the MP-max catch-up (finding SC1 of docs/plan-e16-etat-partie.md).
+    // -----------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// The MP-max catch-up sub-step ([8], HudManager.cs:421-433) only moves while the displayed max lags the true
+    /// one, and reopening snaps the displayed max to the true one without touching it (FUN_8004b770 writes [1] and
+    /// [3] only - ALUN_CD.EXE 0x8004b7b0 and 0x8004b7c4). A script that hides the jauge mid-cycle therefore strands
+    /// the sub-step, and the preview it drives (DisplayMp's "[7] != 0 || [8] != 0", 0x8004d3f0-0x8004d410) asks for a
+    /// fifth pip once the displayed MP reaches 4. The executable draws pip i from 0x801760b8 + bank * 0x50 + i * 0x14,
+    /// four primitives per bank with no bound on i, so its fifth pip lands outside the bank; the port must still
+    /// compose the four pips the player has (D-E13-13, docs/plan-e13-hud.md).
+    /// </summary>
+    [Fact]
+    public void ScriptedCloseDuringTheMpMaxCatchUp_ThenReopen_StillComposesFourPips()
+    {
+        var state = new AlundraGameState();
+        var director = ArmedOpening(state);
+        AlundraPlayerManager.SetPlayerMpMax(state, 3);
+        AlundraPlayerManager.SetPlayerMp(state, 3);
+        var view = new RecordingHudView(pixelScale: 1);
+        var presenter = new AlundraHudPresenter(director, view);
+
+        void Step()
+        {
+            director.Tick();
+            presenter.Tick();
+        }
+
+        // Opened, the displayed MP rolled up to 3 / 3.
+        for (var i = 0; i < 200 && !(director.Phase == AlundraHudDirector.HudPhase.Displayed
+                                     && director.Mp == 3 && !director.MpDisplayPreviewIncrement); i++)
+        {
+            Step();
+        }
+
+        Assert.Equal(AlundraHudDirector.HudPhase.Displayed, director.Phase);
+        Assert.Equal(3, director.Mp);
+        Assert.Equal(3, director.MpMax);
+
+        // The MP-max item (PlayerManager.IncreaseMpMaxAndCreateEffect, 0x8003382c): the max grows by one, then the MP
+        // is refilled to it. The displayed MP already equals the displayed max, so only the max catch-up runs, and
+        // its first sub-step turns the preview on.
+        AlundraPlayerManager.SetPlayerMpMax(state, 4);
+        AlundraPlayerManager.SetPlayerMp(state, 4);
+        for (var i = 0; i < 4 && !director.MpDisplayPreviewIncrement; i++)
+        {
+            Step();
+        }
+
+        Assert.True(director.MpDisplayPreviewIncrement);
+        Assert.Equal(3, director.Mp);
+        Assert.Equal(3, director.MpMax); // mid-cycle: the displayed max has not grown yet.
+
+        // A map script hides the jauge at once (branch (iii), flag 1814), then asks it back (branch (ii), flag 1813).
+        state.AddFlag(ScriptCloseRequestFlag, ScriptCloseRequestMask);
+        Step();
+        Assert.Equal(AlundraHudDirector.HudPhase.Idle, director.Phase);
+
+        state.AddFlag(ScriptOpenRequestFlag, ScriptOpenRequestMask);
+        for (var i = 0; i < 200 && !(director.Phase == AlundraHudDirector.HudPhase.Displayed && director.Mp == 4); i++)
+        {
+            Step();
+        }
+
+        Assert.Equal(AlundraHudDirector.HudPhase.Displayed, director.Phase);
+        Assert.Equal(4, director.Mp);
+        Assert.Equal(4, director.MpMax);
+
+        var pips = view.TileCalls[^1]
+            .Where(t => t.Glyph is HudGlyph.MagicPipFull0 or HudGlyph.MagicPipFull1 or HudGlyph.MagicPipFull2
+                or HudGlyph.MagicPipFull3 or HudGlyph.MagicPipEmpty)
+            .ToList();
+        Assert.Equal(4, pips.Count);
+        Assert.DoesNotContain(pips, t => t.Glyph == HudGlyph.MagicPipEmpty);
+        Assert.Equal(new[] { 0xd8, 0xe0, 0xe8, 0xf0 }, pips.Select(t => t.NativeX)); // BoxX + 0xd8 + i * 8, i < 4.
     }
 
     // -----------------------------------------------------------------------------------------
