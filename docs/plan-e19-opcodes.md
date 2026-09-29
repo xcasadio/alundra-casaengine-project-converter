@@ -605,6 +605,9 @@ flottant 32 bits dans le scratchpad `e19a2/`) :
 
 **Tâches.**
 
+- **T0 — Preuve rouge d'A1c, avant tout changement du moteur** : écrire le mode « vrai contrôleur »
+  d'`ArcRun` et A1c (détail en T3), les lancer sur le sous-module en `a550859f`, consigner l'échec et
+  le `HEAD`, et ne rien committer.
 - **T1 — Moteur** : plan `CasaEngineMonogame/ai-agent/tasks/field-move-to-contact-tasks.md` (T0.1 branche,
   plan et ADR-0045 du moteur ; T1.1 bisection et tests ; T1.2 docs), sur la branche moteur
   `chantier/field-move-to-contact`.
@@ -653,10 +656,13 @@ flottant 32 bits dans le scratchpad `e19a2/`) :
 
     A1c part de (44,23,4) avec `G866`, `G869`, `G870` et `G871`, ferme le dialogue de B3 et exécute
     `0x53 @688`, en moins de 900 images à dt 0,02 (le diagnostic l'atteint vers l'image 330).
-    - **Preuve sur l'ancien moteur** : A1c est écrit et lancé **avant** le déplacement du pointeur (T2),
-      sur `a550859f`, sans rien committer. Il doit échouer dans sa limite en nommant `0x1E @658` ; le
-      constat est consigné. Le sous-module n'est jamais remis en arrière par `checkout`.
-    - A1c est commité avec T3, après T2 ;
+    - **Preuve sur l'ancien moteur** : `Alundra.Tests` se construit contre l'arbre de travail du
+      sous-module, pas contre le pointeur du parent. Le mode « vrai contrôleur » d'`ArcRun` et A1c sont
+      donc écrits et lancés **avant la première modification du sous-module**, c'est-à-dire avant le T0.1
+      du moteur, sans rien committer. Il doit échouer dans sa limite en nommant `0x1E @658`. Le constat
+      consigné porte, à côté du message d'échec, la sortie de `git -C CasaEngineMonogame rev-parse HEAD`,
+      qui doit valoir `a550859f…`. Le sous-module n'est jamais remis en arrière par `checkout`.
+    - Ces fichiers restent non commités jusqu'à T3, où ils sont commités après T2 ;
   - le P3 reporté du constructeur d'`ArcRun` (état global sali si une étape échoue) se corrige ici, parce
     que le mode « vrai contrôleur » rend un échec dans le constructeur plus probable ;
   - les deux diagnostics temporaires `Alundra.Tests/ZzDiagE19Cabin*.cs`, jamais commités, sont supprimés.
@@ -707,6 +713,16 @@ après exécution. Budgets et arrêts : ceux du §5.
 - **P3 intégrés** : citations décalées, ordre de la preuve sur l'ancien moteur, tests à lancer d'abord,
   garde des traces par le `git diff`, contrat de la bisection, avance résiduelle inférieure à 1e-3 px
   (plan moteur).
+- **Relecture neuve de clôture** (`8fec476`) : **REVISE**, deux P2, tous deux corrigés (FIX) en
+  appliquant mot pour mot les révisions minimales demandées :
+  - la preuve rouge d'A1c se fait avant toute modification du sous-module (nouvelle tâche T0), avec
+    le `HEAD` du sous-module consigné ;
+  - la grille du test aux puissances de deux doit contenir le coin lointain de l'empreinte de départ
+    (65 rangées pour la seconde fenêtre).
+
+  **Le plafond de relecture est atteint** : c'était la relecture de clôture, cette version n'est pas
+  relue à nouveau. La décision d'approuver en l'état, ou de demander une relecture de plus, revient à
+  l'auteur.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
