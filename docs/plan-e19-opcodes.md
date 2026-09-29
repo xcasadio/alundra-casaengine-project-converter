@@ -32,6 +32,9 @@ mais trois P2 et neuf P3. Corrections :
 - A0b couvre la branche où la cinématique pousse le héros ;
 - les documents périmés sont complétés, et quelques formulations sont corrigées.
 
+Relecture neuve de clôture de la révision 1 (`b75807e`) : **READY**. L'enveloppe et E19.a attendent
+l'approbation de l'auteur.
+
 ---
 
 ## 0. Cadre
