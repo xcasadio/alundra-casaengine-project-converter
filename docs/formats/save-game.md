@@ -80,6 +80,16 @@ Le chargement passe par le chemin des warps (ADR-0013, `AlundraSaveGameDirector`
 Un refus, une erreur du service, un départ avorté ou une arrivée sur une autre carte laissent la
 partie intacte, avec une ligne de journal.
 
+## Sauvegarde en jeu (livre)
+
+Le joueur sauvegarde en interagissant avec un livre de sauvegarde (65 cartes), comme dans
+l'original (ADR-0014) : « Enregistrer tes progrès? », OUI/NON, puis l'écran de carte mémoire,
+avec un carrousel de quatre emplacements fixes, `slot1` à `slot4`. Chaque emplacement montre le nom
+du chapitre, puis le résumé, recalculés depuis sa sauvegarde validée ; un emplacement vide, illisible
+ou refusé montre deux lignes vides. Croix, puis OUI, écrit la partie capturée par le livre dans
+l'emplacement choisi, en binaire. Le livre ne charge pas : le chargement passe par F9 tant qu'il n'y a
+pas d'écran titre.
+
 ## Touches de recette
 
 Actives quand `Alundra.dll` est compilée en Debug (D-E16-33), inactives en Release ; le journal

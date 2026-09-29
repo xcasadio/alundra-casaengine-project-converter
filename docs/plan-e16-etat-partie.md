@@ -1463,7 +1463,7 @@ La remise de session couvre tous les singletons, sauf le fondu maître de la mus
 `ApplyPendingLoad` ; un test existant qui change pour une autre raison ; l'oracle de l'intro qui
 bouge.
 
-### E16.e — Écran de sauvegarde en jeu 🚧 (DLL, MGUI en XAML ; plan détaillé du 2026-09-29 ; mis en pause après un troisième REVISE, repris sur la réponse de l'auteur, D-E16-38 ; relecture de clôture fraîche sur `c91e4e1` : READY ; exécution en mode AUTO ; T1 et T2 faites le 2026-09-29 ; T3 arrêtée sur O-E16-18, tranchée par la règle « le binaire tranche » ; relecture de clôture du plan corrigé (`97f0054`) : REVISE, des attentes « n. » restées en L3, T3 et T8, corrigées ; reprise pour T3 à T5 sur le contrat corrigé (`ec7fbbe`) ; T3 faite le 2026-09-29)
+### E16.e — Écran de sauvegarde en jeu 🧪 (DLL, MGUI en XAML ; plan détaillé du 2026-09-29, READY après trois pauses et reprises (D-E16-38, O-E16-18) ; T1 à T7 faites et vérifiées CONFIRMED le 2026-09-29, `3cc12ca` à `bd1d8cb` ; ADR-0014 ; reste la recette en jeu T8 de l'auteur)
 
 - **But** : le joueur sauvegarde lui-même, comme dans l'original.
 - **Contenu** : le gestionnaire du livre de sauvegarde (`AI_ProcessWarpTransitionState`, question
@@ -1939,11 +1939,38 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   Harnais sans jeu réel : l'en-tête de sprite du héros est appliqué depuis le catalogue exporté, et
   l'animation d'entrée de carte (`0x36`) est terminée à la main (`Idle`). `AlundraSaveBook.Screen` a une
   seule source de production, que le test fige (mutation tuée). `Alundra.Tests` 1882/1882.*
-- ⏳ **T6 — Documentation et ADR** (session principale) : ADR-0014 (écran de sauvegarde du livre :
+- ✅ **T6 — Documentation et ADR** (fait le 2026-09-29 : ADR-0014, section « Sauvegarde en jeu » de
+  `docs/formats/save-game.md`, plan maître) (session principale) : ADR-0014 (écran de sauvegarde du livre :
   états conservés, adaptés et sans objet, emplacements, libellés recalculés, correction de H2) ;
   `docs/formats/save-game.md` ; plan maître.
-- ⏳ **T7 — Vérification** : un `verifier` frais et un contradicteur.
-- ⏳ **T8 — Recette en jeu** (l'auteur) : un livre, sauvegarde dans chacun des 4 emplacements,
+- ✅ **T7 — Vérification** : un `verifier` frais et un contradicteur.
+
+  Fait le 2026-09-29 sur `bd1d8cb` :
+  - `verifier` : build à 0 erreur, `Alundra.Tests` 1882/1882, oracle de l'intro inchangé, manifeste
+    de l'export recalculé et identique au dernier de l'exécuteur : **CONFIRMED** ;
+  - contradicteur, en lecture seule : **CONFIRMED**, aucun P0 à P2.
+
+  Preuve de l'export (T4) : baseline de 23 731 fichiers ; après l'export en place, 23 734 fichiers,
+  et un diff limité aux trois fichiers `SaveScreen.*` ajoutés, à `DialogueScreen.xaml`, à
+  `AssetInfos.json` (entrée `SaveScreen`) et à `report.json` ; le second export ne change que
+  `report.json`.
+
+  Écart à confirmer par l'auteur : la teinte du carrousel est **corrigée**. Dans l'original, elle
+  dépasse sa cible (`FUN_80059e0c`, `0x80059E1C`) et la boîte du milieu reste à `0x99` ou `0x8C` au
+  lieu de `0x80`. L'exécuteur l'a arrêtée à sa cible, selon la règle « corriger les défauts de
+  l'original ». À voir pendant la recette.
+
+  Reportés :
+  - (P3) un script qui fermerait la boîte du livre pendant ses 61 ticks d'attente laisserait la
+    question OUI/NON sans boîte, et l'écran de dialogue resterait poussé après la réponse ; aucun
+    script connu ne le fait ;
+  - (P4) un ancien écran de sauvegarde resterait poussé si le monde changeait pendant qu'il est
+    affiché. Aucun déclencheur connu : `MenuOpen` fige la carte ;
+  - (P4) `TryWireSaveScreenOnce` lève à chaque image si le projet exporté date d'avant E16.e ; il
+    faut réexporter ;
+  - (P4) le build Release n'a été refait que par l'exécuteur (T4), pas par le verifier.
+- 🧪 **T8 — Recette en jeu** (l'auteur ; le livre de la carte 17 n'apparaît qu'après les drapeaux
+  d'histoire `0x4CA` et `0x4C4`, prendre un livre d'une carte déjà atteinte) : un livre, sauvegarde dans chacun des 4 emplacements,
   libellés relus ; F9 recharge la plus récente. Trois emplacements hostiles aussi (SE11) :
   - un JSON aux métadonnées forgées (`chapter` « 9999 », un `summary` de 500 caractères avec du
     balisage) mais aux données valides : le libellé montre les valeurs recalculées ;
