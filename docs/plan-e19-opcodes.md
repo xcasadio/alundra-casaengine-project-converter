@@ -692,6 +692,31 @@ flottant 32 bits dans le scratchpad `e19a2/`) :
 4. Un verifier frais rend CONFIRMED sur 1 à 3.
 5. La recette T5 de l'auteur. Tant qu'elle n'est pas faite, E19.a et E19.a2 restent 🧪.
 
+**Vérification d'E19.a2 (2026-09-29).**
+- **Commits.** Moteur `d51089f5`, `62ac8431`, `25f8385c`, puis la clôture de son plan `7fae9959`.
+  Parent `c48cf5e` (T2), `386bc60` (T3), `d174586` (T4).
+- **Preuve rouge.** Sur le sous-module en `a550859f…`, A1c échoue à sa limite de 900 images en nommant
+  `0x1E @658`.
+- **Tests.** `CasaEngine.Tests` 2375/2375. `Alundra.Tests` 1916/1916 en Debug et en Release. Tests du
+  convertisseur : 400/400.
+- **Traces.** Les quatre traces ne changent que dans la colonne `posX` : images 98 à 209 (spawn) et
+  39 à 117 (highground).
+- **Verifier frais : CONFIRMED**, sans constat.
+- **Contradicteur en lecture seule** : aucun P0 à P3. Dispositions de ses P4 (signalés, jamais corrigés
+  sur un candidat CONFIRMED) :
+
+  | Constat P4 | Disposition |
+  |---|---|
+  | Le contrôle final d'`AdvanceBlockedAxisToContact` ne peut jamais reculer : c'est une garde morte, décrite comme active. | Signalé dans le plan moteur ; reporté. |
+  | La bisection suppose le blocage monotone : un pas de plus d'environ 45 px pourrait traverser un obstacle fin. Inatteignable avec les pas d'Alundra, mais absent de l'ADR-0045. | Signalé ; à écrire dans une prochaine ADR du moteur si des pas longs apparaissent. |
+  | La correction du constructeur d'`ArcRun` est incomplète : `FindProjectRoot` et l'option de caméra sont hors du `try`, et le test ne vérifie que `ProjectPath`. | Reporté à E19.b, qui étend le support d'arcs. |
+  | Le test « cabine seule » ne reproduit pas le blocage ; seule l'épingle `PosY == 215 << 16` le distingue. C'est A1c qui reproduit le blocage. | Accepté : A1c porte la preuve. |
+  | Les aides `LoadHeroControllerSettings`/`LoadHeroHeader` ne sont pas regroupées dans `HeroWorldFixture` comme prévu ; des copies restent. | Reporté (hygiène). |
+  | Les deux tests d'adoption re-mesurés rendent vert en silence quand l'export manque. Ce défaut existait avant. | Reporté (hygiène). |
+  | Un reste de moins de 1e-3 px est abandonné par le balayage. | Limite acceptée P5, écrite dans l'ADR-0045. |
+  | L'avance d'un tick de `ForceAdjusted` (D-E19-10) ne vient pas du contact : l'ancien rejet la produisait déjà ; les traces gardent les mêmes images. | Précision notée ici ; l'ADR-0016 n'est pas réécrite. |
+  | Le pointeur du parent vise un commit moteur hors de `main`. | Ordre de merge : moteur d'abord, puis parent, avec le pointeur. |
+
 **Risques.**
 - **Changements ailleurs que dans la cabine.** Le héros et les PNJ s'arrêtent désormais plus près des murs.
   Les portails et les zones testés par case peuvent se déclencher un pas plus tôt, ce qui est plus proche
