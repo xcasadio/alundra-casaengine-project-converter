@@ -37,7 +37,11 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// (EntityEventHandlers.cs:335: <c>func(entity.LogicContextEntity, entity, ...)</c>) and reassigned by
     /// <see cref="AlundraWorldProxy.RunMapEventsPass"/> (port of <c>RunMapEvents</c>, GameEngine.cs:1698:
     /// <c>playerEntity.LogicContextEntity = mapEventEntity</c>) to the map-event's own logic entity
-    /// (initially the player itself, retargetable by opcode 0x66 - not ported). Deliberately a SEPARATE
+    /// (initially the player itself). Retargeted by opcodes 0x42 and 0x43, the only two that write it
+    /// (E19.a, ALUN_CD.EXE 0x8003E808/0x8003E81C; 0x66 writes the owner's state, not this word, contrary to
+    /// what this comment used to say). Null means "the entity itself" (<c>InitializeEntity</c>,
+    /// 0x80042028): <see cref="AlundraEventProgramRunner"/> resolves <c>LogicEntity ?? owner</c> before every
+    /// instruction, and a clone starts on itself. Deliberately a SEPARATE
     /// field from this proxy's own <see cref="LogicContextEntity"/> below, which is an engine-only,
     /// unrelated-by-coincidence-of-name back-pointer to this proxy's OWN CasaEngine <see cref="Entity"/>
     /// (set once at spawn, see <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>) - conflating the
@@ -1907,7 +1911,6 @@ public class AlundraEntityScriptProxy : GameplayProxy
         var clone = new AlundraEntityScriptProxy
         {
             IsPlayer = IsPlayer,
-            LogicEntity = LogicEntity,
             Index = Index,
             Index2 = Index2,
             ChildEntity = ChildEntity,

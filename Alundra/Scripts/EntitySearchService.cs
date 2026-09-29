@@ -85,9 +85,9 @@ public static class EntitySearchService
 
     /// <summary>
     /// Runs one search, in the original's own iteration order. <paramref name="ownerEntity"/> is the
-    /// entity whose Load/Tick/... program issued the search (<c>logicEntity</c>/<c>ownerEntity</c> in the
-    /// original are the same object by the time any opcode runs in this V1 interpreter - see
-    /// <see cref="AlundraEventProgramRunner"/>'s class doc on always-self <c>LogicContextEntity</c>).
+    /// REFERENCE of the search: the logic entity of the program that issued it (<c>logicEntity</c>, the
+    /// handler's a0 in the original): the entity whose program runs, until opcode 0x42/0x43 retargets it
+    /// (E19.a T1, <see cref="AlundraEntityScriptProxy.LogicEntity"/>) - not always the entity itself.
     /// <paramref name="playerEntity"/> backs function id 1 ("get player") - passed explicitly (the
     /// caller's own <see cref="IEntityWorldContext.PlayerEntity"/>) rather than found by scanning
     /// <paramref name="spawnedEntities"/> for <see cref="AlundraEntityScriptProxy.IsPlayer"/>, since every

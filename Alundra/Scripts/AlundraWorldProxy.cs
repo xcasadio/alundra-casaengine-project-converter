@@ -2287,8 +2287,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <summary>
     /// Port of <c>RunMapEvents</c> (GameEngine.cs:1667-1718, 0x8003c67c). Always executes against
     /// <paramref name="player"/> - every MapEvent's own logic entity starts as the player
-    /// (<see cref="BuildMapEvents"/>) and can only ever be retargeted by opcode 0x66 (not ported, never
-    /// reached by map 389's own programs - docs/intro-roadmap.md §1.5).
+    /// (<see cref="BuildMapEvents"/>) and is retargeted by opcodes 0x42/0x43 (E19.a; 0x66 does not touch it - see
+    /// <see cref="AlundraEntityScriptProxy.LogicEntity"/>), which <see cref="AlundraEventProgramRunner"/> reads
+    /// before every instruction.
     /// </summary>
     internal static void RunMapEventsPass(
         AlundraEntityScriptProxy player, IReadOnlyList<AlundraMapEvent> mapEvents, IEventProgramRunner runner,
@@ -2708,8 +2709,8 @@ internal sealed class AlundraMapEvent
     public int ProgramBMap;
 
     /// <summary>The map-event's own current "logic entity" (initially the player - see
-    /// <see cref="AlundraWorldProxy.BuildMapEvents"/>; only opcode 0x66, not ported, can ever retarget
-    /// it).</summary>
+    /// <see cref="AlundraWorldProxy.BuildMapEvents"/>; retargeted by opcodes 0x42/0x43, E19.a, and kept from
+    /// one frame to the next).</summary>
     public AlundraEntityScriptProxy? Entity;
 
     public readonly EventProgramState EventData = new();

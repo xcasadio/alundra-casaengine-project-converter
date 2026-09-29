@@ -383,7 +383,12 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             }
 
             _lastDispatchKind = EventTraceKind.Implemented;
-            var result = Dispatch(command, entity, variables, state);
+
+            // E19.a T1 (D-E19-2, docs/plan-e19-opcodes.md §0.2.3): the handler's a0 is the LOGIC entity, read from
+            // the owner's own word before EVERY instruction (0x80042284) - the owner itself until 0x42/0x43 retarget
+            // it. Only 0x42 and 0x43 write the owner's word; the program state stays the owner's.
+            var logic = entity.LogicEntity ?? entity;
+            var result = Dispatch(command, logic, entity, variables, state);
 
             if (TraceSink != null)
             {
@@ -455,7 +460,14 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         return _fetchScratch;
     }
 
-    private int Dispatch(int command, AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
+    /// <summary>
+    /// The opcode switch, called as the original calls every handler (<c>h(logic, owner, &amp;pc, state)</c>,
+    /// <c>RunScript</c> @ 0x8004205C): <paramref name="entity"/> is the LOGIC entity, the one every opcode acts on
+    /// or takes as the reference of its searches (E19.a T1), and <paramref name="owner"/> the entity whose program
+    /// runs - the one <c>0x42</c>/<c>0x43</c> retarget (<see cref="AlundraEntityScriptProxy.LogicEntity"/>).
+    /// <paramref name="state"/> is the running program's state, on the owner.
+    /// </summary>
+    private int Dispatch(int command, AlundraEntityScriptProxy entity, AlundraEntityScriptProxy owner, int[] v, EventProgramState state)
     {
         switch (command)
         {

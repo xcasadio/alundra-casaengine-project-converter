@@ -308,7 +308,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 - **Mise à jour de ce plan** : chaque tranche de la phase 1 remet au §0.2 ce qu'elle a mesuré en
   vrai, puis fait détailler, relire et approuver la tranche suivante.
 
-### 1.2 E19.a — Entité de contexte, `0x59` et garde de boucle ⏳
+### 1.2 E19.a — Entité de contexte, `0x59` et garde de boucle 🚧
 
 **But.** La cinématique du capitaine sur la 390 se joue comme dans l'original : le capitaine monte
 l'escalier et disparaît, puis on le retrouve en pièce B, et la cabine endort Alundra et charge 476.
@@ -324,7 +324,7 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
 
 #### Tâches
 
-- **T1 — L'entité logique, instruction par instruction.**
+- ✅ **T1 — L'entité logique, instruction par instruction.** *(fait le 2026-09-29 : `RunOneScriptCall` résout `LogicEntity ?? owner` avant chaque opcode et `Dispatch` reçoit l'entité logique et l'owner ; `Clone` ne copie plus le contexte ; commentaires, `docs/intro-roadmap.md` et `EntitySearchService` corrigés ; 7 tests unitaires, `AlundraEventProgramRunnerLogicEntityTests`. Les 13 opcodes de champs et les 16 de référence agissent sans autre modification de cas ; aucun cas ne lit l'état du programme sur l'entité.)*
   - `RunOneScriptCall` résout `logic = owner.LogicEntity ?? owner` avant chaque opcode
     (`0x80042284`), puis appelle `Dispatch(command, logic, owner, v, state)`.
   - Dans les cas existants, `entity` désigne désormais l'entité logique, et le paramètre de l'owner
@@ -343,7 +343,7 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
     `0x66` : `RunMapEventsPass` pose déjà ces champs (`AlundraWorldProxy.cs:2326-2334`).
   - `EntitySearchService.cs:86-91` dit que la référence de recherche est toujours l'entité elle-même :
     c'est faux après T1, à corriger.
-- **T2 — `0x42` et `0x43`** (`0x8003E808`, `0x8003E81C`).
+- ⏳ **T2 — `0x42` et `0x43`** (`0x8003E808`, `0x8003E81C`).
   - `0x42` : `owner.LogicEntity = PlayerEntity`. Rend 1. Sans héros (contexte dégradé), rien ne
     change, et le cas passe par `LogDegradedNoPlayerOpcodeOnce`, comme `0x3B`, `0x3E` et `0x53`.
   - `0x43` : la recherche `v1` prend l'entité logique pour référence (`EntitySearchService`).
@@ -352,10 +352,10 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
     - Rend 2 dans les deux cas.
     - `0x43 [0x80]` reste un changement sans effet sur le contexte, avec `Result = 1`, comme le
       binaire.
-- **T3 — `0x59`** (`0x8003EE8C`, taille 3) : pour chaque entité trouvée par `v1` (référence :
+- ⏳ **T3 — `0x59`** (`0x8003EE8C`, taille 3) : pour chaque entité trouvée par `v1` (référence :
   l'entité logique), `TargetAnimationId = v2`. Rend 3. Ce cas couvre 669 sites « héros au repos »
   `[129,0]`, dont 390 `@515` et 389 `@1369`.
-- **T4 — Garde de boucle** (D-E19-3).
+- ⏳ **T4 — Garde de boucle** (D-E19-3).
   - Le budget d'un appel est `MaxIterationsPerCall ?? ProductionLoopBudget`, avec
     `ProductionLoopBudget = 1024` : 8,5 fois la pire boucle mesurée, 19,7 fois la plus longue suite
     finie.
@@ -376,7 +376,7 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
   - Le harnais de l'intro garde sa valeur explicite, 20000.
   - Limite connue : un programme de recherches qui boucle alloue deux listes par opcode, soit
     environ 2048 par image. Cela ne concerne que les boucles pathologiques.
-- **T5 — Support d'arcs et tests** (§1.3).
+- 🚧 **T5 — Support d'arcs et tests** (§1.3).
   - Support partagé, construit sur le montage d'E16.e, avec les détails du §0.2.6 :
     - monde bâti d'après le chemin du dossier de la carte (zone et nom), toutes ses couches,
       `ProjectPath` réglé ;
@@ -423,9 +423,9 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
       réécrit `Result` avant `0x03 @764` : ses assertions tiennent. Seul son commentaire (`:4472-4476`,
       « `0x43` non porté, sauté par sa taille ») est à mettre à jour ;
     - `AlundraWorldProxyEventPassTests.cs:387` reste valide.
-- **T6 — Docs.** Mettre à jour ce plan (statuts, faits mesurés) et `plan-conversion-totale.md`
+- ⏳ **T6 — Docs.** Mettre à jour ce plan (statuts, faits mesurés) et `plan-conversion-totale.md`
   (ligne E19). L'ADR-0015 est déjà écrite.
-- **T7 — Recette en jeu (auteur).** Lancer le jeu hors de l'app Claude, en Debug.
+- ⏳ **T7 — Recette en jeu (auteur).** Lancer le jeu hors de l'app Claude, en Debug.
   1. Après l'intro, parler au marin au grog (salle du nord, par la porte 2 du pont) puis au
      capitaine **en dernier**.
   2. Le capitaine va vers l'est, monte l'escalier et disparaît dans le trou ; la main revient.
