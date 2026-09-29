@@ -1040,8 +1040,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// separate map-entry reset" shape as <see cref="AlundraHudDirector"/> (this director has no
     /// map-entry state either: <see cref="AlundraGameState.PlayerControlFlags"/>/<c>MenuOpen</c> already
     /// survives a map change like every other <see cref="AlundraGameState"/> field, and the inventory
-    /// itself is never open across a map transition in the original - opening it requires the SAME
-    /// control-flag gate a warp/portal already poses).
+    /// itself is never open across a map transition: MenuOpen, cleared only with the closing slide's end, blocks
+    /// the portal test and freezes the event programs, so no warp starts while it is open, and the trigger
+    /// refuses while
+    /// <see cref="AlundraWarpDirector.IsTransitionInProgress"/> - the warp poses no control-flag bit, SD5,
+    /// D-E13D-38).
     /// </summary>
     internal void InstallInventorySystems()
     {

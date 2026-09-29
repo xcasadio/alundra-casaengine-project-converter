@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
+using CasaEngine.Framework.Application;
 using Xunit;
 
 namespace Alundra.Tests;
@@ -30,6 +31,9 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
+        AlundraScreenFadeDirector.Instance.ResetForTests(); // SD5: the warp departure tests arm the outgoing fade...
+        AlundraMusicPlayer.Instance.ResetForTests();        // ...record a departure request on the music player...
+        AlundraBgmFadeDirector.Instance.ResetForTests();    // ...which may arm the BGM fade at the frame close.
         AlundraEtcStringTable.ResetForTests(); // E15.c T6: this class' own SetEtcFixture leaves an injected asset behind.
         _previousProjectPath = EngineEnvironment.ProjectPath;
     }
@@ -45,6 +49,9 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         SpriteRecordCatalog.ResetForTests();
         AlundraSoundBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
+        AlundraScreenFadeDirector.Instance.ResetForTests(); // SD5: same reason as the constructor.
+        AlundraMusicPlayer.Instance.ResetForTests();
+        AlundraBgmFadeDirector.Instance.ResetForTests();
         AlundraEtcStringTable.ResetForTests(); // E15.c T6: same reason as the constructor.
         EngineEnvironment.ProjectPath = _previousProjectPath!;
     }
@@ -73,6 +80,41 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
             (itemId + 0x200, name),
             (itemId + 0x280, desc0),
             (itemId + 0x300, desc1)));
+    }
+
+    /// <summary>Portal 0 of map 389 (mono-cell (18,38) to map 390) - same record as
+    /// <c>AlundraWarpDepartureTests.Map389Portal0</c>.</summary>
+    private static AlundraPortalRecord Map389Portal0() => new()
+    {
+        Index = 0,
+        X1 = 18,
+        Y1 = 38,
+        X2 = 18,
+        Y2 = 38,
+        DestMapId = 390,
+        DestTileX = 10,
+        DestTileY = 40,
+        ZLevel = 0,
+        Flags = 0x5001,
+    };
+
+    private static string FindProjectRoot()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, "alundra-project");
+            if (Directory.Exists(Path.Combine(candidate, "Maps")))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new InvalidOperationException(
+            $"AlundraInventoryDirectorTests: no 'alundra-project/Maps' directory found above "
+            + $"'{AppContext.BaseDirectory}' - this test needs the real converter export.");
     }
 
     private static AlundraGameState NewState() => new();
@@ -199,6 +241,35 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         Tick(state, director, AlundraPadState.Start | AlundraPadState.L2); // tick 10: a fresh L2 edge, delay over.
         Assert.False(AlundraWarpDirector.Instance.IsWarpDelayRunning);
         Assert.True(director.IsActive);
+    }
+
+    /// <summary>SD5 (D-E13D-38): the warp's departure tick is refused too, unlike the original [binaire]:
+    /// HandleWarpTransition (0x80031340) runs inside UpdateWorld, before the same Update's trigger test
+    /// (0x8002bc6c), which never looks at g_isGameEnding - a press on that exact frame armed the inventory, which
+    /// then opened on the arrival map. A defect of the original, corrected (D-E13D-30). The port has the same order:
+    /// the departure is armed from the hero's own Update, before the world's per-tick inventory loop. The fade that
+    /// follows is <see cref="WorldUpdate_StartPressedDuringAWarpDepartureFade_NeverOpensTheInventory"/>.</summary>
+    [Fact]
+    public void Trigger_Refused_OnTheWarpDepartureTick_ADefectOfTheOriginalCorrected()
+    {
+        var state = NewState();
+        var director = NewDirector(state);
+        var player = new AlundraEntityScriptProxy
+        {
+            IsPlayer = true,
+            PosX = (18 * 24 + 12) << 16, // on portal 0's own source cell.
+            PosY = (38 * 16 + 8) << 16,
+        };
+
+        AlundraWarpDirector.Instance.BeginDeparture(Map389Portal0(), 0x10, player, state);
+        Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        Assert.Equal(0u, state.PlayerControlFlags); // the warp poses no control-flag bit (D-T-6).
+
+        Tick(state, director, AlundraPadState.Start, player);
+
+        Assert.False(director.IsActive);
+        Assert.Equal(0u, director.ForbiddenWarpFlag);
+        Assert.Equal(0u, state.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
     }
 
     [Fact]
@@ -868,5 +939,70 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         worldProxy.Update(0.04f);
 
         Assert.Equal(slotBefore + 6, AlundraInventoryDirector.Instance.SelectedSlotId);
+    }
+
+    /// <summary>
+    /// SD5 (E16.d security review): a Start pressed during a warp departure fade must not open the inventory.
+    /// The original cannot [binaire]: HandleWarpTransition (0x80031340) only poses g_isGameEnding, and the main
+    /// loop then leaves for the transition loop (0x8002c490-0x8002c4c0), which refreshes the pad (0x8002e38c)
+    /// and draws the effect (0x80044440) but never calls Update (0x8002baec), where the trigger lives
+    /// (0x8002bc6c-0x8002bd00), until the arrival map's own Update(1) (0x8002c3e4) - refused there by the
+    /// map-entry delay.
+    /// The warp poses no control-flag bit (D-T-6), so none of the original's own guards sees it (D-E13D-38).
+    /// Start is pressed from the second frame after the departure on: the departure frame itself, whose Update
+    /// still runs the trigger after UpdateWorld in the original, is
+    /// <see cref="Trigger_Refused_OnTheWarpDepartureTick_ADefectOfTheOriginalCorrected"/>.
+    /// </summary>
+    [Fact]
+    public void WorldUpdate_StartPressedDuringAWarpDepartureFade_NeverOpensTheInventory()
+    {
+        var projectRoot = FindProjectRoot();
+        EngineEnvironment.ProjectPath = projectRoot;
+
+        var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
+        var worldProxy = new AlundraWorldProxy();
+        worldProxy.InitializeWithWorld(world); // no TileMap entity - same headless montage as the test above.
+        worldProxy.PlayerEntity = new AlundraEntityScriptProxy
+        {
+            IsPlayer = true,
+            PosX = (18 * 24 + 12) << 16, // on portal 0's own source cell.
+            PosY = (38 * 16 + 8) << 16,
+        };
+        AlundraInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, ItemTablesFixture.LoadReal(), worldProxy.SoundPlayer);
+
+        // A non-degraded departure (real world index, a GameManager to hand the world path to), so the gate
+        // stays posted through the world-change request instead of being lifted by the abort guard - same
+        // montage as AlundraWarpDepartureTests' own freeze test. Departs through the production trigger site.
+        AlundraWarpDirector.Instance.AttachToWorld(new GameManager(null), soundPlayer: null, projectRoot);
+        ((IAlundraScriptHost)worldProxy).OnPortalTriggerDetected(Map389Portal0(), 0x10);
+        Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
+        Assert.Equal(0u, worldProxy.GameState.PlayerControlFlags); // the warp poses no control-flag bit (D-T-6).
+
+        worldProxy.Update(0.02f); // the departure frame's own world half - nothing pressed.
+
+        for (var frame = 1; frame <= 24; frame++)
+        {
+            // A fresh Start edge every other frame, published the way AlundraEntityScriptProxy.Update keeps
+            // publishing the pad during the fade.
+            worldProxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = frame % 2 == 1 ? AlundraPadState.Start : 0u };
+            worldProxy.Update(0.02f);
+
+            Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress, $"frame {frame}: the montage left the transition");
+            Assert.False(AlundraInventoryDirector.Instance.IsActive, $"frame {frame}: the inventory opened mid-transition");
+            Assert.Equal(0u, worldProxy.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
+        }
+
+        // Not vacuous: the same montage opens once the arrival has lifted the gate and the 0.2 s map-entry
+        // delay has run out.
+        AlundraWarpDirector.Instance.InstallForMapEntry();
+        worldProxy.GameState.LastPadState = default;
+        for (var i = 0; i < 10; i++)
+        {
+            worldProxy.Update(0.02f);
+        }
+
+        worldProxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Start };
+        worldProxy.Update(0.02f);
+        Assert.True(AlundraInventoryDirector.Instance.IsActive);
     }
 }
