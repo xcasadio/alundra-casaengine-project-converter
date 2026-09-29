@@ -1463,7 +1463,7 @@ La remise de session couvre tous les singletons, sauf le fondu maître de la mus
 `ApplyPendingLoad` ; un test existant qui change pour une autre raison ; l'oracle de l'intro qui
 bouge.
 
-### E16.e — Écran de sauvegarde en jeu 🚧 (DLL, MGUI en XAML ; plan détaillé du 2026-09-29 ; mis en pause après un troisième REVISE, repris sur la réponse de l'auteur, D-E16-38 ; relecture de clôture fraîche sur `c91e4e1` : READY ; exécution en mode AUTO)
+### E16.e — Écran de sauvegarde en jeu 🚧 (DLL, MGUI en XAML ; plan détaillé du 2026-09-29 ; mis en pause après un troisième REVISE, repris sur la réponse de l'auteur, D-E16-38 ; relecture de clôture fraîche sur `c91e4e1` : READY ; exécution en mode AUTO ; T1 et T2 faites le 2026-09-29, T3 en pause sur O-E16-18)
 
 - **But** : le joueur sauvegarde lui-même, comme dans l'original.
 - **Contenu** : le gestionnaire du livre de sauvegarde (`AI_ProcessWarpTransitionState`, question
@@ -1794,7 +1794,46 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   - créneau F repris aux états 2, 4 et 6 ; `Start` pendant que l'écran est actif (SE7) ;
   - refus de la capture : en un nombre borné de ticks, livre à l'état 0, `PlayerControlFlags == 0`,
     `IsActive` faux, `MenuOpen` effacé (SE8).
-- ⏳ **T3 — Directeur de l'écran** (L2, L3, L5, sans MGUI). Tests, sur un service simulé :
+- ⚠️ **T3 — Directeur de l'écran** (L2, L3, L5, sans MGUI). *Arrêtée le 2026-09-29 avant tout code :
+  deux faits du plan sont contredits par le binaire (règle : un fait du plan contredit arrête la tâche).
+  Rien n'est commité pour T3 hors de cette note.*
+  - *Rotation `PARTIAL` du carrousel (J4) : tranchée par le désassemblage de `DisplayMemoryCardMenu`
+    (`0x80058F24`), elle confirme les boucles de la décompilation.* Enregistrement i : drapeau en
+    `0x800C419C + 0x74 × i`, boîte pointée en `+4`, glissement en `+8`. Bas (`0x80059590`-`0x80059780`) :
+    enregistrements `ring+1`, `ring+2`, `ring+3`, `ring` (4 tours, index de départ `ring+1`), chacun de
+    `SHORT_ARRAY_800C436C[i+1]` vers `[i]` (0→-1, 64→0, 128→64, 240→128) ; teintes `ring` 0→`0x40`,
+    `ring+1` `0x40`→0, `ring+2` `0x80`→`0x40`, `ring+3` `0x40`→`0x80` ; puis remplissage de `ring` avec
+    l'entrée `[1]`, `ring+1`, sélection +1. Haut (`0x800598FC`-`0x80059B04`) : enregistrements `ring` à
+    `ring+3`, de `[i]` vers `[i+1]` ; remplissage de `ring` avec l'entrée `sélection-2` si `sélection >= 2` ;
+    teintes `ring` 0→`0x40`, `ring+1` `0x40`→`0x80`, `ring+2` `0x80`→`0x40`, `ring+3` `0x40`→0 ; `[1]` =
+    `sélection` si l'entrée `sélection` est vide, sinon `sélection+1` ; `ring-1`, sélection -1. Fermeture
+    (`0x80059150`-`0x8005933C`) : `ring+1` à `ring+3` (3 tours), de `[i+1]` vers Y = -1 (soit
+    `-1 - 8 × Hauteur`) ; teintes `0x40`/`0x80`/`0x40` → 0 ; boîte des messages de son Y vers 240. Bas puis
+    Haut sont testés dans le même tick, dans cet ordre ; aucune touche n'est lue pendant un glissement
+    (drapeaux `5`, `2`, `8`). Fin d'un glissement : sur le retour de l'enregistrement 2 (ordre des appels
+    0, 1, 3, 2, `0x80058FA8`-`0x80058FD4`), puis `ring` masqué. Fin de la fermeture : sur le retour de la
+    boîte des messages, qui reprend sa position d'origine, et ce tick-là ne dessine rien. Géométrie lue
+    dans le binaire : les quatre boîtes à X = 16, 36 × 7 tuiles ; la boîte des messages en (16, 168),
+    36 × 7. Anneau à l'ouverture : 3 (`0x80058A80`-`0x80058A94` ; l'affectation `[0] = [1] & 3` de la
+    décompilation n'existe pas dans le binaire, sans effet ici avec quatre entrées).
+  - *Contradiction 1 (J4, ouverture)* : la boîte des messages affiche à l'ouverture l'en-tête `+0`,
+    c'est-à-dire ETC `0x83` « Sélectionne une fente pour l'enregistrement. » (`0x800589A8`,
+    `lw a1, 0($v1)` sur `*0x8018023C`, en-tête posé en `0x80060154`-`0x80060194`), et non `0x84` ;
+    `0x84` (en-tête `+4`) ne la remplace qu'à l'appui de Croix (`0x80059534`, `lw a1, 4($v0)`), ce que
+    T3 dit déjà pour la question. La décompilation lit `field_0x4` aux deux endroits
+    (`MemoryCardManager.cs:2015-2021` et `:2336-2343`).
+  - *Contradiction 2 (J3, L3, ordre des lignes)* : dans le binaire, la ligne 1 d'une entrée est le nom
+    du chapitre et la ligne 2 le résumé. État `0x0C` (`0x80060128`-`0x80060130`) : entrée `+0` =
+    `FUN_800818e4(bloc + 0)`, qui lit les quatre chiffres du chapitre et rend `GetEtcString(n)`
+    (`0x800816D4`), entrée `+4` = `bloc + 0x20` (le résumé) ; `FUN_80058b28` (`0x80058BB4`, `0x80058BE4`)
+    rend l'entrée `+0` dans le sprite `+0x24` et l'entrée `+4` dans le sprite `+0x4C` ; `FUN_80058c44`
+    les place en (X + 16, Y + 8) et (X + 16, Y + 32) (`0x80058D74`-`0x80058DC4`). La décompilation
+    (`MemoryCardManager.cs:1250-1254`, et `:153-154`) inverse les deux champs, et J3 et L3 la suivent.
+  - **Question O-E16-18** : suivre le binaire, c'est-à-dire ETC `0x83` à l'ouverture puis `0x84` à la
+    question, et ligne 1 = nom du chapitre, ligne 2 = résumé (D-E16-36 dit « comme l'original ») ?
+    Recommandation : oui, selon la règle « le binaire tranche ».
+
+  Tests, sur un service simulé :
   - la suite des états conservés, les temporisations, les textes affichés ;
   - libellés : un emplacement valide montre son résumé et son chapitre recalculés, et des
     métadonnées fausses dans le fichier n'y changent rien ; un emplacement vide, illisible ou refusé
