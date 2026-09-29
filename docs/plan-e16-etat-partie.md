@@ -1463,7 +1463,7 @@ La remise de session couvre tous les singletons, sauf le fondu maître de la mus
 `ApplyPendingLoad` ; un test existant qui change pour une autre raison ; l'oracle de l'intro qui
 bouge.
 
-### E16.e — Écran de sauvegarde en jeu ⚠️ (DLL, MGUI en XAML ; préparée le 2026-09-28 en mode AUTO, en pause : choix de l'auteur O-E16-13 à O-E16-16)
+### E16.e — Écran de sauvegarde en jeu ⏳ (DLL, MGUI en XAML ; préparée le 2026-09-28 en mode AUTO ; choix de l'auteur reçus le 2026-09-29, D-E16-34 à D-E16-37 ; plan détaillé à écrire)
 
 - **But** : le joueur sauvegarde lui-même, comme dans l'original.
 - **Contenu** : le gestionnaire du livre de sauvegarde (`AI_ProcessWarpTransitionState`, question
@@ -1510,6 +1510,19 @@ tranche s'arrête donc ici, préparée, avec les questions ci-dessous (points O-
   textes absents de l'export et des chaînes japonaises en dur ?
 
 Défaut H2 : corrigé par défaut (règle « corriger les défauts de l'original »), sauf avis contraire.
+
+**Réponses de l'auteur (2026-09-29)** :
+- **D-E16-34 (O-E16-13) — Les écrans de carte mémoire de l'original sont reproduits**, adaptés aux
+  fichiers : liste des blocs, icônes, messages. Le plan détaillé classe chaque état de
+  `MemoryCardManager` du flux de sauvegarde : reproduit tel quel, adapté aux fichiers, ou sans
+  objet ;
+- **D-E16-35 (O-E16-14) — 4 emplacements fixes**, comme une carte mémoire de l'original ;
+- **D-E16-36 (O-E16-15) — Un emplacement est libellé par son chapitre et son résumé**
+  (`HP xx TIME hh:mm:ss`), comme l'original, **recalculés depuis la sauvegarde validée** et non lus
+  dans les métadonnées non fiables ;
+- **D-E16-37 (O-E16-16) — Seuls les textes utiles sont gardés** : les textes ETC des états
+  reproduits ; les 8 textes absents de l'export sont vérifiés dans `ETC_RES.R` avant d'être
+  écartés ; les chaînes japonaises en dur du chemin de test sont ignorées.
 
 ### E16.f — Variables Yarn adossées aux drapeaux ✅ (DLL, docs ; relecture REVISE puis READY le 2026-09-28 ; exécutée en mode AUTO, « fait tout E16 de façon autonome » ; faite et vérifiée CONFIRMED le même jour, `82ab618` à `c4ff1d5`)
 
@@ -1918,10 +1931,10 @@ tests du convertisseur 400/400, `Alundra.Tests` 1361/1361.
 | O-E16-10 | ~~Unité du temps de jeu~~ — **tranché** (D-E16-23) : 60 unités par seconde réelle, affichage divisé par 60. | E16.c |
 | O-E16-11 | ~~Désaccords de décompilation~~ — **tranché** (D-E16-24) : tous corrigés en E18. | E18 |
 | O-E16-12 | Seulement si E16.a T3.1 ne retrouve pas, dans le binaire, que la hauteur de terrain (`TerrainHeight`, `+0x138`) d'une entité que `0x8D` teste (joueur, PNJ avec ou sans contrôleur, dès l'apparition) vaut celle que la sonde de la DLL (`ComputeTerrainHeight`) peut calculer, au même moment de l'image : quelle source prendre pour `0x8D` ? | E16.a |
-| O-E16-13 | **Aspect de l'écran de sauvegarde** : écrans de carte mémoire de l'original (blocs, icônes, messages de carte absente, pleine ou abîmée), ou flux simplifié qui garde les temps visibles (message du livre, oui/non, choix de l'emplacement, écrasement, réussite ou échec) sans les états propres au matériel PS1 ? | E16.e |
-| O-E16-14 | **Emplacements** : 4 fixes comme une carte mémoire, un seul implicite, ou une liste libre ? | E16.e |
-| O-E16-15 | **Libellé d'un emplacement** : chapitre et résumé recalculés depuis la sauvegarde validée, date d'écriture, numéro, ou une combinaison ? | E16.e |
-| O-E16-16 | **Textes** : quels messages ETC de l'original garder, et que faire des 8 textes absents de l'export et des chaînes japonaises en dur ? | E16.e |
+| O-E16-13 | ~~tranché~~ (D-E16-34, écrans de carte mémoire reproduits, adaptés aux fichiers). Question d'origine : **Aspect de l'écran de sauvegarde** : écrans de carte mémoire de l'original (blocs, icônes, messages de carte absente, pleine ou abîmée), ou flux simplifié qui garde les temps visibles (message du livre, oui/non, choix de l'emplacement, écrasement, réussite ou échec) sans les états propres au matériel PS1 ? | E16.e |
+| O-E16-14 | ~~tranché~~ (D-E16-35, 4 emplacements fixes). Question d'origine : **Emplacements** : 4 fixes comme une carte mémoire, un seul implicite, ou une liste libre ? | E16.e |
+| O-E16-15 | ~~tranché~~ (D-E16-36, chapitre et résumé recalculés depuis la sauvegarde validée). Question d'origine : **Libellé d'un emplacement** : chapitre et résumé recalculés depuis la sauvegarde validée, date d'écriture, numéro, ou une combinaison ? | E16.e |
+| O-E16-16 | ~~tranché~~ (D-E16-37, textes utiles seulement ; les 8 absents vérifiés dans `ETC_RES.R`). Question d'origine : **Textes** : quels messages ETC de l'original garder, et que faire des 8 textes absents de l'export et des chaînes japonaises en dur ? | E16.e |
 
 ## 4. Hors périmètre
 
