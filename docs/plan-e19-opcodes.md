@@ -605,13 +605,16 @@ flottant 32 bits dans le scratchpad `e19a2/`) :
 
 **Tâches.**
 
-- **T0 — Preuve rouge d'A1c, avant tout changement du moteur** : écrire le mode « vrai contrôleur »
+- ✅ **T0 — Preuve rouge d'A1c, avant tout changement du moteur** : écrire le mode « vrai contrôleur »
   d'`ArcRun` et A1c (détail en T3), les lancer sur le sous-module en `a550859f`, consigner l'échec et
   le `HEAD`, et ne rien committer.
-- **T1 — Moteur** : plan `CasaEngineMonogame/ai-agent/tasks/field-move-to-contact-tasks.md` (T0.1 branche,
+  *(fait le 2026-09-29 : `git -C CasaEngineMonogame rev-parse HEAD` = `a550859fd1c25fcfa74d13cc09ec2afec1a68949`. A1c échoue à la limite de 900 images, à l'image 899, en nommant `0x1E @658` : « arc A1c did not reach its end signal (B2 executes 0x53 @688 towards map 476 (the walk of 0x1E @658 ends at its contact)) within 900 frames. Last instruction of each program: [... slot 1 program @552: last 0x1E @658 (Implemented, frame 899); ...]. Skipped or exceeded: []. » Rien n'a été commité à ce stade ; les fichiers le sont en T3.)*
+- ✅ **T1 — Moteur** : plan `CasaEngineMonogame/ai-agent/tasks/field-move-to-contact-tasks.md` (T0.1 branche,
   plan et ADR-0045 du moteur ; T1.1 bisection et tests ; T1.2 docs), sur la branche moteur
   `chantier/field-move-to-contact`.
-- **T2 — Pointeur et épingles du parent**, en un seul commit compilable :
+  *(fait le 2026-09-29 : commits moteur `d51089f5` (T0.1), `62ac8431` (T1.1), `25f8385c` (T1.2) ; `CasaEngine.Tests` 2375/2375, aucun test hors de `CharacterControllerFieldAwareMoverTests` n'a changé de résultat.)*
+- ✅ **T2 — Pointeur et épingles du parent**, en un seul commit compilable :
+  *(fait le 2026-09-29 : pointeur sur `25f8385c` ; les tests dépendant du tick de `ForceAdjusted` (`Walk0x1E_RealWall…`, `Walk0x1F_RealWall…`, `ForceAdjusted_ClearedEachFrameTop…`, `AlundraLadderClimbTests`) passent sans changement, 20/20 ; traces : seule la colonne `posX` change, dès l'image 98 (spawn, 36956160 → 36831232, 112 lignes) et 39 (highground, 27506688 → 27394048, 79 lignes) ; épingle `:748` à 36831232 et nouvelle épingle highground 27394048 (image 39) ; les deux tests d'adoption à (565,632,80) et (397,264,0), renommés `…StopsAtContact` ; commentaires de `AlundraEntityScriptProxy.cs` dont l'écart D-E19-10. Aucune autre épingle n'a bougé : `Alundra.Tests` 1920/1920, en comptant A1c et les 7 cas de diagnostic non encore commités (T3).)*
   - le pointeur du sous-module suit la branche moteur ;
   - relancer `HeroTraceHarnessTests`. Il réécrit les quatre traces, qui ne sont comparées à rien par le
     test : le `git diff` est donc la seule garde. Vérifier, sans tenir compte des fins de ligne, qu'il ne

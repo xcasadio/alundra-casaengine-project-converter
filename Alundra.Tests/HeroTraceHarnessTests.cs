@@ -745,7 +745,16 @@ public class HeroTraceHarnessTests
         Assert.Equal(98, firstWallFrame);
 
         var wallPosX = spawnLines.First(l => l.ForceAdjusted == 1).PosX;
-        Assert.Equal(36956160, wallPosX); // frozen against the wall - see AlundraCellsCollisionField's own tx22/23 boundary.
+        // Frozen against the wall - see AlundraCellsCollisionField's own tx22/23 boundary. E19.a2 (ADR-0045 of the
+        // engine): the blocked step now advances to the contact, so the hero stops at 36831232 (562 px) instead of
+        // 36956160 (563.9 px), where the whole step used to be rejected. The flag still rises on the same frame (98):
+        // D-E19-10, the DLL keeps its own rule (a shortfall of more than 0.01 px), one tick before the original's.
+        Assert.Equal(36831232, wallPosX);
+
+        // The highground scenario reaches its wall on frame 39 and stops at 27394048 (418 px) instead of 27506688.
+        var highgroundFirstWall = highgroundFreestep1.Lines.First(l => l.ForceAdjusted == 1);
+        Assert.Equal(39, highgroundFirstWall.Frame);
+        Assert.Equal(27394048, highgroundFirstWall.PosX);
 
         // First real directional input takes effect: MovePlayer sets TargetAnimationId=1 (Moving) the very
         // first frame ButtonsHold != 0 - frame 1 itself (pad is already Left from the very first Update).

@@ -186,6 +186,14 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// a value a tick-less render frame silently wiped. Stays 0 the whole session for an entity with no
     /// controller (bare-fallback spawn) - <see cref="MoveControllerAndPullPosition"/> is itself a no-op in
     /// that case.
+    /// <para>
+    /// E19.a2 (D-E19-10, deviation from the original kept until E19.h): the engine's cell field now
+    /// advances a blocked step to the contact (ADR-0045 of the engine), so the flag rises on the tick that
+    /// REACHES the contact (its displacement falls short by the part beyond the wall), one tick before the
+    /// original, which raises it only on the first tick with no advance at all
+    /// (<c>0x80037d54</c>, skipped by the guard of <c>0x800379a4</c>, when the whole step is rejected).
+    /// E19.h aligns the flag on the binary, together with the slide along a wall.
+    /// </para>
     /// </summary>
     public int ForceAdjusted;//0x13c
 
@@ -1761,7 +1769,9 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// fraction (<c>Δ / 65536f</c>, not the original's own truncated <c>Δ &gt;&gt; 16</c>) - see
     /// <see cref="AlundraPlayerManager.RunOneTick"/>'s own call site. An axis <c>Move</c> blocks leaves
     /// <see cref="ForceX"/>/<see cref="ForceY"/> untouched by design (no per-axis correction - accepted
-    /// deviation, documented on the same plan section); it DOES set <see cref="ForceAdjusted"/> (E4.d)
+    /// deviation, documented on the same plan section); a blocked axis advances to the contact on the cell
+    /// field (E19.a2, ADR-0045 of the engine: the hero stops against the wall, no longer one step short of
+    /// it), so the returned displacement is the part up to the contact. It DOES set <see cref="ForceAdjusted"/> (E4.d)
     /// when the controller's own returned displacement falls short of what was requested here by more
     /// than <see cref="ForceAdjustedEpsilonPixels"/> on either horizontal axis - the DLL's own equivalent
     /// of the original's "movement was curtailed" signal (see <see cref="ForceAdjusted"/>'s own doc). A
@@ -1881,8 +1891,9 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// <summary>Small horizontal-axis tolerance <see cref="MoveControllerAndPullPosition"/> uses to decide
     /// whether the controller's own returned displacement counts as "curtailed" (sets
     /// <see cref="ForceAdjusted"/>) - well under a single pixel, so ordinary floating-point noise from the
-    /// <c>Move</c> round trip never sets it spuriously, while any REAL wall/step-height block (which stops
-    /// the entity short by at least a fraction of a pixel every tick it keeps pushing) reliably does.
+    /// <c>Move</c> round trip never sets it spuriously, while any REAL wall/step-height block reliably does:
+    /// the tick that reaches the contact falls short by the part of the step beyond the wall (E19.a2, the
+    /// step advances to the contact), and every tick the entity keeps pushing falls short by the whole step.
     /// </summary>
     private const float ForceAdjustedEpsilonPixels = 0.01f;
 

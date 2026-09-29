@@ -341,7 +341,7 @@ public class AlundraCharacterControllerAdoptionTests
     // -----------------------------------------------------------------------------------------
 
     [Fact]
-    public void Mask_ClassBMaskOnEqualHeightCells_BlocksTheMove()
+    public void Mask_ClassBMaskOnEqualHeightCells_StopsAtContact()
     {
         var projectRoot = FindProjectRoot();
         var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
@@ -359,7 +359,9 @@ public class AlundraCharacterControllerAdoptionTests
         proxy.Controller!.Move(new Vector3(24f, 0f, 0f));
         world.Update(1f / 50f);
 
-        Assert.Equal(new Vector3(564f, 632f, 80f), entity.RootComponent!.Position);
+        // E19.a2 (ADR-0045 of the engine): the blocked step advances to the contact. The hero's far corner (root + 11)
+        // stops on the frontier x = 576 of cell (24,39): 576 - 11 = 565. It used to be rejected whole, at 564.
+        Assert.Equal(new Vector3(565f, 632f, 80f), entity.RootComponent!.Position);
     }
 
     [Fact]
@@ -389,7 +391,7 @@ public class AlundraCharacterControllerAdoptionTests
     // -----------------------------------------------------------------------------------------
 
     [Fact]
-    public void Cliff_HeightAboveStepHeight_BlocksTheMoveRegardlessOfMask()
+    public void Cliff_HeightAboveStepHeight_StopsAtContactRegardlessOfMask()
     {
         var projectRoot = FindProjectRoot();
         var field = projectRoot == null ? null : LoadMap389Field(projectRoot);
@@ -407,7 +409,9 @@ public class AlundraCharacterControllerAdoptionTests
         proxy.Controller!.Move(new Vector3(24f, 0f, 0f));
         world.Update(1f / 50f);
 
-        Assert.Equal(new Vector3(396f, 264f, 0f), entity.RootComponent!.Position);
+        // E19.a2: advances to the contact, the far corner on the frontier x = 408 of cell (17,16): 408 - 11 = 397
+        // (it used to be rejected whole, at 396).
+        Assert.Equal(new Vector3(397f, 264f, 0f), entity.RootComponent!.Position);
     }
 
     // -----------------------------------------------------------------------------------------

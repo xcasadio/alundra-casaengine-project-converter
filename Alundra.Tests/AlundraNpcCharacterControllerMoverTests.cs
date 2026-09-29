@@ -1214,7 +1214,7 @@ public class AlundraNpcCharacterControllerMoverTests
 
     // -----------------------------------------------------------------------------------------
     // (7) E4.d, item 7(2)/(3): a REAL map-389 wall (cell (24,39), walkability 1 - same cell/mask
-    // AlundraCharacterControllerAdoptionTests.Mask_ClassBMaskOnEqualHeightCells_BlocksTheMove already
+    // AlundraCharacterControllerAdoptionTests.Mask_ClassBMaskOnEqualHeightCells_StopsAtContact already
     // proves blocks under a ClassB mask 0x41) curtails a due-east walk. 0x1E gets a synthetic navigation
     // grid (map 389 itself has 0 blocked cells - E4.a's own finding) with the SAME cell blocked and
     // detours around it without ending; 0x1F has NO grid and ends immediately instead (D5: no detour for
