@@ -1524,6 +1524,163 @@ Défaut H2 : corrigé par défaut (règle « corriger les défauts de l'original
   reproduits ; les 8 textes absents de l'export sont vérifiés dans `ETC_RES.R` avant d'être
   écartés ; les chaînes japonaises en dur du chemin de test sont ignorées.
 
+#### Plan détaillé d'E16.e (2026-09-29)
+
+**Statut** : proposé en mode AUTO (« fait tout E16 de façon autonome ») ; revue de sécurité, puis
+relecture de plan jusqu'à READY, avant l'exécution ; vérification par un `verifier` frais et un
+contradicteur. Exploration du 2026-09-29 en lecture seule, chaque surface recontrôlée par un second
+agent (`scratchpad/e16def/e16e-*.md`).
+
+**Faits établis** (compléments de H1 à H6)
+
+| Réf | Fait | Source |
+|---|---|---|
+| J1 | Seul `UpdateSavedData` (état 5 du livre) arme le flux de carte mémoire : `InitializeSaveDataCopy(g_saveData, 0x758, 1)` pose `g_globalTransitionState = 0x2710` et `g_postProcessingState = 1` ; `UpdateMemoryCardProcess` part alors dans `StartMemoryCardProcess`. La voie `g_postProcessingState == 3` (`UpdateSaveGameTransition`, avec les chaînes japonaises de test) n'est jamais armée. | désassemblage `0x8005EC44`, `0x8005EC98` ; `MemoryCardManager.cs:99-132`, `:580-586` ; `GameEngine.cs:2649-2680` |
+| J2 | Le flux de sauvegarde de `StartMemoryCardProcess` (`0x8005F458`, une cinquantaine d'états) se classe en trois familles, tableau complet dans `scratchpad/e16def/e16e-flow.md` : (a) les états visibles du joueur, conservés par L2 ; (b) les états qui ne servent que la carte PS1 : examen des ports, formatage, place libre et suppression d'une partie quand la carte est pleine, réservation d'un bloc, icône et somme de contrôle, carte absente ou changée ; (c) la chaîne de fin commune. L'examen des ports est asymétrique dans le binaire lui-même : une carte trouvée au seul port 2 mène à « Insère une Carte Mémoire. » sans jamais sauvegarder. | `MemoryCardManager.cs:592-1737` ; désassemblage `0x8005F7F4`–`0x8005F8AC` |
+| J3 | L'écran de choix (état `0x0C`) remplit quatre entrées : pour une partie existante, ligne 1 = résumé (`GameStateDescription`), ligne 2 = chapitre (`CurrentFlagName`) ; pour une entrée vide, `"{n}."` et une ligne vide. Titre : ETC `0x83`/`0x84`. Le sélecteur (`DisplayMemoryCardMenu`, rendu de la transition 10) lit Haut/Bas (au rythme de répétition) et Croix : Croix ouvre OUI/NON (ETC `0x4A`/`0x4B`) ; OUI retient l'entrée, NON annule tout le choix (pas de retour au choix). | `MemoryCardManager.cs:1229-1269`, `:2128-2480` |
+| J4 | Le sélecteur est un **carrousel** de quatre boîtes (288 × 56, même dessin que la boîte de description de l'inventaire, déjà exportée) : les quatre enregistrements tournent sur les hauteurs `-1, 0, 64, 128, 240` (`SHORT_ARRAY_800C436C`), glissent par `UpdateUiBoxesPosition` (déjà porté trois fois dans la DLL) et changent de teinte RVB sur 15 images (`InitializeUIMemoryFileBox`, cible `0x80` pour l'entrée du milieu). Le texte : deux lignes par boîte, à `(X + 16, Y + 8)` et `(X + 16, Y + 32)`, en font3. La boîte des messages est `g_uiBoxesInventoryDescriptionBackground` (16, 168). L'icône de carte mémoire n'est jamais dessinée à l'écran : elle ne va que dans l'en-tête du fichier PS1. | `MemoryCardManager.cs:2128-2480`, `:2599-2699`, `:1758-1813` ; `StaticVariables.cs:11195-11203`, `:11329-11386`, `:12406` ; `MGImage.cs:220-230` (`TextureColor`) |
+| J5 | Les 8 textes absents de l'export sont vides dans `ETC_RES.R` lui-même (vérifié octet par octet dans le fichier d'origine) : 6 secondes lignes vides et une paire vide (`0x9F`/`0xA0`). Les noms des 42 chapitres sont les textes ETC 0 à 41 (`Etc_0000` « Un Nouveau Départ » … `Etc_0041`). | `EtcIndexTable.csv` ; `data-extracted/data/ETC_RES.R.json` ; `alundra-project/Dialogues/Etc.yarn` |
+| J6 | La DLL : le livre atteint son créneau F (interaction) par `PickEventTrigger`, puis `RunPickedEvent` appelle `RunSpriteEvent`, un « no-op » compté pour toute IA native. Le code F 1 de l'original (`Script_FInteract_FUN_8007fc64`) verrouille le héros (`ControlLocked`) : le porter pour toute entité de code F 1 verrouillerait le héros devant des entités dont l'IA de tick n'est pas portée. | `AlundraEntityScriptProxy.cs:1140-1205` ; `AlundraEventProgramRunner.cs:268-279` ; `SpriteEventHandlers.cs:233-234`, `:270-277` |
+| J7 | Message ETC et oui/non dans la DLL : `AlundraDialogueDirector.Open(asset, nœud, 1)` sur l'asset `dialogue_etc` (nœuds `Etc_{index:D4}` en décimal) ; `SetCloseMask` est l'opcode `0x50`, que l'original appelle `SetEtcAnimationMode` ; `OpenChoice`/`TakeChoiceResult` pour OUI/NON. `AlundraEtcStringTable` charge `dialogue_etc` mais n'expose ni l'asset ni un texte ETC quelconque. | `AlundraDialogueDirector.cs:98-103`, `:213-343`, `:393-428` ; `AlundraEtcStringTable.cs:51-181` |
+| J8 | Les écrans XAML modaux à suivre sont ceux de l'inventaire et du sous-inventaire : classe `XamlUIScreenBase`, `.uiscreen` catalogué par l'export (`UiWriter.RegisterVersionedScreens`), toile 320 × 240, directeur logique (singleton de session, sans MGUI), présentateur câblé par `AlundraWorldProxy`, `TickPad` pour les touches, `MenuOpen` posé à l'ouverture. Les fichiers d'écran sont suivis par git sous `alundra-project/UI/Screens/`. | `AlundraInventoryScreen.cs:34-164` ; `AlundraWorldProxy.cs:1244-1274` ; `UiWriter.cs:161` |
+| J9 | La garde « `g_globalTransitionState == 0` » du déclencheur de l'inventaire est déclarée absente et traitée comme toujours vraie. | `AlundraInventoryDirector.cs:14-20`, `:417-421` |
+| J10 | E16.d ne se réutilise pas tel quel : sa sauvegarde refuse tout `PlayerControlFlags` non nul, or le livre pose `ControlLocked` avant d'écrire. E16.e compose donc les briques : `TryCaptureFromWorld`, `TryValidate`, `IAlundraSaveSlots.Save`, `TryLoad`. | `AlundraSaveGameDirector.cs:465-533` ; `IAlundraSaveSlots.cs:15-42` |
+
+**Choix du plan (à approuver)**
+
+- **L1 — Le livre seulement.** Le port de l'IA native ne vise que le livre : l'entité de type de
+  sprite 237, nommée « SaveBook (Ne pas toucher !) » (H4, J6). `RunSpriteEvent` reçoit une
+  répartition minimale, sur (créneau, code), qui ne connaît que le créneau F code 1 et le créneau C
+  code 72, **et seulement pour cette entité**. Toute autre IA native reste un « no-op » compté,
+  comme aujourd'hui.
+- **L2 — États conservés, adaptés, sans objet** (D-E16-34) :
+  - conservés, dans l'ordre de l'original :
+    - `0x2710` : message ETC `0x87` « Examen de la Carte Mémoire . . . » ;
+    - attentes `0x2711` et `0x3f4` ;
+    - `0x0C` : choix, titre `0x83`/`0x84`, quatre entrées ;
+    - le carrousel de J4, avec Haut/Bas, Croix, OUI/NON `0x4A`/`0x4B` ;
+    - `0x3f8` : message `0xA5` « Enregistrement de l'histoire . . . » ;
+    - `0x10` : écriture ;
+    - `0x3fe` : message `0xB1` « Histoire enregistrée. » ;
+    - `0x3fd`/`0x15` : message `0xAF`/`0xB0` d'échec ;
+    - la chaîne de fin `0x3f5` (Carré ou automatique), `0x0D`, `0x3f6`, `0x0E` (remise de la jauge
+      avant de la cacher), `0x44B`, `0x63` ;
+  - adapté : `0x10` écrit l'objet capturé à l'état 5 du livre dans l'emplacement `slot{n}` (n = 1 à
+    4), en binaire, par `IAlundraSaveSlots.Save` avec `BuildMetadata`. Tout état autre que `Saved`
+    mène à l'échec `0x15` ;
+  - sans objet, car le port écrit des fichiers : examen des ports, formatage, place libre,
+    suppression quand la carte est pleine, réservation d'un bloc, icône et somme de contrôle, et les
+    messages de carte absente, changée, non formatable. Avec quatre emplacements fixes, la carte
+    n'est jamais pleine.
+
+  Les attentes gardent les durées de l'original (`AdvanceFadeOldCheck` : `0x13`, `0x1c`, `0x0B`
+  images). Ce sont des temporisations, pas des fondus (J4).
+- **L3 — Libellés** (D-E16-36). À l'ouverture du choix, pour chaque emplacement `slot1` à `slot4` :
+  `TryLoad` puis `TryValidate` avec les règles de production (injectables comme au K1 d'E16.d).
+  - Réussite : ligne 1 = `AlundraSaveGame.BuildSummary(hpMax, gameTime)` ; ligne 2 = le nom du
+    chapitre, texte ETC d'indice `AlundraChapterFlags.GetFirstEnabledFlagIndex(GameFlags)` (0 à 41,
+    J5).
+  - Tout autre cas (vide, illisible, refusé) : `"{n}."` et une ligne vide, comme un emplacement vide
+    de l'original. L'emplacement reste écrasable.
+  - Les métadonnées du fichier ne sont jamais lues.
+  - Les textes affichés viennent du jeu (textes ETC, résumé calculé), sont bornés en longueur, et
+    passent par des `TextBlock` font3 avec `AllowsInlineFormatting="False"`.
+- **L4 — Livre (port de `0x8007B998`, avec le défaut H2 corrigé)** :
+  - **créneau F** : `Bytes` à 1, 0, 0, 0 ; `TargetAnimationId` à 0 ; `ControlLocked` posé ;
+  - **état 1** : si un dialogue est déjà ouvert, abandon (l'équivalent de `0x80045004`) ; sinon
+    `Open(dialogue_etc, "Etc_0064", 1)` (ETC `0x40`), `SetCloseMask` avec le bit de script, 60
+    ticks, puis fermeture par le script ;
+  - **état 2** : `OpenChoice` avec les textes ETC `0x41`/`0x42`. Si l'ouverture échoue, **abandon**,
+    au lieu de rester à l'état 3 comme l'original (H2) ;
+  - **état 4** : `TakeChoiceResult`. Autre que OUI : abandon. OUI : 60 ticks ;
+  - **état 5** : capture par `TryCaptureFromWorld` (la carte courante et la tuile du héros, comme
+    `UpdateSavedData`), puis `TryValidate`. Refus : message d'échec `0x15`, sans écriture. Sinon :
+    démarrage de l'écran de sauvegarde avec l'objet capturé ;
+  - **état 6** : attente de la fin de l'écran, puis remise (état 0, `ControlLocked` effacé) ;
+  - l'abandon efface `ControlLocked` comme `ResetWarpState`.
+- **L5 — Directeur et écran**. `AlundraSaveScreenDirector`, directeur logique singleton de session,
+  sans MGUI, sur le modèle de l'inventaire (J8). Il remplace l'état global `g_globalTransitionState`
+  de l'original :
+  - `IsActive` vaut vrai de l'état `0x2710` jusqu'à la fin de `0x63` ;
+  - la garde du déclencheur de l'inventaire (J9) teste désormais `!AlundraSaveScreenDirector.Instance.IsActive` ;
+  - `MenuOpen` est posé et effacé là où l'original le fait (effacé en `0x63`).
+
+  Autour du directeur :
+  - `AlundraSaveScreenPresenter` et `AlundraSaveScreen : XamlUIScreenBase` ;
+  - `SaveScreen.xaml`, `.uiscreen` et `.design.json` sous `alundra-project/UI/Screens/`, suivis par
+    git comme ceux de l'inventaire ;
+  - toile 320 × 240, reprise du sprite `g_uiBoxesInventoryDescriptionBackground` pour la boîte des
+    messages et pour les quatre boîtes du carrousel (même dessin, J4) ;
+  - teinte par `TextureColor` ;
+  - Haut/Bas/Croix/Carré lus sur `TickPad`.
+- **L6 — Textes ETC**. `AlundraEtcStringTable` gagne un accès public générique,
+  `TryResolveText(int etcIndex, out string text)`, et l'accès à son asset chargé pour
+  `AlundraDialogueDirector.Open`. Les textes absents (J5) rendent une ligne vide, comme l'original.
+- **L7 — Le livre ne charge pas.** Le chargement par le joueur relève d'un écran titre (D-E16-10,
+  plus tard) ; F9 reste la recette.
+- **L8 — Écart consigné** : la sauvegarde du livre ne met pas à jour la copie de reprise après la
+  mort (`g_saveDataInRam`), qui appartient à « Réessayer » (E18).
+
+**Tâches** (branche `chantier/e16-proposition` ; un commit par tâche, avec la mise à jour de ce
+plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé)
+
+- ⏳ **T1 — Textes ETC et répartition du livre** (L1, L6). Tests :
+  - `TryResolveText` rend « Enregistrer tes progrès? » pour `0x40`, « OUI »/« NON » pour
+    `0x4A`/`0x4B`, « Un Nouveau Départ » pour 0 ; une ligne vide pour `0x88` ; faux hors de 0..1023 ;
+  - une entité de type 237 atteint le livre porté par ses créneaux F et C ; une autre entité de code
+    F 1 reste un « no-op » compté (aucun `ControlLocked`).
+- ⏳ **T2 — Livre** (L4). Tests, sur le directeur de dialogue réel :
+  - chaque transition des états 1, 2, 4, 5 et 6, avec les durées de 60 ticks ;
+  - NON → abandon, `ControlLocked` effacé ;
+  - un dialogue déjà ouvert à l'état 1 → abandon ;
+  - échec de l'ouverture du choix → abandon, et non blocage à l'état 3 (H2) ;
+  - OUI → capture à la carte et à la tuile du héros, puis démarrage de l'écran (directeur simulé) ;
+  - capture refusée par `TryValidate` → message d'échec, aucune écriture.
+- ⏳ **T3 — Directeur de l'écran** (L2, L3, L5, sans MGUI). Tests, sur un service simulé :
+  - la suite des états conservés, les temporisations, les textes affichés ;
+  - libellés : un emplacement valide montre son résumé et son chapitre recalculés, et des
+    métadonnées fausses dans le fichier n'y changent rien ; un emplacement vide, illisible ou refusé
+    montre `"{n}."` ;
+  - carrousel : Haut/Bas au rythme de répétition, positions et teintes de J4, bornes (pas de
+    défilement au-delà de la première et de la quatrième entrée) ;
+  - Croix → OUI : écriture dans `slot{n}` en binaire, avec l'objet capturé et ses métadonnées,
+    puis « Histoire enregistrée. » ; NON : annulation, rien d'écrit, fin directe par la chaîne de
+    fin ;
+  - chaque état de sauvegarde autre que `Saved`, et une exception du service simulé derrière
+    l'adaptateur → message d'échec `0x15`, aucune exception ;
+  - `IsActive` et `MenuOpen` sur tout le parcours ; l'inventaire ne s'ouvre pas pendant l'écran.
+- ⏳ **T4 — Écran XAML et présentation** (L5). `SaveScreen.xaml`, `.uiscreen`, `.design.json`,
+  présentateur et vue-modèle, câblés comme l'inventaire.
+  - Tests : le présentateur pousse l'écran à l'activation et le retire à la fin ; la vue-modèle suit
+    le directeur (positions, teintes, textes) ; un `MGDesktop` de test charge l'écran sans erreur
+    (règle de l'auteur : jamais un `UIRoot`).
+  - Ensuite, **export complet en place**, pour cataloguer le nouvel écran. Il ne doit changer que
+    le catalogue et le rapport (preuve par diff des manifestes) ; jamais pendant que `Alundra.Tests`
+    tourne.
+  - Un manque de MGUI ou du moteur est consigné dans le rapport dédié, et la tâche s'arrête.
+- ⏳ **T5 — Bout en bout** : sur la vraie carte 17 (un des 65 livres), interaction avec le livre (Carré si son drapeau
+  `InteractRequiresButton` l'exige, sinon au contact), message,
+  OUI, écran, choix de `slot2`, OUI → `Save` reçoit `slot2` en binaire. Puis le libellé de `slot2`
+  recalculé, sur un service simulé qui rend ce qu'il a reçu, montre le chapitre et le résumé de la
+  partie.
+- ⏳ **T6 — Documentation et ADR** (session principale) : ADR-0014 (écran de sauvegarde du livre :
+  états conservés, adaptés et sans objet, emplacements, libellés recalculés, correction de H2) ;
+  `docs/formats/save-game.md` ; plan maître.
+- ⏳ **T7 — Vérification** : un `verifier` frais et un contradicteur.
+- ⏳ **T8 — Recette en jeu** (l'auteur) : un livre, sauvegarde dans chacun des 4 emplacements,
+  libellés relus ; F9 recharge la plus récente.
+
+**Acceptation d'E16.e** : les tests de T1 à T5 passent ; `Alundra.Tests` sans échec, oracle de
+l'intro inchangé ; build Release puis Debug à 0 erreur (Debug en dernier) ; export en place dont le
+diff ne touche que le catalogue et le rapport ; verifier et contradicteur **CONFIRMED** ; T8 🧪.
+
+**Arrêts** :
+- un état de l'original dont la classe (conservé, adapté, sans objet) n'est pas établie par le code
+  ou le binaire ;
+- un manque de MGUI ou du moteur (rapport dédié, règle de l'auteur) ;
+- une exception qui sort du livre ou de l'écran ;
+- un test existant qui change pour une autre raison, ou l'oracle de l'intro qui bouge.
+
 ### E16.f — Variables Yarn adossées aux drapeaux ✅ (DLL, docs ; relecture REVISE puis READY le 2026-09-28 ; exécutée en mode AUTO, « fait tout E16 de façon autonome » ; faite et vérifiée CONFIRMED le même jour, `82ab618` à `c4ff1d5`)
 
 Relectures du 2026-09-28 :
