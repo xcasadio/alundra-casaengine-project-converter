@@ -18,6 +18,20 @@ s'approuvent chacune à part, comme en E16. Décisions de l'auteur : §0.1 et AD
 Aucune tranche ne touche aux fichiers de sauvegarde, aux secrets ni à une entrée non fiable : pas de
 revue de sécurité. Si une tranche en ajoute, sa ligne ajoute la revue.
 
+**Révision 1 (2026-09-29).** Première relecture de l'enveloppe et d'E19.a : **REVISE**, deux P2.
+Un audit en lecture seule des citations et de la faisabilité, mené en parallèle, n'a trouvé aucun P1,
+mais trois P2 et neuf P3. Corrections :
+- l'arc A1 visait le mauvais `0x53` : c'est `@688` (vers 476), pas `@698` (vers 412, jamais atteint) ;
+- l'arc A0 n'a pas de `0x53` : il a maintenant son propre signal de fin (`0x11 @547`, puis `0xFF
+  @548`), et chaque arc a une limite d'images qui le fait échouer en nommant l'endroit où il s'est
+  arrêté ;
+- A1 part de la vraie arrivée `(44,23,4)`, où le programme B3 ouvre un dialogue : l'arc le ferme au
+  bouton, comme le joueur ;
+- la clé de l'avertissement de la garde ne contient plus le pc ;
+- les détails du montage de test sont listés (§0.2.6, T5) ;
+- A0b couvre la branche où la cinématique pousse le héros ;
+- les documents périmés sont complétés, et quelques formulations sont corrigées.
+
 ---
 
 ## 0. Cadre
@@ -95,8 +109,9 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
   forment des cycles sans suspension sous les règles de la DLL ; le nombre dépend de la façon de
   compter.
 - Seuls les créneaux B et C reprennent un appel suspendu (état propre à l'entité). A, D, E et F
-  repartent d'un état de travail remis à zéro à chaque appel (`:233-243`) ; la table de créneaux du
-  binaire `0x80023E10` fait de même **[binaire]**.
+  partagent un état de travail (`:233-243`). `InitializeEventData` (`:312`) le réinitialise à chaque
+  appel (`CodeIndex`, `Parameters` et `Sp`) mais garde `Result` exprès (`:107-121`). La table de
+  créneaux du binaire `0x80023E10` ne fait reprendre, elle aussi, que B et C **[binaire]**.
 
 #### 0.2.3 Entité de contexte (« logic entity ») **[binaire]**
 
@@ -196,8 +211,9 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
   d'animation ne le remet **pas** à zéro (`0x80038B6C` ne remet que `+0xAC`). Sur la chaîne, les
   quatre sites sont des animations Hold ou Chain : aucun n'a besoin d'un signal de boucle Loop.
 - `0x5E` : `ForceZ = int16(v2 | v3<<8) << 8` pour chaque entité trouvée. Le bloc 0 de 478 a un
-  `CharacterController`, et la DLL intègre `ForceZ` dans `PosZ` à chaque tick pour ces entités
-  (`AlundraScriptedMotion.cs:227`, `AlundraEntityScriptProxy.cs:700`).
+  `CharacterController`, et la DLL recopie `ForceZ` dans `FinalForceZ` à chaque tick
+  (`AlundraScriptedMotion.cs:227`). Elle ne l'applique à `PosZ` que dans la branche « en l'air »
+  d'`EvaluateEntitySupport` (`AlundraEntityScriptProxy.cs:700`), celle d'une entité qui monte.
 - La DLL n'a pas de compteur de boucles d'animation : `AnimCompleteCounter` n'est jamais écrit, et
   `ForceResetAnimationFlag` n'est jamais effacé. `CollidedWithEntityZ` diffère du binaire : le
   binaire l'efface à chaque passe physique (`0x800383B4`) et le pose à tout contact en Z
@@ -220,7 +236,34 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
   « nues » : déplacement horizontal sans collision, aucun déplacement vertical.
 - Sans gestionnaire d'assets, `InstallDialogueAssets` ne fait rien (`AlundraWorldProxy.cs:1112-1118`) :
   aucun nœud Yarn ne joue. Un test d'arc doit injecter lui-même les assets de dialogue de la carte, le
-  partagé et l'ETC, sinon 476 reste bloquée même avec `0xC4`.
+  partagé et l'ETC, sinon 476 reste bloquée même avec `0xC4`. Les voies :
+  - les propriétés internes `MapDialogueAsset` et `SharedDialogueAsset` du runner (`:112`, `:118`),
+    chargées par `DialogueTestAssets.LoadFromDisk` depuis `Maps/…/dialogues/<carte>.dialogue` et
+    `Dialogues/Shared.dialogue` ;
+  - `AlundraEtcStringTable.SetEtcDialogueAssetForTests` pour l'ETC.
+- Détails du montage qu'un arc doit reprendre (`AlundraSaveBookEndToEndTests.cs`) :
+  - `BuildRealMap17World` (`:271-310`) est privé et code en dur `Maps/Overworld/<nom>/tilemap/` avec
+    quatre couches ; la 390 a aussi quatre couches, mais sous `Maps/The Klark/…` ;
+  - réflexion `_backdropStage._clearColorApplied = true` (`:95-96`) ;
+  - `SetDebugCameraPanEnabledOverrideForTests(true)` (`:50`, `:55`) ;
+  - remise à zéro des singletons (`:59-64`, `SaveGameDirectorTestSupport.cs:106-124`) ;
+  - animation d'entrée du héros ramenée de 54 à 0 (`:121-122`) ;
+  - `PadStateProviderForTests` (`:76`) ;
+  - attribut `[Collection(AlundraMusicPlayerSingletonCollection.Name)]` (`:37`).
+- Placement du héros : `AdoptPlayerPawn` le pose sur la case de nouvelle partie `(33,59,0)` et calcule
+  ses `Tile*` une seule fois (`AlundraWorldProxy.cs:1674-1688`). Un arc doit poser `Pos*` **et**
+  `Tile*` avant la première image, avec `TileZ = PosZ >> 20` exact : les zones testées (`0x3B`) en
+  dépendent.
+- Les entités nues bougent quand on leur donne une animation de marche : `TickScriptedNpc`
+  (`AlundraEntityScriptProxy.cs:1019`, `AlundraScriptedMotion.cs:159-162`), avec une image de retard
+  sur `CurrentAnimationId` (`AlundraFrameSyncPasses.cs:106-113`). La branche sans contrôleur fait
+  `PosX += FinalForceX` (`AlundraScriptedMotion.cs:237-241`). Le capitaine (animation 6, vitesse
+  160) avance de 1,25 px par tick vers le nord : 80 px en environ 64 ticks.
+- `SaveGameDirectorTestSupport.LogCapture` (`:358`) capte le journal, qui est global : il faut
+  filtrer sur le texte du message.
+- Les tests unitaires du runner construisent leurs programmes avec `NewDocument`
+  (`AlundraEventProgramRunnerTests.cs:20`), qui ne fait qu'une table A. Un test des créneaux B ou C
+  demande un document avec ces tables.
 - `TraceSink` et `MaxIterationsPerCall` sont internes et atteignables par `proxy.EventProgramRunner`.
   Les types `UnknownSkipped`, `UnknownNoSizeTerminated` et `LoopBudgetExceeded` donnent le triplet
   (créneau, pc, opcode) exact.
@@ -239,7 +282,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 
 | Tranche | Contenu | Arcs de test (§1.3) | Recette en jeu |
 |---|---|---|---|
-| **E19.a** | Entité de contexte (`0x42`, `0x43`, et tous les opcodes sur l'entité logique), `0x59`, garde de boucle (D-E19-3), support des arcs | A0, A1 | Le capitaine sort par l'escalier et réapparaît en pièce B ; sommeil, puis 476 |
+| **E19.a** | Entité de contexte (`0x42`, `0x43`, et tous les opcodes sur l'entité logique), `0x59`, garde de boucle (D-E19-3), support des arcs | A0, A0b, A1 | Le capitaine sort par l'escalier et réapparaît en pièce B ; sommeil, puis 476 |
 | E19.b | Carte 476 : `0xC4` sans nom (D-E19-5), `0x8A` (bloc caméra), `0x4C` gardé pour la machine à écrire | A2, A4 | La vision de Lars et Melzas jusqu'à 478, puis jusqu'à 392 |
 | E19.c | Carte 478 et marches : `0x0B` avec détour (D-E19-6), `0x1C`/`0x1D` (compteur du binaire, Chain et Hold), `0x5E`, `0x08`, `0x0C`, `0x3A`, `0x89`, `0x73`/`0x74` | A3, A7 | La vision de 478 va au bout ; la plage 416 mène à Inoa |
 | E19.d | Fin de chaîne : `0x24` sur l'entité logique, `0x40`/`0x41` sur l'entité logique, reste de 392, 391 et 163 | A5, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
@@ -292,11 +335,14 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
     `InitializeEntity` (`0x80042028`).
   - `RunMapEventsPass` garde déjà une entité logique par événement (`:2334`, `:2340`) : inchangé.
   - Corriger les commentaires qui disent que seul `0x66` change l'entité logique :
-    `AlundraEntityScriptProxy.cs:40`, `AlundraWorldProxy.cs:2290` et `:2711`, et
-    `docs/intro-roadmap.md:99`.
+    `AlundraEntityScriptProxy.cs:40`, `AlundraWorldProxy.cs:2290` et `:2711`. Corriger aussi
+    l'entrée entière du point (2) de `docs/intro-roadmap.md:98-99`, pas seulement sa clause sur
+    `0x66` : `RunMapEventsPass` pose déjà ces champs (`AlundraWorldProxy.cs:2326-2334`).
+  - `EntitySearchService.cs:86-91` dit que la référence de recherche est toujours l'entité elle-même :
+    c'est faux après T1, à corriger.
 - **T2 — `0x42` et `0x43`** (`0x8003E808`, `0x8003E81C`).
-  - `0x42` : `owner.LogicEntity = PlayerEntity`. Sans héros (contexte dégradé), rien ne change.
-    Rend 1.
+  - `0x42` : `owner.LogicEntity = PlayerEntity`. Rend 1. Sans héros (contexte dégradé), rien ne
+    change, et le cas passe par `LogDegradedNoPlayerOpcodeOnce`, comme `0x3B`, `0x3E` et `0x53`.
   - `0x43` : la recherche `v1` prend l'entité logique pour référence (`EntitySearchService`).
     - Sans résultat : `Result = 0`, contexte inchangé.
     - Sinon : `owner.LogicEntity` prend le **dernier** résultat, et `Result = 1`.
@@ -310,22 +356,42 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
   - Le budget d'un appel est `MaxIterationsPerCall ?? ProductionLoopBudget`, avec
     `ProductionLoopBudget = 1024` : 8,5 fois la pire boucle mesurée, 19,7 fois la plus longue suite
     finie.
-  - Au dépassement, la garde envoie `LoopBudgetExceeded` au `TraceSink` et écrit un seul
-    avertissement par (créneau, entité, pc), sur le même canal que `UnknownOpcode`. Puis elle rend
-    sans toucher à `CodeIndex` ni à `Parameters` : B et C reprennent au même opcode à l'image
-    suivante, A, D, E et F repartent de zéro comme aujourd'hui.
-  - Mettre à jour la doc de `MaxIterationsPerCall` et celle de `LoopBudgetExceeded`.
+  - La garde existe déjà (`:361-365`) : elle coupe avant la lecture de l'opcode et ne touche ni à
+    `CodeIndex` ni à `Parameters`. B et C reprennent donc au même opcode à l'image suivante ; A, D, E
+    et F repartent de zéro, comme aujourd'hui. T4 lui donne le budget par défaut et ajoute
+    l'avertissement.
+  - Au dépassement, la garde envoie `LoopBudgetExceeded` au `TraceSink`. Ce rapport porte l'opcode
+    `Codes[CodeIndex]`, pas `state.Sp` comme aujourd'hui (`:363`) : `Sp` est l'opcode lu juste avant.
+  - La garde écrit alors **un seul** avertissement par (owner, créneau, index du programme de ce
+    créneau), sur le canal de `UnknownOpcode` (`Logs.WriteWarning`), avec un ensemble à côté de
+    `_loggedUnknownOpcodes` (`:125`).
+    - Le pc n'est pas dans la clé : une boucle B ou C reprend à un pc différent à chaque image.
+    - L'index du programme sépare les événements de carte, qui ont tous le héros pour owner et le
+      créneau B.
+  - Mettre à jour la doc de `MaxIterationsPerCall` et celle de `LoopBudgetExceeded`, ainsi que
+    `docs/intro-roadmap.md:88-90` (« `MaxIterationsPerCall` nul par défaut »).
   - Le harnais de l'intro garde sa valeur explicite, 20000.
+  - Limite connue : un programme de recherches qui boucle alloue deux listes par opcode, soit
+    environ 2048 par image. Cela ne concerne que les boucles pathologiques.
 - **T5 — Support d'arcs et tests** (§1.3).
-  - Support partagé, construit sur le montage d'E16.e :
-    - monde bâti d'après le nom du dossier de la carte, `ProjectPath` réglé ;
-    - héros possédé et en-tête du héros appliqué ;
+  - Support partagé, construit sur le montage d'E16.e, avec les détails du §0.2.6 :
+    - monde bâti d'après le chemin du dossier de la carte (zone et nom), toutes ses couches,
+      `ProjectPath` réglé ;
+    - héros possédé, en-tête du héros appliqué, animation d'entrée ramenée à 0 ;
     - assets de dialogue injectés (carte, partagé, ETC) ;
-    - drapeaux posés et héros placé avant la première image ;
-    - boucle d'images, arrêt sur `HasPendingArrival` ;
-    - collecteur `TraceSink` des opcodes sautés et des dépassements, avec le couple (créneau, pc).
+    - drapeaux posés, puis `Pos*` et `Tile*` du héros posés avant la première image ;
+    - boucle d'images avec une **limite chiffrée par arc**. Au-delà, le test échoue et nomme, pour
+      chaque programme qui a tourné, le dernier (créneau, pc, opcode) exécuté ;
+    - arrêt sur le **signal de fin** de l'arc (§1.3) : `HasPendingArrival` pour un arc qui finit par
+      un `0x53`, sinon l'instruction de fin nommée ;
+    - collecteur `TraceSink` de toutes les instructions, qui sert aux signaux de fin, au dernier pc
+      et aux listes d'opcodes sautés et de dépassements ;
+    - boutons de manette pour fermer une boîte de dialogue, comme le joueur.
   - Un export absent **fait échouer** le test en le nommant ; il ne le fait jamais passer en silence.
-  - Tests unitaires (sur le modèle d'`AlundraEventProgramRunnerTests`) :
+  - A0 s'écrit **avant** T1 à T3. Sur le code d'avant, il doit échouer dans sa limite en nommant
+    `0x1E @540`, sans figer la suite de tests : c'est la preuve que l'arc voit le blocage.
+  - Tests unitaires (sur le modèle d'`AlundraEventProgramRunnerTests` ; un document avec tables B et
+    C pour les tests de ces créneaux ; `LogCapture` filtré sur le message pour le journal) :
     - `0x43` trouvé et non trouvé : `Result`, dernier résultat, taille 2, contexte inchangé sans
       résultat, `[0x80]` ;
     - `0x42` : héros, taille 1, sans héros ;
@@ -336,17 +402,23 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
     - un événement de carte garde son contexte ;
     - `Clone` ne copie pas le contexte ;
     - `0x59` sur 0x81, sur un id et sur 0x80 ;
-    - garde : une boucle `Goto` sans suspension rend après le budget, reprend au même `CodeIndex`,
-      n'écrit l'avertissement qu'une fois et envoie le type de trace ; une boucle avec une attente ne
-      la déclenche jamais ; `MaxIterationsPerCall` la remplace.
-  - Arcs A0 et A1 (§1.3).
+    - garde :
+      - une boucle `Goto` sans suspension, de longueur qui ne divise pas 1024, rend après le budget
+        et reprend au même `CodeIndex` ;
+      - l'avertissement n'est écrit qu'une fois en plusieurs images ;
+      - le type de trace et l'opcode rapportés sont les bons ;
+      - une boucle avec une attente ne la déclenche jamais ;
+      - `MaxIterationsPerCall` la remplace.
+  - Arcs A0, A0b et A1 (§1.3).
   - Tests existants à revoir, pour la raison de la tranche :
     - `IntroTraceHarnessTests.ImplementedOpcodes` gagne `0x42`, `0x43` et `0x59` ; régénérer et
       committer `docs/intro-trace-389.txt` et `docs/intro-programs-389.txt`. Seul le libellé de
       `0x59 @1369` doit changer : aucun point épinglé de l'intro ne bouge (389 n'a pas de
       `0x42`/`0x43`) ;
-    - le test « Cave 140 » (`AlundraEventProgramRunnerTests.cs:~4451-4474`) traverse `0x43 @750`,
-      qui écrit maintenant `Result = 0` : relire ses assertions et ses commentaires ;
+    - le test « Cave 140 » (`AlundraEventProgramRunnerTests.cs:4451`) traverse `0x43 [17] @750`. La
+      recherche n'y trouve rien, donc `Result = 0` et le contexte ne change pas, puis `0x3B @757`
+      réécrit `Result` avant `0x03 @764` : ses assertions tiennent. Seul son commentaire (`:4472-4476`,
+      « `0x43` non porté, sauté par sa taille ») est à mettre à jour ;
     - `AlundraWorldProxyEventPassTests.cs:387` reste valide.
 - **T6 — Docs.** Mettre à jour ce plan (statuts, faits mesurés) et `plan-conversion-totale.md`
   (ligne E19). L'ADR-0015 est déjà écrite.
@@ -356,8 +428,9 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
   2. Le capitaine va vers l'est, monte l'escalier et disparaît dans le trou ; la main revient.
   3. Aller en pièce B, par l'escalier et le trou ou par la porte du pont : le capitaine y est.
      Lui parler.
-  4. Entrer dans la cabine d'Alundra : il s'endort, et 476 se charge. 476 s'arrête ensuite au
-     premier dialogue `0xC4`, ce qui est attendu jusqu'à E19.b.
+  4. Entrer dans la cabine d'Alundra. Un dialogue s'ouvre à l'entrée (programme B3) ; le fermer.
+     Alundra s'endort, et 476 se charge. 476 s'arrête ensuite au premier dialogue `0xC4`, ce qui est
+     attendu jusqu'à E19.b.
   5. Le journal ne doit contenir aucun avertissement de garde de boucle.
 
   Raccourci : F6 puis éditer `debug-json.sav` : `initialMapId` 390, `cameraTile` (30,57,4) pour la
@@ -365,14 +438,22 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
 
 #### Acceptation d'E19.a
 
-1. L'arc A0 passe :
+1. Les arcs A0 et A0b passent, chacun en moins de 800 images :
    - pendant `1E @540`, c'est le capitaine qui avance d'au moins 80 px vers le nord, pas le héros ;
-   - `0x11 @547` est exécuté, `G870` est posé, le capitaine n°1 est `FlagToDestroy` et
-     `PlayerControlFlags == 0` ;
-   - aucun opcode sauté ni aucun dépassement dans les programmes de la 390.
-2. L'arc A1 passe :
+   - signal de fin : le programme B1 exécute `0x11 @547` puis `0xFF @548`. Ensuite, `G870` est posé,
+     le capitaine n°1 est `FlagToDestroy` et `PlayerControlFlags == 0` ;
+   - aucun opcode sauté ni aucun dépassement dans les programmes de la 390 ;
+   - A0b passe aussi par la branche qui pousse le héros (`@482-514`, deux `0x1F`).
+   - Sur le code d'avant T1 à T3, A0 a échoué dans sa limite en nommant `0x1E @540` (constat
+     consigné dans le rapport de la tâche).
+2. L'arc A1 passe en moins de 900 images :
    - au chargement, le capitaine n°2 existe et le n°1 est détruit ;
-   - `G1640` est posé, et le départ vers 476 porte les valeurs de `53 [220,1,0,0,3,4,73]` (`@698`).
+   - le dialogue de B3 s'ouvre, puis se ferme au bouton ;
+   - `G1640` est posé (`@685`) ;
+   - signal de fin : `0x53 [220,1,0,0,3,4,73]` est exécuté à `@688` (créneau B). L'arrivée porte la
+     carte 476, `PosX = 12 << 16`, `PosY = 8 << 16`, `PosZ = 3 << 20` et l'effet 4 ;
+   - le second `0x53` du programme, à `@698` (vers 412), n'est jamais atteint : le warp gèle les
+     événements de carte dès `@688`.
 3. Les tests unitaires de T5 passent.
 4. Build de la solution en Release sans erreur. `Alundra.Tests` et les tests du convertisseur en
    Release, avec `--blame-hang-timeout 60s` : 0 échec.
@@ -396,23 +477,31 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
-Chaque arc part d'une carte chargée seule, avec des drapeaux posés et le héros placé. Il s'arrête sur
-un résultat attendu écrit à la main avant le code. Il vérifie aussi que son propre `0x53` a bien été
-exécuté : un arc qui n'a jamais tourné ne doit pas passer.
+Chaque arc part d'une carte chargée seule, avec des drapeaux posés et le héros placé. Les valeurs
+attendues sont écrites à la main avant le code. Chaque arc a :
+- un **signal de fin** prouvé par la trace : son propre `0x53` quand le programme en a un, sinon
+  l'instruction de fin nommée dans la table. Un arc qui n'a pas produit ce signal ne passe jamais ;
+- une **limite d'images** chiffrée. Au-delà, il échoue en nommant, pour chaque programme qui a
+  tourné, le dernier (créneau, pc, opcode) exécuté, sans figer la suite de tests.
 
-| Arc | Carte | Drapeaux posés | Héros | Attendu | Tranche |
-|---|---|---|---|---|---|
-| A0 | 390 | `G866`, `G869` (mot 27 : 36) | (30,57,4), salle 1 | §1.2, acceptation 1 | E19.a |
-| A1 | 390 | `G866`, `G869`, `G870`, `G871` (mot 27 : 228) | (44,23,4), cabine | §1.2, acceptation 2 | E19.a |
-| A2 | 476 | `G1640` (mot 51 : 256) | arrivée | `53` vers 478 (`@758`) | E19.b |
-| A3 | 478 | `G1641` (mot 51 : 512) | arrivée | T20 à T60 posés, puis `53` vers 476 | E19.c |
-| A4 | 476 | `G1641` | arrivée | `53` vers 392 (`@986`) | E19.b |
-| A5 | 392 | — | couloir du portail | portail vers 391 | E19.d |
-| A6 | 391 | — | arrivée | `53` vers 416 | E19.d |
-| A7 | 416 | — | arrivée | `53` vers 163 (`C[1] @640`) | E19.c |
-| A8 | 163 | — | arrivée | `G0`, main rendue `@201`, `G1662`, livre présent | E19.d |
+Les limites des arcs des tranches suivantes seront fixées par leur tranche, d'après une première
+mesure.
 
-Les valeurs exactes de chaque arrivée se décodent des opcodes `0x53` cités, dans le test.
+| Arc | Carte | Drapeaux posés | Héros | Signal de fin et attendu | Limite | Tranche |
+|---|---|---|---|---|---|---|
+| A0 | 390 | `G866`, `G869` (mot 27 : 36) | (30,57,4), salle 1, hors de la zone de poussée | `0x11 @547` puis `0xFF @548` (B1) ; §1.2, acceptation 1 | 800 | E19.a |
+| A0b | 390 | idem | (38,49,4), dans la zone de poussée (`3B [36,40,48,50,4,8]` `@482`) | idem, après les deux `0x1F` (`@496`, `@507`) | 800 | E19.a |
+| A1 | 390 | `G866`, `G869`, `G870`, `G871` (mot 27 : 228) | (44,23,4), arrivée de la porte 3 du pont ; le dialogue de B3 (`3B [43,45,20,23,4,4]` `@712`) s'ouvre et se ferme au bouton | `0x53 @688` (B2) vers 476 ; §1.2, acceptation 2 | 900 | E19.a |
+| A2 | 476 | `G1640` (mot 51 : 256) | arrivée | `0x53 @758` vers 478 | E19.b | E19.b |
+| A3 | 478 | `G1641` (mot 51 : 512) | arrivée | T20 à T60 posés, puis le `0x53` vers 476 | E19.c | E19.c |
+| A4 | 476 | `G1641` | arrivée | `0x53 @986` vers 392 | E19.b | E19.b |
+| A5 | 392 | — | couloir du portail | portail vers 391 | E19.d | E19.d |
+| A6 | 391 | — | arrivée | le `0x53` vers 416 | E19.d | E19.d |
+| A7 | 416 | — | arrivée | `0x53` de `C[1] @640` vers 163 | E19.c | E19.c |
+| A8 | 163 | — | arrivée | `G0`, `0x11 @201`, `G1662`, livre présent | E19.d | E19.d |
+
+Les valeurs exactes de chaque arrivée se décodent des opcodes `0x53` cités et s'écrivent dans le test
+avant le code.
 
 ---
 
@@ -447,7 +536,8 @@ Réservé aux mesures faites en exécutant les tranches.
   - un fait mesuré qui contredit une décision D-E19 ou un fait marqué [binaire] ;
   - un point épinglé de l'intro qui bouge ;
   - un test existant qui devrait changer pour une autre raison que la tranche ;
-  - un arc qui passe sans avoir exécuté son `0x53` ou son résultat attendu ;
+  - un arc qui passe sans avoir produit son signal de fin ou son résultat attendu, ou un arc qui
+    fige la suite de tests au lieu d'échouer dans sa limite ;
   - une modification de l'auteur indexée par erreur ; un commit sur `main` ; un push ;
   - tout contact avec `CasaEngine.Launcher/Program.cs`.
 - **Retours arrière** :
