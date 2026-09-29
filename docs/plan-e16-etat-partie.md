@@ -1463,7 +1463,7 @@ La remise de session couvre tous les singletons, sauf le fondu maître de la mus
 `ApplyPendingLoad` ; un test existant qui change pour une autre raison ; l'oracle de l'intro qui
 bouge.
 
-### E16.e — Écran de sauvegarde en jeu ⚠️ (DLL, MGUI en XAML ; plan détaillé du 2026-09-29 EN PAUSE après un troisième REVISE : question O-E16-17 à l'auteur)
+### E16.e — Écran de sauvegarde en jeu ⏳ (DLL, MGUI en XAML ; plan détaillé du 2026-09-29 ; mis en pause après un troisième REVISE, puis repris sur la réponse de l'auteur, D-E16-38)
 
 - **But** : le joueur sauvegarde lui-même, comme dans l'original.
 - **Contenu** : le gestionnaire du livre de sauvegarde (`AI_ProcessWarpTransitionState`, question
@@ -1557,10 +1557,23 @@ Dispositions proposées (question O-E16-17 au §3) :
   (`IsCloseButtonVisible="False"` dans `DialogueScreen.xaml`), comme dans l'original qui n'en a
   pas ; test en T4.
 
-Remarques P3 de la même relecture, à reprendre avec la correction : nommer `_presenter?.Close()`
+**D-E16-38 (réponse de l'auteur à O-E16-17, 2026-09-29) — La croix de la fenêtre de dialogue est
+masquée** : `IsCloseButtonVisible="False"` dans `alundra-project/UI/Screens/DialogueScreen.xaml`
+(fichier écrit à la main et suivi par git ; propriété lue par `MGUI.Core/UI/XAML/Controls.cs:4187`,
+`:4336-4338`). L'original n'a pas de bouton de fermeture ; la seule fermeture hors du jeu disparaît,
+pour tous les dialogues. `SaveScreen.xaml` n'a pas de barre de titre (`IsTitleBarVisible="False"`,
+comme `InventoryScreen.xaml`). Faite en T4, avec un test. Reprise sur la réponse de l'auteur : une
+relecture de clôture fraîche, puis l'exécution.
+
+Remarques P3 de la même relecture, reprises avec la correction : nommer `_presenter?.Close()`
 pour `CloseStandaloneChoice` ; préciser l'ordre des appels sur l'arrêt de SE3 (le directeur de
 dialogue a déjà remis son état à l'entrée de carte). P4 : une image de boîte vide possible entre
-la réponse et la fermeture. vérification par un `verifier` frais et un
+la réponse et la fermeture. Reprises ainsi :
+- `CloseStandaloneChoice` ferme par `_presenter?.Close()`, indépendamment du runner ;
+- sur l'arrêt de SE3, `InitializeWithWorld` appelle d'abord l'entrée de carte du directeur de
+  dialogue (qui efface le choix et reconstruit le runner), puis celle du directeur de l'écran ;
+  l'écran de dialogue de l'ancien monde part avec lui. Le test de SE3 regarde donc le
+  `IUIViewRuntime` du nouveau monde, où aucun écran de dialogue ne doit rester poussé. vérification par un `verifier` frais et un
 contradicteur. Exploration du 2026-09-29 en lecture seule, chaque surface recontrôlée par un second
 agent (`scratchpad/e16def/e16e-*.md`).
 
@@ -1810,7 +1823,10 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
     `AllowsInlineFormatting` à faux (SE10) ; pendant OUI/NON, l'écran de dialogue (couche `Modal`)
     est poussé au-dessus de l'écran de sauvegarde (couche `Menu`) sans le retirer ; avec un
     `IUIViewRuntime` qui enregistre, après la réponse, l'écran de dialogue est retiré et l'écran de
-    sauvegarde reste poussé jusqu'à sa fin.
+    sauvegarde reste poussé jusqu'à sa fin ;
+  - D-E16-38 : `DialogueScreen.xaml` porte `IsCloseButtonVisible="False"`, et un test charge la
+    fenêtre de dialogue d'Alundra dans un `MGDesktop` et vérifie `IsCloseButtonVisible == false` ;
+    `SaveScreen.xaml` a `IsTitleBarVisible="False"`, vérifié de même.
   - Ensuite, **export complet en place**, pour cataloguer le nouvel écran. Il ne doit changer que
     le catalogue et le rapport (preuve par diff des manifestes) ; jamais pendant que `Alundra.Tests`
     tourne.
@@ -2277,7 +2293,7 @@ tests du convertisseur 400/400, `Alundra.Tests` 1361/1361.
 | O-E16-14 | ~~tranché~~ (D-E16-35, 4 emplacements fixes). Question d'origine : **Emplacements** : 4 fixes comme une carte mémoire, un seul implicite, ou une liste libre ? | E16.e |
 | O-E16-15 | ~~tranché~~ (D-E16-36, chapitre et résumé recalculés depuis la sauvegarde validée). Question d'origine : **Libellé d'un emplacement** : chapitre et résumé recalculés depuis la sauvegarde validée, date d'écriture, numéro, ou une combinaison ? | E16.e |
 | O-E16-16 | ~~tranché~~ (D-E16-37, textes utiles seulement ; les 8 absents vérifiés dans `ETC_RES.R`). Question d'origine : **Textes** : quels messages ETC de l'original garder, et que faire des 8 textes absents de l'export et des chaînes japonaises en dur ? | E16.e |
-| O-E16-17 | **Fermeture de la fenêtre de dialogue pendant un choix** (troisième relecture d'E16.e) : (a) `NotifyPresenterClosed` termine un choix en attente, (b) masquer le bouton de fermeture de la fenêtre de dialogue, ou les deux ? | E16.e |
+| O-E16-17 | ~~tranché~~ (D-E16-38, masquer la croix de la fenêtre de dialogue). Question d'origine : **Fermeture de la fenêtre de dialogue pendant un choix** (troisième relecture d'E16.e) : (a) `NotifyPresenterClosed` termine un choix en attente, (b) masquer le bouton de fermeture de la fenêtre de dialogue, ou les deux ? | E16.e |
 
 ## 4. Hors périmètre
 
