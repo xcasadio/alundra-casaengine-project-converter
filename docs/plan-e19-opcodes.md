@@ -308,7 +308,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 - **Mise à jour de ce plan** : chaque tranche de la phase 1 remet au §0.2 ce qu'elle a mesuré en
   vrai, puis fait détailler, relire et approuver la tranche suivante.
 
-### 1.2 E19.a — Entité de contexte, `0x59` et garde de boucle 🚧
+### 1.2 E19.a — Entité de contexte, `0x59` et garde de boucle 🧪 (T1 à T6 faites et vérifiées CONFIRMED le 2026-09-29 ; reste la recette en jeu T7)
 
 **But.** La cinématique du capitaine sur la 390 se joue comme dans l'original : le capitaine monte
 l'escalier et disparaît, puis on le retrouve en pièce B, et la cabine endort Alundra et charge 476.
@@ -356,7 +356,7 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
   l'entité logique), `TargetAnimationId = v2`. Rend 3. Ce cas couvre 669 sites « héros au repos »
   `[129,0]`, dont 390 `@515` et 389 `@1369`.
   *(fait le 2026-09-29 : cas `0x59` de `Dispatch` ; 3 tests unitaires (17 au total dans `AlundraEventProgramRunnerLogicEntityTests`) ; `ImplementedOpcodes` gagne `0x59`, `docs/intro-programs-389.txt` régénéré : seul le libellé de `0x59 @1369` change, `docs/intro-trace-389.txt` et les points épinglés de l'intro ne bougent pas.)*
-- ✅ **T4 — Garde de boucle** (D-E19-3). *(fait le 2026-09-29 : `ProductionLoopBudget` = 1024, budget `MaxIterationsPerCall ?? ProductionLoopBudget` ; le rapport de trace porte `Codes[CodeIndex]` ; un avertissement `loop guard` par (owner, créneau, index du programme du créneau) ; documentation de `MaxIterationsPerCall`, de `LoopBudgetExceeded` et de `docs/intro-roadmap.md` mise à jour ; 6 tests unitaires (23 au total dans `AlundraEventProgramRunnerLogicEntityTests`). Piège noté : un `0x37` placé au pc 0 d'une boucle ne suspend pas (il lit `Parameters[1] == CodeIndex` comme une ré-entrée), fidèle à l'original.)*
+- ✅ **T4 — Garde de boucle** (D-E19-3). *(fait le 2026-09-29 : `ProductionLoopBudget` = 1024, budget `MaxIterationsPerCall ?? ProductionLoopBudget` ; le rapport de trace porte `Codes[CodeIndex]` ; un avertissement `loop guard` par (owner, créneau, index du programme du créneau) ; documentation de `MaxIterationsPerCall`, de `LoopBudgetExceeded` et de `docs/intro-roadmap.md` mise à jour ; 6 tests unitaires (23 au total dans `AlundraEventProgramRunnerLogicEntityTests`). Piège noté : un `0x37` placé au pc 0 d'une boucle ne suspend pas (il lit `Parameters[1] == CodeIndex` comme une ré-entrée). Ce n'est **pas** fidèle à l'original, correction de la vérification : le binaire compare la clé au pointeur de pc (`0x8003E3DC`), jamais nul. L'écart vient de la DLL, qui compare un index au lieu d'un pointeur ; il est inatteignable sur les vraies données, aucun programme ne commençant à l'index 0.)*
   - Le budget d'un appel est `MaxIterationsPerCall ?? ProductionLoopBudget`, avec
     `ProductionLoopBudget = 1024` : 8,5 fois la pire boucle mesurée, 19,7 fois la plus longue suite
     finie.
@@ -424,8 +424,9 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
       réécrit `Result` avant `0x03 @764` : ses assertions tiennent. Seul son commentaire (`:4472-4476`,
       « `0x43` non porté, sauté par sa taille ») est à mettre à jour ;
     - `AlundraWorldProxyEventPassTests.cs:387` reste valide.
-- ⏳ **T6 — Docs.** Mettre à jour ce plan (statuts, faits mesurés) et `plan-conversion-totale.md`
-  (ligne E19). L'ADR-0015 est déjà écrite.
+- ✅ **T6 — Docs.** Mettre à jour ce plan (statuts, faits mesurés) et `plan-conversion-totale.md`
+  (ligne E19). L'ADR-0015 est déjà écrite. *(fait le 2026-09-29 : statuts, vérification et
+  dispositions ci-dessous, ligne E19 du plan maître.)*
 - ⏳ **T7 — Recette en jeu (auteur).** Lancer le jeu hors de l'app Claude, en Debug.
   1. Après l'intro, parler au marin au grog (salle du nord, par la porte 2 du pont) puis au
      capitaine **en dernier**.
@@ -464,19 +465,54 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
 5. Un verifier frais rend CONFIRMED sur 1 à 4.
 6. La recette T7 de l'auteur. Tant qu'elle n'est pas faite, la tranche reste 🧪.
 
+#### Vérification d'E19.a (2026-09-29)
+
+Commits `cab5e4c` (T1), `ef8e509` (T2), `08f5a40` (T3), `55af880` (T4) et `db59cc9` (T5).
+
+- **Verifier frais : CONFIRMED** sur 1 à 4, avec deux remarques P4.
+  - Build Release sans erreur.
+  - `Alundra.Tests` : 1912 sur 1912 en Release (1886 avant la tranche : 23 tests unitaires et 3 arcs
+    ajoutés). Tests du convertisseur : 400 sur 400.
+  - Les arcs chargent vraiment la 390.
+  - Seul le libellé de `0x59 @1369` change dans `docs/intro-programs-389.txt`. `docs/intro-trace-389.txt`
+    est inchangé : aucun point épinglé de l'intro n'a bougé.
+- **Constat rouge d'A0**, sur le code d'avant T1 : échec à la limite de 800 images en 0,6 s, qui
+  nomme `0x1E @540`, avec `0x59 @515` et `0x43 @534` sautés. Après T1 seul, A0 restait rouge. Après
+  T2, il passait les assertions de marche et n'échouait plus que sur `0x59 @515`. Il est vert après
+  T3.
+- **Contradicteur en lecture seule** : aucun P0, P1 ni P2. Il a vérifié dans le binaire les
+  écritures de `0x42`, `0x43` et `0x59` et le contrat des gestionnaires. Dispositions (règle : un P3
+  ou un P4 est reporté ou signalé, jamais corrigé sur un candidat CONFIRMED) :
+
+  | Constat | Priorité | Disposition |
+  |---|---|---|
+  | La remise à zéro hors zone de `RunMapEventsPass` écrit maintenant dans l'entité d'un événement recontextualisé (`AlundraWorldProxy.cs:2312-2324`) et ne remet pas son contexte au héros. Sans effet aujourd'hui : ces champs n'ont aucun lecteur, et `Sp` est réécrit à chaque lecture. | P3, introduit | **Reporté à E19.j**, qui porte le réarmement du binaire (`0x8003C7F0`). |
+  | Le constructeur d'`ArcRun` modifie l'état global avant des étapes qui peuvent échouer, et `Dispose` n'est alors jamais appelé : un arc qui échoue peut salir les tests suivants. | P3, introduit | **Reporté à E19.b**, à corriger avant d'ajouter les arcs A2 et A4 au support. |
+  | Avec la garde, une boucle sans suspension qui a des effets (son, demi-tour, apparition) les répète environ 1024/N fois par image au lieu de figer le jeu. Exemple hors chaîne : Overworld 2,3-12, `C[2] @736`. | P4 | Signalé : c'est l'écart D-E19-3. Porter les opcodes qui suspendent (E19.c) retire ces boucles. |
+  | Note de T4 et commentaire du test `LoopGuard_ALoopWithAWait` : « fidèle à l'original » est faux (index au lieu de pointeur). | P4 | Note de T4 corrigée ici. Commentaire du test reporté à E19.b. |
+  | Commentaires et docs encore imprécis : commentaires de `0x3B` et `0x3E` (« entité qui exécute », `AlundraEventProgramRunner.cs:1176`, `:1295-1298`) ; `EntitySearchService.cs:31` et le nom `ownerEntity` ; `docs/intro-roadmap.md` vers `:101` (`EventTrigger = i`) ; la phrase de l'ADR-0015 « les programmes sans `0x42`/`0x43` se comportent comme avant », qui oublie `0x59` et la garde ; la doc de `ProductionLoopBudget` sur les créneaux A, D, E et F ; le commentaire des 23 opcodes d'`IntroTraceHarnessTests.ImplementedOpcodes`, déplacé par l'insertion. | P4 | Reportés à E19.b, sauf l'ADR, qui ne se réécrit pas : c'est ce plan qui fait foi (risques ci-dessous). |
+  | `_loggedLoopGuards` garde une référence aux owners tant que le runner vit. | P4 | Reporté (borné par le nombre d'entités d'une carte). |
+  | Le message dégradé de `0x42` sans héros dit « `Result = 0` », mais `0x42` n'écrit pas `Result`. | P4 | Reporté à E19.b. |
+
 #### Risques d'E19.a
 
 - **Le capitaine bloqué en production.** Le montage fait marcher des entités nues, sans collision.
   En jeu, le capitaine a un contrôleur : s'il ne franchit pas la rampe ou la rangée du trou
   (walkability 4), `0x1E` attend toujours, malgré son détour E4.d. La recette le montre. Un tel
   blocage se corrige à la racine (D-E19-6), dans une tâche de diagnostic ajoutée au plan.
+- **Programmes sans `0x42`/`0x43`** : ils ne changent pas d'entité, mais deux autres changements
+  les touchent. Les 1085 sites de `0x59` appliquent maintenant leur animation, et un programme qui
+  dépasse 1024 opcodes par appel est coupé par la garde. Cette précision complète la phrase de
+  l'ADR-0015 qui dit qu'ils « se comportent comme avant ».
 - **Changements visibles hors de la chaîne** : 98 cartes utilisent `0x42`/`0x43`, et 74
   enregistrements de 38 cartes ont un contexte qui persiste d'un créneau à l'autre. C'est fidèle au
   binaire ; la recette ne couvre que la chaîne.
 - **Contexte périmé du héros** : après la passe des événements de carte, `player.LogicEntity` garde la
   valeur du dernier événement, comme `hero+0x230` dans l'original. Aucun autre appel de production ne
   fait exécuter un script au héros. Un test qui le fait doit remettre le contexte à zéro.
-- La garde relance du début les créneaux A, D, E et F à chaque image. C'est journalisé, et préférable
+- La garde coupe les créneaux A, D, E et F au lieu de les suspendre. Un programme A coupé ne reprend
+  jamais, car A n'est proposé qu'une fois par entité ; D, E et F repartent du début à leur
+  déclenchement suivant. C'est journalisé, et préférable
   à un jeu figé.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
