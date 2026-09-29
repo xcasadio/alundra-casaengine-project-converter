@@ -610,38 +610,61 @@ flottant 32 bits dans le scratchpad `e19a2/`) :
   `chantier/field-move-to-contact`.
 - **T2 — Pointeur et épingles du parent**, en un seul commit compilable :
   - le pointeur du sous-module suit la branche moteur ;
-  - relancer `HeroTraceHarnessTests`. Il réécrit les quatre traces : vérifier que le `git diff` ne touche
-    que la colonne `posX` à partir des images 98 et 39, puis mettre l'épingle `:748` à la valeur mesurée
-    (attendu 36831232) ;
+  - relancer `HeroTraceHarnessTests`. Il réécrit les quatre traces, qui ne sont comparées à rien par le
+    test : le `git diff` est donc la seule garde. Vérifier, sans tenir compte des fins de ligne, qu'il ne
+    touche que la colonne `posX` à partir des images 98 et 39, puis mettre l'épingle `:748` à la valeur
+    mesurée (attendu 36831232) ;
+  - lancer d'abord les tests qui dépendent du tick où `ForceAdjusted` se lève pour la première fois, sans
+    épingler de position : dans `AlundraNpcCharacterControllerMoverTests`, les `Walk0x1E_RealWall…`, les
+    `Walk0x1F_RealWall…` (`:1329`, et son jumeau à dt 1/123, `:2654`) et
+    `ForceAdjusted_ClearedEachFrameTop…` (`:1449`) ; puis les tests `ProductionCallSite` de
+    `AlundraLadderClimbTests` ;
   - ajouter une épingle chiffrée pour le premier contact de la trace highground (attendu 27394048) ;
   - mettre les deux tests d'adoption à (565,632,80) et (397,264,0), et les renommer (« StopsAtContact ») ;
   - mettre à jour les commentaires de `AlundraEntityScriptProxy.cs` cités plus haut, dont l'écart
     D-E19-10 dans la doc de `ForceAdjusted` ;
   - toute autre épingle qui bouge est un arrêt : elle se signale, elle ne s'adapte pas en silence.
 - **T3 — La cabine avec un vrai contrôleur, en deux niveaux de test** :
-  - **cabine seule** : un test durable sur les vraies cellules de la 390, avec les rails posés par le
-    tableau aliasé, l'en-tête et les réglages réels du héros, le masque `0x41` vérifié, et les quatre
-    marches. Il vérifie `PosY == 215 << 16` à la fin de la troisième marche et l'achèvement de la
-    quatrième, à dt 0,02 et 1/60. Les aides dupliquées (`LoadHeroControllerSettings`, `LoadHeroHeader`)
-    rejoignent `HeroWorldFixture` ;
-  - **arc A1c** : `ArcRun` gagne un mode « vrai contrôleur » :
-    - un monde physique avec la politique d'exécution du jeu ;
-    - un héros muni d'un `CharacterControllerComponent` réglé comme l'export et ajouté au monde ;
-    - l'en-tête du héros, puis `ResyncControllerFromFlags`, avec le masque vérifié ;
+  - **cabine seule** : un test durable sur les vraies cellules de la 390, avec l'en-tête et les réglages
+    réels du héros, le masque `0x41` vérifié, et les quatre marches.
+    - Les rails sont posés comme B2 les pose, par `records.Walkability[y * largeur + x] |= 1` sur le
+      tableau aliasé. Ce sont les quinze cellules des `0x54` de B2 (`@558` à `@628`) : (42,12),
+      (43,13), (43,14), (43,15), (43,16), (43,17), (41,15), (41,16), (41,17), (41,18), (41,19), (42,19),
+      (43,19), (43,20), (45,20).
+    - Le test vérifie `PosY == 215 << 16` à la fin de la troisième marche. C'est une valeur calculée
+      pour cette trajectoire, dont le dernier tick franchit le rail. Il vérifie aussi que chaque marche
+      atteint sa distance, et que la quatrième s'achève, à dt 0,02 et 1/60 : les ticks logiques étant à
+      50 Hz, les deux cadences donnent la même suite de positions.
+    - Les aides dupliquées (`LoadHeroControllerSettings`, `LoadHeroHeader`) rejoignent
+      `HeroWorldFixture` ;
+  - **arc A1c** : `ArcSpec` gagne un indicateur de mode, et `ArcRun` un mode « vrai contrôleur ». Le
+    diagnostic temporaire `ZzDiagE19CabinProductionTests.cs` montre la recette qui fonctionne :
+    - avant `InitializeWithWorld` : la politique d'exécution du jeu (`GameplayExecutionPolicies.Runtime`,
+      sans quoi `World.Update` ne fait pas tourner les scripts des entités) et un `PhysicsWorld` ;
+    - un héros propre à ce mode : `CharacterControllerComponent` réglé comme l'export, puis
+      `world.AddEntity`. `SaveGameDirectorTestSupport.AddHeroPawn` ne convient pas : il ne fait que poser
+      `Entity.World` par réflexion, sans ajouter l'entité au monde, donc sans l'inscrire au système de
+      mouvement ;
+    - l'en-tête du héros, puis `ResyncControllerFromFlags`, avec le masque `0x41` vérifié ;
     - `PushLogicalPositionToRoot` après le placement ;
-    - chaque image = `world.Update`, puis `Proxy.Update`.
+    - chaque image = `world.Update`, puis `Proxy.Update`, **sans** la boucle manuelle d'`OneFrame` sur les
+      entités : le monde met déjà à jour les PNJ, ajoutés par `world.AddEntity`, et la boucle les mettrait
+      à jour deux fois. Le mode par défaut ne change pas : A0, A0b et A1 restent tels quels.
 
     A1c part de (44,23,4) avec `G866`, `G869`, `G870` et `G871`, ferme le dialogue de B3 et exécute
-    `0x53 @688`, en moins de 900 images à dt 0,02. Sur l'ancien pointeur moteur, il doit échouer dans sa
-    limite en nommant `0x1E @658` (constat consigné) ;
+    `0x53 @688`, en moins de 900 images à dt 0,02 (le diagnostic l'atteint vers l'image 330).
+    - **Preuve sur l'ancien moteur** : A1c est écrit et lancé **avant** le déplacement du pointeur (T2),
+      sur `a550859f`, sans rien committer. Il doit échouer dans sa limite en nommant `0x1E @658` ; le
+      constat est consigné. Le sous-module n'est jamais remis en arrière par `checkout`.
+    - A1c est commité avec T3, après T2 ;
   - le P3 reporté du constructeur d'`ArcRun` (état global sali si une étape échoue) se corrige ici, parce
     que le mode « vrai contrôleur » rend un échec dans le constructeur plus probable ;
   - les deux diagnostics temporaires `Alundra.Tests/ZzDiagE19Cabin*.cs`, jamais commités, sont supprimés.
 - **T4 — Docs du parent** :
   - l'ADR-0016 (déjà écrite) ;
   - une ligne « Mise à jour 2026-09-29 » dans `docs/plan-e3-collisions.md` (C5),
-    `docs/plan-moteur-character-motion.md` (sens des drapeaux M2) et `docs/plan-e4-deplacement-scripte.md`
-    (D5), sans réécrire ces plans ;
+    `docs/plan-moteur-character-motion.md` (sens des drapeaux M2), `docs/plan-e4-deplacement-scripte.md`
+    (D5) et `docs/plan-oracle-heros.md` (`:227`, ancienne valeur 36956160), sans réécrire ces plans ;
   - ce plan et la ligne E19 du plan maître.
 - **T5 — Recette en jeu (auteur)** : rejouer T7 d'E19.a. Le capitaine sort, on le retrouve en pièce B,
   Alundra s'endort dans la cabine, et la 476 se charge, puis s'arrête au premier `0xC4`, ce qui est attendu
@@ -671,6 +694,19 @@ flottant 32 bits dans le scratchpad `e19a2/`) :
 
 **Revues** : plan-verifier sur cette section et sur le plan moteur, avant approbation ; verifier frais
 après exécution. Budgets et arrêts : ceux du §5.
+
+**Relectures du 2026-09-29.**
+- **Plan-verifier** (parent `54a99b5` et plan moteur) : **READY**.
+- **Audit des citations et de la faisabilité**, en parallèle : aucun P1. Toutes les valeurs épinglées sont
+  recalculées depuis la géométrie et les données : (565,632,80), (397,264,0), (56,24,0), 215,0,
+  36831232, 27394048.
+- **Trois P2 intégrés** :
+  - la liste des quinze rails ;
+  - la recette du mode « vrai contrôleur » d'`ArcRun` ;
+  - la géométrie du test moteur aux frontières de puissance de deux (plan moteur).
+- **P3 intégrés** : citations décalées, ordre de la preuve sur l'ancien moteur, tests à lancer d'abord,
+  garde des traces par le `git diff`, contrat de la bisection, avance résiduelle inférieure à 1e-3 px
+  (plan moteur).
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
