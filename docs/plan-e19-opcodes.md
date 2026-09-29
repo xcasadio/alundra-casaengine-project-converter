@@ -377,7 +377,7 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
   - Le harnais de l'intro garde sa valeur explicite, 20000.
   - Limite connue : un programme de recherches qui boucle alloue deux listes par opcode, soit
     environ 2048 par image. Cela ne concerne que les boucles pathologiques.
-- 🚧 **T5 — Support d'arcs et tests** (§1.3).
+- ✅ **T5 — Support d'arcs et tests** (§1.3). *(fait le 2026-09-29 : `AlundraArcSupport.cs` (`ArcRun`, `ArcSpec`) et `AlundraShipArcTests.cs` (A0, A0b, A1) ; les tests unitaires sont dans `AlundraEventProgramRunnerLogicEntityTests` (T1 à T4, 23 tests au total). Constat rouge d'A0 écrit avant T1 : sur le code d'avant, échec à la limite de 800 images en nommant `slot 1 program @452: last 0x1E @540`, avec `0x59 @515` et `0x43 @534` sautés, sans figer la suite. Après T1 à T3, A0, A0b et A1 passent, chacun avec son signal de fin prouvé par la trace.)*
   - Support partagé, construit sur le montage d'E16.e, avec les détails du §0.2.6 :
     - monde bâti d'après le chemin du dossier de la carte (zone et nom), toutes ses couches,
       `ProjectPath` réglé ;
