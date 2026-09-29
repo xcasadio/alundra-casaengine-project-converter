@@ -1463,7 +1463,7 @@ La remise de session couvre tous les singletons, sauf le fondu maître de la mus
 `ApplyPendingLoad` ; un test existant qui change pour une autre raison ; l'oracle de l'intro qui
 bouge.
 
-### E16.e — Écran de sauvegarde en jeu ⏳ (DLL, MGUI en XAML ; préparée le 2026-09-28 en mode AUTO ; choix de l'auteur reçus le 2026-09-29, D-E16-34 à D-E16-37 ; plan détaillé à écrire)
+### E16.e — Écran de sauvegarde en jeu ⚠️ (DLL, MGUI en XAML ; plan détaillé du 2026-09-29 EN PAUSE après un troisième REVISE : question O-E16-17 à l'auteur)
 
 - **But** : le joueur sauvegarde lui-même, comme dans l'original.
 - **Contenu** : le gestionnaire du livre de sauvegarde (`AI_ProcessWarpTransitionState`, question
@@ -1535,7 +1535,32 @@ boîte par `OpenSerial`, source des emplacements, 61 ticks. Relecture de clôtur
 **REVISE**, un bloquant. Le choix seul du sélecteur n'était jamais refermé ; correction :
 `CloseStandaloneChoice` (L5, T3, T4), qui ferme sans toucher `MenuOpen`, avec Croix sans
 présentateur valant NON. C'est le deuxième REVISE : une seule relecture de clôture suit, et un
-nouveau REVISE met la tranche en pause. Ensuite, l'exécution ; vérification par un `verifier` frais et un
+nouveau REVISE met la tranche en pause.
+
+**Relecture de clôture (`6751514`) : REVISE, un P2 introduit par la tranche. La tranche est en
+pause** (règle : un REVISE après la relecture de clôture arrête la boucle). Constat :
+- la fenêtre de dialogue garde le bouton de fermeture de sa barre de titre (`MGWindow`, visible par
+  défaut, `MGWindow.cs:1676-1680` ; `DialogueScreen.xaml` ne le masque pas) ;
+- un clic lance `WindowClosed` → `RequestClose` → `NotifyPresenterClosed`
+  (`DialogueScreen.cs:153`, `AlundraDialoguePresenter.cs:182-190`) ;
+- pour le choix seul de l'écran de sauvegarde, `NotifyPresenterClosed` ne fait rien (`IsOpen`
+  faux) : le choix reste en attente pour toujours, avec `MenuOpen` posé, donc le jeu est figé ;
+- pour le choix du livre (état 4), `Close` efface les drapeaux de la boîte mais pas le choix en
+  attente : le livre attend pour toujours avec `ControlLocked`.
+
+Dispositions proposées (question O-E16-17 au §3) :
+- (a) `NotifyPresenterClosed` termine aussi un choix en attente (efface `_awaitingChoice` et
+  `_pendingChoiceResult`, se désabonne, retire l'écran), sans toucher `PlayerControlFlags` quand
+  aucune boîte n'est ouverte ; l'écran de sauvegarde traite « ni résultat ni choix en attente »
+  comme NON, et le livre comme un abandon. Tests en T2 et T3 ;
+- (b) masquer le bouton de fermeture de la fenêtre de dialogue d'Alundra
+  (`IsCloseButtonVisible="False"` dans `DialogueScreen.xaml`), comme dans l'original qui n'en a
+  pas ; test en T4.
+
+Remarques P3 de la même relecture, à reprendre avec la correction : nommer `_presenter?.Close()`
+pour `CloseStandaloneChoice` ; préciser l'ordre des appels sur l'arrêt de SE3 (le directeur de
+dialogue a déjà remis son état à l'entrée de carte). P4 : une image de boîte vide possible entre
+la réponse et la fermeture. vérification par un `verifier` frais et un
 contradicteur. Exploration du 2026-09-29 en lecture seule, chaque surface recontrôlée par un second
 agent (`scratchpad/e16def/e16e-*.md`).
 
@@ -2252,6 +2277,7 @@ tests du convertisseur 400/400, `Alundra.Tests` 1361/1361.
 | O-E16-14 | ~~tranché~~ (D-E16-35, 4 emplacements fixes). Question d'origine : **Emplacements** : 4 fixes comme une carte mémoire, un seul implicite, ou une liste libre ? | E16.e |
 | O-E16-15 | ~~tranché~~ (D-E16-36, chapitre et résumé recalculés depuis la sauvegarde validée). Question d'origine : **Libellé d'un emplacement** : chapitre et résumé recalculés depuis la sauvegarde validée, date d'écriture, numéro, ou une combinaison ? | E16.e |
 | O-E16-16 | ~~tranché~~ (D-E16-37, textes utiles seulement ; les 8 absents vérifiés dans `ETC_RES.R`). Question d'origine : **Textes** : quels messages ETC de l'original garder, et que faire des 8 textes absents de l'export et des chaînes japonaises en dur ? | E16.e |
+| O-E16-17 | **Fermeture de la fenêtre de dialogue pendant un choix** (troisième relecture d'E16.e) : (a) `NotifyPresenterClosed` termine un choix en attente, (b) masquer le bouton de fermeture de la fenêtre de dialogue, ou les deux ? | E16.e |
 
 ## 4. Hors périmètre
 
