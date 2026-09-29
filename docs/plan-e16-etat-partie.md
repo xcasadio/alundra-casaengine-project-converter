@@ -1463,7 +1463,7 @@ La remise de session couvre tous les singletons, sauf le fondu maître de la mus
 `ApplyPendingLoad` ; un test existant qui change pour une autre raison ; l'oracle de l'intro qui
 bouge.
 
-### E16.e — Écran de sauvegarde en jeu 🚧 (DLL, MGUI en XAML ; plan détaillé du 2026-09-29 ; mis en pause après un troisième REVISE, repris sur la réponse de l'auteur, D-E16-38 ; relecture de clôture fraîche sur `c91e4e1` : READY ; exécution en mode AUTO ; T1 et T2 faites le 2026-09-29 ; T3 arrêtée sur O-E16-18, tranchée par la règle « le binaire tranche », plan corrigé et relu avant la reprise)
+### E16.e — Écran de sauvegarde en jeu 🚧 (DLL, MGUI en XAML ; plan détaillé du 2026-09-29 ; mis en pause après un troisième REVISE, repris sur la réponse de l'auteur, D-E16-38 ; relecture de clôture fraîche sur `c91e4e1` : READY ; exécution en mode AUTO ; T1 et T2 faites le 2026-09-29 ; T3 arrêtée sur O-E16-18, tranchée par la règle « le binaire tranche » ; relecture de clôture du plan corrigé (`97f0054`) : REVISE, des attentes « n. » restées en L3, T3 et T8, corrigées ; EN PAUSE jusqu'à l'accord de l'auteur pour une relecture finale puis T3 à T5)
 
 - **But** : le joueur sauvegarde lui-même, comme dans l'original.
 - **Contenu** : le gestionnaire du livre de sauvegarde (`AI_ProcessWarpTransitionState`, question
@@ -1653,7 +1653,7 @@ agent (`scratchpad/e16def/e16e-*.md`).
     passés à `ApplyTo` ni à `Save` (SE4).
   - Les règles viennent de la fabrique gardée d'E16.d (`TryCreateRules`, rendue interne et
     partagée, `RulesFactoryForTests` compris), construites une fois par ouverture. Si elles ne se
-    construisent pas, les quatre libellés sont `"{n}."` et la capture de l'état 5 est refusée
+    construisent pas, les quatre libellés sont les deux lignes d'un emplacement vide établies par L3, et la capture de l'état 5 est refusée
     (SE4).
   - Les quatre lectures ont lieu une fois par ouverture, à l'entrée de `0x0C`, derrière le
     message « Examen », jamais pendant le carrousel (SE9).
@@ -1841,9 +1841,10 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
 
   Tests, sur un service simulé :
   - la suite des états conservés, les temporisations, les textes affichés ;
-  - libellés : un emplacement valide montre son résumé et son chapitre recalculés, et des
-    métadonnées fausses dans le fichier n'y changent rien ; un emplacement vide, illisible ou refusé
-    montre `"{n}."` ;
+  - libellés : un emplacement valide montre, recalculés, son chapitre en ligne 1 et son résumé en
+    ligne 2 (J3), et des métadonnées fausses dans le fichier n'y changent rien ; un emplacement vide,
+    illisible ou refusé montre les deux lignes d'un emplacement vide établies par L3 (ce test fige ce que T3 a établi dans le binaire) ;
+  - la boîte des messages montre `0x83` à l'ouverture et `0x84` pendant la question (J4) ;
   - carrousel, sur les valeurs de J4 : disposition et teintes à l'ouverture ; Haut/Bas au rythme de
     répétition, positions et teintes après un défilement, bornes (pas de défilement au-delà de la
     première et de la quatrième entrée) ; disposition et teintes à la fermeture, et résultat rendu
@@ -1862,11 +1863,11 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
     l'adaptateur → message d'échec `0x15`, aucune exception ;
   - `IsActive` et `MenuOpen` sur tout le parcours ; l'inventaire ne s'ouvre pas pendant l'écran.
   - libellés sur des emplacements hostiles : chaque état de chargement autre que `Loaded`,
-    `Loaded` avec un objet nul, `LoadedDataVersion` à 0, un champ hors domaine → `"{n}."` ; un
+    `Loaded` avec un objet nul, `LoadedDataVersion` à 0, un champ hors domaine → les deux lignes d'un emplacement vide établies par L3 ; un
     instantané de l'état de jeu identique après l'ouverture de l'écran sur quatre emplacements
     hostiles ; `Save` reçoit l'instance capturée elle-même (`ReferenceEquals`) ; une fabrique de
     règles qui lève, et un service derrière l'adaptateur qui lève sur `TryLoad` : aucune exception,
-    libellés `"{n}."`, aucune écriture (SE4) ;
+    libellés vides établis par L3, aucune écriture (SE4) ;
   - Bas pendant OUI/NON, puis OUI : `Save` reçoit l'emplacement figé, et un seul `Save` par flux
     (SE5) ;
   - un service simulé compteur : `TryLoad` appelé 4 fois par ouverture, jamais pendant le
@@ -1902,8 +1903,8 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   libellés relus ; F9 recharge la plus récente. Trois emplacements hostiles aussi (SE11) :
   - un JSON aux métadonnées forgées (`chapter` « 9999 », un `summary` de 500 caractères avec du
     balisage) mais aux données valides : le libellé montre les valeurs recalculées ;
-  - un `hpMax` hors domaine : `"{n}."` ;
-  - un binaire avec un octet inversé : `"{n}."`.
+  - un `hpMax` hors domaine : les deux lignes d'un emplacement vide établies par L3 ;
+  - un binaire avec un octet inversé : les deux lignes d'un emplacement vide établies par L3.
 
   Puis écraser l'un d'eux depuis le livre et le recharger par F9.
 
