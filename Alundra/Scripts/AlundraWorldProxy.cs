@@ -348,6 +348,19 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// does.</summary>
     private AlundraSubInventoryScreen? _subInventoryScreen;
 
+    /// <summary>E16.e T4 (docs/plan-e16-etat-partie.md, L5): the per-proxy retry gate of
+    /// <see cref="TryWireSaveScreenOnce"/>, the shape of <see cref="_subInventoryScreenWired"/>.</summary>
+    private bool _saveScreenWired;
+
+    /// <summary>E16.e T4: the presenter that pushes/removes <see cref="AlundraSaveScreen"/> and writes its view
+    /// model - null until <see cref="TryWireSaveScreenOnce"/> succeeds, or a test attaches one
+    /// (<see cref="AttachSaveScreenPresenterForTests"/>).</summary>
+    private AlundraSaveScreenPresenter? _saveScreenPresenter;
+
+    /// <summary>E16.e T4: the save screen this proxy built; it holds font3, and <see cref="OnEndPlay"/> disposes
+    /// it the same way <see cref="_subInventoryScreen"/> does.</summary>
+    private AlundraSaveScreen? _saveScreen;
+
     /// <summary>Engine ADR-0037: the HUD screen this proxy built. It holds its glyph and icon sprites, and
     /// <see cref="OnEndPlay"/> disposes it so they are given back when this world ends.</summary>
     private AlundraHudScreen? _hudScreen;
@@ -1344,6 +1357,41 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             AlundraSubInventoryDirector.Instance, GameState, ItemTables, viewModel, screen, uiView);
     }
 
+    /// <summary>
+    /// E16.e T4 (docs/plan-e16-etat-partie.md, L5): <see cref="TryWireSubInventoryScreenOnce"/>'s shape for the save
+    /// screen - retry-until-success, once per frame, since the UI view appears after <see cref="InitializeWithWorld"/>.
+    /// The screen is modal and stays down until its director is active: this only builds the presenter.
+    /// </summary>
+    private void TryWireSaveScreenOnce()
+    {
+        if (_saveScreenWired)
+        {
+            return;
+        }
+
+        var uiView = _world?.Game?.GameManager?.ViewManager?.GetActiveUIView();
+        var assetContentManager = _world?.Game?.AssetContentManager;
+        var fonts = _world?.Game?.UIFonts;
+        if (uiView == null || assetContentManager == null || fonts == null)
+        {
+            return; // retry next frame.
+        }
+
+        var saveScreen = new AlundraSaveScreen(assetContentManager, fonts);
+        _saveScreen = saveScreen;
+        _saveScreenPresenter = new AlundraSaveScreenPresenter(AlundraSaveScreenDirector.Instance, saveScreen.ViewModel, saveScreen, uiView);
+        _saveScreenWired = true;
+        Logs.WriteInfo("AlundraWorldProxy: save screen wired to the active UI view (post-bootstrap retry).");
+    }
+
+    /// <summary>Test-only seam: attaches an <see cref="AlundraSaveScreenPresenter"/> over the session's
+    /// <see cref="AlundraSaveScreenDirector.Instance"/>, against any view model, screen and UI view - the shape of
+    /// <see cref="AttachSubInventoryPresenterForTests"/>.</summary>
+    internal void AttachSaveScreenPresenterForTests(AlundraSaveScreenViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
+    {
+        _saveScreenPresenter = new AlundraSaveScreenPresenter(AlundraSaveScreenDirector.Instance, viewModel, screen, uiView);
+    }
+
     /// <summary>docs/plan-portrait-inventaire.md PI8: refreshes <see cref="AlundraInventoryPortrait"/>'s head point
     /// for this tick, before the inventory directors, from the player's 16.16 position and the original's
     /// <c>g_cameraScrollingX/Y</c>, obtained through <see cref="AlundraCameraMath.ToOriginalScrollSpace"/> (the one
@@ -1965,6 +2013,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // screens are never pushed together (D-E13D-26), so their push/remove order here never matters,
             // but running both inside the loop keeps every presenter reading this SAME tick's director state.
             _subInventoryPresenter?.Tick();
+
+            // E16.e T4 (docs/plan-e16-etat-partie.md, L5): the save screen's presenter, reading the state its
+            // director reached earlier in this same tick.
+            _saveScreenPresenter?.Tick();
         }
 
         // E12.a wiring fix: must run BEFORE the map-events pass below - a scripted dialogue opened
@@ -1973,6 +2025,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         TryWireHudScreenOnce();
         TryWireInventoryScreenOnce();
         TryWireSubInventoryScreenOnce();
+        TryWireSaveScreenOnce();
 
         // C1 (docs/plan-camera-ordre-frame.md §3): map-events run FIRST, before the camera block - a
         // faithful port of the original's own frame order (GameEngine.cs:1638-1664/1743-1753:
@@ -2581,6 +2634,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // E13.d SI4: the sub-inventory screen gives font3 back the same way.
         _subInventoryScreen?.Dispose();
         _subInventoryScreen = null;
+
+        // E16.e T4: the save screen gives font3 back the same way.
+        _saveScreen?.Dispose();
+        _saveScreen = null;
 
         // Engine ADR-0037: the HUD screen gives back its sprites the same way.
         _hudScreen?.Dispose();

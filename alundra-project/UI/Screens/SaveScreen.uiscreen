@@ -1,0 +1,9 @@
+{
+  "id": "4d6cb7b6-ed7c-40dc-964c-79f0e8c6f1bc",
+  "name": "SaveScreen",
+  "source_xaml_file": "SaveScreen.xaml",
+  "theme_name": "",
+  "preview_resolution": { "x": 320, "y": 240 },
+  "resource_files": [],
+  "design_time_data_file": "SaveScreen.design.json"
+}

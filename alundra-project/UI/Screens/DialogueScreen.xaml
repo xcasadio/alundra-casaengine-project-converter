@@ -2,6 +2,7 @@
         Name="AlundraDialogue"
         Left="0" Top="0" Height="150"
         TitleText="Dialogue"
+        IsCloseButtonVisible="False"
         IsTopmost="True"
         IsUserResizable="False"
         Padding="14"
@@ -22,7 +23,9 @@
 
        No btnClose: Alundra's boxes are closed by the interact button or the auto timer, owned by
        AlundraDialogueDirector, never by a button in the box (AlundraDialoguePresenter sets
-       ShowCloseButton to false). -->
+       ShowCloseButton to false). No title-bar close button either (IsCloseButtonVisible, D-E16-38,
+       docs/plan-e16-etat-partie.md): the original has none, and closing the window from it left a choice
+       asked without a box (the save screen's OUI/NON) waiting forever. -->
 
   <StackPanel Name="pnlContent" Orientation="Vertical" Spacing="8">
 

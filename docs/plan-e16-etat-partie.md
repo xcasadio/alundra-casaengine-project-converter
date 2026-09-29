@@ -1895,8 +1895,20 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
     carrousel (SE9) ;
   - livre à l'état 2, puis installation d'un monde : drapeaux à 0, `IsActive` faux, aucun `Save`
     (SE3).
-- ⏳ **T4 — Écran XAML et présentation** (L5). `SaveScreen.xaml`, `.uiscreen`, `.design.json`,
+- ✅ **T4 — Écran XAML et présentation** (L5). `SaveScreen.xaml`, `.uiscreen`, `.design.json`,
   présentateur et vue-modèle, câblés comme l'inventaire.
+  *Fait le 2026-09-29 : `AlundraSaveScreen` (couche `Menu`, modal, font3), `AlundraSaveScreenPresenter`
+  (pousse à l'activation du directeur, retire à sa fin), `AlundraSaveScreenViewModel` (teinte liée à
+  `TextureColor`, 0x80 = couleur de la texture) ; `SaveScreen.xaml` : quatre boîtes et la boîte des
+  messages sur le sprite de la boîte de description (`973a9208…`), dix `TextBlock` font3 sans formatage
+  en ligne, pas de barre de titre ; `DialogueScreen.xaml` : `IsCloseButtonVisible="False"` (D-E16-38) ;
+  câblage dans `AlundraWorldProxy` (`TryWireSaveScreenOnce`, présentateur dans la boucle par tick,
+  `OnEndPlay`). La teinte est absente du `.design.json` : Newtonsoft ne lit pas une `Color` XNA.
+  `AlundraSaveScreenXamlTests` (9) et `AlundraSaveScreenPresenterTests` (4) ; 4 mutations par script,
+  toutes tuées. Export complet en place, deux fois : 0 erreur ; diff des manifestes avant/après =
+  `SaveScreen.*` (3 nouveaux), `DialogueScreen.xaml`, `AssetInfos.json` (l'écran catalogué),
+  `report.json` ; second export identique au premier hors `report.json`. Builds Release puis Debug à
+  0 erreur ; `Alundra.Tests` 1881/1881.*
   - Tests : le présentateur pousse l'écran à l'activation et le retire à la fin ; la vue-modèle suit
     le directeur (positions, teintes, textes) ; un `MGDesktop` de test charge l'écran sans erreur
     (règle de l'auteur : jamais un `UIRoot`) ; chaque `MGTextBlock` de `SaveScreen.xaml` a

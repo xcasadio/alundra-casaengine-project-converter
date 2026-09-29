@@ -1,0 +1,51 @@
+<Window xmlns="clr-namespace:MGUI.Core.UI.XAML;assembly=MGUI.Core"
+        xmlns:dataBinding="clr-namespace:MGUI.Core.UI.DataBinding;assembly=MGUI.Core"
+        Left="0" Top="0" Width="320" Height="240"
+        TitleText=""
+        IsTitleBarVisible="False"
+        IsTopmost="True"
+        IsUserResizable="False"
+        Padding="0"
+        Background="rgba(0,0,0,0)">
+
+  <!-- E16.e T4 (docs/plan-e16-etat-partie.md, L5, D-E16-34, D-E16-38): the save screen the save book starts,
+       versioned as a project asset (parent ADR-0002): this file, SaveScreen.uiscreen and SaveScreen.design.json
+       live in alundra-project/UI/Screens/, the only part of the generated project kept in git; the converter
+       catalogues the envelope and never writes here. No title bar, so no close button: the original has none.
+       A full-screen transparent window whose sole content is a Canvas authored in NATIVE pixels (320x240) -
+       same shell as InventoryScreen.xaml: the code (AlundraSaveScreen) resizes this window to the real screen
+       bounds and applies the whole integer pixel scale ONCE as the canvas own RenderTransform.Scale (engine
+       ADR-0006). Every value that changes is bound to the window data context, an AlundraSaveScreenViewModel
+       the presenter writes each logic tick.
+
+       The four picker boxes and the message box are the same drawing, g_uiBoxesInventoryDescriptionBackground
+       (288x56, the inventory's description box, J4), by its fixed id. A picker box is tinted through the
+       image's TextureColor (the original's per-box RGB tint, InitializeUIMemoryFileBox). Every text is font3,
+       with inline formatting OFF (SE10): the texts come from the game, never from a save file (L3).
+
+       Draw order (back to front): the four boxes, their two lines each, then the message box and its lines. -->
+
+  <Canvas Name="RootCanvas" Width="320" Height="240" Visibility="{dataBinding:MGBinding Path=RootVisibility}">
+
+    <Image Name="RecordBox0" Stretch="None" SourceName="973a9208-c867-57fe-bee3-cf30237221ef" CanvasLeft="{dataBinding:MGBinding Path=RecordBox0.Left}" CanvasTop="{dataBinding:MGBinding Path=RecordBox0.Top}" Visibility="{dataBinding:MGBinding Path=RecordBox0.Visibility}" TextureColor="{dataBinding:MGBinding Path=RecordBox0.TextureColor}" />
+    <Image Name="RecordBox1" Stretch="None" SourceName="973a9208-c867-57fe-bee3-cf30237221ef" CanvasLeft="{dataBinding:MGBinding Path=RecordBox1.Left}" CanvasTop="{dataBinding:MGBinding Path=RecordBox1.Top}" Visibility="{dataBinding:MGBinding Path=RecordBox1.Visibility}" TextureColor="{dataBinding:MGBinding Path=RecordBox1.TextureColor}" />
+    <Image Name="RecordBox2" Stretch="None" SourceName="973a9208-c867-57fe-bee3-cf30237221ef" CanvasLeft="{dataBinding:MGBinding Path=RecordBox2.Left}" CanvasTop="{dataBinding:MGBinding Path=RecordBox2.Top}" Visibility="{dataBinding:MGBinding Path=RecordBox2.Visibility}" TextureColor="{dataBinding:MGBinding Path=RecordBox2.TextureColor}" />
+    <Image Name="RecordBox3" Stretch="None" SourceName="973a9208-c867-57fe-bee3-cf30237221ef" CanvasLeft="{dataBinding:MGBinding Path=RecordBox3.Left}" CanvasTop="{dataBinding:MGBinding Path=RecordBox3.Top}" Visibility="{dataBinding:MGBinding Path=RecordBox3.Visibility}" TextureColor="{dataBinding:MGBinding Path=RecordBox3.TextureColor}" />
+
+    <!-- Each slot's two lines at (X + 16, Y + 8) and (X + 16, Y + 32): the chapter's name, then the summary. -->
+    <TextBlock Name="Record0Line0Text" Text="{dataBinding:MGBinding Path=Record0Line0.Text}" CanvasLeft="{dataBinding:MGBinding Path=Record0Line0.Left}" CanvasTop="{dataBinding:MGBinding Path=Record0Line0.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="Record0Line1Text" Text="{dataBinding:MGBinding Path=Record0Line1.Text}" CanvasLeft="{dataBinding:MGBinding Path=Record0Line1.Left}" CanvasTop="{dataBinding:MGBinding Path=Record0Line1.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="Record1Line0Text" Text="{dataBinding:MGBinding Path=Record1Line0.Text}" CanvasLeft="{dataBinding:MGBinding Path=Record1Line0.Left}" CanvasTop="{dataBinding:MGBinding Path=Record1Line0.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="Record1Line1Text" Text="{dataBinding:MGBinding Path=Record1Line1.Text}" CanvasLeft="{dataBinding:MGBinding Path=Record1Line1.Left}" CanvasTop="{dataBinding:MGBinding Path=Record1Line1.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="Record2Line0Text" Text="{dataBinding:MGBinding Path=Record2Line0.Text}" CanvasLeft="{dataBinding:MGBinding Path=Record2Line0.Left}" CanvasTop="{dataBinding:MGBinding Path=Record2Line0.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="Record2Line1Text" Text="{dataBinding:MGBinding Path=Record2Line1.Text}" CanvasLeft="{dataBinding:MGBinding Path=Record2Line1.Left}" CanvasTop="{dataBinding:MGBinding Path=Record2Line1.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="Record3Line0Text" Text="{dataBinding:MGBinding Path=Record3Line0.Text}" CanvasLeft="{dataBinding:MGBinding Path=Record3Line0.Left}" CanvasTop="{dataBinding:MGBinding Path=Record3Line0.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="Record3Line1Text" Text="{dataBinding:MGBinding Path=Record3Line1.Text}" CanvasLeft="{dataBinding:MGBinding Path=Record3Line1.Left}" CanvasTop="{dataBinding:MGBinding Path=Record3Line1.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+
+    <!-- The message box (16, 168): the flow's messages on two lines, or the picker's heading on one. -->
+    <Image Name="MessageBox" Stretch="None" SourceName="973a9208-c867-57fe-bee3-cf30237221ef" CanvasLeft="{dataBinding:MGBinding Path=MessageBox.Left}" CanvasTop="{dataBinding:MGBinding Path=MessageBox.Top}" Visibility="{dataBinding:MGBinding Path=MessageBox.Visibility}" />
+    <TextBlock Name="MessageLine0Text" Text="{dataBinding:MGBinding Path=MessageLine0.Text}" CanvasLeft="{dataBinding:MGBinding Path=MessageLine0.Left}" CanvasTop="{dataBinding:MGBinding Path=MessageLine0.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+    <TextBlock Name="MessageLine1Text" Text="{dataBinding:MGBinding Path=MessageLine1.Text}" CanvasLeft="{dataBinding:MGBinding Path=MessageLine1.Left}" CanvasTop="{dataBinding:MGBinding Path=MessageLine1.Top}" AllowsInlineFormatting="False" Foreground="White" FontFamily="font3" />
+
+  </Canvas>
+</Window>
