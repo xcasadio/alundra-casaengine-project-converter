@@ -1772,7 +1772,14 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
     F 1 reste un « no-op » compté (aucun `ControlLocked`).
   - le type 237 avec d'autres codes → « no-op » ; un autre type avec F 1 ou C 72 → « no-op »
     compté ; les deux chemins d'apparition posent le type (SE6).
-- ⏳ **T2 — Livre** (L4). Tests, sur le directeur de dialogue réel :
+- ✅ **T2 — Livre** (L4). *Fait le 2026-09-29 : `AlundraSaveBook` porte les états 1, 2, 4, 5 et 6 de
+  `0x8007B998` (attentes de 61 ticks), le créneau F (ignoré hors de l'état 0, SE7), l'abandon et la remise
+  communs (boîte du livre fermée si `OpenSerial` n'a pas changé, choix annulé par `CancelChoice`,
+  `ControlLocked` effacé, fin du flux) ; H2 corrigé (abandon, jamais l'état 3) ; capture par
+  `TryCaptureFromWorld` avec le nom du monde (`IEntityWorldContext.WorldName`, nouveau membre par défaut),
+  règles par `TryCreateRules` rendue interne. L'écran est vu par l'interface `IAlundraSaveBookScreen`, que
+  T3 branche : d'ici là, l'état 5 abandonne. `AlundraSaveBookTests` : 16 tests, 8 mutations toutes tuées ;
+  `Alundra.Tests` 1826/1826.* Tests, sur le directeur de dialogue réel :
   - chaque transition des états 1, 2, 4, 5 et 6, avec les durées de 60 ticks ;
   - NON → abandon, `ControlLocked` effacé ;
   - un dialogue déjà ouvert à l'état 1 → abandon ;

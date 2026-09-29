@@ -484,6 +484,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     public IAlundraDialogueDirector DialogueDirector => AlundraDialogueDirector.Instance;
 
+    /// <summary>E16.e L4: this world's name (<see cref="IEntityWorldContext.WorldName"/>), read at use time - the
+    /// save book's state 5 captures the map from its "-{id}" suffix.</summary>
+    public string? WorldName => _world?.Name;
+
     /// <summary>
     /// Seam over <c>Sounds/sfx-manifest.json</c> lookups (see <see cref="Alundra.Scripts.AlundraSoundBank"/>'s
     /// class doc), read once and reused by <see cref="SoundPlayer"/> for every sfx it resolves. Internal,

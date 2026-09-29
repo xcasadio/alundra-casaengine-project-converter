@@ -160,6 +160,14 @@ public interface IEntityWorldContext
     /// all" (most synthetic interpreter tests, <see cref="NoOpEntityWorldContext"/>).
     /// </summary>
     IAlundraDialogueDirector? DialogueDirector => null;
+
+    /// <summary>
+    /// E16.e L4 (docs/plan-e16-etat-partie.md): the current world's name, whose "-{id}" suffix is the current map
+    /// (<see cref="AlundraSaveGame.TryCaptureFromWorld"/>, F4) - what the save book's state 5 captures the save
+    /// with, the same source the recipe keys use (<see cref="AlundraSaveGameDirector"/>). A default interface
+    /// member, same "degraded" shape as the seams above: null means "no world name", and a capture then refuses.
+    /// </summary>
+    string? WorldName => null;
 }
 
 /// <summary>

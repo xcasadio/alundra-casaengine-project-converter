@@ -134,6 +134,14 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
     public bool IsOpen => _isOpen;
     public bool IsAwaitingChoice => _awaitingChoice;
 
+    /// <summary>
+    /// E16.e L4 (docs/plan-e16-etat-partie.md, SE1): how many times <see cref="Open"/> ran this session - a caller
+    /// that opened a box remembers the value right after its own <see cref="Open"/>, and knows the box is still its
+    /// own while the value has not changed (the save book closes only the box it opened). Never reset, not even by
+    /// <see cref="InstallForMapEntry"/>, so a remembered value can never match a later box by accident.
+    /// </summary>
+    public int OpenSerial { get; private set; }
+
     /// <summary>Re-points this session-scoped instance at the current world's own presenter/game state -
     /// called by <see cref="AlundraWorldProxy.InstallDialogueSystems"/> on every world install. Deliberately
     /// does NOT touch <see cref="_isOpen"/>/<see cref="_closeMask"/>/<see cref="_pageCount"/>/choice state (same
@@ -212,6 +220,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
     /// <inheritdoc/>
     public void Open(DialogueAsset? asset, string? node, int controlMode)
     {
+        OpenSerial++; // E16.e L4: see the property's own doc.
         _closeMask = DefaultCloseMask; // §1.2/T3: every open resets the close-mode mask to 3.
         _swallowOpeningButtonPress =
             _gameState != null && (_gameState.LastPadState.ButtonsJustPressed & InteractButtonBit) != 0;
@@ -425,6 +434,19 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
         _awaitingChoice = false;
         UnsubscribeChoiceHandler();
         return result;
+    }
+
+    /// <summary>
+    /// E16.e L4 (docs/plan-e16-etat-partie.md, SE1): ends a choice list without a selection - clears the awaiting
+    /// state and any result not yet taken, and stops listening to the presenter. It neither closes a box nor touches
+    /// <see cref="AlundraGameState.PlayerControlFlags"/>: the save book calls it on its abandon and its reset, after
+    /// closing the box it owns, so no choice of its own is ever left waiting. A no-op when no choice is pending.
+    /// </summary>
+    internal void CancelChoice()
+    {
+        _awaitingChoice = false;
+        _pendingChoiceResult = null;
+        UnsubscribeChoiceHandler();
     }
 
     private void UnsubscribeChoiceHandler()

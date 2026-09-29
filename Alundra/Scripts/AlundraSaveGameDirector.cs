@@ -534,8 +534,10 @@ public sealed class AlundraSaveGameDirector
 
     /// <summary>K1: the rules of the validation - <see cref="RulesFactoryForTests"/> when set, the production
     /// rules otherwise. A failure to build them (no project path, an unreadable table) is a refusal, never an
-    /// exception out of a key.</summary>
-    private bool TryCreateRules(out AlundraSaveGameRules? rules, out string error)
+    /// exception out of a key. E16.e L3 (docs/plan-e16-etat-partie.md): internal and shared - the save book's
+    /// capture (<see cref="AlundraSaveBook"/>, state 5) and the save screen's labels use this same guarded
+    /// factory, <see cref="RulesFactoryForTests"/> included.</summary>
+    internal bool TryCreateRules(out AlundraSaveGameRules? rules, out string error)
     {
         rules = null;
         error = string.Empty;
