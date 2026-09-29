@@ -50,12 +50,14 @@ public enum EventTraceKind
     End,
     Break,
 
-    /// <summary>Diagnostic-only kind, never produced in production: <see cref="AlundraEventProgramRunner.MaxIterationsPerCall"/>
-    /// forcibly ended this script call after too many dispatched opcodes without reaching 0xFF/0x00/a
-    /// suspend - almost always an unimplemented suspending opcode (skipped instead of suspending - see
-    /// this runner's own class doc) sitting inside a Goto loop that never exits. Diagnostic only - not a
-    /// fidelity concern for slot A (the only slot production code
-    /// actually interprets), which never hits this in practice.</summary>
+    /// <summary>The loop guard ended this script call after too many dispatched opcodes without reaching
+    /// 0xFF/0x00/a suspend (E19.a T4, D-E19-3, docs/plan-e19-opcodes.md): the budget is
+    /// <see cref="AlundraEventProgramRunner.MaxIterationsPerCall"/> when set, else
+    /// <see cref="AlundraEventProgramRunner.ProductionLoopBudget"/> - so this kind IS produced in production, and
+    /// logged once per program. A documented deviation from the original, which has no guard (its loops always
+    /// contain an opcode that suspends): almost always an unported suspending opcode (skipped instead of
+    /// suspending) sitting inside a loop that never exits. The record carries <c>Codes[CodeIndex]</c>, the opcode
+    /// the call was about to read.</summary>
     LoopBudgetExceeded,
 }
 
@@ -94,12 +96,28 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// </summary>
     internal Action<EventTraceRecord>? TraceSink { get; set; }
 
-    /// <summary>Diagnostic-only safety valve, null (unlimited) by default - unused, hence no behavior
-    /// change, unless a caller (the intro trace harness) explicitly sets it. When set,
-    /// <see cref="RunOneScriptCall"/> forcibly ends a script call after this many dispatched opcodes
-    /// without reaching a natural end/suspend, reporting <see cref="EventTraceKind.LoopBudgetExceeded"/>
-    /// through <see cref="TraceSink"/> instead of hanging forever - see that trace kind's own doc.</summary>
+    /// <summary>Overrides <see cref="ProductionLoopBudget"/> for this runner when set (null by default: the
+    /// production budget applies). <see cref="RunOneScriptCall"/> ends a script call after this many
+    /// dispatched opcodes without reaching a natural end/suspend, reporting
+    /// <see cref="EventTraceKind.LoopBudgetExceeded"/> through <see cref="TraceSink"/> instead of hanging
+    /// forever - see that trace kind's own doc. Set explicitly by the intro trace harness (20000) and by
+    /// tests that need a different budget.</summary>
     internal int? MaxIterationsPerCall { get; set; }
+
+    /// <summary>
+    /// The production loop guard (E19.a T4, D-E19-3, docs/plan-e19-opcodes.md): after this many dispatched opcodes
+    /// in one script call, the program yields until the next frame with its position kept, as a Break would - a
+    /// documented deviation from the original, which has no guard. 8.5 times the worst suspend-free timer loop
+    /// measured on the corpus (120, map 440 @1257) and 19.7 times its longest finite suspend-free run (52, map
+    /// 11 F[2] @408). Slots B and C resume at the same opcode next frame; A, D, E and F start over, as they do
+    /// after any yield.
+    /// </summary>
+    internal const int ProductionLoopBudget = 1024;
+
+    /// <summary>The (owner, slot, program index of that slot) triples whose loop guard already logged: the pc is
+    /// not part of the key (a B or C loop resumes at a different pc every frame), and the program index
+    /// separates the map events, which all have the hero as owner and slot B.</summary>
+    private readonly HashSet<(AlundraEntityScriptProxy Owner, int Slot, int ProgramIndex)> _loggedLoopGuards = new();
 
     /// <summary>
     /// E15.c T5 (docs/plan-e15-yarn.md, contract item 1): this world's own <c>dialogue_{mapId}</c> Yarn
@@ -358,9 +376,14 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
         while (true)
         {
-            if (MaxIterationsPerCall is { } budget && ++iterations > budget)
+            if (++iterations > (MaxIterationsPerCall ?? ProductionLoopBudget))
             {
-                TraceSink?.Invoke(new EventTraceRecord(programSlot, state.CodeIndex, state.Sp, EventTraceKind.LoopBudgetExceeded, 0, null, state));
+                // Cut BEFORE the opcode is read, touching neither CodeIndex nor Parameters: B and C resume
+                // here next frame. The record carries the opcode about to be read (state.Sp is the one read
+                // just before).
+                var pending = state.Codes != null && state.CodeIndex < state.Codes.Length ? state.Codes[state.CodeIndex] : 0xFF;
+                LogLoopGuardOnce(entity, programSlot, state.CodeIndex, pending);
+                TraceSink?.Invoke(new EventTraceRecord(programSlot, state.CodeIndex, pending, EventTraceKind.LoopBudgetExceeded, 0, null, state));
                 return;
             }
 
@@ -419,6 +442,23 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     }
 
     private EventTraceKind _lastDispatchKind = EventTraceKind.Implemented;
+
+    /// <summary>One warning per (owner, slot, program index) when the loop guard cuts a call - the channel of
+    /// <see cref="UnknownOpcode"/> (<see cref="Logs.WriteWarning"/>), one set beside
+    /// <see cref="_loggedUnknownOpcodes"/>.</summary>
+    private void LogLoopGuardOnce(AlundraEntityScriptProxy owner, int programSlot, int codeIndex, int opcode)
+    {
+        var programIndex = programSlot >= 0 && programSlot < owner.ProgramIndexes.Length ? owner.ProgramIndexes[programSlot] : -1;
+        if (!_loggedLoopGuards.Add((owner, programSlot, programIndex)))
+        {
+            return;
+        }
+
+        Logs.WriteWarning(
+            $"AlundraEventProgramRunner: loop guard - entity[{owner.EntityRefId}] slot {programSlot} program {programIndex} "
+            + $"dispatched more than {MaxIterationsPerCall ?? ProductionLoopBudget} opcodes in one call without suspending "
+            + $"(next opcode 0x{opcode:x2} @{codeIndex}); yielding until the next frame (D-E19-3 deviation, logged once per program).");
+    }
 
     /// <summary>
     /// Scratch buffer for <see cref="FillDataFromCommand"/> - deviation from the original AND from this

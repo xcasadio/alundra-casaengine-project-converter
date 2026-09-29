@@ -416,6 +416,159 @@ public class AlundraEventProgramRunnerLogicEntityTests
         Assert.Equal(0u, owner.TargetAnimationId);
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // T4: the production loop guard (D-E19-3)
+    // ---------------------------------------------------------------------------------------------
+
+    /// <summary>Three instructions per turn (0x01, 0x01, then 0x02 back to the start): 1024 does not divide by 3, so
+    /// the guard cuts in the middle of a turn, at code index 1.</summary>
+    private static readonly int[] ThreeInstructionLoop = { 0x01, 0x01, 0x02, 0xFE, 0xFF };
+
+    private const string LoopGuardText = "loop guard";
+
+    private static List<string> LoopGuardWarnings(SaveGameDirectorTestSupport.LogCapture log)
+        => log.Warnings.Where(w => w.Contains(LoopGuardText)).ToList();
+
+    [Fact]
+    public void LoopGuard_ASuspendFreeLoop_ReturnsAfterTheProductionBudget_AndResumesAtTheSameCodeIndex()
+    {
+        var document = NewDocument(ThreeInstructionLoop);
+        var runner = NewRunner(document);
+        var records = new List<EventTraceRecord>();
+        runner.TraceSink = records.Add;
+        var owner = Entity(1);
+        var state = StateFor(document);
+
+        runner.RunOneScriptCall(owner, state); // returns instead of looping forever.
+
+        Assert.Equal(AlundraEventProgramRunner.ProductionLoopBudget, records.Count(r => r.Kind == EventTraceKind.Implemented));
+        var cut = Assert.Single(records, r => r.Kind == EventTraceKind.LoopBudgetExceeded);
+        Assert.Same(records[^1].State, cut.State);
+        Assert.Equal(1, state.CodeIndex); // the 1024th instruction was the 0x01 at 0: the next one is at 1, not yet read.
+
+        records.Clear();
+        runner.RunOneScriptCall(owner, state); // the same state, next frame: resumes AT the opcode it was cut before.
+        Assert.Equal(1, records[0].CodeIndex);
+    }
+
+    [Fact]
+    public void LoopGuard_ReportsTheTraceKind_TheCodeIndexAndTheOpcodeAboutToBeRead()
+    {
+        var document = NewDocument(ThreeInstructionLoop);
+        var runner = NewRunner(document);
+        EventTraceRecord? cut = null;
+        runner.TraceSink = r =>
+        {
+            if (r.Kind == EventTraceKind.LoopBudgetExceeded)
+            {
+                cut = r;
+            }
+        };
+        var state = StateFor(document);
+
+        runner.RunOneScriptCall(Entity(1), state, ScriptHelper.ProgramCTick);
+
+        Assert.NotNull(cut);
+        Assert.Equal(EventTraceKind.LoopBudgetExceeded, cut!.Value.Kind);
+        Assert.Equal(ScriptHelper.ProgramCTick, cut.Value.ProgramSlot);
+        Assert.Equal(1, cut.Value.CodeIndex);
+        Assert.Equal(0x01, cut.Value.Opcode); // Codes[CodeIndex], not state.Sp (the opcode read just before).
+    }
+
+    [Fact]
+    public void LoopGuard_LogsOnce_PerOwnerSlotAndProgramIndex_NotPerFrame_NorPerPc()
+    {
+        using var log = SaveGameDirectorTestSupport.LogCapture.Install();
+        var document = new EventProgramDocument
+        {
+            EventCodesBTable = new[] { 0, 0 },
+            Codes = ThreeInstructionLoop,
+        };
+        var runner = NewRunner(document);
+        var owner = Entity(11);
+        owner.ProgramIndexes[ScriptHelper.ProgramBMap] = 0x80;
+
+        // Many frames of the same program: the loop resumes at a different pc each frame, one warning only.
+        for (var frame = 0; frame < 5; frame++)
+        {
+            runner.RunScript(owner, ScriptHelper.ProgramBMap);
+        }
+
+        var warnings = LoopGuardWarnings(log);
+        Assert.Single(warnings, w => w.Contains("entity[11]"));
+
+        // Another program of the same owner and slot (the map events all have the hero as owner, slot B) logs again.
+        owner.ProgramIndexes[ScriptHelper.ProgramBMap] = 0x81;
+        owner.EventProgramState.Codes = null;
+        runner.RunScript(owner, ScriptHelper.ProgramBMap);
+        runner.RunScript(owner, ScriptHelper.ProgramBMap);
+        Assert.Equal(2, LoopGuardWarnings(log).Count(w => w.Contains("entity[11]")));
+    }
+
+    [Fact]
+    public void LoopGuard_SlotsBAndCResumeAtTheSameOpcode_ButSlotAStartsOver()
+    {
+        var document = new EventProgramDocument
+        {
+            EventCodesATable = new[] { 0 },
+            EventCodesBTable = new[] { 0 },
+            Codes = ThreeInstructionLoop,
+        };
+        var runner = NewRunner(document);
+        var records = new List<EventTraceRecord>();
+        runner.TraceSink = records.Add;
+        var owner = Entity(1);
+        owner.ProgramIndexes[ScriptHelper.ProgramBMap] = 0x80;
+        owner.ProgramIndexes[ScriptHelper.ProgramALoad] = 0x80;
+
+        runner.RunScript(owner, ScriptHelper.ProgramBMap);
+        records.Clear();
+        runner.RunScript(owner, ScriptHelper.ProgramBMap);
+        Assert.Equal(1, records[0].CodeIndex); // B: resumes where it was cut.
+
+        records.Clear();
+        runner.RunScript(owner, ScriptHelper.ProgramALoad);
+        records.Clear();
+        runner.RunScript(owner, ScriptHelper.ProgramALoad);
+        Assert.Equal(0, records[0].CodeIndex); // A: starts over, as after any yield.
+    }
+
+    [Fact]
+    public void LoopGuard_ALoopWithAWait_NeverTriggersIt()
+    {
+        using var log = SaveGameDirectorTestSupport.LogCapture.Install();
+        // 0x01, then 0x37 Wait(1) (not at pc 0: a Wait keys its re-entry off the code index, and a freshly
+        // cleared Parameters[1] is already 0), then back to the start: every turn suspends.
+        var document = NewDocument(0x01, 0x37, 1, 0x02, 0xFD, 0xFF);
+        var runner = NewRunner(document);
+        var cuts = 0;
+        runner.TraceSink = r => cuts += r.Kind == EventTraceKind.LoopBudgetExceeded ? 1 : 0;
+        var owner = Entity(21);
+        var state = StateFor(document);
+
+        for (var frame = 0; frame < 3000; frame++)
+        {
+            runner.RunOneScriptCall(owner, state);
+        }
+
+        Assert.Equal(0, cuts);
+        Assert.Empty(LoopGuardWarnings(log).Where(w => w.Contains("entity[21]")));
+    }
+
+    [Fact]
+    public void LoopGuard_MaxIterationsPerCall_ReplacesTheProductionBudget()
+    {
+        var document = NewDocument(ThreeInstructionLoop);
+        var runner = NewRunner(document);
+        runner.MaxIterationsPerCall = 10;
+        var implemented = 0;
+        runner.TraceSink = r => implemented += r.Kind == EventTraceKind.Implemented ? 1 : 0;
+
+        runner.RunOneScriptCall(Entity(1), StateFor(document));
+
+        Assert.Equal(10, implemented);
+    }
+
     [Fact]
     public void Clone_DoesNotCopyTheLogicEntity_ANewEntityStartsOnItself()
     {

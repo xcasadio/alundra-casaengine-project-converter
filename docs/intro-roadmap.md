@@ -85,8 +85,9 @@ Tests unitaires ajoutés dans `Alundra.Tests/AlundraEventProgramRunnerTests.cs` 
   des scripts de porte qui utilisent aussi 0x10/0x11) ; (b) 300 frames sans qu'aucune paire (contexte,
   pc) inédite ne s'exécute (progression, pas opcode distinct : un Wait qui se ré-entre n'est pas un
   progrès) ; (c) plafond 3600 frames.
-- **F. Garde-fous diagnostiques** : `AlundraEventProgramRunner.MaxIterationsPerCall` (null par défaut,
-  20 000 dans le harnais) et un plafond cumulé côté harnais. Silencieux dans la trace finale ; ils ont
+- **F. Garde-fous diagnostiques** : `AlundraEventProgramRunner.MaxIterationsPerCall` (depuis E19.a, il
+  remplace la garde de production `ProductionLoopBudget` = 1024 quand il est réglé ; le harnais le règle à
+  20 000) et un plafond cumulé côté harnais. Silencieux dans la trace finale ; ils ont
   servi à prouver que le chemin « skip » sur 0x36 bouclait.
 
 ### Limites connues du harnais (inatteignables sur la map 389, à traiter au lot 1)
