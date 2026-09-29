@@ -911,6 +911,22 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
   d'après ce que le binaire permet de sauvegarder, ou une autre coupure de la boucle.
 - **Dépendances** : E16 (sauvegarde et chargement), le chantier qui portera la mort du héros.
 
+### E19 — Opcodes de l'interpréteur ⏳ (ouverte le 2026-09-29, plan proposé)
+
+- **But** : porter les opcodes que l'interpréteur saute encore par leur taille. Il y en a 88 dans le
+  corpus : 14 644 instructions atteignables sur 111 136, dans 392 cartes.
+- **Pourquoi** : l'histoire ne progresse pas au-delà du bateau Klark. Les drapeaux ne sont pas en
+  cause (E16.a, E16.f), et aucune étape ne portait ces opcodes. Trois arrêts sur la chaîne :
+  - 390 : la cinématique du capitaine attend le héros au lieu du capitaine (`0x43`/`0x42`) ;
+  - 476 : `0xC4` n'ouvre pas son dialogue ;
+  - 478 : le processus gèle, car `0x0B` est sauté et il n'y a pas de garde de boucle.
+- **Plan** : [plan-e19-opcodes.md](plan-e19-opcodes.md) ; décisions D-E19-1 à D-E19-7, ADR-0015.
+  - Phase 1 : la chaîne 389 → 390 → 476 → 478 → 476 → 392 → 391 → 416 → 163 (premier livre),
+    E19.a à E19.e, puis la boîte de nom et la boîte de texte fidèle (E19.f).
+  - Phase 2 : le reste du corpus, une famille par tranche, les effets visuels compris (E19.g à
+    E19.m).
+- **Dépendances** : E16 (drapeaux). E14, E17 et E18 ne sont pas nécessaires à la chaîne.
+
 ## 5. Règles de travail
 
 - Fidélité **de comportement observable** dès qu'un système moteur remplace un système original ;
@@ -956,3 +972,4 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
 | E16 état de partie (drapeaux, sauvegarde) | 🧪 mergée dans `main` le 2026-09-29 (moteur `a550859f`, analyseur `242b09a`), rien poussé ; E16.0, E16.a (recette en jeu T7 à faire) et E16.b faites ; E16.c faite et vérifiée CONFIRMED (ADR-0012) ; E16.f faite et vérifiée CONFIRMED ; E16.d faite et vérifiée CONFIRMED (ADR-0013), recette en jeu à faire ; E16.e (livre et écran de sauvegarde) faite et vérifiée CONFIRMED (ADR-0014), recette en jeu à faire | `docs/plan-e16-etat-partie.md` |
 | E17 cinématiques en `.cutscene` | ⏳ ouverte le 2026-09-27, prérequis moteur | |
 | E18 mort et « Réessayer » (avec correction de la décompilation) | ⏳ ouverte le 2026-09-28, non planifiée | |
+| E19 opcodes de l'interpréteur (chaîne du bateau, puis corpus) | ⏳ ouverte le 2026-09-29, enveloppe et E19.a proposées | `docs/plan-e19-opcodes.md`, ADR-0015 ; branche `chantier/e19-opcodes` |

@@ -28,3 +28,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0012 | The Alundra save game holds the original's saved state and is validated field by field before it is applied | Accepted | 2026-09-28 |
 | ADR-0013 | A save is loaded through the warp departure path and applied at the arrival map's entry; the recipe keys exist only in Debug builds | Accepted | 2026-09-28 |
 | ADR-0014 | The save book reproduces the original's memory-card save screens over four file slots | Accepted | 2026-09-29 |
+| ADR-0015 | The event interpreter ports the missing opcodes from the binary, with a production loop guard and the E4.d detour for scripted walks | Accepted | 2026-09-29 |
