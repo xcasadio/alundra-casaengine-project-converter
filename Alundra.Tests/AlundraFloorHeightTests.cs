@@ -194,6 +194,12 @@ public class AlundraFloorHeightTests
         Assert.Equal(groundHeightPx << 16, expectedFloorHeight); // sanity: matches the seeded ground height.
         Assert.Equal(expectedFloorHeight, proxy.FloorHeight);
         Assert.NotEqual(0, proxy.FloorHeight); // non-zero, per the ticket's own acceptance wording.
+
+        // E16.a (D-E16-29, docs/plan-e16-etat-partie.md): UpdateFloorHeight now also keeps TerrainHeight
+        // (the DLL's +0x138) up to date for the player, from the SAME ComputeTerrainHeight probe
+        // FloorHeight already uses (T3.1's own "même valeur" finding) - this is that write's one
+        // production call site (Update's IsPlayer branch), after one real World.Update tick.
+        Assert.Equal(expectedFloorHeight, proxy.TerrainHeight);
     }
 
     // -----------------------------------------------------------------------------------------

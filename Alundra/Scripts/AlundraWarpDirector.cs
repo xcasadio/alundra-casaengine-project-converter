@@ -239,6 +239,11 @@ public sealed class AlundraWarpDirector
         _worldChangeRequested = false;
         HasPendingArrival = false;
 
+        // E16.d K8 (docs/plan-e16-etat-partie.md): a departure that never reaches its arrival leaves no load
+        // pending to be applied later at some other arrival. This director depends on the save-game
+        // director, never the reverse.
+        AlundraSaveGameDirector.Instance.AbandonPendingLoad("its departure was aborted before any arrival");
+
         if (_gravitySuspendedPlayer != null)
         {
             AlundraPlayerManager.RestoreGravityAfterAbortedWarpDeparture(_gravitySuspendedPlayer, _gravityBeforeDeparture);
@@ -393,6 +398,61 @@ public sealed class AlundraWarpDirector
                     _soundPlayer?.PlaySfx(sfxId);
                 }
             });
+    }
+
+    /// <summary>E16.d K7 step 5 (docs/plan-e16-etat-partie.md, SD1): whether a <see cref="GameManager"/> is
+    /// attached to hand a world change to - read-only, so the load can refuse a departure the abort guard of
+    /// <see cref="Advance"/> would otherwise end, after its fade and its sound had already left.</summary>
+    internal bool IsGameManagerAttached => _gameManager != null;
+
+    /// <summary>E16.d K7 step 5 (SD1): resolves <paramref name="mapId"/> through THIS director's own
+    /// <c>Maps/world-index.json</c>, the table <see cref="BeginDepartureCore"/> resolves the departure's world
+    /// path with. Read-only; false (and a null path) when the table is missing or has no such key.</summary>
+    internal bool TryResolveWorldPath(int mapId, out string? path)
+    {
+        path = _worldIndex?.Resolve(mapId);
+        return path != null;
+    }
+
+    /// <summary>
+    /// E16.d K7 step 6 (docs/plan-e16-etat-partie.md, SD2): the departure of a loaded save - to
+    /// <paramref name="desiredMapIndex"/>, the save's <c>InitialMapId</c> taken as-is (like opcode 0x53, G1; the
+    /// same <c>world-index.json</c> key the validation checked), at the given 16.16/<c>&lt;&lt; 20</c> position.
+    /// Converges on <see cref="BeginDepartureCore"/> like the two other departures, with what the original's
+    /// New Game and load both use (<c>AlundraGameState.cs</c>, <c>GameInitializer.cs:414</c>): the animation
+    /// <see cref="AlundraGameState.ResetAnimationId"/> (<c>0x36</c>) and the direction
+    /// <see cref="AlundraGameState.ResetDirectionId"/> (0) - never the hero's current animation, which
+    /// <see cref="BeginDepartureFromChangeMapOpcode"/> would copy (a load pressed mid-attack or mid-jump). Effect
+    /// 0, and an EMPTY sound action: no departure sound, and no
+    /// <see cref="AlundraMusicPlayer.HandleWarpDeparture"/> - the arrival's own <c>PlayMapMusic</c> sets the
+    /// music. Repeats the <see cref="AlundraGameState.IsWarpDisabled"/> test of the two other entries (the caller
+    /// has already refused it, K7 step 5).
+    /// </summary>
+    internal void BeginDepartureForLoad(
+        uint desiredMapIndex,
+        int posX,
+        int posY,
+        int posZ,
+        AlundraEntityScriptProxy player,
+        AlundraGameState state)
+    {
+        if (state.IsWarpDisabled)
+        {
+            return;
+        }
+
+        Logs.WriteInfo($"AlundraWarpDirector: departure of a loaded save to map {desiredMapIndex} (effect 0).");
+
+        BeginDepartureCore(
+            desiredMapIndex,
+            posX,
+            posY,
+            posZ,
+            animationId: AlundraGameState.ResetAnimationId,
+            directionId: AlundraGameState.ResetDirectionId,
+            effectId: 0,
+            player,
+            soundAction: static () => { });
     }
 
     /// <summary>

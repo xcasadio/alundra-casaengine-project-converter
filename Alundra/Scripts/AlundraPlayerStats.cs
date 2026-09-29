@@ -7,8 +7,10 @@ namespace Alundra.Scripts;
 /// (alundra-datas-analyser/AlundraTools/AlundraEngine/Gameplay/PlayerStats.cs:4-12): the five fields
 /// E13's C0 needs (<see cref="Hp"/>, <see cref="HpMax"/>, <see cref="Mp"/>, <see cref="MpMax"/>,
 /// <see cref="Money"/>), then <see cref="WeaponId"/> and <see cref="ItemId"/>, which E13.c S3 added for
-/// the HUD's weapon and accessory boxes (docs/plan-e13c-icones-hud.md). <c>FalconTemp</c> and
-/// <c>Falcon</c> are still not ported - no falcon system exists yet in this DLL.
+/// the HUD's weapon and accessory boxes (docs/plan-e13c-icones-hud.md). <see cref="FalconTemp"/> and
+/// <see cref="Falcon"/> followed with E13.d (shown by the inventory); the falcon text command of E15
+/// (<see cref="AlundraTextProgress"/>) is their only writer, and all nine fields are saved by
+/// <see cref="AlundraSaveGame"/> (E16.c, docs/decisions/0012-alundra-save-game-content-and-validation.md).
 ///
 /// <para><b>One instance, not two.</b> The original allocates a single <c>PlayerStats</c> object and
 /// ALIASES it onto two globals - <c>g_saveData.PlayerStats = new PlayerStats()</c> immediately followed
@@ -65,14 +67,15 @@ public sealed class AlundraPlayerStats
 
     /// <summary>E13.d D4 (docs/plan-e13d-inventaire.md, D-E13D-5): port of <c>PlayerStats.Falcon</c> -
     /// the falcon-key count <c>DisplayAmountOfMoneyFalconKeys</c> shows next to the regular key count
-    /// (MainInventoryManager.cs:1555-1587, <c>GetNumberOfFalcon()</c>). No falcon system exists in this
-    /// DLL yet (this class' own doc, above) - kept at 0, the value a New Game has, with no mechanic that
-    /// ever changes it (D-E13D-5: "affichés ; aucune mécanique de faucon").</summary>
+    /// (MainInventoryManager.cs:1555-1587, <c>GetNumberOfFalcon()</c>). 0 at New Game; since E15 the
+    /// falcon text command folds <see cref="FalconTemp"/> into it and caps it at 50
+    /// (<see cref="AlundraTextProgress"/>), and a loaded save restores it (E16.c).</summary>
     public short Falcon;
 
     /// <summary>E13.d D4: port of <c>PlayerStats.FalconTemp</c> - the original adds this to
     /// <see cref="Falcon"/> for the inventory's displayed total (<c>GetNumberOfFalconTemp()</c>,
-    /// MainInventoryManager.cs:1556). Same "0, no mechanic" status as <see cref="Falcon"/>.</summary>
+    /// MainInventoryManager.cs:1556). Nothing raises it yet (the original's <c>IncreaseFalcon2</c>,
+    /// 0x8004E6EC, is not ported): the falcon text command zeroes it, and a loaded save restores it.</summary>
     public short FalconTemp;
 
     /// <summary>Test-only: restores this object to its New-Game-equivalent construction state, the same

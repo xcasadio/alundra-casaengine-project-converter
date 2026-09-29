@@ -90,6 +90,7 @@ frame près (écart documenté).
 | `SpriteEventHandlers` (IA native) | navigation (steering/poursuite) + scripts C# par type de sprite | E14 |
 | Tables de texte (cartes, `map_alundra`, ETC) et codes de `TextInterpreter` | fichiers Yarn compilés (`.yarn` + `.dialogue`) joués par `YarnDialogueRunner` | E15 |
 | Programme B 129 (cinématique) | `.cutscene` (`CutsceneDirector`) — conversion hybride (D1) | E17 |
+| `GetFlag`/`AddFlag`/`SetFlag`/`XorFlag`, `g_temporaryFlags`, `g_saveData`, `InitializeGameState` (`SlotData == 1`), `MemoryCardManager` | `AlundraGameState` (DLL) ; persistance à décider | E16 |
 
 ## 4. Étapes
 
@@ -679,7 +680,8 @@ L'ordre ci-dessous prime sur la numérotation E13 → E15 tant qu'il n'est pas �
    début de la map. »). C'est l'inventaire qui avait tort, pas le dossier.
 
 Ensuite seulement : E13, E14, E15 — sachant qu'E14 porte aussi le blocage physique entité↔entité,
-rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
+rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16 vient après E15
+(décision de l'auteur du 2026-09-27).
 
 ### E13 — HUD MGUI 🚧 (découpée en quatre étapes le 2026-09-19, sur décision de l'auteur)
 
@@ -737,7 +739,8 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 ### E14 — IA native ⏳
 
 - **But** : `SpriteEventHandlers` (~120 handlers) en scripts C# par type de sprite, sur la navigation
-  (poursuite, patrouille). Hors intro : seuls A0/E0 sont requis avant (E1).
+  (poursuite, patrouille). Hors intro : seuls A0/E0 sont requis avant (E1). **Sauf** le gestionnaire
+  du livre de sauvegarde (`AI_ProcessWarpTransitionState`), porté par E16.e (D-E16-12, 2026-09-27).
 - **Dépendances** : E4, E5.
 
 ### E15 — Tout le texte d'Alundra en Yarn ✅ (close le 2026-09-28, recette en jeu validée : `docs/plan-e15-yarn.md`)
@@ -768,6 +771,96 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
   celle-ci.
 - **Dépendances** : E5, E6, E12.
 
+### E16 — État de partie : drapeaux et sauvegarde ⏳ (plan détaillé proposé le 2026-09-27, révision 3 le 2026-09-28 : `docs/plan-e16-etat-partie.md`)
+
+- **But** : terminer la gestion des deux banques de drapeaux, `GameFlags` (persistants, sauvegardés)
+  et `TemporaryFlags` (vidés à chaque entrée de carte), puis leur donner une vie au-delà de la
+  session : sauvegarder et recharger une partie comme l'original (`g_saveData`, carte mémoire).
+- **Pourquoi une étape** : aucune étape de cette feuille de route ne portait les drapeaux. Ils sont
+  arrivés par morceaux (E1, transitions, E13), et la sauvegarde n'a jamais été planifiée.
+- **Déjà livré** (constaté le 2026-09-27) :
+  - stockage et API : `AlundraGameState` (`AlundraGameState.cs:192`, `:220`, `:244-259`), port de `GetFlag`,
+    `AddFlag`, `SetFlag` et `XorFlag` (`GameEngine.cs:2828-2926`), banque choisie par le bit `0x8000`
+    de l'id ;
+  - cycle de vie : `TemporaryFlags` vidé et `GameFlags` conservé à chaque entrée de carte
+    (`InstallForMapEntry`, D-T-13 de `plan-transitions-carte.md`), pinné par
+    `AlundraGameStateSessionTests` et `AlundraWorldProxySessionStateTests` ;
+  - lecteurs et écrivains (citations remises à jour le 2026-09-28) :
+    - l'interpréteur (`0x05`, `0x06`, `0x30`, `0x31`, `0x33`, `0x36`) ;
+    - la commande `<<flag n>>` du texte Yarn, qui écrit dans la banque temporaire
+      (`AlundraYarnBindings.cs:142-153`, E15) ;
+    - la jauge : drapeaux 1662, 1813 et 1814 (`AlundraHudDirector`).
+
+    Le monde n'en écrit plus depuis la suppression de la recette `ALUNDRA_HUD_DEBUG` et de F1.
+- **Manques constatés** :
+  1. **Opcodes de drapeaux non portés**, aujourd'hui sautés par taille : `0x32` (bascule par
+     `XorFlag`, `EntityEventHandlers.cs:1102`), `0x34` (vrai si aucun des quatre drapeaux n'est posé,
+     `:1132`), `0x35` (attend qu'un drapeau retombe à 0, `:1152`), `0x7B`, `0x7C`, `0x80` et `0x81`
+     (sauts conditionnels à paramètre mémorisé, `:2264-2373`). `XorFlag` existe dans la DLL mais n'a
+     aucun appelant.
+  2. **Tailles** : l'original déclare `GameFlags` sur **64 mots**, soit 2048 drapeaux
+     (`SaveData.cs:17`), et `ClearTemporaryFlags` ne vide que 64 mots de `g_temporaryFlags`
+     (`GameEngine.cs:429-438`). La DLL dimensionne les deux banques à 1024 mots, la borne de
+     l'indexation `& 0x3ff`. Sans effet tant qu'aucun id ne dépasse 2047 : à mesurer sur le corpus.
+  3. **Aucune persistance** : ni la branche « charger » d'`InitializeGameState` (`SlotData == 1`,
+     `GameInitializer.cs:350-356`) ni la carte mémoire (`MemoryCardManager` : un bloc, en-tête `SC`,
+     somme de contrôle sur `0x1ffc` octets, `:163-180`) ne sont portées, pas plus que le temps de jeu
+     (`SaveData.GameTime`). Le moteur n'offre aucun service de sauvegarde : à l'exécution, seuls les
+     réglages d'affichage et de projet s'écrivent sur disque (`DisplaySettingsPersistence`,
+     `ProjectSettingsHelper`).
+  4. **Aucun nom** : les drapeaux restent des nombres. La seule table sémantique connue est
+     `ChapterFlags.cs` : 41 drapeaux de fin de chapitre, qui donnent le chapitre affiché par
+     l'écran de chargement (`SaveData.CurrentFlagName`).
+- **Qui lit les drapeaux** (question de l'auteur du 2026-09-27) : le moteur de script d'Alundra est
+  l'interpréteur de la DLL (D1). C'est lui, avec les directeurs de la DLL, qui lit et écrit les
+  drapeaux, et cela ne change pas. Les systèmes de script **du moteur** ne les voient pas :
+  `YarnDialogueRunner` crée son propre `MemoryVariableStore` (`YarnDialogueRunner.cs:74`), Yarn
+  n'est plus dans le chemin des dialogues depuis la route directe d'E12
+  (`plan-e12-dialogues.md:4`), et `CutsceneDirector` n'a ni condition ni commande de drapeau
+  (`SetGameFlag` n'est qu'une commande recommandée,
+  `CasaEngineMonogame/docs/engine/cutscene_commandes_sequentielles_async_coroutine.md:1906`).
+  **Décision (D-E16-6)** : `AlundraGameState` reste l'unique propriétaire des drapeaux. Le pont vers Yarn et
+  les cutscenes (un stockage de variables Yarn fourni par la DLL, une commande de condition sur une
+  interface que la DLL implémente) se construit en **E15**, quand un programme converti en a besoin.
+  E16 ne touche pas le moteur pour les drapeaux.
+  *Mise à jour du 2026-09-28* : depuis E15, la DLL joue tout le texte sur `YarnDialogueRunner`, dont
+  le stockage de variables est injectable (`YarnDialogueRunner.VariableStorage`, ADR-0042 du moteur).
+  E15 n'a pas construit le pont (D-E15-13 : aucun texte n'utilise de variable). L'auteur l'a mis dans
+  E16, tranche E16.f :
+  - `$flag_n` et `$tmp_flag_n` pour les deux banques, en lecture et en écriture ;
+  - tout autre nom est refusé ;
+  - décisions D-E16-14 à D-E16-18, ADR-0010.
+
+  Le pont des cinématiques revient à E17.
+- **Décisions de l'auteur (2026-09-27)** : tout, en tranches, écran de sauvegarde en jeu compris ;
+  deux formats au choix, JSON lisible et binaire compact ; un **service de sauvegarde générique
+  dans le moteur**, inspiré de Godot, Unity et Unreal, auquel la DLL confie un objet de sauvegarde
+  (modèle Unreal) ; fichiers dans le dossier de l'utilisateur ; les drapeaux restent dans la DLL et
+  le pont vers Yarn et les cutscenes attend E15 ; **E16 passe après E15**. Puis, après la relecture
+  READY : §9.9 du moteur précisé, écran « Continuer » plus tard, touches F5/F6/F9 gardées par
+  un interrupteur de débogage (mécanisme à choisir, O-E16-6), livre de sauvegarde porté par E16.e,
+  touche F1 et recette `ALUNDRA_HUD_DEBUG` de la jauge supprimées. Le 2026-09-28, après E15 :
+  - les variables Yarn adossées aux drapeaux vont dans E16 (E16.f) ;
+  - l'indice de catégorie et les variables `\V` sont remis à zéro au chargement ;
+  - le rechargement après la mort (« Réessayer ») devient l'étape E18.
+
+  Détail : D-E16-1 à D-E16-24 du plan détaillé ; mesures d'E16.0 au §2.
+- **Découpage** (plan détaillé `docs/plan-e16-etat-partie.md`) :
+  - **E16.0 — Mesure** ✅ (faite le 2026-09-28, vérifiée) (lecture seule) : ids de drapeaux utilisés, occurrences des opcodes du
+    manque 1, disposition de `g_saveData` et unité du temps de jeu dans `ALUN_CD.EXE`, déclencheur de
+    l'écran de sauvegarde.
+  - **E16.a — Opcodes de drapeaux** (DLL).
+  - **E16.b — Service de sauvegarde** (moteur) : plan
+    `CasaEngineMonogame/ai-agent/tasks/save-game-service-tasks.md`.
+  - **E16.c — Objet de sauvegarde d'Alundra** (DLL).
+  - **E16.d — Chargement et recette** (DLL).
+  - **E16.e — Écran de sauvegarde en jeu** (DLL, MGUI en XAML), avec son propre plan après E16.0.
+  - **E16.f — Variables Yarn adossées aux drapeaux** (DLL), après E16.0, indépendante des autres.
+- **Hors périmètre** : les lecteurs de `ContentsGameFlag` de l'IA native (coffres, `FunctionTypeA.cs:236-264`)
+  → E14 ; le pont vers les cutscenes → E17 ; le rechargement après la mort → E18 ; l'écran titre
+  (point ouvert O-E16-1) ; la relecture des vraies sauvegardes PS1.
+- **Dépendances** : aucune technique ; position dans la file décidée par l'auteur, après E15.
+
 ### E17 — Cinématiques en `.cutscene` ⏳ (ouverte le 2026-09-27, non planifiée)
 
 - **But** (D1) : traduire en `.cutscene` les programmes qui s'y prêtent, à commencer par le programme
@@ -781,6 +874,42 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 - **Prérequis** : un chantier moteur qui rend les cinématiques extensibles par le jeu et ajoute les
   actions manquantes.
 - **Dépendances** : E15, E16.
+
+### E18 — Mort et « Réessayer » ⏳ (ouverte le 2026-09-28, non planifiée)
+
+- **But** : porter le rechargement après la mort. Sur la carte `0x1DD`, l'opcode `0xBB` (« Check retry
+  or title screen », `Script_187_0BB` à `0x80041A74`) déclenche l'effet de transition 10, qui
+  recharge la dernière sauvegarde gardée en mémoire (`InitializeMapWarpPosition` à `0x800315b0`,
+  `UpdateSaveData` : `g_saveDataInRam` copiée dans `g_saveData`), puis repart du point de sauvegarde.
+  La DLL saute aujourd'hui `0xBB` par taille (`Alundra/Scripts/EventOpcodeSizeTable.cs:218`).
+- **Correction de la décompilation C#** (décision de l'auteur du 2026-09-28, D-E16-20 de
+  `docs/plan-e16-etat-partie.md`) :
+  - le champ `SaveSlotIndex` compte les reprises après la mort, ce que E16.0 a confirmé dans
+    `ALUN_CD.EXE` (§2 du plan E16). Il est journalisé « Retry = » (`EntityEventHandlers.cs:3527-3537`)
+    et prend +1 à chaque essai (`GameEngine.cs:1482-1485`). Il reste à le renommer, avec ses
+    lecteurs ;
+  - tout le chemin est à vérifier contre le binaire (`Script_187_0BB`, l'effet 10 en
+    `GameEngine.cs:326-333`, `InitializeMapWarpPosition` en `:1480-1498`), et chaque écart à
+    corriger ;
+  - les autres désaccords relevés par la mesure E16.0 (D-E16-24, §2 du plan E16) :
+    - la division par 60 perdue dans `UpdateMenuStatusText` (`GameEngine.cs:2724`) ;
+    - le paramètre fantôme `displayMenu` d'`UpdateSavedData` ;
+    - le champ `Offset` de `SaveData.cs`, absent de l'original ;
+    - `0xC2` (`Script_194_0C2`), qui ne lit qu'un octet de paramètre ;
+    - la valeur rendue par `UpdateMemoryCardProcess` dans les états 1 et 2, à recontrôler.
+
+  La taille de `0x78` dans `EventCodeDebugger.cs` est corrigée par E16.a (D-E16-21).
+- **Faits établis par E16.0** : `SaveSlotIndex` compte les reprises après la mort (un octet, plafonné
+  à `0xFF`), il est sauvegardé et lu par l'opcode `0xC2`. Chaque sauvegarde réussie recopie la
+  sauvegarde dans `g_saveDataInRam`, que « Réessayer » restaure.
+- **Faits déjà établis** : ce chemin ne remet pas la BSS à zéro. L'indice de catégorie du texte et les
+  variables `\V` y gardent leur valeur (§5.7 de `plan-e15-yarn.md`), alors qu'un chargement d'E16
+  les remet à zéro (D-E16-19). E16.0 confirme ces faits dans le binaire.
+- **Prérequis venu de la revue de sécurité d'E16.c** (SC8, `docs/plan-e16-etat-partie.md`) : la
+  validation d'E16.c accepte `Hp = 0`. Une fois la mort portée, « Réessayer » rechargerait en boucle
+  une sauvegarde éditée à 0 PV. À trancher avant d'écrire ce chemin : `Hp ≥ 1` exigé au chargement,
+  d'après ce que le binaire permet de sauvegarder, ou une autre coupure de la boucle.
+- **Dépendances** : E16 (sauvegarde et chargement), le chantier qui portera la mort du héros.
 
 ## 5. Règles de travail
 
@@ -824,4 +953,6 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ).
 | E13.d inventaire principal (puis sous-inventaire et L1/R1) | ✅ close (principal validé en jeu le 2026-09-24 ; sous-inventaire, L1/R1 et suites SI7-SI12 validés le 2026-09-25, mergés par l'auteur dans `main`) | `docs/plan-e13d-inventaire.md` ; `docs/plan-e13d-sous-inventaire.md` : analyseur `8f403d5`, parent `45bb0e2`, `a3901af`, `dc3fe1a`, `5f12e53`, suites `4e411ef`…`192f497`, merge `3537807` |
 | E14 IA native | ⏳ | |
 | E15 le texte en Yarn | ✅ close (recette en jeu validée le 2026-09-28) | `docs/plan-e15-yarn.md` ; parent `chantier/e15-yarn`, moteur `chantier/yarn-extension-points` |
+| E16 état de partie (drapeaux, sauvegarde) | 🚧 E16.0, E16.a (recette en jeu T7 à faire) et E16.b faites ; E16.c faite et vérifiée CONFIRMED (ADR-0012) ; E16.f faite et vérifiée CONFIRMED ; E16.d faite et vérifiée CONFIRMED (ADR-0013), recette en jeu à faire ; E16.e (livre et écran de sauvegarde) faite et vérifiée CONFIRMED (ADR-0014), recette en jeu à faire | `docs/plan-e16-etat-partie.md` |
 | E17 cinématiques en `.cutscene` | ⏳ ouverte le 2026-09-27, prérequis moteur | |
+| E18 mort et « Réessayer » (avec correction de la décompilation) | ⏳ ouverte le 2026-09-28, non planifiée | |

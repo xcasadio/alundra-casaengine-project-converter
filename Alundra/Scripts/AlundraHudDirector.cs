@@ -256,6 +256,42 @@ public sealed class AlundraHudDirector
     }
 
     /// <summary>
+    /// E16.d K8, step 3 (docs/plan-e16-etat-partie.md, SC1): the jauge's half of loading a save, run on the
+    /// arrival map right after <see cref="AlundraSaveGame.ApplyTo"/>, with the stats that were just loaded
+    /// (passed in: the jauge may have no state attached yet). The displayed values (HP, HP max, MP, MP max,
+    /// money) take the loaded values at once, the four catch-up sub-steps go back to 0, the coin icon to frame
+    /// 0 and not rolling, and every magic-pip frame to 0: the whole content of <see cref="ResetForTests"/> but
+    /// the attached state and the open/close machine.
+    /// <para>Why all of it (SC1, the E16.c security review): a sub-step left non-zero keeps the preview
+    /// (<see cref="MpDisplayPreviewIncrement"/>) on; with a loaded MP max of 4, the jauge's composer then reads
+    /// the pip one past the fourth and throws. <see cref="ArmAppearance"/> only refreshes the maxima, so a jauge
+    /// closed mid-catch-up and reopened after a load would reach it.</para>
+    /// <para>Kept as they are: <see cref="Phase"/>, <see cref="Y"/> and the slide, <see cref="FrameCounter"/> and
+    /// the attached state - an open jauge stays open, without a jump.</para>
+    /// </summary>
+    internal void ResetDisplayForLoad(AlundraPlayerStats stats)
+    {
+        System.ArgumentNullException.ThrowIfNull(stats);
+
+        Hp = stats.Hp;
+        HpMax = stats.HpMax;
+        Mp = stats.Mp;
+        MpMax = stats.MpMax;
+        Money = stats.Money;
+        _hpSubStep = 0;
+        _hpMaxSubStep = 0;
+        _mpSubStep = 0;
+        _mpMaxSubStep = 0;
+        CoinIconFrame = 0;
+        IsMoneyRolling = false;
+        System.Array.Clear(_magicPipFrame, 0, _magicPipFrame.Length);
+    }
+
+    /// <summary>Test-only: the four catch-up sub-steps (<c>g_playerDataHud[5..8]</c>), so a test can pose and
+    /// check the mid-catch-up state of SC1 without reaching into private fields.</summary>
+    internal (int Hp, int HpMax, int Mp, int MpMax) SubStepsForTests => (_hpSubStep, _hpMaxSubStep, _mpSubStep, _mpMaxSubStep);
+
+    /// <summary>
     /// Test-only: restores this session singleton to construction-equivalent state, same seam as every
     /// other session-scoped director in this DLL.
     /// </summary>

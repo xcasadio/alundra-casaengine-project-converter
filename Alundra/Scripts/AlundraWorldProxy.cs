@@ -348,6 +348,19 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// does.</summary>
     private AlundraSubInventoryScreen? _subInventoryScreen;
 
+    /// <summary>E16.e T4 (docs/plan-e16-etat-partie.md, L5): the per-proxy retry gate of
+    /// <see cref="TryWireSaveScreenOnce"/>, the shape of <see cref="_subInventoryScreenWired"/>.</summary>
+    private bool _saveScreenWired;
+
+    /// <summary>E16.e T4: the presenter that pushes/removes <see cref="AlundraSaveScreen"/> and writes its view
+    /// model - null until <see cref="TryWireSaveScreenOnce"/> succeeds, or a test attaches one
+    /// (<see cref="AttachSaveScreenPresenterForTests"/>).</summary>
+    private AlundraSaveScreenPresenter? _saveScreenPresenter;
+
+    /// <summary>E16.e T4: the save screen this proxy built; it holds font3, and <see cref="OnEndPlay"/> disposes
+    /// it the same way <see cref="_subInventoryScreen"/> does.</summary>
+    private AlundraSaveScreen? _saveScreen;
+
     /// <summary>Engine ADR-0037: the HUD screen this proxy built. It holds its glyph and icon sprites, and
     /// <see cref="OnEndPlay"/> disposes it so they are given back when this world ends.</summary>
     private AlundraHudScreen? _hudScreen;
@@ -483,6 +496,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// dispatch (see that member's own doc). Installed by <see cref="InstallDialogueSystems"/>.
     /// </summary>
     public IAlundraDialogueDirector DialogueDirector => AlundraDialogueDirector.Instance;
+
+    /// <summary>E16.e L4: this world's name (<see cref="IEntityWorldContext.WorldName"/>), read at use time - the
+    /// save book's state 5 captures the map from its "-{id}" suffix.</summary>
+    public string? WorldName => _world?.Name;
 
     /// <summary>
     /// Seam over <c>Sounds/sfx-manifest.json</c> lookups (see <see cref="Alundra.Scripts.AlundraSoundBank"/>'s
@@ -622,6 +639,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         if (tileMapEntity == null)
         {
             Logs.WriteWarning($"AlundraWorldProxy: no '{TileMapEntityName}' entity found in world '{world.Name}'; no entity spawned.");
+
+            // E16.d K8/SD9: a load pending on this departure can never be applied here - drop it now, so it is
+            // not applied later at some other arrival.
+            AlundraSaveGameDirector.Instance.AbandonPendingLoad($"world '{world.Name}' has no '{TileMapEntityName}' entity");
             return;
         }
 
@@ -630,6 +651,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         if (tileMapData == null)
         {
             Logs.WriteWarning($"AlundraWorldProxy: entity '{TileMapEntityName}' has no loaded TileMapData in world '{world.Name}'; no entity spawned.");
+            AlundraSaveGameDirector.Instance.AbandonPendingLoad($"world '{world.Name}' has no loaded tile map"); // E16.d SD9.
             return;
         }
 
@@ -640,6 +662,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // before InstallDialogueSystems below goes on to clean up PlayerControlFlags' own MessageBox/
         // MenuOpen bits.
         GameState.InstallForMapEntry();
+
+        // E16.d K8 (docs/plan-e16-etat-partie.md, G5): a load carried by this arrival is applied HERE - after
+        // the map entry's own disposition, during this installation and so BEFORE this world's first tick,
+        // where the entities' load programs and the map events are the first readers of the loaded flags and
+        // stats. The installs below only re-attach state, and AdoptPlayerPawn places the hero from the warp
+        // arrival the load departed with. No-op without a pending load.
+        AlundraSaveGameDirector.Instance.ApplyPendingLoad(
+            GameState,
+            world.Name != null && BackdropLoader.TryParseMapIndex(world.Name, out var arrivalMapId) ? arrivalMapId : null);
 
         // D-T-13's own point 4: ActiveCollisionEntity does not live on AlundraGameState (no such field
         // there) - its real owner is THIS proxy (:239), so its map-entry reset lives here instead.
@@ -654,6 +685,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         InstallWarpSystems(world);
         InstallScreenFadeSystems(world);
         InstallDialogueSystems(world);
+        InstallSaveScreenSystems();
         InstallHudSystems();
         InstallInventorySystems();
 
@@ -1034,6 +1066,19 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
+    /// E16.e L5/SE3 (docs/plan-e16-etat-partie.md): re-points the SESSION-scoped
+    /// <see cref="AlundraSaveScreenDirector.Instance"/> at this world's <see cref="GameState"/> and
+    /// <see cref="SoundPlayer"/>, then runs its map entry - which ends, without writing, a save flow a world change
+    /// cut. Called from <see cref="InitializeWithWorld"/> right AFTER <see cref="InstallDialogueSystems"/>: the
+    /// dialogue director's own map entry has already dropped its box and choice and rebuilt its runner.
+    /// </summary>
+    internal void InstallSaveScreenSystems()
+    {
+        AlundraSaveScreenDirector.Instance.AttachToWorld(GameState, SoundPlayer);
+        AlundraSaveScreenDirector.Instance.InstallForMapEntry();
+    }
+
+    /// <summary>
     /// E13.d D4 (docs/plan-e13d-inventaire.md): re-points the SESSION-scoped
     /// <see cref="AlundraInventoryDirector.Instance"/> at this world's own <see cref="GameState"/>,
     /// <see cref="ItemTables"/> and <see cref="SoundPlayer"/> - same "AttachToWorld re-points, no
@@ -1315,6 +1360,41 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             AlundraSubInventoryDirector.Instance, GameState, ItemTables, viewModel, screen, uiView);
     }
 
+    /// <summary>
+    /// E16.e T4 (docs/plan-e16-etat-partie.md, L5): <see cref="TryWireSubInventoryScreenOnce"/>'s shape for the save
+    /// screen - retry-until-success, once per frame, since the UI view appears after <see cref="InitializeWithWorld"/>.
+    /// The screen is modal and stays down until its director is active: this only builds the presenter.
+    /// </summary>
+    private void TryWireSaveScreenOnce()
+    {
+        if (_saveScreenWired)
+        {
+            return;
+        }
+
+        var uiView = _world?.Game?.GameManager?.ViewManager?.GetActiveUIView();
+        var assetContentManager = _world?.Game?.AssetContentManager;
+        var fonts = _world?.Game?.UIFonts;
+        if (uiView == null || assetContentManager == null || fonts == null)
+        {
+            return; // retry next frame.
+        }
+
+        var saveScreen = new AlundraSaveScreen(assetContentManager, fonts);
+        _saveScreen = saveScreen;
+        _saveScreenPresenter = new AlundraSaveScreenPresenter(AlundraSaveScreenDirector.Instance, saveScreen.ViewModel, saveScreen, uiView);
+        _saveScreenWired = true;
+        Logs.WriteInfo("AlundraWorldProxy: save screen wired to the active UI view (post-bootstrap retry).");
+    }
+
+    /// <summary>Test-only seam: attaches an <see cref="AlundraSaveScreenPresenter"/> over the session's
+    /// <see cref="AlundraSaveScreenDirector.Instance"/>, against any view model, screen and UI view - the shape of
+    /// <see cref="AttachSubInventoryPresenterForTests"/>.</summary>
+    internal void AttachSaveScreenPresenterForTests(AlundraSaveScreenViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
+    {
+        _saveScreenPresenter = new AlundraSaveScreenPresenter(AlundraSaveScreenDirector.Instance, viewModel, screen, uiView);
+    }
+
     /// <summary>docs/plan-portrait-inventaire.md PI8: refreshes <see cref="AlundraInventoryPortrait"/>'s head point
     /// for this tick, before the inventory directors, from the player's 16.16 position and the original's
     /// <c>g_cameraScrollingX/Y</c>, obtained through <see cref="AlundraCameraMath.ToOriginalScrollSpace"/> (the one
@@ -1447,6 +1527,34 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             $"AlundraWorldProxy: world '{worldName}' has no navigation layer ('{NavigationGrid2D.NavigationRoleProperty}' "
             + $"= '{NavigationGrid2D.NavigationRoleGrid}'); navigation disabled (degraded mode).");
         return null;
+    }
+
+    /// <summary>
+    /// The hero's share of <c>EntityManager.InitializeEntity</c> (0x80039D04) that needs its sprite header - the
+    /// block <see cref="AdoptPlayerPawn"/> runs once the hero prefab's header resolves, kept in one method so a
+    /// test can pin it without a loaded asset catalog (E16.e SE6).
+    /// </summary>
+    internal static void ApplyHeroSpriteHeader(AlundraEntityScriptProxy proxy, SpriteRecordHeader header)
+    {
+        proxy.Flags = (uint)(header.MoreFlags | (header.CanPickup << 8) | (header.FlagsPortraitShadowType << 16));
+        // E16.e L1/SE6 (docs/plan-e16-etat-partie.md): ResetEntityState (0x80031974, GameEngine.cs:650-652)
+        // initializes the hero with sprite table index 0, not a map sprite.
+        proxy.SpriteType = 0;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramALoad] = header.ProgramLoad;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramBMap] = 0;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramCTick] = header.ProgramTick;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramDTouch] = header.ProgramTouch;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate] = header.ProgramDeactivate;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramFInteract] = header.ProgramInteract;
+        proxy.IdsvByAnimDirection = AlundraEntitySpawnFactory.BuildIdsvByAnimDirection(header.IdsvAnimDirs);
+        proxy.AnimationEndByAnimDirection = AlundraEntitySpawnFactory.BuildAnimationEndByAnimDirection(header.IdsvAnimDirs);
+        proxy.AnimSetsByAnim = header.AnimSets;
+        // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): the hero's own logical
+        // Mod*/Width/Height/Depth, same port (SetEntityDimensions, EntityManager.cs:160-199) every
+        // record-spawned NPC already gets from ApplySpawnInitialization - needed so the hero counts as
+        // a valid EntitySupport candidate/target (e.g. a future entity standing on the hero, or the
+        // hero itself queried by EntitySearchService) with real dimensions instead of all-zero ones.
+        AlundraEntitySpawnFactory.SetEntityDimensions(proxy, header.OffsetX, header.OffsetY, header.OffsetZ, header.SizeX, header.SizeY, header.SizeZ);
     }
 
     /// <summary>
@@ -1599,22 +1707,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         var assetInfo = AssetCatalog.Get(HeroAssetName);
         if (assetInfo != null && SpriteRecordCatalog != null && SpriteRecordCatalog.TryGet(assetInfo.Id, out var header))
         {
-            proxy.Flags = (uint)(header.MoreFlags | (header.CanPickup << 8) | (header.FlagsPortraitShadowType << 16));
-            proxy.SpriteProgramIndexes[ScriptHelper.ProgramALoad] = header.ProgramLoad;
-            proxy.SpriteProgramIndexes[ScriptHelper.ProgramBMap] = 0;
-            proxy.SpriteProgramIndexes[ScriptHelper.ProgramCTick] = header.ProgramTick;
-            proxy.SpriteProgramIndexes[ScriptHelper.ProgramDTouch] = header.ProgramTouch;
-            proxy.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate] = header.ProgramDeactivate;
-            proxy.SpriteProgramIndexes[ScriptHelper.ProgramFInteract] = header.ProgramInteract;
-            proxy.IdsvByAnimDirection = AlundraEntitySpawnFactory.BuildIdsvByAnimDirection(header.IdsvAnimDirs);
-            proxy.AnimationEndByAnimDirection = AlundraEntitySpawnFactory.BuildAnimationEndByAnimDirection(header.IdsvAnimDirs);
-            proxy.AnimSetsByAnim = header.AnimSets;
-            // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): the hero's own logical
-            // Mod*/Width/Height/Depth, same port (SetEntityDimensions, EntityManager.cs:160-199) every
-            // record-spawned NPC already gets from ApplySpawnInitialization - needed so the hero counts as
-            // a valid EntitySupport candidate/target (e.g. a future entity standing on the hero, or the
-            // hero itself queried by EntitySearchService) with real dimensions instead of all-zero ones.
-            AlundraEntitySpawnFactory.SetEntityDimensions(proxy, header.OffsetX, header.OffsetY, header.OffsetZ, header.SizeX, header.SizeY, header.SizeZ);
+            ApplyHeroSpriteHeader(proxy, header);
         }
         else if (!_loggedNoHeroHeader)
         {
@@ -1623,6 +1716,18 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 $"AlundraWorldProxy: no sprite-records.json header found for the hero prefab in world "
                 + $"'{world.Name}'; Flags/SpriteProgramIndexes/AnimSetsByAnim left at their defaults.");
         }
+
+        // E16.a (D-E16-30, docs/plan-e16-etat-partie.md, T3.1): the hero's own spawn-time TerrainHeight
+        // (+0x138) write - port of InitializeEntity (0x80039D04, EntityManager.cs:127-128), which the
+        // original runs for EVERY entity, player slot 0 included, right after its position/footprint are
+        // set and BEFORE any script (the loading program in particular) can ever run on it. Placed here,
+        // AFTER the position (ClampToGround above) and footprint (Mod*/Width/Height, just set above) are
+        // both final, and BEFORE this proxy is added to _spawnedEntities/reachable by any script below -
+        // AdoptPlayerPawn's own equivalent of the map-load spawn loop's
+        // `EvaluateEntitySupport(..., immediateAtSpawn: true)` call (AlundraWorldProxy.cs, map-load/dynamic
+        // spawn paths above), which the hero does not go through (it never calls EvaluateEntitySupport at
+        // all - E2 drives it through AlundraPlayerManager instead).
+        proxy.TerrainHeight = proxy.ComputeTerrainHeight();
 
         // E3.d ("DLL - adoption", docs/plan-e3-collisions.md): overrides the converter-exported
         // Gravity/MaxFallSpeed/WalkabilityMask - the only three CharacterControllerSettings the
@@ -1814,6 +1919,19 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     public override void Update(float elapsedTime)
     {
+        // E16.c C8 (docs/plan-e16-etat-partie.md, D-E16-23): the game-time counter, once per frame and
+        // before anything else. Ungated, like the original's end-of-frame increment (0x80042798), which
+        // counts every displayed frame - dialogues, menus and transitions included (§2, Q3). Counted on
+        // this frame's elapsed real time, not on logic ticks (F9).
+        GameState.AdvanceGameTime(elapsedTime);
+
+        // E16.d K3 (docs/plan-e16-etat-partie.md, D-E16-11, D-E16-33): the save-game recipe keys, once per
+        // RENDERED frame (the engine's keyboard advances once per frame, G9), right after the game time and
+        // BEFORE gameplayBlocked is computed below (SD3): a load armed by F9 posts the warp gate at once, so
+        // this frame's "dedans" passes (map events, scripted 0x53) are already frozen and cannot overwrite the
+        // load's departure or open a box. A no-op, reading no key, unless Alundra.dll is compiled in Debug.
+        AlundraSaveGameDirector.Instance.UpdateRecipeKeys(_world?.Game?.InputComponent?.KeyboardManager, GameState, _world?.Name, PlayerEntity);
+
         // Bug fix (AlundraLogicClock's own class doc): this world's ONE shared logic clock. Reads the SAME
         // cached value every spawned entity's own Update already advanced/read this frame (this proxy's
         // own Update always runs LAST - World.cs:443-491) - or, for a world with no entities at all (the
@@ -1871,6 +1989,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             AlundraSubInventoryDirector.Instance.Tick();
             AlundraInventoryPostProcess.Instance.Run();
 
+            // E16.e L5 (docs/plan-e16-etat-partie.md): the save screen - its state machine then its transition's
+            // render, as UpdateMemoryCardProcess then UpdateUserInterface in the original's RenderScene
+            // (GraphicManager.cs:62-63). It reads TickPad's edges, so it runs inside this loop too. Never open
+            // together with an inventory: the inventory's trigger refuses while it is active (J9).
+            AlundraSaveScreenDirector.Instance.Tick();
+
             // docs/plan-portrait-inventaire.md P4/PI8: the portrait steps once per tick HERE, after both
             // directors' per-frame work and the post-process and before the presenters - the original's own
             // DisplayUserInterface (0x8002be64) runs right after the callbacks and the post-process
@@ -1892,6 +2016,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // screens are never pushed together (D-E13D-26), so their push/remove order here never matters,
             // but running both inside the loop keeps every presenter reading this SAME tick's director state.
             _subInventoryPresenter?.Tick();
+
+            // E16.e T4 (docs/plan-e16-etat-partie.md, L5): the save screen's presenter, reading the state its
+            // director reached earlier in this same tick.
+            _saveScreenPresenter?.Tick();
         }
 
         // E12.a wiring fix: must run BEFORE the map-events pass below - a scripted dialogue opened
@@ -1900,6 +2028,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         TryWireHudScreenOnce();
         TryWireInventoryScreenOnce();
         TryWireSubInventoryScreenOnce();
+        TryWireSaveScreenOnce();
 
         // C1 (docs/plan-camera-ordre-frame.md §3): map-events run FIRST, before the camera block - a
         // faithful port of the original's own frame order (GameEngine.cs:1638-1664/1743-1753:
@@ -2508,6 +2637,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // E13.d SI4: the sub-inventory screen gives font3 back the same way.
         _subInventoryScreen?.Dispose();
         _subInventoryScreen = null;
+
+        // E16.e T4: the save screen gives font3 back the same way.
+        _saveScreen?.Dispose();
+        _saveScreen = null;
 
         // Engine ADR-0037: the HUD screen gives back its sprites the same way.
         _hudScreen?.Dispose();

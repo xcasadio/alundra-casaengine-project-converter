@@ -198,10 +198,11 @@ public sealed class AlundraGameState
     /// (0x801EB2E8-0x801EBA40). It is written only by <see cref="AlundraTextProgress.UpdatePlayerProgressState"/>
     /// and read only by the <c>\X2</c>/<c>\X3</c>/<c>\X4</c>/<c>\X5</c> text codes (via
     /// <see cref="AlundraTextProgress"/>'s functions), so this field is process-lifetime state like the
-    /// rest of this class' construction-time defaults - PRODUCTION never resets it (no New Game reset
-    /// path touches it in the binary either); <see cref="ResetForTests"/> resets it anyway, because that
-    /// method is a TEST-ONLY seam whose job is to leave <see cref="Instance"/> clean between tests that
-    /// mutate it through the public API, not to reproduce the binary's own (lack of) reset.
+    /// rest of this class' construction-time defaults - no New Game path resets it (nor does the binary).
+    /// The one production reset is a save load: <see cref="ResetSessionForLoad"/> zeroes it, as a fresh
+    /// process would (D-E16-19, docs/plan-e16-etat-partie.md E16.d); the in-process "Retry" reload of
+    /// the original keeps it and belongs to E18. <see cref="ResetForTests"/> resets it too, as the
+    /// TEST-ONLY seam that leaves <see cref="Instance"/> clean between tests.
     /// </summary>
     public int TextCategoryIndex;
 
@@ -211,8 +212,9 @@ public sealed class AlundraGameState
     /// programs the decompilation names (<c>AI_FUN_80064294</c>, <c>AI_FUN_80064d90</c>), neither of
     /// which is ported yet, so nothing in this DLL writes it; read only by the <c>\V&lt;n&gt;</c> text
     /// code (<c>game_var(n)</c>, docs/plan-e15-yarn.md §1/§5.7), unchecked bounds like the original
-    /// (<c>c - '0'</c>). PRODUCTION never resets this array either; like <see cref="TextCategoryIndex"/>
-    /// above, only the TEST-ONLY <see cref="ResetForTests"/> seam clears it.
+    /// (<c>c - '0'</c>). Like <see cref="TextCategoryIndex"/> above, only a save load
+    /// (<see cref="ResetSessionForLoad"/>, D-E16-19) and the TEST-ONLY <see cref="ResetForTests"/> seam
+    /// clear it.
     /// </summary>
     public readonly int[] GameVariables = new int[4];
 
@@ -229,6 +231,70 @@ public sealed class AlundraGameState
     /// <see cref="GameFlags"/>/<see cref="TemporaryFlags"/> starting zeroed.
     /// </summary>
     public readonly ushort[] MapIdToInternalMapIndexTable = CreateIdentityMapIndexTable();
+
+    /// <summary>E16.c C8 (docs/plan-e16-etat-partie.md, D-E16-23): game-time units per real second. The
+    /// original's end-of-frame function (<c>0x80042798</c>) adds one unit per displayed frame, and
+    /// <c>UpdateMenuStatusText</c> (<c>0x800311D4</c>) shows the counter in sixtieths of a second (§2, Q3);
+    /// the author settled the port on 60 units per real second.</summary>
+    public const int GameTimeUnitsPerSecond = 60;
+
+    /// <summary>E16.c C8: the counter's ceiling, <c>0x14996C4</c> = 99:59:59 in sixtieths of a second -
+    /// the cap of the original's end-of-frame increment (<c>0x80042834</c>, <c>GameEngine.cs:1471-1474</c>).</summary>
+    public const uint GameTimeMax = 0x14996C4;
+
+    /// <summary>
+    /// E16.c C1/C8 (docs/plan-e16-etat-partie.md, D-E16-23): port of <c>g_gameplayTime</c> @ 0x8013FB4C,
+    /// saved as <c>g_saveData.GameTime</c> (<c>+0x048</c>) by <c>UpdateSavedData</c>. Counts sixtieths of a
+    /// second, capped at <see cref="GameTimeMax"/>; advanced only by <see cref="AdvanceGameTime"/>. Part of
+    /// <c>g_saveData</c>, so <see cref="InstallForMapEntry"/> keeps it (F9: this DLL had no game time before).
+    /// </summary>
+    public uint GameTime;
+
+    /// <summary>
+    /// E16.c C1 (docs/plan-e16-etat-partie.md, D-E16-22): port of <c>g_saveData.SaveSlotIndex</c>
+    /// (<c>+0x756</c>, one byte), renamed after what it counts: the retries after death. The original
+    /// increments it only in <c>InitializeMapWarpPosition</c> (<c>0x800315B0</c>, capped at <c>0xFF</c>),
+    /// zeroes it at New Game (<c>0x80031860</c>), and reads it in opcode <c>0xC2</c> (<c>0x80041D34</c>) and in
+    /// <c>Script_187_0BB</c>'s "Retry =" debug log (§2, Q4). Nothing increments it before E18 ("Retry" is not
+    /// ported); it is saved and restored. Kept by <see cref="InstallForMapEntry"/>, like the rest of
+    /// <c>g_saveData</c>.
+    /// </summary>
+    public byte DeathRetryCount;
+
+    /// <summary>E16.c C8: the fraction of a game-time unit <see cref="AdvanceGameTime"/> has not yet passed
+    /// to <see cref="GameTime"/>. Not saved; zeroed by <see cref="ResetGameTimeFraction"/>.</summary>
+    private double _gameTimeFraction;
+
+    /// <summary>
+    /// E16.c C8 (docs/plan-e16-etat-partie.md, D-E16-23): advances <see cref="GameTime"/> by
+    /// <paramref name="elapsedSeconds"/> real seconds, at <see cref="GameTimeUnitsPerSecond"/> units per second.
+    /// Called once per frame at the head of <see cref="AlundraWorldProxy.Update"/>. The DLL's logic clock runs
+    /// at 50 Hz (F9, <see cref="AlundraLogicClock"/>), so the units are counted on elapsed time, not on ticks.
+    /// A non-finite, zero or negative duration adds nothing. The whole units are passed on and the counter is
+    /// capped at <see cref="GameTimeMax"/> in <see cref="double"/>, BEFORE the conversion to <see cref="uint"/>,
+    /// so a huge finite duration reaches the cap instead of wrapping (SC11).
+    /// </summary>
+    public void AdvanceGameTime(float elapsedSeconds)
+    {
+        if (!float.IsFinite(elapsedSeconds) || elapsedSeconds <= 0f)
+        {
+            return;
+        }
+
+        _gameTimeFraction += elapsedSeconds * (double)GameTimeUnitsPerSecond;
+        var wholeUnits = Math.Floor(_gameTimeFraction);
+        _gameTimeFraction -= wholeUnits;
+
+        var total = GameTime + wholeUnits;
+        GameTime = total >= GameTimeMax ? GameTimeMax : (uint)total;
+    }
+
+    /// <summary>E16.c C6/C8: drops the unsaved fraction of a game-time unit - used when a save's
+    /// <see cref="GameTime"/> is applied (<c>AlundraSaveGame.ApplyTo</c>, E16.c C6) and by <see cref="ResetForTests"/>.</summary>
+    internal void ResetGameTimeFraction()
+    {
+        _gameTimeFraction = 0d;
+    }
 
     private static ushort[] CreateIdentityMapIndexTable()
     {
@@ -270,6 +336,9 @@ public sealed class AlundraGameState
     /// <item><description><see cref="GameFlags"/>, <see cref="MapIdToInternalMapIndexTable"/>,
     /// <see cref="PlayerControlFlags"/>, <see cref="LastPadState"/> and the eight numeric interact-latch
     /// fields all stay CONSERVED - nothing to do here for them.</description></item>
+    /// <item><description>E16.c C8: <see cref="GameTime"/> (with its unsaved fraction) and
+    /// <see cref="DeathRetryCount"/> stay CONSERVED too - both are in <c>g_saveData</c>, which no map entry
+    /// of the original touches.</description></item>
     /// </list>
     /// </summary>
     public void InstallForMapEntry()
@@ -291,6 +360,52 @@ public sealed class AlundraGameState
         // entry. NOTE for the main session: this row is not yet reflected in D-T-13's own exhaustive
         // table (that table predates this field) - it needs one.
         IsWarpDisabled = false;
+    }
+
+    /// <summary>
+    /// E16.d K8, step 1 (docs/plan-e16-etat-partie.md, D-E16-19, SC7): the session half of loading a save -
+    /// run by <c>AlundraSaveGameDirector.ApplyPendingLoad</c> on the arrival map, right after
+    /// <see cref="InstallForMapEntry"/> and BEFORE <see cref="AlundraSaveGame.ApplyTo"/>. It puts back what a
+    /// fresh process would hold for the fields the save does NOT carry, so nothing of the session in progress
+    /// leaks into the loaded game - the original only loads from a fresh process (<c>LOADER.EXE</c>) or after
+    /// death ("Retry"), never from the middle of a session (§0.2):
+    /// <list type="bullet">
+    /// <item><description><see cref="PlayerControlFlags"/> 0, <see cref="LastPadState"/> default,
+    /// <see cref="TickPad"/> reset;</description></item>
+    /// <item><description>the interact latch, its entity and its eight numbers;</description></item>
+    /// <item><description><see cref="IsWarpDisabled"/> false;</description></item>
+    /// <item><description><see cref="TextCategoryIndex"/> 0 and <see cref="GameVariables"/> zeroed (D-E16-19:
+    /// both are BSS outside <c>g_saveData</c>, zero in the fresh process the original loads from);</description></item>
+    /// <item><description><see cref="NewGameInventoryInitialized"/> TRUE, unlike a New Game (SC7): a later map
+    /// entry without a warp arrival must not run the New Game inventory over the loaded items
+    /// (<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>).</description></item>
+    /// </list>
+    /// Nothing the save carries is touched here (flags, map table, item counters, stats, game time, death
+    /// retries): <see cref="AlundraSaveGame.ApplyTo"/> writes them next. <see cref="TemporaryFlags"/> is already
+    /// cleared by <see cref="InstallForMapEntry"/>.
+    /// </summary>
+    internal void ResetSessionForLoad()
+    {
+        PlayerControlFlags = 0;
+        LastPadState = default;
+        TickPad.Reset();
+
+        InteractLatchEntity = null;
+        InteractLatchFacing = 0;
+        InteractLatchEntityX = 0;
+        InteractLatchEntityY = 0;
+        InteractLatchEntityZ = 0;
+        InteractLatchPlayerX = 0;
+        InteractLatchPlayerY = 0;
+        InteractLatchPlayerZ = 0;
+        InteractLatchDirection = 0;
+
+        IsWarpDisabled = false;
+
+        TextCategoryIndex = 0;
+        Array.Clear(GameVariables);
+
+        NewGameInventoryInitialized = true;
     }
 
     /// <summary>Test-only: restores this session carrier to its New-Game-equivalent construction state,
@@ -338,5 +453,10 @@ public sealed class AlundraGameState
         // binary's (lack of) reset.
         TextCategoryIndex = 0;
         Array.Clear(GameVariables);
+
+        // E16.c C8: the game time, its unsaved fraction and the death-retry counter are session state.
+        GameTime = 0;
+        DeathRetryCount = 0;
+        ResetGameTimeFraction();
     }
 }

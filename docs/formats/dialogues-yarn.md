@@ -87,6 +87,41 @@ Commandes (non déclarées au compilateur) : `<<flag n>>` pose le drapeau tempor
 `<<falcon_update>>` garde l'état qu'elle va changer, puis lance `UpdateNumberOfFalcon` et
 `UpdatePlayerProgressState` (ADR-0007).
 
+## Variables
+
+Les variables Yarn sont les drapeaux d'Alundra (ADR-0010, ADR-0011) : ni Yarn ni le moteur ne gardent
+de valeur à eux. `AlundraDialogueDirector` pose `AlundraYarnVariableStorage` sur chaque runner qu'il
+crée.
+
+| Nom | Drapeau | Type |
+|---|---|---|
+| `$flag_n` | drapeau `n` de `GameFlags` | booléen |
+| `$tmp_flag_n` | drapeau `n \| 0x8000`, dans `TemporaryFlags` | booléen |
+
+- **`n`** : décimal de 0 à 2047, en chiffres ASCII, sans zéro de tête ni signe, pour qu'un drapeau
+  n'ait qu'un nom.
+- **Lecture** : le bit `1 << (n & 0x1f)` du mot, le même test que les opcodes `0x30` et `0x31`. La
+  machine de Yarn 3.2.1 demande la valeur avec `T = IConvertible` ; le stockage rend le booléen pour
+  `bool`, `IConvertible` et `object`, et refuse les autres types.
+- **Écriture** : `true` pose le bit comme l'opcode `0x05`, `false` l'efface comme `0x06` ; les autres
+  bits du mot ne changent pas.
+- **Refus** : chacun est journalisé une fois par nom, sans exception et sans changement d'état.
+  - Cas refusés : tout autre nom, variables internes de Yarn comprises ; un `n` hors bornes ou écrit
+    autrement ; une valeur texte ou nombre rangée sous un nom de drapeau ; la lecture d'un nom refusé.
+  - Après une lecture refusée, la machine de Yarn prend la valeur initiale du programme compilé,
+    déclarée ou posée implicitement par le compilateur. Elle ne lèverait que pour un nom absent de
+    ces valeurs initiales, ce que le compilateur ne produit pas (tests d'E16.f T1).
+- **`GetVariableKind`** : `Stored` pour un nom de drapeau, `Unknown` sinon.
+- **`Clear()`** : ne touche aucune banque ; l'appel est journalisé. Le runner ne l'appelle pas.
+- **Cycle de vie** : celui des banques. `TemporaryFlags` est vidée à chaque entrée de carte ;
+  `GameFlags` est gardée, et sauvegardée sur 64 mots par `AlundraSaveGame` (ADR-0012). Rien de propre
+  à Yarn n'est sauvegardé.
+- **Corpus exporté** : aucun des 485 `.dialogue` ne lit ni n'écrit de variable
+  (`AlundraYarnVariableCorpusTests`).
+- **Limite** : le chemin dégradé de l'interpréteur, qui joue un nœud sans boîte
+  (`AlundraEventProgramRunner.PlayNodeHeadlessToEnd`), crée son propre runner sans ce stockage. C'est
+  sans effet tant que le corpus n'a pas de variable.
+
 ## Lire une ligne
 
 - Dans une boîte de dialogue : `YarnDialogueRunner.Start(asset, nœud)`, avec les commandes et les

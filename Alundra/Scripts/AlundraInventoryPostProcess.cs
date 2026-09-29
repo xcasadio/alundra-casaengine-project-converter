@@ -42,8 +42,16 @@ public sealed class AlundraInventoryPostProcess
     /// decompilation (plan §1.1).</summary>
     public int State { get; internal set; }
 
-    /// <summary>Test-only: restores this session singleton to construction-equivalent state.</summary>
+    /// <summary>Test-only: restores this session singleton to construction-equivalent state, through
+    /// <see cref="ResetSessionForLoad"/>.</summary>
     internal void ResetForTests()
+    {
+        ResetSessionForLoad();
+    }
+
+    /// <summary>E16.d K8, step 4 (docs/plan-e16-etat-partie.md): loading a save puts the post-process back to
+    /// idle (<see cref="State"/> 0), so no inventory hand-off requested before the load runs after it.</summary>
+    internal void ResetSessionForLoad()
     {
         State = 0;
     }

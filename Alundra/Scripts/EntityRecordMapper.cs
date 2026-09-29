@@ -212,6 +212,28 @@ public static class EntityRecordMapper
         Map(record.Name ?? string.Empty, record.CustomProperties, proxy);
     }
 
+    /// <summary>
+    /// E16.e L1/SE6 (docs/plan-e16-etat-partie.md): the record's sprite type as the original computes it in
+    /// <c>GameEngine.SpawnEntity</c> (GameEngine.cs:732-737) before <c>EntityManager.InitializeEntity</c> stores
+    /// it in <c>entity.SpriteTableIndex</c> - <c>SpriteTableIndex</c>, with <c>0x100</c> added when the record
+    /// is a map sprite (<c>SpriteDirection &amp; 0x80</c>). -1 when the record carries no
+    /// <c>SpriteTableIndex</c>; a missing <c>SpriteDirection</c> reads as 0. Throws on a malformed value, like
+    /// <see cref="Map(string, IReadOnlyDictionary{string, string}, AlundraEntityScriptProxy)"/>.
+    /// </summary>
+    public static int ResolveSpriteType(TileMapObjectData record)
+    {
+        ArgumentNullException.ThrowIfNull(record);
+
+        var recordName = record.Name ?? string.Empty;
+        if (!TryGetInt(recordName, record.CustomProperties, "SpriteTableIndex", out var spriteTableIndex))
+        {
+            return -1;
+        }
+
+        TryGetInt(recordName, record.CustomProperties, "SpriteDirection", out var spriteDirection);
+        return (spriteDirection & 0x80) != 0 ? spriteTableIndex | 0x100 : spriteTableIndex;
+    }
+
     private static bool TryGetInt(string recordName, IReadOnlyDictionary<string, string> customProperties, string key, out int value)
     {
         if (!customProperties.TryGetValue(key, out var rawValue))

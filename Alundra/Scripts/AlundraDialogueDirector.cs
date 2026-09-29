@@ -134,6 +134,14 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
     public bool IsOpen => _isOpen;
     public bool IsAwaitingChoice => _awaitingChoice;
 
+    /// <summary>
+    /// E16.e L4 (docs/plan-e16-etat-partie.md, SE1): how many times <see cref="Open"/> ran this session - a caller
+    /// that opened a box remembers the value right after its own <see cref="Open"/>, and knows the box is still its
+    /// own while the value has not changed (the save book closes only the box it opened). Never reset, not even by
+    /// <see cref="InstallForMapEntry"/>, so a remembered value can never match a later box by accident.
+    /// </summary>
+    public int OpenSerial { get; private set; }
+
     /// <summary>Re-points this session-scoped instance at the current world's own presenter/game state -
     /// called by <see cref="AlundraWorldProxy.InstallDialogueSystems"/> on every world install. Deliberately
     /// does NOT touch <see cref="_isOpen"/>/<see cref="_closeMask"/>/<see cref="_pageCount"/>/choice state (same
@@ -168,7 +176,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
         // right after this from the same install call and resets open/page state anyway, so there is no
         // Yarn state worth preserving across this rebuild.
         _capturePresenter = new AlundraDialogueCapturePresenter(presenter);
-        _runner = new YarnDialogueRunner(_capturePresenter);
+        _runner = new YarnDialogueRunner(_capturePresenter) { VariableStorage = new AlundraYarnVariableStorage(gameState) };
         new AlundraYarnBindings(gameState).Register(_runner);
         _boundGameState = gameState;
     }
@@ -212,6 +220,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
     /// <inheritdoc/>
     public void Open(DialogueAsset? asset, string? node, int controlMode)
     {
+        OpenSerial++; // E16.e L4: see the property's own doc.
         _closeMask = DefaultCloseMask; // §1.2/T3: every open resets the close-mode mask to 3.
         _swallowOpeningButtonPress =
             _gameState != null && (_gameState.LastPadState.ButtonsJustPressed & InteractButtonBit) != 0;
@@ -425,6 +434,44 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
         _awaitingChoice = false;
         UnsubscribeChoiceHandler();
         return result;
+    }
+
+    /// <summary>
+    /// E16.e L4 (docs/plan-e16-etat-partie.md, SE1): ends a choice list without a selection - clears the awaiting
+    /// state and any result not yet taken, and stops listening to the presenter. It neither closes a box nor touches
+    /// <see cref="AlundraGameState.PlayerControlFlags"/>: the save book calls it on its abandon and its reset, after
+    /// closing the box it owns, so no choice of its own is ever left waiting. A no-op when no choice is pending.
+    /// </summary>
+    internal void CancelChoice()
+    {
+        _awaitingChoice = false;
+        _pendingChoiceResult = null;
+        UnsubscribeChoiceHandler();
+    }
+
+    /// <summary>
+    /// E16.e L5 (docs/plan-e16-etat-partie.md, the closing review of 2026-09-29): closes a choice list asked WITHOUT
+    /// a box (<see cref="OpenChoice"/> with no <see cref="Open"/> before it) - the save screen's OUI/NON. After an
+    /// answer the engine's service stays open (<c>DialogueService.SelectChoice</c>) and nothing else removes the
+    /// dialogue screen, while the private <see cref="Close"/> would clear <c>MessageBox</c>/<c>MenuOpen</c>, which the
+    /// save screen keeps until its state <c>0x63</c>. So this clears the choice in waiting and any result not yet
+    /// taken, stops listening to the presenter, and closes the presenter (<c>_presenter?.Close()</c>, which removes
+    /// the screen). It never touches <see cref="AlundraGameState.PlayerControlFlags"/> and never goes through
+    /// <see cref="Close"/>: the presenter's call back (<see cref="NotifyPresenterClosed"/>) finds no box open.
+    /// Returns false, doing nothing, while a box is open (<see cref="IsOpen"/>): that choice is not a lone one.
+    /// </summary>
+    internal bool CloseStandaloneChoice()
+    {
+        if (_isOpen)
+        {
+            return false;
+        }
+
+        _awaitingChoice = false;
+        _pendingChoiceResult = null;
+        UnsubscribeChoiceHandler();
+        _presenter?.Close();
+        return true;
     }
 
     private void UnsubscribeChoiceHandler()

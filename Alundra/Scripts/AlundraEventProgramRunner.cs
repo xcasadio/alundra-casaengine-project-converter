@@ -52,9 +52,9 @@ public enum EventTraceKind
 
     /// <summary>Diagnostic-only kind, never produced in production: <see cref="AlundraEventProgramRunner.MaxIterationsPerCall"/>
     /// forcibly ended this script call after too many dispatched opcodes without reaching 0xFF/0x00/a
-    /// suspend - almost always an unimplemented suspending opcode (e.g. 0x35/0x36 wait-flag, skipped
-    /// instead of suspending - see this runner's own class doc) sitting inside a Goto loop that never
-    /// exits. Diagnostic only - not a fidelity concern for slot A (the only slot production code
+    /// suspend - almost always an unimplemented suspending opcode (skipped instead of suspending - see
+    /// this runner's own class doc) sitting inside a Goto loop that never exits. Diagnostic only - not a
+    /// fidelity concern for slot A (the only slot production code
     /// actually interprets), which never hits this in practice.</summary>
     LoopBudgetExceeded,
 }
@@ -79,6 +79,10 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 {
     public int ScriptRunCount { get; private set; }
     public int SpriteEventRunCount { get; private set; }
+
+    /// <summary>E16.e L1: how many of the <see cref="SpriteEventRunCount"/> calls were dispatched to the save book
+    /// (<see cref="AlundraSaveBook.TryMatch"/>); every other one stays a counted no-op.</summary>
+    public int SaveBookEventRunCount { get; private set; }
 
     /// <summary>
     /// Trace seam for the headless intro trace harness (Alundra.Tests/IntroTraceHarnessTests.cs) - null
@@ -265,9 +269,34 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// </summary>
     internal bool ClearProgramStateRequested;
 
+    /// <summary>
+    /// Port of <c>GameEngine.RunSpriteEvent</c> (GameEngine.cs:2224-2228) and of its table lookup
+    /// (<c>g_entityEventFunctionsByType</c>, 0x800C4F34, <c>SpriteEventHandlers.RunSpriteEvent</c>) restricted, by
+    /// E16.e L1 (docs/plan-e16-etat-partie.md), to ONE entity: the save book (<see cref="AlundraSaveBook"/>),
+    /// whose slot F code 1 (<c>Script_FInteract_FUN_8007fc64</c>) and slot C code 72
+    /// (<c>AI_ProcessWarpTransitionState</c>, 0x8007B998) are dispatched to it, and only when
+    /// <see cref="AlundraSaveBook.TryMatch"/> holds all together (type 237, a native slot, a book code). Every call
+    /// is counted in <see cref="SpriteEventRunCount"/>; every other native handler (the ~120 of E14) stays a
+    /// counted no-op, as before E16.e.
+    /// </summary>
     public void RunSpriteEvent(AlundraEntityScriptProxy entity)
     {
         SpriteEventRunCount++;
+
+        if (AlundraSaveBook.TryMatch(entity, out var bookSlot))
+        {
+            SaveBookEventRunCount++;
+            if (bookSlot == ScriptHelper.ProgramFInteract)
+            {
+                AlundraSaveBook.Instance.RunInteract(entity, _worldContext, _gameState);
+            }
+            else
+            {
+                AlundraSaveBook.Instance.RunTick(entity, _worldContext, _gameState);
+            }
+
+            return;
+        }
 
         if (!_loggedSpriteEventOnce)
         {
@@ -557,6 +586,17 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             case 0x31: // If flag off - Script_49_031
                 return FlagBranch(v, wantSet: false);
 
+            case 0x32: // Toggle flag - Script_50_032 @ 0x8003DEFC (EntityEventHandlers.cs:1102-1109):
+                       // XorFlag(flag, 1 << (v1 & 0x1f)) - the FIRST caller of
+                       // AlundraGameState.XorFlag (bank chosen by bit 0x8000 of the flag id, as its own
+                       // BankFor already does). Always returns 3 (instruction size).
+            {
+                var flag = (uint)((v[2] << 8) | v[1]);
+                var mask = (uint)(1 << (v[1] & 0x1f));
+                _gameState.XorFlag(flag, mask);
+                return 3;
+            }
+
             case 0x37: // Wait - Script_55_037
                 return Wait(v, state);
 
@@ -564,6 +604,12 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // EventCodeDebugger/EventOpcodeSizeTable names this "Wait flag off", which is misleading -
                        // it returns 3 (advance) when the flag bit IS SET, and 0 (suspend) when it is clear.
                 return WaitUntilFlagOn(v);
+
+            case 0x35: // Wait flag on - Script_53_035 @ 0x8003E2DC (EntityEventHandlers.cs:1152-1163): the
+                       // mirror image of 0x36 above, and the size table's name for THIS one reads
+                       // backwards for exactly the same reason - it returns 3 (advance) once the flag bit
+                       // IS CLEAR, and 0 (suspend, re-tested next call) while it is SET.
+                return WaitUntilFlagOff(v);
 
             case 0x2D: // Activate entity - Script_45_02D
                 ActivateEntity(entity, v);
@@ -575,6 +621,70 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
             case 0x33: // Check flags on - Script_51_033
                 return CheckFlagsOn(v, state);
+
+            case 0x34: // Check flags off - Script_52_034 @ 0x8003E128 (EntityEventHandlers.cs:1132-1149):
+                       // tests the SAME four (flag,bit) pairs from v[1..8] as CheckFlagsOn (0x33), but
+                       // the OPPOSITE polarity: Result=0 as soon as ANY tested bit is SET (short-circuit,
+                       // in order), Result=1 only if every bit is clear. Always returns 9 regardless of
+                       // Result.
+                return CheckFlagsOff(v, state);
+
+            case 0x78: // Store choice param and jump - Script_120_078 @ 0x8003FB10 (D-E16-21, E16.a T4):
+                       // ALWAYS jumps. Per the binary, reads only v[1]/v[2] and writes
+                       // state._34 = CodeIndex + 3 (its OWN size, 3 bytes - NOT the 4 the decompilation's
+                       // own dead v[3] read would suggest, see EventOpcodeSizeTable's own note) before
+                       // returning the signed 16-bit jump delta.
+                state._34 = state.CodeIndex + 3;
+                return SignExtend16((v[2] << 8) | v[1]);
+
+            case 0x79: // Store choice param and jump if true - Script_121_079 @ 0x8003FB44
+                       // (EntityEventHandlers.cs:2242-2256, agrees with the binary): only jumps (and
+                       // remembers the return point, _34 = CodeIndex + 3) when Result != 0; otherwise
+                       // just advances by its own size (3).
+                if (state.Result != 0)
+                {
+                    state._34 = state.CodeIndex + 3;
+                    return SignExtend16((v[2] << 8) | v[1]);
+                }
+
+                return 3;
+
+            case 0x7B: // Jump if flag set, store param - Script_123_07B @ 0x8003FBD4
+                       // (EntityEventHandlers.cs:2286-... , agrees with the binary): flag id/bit from
+                       // v[1]/v[2] (same (word&lt;&lt;5)+bit/bank-by-0x8000 shape as 0x05/0x30/etc.); when
+                       // the bit is SET, remembers the return point (_34 = CodeIndex + 5, its own size)
+                       // and jumps by the signed 16-bit delta in v[3]/v[4]; otherwise just advances (5).
+                return FlagBranchAndRemember(v, state, wantSet: true);
+
+            case 0x7C: // Jump if flag clear, store param - Script_124_07C @ 0x8003FC74
+                       // (EntityEventHandlers.cs:2316-...): mirror of 0x7B above - jumps (and remembers
+                       // _34 = CodeIndex + 5) when the bit is CLEAR, else advances (5).
+                return FlagBranchAndRemember(v, state, wantSet: false);
+
+            case 0x7D: // Jump relative from stored param - Script_125_07D @ 0x8003FD14
+                       // (EntityEventHandlers.cs:2326): ALWAYS returns to the point 0x78/0x79/0x7B/0x7C
+                       // last remembered (state._34 - CodeIndex). Per the binary this reads NO operand -
+                       // the decompilation's own v[0]/v[1]-derived local here is dead code (never used),
+                       // so it is not ported.
+                return state._34 - state.CodeIndex;
+
+            case 0x7E: // Conditional jump if true - Script_126_07E @ 0x8003FD24: returns to the
+                       // remembered point (state._34 - CodeIndex) when Result != 0, else just advances
+                       // (1, its own size).
+                return state.Result != 0 ? state._34 - state.CodeIndex : 1;
+
+            case 0x7F: // Conditional jump if false - Script_127_07F @ 0x8003FD4C: mirror of 0x7E above -
+                       // returns to the remembered point when Result == 0, else advances (1).
+                return state.Result == 0 ? state._34 - state.CodeIndex : 1;
+
+            case 0x80: // Jump from param if flag set - Script_128_080 @ 0x8003FD74: flag id/bit from
+                       // v[1]/v[2], same shape as 0x7B/0x7C. Returns to the remembered point
+                       // (state._34 - CodeIndex) when the bit is SET, else advances (3, its own size).
+                return FlagReturnToMark(v, state, wantSet: true);
+
+            case 0x81: // Jump from param if flag clear - Script_129_081 @ 0x8003FDF8: mirror of 0x80
+                       // above - returns to the remembered point when the bit is CLEAR, else advances (3).
+                return FlagReturnToMark(v, state, wantSet: false);
 
             case 0x38: // Set save map-id -> internal map index - Script_SetSaveMapIdToInternalMapIndex_038
                        // (EntityEventHandlers.cs:1202-1207): MapIdToInternalMapIndexTable[v2<<8|v1] =
@@ -1103,6 +1213,114 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 _gameState.IsWarpDisabled = false;
                 return 1;
 
+            case 0x2C: // Check no entity by function id - Script_44_02C @ 0x8003DC84
+                       // (EntityEventHandlers.cs:1008-1014): Result = 1 if v[1]'s search type matches NO
+                       // entity, 0 otherwise (the OPPOSITE polarity of 0x2E DestroyMatchingEntities' own
+                       // Result above - "no match" is the true case here). Same search call as every other
+                       // matched-entity opcode (EntitySearchService.GetMatchingEntitiesBySearchType).
+            {
+                var noEntityMatches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+                state.Result = noEntityMatches.Count == 0 ? 1 : 0;
+                return 2;
+            }
+
+            case 0x3E: // Is player riding entity - Script_62_03E @ 0x8003E708
+                       // (EntityEventHandlers.cs:1298-1310): Result = 1 iff the player's own RidingEntity
+                       // points back at THIS entity (the executing one, not a searched match) - same
+                       // ReferenceEquals(player.RidingEntity, candidate.LogicContextEntity) idiom
+                       // EntitySearchService's own function ids 5/6 already use (EntitySearchService.cs:
+                       // 174/186), here compared directly against the executing entity's own
+                       // LogicContextEntity instead of a searched candidate. No PlayerEntity spawned this
+                       // session -> Result = 0, degraded no-op (once-logged warning), same "nothing to
+                       // search" shape as 0x3B/0x27 above.
+                if (_worldContext.PlayerEntity is { } ridingCheckPlayer)
+                {
+                    state.Result = ReferenceEquals(ridingCheckPlayer.RidingEntity, entity.LogicContextEntity) ? 1 : 0;
+                }
+                else
+                {
+                    state.Result = 0;
+                    LogDegradedNoPlayerOpcodeOnce(0x3E, "IsPlayerRidingEntity");
+                }
+
+                return 1;
+
+            case 0x6E: // Is force adjusted - Script_110_06E @ 0x8003F9D4 (EntityEventHandlers.cs:2146-2151):
+                       // Result = entity.ForceAdjusted, copied as is like the binary does
+                       // (`lw $v0,0x13c($a0)` / `sw $v0,0x2c($a3)`) - see ForceAdjusted's own doc (E4.d)
+                       // for how/when it is set (this port only ever writes 0 or 1).
+                state.Result = entity.ForceAdjusted;
+                return 1;
+
+            case 0xAD: // Check entity in AABB - Script_173_0AD @ 0x80041344 (EntityEventHandlers.cs:
+                       // 3221-3278), PER THE BINARY (D-E16-27 - the decompilation disagrees on three
+                       // points, all corrected here):
+                       // 1) its `while (i > 0)` loop over the candidate buffer never tests index 0 - the
+                       //    binary tests every candidate, index 0 included (ported below as a plain
+                       //    forward foreach, no skip);
+                       // 2) it never writes Result = 0 when the second search is empty, nor when the loop
+                       //    exhausts with no candidate inside the box - both paths leave a stale Result;
+                       //    the binary writes 0 on both. Ported here as one single "default to 0, only ever
+                       //    raised to 1" flow;
+                       // 3) offsets v[3]/v[4]/v[5] are read as SIGNED bytes by the binary, even though
+                       //    FillDataFromCommand (see its own doc above) zero-extends every operand byte -
+                       //    ported with an explicit (sbyte) cast; v[6]/v[7]/v[8] stay unsigned.
+                       // Box construction (32-bit int arithmetic, matching the original): the FIRST search
+                       // (v[1]) yields the base entity (no match -> Result = 0, return 9, second search
+                       // never runs); minX/Y/Z = base position + signed-offset*scale, maxX/Y/Z = min +
+                       // unsigned-offset*scale (X uses a *3 factor the original itself applies, unlike
+                       // Y/Z). The SECOND search (v[2]) yields the candidates tested against that box
+                       // (inclusive bounds).
+                return CheckEntityInAabb(entity, v, state);
+
+            case 0xB8: // Check CurrentAnimationId - Script_184_0B8 @ 0x80041988 (EntityEventHandlers.cs:
+                       // 3471-3494), PER THE BINARY (D-E16-27): compares each v[1]-matched entity's
+                       // CurrentAnimationId (+0x90, AlundraEntityScriptProxy.cs:87) against v[2]. The
+                       // decompilation instead reads TargetAnimationId (+0x88) and both size tables name
+                       // this opcode "Check TargetDirection" - both wrong, corrected here and in
+                       // EventOpcodeSizeTable (contract 2). Result = 1 if ANY match's CurrentAnimationId
+                       // equals v[2], else 0.
+            {
+                var animCheckMatches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+                var wantedAnimationId = (uint)v[2];
+                state.Result = 0;
+
+                foreach (var animCheckMatch in animCheckMatches)
+                {
+                    if (animCheckMatch.CurrentAnimationId == wantedAnimationId)
+                    {
+                        state.Result = 1;
+                        break;
+                    }
+                }
+
+                return 3;
+            }
+
+            case 0x8D: // Check any match on/under terrain - Script_141_08D @ 0x800404A8
+                       // (EntityEventHandlers.cs:2597-2615): Result = 1 if ANY v[1]-matched entity has
+                       // PosZ <= (that MATCH's OWN) TerrainHeight + 1, else 0 - the same per-entity
+                       // TerrainHeight E16.a now maintains for every entity (D-E16-29/D-E16-30). The
+                       // binary's own loop walks its matching-entity buffer BACKWARD; the decompilation
+                       // above walks it forward - no observable difference (a plain OR across matches,
+                       // never order-dependent), so ported here as a forward foreach like every other
+                       // matched-entity opcode in this file.
+            {
+                var groundCheckMatches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+                state.Result = 0;
+
+                foreach (var groundCheckMatch in groundCheckMatches)
+                {
+                    if (groundCheckMatch.PosZ <= groundCheckMatch.TerrainHeight + 1)
+                    {
+                        state.Result = 1;
+                        break;
+                    }
+                }
+
+                return 2;
+            }
+
             default:
                 return UnknownOpcode(command, state);
         }
@@ -1228,6 +1446,38 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         return isSet == wantSet ? SignExtend16((v[4] << 8) | v[3]) : 5;
     }
 
+    /// <summary>Shared shape of Script_123_07B (0x7B, "jump if flag set") / Script_124_07C (0x7C, "jump
+    /// if flag clear") - same flag test as <see cref="FlagBranch"/>, but the goto is stored/returned via
+    /// <see cref="EventProgramState._34"/> (own size, 5) rather than taken directly, so a later
+    /// 0x7D/0x7E/0x7F/0x80/0x81 can return to right after this instruction (E16.a T4, D-E16-21).</summary>
+    private int FlagBranchAndRemember(int[] v, EventProgramState state, bool wantSet)
+    {
+        var flag = (uint)((v[2] << 8) | v[1]);
+        var mask = 1 << (v[1] & 0x1f);
+        var isSet = (_gameState.GetFlag(flag) & mask) != 0;
+
+        if (isSet == wantSet)
+        {
+            state._34 = state.CodeIndex + 5;
+            return SignExtend16((v[4] << 8) | v[3]);
+        }
+
+        return 5;
+    }
+
+    /// <summary>Shared shape of Script_128_080 (0x80, "jump from param if flag set") / Script_129_081
+    /// (0x81, "jump from param if flag clear") - same flag test as <see cref="FlagBranch"/>/
+    /// <see cref="FlagBranchAndRemember"/>, but the jump itself is always back to the point a previous
+    /// 0x78/0x79/0x7B/0x7C remembered (<c>state._34 - state.CodeIndex</c>), never an operand-encoded
+    /// delta (E16.a T4, D-E16-21).</summary>
+    private int FlagReturnToMark(int[] v, EventProgramState state, bool wantSet)
+    {
+        var flag = (uint)((v[2] << 8) | v[1]);
+        var mask = 1 << (v[1] & 0x1f);
+        var isSet = (_gameState.GetFlag(flag) & mask) != 0;
+        return isSet == wantSet ? state._34 - state.CodeIndex : 3;
+    }
+
     /// <summary>Script_54_036 (0x36) - a pure-flag suspend/advance test, same shape as
     /// <see cref="FlagBranch"/> but WITHOUT a goto (it is only ever used as a suspend gate, not a
     /// branch): returns 3 (advance past the instruction) once the flag bit is SET, 0 (suspend, retry
@@ -1238,6 +1488,16 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         var flag = (uint)((v[2] << 8) | v[1]);
         var mask = 1u << (v[1] & 0x1f);
         return (_gameState.GetFlag(flag) & mask) != 0 ? 3 : 0;
+    }
+
+    /// <summary>Script_53_035 (0x35) - mirror image of <see cref="WaitUntilFlagOn"/> (0x36): returns 3
+    /// (advance) once the flag bit is CLEAR, 0 (suspend, retry next frame) while it is SET. See case
+    /// 0x35's own comment on <see cref="Dispatch"/> for the size table's backwards name.</summary>
+    private int WaitUntilFlagOff(int[] v)
+    {
+        var flag = (uint)((v[2] << 8) | v[1]);
+        var mask = 1u << (v[1] & 0x1f);
+        return (_gameState.GetFlag(flag) & mask) != 0 ? 0 : 3;
     }
 
     /// <summary>Script_51_033 (0x33 CheckFlagsOn) - tests FOUR (flag,bit) pairs from v[1..8]:
@@ -1253,6 +1513,28 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             var mask = 1u << (int)(flag & 0x1f);
 
             if ((_gameState.GetFlag(flag) & mask) == 0)
+            {
+                state.Result = 0;
+                return 9;
+            }
+        }
+
+        state.Result = 1;
+        return 9;
+    }
+
+    /// <summary>Script_52_034 (0x34 CheckFlagsOff) - tests the SAME four (flag,bit) pairs from v[1..8]
+    /// as <see cref="CheckFlagsOn"/> (0x33), but the OPPOSITE polarity: Result=0 as soon as ANY tested
+    /// bit is SET (short-circuit on the first set pair), Result=1 only if every bit is clear. Always
+    /// returns 9 (instruction size) regardless of Result.</summary>
+    private int CheckFlagsOff(int[] v, EventProgramState state)
+    {
+        for (var i = 0; i < 4; i++)
+        {
+            var flag = (uint)(v[i * 2 + 1] + (v[i * 2 + 2] << 8));
+            var mask = 1u << (int)(flag & 0x1f);
+
+            if ((_gameState.GetFlag(flag) & mask) != 0)
             {
                 state.Result = 0;
                 return 9;
@@ -1823,6 +2105,61 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         }
 
         return false;
+    }
+
+    /// <summary>Script_173_0AD (0xAD CheckEntityInAabb) - see the 0xAD case's own doc on
+    /// <see cref="Dispatch"/> for the three binary-vs-decompilation disagreements this corrects
+    /// (D-E16-27). Both searches use raw fixed-point <see cref="AlundraEntityScriptProxy.PosX"/>/PosY/PosZ
+    /// (NOT the tile-quantized TileX/TileY/TileZ 0x07/0x3B use), matching the original's own field
+    /// reads (AlundraEntityScriptProxy.cs:134-136).</summary>
+    private int CheckEntityInAabb(AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
+    {
+        state.Result = 0;
+
+        var baseMatches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+        if (baseMatches.Count == 0)
+        {
+            return 9;
+        }
+
+        var baseX = baseMatches[0].PosX;
+        var baseY = baseMatches[0].PosY;
+        var baseZ = baseMatches[0].PosZ;
+
+        // v[3]/v[4]/v[5] are SIGNED bytes in the binary; FillDataFromCommand zero-extends every operand,
+        // so the signedness must be recovered explicitly here (unlike v[6]/v[7]/v[8], which stay unsigned).
+        var dx0 = (sbyte)v[3];
+        var dy0 = (sbyte)v[4];
+        var dz0 = (sbyte)v[5];
+        var dx1 = v[6];
+        var dy1 = v[7];
+        var dz1 = v[8];
+
+        var minX = baseX + ((dx0 * 3) << 19);
+        var minY = baseY + (dy0 << 20);
+        var minZ = baseZ + (dz0 << 20);
+        var maxX = minX + ((dx1 * 3) << 19);
+        var maxY = minY + (dy1 << 20);
+        var maxZ = minZ + (dz1 << 20);
+
+        var candidates = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[2], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+        if (candidates.Count == 0)
+        {
+            return 9;
+        }
+
+        foreach (var candidate in candidates)
+        {
+            if (candidate.PosX >= minX && candidate.PosX <= maxX
+                && candidate.PosY >= minY && candidate.PosY <= maxY
+                && candidate.PosZ >= minZ && candidate.PosZ <= maxZ)
+            {
+                state.Result = 1;
+                break;
+            }
+        }
+
+        return 9;
     }
 
     private readonly HashSet<int> _loggedOutOfRangeMapIndexes = new();

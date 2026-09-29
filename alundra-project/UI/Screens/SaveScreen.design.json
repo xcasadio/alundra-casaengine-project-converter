@@ -1,0 +1,81 @@
+{
+  "view_model_type": "AlundraSaveScreenViewModel",
+  "values": {
+    "RootVisibility": "Visible",
+    "MessageBox": {
+      "Left": 16,
+      "Top": 168,
+      "Visibility": "Visible"
+    },
+    "MessageLine0": {
+      "Text": "Sélectionne une fente pour l'enregistrement.",
+      "Left": 32,
+      "Top": 184
+    },
+    "MessageLine1": {
+      "Text": "",
+      "Left": 32,
+      "Top": 200
+    },
+    "RecordBox0": {
+      "Left": 16,
+      "Top": 0,
+      "Visibility": "Collapsed"
+    },
+    "RecordBox1": {
+      "Left": 16,
+      "Top": 64,
+      "Visibility": "Visible"
+    },
+    "RecordBox2": {
+      "Left": 16,
+      "Top": 128,
+      "Visibility": "Visible"
+    },
+    "RecordBox3": {
+      "Left": 16,
+      "Top": 240,
+      "Visibility": "Collapsed"
+    },
+    "Record0Line0": {
+      "Text": "",
+      "Left": 32,
+      "Top": 8
+    },
+    "Record0Line1": {
+      "Text": "",
+      "Left": 32,
+      "Top": 32
+    },
+    "Record1Line0": {
+      "Text": "Un Nouveau Départ",
+      "Left": 32,
+      "Top": 72
+    },
+    "Record1Line1": {
+      "Text": "  HP 10       TIME 00:12:34   ",
+      "Left": 32,
+      "Top": 96
+    },
+    "Record2Line0": {
+      "Text": "",
+      "Left": 32,
+      "Top": 136
+    },
+    "Record2Line1": {
+      "Text": "",
+      "Left": 32,
+      "Top": 160
+    },
+    "Record3Line0": {
+      "Text": "",
+      "Left": 32,
+      "Top": 248
+    },
+    "Record3Line1": {
+      "Text": "",
+      "Left": 32,
+      "Top": 272
+    }
+  }
+}

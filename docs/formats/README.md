@@ -20,6 +20,7 @@ provient), et un extrait réel tiré d'une conversion complète.
 | [`backdrops.md`](backdrops.md) | `Maps/{Zone}/{Name}-{id}/backdrop/{Name}-{id}.backdrop.json` : les couches de décor défilant PSX (parallaxe, auto-scroll, cellulaire différé), plus les textures pré-rendues. |
 | [`world-index.md`](world-index.md) | `Maps/world-index.json` : la table MapId → chemin du `.world`. |
 | [`misc-data.md`](misc-data.md) | `Data/balance.json`, `UI/wind-sprites.json`, `Sprites/hero/hero_effects.json`. |
+| [`save-game.md`](save-game.md) | La sauvegarde de partie (`AlundraSaveGame`) : écrite en jeu par la DLL à travers le service du moteur, pas par le convertisseur ; champs, domaines, métadonnées. |
 
 Voir aussi le [`README.md`](../../README.md) racine pour l'usage du CLI et la disposition générale
 d'un projet converti.

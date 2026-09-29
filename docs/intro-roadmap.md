@@ -318,7 +318,7 @@ gardé par 0x800C du Tick 140), 0x59/0x27 (idem).
 
 | # | 1re frame | Fonction originale | file:line | Rôle | État dans la DLL |
 |---|---|---|---|---|---|
-| 1 | 0 | `GameEngine.ClearTemporaryFlags` | GameEngine.cs:429 | vide `g_temporaryFlags` à l'entrée de map | non porté (`AlundraGameState` part de zéro, rien ne re-vide) |
+| 1 | 0 | `GameEngine.ClearTemporaryFlags` | GameEngine.cs:429 | vide `g_temporaryFlags` à l'entrée de map | porté : `AlundraGameState.InstallForMapEntry` vide `TemporaryFlags` à chaque entrée de carte (`AlundraGameState.cs:275-294`, D-T-13 de `plan-transitions-carte.md`) ; l'original vide 64 mots (`0x8008159C`), la DLL ses 1024 (mesure E16.0, `plan-e16-etat-partie.md` §2) |
 | 2 | 0 | `GameEngine.ResetCameraAndLoadVRAMAssets` | GameEngine.cs:445 | reset caméra/scroll | non porté |
 | 3 | 0 | `GameEngine.InitializeItems` | GameEngine.cs:454 | table d'objets de la map | non porté |
 | 4 | 0 | `InitializeEntitySlots` → `ResetEntityState` (joueur slot 0) | GameEngine.cs:621-670 | création du héros | non porté (approximé dans le harnais) |
