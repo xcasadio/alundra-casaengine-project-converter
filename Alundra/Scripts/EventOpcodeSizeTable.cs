@@ -150,7 +150,7 @@ public static class EventOpcodeSizeTable
         { 0x70, new(1, "Is above ground") },
         { 0x71, new(1, "Get hit counter") },
         { 0x72, new(1, "Set LastTargetAnim and Direction") },
-        { 0x73, new(2, "Set program counter _30") },
+        { 0x73, new(2, "Set loop counter _30") },
         { 0x74, new(3, "Decrement _30 and jump while positive") },
         { 0x75, new(2, "Play sound effect") },
         { 0x76, new(0, "not implemented") },

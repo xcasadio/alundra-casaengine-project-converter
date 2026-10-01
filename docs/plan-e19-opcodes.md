@@ -1629,7 +1629,9 @@ moteur pour C0).
   (`01 1C 02 FF`, drapeau tenu) passe de 0, 0, 2 à 0, 0, 0 ; après un changement, drapeau 0 et marque
   effacée ; avec le drapeau reposé à 1, le quatrième appel rend 2.
 - **C4 — Repli de la passe de tri** ✅ *(fait le 2026-10-01 ; T-D18 rouge sans le repli, 6 au lieu de 22 pour l'élévation, puis vert)* et son test (T-D18).
-- **C5 — Hygiène reportée par E19.c1** ⏳ :
+- **C5 — Hygiène reportée par E19.c1** ✅ *(fait le 2026-10-01 : les textes du code sont à jour ; la vérification d'A7 image par image est écrite
+  (le héros ne bouge pas, sur plus de 1000 images) mais, comme tout le fichier des arcs, elle entre avec C6 ; les comptes de la ligne E19.i
+  et des lignes P1/P2 de §1.2e sont mis à jour avec C7, qui met à jour ces lignes)* :
   - le libellé de `0x73` devient « Set loop counter _30 » ; la coquille « the / the » d'`EntitySearchService` ;
   - A7 vérifie à chaque image que le héros ne bouge pas, de `@421` à la fin ;
   - textes en retard : « Loop not bridged » d'`AlundraEntitySpawnFactory`, la doc de `SyncAnimation` et du

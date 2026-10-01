@@ -33,7 +33,11 @@ namespace Alundra.Scripts;
 /// owner declares every tick (<see cref="OwnerExternalVerticalDisplacement"/>).</para>
 ///
 /// <para><b>The animations</b>: <see cref="AnimatedSpriteComponent.IsPlaybackPaused"/> is posed, and its
-/// previous value given back at the thaw, so an animation something else had paused stays paused.</para>
+/// previous value given back at the thaw, so an animation something else had paused stays paused. This pauses the
+/// DRAWING only (E19.c2, D-E19-17): the logical clock of the animation ends, which the scripts see, is stepped by
+/// <see cref="AlundraFrameSyncPasses.StepAnimationClock"/> inside the gameplay-blockable block, so the same gate stops
+/// it, and it ignores <see cref="AnimatedSpriteComponent.IsPlaybackPaused"/> (a stale pause must not eat the first tick
+/// after a thaw). A warp departure does not pause the drawing: only the clock stops.</para>
 ///
 /// <para>Applied from the END of <see cref="AlundraWorldProxy.Update"/>, to every spawned entity: the
 /// engine updates the controllers and the sprites BEFORE the gameplay proxies each frame, and MenuOpen is

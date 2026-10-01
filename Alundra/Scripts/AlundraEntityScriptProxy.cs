@@ -1056,7 +1056,9 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 // one frame of latency behind a same-frame TargetAnimationId write, exactly the same shape
                 // as this class' own documented one-frame World/entity latency (see this method's own doc,
                 // "Accepted deviation" paragraph) - "à défaut d'équivalent exact, utiliser l'anim courante
-                // synchronisée et documenter l'écart" per the plan.
+                // synchronisée et documenter l'écart" per the plan. E19.c2: this lag (kept, D-E19-13) concerns the
+                // MOTION only; the ends of the animations that 0x1C/0x1D see come from the logical clock stepped
+                // just above, exact at the tick (a switch owes its tick, see AlundraFrameSyncPasses.SyncAnimation).
                 //
                 // E4.e (docs/plan-e4-deplacement-scripte.md): unconditional, not gated on Controller != null
                 // - the original applies UpdateEntityPhysics to every entity in g_activeEntities regardless

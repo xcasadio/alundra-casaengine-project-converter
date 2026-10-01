@@ -50,7 +50,7 @@ namespace Alundra.Scripts;
 /// <item><description>5 - entities the reference entity is riding on (<c>referenceEntity.RidingEntity</c> matches the
 /// candidate's own backing <see cref="AlundraEntityScriptProxy.LogicContextEntity"/>), EXCLUDING the
 /// player (E4.f, GameEngine.cs:2010-2091 loops from slot 1, never slot 0).</description></item>
-/// <item><description>6 - entities riding on the reference entity (candidate's <c>RidingEntity</c> matches the
+/// <item><description>6 - entities riding on the reference entity (candidate's <c>RidingEntity</c> matches
 /// the reference entity's <c>LogicContextEntity</c>), EXCLUDING the player.</description></item>
 /// <item><description>7 - entities the reference entity's <c>XCollisionEntity</c> points at, EXCLUDING the
 /// player.</description></item>
