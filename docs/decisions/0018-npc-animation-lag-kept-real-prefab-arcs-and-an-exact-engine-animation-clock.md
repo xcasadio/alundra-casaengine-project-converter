@@ -1,6 +1,6 @@
 # ADR-0018: The NPC animation lag is kept, arcs load real prefabs, and the engine gets an exact animation clock
 
-- **Status**: Accepted
+- **Status**: Accepted; D-E19-16 refined by ADR-0019
 - **Date**: 2026-10-01
 - **Source**: this chantier: `docs/plan-e19-opcodes.md` §0.1 (decisions D-E19-13 to D-E19-16, taken with the author on 2026-10-01 before the plan of slice E19.c), §1.2e (E19.c1), §1.2f (E19.c2), open points O-E19-3 and O-E19-5
 

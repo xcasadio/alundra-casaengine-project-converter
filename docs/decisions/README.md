@@ -31,4 +31,5 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0015 | The event interpreter ports the missing opcodes from the binary, with a production loop guard and the E4.d detour for scripted walks | Accepted | 2026-09-29 |
 | ADR-0016 | A blocked step on the cell field advances to contact, and ForceAdjusted keeps its shortfall rule | Accepted; D-E19-10 superseded by ADR-0017 | 2026-09-29 |
 | ADR-0017 | ForceAdjusted rises only on a tick without progress, like the binary | Accepted | 2026-10-01 |
-| ADR-0018 | The NPC animation lag is kept, arcs load real prefabs, and the engine gets an exact animation clock | Accepted | 2026-10-01 |
+| ADR-0018 | The NPC animation lag is kept, arcs load real prefabs, and the engine gets an exact animation clock | Accepted; D-E19-16 refined by ADR-0019 | 2026-10-01 |
+| ADR-0019 | Animation ends become exact on a logical clock while sprites stay in real time, and loops are counted | Accepted | 2026-10-01 |
