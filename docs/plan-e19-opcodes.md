@@ -958,9 +958,35 @@ puis part vers la 392 (arc A4).
       48 px à chaque fois. L'écart au-delà de 48 px n'est pas épinglé tant qu'O-E19-5 n'est pas corrigé.
     - Rancune (enregistrement 0) apparaît à `@553` en (792 << 16, 176 << 16, (48 << 16) + 1).
   - **Pour les deux arcs** : aucun opcode sauté hors de {`0x4C`, `0x92`, `0x93`, `0xA2`} ; `0xC4` et `0x8A`
-    jamais sautés ; aucun dépassement de la garde.
-  - **Rouge attendu** : sur le code actuel, les deux arcs échouent dans leur limite en nommant `0x36 @116`.
-    Après T1, A2 passe et A4 échoue en nommant `0x1E @84`. Après T2, A4 passe. Ces constats sont consignés.
+    jamais sautés ; aucun dépassement de la garde. À la fin, `PlayerControlFlags == 0x04` (ControlLocked
+    par `0x10 @73`, la 476 n'a pas de `0x11`) : ne pas reprendre le « drapeaux à 0 » d'A0.
+  - **Moment des vérifications** :
+    - les échantillons pris à une instruction (position du bloc à `@63`, suivi de caméra à `@71`, Rancune à
+      `@553`, texte de chaque boîte à son ouverture, position du héros avant et après chaque marche du bloc)
+      sont **enregistrés pendant la course**, par `OnInstruction`, qui voit l'instruction après ses effets ;
+    - ils ne sont **vérifiés qu'après** que `RunUntil` a atteint le signal de fin. L'échec d'un arc qui
+      n'arrive pas au bout nomme donc toujours sa dernière instruction ;
+    - une position se lit à l'instruction qui la pose : le Z du bloc dérive aux images suivantes, et
+      Rancune est déplacé ensuite par les sous-programmes `@134` et `@188`.
+  - **Précisions** :
+    - `@553`, `@78`, `@90`, `@95` et `@107` sont dans le code d'autres programmes, mais appelés depuis
+      B5 ;
+    - le parent du bloc est le héros (entité logique de B1). Celui de Rancune est **le bloc**, car
+      `0x43 [0x80]` laisse le bloc comme entité logique de B5 après le premier panoramique ;
+    - « le bloc a bougé d'au moins 48 px » répète la condition de sortie de `0x1E`. Le test vérifie aussi
+      que **le héros ne bouge pas** pendant chacune des quatre marches, ce qui prouve que la marche agit
+      sur le bloc. Les positions sont mesurées après l'image 0, où B1 `@55` déplace le héros.
+    - Chaînes de l'`ArcSpec` : zone `Lars & Melzas Room`, carte `Lars & Melzas Room (beginning Event)-476`.
+      La classe porte `[Collection(AlundraMusicPlayerSingletonCollection.Name)]`.
+  - **Rouge attendu, étape par étape**, cohérent avec chacune des vérifications ci-dessus :
+
+    | Étape | A2 | A4 |
+    |---|---|---|
+    | Code actuel | échoue dans sa limite en nommant `0x36 @116` | échoue dans sa limite en nommant `0x36 @116` |
+    | Après T1 (`0xC4`) | atteint `0x53 @758`, puis échoue sur le bloc absent à `@63` et sur `0x8A` sauté | échoue dans sa limite en nommant `0x1E @84` (`0x43 [1]` ne trouve pas de bloc) |
+    | Après T2 (`0x8A`) | passe | passe |
+
+    Ces constats sont consignés.
 - **T1 — `0xC4`** : le cas dans `Dispatch`.
   - Tests unitaires :
     - positions des opérandes, avec des nœuds leurres : une lecture décalée ouvrirait un autre texte ;
@@ -975,12 +1001,19 @@ puis part vers la 392 (arc A4).
   - Tests unitaires : position, `+1` sur Z seul, parent = entité logique, octet fort des 16 bits, échec sans
     exception (taille 8, aucune écriture de position), deux apparitions du même enregistrement, `0x8A` puis
     `0x67`.
+    - Pièges du faux contexte : une recherche par numéro exige l'owner en `Status = Normal`, et l'entité
+      apparue doit recevoir `EntityRefId = 1` et entrer dans `SpawnedEntitiesList`, ce que le faux ne fait
+      pas seul. Le parent ne se vérifie que par `SpawnCalls.LogicEntity`.
+  - Un échec d'apparition, fatal dans l'original, est journalisé et l'exécution continue : c'est la pratique
+    déjà en place pour `0x2D` et `0x8B`, pas une décision nouvelle.
   - Miroir du harnais. Commentaires périmés : l'aide de `0x8B`, `IEntityWorldContext.cs:59`,
     `AlundraWorldProxy.cs:~2419`.
 - **T3 — Les arcs** : A2 et A4 passent avec les valeurs de T0 ; ils sont commités.
 - **T4 — Hygiène reportée par E19.a et E19.a3** :
-  - le constructeur d'`ArcRun` : `FindProjectRoot` et l'option de caméra sont placés dans le `try`, et
-    son test vérifie aussi l'option de caméra ;
+  - le constructeur d'`ArcRun` : `FindProjectRoot` et l'option de caméra sont placés dans le `try`, en
+    mémorisant `_previousProjectPath` **avant** `FindProjectRoot`, sinon `Dispose` remettrait `ProjectPath`
+    à null. Le test d'échec vérifie aussi l'option de caméra, lue par
+    `AlundraWorldProxy.DebugCameraPanEnabledForTests` ;
   - commentaires : test `LoopGuard_ALoopWithAWait`, `0x3B`/`0x3E` (« entité qui exécute »),
     `EntitySearchService.cs:31`, doc de `ProductionLoopBudget`, place du commentaire des 23 opcodes
     d'`ImplementedOpcodes`, message dégradé de `0x42` (« `Result = 0` »), en-tête du test du marin 12
@@ -992,9 +1025,10 @@ puis part vers la 392 (arc A4).
 - **T6 — Recette en jeu (auteur)** :
   1. **A2, en jouant.** Après la cabine, la 476 montre trois boîtes sans nom, d'environ 1,2 s chacune, et
      la caméra sur la salle de la vision. Puis la 478 se charge. Elle ne va pas plus loin : c'est E19.c.
-  2. **A4, par raccourci.** F6, puis dans `debug-json.sav` : `initialMapId` 476, `cameraTile` (0,0,0),
-     `gameFlags[51] |= 512`, puis F9. On voit huit boîtes, la caméra glisse vers l'ouest puis l'est, et la
-     392 se charge.
+  2. **A4, par raccourci.** F6, puis dans `debug-json.sav` : `initialMapId` 476, `cameraTileX`,
+     `cameraTileY` et `cameraTileZ` à 0, `gameFlags[51] |= 512` **et le bit 256 effacé** (sinon B4 rejoue la
+     séquence d'A2 en même temps), puis F9. On voit huit boîtes, la caméra glisse vers l'ouest puis l'est,
+     et la 392 se charge.
 
 **Acceptation d'E19.b.**
 1. Les deux arcs échouaient comme annoncé avant T1 et T2, et passent avec les valeurs de T0.
@@ -1016,6 +1050,21 @@ puis part vers la 392 (arc A4).
 - A4 n'est pas atteignable en jouant avant E19.c : la 478 doit d'abord renvoyer vers la 476.
 
 **Revues** : plan-verifier sur cette section, avant approbation ; verifier frais après exécution.
+
+**Relectures du 2026-10-01.**
+- **Plan-verifier** (`ba2bb30`) : **REVISE**, un P2 : la suite rouge annoncée (« après T1, A2 passe »)
+  contredisait les vérifications d'A2 sur le bloc, et le moment des vérifications n'était pas dit.
+- **Audit en parallèle** : aucun P1. Toutes les valeurs de T0 sont recalculées et confirmées, dont les
+  1209 et 2059 images, par une réécriture indépendante de l'interpréteur. Il signale le même P2, et des P3 :
+  - naming « appelé depuis B5 » ;
+  - parent de Rancune = le bloc ;
+  - positions lues à l'instruction ;
+  - héros immobile pendant les marches ;
+  - pièges du constructeur d'`ArcRun` et du faux contexte ;
+  - détails de l'`ArcSpec` et des drapeaux de contrôle ;
+  - raccourci de recette.
+- **Tous sont intégrés** : table du rouge étape par étape, moment des vérifications, précisions de T0 et
+  T2, constructeur d'`ArcRun`, recette.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
