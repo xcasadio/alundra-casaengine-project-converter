@@ -231,7 +231,8 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 - **478** : 21 `0x0B`, `0x5E` (`C[5] @363`, fait monter le bloc 0 : T20 à T60 posés à mesure qu'il
   monte, environ 2000 ticks en tout, calcul statique), `0x73`/`0x74`, `0x08`, `0x89` (le chien
   recollé au bloc à chaque tick), `0x1C` (C[16]) et 11 `0x59`.
-- **392** : `0x8E` (balancement de caméra), `0x0C`, `0x08`, tous trois dans la boucle de roulis.
+- **392** : `0x0C` et `0x08` dans la boucle de roulis ; `0x8E` (balancement de caméra) en tête de B1
+  (`@20`), hors de cette boucle.
   **391** : effets `0xA2`/`0x94`, `0x8E`, `0x5E` ×4, `0x59`, `0x4C`, `0x73`/`0x74`, tous cosmétiques
   ou de rythme. **416** : `0x0B` ×5 ; aujourd'hui la carte atteint `53` vers 163 plus tôt, sans ces
   marches. **163** B1 (réveil) : `0x1C` ×3, `0x0B` ×3, `0x24`, `0x43`/`0x42` et `0x59`, jusqu'à
@@ -348,7 +349,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.g | Effets visuels (D-E19-7) : export des effets par le convertisseur, réserve de 128 effets aux règles du binaire, `0x90`-`0x94`, `0xA0`-`0xA3`, rendu | cartes à effets | L'aura de 476, les vagues de 391 |
 | E19.h | Attentes en Z et contacts : `0x20`-`0x23`, `0x25`, `0x26`, `0x47`, `0x48` ; `CollidedWithEntityZ` et `ForceAdjusted` alignés sur le binaire | ciblés | ciblée |
 | E19.i | ~~Boucles d'animation Loop pour `0x1C`/`0x1D`~~ — **absorbée par E19.c2** (D-E19-18) : le signal de boucle et son pont y arrivent ; le recensement exact est de 208 sites dans 53 cartes, et non 101 dans 30 | — | — |
-| E19.j | Événements de carte : réarmement hors zone du binaire (619 enregistrements) ; (`0x40`/`0x41` complets : faits en E19.d, D-E19-22) | ciblés | ciblée |
+| E19.j | Événements de carte : réarmement hors zone du binaire (619 enregistrements, O-E19-11) | ciblés | ciblée |
 | E19.k | Caméra : balancement `0x8E`/`0x8F`, masque des fonds `0xA4` | ciblés | 392, 391 |
 | E19.l | Prédicats, branches et restes : `0x82` (avec la correction d'`AddOneItemIfUnlocked`), `0x83`, `0x84`, `0x87`, `0x3F`, `0x95`, `0x99`, `0x9A`, `0x9F` (avec `InitializeContents`), `0x57`, `0x58`, `0x4A`, `0x2A`, `0x2B`, `0x5D`, etc. ; liste fermée au recensement du moment | ciblés | ciblée |
 | E19.m | Hygiène et clôture : taille de `0x5F` (8), libellés faux, `0x01` qui rend 0, modes aléatoires 4 et 5 de `ResolveDirectionFromParam` ; test statique : aucun opcode atteignable sauté dans le corpus hors E14 (IA native) et E18 (`0xBB`) | corpus | — |
@@ -375,8 +376,8 @@ commentaires d'`AlundraWorldProxy.cs`), tests (`Alundra.Tests/`), docs (`docs/in
 annexes de trace régénérées, ce plan). Ni le moteur, ni le convertisseur, ni l'export ne sont touchés.
 
 **Hors périmètre d'E19.a.** Le réarmement hors zone des événements de carte (E19.j). `0x40`/`0x41`
-et `g_clearProgramState` sur l'entité logique (E19.j ; ces deux opcodes ne sont pas portés
-aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
+et `g_clearProgramState` sur l'entité logique (faits en E19.d, D6, D-E19-22). Le portail trou et
+escalier de la 390 (O-E19-1).
 
 #### Tâches
 
@@ -2019,7 +2020,7 @@ et A8 restent hors du dépôt jusqu'à D7 ; d'ici là, les lancements de toute l
   écrirait hors du tableau). Tests unitaires U5 à U13 (sans U9).
   A8 passe ensuite.
 - **D7 — Arcs verts** ✅ (faite le 2026-10-01 ; A6 et A8 commités avec toutes leurs valeurs écrites d'avance, sans en changer une ; table du rouge constatée : A8 après D4 échouait sur `0x41 @56`, `0x41 @728`, `0x40 @731` seuls, passe après D6 ; temps d'exécution en Debug : A6 environ 0,75 s, A8 environ 0,78 s, A5 environ 1 s, A5r environ 0,7 s, aucun arc près de 120 s) : A6 et A8 commités ; temps d'exécution relevés.
-- **D8 — Hygiène** ⏳ : miroir `ImplementedOpcodes` (`0x24`, `0x40`, `0x41`) ; libellés de la table des
+- **D8 — Hygiène** ✅ (faite le 2026-10-01 : le miroir `ImplementedOpcodes` compte `0x24`, `0x40` et `0x41` ; la table des tailles nomme `0x24` « Wait until force adjusted » et `0x40` « Set program index and clear the program state », sans changer une taille ; la doc de `RunScript` sur l'effacement avait été réécrite en D6 ; la doc de T-D15 dit les valeurs de la DLL (premier appel avant le tour : 54 ; sur le tour ou après : 108) ; la ligne E19.j, le « hors périmètre » d'E19.a et le §0.2.4 sont corrigés ; les annexes de trace ne bougent pas) : miroir `ImplementedOpcodes` (`0x24`, `0x40`, `0x41`) ; libellés de la table des
   tailles ; la doc de `RunScript` sur l'effacement (le choix laissé au port de `0x40` est fait) ; la doc de
   T-D15 qui se contredit (P4 d'E19.c2) ; la ligne E19.j de l'enveloppe ne garde que le réarmement hors zone ;
   au §0.2.4, `0x8E @20` est en tête de B1, hors de la boucle de roulis.

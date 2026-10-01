@@ -24,6 +24,9 @@ namespace Alundra.Scripts;
 ///
 /// One size deviates from the source table: <c>0x78</c> is 3 bytes here, not the source's 4 - the binary
 /// (0x8003FB10) reads only v[1]/v[2] (D-E16-21, docs/plan-e16-etat-partie.md).
+///
+/// Two names are made explicit (E19.d D8, no size change): <c>0x24</c> waits UNTIL the logic entity's ForceAdjusted is nonzero
+/// (0x8003DB70) and <c>0x40</c> also asks for the running program state to be cleared (<c>g_clearProgramState</c>, 0x8003E7B8).
 /// </summary>
 public static class EventOpcodeSizeTable
 {
@@ -67,7 +70,7 @@ public static class EventOpcodeSizeTable
         { 0x21, new(3, "Is within Z distance") },
         { 0x22, new(1, "Clamp forceZ to height target") },
         { 0x23, new(1, "Clamp forceZ and no collided Z") },
-        { 0x24, new(1, "Wait force adjusted") },
+        { 0x24, new(1, "Wait until force adjusted") },
         { 0x25, new(1, "Wait entity collision z or 144") },
         { 0x26, new(1, "Wait force adjusted or entity collision z") },
         { 0x27, new(1, "Face player") },
@@ -99,7 +102,7 @@ public static class EventOpcodeSizeTable
         { 0x3D, new(7, "If entity in zone") },
         { 0x3E, new(1, "Is player riding entity") },
         { 0x3F, new(1, "If entity riding me") },
-        { 0x40, new(3, "Set program index") },
+        { 0x40, new(3, "Set program index and clear the program state") },
         { 0x41, new(3, "Set sprite program index") },
         { 0x42, new(1, "SetLogicContextEntity = PlayerEntity") },
         { 0x43, new(2, "Set LogicContextEntity") },

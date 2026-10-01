@@ -575,8 +575,10 @@ public sealed class AlundraAnimationClockDriveTests
             $"counter {counterAfterFrame30} after frame 30; ticks {(ticksAreKModTen ? "k mod 10" : "all " + ticks.Max())}");
     }
 
-    /// <summary>T-D15: map 396, a map-event program <c>1D 01</c> waits on the hero's idle animation (a Loop of 54 ticks played from frame 0):
-    /// the turn is counted at the tick it happens, whatever the frame of the first call.</summary>
+    /// <summary>T-D15: map 396, a map-event program <c>1D 01</c> waits on the hero's idle animation (a Loop of 54 ticks played from frame 0),
+    /// without a <c>1A</c> of its own. The values pinned are the DLL's, not the binary's (map events run after the entities, D-E19-13): a first
+    /// call BEFORE the turn (frames 0, 1, 10, 53) sees it at the frame of the turn, 54; a first call ON the frame of the turn or after it
+    /// (54, 55, 100) waits for the next turn, 108. Never a block.</summary>
     [Theory]
     [InlineData(0, 54)]
     [InlineData(1, 54)]
