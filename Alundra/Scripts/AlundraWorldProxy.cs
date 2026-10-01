@@ -2412,7 +2412,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
-    /// Backs opcode 0x2D (Script_45_02D) via <see cref="IEntityWorldContext"/>. Faithful port of
+    /// Backs opcodes 0x2D (Script_45_02D), 0x8A and 0x8B via <see cref="IEntityWorldContext"/>. Faithful port of
     /// <c>GameEngine.SpawnEntity(parent, entityId, notCheckSpawnZone)</c> (GameEngine.cs:679-758)
     /// restricted to <c>notCheckSpawnZone = 1</c>, the only value the opcode ever passes - so only the
     /// <c>IsEnabled</c> gate applies (see <see cref="ShouldSpawnRecord(TileMapObjectData,bool,out string)"/>'s

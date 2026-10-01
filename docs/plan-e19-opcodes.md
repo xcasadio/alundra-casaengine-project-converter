@@ -996,7 +996,7 @@ puis part vers la 392 (arc A4).
     - le premier test direct de `0x5C`, dans le même `Theory`.
   - Test de corpus : les 31 sites, chacun ouvrant un nœud qui existe.
   - Miroir `ImplementedOpcodes` et sélecteur `textId` du harnais de l'intro.
-- **T2 — `0x8A`** : le cas et une petite méthode à côté de celle de `0x8B`.
+- **T2 — `0x8A`** ✅ : le cas et une petite méthode à côté de celle de `0x8B` (fait le 2026-10-01 ; 5 tests unitaires dans `AlundraEventProgramRunnerTests` ; A2 et A4 passent avec les valeurs de T0).
   - Un échec est journalisé en avertissement, une seule fois par (opcode, enregistrement).
   - Tests unitaires : position, `+1` sur Z seul, parent = entité logique, octet fort des 16 bits, échec sans
     exception (taille 8, aucune écriture de position), deux apparitions du même enregistrement, `0x8A` puis

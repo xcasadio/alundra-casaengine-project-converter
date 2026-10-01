@@ -51,12 +51,15 @@ public class AlundraEventProgramRunnerTests
         public readonly List<(AlundraEntityScriptProxy LogicEntity, int EntityRecordId)> SpawnCalls = new();
         public AlundraEntityScriptProxy? EntityToSpawn;
 
+        /// <summary>E19.b: entities handed back one per call (before <see cref="EntityToSpawn"/>), for a program that spawns twice.</summary>
+        public readonly Queue<AlundraEntityScriptProxy> SpawnQueue = new();
+
         public readonly List<AlundraEntityScriptProxy> DestroyedEntities = new();
 
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId)
         {
             SpawnCalls.Add((logicEntity, entityRecordId));
-            return EntityToSpawn;
+            return SpawnQueue.Count > 0 ? SpawnQueue.Dequeue() : EntityToSpawn;
         }
 
         public void DestroyEntity(AlundraEntityScriptProxy entity)
@@ -586,6 +589,113 @@ public class AlundraEventProgramRunnerTests
         Assert.Equal(111, spawned.PosX);
         Assert.Equal(222, spawned.PosY);
         Assert.Equal(333, spawned.PosZ);
+    }
+
+    [Fact]
+    public void SpawnEntityAtPosition_0x8A_WritesTheAbsolutePosition_PlusOneOnZOnly_WithTheLogicEntityAsParent()
+    {
+        // E19.b T2 (docs/plan-e19-opcodes.md §1.2d): 0x8A [record 1, X 972 (0xCC,3), Y 112 (112,0), Z 48 (48,0)], the
+        // operands of the camera block of map 476. 972 needs its HIGH byte (a read that drops it gives 204).
+        var document = NewDocument(0x8A, 1, 0xCC, 3, 112, 0, 48, 0, 0xFF);
+        var spawned = new AlundraEntityScriptProxy { PosX = 111, PosY = 222, PosZ = 333 };
+        var context = new FakeEntityWorldContext { EntityToSpawn = spawned };
+        var runner = NewRunner(document, worldContext: context);
+        var logic = new AlundraEntityScriptProxy { PosX = 5 << 16, PosY = 7 << 16, PosZ = 9 << 16 };
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 7 };
+
+        runner.RunOneScriptCall(logic, state);
+
+        var call = Assert.Single(context.SpawnCalls);
+        Assert.Same(logic, call.LogicEntity); // the parent: the entity the instruction runs for.
+        Assert.Equal(1, call.EntityRecordId);
+        Assert.Equal(972 << 16, spawned.PosX);
+        Assert.Equal(112 << 16, spawned.PosY);
+        Assert.Equal((48 << 16) + 1, spawned.PosZ); // +1 on Z, not on X or Y.
+        Assert.Equal(8, state.CodeIndex);
+        Assert.Equal(7, state.Result); // no Result write.
+        Assert.Equal((5 << 16, 7 << 16, 9 << 16), (logic.PosX, logic.PosY, logic.PosZ)); // the logic entity is not moved.
+    }
+
+    [Fact]
+    public void SpawnEntityAtPosition_0x8A_ZeroPosition_StillGetsThePlusOneOnZ()
+    {
+        var document = NewDocument(0x8A, 0, 0, 0, 0, 0, 0, 0, 0xFF);
+        var spawned = NewEntity();
+        var runner = NewRunner(document, worldContext: new FakeEntityWorldContext { EntityToSpawn = spawned });
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(NewEntity(), state);
+
+        Assert.Equal(0, spawned.PosX);
+        Assert.Equal(0, spawned.PosY);
+        Assert.Equal(1, spawned.PosZ);
+    }
+
+    [Fact]
+    public void SpawnEntityAtPosition_0x8A_AFailedSpawn_DoesNotThrow_AdvancesByEight_WritesNoPosition_AndWarnsOncePerRecord()
+    {
+        using var log = SaveGameDirectorTestSupport.LogCapture.Install();
+        // Two failing spawns of record 41, then one of record 42: the warning is once per (opcode, record).
+        var document = NewDocument(
+            0x8A, 41, 1, 0, 2, 0, 3, 0,
+            0x8A, 41, 1, 0, 2, 0, 3, 0,
+            0x8A, 42, 1, 0, 2, 0, 3, 0,
+            0xFF);
+        var context = new FakeEntityWorldContext { EntityToSpawn = null };
+        var runner = NewRunner(document, worldContext: context);
+        var logic = new AlundraEntityScriptProxy { PosX = 5, PosY = 6, PosZ = 7 };
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 7 };
+
+        runner.RunOneScriptCall(logic, state);
+
+        Assert.Equal(24, state.CodeIndex); // three instructions of size 8, then 0xFF.
+        Assert.Equal(3, context.SpawnCalls.Count);
+        Assert.Equal((5, 6, 7), (logic.PosX, logic.PosY, logic.PosZ));
+        Assert.Equal(7, state.Result);
+        var warnings = log.Warnings.Where(w => w.Contains("opcode 0x8A")).ToList();
+        Assert.Equal(2, warnings.Count);
+        Assert.Single(warnings, w => w.Contains("SpawnEntityAtPosition(41)"));
+        Assert.Single(warnings, w => w.Contains("SpawnEntityAtPosition(42)"));
+    }
+
+    [Fact]
+    public void SpawnEntityAtPosition_0x8A_TwiceTheSameRecord_SpawnsTwice_AndEachWriteGoesToItsOwnEntity()
+    {
+        var document = NewDocument(0x8A, 1, 10, 0, 20, 0, 30, 0, 0x8A, 1, 11, 0, 21, 0, 31, 0, 0xFF);
+        var first = NewEntity();
+        var second = NewEntity();
+        var context = new FakeEntityWorldContext();
+        context.SpawnQueue.Enqueue(first);
+        context.SpawnQueue.Enqueue(second);
+        var runner = NewRunner(document, worldContext: context);
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(NewEntity(), state);
+
+        Assert.Equal(2, context.SpawnCalls.Count);
+        Assert.All(context.SpawnCalls, call => Assert.Equal(1, call.EntityRecordId));
+        Assert.Equal((10 << 16, 20 << 16, (30 << 16) + 1), (first.PosX, first.PosY, first.PosZ));
+        Assert.Equal((11 << 16, 21 << 16, (31 << 16) + 1), (second.PosX, second.PosY, second.PosZ));
+    }
+
+    [Fact]
+    public void SpawnEntityAtPosition_0x8A_ThenCameraFollow_0x67_FindsTheNewEntityByItsRecordNumber()
+    {
+        // 0x8A [1, ...] then 0x67 [1] (B1 of map 476, @63 and @71). The fake context needs what the real world does
+        // by itself: the spawned entity carries EntityRefId = 1 and is in SpawnedEntities, and a search by number
+        // requires the OWNER to be Loaded, Normal or Deactivated.
+        var document = NewDocument(0x8A, 1, 0xCC, 3, 112, 0, 48, 0, 0x67, 1, 0xFF);
+        var spawned = new AlundraEntityScriptProxy { EntityRefId = 1 };
+        var context = new FakeEntityWorldContext { EntityToSpawn = spawned };
+        context.SpawnedEntitiesList.Add(spawned);
+        var runner = NewRunner(document, worldContext: context);
+        var owner = new AlundraEntityScriptProxy { Status = EntityStatus.Normal };
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Same(spawned, context.EntityFollowedByCamera);
+        Assert.Equal(10, state.CodeIndex);
     }
 
     [Fact]

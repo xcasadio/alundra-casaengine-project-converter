@@ -143,6 +143,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     private readonly HashSet<int> _loggedUnknownOpcodes = new();
     private readonly HashSet<int> _loggedDegradedOpcodes = new();
     private readonly HashSet<int> _loggedFailedActivations = new();
+    private readonly HashSet<(int Opcode, int Record)> _loggedFailedSpawns = new();
     private bool _loggedNoDocument;
     private bool _loggedGlobalTableFallback;
     private bool _loggedSpriteEventOnce;
@@ -877,6 +878,13 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // on ResolveDirectionFromParam's own doc.
                 TurnMatchingEntities(entity, v[1], (uint)v[3], animationId: (uint)v[2]);
                 return 4;
+
+            case 0x8A: // Spawn entity at a position - Script_138_08A @ 0x80040284 (E19.b, docs/plan-e19-opcodes.md
+                       // §1.2d): spawns record v1 with the logic entity as parent, then writes X = v2|v3<<8,
+                       // Y = v4|v5<<8 and Z = v6|v7<<8 (absolute 16-bit values, shifted by 16) and +1 on Z.
+                       // No Result. Size 8.
+                SpawnEntityAtPosition(entity, v);
+                return 8;
 
             case 0x8B: // Spawn entity next to entity - Script_139_08B @ 0x8004033C
                 SpawnEntityNextToEntity(entity, v);
@@ -1676,6 +1684,34 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         }
     }
 
+    /// <summary>Script_138_08A (0x8A SpawnEntityAtPosition, <c>0x80040284</c>) - the same spawn as 0x2D (record v[1],
+    /// <c>notCheckSpawnZone = 1</c>, the logic entity as parent), then the new entity is put at an ABSOLUTE position:
+    /// <c>PosX = (v2 | v3 &lt;&lt; 8) &lt;&lt; 16</c>, <c>PosY = (v4 | v5 &lt;&lt; 8) &lt;&lt; 16</c> and
+    /// <c>PosZ = ((v6 | v7 &lt;&lt; 8) &lt;&lt; 16) + 1</c> (the same +1 on Z as 0x64, and on Z only). A failed spawn is
+    /// fatal in the original; the port logs a warning once per (opcode, record) and writes nothing, like 0x2D and 0x8B
+    /// do for their own failure.</summary>
+    private void SpawnEntityAtPosition(AlundraEntityScriptProxy entity, int[] v)
+    {
+        var spawned = _worldContext.SpawnEntityByRecordId(entity, v[1]);
+
+        if (spawned == null)
+        {
+            if (_loggedFailedSpawns.Add((0x8A, v[1])))
+            {
+                Logs.WriteWarning(
+                    $"AlundraEventProgramRunner: opcode 0x8A SpawnEntityAtPosition({v[1]}) - spawn failed "
+                    + "(record disabled/missing, or the spawn path threw) - the original stops here, the port goes on.");
+            }
+
+            return;
+        }
+
+        spawned.PosX = (v[2] + v[3] * 0x100) << 16;
+        spawned.PosY = (v[4] + v[5] * 0x100) << 16;
+        spawned.PosZ = ((v[6] + v[7] * 0x100) << 16) + 1;
+        spawned.PushLogicalPositionToRoot();
+    }
+
     /// <summary>Script_139_08B (0x8B SpawnEntityNextToEntity) - dynamic spawn by entity-record
     /// id (v[2]), same notCheckSpawnZone=1 spawn path as 0x2D ActivateEntity, then positions the
     /// NEW entity relative to the first entity matched by v[1]s search type: raw 16.16 offset
@@ -1704,9 +1740,9 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             spawned.PosY = matches[0].PosY + ((v[5] + v[6] * 0x100) << 16);
             spawned.PosZ = matches[0].PosZ + ((v[7] + v[8] * 0x100) << 16);
             // E3.d: grep-routed Pos* write site (docs/plan-e3-collisions.md "DLL - propriete de la
-            // racine par frame" item 4) - a no-op today (no spawned prefab carries a controller, E3.d
-            // scopes CharacterControllerComponent to the hero alone), kept for parity with every other
-            // scripted Pos* write site so a future controller-driven spawn is routed correctly too.
+            // racine par frame" item 4) - routes the new position to the root of a spawned prefab that
+            // carries a controller (the camera block of map 476, E19.b); a no-op for a bare entity. Kept
+            // for parity with every other scripted Pos* write site.
             spawned.PushLogicalPositionToRoot();
         }
     }

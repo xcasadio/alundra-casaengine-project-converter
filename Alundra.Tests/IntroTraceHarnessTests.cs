@@ -297,7 +297,7 @@ public class IntroTraceHarnessTests
 /// sound/effects/HUD, entity-vs-entity HORIZONTAL collision, walls/navigation (E4-1: the intro's own
 /// paths are unobstructed on map 389). Entity-vs-entity Z SUPPORT (E4.f, decision E4-4 -
 /// <see cref="EntitySupport"/>) IS simulated - static platforms only, no moving-platform passenger
-/// follow (E14). Dynamic entity spawn (opcodes 0x2D/0x8B, via <see cref="SpawnEntityByRecordId"/>) IS
+/// follow (E14). Dynamic entity spawn (opcodes 0x2D/0x8A/0x8B, via <see cref="SpawnEntityByRecordId"/>) IS
 /// simulated - see that method's own doc.
 /// </summary>
 internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScriptHost, IAlundraSoundPlayer
@@ -326,6 +326,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         0xAF, 0xB0, 0xB1, 0xBA, 0xBD, 0xBE, 0xBF,
         0x42, 0x43, 0x59,
         0xC4, // E19.b T1 (dialogue with a speaker search, without the name box).
+        0x8A, // E19.b T2 (spawn at an absolute position).
         // E16.a T6 (docs/plan-e16-etat-partie.md, contract item 4): the 23 opcodes on the line above were
         // ported by earlier slices (dialogue, map change, HUD, audio, ...) and already have a Dispatch
         // case, but were never added here - the same staleness the notes below describe. Checked by
@@ -1156,7 +1157,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
-    /// Dynamic spawn-by-record-id (opcodes 0x2D ActivateEntity, 0x8B SpawnEntityNextToEntity) - mirrors
+    /// Dynamic spawn-by-record-id (opcodes 0x2D ActivateEntity, 0x8A SpawnEntityAtPosition, 0x8B SpawnEntityNextToEntity) - mirrors
     /// GameEngine.SpawnEntity (GameEngine.cs:684-760) called with notCheckSpawnZone=1, i.e. only
     /// AlundraEntitySpawnFactory.ShouldSpawnRecord's IsEnabled gate still applies (the 0x40 SpriteDirection gate
     /// and the player-tile spawn-zone box are both skipped, exactly like the original). Builds a fresh

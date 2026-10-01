@@ -51,7 +51,7 @@ public interface IEntityWorldContext
     void SetForcedCameraLookAt(int x, int y, int z);
 
     /// <summary>
-    /// Dynamic spawn by entity-record id - backs opcode 0x2D (Script_45_02D), which always calls the
+    /// Dynamic spawn by entity-record id - backs opcodes 0x2D (Script_45_02D), 0x8A and 0x8B, which always call the
     /// original's <c>GameEngine.SpawnEntity(logicEntity, entityRecordId, notCheckSpawnZone: 1)</c>.
     /// Returns null when the record is disabled/missing or the spawn otherwise fails (prefab loader
     /// unavailable, etc.) - the original breakpoints (debug-only trap) in that case instead.
