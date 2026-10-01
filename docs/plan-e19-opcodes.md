@@ -95,6 +95,15 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     corrige dans E19.c2.
   - **D-E19-20** — La branche moteur d'E19.c2 part de `main`, après le merge de
     `chantier/field-move-to-contact` par l'auteur (fait le 2026-10-01).
+- **D-E19-21 à D-E19-23** (2026-10-01, avant le plan d'E19.d) — ADR-0020 :
+  - **D-E19-21** — `0x24` se porte comme le binaire, avec un **recensement statique** de ses 395 sites ; un
+    site du chemin de l'histoire qui risque de ne jamais finir arrête l'exécution et se soumet à l'auteur.
+  - **D-E19-22** — `0x40` et `0x41` se portent **complètement** dans E19.d, les deux cas d'effacement de
+    l'état compris ; un numéro de programme hors limites (v1 ≥ 6, aucun site) est ignoré avec un
+    avertissement : on corrige l'écriture hors tableau de l'original. E19.j ne garde que le réarmement hors
+    zone.
+  - **D-E19-23** — L'arc de la 392 replace Alundra dans le couloir du portail après le retour de la main,
+    au lieu de le faire marcher à travers les caisses.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -321,13 +330,13 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.b 🧪 | Carte 476 : `0xC4` sans nom (D-E19-5), `0x8A` (bloc caméra), `0x4C` gardé pour la machine à écrire | A2, A4 | La vision de Lars et Melzas jusqu'à 478, puis jusqu'à 392 |
 | E19.c1 🧪 | Cartes 478 et 416 : `0x0B` avec détour (D-E19-6), `0x1C`/`0x1D` (compteur du binaire, Chain et Hold), `0x5E`, `0x08`, `0x0C`, `0x3A`, `0x89`, `0x73`/`0x74` ; arcs en vrais préfabs (D-E19-14) | A3, A7, A4p | La vision de 478 va au bout ; la plage 416 mène à la 163 |
 | E19.c2 🧪 | Moteur : horloge logique exacte des fins d'animation, rendu en temps réel (D-E19-16, D-E19-17), correction des Loop figées ; DLL : pilotage à chaque tick logique, signal de boucle (D-E19-18), garde de `0x1C` sous rattrapage | A3, A9, tests moteur | Wendell à Inoa rend la main ; les fins d'animation au tick de l'original |
-| E19.d | Fin de chaîne : `0x24` sur l'entité logique, `0x40`/`0x41` sur l'entité logique, reste de 392, 391 et 163 | A5, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
+| E19.d | Fin de chaîne : `0x24` avec recensement (D-E19-21), `0x40`/`0x41` complets (D-E19-22), défaut d'atterrissage de la DLL (391), vrai héros et pad tenu dans les arcs ; reste de 392, 391 et 163 | A5, A5r, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
 | E19.e | Recette de bout en bout, plus un test statique : aucun opcode sauté sur la chaîne hors liste d'exceptions | toute la chaîne | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement (avec les recettes d'E16 en attente) |
 | E19.f | Boîte de nom et boîte de texte fidèle (D-E19-4) : export du cadre, écrans XAML liés à un view model, cycle de vie de la boîte de nom, pour `0x0D`/`0x5C`/`0xC4` | tests MGDesktop | Les noms s'affichent au-dessus de la boîte, à la place de l'original |
 | E19.g | Effets visuels (D-E19-7) : export des effets par le convertisseur, réserve de 128 effets aux règles du binaire, `0x90`-`0x94`, `0xA0`-`0xA3`, rendu | cartes à effets | L'aura de 476, les vagues de 391 |
 | E19.h | Attentes en Z et contacts : `0x20`-`0x23`, `0x25`, `0x26`, `0x47`, `0x48` ; `CollidedWithEntityZ` et `ForceAdjusted` alignés sur le binaire | ciblés | ciblée |
 | E19.i | ~~Boucles d'animation Loop pour `0x1C`/`0x1D`~~ — **absorbée par E19.c2** (D-E19-18) : le signal de boucle et son pont y arrivent ; le recensement exact est de 208 sites dans 53 cartes, et non 101 dans 30 | — | — |
-| E19.j | Événements de carte : réarmement hors zone du binaire (619 enregistrements) ; `0x40`/`0x41` complets avec `g_clearProgramState` sur l'entité logique | ciblés | ciblée |
+| E19.j | Événements de carte : réarmement hors zone du binaire (619 enregistrements) ; (`0x40`/`0x41` complets : faits en E19.d, D-E19-22) | ciblés | ciblée |
 | E19.k | Caméra : balancement `0x8E`/`0x8F`, masque des fonds `0xA4` | ciblés | 392, 391 |
 | E19.l | Prédicats, branches et restes : `0x82` (avec la correction d'`AddOneItemIfUnlocked`), `0x83`, `0x84`, `0x87`, `0x3F`, `0x95`, `0x99`, `0x9A`, `0x9F` (avec `InitializeContents`), `0x57`, `0x58`, `0x4A`, `0x2A`, `0x2B`, `0x5D`, etc. ; liste fermée au recensement du moment | ciblés | ciblée |
 | E19.m | Hygiène et clôture : taille de `0x5F` (8), libellés faux, `0x01` qui rend 0, modes aléatoires 4 et 5 de `ResolveDirectionFromParam` ; test statique : aucun opcode atteignable sauté dans le corpus hors E14 (IA native) et E18 (`0xBB`) | corpus | — |
@@ -1821,6 +1830,354 @@ exécution.
   | Latent : le binaire exclut aussi les entités bloquées (`BlockedByEntity`, `+0x20`) de `UpdateAnimation` ; la DLL n'exclut que les entités à détruire. Rien ne pose ce champ aujourd'hui. | P4 | Reporté (à reprendre si le blocage entre entités est porté). |
   | P4 du moteur (horloge activée en cours d'animation, `LastUpdateLoopTurns` périmé, numéros de ligne de la doc, trous de tests, entrées limites, `Detach`). | P4 | Reportés : plan moteur, « Vérification de clôture ». |
 
+### 1.2g E19.d — Fin de la chaîne : 392, 391 et 163 jusqu'au premier livre ⏳ (proposée le 2026-10-01)
+
+**But.**
+- La 392 mène à la 391 par son portail ; la 391 mène à la 416 ; la 163 joue le réveil à Inoa, Jess marche
+  jusqu'au mur et disparaît, Alundra reprend la main près du premier livre.
+- `0x24` attend comme le binaire, avec un recensement de ses 395 sites (D-E19-21) ; `0x40`/`0x41` sont portés
+  complètement (D-E19-22).
+- Les arcs à préfabs ont le vrai préfab d'Alundra, et le générateur aléatoire repart de sa graine à chaque
+  arc.
+
+**Périmètre.** DLL (`AlundraEventProgramRunner.cs`, `AlundraEntityScriptProxy.cs` pour le défaut
+d'atterrissage, `EventOpcodeSizeTable.cs` pour les libellés), tests (`Alundra.Tests`, support d'arcs), docs.
+Le moteur ne change pas.
+
+**Décisions** (2026-10-01, avec l'auteur ; ADR-0020) : D-E19-21 à D-E19-23, au §0.1.
+
+**Faits établis** (découverte en lecture seule du 2026-10-01 : quatre volets, chacun contre-vérifié ;
+scratchpad `e19d/`) :
+
+- **La 392** **[données]** :
+  - on y arrive par le `0x53 @986` de la 476 (tuile (29, 13), z 4, effet 4) ; la carte ne lit ni n'écrit aucun
+    drapeau ;
+  - B1 (`@20`) : `0x10 @49`, `0x64 @50` place le héros en (720, 216, 64) à l'image 0, animation 13, attente,
+    marche de 48 px vers l'est (`0x1F @68`), puis `0x11 @104` ; ensuite une boucle de roulis : tant qu'une
+    direction est tenue (`0x2F [0,240,0]`, masque 0xF000) et que le héros est au sol, `0x10`, `0x0C`,
+    `0x08 [2]`, attente de 4, `0x11` — le héros est poussé 4 à 5 ticks dans une direction tirée au hasard ;
+  - la sortie est le **portail** 0 en (22, 23), sol de portail, drapeau 1 : il faut la flèche bas tenue,
+    regarder vers le bas et `PlayerControlFlags` = 0 ; fenêtre `PosX >> 16` dans [538, 541], `PosY >> 16`
+    dans [375, 376]. Arrivée : 391, `PosX` 24379392, `PosY` 29884416, `PosZ` 0, animation 0x36, direction 0,
+    effet 0 ;
+  - seul opcode non porté atteint : `0x8E @20` (balancement de caméra, E19.k), qui ne bloque rien ;
+  - **les caisses** (4 à 11) ferment le passage vers le portail. Dans l'original, Alundra les soulève et les
+    lance, ou saute par-dessus (hypothèse appuyée par les drapeaux des caisses). **Dans la DLL, elles ne
+    bloquent pas** : leur corps de collision est un fantôme (`isSensor: true`,
+    `BepuPhysicsEngine.cs:188`) que les déplacements par contrôleur ignorent (`AllowSweepTest`, `:460`) —
+    c'est la règle déjà en place, les entités ne se bloquent pas entre elles. Alundra traverse donc les
+    caisses : écart connu, à reprendre avec le port et le lancer (E14).
+- **La 391** **[données]** : B1 (`@228`), B2 (`@552`) et le programme du bloc caméra (C[100], enregistrement
+  0, apparu par `0x2D @265`). Opcodes non portés atteints : `0xA2` × 5, `0x94` × 5 (effets, E19.g), `0x8E`
+  × 3 ou 4 (E19.k), `0x4C @706` (E12.c) ; aucun ne bloque.
+- **Défaut d'atterrissage de la DLL** **[DLL][binaire]** (bloque la 391) : dans `EvaluateEntitySupport`,
+  `wasAlreadyLanded` exige `ForceZ == 0` (`AlundraEntityScriptProxy.cs:716`). Une entité sans gravité qui se
+  pose garde sa `ForceZ` négative (comme le binaire, `ComputeZPosition` `0x800375E0`, qui n'écrit jamais X
+  ni Y). La DLL pousse alors sa position vers la racine à chaque tick, en la tronquant aux pixels entiers :
+  une marche de moins d'un pixel par tick n'avance jamais. Le bloc caméra de la 391 (`0x1B [0,255]`, sans
+  gravité) se pose à 144 px, puis sa marche vers le sud à 0,5 px par tick (`0x5B @470`) ne bouge pas ;
+  `0x07 @480` (TileY 44) ne passe jamais et le `0x53 @540` vers la 416 n'est jamais atteint.
+- **La 163** **[données]** — B[1] `@60` (événement de carte 0, héros = propriétaire) est toute la
+  cinématique :
+  - `@98`-`@110` : animations 83 (Hold 32) et 85 (Hold 40) du héros, avec `0x1C [3]` et `0x1C [1]` ;
+  - `@115 0x43 [0]` : l'entité logique devient Jess ; `@135 0x1A 12 ; 0x1C [1]` (Chain 24 vers 0) ;
+    marches `0x0B @143` (96 px) et `@157` (16 px) ;
+  - cinq boîtes `0x0D` suivies de `0x39` (`@117`, `@123`, `@129`, `@163`, `@169` ; 2, 3, 3, 3 et 2 pages) :
+    il faut le bouton ;
+  - `@181 0x1A 1 ; @183 0x24` : Jess marche vers +Y jusqu'au mur ; `@184 0x42`, `@185 0x2E [0]` (Jess
+    détruite), marche du héros `0x0B @190`, `G0 @198`, `0x11 @201`, `G200` effacé `@202`, `G201 @205`,
+    `G1662 @208` ;
+  - le livre (enregistrement 7) est là dès l'image 0 ;
+  - opcodes non portés atteints : `0x24 @183` (le seul qui bloque), `0x41 @56`, `0x41 @728` et `0x40 @731`
+    (objets de la boutique, sans effet sur la cinématique) ;
+  - **Jess au mur** : préfab sans ClassA ni ClassB, masque 0x40 ; boîte 20 × 14 × 32 centrée ; la colonne
+    38 a la praticabilité 0x41 aux lignes 19 à 21. Contact exact à `PosY` 297,0 (19464192), avec une avance
+    de 0,5 px au tick du contact (drapeau à 0, E19.a3), puis `ForceAdjusted` = 1 au tick suivant ;
+  - le P3 d'E19.c2 (fin fantôme par une écriture croisée) ne peut pas arriver ici : les trois attentes sont
+    dans B[1], qui écrit l'animation attendue juste avant.
+- **Binaire** **[binaire]** :
+  - `0x24` (`0x8003DB70`, taille 1) : rend 1 si `ForceAdjusted` (`+0x13C`) de l'entité logique ≠ 0, sinon 0 ;
+    sans opérande, sans mémoire, sans autre sortie ;
+  - `0x40` (`0x8003E7B8`, taille 3) : `ProgramIndexes[v1]` = v2 de l'entité logique et pose
+    `g_clearProgramState` ; `0x41` (`0x8003E7E4`, taille 3) : `SpriteProgramIndexes[v1]` = v2 de l'entité
+    logique ; aucun ne borne v1 ;
+  - `RunScript` remet le drapeau à zéro au début de chaque appel et le teste après chaque instruction (avec
+    l'entité logique lue avant celle-ci) : si l'entité logique est le propriétaire, l'état qui tourne est
+    effacé à la fin de l'appel (même sur un Break ou une suspension, quel que soit v1) ; sinon,
+    `logic+0x234` et `+0x238` sont effacés tout de suite. Dans les deux cas, le drapeau est remis à zéro
+    (`0x80042310`) — la décompilation ne le fait que dans le second cas ;
+  - corpus : 426 sites de `0x40` dans 121 cartes, toujours (v1, 0) avec v1 de 2 à 5, aucun dans un programme
+    B ; 85 sites de `0x41`.
+- **`0x24` dans le corpus** **[données]** : 395 sites dans 76 cartes, dont 160 dans des programmes qui
+  tiennent la main du joueur (46 cartes). Après la 163, sur le chemin de l'histoire : 162 (`@205`, `@210`,
+  `@215`), 164 (`@341`, `@346`), 165 (Nestus, `@932`, `@943`, qui commandent par T103 la cinématique de la
+  première visite, sous sa propre main tenue), 176, 178 (× 5), 179 (× 5), 44 et 10. Tous les acteurs
+  de `0x24` en programme C ont un contrôleur.
+- **Support d'arcs** **[test]** :
+  - le héros des arcs `RealController` est construit à la main : une boîte et un contrôleur, sans
+    `AnimatedSpriteComponent`, donc sans horloge d'animation ; `0x1C @100` de la 163 ne finit jamais. Son
+    corps est même `Static` (un mur fantôme à sa tuile de départ), alors que le préfab est `Kinetic`
+    (fantôme) ;
+  - en production, le héros est le préfab `Entities/Alundra/Alundra.entity` (`192c2eeb`), créé par
+    `World.SpawnEntity<Entity>` ; `AdoptPlayerPawn` abonne son sprite (376 animations) à l'horloge logique ;
+  - `ArcRun.ResetAll` ne remet pas `AlundraRandom` à zéro (P4 reporté d'E19.c1) ; l'arc de la 392 tient une
+    direction, donc `0x0C` tire dans le flux ;
+  - le pad de l'arc ne tient un bouton qu'une image (`Press`) et l'arc ne place le héros qu'à sa
+    construction.
+
+**Tâches.** Chaque tâche porte son icône de statut et se commite avec la mise à jour de ce plan. Les arcs A6
+et A8 restent hors du dépôt jusqu'à D7 ; d'ici là, les lancements de toute la suite filtrent leurs classes.
+
+- **D0 — Preuves rouges** ⏳ (non commitées) : les arcs A6 et A8 écrits avant le code, avec toutes les
+  valeurs ci-dessous, lancés sur le code actuel (`74df40e`). Rouges attendus : A6 échoue dans sa limite en
+  nommant `slot 1 program @228: last 0x00 @479` ; A8 échoue dans sa limite en nommant
+  `slot 1 program @60: last 0x1C @100` (le message donne l'image de la dernière exécution, pas 253).
+- **D1 — Support d'arcs** ⏳ (tests seulement) :
+  - **vrai héros** : en mode `Prefabs`, le héros est le préfab d'Alundra créé par l'appel de production
+    (`World.SpawnEntity<Entity>(HeroPrefabId)`, puis `Initialize()`, puis le `AlundraPlayerController`
+    existant) ; on garde l'application de l'en-tête, la resynchronisation du masque, l'animation 0 forcée,
+    le placement et le pad ;
+  - **`AlundraRandom.Reset()`** dans `ArcRun.ResetAll()` (le flux de l'arc part de la graine ; en jeu, sa
+    position dépend des tirages d'avant : convention d'arc documentée) ;
+  - **directions tenues** : `HoldDirections` / `ReleaseDirections`, à côté de `Press` (inchangé) ;
+  - **placement en cours d'arc** : `PlaceHero(x, y, z)` (pixels), qui pose `Pos*`, `Tile*` (`TileZ` =
+    `PosZ >> 20`) et déplace la racine ;
+  - autotests, rouges d'abord : **TH1**, **TH2**, **TH3** (valeurs plus bas) ;
+  - **non-régression** : A3 (resserré compris), A4p, A7, A9 et l'autotest des préfabs gardent toutes leurs
+    valeurs avec le vrai héros ; A0 à A4, la cabine et le marin 12 (sans préfabs) ne changent pas ; les
+    traces ne bougent pas. Une valeur qui bouge est un arrêt ; repli : le vrai héros derrière un drapeau
+    `RealHero` de l'`ArcSpec`, réservé à A5, A6 et A8.
+  - Après D1, A8 atteint `0x11 @201` vers l'image 941 puis échoue sur les opcodes sautés, qui contiennent
+    `(1,183,0x24)`, `(0,56,0x41)`, `(2,728,0x41)` et `(2,731,0x40)`.
+- **D2 — Défaut d'atterrissage** ⏳ : `wasAlreadyLanded` ne dépend plus de `ForceZ`
+  (`PosZ == targetPosZ` suffit) ; l'entité qui reste posée n'est plus repoussée à chaque tick. Tests
+  unitaires (valeurs plus bas), puis A6 passe.
+- **D3 — Arc A5 de la 392** ⏳ (avec A5r) : écrits et verts d'un coup (aucun opcode d'E19.d n'y joue).
+- **D4 — `0x24`** ⏳ : le cas, une ligne sur l'entité logique, sans détour ni minuterie (D-E19-6) ; tests
+  unitaires U1 à U4. A8 échoue ensuite sur `0x41 @56`, `0x41 @728` et `0x40 @731`.
+- **D5 — Recensement des 395 sites de `0x24`** ⏳ (D-E19-21) :
+  - **méthode** : pour chaque site atteignable (programmes de tous les créneaux, entité logique suivie à
+    travers `0x42`/`0x43`), l'acteur (préfab), son animation au moment de l'attente (dernier `0x1A`, `0x59`,
+    `0x5B` ou `0x0B` avant le site), la vitesse de cette animation (jeux d'animation du préfab), sa
+    direction (dernier `0x09`, `0x5B`, `0x3A`, `0x08` ou `0x0C`) et sa position quand elle se déduit
+    statiquement (apparition ou dernier `0x64`/`0x65`) ; puis un lancer de rayon dans la grille de cellules
+    depuis l'empreinte de l'acteur, dans sa direction : la première cellule qui bloque son masque (comme
+    `AlundraCellsCollisionField`) ou dont la marche de hauteur dépasse celle du contrôleur ;
+  - **classes** : « mur trouvé » (finit sur une cellule) ; « vitesse nulle » (attend un contact extérieur :
+    E19.h ou E14) ; « aucun mur » (le rayon sort de la carte) ; « indéterminé » (position ou direction non
+    déductible) ;
+  - **rapport** : `docs/census-0x24-waits.md` (en anglais) — la méthode, le tableau site par site (carte,
+    pc, créneau, acteur, animation, vitesse, direction, classe, distance au mur, main tenue ou non) et les
+    totaux par classe ;
+  - **arrêt** : un site du chemin de l'histoire (162, 164, 165, 176, 178, 179, 44, 10) hors de « mur trouvé »
+    arrête l'exécution **avant** le commit de D4 et D5 : la question est soumise à l'auteur. Les sites hors du
+    chemin dans une classe à risque sont listés pour l'auteur, sans arrêt.
+- **D6 — `0x40` et `0x41`** ⏳ (D-E19-22) : les deux cas, comme le binaire. `0x41` écrit
+  `SpriteProgramIndexes[v1]` de l'entité logique ; `0x40` écrit `ProgramIndexes[v1]` et demande
+  l'effacement : propriétaire → l'état qui tourne, à la fin de l'appel (`ClearProgramStateRequested`), quel
+  que soit v1, même sur un Break ou une suspension ; autre entité → son `EventProgramState` tout de suite. Le
+  drapeau est remis à zéro à chaque test. v1 ≥ 6 : rien n'est écrit, un avertissement une seule fois, taille
+  rendue 3 (correction d'un défaut de l'original, qui écrirait hors du tableau). Tests unitaires U5 à U13.
+  A8 passe ensuite.
+- **D7 — Arcs verts** ⏳ : A6 et A8 commités ; temps d'exécution relevés.
+- **D8 — Hygiène** ⏳ : miroir `ImplementedOpcodes` (`0x24`, `0x40`, `0x41`) ; libellés de la table des
+  tailles ; la doc de `RunScript` sur l'effacement (le choix laissé au port de `0x40` est fait) ; la doc de
+  T-D15 qui se contredit (P4 d'E19.c2) ; la ligne E19.j de l'enveloppe ne garde que le réarmement hors zone ;
+  au §0.2.4, `0x8E @20` est en tête de B1, hors de la boucle de roulis.
+- **D9 — Docs** ⏳ : statuts, mesures au §2, points ouverts, ligne du plan maître.
+- **D10 — Recette en jeu (auteur)** ⏳ : voir plus bas.
+
+**Valeurs écrites d'avance.** Échantillons pris pendant la course (`OnInstruction`, après l'effet), vérifiés
+après le signal de fin ; ordre des vérifications : signal de fin, opcodes sautés ou dépassés, puis le reste
+dans l'ordre écrit ; images absolues à ± 3 près, écarts exacts.
+
+- **Support d'arcs** :
+  - **TH1** (carte 478, `ArcSpec("PrefabHeroSelfTest", "Inoa", "Inoa (Vision Event from Lars and Melzas
+    cutscene)-478", {1641}, 22, 57, 1, 200, RealController, Prefabs)`). Rouge aujourd'hui : échoue sur
+    l'absence d'`AnimatedSpriteComponent` du héros. Vert, dans cet ordre : (1) après une image, le héros est
+    dans `RealWorld.Entities` avec `Entity.World` = `RealWorld` ; un `AnimatedSpriteComponent` de 376
+    animations ; `Hero.LogicalClockSprite` est ce composant, avec `LogicalTickRate` 50 ; une boîte
+    (21, 15, 32) en (0,5 ; 0,5 ; 16) ; un `CollisionComponent` `Kinetic` sans réponse de contact ; un
+    contrôleur de masque 0x41 ; (2) en fin d'image 0, l'animation courante est `bankalundra_0_anim0_down`,
+    tick logique 0 ; (3) `Hero.AnimCompleteCounter` vaut 0 à `arc.Frame` = 54, 1 à 55, 2 à 109 ; (4) après la
+    première image, exactement 6463 erreurs de résolution de sprite (3628 + 2835), aucune autre erreur, aucun
+    repli sur une entité nue ; le temps est relevé.
+  - **TH2** : trois `AlundraRandom.Next()`, puis `new ArcRun(spec)` : graine 0xB017C93D ; un `Next()`, puis
+    `Dispose()` : graine 0xB017C93D. Rouge aujourd'hui sur la première.
+  - **TH3** (lu dans `ArcRun.State.LastPadState` après chaque image) : `HoldDirections(Down)` : image 1,
+    `Hold` 0x4000 et `JustPressed` 0x4000 ; image 2, 0x4000 et 0 ; `Press(Square)` avec bas tenu : 0x4080 et
+    0x0080 ; `ReleaseDirections()` : image suivante 0 et 0 ; bas de nouveau : `JustPressed` 0x4000. A1 et A9
+    ne changent pas.
+- **Défaut d'atterrissage (D2)** — entité sans gravité, avec contrôleur, posée sur un sol plat avec
+  `ForceZ` −65536, `CurrentAnimationId` déjà sur une animation de marche de 0,5 px par tick vers le sud (sans
+  cela, le retard D-E19-13 donne 31,5 px) :
+  - après 64 ticks, `PosY`, lue après la reprise de la racine de l'image suivante, a avancé de exactement
+    2097152 (32 px) ; `PosZ` reste au sol ; `ForceZ` reste −65536. Aujourd'hui : 0 (le champ `PosY` vaut le
+    départ + 32768 juste après chaque tick, sans jamais cumuler) ;
+  - jumeaux : une entité avec gravité se pose comme avant (`ForceZ` 0, plus de poussée une fois posée) ; une
+    entité sans gravité qui marche hors d'un rebord descend de 1 px par tick.
+- **A6** (391) : `ArcSpec("A6", "The Klark", "Ship Klark (night, break, Event)-391", {1641}, 15, 28, 7,
+  limite 1500, RealController, Prefabs)`.
+  - Fin : `0x53 @540` (créneau B, programme `@228`) à l'image 1149 ; arrivée sur la 416 en `PosX` 65273856,
+    `PosY` 51904512, `PosZ` 1048576, effet 2, animation 0, direction 0.
+  - Opcodes sautés : contenus dans {`0xA2` `@228`/`@236`/`@244`/`@252`/`@408`, `0x8E` `@260`/`@335`/`@342`/
+    `@721`, `0x94` `@417`/`@425`/`@433`/`@441`/`@503`, `0x4C @706`} ; `0x4C @706` s'exécute exactement 3 fois ;
+    aucun dépassement de la garde.
+  - Image 0 : après `0x2D @265`, l'enregistrement 0 est en (29097984, 44040192, 9437185) ; après `@270`, le
+    héros a `TargetAnimationId` 1 et `TargetDirection` 0. C[100] tourne pour la première fois à l'image 2 :
+    après `@764`, `PosZ >> 16` du bloc vaut 336 ; après `@775`, sa `ForceZ` vaut −65536. Le héros à `@275`
+    (image 21) : (24379392, 32067584).
+  - Premier `0x00 @291` à l'image 179, le bloc en TileX 18, TileY 42, TileZ 9.
+  - Boîtes : `0x5C @295` à l'image 180, `@306` à 273, `@327` à 444 ; chacune fermée par `0x51 @739` exactement
+    61 images après (241, 334, 505) ; trois ouvertures en tout, boîte fermée à la fin.
+  - À l'instruction : `0x5E @321` (413), enregistrement 6, `ForceZ` 393216 ; `@368` (619), enregistrement 2,
+    524288 ; `@377` (640), enregistrement 3, 393216 ; `@497` (854), enregistrement 0, 24576. T0 posé `@347`
+    (568). `0x2E @388` et `@390` (702), `Result` 1. `0x64 @449` (703) : l'enregistrement 4 en (29097984,
+    46661632, 3145729) ; après `0x63 @457`, `(Flags & 0x100) == 0`. `0x5B @470` (728) : animation 1, direction
+    0 du bloc. Premier `0x5B @491` à l'image 793, bloc en `PosY` ≥ 46137344 et TileY 44.
+  - Boucle et fin : `0x73 @514` (987) ; `0x65 @517` et `0x74 @525` s'exécutent 40 fois chacun, `0x65` sur 40
+    images consécutives à partir de 988 ; l'enregistrement 4 en `PosY` 51904512 à `0x00 @528` (1027) ;
+    premier `0x37 @529` à 1028 ; le `0x53 @540` exactement 121 images après. B2 : `0xAF` aux images 62, 184,
+    206, 448 et 510 ; fin `@761` dès 633. État final : `PlayerControlFlags` 0x04 ; T0 posé ; T999 et T1000
+    effacés ; `GameFlags[51]` = 512.
+  - La `PosY` finale du bloc n'est pas épinglée (une dernière troncature à l'atterrissage reste).
+  - Ces images suivent l'ordre actuel de `TileZ` : elles reculeront d'une image avec E19.h (D-E19-15).
+- **A5** (392) : `ArcSpec("A5", "The Klark", "Ship Klark (night, inner, break)-392", {1641}, 29, 13, 4,
+  limite 400, RealController, Prefabs)`.
+  - Partie 1 : image 0, `0x8E @20` sauté, `0x10 @49` ; après `0x64 @50`, le héros en (47185920, 14155776,
+    4194305) ; après `@58`, animation 13, direction 0. `@64` à l'image 121 (animation 3, direction 24).
+    `0x00 @71` à 135, héros en `PosX` 50411520, `PosY` 14155776 ; `@72` à 136, `PosX` 50669568 ; `@78`, `@84`,
+    `@90` à 152, 168, 184 ; `@96` à `@99` de 200 à 203 ; `0x11 @104` à 204, héros en (50798592, 14155776),
+    tuile (32, 13, 4), `PlayerControlFlags` 0.
+  - Partie 2 : à l'image 205, `PlaceHero(540, 360, 64)` et `HoldDirections(Down)`, puis course jusqu'au départ
+    par le portail (`HasPendingArrival`) : le départ a lieu dans l'image 215 (`arc.Frame` vaut 216 au retour),
+    sans aucun `0x2F @107` avant. Arrivée : 391, `PosX` 24379392, `PosY` 29884416, `PosZ` 0, animation 0x36,
+    direction 0, effet 0.
+  - Opcodes sautés : exactement `0x8E @20`, une fois ; aucune boîte ; `0x3B @133` rend toujours 0.
+  - **Signal de fin hors de la trace** : le départ par un portail n'est pas une instruction. A5 prend
+    `HasPendingArrival` et `ArrivalRecordForTests`, l'exception à la règle du §1.3 est écrite ici.
+  - **A5r** (roulis) : bas tenu sur place dès l'image 205 ; `0x2F @107` à 220 avec `Result` 1, `0x70 @114`
+    avec `Result` 1, `0x10 @118` ; après `0x08 @120`, `TargetDirection` du héros 0x02 ; de 221 à 225,
+    `PlayerControlFlags` 0x04, `PosX` décroît et `PosY` croît (à 225 : (50523408, 16302440)) ; `0x11 @124` à
+    225 ; relâché aux images 226 et 227 ; `PlaceHero(540, 360, 64)` à 228 ; bas tenu ; départ dans l'image
+    238, même arrivée.
+- **A8** (163) : `ArcSpec("A8", "Inoa", "Inoa (inner)-163", {}, 40, 9, 2, limite 1300, RealController,
+  Prefabs)`, avec le vrai héros ; chaque boîte `0x0D` se ferme au bouton dès qu'elle s'ouvre (autant d'appuis
+  que de pages).
+  - Fin : `0x11 @201` (créneau B, programme `@60`) à l'image 1025 ; aucun opcode sauté ni dépassé.
+  - État final : `0x05 @198`, `0x06 @202`, `0x05 @205` et `0x05 @208` dans l'image de `0x11 @201` ; `G0`,
+    `G201` et `G1662` posés, `G200` effacé ; `PlayerControlFlags` 0 ; cinq boîtes ouvertes, aucune ouverte à
+    la fin.
+  - Livre : l'enregistrement 7 est présent, `SpriteType` 237, statut `Normal`, `SpriteProgramIndexes[C]` = 72,
+    `SaveBookEventRunCount` > 0.
+  - Héros pendant les attentes : à `@73`, en (62914560, 9961472), `PosZ` 2359297 (seule épingle de Z) ; X et
+    Y du héros inchangés de `@73` au premier appel de `@190` ; `@102` (`0x1A`) exactement 99 images après
+    `@98` ; `@110` exactement 41 images après `@106` ; `TargetAnimationId` 83 après `@98`, 85 après `@106`.
+  - Entité logique : après `@115`, celle du héros est l'enregistrement 0 (Jess) ; après `@184`, le héros.
+  - Jess : `@139` exactement 25 images après `@135` ; `TargetAnimationId` 12 après `@135` ;
+    `AnimCompleteCounter` 0 à `@139`. Au premier appel de `@143` : (60555264, 8912896), `PosZ` 2097152,
+    TileZ 2, un contrôleur de masque 0x40. Marche 1 : à `@147`, (60555264, 15237120) (232,5 px),
+    `ForceAdjusted` 0, `@147` exactement 98 images après `@143` ; à `@155`, `PosY` 15302656 (233,5).
+    Marche 2 : à `@161`, (60555264, 14221312) (217,0), `ForceAdjusted` 0, exactement 18 images après `@157` ;
+    à `@181`, `PosY` 14155776 (216,0).
+  - `0x24` : à `@184`, Jess en (60555264, 19464192) (924 ; 297,0 px), `ForceAdjusted` 1 ; `@184` exactement 84
+    images après le premier `@183` ; `0x24 @183` s'exécute 85 fois ; après `@185`, Jess (enregistrement 0) est
+    à détruire.
+  - Marche du héros : au premier appel de `@190`, en (62914560, 9961472), puis `TargetAnimationId` 1 et
+    `TargetDirection` 8 ; à `@194`, en (58681344, 9961472) (895,40625 ; 152) ; `@194` exactement 27 images
+    après `@190`.
+  - Boîtes, fermeture (pages + 1 images) : `@121` − `@117` = 3, `@127` − `@123` = 4, `@133` − `@129` = 4,
+    `@167` − `@163` = 4, `@173` − `@169` = 3. Attentes : `@123` − `@121` = 46, `@129` − `@127` = 46, `@135` −
+    `@133` = 46, `@169` − `@167` = 31, `@175` − `@173` = 31, `@179` − `@177` = 11, `@98` − `@96` = 241.
+  - Images absolues : `@98` 253, `@106` 413, `@115` 516, `@123` 565, `@129` 615, `@135` 665, `@143` 690,
+    `@157` 815, `@163` 833, `@169` 868, `@181` 913, `@184` 997, `@190` 998, `@201` 1025.
+  - Objets de la boutique (enregistrements 3, 4, 5, 6 et 8), après leur premier tick C : `ProgramIndexes[2]` =
+    0 (avant 132), `SpriteProgramIndexes[0]` = 0, `SpriteProgramIndexes[2]` = 4, `EventProgramState.Codes`
+    nul ; `(0,56,0x41)`, `(2,724,0x62)`, `(2,728,0x41)`, `(2,731,0x40)` et `(2,734,0xFF)` s'exécutent
+    exactement 5 fois chacun sur tout l'arc.
+- **Tests unitaires de `0x24` (D4)** :
+  - **U1** : propriétaire = entité logique, `01 24 FF`, `ForceAdjusted` 0 : appel 1, trace (0, `0x01`, 1)
+    puis (1, `0x24`, 0), `CodeIndex` 1, `Parameters[1]` 0 ; `ForceAdjusted` 1 : appel 2, (1, `0x24`, 1) puis
+    (2, fin), `CodeIndex` 2 ;
+  - **U2** : `ForceAdjusted` 2 → 1 ;
+  - **U3** : lit l'entité logique : propriétaire à 1 et entité logique à 0 → 0 ; l'inverse → 1 ;
+  - **U4** : aucun effet de bord ni détour : avec une grille de navigation, dix appels avec 0 puis 1 laissent
+    `TargetDirection`, `TargetAnimationId`, les champs du détour et `Parameters[1..3]` inchangés.
+- **Tests unitaires de `0x40`/`0x41` (D6)** :
+  - **U5** : programme C, `ProgramIndexes[2]` = 0x84, `40 02 00 1A 05 FF` : après l'appel,
+    `ProgramIndexes[2]` = 0, `TargetAnimationId` 5, `EventProgramState.Codes` nul et `Sp` 0 ; trace
+    (`0x40`, 3), (`0x1A`, 2), fin ; au tick C suivant, `SpriteEventRunCount` + 1 et `ScriptRunCount` inchangé ;
+  - **U6** : programme C du propriétaire `40 03 00 37 05` avec une entité logique X (état non nul en
+    `CodeIndex` 7) : après l'appel 1 (suspendu dans l'attente), `X.ProgramIndexes[3]` = 0, l'état de X effacé,
+    celui du propriétaire gardé (`Codes` non nul, `CodeIndex` 3) et ses `ProgramIndexes` inchangés ;
+  - **U7** : `40 02 00 43 kk 1A 05 FF`, l'entité logique est d'abord le propriétaire, puis kk trouve X : l'état
+    de X n'est pas effacé, `X.TargetAnimationId` = 5, l'état du propriétaire est effacé en fin d'appel ;
+  - **U8** : `40 02 00 FF` dans un programme A d'une entité dont l'état C est non nul : `ProgramIndexes[2]` = 0,
+    état C intact, et le tick C suivant passe par `RunSpriteEvent` ;
+  - **U10** : `40 06 00 FF` et `41 06 00 FF` : aucune exception, tableaux inchangés, un avertissement, taille
+    rendue 3 ;
+  - **U11** : `41 02 04 FF` : `SpriteProgramIndexes[2]` = 4 de l'entité logique, `ProgramIndexes` inchangés,
+    état non effacé (fin sur `0xFF @3`), taille 3 ; avec une entité logique X, seule X change ;
+  - **U12** : programme C `40 03 00 1A 05 00 1A 06 FF`, `ProgramIndexes[2]` = 0x81 et `[3]` = 0x82 : appel 1,
+    trace (0, `0x40`, 3), (3, `0x1A`, 2), (5, Break), puis `ProgramIndexes[3]` = 0 et `Codes` nul ; l'appel 2
+    reprend en pc 0 ; `TargetAnimationId` ne vaut jamais 6 ;
+  - **U13** : `40 03 00 37 05 1A 06 FF` n'atteint jamais le pc 5.
+- **Rouge attendu, étape par étape** :
+
+  | Étape | A6 | A8 |
+  |---|---|---|
+  | Code actuel (`74df40e`) | échoue dans sa limite en nommant `slot 1 program @228: last 0x00 @479` | échoue dans sa limite en nommant `slot 1 program @60: last 0x1C @100` |
+  | Après D1 (support d'arcs) | même échec | atteint `0x11 @201` vers l'image 941, puis échoue sur les opcodes sautés (`0x24 @183`, `0x41 @56`, `0x41 @728`, `0x40 @731`) |
+  | Après D2 (atterrissage) | passe | même échec |
+  | Après D4 (`0x24`) | passe | atteint la fin à 1025, puis échoue sur les opcodes sautés (`0x41 @56`, `0x41 @728`, `0x40 @731`) |
+  | Après D6 (`0x40`/`0x41`) | passe | passe |
+
+**Lancement des tests.** Comme E19.c1 et E19.c2 : au premier plan, `--blame-hang-timeout 300s` dès qu'un arc en
+préfabs tourne ; un arc qui dépasse 120 s est un arrêt ; à la fin, une course en Release, puis la build Debug
+et une course Debug ; la DLL déployée est la Debug.
+
+**Recette en jeu D10 (auteur).**
+1. **De la 476 à la 163, en jouant** (après le raccourci de l'arc A4 sur la 476) : la 392 se charge, Alundra
+   reprend la main ; il marche vers l'ouest jusqu'au portail en (22, 23) et le prend en tenant bas. Il
+   traverse les caisses : c'est l'écart connu (l'original demande de les soulever ou de sauter). La 391 joue
+   sa cinématique (les marins sautent, le bloc caméra descend puis glisse au sud, trois boîtes), puis la 416,
+   puis la 163 : réveil, cinq boîtes, Jess marche jusqu'au mur et disparaît, Alundra fait quelques pas à
+   gauche et reprend la main, le livre est sur sa table.
+2. **La fin de l'intro (389)** se joue comme avant : le bloc 18 se pose et la suite démarre (le défaut
+   d'atterrissage corrigé touche ce genre d'entité).
+
+**Acceptation d'E19.d.**
+1. TH1 à TH3 rouges puis verts ; les arcs et épingles existants gardent leurs valeurs avec le vrai héros.
+2. A6 et A8 échouent comme le dit la table, puis passent ; A5 et A5r passent.
+3. Les tests unitaires de D2, D4 et D6 passent.
+4. Le recensement de `0x24` est dans `docs/census-0x24-waits.md`, et aucun site du chemin de l'histoire n'est
+   hors de « mur trouvé » (sinon arrêt, D5).
+5. `Alundra.Tests` et les tests du convertisseur passent à 0 échec ; le moteur, les traces du héros et de
+   l'intro ne changent pas.
+6. Un verifier frais rend CONFIRMED sur 1 à 5.
+7. La recette D10 de l'auteur.
+
+**Risques.**
+- `0x24` passe en vrai dans tout le corpus : 395 sites, dont 160 sous main tenue. Le recensement montre les
+  sites à risque ; les contacts entre entités, les porteurs et les bornes de force qui lèvent aussi le drapeau
+  dans le binaire restent pour E19.h.
+- `0x40` en vrai rend inertes, jusqu'à E14, environ 200 entités dans 40 cartes dont le binaire coupe le
+  script (par exemple une énigme résolue) : c'est fidèle, mais leur comportement natif manque.
+- Le défaut d'atterrissage corrigé touche toute entité sans gravité qui se pose avec une `ForceZ` négative :
+  183 sites de `0x1B` négatif dans 67 cartes. Aucun arc existant n'en a ; l'intro a son propre moteur
+  vertical. La fin de l'intro en jeu (bloc 18) est vérifiée à la recette. La branche « posé sur une entité »
+  tronque toujours à chaque tick (écart préexistant).
+- Le vrai héros dans les arcs à préfabs ajoute 2835 erreurs de résolution de sprite par arc ; une valeur
+  épinglée qui bougerait est un arrêt (repli : drapeau `RealHero`).
+- A5 replace Alundra dans le couloir : le trajet à travers les caisses n'est pas testé.
+- Les images d'A8 dépendent du protocole des boîtes (pages, un appui par image) : la machine à écrire (E12.c) ou
+  la boîte de nom (E19.f) les décaleront, pas les écarts.
+- Sur la 391, la branche T1000 (tout le monde se tourne vers le nord pendant la phrase des récifs) ne se joue
+  qu'une fois au plus dans la DLL, parce que Yarn pose les drapeaux à l'ouverture de la boîte : écart
+  cosmétique, jusqu'à E12.c.
+
+**Revues** : plan-verifier sur cette section, avant approbation ; verifier frais après exécution.
+
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
 Chaque arc part d'une carte chargée seule, avec des drapeaux posés et le héros placé. Les valeurs
@@ -1841,11 +2198,12 @@ mesure.
 | A2 | 476 | `G1640` (mot 51 : 256) | arrivée | `0x53 @758` vers 478 | E19.b | E19.b |
 | A3 | 478 | `G1641` (mot 51 : 512) | arrivée | T20 à T60 posés, puis `0x53 @245` vers 476 (§1.2e) | 2700 | E19.c1 |
 | A4 | 476 | `G1641` | arrivée | `0x53 @986` vers 392 | E19.b | E19.b |
-| A5 | 392 | — | couloir du portail | portail vers 391 | E19.d | E19.d |
-| A6 | 391 | — | arrivée | le `0x53` vers 416 | E19.d | E19.d |
+| A5 | 392 | `G1641` | arrivée, puis replacé dans le couloir du portail après `0x11 @104` (D-E19-23) | départ par le portail vers 391 (`HasPendingArrival`, hors trace ; §1.2g) | 400 | E19.d |
+| A5r | 392 | `G1641` | comme A5, avec un roulis avant le portail | idem | 400 | E19.d |
+| A6 | 391 | `G1641` | arrivée (15, 28, 7) | `0x53 @540` vers 416 (§1.2g) | 1500 | E19.d |
 | A7 | 416 | — | arrivée | `0x53` de `C[1] @640` vers 163 (§1.2e) | 2200 | E19.c1 |
 | A4p | 476 | `G1641` | comme A4 | comme A4, en vrais préfabs (§1.2e) | 2500 | E19.c1 |
-| A8 | 163 | — | arrivée | `G0`, `0x11 @201`, `G1662`, livre présent | E19.d | E19.d |
+| A8 | 163 | — | arrivée (40, 9, 2), vrai héros | `0x11 @201`, `G0`, `G1662`, livre présent (§1.2g) | 1300 | E19.d |
 | A9 | 172 | — | (36,18,2) ; l'arc pose `ActiveCollisionEntity` = enregistrement 4 | `0x11 @547` de C[6] @504 (Wendell), après `0x10 @530` et la boîte (§1.2f) | 400 | E19.c2 |
 
 Les valeurs exactes de chaque arrivée se décodent des opcodes `0x53` cités et s'écrivent dans le test
