@@ -2225,6 +2225,7 @@ et une course Debug ; la DLL déployée est la Debug.
   du chemin de l'histoire (zone Inoa 162 à 182, 44, 10), arrêt sur tout site incertain, verdict sur la 172
   (six sites dormants, vérifié dans les données) ; l'épingle d'A6 et O-E19-15 ; l'outil d'appuis consécutifs
   pour A8 ; les précisions des tests et des risques.
+- **Relecture neuve de la révision** (`556b53b`) : **READY**.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
