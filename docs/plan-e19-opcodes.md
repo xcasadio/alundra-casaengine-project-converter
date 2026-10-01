@@ -1373,7 +1373,7 @@ classe.
     l'horloge à virgule flottante du moteur jusqu'à E19.c2.
 - **T5 — Arcs verts** ✅ *(fait le 2026-10-01 : A3, A7 et A4p passent avec toutes les valeurs de T2, sans en changer une ; images mesurées égales aux images attendues, par exemple T20 à T60 aux images 301, 856, 1368, 1624, 2008 et le `0x53` d'A3 à 2262, celui d'A7 à 1759. Temps d'exécution : A3 environ 1 s (2263 images), A7 environ 0,4 s (1760 images), A4p environ 0,5 s ; l'autotest 1 s.)* : A3, A7 et A4p passent avec les valeurs de T2 ; ils sont commités. Leur temps
   d'exécution est relevé.
-- **T6 — `ForceAdjusted` sur Y et en sens négatif** ⏳ (P3 reporté par E19.a3) : même montage que
+- **T6 — `ForceAdjusted` sur Y et en sens négatif** ✅ *(fait le 2026-10-01, tests dans `AlundraNpcCharacterControllerMoverTests` ; toutes les valeurs écrites tiennent : 646,0, 650,0, 537,0 et le contact à 567,0. Précision de lecture : « `Move(0, +1)` le laisse à 0 » se lit après la remise à zéro de la passe par image, car un `Move` ne l'efface jamais lui-même ; le test la fait explicitement.)* (P3 reporté par E19.a3) : même montage que
   `BuildSailorBesideTheEastWall` (champ réel de la 389, contrôleur de la banque 146, boîte 18 × 12, masque
   0x41, une image d'enregistrement, appels directs de `MoveControllerAndPullPosition`) :
   - nord, pion en (516, 650, 80) : `Move(0, −10)` donne y = 646,0 (42336256) et `ForceAdjusted` 0 ;

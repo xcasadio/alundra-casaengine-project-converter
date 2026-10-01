@@ -1504,7 +1504,11 @@ public class AlundraNpcCharacterControllerMoverTests
     // still advances. Same wall as above: east of the sailor at (564,632), cell (24,39) from px 576.
     // -----------------------------------------------------------------------------------------
 
-    private static AlundraEntityScriptProxy BuildSailorBesideTheEastWall()
+    private static AlundraEntityScriptProxy BuildSailorBesideTheEastWall() => BuildSailorAt(new Vector3(564f, 632f, 80f));
+
+    /// <summary>The same montage as <see cref="BuildSailorBesideTheEastWall"/> (real field of map 389, controller of bank 146,
+    /// box 18 x 12, mask 0x41, one frame of the world), the pawn put at <paramref name="position"/>.</summary>
+    private static AlundraEntityScriptProxy BuildSailorAt(Vector3 position)
     {
         var projectRoot = FindProjectRoot();
         Assert.True(projectRoot != null, "the real alundra-project export is missing");
@@ -1514,7 +1518,7 @@ public class AlundraNpcCharacterControllerMoverTests
         Assert.True(settings != null, "the real controller of bank 146 is missing");
 
         var world = BuildWorld(field!);
-        var (_, proxy) = BuildNpcPawn(world, settings!, new Vector3(564f, 632f, 80f), new FakeScriptHost());
+        var (_, proxy) = BuildNpcPawn(world, settings!, position, new FakeScriptHost());
         proxy.Controller!.Settings.WalkabilityMask = 0x41u; // ClassB - cell (24,39) walkability 1 blocks.
         world.Update(1f / 50f);
         proxy.ForceAdjusted = 0;
@@ -1529,9 +1533,71 @@ public class AlundraNpcCharacterControllerMoverTests
 
         proxy.MoveControllerAndPullPosition(10f, 0f);
 
+        // Shortened (the wall is nearer than 10 px) yet it advanced: exactly 3.0 px, the contact at x = 567.0 (E19.c1 T6).
         var advanced = proxy.PosX / 65536.0 - startX;
-        Assert.InRange(advanced, 0.5, 9.5); // shortened (the wall is nearer than 10 px) yet it advanced.
+        Assert.Equal(3.0, advanced);
+        Assert.Equal(567 << 16, proxy.PosX);
         Assert.Equal(0, proxy.ForceAdjusted);
+    }
+
+    // E19.c1 T6 (docs/plan-e19-opcodes.md §1.2e, P3 deferred by E19.a3): the Y axis and the negative direction, on the same wall
+    // montage. Each pawn starts beside a wall of its own side of map 389; the contact values are written by hand.
+
+    [Fact]
+    public void ForceAdjusted_NorthWall_TheStepShortenedToTheContactAdvances_ThePushThatCannotRaisesTheFlag_AMoveAwayLeavesItAtZero()
+    {
+        var proxy = BuildSailorAt(new Vector3(516f, 650f, 80f));
+
+        proxy.MoveControllerAndPullPosition(0f, -10f); // shortened to the contact, still advancing.
+        Assert.Equal(42336256, proxy.PosY); // y = 646.0.
+        Assert.Equal(0, proxy.ForceAdjusted);
+
+        proxy.MoveControllerAndPullPosition(0f, -2f); // nothing advances.
+        Assert.Equal(42336256, proxy.PosY);
+        Assert.Equal(1, proxy.ForceAdjusted);
+
+        // Away from the wall the step advances freely and leaves the flag at 0. A move never clears the flag by itself (the
+        // per-frame pass of the scripted motion does): the reset below is that pass.
+        proxy.ForceAdjusted = 0;
+        proxy.MoveControllerAndPullPosition(0f, 1f);
+        Assert.Equal(0, proxy.ForceAdjusted);
+
+        // Back to the contact, then X advances while Y pushes into the wall: the blocked axis alone raises the flag.
+        proxy.MoveControllerAndPullPosition(0f, -10f);
+        Assert.Equal(42336256, proxy.PosY);
+        Assert.Equal(0, proxy.ForceAdjusted);
+        var xBefore = proxy.PosX;
+        proxy.MoveControllerAndPullPosition(1f, -2f);
+        Assert.Equal(xBefore + 65536, proxy.PosX);
+        Assert.Equal(1, proxy.ForceAdjusted);
+    }
+
+    [Fact]
+    public void ForceAdjusted_SouthWall_TheStepShortenedToTheContactAdvances_ThePushThatCannotRaisesTheFlag()
+    {
+        var proxy = BuildSailorAt(new Vector3(492f, 648f, 80f));
+
+        proxy.MoveControllerAndPullPosition(0f, 10f);
+        Assert.Equal(42598400, proxy.PosY); // y = 650.0.
+        Assert.Equal(0, proxy.ForceAdjusted);
+
+        proxy.MoveControllerAndPullPosition(0f, 2f);
+        Assert.Equal(42598400, proxy.PosY);
+        Assert.Equal(1, proxy.ForceAdjusted);
+    }
+
+    [Fact]
+    public void ForceAdjusted_WestWall_TheStepShortenedToTheContactAdvances_ThePushThatCannotRaisesTheFlag()
+    {
+        var proxy = BuildSailorAt(new Vector3(545f, 632f, 80f));
+
+        proxy.MoveControllerAndPullPosition(-10f, 0f);
+        Assert.Equal(35192832, proxy.PosX); // x = 537.0.
+        Assert.Equal(0, proxy.ForceAdjusted);
+
+        proxy.MoveControllerAndPullPosition(-2f, 0f);
+        Assert.Equal(35192832, proxy.PosX);
+        Assert.Equal(1, proxy.ForceAdjusted);
     }
 
     [Fact]
