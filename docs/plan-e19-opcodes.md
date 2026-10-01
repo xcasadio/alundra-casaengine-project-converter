@@ -1778,6 +1778,7 @@ exécution.
 - **Tous intégrés** : liste complète des résultats attendus en C1 et en C2, ordre des vérifications d'A3
   resserré et sa case rouge, règles « sans animation » et `Seek` du plan moteur avec le test L17, direction
   dans le changement en attente (cas de TG4), précondition des tests, cas sans animation de TG3, formulations.
+- **Relecture neuve de la révision** (`9d169eb` et moteur `92869187`) : **READY**.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
