@@ -87,6 +87,14 @@ internal sealed class ArcRun : IDisposable
 
     public AlundraEntityScriptProxy Hero { get; }
 
+    /// <summary>The entity that carries <see cref="Hero"/>.</summary>
+    public Entity HeroEntity { get; }
+
+    /// <summary>The entity that carries <paramref name="proxy"/> (its protected <c>Owner</c>), whether bare or a prefab.</summary>
+    public static Entity? EntityOf(AlundraEntityScriptProxy proxy) =>
+        (Entity?)typeof(CasaEngine.Framework.Scripting.GameplayProxy)
+            .GetProperty("Owner", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)!.GetValue(proxy);
+
     public AlundraEventProgramRunner Runner { get; }
 
     /// <summary>Frames run so far.</summary>
@@ -172,6 +180,7 @@ internal sealed class ArcRun : IDisposable
             AlundraEtcStringTable.SetEtcDialogueAssetForTests(DialogueTestAssets.LoadFromDisk(Path.Combine(root, "Dialogues", "Etc.dialogue")));
             Assert.True(AlundraDialogueDirector.Instance.HasPresenter);
 
+            HeroEntity = heroEntity;
             Hero = Assert.IsType<AlundraEntityScriptProxy>(heroEntity.GameplayProxy);
 
             // The hero's sprite header (flags, programs, body box): AdoptPlayerPawn resolves it through the asset

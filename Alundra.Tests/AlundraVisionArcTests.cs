@@ -35,18 +35,25 @@ public sealed class AlundraVisionArcTests
 
     private static ArcSpec A4Spec => new("A4", Zone, Map476, new[] { 1641 }, 0, 0, 0, 2500);
 
-    private sealed record BoxSample(int Opcode, uint OpenSerial, string Text);
+    /// <summary>A4p (E19.c1, D-E19-14): A4 with the export's real prefabs, loaded by the production spawn path.</summary>
+    internal static ArcSpec A4pSpec => new("A4p", Zone, Map476, new[] { 1641 }, 0, 0, 0, 2500, RealController: true, Prefabs: true);
 
-    private sealed record Walk(int Pc, (int X, int Y) HeroBefore, (int X, int Y) BlockBefore)
+    internal sealed record BoxSample(int Opcode, uint OpenSerial, string Text);
+
+    internal sealed record Walk(int Pc, (int X, int Y) HeroBefore, (int X, int Y) BlockBefore)
     {
         public (int X, int Y)? HeroAfter { get; set; }
 
         public (int X, int Y)? BlockAfter { get; set; }
+
+        public int? BlockForceAdjustedBefore { get; set; }
+
+        public int? BlockForceAdjustedAfter { get; set; }
     }
 
     /// <summary>The samples both arcs take: one per box opening, plus the block at <c>0x8A @63</c> and the camera at
     /// <c>0x67 @71</c> of B1.</summary>
-    private sealed class Samples
+    internal sealed class Samples
     {
         public (int X, int Y, int Z)? BlockAtSpawn;
         public bool BlockSpawnSeen;
@@ -57,10 +64,26 @@ public sealed class AlundraVisionArcTests
         public readonly Dictionary<int, BoxSample?> Boxes = new();
         public readonly List<Walk> Walks = new();
 
+        // E19.c1 (A4p, real prefabs): the block right after 0x8A @63 and at the first instruction of a later frame.
+        public int BlockSpawnFrame = -1;
+        public bool BlockHasControllerAtSpawn;
+        public bool BlockInWorldAtSpawn;
+        public bool NextFrameSeen;
+        public int? BlockZOnNextFrame;
+        public bool BlockInWorldOnNextFrame;
+
         private Walk? _activeWalk;
 
         public void Take(ArcRun arc, ArcInstruction t, int[] boxPcs)
         {
+            if (BlockSpawnFrame >= 0 && !NextFrameSeen && t.Frame > BlockSpawnFrame)
+            {
+                NextFrameSeen = true;
+                var next = arc.EntityByRecord(1);
+                BlockZOnNextFrame = next?.PosZ;
+                BlockInWorldOnNextFrame = next != null && arc.RealWorld != null && arc.RealWorld.Entities.Contains(ArcRun.EntityOf(next)!);
+            }
+
             if (t.Slot != BProgram)
             {
                 return;
@@ -71,6 +94,9 @@ public sealed class AlundraVisionArcTests
                 BlockSpawnSeen = true;
                 var block = arc.EntityByRecord(1);
                 BlockAtSpawn = block == null ? null : (block.PosX, block.PosY, block.PosZ);
+                BlockSpawnFrame = t.Frame;
+                BlockHasControllerAtSpawn = block?.Controller != null;
+                BlockInWorldAtSpawn = block != null && arc.RealWorld != null && arc.RealWorld.Entities.Contains(ArcRun.EntityOf(block)!);
             }
 
             if (t.Pc == 71 && t.Opcode == 0x67 && !CameraSeen)
@@ -103,20 +129,24 @@ public sealed class AlundraVisionArcTests
                     _activeWalk.HeroAfter = (arc.Hero.PosX, arc.Hero.PosY);
                     var blockAfter = arc.EntityByRecord(1);
                     _activeWalk.BlockAfter = blockAfter == null ? null : (blockAfter.PosX, blockAfter.PosY);
+                    _activeWalk.BlockForceAdjustedAfter = blockAfter?.ForceAdjusted;
                     _activeWalk = null;
                 }
 
                 if (_activeWalk == null && t.Opcode == 0x1E)
                 {
                     var block = arc.EntityByRecord(1);
-                    _activeWalk = new Walk(t.Pc, (arc.Hero.PosX, arc.Hero.PosY), block == null ? (0, 0) : (block.PosX, block.PosY));
+                    _activeWalk = new Walk(t.Pc, (arc.Hero.PosX, arc.Hero.PosY), block == null ? (0, 0) : (block.PosX, block.PosY))
+                    {
+                        BlockForceAdjustedBefore = block?.ForceAdjusted,
+                    };
                     Walks.Add(_activeWalk);
                 }
             }
         }
     }
 
-    private static void AssertNoOtherSkippedOpcode(ArcRun arc)
+    internal static void AssertNoOtherSkippedOpcode(ArcRun arc)
     {
         var offenders = arc.SkippedOrExceeded
             .Where(t => t.Kind == EventTraceKind.LoopBudgetExceeded || !AllowedSkippedOpcodes.Contains(t.Opcode))
@@ -126,7 +156,7 @@ public sealed class AlundraVisionArcTests
         Assert.True(offenders.Count == 0, "unexpected skipped or exceeded instructions: " + string.Join("; ", offenders));
     }
 
-    private static void AssertBox(Samples samples, int pc, int opcode, string fragment, string? notFragment = null)
+    internal static void AssertBox(Samples samples, int pc, int opcode, string fragment, string? notFragment = null)
     {
         Assert.True(samples.Boxes.TryGetValue(pc, out var box) && box != null, $"no box was opened by 0x{opcode:X2} @{pc}");
         Assert.Equal(opcode, box!.Opcode);
@@ -190,9 +220,21 @@ public sealed class AlundraVisionArcTests
     /// map 392.
     /// </summary>
     [Fact]
-    public void A4_TheVisionOnTheReturn_TheBlockWalksFourTimes_EightBoxesOpen_ThenTheWarpToMap392Departs()
+    public void A4_TheVisionOnTheReturn_TheBlockWalksFourTimes_EightBoxesOpen_ThenTheWarpToMap392Departs() => RunA4(A4Spec);
+
+    /// <summary>A4 on the export's real prefabs (E19.c1, D-E19-14): the same end values and the same eight boxes, plus what
+    /// only a real controller shows (the block spawned by <c>0x8A @63</c> is a world entity, the four pans measured on it).</summary>
+    [Fact]
+    public void A4p_TheSameVisionWithRealPrefabs_TheBlockIsAControllerEntity_AndPansLikeA4()
     {
-        using var arc = new ArcRun(A4Spec);
+        RunA4(A4pSpec);
+    }
+
+    /// <summary>The body of A4 and A4p (the latter adds the checks of the real prefabs).</summary>
+    internal static void RunA4(ArcSpec spec)
+    {
+        var prefabs = spec.Prefabs;
+        using var arc = new ArcRun(spec);
         Assert.Equal(512u, ArcRun.State.GameFlags[51]);
         var serialAtStart = AlundraDialogueDirector.Instance.OpenSerial;
 
@@ -201,6 +243,9 @@ public sealed class AlundraVisionArcTests
         arc.OnInstruction = t => samples.Take(arc, t, boxPcs);
 
         arc.RunUntil(() => arc.Has(BProgram, 986, 0x53), "B5 executes 0x53 @986 towards map 392");
+
+        // The skipped set comes right after the end signal (docs/plan-e19-opcodes.md §1.2e, T2: order of the checks).
+        AssertNoOtherSkippedOpcode(arc);
 
         Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
         var arrival = AlundraWarpDirector.Instance.ArrivalRecordForTests;
@@ -239,6 +284,38 @@ public sealed class AlundraVisionArcTests
         Assert.False(AlundraDialogueDirector.Instance.IsOpen);
 
         Assert.Equal(AlundraGameState.PlayerControlBits.ControlLocked, ArcRun.State.PlayerControlFlags);
-        AssertNoOtherSkippedOpcode(arc);
+
+        if (prefabs)
+        {
+            // The block spawned by 0x8A @63 is a real prefab: a controller, queued by the spawn and a world entity from
+            // the next frame on; its Z loses the spawn "+1" at the first adjustment of the root.
+            Assert.True(samples.BlockHasControllerAtSpawn, "the block spawned by 0x8A @63 has no controller");
+            Assert.False(samples.BlockInWorldAtSpawn, "the block is already a world entity at 0x8A @63");
+            Assert.Equal((63700992, 7340032, 3145729), samples.BlockAtSpawn!.Value);
+            Assert.True(samples.NextFrameSeen, "no instruction ran in the frame after 0x8A @63");
+            Assert.True(samples.BlockInWorldOnNextFrame, "the block is not a world entity one frame after 0x8A @63");
+            Assert.Equal(3145728, samples.BlockZOnNextFrame);
+
+            // The four pans, measured on the block (16.16): the second overshoot is the kept animation lag (D-E19-13).
+            var expectedPans = new[] { (63700992, 60555264), (60555264, 57409536), (57360384, 60506112), (60506112, 63651840) };
+            for (var i = 0; i < 4; i++)
+            {
+                var walk = samples.Walks[i];
+                Assert.Equal(expectedPans[i], (walk.BlockBefore.X, walk.BlockAfter!.Value.X));
+                Assert.Equal(7340032, walk.BlockBefore.Y);
+                Assert.Equal(7340032, walk.BlockAfter.Value.Y);
+                Assert.Equal(0, walk.BlockForceAdjustedBefore);
+                Assert.Equal(0, walk.BlockForceAdjustedAfter);
+            }
+
+            // Parents: the block's is the hero, Rancune's is the block.
+            var blockProxy = arc.EntityByRecord(1)!;
+            Assert.Same(arc.HeroEntity, blockProxy.ParentEntity);
+            Assert.Same(ArcRun.EntityOf(blockProxy), arc.EntityByRecord(0)!.ParentEntity);
+
+            // No exception was logged beyond the sprite resolutions the test cannot avoid (no SpriteData loader).
+            var unexpected = arc.Log!.Errors.Where(e => !e.StartsWith("AnimatedSpriteComponent : can't resolve sprite", StringComparison.Ordinal)).ToList();
+            Assert.True(unexpected.Count == 0, "errors logged: " + string.Join(" | ", unexpected.Take(3)));
+        }
     }
 }

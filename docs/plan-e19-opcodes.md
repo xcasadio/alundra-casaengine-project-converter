@@ -1371,7 +1371,7 @@ classe.
       1 ; même chose pour une entité sans sprite ;
   - A3 passe après T4. Le moment exact de la fin Hold de Ronan n'est pas épinglé : il vient de
     l'horloge à virgule flottante du moteur jusqu'à E19.c2.
-- **T5 — Arcs verts** ⏳ : A3, A7 et A4p passent avec les valeurs de T2 ; ils sont commités. Leur temps
+- **T5 — Arcs verts** ✅ *(fait le 2026-10-01 : A3, A7 et A4p passent avec toutes les valeurs de T2, sans en changer une ; images mesurées égales aux images attendues, par exemple T20 à T60 aux images 301, 856, 1368, 1624, 2008 et le `0x53` d'A3 à 2262, celui d'A7 à 1759. Temps d'exécution : A3 environ 1 s (2263 images), A7 environ 0,4 s (1760 images), A4p environ 0,5 s ; l'autotest 1 s.)* : A3, A7 et A4p passent avec les valeurs de T2 ; ils sont commités. Leur temps
   d'exécution est relevé.
 - **T6 — `ForceAdjusted` sur Y et en sens négatif** ⏳ (P3 reporté par E19.a3) : même montage que
   `BuildSailorBesideTheEastWall` (champ réel de la 389, contrôleur de la banque 146, boîte 18 × 12, masque
