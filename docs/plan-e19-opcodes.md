@@ -294,8 +294,8 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
   `0x53`, sans construire la carte suivante.
 - `IntroTraceHarnessTests.ImplementedOpcodes` (`:319`) est une copie tenue à la main. Le test de trace
   réécrit `docs/intro-trace-389.txt` et `docs/intro-programs-389.txt` à chaque passage.
-- `UnknownOpcode_KnownSize_SkipsBySize` (`AlundraEventProgramRunnerTests.cs:320`) utilise `0x08` : à
-  changer quand `0x08` sera porté (E19.c), par exemple pour `0x4E`.
+- `UnknownOpcode_KnownSize_SkipsBySize` (`AlundraEventProgramRunnerTests.cs:320`) utilisait `0x08` : il
+  utilise `0x4C` (la machine à écrire, E12.c) depuis E19.c1 T3, car `0x08` est porté.
 
 ---
 
@@ -309,7 +309,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.a2 ✅ | Moteur : sur le champ de cellules, un pas bloqué avance jusqu'au contact (D-E19-8) ; épingles et traces de référence du héros re-mesurées ; la cabine testée avec un vrai contrôleur | cabine seule, A1c | La cabine : Alundra s'endort, puis la 476 se charge |
 | E19.a3 ✅ | DLL : `ForceAdjusted` ne se lève qu'au tick sans avance, comme le binaire (D-E19-12) ; épingles du héros re-mesurées | marin 12 de la 389 | Le marin 12 rejoint sa place en fin d'intro |
 | E19.b 🧪 | Carte 476 : `0xC4` sans nom (D-E19-5), `0x8A` (bloc caméra), `0x4C` gardé pour la machine à écrire | A2, A4 | La vision de Lars et Melzas jusqu'à 478, puis jusqu'à 392 |
-| E19.c1 | Cartes 478 et 416 : `0x0B` avec détour (D-E19-6), `0x1C`/`0x1D` (compteur du binaire, Chain et Hold), `0x5E`, `0x08`, `0x0C`, `0x3A`, `0x89`, `0x73`/`0x74` ; arcs en vrais préfabs (D-E19-14) | A3, A7, A4p | La vision de 478 va au bout ; la plage 416 mène à la 163 |
+| E19.c1 🧪 | Cartes 478 et 416 : `0x0B` avec détour (D-E19-6), `0x1C`/`0x1D` (compteur du binaire, Chain et Hold), `0x5E`, `0x08`, `0x0C`, `0x3A`, `0x89`, `0x73`/`0x74` ; arcs en vrais préfabs (D-E19-14) | A3, A7, A4p | La vision de 478 va au bout ; la plage 416 mène à la 163 |
 | E19.c2 | Moteur : horloge d'animation exacte en ticks (D-E19-16), pilotée par la DLL à chaque tick logique ; garde de `0x1C` sous rattrapage | A3, tests moteur | Les animations au tick de l'original |
 | E19.d | Fin de chaîne : `0x24` sur l'entité logique, `0x40`/`0x41` sur l'entité logique, reste de 392, 391 et 163 | A5, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
 | E19.e | Recette de bout en bout, plus un test statique : aucun opcode sauté sur la chaîne hors liste d'exceptions | toute la chaîne | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement (avec les recettes d'E16 en attente) |
@@ -951,7 +951,7 @@ puis part vers la 392 (arc A4).
     physique (`0x8002E100`, `0x8003B388` → `0x8003B3D8` → `0x8003B3E0`). Un changement d'animation par
     script s'applique donc dans la physique du même tick ;
   - la DLL a une image de retard : c'est la cause du pas de 1,25 px du marin 12 ;
-  - chaque panoramique du bloc fera 48,75 px au lieu de 48. La correction reste dans E19.c.
+  - chaque panoramique du bloc fait 48,75 px au lieu de 48 dans la DLL. L'auteur garde ce retard (D-E19-13, ADR-0018), et E19.c1 en épingle les valeurs : il n'est pas corrigé en E19.c.
 - **Arcs** : 1 tick logique par image à dt 0,02, donc des comptes d'images exacts.
   - A2 : environ 1209 images ;
   - A4 : environ 2059 images.
@@ -1113,7 +1113,7 @@ puis part vers la 392 (arc A4).
   | Textes en retard : la doc de classe et les commentaires de cas d'`EntitySearchService` disent encore « owner » ; la doc d'`OpenDialog` ne cite que `0x0D` et `0x5C`. | P4 | Reporté à l'hygiène d'E19.c. L'ADR-0006 ne se réécrit pas. |
   | La preuve rouge des arcs n'est pas dans l'historique : les arcs sont commités après le code. | P4 | Accepté : le verifier l'a reproduite à part, comme pour E19.a3. |
 
-### 1.2e E19.c1 — Cartes 478 et 416 : attentes de mouvement, arcs en vrais préfabs ⏳ (proposée le 2026-10-01)
+### 1.2e E19.c1 — Cartes 478 et 416 : attentes de mouvement, arcs en vrais préfabs 🧪 (code et arcs faits le 2026-10-01 ; reste la recette T9 de l'auteur)
 
 **But.**
 - La vision de la 478 va au bout : le bloc caméra monte, les drapeaux T20 à T60 tombent, puis la 476
@@ -1392,7 +1392,7 @@ classe.
     au lieu d'« owner » ; la doc d'`OpenDialog` cite `0xC4` ;
   - le commentaire d'`AlundraWorldProxy.cs:773-778` dit que l'ajustement au sol à l'apparition ne fait
     rien en production (`Entity.World` est nul à ce moment ; O-E19-6).
-- **T8 — Docs** ⏳ : statuts de ce plan, mesures au §2, points ouverts, ligne E19 du plan maître ; les
+- **T8 — Docs** ✅ *(fait le 2026-10-01)* : statuts de ce plan, mesures au §2, points ouverts, ligne E19 du plan maître ; les
   textes qui annonçaient la correction du retard en E19.c disent qu'il est gardé (D-E19-13).
 - **T9 — Recette en jeu (auteur)** ⏳ :
   1. **La 478, en jouant** : après la cabine et la 476, la 478 montre la caméra sur le bloc qui monte
@@ -1512,6 +1512,31 @@ avant le code.
 
 Réservé aux mesures faites en exécutant les tranches.
 
+### E19.c1 (2026-10-01)
+
+- **Commits** (branche `chantier/e19-opcodes`) : T1 `d1d2bea`, T3 `7d6d8ce`, T4 `53b1503`, T5 `35feaa5`, T6 `767c6a5`, T7
+  `6023e4c`, puis cette mise à jour des docs. T2 n'a pas de commit propre (les arcs entrent avec T5). Le pointeur du moteur
+  ne change pas.
+- **Autotest du mode préfabs** : rouge avec le drapeau sans effet (« record 0 à 21 : no controller »), puis vert en 993 ms.
+  Journal après la première image : 3628 erreurs de résolution de sprite (616760 caractères, une par animation, faute de
+  chargeur `SpriteData`), 4 avertissements, 3 messages d'information, aucun repli sur une entité nue. Le volume ne grandit pas
+  avec les images : A3 sur 2263 images en compte le même nombre, A7 en compte 229.
+- **Rouge constaté** (conforme à la table) : après T1, A3 échoue dans sa limite (3 s) en nommant `slot 1 program @164: last
+  0x36 @180`, A7 atteint `0x53 @640` à l'image 1145 puis échoue sur les opcodes sautés `0x0B @659`, `@572`, `@586`, `@594`,
+  `@608`, A4p passe. Après T3, A7 passe et A3 atteint `0x53 @245` puis échoue sur `0x1C @854` seul. Après T4, les trois passent.
+- **Valeurs mesurées contre valeurs écrites** : toutes égales, sans en changer une.
+  - A3 : premiers `0x05` de T20 à T60 aux images 301, 856, 1368, 1624, 2008 ; `0x53` à 2262 (2263 images) ; T10 à 63 ;
+    écarts 555, 512, 256, 384 ; `TileZ` 8, 21, 33, 39, 48 ; `PosZ` 8421376, 22061056, 34643968, 40935424, 50372608 ;
+    C[11] atteint `@725` à 1702 et C[12] `@802` à 1682 ; Ronan passe `0x1C @854` à l'image 25.
+  - A7 : T0 à 493 ; premier `0x0B @659` à 494 ; fin à 879 (385 images) ; `0x2D @671` à 1062 (183 images après) ; les quatre marches
+    de Jess finissent aux images 1161, 1288, 1321, 1385 ; `0x53 @640` à 1759.
+  - A4p : toutes les valeurs écrites (les quatre panoramiques, `PosZ` 3145729 puis 3145728, les parents).
+- **Temps d'exécution** (Debug) : autotest 1 s ; A3 environ 1 s (2263 images, 57182 entrées de trace) ; A7 environ 0,4 s (1760
+  images) ; A4p environ 0,5 s. Aucun arc n'approche 120 s, et le rouge d'A3 (3 s) n'a pas eu besoin de la limite de 400 images.
+- **Suites** : `Alundra.Tests` 1995 réussis, 0 échec, en Debug (21 s) comme en Release (24 s), contre 1939 avant la tranche ;
+  convertisseur 400 sur 400. Les annexes de trace de l'intro et du héros ne changent pas. La DLL déployée dans
+  `alundra-project/` est la Debug (`cmp` identique).
+
 ## 3. Points ouverts
 
 | Réf | Sujet | Tranche |
@@ -1519,7 +1544,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-1 | ~~Portails trou et escalier de la 390~~ — **réglé par la recette du 2026-09-29** : le journal montre le passage par le portail 5, qui charge la pièce B. Question d'origine : si la recette d'E19.a montre que le héros ne suit pas le capitaine par là, faut-il corriger dans E19 ou dans un chantier de transitions ? | E19.a (recette) |
 | O-E19-2 | Nouveaux écarts de la décompilation relevés dans le binaire : `0x5F` (entité et taille), `0x66` (sens de la copie), compteur de `0x1C`, `y` de la boîte de nom, portrait de `Script_196_0C4`, test de zone de `GetMapEffectRecord`, `AddOneItemIfUnlocked`, `InitializeEventData`. Le portage suit le binaire. Faut-il aussi corriger la décompilation dans l'analyseur, comme pour la taille de `0x78` en E16.a ? | E19.m |
 | O-E19-3 | ~~Déplacement vertical des entités nues dans le support d'arcs~~ — **tranché le 2026-10-01 (D-E19-14)** : les arcs chargent les vrais préfabs par un gestionnaire d'assets construit par le test. | E19.c1 |
-| O-E19-5 | Quand un `0x5B [x,0,dir]` arrête un PNJ au tick où sa marche se termine, le mouvement de ce tick s'applique encore avec la nouvelle direction : le marin 12 de la 389 descend de 1,25 px au tick de `@1494` (mesuré en E19.a3 : y = 843,25 à l'image de `@1494`, contre 842,0 à l'image précédente, lue par le test du marin 12). Cela peut venir de la latence d'une image de `CurrentAnimationId` des PNJ, déjà relevée (le moteur synchronise l'animation en fin d'image). **Tranché par le binaire le 2026-10-01 (§1.2d, [binaire])** : l'original exécute dans l'ordre les événements de carte, les entités, `UpdateAnimation` puis la physique (`0x8002E100`, `0x8003B388` → `0x8003B3D8` → `0x8003B3E0`) ; un changement d'animation par script s'applique donc dans la physique du même tick. La DLL a une image de retard : c'est la cause du pas de 1,25 px du marin 12, et chaque panoramique du bloc de la 476 fera 48,75 px au lieu de 48. La correction reste dans E19.c. **Précisé puis tranché le 2026-10-01** : chaque marche du bloc fait bien 48,0 px, mais la première de chaque panoramique dure un tick de plus et le bloc dépasse de 0,75 px après chaque panoramique. L'auteur garde ce retard (D-E19-13, ADR-0018) : le corriger aurait déplacé des points épinglés de l'intro. | E19.c1 (clos) |
+| O-E19-5 | Quand un `0x5B [x,0,dir]` arrête un PNJ au tick où sa marche se termine, le mouvement de ce tick s'applique encore avec la nouvelle direction : le marin 12 de la 389 descend de 1,25 px au tick de `@1494` (mesuré en E19.a3 : y = 843,25 à l'image de `@1494`, contre 842,0 à l'image précédente, lue par le test du marin 12). Cela peut venir de la latence d'une image de `CurrentAnimationId` des PNJ, déjà relevée (le moteur synchronise l'animation en fin d'image). **Tranché par le binaire le 2026-10-01 (§1.2d, [binaire])** : l'original exécute dans l'ordre les événements de carte, les entités, `UpdateAnimation` puis la physique (`0x8002E100`, `0x8003B388` → `0x8003B3D8` → `0x8003B3E0`) ; un changement d'animation par script s'applique donc dans la physique du même tick. La DLL a une image de retard : c'est la cause du pas de 1,25 px du marin 12, et chaque panoramique du bloc de la 476 fera 48,75 px au lieu de 48. (La correction qui était annoncée dans E19.c est abandonnée : voir la suite.) **Précisé puis tranché le 2026-10-01** : chaque marche du bloc fait bien 48,0 px, mais la première de chaque panoramique dure un tick de plus et le bloc dépasse de 0,75 px après chaque panoramique. L'auteur garde ce retard (D-E19-13, ADR-0018) : le corriger aurait déplacé des points épinglés de l'intro. | E19.c1 (clos) |
 | O-E19-6 | À l'apparition, l'ajustement au sol (`ClampToGround`) et `TerrainHeight` ne font rien en production : `World.AddEntity` ne fait que mettre l'entité en file, et `Entity.World` n'est posé qu'à l'intégration suivante. Le commentaire d'`AlundraWorldProxy.cs:773-778` dit le contraire (corrigé en E19.c1 T7). Faut-il corriger le comportement ? | E19.h |
 | O-E19-7 | Une entité sans contrôleur ne bouge jamais en Z dans la DLL, alors que le binaire intègre Z pour toute entité active (`MoveEntity` `0x80037E34` → `ComputeZPosition`). Sur la chaîne, tous les enregistrements ont un contrôleur. | E19.h |
 | O-E19-8 | `IsZForceApplied` (`+0xF8`) n'est pas porté : au tick d'un changement d'animation, le binaire remplace `ForceZ` par la valeur du jeu d'animation (131 des 395 enregistrements de sprite en ont une non nulle). Il suppose l'animation résolue avant la physique, ce que D-E19-13 ne fait pas. | E19.h |
@@ -1527,6 +1552,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-10 | Défaut du moteur sur le chemin en temps réel : à 0,02 s par image, 197 des 5202 Loop de l'export ne bouclent plus jamais (le temps tombe pile sur la durée, puis la dépasse), et le sprite montre la pose cachée de fin (exemple : animations 53 et 55 du héros). | E19.c2 |
 | O-E19-11 | La remise à zéro hors zone d'un événement de carte diffère du binaire : la DLL écrit sur l'entité de l'événement et ne remet pas `mapEvent.EventData` à zéro, le binaire (`0x8003C7F0`-`0x8003C804`) remet le pc et l'entrée de l'état de l'événement, `state+0x2C`, l'entité logique et l'octet de programme. Un programme B réentré reprend dans la DLL et recommence dans le binaire. Sans effet sur la 478 et la 416 (zones de toute la carte). | E19.j |
 | O-E19-12 | Base de la branche moteur d'E19.c2 : `chantier/field-move-to-contact` (E19.a2) n'est pas mergée dans `main` du moteur, et le parent la pointe. Partir d'elle, ou attendre son merge ? | E19.c2 (auteur) |
+| O-E19-13 | Le moment de la fin Hold de Ronan (`0x1C @854`, image 25 de la 478) vient de l'horloge à virgule flottante du moteur, à ± 1 tick du binaire : il n'est pas épinglé. Il se resserre avec E19.c2. | E19.c2 |
 | O-E19-4 | Le gestionnaire natif du créneau E (`0x8007ED10`, destruction après `Deactivated`, 417 enregistrements sur 85 cartes) : E14, ou une tranche d'E19 ? Sur la chaîne, il ne touche que l'oiseau de la 389 et des PNJ d'Inoa. | E14 |
 
 ## 4. Hors périmètre
