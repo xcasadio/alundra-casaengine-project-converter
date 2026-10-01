@@ -72,6 +72,19 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   `ForceAdjusted` garde la règle de la DLL (D-E19-10, **remplacée par D-E19-12** ci-dessus : le
   drapeau suit désormais le binaire) ; dans le moteur, les drapeaux « curtailed » signifient
   « raccourci ». Détail au §1.2b (E19.a2), ADR-0016.
+- **D-E19-13 à D-E19-16** (2026-10-01, avant le plan d'E19.c) — ADR-0018 :
+  - **D-E19-13** — Le retard d'une image de `CurrentAnimationId` pour le mouvement des PNJ est
+    **gardé** (O-E19-5 tranché). Les points épinglés de l'intro ne bougent pas. Une marche qui part de
+    l'arrêt dure un tick de plus que dans l'original, et le dernier tick d'une marche suivie d'un arrêt
+    avance encore à l'ancienne vitesse (le pas de 1,25 px du marin 12, les 0,75 px du bloc de la 476).
+  - **D-E19-14** — Les arcs chargent les **vrais préfabs** du projet exporté (O-E19-3 tranché) : un
+    gestionnaire d'assets construit par le test, sans changement de la DLL.
+  - **D-E19-15** — L'ordre de calcul de `TileZ` (avant le mouvement vertical dans la DLL, après dans
+    le binaire) se corrige en **E19.h**. E19.c épingle les valeurs actuelles et annonce le décalage
+    d'une image.
+  - **D-E19-16** — Le moteur reçoit une **horloge d'animation exacte en ticks** dans E19.c (tranche
+    E19.c2), pour que les fins d'animation tombent au tick de l'original. Le signal de fin de boucle
+    reste rattaché à E19.i, sauf si E19.c2 l'apporte (décision au plan d'E19.c2).
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -296,7 +309,8 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.a2 ✅ | Moteur : sur le champ de cellules, un pas bloqué avance jusqu'au contact (D-E19-8) ; épingles et traces de référence du héros re-mesurées ; la cabine testée avec un vrai contrôleur | cabine seule, A1c | La cabine : Alundra s'endort, puis la 476 se charge |
 | E19.a3 ✅ | DLL : `ForceAdjusted` ne se lève qu'au tick sans avance, comme le binaire (D-E19-12) ; épingles du héros re-mesurées | marin 12 de la 389 | Le marin 12 rejoint sa place en fin d'intro |
 | E19.b 🧪 | Carte 476 : `0xC4` sans nom (D-E19-5), `0x8A` (bloc caméra), `0x4C` gardé pour la machine à écrire | A2, A4 | La vision de Lars et Melzas jusqu'à 478, puis jusqu'à 392 |
-| E19.c | Carte 478 et marches : `0x0B` avec détour (D-E19-6), `0x1C`/`0x1D` (compteur du binaire, Chain et Hold), `0x5E`, `0x08`, `0x0C`, `0x3A`, `0x89`, `0x73`/`0x74` | A3, A7 | La vision de 478 va au bout ; la plage 416 mène à Inoa |
+| E19.c1 | Cartes 478 et 416 : `0x0B` avec détour (D-E19-6), `0x1C`/`0x1D` (compteur du binaire, Chain et Hold), `0x5E`, `0x08`, `0x0C`, `0x3A`, `0x89`, `0x73`/`0x74` ; arcs en vrais préfabs (D-E19-14) | A3, A7, A4p | La vision de 478 va au bout ; la plage 416 mène à la 163 |
+| E19.c2 | Moteur : horloge d'animation exacte en ticks (D-E19-16), pilotée par la DLL à chaque tick logique ; garde de `0x1C` sous rattrapage | A3, tests moteur | Les animations au tick de l'original |
 | E19.d | Fin de chaîne : `0x24` sur l'entité logique, `0x40`/`0x41` sur l'entité logique, reste de 392, 391 et 163 | A5, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
 | E19.e | Recette de bout en bout, plus un test statique : aucun opcode sauté sur la chaîne hors liste d'exceptions | toute la chaîne | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement (avec les recettes d'E16 en attente) |
 | E19.f | Boîte de nom et boîte de texte fidèle (D-E19-4) : export du cadre, écrans XAML liés à un view model, cycle de vie de la boîte de nom, pour `0x0D`/`0x5C`/`0xC4` | tests MGDesktop | Les noms s'affichent au-dessus de la boîte, à la place de l'original |
@@ -308,12 +322,14 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.l | Prédicats, branches et restes : `0x82` (avec la correction d'`AddOneItemIfUnlocked`), `0x83`, `0x84`, `0x87`, `0x3F`, `0x95`, `0x99`, `0x9A`, `0x9F` (avec `InitializeContents`), `0x57`, `0x58`, `0x4A`, `0x2A`, `0x2B`, `0x5D`, etc. ; liste fermée au recensement du moment | ciblés | ciblée |
 | E19.m | Hygiène et clôture : taille de `0x5F` (8), libellés faux, `0x01` qui rend 0, modes aléatoires 4 et 5 de `ResolveDirectionFromParam` ; test statique : aucun opcode atteignable sauté dans le corpus hors E14 (IA native) et E18 (`0xBB`) | corpus | — |
 
-- **Ordre** : E19.a → E19.b → E19.c → E19.d → E19.e, puis E19.f. Les tranches de phase 2 viennent
-  ensuite, dans l'ordre que l'auteur choisira.
-- **Dépendances** : E19.b et E19.d ont besoin de l'entité de contexte d'E19.a. E19.c a besoin de la
-  garde, pour que ses tests ne figent pas si un opcode reste non porté.
-- **Tests de ces tranches** : E19.c et E19.d ajouteront au support d'arcs un déplacement vertical
-  pour les entités nues (point O-E19-3).
+- **Ordre** : E19.a → E19.b → E19.c1 → E19.c2 → E19.d → E19.e, puis E19.f. Les tranches de phase 2
+  viennent ensuite, dans l'ordre que l'auteur choisira. E19.c1 passe avant E19.c2 : elle débloque
+  l'histoire, et l'horloge exacte ne change pas le mouvement.
+- **Dépendances** : E19.b et E19.d ont besoin de l'entité de contexte d'E19.a. E19.c1 a besoin de la
+  garde, pour que ses tests ne figent pas si un opcode reste non porté. E19.c2 a besoin de `0x1C` et
+  du pont des fins d'animation d'E19.c1.
+- **Tests de ces tranches** : depuis E19.c1, les arcs peuvent charger les vrais préfabs (D-E19-14,
+  O-E19-3 tranché).
 - **Mise à jour de ce plan** : chaque tranche de la phase 1 remet au §0.2 ce qu'elle a mesuré en
   vrai, puis fait détailler, relire et approuver la tranche suivante.
 
@@ -1097,6 +1113,354 @@ puis part vers la 392 (arc A4).
   | Textes en retard : la doc de classe et les commentaires de cas d'`EntitySearchService` disent encore « owner » ; la doc d'`OpenDialog` ne cite que `0x0D` et `0x5C`. | P4 | Reporté à l'hygiène d'E19.c. L'ADR-0006 ne se réécrit pas. |
   | La preuve rouge des arcs n'est pas dans l'historique : les arcs sont commités après le code. | P4 | Accepté : le verifier l'a reproduite à part, comme pour E19.a3. |
 
+### 1.2e E19.c1 — Cartes 478 et 416 : attentes de mouvement, arcs en vrais préfabs ⏳ (proposée le 2026-10-01)
+
+**But.**
+- La vision de la 478 va au bout : le bloc caméra monte, les drapeaux T20 à T60 tombent, puis la 476
+  revient (arc A3).
+- La plage 416 mène à la 163 : le bloc caméra glisse au nord, Jess apparaît, marche jusqu'à Alundra,
+  puis la 163 se charge (arc A7).
+- Les arcs chargent les vrais préfabs (D-E19-14), ce qui teste aussi `0x8A` sur le vrai bloc de la 476
+  (arc A4p, le jumeau d'A4).
+
+**Périmètre.** DLL (`AlundraEventProgramRunner.cs`, `AlundraEntitySpawnFactory.cs`,
+`AlundraFrameSyncPasses.cs`, `EventOpcodeSizeTable.cs` pour les libellés, commentaires d'`EntitySearchService.cs` et
+d'`AlundraWorldProxy.cs`), tests (`Alundra.Tests`), docs. Le moteur ne change pas. Le retard d'animation
+est gardé (D-E19-13) : toutes les valeurs ci-dessous l'incluent.
+
+**Faits établis** (découverte en lecture seule du 2026-10-01 : quatre volets, chacun contre-vérifié ;
+scratchpad `e19c/`) :
+
+- **La 478** (arc A3) **[données]** :
+  - une seule chaîne fait avancer la carte. Le programme C[5] du chien (enregistrement 5) fait `0x63
+    [0,128,1]` `@359`, puis `0x5E [0,96,0]` `@363` : le bloc caméra (enregistrement 0) reçoit `ForceZ`
+    = 0x6000, soit 0,375 px par tick vers le haut ;
+  - C[5] sonde ensuite à chaque image le `TileZ` du bloc (`0x07 [130,26,27,57,57,z,z]`, z = 8, 21, 33,
+    39, 48) et pose T20 à T60. B1 (`@164`) attend chacun (`@180`, `@191`, `@202`, `@213`, `@224`) et
+    téléporte le héros ;
+  - puis `0xAF`, `Wait 130`, `0xA6`, `Wait 120`, `G1641` `@242`, et `0x53 @245` vers la 476 en `PosX`
+    786432, `PosY` 524288, `PosZ` 0, effet 0 ;
+  - seul `0x5E` bloque la progression. Les autres opcodes atteints et non portés sont cosmétiques :
+    `0x0B` (21 sites), `0x1C @854`, `0x89 @836`, `0x73` et `0x74` (3 sites chacun), `0x08` (2 sites).
+    Tant que `0x0B` est sauté, les cycles C[11] et C[12] déclenchent la garde de boucle à chaque image ;
+  - aucune boîte de dialogue, aucun drapeau persistant lu ; pas de `0x11` : `PlayerControlFlags` finit
+    à 0x04.
+- **La 416** (arc A7) **[données]** :
+  - on n'y entre que par `0x53 @540` de B1 sur la 391, en `PosX` 65273856, `PosY` 51904512, `PosZ`
+    1048576, effet 2 ;
+  - B1 pose T0 (`@506`). Le bloc (C[100], enregistrement 0) marche 192 px au nord à 0,5 px par tick
+    (`0x0B [1,192]` `@659`), attend 3 × 60, puis `0x2D [1]` `@671` fait apparaître Jess ;
+  - Jess (C[1], enregistrement 1) marche 72, 64, 48 et 16 px (`@572`, `@586`, `@594`, `@608`), attend,
+    puis `0x53 @640` charge la 163 en `PosX` 63700992, `PosY` 9961472, `PosZ` 2097152, effet 2 ;
+  - seul `0x0B` (5 sites) manque. Aujourd'hui, les marches sont sautées et la carte atteint son `0x53`
+    dès l'image 1145.
+- **Aucun mur sur les marches** : sur la 478 comme sur la 416, aucune cellule traversée n'a le bit
+  0x40, et les hauteurs suivent le marcheur. Les tuiles n'ont aucun collisionneur. Seule marge étroite :
+  le bloc de la 416 passe à 1 px de la boîte du héros allongé. Toutes les animations de marche de ces
+  deux cartes sont des Loop : aucune fin Chain ne change la vitesse pendant une marche.
+- **Sémantique du binaire** **[binaire]** (chaque gestionnaire agit sur l'entité logique) :
+  - `0x0B` (`0x8003D468`, taille 4) : écrit `TargetAnimationId` = v1 à **chaque** appel. Le premier
+    appel mémorise le pc et `PosX`/`PosY` puis rend 0. Ensuite il rend 4 dès que r ≤ |dX| >> 16 ou r ≤
+    |dY| >> 16, avec r = v2 | v3 << 8. Il n'écrit pas la direction, ne lit pas `ForceAdjusted` et n'a
+    aucune sortie en cas de blocage ;
+  - `0x08` (taille 2) : `TargetDirection` = (`TargetDirection` + v1) & 0x1F ;
+  - `0x3A` (taille 2) : `TargetDirection` = table[v1 & 3], table {0, 0x10, 8, 0x18} ;
+  - `0x0C` (taille 1) : tirage du générateur partagé (graine `0x80098708`, mêmes constantes
+    qu'`AlundraRandom`), puis `TargetDirection` = table[graine >> 30] ;
+  - `0x5E` (taille 4) : pour chaque entité trouvée par la recherche v1, `ForceZ` = int16(v2 | v3 << 8)
+    << 8 ;
+  - `0x73` (taille 2) : compteur `state+0x30` = v1 (le champ `_30` d'`EventProgramState`, présent et
+    inutilisé). `0x74` (taille 3) : le décrémente ; rend 3 s'il est ≤ 0, sinon le saut relatif
+    int16(v1 | v2 << 8). Un compteur par état de programme, jamais remis à zéro ;
+  - `0x89` (taille 9) : la référence est la première entité trouvée par v1, sa position lue avant la
+    seconde recherche v2 ; chaque entité trouvée par v2 reçoit la position de la référence plus
+    int16 << 16 sur X, Y et Z, sans `+1` sur Z. Rend 9, même sans entité trouvée ;
+  - `0x1C` (taille 2) : le premier appel mémorise le pc, compte 0, `AnimCompleteCounter` = 0, rend 0,
+    sans toucher `ForceResetAnimationFlag`. Ensuite : si le drapeau Hold est posé,
+    `CurrentAnimationId` = ~`TargetAnimationId` et compte + 1 ; sinon, si `AnimCompleteCounter` ≠ 0,
+    compte + 1 ; dans les deux cas `AnimCompleteCounter` = 0. Il rend 2 quand compte ≥ v1, sinon 0.
+    `0x1C` n'efface jamais le drapeau Hold ;
+  - `0x1D` : comme `0x1C`, mais rend 2 aussi quand `ForceAdjusted` ≠ 0, dès le premier appel ;
+  - dans `UpdateAnimation` (`0x80038AB4`), une fin Hold pose le drapeau Hold ; une fin Chain et un
+    tour de Loop font `AnimCompleteCounter` + 1 ; un changement d'animation efface le drapeau Hold mais
+    ne remet jamais le compteur à zéro. La décompilation se trompe ici (remise à zéro au changement,
+    pas d'incrément sur Chain) : le binaire tranche.
+- **La DLL aujourd'hui** **[DLL]** :
+  - aucun des dix opcodes n'a de cas dans `Dispatch` ;
+  - le pont des fins d'animation (`OnAnimationFinished`) pose le drapeau Hold et applique les Chain,
+    mais n'incrémente jamais `AnimCompleteCounter`, et `SyncAnimation` n'efface jamais le drapeau Hold ;
+  - aucun site de `0x1D` sur la 478, la 416 ou la 163, et aucun site de la chaîne n'a besoin du
+    signal de boucle ;
+  - `Walk` (`0x1E`/`0x1F`) a le cœur de mesure de `0x0B` et le détour d'E4.d, avec trois écarts : clé
+    sur les opérandes, seuil en v1 | v2 << 8, retour 3.
+- **Support d'arcs** **[DLL][moteur]** :
+  - tous les PNJ des arcs sont aujourd'hui des entités nues, dans les deux modes : le jeu factice n'a
+    pas de gestionnaire d'assets, le chargement du préfab lève, et l'apparition retombe sur une entité
+    nue. Une entité nue ne monte jamais en Z : le bloc de la 478 resterait au sol ;
+  - un `AssetContentManager` construit par le test, posé par réflexion sur le jeu factice comme l'est
+    déjà son `GameManager`, rend le vrai chemin d'apparition. Il faut les chargeurs `Entity`,
+    `Animation2dData` et `UIScreenAsset`, et des identifiants résolus depuis `AssetInfos.json` par
+    `RuntimeContext.ResolveAssetInfo` ;
+  - trois pièges. Ne jamais enregistrer les chargeurs `SpriteData` ou `Texture` (il leur faut un
+    `GraphicsDevice`). Sans chargeur `UIScreenAsset`, le branchement du HUD lève. Un résolveur qui lève
+    sur un identifiant inconnu fait abandonner l'entité en silence par `World.InternalAddEntities` ;
+  - dans le jeu, le bloc de la 478 monte par son contrôleur (`MoveVerticalAndPullPosition`). La DLL
+    calcule `TileZ` avant ce mouvement, le binaire après (D-E19-15, E19.h).
+- **Écarts gardés** (déjà décidés, rappelés pour les valeurs) :
+  - `0x89` écrit par le chemin de `0x64`/`0x65` (`PushLogicalPositionToRoot`, donc `ClampToGround` puis
+    `Teleport`), absent du binaire, comme décidé en E3.d. Chaque recherche alloue une liste, comme les
+    sondes `0x07` déjà portées : une recherche sans allocation est pour E19.m ;
+  - `0x0C` et les autres consommateurs du générateur : la position dans la suite ne peut pas égaler
+    celle de l'original tant que l'IA native n'est pas portée (588 accès dans le binaire).
+
+**Tâches.** Chaque tâche porte son icône de statut et se commite avec la mise à jour de ce plan. Les
+arcs restent hors du dépôt jusqu'à T5 ; d'ici là, les lancements de toute la suite filtrent leur
+classe.
+
+- **T1 — Mode « vrais préfabs » du support d'arcs** ⏳ (tests seulement) :
+  - drapeau `Prefabs` de l'`ArcSpec`, qui exige `RealController` ;
+  - un `AssetContentManager` construit par le test et posé par réflexion sur le jeu factice. Il a les
+    chargeurs `Entity`, `Animation2dData` et `UIScreenAsset`, jamais `SpriteData`, `Texture` ni
+    `TileSetData` : pas de grille de navigation, donc pas de détour, car aucune marche ne rencontre de
+    mur ; le détour de `0x0B` est couvert par un test unitaire en T3 ;
+  - un résolveur depuis `AssetInfos.json` par `TryGetValue`, qui rend `null` sur un identifiant
+    inconnu ;
+  - **autotest, rouge d'abord** (en mode `RealController` seul), puis vert. Sur la 478, après la
+    première image :
+    - les 22 enregistrements ont un `Controller`, sont dans `world.Entities` et ont `Entity.World` égal
+      au monde de l'arc ;
+    - l'enregistrement 0 a les drapeaux 0x6080, un `AnimatedSpriteComponent` de 24 animations et une
+      boîte 24 × 16 × 32 en local (0, 0, 16) ;
+    - aucun avertissement de repli sur une entité nue et aucune exception journalisée pendant
+      l'intégration ;
+  - A0, A0b, A1, A1c, A2, A4, la cabine et le marin 12 ne changent pas : ils n'activent pas le drapeau.
+  - Le temps de l'autotest est relevé.
+- **T2 — Arcs A3, A7 et A4p écrits avant le code** ⏳ (non commités jusqu'à T5) : valeurs ci-dessous,
+  lancées sur le code d'après T1. Les échantillons sont pris pendant la course (`OnInstruction`, après
+  l'effet de l'instruction) et vérifiés après le signal de fin. La fin d'un `0x0B` se lit à
+  l'instruction **suivante** : `ArcInstruction` ne porte pas le résultat du gestionnaire, et la
+  première exécution d'un `0x0B` est son appel suspendu.
+  - **A3** : `ArcSpec("A3", "Inoa", "Inoa (Vision Event from Lars and Melzas cutscene)-478", {1641},
+    héros en (22, 57, 1), limite 2700, RealController, Prefabs)`.
+    - Fin : `0x53 @245` (créneau B, programme `@164`) ; arrivée sur la 476 en `PosX` 786432, `PosY`
+      524288, `PosZ` 0, effet 0. La trace contient `0x05 @242` : comme `G1641` est posé au départ,
+      « `G1641` posé à la fin » ne prouverait rien.
+    - Ordre des premiers `0x05` : T0 (B `@177`), T10 (C `@370`), T20 (`@437`), T30 (`@442`), T40
+      (`@447`), T50 (`@452`), T60 (`@457`), puis le `0x53`.
+    - Écarts exacts entre les premiers `0x05` : T20 → T30 = 555 images, T30 → T40 = 512, T40 → T50 =
+      256, T50 → T60 = 384. Images attendues (modèle) : T20 301, T30 856, T40 1368, T50 1624, T60 2008,
+      `0x53` 2262, vérifiées à ± 3 près (la convention de comptage des images n'est pas mesurée).
+    - L'enregistrement 0, à chaque premier `0x05` de T20 à T60 : `TileZ` 8, 21, 33, 39, 48 ; `PosX`
+      42467328 et `PosY` 60293120 (648 et 920 px) ; `PosZ` 8421376, 22061056, 34643968, 40935424,
+      50372608.
+    - Après `0x63 @359`, l'enregistrement 0 a les drapeaux 0x6000 ; après `0x5E @363`, `ForceZ` =
+      24576.
+    - Héros, lu aux téléportations de B1 (X et Y seulement : Z dépend du contrôleur) : `@166` (35389440,
+      60293120), `@183` (36962304, 49807360), `@194` (38535168, 38273024), `@205` (47972352,
+      33030144), `@216` (35389440, 26738688).
+    - Programmes cosmétiques : C[11] atteint `@725` et C[12] `@802` après T50 (sortie de leurs tours) ;
+      `0x08 @547` et `0x08 @576` s'exécutent 16 fois chacun, et `TargetDirection` vaut 16 à la sortie
+      de la boucle de `@549`, 0 à celle de `@578` ; à chaque `0x89 @836`, l'enregistrement 13 a les
+      `PosX`/`PosY` de l'enregistrement 11 ; le programme de Ronan dépasse `0x1C @854` au moins une
+      fois (la fin Hold arrive par le vrai sprite).
+    - Fin : aucun opcode sauté, aucun dépassement de la garde, aucune boîte ouverte,
+      `PlayerControlFlags == 0x04`.
+  - **A7** : `ArcSpec("A7", "Coast", "Coast beginning-416", {}, héros en (41, 49, 1), limite 2200,
+    RealController, Prefabs)`.
+    - Fin : `0x53 @640` (créneau C, programme `@568`, Jess) ; arrivée sur la 163 en `PosX` 63700992,
+      `PosY` 9961472, `PosZ` 2097152, effet 2. Image attendue : 1759 (± 3).
+    - B1 : `0x05 @506` (T0) à l'image 493 (± 3) ; héros en (65273856, 49807360) de `0x64 @421` à la
+      fin ; après `0x5B @429`, `TargetAnimationId` 78 et `TargetDirection` 16.
+    - Le bloc : premier appel de `0x0B @659` à l'image 494 (± 3). À l'instruction suivante (`0x1A
+      @663`), 385 images plus tard exactement : `PosX` 66846720, `PosY` 49807360 (1020 et 760 px).
+    - `0x2D @671`, 183 images après : une seule entité d'`EntityRefId` 1, Jess, en `PosX` 57409536,
+      `PosY` 42991616 (876 et 656 px), `PosZ >> 16` = 16, `TargetDirection` 24, avec un `Controller`.
+    - Les quatre marches de Jess finissent dans l'ordre, lues à l'instruction suivante, avec
+      `ForceAdjusted` = 0 :
+      - `@572` → `0x5B @576` : `PosX` 62128128 (948 px), image 1161 (± 3) ;
+      - `@586` → `0x5B @590` : `PosY` 47251456 (721,0 px), image 1288 (± 3) ;
+      - `@594` → `0x5B @598` : `PosX` 65323008 (996,75 px), `PosY` 47284224 (721,5 px), image 1321
+        (± 3) ;
+      - `@608` → `0x1A @612` : `PosX` 65372160 (997,5 px), `PosY` 48365568 (738,0 px), image 1385
+        (± 3).
+    - Au `0x53` : Jess en (65372160, 48398336), soit (997,5 ; 738,5) px ; le bloc en (66846720,
+      49774592), soit (1020 ; 759,5) px. Le demi-pixel de plus vient du retard gardé (D-E19-13).
+    - Fin : aucun opcode sauté, aucun dépassement, aucune boîte, `PlayerControlFlags == 0x04`.
+  - **A4p** : l'arc A4 d'E19.b en mode `RealController` + `Prefabs`, mêmes valeurs de fin, mêmes huit
+    boîtes, plus :
+    - le bloc apparu par `0x8A @63` a un `Controller` et entre dans `world.Entities` à l'image
+      suivante ; lu à `@63` en (63700992, 7340032, 3145729), puis `PosZ` = 3145728 une image plus tard
+      (le `+1` tombe au premier ajustement de la racine) ;
+    - les quatre panoramiques, mesurés comme dans A4 (`BlockBefore` → `BlockAfter`, en 16.16) :
+      63700992 → 60555264, 60555264 → 57409536, 57360384 → 60506112, 60506112 → 63651840 ; `PosY`
+      reste 7340032 ; `ForceAdjusted` du bloc reste 0 et le héros ne bouge pas ;
+    - parents : celui du bloc est le héros, celui de Rancune est le bloc (`ParentEntity`).
+  - **Rouge attendu, étape par étape** :
+
+    | Étape | A3 | A7 | A4p |
+    |---|---|---|---|
+    | Après T1 (code d'avant) | échoue dans sa limite en nommant `slot 1 program @164: last 0x36 @180` | atteint `0x53 @640` vers l'image 1145, puis échoue sur les opcodes sautés, qui contiennent `0x0B @659`, `@572`, `@586`, `@594` et `@608` | passe |
+    | Après T3 (opcodes de mouvement) | atteint `0x53 @245`, puis échoue sur les opcodes sautés ou dépassés, qui contiennent `0x1C @854` | passe | passe |
+    | Après T4 (`0x1C`, `0x1D`) | passe | passe | passe |
+
+    A4p ne dépend d'aucun opcode d'E19.c1 : il vérifie le mode préfabs sur la 476. Le rouge d'A3
+    enregistre environ 5,8 millions d'entrées de trace (deux coupures de garde par image) ; s'il dépasse
+    le délai, il se relance avec une limite de 400 images, qui donne le même message.
+- **T3 — Les opcodes de mouvement** ⏳ : `0x0B`, `0x08`, `0x0C`, `0x3A`, `0x5E`, `0x73`, `0x74`,
+  `0x89`, sur l'entité logique.
+  - `0x0B` : une méthode sœur de `Walk`, qui garde `0x1E`/`0x1F` intacts : `TargetAnimationId` = v1 à
+    chaque appel avant la clé, clé `CodeIndex`, seuil v2 | v3 << 8, retour 4, détour d'E4.d réutilisé
+    tel quel (D-E19-6).
+  - `0x73`/`0x74` sur `EventProgramState._30` (doc du champ mise à jour) ; `0x0C` sur `AlundraRandom` ;
+    `0x5E` sur le modèle de `TurnMatchingEntities` ; `0x89` sur le modèle de `SetEntitiesPosition`.
+  - Libellés de la table des tailles corrigés pour ces opcodes ; miroir `ImplementedOpcodes` du harnais
+    de l'intro ; le test `UnknownOpcode_KnownSize_SkipsBySize`, qui prend `0x08` comme opcode inconnu,
+    passe à un opcode qui reste non porté.
+  - **Tests unitaires** (valeurs du binaire) :
+    - `73 03 | 08 01 | 74 FE FF | FF` en un appel : direction 0 → 3, `_30` = 0, `0x74` rend −2, −2
+      puis 3, l'appel finit sur `0xFF @7`. Avec `73 00` : direction 1, `_30` = −1. Avec `73 01` :
+      direction 1, `_30` = 0 ;
+    - `73 02 | 00 | 08 01 | 74 FD FF | FF` sur un état de créneau C conservé : l'appel 1 laisse `_30` =
+      2 et `CodeIndex` 3 ; l'appel 2 donne la direction 1 et repasse le Break ; l'appel 3 donne la
+      direction 2 et finit sur `0xFF @8`. `_30` = 7 survit à `InitializeEventData` ;
+    - `0x08` : 31 + 1 → 0 ; 0 + 31 → 31 ; 5 + 0xFF → 4 ; rend 2. `0x3A` avec v1 = 0, 1, 2, 3, 6 → 0x00,
+      0x10, 0x08, 0x18, 0x08 ; rend 2 ;
+    - `0x0C`, après `AlundraRandom.Reset()` et dans une collection qui sérialise `AlundraRandom` : cinq
+      appels donnent 0x00, 0x18, 0x18, 0x08, 0x00, et la graine vaut 0x35E36190 après le premier ; rend
+      1 ;
+    - `0x0B [7,12,0]` depuis (100, 100) px : le premier appel rend 0 et pose `TargetAnimationId` 7 ;
+      après un déplacement de (12 << 16) − 1, rend 0 ; une unité de plus, rend 4 ; un `Target` remis à 0
+      entre deux appels revient à 7 ; `TargetDirection` ne change jamais ; un déplacement vers −X ou sur
+      Y seul termine aussi ; `[a,0,1]` donne un rayon de 256 ; avec une entité logique posée sur un
+      programme B, la mesure et l'animation portent sur l'entité logique ;
+    - détour de `0x0B` : copie du test de détour de `0x1E` (grille, `ForceAdjusted` = 1 : le détour
+      s'engage une fois et se remet à zéro à la fin) ;
+    - `0x5E` : `[0,96,0]` → `ForceZ` 24576 sur chaque entité trouvée ; `[x,0,0x80]` → −8388608 ;
+      `[6,0,6]` → 393216 ; rend 4 ; sans entité trouvée, rien n'est écrit ;
+    - `0x89` : la référence est la première entité trouvée dans l'ordre d'apparition ; les décalages
+      `[2,0,0xFE,0xFF,0,0]` donnent +2, −2 et 0 px, sans `+1` sur Z ; rend 9 ; sans référence, les
+      cibles ne bougent pas ; une entité qui se prend pour référence et cible avec +2 ne bouge qu'une
+      fois.
+  - A7 passe après T3 ; A3 échoue comme le dit la table.
+- **T4 — `0x1C`, `0x1D` et le pont des fins d'animation** ⏳ :
+  - les deux gestionnaires exactement comme le binaire ;
+  - le pont : une fin Chain fait `AnimCompleteCounter` + 1 (un Chain sur soi-même aussi), une fin Hold
+    ne touche pas le compteur ;
+  - `SyncAnimation` efface `ForceResetAnimationFlag` à **tout** changement (cible, direction, relance
+    de Chain), avant son retour anticipé pour une entité sans sprite, et ne remet jamais le compteur à
+    zéro ;
+  - **tests unitaires** :
+    - `0x1C`, premier appel : `AnimCompleteCounter` 5 → 0, drapeau laissé à 1, rend 0 ; l'appel suivant
+      avec le drapeau : `CurrentAnimationId` = ~`TargetAnimationId`, rend 2 pour `[1]` ; un compteur à
+      3 compte une seule fois ; drapeau et compteur ensemble comptent une seule fois ; `[0]` rend 2 au
+      deuxième appel ;
+    - drapeau tenu à 1 sans `SyncAnimation` entre les appels : `1C [2]` rend 0, 0 puis 2 ; le drapeau
+      vaut toujours 1 après ;
+    - `0x1D` avec `ForceAdjusted` = 1 au premier appel rend 2 ;
+    - pont : fin Chain 54 → 0, compteur 0 → 1 ; Chain sur soi-même, 1 ; Hold, compteur inchangé ;
+    - `SyncAnimation` : un changement de cible avec drapeau 1 et compteur 2 donne drapeau 0 et compteur
+      2 ; un changement de direction seul efface aussi le drapeau ; sans changement, le drapeau reste à
+      1 ; même chose pour une entité sans sprite ;
+  - A3 passe après T4. Le moment exact de la fin Hold de Ronan n'est pas épinglé : il vient de
+    l'horloge à virgule flottante du moteur jusqu'à E19.c2.
+- **T5 — Arcs verts** ⏳ : A3, A7 et A4p passent avec les valeurs de T2 ; ils sont commités. Leur temps
+  d'exécution est relevé.
+- **T6 — `ForceAdjusted` sur Y et en sens négatif** ⏳ (P3 reporté par E19.a3) : même montage que
+  `BuildSailorBesideTheEastWall` (champ réel de la 389, contrôleur de la banque 146, boîte 18 × 12, masque
+  0x41, une image d'enregistrement, appels directs de `MoveControllerAndPullPosition`) :
+  - nord, pion en (516, 650, 80) : `Move(0, −10)` donne y = 646,0 (42336256) et `ForceAdjusted` 0 ;
+    `Move(0, −2)` laisse y et lève le drapeau ; `Move(0, +1)` le laisse à 0 ; de retour au contact,
+    `Move(+1, −2)` avance X de 1 et lève le drapeau ;
+  - sud, pion en (492, 648, 80) : `Move(0, +10)` donne y = 650,0 (42598400) et 0 ; `Move(0, +2)` lève
+    le drapeau ;
+  - ouest, pion en (545, 632, 80) : `Move(−10, 0)` donne x = 537,0 (35192832) et 0 ; `Move(−2, 0)` lève
+    le drapeau ;
+  - le test vers l'est est resserré : il avance d'exactement 3,0 px (contact à 567,0).
+- **T7 — Hygiène reportée par E19.b** ⏳ :
+  - un test unitaire de `0x8A` avec des octets forts non nuls sur Y et Z ;
+  - A2 et A4 vérifient les parents (bloc → héros, Rancune → bloc) ;
+  - le fragment « Tu » de `S102` remplacé par un fragment distinctif d'au moins 15 caractères du nœud ;
+  - la doc de classe et les commentaires de cas d'`EntitySearchService` disent « entité de référence »
+    au lieu d'« owner » ; la doc d'`OpenDialog` cite `0xC4` ;
+  - le commentaire d'`AlundraWorldProxy.cs:773-778` dit que l'ajustement au sol à l'apparition ne fait
+    rien en production (`Entity.World` est nul à ce moment ; O-E19-6).
+- **T8 — Docs** ⏳ : statuts de ce plan, mesures au §2, points ouverts, ligne E19 du plan maître ; les
+  textes qui annonçaient la correction du retard en E19.c disent qu'il est gardé (D-E19-13).
+- **T9 — Recette en jeu (auteur)** ⏳ :
+  1. **La 478, en jouant** : après la cabine et la 476, la 478 montre la caméra sur le bloc qui monte
+     lentement, pendant que les PNJ marchent (Talis, le bloc et son chien, Yuri qui tourne sur
+     lui-même). Après environ 45 s, fondu, retour à la 476 (huit boîtes), puis la 392 se charge.
+  2. **La 416, par raccourci** : F6, puis dans `debug-json.sav` : `initialMapId` 416, `cameraTileX`,
+     `cameraTileY` et `cameraTileZ` à 0, aucun drapeau, puis F9. Alundra est allongé ; la caméra glisse
+     au nord pendant environ 8 s ; Jess apparaît, marche jusqu'à Alundra, s'arrête, puis la 163 se
+     charge.
+
+**Lancement des tests.** Comme avant, au premier plan. Les lancements qui contiennent des arcs en
+préfabs prennent `--blame-hang-timeout 300s` ; un arc qui dépasse 120 s est un arrêt. À la fin : une
+course en Release, puis la build Debug et une course Debug, et la DLL déployée dans `alundra-project/`
+est la Debug.
+
+**Acceptation d'E19.c1.**
+1. L'autotest du mode préfabs échoue puis passe ; les arcs et épingles existants ne bougent pas.
+2. A3 et A7 échouent comme le dit la table avant T3 et T4, puis passent avec les valeurs de T2 ; A4p
+   passe avec les siennes.
+3. Les tests unitaires de T3, T4, T6 et T7 passent.
+4. `Alundra.Tests` et les tests du convertisseur passent à 0 échec. Le moteur, les traces du héros et
+   la trace de l'intro ne changent pas.
+5. Un verifier frais rend CONFIRMED sur 1 à 4.
+6. La recette T9 de l'auteur.
+
+**Risques.**
+- `0x0B` n'a pas de sortie en cas de blocage. Dans le jeu, un mur ou un corps d'entité que l'original
+  n'a pas figerait la 416 (son `0x53` attend les marches). Les données l'excluent, et les arcs en
+  préfabs le testent avec les vrais contrôleurs.
+- Les vrais préfabs peuvent révéler un blocage propre au jeu, par exemple un PNJ qui en bloque un
+  autre, ou le chien de la 478 que `0x89` téléporte à chaque tick dans le corps collidable du bloc 11.
+  Un tel blocage est un arrêt : il se soumet à l'auteur avant toute correction.
+- Avec un gestionnaire d'assets, le présentateur de dialogue change de chemin (`DialogueScreen`) : les
+  huit boîtes d'A4p le vérifient.
+- Les sprites des préfabs journalisent des erreurs de résolution à chaque animation (pas de
+  `SpriteData` en test) ; le volume et la durée sont relevés en T1.
+- Avec le retard gardé, une relance Hold par `0x1C` sur un PNJ **qui se déplace** donne un tick à
+  vitesse nulle (`CurrentAnimationId` = ~`TargetAnimationId` n'a pas de jeu d'animation). Aucun site
+  de la chaîne n'est dans ce cas : Ronan ne bouge pas.
+- Les dix opcodes passent en vrai dans tout le corpus : 1246 sites de `0x0B`, 582 de `0x74`, 120 de
+  `0x5E`, 86 de `0x89`. La 391 change en jeu (les marins sautent, une boucle `0x73`/`0x74` retarde son
+  `0x53` d'environ 38 images) et la 392 tourne le héros au hasard dans sa boucle de roulis : c'est
+  fidèle, et c'est vérifié en E19.d.
+- Les valeurs des arcs viennent de deux modèles indépendants de la DLL, pas d'une course. Une valeur
+  contredite est un arrêt, jamais une ré-épingle.
+
+**Revues** : plan-verifier sur cette section, avant approbation ; verifier frais après exécution.
+
+### 1.2f E19.c2 — Horloge d'animation exacte en ticks ⏳ (esquisse ; se détaille après E19.c1)
+
+**But.** Les fins d'animation et les changements d'image tombent au tick de l'original (D-E19-16).
+
+**Faits établis** (découverte du 2026-10-01, contre-vérifiée ; scratchpad `e19c/animclock.md`) :
+- le moteur avance les sprites en secondes réelles, en float32, avant les scripts et hors du gel du
+  jeu. À 0,02 s par image, sur l'export : 1010 des 4413 animations Once finissent un tick trop tôt,
+  3109 des 5202 Loop bouclent un tick trop tard, 197 Loop ne bouclent plus jamais et montrent la pose
+  cachée de fin (défaut du moteur, O-E19-10) ; le cycle de marche du héros dure 31 ticks au lieu de
+  30 ;
+- les délais entiers survivent à l'export : chaque instant de clé est à moins de 1,02e-4 tick de la
+  grille à 50 Hz. Aucun changement de format ni du convertisseur n'est nécessaire ;
+- dans le binaire, `UpdateAnimation` tourne après les scripts et avant la physique, et pas du tout
+  quand le jeu est gelé.
+
+**Proposition** : un mode « horloge en ticks », optionnel, du `AnimatedSpriteComponent` et de son
+échantillonneur (moteur, API additive, ADR-0046 du moteur, plan dans
+`CasaEngineMonogame/ai-agent/tasks/`), avancé par la DLL d'un tick à chaque tick logique, dans le gel,
+juste après les scripts du tick. Un modèle de ce pilotage redonne toutes les fins du binaire à 0 ou 1
+tick par image (Ronan `s+25`, tour de 66 ; héros 83 `[3]` `s+99`, puis 85 `[1]` `+41` ; Jess `s+25`).
+Le signal de fin de boucle en sort sans coût.
+
+**Questions à trancher avec son plan** : base de la branche du moteur (`chantier/field-move-to-contact`
+n'est pas mergée, O-E19-12) ; règles de l'ADR (une Once finit à la D-ième avance, une Loop boucle à la
+D-ième, clés arrondies au tick) ; garde de `0x1C` sous rattrapage (2 ticks ou plus par image) ; le pont
+du signal de boucle dans E19.c2 ou E19.i ; changements visibles (les sprites changent d'image sur les
+ticks logiques, et se figent pendant le départ d'un portail).
+
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
 Chaque arc part d'une carte chargée seule, avec des drapeaux posés et le héros placé. Les valeurs
@@ -1115,11 +1479,12 @@ mesure.
 | A0b | 390 | idem | (38,49,4), dans la zone de poussée (`3B [36,40,48,50,4,8]` `@482`) | idem, après les deux `0x1F` (`@496`, `@507`) | 800 | E19.a |
 | A1 | 390 | `G866`, `G869`, `G870`, `G871` (mot 27 : 228) | (44,23,4), arrivée de la porte 3 du pont ; le dialogue de B3 (`3B [43,45,20,23,4,4]` `@712`) s'ouvre et se ferme au bouton | `0x53 @688` (B2) vers 476 ; §1.2, acceptation 2 | 900 | E19.a |
 | A2 | 476 | `G1640` (mot 51 : 256) | arrivée | `0x53 @758` vers 478 | E19.b | E19.b |
-| A3 | 478 | `G1641` (mot 51 : 512) | arrivée | T20 à T60 posés, puis le `0x53` vers 476 | E19.c | E19.c |
+| A3 | 478 | `G1641` (mot 51 : 512) | arrivée | T20 à T60 posés, puis `0x53 @245` vers 476 (§1.2e) | 2700 | E19.c1 |
 | A4 | 476 | `G1641` | arrivée | `0x53 @986` vers 392 | E19.b | E19.b |
 | A5 | 392 | — | couloir du portail | portail vers 391 | E19.d | E19.d |
 | A6 | 391 | — | arrivée | le `0x53` vers 416 | E19.d | E19.d |
-| A7 | 416 | — | arrivée | `0x53` de `C[1] @640` vers 163 | E19.c | E19.c |
+| A7 | 416 | — | arrivée | `0x53` de `C[1] @640` vers 163 (§1.2e) | 2200 | E19.c1 |
+| A4p | 476 | `G1641` | comme A4 | comme A4, en vrais préfabs (§1.2e) | 2500 | E19.c1 |
 | A8 | 163 | — | arrivée | `G0`, `0x11 @201`, `G1662`, livre présent | E19.d | E19.d |
 
 Les valeurs exactes de chaque arrivée se décodent des opcodes `0x53` cités et s'écrivent dans le test
@@ -1137,8 +1502,15 @@ Réservé aux mesures faites en exécutant les tranches.
 |---|---|---|
 | O-E19-1 | ~~Portails trou et escalier de la 390~~ — **réglé par la recette du 2026-09-29** : le journal montre le passage par le portail 5, qui charge la pièce B. Question d'origine : si la recette d'E19.a montre que le héros ne suit pas le capitaine par là, faut-il corriger dans E19 ou dans un chantier de transitions ? | E19.a (recette) |
 | O-E19-2 | Nouveaux écarts de la décompilation relevés dans le binaire : `0x5F` (entité et taille), `0x66` (sens de la copie), compteur de `0x1C`, `y` de la boîte de nom, portrait de `Script_196_0C4`, test de zone de `GetMapEffectRecord`, `AddOneItemIfUnlocked`, `InitializeEventData`. Le portage suit le binaire. Faut-il aussi corriger la décompilation dans l'analyseur, comme pour la taille de `0x78` en E16.a ? | E19.m |
-| O-E19-3 | Déplacement vertical des entités nues dans le support d'arcs (A3, A6) : dupliquer la passe du harnais de l'intro, l'extraire (le fichier de trace épinglé serait touché), ou ouvrir en production un point d'entrée du chargeur de préfabs pour que le montage ait de vrais contrôleurs ? | E19.c |
-| O-E19-5 | Quand un `0x5B [x,0,dir]` arrête un PNJ au tick où sa marche se termine, le mouvement de ce tick s'applique encore avec la nouvelle direction : le marin 12 de la 389 descend de 1,25 px au tick de `@1494` (mesuré en E19.a3 : y = 843,25 à l'image de `@1494`, contre 842,0 à l'image précédente, lue par le test du marin 12). Cela peut venir de la latence d'une image de `CurrentAnimationId` des PNJ, déjà relevée (le moteur synchronise l'animation en fin d'image). **Tranché par le binaire le 2026-10-01 (§1.2d, [binaire])** : l'original exécute dans l'ordre les événements de carte, les entités, `UpdateAnimation` puis la physique (`0x8002E100`, `0x8003B388` → `0x8003B3D8` → `0x8003B3E0`) ; un changement d'animation par script s'applique donc dans la physique du même tick. La DLL a une image de retard : c'est la cause du pas de 1,25 px du marin 12, et chaque panoramique du bloc de la 476 fera 48,75 px au lieu de 48. La correction reste dans E19.c. | E19.c |
+| O-E19-3 | ~~Déplacement vertical des entités nues dans le support d'arcs~~ — **tranché le 2026-10-01 (D-E19-14)** : les arcs chargent les vrais préfabs par un gestionnaire d'assets construit par le test. | E19.c1 |
+| O-E19-5 | Quand un `0x5B [x,0,dir]` arrête un PNJ au tick où sa marche se termine, le mouvement de ce tick s'applique encore avec la nouvelle direction : le marin 12 de la 389 descend de 1,25 px au tick de `@1494` (mesuré en E19.a3 : y = 843,25 à l'image de `@1494`, contre 842,0 à l'image précédente, lue par le test du marin 12). Cela peut venir de la latence d'une image de `CurrentAnimationId` des PNJ, déjà relevée (le moteur synchronise l'animation en fin d'image). **Tranché par le binaire le 2026-10-01 (§1.2d, [binaire])** : l'original exécute dans l'ordre les événements de carte, les entités, `UpdateAnimation` puis la physique (`0x8002E100`, `0x8003B388` → `0x8003B3D8` → `0x8003B3E0`) ; un changement d'animation par script s'applique donc dans la physique du même tick. La DLL a une image de retard : c'est la cause du pas de 1,25 px du marin 12, et chaque panoramique du bloc de la 476 fera 48,75 px au lieu de 48. La correction reste dans E19.c. **Précisé puis tranché le 2026-10-01** : chaque marche du bloc fait bien 48,0 px, mais la première de chaque panoramique dure un tick de plus et le bloc dépasse de 0,75 px après chaque panoramique. L'auteur garde ce retard (D-E19-13, ADR-0018) : le corriger aurait déplacé des points épinglés de l'intro. | E19.c1 (clos) |
+| O-E19-6 | À l'apparition, l'ajustement au sol (`ClampToGround`) et `TerrainHeight` ne font rien en production : `World.AddEntity` ne fait que mettre l'entité en file, et `Entity.World` n'est posé qu'à l'intégration suivante. Le commentaire d'`AlundraWorldProxy.cs:773-778` dit le contraire (corrigé en E19.c1 T7). Faut-il corriger le comportement ? | E19.h |
+| O-E19-7 | Une entité sans contrôleur ne bouge jamais en Z dans la DLL, alors que le binaire intègre Z pour toute entité active (`MoveEntity` `0x80037E34` → `ComputeZPosition`). Sur la chaîne, tous les enregistrements ont un contrôleur. | E19.h |
+| O-E19-8 | `IsZForceApplied` (`+0xF8`) n'est pas porté : au tick d'un changement d'animation, le binaire remplace `ForceZ` par la valeur du jeu d'animation (131 des 395 enregistrements de sprite en ont une non nulle). Il suppose l'animation résolue avant la physique, ce que D-E19-13 ne fait pas. | E19.h |
+| O-E19-9 | Les 5 animations Loop de durée 0 de l'export (banque 127 anim 0 gauche et droite, banque 151 anim 1 haut, gauche et bas) sont invisibles dans le moteur : la clé cachée de fin tombe au même instant 0 que l'image. Le binaire montre l'image figée. À corriger au convertisseur (export complet à relancer). | à placer |
+| O-E19-10 | Défaut du moteur sur le chemin en temps réel : à 0,02 s par image, 197 des 5202 Loop de l'export ne bouclent plus jamais (le temps tombe pile sur la durée, puis la dépasse), et le sprite montre la pose cachée de fin (exemple : animations 53 et 55 du héros). | E19.c2 |
+| O-E19-11 | La remise à zéro hors zone d'un événement de carte diffère du binaire : la DLL écrit sur l'entité de l'événement et ne remet pas `mapEvent.EventData` à zéro, le binaire (`0x8003C7F0`-`0x8003C804`) remet le pc et l'entrée de l'état de l'événement, `state+0x2C`, l'entité logique et l'octet de programme. Un programme B réentré reprend dans la DLL et recommence dans le binaire. Sans effet sur la 478 et la 416 (zones de toute la carte). | E19.j |
+| O-E19-12 | Base de la branche moteur d'E19.c2 : `chantier/field-move-to-contact` (E19.a2) n'est pas mergée dans `main` du moteur, et le parent la pointe. Partir d'elle, ou attendre son merge ? | E19.c2 (auteur) |
 | O-E19-4 | Le gestionnaire natif du créneau E (`0x8007ED10`, destruction après `Deactivated`, 417 enregistrements sur 85 cartes) : E14, ou une tranche d'E19 ? Sur la chaîne, il ne touche que l'oiseau de la 389 et des PNJ d'Inoa. | E14 |
 
 ## 4. Hors périmètre
