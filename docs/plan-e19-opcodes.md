@@ -1217,7 +1217,7 @@ scratchpad `e19c/`) :
 arcs restent hors du dépôt jusqu'à T5 ; d'ici là, les lancements de toute la suite filtrent leur
 classe.
 
-- **T1 — Mode « vrais préfabs » du support d'arcs** ⏳ (tests seulement) :
+- **T1 — Mode « vrais préfabs » du support d'arcs** ✅ *(fait le 2026-10-01 : `ArcSpec.Prefabs`, `ArcPrefabAssets` dans `AlundraArcSupport.cs`, autotest `AlundraPrefabArcSupportTests`. Rouge constaté avec le drapeau sans effet : « record 0 à 21 : no controller ». Vert ensuite, 993 ms. Seules erreurs journalisées après la première image : 3628 résolutions de sprite (616760 caractères), attendues sans chargeur `SpriteData` ; le test échoue sur toute autre erreur.)* (tests seulement) :
   - drapeau `Prefabs` de l'`ArcSpec`, qui exige `RealController` ;
   - un `AssetContentManager` construit par le test et posé par réflexion sur le jeu factice. Il a les
     chargeurs `Entity`, `Animation2dData` et `UIScreenAsset`, jamais `SpriteData`, `Texture` ni

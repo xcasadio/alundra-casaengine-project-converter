@@ -10,6 +10,10 @@ using CasaEngine.Engine.Geometry;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Application.Components.Physics;
+using CasaEngine.Framework.Assets;
+using CasaEngine.Framework.Assets.Animations;
+using CasaEngine.Framework.Configuration.Project;
+using CasaEngine.Framework.UI.MGUI;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Gameplay;
 using CasaEngine.Framework.Scene.Entities;
@@ -38,9 +42,12 @@ namespace Alundra.Tests;
 /// export's, and every frame is the world's own <c>Update</c> (which moves the entities), so walks meet the map's
 /// cells and rails. Off (the default), the entities are bare and <see cref="ArcRun.OneFrame"/> updates them one by
 /// one.</param>
+/// <param name="Prefabs">E19.c1 (D-E19-14): the NPCs are the export's real prefabs, loaded by the production spawn path
+/// through an <see cref="AssetContentManager"/> built by the test (<see cref="ArcPrefabAssets"/>). Requires
+/// <see cref="RealController"/>. Off (the default), every NPC is a bare entity.</param>
 internal sealed record ArcSpec(
     string Name, string Zone, string WorldName, int[] Flags, int HeroTileX, int HeroTileY, int HeroTileZ, int FrameLimit,
-    bool RealController = false);
+    bool RealController = false, bool Prefabs = false);
 
 /// <summary>One instruction of the arc's trace: the frame it ran in, the program it belongs to (slot and start
 /// code index, the identity a trace record can give without its owner), and its outcome.</summary>
@@ -103,7 +110,17 @@ internal sealed class ArcRun : IDisposable
 
         try
         {
+            if (spec.Prefabs && !spec.RealController)
+            {
+                throw new ArgumentException($"arc {spec.Name}: Prefabs requires RealController (the prefabs' controllers need the world's own Update).");
+            }
+
             ResetAll();
+            if (spec.Prefabs)
+            {
+                Log = LogCapture.Install();
+            }
+
             AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
 
             var root = FindProjectRoot();
@@ -117,6 +134,11 @@ internal sealed class ArcRun : IDisposable
             var uiView = new AlundraSaveBookTests.RecordingUIViewRuntime();
             var world = BuildWorld(root, spec, uiView);
             Entity heroEntity;
+            if (spec.Prefabs)
+            {
+                ArcPrefabAssets.Install(world, root);
+            }
+
             if (spec.RealController)
             {
                 // The game's execution policy (without it World.Update does not run the entities' scripts) and a
@@ -193,10 +215,17 @@ internal sealed class ArcRun : IDisposable
 
     public void Dispose()
     {
+        Log?.Dispose();
         EngineEnvironment.ProjectPath = _previousProjectPath;
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
         ResetAll();
     }
+
+    /// <summary>The log lines of the run, in <see cref="ArcSpec.Prefabs"/> mode only (null otherwise).</summary>
+    public LogCapture? Log { get; private set; }
+
+    /// <summary>The world of the arc in <see cref="ArcSpec.RealController"/> mode (null in bare mode).</summary>
+    public World? RealWorld => _realWorld;
 
     private static void ResetAll()
     {
@@ -398,5 +427,45 @@ internal sealed class ArcRun : IDisposable
 
         world.Entities.Add(tileMapEntity);
         return world;
+    }
+}
+
+/// <summary>
+/// E19.c1 T1 (D-E19-14): the asset manager of the <see cref="ArcSpec.Prefabs"/> mode. The headless game is an
+/// uninitialised <c>CasaEngineGame</c>, whose <c>AssetContentManager</c> initializer never ran: the production prefab
+/// loader throws and every NPC falls back to a bare entity. A manager built here and set by reflection, as the montage
+/// already sets the <c>GameManager</c>, gives the production spawn path its real prefab.
+/// <list type="bullet">
+/// <item><description>Loaders: <c>Entity</c>, <c>Animation2dData</c> and <c>UIScreenAsset</c> only (the HUD wiring of a
+/// non-null manager builds a screen that acquires its asset). NEVER <c>SpriteData</c>, <c>Texture</c> or
+/// <c>TileSetData</c>: the first two need a graphics device and a failure past them drops the entity, the third would
+/// build a navigation grid (no detour: the arcs' walks meet no wall).</description></item>
+/// <item><description>The resolver reads the export's <c>AssetInfos.json</c> and answers <c>null</c> for an unknown id
+/// (a throwing resolver makes <c>World.InternalAddEntities</c> drop the entity without a trace).</description></item>
+/// </list>
+/// </summary>
+internal static class ArcPrefabAssets
+{
+    public static AssetContentManager Install(World world, string projectRoot)
+    {
+        var infos = new Dictionary<Guid, AssetInfo>();
+        var assetInfos = JObject.Parse(File.ReadAllText(Path.Combine(projectRoot, "AssetInfos.json")));
+        foreach (var node in (JArray)assetInfos["asset_infos"]!)
+        {
+            var info = new AssetInfo();
+            info.Load((JObject)node);
+            infos[info.Id] = info;
+        }
+
+        var context = new EngineRuntimeContext(new ProjectSettings(), projectRoot, id => infos.TryGetValue(id, out var info) ? info : null!);
+        var manager = new AssetContentManager { RuntimeContext = context };
+        manager.RegisterAssetLoader(typeof(Entity), new AssetLoader<Entity>());
+        manager.RegisterAssetLoader(typeof(Animation2dData), new AssetLoader<Animation2dData>());
+        manager.RegisterAssetLoader(typeof(UIScreenAsset), new AssetLoader<UIScreenAsset>());
+
+        typeof(CasaEngineGame)
+            .GetField("<AssetContentManager>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .SetValue(world.Game, manager);
+        return manager;
     }
 }
