@@ -168,10 +168,12 @@ d'intro-roadmap).
   (qui est un pointeur moteur vers sa propre `Entity` CasaEngine, posé une fois au spawn) — un nouveau
   champ `AlundraEntityScriptProxy.LogicEntity` porte la sémantique de l'original.
 - **`g_clearProgramState`** : mécanisme ajouté (`AlundraEventProgramRunner.ClearProgramStateRequested`)
-  mais aucun opcode porté ne le positionne encore (seul 0x40, non porté, le ferait) ; simplification
-  documentée : l'original re-teste le flag après *chaque* opcode et distingue nettoyer l'état de l'entité
-  en cours d'exécution de celui d'une autre entité ciblée — ce port ne re-teste qu'une fois, après le
-  retour de `RunOneScriptCall`, et ne nettoie que l'état de l'appel en cours.
+  mais aucun opcode porté ne le positionnait alors (seul 0x40, non porté, le ferait) ; simplification
+  documentée à l'époque : l'original re-teste le flag après *chaque* opcode et distingue nettoyer l'état de
+  l'entité en cours d'exécution de celui d'une autre entité ciblée — ce port ne re-testait qu'une fois, après
+  le retour de `RunOneScriptCall`. **Mise à jour 2026-10-01 (E19.d D6, D-E19-22)** : 0x40 et 0x41 sont portés ;
+  le flag est re-testé après chaque opcode (état de l'appel effacé en fin d'appel pour le propriétaire, état
+  d'une autre entité tout de suite), comme l'original.
 - **Entité joueur minimale** : spawnée par nom de catalogue `"Alundra"` (résolu via
   `AssetCatalog.Get("Alundra").Id`, le même id que `SpriteRecordCatalog.TryGet` utilise pour son en-tête
   sprite-records.json) plutôt que par un `PrefabAssetId` de record — il n'y a pas de record `Entities`
@@ -925,6 +927,10 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
     E19.a à E19.e, puis la boîte de nom et la boîte de texte fidèle (E19.f).
   - Phase 2 : le reste du corpus, une famille par tranche, les effets visuels compris (E19.g à
     E19.m).
+- **État (2026-10-01)** : E19.a à E19.c2 faites ; E19.d (392, 391 et 163 : `0x24` avec recensement, `0x40`/`0x41`, défaut d'atterrissage,
+  arcs A5, A5r, A6 et A8) faite et verte (`Alundra.Tests` 2086 réussis), reste le verifier frais et la recette en jeu de l'auteur
+  ([plan-e19-opcodes.md](plan-e19-opcodes.md) §1.2g, D10). Suite : **E19.d2** (Inoa après le premier livre : la scène des villageois de
+  la carte 10 et le saut scripté d'Alundra avec `0x25`), puis E19.e.
 - **Dépendances** : E16 (drapeaux). E14, E17 et E18 ne sont pas nécessaires à la chaîne.
 
 ## 5. Règles de travail

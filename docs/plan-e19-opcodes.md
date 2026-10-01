@@ -342,7 +342,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.b 🧪 | Carte 476 : `0xC4` sans nom (D-E19-5), `0x8A` (bloc caméra), `0x4C` gardé pour la machine à écrire | A2, A4 | La vision de Lars et Melzas jusqu'à 478, puis jusqu'à 392 |
 | E19.c1 🧪 | Cartes 478 et 416 : `0x0B` avec détour (D-E19-6), `0x1C`/`0x1D` (compteur du binaire, Chain et Hold), `0x5E`, `0x08`, `0x0C`, `0x3A`, `0x89`, `0x73`/`0x74` ; arcs en vrais préfabs (D-E19-14) | A3, A7, A4p | La vision de 478 va au bout ; la plage 416 mène à la 163 |
 | E19.c2 🧪 | Moteur : horloge logique exacte des fins d'animation, rendu en temps réel (D-E19-16, D-E19-17), correction des Loop figées ; DLL : pilotage à chaque tick logique, signal de boucle (D-E19-18), garde de `0x1C` sous rattrapage | A3, A9, tests moteur | Wendell à Inoa rend la main ; les fins d'animation au tick de l'original |
-| E19.d | Fin de chaîne : `0x24` avec recensement (D-E19-21), `0x40`/`0x41` complets (D-E19-22), défaut d'atterrissage de la DLL (391), vrai héros et pad tenu dans les arcs ; reste de 392, 391 et 163 | A5, A5r, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
+| E19.d 🧪 | Fin de chaîne : `0x24` avec recensement (D-E19-21), `0x40`/`0x41` complets (D-E19-22), défaut d'atterrissage de la DLL (391), vrai héros et pad tenu dans les arcs ; reste de 392, 391 et 163 | A5, A5r, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
 | E19.d2 | Inoa après le premier livre (D-E19-26) : la scène des villageois de la carte 10 (O-E19-18), le saut scripté d'Alundra et `0x25` (O-E19-19) | arcs d'arrivée sur la 10 | La scène de la 10 rend la main ; la chaîne 179 → 176 → 10 → 135 passe |
 | E19.e | Recette de bout en bout, plus un test statique : aucun opcode sauté sur la chaîne hors liste d'exceptions | toute la chaîne | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement (avec les recettes d'E16 en attente) |
 | E19.f | Boîte de nom et boîte de texte fidèle (D-E19-4) : export du cadre, écrans XAML liés à un view model, cycle de vie de la boîte de nom, pour `0x0D`/`0x5C`/`0xC4` | tests MGDesktop | Les noms s'affichent au-dessus de la boîte, à la place de l'original |
@@ -1843,7 +1843,7 @@ exécution.
   | Latent : le binaire exclut aussi les entités bloquées (`BlockedByEntity`, `+0x20`) de `UpdateAnimation` ; la DLL n'exclut que les entités à détruire. Rien ne pose ce champ aujourd'hui. | P4 | Reporté (à reprendre si le blocage entre entités est porté). |
   | P4 du moteur (horloge activée en cours d'animation, `LastUpdateLoopTurns` périmé, numéros de ligne de la doc, trous de tests, entrées limites, `Detach`). | P4 | Reportés : plan moteur, « Vérification de clôture ». |
 
-### 1.2g E19.d — Fin de la chaîne : 392, 391 et 163 jusqu'au premier livre ⏳ (proposée le 2026-10-01)
+### 1.2g E19.d — Fin de la chaîne : 392, 391 et 163 jusqu'au premier livre 🧪 (D0 à D9 faites le 2026-10-01 ; reste le verifier frais et la recette D10 de l'auteur)
 
 **But.**
 - La 392 mène à la 391 par son portail ; la 391 mène à la 416 ; la 163 joue le réveil à Inoa, Jess marche
@@ -2024,7 +2024,7 @@ et A8 restent hors du dépôt jusqu'à D7 ; d'ici là, les lancements de toute l
   tailles ; la doc de `RunScript` sur l'effacement (le choix laissé au port de `0x40` est fait) ; la doc de
   T-D15 qui se contredit (P4 d'E19.c2) ; la ligne E19.j de l'enveloppe ne garde que le réarmement hors zone ;
   au §0.2.4, `0x8E @20` est en tête de B1, hors de la boucle de roulis.
-- **D9 — Docs** ⏳ : statuts, mesures au §2, points ouverts, ligne du plan maître.
+- **D9 — Docs** ✅ (faite le 2026-10-01 : statuts, mesures au §2 (recensement compris), points ouverts (O-E19-21), ligne du plan maître avec E19.d2 en suite, ADR-0020 amendé pour D-E19-24 à D-E19-26) : statuts, mesures au §2, points ouverts, ligne du plan maître.
 - **D10 — Recette en jeu (auteur)** ⏳ : voir plus bas.
 
 **Valeurs écrites d'avance.** Échantillons pris pendant la course (`OnInstruction`, après l'effet), vérifiés
@@ -2343,6 +2343,25 @@ Réservé aux mesures faites en exécutant les tranches.
   Debug (1995 avant la tranche : 69 tests de plus, dont les colonnes de la table T-D comptées une par une) ; convertisseur 400 sur 400. Les annexes de trace du héros
   et de l'intro ne changent pas. La DLL déployée dans `alundra-project/` est la Debug (`cmp` identique).
 
+### E19.d (2026-10-01)
+
+- **Commits** (branche `chantier/e19-opcodes`) : D1 `acbb789`, D2 `c91af00`, D3 `a31689e`, plan (arrêt de D5, décisions D-E19-24 à D-E19-26) `dfd8ded` et `67f8941`, D4 `8dca230`,
+  D5 `8ee80e9`, D6 `6d6647a`, D7 `d3c397a`, D8 `0a926e4`, puis cette mise à jour des docs. D0 n'a pas de commit propre (les arcs A6 et A8 entrent avec D7). Le pointeur du moteur ne
+  change pas ; le moteur n'est pas touché.
+- **Rouge constaté** (conforme à la table) : A6 échouait avec `slot 1 program @228: last 0x00 @479` et A8 avec `slot 1 program @60: last 0x1C @100` sur `74df40e` (D0) ; après D1, A8
+  atteignait `0x11 @201` à l'image 941 puis échouait sur les opcodes sautés ; après D2, A6 passait ; après D4, A8 atteignait la fin à l'image 1025 et échouait sur `0x41 @56`,
+  `0x41 @728` et `0x40 @731` seuls (revu le 2026-10-01 sur le code de D4) ; après D6, A8 passe. U1, U3 et U4 rouges sans le cas de `0x24` (revérifié) ; U5 à U13 (sans U9) : les 8 rouges
+  sur le code de D4, verts du premier coup avec D6.
+- **Valeurs mesurées contre valeurs écrites** : toutes égales, sans en changer une (A5, A5r, A6, A8, TH1 à TH3, D2, U1 à U13).
+- **Recensement des sites de `0x24`** (`docs/census-0x24-waits.md`, modèle corrigé par D-E19-24, quatre passes jusqu'à un tableau stable) : 429 sites dans 82 cartes ; 395 atteignables dans
+  76 cartes, 34 dormants, 0 « DLL seulement » ; classes des 395 : mur trouvé 293, vitesse nulle 1, aucun mur 4, indéterminé 4, non atteint (0x0B bloqué) 30, non atteint (drapeau jamais
+  posé) 63. Premier modèle, pour mémoire : 269 / 1 / 83 / 42 (aucun non atteint). Chemin de l'histoire : 59 sites atteignables, 31 « mur trouvé », 0 « aucun mur », 0 « indéterminé »,
+  28 non atteints (O-E19-18, O-E19-19) ; les six sites de la 172 sont dormants. Hors du chemin : 9 sites à risque (aucun mur 4 : cartes 40 et 62 ; indéterminé 4 : cartes 40, 62 et 249 ;
+  vitesse nulle 1 : Flamme de la 152), dont 1 sous main tenue, et 65 sites non atteints (O-E19-21). Sites atteints dans le modèle : 302, dont 201 sous main tenue.
+- **Temps d'exécution** (Debug) : A5 environ 1 s, A5r 0,7 s, A6 0,75 s, A8 0,78 s ; la suite complète environ 26 s.
+- **Suites** : `Alundra.Tests` 2086 réussis, 0 échec, en Debug (26 s) comme en Release (27 s) (2071 à la fin de D2 sans A8 : A5, A5r, U1 à U13 sans U9 et A8 font 2086) ; convertisseur 400
+  sur 400. Les annexes de trace du héros et de l'intro ne changent pas. La DLL déployée dans `alundra-project/` est la Debug (`cmp` identique).
+
 ## 3. Points ouverts
 
 | Réf | Sujet | Tranche |
@@ -2366,6 +2385,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-18 | **Scène des villageois de la carte 10** (après le premier rêve) : dans le modèle des cellules de la DLL, la marche `0x0B @5172` de Nestus (vers le haut, 28 px) et `0x0B @5071` de Bergus butent sur un mur dès le premier pas ; `0x0B` n'a pas de sortie sur blocage, donc T666 n'est jamais posé, B[14] ne finit jamais et le héros reste bloqué (`0x10 @1826`). Dans l'original la scène va au bout : contact entre entités (Meade immobile en (960, 504)) ou écart du champ de cellules, à établir. | E19.d2 (D-E19-26) |
 | O-E19-19 | **Saut scripté d'Alundra** : la chaîne 179 → 176 → 10 → 135 fait sauter le héros d'une marche de 16 px (carte 10, animation 2 et `0x25`, `0x0B @2456`) ; le saut et `0x25` ne sont pas portés, la marche cale. Même cas pour Giles (`0x0B @6394`, animation 3). La 178 n'est atteinte qu'après (G1655, posé sur la 135). | E19.d2 (D-E19-26) |
 | O-E19-20 | `0x45`/`0x46` (« NoObstacleSlide », `+0x6C` bit 0x2000, `0x8003E954`/`0x8003E96C`) décident si un contact avec un mur lève `ForceAdjusted` tout de suite ou essaie d'abord le glissement ; non portés (la 178 encadre ses `0x24` du héros avec eux). | E19.h |
+| O-E19-21 | **Sites de `0x24` à risque hors du chemin de l'histoire** (recensement corrigé, `docs/census-0x24-waits.md`) : 9 sites en classe à risque (aucun mur 4 sur les cartes 40 et 62, indéterminé 4 sur les cartes 40, 62 et 249, vitesse nulle 1 sur la 152), dont 1 sous main tenue, et 65 sites non atteints dans le modèle (0x0B bloqué 26, drapeau jamais posé 39). Aucun n'arrête E19.d (D-E19-24). À reprendre avec les contacts entre entités et les bornes de force (E19.h), le rognage au bord (O-E19-17) et, par carte, un arc d'arrivée quand la carte est jouée. | E19.h |
 | O-E19-4 | Le gestionnaire natif du créneau E (`0x8007ED10`, destruction après `Deactivated`, 417 enregistrements sur 85 cartes) : E14, ou une tranche d'E19 ? Sur la chaîne, il ne touche que l'oiseau de la 389 et des PNJ d'Inoa. | E14 |
 
 ## 4. Hors périmètre

@@ -22,3 +22,13 @@
 - Waits on `0x24` end at the original's tick when the DLL's cells stop the walker as the original's do; the census lists every site at risk (speed zero, no wall on the path, undetermined) for later slices (E19.h for entity contacts, riders and force clamps).
 - About 200 entities in 40 maps whose script the original disables become inert, as in the original, until their native behaviour is ported (E14).
 - The arc of map 392 does not test the walk through the crates; crossing them in game remains a known deviation until carrying and throwing are ported.
+
+## Amendment (2026-10-01, after the first census stop)
+
+The first run of the census stopped on the rule of D-E19-21 (26 of the 59 reachable story-path sites outside "wall found"). A read-only follow-up showed that the model, not the port, was wrong, and the author decided (`docs/plan-e19-opcodes.md` §0.1, O-E19-16):
+
+- **D-E19-24** — The census model is corrected and rerun before the commit of `0x24`: each actor starts where it really appears (`0x8A`, or `0x2D` then `0x64`, including writes made by other programs), the hero starts from its real arrivals (`0x53`, portals, the tile of a `0x3B` box, the contact of an interaction), a `0x0B` that the cell model blocks is not clipped (the rest of the program is "not reached"), and so is what depends on a flag that no reached program sets. The not-reached sites are separate risks and no longer stop the commit; a story-path site that is still "no wall" or "indeterminate" does.
+- **D-E19-25** — The screen-border clamp of `ApplyEntityForces` (O-E19-17) is ported in a separate, later slice.
+- **D-E19-26** — Slice E19.d2 ("Inoa after the first book") follows E19.d, before E19.e: the villager scene of map 10 (O-E19-18) and the scripted jump of the hero with `0x25` (O-E19-19).
+
+Result of the corrected census (`docs/census-0x24-waits.md`): 395 reachable sites in 76 maps; on the story path 59 reachable sites, 31 "wall found", none "no wall" or "indeterminate", 28 not reached.
