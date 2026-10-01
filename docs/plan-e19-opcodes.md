@@ -2010,7 +2010,7 @@ et A8 restent hors du dépôt jusqu'à D7 ; d'ici là, les lancements de toute l
     D4 et D5 : la question est soumise à l'auteur. Les sites hors du chemin dans une classe à risque sont
     listés pour l'auteur, sans arrêt. Les six sites de la 172 sont attendus dormants ; si le parcours les
     trouve atteignables, ils tombent sous l'arrêt.
-- **D6 — `0x40` et `0x41`** ⏳ (D-E19-22) : les deux cas, comme le binaire. `0x41` écrit
+- **D6 — `0x40` et `0x41`** ✅ (faite le 2026-10-01 ; U5 à U13 (sans U9) écrits d'abord : les 8 rouges sur le code de D4 (tableaux non écrits, état non effacé, aucun avertissement) puis verts du premier coup ; A8 passe avec toutes ses valeurs écrites, A6 inchangé ; suite complète 2086 réussis ; l'effacement se fait dans `RunOneScriptCall` (état propriétaire effacé en fin d'appel, état d'une autre entité tout de suite, drapeau remis à zéro à chaque test), `RunScript` n'efface plus après coup) : les deux cas, comme le binaire. `0x41` écrit
   `SpriteProgramIndexes[v1]` de l'entité logique ; `0x40` écrit `ProgramIndexes[v1]` et demande
   l'effacement : propriétaire → l'état qui tourne, à la fin de l'appel (`ClearProgramStateRequested`), quel
   que soit v1, même sur un Break ou une suspension ; autre entité → son `EventProgramState` tout de suite. Le

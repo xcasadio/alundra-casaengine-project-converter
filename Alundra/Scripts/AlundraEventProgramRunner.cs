@@ -178,16 +178,13 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// (EntityEventHandlers.cs:232-296) and its END_SCRIPT <c>g_clearProgramState</c> handling (:343-358,
     /// :382-391).
     ///
-    /// Documented simplification on <c>g_clearProgramState</c>: the original re-checks the flag after
-    /// EVERY dispatched opcode (not just once at the end) and, when set, distinguishes clearing the
-    /// CURRENTLY RUNNING entity's own state (deferred to this call's own END_SCRIPT, via
-    /// <c>wasEntityCleared</c>) from clearing a DIFFERENT entity's <c>LogicContextEntity.EventProgramState</c>
-    /// immediately, inline, mid-loop. No opcode this runner implements ever sets the flag yet - only
-    /// <c>Script_64_040</c> (0x40, EntityEventHandlers.cs:1332-1338) and one <c>FunctionTypeC</c> handler do,
-    /// neither ported - so this port only re-checks <see cref="ClearProgramStateRequested"/> once, after
-    /// <see cref="RunOneScriptCall"/> returns, and only ever clears the state THIS call actually ran
-    /// (<paramref name="programSlot"/>'s own <c>state</c>). The self-vs-other distinction is deferred to
-    /// whichever future task ports opcode 0x40.
+    /// <c>g_clearProgramState</c> (E19.d D6, D-E19-22): the original resets the flag at the start of every call and re-tests it
+    /// after EVERY dispatched opcode (EntityEventHandlers.cs:300, :345-358, :382-391; binary <c>0x80042310</c>), with the
+    /// logic entity read BEFORE the opcode: when that entity is the owner, the state that is running is cleared at the end of
+    /// the call (on an End, a Break or a suspension alike); otherwise the logic entity's own <c>EventProgramState</c> is
+    /// cleared at once. The flag is reset by the test in both cases (the decompilation resets it in the second one only).
+    /// <see cref="RunOneScriptCall"/> does all of it, so a direct call with an explicit state behaves like this method.
+    /// Only 0x40 raises the flag in this port (the <c>FunctionTypeC</c> handler that also does is native AI, E14).
     /// </summary>
     public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
     {
@@ -271,21 +268,12 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         // this same assignment next, in the original.
         entity.MapEventProgramId = programSlot;
 
-        ClearProgramStateRequested = false;
         RunOneScriptCall(entity, state, programSlot);
-
-        if (ClearProgramStateRequested)
-        {
-            ClearProgramStateRequested = false;
-            state.Sp = 0;
-            state.Codes = null;
-        }
     }
 
     /// <summary>
-    /// Port of <c>StaticVariables.g_clearProgramState</c> - see <see cref="RunScript"/>'s own doc on this
-    /// port's END_SCRIPT simplification. No opcode implemented by this runner sets this yet; it exists so
-    /// a future opcode 0x40 port does not also need a <see cref="RunScript"/> change.
+    /// Port of <c>StaticVariables.g_clearProgramState</c>, raised by 0x40 and consumed by <see cref="RunOneScriptCall"/> after
+    /// the opcode that raised it - see <see cref="RunScript"/>'s own doc.
     /// </summary>
     internal bool ClearProgramStateRequested;
 
@@ -375,6 +363,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     internal void RunOneScriptCall(AlundraEntityScriptProxy entity, EventProgramState state, int programSlot = -1)
     {
         var iterations = 0;
+        var clearRunningState = false; // g_clearProgramState raised by the owner's own logic: the state that runs is cleared at the end of the call.
+        ClearProgramStateRequested = false;
 
         while (true)
         {
@@ -386,6 +376,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 var pending = state.Codes != null && state.CodeIndex < state.Codes.Length ? state.Codes[state.CodeIndex] : 0xFF;
                 LogLoopGuardOnce(entity, programSlot, state.CodeIndex, pending);
                 TraceSink?.Invoke(new EventTraceRecord(programSlot, state.CodeIndex, pending, EventTraceKind.LoopBudgetExceeded, 0, null, state));
+                EndCall(state, clearRunningState);
                 return;
             }
 
@@ -396,6 +387,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             if (command == 0xFF)
             {
                 TraceSink?.Invoke(new EventTraceRecord(programSlot, codeIndexAtFetch, command, EventTraceKind.End, 0, null, state));
+                EndCall(state, clearRunningState);
                 return;
             }
 
@@ -404,6 +396,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 state.Parameters[1] = 0;
                 state.CodeIndex++;
                 TraceSink?.Invoke(new EventTraceRecord(programSlot, codeIndexAtFetch, command, EventTraceKind.Break, 1, null, state));
+                EndCall(state, clearRunningState);
                 return;
             }
 
@@ -433,13 +426,40 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 TraceSink.Invoke(new EventTraceRecord(programSlot, codeIndexAtFetch, command, _lastDispatchKind, result, parameters, state));
             }
 
+            // RunScript's test after every opcode (EntityEventHandlers.cs:345-358): the logic entity is the one read BEFORE the opcode.
+            if (ClearProgramStateRequested)
+            {
+                ClearProgramStateRequested = false;
+                if (ReferenceEquals(logic, entity))
+                {
+                    clearRunningState = true;
+                }
+                else
+                {
+                    logic.EventProgramState.Sp = 0;
+                    logic.EventProgramState.Codes = null;
+                }
+            }
+
             if (result == 0)
             {
+                EndCall(state, clearRunningState);
                 return;
             }
 
             state.Parameters[1] = 0;
             state.CodeIndex += result;
+        }
+    }
+
+    /// <summary>END_SCRIPT of <c>RunScript</c> (EntityEventHandlers.cs:382-391): the state that ran is cleared when its owner's own logic raised
+    /// <c>g_clearProgramState</c> (<c>wasEntityCleared</c>), so the next call of a B or C program starts over from its first opcode.</summary>
+    private static void EndCall(EventProgramState state, bool clearRunningState)
+    {
+        if (clearRunningState)
+        {
+            state.Sp = 0;
+            state.Codes = null;
         }
     }
 
@@ -509,6 +529,22 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// runs - the one <c>0x42</c>/<c>0x43</c> retarget (<see cref="AlundraEntityScriptProxy.LogicEntity"/>).
     /// <paramref name="state"/> is the running program's state, on the owner.
     /// </summary>
+    private bool _loggedProgramIndexOutOfRange40;
+    private bool _loggedProgramIndexOutOfRange41;
+
+    private static void LogProgramIndexOutOfRangeOnce(int opcode, int slot, ref bool logged)
+    {
+        if (logged)
+        {
+            return;
+        }
+
+        logged = true;
+        Logs.WriteWarning(
+            $"AlundraEventProgramRunner: opcode 0x{opcode:x2} with a program slot {slot} out of range (0..5); ignored - the original would write past its "
+            + "array (E19.d D6, D-E19-22 correction; no such site in the corpus). Logged once per opcode.");
+    }
+
     private int Dispatch(int command, AlundraEntityScriptProxy entity, AlundraEntityScriptProxy owner, int[] v, EventProgramState state)
     {
         switch (command)
@@ -633,6 +669,32 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // its root, in the collisions or the engine. ForceAdjusted follows the binary since E19.a3 (it is raised at the tick of a
                        // blocked step and cleared at the next one). Size 1.
                 return entity.ForceAdjusted != 0 ? 1 : 0;
+
+            case 0x40: // Set program index - Script_64_040 @ 0x8003E7B8 (E19.d D6, D-E19-22), PER THE BINARY: raises g_clearProgramState,
+                       // then ProgramIndexes[v1] = v2 of the LOGIC entity; size 3. The original bounds nothing: v1 >= 6 would write
+                       // past the array (no site in the corpus, 426 sites all with v1 from 2 to 5). Documented correction of that defect:
+                       // v1 >= 6 does nothing at all (nothing written, no state cleared), warned once, size 3. The flag is consumed by
+                       // RunOneScriptCall (the owner's own state at the end of the call, any other entity's state at once).
+                if ((uint)v[1] >= (uint)entity.ProgramIndexes.Length)
+                {
+                    LogProgramIndexOutOfRangeOnce(0x40, v[1], ref _loggedProgramIndexOutOfRange40);
+                    return 3;
+                }
+
+                ClearProgramStateRequested = true;
+                entity.ProgramIndexes[v[1]] = v[2];
+                return 3;
+
+            case 0x41: // Set sprite program index - Script_65_041 @ 0x8003E7E4 (E19.d D6, D-E19-22), PER THE BINARY: SpriteProgramIndexes[v1] = v2
+                       // of the LOGIC entity, no clearing, size 3. Same out-of-range correction as 0x40.
+                if ((uint)v[1] >= (uint)entity.SpriteProgramIndexes.Length)
+                {
+                    LogProgramIndexOutOfRangeOnce(0x41, v[1], ref _loggedProgramIndexOutOfRange41);
+                    return 3;
+                }
+
+                entity.SpriteProgramIndexes[v[1]] = v[2];
+                return 3;
 
             case 0x1B: // Fly - Script_27_01B (EntityEventHandlers.cs:743-747): ForceZ = (((v2<<8)|v1) *
                        // 0x10000) >> 8, a signed 16.16 vertical impulse. Only the DLL-side struct field is
