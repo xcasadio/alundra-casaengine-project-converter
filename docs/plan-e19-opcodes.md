@@ -1490,7 +1490,7 @@ est la Debug.
   | `0x0B`, `0x1C` et `0x1D` prennent `CodeIndex` pour clé : une attente au pc 0 se croirait déjà mémorisée. Aucun site au pc 0 dans les 483 cartes. | P4 | Accepté, comme pour `Wait`. |
   | T6 : « `Move(0, +1)` le laisse à 0 » se lit avec la remise à zéro par image, car un `Move` ne fait que lever le drapeau. | — | Précision acceptée ; valeurs inchangées. |
 
-### 1.2f E19.c2 — Fins d'animation exactes et signal de boucle 🧪 (C0 à C7 faites le 2026-10-01, tests et arcs verts ; reste le verifier frais sur le moteur et le parent ensemble, puis la recette C8 de l'auteur)
+### 1.2f E19.c2 — Fins d'animation exactes et signal de boucle 🧪 (C0 à C7 faites et vérifiées CONFIRMED le 2026-10-01, moteur et parent ensemble ; reste la recette C8 de l'auteur)
 
 **But.**
 - `0x1C` et `0x1D` voient les fins Hold, les fins Chain et les tours de Loop au tick de l'original. Le
@@ -1794,6 +1794,32 @@ exécution.
   resserré et sa case rouge, règles « sans animation » et `Seek` du plan moteur avec le test L17, direction
   dans le changement en attente (cas de TG4), précondition des tests, cas sans animation de TG3, formulations.
 - **Relecture neuve de la révision** (`9d169eb` et moteur `92869187`) : **READY**.
+
+**Vérification d'E19.c2 (2026-10-01).**
+- **Commits** : moteur `1561fd07`, `cc6f498e`, `34ddf5e2`, `b40888f1` (plus `f205683a`, docs) ; parent `54029c4`
+  (C2, pointeur sur `b40888f1`), `371ac46` (C3), `ff2328d` (C4), `1509625` (C5), `4cab666` (C6), `39a1843` (C7).
+- **Verifier frais, moteur et parent ensemble : CONFIRMED.** Dans un arbre jetable : `CasaEngine.Tests`
+  2405/2405, `Alundra.Tests` 2064/2064 en Release et en Debug, convertisseur 400/400.
+  - Rouge reproduit : la DLL d'E19.c1 sur le moteur de C0 fait échouer A9 sur `0x1C @539` et A3 resserré sur
+    25 au lieu de 26.
+  - Mutations attrapées : l'ancienne logique de bouclage (R1 à R4), le pont de boucle retiré (A9), la direction
+    retirée du changement en attente (TG4), la garde retirée (T-D2 et T-D3 en 2 t/i, TG2), un chemin en temps
+    réel qui lèverait encore les fins en mode logique (L6, cas 60 Hz, T-D7, T-D13, A3).
+  - Traces inchangées ; DLL Debug déployée ; pointeur sur la tête de la branche moteur.
+- **Trois contradicteurs en lecture seule** (moteur, pilotage contre le binaire, corpus). Le corpus est fermé :
+  aucune attente `0x1C`/`0x1D` ne peut plus durer sans fin là où l'original se termine ; rien de nouveau ne bloque
+  sur les cartes de la chaîne ni sur les cartes d'Inoa. Dispositions (signalé, jamais corrigé sur un candidat
+  CONFIRMED) :
+
+  | Constat | Priorité | Disposition |
+  |---|---|---|
+  | À 1 tick par image, une autre entité qui change l'animation d'une entité après la synchronisation de celle-ci, au tick exact où son animation finit, fait compter une fin fantôme par le `0x1C` de cette entité (la garde ne voit que les changements déjà comptés par le pas). Rare : environ 1/D des écritures croisées, et seulement au tick de fin. | P3, introduit | Reporté : E19.d vérifie les sites croisés de la 163 (`0x43` vers Jess) ; piste : cacher le drapeau quand un changement est déjà en attente à l'appel. |
+  | Un programme d'événement de carte qui attend sans `1A` (animation déjà jouée) voit la fin un tick tôt, ou un cycle entier plus tard si son premier appel tombe sur le tick de la fin (396 `@77` et suivants sur le repos du héros, 226 `@322`/`@437`, 115 `@231`, boss). Jamais de blocage. T-D15 épingle les valeurs de la DLL, et sa doc se contredit. | P4, introduit | Accepté (classe D-E19-13 : événements de carte après les entités) ; doc de T-D15 à corriger en hygiène. |
+  | Sous rattrapage, une fin Chain puis un changement par le script dans la même image font avancer la compensation d'un tick de trop : 1 à 3 ticks d'écart pour les programmes C de l'entité elle-même (jusqu'à 26 ticks à 4 ticks par image avec D ≤ 3). Le plan disait les programmes C exacts sous rattrapage. | P4, introduit | Accepté et consigné ici ; piste : appliquer le changement Chain au pas. |
+  | Autres résidus sous rattrapage : un changement demandé puis annulé dans la même image perd son tick ; une Chain de D = 1 finit dans la compensation dès 2 ticks par image. | P4, introduit | Accepté. |
+  | La relance sur sélection échouée vaut pour toute entité et toute direction, et aussi pour un sprite sans horloge ; seule la Flamme vers le bas est fidèle. Le corpus n'a que les Flammes (les deux autres écritures vers une animation absente sont écrasées dans le même appel). | P4 | Accepté. |
+  | Latent : le binaire exclut aussi les entités bloquées (`BlockedByEntity`, `+0x20`) de `UpdateAnimation` ; la DLL n'exclut que les entités à détruire. Rien ne pose ce champ aujourd'hui. | P4 | Reporté (à reprendre si le blocage entre entités est porté). |
+  | P4 du moteur (horloge activée en cours d'animation, `LastUpdateLoopTurns` périmé, numéros de ligne de la doc, trous de tests, entrées limites, `Detach`). | P4 | Reportés : plan moteur, « Vérification de clôture ». |
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
