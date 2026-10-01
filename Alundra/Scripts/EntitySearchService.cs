@@ -47,18 +47,18 @@ namespace Alundra.Scripts;
 /// per-animation "no entity collision" bit (<c>EntityAnimFlags.NoEntityCollision</c> = 0x80, ported here
 /// as a local constant - see that class's own doc for why it is not pulled in as a whole file) clear, and
 /// no <see cref="AlundraEntityScriptProxy.PlatformEntity"/>.</description></item>
-/// <item><description>5 - entities the owner is riding on (<c>referenceEntity.RidingEntity</c> matches the
+/// <item><description>5 - entities the reference entity is riding on (<c>referenceEntity.RidingEntity</c> matches the
 /// candidate's own backing <see cref="AlundraEntityScriptProxy.LogicContextEntity"/>), EXCLUDING the
 /// player (E4.f, GameEngine.cs:2010-2091 loops from slot 1, never slot 0).</description></item>
-/// <item><description>6 - entities riding on the owner (candidate's <c>RidingEntity</c> matches the
-/// owner's <c>LogicContextEntity</c>), EXCLUDING the player.</description></item>
-/// <item><description>7 - entities the owner's <c>XCollisionEntity</c> points at, EXCLUDING the
+/// <item><description>6 - entities riding on the reference entity (candidate's <c>RidingEntity</c> matches the
+/// the reference entity's <c>LogicContextEntity</c>), EXCLUDING the player.</description></item>
+/// <item><description>7 - entities the reference entity's <c>XCollisionEntity</c> points at, EXCLUDING the
 /// player.</description></item>
-/// <item><description>8 - entities whose <c>XCollisionEntity</c> points at the owner, EXCLUDING the
+/// <item><description>8 - entities whose <c>XCollisionEntity</c> points at the reference entity, EXCLUDING the
 /// player.</description></item>
-/// <item><description>9 - entities whose <c>ParentEntity</c> is the owner, EXCLUDING the
+/// <item><description>9 - entities whose <c>ParentEntity</c> is the reference entity, EXCLUDING the
 /// player.</description></item>
-/// <item><description>10 - the entity the owner's <c>ParentEntity</c> points at, EXCLUDING the
+/// <item><description>10 - the entity the reference entity's <c>ParentEntity</c> points at, EXCLUDING the
 /// player.</description></item>
 /// <item><description>11 - every entity with a non-null <c>PlatformEntity</c> (riding something,
 /// regardless of what), EXCLUDING the player.</description></item>
@@ -167,7 +167,7 @@ public static class EntitySearchService
 
                 break;
 
-            case 5: // entities the owner is riding on (besides the player - GameEngine.cs:2010-2019, loop from slot 1)
+            case 5: // entities the reference entity is riding on (besides the player - GameEngine.cs:2010-2019, loop from slot 1)
                 foreach (var candidate in spawnedEntities)
                 {
                     if (!candidate.IsPlayer && candidate.IsLoadedNormalOrDeactivated
@@ -179,7 +179,7 @@ public static class EntitySearchService
 
                 break;
 
-            case 6: // entities riding on the owner (besides the player - GameEngine.cs:2023-2032)
+            case 6: // entities riding on the reference entity (besides the player - GameEngine.cs:2023-2032)
                 foreach (var candidate in spawnedEntities)
                 {
                     if (!candidate.IsPlayer && candidate.IsLoadedNormalOrDeactivated
@@ -191,7 +191,7 @@ public static class EntitySearchService
 
                 break;
 
-            case 7: // entities the owner's XCollisionEntity points at (besides the player - GameEngine.cs:2036-2044)
+            case 7: // entities the reference entity's XCollisionEntity points at (besides the player - GameEngine.cs:2036-2044)
                 foreach (var candidate in spawnedEntities)
                 {
                     // E12.d (D-E12D-8): XCollisionEntity is proxy-typed now - compare proxies
@@ -206,7 +206,7 @@ public static class EntitySearchService
 
                 break;
 
-            case 8: // entities whose XCollisionEntity points at the owner (besides the player - GameEngine.cs:2048-2058)
+            case 8: // entities whose XCollisionEntity points at the reference entity (besides the player - GameEngine.cs:2048-2058)
                 foreach (var candidate in spawnedEntities)
                 {
                     if (!candidate.IsPlayer && candidate.IsLoadedNormalOrDeactivated
@@ -218,7 +218,7 @@ public static class EntitySearchService
 
                 break;
 
-            case 9: // entities whose ParentEntity is the owner (besides the player - GameEngine.cs:2062-2072)
+            case 9: // entities whose ParentEntity is the reference entity (besides the player - GameEngine.cs:2062-2072)
                 foreach (var candidate in spawnedEntities)
                 {
                     if (!candidate.IsPlayer && candidate.IsLoadedNormalOrDeactivated
@@ -230,7 +230,7 @@ public static class EntitySearchService
 
                 break;
 
-            case 10: // the entity the owner's ParentEntity points at (besides the player - GameEngine.cs:2076-2086)
+            case 10: // the entity the reference entity's ParentEntity points at (besides the player - GameEngine.cs:2076-2086)
                 foreach (var candidate in spawnedEntities)
                 {
                     if (!candidate.IsPlayer && candidate.IsLoadedNormalOrDeactivated

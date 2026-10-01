@@ -205,9 +205,13 @@ public sealed class AlundraVisionArcTests
         // Three boxes, closed by the script (the arc never presses a button).
         Assert.Equal(3u, (uint)AlundraDialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
         AssertBox(samples, 622, 0xC4, "Est-ce que");
-        AssertBox(samples, 632, 0xC4, "Tu", notFragment: "Est-ce que");
+        // The whole text of node M476_S102 (15 characters, its glyph included); the first box carries "tu" and a glyph after it.
+        AssertBox(samples, 632, 0xC4, "Tu\u0012 m'entends ?", notFragment: "Est-ce que");
         AssertBox(samples, 739, 0xC4, "Je suis connu sous le nom de Lars");
         Assert.False(AlundraDialogueDirector.Instance.IsOpen);
+
+        // The block's parent is the hero (the logic entity of B1).
+        Assert.Same(arc.HeroEntity, arc.EntityByRecord(1)!.ParentEntity);
 
         Assert.Equal(AlundraGameState.PlayerControlBits.ControlLocked, ArcRun.State.PlayerControlFlags);
         AssertNoOtherSkippedOpcode(arc);
@@ -283,6 +287,11 @@ public sealed class AlundraVisionArcTests
         AssertBox(samples, 974, 0x5C, "Ha, ha, ha");
         Assert.False(AlundraDialogueDirector.Instance.IsOpen);
 
+        // Parents: the block's is the hero, Rancune's is the block (0x43 [0x80] leaves the block as the logic entity of B5).
+        var blockProxy = arc.EntityByRecord(1)!;
+        Assert.Same(arc.HeroEntity, blockProxy.ParentEntity);
+        Assert.Same(ArcRun.EntityOf(blockProxy), arc.EntityByRecord(0)!.ParentEntity);
+
         Assert.Equal(AlundraGameState.PlayerControlBits.ControlLocked, ArcRun.State.PlayerControlFlags);
 
         if (prefabs)
@@ -307,11 +316,6 @@ public sealed class AlundraVisionArcTests
                 Assert.Equal(0, walk.BlockForceAdjustedBefore);
                 Assert.Equal(0, walk.BlockForceAdjustedAfter);
             }
-
-            // Parents: the block's is the hero, Rancune's is the block.
-            var blockProxy = arc.EntityByRecord(1)!;
-            Assert.Same(arc.HeroEntity, blockProxy.ParentEntity);
-            Assert.Same(ArcRun.EntityOf(blockProxy), arc.EntityByRecord(0)!.ParentEntity);
 
             // No exception was logged beyond the sprite resolutions the test cannot avoid (no SpriteData loader).
             var unexpected = arc.Log!.Errors.Where(e => !e.StartsWith("AnimatedSpriteComponent : can't resolve sprite", StringComparison.Ordinal)).ToList();

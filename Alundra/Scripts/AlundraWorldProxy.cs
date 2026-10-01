@@ -771,10 +771,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 _spawnedEntities.Add(entity);
 
                 // E4.b ("Spawn" item, docs/plan-e4-deplacement-scripte.md): ground-clamp + root push for a
-                // controller-driven NPC now that the entity is actually IN the world - ClampToGround needs
-                // World.CollisionField, only reachable once Entity.World is set (World.AddEntity, just
-                // above), strictly AFTER CreateEntityFromPrefab's own spawn-time root write (which had to
-                // run off the un-clamped PosZ). A no-op without a Controller
+                // controller-driven NPC, after CreateEntityFromPrefab's own spawn-time root write (which had to
+                // run off the un-clamped PosZ). In production the ground clamp does nothing here (O-E19-6,
+                // docs/plan-e19-opcodes.md): World.AddEntity only QUEUES the entity and Entity.World is set at the next
+                // integration, so Entity.World is still null when this runs; ClampToGround and TerrainHeight both
+                // return at once, and only the root push itself happens. A no-op without a Controller
                 // (PushLogicalPositionToRoot's own gate), same as every other entity today.
                 spawnedProxy?.PushLogicalPositionToRoot();
 

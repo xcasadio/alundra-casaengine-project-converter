@@ -1501,8 +1501,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     }
 
     /// <summary>
-    /// Shared "open" half of opcodes 0x0D and 0x5C (E12.a, docs/plan-e12-dialogues.md; E15.c
-    /// docs/plan-e15-yarn.md contract items 1/2/8): resolves <paramref name="textIdParam"/> to a Yarn
+    /// Shared "open" half of opcodes 0x0D, 0x5C and 0xC4 (E12.a, docs/plan-e12-dialogues.md; E15.c
+    /// docs/plan-e15-yarn.md contract items 1/2/8; 0xC4 since E19.b): resolves <paramref name="textIdParam"/> to a Yarn
     /// asset/node (see <see cref="ResolveDialogNode"/>), then either opens the real dialogue through
     /// <see cref="AlundraDialogueDirector"/> (Dispatch's own reentrancy guard - T2 - already ran BEFORE
     /// this is called, via <see cref="IAlundraDialogueDirector.IsOpen"/>) or degrades: item 8 plays the

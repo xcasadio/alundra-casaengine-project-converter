@@ -1384,7 +1384,7 @@ classe.
   - ouest, pion en (545, 632, 80) : `Move(−10, 0)` donne x = 537,0 (35192832) et 0 ; `Move(−2, 0)` lève
     le drapeau ;
   - le test vers l'est est resserré : il avance d'exactement 3,0 px (contact à 567,0).
-- **T7 — Hygiène reportée par E19.b** ⏳ :
+- **T7 — Hygiène reportée par E19.b** ✅ *(fait le 2026-10-01 ; le fragment retenu pour `S102` est le texte entier du nœud, 15 caractères dont le glyphe `U+0012`, `Tu` + glyphe + ` m'entends ?`, car le texte n'a pas plus de caractères ; les parents sont vérifiés par A2, A4 et A4p)* :
   - un test unitaire de `0x8A` avec des octets forts non nuls sur Y et Z ;
   - A2 et A4 vérifient les parents (bloc → héros, Rancune → bloc) ;
   - le fragment « Tu » de `S102` remplacé par un fragment distinctif d'au moins 15 caractères du nœud ;

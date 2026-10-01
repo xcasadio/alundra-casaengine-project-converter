@@ -618,6 +618,20 @@ public class AlundraEventProgramRunnerTests
     }
 
     [Fact]
+    public void SpawnEntityAtPosition_0x8A_TheHighBytesOfYAndZAreRead_NotOnlyOnX()
+    {
+        // E19.c1 T7: X 513 (1, 2), Y 972 (0xCC, 3) and Z 300 (0x2C, 1): a read that drops a high byte gives 1, 204 or 44.
+        var document = NewDocument(0x8A, 1, 1, 2, 0xCC, 3, 0x2C, 1, 0xFF);
+        var spawned = NewEntity();
+        var runner = NewRunner(document, worldContext: new FakeEntityWorldContext { EntityToSpawn = spawned });
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(NewEntity(), state);
+
+        Assert.Equal((513 << 16, 972 << 16, (300 << 16) + 1), (spawned.PosX, spawned.PosY, spawned.PosZ));
+    }
+
+    [Fact]
     public void SpawnEntityAtPosition_0x8A_ZeroPosition_StillGetsThePlusOneOnZ()
     {
         var document = NewDocument(0x8A, 0, 0, 0, 0, 0, 0, 0, 0xFF);
