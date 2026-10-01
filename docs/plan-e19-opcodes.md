@@ -1908,11 +1908,16 @@ scratchpad `e19d/`) :
     (`0x80042310`) — la décompilation ne le fait que dans le second cas ;
   - corpus : 426 sites de `0x40` dans 121 cartes, toujours (v1, 0) avec v1 de 2 à 5, aucun dans un programme
     B ; 85 sites de `0x41`.
-- **`0x24` dans le corpus** **[données]** : 395 sites dans 76 cartes, dont 160 dans des programmes qui
-  tiennent la main du joueur (46 cartes). Après la 163, sur le chemin de l'histoire : 162 (`@205`, `@210`,
-  `@215`), 164 (`@341`, `@346`), 165 (Nestus, `@932`, `@943`, qui commandent par T103 la cinématique de la
-  première visite, sous sa propre main tenue), 176, 178 (× 5), 179 (× 5), 44 et 10. Tous les acteurs
-  de `0x24` en programme C ont un contrôleur.
+- **`0x24` dans le corpus** **[données]** : un balayage linéaire de toutes les entrées de programme trouve
+  429 sites dans 82 cartes ; 395 d'entre eux, dans 76 cartes, sont dans des programmes atteignables (référencés
+  par un événement de carte ou par l'index d'un créneau d'un enregistrement, bit 0x80 posé, ou atteints depuis
+  ceux-ci). Les 34 autres sont dans des entrées dormantes. Exemple vérifié : la 172 a 6 sites (`@372`,
+  `@383`, `@839`, `@1004`, `@1342`, `@1666`) dans C[4], C[12], C[13], C[19] et C[21], qu'aucun enregistrement
+  ne référence (ils utilisent C 6, 7, 8, 9, 22 et 23) et qu'aucun `0x40`/`0x41` de la carte ne peut activer.
+  160 des 395 sites tournent dans des programmes qui tiennent la main du joueur (46 cartes). Après la 163,
+  sur le chemin de l'histoire : 162 (`@205`, `@210`, `@215`), 164 (`@341`, `@346`), 165 (Nestus, `@932`,
+  `@943`, qui commandent par T103 la cinématique de la première visite, sous sa propre main tenue), 176,
+  178 (× 5), 179 (× 5), 44 et 10. Tous les acteurs de `0x24` en programme C ont un contrôleur.
 - **Support d'arcs** **[test]** :
   - le héros des arcs `RealController` est construit à la main : une boîte et un contrôleur, sans
     `AnimatedSpriteComponent`, donc sans horloge d'animation ; `0x1C @100` de la 163 ne finit jamais. Son
@@ -1942,6 +1947,10 @@ et A8 restent hors du dépôt jusqu'à D7 ; d'ici là, les lancements de toute l
   - **directions tenues** : `HoldDirections` / `ReleaseDirections`, à côté de `Press` (inchangé) ;
   - **placement en cours d'arc** : `PlaceHero(x, y, z)` (pixels), qui pose `Pos*`, `Tile*` (`TileZ` =
     `PosZ >> 20`) et déplace la racine ;
+  - **boîtes fermées par appuis consécutifs** : un outil qui appuie sur Carré à **chaque** image dès l'image
+    qui suit l'ouverture, jusqu'à la fermeture (autant d'appuis que de pages), pour A8. L'outil existant
+    `CloseDialogueWithTheButton` alterne un appui et une image sans bouton : il donnerait d'autres images
+    (4, 6, 6, 6 et 4 au lieu de 3, 4, 4, 4 et 3) ; il reste inchangé pour A1 et A9 ;
   - autotests, rouges d'abord : **TH1**, **TH2**, **TH3** (valeurs plus bas) ;
   - **non-régression** : A3 (resserré compris), A4p, A7, A9 et l'autotest des préfabs gardent toutes leurs
     valeurs avec le vrai héros ; A0 à A4, la cabine et le marin 12 (sans préfabs) ne changent pas ; les
@@ -1955,9 +1964,21 @@ et A8 restent hors du dépôt jusqu'à D7 ; d'ici là, les lancements de toute l
 - **D3 — Arc A5 de la 392** ⏳ (avec A5r) : écrits et verts d'un coup (aucun opcode d'E19.d n'y joue).
 - **D4 — `0x24`** ⏳ : le cas, une ligne sur l'entité logique, sans détour ni minuterie (D-E19-6) ; tests
   unitaires U1 à U4. A8 échoue ensuite sur `0x41 @56`, `0x41 @728` et `0x40 @731`.
-- **D5 — Recensement des 395 sites de `0x24`** ⏳ (D-E19-21) :
-  - **méthode** : pour chaque site atteignable (programmes de tous les créneaux, entité logique suivie à
-    travers `0x42`/`0x43`), l'acteur (préfab), son animation au moment de l'attente (dernier `0x1A`, `0x59`,
+- **D5 — Recensement des sites de `0x24`** ⏳ (D-E19-21) :
+  - **population** : les 429 sites du balayage linéaire de toutes les entrées de programme de toutes les cartes.
+    Chacun reçoit d'abord une **atteignabilité**, par une règle mécanique :
+    - **racines** : l'entrée B de chaque événement de carte ; pour chaque enregistrement de la carte, l'entrée
+      désignée par chacun de ses index de créneau A, C, D, E et F quand le bit 0x80 est posé (index & 0x7F) ;
+    - **atteignable** : toute instruction atteinte depuis une racine en suivant tous les sauts, branches et
+      appels (toutes les branches ouvertes) ; `0x40` (toujours v2 = 0 dans le corpus) et `0x41` (index de
+      sprite, natifs) n'ouvrent aucune entrée de script ;
+    - **DLL seulement** : atteint seulement par le repli de la DLL sur un index sans bit 0x80 (par exemple la
+      carte 60) ;
+    - **dormant** : aucune des règles ci-dessus ;
+    - une atteignabilité qui ne se décide pas compte comme **atteignable**. Attendu : 395 atteignables dans 76
+      cartes, 34 dormants ou DLL seulement ; tout autre compte est noté et expliqué dans le rapport ;
+  - **méthode** (sites atteignables et DLL seulement ; entité logique suivie à travers `0x42`/`0x43`) :
+    l'acteur (préfab), son animation au moment de l'attente (dernier `0x1A`, `0x59`,
     `0x5B` ou `0x0B` avant le site), la vitesse de cette animation (jeux d'animation du préfab), sa
     direction (dernier `0x09`, `0x5B`, `0x3A`, `0x08` ou `0x0C`) et sa position quand elle se déduit
     statiquement (apparition ou dernier `0x64`/`0x65`) ; puis un lancer de rayon dans la grille de cellules
@@ -1967,17 +1988,23 @@ et A8 restent hors du dépôt jusqu'à D7 ; d'ici là, les lancements de toute l
     E19.h ou E14) ; « aucun mur » (le rayon sort de la carte) ; « indéterminé » (position ou direction non
     déductible) ;
   - **rapport** : `docs/census-0x24-waits.md` (en anglais) — la méthode, le tableau site par site (carte,
-    pc, créneau, acteur, animation, vitesse, direction, classe, distance au mur, main tenue ou non) et les
-    totaux par classe ;
-  - **arrêt** : un site du chemin de l'histoire (162, 164, 165, 176, 178, 179, 44, 10) hors de « mur trouvé »
-    arrête l'exécution **avant** le commit de D4 et D5 : la question est soumise à l'auteur. Les sites hors du
-    chemin dans une classe à risque sont listés pour l'auteur, sans arrêt.
+    pc, créneau, atteignabilité, acteur, animation, vitesse, direction, classe, distance au mur, main tenue ou
+    non) et les totaux par atteignabilité et par classe ;
+  - **chemin de l'histoire** (critère et fin) : de la 163 jusqu'au premier rêve, soit toutes les cartes de la
+    zone Inoa (162 à 182, la 172 comprise), la 44 (Wendels Nightmare, atteinte depuis la 179) et la 10
+    (Overworld 2,1, voisine d'Inoa) ;
+  - **arrêt** : un site atteignable ou DLL seulement de ces cartes hors de « mur trouvé », ou un site dont
+    l'appartenance au chemin ou l'atteignabilité reste incertaine, arrête l'exécution **avant** le commit de
+    D4 et D5 : la question est soumise à l'auteur. Les sites hors du chemin dans une classe à risque sont
+    listés pour l'auteur, sans arrêt. Les six sites de la 172 sont attendus dormants ; si le parcours les
+    trouve atteignables, ils tombent sous l'arrêt.
 - **D6 — `0x40` et `0x41`** ⏳ (D-E19-22) : les deux cas, comme le binaire. `0x41` écrit
   `SpriteProgramIndexes[v1]` de l'entité logique ; `0x40` écrit `ProgramIndexes[v1]` et demande
   l'effacement : propriétaire → l'état qui tourne, à la fin de l'appel (`ClearProgramStateRequested`), quel
   que soit v1, même sur un Break ou une suspension ; autre entité → son `EventProgramState` tout de suite. Le
-  drapeau est remis à zéro à chaque test. v1 ≥ 6 : rien n'est écrit, un avertissement une seule fois, taille
-  rendue 3 (correction d'un défaut de l'original, qui écrirait hors du tableau). Tests unitaires U5 à U13.
+  drapeau est remis à zéro à chaque test. v1 ≥ 6 : aucun effet (rien n'est écrit, aucun état n'est effacé),
+  un avertissement une seule fois par opcode, taille rendue 3 (correction d'un défaut de l'original, qui
+  écrirait hors du tableau). Tests unitaires U5 à U13 (sans U9).
   A8 passe ensuite.
 - **D7 — Arcs verts** ⏳ : A6 et A8 commités ; temps d'exécution relevés.
 - **D8 — Hygiène** ⏳ : miroir `ImplementedOpcodes` (`0x24`, `0x40`, `0x41`) ; libellés de la table des
@@ -2009,8 +2036,9 @@ dans l'ordre écrit ; images absolues à ± 3 près, écarts exacts.
     0x0080 ; `ReleaseDirections()` : image suivante 0 et 0 ; bas de nouveau : `JustPressed` 0x4000. A1 et A9
     ne changent pas.
 - **Défaut d'atterrissage (D2)** — entité sans gravité, avec contrôleur, posée sur un sol plat avec
-  `ForceZ` −65536, `CurrentAnimationId` déjà sur une animation de marche de 0,5 px par tick vers le sud (sans
-  cela, le retard D-E19-13 donne 31,5 px) :
+  `ForceZ` −65536, `CurrentAnimationId` déjà sur une animation de marche de 0,5 px par tick vers le sud
+  (vitesse 64, **accélération 0**, comme l'animation 1 du bloc de la 391 ; direction 0 ; `ForceY` initiale
+  0 ; sans le préréglage de l'animation, le retard D-E19-13 donne 31,5 px) :
   - après 64 ticks, `PosY`, lue après la reprise de la racine de l'image suivante, a avancé de exactement
     2097152 (32 px) ; `PosZ` reste au sol ; `ForceZ` reste −65536. Aujourd'hui : 0 (le champ `PosY` vaut le
     départ + 32768 juste après chaque tick, sans jamais cumuler) ;
@@ -2023,7 +2051,9 @@ dans l'ordre écrit ; images absolues à ± 3 près, écarts exacts.
   - Opcodes sautés : contenus dans {`0xA2` `@228`/`@236`/`@244`/`@252`/`@408`, `0x8E` `@260`/`@335`/`@342`/
     `@721`, `0x94` `@417`/`@425`/`@433`/`@441`/`@503`, `0x4C @706`} ; `0x4C @706` s'exécute exactement 3 fois ;
     aucun dépassement de la garde.
-  - Image 0 : après `0x2D @265`, l'enregistrement 0 est en (29097984, 44040192, 9437185) ; après `@270`, le
+  - Image 0 : après `0x2D @265`, l'enregistrement 0 est en (29097984, 44040192, 7340032) : l'appui évalué à
+    l'apparition, sans limite de portée, le pose une image sur le dessus du marin 4 (TileZ 7) ; dès l'image 1,
+    il revient sur le terrain à 144 px, et la suite ne change pas (O-E19-15) ; après `@270`, le
     héros a `TargetAnimationId` 1 et `TargetDirection` 0. C[100] tourne pour la première fois à l'image 2 :
     après `@764`, `PosZ >> 16` du bloc vaut 336 ; après `@775`, sa `ForceZ` vaut −65536. Le héros à `@275`
     (image 21) : (24379392, 32067584).
@@ -2062,8 +2092,8 @@ dans l'ordre écrit ; images absolues à ± 3 près, écarts exacts.
     225 ; relâché aux images 226 et 227 ; `PlaceHero(540, 360, 64)` à 228 ; bas tenu ; départ dans l'image
     238, même arrivée.
 - **A8** (163) : `ArcSpec("A8", "Inoa", "Inoa (inner)-163", {}, 40, 9, 2, limite 1300, RealController,
-  Prefabs)`, avec le vrai héros ; chaque boîte `0x0D` se ferme au bouton dès qu'elle s'ouvre (autant d'appuis
-  que de pages).
+  Prefabs)`, avec le vrai héros ; chaque boîte `0x0D` se ferme par l'outil d'appuis consécutifs de D1 : un
+  appui de Carré à chaque image dès l'image qui suit l'ouverture (autant d'appuis que de pages).
   - Fin : `0x11 @201` (créneau B, programme `@60`) à l'image 1025 ; aucun opcode sauté ni dépassé.
   - État final : `0x05 @198`, `0x06 @202`, `0x05 @205` et `0x05 @208` dans l'image de `0x11 @201` ; `G0`,
     `G201` et `G1662` posés, `G200` effacé ; `PlayerControlFlags` 0 ; cinq boîtes ouvertes, aucune ouverte à
@@ -2101,8 +2131,9 @@ dans l'ordre écrit ; images absolues à ± 3 près, écarts exacts.
     (2, fin), `CodeIndex` 2 ;
   - **U2** : `ForceAdjusted` 2 → 1 ;
   - **U3** : lit l'entité logique : propriétaire à 1 et entité logique à 0 → 0 ; l'inverse → 1 ;
-  - **U4** : aucun effet de bord ni détour : avec une grille de navigation, dix appels avec 0 puis 1 laissent
-    `TargetDirection`, `TargetAnimationId`, les champs du détour et `Parameters[1..3]` inchangés.
+  - **U4** : aucun effet de bord ni détour : avec une grille de navigation et `Parameters[1..3]` à 0 au
+    départ, dix appels avec 0 puis 1 laissent `TargetDirection`, `TargetAnimationId` et les champs du détour
+    inchangés, et `Parameters[1..3]` à 0.
 - **Tests unitaires de `0x40`/`0x41` (D6)** :
   - **U5** : programme C, `ProgramIndexes[2]` = 0x84, `40 02 00 1A 05 FF` : après l'appel,
     `ProgramIndexes[2]` = 0, `TargetAnimationId` 5, `EventProgramState.Codes` nul et `Sp` 0 ; trace
@@ -2114,8 +2145,10 @@ dans l'ordre écrit ; images absolues à ± 3 près, écarts exacts.
     de X n'est pas effacé, `X.TargetAnimationId` = 5, l'état du propriétaire est effacé en fin d'appel ;
   - **U8** : `40 02 00 FF` dans un programme A d'une entité dont l'état C est non nul : `ProgramIndexes[2]` = 0,
     état C intact, et le tick C suivant passe par `RunSpriteEvent` ;
-  - **U10** : `40 06 00 FF` et `41 06 00 FF` : aucune exception, tableaux inchangés, un avertissement, taille
-    rendue 3 ;
+  - (U9, un `0x40` dans un programme B, est abandonné : aucun site du corpus) ;
+  - **U10** : `40 06 00 FF` et `41 06 00 FF` : aucune exception, tableaux inchangés, **état non effacé**
+    (`Codes` non nul : l'opcode hors limites n'a aucun effet), un avertissement par opcode (deux en tout),
+    taille rendue 3 ;
   - **U11** : `41 02 04 FF` : `SpriteProgramIndexes[2]` = 4 de l'entité logique, `ProgramIndexes` inchangés,
     état non effacé (fin sur `0xFF @3`), taille 3 ; avec une entité logique X, seule X change ;
   - **U12** : programme C `40 03 00 1A 05 00 1A 06 FF`, `ProgramIndexes[2]` = 0x81 et `[3]` = 0x82 : appel 1,
@@ -2163,8 +2196,9 @@ et une course Debug ; la DLL déployée est la Debug.
   dans le binaire restent pour E19.h.
 - `0x40` en vrai rend inertes, jusqu'à E14, environ 200 entités dans 40 cartes dont le binaire coupe le
   script (par exemple une énigme résolue) : c'est fidèle, mais leur comportement natif manque.
-- Le défaut d'atterrissage corrigé touche toute entité sans gravité qui se pose avec une `ForceZ` négative :
-  183 sites de `0x1B` négatif dans 67 cartes. Aucun arc existant n'en a ; l'intro a son propre moteur
+- Le défaut d'atterrissage corrigé touche toute entité sans gravité qui se pose avec une `ForceZ` négative
+  (183 sites de `0x1B` négatif dans 67 cartes), et toute entité avec gravité au repos dont le contrôleur ne se
+  dit pas au sol à ce tick. Aucun arc existant n'en a ; l'intro a son propre moteur
   vertical. La fin de l'intro en jeu (bloc 18) est vérifiée à la recette. La branche « posé sur une entité »
   tronque toujours à chaque tick (écart préexistant).
 - Le vrai héros dans les arcs à préfabs ajoute 2835 erreurs de résolution de sprite par arc ; une valeur
@@ -2177,6 +2211,20 @@ et une course Debug ; la DLL déployée est la Debug.
   cosmétique, jusqu'à E12.c.
 
 **Revues** : plan-verifier sur cette section, avant approbation ; verifier frais après exécution.
+
+**Relectures du 2026-10-01.**
+- **Plan-verifier** (`f27d4d0`) : **REVISE**, un P2 : la population du recensement de D5 n'était pas définie
+  de façon mécanique (395 ou 429 sites, « atteignable » non défini), la liste du chemin de l'histoire était
+  écrite en dur sans critère, et la 172 n'était pas tranchée.
+- **Audit indépendant des valeurs, en parallèle** : toutes les valeurs recalculées et confirmées, sauf une
+  (P2) : après `0x2D @265`, le bloc de la 391 est en `PosZ` 7340032 (posé une image sur le marin 4), pas
+  9437185. Un P3 : les images d'A8 supposent un appui à chaque image, que l'outil existant ne fait pas. Des
+  P4 : l'accélération du test de D2, U10 (avertissements, état non effacé), U4 (`Parameters`), U9 absent, le
+  rayon d'action de D2.
+- **Corrigé** : règle d'atteignabilité, population de 429 sites et réconciliation avec les 395, critère et fin
+  du chemin de l'histoire (zone Inoa 162 à 182, 44, 10), arrêt sur tout site incertain, verdict sur la 172
+  (six sites dormants, vérifié dans les données) ; l'épingle d'A6 et O-E19-15 ; l'outil d'appuis consécutifs
+  pour A8 ; les précisions des tests et des risques.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
@@ -2297,6 +2345,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-11 | La remise à zéro hors zone d'un événement de carte diffère du binaire : la DLL écrit sur l'entité de l'événement et ne remet pas `mapEvent.EventData` à zéro, le binaire (`0x8003C7F0`-`0x8003C804`) remet le pc et l'entrée de l'état de l'événement, `state+0x2C`, l'entité logique et l'octet de programme. Un programme B réentré reprend dans la DLL et recommence dans le binaire. Sans effet sur la 478 et la 416 (zones de toute la carte). | E19.j |
 | O-E19-12 | ~~Base de la branche moteur d'E19.c2~~ — **réglé le 2026-10-01 (D-E19-20)** : l'auteur a mergé `chantier/field-move-to-contact` dans `main` du moteur (`74e97293`) ; la branche d'E19.c2 part de `main`. | E19.c2 |
 | O-E19-13 | ~~Le moment de la fin Hold de Ronan~~ — **réglé le 2026-10-01 : A3 resserré épingle 26 (premier `0x1A @856`), 25 et 66 images, mesurés égaux** ; question d'origine : le moment de la fin Hold de Ronan (`0x1C @854`, image 25 de la 478) vient de l'horloge à virgule flottante du moteur, à ± 1 tick du binaire : il n'est pas épinglé. **Se ferme en E19.c2** : A3 resserré épingle 25 et 66 images. | E19.c2 |
+| O-E19-15 | À l'apparition, `EvaluateEntitySupport(…, immediateAtSpawn: true)` accepte un support sans limite de portée : le bloc de la 391, apparu à 144 px au-dessus du marin 4, se pose une image sur sa tête (`PosZ` 7340032) avant de revenir sur le terrain. La fidélité de cet appui au binaire n'est pas vérifiée. | E19.h |
 | O-E19-14 | Un test statique qui compte les attentes `0x1C`/`0x1D` sur une animation absente du préfab de l'acteur (attendu : 3, les Flammes des cartes 35, 38 et 39), pour voir arriver tout nouveau cas avec une future exportation. | E19.m |
 | O-E19-4 | Le gestionnaire natif du créneau E (`0x8007ED10`, destruction après `Deactivated`, 417 enregistrements sur 85 cartes) : E14, ou une tranche d'E19 ? Sur la chaîne, il ne touche que l'oiseau de la 389 et des PNJ d'Inoa. | E14 |
 
