@@ -802,7 +802,12 @@ temporaire `Alundra.Tests/ZzDiagE19SailorTests.cs`, non commité) :
   - la marche ouest 72 part de x = 540,875 sur la rangée 52, libre de x = 17 à 23 à la hauteur 8 du
     marin. Elle avance de 1,875 px par tick (vitesse 160 sur X) et se termine par la distance au 39e
     tick ;
-  - position finale du marin : **(467,75 ; 842,0)** exactement ;
+  - position du marin à la fin de la marche ouest : **(467,75 ; 842,0)** exactement, lue à la fin de
+    l'image du dernier pas vers l'ouest, c'est-à-dire juste avant l'image où `@1494` s'exécute ;
+  - **correction du 2026-10-01**, après l'arrêt de l'exécution : la valeur attendue ne change pas, seul
+    le moment de lecture est précisé. Au tick où la marche se termine, `@1494` tourne le marin vers le sud
+    au repos, mais le mouvement de ce même tick s'applique encore avec la nouvelle direction : le marin
+    descend de 1,25 px (y = 843,25 mesuré). Ce pas est consigné en O-E19-5 ;
   - **condition de fin** : le programme exécute `@1494` puis `0xFF` ;
   - **limite** : 450 images à dt 0,02 (le diagnostic atteint la fin de la marche sud 48 à l'image 313).
     Au-delà, le test échoue en nommant le dernier (pc, opcode) exécuté.
@@ -834,7 +839,13 @@ temporaire `Alundra.Tests/ZzDiagE19SailorTests.cs`, non commité) :
 
 **Acceptation d'E19.a3.**
 1. Le test du marin 12 échouait sur l'ancien code, avant T1 (marin laissé en x = 540,875). Après, il
-   atteint `@1494` puis `0xFF` en moins de 450 images, et le marin finit en (467,75 ; 842,0).
+   atteint `@1494` puis `0xFF` en moins de 450 images, et le marin est en (467,75 ; 842,0) à la fin de la
+   marche ouest, juste avant l'image de `@1494`.
+
+**Ordre des commits, précisé le 2026-10-01.** La règle de T1 fait bouger l'épingle des traces du héros
+(98 → 99). La règle, ses tests unitaires, les traces régénérées et les deux épingles re-mesurées
+partent donc dans un même commit, pour qu'aucun commit ne laisse un test rouge. Le test du marin 12 et
+la suppression du diagnostic suivent dans le commit de T2.
 2. Les traces du héros ne changent que dans la colonne `forceAdjusted`, aux deux images annoncées. Les
    seules épingles qui bougent sont celles de T2.
 3. `Alundra.Tests` et les tests du convertisseur passent à 0 échec, A1c compris. Le moteur ne change pas.
@@ -887,6 +898,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-1 | ~~Portails trou et escalier de la 390~~ — **réglé par la recette du 2026-09-29** : le journal montre le passage par le portail 5, qui charge la pièce B. Question d'origine : si la recette d'E19.a montre que le héros ne suit pas le capitaine par là, faut-il corriger dans E19 ou dans un chantier de transitions ? | E19.a (recette) |
 | O-E19-2 | Nouveaux écarts de la décompilation relevés dans le binaire : `0x5F` (entité et taille), `0x66` (sens de la copie), compteur de `0x1C`, `y` de la boîte de nom, portrait de `Script_196_0C4`, test de zone de `GetMapEffectRecord`, `AddOneItemIfUnlocked`, `InitializeEventData`. Le portage suit le binaire. Faut-il aussi corriger la décompilation dans l'analyseur, comme pour la taille de `0x78` en E16.a ? | E19.m |
 | O-E19-3 | Déplacement vertical des entités nues dans le support d'arcs (A3, A6) : dupliquer la passe du harnais de l'intro, l'extraire (le fichier de trace épinglé serait touché), ou ouvrir en production un point d'entrée du chargeur de préfabs pour que le montage ait de vrais contrôleurs ? | E19.c |
+| O-E19-5 | Quand un `0x5B [x,0,dir]` arrête un PNJ au tick où sa marche se termine, le mouvement de ce tick s'applique encore avec la nouvelle direction : le marin 12 de la 389 descend de 1,25 px au tick de `@1494` (mesuré en E19.a3). Cela peut venir de la latence d'une image de `CurrentAnimationId` des PNJ, déjà relevée (le moteur synchronise l'animation en fin d'image). À vérifier contre le binaire, avec les attentes de mouvement. | E19.c |
 | O-E19-4 | Le gestionnaire natif du créneau E (`0x8007ED10`, destruction après `Deactivated`, 417 enregistrements sur 85 cartes) : E14, ou une tranche d'E19 ? Sur la chaîne, il ne touche que l'oiseau de la 389 et des PNJ d'Inoa. | E14 |
 
 ## 4. Hors périmètre
