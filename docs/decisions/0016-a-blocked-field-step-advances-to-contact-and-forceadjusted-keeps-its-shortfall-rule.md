@@ -1,6 +1,6 @@
 # ADR-0016: A blocked step on the cell field advances to contact, and ForceAdjusted keeps its shortfall rule
 
-- **Status**: Accepted
+- **Status**: Accepted; D-E19-10 superseded by ADR-0017
 - **Date**: 2026-09-29
 - **Source**: this chantier: `docs/plan-e19-opcodes.md`, E19.a "Recette en jeu T7" and slice E19.a2 (author decisions D-E19-8 to D-E19-11 of 2026-09-29), after a diagnosis on the real map 390 with the hero's real controller; engine side: `CasaEngineMonogame/ai-agent/tasks/field-move-to-contact-tasks.md` and engine ADR-0045
 

@@ -65,6 +65,8 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   le moteur.
 - **D-E19-7** — **Effets visuels après le bateau** : les opcodes `0x90`-`0x94` et `0xA0`-`0xA3`
   forment une tranche de la phase 2 (E19.g).
+- **D-E19-12** (2026-10-01, après la recette d'E19.a2) : `ForceAdjusted` suit le binaire et ne se lève
+  qu'au tick sans avance ; remplace D-E19-10. Détail au §1.2c (E19.a3), ADR-0017.
 - **D-E19-8 à D-E19-11** (2026-09-29, après la recette d'E19.a) : un pas bloqué sur le champ de
   cellules avance jusqu'au contact, dans le moteur ; le glissement le long des murs vient avec E19.h ;
   `ForceAdjusted` garde la règle de la DLL ; dans le moteur, les drapeaux « curtailed » signifient
@@ -291,6 +293,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 |---|---|---|---|
 | **E19.a** | Entité de contexte (`0x42`, `0x43`, et tous les opcodes sur l'entité logique), `0x59`, garde de boucle (D-E19-3), support des arcs | A0, A0b, A1 | Le capitaine sort par l'escalier et réapparaît en pièce B ; sommeil, puis 476 |
 | E19.a2 🧪 | Moteur : sur le champ de cellules, un pas bloqué avance jusqu'au contact (D-E19-8) ; épingles et traces de référence du héros re-mesurées ; la cabine testée avec un vrai contrôleur | cabine seule, A1c | La cabine : Alundra s'endort, puis la 476 se charge |
+| E19.a3 | DLL : `ForceAdjusted` ne se lève qu'au tick sans avance, comme le binaire (D-E19-12) ; épingles du héros re-mesurées | marin 12 de la 389 | Le marin 12 rejoint sa place en fin d'intro |
 | E19.b | Carte 476 : `0xC4` sans nom (D-E19-5), `0x8A` (bloc caméra), `0x4C` gardé pour la machine à écrire | A2, A4 | La vision de Lars et Melzas jusqu'à 478, puis jusqu'à 392 |
 | E19.c | Carte 478 et marches : `0x0B` avec détour (D-E19-6), `0x1C`/`0x1D` (compteur du binaire, Chain et Hold), `0x5E`, `0x08`, `0x0C`, `0x3A`, `0x89`, `0x73`/`0x74` | A3, A7 | La vision de 478 va au bout ; la plage 416 mène à Inoa |
 | E19.d | Fin de chaîne : `0x24` sur l'entité logique, `0x40`/`0x41` sur l'entité logique, reste de 392, 391 et 163 | A5, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
@@ -753,6 +756,80 @@ après exécution. Budgets et arrêts : ceux du §5.
   **Le plafond de relecture est atteint** : c'était la relecture de clôture, cette version n'est pas
   relue à nouveau. La décision d'approuver en l'état, ou de demander une relecture de plus, revient à
   l'auteur.
+
+### 1.2c E19.a3 — `ForceAdjusted` comme dans le binaire ⏳ (proposée le 2026-10-01)
+
+**Origine : recette T5 d'E19.a2 (auteur).** La cabine passe : Alundra se couche et la suite du script
+part. Mais à la fin de l'intro de la 389, le marin 12 s'arrête avant sa place : il finit 72 px trop à
+l'est.
+
+**Diagnostic**, reproduit avec le vrai contrôleur du marin sur les vraies cellules de la 389 (diagnostic
+temporaire `Alundra.Tests/ZzDiagE19SailorTests.cs`, non commité) :
+
+- Son programme C[12] (`@1438` à `@1494`) enchaîne huit marches : sud 16, ouest 120, sud 16, ouest 24,
+  sud 96 en `0x1F`, est 120 en `0x1E`, puis sud 48 et ouest 72 en `0x1F`. Il part de (564, 672, 80).
+- La marche sud 96 finit maintenant au contact exact, y = 794,0 ; avant E19.a2, en 793,25.
+- La marche sud 48 part donc de 794,0. Son dernier pas bute sur le mur et est raccourci pour finir en
+  842,0 : la distance de 48 est atteinte. Mais notre règle (manque de plus de 0,01 px) lève
+  `ForceAdjusted` sur ce même tick.
+- La marche ouest 72 commence dans le même tick. `0x1F` rend « fini » dès que `ForceAdjusted` vaut 1
+  (`AlundraEventProgramRunner.cs:601`) : elle lit le drapeau resté du tick précédent et se termine sans
+  un pas. Le marin reste en x = 540,875.
+- Dans l'original, `ForceAdjusted` ne se lève qu'au tick où aucun demi-pas n'est accepté
+  (`0x80037d54`, sauté par la garde de `0x800379a4`) **[binaire]**. Au tick du contact, le pas raccourci
+  est accepté, le drapeau reste à 0, et la marche ouest part normalement.
+- Avant E19.a2, le moteur rejetait le pas bloqué en entier : notre règle levait le drapeau au tick sans
+  avance, comme l'original. C'est le contact, combiné à D-E19-10, qui l'a avancé d'un tick.
+
+**Décision de l'auteur (2026-10-01)**, consignée dans l'ADR-0017, qui remplace D-E19-10 :
+- **D-E19-12** — `ForceAdjusted` suit le binaire : il se lève quand un axe demandé (plus de 0,01 px)
+  n'avance pas du tout (moins de 0,01 px), et non quand le pas n'est que raccourci. Le glissement le long
+  des murs reste pour E19.h (D-E19-9).
+
+**Tâches.**
+
+- **T0 — Preuve rouge** : écrire le test durable du marin 12, d'après le diagnostic temporaire :
+  - vrai contrôleur du banc 146 ;
+  - vraies cellules et vraie grille de navigation de la 389 ;
+  - en-tête réel du marin, masque `WalkabilityMaskFor(Flags)` ;
+  - les codes réels de C[12] `@1438-1494`, suivis de `0xFF`.
+
+  Le lancer sur le code actuel. Il doit échouer parce que la marche ouest 72 (`0x1F @1491`) se termine
+  au tick même où elle commence, sans déplacement. Consigner le constat, sans rien committer.
+- **T1 — La règle** : dans `AlundraEntityScriptProxy.MoveControllerAndPullPosition` (`:1792-1796`),
+  `ForceAdjusted = 1` seulement si, sur un axe, |demandé| > 0,01 et |obtenu| ≤ 0,01.
+  - Mettre à jour la doc de `ForceAdjusted` (`:168-196`, dont l'écart D-E19-10, maintenant levé) et celle
+    de la méthode.
+  - Tests unitaires : un pas raccourci mais avancé ne lève pas le drapeau ; un pas sans avance le lève ;
+    les deux axes sont jugés séparément ; un reste de moins de 0,01 px compte comme « sans avance ».
+- **T2 — Le marin 12 et les épingles** :
+  - le test de T0 passe : la marche ouest 72 se fait, et la position finale est épinglée à la valeur
+    mesurée ;
+  - les traces du héros ne changent que dans la colonne `forceAdjusted`, à la première image de contact :
+    98 devient 0 et le premier 1 passe à 99 (spawn) ; de même 39 devient 0 et le premier 1 passe à 40
+    (highground) ;
+  - épingles : `HeroTraceHarnessTests.cs:745` (98 → 99) et l'épingle highground (39 → 40). La position au
+    premier drapeau ne change pas (36831232, 27394048) ;
+  - lancer d'abord les tests qui dépendent du tick du premier `ForceAdjusted` (liste de T2 d'E19.a2). Un
+    décalage d'exactement un tick, expliqué par la règle, s'épingle ; tout autre changement est un arrêt ;
+  - A1c et le test de la cabine passent toujours.
+- **T3 — Docs** : l'ADR-0017 (déjà écrite), la ligne de statut de l'ADR-0016, ce plan, et la ligne E19 du
+  plan maître.
+- **T4 — Recette en jeu (auteur)** : à la fin de l'intro de la 389, le marin 12 rejoint sa place (ta
+  capture 2) ; puis la cabine, Alundra se couche, et la 476 se charge.
+
+**Acceptation d'E19.a3.**
+1. Le test du marin 12 échouait sur l'ancien code, avant T1, et passe après.
+2. Les traces du héros ne changent que dans la colonne `forceAdjusted`, aux deux images annoncées. Les
+   seules épingles qui bougent sont celles de T2.
+3. `Alundra.Tests` et les tests du convertisseur passent à 0 échec, A1c compris. Le moteur ne change pas.
+4. Un verifier frais rend CONFIRMED sur 1 à 3.
+5. La recette T4 de l'auteur.
+
+**Risques.** Le drapeau se lève maintenant un tick plus tard qu'avant E19.a2 au contact. Tous ses
+lecteurs le voient donc au même tick que l'original : `0x1F`, `0x24`, le détour E4.d, la désactivation
+au choc et l'entrée sur une échelle. Les marches en diagonale contre un coin restent différentes de
+l'original jusqu'au glissement (E19.h).
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
