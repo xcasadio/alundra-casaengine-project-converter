@@ -887,7 +887,7 @@ l'original jusqu'au glissement (E19.h).
   | Au bord de l'epsilon, la nouvelle règle diffère de l'ancienne dans deux cas étroits : une demande entre 0,01 et 0,02 px, et un recul de plus de 0,01 px. | P4 | Accepté. |
   | La preuve rouge du test du marin n'est pas dans l'historique : la règle est commitée avant le test. | P4 | Accepté : le verifier l'a reproduite à part. |
 
-### 1.2d E19.b — Carte 476 : la vision de Lars et Melzas 🧪 (code et arcs faits le 2026-10-01 ; reste le verifier et la recette T6 de l'auteur)
+### 1.2d E19.b — Carte 476 : la vision de Lars et Melzas 🧪 (code et arcs faits et vérifiés CONFIRMED le 2026-10-01 ; reste la recette T6 de l'auteur)
 
 **But.** La vision se joue jusqu'au bout. À l'aller (`G1640`), la 476 ouvre ses trois boîtes puis part vers
 la 478 (arc A2). Au retour (`G1641`), elle déplace la caméra par le bloc transparent, ouvre ses huit boîtes
@@ -1067,6 +1067,35 @@ puis part vers la 392 (arc A4).
 - **Tous sont intégrés** : table du rouge étape par étape, moment des vérifications, précisions de T0 et
   T2, constructeur d'`ArcRun`, recette.
 - **Relecture neuve de la révision** (`1dc4bdb`) : **READY**.
+
+**Vérification d'E19.b (2026-10-01).**
+- **Commits** : `c885926` (`0xC4`), `50353df` (`0x8A`), `a6448a3` (arcs), `b987da3` (hygiène), `d8c9d83`
+  (docs). Le pointeur du moteur ne change pas.
+- **Verifier frais : CONFIRMED** sur les acceptations 1 à 3. `Alundra.Tests` 1939/1939 en Release,
+  convertisseur 400/400.
+  - Il a lu les arcs : ils ne sont pas vides. Valeurs exactes des arrivées, texte de chaque boîte par pc,
+    héros immobile pendant les quatre marches, ensemble des opcodes sautés, échantillons vérifiés après le
+    signal de fin.
+  - Dans un arbre de travail jetable :
+    - les deux cas retirés, le rouge du code d'avant se reproduit à l'identique ;
+    - `0x8A` seul retiré, le rouge d'après T1 se reproduit à l'identique ;
+    - le `+1` sur Z retiré, trois tests unitaires de `0x8A` et les deux arcs échouent.
+  - Les traces du héros ne changent pas. La DLL déployée dans `alundra-project/` est la DLL Debug, à
+    jour.
+- **Contradicteur en lecture seule** : aucun P0 à P2. Les dix autres cartes de `0xC4` ne bloquent pas.
+  Pour la 161 `S097`, T999 est posé par la page 1 au premier appui, comme dans l'original. Les 30 autres
+  sites sont suivis directement d'un `0x39`. Dispositions (signalé, jamais corrigé sur un candidat
+  CONFIRMED) :
+
+  | Constat | Priorité | Disposition |
+  |---|---|---|
+  | `0x8A` apparaît désormais pour de vrai dans environ 70 cartes. Des programmes en boucle (sanctuaire 28, et 30, 134, 147, 159, 160) font apparaître des entités sans fin tant que le joueur reste sur la carte, car `DestroyEntity` ne retire jamais l'entité du moteur. | P3, introduit | Reporté : limite déjà acceptée par ce plan (risques ci-dessus, E14 ou E19.m). Aucune de ces cartes n'est sur la chaîne. |
+  | Aucun test n'exerce `0x8A` sur le vrai bloc, qui porte un contrôleur : dans les arcs, le bloc est nu et `PushLogicalPositionToRoot` ne fait rien. Le second appel de `PushLogicalPositionToRoot` est hors du `try` de `SpawnEntityByRecordId`. | P3, introduit | Reporté : la recette T6 le couvre ; les arcs avec de vrais contrôleurs viennent avec O-E19-3 (E19.c). |
+  | Après l'écriture de la position par `0x8A`, l'état de support et les champs `Tile*` restent ceux de la position du record jusqu'au tick suivant. | P4 | Accepté : même forme que `0x8B` ; sans effet pour le bloc et Rancune, qui ne portent personne. |
+  | Tests plus faibles que le plan : l'octet fort n'est testé que sur X ; les arcs ne vérifient pas les parents (bloc → héros, Rancune → bloc) ; le fragment de texte « Tu » de `S102` est faible. | P4 | Reporté à l'hygiène d'E19.c. |
+  | La correction du constructeur d'`ArcRun` n'a pas de test qui la distingue de l'ancien ordre. Un `ResetAll` qui lèverait dans `Dispose` masquerait l'exception d'origine. | P4 | Accepté : correction structurelle, déjà notée en T4. |
+  | Textes en retard : la doc de classe et les commentaires de cas d'`EntitySearchService` disent encore « owner » ; la doc d'`OpenDialog` ne cite que `0x0D` et `0x5C`. | P4 | Reporté à l'hygiène d'E19.c. L'ADR-0006 ne se réécrit pas. |
+  | La preuve rouge des arcs n'est pas dans l'historique : les arcs sont commités après le code. | P4 | Accepté : le verifier l'a reproduite à part, comme pour E19.a3. |
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
