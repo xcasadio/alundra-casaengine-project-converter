@@ -1008,7 +1008,7 @@ puis part vers la 392 (arc A4).
     déjà en place pour `0x2D` et `0x8B`, pas une décision nouvelle.
   - Miroir du harnais. Commentaires périmés : l'aide de `0x8B`, `IEntityWorldContext.cs:59`,
     `AlundraWorldProxy.cs:~2419`.
-- **T3 — Les arcs** : A2 et A4 passent avec les valeurs de T0 ; ils sont commités.
+- **T3 — Les arcs** ✅ : A2 et A4 passent avec les valeurs de T0 ; ils sont commités (`AlundraVisionArcTests`, fait le 2026-10-01).
 - **T4 — Hygiène reportée par E19.a et E19.a3** :
   - le constructeur d'`ArcRun` : `FindProjectRoot` et l'option de caméra sont placés dans le `try`, en
     mémorisant `_previousProjectPath` **avant** `FindProjectRoot`, sinon `Dispose` remettrait `ProjectPath`
