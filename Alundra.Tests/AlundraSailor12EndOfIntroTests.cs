@@ -21,7 +21,7 @@ namespace Alundra.Tests;
 /// E19.a3 T0/T2 (docs/plan-e19-opcodes.md §1.2c, ADR-0017 D-E19-12): the eight walks of sailor 12 of map 389 at the end
 /// of the intro (<c>C[12]</c>, <c>@1438</c> to <c>@1494</c>), played by the real controller of bank 146 on the real
 /// cells and the real navigation grid of the map, with the real header of the sailor. The walk south 48 (<c>0x1F
-/// @1487</c>) ends against the wall of row 53 at the contact y = 842.0: its last step is shortened but advances, so
+/// @1484</c>) ends against the wall of row 53 at the contact y = 842.0: its last step is shortened but advances, so
 /// the original leaves <c>ForceAdjusted</c> at 0 (<c>0x80037d54</c> only fires on a tick with no accepted sub-step)
 /// and the walk west 72 (<c>0x1F @1491</c>), which starts on the same tick, proceeds. A flag raised by a shortened step
 /// ends that walk on the tick it starts and leaves the sailor 72 px east of his place (x = 540.875).

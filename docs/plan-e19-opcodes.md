@@ -69,7 +69,8 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   qu'au tick sans avance ; remplace D-E19-10. Détail au §1.2c (E19.a3), ADR-0017.
 - **D-E19-8 à D-E19-11** (2026-09-29, après la recette d'E19.a) : un pas bloqué sur le champ de
   cellules avance jusqu'au contact, dans le moteur ; le glissement le long des murs vient avec E19.h ;
-  `ForceAdjusted` garde la règle de la DLL ; dans le moteur, les drapeaux « curtailed » signifient
+  `ForceAdjusted` garde la règle de la DLL (D-E19-10, **remplacée par D-E19-12** ci-dessus : le
+  drapeau suit désormais le binaire) ; dans le moteur, les drapeaux « curtailed » signifient
   « raccourci ». Détail au §1.2b (E19.a2), ADR-0016.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
@@ -1009,7 +1010,7 @@ puis part vers la 392 (arc A4).
   - Miroir du harnais. Commentaires périmés : l'aide de `0x8B`, `IEntityWorldContext.cs:59`,
     `AlundraWorldProxy.cs:~2419`.
 - **T3 — Les arcs** ✅ : A2 et A4 passent avec les valeurs de T0 ; ils sont commités (`AlundraVisionArcTests`, fait le 2026-10-01).
-- **T4 — Hygiène reportée par E19.a et E19.a3** :
+- **T4 — Hygiène reportée par E19.a et E19.a3** ✅ *(fait le 2026-10-01 ; le test d'échec du constructeur lit l'option de caméra, mais comme la valeur par défaut est déjà « activée », il ne distingue pas l'ancien ordre du nouveau : la correction est structurelle)* :
   - le constructeur d'`ArcRun` : `FindProjectRoot` et l'option de caméra sont placés dans le `try`, en
     mémorisant `_previousProjectPath` **avant** `FindProjectRoot`, sinon `Dispose` remettrait `ProjectPath`
     à null. Le test d'échec vérifie aussi l'option de caméra, lue par
@@ -1108,7 +1109,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-1 | ~~Portails trou et escalier de la 390~~ — **réglé par la recette du 2026-09-29** : le journal montre le passage par le portail 5, qui charge la pièce B. Question d'origine : si la recette d'E19.a montre que le héros ne suit pas le capitaine par là, faut-il corriger dans E19 ou dans un chantier de transitions ? | E19.a (recette) |
 | O-E19-2 | Nouveaux écarts de la décompilation relevés dans le binaire : `0x5F` (entité et taille), `0x66` (sens de la copie), compteur de `0x1C`, `y` de la boîte de nom, portrait de `Script_196_0C4`, test de zone de `GetMapEffectRecord`, `AddOneItemIfUnlocked`, `InitializeEventData`. Le portage suit le binaire. Faut-il aussi corriger la décompilation dans l'analyseur, comme pour la taille de `0x78` en E16.a ? | E19.m |
 | O-E19-3 | Déplacement vertical des entités nues dans le support d'arcs (A3, A6) : dupliquer la passe du harnais de l'intro, l'extraire (le fichier de trace épinglé serait touché), ou ouvrir en production un point d'entrée du chargeur de préfabs pour que le montage ait de vrais contrôleurs ? | E19.c |
-| O-E19-5 | Quand un `0x5B [x,0,dir]` arrête un PNJ au tick où sa marche se termine, le mouvement de ce tick s'applique encore avec la nouvelle direction : le marin 12 de la 389 descend de 1,25 px au tick de `@1494` (mesuré en E19.a3 : y = 843,25 à l'image de `@1494`, contre 842,0 à l'image précédente, lue par le test du marin 12). Cela peut venir de la latence d'une image de `CurrentAnimationId` des PNJ, déjà relevée (le moteur synchronise l'animation en fin d'image). À vérifier contre le binaire, avec les attentes de mouvement. | E19.c |
+| O-E19-5 | Quand un `0x5B [x,0,dir]` arrête un PNJ au tick où sa marche se termine, le mouvement de ce tick s'applique encore avec la nouvelle direction : le marin 12 de la 389 descend de 1,25 px au tick de `@1494` (mesuré en E19.a3 : y = 843,25 à l'image de `@1494`, contre 842,0 à l'image précédente, lue par le test du marin 12). Cela peut venir de la latence d'une image de `CurrentAnimationId` des PNJ, déjà relevée (le moteur synchronise l'animation en fin d'image). **Tranché par le binaire le 2026-10-01 (§1.2d, [binaire])** : l'original exécute dans l'ordre les événements de carte, les entités, `UpdateAnimation` puis la physique (`0x8002E100`, `0x8003B388` → `0x8003B3D8` → `0x8003B3E0`) ; un changement d'animation par script s'applique donc dans la physique du même tick. La DLL a une image de retard : c'est la cause du pas de 1,25 px du marin 12, et chaque panoramique du bloc de la 476 fera 48,75 px au lieu de 48. La correction reste dans E19.c. | E19.c |
 | O-E19-4 | Le gestionnaire natif du créneau E (`0x8007ED10`, destruction après `Deactivated`, 417 enregistrements sur 85 cartes) : E14, ou une tranche d'E19 ? Sur la chaîne, il ne touche que l'oiseau de la 389 et des PNJ d'Inoa. | E14 |
 
 ## 4. Hors périmètre

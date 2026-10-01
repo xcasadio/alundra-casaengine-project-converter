@@ -231,6 +231,10 @@ l'intro) ; **caméra, MapEvents et rattrapage D3 hors périmètre** (§1.3) ; au
    > **Mise à jour 2026-09-29 (E19.a2)** : le moteur avance un pas bloqué jusqu'au contact. `posX` au
    > mur vaut désormais 36831232 (ancienne valeur 36956160) ; les quatre traces ne changent que dans la
    > colonne `posX`, dès l'image 98 (spawn) et 39 (highground, 27394048). La première image au mur reste 98.
+   >
+   > **Précision du 2026-10-01 (E19.a3)** : cette mise à jour date d'E19.a2. E19.a3 (D-E19-12, ADR-0017) a
+   > ensuite re-mesuré les épingles du héros avec la règle du binaire pour `ForceAdjusted` : les valeurs
+   > courantes, dont « la première image au mur », sont à relire dans `docs/plan-e19-opcodes.md` §1.2c.
 2. **Angles morts verticaux.** Deux constantes du contrôleur ne sont pas couvertes : la distance
    d'accrochage au sol (`GroundSnapDistance`, 4 px — muter à 2 px ne change aucune trace, parce que le
    mur fait 16 px et la falaise 32 px) et le plafond de vitesse de chute (`MaxFallSpeed` = 800 px/s,

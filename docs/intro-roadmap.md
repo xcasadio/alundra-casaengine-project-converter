@@ -96,7 +96,8 @@ Relevées par le verifier ; aucune n'influence la trace car les branches concern
 ici : (1) le reset « joueur hors zone » de `RunMapEventsPass` remet à zéro `EventData.Sp` du map-event au
 lieu du `EventProgramState` du joueur (`GameEngine.cs:1690-1697` zéroe aussi `ChildEntity`,
 `RelativeWarpOffsetX`, `Index`) — les 7 zones couvrent toute la map ; (2) *(corrigé)*
-`RunMapEventsPass` pose désormais `MapEventProgramId = ProgramBMap`, `EventTrigger = i` et
+`RunMapEventsPass` pose désormais `MapEventProgramId = ProgramBMap`, `EventTrigger = mapEvent.Id` (l'index
+d'enregistrement de l'événement, pas sa position dans la liste compactée) et
 `LogicEntity = mapEventEntity` (`AlundraWorldProxy.cs`), et depuis E19.a le runner lit cette entité logique
 avant chaque instruction : les opcodes `0x42` et `0x43` la re-ciblent (`0x66` ne la touche pas, contrairement
 à ce que ce point disait) ; (3) le slot F zéroe les forces de l'entité au lieu

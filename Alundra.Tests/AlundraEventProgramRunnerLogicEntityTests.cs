@@ -537,8 +537,10 @@ public class AlundraEventProgramRunnerLogicEntityTests
     public void LoopGuard_ALoopWithAWait_NeverTriggersIt()
     {
         using var log = SaveGameDirectorTestSupport.LogCapture.Install();
-        // 0x01, then 0x37 Wait(1) (not at pc 0: a Wait keys its re-entry off the code index, and a freshly
-        // cleared Parameters[1] is already 0), then back to the start: every turn suspends.
+        // 0x01, then 0x37 Wait(1), then back to the start: every turn suspends. The Wait is not at index 0 because
+        // the DLL compares Parameters[1] with the code INDEX where the original compares the pc POINTER (never
+        // null): at index 0 a freshly cleared Parameters[1] already reads as a re-entry. A deviation of the DLL,
+        // unreachable on real data (no program starts at index 0), not a fidelity point.
         var document = NewDocument(0x01, 0x37, 1, 0x02, 0xFD, 0xFF);
         var runner = NewRunner(document);
         var cuts = 0;

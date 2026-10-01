@@ -96,15 +96,19 @@ internal sealed class ArcRun : IDisposable
     public ArcRun(ArcSpec spec)
     {
         Spec = spec;
-        ResetAll();
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
 
-        var root = FindProjectRoot();
+        // Saved BEFORE anything that can fail: a failing constructor never reaches Dispose by itself (the catch
+        // below calls it), and Dispose restores this value - saved after FindProjectRoot, it would put a null back.
         _previousProjectPath = EngineEnvironment.ProjectPath;
-        EngineEnvironment.ProjectPath = root; // the sprite record catalog is resolved when the proxy is built.
 
         try
         {
+            ResetAll();
+            AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
+
+            var root = FindProjectRoot();
+            EngineEnvironment.ProjectPath = root; // the sprite record catalog is resolved when the proxy is built.
+
             foreach (var flag in spec.Flags)
             {
                 State.AddFlag((uint)flag, 1u << (flag & 0x1f));

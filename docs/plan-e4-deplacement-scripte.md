@@ -412,6 +412,10 @@ DLL / convertisseur / harnais (ce repo) :
   > contact. Le drapeau `ForceAdjusted` de la DLL (manque de plus de 0,01 px) se lève donc au tick qui
   > atteint le contact, un tick avant l'original, qui ne le lève qu'au premier tick sans aucune avance.
   > Écart consigné ; E19.h aligne le drapeau sur le binaire.
+  >
+  > **Remplacé le 2026-10-01 (E19.a3, D-E19-12, ADR-0017)** : `ForceAdjusted` suit désormais le binaire et ne
+  > se lève qu'au tick sans aucune avance, non au tick du contact. Le texte « un tick avant l'original » ci-dessus
+  > n'est plus vrai ; le glissement le long des murs reste pour E19.h.
 - **Acceptation** : (1) 0x1F réel du marin 11 (programme 139 — relever seuil/direction) sur la 389 :
   fin à la frame calculée (distance/vitesse AnimSet réels) ; (2) 0x1E avec obstacle (cellules
   bloquées réelles ou monde synthétique) : contournement par waypoints, fin à distance atteinte —

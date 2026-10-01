@@ -109,8 +109,9 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// in one script call, the program yields until the next frame with its position kept, as a Break would - a
     /// documented deviation from the original, which has no guard. 8.5 times the worst suspend-free timer loop
     /// measured on the corpus (120, map 440 @1257) and 19.7 times its longest finite suspend-free run (52, map
-    /// 11 F[2] @408). Slots B and C resume at the same opcode next frame; A, D, E and F start over, as they do
-    /// after any yield.
+    /// 11 F[2] @408). Slots B and C resume at the same opcode next frame. A, D, E and F never resume (they run on a
+    /// shared scratch state re-initialized at every <see cref="RunScript"/>): a cut program of those slots starts
+    /// over from its first opcode the next time the slot runs it, as it does after any yield.
     /// </summary>
     internal const int ProductionLoopBudget = 1024;
 
@@ -1189,7 +1190,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 return 1;
 
             case 0x3B: // Check player in area - Script_59_03B (EntityEventHandlers.cs:1223-1240): tests
-                       // the PLAYER entity's own TileX/TileY/TileZ - NOT the executing entity, unlike
+                       // the PLAYER entity's own TileX/TileY/TileZ - NOT the logic entity this handler
+                       // receives (the entity the program currently runs on, E19.a), unlike
                        // 0x07's EntityInArea (see that method's own doc) - against the inclusive box
                        // v[1]..v[6] (xmin,xmax,ymin,ymax,zmin,zmax), no clamp, same as the original.
                        // Writes Result only, advances by its own size (7) either way (docs/plan-e7-
@@ -1308,11 +1310,11 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
             case 0x3E: // Is player riding entity - Script_62_03E @ 0x8003E708
                        // (EntityEventHandlers.cs:1298-1310): Result = 1 iff the player's own RidingEntity
-                       // points back at THIS entity (the executing one, not a searched match) - same
+                       // points back at the LOGIC entity this handler receives (not a searched match) - same
                        // ReferenceEquals(player.RidingEntity, candidate.LogicContextEntity) idiom
                        // EntitySearchService's own function ids 5/6 already use (EntitySearchService.cs:
                        // 174/186), here compared directly against the executing entity's own
-                       // LogicContextEntity instead of a searched candidate. No PlayerEntity spawned this
+                       // LogicContextEntity (the logic entity's, here) instead of a searched candidate's. No PlayerEntity spawned this
                        // session -> Result = 0, degraded no-op (once-logged warning), same "nothing to
                        // search" shape as 0x3B/0x27 above.
                 if (_worldContext.PlayerEntity is { } ridingCheckPlayer)
@@ -2203,7 +2205,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         {
             Logs.WriteWarning(
                 $"AlundraEventProgramRunner: opcode 0x{opcode:x2} ({name}) has no PlayerEntity spawned "
-                + "for this world - degraded no-op (Result = 0), advancing by its size.");
+                + "for this world - degraded no-op (what it writes, if anything, is in its own case), advancing by its size.");
         }
     }
 
