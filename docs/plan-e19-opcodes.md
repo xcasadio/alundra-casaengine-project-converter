@@ -1065,6 +1065,7 @@ puis part vers la 392 (arc A4).
   - raccourci de recette.
 - **Tous sont intégrés** : table du rouge étape par étape, moment des vérifications, précisions de T0 et
   T2, constructeur d'`ArcRun`, recette.
+- **Relecture neuve de la révision** (`1dc4bdb`) : **READY**.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
