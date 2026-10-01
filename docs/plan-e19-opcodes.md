@@ -1933,11 +1933,11 @@ scratchpad `e19d/`) :
 **Tâches.** Chaque tâche porte son icône de statut et se commite avec la mise à jour de ce plan. Les arcs A6
 et A8 restent hors du dépôt jusqu'à D7 ; d'ici là, les lancements de toute la suite filtrent leurs classes.
 
-- **D0 — Preuves rouges** ⏳ (non commitées) : les arcs A6 et A8 écrits avant le code, avec toutes les
+- **D0 — Preuves rouges** ✅ (faites le 2026-10-01 : A6 échoue sur `slot 1 program @228: last 0x00 @479`, A8 sur `slot 1 program @60: last 0x1C @100`, comme écrit ; arcs non commités jusqu'à D7) : les arcs A6 et A8 écrits avant le code, avec toutes les
   valeurs ci-dessous, lancés sur le code actuel (`74df40e`). Rouges attendus : A6 échoue dans sa limite en
   nommant `slot 1 program @228: last 0x00 @479` ; A8 échoue dans sa limite en nommant
   `slot 1 program @60: last 0x1C @100` (le message donne l'image de la dernière exécution, pas 253).
-- **D1 — Support d'arcs** ⏳ (tests seulement) :
+- **D1 — Support d'arcs** ✅ (faite le 2026-10-01 ; TH1 à TH3 rouges d'abord, puis verts du premier coup ; les 2064 tests existants gardent leurs valeurs avec le vrai héros ; A8 atteint `0x11 @201` à l'image 941 puis échoue sur `0x41 @56`, `0x41 @728`, `0x40 @731`, `0x24 @183`, comme écrit) (tests seulement) :
   - **vrai héros** : en mode `Prefabs`, le héros est le préfab d'Alundra créé par l'appel de production
     (`World.SpawnEntity<Entity>(HeroPrefabId)`, puis `Initialize()`, puis le `AlundraPlayerController`
     existant) ; on garde l'application de l'en-tête, la resynchronisation du masque, l'animation 0 forcée,

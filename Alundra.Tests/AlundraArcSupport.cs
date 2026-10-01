@@ -79,6 +79,8 @@ internal sealed class ArcRun : IDisposable
     private readonly Dictionary<(int Slot, int ProgramStart), ArcInstruction> _lastByProgram = new();
     private readonly string _previousProjectPath;
     private uint _hold;
+    private uint _held;
+    private uint _heldPreviousFrame;
     private readonly World? _realWorld;
 
     public ArcSpec Spec { get; }
@@ -105,6 +107,10 @@ internal sealed class ArcRun : IDisposable
     /// <summary>Called right after every instruction is recorded (so its effects are already applied): the seam
     /// to sample positions at an exact pc.</summary>
     public Action<ArcInstruction>? OnInstruction { get; set; }
+
+    /// <summary>E19.d: called at the end of every frame (<see cref="Frame"/> already incremented), the seam of the per-frame
+    /// invariants (a position that must not change between two pcs).</summary>
+    public Action? OnFrame { get; set; }
 
     public static AlundraGameState State => AlundraGameState.Instance;
 
@@ -153,7 +159,11 @@ internal sealed class ArcRun : IDisposable
                 // physics world (the controller needs one), both before InitializeWithWorld.
                 world.Game!.ExecutionPolicy = GameplayExecutionPolicies.Runtime;
                 HeroWorldFixture.SetProperty(world, nameof(World.PhysicsWorld), new PhysicsWorld(false, new TopDownElevationSimulationSpacePolicy()));
-                heroEntity = AddControllerHeroPawn(world, HeroWorldFixture.LoadHeroControllerSettings(root));
+                // E19.d (TH1): in Prefabs mode the hero is the export's prefab, spawned by the production call, with its animated
+                // sprite on the logical clock; otherwise a box and a controller built by hand.
+                heroEntity = spec.Prefabs
+                    ? AddPrefabHeroPawn(world, root)
+                    : AddControllerHeroPawn(world, HeroWorldFixture.LoadHeroControllerSettings(root));
                 _realWorld = world;
             }
             else
@@ -162,7 +172,11 @@ internal sealed class ArcRun : IDisposable
             }
 
             var controller = world.PlayerControllers.OfType<AlundraPlayerController>().Single();
-            controller.PadStateProviderForTests = () => new AlundraPadState { ButtonsHold = _hold, ButtonsJustPressed = _hold };
+            controller.PadStateProviderForTests = () => new AlundraPadState
+            {
+                ButtonsHold = _hold | _held,
+                ButtonsJustPressed = _hold | (_held & ~_heldPreviousFrame),
+            };
 
             Proxy = new AlundraWorldProxy();
             Proxy.InitializeWithWorld(world);
@@ -238,6 +252,8 @@ internal sealed class ArcRun : IDisposable
 
     private static void ResetAll()
     {
+        // E19.d (TH2): the shared random stream of the arcs starts from its seed (in game its position depends on the draws made before).
+        AlundraRandom.Reset();
         ResetSingletons();
         AlundraEtcStringTable.ResetForTests();
         AlundraSaveBook.Instance.ResetForTests();
@@ -304,6 +320,8 @@ internal sealed class ArcRun : IDisposable
 
         Proxy.Update(0.02f);
         Frame++;
+        _heldPreviousFrame = _held;
+        OnFrame?.Invoke();
     }
 
     /// <summary>One frame with a pad button held (and just pressed) during it.</summary>
@@ -312,6 +330,26 @@ internal sealed class ArcRun : IDisposable
         _hold = button;
         OneFrame();
         _hold = 0;
+    }
+
+    /// <summary>E19.d: holds <paramref name="directions"/> (pad bits) on every following frame until <see cref="ReleaseDirections"/>;
+    /// only the first frame reports them as just pressed. <see cref="Press"/> keeps its meaning (one frame, pressed and held).</summary>
+    public void HoldDirections(uint directions) => _held = directions;
+
+    /// <summary>E19.d: lets go of the directions held by <see cref="HoldDirections"/>.</summary>
+    public void ReleaseDirections() => _held = 0;
+
+    /// <summary>E19.d: places the hero at a pixel position of the map during an arc: <c>Pos*</c> and <c>Tile*</c> together
+    /// (<c>TileZ = PosZ &gt;&gt; 20</c>), then the root, like the placement of the constructor.</summary>
+    public void PlaceHero(int pixelX, int pixelY, int pixelZ)
+    {
+        Hero.PosX = pixelX << 16;
+        Hero.PosY = pixelY << 16;
+        Hero.PosZ = pixelZ << 16;
+        Hero.TileX = pixelX / 24;
+        Hero.TileY = pixelY / 16;
+        Hero.TileZ = Hero.PosZ >> 20;
+        Hero.PushLogicalPositionToRoot();
     }
 
     /// <summary>Frames until <paramref name="done"/> holds, or fails at the arc's frame limit naming the last
@@ -357,6 +395,30 @@ internal sealed class ArcRun : IDisposable
         }, signal);
     }
 
+    /// <summary>E19.d: frames until <paramref name="done"/> holds, pressing Square on EVERY frame that starts with a dialogue open
+    /// (from the frame that follows the opening to the one that closes it: as many presses as pages), like a player who never lets
+    /// go of the button. <see cref="CloseDialogueWithTheButton"/> alternates a press and a frame without the button and stays as it
+    /// is for the arcs that pinned it. Fails at the arc's frame limit.</summary>
+    public void RunUntilPressingTheButtonOnEveryDialogueFrame(Func<bool> done, string signal)
+    {
+        while (!done())
+        {
+            if (Frame >= Spec.FrameLimit)
+            {
+                throw new XunitException(StuckMessage(signal));
+            }
+
+            if (AlundraDialogueDirector.Instance.IsOpen)
+            {
+                Press(AlundraPadState.Square);
+            }
+            else
+            {
+                OneFrame();
+            }
+        }
+    }
+
     /// <summary>The hero pawn of <see cref="ArcSpec.RealController"/> mode: the box of the export's hero (21x15x32, local
     /// (0.5, 0.5, 16)) and a <see cref="CharacterControllerComponent"/> with the export's settings, added to the world
     /// (which registers it with the motion system), then possessed by a real player controller.</summary>
@@ -382,11 +444,27 @@ internal sealed class ArcRun : IDisposable
         entity.Initialize();
         world.AddEntity(entity);
 
+        PossessWithAPlayerController(world, entity);
+        return entity;
+    }
+
+    /// <summary>E19.d (TH1): the hero of the <see cref="ArcSpec.Prefabs"/> mode - the export's prefab <c>Alundra.entity</c>, created by the call
+    /// production makes for the default pawn (<c>World.SpawnEntity</c>, <c>World.InitializePlayerControllers</c>), initialised (its script
+    /// proxy exists, as <c>AdoptPlayerPawn</c> needs) and possessed by a real player controller.</summary>
+    private static Entity AddPrefabHeroPawn(World world, string root)
+    {
+        var pawn = world.SpawnEntity<Entity>(HeroPrefabId(root));
+        pawn.Initialize();
+        PossessWithAPlayerController(world, pawn);
+        return pawn;
+    }
+
+    private static void PossessWithAPlayerController(World world, Entity pawn)
+    {
         var controller = new AlundraPlayerController();
-        controller.Possess(entity);
+        controller.Possess(pawn);
         var field = typeof(World).GetField("_playerControllers", BindingFlags.Instance | BindingFlags.NonPublic)!;
         ((List<PlayerController>)field.GetValue(world)!).Add(controller);
-        return entity;
     }
 
     private static Guid HeroPrefabId(string root)
