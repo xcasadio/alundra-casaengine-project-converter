@@ -794,8 +794,22 @@ temporaire `Alundra.Tests/ZzDiagE19SailorTests.cs`, non commité) :
   - en-tête réel du marin, masque `WalkabilityMaskFor(Flags)` ;
   - les codes réels de C[12] `@1438-1494`, suivis de `0xFF`.
 
-  Le lancer sur le code actuel. Il doit échouer parce que la marche ouest 72 (`0x1F @1491`) se termine
-  au tick même où elle commence, sans déplacement. Consigner le constat, sans rien committer.
+  Les codes sont suivis de l'instruction `@1494` (`0x5B [128,0,64]`, qui arrête le marin), puis de `0xFF`.
+
+  **Valeurs attendues, écrites avant le code** (calcul sur les cellules de la 389) :
+  - la marche sud 48 finit contre la rangée 53, dont les cellules (22,53) et (23,53) sont des murs, au
+    contact y = 842,0 (le bord lointain du marin, y + 6, touche la frontière 848) ;
+  - la marche ouest 72 part de x = 540,875 sur la rangée 52, libre de x = 17 à 23 à la hauteur 8 du
+    marin. Elle avance de 1,875 px par tick (vitesse 160 sur X) et se termine par la distance au 39e
+    tick ;
+  - position finale du marin : **(467,75 ; 842,0)** exactement ;
+  - **condition de fin** : le programme exécute `@1494` puis `0xFF` ;
+  - **limite** : 450 images à dt 0,02 (le diagnostic atteint la fin de la marche sud 48 à l'image 313).
+    Au-delà, le test échoue en nommant le dernier (pc, opcode) exécuté.
+
+  Le lancer sur le code actuel : il doit échouer parce que la marche ouest 72 (`0x1F @1491`) se termine
+  au tick même où elle commence, laissant le marin en x = 540,875. Consigner le constat, sans rien
+  committer. Un écart avec ces valeurs après T1 est un arrêt : il ne s'épingle pas.
 - **T1 — La règle** : dans `AlundraEntityScriptProxy.MoveControllerAndPullPosition` (`:1792-1796`),
   `ForceAdjusted = 1` seulement si, sur un axe, |demandé| > 0,01 et |obtenu| ≤ 0,01.
   - Mettre à jour la doc de `ForceAdjusted` (`:168-196`, dont l'écart D-E19-10, maintenant levé) et celle
@@ -803,8 +817,8 @@ temporaire `Alundra.Tests/ZzDiagE19SailorTests.cs`, non commité) :
   - Tests unitaires : un pas raccourci mais avancé ne lève pas le drapeau ; un pas sans avance le lève ;
     les deux axes sont jugés séparément ; un reste de moins de 0,01 px compte comme « sans avance ».
 - **T2 — Le marin 12 et les épingles** :
-  - le test de T0 passe : la marche ouest 72 se fait, et la position finale est épinglée à la valeur
-    mesurée ;
+  - le test de T0 passe avec les valeurs écrites en T0 : le programme atteint `@1494` puis `0xFF` dans
+    sa limite, et le marin finit en (467,75 ; 842,0) exactement ;
   - les traces du héros ne changent que dans la colonne `forceAdjusted`, à la première image de contact :
     98 devient 0 et le premier 1 passe à 99 (spawn) ; de même 39 devient 0 et le premier 1 passe à 40
     (highground) ;
@@ -819,7 +833,8 @@ temporaire `Alundra.Tests/ZzDiagE19SailorTests.cs`, non commité) :
   capture 2) ; puis la cabine, Alundra se couche, et la 476 se charge.
 
 **Acceptation d'E19.a3.**
-1. Le test du marin 12 échouait sur l'ancien code, avant T1, et passe après.
+1. Le test du marin 12 échouait sur l'ancien code, avant T1 (marin laissé en x = 540,875). Après, il
+   atteint `@1494` puis `0xFF` en moins de 450 images, et le marin finit en (467,75 ; 842,0).
 2. Les traces du héros ne changent que dans la colonne `forceAdjusted`, aux deux images annoncées. Les
    seules épingles qui bougent sont celles de T2.
 3. `Alundra.Tests` et les tests du convertisseur passent à 0 échec, A1c compris. Le moteur ne change pas.
