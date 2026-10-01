@@ -886,6 +886,137 @@ l'original jusqu'au glissement (E19.h).
   | Au bord de l'epsilon, la nouvelle règle diffère de l'ancienne dans deux cas étroits : une demande entre 0,01 et 0,02 px, et un recul de plus de 0,01 px. | P4 | Accepté. |
   | La preuve rouge du test du marin n'est pas dans l'historique : la règle est commitée avant le test. | P4 | Accepté : le verifier l'a reproduite à part. |
 
+### 1.2d E19.b — Carte 476 : la vision de Lars et Melzas ⏳ (proposée le 2026-10-01)
+
+**But.** La vision se joue jusqu'au bout. À l'aller (`G1640`), la 476 ouvre ses trois boîtes puis part vers
+la 478 (arc A2). Au retour (`G1641`), elle déplace la caméra par le bloc transparent, ouvre ses huit boîtes
+puis part vers la 392 (arc A4).
+
+**Faits établis** (découverte en lecture seule du 2026-10-01, trois volets contre-vérifiés ; scratchpad
+`e19b/`) :
+
+- **`0xC4`** (`0x80041DA8`, taille 6) **[binaire]** :
+  - opérandes : v1 recherche du locuteur, v2 | v3<<8 nom, v4 texte, v5 mode ;
+  - il rend 0 tant qu'un dialogue est ouvert, sinon ouvre la boîte et rend 6 au même tick. Il n'attend
+    jamais la fermeture et n'écrit pas `Result` ;
+  - la recherche du locuteur n'a aucun effet observable : E19.b ne l'évalue pas (D-E19-5).
+  - **Portage** : `OpenDialog(v[4], v[5], 6, …)`, le même chemin que `0x0D` et `0x5C`
+    (`AlundraEventProgramRunner.cs:748-755`, `:828-831`, `:1445-1468`).
+  - **Corpus** : 31 sites dans 11 cartes. Les 31 nœuds Yarn existent, tous en mode 1 et en table de
+    carte.
+  - **Portée** : dix autres cartes (25, 76, 84, 95, 161, 226, 274, 347, 411, 432) ouvriront désormais leurs
+    boîtes. `0x5C` n'a aujourd'hui aucun test direct.
+- **`0x4C`** reste sauté, comme le prévoit l'enveloppe : il ne sert qu'à la machine à écrire (E12.c), et
+  chaque ouverture de dialogue le remet à 3.
+- **`0x8A`** (`0x80040284`, taille 8) **[binaire]** :
+  - il fait apparaître l'enregistrement v1 sans test de zone, avec l'entité logique pour parent ;
+  - puis il écrit `PosX = X << 16`, `PosY = Y << 16` et `PosZ = (Z << 16) + 1`, X, Y et Z étant des
+    entiers de 16 bits absolus. Il n'écrit pas `Result` ;
+  - un échec d'apparition est fatal dans l'original. La DLL le journalise et continue.
+  - **Portage** : le chemin de `0x8B` (`SpawnEntityByRecordId`, puis `PushLogicalPositionToRoot`).
+  - **Sites de la 476** : B1 `@63` (bloc caméra, enregistrement 1, en (972, 112, 48)) et B5 `@553`
+    (Rancune, enregistrement 0, en (792, 176, 48)) ; le site `@534` est mort.
+  - **Corpus** : 684 sites dans 69 cartes ; 191 sont dans des boucles qui supposent la réutilisation des
+    emplacements d'entités, absente de la DLL. C'est une limite connue, notée pour E14 et E19.m.
+- **Déroulé de la 476** : six événements de carte, B1 à B6, sans programme d'entité.
+  - Les seules barrières sont `G1640` et `G1641`, T999 (posé par le nœud Yarn à l'ouverture), la poignée
+    de main T1000 entre B4 et B2, les attentes `0x37` et `0x39`, et, en A4, quatre marches `0x1E` du bloc.
+  - Les onze boîtes passent par le sous-programme `@112` et se ferment par le script, environ 61 ticks
+    après leur ouverture : aucun bouton n'est nécessaire.
+  - Après E19.b, restent sautés : `0x4C @112`, `0x92`, `0x93` et `0xA2` (effets, E19.g ; aucun ne
+    suspend).
+  - Dans la DLL, les drapeaux T1001 à T1005 tombent ensemble à l'ouverture. Certains éclairs blancs
+    (`0xAF`) et effets de B2 ne se jouent donc pas : c'est cosmétique, jusqu'à la machine à écrire.
+- **Le bloc** : 24×16×32, avec un contrôleur, collidable. Toutes les cellules de la 476 sont praticables
+  (walkability 0) : rien ne peut l'arrêter. Ses panoramiques font 48 px à 0,75 px par tick.
+- **Latence d'animation (O-E19-5)**, tranchée par le binaire **[binaire]** :
+  - l'original exécute dans l'ordre les événements de carte, les entités, `UpdateAnimation` puis la
+    physique (`0x8002E100`, `0x8003B388` → `0x8003B3D8` → `0x8003B3E0`). Un changement d'animation par
+    script s'applique donc dans la physique du même tick ;
+  - la DLL a une image de retard : c'est la cause du pas de 1,25 px du marin 12 ;
+  - chaque panoramique du bloc fera 48,75 px au lieu de 48. La correction reste dans E19.c.
+- **Arcs** : 1 tick logique par image à dt 0,02, donc des comptes d'images exacts.
+  - A2 : environ 1209 images ;
+  - A4 : environ 2059 images.
+
+**Tâches.**
+
+- **T0 — Preuves rouges** : écrire les arcs A2 et A4 en mode nu, avec les valeurs ci-dessous écrites avant
+  le code, puis les lancer.
+  - **A2** : carte 476, drapeau `G1640` (mot 51 : 256), héros en (0,0,3), limite de 1500 images.
+    - Fin : `0x53 @758`, arrivée sur la 478 en `PosX` 35389440, `PosY` 60293120, `PosZ` 1048576, effet 2.
+    - À la fin, `G1640` éteint et `G1641` posé.
+    - Le bloc (enregistrement 1) apparaît à l'instruction `@63` en (972 << 16, 112 << 16, (48 << 16) + 1).
+      À `@71`, la caméra le suit.
+    - Trois boîtes s'ouvrent, aux pc 622, 632 et 739, sur les nœuds `M476_S101`, `S102` et `S103` (texte
+      échantillonné à l'ouverture). Chacune se ferme par le script, sans bouton.
+  - **A4** : drapeau `G1641` (mot 51 : 512), héros en (0,0,0), limite de 2500 images.
+    - Fin : `0x53 @986`, arrivée sur la 392 en `PosX` 46399488, `PosY` 14155776, `PosZ` 4194304, effet 4.
+    - Huit boîtes : `0xC4` aux pc 786, 820, 842 et 873, `0x5C` aux pc 810, 832, 854 et 974, nœuds
+      `M476_S104` à `S111`.
+    - Les quatre marches `0x1E @84` et `@101` (deux fois chacune) se terminent : le bloc a bougé d'au moins
+      48 px à chaque fois. L'écart au-delà de 48 px n'est pas épinglé tant qu'O-E19-5 n'est pas corrigé.
+    - Rancune (enregistrement 0) apparaît à `@553` en (792 << 16, 176 << 16, (48 << 16) + 1).
+  - **Pour les deux arcs** : aucun opcode sauté hors de {`0x4C`, `0x92`, `0x93`, `0xA2`} ; `0xC4` et `0x8A`
+    jamais sautés ; aucun dépassement de la garde.
+  - **Rouge attendu** : sur le code actuel, les deux arcs échouent dans leur limite en nommant `0x36 @116`.
+    Après T1, A2 passe et A4 échoue en nommant `0x1E @84`. Après T2, A4 passe. Ces constats sont consignés.
+- **T1 — `0xC4`** : le cas dans `Dispatch`.
+  - Tests unitaires :
+    - positions des opérandes, avec des nœuds leurres : une lecture décalée ouvrirait un autre texte ;
+    - taille 6, et rend 0 tant qu'une boîte est ouverte ;
+    - mode 0 → `MenuOpen`, mode 1 → `MessageBox` ;
+    - `Result` inchangé ; chemin dégradé sans présentateur ;
+    - le premier test direct de `0x5C`, dans le même `Theory`.
+  - Test de corpus : les 31 sites, chacun ouvrant un nœud qui existe.
+  - Miroir `ImplementedOpcodes` et sélecteur `textId` du harnais de l'intro.
+- **T2 — `0x8A`** : le cas et une petite méthode à côté de celle de `0x8B`.
+  - Un échec est journalisé en avertissement, une seule fois par (opcode, enregistrement).
+  - Tests unitaires : position, `+1` sur Z seul, parent = entité logique, octet fort des 16 bits, échec sans
+    exception (taille 8, aucune écriture de position), deux apparitions du même enregistrement, `0x8A` puis
+    `0x67`.
+  - Miroir du harnais. Commentaires périmés : l'aide de `0x8B`, `IEntityWorldContext.cs:59`,
+    `AlundraWorldProxy.cs:~2419`.
+- **T3 — Les arcs** : A2 et A4 passent avec les valeurs de T0 ; ils sont commités.
+- **T4 — Hygiène reportée par E19.a et E19.a3** :
+  - le constructeur d'`ArcRun` : `FindProjectRoot` et l'option de caméra sont placés dans le `try`, et
+    son test vérifie aussi l'option de caméra ;
+  - commentaires : test `LoopGuard_ALoopWithAWait`, `0x3B`/`0x3E` (« entité qui exécute »),
+    `EntitySearchService.cs:31`, doc de `ProductionLoopBudget`, place du commentaire des 23 opcodes
+    d'`ImplementedOpcodes`, message dégradé de `0x42` (« `Result = 0` »), en-tête du test du marin 12
+    (`@1484`) ;
+  - textes en retard : `docs/intro-roadmap.md` vers `:101`, `docs/plan-e4-deplacement-scripte.md:411`,
+    `docs/plan-oracle-heros.md:233`, résumé de D-E19-10 au §0.1, O-E19-5 mis à jour avec le constat du
+    binaire.
+- **T5 — Docs** : statuts de ce plan, ligne E19 du plan maître.
+- **T6 — Recette en jeu (auteur)** :
+  1. **A2, en jouant.** Après la cabine, la 476 montre trois boîtes sans nom, d'environ 1,2 s chacune, et
+     la caméra sur la salle de la vision. Puis la 478 se charge. Elle ne va pas plus loin : c'est E19.c.
+  2. **A4, par raccourci.** F6, puis dans `debug-json.sav` : `initialMapId` 476, `cameraTile` (0,0,0),
+     `gameFlags[51] |= 512`, puis F9. On voit huit boîtes, la caméra glisse vers l'ouest puis l'est, et la
+     392 se charge.
+
+**Acceptation d'E19.b.**
+1. Les deux arcs échouaient comme annoncé avant T1 et T2, et passent avec les valeurs de T0.
+2. Les tests unitaires de T1 et T2 passent, ainsi que le test de corpus.
+3. `Alundra.Tests` et les tests du convertisseur passent à 0 échec ; le moteur ne change pas.
+4. Un verifier frais rend CONFIRMED sur 1 à 3.
+5. La recette T6 de l'auteur.
+
+**Risques.**
+- Chaque boîte reste ouverte environ 1,2 s, sans machine à écrire. Ce rythme est accepté depuis D-E19-5,
+  jusqu'à E12.c.
+- Dix autres cartes ouvrent désormais leurs boîtes `0xC4` : intros de boss, Inoa, sanctuaire du lac. Aucun
+  arc ne les couvre. Un opcode non porté plus loin dans leurs scènes peut maintenant y bloquer : on le
+  verra en jouant.
+- `0x8A` passe en vrai dans 69 cartes. La DLL n'a pas de plafond de 63 entités ; les boucles qui font
+  apparaître des entités en grand nombre attendent E14 ou E19.m.
+- Le bloc a un vrai contrôleur en jeu, mais il est nu dans les arcs. Les données excluent tout blocage
+  (cellules toutes praticables), et la recette le confirmera.
+- A4 n'est pas atteignable en jouant avant E19.c : la 478 doit d'abord renvoyer vers la 476.
+
+**Revues** : plan-verifier sur cette section, avant approbation ; verifier frais après exécution.
+
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
 Chaque arc part d'une carte chargée seule, avec des drapeaux posés et le héros placé. Les valeurs
