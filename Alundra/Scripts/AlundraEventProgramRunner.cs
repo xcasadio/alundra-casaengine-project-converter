@@ -830,6 +830,14 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // deferred portrait/name box (E12.c) - ignored for display here, per plan.
                 return OpenDialog(v[2], v[3], instructionSize: 4, opcode: 0x5C, opcodeName: "DialogWithEntity");
 
+            case 0xC4: // Dialog with speaker search - Script_196_0C4 @ 0x80041DA8 (E19.b, docs/plan-e19-opcodes.md
+                       // §1.2d, D-E19-5): v1 = speaker search, v2 | v3 << 8 = name index, v4 = textId, v5 =
+                       // controlMode. Same open semantics as 0x0D/0x5C (retry, return 0, while a box is open;
+                       // otherwise opens and returns the size 6 at the same tick; never waits for the close,
+                       // never writes Result). The speaker search, the name and the portrait have no
+                       // observable effect without the name box, so v1, v2 and v3 are ignored until E19.f.
+                return OpenDialog(v[4], v[5], instructionSize: 6, opcode: 0xC4, opcodeName: "DialogWithSpeaker");
+
             case 0x49: // Restart - Script_73_049 (EntityEventHandlers.cs:1454-1459): unconditional jump
                        // back to Parameters[0] (this program's own start CodeIndex, set once by
                        // InitializeEventData - see that method's own doc). Same

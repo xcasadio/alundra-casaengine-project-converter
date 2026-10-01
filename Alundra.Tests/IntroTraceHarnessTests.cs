@@ -325,6 +325,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         0x0D, 0x12, 0x39, 0x44, 0x50, 0x51, 0x53, 0x5C, 0x75, 0x9B, 0x9C, 0xA5, 0xA6, 0xA7, 0xA8, 0xAB,
         0xAF, 0xB0, 0xB1, 0xBA, 0xBD, 0xBE, 0xBF,
         0x42, 0x43, 0x59,
+        0xC4, // E19.b T1 (dialogue with a speaker search, without the name box).
         // E16.a T6 (docs/plan-e16-etat-partie.md, contract item 4): the 23 opcodes on the line above were
         // ported by earlier slices (dialogue, map change, HUD, audio, ...) and already have a Dispatch
         // case, but were never added here - the same staleness the notes below describe. Checked by
@@ -1579,6 +1580,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         {
             0x0D when parameters.Length >= 1 => (int)parameters[0],
             0x5C when parameters.Length >= 2 => (int)parameters[1],
+            0xC4 when parameters.Length >= 4 => (int)parameters[3], // E19.b: v[4] is the text id.
             _ => -1,
         };
 

@@ -987,7 +987,7 @@ puis part vers la 392 (arc A4).
     | Après T2 (`0x8A`) | passe | passe |
 
     Ces constats sont consignés.
-- **T1 — `0xC4`** : le cas dans `Dispatch`.
+- **T1 — `0xC4`** ✅ : le cas dans `Dispatch` (fait le 2026-10-01 ; tests dans `AlundraDialogueSpeakerOpcodeTests`, 11 tests dont le corpus 31 sites / 11 cartes ; rouge d'A2 et d'A4 après T1 conforme à la table).
   - Tests unitaires :
     - positions des opérandes, avec des nœuds leurres : une lecture décalée ouvrirait un autre texte ;
     - taille 6, et rend 0 tant qu'une boîte est ouverte ;
