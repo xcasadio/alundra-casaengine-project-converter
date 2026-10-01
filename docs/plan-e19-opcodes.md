@@ -1961,7 +1961,7 @@ et A8 restent hors du dépôt jusqu'à D7 ; d'ici là, les lancements de toute l
 - **D2 — Défaut d'atterrissage** ✅ (faite le 2026-10-01 ; rouge du test unitaire : PosY n'avance pas du tout (6553600 au lieu de 8650752), vert après le correctif ; les deux jumeaux passent ; A6 (non commité) passe du premier coup avec toutes ses valeurs ; suite complète sans A8 : 2071 réussis) : `wasAlreadyLanded` ne dépend plus de `ForceZ`
   (`PosZ == targetPosZ` suffit) ; l'entité qui reste posée n'est plus repoussée à chaque tick. Tests
   unitaires (valeurs plus bas), puis A6 passe.
-- **D3 — Arc A5 de la 392** ⏳ (avec A5r) : écrits et verts d'un coup (aucun opcode d'E19.d n'y joue).
+- **D3 — Arc A5 de la 392** ✅ (faite le 2026-10-01 ; A5 et A5r verts du premier coup, toutes les valeurs écrites égales : départ dans l'image 215 (A5) et 238 (A5r)) (avec A5r) : écrits et verts d'un coup (aucun opcode d'E19.d n'y joue).
 - **D4 — `0x24`** ⏳ : le cas, une ligne sur l'entité logique, sans détour ni minuterie (D-E19-6) ; tests
   unitaires U1 à U4. A8 échoue ensuite sur `0x41 @56`, `0x41 @728` et `0x40 @731`.
 - **D5 — Recensement des sites de `0x24`** ⏳ (D-E19-21) :
