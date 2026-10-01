@@ -862,6 +862,30 @@ lecteurs le voient donc au même tick que l'original : `0x1F`, `0x24`, le détou
 au choc et l'entrée sur une échelle. Les marches en diagonale contre un coin restent différentes de
 l'original jusqu'au glissement (E19.h).
 
+**Vérification d'E19.a3 (2026-10-01).**
+- **Commits** : `8a01fa1` (règle, tests unitaires, traces et épingles), `354b80a` (test du marin 12),
+  `eee8f76` (docs). Le pointeur du moteur ne change pas.
+- **Verifier frais : CONFIRMED.** `Alundra.Tests` 1921/1921 en Release, convertisseur 400/400. Dans un
+  arbre de travail jetable, avec l'ancienne règle remise :
+  - le test du marin 12 échoue (x = 540,875) ;
+  - 3 des 4 tests unitaires de la règle échouent.
+- **Traces** : chaque fichier ne change que d'une ligne, dans la colonne `forceAdjusted` (images 98 et 39).
+- **DLL déployée** : la dernière construction avait déployé la DLL Release, sans les touches de recette.
+  La DLL Debug est redéployée dans `alundra-project/`.
+- **Contradicteur en lecture seule** : aucun P0 à P2. Dispositions (signalé, jamais corrigé sur un
+  candidat CONFIRMED) :
+
+  | Constat | Priorité | Disposition |
+  |---|---|---|
+  | La règle n'est jamais testée sur l'axe Y ni en sens négatif à travers le vrai contrôleur : retirer le test de Y laisserait tout vert. | P3 | Reporté : test à ajouter avec la prochaine tranche qui touche aux marches (E19.c). |
+  | Le jugement par axe diffère encore du binaire sur une poussée en diagonale. L'original coupe le pas en deux puis glisse, et n'élève pas le drapeau si un demi-pas passe. | P3 | Connu : vient avec le glissement (E19.h, D-E19-9). |
+  | La position finale réelle du marin (y = 843,25) n'est pas épinglée. | P3 | Accepté : point ouvert O-E19-5 (E19.c). |
+  | Le commentaire d'en-tête du test du marin donne `@1487` pour la marche sud 48, qui est en `@1484`. | P4 | Reporté (hygiène). |
+  | Textes en retard : `docs/plan-e4-deplacement-scripte.md:411` (drapeau « un tick avant »), `docs/plan-oracle-heros.md:233` (« première image au mur reste 98 »), le résumé de D-E19-10 au §0.1. | P4 | Reporté à la prochaine passe de docs (E19.b). |
+  | L'ADR-0017 cite `0x24` parmi les lecteurs du drapeau, mais la DLL n'a pas encore ce cas. | P4 | Accepté : `0x24` arrive en E19.d. |
+  | Au bord de l'epsilon, la nouvelle règle diffère de l'ancienne dans deux cas étroits : une demande entre 0,01 et 0,02 px, et un recul de plus de 0,01 px. | P4 | Accepté. |
+  | La preuve rouge du test du marin n'est pas dans l'historique : la règle est commitée avant le test. | P4 | Accepté : le verifier l'a reproduite à part. |
+
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
 Chaque arc part d'une carte chargée seule, avec des drapeaux posés et le héros placé. Les valeurs
