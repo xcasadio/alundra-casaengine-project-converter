@@ -2018,7 +2018,7 @@ et A8 restent hors du dépôt jusqu'à D7 ; d'ici là, les lancements de toute l
   un avertissement une seule fois par opcode, taille rendue 3 (correction d'un défaut de l'original, qui
   écrirait hors du tableau). Tests unitaires U5 à U13 (sans U9).
   A8 passe ensuite.
-- **D7 — Arcs verts** ⏳ : A6 et A8 commités ; temps d'exécution relevés.
+- **D7 — Arcs verts** ✅ (faite le 2026-10-01 ; A6 et A8 commités avec toutes leurs valeurs écrites d'avance, sans en changer une ; table du rouge constatée : A8 après D4 échouait sur `0x41 @56`, `0x41 @728`, `0x40 @731` seuls, passe après D6 ; temps d'exécution en Debug : A6 environ 0,75 s, A8 environ 0,78 s, A5 environ 1 s, A5r environ 0,7 s, aucun arc près de 120 s) : A6 et A8 commités ; temps d'exécution relevés.
 - **D8 — Hygiène** ⏳ : miroir `ImplementedOpcodes` (`0x24`, `0x40`, `0x41`) ; libellés de la table des
   tailles ; la doc de `RunScript` sur l'effacement (le choix laissé au port de `0x40` est fait) ; la doc de
   T-D15 qui se contredit (P4 d'E19.c2) ; la ligne E19.j de l'enveloppe ne garde que le réarmement hors zone ;
