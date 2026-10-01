@@ -326,8 +326,12 @@ internal static class AlundraFrameSyncPasses
                 continue;
             }
 
+            // E19.c2 (P4 of E19.c1): a 0x1C relaunch from a map event leaves CurrentAnimationId = ~TargetAnimationId until the
+            // entity's next sync, while this pass runs right after the map events. The binary switches back to the target
+            // before drawing, so the key is the target's.
+            var animationId = proxy.CurrentAnimationId == ~proxy.TargetAnimationId ? proxy.TargetAnimationId : proxy.CurrentAnimationId;
             var idsv = 0;
-            var idsvKey = (int)proxy.CurrentAnimationId * AlundraEntitySpawnFactory.IdsvDirectionStride + proxy.AnimationDirection;
+            var idsvKey = (int)animationId * AlundraEntitySpawnFactory.IdsvDirectionStride + proxy.AnimationDirection;
             proxy.IdsvByAnimDirection?.TryGetValue(idsvKey, out idsv);
 
             WallPlacementOverlay.ApplyEntitySortKey(depthSortable, proxy.PosY, idsv);

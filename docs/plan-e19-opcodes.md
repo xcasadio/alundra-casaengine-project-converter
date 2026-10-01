@@ -1628,7 +1628,7 @@ moteur pour C0).
   `RepeatAnimation_0x1C_AHoldFlagHeldWithoutASyncBetweenCalls_CountsOnEveryCall_AndKeepsTheFlag`
   (`01 1C 02 FF`, drapeau tenu) passe de 0, 0, 2 à 0, 0, 0 ; après un changement, drapeau 0 et marque
   effacée ; avec le drapeau reposé à 1, le quatrième appel rend 2.
-- **C4 — Repli de la passe de tri** ⏳ et son test (T-D18).
+- **C4 — Repli de la passe de tri** ✅ *(fait le 2026-10-01 ; T-D18 rouge sans le repli, 6 au lieu de 22 pour l'élévation, puis vert)* et son test (T-D18).
 - **C5 — Hygiène reportée par E19.c1** ⏳ :
   - le libellé de `0x73` devient « Set loop counter _30 » ; la coquille « the / the » d'`EntitySearchService` ;
   - A7 vérifie à chaque image que le héros ne bouge pas, de `@421` à la fin ;

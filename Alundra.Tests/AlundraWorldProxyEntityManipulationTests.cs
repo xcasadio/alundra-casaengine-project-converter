@@ -281,4 +281,31 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
 
         Assert.Equal(123, depthSortable.Elevation);
     }
+
+    /// <summary>T-D18 (E19.c2, P4 of E19.c1): an entity relaunched by <c>0x1C</c> from a map event has <c>CurrentAnimationId</c> = ~<c>TargetAnimationId</c>
+    /// when this pass runs; its key is the one of the target animation (here animation 6 facing down, bias 3 rows of 16 px at 15 px of Y), not 0.</summary>
+    [Fact]
+    public void RunWallInterleaveSortKeyPass_ARelaunchedAnimation_UsesTheBiasOfTheTarget()
+    {
+        var entity = new Entity { Name = "e", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var depthSortable = new DepthSortable2DComponent { Elevation = 123 };
+        entity.AddComponent(depthSortable);
+        entity.Initialize();
+        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        proxy.PosY = 15 << 16;
+        proxy.AnimationDirection = 0;
+        proxy.TargetAnimationId = 6;
+        proxy.CurrentAnimationId = ~6u;
+        proxy.IdsvByAnimDirection = new Dictionary<int, int> { [6 * AlundraEntitySpawnFactory.IdsvDirectionStride + 0] = 3 };
+
+        AlundraFrameSyncPasses.RunWallInterleaveSortKeyPass(new List<Entity> { entity });
+
+        Assert.Equal(WallPlacementOverlay.ComputeEntityElevation(15 << 16, 3), depthSortable.Elevation);
+        Assert.NotEqual(WallPlacementOverlay.ComputeEntityElevation(15 << 16, 0), depthSortable.Elevation); // the bias is what makes the difference.
+
+        // The ordinary case is unchanged: a settled entity keys on its current animation.
+        proxy.CurrentAnimationId = 6;
+        AlundraFrameSyncPasses.RunWallInterleaveSortKeyPass(new List<Entity> { entity });
+        Assert.Equal(WallPlacementOverlay.ComputeEntityElevation(15 << 16, 3), depthSortable.Elevation);
+    }
 }
