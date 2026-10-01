@@ -1520,9 +1520,9 @@ scratchpad `e19c2/`) :
     D + 1 ; Chain (D1) puis Loop (D2) s + D1 + (n−1) × D2 + 1 ;
   - l'indice d'animation n'est jamais borné (`0x80038B18`-`0x80038B58`).
 - **Moteur** **[moteur]** : l'horloge des sprites est le temps réel en float32, avant les scripts. À 0,02 s
-  par image, 1010 des 4413 Once finissent un tick trop tôt, 3111 des 5205 Loop bouclent un tick trop
-  tard, et 197 ne bouclent jamais (cause et correction : plan moteur). Les délais entiers se retrouvent
-  exactement par arrondi.
+  par image, 1010 des 4413 Once finissent à la D-ième mise à jour (vue par les scripts un tick trop tôt) et
+  3403 à la (D+1)-ième ; 1897 des 5205 Loop bouclent à la D-ième, 3111 à la (D+1)-ième, et 197 jamais
+  (cause et correction : plan moteur). Les délais entiers se retrouvent exactement par arrondi.
 - **DLL** **[DLL]** :
   - le pont des fins est abonné à `AnimationFinished`, levé par le composant avant les scripts ; aucun
     signal de Loop ;
@@ -1556,8 +1556,10 @@ scratchpad `e19c2/`) :
   :
   - pour un PNJ, entre `RunPickedEvent` et `TickScriptedNpc` ; pour le héros, à chaque tick, avant
     `Tick(this, 1)` (qui ne tourne qu'avec un contrôleur), même sans contrôleur ;
-  - un changement en attente (relance de Chain ou cible différente de l'animation courante) **réserve le
-    tick** et efface le tick dû : l'ancienne animation n'avance pas et ne finit pas ;
+  - un changement en attente — `PendingChainRestartFlag` ≠ 0, ou `TryResolveAnimationTarget` qui
+    changerait l'animation, c'est-à-dire **une autre cible ou une autre direction**, comme le binaire
+    (`0x80038B08` et `0x80038B10`) — **réserve le tick** et efface le tick dû : l'ancienne animation
+    n'avance pas et ne finit pas ;
   - sinon, un tick dû est consommé sans avancer ;
   - sinon, `AdvanceLogicalTicks(1)` ; une fin Chain levée par cette avance réserve le tick ;
   - `SyncAnimation`, toujours en fin d'image : sur un changement sans tick réservé (image sans tick
@@ -1573,7 +1575,8 @@ scratchpad `e19c2/`) :
   - Hold et Chain restent sur `AnimationFinished`, levé désormais par la seule horloge logique : pas de
     double fin ;
   - quand la sélection d'animation échoue (animation absente du préfab), `SyncAnimation` relance
-    l'animation courante (`SetCurrentAnimation(…, forceReset: true)`). Pour les Flammes, c'est exactement
+    l'animation courante du composant quand il en a une (`SetCurrentAnimation(…, forceReset: true)`), et
+    ne fait rien sinon. Pour les Flammes, c'est exactement
     l'original : les images de l'animation 9 vers le bas sont celles de l'animation 0, reprises à l'image
     0, d'où la fin à s+13.
 - **Garde de `0x1C` sous rattrapage** : le drapeau Hold est invisible pour `RepeatAnimation` tant qu'un
@@ -1583,8 +1586,8 @@ scratchpad `e19c2/`) :
   carte), la passe de tri lit `TargetAnimationId` (P4 d'E19.c1).
 - **Clonage** : les nouveaux champs du proxy (sprite à horloge, ticks réservés, tick dû, marque de fin
   comptée) ne sont pas copiés.
-- **Écarts gardés** : le retard d'animation (D-E19-13) et son tick à vitesse nulle après un comptage Hold ;
-  sous rattrapage (2 ticks ou plus par image), des résidus bornés pour les programmes des événements de
+- **Écarts gardés** : le retard d'animation (D-E19-13) et son tick à vitesse nulle après un comptage Hold
+  (sous rattrapage, jusqu'à la fin de l'image, au plus k−1 ticks, comme le P3 d'E19.c1) ; sous rattrapage (2 ticks ou plus par image), des résidus bornés pour les programmes des événements de
   carte et pour les programmes C qui agissent sur une autre entité (`0x42`/`0x43`). Le rendu et la fin
   logique peuvent différer d'environ un tick (D-E19-17).
 
@@ -1594,12 +1597,23 @@ moteur pour C0).
 - **C0 — Moteur** ⏳ : exécuter le plan moteur (T0.1 à T3.1) sur sa branche. `CasaEngine.Tests` 0 échec,
   aucun test existant modifié.
 - **C1 — Preuves rouges** ⏳ (non commitées jusqu'à C6) : l'arc A9, le resserrement d'A3 et les tests
-  unitaires qui passent par des images, écrits avant le code de la DLL et lancés sur la DLL d'E19.c1
-  au-dessus du moteur de C0. Rouges attendus : table ci-dessous ; T-D1 rend 2 à s+24 au lieu de s+25 ;
-  T-D4, T-D5, T-D7, T-D16, T-D19 et T-D20 ne finissent jamais.
+  T-D1 à T-D16, T-D19 et T-D20 **à 1 tick par image seulement**, écrits avant le code de la DLL et lancés sur
+  la DLL d'E19.c1 au-dessus du moteur de C0 (le pointeur du sous-module est déplacé localement pour la
+  course, sans commit). Résultats attendus, test par test :
+  - **rouges** : T-D1 rend 2 à s+24 ; T-D3, T-D4, T-D5, T-D7, T-D10, T-D15, T-D16 et T-D19 ne finissent
+    jamais ; T-D20 finit sa première attente à s+16, sa seconde jamais ; T-D6 rend 2 à s+93 ; T-D8 à s+102
+    puis s+144 ; T-D11, T-D12 et T-D14 lisent un tick logique de 0 (et T-D14 un compteur de 0) ; T-D13 rend
+    2 à s+24, avec un tick de 0 ;
+  - **verts** : T-D2 (s+99) et T-D9 (s+25) ;
+  - A9 et A3 resserré : table ci-dessous.
+  Les colonnes 60 Hz et 2 t/i, TB1, TB2, TG2 à TG4 et T-D17 demandent le code de C2 : elles s'écrivent en
+  C2. T-D18 s'écrit en C4.
 - **C2 — Pointeur du moteur, pilotage et pont** ⏳ : le pointeur du sous-module sur la tête de la branche
   moteur ; `StepAnimationClock`, le tick dû, la compensation, l'effacement entre passes ; le pont (taux,
-  `AnimationLooped`, relance sur sélection échouée) ; leurs tests. A9 et A3 passent.
+  `AnimationLooped`, relance sur sélection échouée) ; TB1, TB2, TG2 à TG4, T-D17 et les colonnes 60 Hz et
+  2 t/i. A9 et A3 passent, ainsi que toutes les valeurs écrites, **sauf deux, annoncées** : sans la garde
+  de C3, T-D2 en 2 t/i rend 2 à s+33 (double comptage) et T-D3 en 2 t/i à s+5 (drapeau Hold périmé) ;
+  elles passent après C3.
 - **C3 — Garde de `0x1C`** ⏳ : la garde et ses tests. **Seul test existant qui bouge, annoncé** :
   `RepeatAnimation_0x1C_AHoldFlagHeldWithoutASyncBetweenCalls_CountsOnEveryCall_AndKeepsTheFlag`
   (`01 1C 02 FF`, drapeau tenu) passe de 0, 0, 2 à 0, 0, 0 ; après un changement, drapeau 0 et marque
@@ -1617,7 +1631,9 @@ moteur pour C0).
 
 **Valeurs écrites d'avance.** Sauf mention, 1 tick logique par image. La colonne « 60 Hz » suppose le motif
 de ticks [1,1,1,1,1,0] avec l'image s au début du motif (la première image à un tick après l'image sans
-tick) ; « 2 t/i » = 2 ticks par image.
+tick) ; « 2 t/i » = 2 ticks par image, le `0x1A` au premier tick de l'image s. Dans tous les tests où un
+`1A` lance l'attente, l'entité joue **une autre animation** avant s (par exemple une Loop de 7 ticks) : sans
+cela, `0x1A` ne change rien et l'attente dépend de la phase de l'animation déjà jouée.
 
 - **Pont et pilotage** :
   - **TB1** : `SubscribeAnimationEndBridge` met le sprite à 50 et le garde sur le proxy ; une levée
@@ -1629,9 +1645,12 @@ tick) ; « 2 t/i » = 2 ticks par image.
   - **TG3** : `SyncAnimation` avec un sprite à horloge : changement sans tick réservé → tick dû posé, tick 0 ;
     1 réservé → pas de tick dû, tick 0 ; 3 réservés → tick 2. Le compte des réservés revient à 0 après chaque
     appel, aussi sans changement et sur une entité à détruire ; la marque est effacée par tout changement.
+    Un sprite sans animation dont la sélection échoue au changement : aucune exception (les trois tests
+    `SyncAnimation_*` existants qui changent d'animation sur un tel sprite ne bougent pas).
   - **TG4** : `StepAnimationClock` : changement en attente → 1 réservé, tick dû effacé, tick inchangé ; tick
     dû sans changement → effacé, tick inchangé ; ni l'un ni l'autre → tick + 1 ; une avance qui lève une fin
-    Chain → 1 réservé et `PendingChainRestartFlag` 1 ; entité à détruire ou sans sprite à horloge → rien.
+    Chain → 1 réservé et `PendingChainRestartFlag` 1 ; entité à détruire ou sans sprite à horloge → rien ;
+    un changement de direction seul → 1 réservé, tick dû effacé, tick inchangé, aucune fin levée.
 - **Fins vues par `0x1C`** (programme C sauf mention ; s = image de l'instruction `1A`) :
 
   | Test | Programme et données | 1 t/i | 60 Hz | 2 t/i |
@@ -1672,9 +1691,11 @@ tick) ; « 2 t/i » = 2 ticks par image.
     (aujourd'hui 0).
 - **Arcs** (vrais préfabs ; ordre des vérifications : signal de fin, opcodes sautés ou dépassés, puis le
   reste) :
-  - **A3 resserré** : chaque `0x1A @856` s'exécute exactement 25 images après le `0x1A @852` qui le précède ;
-    deux `0x1A @852` successifs sont à 66 images l'un de l'autre jusqu'à T60 ; le premier `0x1A @856` à
-    l'image 26. Toutes les autres valeurs d'A3 restent celles d'E19.c1.
+  - **A3 resserré**, trois vérifications ajoutées à la fin d'A3, **dans cet ordre** : (1) le premier
+    `0x1A @856` s'exécute à l'image 26 ; (2) chaque `0x1A @856` s'exécute exactement 25 images après le
+    `0x1A @852` qui le précède ; (3) deux `0x1A @852` successifs sont à 66 images l'un de l'autre jusqu'à
+    T60. Toutes les autres valeurs d'A3 restent celles d'E19.c1. Sur la DLL d'E19.c1, les trois échouent
+    (25, 24, 65) : la première qui échoue est (1).
   - **A9** (nouveau) : `ArcSpec("A9", "Inoa", "Inoa (inner)-172", {}, héros en (36, 18, 2), limite 400,
     RealController, Prefabs)`.
     - Déroulé : après 2 images, l'arc pose `ActiveCollisionEntity` = l'enregistrement 4 (le déclencheur
@@ -1694,7 +1715,7 @@ tick) ; « 2 t/i » = 2 ticks par image.
 
   | Étape | A9 | A3 resserré |
   |---|---|---|
-  | Après C0 (moteur seul, DLL d'E19.c1) | échoue dans sa limite en nommant `slot 2 program @504: last 0x1C @539` | échoue : `@856` 24 images après `@852` (attendu 25) |
+  | Après C0 (moteur seul, DLL d'E19.c1) | échoue dans sa limite en nommant `slot 2 program @504: last 0x1C @539` | échoue sur (1) : premier `0x1A @856` à l'image 25 (attendu 26) |
   | Après C2 | passe | passe |
   | Après C3 et C4 | passe | passe |
 
@@ -1741,6 +1762,22 @@ et une course Debug ; la DLL déployée dans `alundra-project/` est la Debug.
 
 **Revues** : plan-verifier sur cette section et sur le plan moteur, avant approbation ; verifier frais après
 exécution.
+
+**Relectures du 2026-10-01.**
+- **Plan-verifier** (`5399bac` et moteur `9c191381`) : **REVISE**, deux P2 : les rouges de C1 ne couvraient
+  pas tous les tests écrits (T-D2 et T-D3 manquaient), et la case rouge d'A3 resserré ne fixait pas l'ordre
+  de ses trois nouvelles vérifications.
+- **Audit indépendant des valeurs, en parallèle** : toutes les valeurs du moteur (R1 à R4, L1 à L16), de la
+  table T-D, d'A3 resserré et d'A9 recalculées et confirmées par un modèle propre. Trois P2 : la liste des
+  rouges de C1 ; le moteur ne disait pas ce que fait l'horloge sans animation courante, état où la DLL pose
+  le taux à l'apparition ; le changement de direction manquait à la définition d'un changement en attente.
+  Des P3 : préconditions des tests (autre animation avant s, `0x1A` au premier tick en 2 t/i), rouges de
+  T-D2 et T-D3 en 2 t/i entre C2 et C3, relance sur sélection échouée sans animation courante, règle de
+  `Seek`. Des P4 : formulation des comptes du moteur, vitesse nulle sous rattrapage, valeur rendue de L4,
+  borne de la grille.
+- **Tous intégrés** : liste complète des résultats attendus en C1 et en C2, ordre des vérifications d'A3
+  resserré et sa case rouge, règles « sans animation » et `Seek` du plan moteur avec le test L17, direction
+  dans le changement en attente (cas de TG4), précondition des tests, cas sans animation de TG3, formulations.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
