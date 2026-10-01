@@ -713,7 +713,12 @@ public class AlundraEntityScriptProxy : GameplayProxy
                         // after its own first round-trip), silently re-triggering the SAME truncating X/Y
                         // write above every single tick regardless of the skip.
                         var targetPosZ = terrainHeight - ModZ;
-                        var wasAlreadyLanded = PosZ == targetPosZ && ForceZ == 0;
+                        //
+                        // E19.d D2 (docs/plan-e19-opcodes.md §1.2g): "already landed" depends on the position ALONE. An entity WITHOUT
+                        // gravity that rests here keeps its negative ForceZ (the binary's ComputeZPosition, 0x800375E0, zeroes it only
+                        // with gravity), and the former `&& ForceZ == 0` made it re-push its position every tick, the truncating write
+                        // above: a walk of less than one pixel per tick never advanced (the camera block of map 391, 0.5 px per tick).
+                        var wasAlreadyLanded = PosZ == targetPosZ;
 
                         PosZ = targetPosZ;
                         CollidedWithEntityZ = 0;

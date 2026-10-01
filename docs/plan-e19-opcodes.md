@@ -1958,7 +1958,7 @@ et A8 restent hors du dépôt jusqu'à D7 ; d'ici là, les lancements de toute l
     `RealHero` de l'`ArcSpec`, réservé à A5, A6 et A8.
   - Après D1, A8 atteint `0x11 @201` vers l'image 941 puis échoue sur les opcodes sautés, qui contiennent
     `(1,183,0x24)`, `(0,56,0x41)`, `(2,728,0x41)` et `(2,731,0x40)`.
-- **D2 — Défaut d'atterrissage** ⏳ : `wasAlreadyLanded` ne dépend plus de `ForceZ`
+- **D2 — Défaut d'atterrissage** ✅ (faite le 2026-10-01 ; rouge du test unitaire : PosY n'avance pas du tout (6553600 au lieu de 8650752), vert après le correctif ; les deux jumeaux passent ; A6 (non commité) passe du premier coup avec toutes ses valeurs ; suite complète sans A8 : 2071 réussis) : `wasAlreadyLanded` ne dépend plus de `ForceZ`
   (`PosZ == targetPosZ` suffit) ; l'entité qui reste posée n'est plus repoussée à chaque tick. Tests
   unitaires (valeurs plus bas), puis A6 passe.
 - **D3 — Arc A5 de la 392** ⏳ (avec A5r) : écrits et verts d'un coup (aucun opcode d'E19.d n'y joue).
