@@ -297,4 +297,212 @@ public class AlundraRepeatAnimationOpcodeTests
         Assert.Equal(1, proxy.ForceResetAnimationFlag);
         Assert.Equal(2, proxy.AnimCompleteCounter);
     }
+
+    // -----------------------------------------------------------------------------------------
+    // E19.c2: the switch and the logical clock (TG3, TG4)
+    // -----------------------------------------------------------------------------------------
+
+    private static Animation2d MakeAnimation(uint id, AnimationType type, float seconds)
+    {
+        var data = new Animation2dData { Name = $"bank_anim{id}_down", AnimationType = type };
+        data.Parts.Add(new Animation2dPartData { Id = "body" });
+        data.CollisionKeyframes.Add(new Animation2dCollisionKeyframeData { TimeSeconds = seconds });
+        return new Animation2d(data);
+    }
+
+    /// <summary>An entity on its animation 0 (a Loop of 10 ticks) with the logical clock on; animation 5 is a Loop of 10 ticks, animation 6 a
+    /// Once of 2 ticks that chains to 0. Everything the first sync owed is cleared.</summary>
+    private static (Entity Entity, AnimatedSpriteComponent Sprite, AlundraEntityScriptProxy Proxy) BuildClockedEntity()
+    {
+        var sprite = new AnimatedSpriteComponent();
+        sprite.AddAnimation(MakeAnimation(0, AnimationType.Loop, 0.2f));
+        sprite.AddAnimation(MakeAnimation(5, AnimationType.Loop, 0.2f));
+        sprite.AddAnimation(MakeAnimation(6, AnimationType.Once, 0.04f));
+        var entity = new Entity { Name = "e", GameplayProxyClassName = nameof(AlundraEntityScriptProxy), RootComponent = sprite };
+        entity.Initialize();
+        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        proxy.AnimationEndByAnimDirection = new Dictionary<int, AnimationEndInfo>
+        {
+            [6 * AlundraEntitySpawnFactory.IdsvDirectionStride] = new() { Kind = AnimationEndKind.Chain, ChainTargetAnimationId = 0 },
+        };
+        AlundraEntitySpawnFactory.SubscribeAnimationEndBridge(entity);
+
+        proxy.TargetAnimationId = 0;
+        proxy.CurrentAnimationId = ~0u;
+        AlundraFrameSyncPasses.SyncAnimation(entity);
+        proxy.AnimationSwitchTickOwed = false;
+        return (entity, sprite, proxy);
+    }
+
+    /// <summary>TG3: after a switch, the tick of the switch is owed when no tick was reserved for it, spent when one was, and a catch-up frame
+    /// advances the new animation by the other reserved ticks. The reserved count is always back to 0 after a sync.</summary>
+    [Theory]
+    [InlineData(0, true, 0)]
+    [InlineData(1, false, 0)]
+    [InlineData(3, false, 2)]
+    public void SyncAnimation_ASwitchOnAClockedSprite_OwesOrSpendsTheTickOfTheSwitch(int reserved, bool expectedOwed, int expectedTick)
+    {
+        var (entity, sprite, proxy) = BuildClockedEntity();
+        sprite.AdvanceLogicalTicks(4);
+        proxy.TargetAnimationId = 5;
+        proxy.AnimationSwitchTicksReserved = reserved;
+
+        AlundraFrameSyncPasses.SyncAnimation(entity);
+
+        Assert.Equal(5u, proxy.CurrentAnimationId);
+        Assert.Equal(expectedOwed, proxy.AnimationSwitchTickOwed);
+        Assert.Equal(expectedTick, sprite.LogicalTick);
+        Assert.Equal(0, proxy.AnimationSwitchTicksReserved);
+    }
+
+    [Fact]
+    public void SyncAnimation_WithoutASwitch_OrOnAnEntityToDestroy_StillZeroesTheReservedTicks()
+    {
+        var (entity, sprite, proxy) = BuildClockedEntity();
+        sprite.AdvanceLogicalTicks(4);
+        proxy.AnimationSwitchTicksReserved = 2;
+
+        AlundraFrameSyncPasses.SyncAnimation(entity); // no change pending.
+
+        Assert.Equal(0, proxy.AnimationSwitchTicksReserved);
+        Assert.Equal(4, sprite.LogicalTick);
+        Assert.False(proxy.AnimationSwitchTickOwed);
+
+        proxy.Status = EntityStatus.FlagToDestroy;
+        proxy.AnimationSwitchTicksReserved = 2;
+
+        AlundraFrameSyncPasses.SyncAnimation(entity);
+
+        Assert.Equal(0, proxy.AnimationSwitchTicksReserved);
+    }
+
+    [Fact]
+    public void SyncAnimation_ASwitchToAnAnimationTheSpriteDoesNotHave_RestartsTheOneThatPlays()
+    {
+        var (entity, sprite, proxy) = BuildClockedEntity();
+        sprite.AdvanceLogicalTicks(4);
+        proxy.TargetAnimationId = 9; // not one of the sprite's animations.
+
+        AlundraFrameSyncPasses.SyncAnimation(entity);
+
+        Assert.Equal(9u, proxy.CurrentAnimationId);
+        Assert.EndsWith("_anim0_down", sprite.CurrentAnimation!.Animation2dData.Name);
+        Assert.Equal(0, sprite.LogicalTick);
+        Assert.True(proxy.AnimationSwitchTickOwed);
+    }
+
+    /// <summary>A sprite with no animation at all, whose selection fails at the switch: nothing to restart, no exception.</summary>
+    [Fact]
+    public void SyncAnimation_ASwitchOnASpriteWithoutAnyAnimation_DoesNotThrow()
+    {
+        var sprite = new AnimatedSpriteComponent();
+        var entity = new Entity { Name = "e", GameplayProxyClassName = nameof(AlundraEntityScriptProxy), RootComponent = sprite };
+        entity.Initialize();
+        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        AlundraEntitySpawnFactory.SubscribeAnimationEndBridge(entity);
+        proxy.TargetAnimationId = 3;
+        proxy.CurrentAnimationId = ~3u;
+
+        AlundraFrameSyncPasses.SyncAnimation(entity);
+
+        Assert.Equal(3u, proxy.CurrentAnimationId);
+        Assert.Null(sprite.CurrentAnimation);
+    }
+
+    /// <summary>TG4: one step of the clock: a pending switch keeps the tick, a tick owed is consumed, otherwise the animation advances.</summary>
+    [Fact]
+    public void StepAnimationClock_ASwitchPending_ReservesTheTick_AndSpendsTheTickOwed()
+    {
+        var (_, sprite, proxy) = BuildClockedEntity();
+        sprite.AdvanceLogicalTicks(4);
+        proxy.TargetAnimationId = 5; // Current is 0: a switch is pending.
+        proxy.AnimationSwitchTickOwed = true;
+
+        AlundraFrameSyncPasses.StepAnimationClock(proxy);
+
+        Assert.Equal(1, proxy.AnimationSwitchTicksReserved);
+        Assert.False(proxy.AnimationSwitchTickOwed);
+        Assert.Equal(4, sprite.LogicalTick);
+    }
+
+    [Fact]
+    public void StepAnimationClock_ATickOwedAndNoSwitch_IsConsumedWithoutAdvancing()
+    {
+        var (_, sprite, proxy) = BuildClockedEntity();
+        sprite.AdvanceLogicalTicks(4);
+        proxy.AnimationSwitchTickOwed = true;
+
+        AlundraFrameSyncPasses.StepAnimationClock(proxy);
+
+        Assert.False(proxy.AnimationSwitchTickOwed);
+        Assert.Equal(0, proxy.AnimationSwitchTicksReserved);
+        Assert.Equal(4, sprite.LogicalTick);
+    }
+
+    [Fact]
+    public void StepAnimationClock_NothingPending_AdvancesOneTick()
+    {
+        var (_, sprite, proxy) = BuildClockedEntity();
+        sprite.AdvanceLogicalTicks(4);
+
+        AlundraFrameSyncPasses.StepAnimationClock(proxy);
+
+        Assert.Equal(5, sprite.LogicalTick);
+        Assert.Equal(0, proxy.AnimationSwitchTicksReserved);
+    }
+
+    [Fact]
+    public void StepAnimationClock_ADirectionChangeAlone_ReservesTheTick_AndRaisesNoEnd()
+    {
+        var (_, sprite, proxy) = BuildClockedEntity();
+        sprite.AdvanceLogicalTicks(4);
+        proxy.AnimationSwitchTickOwed = true;
+        proxy.TargetDirection = 6; // row 0, column 2: animation direction 2.
+        var turns = proxy.AnimCompleteCounter;
+
+        AlundraFrameSyncPasses.StepAnimationClock(proxy);
+
+        Assert.Equal(1, proxy.AnimationSwitchTicksReserved);
+        Assert.False(proxy.AnimationSwitchTickOwed);
+        Assert.Equal(4, sprite.LogicalTick);
+        Assert.Equal(turns, proxy.AnimCompleteCounter);
+    }
+
+    [Fact]
+    public void StepAnimationClock_AnAdvanceThatRaisesAChainEnd_ReservesTheTick_AndAsksForTheRestart()
+    {
+        var (entity, sprite, proxy) = BuildClockedEntity();
+        proxy.TargetAnimationId = 6;
+        AlundraFrameSyncPasses.SyncAnimation(entity); // plays animation 6: a Once of 2 ticks, chaining to 0.
+        proxy.AnimationSwitchTickOwed = false;
+        AlundraFrameSyncPasses.StepAnimationClock(proxy); // tick 1.
+        Assert.Equal(0, proxy.AnimationSwitchTicksReserved);
+
+        AlundraFrameSyncPasses.StepAnimationClock(proxy); // tick 2: the end.
+
+        Assert.Equal(1, proxy.AnimationSwitchTicksReserved);
+        Assert.Equal(1, proxy.PendingChainRestartFlag);
+        Assert.Equal(0u, proxy.TargetAnimationId);
+    }
+
+    [Fact]
+    public void StepAnimationClock_AnEntityToDestroy_OrWithoutAClockedSprite_DoesNothing()
+    {
+        var (_, sprite, proxy) = BuildClockedEntity();
+        sprite.AdvanceLogicalTicks(4);
+        proxy.Status = EntityStatus.FlagToDestroy;
+        proxy.TargetAnimationId = 5;
+
+        AlundraFrameSyncPasses.StepAnimationClock(proxy);
+
+        Assert.Equal(0, proxy.AnimationSwitchTicksReserved);
+        Assert.Equal(4, sprite.LogicalTick);
+
+        var (_, bare) = BuildEntity(withSprite: false);
+        bare.TargetAnimationId = 5;
+
+        AlundraFrameSyncPasses.StepAnimationClock(bare);
+
+        Assert.Equal(0, bare.AnimationSwitchTicksReserved);
+    }
 }

@@ -1490,7 +1490,7 @@ est la Debug.
   | `0x0B`, `0x1C` et `0x1D` prennent `CodeIndex` pour clé : une attente au pc 0 se croirait déjà mémorisée. Aucun site au pc 0 dans les 483 cartes. | P4 | Accepté, comme pour `Wait`. |
   | T6 : « `Move(0, +1)` le laisse à 0 » se lit avec la remise à zéro par image, car un `Move` ne fait que lever le drapeau. | — | Précision acceptée ; valeurs inchangées. |
 
-### 1.2f E19.c2 — Fins d'animation exactes et signal de boucle ⏳ (proposée le 2026-10-01)
+### 1.2f E19.c2 — Fins d'animation exactes et signal de boucle 🚧 (C0 à C2 faites le 2026-10-01 ; reste C3 à C7, puis la recette C8)
 
 **But.**
 - `0x1C` et `0x1D` voient les fins Hold, les fins Chain et les tours de Loop au tick de l'original. Le
@@ -1594,9 +1594,13 @@ scratchpad `e19c2/`) :
 **Tâches.** Chaque tâche porte son icône de statut et se commite avec la mise à jour de ce plan (ou du plan
 moteur pour C0).
 
-- **C0 — Moteur** ⏳ : exécuter le plan moteur (T0.1 à T3.1) sur sa branche. `CasaEngine.Tests` 0 échec,
-  aucun test existant modifié.
-- **C1 — Preuves rouges** ⏳ (non commitées jusqu'à C6) : l'arc A9, le resserrement d'A3 et les tests
+- **C0 — Moteur** ✅ *(fait le 2026-10-01 par un autre exécutant : commits moteur `1561fd07`, `cc6f498e`, `34ddf5e2`,
+  `b40888f1` sur `chantier/animation-logical-end-clock` ; toutes les valeurs écrites d'avance tenues. `Alundra.Tests` sur le moteur
+  de C0 avant tout changement de la DLL : 1995 réussis, 0 échec, traces inchangées)* : exécuter le plan moteur (T0.1 à T3.1) sur sa
+  branche. `CasaEngine.Tests` 0 échec, aucun test existant modifié.
+- **C1 — Preuves rouges** ✅ *(fait le 2026-10-01, non commité : les résultats mesurés sur la DLL d'E19.c1 au-dessus du moteur de C0 sont
+  ceux de la liste, test par test, sans écart ; A9 échoue dans sa limite en nommant `slot 2 program @504: last 0x1C @539`, A3 resserré
+  échoue sur (1) avec 25 au lieu de 26, puis (2) 24 et (3) 65 une fois (1) retiré)* (non commitées jusqu'à C6) : l'arc A9, le resserrement d'A3 et les tests
   T-D1 à T-D16, T-D19 et T-D20 **à 1 tick par image seulement**, écrits avant le code de la DLL et lancés sur
   la DLL d'E19.c1 au-dessus du moteur de C0 (le pointeur du sous-module est déplacé localement pour la
   course, sans commit). Résultats attendus, test par test :
@@ -1608,7 +1612,11 @@ moteur pour C0).
   - A9 et A3 resserré : table ci-dessous.
   Les colonnes 60 Hz et 2 t/i, TB1, TB2, TG2 à TG4 et T-D17 demandent le code de C2 : elles s'écrivent en
   C2. T-D18 s'écrit en C4.
-- **C2 — Pointeur du moteur, pilotage et pont** ⏳ : le pointeur du sous-module sur la tête de la branche
+- **C2 — Pointeur du moteur, pilotage et pont** ✅ *(fait le 2026-10-01 : pointeur sur `b40888f1`, `StepAnimationClock`, tick dû,
+  compensation et effacement entre passes dans `AlundraFrameSyncPasses`, pont (taux 50, `AnimationLooped`, relance sur sélection échouée) ;
+  tests TB1, TB2, TG3, TG4, T-D17 et les colonnes 60 Hz et 2 t/i dans `AlundraAnimationClockDriveTests`, `AlundraWorldProxyAnimationEndBridgeTests`
+  et `AlundraRepeatAnimationOpcodeTests`. A9 et A3 resserré passent ; seuls rouges, comme annoncé : T-D2 en 2 t/i rend 2 à s+33 et T-D3 en
+  2 t/i à s+5. Ces deux colonnes et TG2, tests de la garde, entrent avec C3 pour que chaque commit reste vert)* : le pointeur du sous-module sur la tête de la branche
   moteur ; `StepAnimationClock`, le tick dû, la compensation, l'effacement entre passes ; le pont (taux,
   `AnimationLooped`, relance sur sélection échouée) ; TB1, TB2, TG2 à TG4, T-D17 et les colonnes 60 Hz et
   2 t/i. A9 et A3 passent, ainsi que toutes les valeurs écrites, **sauf deux, annoncées** : sans la garde

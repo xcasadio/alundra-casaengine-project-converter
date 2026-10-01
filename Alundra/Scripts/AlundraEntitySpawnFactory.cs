@@ -182,10 +182,11 @@ internal static class AlundraEntitySpawnFactory
     /// Builds the per-entity Hold/Chain lookup <see cref="AlundraEntityScriptProxy.AnimationEndByAnimDirection"/>
     /// stashes at spawn - same key packing as <see cref="BuildIdsvByAnimDirection"/>, so both tables share
     /// the (anim, direction) -&gt; int key without a tuple key/comparer. Only entries whose End is Hold or
-    /// Chain are worth keeping (a Loop entry has nothing to bridge - <see cref="OnAnimationFinished"/>
-    /// treats a lookup miss as "keep looping" already, so a Loop entry would be a table slot that is never
-    /// read for anything different); this also keeps the table small - Loop entries were the majority
-    /// (5207 of 9620 across the real export) and would triple its size for no observable effect.
+    /// Chain are worth keeping (a Loop entry has nothing to look up - <see cref="OnAnimationFinished"/>
+    /// treats a lookup miss as "nothing to do", and the turns of a Loop are counted by
+    /// <see cref="OnAnimationLooped"/> without any table); this also keeps the table small - Loop entries
+    /// were the majority (5207 of 9620 across the real export) and would triple its size for no observable
+    /// effect. A record with only Loop entries has no table at all (99 of the 395 sprite records).
     /// </summary>
     internal static Dictionary<int, AnimationEndInfo>? BuildAnimationEndByAnimDirection(
         IReadOnlyList<AnimDirIdsv>? idsvAnimDirs)
@@ -212,25 +213,32 @@ internal static class AlundraEntitySpawnFactory
     }
 
     /// <summary>
-    /// Subscribes <paramref name="entity"/>'s <see cref="AnimatedSpriteComponent"/> (if it has one) to
-    /// <see cref="OnAnimationFinished"/> exactly once, at spawn/adoption (see
-    /// <see cref="ApplySpawnInitialization"/>/<see cref="AdoptPlayerPawn"/>) - bridging the engine's
-    /// Once-finished event back to the original's Hold/Chain semantics (EntityManager.cs:257-281, see
-    /// <see cref="OnAnimationFinished"/>'s own doc). The cached static delegate
-    /// (<see cref="AnimationFinishedHandler"/>) means subscribing allocates nothing beyond the one-time
-    /// delegate instance shared by every entity; the handler itself resolves the proxy from
-    /// <c>sender</c>/<c>Owner.GameplayProxy</c> rather than capturing anything per-entity.
+    /// Ticks per second of the logical clock of the animation ends: the original's fixed 50 Hz frame (E19.c2, ADR-0019).
     /// </summary>
+    internal const int LogicTicksPerSecond = 50;
+
     /// <summary>
+    /// Turns <paramref name="entity"/>'s <see cref="AnimatedSpriteComponent"/> (if it has one) into the source of the animation ends
+    /// the scripts see, exactly once, at spawn/adoption (see <see cref="ApplySpawnInitialization"/>/<see cref="AdoptPlayerPawn"/>):
+    /// <list type="bullet">
+    /// <item><description>the sprite's logical clock is set to <see cref="LogicTicksPerSecond"/> (E19.c2): from then on only
+    /// <see cref="AlundraFrameSyncPasses.StepAnimationClock"/>, once per logic tick, raises <see cref="AnimatedSpriteComponent.AnimationFinished"/>
+    /// and <see cref="AnimatedSpriteComponent.AnimationLooped"/>, at the tick of the original (the sprite keeps drawing in real time,
+    /// D-E19-17); the sprite is cached on the proxy for that step;</description></item>
+    /// <item><description><see cref="OnAnimationFinished"/> bridges the end of a Once animation back to the original's Hold/Chain semantics
+    /// (EntityManager.cs:257-281);</description></item>
+    /// <item><description><see cref="OnAnimationLooped"/> counts every turn of a Loop (<c>0x80038D70</c>).</description></item>
+    /// </list>
+    /// The cached static delegates mean subscribing allocates nothing beyond the one-time delegate instances shared by every entity; the
+    /// handlers resolve the proxy from <c>sender</c>/<c>Owner.GameplayProxy</c> rather than capturing anything per-entity.
+    /// <para>
     /// No unsubscribe on destroy: <see cref="DestroyEntity(AlundraEntityScriptProxy)"/> only ever sets
     /// <see cref="EntityStatus.FlagToDestroy"/> (V1 scope is invisibility, not removal/slot recycling -
     /// see that method's own doc), never disposes the entity or its components, so the subscription
     /// this method makes lives exactly as long as the entity object itself and needs no explicit
-    /// teardown. A FlagToDestroy entity's <see cref="OnAnimationFinished"/> calls (should its sampler
-    /// still run while invisible) are themselves harmless: every per-frame pass that reads
-    /// <see cref="AlundraEntityScriptProxy.ForceResetAnimationFlag"/>/<c>TargetAnimationId</c>
-    /// (<see cref="AlundraFrameSyncPasses.SyncAnimation"/>, <see cref="RunPendingEventTriggers"/>) already skips FlagToDestroy
-    /// entities.
+    /// teardown. A FlagToDestroy entity's clock does not step (<see cref="AlundraFrameSyncPasses.StepAnimationClock"/>), so its handlers never run
+    /// again.
+    /// </para>
     /// </summary>
     internal static void SubscribeAnimationEndBridge(Entity entity)
     {
@@ -240,17 +248,41 @@ internal static class AlundraEntitySpawnFactory
             return;
         }
 
+        animatedSprite.SetLogicalTickRate(LogicTicksPerSecond);
         animatedSprite.AnimationFinished += AnimationFinishedHandler;
+        animatedSprite.AnimationLooped += AnimationLoopedHandler;
+
+        if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
+        {
+            proxy.LogicalClockSprite = animatedSprite;
+        }
     }
 
     private static readonly EventHandler<Animation2d> AnimationFinishedHandler = OnAnimationFinished;
 
+    private static readonly EventHandler<Animation2d> AnimationLoopedHandler = OnAnimationLooped;
+
     /// <summary>
-    /// Bridge from <see cref="AnimatedSpriteComponent.AnimationFinished"/> (fired once, from inside
-    /// <c>Entity.Update</c>'s component pass, strictly BEFORE that same entity's own
-    /// <see cref="AlundraEntityScriptProxy.Update"/> runs - see <c>Animation2dCompositionSampler.Update</c>'s
-    /// clamp-at-DurationSeconds/IsFinished and <c>AnimatedSpriteComponent.Update</c>) back to the
-    /// original's Hold/Chain semantics (EntityManager.cs:257-281):
+    /// Bridge from <see cref="AnimatedSpriteComponent.AnimationLooped"/> (raised once per turn of a Loop animation by the logical clock,
+    /// E19.c2) to the original's <c>AnimCompleteCounter</c> + 1 per Loop turn (<c>0x80038D70</c>-<c>0x80038D7C</c>): the signal
+    /// <c>0x1C</c>/<c>0x1D</c> count on a Loop. Table-free on purpose: the original counts the images that play whatever the
+    /// sprite record says, and 99 of the 395 sprite records are all-Loop (no end table). A sender that is not a component with an
+    /// <see cref="AlundraEntityScriptProxy"/> is ignored.
+    /// </summary>
+    internal static void OnAnimationLooped(object? sender, Animation2d loopedAnimation)
+    {
+        if (sender is AnimatedSpriteComponent component
+            && component.Owner?.GameplayProxy is AlundraEntityScriptProxy proxy)
+        {
+            proxy.AnimCompleteCounter++;
+        }
+    }
+
+    /// <summary>
+    /// Bridge from <see cref="AnimatedSpriteComponent.AnimationFinished"/> (raised once per Once animation by the sprite's logical clock,
+    /// from <see cref="AlundraFrameSyncPasses.StepAnimationClock"/> or the compensation of
+    /// <see cref="AlundraFrameSyncPasses.SyncAnimation"/>, E19.c2 - never by the real-time component pass any more, so an end is
+    /// not bridged twice) back to the original's Hold/Chain semantics (EntityManager.cs:257-281):
     /// <list type="bullet">
     /// <item><description>Hold: sets <see cref="AlundraEntityScriptProxy.ForceResetAnimationFlag"/> = 1
     /// (EntityManager.cs:273-275) - already read by <see cref="AlundraEntityScriptProxy.Update"/>'s pick
@@ -259,21 +291,16 @@ internal static class AlundraEntitySpawnFactory
     /// class doc) - nothing else to do.</description></item>
     /// <item><description>Chain: sets <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> to the
     /// chain target (EntityManager.cs:277-279). <see cref="AlundraEntityScriptProxy.Update"/> calls
-    /// <see cref="AlundraFrameSyncPasses.SyncAnimation"/> every frame regardless, so the very next call - later this SAME
-    /// frame, since the component pass already ran - notices <c>TargetAnimationId</c> changed and
-    /// switches animation: the same-tick effect the original gets from its own recursive
-    /// <c>UpdateAnimation</c> call (EntityManager.cs:280), without this bridge needing to call
-    /// <see cref="AlundraFrameSyncPasses.SyncAnimation"/> itself.</description></item>
+    /// <see cref="AlundraFrameSyncPasses.SyncAnimation"/> every frame regardless, so the end-of-frame call notices
+    /// <c>TargetAnimationId</c> changed and switches animation (the switch tick is reserved by
+    /// <see cref="AlundraFrameSyncPasses.StepAnimationClock"/>, which sees <see cref="AlundraEntityScriptProxy.PendingChainRestartFlag"/>):
+    /// the same-tick effect the original gets from its own recursive <c>UpdateAnimation</c> call (EntityManager.cs:280), without this
+    /// bridge needing to call <see cref="AlundraFrameSyncPasses.SyncAnimation"/> itself.</description></item>
     /// </list>
-    /// A lookup miss (no entry for the just-finished (anim, direction), including every Loop entry -
-    /// see <see cref="BuildAnimationEndByAnimDirection"/>) is a no-op: the engine already looped or
-    /// nothing was ever wired up for this entity (degraded catalog). A Chain end also increments
-    /// <see cref="AlundraEntityScriptProxy.AnimCompleteCounter"/> (E19.c1 T4, <c>0x80038D64</c>), a self-chain
-    /// included: that is the signal opcodes 0x1C/0x1D count. A Hold end leaves it alone. The original's own
-    /// <c>AnimCompleteCounter++</c> per Loop cycle (EntityManager.cs:263) is NOT bridged:
-    /// <see cref="AnimatedSpriteComponent.AnimationFinished"/> does not even fire for a Loop animation
-    /// (<c>Animation2dCompositionSampler</c> wraps instead of finishing) so there is no signal to bridge it
-    /// from (E19.i).
+    /// A lookup miss (no entry for the just-finished (anim, direction), or a record with no end table) is a no-op. A Chain end also
+    /// increments <see cref="AlundraEntityScriptProxy.AnimCompleteCounter"/> (E19.c1 T4, <c>0x80038D64</c>), a self-chain
+    /// included: that is the signal opcodes 0x1C/0x1D count. A Hold end leaves it alone. The turns of a Loop are counted by
+    /// <see cref="OnAnimationLooped"/> (E19.c2), not here.
     /// </summary>
     internal static void OnAnimationFinished(object? sender, Animation2d finishedAnimation)
     {

@@ -136,6 +136,30 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// </summary>
     public int PendingChainRestartFlag;
     public int AnimCompleteCounter;
+
+    /// <summary>
+    /// Engine-only (E19.c2, docs/plan-e19-opcodes.md §1.2f, ADR-0019): the sprite whose logical clock
+    /// (<see cref="AnimatedSpriteComponent.SetLogicalTickRate"/>) drives the ends of this entity's animations, cached when
+    /// <see cref="AlundraEntitySpawnFactory.SubscribeAnimationEndBridge"/> turns the clock on. Null for an entity without
+    /// a sprite. Not copied by <see cref="Clone"/>: a clone has no subscription.
+    /// </summary>
+    internal AnimatedSpriteComponent? LogicalClockSprite;
+
+    /// <summary>
+    /// Engine-only (E19.c2): the logic ticks of the current frame at which <see cref="AlundraFrameSyncPasses.StepAnimationClock"/>
+    /// found an animation switch pending (the binary's <c>UpdateAnimation</c> of that tick switches instead of advancing the
+    /// old animation). Read and zeroed by <see cref="AlundraFrameSyncPasses.SyncAnimation"/>, once per frame, whatever it
+    /// decides. Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal int AnimationSwitchTicksReserved;
+
+    /// <summary>
+    /// Engine-only (E19.c2): set by <see cref="AlundraFrameSyncPasses.SyncAnimation"/> when it switches an animation on a frame
+    /// that had no logic tick to spend on the switch; the next tick is then consumed without advancing the new animation (the
+    /// binary shows the new animation's frame 0 on the tick of the switch without counting it). Cleared by a switch that reserves
+    /// a tick. Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal bool AnimationSwitchTickOwed;
     public int AnimFlags;
     public int ForceZ;//rise/fall speed
     public int TargetForceX, TargetForceY;
@@ -994,6 +1018,13 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 PickEventTrigger();
                 RunPickedEvent(ScriptHost.Runner);
 
+                // E19.c2 (docs/plan-e19-opcodes.md §1.2f, ADR-0019): the logical clock of the animation ends steps once per
+                // tick, right after this entity's script and before its motion - the binary's order (events, then
+                // UpdateAnimation, then physics, 0x8003B388). A switch the script just asked for reserves the tick (the old
+                // animation neither advances nor ends on it); otherwise the animation advances one tick and may end, which
+                // 0x1C/0x1D then see at the next tick, as in the binary. The sprites themselves keep drawing in real time.
+                AlundraFrameSyncPasses.StepAnimationClock(this);
+
                 // E4.b (docs/plan-e4-deplacement-scripte.md): scripted mover for every controller-driven
                 // NPC - port of PhysicsEngine.UpdateEntityPhysics (:1579-1598) restricted to the
                 // flat-ground half already ported for the hero (AlundraPlayerManager/AlundraScriptedMotion's
@@ -1056,6 +1087,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
             // time (ONE-CLOCK fix, AlundraScriptedMotion's own class doc) - the hero's own observable
             // per-tick behaviour is unchanged, only the source of the tick count.
             var playerController = ScriptHost.PlayerController;
+            var heroTicksThisFrame = ScriptHost.LogicTicksThisFrame(elapsedTime);
             if (playerController != null)
             {
                 // D-E7-8 (docs/plan-e7-mutation-tuiles.md, slice E7.c): this frame's pad snapshot is
@@ -1065,8 +1097,23 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 // this frame, which is the single-global behaviour the original has.
                 var pad = ScriptHost.GameState.LastPadState;
                 AlundraPlayerManager.MovePlayer(this, in pad, ScriptHost.GameState, ScriptHost);
-                var ticksThisFrame = ScriptHost.LogicTicksThisFrame(elapsedTime);
-                AlundraPlayerManager.Tick(this, ticksThisFrame);
+            }
+
+            // E19.c2 (docs/plan-e19-opcodes.md §1.2f): the hero's animation clock steps at every tick, whether or not a
+            // controller possesses the pawn (the binary animates the player whatever its input; production always has a
+            // controller), interleaved with the kinematic tick: a Chain that MovePlayer asked for reserves the tick before the
+            // motion reads TargetAnimationId. Tick(this, 1) once per tick is Tick(this, n).
+            for (var tick = 0; tick < heroTicksThisFrame; tick++)
+            {
+                AlundraFrameSyncPasses.StepAnimationClock(this);
+                if (playerController != null)
+                {
+                    AlundraPlayerManager.Tick(this, 1);
+                }
+            }
+
+            if (playerController != null)
+            {
 
                 // E1 (docs/plan-echelles-chiffrage.md É1): alimente Slope_18c AFTER this frame's own
                 // MovePlayer+Tick, exactly like the original's UpdateTileAttributes runs at the end of

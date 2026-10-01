@@ -2048,6 +2048,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // fixed 50 Hz frame) - gated the same way as every entity's own pick/run pass.
             for (var tick = 0; tick < ticksThisFrame; tick++)
             {
+                // E19.c2 (docs/plan-e19-opcodes.md §1.2f): the passes after the first of a catch-up frame stand for ticks whose
+                // UpdateAnimation (0x80038B6C) already switched the animations a previous pass asked for, clearing their Hold flag:
+                // clear it here too, so a 0x1C does not count the same Hold end again. A no-op at 0 or 1 tick per frame.
+                if (tick > 0)
+                {
+                    AlundraFrameSyncPasses.ClearHoldFlagsOfPendingSwitches(_spawnedEntities);
+                }
+
                 RunMapEventsPass(PlayerEntity, _mapEvents, EventProgramRunner, GameState.PlayerControlFlags);
             }
         }
