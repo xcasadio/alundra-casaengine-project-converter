@@ -627,6 +627,13 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // documented deviation, plan §3 E4.d).
                 return Walk(entity, v, state, allowDetour: false) == 0 && entity.ForceAdjusted == 0 ? 0 : 3;
 
+            case 0x24: // Wait force adjusted - Script_36_024 @ 0x8003DB70 (E19.d D4, D-E19-21, docs/plan-e19-opcodes.md §1.2g), PER THE BINARY:
+                       // returns 1 when the LOGIC entity's ForceAdjusted (+0x13C) is nonzero, else 0 (the script waits and re-tests at the next tick).
+                       // No operand, no memory of its own, no other output: no detour and no timer (D-E19-6), a wait that stays stuck is fixed at
+                       // its root, in the collisions or the engine. ForceAdjusted follows the binary since E19.a3 (it is raised at the tick of a
+                       // blocked step and cleared at the next one). Size 1.
+                return entity.ForceAdjusted != 0 ? 1 : 0;
+
             case 0x1B: // Fly - Script_27_01B (EntityEventHandlers.cs:743-747): ForceZ = (((v2<<8)|v1) *
                        // 0x10000) >> 8, a signed 16.16 vertical impulse. Only the DLL-side struct field is
                        // set here now (root-cause vertical-fidelity fix, gull entity 6 map 389 - see
