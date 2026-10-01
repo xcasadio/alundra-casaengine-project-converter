@@ -1240,6 +1240,11 @@ classe.
   l'effet de l'instruction) et vérifiés après le signal de fin. La fin d'un `0x0B` se lit à
   l'instruction **suivante** : `ArcInstruction` ne porte pas le résultat du gestionnaire, et la
   première exécution d'un `0x0B` est son appel suspendu.
+  - **Ordre des vérifications** (A3, A7 et A4p) : d'abord le signal de fin (`RunUntil`, qui échoue dans
+    la limite en nommant la dernière instruction de chaque programme) ; **ensuite l'ensemble des
+    opcodes sautés ou dépassés**, qui doit être vide (A3, A7) ou rester dans celui d'A4 (A4p) ; enfin
+    les autres vérifications, dans l'ordre où elles sont écrites ci-dessous. La table du rouge suit cet
+    ordre.
   - **A3** : `ArcSpec("A3", "Inoa", "Inoa (Vision Event from Lars and Melzas cutscene)-478", {1641},
     héros en (22, 57, 1), limite 2700, RealController, Prefabs)`.
     - Fin : `0x53 @245` (créneau B, programme `@164`) ; arrivée sur la 476 en `PosX` 786432, `PosY`
@@ -1303,6 +1308,9 @@ classe.
     | Après T3 (opcodes de mouvement) | atteint `0x53 @245`, puis échoue sur les opcodes sautés ou dépassés, qui contiennent `0x1C @854` | passe | passe |
     | Après T4 (`0x1C`, `0x1D`) | passe | passe | passe |
 
+    Dans chaque case qui nomme une vérification qui échoue, toutes les vérifications qui la précèdent
+    dans l'ordre ci-dessus passent sur le code de l'étape : le signal de fin est atteint (A7 après T1,
+    A3 après T3), et l'ensemble des opcodes sautés est la première vérification qui suit.
     A4p ne dépend d'aucun opcode d'E19.c1 : il vérifie le mode préfabs sur la 476. Le rouge d'A3
     enregistre environ 5,8 millions d'entrées de trace (deux coupures de garde par image) ; s'il dépasse
     le délai, il se relance avec une limite de 400 images, qui donne le même message.
@@ -1432,6 +1440,13 @@ est la Debug.
   contredite est un arrêt, jamais une ré-épingle.
 
 **Revues** : plan-verifier sur cette section, avant approbation ; verifier frais après exécution.
+
+**Relectures du 2026-10-01.**
+- **Plan-verifier** (`34379a3`) : **REVISE**, un P2 : la case rouge d'A7 après T1 (« atteint `0x53`
+  puis échoue sur les opcodes sautés ») ne suivait pas l'ordre écrit des vérifications, où l'image de
+  fin attendue (1759) venait d'abord. Le même défaut avait touché E19.b.
+- **Corrigé** : T2 fixe l'ordre des vérifications (signal de fin, puis opcodes sautés ou dépassés, puis
+  le reste), et la table du rouge le suit.
 
 ### 1.2f E19.c2 — Horloge d'animation exacte en ticks ⏳ (esquisse ; se détaille après E19.c1)
 
