@@ -1235,7 +1235,7 @@ classe.
       l'intégration ;
   - A0, A0b, A1, A1c, A2, A4, la cabine et le marin 12 ne changent pas : ils n'activent pas le drapeau.
   - Le temps de l'autotest est relevé.
-- **T2 — Arcs A3, A7 et A4p écrits avant le code** ⏳ (non commités jusqu'à T5) : valeurs ci-dessous,
+- **T2 — Arcs A3, A7 et A4p écrits avant le code** ✅ *(faits le 2026-10-01, non commités jusqu'à T5 ; fichier `AlundraVisionAndCoastArcTests.cs` pour A3 et A7, A4p dans `AlundraVisionArcTests` qui partage les échantillons d'A4. Rouge constaté après T1, conforme à la table : A3 échoue dans sa limite de 2700 images en nommant `slot 1 program @164: last 0x36 @180` (3 s, pas besoin de la limite de 400) ; A7 atteint `0x53 @640` à l'image 1145 puis échoue sur les opcodes sautés `0x0B @659`, `@572`, `@586`, `@594`, `@608` ; A4p passe avec toutes ses valeurs.)* : valeurs ci-dessous,
   lancées sur le code d'après T1. Les échantillons sont pris pendant la course (`OnInstruction`, après
   l'effet de l'instruction) et vérifiés après le signal de fin. La fin d'un `0x0B` se lit à
   l'instruction **suivante** : `ArcInstruction` ne porte pas le résultat du gestionnaire, et la
@@ -1314,7 +1314,7 @@ classe.
     A4p ne dépend d'aucun opcode d'E19.c1 : il vérifie le mode préfabs sur la 476. Le rouge d'A3
     enregistre environ 5,8 millions d'entrées de trace (deux coupures de garde par image) ; s'il dépasse
     le délai, il se relance avec une limite de 400 images, qui donne le même message.
-- **T3 — Les opcodes de mouvement** ⏳ : `0x0B`, `0x08`, `0x0C`, `0x3A`, `0x5E`, `0x73`, `0x74`,
+- **T3 — Les opcodes de mouvement** ✅ *(fait le 2026-10-01 : tests dans `AlundraEventProgramRunnerTests` et `AlundraRandomOpcodeTests` (collection du générateur). Après T3, A7 passe avec toutes ses valeurs ; A3 atteint `0x53 @245` puis échoue sur les opcodes sautés, qui sont `0x1C @854` seul, comme dans la table. Le test unitaire de `0x0B` place un `0x01` devant : la clé est le pc, et un pc 0 se lit « déjà mémorisé » (aucun programme du corpus n'a `0x0B`, `0x1C` ou `0x1D` au pc 0, vérifié sur les 483 cartes).)* : `0x0B`, `0x08`, `0x0C`, `0x3A`, `0x5E`, `0x73`, `0x74`,
   `0x89`, sur l'entité logique.
   - `0x0B` : une méthode sœur de `Walk`, qui garde `0x1E`/`0x1F` intacts : `TargetAnimationId` = v1 à
     chaque appel avant la clé, clé `CodeIndex`, seuil v2 | v3 << 8, retour 4, détour d'E4.d réutilisé

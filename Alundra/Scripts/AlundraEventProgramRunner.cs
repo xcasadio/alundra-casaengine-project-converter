@@ -549,12 +549,27 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 state.Result = EntityInArea(entity, v) ? 1 : 0;
                 return 8;
 
+            case 0x08: // Turn by an amount - Script_8_008 @ 0x8003D404 (E19.c1 T3, docs/plan-e19-opcodes.md §1.2e):
+                       // TargetDirection = (TargetDirection + v1) & 0x1F. Size 2.
+                entity.TargetDirection = (entity.TargetDirection + (uint)v[1]) & 0x1f;
+                return 2;
+
             case 0x09: // Set direction - Script_9_009
                 entity.TargetDirection = (uint)(v[1] & 0x1f);
                 return 2;
 
             case 0x0A: // Reverse direction - Script_10_00A
                 entity.TargetDirection = (entity.TargetDirection + 0x10) & 0x1f;
+                return 1;
+
+            case 0x0B: // Wait until the entity moved beyond a radius - Script_11_00B @ 0x8003D468 (E19.c1 T3): see
+                       // WalkUntilBeyondRadius below.
+                return WalkUntilBeyondRadius(entity, v, state);
+
+            case 0x0C: // Random cardinal direction - Script_12_00C (E19.c1 T3): one draw of the shared generator
+                       // (AlundraRandom, the original's seed 0x80098708 and constants), then TargetDirection =
+                       // cardinal table[seed >> 30]. Size 1.
+                entity.TargetDirection = AnimationTables.CardinalDirectionTable[(int)((uint)AlundraRandom.Next() >> 30)];
                 return 1;
 
             case 0x10: // Player lose control - Script_16_010 (EntityEventHandlers.cs:680-684). The flag
@@ -866,6 +881,32 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
                 return 3;
             }
+
+            case 0x3A: // Set cardinal direction - Script_58_03A (E19.c1 T3): TargetDirection = cardinal table[v1 & 3]
+                       // ({0, 0x10, 8, 0x18}). Size 2.
+                entity.TargetDirection = AnimationTables.CardinalDirectionTable[v[1] & 3];
+                return 2;
+
+            case 0x5E: // Set forceZ for entities - Script_94_05E @ 0x8003F1A0 (E19.c1 T3): for every entity matched
+                       // by v1's search, ForceZ = int16(v2 | v3 << 8) << 8. Size 4.
+                SetEntitiesForceZ(entity, v);
+                return 4;
+
+            case 0x73: // Initialize timer _30 - Script_115_073 @ 0x8003FA3C (E19.c1 T3): the program state's own
+                       // counter (state + 0x30) = v1. Size 2.
+                state._30 = v[1];
+                return 2;
+
+            case 0x74: // Update timer _30 - Script_116_074 @ 0x8003FA58 (E19.c1 T3): decrements the counter; at 0 or
+                       // below the instruction ends (size 3), else it jumps by int16(v1 | v2 << 8). The counter is
+                       // never reset by the interpreter: only a following 0x73 sets it.
+                state._30--;
+                return state._30 <= 0 ? 3 : SignExtend16((v[2] << 8) | v[1]);
+
+            case 0x89: // Set entities position relative to a reference - Script_137_089 @ 0x80040194 (E19.c1 T3):
+                       // see SetEntitiesPositionFromReference. Size 9, also when nothing is found.
+                SetEntitiesPositionFromReference(entity, v);
+                return 9;
 
             case 0x5A: // Turn entity - Script_90_05A (EntityEventHandlers.cs:1694-1710): for every entity
                        // matched by v1's search type, TargetDirection = ResolveDirectionFromParam(v2).
@@ -1829,6 +1870,47 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         }
     }
 
+    /// <summary>Script_94_05E (0x5E) - <c>ForceZ</c> of every entity matched by v1's search = int16(v2 | v3 &lt;&lt; 8)
+    /// &lt;&lt; 8 (so 0x0060 is 0.375 px per tick upward). Nothing matched, nothing written.</summary>
+    private void SetEntitiesForceZ(AlundraEntityScriptProxy entity, int[] v)
+    {
+        var forceZ = ((short)(v[2] | (v[3] << 8))) << 8;
+        foreach (var match in EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity))
+        {
+            match.ForceZ = forceZ;
+        }
+    }
+
+    /// <summary>
+    /// Script_137_089 (0x89, E19.c1 T3): the reference is the FIRST entity found by v1's search, its position read BEFORE
+    /// the second search (v2); every entity found by v2 gets the reference's position plus int16(v3 | v4 &lt;&lt; 8),
+    /// int16(v5 | v6 &lt;&lt; 8) and int16(v7 | v8 &lt;&lt; 8) pixels on X, Y and Z, with no <c>+1</c> on Z (unlike 0x64). With no
+    /// reference nothing moves. The write goes through the path of 0x64/0x65 (<c>PushLogicalPositionToRoot</c>, so
+    /// <c>ClampToGround</c> then <c>Teleport</c>), which the original does not have: the E3.d deviation already taken for
+    /// those two. Each search allocates a list, like the probes of 0x07; an allocation-free search is E19.m.
+    /// </summary>
+    private void SetEntitiesPositionFromReference(AlundraEntityScriptProxy entity, int[] v)
+    {
+        var references = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+        if (references.Count == 0)
+        {
+            return;
+        }
+
+        var reference = references[0];
+        var x = reference.PosX + (((short)(v[3] | (v[4] << 8))) << 16);
+        var y = reference.PosY + (((short)(v[5] | (v[6] << 8))) << 16);
+        var z = reference.PosZ + (((short)(v[7] | (v[8] << 8))) << 16);
+
+        foreach (var target in EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[2], _worldContext.SpawnedEntities, _worldContext.PlayerEntity))
+        {
+            target.PosX = x;
+            target.PosY = y;
+            target.PosZ = z;
+            target.PushLogicalPositionToRoot();
+        }
+    }
+
     /// <summary>Script_101_065 (0x65) - adds a raw 16.16 fixed-point offset to PosX/PosY/PosZ of every
     /// matched entity (note the original's little-endian byte order here is the mirror image of 0x64's -
     /// <c>v[2]|(v[3]&lt;&lt;8)</c> vs 0x64's <c>(v[3]&lt;&lt;8)|v[2]</c>, same value either way but ported
@@ -1993,6 +2075,44 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             UpdateWalkDetour(entity, state, threshold);
         }
 
+        return 0;
+    }
+
+    /// <summary>
+    /// Script_11_00B (0x0B, E19.c1 T3), the sibling of <see cref="Walk"/> that leaves 0x1E/0x1F untouched. It acts on the
+    /// logic entity and writes <c>TargetAnimationId</c> = v1 on EVERY call, before anything else (the binary does, so a
+    /// Target reset between two calls comes back). The first call at a pc (the key is <c>CodeIndex</c>, in
+    /// <c>Parameters[1]</c>) memorises PosX/PosY and suspends; later calls end (size 4) as soon as the entity moved r pixels
+    /// along X or Y, r = v2 | v3 &lt;&lt; 8 (an inclusive test on the truncated pixel distance, as in <see cref="Walk"/>),
+    /// else suspend. It never writes the direction, never reads <c>ForceAdjusted</c> and has no exit on a blocked walk: a
+    /// block that never ends is fixed at the root (D-E19-6). The navigation detour of 0x1E (E4.d) is reused as is.
+    /// </summary>
+    private int WalkUntilBeyondRadius(AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
+    {
+        entity.TargetAnimationId = (uint)v[1];
+
+        if (state.Parameters[1] != state.CodeIndex)
+        {
+            state.Parameters[1] = state.CodeIndex;
+            state.Parameters[2] = entity.PosX;
+            state.Parameters[3] = entity.PosY;
+            entity.WalkDetourPath = null;
+            entity.WalkDetourAttempted = false;
+            return 0;
+        }
+
+        var dx = Math.Abs(state.Parameters[2] - entity.PosX) >> 16;
+        var dy = Math.Abs(state.Parameters[3] - entity.PosY) >> 16;
+        var radius = (v[3] << 8) | v[2];
+
+        if (radius <= dx || radius <= dy)
+        {
+            entity.WalkDetourPath = null;
+            entity.WalkDetourAttempted = false;
+            return 4;
+        }
+
+        UpdateWalkDetour(entity, state, radius);
         return 0;
     }
 

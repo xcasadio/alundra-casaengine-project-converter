@@ -327,6 +327,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         0x42, 0x43, 0x59,
         0xC4, // E19.b T1 (dialogue with a speaker search, without the name box).
         0x8A, // E19.b T2 (spawn at an absolute position).
+        0x08, 0x0B, 0x0C, 0x3A, 0x5E, 0x73, 0x74, 0x89, // E19.c1 T3 (motion opcodes).
         // E16.a T6 (docs/plan-e16-etat-partie.md, contract item 4): the 23 opcodes of the two rows that start at 0x0D were
         // ported by earlier slices (dialogue, map change, HUD, audio, ...) and already have a Dispatch
         // case, but were never added here - the same staleness the notes below describe. Checked by
