@@ -1499,6 +1499,103 @@ public class AlundraNpcCharacterControllerMoverTests
     }
 
     // -----------------------------------------------------------------------------------------
+    // E19.a3 (D-E19-12, ADR-0017): ForceAdjusted rises only when a requested axis makes no progress at all,
+    // like the binary's tick with no accepted sub-step - never for a step shortened to the contact that
+    // still advances. Same wall as above: east of the sailor at (564,632), cell (24,39) from px 576.
+    // -----------------------------------------------------------------------------------------
+
+    private static AlundraEntityScriptProxy BuildSailorBesideTheEastWall()
+    {
+        var projectRoot = FindProjectRoot();
+        Assert.True(projectRoot != null, "the real alundra-project export is missing");
+        var field = LoadMap389Field(projectRoot!);
+        Assert.True(field != null, "the real export of map 389 is missing");
+        var settings = LoadBank146ControllerSettings(projectRoot!);
+        Assert.True(settings != null, "the real controller of bank 146 is missing");
+
+        var world = BuildWorld(field!);
+        var (_, proxy) = BuildNpcPawn(world, settings!, new Vector3(564f, 632f, 80f), new FakeScriptHost());
+        proxy.Controller!.Settings.WalkabilityMask = 0x41u; // ClassB - cell (24,39) walkability 1 blocks.
+        world.Update(1f / 50f);
+        proxy.ForceAdjusted = 0;
+        return proxy;
+    }
+
+    [Fact]
+    public void MoveControllerAndPullPosition_StepShortenedToTheContactButAdvancing_DoesNotRaiseForceAdjusted()
+    {
+        var proxy = BuildSailorBesideTheEastWall();
+        var startX = proxy.PosX / 65536.0;
+
+        proxy.MoveControllerAndPullPosition(10f, 0f);
+
+        var advanced = proxy.PosX / 65536.0 - startX;
+        Assert.InRange(advanced, 0.5, 9.5); // shortened (the wall is nearer than 10 px) yet it advanced.
+        Assert.Equal(0, proxy.ForceAdjusted);
+    }
+
+    [Fact]
+    public void MoveControllerAndPullPosition_StepWithNoAdvanceAgainstTheWall_RaisesForceAdjusted()
+    {
+        var proxy = BuildSailorBesideTheEastWall();
+        proxy.MoveControllerAndPullPosition(10f, 0f); // reach the contact.
+        Assert.Equal(0, proxy.ForceAdjusted);
+        var contactX = proxy.PosX;
+
+        proxy.MoveControllerAndPullPosition(2f, 0f); // keep pushing: nothing advances.
+
+        Assert.Equal(contactX, proxy.PosX);
+        Assert.Equal(1, proxy.ForceAdjusted);
+    }
+
+    [Fact]
+    public void MoveControllerAndPullPosition_TheTwoAxesAreJudgedSeparately()
+    {
+        var proxy = BuildSailorBesideTheEastWall();
+        proxy.MoveControllerAndPullPosition(10f, 0f); // reach the contact.
+
+        // Nothing requested on X: a motionless axis is not a blocked one.
+        proxy.MoveControllerAndPullPosition(0f, 1f);
+        Assert.Equal(0, proxy.ForceAdjusted);
+
+        // Moving away from the wall on X, nothing on Y.
+        proxy.MoveControllerAndPullPosition(-2f, 0f);
+        Assert.Equal(0, proxy.ForceAdjusted);
+
+        // A request below the epsilon is not a request.
+        proxy.MoveControllerAndPullPosition(0.005f, 0f);
+        Assert.Equal(0, proxy.ForceAdjusted);
+
+        // X pushes into the wall while Y advances freely: the blocked axis alone raises the flag.
+        proxy.MoveControllerAndPullPosition(10f, 0f); // back to the contact first.
+        Assert.Equal(0, proxy.ForceAdjusted);
+        var yBefore = proxy.PosY;
+        proxy.MoveControllerAndPullPosition(2f, 1f);
+        Assert.True(proxy.PosY > yBefore, "the free axis must advance for this case to judge the axes separately");
+        Assert.Equal(1, proxy.ForceAdjusted);
+    }
+
+    [Fact]
+    public void MoveControllerAndPullPosition_ARemainderUnderTheEpsilon_CountsAsNoProgress()
+    {
+        var probe = BuildSailorBesideTheEastWall();
+        var startX = probe.PosX;
+        probe.MoveControllerAndPullPosition(10f, 0f);
+        var distanceToContact = (probe.PosX - startX) / 65536f;
+
+        // A second sailor stops 0.005 px short of the contact, without touching the wall on the way.
+        var proxy = BuildSailorBesideTheEastWall();
+        proxy.MoveControllerAndPullPosition(distanceToContact - 0.005f, 0f);
+        Assert.Equal(0, proxy.ForceAdjusted);
+        var before = proxy.PosX;
+
+        proxy.MoveControllerAndPullPosition(1f, 0f);
+
+        Assert.InRange((proxy.PosX - before) / 65536.0, 0.0, 0.0100001);
+        Assert.Equal(1, proxy.ForceAdjusted);
+    }
+
+    // -----------------------------------------------------------------------------------------
     // (10) E4.d, item 7(6): TileZ deferral fix (E4.c) - refreshed every tick, not just at spawn, for an
     // entity with real vertical motion (0x1B-equivalent SetVerticalVelocity).
     // -----------------------------------------------------------------------------------------

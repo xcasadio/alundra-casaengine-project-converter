@@ -461,7 +461,7 @@ public class HeroTraceHarnessTests
         // Scenario A only (§2.6 bis / F1 fix): mid-walk full reposition (Reposition, not a Z-only bump) to
         // the one real cliff-top tile this map's own topology makes reachable from "no climbing needed" -
         // documented in the trace header (§1.3 item 7 for this scenario). Frame 210 is well past the wall
-        // interaction (empirically: forceAdjusted=1 starts around frame 98, see the test's own pinned
+        // interaction (empirically: forceAdjusted=1 starts around frame 99, see the test's own pinned
         // assertion). Direction switches from Left (west, into the wall) to Right (east, off the cliff).
         const int repositionFrameIndex = 210;
 
@@ -742,18 +742,18 @@ public class HeroTraceHarnessTests
         // engineStepsDelta itself).
         var spawnLines = spawnFreestep1.Lines;
         var firstWallFrame = spawnLines.First(l => l.ForceAdjusted == 1).Frame;
-        Assert.Equal(98, firstWallFrame);
+        Assert.Equal(99, firstWallFrame);
 
         var wallPosX = spawnLines.First(l => l.ForceAdjusted == 1).PosX;
         // Frozen against the wall - see AlundraCellsCollisionField's own tx22/23 boundary. E19.a2 (ADR-0045 of the
         // engine): the blocked step now advances to the contact, so the hero stops at 36831232 (562 px) instead of
-        // 36956160 (563.9 px), where the whole step used to be rejected. The flag still rises on the same frame (98):
-        // D-E19-10, the DLL keeps its own rule (a shortfall of more than 0.01 px), one tick before the original's.
+        // 36956160 (563.9 px), where the whole step used to be rejected. The flag rises one frame later (99), on the first frame with no advance at all, as
+        // the binary does (E19.a3, D-E19-12): frame 98 reaches the contact with a shortened step that still advances, so the flag stays 0.
         Assert.Equal(36831232, wallPosX);
 
-        // The highground scenario reaches its wall on frame 39 and stops at 27394048 (418 px) instead of 27506688.
+        // The highground scenario reaches its wall on frame 39 (flag from frame 40, E19.a3) and stops at 27394048 (418 px) instead of 27506688.
         var highgroundFirstWall = highgroundFreestep1.Lines.First(l => l.ForceAdjusted == 1);
-        Assert.Equal(39, highgroundFirstWall.Frame);
+        Assert.Equal(40, highgroundFirstWall.Frame);
         Assert.Equal(27394048, highgroundFirstWall.PosX);
 
         // First real directional input takes effect: MovePlayer sets TargetAnimationId=1 (Moving) the very

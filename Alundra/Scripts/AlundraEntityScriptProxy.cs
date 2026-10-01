@@ -173,11 +173,11 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// "per frame" in the original IS "per tick" here, since the original's engine runs exactly one script
     /// pass and one physics pass per fixed 50 Hz frame; see the ONE-CLOCK fix doc on
     /// <see cref="AlundraScriptedMotion"/> for why this field used to go stale before that fix), set
-    /// (nonzero) by <see cref="MoveControllerAndPullPosition"/> whenever the controller's own <c>Move</c>
-    /// returns an actual displacement that falls short of the requested one beyond a small epsilon on
-    /// either horizontal axis (<c>CharacterControllerComponent.Move</c> returns the actual displacement -
-    /// CharacterControllerComponent.cs:345-369) - the DLL's own equivalent of the original's "movement was
-    /// curtailed by a wall/screen clamp/collision" signal, consumed by opcode 0x1F
+    /// (nonzero) by <see cref="MoveControllerAndPullPosition"/> whenever, on either horizontal axis, a
+    /// displacement beyond a small epsilon was requested and the controller's own <c>Move</c> returns none
+    /// of it (an actual displacement within that epsilon; <c>CharacterControllerComponent.Move</c> returns
+    /// the actual displacement - CharacterControllerComponent.cs:345-369) - the DLL's own equivalent of the
+    /// original's "no sub-step was accepted" signal, consumed by opcode 0x1F
     /// (<see cref="AlundraEventProgramRunner"/>'s own Walk-with-collision bridge) and by 0x1E's own
     /// navigation detour. A value this field holds after its owning entity's motion tick survives
     /// unchanged across any additional RENDERED frames until the entity's next LOGIC tick (there may be
@@ -187,12 +187,12 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// controller (bare-fallback spawn) - <see cref="MoveControllerAndPullPosition"/> is itself a no-op in
     /// that case.
     /// <para>
-    /// E19.a2 (D-E19-10, deviation from the original kept until E19.h): the engine's cell field now
-    /// advances a blocked step to the contact (ADR-0045 of the engine), so the flag rises on the tick that
-    /// REACHES the contact (its displacement falls short by the part beyond the wall), one tick before the
-    /// original, which raises it only on the first tick with no advance at all
-    /// (<c>0x80037d54</c>, skipped by the guard of <c>0x800379a4</c>, when the whole step is rejected).
-    /// E19.h aligns the flag on the binary, together with the slide along a wall.
+    /// E19.a3 (D-E19-12, ADR-0017, superseding D-E19-10): like the binary, the flag rises only on a tick
+    /// with no progress on a requested axis (<c>0x80037d54</c>, skipped by the guard of <c>0x800379a4</c>
+    /// when a halved sub-step is accepted). A step the engine's cell field shortens to the contact
+    /// (ADR-0045 of the engine) but that still advances leaves it at 0, so a walk chained on the tick that
+    /// reaches the contact is not ended by a stale flag. The original's slide along a wall when only one
+    /// corner touches stays with E19.h (D-E19-9).
     /// </para>
     /// </summary>
     public int ForceAdjusted;//0x13c
@@ -1772,9 +1772,10 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// deviation, documented on the same plan section); a blocked axis advances to the contact on the cell
     /// field (E19.a2, ADR-0045 of the engine: the hero stops against the wall, no longer one step short of
     /// it), so the returned displacement is the part up to the contact. It DOES set <see cref="ForceAdjusted"/> (E4.d)
-    /// when the controller's own returned displacement falls short of what was requested here by more
-    /// than <see cref="ForceAdjustedEpsilonPixels"/> on either horizontal axis - the DLL's own equivalent
-    /// of the original's "movement was curtailed" signal (see <see cref="ForceAdjusted"/>'s own doc). A
+    /// when, on either horizontal axis, more than <see cref="ForceAdjustedEpsilonPixels"/> was requested
+    /// here and the controller's own returned displacement is at most that (E19.a3, D-E19-12: no progress on
+    /// the axis, as the binary's tick with no accepted sub-step; a step shortened to the contact that still
+    /// advances leaves the flag alone - see <see cref="ForceAdjusted"/>'s own doc). A
     /// no-op without a controller (the caller falls back to its own direct
     /// <see cref="PosX"/>/<see cref="PosY"/> += in that case) - <see cref="ForceAdjusted"/> is left
     /// untouched, same as every other controller-gated site on this class.
@@ -1789,8 +1790,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
         var requested = new Vector3(deltaXPixels, deltaYPixels, 0f);
         var actual = Controller.Move(requested);
 
-        if (MathF.Abs(actual.X - requested.X) > ForceAdjustedEpsilonPixels
-            || MathF.Abs(actual.Y - requested.Y) > ForceAdjustedEpsilonPixels)
+        if (AxisMadeNoProgress(requested.X, actual.X) || AxisMadeNoProgress(requested.Y, actual.Y))
         {
             ForceAdjusted = 1;
         }
@@ -1888,14 +1888,24 @@ public class AlundraEntityScriptProxy : GameplayProxy
         }
     }
 
-    /// <summary>Small horizontal-axis tolerance <see cref="MoveControllerAndPullPosition"/> uses to decide
-    /// whether the controller's own returned displacement counts as "curtailed" (sets
-    /// <see cref="ForceAdjusted"/>) - well under a single pixel, so ordinary floating-point noise from the
-    /// <c>Move</c> round trip never sets it spuriously, while any REAL wall/step-height block reliably does:
-    /// the tick that reaches the contact falls short by the part of the step beyond the wall (E19.a2, the
-    /// step advances to the contact), and every tick the entity keeps pushing falls short by the whole step.
+    /// <summary>Small horizontal-axis tolerance <see cref="MoveControllerAndPullPosition"/> uses on each axis,
+    /// both to decide that a displacement was requested at all (more than this) and that the controller
+    /// obtained none of it (at most this) - well under a single pixel, so ordinary floating-point noise from
+    /// the <c>Move</c> round trip never sets <see cref="ForceAdjusted"/> spuriously, while any REAL wall/
+    /// step-height block reliably does on the tick the entity keeps pushing without advancing (E19.a3,
+    /// D-E19-12: the tick that merely reaches the contact is a shortened step that still advances, and does
+    /// not).
     /// </summary>
     private const float ForceAdjustedEpsilonPixels = 0.01f;
+
+    /// <summary>True when, on one horizontal axis, a displacement beyond
+    /// <see cref="ForceAdjustedEpsilonPixels"/> was requested and the controller obtained at most that
+    /// much of it, i.e. the axis made no progress at all (E19.a3, D-E19-12).</summary>
+    private static bool AxisMadeNoProgress(float requested, float actual)
+    {
+        return MathF.Abs(requested) > ForceAdjustedEpsilonPixels
+            && MathF.Abs(actual) <= ForceAdjustedEpsilonPixels;
+    }
 
     public override void Draw()
     {
