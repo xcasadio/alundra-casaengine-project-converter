@@ -219,6 +219,27 @@ public sealed class AlundraVisionAndCoastArcTests
         Assert.Equal(samples.DogSamples, samples.DogEqualsBlock11);
         Assert.True(arc.Trace.Any(t => t.Slot == CProgram && t.Pc == 856), "Ronan's program never passed 0x1C @854");
 
+        // E19.c2: Ronan's laps (1A 06 @852; 1C [1] @854; 1A 00 @856; Wait 41 ticks) on the exact end of his Hold of 24 ticks. The
+        // first 0x1A @852 runs at frame 1; in the binary the wait ends 25 ticks after it (the end of the Hold is seen one tick after
+        // it happens), so a lap is 25 + 41 = 66 frames. The three checks, in this order.
+        var ronanStarts = arc.Trace.Where(t => t.Slot == CProgram && t.Pc == 852 && t.Opcode == 0x1A).Select(t => t.Frame).ToList();
+        var ronanRestarts = arc.Trace.Where(t => t.Slot == CProgram && t.Pc == 856 && t.Opcode == 0x1A).Select(t => t.Frame).ToList();
+
+        // (1) the first 0x1A @856 runs at frame 26.
+        Assert.Equal(26, ronanRestarts.First());
+
+        // (2) every 0x1A @856 runs exactly 25 frames after the 0x1A @852 that precedes it.
+        Assert.Equal(
+            Enumerable.Repeat(25, ronanRestarts.Count),
+            ronanRestarts.Select(restart => restart - ronanStarts.Last(start => start < restart)).ToList());
+
+        // (3) two successive 0x1A @852 are 66 frames apart, up to T60.
+        var lapStarts = ronanStarts.Where(start => start <= t60).ToList();
+        Assert.True(lapStarts.Count > 1, "Ronan did not start two laps before T60");
+        Assert.Equal(
+            Enumerable.Repeat(66, lapStarts.Count - 1),
+            lapStarts.Zip(lapStarts.Skip(1), (first, next) => next - first).ToList());
+
         // The end: no box, the hero still locked.
         Assert.Equal(0u, (uint)AlundraDialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
         Assert.False(AlundraDialogueDirector.Instance.IsOpen);
@@ -243,6 +264,19 @@ public sealed class AlundraVisionAndCoastArcTests
         public readonly Dictionary<int, (int X, int Y, int ForceAdjusted)> JessAfterWalk = new();
         public (int X, int Y)? JessAt53;
         public (int X, int Y)? BlockAt53;
+        public int FramesWithTheHeroChecked;
+
+        /// <summary>E19.c2 (hygiene of E19.c1): from the frame of <c>0x64 @421</c> to the end the hero stays where B1 put him, checked at the end of every frame.</summary>
+        public void AssertTheHeroDidNotMove(ArcRun arc)
+        {
+            if (HeroAt421 is not { } expected)
+            {
+                return;
+            }
+
+            FramesWithTheHeroChecked++;
+            Assert.True((arc.Hero.PosX, arc.Hero.PosY) == expected, $"the hero moved at frame {arc.Frame}: ({arc.Hero.PosX}, {arc.Hero.PosY}), expected {expected}");
+        }
 
         public void Take(ArcRun arc, ArcInstruction t)
         {
@@ -314,7 +348,11 @@ public sealed class AlundraVisionAndCoastArcTests
         arc.OnInstruction = t => samples.Take(arc, t);
 
         // 1. The end signal.
-        arc.RunUntil(() => arc.Has(CProgram, 640, 0x53), "Jess (C[1]) executes 0x53 @640 towards map 163");
+        arc.RunUntil(() =>
+        {
+            samples.AssertTheHeroDidNotMove(arc);
+            return arc.Has(CProgram, 640, 0x53);
+        }, "Jess (C[1]) executes 0x53 @640 towards map 163");
 
         // 2. Nothing skipped, nothing cut off by the loop guard.
         AssertNothingSkippedOrExceeded(arc);
@@ -333,6 +371,7 @@ public sealed class AlundraVisionAndCoastArcTests
         AssertFrame(arc, BProgram, 506, 0x05, 493);
         Assert.Equal((65273856, 49807360), samples.HeroAt421);
         Assert.Equal((65273856, 49807360), (arc.Hero.PosX, arc.Hero.PosY));
+        Assert.True(samples.FramesWithTheHeroChecked > 1000, $"the hero was checked on {samples.FramesWithTheHeroChecked} frames only");
         Assert.Equal(78u, samples.HeroAnimAt429);
         Assert.Equal(16u, samples.HeroDirectionAt429);
 
@@ -373,6 +412,103 @@ public sealed class AlundraVisionAndCoastArcTests
         Assert.Equal(0u, (uint)AlundraDialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
         Assert.False(AlundraDialogueDirector.Instance.IsOpen);
         Assert.Equal(AlundraGameState.PlayerControlBits.ControlLocked, ArcRun.State.PlayerControlFlags);
+        AssertNoUnexpectedError(arc);
+    }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // A9
+    // ----------------------------------------------------------------------------------------------------------
+
+    private const int FProgram = ScriptHelper.ProgramFInteract;
+
+    private static ArcSpec A9Spec => new(
+        "A9", "Inoa", "Inoa (inner)-172", Array.Empty<int>(), 36, 18, 2, 400, RealController: true, Prefabs: true);
+
+    private sealed class A9Samples
+    {
+        public uint? WendellTargetAfter537;
+        public uint? FlagsAfter534;
+        public int? WendellCounterAfter541;
+        public uint? WendellTargetAfter541;
+
+        public void Take(ArcRun arc, ArcInstruction t)
+        {
+            if (t.Slot != CProgram)
+            {
+                return;
+            }
+
+            if (t.Pc == 534 && t.Opcode == 0x0D && FlagsAfter534 == null)
+            {
+                FlagsAfter534 = ArcRun.State.PlayerControlFlags;
+            }
+
+            if (t.Pc == 537 && t.Opcode == 0x1A && WendellTargetAfter537 == null)
+            {
+                WendellTargetAfter537 = arc.EntityByRecord(6)?.TargetAnimationId;
+            }
+
+            if (t.Pc == 541 && t.Opcode == 0x1A && WendellCounterAfter541 == null)
+            {
+                WendellCounterAfter541 = arc.EntityByRecord(6)?.AnimCompleteCounter;
+                WendellTargetAfter541 = arc.EntityByRecord(6)?.TargetAnimationId;
+            }
+        }
+    }
+
+    /// <summary>
+    /// A9 (map 172, Inoa, no flag): the player talks to Wendell through the invisible trigger of record 4 (the production seam of the
+    /// interaction, <see cref="IAlundraScriptHost.ActiveCollisionEntity"/>): its slot F program sets T0 (<c>0x05 @1840</c>), which releases
+    /// Wendell's tick program C[6] (@504). It locks the player (<c>0x10 @530</c>), opens the box (<c>0x0D @534</c>), plays Wendell's
+    /// animation 11, a Loop of 90 ticks (<c>0x1A @537</c>), and waits for one turn of it (<c>0x1C [1] @539</c>), which the binary sees 91
+    /// ticks after the <c>0x1A</c>; then <c>0x1A [10] @541</c>, <c>0x39 @543</c>, <c>0x06 @544</c> clears T0 and <c>0x11 @547</c> gives the hand
+    /// back. Before E19.c2 the wait never saw the turn and the player stayed locked for ever (the P1 introduced by E19.c1).
+    /// </summary>
+    [Fact]
+    public void A9_WendellOnMap172_TheWaitOnALoopSeesItsTurn_ThePlayerGetsTheHandBack()
+    {
+        using var arc = new ArcRun(A9Spec);
+        var serialAtStart = AlundraDialogueDirector.Instance.OpenSerial;
+        var samples = new A9Samples();
+        arc.OnInstruction = t => samples.Take(arc, t);
+
+        // 1. The end signal: the interaction, the lock and the box (closed at once, one press per page), then the unlock.
+        arc.OneFrame();
+        arc.OneFrame();
+        ((IAlundraScriptHost)arc.Proxy).ActiveCollisionEntity = arc.EntityByRecord(4);
+        arc.RunUntil(() => arc.Has(CProgram, 530, 0x10), "Wendell (C[6]) executes 0x10 @530 after the interaction");
+        var f530 = FrameOf(arc, CProgram, 530, 0x10);
+        arc.CloseDialogueWithTheButton("the box of Wendell closes");
+        var frameAfterTheBoxClosed = arc.Frame;
+        arc.RunUntil(() => arc.Has(CProgram, 547, 0x11), "Wendell executes 0x11 @547");
+
+        // 2. Nothing skipped, nothing cut off by the loop guard.
+        AssertNothingSkippedOrExceeded(arc);
+
+        // 3. The rest, in the order of the plan.
+        Assert.Equal(1, arc.Trace.Count(t => t.Slot == FProgram && t.Pc == 1840 && t.Opcode == 0x05));
+        Assert.InRange(f530, 1, 10);
+        Assert.Equal(f530, FrameOf(arc, CProgram, 534, 0x0D));
+        Assert.Equal(f530, FrameOf(arc, CProgram, 537, 0x1A));
+        Assert.Equal(f530, FrameOf(arc, CProgram, 539, 0x1C));
+        Assert.Equal(11u, samples.WendellTargetAfter537);
+        Assert.Equal(0x14u, samples.FlagsAfter534);
+
+        // The wait ends 91 frames after the 0x1A (a Loop of 90 ticks, seen one tick after its turn).
+        Assert.Equal(f530 + 91, FrameOf(arc, CProgram, 541, 0x1A));
+        Assert.Equal(0, samples.WendellCounterAfter541);
+        Assert.Equal(10u, samples.WendellTargetAfter541);
+
+        // The box was closed before the end of the wait: nothing else delays the rest of the program.
+        Assert.True(frameAfterTheBoxClosed <= f530 + 91, $"the box closed at frame {frameAfterTheBoxClosed}, after the end of the wait (frame {f530 + 91})");
+        Assert.Equal(f530 + 91, FrameOf(arc, CProgram, 543, 0x39));
+        Assert.Equal(f530 + 91, FrameOf(arc, CProgram, 544, 0x06));
+        Assert.Equal(f530 + 91, FrameOf(arc, CProgram, 547, 0x11));
+
+        // The end: the hand is back, T0 is clear, one box opened.
+        Assert.Equal(0u, ArcRun.State.PlayerControlFlags);
+        Assert.Equal(0u, ArcRun.State.GetFlag(0x8000) & 1u);
+        Assert.Equal(1u, (uint)AlundraDialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
         AssertNoUnexpectedError(arc);
     }
 }

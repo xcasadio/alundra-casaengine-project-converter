@@ -1637,7 +1637,8 @@ moteur pour C0).
   - textes en retard : « Loop not bridged » d'`AlundraEntitySpawnFactory`, la doc de `SyncAnimation` et du
     pont, `AlundraGameplayFreeze.cs`, le commentaire du proxy sur la latence, le texte de rôle
     d'`IntroTraceHarnessTests.cs:878`, les comptes de la ligne E19.i et des lignes P1/P2 de §1.2e.
-- **C6 — Arcs verts** ⏳ : A9 et A3 resserré commités.
+- **C6 — Arcs verts** ✅ *(fait le 2026-10-01 : le fichier des arcs entre avec A9, A3 resserré et la vérification d'A7 ; A9 mesuré F530 = 4, boîte fermée
+  avant l'image 8, `0x11 @547` à l'image 95 ; ligne A9 ajoutée au tableau du §1.3)* : A9 et A3 resserré commités.
 - **C7 — Docs** ⏳ : statuts, mesures au §2, points ouverts, ligne du plan maître.
 - **C8 — Recette en jeu (auteur)** ⏳ : voir plus bas.
 
@@ -1817,6 +1818,7 @@ mesure.
 | A7 | 416 | — | arrivée | `0x53` de `C[1] @640` vers 163 (§1.2e) | 2200 | E19.c1 |
 | A4p | 476 | `G1641` | comme A4 | comme A4, en vrais préfabs (§1.2e) | 2500 | E19.c1 |
 | A8 | 163 | — | arrivée | `G0`, `0x11 @201`, `G1662`, livre présent | E19.d | E19.d |
+| A9 | 172 | — | (36,18,2) ; l'arc pose `ActiveCollisionEntity` = enregistrement 4 | `0x11 @547` de C[6] @504 (Wendell), après `0x10 @530` et la boîte (§1.2f) | 400 | E19.c2 |
 
 Les valeurs exactes de chaque arrivée se décodent des opcodes `0x53` cités et s'écrivent dans le test
 avant le code.
