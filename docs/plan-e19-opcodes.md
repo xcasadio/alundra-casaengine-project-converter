@@ -1843,7 +1843,7 @@ exécution.
   | Latent : le binaire exclut aussi les entités bloquées (`BlockedByEntity`, `+0x20`) de `UpdateAnimation` ; la DLL n'exclut que les entités à détruire. Rien ne pose ce champ aujourd'hui. | P4 | Reporté (à reprendre si le blocage entre entités est porté). |
   | P4 du moteur (horloge activée en cours d'animation, `LastUpdateLoopTurns` périmé, numéros de ligne de la doc, trous de tests, entrées limites, `Detach`). | P4 | Reportés : plan moteur, « Vérification de clôture ». |
 
-### 1.2g E19.d — Fin de la chaîne : 392, 391 et 163 jusqu'au premier livre 🧪 (D0 à D9 faites le 2026-10-01 ; reste le verifier frais et la recette D10 de l'auteur)
+### 1.2g E19.d — Fin de la chaîne : 392, 391 et 163 jusqu'au premier livre 🧪 (D0 à D9 faites et vérifiées CONFIRMED le 2026-10-01 ; un P2 introduit sur la carte 10 se règle en E19.d2, sans merge d'E19.d avant ; reste la recette D10 de l'auteur)
 
 **But.**
 - La 392 mène à la 391 par son portail ; la 391 mène à la 416 ; la 163 joue le réveil à Inoa, Jess marche
@@ -2197,7 +2197,9 @@ et une course Debug ; la DLL déployée est la Debug.
 2. A6 et A8 échouent comme le dit la table, puis passent ; A5 et A5r passent.
 3. Les tests unitaires de D2, D4 et D6 passent.
 4. Le recensement de `0x24` est dans `docs/census-0x24-waits.md`, et aucun site du chemin de l'histoire n'est
-   hors de « mur trouvé » (sinon arrêt, D5).
+   hors de « mur trouvé » (sinon arrêt, D5). **Modifié par D-E19-24** : aucun site du chemin n'est « aucun mur »
+   ni « indéterminé » ; les sites « non atteints » (marche `0x0B` bloquée, drapeau jamais posé) sont des
+   risques séparés, listés dans le rapport.
 5. `Alundra.Tests` et les tests du convertisseur passent à 0 échec ; le moteur, les traces du héros et de
    l'intro ne changent pas.
 6. Un verifier frais rend CONFIRMED sur 1 à 5.
@@ -2239,6 +2241,35 @@ et une course Debug ; la DLL déployée est la Debug.
   (six sites dormants, vérifié dans les données) ; l'épingle d'A6 et O-E19-15 ; l'outil d'appuis consécutifs
   pour A8 ; les précisions des tests et des risques.
 - **Relecture neuve de la révision** (`556b53b`) : **READY**.
+
+**Vérification d'E19.d (2026-10-01).**
+- **Commits** : `acbb789` (D1), `c91af00` (D2), `a31689e` (D3), `dfd8ded` (arrêt de D5), `67f8941`
+  (D-E19-24 à D-E19-26), `8dca230` (D4), `8ee80e9` (D5, recensement corrigé), `6d6647a` (D6), `d3c397a` (D7),
+  `0a926e4` (D8), `1afc26b` (D9). Le moteur et son pointeur ne changent pas.
+- **Verifier frais : CONFIRMED.** Dans un arbre jetable : `Alundra.Tests` 2086/2086 en Release,
+  convertisseur 400/400.
+  - Mutations attrapées : l'ancien `wasAlreadyLanded` (A6 sur `@479`, test de D2), `0x24` retiré (A8 sur les
+    opcodes sautés, U1, U3, U4), `0x40`/`0x41` retirés (A8, U5 à U13), effacement du propriétaire quand
+    l'entité logique est une autre (U6, U7), remise à zéro du générateur retirée (TH2), héros construit à la
+    main (TH1, A8 bloqué sur `0x1C @100`).
+  - Son propre recensement (décodeur, atteignabilité, rayons) redonne les 429 sites, les 395 atteignables, les
+    59 sites du chemin et les 28 non atteints ; aucun site du chemin n'est « aucun mur » ni « indéterminé ».
+    Quelques distances diffèrent, jamais la classe.
+  - Traces inchangées ; DLL Debug déployée.
+- **Trois contradicteurs en lecture seule.** La fidélité au binaire de `0x24`, `0x40`, `0x41`, de l'effacement
+  dans `RunScript` et du correctif d'atterrissage est confirmée instruction par instruction. Dispositions :
+
+  | Constat | Priorité | Disposition |
+  |---|---|---|
+  | Porter `0x24` fait caler la scène des villageois de la carte 10 (G218, B[14]) : avant D4, l'opcode sauté laissait Nestus repartir de son point d'apparition ; maintenant il marche 193 px au nord jusqu'à la falaise, puis sa marche `0x0B @5172` ne peut pas partir (marche de 80 px, au-delà du pas de 3). T666 n'est jamais posé et le héros reste bloqué (`0x10 @1826`). Même chose sur la 331 (miroir de la 10). Dans l'original la scène va au bout : c'est l'écart O-E19-18, que le port fidèle de `0x24` met au jour. | **P2, introduit** | **Bloquant pour le merge** : se règle en E19.d2 (D-E19-26), décidée avant ce constat ; E19.d ne se merge pas sans E19.d2. La recette D10 ne passe pas par la carte 10. |
+  | La liste des sites « non atteints » ne vaut pas liste des blocages : elle ne part que des sites de `0x24`. Neuf marches `0x0B` bloquées n'existent qu'à cause du port et n'y figurent pas (héros B[9] sur la 10 et la 331, Septimus `@506` sur la 185, Jess sur la 334 et la 365, Zane sur la 363, Beaumont sur la 366, Nestus `@5172` sur la 10 et la 331). L'argument d'O-E19-16 « seuls les 8 sites sous main tenue peuvent bloquer » est donc faux. | P3, introduit | Reporté : la découverte d'E19.d2 recense toutes les marches `0x0B` bloquées après un `0x24`, sur tout le corpus. |
+  | L'acceptation 4 et l'arrêt de D5 gardaient l'ancienne formulation ; le chemin de l'histoire omet la 135 (église), qui commande la 178 par G1655 (six sites « non atteints » de la 135 non marqués). | P3 | Acceptation 4 annotée ci-dessus ; la 135 entre dans le périmètre d'E19.d2. |
+  | Le recensement n'est pas reproductible depuis le dépôt : les scripts sont dans le scratchpad de la session. | P4 | Question à l'auteur (avec le plan d'E19.d2). |
+  | Écarts du modèle : une marche `0x0B` courte d'un pixel compte comme passée (la DLL cale) ; le filtre de zone d'apparition n'est pas modélisé. Aucune classe du chemin ne change. | P4 | Accepté, noté pour le prochain recensement. |
+  | `0x40` touche 427 sites dans 122 cartes (782 enregistrements) ; 362 sont suivis directement de `0xFF`, donc rien ne change ; environ 65 continuent et sont désormais coupés. Sur le chemin, seules la 44 et la 163, toutes suivies de `0xFF`. | P4 | Accepté ; les chiffres du plan et de l'ADR (environ 200 entités dans 40 cartes) sont à ce titre une estimation basse. |
+  | La garde de boucle coupe maintenant aussi l'état d'un programme qui a fait `0x40` plus tôt dans l'appel (le binaire n'a pas de garde) ; jamais atteint dans le corpus. | P4, introduit | Accepté. |
+  | Le terrain pose `CollidedWithEntityZ` à 0 dans la DLL, à 1 dans le binaire (`0x800376E0`) ; aucun opcode ne le lit aujourd'hui (`0x25`, `0x26`, `0x47` le liront). | P4 | Reporté à E19.h. |
+  | La doc XML de `Dispatch` est passée sur un nouveau champ ; la doc de l'`ArcSpec` décrit encore le héros construit à la main ; « `0x3B @133` rend toujours 0 » d'A5 ne vérifie pas qu'il y a des échantillons ; A8 épingle des effets du retard D-E19-13 ; l'ordre de mise en place du héros des arcs diffère de la production (couvert par TH1) ; le rouge d'A6 et d'A8 n'est pas dans l'historique ; l'ADR-0020 a reçu un amendement au lieu d'une nouvelle ADR. | P4 | Reportés (hygiène d'E19.d2). |
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
