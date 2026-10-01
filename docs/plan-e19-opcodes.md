@@ -293,7 +293,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 |---|---|---|---|
 | **E19.a** | Entité de contexte (`0x42`, `0x43`, et tous les opcodes sur l'entité logique), `0x59`, garde de boucle (D-E19-3), support des arcs | A0, A0b, A1 | Le capitaine sort par l'escalier et réapparaît en pièce B ; sommeil, puis 476 |
 | E19.a2 🧪 | Moteur : sur le champ de cellules, un pas bloqué avance jusqu'au contact (D-E19-8) ; épingles et traces de référence du héros re-mesurées ; la cabine testée avec un vrai contrôleur | cabine seule, A1c | La cabine : Alundra s'endort, puis la 476 se charge |
-| E19.a3 | DLL : `ForceAdjusted` ne se lève qu'au tick sans avance, comme le binaire (D-E19-12) ; épingles du héros re-mesurées | marin 12 de la 389 | Le marin 12 rejoint sa place en fin d'intro |
+| E19.a3 🧪 | DLL : `ForceAdjusted` ne se lève qu'au tick sans avance, comme le binaire (D-E19-12) ; épingles du héros re-mesurées | marin 12 de la 389 | Le marin 12 rejoint sa place en fin d'intro |
 | E19.b | Carte 476 : `0xC4` sans nom (D-E19-5), `0x8A` (bloc caméra), `0x4C` gardé pour la machine à écrire | A2, A4 | La vision de Lars et Melzas jusqu'à 478, puis jusqu'à 392 |
 | E19.c | Carte 478 et marches : `0x0B` avec détour (D-E19-6), `0x1C`/`0x1D` (compteur du binaire, Chain et Hold), `0x5E`, `0x08`, `0x0C`, `0x3A`, `0x89`, `0x73`/`0x74` | A3, A7 | La vision de 478 va au bout ; la plage 416 mène à Inoa |
 | E19.d | Fin de chaîne : `0x24` sur l'entité logique, `0x40`/`0x41` sur l'entité logique, reste de 392, 391 et 163 | A5, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
@@ -757,7 +757,7 @@ après exécution. Budgets et arrêts : ceux du §5.
   relue à nouveau. La décision d'approuver en l'état, ou de demander une relecture de plus, revient à
   l'auteur.
 
-### 1.2c E19.a3 — `ForceAdjusted` comme dans le binaire ⏳ (proposée le 2026-10-01)
+### 1.2c E19.a3 — `ForceAdjusted` comme dans le binaire 🧪 (T0 à T3 faites le 2026-10-01 ; reste la recette en jeu T4)
 
 **Origine : recette T5 d'E19.a2 (auteur).** La cabine passe : Alundra se couche et la suite du script
 part. Mais à la fin de l'intro de la 389, le marin 12 s'arrête avant sa place : il finit 72 px trop à
@@ -788,7 +788,9 @@ temporaire `Alundra.Tests/ZzDiagE19SailorTests.cs`, non commité) :
 
 **Tâches.**
 
-- **T0 — Preuve rouge** : écrire le test durable du marin 12, d'après le diagnostic temporaire :
+- ✅ **T0 — Preuve rouge** :
+  *(fait le 2026-10-01 : sur l'ancienne règle, le test échoue parce que la marche ouest 72 (`0x1F @1491`) se termine au tick où elle commence ; le marin reste en (540,875 ; 842,0).)*
+  écrire le test durable du marin 12, d'après le diagnostic temporaire :
   - vrai contrôleur du banc 146 ;
   - vraies cellules et vraie grille de navigation de la 389 ;
   - en-tête réel du marin, masque `WalkabilityMaskFor(Flags)` ;
@@ -815,13 +817,16 @@ temporaire `Alundra.Tests/ZzDiagE19SailorTests.cs`, non commité) :
   Le lancer sur le code actuel : il doit échouer parce que la marche ouest 72 (`0x1F @1491`) se termine
   au tick même où elle commence, laissant le marin en x = 540,875. Consigner le constat, sans rien
   committer. Un écart avec ces valeurs après T1 est un arrêt : il ne s'épingle pas.
-- **T1 — La règle** : dans `AlundraEntityScriptProxy.MoveControllerAndPullPosition` (`:1792-1796`),
+- ✅ **T1 — La règle** :
+  *(fait le 2026-10-01 : règle `AxisMadeNoProgress`, docs de `ForceAdjusted` et de la méthode, 4 tests unitaires dans `AlundraNpcCharacterControllerMoverTests` ; commit `8a01fa1`.)*
+  dans `AlundraEntityScriptProxy.MoveControllerAndPullPosition` (`:1792-1796`),
   `ForceAdjusted = 1` seulement si, sur un axe, |demandé| > 0,01 et |obtenu| ≤ 0,01.
   - Mettre à jour la doc de `ForceAdjusted` (`:168-196`, dont l'écart D-E19-10, maintenant levé) et celle
     de la méthode.
   - Tests unitaires : un pas raccourci mais avancé ne lève pas le drapeau ; un pas sans avance le lève ;
     les deux axes sont jugés séparément ; un reste de moins de 0,01 px compte comme « sans avance ».
-- **T2 — Le marin 12 et les épingles** :
+- ✅ **T2 — Le marin 12 et les épingles** :
+  *(fait le 2026-10-01 : le test `AlundraSailor12EndOfIntroTests` atteint `@1494` puis `0xFF` et lit (467,75 ; 842,0) à la fin de l'image qui précède celle de `@1494` ; traces du héros : seule la colonne `forceAdjusted` change, 1 → 0 à l'image 98 (spawn) et 39 (highground), un seul écart par fichier ; épingles 98 → 99 et 39 → 40, posX inchangée (36831232, 27394048) ; `Alundra.Tests` 1920/1920 avant ajout du test du marin, A1c et la cabine verts ; commits `8a01fa1` (règle, tests, traces, épingles) et `354b80a` (test du marin, diagnostic supprimé).)*
   - le test de T0 passe avec les valeurs écrites en T0 : le programme atteint `@1494` puis `0xFF` dans
     sa limite, et le marin finit en (467,75 ; 842,0) exactement ;
   - les traces du héros ne changent que dans la colonne `forceAdjusted`, à la première image de contact :
@@ -832,9 +837,9 @@ temporaire `Alundra.Tests/ZzDiagE19SailorTests.cs`, non commité) :
   - lancer d'abord les tests qui dépendent du tick du premier `ForceAdjusted` (liste de T2 d'E19.a2). Un
     décalage d'exactement un tick, expliqué par la règle, s'épingle ; tout autre changement est un arrêt ;
   - A1c et le test de la cabine passent toujours.
-- **T3 — Docs** : l'ADR-0017 (déjà écrite), la ligne de statut de l'ADR-0016, ce plan, et la ligne E19 du
+- ✅ **T3 — Docs** *(fait le 2026-10-01)* : l'ADR-0017 (déjà écrite), la ligne de statut de l'ADR-0016, ce plan, et la ligne E19 du
   plan maître.
-- **T4 — Recette en jeu (auteur)** : à la fin de l'intro de la 389, le marin 12 rejoint sa place (ta
+- ⏳ **T4 — Recette en jeu (auteur)** : à la fin de l'intro de la 389, le marin 12 rejoint sa place (ta
   capture 2) ; puis la cabine, Alundra se couche, et la 476 se charge.
 
 **Acceptation d'E19.a3.**
@@ -898,7 +903,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-1 | ~~Portails trou et escalier de la 390~~ — **réglé par la recette du 2026-09-29** : le journal montre le passage par le portail 5, qui charge la pièce B. Question d'origine : si la recette d'E19.a montre que le héros ne suit pas le capitaine par là, faut-il corriger dans E19 ou dans un chantier de transitions ? | E19.a (recette) |
 | O-E19-2 | Nouveaux écarts de la décompilation relevés dans le binaire : `0x5F` (entité et taille), `0x66` (sens de la copie), compteur de `0x1C`, `y` de la boîte de nom, portrait de `Script_196_0C4`, test de zone de `GetMapEffectRecord`, `AddOneItemIfUnlocked`, `InitializeEventData`. Le portage suit le binaire. Faut-il aussi corriger la décompilation dans l'analyseur, comme pour la taille de `0x78` en E16.a ? | E19.m |
 | O-E19-3 | Déplacement vertical des entités nues dans le support d'arcs (A3, A6) : dupliquer la passe du harnais de l'intro, l'extraire (le fichier de trace épinglé serait touché), ou ouvrir en production un point d'entrée du chargeur de préfabs pour que le montage ait de vrais contrôleurs ? | E19.c |
-| O-E19-5 | Quand un `0x5B [x,0,dir]` arrête un PNJ au tick où sa marche se termine, le mouvement de ce tick s'applique encore avec la nouvelle direction : le marin 12 de la 389 descend de 1,25 px au tick de `@1494` (mesuré en E19.a3). Cela peut venir de la latence d'une image de `CurrentAnimationId` des PNJ, déjà relevée (le moteur synchronise l'animation en fin d'image). À vérifier contre le binaire, avec les attentes de mouvement. | E19.c |
+| O-E19-5 | Quand un `0x5B [x,0,dir]` arrête un PNJ au tick où sa marche se termine, le mouvement de ce tick s'applique encore avec la nouvelle direction : le marin 12 de la 389 descend de 1,25 px au tick de `@1494` (mesuré en E19.a3 : y = 843,25 à l'image de `@1494`, contre 842,0 à l'image précédente, lue par le test du marin 12). Cela peut venir de la latence d'une image de `CurrentAnimationId` des PNJ, déjà relevée (le moteur synchronise l'animation en fin d'image). À vérifier contre le binaire, avec les attentes de mouvement. | E19.c |
 | O-E19-4 | Le gestionnaire natif du créneau E (`0x8007ED10`, destruction après `Deactivated`, 417 enregistrements sur 85 cartes) : E14, ou une tranche d'E19 ? Sur la chaîne, il ne touche que l'oiseau de la 389 et des PNJ d'Inoa. | E14 |
 
 ## 4. Hors périmètre
