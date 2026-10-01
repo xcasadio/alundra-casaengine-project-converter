@@ -320,7 +320,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.a3 ✅ | DLL : `ForceAdjusted` ne se lève qu'au tick sans avance, comme le binaire (D-E19-12) ; épingles du héros re-mesurées | marin 12 de la 389 | Le marin 12 rejoint sa place en fin d'intro |
 | E19.b 🧪 | Carte 476 : `0xC4` sans nom (D-E19-5), `0x8A` (bloc caméra), `0x4C` gardé pour la machine à écrire | A2, A4 | La vision de Lars et Melzas jusqu'à 478, puis jusqu'à 392 |
 | E19.c1 🧪 | Cartes 478 et 416 : `0x0B` avec détour (D-E19-6), `0x1C`/`0x1D` (compteur du binaire, Chain et Hold), `0x5E`, `0x08`, `0x0C`, `0x3A`, `0x89`, `0x73`/`0x74` ; arcs en vrais préfabs (D-E19-14) | A3, A7, A4p | La vision de 478 va au bout ; la plage 416 mène à la 163 |
-| E19.c2 | Moteur : horloge logique exacte des fins d'animation, rendu en temps réel (D-E19-16, D-E19-17), correction des Loop figées ; DLL : pilotage à chaque tick logique, signal de boucle (D-E19-18), garde de `0x1C` sous rattrapage | A3, A9, tests moteur | Wendell à Inoa rend la main ; les fins d'animation au tick de l'original |
+| E19.c2 🧪 | Moteur : horloge logique exacte des fins d'animation, rendu en temps réel (D-E19-16, D-E19-17), correction des Loop figées ; DLL : pilotage à chaque tick logique, signal de boucle (D-E19-18), garde de `0x1C` sous rattrapage | A3, A9, tests moteur | Wendell à Inoa rend la main ; les fins d'animation au tick de l'original |
 | E19.d | Fin de chaîne : `0x24` sur l'entité logique, `0x40`/`0x41` sur l'entité logique, reste de 392, 391 et 163 | A5, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
 | E19.e | Recette de bout en bout, plus un test statique : aucun opcode sauté sur la chaîne hors liste d'exceptions | toute la chaîne | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement (avec les recettes d'E16 en attente) |
 | E19.f | Boîte de nom et boîte de texte fidèle (D-E19-4) : export du cadre, écrans XAML liés à un view model, cycle de vie de la boîte de nom, pour `0x0D`/`0x5C`/`0xC4` | tests MGDesktop | Les noms s'affichent au-dessus de la boîte, à la place de l'original |
@@ -1123,7 +1123,7 @@ puis part vers la 392 (arc A4).
   | Textes en retard : la doc de classe et les commentaires de cas d'`EntitySearchService` disent encore « owner » ; la doc d'`OpenDialog` ne cite que `0x0D` et `0x5C`. | P4 | Reporté à l'hygiène d'E19.c. L'ADR-0006 ne se réécrit pas. |
   | La preuve rouge des arcs n'est pas dans l'historique : les arcs sont commités après le code. | P4 | Accepté : le verifier l'a reproduite à part, comme pour E19.a3. |
 
-### 1.2e E19.c1 — Cartes 478 et 416 : attentes de mouvement, arcs en vrais préfabs 🧪 (code et arcs faits et vérifiés CONFIRMED le 2026-10-01 ; le P1 introduit se corrige en E19.c2, sans merge d'E19.c1 avant ; reste la recette T9)
+### 1.2e E19.c1 — Cartes 478 et 416 : attentes de mouvement, arcs en vrais préfabs 🧪 (code et arcs faits et vérifiés CONFIRMED le 2026-10-01 ; le P1 introduit est corrigé par E19.c2 (code fait le 2026-10-01), sans merge d'E19.c1 avant celui d'E19.c2 ; reste la recette T9)
 
 **But.**
 - La vision de la 478 va au bout : le bloc caméra monte, les drapeaux T20 à T60 tombent, puis la 476
@@ -1477,20 +1477,20 @@ est la Debug.
 
   | Constat | Priorité | Disposition |
   |---|---|---|
-  | `0x1C`/`0x1D` attendent désormais sans fin sur une animation Loop : la DLL n'a pas de signal de tour de boucle, alors que le binaire compte chaque tour (`0x80038D70`-`0x80038D7C`). Avant E19.c1, ces opcodes étaient sautés et le script passait. Quand le script tient la main du joueur (`0x10`), c'est un **blocage définitif** : vérifié sur la 172 (Inoa, après la 163), `0x10 @530`, `0x1A [11] @537` (Loop), `0x1C [1] @539`, `0x11 @547` jamais atteint. Même cas sur la 165 et la 179 (Wendell), et sur 138, 115, 440, 396 ; 28 sites dans 11 cartes. | **P1, introduit** | **Décidé par l'auteur le 2026-10-01 (D-E19-18)** : corrigé par le signal de boucle d'E19.c2 ; E19.c1 ne se merge pas sans E19.c2. La 478, la 416, la 476 et la 163 ne sont pas touchées : la recette T9 reste possible. Recensement exact en E19.c2 : 36 blocages dans 15 cartes. |
-  | Même cause hors blocage : des programmes d'interrupteurs, de plaques et de PNJ restent figés et ne posent plus leurs drapeaux ni leurs apparitions (sanctuaires 29 et 30, Magyscar 92, sanctuaire du lac 337 et 343, Meia 306, 440, 441). 141 sites Loop dans 40 cartes, et non 101 dans 30 comme le disait E19.i. | P2, introduit | Même décision que le P1. Recensement exact en E19.c2 : 208 sites exposés dans 53 cartes, dont 145 qui commandent un effet dans 27 cartes. |
-  | Sous rattrapage (2 ticks ou plus par image), `0x1C` compte une fin Hold à chaque tick, et un PNJ relancé reste à vitesse nulle jusqu'à 3 ticks. Le test unitaire de T4 épingle ce comptage. | P3, introduit | Reporté : la garde de `0x1C` sous rattrapage est prévue dans E19.c2. |
-  | Une relance `0x1C` depuis un événement de carte laisse `CurrentAnimationId` = ~`TargetAnimationId` visible une image : la passe de tri lit un biais IDSV nul. | P4 | Reporté à E19.c2 (pilotage des animations). |
-  | Une fin Chain qui tombe à l'image même du premier appel de `0x1C` est perdue (l'événement du sprite arrive avant le script). | P4 | Reporté à E19.c2 (le sprite avancera après les scripts). |
+  | `0x1C`/`0x1D` attendent désormais sans fin sur une animation Loop : la DLL n'a pas de signal de tour de boucle, alors que le binaire compte chaque tour (`0x80038D70`-`0x80038D7C`). Avant E19.c1, ces opcodes étaient sautés et le script passait. Quand le script tient la main du joueur (`0x10`), c'est un **blocage définitif** : vérifié sur la 172 (Inoa, après la 163), `0x10 @530`, `0x1A [11] @537` (Loop), `0x1C [1] @539`, `0x11 @547` jamais atteint. Même cas sur la 165 et la 179 (Wendell), et sur 138, 115, 440, 396 ; 28 sites dans 11 cartes. | **P1, introduit** | **Décidé par l'auteur le 2026-10-01 (D-E19-18)** : corrigé par le signal de boucle d'E19.c2 ; E19.c1 ne se merge pas sans E19.c2. La 478, la 416, la 476 et la 163 ne sont pas touchées : la recette T9 reste possible. Recensement exact en E19.c2 : 36 blocages dans 15 cartes. **Corrigé en E19.c2 (2026-10-01)** : le signal de tour de boucle et l'horloge logique ; A9 le prouve sur la 172 (`0x11 @547` à F530 + 91). Reste la recette C8. |
+  | Même cause hors blocage : des programmes d'interrupteurs, de plaques et de PNJ restent figés et ne posent plus leurs drapeaux ni leurs apparitions (sanctuaires 29 et 30, Magyscar 92, sanctuaire du lac 337 et 343, Meia 306, 440, 441). 141 sites Loop dans 40 cartes, et non 101 dans 30 comme le disait E19.i. | P2, introduit | Même décision que le P1. Recensement exact en E19.c2 : 208 sites exposés dans 53 cartes, dont 145 qui commandent un effet dans 27 cartes. **Corrigé en E19.c2 (2026-10-01)** par le même mécanisme ; les tests couvrent le mécanisme (T-D3, T-D5, T-D10, T-D15), le corpus se vérifie en jouant (C8). |
+  | Sous rattrapage (2 ticks ou plus par image), `0x1C` compte une fin Hold à chaque tick, et un PNJ relancé reste à vitesse nulle jusqu'à 3 ticks. Le test unitaire de T4 épingle ce comptage. | P3, introduit | Reporté : la garde de `0x1C` sous rattrapage est prévue dans E19.c2. **Corrigé en E19.c2 (C3, 2026-10-01)** pour le comptage (TG2, T-D2 et T-D3 en 2 t/i) ; le tick à vitesse nulle d'un PNJ relancé reste, écart gardé (D-E19-13). |
+  | Une relance `0x1C` depuis un événement de carte laisse `CurrentAnimationId` = ~`TargetAnimationId` visible une image : la passe de tri lit un biais IDSV nul. | P4 | Reporté à E19.c2 (pilotage des animations). **Corrigé en E19.c2 (C4, 2026-10-01)** : repli de la passe de tri sur la cible, T-D18. |
+  | Une fin Chain qui tombe à l'image même du premier appel de `0x1C` est perdue (l'événement du sprite arrive avant le script). | P4 | Reporté à E19.c2 (le sprite avancera après les scripts). **Corrigé en E19.c2 (2026-10-01)** : l'horloge logique avance après le script de l'entité ; T-D7 (le premier `0x1C` à s+24, rend 2 à s+25). |
   | `0x0B` sur un bloc de vitesse nulle, qui attend d'être poussé (435, `@547`) : attend sans fin, la poussée entre entités n'étant pas portée. | P4, introduit | Reporté (poussée : E14 ou E19.h) ; il ne perd que le `0x1A [0]` qui suit. |
   | Le mode préfabs construit un `ProjectSettings` vide : A4p ne passe pas par le gabarit de boîte du projet ni par font3, et vérifie ses boîtes sur le directeur. La ligne de risque « les huit boîtes d'A4p le vérifient » en disait trop. | P4 | Accepté ; la boîte fidèle vient avec E19.f. |
   | `ArcRun.ResetAll` ne remet pas `AlundraRandom` à zéro, alors que `0x0C` le consomme désormais. Aucune carte d'arc actuelle n'a de `0x0C`. | P4 | Reporté à E19.d (la 392 en a un). |
-  | A7 ne vérifie l'immobilité du héros qu'à `@421` et à la fin. | P4 | Reporté (hygiène d'E19.c2). |
-  | Libellé de `0x73` « Set program counter _30 » : c'est un compteur de boucle. Coquille « the / the » dans la doc d'`EntitySearchService`. | P4 | Reportés (hygiène d'E19.c2). |
+  | A7 ne vérifie l'immobilité du héros qu'à `@421` et à la fin. | P4 | Reporté (hygiène d'E19.c2). **Fait en E19.c2 (C5, C6, 2026-10-01)** : le héros ne bouge sur aucune des plus de 1000 images de `@421` à la fin. |
+  | Libellé de `0x73` « Set program counter _30 » : c'est un compteur de boucle. Coquille « the / the » dans la doc d'`EntitySearchService`. | P4 | Reportés (hygiène d'E19.c2). **Faits en E19.c2 (C5, 2026-10-01).** |
   | `0x0B`, `0x1C` et `0x1D` prennent `CodeIndex` pour clé : une attente au pc 0 se croirait déjà mémorisée. Aucun site au pc 0 dans les 483 cartes. | P4 | Accepté, comme pour `Wait`. |
   | T6 : « `Move(0, +1)` le laisse à 0 » se lit avec la remise à zéro par image, car un `Move` ne fait que lever le drapeau. | — | Précision acceptée ; valeurs inchangées. |
 
-### 1.2f E19.c2 — Fins d'animation exactes et signal de boucle 🚧 (C0 à C2 faites le 2026-10-01 ; reste C3 à C7, puis la recette C8)
+### 1.2f E19.c2 — Fins d'animation exactes et signal de boucle 🧪 (C0 à C7 faites le 2026-10-01, tests et arcs verts ; reste le verifier frais sur le moteur et le parent ensemble, puis la recette C8 de l'auteur)
 
 **But.**
 - `0x1C` et `0x1D` voient les fins Hold, les fins Chain et les tours de Loop au tick de l'original. Le
@@ -1639,7 +1639,9 @@ moteur pour C0).
     d'`IntroTraceHarnessTests.cs:878`, les comptes de la ligne E19.i et des lignes P1/P2 de §1.2e.
 - **C6 — Arcs verts** ✅ *(fait le 2026-10-01 : le fichier des arcs entre avec A9, A3 resserré et la vérification d'A7 ; A9 mesuré F530 = 4, boîte fermée
   avant l'image 8, `0x11 @547` à l'image 95 ; ligne A9 ajoutée au tableau du §1.3)* : A9 et A3 resserré commités.
-- **C7 — Docs** ⏳ : statuts, mesures au §2, points ouverts, ligne du plan maître.
+- **C7 — Docs** ✅ *(fait le 2026-10-01 : statuts, mesures au §2, O-E19-10 et O-E19-13 réglés, lignes P1 à P4 d'E19.c1 mises à jour, ligne E19.c2 de la
+  table des tranches, ligne E19 du plan maître ; la ligne E19.i disait déjà 208 sites dans 53 cartes ; le pointeur du moteur n'a pas bougé depuis C2)* :
+  statuts, mesures au §2, points ouverts, ligne du plan maître.
 - **C8 — Recette en jeu (auteur)** ⏳ : voir plus bas.
 
 **Valeurs écrites d'avance.** Sauf mention, 1 tick logique par image. La colonne « 60 Hz » suppose le motif
@@ -1854,6 +1856,47 @@ Réservé aux mesures faites en exécutant les tranches.
   convertisseur 400 sur 400. Les annexes de trace de l'intro et du héros ne changent pas. La DLL déployée dans
   `alundra-project/` est la Debug (`cmp` identique).
 
+### E19.c2 (2026-10-01)
+
+- **Commits** : moteur (branche `chantier/animation-logical-end-clock`, exécutés par le plan moteur) `1561fd07`, `cc6f498e`, `34ddf5e2`,
+  `b40888f1` ; parent (branche `chantier/e19-opcodes`) C2 `54029c4`, C3 `371ac46`, C4 `ff2328d`, C5 `1509625`, C6 `4cab666`, puis cette mise à jour
+  des docs. C1 n'a pas de commit propre (les preuves rouges entrent avec C2, C3 et C6). Le pointeur du moteur est `b40888f1` ; il n'a pas bougé
+  depuis C2.
+- **Rouge constaté (C1, DLL d'E19.c1 au-dessus du moteur de C0, 1 tick par image)**, conforme à la liste test par test :
+  - T-D1 rend 2 à s+24 ; T-D6 à s+93 ; T-D8 à s+102 puis s+144 ; T-D20 finit sa première attente à s+16, la seconde jamais ;
+  - T-D3, T-D4, T-D5 (n = 1, 2, 3), T-D7, T-D10 (n = 1, 2, 3), T-D15 (les sept premiers appels), T-D16 et T-D19 ne finissent jamais ;
+  - T-D11 et T-D12 lisent un tick logique de 0 (T-D11 : (4, 1, 0), (5, 2, 0), (6, 2, 0), ...) ; T-D14 lit un tick de 0 et un compteur de 0 ;
+    T-D13 lit un tick de 0 sur les images gelées et rend 2 à s+24 ;
+  - verts, comme annoncé : T-D2 (s+99) et T-D9 (s+25) ;
+  - A9 échoue dans sa limite de 400 images en nommant `slot 2 program @504: last 0x1C @539` ; A3 resserré échoue sur (1), 25 au lieu de 26 ; une fois (1)
+    retiré, (2) donne 24 au lieu de 25 et (3) 65 au lieu de 66.
+- **Rouge constaté (C2)** : seuls rouges, comme annoncé, T-D2 en 2 t/i (rend 2 à s+33 au lieu de 49) et T-D3 en 2 t/i (s+5 au lieu de 10) ; ils passent avec C3.
+  Une exception de déroulé, écrite en déviation : TG2, test de la garde, est écrit avec C3 et non avec C2, où il n'aurait pas pu passer.
+- **Valeurs mesurées contre valeurs écrites** : toutes égales, sans en changer une.
+  - Table T-D, 1 t/i, 60 Hz, 2 t/i : T-D1 25, 30, 12 (tick logique k en fin d'image s+k pour k = 0 à 24, drapeau Hold 1 en fin de s+24 puis 0 en fin de s+25,
+    animation 0 à l'image s+25, tick 0) ; T-D2 99, 118, 49 ; T-D3 21, 25, 10 ; T-D4 91, 109, 45 ; T-D5 11, 21, 31 / 13, 25, 37 / 5, 10, 15 ;
+    T-D6 91, 109, 45 ; T-D7 premier `0x1C` à s+24, rend 2 à s+25 ; T-D19 s+37 ; T-D20 s+16 puis s+36 ; T-D8 s+99 et s+140 (60 Hz : s+118 et s+168) ;
+    T-D9 s+25 (60 Hz : s+30) ; T-D10 11, 21, 31 (60 Hz : 13, 25, 37).
+  - T-D11 (4, 1, 0), (5, 2, 0), (6, 2, 1), (7, 2, 2), (8, 2, 3) ; T-D12 (4, 0), (5, 0), (6, 1), (7, 2), (8, 3), (9, 4) ; T-D13 tick 10 sur les dix images gelées,
+    `0x1C` à s+35 ; T-D14 tick k mod 10 sur 36 images, compteur 3 après l'image 30 ; T-D15 images 54 pour un premier appel aux images 0, 1, 10 et 53, 108
+    pour 54, 55 et 100 ; T-D16 tick 0 en fin d'image s, `0x1C` à s+13, compteur 0 ; T-D17 0 octet pour 1000 pas et 100 tours comptés ; T-D18 élévation 22 avec le
+    biais 3 (6 sans le repli).
+  - TB1, TB2, TG2, TG3 (réservés 0, 1 et 3 : tick dû posé et tick 0, rien et tick 0, tick 2 ; compte des réservés revenu à 0 à chaque appel, marque
+    effacée par tout changement), TG4 : toutes les valeurs écrites. Le test annoncé en C3 rend 0, 0, 0, puis, après le changement, drapeau 0 et marque
+    effacée, et 2 au quatrième appel.
+  - A3 resserré : premier `0x1A @856` à l'image 26 ; 31 `0x1A @852` et 31 `0x1A @856`, chaque `@856` 25 images après le `@852` qui le précède, deux `@852`
+    successifs à 66 images l'un de l'autre jusqu'à T60 (image 2008, dernier tour commencé à l'image 1981) ; toutes les autres valeurs d'A3 sont celles d'E19.c1.
+  - A9 : `0x05 @1840` une seule fois ; F530 = 4 (la dérivée) ; `0x10 @530`, `0x0D @534`, `0x1A @537` et le premier `0x1C @539` à l'image 4 ; `TargetAnimationId` 11
+    après `@537`, `PlayerControlFlags` 0x14 après `@534` ; `0x1A @541` à l'image 95 = F530 + 91 avec le compteur 0 et la cible 10 ; la boîte fermée avant l'image 8
+    (huit images exécutées) ; `0x39 @543`, `0x06 @544` et `0x11 @547` à l'image 95 ; fin : `PlayerControlFlags` 0, T0 effacé, une seule boîte, aucun opcode sauté,
+    aucune erreur inattendue.
+  - A7 : le héros reste en (65273856, 49807360) sur toutes les images de `@421` à la fin (plus de 1000 images vérifiées).
+- **Temps d'exécution** (Debug) : A9 environ 0,7 s ; A3 environ 1 s ; la classe `AlundraAnimationClockDriveTests` quelques dizaines de ms ; la suite complète
+  environ 20 s.
+- **Suites** : `CasaEngine.Tests` 2405 réussis, 0 échec (construit à part, lancé avec `--no-build`) ; `Alundra.Tests` 2064 réussis, 0 échec, en Release comme en
+  Debug (1995 avant la tranche : 69 tests de plus, dont les colonnes de la table T-D comptées une par une) ; convertisseur 400 sur 400. Les annexes de trace du héros
+  et de l'intro ne changent pas. La DLL déployée dans `alundra-project/` est la Debug (`cmp` identique).
+
 ## 3. Points ouverts
 
 | Réf | Sujet | Tranche |
@@ -1866,10 +1909,10 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-7 | Une entité sans contrôleur ne bouge jamais en Z dans la DLL, alors que le binaire intègre Z pour toute entité active (`MoveEntity` `0x80037E34` → `ComputeZPosition`). Sur la chaîne, tous les enregistrements ont un contrôleur. | E19.h |
 | O-E19-8 | `IsZForceApplied` (`+0xF8`) n'est pas porté : au tick d'un changement d'animation, le binaire remplace `ForceZ` par la valeur du jeu d'animation (131 des 395 enregistrements de sprite en ont une non nulle). Il suppose l'animation résolue avant la physique, ce que D-E19-13 ne fait pas. | E19.h |
 | O-E19-9 | Les 5 animations Loop de durée 0 de l'export (banque 127 anim 0 gauche et droite, banque 151 anim 1 haut, gauche et bas) sont invisibles dans le moteur : la clé cachée de fin tombe au même instant 0 que l'image. Le binaire montre l'image figée. À corriger au convertisseur (export complet à relancer). | à placer |
-| O-E19-10 | Défaut du moteur sur le chemin en temps réel : à 0,02 s par image, 197 des 5205 Loop de durée positive de l'export ne bouclent jamais (le temps tombe pile sur la durée, puis la dépasse), et le sprite montre la pose cachée de fin (exemple : animations 53 et 55 du héros). **Correction planifiée** (D-E19-19) : tâche T1.1 du plan moteur d'E19.c2. | E19.c2 |
+| O-E19-10 | ~~Défaut du moteur sur le chemin en temps réel~~ — **réglé le 2026-10-01 par le moteur (`cc6f498e`, R2) et vérifié par le plan moteur (R1 à R4, 0 échec)** ; question d'origine : défaut du moteur sur le chemin en temps réel : à 0,02 s par image, 197 des 5205 Loop de durée positive de l'export ne bouclent jamais (le temps tombe pile sur la durée, puis la dépasse), et le sprite montre la pose cachée de fin (exemple : animations 53 et 55 du héros). **Correction planifiée** (D-E19-19) : tâche T1.1 du plan moteur d'E19.c2. | E19.c2 |
 | O-E19-11 | La remise à zéro hors zone d'un événement de carte diffère du binaire : la DLL écrit sur l'entité de l'événement et ne remet pas `mapEvent.EventData` à zéro, le binaire (`0x8003C7F0`-`0x8003C804`) remet le pc et l'entrée de l'état de l'événement, `state+0x2C`, l'entité logique et l'octet de programme. Un programme B réentré reprend dans la DLL et recommence dans le binaire. Sans effet sur la 478 et la 416 (zones de toute la carte). | E19.j |
 | O-E19-12 | ~~Base de la branche moteur d'E19.c2~~ — **réglé le 2026-10-01 (D-E19-20)** : l'auteur a mergé `chantier/field-move-to-contact` dans `main` du moteur (`74e97293`) ; la branche d'E19.c2 part de `main`. | E19.c2 |
-| O-E19-13 | Le moment de la fin Hold de Ronan (`0x1C @854`, image 25 de la 478) vient de l'horloge à virgule flottante du moteur, à ± 1 tick du binaire : il n'est pas épinglé. **Se ferme en E19.c2** : A3 resserré épingle 25 et 66 images. | E19.c2 |
+| O-E19-13 | ~~Le moment de la fin Hold de Ronan~~ — **réglé le 2026-10-01 : A3 resserré épingle 26 (premier `0x1A @856`), 25 et 66 images, mesurés égaux** ; question d'origine : le moment de la fin Hold de Ronan (`0x1C @854`, image 25 de la 478) vient de l'horloge à virgule flottante du moteur, à ± 1 tick du binaire : il n'est pas épinglé. **Se ferme en E19.c2** : A3 resserré épingle 25 et 66 images. | E19.c2 |
 | O-E19-14 | Un test statique qui compte les attentes `0x1C`/`0x1D` sur une animation absente du préfab de l'acteur (attendu : 3, les Flammes des cartes 35, 38 et 39), pour voir arriver tout nouveau cas avec une future exportation. | E19.m |
 | O-E19-4 | Le gestionnaire natif du créneau E (`0x8007ED10`, destruction après `Deactivated`, 417 enregistrements sur 85 cartes) : E14, ou une tranche d'E19 ? Sur la chaîne, il ne touche que l'oiseau de la 389 et des PNJ d'Inoa. | E14 |
 
