@@ -267,11 +267,13 @@ internal static class AlundraEntitySpawnFactory
     /// </list>
     /// A lookup miss (no entry for the just-finished (anim, direction), including every Loop entry -
     /// see <see cref="BuildAnimationEndByAnimDirection"/>) is a no-op: the engine already looped or
-    /// nothing was ever wired up for this entity (degraded catalog). The original's own
-    /// <c>AnimCompleteCounter++</c> per Loop cycle (EntityManager.cs:263) is NOT bridged - nothing in
-    /// the ported V1 gameplay reads it yet, and <see cref="AnimatedSpriteComponent.AnimationFinished"/>
-    /// does not even fire for a Loop animation (<c>Animation2dCompositionSampler</c> wraps instead of
-    /// finishing) so there would be no signal to bridge it from.
+    /// nothing was ever wired up for this entity (degraded catalog). A Chain end also increments
+    /// <see cref="AlundraEntityScriptProxy.AnimCompleteCounter"/> (E19.c1 T4, <c>0x80038D64</c>), a self-chain
+    /// included: that is the signal opcodes 0x1C/0x1D count. A Hold end leaves it alone. The original's own
+    /// <c>AnimCompleteCounter++</c> per Loop cycle (EntityManager.cs:263) is NOT bridged:
+    /// <see cref="AnimatedSpriteComponent.AnimationFinished"/> does not even fire for a Loop animation
+    /// (<c>Animation2dCompositionSampler</c> wraps instead of finishing) so there is no signal to bridge it
+    /// from (E19.i).
     /// </summary>
     internal static void OnAnimationFinished(object? sender, Animation2d finishedAnimation)
     {
@@ -295,6 +297,7 @@ internal static class AlundraEntitySpawnFactory
         else if (end.Kind == AnimationEndKind.Chain)
         {
             proxy.TargetAnimationId = (uint)end.ChainTargetAnimationId;
+            proxy.AnimCompleteCounter++;
 
             // A chain must restart its target even when that target is the animation that just ended -
             // the original's own way of spelling "loop" for the hero's walk (ChainTo = 1 on anim 1, all

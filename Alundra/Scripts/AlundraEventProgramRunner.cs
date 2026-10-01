@@ -602,6 +602,16 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 entity.TargetAnimationId = (uint)v[1];
                 return 2;
 
+            case 0x1C: // Repeat anim - Script_28_01C @ 0x8003D7FC (E19.c1 T4): see RepeatAnimation below. Size 2.
+                return RepeatAnimation(entity, v, state);
+
+            case 0x1D: // Repeat anim with collision - Script_29_01D @ 0x8003D890 (E19.c1 T4): 0x1C, which ALSO ends
+                       // (returns 2) as soon as ForceAdjusted is nonzero - from its very first call. Size 2.
+            {
+                var repeated = RepeatAnimation(entity, v, state);
+                return repeated == 0 && entity.ForceAdjusted != 0 ? 2 : repeated;
+            }
+
             case 0x1E: // Walk - Script_30_01E (EntityEventHandlers.cs:793-829): see this case's own doc
                        // on Walk below for the full port + E4.d navigation-detour extension (D5). Sets
                        // NEITHER anim NOR direction by itself (0x5A/0x5B do - free walk comes from the
@@ -2076,6 +2086,42 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         }
 
         return 0;
+    }
+
+    /// <summary>
+    /// Script_28_01C (0x1C, E19.c1 T4), exactly as <c>0x8003D7FC</c>: waits until the entity's animation ended v1 times. The
+    /// first call at a pc (the key is <c>CodeIndex</c>, in <c>Parameters[1]</c>) memorises the pc, zeroes the count
+    /// (<c>Parameters[2]</c>) and <see cref="AlundraEntityScriptProxy.AnimCompleteCounter"/>, and suspends; it does NOT clear the
+    /// Hold flag. Later calls count one end per call: when the Hold flag
+    /// (<see cref="AlundraEntityScriptProxy.ForceResetAnimationFlag"/>) is set, <c>CurrentAnimationId</c> becomes
+    /// <c>~TargetAnimationId</c> (the next sync restarts the animation, and clears the flag) and the count goes up by one;
+    /// otherwise, when the counter is nonzero, the count goes up by one. In both cases the counter is zeroed (a counter of 3
+    /// counts once, not three times). The call ends (size 2) once count &gt;= v1, so v1 = 0 ends on the second call. The
+    /// handler never clears the Hold flag itself.
+    /// </summary>
+    private static int RepeatAnimation(AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
+    {
+        if (state.Parameters[1] != state.CodeIndex)
+        {
+            state.Parameters[1] = state.CodeIndex;
+            state.Parameters[2] = 0;
+            entity.AnimCompleteCounter = 0;
+            return 0;
+        }
+
+        if (entity.ForceResetAnimationFlag != 0)
+        {
+            entity.CurrentAnimationId = ~entity.TargetAnimationId;
+            state.Parameters[2]++;
+            entity.AnimCompleteCounter = 0;
+        }
+        else if (entity.AnimCompleteCounter != 0)
+        {
+            state.Parameters[2]++;
+            entity.AnimCompleteCounter = 0;
+        }
+
+        return state.Parameters[2] >= v[1] ? 2 : 0;
     }
 
     /// <summary>

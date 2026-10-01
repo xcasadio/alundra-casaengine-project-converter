@@ -1350,7 +1350,7 @@ classe.
       cibles ne bougent pas ; une entité qui se prend pour référence et cible avec +2 ne bouge qu'une
       fois.
   - A7 passe après T3 ; A3 échoue comme le dit la table.
-- **T4 — `0x1C`, `0x1D` et le pont des fins d'animation** ⏳ :
+- **T4 — `0x1C`, `0x1D` et le pont des fins d'animation** ✅ *(fait le 2026-10-01 : tests dans `AlundraRepeatAnimationOpcodeTests` (19 tests, même précaution du `0x01` en tête que pour `0x0B`). Après T4, les trois arcs passent avec toutes leurs valeurs.)* :
   - les deux gestionnaires exactement comme le binaire ;
   - le pont : une fin Chain fait `AnimCompleteCounter` + 1 (un Chain sur soi-même aussi), une fin Hold
     ne touche pas le compteur ;

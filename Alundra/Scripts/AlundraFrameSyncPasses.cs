@@ -106,6 +106,11 @@ internal static class AlundraFrameSyncPasses
         proxy.CurrentAnimationId = newCurrentAnimationId;
         proxy.AnimationDirection = newAnimationDirection;
 
+        // Any switch (target, direction or chain restart) clears the Hold flag: UpdateAnimation writes +0xAC = 0 in
+        // its switch block (0x80038B6C), before anything that needs a sprite, so a sprite-less entity clears it too
+        // (E19.c1 T4). The animation-end counter is never zeroed here: the binary does not.
+        proxy.ForceResetAnimationFlag = 0;
+
         var animatedSprite = entity.GetComponent<AnimatedSpriteComponent>();
         if (animatedSprite == null)
         {
