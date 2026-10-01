@@ -1113,7 +1113,7 @@ puis part vers la 392 (arc A4).
   | Textes en retard : la doc de classe et les commentaires de cas d'`EntitySearchService` disent encore « owner » ; la doc d'`OpenDialog` ne cite que `0x0D` et `0x5C`. | P4 | Reporté à l'hygiène d'E19.c. L'ADR-0006 ne se réécrit pas. |
   | La preuve rouge des arcs n'est pas dans l'historique : les arcs sont commités après le code. | P4 | Accepté : le verifier l'a reproduite à part, comme pour E19.a3. |
 
-### 1.2e E19.c1 — Cartes 478 et 416 : attentes de mouvement, arcs en vrais préfabs 🧪 (code et arcs faits le 2026-10-01 ; reste la recette T9 de l'auteur)
+### 1.2e E19.c1 — Cartes 478 et 416 : attentes de mouvement, arcs en vrais préfabs 🧪 (code et arcs faits et vérifiés CONFIRMED le 2026-10-01 ; un P1 introduit attend la décision de l'auteur ; reste la recette T9)
 
 **But.**
 - La vision de la 478 va au bout : le bloc caméra monte, les drapeaux T20 à T60 tombent, puis la 476
@@ -1448,6 +1448,37 @@ est la Debug.
 - **Corrigé** : T2 fixe l'ordre des vérifications (signal de fin, puis opcodes sautés ou dépassés, puis
   le reste), et la table du rouge le suit.
 - **Relecture neuve de la révision** (`5a2fffa`) : **READY**.
+
+**Vérification d'E19.c1 (2026-10-01).**
+- **Commits** : `d1d2bea` (T1), `7d6d8ce` (T3), `53b1503` (T4), `35feaa5` (T5, arcs), `767c6a5` (T6),
+  `6023e4c` (T7), `72a2b20` (T8). Le pointeur du moteur ne change pas.
+- **Verifier frais : CONFIRMED** sur les acceptations 1 à 4. `Alundra.Tests` 1995/1995 en Release,
+  convertisseur 400/400, dans un arbre jetable hors du dépôt.
+  - Le rouge de la table se reproduit : sans `0x5E`, A3 échoue sur `0x36 @180` ; sans `0x0B`, A7 atteint
+    son `0x53` puis échoue sur les opcodes sautés ; sans `0x1C`/`0x1D`, A3 atteint `0x53 @245` puis échoue
+    sur `0x1C @854`. Sans l'installation des préfabs, l'autotest échoue.
+  - Une mutation par famille est attrapée : le `+1` sur Z de `0x89`, la borne de `0x74`, les opérandes et
+    l'inégalité de `0x0B`, l'incrément Chain du pont, l'effacement du drapeau par `SyncAnimation`, la
+    remise à zéro du compteur de la décompilation, le masque de `0x08`, la table de `0x3A`, le décalage
+    de `0x0C`, l'extension de signe de `0x5E`.
+  - Traces du héros et de l'intro inchangées ; DLL Debug déployée.
+- **Trois contradicteurs en lecture seule** (fidélité au binaire, support d'arcs, corpus). La fidélité
+  au binaire des dix gestionnaires et du pont est confirmée instruction par instruction. Dispositions :
+
+  | Constat | Priorité | Disposition |
+  |---|---|---|
+  | `0x1C`/`0x1D` attendent désormais sans fin sur une animation Loop : la DLL n'a pas de signal de tour de boucle, alors que le binaire compte chaque tour (`0x80038D70`-`0x80038D7C`). Avant E19.c1, ces opcodes étaient sautés et le script passait. Quand le script tient la main du joueur (`0x10`), c'est un **blocage définitif** : vérifié sur la 172 (Inoa, après la 163), `0x10 @530`, `0x1A [11] @537` (Loop), `0x1C [1] @539`, `0x11 @547` jamais atteint. Même cas sur la 165 et la 179 (Wendell), et sur 138, 115, 440, 396 ; 28 sites dans 11 cartes. | **P1, introduit** | **En attente de l'auteur** (mode ASK). La 478, la 416, la 476 et la 163 ne sont pas touchées : la recette T9 reste possible. |
+  | Même cause hors blocage : des programmes d'interrupteurs, de plaques et de PNJ restent figés et ne posent plus leurs drapeaux ni leurs apparitions (sanctuaires 29 et 30, Magyscar 92, sanctuaire du lac 337 et 343, Meia 306, 440, 441). 141 sites Loop dans 40 cartes, et non 101 dans 30 comme le disait E19.i. | P2, introduit | Même décision que le P1. |
+  | Sous rattrapage (2 ticks ou plus par image), `0x1C` compte une fin Hold à chaque tick, et un PNJ relancé reste à vitesse nulle jusqu'à 3 ticks. Le test unitaire de T4 épingle ce comptage. | P3, introduit | Reporté : la garde de `0x1C` sous rattrapage est prévue dans E19.c2. |
+  | Une relance `0x1C` depuis un événement de carte laisse `CurrentAnimationId` = ~`TargetAnimationId` visible une image : la passe de tri lit un biais IDSV nul. | P4 | Reporté à E19.c2 (pilotage des animations). |
+  | Une fin Chain qui tombe à l'image même du premier appel de `0x1C` est perdue (l'événement du sprite arrive avant le script). | P4 | Reporté à E19.c2 (le sprite avancera après les scripts). |
+  | `0x0B` sur un bloc de vitesse nulle, qui attend d'être poussé (435, `@547`) : attend sans fin, la poussée entre entités n'étant pas portée. | P4, introduit | Reporté (poussée : E14 ou E19.h) ; il ne perd que le `0x1A [0]` qui suit. |
+  | Le mode préfabs construit un `ProjectSettings` vide : A4p ne passe pas par le gabarit de boîte du projet ni par font3, et vérifie ses boîtes sur le directeur. La ligne de risque « les huit boîtes d'A4p le vérifient » en disait trop. | P4 | Accepté ; la boîte fidèle vient avec E19.f. |
+  | `ArcRun.ResetAll` ne remet pas `AlundraRandom` à zéro, alors que `0x0C` le consomme désormais. Aucune carte d'arc actuelle n'a de `0x0C`. | P4 | Reporté à E19.d (la 392 en a un). |
+  | A7 ne vérifie l'immobilité du héros qu'à `@421` et à la fin. | P4 | Reporté (hygiène d'E19.c2). |
+  | Libellé de `0x73` « Set program counter _30 » : c'est un compteur de boucle. Coquille « the / the » dans la doc d'`EntitySearchService`. | P4 | Reportés (hygiène d'E19.c2). |
+  | `0x0B`, `0x1C` et `0x1D` prennent `CodeIndex` pour clé : une attente au pc 0 se croirait déjà mémorisée. Aucun site au pc 0 dans les 483 cartes. | P4 | Accepté, comme pour `Wait`. |
+  | T6 : « `Move(0, +1)` le laisse à 0 » se lit avec la remise à zéro par image, car un `Move` ne fait que lever le drapeau. | — | Précision acceptée ; valeurs inchangées. |
 
 ### 1.2f E19.c2 — Horloge d'animation exacte en ticks ⏳ (esquisse ; se détaille après E19.c1)
 
