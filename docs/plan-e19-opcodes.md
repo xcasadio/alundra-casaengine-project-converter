@@ -291,9 +291,9 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 
 | Tranche | Contenu | Arcs de test (§1.3) | Recette en jeu |
 |---|---|---|---|
-| **E19.a** | Entité de contexte (`0x42`, `0x43`, et tous les opcodes sur l'entité logique), `0x59`, garde de boucle (D-E19-3), support des arcs | A0, A0b, A1 | Le capitaine sort par l'escalier et réapparaît en pièce B ; sommeil, puis 476 |
-| E19.a2 🧪 | Moteur : sur le champ de cellules, un pas bloqué avance jusqu'au contact (D-E19-8) ; épingles et traces de référence du héros re-mesurées ; la cabine testée avec un vrai contrôleur | cabine seule, A1c | La cabine : Alundra s'endort, puis la 476 se charge |
-| E19.a3 🧪 | DLL : `ForceAdjusted` ne se lève qu'au tick sans avance, comme le binaire (D-E19-12) ; épingles du héros re-mesurées | marin 12 de la 389 | Le marin 12 rejoint sa place en fin d'intro |
+| **E19.a** ✅ | Entité de contexte (`0x42`, `0x43`, et tous les opcodes sur l'entité logique), `0x59`, garde de boucle (D-E19-3), support des arcs | A0, A0b, A1 | Le capitaine sort par l'escalier et réapparaît en pièce B ; sommeil, puis 476 |
+| E19.a2 ✅ | Moteur : sur le champ de cellules, un pas bloqué avance jusqu'au contact (D-E19-8) ; épingles et traces de référence du héros re-mesurées ; la cabine testée avec un vrai contrôleur | cabine seule, A1c | La cabine : Alundra s'endort, puis la 476 se charge |
+| E19.a3 ✅ | DLL : `ForceAdjusted` ne se lève qu'au tick sans avance, comme le binaire (D-E19-12) ; épingles du héros re-mesurées | marin 12 de la 389 | Le marin 12 rejoint sa place en fin d'intro |
 | E19.b | Carte 476 : `0xC4` sans nom (D-E19-5), `0x8A` (bloc caméra), `0x4C` gardé pour la machine à écrire | A2, A4 | La vision de Lars et Melzas jusqu'à 478, puis jusqu'à 392 |
 | E19.c | Carte 478 et marches : `0x0B` avec détour (D-E19-6), `0x1C`/`0x1D` (compteur du binaire, Chain et Hold), `0x5E`, `0x08`, `0x0C`, `0x3A`, `0x89`, `0x73`/`0x74` | A3, A7 | La vision de 478 va au bout ; la plage 416 mène à Inoa |
 | E19.d | Fin de chaîne : `0x24` sur l'entité logique, `0x40`/`0x41` sur l'entité logique, reste de 392, 391 et 163 | A5, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
@@ -316,7 +316,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 - **Mise à jour de ce plan** : chaque tranche de la phase 1 remet au §0.2 ce qu'elle a mesuré en
   vrai, puis fait détailler, relire et approuver la tranche suivante.
 
-### 1.2 E19.a — Entité de contexte, `0x59` et garde de boucle 🧪 (T1 à T6 faites et vérifiées CONFIRMED le 2026-09-29 ; reste la recette en jeu T7)
+### 1.2 E19.a — Entité de contexte, `0x59` et garde de boucle ✅ (T1 à T6 faites et vérifiées CONFIRMED le 2026-09-29 ; recette en jeu T7 validée le 2026-10-01, après E19.a2 et E19.a3)
 
 **But.** La cinématique du capitaine sur la 390 se joue comme dans l'original : le capitaine monte
 l'escalier et disparaît, puis on le retrouve en pièce B, et la cabine endort Alundra et charge 476.
@@ -435,7 +435,7 @@ aujourd'hui). Le portail trou et escalier de la 390 (O-E19-1).
 - ✅ **T6 — Docs.** Mettre à jour ce plan (statuts, faits mesurés) et `plan-conversion-totale.md`
   (ligne E19). L'ADR-0015 est déjà écrite. *(fait le 2026-09-29 : statuts, vérification et
   dispositions ci-dessous, ligne E19 du plan maître.)*
-- ⏳ **T7 — Recette en jeu (auteur).** Lancer le jeu hors de l'app Claude, en Debug.
+- ✅ **T7 — Recette en jeu (auteur).** *(validée par l'auteur : points 1 à 3 le 2026-09-29 ; point 4, la cabine, le 2026-10-01, après E19.a2 et E19.a3.)* Lancer le jeu hors de l'app Claude, en Debug.
   1. Après l'intro, parler au marin au grog (salle du nord, par la porte 2 du pont) puis au
      capitaine **en dernier**.
   2. Le capitaine va vers l'est, monte l'escalier et disparaît dans le trou ; la main revient.
@@ -556,7 +556,7 @@ Commits `cab5e4c` (T1), `ef8e509` (T2), `08f5a40` (T3), `55af880` (T4) et `db59c
   déclenchement suivant. C'est journalisé, et préférable
   à un jeu figé.
 
-### 1.2b E19.a2 — Un pas bloqué avance jusqu'au contact 🧪 (T0 à T4 faites le 2026-09-29 ; reste la recette en jeu T5)
+### 1.2b E19.a2 — Un pas bloqué avance jusqu'au contact ✅ (T0 à T4 faites le 2026-09-29 ; recette en jeu T5 validée le 2026-10-01, après E19.a3)
 
 **But.** Dans la cabine de la 390, Alundra finit ses quatre marches, s'endort, et la 476 se charge (point 4
 de la recette T7). Plus généralement : sur le champ de cellules, un pas bloqué avance jusqu'au contact,
@@ -680,7 +680,7 @@ flottant 32 bits dans le scratchpad `e19a2/`) :
     `docs/plan-moteur-character-motion.md` (sens des drapeaux M2), `docs/plan-e4-deplacement-scripte.md`
     (D5) et `docs/plan-oracle-heros.md` (`:227`, ancienne valeur 36956160), sans réécrire ces plans ;
   - ce plan et la ligne E19 du plan maître.
-- 🧪 **T5 — Recette en jeu (auteur)** : rejouer T7 d'E19.a. Le capitaine sort, on le retrouve en pièce B,
+- ✅ **T5 — Recette en jeu (auteur)** *(validée le 2026-10-01 : la cabine passe dès le 2026-09-29 ; le marin 12 de la 389, déplacé par le contact, est corrigé par E19.a3)* : rejouer T7 d'E19.a. Le capitaine sort, on le retrouve en pièce B,
   Alundra s'endort dans la cabine, et la 476 se charge, puis s'arrête au premier `0xC4`, ce qui est attendu
   jusqu'à E19.b.
 
@@ -757,7 +757,7 @@ après exécution. Budgets et arrêts : ceux du §5.
   relue à nouveau. La décision d'approuver en l'état, ou de demander une relecture de plus, revient à
   l'auteur.
 
-### 1.2c E19.a3 — `ForceAdjusted` comme dans le binaire 🧪 (T0 à T3 faites le 2026-10-01 ; reste la recette en jeu T4)
+### 1.2c E19.a3 — `ForceAdjusted` comme dans le binaire ✅ (T0 à T3 faites le 2026-10-01 ; recette en jeu T4 validée le même jour)
 
 **Origine : recette T5 d'E19.a2 (auteur).** La cabine passe : Alundra se couche et la suite du script
 part. Mais à la fin de l'intro de la 389, le marin 12 s'arrête avant sa place : il finit 72 px trop à
@@ -839,7 +839,7 @@ temporaire `Alundra.Tests/ZzDiagE19SailorTests.cs`, non commité) :
   - A1c et le test de la cabine passent toujours.
 - ✅ **T3 — Docs** *(fait le 2026-10-01)* : l'ADR-0017 (déjà écrite), la ligne de statut de l'ADR-0016, ce plan, et la ligne E19 du
   plan maître.
-- ⏳ **T4 — Recette en jeu (auteur)** : à la fin de l'intro de la 389, le marin 12 rejoint sa place (ta
+- ✅ **T4 — Recette en jeu (auteur)** *(validée le 2026-10-01)* : à la fin de l'intro de la 389, le marin 12 rejoint sa place (ta
   capture 2) ; puis la cabine, Alundra se couche, et la 476 se charge.
 
 **Acceptation d'E19.a3.**
