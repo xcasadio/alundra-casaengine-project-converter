@@ -1447,6 +1447,7 @@ est la Debug.
   fin attendue (1759) venait d'abord. Le même défaut avait touché E19.b.
 - **Corrigé** : T2 fixe l'ordre des vérifications (signal de fin, puis opcodes sautés ou dépassés, puis
   le reste), et la table du rouge le suit.
+- **Relecture neuve de la révision** (`5a2fffa`) : **READY**.
 
 ### 1.2f E19.c2 — Horloge d'animation exacte en ticks ⏳ (esquisse ; se détaille après E19.c1)
 
