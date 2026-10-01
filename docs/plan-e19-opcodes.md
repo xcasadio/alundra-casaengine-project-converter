@@ -1622,7 +1622,9 @@ moteur pour C0).
   2 t/i. A9 et A3 passent, ainsi que toutes les valeurs écrites, **sauf deux, annoncées** : sans la garde
   de C3, T-D2 en 2 t/i rend 2 à s+33 (double comptage) et T-D3 en 2 t/i à s+5 (drapeau Hold périmé) ;
   elles passent après C3.
-- **C3 — Garde de `0x1C`** ⏳ : la garde et ses tests. **Seul test existant qui bouge, annoncé** :
+- **C3 — Garde de `0x1C`** ✅ *(fait le 2026-10-01 : TG2 déplacé ici de C2 puisqu'il teste la garde ; T-D2 et T-D3 en 2 t/i passent (49 et 10) ;
+  le test annoncé rend bien 0, 0, 0, drapeau 0 et marque effacée après le changement, quatrième appel 2, et il est renommé
+  `..._CountsTheEndOnce_...` car l'ancien nom disait le contraire ; `Alundra.Tests` 2063 réussis avec les arcs en cours)* : la garde et ses tests. **Seul test existant qui bouge, annoncé** :
   `RepeatAnimation_0x1C_AHoldFlagHeldWithoutASyncBetweenCalls_CountsOnEveryCall_AndKeepsTheFlag`
   (`01 1C 02 FF`, drapeau tenu) passe de 0, 0, 2 à 0, 0, 0 ; après un changement, drapeau 0 et marque
   effacée ; avec le drapeau reposé à 1, le quatrième appel rend 2.

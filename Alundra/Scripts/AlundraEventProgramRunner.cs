@@ -2097,7 +2097,10 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// <c>~TargetAnimationId</c> (the next sync restarts the animation, and clears the flag) and the count goes up by one;
     /// otherwise, when the counter is nonzero, the count goes up by one. In both cases the counter is zeroed (a counter of 3
     /// counts once, not three times). The call ends (size 2) once count &gt;= v1, so v1 = 0 ends on the second call. The
-    /// handler never clears the Hold flag itself.
+    /// handler never clears the Hold flag itself. E19.c2 adds a guard that changes nothing at 0 or 1 logic tick per frame: the
+    /// Hold flag is invisible while a switch tick is reserved (<see cref="AlundraEntityScriptProxy.AnimationSwitchTicksReserved"/>)
+    /// or while a Hold end already counted waits for its switch (<see cref="AlundraEntityScriptProxy.HoldCountedAwaitingSwitch"/>,
+    /// set here, cleared by the switch), so a catch-up frame never counts one end twice.
     /// </summary>
     private static int RepeatAnimation(AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
     {
@@ -2109,9 +2112,19 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             return 0;
         }
 
-        if (entity.ForceResetAnimationFlag != 0)
+        // E19.c2 guard (docs/plan-e19-opcodes.md §1.2f), a no-op at 0 or 1 tick per frame: under catch-up several calls of this
+        // handler can run before the sync of the frame switches the animation, while in the binary every tick has its own
+        // UpdateAnimation. The Hold flag is therefore invisible while a tick of switch is reserved and not yet performed (the
+        // binary's UpdateAnimation of that tick has already switched and cleared the flag), and while a Hold end this handler
+        // already counted waits for the switch it asked for (it would be counted once per call).
+        var holdVisible = entity.ForceResetAnimationFlag != 0
+            && entity.AnimationSwitchTicksReserved == 0
+            && !entity.HoldCountedAwaitingSwitch;
+
+        if (holdVisible)
         {
             entity.CurrentAnimationId = ~entity.TargetAnimationId;
+            entity.HoldCountedAwaitingSwitch = true;
             state.Parameters[2]++;
             entity.AnimCompleteCounter = 0;
         }

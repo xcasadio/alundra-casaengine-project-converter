@@ -27,7 +27,7 @@ public class AlundraRepeatAnimationOpcodeTests
     private sealed class Harness
     {
         public readonly AlundraEventProgramRunner Runner;
-        public readonly AlundraEntityScriptProxy Entity = new();
+        public AlundraEntityScriptProxy Entity = new();
         public readonly EventProgramState State;
         public readonly List<EventTraceRecord> Trace = new();
 
@@ -116,16 +116,51 @@ public class AlundraRepeatAnimationOpcodeTests
         Assert.Equal(2, h.Call(0x1C));
     }
 
+    /// <summary>E19.c2 (C3, the one existing test that moves, announced by the plan): E19.c1 pinned 0, 0, 2 here, the double count of a Hold end
+    /// under catch-up; with the guard the end is counted once (0, 0, 0), the flag stays, and the count goes on after a switch.</summary>
     [Fact]
-    public void RepeatAnimation_0x1C_AHoldFlagHeldWithoutASyncBetweenCalls_CountsOnEveryCall_AndKeepsTheFlag()
+    public void RepeatAnimation_0x1C_AHoldFlagHeldWithoutASyncBetweenCalls_CountsTheEndOnce_AndKeepsTheFlag()
     {
-        var h = new Harness(0x01, 0x1C, 2, 0xFF);
-        h.Entity.ForceResetAnimationFlag = 1;
+        var (entity, proxy) = BuildEntity(withSprite: false);
+        proxy.AnimCompleteCounter = 0;
+        var h = new Harness(0x01, 0x1C, 2, 0xFF) { Entity = proxy };
 
         Assert.Equal(0, h.Call(0x1C)); // first call: memorise.
-        Assert.Equal(0, h.Call(0x1C)); // count 1.
+        Assert.Equal(0, h.Call(0x1C)); // count 1: the Hold end is counted, the animation is asked to restart.
+        Assert.True(proxy.HoldCountedAwaitingSwitch);
+        Assert.Equal(0, h.Call(0x1C)); // the same end is not counted again.
+        Assert.Equal(1, h.State.Parameters[2]);
+        Assert.Equal(1, proxy.ForceResetAnimationFlag);
+
+        AlundraFrameSyncPasses.SyncAnimation(entity); // the switch the count asked for.
+
+        Assert.Equal(0, proxy.ForceResetAnimationFlag);
+        Assert.False(proxy.HoldCountedAwaitingSwitch);
+
+        proxy.ForceResetAnimationFlag = 1; // the restarted animation ends again.
         Assert.Equal(2, h.Call(0x1C)); // count 2.
-        Assert.Equal(1, h.Entity.ForceResetAnimationFlag);
+    }
+
+    /// <summary>TG2: while a tick of switch is reserved the Hold flag is invisible; the counter is not.</summary>
+    [Fact]
+    public void RepeatAnimation_0x1C_WhileASwitchTickIsReserved_TheHoldFlagIsInvisible_TheCounterIsNot()
+    {
+        var h = new Harness(0x01, 0x1C, 1, 0xFF);
+        h.Entity.ForceResetAnimationFlag = 1;
+        h.Entity.AnimationSwitchTicksReserved = 1;
+        h.Entity.TargetAnimationId = 7;
+        h.Entity.CurrentAnimationId = 7;
+
+        Assert.Equal(0, h.Call(0x1C)); // first call: memorise.
+        Assert.Equal(0, h.Call(0x1C));
+        Assert.Equal(0, h.State.Parameters[2]);
+        Assert.Equal(7u, h.Entity.CurrentAnimationId);
+        Assert.False(h.Entity.HoldCountedAwaitingSwitch);
+
+        h.Entity.ForceResetAnimationFlag = 0;
+        h.Entity.AnimCompleteCounter = 1;
+
+        Assert.Equal(2, h.Call(0x1C));
     }
 
     [Fact]
@@ -346,9 +381,11 @@ public class AlundraRepeatAnimationOpcodeTests
         sprite.AdvanceLogicalTicks(4);
         proxy.TargetAnimationId = 5;
         proxy.AnimationSwitchTicksReserved = reserved;
+        proxy.HoldCountedAwaitingSwitch = true;
 
         AlundraFrameSyncPasses.SyncAnimation(entity);
 
+        Assert.False(proxy.HoldCountedAwaitingSwitch);
         Assert.Equal(5u, proxy.CurrentAnimationId);
         Assert.Equal(expectedOwed, proxy.AnimationSwitchTickOwed);
         Assert.Equal(expectedTick, sprite.LogicalTick);
@@ -504,5 +541,24 @@ public class AlundraRepeatAnimationOpcodeTests
         AlundraFrameSyncPasses.StepAnimationClock(bare);
 
         Assert.Equal(0, bare.AnimationSwitchTicksReserved);
+    }
+
+    /// <summary>The Hold flag of an entity whose switch is pending is cleared between two map-event passes of a frame; the others keep it.</summary>
+    [Fact]
+    public void ClearHoldFlagsOfPendingSwitches_ClearsTheFlagOfAPendingSwitchOnly()
+    {
+        var (pendingEntity, pending) = BuildEntity(withSprite: false);
+        pending.TargetAnimationId = 5; // Current is 0: a switch is pending.
+        pending.HoldCountedAwaitingSwitch = true;
+        var (chainEntity, chain) = BuildEntity(withSprite: false);
+        chain.PendingChainRestartFlag = 1;
+        var (steadyEntity, steady) = BuildEntity(withSprite: false);
+
+        AlundraFrameSyncPasses.ClearHoldFlagsOfPendingSwitches(new[] { pendingEntity, chainEntity, steadyEntity });
+
+        Assert.Equal(0, pending.ForceResetAnimationFlag);
+        Assert.False(pending.HoldCountedAwaitingSwitch);
+        Assert.Equal(0, chain.ForceResetAnimationFlag);
+        Assert.Equal(1, steady.ForceResetAnimationFlag);
     }
 }

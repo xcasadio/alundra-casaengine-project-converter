@@ -160,6 +160,15 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// a tick. Not copied by <see cref="Clone"/>.
     /// </summary>
     internal bool AnimationSwitchTickOwed;
+
+    /// <summary>
+    /// Engine-only (E19.c2): a Hold end already counted by <c>0x1C</c>/<c>0x1D</c> that waits for the switch it asked for
+    /// (<c>CurrentAnimationId</c> = ~<c>TargetAnimationId</c>). While set, the Hold flag is invisible to those opcodes, so a
+    /// catch-up frame cannot count the same end twice before the switch clears the flag. Cleared by any switch
+    /// (<see cref="AlundraFrameSyncPasses.SyncAnimation"/>, <see cref="AlundraFrameSyncPasses.ClearHoldFlagsOfPendingSwitches"/>).
+    /// Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal bool HoldCountedAwaitingSwitch;
     public int AnimFlags;
     public int ForceZ;//rise/fall speed
     public int TargetForceX, TargetForceY;

@@ -127,6 +127,7 @@ internal static class AlundraFrameSyncPasses
         // its switch block (0x80038B6C), before anything that needs a sprite, so a sprite-less entity clears it too
         // (E19.c1 T4). The animation-end counter is never zeroed here: the binary does not.
         proxy.ForceResetAnimationFlag = 0;
+        proxy.HoldCountedAwaitingSwitch = false;
 
         var animatedSprite = entity.GetComponent<AnimatedSpriteComponent>();
         if (animatedSprite == null)
@@ -224,6 +225,7 @@ internal static class AlundraFrameSyncPasses
             if (proxy.PendingChainRestartFlag != 0 || TryResolveAnimationTarget(proxy, out _, out _))
             {
                 proxy.ForceResetAnimationFlag = 0;
+                proxy.HoldCountedAwaitingSwitch = false;
             }
         }
     }

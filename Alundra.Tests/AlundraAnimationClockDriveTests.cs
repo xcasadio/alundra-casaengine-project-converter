@@ -302,6 +302,7 @@ public sealed class AlundraAnimationClockDriveTests
     [Theory]
     [InlineData("1", 99)]
     [InlineData("60", 118)]
+    [InlineData("2", 49)]
     public void TD2_HeroLike_HoldOf32Ticks_ThreeCounts(string pattern, int expectedEnd)
     {
         var drive = NpcWithTickProgram(Hero, 0, new[] { 0x01, 0x1A, 0x53, 0x1C, 0x03, 0xFF }, pattern);
@@ -315,6 +316,7 @@ public sealed class AlundraAnimationClockDriveTests
     [Theory]
     [InlineData("1", 21)]
     [InlineData("60", 25)]
+    [InlineData("2", 10)]
     public void TD3_FromAFinishedHold_TwoTurnsOfALoopOf10Ticks(string pattern, int expectedEnd)
     {
         var anims = new[] { Hold(5, 0.2f), Loop(7, 0.2f) };
