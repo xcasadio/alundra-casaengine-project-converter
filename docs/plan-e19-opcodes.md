@@ -295,7 +295,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | **E19.a** ✅ | Entité de contexte (`0x42`, `0x43`, et tous les opcodes sur l'entité logique), `0x59`, garde de boucle (D-E19-3), support des arcs | A0, A0b, A1 | Le capitaine sort par l'escalier et réapparaît en pièce B ; sommeil, puis 476 |
 | E19.a2 ✅ | Moteur : sur le champ de cellules, un pas bloqué avance jusqu'au contact (D-E19-8) ; épingles et traces de référence du héros re-mesurées ; la cabine testée avec un vrai contrôleur | cabine seule, A1c | La cabine : Alundra s'endort, puis la 476 se charge |
 | E19.a3 ✅ | DLL : `ForceAdjusted` ne se lève qu'au tick sans avance, comme le binaire (D-E19-12) ; épingles du héros re-mesurées | marin 12 de la 389 | Le marin 12 rejoint sa place en fin d'intro |
-| E19.b | Carte 476 : `0xC4` sans nom (D-E19-5), `0x8A` (bloc caméra), `0x4C` gardé pour la machine à écrire | A2, A4 | La vision de Lars et Melzas jusqu'à 478, puis jusqu'à 392 |
+| E19.b 🧪 | Carte 476 : `0xC4` sans nom (D-E19-5), `0x8A` (bloc caméra), `0x4C` gardé pour la machine à écrire | A2, A4 | La vision de Lars et Melzas jusqu'à 478, puis jusqu'à 392 |
 | E19.c | Carte 478 et marches : `0x0B` avec détour (D-E19-6), `0x1C`/`0x1D` (compteur du binaire, Chain et Hold), `0x5E`, `0x08`, `0x0C`, `0x3A`, `0x89`, `0x73`/`0x74` | A3, A7 | La vision de 478 va au bout ; la plage 416 mène à Inoa |
 | E19.d | Fin de chaîne : `0x24` sur l'entité logique, `0x40`/`0x41` sur l'entité logique, reste de 392, 391 et 163 | A5, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
 | E19.e | Recette de bout en bout, plus un test statique : aucun opcode sauté sur la chaîne hors liste d'exceptions | toute la chaîne | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement (avec les recettes d'E16 en attente) |
@@ -887,7 +887,7 @@ l'original jusqu'au glissement (E19.h).
   | Au bord de l'epsilon, la nouvelle règle diffère de l'ancienne dans deux cas étroits : une demande entre 0,01 et 0,02 px, et un recul de plus de 0,01 px. | P4 | Accepté. |
   | La preuve rouge du test du marin n'est pas dans l'historique : la règle est commitée avant le test. | P4 | Accepté : le verifier l'a reproduite à part. |
 
-### 1.2d E19.b — Carte 476 : la vision de Lars et Melzas ⏳ (proposée le 2026-10-01)
+### 1.2d E19.b — Carte 476 : la vision de Lars et Melzas 🧪 (code et arcs faits le 2026-10-01 ; reste le verifier et la recette T6 de l'auteur)
 
 **But.** La vision se joue jusqu'au bout. À l'aller (`G1640`), la 476 ouvre ses trois boîtes puis part vers
 la 478 (arc A2). Au retour (`G1641`), elle déplace la caméra par le bloc transparent, ouvre ses huit boîtes
@@ -942,7 +942,7 @@ puis part vers la 392 (arc A4).
 
 **Tâches.**
 
-- **T0 — Preuves rouges** : écrire les arcs A2 et A4 en mode nu, avec les valeurs ci-dessous écrites avant
+- **T0 — Preuves rouges** ✅ *(fait le 2026-10-01 ; rouge constaté, conforme à la table : sur le code d'avant, A2 échoue à 1500 images en nommant `slot 1 program @612: last 0x36 @116` avec `0xC4 @622` et `0x8A @63` sautés, A4 à 2500 images en nommant `slot 1 program @772: last 0x36 @116` avec `0xC4 @786` sauté. Après T1, A2 atteint `0x53 @758` puis échoue sur « record 1 (the camera block) is absent after 0x8A @63 », et A4 échoue à 2500 images en nommant `slot 1 program @772: last 0x1E @84`. Après T2, les deux passent avec les valeurs de T0, sans les changer. Le message d'A2 après T1 ne nomme que le bloc absent : l'assertion sur `0x8A` sauté vient après dans le test et n'est pas atteinte.)* : écrire les arcs A2 et A4 en mode nu, avec les valeurs ci-dessous écrites avant
   le code, puis les lancer.
   - **A2** : carte 476, drapeau `G1640` (mot 51 : 256), héros en (0,0,3), limite de 1500 images.
     - Fin : `0x53 @758`, arrivée sur la 478 en `PosX` 35389440, `PosY` 60293120, `PosZ` 1048576, effet 2.
@@ -1022,8 +1022,8 @@ puis part vers la 392 (arc A4).
   - textes en retard : `docs/intro-roadmap.md` vers `:101`, `docs/plan-e4-deplacement-scripte.md:411`,
     `docs/plan-oracle-heros.md:233`, résumé de D-E19-10 au §0.1, O-E19-5 mis à jour avec le constat du
     binaire.
-- **T5 — Docs** : statuts de ce plan, ligne E19 du plan maître.
-- **T6 — Recette en jeu (auteur)** :
+- **T5 — Docs** ✅ : statuts de ce plan, ligne E19 du plan maître *(fait le 2026-10-01)*.
+- **T6 — Recette en jeu (auteur)** ⏳ :
   1. **A2, en jouant.** Après la cabine, la 476 montre trois boîtes sans nom, d'environ 1,2 s chacune, et
      la caméra sur la salle de la vision. Puis la 478 se charge. Elle ne va pas plus loin : c'est E19.c.
   2. **A4, par raccourci.** F6, puis dans `debug-json.sav` : `initialMapId` 476, `cameraTileX`,
