@@ -148,6 +148,35 @@ public sealed class AlundraPrefabArcSupportTests
     }
 
     [Fact]
+    public void TH3_ArrivalByPortal162_3_OnMap165_TheAdoptionRaisesTheHeroOntoTheGroundOfTheTile()
+    {
+        // E19.d2a S3 (docs/plan-e19-opcodes.md section 1.2h.1, U3): an arc that starts from a real portal arrival - the record
+        // BeginDepartureCore writes (position of portal 162.3 on map 165, animation 0x36, direction 16) - lets AdoptPlayerPawn
+        // (and its ClampToGround) place the hero as in production: the arc writes neither the position nor the Tile*.
+        // The portal's ZLevel is 0; the cell (12, 22) of map 165 has height 1.
+        var spec = new ArcSpec(
+            "TH3", Zone, "Inoa (inner)-165", System.Array.Empty<int>(), 0, 0, 0, 100,
+            RealController: true, Prefabs: true,
+            Arrival: new ArcArrival(19660800, 23592960, 0, AlundraGameState.ResetAnimationId, 16));
+        using var arc = new ArcRun(spec);
+
+        Assert.False(AlundraWarpDirector.Instance.HasPendingArrival); // consumed by the adoption, as in production.
+        Assert.Equal((19660800, 23592960), (arc.Hero.PosX, arc.Hero.PosY));
+        Assert.Equal(1048576, arc.Hero.PosZ);
+        Assert.Equal((12, 22, 1), (arc.Hero.TileX, arc.Hero.TileY, arc.Hero.TileZ));
+        Assert.Equal(16u, arc.Hero.TargetDirection);
+
+        // And it stays there: the hero is not dropped back to the ground of height 0 by the first frames.
+        for (var i = 0; i < 10; i++)
+        {
+            arc.OneFrame();
+        }
+
+        Assert.Equal((19660800, 23592960, 1048576), (arc.Hero.PosX, arc.Hero.PosY, arc.Hero.PosZ));
+        Assert.Equal((12, 22, 1), (arc.Hero.TileX, arc.Hero.TileY, arc.Hero.TileZ));
+    }
+
+    [Fact]
     public void ArcRun_ResetsTheSharedRandomStream_AtConstructionAndAtDispose()
     {
         // E19.d D1 (TH2): the stream of the arcs starts from the seed whatever the tests that ran before.

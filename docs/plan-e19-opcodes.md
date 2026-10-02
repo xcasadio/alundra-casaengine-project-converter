@@ -2477,7 +2477,7 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
     DLL est déployée ; F9 charge le créneau le plus récent ; ce que chaque préréglage pose ; ce qu'une sauvegarde ne peut
     pas porter (drapeaux T, états locaux de carte, direction du héros). Ligne dans l'index de `docs/` s'il en a un.
 
-- ⏳ **S3 — Arrivée par portail dans les arcs (U3).**
+- ✅ **S3 — Arrivée par portail dans les arcs (U3).**
   - Un point d'entrée de test interne sur `AlundraWarpDirector` pose un enregistrement d'arrivée en attente (carte,
     `PosX`, `PosY`, `PosZ`, animation, direction), comme le fait `BeginDepartureCore` ; `ArcSpec` gagne une arrivée
     optionnelle : quand elle est donnée, l'arc ne réécrit ni la position ni les `Tile*` du héros, et c'est
@@ -2486,6 +2486,14 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
     0), direction 16 — donne `PosZ = 1048576` et `TileZ = 1` après l'adoption (case (12,22) de hauteur 1).
   - **Arrêt** si `TileZ` ≠ 1 : la première visite de la 165 ne partirait pas en jeu (blocage du jour 1) ; question à
     l'auteur, pas de contournement dans l'arc.
+  - **Mesure et déviation (exécution, 2026-10-02)** : TH3, écrit tel quel, a d'abord donné `PosZ = 0` et `TileZ = 0`.
+    Cause établie dans le montage, pas dans le jeu : en production `World.InitializePlayerControllers` intègre le pion
+    (`InternalAddEntities`, qui pose `Entity.World`) AVANT que le proxy du monde ne lance `AdoptPlayerPawn`, dont
+    `ClampToGround` lit `Owner.World.CollisionField` ; le montage laissait le pion en file, donc l'adoption ne voyait
+    aucun monde et ne relevait rien (`World` nul, constaté). Dans le mode arrivée, `ArcRun` intègre donc le pion avant
+    l'entrée de carte (appel réfléchi de `InternalAddEntities`, comme la production) ; aucun autre arc n'est touché.
+    Mesure après correction : `PosZ = 1048576`, `TileZ = 1`, stables sur 10 images. Le critère d'arrêt (`TileZ` ≠ 1 en
+    production) n'est pas atteint ; l'auteur peut contester cette lecture.
 
 - ⏳ **S4 — Arcs du jour 1** (`Alundra.Tests/AlundraInoaDayOneArcTests.cs`, vrais préfabs, vrai héros, contrôleur réel,
   `AlundraRandom.Reset()`, conventions du §1.3, limite d'images fixée après une première mesure, ± 3 images).

@@ -45,9 +45,17 @@ namespace Alundra.Tests;
 /// <param name="Prefabs">E19.c1 (D-E19-14): the NPCs are the export's real prefabs, loaded by the production spawn path
 /// through an <see cref="AssetContentManager"/> built by the test (<see cref="ArcPrefabAssets"/>). Requires
 /// <see cref="RealController"/>. Off (the default), every NPC is a bare entity.</param>
+/// <param name="Arrival">E19.d2a S3 (U3): when given, the arc starts from a real portal arrival: the record is posed on the warp
+/// director before the map entry, <c>AdoptPlayerPawn</c> (and its <c>ClampToGround</c>) places the hero as in production, and the
+/// arc writes neither the hero's position nor its <c>Tile*</c> (<see cref="HeroTileX"/> to <see cref="HeroTileZ"/> are then unused).</param>
 internal sealed record ArcSpec(
     string Name, string Zone, string WorldName, int[] Flags, int HeroTileX, int HeroTileY, int HeroTileZ, int FrameLimit,
-    bool RealController = false, bool Prefabs = false);
+    bool RealController = false, bool Prefabs = false, ArcArrival? Arrival = null);
+
+/// <summary>E19.d2a S3 (U3): a real portal arrival record - what <c>AlundraWarpDirector.BeginDepartureCore</c> writes and
+/// <c>AdoptPlayerPawn</c> consumes. Positions are in 16.16 (<c>&lt;&lt; 16</c>) for X and Y and <c>&lt;&lt; 20</c> for Z
+/// (<c>ZLevel &lt;&lt; 20</c>, not yet the ground height: the adoption raises it), the animation is <c>0x36</c> for a portal.</summary>
+internal sealed record ArcArrival(int PosX, int PosY, int PosZ, uint AnimationId, uint DirectionId);
 
 /// <summary>One instruction of the arc's trace: the frame it ran in, the program it belongs to (slot and start
 /// code index, the identity a trace record can give without its owner), and its outcome.</summary>
@@ -178,6 +186,19 @@ internal sealed class ArcRun : IDisposable
                 ButtonsJustPressed = _hold | (_held & ~_heldPreviousFrame),
             };
 
+            if (spec.Arrival is { } arrival)
+            {
+                // E19.d2a S3: production integrates the pawn (World.InternalAddEntities, which sets Entity.World) in
+                // World.InitializePlayerControllers, BEFORE the world's gameplay proxy runs InitializeWithWorld and
+                // AdoptPlayerPawn - whose ClampToGround reads Owner.World.CollisionField. The montage left the pawn queued, so
+                // the adoption saw no world and raised nothing; an arrival is only measurable with the pawn integrated first.
+                typeof(World).GetMethod("InternalAddEntities", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(world, null);
+
+                Assert.True(BackdropLoader.TryParseMapIndex(spec.WorldName, out var arrivalMap), $"arc {spec.Name}: no map id in '{spec.WorldName}'");
+                AlundraWarpDirector.Instance.SetPendingArrivalForTests(
+                    (uint)arrivalMap, arrival.PosX, arrival.PosY, arrival.PosZ, arrival.AnimationId, arrival.DirectionId);
+            }
+
             Proxy = new AlundraWorldProxy();
             Proxy.InitializeWithWorld(world);
             typeof(AlundraBackdropStage).GetField("_clearColorApplied", BindingFlags.Instance | BindingFlags.NonPublic)!
@@ -216,15 +237,19 @@ internal sealed class ArcRun : IDisposable
 
             // Position and tile together, before the first frame: AdoptPlayerPawn puts the hero on the New Game tile
             // and computes its Tile* once, and the zone tests (0x3B) read TileX/Y/Z.
-            Hero.PosX = (spec.HeroTileX * 24 + 12) << 16;
-            Hero.PosY = (spec.HeroTileY * 16 + 8) << 16;
-            Hero.PosZ = spec.HeroTileZ << 20;
-            Hero.TileX = spec.HeroTileX;
-            Hero.TileY = spec.HeroTileY;
-            Hero.TileZ = Hero.PosZ >> 20;
-            if (spec.RealController)
+            // E19.d2a S3 (U3): an arc with an arrival writes neither: AdoptPlayerPawn placed the hero from the arrival record.
+            if (spec.Arrival is null)
             {
-                Hero.PushLogicalPositionToRoot(); // the controller moves the root: it starts where the hero was placed.
+                Hero.PosX = (spec.HeroTileX * 24 + 12) << 16;
+                Hero.PosY = (spec.HeroTileY * 16 + 8) << 16;
+                Hero.PosZ = spec.HeroTileZ << 20;
+                Hero.TileX = spec.HeroTileX;
+                Hero.TileY = spec.HeroTileY;
+                Hero.TileZ = Hero.PosZ >> 20;
+                if (spec.RealController)
+                {
+                    Hero.PushLogicalPositionToRoot(); // the controller moves the root: it starts where the hero was placed.
+                }
             }
         }
         catch
