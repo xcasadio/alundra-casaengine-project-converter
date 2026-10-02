@@ -1965,8 +1965,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // "g_playerControlFlags & GameplayBlockedMask" gate over UpdateEntities, read once and reused by
         // every "dedans" pass below (RunMapEventsPass, RunPendingEventTriggers) - the exhaustive table in
         // §1.5 keeps the "dehors" passes (map-event coalescing, RefreshUpdateProxiesAndCollidables, the
-        // wall interleave, the camera/backdrop/fade/dialogue blocks and the contact probe's own inline
-        // check further down) unconditional.
+        // wall interleave and the camera/backdrop/fade/dialogue blocks further down) unconditional; the contact of
+        // the dialogue now comes from the movement obstacle probe inside the frozen entity update (E19.d2b).
         //
         // T4 (D-T-6): OR'd with AlundraWarpDirector's own gel gate - the "third mechanism" (§1.5) that
         // freezes the SAME "dedans" passes, at this SAME site, without ever posing a control-flag bit

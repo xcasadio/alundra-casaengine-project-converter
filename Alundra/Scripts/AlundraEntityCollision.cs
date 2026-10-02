@@ -6,10 +6,10 @@ namespace Alundra.Scripts;
 /// <summary>
 /// Port of <c>PhysicsEngine.FindEntityCollisionCandidate</c> @ 0x80036F34 (decompilation
 /// PhysicsEngine.cs:1169-1283) - the entity-pair overlap probe the original's movement resolution
-/// uses, ported for E12.d (docs/plan-e12d-interaction-joueur.md) as DETECTION ONLY (D-E12D-1, user
-/// decision): the result feeds the player's <see cref="AlundraEntityScriptProxy.XCollisionEntity"/>
-/// and from there <c>CheckEntityInteraction</c>; nothing here blocks movement (entity↔entity blocking
-/// stays with the E14 chantier).
+/// uses, first ported for E12.d (docs/plan-e12d-interaction-joueur.md) as detection only (D-E12D-1). Since
+/// E19.d2b (D-E19-27, B3) it also blocks movement: the movement obstacle probe of the controller's field stage
+/// (<see cref="AlundraMovementObstacleProbe"/>) asks it for each candidate step, and the blocking report feeds the
+/// player's <see cref="AlundraEntityScriptProxy.XCollisionEntity"/> and from there <c>CheckEntityInteraction</c>.
 ///
 /// Ported as its own function rather than reusing an <see cref="EntitySupport"/> helper (the ÉCHELLES
 /// rule n°3: the original has a distinct function, we port it distinct) - with ONE deliberate shared
