@@ -1,0 +1,5 @@
+*.pkl
+*.log
+table.tsv
+totals.txt
+__pycache__/
