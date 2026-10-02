@@ -2798,7 +2798,7 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
   - Fait le 2026-10-02 : le commentaire de la méthode, le test renommé `FlushContact_DoesNotOverlap_OneUnitLessDoes` (mêmes deux assertions : l'ancien « flush » de la
     ligne était une unité en deçà du contact affleurant, l'ancien « apart » en est le contact affleurant) et la note datée du plan E12.d.
 
-- ⏳ **B6 — Arcs** (vrais préfabs, vrai héros, contrôleurs réels ; images jamais absolues ; contacts en relationnel
+- 🚧 **B6 — Arcs** (vrais préfabs, vrai héros, contrôleurs réels ; images jamais absolues ; contacts en relationnel
   exact à un ULP de la coordonnée près ; positions de transition à ± 2,5 px ; une valeur contredite est un **arrêt**).
   - **T-REG-0** : `EntityBlockCount` vaut 0 à la fin de A1c, A3, A4p, A5, A5r, A6, A7, A8, A9, A10 et A20 (preuve que
     leurs épingles n'ont pas de raison de bouger) ; leurs épingles restent inchangées.
@@ -2849,6 +2849,21 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
     case (17,7), z 1, drapeaux du préréglage).
   - Commits : `test(alundra): pin the entity contact arcs of maps 185, 10, 61 and 346 (E19.d2b)` et
     `test(alundra): re-pin A11 under entity contacts and guard the unchanged arcs`.
+  - Premier commit fait le 2026-10-02 (arcs T-A19, T-A10v, T-B9 et sa contre-épreuve, T-C61, TN-3, TH4 ; `AlundraEntityContactArcTests.cs`). **Rouge d'abord, sur la DLL d'avant B3**
+    (sonde non installée, aucune règle d'entité) : T-A19 échoue dans sa limite (1700 images) en nommant `slot 2 program @452: last 0x0B @506` ; T-A10v dans la sienne (6500) en
+    nommant `slot 2 program @5156: last 0x0B @5172` ; T-B9 dans la sienne (3200) en nommant `slot 1 program @1132: last 0x0B @1215` (le héros) et `slot 2 program @3636: last 0x0B @3673`
+    (Septimus) ; T-C61 dans la sienne (700) en nommant `slot 1 program @872: last 0x1E @980` ; la contre-épreuve de T-B9 et TN-3 sont rouges aussi (TN-3 : la plateforme traverse le
+    mur et passe à 800,5 px). Des explorations jetables du même jour (non commitées) ont mesuré, sur cette DLL, les positions de calage écrites au plan : Septimus de la 185 en
+    (15073280 ; 25821184), Nestus de la 10 en (64323584 ; 23527424), hors des tests. **Vert après B3 et B4** : toutes les valeurs écrites d'avance sont égales aux mesures, sans en
+    changer une (contacts en relationnel exact, fins de marche dans leurs tolérances, T10 à T70 dans l'ordre, la 362 en (16515072 ; 17301504 ; 2097152) effet 4 ; T-A10v jusqu'à
+    `0x53 @2003` ; T-B9 jusqu'à G482 et `0x11 @3738` ; T-C61 jusqu'à G672 ; TN-3 : la plateforme en (96 ; 800) contre rec10, immobile 500 images, `ForceAdjusted` 1, `XCollisionEntity` rec10,
+    ni chemin ni `WalkDetourAttempted` ; contre-épreuve de T-B9 : Septimus arrêté en (57409536 ; 51912704), T510 jamais posé, héros garé à ± 2,5 px de (57094144 ; 50995200)).
+    Les ensembles d'opcodes sautés sont ceux de la mesure (0x25 de la 10 pour E19.d2c, 0x58, 0x90, 0x95, 0x2B, 0x4C, 0x4D, 0x29, 0x5D, 0x52, 0x3F, 0x45, 0x46). TH4 : les quatre arrivées
+    (A20, A10, T-A19, `day3-after-dream`) ne recouvrent aucune entité à la première image.
+  - Montages des arcs (précisions) : T-A19 comme écrit (arrivée puis `PlaceHero(132, 296, 16)`, « sol » = 16 px) ; T-A10v : héros posé par la tuile (41, 29, 3) = (996, 472, 48), que `B[14]` ré-écrit
+    par `0x64` ; T-B9 : tuile (37, 46, 1) puis `PlaceHero(898, 736, 16)` avant la première image ; contre-épreuve `PlaceHero(898, 744, 16)`, bilan à l'image 1400 ; T-C61 : arrivée (588, 648)
+    à z 2 ; **TN-3 : le héros « dans la zone » est une arrivée à la tuile (6, 50), z 2** (la zone de spawn est lue à l'adoption du héros : un héros placé après la construction du monde ne fait pas
+    apparaître la plateforme). Support partagé : `AlundraArcSamples.cs` (instantané au premier instruction qui suit un pc, ordre des drapeaux temporaires).
 
 - ⏳ **B7 — Hygiène reportée d'E19.d2a.** A20 compte les onze `0xA2` parmi les sautés (`SkippedOrExceeded`) ; A10 vérifie
   le programme `@236` de `0x11 @354` ; S1 : un préréglage de test qui pose puis efface un drapeau, un compteur d'objet,
