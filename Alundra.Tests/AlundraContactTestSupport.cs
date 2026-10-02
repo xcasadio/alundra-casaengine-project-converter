@@ -53,18 +53,20 @@ internal sealed class ContactHost : IAlundraScriptHost
         }
     }
 
-    public ContactHost(IEventProgramRunner? runner = null)
+    public ContactHost(IEventProgramRunner? runner = null, uint playerControlFlags = 0, AlundraPlayerController? playerController = null)
     {
         Runner = runner ?? new NoOpRunner();
+        GameState = new AlundraGameState { PlayerControlFlags = playerControlFlags };
+        PlayerController = playerController;
     }
 
     public IEventProgramRunner Runner { get; }
 
     public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
 
-    public AlundraGameState GameState { get; } = new();
+    public AlundraGameState GameState { get; }
 
-    public AlundraPlayerController? PlayerController => null;
+    public AlundraPlayerController? PlayerController { get; }
 
     /// <summary>Every proxy of the world, in world order (the hero first).</summary>
     public List<AlundraEntityScriptProxy> All { get; } = new();

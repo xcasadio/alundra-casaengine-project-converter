@@ -2200,25 +2200,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             _hudPresenter?.Tick();
         }
 
-        // E12.d (D-E12D-2): the player's entity-contact probe, once per logic tick - the port of
-        // MoveEntity's "XCollisionEntity = ComputeXYPosition(...)" write (PhysicsEngine.cs:71-84),
-        // detection only (D-E12D-1, no blocking). Phase fidelity: the original computes this in the
-        // physics pass, AFTER the events pass of the same tick (EntityManager.cs:377-387), so
-        // MovePlayer always consumes the PREVIOUS tick's contact - identical here, where this
-        // end-of-frame pass feeds the next frame's MovePlayer. Gated by GameplayBlockedMask
-        // (D-E12D-5): the original freezes its whole entity pipeline - physics included - behind that
-        // mask (EntityManager.cs:377), so with a MenuOpen dialogue box up, the contact stays frozen
-        // at its pre-open value exactly like the original's.
-        if (PlayerEntity is { } contactProbeSubject
-            && (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) == 0
-            && !AlundraWarpDirector.Instance.IsTransitionInProgress)
-        {
-            for (var contactTick = 0; contactTick < ticksThisFrame; contactTick++)
-            {
-                contactProbeSubject.XCollisionEntity =
-                    AlundraEntityCollision.FindEntityCollisionCandidate(contactProbeSubject, _collidables);
-            }
-        }
+        // E12.d (D-E12D-2) had a pass here: the player's overlap probe, once per logic tick, feeding XCollisionEntity (detection only, D-E12D-1). E19.d2b B4
+        // (D-E19-27, D-E19-29) removed it: entities now block movement, and the contact of the dialogue is the entity that shortened or cancelled the step,
+        // written by AlundraEntityScriptProxy.MoveControllerAndPullPosition from the blocking report of the controller (the binary's +0x130). The freeze of
+        // the old pass (GameplayBlockedMask, D-E12D-5) is kept by construction: no step is taken, so the contact keeps its value.
 
         // E13.d D2 (docs/plan-e13d-inventaire.md, D-E13D-15): the freeze the T2 gate cannot reach - the
         // engine's own gravity integration and sprite animation, frozen for every spawned entity while

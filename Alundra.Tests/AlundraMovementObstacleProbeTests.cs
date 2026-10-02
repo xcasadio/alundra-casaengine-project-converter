@@ -193,6 +193,7 @@ public sealed class AlundraMovementObstacleProbeTests
             nestus.ForceAdjusted = 0;
             nestus.MoveControllerAndPullPosition(0f, -1f);
             Assert.Null(ObstacleOf(nestus));
+            Assert.Null(nestus.XCollisionEntity); // the contact of the dialogue (B4): null while nothing blocks.
             Assert.Equal(0, nestus.ForceAdjusted);
         }
 
@@ -204,6 +205,7 @@ public sealed class AlundraMovementObstacleProbeTests
             nestus.ForceAdjusted = 0;
             nestus.MoveControllerAndPullPosition(0f, -1f);
             Assert.Same(meadeEntity, ObstacleOf(nestus));
+            Assert.Same(meade, nestus.XCollisionEntity); // ... and Meade from the tick 34 (B4).
             Assert.Equal(1, nestus.ForceAdjusted);
             Assert.Equal(33947648, nestus.PosY);
         }
@@ -263,7 +265,8 @@ public sealed class AlundraMovementObstacleProbeTests
 
         var x = ContactWorld.Root(mover).X;
         Assert.InRange(x, flush - ulp, flush + ulp);
-        Assert.Same(obstacle.OwnerEntity, ObstacleOf(mover)); // "XCollisionEntity" of the tick that shortens (B4 reads it from here).
+        Assert.Same(obstacle.OwnerEntity, ObstacleOf(mover));
+        Assert.Same(obstacle, mover.XCollisionEntity); // the contact of the dialogue is written at the tick that shortens (B4).
         Assert.Equal(0, mover.ForceAdjusted);
         // The binary leaves 0 to 3 units and raises the flag 0 to 2 ticks later; here the contact is exact to a float ULP.
 
@@ -272,6 +275,7 @@ public sealed class AlundraMovementObstacleProbeTests
 
         Assert.Equal(1, mover.ForceAdjusted);
         Assert.Same(obstacle.OwnerEntity, ObstacleOf(mover));
+        Assert.Same(obstacle, mover.XCollisionEntity);
         Assert.InRange(ContactWorld.Root(mover).X, flush - ulp, flush + ulp);
         Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(mover, new[] { obstacle })); // the logical fields: flush does not overlap.
     }
@@ -379,6 +383,7 @@ public sealed class AlundraMovementObstacleProbeTests
             Assert.Equal(500f, root.X); // X blocked by the villager (flush)
             Assert.Equal(300f - 1.4140625f * tick, root.Y); // Y goes on: -1.4140625 px per tick
             Assert.Same(villager.OwnerEntity, ObstacleOf(hero));
+            Assert.Same(villager, hero.XCollisionEntity);
         }
 
         // Deviation from the binary, where the joint division of both axes keeps the hero still: E19.h (O-E19-28).

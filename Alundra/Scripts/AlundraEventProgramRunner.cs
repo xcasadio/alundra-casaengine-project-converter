@@ -2276,7 +2276,10 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     {
         var grid = _worldContext.NavigationGrid;
 
-        if (entity.WalkDetourPath == null && !entity.WalkDetourAttempted && grid != null && entity.ForceAdjusted != 0)
+        // E19.d2b B4 (D-E19-30, D-E19-35): the detour is for a contact of the cells (D-E19-6). A walk that an ENTITY blocks (the controller names it in
+        // XCollisionEntity) waits, as the original: 0x0B (0x8003D468) and 0x1E (0x8003D8D8) never read ForceAdjusted, and no detour is attempted or latched.
+        if (entity.WalkDetourPath == null && !entity.WalkDetourAttempted && grid != null && entity.ForceAdjusted != 0
+            && entity.XCollisionEntity == null)
         {
             TryEngageDetour(entity, state, grid, thresholdPx);
         }

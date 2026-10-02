@@ -2757,7 +2757,7 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
     héros}, `@341` et `@346`, `@386` ≥ 68222976, images 48, 175, 189 et 189, T200 et T201, `rec4` Deactivated puis détruit une image plus tard). Le support
     `AlundraArcSamples.cs` (instantanés au premier instruction qui suit un pc) sert aussi les arcs de B6.
 
-- ⏳ **B4 — Contact du dialogue et détour (DLL), tests d'abord.**
+- ✅ **B4 — Contact du dialogue et détour (DLL), tests d'abord.**
   - `MoveControllerAndPullPosition` remet `XCollisionEntity` à null avant le `Move`, puis y écrit le proxy de
     `H2Obstacle ?? H1Obstacle` (le dernier axe traité) ; null si rien n'a bloqué ou si le déplacement demandé est nul ; le
     gel garde la valeur. La sonde de chevauchement de fin d'image (`AlundraWorldProxy.cs:2208-2216`) est retirée.
@@ -2777,6 +2777,20 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
     l'arrêt ; null après un `Move` nul ; gardé pendant le gel `MenuOpen`) ; le miroir de `SailorThirteen` suit le site
     de production.
   - Commit : `feat(alundra): take the interaction contact from the blocking report and keep walk detours off entities`
+  - Fait le 2026-10-02. Rouge d'abord, sur la DLL d'avant B4 (la sonde installée, `XCollisionEntity` encore écrit par la passe de recouvrement de fin d'image) :
+    7 des 16 tests des trois classes `AlundraEntityContactReportTests`, `AlundraSaveBookEndToEndTests` et `AlundraInteractionPassTests` échouent : T-R7 (deux),
+    T-R8 (deux), T-REG-E12D-1 (un), T-REG-E12D-2 (deux) ; les 9 autres sont les contre-épreuves (détour sur contact de case, jumeau posé sans pousser) et les tests inchangés. Sur la DLL de B4 avant les
+    réécritures, exactement les trois montages nommés par le plan échouaient (`AlundraSaveBookEndToEndTests`, les deux P-a d'`AlundraInteractionPassTests`) ; aucun autre
+    test existant n'a bougé. Vert après : `Alundra.Tests` 2178 sur 2178 (dont 4 tests d'exploration non commités, et les 5 arcs de B6 non encore commités). Aucune valeur du
+    plan contredite : le héros du livre finit à `PosY` 22478848 (343 px) et nomme le livre, au pixel prévu.
+  - Réécritures (D-E19-29) : **T-REG-E12D-1** (`AlundraSaveBookEndToEndTests`) : héros à contrôleur réel (les réglages de l'export), posé 32 px au sud du livre, Haut tenu ; jumeau
+    posé à y = 343 sans pousser (aucun contact, le flux ne démarre pas). **T-REG-E12D-2** (les deux P-a d'`AlundraInteractionPassTests`, remplacés) : héros à contrôleur réel
+    dans un monde réel, marin collisionnable à 40 px en X, Droite tenu au pad (chaîne réelle pad, `MovePlayer`, `TickPlayer`, `Move`) : contact à l'image de l'arrêt, null une fois
+    le pas nul, gardé pendant le gel `MenuOpen`. Le miroir de `SailorThirteen` (`AlundraDialogueOpcodesProductionTests`) garde son code et son commentaire dit qu'il tient lieu du
+    contact du pas du héros (le banc n'a pas de contrôleur).
+  - Code : `MoveControllerAndPullPosition` remet `XCollisionEntity` à null, fait le `Move`, puis y écrit le proxy de `H2Obstacle ?? H1Obstacle` et incrémente
+    `EntityBlockCount` ; la passe de recouvrement de `AlundraWorldProxy.Update` est retirée ; `UpdateWalkDetour` ne s'engage que sans entité en contact (0x0B et 0x1E).
+    T-R3, T-R4 et T-R9 (B3) lisent aussi `XCollisionEntity`.
 
 - ⏳ **B5 — Textes.** Commentaire d'`AlundraEntityCollision.cs:27-33` et nom du test `FlushContact_*` corrigés (le
   contact affleurant ne recouvre pas) ; note datée dans `docs/plan-e12d-interaction-joueur.md:86-88`.

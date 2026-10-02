@@ -109,74 +109,129 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
     private static AlundraPadState SquarePress() => new() { ButtonsJustPressed = AlundraPadState.Square };
 
     // -----------------------------------------------------------------------------------------
-    // P-a - the contact pass at the real AlundraWorldProxy.Update site (mutations №2 and №7).
+    // P-a - the contact at its production site (mutations №2 and №7). E19.d2b B4 (T-REG-E12D-2, D-E19-29): the overlap pass of the end of
+    // AlundraWorldProxy.Update is gone; the contact is the entity that shortened or cancelled the hero's step, written by his controller's blocking
+    // report in his own tick (AlundraEntityScriptProxy.MoveControllerAndPullPosition), through the real player branch: pad -> MovePlayer -> TickPlayer.
     // -----------------------------------------------------------------------------------------
 
-    private static AlundraWorldProxy BuildProxyWithPlayerAndCollidable(
-        out AlundraEntityScriptProxy player, out AlundraEntityScriptProxy sailor)
+    private sealed class HeroAndSailor
     {
-        var world = new World { Name = "TestWorld" };
-        var camera = new Camera2dComponent();
-        world.Entities.Add(new Entity { Name = "camera", RootComponent = camera });
+        public required World World { get; init; }
 
-        var proxy = new AlundraWorldProxy();
-        proxy.InitializeWithWorld(world);
+        public required ContactHost Host { get; init; }
 
-        player = NewCollidable(100, 100, 100);
-        player.IsPlayer = true;
-        sailor = NewCollidable(100, 100, 100, EntityFlags.InteractRequiresButton);
+        public required AlundraEntityScriptProxy Hero { get; init; }
 
-        proxy.PlayerEntity = player;
+        public required AlundraEntityScriptProxy Sailor { get; init; }
 
-        // The ONE reflection seam of this montage: the private per-frame collidables buffer -
-        // "TestWorld" spawns nothing, so RefreshUpdateProxiesAndCollidables never rebuilds (and never
-        // clears) it, and injecting here feeds the real pass its real input list.
-        var field = typeof(AlundraWorldProxy).GetField("_collidables", BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.NotNull(field);
-        ((List<AlundraEntityScriptProxy>)field!.GetValue(proxy)!).Add(sailor);
+        public required PadHold Pad { get; init; }
 
-        return proxy;
+        public void Tick() => ContactWorld.Integrate(World, Host);
+    }
+
+    private sealed class PadHold
+    {
+        public uint Buttons;
+    }
+
+    /// <summary>The hero (21 x 15 x 32, a real controller, the walking animation of the export: speed 208) at (100, 100, 48) and a collidable sailor that
+    /// asks for the button at (140, 100), 40 px away on x: the hero's right edge meets the sailor's left edge (130) at x = 119. The pad is held through
+    /// <see cref="PadHold"/>; the probe is installed.</summary>
+    private static HeroAndSailor BuildHeroAndSailor()
+    {
+        var pad = new PadHold();
+        var host = new ContactHost(playerController: new AlundraPlayerController
+        {
+            PadStateProviderForTests = () => new AlundraPadState { ButtonsHold = pad.Buttons, ButtonsJustPressed = pad.Buttons },
+        });
+        var world = ContactWorld.BuildWorld(new FlatGroundField { GroundZ = 48f }, new AlundraMovementObstacleProbe(host));
+        var hero = ContactWorld.AddEntity(world, host, "Hero", 100, 100, 48, -10, -7, 0, 21, 15, 32, isPlayer: true);
+        var sailor = ContactWorld.AddEntity(world, host, "Sailor", 140, 100, 48, -10, -7, 0, 20, 14, 32);
+        sailor.Flags |= EntityFlags.InteractRequiresButton;
+        hero.AnimSetsByAnim = new Dictionary<int, AnimSetEntry>
+        {
+            [0] = new AnimSetEntry { Anim = 0, Speed = 0, Acceleration = 0 },
+            [1] = new AnimSetEntry { Anim = 1, Speed = 208, Acceleration = 1 },
+        };
+        hero.IsOnGround = 1;
+        ContactWorld.Integrate(world, host);
+        return new HeroAndSailor { World = world, Host = host, Hero = hero, Sailor = sailor, Pad = pad };
     }
 
     [Fact]
-    public void Update_WritesThePlayersContact_AndDetectionFollowsAMove()
+    public void Update_WritesThePlayersContact_AtTheTickOfTheStop_AndNullOnceTheMoveIsNull()
     {
-        var proxy = BuildProxyWithPlayerAndCollidable(out var player, out var sailor);
+        var rig = BuildHeroAndSailor();
+        Assert.Null(rig.Hero.XCollisionEntity);
 
-        proxy.Update(1f / 50f);
-        Assert.Same(sailor, player.XCollisionEntity);
+        // Right held: free ticks first, then the sailor from the tick the controller shortens the step.
+        rig.Pad.Buttons = AlundraPadState.Right;
+        var ticks = 0;
+        while (rig.Hero.XCollisionEntity == null && ticks < 40)
+        {
+            rig.Tick();
+            ticks++;
+        }
 
-        // Move the player away from its spawn position: a stale-cache port (mutation №7) or a deleted
-        // call site (mutation №2) both fail here.
-        player.PosX = 100000;
-        proxy.Update(1f / 50f);
-        Assert.Null(player.XCollisionEntity);
+        Assert.Same(rig.Sailor, rig.Hero.XCollisionEntity);
+        Assert.InRange(rig.Hero.PosX, 117 << 16, 120 << 16); // flush: x = 119.
 
-        player.PosX = 100;
-        proxy.Update(1f / 50f);
-        Assert.Same(sailor, player.XCollisionEntity);
+        // The pad released: the force decays to nothing, then a null Move writes no contact.
+        rig.Pad.Buttons = 0;
+        for (var tick = 0; tick < 12; tick++)
+        {
+            rig.Tick();
+        }
+
+        Assert.Null(rig.Hero.XCollisionEntity);
+
+        // Pushing again, the contact is back (detection follows the move); stepping away clears it.
+        rig.Pad.Buttons = AlundraPadState.Right;
+        for (var tick = 0; tick < 12 && rig.Hero.XCollisionEntity == null; tick++)
+        {
+            rig.Tick();
+        }
+
+        Assert.Same(rig.Sailor, rig.Hero.XCollisionEntity);
+        rig.Pad.Buttons = AlundraPadState.Left;
+        for (var tick = 0; tick < 12; tick++)
+        {
+            rig.Tick();
+        }
+
+        Assert.Null(rig.Hero.XCollisionEntity);
     }
 
     [Fact]
-    public void Update_ContactPassIsFrozen_WhileGameplayBlockedMaskIsPosed()
+    public void Update_TheContactIsFrozen_WhileGameplayBlockedMaskIsPosed()
     {
-        var proxy = BuildProxyWithPlayerAndCollidable(out var player, out _);
+        var rig = BuildHeroAndSailor();
 
-        // The original freezes its whole entity pipeline - physics included - behind
-        // GameplayBlockedMask (EntityManager.cs:377): with a MenuOpen box up, the contact must keep
-        // its pre-open value, not refresh (D-E12D-5).
-        player.PosX = 100000;
-        proxy.Update(1f / 50f);
-        Assert.Null(player.XCollisionEntity);
+        // The original freezes its whole entity pipeline - physics included - behind GameplayBlockedMask (EntityManager.cs:377): with a MenuOpen box up,
+        // the contact must keep its pre-open value, not refresh (D-E12D-5). No step is taken, so it keeps it by construction.
+        rig.Pad.Buttons = AlundraPadState.Right;
+        for (var tick = 0; tick < 40 && rig.Hero.XCollisionEntity == null; tick++)
+        {
+            rig.Tick();
+        }
 
-        proxy.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
-        player.PosX = 100; // back onto the sailor - but the pass must not run.
-        proxy.Update(1f / 50f);
-        Assert.Null(player.XCollisionEntity);
+        Assert.Same(rig.Sailor, rig.Hero.XCollisionEntity);
 
-        proxy.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
-        proxy.Update(1f / 50f);
-        Assert.NotNull(player.XCollisionEntity);
+        rig.Host.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
+        rig.Pad.Buttons = 0; // were the pipeline running, a null step would clear the contact.
+        for (var tick = 0; tick < 4; tick++)
+        {
+            rig.Tick();
+            Assert.Same(rig.Sailor, rig.Hero.XCollisionEntity);
+        }
+
+        rig.Host.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
+        for (var tick = 0; tick < 12; tick++)
+        {
+            rig.Tick();
+        }
+
+        Assert.Null(rig.Hero.XCollisionEntity);
     }
 
     // -----------------------------------------------------------------------------------------

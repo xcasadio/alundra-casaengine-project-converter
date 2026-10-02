@@ -324,6 +324,12 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// each call: only a freeze or a thaw asks, never a per-frame path.</summary>
     internal AnimatedSpriteComponent? AnimatedSprite => Owner?.GetComponent<AnimatedSpriteComponent>();
 
+    /// <summary>
+    /// E19.d2b B4: how many controller steps (<see cref="MoveControllerAndPullPosition"/>) an entity shortened or cancelled, since the proxy exists.
+    /// Not a game state: the arcs read it (T-REG-0 pins the arcs that must never meet an entity at 0). Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal int EntityBlockCount;
+
     /// <summary>E19.d2b: the engine entity this proxy drives (the movement obstacle probe returns obstacles as engine entities).</summary>
     internal Entity? OwnerEntity => Owner;
 
@@ -1860,7 +1866,18 @@ public class AlundraEntityScriptProxy : GameplayProxy
         }
 
         var requested = new Vector3(deltaXPixels, deltaYPixels, 0f);
+
+        // E19.d2b B4 (D-E19-29): the contact of the dialogue and of the grab is the entity that shortened or cancelled THIS step - the binary's +0x130
+        // (0x80037F08): the obstacle of the tick, the one nearest the contact when two follow each other (the LAST axis processed, h2 when both), 0 when
+        // nothing blocked or no displacement was asked. It is rewritten at every step, and kept while the world is frozen (no step is taken then).
+        XCollisionEntity = null;
         var actual = Controller.Move(requested);
+        var contact = Controller.LastContact;
+        if ((contact.H2Obstacle ?? contact.H1Obstacle)?.GameplayProxy is AlundraEntityScriptProxy blockingEntity)
+        {
+            XCollisionEntity = blockingEntity;
+            EntityBlockCount++;
+        }
 
         if (AxisMadeNoProgress(requested.X, actual.X) || AxisMadeNoProgress(requested.Y, actual.Y))
         {
