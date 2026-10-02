@@ -2528,7 +2528,7 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
     - Les positions de Septimus ne sont pas épinglées ici : dans l'original rec4 l'arrête (E19.d2b).
   - Une valeur écrite d'avance que l'arc contredit est un **arrêt** (question à l'auteur), jamais une ré-épingle.
 
-- ⏳ **S5 — Vérification et clôture.** Build de la solution et `Alundra.Tests` complet en **Release** d'abord
+- 🧪 **S5 — Vérification et clôture** (builds, tests et mesures faits par l'exécutant, voir §2 « E19.d2a » ; reste le verifier frais et les dispositions, par la session principale). Build de la solution et `Alundra.Tests` complet en **Release** d'abord
   (`--blame-hang-timeout 300s`), puis, **en dernier**, build et `Alundra.Tests` complet en **Debug** : la dernière
   build est Debug, et `cmp` ne montre aucun écart entre `Alundra/bin/Debug/<cible>/Alundra.dll` et
   `alundra-project/Alundra.dll` (chaque build de `Alundra` recopie sa DLL dans le projet exporté, et une DLL Release
@@ -2736,6 +2736,31 @@ Réservé aux mesures faites en exécutant les tranches.
 - **Temps d'exécution** (Debug) : A5 environ 1 s, A5r 0,7 s, A6 0,75 s, A8 0,78 s ; la suite complète environ 26 s.
 - **Suites** : `Alundra.Tests` 2086 réussis, 0 échec, en Debug (26 s) comme en Release (27 s) (2071 à la fin de D2 sans A8 : A5, A5r, U1 à U13 sans U9 et A8 font 2086) ; convertisseur 400
   sur 400. Les annexes de trace du héros et de l'intro ne changent pas. La DLL déployée dans `alundra-project/` est la Debug (`cmp` identique).
+
+### E19.d2a (2026-10-02)
+
+- **Commits** (branche `chantier/e19-opcodes`) : S1 `3be0d89`, S2 `62dccdd`, S3 `ad04f9c`, S4 `43b12ac`, puis cette mise à jour du plan. Aucun sous-module
+  touché ; le convertisseur n'est pas touché (ses tests ne sont pas relancés).
+- **Rouge d'abord** : S1, 22 tests sur 22 rouges contre une ébauche qui rend `false` (« not implemented »), puis 22 verts ; TH3, rouge par l'absence du point
+  d'entrée (`ArcSpec` sans `Arrival`, erreurs de compilation CS1739 et CS0246), puis, avec le point d'entrée seul, `PosZ = 0` au lieu de 1048576 (voir S3, déviation).
+  A20, A10 et A11 testent du code existant : aucune implémentation ne les précède, ils sont verts du premier coup contre les valeurs écrites d'avance ; leur
+  discrimination est vérifiée par trois valeurs altérées (X de Sybill, position de rec0, `(0x4C, 331)`), qui les font échouer, puis rétablies.
+- **Valeurs mesurées contre valeurs écrites** : toutes égales, sans en changer une (positions de Sybill, positions `0x64` de rec0 à rec5, cellules (12,23) à (12,26),
+  ordre des drapeaux T101 à T105, ensembles d'opcodes sautés, position de rec4 = héros + (96, 16, 0) px).
+- **Limites d'images retenues** : A20 160 (fin `0x11 @596` à l'image 134) ; A10 1000 (fin `0x11 @354` à l'image 922) ; A11 240 (fin `0x38 @437` à l'image 208).
+- **A20** : Sybill part de (540, 472) à l'image 1 (`@584`) ; sa marche finit au premier passage de `@588` (image 131) avec **x = 732,75 px** (48021504), y = 472 :
+  dépassement de 0,75 px, comme le retard D-E19-13 ; les onze `0xA2` sautés tous à l'image 0.
+- **A10** : `B[1]` aux images 0 (`@106` à `@121`), 1 (`@122`, `@139`) et 2 (`@140` à `@180`) ; T100 visible à l'image 3 ; cellules à 0x00 au premier tick de rec5 `C[1]`
+  (image 3), 0x41 de nouveau à l'image 227 ; drapeaux T101 posé à l'image 4, effacé en 228 (rec5 `@703`), T102 229 puis 323 (Wendell `@774`), T103 324 puis 479
+  (Nestus `@944`), T104 480 puis 488 (Bergus `@847`, après `0x25 @838` à l'image 484 et `@843` à l'image 487), T102 de nouveau 489 puis 581, T105 582 puis 737 (Meade `@1026`).
+- **A11** : `0x05 @576` (T0) à l'image 3 ; boîte 130 ouverte à l'image 5, fermée à l'image 9 (T6 puis T2) ; hero placé en (996, 120, 16), `0x8B @86` à l'image 10 ;
+  boîte 131 à l'image 11 (T200 visible en 12, T201 en 13 au premier appui), attente `@353` à l'image 67 ; boîte 132 à l'image 194 ; `0x38 @437` et **désactivation de rec4
+  (`C[3] @451`) à l'image 208**, T3 visible en 209. **`0x58 @110` sauté 36 fois** jusqu'au signal de fin (dès l'image 2, non épinglé).
+- **Temps d'exécution** (Debug) : chaque arc environ 1 s ; la suite complète 23 s.
+- **Suites** : `Alundra.Tests` **2086 réussis avant la tranche, 2112 après** (+22 S1, +1 TH3, +3 arcs), 0 échec, en Release (23 s) puis en Debug (23 s), la Debug en dernier.
+  `cmp` sans écart entre `Alundra/bin/Debug/net9.0-windows/Alundra.dll` et `alundra-project/Alundra.dll` (sha256 `bb5332a6...a1b`), re-contrôlé après les `--dry-run`.
+- **`--dry-run`** des deux préréglages (`dotnet run -c Debug`) : sortie conforme au tableau de S1, code de sortie 0, aucun dossier `AlundraGame` créé sous
+  `%LOCALAPPDATA%`.
 
 ## 3. Points ouverts
 
