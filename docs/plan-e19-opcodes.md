@@ -2612,7 +2612,7 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
   | Deux tests portent le libellé « TH3 » (celui d'E19.d D1 et celui d'E19.d2a S3). | P4 | Reporté (hygiène). |
   | L'empreinte sha256 de la DLL consignée au §2 ne désignait plus la DLL déployée, reconstruite par le verifier depuis les mêmes sources. | P4 | Corrigé au §2 dans ce commit. |
 
-#### 1.2h.2 E19.d2b — Contacts entre entités 🚧 (planifiée, relue READY et approuvée par l'auteur le 2026-10-02, sans démo moteur ; exécution en cours)
+#### 1.2h.2 E19.d2b — Contacts entre entités 🧪 (B1 à B7 faites le 2026-10-02, sans démo moteur ; B8 : suites et mesures faites, vérification indépendante en attente ; reste la recette B9 de l'auteur)
 
 **Résultat** : le héros et les PNJ s'arrêtent au contact exact de toute entité collisionnable, comme dans le binaire ;
 les deux P2 introduits par E19.d sont réglés (la réunion de la 185 mène à la 362 ; la scène des villageois de la 10
@@ -2886,9 +2886,12 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
     l'outil depuis l'app Claude (terminal, bouton Run, agent), choix du slot de F9 par la date (`LastWriteTime`), refus et limites de F9. **Non fait** : un test automatique de
     l'outil (il faudrait référencer un projet exécutable depuis `Alundra.Tests`) ; le verrouillage du fichier projet n'a pas été exercé (le chemin d'exception est une ligne).
 
-- ⏳ **B8 — Vérification et clôture.** Builds et suites dans cet ordre : `CasaEngine.Tests` (moteur) ; build de la solution
+- 🧪 **B8 — Vérification et clôture.** Builds et suites dans cet ordre : `CasaEngine.Tests` (moteur) ; build de la solution
   parent et `Alundra.Tests` en Release, puis en Debug **en dernier**, `--blame-hang-timeout 300s` ; convertisseur
   inchangé ; `cmp` de la DLL Debug déployée. Verifier frais et contradicteurs ; dispositions au plan ; §0.2, §2 et mémoire.
+  - Part de l'exécutant faite le 2026-10-02 (mesures au §2, sous-section E19.d2b) : `CasaEngine.Tests` 2441 réussis, 0 échec ; solution parent et `Alundra.Tests` 2185 réussis en Release puis
+    en Debug (la Debug en dernier), 0 échec ; `cmp` de la DLL Debug déployée sans écart ; convertisseur et analyseur non touchés (leurs tests ne sont pas relancés). **Reste** : le verifier frais
+    et les contradicteurs, les dispositions, §0.2 et la mémoire, qui se font après l'exécutant.
 
 - ⏳ **B9 — Recette en jeu (auteur).**
   1. Jeu libre de l'intro et du jour 1 (sauvegarde devant le livre) : le héros bute sur les marins et les villageois au
@@ -3099,6 +3102,39 @@ Réservé aux mesures faites en exécutant les tranches.
   version) : sha256 `19398dc7...`, `cmp` sans écart, re-contrôlé par la session principale après sa dernière build Debug.
 - **`--dry-run`** des deux préréglages (`dotnet run -c Debug`) : sortie conforme au tableau de S1, code de sortie 0, aucun dossier `AlundraGame` créé sous
   `%LOCALAPPDATA%`.
+
+### E19.d2b (2026-10-02)
+
+- **Commits** : moteur (branche `chantier/field-movement-obstacles`, faits avant cette exécution) `4e6bd6bd` (ADR-0047), `3dc98385`, `c57c120f`, `d509bc10`, `c2e4fdce`. Parent (branche
+  `chantier/e19-opcodes`) : B1 `fdd6fb9` (pointeur du sous-module), B2 `f3e3a03`, B3 `469c6f3` (avec l'installation de la sonde et le ré-épinglage d'A11), B4 `9896578`, B5 `363db2a`, B6 `ee00ff0` (les
+  arcs) et `0a68fa4` (T-REG-0), B7 `f87ae56`, puis cette mise à jour des docs. Aucun commit sur `main`, rien poussé ; la modification locale de l'auteur dans `CasaEngine.Launcher/Program.cs` n'a
+  été ni touchée ni indexée.
+- **Suites** : `CasaEngine.Tests` **2441** réussis, 0 échec (base 2405 : +36 tests moteur, aucun existant modifié). `Alundra.Tests` **2112 avant la tranche, 2185 après** (+73 : B2 17, B3 32, B4 7 et 1 jumeau
+  du livre, arcs de B6 10 : T-A19, T-A10v, T-B9 et sa contre-épreuve, T-C61, TN-3 et quatre lignes de TH4, B7 6 lignes), 0 échec, en Release (30 s) puis en Debug (30 s), la Debug en dernier. Le convertisseur n'est pas
+  touché (ses 400 tests ne sont pas relancés). `cmp` sans écart entre `Alundra/bin/Debug/net9.0-windows/Alundra.dll` et `alundra-project/Alundra.dll` (sha256 `ed1126bb...2dbf`).
+- **Tests existants modifiés** (la liste du plan, rien d'autre) : A11 (ré-épinglé), `AlundraSaveBookEndToEndTests` (T-REG-E12D-1), les deux P-a d'`AlundraInteractionPassTests` (T-REG-E12D-2), le
+  commentaire du miroir de `SailorThirteen`, le nom du test `FlushContact_*`, et la hygiène de B7 (A20, A10, `TH3b`). Aucune autre épingle ni trace n'a bougé (les annexes de trace de l'intro et du héros ne sont pas
+  régénérées).
+- **Rouge d'abord** : B2, 8 des 17 nouveaux tests rouges ; B3, 20 des 32 ; B4, 7 des 16 des trois classes touchées. Arcs sur la DLL d'avant B3 : T-A19 `slot 2 program @452: last 0x0B @506` (limite 1700) ;
+  T-A10v `slot 2 program @5156: last 0x0B @5172` (6500) ; T-B9 `slot 1 program @1132: last 0x0B @1215` et `slot 2 program @3636: last 0x0B @3673` (3200) ; T-C61 `slot 1 program @872: last 0x1E @980` (700) ;
+  la contre-épreuve de T-B9 et TN-3 rouges aussi (plateforme à 800,5 px au lieu de 800).
+- **Valeurs mesurées contre valeurs écrites** : toutes égales, sans en changer une.
+  - T-A19 : héros `@95` (6946816 ; 19398656) ; Septimus `@458` (8650752 ; 21626880) contre rec7 (7864320 ; 22544384) ; `@463` PosX 11927552 ; `@506` finit en (11927552 ; 22446080) ; rec7 détruit à l'image 119 et
+    absent de la liste à la fin de l'image 120 ; T10 à T70 posés aux images 334, 480, 552, 654, 702 et 821 ; héros `@120` (6946816 ; 21495808), `@125` (11862016 ; 21495808) ; `0x53 @147` à l'image 1116 vers la 362 en
+    (16515072 ; 17301504 ; 2097152), effet 4.
+  - T-A10v : Meade (62881792 ; 32997376) ; Nestus `@5163` PosY 33914880 (image 1090), `@5166` x = 64274432 (980,75 px, image 1099), `@5172` y = 32047104 (489,0 px, image 1128) ; T666 à 1160 ; Bergus `@5061`
+    PosX 63963136 (image 1814) ; T668 à 1876 ; Bergus `@5071` (67108864 ; 36175872) exactement (image 1971) ; T674 posé à 4241, effacé à 4739 ; `0x53 @2003` à l'image 5100.
+  - T-B9 : Septimus `@3670` (59006976 ; 39190528) à l'image 992 ; héros `@1212` (58851328 ; 39256064) à 1022 ; `@3673` PosX 54214656 (1022) ; `@1215` PosX 55576576 (848,03 px, image 1043) ; rec41 détruit à 1043 ;
+    T510 à 905, T511 à 1055, T512 à 1221, T514 à 1333, T515 à 1583 ; `@3693` à 1693, `@3734` à 2115 (`0x11 @3738` à 2115). Contre-épreuve (y0 744), image 1400 : Septimus (57409536 ; 51912704), héros garé (57094144 ; 50995200).
+  - T-C61 : `@929` (38535168 ; 36110336) à l'image 50, `@934` (27394048 ; 36110336) à 108, `@959` (17956864 ; 45547520) à 229, `@964` (17956864 ; 50855936) à 271, `@977` (11665408 ; 50855936) à 304, `@980`
+    (11665408 ; 55050240) à 336 ; G672 à 337.
+  - TN-3 : `0x1E @943` démarre à l'image 62 en (96 ; 752) ; la plateforme atteint (96 ; 800) à l'image 159 et n'en bouge pas pendant 500 images (fin à 659).
+  - A11 : `@341` (71565312 ; 7995392), `@346` (66650112 ; 7995392) avec `ForceAdjusted` 1, `@386` PosX ≥ 68222976 ; `(C,276)` 5, `(C,289)` 9, `(B,86)` 10, `(C,325)` 11, `(C,353)` 48, `(C,417)` 175, `(C,437)` et `(C,451)` 189 ;
+    T200 à 12, T201 à 13 ; contacts de Septimus {rec4, héros}.
+  - T-REG-0 : `EntityBlockCount` 0 à la fin des onze arcs ; TH4 : aucune des quatre arrivées ne recouvre une entité à la première image.
+- **Limites d'images retenues** : T-A19 1700 (fin à 1116) ; T-A10v 6500 (5100) ; T-B9 3200 (2115) et sa contre-épreuve 1500 ; T-C61 700 (337) ; TN-3 1200 (659) ; A11 inchangée, 240 (fin à 189).
+- **Temps d'exécution** (Release) : chaque arc de B6 entre 0,5 et 0,8 s (T-A10v, 5100 images, le plus long) ; aucun n'approche 120 s ; la suite complète 30 s.
+- **Ensembles d'opcodes sautés des nouveaux arcs** (mesurés) : 0x45, 0x46 (185) ; 0x25 deux fois (10, E19.d2c), 0x58, 0x90, 0x95, 0x2B, 0x4C, 0x4D (10) ; 0x29, 0x2B, 0x5D, 0x52 (61) ; 0x3F (346).
 
 ## 3. Points ouverts
 
