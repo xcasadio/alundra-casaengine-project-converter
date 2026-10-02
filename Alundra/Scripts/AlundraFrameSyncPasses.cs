@@ -120,6 +120,20 @@ internal static class AlundraFrameSyncPasses
             return;
         }
 
+        // E19.d2c1 R1/R2: the validation of the switch. The tick that saw it pending already took its Z impulse (the lock is raised): the lock is
+        // lowered. A validation on a frame without a tick (no lock) owes the impulse to the first tick that follows, except for the animation of an
+        // appearance or an arrival, which never gives one (R2). The appearance flag falls at this first validation, whatever it decides.
+        var spawnSwitch = proxy.SpawnAnimationActive && proxy.TargetAnimationId == proxy.SpawnAnimationId;
+        proxy.SpawnAnimationActive = false;
+        if (proxy.ZImpulseTaken)
+        {
+            proxy.ZImpulseTaken = false;
+        }
+        else if (!spawnSwitch)
+        {
+            proxy.ZImpulseDue = true;
+        }
+
         proxy.CurrentAnimationId = newCurrentAnimationId;
         proxy.AnimationDirection = newAnimationDirection;
 
@@ -184,17 +198,45 @@ internal static class AlundraFrameSyncPasses
     /// <item><description>otherwise the sprite's logical clock advances by one tick and raises the ends (Hold flag, Chain, Loop turn)
     /// through the bridge; a Chain end it raised switches animation on this very tick in the binary, so it reserves the tick too.</description></item>
     /// </list>
-    /// Nothing for an entity flagged for destruction or without a sprite whose clock the bridge turned on. No allocation.
+    /// Nothing of the clock for an entity flagged for destruction or without a sprite whose clock the bridge turned on. No allocation.
+    /// <para>
+    /// E19.d2c1 R1 (docs/plan-e19-opcodes.md §1.2h.3.1): this is also the per-tick home of the Z impulse of the animation
+    /// (<see cref="AlundraEntityScriptProxy.IsZForceApplied"/>, <c>+0xF8</c>). The binary's <c>UpdateAnimation</c> clears it at every call
+    /// (<c>0x80038AE4</c>) and writes the impulse of the animation in its switch block (<c>0x80038B5C</c>): a new target, a new direction row or the end
+    /// of a chain. So, before any early return: cleared; an impulse owed by a switch the validation made on a frame without tick is taken (from
+    /// <see cref="AlundraEntityScriptProxy.CurrentAnimationId"/>); a switch pending whose impulse is not yet taken gives the impulse of its target
+    /// (not for the animation of an appearance or an arrival, R2) and raises <see cref="AlundraEntityScriptProxy.ZImpulseTaken"/>, which makes a
+    /// catch-up frame give one impulse per switch; the end of a chain this tick's clock raises gives the impulse of the chained animation at this tick;
+    /// a turn of a loop gives none. This holds for an entity without a sprite or a clock too.
+    /// </para>
     /// </summary>
     internal static void StepAnimationClock(AlundraEntityScriptProxy proxy)
     {
-        var sprite = proxy.LogicalClockSprite;
-        if (sprite == null || proxy.Status == EntityStatus.FlagToDestroy)
+        proxy.IsZForceApplied = 0;
+        if (proxy.Status == EntityStatus.FlagToDestroy)
         {
             return;
         }
 
-        if (proxy.PendingChainRestartFlag != 0 || TryResolveAnimationTarget(proxy, out _, out _))
+        if (proxy.ZImpulseDue)
+        {
+            proxy.ZImpulseDue = false;
+            proxy.IsZForceApplied = proxy.ZImpulseOf(proxy.CurrentAnimationId);
+        }
+
+        var switchPending = proxy.PendingChainRestartFlag != 0 || TryResolveAnimationTarget(proxy, out _, out _);
+        if (switchPending && !proxy.ZImpulseTaken)
+        {
+            TakeZImpulse(proxy);
+        }
+
+        var sprite = proxy.LogicalClockSprite;
+        if (sprite == null)
+        {
+            return;
+        }
+
+        if (switchPending)
         {
             proxy.AnimationSwitchTicksReserved++;
             proxy.AnimationSwitchTickOwed = false;
@@ -211,7 +253,21 @@ internal static class AlundraFrameSyncPasses
         if (proxy.PendingChainRestartFlag != 0)
         {
             proxy.AnimationSwitchTicksReserved++;
+            TakeZImpulse(proxy); // the end of a chain switches animation on this very tick in the binary (0x80038D54-0x80038D68).
         }
+    }
+
+    /// <summary>E19.d2c1 R1/R2: gives the impulse of the target animation for the switch pending, and raises the lock; nothing for the animation of an
+    /// appearance or an arrival (the lock then stays down, and the validation does not owe an impulse either).</summary>
+    private static void TakeZImpulse(AlundraEntityScriptProxy proxy)
+    {
+        if (proxy.SpawnAnimationActive && proxy.TargetAnimationId == proxy.SpawnAnimationId)
+        {
+            return;
+        }
+
+        proxy.IsZForceApplied = proxy.ZImpulseOf(proxy.TargetAnimationId);
+        proxy.ZImpulseTaken = true;
     }
 
     /// <summary>

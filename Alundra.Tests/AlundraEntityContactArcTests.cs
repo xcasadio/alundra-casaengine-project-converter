@@ -474,6 +474,19 @@ public sealed class AlundraEntityContactArcTests
         var s = new ArcSamples(arc, new[] { 32, 33, 34, 35 }, Array.Empty<uint>(),
             (B, 872, 929), (B, 872, 934), (B, 872, 959), (B, 872, 964), (B, 872, 977), (B, 872, 980));
 
+        // E19.d2c1 C2: the iron grid rec9 (prefab 396c008e, appears at the load, animation 0 of impulse -32768, no gravity) keeps IsZForceApplied 0 and ForceZ 0
+        // and stays at its height at every frame of the arc: no impulse at its appearance (R2) and the stop marker 0x8000 would hold it anyway (R3).
+        var gridSamples = new List<(int Frame, int PosZ, int ForceZ, int IsZForceApplied)>();
+        var sampleEachFrame = arc.OnFrame!;
+        arc.OnFrame = () =>
+        {
+            sampleEachFrame();
+            if (arc.EntityByRecord(9) is { } grid)
+            {
+                gridSamples.Add((arc.Frame, grid.PosZ, grid.ForceZ, grid.IsZForceApplied));
+            }
+        };
+
         // 1. The end signal: G672.
         arc.RunUntil(() => IsSet(672), "G672 set by B[6] after 0x1E @980");
 
@@ -504,6 +517,14 @@ public sealed class AlundraEntityContactArcTests
         var at980 = s[B, 872, 980];
         Assert.Equal((11665408, 55050240), (at980.Hero.X, at980.Hero.Y));
         Assert.True(IsSet(672), "G672");
+
+        Assert.True(gridSamples.Count > 100, "the grid rec9 was sampled at every frame of the arc");
+        Assert.All(gridSamples, g =>
+        {
+            Assert.Equal(0, g.IsZForceApplied);
+            Assert.Equal(0, g.ForceZ);
+            Assert.Equal(gridSamples[0].PosZ, g.PosZ);
+        });
         AssertNoUnexpectedError(arc);
     }
 }

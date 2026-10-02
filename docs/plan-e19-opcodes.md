@@ -3205,7 +3205,7 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
     Mutation jetable de R5 a (`FinalForceZ` à la place de la force du tick relevée avant la remise à zéro) : UJ-4 repos avec gravité rouge. Écart :
     le test d'A12 vit dans `AlundraBergusJumpArcTests.cs` (nouveau fichier), non dans `AlundraEntityContactArcTests`.
 
-- ⏳ **C2 — Impulsion au tick, apparition, PNJ, règle `0x8000` (R1, R2, R3), tests d'abord.** Montage de PNJ des tests
+- ✅ **C2 — Impulsion au tick, apparition, PNJ, règle `0x8000` (R1, R2, R3), tests d'abord.** Montage de PNJ des tests
   (annexe A.1 et C.valeurs) : `ContactWorld.BuildWorld(new FlatGroundField { GroundZ = 0 }, null)`, `ContactHost`,
   `ContactWorld.AddEntity(..., 200, 100, 0, -10, -7, 0, 20, 14, 32)`, `Flags |= Gravity` **après** `AddEntity`,
   `MapGravityRaw` 128, `MapZViscosityRaw` 4096, animations {0 : vitesse 0 ; 3 : vitesse 0, IZF 1360}, une entité par
@@ -3259,6 +3259,26 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
   - **A3** (478) : **inchangé**, toutes ses épingles comprises (dont le bloc rec0, `ForceZ` 24576 et `PosZ` aux
     T20-T60, qui passe par la fonction restructurée) ; les chiens rec3 et rec4 sautent une fois (non épinglés).
   - Commit : `feat(alundra): give the animation impulse on the switch tick, never at spawn, like the binary`
+  - Fait le 2026-10-03. Rouges d'abord sur la DLL de C1 : UJ-1, 1b, 5, 8 (deux montages), 9, 10, DIR, 0x8000, CLAMP et A12
+    (11 tests) ; `AlundraAnimationImpulseSpawnTests` (UJ-6 sur les préfabs réels `eab8d775`, `67b30f8f`, `396c008e` par
+    `CreateEntityFromRecord`, UJ-6b, UJ-7) ne compile pas sur l'ancien code (champs nouveaux). Vert après : `Alundra.Tests`
+    2210 réussis, 0 échec ; A3, T-A10v et les traces inchangés (garde d'octets 0). Mutations jetables, une par règle :
+    verrou (UJ-1, 1b, 1c, 5, 9, 10, DIR rouges), borne à deux côtés (CLAMP), règle `0x8000` (0x8000), impulsion due (UJ-8,
+    deux montages), fin de chaîne (UJ-9), exemption d'apparition (UJ-6 flèche et boule de feu, UJ-7). Toutes les valeurs
+    d'UJ et d'A12 tiennent telles qu'écrites ; A10 : `0x25 @838` 484 à 503, `@843` 506 à 525, hauteurs de Bergus, fin 960.
+  - **Arrêt et disposition (session principale)** : deux arêtes d'A10 contredisaient le plan, T102 effacé **620** (écrit
+    619) et T105 posé **621** (écrit 620). Cause établie : les valeurs du plan ajoutaient +38 à la base sans la phase de
+    Wendell (rec0, programme `@740`), qui n'interroge T102 qu'une image sur trois (`37 [1] @747` attend deux images, `0x00
+    @759` termine l'appel, `0x02 @760` relance) : il le lit aux images multiples de 3, 489 dans la base, 528 ici (T102 posé
+    à 527), et son dialogue `@764` dure les mêmes 92 images. Erreur de dérivation du plan, non du portage : les deux
+    assertions passent à 620 et 621, avec cette explication dans le test.
+  - Écarts acceptés : UJ-7 exécute le vrai `0x53` sur le héros en animation 2, puis repose l'enregistrement d'arrivée sur
+    le directeur de transition et appelle `AdoptPlayerPawn` (réflexion), parce qu'`ArcRun` refuse une arrivée autre que
+    `0x36` ; UJ-6 prend sa hauteur de référence après le premier tick (le `+1` d'apparition est avalé par le premier
+    aller-retour de la racine) ; UJ-0x8000 pose le marqueur au tick 9 (8 px : à 4 px ou moins l'aimantation du moteur
+    masquerait la règle) ; UJ-1c en relationnel (`PosZ` 327680 à la 20, X entier au pixel à l'atterrissage de la 21,
+    O-E19-29). **Non couvert** : l'effacement du drapeau d'apparition par le relancement `0x1C` (aucun site réel ; une
+    mutation qui le retire reste verte) : reporté à E19.m.
 
 - ⏳ **C3 — Héros en l'air pour les sauts scriptés et `0x1B`, son (R6, R8), tests d'abord.** Montage héros (annexe A.1) :
   `AlundraLadderClimbTests` (contrôleur de joueur, `PlayerControlFlags = ControlLocked`), `HeroWorldFixture.BuildWorld`

@@ -96,7 +96,7 @@ public sealed class AlundraInoaDayOneArcTests
     // ----------------------------------------------------------------------------------------------------------
 
     private static ArcSpec A10Spec => new(
-        "A10", "Inoa", "Inoa (inner)-165", Array.Empty<int>(), 0, 0, 0, 1000,
+        "A10", "Inoa", "Inoa (inner)-165", Array.Empty<int>(), 0, 0, 0, 1100,
         RealController: true, Prefabs: true,
         Arrival: new ArcArrival(19660800, 23592960, 0, AlundraGameState.ResetAnimationId, 16));
 
@@ -107,12 +107,20 @@ public sealed class AlundraInoaDayOneArcTests
         public string? CellsAtFirstTickOfRec5;
         public string? CellsAfter721;
         public readonly List<(uint Flag, int Set, int Cleared)> FlagEdges = new();
+
+        /// <summary>E19.d2c1 C2: the height of Bergus (record 2, the actor of T104 and of the two jumps) at the end of every frame: (frame, PosZ).</summary>
+        public readonly List<(int Frame, int PosZ)> BergusHeights = new();
         private readonly Dictionary<uint, int> _openSince = new();
         private readonly Dictionary<uint, bool> _was = new();
 
         /// <summary>Samples the five flags at the end of every frame: rising and falling edges, in order.</summary>
         public void TakeFrame(ArcRun arc)
         {
+            if (arc.EntityByRecord(2) is { } bergus)
+            {
+                BergusHeights.Add((arc.Frame, bergus.PosZ));
+            }
+
             for (uint number = 101; number <= 105; number++)
             {
                 var on = IsTemporarySet(number);
@@ -175,18 +183,22 @@ public sealed class AlundraInoaDayOneArcTests
         // 1. The end signal: 0x11 @354 of the program @236 (slot B); the boxes are closed by one press per frame.
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(B, 354, 0x11), "B[2] executes 0x11 @354");
 
-        // 2. Nothing skipped, nothing cut off by the loop guard (E19.d2c1 R4: 0x25 is ported). Each 0x25 of Bergus executes once and returns 1
-        // at its first call: Bergus does not leave the ground yet (no impulse before the next task), so he rests with CollidedWithEntityZ raised
-        // (R5 a) and the instruction after it runs in the same call.
+        // 2. Nothing skipped, nothing cut off by the loop guard (E19.d2c1 R4: 0x25 is ported).
         AssertNothingSkippedOrExceeded(arc);
-        foreach (var pc in new[] { 838, 843 })
+
+        // The two jumps of Bergus (E19.d2c1 C2, valeurs du plan): `0x25 @838` runs 20 times from the frame 484 and returns at 503, @839 and @841 in the same
+        // call; `0x25 @843` runs 20 times from 506 and returns at 525, @844, @846 and `0x06 @847` in the same call.
+        Assert.Equal(Enumerable.Range(484, 20).ToList(), FramesOf(arc, C, 838, 0x25));
+        Assert.Equal(503, FrameOf(arc, C, 839));
+        Assert.Equal(503, FrameOf(arc, C, 841));
+        Assert.Equal(Enumerable.Range(506, 20).ToList(), FramesOf(arc, C, 843, 0x25));
+        foreach (var pc in new[] { 844, 846, 847 })
         {
-            Assert.Equal(1, FramesOf(arc, C, pc, 0x25).Count);
-            Assert.Equal(FramesOf(arc, C, pc, 0x25)[0], FrameOf(arc, C, pc + 1));
+            Assert.Equal(525, FrameOf(arc, C, pc));
         }
 
         // 3. The rest, in the order of the plan.
-        AssertFrame(arc, B, 354, 922);
+        AssertFrame(arc, B, 354, 960); // 922 before E19.d2c1 C2: the two jumps of Bergus take 20 ticks each, as the binary's.
         Assert.Equal(236, arc.Trace.First(t => t.Slot == B && t.Pc == 354 && t.Opcode == 0x11).ProgramStart); // E19.d2b B7: the program @236, as the plan says.
         var endFrame = FrameOf(arc, B, 354);
         Assert.Equal(new[] { endFrame }, FramesOf(arc, B, 351, 0x05).ToArray()); // G3 in the same image.
@@ -227,6 +239,31 @@ public sealed class AlundraInoaDayOneArcTests
                 samples.FlagEdges[i].Set < samples.FlagEdges[i].Cleared && samples.FlagEdges[i].Cleared <= samples.FlagEdges[i + 1].Set,
                 $"T{samples.FlagEdges[i].Flag}: set at frame {samples.FlagEdges[i].Set}, cleared at {samples.FlagEdges[i].Cleared}, next flag set at {samples.FlagEdges[i + 1].Set}");
         }
+
+        // E19.d2c1 C2: the edges of the flags after the two jumps (plan values), and the height of Bergus: above his rest at the images 481 to 502 and 503 to 524
+        // (the state at the end of the image: the flight list of UJ-1 twice, the second flight starting in the very tick of the landing of the first, since the
+        // 0x25 that ends at 503 is followed by the next jump), at rest from 525.
+        // T102 is cleared one image later than a plain +38 shift of the base (581 -> 620, not 619): Wendell (rec0, program @740) polls T102 once every
+        // three images (37 [1] waits two, then 0x00 ends the call and the next one jumps back to @747), on the images that are multiples of 3: 489 in the
+        // base, 528 here (T102 is set at 527), so his dialog @764 starts at 528 and lasts the same 92 images; T105 follows at 621.
+        Assert.Equal(526, samples.FlagEdges[3].Cleared);
+        Assert.Equal((527, 620), (samples.FlagEdges[4].Set, samples.FlagEdges[4].Cleared));
+        Assert.Equal((621, 775), (samples.FlagEdges[5].Set, samples.FlagEdges[5].Cleared));
+        int[] flight =
+        {
+            348160, 663552, 946176, 1196032, 1413120, 1597440, 1748992, 1867776, 1953792, 2007040, 2027520, 2015232, 1970176, 1892352, 1781760, 1638400,
+            1462272, 1253376, 1011712, 737280, 430080, 90112,
+        };
+        int HeightAfterImage(int image) => samples.BergusHeights.Single(h => h.Frame == image + 1).PosZ;
+        var rest = HeightAfterImage(480);
+        for (var i = 0; i < flight.Length; i++)
+        {
+            Assert.Equal(rest + flight[i], HeightAfterImage(481 + i));
+            Assert.Equal(rest + flight[i], HeightAfterImage(503 + i));
+        }
+
+        Assert.Equal(rest, HeightAfterImage(525));
+        Assert.Equal(rest, HeightAfterImage(526));
 
         // The actors (slot C, the clearing 0x06): rec5 @703 (program @648), Wendell @774 (program @740, twice), Nestus @944 (program
         // @880), Bergus @847 (program @804), Meade @1026 (program @984). The frame of each edge is the frame after the 0x06.

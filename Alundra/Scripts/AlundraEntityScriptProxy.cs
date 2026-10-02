@@ -169,6 +169,40 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// Not copied by <see cref="Clone"/>.
     /// </summary>
     internal bool HoldCountedAwaitingSwitch;
+
+    /// <summary>
+    /// Engine-only (E19.d2c1 R1, docs/plan-e19-opcodes.md §1.2h.3.1): the "impulse taken" lock of the pending animation switch. The binary gives
+    /// the Z impulse of an animation (<see cref="IsZForceApplied"/>, <c>+0xF8</c>) in the switch block of its <c>UpdateAnimation</c>, at the tick
+    /// of the switch; here the switch is validated at the end of the frame by <see cref="AlundraFrameSyncPasses.SyncAnimation"/>, after any
+    /// number of ticks (catch-up), so the first <see cref="AlundraFrameSyncPasses.StepAnimationClock"/> that sees the switch pending takes the
+    /// impulse and raises this lock, the next ticks of the frame do not take it again, and the validation lowers it. Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal bool ZImpulseTaken;
+
+    /// <summary>
+    /// Engine-only (E19.d2c1 R1): an impulse owed to a switch that <see cref="AlundraFrameSyncPasses.SyncAnimation"/> validated on a frame without
+    /// a logic tick (a target written by a map event, for example): the first <see cref="AlundraFrameSyncPasses.StepAnimationClock"/> that follows
+    /// takes it, from <see cref="CurrentAnimationId"/>, before anything else. Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal bool ZImpulseDue;
+
+    /// <summary>
+    /// Engine-only (E19.d2c1 R2): raised with the animation of an appearance or an arrival (<see cref="SpawnAnimationId"/>) by
+    /// <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/> (load, <c>0x2D</c>, <c>0x8A</c>, <c>0x8B</c>) and
+    /// <c>AlundraWorldProxy.AdoptPlayerPawn</c> (every arrival of the hero): the binary makes that first switch itself in
+    /// <c>InitializeEntity</c> and its next <c>UpdateAnimation</c> clears the impulse before the physics, so an entity never takes off at its
+    /// appearance. A pending switch whose target is that animation gives no impulse; the flag falls at the first validation of
+    /// <see cref="AlundraFrameSyncPasses.SyncAnimation"/>. Another animation written by a script before that validation gives the impulse (an ordinary
+    /// switch in the binary); the <c>0x1C</c> relaunch is never excluded (it clears the flag). Copied by <see cref="Clone"/>.
+    /// </summary>
+    internal bool SpawnAnimationActive;
+
+    /// <summary>The animation of the appearance or arrival, see <see cref="SpawnAnimationActive"/>. Copied by <see cref="Clone"/>.</summary>
+    internal uint SpawnAnimationId;
+
+    /// <summary>The impulse (<see cref="AnimSetEntry.IsZForceApplied"/>) of <paramref name="animationId"/> in this entity's animation sets, 0 when it has none.</summary>
+    internal int ZImpulseOf(uint animationId)
+        => AnimSetsByAnim != null && AnimSetsByAnim.TryGetValue((int)animationId, out var entry) ? entry.IsZForceApplied : 0;
     public int AnimFlags;
     public int ForceZ;//rise/fall speed
     public int TargetForceX, TargetForceY;
@@ -559,18 +593,35 @@ public class AlundraEntityScriptProxy : GameplayProxy
         // ApplyGravitySettingsToController's own doc for why that engine path is now permanently disabled
         // for every controller-driven NPC. Skipped at the immediate spawn-time evaluation (FinalForceZ has
         // no real per-tick meaning yet there either).
-        if (Controller != null && !immediateAtSpawn && (Flags & EntityFlags.Gravity) != 0)
+        //
+        // E19.d2c1 R3 (the binary, 0x80036AB8-0x80036B60): an impulse taken this tick (IsZForceApplied, R1) sets the force with no decay: IZF << 8, or 0 for the
+        // stop marker of the iron grids (the 16 low bits of IZF equal 0x8000) on an entity without gravity (148 records of 58 maps). Without an impulse, an
+        // entity with gravity decays its force and the result is bounded on BOTH sides to +-(ZViscosity << 8), as the binary does (the DLL bounded one side).
+        if (Controller != null && !immediateAtSpawn)
         {
-            var force = ForceZ - (MapGravityRaw << 8);
-            var forceAbs = force < 0 ? -force : force;
-            var terminal = MapZViscosityRaw << 8;
-            if (terminal < forceAbs && force < 1)
+            var gravity = (Flags & EntityFlags.Gravity) != 0;
+            if (IsZForceApplied != 0)
             {
-                force = -terminal;
+                var impulse = (IsZForceApplied & 0xFFFF) == 0x8000 && !gravity ? 0 : IsZForceApplied << 8;
+                ForceZ = impulse;
+                FinalForceZ = impulse;
             }
+            else if (gravity)
+            {
+                var force = ForceZ - (MapGravityRaw << 8);
+                var terminal = MapZViscosityRaw << 8;
+                if (force > terminal)
+                {
+                    force = terminal;
+                }
+                else if (force < -terminal)
+                {
+                    force = -terminal;
+                }
 
-            ForceZ = force;
-            FinalForceZ = force;
+                ForceZ = force;
+                FinalForceZ = force;
+            }
         }
 
         // Root-cause redo (measured on the real gull, entity 6, map 389, dt~1/123): driving this tick's own
@@ -2032,6 +2083,8 @@ public class AlundraEntityScriptProxy : GameplayProxy
         var clone = new AlundraEntityScriptProxy
         {
             IsPlayer = IsPlayer,
+            SpawnAnimationActive = SpawnAnimationActive,
+            SpawnAnimationId = SpawnAnimationId,
             Index = Index,
             Index2 = Index2,
             ChildEntity = ChildEntity,

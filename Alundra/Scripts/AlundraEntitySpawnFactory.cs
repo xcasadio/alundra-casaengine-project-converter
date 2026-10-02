@@ -673,6 +673,10 @@ internal static class AlundraEntitySpawnFactory
         proxy.CurrentDirection = ~direction;
         proxy.TargetAnimationId = animationId;
         proxy.TargetDirection = direction;
+
+        // E19.d2c1 R2: the binary makes this first switch in InitializeEntity, so the animation of the appearance never gives its Z impulse.
+        proxy.SpawnAnimationActive = true;
+        proxy.SpawnAnimationId = animationId;
     }
 
     /// <summary>

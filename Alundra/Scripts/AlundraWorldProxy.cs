@@ -1698,6 +1698,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         proxy.CurrentAnimationId = ~proxy.TargetAnimationId;
         proxy.CurrentDirection = ~proxy.TargetDirection;
 
+        // E19.d2c1 R2: every arrival of the hero (the default 0x36, a F9 load, a 0x53 that copies the current animation) is the first switch of
+        // InitializeEntity in the binary: the animation of the arrival never gives its Z impulse.
+        proxy.SpawnAnimationActive = true;
+        proxy.SpawnAnimationId = proxy.TargetAnimationId;
+
         // Documented stub for AlundraPlayerManager's faithful LoadingMap(0x36) port
         // (PlayerManager.cs:914-916: "if IsOnGround != 0, break" - i.e. stay in LoadingMap): only ever
         // read before this frame's own AlundraEntityScriptProxy.Update runs (E3.d has that method pull

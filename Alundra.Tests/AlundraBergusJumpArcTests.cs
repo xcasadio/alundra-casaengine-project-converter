@@ -55,22 +55,31 @@ public sealed class AlundraBergusJumpArcTests
         // on the DLL before C1 (0x25 skipped), skipped exactly (0x25, 415); R4 ports it.
         AssertNothingSkippedOrExceeded(arc);
 
-        // 2. The frames of the base of C0 (E19.d2c1 C1, before the impulse of C2: Bergus does not leave the ground): 1A [2] @411 at the frame 287,
-        // 37 [3] @413 returns at 291 (the clock of the animation), 0x25 @415 executes once, at 291, and returns 1 at its first call (Bergus rests on
-        // the ground, CollidedWithEntityZ raised by R5 a), 1A [0] @416 in the same call, 0x53 @451 at 359.
+        // 2. The frames. F is the image of `1A [2] @411`: 287, as in the base measured on the DLL before C1. With the impulse (E19.d2c1 C2) the wait of the landing
+        // lasts: `37 [3] @413` returns at F+4, `0x25 @415` executes from F+4 to F+23 (20 executions) and returns at F+23, `1A [0] @416` runs in the same call, and
+        // `0x53 @451` comes 19 images later than the base (359): at 378.
         const int f = 287;
         Assert.Equal(f, FrameOf(arc, B, 411));
-        Assert.Equal(new[] { f + 4 }, FramesOf(arc, B, 413, 0x37).Skip(FramesOf(arc, B, 413, 0x37).Count - 1).ToArray());
-        Assert.Equal(new[] { f + 4 }, FramesOf(arc, B, 415, 0x25));
-        Assert.Equal(f + 4, FrameOf(arc, B, 416));
-        Assert.Equal(359, FrameOf(arc, B, 451));
+        Assert.Equal(f + 4, FramesOf(arc, B, 413, 0x37)[^1]);
+        Assert.Equal(Enumerable.Range(f + 4, 20).ToList(), FramesOf(arc, B, 415, 0x25));
+        Assert.Equal(f + 23, FrameOf(arc, B, 416));
+        Assert.Equal(359 + 19, FrameOf(arc, B, 451));
 
-        // 3. Bergus (record 8) never leaves his rest height: no impulse yet.
-        Assert.All(samples.Where(s => s.Frame >= f && s.Frame <= f + 30), s =>
+        // 3. Bergus (record 8): above his rest at the images F+1 to F+22 (the state at the end of the image) by the flight list of UJ-1, at rest from F+23.
+        int[] flight =
         {
-            Assert.Equal(1048576, s.PosZ);
-            Assert.Equal(1, s.IsOnGround);
-        });
+            348160, 663552, 946176, 1196032, 1413120, 1597440, 1748992, 1867776, 1953792, 2007040, 2027520, 2015232, 1970176, 1892352, 1781760, 1638400,
+            1462272, 1253376, 1011712, 737280, 430080, 90112,
+        };
+        int HeightAfterImage(int image) => samples.Single(s => s.Frame == image + 1).PosZ;
+        var rest = HeightAfterImage(f);
+        for (var i = 0; i < flight.Length; i++)
+        {
+            Assert.Equal(rest + flight[i], HeightAfterImage(f + 1 + i));
+        }
+
+        Assert.Equal(rest, HeightAfterImage(f + 23));
+        Assert.Equal(rest, HeightAfterImage(f + 24));
 
         AssertNoUnexpectedError(arc);
     }

@@ -2210,6 +2210,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         if (holdVisible)
         {
             entity.CurrentAnimationId = ~entity.TargetAnimationId;
+            entity.SpawnAnimationActive = false; // E19.d2c1 R2: a relaunch is an ordinary switch, never excluded.
             entity.HoldCountedAwaitingSwitch = true;
             state.Parameters[2]++;
             entity.AnimCompleteCounter = 0;
