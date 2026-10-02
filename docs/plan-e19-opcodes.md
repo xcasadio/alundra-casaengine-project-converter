@@ -2415,7 +2415,7 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
 
 **Tâches.**
 
-- ⏳ **S1 — Préréglages de sauvegarde (DLL), tests d'abord.**
+- ✅ **S1 — Préréglages de sauvegarde (DLL), tests d'abord.**
   - Fichier `Alundra/Scripts/AlundraTestSaves.cs`, classe publique statique : la liste des préréglages et un
     constructeur qui part d'un `AlundraGameState` neuf (drapeaux à 0, table identité `AlundraGameState.cs:233` et `:299-308`), appelle
     `AlundraPlayerManager.InitializeNewGameStats` et `InitializeNewGameInventory` (tables d'objets du projet), applique
