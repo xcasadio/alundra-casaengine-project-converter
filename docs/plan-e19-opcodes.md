@@ -3375,7 +3375,7 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
     et renvoi à O-E19-29 dans le test : un correctif d'O-E19-29 les ramènera à F0+257, F0+268 et F0+269. Sans effet sur la
     scène (Giles est détruit avant que le héros n'approche).
 
-- ⏳ **C5 — Hygiène reportée d'E19.d2b** (dispositions du §1.2h.2) : retrait de rec7 et de rec41 de la liste lu à l'image
+- ✅ **C5 — Hygiène reportée d'E19.d2b** (dispositions du §1.2h.2) : retrait de rec7 et de rec41 de la liste lu à l'image
   exacte qui suit la destruction ; un test de la règle `H2Obstacle ?? H1Obstacle` (deux entités qui raccourcissent X et
   Y) ; doc de la surcharge B5 rattachée aux deux surcharges ; références à la passe de contact retirée (un `cref`, deux
   commentaires) ; assistant `UlpUnits` retiré s'il reste inutilisé ; ventilation du rouge de B3 au §2 corrigée ; signal de
@@ -3385,6 +3385,18 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
   restent à une suite moteur. Vérification propre à C5 : les lectures resserrées sont vertes ; le nouveau test de la
   règle `H2Obstacle ?? H1Obstacle` échoue sous une mutation jetable qui inverse l'ordre ; la garde T-REG-0 lève toujours
   sur un arc vert qui a un contact (mutation jetable d'E19.d2b rejouée). Commit : `chore(alundra): close the E19.d2b hygiene items`
+  - Fait le 2026-10-03. Pas de rouge d'abord au sens strict : la tâche ne change aucun comportement, ses tests sont des gardes resserrées. Nouveau test `TRH2_...` (`AlundraMovementObstacleProbeTests` : deux
+    murs raccourcissent X puis Y au même tick, l'obstacle rapporté est celui de H2 ; seul H1 raccourci : H1) vert, et **rouge sous la mutation jetable** `H1Obstacle ?? H2Obstacle` de
+    `MoveControllerAndPullPosition` (R9 reste vert : il ne discrimine pas l'ordre). Lectures de T-A19 et T-B9 resserrées à `destroyFrame + 1` : l'échantillon est indexé par le compteur d'images
+    APRÈS l'image (`OneFrame` l'incrémente avant `OnFrame`), donc `destroyFrame + 1` est la fin de l'image même de `0x2E` ; rec7 et rec41 y sont déjà hors de la liste (mesuré : faux à
+    120 et suivantes, 1044 et suivantes). Garde T-REG-0 : `Dispose` ne lève plus si une exception est en vol (`Marshal.GetExceptionPointers`, vérifié sous xunit 2.9.3 sur Windows : non nul
+    dans un `Dispose` d'échec, nul sur un arc vert) ; mutation d'E19.d2b rejouée (A11 ajouté à `ArcsWithoutEntityContact` : la garde lève, 5 pas) et, avec T-A19 aussi ajouté, une assertion
+    de T-A19 cassée à dessein rend l'échec d'origine, non celui de la garde. Signal de fin de T-C61 : `arc.Has(B, 983, 0x30)` (l'instruction qui pose G672, même image 336 qu'avant) ; `IsSet(672)`
+    reste affirmé. Miroir de `SailorThirteen` : le contact est le rapport de la règle de la sonde de production (surcharge à position donnée, soulevables écartés) au lieu de la passe de
+    chevauchement ; vert, même preuve. Docs : la doc de la règle (B5) est sur la surcharge à deux arguments, la seconde renvoie à la première ; `cref` périmé d'`AlundraWorldProxyGlobalFreezeTests`
+    corrigé (`Update_TheContactIsFrozen_...`) ; commentaires périmés de `XCollisionEntity` (`AlundraEntityScriptProxy`) et de `CheckEntityInteraction` (`AlundraPlayerManager`) mis à jour ;
+    `UlpUnits` retiré (inutilisé). §2 : ventilation du rouge de B3 reprise de la puce de B3. `research/census/README.md` : défaut 5 (`emu.py`, `0x37`). `Alundra.Tests` 2228 réussis (2227 + 1), 0 échec ;
+    six traces inchangées (garde d'octets 0). Écart : aucun test existant hors de la liste de l'acceptation 2 touché ; le texte du plan ne dit pas où poser le test de H2 : `AlundraMovementObstacleProbeTests`.
 
 - ⏳ **C6 — Vérification et clôture.** `Alundra.Tests` en Release puis en Debug **en dernier**
   (`--blame-hang-timeout 300s`), `cmp` de la DLL Debug déployée ; convertisseur, analyseur et moteur non touchés.
@@ -3664,7 +3676,7 @@ Réservé aux mesures faites en exécutant les tranches.
 - **Tests existants modifiés** (la liste du plan, rien d'autre) : A11 (ré-épinglé), `AlundraSaveBookEndToEndTests` (T-REG-E12D-1), les deux P-a d'`AlundraInteractionPassTests` (T-REG-E12D-2), le
   commentaire du miroir de `SailorThirteen`, le nom du test `FlushContact_*`, et la hygiène de B7 (A20, A10, `TH3b`). Aucune autre épingle ni trace n'a bougé (les annexes de trace de l'intro et du héros ne sont pas
   régénérées).
-- **Rouge d'abord** : B2, 8 des 17 nouveaux tests rouges ; B3, 20 des 32 ; B4, 7 des 16 des trois classes touchées. Arcs sur la DLL d'avant B3 : T-A19 `slot 2 program @452: last 0x0B @506` (limite 1700) ;
+- **Rouge d'abord** : B2, 8 des 17 nouveaux tests rouges ; B3, 20 des 32 (T-R1 douze lignes, T-R3 deux, T-R4, T-R-ID, T-R-LIFT, T-R9, `DrawDebug` et les contrôles d'ordre et de drapeaux soulevables ; les 12 autres sont des contre-épreuves et T-REG-Z, verts avant et après) ; B4, 7 des 16 des trois classes touchées. Arcs sur la DLL d'avant B3 : T-A19 `slot 2 program @452: last 0x0B @506` (limite 1700) ;
   T-A10v `slot 2 program @5156: last 0x0B @5172` (6500) ; T-B9 `slot 1 program @1132: last 0x0B @1215` et `slot 2 program @3636: last 0x0B @3673` (3200) ; T-C61 `slot 1 program @872: last 0x1E @980` (700) ;
   la contre-épreuve de T-B9 et TN-3 rouges aussi (plateforme à 800,5 px au lieu de 800).
 - **Valeurs mesurées contre valeurs écrites** : toutes égales, sans en changer une.

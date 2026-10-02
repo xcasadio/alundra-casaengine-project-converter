@@ -299,6 +299,37 @@ public sealed class AlundraMovementObstacleProbeTests
         Assert.InRange(ContactWorld.Root(mover).X, 130f - ulp, 130f + ulp);
     }
 
+    // ---- T-R-H2: two axes shortened in the same tick: the contact is the obstacle of the LAST axis (h2) ------------------
+
+    [Fact]
+    public void TRH2_TwoEntitiesShortenXAndYInTheSameTick_TheContactIsTheObstacleOfTheSecondAxis()
+    {
+        var rig = NewRig();
+        var mover = rig.Add("Mover", 100, 100);
+        var wallEast = rig.Add("WallEast", 140, 100, sizeY: 200); // x 130 to 150, y 93 to 293: shortens X whatever y the step reaches.
+        var wallSouth = rig.Add("WallSouth", 130, 140, sizeX: 200); // x 120 to 320, y 133 to 147: shortens Y once the mover is flush against WallEast.
+        rig.Integrate();
+
+        mover.MoveControllerAndPullPosition(30f, 30f);
+
+        var contact = mover.Controller!.LastContact;
+        Assert.Same(wallEast.OwnerEntity, contact.H1Obstacle);
+        Assert.Same(wallSouth.OwnerEntity, contact.H2Obstacle);
+        Assert.Same(wallSouth, mover.XCollisionEntity); // H2Obstacle ?? H1Obstacle: the second axis wins when both are set.
+        Assert.NotSame(wallEast, mover.XCollisionEntity);
+
+        // When only the first axis is shortened, it is the one reported.
+        var rig2 = NewRig();
+        var mover2 = rig2.Add("Mover", 100, 100);
+        var wall2 = rig2.Add("WallEast", 140, 100, sizeY: 200);
+        rig2.Integrate();
+
+        mover2.MoveControllerAndPullPosition(30f, 30f);
+
+        Assert.Null(mover2.Controller!.LastContact.H2Obstacle);
+        Assert.Same(wall2, mover2.XCollisionEntity);
+    }
+
     // ---- T-R-LIFT: soulevables are not obstacles, iron-ball walls are (D-E19-28, D-E19-34) -------------------------
 
     [Fact]

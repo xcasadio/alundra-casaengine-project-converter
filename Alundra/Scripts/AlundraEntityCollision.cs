@@ -25,22 +25,8 @@ namespace Alundra.Scripts;
 public static class AlundraEntityCollision
 {
     /// <summary>
-    /// The asymmetric AABB overlap of the original, all three axes (X↔Width, Y↔Height, Z↔Depth -
-    /// the same axis naming FindEntityCollisionCandidate itself uses, NOT the attack path's): for each
-    /// axis, a negative delta (candidate to the left/above/below) tests against the CANDIDATE's own
-    /// dimension + 1, a non-negative delta against the SUBJECT's (+1 derived: <c>dif &lt; dim + 1</c>
-    /// ⇔ <c>dif &lt;= dim</c>). The edge is semi-open: the dimensions are <c>(size &lt;&lt; 16) - 1</c>, so a FLUSH contact
-    /// (<c>dif = size &lt;&lt; 16 = dim + 1</c>) does NOT overlap and one 16.16 unit less does (E19.d2b B5 corrects the earlier
-    /// "flush contact counts", which this code never did with the real dimensions).
-    ///
-    /// D-E12D-1's position-source correction (plan relecture P2): the original reads
-    /// <c>ModdedPos*</c>, refreshed on every movement attempt (PhysicsEngine.cs:428-430/:849-851);
-    /// in this DLL those cached fields are only written at spawn, so this port recomputes
-    /// <c>Pos* + Mod*</c> on the fly for subject AND candidate - the established convention of
-    /// <see cref="EntitySupport"/> (EntitySupport.cs:112-114), for exactly this staleness reason.
-    /// </summary>
-    /// <summary>
-    /// The same rule with the position of the SUBJECT given (E19.d2b B3, D-E19-27): the movement obstacle probe asks it for the
+    /// The same rule as <see cref="FindEntityCollisionCandidate(AlundraEntityScriptProxy, IReadOnlyList{AlundraEntityScriptProxy})"/> (asymmetric AABB on the three axes, the
+    /// semi-open edge corrected by E19.d2b B5) with the position of the SUBJECT given (E19.d2b B3, D-E19-27): the movement obstacle probe asks it for the
     /// candidate position of the root of a controller step, in the 16.16 fields (the subject's own <c>Pos*</c> are not read). The
     /// subject gate and the candidate order are unchanged; a candidate whose flags intersect <paramref name="skippedCandidateFlags"/>
     /// is skipped (the probe passes <see cref="EntityFlags.PickupKindMask"/>: the soulevables are not obstacles until E14, D-E19-28).
@@ -96,6 +82,21 @@ public static class AlundraEntityCollision
         return null;
     }
 
+    /// <summary>
+    /// The asymmetric AABB overlap of the original, all three axes (X↔Width, Y↔Height, Z↔Depth -
+    /// the same axis naming FindEntityCollisionCandidate itself uses, NOT the attack path's): for each
+    /// axis, a negative delta (candidate to the left/above/below) tests against the CANDIDATE's own
+    /// dimension + 1, a non-negative delta against the SUBJECT's (+1 derived: <c>dif &lt; dim + 1</c>
+    /// ⇔ <c>dif &lt;= dim</c>). The edge is semi-open: the dimensions are <c>(size &lt;&lt; 16) - 1</c>, so a FLUSH contact
+    /// (<c>dif = size &lt;&lt; 16 = dim + 1</c>) does NOT overlap and one 16.16 unit less does (E19.d2b B5 corrects the earlier
+    /// "flush contact counts", which this code never did with the real dimensions).
+    ///
+    /// D-E12D-1's position-source correction (plan relecture P2): the original reads
+    /// <c>ModdedPos*</c>, refreshed on every movement attempt (PhysicsEngine.cs:428-430/:849-851);
+    /// in this DLL those cached fields are only written at spawn, so this port recomputes
+    /// <c>Pos* + Mod*</c> on the fly for subject AND candidate - the established convention of
+    /// <see cref="EntitySupport"/> (EntitySupport.cs:112-114), for exactly this staleness reason.
+    /// </summary>
     public static AlundraEntityScriptProxy? FindEntityCollisionCandidate(
         AlundraEntityScriptProxy entity, IReadOnlyList<AlundraEntityScriptProxy> collidables)
     {

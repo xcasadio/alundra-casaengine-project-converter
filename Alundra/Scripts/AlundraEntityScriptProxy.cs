@@ -262,7 +262,8 @@ public class AlundraEntityScriptProxy : GameplayProxy
     // UNIFIED entities (the object carrying Flags/ProgramIndexes, i.e. our proxy), and the proxy-typed
     // comparison also kills a latent ReferenceEquals(null, null) match in EntitySearchService's
     // functions 7/8 against bare test proxies whose LogicContextEntity is null. Written once per logic
-    // tick for the PLAYER by AlundraWorldProxy.Update's contact pass (detection only, no blocking).
+    // step for the entity by MoveControllerAndPullPosition (E19.d2b B4, D-E19-29): the obstacle of the controller's blocking report (the end-of-frame
+    // contact pass of E12.d is gone).
     public AlundraEntityScriptProxy? XCollisionEntity;
     public int FloorHeight;
     public int TerrainHeight;//

@@ -11,7 +11,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E12.d's PRODUCTION-SITE stage (plan §3 étage 1, docs/plan-e12d-interaction-joueur.md): the player
-/// interaction chain pinned at the real call sites - the contact pass inside the real
+/// interaction chain pinned at the real call sites - the contact of the hero's blocked step inside the real
 /// <see cref="AlundraWorldProxy.Update"/> (P-a), the <c>CheckEntityInteraction</c> call inside the real
 /// player branch of <see cref="AlundraEntityScriptProxy.Update"/> → <c>MovePlayer</c> (P-b), and the
 /// consume-on-pick cadence at the real slot-F pick (P-c). The full-flow sailor test in

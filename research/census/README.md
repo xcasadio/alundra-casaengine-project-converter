@@ -61,6 +61,9 @@ Fix these before any total is reused or pinned (O-E19-25):
 2. The binary rule slides only cardinal walks; the binary has slide cases for oblique directions too.
 3. A start candidate written after the site is used (a "park before self-destroy" `0x64` at (0, 0) on map 1).
 4. A site is labelled "rule difference" without checking that the compared runs share the same start.
+5. `emu.py` (walks-0x0b): `0x37 [v]` returns at s+v instead of s+v+1 (the binary, `0x8003E3DC`, and the DLL,
+   `AlundraEventProgramRunner.cs`, opcode `0x37`, return one tick later). The absolute times of the scene emulations
+   (`scene185.py` and the like) are shifted one tick per wait; their outcome is not.
 
 Other limits, recorded with the reports: no entity contacts in the `0x24` census; cell writes only flagged, not
 replayed; jumps other than the four certified ones not modelled; native AI not modelled; the spawn zone filter not

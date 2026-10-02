@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Engine.Geometry;
@@ -264,7 +265,8 @@ internal sealed class ArcRun : IDisposable
     /// <summary>
     /// E19.d2b B6 (T-REG-0): the arcs whose pins were measured before entities blocked movement. Their positions, frames and flags have no reason to move
     /// under the entity contacts, and the proof is that no entity shortened or cancelled a single controller step of theirs: <see cref="TotalEntityBlockCount"/>
-    /// is 0 when they end. Checked when the arc is disposed (the end of its <c>using</c>), after the global state is restored.
+    /// is 0 when they end. Checked when the arc is disposed (the end of its <c>using</c>), after the global state is restored, and only when the
+    /// test is not already failing (an exception in flight: the guard would replace the original failure with its own).
     /// </summary>
     private static readonly HashSet<string> ArcsWithoutEntityContact = new() { "A1c", "A3", "A4p", "A5", "A5r", "A6", "A7", "A8", "A9", "A10", "A10J", "A20" };
 
@@ -273,7 +275,9 @@ internal sealed class ArcRun : IDisposable
 
     public void Dispose()
     {
-        var blocked = Frame > 0 && ArcsWithoutEntityContact.Contains(Spec.Name) ? TotalEntityBlockCount : 0;
+        // A non-zero value means an exception is propagating through this Dispose (the test, or the constructor, has already failed).
+        var alreadyFailing = Marshal.GetExceptionPointers() != IntPtr.Zero;
+        var blocked = !alreadyFailing && Frame > 0 && ArcsWithoutEntityContact.Contains(Spec.Name) ? TotalEntityBlockCount : 0;
         Log?.Dispose();
         EngineEnvironment.ProjectPath = _previousProjectPath;
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);

@@ -28,13 +28,6 @@ public sealed class AlundraEntityContactArcTests
     private static void AssertWithin(int actual, int expected, int tolerance, string what)
         => Assert.True(Math.Abs(actual - expected) <= tolerance, $"{what}: {actual / 65536.0} px, {expected / 65536.0} px +/- {tolerance / 65536.0} expected");
 
-    /// <summary>The ULP of the float32 coordinate in 16.16 units, rounded up (1 unit under 256 px, 2 under 512, 4 under 1024, 8 above).</summary>
-    private static int UlpUnits(int fixed1616)
-    {
-        var pixels = Math.Abs(fixed1616 / 65536.0);
-        return pixels < 256 ? 1 : pixels < 512 ? 2 : pixels < 1024 ? 4 : 8;
-    }
-
     // ----------------------------------------------------------------------------------------------------------
     // T-A19 - map 185, the meeting of the villagers (day 4)
     // ----------------------------------------------------------------------------------------------------------
@@ -101,9 +94,10 @@ public sealed class AlundraEntityContactArcTests
         Assert.Equal(at458.Rec(6).Y + 6 * Px, at458.Rec(7).Y - 8 * Px); // the contact, edge against edge.
         Assert.Equal(11927552, s[C, 452, 463].Rec(6).X);
 
-        // rec7 destroyed by 0x2E @466, and out of the list of obstacles the following frame.
+        // rec7 destroyed by 0x2E @466, and out of the list of obstacles when that frame ends. The samples are keyed by the frame counter AFTER the
+        // frame (OneFrame increments it before OnFrame), so the end of the frame of 0x2E @466 is keyed destroyFrame + 1: the exact frame that follows.
         Assert.True(destroyFrame >= 0, "0x2E @466 never ran");
-        Assert.False(rec7InList[destroyFrame + 2], "rec7 is still an obstacle the frame after its destruction");
+        Assert.False(rec7InList[destroyFrame + 1], "rec7 is still an obstacle at the end of the frame of its destruction");
 
         Assert.True(s[C, 452, 506].Rec(6).Y >= 22413312, "Septimus ends 0x0B @506 at 342 px or more");
 
@@ -312,9 +306,10 @@ public sealed class AlundraEntityContactArcTests
         var x1215 = s[B, 1132, 1215].Hero.X;
         Assert.True(x1215 >= 898 * Px - 52 * Px - Px / 2 && x1215 <= 898 * Px - 48 * Px - Px / 2, $"the hero ends 0x0B @1215 at x = {x1215 / 65536.0} px, 845.5 to 849.5 expected");
 
-        // rec41 destroyed by 0x2E @1226, and out of the list of obstacles the following frame.
+        // rec41 destroyed by 0x2E @1226, and out of the list of obstacles when that frame ends (samples keyed by the counter after the frame:
+        // destroyFrame + 1 is the end of the frame of the destruction, the exact frame that follows).
         Assert.True(destroyFrame >= 0, "0x2E @1226 never ran");
-        Assert.False(inList[destroyFrame + 2], "rec41 is still an obstacle the frame after its destruction");
+        Assert.False(inList[destroyFrame + 1], "rec41 is still an obstacle at the end of the frame of its destruction");
 
         foreach (var n in new uint[] { 511, 512, 514, 515 })
         {
@@ -487,8 +482,8 @@ public sealed class AlundraEntityContactArcTests
             }
         };
 
-        // 1. The end signal: G672.
-        arc.RunUntil(() => IsSet(672), "G672 set by B[6] after 0x1E @980");
+        // 1. The end signal: the instruction that ends the scene, 0x30 @983 (it sets G672, in the frame of the end of 0x1E @980).
+        arc.RunUntil(() => arc.Has(B, 983, 0x30), "B[6] executes 0x30 @983 (G672) after 0x1E @980");
 
         // 2. Only the instructions the measure shows are skipped (the rest of B[6] is not played).
         AssertSkippedWithin(arc, new HashSet<(int, int)> { (0x5D, 988), (0x52, 994), (0x29, 882), (0x2B, 1958) });

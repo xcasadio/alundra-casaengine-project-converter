@@ -277,12 +277,12 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
     /// real map-389 world - contact detection → CheckEntityInteraction → ActiveCollisionEntity → the
     /// REAL slot-F pick (the sim's own per-entity Update, not a direct RunScript) → 0x27+0x0D → the
     /// dialogue opens, survives its own opening press (D-E12D-6), closes on later presses, and NEVER
-    /// reopens uncommanded (consume-on-pick, D-E12D-4). The per-frame MovePlayer call and contact pass
+    /// reopens uncommanded (consume-on-pick, D-E12D-4). The per-frame MovePlayer call and the contact of the hero's step
     /// here are the harness MIRROR of the two production sites <see cref="AlundraInteractionPassTests"/>
     /// pins (the F1 contract: a mirror only stands when the production site carries its own test).
     /// Mirror order matches production phase: MovePlayer consumes the PREVIOUS frame's contact
     /// (events before physics in the original, EntityManager.cs:377-387), so the hook runs MovePlayer
-    /// first, then the contact probe for the next frame.
+    /// first, then the contact (the obstacle of the hero's step, by the rule of the production probe) for the next frame.
     /// </summary>
     [Fact]
     public void SailorThirteen_FullInteractionChain_SquareOpensTheBox_AndNothingReopensIt()
@@ -371,12 +371,13 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                 // Mirror 2 - the contact of the hero's step, feeding NEXT frame's MovePlayer. E19.d2b B4 (D-E19-29): in
                 // production this contact is the entity that shortened or cancelled the hero's controller step
                 // (AlundraEntityScriptProxy.MoveControllerAndPullPosition, pinned by AlundraEntityContactReportTests T-R7 and
-                // AlundraInteractionPassTests P-a), and no longer an overlap pass of the end of the frame; this harness has
-                // no controller, the overlap of the hero kept ON sailor 13 stands for the contact of his push. Gated like
-                // production (D-E12D-5: no step is taken behind the mask).
+                // AlundraInteractionPassTests P-a). This harness has no controller, so the report is the one the controller would get from the
+                // production probe for the hero kept ON sailor 13: the same rule, at the hero's own position, with the soulevables skipped
+                // (AlundraMovementObstacleProbe.TryFindObstacle). Gated like production (D-E12D-5: no step is taken behind the mask).
                 if ((s.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) == 0)
                 {
-                    player!.XCollisionEntity = AlundraEntityCollision.FindEntityCollisionCandidate(player, s.Collidables);
+                    player!.XCollisionEntity = AlundraEntityCollision.FindEntityCollisionCandidate(
+                        player, player.PosX, player.PosY, player.PosZ, s.Collidables, EntityFlags.PickupKindMask);
                 }
 
                 // Frame 11: the press of frame 10 assigned the sailor; THIS frame's real pick chose F,

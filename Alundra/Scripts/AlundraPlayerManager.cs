@@ -543,8 +543,8 @@ public static class AlundraPlayerManager
     /// <summary>
     /// Port of <c>CheckEntityInteraction</c> @ 0x8002e910 (decompilation PlayerManager.cs:1597-1669),
     /// E12.d (docs/plan-e12d-interaction-joueur.md). Reads the player's per-tick entity contact
-    /// (<see cref="AlundraEntityScriptProxy.XCollisionEntity"/>, written by AlundraWorldProxy.Update's
-    /// contact pass), maintains the interact latch on <paramref name="state"/> (see the latch fields'
+    /// (<see cref="AlundraEntityScriptProxy.XCollisionEntity"/>, written by the blocking report of his controller in
+    /// <see cref="AlundraEntityScriptProxy.MoveControllerAndPullPosition"/>, E19.d2b B4), maintains the interact latch on <paramref name="state"/> (see the latch fields'
     /// own doc there), and on success assigns <see cref="IAlundraScriptHost.ActiveCollisionEntity"/> -
     /// the one-shot signal the slot-F pick consumes (D-E12D-4). Returns the original's exact result
     /// codes: 0 = no interaction, 1 = auto-touch interact (no InteractRequiresButton flag),

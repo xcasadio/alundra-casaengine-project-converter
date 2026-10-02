@@ -32,8 +32,8 @@ namespace Alundra.Tests;
 /// <see cref="AlundraDialogueFramePassTests.Update_RunsTheDialoguePass_ButtonClosesABoxNoScriptIsWatching"/>
 /// already opens a box with <c>controlMode: 0</c> (MenuOpen) and proves the SAME <c>proxy.Update</c> call
 /// still advances/closes it - widening the gate to cover the dialogue tick would fail that test.</description></item>
-/// <item><description>the contact probe's own freeze -&gt;
-/// <see cref="AlundraInteractionPassTests.Update_ContactPassIsFrozen_WhileGameplayBlockedMaskIsPosed"/>.</description></item>
+/// <item><description>the freeze of the contact (no step is taken behind the mask, so the blocking report keeps its value) -&gt;
+/// <see cref="AlundraInteractionPassTests.Update_TheContactIsFrozen_WhileGameplayBlockedMaskIsPosed"/>.</description></item>
 /// </list>
 /// This file adds the one T2 mutation with no existing coverage - "mettre le suivi caméra dedans" - plus
 /// the [R5] debt test.
