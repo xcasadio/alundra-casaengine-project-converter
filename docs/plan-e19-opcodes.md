@@ -2447,7 +2447,7 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
     sauvegarde par le chemin existant (motif d'`AlundraSaveGameApplyTests`) pose les drapeaux et la table dans le
     `AlundraGameState` d'arrivée.
 
-- ⏳ **S2 — Outil console.**
+- ✅ **S2 — Outil console.**
   - Projet `tools/AlundraTestSaves/AlundraTestSaves.csproj` (exécutable, même cible que `Alundra`), références à
     `Alundra` et au moteur, inscrit dans le `.slnx`.
   - Ligne de commande : `AlundraTestSaves <fichier projet AlundraGame.json> <préréglage> [--dry-run]` (pas d'option de créneau).
