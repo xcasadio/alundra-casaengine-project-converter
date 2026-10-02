@@ -870,6 +870,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             CollisionField = null;
         }
 
+        // E19.d2b B3 (D-E19-27): the movement obstacle probe, next to the field and for the same reason - World.Clear() resets the slot to
+        // null, so every load re-installs it. The controller's field stage consults it for every non-zero horizontal step.
+        world.MovementObstacleProbe = new AlundraMovementObstacleProbe(this);
+
         // E4.d (docs/plan-e4-deplacement-scripte.md, decision E4-2): navigation grid, built from the same
         // TileMapData right after the collision field above - see TryBuildNavigationGrid's own doc.
         NavigationGrid = TryBuildNavigationGrid(world, tileMapData);

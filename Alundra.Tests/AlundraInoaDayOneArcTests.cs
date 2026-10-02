@@ -252,6 +252,13 @@ public sealed class AlundraInoaDayOneArcTests
     /// (<c>0x8B</c>). C[2] then opens box 131 (<c>0x0D @325</c>, which sets T200), waits for the page to turn (T201, set by the node
     /// <c>M164_S003</c> at the first press: the director never turns a page alone, <c>0x4D @350</c> being skipped), plays the scene,
     /// opens box 132 and ends with <c>0x38 @437</c>.
+    /// <para>
+    /// E19.d2b (B3, D-E19-27): re-pinned under the entity contacts. Septimus (record 1) is stopped by the entities of his path: <c>0x24 @341</c> (south)
+    /// ends against record 4 (spawned at (1092, 136)), <c>0x24 @346</c> (west) ends against the HERO, parked in the zone at (996, 120) (his place in
+    /// the zone decides the x of this contact: the relation is pinned, not the number's origin), and <c>0x0B @386</c> (east, 24 px) ends where the
+    /// retard of D-E19-13 leaves it. Everything that follows <c>@341</c> comes 19 frames earlier (Septimus no longer walks to the wall of the cell model),
+    /// and record 4, deactivated by C[3], is destroyed by the native E handler the frame after (D-E19-29). The frames before <c>@341</c> do not move.
+    /// </para>
     /// </summary>
     [Fact]
     public void A11_SeptimusOnMap164_TheScenePlaysToItsEnd_TheTableAndTheFlagsAreSet()
@@ -259,12 +266,31 @@ public sealed class AlundraInoaDayOneArcTests
         using var arc = new ArcRun(A11Spec);
         (int X, int Y, int Z)? heroAtSpawn = null;
         (int X, int Y, int Z)? record4AtSpawn = null;
+        var samples = new ArcSamples(arc, new[] { 1, 4 }, new uint[] { 200, 201 }, (C, 240, 341), (C, 240, 346), (C, 240, 386));
+        var sampleOnInstruction = arc.OnInstruction!;
         arc.OnInstruction = t =>
         {
+            sampleOnInstruction(t);
             if (t.Slot == B && t.Pc == 95 && record4AtSpawn == null && arc.EntityByRecord(4) is { } r4)
             {
                 heroAtSpawn = (arc.Hero.PosX, arc.Hero.PosY, arc.Hero.PosZ);
                 record4AtSpawn = (r4.PosX, r4.PosY, r4.PosZ);
+            }
+        };
+
+        // The contacts of Septimus (record 1): every entity that shortened one of his steps, read from the report of his controller at the end of each frame.
+        var sampleOnFrame = arc.OnFrame!;
+        var septimusContacts = new HashSet<string>();
+        arc.OnFrame = () =>
+        {
+            sampleOnFrame();
+            var contact = arc.EntityByRecord(1)?.Controller?.LastContact;
+            foreach (var obstacle in new[] { contact?.H1Obstacle, contact?.H2Obstacle })
+            {
+                if (obstacle?.GameplayProxy is AlundraEntityScriptProxy proxy)
+                {
+                    septimusContacts.Add(ReferenceEquals(proxy, arc.Hero) ? "hero" : $"rec{proxy.EntityRefId}");
+                }
             }
         };
 
@@ -315,7 +341,7 @@ public sealed class AlundraInoaDayOneArcTests
 
         // The end: 0x38 @437 of C[2] (program @240); G4, G8, G202 set, G201 cleared, [162] = 169, no lock, T3 set, record 4 deactivated.
         Assert.Equal(240, arc.Trace.First(t => t.Slot == C && t.Pc == 437 && t.Opcode == 0x38).ProgramStart);
-        AssertFrame(arc, C, 437, 208);
+        AssertFrame(arc, C, 437, 189);
         Assert.True(IsSet(4), "G4");
         Assert.True(IsSet(8), "G8");
         Assert.True(IsSet(202), "G202");
@@ -325,11 +351,28 @@ public sealed class AlundraInoaDayOneArcTests
         Assert.False(AlundraDialogueDirector.Instance.IsOpen);
         Assert.True(IsTemporarySet(3), "T3");
         Assert.True(arc.Has(C, 451, 0x19), "C[3] never deactivated record 4 (0x19 @451)");
-        AssertFrame(arc, C, 451, 208);
-        Assert.Equal(EntityStatus.Deactivated, arc.EntityByRecord(4)!.Status);
+        AssertFrame(arc, C, 451, 189);
+        Assert.Equal(EntityStatus.Deactivated, arc.EntityByRecord(4)!.Status); // at the frame of the end ...
+        arc.OneFrame();
+        Assert.Equal(EntityStatus.FlagToDestroy, arc.EntityByRecord(4)!.Status); // ... and destroyed by the native E handler the frame after (D-E19-29).
+
+        // The contacts of Septimus, in the order of the plan: record 4 and the hero, nothing else.
+        Assert.Equal(new[] { "hero", "rec4" }, septimusContacts.OrderBy(c => c).ToArray());
+        var at341 = samples[C, 240, 341];
+        Assert.Equal((71565312, 7995392), (at341.Rec(1).X, at341.Rec(1).Y)); // south, against record 4.
+        Assert.Equal(at341.Rec(1).Y + 6 * 65536, at341.Rec(4).Y - 8 * 65536);
+        var at346 = samples[C, 240, 346];
+        Assert.Equal((66650112, 7995392), (at346.Rec(1).X, at346.Rec(1).Y)); // west, against the hero.
+        Assert.Equal(1, at346.Rec(1).ForceAdjusted);
+        Assert.Equal(at346.Rec(1).X - 10 * 65536, at346.Hero.X + 11 * 65536); // edge against edge, whatever the place of the hero in the zone.
+        Assert.True(samples[C, 240, 386].Rec(1).X >= 68222976, "Septimus ends 0x0B @386 at x = 1041 px or more");
+
+        // T200 is seen set at the frame of the opening of box 131, T201 at the first press (the frames 12 and 13).
+        Assert.Equal(FrameOf(arc, C, 325) + 1, samples.FirstSet[200]);
+        Assert.Equal(samples.FirstSet[200] + 1, samples.FirstSet[201]);
 
         // The absolute frames (first measurement, +/- 3).
-        foreach (var (slot, pc, frame) in new[] { (C, 276, 5), (C, 289, 9), (B, 86, 10), (C, 325, 11), (C, 353, 67), (C, 417, 194) })
+        foreach (var (slot, pc, frame) in new[] { (C, 276, 5), (C, 289, 9), (B, 86, 10), (C, 325, 11), (C, 353, 48), (C, 417, 175) })
         {
             AssertFrame(arc, slot, pc, frame);
         }

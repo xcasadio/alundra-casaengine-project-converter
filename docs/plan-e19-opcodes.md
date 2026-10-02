@@ -2707,7 +2707,7 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
     programme scripté) ; vert après : 17 sur 17. `Alundra.Tests` 2129 réussis (2112 avant), aucun test existant modifié. Le support
     de test partagé (`AlundraContactTestSupport.cs` : sol plat, hôte à liste de collidables, monde réel à contrôleurs) sert B3 et B4.
 
-- ⏳ **B3 — Prédicat d'obstacle (DLL), tests d'abord.**
+- ✅ **B3 — Prédicat d'obstacle (DLL), tests d'abord.**
   - Classe `AlundraMovementObstacleProbe : IMovementObstacleProbe` (interface du moteur, namespace
     `CasaEngine.Framework.Physics`), installée par `InstallCellAndOverlaySystems`
     (`AlundraWorldProxy.cs:850-871`) à côté du champ, à chaque chargement de monde.
@@ -2741,6 +2741,21 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
     bloqué, Y descend de 1,4140625 px par tick, `XCollisionEntity` = le villageois ; écart au binaire, où le héros reste
     immobile, écrit dans le test).
   - Commit : `feat(alundra): block movers at entities through the controller's movement obstacle probe`
+  - Fait le 2026-10-02. Rouge d'abord : 20 des 32 tests de `AlundraMovementObstacleProbeTests` échouent contre un prédicat qui ne bloque rien et une
+    surcharge de règle qui rend null (T-R1 douze lignes, T-R3 deux, T-R4, T-R-ID, T-R-LIFT, T-R9, `DrawDebug`, les deux contrôles d'ordre et de drapeaux
+    soulevables) ; les 12 autres sont des contre-épreuves (flush libre) et T-REG-Z, qui garde le comportement (marin soutenu sur sa plate-forme avec un
+    jeu d'une unité) : verts avant et après. Vert après : 32 sur 32, aucune valeur du plan contredite. `Alundra.Tests` : aucun test existant modifié par
+    B3, sauf A11 (ci-dessous). Précisions : (1) dans T-R1 les positions du villageois sont celles que les valeurs écrites imposent (501 px, 301 px, z 48 px
+    plus une unité : héros à l'est ou à l'ouest, au sud ou au nord) ; (2) la sonde reçoit l'hôte du monde (`AlundraMovementObstacleProbe(IAlundraScriptHost)`),
+    qui lui donne la liste pour le test et pour le tracé ; (3) T-R3 et T-R4 lisent l'obstacle dans le rapport de contact du contrôleur (`LastContact`) :
+    `XCollisionEntity` n'est écrit qu'en B4, où T-R7 le vérifie tick par tick ; (4) T-REG-Z est un équivalent synthétique (une plate-forme à
+    `PosZ` 24117249 et un marin à gravité qui marche dessus avec le jeu d'une unité, supports de l'étage E4.f réels), non une relance des deux tests
+    de la carte 389, qui n'ont pas la sonde installée : la règle pure est testée aux trois valeurs du plan (26214401, 26214400, 26214399).
+  - **Déviation d'ordre (A11)** : l'installation de la sonde dans `InstallCellAndOverlaySystems` change A11 et seulement A11 (le reste de la suite reste vert,
+    mesuré), alors que le plan ré-épingle A11 en B6. Pour ne laisser aucun commit rouge, le ré-épinglage d'A11 est fait dans le commit de B3, aux valeurs écrites
+    d'avance, sans en changer une : A11 rouge sur ses anciennes valeurs avec la sonde installée, puis vert avec les valeurs du plan (contacts de Septimus {rec4,
+    héros}, `@341` et `@346`, `@386` ≥ 68222976, images 48, 175, 189 et 189, T200 et T201, `rec4` Deactivated puis détruit une image plus tard). Le support
+    `AlundraArcSamples.cs` (instantanés au premier instruction qui suit un pc) sert aussi les arcs de B6.
 
 - ⏳ **B4 — Contact du dialogue et détour (DLL), tests d'abord.**
   - `MoveControllerAndPullPosition` remet `XCollisionEntity` à null avant le `Move`, puis y écrit le proxy de

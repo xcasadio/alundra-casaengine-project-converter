@@ -37,6 +37,63 @@ public static class AlundraEntityCollision
     /// <c>Pos* + Mod*</c> on the fly for subject AND candidate - the established convention of
     /// <see cref="EntitySupport"/> (EntitySupport.cs:112-114), for exactly this staleness reason.
     /// </summary>
+    /// <summary>
+    /// The same rule with the position of the SUBJECT given (E19.d2b B3, D-E19-27): the movement obstacle probe asks it for the
+    /// candidate position of the root of a controller step, in the 16.16 fields (the subject's own <c>Pos*</c> are not read). The
+    /// subject gate and the candidate order are unchanged; a candidate whose flags intersect <paramref name="skippedCandidateFlags"/>
+    /// is skipped (the probe passes <see cref="EntityFlags.PickupKindMask"/>: the soulevables are not obstacles until E14, D-E19-28).
+    /// The edge is semi-open, the binary's: <c>Width = (size &lt;&lt; 16) - 1</c> and an overlap needs <c>delta &lt; Width + 1</c>, so a
+    /// flush contact does NOT overlap and one 16.16 unit less does.
+    /// </summary>
+    public static AlundraEntityScriptProxy? FindEntityCollisionCandidate(
+        AlundraEntityScriptProxy entity, int subjectPosX, int subjectPosY, int subjectPosZ,
+        IReadOnlyList<AlundraEntityScriptProxy> collidables, uint skippedCandidateFlags = 0)
+    {
+        if (!EntitySupport.IsEligibleSubject(entity) || collidables.Count == 0)
+        {
+            return null;
+        }
+
+        var moddedPosX = subjectPosX + entity.ModX;
+        var moddedPosY = subjectPosY + entity.ModY;
+        var moddedPosZ = subjectPosZ + entity.ModZ;
+
+        for (var i = 0; i < collidables.Count; i++)
+        {
+            var candidate = collidables[i];
+            if (ReferenceEquals(candidate, entity) || (candidate.Flags & skippedCandidateFlags) != 0)
+            {
+                continue;
+            }
+
+            var candidateModX = candidate.PosX + candidate.ModX;
+            var candidateModY = candidate.PosY + candidate.ModY;
+            var candidateModZ = candidate.PosZ + candidate.ModZ;
+
+            var delta = candidateModX - moddedPosX;
+            if (delta < 0 ? moddedPosX - candidateModX >= candidate.Width + 1 : delta >= entity.Width + 1)
+            {
+                continue;
+            }
+
+            delta = candidateModY - moddedPosY;
+            if (delta < 0 ? moddedPosY - candidateModY >= candidate.Height + 1 : delta >= entity.Height + 1)
+            {
+                continue;
+            }
+
+            delta = candidateModZ - moddedPosZ;
+            if (delta < 0 ? moddedPosZ - candidateModZ >= candidate.Depth + 1 : delta >= entity.Depth + 1)
+            {
+                continue;
+            }
+
+            return candidate;
+        }
+
+        return null;
+    }
+
     public static AlundraEntityScriptProxy? FindEntityCollisionCandidate(
         AlundraEntityScriptProxy entity, IReadOnlyList<AlundraEntityScriptProxy> collidables)
     {

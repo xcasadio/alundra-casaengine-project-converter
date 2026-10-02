@@ -324,6 +324,9 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// each call: only a freeze or a thaw asks, never a per-frame path.</summary>
     internal AnimatedSpriteComponent? AnimatedSprite => Owner?.GetComponent<AnimatedSpriteComponent>();
 
+    /// <summary>E19.d2b: the engine entity this proxy drives (the movement obstacle probe returns obstacles as engine entities).</summary>
+    internal Entity? OwnerEntity => Owner;
+
     /// <summary>
     /// Engine-only, not part of the original struct: this entity's own map's Gravity/ZViscosity, already
     /// converted to the units <see cref="CharacterControllerSettings.Gravity"/>/<see cref="CharacterControllerSettings.MaxFallSpeed"/>

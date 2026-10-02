@@ -124,11 +124,12 @@ internal static class ContactWorld
     public static AlundraEntityScriptProxy AddEntity(
         World world, ContactHost host, string name, int xPixels, int yPixels, int zPixels,
         int offsetX, int offsetY, int offsetZ, int sizeX, int sizeY, int sizeZ,
-        bool isPlayer = false, bool collidable = true, EntityStatus status = EntityStatus.Normal)
+        bool isPlayer = false, bool collidable = true, EntityStatus status = EntityStatus.Normal, bool withController = true)
     {
         var root = new TransformComponent();
         root.LocalTransform.Position = new Vector3(xPixels, yPixels, zPixels);
         var collision = new CollisionComponent();
+        collision.PhysicsDefinition.PhysicsType = PhysicsType.Kinetic; // a kinematic ghost body, as the entities of the game: invisible to the rigid sweep.
         collision.Fixtures.Add(new ColliderFixture
         {
             Shape = new Box { Size = new Vector3(18f, 12f, 32f) },
@@ -138,25 +139,19 @@ internal static class ContactWorld
         root.AddChildComponent(collision);
 
         var entity = new Entity { Name = name, RootComponent = root, GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
-        var settings = new CharacterControllerSettings
+        if (withController)
         {
-            Radius = 6f,
-            Height = 32f,
-            SkinWidth = 0.5f,
-            StepHeight = 3f,
-            GroundSnapDistance = 4f,
-            Gravity = 0f,
-            MaxFallSpeed = 0f,
-            WalkabilityMask = 0,
-        };
-        var controller = new CharacterControllerComponent { Settings = settings };
-        controller.SetControlMode(CharacterControlMode.Script);
-        controller.IsVerticalOwnedExternally = true;
-        entity.AddComponent(controller);
+            AddController(entity);
+        }
+
         entity.Initialize();
 
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
-        proxy.Controller = entity.GetComponent<CharacterControllerComponent>();
+        if (withController)
+        {
+            proxy.Controller = entity.GetComponent<CharacterControllerComponent>();
+        }
+
         proxy.IsPlayer = isPlayer;
         proxy.ScriptHost = host;
         proxy.Status = status;
@@ -176,12 +171,32 @@ internal static class ContactWorld
         return proxy;
     }
 
+    private static void AddController(Entity entity)
+    {
+        var settings = new CharacterControllerSettings
+        {
+            Radius = 6f,
+            Height = 32f,
+            SkinWidth = 0.5f,
+            StepHeight = 3f,
+            GroundSnapDistance = 4f,
+            Gravity = 0f,
+            MaxFallSpeed = 0f,
+            WalkabilityMask = 0,
+        };
+        var controller = new CharacterControllerComponent { Settings = settings };
+        controller.SetControlMode(CharacterControlMode.Script);
+        controller.IsVerticalOwnedExternally = true;
+        entity.AddComponent(controller);
+    }
+
     /// <summary>The root position of the entity of <paramref name="proxy"/> (pixels).</summary>
-    public static Vector3 Root(AlundraEntityScriptProxy proxy) => proxy.Controller!.Owner!.RootComponent!.LocalTransform.Position;
+    public static Vector3 Root(AlundraEntityScriptProxy proxy) => proxy.OwnerEntity!.RootComponent!.LocalTransform.Position;
 
     /// <summary>One update of the world (integrates the entities added so far) then the end-of-frame rebuild of the collidable list.</summary>
     public static void Integrate(World world, ContactHost host)
     {
+        host.Rebuild();
         world.Update(0.02f);
         host.Rebuild();
     }
