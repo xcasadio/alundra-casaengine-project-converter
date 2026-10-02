@@ -213,6 +213,7 @@ internal static class AlundraFrameSyncPasses
     internal static void StepAnimationClock(AlundraEntityScriptProxy proxy)
     {
         proxy.IsZForceApplied = 0;
+        proxy.ZImpulseSfx = 0;
         if (proxy.Status == EntityStatus.FlagToDestroy)
         {
             return;
@@ -221,7 +222,7 @@ internal static class AlundraFrameSyncPasses
         if (proxy.ZImpulseDue)
         {
             proxy.ZImpulseDue = false;
-            proxy.IsZForceApplied = proxy.ZImpulseOf(proxy.CurrentAnimationId);
+            GiveImpulse(proxy, proxy.CurrentAnimationId);
         }
 
         var switchPending = proxy.PendingChainRestartFlag != 0 || TryResolveAnimationTarget(proxy, out _, out _);
@@ -266,8 +267,15 @@ internal static class AlundraFrameSyncPasses
             return;
         }
 
-        proxy.IsZForceApplied = proxy.ZImpulseOf(proxy.TargetAnimationId);
+        GiveImpulse(proxy, proxy.TargetAnimationId);
         proxy.ZImpulseTaken = true;
+    }
+
+    /// <summary>E19.d2c1 R1/R8: posts the impulse of <paramref name="animationId"/>; for the hero, also its sound (the take-off sound the hero's tick asks the world for).</summary>
+    private static void GiveImpulse(AlundraEntityScriptProxy proxy, uint animationId)
+    {
+        proxy.IsZForceApplied = proxy.ZImpulseOf(animationId);
+        proxy.ZImpulseSfx = proxy.IsPlayer && proxy.IsZForceApplied != 0 ? proxy.ZImpulseSfxOf(animationId) : 0;
     }
 
     /// <summary>

@@ -68,6 +68,11 @@ internal static class AlundraScriptedMotion
     /// never its magnitude). Not a physical distance; any positive value would do.</summary>
     internal const float ClimbingExternalDisplacementSentinel = 1f;
 
+    /// <summary>Fixed positive value the hero's air state (E19.d2c1 R6) latches through
+    /// <see cref="CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent.SetExternalVerticalDisplacement"/> at every tick, for the same reason as
+    /// <see cref="ClimbingExternalDisplacementSentinel"/>: the engine only reads the SIGN of the latch (a positive one means airborne, no ground snap).</summary>
+    internal const float AirborneExternalDisplacementSentinel = 1f;
+
     /// <summary>Runs <paramref name="ticks"/> whole 50 Hz kinematic ticks for the hero pawn - the tick
     /// COUNT is owned entirely by the caller now (this class' own doc, ONE-CLOCK fix): it is always the
     /// same <c>ticksThisFrame</c> the shared <see cref="AlundraLogicClock"/> already handed the script
@@ -174,15 +179,135 @@ internal static class AlundraScriptedMotion
         entity.ForceAdjusted = 0;
         // E19.d2c1 R5 (the binary clears +0x140 and +0x13C together at the head of the physics pass, 0x800383B4/0x800383B8).
         entity.CollidedWithEntityZ = 0;
+        entity.ZHeldByTick = false;
+
+        // E19.d2c1 R6: the hero's vertical belongs to the tick while it is in the air state (a scripted jump, 0x1B): after the clears above and BEFORE the XY
+        // step, the binary's order (Z before XY, 0x80037E34).
+        var airborne = entity.IsPlayer && RunHeroVerticalTick(entity);
+
         // R5 d: the hero outside the airborne state lands on every tick of its rest with gravity (+0x140 stays 1 on the ground). The state
-        // itself (E19.d2c1 C3) raises it at its own landing.
-        if (entity.IsPlayer && (entity.Flags & EntityFlags.Gravity) != 0 && entity.IsOnGround == 1)
+        // itself raises it at its own landing.
+        if (entity.IsPlayer && !airborne && (entity.Flags & EntityFlags.Gravity) != 0 && entity.IsOnGround == 1)
         {
             entity.CollidedWithEntityZ = 1;
         }
 
         RunOneKinematicTick(entity, animSetAnimationId);
+
+        // R6: after each tick of the state, IsOnGround is derived from the position after the XY step, not pulled from the engine: PosZ <= terrain (the binary's
+        // !(FloorHeight < PosZ), 0x800380F8, without its +1).
+        if (entity.ZHeldByTick)
+        {
+            entity.IsOnGround = entity.PosZ + entity.ModZ <= entity.ComputeTerrainHeight() ? 1 : 0;
+        }
+
         entity.MotionTickCount++; // see that field's own doc (ONE-CLOCK invariant instrumentation).
+    }
+
+    /// <summary>
+    /// E19.d2c1 R6 (docs/plan-e19-opcodes.md §1.2h.3.1): the vertical step of the hero in the air state the logic tick holds, ported from the binary (the force
+    /// of the hero <c>0x80036884</c>-<c>0x80036948</c>, the strict landing test <c>0x80036C20</c>-<c>0x80036C34</c> and <c>0x800376E0</c>/<c>0x80037700</c>). Returns
+    /// true when the state ran this tick.
+    /// <list type="bullet">
+    /// <item><description>Entry: the impulse of an animation taken at this tick (<see cref="AlundraEntityScriptProxy.IsZForceApplied"/>, R1) or the mark of
+    /// <c>0x1B</c> on the hero. The live values of the engine (its gravity, <c>MaxFallSpeed</c>, vertical ownership) are captured, then gravity and fall speed
+    /// go to 0 and the vertical becomes external; they are given back AS CAPTURED at the landing (a gravity already at 0 by a <c>0x17</c> stays 0).</description></item>
+    /// <item><description>Force: impulse tick, <c>ForceZ = IZF &lt;&lt; 8</c> with no decay; otherwise, with <see cref="EntityFlags.Gravity"/>, the decay
+    /// <c>ForceZ -= Gravity &lt;&lt; 8</c> bounded on both sides by <c>ZViscosity &lt;&lt; 8</c>; without Gravity, unchanged.</description></item>
+    /// <item><description>Step: <c>F &gt; 0</c> rises (no ceiling, E19.h); otherwise the STRICT test <c>PosZ + F &lt; T</c> (<c>T</c>, the terrain under the box at the
+    /// position before the XY step): landed means <c>PosZ = T</c>, <c>ForceZ = 0</c> with gravity, <see cref="AlundraEntityScriptProxy.CollidedWithEntityZ"/> 1 and
+    /// the state ends; not landed, <c>PosZ += F</c>. The logical <see cref="AlundraEntityScriptProxy.PosZ"/> is the truth; the root follows by a vertical
+    /// displacement of the controller (never a teleport: X and Y keep their fraction).</description></item>
+    /// </list>
+    /// </summary>
+    private static bool RunHeroVerticalTick(AlundraEntityScriptProxy hero)
+    {
+        var impulse = hero.IsZForceApplied != 0;
+
+        // R8: the sound of the take-off, once per impulse (the impulse is cleared by every StepAnimationClock, so a catch-up frame gives it at one tick only).
+        if (impulse && hero.ZImpulseSfx > 0)
+        {
+            hero.ScriptHost?.SoundPlayer?.PlaySfx(hero.ZImpulseSfx);
+        }
+
+        var controller = hero.Controller;
+        if (controller == null || hero.OwnerEntity?.RootComponent == null)
+        {
+            hero.HeroFlyMarked = false;
+            return false;
+        }
+
+        if (!hero.HeroAirborne)
+        {
+            if (!impulse && !hero.HeroFlyMarked)
+            {
+                return false;
+            }
+
+            hero.AirborneSavedGravity = controller.Settings.Gravity;
+            hero.AirborneSavedMaxFallSpeed = controller.Settings.MaxFallSpeed;
+            hero.AirborneSavedVerticalOwned = controller.IsVerticalOwnedExternally;
+            controller.Settings.Gravity = 0f;
+            controller.Settings.MaxFallSpeed = 0f;
+            controller.IsVerticalOwnedExternally = true;
+            hero.HeroAirborne = true;
+        }
+
+        hero.HeroFlyMarked = false;
+        var gravity = (hero.Flags & EntityFlags.Gravity) != 0;
+        if (impulse)
+        {
+            hero.ForceZ = hero.IsZForceApplied << 8;
+        }
+        else if (gravity)
+        {
+            var force = hero.ForceZ - (hero.MapGravityRaw << 8);
+            var terminal = hero.MapZViscosityRaw << 8;
+            hero.ForceZ = Math.Clamp(force, -terminal, terminal);
+        }
+
+        var tickForce = hero.ForceZ;
+        hero.FinalForceZ = tickForce;
+        var terrain = hero.ComputeTerrainHeight();
+        var landed = false;
+        if (tickForce <= 0 && hero.PosZ + hero.ModZ + tickForce < terrain)
+        {
+            hero.PosZ = terrain - hero.ModZ;
+            if (gravity)
+            {
+                hero.ForceZ = 0;
+                hero.FinalForceZ = 0;
+            }
+
+            hero.CollidedWithEntityZ = 1;
+            landed = true;
+        }
+        else
+        {
+            hero.PosZ += tickForce;
+        }
+
+        hero.TileZ = hero.PosZ >> 20;
+        hero.ZHeldByTick = true;
+        hero.FollowPosZOnRoot();
+
+        if (landed)
+        {
+            hero.HeroAirborne = false;
+            controller.Settings.Gravity = hero.AirborneSavedGravity;
+            controller.Settings.MaxFallSpeed = hero.AirborneSavedMaxFallSpeed;
+            controller.IsVerticalOwnedExternally = hero.AirborneSavedVerticalOwned;
+            if (hero.AirborneSavedVerticalOwned)
+            {
+                controller.SetExternalVerticalDisplacement(AlundraGameplayFreeze.OwnerExternalVerticalDisplacement(hero));
+            }
+        }
+        else
+        {
+            controller.SetExternalVerticalDisplacement(AirborneExternalDisplacementSentinel);
+        }
+
+        return true;
     }
 
     /// <summary>

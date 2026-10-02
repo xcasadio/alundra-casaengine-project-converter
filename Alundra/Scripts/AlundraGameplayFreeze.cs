@@ -116,13 +116,19 @@ internal static class AlundraGameplayFreeze
     }
 
     /// <summary>The value the entity's owner declares every tick as its external vertical displacement:
-    /// the climbing sentinel for a hero clinging to a ladder (AlundraScriptedMotion.cs:140-144), this tick's
+    /// the climbing sentinel for a hero clinging to a ladder (AlundraScriptedMotion.cs:140-144) or the airborne sentinel for a hero in the air state (E19.d2c1 R6), this tick's
     /// resolved vertical force for a controller-driven NPC (AlundraEntityScriptProxy.Update's own trailing
     /// declaration), and 0 otherwise - the value <c>Stop()</c> itself leaves.</summary>
     internal static float OwnerExternalVerticalDisplacement(AlundraEntityScriptProxy proxy)
     {
         if (proxy.IsPlayer)
         {
+            // E19.d2c1 R6: the hero in the air state of the logic tick declares the airborne sentinel every tick (a thaw on a frame without tick must not re-ground it).
+            if (proxy.HeroAirborne)
+            {
+                return AlundraScriptedMotion.AirborneExternalDisplacementSentinel;
+            }
+
             return proxy.TargetAnimationId is AlundraPlayerManager.ClimbingAnimationId or AlundraPlayerManager.ClimbStillAnimationId
                 ? AlundraScriptedMotion.ClimbingExternalDisplacementSentinel
                 : 0f;

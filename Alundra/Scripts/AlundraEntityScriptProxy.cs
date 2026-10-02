@@ -200,9 +200,43 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// <summary>The animation of the appearance or arrival, see <see cref="SpawnAnimationActive"/>. Copied by <see cref="Clone"/>.</summary>
     internal uint SpawnAnimationId;
 
+    /// <summary>
+    /// Engine-only (E19.d2c1 R8): the sound (<see cref="AnimSetEntry.Sfx"/>, 0 for none) of the animation whose impulse the hero takes at this tick;
+    /// <see cref="AlundraFrameSyncPasses.StepAnimationClock"/> clears it with <see cref="IsZForceApplied"/> and posts it with the impulse, the hero's tick
+    /// asks the world's sound player for it. Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal int ZImpulseSfx;
+
+    /// <summary>
+    /// Engine-only (E19.d2c1 R6, docs/plan-e19-opcodes.md §1.2h.3.1): the hero is in the air state the logic tick holds (a scripted jump, an impulse of
+    /// the animation, or <c>0x1B</c> on the hero). While it is up, <see cref="AlundraScriptedMotion"/> owns the vertical - the force of the tick, the strict
+    /// landing test, the exact <see cref="PosZ"/> - and the engine only follows the root: its gravity is 0, its vertical external with a positive latch. No
+    /// pull of <see cref="PosZ"/> or <see cref="IsOnGround"/> from the root while it is up. Cleared at the landing and at the adoption of a new pawn. Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal bool HeroAirborne;
+
+    /// <summary>Engine-only (E19.d2c1 R6): <c>0x1B</c> was run on the hero (the logic entity): its tick enters the air state, the written <see cref="ForceZ"/> decaying from that tick.</summary>
+    internal bool HeroFlyMarked;
+
+    /// <summary>Engine-only (E19.d2c1 R6): the air state ran this tick, so <see cref="PosZ"/> is the tick's and no pull from the root may rewrite it until the next tick.</summary>
+    internal bool ZHeldByTick;
+
+    /// <summary>Engine-only (E19.d2c1 R6): the live engine values captured at the entry of the air state (its own gravity, <c>MaxFallSpeed</c> and vertical ownership), given back at the landing.</summary>
+    internal float AirborneSavedGravity;
+
+    /// <summary>See <see cref="AirborneSavedGravity"/>.</summary>
+    internal float AirborneSavedMaxFallSpeed;
+
+    /// <summary>See <see cref="AirborneSavedGravity"/>.</summary>
+    internal bool AirborneSavedVerticalOwned;
+
     /// <summary>The impulse (<see cref="AnimSetEntry.IsZForceApplied"/>) of <paramref name="animationId"/> in this entity's animation sets, 0 when it has none.</summary>
     internal int ZImpulseOf(uint animationId)
         => AnimSetsByAnim != null && AnimSetsByAnim.TryGetValue((int)animationId, out var entry) ? entry.IsZForceApplied : 0;
+
+    /// <summary>The sound (<see cref="AnimSetEntry.Sfx"/>, 0 for none) of <paramref name="animationId"/> in this entity's animation sets.</summary>
+    internal int ZImpulseSfxOf(uint animationId)
+        => AnimSetsByAnim != null && AnimSetsByAnim.TryGetValue((int)animationId, out var entry) ? entry.Sfx : 0;
     public int AnimFlags;
     public int ForceZ;//rise/fall speed
     public int TargetForceX, TargetForceY;
@@ -1065,12 +1099,17 @@ public class AlundraEntityScriptProxy : GameplayProxy
             var root = Owner.RootComponent.LocalTransform.Position;
             PosX = (int)Math.Round((double)root.X * 65536.0);
             PosY = (int)Math.Round((double)root.Y * 65536.0);
-            if (!WasEntitySupportedLastTick)
+
+            // E19.d2c1 R6: in the air state the logic tick owns PosZ and IsOnGround (the engine only follows the root).
+            if (!WasEntitySupportedLastTick && !HeroAirborne)
             {
                 PosZ = (int)Math.Round((double)root.Z * 65536.0);
             }
 
-            IsOnGround = Controller.IsGrounded ? 1 : 0;
+            if (!HeroAirborne)
+            {
+                IsOnGround = Controller.IsGrounded ? 1 : 0;
+            }
         }
 
         if (!IsPlayer)
@@ -1959,9 +1998,29 @@ public class AlundraEntityScriptProxy : GameplayProxy
         // already correctly gated and read back 26214401 intact, but this method's unconditional PosZ
         // pull silently overwrote it moments later, in the SAME frame, before EvaluateEntitySupport's own
         // re-evaluation ever ran).
-        if (!WasEntitySupportedLastTick)
+        //
+        // E19.d2c1 R6: nor does this pull rewrite the PosZ the air state of the hero has just posted this tick (ZHeldByTick).
+        if (!WasEntitySupportedLastTick && !ZHeldByTick)
         {
             PosZ = (int)Math.Round((double)root.Z * 65536.0);
+        }
+    }
+
+    /// <summary>
+    /// E19.d2c1 R6: makes the root follow the logical <see cref="PosZ"/> (the truth of the hero in the air state) by a vertical displacement of the controller - never
+    /// <see cref="PushLogicalPositionToRoot"/> or a teleport, which would truncate X, Y and Z to the pixel and reset the vertical latch. A no-op without a controller.
+    /// </summary>
+    internal void FollowPosZOnRoot()
+    {
+        if (Controller == null || Owner?.RootComponent == null)
+        {
+            return;
+        }
+
+        var delta = PosZ / 65536f - Owner.RootComponent.LocalTransform.Position.Z;
+        if (delta != 0f)
+        {
+            Controller.Move(new Vector3(0f, 0f, delta));
         }
     }
 

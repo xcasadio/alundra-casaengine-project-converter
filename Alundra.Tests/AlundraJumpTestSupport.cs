@@ -9,6 +9,7 @@ using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Application.Components.Physics;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Assets.TileMap;
+using CasaEngine.Framework.Physics;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
@@ -182,6 +183,127 @@ internal sealed class JumpNpcRig
         npc.ResyncControllerFromFlags();
 
         var rig = new JumpNpcRig { World = world, Host = host, Npc = npc };
+        rig.Update(); // the settling update.
+        return rig;
+    }
+}
+
+/// <summary>A recorder of the sounds the hero's take-off asks for (R8).</summary>
+internal sealed class RecordingSoundPlayer : IAlundraSoundPlayer
+{
+    public List<int> Requests { get; } = new();
+
+    public void PlaySfx(int sfxId) => Requests.Add(sfxId);
+
+    public void RemixVoice(int sfxId, int left, int right)
+    {
+    }
+
+    public void FlushFrameSounds()
+    {
+    }
+
+    public void StopAllSfx()
+    {
+    }
+}
+
+/// <summary>
+/// E19.d2c1 (docs/plan-e19-opcodes.md §1.2h.3.1, C3/C4): the hero montage of the plan (annex A.1): a real <see cref="World"/> on a field of
+/// synthetic cells (<see cref="CellsField"/>, height 0 unless a test gives its own), a hero pawn with the REAL exported controller settings
+/// (<see cref="HeroWorldFixture.BuildHeroPawn"/>, <c>MapGravity</c> 1250, <c>MapMaxFallSpeed</c> 800, <c>MapGravityRaw</c> 128,
+/// <c>MapZViscosityRaw</c> 4096 as <c>AdoptPlayerPawn</c> posts them), <see cref="EntityFlags.Gravity"/> set (BuildHeroPawn leaves the flags at 0 and
+/// <c>MovePlayer</c> returns before posting the bit under <c>ControlLocked</c>), and a host that exposes a <see cref="AlundraPlayerController"/> (without
+/// one the tick of the hero does not run). The pad is locked (<c>ControlLocked</c>): the animation and the direction are the test's to write.
+/// </summary>
+internal sealed class JumpHeroRig
+{
+    public const int HeroOffsetX = -10;
+    public const int HeroOffsetY = -7;
+    public const int HeroSizeX = 21;
+    public const int HeroSizeY = 15;
+    public const float MapGravity = 1250f;
+    public const float MapMaxFallSpeed = 800f;
+
+    public required World World { get; init; }
+
+    public required ContactHost Host { get; init; }
+
+    public required AlundraEntityScriptProxy Hero { get; init; }
+
+    public required Entity HeroEntity { get; init; }
+
+    public CharacterControllerComponent Controller => Hero.Controller!;
+
+    /// <summary>The root height of the hero (pixels).</summary>
+    public float RootZ => HeroEntity.RootComponent!.LocalTransform.Position.Z;
+
+    /// <summary>One update of the world: the rebuild of the collidable list, the update, the rebuild at the end of the frame.</summary>
+    public void Update(float elapsed = 0.02f)
+    {
+        Host.Rebuild();
+        World.Update(elapsed);
+        Host.Rebuild();
+    }
+
+    /// <summary>Replaces (or adds) the animation set <paramref name="entry"/> of the hero.</summary>
+    public void SetAnimSet(AnimSetEntry entry)
+    {
+        var sets = new Dictionary<int, AnimSetEntry>(Hero.AnimSetsByAnim!) { [entry.Anim] = entry };
+        Hero.AnimSetsByAnim = sets;
+    }
+
+    /// <summary>
+    /// The montage, with one settling update at rest. <paramref name="field"/> null: a flat field of cells of height 0 (<see cref="FlatCells"/>);
+    /// <paramref name="probeFactory"/> builds the movement obstacle probe from the host (null: none); <paramref name="configure"/> runs on the host
+    /// and the world before the hero is added (the other entities of the montage); the hero is at the root (<paramref name="x"/>, <paramref name="y"/>).
+    /// </summary>
+    public static JumpHeroRig Build(
+        ICollisionField? field = null,
+        Func<ContactHost, IMovementObstacleProbe?>? probeFactory = null,
+        Action<World, ContactHost>? configure = null,
+        float x = 200.25f,
+        float y = 100.5f,
+        float groundSnapDistance = -1f,
+        bool gravityFlag = true)
+    {
+        var controller = new AlundraPlayerController { PadStateProviderForTests = () => default };
+        var host = new ContactHost(playerControlFlags: AlundraGameState.PlayerControlBits.ControlLocked, playerController: controller);
+        var world = ContactWorld.BuildWorld(field ?? FlatCells.Create(), probeFactory?.Invoke(host));
+        configure?.Invoke(world, host);
+
+        var settings = HeroWorldFixture.LoadHeroControllerSettings(ProjectRootFinder.Find());
+        settings.Gravity = MapGravity;
+        settings.MaxFallSpeed = MapMaxFallSpeed;
+        if (groundSnapDistance >= 0f)
+        {
+            settings.GroundSnapDistance = groundSnapDistance;
+        }
+
+        var (entity, hero) = HeroWorldFixture.BuildHeroPawn(world, settings, new Vector3(x, y, 0f), host);
+        AlundraEntitySpawnFactory.SetEntityDimensions(hero, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
+        hero.MapGravity = MapGravity;
+        hero.MapMaxFallSpeed = MapMaxFallSpeed;
+        hero.MapGravityRaw = 128;
+        hero.MapZViscosityRaw = 4096;
+        hero.Flags |= EntityFlags.Collidable; // the real hero is collidable (without it the probe of obstacles ignores it).
+        if (gravityFlag)
+        {
+            hero.Flags |= EntityFlags.Gravity;
+        }
+
+        hero.AnimSetsByAnim = new Dictionary<int, AnimSetEntry>
+        {
+            [0] = new AnimSetEntry { Anim = 0, Speed = 0 },
+            [1] = new AnimSetEntry { Anim = 1, Speed = 208, Acceleration = 1 },
+            [2] = new AnimSetEntry { Anim = 2, Speed = 208, Acceleration = 1, IsZForceApplied = 1280, Sfx = 10 },
+            [43] = new AnimSetEntry { Anim = 43, Speed = 0, Acceleration = 1, IsZForceApplied = 1280, Sfx = 10 },
+        };
+        hero.CurrentAnimationId = 0;
+        hero.TargetAnimationId = 0;
+        host.All.Insert(0, hero);
+
+        var rig = new JumpHeroRig { World = world, Host = host, Hero = hero, HeroEntity = entity };
         rig.Update(); // the settling update.
         return rig;
     }

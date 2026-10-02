@@ -68,6 +68,9 @@ internal sealed class ContactHost : IAlundraScriptHost
 
     public AlundraPlayerController? PlayerController { get; }
 
+    /// <summary>E19.d2c1 R8: the sound player the host hands to the hero's take-off (null: none, as the default member of the interface).</summary>
+    public IAlundraSoundPlayer? SoundPlayer { get; set; }
+
     /// <summary>Every proxy of the world, in world order (the hero first).</summary>
     public List<AlundraEntityScriptProxy> All { get; } = new();
 

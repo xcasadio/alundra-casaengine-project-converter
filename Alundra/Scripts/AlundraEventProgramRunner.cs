@@ -732,6 +732,13 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // controller (bare-fallback spawn, or the intro trace harness - E4.e still owns that
                        // simulated kinematics), ForceZ alone is what ever mattered anyway.
                 entity.ForceZ = SignExtend16(((v[2] << 8) | v[1])) * 0x10000 >> 8;
+
+                // E19.d2c1 R6: on the hero (the logic entity) the written force is the entry of the air state its logic tick holds, decaying from that tick.
+                if (entity.IsPlayer)
+                {
+                    entity.HeroFlyMarked = true;
+                }
+
                 return 3;
 
             case 0x27: // Face player - Script_39_027 (EntityEventHandlers.cs:973-978): TargetDirection =

@@ -3280,7 +3280,7 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
     O-E19-29). **Non couvert** : l'effacement du drapeau d'apparition par le relancement `0x1C` (aucun site réel ; une
     mutation qui le retire reste verte) : reporté à E19.m.
 
-- ⏳ **C3 — Héros en l'air pour les sauts scriptés et `0x1B`, son (R6, R8), tests d'abord.** Montage héros (annexe A.1) :
+- ✅ **C3 — Héros en l'air pour les sauts scriptés et `0x1B`, son (R6, R8), tests d'abord.** Montage héros (annexe A.1) :
   `AlundraLadderClimbTests` (contrôleur de joueur, `PlayerControlFlags = ControlLocked`), `HeroWorldFixture.BuildWorld`
   (il prend un `AlundraCellsCollisionField` : `TileMapData` synthétique à `AlundraCells` de hauteur 0, modèle
   `AlundraCellStoreTests.cs:207`) et `BuildHeroPawn` (`LoadHeroControllerSettings`), `MapGravity` 1250, `MapMaxFallSpeed`
@@ -3309,6 +3309,13 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
     une fois au tick de l'impulsion d'UJ-3 ; une seule fois sous
     rattrapage ; aucun son pour UJ-3b ni UJ-7.
   - Commit : `feat(alundra): own the hero's airborne state in the logic tick for scripted jumps, with the take-off sound`
+  - Fait le 2026-10-03 : rouges d'abord sur le code d'avant C3 : UJ-3, UJ-3b, UJ-11, UJ-12 (PosZ reste 0, l'entité ne se franchit pas), TR-P (deux cas : la verticale ne passe pas au tick), UJ-SND (aucun son) ;
+    verts après : `Alundra.Tests` 2218 réussis (2210 + 8), 0 échec, aucun test existant touché, six traces inchangées (garde d'octets 0). Toutes les valeurs écrites tiennent telles quelles
+    (UJ-3, UJ-3b, liste d'UJ-12 : bloqué aux mises à jour 1 à 4, libre de 5 à 26). Mutations jetables : restitution de `MapGravity` au lieu de la valeur capturée (TR-P), test d'atterrissage
+    non strict (UJ-3, UJ-3b), sentinelle du gel retirée (UJ-11), tirage de `PosZ` ou de `IsOnGround` depuis le moteur en l'air (UJ-3c), son sur la marque `0x1B` (UJ-SND).
+    Écarts : montage `JumpHeroRig` (`AlundraJumpTestSupport.cs`) sur `ContactWorld.BuildWorld` et `ContactHost` (qui gagne `SoundPlayer`) plutôt que sur `HeroWorldFixture.BuildWorld`, parce que UJ-12 exige la sonde d'obstacles
+    et que `ContactHost` rend un `PlayerController` ; le héros du montage porte `Collidable` (la sonde ignore un héros qui ne l'est pas) ; UJ-3c ajouté (la vérité de `PosZ` et de `IsOnGround` en l'air,
+    que les mutations de tirage ne faisaient pas rougir autrement) ; l'état n'existe que pour un héros à contrôleur (sans contrôleur, rien ne change) ; le `x160` de R6 vient avec C4 (UW-4).
 
 - ⏳ **C4 — Eau, glace, `x160`, bottes, `VramOR` par tick (R7), et l'arc A10J, tests d'abord.** Montage d'UJ-3 (bit
   Gravity compris : sans lui `UpdateVramFlags` rend 0, `AlundraEntityScriptProxy.cs:1559-1564`) sur un `TileMapData`

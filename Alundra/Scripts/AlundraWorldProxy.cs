@@ -1714,6 +1714,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // original's own trailing-control-frame-driven animation switch rather than a ground check.
         proxy.IsOnGround = 1;
 
+        // E19.d2c1 R6: a new pawn starts outside the air state the logic tick holds (a state of the former pawn never follows it).
+        proxy.HeroAirborne = false;
+        proxy.HeroFlyMarked = false;
+        proxy.ZHeldByTick = false;
+
         var assetInfo = AssetCatalog.Get(HeroAssetName);
         if (assetInfo != null && SpriteRecordCatalog != null && SpriteRecordCatalog.TryGet(assetInfo.Id, out var header))
         {
@@ -2520,6 +2525,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     // T3 (docs/plan-transitions-carte.md §3): production always exposes the real parsed list - the
     // interface's own default (empty) only covers hosts from OTHER slices/tests that never override it.
     IReadOnlyList<AlundraPortalRecord> IAlundraScriptHost.Portals => _portals;
+
+    /// <summary>E19.d2c1 R8: the sound player the hero's take-off reaches through the host seam (the world's own, <see cref="SoundPlayer"/>).</summary>
+    IAlundraSoundPlayer? IAlundraScriptHost.SoundPlayer => SoundPlayer;
 
     // T4 (docs/plan-transitions-carte.md §3): the override T3's own comment (formerly here) named in
     // advance - AlundraPlayerManager.MovePlayer calls this from INSIDE PlayerEntity's own Update, so
