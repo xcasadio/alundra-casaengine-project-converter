@@ -2798,7 +2798,7 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
   - Fait le 2026-10-02 : le commentaire de la méthode, le test renommé `FlushContact_DoesNotOverlap_OneUnitLessDoes` (mêmes deux assertions : l'ancien « flush » de la
     ligne était une unité en deçà du contact affleurant, l'ancien « apart » en est le contact affleurant) et la note datée du plan E12.d.
 
-- 🚧 **B6 — Arcs** (vrais préfabs, vrai héros, contrôleurs réels ; images jamais absolues ; contacts en relationnel
+- ✅ **B6 — Arcs** (vrais préfabs, vrai héros, contrôleurs réels ; images jamais absolues ; contacts en relationnel
   exact à un ULP de la coordonnée près ; positions de transition à ± 2,5 px ; une valeur contredite est un **arrêt**).
   - **T-REG-0** : `EntityBlockCount` vaut 0 à la fin de A1c, A3, A4p, A5, A5r, A6, A7, A8, A9, A10 et A20 (preuve que
     leurs épingles n'ont pas de raison de bouger) ; leurs épingles restent inchangées.
@@ -2864,6 +2864,12 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
     par `0x64` ; T-B9 : tuile (37, 46, 1) puis `PlaceHero(898, 736, 16)` avant la première image ; contre-épreuve `PlaceHero(898, 744, 16)`, bilan à l'image 1400 ; T-C61 : arrivée (588, 648)
     à z 2 ; **TN-3 : le héros « dans la zone » est une arrivée à la tuile (6, 50), z 2** (la zone de spawn est lue à l'adoption du héros : un héros placé après la construction du monde ne fait pas
     apparaître la plateforme). Support partagé : `AlundraArcSamples.cs` (instantané au premier instruction qui suit un pc, ordre des drapeaux temporaires).
+  - Second commit fait le 2026-10-02 : **T-REG-0**, garde des arcs inchangés. `EntityBlockCount` est lu à la fin de chaque arc par `ArcRun.Dispose` (le `using` du test), pour les onze arcs
+    nommés (A1c, A3, A4p, A5, A5r, A6, A7, A8, A9, A10, A20) : **0 sur les onze**, leurs épingles n'ont donc aucune raison de bouger, et elles n'ont pas bougé. La garde discrimine
+    (A11 ajouté à l'ensemble par une mutation jetable : « 5 controller step(s) were shortened or cancelled by an entity », retirée ensuite). Déviation de forme : la garde est dans le support
+    d'arcs (une ligne par nom), non une assertion ajoutée dans chacun des onze tests existants, qu'aucun n'a donc à changer.
+  - **Déviation d'ordre (rappel)** : le ré-épinglage d'A11 (premier point de la seconde ligne de commit du plan) est dans le commit de B3 (voir B3) ; ce second commit ne porte que la garde.
+    Le plan de B6 listait aussi « TN-1 retiré » (aucun test) et TH4 (fait, quatre arrivées).
 
 - ⏳ **B7 — Hygiène reportée d'E19.d2a.** A20 compte les onze `0xA2` parmi les sautés (`SkippedOrExceeded`) ; A10 vérifie
   le programme `@236` de `0x11 @354` ; S1 : un préréglage de test qui pose puis efface un drapeau, un compteur d'objet,

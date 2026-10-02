@@ -261,12 +261,27 @@ internal sealed class ArcRun : IDisposable
         }
     }
 
+    /// <summary>
+    /// E19.d2b B6 (T-REG-0): the arcs whose pins were measured before entities blocked movement. Their positions, frames and flags have no reason to move
+    /// under the entity contacts, and the proof is that no entity shortened or cancelled a single controller step of theirs: <see cref="TotalEntityBlockCount"/>
+    /// is 0 when they end. Checked when the arc is disposed (the end of its <c>using</c>), after the global state is restored.
+    /// </summary>
+    private static readonly HashSet<string> ArcsWithoutEntityContact = new() { "A1c", "A3", "A4p", "A5", "A5r", "A6", "A7", "A8", "A9", "A10", "A20" };
+
+    /// <summary>The controller steps that an entity shortened or cancelled, summed over every entity of the world (the hero's included).</summary>
+    public int TotalEntityBlockCount => Proxy == null ? 0 : Entities.Concat(new[] { Hero }).Distinct().Sum(e => e.EntityBlockCount);
+
     public void Dispose()
     {
+        var blocked = Frame > 0 && ArcsWithoutEntityContact.Contains(Spec.Name) ? TotalEntityBlockCount : 0;
         Log?.Dispose();
         EngineEnvironment.ProjectPath = _previousProjectPath;
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
         ResetAll();
+        if (blocked != 0)
+        {
+            throw new XunitException($"arc {Spec.Name}: {blocked} controller step(s) were shortened or cancelled by an entity (T-REG-0 expects none: its pins have no reason to move)");
+        }
     }
 
     /// <summary>The log lines of the run, in <see cref="ArcSpec.Prefabs"/> mode only (null otherwise).</summary>
