@@ -2680,7 +2680,7 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
 
 **Tâches.**
 
-- ⏳ **B0 — Plan et ADR.** Ce plan, le plan moteur (commits `b3aa47ca` puis `c372e946` sur `chantier/field-movement-obstacles`) et
+- ⏳ **B0 — Plan et ADR.** Ce plan, le plan moteur (commits `b3aa47ca`, `c372e946` puis `c72d08a8` sur `chantier/field-movement-obstacles`) et
   l'ADR-0022 du parent. Fait avec la relecture.
 
 - ⏳ **B1 — Moteur** : exécuter le plan moteur (T0.1 à T2.1, `CasaEngine.Tests` sans échec), puis pointer le
@@ -2868,6 +2868,8 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
   et T-B9 prises à l'instruction précédente (corrigées) ; TN-1 rendu faux par une troncature préexistante de la DLL
   (retiré, O-E19-29). P3 et P4 corrigés (pilotage de T-R3, tolérances des fins de marche, commentaire de T-R4, plan
   moteur). Toutes les autres valeurs ont été recalculées par l'auditeur : justes.
+- Relecture neuve sur `18786f4` et le plan moteur `c372e946` : **READY** (plan-verifier) ; plan moteur sain (aucune
+  remarque P0 à P3 ; huit P4 portées au plan moteur comme consignes d'exécution).
 
 #### 1.2h.3 E19.d2c — Saut, `0x25`, eau et glace ⏳ (esquisse ; détaillée, relue et approuvée après E19.d2b)
 
