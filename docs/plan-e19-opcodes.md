@@ -371,12 +371,12 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | **E19.a** ✅ | Entité de contexte (`0x42`, `0x43`, et tous les opcodes sur l'entité logique), `0x59`, garde de boucle (D-E19-3), support des arcs | A0, A0b, A1 | Le capitaine sort par l'escalier et réapparaît en pièce B ; sommeil, puis 476 |
 | E19.a2 ✅ | Moteur : sur le champ de cellules, un pas bloqué avance jusqu'au contact (D-E19-8) ; épingles et traces de référence du héros re-mesurées ; la cabine testée avec un vrai contrôleur | cabine seule, A1c | La cabine : Alundra s'endort, puis la 476 se charge |
 | E19.a3 ✅ | DLL : `ForceAdjusted` ne se lève qu'au tick sans avance, comme le binaire (D-E19-12) ; épingles du héros re-mesurées | marin 12 de la 389 | Le marin 12 rejoint sa place en fin d'intro |
-| E19.b 🧪 | Carte 476 : `0xC4` sans nom (D-E19-5), `0x8A` (bloc caméra), `0x4C` gardé pour la machine à écrire | A2, A4 | La vision de Lars et Melzas jusqu'à 478, puis jusqu'à 392 |
-| E19.c1 🧪 | Cartes 478 et 416 : `0x0B` avec détour (D-E19-6), `0x1C`/`0x1D` (compteur du binaire, Chain et Hold), `0x5E`, `0x08`, `0x0C`, `0x3A`, `0x89`, `0x73`/`0x74` ; arcs en vrais préfabs (D-E19-14) | A3, A7, A4p | La vision de 478 va au bout ; la plage 416 mène à la 163 |
-| E19.c2 🧪 | Moteur : horloge logique exacte des fins d'animation, rendu en temps réel (D-E19-16, D-E19-17), correction des Loop figées ; DLL : pilotage à chaque tick logique, signal de boucle (D-E19-18), garde de `0x1C` sous rattrapage | A3, A9, tests moteur | Wendell à Inoa rend la main ; les fins d'animation au tick de l'original |
-| E19.d 🧪 | Fin de chaîne : `0x24` avec recensement (D-E19-21), `0x40`/`0x41` complets (D-E19-22), défaut d'atterrissage de la DLL (391), vrai héros et pad tenu dans les arcs ; reste de 392, 391 et 163 | A5, A5r, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
-| E19.d2a 🧪 | Après le premier livre (§1.2h) : sauvegardes de test chargées par F9 (D-E19-33) ; arrivée par portail dans les arcs (U3) ; arcs du jour 1 | A10, A11, A20, TH3 | Jour 1 jusqu'au jour 2 ; F9 sur les préréglages du jour 3 et du jour 4 |
-| E19.d2b 🧪 | Moteur : sonde d'obstacles dans l'étage champ du contrôleur (ADR-0047 du moteur) ; DLL : contacts entre entités du binaire (D-E19-27 à D-E19-30, D-E19-34 à D-E19-37), natif E 0/1, contact du dialogue ; règle les deux P2 d'E19.d (O-E19-18, 185 `@506`) | T-A19, T-A10v, T-B9, T-C61, TN-3, A11, tests moteur | Le héros bute sur les PNJ et leur parle ; jour 4 : la 185 mène à la 362 |
+| E19.b ✅ | Carte 476 : `0xC4` sans nom (D-E19-5), `0x8A` (bloc caméra), `0x4C` gardé pour la machine à écrire | A2, A4 | La vision de Lars et Melzas jusqu'à 478, puis jusqu'à 392 |
+| E19.c1 ✅ | Cartes 478 et 416 : `0x0B` avec détour (D-E19-6), `0x1C`/`0x1D` (compteur du binaire, Chain et Hold), `0x5E`, `0x08`, `0x0C`, `0x3A`, `0x89`, `0x73`/`0x74` ; arcs en vrais préfabs (D-E19-14) | A3, A7, A4p | La vision de 478 va au bout ; la plage 416 mène à la 163 |
+| E19.c2 ✅ | Moteur : horloge logique exacte des fins d'animation, rendu en temps réel (D-E19-16, D-E19-17), correction des Loop figées ; DLL : pilotage à chaque tick logique, signal de boucle (D-E19-18), garde de `0x1C` sous rattrapage | A3, A9, tests moteur | Wendell à Inoa rend la main ; les fins d'animation au tick de l'original |
+| E19.d ✅ | Fin de chaîne : `0x24` avec recensement (D-E19-21), `0x40`/`0x41` complets (D-E19-22), défaut d'atterrissage de la DLL (391), vrai héros et pad tenu dans les arcs ; reste de 392, 391 et 163 | A5, A5r, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
+| E19.d2a ✅ | Après le premier livre (§1.2h) : sauvegardes de test chargées par F9 (D-E19-33) ; arrivée par portail dans les arcs (U3) ; arcs du jour 1 | A10, A11, A20, TH3 | Jour 1 jusqu'au jour 2 ; F9 sur les préréglages du jour 3 et du jour 4 |
+| E19.d2b ✅ | Moteur : sonde d'obstacles dans l'étage champ du contrôleur (ADR-0047 du moteur) ; DLL : contacts entre entités du binaire (D-E19-27 à D-E19-30, D-E19-34 à D-E19-37), natif E 0/1, contact du dialogue ; règle les deux P2 d'E19.d (O-E19-18, 185 `@506`) | T-A19, T-A10v, T-B9, T-C61, TN-3, A11, tests moteur | Le héros bute sur les PNJ et leur parle ; jour 4 : la 185 mène à la 362 |
 | E19.d2c | DLL : saut scripté et `IsZForceApplied` (D-E19-31), `0x25`, `CollidedWithEntityZ`, eau et glace du héros (D-E19-32) (O-E19-8, O-E19-19) | UJ, UW, A10J/A16, A3 | Jour 3 : le saut de la 10 jusqu'à la 135 |
 | E19.e | Recette de bout en bout, plus un test statique : aucun opcode sauté sur la chaîne hors liste d'exceptions | toute la chaîne | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement (avec les recettes d'E16 en attente) |
 | E19.f | Boîte de nom et boîte de texte fidèle (D-E19-4) : export du cadre, écrans XAML liés à un view model, cycle de vie de la boîte de nom, pour `0x0D`/`0x5C`/`0xC4` | tests MGDesktop | Les noms s'affichent au-dessus de la boîte, à la place de l'original |
@@ -969,7 +969,7 @@ l'original jusqu'au glissement (E19.h).
   | Au bord de l'epsilon, la nouvelle règle diffère de l'ancienne dans deux cas étroits : une demande entre 0,01 et 0,02 px, et un recul de plus de 0,01 px. | P4 | Accepté. |
   | La preuve rouge du test du marin n'est pas dans l'historique : la règle est commitée avant le test. | P4 | Accepté : le verifier l'a reproduite à part. |
 
-### 1.2d E19.b — Carte 476 : la vision de Lars et Melzas 🧪 (code et arcs faits et vérifiés CONFIRMED le 2026-10-01 ; reste la recette T6 de l'auteur)
+### 1.2d E19.b — Carte 476 : la vision de Lars et Melzas ✅ (code et arcs faits et vérifiés CONFIRMED le 2026-10-01 ; **recette de l'auteur validée le 2026-10-02** (« tout fonctionne ») ; l'affichage de la vision est noté à part, O-E19-30)
 
 **But.** La vision se joue jusqu'au bout. À l'aller (`G1640`), la 476 ouvre ses trois boîtes puis part vers
 la 478 (arc A2). Au retour (`G1641`), elle déplace la caméra par le bloc transparent, ouvre ses huit boîtes
@@ -1105,7 +1105,7 @@ puis part vers la 392 (arc A4).
     `docs/plan-oracle-heros.md:233`, résumé de D-E19-10 au §0.1, O-E19-5 mis à jour avec le constat du
     binaire.
 - **T5 — Docs** ✅ : statuts de ce plan, ligne E19 du plan maître *(fait le 2026-10-01)*.
-- **T6 — Recette en jeu (auteur)** ⏳ :
+- **T6 — Recette en jeu (auteur)** ✅ (2026-10-02, « tout fonctionne » ; affichage de la vision : O-E19-30) :
   1. **A2, en jouant.** Après la cabine, la 476 montre trois boîtes sans nom, d'environ 1,2 s chacune, et
      la caméra sur la salle de la vision. Puis la 478 se charge. Elle ne va pas plus loin : c'est E19.c.
   2. **A4, par raccourci.** F6, puis dans `debug-json.sav` : `initialMapId` 476, `cameraTileX`,
@@ -1179,7 +1179,7 @@ puis part vers la 392 (arc A4).
   | Textes en retard : la doc de classe et les commentaires de cas d'`EntitySearchService` disent encore « owner » ; la doc d'`OpenDialog` ne cite que `0x0D` et `0x5C`. | P4 | Reporté à l'hygiène d'E19.c. L'ADR-0006 ne se réécrit pas. |
   | La preuve rouge des arcs n'est pas dans l'historique : les arcs sont commités après le code. | P4 | Accepté : le verifier l'a reproduite à part, comme pour E19.a3. |
 
-### 1.2e E19.c1 — Cartes 478 et 416 : attentes de mouvement, arcs en vrais préfabs 🧪 (code et arcs faits et vérifiés CONFIRMED le 2026-10-01 ; le P1 introduit est corrigé par E19.c2 (code fait le 2026-10-01), sans merge d'E19.c1 avant celui d'E19.c2 ; reste la recette T9)
+### 1.2e E19.c1 — Cartes 478 et 416 : attentes de mouvement, arcs en vrais préfabs ✅ (code et arcs faits et vérifiés CONFIRMED le 2026-10-01 ; le P1 introduit est corrigé par E19.c2 (code fait le 2026-10-01), sans merge d'E19.c1 avant celui d'E19.c2 ; recette T9 de l'auteur validée le 2026-10-02, « tout fonctionne »)
 
 **But.**
 - La vision de la 478 va au bout : le bloc caméra monte, les drapeaux T20 à T60 tombent, puis la 476
@@ -1460,7 +1460,7 @@ classe.
     rien en production (`Entity.World` est nul à ce moment ; O-E19-6).
 - **T8 — Docs** ✅ *(fait le 2026-10-01)* : statuts de ce plan, mesures au §2, points ouverts, ligne E19 du plan maître ; les
   textes qui annonçaient la correction du retard en E19.c disent qu'il est gardé (D-E19-13).
-- **T9 — Recette en jeu (auteur)** ⏳ :
+- **T9 — Recette en jeu (auteur)** ✅ (2026-10-02, « tout fonctionne ») :
   1. **La 478, en jouant** : après la cabine et la 476, la 478 montre la caméra sur le bloc qui monte
      lentement, pendant que les PNJ marchent (Talis, le bloc et son chien, Yuri qui tourne sur
      lui-même). Après environ 45 s, fondu, retour à la 476 (huit boîtes), puis la 392 se charge.
@@ -1546,7 +1546,7 @@ est la Debug.
   | `0x0B`, `0x1C` et `0x1D` prennent `CodeIndex` pour clé : une attente au pc 0 se croirait déjà mémorisée. Aucun site au pc 0 dans les 483 cartes. | P4 | Accepté, comme pour `Wait`. |
   | T6 : « `Move(0, +1)` le laisse à 0 » se lit avec la remise à zéro par image, car un `Move` ne fait que lever le drapeau. | — | Précision acceptée ; valeurs inchangées. |
 
-### 1.2f E19.c2 — Fins d'animation exactes et signal de boucle 🧪 (C0 à C7 faites et vérifiées CONFIRMED le 2026-10-01, moteur et parent ensemble ; reste la recette C8 de l'auteur)
+### 1.2f E19.c2 — Fins d'animation exactes et signal de boucle ✅ (C0 à C7 faites et vérifiées CONFIRMED le 2026-10-01, moteur et parent ensemble ; **recette de l'auteur validée le 2026-10-02** (« tout fonctionne »))
 
 **But.**
 - `0x1C` et `0x1D` voient les fins Hold, les fins Chain et les tours de Loop au tick de l'original. Le
@@ -1698,7 +1698,7 @@ moteur pour C0).
 - **C7 — Docs** ✅ *(fait le 2026-10-01 : statuts, mesures au §2, O-E19-10 et O-E19-13 réglés, lignes P1 à P4 d'E19.c1 mises à jour, ligne E19.c2 de la
   table des tranches, ligne E19 du plan maître ; la ligne E19.i disait déjà 208 sites dans 53 cartes ; le pointeur du moteur n'a pas bougé depuis C2)* :
   statuts, mesures au §2, points ouverts, ligne du plan maître.
-- **C8 — Recette en jeu (auteur)** ⏳ : voir plus bas.
+- **C8 — Recette en jeu (auteur)** ✅ (2026-10-02, « tout fonctionne ») : voir plus bas.
 
 **Valeurs écrites d'avance.** Sauf mention, 1 tick logique par image. La colonne « 60 Hz » suppose le motif
 de ticks [1,1,1,1,1,0] avec l'image s au début du motif (la première image à un tick après l'image sans
@@ -1877,7 +1877,7 @@ exécution.
   | Latent : le binaire exclut aussi les entités bloquées (`BlockedByEntity`, `+0x20`) de `UpdateAnimation` ; la DLL n'exclut que les entités à détruire. Rien ne pose ce champ aujourd'hui. | P4 | Reporté (à reprendre si le blocage entre entités est porté). |
   | P4 du moteur (horloge activée en cours d'animation, `LastUpdateLoopTurns` périmé, numéros de ligne de la doc, trous de tests, entrées limites, `Detach`). | P4 | Reportés : plan moteur, « Vérification de clôture ». |
 
-### 1.2g E19.d — Fin de la chaîne : 392, 391 et 163 jusqu'au premier livre 🧪 (D0 à D9 faites et vérifiées CONFIRMED le 2026-10-01 ; deux P2 introduits, cartes 10 et 185, se règlent en E19.d2b, sans merge d'E19.d avant ; reste la recette D10 de l'auteur)
+### 1.2g E19.d — Fin de la chaîne : 392, 391 et 163 jusqu'au premier livre ✅ (D0 à D9 faites et vérifiées CONFIRMED le 2026-10-01 ; les deux P2 introduits, cartes 10 et 185, sont réglés par E19.d2b ; **recette de l'auteur validée le 2026-10-02** (« tout fonctionne »))
 
 **But.**
 - La 392 mène à la 391 par son portail ; la 391 mène à la 416 ; la 163 joue le réveil à Inoa, Jess marche
@@ -2059,7 +2059,7 @@ et A8 restent hors du dépôt jusqu'à D7 ; d'ici là, les lancements de toute l
   T-D15 qui se contredit (P4 d'E19.c2) ; la ligne E19.j de l'enveloppe ne garde que le réarmement hors zone ;
   au §0.2.4, `0x8E @20` est en tête de B1, hors de la boucle de roulis.
 - **D9 — Docs** ✅ (faite le 2026-10-01 : statuts, mesures au §2 (recensement compris), points ouverts (O-E19-21), ligne du plan maître avec E19.d2 en suite, ADR-0020 amendé pour D-E19-24 à D-E19-26) : statuts, mesures au §2, points ouverts, ligne du plan maître.
-- **D10 — Recette en jeu (auteur)** ⏳ : voir plus bas.
+- **D10 — Recette en jeu (auteur)** ✅ (2026-10-02, « tout fonctionne ») : voir plus bas.
 
 **Valeurs écrites d'avance.** Échantillons pris pendant la course (`OnInstruction`, après l'effet), vérifiés
 après le signal de fin ; ordre des vérifications : signal de fin, opcodes sautés ou dépassés, puis le reste
@@ -2409,7 +2409,7 @@ indépendante ; notes et scripts dans le scratchpad de la session, `e19d2-disc/`
 - **Merge** : E19.d ne se merge pas sans E19.d2b et E19.d2c ; moteur d'abord (`chantier/animation-logical-end-clock`,
   puis la branche moteur d'E19.d2b, qui en part).
 
-#### 1.2h.1 E19.d2a — Sauvegardes de test et arcs du jour 1 🧪 (S1 à S5 faites et vérifiées CONFIRMED le 2026-10-02 ; reste la recette S6 de l'auteur)
+#### 1.2h.1 E19.d2a — Sauvegardes de test et arcs du jour 1 ✅ (S1 à S5 faites et vérifiées CONFIRMED le 2026-10-02 ; **recette de l'auteur validée le 2026-10-02** (« tout fonctionne »))
 
 **Résultat** : l'auteur lance un outil qui écrit une sauvegarde préparée dans le dossier du jeu ; F9 la charge ; la
 partie reprend au jour 3 après le rêve (carte 179) ou au jour 4 (carte 185). Le jour 1 après le livre (162, 165, 164)
@@ -2546,7 +2546,7 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
   n'a pas F9) ; convertisseur inchangé ; `--dry-run` des deux préréglages lancé après cette build Debug
   (`dotnet run -c Debug … --dry-run`) et imprimé dans le rapport. Verifier frais sur l'acceptation ci-dessous ; dispositions au plan ; §0.2 et §2 mis à jour.
 
-- ⏳ **S6 — Recette en jeu (auteur).**
+- ✅ **S6 — Recette en jeu (auteur).** Validée le 2026-10-02 (« tout fonctionne »).
   1. Jour 1 : nouvelle partie jusqu'au livre de la 163 (recette D10 d'E19.d), puis la 162 (Sybill), la 165 (première
      visite chez Meade) et la 164 (Septimus) ; la partie passe au jour 2 (la 162 devient la 169).
   2. Hors de l'app Claude : `dotnet run --project tools/AlundraTestSaves -c Debug -- <alundra-project\AlundraGame.json>
@@ -2612,7 +2612,7 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
   | Deux tests portent le libellé « TH3 » (celui d'E19.d D1 et celui d'E19.d2a S3). | P4 | Reporté (hygiène). |
   | L'empreinte sha256 de la DLL consignée au §2 ne désignait plus la DLL déployée, reconstruite par le verifier depuis les mêmes sources. | P4 | Corrigé au §2 dans ce commit. |
 
-#### 1.2h.2 E19.d2b — Contacts entre entités 🧪 (B1 à B8 faites et vérifiées CONFIRMED le 2026-10-02, sans démo moteur ; reste la recette B9 de l'auteur)
+#### 1.2h.2 E19.d2b — Contacts entre entités ✅ (B1 à B8 faites et vérifiées CONFIRMED le 2026-10-02, sans démo moteur ; **recette de l'auteur validée le 2026-10-02** (« tout fonctionne »), jour 4 jusqu'à la 362 compris)
 
 **Résultat** : le héros et les PNJ s'arrêtent au contact exact de toute entité collisionnable, comme dans le binaire ;
 les deux P2 introduits par E19.d sont réglés (la réunion de la 185 mène à la 362 ; la scène des villageois de la 10
@@ -2894,7 +2894,7 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
     et les contradicteurs, les dispositions, §0.2 et la mémoire, qui se font après l'exécutant. Faits : voir « Vérification
     d'E19.d2b » ci-dessous.
 
-- ⏳ **B9 — Recette en jeu (auteur).**
+- ✅ **B9 — Recette en jeu (auteur).** Validée le 2026-10-02 (« tout fonctionne »).
   1. Jeu libre de l'intro et du jour 1 (sauvegarde devant le livre) : le héros bute sur les marins et les villageois au
      lieu de les traverser ; il leur parle en marchant contre eux puis Carré ; les portes ouvertes se passent ; aucune
      scène ne cale.
