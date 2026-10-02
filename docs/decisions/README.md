@@ -34,3 +34,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0018 | The NPC animation lag is kept, arcs load real prefabs, and the engine gets an exact animation clock | Accepted; D-E19-16 refined by ADR-0019 | 2026-10-01 |
 | ADR-0019 | Animation ends become exact on a logical clock while sprites stay in real time, and loops are counted | Accepted | 2026-10-01 |
 | ADR-0020 | Opcode 0x24 is ported with a census of its waits, and opcodes 0x40/0x41 are ported in full | Accepted | 2026-10-01 |
+| ADR-0021 | Entity contacts, scripted jumps and the hero's water and ice rules follow the binary, and test saves feed the recipes | Accepted | 2026-10-02 |

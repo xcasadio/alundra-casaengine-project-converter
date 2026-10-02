@@ -115,6 +115,27 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-25** — Le rognage au bord de la carte (O-E19-17) se porte dans une tranche à part, plus tard.
   - **D-E19-26** — Une tranche **E19.d2 « Inoa après le premier livre »** suit E19.d, avant E19.e : la scène
     des villageois de la carte 10 (O-E19-18) et le saut scripté d'Alundra avec `0x25` (O-E19-19).
+- **D-E19-27 à D-E19-33** (2026-10-02, après la découverte d'E19.d2) — ADR-0021 :
+  - **D-E19-27** — **Blocage universel entre entités**, comme le binaire : le héros et tous les PNJ s'arrêtent au contact
+    de toute entité collisionnable, en jeu libre comme sous script. Le moteur reçoit un prédicat d'obstacle optionnel
+    dans l'étage champ du contrôleur (point d'extension, comme `CollisionField`) ; la DLL l'implémente avec la règle du
+    binaire. Lève le report du blocage à E14 de D-E12D-1.
+  - **D-E19-28** — Jusqu'à E14, les entités soulevables (`Flags & 0x600`) et cassables (natif E 2) ne sont **pas** des
+    obstacles : la DLL ne sait ni les soulever ni les briser. Le héros les traverse, comme aujourd'hui.
+  - **D-E19-29** — Le blocage vient avec ce qu'il exige : une entité marquée pour destruction quitte les obstacles comme
+    dans le binaire ; le natif E d'index 0 et 1 (destruction) est porté, sans butin ni effet de bris (E14) ; `AnimFlags`
+    est chargé depuis le jeu d'animation ; l'entité de contact du dialogue et de la saisie vient du rapport de blocage.
+  - **D-E19-30** — Quand une **entité** bloque une marche `0x0B`, le détour E4.d ne s'engage pas : la marche attend,
+    comme l'original. D-E19-6 garde le détour pour les contacts de case.
+  - **D-E19-31** — **Saut scripté fidèle** pour toute entité : impulsion au tick du changement d'animation (jamais au
+    premier changement d'une apparition ou d'une arrivée), héros en l'air tenu par le tick (amende E3.d, comme
+    l'escalade), `0x25` à deux termes, `CollidedWithEntityZ` aligné sur le binaire (avancé d'E19.h).
+  - **D-E19-32** — Les règles **eau et glace** du héros et le saut abaissé sur les cases `0x18` se portent maintenant,
+    avec le niveau de bottes recalculé à chaque tick depuis les objets possédés. L'eau profonde et les dégâts de sol
+    restent des points ouverts (O-E19-22).
+  - **D-E19-33** — **Sauvegardes de test** : un outil console construit des sauvegardes préréglées (nouvelle partie plus
+    drapeaux, table et position), les valide par les règles du jeu et les écrit dans le dossier du jeu, où F9 les charge.
+    L'auteur le lance hors de l'app Claude.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -343,18 +364,20 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.c1 🧪 | Cartes 478 et 416 : `0x0B` avec détour (D-E19-6), `0x1C`/`0x1D` (compteur du binaire, Chain et Hold), `0x5E`, `0x08`, `0x0C`, `0x3A`, `0x89`, `0x73`/`0x74` ; arcs en vrais préfabs (D-E19-14) | A3, A7, A4p | La vision de 478 va au bout ; la plage 416 mène à la 163 |
 | E19.c2 🧪 | Moteur : horloge logique exacte des fins d'animation, rendu en temps réel (D-E19-16, D-E19-17), correction des Loop figées ; DLL : pilotage à chaque tick logique, signal de boucle (D-E19-18), garde de `0x1C` sous rattrapage | A3, A9, tests moteur | Wendell à Inoa rend la main ; les fins d'animation au tick de l'original |
 | E19.d 🧪 | Fin de chaîne : `0x24` avec recensement (D-E19-21), `0x40`/`0x41` complets (D-E19-22), défaut d'atterrissage de la DLL (391), vrai héros et pad tenu dans les arcs ; reste de 392, 391 et 163 | A5, A5r, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
-| E19.d2 | Inoa après le premier livre (D-E19-26) : la scène des villageois de la carte 10 (O-E19-18), le saut scripté d'Alundra et `0x25` (O-E19-19) | arcs d'arrivée sur la 10 | La scène de la 10 rend la main ; la chaîne 179 → 176 → 10 → 135 passe |
+| E19.d2a | Après le premier livre (§1.2h) : sauvegardes de test chargées par F9 (D-E19-33) ; arrivée par portail dans les arcs (U3) ; arcs du jour 1 | A10, A11, A20, TH3 | Jour 1 jusqu'au jour 2 ; F9 sur les préréglages du jour 3 et du jour 4 |
+| E19.d2b | Moteur : prédicat d'obstacle dans l'étage champ du contrôleur ; DLL : contacts entre entités du binaire (D-E19-27 à D-E19-30), natif E 0/1, contact du dialogue ; règle les deux P2 d'E19.d (O-E19-18, 185 `@506`) | T-A19, T-A10v, T-B9, T-C61, test moteur | Le héros bute sur les PNJ et leur parle ; jour 4 : la 185 mène à la 362 |
+| E19.d2c | DLL : saut scripté et `IsZForceApplied` (D-E19-31), `0x25`, `CollidedWithEntityZ`, eau et glace du héros (D-E19-32) (O-E19-8, O-E19-19) | UJ, UW, A10J/A16, A3 | Jour 3 : le saut de la 10 jusqu'à la 135 |
 | E19.e | Recette de bout en bout, plus un test statique : aucun opcode sauté sur la chaîne hors liste d'exceptions | toute la chaîne | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement (avec les recettes d'E16 en attente) |
 | E19.f | Boîte de nom et boîte de texte fidèle (D-E19-4) : export du cadre, écrans XAML liés à un view model, cycle de vie de la boîte de nom, pour `0x0D`/`0x5C`/`0xC4` | tests MGDesktop | Les noms s'affichent au-dessus de la boîte, à la place de l'original |
 | E19.g | Effets visuels (D-E19-7) : export des effets par le convertisseur, réserve de 128 effets aux règles du binaire, `0x90`-`0x94`, `0xA0`-`0xA3`, rendu | cartes à effets | L'aura de 476, les vagues de 391 |
-| E19.h | Attentes en Z et contacts : `0x20`-`0x23`, `0x25`, `0x26`, `0x47`, `0x48` ; `CollidedWithEntityZ` et `ForceAdjusted` alignés sur le binaire | ciblés | ciblée |
+| E19.h | Attentes en Z et contacts : `0x20`-`0x23`, `0x26`, `0x47`, `0x48` ; `ForceAdjusted` aligné sur le binaire ; glissement le long des murs ; reste du saut (O-E19-27) — `0x25` et `CollidedWithEntityZ` avancés en E19.d2c (D-E19-31) | ciblés | ciblée |
 | E19.i | ~~Boucles d'animation Loop pour `0x1C`/`0x1D`~~ — **absorbée par E19.c2** (D-E19-18) : le signal de boucle et son pont y arrivent ; le recensement exact est de 208 sites dans 53 cartes, et non 101 dans 30 | — | — |
 | E19.j | Événements de carte : réarmement hors zone du binaire (619 enregistrements, O-E19-11) | ciblés | ciblée |
 | E19.k | Caméra : balancement `0x8E`/`0x8F`, masque des fonds `0xA4` | ciblés | 392, 391 |
 | E19.l | Prédicats, branches et restes : `0x82` (avec la correction d'`AddOneItemIfUnlocked`), `0x83`, `0x84`, `0x87`, `0x3F`, `0x95`, `0x99`, `0x9A`, `0x9F` (avec `InitializeContents`), `0x57`, `0x58`, `0x4A`, `0x2A`, `0x2B`, `0x5D`, etc. ; liste fermée au recensement du moment | ciblés | ciblée |
 | E19.m | Hygiène et clôture : taille de `0x5F` (8), libellés faux, `0x01` qui rend 0, modes aléatoires 4 et 5 de `ResolveDirectionFromParam` ; test statique : aucun opcode atteignable sauté dans le corpus hors E14 (IA native) et E18 (`0xBB`) | corpus | — |
 
-- **Ordre** : E19.a → E19.b → E19.c1 → E19.c2 → E19.d → E19.d2 → E19.e, puis E19.f. Les tranches de phase 2
+- **Ordre** : E19.a → E19.b → E19.c1 → E19.c2 → E19.d → E19.d2a → E19.d2b → E19.d2c → E19.e, puis E19.f. Les tranches de phase 2
   viennent ensuite, dans l'ordre que l'auteur choisira. E19.c1 passe avant E19.c2 : elle débloque
   l'histoire, et l'horloge exacte ne change pas le mouvement.
 - **Dépendances** : E19.b et E19.d ont besoin de l'entité de contexte d'E19.a. E19.c1 a besoin de la
@@ -1843,7 +1866,7 @@ exécution.
   | Latent : le binaire exclut aussi les entités bloquées (`BlockedByEntity`, `+0x20`) de `UpdateAnimation` ; la DLL n'exclut que les entités à détruire. Rien ne pose ce champ aujourd'hui. | P4 | Reporté (à reprendre si le blocage entre entités est porté). |
   | P4 du moteur (horloge activée en cours d'animation, `LastUpdateLoopTurns` périmé, numéros de ligne de la doc, trous de tests, entrées limites, `Detach`). | P4 | Reportés : plan moteur, « Vérification de clôture ». |
 
-### 1.2g E19.d — Fin de la chaîne : 392, 391 et 163 jusqu'au premier livre 🧪 (D0 à D9 faites et vérifiées CONFIRMED le 2026-10-01 ; un P2 introduit sur la carte 10 se règle en E19.d2, sans merge d'E19.d avant ; reste la recette D10 de l'auteur)
+### 1.2g E19.d — Fin de la chaîne : 392, 391 et 163 jusqu'au premier livre 🧪 (D0 à D9 faites et vérifiées CONFIRMED le 2026-10-01 ; deux P2 introduits, cartes 10 et 185, se règlent en E19.d2b, sans merge d'E19.d avant ; reste la recette D10 de l'auteur)
 
 **But.**
 - La 392 mène à la 391 par son portail ; la 391 mène à la 416 ; la 163 joue le réveil à Inoa, Jess marche
@@ -2262,14 +2285,283 @@ et une course Debug ; la DLL déployée est la Debug.
   | Constat | Priorité | Disposition |
   |---|---|---|
   | Porter `0x24` fait caler la scène des villageois de la carte 10 (G218, B[14]) : avant D4, l'opcode sauté laissait Nestus repartir de son point d'apparition ; maintenant il marche 193 px au nord jusqu'à la falaise, puis sa marche `0x0B @5172` ne peut pas partir (marche de 80 px, au-delà du pas de 3). T666 n'est jamais posé et le héros reste bloqué (`0x10 @1826`). Même chose sur la 331 (miroir de la 10). Dans l'original la scène va au bout : c'est l'écart O-E19-18, que le port fidèle de `0x24` met au jour. | **P2, introduit** | **Bloquant pour le merge** : se règle en E19.d2 (D-E19-26), décidée avant ce constat ; E19.d ne se merge pas sans E19.d2. La recette D10 ne passe pas par la carte 10. |
-  | La liste des sites « non atteints » ne vaut pas liste des blocages : elle ne part que des sites de `0x24`. Neuf marches `0x0B` bloquées n'existent qu'à cause du port et n'y figurent pas (héros B[9] sur la 10 et la 331, Septimus `@506` sur la 185, Jess sur la 334 et la 365, Zane sur la 363, Beaumont sur la 366, Nestus `@5172` sur la 10 et la 331). L'argument d'O-E19-16 « seuls les 8 sites sous main tenue peuvent bloquer » est donc faux. | P3, introduit | Reporté : la découverte d'E19.d2 recense toutes les marches `0x0B` bloquées après un `0x24`, sur tout le corpus. |
+  | La liste des sites « non atteints » ne vaut pas liste des blocages : elle ne part que des sites de `0x24`. Neuf marches `0x0B` bloquées n'existent qu'à cause du port et n'y figurent pas (héros B[9] sur la 10 et la 331, Septimus `@506` sur la 185, Jess sur la 334 et la 365, Zane sur la 363, Beaumont sur la 366, Nestus `@5172` sur la 10 et la 331). L'argument d'O-E19-16 « seuls les 8 sites sous main tenue peuvent bloquer » est donc faux. | P3, introduit | Reporté : la découverte d'E19.d2 recense toutes les marches `0x0B` bloquées après un `0x24`, sur tout le corpus. **Reclassé le 2026-10-02** : le recensement confirme les neuf sites (O-E19-25) ; Septimus `@506` de la 185 est sur le seul chemin vers la 362 : **P2 introduit, bloquant pour le merge**, réglé par E19.d2b avec la scène de la 10 (§1.2h). |
   | L'acceptation 4 et l'arrêt de D5 gardaient l'ancienne formulation ; le chemin de l'histoire omet la 135 (église), qui commande la 178 par G1655 (six sites « non atteints » de la 135 non marqués). | P3 | Acceptation 4 annotée ci-dessus ; la 135 entre dans le périmètre d'E19.d2. |
-  | Le recensement n'est pas reproductible depuis le dépôt : les scripts sont dans le scratchpad de la session. | P4 | Question à l'auteur (avec le plan d'E19.d2). |
+  | Le recensement n'est pas reproductible depuis le dépôt : les scripts sont dans le scratchpad de la session. | P4 | Reporté (O-E19-25) ; la question est posée avec le plan d'E19.d2. |
   | Écarts du modèle : une marche `0x0B` courte d'un pixel compte comme passée (la DLL cale) ; le filtre de zone d'apparition n'est pas modélisé. Aucune classe du chemin ne change. | P4 | Accepté, noté pour le prochain recensement. |
   | `0x40` touche 427 sites dans 122 cartes (782 enregistrements) ; 362 sont suivis directement de `0xFF`, donc rien ne change ; environ 65 continuent et sont désormais coupés. Sur le chemin, seules la 44 et la 163, toutes suivies de `0xFF`. | P4 | Accepté ; les chiffres du plan et de l'ADR (environ 200 entités dans 40 cartes) sont à ce titre une estimation basse. |
   | La garde de boucle coupe maintenant aussi l'état d'un programme qui a fait `0x40` plus tôt dans l'appel (le binaire n'a pas de garde) ; jamais atteint dans le corpus. | P4, introduit | Accepté. |
-  | Le terrain pose `CollidedWithEntityZ` à 0 dans la DLL, à 1 dans le binaire (`0x800376E0`) ; aucun opcode ne le lit aujourd'hui (`0x25`, `0x26`, `0x47` le liront). | P4 | Reporté à E19.h. |
+  | Le terrain pose `CollidedWithEntityZ` à 0 dans la DLL, à 1 dans le binaire (`0x800376E0`) ; aucun opcode ne le lit aujourd'hui (`0x25`, `0x26`, `0x47` le liront). | P4 | Reporté à E19.h ; avancé en E19.d2c (D-E19-31). |
   | La doc XML de `Dispatch` est passée sur un nouveau champ ; la doc de l'`ArcSpec` décrit encore le héros construit à la main ; « `0x3B @133` rend toujours 0 » d'A5 ne vérifie pas qu'il y a des échantillons ; A8 épingle des effets du retard D-E19-13 ; l'ordre de mise en place du héros des arcs diffère de la production (couvert par TH1) ; le rouge d'A6 et d'A8 n'est pas dans l'historique ; l'ADR-0020 a reçu un amendement au lieu d'une nouvelle ADR. | P4 | Reportés (hygiène d'E19.d2). |
+
+### 1.2h E19.d2 — Après le premier livre : contacts entre entités, saut scripté, sauvegardes de test ⏳ (programme ; E19.d2a détaillée ci-dessous, E19.d2b et E19.d2c esquissées, détaillées et relues chacune avant leur approbation)
+
+**Cadrage corrigé** (découverte du 2026-10-02, en lecture seule, chaque surface recoupée par une contre-expertise
+indépendante ; notes et scripts dans le scratchpad de la session, `e19d2-disc/` et `e19d2-disc2/`).
+- La « scène des villageois de la 10 » (O-E19-18, `B[14]`) exige G218 : elle est au chapitre 18, loin après le premier
+  rêve, et non « juste après le livre ». Elle reste dans E19.d2 (D-E19-26) : elle se règle par le même mécanisme que la
+  185.
+- **Un second P2 introduit par E19.d** : sur la 185 (jour 4, réunion chez Beaumont, seul chemin vers le rêve d'Olen
+  362), Septimus doit s'arrêter contre le bloc transparent rec7 (`0x24 @458`/`@463`) ; dans la DLL il file au mur et sa
+  marche `0x0B @506` ne peut pas partir : T70 n'est jamais posé et le héros reste verrouillé. Il était classé P3 dans la
+  vérification d'E19.d ; il passe **P2 introduit, bloquant pour le merge d'E19.d**, comme la scène de la 10 (§1.2g).
+- Les deux P2 ont **une seule cause** : le blocage entre entités, absent de la DLL (D-E12D-1). La règle des cases est la
+  même dans les deux jeux.
+- Le saut de la 10 (`B[20]`, jour 3) est bien sur la chaîne : `163 → 162 → 165 → 164 → [jour 2] → 10/14/15 → Tarn's Manor
+  → [jour 3] 179 → 44 → 179 → 176 → 179 → 176 → 10 → 135 → 10 → 176 → 178 → [jour 4] 183 → 185 → 362`. Le jour 1
+  (162, 165, 164) est entièrement scripté ; le passage du jour 2 au jour 3 (combat de la 15, Tarn's Manor) et le rêve 44
+  exigent le combat (E14) : d'où les sauvegardes de test (D-E19-33).
+
+**Faits établis pour E19.d2.**
+- *Contacts entre entités* **[binaire]** :
+  - Chaque essai de `ComputeXYPosition` (`0x80037730`) appelle `FindEntityCollisionCandidate` (`0x80036F34`, appels
+    `0x800378C4` et `0x80037908`) avant le test de case. Un mobile de la liste physique qui est lui-même collisionnable
+    (`+0x6C & 0x80`, `AnimFlags +0xB4 & 0x80` nul, non porté `+0x28`) s'arrête au contact de toute entité de la liste
+    des collisionnables (mêmes gardes), boîte en unités 16.16 et recouvrement en Z ; le héros en jeu libre comme les PNJ.
+    L'obstacle n'est jamais poussé ; un contact d'entité ne glisse jamais.
+  - La liste se construit en `0x800384F4`, après les événements et avant l'animation et la physique, **sans test
+    d'état** ; le recyclage des créneaux `FlagToDestroy` (`0x80038634`) ouvre `UpdateEntities` : une entité détruite par
+    un programme de carte disparaît dans le même tick, par un script d'entité ou un natif E au tick suivant. Côté DLL,
+    exclure `FlagToDestroy` dans `BuildCollidables` (`EntitySupport.cs:43-71`, reconstruit en fin d'image,
+    `AlundraWorldProxy.cs:2584-2599`) reproduit les deux délais à un tick par image.
+  - Un mobile qui chevauche déjà un obstacle au début d'un tick reste bloqué, sauf par un pas qui sort entièrement du
+    chevauchement.
+  - Un contact d'entité lève `ForceAdjusted` (`0x800379D0` → `0x80037D54`) : `0x24` finit sur une entité. `0x0B`
+    (`0x8003D468`-`0x8003D514`) ne lit jamais `ForceAdjusted` : l'original attend que l'obstacle s'en aille.
+  - `+0x130` (`XCollisionEntity`) est le retour de `ComputeXYPosition` (écrit en `0x80037F08`) : l'entité trouvée par
+    l'essai précédent, 0 si la force est nulle ou si le premier essai est libre. Le dialogue (`0x8002E910`) et la saisie
+    (`0x8002EF08`) le lisent. La sonde E12.d de la DLL (`AlundraWorldProxy.cs:2209-2216`) teste un chevauchement à la
+    position courante : sous des contacts exacts elle ne trouverait plus rien et on ne pourrait plus parler aux PNJ.
+  - Le natif E d'index 0 ou 1 (`0x8007ED10`) ne fait que `DestroyEntity(e, -1)` (`0x8003A59C`), à chaque tick de l'état 3
+    (`0x800237B4[3]` → `0x80038838`) quand le programme E scripté est vide ; index lu en `+0x80`. 417 enregistrements sur
+    85 cartes l'atteignent par `0x19` (O-E19-4). `DestroyEntity` fait aussi tomber un butin (`0x80032B90`) et joue un
+    effet de bris (octet d'en-tête `0x1E`, `0x8003BE74`), non portés. Dans la DLL, `RunSpriteEvent` est un no-op compté
+    (`AlundraEventProgramRunner.cs:290-316`).
+  - `AnimFlags` est l'octet `0xD` du jeu d'animation, rechargé à chaque changement d'animation (`0x80038B68`) ; bit 0x80
+    = pas de collision entre entités (animation 1, état ouvert, des portes, grilles de fer et de la boîte bicolore ;
+    animations de sable 32 à 36 et 39 du héros). **[données]** Il est déjà exporté sous le nom `Acceleration`
+    (`SpriteRecordCatalog.cs:331`), mais jamais copié dans `AnimFlags` (`AlundraEntityScriptProxy.cs:172`).
+  - **[données]** 2 250 enregistrements collisionnables sont soulevables (`Flags & 0x600`) sur 241 cartes, dont 2 161
+    avec le natif E 2 (bris puis destruction). La DLL ne porte ni la saisie (`0x8002EDBC`) ni les coups (D-E19-28).
+  - **[émulation]** Sous la règle binaire, les scènes `B[14]` et `B[9]` de la 10, la réunion de la 185 et la scène
+    `B[3]` de la 179 vont au bout ; sans blocage entre entités (la DLL d'aujourd'hui), les trois premières calent.
+- *Saut scripté* **[binaire]** :
+  - `UpdateAnimation` (`0x80038AB4`) efface `IsZForceApplied` (`+0xF8`) à chaque appel et y écrit `lh(animSet+0xA)` au
+    tick d'un changement (nouvelle cible, nouvelle ligne de direction ou chaîne). La passe de forces en fait l'impulsion
+    `ForceZ = IZF << 8` (héros `0x80036884`, PNJ `0x80036AB8`, 0 pour 0x8000 sans gravité) ; `IZF * 160` pour le héros
+    sur une case `0x18` sans bottes. `InitializeEntity` (`0x80039D04`) fait lui-même le premier changement d'une entité
+    qui apparaît : jamais d'impulsion à l'apparition.
+  - `0x25` (`0x8003DB7C`) rend 1 si `CollidedWithEntityZ` (`+0x140`) **ou** `IsOnGround` (`+0x144`) ; l'atterrissage
+    sur le terrain pose `+0x140` à 1 (`0x800376E0`), la passe physique l'efface à chaque tick (`0x800383B4`). Sans le
+    terme `+0x144`, la première visite de la 165 calerait au jour 1 (sauts de Bergus `@838`/`@843`).
+  - En l'air, aucune tolérance de marche ; l'aimantation de 3 px ne joue que si `ForceZ == 0` (`0x80037848`).
+- *Eau et glace du héros* **[binaire]** :
+  - Dans la branche du héros seulement, sur des copies locales avant `IncrementForce` (`0x800367E4`) : glace
+    (`VramOR & 0x20`) → pas d'accélération divisé par 16 (`0x80036954`-`0x800369C8`) ; eau (`VramOR & 0x08` et niveau de
+    bottes ≤ 0) → force cible divisée par 2 (`0x800369CC`-`0x80036A50`). La branche des PNJ n'a ni l'un ni l'autre.
+  - `VramOR` (`+0x180`) est calculé en fin de physique par `UpdateTileAttributes` (`0x80038110`-`0x80038190`) : le OU
+    des mots de case des 4 coins de la boîte dont la hauteur + 1 vaut `ModdedPosZ` ; 0 en l'air et sans gravité ; lu
+    par les forces du tick suivant. **[DLL]** `UpdateVramFlags` (`AlundraEntityScriptProxy.cs:1542-1571`, appelée en
+    `:1151`, héros seul) donne déjà le même OU, une fois par image (à déplacer dans la boucle par tick).
+  - Le niveau de bottes (`0x80127000`) vaut 3, 2 ou 1 si l'objet `0x1C`, `0x1B` ou `0x1A` est **possédé**, sinon 0 ;
+    rafraîchi à chaque tick (`0x800307E8`, depuis la fin de `MovePlayer` `0x80032914`, verrou compris). La DLL ne le
+    stocke pas : il se calcule avec `AlundraPlayerManager.GetNumberOfItem` (`AlundraPlayerManager.cs:932-946`).
+  - **[données]** Eau `0x08` : 12 745 cases dans 50 cartes ; `0x18` : 12 526 cases dans 41 cartes ; glace `0x20` :
+    2 750 cases dans 6 cartes. Sur le chemin de l'histoire, seules la 10 et la 416. Les bits sont dans l'export
+    (`AlundraCells.walkability`) : aucune modification du convertisseur.
+- *Sauvegardes* **[DLL]** :
+  - Seule la touche F9 (DLL Debug) recharge : elle prend le créneau lisible **le plus récent** de
+    `%LOCALAPPDATA%\AlundraGame\SaveGames` (`AlundraSaveGameDirector.cs:259`, `:427-456`) ; le livre de sauvegarde ne
+    recharge pas (ADR-0013, ADR-0014). La sauvegarde s'applique à l'entrée de la carte d'arrivée ; toute carte et toute
+    case valides ; arrivée au centre de la case, `PosZ = z << 20`, animation `0x36`, direction 0 ; les programmes B dont
+    la zone contient le héros partent au premier tick. Les drapeaux T ne sont jamais sauvegardés.
+  - API publiques : `GameSettings.SaveGames.Save` (dossier par défaut, après `ProjectSettings.ProjectName =
+    "AlundraGame"`), `AlundraSaveGame.Capture`, `AlundraPlayerManager.InitializeNewGameStats` et
+    `InitializeNewGameInventory`, `AlundraItemTables.GetOrCreate`, `AlundraSaveGameRules`. Aucun outil n'écrit de
+    sauvegarde aujourd'hui. Les écritures sous AppData faites depuis l'app Claude sont virtualisées : l'outil se lance
+    hors de l'app, par l'auteur.
+
+**Sous-tranches.**
+
+| Tranche | Résultat | Périmètre | Acceptation | Dépend de | Retour arrière |
+|---|---|---|---|---|---|
+| **E19.d2a** — Sauvegardes de test et jour 1 | L'auteur charge par F9 une partie au jour 3 après le rêve (179) et au jour 4 (185) ; le jour 1 après le livre est prouvé par des arcs partis de vraies arrivées | DLL (préréglages), outil console, support d'arcs (arrivée par portail), arcs A10, A11, A20 | §1.2h.1 | E19.d | abandon de la branche ; outil et préréglages se retirent en un revert |
+| **E19.d2b** — Contacts entre entités | Les deux P2 d'E19.d sont réglés ; le héros et les PNJ s'arrêtent au contact comme dans l'original ; parler aux PNJ marche toujours | Moteur : prédicat d'obstacle dans l'étage champ du contrôleur et rapport de contact (ADR moteur) ; DLL : règle binaire, gardes (D-E19-28, D-E19-29), natif E 0/1, contact E12.d, détour (D-E19-30) | arcs T-A19 (185 → 362), T-A10v (villagers), T-B9, T-C61 (rails), test moteur T-ENG-1 ; toutes les épingles existantes inchangées ou re-mesurées d'avance ; émulation binaire des 7 nouveaux blocages avant merge | E19.d2a (recette 185) | branche moteur et branche parent abandonnées |
+| **E19.d2c** — Saut, `0x25`, eau et glace | La chaîne du jour 3 passe le saut de la 10 jusqu'à la 135 ; le héros ralentit dans l'eau et glisse sur la glace | DLL seule : `IsZForceApplied`, héros en l'air tenu par le tick (amende E3.d), impulsion des PNJ, `0x25`, `CollidedWithEntityZ`, eau, glace, `x160`, niveau de bottes | UJ-1 à UJ-6, UW-1 à UW-5, A10J/A16 (valeurs du binaire, eau comprise), A3 re-mesuré d'avance | E19.d2b | abandon de la branche |
+
+- **Ordre** : E19.d2a → E19.d2b → E19.d2c. E19.d2a ne touche ni au mouvement ni aux collisions : elle donne à l'auteur
+  de quoi recetter les deux suivantes en jeu, et elle mesure U3 (l'arrivée sur la 165, condition du jour 1) avant tout
+  changement de collisions. E19.d2b passe avant E19.d2c : les épingles du saut de la 10 se mesurent sous les règles de
+  contact définitives.
+- **Proposition pour E19.e** (à approuver avec E19.e) : étendre la recette de bout en bout et le test statique à la
+  chaîne jusqu'à la 362 (arcs A12 à A18 de la découverte : 179, 176, 135, 178).
+- **Merge** : E19.d ne se merge pas sans E19.d2b et E19.d2c ; moteur d'abord (`chantier/animation-logical-end-clock`,
+  puis la branche moteur d'E19.d2b, qui en part).
+
+#### 1.2h.1 E19.d2a — Sauvegardes de test et arcs du jour 1 ⏳
+
+**Résultat** : l'auteur lance un outil qui écrit une sauvegarde préparée dans le dossier du jeu ; F9 la charge ; la
+partie reprend au jour 3 après le rêve (carte 179) ou au jour 4 (carte 185). Le jour 1 après le livre (162, 165, 164)
+est prouvé par des arcs qui partent des vraies arrivées, U3 compris.
+
+**Périmètre** : `Alundra/` (préréglages et constructeur de sauvegarde ; un point d'entrée de test du directeur de
+warp), un nouveau projet `tools/AlundraTestSaves/` inscrit dans `alundra-casaengine-project-converter.slnx`,
+`Alundra.Tests/` (tests des préréglages, support d'arcs, arcs du jour 1), `docs/` (mode d'emploi, plan).
+
+**Hors périmètre** : aucun changement de mouvement, de collision, d'opcode ni du format de sauvegarde ; pas de
+sous-module touché ; les positions [modèle] du jour 1 qui dépendent des contacts entre entités (épinglées en E19.d2b) ;
+la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique complet des drapeaux d'une vraie partie
+(les préréglages ne posent que ce que lisent les cartes visées).
+
+**Tâches.**
+
+- ⏳ **S1 — Préréglages de sauvegarde (DLL), tests d'abord.**
+  - Fichier `Alundra/Scripts/AlundraTestSaves.cs`, classe publique statique : la liste des préréglages et un
+    constructeur qui part d'un `AlundraGameState` neuf (drapeaux à 0, table identité `AlundraGameState.cs:421`), appelle
+    `AlundraPlayerManager.InitializeNewGameStats` et `InitializeNewGameInventory` (tables d'objets du projet), applique
+    le préréglage (drapeaux G posés ou effacés, entrées de table, compteurs d'objets), puis
+    `AlundraSaveGame.Capture(state, carte, x, y, z)`. Il refuse, sans exception et avec un message : un nom inconnu, un
+    drapeau T (id ≥ 0x8000), une sauvegarde que `AlundraSaveGameRules` refuse. Aucun accès disque, aucun état global.
+  - Préréglages (valeurs écrites d'avance) :
+
+    | Nom | Carte, case, z | Drapeaux posés | Effacés | Table | Objet 88 |
+    |---|---|---|---|---|---|
+    | `day3-after-dream` | 179, (17,7), 1 | G203 (`GameFlags[6] = 0x800`), G1651 (`GameFlags[51] = 0x80000`) | — | `[162] = 176` | 0 (`NumberOfItems[177]`) |
+    | `day4-meeting` | 185, (5,18), 1 | G204 (`GameFlags[6] = 0x1000`), G1651 à G1655 (`GameFlags[51] = 0x00F80000`) | G203 | `[162] = 183`, `[176] = 183` | 0 |
+
+    Le reste vient de la nouvelle partie : PV 10/10, MP 0/0, or 0, arme 1, objets 1, 17 et 25 ; tous les autres mots de
+    drapeaux à 0 ; toutes les autres entrées de table à l'identité. Au jour 4, G120 à G123 restent éteints : les quatre
+    villageois de la 185 les posent quand on leur parle, avant que la réunion (`B[1]`) ne parte.
+  - Tests `Alundra.Tests/AlundraTestSavesTests.cs`, écrits **rouges d'abord** : pour chaque préréglage, les 64 mots de
+    drapeaux, les 500 entrées de table, les 256 compteurs d'objets et les neuf statistiques égaux à la nouvelle partie
+    plus le préréglage, la carte et la case ; validation par les vraies règles (`RealRules()` des tests existants)
+    acceptée ; deux constructions égales octet pour octet ; nom inconnu et drapeau T refusés ; l'application de la
+    sauvegarde par le chemin existant (motif d'`AlundraSaveGameApplyTests`) pose les drapeaux et la table dans le
+    `AlundraGameState` d'arrivée.
+
+- ⏳ **S2 — Outil console.**
+  - Projet `tools/AlundraTestSaves/AlundraTestSaves.csproj` (exécutable, même cible que `Alundra`), références à
+    `Alundra` et au moteur, inscrit dans le `.slnx`.
+  - Ligne de commande : `AlundraTestSaves <fichier projet AlundraGame.json> <préréglage> [--slot <nom>] [--dry-run]`.
+    Il lit le nom du projet dans le fichier (`ProjectName`) pour `GameSettings.ProjectSettings`, charge les tables
+    d'objets du dossier du projet, construit la sauvegarde par S1, puis :
+    - `--dry-run` : imprime la carte, la case, les drapeaux posés et effacés, la table, et le créneau visé, **sans rien
+      écrire** ;
+    - sinon : `GameSettings.SaveGames.Save(créneau, sauvegarde, SaveGameFormat.Json)` (créneau par défaut
+      `test-<préréglage>`, conforme à `SaveGameNames`), puis imprime le résultat et le chemin du fichier.
+    - Code de sortie non nul sur tout refus (préréglage inconnu, projet illisible, validation, écriture) ; aucun
+      `try/catch` qui avale une erreur.
+  - Les agents ne lancent que `--dry-run` (pas d'écriture sous AppData depuis l'app). Construire l'outil construit
+    aussi `Alundra` et recopie la DLL dans `alundra-project/` : la tâche finit, comme les autres, par une build Debug de
+    la DLL déployée.
+  - Mode d'emploi `docs/test-saves.md` (anglais) : à lancer hors de l'app Claude, en Debug, depuis le checkout dont la
+    DLL est déployée ; F9 charge le créneau le plus récent ; ce que chaque préréglage pose ; ce qu'une sauvegarde ne peut
+    pas porter (drapeaux T, états locaux de carte, direction du héros). Ligne dans l'index de `docs/` s'il en a un.
+
+- ⏳ **S3 — Arrivée par portail dans les arcs (U3).**
+  - Un point d'entrée de test interne sur `AlundraWarpDirector` pose un enregistrement d'arrivée en attente (carte,
+    `PosX`, `PosY`, `PosZ`, animation, direction), comme le fait `BeginDepartureCore` ; `ArcSpec` gagne une arrivée
+    optionnelle : quand elle est donnée, l'arc ne réécrit ni la position ni les `Tile*` du héros, et c'est
+    `AdoptPlayerPawn` (donc `ClampToGround`) qui les pose, comme en production.
+  - Test TH3 (rouge d'abord, faute de point d'entrée) : arrivée par le portail 162.3 sur la 165 — (19660800, 23592960,
+    0), direction 16 — donne `PosZ = 1048576` et `TileZ = 1` après l'adoption (case (12,22) de hauteur 1).
+  - **Arrêt** si `TileZ` ≠ 1 : la première visite de la 165 ne partirait pas en jeu (blocage du jour 1) ; question à
+    l'auteur, pas de contournement dans l'arc.
+
+- ⏳ **S4 — Arcs du jour 1** (`Alundra.Tests/AlundraInoaDayOneArcTests.cs`, vrais préfabs, vrai héros, contrôleur réel,
+  `AlundraRandom.Reset()`, conventions du §1.3, limite d'images fixée après une première mesure, ± 3 images).
+  - **A20 — 162, Sybill** : drapeaux {} ; arrivée par le portail 163.0 (47972352, 27787264, 0), direction 0. Sybill
+    va de (540,472) à (732,472) ± 2 px après `@584` ; fin `0x11 @596` ; G1659 posé `@597`.
+  - **A10 — 165, première visite** : drapeaux {} ; arrivée par le portail 162.3 (S3).
+    - Premier appel de `B[1]` : `0x3B @106` rend 1, puis `0x69 @122` est atteint.
+    - Positions écrites par `0x64` (`@140`-`@172`), exactes en X et Y : rec0 (29884416, 7864320), rec1 (11796480,
+      16252928), rec2 (27525120, 6815744), rec3 (25952256, 8912896), rec5 (19660800, 28049408) ; T100 posé `@180`.
+    - Au premier tick de `rec5 C[1]`, les cellules (12,23) à (12,26) ont la praticabilité 0x00 (0x41 avant) ; 0x41 de
+      nouveau après `@721`.
+    - Drapeaux dans cet ordre : T101, T102, T103, T104, T102, T105, chacun effacé par son acteur (rec5 `@703`, Wendell
+      `@774`, Nestus `@944`, Bergus `@847`, Meade `@1026`).
+    - Fin : `0x11 @354` (créneau B, programme `@236`), G3 posé `@351` dans la même image, `PlayerControlFlags` 0 ; aucune
+      boîte ouverte à la fin.
+    - Opcodes sautés : exactement `0x25 @838` et `@843`, une fois chacun (changera en E19.d2c, annoncé).
+  - **A11 — 164, Septimus** : drapeaux {G3} ; héros en contact avec rec1 (1092,120) et entité de contact rec1 (comme A9),
+    puis appui sur Carré.
+    - Boîte 130 fermée par appuis ; T6 puis T2 posés ; `PlaceHero(996,120,16)` (case (41,7)) ; T1 posé `@83` ; rec4
+      apparu (position lue sur le cas `0x8B` de la DLL avant d'être écrite ; pas d'épingle supposée).
+    - T200 **et** T201 posés à l'ouverture de la boîte 131.
+    - Fin : `0x38 @437` (`C[2]`, programme `@240`) ; G4, G8, G202 posés, G201 effacé, table `[162] = 169`,
+      `PlayerControlFlags` 0, T3 posé, rec4 désactivé.
+    - Opcodes sautés, une fois chacun : `0x4C @331`, `@351`, `@356`, `@402` ; `0x4D @350`, `@361`, `@373`, `@376`,
+      `@379`, `@382`, `@392`, `@395`, `@398`.
+    - Les positions de Septimus ne sont pas épinglées ici : dans l'original rec4 l'arrête (E19.d2b).
+  - Une valeur écrite d'avance que l'arc contredit est un **arrêt** (question à l'auteur), jamais une ré-épingle.
+
+- ⏳ **S5 — Vérification et clôture.** Build `Debug` puis `Release` de la solution ; `Alundra.Tests` complet avec
+  `--blame-hang-timeout 300s` ; convertisseur inchangé ; DLL Debug déployée (`cmp`) ; `--dry-run` des deux préréglages
+  imprimé dans le rapport. Verifier frais sur l'acceptation ci-dessous ; dispositions au plan ; §0.2 et §2 mis à jour.
+
+- ⏳ **S6 — Recette en jeu (auteur).**
+  1. Jour 1 : nouvelle partie jusqu'au livre de la 163 (recette D10 d'E19.d), puis la 162 (Sybill), la 165 (première
+     visite chez Meade) et la 164 (Septimus) ; la partie passe au jour 2 (la 162 devient la 169).
+  2. Hors de l'app Claude : `dotnet run --project tools/AlundraTestSaves -c Debug -- <alundra-project\AlundraGame.json>
+     day3-after-dream`, lancer le jeu, F9 : la scène de la 179 démarre ; attendu ensuite : 176, 179, 176, puis la 10 où
+     le saut cale (O-E19-19, réglé par E19.d2c) — noté, pas un échec de la tranche.
+  3. Même chose avec `day4-meeting` : la 185 ; parler aux quatre villageois ; la réunion démarre ; attendu : Septimus
+     cale avant T70 (réglé par E19.d2b) — noté.
+
+**Acceptation d'E19.d2a.**
+1. Les tests de S1 et TH3 passent, écrits rouges d'abord (rouge noté dans le rapport).
+2. `--dry-run` des deux préréglages imprime exactement les valeurs du tableau de S1, sans fichier créé (vérifié par le
+   verifier : aucun `.sav` nouveau sous le dossier de l'utilisateur pendant ses propres essais).
+3. A20, A10 et A11 passent avec les valeurs écrites d'avance ; A10 part d'une vraie arrivée de portail.
+4. Aucune autre épingle ni trace ne bouge ; `Alundra.Tests` sans échec ; DLL Debug déployée.
+5. Recette S6 faite par l'auteur.
+
+**Risques d'E19.d2a.**
+- U3 : si l'arrivée ne relève pas le héros, le jour 1 cale en jeu ; S3 le mesure avant tout le reste (arrêt).
+- Les préréglages ne posent que les drapeaux lus par les cartes visées : d'autres cartes visitées depuis une sauvegarde
+  de test peuvent se comporter comme une partie incohérente ; la recette reste sur la chaîne.
+- F9 charge le plus récent : une ancienne sauvegarde de date future ou un créneau récent illisible bloque F9 (limite
+  connue d'ADR-0013).
+- La phase du HUD n'est pas sauvegardée : après F9 dans un processus neuf, le HUD peut rester fermé (déjà le cas des
+  recettes F9 précédentes).
+- Construire l'outil redéploie la DLL dans `alundra-project/` dans la configuration de la build : une build Release la
+  remplace par une DLL sans F9.
+
+**Esquisse d'E19.d2b — Contacts entre entités** (détaillée, relue et approuvée après E19.d2a).
+- Moteur, branche `chantier/field-movement-obstacles` depuis `chantier/animation-logical-end-clock` (`f205683a`, pas
+  encore dans `main` du moteur), plan `CasaEngineMonogame/ai-agent/tasks/field-movement-obstacles-tasks.md`, ADR moteur :
+  un prédicat d'obstacle optionnel, installé sur `World` comme `CollisionField` (non sérialisé, mêmes règles de remise à
+  zéro), interrogé par le test de blocage de l'étage champ avec l'entité mobile et la position candidate, pour que la
+  bisection d'ADR-0045 donne le contact exact ; le rapport de contact dit qui a bloqué (case ou obstacle) et lequel ;
+  aucune allocation ; sans obstacle installé, aucun test existant ne change.
+- DLL : la règle binaire de `FindEntityCollisionCandidate` (gardes du mobile et de la liste, boîte, Z) ; liste sans
+  `FlagToDestroy` ni soulevables ou cassables (D-E19-28) ; `AnimFlags` depuis `Acceleration` ; natif E 0/1 →
+  `DestroyEntity` ; entité de contact E12.d depuis le rapport ; détour de `0x0B` seulement sans entité en contact.
+- À trancher dans son plan : la règle de bord exacte (le port E12.d compte le contact affleurant, `dif <= dim` ; la
+  découverte de collision parle d'une boîte semi-ouverte) se lit dans le binaire avant d'écrire une valeur ; le calage à
+  l'entrée sud de la case (37,46) (O-E19-24).
+- Tests : T-ENG-1 (moteur) ; T-DLL-1 et ses jumeaux ; T-A19 (185 jusqu'au `0x53 @147` vers la 362) ; T-A10v
+  (villageois, valeurs avec le retard D-E19-13) ; T-B9 (jusqu'à G482 et `0x11 @3738`, recyclage des créneaux) ; T-C61
+  (rails de la mine) ; dialogue au contact ; épingles d'A10, A11 et A20 re-mesurées et écrites d'avance ; toutes les
+  autres inchangées (une épingle de l'intro qui bouge est un arrêt).
+- Porte avant merge : émulation dans la boucle binaire des 7 sites que le correctif bloque et des 13 départs du
+  cimetière (recensement des marches `0x0B`).
+- Recette : jeu libre de l'intro (le héros bute sur les PNJ, parle toujours, passe les portes ouvertes) ; F9
+  `day4-meeting` → la 185 → la 362 se charge.
+
+**Esquisse d'E19.d2c — Saut, `0x25`, eau et glace** (détaillée, relue et approuvée après E19.d2b).
+- DLL seule : `IsZForceApplied` posé au tick du changement dans `StepAnimationClock` (pas au premier changement d'une
+  apparition ni d'une arrivée ; repli à front montant pour une entité sans horloge ; remise à zéro avant les retours
+  anticipés) ; impulsion des PNJ dans `EvaluateEntitySupport` ; héros en l'air tenu par le tick (impulsion, décroissance,
+  bornes, `x160`, Z avant XY, atterrissage exact, gravité du moteur rendue à l'atterrissage) ; `CollidedWithEntityZ`
+  effacé à chaque tick, posé à l'atterrissage ; `IsOnGround` après le tick ; `0x25` à deux termes ; eau et glace dans
+  `RunOneKinematicTick` (héros seul, copies locales) ; niveau de bottes à chaque tick ; `VramOR` dans la boucle par tick.
+- Non portés, consignés : aimantation au sommet du saut, dessus d'entités et plafonds pour le héros en l'air, règle du
+  passager, son du changement d'animation (O-E19-27).
+- Tests : UJ-1 à UJ-6 (dont la flèche de la 382 qui ne décolle pas à l'apparition), UW-1 à UW-5, A10J/A16 avec les
+  valeurs du binaire eau comprise (@2447 rend la main à F0+158, atterrissage F0+176, `@2456` à F0+256 en 47748096), A3
+  re-mesuré (les chiens de la 478 sautent : impulsion 196608, sommet 10,5 px), A10 sans opcode sauté.
+- Recette : F9 `day3-after-dream` → 179 → 176 → 179 → 176 → la 10 (le saut) → la 135 → 10 → 176 → 178 → 183.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
@@ -2403,7 +2695,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-5 | Quand un `0x5B [x,0,dir]` arrête un PNJ au tick où sa marche se termine, le mouvement de ce tick s'applique encore avec la nouvelle direction : le marin 12 de la 389 descend de 1,25 px au tick de `@1494` (mesuré en E19.a3 : y = 843,25 à l'image de `@1494`, contre 842,0 à l'image précédente, lue par le test du marin 12). Cela peut venir de la latence d'une image de `CurrentAnimationId` des PNJ, déjà relevée (le moteur synchronise l'animation en fin d'image). **Tranché par le binaire le 2026-10-01 (§1.2d, [binaire])** : l'original exécute dans l'ordre les événements de carte, les entités, `UpdateAnimation` puis la physique (`0x8002E100`, `0x8003B388` → `0x8003B3D8` → `0x8003B3E0`) ; un changement d'animation par script s'applique donc dans la physique du même tick. La DLL a une image de retard : c'est la cause du pas de 1,25 px du marin 12, et chaque panoramique du bloc de la 476 fera 48,75 px au lieu de 48. (La correction qui était annoncée dans E19.c est abandonnée : voir la suite.) **Précisé puis tranché le 2026-10-01** : chaque marche du bloc fait bien 48,0 px, mais la première de chaque panoramique dure un tick de plus et le bloc dépasse de 0,75 px après chaque panoramique. L'auteur garde ce retard (D-E19-13, ADR-0018) : le corriger aurait déplacé des points épinglés de l'intro. | E19.c1 (clos) |
 | O-E19-6 | À l'apparition, l'ajustement au sol (`ClampToGround`) et `TerrainHeight` ne font rien en production : `World.AddEntity` ne fait que mettre l'entité en file, et `Entity.World` n'est posé qu'à l'intégration suivante. Le commentaire d'`AlundraWorldProxy.cs:773-778` dit le contraire (corrigé en E19.c1 T7). Faut-il corriger le comportement ? | E19.h |
 | O-E19-7 | Une entité sans contrôleur ne bouge jamais en Z dans la DLL, alors que le binaire intègre Z pour toute entité active (`MoveEntity` `0x80037E34` → `ComputeZPosition`). Sur la chaîne, tous les enregistrements ont un contrôleur. | E19.h |
-| O-E19-8 | `IsZForceApplied` (`+0xF8`) n'est pas porté : au tick d'un changement d'animation, le binaire remplace `ForceZ` par la valeur du jeu d'animation (131 des 395 enregistrements de sprite en ont une non nulle). Il suppose l'animation résolue avant la physique, ce que D-E19-13 ne fait pas. | E19.h |
+| O-E19-8 | `IsZForceApplied` (`+0xF8`) n'est pas porté : au tick d'un changement d'animation, le binaire remplace `ForceZ` par la valeur du jeu d'animation (131 des 395 enregistrements de sprite en ont une non nulle). Il suppose l'animation résolue avant la physique, ce que D-E19-13 ne fait pas. **Avancé le 2026-10-02 (D-E19-31)** : l'impulsion se pose dans `StepAnimationClock`, au tick du binaire ; seul le changement de vitesse horizontale des PNJ garde le retard D-E19-13. | E19.d2c |
 | O-E19-9 | Les 5 animations Loop de durée 0 de l'export (banque 127 anim 0 gauche et droite, banque 151 anim 1 haut, gauche et bas) sont invisibles dans le moteur : la clé cachée de fin tombe au même instant 0 que l'image. Le binaire montre l'image figée. À corriger au convertisseur (export complet à relancer). | à placer |
 | O-E19-10 | ~~Défaut du moteur sur le chemin en temps réel~~ — **réglé le 2026-10-01 par le moteur (`cc6f498e`, R2) et vérifié par le plan moteur (R1 à R4, 0 échec)** ; question d'origine : défaut du moteur sur le chemin en temps réel : à 0,02 s par image, 197 des 5205 Loop de durée positive de l'export ne bouclent jamais (le temps tombe pile sur la durée, puis la dépasse), et le sprite montre la pose cachée de fin (exemple : animations 53 et 55 du héros). **Correction planifiée** (D-E19-19) : tâche T1.1 du plan moteur d'E19.c2. | E19.c2 |
 | O-E19-11 | La remise à zéro hors zone d'un événement de carte diffère du binaire : la DLL écrit sur l'entité de l'événement et ne remet pas `mapEvent.EventData` à zéro, le binaire (`0x8003C7F0`-`0x8003C804`) remet le pc et l'entrée de l'état de l'événement, `state+0x2C`, l'entité logique et l'octet de programme. Un programme B réentré reprend dans la DLL et recommence dans le binaire. Sans effet sur la 478 et la 416 (zones de toute la carte). | E19.j |
@@ -2413,15 +2705,21 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-14 | Un test statique qui compte les attentes `0x1C`/`0x1D` sur une animation absente du préfab de l'acteur (attendu : 3, les Flammes des cartes 35, 38 et 39), pour voir arriver tout nouveau cas avec une future exportation. | E19.m |
 | O-E19-16 | **Arrêt de D5 (recensement de `0x24`)** : 26 des 59 sites atteignables des cartes du chemin de l'histoire (Inoa 162-182, 44, 10) ne finissent pas sur « mur trouvé » dans le modèle statique (rapport `docs/census-0x24-waits.md`) : 17 « aucun mur » et 9 « indéterminé ». Dont 8 sous main tenue : le héros marche jusqu'à un mur depuis une position que le programme ne fixe pas (cartes 10 `@1212` et `@2462`, 176 `@599`, 178 `@123`, `@141`, `@146`, `@151`, 179 `@564`) ; sans main tenue : des villageois de la 10 qui marchent jusqu'au bord de la carte (`@4973`, `@5061`, `@5163`, `@5275`, `@5344`, `@5430`, `@5588`, `@5905`, où l'original termine par le rognage d'écran, non porté) et leurs sites suivants indéterminés, le héros de la 10 `@1047` et Nestus de la 165 (`@932`, `@943`). **Question** : D4 (`0x24` et U1 à U4) et D5 se commitent-ils tels quels, en acceptant ces sites comme risque connu jusqu'à E19.h (contacts, rognage d'écran) et à leurs arcs, ou faut-il d'abord porter le rognage d'écran de la carte et vérifier les positions d'arrivée du héros des sites sous main tenue ? Recommandation : commiter D4 et D5 avec le rapport (le port suit le binaire ; sur le chemin de l'histoire seuls les 8 sites sous main tenue peuvent bloquer le joueur, et ils se vérifient par un arc à l'arrivée de chaque carte) et ouvrir le rognage d'écran dans E19.h. D6 à D9 attendent cette réponse (A8 ne passe qu'avec D4 et D6). **Réglé le 2026-10-01 (D-E19-24 à D-E19-26)** : une vérification en lecture seule, contre-vérifiée, a montré que les 26 sites venaient de positions de départ fausses dans le modèle (les villageois de la 10 et Nestus de la 165 n'apparaissent pas à la position de leur enregistrement mais par `0x8A`, ou `0x2D` puis `0x64` ; le héros part de ses vraies arrivées, non de toute la carte). Corrigé, le chemin n'a plus aucun site « aucun mur » ni « indéterminé ». Elle a aussi trouvé, au-delà de la 163, deux blocages sans rapport avec `0x24` (O-E19-18, O-E19-19) et l'absence du rognage au bord de la carte (O-E19-17). | E19.d (D4, D5) |
 | O-E19-17 | **Rognage au bord de la carte** **[binaire]** : `ApplyEntityForces` (`0x800366FC`) borne le pas de toute entité de la liste physique (le héros toujours ; les autres sauf portées) à la grille de 52 × 60 cases (x de 0 à 1248 px, y de 0 à 960 px, bornes posées par `SetEntityDimensions` `0x80039C40`) et lève alors `ForceAdjusted` (`0x8003679C`, `0x800367D4`) : dans l'original, une marche vers le bord finit toujours. La DLL ne le porte pas (`AlundraScriptedMotion.RunOneKinematicTick`, et le champ de cellules ramène un point hors grille à la case de bord) : une entité peut sortir de la carte. Change aussi Alundra en jeu libre au bord des cartes (portails sur les cases de bord à vérifier). | tranche à part, plus tard (D-E19-25) |
-| O-E19-18 | **Scène des villageois de la carte 10** (après le premier rêve) : dans le modèle des cellules de la DLL, la marche `0x0B @5172` de Nestus (vers le haut, 28 px) et `0x0B @5071` de Bergus butent sur un mur dès le premier pas ; `0x0B` n'a pas de sortie sur blocage, donc T666 n'est jamais posé, B[14] ne finit jamais et le héros reste bloqué (`0x10 @1826`). Dans l'original la scène va au bout : contact entre entités (Meade immobile en (960, 504)) ou écart du champ de cellules, à établir. | E19.d2 (D-E19-26) |
-| O-E19-19 | **Saut scripté d'Alundra** : la chaîne 179 → 176 → 10 → 135 fait sauter le héros d'une marche de 16 px (carte 10, animation 2 et `0x25`, `0x0B @2456`) ; le saut et `0x25` ne sont pas portés, la marche cale. Même cas pour Giles (`0x0B @6394`, animation 3). La 178 n'est atteinte qu'après (G1655, posé sur la 135). | E19.d2 (D-E19-26) |
+| O-E19-18 | **Scène des villageois de la carte 10** (après le premier rêve) : dans le modèle des cellules de la DLL, la marche `0x0B @5172` de Nestus (vers le haut, 28 px) et `0x0B @5071` de Bergus butent sur un mur dès le premier pas ; `0x0B` n'a pas de sortie sur blocage, donc T666 n'est jamais posé, B[14] ne finit jamais et le héros reste bloqué (`0x10 @1826`). Dans l'original la scène va au bout : contact entre entités (Meade immobile en (960, 504)) ou écart du champ de cellules, à établir. **Établi le 2026-10-02** : contact entre entités (la règle des cases est la même) ; scène du chapitre 18 (G218). | E19.d2b (D-E19-27) |
+| O-E19-19 | **Saut scripté d'Alundra** : la chaîne 179 → 176 → 10 → 135 fait sauter le héros d'une marche de 16 px (carte 10, animation 2 et `0x25`, `0x0B @2456`) ; le saut et `0x25` ne sont pas portés, la marche cale. Même cas pour Giles (`0x0B @6394`, animation 3). La 178 n'est atteinte qu'après (G1655, posé sur la 135). | E19.d2c (D-E19-31) |
 | O-E19-20 | `0x45`/`0x46` (« NoObstacleSlide », `+0x6C` bit 0x2000, `0x8003E954`/`0x8003E96C`) décident si un contact avec un mur lève `ForceAdjusted` tout de suite ou essaie d'abord le glissement ; non portés (la 178 encadre ses `0x24` du héros avec eux). | E19.h |
 | O-E19-21 | **Sites de `0x24` à risque hors du chemin de l'histoire** (recensement corrigé, `docs/census-0x24-waits.md`) : 9 sites en classe à risque (aucun mur 4 sur les cartes 40 et 62, indéterminé 4 sur les cartes 40, 62 et 249, vitesse nulle 1 sur la 152), dont 1 sous main tenue, et 65 sites non atteints dans le modèle (0x0B bloqué 26, drapeau jamais posé 39). Aucun n'arrête E19.d (D-E19-24). À reprendre avec les contacts entre entités et les bornes de force (E19.h), le rognage au bord (O-E19-17) et, par carte, un arc d'arrivée quand la carte est jouée. | E19.h |
-| O-E19-4 | Le gestionnaire natif du créneau E (`0x8007ED10`, destruction après `Deactivated`, 417 enregistrements sur 85 cartes) : E14, ou une tranche d'E19 ? Sur la chaîne, il ne touche que l'oiseau de la 389 et des PNJ d'Inoa. | E14 |
+| O-E19-4 | Le gestionnaire natif du créneau E (`0x8007ED10`, destruction après `Deactivated`, 417 enregistrements sur 85 cartes) : E14, ou une tranche d'E19 ? Sur la chaîne, il ne touche que l'oiseau de la 389 et des PNJ d'Inoa. **Réglé en partie le 2026-10-02 (D-E19-29)** : les index 0 et 1 (destruction seule) se portent en E19.d2b, sans butin ni effet de bris (O-E19-23). | E19.d2b ; le reste E14 |
+| O-E19-22 | **Autres règles des bottes, non portées** **[binaire]** : sans bottes triton (niveau < 2), une case d'eau profonde (`(walk \| gp << 8) & 0xE00 == 0x800`, `0x800374FC`) bloque le héros : 10 644 cases dans 54 cartes, dont 399 sur la 416 ; le champ de la DLL ne connaît que les masques 0x40, 0x41 et 0x1000. Sans bottes magiques (niveau < 3), les cases `VramOR & 0x180` blessent (`0x80031AD0`, 7 322 cases). | à placer |
+| O-E19-23 | **Soulevables et cassables traversables** (D-E19-28) : 2 250 enregistrements collisionnables (`Flags & 0x600`, dont 2 161 du natif E 2) ne bloquent pas tant que la saisie (`0x8002EDBC`) et les coups (`HitCounter`) ne sont pas portés ; l'effet de bris (octet d'en-tête `0x1E`) n'est pas dans `sprite-records.json` ; le butin de `DestroyEntity` (`0x80032B90`) n'est pas porté. | E14 |
+| O-E19-24 | **Calage à l'entrée sud de la case (37,46) de la 10** [émulation] : sous le blocage fidèle, si le joueur entre dans la zone de `B[9]` par le sud (y ≥ 744), le héros garé bloque l'approche de Septimus (`0x0B @3643`) et la scène cale avant T510 dans l'original émulé. Défaut de l'original à corriger (règle de l'auteur) ou à reproduire : à trancher dans le plan d'E19.d2b. | E19.d2b |
+| O-E19-25 | **Recensement des marches `0x0B`/`0x1E`** (découverte d'E19.d2, scratchpad) : avant tout réemploi de ses totaux, corriger son modèle (`0x62`/`0x63` sur le marcheur, glissement des directions obliques, départs écrits après le site, départs partagés avant une étiquette « règle ») ; il n'est pas reproductible depuis le dépôt (P4 d'E19.d). | E19.m |
+| O-E19-26 | **`0x28` à `0x2B`** (bits de classe A/B du marcheur, `0x8003DC24`-`0x8003DC6C`) : 15 marches bloquées seulement dans la DLL (Muruta des cartes 2 et 384, chariots de la mine 61, 63, 66 et 328), aucune sur une carte de l'histoire ; les porter ajoute 4 blocages sur la 102. | E19.l |
+| O-E19-27 | **Reste du saut, non porté en E19.d2c** : aimantation de 3 px au sommet, dessus d'entités et plafonds pour le héros en l'air (`0x80036BFC`, `0x80036D94`), règle du passager (`0x800373AC`), son du changement d'animation (`0x800490FC`), `+0xF8` surchargé pour le type 0x14. | E19.h |
 
 ## 4. Hors périmètre
 
-- IA native (E14) : portage des objets de boutique, gestionnaire de destruction du créneau E,
+- IA native (E14) : portage des objets de boutique, gestionnaire de destruction du créneau E (sauf ses index 0 et 1, E19.d2b),
   animaux d'Inoa.
 - « Réessayer » après la mort, `0xBB` (E18). Conversion des cinématiques (E17).
 - Portraits et machine à écrire des dialogues (E12.c, D-E19-4).
