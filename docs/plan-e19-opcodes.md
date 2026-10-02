@@ -2683,8 +2683,10 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
 - ✅ **B0 — Plan et ADR.** Ce plan, le plan moteur (commits `b3aa47ca`, `c372e946` puis `c72d08a8` sur `chantier/field-movement-obstacles`) et
   l'ADR-0022 du parent. Fait avec la relecture.
 
-- ⏳ **B1 — Moteur** : exécuter le plan moteur (T0.1 à T2.1, `CasaEngine.Tests` sans échec), puis pointer le
+- ✅ **B1 — Moteur** : exécuter le plan moteur (T0.1 à T2.1, `CasaEngine.Tests` sans échec), puis pointer le
   sous-module du parent sur sa dernière tâche (commit `chore(engine): ...` du parent). Le pointeur ne bouge que là.
+  - Fait le 2026-10-02 : plan moteur exécuté (commits `4e6bd6bd`, `3dc98385`, `c57c120f`, `d509bc10`, `c2e4fdce`) ;
+    `CasaEngine.Tests` 2441 réussis, 0 échec (base 2405 : +36 tests nouveaux) ; le pointeur du parent passe à `c2e4fdce`.
 
 - ⏳ **B2 — Liste, mobiles, AnimFlags, natif E (DLL), tests d'abord.**
   - `BuildCollidables` exclut `Status == FlagToDestroy` ; la porte du mouvement (`RunGameplayBlockableUpdate`,
