@@ -2442,27 +2442,32 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
   - Tests `Alundra.Tests/AlundraTestSavesTests.cs`, écrits **rouges d'abord** : pour chaque préréglage, les 64 mots de
     drapeaux, les 500 entrées de table, les 256 compteurs d'objets, les neuf statistiques, le temps de jeu et les reprises
     égaux à la nouvelle partie plus le préréglage, la carte et la case ; validation par les vraies règles (`RealRules()` des tests existants)
-    acceptée ; deux constructions égales octet pour octet ; nom inconnu, drapeau T et drapeau G ≥ 2048 refusés ; l'application de la
+    acceptée ; deux constructions égales octet pour octet ; le créneau de chaque préréglage égal à `test-<nom>` et conforme au
+    motif `^[a-z0-9_-]{1,32}$` (copie de test de la règle d'ADR-0044 du moteur, provenance citée) ; nom inconnu, drapeau T et drapeau G ≥ 2048 refusés ; l'application de la
     sauvegarde par le chemin existant (motif d'`AlundraSaveGameApplyTests`) pose les drapeaux et la table dans le
     `AlundraGameState` d'arrivée.
 
 - ⏳ **S2 — Outil console.**
   - Projet `tools/AlundraTestSaves/AlundraTestSaves.csproj` (exécutable, même cible que `Alundra`), références à
     `Alundra` et au moteur, inscrit dans le `.slnx`.
-  - Ligne de commande : `AlundraTestSaves <fichier projet AlundraGame.json> <préréglage> [--slot <nom>] [--dry-run]`.
-    Dans cet ordre : il valide `--slot` par les règles de `SaveGameNames` ; lit le nom du projet dans le fichier
+  - Ligne de commande : `AlundraTestSaves <fichier projet AlundraGame.json> <préréglage> [--dry-run]` (pas d'option de créneau).
+    Dans cet ordre : il lit le nom du projet dans le fichier
     (`ProjectName`, « AlundraGame ») pour `GameSettings.ProjectSettings` ; branche un journal console (sans lui, les
     avertissements de `Logs` ne s'affichent nulle part) ; charge `AlundraItemTables.GetOrCreate(<dossier du projet>)`
     (le dossier qui contient `Data/` ; la fonction ne lève jamais et rend des tables à zéro sur un fichier absent :
-    l'outil vérifie qu'elles sont chargées, sinon refus) ; construit les règles
+    l'outil vérifie qu'elles sont chargées, au moins une valeur non nulle dans `ItemsProperties` et dans `DropField3`,
+    sinon refus) ; construit les règles
     `new AlundraSaveGameRules(<dossier>, chemin => File.Exists(Path.Combine(<dossier>, chemin)), tables)`, équivalent
     sur disque du catalogue d'assets de la production (`AlundraSaveGameDirector.cs:553-556`) ; construit la sauvegarde
     par S1, puis :
     - `--dry-run` : imprime la carte, la case, les drapeaux posés et effacés, la table, et le créneau visé, **sans rien
       écrire** ;
     - sinon : `GameSettings.SaveGames.Save(créneau, sauvegarde, SaveGameFormat.Json, sauvegarde.BuildMetadata())`
-      (les métadonnées de F5/F6 ; créneau par défaut `test-<préréglage>`), puis imprime le résultat et le chemin du
-      fichier.
+      (les métadonnées de F5/F6) dans le créneau fixe du préréglage, puis imprime le résultat et le chemin du fichier.
+    - Créneaux fixes, portés par les préréglages de S1 : `test-day3-after-dream` et `test-day4-meeting`. `SaveGameNames`
+      est interne au moteur et l'outil ne peut pas l'appeler : sans option de créneau, il n'a rien à valider ; ces deux
+      noms suivent la règle publiée par ADR-0044 du moteur (1 à 32 caractères parmi `a-z0-9_-`, aucun nom réservé de
+      Windows), vérifié par l'audit et par le test de S1.
     - Code de sortie non nul sur tout refus (préréglage inconnu, projet illisible, validation, écriture) ; aucun
       `try/catch` qui avale une erreur.
   - Les agents ne lancent que `--dry-run` (pas d'écriture sous AppData depuis l'app). Construire l'outil construit
@@ -2560,6 +2565,10 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
   de catalogue sur disque, tables chargées vérifiées, journal console, `--slot` validé, métadonnées de F5/F6) ; A20 (fin
   x ≥ 732, onze `0xA2` sautés) ; A10 (`0x69 @122` au deuxième appel) ; A11 (G201 au départ, T201 au premier appui,
   `0x58 @110` sauté à répétition, désactivation de rec4 mesurée).
+- Relecture neuve sur `050cfd8` : **REVISE**, un P2 — S2 validait `--slot` par `SaveGameNames`, interne au moteur et
+  inaccessible à l'outil. Disposition **FIX** : l'option de créneau est retirée, chaque préréglage a son créneau fixe,
+  testé en S1. P3 corrigé aussi : le critère « tables chargées » est nommé. Deuxième REVISE automatique : nouvelle
+  époque de préparation, une seule relecture de clôture.
 
 **Esquisse d'E19.d2b — Contacts entre entités** (détaillée, relue et approuvée après E19.d2a).
 - Moteur, branche `chantier/field-movement-obstacles` depuis `chantier/animation-logical-end-clock` (`f205683a`, pas
