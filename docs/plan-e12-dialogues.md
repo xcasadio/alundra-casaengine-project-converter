@@ -254,6 +254,9 @@ minuterie, `0x4C`/`0x4D`, boîte de nom + portrait (`0xC4`, entités ≥0x100), 
 l'original) passent en E19.f, et `0xC4` s'ouvre d'abord sans nom en E19.b (D-E19-4, D-E19-5,
 `plan-e19-opcodes.md`). Les portraits et la machine à écrire restent ici.
 
+**Mise à jour du 2026-10-02** : E12.c se fait **dans la même tranche qu'E19.f** (D-E19-38, décision de l'auteur),
+après E19.d2c et E19.e.
+
 ## 5. Budget, arrêts
 
 **Budget** : ordre d'exécution **E12.a-moteur → E12.b → E12.a-DLL** (D-E12-6 : la DLL consomme
