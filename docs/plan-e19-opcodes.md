@@ -2612,7 +2612,7 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
   | Deux tests portent le libellé « TH3 » (celui d'E19.d D1 et celui d'E19.d2a S3). | P4 | Reporté (hygiène). |
   | L'empreinte sha256 de la DLL consignée au §2 ne désignait plus la DLL déployée, reconstruite par le verifier depuis les mêmes sources. | P4 | Corrigé au §2 dans ce commit. |
 
-#### 1.2h.2 E19.d2b — Contacts entre entités ⏳ (planifiée le 2026-10-02 ; relue avant l'approbation de l'auteur)
+#### 1.2h.2 E19.d2b — Contacts entre entités 🚧 (planifiée, relue READY et approuvée par l'auteur le 2026-10-02, sans démo moteur ; exécution en cours)
 
 **Résultat** : le héros et les PNJ s'arrêtent au contact exact de toute entité collisionnable, comme dans le binaire ;
 les deux P2 introduits par E19.d sont réglés (la réunion de la 185 mène à la 362 ; la scène des villageois de la 10
@@ -2680,7 +2680,7 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
 
 **Tâches.**
 
-- ⏳ **B0 — Plan et ADR.** Ce plan, le plan moteur (commits `b3aa47ca`, `c372e946` puis `c72d08a8` sur `chantier/field-movement-obstacles`) et
+- ✅ **B0 — Plan et ADR.** Ce plan, le plan moteur (commits `b3aa47ca`, `c372e946` puis `c72d08a8` sur `chantier/field-movement-obstacles`) et
   l'ADR-0022 du parent. Fait avec la relecture.
 
 - ⏳ **B1 — Moteur** : exécuter le plan moteur (T0.1 à T2.1, `CasaEngine.Tests` sans échec), puis pointer le
@@ -3066,7 +3066,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-26 | **`0x28` à `0x2B`** (bits de classe A/B du marcheur, `0x8003DC24`-`0x8003DC6C`) : 15 marches bloquées seulement dans la DLL (Muruta des cartes 2 et 384, chariots de la mine 61, 63, 66 et 328), aucune sur une carte de l'histoire ; les porter ajoute 4 blocages sur la 102. | E19.l |
 | O-E19-27 | **Reste du saut, non porté en E19.d2c** : aimantation de 3 px au sommet, dessus d'entités et plafonds pour le héros en l'air (`0x80036BFC`, `0x80036D94`), règle du passager (`0x800373AC`), son du changement d'animation (`0x800490FC`), `+0xF8` surchargé pour le type 0x14. | E19.h |
 | O-E19-28 | **Écarts acceptés du contact entre entités** (E19.d2b) : avance par axe du moteur contre division conjointe du binaire (un mobile qui pousse en diagonale contre une entité glisse ; 5,6 % des pas obliques bloqués finissent jusqu'à 2 px ailleurs) ; `ForceAdjusted` sur contact d'entité 0 à 2 ticks plus tôt à l'est et au sud ; contact au flottant (4 à 8 unités 16.16) ; `XCollisionEntity` écrit pour tout mobile (le binaire le met à 0 dans la moitié des ticks raccourcis d'un mobile sans gravité ou en l'air) ; liste d'un tick de retard pour `0x62`/`0x63` et les créations par script ; ordre de mise à jour par entité au lieu de par créneau ; Z des PNJ en retard d'un tick. | E19.h |
-| O-E19-29 | **Troncature au pixel à l'atterrissage** (relecture d'E19.d2b) : quand un PNJ à contrôleur atterrit sur une nouvelle hauteur de terrain, `EvaluateEntitySupport` (`AlundraEntityScriptProxy.cs:700-735`, `wasAlreadyLanded` faux à chaque changement de hauteur) appelle `PushLogicalPositionToRoot`, et `ResolveLogicalPosition` (`AlundraEntitySpawnFactory.cs:472-479`) ramène X et Y au pixel entier inférieur ; le binaire garde la fraction. Sur une rampe qui change de hauteur à chaque pixel, la vitesse double et le cortège de la 10 `B[13]` (chapitre 18) cale, avec ou sans blocage d'entités. Question à l'auteur : tranche à part. | à placer |
+| O-E19-29 | **Troncature au pixel à l'atterrissage** (relecture d'E19.d2b) : quand un PNJ à contrôleur atterrit sur une nouvelle hauteur de terrain, `EvaluateEntitySupport` (`AlundraEntityScriptProxy.cs:700-735`, `wasAlreadyLanded` faux à chaque changement de hauteur) appelle `PushLogicalPositionToRoot`, et `ResolveLogicalPosition` (`AlundraEntitySpawnFactory.cs:472-479`) ramène X et Y au pixel entier inférieur ; le binaire garde la fraction. Sur une rampe qui change de hauteur à chaque pixel, la vitesse double et le cortège de la 10 `B[13]` (chapitre 18) cale, avec ou sans blocage d'entités. Question à l'auteur : tranche à part. **L'auteur, le 2026-10-02 : plus tard, dans une tranche à part.** | tranche à part, plus tard |
 
 ## 4. Hors périmètre
 
