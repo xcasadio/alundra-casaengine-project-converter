@@ -382,6 +382,12 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
   réécrit `docs/intro-trace-389.txt` et `docs/intro-programs-389.txt` à chaque passage.
 - `UnknownOpcode_KnownSize_SkipsBySize` (`AlundraEventProgramRunnerTests.cs:320`) utilisait `0x08` : il
   utilise `0x4C` (la machine à écrire, E12.c) depuis E19.c1 T3, car `0x08` est porté.
+- (E19.d2c1) Montages du saut : `AlundraJumpTestSupport.cs` (`JumpNpcRig` : PNJ à contrôleur sur sol plat ou à sprite
+  d'horloge ; `JumpHeroRig` : héros possédé sur `ContactWorld` avec la sonde d'obstacles et un lecteur de sons factice ;
+  `FlatCells` : cases synthétiques d'une marche donnée, eau `0x18`, glace `0x20`). Le héros d'un montage a besoin du bit
+  Gravity et de `Collidable`.
+- (E19.d2c1) La suite réécrit les quatre traces du héros en fins de ligne LF à chaque passage : contenu identique, `git diff
+  --exit-code` rend 0 ; remettre les fichiers par `git checkout` avant un commit.
 
 ---
 
@@ -3398,12 +3404,12 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
     `UlpUnits` retiré (inutilisé). §2 : ventilation du rouge de B3 reprise de la puce de B3. `research/census/README.md` : défaut 5 (`emu.py`, `0x37`). `Alundra.Tests` 2228 réussis (2227 + 1), 0 échec ;
     six traces inchangées (garde d'octets 0). Écart : aucun test existant hors de la liste de l'acceptation 2 touché ; le texte du plan ne dit pas où poser le test de H2 : `AlundraMovementObstacleProbeTests`.
 
-- ⏳ **C6 — Vérification et clôture.** `Alundra.Tests` en Release puis en Debug **en dernier**
+- ✅ **C6 — Vérification et clôture.** `Alundra.Tests` en Release puis en Debug **en dernier**
   (`--blame-hang-timeout 300s`), `cmp` de la DLL Debug déployée ; convertisseur, analyseur et moteur non touchés.
   Verifier frais et contradicteurs (fidélité au binaire, non-régression, tests) ; dispositions au plan ; §0.2, §2, §3,
   doc d'architecture des opcodes si elle cite `0x25` ; mémoire.
 
-- ⏳ **C7 — Recette en jeu (auteur).**
+- 🧪 **C7 — Recette en jeu (auteur).** En attente de l'auteur (avec celle d'E19.d2c2, qui se merge avec elle).
   1. F9 sur `day3-after-dream` : sur la 179, Bergus saute, sans son (le son n'est porté que pour Alundra) ; la chaîne 179 → 176 → 179 → 176 → 10 continue ; sur la 10, Alundra marche plus
      lentement dans le bassin, saute la falaise avec le son 10, Giles saute aussi ; la scène mène à la 135, puis 10 → 176
      → 178 → 183.
@@ -3449,7 +3455,8 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
   `PushLogicalPositionToRoot` et perdent leur fraction (O-E19-29, épinglé par UJ-1c).
 - Marge de 0,25 px en y pour l'eau de la rangée 52 de la 10 : un départ décalé d'un quart de pixel supprime les 9 ticks
   d'eau et décale A10J.
-- Un relancement `0x1C` d'une entité sans gravité à impulsion monte sans fin (aucun plafond, E19.h).
+- Un relancement `0x1C` ou un changement de ligne de direction d'une entité sans gravité à impulsion la fait monter
+  sans fin (aucun plafond, E19.h).
 - Après un saut scripté sans remise de l'animation, le héros reste en animation 44 (cartes 61 à 68 et 329, hors chaîne)
   jusqu'à E19.d2c2.
 - L'envol de la 478 est actif (D-E19-41), y compris pendant la vision.
@@ -3481,6 +3488,38 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
   --exit-code` rend 0, fins de ligne remises par `git checkout`).
 - Relecture de clôture sur `6d4d778` : **READY**. Exécution lancée le 2026-10-03 sous la consigne de l'auteur du
   2026-10-02 (« Fait tout E12 et E19 », mode AUTO : ni merge ni push).
+
+**Vérification d'E19.d2c1 (2026-10-03).**
+- **Commits** (branche `chantier/e19-opcodes`) : plan `d85a156`, `db67bab`, `6d4d778`, `5e74e86` ; C1 `8bcc4cd`, C2 `b4a573b`, O-E19-30
+  `93cf6d7`, C3 `fc58684`, C4 `6a9a7a8`, C5 `7ea2426`, deux commentaires périmés `6d0cc23`. Rien sur `main`, rien poussé ; la
+  modification locale de l'auteur dans `CasaEngine.Launcher/Program.cs` ni touchée ni indexée. Les commits des exécutants
+  portent la signature `Claude Sonnet 5.5` imposée par leur outil.
+- **Verifier frais : CONFIRMED** sur les critères 1 à 4. `Alundra.Tests` 2228/2228 en Release puis en Debug, la Debug en
+  dernier, `cmp` de la DLL déployée sans écart ; traces identiques en contenu ; 25 mutations de production, une par règle
+  (R1 à R8) et trois sur les arcs, toutes attrapées ; le diff des tests reste dans la liste fermée de l'acceptation 2 ;
+  T-REG-0 vaut 0 sur les douze arcs nommés et reste actif (A11 ajouté par mutation : rouge).
+- **Deux contradicteurs en lecture seule** (fidélité au binaire ; tests et non-régression) : aucun P0 à P2. Le premier
+  confirme au désassemblage l'ordre du tick, `+0xF8` écrit seulement en `0x80038AE4` et `0x80038B64`, la fin de chaîne,
+  le tour de boucle, les cinq points d'apparition par `InitializeEntity`, les forces du héros et des PNJ, l'eau et la
+  glace sur copies locales, l'atterrissage strict, `IsOnGround`, `VramOR` et `0x25`. Le second confirme les deux
+  dispositions octet par octet (programme de Wendell `@740`-`@777` sur la 165 ; chaîne de Giles `@6389`-`@6411` sur la
+  10) et ajoute la contre-partie de la première : **Meade** (`@984`) interroge T105 une image sur deux, ce qui garde
+  T105 effacé à 775 et la fin à 960 ; aucune assertion existante n'est affaiblie.
+- **Dispositions** :
+
+  | Constat | Priorité | Disposition |
+  |---|---|---|
+  | Verrou « impulsion prise » qui peut rester levé : un changement vu en attente à un tick puis annulé par le script de l'entité avant la validation de fin d'image (image de rattrapage, PNJ seulement) laisse `ZImpulseTaken` levé, et le changement suivant ne donne pas d'impulsion (le binaire en donne une à chaque changement). | P3, introduit | Reporté à l'hygiène d'E19.d2c2 : baisser le verrou quand plus rien n'est en attente à la validation, avec un test. |
+  | L'exemption d'apparition (R2) ne regarde que l'animation : un changement de ligne de direction de l'animation d'apparition avant la première validation ne donne pas d'impulsion, le binaire en donne une. Aucun site réel (13 préfabs à IZF sur l'animation 0, programmes natifs). | P4 | Reporté à E19.m. |
+  | Son à l'arrivée : le bloc de changement que fait `InitializeEntity` joue le son de l'animation (`0x80038BB0`), sauf décompte de changement de musique ou doublon de l'image ; un héros qui arrive en animation 2, 6, 43 ou 46 l'entend dans le binaire, pas dans la DLL (R8 : jamais à l'arrivée). `ZImpulseSfxOf` ignore aussi le `+0x100` (bit `0x20` de l'octet `0xD`), sans effet sur les animations à impulsion du héros. | P4 | Reporté à E19.h avec les sons des changements d'animation (O-E19-27). |
+  | Ordre des PNJ : la DLL fait le pas XY puis le vertical sur le terrain d'après le pas ; le binaire fait Z avant XY sur le terrain d'avant le pas. Seconde cause, avec l'aimantation de 4 px, d'un tick d'écart à l'atterrissage d'un PNJ au bord d'une marche. | P4 | Consigné avec D-E19-40 ; E19.h. |
+  | UJ-6 (grille) ne rougit sous aucune mutation d'une seule règle (exemption et règle `0x8000` se couvrent) ; T-C61 couvre l'exemption sur le même préfab. | P3 | Accepté. |
+  | UJ-2 « aucun effet de bord » : `0x25` au pc 0 ne voit pas une écriture parasite de `Parameters[1]`. | P3 | Reporté à l'hygiène d'E19.d2c2 (`0x25` au pc 1). |
+  | Le branchement de production du lecteur de sons (`AlundraWorldProxy`) n'a pas de test : UJ-SND passe par l'hôte de test ; la recette C7 le couvre. | P3 | Reporté à l'hygiène d'E19.d2c2. |
+  | La garde T-REG-0 lit `Marshal.GetExceptionPointers()` dans `Dispose` ; aucun test permanent ne fixe ce comportement, et une assertion attrapée dans un `using` la court-circuite. | P3, introduit | Reporté à l'hygiène d'E19.d2c2 (un test de la garde). |
+  | Giles : le mécanisme d'O-E19-29 (pas de 2,0 px de F0+241 à F0+244) n'est pas épinglé à l'image, seulement « X entier au retour ». | P3 | Reporté à l'hygiène d'E19.d2c2. |
+  | Textes : commentaire de T-C61 (`0x30 @983` teste G672, `0x05 @990` le pose), doc d'A10 périmée (« returns 1 at its first call »), Meade non écrit dans le test d'A10 ; A12 sans `using` (un arc bloqué laisse l'état global sale) ; UJ-0x8000 avec gravité ne discrimine que le terme `!gravity` ; liste fermée de l'acceptation 2 qui omettait la propriété `SoundPlayer` de `ContactHost` et un commentaire et un `cref` de C5. | P4 | Reportés à l'hygiène d'E19.d2c2 ; la liste incomplète est acceptée (aucune assertion touchée). |
+  | L'effacement du drapeau d'apparition par `0x1C` n'a pas de test (aucun site réel). | P4 | Reporté à E19.m (déjà noté). |
 
 ##### 1.2h.3.2 E19.d2c2 — Saut à la manette, chutes, dessus d'objets ⏳ (esquisse ; détaillée, relue et approuvée après E19.d2c1)
 
@@ -3696,6 +3735,19 @@ Réservé aux mesures faites en exécutant les tranches.
 - **Limites d'images retenues** : T-A19 1700 (fin à 1116) ; T-A10v 6500 (5100) ; T-B9 3200 (2115) et sa contre-épreuve 1500 ; T-C61 700 (337) ; TN-3 1200 (659) ; A11 inchangée, 240 (fin à 189).
 - **Temps d'exécution** (Release) : chaque arc de B6 entre 0,5 et 0,8 s (T-A10v, 5100 images, le plus long) ; aucun n'approche 120 s ; la suite complète 30 s.
 - **Ensembles d'opcodes sautés des nouveaux arcs** (mesurés) : 0x45, 0x46 (185) ; 0x25 deux fois (10, E19.d2c), 0x58, 0x90, 0x95, 0x2B, 0x4C, 0x4D (10) ; 0x29, 0x2B, 0x5D, 0x52 (61) ; 0x3F (346).
+
+### E19.d2c1 (2026-10-03)
+
+- **Suites** : `Alundra.Tests` **2185 avant la sous-tranche, 2228 après** (+43 : C1 9, C2 16, C3 8, C4 9, C5 1), 0 échec, en Release
+  (33 s) puis en Debug (32 s), la Debug en dernier ; `cmp` sans écart entre `Alundra/bin/Debug/net9.0-windows/Alundra.dll` et
+  `alundra-project/Alundra.dll` (sha256 `cee2e950...7df9`). Moteur, convertisseur et analyseur non touchés.
+- **Traces** : contenu identique après chaque suite ; le test réécrit les quatre traces du héros en fins de ligne LF (`git diff
+  --exit-code` rend 0 ; fins de ligne remises par `git checkout`).
+- **Valeurs mesurées contre valeurs écrites** : toutes égales, sauf deux arrêts tranchés (A10 : T102 effacé 620 et T105 posé 621,
+  phase de Wendell ; Giles dans A10J : `0x24 @6400` à F0+255, `0x19` à F0+266, `FlagToDestroy` à F0+267, O-E19-29). A10 : fin
+  `0x11 @354` à 960 (922 avant). A12 (179) : `1A [2] @411` à l'image 287, `0x53 @451` de 359 à 378 (+19). A10J : F0 = image 33,
+  héros aux valeurs du binaire à l'unité, eau comprise ; `0x24 @2462` à F0+297.
+- **Temps d'exécution** : chaque nouvel arc sous la seconde ; aucun n'approche 120 s.
 
 ## 3. Points ouverts
 
