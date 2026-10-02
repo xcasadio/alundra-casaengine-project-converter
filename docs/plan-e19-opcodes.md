@@ -161,6 +161,15 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-41** — L'envol caché de la carte 478 (programme `B[2]` : L2 ou R1, touches Y ou I, tenus seuls à
     l'arrivée, Alundra monte de 60 px puis retombe) **reste comme dans l'original** : le port du `0x1B` du héros le
     fait fonctionner, sans exception.
+- **D-E19-42 à D-E19-44** (2026-10-02, après la découverte du saut à la manette) :
+  - **D-E19-42** — Le héros **se pose sur le dessus des objets** (coffres, plateformes, interrupteurs à piétiner) et
+    **est porté** par une plateforme qui bouge (règle du passager du binaire, passager recalculé à chaque tick), dans
+    E19.d2c ; le plafond reste à E19.h.
+  - **D-E19-43** — **Tomber d'un rebord** passe par la même mécanique que le saut, comme dans l'original (même état en
+    l'air, même gravité, même atterrissage) ; les deux traces de référence « spawn » du héros sont régénérées aux
+    valeurs prévues d'avance.
+  - **D-E19-44** — Le **son du décollage** d'Alundra (son 10 de l'original) est joué dès E19.d2c, s'il se retrouve dans la
+    banque de sons de la DLL ; sinon il est consigné.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
