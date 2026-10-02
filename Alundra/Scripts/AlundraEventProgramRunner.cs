@@ -681,6 +681,12 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // blocked step and cleared at the next one). Size 1.
                 return entity.ForceAdjusted != 0 ? 1 : 0;
 
+            case 0x25: // Wait entity collision z or on ground - Script_37_025 @ 0x8003DB7C (E19.d2c1 R4, docs/plan-e19-opcodes.md §1.2h.3.1), PER THE BINARY:
+                       // returns 1 when the LOGIC entity's CollidedWithEntityZ (+0x140) or IsOnGround (+0x144) is nonzero, else 0 (the script waits and
+                       // re-tests at the next tick). No operand, no side effect, no timer: same shape as 0x24. Size 1. Before E19.d2c1 the opcode was
+                       // skipped, so every jump or fall script ran on without waiting for the landing.
+                return entity.CollidedWithEntityZ != 0 || entity.IsOnGround != 0 ? 1 : 0;
+
             case 0x40: // Set program index - Script_64_040 @ 0x8003E7B8 (E19.d D6, D-E19-22), PER THE BINARY: raises g_clearProgramState,
                        // then ProgramIndexes[v1] = v2 of the LOGIC entity; size 3. The original bounds nothing: v1 >= 6 would write
                        // past the array (no site in the corpus, 426 sites all with v1 from 2 to 5). Documented correction of that defect:

@@ -172,6 +172,15 @@ internal static class AlundraScriptedMotion
     private static void RunOneMotionTick(AlundraEntityScriptProxy entity, uint animSetAnimationId)
     {
         entity.ForceAdjusted = 0;
+        // E19.d2c1 R5 (the binary clears +0x140 and +0x13C together at the head of the physics pass, 0x800383B4/0x800383B8).
+        entity.CollidedWithEntityZ = 0;
+        // R5 d: the hero outside the airborne state lands on every tick of its rest with gravity (+0x140 stays 1 on the ground). The state
+        // itself (E19.d2c1 C3) raises it at its own landing.
+        if (entity.IsPlayer && (entity.Flags & EntityFlags.Gravity) != 0 && entity.IsOnGround == 1)
+        {
+            entity.CollidedWithEntityZ = 1;
+        }
+
         RunOneKinematicTick(entity, animSetAnimationId);
         entity.MotionTickCount++; // see that field's own doc (ONE-CLOCK invariant instrumentation).
     }

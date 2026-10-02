@@ -135,7 +135,8 @@ public sealed class AlundraInoaDayOneArcTests
     /// A10 (no flag): the hero arrives by portal 162.3 on map 165 (the first visit to Meade's house). B[1] sees the hero at tile (12, 22)
     /// (height 1: U3), places five actors, sets T100; B[2] then plays the visit, handing the scene to the actors one temporary flag at
     /// a time (T101, T102, T103, T104, T102, T105), each cleared by its own actor; <c>0x11 @354</c> ends it with G3 set. The two
-    /// <c>0x25</c> of Bergus (<c>@838</c>, <c>@843</c>) are skipped: they change in E19.d2c, as announced.
+    /// <c>0x25</c> of Bergus (<c>@838</c>, <c>@843</c>) are executed since E19.d2c1 C1 (R4): each returns 1 at its first call, Bergus resting on
+    /// the ground; the jumps themselves (the impulse) come with C2, which re-pins the frames of the arc.
     /// </summary>
     [Fact]
     public void A10_TheFirstVisitOnMap165_TheActorsPassTheSceneOnByFlags_ThePlayerGetsTheHandBack()
@@ -174,10 +175,15 @@ public sealed class AlundraInoaDayOneArcTests
         // 1. The end signal: 0x11 @354 of the program @236 (slot B); the boxes are closed by one press per frame.
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(B, 354, 0x11), "B[2] executes 0x11 @354");
 
-        // 2. Exactly 0x25 @838 and @843 skipped, once each; nothing cut off by the loop guard.
-        AssertSkippedWithin(arc, new HashSet<(int, int)> { (0x25, 838), (0x25, 843) });
-        Assert.Equal(1, arc.SkippedOrExceeded.Count(t => t.Opcode == 0x25 && t.Pc == 838));
-        Assert.Equal(1, arc.SkippedOrExceeded.Count(t => t.Opcode == 0x25 && t.Pc == 843));
+        // 2. Nothing skipped, nothing cut off by the loop guard (E19.d2c1 R4: 0x25 is ported). Each 0x25 of Bergus executes once and returns 1
+        // at its first call: Bergus does not leave the ground yet (no impulse before the next task), so he rests with CollidedWithEntityZ raised
+        // (R5 a) and the instruction after it runs in the same call.
+        AssertNothingSkippedOrExceeded(arc);
+        foreach (var pc in new[] { 838, 843 })
+        {
+            Assert.Equal(1, FramesOf(arc, C, pc, 0x25).Count);
+            Assert.Equal(FramesOf(arc, C, pc, 0x25)[0], FrameOf(arc, C, pc + 1));
+        }
 
         // 3. The rest, in the order of the plan.
         AssertFrame(arc, B, 354, 922);

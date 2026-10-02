@@ -330,6 +330,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         0x08, 0x0B, 0x0C, 0x3A, 0x5E, 0x73, 0x74, 0x89, // E19.c1 T3 (motion opcodes).
         0x1C, 0x1D, // E19.c1 T4 (wait for animation ends).
         0x24, // E19.d D4 (wait until ForceAdjusted of the logic entity is nonzero).
+        0x25, // E19.d2c1 R4 (wait until CollidedWithEntityZ or IsOnGround of the logic entity is nonzero; trace label only).
         0x40, 0x41, // E19.d D6 (set program index and clear the state, set sprite program index).
         // E16.a T6 (docs/plan-e16-etat-partie.md, contract item 4): the 23 opcodes of the two rows that start at 0x0D were
         // ported by earlier slices (dialogue, map change, HUD, audio, ...) and already have a Dispatch

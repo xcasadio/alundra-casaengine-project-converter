@@ -154,14 +154,30 @@ public sealed class AlundraEntityContactArcTests
         var s = new ArcSamples(arc, new[] { 71, 72, 73, 74 }, new uint[] { 666, 668, 674 },
             (C, 5156, 5163), (C, 5156, 5166), (C, 5156, 5172), (C, 5012, 5061), (C, 5012, 5071));
 
+        // E19.d2c1 TR-V: the two bouquets (records 69 and 81, no gravity) are dropped by `1B [128,255]` (C[44] @4738 and C[54] @5542, -32768 per
+        // tick) and each waits for the landing with `0x25` (@4741, @5545) before `1B [0,0]`. Sampled at the end of every frame.
+        var bouquets = new Dictionary<int, List<(int Frame, int PosZ, int ForceZ, int IsOnGround)>> { [69] = new(), [81] = new() };
+        var sampleEachFrame = arc.OnFrame!;
+        arc.OnFrame = () =>
+        {
+            sampleEachFrame();
+            foreach (var (record, list) in bouquets)
+            {
+                if (arc.EntityByRecord(record) is { } bouquet)
+                {
+                    list.Add((arc.Frame, bouquet.PosZ, bouquet.ForceZ, bouquet.IsOnGround));
+                }
+            }
+        };
+
         // 1. The end signal: 0x53 @2003 of B[14].
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(B, 2003, 0x53), "B[14] executes 0x53 @2003");
 
         // 2. Only the instructions the measure shows are skipped.
-        // 0x25 (the jump, E19.d2c) twice, 0x58, 0x90, 0x95 and 0x2B (not ported, no effect on the scene).
+        // 0x58, 0x90, 0x95 and 0x2B (not ported, no effect on the scene); the two 0x25 of the bouquets are ported (E19.d2c1 R4).
         AssertSkippedWithin(arc, new HashSet<(int, int)>
         {
-            (0x58, 5470), (0x90, 2689), (0x2B, 6413), (0x95, 6418), (0x90, 2828), (0x58, 4666), (0x25, 4741), (0x25, 5545),
+            (0x58, 5470), (0x90, 2689), (0x2B, 6413), (0x95, 6418), (0x90, 2828), (0x58, 4666),
         });
 
         // 3. The rest, in the order of the plan.
@@ -197,6 +213,32 @@ public sealed class AlundraEntityContactArcTests
         for (var i = 0; i + 1 < ordered.Length; i++)
         {
             Assert.True(ordered[i] <= ordered[i + 1], $"the events are not in the order of the plan: frames {string.Join(", ", ordered)}");
+        }
+
+        // TR-V (E19.d2c1 C1): each bouquet falls 32768 units per tick from the drop (the tick of `1B [128,255]`, t), its 0x25 returns 1 between
+        // t+8 (the 4 px magnet of the engine, IsOnGround 1) and t+17 (the landing of the DLL on the strict test of R5), the `1B [0,0]` that
+        // follows sets ForceZ to 0 and the bouquet stays at its rest height: none is left in the air at the end of the arc.
+        foreach (var (record, dropPc, waitPc, stopPc) in new[] { (69, 4738, 4741, 4742), (81, 5542, 5545, 5546) })
+        {
+            var samples = bouquets[record];
+            var drop = FrameOf(arc, C, dropPc);
+            var wait = FramesOf(arc, C, waitPc, 0x25);
+            var detail = $"bouquet {record}: drop frame {drop}, 0x25 frames [{string.Join(",", wait)}], samples {string.Join(" ", samples.Where(x => x.Frame >= drop && x.Frame <= drop + 20).Select(x => $"{x.Frame}:{x.PosZ}/{x.ForceZ}/{x.IsOnGround}"))}";
+            Assert.True(wait.Count > 0, detail);
+            Assert.InRange(wait[^1] - drop, 8, 17);
+            Assert.Equal(wait[^1], FrameOf(arc, C, stopPc)); // the wait returns 1 and `1B [0,0]` runs in the same call.
+            var rest = samples[^1].PosZ;
+            var afterDrop = samples.Where(x => x.Frame > drop && x.Frame <= drop + 4).ToList(); // the first ticks, above the magnet.
+            Assert.True(afterDrop.Count == 4 && afterDrop.All(x => x.ForceZ == -32768), detail);
+            for (var i = 1; i < afterDrop.Count; i++)
+            {
+                Assert.True(afterDrop[i].PosZ - afterDrop[i - 1].PosZ == -32768, detail);
+            }
+
+            var after = samples.Where(x => x.Frame > wait[^1]).ToList();
+            Assert.True(after.Count > 0 && after.All(x => x.ForceZ == 0 && x.PosZ == rest), detail);
+            Assert.True(rest < afterDrop[0].PosZ, detail);
+            Assert.Equal(1, samples[^1].IsOnGround);
         }
 
         AssertNoUnexpectedError(arc);

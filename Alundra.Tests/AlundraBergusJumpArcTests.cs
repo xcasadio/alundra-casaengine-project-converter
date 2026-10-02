@@ -1,0 +1,77 @@
+#nullable enable
+using System.Collections.Generic;
+using System.Linq;
+using Alundra.Scripts;
+using Xunit;
+using static Alundra.Tests.ArcChecks;
+
+namespace Alundra.Tests;
+
+/// <summary>
+/// E19.d2c1 A12 (docs/plan-e19-opcodes.md section 1.2h.3.1): map 179, B[2] (program @328), the first scripted jump of the day 3 chain -
+/// Bergus (record 8) is told to jump (<c>1A [2] @411</c>, an animation of impulse), waits for the animation (<c>37 [3] @413</c>) and for the landing
+/// (<c>0x25 @415</c>), then comes back (<c>1A [0] @416</c>); the boxes then close and <c>0x53 @451</c> leaves the map. The arc starts like the
+/// preset <c>day3-after-dream</c> (G203, G1651, G1660, arrival at the tile (17, 7), z 1).
+/// </summary>
+[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+public sealed class AlundraBergusJumpArcTests
+{
+    private const int B = ScriptHelper.ProgramBMap;
+    private const int C = ScriptHelper.ProgramCTick;
+
+    private static ArcSpec A12Spec => new(
+        "A12", "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1660 }, 0, 0, 0, 2500,
+        RealController: true, Prefabs: true,
+        Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, AlundraGameState.ResetAnimationId, 0));
+
+    /// <summary>The state of Bergus (the entity of the record) at the end of every frame, from the first frame the program is seen.</summary>
+    private sealed record Sample(int Frame, int PosZ, int ForceZ, int IsOnGround, int CollidedWithEntityZ, int IsZForceApplied);
+
+    private static (ArcRun Arc, List<Sample> Samples) Run()
+    {
+        var arc = new ArcRun(A12Spec);
+        var samples = new List<Sample>();
+        var previous = arc.OnFrame;
+        arc.OnFrame = () =>
+        {
+            previous?.Invoke();
+            if (arc.EntityByRecord(8) is { } bergus)
+            {
+                samples.Add(new Sample(arc.Frame, bergus.PosZ, bergus.ForceZ, bergus.IsOnGround, bergus.CollidedWithEntityZ, bergus.IsZForceApplied));
+            }
+        };
+
+        arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(B, 451, 0x53), "B[2] executes 0x53 @451");
+        return (arc, samples);
+    }
+
+    [Fact]
+    public void A12_BergusJumpsOnMap179_TheWaitForTheLandingEnds_TheSceneLeavesByThe0x53()
+    {
+        var (arc, samples) = Run();
+        using var _ = arc;
+
+        // 1. The end signal (0x53 @451, reached by the run above), then nothing skipped, nothing cut off by the loop guard: the base of C0, measured
+        // on the DLL before C1 (0x25 skipped), skipped exactly (0x25, 415); R4 ports it.
+        AssertNothingSkippedOrExceeded(arc);
+
+        // 2. The frames of the base of C0 (E19.d2c1 C1, before the impulse of C2: Bergus does not leave the ground): 1A [2] @411 at the frame 287,
+        // 37 [3] @413 returns at 291 (the clock of the animation), 0x25 @415 executes once, at 291, and returns 1 at its first call (Bergus rests on
+        // the ground, CollidedWithEntityZ raised by R5 a), 1A [0] @416 in the same call, 0x53 @451 at 359.
+        const int f = 287;
+        Assert.Equal(f, FrameOf(arc, B, 411));
+        Assert.Equal(new[] { f + 4 }, FramesOf(arc, B, 413, 0x37).Skip(FramesOf(arc, B, 413, 0x37).Count - 1).ToArray());
+        Assert.Equal(new[] { f + 4 }, FramesOf(arc, B, 415, 0x25));
+        Assert.Equal(f + 4, FrameOf(arc, B, 416));
+        Assert.Equal(359, FrameOf(arc, B, 451));
+
+        // 3. Bergus (record 8) never leaves his rest height: no impulse yet.
+        Assert.All(samples.Where(s => s.Frame >= f && s.Frame <= f + 30), s =>
+        {
+            Assert.Equal(1048576, s.PosZ);
+            Assert.Equal(1, s.IsOnGround);
+        });
+
+        AssertNoUnexpectedError(arc);
+    }
+}

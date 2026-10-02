@@ -673,6 +673,10 @@ public class AlundraEntityScriptProxy : GameplayProxy
                     // "moddedPosZ + FinalForceZ &lt;= landingTop - 1" test below (sailor 12, map 389's own
                     // last staircase - the exact regression a750256 fixed). Gated on `ForceZ &lt; 0` (never
                     // wipes a same-tick rising 0x1B impulse), matching that commit's own faithfulness note.
+                    //
+                    // E19.d2c1 R5 a: the binary's strict landing test reads the force OF THE TICK, so it is taken here, before this reset
+                    // wipes it (a resting NPC with gravity has -32768 here every tick, which is what makes CollidedWithEntityZ 1 at rest).
+                    var tickForceZ = FinalForceZ;
                     if (Controller.IsGrounded && (Flags & EntityFlags.Gravity) != 0 && ForceZ < 0)
                     {
                         ForceZ = 0;
@@ -730,7 +734,14 @@ public class AlundraEntityScriptProxy : GameplayProxy
                         var wasAlreadyLanded = PosZ == targetPosZ;
 
                         PosZ = targetPosZ;
-                        CollidedWithEntityZ = 0;
+                        // E19.d2c1 R5 a (the binary, 0x80036C20-0x80036C34 and 0x800376E0): CollidedWithEntityZ is raised only when the STRICT
+                        // test holds on the force of the tick, moddedPosZ + F < terrainHeight; this branch keeps the DLL's own `<=` landing
+                        // (D-E19-40), so an exact touch (sum == 0) lands here without raising it. It is cleared at the head of every motion tick.
+                        if (moddedPosZ + tickForceZ < terrainHeight)
+                        {
+                            CollidedWithEntityZ = 1;
+                        }
+
                         if ((Flags & EntityFlags.Gravity) != 0)
                         {
                             ForceZ = 0;

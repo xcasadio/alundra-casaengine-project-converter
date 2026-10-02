@@ -3169,7 +3169,7 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
   chaque tâche : `git diff --exit-code` sur les six traces (`docs/hero-trace-389-*.txt`, `docs/intro-trace-389.txt`,
   `docs/intro-programs-389.txt`).
 
-- ⏳ **C1 — `0x25` et `CollidedWithEntityZ` (R4, R5), tests d'abord.**
+- ✅ **C1 — `0x25` et `CollidedWithEntityZ` (R4, R5), tests d'abord.**
   - **UJ-2** (montage de `AlundraEventProgramRunnerWaitForceAdjustedTests` : programme `01 25 FF`) : propriétaire = logique,
     `(CollidedWithEntityZ, IsOnGround)` = (0,0) : l'appel 1 trace `(0,0x01,1)`, `(1,0x25,0)`, `CodeIndex` 1 ; puis (0,1) :
     `(1,0x25,1)`, fin, `CodeIndex` 2 ; idem (1,0) et (1,1) ; lit l'entité logique (propriétaire (1,1) et logique (0,0) :
@@ -3195,6 +3195,15 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
     les images de `@411`, `@416` et `@451` sont celles de la base de C0 ; ensemble des sautés = celui de la base moins
     `(0x25,415)`.
   - Commit : `feat(alundra): port opcode 0x25 and clear CollidedWithEntityZ every tick like the binary`
+  - Fait le 2026-10-03 : rouges d'abord sur le code d'avant C1 (production remisée) : UJ-2 (3 tests : continue d'emblée), UJ-4 (repos avec gravité,
+    plateforme puis air à n+1, héros au repos : 1 attendu, 0 rendu ; les cas sans gravité et en l'air passent déjà, ce sont des gardes), A10
+    (`0x25 @838` et `@843` encore sautés), T-A10v et A12 (`0x25` sautés) ; verts après : 2193 puis 2194 tests, aucun test existant hors liste
+    touché. Montage UJ-4 : `JumpNpcRig` et `FlatCells` (`AlundraJumpTestSupport.cs`), PNJ de l'annexe A.1. Base d'A12 mesurée sur la DLL d'avant C1 :
+    F = 287, `37 [3] @413` rend à F+4 (291), `0x25 @415` sauté à 291, `1A [0] @416` à 291, `0x53 @451` à 359, sautés = {(0x25, 415)} seul ; sur
+    la DLL de C1 : mêmes images, `0x25 @415` exécuté une fois à 291, rien de sauté. TR-V : lâcher à t = 187 (rec69), `1B [128,255]` puis -32768 par
+    tick, `0x25` rend à t+8 (aimantation de 4 px du moteur : 52 px puis 48 px), `1B [0,0]` dans le même appel, repos à 48 px, rien en l'air à la fin.
+    Mutation jetable de R5 a (`FinalForceZ` à la place de la force du tick relevée avant la remise à zéro) : UJ-4 repos avec gravité rouge. Écart :
+    le test d'A12 vit dans `AlundraBergusJumpArcTests.cs` (nouveau fichier), non dans `AlundraEntityContactArcTests`.
 
 - ⏳ **C2 — Impulsion au tick, apparition, PNJ, règle `0x8000` (R1, R2, R3), tests d'abord.** Montage de PNJ des tests
   (annexe A.1 et C.valeurs) : `ContactWorld.BuildWorld(new FlatGroundField { GroundZ = 0 }, null)`, `ContactHost`,

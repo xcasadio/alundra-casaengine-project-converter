@@ -71,7 +71,7 @@ public static class EventOpcodeSizeTable
         { 0x22, new(1, "Clamp forceZ to height target") },
         { 0x23, new(1, "Clamp forceZ and no collided Z") },
         { 0x24, new(1, "Wait until force adjusted") },
-        { 0x25, new(1, "Wait entity collision z or 144") },
+        { 0x25, new(1, "Wait until collided with entity Z or on ground") },
         { 0x26, new(1, "Wait force adjusted or entity collision z") },
         { 0x27, new(1, "Face player") },
         { 0x28, new(1, "Set EntityFlags.ClassB") },
