@@ -364,7 +364,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.c1 🧪 | Cartes 478 et 416 : `0x0B` avec détour (D-E19-6), `0x1C`/`0x1D` (compteur du binaire, Chain et Hold), `0x5E`, `0x08`, `0x0C`, `0x3A`, `0x89`, `0x73`/`0x74` ; arcs en vrais préfabs (D-E19-14) | A3, A7, A4p | La vision de 478 va au bout ; la plage 416 mène à la 163 |
 | E19.c2 🧪 | Moteur : horloge logique exacte des fins d'animation, rendu en temps réel (D-E19-16, D-E19-17), correction des Loop figées ; DLL : pilotage à chaque tick logique, signal de boucle (D-E19-18), garde de `0x1C` sous rattrapage | A3, A9, tests moteur | Wendell à Inoa rend la main ; les fins d'animation au tick de l'original |
 | E19.d 🧪 | Fin de chaîne : `0x24` avec recensement (D-E19-21), `0x40`/`0x41` complets (D-E19-22), défaut d'atterrissage de la DLL (391), vrai héros et pad tenu dans les arcs ; reste de 392, 391 et 163 | A5, A5r, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
-| E19.d2a | Après le premier livre (§1.2h) : sauvegardes de test chargées par F9 (D-E19-33) ; arrivée par portail dans les arcs (U3) ; arcs du jour 1 | A10, A11, A20, TH3 | Jour 1 jusqu'au jour 2 ; F9 sur les préréglages du jour 3 et du jour 4 |
+| E19.d2a 🧪 | Après le premier livre (§1.2h) : sauvegardes de test chargées par F9 (D-E19-33) ; arrivée par portail dans les arcs (U3) ; arcs du jour 1 | A10, A11, A20, TH3 | Jour 1 jusqu'au jour 2 ; F9 sur les préréglages du jour 3 et du jour 4 |
 | E19.d2b | Moteur : prédicat d'obstacle dans l'étage champ du contrôleur ; DLL : contacts entre entités du binaire (D-E19-27 à D-E19-30), natif E 0/1, contact du dialogue ; règle les deux P2 d'E19.d (O-E19-18, 185 `@506`) | T-A19, T-A10v, T-B9, T-C61, test moteur | Le héros bute sur les PNJ et leur parle ; jour 4 : la 185 mène à la 362 |
 | E19.d2c | DLL : saut scripté et `IsZForceApplied` (D-E19-31), `0x25`, `CollidedWithEntityZ`, eau et glace du héros (D-E19-32) (O-E19-8, O-E19-19) | UJ, UW, A10J/A16, A3 | Jour 3 : le saut de la 10 jusqu'à la 135 |
 | E19.e | Recette de bout en bout, plus un test statique : aucun opcode sauté sur la chaîne hors liste d'exceptions | toute la chaîne | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement (avec les recettes d'E16 en attente) |
@@ -2398,7 +2398,7 @@ indépendante ; notes et scripts dans le scratchpad de la session, `e19d2-disc/`
 - **Merge** : E19.d ne se merge pas sans E19.d2b et E19.d2c ; moteur d'abord (`chantier/animation-logical-end-clock`,
   puis la branche moteur d'E19.d2b, qui en part).
 
-#### 1.2h.1 E19.d2a — Sauvegardes de test et arcs du jour 1 ⏳
+#### 1.2h.1 E19.d2a — Sauvegardes de test et arcs du jour 1 🧪 (S1 à S5 faites et vérifiées CONFIRMED le 2026-10-02 ; reste la recette S6 de l'auteur)
 
 **Résultat** : l'auteur lance un outil qui écrit une sauvegarde préparée dans le dossier du jeu ; F9 la charge ; la
 partie reprend au jour 3 après le rêve (carte 179) ou au jour 4 (carte 185). Le jour 1 après le livre (162, 165, 164)
@@ -2528,7 +2528,7 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
     - Les positions de Septimus ne sont pas épinglées ici : dans l'original rec4 l'arrête (E19.d2b).
   - Une valeur écrite d'avance que l'arc contredit est un **arrêt** (question à l'auteur), jamais une ré-épingle.
 
-- 🧪 **S5 — Vérification et clôture** (builds, tests et mesures faits par l'exécutant, voir §2 « E19.d2a » ; reste le verifier frais et les dispositions, par la session principale). Build de la solution et `Alundra.Tests` complet en **Release** d'abord
+- ✅ **S5 — Vérification et clôture** (builds, tests et mesures faits par l'exécutant, voir §2 « E19.d2a » ; verifier frais et dispositions ci-dessous, « Vérification d'E19.d2a »). Build de la solution et `Alundra.Tests` complet en **Release** d'abord
   (`--blame-hang-timeout 300s`), puis, **en dernier**, build et `Alundra.Tests` complet en **Debug** : la dernière
   build est Debug, et `cmp` ne montre aucun écart entre `Alundra/bin/Debug/<cible>/Alundra.dll` et
   `alundra-project/Alundra.dll` (chaque build de `Alundra` recopie sa DLL dans le projet exporté, et une DLL Release
@@ -2578,6 +2578,28 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
   testé en S1. P3 corrigé aussi : le critère « tables chargées » est nommé. Deuxième REVISE automatique : nouvelle
   époque de préparation, une seule relecture de clôture.
 - Relecture de clôture sur `f9512d1` : **READY**.
+
+**Vérification d'E19.d2a (2026-10-02).**
+- **Commits** : `3be0d89` (S1), `62dccdd` (S2), `ad04f9c` (S3), `43b12ac` (S4), `15daf93` (mesures, part de l'exécutant de S5).
+- **Verifier frais : CONFIRMED** sur les critères 1 à 4. Il a relancé `Alundra.Tests` en Release puis en Debug, en dernier (2112/2112 chaque fois,
+  `--blame-hang-timeout 300s`), le `--dry-run` des deux préréglages (conforme au tableau de S1, code 0, aucun dossier créé sous `%LOCALAPPDATA%`), et
+  le `cmp` de la DLL déployée. Mutations attrapées : `[176] = 182` dans le préréglage du jour 4 (2 tests de S1) ; intégration du pion retirée du support
+  d'arcs (TH3 et A10). Il a vérifié dans le moteur (`World.cs:294-311`, `:360-375`) que la déviation de S3 suit l'ordre de la production.
+- **Trois contradicteurs en lecture seule** (valeurs, sûreté de l'outil, qualité des tests) : aucun P0 à P2. Valeurs recalculées depuis les données :
+  toutes conformes, aucune ré-épinglée. L'outil n'écrit que par `GameSettings.SaveGames.Save`, refuse avec un code non nul sans exception avalée, et le
+  `--dry-run` n'écrit rien (13 lancements). La session principale a refait une build Debug après eux : à jour, `cmp` sans écart.
+- **Dispositions** :
+
+  | Constat | Priorité | Disposition |
+  |---|---|---|
+  | S3 : l'arrêt écrit « `TileZ` ≠ 1 » a été atteint à la première mesure (`PosZ = 0`) ; l'exécutant a corrigé le support d'arcs au lieu de s'arrêter. Cause établie : le support laissait le pion en file, donc sans monde à l'adoption, alors que la production l'intègre avant `AdoptPlayerPawn` (`World.cs:294-311`, `:360-375`, `Entity.cs:227-229`). Avec l'ordre de production, `PosZ = 1048576` et `TileZ = 1` ; retirer cette intégration fait échouer TH3 et A10. | P4, procédure | Accepté : l'arrêt visait un défaut de production (U3), que la mesure écarte ; le défaut était dans le montage du test. Signalé à l'auteur. |
+  | A11 n'asserte ni T200 (ouverture de la boîte 131) ni T201 (premier appui), mesurés aux images 12 et 13 ; seuls la fin et l'image de `@353` les couvrent indirectement. A10 ne vérifie pas que `0x11 @354` appartient au programme `@236`. | P3 et P4, introduits | Reporté à E19.d2b, qui re-mesure et ré-épingle A10, A11 et A20. |
+  | A20 vérifie que les onze `0xA2` s'exécutent une fois à l'image 0, pas qu'ils sont sautés (compte toute la trace, quand A10 et A11 comptent les sautés). | P3, introduit | Reporté à E19.d2b (même fichier). |
+  | S1 : l'effacement de drapeaux et les compteurs d'objets ne sont observés par aucun test (G203 vaut déjà 0 dans une nouvelle partie ; aucun préréglage n'a de compteur) : leurs mutations survivent aux 22 tests. | P3, introduit | Reporté à E19.d2b (hygiène) : un préréglage de test qui pose puis efface, un compteur, les refus d'index. |
+  | Outil : le `--dry-run` accepte un `ProjectName` que le moteur refuserait à l'écriture ; le code de sortie annoncé (« 1 sur tout refus ») est faux pour les exceptions non gérées (fichier projet verrouillé, nom refusé : sortie non nulle mais pas 1) ; le mode d'emploi ne nomme pas les limites et préconditions de F9 ; aucun test automatique de l'outil. | P4, introduits | Reportés (hygiène d'E19.d2b) ; sans effet sur la recette (le vrai nom `AlundraGame` est valide). |
+  | Les arcs en mode arrivée partent avec un inventaire vide (`AdoptPlayerPawn` ne donne l'inventaire de nouvelle partie que sans arrivée). Sans effet aujourd'hui. | P4, introduit | Reporté à E19.d2c : le niveau de bottes s'y calcule depuis les objets possédés. |
+  | Deux tests portent le libellé « TH3 » (celui d'E19.d D1 et celui d'E19.d2a S3). | P4 | Reporté (hygiène). |
+  | L'empreinte sha256 de la DLL consignée au §2 ne désignait plus la DLL déployée, reconstruite par le verifier depuis les mêmes sources. | P4 | Corrigé au §2 dans ce commit. |
 
 **Esquisse d'E19.d2b — Contacts entre entités** (détaillée, relue et approuvée après E19.d2a).
 - Moteur, branche `chantier/field-movement-obstacles` depuis `chantier/animation-logical-end-clock` (`f205683a`, pas
@@ -2758,7 +2780,8 @@ Réservé aux mesures faites en exécutant les tranches.
   (`C[3] @451`) à l'image 208**, T3 visible en 209. **`0x58 @110` sauté 36 fois** jusqu'au signal de fin (dès l'image 2, non épinglé).
 - **Temps d'exécution** (Debug) : chaque arc environ 1 s ; la suite complète 23 s.
 - **Suites** : `Alundra.Tests` **2086 réussis avant la tranche, 2112 après** (+22 S1, +1 TH3, +3 arcs), 0 échec, en Release (23 s) puis en Debug (23 s), la Debug en dernier.
-  `cmp` sans écart entre `Alundra/bin/Debug/net9.0-windows/Alundra.dll` et `alundra-project/Alundra.dll` (sha256 `bb5332a6...a1b`), re-contrôlé après les `--dry-run`.
+  `cmp` sans écart entre `Alundra/bin/Debug/net9.0-windows/Alundra.dll` et `alundra-project/Alundra.dll` (sha256 `bb5332a6...a1b`), re-contrôlé après les `--dry-run`. Le verifier a reconstruit ensuite depuis les mêmes sources (HEAD embarqué dans la
+  version) : sha256 `19398dc7...`, `cmp` sans écart, re-contrôlé par la session principale après sa dernière build Debug.
 - **`--dry-run`** des deux préréglages (`dotnet run -c Debug`) : sortie conforme au tableau de S1, code de sortie 0, aucun dossier `AlundraGame` créé sous
   `%LOCALAPPDATA%`.
 
