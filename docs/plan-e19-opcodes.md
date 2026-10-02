@@ -136,6 +136,17 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-33** — **Sauvegardes de test** : un outil console construit des sauvegardes préréglées (nouvelle partie plus
     drapeaux, table et position), les valide par les règles du jeu et les écrit dans le dossier du jeu, où F9 les charge.
     L'auteur le lance hors de l'app Claude.
+- **D-E19-34 à D-E19-37** (2026-10-02, après la découverte d'E19.d2b) — ADR-0022 :
+  - **D-E19-34** — Les obstacles que l'original détruit par du code natif non porté (environ 600 : murs à boule de fer,
+    ronces enflammées, colonnes de glace, rochers et couvercles, piliers) restent **solides** jusqu'à E14, comme dans
+    l'original avant l'objet ou le pouvoir. Seuls les soulevables sont exclus (D-E19-28 : tous les cassables sont
+    soulevables).
+  - **D-E19-35** — D-E19-30 s'étend à `0x1E` : une seule règle dans `UpdateWalkDetour` n'engage le détour que si aucune
+    entité n'est en contact. Amende l'écart E4-D5 pour les seuls contacts d'entité.
+  - **D-E19-36** — Un mobile qui chevauche déjà une entité reste bloqué, comme dans le binaire ; aucune règle de sortie.
+    Les arrivées de la chaîne sont vérifiées par des arcs.
+  - **D-E19-37** — Le calage à l'entrée sud de la case (37,46) de la 10 (O-E19-24) est **reproduit et noté** : un arc de
+    contre-épreuve le documente ; le point reste ouvert jusqu'à ce que le chapitre 16 soit jouable.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -365,7 +376,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.c2 🧪 | Moteur : horloge logique exacte des fins d'animation, rendu en temps réel (D-E19-16, D-E19-17), correction des Loop figées ; DLL : pilotage à chaque tick logique, signal de boucle (D-E19-18), garde de `0x1C` sous rattrapage | A3, A9, tests moteur | Wendell à Inoa rend la main ; les fins d'animation au tick de l'original |
 | E19.d 🧪 | Fin de chaîne : `0x24` avec recensement (D-E19-21), `0x40`/`0x41` complets (D-E19-22), défaut d'atterrissage de la DLL (391), vrai héros et pad tenu dans les arcs ; reste de 392, 391 et 163 | A5, A5r, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
 | E19.d2a 🧪 | Après le premier livre (§1.2h) : sauvegardes de test chargées par F9 (D-E19-33) ; arrivée par portail dans les arcs (U3) ; arcs du jour 1 | A10, A11, A20, TH3 | Jour 1 jusqu'au jour 2 ; F9 sur les préréglages du jour 3 et du jour 4 |
-| E19.d2b | Moteur : prédicat d'obstacle dans l'étage champ du contrôleur ; DLL : contacts entre entités du binaire (D-E19-27 à D-E19-30), natif E 0/1, contact du dialogue ; règle les deux P2 d'E19.d (O-E19-18, 185 `@506`) | T-A19, T-A10v, T-B9, T-C61, test moteur | Le héros bute sur les PNJ et leur parle ; jour 4 : la 185 mène à la 362 |
+| E19.d2b | Moteur : sonde d'obstacles dans l'étage champ du contrôleur (ADR-0047 du moteur) ; DLL : contacts entre entités du binaire (D-E19-27 à D-E19-30, D-E19-34 à D-E19-37), natif E 0/1, contact du dialogue ; règle les deux P2 d'E19.d (O-E19-18, 185 `@506`) | T-A19, T-A10v, T-B9, T-C61, TN-1, TN-3, A11, tests moteur | Le héros bute sur les PNJ et leur parle ; jour 4 : la 185 mène à la 362 |
 | E19.d2c | DLL : saut scripté et `IsZForceApplied` (D-E19-31), `0x25`, `CollidedWithEntityZ`, eau et glace du héros (D-E19-32) (O-E19-8, O-E19-19) | UJ, UW, A10J/A16, A3 | Jour 3 : le saut de la 10 jusqu'à la 135 |
 | E19.e | Recette de bout en bout, plus un test statique : aucun opcode sauté sur la chaîne hors liste d'exceptions | toute la chaîne | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement (avec les recettes d'E16 en attente) |
 | E19.f | Boîte de nom et boîte de texte fidèle (D-E19-4) : export du cadre, écrans XAML liés à un view model, cycle de vie de la boîte de nom, pour `0x0D`/`0x5C`/`0xC4` | tests MGDesktop | Les noms s'affichent au-dessus de la boîte, à la place de l'original |
@@ -2601,29 +2612,249 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
   | Deux tests portent le libellé « TH3 » (celui d'E19.d D1 et celui d'E19.d2a S3). | P4 | Reporté (hygiène). |
   | L'empreinte sha256 de la DLL consignée au §2 ne désignait plus la DLL déployée, reconstruite par le verifier depuis les mêmes sources. | P4 | Corrigé au §2 dans ce commit. |
 
-**Esquisse d'E19.d2b — Contacts entre entités** (détaillée, relue et approuvée après E19.d2a).
-- Moteur, branche `chantier/field-movement-obstacles` depuis `chantier/animation-logical-end-clock` (`f205683a`, pas
-  encore dans `main` du moteur), plan `CasaEngineMonogame/ai-agent/tasks/field-movement-obstacles-tasks.md`, ADR moteur :
-  un prédicat d'obstacle optionnel, installé sur `World` comme `CollisionField` (non sérialisé, mêmes règles de remise à
-  zéro), interrogé par le test de blocage de l'étage champ avec l'entité mobile et la position candidate, pour que la
-  bisection d'ADR-0045 donne le contact exact ; le rapport de contact dit qui a bloqué (case ou obstacle) et lequel ;
-  aucune allocation ; sans obstacle installé, aucun test existant ne change.
-- DLL : la règle binaire de `FindEntityCollisionCandidate` (gardes du mobile et de la liste, boîte, Z) ; liste sans
-  `FlagToDestroy` ni soulevables ou cassables (D-E19-28) ; `AnimFlags` depuis `Acceleration` ; natif E 0/1 →
-  `DestroyEntity` ; entité de contact E12.d depuis le rapport ; détour de `0x0B` seulement sans entité en contact.
-- À trancher dans son plan : la règle de bord exacte (le port E12.d compte le contact affleurant, `dif <= dim` ; la
-  découverte de collision parle d'une boîte semi-ouverte) se lit dans le binaire avant d'écrire une valeur ; le calage à
-  l'entrée sud de la case (37,46) (O-E19-24).
-- Tests : T-ENG-1 (moteur) ; T-DLL-1 et ses jumeaux ; T-A19 (185 jusqu'au `0x53 @147` vers la 362) ; T-A10v
-  (villageois, valeurs avec le retard D-E19-13) ; T-B9 (jusqu'à G482 et `0x11 @3738`, recyclage des créneaux) ; T-C61
-  (rails de la mine) ; dialogue au contact ; épingles d'A10, A11 et A20 re-mesurées et écrites d'avance ; toutes les
-  autres inchangées (une épingle de l'intro qui bouge est un arrêt).
-- Porte avant merge : émulation dans la boucle binaire des 7 sites que le correctif bloque et des 13 départs du
-  cimetière (recensement des marches `0x0B`).
-- Recette : jeu libre de l'intro (le héros bute sur les PNJ, parle toujours, passe les portes ouvertes) ; F9
-  `day4-meeting` → la 185 → la 362 se charge.
+#### 1.2h.2 E19.d2b — Contacts entre entités ⏳ (planifiée le 2026-10-02 ; relue avant l'approbation de l'auteur)
 
-**Esquisse d'E19.d2c — Saut, `0x25`, eau et glace** (détaillée, relue et approuvée après E19.d2b).
+**Résultat** : le héros et les PNJ s'arrêtent au contact exact de toute entité collisionnable, comme dans le binaire ;
+les deux P2 introduits par E19.d sont réglés (la réunion de la 185 mène à la 362 ; la scène des villageois de la 10
+va au bout) ; parler aux PNJ marche toujours, par le contact.
+
+**Découverte** (2026-10-02, lecture seule, cinq surfaces dont quatre contre-vérifiées par des émulations indépendantes ;
+notes dans le scratchpad, `e19d2b-disc/`). Faits porteurs :
+- **Règle de bord tranchée** **[binaire]** : `FindEntityCollisionCandidate` (`0x80036FE0`-`0x800370B8`) est
+  semi-ouvert ; `Width = (taille << 16) - 1` (`0x80039CB8`) ; par axe, `delta = Mod(obstacle) - Mod(mobile)`, recouvrement
+  si `delta < Width(mobile) + 1` (delta ≥ 0) ou `-delta < Width(obstacle) + 1` (delta < 0) : **un contact affleurant ne
+  bloque pas**, une unité de moins bloque ; premier candidat de la liste qui recouvre en X, Y et Z. Le port E12.d de la
+  DLL (`AlundraEntityCollision.cs:40-111`, `AlundraEntitySpawnFactory.cs:697-699`) est déjà identique ; seuls le texte
+  (`AlundraEntityCollision.cs:27-33`, `docs/plan-e12d-interaction-joueur.md:86-88`) et le nom du test
+  `FlushContact_Counts_TheDerivedPlusOne` (`AlundraEntityCollisionTests.cs:42-52`) disent le contraire.
+- **Gardes** **[binaire]** : le mobile doit avoir `Flags & 0x80`, `AnimFlags & 0x80` nul et ne pas être porté ; la liste
+  des collisionnables (`0x800384F4`) a les mêmes gardes **sans test d'état**, héros compris ; la liste physique des
+  mobiles exige l'état 2 ou 3. Un contact d'entité ne glisse jamais ; l'entité est testée avant la case.
+- **Contact du dialogue** **[binaire]** : `+0x130` (`0x80037F08`) vaut l'obstacle qui a raccourci ou annulé le pas du
+  tick, le plus proche du contact quand deux se suivent (dernier rejet), 0 sinon ; pour un mobile sans gravité ou en l'air,
+  le binaire le met à 0 dans environ la moitié des ticks raccourcis (écart accepté).
+- **Un seul chemin** **[DLL]** : `MoveControllerAndPullPosition` (`AlundraEntityScriptProxy.cs:1846-1878`) pour le
+  héros (`TickPlayer`) comme pour les PNJ (`TickScriptedNpc`) ; tirage 16.16 par `Math.Round((double)racine * 65536.0)`
+  (`:1862-1863`) ; téléports (`0x64`, `0x65`, `0x8B`, `0x2D`, arrivées) par `PushLogicalPositionToRoot` → `Teleport`,
+  jamais bloqués ; entités sans contrôleur jamais bloquées.
+- **Liste de la DLL** : `BuildCollidables` (`EntitySupport.cs:43-71`), reconstruite en fin d'image
+  (`AlundraWorldProxy.cs:2586-2599`), héros en tête, sans test d'état ; elle sert aussi l'appui vertical
+  (`TryFindSupport`, `UpdateRidingEntities`, `EvaluateEntitySupport`) : l'exclusion des soulevables va dans le prédicat,
+  pas dans la liste. Le mouvement d'une entité `FlagToDestroy` continue aujourd'hui (le binaire l'exclut).
+- **Natif E 0/1** **[binaire]** : `0x8007ED10` = `DestroyEntity(e, -1)` (`0x8003A59C`), à chaque tick de l'état 3 quand le
+  programme E scripté est vide ; port dans `RunSpriteEvent` (`AlundraEventProgramRunner.cs:290-316`).
+- **AnimFlags** : octet `0xD` du jeu d'animation (`0x80038B68`), exporté sous le nom `Acceleration`
+  (`SpriteRecordCatalog.cs:331`), jamais copié (`AlundraEntityScriptProxy.cs:172`) ; une porte qui s'ouvre cesse de
+  bloquer un tick plus tard dans le binaire, un ou deux dans la DLL (script d'entité, programme de carte).
+- **Détour** : `0x0B` (`0x8003D468`) et `0x1E` (`0x8003D8D8`) ne lisent jamais `ForceAdjusted` ; la DLL leur donne le
+  même détour (`UpdateWalkDetour`, `AlundraEventProgramRunner.cs:2264`).
+- **Écarts mesurés et acceptés** : avance par axe du moteur contre division conjointe du binaire (un mobile qui pousse
+  en diagonale contre un PNJ glisse dans la DLL, reste collé dans le binaire ; 5,6 % des pas obliques bloqués finissent
+  jusqu'à 2 px ailleurs) ; `ForceAdjusted` sur contact d'entité 0 à 2 ticks plus tôt à l'est et au sud, même position ;
+  contact au flottant (4 unités 16.16 entre 512 et 1024 px, 8 au-delà) ; liste d'un tick de retard pour `0x62`/`0x63` et
+  les créations par script ; Z des PNJ un tick en retard sur le vertical.
+- **Épingles existantes** : sur 24 tests d'arcs, seul A11 change (Septimus s'arrête contre rec4 puis contre le héros,
+  19 images plus tôt). Changent aussi, par construction (D-E19-29), les trois montages qui reposent sur la sonde de
+  chevauchement de fin d'image (`AlundraWorldProxy.cs:2208-2216`) : `AlundraInteractionPassTests` (`:142`, `:161`) et
+  `AlundraSaveBookEndToEndTests` (`:132`, héros sans contrôleur posé sur le livre) ; `SailorThirteen`
+  (`AlundraDialogueOpcodesProductionTests.cs:339-375`) reste vert mais son miroir devient inerte. Inchangés : les
+  traces de l'intro (entités nues ou hôte à liste vide), le marin 12, la cabine, les tests de mouvement. Garde-fous à
+  conserver : marge d'une unité en Z d'une entité posée sur une autre (`AlundraNpcCharacterControllerMoverTests.cs:1801`,
+  `:1996`) : le prédicat lit les champs logiques entiers, jamais la racine flottante en Z.
+- **Scènes cibles** (émulées, reproduites par un mover float32 indépendant) : 185, 10 `B[14]`, 10 `B[9]` et 61 `B[6]`
+  vont au bout avec le prédicat et calent sans lui ; plusieurs contacts sont à 0 px (arrivée de la 179, héros sous le
+  livre de la 178, Naomi sous le héros de la 10, Giles et le héros de la 176 à 0,625 px) : la boîte semi-ouverte exacte
+  est décisive (en boîtes fermées la scène `B[14]` ne finit jamais).
+- **Porte avant merge franchie** : des sites que le correctif bloquerait d'après le recensement, seul 346 `@943` est aussi
+  bloqué dans le binaire (plateforme contre un mur à boule de fer : fidèle, D-E19-34) ; tous les autres (52, 199, 426, 61,
+  62, cimetière de la 10 et de la 331, 240) passent : artefacts du modèle statique. Les sites « nuage » des cartes de
+  l'histoire non émulés restent couverts par les arcs des cartes jouées.
+- **Jeu libre** : aucun passage obligé de la chaîne n'est fermé ; au jour 1 de la 162, les sorties secondaires 9, 12, 13
+  et 14 sont gardées par Sierra, Talis, Kline et Yuri (choix de level design apparent, hors chaîne).
+
+**Périmètre** : moteur (plan `CasaEngineMonogame/ai-agent/tasks/field-movement-obstacles-tasks.md`, ADR-0047, branche
+`chantier/field-movement-obstacles`) ; DLL `Alundra/` ; `Alundra.Tests/` ; `tools/AlundraTestSaves/` et `docs/test-saves.md`
+(hygiène reportée d'E19.d2a) ; docs du parent. **Hors périmètre** : glissement et division conjointe (E19.h) ; saut,
+`0x25`, eau et glace (E19.d2c) ; destruction des obstacles natifs, saisie et coups (E14) ; `0x28`-`0x2B` (E19.l) ;
+rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
+
+**Tâches.**
+
+- ⏳ **B0 — Plan et ADR.** Ce plan, le plan moteur (commit `b3aa47ca` sur `chantier/field-movement-obstacles`) et
+  l'ADR-0022 du parent. Fait avec la relecture.
+
+- ⏳ **B1 — Moteur** : exécuter le plan moteur (T0.1 à T2.1, `CasaEngine.Tests` sans échec), puis pointer le
+  sous-module du parent sur sa dernière tâche (commit `chore(engine): ...` du parent). Le pointeur ne bouge que là.
+
+- ⏳ **B2 — Liste, mobiles, AnimFlags, natif E (DLL), tests d'abord.**
+  - `BuildCollidables` exclut `Status == FlagToDestroy` ; la porte du mouvement (`RunGameplayBlockableUpdate`,
+    `AlundraEntityScriptProxy.cs:961-1090`) ne fait bouger qu'une entité `Status.IsActive()` (Normal ou Deactivated).
+  - `SyncAnimation` (`AlundraFrameSyncPasses.cs:123`, juste après `CurrentAnimationId`, avant le retour sans sprite)
+    copie `AnimSetsByAnim[CurrentAnimationId].Acceleration` (octet entier) dans `AnimFlags`, 0 si l'animation manque.
+  - `RunSpriteEvent` : `EventTrigger == ProgramEDeactivate` et `(uint)SpriteProgramIndexes[4] <= 1` →
+    `ScriptHost.DestroyEntity(entity, -1)` ; natif 2 et autres index inchangés.
+  - Tests **T-R2** (un candidat `FlagToDestroy` absent de `Collidables` ; Deactivated et Loaded présents ; une entité
+    `Flags & 0x600` présente dans `Collidables`) ; **T-R5** (`EventTrigger` 4, programme E scripté vide :
+    `SpriteProgramIndexes[4]` 0 ou 1 → `FlagToDestroy` ; 2 → inchangé ; programme E scripté → pas de destruction ;
+    créneaux C et F → pas de destruction ; chaîne `0x19` → une image → `FlagToDestroy` → l'image suivante, absent de la
+    liste) ; **T-R6** (jeu d'animation {0 : `Acceleration` 0x00, 1 : 0xD0} : cible 1 puis `SyncAnimation` → `AnimFlags`
+    0xD0 ; cible 0 → 0 ; entité sans sprite : chargé aussi).
+  - Commit : `feat(alundra): drop destroyed entities from collidables, load AnimFlags, destroy on native E 0 and 1`
+
+- ⏳ **B3 — Prédicat d'obstacle (DLL), tests d'abord.**
+  - Classe `AlundraMovementObstacleProbe : IMovementObstacleProbe`, installée par `InstallCellAndOverlaySystems`
+    (`AlundraWorldProxy.cs:850-871`) à côté du champ, à chaque chargement de monde.
+  - `TryFindObstacle(mover, racine candidate, out obstacle)` : proxy du mobile ; X et Y candidats =
+    `Math.Round((double)racine * 65536.0)`, exactement le tirage de `MoveControllerAndPullPosition` ; Z = `PosZ` logique
+    du mobile (champs entiers, jamais la racine flottante) ; parcours indexé de `ScriptHost.Collidables`, sans
+    allocation, en sautant le mobile lui-même et tout candidat `(Flags & EntityFlags.PickupKindMask) != 0`
+    (D-E19-28) ; la règle est celle de `FindEntityCollisionCandidate`, par une surcharge qui prend la position du sujet ;
+    premier candidat de la liste qui recouvre.
+  - `DrawDebug` : les boîtes de la liste, sous `DisplayPhysics`.
+  - Tests **T-R1** (règle pure, déjà portée, en dimensions réelles : héros Pos (32768000 ; 19660800 ; 3145729), boîte
+    (-10, -7, 0 ; 21, 15, 32) contre un villageois (-10, -7, 0 ; 20, 14, 32) : est X 34144256 → null, 34144255 → villageois ;
+    ouest 31457280 → null, 31457281 → villageois ; sud Y 20643840 → null, 20643839 → villageois ; nord 18743296 → null,
+    18743297 → villageois ; Z haut PosZ 5242881 → null, 5242880 et 5242879 → villageois ; Z bas 1048577 → null, 1048578 →
+    villageois ; héros PosZ 3145728 : villageois 5242880 → null, 5242879 → villageois ; Nestus PosY 33947648 → null,
+    33947647 → Meade, 33947649 → null avec Meade (62881792 ; 33030144) et Nestus X 63438848) ;
+    **T-R3** (contrôleurs réels, cases plates de hauteur 48, positions posées sur les champs logiques : Nestus (968,0 ;
+    552,0) vers le nord à 1 px par tick contre Meade immobile (960,0 ; 504,0), posée sur un pixel entier parce que le
+    tirage tronque une téléportation : PosY finale 33947648, soit `Nestus.PosY - 7 px = Meade.PosY + 7 px` ; `XCollisionEntity`
+    null aux ticks 0 à 33 puis Meade dès le tick 34 ; `ForceAdjusted` 0 aux ticks 0 à 33 puis 1 dès le tick 34 ; Meade
+    dont `0x63` efface Collidable : plus d'arrêt à l'image qui suit la reconstruction de la liste) ;
+    **T-R4** (contact est : le mobile finit affleurant, bord droit = bord gauche de l'obstacle à un ULP près,
+    `XCollisionEntity` = l'obstacle au tick qui raccourcit, `ForceAdjusted` 1 au tick suivant ; commentaire : le binaire
+    laisse 1 à 3 unités et lève le drapeau 1 à 2 ticks plus tard) ; **T-R-ID** (deux obstacles sur le chemin, le premier
+    de la liste plus loin, le second plus près : l'obstacle rapporté est le plus proche) ; **T-REG-Z** (plateforme PosZ
+    24117249, profondeur 2097151 : mobile à PosZ 26214401 → null, à 26214400 → la plateforme ; les tests
+    `AlundraNpcCharacterControllerMoverTests.cs:1801` et `:1996` restent verts avec la sonde installée) ; **T-R-LIFT**
+    (une caisse `Flags & 0x600` sur le chemin ne bloque pas ; un mur à boule de fer bloque, D-E19-34) ; **T-R9**
+    (héros (500 ; 300), direction 20, vitesse 256, pas (139008 ; -92672), villageois affleurant en (521 ; 296) : X
+    bloqué, Y descend de 1,4140625 px par tick, `XCollisionEntity` = le villageois ; écart au binaire, où le héros reste
+    immobile, écrit dans le test).
+  - Commit : `feat(alundra): block movers at entities through the controller's movement obstacle probe`
+
+- ⏳ **B4 — Contact du dialogue et détour (DLL), tests d'abord.**
+  - `MoveControllerAndPullPosition` remet `XCollisionEntity` à null avant le `Move`, puis y écrit le proxy de
+    `H2Obstacle ?? H1Obstacle` (le dernier axe traité) ; null si rien n'a bloqué ou si le déplacement demandé est nul ; le
+    gel garde la valeur. La sonde de chevauchement de fin d'image (`AlundraWorldProxy.cs:2208-2216`) est retirée.
+    `CheckEntityInteraction` ne change pas. Un compteur interne `EntityBlockCount` (incrémenté à chaque `Move` qui
+    rapporte un obstacle) sert aux arcs.
+  - `UpdateWalkDetour` ne s'engage que si `ForceAdjusted != 0` **et** `XCollisionEntity == null`, pour `0x0B` et
+    `0x1E` (D-E19-30, D-E19-35).
+  - Tests **T-R7** (héros à contrôleur réel, au sol, contre un PNJ `InteractRequiresButton` : `XCollisionEntity` = le PNJ
+    au tick du contact, null quand il s'écarte, null pour un déplacement demandé nul, gardé pendant le gel) ; **T-R8**
+    (`0x0B` et `0x1E` avec `ForceAdjusted` 1 et `XCollisionEntity` posé : ni chemin ni `WalkDetourAttempted` ; avec
+    `XCollisionEntity` null : détour comme avant, tests E4.d existants inchangés).
+  - **Montages réécrits** (changement propre à la tranche, D-E19-29) : `AlundraSaveBookEndToEndTests` → **T-REG-E12D-1**
+    (carte 17, livre rec0 (84 ; 328 ; z 0), boîte y 320 à 336 ; héros à contrôleur réel posé en (84 ; 360 ; 0), Haut
+    tenu : au contact PosY = 22478848 (343 px) et `XCollisionEntity` = le livre ; Carré démarre le flux du livre ;
+    jumeau posé en PosY 343 sans pousser : aucun contact écrit) ; les deux P-a d'`AlundraInteractionPassTests` →
+    **T-REG-E12D-2** (joueur à contrôleur, marin collisionnable à 40 px en X, Droite tenu : contact écrit à l'image de
+    l'arrêt ; null après un `Move` nul ; gardé pendant le gel `MenuOpen`) ; le miroir de `SailorThirteen` suit le site
+    de production.
+  - Commit : `feat(alundra): take the interaction contact from the blocking report and keep walk detours off entities`
+
+- ⏳ **B5 — Textes.** Commentaire d'`AlundraEntityCollision.cs:27-33` et nom du test `FlushContact_*` corrigés (le
+  contact affleurant ne recouvre pas) ; note datée dans `docs/plan-e12d-interaction-joueur.md:86-88`.
+  Commit : `docs(alundra): state that a flush contact does not overlap`
+
+- ⏳ **B6 — Arcs** (vrais préfabs, vrai héros, contrôleurs réels ; images jamais absolues ; contacts en relationnel
+  exact à un ULP de la coordonnée près ; positions de transition à ± 2,5 px ; une valeur contredite est un **arrêt**).
+  - **T-REG-0** : `EntityBlockCount` vaut 0 à la fin de A1c, A3, A4p, A5, A5r, A6, A7, A8, A9, A10 et A20 (preuve que
+    leurs épingles n'ont pas de raison de bouger) ; leurs épingles restent inchangées.
+  - **A11 ré-épinglé** (drapeaux {G3, G201}, `PlaceHero(996, 120, 16)`) : contacts de Septimus = {rec4, héros}
+    seulement ; `0x24 @341` finit en (71565312 ; 7995392) contre rec4 ; `@346` finit en (66650112 ; 7995392) contre le
+    héros, `ForceAdjusted` 1 ; `0x0B @386` finit avec PosX ≥ 68222976 (valeur du modèle 68272128) ; images (C,276) 5,
+    (C,289) 9, (B,86) 10, (C,325) 11 inchangées ; T200 vu posé à l'image de l'ouverture de la boîte 131, T201 au premier
+    appui (images 12 et 13) ; (C,353), (C,417), (C,437) et (C,451) avancent de 19 images (48, 175, 189, 189 ± 3) ; rec4
+    Deactivated à l'image de fin, `FlagToDestroy` une image plus tard. Reprend les P3 reportés d'E19.d2a sur A11.
+  - **T-A19** (185, drapeaux G204, G120 à G123 ; arrivée par le portail 183.6 (60555264 ; 24641536 ; 0), direction 16,
+    puis `PlaceHero(132, 296, sol)`) : rouge sur la DLL d'avant B3 (`slot 2 program @452: last 0x0B @506`, Septimus en
+    (15073280 ; 25821184), T70 jamais posé) ; vert : héros `@95` (6946816 ; 19398656) ; Septimus `@458` (8650752 ;
+    21626880) contre rec7 en (7864320 ; 22544384), relation `Septimus.PosY + 6 px = rec7.PosY - 8 px` ; `@463` PosX
+    11927552 ; rec7 hors de la liste l'image qui suit sa destruction ; `@506` finit avec PosY ≥ 22413312 ; T10, T30, T40,
+    T50, T60, T70 dans cet ordre ; `0x53 @147` vers la 362 en (16515072 ; 17301504 ; 2097152), effet 4. Positions après
+    `@506` non épinglées (jamais jouées dans la DLL ; le détour E4.d sur contact de case de Lutas `@219` n'est pas
+    modélisé).
+  - **T-A10v** (10 `B[14]`, drapeaux G218, G456) : rouge (`@5172` jamais fini, Nestus (63438848 ; 23527424)) ; vert :
+    Meade au repos (62881792 ; 32997376) ; Nestus `@5163` PosY 33914880 avec `Nestus.PosY - 7 px = Meade.PosY + 7 px` ;
+    `@5166` finit avec X dans [980,0 ; 981,0] ; `@5172` finit avec PosY ≤ 32112640 ; T666 ; Bergus `@5061` PosX 63963136
+    avec `Rumi.PosX - Bergus.PosX = 20 px` ; T668 ; `@5071` finit en (67108864 ; 36175872) ; T674 posé puis effacé ;
+    `0x53 @2003`. Dans cet ordre.
+  - **T-B9** (10 `B[9]`, drapeaux G216, G485, G1666 à G1669, G482 éteint ; héros (898 ; 736 ; 16)) : rouge (`0x0B @1215`
+    du héros et `@3673` de Septimus ; héros (58851328 ; 17235968), Septimus (59006976 ; 17170432)) ; vert : Septimus
+    `@3670` (59006976 ; 39190528) contre rec41 ; héros `@1212` (58851328 ; 39256064) ; `@3673` PosX 54214656 ; `@1215` PosX
+    dans [x0 - 52,5 ; x0 - 48,5] px ; rec41 détruit puis absent de la liste l'image suivante ; T511, T512, T514, T515 ;
+    `@3693`, `@3725`, `@3731` et `@3734` finissent (positions après `@3734` non épinglées : détour sur contact de case) ;
+    G482 et `0x11 @3738`. **Contre-épreuve D-E19-37** : héros posé en (898 ; 744 ; 16) : Septimus arrêté en (57409536 ;
+    51912704) contre le héros garé en (57094144 ; 50995200), T510 jamais posé dans la limite ; le test affirme ce calage
+    reproduit et cite O-E19-24.
+  - **T-C61** (61 `B[6]`, G784 posé, G670 éteint ; arrivée par le portail 61.1 en (588 ; 648)) : rouge (`@980` jamais fini,
+    héros en (5373952 ; 54001664)) ; vert jusqu'à G672 : `@929` PosY 36110336 contre rec32 ; `@934` PosX 27394048 contre
+    rec33 ; `@959` (17956864 ; 45547520) contre rec34 ; `@964` (17956864 ; 50855936) contre rec35 ; `@977` (11665408 ;
+    50855936) ; `0x1E @980` finit en (11665408 ; 55050240) ; arrêt à G672 (la suite dépend d'O-E19-17 et d'O-E19-26).
+  - **TN-3** (346, hôte dans la zone x 0 à 15, y 40 à 59, G1022 éteint) : `0x1E @943` part de (96,0 ; 752,0) ; la
+    plateforme s'arrête en (96,0 ; 800,0) contre le mur rec10 et n'avance plus pendant 500 ticks ; `ForceAdjusted` posé ;
+    aucun détour engagé (D-E19-34, D-E19-35).
+  - **TN-1** (10 `B[13]`, cortège du chapitre 18, drapeaux G218 et G455, `0x64` du héros en (996 ; 472 ; 48)) : 39 marches
+    `0x0B` finissent sans `ForceAdjusted` ; T639 posé ; positions finales à ± 3 px : Cephas (957,75 ; 476,5), Septimus
+    (957,75 ; 460,5), Meade (957,75 ; 492,5), Ronan (925,5 ; 470,5), rec66 (961,5 ; 523,5) ; écart minimal entre MOBILES de
+    Z recouvrant > 0 (marges de 1,5 px).
+  - **TH4** (arrivées sans chevauchement, D-E19-36) : à la première image après l'adoption, `FindEntityCollisionCandidate`
+    du héros rend null pour les arrivées de A20 (162), A10 (165), T-A19 (185) et du préréglage `day3-after-dream` (179,
+    case (17,7), z 1, drapeaux du préréglage).
+  - Commits : `test(alundra): pin the entity contact arcs of maps 185, 10, 61 and 346 (E19.d2b)` et
+    `test(alundra): re-pin A11 under entity contacts and guard the unchanged arcs`.
+
+- ⏳ **B7 — Hygiène reportée d'E19.d2a.** A20 compte les onze `0xA2` parmi les sautés (`SkippedOrExceeded`) ; A10 vérifie
+  le programme `@236` de `0x11 @354` ; S1 : un préréglage de test qui pose puis efface un drapeau, un compteur d'objet,
+  les refus d'index ; l'outil refuse en `--dry-run` un `ProjectName` que le moteur refuserait et rend 1 sur tout refus
+  (exceptions comprises) ; `docs/test-saves.md` : ne pas lancer l'outil par le terminal ou le bouton Run de l'app Claude,
+  le choix de la sauvegarde que charge F9 par la date (`LastWriteTime`), les limites et préconditions de F9 ; le second
+  libellé « TH3 » renommé. Commit : `chore(alundra): close the E19.d2a hygiene items`
+
+- ⏳ **B8 — Vérification et clôture.** Builds et suites dans cet ordre : `CasaEngine.Tests` (moteur) ; build de la solution
+  parent et `Alundra.Tests` en Release, puis en Debug **en dernier**, `--blame-hang-timeout 300s` ; convertisseur
+  inchangé ; `cmp` de la DLL Debug déployée. Verifier frais et contradicteurs ; dispositions au plan ; §0.2, §2 et mémoire.
+
+- ⏳ **B9 — Recette en jeu (auteur).**
+  1. Jeu libre de l'intro et du jour 1 (sauvegarde devant le livre) : le héros bute sur les marins et les villageois au
+     lieu de les traverser ; il leur parle en marchant contre eux puis Carré ; les portes ouvertes se passent ; aucune
+     scène ne cale.
+  2. F9 sur `day4-meeting` : parler aux quatre villageois de la 185 ; la réunion va au bout ; la 362 (rêve d'Olen) se
+     charge.
+  3. F9 sur `day3-after-dream` : sur la 179, Alundra s'arrête contre Septimus au lieu de le traverser ; la chaîne
+     continue jusqu'au saut de la 10 (réglé par E19.d2c).
+
+**Acceptation d'E19.d2b.**
+1. Plan moteur fait, `CasaEngine.Tests` sans échec, aucun test moteur existant modifié.
+2. Tests B2 à B4 écrits rouges d'abord, verts ; T-A19, T-A10v, T-B9 et T-C61 rouges sur la DLL d'avant B3, verts
+   après, avec les valeurs écrites d'avance ; la contre-épreuve de T-B9 et TN-3 rendent le comportement fidèle annoncé.
+3. A11 ré-épinglé aux valeurs écrites ; T-REG-0 à 0 sur les onze arcs ; aucune autre épingle ni trace ne bouge ; seuls
+   les trois montages nommés sont réécrits.
+4. `Alundra.Tests` sans échec en Release puis en Debug, la DLL Debug déployée en dernier.
+5. Recette B9 faite par l'auteur.
+
+**Risques d'E19.d2b.**
+- Contacts à 0 px et marges de 1 à 2 px (179, 178, 10, 176, cortège) : une lecture flottante, un arrondi différent du
+  tirage, une boîte fermée ou un skin figeraient une scène ; B3 impose la règle exacte et la même conversion.
+- Chevauchement reproduit (D-E19-36) : un héros ou un PNJ placé dans une entité se fige ; 87 arrivées de portail le
+  feraient en statique (drapeaux non appliqués) ; seules les arrivées de la chaîne sont vérifiées (TH4) ; les autres
+  cartes, à leur premier arc.
+- Ressenti du jeu libre : le héros glisse le long d'un PNJ en diagonale (le binaire reste collé) ; corrigé par la
+  division conjointe d'E19.h.
+- Obstacles natifs solides (D-E19-34) : cartes 14 et 15 au jour 2, 362, 346, 52 fermées là où l'original attend un objet.
+- L'intro jouée avec contrôleurs réels n'a aucun arc : la recette B9 la couvre.
+- Ordre de mise à jour : la DLL déplace par entité dans l'ordre du monde (héros en tête supposé), le binaire par créneau ;
+  sans effet mesuré sur les scènes, à surveiller quand deux mobiles se touchent dans le même tick.
+- Détour E4.d sur contacts de case (Lutas `@219` sur la 185, Septimus `@3734` sur la 10) : non modélisé ; les positions
+  qui suivent ne sont pas épinglées, la fin des scènes l'est.
+- Les valeurs viennent d'émulations calées sur des mesures de la DLL : une valeur contredite est un arrêt, jamais une
+  ré-épingle.
+
+#### 1.2h.3 E19.d2c — Saut, `0x25`, eau et glace ⏳ (esquisse ; détaillée, relue et approuvée après E19.d2b)
+
 - DLL seule : `IsZForceApplied` posé au tick du changement dans `StepAnimationClock` (pas au premier changement d'une
   apparition ni d'une arrivée ; repli à front montant pour une entité sans horloge ; remise à zéro avant les retours
   anticipés) ; impulsion des PNJ dans `EvaluateEntitySupport` ; héros en l'air tenu par le tick (impulsion, décroissance,
@@ -2811,11 +3042,12 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-21 | **Sites de `0x24` à risque hors du chemin de l'histoire** (recensement corrigé, `docs/census-0x24-waits.md`) : 9 sites en classe à risque (aucun mur 4 sur les cartes 40 et 62, indéterminé 4 sur les cartes 40, 62 et 249, vitesse nulle 1 sur la 152), dont 1 sous main tenue, et 65 sites non atteints dans le modèle (0x0B bloqué 26, drapeau jamais posé 39). Aucun n'arrête E19.d (D-E19-24). À reprendre avec les contacts entre entités et les bornes de force (E19.h), le rognage au bord (O-E19-17) et, par carte, un arc d'arrivée quand la carte est jouée. | E19.h |
 | O-E19-4 | Le gestionnaire natif du créneau E (`0x8007ED10`, destruction après `Deactivated`, 417 enregistrements sur 85 cartes) : E14, ou une tranche d'E19 ? Sur la chaîne, il ne touche que l'oiseau de la 389 et des PNJ d'Inoa. **Réglé en partie le 2026-10-02 (D-E19-29)** : les index 0 et 1 (destruction seule) se portent en E19.d2b, sans butin ni effet de bris (O-E19-23). | E19.d2b ; le reste E14 |
 | O-E19-22 | **Autres règles des bottes, non portées** **[binaire]** : sans bottes triton (niveau < 2), une case d'eau profonde (`(walk \| gp << 8) & 0xE00 == 0x800`, `0x800374FC`) bloque le héros : 10 644 cases dans 54 cartes, dont 399 sur la 416 ; le champ de la DLL ne connaît que les masques 0x40, 0x41 et 0x1000. Sans bottes magiques (niveau < 3), les cases `VramOR & 0x180` blessent (`0x80031AD0`, 7 322 cases). | à placer |
-| O-E19-23 | **Soulevables et cassables traversables** (D-E19-28) : 2 250 enregistrements collisionnables (`Flags & 0x600`, dont 2 161 du natif E 2) ne bloquent pas tant que la saisie (`0x8002EDBC`) et les coups (`HitCounter`) ne sont pas portés ; l'effet de bris (octet d'en-tête `0x1E`) n'est pas dans `sprite-records.json` ; le butin de `DestroyEntity` (`0x80032B90`) n'est pas porté. | E14 |
-| O-E19-24 | **Calage à l'entrée sud de la case (37,46) de la 10** [émulation] : sous le blocage fidèle, si le joueur entre dans la zone de `B[9]` par le sud (y ≥ 744), le héros garé bloque l'approche de Septimus (`0x0B @3643`) et la scène cale avant T510 dans l'original émulé. Défaut de l'original à corriger (règle de l'auteur) ou à reproduire : à trancher dans le plan d'E19.d2b. | E19.d2b |
+| O-E19-23 | **Soulevables et cassables traversables** (D-E19-28) : 2 250 enregistrements collisionnables (`Flags & 0x600`, dont 2 161 du natif E 2) ne bloquent pas tant que la saisie (`0x8002EDBC`) et les coups (`HitCounter`) ne sont pas portés ; l'effet de bris (octet d'en-tête `0x1E`) n'est pas dans `sprite-records.json` ; le butin de `DestroyEntity` (`0x80032B90`) n'est pas porté. Les obstacles à destruction native (environ 600 : murs à boule de fer, ronces, glace, rochers, piliers) restent solides en attendant (D-E19-34). | E14 |
+| O-E19-24 | **Calage à l'entrée sud de la case (37,46) de la 10** [émulation] : sous le blocage fidèle, si le joueur entre dans la zone de `B[9]` par le sud (y ≥ 744), le héros garé bloque l'approche de Septimus (`0x0B @3643`) et la scène cale avant T510 dans l'original émulé. Défaut de l'original à corriger (règle de l'auteur) ou à reproduire : à trancher dans le plan d'E19.d2b. **Tranché le 2026-10-02 (D-E19-37)** : reproduit et noté (contre-épreuve de T-B9) ; l'accès par le sud dépend d'échelles non modélisées ; correctifs possibles relevés : rayon de `0x0B @1176` du héros 32 → 24, ou de `0x0B @3643` de Septimus 44 → 36 (un octet sur les cartes 10 et 331), ou héros verrouillé non obstacle (change A11). | à rouvrir quand le chapitre 16 sera jouable |
 | O-E19-25 | **Recensement des marches `0x0B`/`0x1E`** (découverte d'E19.d2, scratchpad) : avant tout réemploi de ses totaux, corriger son modèle (`0x62`/`0x63` sur le marcheur, glissement des directions obliques, départs écrits après le site, départs partagés avant une étiquette « règle »). **Scripts archivés le 2026-10-02** à la demande de l'auteur dans `research/census/` (archive, pas un outil : README avec les défauts connus ; seuls quatre chemins d'import vers le scratchpad ont changé). | E19.m |
 | O-E19-26 | **`0x28` à `0x2B`** (bits de classe A/B du marcheur, `0x8003DC24`-`0x8003DC6C`) : 15 marches bloquées seulement dans la DLL (Muruta des cartes 2 et 384, chariots de la mine 61, 63, 66 et 328), aucune sur une carte de l'histoire ; les porter ajoute 4 blocages sur la 102. | E19.l |
 | O-E19-27 | **Reste du saut, non porté en E19.d2c** : aimantation de 3 px au sommet, dessus d'entités et plafonds pour le héros en l'air (`0x80036BFC`, `0x80036D94`), règle du passager (`0x800373AC`), son du changement d'animation (`0x800490FC`), `+0xF8` surchargé pour le type 0x14. | E19.h |
+| O-E19-28 | **Écarts acceptés du contact entre entités** (E19.d2b) : avance par axe du moteur contre division conjointe du binaire (un mobile qui pousse en diagonale contre une entité glisse ; 5,6 % des pas obliques bloqués finissent jusqu'à 2 px ailleurs) ; `ForceAdjusted` sur contact d'entité 0 à 2 ticks plus tôt à l'est et au sud ; contact au flottant (4 à 8 unités 16.16) ; `XCollisionEntity` écrit pour tout mobile (le binaire le met à 0 dans la moitié des ticks raccourcis d'un mobile sans gravité ou en l'air) ; liste d'un tick de retard pour `0x62`/`0x63` et les créations par script ; ordre de mise à jour par entité au lieu de par créneau ; Z des PNJ en retard d'un tick. | E19.h |
 
 ## 4. Hors périmètre
 

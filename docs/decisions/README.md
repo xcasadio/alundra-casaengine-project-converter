@@ -35,3 +35,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0019 | Animation ends become exact on a logical clock while sprites stay in real time, and loops are counted | Accepted | 2026-10-01 |
 | ADR-0020 | Opcode 0x24 is ported with a census of its waits, and opcodes 0x40/0x41 are ported in full | Accepted | 2026-10-01 |
 | ADR-0021 | Entity contacts, scripted jumps and the hero's water and ice rules follow the binary, and test saves feed the recipes | Accepted | 2026-10-02 |
+| ADR-0022 | Native-destruction obstacles stay solid, the walk detour waits on entities, and overlaps stay faithful | Accepted | 2026-10-02 |
