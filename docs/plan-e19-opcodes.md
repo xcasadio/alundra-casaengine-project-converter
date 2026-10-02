@@ -2417,25 +2417,32 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
 
 - ⏳ **S1 — Préréglages de sauvegarde (DLL), tests d'abord.**
   - Fichier `Alundra/Scripts/AlundraTestSaves.cs`, classe publique statique : la liste des préréglages et un
-    constructeur qui part d'un `AlundraGameState` neuf (drapeaux à 0, table identité `AlundraGameState.cs:421`), appelle
+    constructeur qui part d'un `AlundraGameState` neuf (drapeaux à 0, table identité `AlundraGameState.cs:233` et `:299-308`), appelle
     `AlundraPlayerManager.InitializeNewGameStats` et `InitializeNewGameInventory` (tables d'objets du projet), applique
     le préréglage (drapeaux G posés ou effacés, entrées de table, compteurs d'objets), puis
     `AlundraSaveGame.Capture(state, carte, x, y, z)`. Il refuse, sans exception et avec un message : un nom inconnu, un
-    drapeau T (id ≥ 0x8000), une sauvegarde que `AlundraSaveGameRules` refuse. Aucun accès disque, aucun état global.
+    drapeau T (id ≥ 0x8000), un drapeau G hors des 64 mots sauvegardés (id ≥ 2048, que `Capture` perdrait en silence),
+    une sauvegarde que `AlundraSaveGameRules` refuse. Aucun accès disque, aucun état global.
   - Préréglages (valeurs écrites d'avance) :
 
     | Nom | Carte, case, z | Drapeaux posés | Effacés | Table | Objet 88 |
     |---|---|---|---|---|---|
-    | `day3-after-dream` | 179, (17,7), 1 | G203 (`GameFlags[6] = 0x800`), G1651 (`GameFlags[51] = 0x80000`) | — | `[162] = 176` | 0 (`NumberOfItems[177]`) |
+    | `day3-after-dream` | 179, (17,7), 1 | G203 (`GameFlags[6] = 0x800`), G1651 et G1660 (`GameFlags[51] = 0x10080000`) | — | `[162] = 176` | 0 (`NumberOfItems[177]`) |
     | `day4-meeting` | 185, (5,18), 1 | G204 (`GameFlags[6] = 0x1000`), G1651 à G1655 (`GameFlags[51] = 0x00F80000`) | G203 | `[162] = 183`, `[176] = 183` | 0 |
 
-    Le reste vient de la nouvelle partie : PV 10/10, MP 0/0, or 0, arme 1, objets 1, 17 et 25 ; tous les autres mots de
-    drapeaux à 0 ; toutes les autres entrées de table à l'identité. Au jour 4, G120 à G123 restent éteints : les quatre
+    Le reste vient de la nouvelle partie : PV 10/10, MP 0/0, or 0, arme 1, objet équipé 0, faucon 0 (`Falcon` et
+    `FalconTemp`), temps de jeu 0, reprises 0 ; objets 1, 17 et 25 (`NumberOfItems[3] = [35] = [51] = 1`, tous les autres
+    compteurs à 0) ; tous les autres mots de drapeaux à 0 ; toutes les autres entrées de table à l'identité.
+    Provenance [audit du 2026-10-02, recalcul indépendant] : sur la 179, la scène qui part au premier tick est `B[2] @328`
+    (zone de toute la carte, G1651 posé, G1652 éteint) ; G1660 est posé par la 174 au jour 2, et sans lui la 176
+    (`B[9] @668`) n'active pas son entité 13 ; aucun programme de la 179 ne lit G203, et la 185 ne lit ni G204 ni G1651
+    à G1655 : ces drapeaux servent à la suite de la chaîne (10, 135, 176, 178). Les tables viennent des poseurs de
+    l'original : 117 `@1068` (`[162] = 176`) et 178 `C[6]` (`[176] = 183`, `[162] = 183`). Au jour 4, G120 à G123 restent éteints : les quatre
     villageois de la 185 les posent quand on leur parle, avant que la réunion (`B[1]`) ne parte.
   - Tests `Alundra.Tests/AlundraTestSavesTests.cs`, écrits **rouges d'abord** : pour chaque préréglage, les 64 mots de
-    drapeaux, les 500 entrées de table, les 256 compteurs d'objets et les neuf statistiques égaux à la nouvelle partie
-    plus le préréglage, la carte et la case ; validation par les vraies règles (`RealRules()` des tests existants)
-    acceptée ; deux constructions égales octet pour octet ; nom inconnu et drapeau T refusés ; l'application de la
+    drapeaux, les 500 entrées de table, les 256 compteurs d'objets, les neuf statistiques, le temps de jeu et les reprises
+    égaux à la nouvelle partie plus le préréglage, la carte et la case ; validation par les vraies règles (`RealRules()` des tests existants)
+    acceptée ; deux constructions égales octet pour octet ; nom inconnu, drapeau T et drapeau G ≥ 2048 refusés ; l'application de la
     sauvegarde par le chemin existant (motif d'`AlundraSaveGameApplyTests`) pose les drapeaux et la table dans le
     `AlundraGameState` d'arrivée.
 
@@ -2443,12 +2450,19 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
   - Projet `tools/AlundraTestSaves/AlundraTestSaves.csproj` (exécutable, même cible que `Alundra`), références à
     `Alundra` et au moteur, inscrit dans le `.slnx`.
   - Ligne de commande : `AlundraTestSaves <fichier projet AlundraGame.json> <préréglage> [--slot <nom>] [--dry-run]`.
-    Il lit le nom du projet dans le fichier (`ProjectName`) pour `GameSettings.ProjectSettings`, charge les tables
-    d'objets du dossier du projet, construit la sauvegarde par S1, puis :
+    Dans cet ordre : il valide `--slot` par les règles de `SaveGameNames` ; lit le nom du projet dans le fichier
+    (`ProjectName`, « AlundraGame ») pour `GameSettings.ProjectSettings` ; branche un journal console (sans lui, les
+    avertissements de `Logs` ne s'affichent nulle part) ; charge `AlundraItemTables.GetOrCreate(<dossier du projet>)`
+    (le dossier qui contient `Data/` ; la fonction ne lève jamais et rend des tables à zéro sur un fichier absent :
+    l'outil vérifie qu'elles sont chargées, sinon refus) ; construit les règles
+    `new AlundraSaveGameRules(<dossier>, chemin => File.Exists(Path.Combine(<dossier>, chemin)), tables)`, équivalent
+    sur disque du catalogue d'assets de la production (`AlundraSaveGameDirector.cs:553-556`) ; construit la sauvegarde
+    par S1, puis :
     - `--dry-run` : imprime la carte, la case, les drapeaux posés et effacés, la table, et le créneau visé, **sans rien
       écrire** ;
-    - sinon : `GameSettings.SaveGames.Save(créneau, sauvegarde, SaveGameFormat.Json)` (créneau par défaut
-      `test-<préréglage>`, conforme à `SaveGameNames`), puis imprime le résultat et le chemin du fichier.
+    - sinon : `GameSettings.SaveGames.Save(créneau, sauvegarde, SaveGameFormat.Json, sauvegarde.BuildMetadata())`
+      (les métadonnées de F5/F6 ; créneau par défaut `test-<préréglage>`), puis imprime le résultat et le chemin du
+      fichier.
     - Code de sortie non nul sur tout refus (préréglage inconnu, projet illisible, validation, écriture) ; aucun
       `try/catch` qui avale une erreur.
   - Les agents ne lancent que `--dry-run` (pas d'écriture sous AppData depuis l'app). Construire l'outil construit
@@ -2471,9 +2485,12 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
 - ⏳ **S4 — Arcs du jour 1** (`Alundra.Tests/AlundraInoaDayOneArcTests.cs`, vrais préfabs, vrai héros, contrôleur réel,
   `AlundraRandom.Reset()`, conventions du §1.3, limite d'images fixée après une première mesure, ± 3 images).
   - **A20 — 162, Sybill** : drapeaux {} ; arrivée par le portail 163.0 (47972352, 27787264, 0), direction 0. Sybill
-    va de (540,472) à (732,472) ± 2 px après `@584` ; fin `0x11 @596` ; G1659 posé `@597`.
+    part de (540,472) vers la droite et sa marche `@584` finit avec x ≥ 732 (le dépassement se mesure au premier
+    passage) ; fin `0x11 @596` ; G1659 posé `@597`, dans le même appel. Opcodes sautés : exactement onze `0xA2` de
+    `B[9]` (`@608` à `@688`), une fois chacun, au premier tick.
   - **A10 — 165, première visite** : drapeaux {} ; arrivée par le portail 162.3 (S3).
-    - Premier appel de `B[1]` : `0x3B @106` rend 1, puis `0x69 @122` est atteint.
+    - Premier appel de `B[1]` : `0x3B @106` rend 1 (`0x00 @121` clôt l'appel) ; `0x69 @122` est atteint au deuxième
+      appel, les écritures `0x64` au troisième.
     - Positions écrites par `0x64` (`@140`-`@172`), exactes en X et Y : rec0 (29884416, 7864320), rec1 (11796480,
       16252928), rec2 (27525120, 6815744), rec3 (25952256, 8912896), rec5 (19660800, 28049408) ; T100 posé `@180`.
     - Au premier tick de `rec5 C[1]`, les cellules (12,23) à (12,26) ont la praticabilité 0x00 (0x41 avant) ; 0x41 de
@@ -2483,21 +2500,27 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
     - Fin : `0x11 @354` (créneau B, programme `@236`), G3 posé `@351` dans la même image, `PlayerControlFlags` 0 ; aucune
       boîte ouverte à la fin.
     - Opcodes sautés : exactement `0x25 @838` et `@843`, une fois chacun (changera en E19.d2c, annoncé).
-  - **A11 — 164, Septimus** : drapeaux {G3} ; héros en contact avec rec1 (1092,120) et entité de contact rec1 (comme A9),
+  - **A11 — 164, Septimus** : drapeaux {G3, G201} ; héros en contact avec rec1 (1092,120) et entité de contact rec1 (comme A9),
     puis appui sur Carré.
     - Boîte 130 fermée par appuis ; T6 puis T2 posés ; `PlaceHero(996,120,16)` (case (41,7)) ; T1 posé `@83` ; rec4
       apparu (position lue sur le cas `0x8B` de la DLL avant d'être écrite ; pas d'épingle supposée).
-    - T200 **et** T201 posés à l'ouverture de la boîte 131.
+    - T200 posé à l'ouverture de la boîte 131 (`0x0D @325`) ; T201 au premier appui qui tourne la page (nœud
+      `M164_S003`, `<<flag 201>>` avant la page 1 : le directeur ne tourne jamais une page seul, `0x4D @350` étant
+      sauté).
     - Fin : `0x38 @437` (`C[2]`, programme `@240`) ; G4, G8, G202 posés, G201 effacé, table `[162] = 169`,
-      `PlayerControlFlags` 0, T3 posé, rec4 désactivé.
+      `PlayerControlFlags` 0, T3 posé, rec4 désactivé (`C[3] @451`, image mesurée).
     - Opcodes sautés, une fois chacun : `0x4C @331`, `@351`, `@356`, `@402` ; `0x4D @350`, `@361`, `@373`, `@376`,
-      `@379`, `@382`, `@392`, `@395`, `@398`.
+      `@379`, `@382`, `@392`, `@395`, `@398`. En plus, `0x58 @110` (programmes C de rec6 Beaumont et rec7 Thyea, par
+      `@100`) est sauté à répétition tant que le héros n'est pas près d'eux : son nombre se mesure, il n'est pas épinglé.
     - Les positions de Septimus ne sont pas épinglées ici : dans l'original rec4 l'arrête (E19.d2b).
   - Une valeur écrite d'avance que l'arc contredit est un **arrêt** (question à l'auteur), jamais une ré-épingle.
 
-- ⏳ **S5 — Vérification et clôture.** Build `Debug` puis `Release` de la solution ; `Alundra.Tests` complet avec
-  `--blame-hang-timeout 300s` ; convertisseur inchangé ; DLL Debug déployée (`cmp`) ; `--dry-run` des deux préréglages
-  imprimé dans le rapport. Verifier frais sur l'acceptation ci-dessous ; dispositions au plan ; §0.2 et §2 mis à jour.
+- ⏳ **S5 — Vérification et clôture.** Build de la solution et `Alundra.Tests` complet en **Release** d'abord
+  (`--blame-hang-timeout 300s`), puis, **en dernier**, build et `Alundra.Tests` complet en **Debug** : la dernière
+  build est Debug, et `cmp` ne montre aucun écart entre `Alundra/bin/Debug/<cible>/Alundra.dll` et
+  `alundra-project/Alundra.dll` (chaque build de `Alundra` recopie sa DLL dans le projet exporté, et une DLL Release
+  n'a pas F9) ; convertisseur inchangé ; `--dry-run` des deux préréglages lancé après cette build Debug
+  (`dotnet run -c Debug … --dry-run`) et imprimé dans le rapport. Verifier frais sur l'acceptation ci-dessous ; dispositions au plan ; §0.2 et §2 mis à jour.
 
 - ⏳ **S6 — Recette en jeu (auteur).**
   1. Jour 1 : nouvelle partie jusqu'au livre de la 163 (recette D10 d'E19.d), puis la 162 (Sybill), la 165 (première
@@ -2513,7 +2536,8 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
 2. `--dry-run` des deux préréglages imprime exactement les valeurs du tableau de S1, sans fichier créé (vérifié par le
    verifier : aucun `.sav` nouveau sous le dossier de l'utilisateur pendant ses propres essais).
 3. A20, A10 et A11 passent avec les valeurs écrites d'avance ; A10 part d'une vraie arrivée de portail.
-4. Aucune autre épingle ni trace ne bouge ; `Alundra.Tests` sans échec ; DLL Debug déployée.
+4. Aucune autre épingle ni trace ne bouge ; `Alundra.Tests` sans échec en Release puis en Debug ; la DLL Debug est
+   déployée en dernier (`cmp` sans écart).
 5. Recette S6 faite par l'auteur.
 
 **Risques d'E19.d2a.**
@@ -2526,6 +2550,16 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
   recettes F9 précédentes).
 - Construire l'outil redéploie la DLL dans `alundra-project/` dans la configuration de la build : une build Release la
   remplace par une DLL sans F9.
+
+**Relecture d'E19.d2a (2026-10-02).**
+- Plan-verifier sur `30a88d7` : **REVISE**, un P2 — S5 faisait la build Release après la build Debug et laissait une
+  DLL sans F9 dans le projet exporté. Corrigé : Release d'abord, Debug en dernier, `cmp`.
+- Audit des valeurs (recalcul indépendant, décodeur à lui) : drapeaux, cases, arrivée de U3, positions `0x64`, fins et
+  sautés d'A10 confirmés. Corrigés : citation de la table identité ; compteurs d'objets de la nouvelle partie, temps et
+  reprises ; refus d'un drapeau G ≥ 2048 ; G1660 ajouté au jour 3 ; scène `B[2] @328` de la 179 nommée ; outil (prédicat
+  de catalogue sur disque, tables chargées vérifiées, journal console, `--slot` validé, métadonnées de F5/F6) ; A20 (fin
+  x ≥ 732, onze `0xA2` sautés) ; A10 (`0x69 @122` au deuxième appel) ; A11 (G201 au départ, T201 au premier appui,
+  `0x58 @110` sauté à répétition, désactivation de rec4 mesurée).
 
 **Esquisse d'E19.d2b — Contacts entre entités** (détaillée, relue et approuvée après E19.d2a).
 - Moteur, branche `chantier/field-movement-obstacles` depuis `chantier/animation-logical-end-clock` (`f205683a`, pas
