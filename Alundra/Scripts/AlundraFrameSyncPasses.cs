@@ -123,6 +123,15 @@ internal static class AlundraFrameSyncPasses
         proxy.CurrentAnimationId = newCurrentAnimationId;
         proxy.AnimationDirection = newAnimationDirection;
 
+        // E19.d2b (D-E19-29): AnimFlags is the byte 0xD of the animation set the binary reloads in the switch block of UpdateAnimation
+        // (0x80038B68), before anything that needs a sprite; the export carries it under the name Acceleration, whole (the kinematic
+        // tick keeps the 4 low bits of it). 0 when the animation is not in the set. Its bit 0x80 takes the entity out of the collidable
+        // list for the duration of the animation.
+        proxy.AnimFlags = proxy.AnimSetsByAnim != null
+            && proxy.AnimSetsByAnim.TryGetValue((int)proxy.CurrentAnimationId, out var animSet)
+                ? animSet.Acceleration
+                : 0;
+
         // Any switch (target, direction or chain restart) clears the Hold flag: UpdateAnimation writes +0xAC = 0 in
         // its switch block (0x80038B6C), before anything that needs a sprite, so a sprite-less entity clears it too
         // (E19.c1 T4). The animation-end counter is never zeroed here: the binary does not.

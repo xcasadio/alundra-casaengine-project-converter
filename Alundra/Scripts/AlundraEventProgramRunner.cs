@@ -306,6 +306,17 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             return;
         }
 
+        // E19.d2b (D-E19-29, O-E19-4 in part): the native handler 0x8007ED10 of slot E, reached at each tick of the Deactivated state
+        // while the scripted E program is empty, is DestroyEntity(e, -1) (0x8003A59C) for the indexes 0 and 1 (destruction only: the
+        // loot and the break effect of the other indexes belong to E14, O-E19-23). Index 2 and the other slots stay counted no-ops.
+        if (entity.EventTrigger == ScriptHelper.ProgramEDeactivate
+            && (entity.ProgramIndexes[ScriptHelper.ProgramEDeactivate] & 0x7f) == 0
+            && (uint)entity.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate] <= 1u)
+        {
+            entity.ScriptHost?.DestroyEntity(entity, -1);
+            return;
+        }
+
         if (!_loggedSpriteEventOnce)
         {
             _loggedSpriteEventOnce = true;

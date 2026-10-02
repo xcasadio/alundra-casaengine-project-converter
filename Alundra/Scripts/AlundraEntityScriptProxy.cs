@@ -1075,7 +1075,13 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 // harness's own bare proxies (no Owner/World at all) or a genuinely controller-less
                 // sprite-only prefab (11 on map 389, whose Speed is 0 for every AnimSet they carry - this
                 // is a no-op integration for them in practice).
-                AlundraScriptedMotion.TickScriptedNpc(this);
+                //
+                // E19.d2b (D-E19-29): only an entity that is Normal or Deactivated moves (the binary's physics list takes the
+                // statuses 2 and 3): one flagged for destruction stays where it was while it waits to be recycled.
+                if (Status.IsActive())
+                {
+                    AlundraScriptedMotion.TickScriptedNpc(this);
+                }
 
                 // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): entity-vs-entity Z support
                 // clamp - AFTER this tick's own motion above, so a walk that just moved this entity out of

@@ -2688,7 +2688,7 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
   - Fait le 2026-10-02 : plan moteur exécuté (commits `4e6bd6bd`, `3dc98385`, `c57c120f`, `d509bc10`, `c2e4fdce`) ;
     `CasaEngine.Tests` 2441 réussis, 0 échec (base 2405 : +36 tests nouveaux) ; le pointeur du parent passe à `c2e4fdce`.
 
-- ⏳ **B2 — Liste, mobiles, AnimFlags, natif E (DLL), tests d'abord.**
+- ✅ **B2 — Liste, mobiles, AnimFlags, natif E (DLL), tests d'abord.**
   - `BuildCollidables` exclut `Status == FlagToDestroy` ; la porte du mouvement (`RunGameplayBlockableUpdate`,
     `AlundraEntityScriptProxy.cs:961-1090`) ne fait bouger qu'une entité `Status.IsActive()` (Normal ou Deactivated).
   - `SyncAnimation` (`AlundraFrameSyncPasses.cs:123`, juste après `CurrentAnimationId`, avant le retour sans sprite)
@@ -2702,6 +2702,10 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
     liste) ; **T-R6** (jeu d'animation {0 : `Acceleration` 0x00, 1 : 0xD0} : cible 1 puis `SyncAnimation` → `AnimFlags`
     0xD0 ; cible 0 → 0 ; entité sans sprite : chargé aussi).
   - Commit : `feat(alundra): drop destroyed entities from collidables, load AnimFlags, destroy on native E 0 and 1`
+  - Fait le 2026-10-02. Rouge d'abord : 8 des 17 nouveaux tests échouent sur la DLL d'avant (`AlundraEntityDestructionTests` : T-R2 deux,
+    T-R5 index 0 et 1 et la chaîne `0x19`, T-R6 trois ; les 9 autres sont des contre-épreuves vertes, index 2 et 3, autres créneaux,
+    programme scripté) ; vert après : 17 sur 17. `Alundra.Tests` 2129 réussis (2112 avant), aucun test existant modifié. Le support
+    de test partagé (`AlundraContactTestSupport.cs` : sol plat, hôte à liste de collidables, monde réel à contrôleurs) sert B3 et B4.
 
 - ⏳ **B3 — Prédicat d'obstacle (DLL), tests d'abord.**
   - Classe `AlundraMovementObstacleProbe : IMovementObstacleProbe` (interface du moteur, namespace

@@ -47,7 +47,10 @@ internal static class EntitySupport
         for (var i = 0; i < spawnedEntities.Count; i++)
         {
             var candidate = spawnedEntities[i];
-            if (IsEligibleSubject(candidate))
+
+            // E19.d2b (D-E19-29): the binary's list takes no entity flagged for destruction (its status is not 2 or 3 once
+            // flagged); the soulevables STAY in the list, their exclusion as obstacles belongs to the movement obstacle probe.
+            if (candidate.Status != EntityStatus.FlagToDestroy && IsEligibleSubject(candidate))
             {
                 buffer.Add(candidate);
             }
