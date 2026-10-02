@@ -191,6 +191,32 @@ public sealed class AlundraWarpDirector
     internal (uint MapIndex, int PosX, int PosY, int PosZ, uint AnimationId, uint DirectionId, int EffectId) ArrivalRecordForTests
         => (_arrivalMapIndex, _arrivalPosX, _arrivalPosY, _arrivalPosZ, _arrivalAnimationId, _arrivalDirectionId, _arrivalEffectId);
 
+    /// <summary>
+    /// E19.d2a S3 (docs/plan-e19-opcodes.md section 1.2h.1, U3): test-only entry that poses a pending arrival record the
+    /// way <see cref="BeginDepartureCore"/> does - the seven fields and <see cref="HasPendingArrival"/> - and nothing
+    /// else: no fade, no gravity suspension, no world change. The next map entry's <c>AdoptPlayerPawn</c> consumes it, so
+    /// an arc that starts from a real portal arrival gets the position, tile, animation and direction that production
+    /// gives (including <see cref="AlundraEntityScriptProxy.ClampToGround"/>) instead of values written by the test.
+    /// </summary>
+    internal void SetPendingArrivalForTests(
+        uint mapIndex,
+        int posX,
+        int posY,
+        int posZ,
+        uint animationId,
+        uint directionId,
+        int effectId = 0)
+    {
+        _arrivalMapIndex = mapIndex;
+        _arrivalPosX = posX;
+        _arrivalPosY = posY;
+        _arrivalPosZ = posZ;
+        _arrivalAnimationId = animationId;
+        _arrivalDirectionId = directionId;
+        _arrivalEffectId = effectId;
+        HasPendingArrival = true;
+    }
+
     /// <summary>Test-only: whether a departure is currently armed (<see cref="_sequenceTicks"/> != 0) -
     /// the D-T-15 "demande de départ"/"séquence de départ" rows, exposed together since this port folds
     /// them into the one counter (see that field's own doc).</summary>

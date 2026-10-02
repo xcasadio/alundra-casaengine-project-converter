@@ -250,6 +250,10 @@ Machine à écrire (1/4 frames, bouton tenu ×4), pagination défilante, curseur
 minuterie, `0x4C`/`0x4D`, boîte de nom + portrait (`0xC4`, entités ≥0x100), table partagée
 `map_alundra` (export + `0x0D` bit clair), sfx 6/7 d'ouverture/fermeture.
 
+**Mise à jour du 2026-09-29** : la boîte de nom et la boîte de texte fidèle (place et cadre de
+l'original) passent en E19.f, et `0xC4` s'ouvre d'abord sans nom en E19.b (D-E19-4, D-E19-5,
+`plan-e19-opcodes.md`). Les portraits et la machine à écrire restent ici.
+
 ## 5. Budget, arrêts
 
 **Budget** : ordre d'exécution **E12.a-moteur → E12.b → E12.a-DLL** (D-E12-6 : la DLL consomme

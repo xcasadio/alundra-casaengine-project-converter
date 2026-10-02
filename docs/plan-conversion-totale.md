@@ -168,10 +168,12 @@ d'intro-roadmap).
   (qui est un pointeur moteur vers sa propre `Entity` CasaEngine, posé une fois au spawn) — un nouveau
   champ `AlundraEntityScriptProxy.LogicEntity` porte la sémantique de l'original.
 - **`g_clearProgramState`** : mécanisme ajouté (`AlundraEventProgramRunner.ClearProgramStateRequested`)
-  mais aucun opcode porté ne le positionne encore (seul 0x40, non porté, le ferait) ; simplification
-  documentée : l'original re-teste le flag après *chaque* opcode et distingue nettoyer l'état de l'entité
-  en cours d'exécution de celui d'une autre entité ciblée — ce port ne re-teste qu'une fois, après le
-  retour de `RunOneScriptCall`, et ne nettoie que l'état de l'appel en cours.
+  mais aucun opcode porté ne le positionnait alors (seul 0x40, non porté, le ferait) ; simplification
+  documentée à l'époque : l'original re-teste le flag après *chaque* opcode et distingue nettoyer l'état de
+  l'entité en cours d'exécution de celui d'une autre entité ciblée — ce port ne re-testait qu'une fois, après
+  le retour de `RunOneScriptCall`. **Mise à jour 2026-10-01 (E19.d D6, D-E19-22)** : 0x40 et 0x41 sont portés ;
+  le flag est re-testé après chaque opcode (état de l'appel effacé en fin d'appel pour le propriétaire, état
+  d'une autre entité tout de suite), comme l'original.
 - **Entité joueur minimale** : spawnée par nom de catalogue `"Alundra"` (résolu via
   `AssetCatalog.Get("Alundra").Id`, le même id que `SpriteRecordCatalog.TryGet` utilise pour son en-tête
   sprite-records.json) plutôt que par un `PrefabAssetId` de record — il n'y a pas de record `Entities`
@@ -911,6 +913,26 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
   d'après ce que le binaire permet de sauvegarder, ou une autre coupure de la boucle.
 - **Dépendances** : E16 (sauvegarde et chargement), le chantier qui portera la mort du héros.
 
+### E19 — Opcodes de l'interpréteur ⏳ (ouverte le 2026-09-29, plan proposé)
+
+- **But** : porter les opcodes que l'interpréteur saute encore par leur taille. Il y en a 88 dans le
+  corpus : 14 644 instructions atteignables sur 111 136, dans 392 cartes.
+- **Pourquoi** : l'histoire ne progresse pas au-delà du bateau Klark. Les drapeaux ne sont pas en
+  cause (E16.a, E16.f), et aucune étape ne portait ces opcodes. Trois arrêts sur la chaîne :
+  - 390 : la cinématique du capitaine attend le héros au lieu du capitaine (`0x43`/`0x42`) ;
+  - 476 : `0xC4` n'ouvre pas son dialogue ;
+  - 478 : le processus gèle, car `0x0B` est sauté et il n'y a pas de garde de boucle.
+- **Plan** : [plan-e19-opcodes.md](plan-e19-opcodes.md) ; décisions D-E19-1 à D-E19-7, ADR-0015.
+  - Phase 1 : la chaîne 389 → 390 → 476 → 478 → 476 → 392 → 391 → 416 → 163 (premier livre),
+    E19.a à E19.e, puis la boîte de nom et la boîte de texte fidèle (E19.f).
+  - Phase 2 : le reste du corpus, une famille par tranche, les effets visuels compris (E19.g à
+    E19.m).
+- **État (2026-10-01)** : E19.a à E19.c2 faites ; E19.d (392, 391 et 163 : `0x24` avec recensement, `0x40`/`0x41`, défaut d'atterrissage,
+  arcs A5, A5r, A6 et A8) faite et verte (`Alundra.Tests` 2086 réussis), reste le verifier frais et la recette en jeu de l'auteur
+  ([plan-e19-opcodes.md](plan-e19-opcodes.md) §1.2g, D10). Suite : **E19.d2** (Inoa après le premier livre : la scène des villageois de
+  la carte 10 et le saut scripté d'Alundra avec `0x25`), puis E19.e.
+- **Dépendances** : E16 (drapeaux). E14, E17 et E18 ne sont pas nécessaires à la chaîne.
+
 ## 5. Règles de travail
 
 - Fidélité **de comportement observable** dès qu'un système moteur remplace un système original ;
@@ -956,3 +978,4 @@ rattaché à elle par décision d'E12.d (le joueur traverse encore les PNJ). E16
 | E16 état de partie (drapeaux, sauvegarde) | 🧪 mergée dans `main` le 2026-09-29 (moteur `a550859f`, analyseur `242b09a`), rien poussé ; E16.0, E16.a (recette en jeu T7 à faire) et E16.b faites ; E16.c faite et vérifiée CONFIRMED (ADR-0012) ; E16.f faite et vérifiée CONFIRMED ; E16.d faite et vérifiée CONFIRMED (ADR-0013), recette en jeu à faire ; E16.e (livre et écran de sauvegarde) faite et vérifiée CONFIRMED (ADR-0014), recette en jeu à faire | `docs/plan-e16-etat-partie.md` |
 | E17 cinématiques en `.cutscene` | ⏳ ouverte le 2026-09-27, prérequis moteur | |
 | E18 mort et « Réessayer » (avec correction de la décompilation) | ⏳ ouverte le 2026-09-28, non planifiée | |
+| E19 opcodes de l'interpréteur (chaîne du bateau, puis corpus) | 🚧 ouverte le 2026-09-29, enveloppe approuvée ; **E19.a, E19.a2, E19.a3 ✅** (recettes en jeu validées le 2026-10-01 : le capitaine, la pièce B, la cabine jusqu'à la 476, le marin 12 de la 389) — E19.a : entité de contexte, `0x42`/`0x43`, `0x59`, garde de boucle ; E19.a2 : un pas bloqué avance jusqu'au contact (moteur, ADR-0045 du moteur, ADR-0016) ; E19.a3 : `ForceAdjusted` seulement au tick sans avance, comme le binaire (ADR-0017) ; **E19.b 🧪** (carte 476, code et arcs A2 et A4 faits le 2026-10-01 : `0xC4` sans nom, `0x8A`, hygiène reportée ; vérifiée CONFIRMED ; reste la recette en jeu T6 de l'auteur) ; **E19.c1 🧪** (cartes 478 et 416 : `0x0B` avec détour, `0x08`, `0x0C`, `0x3A`, `0x5E`, `0x73`/`0x74`, `0x89`, `0x1C`/`0x1D` et le pont des fins d'animation ; arcs A3, A7 et A4p en vrais préfabs ; retard d'animation gardé, D-E19-13 ; code et arcs faits et vérifiés CONFIRMED le 2026-10-01 ; un P1 introduit — `0x1C` sur une Loop bloque Wendell à Inoa — est corrigé par E19.c2, sans merge d'E19.c1 avant celui d'E19.c2 ; reste la recette en jeu T9 de l'auteur) ; **E19.c2 🧪** (horloge logique exacte des fins d'animation dans le moteur, rendu en temps réel, correction des Loop figées ; DLL : pilotage à chaque tick logique, signal de boucle, garde de `0x1C` sous rattrapage, repli de la passe de tri ; arcs A9 — Wendell à Inoa rend la main — et A3 resserré, hygiène d'E19.c1 ; tout fait et vérifié CONFIRMED le 2026-10-01 ; reste la recette en jeu C8 de l'auteur) ; **E19.d proposée** (392, 391 et 163 jusqu'au premier livre : `0x24` avec recensement, `0x40`/`0x41` complets, défaut d'atterrissage de la DLL qui bloquait la 391, vrai héros dans les arcs ; ADR-0020) ; rien poussé ; merge : moteur d'abord | `docs/plan-e19-opcodes.md`, ADR-0015 à ADR-0019 ; branche `chantier/e19-opcodes`, `cab5e4c` à `db59cc9` puis `c48cf5e` à `d174586`, puis E19.a3 `8a01fa1` et `354b80a`, puis E19.b `c885926` à `b987da3`, puis E19.c1 `d1d2bea` à `6023e4c`, puis E19.c2 `54029c4` à `4cab666` et les docs ; moteur `chantier/field-move-to-contact`, `d51089f5` à `7fae9959`, mergée dans `main` du moteur par l'auteur le 2026-10-01 (`74e97293`) ; moteur d'E19.c2 `chantier/animation-logical-end-clock`, `1561fd07` à `b40888f1` (pointeur du parent sur `b40888f1`) |

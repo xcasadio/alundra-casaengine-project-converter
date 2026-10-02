@@ -24,6 +24,9 @@ namespace Alundra.Scripts;
 ///
 /// One size deviates from the source table: <c>0x78</c> is 3 bytes here, not the source's 4 - the binary
 /// (0x8003FB10) reads only v[1]/v[2] (D-E16-21, docs/plan-e16-etat-partie.md).
+///
+/// Two names are made explicit (E19.d D8, no size change): <c>0x24</c> waits UNTIL the logic entity's ForceAdjusted is nonzero
+/// (0x8003DB70) and <c>0x40</c> also asks for the running program state to be cleared (<c>g_clearProgramState</c>, 0x8003E7B8).
 /// </summary>
 public static class EventOpcodeSizeTable
 {
@@ -39,11 +42,11 @@ public static class EventOpcodeSizeTable
         { 0x05, new(3, "Flag on") },
         { 0x06, new(3, "Flag off") },
         { 0x07, new(8, "Check entity in area") },
-        { 0x08, new(2, "Turn") },
+        { 0x08, new(2, "Add to TargetDirection (modulo 32)") },
         { 0x09, new(2, "Set direction") },
         { 0x0A, new(1, "Reverse direction") },
         { 0x0B, new(4, "Wait until entity moves beyond radius") },
-        { 0x0C, new(1, "Set random dir") },
+        { 0x0C, new(1, "Set random cardinal direction") },
         { 0x0D, new(3, "Dialog") },
         { 0x0E, new(0, "Do nothing (debug command)") },
         { 0x0F, new(0, "Do nothing (debug command)") },
@@ -59,15 +62,15 @@ public static class EventOpcodeSizeTable
         { 0x19, new(1, "Deactivate entity") },
         { 0x1A, new(2, "Set anim") },
         { 0x1B, new(3, "Fly") },
-        { 0x1C, new(2, "Repeat anim") },
-        { 0x1D, new(2, "Repeat anim with collision") },
+        { 0x1C, new(2, "Wait for animation ends (Hold flag or end counter)") },
+        { 0x1D, new(2, "Wait for animation ends, or until ForceAdjusted") },
         { 0x1E, new(3, "Walk") },
         { 0x1F, new(3, "Walk with collision") },
         { 0x20, new(3, "Check Z distance and collided Z") },
         { 0x21, new(3, "Is within Z distance") },
         { 0x22, new(1, "Clamp forceZ to height target") },
         { 0x23, new(1, "Clamp forceZ and no collided Z") },
-        { 0x24, new(1, "Wait force adjusted") },
+        { 0x24, new(1, "Wait until force adjusted") },
         { 0x25, new(1, "Wait entity collision z or 144") },
         { 0x26, new(1, "Wait force adjusted or entity collision z") },
         { 0x27, new(1, "Face player") },
@@ -93,13 +96,13 @@ public static class EventOpcodeSizeTable
         { 0x37, new(2, "Wait") },
         { 0x38, new(5, "Set MapIdToInternalMapIndex") },
         { 0x39, new(1, "Wait for dialog") },
-        { 0x3A, new(2, "Set TargetDirection") },
+        { 0x3A, new(2, "Set cardinal direction") },
         { 0x3B, new(7, "Check player in area") },
         { 0x3C, new(7, "If entity in zone with flag 0x80") },
         { 0x3D, new(7, "If entity in zone") },
         { 0x3E, new(1, "Is player riding entity") },
         { 0x3F, new(1, "If entity riding me") },
-        { 0x40, new(3, "Set program index") },
+        { 0x40, new(3, "Set program index and clear the program state") },
         { 0x41, new(3, "Set sprite program index") },
         { 0x42, new(1, "SetLogicContextEntity = PlayerEntity") },
         { 0x43, new(2, "Set LogicContextEntity") },
@@ -150,8 +153,8 @@ public static class EventOpcodeSizeTable
         { 0x70, new(1, "Is above ground") },
         { 0x71, new(1, "Get hit counter") },
         { 0x72, new(1, "Set LastTargetAnim and Direction") },
-        { 0x73, new(2, "Initialize timer _30") },
-        { 0x74, new(3, "Update timer _30") },
+        { 0x73, new(2, "Set loop counter _30") },
+        { 0x74, new(3, "Decrement _30 and jump while positive") },
         { 0x75, new(2, "Play sound effect") },
         { 0x76, new(0, "not implemented") },
         { 0x77, new(0, "not implemented") },

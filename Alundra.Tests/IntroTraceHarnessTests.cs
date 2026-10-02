@@ -297,7 +297,7 @@ public class IntroTraceHarnessTests
 /// sound/effects/HUD, entity-vs-entity HORIZONTAL collision, walls/navigation (E4-1: the intro's own
 /// paths are unobstructed on map 389). Entity-vs-entity Z SUPPORT (E4.f, decision E4-4 -
 /// <see cref="EntitySupport"/>) IS simulated - static platforms only, no moving-platform passenger
-/// follow (E14). Dynamic entity spawn (opcodes 0x2D/0x8B, via <see cref="SpawnEntityByRecordId"/>) IS
+/// follow (E14). Dynamic entity spawn (opcodes 0x2D/0x8A/0x8B, via <see cref="SpawnEntityByRecordId"/>) IS
 /// simulated - see that method's own doc.
 /// </summary>
 internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScriptHost, IAlundraSoundPlayer
@@ -324,7 +324,14 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         0x70, 0x78, 0x79, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F, 0x80, 0x81, 0x85, 0x8B, 0x8D, 0xAC, 0xAD, 0xB8,
         0x0D, 0x12, 0x39, 0x44, 0x50, 0x51, 0x53, 0x5C, 0x75, 0x9B, 0x9C, 0xA5, 0xA6, 0xA7, 0xA8, 0xAB,
         0xAF, 0xB0, 0xB1, 0xBA, 0xBD, 0xBE, 0xBF,
-        // E16.a T6 (docs/plan-e16-etat-partie.md, contract item 4): the 23 opcodes on the line above were
+        0x42, 0x43, 0x59,
+        0xC4, // E19.b T1 (dialogue with a speaker search, without the name box).
+        0x8A, // E19.b T2 (spawn at an absolute position).
+        0x08, 0x0B, 0x0C, 0x3A, 0x5E, 0x73, 0x74, 0x89, // E19.c1 T3 (motion opcodes).
+        0x1C, 0x1D, // E19.c1 T4 (wait for animation ends).
+        0x24, // E19.d D4 (wait until ForceAdjusted of the logic entity is nonzero).
+        0x40, 0x41, // E19.d D6 (set program index and clear the state, set sprite program index).
+        // E16.a T6 (docs/plan-e16-etat-partie.md, contract item 4): the 23 opcodes of the two rows that start at 0x0D were
         // ported by earlier slices (dialogue, map change, HUD, audio, ...) and already have a Dispatch
         // case, but were never added here - the same staleness the notes below describe. Checked by
         // comparing every Dispatch case label with this set: they are now equal.
@@ -353,6 +360,9 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         // buttons, D-E7-7 relabel) newly implemented (AlundraEventProgramRunner.Dispatch cases 0x3B/0x2F)
         // - see PessimisticPredicateOpcodes/OptimisticPredicateOpcodes' own updated docs above for why
         // this changes only labels, never a Result, on map 389.
+        // E19.a (docs/plan-e19-opcodes.md T2): 0x42/0x43 (logic entity) newly implemented; map 389 has no
+        // site of either, so no line of the annexes changes. T3: 0x59 (Set entity anim) newly implemented;
+        // map 389 has one site (offset 1369), whose label changes in the annexes.
     };
 
     private readonly string _projectRoot;
@@ -867,7 +877,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         RecordSystemOnce("EntityManager.UpdateDestroyedEntities", "EntityManager.cs:367-395 (UpdateEntities pass list)", "slot recycling for destroyed entities - not ported");
         RecordSystemOnce("EntityManager.UpdateEntitiesCounters", "EntityManager.cs:367-395 (UpdateEntities pass list)", "per-entity frame counters - not ported");
         RecordSystemOnce("EntityManager.UpdateEntityLists", "EntityManager.cs:367-395 (UpdateEntities pass list)", "active/renderable list rebuild - not ported");
-        RecordSystemOnce("EntityManager.UpdateAnimation", "EntityManager.cs:209-224", "PARTIAL: AlundraWorldProxy.SyncAnimation (called per-entity from AlundraEntityScriptProxy.Update) ports the target-resolution half only (CurrentAnimationId/AnimationDirection); frame timing/AnimCompleteCounter/NextFrameDelay are not ported (owned by CasaEngine's own Animation2dCompositionSampler instead)");
+        RecordSystemOnce("EntityManager.UpdateAnimation", "EntityManager.cs:209-224", "PARTIAL: AlundraFrameSyncPasses.SyncAnimation (called per-entity from AlundraEntityScriptProxy.Update) ports the target-resolution half (CurrentAnimationId/AnimationDirection) and StepAnimationClock the ends the scripts see (Hold flag, Chain, Loop counter) through the sprite's logical tick clock (E19.c2); NextFrameDelay and the frames themselves are not ported (the drawing is CasaEngine's own Animation2dCompositionSampler, in real time)");
         RecordSystemOnce("PhysicsEngine.UpdateEntitiesPhysics", "PhysicsEngine.cs:10", "PARTIAL (E4.e/E4.f): horizontal integration is ported per-entity, inside AlundraEntityScriptProxy.Update itself (AlundraScriptedMotion.TickScriptedNpc, run earlier this same frame, above); vertical gravity/ground-clamp + entity-vs-entity Z support (CheckEntityCollisionDown, EntitySupport.TryFindSupport) is ported here (RunVerticalPhysicsPass); CheckRidingEntities (search 5/6 fidelity) runs once per frame from RunFrame. Riding-platform FORCE feed for a MOVING platform (UpdateRidingEntity's own AdjustedForceX/Y propagation, MoveEntity's own PlatformEntity branch) is still not ported - map 389's intro platforms are all static (documented deviation, E14 for moving platforms).");
         // E4.e (docs/plan-e4-deplacement-scripte.md, decision E4-1): real per-entity vertical kinematics -
         // see RunVerticalPhysicsPass's own doc. Runs over the LIVE _spawnedEntities (not the frame-start
@@ -1151,7 +1161,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
-    /// Dynamic spawn-by-record-id (opcodes 0x2D ActivateEntity, 0x8B SpawnEntityNextToEntity) - mirrors
+    /// Dynamic spawn-by-record-id (opcodes 0x2D ActivateEntity, 0x8A SpawnEntityAtPosition, 0x8B SpawnEntityNextToEntity) - mirrors
     /// GameEngine.SpawnEntity (GameEngine.cs:684-760) called with notCheckSpawnZone=1, i.e. only
     /// AlundraEntitySpawnFactory.ShouldSpawnRecord's IsEnabled gate still applies (the 0x40 SpriteDirection gate
     /// and the player-tile spawn-zone box are both skipped, exactly like the original). Builds a fresh
@@ -1575,6 +1585,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         {
             0x0D when parameters.Length >= 1 => (int)parameters[0],
             0x5C when parameters.Length >= 2 => (int)parameters[1],
+            0xC4 when parameters.Length >= 4 => (int)parameters[3], // E19.b: v[4] is the text id.
             _ => -1,
         };
 

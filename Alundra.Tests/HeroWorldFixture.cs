@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Alundra.Scripts;
@@ -10,6 +11,7 @@ using CasaEngine.Framework.Application.Components.Physics;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
 
@@ -112,5 +114,37 @@ internal static class HeroWorldFixture
 
         world.AddEntity(entity);
         return (entity, proxy);
+    }
+
+    /// <summary>The "settings" node of the <c>CharacterControllerComponent</c> in the real exported hero prefab
+    /// (<c>Entities/Alundra/Alundra.entity</c>), loaded the way <c>CharacterControllerComponent.Load</c> does. Fails
+    /// naming the file when the export is absent.</summary>
+    internal static CharacterControllerSettings LoadHeroControllerSettings(string projectRoot)
+    {
+        var path = Path.Combine(projectRoot, "Entities", "Alundra", "Alundra.entity");
+        Assert.True(File.Exists(path), $"the real export of the hero prefab is missing: '{path}'");
+        var document = JObject.Parse(File.ReadAllText(path));
+        foreach (var node in (JArray)document["components"]!)
+        {
+            if ((string?)node["type"] == nameof(CharacterControllerComponent))
+            {
+                var settings = new CharacterControllerSettings();
+                settings.Load((JObject)node["settings"]!);
+                return settings;
+            }
+        }
+
+        throw new InvalidOperationException($"no CharacterControllerComponent node in '{path}'");
+    }
+
+    /// <summary>The hero's sprite record header (flags, animation sets, body box) from the real export's own
+    /// catalog. Fails naming the file when the export is absent.</summary>
+    internal static SpriteRecordHeader LoadHeroHeader(string projectRoot)
+    {
+        var path = Path.Combine(projectRoot, "Entities", "Alundra", "Alundra.entity");
+        Assert.True(File.Exists(path), $"the real export of the hero prefab is missing: '{path}'");
+        var heroId = Guid.Parse((string)JObject.Parse(File.ReadAllText(path))["id"]!);
+        Assert.True(new SpriteRecordCatalog(projectRoot).TryGet(heroId, out var header), "the hero has no sprite record header in the export");
+        return header;
     }
 }

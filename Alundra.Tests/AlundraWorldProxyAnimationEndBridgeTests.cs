@@ -221,4 +221,88 @@ public class AlundraWorldProxyAnimationEndBridgeTests
 
         AlundraEntitySpawnFactory.SubscribeAnimationEndBridge(entity);
     }
+
+    // -----------------------------------------------------------------------------------------
+    // E19.c2: the logical clock and the Loop signal (TB1, TB2)
+    // -----------------------------------------------------------------------------------------
+
+    /// <summary>A spawned entity whose sprite plays one Loop of <paramref name="durationSeconds"/> (animation 0, facing down).</summary>
+    private static (Entity Entity, AnimatedSpriteComponent Component, AlundraEntityScriptProxy Proxy) BuildEntityOnALoop(float durationSeconds)
+    {
+        var component = new AnimatedSpriteComponent();
+        var data = new Animation2dData { Name = "bank_anim0_down", AnimationType = AnimationType.Loop };
+        data.Parts.Add(new Animation2dPartData { Id = "body" });
+        data.CollisionKeyframes.Add(new Animation2dCollisionKeyframeData { TimeSeconds = durationSeconds });
+        component.AddAnimation(new Animation2d(data));
+
+        var entity = new Entity
+        {
+            Name = "e",
+            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            RootComponent = component,
+        };
+        entity.Initialize();
+        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        AlundraEntitySpawnFactory.SubscribeAnimationEndBridge(entity);
+        component.SetCurrentAnimation(0, forceReset: true);
+        return (entity, component, proxy);
+    }
+
+    /// <summary>TB1: the bridge turns the logical clock of the sprite on at 50 ticks per second, keeps the sprite on the proxy, and
+    /// feeds the Loop turn into <see cref="AlundraEntityScriptProxy.AnimCompleteCounter"/>.</summary>
+    [Fact]
+    public void SubscribeAnimationEndBridge_TurnsTheLogicalClockOn_KeepsTheSprite_AndCountsALoopTurn()
+    {
+        var (_, component, proxy) = BuildEntityOnALoop(0.06f);
+
+        Assert.Equal(50, component.LogicalTickRate);
+        Assert.Same(component, proxy.LogicalClockSprite);
+        Assert.Equal(3, component.LogicalDurationTicks);
+        Assert.Equal(0, proxy.AnimCompleteCounter);
+
+        component.AdvanceLogicalTicks(3); // one turn of the Loop.
+
+        Assert.Equal(1, proxy.AnimCompleteCounter);
+    }
+
+    [Fact]
+    public void SubscribeAnimationEndBridge_WithoutASprite_LeavesTheClockSpriteNull()
+    {
+        var entity = new Entity { Name = "bare", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        entity.Initialize();
+        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+
+        AlundraEntitySpawnFactory.SubscribeAnimationEndBridge(entity);
+
+        Assert.Null(proxy.LogicalClockSprite);
+    }
+
+    /// <summary>TB2: each raising of the Loop signal adds one (an advance that makes two turns raises twice), a record with no end table
+    /// counts too, and a sender that is not a sprite of an entity with a proxy is ignored.</summary>
+    [Fact]
+    public void OnAnimationLooped_EachTurnAddsOne_WithOrWithoutAnEndTable_AndAForeignSenderIsIgnored()
+    {
+        var (_, component, proxy) = BuildEntityOnALoop(0.06f);
+        Assert.Null(proxy.AnimationEndByAnimDirection); // an all-Loop record has no end table.
+
+        component.AdvanceLogicalTicks(3);
+        Assert.Equal(1, proxy.AnimCompleteCounter);
+
+        component.AdvanceLogicalTicks(6); // two turns in one advance: two raisings.
+        Assert.Equal(3, proxy.AnimCompleteCounter);
+
+        // A record with an end table (Hold and Chain entries only) counts the turns of its Loops all the same.
+        proxy.AnimationEndByAnimDirection = new Dictionary<int, AnimationEndInfo>
+        {
+            [10 * 4] = new() { Kind = AnimationEndKind.Hold },
+        };
+        component.AdvanceLogicalTicks(3);
+        Assert.Equal(4, proxy.AnimCompleteCounter);
+
+        var animation = new Animation2d(new Animation2dData());
+        AlundraEntitySpawnFactory.OnAnimationLooped(null, animation);
+        AlundraEntitySpawnFactory.OnAnimationLooped(new object(), animation);
+        AlundraEntitySpawnFactory.OnAnimationLooped(new AnimatedSpriteComponent(), animation); // no owner.
+        Assert.Equal(4, proxy.AnimCompleteCounter);
+    }
 }

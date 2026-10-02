@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AlundraTestSavesTool</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Same pin as Alundra.csproj and the engine (Directory.Packages.props); Alundra.csproj marks its own
+         reference PrivateAssets="All", so the tool names it itself to get MonoGame next to its executable. -->
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.5.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Alundra\Alundra.csproj" />
+    <ProjectReference Include="..\..\CasaEngineMonogame\CasaEngine\CasaEngine.csproj" />
+  </ItemGroup>
+</Project>

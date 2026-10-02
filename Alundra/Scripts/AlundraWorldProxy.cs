@@ -771,10 +771,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 _spawnedEntities.Add(entity);
 
                 // E4.b ("Spawn" item, docs/plan-e4-deplacement-scripte.md): ground-clamp + root push for a
-                // controller-driven NPC now that the entity is actually IN the world - ClampToGround needs
-                // World.CollisionField, only reachable once Entity.World is set (World.AddEntity, just
-                // above), strictly AFTER CreateEntityFromPrefab's own spawn-time root write (which had to
-                // run off the un-clamped PosZ). A no-op without a Controller
+                // controller-driven NPC, after CreateEntityFromPrefab's own spawn-time root write (which had to
+                // run off the un-clamped PosZ). In production the ground clamp does nothing here (O-E19-6,
+                // docs/plan-e19-opcodes.md): World.AddEntity only QUEUES the entity and Entity.World is set at the next
+                // integration, so Entity.World is still null when this runs; ClampToGround and TerrainHeight both
+                // return at once, and only the root push itself happens. A no-op without a Controller
                 // (PushLogicalPositionToRoot's own gate), same as every other entity today.
                 spawnedProxy?.PushLogicalPositionToRoot();
 
@@ -868,6 +869,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         {
             CollisionField = null;
         }
+
+        // E19.d2b B3 (D-E19-27): the movement obstacle probe, next to the field and for the same reason - World.Clear() resets the slot to
+        // null, so every load re-installs it. The controller's field stage consults it for every non-zero horizontal step.
+        world.MovementObstacleProbe = new AlundraMovementObstacleProbe(this);
 
         // E4.d (docs/plan-e4-deplacement-scripte.md, decision E4-2): navigation grid, built from the same
         // TileMapData right after the collision field above - see TryBuildNavigationGrid's own doc.
@@ -2047,6 +2052,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // fixed 50 Hz frame) - gated the same way as every entity's own pick/run pass.
             for (var tick = 0; tick < ticksThisFrame; tick++)
             {
+                // E19.c2 (docs/plan-e19-opcodes.md §1.2f): the passes after the first of a catch-up frame stand for ticks whose
+                // UpdateAnimation (0x80038B6C) already switched the animations a previous pass asked for, clearing their Hold flag:
+                // clear it here too, so a 0x1C does not count the same Hold end again. A no-op at 0 or 1 tick per frame.
+                if (tick > 0)
+                {
+                    AlundraFrameSyncPasses.ClearHoldFlagsOfPendingSwitches(_spawnedEntities);
+                }
+
                 RunMapEventsPass(PlayerEntity, _mapEvents, EventProgramRunner, GameState.PlayerControlFlags);
             }
         }
@@ -2187,25 +2200,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             _hudPresenter?.Tick();
         }
 
-        // E12.d (D-E12D-2): the player's entity-contact probe, once per logic tick - the port of
-        // MoveEntity's "XCollisionEntity = ComputeXYPosition(...)" write (PhysicsEngine.cs:71-84),
-        // detection only (D-E12D-1, no blocking). Phase fidelity: the original computes this in the
-        // physics pass, AFTER the events pass of the same tick (EntityManager.cs:377-387), so
-        // MovePlayer always consumes the PREVIOUS tick's contact - identical here, where this
-        // end-of-frame pass feeds the next frame's MovePlayer. Gated by GameplayBlockedMask
-        // (D-E12D-5): the original freezes its whole entity pipeline - physics included - behind that
-        // mask (EntityManager.cs:377), so with a MenuOpen dialogue box up, the contact stays frozen
-        // at its pre-open value exactly like the original's.
-        if (PlayerEntity is { } contactProbeSubject
-            && (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) == 0
-            && !AlundraWarpDirector.Instance.IsTransitionInProgress)
-        {
-            for (var contactTick = 0; contactTick < ticksThisFrame; contactTick++)
-            {
-                contactProbeSubject.XCollisionEntity =
-                    AlundraEntityCollision.FindEntityCollisionCandidate(contactProbeSubject, _collidables);
-            }
-        }
+        // E12.d (D-E12D-2) had a pass here: the player's overlap probe, once per logic tick, feeding XCollisionEntity (detection only, D-E12D-1). E19.d2b B4
+        // (D-E19-27, D-E19-29) removed it: entities now block movement, and the contact of the dialogue is the entity that shortened or cancelled the step,
+        // written by AlundraEntityScriptProxy.MoveControllerAndPullPosition from the blocking report of the controller (the binary's +0x130). The freeze of
+        // the old pass (GameplayBlockedMask, D-E12D-5) is kept by construction: no step is taken, so the contact keeps its value.
 
         // E13.d D2 (docs/plan-e13d-inventaire.md, D-E13D-15): the freeze the T2 gate cannot reach - the
         // engine's own gravity integration and sprite animation, frozen for every spawned entity while
@@ -2287,8 +2285,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <summary>
     /// Port of <c>RunMapEvents</c> (GameEngine.cs:1667-1718, 0x8003c67c). Always executes against
     /// <paramref name="player"/> - every MapEvent's own logic entity starts as the player
-    /// (<see cref="BuildMapEvents"/>) and can only ever be retargeted by opcode 0x66 (not ported, never
-    /// reached by map 389's own programs - docs/intro-roadmap.md §1.5).
+    /// (<see cref="BuildMapEvents"/>) and is retargeted by opcodes 0x42/0x43 (E19.a; 0x66 does not touch it - see
+    /// <see cref="AlundraEntityScriptProxy.LogicEntity"/>), which <see cref="AlundraEventProgramRunner"/> reads
+    /// before every instruction.
     /// </summary>
     internal static void RunMapEventsPass(
         AlundraEntityScriptProxy player, IReadOnlyList<AlundraMapEvent> mapEvents, IEventProgramRunner runner,
@@ -2411,7 +2410,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
-    /// Backs opcode 0x2D (Script_45_02D) via <see cref="IEntityWorldContext"/>. Faithful port of
+    /// Backs opcodes 0x2D (Script_45_02D), 0x8A and 0x8B via <see cref="IEntityWorldContext"/>. Faithful port of
     /// <c>GameEngine.SpawnEntity(parent, entityId, notCheckSpawnZone)</c> (GameEngine.cs:679-758)
     /// restricted to <c>notCheckSpawnZone = 1</c>, the only value the opcode ever passes - so only the
     /// <c>IsEnabled</c> gate applies (see <see cref="ShouldSpawnRecord(TileMapObjectData,bool,out string)"/>'s
@@ -2708,8 +2707,8 @@ internal sealed class AlundraMapEvent
     public int ProgramBMap;
 
     /// <summary>The map-event's own current "logic entity" (initially the player - see
-    /// <see cref="AlundraWorldProxy.BuildMapEvents"/>; only opcode 0x66, not ported, can ever retarget
-    /// it).</summary>
+    /// <see cref="AlundraWorldProxy.BuildMapEvents"/>; retargeted by opcodes 0x42/0x43, E19.a, and kept from
+    /// one frame to the next).</summary>
     public AlundraEntityScriptProxy? Entity;
 
     public readonly EventProgramState EventData = new();

@@ -85,8 +85,9 @@ Tests unitaires ajoutés dans `Alundra.Tests/AlundraEventProgramRunnerTests.cs` 
   des scripts de porte qui utilisent aussi 0x10/0x11) ; (b) 300 frames sans qu'aucune paire (contexte,
   pc) inédite ne s'exécute (progression, pas opcode distinct : un Wait qui se ré-entre n'est pas un
   progrès) ; (c) plafond 3600 frames.
-- **F. Garde-fous diagnostiques** : `AlundraEventProgramRunner.MaxIterationsPerCall` (null par défaut,
-  20 000 dans le harnais) et un plafond cumulé côté harnais. Silencieux dans la trace finale ; ils ont
+- **F. Garde-fous diagnostiques** : `AlundraEventProgramRunner.MaxIterationsPerCall` (depuis E19.a, il
+  remplace la garde de production `ProductionLoopBudget` = 1024 quand il est réglé ; le harnais le règle à
+  20 000) et un plafond cumulé côté harnais. Silencieux dans la trace finale ; ils ont
   servi à prouver que le chemin « skip » sur 0x36 bouclait.
 
 ### Limites connues du harnais (inatteignables sur la map 389, à traiter au lot 1)
@@ -94,9 +95,12 @@ Tests unitaires ajoutés dans `Alundra.Tests/AlundraEventProgramRunnerTests.cs` 
 Relevées par le verifier ; aucune n'influence la trace car les branches concernées ne s'exécutent jamais
 ici : (1) le reset « joueur hors zone » de `RunMapEventsPass` remet à zéro `EventData.Sp` du map-event au
 lieu du `EventProgramState` du joueur (`GameEngine.cs:1690-1697` zéroe aussi `ChildEntity`,
-`RelativeWarpOffsetX`, `Index`) — les 7 zones couvrent toute la map ; (2) `RunMapEventsPass` omet
-`MapEventProgramId = ProgramBMap`, `EventTrigger = i`, `LogicContextEntity = mapEventEntity` — inertes
-tant qu'aucun opcode 0x66 ne re-cible l'entité logique ; (3) le slot F zéroe les forces de l'entité au lieu
+`RelativeWarpOffsetX`, `Index`) — les 7 zones couvrent toute la map ; (2) *(corrigé)*
+`RunMapEventsPass` pose désormais `MapEventProgramId = ProgramBMap`, `EventTrigger = mapEvent.Id` (l'index
+d'enregistrement de l'événement, pas sa position dans la liste compactée) et
+`LogicEntity = mapEventEntity` (`AlundraWorldProxy.cs`), et depuis E19.a le runner lit cette entité logique
+avant chaque instruction : les opcodes `0x42` et `0x43` la re-ciblent (`0x66` ne la touche pas, contrairement
+à ce que ce point disait) ; (3) le slot F zéroe les forces de l'entité au lieu
 de celles du joueur (`EntityEventHandlers.cs:268-273`) — aucun slot F n'est atteint. Le port de production
 (lot 1) doit suivre l'original, pas le harnais.
 

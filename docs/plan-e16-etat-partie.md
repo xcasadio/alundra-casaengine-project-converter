@@ -1045,7 +1045,7 @@ max `0x6A2`, mot 53) et arithmétique de C3.
 | SC11 | P4 | Une durée finie énorme pourrait faire reboucler le compteur de temps avant le plafond | FIX | T1 |
 | SC12 | P4 | Les valeurs de la table des cartes ne sont pas contrôlées contre le catalogue | REJECT | même exposition que les opcodes `0x38` et `0x53` ; les 483 mondes existent (F3) ; risque résiduel au §4 |
 
-### E16.d — Chargement et recette 🧪 (DLL ; plan détaillé plus bas, READY le 2026-09-28, exécuté en mode AUTO ; T1 à T7 faites et vérifiées CONFIRMED le 2026-09-29, `f2cc8be` à `00746c7` ; reste la recette en jeu T8 de l'auteur)
+### E16.d — Chargement et recette ✅ (DLL ; plan détaillé plus bas, READY le 2026-09-28, exécuté en mode AUTO ; T1 à T7 faites et vérifiées CONFIRMED le 2026-09-29, `f2cc8be` à `00746c7` ; recette T8 de l'auteur validée le 2026-10-02, « tout fonctionne »)
 
 - **But** : reprendre une partie sauvegardée.
 - **Contenu** : port de la branche `SlotData == 1` d'`InitializeGameState`, dans cet ordre, dont
@@ -1413,7 +1413,7 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
     l'interface ;
   - (P4) le chargement n'exige pas le héros au sol, contrairement à la sauvegarde (conforme à K7) ;
     le départ pose l'animation `0x36`.
-- 🧪 **T8 — Recette en jeu** (l'auteur, hors de l'app Claude ; la DLL Debug est déployée dans
+- ✅ **T8 — Recette en jeu** (validée par l'auteur le 2026-10-02 ; l'auteur, hors de l'app Claude ; la DLL Debug est déployée dans
   `alundra-project/` par le dernier build de T5) : l'acceptation en jeu ci-dessus, avec
   la DLL compilée en Debug ; le journal montre la ligne de l'interrupteur.
 
@@ -1466,7 +1466,7 @@ La remise de session couvre tous les singletons, sauf le fondu maître de la mus
 `ApplyPendingLoad` ; un test existant qui change pour une autre raison ; l'oracle de l'intro qui
 bouge.
 
-### E16.e — Écran de sauvegarde en jeu 🧪 (DLL, MGUI en XAML ; plan détaillé du 2026-09-29, READY après trois pauses et reprises (D-E16-38, O-E16-18) ; T1 à T7 faites et vérifiées CONFIRMED le 2026-09-29, `3cc12ca` à `bd1d8cb` ; ADR-0014 ; reste la recette en jeu T8 de l'auteur)
+### E16.e — Écran de sauvegarde en jeu ✅ (DLL, MGUI en XAML ; plan détaillé du 2026-09-29, READY après trois pauses et reprises (D-E16-38, O-E16-18) ; T1 à T7 faites et vérifiées CONFIRMED le 2026-09-29, `3cc12ca` à `bd1d8cb` ; ADR-0014 ; recette T8 de l'auteur validée le 2026-10-02, « tout fonctionne », emplacements hostiles facultatifs non joués ; l'annulation passe par NON, comme le binaire, J3)
 
 - **But** : le joueur sauvegarde lui-même, comme dans l'original.
 - **Contenu** : le gestionnaire du livre de sauvegarde (`AI_ProcessWarpTransitionState`, question
@@ -1972,7 +1972,7 @@ plan ; `Alundra.Tests` sans échec à chaque commit, oracle de l'intro inchangé
   - (P4) `TryWireSaveScreenOnce` lève à chaque image si le projet exporté date d'avant E16.e ; il
     faut réexporter ;
   - (P4) le build Release n'a été refait que par l'exécuteur (T4), pas par le verifier.
-- 🧪 **T8 — Recette en jeu** (l'auteur ; le livre de la carte 17 n'apparaît qu'après les drapeaux
+- ✅ **T8 — Recette en jeu** (validée par l'auteur le 2026-10-02 ; l'auteur ; le livre de la carte 17 n'apparaît qu'après les drapeaux
   d'histoire `0x4CA` et `0x4C4`, prendre un livre d'une carte déjà atteinte) : un livre, sauvegarde dans chacun des 4 emplacements,
   libellés relus ; F9 recharge la plus récente. Trois emplacements hostiles aussi (SE11) :
   - un JSON aux métadonnées forgées (`chapter` « 9999 », un `summary` de 500 caractères avec du

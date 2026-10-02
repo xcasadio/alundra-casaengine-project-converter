@@ -13,8 +13,9 @@ namespace Alundra.Scripts;
 /// true/false outcome a condition opcode left behind for a following conditional-goto to consume
 /// (<see cref="Result"/>).
 ///
-/// Field <see cref="_30"/> is carried over unused (as in the original, whose own name for it is just the
-/// struct offset) - kept for field-layout fidelity, not read by any ported opcode handler.
+/// Field <see cref="_30"/> is the loop counter of the program (the original's own name for it is just the struct
+/// offset, <c>state + 0x30</c>): <c>0x73</c> sets it and <c>0x74</c> decrements it and jumps back while it stays positive
+/// (E19.c1 T3). Nothing else touches it, and the interpreter never resets it.
 ///
 /// <see cref="_34"/> IS read (E16.a T4, D-E16-21): the "stored choice param" family's own remembered
 /// return point. <c>0x78</c>/<c>0x79</c>/<c>0x7B</c>/<c>0x7C</c> write it (to <c>CodeIndex</c> + their

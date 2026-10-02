@@ -21,14 +21,14 @@ namespace Alundra.Scripts;
 /// <list type="bullet">
 /// <item><description>0x80 clear: raw entity-record id search (GameEngine.cs:1940-1953) - matches every
 /// spawned entity whose <see cref="AlundraEntityScriptProxy.EntityRefId"/> equals <c>searchType</c>,
-/// gated on <c>ownerEntity.IsLoadedNormalOrDeactivated</c>. The original also calls
+/// gated on <c>referenceEntity.IsLoadedNormalOrDeactivated</c>. The original also calls
 /// <c>CheckEntityRecord(searchType)</c> first purely to validate the id and log "Illegal InitData
 /// Number!!" on failure (GameEngine.cs:2113-2123) - its result is discarded and it has no effect on the
 /// match count, so it is NOT ported here.</description></item>
 /// <item><description>0x80 set: <c>functionId = searchType &amp; 0x7f</c> selects one of 12 canned
 /// queries (GameEngine.cs:1956-2104):
 /// <list type="number">
-/// <item><description>0 - the owner itself.</description></item>
+/// <item><description>0 - the reference entity itself (the logic entity of the program).</description></item>
 /// <item><description>1 - the player entity (GameEngine.cs:1962-1964:
 /// <c>g_matchingEntitiesBuffer[0] = StaticVariables.PlayerEntity</c>). Since E1 the player IS a real
 /// spawned entity (<see cref="AlundraWorldProxy.PlayerEntity"/>, also present in
@@ -47,18 +47,18 @@ namespace Alundra.Scripts;
 /// per-animation "no entity collision" bit (<c>EntityAnimFlags.NoEntityCollision</c> = 0x80, ported here
 /// as a local constant - see that class's own doc for why it is not pulled in as a whole file) clear, and
 /// no <see cref="AlundraEntityScriptProxy.PlatformEntity"/>.</description></item>
-/// <item><description>5 - entities the owner is riding on (<c>ownerEntity.RidingEntity</c> matches the
+/// <item><description>5 - entities the reference entity is riding on (<c>referenceEntity.RidingEntity</c> matches the
 /// candidate's own backing <see cref="AlundraEntityScriptProxy.LogicContextEntity"/>), EXCLUDING the
 /// player (E4.f, GameEngine.cs:2010-2091 loops from slot 1, never slot 0).</description></item>
-/// <item><description>6 - entities riding on the owner (candidate's <c>RidingEntity</c> matches the
-/// owner's <c>LogicContextEntity</c>), EXCLUDING the player.</description></item>
-/// <item><description>7 - entities the owner's <c>XCollisionEntity</c> points at, EXCLUDING the
+/// <item><description>6 - entities riding on the reference entity (candidate's <c>RidingEntity</c> matches
+/// the reference entity's <c>LogicContextEntity</c>), EXCLUDING the player.</description></item>
+/// <item><description>7 - entities the reference entity's <c>XCollisionEntity</c> points at, EXCLUDING the
 /// player.</description></item>
-/// <item><description>8 - entities whose <c>XCollisionEntity</c> points at the owner, EXCLUDING the
+/// <item><description>8 - entities whose <c>XCollisionEntity</c> points at the reference entity, EXCLUDING the
 /// player.</description></item>
-/// <item><description>9 - entities whose <c>ParentEntity</c> is the owner, EXCLUDING the
+/// <item><description>9 - entities whose <c>ParentEntity</c> is the reference entity, EXCLUDING the
 /// player.</description></item>
-/// <item><description>10 - the entity the owner's <c>ParentEntity</c> points at, EXCLUDING the
+/// <item><description>10 - the entity the reference entity's <c>ParentEntity</c> points at, EXCLUDING the
 /// player.</description></item>
 /// <item><description>11 - every entity with a non-null <c>PlatformEntity</c> (riding something,
 /// regardless of what), EXCLUDING the player.</description></item>
@@ -84,10 +84,10 @@ public static class EntitySearchService
     private static readonly HashSet<int> LoggedIllegalFunctionIds = new();
 
     /// <summary>
-    /// Runs one search, in the original's own iteration order. <paramref name="ownerEntity"/> is the
-    /// entity whose Load/Tick/... program issued the search (<c>logicEntity</c>/<c>ownerEntity</c> in the
-    /// original are the same object by the time any opcode runs in this V1 interpreter - see
-    /// <see cref="AlundraEventProgramRunner"/>'s class doc on always-self <c>LogicContextEntity</c>).
+    /// Runs one search, in the original's own iteration order. <paramref name="referenceEntity"/> is the
+    /// REFERENCE of the search: the logic entity of the program that issued it (<c>logicEntity</c>, the
+    /// handler's a0 in the original): the entity whose program runs, until opcode 0x42/0x43 retargets it
+    /// (E19.a T1, <see cref="AlundraEntityScriptProxy.LogicEntity"/>) - not always the entity itself.
     /// <paramref name="playerEntity"/> backs function id 1 ("get player") - passed explicitly (the
     /// caller's own <see cref="IEntityWorldContext.PlayerEntity"/>) rather than found by scanning
     /// <paramref name="spawnedEntities"/> for <see cref="AlundraEntityScriptProxy.IsPlayer"/>, since every
@@ -96,14 +96,14 @@ public static class EntitySearchService
     /// so existing tests/call sites that never exercise function id 1 do not need to pass it.
     /// </summary>
     public static List<AlundraEntityScriptProxy> GetMatchingEntitiesBySearchType(
-        AlundraEntityScriptProxy ownerEntity, int searchType, IReadOnlyList<AlundraEntityScriptProxy> spawnedEntities,
+        AlundraEntityScriptProxy referenceEntity, int searchType, IReadOnlyList<AlundraEntityScriptProxy> spawnedEntities,
         AlundraEntityScriptProxy? playerEntity = null)
     {
         var matches = new List<AlundraEntityScriptProxy>();
 
         if ((searchType & 0x80) == 0)
         {
-            if (ownerEntity.IsLoadedNormalOrDeactivated)
+            if (referenceEntity.IsLoadedNormalOrDeactivated)
             {
                 foreach (var candidate in spawnedEntities)
                 {
@@ -119,8 +119,8 @@ public static class EntitySearchService
 
         switch (searchType & 0x7f)
         {
-            case 0: // get owner
-                matches.Add(ownerEntity);
+            case 0: // get the reference entity (the logic entity of the program)
+                matches.Add(referenceEntity);
                 break;
 
             case 1: // get player - GameEngine.cs:1962-1964
@@ -156,7 +156,7 @@ public static class EntitySearchService
             case 4: // all entities on the ground
                 foreach (var candidate in spawnedEntities)
                 {
-                    if (ownerEntity.IsLoadedNormalOrDeactivated
+                    if (referenceEntity.IsLoadedNormalOrDeactivated
                         && (candidate.Flags & EntityFlags.Collidable) != 0
                         && (candidate.AnimFlags & NoEntityCollision) == 0
                         && candidate.PlatformEntity == null)
@@ -167,11 +167,11 @@ public static class EntitySearchService
 
                 break;
 
-            case 5: // entities the owner is riding on (besides the player - GameEngine.cs:2010-2019, loop from slot 1)
+            case 5: // entities the reference entity is riding on (besides the player - GameEngine.cs:2010-2019, loop from slot 1)
                 foreach (var candidate in spawnedEntities)
                 {
                     if (!candidate.IsPlayer && candidate.IsLoadedNormalOrDeactivated
-                        && ReferenceEquals(ownerEntity.RidingEntity, candidate.LogicContextEntity))
+                        && ReferenceEquals(referenceEntity.RidingEntity, candidate.LogicContextEntity))
                     {
                         matches.Add(candidate);
                     }
@@ -179,11 +179,11 @@ public static class EntitySearchService
 
                 break;
 
-            case 6: // entities riding on the owner (besides the player - GameEngine.cs:2023-2032)
+            case 6: // entities riding on the reference entity (besides the player - GameEngine.cs:2023-2032)
                 foreach (var candidate in spawnedEntities)
                 {
                     if (!candidate.IsPlayer && candidate.IsLoadedNormalOrDeactivated
-                        && ReferenceEquals(candidate.RidingEntity, ownerEntity.LogicContextEntity))
+                        && ReferenceEquals(candidate.RidingEntity, referenceEntity.LogicContextEntity))
                     {
                         matches.Add(candidate);
                     }
@@ -191,14 +191,14 @@ public static class EntitySearchService
 
                 break;
 
-            case 7: // entities the owner's XCollisionEntity points at (besides the player - GameEngine.cs:2036-2044)
+            case 7: // entities the reference entity's XCollisionEntity points at (besides the player - GameEngine.cs:2036-2044)
                 foreach (var candidate in spawnedEntities)
                 {
                     // E12.d (D-E12D-8): XCollisionEntity is proxy-typed now - compare proxies
                     // directly (the original compares the same unified entities), which also removes
                     // the latent null==null match bare test proxies used to allow via LogicContextEntity.
                     if (!candidate.IsPlayer && candidate.IsLoadedNormalOrDeactivated
-                        && ReferenceEquals(ownerEntity.XCollisionEntity, candidate))
+                        && ReferenceEquals(referenceEntity.XCollisionEntity, candidate))
                     {
                         matches.Add(candidate);
                     }
@@ -206,11 +206,11 @@ public static class EntitySearchService
 
                 break;
 
-            case 8: // entities whose XCollisionEntity points at the owner (besides the player - GameEngine.cs:2048-2058)
+            case 8: // entities whose XCollisionEntity points at the reference entity (besides the player - GameEngine.cs:2048-2058)
                 foreach (var candidate in spawnedEntities)
                 {
                     if (!candidate.IsPlayer && candidate.IsLoadedNormalOrDeactivated
-                        && ReferenceEquals(candidate.XCollisionEntity, ownerEntity))
+                        && ReferenceEquals(candidate.XCollisionEntity, referenceEntity))
                     {
                         matches.Add(candidate);
                     }
@@ -218,11 +218,11 @@ public static class EntitySearchService
 
                 break;
 
-            case 9: // entities whose ParentEntity is the owner (besides the player - GameEngine.cs:2062-2072)
+            case 9: // entities whose ParentEntity is the reference entity (besides the player - GameEngine.cs:2062-2072)
                 foreach (var candidate in spawnedEntities)
                 {
                     if (!candidate.IsPlayer && candidate.IsLoadedNormalOrDeactivated
-                        && ReferenceEquals(candidate.ParentEntity, ownerEntity.LogicContextEntity))
+                        && ReferenceEquals(candidate.ParentEntity, referenceEntity.LogicContextEntity))
                     {
                         matches.Add(candidate);
                     }
@@ -230,11 +230,11 @@ public static class EntitySearchService
 
                 break;
 
-            case 10: // the entity the owner's ParentEntity points at (besides the player - GameEngine.cs:2076-2086)
+            case 10: // the entity the reference entity's ParentEntity points at (besides the player - GameEngine.cs:2076-2086)
                 foreach (var candidate in spawnedEntities)
                 {
                     if (!candidate.IsPlayer && candidate.IsLoadedNormalOrDeactivated
-                        && ReferenceEquals(ownerEntity.ParentEntity, candidate.LogicContextEntity))
+                        && ReferenceEquals(referenceEntity.ParentEntity, candidate.LogicContextEntity))
                     {
                         matches.Add(candidate);
                     }

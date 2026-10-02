@@ -87,7 +87,11 @@ Toute la chaîne originale, vérifiée file:line dans `alundra-datas-analyser` :
   (AABB asymétrique, portes, +1 inclus — ce `+1` est *dérivé* : `dif < dim + 1` ⇔ `dif <= dim`, le
   contact affleurant compte) mais **aucun blocage** : le déplacement du joueur reste au mover moteur.
   Écart documenté : l'interaction se déclenche en chevauchement plutôt qu'en butée ; le joueur
-  traverse toujours les PNJ (comme aujourd'hui). Le port est écrit comme une **fonction dédiée**
+  traverse toujours les PNJ (comme aujourd'hui). *(Note du 2026-10-02, E19.d2b : « le contact
+  affleurant compte » est faux avec les dimensions réelles, `Width = (taille << 16) - 1` : un contact
+  affleurant ne recouvre pas, une unité de moins recouvre (bord semi-ouvert du binaire) ; et « aucun
+  blocage » est levé par D-E19-27 : le héros et les PNJ s'arrêtent au contact, et l'entité de contact
+  vient du rapport de blocage du contrôleur.)* Le port est écrit comme une **fonction dédiée**
   (règle n°3 des ÉCHELLES : ne pas réutiliser un helper d'EntitySupport sans comparaison ligne à
   ligne — l'original a une fonction distincte, on la porte distincte).
   **CORRECTION P2 de relecture — la source de position n'est PAS `ModdedPos*`** : l'original lit

@@ -64,10 +64,23 @@ internal static class AlundraFrameSyncPasses
     /// see <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>/<see cref="SpawnPlayerEntity"/>, guaranteed different from
     /// <c>TargetAnimationId</c>), so the very first sync always fires and sets the entity's initial visual.
     ///
-    /// Frame-level animation state (<c>Frame</c>/<c>NextFrameDelay</c>/<c>AnimCompleteCounter</c>, the rest
-    /// of <c>UpdateAnimation</c>) stays out of scope: CasaEngine's own <c>Animation2dCompositionSampler</c>
-    /// (driven by <see cref="AnimatedSpriteComponent.Update"/>) already owns frame timing once the right
-    /// animation is selected.
+    /// Frame timing for the DRAWING stays with CasaEngine's own <c>Animation2dCompositionSampler</c> (driven in real time by
+    /// <see cref="AnimatedSpriteComponent.Update"/>, D-E19-17); the ENDS the scripts see (Hold, Chain, Loop turn) come from the
+    /// sprite's logical tick clock, stepped once per logic tick by <see cref="StepAnimationClock"/> (E19.c2, ADR-0019). This method
+    /// runs once per frame, at the end of the frame (the kept one-frame animation lag, D-E19-13), and keeps the clock aligned with
+    /// the switch it makes:
+    /// <list type="bullet">
+    /// <item><description>it reads and zeroes <see cref="AlundraEntityScriptProxy.AnimationSwitchTicksReserved"/>, the ticks of this
+    /// frame the clock spent on the switch (whatever it decides, so a frame never leaks its count into the next);</description></item>
+    /// <item><description>on a switch it restarts the animation (the logical tick goes back to 0: the binary shows frame 0 on the tick
+    /// of the switch without counting it). With no tick reserved (the switch was asked on a frame without a logic tick, by a map
+    /// event or by the hero's input) the next tick is owed to the switch and consumed without advancing; with several reserved (a
+    /// catch-up frame) the new animation advances by the reserved ticks minus one, the ticks the binary would have counted after the
+    /// switch tick;</description></item>
+    /// <item><description>when the animation asked for is not one of the entity's (its prefab does not have it, as the Flames of the lair
+    /// of Nirude do for <c>1A 09</c>), the animation that plays starts again from its frame 0: the binary reads past its table and
+    /// shows the images of animation 0.</description></item>
+    /// </list>
     /// </summary>
     internal static void SyncAnimation(Entity entity)
     {
@@ -75,6 +88,10 @@ internal static class AlundraFrameSyncPasses
         {
             return;
         }
+
+        // The ticks the clock reserved for a switch this frame: read and zeroed first, before any early return.
+        var reservedTicks = proxy.AnimationSwitchTicksReserved;
+        proxy.AnimationSwitchTicksReserved = 0;
 
         // Destroyed-entity visibility (structural piece for the search-driven destroy opcodes, 0x2E
         // in particular): once an entity is flagged for destruction it stops being drawn and stops
@@ -106,6 +123,21 @@ internal static class AlundraFrameSyncPasses
         proxy.CurrentAnimationId = newCurrentAnimationId;
         proxy.AnimationDirection = newAnimationDirection;
 
+        // E19.d2b (D-E19-29): AnimFlags is the byte 0xD of the animation set the binary reloads in the switch block of UpdateAnimation
+        // (0x80038B68), before anything that needs a sprite; the export carries it under the name Acceleration, whole (the kinematic
+        // tick keeps the 4 low bits of it). 0 when the animation is not in the set. Its bit 0x80 takes the entity out of the collidable
+        // list for the duration of the animation.
+        proxy.AnimFlags = proxy.AnimSetsByAnim != null
+            && proxy.AnimSetsByAnim.TryGetValue((int)proxy.CurrentAnimationId, out var animSet)
+                ? animSet.Acceleration
+                : 0;
+
+        // Any switch (target, direction or chain restart) clears the Hold flag: UpdateAnimation writes +0xAC = 0 in
+        // its switch block (0x80038B6C), before anything that needs a sprite, so a sprite-less entity clears it too
+        // (E19.c1 T4). The animation-end counter is never zeroed here: the binary does not.
+        proxy.ForceResetAnimationFlag = 0;
+        proxy.HoldCountedAwaitingSwitch = false;
+
         var animatedSprite = entity.GetComponent<AnimatedSpriteComponent>();
         if (animatedSprite == null)
         {
@@ -115,6 +147,95 @@ internal static class AlundraFrameSyncPasses
         if (TrySelectAnimationByNameSuffix(animatedSprite, proxy.CurrentAnimationId, proxy.AnimationDirection, out var selected))
         {
             animatedSprite.SetCurrentAnimation(selected, forceReset: true);
+        }
+        else if (animatedSprite.CurrentAnimation != null)
+        {
+            // The animation asked for is not one of this entity's: the one that plays starts again (see this method's doc).
+            animatedSprite.SetCurrentAnimation(animatedSprite.CurrentAnimation, forceReset: true);
+        }
+
+        if (animatedSprite.LogicalTickRate == 0)
+        {
+            return;
+        }
+
+        if (reservedTicks == 0)
+        {
+            proxy.AnimationSwitchTickOwed = true;
+        }
+        else if (reservedTicks > 1)
+        {
+            animatedSprite.AdvanceLogicalTicks(reservedTicks - 1);
+        }
+    }
+
+    /// <summary>
+    /// E19.c2 (docs/plan-e19-opcodes.md §1.2f, ADR-0019): one step of the logical clock of the animation ends, called once per logic
+    /// tick by <see cref="AlundraEntityScriptProxy.Update"/>, inside the gameplay-blockable block (so never while the game is frozen
+    /// or a transition departs), after the entity's script and before its motion. It ports the tick of the binary's
+    /// <c>UpdateAnimation</c> (<c>0x80038AB4</c>):
+    /// <list type="bullet">
+    /// <item><description>a switch is pending (<see cref="AlundraEntityScriptProxy.PendingChainRestartFlag"/>, or
+    /// <see cref="TryResolveAnimationTarget"/> would change the animation, a new target or a new direction): the tick belongs to the
+    /// switch, the old animation neither advances nor ends on it. The tick is reserved for <see cref="SyncAnimation"/> and the tick
+    /// owed is cleared (this switch spends it);</description></item>
+    /// <item><description>otherwise, a tick owed to an earlier switch is consumed without advancing (the new animation shows its frame 0
+    /// on the tick of its switch, uncounted);</description></item>
+    /// <item><description>otherwise the sprite's logical clock advances by one tick and raises the ends (Hold flag, Chain, Loop turn)
+    /// through the bridge; a Chain end it raised switches animation on this very tick in the binary, so it reserves the tick too.</description></item>
+    /// </list>
+    /// Nothing for an entity flagged for destruction or without a sprite whose clock the bridge turned on. No allocation.
+    /// </summary>
+    internal static void StepAnimationClock(AlundraEntityScriptProxy proxy)
+    {
+        var sprite = proxy.LogicalClockSprite;
+        if (sprite == null || proxy.Status == EntityStatus.FlagToDestroy)
+        {
+            return;
+        }
+
+        if (proxy.PendingChainRestartFlag != 0 || TryResolveAnimationTarget(proxy, out _, out _))
+        {
+            proxy.AnimationSwitchTicksReserved++;
+            proxy.AnimationSwitchTickOwed = false;
+            return;
+        }
+
+        if (proxy.AnimationSwitchTickOwed)
+        {
+            proxy.AnimationSwitchTickOwed = false;
+            return;
+        }
+
+        sprite.AdvanceLogicalTicks(1);
+        if (proxy.PendingChainRestartFlag != 0)
+        {
+            proxy.AnimationSwitchTicksReserved++;
+        }
+    }
+
+    /// <summary>
+    /// E19.c2 (docs/plan-e19-opcodes.md §1.2f): between two map-event passes of the same (catch-up) frame, clears the Hold flag
+    /// of every entity whose animation switch is pending, as the <c>UpdateAnimation</c> of the tick in between would have
+    /// (<c>0x80038B6C</c> writes the flag 0 in its switch block). Without it a map-event <c>0x1C</c> would count the same Hold
+    /// end on every pass of the frame. Indexed loop, no allocation.
+    /// </summary>
+    internal static void ClearHoldFlagsOfPendingSwitches(IReadOnlyList<Entity> entities)
+    {
+        for (var i = 0; i < entities.Count; i++)
+        {
+            if (entities[i].GameplayProxy is not AlundraEntityScriptProxy proxy
+                || proxy.Status == EntityStatus.FlagToDestroy
+                || proxy.ForceResetAnimationFlag == 0)
+            {
+                continue;
+            }
+
+            if (proxy.PendingChainRestartFlag != 0 || TryResolveAnimationTarget(proxy, out _, out _))
+            {
+                proxy.ForceResetAnimationFlag = 0;
+                proxy.HoldCountedAwaitingSwitch = false;
+            }
         }
     }
 
@@ -214,8 +335,12 @@ internal static class AlundraFrameSyncPasses
                 continue;
             }
 
+            // E19.c2 (P4 of E19.c1): a 0x1C relaunch from a map event leaves CurrentAnimationId = ~TargetAnimationId until the
+            // entity's next sync, while this pass runs right after the map events. The binary switches back to the target
+            // before drawing, so the key is the target's.
+            var animationId = proxy.CurrentAnimationId == ~proxy.TargetAnimationId ? proxy.TargetAnimationId : proxy.CurrentAnimationId;
             var idsv = 0;
-            var idsvKey = (int)proxy.CurrentAnimationId * AlundraEntitySpawnFactory.IdsvDirectionStride + proxy.AnimationDirection;
+            var idsvKey = (int)animationId * AlundraEntitySpawnFactory.IdsvDirectionStride + proxy.AnimationDirection;
             proxy.IdsvByAnimDirection?.TryGetValue(idsvKey, out idsv);
 
             WallPlacementOverlay.ApplyEntitySortKey(depthSortable, proxy.PosY, idsv);

@@ -37,7 +37,11 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// (EntityEventHandlers.cs:335: <c>func(entity.LogicContextEntity, entity, ...)</c>) and reassigned by
     /// <see cref="AlundraWorldProxy.RunMapEventsPass"/> (port of <c>RunMapEvents</c>, GameEngine.cs:1698:
     /// <c>playerEntity.LogicContextEntity = mapEventEntity</c>) to the map-event's own logic entity
-    /// (initially the player itself, retargetable by opcode 0x66 - not ported). Deliberately a SEPARATE
+    /// (initially the player itself). Retargeted by opcodes 0x42 and 0x43, the only two that write it
+    /// (E19.a, ALUN_CD.EXE 0x8003E808/0x8003E81C; 0x66 writes the owner's state, not this word, contrary to
+    /// what this comment used to say). Null means "the entity itself" (<c>InitializeEntity</c>,
+    /// 0x80042028): <see cref="AlundraEventProgramRunner"/> resolves <c>LogicEntity ?? owner</c> before every
+    /// instruction, and a clone starts on itself. Deliberately a SEPARATE
     /// field from this proxy's own <see cref="LogicContextEntity"/> below, which is an engine-only,
     /// unrelated-by-coincidence-of-name back-pointer to this proxy's OWN CasaEngine <see cref="Entity"/>
     /// (set once at spawn, see <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>) - conflating the
@@ -132,6 +136,39 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// </summary>
     public int PendingChainRestartFlag;
     public int AnimCompleteCounter;
+
+    /// <summary>
+    /// Engine-only (E19.c2, docs/plan-e19-opcodes.md §1.2f, ADR-0019): the sprite whose logical clock
+    /// (<see cref="AnimatedSpriteComponent.SetLogicalTickRate"/>) drives the ends of this entity's animations, cached when
+    /// <see cref="AlundraEntitySpawnFactory.SubscribeAnimationEndBridge"/> turns the clock on. Null for an entity without
+    /// a sprite. Not copied by <see cref="Clone"/>: a clone has no subscription.
+    /// </summary>
+    internal AnimatedSpriteComponent? LogicalClockSprite;
+
+    /// <summary>
+    /// Engine-only (E19.c2): the logic ticks of the current frame at which <see cref="AlundraFrameSyncPasses.StepAnimationClock"/>
+    /// found an animation switch pending (the binary's <c>UpdateAnimation</c> of that tick switches instead of advancing the
+    /// old animation). Read and zeroed by <see cref="AlundraFrameSyncPasses.SyncAnimation"/>, once per frame, whatever it
+    /// decides. Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal int AnimationSwitchTicksReserved;
+
+    /// <summary>
+    /// Engine-only (E19.c2): set by <see cref="AlundraFrameSyncPasses.SyncAnimation"/> when it switches an animation on a frame
+    /// that had no logic tick to spend on the switch; the next tick is then consumed without advancing the new animation (the
+    /// binary shows the new animation's frame 0 on the tick of the switch without counting it). Cleared by a switch that reserves
+    /// a tick. Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal bool AnimationSwitchTickOwed;
+
+    /// <summary>
+    /// Engine-only (E19.c2): a Hold end already counted by <c>0x1C</c>/<c>0x1D</c> that waits for the switch it asked for
+    /// (<c>CurrentAnimationId</c> = ~<c>TargetAnimationId</c>). While set, the Hold flag is invisible to those opcodes, so a
+    /// catch-up frame cannot count the same end twice before the switch clears the flag. Cleared by any switch
+    /// (<see cref="AlundraFrameSyncPasses.SyncAnimation"/>, <see cref="AlundraFrameSyncPasses.ClearHoldFlagsOfPendingSwitches"/>).
+    /// Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal bool HoldCountedAwaitingSwitch;
     public int AnimFlags;
     public int ForceZ;//rise/fall speed
     public int TargetForceX, TargetForceY;
@@ -169,11 +206,11 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// "per frame" in the original IS "per tick" here, since the original's engine runs exactly one script
     /// pass and one physics pass per fixed 50 Hz frame; see the ONE-CLOCK fix doc on
     /// <see cref="AlundraScriptedMotion"/> for why this field used to go stale before that fix), set
-    /// (nonzero) by <see cref="MoveControllerAndPullPosition"/> whenever the controller's own <c>Move</c>
-    /// returns an actual displacement that falls short of the requested one beyond a small epsilon on
-    /// either horizontal axis (<c>CharacterControllerComponent.Move</c> returns the actual displacement -
-    /// CharacterControllerComponent.cs:345-369) - the DLL's own equivalent of the original's "movement was
-    /// curtailed by a wall/screen clamp/collision" signal, consumed by opcode 0x1F
+    /// (nonzero) by <see cref="MoveControllerAndPullPosition"/> whenever, on either horizontal axis, a
+    /// displacement beyond a small epsilon was requested and the controller's own <c>Move</c> returns none
+    /// of it (an actual displacement within that epsilon; <c>CharacterControllerComponent.Move</c> returns
+    /// the actual displacement - CharacterControllerComponent.cs:345-369) - the DLL's own equivalent of the
+    /// original's "no sub-step was accepted" signal, consumed by opcode 0x1F
     /// (<see cref="AlundraEventProgramRunner"/>'s own Walk-with-collision bridge) and by 0x1E's own
     /// navigation detour. A value this field holds after its owning entity's motion tick survives
     /// unchanged across any additional RENDERED frames until the entity's next LOGIC tick (there may be
@@ -182,6 +219,14 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// a value a tick-less render frame silently wiped. Stays 0 the whole session for an entity with no
     /// controller (bare-fallback spawn) - <see cref="MoveControllerAndPullPosition"/> is itself a no-op in
     /// that case.
+    /// <para>
+    /// E19.a3 (D-E19-12, ADR-0017, superseding D-E19-10): like the binary, the flag rises only on a tick
+    /// with no progress on a requested axis (<c>0x80037d54</c>, skipped by the guard of <c>0x800379a4</c>
+    /// when a halved sub-step is accepted). A step the engine's cell field shortens to the contact
+    /// (ADR-0045 of the engine) but that still advances leaves it at 0, so a walk chained on the tick that
+    /// reaches the contact is not ended by a stale flag. The original's slide along a wall when only one
+    /// corner touches stays with E19.h (D-E19-9).
+    /// </para>
     /// </summary>
     public int ForceAdjusted;//0x13c
 
@@ -278,6 +323,15 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// <see cref="AlundraGameplayFreeze"/>, which cannot reach the protected <c>Owner</c>. Looked up on
     /// each call: only a freeze or a thaw asks, never a per-frame path.</summary>
     internal AnimatedSpriteComponent? AnimatedSprite => Owner?.GetComponent<AnimatedSpriteComponent>();
+
+    /// <summary>
+    /// E19.d2b B4: how many controller steps (<see cref="MoveControllerAndPullPosition"/>) an entity shortened or cancelled, since the proxy exists.
+    /// Not a game state: the arcs read it (T-REG-0 pins the arcs that must never meet an entity at 0). Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal int EntityBlockCount;
+
+    /// <summary>E19.d2b: the engine entity this proxy drives (the movement obstacle probe returns obstacles as engine entities).</summary>
+    internal Entity? OwnerEntity => Owner;
 
     /// <summary>
     /// Engine-only, not part of the original struct: this entity's own map's Gravity/ZViscosity, already
@@ -668,7 +722,12 @@ public class AlundraEntityScriptProxy : GameplayProxy
                         // after its own first round-trip), silently re-triggering the SAME truncating X/Y
                         // write above every single tick regardless of the skip.
                         var targetPosZ = terrainHeight - ModZ;
-                        var wasAlreadyLanded = PosZ == targetPosZ && ForceZ == 0;
+                        //
+                        // E19.d D2 (docs/plan-e19-opcodes.md §1.2g): "already landed" depends on the position ALONE. An entity WITHOUT
+                        // gravity that rests here keeps its negative ForceZ (the binary's ComputeZPosition, 0x800375E0, zeroes it only
+                        // with gravity), and the former `&& ForceZ == 0` made it re-push its position every tick, the truncating write
+                        // above: a walk of less than one pixel per tick never advanced (the camera block of map 391, 0.5 px per tick).
+                        var wasAlreadyLanded = PosZ == targetPosZ;
 
                         PosZ = targetPosZ;
                         CollidedWithEntityZ = 0;
@@ -982,6 +1041,13 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 PickEventTrigger();
                 RunPickedEvent(ScriptHost.Runner);
 
+                // E19.c2 (docs/plan-e19-opcodes.md §1.2f, ADR-0019): the logical clock of the animation ends steps once per
+                // tick, right after this entity's script and before its motion - the binary's order (events, then
+                // UpdateAnimation, then physics, 0x8003B388). A switch the script just asked for reserves the tick (the old
+                // animation neither advances nor ends on it); otherwise the animation advances one tick and may end, which
+                // 0x1C/0x1D then see at the next tick, as in the binary. The sprites themselves keep drawing in real time.
+                AlundraFrameSyncPasses.StepAnimationClock(this);
+
                 // E4.b (docs/plan-e4-deplacement-scripte.md): scripted mover for every controller-driven
                 // NPC - port of PhysicsEngine.UpdateEntityPhysics (:1579-1598) restricted to the
                 // flat-ground half already ported for the hero (AlundraPlayerManager/AlundraScriptedMotion's
@@ -1004,7 +1070,9 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 // one frame of latency behind a same-frame TargetAnimationId write, exactly the same shape
                 // as this class' own documented one-frame World/entity latency (see this method's own doc,
                 // "Accepted deviation" paragraph) - "à défaut d'équivalent exact, utiliser l'anim courante
-                // synchronisée et documenter l'écart" per the plan.
+                // synchronisée et documenter l'écart" per the plan. E19.c2: this lag (kept, D-E19-13) concerns the
+                // MOTION only; the ends of the animations that 0x1C/0x1D see come from the logical clock stepped
+                // just above, exact at the tick (a switch owes its tick, see AlundraFrameSyncPasses.SyncAnimation).
                 //
                 // E4.e (docs/plan-e4-deplacement-scripte.md): unconditional, not gated on Controller != null
                 // - the original applies UpdateEntityPhysics to every entity in g_activeEntities regardless
@@ -1016,7 +1084,13 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 // harness's own bare proxies (no Owner/World at all) or a genuinely controller-less
                 // sprite-only prefab (11 on map 389, whose Speed is 0 for every AnimSet they carry - this
                 // is a no-op integration for them in practice).
-                AlundraScriptedMotion.TickScriptedNpc(this);
+                //
+                // E19.d2b (D-E19-29): only an entity that is Normal or Deactivated moves (the binary's physics list takes the
+                // statuses 2 and 3): one flagged for destruction stays where it was while it waits to be recycled.
+                if (Status.IsActive())
+                {
+                    AlundraScriptedMotion.TickScriptedNpc(this);
+                }
 
                 // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): entity-vs-entity Z support
                 // clamp - AFTER this tick's own motion above, so a walk that just moved this entity out of
@@ -1044,6 +1118,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
             // time (ONE-CLOCK fix, AlundraScriptedMotion's own class doc) - the hero's own observable
             // per-tick behaviour is unchanged, only the source of the tick count.
             var playerController = ScriptHost.PlayerController;
+            var heroTicksThisFrame = ScriptHost.LogicTicksThisFrame(elapsedTime);
             if (playerController != null)
             {
                 // D-E7-8 (docs/plan-e7-mutation-tuiles.md, slice E7.c): this frame's pad snapshot is
@@ -1053,8 +1128,23 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 // this frame, which is the single-global behaviour the original has.
                 var pad = ScriptHost.GameState.LastPadState;
                 AlundraPlayerManager.MovePlayer(this, in pad, ScriptHost.GameState, ScriptHost);
-                var ticksThisFrame = ScriptHost.LogicTicksThisFrame(elapsedTime);
-                AlundraPlayerManager.Tick(this, ticksThisFrame);
+            }
+
+            // E19.c2 (docs/plan-e19-opcodes.md §1.2f): the hero's animation clock steps at every tick, whether or not a
+            // controller possesses the pawn (the binary animates the player whatever its input; production always has a
+            // controller), interleaved with the kinematic tick: a Chain that MovePlayer asked for reserves the tick before the
+            // motion reads TargetAnimationId. Tick(this, 1) once per tick is Tick(this, n).
+            for (var tick = 0; tick < heroTicksThisFrame; tick++)
+            {
+                AlundraFrameSyncPasses.StepAnimationClock(this);
+                if (playerController != null)
+                {
+                    AlundraPlayerManager.Tick(this, 1);
+                }
+            }
+
+            if (playerController != null)
+            {
 
                 // E1 (docs/plan-echelles-chiffrage.md É1): alimente Slope_18c AFTER this frame's own
                 // MovePlayer+Tick, exactly like the original's UpdateTileAttributes runs at the end of
@@ -1757,10 +1847,13 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// fraction (<c>Δ / 65536f</c>, not the original's own truncated <c>Δ &gt;&gt; 16</c>) - see
     /// <see cref="AlundraPlayerManager.RunOneTick"/>'s own call site. An axis <c>Move</c> blocks leaves
     /// <see cref="ForceX"/>/<see cref="ForceY"/> untouched by design (no per-axis correction - accepted
-    /// deviation, documented on the same plan section); it DOES set <see cref="ForceAdjusted"/> (E4.d)
-    /// when the controller's own returned displacement falls short of what was requested here by more
-    /// than <see cref="ForceAdjustedEpsilonPixels"/> on either horizontal axis - the DLL's own equivalent
-    /// of the original's "movement was curtailed" signal (see <see cref="ForceAdjusted"/>'s own doc). A
+    /// deviation, documented on the same plan section); a blocked axis advances to the contact on the cell
+    /// field (E19.a2, ADR-0045 of the engine: the hero stops against the wall, no longer one step short of
+    /// it), so the returned displacement is the part up to the contact. It DOES set <see cref="ForceAdjusted"/> (E4.d)
+    /// when, on either horizontal axis, more than <see cref="ForceAdjustedEpsilonPixels"/> was requested
+    /// here and the controller's own returned displacement is at most that (E19.a3, D-E19-12: no progress on
+    /// the axis, as the binary's tick with no accepted sub-step; a step shortened to the contact that still
+    /// advances leaves the flag alone - see <see cref="ForceAdjusted"/>'s own doc). A
     /// no-op without a controller (the caller falls back to its own direct
     /// <see cref="PosX"/>/<see cref="PosY"/> += in that case) - <see cref="ForceAdjusted"/> is left
     /// untouched, same as every other controller-gated site on this class.
@@ -1773,10 +1866,20 @@ public class AlundraEntityScriptProxy : GameplayProxy
         }
 
         var requested = new Vector3(deltaXPixels, deltaYPixels, 0f);
-        var actual = Controller.Move(requested);
 
-        if (MathF.Abs(actual.X - requested.X) > ForceAdjustedEpsilonPixels
-            || MathF.Abs(actual.Y - requested.Y) > ForceAdjustedEpsilonPixels)
+        // E19.d2b B4 (D-E19-29): the contact of the dialogue and of the grab is the entity that shortened or cancelled THIS step - the binary's +0x130
+        // (0x80037F08): the obstacle of the tick, the one nearest the contact when two follow each other (the LAST axis processed, h2 when both), 0 when
+        // nothing blocked or no displacement was asked. It is rewritten at every step, and kept while the world is frozen (no step is taken then).
+        XCollisionEntity = null;
+        var actual = Controller.Move(requested);
+        var contact = Controller.LastContact;
+        if ((contact.H2Obstacle ?? contact.H1Obstacle)?.GameplayProxy is AlundraEntityScriptProxy blockingEntity)
+        {
+            XCollisionEntity = blockingEntity;
+            EntityBlockCount++;
+        }
+
+        if (AxisMadeNoProgress(requested.X, actual.X) || AxisMadeNoProgress(requested.Y, actual.Y))
         {
             ForceAdjusted = 1;
         }
@@ -1874,13 +1977,24 @@ public class AlundraEntityScriptProxy : GameplayProxy
         }
     }
 
-    /// <summary>Small horizontal-axis tolerance <see cref="MoveControllerAndPullPosition"/> uses to decide
-    /// whether the controller's own returned displacement counts as "curtailed" (sets
-    /// <see cref="ForceAdjusted"/>) - well under a single pixel, so ordinary floating-point noise from the
-    /// <c>Move</c> round trip never sets it spuriously, while any REAL wall/step-height block (which stops
-    /// the entity short by at least a fraction of a pixel every tick it keeps pushing) reliably does.
+    /// <summary>Small horizontal-axis tolerance <see cref="MoveControllerAndPullPosition"/> uses on each axis,
+    /// both to decide that a displacement was requested at all (more than this) and that the controller
+    /// obtained none of it (at most this) - well under a single pixel, so ordinary floating-point noise from
+    /// the <c>Move</c> round trip never sets <see cref="ForceAdjusted"/> spuriously, while any REAL wall/
+    /// step-height block reliably does on the tick the entity keeps pushing without advancing (E19.a3,
+    /// D-E19-12: the tick that merely reaches the contact is a shortened step that still advances, and does
+    /// not).
     /// </summary>
     private const float ForceAdjustedEpsilonPixels = 0.01f;
+
+    /// <summary>True when, on one horizontal axis, a displacement beyond
+    /// <see cref="ForceAdjustedEpsilonPixels"/> was requested and the controller obtained at most that
+    /// much of it, i.e. the axis made no progress at all (E19.a3, D-E19-12).</summary>
+    private static bool AxisMadeNoProgress(float requested, float actual)
+    {
+        return MathF.Abs(requested) > ForceAdjustedEpsilonPixels
+            && MathF.Abs(actual) <= ForceAdjustedEpsilonPixels;
+    }
 
     public override void Draw()
     {
@@ -1907,7 +2021,6 @@ public class AlundraEntityScriptProxy : GameplayProxy
         var clone = new AlundraEntityScriptProxy
         {
             IsPlayer = IsPlayer,
-            LogicEntity = LogicEntity,
             Index = Index,
             Index2 = Index2,
             ChildEntity = ChildEntity,

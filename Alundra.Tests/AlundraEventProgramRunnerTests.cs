@@ -51,12 +51,15 @@ public class AlundraEventProgramRunnerTests
         public readonly List<(AlundraEntityScriptProxy LogicEntity, int EntityRecordId)> SpawnCalls = new();
         public AlundraEntityScriptProxy? EntityToSpawn;
 
+        /// <summary>E19.b: entities handed back one per call (before <see cref="EntityToSpawn"/>), for a program that spawns twice.</summary>
+        public readonly Queue<AlundraEntityScriptProxy> SpawnQueue = new();
+
         public readonly List<AlundraEntityScriptProxy> DestroyedEntities = new();
 
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId)
         {
             SpawnCalls.Add((logicEntity, entityRecordId));
-            return EntityToSpawn;
+            return SpawnQueue.Count > 0 ? SpawnQueue.Dequeue() : EntityToSpawn;
         }
 
         public void DestroyEntity(AlundraEntityScriptProxy entity)
@@ -319,8 +322,9 @@ public class AlundraEventProgramRunnerTests
     [Fact]
     public void UnknownOpcode_KnownSize_SkipsBySize()
     {
-        // 0x08 "Turn" (size 2) is not one of the implemented handlers - skipped by its table size.
-        var document = NewDocument(0x08, 0, 0x1A, 4, 0xFF);
+        // 0x4C "Set text flags" (size 2, the typewriter: E12.c) is not one of the implemented handlers - skipped by its
+        // table size. (It was 0x08 "Turn" until E19.c1 ported it.)
+        var document = NewDocument(0x4C, 0, 0x1A, 4, 0xFF);
         var runner = NewRunner(document);
         var entity = NewEntity();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
@@ -586,6 +590,127 @@ public class AlundraEventProgramRunnerTests
         Assert.Equal(111, spawned.PosX);
         Assert.Equal(222, spawned.PosY);
         Assert.Equal(333, spawned.PosZ);
+    }
+
+    [Fact]
+    public void SpawnEntityAtPosition_0x8A_WritesTheAbsolutePosition_PlusOneOnZOnly_WithTheLogicEntityAsParent()
+    {
+        // E19.b T2 (docs/plan-e19-opcodes.md §1.2d): 0x8A [record 1, X 972 (0xCC,3), Y 112 (112,0), Z 48 (48,0)], the
+        // operands of the camera block of map 476. 972 needs its HIGH byte (a read that drops it gives 204).
+        var document = NewDocument(0x8A, 1, 0xCC, 3, 112, 0, 48, 0, 0xFF);
+        var spawned = new AlundraEntityScriptProxy { PosX = 111, PosY = 222, PosZ = 333 };
+        var context = new FakeEntityWorldContext { EntityToSpawn = spawned };
+        var runner = NewRunner(document, worldContext: context);
+        var logic = new AlundraEntityScriptProxy { PosX = 5 << 16, PosY = 7 << 16, PosZ = 9 << 16 };
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 7 };
+
+        runner.RunOneScriptCall(logic, state);
+
+        var call = Assert.Single(context.SpawnCalls);
+        Assert.Same(logic, call.LogicEntity); // the parent: the entity the instruction runs for.
+        Assert.Equal(1, call.EntityRecordId);
+        Assert.Equal(972 << 16, spawned.PosX);
+        Assert.Equal(112 << 16, spawned.PosY);
+        Assert.Equal((48 << 16) + 1, spawned.PosZ); // +1 on Z, not on X or Y.
+        Assert.Equal(8, state.CodeIndex);
+        Assert.Equal(7, state.Result); // no Result write.
+        Assert.Equal((5 << 16, 7 << 16, 9 << 16), (logic.PosX, logic.PosY, logic.PosZ)); // the logic entity is not moved.
+    }
+
+    [Fact]
+    public void SpawnEntityAtPosition_0x8A_TheHighBytesOfYAndZAreRead_NotOnlyOnX()
+    {
+        // E19.c1 T7: X 513 (1, 2), Y 972 (0xCC, 3) and Z 300 (0x2C, 1): a read that drops a high byte gives 1, 204 or 44.
+        var document = NewDocument(0x8A, 1, 1, 2, 0xCC, 3, 0x2C, 1, 0xFF);
+        var spawned = NewEntity();
+        var runner = NewRunner(document, worldContext: new FakeEntityWorldContext { EntityToSpawn = spawned });
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(NewEntity(), state);
+
+        Assert.Equal((513 << 16, 972 << 16, (300 << 16) + 1), (spawned.PosX, spawned.PosY, spawned.PosZ));
+    }
+
+    [Fact]
+    public void SpawnEntityAtPosition_0x8A_ZeroPosition_StillGetsThePlusOneOnZ()
+    {
+        var document = NewDocument(0x8A, 0, 0, 0, 0, 0, 0, 0, 0xFF);
+        var spawned = NewEntity();
+        var runner = NewRunner(document, worldContext: new FakeEntityWorldContext { EntityToSpawn = spawned });
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(NewEntity(), state);
+
+        Assert.Equal(0, spawned.PosX);
+        Assert.Equal(0, spawned.PosY);
+        Assert.Equal(1, spawned.PosZ);
+    }
+
+    [Fact]
+    public void SpawnEntityAtPosition_0x8A_AFailedSpawn_DoesNotThrow_AdvancesByEight_WritesNoPosition_AndWarnsOncePerRecord()
+    {
+        using var log = SaveGameDirectorTestSupport.LogCapture.Install();
+        // Two failing spawns of record 41, then one of record 42: the warning is once per (opcode, record).
+        var document = NewDocument(
+            0x8A, 41, 1, 0, 2, 0, 3, 0,
+            0x8A, 41, 1, 0, 2, 0, 3, 0,
+            0x8A, 42, 1, 0, 2, 0, 3, 0,
+            0xFF);
+        var context = new FakeEntityWorldContext { EntityToSpawn = null };
+        var runner = NewRunner(document, worldContext: context);
+        var logic = new AlundraEntityScriptProxy { PosX = 5, PosY = 6, PosZ = 7 };
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 7 };
+
+        runner.RunOneScriptCall(logic, state);
+
+        Assert.Equal(24, state.CodeIndex); // three instructions of size 8, then 0xFF.
+        Assert.Equal(3, context.SpawnCalls.Count);
+        Assert.Equal((5, 6, 7), (logic.PosX, logic.PosY, logic.PosZ));
+        Assert.Equal(7, state.Result);
+        var warnings = log.Warnings.Where(w => w.Contains("opcode 0x8A")).ToList();
+        Assert.Equal(2, warnings.Count);
+        Assert.Single(warnings, w => w.Contains("SpawnEntityAtPosition(41)"));
+        Assert.Single(warnings, w => w.Contains("SpawnEntityAtPosition(42)"));
+    }
+
+    [Fact]
+    public void SpawnEntityAtPosition_0x8A_TwiceTheSameRecord_SpawnsTwice_AndEachWriteGoesToItsOwnEntity()
+    {
+        var document = NewDocument(0x8A, 1, 10, 0, 20, 0, 30, 0, 0x8A, 1, 11, 0, 21, 0, 31, 0, 0xFF);
+        var first = NewEntity();
+        var second = NewEntity();
+        var context = new FakeEntityWorldContext();
+        context.SpawnQueue.Enqueue(first);
+        context.SpawnQueue.Enqueue(second);
+        var runner = NewRunner(document, worldContext: context);
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(NewEntity(), state);
+
+        Assert.Equal(2, context.SpawnCalls.Count);
+        Assert.All(context.SpawnCalls, call => Assert.Equal(1, call.EntityRecordId));
+        Assert.Equal((10 << 16, 20 << 16, (30 << 16) + 1), (first.PosX, first.PosY, first.PosZ));
+        Assert.Equal((11 << 16, 21 << 16, (31 << 16) + 1), (second.PosX, second.PosY, second.PosZ));
+    }
+
+    [Fact]
+    public void SpawnEntityAtPosition_0x8A_ThenCameraFollow_0x67_FindsTheNewEntityByItsRecordNumber()
+    {
+        // 0x8A [1, ...] then 0x67 [1] (B1 of map 476, @63 and @71). The fake context needs what the real world does
+        // by itself: the spawned entity carries EntityRefId = 1 and is in SpawnedEntities, and a search by number
+        // requires the OWNER to be Loaded, Normal or Deactivated.
+        var document = NewDocument(0x8A, 1, 0xCC, 3, 112, 0, 48, 0, 0x67, 1, 0xFF);
+        var spawned = new AlundraEntityScriptProxy { EntityRefId = 1 };
+        var context = new FakeEntityWorldContext { EntityToSpawn = spawned };
+        context.SpawnedEntitiesList.Add(spawned);
+        var runner = NewRunner(document, worldContext: context);
+        var owner = new AlundraEntityScriptProxy { Status = EntityStatus.Normal };
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Same(spawned, context.EntityFollowedByCamera);
+        Assert.Equal(10, state.CodeIndex);
     }
 
     [Fact]
@@ -2024,6 +2149,375 @@ public class AlundraEventProgramRunnerTests
 
         Assert.Null(entity.WalkDetourPath);
         Assert.Equal(24u, entity.TargetDirection); // unchanged - degraded mode, original "keep pushing" behavior.
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // E19.c1 T3 (docs/plan-e19-opcodes.md §1.2e): the motion opcodes 0x08, 0x0B, 0x3A, 0x5E, 0x73, 0x74, 0x89
+    // (0x0C is in AlundraRandomOpcodeTests: it consumes the static shared generator). Values are the binary's.
+    // -----------------------------------------------------------------------------------------
+
+    private static List<EventTraceRecord> TraceOf(AlundraEventProgramRunner runner)
+    {
+        var records = new List<EventTraceRecord>();
+        runner.TraceSink = records.Add;
+        return records;
+    }
+
+    [Fact]
+    public void Timer_0x73_0x74_ALoopRunsItsBodyV1Times_InOneCall()
+    {
+        // 73 03 | 08 01 | 74 FE FF | FF : the body (turn by 1) runs 3 times, 0x74 returns -2, -2 then 3.
+        var document = NewDocument(0x73, 3, 0x08, 1, 0x74, 0xFE, 0xFF, 0xFF);
+        var runner = NewRunner(document);
+        var trace = TraceOf(runner);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(3u, entity.TargetDirection);
+        Assert.Equal(0, state._30);
+        Assert.Equal(7, state.CodeIndex); // ended on 0xFF @7.
+        Assert.Equal(new[] { -2, -2, 3 }, trace.Where(r => r.Opcode == 0x74).Select(r => r.Size).ToArray());
+    }
+
+    [Theory]
+    [InlineData(0, -1)]
+    [InlineData(1, 0)]
+    public void Timer_0x74_AtOrBelowZeroAfterTheDecrement_EndsAtOnce(int initial, int expectedCounter)
+    {
+        var document = NewDocument(0x73, initial, 0x08, 1, 0x74, 0xFE, 0xFF, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(1u, entity.TargetDirection); // the body ran once.
+        Assert.Equal(expectedCounter, state._30);
+        Assert.Equal(7, state.CodeIndex);
+    }
+
+    [Fact]
+    public void Timer_0x73_0x74_OnAPersistedState_ResumesAcrossCalls_AndTheCounterSurvivesInitializeEventData()
+    {
+        // 73 02 | 00 | 08 01 | 74 FD FF | FF on a slot C state kept between calls (a Break inside the loop).
+        var document = NewDocument(0x73, 2, 0x00, 0x08, 1, 0x74, 0xFD, 0xFF, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+        Assert.Equal(2, state._30);
+        Assert.Equal(3, state.CodeIndex);
+        Assert.Equal(0u, entity.TargetDirection);
+
+        runner.RunOneScriptCall(entity, state);
+        Assert.Equal(1u, entity.TargetDirection);
+        Assert.Equal(3, state.CodeIndex); // went back and met the Break again.
+
+        runner.RunOneScriptCall(entity, state);
+        Assert.Equal(2u, entity.TargetDirection);
+        Assert.Equal(0, state._30);
+        Assert.Equal(8, state.CodeIndex); // ended on 0xFF @8.
+
+        state._30 = 7;
+        runner.InitializeEventData(entity, ScriptHelper.ProgramALoad, state);
+        Assert.Equal(7, state._30); // never reset by the interpreter.
+    }
+
+    [Theory]
+    [InlineData(31u, 1, 0u)]
+    [InlineData(0u, 31, 31u)]
+    [InlineData(5u, 0xFF, 4u)]
+    public void Turn_0x08_AddsV1ToTheDirection_Modulo32(uint start, int v1, uint expected)
+    {
+        var document = NewDocument(0x08, v1, 0xFF);
+        var runner = NewRunner(document);
+        var trace = TraceOf(runner);
+        var entity = NewEntity();
+        entity.TargetDirection = start;
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(expected, entity.TargetDirection);
+        Assert.Equal(2, trace.Single(r => r.Opcode == 0x08).Size);
+    }
+
+    [Theory]
+    [InlineData(0, 0x00u)]
+    [InlineData(1, 0x10u)]
+    [InlineData(2, 0x08u)]
+    [InlineData(3, 0x18u)]
+    [InlineData(6, 0x08u)]
+    public void SetCardinalDirection_0x3A_TakesTheTableEntryOfV1AndThree(int v1, uint expected)
+    {
+        var document = NewDocument(0x3A, v1, 0xFF);
+        var runner = NewRunner(document);
+        var trace = TraceOf(runner);
+        var entity = NewEntity();
+        entity.TargetDirection = 5;
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(expected, entity.TargetDirection);
+        Assert.Equal(2, trace.Single(r => r.Opcode == 0x3A).Size);
+    }
+
+    [Fact]
+    public void WalkUntilBeyondRadius_0x0B_SuspendsUntilTheEntityMovedTheRadius_AndOnlyWritesTheAnimation()
+    {
+        // 01 | 0B [7, 12, 0] | 1A 99 (a leading 0x01: the key is the pc, and a pc of 0 reads as "already memorised"): the first call memorises the position and suspends; 11 px is short, 12 ends it.
+        var document = NewDocument(0x01, 0x0B, 7, 12, 0, 0x1A, 99, 0xFF);
+        var runner = NewRunner(document);
+        var trace = TraceOf(runner);
+        var entity = NewEntity();
+        entity.PosX = 100 << 16;
+        entity.PosY = 100 << 16;
+        entity.TargetDirection = 5;
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+        Assert.Equal(1, state.CodeIndex);
+        Assert.Equal(7u, entity.TargetAnimationId);
+        Assert.Equal(100 << 16, state.Parameters[2]);
+
+        entity.PosX += (12 << 16) - 1; // 11 px once truncated.
+        runner.RunOneScriptCall(entity, state);
+        Assert.Equal(1, state.CodeIndex);
+
+        entity.PosX += 1; // 12 px: the inclusive test ends the wait, which falls through to the next instruction.
+        runner.RunOneScriptCall(entity, state);
+        Assert.Equal(99u, entity.TargetAnimationId);
+        Assert.Equal(7, state.CodeIndex);
+        Assert.Equal(4, trace.Where(r => r.Opcode == 0x0B).Last().Size);
+        Assert.Equal(5u, entity.TargetDirection); // never written by 0x0B.
+    }
+
+    [Fact]
+    public void WalkUntilBeyondRadius_0x0B_RewritesTheAnimationOnEveryCall()
+    {
+        var document = NewDocument(0x01, 0x0B, 7, 12, 0, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+        entity.TargetAnimationId = 0; // something else (a script, a Hold end) reset it between two calls.
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(7u, entity.TargetAnimationId);
+    }
+
+    [Theory]
+    [InlineData(-12, 0)]
+    [InlineData(0, 12)]
+    [InlineData(0, -12)]
+    public void WalkUntilBeyondRadius_0x0B_EndsOnAMoveTowardsMinusXOrOnYAlone(int dxPx, int dyPx)
+    {
+        var document = NewDocument(0x01, 0x0B, 7, 12, 0, 0x1A, 99, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        entity.PosX = 500 << 16;
+        entity.PosY = 500 << 16;
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        entity.PosX += dxPx << 16;
+        entity.PosY += dyPx << 16;
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(99u, entity.TargetAnimationId);
+    }
+
+    [Fact]
+    public void WalkUntilBeyondRadius_0x0B_ARadiusOfAHighByteIsRead_256Pixels()
+    {
+        var document = NewDocument(0x01, 0x0B, 7, 0, 1, 0x1A, 99, 0xFF);
+        var runner = NewRunner(document);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+        runner.RunOneScriptCall(entity, state);
+
+        entity.PosY += 255 << 16;
+        runner.RunOneScriptCall(entity, state);
+        Assert.Equal(7u, entity.TargetAnimationId); // not yet.
+
+        entity.PosY += 1 << 16;
+        runner.RunOneScriptCall(entity, state);
+        Assert.Equal(99u, entity.TargetAnimationId);
+    }
+
+    [Fact]
+    public void WalkUntilBeyondRadius_0x0B_WithALogicEntityOnAProgram_MeasuresAndAnimatesTheLogicEntity()
+    {
+        var document = NewDocument(0x01, 0x0B, 7, 12, 0, 0x1A, 99, 0xFF);
+        var runner = NewRunner(document);
+        var owner = NewEntity();
+        var logic = NewEntity();
+        owner.LogicEntity = logic;
+        owner.PosX = 100 << 16;
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+        Assert.Equal(7u, logic.TargetAnimationId);
+        Assert.Equal(0u, owner.TargetAnimationId);
+
+        owner.PosX += 40 << 16; // the owner moving does not end the wait...
+        runner.RunOneScriptCall(owner, state);
+        Assert.Equal(1, state.CodeIndex);
+
+        logic.PosX += 12 << 16; // ...the logic entity does.
+        runner.RunOneScriptCall(owner, state);
+        Assert.Equal(99u, logic.TargetAnimationId);
+    }
+
+    [Fact]
+    public void WalkUntilBeyondRadius_0x0B_ForceAdjustedWithNavigationGrid_EngagesTheDetourOnce_AndResetsItOnCompletion()
+    {
+        // The detour test of 0x1E (above) for 0x0B: the grid, the blocked cell and the memorised start are the same.
+        var grid = NewSyntheticGrid(10, 10, (5, 5));
+        var context = new FakeEntityWorldContext { NavigationGrid = grid };
+        var document = NewDocument(0x01, 0x0B, 7, 24, 0, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        entity.PosX = 108 << 16;
+        entity.PosY = 88 << 16;
+        entity.TargetDirection = 24;
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state); // first pass.
+        entity.ForceAdjusted = 1;
+        runner.RunOneScriptCall(entity, state);
+
+        var path = entity.WalkDetourPath;
+        Assert.NotNull(path);
+        Assert.True(path!.Points.Count > 2);
+        Assert.NotEqual(24u, entity.TargetDirection);
+        Assert.Equal(1, state.CodeIndex);
+
+        runner.RunOneScriptCall(entity, state); // one engagement only: the same path object, the same attempt.
+        Assert.Same(path, entity.WalkDetourPath);
+
+        entity.PosX += 24 << 16;
+        runner.RunOneScriptCall(entity, state);
+        Assert.Equal(5, state.CodeIndex);
+        Assert.Null(entity.WalkDetourPath);
+        Assert.False(entity.WalkDetourAttempted);
+    }
+
+    private static FakeEntityWorldContext ContextWith(params AlundraEntityScriptProxy[] entities)
+    {
+        var context = new FakeEntityWorldContext();
+        context.SpawnedEntitiesList.AddRange(entities);
+        return context;
+    }
+
+    private static AlundraEntityScriptProxy Numbered(int refId, int xPx = 0, int yPx = 0, int zPx = 0) => new()
+    {
+        EntityRefId = refId,
+        Status = EntityStatus.Normal,
+        PosX = xPx << 16,
+        PosY = yPx << 16,
+        PosZ = zPx << 16,
+    };
+
+    [Theory]
+    [InlineData(0, 96, 0, 24576)]
+    [InlineData(2, 0, 0x80, -8388608)]
+    [InlineData(6, 0, 6, 393216)]
+    public void SetEntitiesForceZ_0x5E_WritesInt16Shifted8_OnEveryEntityFound(int search, int v2, int v3, int expected)
+    {
+        var document = NewDocument(0x5E, search, v2, v3, 0xFF);
+        var a = Numbered(search);
+        var b = Numbered(search);
+        var other = Numbered(search + 1);
+        var runner = NewRunner(document, worldContext: ContextWith(a, b, other));
+        var trace = TraceOf(runner);
+        var owner = Numbered(99);
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal(expected, a.ForceZ);
+        Assert.Equal(expected, b.ForceZ);
+        Assert.Equal(0, other.ForceZ);
+        Assert.Equal(0, owner.ForceZ);
+        Assert.Equal(4, trace.Single(r => r.Opcode == 0x5E).Size);
+    }
+
+    [Fact]
+    public void SetEntitiesForceZ_0x5E_WithNoEntityFound_WritesNothing()
+    {
+        var document = NewDocument(0x5E, 9, 96, 0, 0xFF);
+        var bystander = Numbered(3);
+        var runner = NewRunner(document, worldContext: ContextWith(bystander));
+        var owner = Numbered(99);
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal(0, bystander.ForceZ);
+        Assert.Equal(0, owner.ForceZ);
+        Assert.Equal(4, state.CodeIndex);
+    }
+
+    [Fact]
+    public void SetEntitiesPositionFromReference_0x89_TheReferenceIsTheFirstEntityFound_AndZGetsNoPlusOne()
+    {
+        // 89 [reference record 1, targets record 2, dx +2, dy -2, dz 0] (the offsets are int16: 0xFE 0xFF is -2).
+        var document = NewDocument(0x89, 1, 2, 2, 0, 0xFE, 0xFF, 0, 0, 0xFF);
+        var firstReference = Numbered(1, 10, 20, 30);
+        var secondReference = Numbered(1, 50, 60, 70);
+        var target = Numbered(2, 1, 1, 1);
+        var otherTarget = Numbered(2, 2, 2, 2);
+        var bystander = Numbered(3, 5, 5, 5);
+        var runner = NewRunner(document, worldContext: ContextWith(firstReference, secondReference, target, otherTarget, bystander));
+        var trace = TraceOf(runner);
+        var owner = Numbered(99);
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal((12 << 16, 18 << 16, 30 << 16), (target.PosX, target.PosY, target.PosZ));
+        Assert.Equal((12 << 16, 18 << 16, 30 << 16), (otherTarget.PosX, otherTarget.PosY, otherTarget.PosZ));
+        Assert.Equal((10 << 16, 20 << 16, 30 << 16), (firstReference.PosX, firstReference.PosY, firstReference.PosZ));
+        Assert.Equal((5 << 16, 5 << 16, 5 << 16), (bystander.PosX, bystander.PosY, bystander.PosZ));
+        Assert.Equal(9, trace.Single(r => r.Opcode == 0x89).Size);
+        Assert.Equal(9, state.CodeIndex);
+    }
+
+    [Fact]
+    public void SetEntitiesPositionFromReference_0x89_WithoutAReference_TheTargetsDoNotMove_AndItStillReturns9()
+    {
+        var document = NewDocument(0x89, 7, 2, 2, 0, 2, 0, 2, 0, 0xFF);
+        var target = Numbered(2, 1, 1, 1);
+        var runner = NewRunner(document, worldContext: ContextWith(target));
+        var trace = TraceOf(runner);
+        var owner = Numbered(99);
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal((1 << 16, 1 << 16, 1 << 16), (target.PosX, target.PosY, target.PosZ));
+        Assert.Equal(9, trace.Single(r => r.Opcode == 0x89).Size);
+    }
+
+    [Fact]
+    public void SetEntitiesPositionFromReference_0x89_AnEntityThatIsItsOwnReferenceAndTarget_MovesOnlyOnce()
+    {
+        // The reference position is read before the targets are written: +2 px once, not twice.
+        var document = NewDocument(0x89, 3, 3, 2, 0, 0, 0, 0, 0, 0xFF);
+        var self = Numbered(3, 100, 200, 300);
+        var runner = NewRunner(document, worldContext: ContextWith(self));
+        var owner = Numbered(99);
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal((102 << 16, 200 << 16, 300 << 16), (self.PosX, self.PosY, self.PosZ));
     }
 
     // -----------------------------------------------------------------------------------------
@@ -4470,7 +4964,9 @@ public class AlundraEventProgramRunnerTests
         Assert.Equal(0x7D, codeBytes[1361]);
 
         // The entry point's own lead-in: 0x36 (wait until flag 0x83EC is on) at 744, then 0x06 (flag off,
-        // consuming the same flag) at 747, an unimplemented 0x43 (skipped by size) at 750, a real Break at
+        // consuming the same flag) at 747, a 0x43 [17] at 750 (E19.a: it searches record 17, finds nothing
+        // in this world, so Result = 0 and the logic entity does not change - the 0x3B at 757 rewrites
+        // Result before the 0x03 at 764), a real Break at
         // 752 (resumes next call at 753), an unimplemented 0x73 at 753, a real 0x37 Wait(1) at 755, then
         // 0x3B (Check player in area, box [40,40,17,17,1,1]) at 757, whose Result gates the 0x03 (if true
         // goto) at 764 that reaches offset 773.

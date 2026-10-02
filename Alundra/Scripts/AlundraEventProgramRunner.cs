@@ -50,12 +50,14 @@ public enum EventTraceKind
     End,
     Break,
 
-    /// <summary>Diagnostic-only kind, never produced in production: <see cref="AlundraEventProgramRunner.MaxIterationsPerCall"/>
-    /// forcibly ended this script call after too many dispatched opcodes without reaching 0xFF/0x00/a
-    /// suspend - almost always an unimplemented suspending opcode (skipped instead of suspending - see
-    /// this runner's own class doc) sitting inside a Goto loop that never exits. Diagnostic only - not a
-    /// fidelity concern for slot A (the only slot production code
-    /// actually interprets), which never hits this in practice.</summary>
+    /// <summary>The loop guard ended this script call after too many dispatched opcodes without reaching
+    /// 0xFF/0x00/a suspend (E19.a T4, D-E19-3, docs/plan-e19-opcodes.md): the budget is
+    /// <see cref="AlundraEventProgramRunner.MaxIterationsPerCall"/> when set, else
+    /// <see cref="AlundraEventProgramRunner.ProductionLoopBudget"/> - so this kind IS produced in production, and
+    /// logged once per program. A documented deviation from the original, which has no guard (its loops always
+    /// contain an opcode that suspends): almost always an unported suspending opcode (skipped instead of
+    /// suspending) sitting inside a loop that never exits. The record carries <c>Codes[CodeIndex]</c>, the opcode
+    /// the call was about to read.</summary>
     LoopBudgetExceeded,
 }
 
@@ -94,12 +96,29 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// </summary>
     internal Action<EventTraceRecord>? TraceSink { get; set; }
 
-    /// <summary>Diagnostic-only safety valve, null (unlimited) by default - unused, hence no behavior
-    /// change, unless a caller (the intro trace harness) explicitly sets it. When set,
-    /// <see cref="RunOneScriptCall"/> forcibly ends a script call after this many dispatched opcodes
-    /// without reaching a natural end/suspend, reporting <see cref="EventTraceKind.LoopBudgetExceeded"/>
-    /// through <see cref="TraceSink"/> instead of hanging forever - see that trace kind's own doc.</summary>
+    /// <summary>Overrides <see cref="ProductionLoopBudget"/> for this runner when set (null by default: the
+    /// production budget applies). <see cref="RunOneScriptCall"/> ends a script call after this many
+    /// dispatched opcodes without reaching a natural end/suspend, reporting
+    /// <see cref="EventTraceKind.LoopBudgetExceeded"/> through <see cref="TraceSink"/> instead of hanging
+    /// forever - see that trace kind's own doc. Set explicitly by the intro trace harness (20000) and by
+    /// tests that need a different budget.</summary>
     internal int? MaxIterationsPerCall { get; set; }
+
+    /// <summary>
+    /// The production loop guard (E19.a T4, D-E19-3, docs/plan-e19-opcodes.md): after this many dispatched opcodes
+    /// in one script call, the program yields until the next frame with its position kept, as a Break would - a
+    /// documented deviation from the original, which has no guard. 8.5 times the worst suspend-free timer loop
+    /// measured on the corpus (120, map 440 @1257) and 19.7 times its longest finite suspend-free run (52, map
+    /// 11 F[2] @408). Slots B and C resume at the same opcode next frame. A, D, E and F never resume (they run on a
+    /// shared scratch state re-initialized at every <see cref="RunScript"/>): a cut program of those slots starts
+    /// over from its first opcode the next time the slot runs it, as it does after any yield.
+    /// </summary>
+    internal const int ProductionLoopBudget = 1024;
+
+    /// <summary>The (owner, slot, program index of that slot) triples whose loop guard already logged: the pc is
+    /// not part of the key (a B or C loop resumes at a different pc every frame), and the program index
+    /// separates the map events, which all have the hero as owner and slot B.</summary>
+    private readonly HashSet<(AlundraEntityScriptProxy Owner, int Slot, int ProgramIndex)> _loggedLoopGuards = new();
 
     /// <summary>
     /// E15.c T5 (docs/plan-e15-yarn.md, contract item 1): this world's own <c>dialogue_{mapId}</c> Yarn
@@ -125,6 +144,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     private readonly HashSet<int> _loggedUnknownOpcodes = new();
     private readonly HashSet<int> _loggedDegradedOpcodes = new();
     private readonly HashSet<int> _loggedFailedActivations = new();
+    private readonly HashSet<(int Opcode, int Record)> _loggedFailedSpawns = new();
     private bool _loggedNoDocument;
     private bool _loggedGlobalTableFallback;
     private bool _loggedSpriteEventOnce;
@@ -158,16 +178,13 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// (EntityEventHandlers.cs:232-296) and its END_SCRIPT <c>g_clearProgramState</c> handling (:343-358,
     /// :382-391).
     ///
-    /// Documented simplification on <c>g_clearProgramState</c>: the original re-checks the flag after
-    /// EVERY dispatched opcode (not just once at the end) and, when set, distinguishes clearing the
-    /// CURRENTLY RUNNING entity's own state (deferred to this call's own END_SCRIPT, via
-    /// <c>wasEntityCleared</c>) from clearing a DIFFERENT entity's <c>LogicContextEntity.EventProgramState</c>
-    /// immediately, inline, mid-loop. No opcode this runner implements ever sets the flag yet - only
-    /// <c>Script_64_040</c> (0x40, EntityEventHandlers.cs:1332-1338) and one <c>FunctionTypeC</c> handler do,
-    /// neither ported - so this port only re-checks <see cref="ClearProgramStateRequested"/> once, after
-    /// <see cref="RunOneScriptCall"/> returns, and only ever clears the state THIS call actually ran
-    /// (<paramref name="programSlot"/>'s own <c>state</c>). The self-vs-other distinction is deferred to
-    /// whichever future task ports opcode 0x40.
+    /// <c>g_clearProgramState</c> (E19.d D6, D-E19-22): the original resets the flag at the start of every call and re-tests it
+    /// after EVERY dispatched opcode (EntityEventHandlers.cs:300, :345-358, :382-391; binary <c>0x80042310</c>), with the
+    /// logic entity read BEFORE the opcode: when that entity is the owner, the state that is running is cleared at the end of
+    /// the call (on an End, a Break or a suspension alike); otherwise the logic entity's own <c>EventProgramState</c> is
+    /// cleared at once. The flag is reset by the test in both cases (the decompilation resets it in the second one only).
+    /// <see cref="RunOneScriptCall"/> does all of it, so a direct call with an explicit state behaves like this method.
+    /// Only 0x40 raises the flag in this port (the <c>FunctionTypeC</c> handler that also does is native AI, E14).
     /// </summary>
     public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
     {
@@ -251,21 +268,12 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         // this same assignment next, in the original.
         entity.MapEventProgramId = programSlot;
 
-        ClearProgramStateRequested = false;
         RunOneScriptCall(entity, state, programSlot);
-
-        if (ClearProgramStateRequested)
-        {
-            ClearProgramStateRequested = false;
-            state.Sp = 0;
-            state.Codes = null;
-        }
     }
 
     /// <summary>
-    /// Port of <c>StaticVariables.g_clearProgramState</c> - see <see cref="RunScript"/>'s own doc on this
-    /// port's END_SCRIPT simplification. No opcode implemented by this runner sets this yet; it exists so
-    /// a future opcode 0x40 port does not also need a <see cref="RunScript"/> change.
+    /// Port of <c>StaticVariables.g_clearProgramState</c>, raised by 0x40 and consumed by <see cref="RunOneScriptCall"/> after
+    /// the opcode that raised it - see <see cref="RunScript"/>'s own doc.
     /// </summary>
     internal bool ClearProgramStateRequested;
 
@@ -295,6 +303,17 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 AlundraSaveBook.Instance.RunTick(entity, _worldContext, _gameState);
             }
 
+            return;
+        }
+
+        // E19.d2b (D-E19-29, O-E19-4 in part): the native handler 0x8007ED10 of slot E, reached at each tick of the Deactivated state
+        // while the scripted E program is empty, is DestroyEntity(e, -1) (0x8003A59C) for the indexes 0 and 1 (destruction only: the
+        // loot and the break effect of the other indexes belong to E14, O-E19-23). Index 2 and the other slots stay counted no-ops.
+        if (entity.EventTrigger == ScriptHelper.ProgramEDeactivate
+            && (entity.ProgramIndexes[ScriptHelper.ProgramEDeactivate] & 0x7f) == 0
+            && (uint)entity.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate] <= 1u)
+        {
+            entity.ScriptHost?.DestroyEntity(entity, -1);
             return;
         }
 
@@ -355,12 +374,20 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     internal void RunOneScriptCall(AlundraEntityScriptProxy entity, EventProgramState state, int programSlot = -1)
     {
         var iterations = 0;
+        var clearRunningState = false; // g_clearProgramState raised by the owner's own logic: the state that runs is cleared at the end of the call.
+        ClearProgramStateRequested = false;
 
         while (true)
         {
-            if (MaxIterationsPerCall is { } budget && ++iterations > budget)
+            if (++iterations > (MaxIterationsPerCall ?? ProductionLoopBudget))
             {
-                TraceSink?.Invoke(new EventTraceRecord(programSlot, state.CodeIndex, state.Sp, EventTraceKind.LoopBudgetExceeded, 0, null, state));
+                // Cut BEFORE the opcode is read, touching neither CodeIndex nor Parameters: B and C resume
+                // here next frame. The record carries the opcode about to be read (state.Sp is the one read
+                // just before).
+                var pending = state.Codes != null && state.CodeIndex < state.Codes.Length ? state.Codes[state.CodeIndex] : 0xFF;
+                LogLoopGuardOnce(entity, programSlot, state.CodeIndex, pending);
+                TraceSink?.Invoke(new EventTraceRecord(programSlot, state.CodeIndex, pending, EventTraceKind.LoopBudgetExceeded, 0, null, state));
+                EndCall(state, clearRunningState);
                 return;
             }
 
@@ -371,6 +398,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             if (command == 0xFF)
             {
                 TraceSink?.Invoke(new EventTraceRecord(programSlot, codeIndexAtFetch, command, EventTraceKind.End, 0, null, state));
+                EndCall(state, clearRunningState);
                 return;
             }
 
@@ -379,11 +407,17 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 state.Parameters[1] = 0;
                 state.CodeIndex++;
                 TraceSink?.Invoke(new EventTraceRecord(programSlot, codeIndexAtFetch, command, EventTraceKind.Break, 1, null, state));
+                EndCall(state, clearRunningState);
                 return;
             }
 
             _lastDispatchKind = EventTraceKind.Implemented;
-            var result = Dispatch(command, entity, variables, state);
+
+            // E19.a T1 (D-E19-2, docs/plan-e19-opcodes.md §0.2.3): the handler's a0 is the LOGIC entity, read from
+            // the owner's own word before EVERY instruction (0x80042284) - the owner itself until 0x42/0x43 retarget
+            // it. Only 0x42 and 0x43 write the owner's word; the program state stays the owner's.
+            var logic = entity.LogicEntity ?? entity;
+            var result = Dispatch(command, logic, entity, variables, state);
 
             if (TraceSink != null)
             {
@@ -403,8 +437,24 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 TraceSink.Invoke(new EventTraceRecord(programSlot, codeIndexAtFetch, command, _lastDispatchKind, result, parameters, state));
             }
 
+            // RunScript's test after every opcode (EntityEventHandlers.cs:345-358): the logic entity is the one read BEFORE the opcode.
+            if (ClearProgramStateRequested)
+            {
+                ClearProgramStateRequested = false;
+                if (ReferenceEquals(logic, entity))
+                {
+                    clearRunningState = true;
+                }
+                else
+                {
+                    logic.EventProgramState.Sp = 0;
+                    logic.EventProgramState.Codes = null;
+                }
+            }
+
             if (result == 0)
             {
+                EndCall(state, clearRunningState);
                 return;
             }
 
@@ -413,7 +463,35 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         }
     }
 
+    /// <summary>END_SCRIPT of <c>RunScript</c> (EntityEventHandlers.cs:382-391): the state that ran is cleared when its owner's own logic raised
+    /// <c>g_clearProgramState</c> (<c>wasEntityCleared</c>), so the next call of a B or C program starts over from its first opcode.</summary>
+    private static void EndCall(EventProgramState state, bool clearRunningState)
+    {
+        if (clearRunningState)
+        {
+            state.Sp = 0;
+            state.Codes = null;
+        }
+    }
+
     private EventTraceKind _lastDispatchKind = EventTraceKind.Implemented;
+
+    /// <summary>One warning per (owner, slot, program index) when the loop guard cuts a call - the channel of
+    /// <see cref="UnknownOpcode"/> (<see cref="Logs.WriteWarning"/>), one set beside
+    /// <see cref="_loggedUnknownOpcodes"/>.</summary>
+    private void LogLoopGuardOnce(AlundraEntityScriptProxy owner, int programSlot, int codeIndex, int opcode)
+    {
+        var programIndex = programSlot >= 0 && programSlot < owner.ProgramIndexes.Length ? owner.ProgramIndexes[programSlot] : -1;
+        if (!_loggedLoopGuards.Add((owner, programSlot, programIndex)))
+        {
+            return;
+        }
+
+        Logs.WriteWarning(
+            $"AlundraEventProgramRunner: loop guard - entity[{owner.EntityRefId}] slot {programSlot} program {programIndex} "
+            + $"dispatched more than {MaxIterationsPerCall ?? ProductionLoopBudget} opcodes in one call without suspending "
+            + $"(next opcode 0x{opcode:x2} @{codeIndex}); yielding until the next frame (D-E19-3 deviation, logged once per program).");
+    }
 
     /// <summary>
     /// Scratch buffer for <see cref="FillDataFromCommand"/> - deviation from the original AND from this
@@ -455,7 +533,30 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         return _fetchScratch;
     }
 
-    private int Dispatch(int command, AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
+    /// <summary>
+    /// The opcode switch, called as the original calls every handler (<c>h(logic, owner, &amp;pc, state)</c>,
+    /// <c>RunScript</c> @ 0x8004205C): <paramref name="entity"/> is the LOGIC entity, the one every opcode acts on
+    /// or takes as the reference of its searches (E19.a T1), and <paramref name="owner"/> the entity whose program
+    /// runs - the one <c>0x42</c>/<c>0x43</c> retarget (<see cref="AlundraEntityScriptProxy.LogicEntity"/>).
+    /// <paramref name="state"/> is the running program's state, on the owner.
+    /// </summary>
+    private bool _loggedProgramIndexOutOfRange40;
+    private bool _loggedProgramIndexOutOfRange41;
+
+    private static void LogProgramIndexOutOfRangeOnce(int opcode, int slot, ref bool logged)
+    {
+        if (logged)
+        {
+            return;
+        }
+
+        logged = true;
+        Logs.WriteWarning(
+            $"AlundraEventProgramRunner: opcode 0x{opcode:x2} with a program slot {slot} out of range (0..5); ignored - the original would write past its "
+            + "array (E19.d D6, D-E19-22 correction; no such site in the corpus). Logged once per opcode.");
+    }
+
+    private int Dispatch(int command, AlundraEntityScriptProxy entity, AlundraEntityScriptProxy owner, int[] v, EventProgramState state)
     {
         switch (command)
         {
@@ -495,12 +596,27 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 state.Result = EntityInArea(entity, v) ? 1 : 0;
                 return 8;
 
+            case 0x08: // Turn by an amount - Script_8_008 @ 0x8003D404 (E19.c1 T3, docs/plan-e19-opcodes.md §1.2e):
+                       // TargetDirection = (TargetDirection + v1) & 0x1F. Size 2.
+                entity.TargetDirection = (entity.TargetDirection + (uint)v[1]) & 0x1f;
+                return 2;
+
             case 0x09: // Set direction - Script_9_009
                 entity.TargetDirection = (uint)(v[1] & 0x1f);
                 return 2;
 
             case 0x0A: // Reverse direction - Script_10_00A
                 entity.TargetDirection = (entity.TargetDirection + 0x10) & 0x1f;
+                return 1;
+
+            case 0x0B: // Wait until the entity moved beyond a radius - Script_11_00B @ 0x8003D468 (E19.c1 T3): see
+                       // WalkUntilBeyondRadius below.
+                return WalkUntilBeyondRadius(entity, v, state);
+
+            case 0x0C: // Random cardinal direction - Script_12_00C (E19.c1 T3): one draw of the shared generator
+                       // (AlundraRandom, the original's seed 0x80098708 and constants), then TargetDirection =
+                       // cardinal table[seed >> 30]. Size 1.
+                entity.TargetDirection = AnimationTables.CardinalDirectionTable[(int)((uint)AlundraRandom.Next() >> 30)];
                 return 1;
 
             case 0x10: // Player lose control - Script_16_010 (EntityEventHandlers.cs:680-684). The flag
@@ -533,6 +649,16 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 entity.TargetAnimationId = (uint)v[1];
                 return 2;
 
+            case 0x1C: // Repeat anim - Script_28_01C @ 0x8003D7FC (E19.c1 T4): see RepeatAnimation below. Size 2.
+                return RepeatAnimation(entity, v, state);
+
+            case 0x1D: // Repeat anim with collision - Script_29_01D @ 0x8003D890 (E19.c1 T4): 0x1C, which ALSO ends
+                       // (returns 2) as soon as ForceAdjusted is nonzero - from its very first call. Size 2.
+            {
+                var repeated = RepeatAnimation(entity, v, state);
+                return repeated == 0 && entity.ForceAdjusted != 0 ? 2 : repeated;
+            }
+
             case 0x1E: // Walk - Script_30_01E (EntityEventHandlers.cs:793-829): see this case's own doc
                        // on Walk below for the full port + E4.d navigation-detour extension (D5). Sets
                        // NEITHER anim NOR direction by itself (0x5A/0x5B do - free walk comes from the
@@ -547,6 +673,39 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // curtailment instead, see AlundraEntityScriptProxy.ForceAdjusted's own doc -
                        // documented deviation, plan §3 E4.d).
                 return Walk(entity, v, state, allowDetour: false) == 0 && entity.ForceAdjusted == 0 ? 0 : 3;
+
+            case 0x24: // Wait force adjusted - Script_36_024 @ 0x8003DB70 (E19.d D4, D-E19-21, docs/plan-e19-opcodes.md §1.2g), PER THE BINARY:
+                       // returns 1 when the LOGIC entity's ForceAdjusted (+0x13C) is nonzero, else 0 (the script waits and re-tests at the next tick).
+                       // No operand, no memory of its own, no other output: no detour and no timer (D-E19-6), a wait that stays stuck is fixed at
+                       // its root, in the collisions or the engine. ForceAdjusted follows the binary since E19.a3 (it is raised at the tick of a
+                       // blocked step and cleared at the next one). Size 1.
+                return entity.ForceAdjusted != 0 ? 1 : 0;
+
+            case 0x40: // Set program index - Script_64_040 @ 0x8003E7B8 (E19.d D6, D-E19-22), PER THE BINARY: raises g_clearProgramState,
+                       // then ProgramIndexes[v1] = v2 of the LOGIC entity; size 3. The original bounds nothing: v1 >= 6 would write
+                       // past the array (no site in the corpus, 426 sites all with v1 from 2 to 5). Documented correction of that defect:
+                       // v1 >= 6 does nothing at all (nothing written, no state cleared), warned once, size 3. The flag is consumed by
+                       // RunOneScriptCall (the owner's own state at the end of the call, any other entity's state at once).
+                if ((uint)v[1] >= (uint)entity.ProgramIndexes.Length)
+                {
+                    LogProgramIndexOutOfRangeOnce(0x40, v[1], ref _loggedProgramIndexOutOfRange40);
+                    return 3;
+                }
+
+                ClearProgramStateRequested = true;
+                entity.ProgramIndexes[v[1]] = v[2];
+                return 3;
+
+            case 0x41: // Set sprite program index - Script_65_041 @ 0x8003E7E4 (E19.d D6, D-E19-22), PER THE BINARY: SpriteProgramIndexes[v1] = v2
+                       // of the LOGIC entity, no clearing, size 3. Same out-of-range correction as 0x40.
+                if ((uint)v[1] >= (uint)entity.SpriteProgramIndexes.Length)
+                {
+                    LogProgramIndexOutOfRangeOnce(0x41, v[1], ref _loggedProgramIndexOutOfRange41);
+                    return 3;
+                }
+
+                entity.SpriteProgramIndexes[v[1]] = v[2];
+                return 3;
 
             case 0x1B: // Fly - Script_27_01B (EntityEventHandlers.cs:743-747): ForceZ = (((v2<<8)|v1) *
                        // 0x10000) >> 8, a signed 16.16 vertical impulse. Only the DLL-side struct field is
@@ -778,6 +937,14 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // deferred portrait/name box (E12.c) - ignored for display here, per plan.
                 return OpenDialog(v[2], v[3], instructionSize: 4, opcode: 0x5C, opcodeName: "DialogWithEntity");
 
+            case 0xC4: // Dialog with speaker search - Script_196_0C4 @ 0x80041DA8 (E19.b, docs/plan-e19-opcodes.md
+                       // §1.2d, D-E19-5): v1 = speaker search, v2 | v3 << 8 = name index, v4 = textId, v5 =
+                       // controlMode. Same open semantics as 0x0D/0x5C (retry, return 0, while a box is open;
+                       // otherwise opens and returns the size 6 at the same tick; never waits for the close,
+                       // never writes Result). The speaker search, the name and the portrait have no
+                       // observable effect without the name box, so v1, v2 and v3 are ignored until E19.f.
+                return OpenDialog(v[4], v[5], instructionSize: 6, opcode: 0xC4, opcodeName: "DialogWithSpeaker");
+
             case 0x49: // Restart - Script_73_049 (EntityEventHandlers.cs:1454-1459): unconditional jump
                        // back to Parameters[0] (this program's own start CodeIndex, set once by
                        // InitializeEventData - see that method's own doc). Same
@@ -791,6 +958,46 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // instruction (size 1, see EventOpcodeSizeTable).
                 return state.Result == 0 ? state.Parameters[0] - state.CodeIndex : 1;
 
+            case 0x59: // Set entity anim - Script_89_059 @ 0x8003EE8C (E19.a T3, docs/plan-e19-opcodes.md):
+                       // for every entity matched by v1's search type (reference: the logic entity),
+                       // TargetAnimationId = v2. Size 3. Covers the 669 "hero at rest" sites [0x81, 0]
+                       // (390 @515, 389 @1369, ...).
+            {
+                var animMatches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+                foreach (var animMatch in animMatches)
+                {
+                    animMatch.TargetAnimationId = (uint)v[2];
+                }
+
+                return 3;
+            }
+
+            case 0x3A: // Set cardinal direction - Script_58_03A (E19.c1 T3): TargetDirection = cardinal table[v1 & 3]
+                       // ({0, 0x10, 8, 0x18}). Size 2.
+                entity.TargetDirection = AnimationTables.CardinalDirectionTable[v[1] & 3];
+                return 2;
+
+            case 0x5E: // Set forceZ for entities - Script_94_05E @ 0x8003F1A0 (E19.c1 T3): for every entity matched
+                       // by v1's search, ForceZ = int16(v2 | v3 << 8) << 8. Size 4.
+                SetEntitiesForceZ(entity, v);
+                return 4;
+
+            case 0x73: // Initialize timer _30 - Script_115_073 @ 0x8003FA3C (E19.c1 T3): the program state's own
+                       // counter (state + 0x30) = v1. Size 2.
+                state._30 = v[1];
+                return 2;
+
+            case 0x74: // Update timer _30 - Script_116_074 @ 0x8003FA58 (E19.c1 T3): decrements the counter; at 0 or
+                       // below the instruction ends (size 3), else it jumps by int16(v1 | v2 << 8). The counter is
+                       // never reset by the interpreter: only a following 0x73 sets it.
+                state._30--;
+                return state._30 <= 0 ? 3 : SignExtend16((v[2] << 8) | v[1]);
+
+            case 0x89: // Set entities position relative to a reference - Script_137_089 @ 0x80040194 (E19.c1 T3):
+                       // see SetEntitiesPositionFromReference. Size 9, also when nothing is found.
+                SetEntitiesPositionFromReference(entity, v);
+                return 9;
+
             case 0x5A: // Turn entity - Script_90_05A (EntityEventHandlers.cs:1694-1710): for every entity
                        // matched by v1's search type, TargetDirection = ResolveDirectionFromParam(v2).
                 TurnMatchingEntities(entity, v[1], (uint)v[2], animationId: null);
@@ -803,6 +1010,13 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // on ResolveDirectionFromParam's own doc.
                 TurnMatchingEntities(entity, v[1], (uint)v[3], animationId: (uint)v[2]);
                 return 4;
+
+            case 0x8A: // Spawn entity at a position - Script_138_08A @ 0x80040284 (E19.b, docs/plan-e19-opcodes.md
+                       // §1.2d): spawns record v1 with the logic entity as parent, then writes X = v2|v3<<8,
+                       // Y = v4|v5<<8 and Z = v6|v7<<8 (absolute 16-bit values, shifted by 16) and +1 on Z.
+                       // No Result. Size 8.
+                SpawnEntityAtPosition(entity, v);
+                return 8;
 
             case 0x8B: // Spawn entity next to entity - Script_139_08B @ 0x8004033C
                 SpawnEntityNextToEntity(entity, v);
@@ -1107,7 +1321,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 return 1;
 
             case 0x3B: // Check player in area - Script_59_03B (EntityEventHandlers.cs:1223-1240): tests
-                       // the PLAYER entity's own TileX/TileY/TileZ - NOT the executing entity, unlike
+                       // the PLAYER entity's own TileX/TileY/TileZ - NOT the logic entity this handler
+                       // receives (the entity the program currently runs on, E19.a), unlike
                        // 0x07's EntityInArea (see that method's own doc) - against the inclusive box
                        // v[1]..v[6] (xmin,xmax,ymin,ymax,zmin,zmax), no clamp, same as the original.
                        // Writes Result only, advances by its own size (7) either way (docs/plan-e7-
@@ -1226,11 +1441,11 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
             case 0x3E: // Is player riding entity - Script_62_03E @ 0x8003E708
                        // (EntityEventHandlers.cs:1298-1310): Result = 1 iff the player's own RidingEntity
-                       // points back at THIS entity (the executing one, not a searched match) - same
+                       // points back at the LOGIC entity this handler receives (not a searched match) - same
                        // ReferenceEquals(player.RidingEntity, candidate.LogicContextEntity) idiom
                        // EntitySearchService's own function ids 5/6 already use (EntitySearchService.cs:
                        // 174/186), here compared directly against the executing entity's own
-                       // LogicContextEntity instead of a searched candidate. No PlayerEntity spawned this
+                       // LogicContextEntity (the logic entity's, here) instead of a searched candidate's. No PlayerEntity spawned this
                        // session -> Result = 0, degraded no-op (once-logged warning), same "nothing to
                        // search" shape as 0x3B/0x27 above.
                 if (_worldContext.PlayerEntity is { } ridingCheckPlayer)
@@ -1244,6 +1459,45 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 }
 
                 return 1;
+
+            case 0x42: // Set logic entity to the player - Script_66_042 @ 0x8003E808 (E19.a T2, D-E19-2,
+                       // docs/plan-e19-opcodes.md §0.2.3), PER THE BINARY: writes the OWNER's word (+0x230) -
+                       // the one every later instruction reads its logic entity from - with the HERO
+                       // (0x80127D30), never with the owner itself, and returns its own size (1). No PlayerEntity
+                       // spawned for this world: the word is left as it is, degraded no-op (once-logged warning),
+                       // the same shape as 0x3B/0x3E/0x53.
+                if (_worldContext.PlayerEntity is { } logicPlayer)
+                {
+                    owner.LogicEntity = logicPlayer;
+                }
+                else
+                {
+                    LogDegradedNoPlayerOpcodeOnce(0x42, "SetLogicEntityToPlayer");
+                }
+
+                return 1;
+
+            case 0x43: // Set logic entity by search - Script_67_043 @ 0x8003E81C (E19.a T2), PER THE BINARY:
+                       // searches by v1 with the current LOGIC entity as the reference. With at least one match
+                       // the owner's word takes the LAST one found and Result = 1; with none, Result = 0 and the
+                       // word is left as it is - a decompilation that only writes Result on one path is wrong
+                       // here. Returns 2 (its own size) on both paths. `0x43 [0x80]` searches "get owner", which
+                       // returns the reference itself: the context does not change, Result = 1 (2 sites, map
+                       // 476 B5 @90 and @107).
+            {
+                var logicMatches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+                if (logicMatches.Count > 0)
+                {
+                    owner.LogicEntity = logicMatches[^1];
+                    state.Result = 1;
+                }
+                else
+                {
+                    state.Result = 0;
+                }
+
+                return 2;
+            }
 
             case 0x6E: // Is force adjusted - Script_110_06E @ 0x8003F9D4 (EntityEventHandlers.cs:2146-2151):
                        // Result = entity.ForceAdjusted, copied as is like the binary does
@@ -1327,8 +1581,8 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     }
 
     /// <summary>
-    /// Shared "open" half of opcodes 0x0D and 0x5C (E12.a, docs/plan-e12-dialogues.md; E15.c
-    /// docs/plan-e15-yarn.md contract items 1/2/8): resolves <paramref name="textIdParam"/> to a Yarn
+    /// Shared "open" half of opcodes 0x0D, 0x5C and 0xC4 (E12.a, docs/plan-e12-dialogues.md; E15.c
+    /// docs/plan-e15-yarn.md contract items 1/2/8; 0xC4 since E19.b): resolves <paramref name="textIdParam"/> to a Yarn
     /// asset/node (see <see cref="ResolveDialogNode"/>), then either opens the real dialogue through
     /// <see cref="AlundraDialogueDirector"/> (Dispatch's own reentrancy guard - T2 - already ran BEFORE
     /// this is called, via <see cref="IAlundraDialogueDirector.IsOpen"/>) or degrades: item 8 plays the
@@ -1563,6 +1817,34 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         }
     }
 
+    /// <summary>Script_138_08A (0x8A SpawnEntityAtPosition, <c>0x80040284</c>) - the same spawn as 0x2D (record v[1],
+    /// <c>notCheckSpawnZone = 1</c>, the logic entity as parent), then the new entity is put at an ABSOLUTE position:
+    /// <c>PosX = (v2 | v3 &lt;&lt; 8) &lt;&lt; 16</c>, <c>PosY = (v4 | v5 &lt;&lt; 8) &lt;&lt; 16</c> and
+    /// <c>PosZ = ((v6 | v7 &lt;&lt; 8) &lt;&lt; 16) + 1</c> (the same +1 on Z as 0x64, and on Z only). A failed spawn is
+    /// fatal in the original; the port logs a warning once per (opcode, record) and writes nothing, like 0x2D and 0x8B
+    /// do for their own failure.</summary>
+    private void SpawnEntityAtPosition(AlundraEntityScriptProxy entity, int[] v)
+    {
+        var spawned = _worldContext.SpawnEntityByRecordId(entity, v[1]);
+
+        if (spawned == null)
+        {
+            if (_loggedFailedSpawns.Add((0x8A, v[1])))
+            {
+                Logs.WriteWarning(
+                    $"AlundraEventProgramRunner: opcode 0x8A SpawnEntityAtPosition({v[1]}) - spawn failed "
+                    + "(record disabled/missing, or the spawn path threw) - the original stops here, the port goes on.");
+            }
+
+            return;
+        }
+
+        spawned.PosX = (v[2] + v[3] * 0x100) << 16;
+        spawned.PosY = (v[4] + v[5] * 0x100) << 16;
+        spawned.PosZ = ((v[6] + v[7] * 0x100) << 16) + 1;
+        spawned.PushLogicalPositionToRoot();
+    }
+
     /// <summary>Script_139_08B (0x8B SpawnEntityNextToEntity) - dynamic spawn by entity-record
     /// id (v[2]), same notCheckSpawnZone=1 spawn path as 0x2D ActivateEntity, then positions the
     /// NEW entity relative to the first entity matched by v[1]s search type: raw 16.16 offset
@@ -1591,9 +1873,9 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             spawned.PosY = matches[0].PosY + ((v[5] + v[6] * 0x100) << 16);
             spawned.PosZ = matches[0].PosZ + ((v[7] + v[8] * 0x100) << 16);
             // E3.d: grep-routed Pos* write site (docs/plan-e3-collisions.md "DLL - propriete de la
-            // racine par frame" item 4) - a no-op today (no spawned prefab carries a controller, E3.d
-            // scopes CharacterControllerComponent to the hero alone), kept for parity with every other
-            // scripted Pos* write site so a future controller-driven spawn is routed correctly too.
+            // racine par frame" item 4) - routes the new position to the root of a spawned prefab that
+            // carries a controller (the camera block of map 476, E19.b); a no-op for a bare entity. Kept
+            // for parity with every other scripted Pos* write site.
             spawned.PushLogicalPositionToRoot();
         }
     }
@@ -1675,6 +1957,47 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             match.PosY = y;
             match.PosZ = z;
             match.PushLogicalPositionToRoot();
+        }
+    }
+
+    /// <summary>Script_94_05E (0x5E) - <c>ForceZ</c> of every entity matched by v1's search = int16(v2 | v3 &lt;&lt; 8)
+    /// &lt;&lt; 8 (so 0x0060 is 0.375 px per tick upward). Nothing matched, nothing written.</summary>
+    private void SetEntitiesForceZ(AlundraEntityScriptProxy entity, int[] v)
+    {
+        var forceZ = ((short)(v[2] | (v[3] << 8))) << 8;
+        foreach (var match in EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity))
+        {
+            match.ForceZ = forceZ;
+        }
+    }
+
+    /// <summary>
+    /// Script_137_089 (0x89, E19.c1 T3): the reference is the FIRST entity found by v1's search, its position read BEFORE
+    /// the second search (v2); every entity found by v2 gets the reference's position plus int16(v3 | v4 &lt;&lt; 8),
+    /// int16(v5 | v6 &lt;&lt; 8) and int16(v7 | v8 &lt;&lt; 8) pixels on X, Y and Z, with no <c>+1</c> on Z (unlike 0x64). With no
+    /// reference nothing moves. The write goes through the path of 0x64/0x65 (<c>PushLogicalPositionToRoot</c>, so
+    /// <c>ClampToGround</c> then <c>Teleport</c>), which the original does not have: the E3.d deviation already taken for
+    /// those two. Each search allocates a list, like the probes of 0x07; an allocation-free search is E19.m.
+    /// </summary>
+    private void SetEntitiesPositionFromReference(AlundraEntityScriptProxy entity, int[] v)
+    {
+        var references = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+        if (references.Count == 0)
+        {
+            return;
+        }
+
+        var reference = references[0];
+        var x = reference.PosX + (((short)(v[3] | (v[4] << 8))) << 16);
+        var y = reference.PosY + (((short)(v[5] | (v[6] << 8))) << 16);
+        var z = reference.PosZ + (((short)(v[7] | (v[8] << 8))) << 16);
+
+        foreach (var target in EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[2], _worldContext.SpawnedEntities, _worldContext.PlayerEntity))
+        {
+            target.PosX = x;
+            target.PosY = y;
+            target.PosZ = z;
+            target.PushLogicalPositionToRoot();
         }
     }
 
@@ -1846,6 +2169,93 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     }
 
     /// <summary>
+    /// Script_28_01C (0x1C, E19.c1 T4), exactly as <c>0x8003D7FC</c>: waits until the entity's animation ended v1 times. The
+    /// first call at a pc (the key is <c>CodeIndex</c>, in <c>Parameters[1]</c>) memorises the pc, zeroes the count
+    /// (<c>Parameters[2]</c>) and <see cref="AlundraEntityScriptProxy.AnimCompleteCounter"/>, and suspends; it does NOT clear the
+    /// Hold flag. Later calls count one end per call: when the Hold flag
+    /// (<see cref="AlundraEntityScriptProxy.ForceResetAnimationFlag"/>) is set, <c>CurrentAnimationId</c> becomes
+    /// <c>~TargetAnimationId</c> (the next sync restarts the animation, and clears the flag) and the count goes up by one;
+    /// otherwise, when the counter is nonzero, the count goes up by one. In both cases the counter is zeroed (a counter of 3
+    /// counts once, not three times). The call ends (size 2) once count &gt;= v1, so v1 = 0 ends on the second call. The
+    /// handler never clears the Hold flag itself. E19.c2 adds a guard that changes nothing at 0 or 1 logic tick per frame: the
+    /// Hold flag is invisible while a switch tick is reserved (<see cref="AlundraEntityScriptProxy.AnimationSwitchTicksReserved"/>)
+    /// or while a Hold end already counted waits for its switch (<see cref="AlundraEntityScriptProxy.HoldCountedAwaitingSwitch"/>,
+    /// set here, cleared by the switch), so a catch-up frame never counts one end twice.
+    /// </summary>
+    private static int RepeatAnimation(AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
+    {
+        if (state.Parameters[1] != state.CodeIndex)
+        {
+            state.Parameters[1] = state.CodeIndex;
+            state.Parameters[2] = 0;
+            entity.AnimCompleteCounter = 0;
+            return 0;
+        }
+
+        // E19.c2 guard (docs/plan-e19-opcodes.md §1.2f), a no-op at 0 or 1 tick per frame: under catch-up several calls of this
+        // handler can run before the sync of the frame switches the animation, while in the binary every tick has its own
+        // UpdateAnimation. The Hold flag is therefore invisible while a tick of switch is reserved and not yet performed (the
+        // binary's UpdateAnimation of that tick has already switched and cleared the flag), and while a Hold end this handler
+        // already counted waits for the switch it asked for (it would be counted once per call).
+        var holdVisible = entity.ForceResetAnimationFlag != 0
+            && entity.AnimationSwitchTicksReserved == 0
+            && !entity.HoldCountedAwaitingSwitch;
+
+        if (holdVisible)
+        {
+            entity.CurrentAnimationId = ~entity.TargetAnimationId;
+            entity.HoldCountedAwaitingSwitch = true;
+            state.Parameters[2]++;
+            entity.AnimCompleteCounter = 0;
+        }
+        else if (entity.AnimCompleteCounter != 0)
+        {
+            state.Parameters[2]++;
+            entity.AnimCompleteCounter = 0;
+        }
+
+        return state.Parameters[2] >= v[1] ? 2 : 0;
+    }
+
+    /// <summary>
+    /// Script_11_00B (0x0B, E19.c1 T3), the sibling of <see cref="Walk"/> that leaves 0x1E/0x1F untouched. It acts on the
+    /// logic entity and writes <c>TargetAnimationId</c> = v1 on EVERY call, before anything else (the binary does, so a
+    /// Target reset between two calls comes back). The first call at a pc (the key is <c>CodeIndex</c>, in
+    /// <c>Parameters[1]</c>) memorises PosX/PosY and suspends; later calls end (size 4) as soon as the entity moved r pixels
+    /// along X or Y, r = v2 | v3 &lt;&lt; 8 (an inclusive test on the truncated pixel distance, as in <see cref="Walk"/>),
+    /// else suspend. It never writes the direction, never reads <c>ForceAdjusted</c> and has no exit on a blocked walk: a
+    /// block that never ends is fixed at the root (D-E19-6). The navigation detour of 0x1E (E4.d) is reused as is.
+    /// </summary>
+    private int WalkUntilBeyondRadius(AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
+    {
+        entity.TargetAnimationId = (uint)v[1];
+
+        if (state.Parameters[1] != state.CodeIndex)
+        {
+            state.Parameters[1] = state.CodeIndex;
+            state.Parameters[2] = entity.PosX;
+            state.Parameters[3] = entity.PosY;
+            entity.WalkDetourPath = null;
+            entity.WalkDetourAttempted = false;
+            return 0;
+        }
+
+        var dx = Math.Abs(state.Parameters[2] - entity.PosX) >> 16;
+        var dy = Math.Abs(state.Parameters[3] - entity.PosY) >> 16;
+        var radius = (v[3] << 8) | v[2];
+
+        if (radius <= dx || radius <= dy)
+        {
+            entity.WalkDetourPath = null;
+            entity.WalkDetourAttempted = false;
+            return 4;
+        }
+
+        UpdateWalkDetour(entity, state, radius);
+        return 0;
+    }
+
+    /// <summary>
     /// E4.d navigation detour (decision D5, docs/plan-e4-deplacement-scripte.md): default is to do
     /// NOTHING (free walk continues, identical to the original) - only engages when this frame's
     /// <see cref="AlundraEntityScriptProxy.ForceAdjusted"/> is nonzero (the last completed sub-step's own
@@ -1866,7 +2276,10 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     {
         var grid = _worldContext.NavigationGrid;
 
-        if (entity.WalkDetourPath == null && !entity.WalkDetourAttempted && grid != null && entity.ForceAdjusted != 0)
+        // E19.d2b B4 (D-E19-30, D-E19-35): the detour is for a contact of the cells (D-E19-6). A walk that an ENTITY blocks (the controller names it in
+        // XCollisionEntity) waits, as the original: 0x0B (0x8003D468) and 0x1E (0x8003D8D8) never read ForceAdjusted, and no detour is attempted or latched.
+        if (entity.WalkDetourPath == null && !entity.WalkDetourAttempted && grid != null && entity.ForceAdjusted != 0
+            && entity.XCollisionEntity == null)
         {
             TryEngageDetour(entity, state, grid, thresholdPx);
         }
@@ -2054,7 +2467,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         {
             Logs.WriteWarning(
                 $"AlundraEventProgramRunner: opcode 0x{opcode:x2} ({name}) has no PlayerEntity spawned "
-                + "for this world - degraded no-op (Result = 0), advancing by its size.");
+                + "for this world - degraded no-op (what it writes, if anything, is in its own case), advancing by its size.");
         }
     }
 

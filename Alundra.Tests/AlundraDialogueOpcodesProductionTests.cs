@@ -368,8 +368,12 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                 // AlundraInteractionPassTests P-b), consuming LAST frame's contact.
                 AlundraPlayerManager.MovePlayer(player!, in pad, s.GameState, s);
 
-                // Mirror 2 - the world proxy's contact pass (production site pinned by P-a), gated like
-                // it (D-E12D-5), feeding NEXT frame's MovePlayer.
+                // Mirror 2 - the contact of the hero's step, feeding NEXT frame's MovePlayer. E19.d2b B4 (D-E19-29): in
+                // production this contact is the entity that shortened or cancelled the hero's controller step
+                // (AlundraEntityScriptProxy.MoveControllerAndPullPosition, pinned by AlundraEntityContactReportTests T-R7 and
+                // AlundraInteractionPassTests P-a), and no longer an overlap pass of the end of the frame; this harness has
+                // no controller, the overlap of the hero kept ON sailor 13 stands for the contact of his push. Gated like
+                // production (D-E12D-5: no step is taken behind the mask).
                 if ((s.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) == 0)
                 {
                     player!.XCollisionEntity = AlundraEntityCollision.FindEntityCollisionCandidate(player, s.Collidables);
