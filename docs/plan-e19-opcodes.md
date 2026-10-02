@@ -3589,7 +3589,7 @@ par `ZImpulseSfx`) ; l'impulsion d'animation est prise au tick (R1) ; `CollidedW
 
 **Tâches.**
 
-- ⏳ **D0 — Plan ; mesure de base des arcs à vrai contrôleur** : A5, A5r, le couloir de la 392 (direction tenue juste
+- ✅ **D0 — Plan ; mesure de base des arcs à vrai contrôleur** : A5, A5r, le couloir de la 392 (direction tenue juste
   après `PlaceHero`) et TN-3 (arrivée à 32 px au-dessus d'une case de 16 px : le héros tombe de 16 px au départ) sont
   mesurés tels quels avant D1 ; tout écart d'une de leurs épingles après D1 ou D2 est un arrêt.
 - ⏳ **D1 — États de saut et cachet (S1), tests d'abord.** SJ-1 à SJ-4 (annexe B.2.2, avec la correction C.saut-dll sur le
@@ -3663,6 +3663,8 @@ inchangées.
   sous verrou, TN-3 dans la base de D0, observable d'UJ-LOCK, note d'en-tête des traces, aides de montage pour D1 à D4.
 - L'auditeur a recalculé tout le reste (UH-1 à UH-3, UH-8, SJ-5 à SJ-7, SJ-6b, traces « spawn » des images 221 à 267, UH-6
   principal, UH-10/UH-11 dont `CollidedWithEntityZ` 1 au tick 18 puis 0 de 19 à 24, SJ-12, SJ-13, UJ-LOCK) : juste.
+- Relecture neuve sur `be04f27` : **READY**. Exécution lancée le 2026-10-03 sous la consigne de l'auteur du 2026-10-02 (mode
+  AUTO, ni merge ni push).
 
 **Acceptation d'E19.d2c2.**
 1. Tests D1 à D3 rouges d'abord, verts après, valeurs écrites tenues ; une valeur contredite est un arrêt.
