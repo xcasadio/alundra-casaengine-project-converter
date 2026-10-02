@@ -2792,9 +2792,11 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
     `EntityBlockCount` ; la passe de recouvrement de `AlundraWorldProxy.Update` est retirée ; `UpdateWalkDetour` ne s'engage que sans entité en contact (0x0B et 0x1E).
     T-R3, T-R4 et T-R9 (B3) lisent aussi `XCollisionEntity`.
 
-- ⏳ **B5 — Textes.** Commentaire d'`AlundraEntityCollision.cs:27-33` et nom du test `FlushContact_*` corrigés (le
+- ✅ **B5 — Textes.** Commentaire d'`AlundraEntityCollision.cs:27-33` et nom du test `FlushContact_*` corrigés (le
   contact affleurant ne recouvre pas) ; note datée dans `docs/plan-e12d-interaction-joueur.md:86-88`.
   Commit : `docs(alundra): state that a flush contact does not overlap`
+  - Fait le 2026-10-02 : le commentaire de la méthode, le test renommé `FlushContact_DoesNotOverlap_OneUnitLessDoes` (mêmes deux assertions : l'ancien « flush » de la
+    ligne était une unité en deçà du contact affleurant, l'ancien « apart » en est le contact affleurant) et la note datée du plan E12.d.
 
 - ⏳ **B6 — Arcs** (vrais préfabs, vrai héros, contrôleurs réels ; images jamais absolues ; contacts en relationnel
   exact à un ULP de la coordonnée près ; positions de transition à ± 2,5 px ; une valeur contredite est un **arrêt**).

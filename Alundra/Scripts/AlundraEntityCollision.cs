@@ -29,7 +29,9 @@ public static class AlundraEntityCollision
     /// the same axis naming FindEntityCollisionCandidate itself uses, NOT the attack path's): for each
     /// axis, a negative delta (candidate to the left/above/below) tests against the CANDIDATE's own
     /// dimension + 1, a non-negative delta against the SUBJECT's (+1 derived: <c>dif &lt; dim + 1</c>
-    /// ⇔ <c>dif &lt;= dim</c>, flush contact counts).
+    /// ⇔ <c>dif &lt;= dim</c>). The edge is semi-open: the dimensions are <c>(size &lt;&lt; 16) - 1</c>, so a FLUSH contact
+    /// (<c>dif = size &lt;&lt; 16 = dim + 1</c>) does NOT overlap and one 16.16 unit less does (E19.d2b B5 corrects the earlier
+    /// "flush contact counts", which this code never did with the real dimensions).
     ///
     /// D-E12D-1's position-source correction (plan relecture P2): the original reads
     /// <c>ModdedPos*</c>, refreshed on every movement attempt (PhysicsEngine.cs:428-430/:849-851);

@@ -39,16 +39,18 @@ public class AlundraEntityCollisionTests
     }
 
     [Fact]
-    public void FlushContact_Counts_TheDerivedPlusOne()
+    public void FlushContact_DoesNotOverlap_OneUnitLessDoes()
     {
-        // Candidate to the LEFT by exactly its own width: dif == Width, and the original's
-        // `dif < Width + 1` (⇔ dif <= Width) makes flush contact a hit; one more unit is a miss.
+        // Candidate to the LEFT by exactly its own Width: dif == Width, and the original's `dif < Width + 1`
+        // (⇔ dif <= Width) is a hit. In the game Width is (size << 16) - 1, so this is ONE UNIT SHORT of a flush
+        // contact; the flush contact is dif == Width + 1, the next unit, which is a miss (the semi-open edge of the
+        // binary, E19.d2b B5).
         var subject = NewBox(10, 0, 0, 4, 4, 4);
-        var flush = NewBox(10 - 4, 0, 0, 4, 4, 4);
-        var apart = NewBox(10 - 5, 0, 0, 4, 4, 4);
+        var oneUnitLess = NewBox(10 - 4, 0, 0, 4, 4, 4);
+        var flush = NewBox(10 - 5, 0, 0, 4, 4, 4);
 
-        Assert.Same(flush, AlundraEntityCollision.FindEntityCollisionCandidate(subject, new[] { flush }));
-        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(subject, new[] { apart }));
+        Assert.Same(oneUnitLess, AlundraEntityCollision.FindEntityCollisionCandidate(subject, new[] { oneUnitLess }));
+        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(subject, new[] { flush }));
     }
 
     [Fact]
