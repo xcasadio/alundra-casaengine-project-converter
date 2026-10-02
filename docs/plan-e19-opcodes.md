@@ -3004,7 +3004,7 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
   | La garde T-REG-0 lève depuis `ArcRun.Dispose` et peut masquer l'échec d'origine d'un arc. | P4, introduit | Reporté (hygiène). |
   | Empreinte de la DLL déployée différente de celle du §2 : reconstruite depuis les mêmes sources (fins de ligne). | P4 | Sans effet ; `cmp` refait par la session principale. |
 
-#### 1.2h.3 E19.d2c — Saut, `0x25`, eau et glace ⏳ (deux sous-tranches : E19.d2c1 détaillée ci-dessous, E19.d2c2 esquissée, détaillée et relue après E19.d2c1)
+#### 1.2h.3 E19.d2c — Saut, `0x25`, eau et glace ⏳ (deux sous-tranches : E19.d2c1 faite et CONFIRMED le 2026-10-03, recette en attente ; E19.d2c2 détaillée ci-dessous)
 
 **Résultat** : la chaîne du jour 3 passe le saut de la 10 jusqu'à la 135 ; toute entité saute au tick du changement
 d'animation, comme dans l'original ; `0x25` attend l'atterrissage ; le héros ralentit dans l'eau sans bottes et glisse sur
@@ -3087,7 +3087,7 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
 | **E19.d2c1** — Saut scripté, `0x25`, eau et glace | Le saut de la 10 et les sauts de Bergus vont au bout ; aucune entité ne décolle à l'apparition ; eau et glace du héros ; son du décollage | impulsion au tick, exclusion d'apparition, impulsion des PNJ et règle `0x8000`, `0x25`, `CollidedWithEntityZ`, état en l'air du héros pour les sauts scriptés et `0x1B`, eau, glace, `x160`, bottes, `VramOR` par tick, son | §1.2h.3.1 | E19.d2b |
 | **E19.d2c2** — Saut à la manette, chutes, dessus d'objets | Le héros saute à la Croix, tombe des rebords et se pose sur les objets comme dans l'original | états de saut de `MovePlayer`, front de Croix par tick, chute dans l'état en l'air, dessus d'entités et règle du passager, traces « spawn » | §1.2h.3.2 | E19.d2c1 |
 
-##### 1.2h.3.1 E19.d2c1 — Saut scripté, `0x25`, eau et glace ⏳
+##### 1.2h.3.1 E19.d2c1 — Saut scripté, `0x25`, eau et glace ✅ (C0 à C6 faites et CONFIRMED le 2026-10-03 ; recette C7 en attente)
 
 **Règles d'exécution** (contrat ; les noms de champs sont indicatifs, l'exécutant garde ceux du code).
 
@@ -3521,39 +3521,136 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
   | Textes : commentaire de T-C61 (`0x30 @983` teste G672, `0x05 @990` le pose), doc d'A10 périmée (« returns 1 at its first call »), Meade non écrit dans le test d'A10 ; A12 sans `using` (un arc bloqué laisse l'état global sale) ; UJ-0x8000 avec gravité ne discrimine que le terme `!gravity` ; liste fermée de l'acceptation 2 qui omettait la propriété `SoundPlayer` de `ContactHost` et un commentaire et un `cref` de C5. | P4 | Reportés à l'hygiène d'E19.d2c2 ; la liste incomplète est acceptée (aucune assertion touchée). |
   | L'effacement du drapeau d'apparition par `0x1C` n'a pas de test (aucun site réel). | P4 | Reporté à E19.m (déjà noté). |
 
-##### 1.2h.3.2 E19.d2c2 — Saut à la manette, chutes, dessus d'objets ⏳ (esquisse ; détaillée, relue et approuvée après E19.d2c1)
+##### 1.2h.3.2 E19.d2c2 — Saut à la manette, chutes, dessus d'objets ⏳
 
-- **États de saut de `MovePlayer`** (D-E19-39) : queue commune du binaire (`0x80031EA8`) pour Idle/Moving et 2, `0x2B`,
-  `0x2C`, `0x2D` (sans `CheckEntityInteraction` pour les quatre) : en l'air → `0x2C` si une direction est tenue, sinon
-  `0x2D` ; au sol, front de Croix → 2 (direction tenue) ou `0x2B`, refusé si `VramOR & 0x4000` ; sinon Moving ou Idle.
-  Prédicat d'air : `Controller != null ? IsOnGround == 0 : HeroAirborne` (correction de la contre-vérification : le
-  prédicat « `HeroAirborne ||` … » laisserait le héros en pose de saut sur une caisse et rendrait SJ-5 faux à l'image 22).
-  `TryUseItem`, `PlayerTryAction`, `PlayerTryAttack`, la course et le transport restent sans effet ; la branche `0x36`
-  n'est pas portée (O-E19-32).
-- **Pas de saut perdu** : front de Croix verrouillé par l'image, consommé par le premier tick, effacé sur toute image où
-  `MovePlayer` ne tourne pas (menu, entrée bloquée) ; cachet de tick : une demande 2 ou `0x2B` qu'aucun tick n'a encore
-  appliquée n'est pas réécrite par l'image suivante.
-- **Chute** (D-E19-43) : un héros à contrôleur, hors de l'état en l'air et hors d'une escalade, dont le tirage de tête
-  d'image donne `IsOnGround` 0, entre dans l'état en l'air sans impulsion au premier tick de l'image (gravité de la
-  carte, même atterrissage strict). **Traces « spawn » prévues** (les deux fichiers ; dérivation de la session principale,
-  à faire contre-vérifier par la relecture d'E19.d2c2) : images 221 à 230, `posZ` 2064384, 1998848, 1900544, 1769472,
-  1605632, 1409024, 1179648, 917504, 622592, 294912 (`tileZ` 1 de 221 à 227, 0 ensuite), `isOnGround` 0, `targetAnim`
-  44 ; image 231 : `posZ` 0, `isOnGround` 1, `targetAnim` 44 ; image 232 : `targetAnim` 1 ; `posX` 221 à 232 = 40287744,
-  40438272, 40588800, 40739328, 40889856, 41040384, 41190912, 41341440, 41491968, 41642496, 41793024, 41948160, puis
-  ancien - 101376 de 233 à 267. Les épingles du test changent par construction : première image en l'air 221 à
-  `posZ` 2064384 (le binaire descend dès le premier tick en `0x2C`), atterrissage à 231. Les traces `highground` et de
-  l'intro restent à l'octet. (La prévision de la découverte, `posZ` inchangé, supposait une chute laissée au moteur.)
-- **Dessus d'objets et passager** (D-E19-42) : l'étape verticale du héros prend `EntitySupport.TryFindSupport` (dessus +1
-  visé, `CollidedWithEntityZ` 1 à l'atterrissage, 0 au repos porté) ; règle du passager du binaire (`0x80037364` : force
-  de la plateforme ajoutée, `ForceZ` de la plateforme si le passager n'a pas d'impulsion) ; `RidingEntity` recalculé à
-  chaque tick, jamais gardé (sinon le héros flotte).
-- **Tests** : SJ-1 à SJ-17 et UH-1 à UH-11 de l'annexe (B), avec les corrections C.saut-binaire et C.saut-dll (dont :
-  animation 44 jusqu'au tick 18 du saut sur marche ; ticks bloqués selon x0 ; `CollidedWithEntityZ` 0 au repos sur un
-  objet ; dimensions `(taille << 16) - 1` et convention de Z d'apparition à re-dériver sur une fixture réelle ; seuil de
-  saccade d'escalier à 3 ticks par image) ; un seul test existant rouge par construction (`MovePlayer_OtherAnimationId` :
-  `0x2D` + Droite → 1) ; base des arcs A5, A5r et du couloir de la 392.
-- **Recette** : saut sur place et en marchant, sur une caisse, depuis l'eau ; chute d'un rebord ; la falaise de la 10 se
-  franchit seule (comme l'original) ; un objet de la 10 (tombe) se monte et se descend.
+**Résultat** : Alundra saute à la Croix (sur place ou en marchant), se dirige en l'air, retombe ; elle tombe des rebords
+avec la même mécanique ; elle se pose sur les coffres, plateformes et interrupteurs et une plateforme qui bouge la porte ;
+après un saut scripté elle revient à l'arrêt ou à la marche dès qu'elle touche le sol (cartes 61 à 68 et 329).
+
+**Point de départ** (E19.d2c1 faite) : l'état en l'air du héros existe pour les sauts scriptés et `0x1B`
+(`AlundraScriptedMotion.RunHeroVerticalTick`, champs `HeroAirborne`, `HeroFlyMarked`, `ZHeldByTick`,
+`AirborneSaved*` ; atterrissage strict sur le terrain ; `IsOnGround` tenu par le tick pendant l'état ; son du décollage
+par `ZImpulseSfx`) ; l'impulsion d'animation est prise au tick (R1) ; `CollidedWithEntityZ` suit le binaire (R5).
+
+**Règles d'exécution** (contrat ; noms de champs indicatifs).
+
+- **S1 — États de saut de `MovePlayer`** (binaire `0x80031E38`, `0x80031E84`, queue `0x80031EA8`) :
+  - Idle (0) et Moving (1) gardent `TargetDirection = dir` et `CheckEntityInteraction` (E12.d) : `res` 2 → Idle, `res` 1
+    → animation inchangée ; `res` 0 → la **queue** ;
+  - 2, `0x2B`, `0x2C`, `0x2D` : `TargetDirection = dir`, **sans** `CheckEntityInteraction`, puis la queue ;
+  - **queue**, dans cet ordre : en l'air (prédicat `Controller != null ? IsOnGround == 0 : HeroAirborne`) → `0x2C`
+    si une direction est tenue (`buttonsHold != 0`, le quartet de la croix, comme Idle/Moving) sinon `0x2D` ; au sol,
+    front de Croix (`pad.ButtonsJustPressed & Cross`) → si `CombinedVramFlagsOR & 0x4000`, fin sans rien changer (pas
+    même le passage en Moving), sinon 2 (direction tenue) ou `0x2B` ; sinon Moving ou Idle (`TryUseItem`,
+    `PlayerTryAction`, `PlayerTryAttack` et la course de Triangle restent des no-ops : Triangle tenu donne Moving ou Idle
+    comme aujourd'hui) ;
+  - la branche `LoadingMap` → `0x2D` reste non portée (O-E19-32) ; la sortie latérale d'échelle reste Idle (décision du
+    2026-08-26), la chute suit par la queue à l'image suivante ;
+  - **cachet** : quand la queue écrit 2 ou `0x2B`, elle note `MotionTickCount` ; tant qu'aucun tick n'a tourné depuis
+    (image sans tick), `MovePlayer` ne réécrit pas la cible. Sous rattrapage (plusieurs ticks dans l'image), la décision
+    reste par image : la transition `0x2B`/2 → `0x2D`/`0x2C` arrive un tick plus tard que dans le binaire (écart accepté,
+    épinglé par SJ-6b).
+- **S2 — Chute** (D-E19-43) : au premier tick d'une image, un héros à contrôleur, hors de l'état en l'air, hors d'une
+  escalade (`Climbing`, `ClimbStill`) et dont la verticale n'est pas déjà tenue ailleurs (`IsVerticalOwnedExternally`
+  faux), dont le tirage de tête d'image a donné `IsOnGround` 0, entre dans l'état en l'air **sans impulsion**,
+  `ForceZ` remis à 0 (le binaire au repos atterrit à chaque tick : `ForceZ` 0 ; l'escalade laisse ±0x10000), puis la
+  gravité de la carte joue dès ce tick, même atterrissage strict. Sous rattrapage, l'entrée se décide au premier tick de
+  l'image (le tirage est par image) : écart d'un tick au plus, accepté.
+- **S3 — Dessus d'objets** (D-E19-42) : dans l'étape verticale du héros, la hauteur d'atterrissage est le plus haut du
+  terrain et du dessus d'une entité trouvée par `EntitySupport.TryFindSupport` (même appel, mêmes gardes et même valeur de
+  `PosZ` que la branche « trouvé » d'`EvaluateEntitySupport` pour un PNJ) ; atterrissage sur une entité : `PosZ` posé,
+  `ForceZ` 0 avec gravité, `CollidedWithEntityZ` 1. **Posé sur une entité, le héros reste dans l'état tenu par le tick**
+  (le moteur ne voit pas les boîtes d'entités) avec `IsOnGround` 1 ; il en sort seulement quand son appui est le terrain
+  (atterrissage sur le terrain, ou passage d'un dessus à un terrain de même hauteur). `IsOnGround` pendant l'état :
+  `PosZ <= max(terrain, dessus d'entité sous la boîte)` (la règle `FloorHeight` du binaire, `UpdateFloorHeight` la
+  compose déjà).
+- **S4 — Passager** (D-E19-42 ; binaire `0x80038998`, `0x800364C8`, `0x80037364`) : `RidingEntity` du héros recalculé en
+  tête de chaque tick du héros, jamais gardé (règle exacte d'`EntitySupport.UpdateRidingEntities` : héros
+  `(Flags & 0x4100) == 0x100`, dessus + 1 == `ModdedPosZ` d'avant le mouvement, recouvrement XY) ; porté et sans
+  impulsion ce tick : `ForceZ`/`FinalForceZ` = ceux de la plateforme, et le pas XY du héros ajoute le déplacement réalisé
+  de la plateforme. Au repos sur un objet immobile, `CollidedWithEntityZ` vaut donc 0 (porté, pas ré-atterri). Le
+  déplacement de la plateforme est celui de son dernier tick : le héros est mis à jour avant elle dans l'image (écart d'un
+  tick de phase, accepté, épinglé par UH-14).
+- **S5 — Son** : rien de neuf (le décollage 2/`0x2B` passe par R8).
+
+**Tâches.**
+
+- ⏳ **D0 — Plan ; mesure de base des arcs à vrai contrôleur** : A5, A5r et le couloir de la 392 (direction tenue juste
+  après `PlaceHero`) sont mesurés tels quels avant D1 ; tout écart après D1 ou D2 est un arrêt.
+- ⏳ **D1 — États de saut et cachet (S1), tests d'abord.** SJ-1 à SJ-4 (annexe B.2.2, avec la correction C.saut-dll sur le
+  prédicat d'air), SJ-8 (menus, boîtes), UH-4 (bords de Croix : en l'air sans effet ; rebond au tick 22 ; Croix tenue sans
+  nouveau front ; Croix et Carré la même image : l'interaction l'emporte), UH-5 (case `VramOR & 0x4000` : Idle, pas
+  même Moving), le retour à Idle ou Moving après un saut scripté sur un héros relâché en animation 44. Test existant rouge
+  par construction : `MovePlayer_OtherAnimationId` (`0x2D` + Droite → 1).
+- ⏳ **D2 — Saut à la manette en monde réel, chutes (S1, S2), tests d'abord.** UH-1 à UH-3 (tables S-A, S-B, S-B2, S-B3,
+  S-I, S-B4 de l'annexe B.1), SJ-5, SJ-5b, SJ-5c, SJ-6, **SJ-6b** (deux ticks dans l'image du front : une impulsion,
+  `PosZ` 622592 ; la cible reste 2 ou `0x2B` pendant les deux ticks de l'image, d'où `ForceX` 159744 au second tick d'un
+  saut en marchant, 155136 dans le binaire : l'écart accepté de S1),
+  SJ-7, SJ-9 (gel en vol), UH-7 (chute d'un rebord : table S-E), UH-8 (eau, `x160` : table S-D, S-D2), SJ-11 (rampe à
+  deux ticks par image : cible 1 à chaque image), SJ-17 (gravité vivante restituée). **Traces « spawn »** : régénérées aux
+  valeurs prévues ci-dessous, les quatre autres à l'octet ; épingles de `HeroTraceHarnessTests` changées par construction
+  (première image en l'air 221 à `posZ` 2064384, la suivante plus basse, atterrissage à 231 à `posZ` 0).
+- ⏳ **D3 — Dessus d'objets et passager (S3, S4), tests d'abord.** UH-6 (marche de 16 px : table S-C, avec les
+  corrections C.saut-binaire : animation 44 jusqu'au tick 18 inclus, Moving au 19 ; x0 = 126 à 128 bloqués au seul tick 3,
+  129 à 133 aux ticks 2 et 3, x finale au tick 30 = 196,633 px de 126 à 133, 195,734 px pour 125), UH-10/UH-11 (coffre
+  24 × 16 × 16 : atterrissage au tick 18, `PosZ` posé selon S3, `CollidedWithEntityZ` 1 au tick 18 puis 0 aux ticks 19 à
+  24, `IsOnGround` 1 jusqu'au 24 et 0 au 25, animation 44 au 26 ; `RidingEntity` = le coffre tant qu'il y repose ;
+  `0x3E` rend 1), SJ-12 et SJ-13 (valeurs relatives au dessus de l'entité, la convention de Z d'apparition à lire sur la
+  fixture), **UH-14** (plateforme qui avance de 1 px par tick : le héros posé dessus avance de 1 px par tick, un tick de
+  phase après elle ; il ne glisse pas hors d'elle en 50 ticks).
+- ⏳ **D4 — Hygiène reportée d'E19.d2c1** (dispositions de « Vérification d'E19.d2c1 ») :
+  - **verrou d'impulsion** : `SyncAnimation` baisse `ZImpulseTaken` aussi quand plus rien n'est en attente à la fin de
+    l'image (changement vu à un tick puis annulé par le script avant la validation) ; test **UJ-LOCK** (PNJ, image à deux
+    ticks : cible 3 (IZF 1360) écrite par son script au tick 1, remise à la cible courante au tick 2 ; à l'image suivante,
+    cible 3 de nouveau : `IsZForceApplied` vaut 1360 à son premier tick ; rouge aujourd'hui : 0) ;
+  - UJ-2 : le programme met `0x25` au pc 1 (comme le premier cas) pour que « aucun effet de bord » voie `Parameters[1]` ;
+  - un test du branchement de production du lecteur de sons (`AlundraWorldProxy` rend son lecteur par
+    `IAlundraScriptHost.SoundPlayer`) ;
+  - un test permanent de la garde T-REG-0 (`ArcRun.Dispose` lève sur un arc vert à contact, ne lève pas quand le test
+    échoue déjà) ;
+  - A10J : épingler le mécanisme d'O-E19-29 sur Giles (pas de y de 131072 aux images F0+241 à F0+244, puis 106496) ;
+  - textes : commentaire du signal de fin de T-C61 (`0x30 @983` teste G672, `0x05 @990` le pose) ; doc du test A10
+    (« returns 1 at its first call » périmé) et la phase de Meade (`@984`, une image sur deux) à côté de celle de
+    Wendell ; A12 sous `using` (un arc bloqué ne doit pas laisser l'état global sale).
+  Commit : `chore(alundra): close the E19.d2c1 hygiene items`
+- ⏳ **D5 — Vérification et clôture**, comme C6. **D6 — Recette** (auteur, avec la recette C7 d'E19.d2c1) : saut sur place
+  et en marchant, contrôle en l'air, saut depuis l'eau (plus bas), chute d'un rebord, saut sur un coffre puis descente, une
+  plateforme mobile, la falaise de la 10 franchie seule ; une case où la Croix ne fait rien ; après un saut scripté sur la
+  61, le héros revient à l'arrêt.
+
+**Traces « spawn » prévues** (les deux fichiers, valeurs recalculées par l'auditeur des valeurs le 2026-10-02) : images 221
+à 230, `posZ` 2064384, 1998848, 1900544, 1769472, 1605632, 1409024, 1179648, 917504, 622592, 294912 (`tileZ` 1 de 221 à
+227, 0 ensuite), `isOnGround` 0, `targetAnim` 44 ; image 231 : `posZ` 0, `isOnGround` 1, `targetAnim` 44 ; image 232 :
+`targetAnim` 1 ; `posX` 221 à 232 = 40287744, 40438272, 40588800, 40739328, 40889856, 41040384, 41190912, 41341440,
+41491968, 41642496, 41793024, 41948160, puis ancien − 101376 de 233 à 267 ; toutes les autres colonnes et lignes
+inchangées.
+
+**Acceptation d'E19.d2c2.**
+1. Tests D1 à D3 rouges d'abord, verts après, valeurs écrites tenues ; une valeur contredite est un arrêt.
+2. **Code de test existant touché** — liste fermée ; toute autre assertion existante reste inchangée et verte :
+   - **D1** : `AlundraPlayerManagerTests.MovePlayer_OtherAnimationId` (`0x2D` + Droite → 1) ;
+   - **D2** : `HeroTraceHarnessTests` (épingles de la chute : première image en l'air 221 à `posZ` 2064384, atterrissage à
+     231 ; commentaires) ; les deux traces `docs/hero-trace-389-spawn-*.txt` régénérées aux valeurs prévues ;
+   - **D3** : aucun (nouveaux tests seulement) ;
+   - **D4** : UJ-2 (`AlundraEventProgramRunnerWaitCollidedZTests.cs`, programme avec `0x25` au pc 1) ; A10J (assertions des
+     pas de Giles ajoutées) ; A10 (doc du test, commentaire de Meade) ; T-C61 (commentaire du signal de fin) ; A12
+     (`AlundraBergusJumpArcTests.cs` sous `using`) ; `AlundraArcSupport.cs` si le test de la garde T-REG-0 l'exige ; les
+     montages de `AlundraJumpTestSupport.cs` et `AlundraContactTestSupport.cs` peuvent gagner des aides.
+   A5, A5r, le couloir de la 392, A3 et toutes les autres épingles restent inchangés ; les traces `highground` et de l'intro
+   restent à l'octet.
+3. `Alundra.Tests` sans échec en Release puis en Debug, la DLL Debug déployée en dernier, `cmp` sans écart.
+4. Recette D5 faite par l'auteur.
+
+**Risques.**
+- Saut perdu sur les images sans tick si le cachet manque (une pression sur six à 60 Hz) : SJ-5b et SJ-5c le gardent.
+- Chute parasite sur une marche ou une rampe à trois ticks par image ou plus (4,875 px > 4 px d'aimantation du moteur) :
+  invisible à un ou deux ticks par image (SJ-11) ; à surveiller en recette.
+- Coincement dans un objet si l'appui manque (D-E19-36) ; héros qui flotte si `RidingEntity` est gardé d'un tick à
+  l'autre.
+- Le joueur franchit seul la falaise de la 10 et sort des zones `0x3B` à un seul niveau de Z (40 sur la chaîne) : comme
+  l'original.
+- Sites `0x2F` qui lisent la Croix hors de la chaîne (51, 440, 477, 143, 475) : la même pression sert le script et le saut,
+  comme l'original.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
