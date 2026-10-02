@@ -2495,7 +2495,7 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
     Mesure après correction : `PosZ = 1048576`, `TileZ = 1`, stables sur 10 images. Le critère d'arrêt (`TileZ` ≠ 1 en
     production) n'est pas atteint ; l'auteur peut contester cette lecture.
 
-- ⏳ **S4 — Arcs du jour 1** (`Alundra.Tests/AlundraInoaDayOneArcTests.cs`, vrais préfabs, vrai héros, contrôleur réel,
+- ✅ **S4 — Arcs du jour 1** (`Alundra.Tests/AlundraInoaDayOneArcTests.cs`, vrais préfabs, vrai héros, contrôleur réel,
   `AlundraRandom.Reset()`, conventions du §1.3, limite d'images fixée après une première mesure, ± 3 images).
   - **A20 — 162, Sybill** : drapeaux {} ; arrivée par le portail 163.0 (47972352, 27787264, 0), direction 0. Sybill
     part de (540,472) vers la droite et sa marche `@584` finit avec x ≥ 732 (le dépassement se mesure au premier
