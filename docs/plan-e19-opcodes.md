@@ -3328,7 +3328,9 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
   fin de T-C61 ; miroir de `SailorThirteen` aligné sur la production ; la garde T-REG-0 ne masque plus l'échec d'origine
   d'un arc (elle ne lève pas depuis `Dispose` quand le test a déjà échoué) ; défaut d'`emu.py` (`0x37` rend à s+v) ajouté
   aux défauts connus de `research/census/README.md`. Les deux points moteur (doc d'`H1Curtailed`, contrat de `DrawDebug`)
-  restent à une suite moteur. Commit : `chore(alundra): close the E19.d2b hygiene items`
+  restent à une suite moteur. Vérification propre à C5 : les lectures resserrées sont vertes ; le nouveau test de la
+  règle `H2Obstacle ?? H1Obstacle` échoue sous une mutation jetable qui inverse l'ordre ; la garde T-REG-0 lève toujours
+  sur un arc vert qui a un contact (mutation jetable d'E19.d2b rejouée). Commit : `chore(alundra): close the E19.d2b hygiene items`
 
 - ⏳ **C6 — Vérification et clôture.** `Alundra.Tests` en Release puis en Debug **en dernier**
   (`--blame-hang-timeout 300s`), `cmp` de la DLL Debug déployée ; convertisseur, analyseur et moteur non touchés.
@@ -3351,9 +3353,22 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
 **Acceptation d'E19.d2c1.**
 1. Tests C1 à C4 écrits rouges d'abord sur la DLL d'avant leur tâche, verts après, avec les valeurs écrites d'avance ;
    une valeur contredite est un arrêt, jamais une ré-épingle.
-2. Tests existants changés : exactement A10 (C1 : comptes des sautés ; C2 : ré-épinglage écrit), T-A10v (C1 : sautés et
-   TR-V), T-C61 (C2 : assertion de la grille ajoutée) ; A3 et toutes les autres épingles inchangées ; T-REG-0 à 0 sur les
-   arcs nommés et A10J.
+2. **Code de test existant touché** — la liste est fermée ; toute autre assertion existante reste inchangée et verte :
+   - **C1** : A10 (`AlundraInoaDayOneArcTests.cs` : comptes des sautés `:179-180`, ensemble des sautés `:178`, doc du
+     test) ; T-A10v (`AlundraEntityContactArcTests.cs` : `(0x25,4741)` et `(0x25,5545)` retirés de l'ensemble des
+     sautés, assertions TR-V ajoutées) ; R4 : la liste `IntroTraceHarnessTests.ImplementedOpcodes` gagne `0x25`
+     (étiquette de trace seulement) ;
+   - **C2** : A10 (`AssertFrame(arc, B, 354, 922)` → 960 ± 3, limite d'images 1000 → 1100, assertions de ré-épinglage
+     ajoutées) ; T-C61 (assertion de la grille rec9 ajoutée) ;
+   - **C4** : `ArcsWithoutEntityContact` (`AlundraArcSupport.cs:269`) gagne A10J ;
+   - **C5** : T-A19 et T-B9 (`AlundraEntityContactArcTests.cs:106` et `:275` : `destroyFrame + 2` resserré à l'image
+     exacte qui suit la destruction) ; T-C61 (signal de fin, sans changer ce qu'il vérifie) ; le miroir de
+     `SailorThirteen_FullInteractionChain_SquareOpensTheBox_AndNothingReopensIt`
+     (`AlundraDialogueOpcodesProductionTests.cs`, aligné sur la production) ; la garde T-REG-0 de
+     `ArcRun.Dispose` (`AlundraArcSupport.cs:274`, ne lève plus quand le test a déjà échoué) ; l'assistant
+     `UlpUnits` (`AlundraEntityContactArcTests.cs:32`) retiré s'il reste inutilisé ; nouveau test de la règle
+     `H2Obstacle ?? H1Obstacle`, rouge quand l'ordre est inversé.
+   A3 et toutes ses épingles restent inchangés ; T-REG-0 vaut 0 sur les onze arcs nommés et sur A10J.
 3. Les six traces de référence sont identiques à l'octet après chaque tâche.
 4. `Alundra.Tests` sans échec en Release puis en Debug, la DLL Debug déployée en dernier, `cmp` sans écart.
 5. Recette C7 faite par l'auteur.
@@ -3391,6 +3406,13 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
 - L'auditeur a recalculé toutes les autres valeurs (UJ-1, UJ-1b, UJ-3, UJ-3b, UJ-5, UJ-12, UJ-CLAMP, UW-1, UW-2, UW-4,
   A10, A12, A10J héros et Giles, traces « spawn » d'E19.d2c2) : justes ; restent invérifiables sans exécution l'image de
   `0x24 @2462` d'A10J et le total de base de 2185 tests (C0 le mesure).
+- Relecture neuve sur `db67bab` : **REVISE**, les deux bloquants précédents levés. Bloquant restant : l'acceptation 2
+  ne listait pas les retouches de tests existants que demandent C5, R4 et C4 ; **FIX** : liste fermée par tâche
+  (acceptation 2) et vérification propre à C5. Deuxième REVISE : la relecture de clôture est la dernière ; un nouveau
+  REVISE met E19.d2c1 en pause.
+- Mesure de base de C0 faite le 2026-10-02 : `Alundra.Tests` 2185 réussis, 0 échec (Debug, `--blame-hang-timeout 300s`) ;
+  les six traces identiques en contenu (le test réécrit les quatre traces du héros en fins de ligne LF : `git diff
+  --exit-code` rend 0, fins de ligne remises par `git checkout`).
 
 ##### 1.2h.3.2 E19.d2c2 — Saut à la manette, chutes, dessus d'objets ⏳ (esquisse ; détaillée, relue et approuvée après E19.d2c1)
 
