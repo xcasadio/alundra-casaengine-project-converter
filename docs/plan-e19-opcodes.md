@@ -2871,12 +2871,20 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
   - **Déviation d'ordre (rappel)** : le ré-épinglage d'A11 (premier point de la seconde ligne de commit du plan) est dans le commit de B3 (voir B3) ; ce second commit ne porte que la garde.
     Le plan de B6 listait aussi « TN-1 retiré » (aucun test) et TH4 (fait, quatre arrivées).
 
-- ⏳ **B7 — Hygiène reportée d'E19.d2a.** A20 compte les onze `0xA2` parmi les sautés (`SkippedOrExceeded`) ; A10 vérifie
+- ✅ **B7 — Hygiène reportée d'E19.d2a.** A20 compte les onze `0xA2` parmi les sautés (`SkippedOrExceeded`) ; A10 vérifie
   le programme `@236` de `0x11 @354` ; S1 : un préréglage de test qui pose puis efface un drapeau, un compteur d'objet,
   les refus d'index ; l'outil refuse en `--dry-run` un `ProjectName` que le moteur refuserait et rend 1 sur tout refus
   (exceptions comprises) ; `docs/test-saves.md` : ne pas lancer l'outil par le terminal ou le bouton Run de l'app Claude,
   le choix de la sauvegarde que charge F9 par la date (`LastWriteTime`), les limites et préconditions de F9 ; le second
   libellé « TH3 » renommé. Commit : `chore(alundra): close the E19.d2a hygiene items`
+  - Fait le 2026-10-02. A20 compte maintenant les onze `0xA2` parmi les instructions sautées (`SkippedOrExceeded`, une fois chacun à l'image 0) ; A10 vérifie que `0x11 @354` est du
+    programme `@236` ; S1 : quatre nouveaux tests (pose puis effacement d'un drapeau, compteur d'objet de l'objet 5 — les règles plafonnent chaque objet, 0..1 ici —, refus des index
+    de table de cartes -1 et 500, des index de compteur -1 et 256) ; le test de TH3 d'E19.d2a est renommé `TH3b` (méthode et nom d'arc). L'outil : `--dry-run` refuse un `ProjectName` que
+    le moteur refuserait comme nom de dossier (copie de la règle de l'ADR-0044 du moteur, noms réservés et nom par défaut compris) et rend 1 sur toute exception ; mesuré par trois
+    `--dry-run` (`alundra-project/AlundraGame.json` : sortie conforme, code 0, « dry run: nothing written » ; `bad/name` et `CON` : refusés, code 1 ; `Good Name` passe le nom puis échoue
+    sur les tables absentes, code 1), rien écrit sous `%LOCALAPPDATA%` (les trois fichiers du dossier sont ceux de l'auteur, datés du matin). `docs/test-saves.md` : ne pas lancer
+    l'outil depuis l'app Claude (terminal, bouton Run, agent), choix du slot de F9 par la date (`LastWriteTime`), refus et limites de F9. **Non fait** : un test automatique de
+    l'outil (il faudrait référencer un projet exécutable depuis `Alundra.Tests`) ; le verrouillage du fichier projet n'a pas été exercé (le chemin d'exception est une ligne).
 
 - ⏳ **B8 — Vérification et clôture.** Builds et suites dans cet ordre : `CasaEngine.Tests` (moteur) ; build de la solution
   parent et `Alundra.Tests` en Release, puis en Debug **en dernier**, `--blame-hang-timeout 300s` ; convertisseur

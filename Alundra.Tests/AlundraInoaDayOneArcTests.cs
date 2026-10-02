@@ -73,7 +73,8 @@ public sealed class AlundraInoaDayOneArcTests
         AssertSkippedWithin(arc, effects.Select(pc => (0xA2, pc)).ToHashSet());
         foreach (var pc in effects)
         {
-            Assert.Equal(new[] { 0 }, FramesOf(arc, B, pc, 0xA2).ToArray()); // once each, at the first tick.
+            // E19.d2b B7: counted among the SKIPPED instructions (the trace also holds the executions, which this never asked): once each, at the first tick.
+            Assert.Equal(new[] { 0 }, arc.SkippedOrExceeded.Where(t => t.Opcode == 0xA2 && t.Pc == pc).Select(t => t.Frame).ToArray());
         }
 
         // 3. The rest, in the order of the plan.
@@ -180,6 +181,7 @@ public sealed class AlundraInoaDayOneArcTests
 
         // 3. The rest, in the order of the plan.
         AssertFrame(arc, B, 354, 922);
+        Assert.Equal(236, arc.Trace.First(t => t.Slot == B && t.Pc == 354 && t.Opcode == 0x11).ProgramStart); // E19.d2b B7: the program @236, as the plan says.
         var endFrame = FrameOf(arc, B, 354);
         Assert.Equal(new[] { endFrame }, FramesOf(arc, B, 351, 0x05).ToArray()); // G3 in the same image.
         Assert.True(IsSet(3), "G3");

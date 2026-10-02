@@ -283,6 +283,59 @@ public sealed class AlundraTestSavesTests : IDisposable
         Assert.Equal(0x80000000u, save!.GameFlags[63]);
     }
 
+    // ---- E19.d2b B7: the hygiene of S1 (the mutations that survived the first 22 tests) ----------------------
+
+    [Fact]
+    public void APresetThatSetsThenClearsAFlag_EndsWithItCleared_AndTheOthersPosed()
+    {
+        // G203 is 0 in a new game, so clearing it alone proves nothing: set it and another, clear the first.
+        var preset = new AlundraTestSaves.Preset("custom", "test-custom", 179, 17, 7, 1, [203u, 5u], [203u], [], []);
+
+        Assert.True(AlundraTestSaves.TryBuild(preset, RealRules(), out var save, out var error), error);
+
+        Assert.Equal(0u, save!.GameFlags[6]); // G203 (word 6 bit 11): set then cleared.
+        Assert.Equal(1u << 5, save.GameFlags[0]); // G5: only set.
+    }
+
+    [Fact]
+    public void AnItemCounter_IsWrittenToItsIndex_AndNothingElseMoves()
+    {
+        var preset = new AlundraTestSaves.Preset("custom", "test-custom", 179, 17, 7, 1, [], [], [], [(5, (short)1)]); // the rules cap each object (0..1 for the object 5).
+
+        Assert.True(AlundraTestSaves.TryBuild(preset, RealRules(), out var save, out var error), error);
+
+        for (var i = 0; i < 256; i++)
+        {
+            Assert.Equal(i switch { 3 or 35 or 51 => 1, 5 => 1, _ => 0 }, save!.NumberOfItems[i]);
+        }
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(500)]
+    public void AMapTableIndexOutsideItsTable_IsRefused(int index)
+    {
+        var preset = new AlundraTestSaves.Preset("custom", "test-custom", 179, 17, 7, 1, [], [], [(index, (ushort)1)], []);
+
+        Assert.False(AlundraTestSaves.TryBuild(preset, RealRules(), out var save, out var error));
+
+        Assert.Null(save);
+        Assert.Contains("map table index " + index, error);
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(256)]
+    public void AnItemCounterIndexOutsideItsTable_IsRefused(int index)
+    {
+        var preset = new AlundraTestSaves.Preset("custom", "test-custom", 179, 17, 7, 1, [], [], [], [(index, (short)1)]);
+
+        Assert.False(AlundraTestSaves.TryBuild(preset, RealRules(), out var save, out var error));
+
+        Assert.Null(save);
+        Assert.Contains("item counter index " + index, error);
+    }
+
     // ---- The existing application path (the pattern of AlundraSaveGameApplyTests) ----------------------------
 
     [Theory]

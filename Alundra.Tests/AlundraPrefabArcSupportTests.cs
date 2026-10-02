@@ -148,14 +148,14 @@ public sealed class AlundraPrefabArcSupportTests
     }
 
     [Fact]
-    public void TH3_ArrivalByPortal162_3_OnMap165_TheAdoptionRaisesTheHeroOntoTheGroundOfTheTile()
+    public void TH3b_ArrivalByPortal162_3_OnMap165_TheAdoptionRaisesTheHeroOntoTheGroundOfTheTile()
     {
         // E19.d2a S3 (docs/plan-e19-opcodes.md section 1.2h.1, U3): an arc that starts from a real portal arrival - the record
         // BeginDepartureCore writes (position of portal 162.3 on map 165, animation 0x36, direction 16) - lets AdoptPlayerPawn
         // (and its ClampToGround) place the hero as in production: the arc writes neither the position nor the Tile*.
         // The portal's ZLevel is 0; the cell (12, 22) of map 165 has height 1.
         var spec = new ArcSpec(
-            "TH3", Zone, "Inoa (inner)-165", System.Array.Empty<int>(), 0, 0, 0, 100,
+            "TH3b", Zone, "Inoa (inner)-165", System.Array.Empty<int>(), 0, 0, 0, 100,
             RealController: true, Prefabs: true,
             Arrival: new ArcArrival(19660800, 23592960, 0, AlundraGameState.ResetAnimationId, 16));
         using var arc = new ArcRun(spec);

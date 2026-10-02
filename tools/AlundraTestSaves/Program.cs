@@ -12,7 +12,8 @@ namespace AlundraTestSavesTool;
 /// <see cref="AlundraTestSaves"/>) into the game's save folder, where F9 of the Debug DLL loads it.
 /// <code>AlundraTestSaves &lt;AlundraGame.json&gt; &lt;preset&gt; [--dry-run]</code>
 /// <c>--dry-run</c> prints what would be written and writes nothing. Exit code 0 on success, 2 on a usage error,
-/// 1 on any refusal (unknown preset, unreadable project, item tables not loaded, validation, write).
+/// 1 on any refusal (unknown preset, unreadable project, a project name the engine would refuse, item tables not loaded, validation, write) and on any
+/// unexpected exception.
 /// </summary>
 internal static class Program
 {
@@ -24,6 +25,21 @@ internal static class Program
     }
 
     internal static int Run(string[] args, TextWriter output, TextWriter error)
+    {
+        // E19.d2b B7: every refusal is exit code 1, an unexpected exception included (a project file held open by another program, a folder that cannot be
+        // read): never the runtime's own crash code.
+        try
+        {
+            return RunCore(args, output, error);
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            error.WriteLine($"unexpected failure: {ex.GetType().Name}: {ex.Message}");
+            return 1;
+        }
+    }
+
+    private static int RunCore(string[] args, TextWriter output, TextWriter error)
     {
         var dryRun = false;
         var positional = new List<string>();
@@ -82,6 +98,15 @@ internal static class Program
             return 1;
         }
 
+        // E19.d2b B7: the engine refuses a project name that is not a valid folder name when it writes (ADR-0044); --dry-run says so too, instead of
+        // describing a file that the real run could never write.
+        var nameRefusal = CheckProjectFolderName(projectName);
+        if (nameRefusal != null)
+        {
+            error.WriteLine($"'{projectFile}': ProjectName \"{projectName}\" is refused: {nameRefusal}");
+            return 1;
+        }
+
         var projectDirectory = Path.GetDirectoryName(projectFile)!;
         GameSettings.ProjectSettings.ProjectName = projectName;
 
@@ -137,6 +162,42 @@ internal static class Program
 
         output.WriteLine($"written: {slotPath}");
         return 0;
+    }
+
+    // Copy of the project folder name rule of the engine's ADR-0044 (SaveGameNames.ProjectFolderNameRegex and its reserved names, internal to the engine,
+    // and the default name that SaveGameFileStorage refuses): 1 to 64 ASCII letters, digits, spaces, '_' and '-', starting with a letter or a digit, not
+    // ending with a space, and not a Windows reserved device name.
+    private static readonly System.Text.RegularExpressions.Regex ProjectFolderNameRule =
+        new(@"\A[A-Za-z0-9](?:[A-Za-z0-9 _-]{0,62}[A-Za-z0-9_-])?\z", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    private static readonly string[] WindowsReservedNames =
+    [
+        "CON", "PRN", "AUX", "NUL",
+        "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+        "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9",
+    ];
+
+    /// <summary>Null when the engine would accept <paramref name="projectName"/> as the name of the save folder, else the reason it would refuse.</summary>
+    internal static string? CheckProjectFolderName(string projectName)
+    {
+        if (string.Equals(projectName, "Project name undefined", StringComparison.Ordinal))
+        {
+            return "it is the default name of a project that never set its own.";
+        }
+
+        if (!ProjectFolderNameRule.IsMatch(projectName))
+        {
+            return "expected 1 to 64 ASCII letters, digits, spaces, '_' and '-', starting with a letter or a digit and not ending with a space.";
+        }
+
+        var dot = projectName.IndexOf('.');
+        var stem = dot >= 0 ? projectName[..dot] : projectName;
+        if (WindowsReservedNames.Any(reserved => string.Equals(stem, reserved, StringComparison.OrdinalIgnoreCase)))
+        {
+            return "it is a Windows reserved device name.";
+        }
+
+        return null;
     }
 
     private static void Describe(TextWriter output, AlundraTestSaves.Preset preset, AlundraSaveGame save, string slotPath)

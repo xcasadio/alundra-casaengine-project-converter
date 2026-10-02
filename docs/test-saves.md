@@ -6,8 +6,9 @@ ADR-0021).
 
 ## Use
 
-Run it OUTSIDE the Claude app (writes under `%LOCALAPPDATA%` made from the app are virtualized and invisible to the
-game), in Debug, from the checkout whose DLL is deployed in `alundra-project/`:
+Run it OUTSIDE the Claude app: neither from a terminal tab nor from the Run button of the app, nor by an agent working in it (writes
+under `%LOCALAPPDATA%` made from the app are virtualized and invisible to the game). Use a terminal of your own, in Debug, from the
+checkout whose DLL is deployed in `alundra-project/`:
 
 ```
 dotnet run --project tools/AlundraTestSaves -c Debug -- <alundra-project\AlundraGame.json> <preset> [--dry-run]
@@ -17,12 +18,26 @@ dotnet run --project tools/AlundraTestSaves -c Debug -- <alundra-project\Alundra
   file, and writes nothing.
 - Without it the tool writes the JSON slot with the same metadata as F5/F6 and prints the file path
   (`%LOCALAPPDATA%\AlundraGame\SaveGames\<slot>.sav`).
-- Exit code 0 on success, 2 on a usage error, 1 on any refusal (unknown preset, unreadable project, item tables not
-  loaded, save refused by the rules, write failure).
+- Exit code 0 on success, 2 on a usage error, 1 on any refusal (unknown preset, unreadable project, a `ProjectName` the engine
+  would refuse as a folder name - `--dry-run` refuses it too -, item tables not loaded, save refused by the rules, write
+  failure) and on any unexpected exception (a project file held open by another program, for instance).
 
 Building the tool also builds `Alundra` and copies its DLL into `alundra-project/` (the DLL's own post-build step):
-build in Debug, a Release DLL has no F9. Then start the game and press F9: it loads the MOST RECENT readable slot of
-the folder, so a newer slot (a recent F5/F6 save) wins over the test slot.
+build in Debug, a Release DLL has no F9. Then start the game and press F9.
+
+## What F9 loads, and when it refuses
+
+- The slot is chosen by DATE, not by name: the readable slot with the greatest write time (`LastWriteTime`) of the folder; on a tie the
+  greatest name. A newer slot (a recent F5/F6 save, or any slot rewritten since) wins over the test slot, and a time in the future
+  always wins. Write the test slot last, or remove the other slots.
+- "Readable" only means that the header opened: a most recent slot that is damaged blocks F9 (it does not fall back to the previous
+  one). Every slot is read whole (1 MiB at most).
+- F9 refuses, with a warning in the log and nothing changed, when: there is no hero in the world; a load is already pending; a dialogue
+  box is open; the inventory or the sub-inventory is open (or its portrait not idle); a map transition is in progress; the master BGM
+  fade is armed; any bit of the player control flags is posed (a locked scene, a box open); the warp is disabled on the map; the slot
+  does not pass the validation rules; no readable slot has a known write time. Press it on a map where the hero walks free.
+- The load applies on the arrival map; it does not restore the local state of a
+  map (see below).
 
 ## Presets
 
