@@ -376,7 +376,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.c2 🧪 | Moteur : horloge logique exacte des fins d'animation, rendu en temps réel (D-E19-16, D-E19-17), correction des Loop figées ; DLL : pilotage à chaque tick logique, signal de boucle (D-E19-18), garde de `0x1C` sous rattrapage | A3, A9, tests moteur | Wendell à Inoa rend la main ; les fins d'animation au tick de l'original |
 | E19.d 🧪 | Fin de chaîne : `0x24` avec recensement (D-E19-21), `0x40`/`0x41` complets (D-E19-22), défaut d'atterrissage de la DLL (391), vrai héros et pad tenu dans les arcs ; reste de 392, 391 et 163 | A5, A5r, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
 | E19.d2a 🧪 | Après le premier livre (§1.2h) : sauvegardes de test chargées par F9 (D-E19-33) ; arrivée par portail dans les arcs (U3) ; arcs du jour 1 | A10, A11, A20, TH3 | Jour 1 jusqu'au jour 2 ; F9 sur les préréglages du jour 3 et du jour 4 |
-| E19.d2b | Moteur : sonde d'obstacles dans l'étage champ du contrôleur (ADR-0047 du moteur) ; DLL : contacts entre entités du binaire (D-E19-27 à D-E19-30, D-E19-34 à D-E19-37), natif E 0/1, contact du dialogue ; règle les deux P2 d'E19.d (O-E19-18, 185 `@506`) | T-A19, T-A10v, T-B9, T-C61, TN-3, A11, tests moteur | Le héros bute sur les PNJ et leur parle ; jour 4 : la 185 mène à la 362 |
+| E19.d2b 🧪 | Moteur : sonde d'obstacles dans l'étage champ du contrôleur (ADR-0047 du moteur) ; DLL : contacts entre entités du binaire (D-E19-27 à D-E19-30, D-E19-34 à D-E19-37), natif E 0/1, contact du dialogue ; règle les deux P2 d'E19.d (O-E19-18, 185 `@506`) | T-A19, T-A10v, T-B9, T-C61, TN-3, A11, tests moteur | Le héros bute sur les PNJ et leur parle ; jour 4 : la 185 mène à la 362 |
 | E19.d2c | DLL : saut scripté et `IsZForceApplied` (D-E19-31), `0x25`, `CollidedWithEntityZ`, eau et glace du héros (D-E19-32) (O-E19-8, O-E19-19) | UJ, UW, A10J/A16, A3 | Jour 3 : le saut de la 10 jusqu'à la 135 |
 | E19.e | Recette de bout en bout, plus un test statique : aucun opcode sauté sur la chaîne hors liste d'exceptions | toute la chaîne | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement (avec les recettes d'E16 en attente) |
 | E19.f | Boîte de nom et boîte de texte fidèle (D-E19-4) : export du cadre, écrans XAML liés à un view model, cycle de vie de la boîte de nom, pour `0x0D`/`0x5C`/`0xC4` | tests MGDesktop | Les noms s'affichent au-dessus de la boîte, à la place de l'original |
@@ -2612,7 +2612,7 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
   | Deux tests portent le libellé « TH3 » (celui d'E19.d D1 et celui d'E19.d2a S3). | P4 | Reporté (hygiène). |
   | L'empreinte sha256 de la DLL consignée au §2 ne désignait plus la DLL déployée, reconstruite par le verifier depuis les mêmes sources. | P4 | Corrigé au §2 dans ce commit. |
 
-#### 1.2h.2 E19.d2b — Contacts entre entités 🧪 (B1 à B7 faites le 2026-10-02, sans démo moteur ; B8 : suites et mesures faites, vérification indépendante en attente ; reste la recette B9 de l'auteur)
+#### 1.2h.2 E19.d2b — Contacts entre entités 🧪 (B1 à B8 faites et vérifiées CONFIRMED le 2026-10-02, sans démo moteur ; reste la recette B9 de l'auteur)
 
 **Résultat** : le héros et les PNJ s'arrêtent au contact exact de toute entité collisionnable, comme dans le binaire ;
 les deux P2 introduits par E19.d sont réglés (la réunion de la 185 mène à la 362 ; la scène des villageois de la 10
@@ -2886,12 +2886,13 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
     l'outil depuis l'app Claude (terminal, bouton Run, agent), choix du slot de F9 par la date (`LastWriteTime`), refus et limites de F9. **Non fait** : un test automatique de
     l'outil (il faudrait référencer un projet exécutable depuis `Alundra.Tests`) ; le verrouillage du fichier projet n'a pas été exercé (le chemin d'exception est une ligne).
 
-- 🧪 **B8 — Vérification et clôture.** Builds et suites dans cet ordre : `CasaEngine.Tests` (moteur) ; build de la solution
+- ✅ **B8 — Vérification et clôture.** Builds et suites dans cet ordre : `CasaEngine.Tests` (moteur) ; build de la solution
   parent et `Alundra.Tests` en Release, puis en Debug **en dernier**, `--blame-hang-timeout 300s` ; convertisseur
   inchangé ; `cmp` de la DLL Debug déployée. Verifier frais et contradicteurs ; dispositions au plan ; §0.2, §2 et mémoire.
   - Part de l'exécutant faite le 2026-10-02 (mesures au §2, sous-section E19.d2b) : `CasaEngine.Tests` 2441 réussis, 0 échec ; solution parent et `Alundra.Tests` 2185 réussis en Release puis
     en Debug (la Debug en dernier), 0 échec ; `cmp` de la DLL Debug déployée sans écart ; convertisseur et analyseur non touchés (leurs tests ne sont pas relancés). **Reste** : le verifier frais
-    et les contradicteurs, les dispositions, §0.2 et la mémoire, qui se font après l'exécutant.
+    et les contradicteurs, les dispositions, §0.2 et la mémoire, qui se font après l'exécutant. Faits : voir « Vérification
+    d'E19.d2b » ci-dessous.
 
 - ⏳ **B9 — Recette en jeu (auteur).**
   1. Jeu libre de l'intro et du jour 1 (sauvegarde devant le livre) : le héros bute sur les marins et les villageois au
@@ -2939,6 +2940,40 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
   moteur). Toutes les autres valeurs ont été recalculées par l'auditeur : justes.
 - Relecture neuve sur `18786f4` et le plan moteur `c372e946` : **READY** (plan-verifier) ; plan moteur sain (aucune
   remarque P0 à P3 ; huit P4 portées au plan moteur comme consignes d'exécution).
+
+**Vérification d'E19.d2b (2026-10-02).**
+- **Commits** : moteur `4e6bd6bd` (T0.1, ADR-0047), `3dc98385` (T1.1), `c57c120f` (T1.2), `d509bc10` (T1.3), `c2e4fdce`
+  (T2.1) sur `chantier/field-movement-obstacles` ; parent `fdd6fb9` (B1, pointeur sur `c2e4fdce`), `f3e3a03` (B2),
+  `469c6f3` (B3, avec A11 ré-épinglé), `9896578` (B4), `363db2a` (B5), `ee00ff0` et `0a68fa4` (B6), `f87ae56` (B7),
+  `360fe7f` (mesures de B8).
+- **Verifier frais : CONFIRMED** sur les critères 1 à 4. `CasaEngine.Tests` 2441/2441 (aucun test moteur existant
+  modifié : seuls deux fichiers de test nouveaux) ; `Alundra.Tests` 2185/2185 en Release puis en Debug, la Debug en
+  dernier, `cmp` sans écart. Toutes les valeurs épinglées de T-A19, T-A10v, T-B9 et sa contre-épreuve, T-C61, TN-3 et A11
+  sont celles du plan. Sans la sonde (approximation de la DLL d'avant B3), 7 tests rougissent sur exactement les pc que
+  le plan nomme (`@506`, `@5172`, `@1215` et `@3673`, `@980`, la plateforme de la 346 à 800,5 px, T510 posé dans la
+  contre-épreuve, A11 revenu à l'image 208). Mutations attrapées : bord fermé au lieu de semi-ouvert (22 échecs), garde
+  `FlagToDestroy` retirée (4), condition « aucune entité » du détour retirée (les 2 cas d'entité de T-R8), destruction
+  native et copie d'`AnimFlags` retirées (5). La session principale a refait la build Debug après les relecteurs : à
+  jour, `cmp` sans écart.
+- **Trois contradicteurs en lecture seule** (fidélité au binaire, règles du moteur, tests et non-régression) : aucun P0
+  à P2. Fidélité confirmée au désassemblage (règle, gardes, Z logique, conversion, exclusion des soulevables limitée au
+  prédicat, natif E 0/1, `AnimFlags`, `XCollisionEntity`, détour) ; moteur : API additive, aucune allocation, identique au
+  bit près sans sonde, contact exact ; `T-REG-0` n'est pas nul par construction (un mutant qui compte chaque pas fait
+  échouer les onze arcs) ; la suite d'avant la tranche, compilée contre la DLL d'après, n'échoue que sur les trois
+  montages nommés et l'ancien A11.
+- **Dispositions** :
+
+  | Constat | Priorité | Disposition |
+  |---|---|---|
+  | Les arcs tournent sans grille de navigation (le banc n'a pas de chargeur de `TileSetData`) : le détour E4.d sur contact de **case**, que la production engage, n'y est jamais exercé ; les fins de T-A19 (Lutas `@219`) et de T-B9 (Septimus `@3734`) ne sont prouvées qu'en son absence. | P3 | Reporté ; **point de recette** B9 : si la réunion de la 185 cale sur Lutas après `@219`, c'est le détour sur contact de case (D-E19-6), à traiter à part. |
+  | T-A19 épingle deux positions du héros après `@506` (`@120` (6946816 ; 21495808), `@125` (11862016 ; 21495808)) alors que le plan disait ne pas les épingler ; ce sont les valeurs de l'émulation de la découverte (`scenes`, reproduites par la contre-vérification), mesurées égales. | P3, introduit | Accepté et consigné ; si le détour sur contact de case ou O-E19-29 les déplace un jour, c'est un arrêt à soumettre, pas une ré-épingle. |
+  | Le retrait de rec7 et de rec41 de la liste est lu deux images après la destruction (`destroyFrame + 2`), non « l'image qui suit ». | P3, introduit | Reporté (hygiène d'E19.d2c) : resserrer à l'image exacte ; la garde est discriminante (mutation attrapée). |
+  | TN-3 « aucun détour » est vrai par construction dans le banc (pas de grille) ; seul T-R8 couvre D-E19-35. | P3, introduit | Accepté : T-R8 couvre la règle. |
+  | La règle `H2Obstacle ?? H1Obstacle` n'a pas de test (l'inversion survit). | P3, introduit | Reporté (hygiène d'E19.d2c) : un test où deux entités raccourcissent X et Y. |
+  | Docs et textes : doc XML d'`H1Curtailed` qui ne cite que le champ (moteur) ; `DrawDebug` reçoit un tiroir dont `Draw3dText` lève `NotImplementedException`, non signalé au contrat (moteur) ; doc B5 rattachée à la nouvelle surcharge, l'ancienne sans doc ; références obsolètes à la passe de contact retirée (un `cref`, deux commentaires) ; assistant `UlpUnits` inutilisé ; ventilation inexacte du rouge de B3 au §2 ; signal de fin de T-C61 par drapeau. | P4 | Reportés (hygiène d'E19.d2c pour le parent ; suite moteur pour les deux points moteur). |
+  | Le miroir de `SailorThirteen` garde la passe de chevauchement retirée de la production ; `T-REG-Z` remplace les deux tests de la 389 par un équivalent synthétique (sonde installée, même marge) ; l'assertion par image de T-REG-Z en monde ne peut pas échouer (l'assertion finale tue la mutation). | P4 | Acceptés (écarts déclarés) ; le miroir sera aligné avec l'hygiène d'E19.d2c. |
+  | La garde T-REG-0 lève depuis `ArcRun.Dispose` et peut masquer l'échec d'origine d'un arc. | P4, introduit | Reporté (hygiène). |
+  | Empreinte de la DLL déployée différente de celle du §2 : reconstruite depuis les mêmes sources (fins de ligne). | P4 | Sans effet ; `cmp` refait par la session principale. |
 
 #### 1.2h.3 E19.d2c — Saut, `0x25`, eau et glace ⏳ (esquisse ; détaillée, relue et approuvée après E19.d2b)
 
