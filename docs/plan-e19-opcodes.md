@@ -3015,7 +3015,8 @@ tout le saut du héros) ; le découpage sert la relecture et la vérification.
 la DLL ; chacune contre-vérifiée par des modèles et des émulateurs MIPS indépendants qui exécutent le vrai code de
 `ALUN_CD.EXE` ; notes et scripts dans le scratchpad de la session, `e19d2c-disc/`). **Les valeurs écrites d'avance sont
 dans l'annexe `docs/plan-e19-d2c-valeurs.md`** (recopie sans retouche des tests proposés, puis des corrections des
-contre-vérifications, qui l'emportent). Faits porteurs :
+contre-vérifications, qui l'emportent ; là où le plan écrit une autre valeur avec sa raison, le plan l'emporte, par
+exemple `CollidedWithEntityZ` 1 à la mise à jour 23 d'UJ-3 par R5 d). Faits porteurs :
 - **Impulsion** **[binaire]** : `UpdateAnimation` (`0x80038AB4`) efface `+0xF8` à chaque appel (`0x80038AE4`) et y écrit
   `IZF = lh(animSet+0xA)` dans son bloc de changement (`0x80038B5C`-`0x80038B64`) : nouvelle cible, nouvelle ligne de
   direction (`0x80038B08`/`0x80038B10`) ou fin de chaîne (`0x80038D54`-`0x80038D68`, qui saute dans le bloc) ; un tour de
@@ -3056,7 +3057,8 @@ contre-vérifications, qui l'emportent). Faits porteurs :
 - **Chaîne** **[données]** : sur toute la chaîne du jour 3 et du jour 4, quatre écritures d'animation à impulsion : 179
   `B[2] @411` et `C[8] @1110` (rec8), 10 `B[20] @2451` (héros) et `C[74] @6389` (Giles) ; `0x25` utiles : 179 `@415`,
   `@1114`, 10 `@2455`, `@6393`. Sur la 478, seuls les chiens rec3 et rec4 (`C[3] @329`, `C[4] @345`, animation 12, IZF
-  768, non collisionnables) ; sur la 165, Bergus (`@834`, `@839`, `@861`, `@1162`). La règle d'eau ralentit 18 ticks de
+  768, non collisionnables) ; sur la 165, Bergus (`@834`, `@839`, `@861`, `@1162`) ; au jour 4, sur la 362 (rêve d'Olen), la bombe de `C[5] @635`
+(`1A [2]`, IZF 1024). La règle d'eau ralentit 18 ticks de
   la marche `@2447` de la 10 (+9 ticks).
 - **Saut à la manette** **[binaire, exécuté]** : voir le premier point du contexte de l'ADR-0023 ; tables S-A à S-L et UH
   de l'annexe (B.1), tirées du vrai `MovePlayer` (1536 combinaisons d'entrées, aucun écart entre deux interpréteurs
@@ -3101,21 +3103,36 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
   l'animation d'apparition ne donne pas d'impulsion ; le drapeau tombe à la première validation de `SyncAnimation`. Une
   autre animation écrite par un script avant cette validation donne l'impulsion (le binaire : changement ordinaire après
   `InitializeEntity`). Le relancement `0x1C` n'est jamais exclu.
-- **R3 — Impulsion des PNJ** (`EvaluateEntitySupport`, hors de la porte Gravity) : `IsZForceApplied != 0` →
-  `ForceZ = ((IZF & 0xFFFF) == 0x8000 && !Gravity) ? 0 : IZF << 8`, sans décroissance ce tick ; sinon, avec Gravity,
-  décroissance puis borne **des deux côtés** à `±(MapZViscosityRaw << 8)` (binaire). Le test d'atterrissage des PNJ garde
-  `<=` (D-E19-40 ; écart d'un tick sur `ForceZ` pour les impulsions multiples de la gravité, épinglé par UJ-1b).
+- **R3 — Impulsion des PNJ** (`EvaluateEntitySupport`, au point de la décroissance, `AlundraEntityScriptProxy.cs:561-573`,
+  même porte `Controller != null && !immediateAtSpawn` mais **sans** la condition Gravity) : `IsZForceApplied != 0` →
+  `ForceZ = FinalForceZ = ((IZF & 0xFFFF) == 0x8000 && !Gravity) ? 0 : IZF << 8`, sans décroissance ce tick ; sinon, avec
+  Gravity, décroissance puis borne **des deux côtés** à `±(MapZViscosityRaw << 8)` (binaire). La remise à zéro de
+  `:676-680` (`Controller.IsGrounded && Gravity && ForceZ < 0` → `ForceZ = FinalForceZ = 0`, correctif `a750256` de
+  l'escalier du marin 12) est **gardée telle quelle** : aucune épingle existante ne bouge par elle. Le test
+  d'atterrissage des PNJ garde `<=` (D-E19-40 ; écart d'un tick sur `ForceZ` pour les impulsions multiples de la gravité,
+  épinglé par UJ-1b).
 - **R4 — `0x25`** : `case 0x25` dans `Dispatch`, sur l'entité logique, taille 1 : continue si `CollidedWithEntityZ != 0`
   ou `IsOnGround != 0`, sinon attend (même forme que `0x24`) ; libellé de `EventOpcodeSizeTable.cs:74` corrigé (taille
   inchangée) ; `0x25` ajouté à `IntroTraceHarnessTests.ImplementedOpcodes` (étiquette de trace seulement).
 - **R5 — `CollidedWithEntityZ`** : effacé en tête du tick de mouvement de toute entité (même point que `ForceAdjusted`,
-  `AlundraScriptedMotion.cs:174`) ; posé à 1 : (a) à l'atterrissage terrain d'un PNJ, **seulement** sur le test strict
-  `moddedPosZ + FinalForceZ < terrainHeight` (dans la branche `<=`) ; (b) à l'appui sur une entité (`:640`, inchangé) ;
-  (c) à l'atterrissage du héros (R6) ; (d) pour le héros hors de l'état en l'air, avec Gravity et `IsOnGround == 1`, à
-  chaque tick (son repos atterrit à chaque tick dans le binaire). L'écriture à 0 de `:733` disparaît.
+  `AlundraScriptedMotion.cs:174`) ; posé à 1 :
+  - (a) à l'atterrissage terrain d'un PNJ (branche `<=` de `:693`), **seulement** si le test strict du binaire tient sur la
+    **force du tick** : `moddedPosZ + F < terrainHeight`, avec `F` la valeur de `FinalForceZ` juste après R3 (impulsion
+    ou décroissance), **relevée avant la remise à zéro de `:676-680`** ; l'écriture à 0 de `:733` disparaît. Traces :
+    PNJ au repos avec gravité, `F` = -32768 : 1 à chaque tick (UJ-4) ; UJ-1, mise à jour 23 (aimanté à la tête de
+    l'image, `PosZ` 0, `F` = -372736) : 1 ; UJ-1b, mise à jour 21 (`PosZ` 327680, `F` = -327680, somme 0, non strict) :
+    0, puis mise à jour 22 (`F` = -32768) : 1 ; PNJ sans gravité au repos (`F` = 0) : 0 ;
+  - (b) à l'appui sur une entité (`:640`, inchangé ; le binaire pose 0 tant qu'une entité est portée : écart sans effet
+    sur `0x25`, consigné pour E19.h) ;
+  - (c) à l'atterrissage du héros (R6) ;
+  - (d) pour le héros hors de l'état en l'air, avec Gravity et `IsOnGround == 1`, à chaque tick (son repos atterrit à
+    chaque tick dans le binaire).
 - **R6 — Héros en l'air, tenu par le tick** (sauts scriptés et `0x1B` ; la chute vient en E19.d2c2) :
   - **entrée**, dans le tick du héros : impulsion prise (R1) ; ou marque posée par `0x1B` quand l'entité logique est le
     héros (le `ForceZ` écrit par l'opcode décroît dès ce tick) ;
+  - **place** : dans le tick de mouvement du héros, **après** l'effacement de `ForceAdjusted` et de
+    `CollidedWithEntityZ` (`AlundraScriptedMotion.cs:174`) et **avant** le pas XY (`RunOneKinematicTick`) ; R5 d au
+    même endroit, hors de l'état ;
   - **étape verticale avant le pas XY** : tick d'impulsion : `ForceZ = IZF * 160` si Gravity, `VramOR & 0x10` et bottes
     ≤ 0, sinon `IZF << 8`, sans décroissance ; sinon, avec Gravity, décroissance et borne des deux côtés. `F > 0` :
     montée (pas de plafond, E19.h). Sinon test **strict** `PosZ + F < T` (`T` : hauteur du terrain sous la boîte, le
@@ -3127,8 +3144,9 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
     `IsVerticalOwnedExternally`), puis `Gravity = 0`, `MaxFallSpeed = 0`, verticale externe, sentinelle positive à chaque
     tick ; à l'atterrissage, restitution **des valeurs capturées** (y compris une gravité nulle posée par un `0x17`
     antérieur) ;
-  - **tirage de tête d'image** (`AlundraEntityScriptProxy.cs:1001-1012`) : pendant l'état, ni `PosZ` ni `IsOnGround` ne
-    viennent du moteur (`PosX`, `PosY` si) ; après chaque tick de l'état, `IsOnGround = PosZ <= T'` (`T'` au XY d'après
+  - **tirages** : pendant l'état, ni le tirage de tête d'image (`AlundraEntityScriptProxy.cs:1001-1012`) ni celui de
+    `MoveControllerAndPullPosition` (`:1900-1903`) ne réécrivent `PosZ`, et `IsOnGround` ne vient pas du moteur (`PosX`,
+    `PosY` si) ; après chaque tick de l'état, `IsOnGround = PosZ <= T'` (`T'` au XY d'après
     le pas). Hors de l'état, rien ne change ;
   - **gel** : `OwnerExternalVerticalDisplacement` rend la sentinelle pendant l'état ; **adoption** d'un nouveau pion :
     état remis à faux.
@@ -3138,7 +3156,9 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
   de fin d'image gardé (portails, images sans tick).
 - **R8 — Son du décollage** : au tick où le héros prend une impulsion (R1 ; pas la marque `0x1B`), la DLL joue le `Sfx` de
   l'animation (10 pour 2, 6, `0x2B`, `0x2E` ; 28 pour 62) par le lecteur de sons du monde, une fois par impulsion ; jamais
-  à l'apparition ni à l'arrivée.
+  à l'apparition ni à l'arrivée. Le lecteur s'atteint par un membre par défaut de `IAlundraScriptHost` qui rend `null`
+  (comme `Portals`, `IAlundraScriptHost.cs:85`, pour ne toucher aucun autre hôte), que `AlundraWorldProxy` implémente
+  avec son lecteur (`IEntityWorldContext.SoundPlayer`, `AlundraWorldProxy.cs:460`).
 
 **Tâches.**
 
@@ -3157,7 +3177,8 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
     `TargetAnimationId`, `TargetDirection`). Rouge aujourd'hui : continue d'emblée.
   - **UJ-4** (montage d'UJ-1, sans impulsion) : PNJ au repos avec gravité : 1 après chaque mise à jour ; sans gravité
     (`F == 0`) : 0 et `IsOnGround` 1 ; soutenu à n puis en l'air à n+1 : 0 à n+1 ; héros à contrôleur au repos, hors de
-    l'état en l'air : 1 après chaque mise à jour.
+    l'état en l'air : 1 après chaque mise à jour (montage d'UJ-3, hôte qui expose un `PlayerController`, sinon le tick du
+    héros ne tourne pas, `AlundraEntityScriptProxy.cs:1140-1143`).
   - **A10** (165) : les deux comptes « sauté une fois » (`AlundraInoaDayOneArcTests.cs:179-180`) deviennent « jamais
     sauté », et chaque `0x25` s'exécute une fois et rend 1 ; l'ensemble des sautés attendu devient vide ; **toutes les
     autres épingles inchangées**, `0x11 @354` toujours à 922 (sans impulsion, Bergus reste au sol et `0x25` rend 1 à son
@@ -3166,8 +3187,8 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
     rec81 (sans gravité) descendent de 32768 unités par tick depuis le lâcher (`1B [128,255]`), leur `0x25` rend 1 entre
     t+8 et t+17 (t = tick du lâcher ; t+8 à t+9 par l'aimantation de 4 px du moteur, t+16 à t+17 par l'atterrissage de la
     DLL et le test strict de R5), puis le `1B [0,0]` qui suit met `ForceZ` à 0 et le bouquet reste à sa hauteur de
-    repos ; aucun bouquet en l'air à la fin ; épingles de T-A10v inchangées (T666 à l'image 1160, `0x53 @2003` à
-    l'image 5100).
+    repos ; aucun bouquet en l'air à la fin ; toutes les assertions existantes de T-A10v (`AlundraEntityContactArcTests.cs:150-203`)
+    restent vertes.
   - **A12** (179 `B[2]`, nouvel arc, même départ que l'arc TH4 du préréglage `day3-after-dream`
     (`AlundraEntityContactArcTests.cs:389-391` : « Inoa (inner)-179 », G203, G1651, G1660, arrivée en (17,7) z1), limite
     d'images assez large pour atteindre `0x53 @451`, boîtes fermées par un appui par image) : sur la DLL de C1, `0x25 @415` rend 1 à son premier appel ;
@@ -3179,7 +3200,8 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
   (annexe A.1 et C.valeurs) : `ContactWorld.BuildWorld(new FlatGroundField { GroundZ = 0 }, null)`, `ContactHost`,
   `ContactWorld.AddEntity(..., 200, 100, 0, -10, -7, 0, 20, 14, 32)`, `Flags |= Gravity` **après** `AddEntity`,
   `MapGravityRaw` 128, `MapZViscosityRaw` 4096, animations {0 : vitesse 0 ; 3 : vitesse 0, IZF 1360}, une entité par
-  monde (l'hôte ferme sa mémo d'horloge à chaque appel).
+  monde (l'hôte ferme sa mémo d'horloge à chaque appel). Ce montage n'a pas de sprite : les cas qui exigent une horloge
+  d'animation (fin de chaîne, tick dû) prennent celui d'`AlundraAnimationClockDriveTests` (hôte, `Drive`, `Animation2d`).
   - **UJ-1** (cible 3 écrite avant la mise à jour 1) : `PosZ` aux mises à jour 1 à 22 = 348160, 663552, 946176, 1196032,
     1413120, 1597440, 1748992, 1867776, 1953792, 2007040, 2027520, 2015232, 1970176, 1892352, 1781760, 1638400, 1462272,
     1253376, 1011712, 737280, 430080, 90112 ; mise à jour 23 : `PosZ` 0, `ForceZ` 0, `IsOnGround` 1,
@@ -3202,13 +3224,17 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
   - **UJ-7** (arrivée du héros par la vraie voie d'un `0x53` lancé pendant l'animation 2, IZF 1280) : aucune impulsion,
     `PosZ` inchangé pendant 5 ticks, aucun son.
   - **UJ-8** (image sans tick : `Update(0.001f)` entre l'écriture de la cible et la première image à tick) :
-    `PosZ` 348160 après le premier tick, avec et sans horloge de sprite. **UJ-9** (chaîne : animation A, IZF 0, chaîne
-    vers B, IZF 1360) : impulsion au tick de la fin de A, puis la liste d'UJ-1. **UJ-10** : un relancement `0x1C` d'une
+    `PosZ` 348160 après le premier tick, sans sprite (montage d'UJ-1) et avec horloge de sprite (montage
+    d'`AlundraAnimationClockDriveTests`). **UJ-9** (montage d'`AlundraAnimationClockDriveTests` : animation A, IZF 0,
+    chaîne vers B, IZF 1360) : impulsion au tick de la fin de A, puis la liste d'UJ-1. **UJ-10** : un relancement `0x1C` d'une
     animation à IZF 1360 redonne l'impulsion (liste d'UJ-1). **UJ-DIR** : en animation 3 (IZF 1360), un changement de
     ligne de direction redonne l'impulsion.
-  - **UJ-0x8000** : PNJ sans gravité, animation 3 (IZF 256) chaînée vers l'animation 0 (IZF -32768) : `ForceZ` 65536
-    pendant la montée, 0 au tick de la chaîne, jamais -8388608 ; avec gravité : -8388608 (le binaire) ; le test compare
-    les 16 bits bas.
+  - **UJ-0x8000** (montage d'UJ-1, IZF stocké en entier signé -32768, la règle compare les 16 bits bas) : PNJ **sans**
+    gravité, cible 3 (IZF 256) : `ForceZ` 65536 et `PosZ` +65536 à chaque tick (pas de décroissance) ; au tick n, cible 0
+    (IZF -32768) écrite : `ForceZ` 0 et `PosZ` constant à n et après (sans la règle : `ForceZ` -8388608 et l'entité
+    tombe au sol) ; PNJ **avec** gravité, au repos au sol, cible 0 écrite : au tick du changement l'impulsion
+    -8388608 atterrit aussitôt (`PosZ` 0, `ForceZ` 0, `CollidedWithEntityZ` 1 par R5 a) : la règle ne joue pas avec
+    gravité, comme le binaire.
   - **UJ-CLAMP** : PNJ avec gravité, sans impulsion, `ForceZ` 1966080 posé avant le tick : 1048576 après le tick (la DLL
     d'aujourd'hui donne 1933312).
   - **A10** (165) ré-épinglé : `0x25 @838` premier appel à l'image 484, rend à 503 (20 exécutions) ; `@839` et `@841` à
@@ -3227,8 +3253,11 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
 
 - ⏳ **C3 — Héros en l'air pour les sauts scriptés et `0x1B`, son (R6, R8), tests d'abord.** Montage héros (annexe A.1) :
   `AlundraLadderClimbTests` (contrôleur de joueur, `PlayerControlFlags = ControlLocked`), `HeroWorldFixture.BuildWorld`
-  (champ plat synthétique) et `BuildHeroPawn` (`LoadHeroControllerSettings`), `MapGravity` 1250, `MapMaxFallSpeed` 800,
-  `MapGravityRaw` 128, `MapZViscosityRaw` 4096 posés comme `AdoptPlayerPawn`.
+  (il prend un `AlundraCellsCollisionField` : `TileMapData` synthétique à `AlundraCells` de hauteur 0, modèle
+  `AlundraCellStoreTests.cs:207`) et `BuildHeroPawn` (`LoadHeroControllerSettings`), `MapGravity` 1250, `MapMaxFallSpeed`
+  800, `MapGravityRaw` 128, `MapZViscosityRaw` 4096 posés comme `AdoptPlayerPawn`, et **`Flags |= EntityFlags.Gravity`**
+  (`BuildHeroPawn` laisse `Flags` à 0 ; sous `ControlLocked`, `MovePlayer` sort avant de poser le bit,
+  `AlundraPlayerManager.cs:196-202` ; l'en-tête réel du héros l'a).
   - **UJ-3** (animation 43 : vitesse 0, accélération 1, IZF 1280) : `PosZ` aux mises à jour 1 à 20 = liste d'UJ-1b ;
     mise à jour 21 : `PosZ` 0, pas atterri (test strict), `IsOnGround` 1, `ForceZ` -327680, `CollidedWithEntityZ` 0 ;
     mise à jour 22 : atterri, `ForceZ` 0, `CollidedWithEntityZ` 1 ; mises à jour 1 à 21 : verticale externe vraie,
@@ -3240,15 +3269,20 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
     mise à jour 31 : 0, `IsOnGround` 1, pas atterri ; atterri à la 32. Aucun son.
   - **UJ-11** (gel en vol) : gel puis reprise sur une image sans tick : verticale externe vraie, `PosZ` inchangé, le vol
     reprend à la valeur suivante de la liste.
-  - **UJ-12** (`0x1B [0,8]`, le héros pousse vers une entité de 32 px de haut) : pas XY libre exactement aux mises à jour
-    5 à 26 (`PosZ` ≥ 2097152), bloqué avant (`XCollisionEntity` = l'entité).
-  - **TR-P** (propriétaire de la gravité) : un `0x17` du héros (gravité moteur 0) puis un saut : après l'atterrissage la
-    gravité moteur vaut 0 (valeur vivante restituée) ; sans `0x17` : 1250.
-  - **UJ-SND** (lecteur de sons factice) : `PlaySfx(10)` une fois au tick de l'impulsion d'UJ-3 ; une seule fois sous
+  - **UJ-12** (`0x1B [0,8]`, le héros pousse vers une entité de 32 px de haut ; sonde d'obstacles installée,
+    `ContactWorld.BuildWorld(champ, sonde)` comme T-R3 et T-R9 d'E19.d2b, avec le chemin de tick du héros) : pas XY
+    libre exactement aux mises à jour 5 à 26 (`PosZ` ≥ 2097152), bloqué avant (`XCollisionEntity` = l'entité).
+  - **TR-P** (propriétaire de la gravité) : un `0x17` du héros (gravité moteur 0 et bit Gravity effacé,
+    `AlundraEventProgramRunner.cs:634-641`), puis le bit rétabli comme le fait `MovePlayer` en jeu libre
+    (`AlundraPlayerManager.cs:202`), puis un saut : après l'atterrissage, `Settings.Gravity` vaut 0 (valeur vivante
+    restituée) ; sans `0x17` : 1250.
+  - **UJ-SND** (lecteur de sons factice rendu par l'hôte, R8 ; animation 43 du montage avec `Sfx` 10) : `PlaySfx(10)`
+    une fois au tick de l'impulsion d'UJ-3 ; une seule fois sous
     rattrapage ; aucun son pour UJ-3b ni UJ-7.
   - Commit : `feat(alundra): own the hero's airborne state in the logic tick for scripted jumps, with the take-off sound`
 
-- ⏳ **C4 — Eau, glace, `x160`, bottes, `VramOR` par tick (R7), et l'arc A10J, tests d'abord.** Montage d'UJ-3 sur un `TileMapData`
+- ⏳ **C4 — Eau, glace, `x160`, bottes, `VramOR` par tick (R7), et l'arc A10J, tests d'abord.** Montage d'UJ-3 (bit
+  Gravity compris : sans lui `UpdateVramFlags` rend 0, `AlundraEntityScriptProxy.cs:1559-1564`) sur un `TileMapData`
   synthétique (cases de marche 24 (`0x18`) ou 32 (`0x20`), hauteur 0), une mise à jour de calage au repos pour poser
   `CombinedVramFlagsOR`.
   - **UW-1** (eau, niveau 0, animation 1 : vitesse 208, accélération 1, direction 24, depuis l'arrêt) : `ForceX` après
@@ -3256,7 +3290,8 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
     159744, 159744 (rouge aujourd'hui : 79872, 159744, …).
   - **UW-2** (glace, après calage) : `ForceX` = 4992 · k jusqu'à 159744 au tick 32 ; arrêt (animation 0) : 154752,
     149760, …, 4992, 0 au tick 32 (31 ticks non nuls, 37,78125 px) ; cible et pas en cache conservés.
-  - **UW-3** : un PNJ sur eau ou glace a les forces du sol plat (159744 dès le tick 1).
+  - **UW-3** : un PNJ sur eau ou sur glace a, tick pour tick, exactement les forces du même PNJ sur le sol plat (même
+    animation, même accélération).
   - **UW-4** (`x160` : animation 2, case `0x18`, niveau 0) : `ForceZ` 204800 ; `PosZ` 204800, 376832, 516096, 622592,
     696320, 737280, 745472, 720896, 663552, 573440, 450560, 294912, 106496, puis 0 et atterri à la mise à jour 14 ;
     niveau 1 : valeurs d'UJ-3.
@@ -3267,7 +3302,7 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
   - **A10J** (10 `B[20]`, nouvel arc ; spec de l'annexe A.2 : « Overworld 2,1-10 », drapeaux {1654, 203}, arrivée
     `ArcArrival(16515072, 61341696, 0, ResetAnimationId, 16)`, vrai contrôleur, vrais préfabs ; F0 = première exécution
     de `0x0B @2441` ; limite d'images ≥ F0 + 330 ; ensemble des sautés : sur-ensemble {(0x90,6406), (0x2B,6413),
-    (0x95,6418), (0x90,2689)} ; `EntityBlockCount` 0 : A10J entre dans `ArcsWithoutEntityContact`, T-REG-0).
+    (0x95,6418), (0x90,2689), (0x90,2828)} ; `EntityBlockCount` 0 : A10J entre dans `ArcsWithoutEntityContact`, T-REG-0).
     **Giles** (relationnel, D-E19-13 et D-E19-40, ± 1 image et ± 1 px) : impulsion à F0+101, atterrissage à F0+119,
     `0x25 @6393` rend 1 à l'image d'atterrissage ou la suivante, `@6394` part de x ∈ [521,5 ; 522,5] px et finit à
     x ∈ [732,3 ; 733,3] px, `0x24 @6400` rend à F0+257 vers y = 775 (± 2,5 px), `0x19` à F0+268, détruit à F0+269 ;
@@ -3308,7 +3343,9 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
      bout.
   3. Sur la 478 (vision) : tenir Y ou I (L2 ou R1), **seuls, dès l'arrivée et jusqu'à la fin du fondu** : Alundra monte de
      60 px puis retombe ; relâcher puis retenir ne refait rien.
-  4. Les flèches et les boules de feu des cartes 382, 386 et 309, si elles sont atteintes, ne décollent pas à leur
+  4. F9 sur `day4-meeting` : la réunion de la 185 mène à la 362 ; dans le rêve d'Olen, la bombe saute (impulsion
+     1024) ; la scène continue.
+  5. Les flèches et les boules de feu des cartes 382, 386 et 309, si elles sont atteintes, ne décollent pas à leur
      apparition.
 
 **Acceptation d'E19.d2c1.**
@@ -3335,8 +3372,25 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
 - Après un saut scripté sans remise de l'animation, le héros reste en animation 44 (cartes 61 à 68 et 329, hors chaîne)
   jusqu'à E19.d2c2.
 - L'envol de la 478 est actif (D-E19-41), y compris pendant la vision.
+- La bombe de la 362 (rêve d'Olen, `C[5] @635`, IZF 1024) saute maintenant ; aucun arc ne couvre la 362 : la recette C7
+  le vérifie.
 - Les arcs à vrai contrôleur qui tiennent une direction juste après `PlaceHero` (A5, A5r, couloir de la 392) : risque
   faible d'une image à vitesse différente ; mesurés par la suite complète à chaque tâche.
+
+**Relecture d'E19.d2c1 (2026-10-02).**
+- Plan-verifier frais et auditeur des valeurs indépendant, sur `d85a156` : **REVISE**. Bloquants : (1) le test strict de
+  R5 a, lu sur `FinalForceZ` après la remise à zéro de `:676-680`, aurait rendu 0 là où UJ-4, UJ-1 (mise à jour 23) et
+  UJ-1b (mise à jour 22) attendent 1 ; corrigé : le test se lit sur la force du tick relevée avant la remise à zéro,
+  gardée (R3, R5 a) ; (2) le cas avec gravité d'UJ-0x8000 n'était pas observable ; corrigé : montage, tick et
+  observables écrits. P2 de l'auditeur : le montage héros n'avait pas le bit Gravity (ajouté à C3 et C4) ; la place de
+  l'étape verticale du héros par rapport à l'effacement de `:174` (écrite dans R6). P3 et P4 portés : chemin du lecteur
+  de sons (R8), montage à horloge pour UJ-8 et UJ-9, sonde pour UJ-12, TR-P avec le bit rétabli, UW-3 en égalité,
+  épingles de T-A10v qui n'existent pas retirées du texte, bombe de la 362 (découverte, recette, risques), `(0x90,2828)`
+  dans le sur-ensemble d'A10J, second tirage de `PosZ` (`:1900-1903`) dans R6, hôte à `PlayerController` pour le volet
+  héros d'UJ-4, préséance du plan sur l'annexe (UJ-3, mise à jour 23).
+- L'auditeur a recalculé toutes les autres valeurs (UJ-1, UJ-1b, UJ-3, UJ-3b, UJ-5, UJ-12, UJ-CLAMP, UW-1, UW-2, UW-4,
+  A10, A12, A10J héros et Giles, traces « spawn » d'E19.d2c2) : justes ; restent invérifiables sans exécution l'image de
+  `0x24 @2462` d'A10J et le total de base de 2185 tests (C0 le mesure).
 
 ##### 1.2h.3.2 E19.d2c2 — Saut à la manette, chutes, dessus d'objets ⏳ (esquisse ; détaillée, relue et approuvée après E19.d2c1)
 
