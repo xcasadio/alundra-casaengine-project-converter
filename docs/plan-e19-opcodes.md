@@ -151,6 +151,16 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   la boîte de nom (E19.f) et la fidélité fine des dialogues (E12.c : portraits, machine à écrire, pagination, curseur,
   blips et voix, `0x4C`/`0x4D`, table partagée `map_alundra`, sons d'ouverture et de fermeture) forment une seule
   tranche ; ordre inchangé : E19.d2c, E19.e, puis E19.f avec E12.c.
+- **D-E19-39 à D-E19-41** (2026-10-02, après la découverte d'E19.d2c) :
+  - **D-E19-39** — Le **saut à la manette** de l'original (Croix) et ses états (saut sur place, saut en marchant,
+    atterrissage) entrent dans **E19.d2c**, avec le saut scripté : une seule tranche pour tout le saut du héros. Ils
+    règlent aussi le héros qui reste en animation 44 après certains sauts scriptés (cartes 61 à 68 et 329).
+  - **D-E19-40** — Le `0x25` d'un PNJ rend une image avant l'original à cause de l'aimantation au sol de 4 px du
+    moteur : **écart accepté jusqu'à E19.h**, qui portera l'état « en l'air » des PNJ avec les contacts en Z ; les
+    valeurs écrites d'avance le reflètent.
+  - **D-E19-41** — L'envol caché de la carte 478 (programme `B[2]` : L2 ou R1, touches Y ou I, tenus seuls à
+    l'arrivée, Alundra monte de 60 px puis retombe) **reste comme dans l'original** : le port du `0x1B` du héros le
+    fait fonctionner, sans exception.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
