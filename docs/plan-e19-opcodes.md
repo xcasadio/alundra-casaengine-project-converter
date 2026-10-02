@@ -3162,7 +3162,7 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
 
 **Tâches.**
 
-- ⏳ **C0 — Plan, annexe, ADR ; mesure de base.** Ce plan, l'annexe des valeurs et l'ADR-0023 (commit de docs). Puis,
+- ✅ **C0 — Plan, annexe, ADR ; mesure de base.** Ce plan, l'annexe des valeurs et l'ADR-0023 (commit de docs). Puis,
   avant toute édition de code : `Alundra.Tests` complet à la tête de la branche (attendu 2185 réussis, 0 échec,
   `--blame-hang-timeout 300s`) ; l'arc A12 (ci-dessous, C1) se monte d'abord **sur la DLL d'avant C1**, `0x25 @415`
   sauté, pour mesurer sa base (images de `@411`, `@416`, `0x53 @451`, ensemble des sautés). Garde d'octets à la fin de
@@ -3413,6 +3413,8 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
 - Mesure de base de C0 faite le 2026-10-02 : `Alundra.Tests` 2185 réussis, 0 échec (Debug, `--blame-hang-timeout 300s`) ;
   les six traces identiques en contenu (le test réécrit les quatre traces du héros en fins de ligne LF : `git diff
   --exit-code` rend 0, fins de ligne remises par `git checkout`).
+- Relecture de clôture sur `6d4d778` : **READY**. Exécution lancée le 2026-10-03 sous la consigne de l'auteur du
+  2026-10-02 (« Fait tout E12 et E19 », mode AUTO : ni merge ni push).
 
 ##### 1.2h.3.2 E19.d2c2 — Saut à la manette, chutes, dessus d'objets ⏳ (esquisse ; détaillée, relue et approuvée après E19.d2c1)
 
