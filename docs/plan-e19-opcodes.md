@@ -2569,6 +2569,7 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
   inaccessible à l'outil. Disposition **FIX** : l'option de créneau est retirée, chaque préréglage a son créneau fixe,
   testé en S1. P3 corrigé aussi : le critère « tables chargées » est nommé. Deuxième REVISE automatique : nouvelle
   époque de préparation, une seule relecture de clôture.
+- Relecture de clôture sur `f9512d1` : **READY**.
 
 **Esquisse d'E19.d2b — Contacts entre entités** (détaillée, relue et approuvée après E19.d2a).
 - Moteur, branche `chantier/field-movement-obstacles` depuis `chantier/animation-logical-end-clock` (`f205683a`, pas
