@@ -376,7 +376,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.c2 🧪 | Moteur : horloge logique exacte des fins d'animation, rendu en temps réel (D-E19-16, D-E19-17), correction des Loop figées ; DLL : pilotage à chaque tick logique, signal de boucle (D-E19-18), garde de `0x1C` sous rattrapage | A3, A9, tests moteur | Wendell à Inoa rend la main ; les fins d'animation au tick de l'original |
 | E19.d 🧪 | Fin de chaîne : `0x24` avec recensement (D-E19-21), `0x40`/`0x41` complets (D-E19-22), défaut d'atterrissage de la DLL (391), vrai héros et pad tenu dans les arcs ; reste de 392, 391 et 163 | A5, A5r, A6, A8 | Naufrage, plage, réveil à Inoa, main rendue |
 | E19.d2a 🧪 | Après le premier livre (§1.2h) : sauvegardes de test chargées par F9 (D-E19-33) ; arrivée par portail dans les arcs (U3) ; arcs du jour 1 | A10, A11, A20, TH3 | Jour 1 jusqu'au jour 2 ; F9 sur les préréglages du jour 3 et du jour 4 |
-| E19.d2b | Moteur : sonde d'obstacles dans l'étage champ du contrôleur (ADR-0047 du moteur) ; DLL : contacts entre entités du binaire (D-E19-27 à D-E19-30, D-E19-34 à D-E19-37), natif E 0/1, contact du dialogue ; règle les deux P2 d'E19.d (O-E19-18, 185 `@506`) | T-A19, T-A10v, T-B9, T-C61, TN-1, TN-3, A11, tests moteur | Le héros bute sur les PNJ et leur parle ; jour 4 : la 185 mène à la 362 |
+| E19.d2b | Moteur : sonde d'obstacles dans l'étage champ du contrôleur (ADR-0047 du moteur) ; DLL : contacts entre entités du binaire (D-E19-27 à D-E19-30, D-E19-34 à D-E19-37), natif E 0/1, contact du dialogue ; règle les deux P2 d'E19.d (O-E19-18, 185 `@506`) | T-A19, T-A10v, T-B9, T-C61, TN-3, A11, tests moteur | Le héros bute sur les PNJ et leur parle ; jour 4 : la 185 mène à la 362 |
 | E19.d2c | DLL : saut scripté et `IsZForceApplied` (D-E19-31), `0x25`, `CollidedWithEntityZ`, eau et glace du héros (D-E19-32) (O-E19-8, O-E19-19) | UJ, UW, A10J/A16, A3 | Jour 3 : le saut de la 10 jusqu'à la 135 |
 | E19.e | Recette de bout en bout, plus un test statique : aucun opcode sauté sur la chaîne hors liste d'exceptions | toute la chaîne | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement (avec les recettes d'E16 en attente) |
 | E19.f | Boîte de nom et boîte de texte fidèle (D-E19-4) : export du cadre, écrans XAML liés à un view model, cycle de vie de la boîte de nom, pour `0x0D`/`0x5C`/`0xC4` | tests MGDesktop | Les noms s'affichent au-dessus de la boîte, à la place de l'original |
@@ -2680,7 +2680,7 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
 
 **Tâches.**
 
-- ⏳ **B0 — Plan et ADR.** Ce plan, le plan moteur (commit `b3aa47ca` sur `chantier/field-movement-obstacles`) et
+- ⏳ **B0 — Plan et ADR.** Ce plan, le plan moteur (commits `b3aa47ca` puis `c372e946` sur `chantier/field-movement-obstacles`) et
   l'ADR-0022 du parent. Fait avec la relecture.
 
 - ⏳ **B1 — Moteur** : exécuter le plan moteur (T0.1 à T2.1, `CasaEngine.Tests` sans échec), puis pointer le
@@ -2702,7 +2702,8 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
   - Commit : `feat(alundra): drop destroyed entities from collidables, load AnimFlags, destroy on native E 0 and 1`
 
 - ⏳ **B3 — Prédicat d'obstacle (DLL), tests d'abord.**
-  - Classe `AlundraMovementObstacleProbe : IMovementObstacleProbe`, installée par `InstallCellAndOverlaySystems`
+  - Classe `AlundraMovementObstacleProbe : IMovementObstacleProbe` (interface du moteur, namespace
+    `CasaEngine.Framework.Physics`), installée par `InstallCellAndOverlaySystems`
     (`AlundraWorldProxy.cs:850-871`) à côté du champ, à chaque chargement de monde.
   - `TryFindObstacle(mover, racine candidate, out obstacle)` : proxy du mobile ; X et Y candidats =
     `Math.Round((double)racine * 65536.0)`, exactement le tirage de `MoveControllerAndPullPosition` ; Z = `PosZ` logique
@@ -2718,13 +2719,14 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
     villageois ; héros PosZ 3145728 : villageois 5242880 → null, 5242879 → villageois ; Nestus PosY 33947648 → null,
     33947647 → Meade, 33947649 → null avec Meade (62881792 ; 33030144) et Nestus X 63438848) ;
     **T-R3** (contrôleurs réels, cases plates de hauteur 48, positions posées sur les champs logiques : Nestus (968,0 ;
-    552,0) vers le nord à 1 px par tick contre Meade immobile (960,0 ; 504,0), posée sur un pixel entier parce que le
+    552,0) vers le nord, pas imposé de -1 px par tick par `MoveControllerAndPullPosition(0, -1)` (forces imposées, sans
+    accélération), contre Meade immobile (960,0 ; 504,0), posée sur un pixel entier parce que le
     tirage tronque une téléportation : PosY finale 33947648, soit `Nestus.PosY - 7 px = Meade.PosY + 7 px` ; `XCollisionEntity`
     null aux ticks 0 à 33 puis Meade dès le tick 34 ; `ForceAdjusted` 0 aux ticks 0 à 33 puis 1 dès le tick 34 ; Meade
     dont `0x63` efface Collidable : plus d'arrêt à l'image qui suit la reconstruction de la liste) ;
     **T-R4** (contact est : le mobile finit affleurant, bord droit = bord gauche de l'obstacle à un ULP près,
     `XCollisionEntity` = l'obstacle au tick qui raccourcit, `ForceAdjusted` 1 au tick suivant ; commentaire : le binaire
-    laisse 1 à 3 unités et lève le drapeau 1 à 2 ticks plus tard) ; **T-R-ID** (deux obstacles sur le chemin, le premier
+    laisse 0 à 3 unités et lève le drapeau 0 à 2 ticks plus tard) ; **T-R-ID** (deux obstacles sur le chemin, le premier
     de la liste plus loin, le second plus près : l'obstacle rapporté est le plus proche) ; **T-REG-Z** (plateforme PosZ
     24117249, profondeur 2097151 : mobile à PosZ 26214401 → null, à 26214400 → la plateforme ; les tests
     `AlundraNpcCharacterControllerMoverTests.cs:1801` et `:1996` restent verts avec la sonde installée) ; **T-R-LIFT**
@@ -2777,18 +2779,20 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
     T50, T60, T70 dans cet ordre ; `0x53 @147` vers la 362 en (16515072 ; 17301504 ; 2097152), effet 4. Positions après
     `@506` non épinglées (jamais jouées dans la DLL ; le détour E4.d sur contact de case de Lutas `@219` n'est pas
     modélisé).
-  - **T-A10v** (10 `B[14]`, drapeaux G218, G456) : rouge (`@5172` jamais fini, Nestus (63438848 ; 23527424)) ; vert :
+  - **T-A10v** (10 `B[14]`, drapeaux G218, G456) : rouge (dernier pc de Nestus `0x0B @5172`, Nestus calé à PosY 23527424 avec X dans [980,0 ; 982,0], valeur du modèle
+    64323584) ; vert :
     Meade au repos (62881792 ; 32997376) ; Nestus `@5163` PosY 33914880 avec `Nestus.PosY - 7 px = Meade.PosY + 7 px` ;
     `@5166` finit avec X dans [980,0 ; 981,0] ; `@5172` finit avec PosY ≤ 32112640 ; T666 ; Bergus `@5061` PosX 63963136
-    avec `Rumi.PosX - Bergus.PosX = 20 px` ; T668 ; `@5071` finit en (67108864 ; 36175872) ; T674 posé puis effacé ;
+    avec `Rumi.PosX - Bergus.PosX = 20 px` ; T668 ; `@5071` finit en (67108864 ; 36175872) à ± 2,5 px (fin de marche au rayon) ; T674 posé puis effacé ;
     `0x53 @2003`. Dans cet ordre.
   - **T-B9** (10 `B[9]`, drapeaux G216, G485, G1666 à G1669, G482 éteint ; héros (898 ; 736 ; 16)) : rouge (`0x0B @1215`
-    du héros et `@3673` de Septimus ; héros (58851328 ; 17235968), Septimus (59006976 ; 17170432)) ; vert : Septimus
-    `@3670` (59006976 ; 39190528) contre rec41 ; héros `@1212` (58851328 ; 39256064) ; `@3673` PosX 54214656 ; `@1215` PosX
+    du héros et `@3673` de Septimus ; héros (58851328 ; 17235968), Septimus calé au contact du mur (36,16) en (58851328 ; 17170432)) ; vert : Septimus
+    `@3670` (59006976 ; 39190528) contre rec41 ; héros `@1212` (58851328 ; 39256064) ; `@3673` PosX 54214656 à ± 2,5 px (fin de marche au rayon) ; `@1215` PosX
     dans [x0 - 52,5 ; x0 - 48,5] px ; rec41 détruit puis absent de la liste l'image suivante ; T511, T512, T514, T515 ;
     `@3693`, `@3725`, `@3731` et `@3734` finissent (positions après `@3734` non épinglées : détour sur contact de case) ;
     G482 et `0x11 @3738`. **Contre-épreuve D-E19-37** : héros posé en (898 ; 744 ; 16) : Septimus arrêté en (57409536 ;
-    51912704) contre le héros garé en (57094144 ; 50995200), T510 jamais posé dans la limite ; le test affirme ce calage
+    51912704) au contact du héros garé (relation exacte bord contre bord), héros garé en (57094144 ; 50995200) à
+    ± 2,5 px, T510 jamais posé dans la limite ; le test affirme ce calage
     reproduit et cite O-E19-24.
   - **T-C61** (61 `B[6]`, G784 posé, G670 éteint ; arrivée par le portail 61.1 en (588 ; 648)) : rouge (`@980` jamais fini,
     héros en (5373952 ; 54001664)) ; vert jusqu'à G672 : `@929` PosY 36110336 contre rec32 ; `@934` PosX 27394048 contre
@@ -2797,10 +2801,12 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
   - **TN-3** (346, hôte dans la zone x 0 à 15, y 40 à 59, G1022 éteint) : `0x1E @943` part de (96,0 ; 752,0) ; la
     plateforme s'arrête en (96,0 ; 800,0) contre le mur rec10 et n'avance plus pendant 500 ticks ; `ForceAdjusted` posé ;
     aucun détour engagé (D-E19-34, D-E19-35).
-  - **TN-1** (10 `B[13]`, cortège du chapitre 18, drapeaux G218 et G455, `0x64` du héros en (996 ; 472 ; 48)) : 39 marches
-    `0x0B` finissent sans `ForceAdjusted` ; T639 posé ; positions finales à ± 3 px : Cephas (957,75 ; 476,5), Septimus
-    (957,75 ; 460,5), Meade (957,75 ; 492,5), Ronan (925,5 ; 470,5), rec66 (961,5 ; 523,5) ; écart minimal entre MOBILES de
-    Z recouvrant > 0 (marges de 1,5 px).
+  - **TN-1 retiré** (cortège de la 10 `B[13]`, chapitre 18) : la relecture a trouvé que la DLL tronque au pixel la racine
+    d'un PNJ qui atterrit sur une nouvelle hauteur (`EvaluateEntitySupport` → `PushLogicalPositionToRoot` →
+    `ResolveLogicalPosition`, `AlundraEntityScriptProxy.cs:700-735`, `:1807-1820`, `AlundraEntitySpawnFactory.cs:472-479`) ;
+    sur la rampe du cortège, cela double sa vitesse et le fait caler **avec ou sans** blocage d'entités : écart
+    préexistant, hors de cette tranche (O-E19-29, question à l'auteur). Aucune autre scène cible n'a de changement de
+    hauteur à une position fractionnaire (185, 164, 61, `B[9]` ; `B[14]` identique avec ou sans troncature).
   - **TH4** (arrivées sans chevauchement, D-E19-36) : à la première image après l'adoption, `FindEntityCollisionCandidate`
     du héros rend null pour les arrivées de A20 (162), A10 (165), T-A19 (185) et du préréglage `day3-after-dream` (179,
     case (17,7), z 1, drapeaux du préréglage).
@@ -2846,12 +2852,22 @@ rognage au bord (O-E19-17) ; le calage de la case (37,46) (reproduit, D-E19-37).
   division conjointe d'E19.h.
 - Obstacles natifs solides (D-E19-34) : cartes 14 et 15 au jour 2, 362, 346, 52 fermées là où l'original attend un objet.
 - L'intro jouée avec contrôleurs réels n'a aucun arc : la recette B9 la couvre.
+- Troncature au pixel d'un PNJ qui atterrit sur une nouvelle hauteur (O-E19-29) : écart préexistant de la DLL, qui fait
+  caler le cortège du chapitre 18 sur sa rampe ; hors tranche, il peut toucher d'autres scènes à rampe.
 - Ordre de mise à jour : la DLL déplace par entité dans l'ordre du monde (héros en tête supposé), le binaire par créneau ;
   sans effet mesuré sur les scènes, à surveiller quand deux mobiles se touchent dans le même tick.
 - Détour E4.d sur contacts de case (Lutas `@219` sur la 185, Septimus `@3734` sur la 10) : non modélisé ; les positions
   qui suivent ne sont pas épinglées, la fin des scènes l'est.
 - Les valeurs viennent d'émulations calées sur des mesures de la DLL : une valeur contredite est un arrêt, jamais une
   ré-épingle.
+
+**Relecture d'E19.d2b (2026-10-02).**
+- Plan-verifier frais, auditeur des valeurs et relecteur moteur, sur `34518c5` et le plan moteur `b3aa47ca` :
+  **REVISE**. Bloquant : T-ENG-12 étendait des tests moteur existants (corrigé : nouveaux tests). P2 : interface
+  moteur placée dans `Engine` alors qu'elle cite `Entity` (corrigé : `Framework/Physics`) ; positions rouges de T-A10v
+  et T-B9 prises à l'instruction précédente (corrigées) ; TN-1 rendu faux par une troncature préexistante de la DLL
+  (retiré, O-E19-29). P3 et P4 corrigés (pilotage de T-R3, tolérances des fins de marche, commentaire de T-R4, plan
+  moteur). Toutes les autres valeurs ont été recalculées par l'auditeur : justes.
 
 #### 1.2h.3 E19.d2c — Saut, `0x25`, eau et glace ⏳ (esquisse ; détaillée, relue et approuvée après E19.d2b)
 
@@ -3048,6 +3064,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-26 | **`0x28` à `0x2B`** (bits de classe A/B du marcheur, `0x8003DC24`-`0x8003DC6C`) : 15 marches bloquées seulement dans la DLL (Muruta des cartes 2 et 384, chariots de la mine 61, 63, 66 et 328), aucune sur une carte de l'histoire ; les porter ajoute 4 blocages sur la 102. | E19.l |
 | O-E19-27 | **Reste du saut, non porté en E19.d2c** : aimantation de 3 px au sommet, dessus d'entités et plafonds pour le héros en l'air (`0x80036BFC`, `0x80036D94`), règle du passager (`0x800373AC`), son du changement d'animation (`0x800490FC`), `+0xF8` surchargé pour le type 0x14. | E19.h |
 | O-E19-28 | **Écarts acceptés du contact entre entités** (E19.d2b) : avance par axe du moteur contre division conjointe du binaire (un mobile qui pousse en diagonale contre une entité glisse ; 5,6 % des pas obliques bloqués finissent jusqu'à 2 px ailleurs) ; `ForceAdjusted` sur contact d'entité 0 à 2 ticks plus tôt à l'est et au sud ; contact au flottant (4 à 8 unités 16.16) ; `XCollisionEntity` écrit pour tout mobile (le binaire le met à 0 dans la moitié des ticks raccourcis d'un mobile sans gravité ou en l'air) ; liste d'un tick de retard pour `0x62`/`0x63` et les créations par script ; ordre de mise à jour par entité au lieu de par créneau ; Z des PNJ en retard d'un tick. | E19.h |
+| O-E19-29 | **Troncature au pixel à l'atterrissage** (relecture d'E19.d2b) : quand un PNJ à contrôleur atterrit sur une nouvelle hauteur de terrain, `EvaluateEntitySupport` (`AlundraEntityScriptProxy.cs:700-735`, `wasAlreadyLanded` faux à chaque changement de hauteur) appelle `PushLogicalPositionToRoot`, et `ResolveLogicalPosition` (`AlundraEntitySpawnFactory.cs:472-479`) ramène X et Y au pixel entier inférieur ; le binaire garde la fraction. Sur une rampe qui change de hauteur à chaque pixel, la vitesse double et le cortège de la 10 `B[13]` (chapitre 18) cale, avec ou sans blocage d'entités. Question à l'auteur : tranche à part. | à placer |
 
 ## 4. Hors périmètre
 
