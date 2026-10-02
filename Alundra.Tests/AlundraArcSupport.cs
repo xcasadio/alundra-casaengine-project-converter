@@ -266,7 +266,7 @@ internal sealed class ArcRun : IDisposable
     /// under the entity contacts, and the proof is that no entity shortened or cancelled a single controller step of theirs: <see cref="TotalEntityBlockCount"/>
     /// is 0 when they end. Checked when the arc is disposed (the end of its <c>using</c>), after the global state is restored.
     /// </summary>
-    private static readonly HashSet<string> ArcsWithoutEntityContact = new() { "A1c", "A3", "A4p", "A5", "A5r", "A6", "A7", "A8", "A9", "A10", "A20" };
+    private static readonly HashSet<string> ArcsWithoutEntityContact = new() { "A1c", "A3", "A4p", "A5", "A5r", "A6", "A7", "A8", "A9", "A10", "A10J", "A20" };
 
     /// <summary>The controller steps that an entity shortened or cancelled, summed over every entity of the world (the hero's included).</summary>
     public int TotalEntityBlockCount => Proxy == null ? 0 : Entities.Concat(new[] { Hero }).Distinct().Sum(e => e.EntityBlockCount);

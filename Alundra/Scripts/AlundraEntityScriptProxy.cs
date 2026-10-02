@@ -1241,6 +1241,10 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 if (playerController != null)
                 {
                     AlundraPlayerManager.Tick(this, 1);
+
+                    // E19.d2c1 R7: the water, ice and x160 rules read VramOR at the next tick, so it is refreshed after every tick of the hero (the binary's
+                    // UpdateTileAttributes ends each physics pass). The end-of-frame call below stays: a frame without tick, a portal read.
+                    UpdateVramFlags();
                 }
             }
 

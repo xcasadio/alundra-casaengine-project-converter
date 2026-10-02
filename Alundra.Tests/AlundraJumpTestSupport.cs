@@ -264,6 +264,7 @@ internal sealed class JumpHeroRig
         Action<World, ContactHost>? configure = null,
         float x = 200.25f,
         float y = 100.5f,
+        float z = 0f,
         float groundSnapDistance = -1f,
         bool gravityFlag = true)
     {
@@ -280,7 +281,7 @@ internal sealed class JumpHeroRig
             settings.GroundSnapDistance = groundSnapDistance;
         }
 
-        var (entity, hero) = HeroWorldFixture.BuildHeroPawn(world, settings, new Vector3(x, y, 0f), host);
+        var (entity, hero) = HeroWorldFixture.BuildHeroPawn(world, settings, new Vector3(x, y, z), host);
         AlundraEntitySpawnFactory.SetEntityDimensions(hero, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
         hero.MapGravity = MapGravity;
         hero.MapMaxFallSpeed = MapMaxFallSpeed;
@@ -333,8 +334,11 @@ internal static class ProjectRootFinder
 /// <summary>A synthetic flat field of cells (walkability, ground property and height 0) for the hero montages.</summary>
 internal static class FlatCells
 {
-    /// <summary>A field of <paramref name="width"/> x <paramref name="height"/> cells, every one of walkability 0 and height 0.</summary>
-    public static AlundraCellsCollisionField Create(int width = 40, int height = 40)
+    /// <summary>
+    /// A field of <paramref name="width"/> x <paramref name="height"/> cells, every one of walkability 0 and height 0 - or, with <paramref name="cell"/>, the
+    /// walkability (<c>0x08</c> water, <c>0x10</c> the x160 bit, <c>0x20</c> ice) and the height (in cells of 16 px) that function gives for the cell (x, y).
+    /// </summary>
+    public static AlundraCellsCollisionField Create(int width = 40, int height = 40, Func<int, int, (int Walkability, int Height)>? cell = null)
     {
         var count = width * height;
         string Zeros()
@@ -348,10 +352,24 @@ internal static class FlatCells
             return sb.Append(']').ToString();
         }
 
+        string Column(Func<(int Walkability, int Height), int> pick)
+        {
+            var sb = new StringBuilder("[");
+            for (var i = 0; i < count; i++)
+            {
+                sb.Append(i == 0 ? "" : ",").Append(pick(cell!(i % width, i / width)));
+            }
+
+            return sb.Append(']').ToString();
+        }
+
+        var walkabilityJson = cell == null ? Zeros() : Column(c => c.Walkability);
+        var heightJson = cell == null ? Zeros() : Column(c => c.Height);
+
         var tileMapData = new TileMapData { MapSize = new CasaEngine.Core.Math.Size(width, height) };
         tileMapData.CustomProperties["AlundraCells"] =
-            "{\"map_index\":1,\"cell_count\":" + count + ",\"walkability\":" + Zeros() + ",\"ground_property\":" + Zeros()
-            + ",\"slope\":" + Zeros() + ",\"height\":" + Zeros() + ",\"tile_id\":" + Zeros() + ",\"wall_tiles_offset\":" + Zeros()
+            "{\"map_index\":1,\"cell_count\":" + count + ",\"walkability\":" + walkabilityJson + ",\"ground_property\":" + Zeros()
+            + ",\"slope\":" + Zeros() + ",\"height\":" + heightJson + ",\"tile_id\":" + Zeros() + ",\"wall_tiles_offset\":" + Zeros()
             + ",\"wall_tiles\":{}}";
         Assert.True(AlundraCellsCollisionField.TryCreate(tileMapData, "flat_cells", out var field));
         return field!;

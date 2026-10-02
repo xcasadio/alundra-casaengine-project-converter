@@ -257,7 +257,11 @@ internal static class AlundraScriptedMotion
         var gravity = (hero.Flags & EntityFlags.Gravity) != 0;
         if (impulse)
         {
-            hero.ForceZ = hero.IsZForceApplied << 8;
+            // The lower jump (the binary, 0x80036884-0x80036948): with gravity, on the cells of the x160 bit (VramOR & 0x10) and without boots, the impulse is IZF * 160
+            // instead of IZF << 8 (the water of the 0x18 cells). VramOR is the one of the previous tick (it is 0 in the air).
+            hero.ForceZ = gravity && (hero.CombinedVramFlagsOR & 0x10) != 0 && BootsLevel(hero) <= 0
+                ? hero.IsZForceApplied * 160
+                : hero.IsZForceApplied << 8;
         }
         else if (gravity)
         {
@@ -348,9 +352,32 @@ internal static class AlundraScriptedMotion
             entity.ForceStepY = Math.Abs(entity.TargetForceY - entity.ForceY) >> entity.Acceleration;
         }
 
+        // E19.d2c1 R7 (the binary, 0x80036954-0x80036A50), the hero alone: on LOCAL copies of the target and of the step (the caches above stay those of the
+        // animation), the ice (VramOR & 0x20) divides the step by 16 and the water (VramOR & 0x08, without boots) halves the target, both with the signed
+        // arithmetic shift of the binary (rounded down). The boots level is read only when the water asks for it.
+        var targetX = entity.TargetForceX;
+        var targetY = entity.TargetForceY;
+        var stepX = entity.ForceStepX;
+        var stepY = entity.ForceStepY;
+        if (entity.IsPlayer)
+        {
+            var vramFlags = entity.CombinedVramFlagsOR;
+            if ((vramFlags & 0x20) != 0)
+            {
+                stepX = (int)(((long)stepX * 0x1000) >> 16);
+                stepY = (int)(((long)stepY * 0x1000) >> 16);
+            }
+
+            if ((vramFlags & 0x08) != 0 && BootsLevel(entity) <= 0)
+            {
+                targetX = (int)(((long)targetX * 0x8000) >> 16);
+                targetY = (int)(((long)targetY * 0x8000) >> 16);
+            }
+        }
+
         // PhysicsEngine.cs:1445-1446/1490-1491.
-        entity.ForceX = IncrementForce(entity.ForceX, entity.TargetForceX, entity.ForceStepX);
-        entity.ForceY = IncrementForce(entity.ForceY, entity.TargetForceY, entity.ForceStepY);
+        entity.ForceX = IncrementForce(entity.ForceX, targetX, stepX);
+        entity.ForceY = IncrementForce(entity.ForceY, targetY, stepY);
 
         // PhysicsEngine.ApplyEntityForces (PhysicsEngine.cs:1514-1547), flat-ground-only - see this
         // method's own doc for what stays out.
@@ -382,6 +409,31 @@ internal static class AlundraScriptedMotion
         entity.TileX = (entity.PosX >> 16) / TileWidth;
         entity.TileY = (entity.PosY >> 16) / TileHeight;
         entity.TileZ = entity.PosZ >> 20;
+    }
+
+    /// <summary>
+    /// E19.d2c1 R7: the boots level of the hero, 3, 2 or 1 when the object <c>0x1C</c>, <c>0x1B</c> or <c>0x1A</c> is owned (<see cref="AlundraPlayerManager.GetNumberOfItem"/>,
+    /// <c>NumberOfItems[id * 2 + 1]</c>), else 0; 0 too without a script host (a bare proxy), without exception.
+    /// </summary>
+    private static int BootsLevel(AlundraEntityScriptProxy hero)
+    {
+        var state = hero.ScriptHost?.GameState;
+        if (state == null)
+        {
+            return 0;
+        }
+
+        if (AlundraPlayerManager.GetNumberOfItem(state, 0x1C) != 0)
+        {
+            return 3;
+        }
+
+        if (AlundraPlayerManager.GetNumberOfItem(state, 0x1B) != 0)
+        {
+            return 2;
+        }
+
+        return AlundraPlayerManager.GetNumberOfItem(state, 0x1A) != 0 ? 1 : 0;
     }
 
     /// <summary>Bit-for-bit port of <c>PhysicsEngine.IncrementForce</c> (PhysicsEngine.cs:1551-1576,
