@@ -5745,7 +5745,7 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
 au sud (O-E19-28 b, aussi contre les cellules) demande l'étape 2 (O-E19-42) ; l'image d'A10J `@2462` peut bouger d'un tick
 (retards connus de la DLL).
 
-### 1.2o E19.g — Effets visuels ⏳ (questions tranchées le 2026-10-03 : D-E19-51 à D-E19-55 ; G0 planifiée ; G1 à G4 à planifier)
+### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55 ; G0 ✅ ; G2a planifiée ; G2b, G1/G3, G4 à planifier)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B les données, le convertisseur,
 l'analyseur, le moteur et la DLL ; notes, rendus et scripts dans le scratchpad de la session, `e19g-disc/A/notes.md` et
@@ -5960,6 +5960,71 @@ dessiné gagne aussi pour l'alpha (déjà le cas pour les couleurs).
   accepter et le dire dans ADR-0030, ou déplacer la correction dans un chemin propre à l'extracteur. P4 un `log.txt` vide non suivi
   laissé par l'extracteur dans `alundra-datas-analyser/AlundraTools/` (laissé tel quel). Branche de l'analyseur
   `chantier/e19g0-extractor` (`d8d9230`, empilée sur f1), non mergée.
+
+##### 1.2o.2 E19.g G2a — Semi-transparence par texel des sprites d'entités (moteur et convertisseur) ⏳ (planifiée)
+
+**Découpage d'après G0** (2026-10-03) : **G2a** (cette tranche) rend la semi-transparence par texel des sprites d'entités
+(D-E19-52) : moteur et convertisseur ; **G2b** (quads à quatre sommets libres et piste de coins dans `.anim2d`, changement de format,
+ADR du moteur) ; **G1/G3** (effets : export, service du moteur qui reçoit les quads d'effets par image, réserve de 128 effets de la DLL,
+opcodes) ; **G4** recette. G2a ne dépend que de G0 (fait : le code alpha est dans les planches).
+
+**Faits** (découverte du rendu, `e19g2-disc/notes.md` §1-§3) :
+- Le shader des sprites (`CasaEngineMonogame/CasaEngine/Content/Shaders/SpriteBatch.fx:40-49`) rejette un texel d'alpha `<= 0.01`
+  et rend `tex2D * Color` ; les entités sont soumises par `AnimatedSpriteComponent.DrawComposedAnimation` (`:507-547`) par une
+  surcharge sans mélange, donc opaque ; `SpriteData` (`SpriteData.cs:18-50`) n'a aucun champ de mélange ; les quatre états de
+  mélange existent (`SpriteRendererComponent.GetBlendState`, `:251-260` : opaque, alpha non prémultiplié, additif One/One,
+  soustractif ReverseSubtract) ; échantillonnage par point (`:192`) ; un quad semi du binaire désigne son mode ABR par les bits 3-5 de
+  l'octet `Spritesheet`, qui entre dans la `Signature`, donc dans l'identité de chaque `.sprite` ; les texels STP portent l'alpha 128
+  depuis G0 (ADR-0030).
+- PSX : mode 0 = B/2 + F/2, 1 = B + F, 2 = B − F, 3 = B + F/4 ; un texel STP (bit 15) est mêlé, un texel non STP est opaque, `0x0000`
+  transparent (psx-spx).
+- Recensement des sprites exportés : 6908 `.sprite`, dont **1836 semi** (ABR1 1615, ABR0 218, ABR3 3) ; 88 des 104 planches exportées
+  portent des texels STP ; 2514 quads d'entités semi mêlent texels opaques et STP ; aucun quad non semi ne porte de texel STP.
+
+**Règles.**
+- **G2a-R1 — Moteur, fenêtre d'alpha** : `SpriteBatch.fx` prend une fenêtre sur l'alpha brut du texel (bornes basse exclue et
+  haute incluse) au lieu du rejet fixe ; la fenêtre par défaut, (0,01 ; 1], reproduit exactement l'existant ; échantillonnage par
+  point seulement (documenté dans le shader).
+- **G2a-R2 — Moteur, mode semi d'un sprite** : `SpriteData` gagne un champ optionnel de semi-transparence PSX (`None` par défaut,
+  puis les modes 0 à 3), lu par `SpriteData.Load` et écrit par le sérialiseur de l'éditor (`EditorAssetJsonSerializer.cs` ~373)
+  **seulement quand il n'est pas `None`** ; `AnimatedSpriteComponent` passe le mode de chaque partie au chemin trié.
+- **G2a-R3 — Moteur, deux dessins disjoints** : une entrée de mode semi se soumet en deux entrées de même clé de tri : texels
+  opaques (fenêtre (0,75 ; 1], état opaque), puis texels STP (fenêtre (0,25 ; 0,75], état du mode : 0 alpha non prémultiplié, ce qui
+  donne la moyenne avec l'alpha 128 ; 1 additif ; 2 soustractif ; 3 additif teinté (64, 64, 64)) ; une entrée `None` reste une seule
+  entrée à la fenêtre par défaut ; la limite de 10 000 entrées est gardée dans la boucle de dessin (défaut existant relevé par la
+  découverte).
+- **G2a-R4 — Convertisseur** : `SpriteWriter` écrit le mode semi de chaque `.sprite` depuis les bits 3-5 de l'octet `Spritesheet` de
+  sa signature (1836 sprites) ; les autres `.sprite` ne changent pas.
+- **G2a-R5 — DLL** : rien (les entités passent par le moteur).
+
+**Tâches.**
+- **G2a-1 — Moteur, tests d'abord** (branche du sous-module empilée sur `chantier/e19k2-layer-mask`, plan du moteur dans son
+  `ai-agent/tasks/`, ADR du moteur) : tests sur la liste des entrées en file (le dessin du périphérique ne tourne pas sans GPU) : une
+  entrée `None` = une entrée, fenêtre par défaut, état opaque ; une entrée de chaque mode = deux entrées de même clé, fenêtres et états
+  ci-dessus, teinte (64, 64, 64) pour le mode 3 ; `SpriteData` lu et écrit avec et sans le champ (absent = `None`, `None` jamais
+  écrit) ; garde du plafond de 10 000 ; **démo** du moteur (une scène, un sprite de chaque mode sur un fond connu) et capture du
+  back-buffer en processus (`GetBackBufferData`, mémoire de la session) dont des pixels choisis égalent les formules PSX à un niveau
+  de 8 bits près.
+- **G2a-2 — Convertisseur, tests d'abord** : le mode lu de la signature (un sprite de chaque mode sur données réelles, un sprite non
+  semi sans champ), puis le pointeur du sous-module ; export complet en place, manifeste : exactement les 1836 `.sprite` semi et
+  `report.json` ; double export ; `Alundra.Tests` en Release puis en Debug sur l'export.
+- **G2a-3 — Vérification**, **G2a-4 — Recette** (auteur) : le héros et les PNJ (parties semi-transparentes : lueurs additives, ombres
+  moyennées), avec une capture du back-buffer.
+
+**Acceptation.**
+1. Tests de G2a-1 et G2a-2 rouges d'abord, verts après ; la capture de la démo égale les formules PSX (pixels écrits d'avance).
+2. Tests existants touchés : aucun côté DLL ; côté moteur, ceux qui comptent les entrées en file d'un sprite (à nommer par l'audit
+   des valeurs) ; côté convertisseur, ceux qui épinglent le contenu d'un `.sprite` (à nommer par l'audit) ; toute autre assertion qui
+   bouge est un arrêt.
+3. Export : exactement 1836 `.sprite` et `report.json` ; double export identique hors `report.json`.
+4. `CasaEngine.Tests` (construit à part) ; tests du convertisseur ; `Alundra.Tests` en Release puis en Debug, la Debug en dernier,
+   `cmp` sans écart ; les six traces à l'octet.
+
+**Retour arrière** : pointeur du sous-module et commit du convertisseur ; ré-export en place, manifeste égal au manifeste d'avant.
+
+**Risques.** Les quads déformés restent dessinés en rectangle jusqu'à G2b ; la teinte du mode 3 (64 au lieu de 63 pour les fonds) ;
+l'alpha du back-buffer réécrit par le mode 0 (captures en processus) ; un sprite partagé par des quads de modes différents est
+impossible (le mode est dans la signature).
 
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 
