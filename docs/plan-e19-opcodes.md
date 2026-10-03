@@ -5061,6 +5061,79 @@ quads par image (pas de 128 entités du moteur, pas de `.anim2d`) ; la semi-tran
 dans le moteur (rapports de manque, jamais de contournement en amont) ; le tri reprend la formule des entités dans la couche
 triée du monde ; les données d'effets s'exportent en données, pas en images précuites.
 
+### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ⏳
+
+**Constat de l'auteur** (conversion relancée, DLL reconstruite) : contacts avec les PNJ bons ; sons et musique bons ; boîtes de
+dialogue toujours celles de MGUI ; scène de Lars et Melzas toujours fausse, halo plus petit que la fenêtre ; on traverse les
+boîtes ; le HUD n'apparaît pas à la sortie de la chambre (seulement après l'écran de sauvegarde ou l'inventaire) ; portes des
+maisons d'Inoa fermées ; devant le manoir de Tarn, après la scène des Murggs, le contrôle ne revient pas.
+
+**Enquête** (2026-10-03, lecture seule, un enquêteur et un contre-vérificateur par point, notes dans le scratchpad de la
+session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
+- **Boîte de dialogue** : E19.f (en pause : Q-F1 à Q-F3) ; une ré-extraction n'y change rien.
+- **Portes d'Inoa** : ce sont des effets de carte qui apparaissent au chargement (découverte d'E19.g) : E19.g (en pause : Q-G1 à
+  Q-G5).
+- **HUD** **[binaire]** (confirmé) : le bloc d'entrée de carte de la boucle principale (`0x8002c2b8`) appelle
+  `InitializeHudPositionBeforeHide` (`0x8004be0c`, en `0x8002c3d0`) ; si le verrou G1662 (posé par 163 `B[1] @208`) est posé et
+  que `g_drawFrameFlags` vaut 0, il pose 5 et le HUD glisse à l'écran. Toute sortie de la chambre de la 163 est un warp complet
+  (portails d'effet 0). Dans la DLL, `AlundraHudDirector.InstallForMapEntry` est vide (sa doc s'appuie sur une preuve fausse :
+  `GameEngine.cs:215` et `:1090` appellent bien cette fonction) ; seuls la fermeture de l'inventaire et l'écran de sauvegarde
+  l'appellent, d'où le constat de l'auteur. **Défaut du port**, correction de la DLL seule (R1).
+- **Scène de la 476** (confirmé) : (a) le cadre elliptique gris vers noir est la couche cellulaire 0 de la carte (bandes à
+  vagues, mélange additif ABR1, texels STP), allumée au chargement et fixée à l'écran : **fidèle**, l'original l'a aussi (il
+  couvre tout l'écran 320 × 240, la fenêtre de 1280 × 944 comprise) ; (b) la carte « en partie noire » : les scripts de la 476
+  copient par `0x85` la chambre de Lars et la salle du trône (sols de hauteur 3) dans la zone vide de la vision ; le binaire
+  copie les cases entières et redessine les sols depuis le tableau vivant chaque image (`0x8002CDA0`, `0x8002D0F8`-`0x8002D174`) ;
+  `AlundraCellVisualSync.ProcessCellFloor` refuse d'adopter un sol surélevé dans une case sans sol à plat et journalise 18 960
+  avertissements : **défaut du port** (le cas dégradé de D-E7-3 est plus large que sa propre formulation), correction de la DLL
+  seule (R2) ; (c) l'aura (`0xA2`/`0x92`/`0x93`/`0x91`) : E19.g ; (d) Melzas paraît plein et bleu : 1856 de ses 1864 quads sont
+  semi-transparents additifs et déformés : E19.g, question Q-G2 ; (e) la fenêtre : la DLL montre 320 × 236 (décompilation), le
+  binaire fixe 320 × 240 (`0x800424AC`) : 4 lignes de moins, sans rapport avec le halo (O-E19-46).
+- **Manoir de Tarn** **[binaire]** (confirmé) : carte 15 (la cour devant le manoir, portail 0 vers la 115). L'événement 0, `B[1]`,
+  boucle sans fin en `@108`-`@111` (`0x00`, `0x2C [2]`, `0x04` vers 108) : il attend que le Murgg d'enregistrement 2 ait disparu.
+  Le Murgg se détruit à la fin de son script (`C[8] 0x2E [0x80] @890`), mais la DLL ne recycle jamais les créneaux détruits : le
+  mandataire reste dans la liste avec `EntityRefId` 2 et la recherche le trouve toujours ; le binaire recycle chaque tick
+  (`UpdateDestroyedEntities` `0x80038634`, premier appel d'`UpdateEntities`, sous la porte `0x48` ; gabarit à `EntityRefId` −1)
+  et rend `Result` 1 deux images plus tard. La scène n'a besoin ni du combat ni de l'IA native : **défaut du port** (limite
+  « invisibilité, pas retrait » consignée comme P3 hors chaîne, son effet sur les attentes de scripts ne l'était pas). Même
+  blocage ailleurs sans combat (exemple : carte 6, `B[2] @239`, attente de Jess). Non établi : le script `C[8]` du Murgg 2
+  pourrait aussi caler avant `@890`. Correction : R3 (décision et ADR, plan à écrire).
+- **Boîtes** (confirmé) : ce sont les caisses et cruches soulevables (`Caisse en bois générique`, `Cruche générique`,
+  `Cruche n°2`, drapeaux `0x3323E4`, type de levage 1) ; la sonde d'obstacles les ignore exprès : **écart consigné D-E19-28**
+  (ADR-0021, O-E19-23) jusqu'à E14 (porter, lancer). Le binaire les traite comme obstacles tant qu'elles ne sont pas portées ;
+  les rendre pleines sans « porter » fermerait la 392 (la barricade de caisses ne laisse qu'une fenêtre de 3 px en Y sur la caisse
+  5). Décision de l'auteur (R4).
+
+**Tâches.**
+- ⏳ **R1 — HUD à l'entrée de carte** : `AlundraHudDirector.InstallForMapEntry` appelle `InitializeHudPositionBeforeHide()` (port
+  de l'appel en `0x8002c3d0` ; ses deux portes du binaire y sont déjà : le verrou G1662 et `Phase == Idle`) ; docs fausses
+  corrigées (`AlundraHudDirector.cs` ~22-26, ~200-217, ~235-242, ~449-451 ; doc d'`InstallHudSystems` dans `AlundraWorldProxy.cs`
+  ~1066-1072 ; `docs/intro-roadmap.md` ligne 9 du tableau ~333 ; `docs/test-saves.md` ; ce plan ~2602 ;
+  `docs/plan-e16-etat-partie.md` ~1148 ; `docs/plan-e13d-inventaire.md` ~231-235). Tests d'abord : verrou posé, `Idle`,
+  `AttachToWorld` puis `InstallForMapEntry` → `Opening` et la table d'ouverture jusqu'à `Displayed` ; verrou clair → `Idle` ;
+  au niveau du mandataire, G1662 posé sur l'état de session puis `InitializeWithWorld` sur une carte réelle → `Opening`, sans le
+  verrou → `Idle` ; nouvelle partie sur la 389 → `Idle` ; chargement d'une sauvegarde portant G1662 → `Opening` ; le test existant
+  `AttachToWorld_RePointsWithoutResetting_InstallForMapEntry_DoesNotResetEither` reste vert. Écart connu : un portail d'effet 3
+  vers la même carte (28 dans les données, hors chaîne) recharge le monde dans la DLL (D-T-7) et armera aussi le HUD.
+  Commit : `fix(alundra): arm the HUD at map entry like the binary`
+- ⏳ **R2 — Sols copiés par `0x85`** : `AlundraCellVisualSync` note à la création les cases **sans sol à plat à elles** (aucun
+  sol au chargement, ou un sol de chargement qui était une pose de la surcouche) ; dans `ProcessCellFloor`, une case mutée sans
+  entrée de sol dans le modèle et sans sol à plat à elle adopte son nouveau sol dans la surcouche triée, quelle que soit sa
+  hauteur, placé en (x, y − hauteur) avec `WallPlacementOverlay.ComputeFloorSortKey(y, ComputeDepthSlot(raw), newStableId)`
+  comme les entrées re-dérivées ; le cas dégradé ne reste que pour une case dont le sol vit dans une couche à plat (D-E7-3), avec
+  un seul avertissement par monde. Tests d'abord (`AlundraCellVisualSyncTests`) : copier un bloc de sols de hauteur 3 dans une zone
+  vide ajoute des entrées de sol en (x, y − 3) aux bons identifiants locaux ; recopier le bloc vide les retire ; un sol de hauteur
+  0 copié dans une case vide est adopté ; une case à sol à plat reste dégradée, un seul avertissement ; les tests de la 389
+  inchangés. Commit : `fix(alundra): draw floors that 0x85 copies into empty cells like the binary`
+- ⏳ **R3 — Recyclage des entités détruites** (plan à écrire, décision D-E19 et ADR) : port d'`UpdateDestroyedEntities`
+  (`0x80038634`) juste après chaque passe des événements de carte, sous la même porte ; forme la plus fidèle : remise à zéro du
+  mandataire en place sur le gabarit du binaire (état 0, `EntityRefId` −1, drapeaux 0, liens effacés), retiré des listes de mise à
+  jour et de collision, caché ; arc rouge d'abord sur la carte 15 (arrêt attendu en `B[1] @109`, puis jusqu'à `0x11 @119`) ;
+  épingles existantes qui observent un cadavre à re-mesurer (A11 ~406-408, A18 ~278-280, A8 ~113-114 et ~251).
+- ⏳ **R4 — Boîtes** : décision de l'auteur (garder D-E19-28 jusqu'à E14, ou avancer une tranche « porter et lancer »).
+- 🧪 **R5 — Recette** (auteur) : sortir de la chambre de la 163 (le HUD glisse à l'écran) ; la 476 (les pièces apparaissent dans
+  le cadre) ; la carte 15 après R3.
+
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
 Chaque arc part d'une carte chargée seule, avec des drapeaux posés et le héros placé. Les valeurs
@@ -5367,6 +5440,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-43 | **Cycle de palettes de `0xA4`** (E19.k2) : `0xA4 [b1, b2 > 0]` lance un programme de cycle de palettes (`0x80186790`) dont le décalage (`0x800C490C`) s'ajoute à l'octet de palette des tuiles et des couches cellulaires (`0x8005C574`, `0x8005CDBC`, `0x8005D544`) : la carte entière change de couleurs. Non porté par E19.k2 (trace `Degraded`) ; hors chaîne (carte 471 selon la découverte). Il demande un décalage de palette des tuiles dans le moteur. | plus tard (moteur) |
 | O-E19-44 | **Portes manquantes de l'aimantation au sommet** (vérification d'E19.h3, P3) : dans le binaire, l'aimantation (`0x80037848`) n'est atteinte que si le pas XY demande une force (`+0xE4`/`+0xE8` non nuls, sinon saut de `0x800377A0` à `0x80037DC0`) et elle est défaite quand le pas est entièrement bloqué (`0x80037938`-`0x80037948` rendent X, Y et Z) ; la DLL aimante dès que Gravity et `ForceZ == 0`. Émulation : saut sur place sous une boîte dont le bas est à 34 px, le binaire touche le plafond (t1 131072) et atterrit à t4, la DLL s'aimante au sol dès t1. Aucun plafond du corpus n'est à moins de 40 px du terrain. | E19.m |
 | O-E19-45 | **Convention de `PosZ` à l'apparition** (conception d'E19.h1b) : la DLL tient partout `PosZ` = celle du binaire moins 1 (atterrissage à `T`), sauf à l'apparition (`z − ModZ + 1`, fabrique ~657) et dans `0x8A`/`0x64`. Le `+ 1` est perdu au premier tirage de tête d'image pour une entité à contrôleur, ce qui la fait passer à travers un appui exact ; c'est ce que masque aujourd'hui l'appui d'apparition sans portée (O-E19-15). **Question** : passer l'apparition en convention de la DLL (abandonner le `+ 1`, relever à `max(PosZ, T)`), décision transversale à consigner en ADR, ou garder la convention du binaire à l'apparition et la traiter autrement ? Recommandation : convention de la DLL à l'apparition (la fabrique ; `0x8A` et `0x64` à examiner dans la même ADR). | auteur, puis E19.h1b et E19.h2 |
+| O-E19-46 | **Hauteur affichée** (recette du 2026-10-03, 476) : la DLL montre 320 × 236 (`AlundraCameraMath.CameraDisplayHeight` 236, fenêtre 1280 × 944, valeur de la décompilation) ; le binaire fixe ses environnements de dessin et d'affichage à 320 × 240 (`0x800424AC`, `SetDefDrawEnv`/`SetDefDispEnv` 0x140 × 0xF0) : quatre lignes de moins dans la DLL. La fenêtre est aussi redimensionnable sans bandes (`AllowUserResizing`, zoom fixé par monde sur la hauteur) : élargie, l'image ne couvre plus les côtés. **Question** : passer à 240 (1280 × 960), et que faire d'une fenêtre redimensionnée (bandes, zoom recalculé, ou taille fixe) ? | auteur |
 
 ## 4. Hors périmètre
 
