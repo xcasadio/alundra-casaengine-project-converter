@@ -1918,20 +1918,8 @@ public class AlundraEventProgramRunnerTests
         Assert.Equal(5u, runner.ResolveDirectionFromParam(entity, 0xE5));
     }
 
-    [Theory]
-    [InlineData(0x80u)] // mode 4 (random cardinal), result=0.
-    [InlineData(0xA0u)] // mode 5 (random 0..31), result=0.
-    public void ResolveDirectionFromParam_RandomModes_ThrowNotSupported(uint encodedDir)
-    {
-        var runner = NewRunner(NewDocument(0xFF));
-        var entity = NewEntity();
-
-        // Pre-read census (docs/plan-e4-deplacement-scripte.md "MANDATORY PRE-READ"): no 0x5A/0x5B
-        // occurrence in map 389's own programs decodes to mode 4/5 - this path is provably unreached in
-        // practice, so it must fail loudly instead of silently guessing a direction (no faithful PSX RNG
-        // port exists).
-        Assert.Throws<System.NotSupportedException>(() => runner.ResolveDirectionFromParam(entity, encodedDir));
-    }
+    // Modes 4 and 5 (random) are covered by AlundraRandomDirectionModesTests (E19.m0), in the collection that
+    // serialises the shared generator's static state.
 
     [Fact]
     public void CheckEntityInArea_0x07_MatchInsideBox_ResultOne()

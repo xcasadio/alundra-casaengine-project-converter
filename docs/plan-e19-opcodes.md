@@ -6529,7 +6529,7 @@ plafond absolu) ; **G5** moteur (erreur du réglage qui ne nomme pas la clé) ; 
   trouvé avec d'autres entités ; à recenser (sites en mode 6 avec une recherche qui rend le héros et une autre entité) puis à porter
   (groupe G4).
 
-#### 1.2s.1 E19.m0 — Modes aléatoires de `ResolveDirectionFromParam` (M-04) ⏳ (relectures n°1 et n°2 REVISE ; resserrée et corrigée ; relecture de clôture)
+#### 1.2s.1 E19.m0 — Modes aléatoires de `ResolveDirectionFromParam` (M-04) ✅ (relectures n°1 et n°2 REVISE ; resserrée et corrigée ; relecture de clôture)
 
 **Faits** **[binaire]** (question bornée du 2026-10-03, `e19m0-disc/notes.md` du scratchpad) :
 - `0x8003CFC8` : `result = a1 & 0x1F`, `mode = a1 >> 5` (8 ou plus : 0) ; table de sauts en `0x80023C60` : mode 4 → `0x8003D060`,
@@ -6577,6 +6577,15 @@ site sur la chaîne). **Retour arrière** : revert du commit (DLL seule).
 
 **Risques.** Les tirages du flux partagé se décalent pour les sites portés suivants (`0x0C`, `0x8C`, et la chute des cellules qui y
 puise à tort, O-E19-48) : le flux de la DLL ne suit déjà pas l'original tirage pour tirage (2 sites sur 93 portés).
+
+- **Fait le 2026-10-03** (M0-1, M0-2) : nouveau fichier `Alundra.Tests/AlundraRandomDirectionModesTests.cs` (collection
+  `AlundraRandomStaticStateCollection`, 11 cas : 3 germes en mode 4, 3 en mode 5, l'alternance 4-5-4 avec l'état final `0xE4013D62`, un
+  tirage `0x35E36190`, `0x9F` et `0xBF`, le test sur les octets réels de la 167 à `CodeIndex` 144). Rouges d'abord : les 11 sur
+  `NotSupportedException` de `AlundraEventProgramRunner.cs:3026` (le test de la 167 compris, donc l'export était présent). Verts
+  après le code : 11 sur 11, toutes les valeurs écrites tenues sans en changer une (167 : `CodeIndex` 152, direction 0, animation 8,
+  germe `0x35E36190`). Test existant touché : seulement `ResolveDirectionFromParam_RandomModes_ThrowNotSupported` (supprimé,
+  remplacé). Suite `Alundra.Tests` en Debug : 2548 réussis, 0 échec ; six traces à l'octet (rc 0), les quatre du héros remises.
+  Release non lancée (consigne du brief). Écart : aucun.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 

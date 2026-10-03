@@ -2991,12 +2991,13 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// <summary>
     /// Full port of <c>GameEngine.ResolveDirectionFromParam</c> (GameEngine.cs:2325-2382, address
     /// 0x8003cfc8) - the 3 high bits of <paramref name="encodedDir"/> select one of 8 modes, the low 5
-    /// bits (<c>result</c>) feed most of them. Modes 4/5 (random, <c>Random.Next()</c>) are NOT ported -
-    /// no faithful PSX RNG exists in this runtime - and throw instead of silently guessing: the E4.c
-    /// pre-read census (docs/plan-e4-deplacement-scripte.md "MANDATORY PRE-READ") decoded every real
-    /// 0x5A/0x5B direction-parameter occurrence in map 389's own programs and found mode 2 (cardinal)
-    /// exclusively, so this path is provably unreached by the intro; a future map that DOES reach it must
-    /// stop here loudly, not silently fall back to a wrong direction.
+    /// bits (<c>result</c>) feed most of them. Modes 4 and 5 draw once from the shared generator
+    /// (<see cref="AlundraRandom"/>, the binary's inlined LCG on the state word at 0x80098708) and ignore
+    /// <c>result</c> (E19.m0, docs/plan-e19-opcodes.md 1.2s.1): mode 4 (0x8003D060) returns
+    /// <c>CardinalDirectionTable[new &gt;&gt; 30]</c> (table at 0x80023644, the same one as mode 2), mode 5
+    /// (0x8003D0BC) returns <c>new &gt;&gt; 27</c> (0..31); both store the new seed (0x8003D08C, 0x8003D0E8)
+    /// and are reached through the jump table at 0x80023C60 from 0x8003CFC8. Known gap: the binary walks the
+    /// matches of 0x5A/0x5B from the last to the first, the DLL from the first to the last (M-47).
     /// </summary>
     internal uint ResolveDirectionFromParam(AlundraEntityScriptProxy entity, uint encodedDir)
     {
@@ -3021,13 +3022,11 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 return (toPlayer + encodedDir) & 0x1f;
             }
 
-            case 4: // Random cardinal - RNG not ported, see this method's own doc.
-            case 5: // Random direction (0..31) - RNG not ported, see this method's own doc.
-                throw new NotSupportedException(
-                    $"ResolveDirectionFromParam: mode {encodedDir >> 5} (random) requires a PSX RNG port "
-                    + "that does not exist in this runtime - the E4.c pre-read census found no map-389 "
-                    + "occurrence reaching this mode, so hitting it live is unexpected; refusing to guess "
-                    + "a direction instead of silently deviating from the original.");
+            case 4: // Random cardinal: one draw, table[new >> 30] (0x8003D060).
+                return AnimationTables.CardinalDirectionTable[(uint)AlundraRandom.Next() >> 30];
+
+            case 5: // Random direction (0..31): one draw, new >> 27, no mask (0x8003D0BC).
+                return (uint)AlundraRandom.Next() >> 27;
 
             case 6: // The PLAYER's current TargetDirection, plus result (not toward-target, unlike mode 3).
             {
