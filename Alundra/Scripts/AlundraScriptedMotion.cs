@@ -237,9 +237,16 @@ internal static class AlundraScriptedMotion
             return false;
         }
 
+        // E19.d2c2 S2 (a fall): outside the air state and without impulse, the first tick of a frame enters it when the head-of-frame pull of that frame found the
+        // hero not on the ground and was reliable (the vertical not held elsewhere). Only with the gravity bit (the binary applies no gravity without it). The
+        // decision is taken once per frame: the pull's flag is consumed here.
+        var fall = !hero.HeroAirborne && !impulse && !hero.HeroFlyMarked && hero.HeadPullGroundTrusted && hero.IsOnGround == 0
+            && (hero.Flags & EntityFlags.Gravity) != 0;
+        hero.HeadPullGroundTrusted = false;
+
         if (!hero.HeroAirborne)
         {
-            if (!impulse && !hero.HeroFlyMarked)
+            if (!impulse && !hero.HeroFlyMarked && !fall)
             {
                 return false;
             }
@@ -247,10 +254,16 @@ internal static class AlundraScriptedMotion
             hero.AirborneSavedGravity = controller.Settings.Gravity;
             hero.AirborneSavedMaxFallSpeed = controller.Settings.MaxFallSpeed;
             hero.AirborneSavedVerticalOwned = controller.IsVerticalOwnedExternally;
+            hero.AirborneSavedStepHeight = controller.Settings.StepHeight;
             controller.Settings.Gravity = 0f;
             controller.Settings.MaxFallSpeed = 0f;
             controller.IsVerticalOwnedExternally = true;
             hero.HeroAirborne = true;
+            if (fall)
+            {
+                // The binary at rest lands at every tick (ForceZ 0); the climb leaves +-0x10000. The map's gravity then plays from this very tick.
+                hero.ForceZ = 0;
+            }
         }
 
         hero.HeroFlyMarked = false;
@@ -298,9 +311,7 @@ internal static class AlundraScriptedMotion
         if (landed)
         {
             hero.HeroAirborne = false;
-            controller.Settings.Gravity = hero.AirborneSavedGravity;
-            controller.Settings.MaxFallSpeed = hero.AirborneSavedMaxFallSpeed;
-            controller.IsVerticalOwnedExternally = hero.AirborneSavedVerticalOwned;
+            RestoreAirborneEngineValues(hero, controller);
             if (hero.AirborneSavedVerticalOwned)
             {
                 controller.SetExternalVerticalDisplacement(AlundraGameplayFreeze.OwnerExternalVerticalDisplacement(hero));
@@ -309,9 +320,25 @@ internal static class AlundraScriptedMotion
         else
         {
             controller.SetExternalVerticalDisplacement(AirborneExternalDisplacementSentinel);
+
+            // E19.d2c2 S6 (binary 0x80037524-0x80037538): no step tolerance in the air - a corner of a cell blocks when its height is above the foot; the 3 px of
+            // tolerance only play at ForceZ == 0 (0x80037848). The engine's rule (ground height above foot + StepHeight) then gives the binary's exactly.
+            controller.Settings.StepHeight = hero.ForceZ != 0 ? 0f : hero.AirborneSavedStepHeight;
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Gives the engine the values captured at the entry of the air state (its gravity, <c>MaxFallSpeed</c>, vertical ownership and, E19.d2c2 S6,
+    /// <c>StepHeight</c>): the landing, and the adoption of a new pawn while the state is up (<c>AlundraWorldProxy.AdoptPlayerPawn</c>).
+    /// </summary>
+    internal static void RestoreAirborneEngineValues(AlundraEntityScriptProxy hero, CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent controller)
+    {
+        controller.Settings.Gravity = hero.AirborneSavedGravity;
+        controller.Settings.MaxFallSpeed = hero.AirborneSavedMaxFallSpeed;
+        controller.Settings.StepHeight = hero.AirborneSavedStepHeight;
+        controller.IsVerticalOwnedExternally = hero.AirborneSavedVerticalOwned;
     }
 
     /// <summary>

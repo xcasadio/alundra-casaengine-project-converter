@@ -618,8 +618,8 @@ public class HeroTraceHarnessTests
             sb.Append($"# scripted repositioning uses, e.g. opcode 0x64) to tile (24,56), pixel (588,904,32) -\n");
             sb.Append("# a non-slope, height-2 (32px) tile whose east neighbor (tile 25,56) is height-0 (this\n");
             sb.Append("# map's own global floor minimum) - a real 32px cliff. The pad then switches to Right\n");
-            sb.Append("# (east); the hero walks off the cliff and FALLS for real (engine gravity, no scripted\n");
-            sb.Append("# Z-only bump) before landing back on the real height-0 floor. Neither this tile nor\n");
+            sb.Append("# (east); the hero walks off the cliff and FALLS for real (the tick-held air state, E19.d2c2 S2,\n");
+            sb.Append("# the map's gravity, no scripted Z-only bump) before landing back on the real height-0 floor. Neither this tile nor\n");
             sb.Append("# any climb is reachable from the real New Game walk itself (§2.6 bis) - the reposition\n");
             sb.Append("# is a documented, one-shot relocation, not a claim that this position is reachable.\n");
         }
@@ -770,15 +770,15 @@ public class HeroTraceHarnessTests
         var firstAirborneAfterReposition = postRepositionLines.First(l => l.IsOnGround == 0);
         Assert.Equal(221, firstAirborneAfterReposition.Frame); // first frame the wider cliff-edge probe misses ground.
 
-        // The FIRST airborne frame's own posZ has not moved yet (gravity only starts building velocity
-        // that frame - the very next controller Update, same shape as PhysicsEngine's own one-tick lag);
-        // the NEXT frame is where the real, engine-driven descent becomes visible.
-        Assert.Equal(2097152, firstAirborneAfterReposition.PosZ);
+        // E19.d2c2 (S2): the fall enters the air state the logic tick holds at the tick of this very frame (the head-of-frame pull saw no ground): the map's
+        // gravity plays from that tick (ForceZ -32768 = half a pixel), so the first airborne frame is already 0.5 px below the 32 px of the ledge, and each
+        // next frame is lower (before: the engine's own gravity needed one more frame to show the descent).
+        Assert.Equal(2064384, firstAirborneAfterReposition.PosZ);
         var firstDescendingFrame = postRepositionLines.First(l => l.Frame == firstAirborneAfterReposition.Frame + 1);
-        Assert.True(firstDescendingFrame.PosZ < 2097152, "posZ must genuinely decrease the frame after going airborne (real gravity, not a frozen bump).");
+        Assert.True(firstDescendingFrame.PosZ < firstAirborneAfterReposition.PosZ, "posZ must genuinely decrease the frame after going airborne (real gravity, not a frozen bump).");
 
         var landingLine = postRepositionLines.First(l => l.Frame > firstAirborneAfterReposition.Frame && l.IsOnGround == 1);
-        Assert.Equal(232, landingLine.Frame);
+        Assert.Equal(231, landingLine.Frame); // E19.d2c2: the strict landing of the air state (was 232 with the engine's own fall).
         Assert.Equal(0, landingLine.PosZ); // lands exactly on the real height-0 floor.
         Assert.True(landingLine.Frame > firstAirborneAfterReposition.Frame + 1, "the fall must last more than one frame.");
     }

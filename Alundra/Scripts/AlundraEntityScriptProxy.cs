@@ -230,6 +230,17 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// <summary>See <see cref="AirborneSavedGravity"/>.</summary>
     internal bool AirborneSavedVerticalOwned;
 
+    /// <summary>See <see cref="AirborneSavedGravity"/>: the <c>Settings.StepHeight</c> of the controller (E19.d2c2 S6, the air state sets it to 0 while <see cref="ForceZ"/> is not 0).</summary>
+    internal float AirborneSavedStepHeight;
+
+    /// <summary>
+    /// Engine-only (E19.d2c2 S2): the head-of-frame pull of the root (<c>RunGameplayBlockableUpdate</c>) found the vertical NOT held elsewhere (no climb, no
+    /// departure of transition, no freeze: <c>IsVerticalOwnedExternally</c> false) and the hero not in the air state, so the <see cref="IsOnGround"/> it gave is
+    /// reliable. The first tick of the frame consumes it: a hero with a controller, outside the air state, enters it without impulse when this pull said not
+    /// on the ground. Cleared by that tick (the decision is taken once per frame).
+    /// </summary>
+    internal bool HeadPullGroundTrusted;
+
     /// <summary>
     /// Engine-only (E19.d2c2 S1, docs/plan-e19-opcodes.md §1.2h.3.2): the <see cref="MotionTickCount"/> at which <c>MovePlayer</c> last wrote the take-off
     /// animation (2 or <c>0x2B</c>), -1 for never. <c>MovePlayer</c> runs once per rendered frame while the binary's runs once per tick: while no tick has run
@@ -1119,6 +1130,9 @@ public class AlundraEntityScriptProxy : GameplayProxy
             {
                 IsOnGround = Controller.IsGrounded ? 1 : 0;
             }
+
+            // E19.d2c2 S2: this pull is a reliable ground reading only when the vertical is not held elsewhere (a ladder, a departure, a freeze all declare it external).
+            HeadPullGroundTrusted = !HeroAirborne && !Controller.IsVerticalOwnedExternally;
         }
 
         if (!IsPlayer)

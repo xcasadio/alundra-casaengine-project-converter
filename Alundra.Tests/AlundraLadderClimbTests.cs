@@ -395,8 +395,9 @@ public class AlundraLadderClimbTests
     }
 
     /// <summary>
-    /// A hero in mid-fall (the jump is not ported, so a fall is the port's airborne case, plan §1.1) holds its
-    /// height for as long as the world is frozen, then falls on with the vertical velocity it had.
+    /// A hero in mid-fall holds its height for as long as the world is frozen, then falls on with the force it had. E19.d2c2 (S2): the fall is the air state
+    /// the logic tick holds - <c>ForceZ</c> decays by <c>MapGravityRaw &lt;&lt; 8</c> = 32768 per tick from 0 and <c>PosZ</c> follows - not the engine's
+    /// own gravity any more (which is 0 during the state, the vertical external).
     /// </summary>
     [Fact]
     public void GameplayFreeze_MidFall_HeroHoldsItsHeight_ThenFallsOnWithTheSameVelocity()
@@ -408,30 +409,46 @@ public class AlundraLadderClimbTests
 
         var host = (PlayerScriptHost)proxy.ScriptHost!;
         SetElevatedPosZ(entity, proxy, LadderGroundHeightPx * 65536 + 40 * 0x10000);
-        proxy.TargetAnimationId = 0u; // Idle, not climbing: the engine owns the vertical.
+        proxy.TargetAnimationId = 0u; // Idle, not climbing: the logic tick owns the vertical in the air.
+        proxy.MapGravityRaw = 128; // as AdoptPlayerPawn posts them (without them the state never lands).
+        proxy.MapZViscosityRaw = 4096;
         world.Update(1f / 50f);
         world.Update(1f / 50f);
-        Assert.Equal(CasaEngine.Framework.Scene.Entities.Components.CharacterMovementState.Falling, proxy.Controller!.MovementState);
-        var fallingVelocity = proxy.Controller!.Velocity;
-        Assert.True(fallingVelocity.Z < 0f, $"expected a downward velocity, got {fallingVelocity}");
-        var frozenRootZ = entity.RootComponent!.LocalTransform.Position.Z;
+        Assert.True(proxy.HeroAirborne);
+        Assert.True(proxy.Controller!.IsVerticalOwnedExternally);
+
+        // Before the freeze: ForceZ decays by 32768 per tick from 0, PosZ follows it.
+        var previousForce = proxy.ForceZ;
+        var previousPosZ = proxy.PosZ;
+        Assert.True(previousForce < 0 && previousForce % 32768 == 0, $"ForceZ {previousForce}");
+        for (var frame = 0; frame < 3; frame++)
+        {
+            world.Update(1f / 50f);
+            Assert.Equal(previousForce - 32768, proxy.ForceZ);
+            Assert.Equal(previousPosZ + proxy.ForceZ, proxy.PosZ);
+            previousForce = proxy.ForceZ;
+            previousPosZ = proxy.PosZ;
+        }
 
         host.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
         AlundraGameplayFreeze.Apply(proxy, gameplayBlocked: true);
         for (var frame = 0; frame < 5; frame++)
         {
             world.Update(1f / 50f);
+            Assert.Equal(previousPosZ, proxy.PosZ);
+            Assert.Equal(previousForce, proxy.ForceZ);
+            Assert.True(proxy.Controller!.IsVerticalOwnedExternally);
         }
-
-        Assert.Equal(frozenRootZ, entity.RootComponent!.LocalTransform.Position.Z);
 
         host.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
         AlundraGameplayFreeze.Apply(proxy, gameplayBlocked: false);
-        Assert.Equal(fallingVelocity, proxy.Controller!.Velocity);
-        Assert.Equal(CasaEngine.Framework.Scene.Entities.Components.CharacterMovementState.Falling, proxy.Controller!.MovementState);
+        Assert.Equal(previousForce, proxy.ForceZ);
+        Assert.Equal(previousPosZ, proxy.PosZ);
 
+        // The fall resumes at the next value of the sequence.
         world.Update(1f / 50f);
-        Assert.True(entity.RootComponent!.LocalTransform.Position.Z < frozenRootZ, "the fall resumes after the thaw");
+        Assert.Equal(previousForce - 32768, proxy.ForceZ);
+        Assert.Equal(previousPosZ + proxy.ForceZ, proxy.PosZ);
     }
 
     // -----------------------------------------------------------------------------------------

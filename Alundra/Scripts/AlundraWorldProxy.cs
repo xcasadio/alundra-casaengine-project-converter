@@ -1714,7 +1714,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // original's own trailing-control-frame-driven animation switch rather than a ground check.
         proxy.IsOnGround = 1;
 
-        // E19.d2c1 R6: a new pawn starts outside the air state the logic tick holds (a state of the former pawn never follows it).
+        // E19.d2c1 R6: a new pawn starts outside the air state the logic tick holds (a state of the former pawn never follows it). E19.d2c2 S6: the engine
+        // values the state captured (its StepHeight above all, 0 in the air) go back to the controller first.
+        if (proxy.HeroAirborne && proxy.Controller != null)
+        {
+            AlundraScriptedMotion.RestoreAirborneEngineValues(proxy, proxy.Controller);
+        }
+
+        proxy.HeadPullGroundTrusted = false;
         proxy.HeroAirborne = false;
         proxy.HeroFlyMarked = false;
         proxy.ZHeldByTick = false;
