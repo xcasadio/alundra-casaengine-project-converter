@@ -4053,7 +4053,7 @@ l'auteur sur l'UI) au patron d'`AlundraSaveScreen` ; le `DialogueScreen` du mote
 l'utiliser ; l'élément « 4+ choix » d'E12.c disparaît (le binaire n'en a pas) ; la machine du portrait volant de
 l'inventaire est généralisée, pas dupliquée ; la passe du dialogue va dans la boucle `padTick` (correction d'A1).
 
-### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) — E19.k1 ✅ (recette K5 en attente) ; E19.k2 ⏳ (esquissée)
+### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) — E19.k1 ✅ (recette K5 en attente) ; E19.k2 ⏳ (planifiée)
 
 **Découverte** (2026-10-03, lecture seule ; notes et scripts dans le scratchpad de la session, `e19k-disc/`). Faits
 porteurs **[binaire]** :
@@ -4209,12 +4209,55 @@ rattrapage à plusieurs ticks, les scripts de tous les ticks passent avant les p
 arcs, à un tick par frame, n'en dépendent pas) ; les deux termes additifs du suivi et les écrivains natifs de la structure
 (O-E19-35) restent à porter avec E14.
 
-##### 1.2k.2 E19.k2 — Masque des fonds `0xA4` ⏳ (esquisse)
+##### 1.2k.2 E19.k2 — Masque des fonds `0xA4` ⏳ (planifiée)
 
-Plan moteur et ADR : couche active par identifiant dans `ScrollingLayerService` et `CellularLayerService` (une couche
-inactive ni n'avance, ni ne se dessine, ni ne tire au hasard ; « toutes actives » à chaque `SetLayers`/`Clear`), rapport de
-manque ; côté DLL, `0xA4` pose le masque par `AlundraBackdropStage` ; le second opérande (cycle de palettes, carte 471
-seulement) est consigné en dégradé, à placer. Sites : 337 à 345, 347, 471, 475, hors chaîne.
+**Faits porteurs** **[binaire]** (découverte d'E19.k, `e19k-disc/notes.md`) : `0xA4 [b1, b2]` (`0x80041098`, taille 3) appelle
+`0x8005D668(b1, b2)` : mode des fonds `0x8018678C = b1`, banque de palettes `0x80181BE4 = b2`, `0x800C490C` (décalage de
+palette) remis à 0, et si `b2 > 0` un programme de cycle de palettes (`0x80186790`). Le dessin des fonds (`0x8005B670`) ne
+traite la couche 0 que si `mode & 1` (`0x8005B848`) et la couche 1 que si `mode & 2` ; l'état par tick d'une couche
+(cadence d'animation, défilement automatique, tirages) est **dans** l'appel gardé : une couche masquée est **figée** et non
+dessinée ; la surcouche (`0x8005BA40`) ne dépend que de l'en-tête de la carte, pas du masque. Au chargement de carte,
+`SetScrollingMode(3, 0)` (`0x8005B63C`) : les deux couches actives, banque 0. Le décalage `0x800C490C` s'ajoute à l'octet de
+palette des **tuiles** et des couches cellulaires (`0x8005C574`, `0x8005CDBC`, `0x8005D544`) : le cycle de palettes touche toute
+la carte. Recensement : 21 sites (cartes 337 à 345, 347, 471, 475), aucun sur la chaîne.
+
+**Choix de conduite** (techniques) : le masque est un manque du moteur (aucune couche active ou inactive dans
+`ScrollingLayerService`) : il se porte dans le moteur (branche dédiée du sous-module, ADR du moteur), jamais contourné dans la
+DLL ; le cycle de palettes (`b2 > 0`, carte 471 seulement selon la découverte) touche les tuiles et sort d'E19.k2 : consigné
+(O-E19-43), trace `Degraded` ; la DLL pose le masque par `AlundraBackdropStage`, qui pousse déjà les couches au service.
+
+**Règles d'exécution.**
+- **K2-R1 — Moteur** : `ScrollingLayerService` gagne un masque des couches actives (`SetActiveLayerMask(int mask)`, bit `i` =
+  couche `i`) ; une couche inactive n'avance pas (`AdvanceLayerOneTick` sauté, son état figé) et ne se dessine pas
+  (`ScrollingLayerComponent`) ; `SetLayers` et `Clear` remettent toutes les couches actives ; le masque d'une couche
+  absente est sans effet. Tests du moteur (`CasaEngine.Tests`, à côté de `ScrollingLayerServiceTests`) ; ADR du moteur.
+- **K2-R2 — DLL** : `0xA4 [b1, b2]` : `AlundraBackdropStage.SetLayerMask(b1 & 3)` qui l'applique au service attaché (sans
+  service : rien, journal une fois) ; `b2 > 0` : journal une fois et trace `Degraded` (O-E19-43) ; taille 3 ; au chargement,
+  le masque revient à 3 par `SetLayers` (comme `SetScrollingMode(3, 0)`). L'index de couche du service est celui du binaire
+  (ordre d'export des couches d'E9.b, à vérifier en premier ; s'il diffère, arrêt).
+
+**Tâches.**
+- ⏳ **K2-0 — Plan**, relu jusqu'à READY.
+- ⏳ **K2-1 — Moteur, tests d'abord** (branche `chantier/e19k2-layer-mask` du sous-module, depuis la `main` du moteur) : deux
+  couches avec défilement automatique et cadence d'animation ; masque 1 puis trois ticks : la couche 0 avance, la couche 1
+  garde son état d'avant (compteurs, défilement) et n'est pas dessinée ; masque 3 : les deux avancent ; `SetLayers` puis aucun
+  masque : les deux actives ; masque 0 : aucune n'avance ni ne se dessine. ADR. Commit (moteur) :
+  `feat(rendering): scrolling layers can be masked off, frozen and not drawn`
+- ⏳ **K2-2 — DLL, tests d'abord** : `[0xA4, 1, 0, 0xFF]` → masque 1 poussé au service, `CodeIndex` 3 (rouge : sauté, aucun
+  masque) ; `[0xA4, 2, 0, …]` → 2 ; `[0xA4, 0, 0, …]` → 0 ; `[0xA4, 3, 5, …]` → 3 et une trace `Degraded` ; sans service : rien,
+  un journal ; chargement d'une carte après un masque 1 : 3. Pointeur du sous-module mis à jour dans le même commit. Commit :
+  `feat(alundra): port the background layer mask opcode 0xA4`
+- ⏳ **K2-3 — Vérification et clôture.** **K2-4 — Recette** (auteur, hors chaîne) : une carte de 337 à 345 où un fond s'éteint et
+  se rallume.
+
+**Acceptation d'E19.k2.**
+1. Tests de K2-1 et K2-2 rouges d'abord, verts après, valeurs écrites tenues.
+2. Code de test existant touché : `IntroTraceHarnessTests.ImplementedOpcodes` ; côté moteur, aucun ; les six traces à l'octet ;
+   la liste fermée de la chaîne inchangée.
+3. `CasaEngine.Tests` sans échec ; `Alundra.Tests` sans échec en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
+4. Recette K2-4 faite par l'auteur.
+
+**Risques.** Le cycle de palettes de la 471 reste absent (O-E19-43) ; l'ordre des couches du service doit être celui du binaire.
 
 ### 1.2l E19.j — Réarmement des événements de carte hors zone ✅ (recette J3 en attente)
 
@@ -5240,6 +5283,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-40 | **Aimantation de descente** (découverte d'E19.h, surface C) : le moteur accepte un sol jusqu'à 4 px sous le pied, une fois par image sur tout le déplacement de l'image (`CharacterControllerComponent.Update`, `GroundSnapDistance` 4 exporté par `SpriteWriter.cs` ~389 et ~432) ; le binaire, 3 px par tick (`0x80037848`). Sur la chaîne, aucune descente de plus de 3 px par tick ; l'écart ne se voit qu'aux images de rattrapage (une pose de chute d'une image). Exporter 3 px casserait SJ-11 et les épingles des PNJ. Un plan moteur (sol résolu par tick) ou un pas vertical tenu par la DLL au sol : consigné, liée à D5 (F3, UH-7b). | plus tard (moteur) |
 | O-E19-41 | **Sons des changements d'animation** (découverte d'E19.h, surface C, question Q-H1 à l'auteur) : le binaire (`UpdateAnimation` `0x80038BB0`-`0x80038BC8`) joue le son de l'animation à chaque changement d'animation de **toute** entité (nouvelle animation, nouvelle ligne de direction, fin de chaîne, `0x1C`, et l'apparition, `InitializeEntity`) ; identifiant `Sfx`, + 0x100 si le bit 0x20 de l'octet 0xD ; la DLL ne joue que le décollage du héros (R8). Porté, il ajoute des sons dans des scènes de la chaîne : 476 (Melzas, 219 au chargement et à `0x8A @553`, 220 à `0x59 @572`), 392 (la course du héros à `0x5B @64`, son 13), le livre de la 178 et de la 179 (204 deux fois), la boule de fer de la 135 (120 à chaque cycle) ; un héros qui arrive par `0x53` en animation de saut réentend le son du décollage. **Questions** : porter la règle pour toutes les entités maintenant (recommandé : oui, comme l'original) ? garder le son à l'arrivée (recommandé : oui, même porte que les autres sons) ? | auteur, puis une sous-tranche d'E19.h |
 | O-E19-42 | **Résolution exacte des contacts** (découverte d'E19.h, surface B, question Q-H2 à l'auteur) : le binaire divise le pas conjointement en 16.16 (`ComputeXYPosition` `0x80037730`) ; une poussée en diagonale contre un PNJ ou contre la pointe d'un coin arrête net Alundra, et le contact est en unités 16.16 (le dernier demi-pas peut s'arrêter 1 à 3 unités avant à l'est et au sud, `ForceAdjusted` un tick plus tard) ; dans la DLL elle glisse le long, et arrive au contact un tick plus tôt à l'est et au sud (O-E19-28 a à d). Le porter demande un plan moteur (un résolveur horizontal tenu par le jeu) et une ADR ; quelques épingles de contact relationnelles bougent de 0 à 3 unités. D-E19-9 ne promettait que le glissement (E19.h4). **Question** : porter la résolution exacte (étape 2), ou accepter le glissement de la DLL ? (recommandé : étape 1 maintenant, étape 2 seulement si l'auteur veut la sensation exacte). | auteur, puis plan moteur |
+| O-E19-43 | **Cycle de palettes de `0xA4`** (E19.k2) : `0xA4 [b1, b2 > 0]` lance un programme de cycle de palettes (`0x80186790`) dont le décalage (`0x800C490C`) s'ajoute à l'octet de palette des tuiles et des couches cellulaires (`0x8005C574`, `0x8005CDBC`, `0x8005D544`) : la carte entière change de couleurs. Non porté par E19.k2 (trace `Degraded`) ; hors chaîne (carte 471 selon la découverte). Il demande un décalage de palette des tuiles dans le moteur. | plus tard (moteur) |
 
 ## 4. Hors périmètre
 
