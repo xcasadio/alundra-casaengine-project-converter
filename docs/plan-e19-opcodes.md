@@ -4782,12 +4782,25 @@ recherche, H3-1 gagne UH-APEX-REVERT, le risque disparaît).
 **Relecture** (2026-10-03) : REVISE n°1 (la table du glissement et le test d'un coin bloqué n'étaient que dans les notes ;
 la règle de `ForceAdjusted` se contredisait, une lecture cassant T-R4 et l'autre faisant tomber le FA des PNJ en oblique ;
 les épingles d'A10J et les comptes du test statique étaient laissés à la mesure) : corrigé (H4-R2 complète, H4-R4, H4-2).
+REVISE n°2 (le prédicat ne disait ni où il s'exécute, ni quel axe compte quand `TargetDirection` ne s'accorde pas avec le
+déplacement demandé ; T-R4 et les tests de mobiles appellent `MoveControllerAndPullPosition` directement avec la direction 0) ;
+dispositions de la session principale : **FIX par réduction** — le glissement et le nouveau prédicat ne s'appliquent que dans
+le pas cinématique (`RunOneKinematicTick`, seul appelant de production de `MoveControllerAndPullPosition`), après son
+`Move`, et seulement quand la direction et le déplacement s'accordent ; `MoveControllerAndPullPosition` garde sa règle
+d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ; une seule relecture de clôture.
 
 **Règles d'exécution.**
 - **H4-R1 — `0x45`/`0x46`** : `Flags &= ~NoObstacleSlide` / `Flags |= NoObstacleSlide` sur l'entité logique, taille 1, sans
   `Result` ni resynchronisation du contrôleur.
-- **H4-R2 — Glissement** (autour de `MoveControllerAndPullPosition`, un tick, convention de la DLL, directions du binaire :
-  0 sud (+Y), 8 ouest, 16 nord, 24 est ; la ligne est choisie par `TargetDirection`, cardinale si `TargetDirection & 7 == 0`) :
+- **H4-R2 — Glissement** (dans `AlundraScriptedMotion.RunOneKinematicTick`, juste après son appel de
+  `MoveControllerAndPullPosition`, qui garde sa règle de `ForceAdjusted` d'aujourd'hui pour tout appel direct ; un tick,
+  convention de la DLL, directions du binaire : 0 sud (+Y), 8 ouest, 16 nord, 24 est ; la ligne est choisie par
+  `TargetDirection`, cardinale si `TargetDirection & 7 == 0`) :
+  - **accord** : la règle ne s'applique que si `TargetDirection < 32` et que le déplacement demandé (`FinalForceX/Y`) s'accorde
+    avec elle : cardinale, seul l'axe de la direction est demandé, avec son signe (0 : `dy > 0`, 8 : `dx < 0`, 16 : `dy < 0`,
+    24 : `dx > 0`, l'autre composante nulle) ; oblique, les deux composantes demandées, aux signes du quadrant (1-7 : `dx < 0`,
+    `dy > 0` ; 9-15 : `dx < 0`, `dy < 0` ; 17-23 : `dx > 0`, `dy < 0` ; 25-31 : `dx > 0`, `dy > 0`) ; sinon (désaccord, ou
+    `TargetDirection >= 32`), le `ForceAdjusted` posé par `MoveControllerAndPullPosition` reste tel quel et aucun glissement ;
   - **coins** : à la position atteinte par le premier `Move`, avancée d'une unité 16.16 dans le sens de la marche (cardinale),
     `x1 = (PosX + ModX) >> 16`, `x2 = (PosX + ModX + Width) >> 16`, `y1`, `y2` de même (`Width = SizeX × 65536 − 1`, `Height =
     SizeY × 65536 − 1`), coins `[0] = (x1, y1)`, `[1] = (x2, y1)`, `[2] = (x1, y2)`, `[3] = (x2, y2)` ; un coin est **bloqué**
@@ -4812,18 +4825,20 @@ les épingles d'A10J et les comptes du test statique étaient laissés à la mes
     donne pas `ForceAdjusted`, un second `Move` du déplacement de la table (un seul par tick ; aucun si le déplacement est
     nul) ; `SlideCount` (compteur du mandataire) augmente de 1 à chaque second `Move` effectivement fait ;
   - **oblique** : pas de second `Move` (le moteur a déjà avancé l'axe libre, O-E19-28 a).
-- **H4-R4 — `ForceAdjusted`** (un seul prédicat, sur les résultats par axe du premier `Move` et du `Move` de glissement) :
-  - cardinale : FA = 0 si le premier `Move` a progressé sur son axe ; sinon FA = 1 si le glissement est interdit (entité en
+- **H4-R4 — `ForceAdjusted`** (dans le pas cinématique seulement, en cas d'accord, H4-R2 ; il remplace la valeur posée par
+  `MoveControllerAndPullPosition` ; « l'axe » est l'axe demandé, « progressé » le sens d'`AxisMadeNoProgress`) :
+  - cardinale : FA = 0 si le premier `Move` a progressé sur l'axe demandé ; sinon FA = 1 si le glissement est interdit (entité en
     contact, bit `0x2000`, `TargetDirection >= 32`), si la table donne FA, si le déplacement est nul, ou si le `Move` de
     glissement n'a pas progressé ; sinon 0 ;
-  - oblique : FA = (l'axe bloqué n'a pas progressé) **et** (glissement interdit, ou table FA, ou aucun axe n'a progressé).
-  T-R4 (pas qui progresse et finit contre une entité : FA 0) reste vert ; un PNJ marqué `0x2000` qui pousse en oblique le long
+  - oblique : FA = (un axe demandé n'a pas progressé) **et** (glissement interdit, ou table FA, ou aucun axe n'a progressé).
+  T-R4 et les tests de mobiles sur les vrais murs de la 389 (`AlundraNpcCharacterControllerMoverTests.cs` ~1529-1640), qui
+  appellent `MoveControllerAndPullPosition` directement, gardent la règle d'aujourd'hui et leurs valeurs ; un PNJ marqué `0x2000` qui pousse en oblique le long
   d'un mur garde FA 1 (aujourd'hui et dans le binaire).
 - **H4-R3** : le commentaire d'UH-6 (`AlundraHeroObjectTopsTests.cs` ~173-185) dit le résultat : {1, 2, 3} pour x0 de 131 à 133
   est celui du binaire, la ligne de l'annexe ({2, 3}) était fausse.
 
 **Tâches.**
-- ⏳ **H4-0 — Plan**, relu jusqu'à READY.
+- ✅ **H4-0 — Plan**, relu jusqu'à READY (REVISE n°1 et n°2, dispositions de la session principale, READY à la relecture de clôture le 2026-10-03).
 - ⏳ **H4-1 — Tests d'abord, puis règles** (montage `JumpHeroRig`, `FlatCells`, cellule de marche 0x40 bloquante, masque de marche du
   héros posé à 0x40 sur les réglages vivants de son contrôleur (le montage le laisse à 0 aujourd'hui), boîte du héros −10, −7,
   21 × 15, Gravity, sol plat) : **T-SL1** (cellule (10,10) bloquée, héros en (263,0 ; 200,0), Haut tenu, force
@@ -4831,14 +4846,14 @@ les épingles d'A10J et les comptes du test statique étaient laissés à la mes
   `PosX` 17235968 ; ticks 9 à 23 : `PosX` + 49152 par tick (17285120 … 17973248), `PosY` 11993088 ; tick 24 `PosY` 11833344, tick
   25 11673600 ; `ForceAdjusted` 0 à chaque tick (rouge : `PosX` reste 17235968, `ForceAdjusted` 1 dès le tick 9). **T-SL2** :
   le même avec `Flags |= 0x2000` : `PosX` 17235968 pour toujours, `ForceAdjusted` 1 dès le tick 9 (garde, vert avant). **T-SL3**
-  (ouest, héros en (300,0 ; 177,0), `FinalForceX` −159744 imposé dès le tick 1) : contact `PosX` 17956864 au tick 11 ; ticks 12 à 23 `PosY` +
+  (ouest, héros en (300,0 ; 177,0), `TargetDirection` 8, `FinalForceX` −159744 imposé dès le tick 1) : contact `PosX` 17956864 au tick 11 ; ticks 12 à 23 `PosY` +
   32768 par tick jusqu'à 11993088 ; tick 24 `PosX` 17797120 ; `ForceAdjusted` 0 (rouge : bloqué à 274,0, `ForceAdjusted` 1 dès
   le tick 12). **T-SL4** (oblique NE, direction 20, force 112944 / −75296, mur aux cellules x ≥ 12, héros en (270,0 ; 400,0)) :
   `ForceAdjusted` 0 à chaque tick (rouge : 1 dès le tick 6) ; `PosY` reste celle d'aujourd'hui (25837920 au tick 5 : pas de
   second `Move` en oblique ; l'avance par axe du moteur reste, O-E19-28 a). **UO-1** `46 FF` sur `Flags` 0x100 → 0x2100, `45 FF` → 0x100, pc + 1, `Result` intact ; par `0x42` dans un
   programme d'enregistrement, c'est le bit du héros qui change. **UO-2** : T-SL2 piloté par le script (`46` puis la marche : pas
   de glissement, `ForceAdjusted` au tick 9 ; `45` : le glissement reprend). **T-SL6** (garde) : un mobile marqué `0x2000` qui
-  pousse en oblique (direction 20) contre un mur de cellules garde `ForceAdjusted` 1 dès le tick du contact (vert avant et
+  pousse en oblique par le pas cinématique (direction 20, force aux signes du quadrant nord-est) contre un mur de cellules garde `ForceAdjusted` 1 dès le tick du contact (vert avant et
   après). T-R4 inchangé et vert. Garde d'arcs `ArcsWithoutSlide` : `SlideCount` 0
   sur tous les arcs à vrai contrôleur, sauf A10J. Commit : `feat(alundra): the hero slides along walls like the binary (stage 1)`
 - ⏳ **H4-2 — Liste fermée et arcs.** Les 6 lignes `0x45`/`0x46` quittent la liste versionnée (178 `B[1] @105`, `@129`, `@134`,
