@@ -412,7 +412,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.g | Effets visuels (D-E19-7) : export des effets par le convertisseur, réserve de 128 effets aux règles du binaire, `0x90`-`0x94`, `0xA0`-`0xA3`, rendu | cartes à effets | L'aura de 476, les vagues de 391 |
 | E19.h | Attentes en Z et contacts : `0x20`-`0x23`, `0x26`, `0x47`, `0x48` ; `ForceAdjusted` aligné sur le binaire ; glissement le long des murs ; reste du saut (O-E19-27) — `0x25` et `CollidedWithEntityZ` avancés en E19.d2c (D-E19-31) | ciblés | ciblée |
 | E19.i | ~~Boucles d'animation Loop pour `0x1C`/`0x1D`~~ — **absorbée par E19.c2** (D-E19-18) : le signal de boucle et son pont y arrivent ; le recensement exact est de 208 sites dans 53 cartes, et non 101 dans 30 | — | — |
-| E19.j | Événements de carte : réarmement hors zone du binaire (619 enregistrements, O-E19-11) | ciblés | ciblée |
+| E19.j (§1.2l) | Événements de carte : réarmement hors zone du binaire (619 enregistrements, O-E19-11) ; aucun effet sur la chaîne | ciblés | ciblée |
 | E19.k (§1.2k) | Caméra : balancement `0x8E`/`0x8F` (E19.k1, DLL seule), masque des fonds `0xA4` (E19.k2, plan moteur) | ciblés | 392, 391 |
 | E19.l | Prédicats, branches et restes : `0x82` (avec la correction d'`AddOneItemIfUnlocked`), `0x83`, `0x84`, `0x87`, `0x3F`, `0x95`, `0x99`, `0x9A`, `0x9F` (avec `InitializeContents`), `0x57`, `0x58`, `0x4A`, `0x2A`, `0x2B`, `0x5D`, etc. ; liste fermée au recensement du moment | ciblés | ciblée |
 | E19.m | Hygiène et clôture : taille de `0x5F` (8), libellés faux, `0x01` qui rend 0, modes aléatoires 4 et 5 de `ResolveDirectionFromParam` ; test statique : aucun opcode atteignable sauté dans le corpus hors E14 (IA native) et E18 (`0xBB`) | corpus | — |
@@ -4151,6 +4151,84 @@ inactive ni n'avance, ni ne se dessine, ni ne tire au hasard ; « toutes actives
 manque ; côté DLL, `0xA4` pose le masque par `AlundraBackdropStage` ; le second opérande (cycle de palettes, carte 471
 seulement) est consigné en dégradé, à placer. Sites : 337 à 345, 347, 471, 475, hors chaîne.
 
+### 1.2l E19.j — Réarmement des événements de carte hors zone ⏳ (plan)
+
+**Découverte** (2026-10-03, lecture seule ; notes et scripts dans le scratchpad de la session, `e19j-disc/`). Faits porteurs
+**[binaire]** :
+- `RunMapEvents` (`0x8003C67C`), une fois par tick avant `UpdateEntities`, garde globale `g_playerControlFlags & 0x48`.
+  Table des créneaux en `0x8013C688` (`0x40` créneaux de `0x48` octets : +0 id, +4 enregistrement, +8 octet de programme B,
+  +0xC entité logique, +0x10..+0x47 état du programme : +0 entrée, +4 pc, +8 clé d'attente, +0xC compteur de `0x37`, +0x2C
+  `Result`, +0x30 boucle, +0x34 retour). Ordre par créneau : un octet `& 0x7F == 0` est sauté **avant** le test de zone ; le
+  test de zone est une case **inclusive** sur TileX/TileY du héros, ni Z ni drapeau.
+- **Hors zone, à chaque tick** (`0x8003C7F0`-`0x8003C804`) : entrée = 0, pc = 0, `Result` = 0, entité logique = le héros,
+  octet de programme = l'octet de l'enregistrement ; **aucune entité n'est écrite** ; les autres champs de l'état restent.
+  À la réentrée, `RunScript` B (`0x800420DC`) relance le programme depuis le début (entrée ou pc nul) : un programme quitté
+  est interrompu et recommence ; un programme garé sur `0xFF` se rejoue à chaque réentrée.
+- **DLL** (`AlundraWorldProxy.cs:2309-2359`, hors zone `:2335-2338`) : suit la décompilation : écrit sur l'entité logique
+  (`ChildEntity`, `Sp`, `RelativeWarpOffsetX`, `Index`) et ne remet ni `EventData`, ni l'entité logique, ni l'octet de
+  programme : un programme quitté reprend au lieu de recommencer, un programme fini ne se rejoue jamais. `BuildMapEvents`
+  (`:1845-1877`) ne garde pas l'octet d'origine de l'enregistrement. Le commentaire `:2344-2348` et la doc du test `:389-397`
+  disent que la table des créneaux n'est pas compactée ; le binaire la compacte (`0x8003C5F4`-`0x8003C608`) ; sans effet
+  (aucun enregistrement à octet nul sur 1714).
+- **Recensement** : 1714 enregistrements, 619 à zone bornée dans 190 cartes ; sur les 30 cartes de la chaîne, 8, et **aucune
+  réentrée sans rechargement** de carte (pièces closes, sorties par portails), sauf 476 `B[3]`, un programme vide : **aucun
+  effet sur l'histoire**. Hors chaîne, environ 134 à 159 enregistrements dans 48 à 57 cartes se rejoueront à la réentrée
+  (modèle approché ; exemple : Torla 445, enregistrement 0, son 216).
+- Aucun arc ni test ne fait sortir puis rentrer le héros d'une zone.
+
+**Choix de conduite** (techniques) : port fidèle du réarmement ; l'écart général d'`InitializeEventData` (effacement des
+paramètres au redémarrage d'un programme, alors que le binaire garde +8..+0x28, D7 de la découverte : 19 programmes B à
+zone bornée et 243 programmes C commencent par `0x37`) n'est pas corrigé ici : **consigné, O-E19-34**, pour E19.m ; le
+commentaire faux sur la compaction est corrigé ici ; une relecture hors chaîne qui serait un vrai défaut de l'original se
+corrige au cas par cas (règle de l'auteur), pas en bloc.
+
+**Règles d'exécution.**
+- **J-R1** : `AlundraMapEvent` garde l'octet de programme d'origine de l'enregistrement, **obligatoire à la construction**
+  (posé par `BuildMapEvents` ; un oubli ne doit pas pouvoir désactiver l'événement).
+- **J-R2 — Hors zone** (après le saut `& 0x7F == 0`, qui reste avant le test de zone) : `EventData.Sp = 0`,
+  `EventData.Codes = null`, `EventData.CodeIndex = 0` (la forme déjà utilisée pour « entrée et pc à 0 »,
+  `AlundraEventProgramRunner.cs:450-451`, `:472-473`), `EventData.Result = 0`, entité logique de l'événement = le héros,
+  `ProgramBMap` = l'octet d'origine ; **plus aucune écriture sur une entité**. Le runner n'est pas touché.
+- **J-R3** : le commentaire `AlundraWorldProxy.cs:2344-2348` et la doc du test `:389-397` disent la compaction du binaire.
+
+**Tâches.**
+- ⏳ **J0 — Plan**, relu jusqu'à READY.
+- ⏳ **J1 — Réarmement, tests d'abord** (montage des tests de la passe, `AlundraWorldProxyEventPassTests` ; sauf mention :
+  programme B au masque 1, table B `{99, 0}`, zone (0,0)-(10,10), héros en (5,5) dans la zone, en (50,50) hors zone) :
+  - **J1-a** `{1A 7, 00, 1A 8, FF}` : dedans, animation remise à 0, dehors, dedans → animation 7 ; hors zone : `Codes` null,
+    `Result` 0, entité logique = le héros, `ProgramBMap` 129 (rouge aujourd'hui : 8) ;
+  - **J1-b** `{1A 7, FF}` : dedans, dedans, dehors, dedans → 7, 0 (remise à 0 entre-temps), —, 7 (rouge : 0) ;
+  - **J1-c** `{43 5, 00, 1A 7, FF}` : dedans, dehors, dedans, dedans → l'entité logique revient au héros ; le PNJ (préparé
+    avec `RelativeWarpOffsetX` 42, `Index` 3, un `ChildEntity`, `Sp` 0xAB) et le héros (`RelativeWarpOffsetX` 17, `Index` 9)
+    gardent ces valeurs ; animation 7 sur le PNJ au 4e tick (rouge : entité réécrite, 7 dès le 3e tick) ;
+  - **J1-d** `@0 03[6,0], @3 1A 7, @5 FF, @6 1A 8, @8 FF` : `Result` 1 au départ, dehors, puis dedans → 7 (rouge : 8) ;
+  - **J1-e** `ProgramBMap` 0x80 hors zone : reste 0x80 (sauté avant le test de zone) ; `ProgramBMap` 130 hors zone : revient
+    à 129 (rouge : 130) ;
+  - **J1-f** zone (2,3)-(4,6) : (4,6) et (2,3) dans la zone, le programme tourne ; (5,6), (4,7), (1,3) hors zone, réarmement ;
+  - **J1-g** (réel, hors chaîne) : carte 445, enregistrement 0, zone (1,8)-(13,59), octet 129 : dedans (5,20), dedans, dehors
+    (20,20), dedans → trace `BD @160`, `BF @163`, fin `@168` ; puis fin `@168` ; puis rien ; puis `BD @160`, `BF @163`, fin
+    `@168` (rouge : fin `@168` seule au dernier tick).
+  Tests existants touchés : `RunMapEventsPass_PlayerOutOfZone_ResetsLogicEntityState_AndDoesNotRun`
+  (`AlundraWorldProxyEventPassTests.cs:419-435`, réécrit au comportement du binaire) ; la doc du test `:389-397` (J-R3) ; la
+  construction de `AlundraMapEvent` (octet d'origine) dans `NewMapEvent` (`:365-367`),
+  `AlundraEventProgramRunnerLogicEntityTests.cs:171` et `:344`, `AlundraEventProgramRunnerTests.cs:3051`,
+  `IntroTraceHarnessTests.cs:681-690` (construction seulement, aucune assertion). Commit :
+  `feat(alundra): rearm map events out of zone like the binary`
+- ⏳ **J2 — Vérification et clôture**, comme les tranches précédentes. **J3 — Recette** (auteur, hors chaîne) : Torla 445,
+  sortir de la zone puis y revenir rejoue le son 216 ; une partie de la chaîne sans écart.
+
+**Acceptation d'E19.j.**
+1. Tests J1 rouges d'abord (sauf J1-f, garde des bornes), verts après, valeurs écrites tenues ; une valeur contredite est un arrêt.
+2. Code de test existant touché : exactement la liste de J1 ; tous les arcs et toutes les autres épingles inchangés ; les six
+   traces à l'octet.
+3. `Alundra.Tests` sans échec en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
+4. Recette J3 faite par l'auteur.
+
+**Risques.** Un événement sans octet d'origine serait désactivé pour toujours (J-R1 obligatoire, J1-e) ; hors chaîne, des
+sons, dialogues et scènes se rejouent à la réentrée comme dans l'original (arènes 323, 324, 327, la 86, les maisons de
+Torla) ; le modèle de réentrée est approché ; le moment où TileX change après un `0x64` pris dans le même passage n'est pas
+vérifié (sans effet sur la chaîne).
+
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
 Chaque arc part d'une carte chargée seule, avec des drapeaux posés et le héros placé. Les valeurs
@@ -4391,6 +4469,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-31 | **Cartes sous-marines 159 et 160** (« Fairy cave underwater ») **[binaire, données]** : gravité 3, `ZViscosity` 256 et octet d'en-tête `+8` (exporté sous le nom `SlideEffectId`) à 1, contre 128, 4096 et 0 sur les 481 autres cartes ; l'octet `+8` décale `ForceX` et `ForceY` avant le déplacement (`srav` en `0x8003675C`) : le héros y va deux fois moins vite et un saut dure 178 ticks. La DLL ne lit pas ce décalage (aucun consommateur). Hors de la chaîne. | à placer |
 | O-E19-32 | **`LoadingMap` (`0x36`) en l'air** **[binaire]** : `MovePlayer` passe en `0x2D` quand le héros arrive au-dessus du sol (`0x800325E8`) ; la DLL laisse `0x36` sans effet (`AlundraPlayerManager.cs:256-263`). La 476 fait arriver le héros à 48 px au-dessus du sol (`0x53` de la 390 `@688`). Non porté en E19.d2c2. | à placer |
 | O-E19-33 | **Scène d'avant le rêve** (179 `B[1]`, jour 3) et rêve 44 : la scène n'est atteignable qu'après le jour 2 (combat, E14) et aucun préréglage ne la couvre ; le rêve demande le combat. Question à l'auteur : faut-il un préréglage `day3-start` (179, case (12,22), z1, G203, G1660, table [162] = 176) et un arc de 179 `B[1]` ? Hors d'E19.e en attendant. | à placer |
+| O-E19-34 | **Paramètres effacés au redémarrage d'un programme** (découverte d'E19.j, D7) : `InitializeEventData` efface tous les paramètres (`Array.Clear`, `AlundraEventProgramRunner.cs:352`) alors que le binaire ne réécrit que l'entrée et le pc (`0x80041EE4`) et garde +8..+0x28 (clé d'attente, compteur de `0x37`…) : un programme suspendu sur son premier `0x37` continue son compte dans le binaire et le recommence dans la DLL ; 19 programmes B à zone bornée et 243 programmes C commencent par `0x37`, 47 par `0x0B`. | E19.m |
 
 ## 4. Hors périmètre
 
