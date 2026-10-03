@@ -1895,7 +1895,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// </summary>
     private void PlayNodeHeadlessToEnd(DialogueAsset asset, string node)
     {
-        var runner = new YarnDialogueRunner(NullDialoguePresenter.Instance);
+        var runner = new YarnDialogueRunner(new NullDialoguePresenter(_gameState));
         new AlundraYarnBindings(_gameState).Register(runner);
 
         if (!runner.Start(asset, node))
@@ -1911,10 +1911,13 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
     /// <summary>Throwaway <see cref="IDialoguePresenter"/> for <see cref="PlayNodeHeadlessToEnd"/>: shows
     /// nothing, closes nothing, never throws - the degraded path only cares about the commands/functions
-    /// a Yarn dialogue runs while it plays, never what it would have displayed.</summary>
+    /// a Yarn dialogue runs while it plays, and the flags its lines carry (E19.f0, D-E19-48: the
+    /// <c>flag</c> markers of each line are set at its display), never what it would have displayed.</summary>
     private sealed class NullDialoguePresenter : IDialoguePresenter
     {
-        public static readonly NullDialoguePresenter Instance = new();
+        private readonly AlundraGameState _gameState;
+
+        public NullDialoguePresenter(AlundraGameState gameState) => _gameState = gameState;
 
         public DialogueRuntimeState State => DialogueRuntimeState.Closed;
         public DialogueLine CurrentLine => DialogueLine.Empty;
@@ -1925,7 +1928,12 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         public event EventHandler<DialoguePresentationChangedEventArgs>? PresentationChanged { add { } remove { } }
         public event EventHandler<DialogueChoiceSelectedEventArgs>? ChoiceSelected { add { } remove { } }
 
-        public bool ShowLine(DialogueLine line) => true;
+        public bool ShowLine(DialogueLine line)
+        {
+            AlundraYarnBindings.ApplyFlagMarkers(_gameState, line);
+            return true;
+        }
+
         public bool ShowChoices(IReadOnlyList<string> labels) => true;
         public bool SelectChoice(int index) => false;
         public bool Close() => true;

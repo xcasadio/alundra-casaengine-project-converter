@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
+using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.Dialogue.Yarn;
 using Yarn;
 
@@ -30,8 +31,16 @@ public sealed class AlundraYarnBindings
     // -----------------------------------------------------------------------------------------
 
     /// <summary><c>flag n</c>: same write as <c>AlundraDialogueDirector.ShowCurrentPage</c> does today
-    /// for a page's numeric control codes (AlundraDialogueDirector.cs ~:290-300).</summary>
+    /// for a page's numeric control codes (AlundraDialogueDirector.cs ~:290-300). Exports before E19.f0
+    /// (D-E19-48) wrote every numeric code as this command; the converter now writes the positioned
+    /// <see cref="FlagMarkerName"/> marker instead, and this handler stays for older exports and for the
+    /// tests that write the command by hand.</summary>
     public const string FlagCommandName = "flag";
+
+    /// <summary>The zero-length <c>[flag id=N/]</c> marker a numeric code becomes in a Yarn line (E19.f0,
+    /// D-E19-48, ADR-0025): its <c>id</c> property is the code's number. Read by
+    /// <see cref="ApplyFlagMarkers"/>.</summary>
+    public const string FlagMarkerName = "flag";
 
     /// <summary><c>falcon_update</c>: keeps the state it is about to replace (ADR-0007), then runs
     /// <see cref="AlundraTextProgress.UpdateNumberOfFalcon"/> and
@@ -148,8 +157,37 @@ public sealed class AlundraYarnBindings
             return;
         }
 
-        var n = (uint)rawValue;
-        _gameState.AddFlag(n | 0x8000, 1u << (int)(n & 0x1f));
+        SetTextFlag(_gameState, (uint)rawValue);
+    }
+
+    /// <summary>The one write of a text flag, shared by the <c>flag</c> command and the
+    /// <see cref="FlagMarkerName"/> markers: <c>AddFlag(n | 0x8000, 1 &lt;&lt; (n &amp; 0x1f))</c>.</summary>
+    internal static void SetTextFlag(AlundraGameState gameState, uint n)
+        => gameState.AddFlag(n | 0x8000, 1u << (int)(n & 0x1f));
+
+    /// <summary>E19.f0 (D-E19-48, D-E12-4 until E19.f2): sets the flag of every <see cref="FlagMarkerName"/>
+    /// marker of <paramref name="line"/>, in the order of the attribute list, all at once - the page's
+    /// display. Any other marker (<c>yield</c>, a name this DLL does not know yet) is ignored; a marker
+    /// without a usable non-negative <c>id</c> is skipped.</summary>
+    internal static void ApplyFlagMarkers(AlundraGameState gameState, DialogueLine line)
+    {
+        foreach (var attribute in line.Attributes)
+        {
+            if (!string.Equals(attribute.Name, FlagMarkerName, StringComparison.Ordinal)
+                || !attribute.Properties.TryGetValue("id", out var idValue)
+                || idValue is null)
+            {
+                continue;
+            }
+
+            var id = Convert.ToInt64(idValue, CultureInfo.InvariantCulture);
+            if (id < 0 || id > uint.MaxValue)
+            {
+                continue;
+            }
+
+            SetTextFlag(gameState, (uint)id);
+        }
     }
 
     /// <summary>ADR-0007: keeps the state <c>falcon_update</c> is about to replace FIRST, then runs the

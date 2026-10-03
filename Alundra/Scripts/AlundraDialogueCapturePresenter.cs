@@ -23,17 +23,24 @@ namespace Alundra.Scripts;
 /// <see cref="WorldPresenter"/>: <c>[br/]</c> becomes a line break and <c>[glyph id=N/]</c> becomes
 /// character <c>N</c> of font3, both inserted from the END of the attribute list so earlier positions
 /// stay valid. <c>voice</c>/<c>center</c>/<c>slow</c>/<c>empty</c> are left in the data for the later
-/// dialogue-fidelity step (E12.c) and ignored here. A non-empty <see cref="DialogueLine.Speaker"/> is
+/// dialogue-fidelity step (E12.c) and ignored here. Before forwarding, it also sets the flag of every
+/// <c>[flag id=N/]</c> marker of the line (E19.f0, D-E19-48); <c>[yield/]</c> is ignored until E19.f2. A non-empty <see cref="DialogueLine.Speaker"/> is
 /// logged once - E15.b's corpus proof (<c>YarnCorpusEquivalenceTests</c>) found none on the real export.
 /// </summary>
 public sealed class AlundraDialogueCapturePresenter : IDialoguePresenter
 {
     private static bool _loggedSpeakerOnce;
 
-    public AlundraDialogueCapturePresenter(IDialoguePresenter worldPresenter)
+    private readonly AlundraGameState? _gameState;
+
+    /// <param name="worldPresenter">Where every transformed line is forwarded.</param>
+    /// <param name="gameState">Where the line's <c>flag</c> markers are written (E19.f0); <c>null</c> for a
+    /// presenter built bare by a test that does not care about flags - then no flag is written.</param>
+    public AlundraDialogueCapturePresenter(IDialoguePresenter worldPresenter, AlundraGameState? gameState = null)
     {
         ArgumentNullException.ThrowIfNull(worldPresenter);
         WorldPresenter = worldPresenter;
+        _gameState = gameState;
     }
 
     /// <summary>The presenter every transformed line/choice/close is forwarded to - re-pointed by
@@ -63,6 +70,13 @@ public sealed class AlundraDialogueCapturePresenter : IDialoguePresenter
             Logs.WriteWarning(
                 $"AlundraDialogueCapturePresenter: a Yarn line carried a non-empty Speaker "
                 + $"('{line.Speaker}') - E15.b's corpus proof found none; shown without a speaker prefix.");
+        }
+
+        // E19.f0 (D-E19-48): the line's flag markers are set here, at the page's display and before the line
+        // goes on (D-E12-4 holds until E19.f2 draws each flag at its glyph).
+        if (_gameState is not null)
+        {
+            AlundraYarnBindings.ApplyFlagMarkers(_gameState, line);
         }
 
         return WorldPresenter.ShowLine(new DialogueLine(ToFont3Text(line)));
