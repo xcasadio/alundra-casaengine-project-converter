@@ -6990,7 +6990,7 @@ O-E19-51 à O-E19-53 (autres écarts relevés) hors tranche.
   `CellularLayerServiceTests` là où le filtre du vérificateur en lance 26 (le nombre de rouges, 13, concorde) ; O-E19-49 n'est
   consigné que dans ADR-0032 (écart côté DLL, conforme à M2-R4). Reste la recette : la pluie de la 391 et les cellules de type 0.
 
-#### 1.2s.4 E19.m3 — Compteur des vagues, parallaxe et ordre des cellules (O-E19-51 à O-E19-53) ⏳ (planifiée)
+#### 1.2s.4 E19.m3 — Compteur des vagues, parallaxe et ordre des cellules (O-E19-51 à O-E19-53) ⏳ (planifiée ; relecture n°1 REVISE, révisée)
 
 **Faits** **[binaire]** (audit du 2026-10-03, `e19m3-disc/notes.md` du scratchpad, scripts `values`, `census3`, `otusers`, `stp` ;
 lignes du moteur citées à `61358ac0`) :
@@ -7022,15 +7022,20 @@ lignes du moteur citées à `61358ac0`) :
 
 **Règles.**
 - **M3-R1 — Compteur des vagues (moteur)** : un seul octet au niveau du service remplace le compteur par couche ; il avance de 1 à
-  chaque tick, avant la boucle des couches, dès que des couches ont été posées depuis le dernier `Clear` (l'équivalent moteur de
-  `Infos.Enabled` : la DLL vide toujours et ne pose des couches que si la carte a un fond, `AlundraBackdropStage.cs:202-222`,
-  `BackdropWriter.cs:117`) ; `SetLayers`, `Clear` et `ResetLayerRuntimeState` ne le remettent jamais à 0 ; le masque ne le fige pas ;
+  chaque tick, avant la boucle des couches, dès que `SetLayers` a été appelé depuis le dernier `Clear`, **même avec une liste vide**
+  (révision n°1 ; l'équivalent moteur de `Infos.Enabled` : la DLL vide toujours, puis appelle `SetLayers` pour toute carte qui a un
+  fond, même sans couche cellulaire, `AlundraBackdropStage.cs:202-223`, `BackdropWriter.cs:117`) ; un service neuf et `Clear` ferment
+  la porte ; `SetLayers`, `Clear` et `ResetLayerRuntimeState` ne le remettent jamais à 0 ; le masque ne le fige pas ;
   `TryGetLayerState` le rapporte (`:510`) ; aucune nouvelle API publique ; ADR-0052 du moteur, qui amende ADR-0049 (vagues
   seulement) ; le fait d'E19.k2 reçoit une note de correction.
 - **M3-R2 — Parallaxe (moteur)** : cellules normales seulement : `den != 0 ? cam × (num / den) : 0` en X et en Y (division entière
   tronquée) ; `FallRespawn` garde `ComputeCameraBase` ; docs `CellularCellDefinition.cs:35-36` et `cellular-layers.md:61`.
 - **M3-R3 — Ordre (moteur)** : une clé par cellule, bâtie dans la boucle des cellules avec `LocalSortOffset = −c` (même procédé que
-  `AnimatedSpriteComponent.BuildPartSortKey`) : la cellule 0 dessinée en dernier ; aucun tri stable ; l'ordre entre couches inchangé.
+  `AnimatedSpriteComponent.BuildPartSortKey`) : la cellule 0 dessinée en dernier ; aucun tri stable. L'ordre entre couches de
+  (passe, `SortingLayer`, `OrderInLayer`) distincts est inchangé (révision n°1) ; deux couches qui partagent ces trois champs voient
+  désormais leurs cellules entrelacées par indice de cellule (`RenderSortKey2D.CompareTo` compare `LocalSortOffset` avant
+  `StableId`, `RenderSortKey2D.cs:78-84`) : cas que la DLL ne construit pas (`OrderInLayer = DepthOrder`, 1 pour la couche 0 et 0
+  pour la couche 1, `BackdropReader.cs:289`) ; ADR-0052 le dit.
 
 **Tâches.**
 - **M3-1 — Moteur, tests d'abord** (branche du sous-module **empilée sur** celle de G2a, `chantier/e19g2a-psx-semi`, une fois G2a
@@ -7039,12 +7044,15 @@ lignes du moteur citées à `61358ac0`) :
   - recharge : 3 ticks, `SetLayers` de nouveau, 1 tick → compteur 4, `DrawX` 46 (aujourd'hui 1, 43) ; 2 ticks, `Clear`, 3 ticks,
     `SetLayers`, 1 tick → 3, 45 (aujourd'hui 1, 43) ; 5 ticks, remise à zéro de l'état, 1 tick → 6, 48 (aujourd'hui 1, 43) ; deux
     couches, la couche 0 masquée 2 ticks, puis 1 tick → les deux à 3, 45 (aujourd'hui 1, 43 et 3, 45) ; test du masque avec la table :
-    tick de reprise → 5, 47 (aujourd'hui 2, 44) ;
+    tick de reprise → 5, 47 (aujourd'hui 2, 44) ; liste vide (révision n°1) : `SetLayers(L)`, 1 tick, `SetLayers([])`, 4 ticks,
+    `SetLayers(L)`, 1 tick → 6, 48 (aujourd'hui 1, 43) ; après un `Clear`, la table des vagues est reposée (`SetWaveLut`) avant le
+    `SetLayers` suivant ;
   - parallaxe (cellule normale en (100, 100), un tick) : facteur 1/2, caméra (100, 60) → (100, 100) (aujourd'hui (50, 70)) ; 3/2,
     caméra (10, 10) → (90, 90) (aujourd'hui (85, 85)) ; −1/2, caméra (10, 10) → (100, 100) (aujourd'hui (105, 105)) ; gardes : 1/1
     inchangé ; `FallRespawn` 1/2, caméra (100, 60) → (50, 70) inchangé ;
   - ordre : trois cellules → `LocalSortOffset` 0, −1, −2 et des `CompareTo` strictement ordonnés (aujourd'hui tous 0) ; cellules
-    `[Normal, ScriptTrack, Normal]` → décalages 0 et −2 ; garde : toute clé de la couche 1 se trie avant toute clé de la couche 0 ;
+    `[Normal, ScriptTrack, Normal]` → décalages 0 et −2 ; garde : couche d'identifiant 0 à `OrderInLayer` 1 et couche 1 à
+    `OrderInLayer` 0, trois cellules chacune → toute clé de la couche 1 se trie avant toute clé de la couche 0 ;
     après le tri (méthode de remplissage de G2a) l'ordre 2, 1, 0 (aujourd'hui 0, 1, 2).
 - **M3-2 — Moteur, code** : M3-R1 à M3-R3, docs, ADR-0052 ; pointeur du sous-module ; note de correction au fait d'E19.k2 dans le plan.
 
