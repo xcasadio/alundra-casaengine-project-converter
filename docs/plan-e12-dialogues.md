@@ -246,6 +246,10 @@ espacé uniformément.
 
 ### E12.c — la fidélité fine *(plus tard)*
 
+**Correction du 2026-10-03** (découverte d'E19.f, binaire) : `\C` règle la voix 0 (sfx 79), ce n'est pas un centrage ;
+le centrage est `\H`. Le binaire n'a que des choix à deux options : l'élément « 4+ choix » disparaît. Le reste d'E12.c est
+détaillé au §1.2j de `plan-e19-opcodes.md`.
+
 Machine à écrire (1/4 frames, bouton tenu ×4), pagination défilante, curseur d'attente animé, blips,
 minuterie, `0x4C`/`0x4D`, boîte de nom + portrait (`0xC4`, entités ≥0x100), table partagée
 `map_alundra` (export + `0x0D` bit clair), sfx 6/7 d'ouverture/fermeture.

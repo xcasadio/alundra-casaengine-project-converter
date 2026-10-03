@@ -408,7 +408,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.d2b ✅ | Moteur : sonde d'obstacles dans l'étage champ du contrôleur (ADR-0047 du moteur) ; DLL : contacts entre entités du binaire (D-E19-27 à D-E19-30, D-E19-34 à D-E19-37), natif E 0/1, contact du dialogue ; règle les deux P2 d'E19.d (O-E19-18, 185 `@506`) | T-A19, T-A10v, T-B9, T-C61, TN-3, A11, tests moteur | Le héros bute sur les PNJ et leur parle ; jour 4 : la 185 mène à la 362 |
 | E19.d2c | DLL, en deux sous-tranches (§1.2h.3, ADR-0023) : saut scripté et `IsZForceApplied` (D-E19-31), `0x25`, `CollidedWithEntityZ`, eau et glace du héros (D-E19-32), son du décollage (D-E19-44) ; puis saut à la manette, chutes, dessus d'objets et passager (D-E19-39, D-E19-42, D-E19-43) (O-E19-8, O-E19-19) | UJ, UW, A10J, A12, A10, T-A10v, T-C61, A3 ; SJ, UH, traces « spawn » | Jour 3 : le saut de la 10 jusqu'à la 135 ; saut à la Croix, chutes, objets |
 | E19.e | (§1.2i) Test statique : la liste fermée des opcodes sautés atteignables sur les 30 cartes de la chaîne ; arcs des scènes scriptées du jour 3 (176, 179, 135, 178) ; arrivées sans recouvrement ; les villageois de la 185 et 179 `B[1]` exclus (recette, O-E19-33) | A13, A14, A15, A17, A18, TH4 étendu, test statique | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement ; `day3-after-dream` jusqu'à la 183 ; `day4-meeting` jusqu'à la 362 |
-| E19.f | Boîte de nom et boîte de texte fidèle (D-E19-4) : export du cadre, écrans XAML liés à un view model, cycle de vie de la boîte de nom, pour `0x0D`/`0x5C`/`0xC4` ; **avec E12.c** (D-E19-38) : portraits, machine à écrire, pagination, curseur, blips et voix, `0x4C`/`0x4D`, table partagée `map_alundra` | tests MGDesktop | Les noms s'affichent au-dessus de la boîte, à la place de l'original |
+| E19.f ⚠️ (§1.2j, attend l'auteur : Q-F1 à Q-F3) | Boîte de nom et boîte de texte fidèle (D-E19-4) : export du cadre, écrans XAML liés à un view model, cycle de vie de la boîte de nom, pour `0x0D`/`0x5C`/`0xC4` ; **avec E12.c** (D-E19-38) : portraits, machine à écrire, pagination, curseur, blips et voix, `0x4C`/`0x4D`, table partagée `map_alundra` | tests MGDesktop | Les noms s'affichent au-dessus de la boîte, à la place de l'original |
 | E19.g | Effets visuels (D-E19-7) : export des effets par le convertisseur, réserve de 128 effets aux règles du binaire, `0x90`-`0x94`, `0xA0`-`0xA3`, rendu | cartes à effets | L'aura de 476, les vagues de 391 |
 | E19.h | Attentes en Z et contacts : `0x20`-`0x23`, `0x26`, `0x47`, `0x48` ; `ForceAdjusted` aligné sur le binaire ; glissement le long des murs ; reste du saut (O-E19-27) — `0x25` et `CollidedWithEntityZ` avancés en E19.d2c (D-E19-31) | ciblés | ciblée |
 | E19.i | ~~Boucles d'animation Loop pour `0x1C`/`0x1D`~~ — **absorbée par E19.c2** (D-E19-18) : le signal de boucle et son pont y arrivent ; le recensement exact est de 208 sites dans 53 cartes, et non 101 dans 30 | — | — |
@@ -3989,6 +3989,69 @@ la liste statique (contrôle croisé). Une valeur exacte contredite est un arrê
 - O-E19-29 (troncature au pixel à l'atterrissage d'un PNJ) n'est pas vérifiée sur 176, 178, 179 et 135.
 - Les drapeaux posés par Yarn pendant une boîte (T0 de la 135, après la page 0 du nœud `M135_S001` ; T900 de la 179 ;
   T200/T201 de la 164) dépendent du dialogue actuel ; E19.f (boîte fidèle) devra les garder.
+
+### 1.2j E19.f avec E12.c — La boîte de dialogue fidèle ⚠️ (découverte faite le 2026-10-03 ; en attente de l'auteur : questions Q-F1 à Q-F3)
+
+**Découverte** (2026-10-03, lecture seule, deux surfaces : le binaire, puis la DLL, le moteur et les données ; notes et
+scripts dans le scratchpad de la session, `e19f-disc/binaire/notes.md` et `e19f-disc/dll/notes.md`, aperçu des cadres
+`e19f-disc/dll/boxes_preview.png`). Faits porteurs **[binaire]** :
+- **Boîte de texte** : toujours en bas, (16,168), 288 × 56 px (36 × 7 cellules de 8 px, configuration `0x8009CFBC`) ;
+  glissement d'ouverture y 240 → 168 et de fermeture 168 → 240, 15 pas tronqués plus 2 images de calage
+  (`0x80047DD0`) ; cadre `wind.tx` palette `WIND.CL` #0, opaque (les 252 cellules de l'analyseur sont exactes) ; texte
+  font3, palette `WIND.CL` #8, x = 32 (centré par `\H` : 16 + (288 − l) / 2), lignes y = 173, 189, 205 (pas de 16, la
+  décompilation dit 15 à tort), **3 lignes visibles**, découpe (32,172) 258 × 50, aucun retour à la ligne automatique.
+- **Cadence** : un glyphe toutes les 4 images (le premier aussitôt), un par image Carré tenu, `\T` → 8 images ; codes
+  sans coût de tick et codes à un tick listés dans les notes ; un appui naissant pendant la frappe est ignoré.
+- **Défilement ligne par ligne, jamais de page entière** : `\N` sur la 3e ligne arme un défilement de 8 images (2 px par
+  image) après 10 images ou un appui naissant ; `\A` affiche le curseur et attend un appui, puis passe à la ligne
+  (défilement immédiat en 3e ligne) ; `\N\A` (1374 fois) laisse une ligne vide.
+- **Curseur d'attente** 16 × 16 en (288,200), images u B0/C0/D0/E0, v 0x38, 10 images par image ; aucun curseur en fin de
+  texte (22 612 chaînes sur 24 431).
+- **Voix** : `\B` aucune (défaut), `\C` à `\F` voix 0 à 3 → sfx 79 à 82, `\G` muette ; un blip sur un caractère normal de
+  rang pair, la parité repartant à chaque ligne ; **`\C` est la voix 0, pas un centrage** (le plan E12 §1.5 se trompe ;
+  le centrage est `\H`). Sfx 6 à l'ouverture, 7 au déclenchement de la fermeture.
+- **Fermeture** évaluée seulement une fois la frappe finie : appui naissant (bit 2), minuterie 360 **armée à la fin du
+  texte** (bit 1), demande `0x51` (bit 4) ; le drapeau d'activité, `MessageBox` et `MenuOpen` ne tombent qu'après le
+  glissement de sortie (17 à 18 images plus tard) : aujourd'hui la DLL ferme tout d'un coup, `0x39` rend la main
+  environ 15 ticks trop tôt.
+- **`0x4C [v]`** pose les drapeaux de texte (bit 1 vitesse au bouton, bit 2 cadence à 4 images, bit 4 frappe pilotée par
+  `0x4D`) ; **`0x4D`** donne un glyphe si le bit 4 est posé ; **`0x4E`/`0x4F`** (mode de défilement, défilement) existent,
+  0 site ; table partagée `map_alundra` par le bit 7 clair (déjà exportée par E15).
+- **Nom** : chaîne ETC d'index = champ +0x68 de l'entité (0x100 à 0x1FF), boîte (64,140) 112 × 32 (cadre absent de
+  `UiBoxes.csv`, cellules déjà dans l'atlas `wind`), texte centré y = 148, glissement x 320 ↔ 64 ; ouvert dans le même
+  tick que l'opcode, fermé avec la boîte.
+- **Portrait** : bit 7 de l'octet 0x12 de l'en-tête du sprite (`HasPortrait`, 25 enregistrements, 331 dans le corpus
+  par carte) ; la **première image** du sprite (`FramesPointer` entrée 0), 48 × 56 en (8,116), vol de 15 pas depuis la
+  position écran de l'entité, couleur 255 → 128 ; 23 portraits font 48 × 56, **deux font 48 × 72** (enregistrements 122 et
+  162) et sont écrasés à 48 × 56 ; la région est vide dans les planches exportées pour 24 sur 25 : **changement
+  d'extracteur et ré-extraction** nécessaires (précédent : le portrait de l'inventaire, ADR-0005).
+- **Choix** : **deux options seulement** (aucun 3 ou 4+ dans le binaire) ; boîte (176,144) 128 × 32, libellés ≤ 6 octets
+  en (192,152) et (240,152), curseur animé au-dessus ; gauche/droite en appui répété, sfx 1 au déplacement ; **validation
+  à la Croix (bit 0x40)**, sfx 5 puis 2 ou 3 ; sfx 4 à l'ouverture.
+- **DLL d'aujourd'hui** : boîte du moteur (`DialogueScreen`) sans cadre ni échelle 320 × 240, page affichée d'un bloc,
+  aucun son, `0x4C`/`0x4D` non portés (32 lignes de la liste fermée d'E19.e), voix et centrage ignorés, minuterie depuis
+  l'ouverture, directeur hors de la boucle `padTick` (avis A1 d'E12.a). La pile UI suffit (écrans XAML liés à un view
+  model comme `AlundraSaveScreen`, `TextProgress` de MGUI pour la révélation, portrait volant déjà fait pour
+  l'inventaire) ; aucun manque moteur bloquant ; un candidat de rapport (`TextProgress` est une fraction).
+
+**Questions à l'auteur** (elles changent le travail ; la tranche attend) :
+- **Q-F1 — Drapeaux posés pendant le texte.** Sur 932 codes de drapeau du texte, 87 sont avant tout caractère, 647 en fin
+  de page et **198 au milieu du texte** ; l'export Yarn les place tous avant la ligne. Avec une vraie machine à écrire, le
+  marin 12 casse (son `\999` est en fin de texte ; le choix s'ouvrirait pendant la frappe) et la scène de la 164 aussi.
+  Voies : (A) marqueurs de position dans le Yarn (exact ; changement de format, de l'émetteur et de la preuve
+  d'équivalence du corpus, ADR) ; (B) le directeur pose les drapeaux d'une page à la fin de sa frappe (exact pour 734, en
+  retard pour les 198 du milieu) ; (C) tel quel (faux). **Recommandation : A.**
+- **Q-F2 — Portraits 48 × 72** (enregistrements 122 et 162) : l'original les dessine écrasés à 48 × 56. Corriger (règle du
+  2026-09-25 : un défaut avéré de l'original se corrige) ou reproduire ? **Recommandation : corriger** (afficher 48 × 72 à
+  la même place, bas aligné), si l'auteur juge que c'est un défaut.
+- **Q-F3 — Boîte de choix fidèle** (deux options côte à côte, validée à la Croix, sons) : elle remplace aussi la liste
+  verticale du livre de sauvegarde (E16.e, validé en jeu), qui passe par le même mécanisme. La faire dans E19.f, pour les
+  dialogues et le livre ? **Recommandation : oui**, comme l'original.
+
+**Choix de conduite déjà pris** (techniques) : la boîte d'Alundra devient un écran XAML lié à un view model (règle de
+l'auteur sur l'UI) au patron d'`AlundraSaveScreen` ; le `DialogueScreen` du moteur reste dans le moteur, Alundra cesse de
+l'utiliser ; l'élément « 4+ choix » d'E12.c disparaît (le binaire n'en a pas) ; la machine du portrait volant de
+l'inventaire est généralisée, pas dupliquée ; la passe du dialogue va dans la boucle `padTick` (correction d'A1).
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
