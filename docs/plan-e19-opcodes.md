@@ -4824,7 +4824,7 @@ fonds (`0x8005B670`) ne traite la couche d'identifiant 0 que si `mode & 1` et la
 (`0x8005B848`) ; chaque couche traitée l'est selon son octet de mode : 1 « tuiles » (`0x8005C294`, défilement), 2
 « cellulaire » (`0x8005C8BC`) ; l'état par tick d'une couche (cadence d'animation, défilement automatique, vagues et tirages
 aléatoires du cellulaire) est **dans** l'appel gardé : une couche masquée est **figée** et non dessinée, quelle que soit sa
-sorte ; la surcouche (`0x8005BA40`) ne dépend que de l'en-tête de la carte. Au chargement, `SetScrollingMode(3, 0)`
+sorte (**correction du 2026-10-03 : faux pour les vagues seulement, leur compteur est unique et hors de l'appel gardé, voir §1.2s.4 et ADR-0052 du moteur**) ; la surcouche (`0x8005BA40`) ne dépend que de l'en-tête de la carte. Au chargement, `SetScrollingMode(3, 0)`
 (`0x8005B63C`) : les deux couches actives, banque 0. Le décalage `0x800C490C` s'ajoute à l'octet de palette des tuiles et des
 couches cellulaires (`0x8005C574`, `0x8005CDBC`, `0x8005D544`) : le cycle de palettes touche toute la carte. Recensement : 21
 sites (cartes 337 à 345, 347, 471, 475), aucun sur la chaîne ; à la 475, la couche 0 est cellulaire et `0xA4 [0,0] @52`,
@@ -6998,7 +6998,7 @@ O-E19-51 à O-E19-53 (autres écarts relevés) hors tranche.
   `CellularLayerServiceTests` là où le filtre du vérificateur en lance 26 (le nombre de rouges, 13, concorde) ; O-E19-49 n'est
   consigné que dans ADR-0032 (écart côté DLL, conforme à M2-R4). Reste la recette : la pluie de la 391 et les cellules de type 0.
 
-#### 1.2s.4 E19.m3 — Compteur des vagues, parallaxe et ordre des cellules (O-E19-51 à O-E19-53) ⏳ (relecture n°1 REVISE, révisée ; relecture n°2 READY ; en exécution)
+#### 1.2s.4 E19.m3 — Compteur des vagues, parallaxe et ordre des cellules (O-E19-51 à O-E19-53) ✅ (relecture n°1 REVISE, révisée ; relecture n°2 READY ; exécutée le 2026-10-03)
 
 **Faits** **[binaire]** (audit du 2026-10-03, `e19m3-disc/notes.md` du scratchpad, scripts `values`, `census3`, `otusers`, `stp` ;
 lignes du moteur citées à `61358ac0`) :
@@ -7072,6 +7072,25 @@ lignes du moteur citées à `61358ac0`) :
    et `CellularLayerServiceTests.cs:110`, `:115`, `:117`, `:134` ne bougent pas ; côté DLL, rien).
 3. `CasaEngine.Tests` construit à part et vert ; `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans écart ; les
    six traces à l'octet.
+
+**Fait le 2026-10-03** (moteur : branche `chantier/e19m3-cellular-order`, partie de `chantier/e19g2a-psx-semi` `b5a9fbcf`, commits
+`3b15324c` plan, `159eb699` compteur, `58ef506f` parallaxe, `bfc36929` ordre, `a885f226` docs et ADR-0052 ; DLL inchangée) :
+- **Rouges d'abord, valeurs lues égales aux valeurs d'aujourd'hui écrites** : recharge, `Clear`, remise à zéro de l'état, liste
+  vide et couche 0 masquée donnent compteur 1 et `DrawX` 43 (attendu 4/46, 3/45, 6/48, 6/48, 3/45) ; reprise du masque avec la
+  table 2 / 44 (attendu 5 / 47) ; `CellularLayerMaskTests.cs:93` attendu 4 lu 1, `:122` attendu 3 lu 1, `:133` attendu 2 lu 0,
+  `CellularLayerServiceTests.cs:487` attendu 5 lu 0 (`:101` non atteint tant que `:93` échoue, valeur d'aujourd'hui 2) ;
+  parallaxe (50, 70), (85, 85), (105, 105) au lieu de (100, 100), (90, 90), (100, 100) ; ordre : décalages 0, 0, 0 au lieu de 0, −1, −2,
+  seconde entrée de `[Normal, ScriptTrack, Normal]` à 0 au lieu de −2, ordre après `FillVertices` 0, 1, 2 (centres x −52, −42, −32)
+  au lieu de 2, 1, 0. Les gardes (1/1, 2/1, `FallRespawn`, Den 0, ordre entre couches) étaient verts d'avance.
+- **Verts après** : aucune valeur écrite changée. Nouveaux tests : `CellularLayerWaveCounterTests` 6, `CellularLayerParallaxTests` 7
+  cas, `CellularLayerCellOrderTests` 4 ; les cinq assertions de la liste fermée (dont `:93` réécrit : cadence, cellules et tirages
+  figés, compteur 4) ; aucun autre test existant touché. `CasaEngine.Tests` 2550 sur 2550 (Debug) ; `Alundra.Tests` Debug 2555 sur
+  2555 ; garde d'octets des six traces à 0, les quatre traces du héros remises par `git checkout`.
+- **Écarts** : le test de reprise du masque avec la table utilise une couche à une seule cellule de vague (et non `MakeLayer(0)`
+  de la suite du masque, dont `BWavePhase` est 0) ; le test d'ordre après tri lit le centre de chaque entrée (`x − 160 + 8` pour
+  une cellule de 16 de large) ; la Release n'est pas lancée ici (session principale, à la clôture) ; les lignes O-E19-51 à O-E19-53
+  du tableau des points ouverts ne sont pas marquées réglées.
+- Decisions: see ADR-0052 (moteur).
 
 **Retour arrière** : pointeur du sous-module.
 
