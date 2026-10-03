@@ -6529,7 +6529,7 @@ plafond absolu) ; **G5** moteur (erreur du réglage qui ne nomme pas la clé) ; 
   trouvé avec d'autres entités ; à recenser (sites en mode 6 avec une recherche qui rend le héros et une autre entité) puis à porter
   (groupe G4).
 
-#### 1.2s.1 E19.m0 — Modes aléatoires de `ResolveDirectionFromParam` (M-04) ⏳ (planifiée ; relecture n°1 REVISE, resserrée)
+#### 1.2s.1 E19.m0 — Modes aléatoires de `ResolveDirectionFromParam` (M-04) ⏳ (relectures n°1 et n°2 REVISE ; resserrée et corrigée ; relecture de clôture)
 
 **Faits** **[binaire]** (question bornée du 2026-10-03, `e19m0-disc/notes.md` du scratchpad) :
 - `0x8003CFC8` : `result = a1 & 0x1F`, `mode = a1 >> 5` (8 ou plus : 0) ; table de sauts en `0x80023C60` : mode 4 → `0x8003D060`,
@@ -6562,8 +6562,10 @@ plafond absolu) ; **G5** moteur (erreur du réglage qui ne nomme pas la clé) ; 
   24 ; `0x9F` se comporte comme `0x80` et `0xBF` comme `0xA0` ; **test sur les octets réels** (révision n°1, au lieu d'un arc) : les
   `Codes` de `alundra-project/Maps/Inoa/Inoa (inner)-167/events/Inoa (inner)-167.events.json` (l'octet 144 vaut `0x5A`, suivi de
   `0x80, 0x80`) chargés dans un document du runner, l'état placé à `CodeIndex` 144, l'entité du script seule (recherche 0x80), germe
-  `0xB017C93D` : un appel du runner n'élève aucune exception, `CodeIndex` passe à 147, la direction cible de l'entité vaut 0 (premier
-  tirage du mode 4) ; le test saute si l'export est absent, comme les autres tests sur données réelles. Rouges d'abord (l'exception
+  `0xB017C93D` : **un appel complet** du runner (révision n°2 : il enchaîne jusqu'à la première attente) n'élève aucune exception ;
+  après `0x5A @144` viennent `0x59 [0x80, 8]` (taille 3, animation cible 8), `0x73 [40]` (taille 2), puis l'attente `0x37 [1]` en
+  152, qui rend la main : `CodeIndex` 152, direction cible 0 (premier tirage du mode 4), animation cible 8, et
+  `(uint)AlundraRandom.RandomSeed` = `0x35E36190` (un seul tirage) ; le test saute si l'export est absent, comme les autres tests sur données réelles. Rouges d'abord (l'exception
   de `:3026`), verts après.
 - **M0-2 — Code** (`AlundraEventProgramRunner.cs`).
 
