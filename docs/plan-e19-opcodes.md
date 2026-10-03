@@ -5753,7 +5753,7 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
 au sud (O-E19-28 b, aussi contre les cellules) demande l'étape 2 (O-E19-42) ; l'image d'A10J `@2462` peut bouger d'un tick
 (retards connus de la DLL).
 
-### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a READY, en exécution ; G2b, G1/G3, G4 à planifier)
+### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2b, G1/G3, G4 à planifier)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B les données, le convertisseur,
 l'analyseur, le moteur et la DLL ; notes, rendus et scripts dans le scratchpad de la session, `e19g-disc/A/notes.md` et
@@ -6101,7 +6101,7 @@ recette sont des couleurs dominantes d'un sprite chacune, sans les changements d
   ponctuels : icônes 84, 69, 82 (rouge, doré, blanc et gris au lieu de l'aplat `#382800`), bâton magique bleu-violet, Thyea et
   Sierra distinctes de Naomi. P4 : le `log.txt` vide non suivi de l'analyseur, recréé par l'extraction (laissé tel quel).
 
-##### 1.2o.2 E19.g G2a — Semi-transparence par texel des sprites d'entités (moteur et convertisseur) ⏳ (révision n°1 après G0b ; relecture n°2 REVISE, révision n°2 ; nouvelle époque, relecture de clôture READY ; en exécution)
+##### 1.2o.2 E19.g G2a — Semi-transparence par texel des sprites d'entités (moteur et convertisseur) ⏳ (révision n°1 après G0b ; relecture n°2 REVISE, révision n°2 ; nouvelle époque, relecture de clôture READY ; G2a-1 et G2a-2 faites le 2026-10-03, section 🧪 tant que la recette G2a-4 manque)
 
 **Découpage d'après G0** (2026-10-03) : **G2a** (cette tranche) rend la semi-transparence par texel des sprites d'entités
 (D-E19-52) : moteur et convertisseur ; **G2b** (quads à quatre sommets libres et piste de coins dans `.anim2d`, changement de format,
@@ -6176,7 +6176,7 @@ ajoutée à la démo) ; nouvelle époque, une relecture de clôture.
 - **G2a-R5 — DLL** : rien (les entités passent par le moteur ; la DLL ne pose jamais `AnimatedSpriteComponent.Color`).
 
 **Tâches.**
-- **G2a-1 — Moteur, tests d'abord** (branche du sous-module **empilée sur** `chantier/e19m2-cellular-binary` (E19.m2) ; plan du moteur
+- ✅ **G2a-1 — Moteur, tests d'abord** (branche du sous-module **empilée sur** `chantier/e19m2-cellular-binary` (E19.m2) ; plan du moteur
   dans son `ai-agent/tasks/` ; ADR du moteur) : tests sur la liste des entrées en file (le dessin du périphérique ne tourne pas sans
   GPU ; avant le tri, ordre d'insertion ; après le tri, aucun ordre relatif entre les deux entrées d'une partie n'est affirmé) : une
   partie `None` = une entrée, fenêtre neutre, état opaque ; une partie de chaque mode = deux entrées de même clé, fenêtres et états
@@ -6191,7 +6191,7 @@ ajoutée à la démo) ; nouvelle époque, une relecture de clôture.
   (120, 80, 40) ; capture du back-buffer en processus, `GetBackBufferData`, pixels loin des bords) : opaque → (60, 40, 20) ; STP
   `Mode0` → (110, 115, 120) ; `Mode1` → (220, 230, 240) ; `Mode2` → (0, 70, 160) ; `Mode3` → (130, 170, 210) ; transparent → le fond ;
   à ±1 par canal (RVB seulement : la formule PSX sur les couleurs 8 bits, pas l'arithmétique 5 bits).
-- **G2a-2 — Convertisseur, tests d'abord** : le mode lu sur `SpriteQuad.Spritesheet` (un sprite réel de chaque mode présent, 0, 1 et
+- ✅ **G2a-2 — Convertisseur, tests d'abord** : le mode lu sur `SpriteQuad.Spritesheet` (un sprite réel de chaque mode présent, 0, 1 et
   3 ; le mode 2 sur un montage synthétique ; un sprite non semi sans champ ; un montage dont l'octet bas de la `Signature` vaut
   `0x18` et `Spritesheet` 0 reste `None`), puis le pointeur du sous-module ; export complet en place, manifeste : exactement les 1836
   `.sprite` semi et `report.json` ; double export ; `Alundra.Tests` en Release puis en Debug sur l'export.
@@ -6217,6 +6217,35 @@ ajoutée à la démo) ; nouvelle époque, une relecture de clôture.
 **Risques.** Les quads déformés restent dessinés en rectangle jusqu'à G2b ; l'alpha du back-buffer réécrit par le mode 0 (191 au lieu
 de 255 : captures en processus translucides) ; un sprite partagé par des quads de modes différents est impossible (le mode est dans la
 signature) ; la croissance des tampons alloue pendant le dessin (rare : plus de 10 000 entrées).
+
+- **Fait le 2026-10-03.** **Moteur** (sous-module, branche `chantier/e19g2a-psx-semi` depuis `61358ac0`, plan
+  `ai-agent/tasks/e19g2a-psx-semi-tasks.md`, la modification locale de l'auteur dans `CasaEngine.Launcher/Program.cs` jamais indexée) :
+  `78e98c66` plan, `c2489471` (E1 : champ, fenêtre du shader, deux dessins disjoints), `67e79e5b` (E2 : capacité), `1c9b129c` (E3 : démos et
+  `docs/engine/sprite-psx-semi-transparency.md`), `b5a9fbcf` (ADR-0051). Rouges d'abord, valeurs lues égales aux valeurs écrites
+  d'avance : `SpriteData` écrit sans clé là où `"ModeN"` est attendu (4 cas) ; une entrée en file là où deux sont attendues (4 modes, et
+  `AnimatedSpriteComponent` à `DepthSortable2DComponent`) ; aucune pose de fenêtre sur `Draw`, `DrawStaticBatch`, `DrawDirectly` ;
+  `IndexOutOfRangeException` dans le remplissage des sommets à la 10 001e entrée (12 rouges sur 20 pour E1, 1 sur 2 pour E2). Verts
+  après : `CasaEngine.Tests` 2533/2533 (2511 avant, +22), aucun test existant touché. Démos (Debug, 1024 × 768, sonde en processus
+  `GetBackBufferData`, à ±1) : modes 15 contrôles sur 15, opaque (60, 40, 20), `Mode0` (110, 115, 120) avec alpha de back-buffer 191,
+  `Mode1` (220, 230, 240), `Mode2` (0, 70, 160), `Mode3` (130, 170, 210), transparent (100, 150, 200), témoin sans mode (120, 80, 40) ;
+  capacité : 12 001 entrées, pixel témoin (702, 469) lu (0, 255, 0) ; images `scratchpad/e19g2a-exec/demo-out/psx-modes.png` et
+  `psx-capacity.png`, lectures `modes.txt` et `capacity.txt` ; la démo de capacité sur le code d'E1 (sans croissance) lève
+  `IndexOutOfRangeException` à chaque image, sans capture. **Convertisseur** : tests 420/420 (418 + 2, rouges d'abord : `sprite_3001`
+  attendu `Mode2` lu `None` sur le montage synthétique ; `sprite_16561416966684` attendu `Mode1` lu `None` sur données réelles),
+  `SpriteWriter.ReadPsxSemiTransparency` lit `SpriteQuad.Spritesheet` (e8231cf). Le montage synthétique porte six quads dont `Signature`
+  d'octet bas `0xB9`, `0xBA` et `0x18` avec `Spritesheet` 0 ou 0x28 : seuls ceux dont `Spritesheet` a le bit 3 reçoivent un mode ; le test
+  réel convertit `map_alundra.json` (héros ABR 1, nuages de sable ABR 3) et `map_100.json` (◆Homme-ombre Niv.1, ABR 0), 2 s, et rend
+  sans rien vérifier si `data-extracted/` manque. **Export** en place : manifeste SHA-1 (23 741 fichiers hors DLL, pdb, `.casaeditor/`)
+  avant/après = exactement les 1837 lignes (les 1836 chemins de `predicted_sprites.txt` et `report.json`) ; pour chacun des 1836
+  `.sprite`, ôter la ligne `"psx_semi_transparency"` rend l'empreinte SHA-1 du manifeste « avant », et la ligne porte le mode de sa
+  ligne de la liste (218 `Mode0`, 1615 `Mode1`, 0 `Mode2`, 3 `Mode3`) ; second export identique hors `report.json` ; `Alundra.Tests`
+  2555/2555 en Debug (pas de Release ici : la clôture la lance), `cmp` de la DLL déposée contre la build Debug sans écart ; six traces
+  à l'octet (`git diff --ignore-cr-at-eol` vide), les quatre traces du héros remises par `git checkout`. Écarts au plan : (1) le fond de
+  la démo de capacité est une entrée de plus en tête de file (12 000 sprites de texel plus le fond, 12 001 entrées) ; (2) le test de
+  `DrawDirectly`, `DrawStaticBatch` et `Draw` observe la pose de la fenêtre par la couture `AlphaWindowWriter` puis laisse passer le
+  `NullReferenceException` de la partie qui touche le périphérique (couture nommée au plan du moteur) ; (3) la `Release` de
+  `Alundra.Tests` n'est pas lancée ici (brief). ADR-0033 (`Accepted`, D-E19-52) ; moteur : ADR-0051. Decisions: see ADR-0033 (moteur :
+  ADR-0051). Reste : G2a-3 (vérification) et G2a-4 (recette de l'auteur).
 
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 
