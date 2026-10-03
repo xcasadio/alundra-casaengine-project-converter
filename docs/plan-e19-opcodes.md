@@ -4892,6 +4892,14 @@ les bits ; le cycle de palettes (`b2 > 0`) sort d'E19.k2 : consigné (O-E19-43),
 4. Recette K2-4 faite par l'auteur.
 
 **Risques.** Le cycle de palettes de la 471 reste absent (O-E19-43).
+- ✅ **Vérification d'E19.k2** (2026-10-03) : `CasaEngine.Tests` 2502/2502 ; `Alundra.Tests` 2539/2539 en Release puis en Debug, la
+  Debug en dernier ; `cmp` sans écart ; les six traces à l'octet. Vérificateur neuf : **CONFIRMED** (binaire relu : `0x80041098` lit
+  b1 et b2 non signés, `0x8005D668`, porte de dessin `0x8005B6F8`-`0x8005B744` ; à la 475, couche 0 cellulaire et couche 1 absente,
+  comme le plan ; mutations du moteur, le talon et la porte de gel ou de soumission retirée, 8 rouges sur 12 chacune ; mutation de
+  la DLL, 15 rouges sur 16). Avis : P3 `SetLayerMask_AfterAMask_ALaterMaskOfThreeTurnsEverythingBackOn`
+  (`AlundraBackgroundLayerMaskTests.cs:206-216`) ne peut pas échouer (il ne vérifie ni l'état intermédiaire ni le retour) : « 16
+  rouges » valait 15 → E19.m ; P4 `0x8005D668` écrit aussi 1 en `0x800C4908` (sans doute un drapeau de palette à refaire) → O-E19-43.
+  **Reste la recette K2-4 de l'auteur.** Branche du moteur `chantier/e19k2-layer-mask` (`987f0c7f`, empilée sur E19.s), non mergée.
 
 ### 1.2l E19.j — Réarmement des événements de carte hors zone ✅ (recette J3 en attente)
 
@@ -6704,6 +6712,11 @@ Réservé aux mesures faites en exécutant les tranches.
 
 - **Commits** : plan et relectures jusqu'à `a4a5ce8` ; `541ae72` (code, tests, ADR-0028, plan) ; puis cette clôture.
 - **Suites** : `Alundra.Tests` **2510 avant, 2523 après** (+13), 0 échec, en Release puis en Debug ; `cmp` sans écart.
+
+### E19.k2 (2026-10-03)
+
+- **Commits** : moteur `7350f247`, `79ef3532`, `987f0c7f` (ADR-0049) ; parent `0d14dfd`, `6688fc9` ; puis cette clôture.
+- **Suites** : `CasaEngine.Tests` **2490 avant, 2502 après** ; `Alundra.Tests` **2523 avant, 2539 après** (+16), en Release puis en Debug.
 
 ## 3. Points ouverts
 
