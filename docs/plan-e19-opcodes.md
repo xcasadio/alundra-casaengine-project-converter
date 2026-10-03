@@ -206,6 +206,7 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     `max(PosZ, T)`) ; `0x8A` et `0x64` sont examinés dans la même ADR.
   - **D-E19-60** — (2026-10-03, l'auteur, E19.s) L'image de 320 × 240 s'agrandit d'un **facteur entier seulement**
     (`k = max(1, floor(min(L / 320, H / 240)))`), centrée, le reste en bandes noires ; tous les pixels restent égaux.
+    Decisions: see ADR-0027.
   - **D-E19-61** — (2026-10-03, l'auteur) Les **sons d'apparition au chargement d'une carte** se résolvent avec le groupe de
     sons de la **nouvelle** carte : défaut de l'original corrigé (le binaire initialise les entités en `0x8002C3AC` avant de
     poser le nouveau groupe en `0x8004A09C`, ces sons sont donc cherchés dans le groupe de la carte précédente).
