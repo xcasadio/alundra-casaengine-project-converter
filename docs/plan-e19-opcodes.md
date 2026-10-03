@@ -6051,6 +6051,18 @@ sous-module soit libre.
   - **Non exécuté en test** (périphérique graphique requis) : l'abonnement à `Window.ClientSizeChanged`, l'effacement noir des bandes, la ligne
     de `UIRoot.Update`. Les fonctions qu'ils appellent le sont. À voir à la recette S6. Icônes d'équipement du HUD : leur centrage dépend du
     facteur, il est refait au prochain tick du présentateur, pas dans le rappel.
+- ✅ **Vérification d'E19.s** (2026-10-03) : `Alundra.Tests` 2505/2505 en Release puis en Debug, la Debug en dernier ; `cmp` sans
+  écart ; les six traces à l'octet. Vérificateur neuf : **CONFIRMED** pour les acceptations 1 à 4 (moteur relu : réglage absent
+  inerte et invisible à l'éditeur, mise en page conforme aux neuf lignes, ordre `World.OnScreenResized` puis vue et caméra, viewport
+  de la caméra 1280 × 960 et aire visible 320 × 240 à la création comme après un redimensionnement ; lignes sans test vérifiées à la
+  lecture ; `CasaEngine.Tests` 2490/2490 ; convertisseur 418/418 ; mutations : `camera.OnScreenResized` retiré (4 rouges), rappel
+  d'un écran vidé (rouge) ; la ligne `UIRoot.cs:135` n'a pas de test, comme annoncé ; empreintes de l'export égales au manifeste
+  d'après). Écarts déclarés acceptés. Avis reportés à E19.m : P3 une valeur non numérique ou booléenne du réglage lève une erreur qui
+  ne nomme pas la clé, un flottant est arrondi (`ProjectSettingsHelper.cs:86-88`) ; P4 commentaire « 320x236 »
+  (`AlundraHudComposer.cs:43`) ; P4 section de doc du moteur en français dans un document français alors que l'`AGENTS.md` du moteur
+  demande l'anglais pour `docs/` (à l'auteur) ; P4 trois branchements sans test (`UIRoot.cs:135`, `CasaEngineGame.cs:472`, `:638`),
+  couverts par la recette S6. **Reste la recette S6 de l'auteur.** Branche du moteur `chantier/e19s-virtual-resolution` (`dfaed7a6`),
+  non mergée : le pointeur du parent la désigne.
 
 ### 1.2r E19.t — Son de chaque changement d'animation ⏳ (planifiée ; relecture n°1 REVISE, révisée)
 
@@ -6419,6 +6431,13 @@ Réservé aux mesures faites en exécutant les tranches.
 - **Commits** : plan `3e6f285`, `60d9699` ; analyseur `b92b7b9` (branche `chantier/e19f1-dialogue-boxes`) ; parent `2e86c87`, `512177c` ;
   puis cette clôture.
 - **Suites** : convertisseur **415 avant, 417 après** ; `Alundra.Tests` 2504 inchangé ; export en place : 7 fichiers nouveaux, 2 modifiés.
+
+### E19.s (2026-10-03)
+
+- **Commits** : moteur `c54cc939` à `dfaed7a6` (branche `chantier/e19s-virtual-resolution`, ADR-0048) ; parent `1250f9b`, `e08c467`,
+  `b386132` (ADR-0027), `a7e57cf` ; puis cette clôture.
+- **Suites** : `CasaEngine.Tests` 2490 ; convertisseur **417 avant, 418 après** ; `Alundra.Tests` **2504 avant, 2505 après** (3 retirés,
+  4 ajoutés) ; export en place : 3 fichiers changés, comme prévu.
 
 ## 3. Points ouverts
 
