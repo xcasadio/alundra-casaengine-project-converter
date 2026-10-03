@@ -4340,7 +4340,7 @@ Commits : `test(converter): …` puis `feat(converter): emit text flag codes and
   change avec un commit du seul plan. Avis reporté à E19.m : P4 un `[flag id=abc/]` écrit à la main (propriété texte) lèverait
   une `FormatException` dans `ShowLine` (`AlundraYarnBindings.cs:183`, `Convert.ToInt64`), le convertisseur n'en produit jamais.
 
-##### 1.2j.2 E19.f1 — Cadres du nom et du choix, curseur d'attente 🚧 (planifiée ; relecture n°1 REVISE, révisée)
+##### 1.2j.2 E19.f1 — Cadres du nom et du choix, curseur d'attente ✅ (planifiée ; relecture n°1 REVISE, révisée)
 
 **Faits.**
 - **Données de la décompilation** (`alundra-datas-analyser/AlundraTools/AlundraEngine/StaticVariables.cs`) : la boîte du nom est
@@ -4406,6 +4406,23 @@ Commits : `test(converter): …` puis `feat(converter): emit text flag codes and
    double export identique hors `report.json` ; 0 erreur ; `UiBoxes.CellsWithoutTile` reste 0 ; `UI/Textures/g_textTilesConfiguration.png`
    fait 112 × 32 et `UI/Textures/g_uiBoxesConfigurationBackgroundMessageChoice.png` 128 × 32.
 4. Tests du convertisseur verts ; `Alundra.Tests` vert sur le nouvel export ; les six traces à l'octet.
+
+- **Fait le 2026-10-03** (sous-module `chantier/e19f1-dialogue-boxes` `b92b7b9`, parent `2e86c87`). F1-1 : 2 boîtes et 120
+  cellules ajoutées en fin de CSV ; lecteur indépendant de `StaticVariables.cs` : 14 boîtes, 1471 cellules, aucune manquante ni
+  en trop, même ordre, 0 cellule hors de sa boîte, aucun recouvrement, `y0` de la boîte du nom 144-168 bruts → 140-164, lignes
+  existantes à l'octet. F1-2 : rouges d'abord sur les CSV d'avant, valeurs lues : les deux PNG de la cuisson absents (boîtes non
+  cuites) et 3 tests de `UiWriterTests` avec « attendu 4, lu 3 » (animations, fichiers, avertissements) ; verts ensuite
+  (10 sur les deux classes, 417 sur la suite du convertisseur). Mutations jetables, restaurées : deux cellules du nom
+  permutées (8 px) rougit (`premier octet différent en (3, 0), attendu 72, lu 0`) ; un texel de coin transparent de la
+  référence passé à alpha 255 rougit (`(0, 0), canal alpha, attendu 255, lu 0`). Références versionnées dans
+  `alundra-casaengine-project-converter.Tests/TestData/` (copiées à la sortie par le `.csproj`). F1-3 : manifeste SHA-1 de
+  `alundra-project/` hors DLL, PDB et `.casaeditor/` (23734 fichiers) avant ; export complet en place ; après 23741 :
+  exactement les sept fichiers nouveaux prévus, `AssetInfos.json` et `report.json` modifiés, rien d'autre ; double export
+  identique hors `report.json` ; 0 erreur, `UiBoxes.CellsWithoutTile` 0, `UiBoxes.Boxes` 13, `UiBoxes.Cells` 1471,
+  `Assets.UiAnimation` 4 ; PNG 112 × 32 et 128 × 32 ; `Alundra.Tests` 2504 verts ; six traces à l'octet
+  (`--ignore-cr-at-eol`), les quatre traces du héros remises par `git checkout`. Écarts : aucun du texte du plan ; le test de
+  cuisson saute si `data-extracted/` est absent (convention des tests sur données réelles), et le cycle est testé par la
+  constante littérale `"ui_dialogue_cursor"`.
 
 **Retour arrière** : le pointeur du sous-module et le commit du convertisseur reviennent ; ré-export en place ; la DLL n'a rien à
 reprendre (elle ne lit pas encore ces fichiers).
