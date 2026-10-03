@@ -45,6 +45,37 @@ public class ProjectWriterTests
         }
     }
 
+    // E19.s (engine ADR-0048): the image is the 320x240 of the original binary, fitted by the engine at a whole
+    // factor. The setting and the window size are read back from the file the game consumes.
+    [Fact]
+    public void CreateEmptyProject_DeclaresTheNative320x240VirtualResolutionAndAFittingWindow()
+    {
+        RunInFreshOutputDirectory(outputDirectory =>
+        {
+            var projectFilePath = Path.Combine(outputDirectory, "AlundraGame.json");
+
+            ProjectWriter.CreateEmptyProject(outputDirectory, new ConversionReport());
+
+            var rootElement = JObject.Parse(File.ReadAllText(projectFilePath));
+            var virtualResolution = rootElement["VirtualResolution"];
+            Assert.NotNull(virtualResolution);
+            Assert.Equal(320, (int?)virtualResolution!["Width"]);
+            Assert.Equal(240, (int?)virtualResolution["Height"]);
+            Assert.Equal("IntegerFit", (string?)virtualResolution["Mode"]);
+
+            // The default window is the image at the whole factor 4: no bands.
+            Assert.Equal(1280, (int?)rootElement["DebugWidth"]);
+            Assert.Equal(960, (int?)rootElement["DebugHeight"]);
+
+            ProjectSettingsHelper.Load(projectFilePath);
+            var loaded = GameSettings.ProjectSettings.VirtualResolution;
+            Assert.NotNull(loaded);
+            Assert.Equal(320, loaded!.Width);
+            Assert.Equal(240, loaded.Height);
+            Assert.Equal(VirtualResolutionMode.IntegerFit, loaded.Mode);
+        });
+    }
+
     // ADR-0040 (engine) / parent plan P6: IsAudioMuted is set by hand in the project file and must survive
     // the phase 0 rewrite of that file.
     [Fact]

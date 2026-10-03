@@ -299,7 +299,7 @@ public class WorldWriterTests
     /// from the files the game actually consumes - not from AlundraDisplay, which would only test
     /// that a constant equals itself - is what catches them drifting apart. Before this, the window
     /// kept the engine's 1024x768 default while Zoom stayed at 1, and the game showed 1024x768 world
-    /// pixels instead of Alundra's 320x236: ten times too much map on screen.
+    /// pixels instead of Alundra's 320x240: ten times too much map on screen.
     /// </summary>
     [Fact]
     public void ProjectWindowAndCameraZoom_TogetherFrameTheNativeAlundraScreen()
@@ -335,9 +335,10 @@ public class WorldWriterTests
                 File.ReadAllText(Path.Combine(outputDirectory, "Entities", "AlundraCamera.entity"))));
             var zoom = Assert.IsType<Camera2dComponent>(cameraEntity.RootComponent).Zoom;
 
-            // AlundraEngine.StaticVariables.ScreenWidth / ScreenHeight.
+            // The 320 x 240 screen of the original binary (ALUN_CD.EXE sets the draw and display environments
+            // to 0x140 x 0xF0; the decompilation's 236 was wrong, E19.s).
             Assert.Equal(320f, windowWidth / zoom);
-            Assert.Equal(236f, windowHeight / zoom);
+            Assert.Equal(240f, windowHeight / zoom);
 
             // An integer zoom is what makes one tileset texel cover a whole number of screen pixels;
             // the engine's pixel-perfect checklist requires it.

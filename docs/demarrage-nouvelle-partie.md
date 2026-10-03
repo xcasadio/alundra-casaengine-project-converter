@@ -139,7 +139,7 @@ GameInitializer.Initialize()
 ### 2.2 Banque de sprites du héros
 
 `ResetEntityState()` fait `GetSpriteFromSpriteTable(false, 0, …)` → **SpriteRecord n° 0 de
-`map_alundra.json`**, donc `Sprites/bank_hero_0/` côté converti. Caméra native 320 × 236.
+`map_alundra.json`**, donc `Sprites/bank_hero_0/` côté converti. Caméra native 320 × 240.
 
 ---
 

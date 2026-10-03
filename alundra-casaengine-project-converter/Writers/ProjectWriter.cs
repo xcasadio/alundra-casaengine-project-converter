@@ -69,11 +69,19 @@ public static class ProjectWriter
             GameplayDllName = GameplayDllName,
             ExternalToolsDirectory = "ExternalTools",
 
-            // Half of the framing: the engine shows window / Zoom world pixels, so leaving these at
-            // the engine's 1024x768 default while the camera zooms by 4 would show the map at the
-            // wrong scale. See AlundraDisplay - the window size and the camera zoom are one setting.
+            // The window the game opens at: the native 320x240 image at the whole factor PixelScale, so no
+            // band at first. See AlundraDisplay - the window size and the camera zoom are one setting.
             DebugWidth = AlundraDisplay.WindowWidth,
             DebugHeight = AlundraDisplay.WindowHeight,
+
+            // The picture is the 320x240 of the original binary; the engine fits it into the window at a
+            // whole factor with black bands and follows the window in real time (engine ADR-0048, E19.s).
+            VirtualResolution = new VirtualResolutionSettings
+            {
+                Width = AlundraDisplay.NativeWidth,
+                Height = AlundraDisplay.NativeHeight,
+                Mode = VirtualResolutionMode.IntegerFit,
+            },
 
             // The one setting the author edits by hand in the generated project (engine ADR-0040): kept
             // across exports, since this phase otherwise rebuilds the file from constants.

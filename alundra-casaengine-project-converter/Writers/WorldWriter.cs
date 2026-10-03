@@ -60,8 +60,10 @@ public readonly record struct TileCentreSpawn(int PixelX, int PixelY, float Worl
 ///  the zoom written here only means something together with the window size Phase 0 writes into
 ///  AlundraGame.json. Both come from AlundraDisplay, which exists so they cannot drift: at Zoom = 1
 ///  against the engine's default 1024x768 window the view showed 1024x768 world pixels where
-///  Alundra shows 320x236 - about ten times too much map on screen, which is what a run of the
-///  converted game actually looked like before this was fixed.
+///  Alundra shows 320x240 - about ten times too much map on screen, which is what a run of the
+///  converted game actually looked like before this was fixed. (The engine now frames the virtual
+///  resolution declared in AlundraGame.json itself, engine ADR-0048; the zoom written here is the
+///  placeholder that keeps this file consistent with the window.)
 ///
 ///  Why the camera is shared rather than inlined per world. Its Target *is* serialized -
 ///  EditorEntityJsonSerializer.SaveCamera2dComponent writes target / zoom / pixel_snap and
@@ -469,7 +471,7 @@ public static class WorldWriter
             ["z"] = 0f,
         };
         // The other half of the framing (see AlundraDisplay). Zoom = 1 with the engine's default
-        // window showed 1024x768 world pixels where Alundra shows 320x236 - ten times too much map.
+        // window showed 1024x768 world pixels where Alundra shows 320x240 - ten times too much map.
         node["zoom"] = AlundraDisplay.CameraZoom;
         node["pixel_snap"] = true;
         return node;

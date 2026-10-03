@@ -14,8 +14,8 @@ Documents liés : [demarrage-nouvelle-partie.md](demarrage-nouvelle-partie.md) �
 
 | Constante | Valeur | Source |
 |---|---|---|
-| Largeur d'écran | 320 | `StaticVariables.ScreenWidth` |
-| Hauteur d'écran | 236 (224 en NTSC) | `StaticVariables.ScreenHeight` |
+| Largeur d'écran | 320 | `ALUN_CD.EXE` (`SetDefDispEnv`, `0x800424AC`), `StaticVariables.ScreenWidth` |
+| Hauteur d'écran | **240** | `ALUN_CD.EXE` (`SetDefDispEnv`, `0x800424AC`) ; la décompilation dit 236 (`StaticVariables.ScreenHeight`), c'est une erreur |
 | Largeur de tuile | **24 px** | `StaticVariables.MapTileWidth` |
 | Hauteur de tuile | **16 px** | `StaticVariables.MapTileHeight` |
 | Taille de map | **52 × 60 tuiles** = 1248 × 960 px | uniforme sur les 483 maps |
@@ -30,8 +30,11 @@ C'est la source d'erreur n° 1. Trois systèmes d'unités coexistent dans les do
 
 ### 2.0 Résolution et cadrage — deux valeurs, un seul réglage
 
-**Écran natif d'Alundra : 320 × 236** (`AlundraEngine.StaticVariables.ScreenWidth` / `ScreenHeight`
-de la décompilation ; le `//224` en commentaire est une estimation antérieure).
+**Écran natif d'Alundra : 320 × 240.** Le binaire (`ALUN_CD.EXE`, France) règle les environnements de dessin et
+d'affichage en `0x140 × 0xF0` (`SetDefDrawEnv` / `SetDefDispEnv`, `0x800424AC`) et dimensionne les deux `TILE` plein
+écran de même (`0x800429C8`-`0x800429EC`). La décompilation dit 236 (`StaticVariables.ScreenHeight`, avec un `//224`
+en commentaire) et écrit 236 là où le binaire écrit `0xF0` : **le binaire l'emporte** (E19.s, D-E19-47). Ce 236 était
+entré dans le convertisseur par `5c7fdad`.
 
 Côté CasaEngine, la surface de monde visible vaut **taille de la fenêtre ÷ `Zoom`**
 (`Camera2dComponent.ComputeProjectionMatrix` :
@@ -46,21 +49,27 @@ Le cadrage dépend donc de **deux valeurs écrites dans deux fichiers différent
 | Taille de fenêtre (`DebugWidth`/`DebugHeight`) | `AlundraGame.json` | 0 |
 | `Zoom` de la caméra | `Entities/AlundraCamera.entity` | 6 |
 
-**Règle : `fenêtre = N × (320 × 236)` et `Zoom = N`**, avec N entier. On retrouve alors exactement le
+**Règle : `fenêtre = N × (320 × 240)` et `Zoom = N`**, avec N entier. On retrouve alors exactement le
 cadrage d'origine, et un texel de tileset couvre N × N pixels écran, ce qu'exige la checklist
-pixel-perfect du moteur. Valeur actuelle : **N = 4**, soit une fenêtre 1280 × 944 — une tuile de
-24 × 16 occupe 96 × 64 pixels écran, et on voit 13,3 × 14,8 tuiles sur les 52 × 60 d'une map.
+pixel-perfect du moteur. Valeur d'ouverture : **N = 4**, soit une fenêtre 1280 × 960 — une tuile de
+24 × 16 occupe 96 × 64 pixels écran, et on voit 13,3 × 15 tuiles sur les 52 × 60 d'une map.
+
+**Le moteur ajuste l'image à la fenêtre** (ADR-0048 du moteur, E19.s) : le convertisseur déclare dans
+`AlundraGame.json` la résolution virtuelle `{ "Width": 320, "Height": 240, "Mode": "IntegerFit" }` ; à l'exécution,
+le moteur prend le plus grand facteur entier `k` qui tient dans la fenêtre, centre l'image 320k × 240k, cadre la
+caméra (`Zoom = k`), efface le reste en noir et suit la fenêtre quand l'utilisateur la redimensionne (par exemple
+1920 × 1080 → ×4, bandes de 320 px à gauche et à droite et de 60 px en haut et en bas). Le `Zoom` écrit dans l'asset
+caméra n'est plus qu'une valeur de départ, et la DLL ne pose plus le zoom.
 
 > **Piège vécu.** Ces deux valeurs sont un seul réglage ; les laisser diverger produit un projet
 > parfaitement valide mais mal cadré. La fenêtre était restée au défaut du moteur (1024 × 768) et le
-> `Zoom` à 1 : le jeu affichait 1024 × 768 pixels de monde au lieu de 320 × 236, soit **10 fois trop
+> `Zoom` à 1 : le jeu affichait 1024 × 768 pixels de monde au lieu de 320 × 240, soit **10 fois trop
 > de map à l'écran** — d'où l'impression de caméra « trop loin ». Un `Zoom` entier était nécessaire,
 > pas suffisant. D'où `AlundraDisplay` côté convertisseur : une seule constante `PixelScale` alimente
-> les deux fichiers, et un test relit les deux pour vérifier que `fenêtre / Zoom == 320 × 236`.
+> les deux fichiers, et un test relit les deux pour vérifier que `fenêtre / Zoom == 320 × 240`.
 >
-> Les pixels sont supposés carrés. L'original tournait sur un téléviseur 4:3 à pixels non carrés :
-> un rendu 1:1 est donc 1,7 % plus large en proportion qu'à l'époque. Corriger cet écart imposerait
-> une échelle non entière sur un axe et casserait le pixel-perfect — c'est assumé.
+> Les pixels sont carrés et 320 × 240 est exactement du 4:3 : l'ancienne note sur un écart d'aspect de 1,7 % (liée au
+> 236) n'a plus lieu d'être.
 
 ### 2.1 Positions d'entité dans `SpriteInfo.Entities` (`XPos`, `YPos`, `Height`)
 
