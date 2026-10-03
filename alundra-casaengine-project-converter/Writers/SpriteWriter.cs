@@ -885,6 +885,29 @@ public static class SpriteWriter
         report.Increment("Sprites.InventoryPortrait");
     }
 
+    /// <summary>
+    /// The PSX semi-transparency mode of a quad (E19.g G2a, ADR-0033, D-E19-52). The primitive of the original binary reads it
+    /// on the first byte of the image record, which is <see cref="SpriteQuad.Spritesheet"/>: bit 3 enables the semi-transparency
+    /// and bits 4-5 are the ABR, the blend rate (0 average, 1 additive, 2 subtractive, 3 quarter); bits 6-7 are never read.
+    /// It is read on that field and never on <see cref="SpriteQuad.Signature"/>, whose low byte equals it on every real quad
+    /// but not on the synthetic quads of the tests, so a fixture with an arbitrary signature must stay without a mode.
+    /// </summary>
+    private static SpritePsxSemiTransparency ReadPsxSemiTransparency(SpriteQuad quad)
+    {
+        if ((quad.Spritesheet & 0x08) == 0)
+        {
+            return SpritePsxSemiTransparency.None;
+        }
+
+        return ((quad.Spritesheet >> 4) & 3) switch
+        {
+            0 => SpritePsxSemiTransparency.Mode0,
+            1 => SpritePsxSemiTransparency.Mode1,
+            2 => SpritePsxSemiTransparency.Mode2,
+            _ => SpritePsxSemiTransparency.Mode3,
+        };
+    }
+
     private static Guid EnsureSpriteData(
         SpriteQuad quad,
         string spritesheetFileName,
@@ -905,6 +928,7 @@ public static class SpriteWriter
             PositionInTexture = new Rectangle(quad.AtlasX, quad.AtlasY, quad.Width, quad.Height),
             Origin = new Point(quad.Width / 2, quad.Height / 2),
             Name = $"sprite_{quad.Signature}",
+            PsxSemiTransparency = ReadPsxSemiTransparency(quad),
         };
         spriteData.FileName = Path.Combine(bankRelativeDirectory, $"{spriteData.Name}.sprite");
 
