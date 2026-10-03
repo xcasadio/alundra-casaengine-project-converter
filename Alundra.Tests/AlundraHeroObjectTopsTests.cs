@@ -177,10 +177,9 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
     [InlineData(128f, new[] { 3 }, 196.633)]
     [InlineData(129f, new[] { 2, 3 }, 196.633)]
     [InlineData(130f, new[] { 2, 3 }, 196.633)]
-    // 131 to 133: the table of the annex says {2, 3} without saying what "blocked" means (no definition reconciles all its rows). At x0 >= 131 the front edge is 2 px or
-    // less from the step: the first step of tick 1 (foot at 5 px) already reaches the contact (x = 133.0, advance to the contact of E19.a2) or starts from it (133), and the
-    // rule of the binary (cell above the foot, S6) blocks that tick necessarily. The DLL's measure is pinned: {1, 2, 3}; the final position is the same. To check against the
-    // binary with E19.h.
+    // 131 to 133: {1, 2, 3} is the binary's result (E19.h4 H4-R3); the row {2, 3} of the annex was wrong. At x0 >= 131 the front edge is 2 px or less from the step: the
+    // first step of tick 1 (foot at 5 px) already reaches the contact (x = 133.0, advance to the contact of E19.a2) or starts from it (133), and the rule of the binary (cell
+    // above the foot, S6) blocks that tick necessarily; the final position is the same.
     [InlineData(131f, new[] { 1, 2, 3 }, 196.633)]
     [InlineData(132f, new[] { 1, 2, 3 }, 196.633)]
     [InlineData(133f, new[] { 1, 2, 3 }, 196.633)]

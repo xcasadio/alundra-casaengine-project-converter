@@ -122,13 +122,13 @@ public sealed class AlundraHeroJumpArcTests
         var corner = Hero(B, 2460, f0 + 256);
         Assert.Equal((47748096, 56016896, 1048576), (corner.X, corner.Y, corner.Z));
 
-        // 6. `0x24 @2462` ends between F0+295 and F0+299 (the original: F0+308, the hero slides along the corner, E19.h), the hero within 2.5 px of (47827968; 51838976),
+        // 6. `0x24 @2462` ends between F0+303 and F0+309 (the original: F0+308: the hero slides +0.75 px along the corner (29,48), E19.h4), the hero exactly at (47877120; 50790400),
         // PosZ 2097152, ForceAdjusted 1; `0x53 @2463` sends him to the map 135 in (30670848; 54001664; 1048576), direction 16.
         var leave = FrameOf(arc, B, 2463);
-        Assert.InRange(leave, f0 + 295, f0 + 299);
+        Assert.InRange(leave, f0 + 303, f0 + 309);
         var at2463 = Hero(B, 2463, leave);
-        Assert.InRange(at2463.X, 47827968 - 163840, 47827968 + 163840);
-        Assert.InRange(at2463.Y, 51838976 - 163840, 51838976 + 163840);
+        Assert.Equal(47877120, at2463.X);
+        Assert.Equal(50790400, at2463.Y);
         Assert.Equal((2097152, 1), (at2463.Z, at2463.ForceAdjusted));
         Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
         var arrival = AlundraWarpDirector.Instance.ArrivalRecordForTests;

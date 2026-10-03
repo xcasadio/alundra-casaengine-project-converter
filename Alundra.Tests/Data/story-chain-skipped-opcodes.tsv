@@ -112,10 +112,6 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 176	B	10	mapevent9 zone(0,0,51,59)	748	0xA2	Create effect with pos	EFFET	E19.g	A	
 176	B	11	mapevent10 zone(0,0,51,59)	765	0xA2	Create effect with pos	EFFET	E19.g	A	
 176	C	1	rec5 Septimus (chercheur)	815	0xA2	Create effect with pos	EFFET	E19.g	S	
-178	B	1	mapevent0 zone(32,5,50,29)	105	0x46	Set EntityFlags.NoObstacleSlide	GLISSEMENT (NoObstacleSlide)	E19.h (O-E19-20)	S	
-178	B	1	mapevent0 zone(32,5,50,29)	129	0x45	Clear EntityFlags.NoObstacleSlide	GLISSEMENT (NoObstacleSlide)	E19.h (O-E19-20)	S	
-178	B	1	mapevent0 zone(32,5,50,29)	134	0x46	Set EntityFlags.NoObstacleSlide	GLISSEMENT (NoObstacleSlide)	E19.h (O-E19-20)	S	
-178	B	1	mapevent0 zone(32,5,50,29)	157	0x45	Clear EntityFlags.NoObstacleSlide	GLISSEMENT (NoObstacleSlide)	E19.h (O-E19-20)	S	
 181	C	3	rec2 Nadia (femme insomniaque)	186	0x90	Create effect	EFFET	E19.g	O	
 181	C	3	rec2 Nadia (femme insomniaque)	188	0x90	Create effect	EFFET	E19.g	O	
 181	C	3	rec2 Nadia (femme insomniaque)	190	0x90	Create effect	EFFET	E19.g	O	
@@ -137,5 +133,3 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 135	C	9	rec24 Boule de fer (grande)	2490	0xA3	Create effect with entity pos	EFFET	E19.g	X	
 183	B	15	mapevent14 zone(0,0,51,59)	872	0xA2	Create effect with pos	EFFET	E19.g	A	
 183	B	15	mapevent14 zone(0,0,51,59)	880	0xA2	Create effect with pos	EFFET	E19.g	A	
-185	B	1	mapevent0 zone(0,0,51,59)	92	0x46	Set EntityFlags.NoObstacleSlide	GLISSEMENT (NoObstacleSlide)	E19.h (O-E19-20)	S	T-A19
-185	B	1	mapevent0 zone(0,0,51,59)	108	0x45	Clear EntityFlags.NoObstacleSlide	GLISSEMENT (NoObstacleSlide)	E19.h (O-E19-20)	S	T-A19

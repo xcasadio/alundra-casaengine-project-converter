@@ -663,6 +663,15 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 entity.ResyncControllerFromFlags();
                 return 1;
 
+            case 0x45: // Clear NoObstacleSlide - Script_69_045 @ 0x8003E954 (E19.h4 H4-R1, docs/plan-e19-opcodes.md §1.2n.4): bit 0x2000 of the logic
+                       // entity's flags, nothing else (no Result, no resync of the controller: the bit is read by the kinematic tick only). Size 1.
+                entity.Flags &= ~EntityFlags.NoObstacleSlide;
+                return 1;
+
+            case 0x46: // Set NoObstacleSlide - Script_70_046 @ 0x8003E96C (E19.h4 H4-R1): the slide along walls is forbidden for the entity.
+                entity.Flags |= EntityFlags.NoObstacleSlide;
+                return 1;
+
             case 0x19: // Deactivate entity - Script_25_019 (EntityEventHandlers.cs:729-733).
                 entity.Status = EntityStatus.Deactivated;
                 return 1;

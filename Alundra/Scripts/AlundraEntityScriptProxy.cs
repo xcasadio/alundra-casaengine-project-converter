@@ -428,6 +428,12 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// </summary>
     internal int EntityBlockCount;
 
+    /// <summary>
+    /// E19.h4 H4-R2: how many second steps (the slide along a wall of the binary's <c>ComputeXYPosition</c>, <c>0x80037A94</c>-<c>0x80037CD0</c>) the kinematic tick of this entity
+    /// made, since the proxy exists. Not a game state: the arcs read it (<c>ArcsWithoutSlide</c> expects 0 outside A10J). Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal int SlideCount;
+
     /// <summary>E19.d2b: the engine entity this proxy drives (the movement obstacle probe returns obstacles as engine entities).</summary>
     internal Entity? OwnerEntity => Owner;
 
@@ -2004,11 +2010,11 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// <see cref="PosX"/>/<see cref="PosY"/> += in that case) - <see cref="ForceAdjusted"/> is left
     /// untouched, same as every other controller-gated site on this class.
     /// </summary>
-    internal void MoveControllerAndPullPosition(float deltaXPixels, float deltaYPixels)
+    internal Vector3 MoveControllerAndPullPosition(float deltaXPixels, float deltaYPixels)
     {
         if (Controller == null || Owner?.RootComponent == null)
         {
-            return;
+            return Vector3.Zero;
         }
 
         var requested = new Vector3(deltaXPixels, deltaYPixels, 0f);
@@ -2049,6 +2055,8 @@ public class AlundraEntityScriptProxy : GameplayProxy
         {
             PosZ = (int)Math.Round((double)root.Z * 65536.0);
         }
+
+        return actual;
     }
 
     /// <summary>
@@ -2156,7 +2164,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// <summary>True when, on one horizontal axis, a displacement beyond
     /// <see cref="ForceAdjustedEpsilonPixels"/> was requested and the controller obtained at most that
     /// much of it, i.e. the axis made no progress at all (E19.a3, D-E19-12).</summary>
-    private static bool AxisMadeNoProgress(float requested, float actual)
+    internal static bool AxisMadeNoProgress(float requested, float actual)
     {
         return MathF.Abs(requested) > ForceAdjustedEpsilonPixels
             && MathF.Abs(actual) <= ForceAdjustedEpsilonPixels;

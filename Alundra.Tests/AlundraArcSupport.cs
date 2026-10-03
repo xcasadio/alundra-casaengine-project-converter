@@ -273,11 +273,25 @@ internal sealed class ArcRun : IDisposable
     /// <summary>The controller steps that an entity shortened or cancelled, summed over every entity of the world (the hero's included).</summary>
     public int TotalEntityBlockCount => Proxy == null ? 0 : Entities.Concat(new[] { Hero }).Distinct().Sum(e => e.EntityBlockCount);
 
+    /// <summary>
+    /// E19.h4 (docs/plan-e19-opcodes.md §1.2n.4, H4-1): the guard <c>ArcsWithoutSlide</c>. Every arc of the real controller made exactly the second steps along a wall this table
+    /// gives (0 for an arc absent from it) when it ends. The three arcs that slide are the hero, without <c>NoObstacleSlide</c>, against ONE cell corner, as the binary does, with
+    /// every pin intact: A10J at (47827968 ; 51838976) going north (corner [0] alone), A14 at (25767936 ; 9961472) going south (direction 0, corner [2] alone), A18 at
+    /// (62312448 ; 9895936) going north (direction 16, corner [0] alone).
+    /// </summary>
+    private static readonly Dictionary<string, int> ArcsThatSlide = new() { ["A10J"] = 1, ["A14"] = 1, ["A18"] = 1 };
+
+    /// <summary>The second steps along a wall that the entities of the world made (the hero's included).</summary>
+    public int TotalSlideCount => Proxy == null ? 0 : Entities.Concat(new[] { Hero }).Distinct().Sum(e => e.SlideCount);
+
     public void Dispose()
     {
         // A non-zero value means an exception is propagating through this Dispose (the test, or the constructor, has already failed).
         var alreadyFailing = Marshal.GetExceptionPointers() != IntPtr.Zero;
         var blocked = !alreadyFailing && Frame > 0 && ArcsWithoutEntityContact.Contains(Spec.Name) ? TotalEntityBlockCount : 0;
+        var expectedSlides = ArcsThatSlide.GetValueOrDefault(Spec.Name);
+        var slides = TotalSlideCount;
+        var slid = !alreadyFailing && Frame > 0 && Spec.RealController && slides != expectedSlides ? slides : -1;
         Log?.Dispose();
         EngineEnvironment.ProjectPath = _previousProjectPath;
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
@@ -285,6 +299,11 @@ internal sealed class ArcRun : IDisposable
         if (blocked != 0)
         {
             throw new XunitException($"arc {Spec.Name}: {blocked} controller step(s) were shortened or cancelled by an entity (T-REG-0 expects none: its pins have no reason to move)");
+        }
+
+        if (slid >= 0)
+        {
+            throw new XunitException($"arc {Spec.Name}: {slid} second step(s) along a wall (ArcsWithoutSlide expects {expectedSlides})");
         }
     }
 

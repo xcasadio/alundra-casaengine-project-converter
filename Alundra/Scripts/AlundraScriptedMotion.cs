@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using Microsoft.Xna.Framework;
 
 namespace Alundra.Scripts;
 
@@ -513,7 +514,8 @@ internal static class AlundraScriptedMotion
         // controller) keeps E2's original collision-free integration, unchanged.
         if (entity.Controller != null)
         {
-            entity.MoveControllerAndPullPosition(entity.FinalForceX / 65536f, entity.FinalForceY / 65536f);
+            var firstStep = entity.MoveControllerAndPullPosition(entity.FinalForceX / 65536f, entity.FinalForceY / 65536f);
+            SlideAlongWall(entity, firstStep);
         }
         else
         {
@@ -532,6 +534,168 @@ internal static class AlundraScriptedMotion
         entity.TileX = (entity.PosX >> 16) / TileWidth;
         entity.TileY = (entity.PosY >> 16) / TileHeight;
         entity.TileZ = entity.PosZ >> 20;
+    }
+
+    /// <summary>
+    /// E19.h4 H4-R2/H4-R4 (docs/plan-e19-opcodes.md §1.2n.4), step 1 of the slide along walls: what the binary's <c>ComputeXYPosition</c> (<c>0x80037730</c>) does once no half
+    /// step of the tick is accepted. Run right after the controller's first step of the kinematic tick, and only when <c>TargetDirection</c> and the requested displacement
+    /// agree (a cardinal direction asks its axis alone with its sign, an oblique one both axes with the signs of its quadrant; <c>TargetDirection &gt;= 32</c> never does):
+    /// then it replaces the <see cref="AlundraEntityScriptProxy.ForceAdjusted"/> the first step posted, which stays as it is otherwise (and for every direct call of
+    /// <see cref="AlundraEntityScriptProxy.MoveControllerAndPullPosition"/>).
+    /// <list type="bullet">
+    /// <item><description>Cardinal: when the first step made no progress on its axis, no entity touched it and the slide is not forbidden (<c>NoObstacleSlide</c>, bit <c>0x2000</c>),
+    /// the four corners of the box, taken one 16.16 unit further in the walking direction, give the table of <c>0x80023734</c>: <c>ForceAdjusted</c>, or ONE second step along
+    /// the wall (a quarter pixel less than a pixel to the side for a step north or south, half a pixel for east or west; <see cref="AlundraEntityScriptProxy.SlideCount"/>
+    /// counts it). A tick that progressed leaves <c>ForceAdjusted</c> at 0.</description></item>
+    /// <item><description>Oblique: no second step (the engine already advanced the free axis, O-E19-28 a); <c>ForceAdjusted</c> only when an axis made no progress AND (the slide is
+    /// forbidden, or the table of the corners at the position reached says so, or no axis progressed).</description></item>
+    /// </list>
+    /// A corner is blocked like the engine blocks it (<c>IsHorizontalMoveBlocked</c>): its cell is not walkable for the entity's mask, or its ground is higher than the foot plus
+    /// the step height of the controller.
+    /// </summary>
+    private static void SlideAlongWall(AlundraEntityScriptProxy entity, Vector3 firstStep)
+    {
+        var direction = entity.TargetDirection;
+        var forceX = entity.FinalForceX;
+        var forceY = entity.FinalForceY;
+        if (direction >= 32)
+        {
+            return;
+        }
+
+        var cardinal = (direction & 7) == 0;
+        bool agrees;
+        if (cardinal)
+        {
+            agrees = direction switch
+            {
+                0 => forceY > 0 && forceX == 0,
+                8 => forceX < 0 && forceY == 0,
+                16 => forceY < 0 && forceX == 0,
+                _ => forceX > 0 && forceY == 0,
+            };
+        }
+        else
+        {
+            var west = direction < 16;
+            var south = direction < 8 || direction > 24;
+            agrees = (west ? forceX < 0 : forceX > 0) && (south ? forceY > 0 : forceY < 0);
+        }
+
+        if (!agrees)
+        {
+            return;
+        }
+
+        var requestedX = forceX / 65536f;
+        var requestedY = forceY / 65536f;
+        var noProgressX = AlundraEntityScriptProxy.AxisMadeNoProgress(requestedX, firstStep.X);
+        var noProgressY = AlundraEntityScriptProxy.AxisMadeNoProgress(requestedY, firstStep.Y);
+        var forbidden = entity.XCollisionEntity != null || (entity.Flags & EntityFlags.NoObstacleSlide) != 0;
+
+        if (!cardinal)
+        {
+            if (!noProgressX && !noProgressY)
+            {
+                entity.ForceAdjusted = 0;
+                return;
+            }
+
+            var adjusted = forbidden || (noProgressX && noProgressY);
+            if (!adjusted)
+            {
+                var corners = BlockedCorners(entity, 0, 0);
+                adjusted = direction switch
+                {
+                    < 8 or > 16 and < 24 => Corner(corners, 0) && Corner(corners, 3),
+                    _ => Corner(corners, 1) && Corner(corners, 2),
+                };
+            }
+
+            entity.ForceAdjusted = adjusted ? 1 : 0;
+            return;
+        }
+
+        var alongX = direction is 8 or 24;
+        if (!(alongX ? noProgressX : noProgressY))
+        {
+            entity.ForceAdjusted = 0;
+            return;
+        }
+
+        if (forbidden)
+        {
+            entity.ForceAdjusted = 1;
+            return;
+        }
+
+        var blocked = BlockedCorners(entity, direction == 24 ? 1 : direction == 8 ? -1 : 0, direction == 0 ? 1 : direction == 16 ? -1 : 0);
+        bool c0 = Corner(blocked, 0), c1 = Corner(blocked, 1), c2 = Corner(blocked, 2), c3 = Corner(blocked, 3);
+        int slideX = 0, slideY = 0;
+        bool tableAdjusts;
+        switch (direction)
+        {
+            case 0:
+                tableAdjusts = (c2 && c3) || c0 || c1;
+                slideX = c2 && !c3 ? 0xC000 : c3 && !c2 ? -0xC000 : 0;
+                break;
+            case 8:
+                tableAdjusts = (c0 && c2) || c1 || c3;
+                slideY = c0 && !c2 ? 0x8000 : c2 && !c0 ? -0x8000 : 0;
+                break;
+            case 16:
+                tableAdjusts = (c0 && c1) || c2 || c3;
+                slideX = c0 && !c1 ? 0xC000 : c1 && !c0 ? -0xC000 : 0;
+                break;
+            default:
+                tableAdjusts = (c1 && c3) || c0 || c2;
+                slideY = c1 && !c3 ? 0x8000 : c3 && !c1 ? -0x8000 : 0;
+                break;
+        }
+
+        if (tableAdjusts || (slideX == 0 && slideY == 0))
+        {
+            entity.ForceAdjusted = 1;
+            return;
+        }
+
+        var slide = entity.MoveControllerAndPullPosition(slideX / 65536f, slideY / 65536f);
+        entity.SlideCount++;
+        var slidAlongX = slideX != 0;
+        var slideRequested = (slidAlongX ? slideX : slideY) / 65536f;
+        entity.ForceAdjusted = AlundraEntityScriptProxy.AxisMadeNoProgress(slideRequested, slidAlongX ? slide.X : slide.Y) ? 1 : 0;
+    }
+
+    private static bool Corner(int mask, int index) => (mask & (1 << index)) != 0;
+
+    /// <summary>
+    /// The blocked corners (bit i of the result: corner [i], with [0] = (x1, y1), [1] = (x2, y1), [2] = (x1, y2), [3] = (x2, y2), as <c>ComputeEntityGroundHeight</c> <c>0x800370C4</c>
+    /// takes them) of the box of <paramref name="entity"/> at its position moved by (<paramref name="advanceX"/>, <paramref name="advanceY"/>) 16.16 units; none without a cell field.
+    /// </summary>
+    private static int BlockedCorners(AlundraEntityScriptProxy entity, int advanceX, int advanceY)
+    {
+        if (entity.OwnerEntity?.World?.CollisionField is not AlundraCellsCollisionField field || entity.Controller == null)
+        {
+            return 0;
+        }
+
+        var left = entity.PosX + advanceX + entity.ModX;
+        var top = entity.PosY + advanceY + entity.ModY;
+        var xs = new[] { left >> 16, (left + entity.Width) >> 16 };
+        var ys = new[] { top >> 16, (top + entity.Height) >> 16 };
+        var mask = AlundraCellsCollisionField.WalkabilityMaskFor(entity.Flags);
+        var reach = entity.PosZ / 65536f + entity.Controller.Settings.StepHeight;
+        var blocked = 0;
+        for (var i = 0; i < 4; i++)
+        {
+            var point = new Vector3(xs[i & 1], ys[i >> 1], 0f);
+            if (!field.TrySampleGround(point, float.MaxValue, mask, out var sample) || !sample.IsWalkable || sample.GroundHeight > reach)
+            {
+                blocked |= 1 << i;
+            }
+        }
+
+        return blocked;
     }
 
     /// <summary>

@@ -4909,7 +4909,7 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
 
 **Tâches.**
 - ✅ **H4-0 — Plan**, relu jusqu'à READY (REVISE n°1 et n°2, dispositions de la session principale, READY à la relecture de clôture le 2026-10-03).
-- ⏳ **H4-1 — Tests d'abord, puis règles** (montage `JumpHeroRig`, `FlatCells`, cellule de marche 0x40 bloquante, masque de marche du
+- ✅ **H4-1 — Tests d'abord, puis règles** (montage `JumpHeroRig`, `FlatCells`, cellule de marche 0x40 bloquante, masque de marche du
   héros posé à 0x40 sur les réglages vivants de son contrôleur (le montage le laisse à 0 aujourd'hui), boîte du héros −10, −7,
   21 × 15, Gravity, sol plat) : **T-SL1** (cellule (10,10) bloquée, héros en (263,0 ; 200,0), Haut tenu, force
   −79872 puis −159744) : `PosY` des ticks 1 à 8 = 13027328, 12867584, 12707840, 12548096, 12388352, 12228608, 12068864, 11993088,
@@ -4926,7 +4926,8 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
   pousse en oblique par le pas cinématique (direction 20, force aux signes du quadrant nord-est) contre un mur de cellules garde `ForceAdjusted` 1 dès le tick du contact (vert avant et
   après). T-R4 inchangé et vert. Garde d'arcs `ArcsWithoutSlide` : `SlideCount` 0
   sur tous les arcs à vrai contrôleur, sauf A10J. Commit : `feat(alundra): the hero slides along walls like the binary (stage 1)`
-- ⏳ **H4-2 — Liste fermée et arcs.** Les 6 lignes `0x45`/`0x46` quittent la liste versionnée (178 `B[1] @105`, `@129`, `@134`,
+  - Fait le 2026-10-03 (commit unique, H4-1 et H4-2 fusionnés : A10J et la règle 2 ne pouvaient pas rester rouges entre les deux) : 8 tests dans `AlundraHeroSlideTests.cs` (T-SL1 à T-SL4, T-SL6, UO-1, UO-2, garde `ArcsWithoutSlide`), rouges d'abord aux valeurs prévues (T-SL1 `ForceAdjusted` 1 dès le tick 9, T-SL3 dès le tick 12, T-SL4 dès le tick 6, UO-1 `Flags` 256 pour 8448), T-SL2 et T-SL6 gardes vertes avant ; verts après avec les valeurs du plan. Écart de montage : les forces `-79872` puis `-159744` de T-SL1 viennent de l'animation 1 à la vitesse 312 (la table d'offsets donne -512 au nord, 208 donnait -53248 puis -106496). Suite complète Debug 2474/2474. Arrêt et disposition (session principale) : la garde a trouvé un glissement sur A14 et A18 (le héros sans 0x2000 contre un seul coin, comme le binaire, épingles intactes) ; `ArcsThatSlide` épingle 1 glissement sur A10J, A14 et A18 ; `AlundraArcSupport.cs` rejoint la liste fermée.
+- ✅ **H4-2 — Liste fermée et arcs.** Les 6 lignes `0x45`/`0x46` quittent la liste versionnée (178 `B[1] @105`, `@129`, `@134`,
   `@157` ; 185 `B[1] @92`, `@108` ; 140 → 134), seules lignes de ces deux cartes : `MapsWithoutSkippedSite` reçoit 178 et 185
   (17 → 19), le test devient `…TheNineteenMaps…` avec `Assert.Equal(19, …)` ; **A10J** (`AlundraHeroJumpArcTests.cs` ~125-132) :
   `0x24 @2462` finit à la position du binaire, exacte, (47877120 ; 50790400) (aujourd'hui (47827968 ; 51838976) : le héros, à
@@ -4935,6 +4936,7 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
   (2097152, 1) ; la fenêtre d'image devient [F0+303, F0+309] (aujourd'hui [F0+295, F0+299], fin à F0+297 ; plus un tick de
   glissement et 16 px à la vitesse de la marche, sept ticks : F0+305 environ ; le binaire F0+308) ; les tests de mobiles sur de vrais murs (`AlundraNpcCharacterControllerMoverTests`, drapeaux
   sans 0x2000) sont relancés avec le compteur : un changement est un arrêt, avec diagnostic. Commit : `test(alundra): the slide on the story chain`
+  - Fait le 2026-10-03 : 6 lignes retirées de la liste versionnée, `MapsWithoutSkippedSite` à 19 (178, 185), A10J aux valeurs du plan (image F0+308 dans [F0+303, F0+309], position exacte (47877120 ; 50790400), `(Z, ForceAdjusted)` (2097152, 1)), commentaire d'UH-6, `ImplementedOpcodes` avec 0x45 et 0x46 ; T-A19 inchangé et vert, tests de mobiles sur les murs inchangés. Commit fusionné avec H4-1 (message de H4-1).
 - ⏳ **H4-3 — Vérification et clôture.** **H4-4 — Recette** (auteur) : le héros glisse le long d'un coin de mur au lieu de
   s'y coller ; sur la 178 et la 185, les marches encadrées par `0x46`/`0x45` s'arrêtent au mur.
 

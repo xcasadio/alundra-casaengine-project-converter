@@ -71,7 +71,7 @@ public class AlundraStoryChainSkippedOpcodesTests
     }
 
     [Fact]
-    public void TheListIsOnTheChainAndTheSeventeenMapsWithoutASiteHaveNone()
+    public void TheListIsOnTheChainAndTheNineteenMapsWithoutASiteHaveNone()
     {
         var list = TheList();
 
@@ -80,7 +80,7 @@ public class AlundraStoryChainSkippedOpcodesTests
         Assert.Equal(7, ExemptCombatMaps.Distinct().Count());
         Assert.Empty(list.Select(l => l.Site.Map).Distinct().Except(ChainMaps));
         Assert.Empty(MapsWithoutSkippedSite.Intersect(list.Select(l => l.Site.Map)));
-        Assert.Equal(17, MapsWithoutSkippedSite.Length);
+        Assert.Equal(19, MapsWithoutSkippedSite.Length);
         Assert.Empty(MapsWithoutSkippedSite.Except(ChainMaps));
         Assert.Equal(list.Count, list.Select(l => l.Site).Distinct().Count()); // the key is unique.
     }
