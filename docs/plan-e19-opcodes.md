@@ -5835,7 +5835,7 @@ re-simule les 484 planches d'entités depuis `DATAS.BIN` et reproduit chaque pix
   texels (`GameMap.cs:188-194`) : 2646 pixels manquent dans 265 planches (695 dans 74 planches exportées, dont 83 dans
   `map_alundra`) ; la simulation le prouve.
 
-##### 1.2o.1 E19.g G0 — Extracteur : texels semi-transparents, planches d'effets, portraits, colonne impaire ⏳ (planifiée ; relecture n°1 REVISE, révisée ; annexe des valeurs versionnée)
+##### 1.2o.1 E19.g G0 — Extracteur : texels semi-transparents, planches d'effets, portraits, colonne impaire ⏳ (relectures n°1 et n°2 REVISE, révisée ; nouvelle époque, relecture de clôture ; annexe des valeurs versionnée)
 
 **Faits.** Ceux de la découverte ci-dessus et de la cartographie de l'extracteur (`e19f-plan2/extract/notes.md`) : extracteur
 `AlundraDataExtractor` (`Program.cs:77-151`, arguments `<gamePath> <extractionPath>`, dispositions par défaut `original` et
@@ -5852,9 +5852,10 @@ sous-module, après une construction Release fraîche ; le sous-module est aujou
   règle ci-dessus ; RVB inchangé ; disposition des planches d'entités inchangée (le dernier texel dessiné gagne).
 - **G0-R2 — Planches d'effets** (révision n°1) : une planche par carte qui a des effets et une globale, nommées
   `data/map_<n>_effectsheet.png` et `data/map_alundra_effectsheet.png` (87 fichiers, larges de 512) ; disposition compacte ; une
-  case par **(page, palette, région)** — 1436 cases (la clé `Signature` de la disposition compacte existante en donnerait 1438, deux
-  paires ne différant que par les bits ABR, qui appartiennent au quad, pas à la case) ; les 46 quads de taille 0 × 0 de la 161 sont
-  ignorés (aucune case, `AtlasX/AtlasY` restent à 0 ; sinon l'extracteur plante, `ImageHelper.cs:179`) ; `AtlasX/AtlasY` écrits
+  case par **(page, palette, région)** — **1435 cases dessinées** (la clé `Signature` de la disposition compacte existante en
+  donnerait une de plus par paire ne différant que par les bits ABR, qui appartiennent au quad, pas à la case) ; les 46 quads de
+  taille 0 × 0 de la 161 sont ignorés (aucune case, `AtlasX/AtlasY` restent à 0 ; sinon l'extracteur plante, `ImageHelper.cs:179`) :
+  18 875 références de quads d'effets quittent (0,0), dont 297 dans `map_161.json` ; `AtlasX/AtlasY` écrits
   sur les seules références de quads d'effets, jamais sur un objet partagé avec un quad d'entité (13 images d'effets sont partagées
   avec des entités de `map_alundra`) ; le code alpha est posé **après** le dessin des texels (un dessin par `DrawImage` mêlerait le
   RVB des texels semi-transparents) ; aucun nouveau champ public sérialisé hors de ceux de G0-R3 (le JSON s'écrit avec
@@ -5887,17 +5888,18 @@ sous-module, après une construction Release fraîche ; le sous-module est aujou
 - **G0-0 — Annexe des valeurs** (faite, révision n°1) : l'audit des valeurs a écrit, et le plan versionne dans
   `docs/plan-e19-g0-annexe/`, la liste exacte des fichiers (`predicted_changes.txt` : 613 modifiés, 381 planches d'entités et 232
   JSON, et 87 ajoutés, 700 lignes) et les fichiers de valeurs (empreintes RGBA des 484 planches d'entités et des 87 planches
-  d'effets, les 1436 cases, les 331 portraits, la classe de chaque changement par planche et par JSON) ; la simulation reproduit
+  d'effets, les 1435 cases, les 331 portraits, la classe de chaque changement par planche et par JSON), tous dans la seule variante
+  « quads vides ignorés » (`cell_skip0` de l'audit ; révision n°2) ; la simulation reproduit
   aujourd'hui chacune des 484 planches à l'octet près (0 pixel d'écart).
 - **G0-1 — Extracteur** (sous-module, branche `chantier/e19g0-extractor` **empilée sur** `chantier/e19f1-dialogue-boxes` `b92b7b9`) :
   G0-R1 à G0-R4, un commit par règle, chacun construit.
 - **G0-2 — Preuves indépendantes** (scripts du scratchpad, qui ne partagent pas le code de l'extracteur) : la re-simulation des 484
-  planches d'entités depuis `DATAS.BIN` (script de la découverte) égale chaque pixel, alpha compris ; les 1436 cases d'effets égales à
+  planches d'entités depuis `DATAS.BIN` (script de la découverte) égale chaque pixel, alpha compris ; les 1435 cases d'effets égales à
   un décodage indépendant ; les 25 portraits égaux à un décodage indépendant ; les 2646 pixels de la colonne impaire présents ; les
   empreintes de l'annexe égales ; **preuve des JSON** : chaque JSON changé égale sa version de `data-extracted/` une fois retirés les
   champs `DialoguePortrait` et remis à 0 les `AtlasX/AtlasY` des références de quads d'effets, et chaque référence de quad d'effet
-  désigne une case égale à son décodage indépendant (0 écart, 0 référence vers une case fausse ou absente) ; les quads d'entités
-  gardent leurs coordonnées.
+  désigne une case égale à son décodage indépendant (0 écart, 0 référence vers une case fausse ou absente), sauf les 46 références
+  aux quads vides de la 161, qui restent à (0,0) sans case ; les quads d'entités gardent leurs coordonnées.
 - **G0-3 — Ré-extraction et diff** (G0-R5, avant le miroir).
 - **G0-4 — Miroir et preuve finale** (G0-R5).
 - **G0-5 — Gardes et export** : tests du convertisseur verts sur le nouveau `data-extracted/` (aucun ne lit l'alpha des planches ni
@@ -5914,8 +5916,9 @@ sous-module, après une construction Release fraîche ; le sous-module est aujou
    Debug en dernier, `cmp` sans écart ; les six traces à l'octet.
 5. `git status` du parent : seulement le pointeur du sous-module, l'ADR, le plan et son annexe.
 
-**Retour arrière** : remettre le pointeur du sous-module ; renommer les dossiers dans l'autre sens et refaire le miroir depuis la
-sauvegarde ; rien n'est supprimé.
+**Retour arrière** (révision n°2) : remettre le pointeur du sous-module ; renommer les dossiers dans l'autre sens et refaire le miroir
+depuis la sauvegarde ; puis un export complet en place dont le manifeste égale le manifeste « avant » de G0-R6 (hors `report.json`),
+et `Alundra.Tests` sur cet export ; le retour arrière n'est fini que quand ce manifeste est égal ; rien n'est supprimé.
 
 **Risques.** Une extraction depuis le mauvais checkout ou une construction périmée (G0-R5) ; un `robocopy` lancé depuis Git Bash
 (chemins avec espaces : il ne copie rien) ; la colonne impaire élargit le diff à des RVB (liste écrite d'avance) ; le dernier texel

@@ -14,3 +14,5 @@ effect sheets (new files): 87; cells 1436 (sig-keyed 1438); refs 20315; refs off
   height differs if keyed by Signature: [('map_alundra', 237, 262)]
 JSON that change: 232 (effects 85, portraits 184, both 37); if sig-keyed: 232
 UNION: modified 613 (PNG 381 + JSON 232) + added 87 = 700
+
+ORACLE VARIANT (plan revision 2, 2026-10-03): cell_skip0 -- the 46 zero-size effect quads of map_161 get no cell and keep AtlasX/AtlasY = 0; 1435 drawn cells; effect refs off (0,0): 18875; map_161.json: 297 refs off (0,0). expected_effect_cells.tsv and expected_effect_sheets.tsv hold only this variant.
