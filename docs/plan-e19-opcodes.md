@@ -6101,7 +6101,7 @@ recette sont des couleurs dominantes d'un sprite chacune, sans les changements d
   ponctuels : icônes 84, 69, 82 (rouge, doré, blanc et gris au lieu de l'aplat `#382800`), bâton magique bleu-violet, Thyea et
   Sierra distinctes de Naomi. P4 : le `log.txt` vide non suivi de l'analyseur, recréé par l'extraction (laissé tel quel).
 
-##### 1.2o.2 E19.g G2a — Semi-transparence par texel des sprites d'entités (moteur et convertisseur) ⏳ (révision n°1 après G0b ; relecture n°2 REVISE, révision n°2 ; nouvelle époque, relecture de clôture READY ; G2a-1 et G2a-2 faites le 2026-10-03, section 🧪 tant que la recette G2a-4 manque)
+##### 1.2o.2 E19.g G2a — Semi-transparence par texel des sprites d'entités (moteur et convertisseur) ⏳ (révision n°1 après G0b ; relecture n°2 REVISE, révision n°2 ; nouvelle époque, relecture de clôture READY ; faite et CONFIRMED le 2026-10-03, section 🧪 tant que la recette G2a-4 manque)
 
 **Découpage d'après G0** (2026-10-03) : **G2a** (cette tranche) rend la semi-transparence par texel des sprites d'entités
 (D-E19-52) : moteur et convertisseur ; **G2b** (quads à quatre sommets libres et piste de coins dans `.anim2d`, changement de format,
@@ -6246,6 +6246,14 @@ signature) ; la croissance des tampons alloue pendant le dessin (rare : plus de 
   `NullReferenceException` de la partie qui touche le périphérique (couture nommée au plan du moteur) ; (3) la `Release` de
   `Alundra.Tests` n'est pas lancée ici (brief). ADR-0033 (`Accepted`, D-E19-52) ; moteur : ADR-0051. Decisions: see ADR-0033 (moteur :
   ADR-0051). Reste : G2a-3 (vérification) et G2a-4 (recette de l'auteur).
+- ✅ **Vérification de G2a** (G2a-3, 2026-10-03) : la session principale a lancé `Alundra.Tests` en Release puis en Debug (2555/2555
+  chacune, la Debug en dernier), `cmp` sans écart, les six traces à l'octet. Vérificateur neuf **CONFIRMED** : démos relancées sur un
+  vrai périphérique (15 contrôles sur 15 ; capacité : 12 001 entrées, pixel témoin (0, 255, 0) ; captures identiques au pixel à
+  celles de l'exécuteur) ; rouges rejoués sur des copies (13 des 22 nouveaux tests du moteur rouges sur le code d'avant, les 2 du
+  convertisseur aussi) ; export recompté (1837 chemins, chaque `.sprite` égal à l'ancien une fois la ligne du champ ôtée, modes
+  218/1615/3) ; `CasaEngine.Tests` 2533/2533, convertisseur 420/420. Avis P4 : le test réel du convertisseur passe sans rien
+  vérifier si `data-extracted/` manque (documenté) ; la remise de la fenêtre après `TryReloadBuiltInShader` et la croissance du
+  `VertexBuffer` n'ont pas de test sans périphérique (lecture du code et démo de capacité). Reste la recette G2a-4 (auteur).
 
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 
@@ -6990,7 +6998,7 @@ O-E19-51 à O-E19-53 (autres écarts relevés) hors tranche.
   `CellularLayerServiceTests` là où le filtre du vérificateur en lance 26 (le nombre de rouges, 13, concorde) ; O-E19-49 n'est
   consigné que dans ADR-0032 (écart côté DLL, conforme à M2-R4). Reste la recette : la pluie de la 391 et les cellules de type 0.
 
-#### 1.2s.4 E19.m3 — Compteur des vagues, parallaxe et ordre des cellules (O-E19-51 à O-E19-53) ⏳ (planifiée ; relecture n°1 REVISE, révisée)
+#### 1.2s.4 E19.m3 — Compteur des vagues, parallaxe et ordre des cellules (O-E19-51 à O-E19-53) ⏳ (relecture n°1 REVISE, révisée ; relecture n°2 READY ; en exécution)
 
 **Faits** **[binaire]** (audit du 2026-10-03, `e19m3-disc/notes.md` du scratchpad, scripts `values`, `census3`, `otusers`, `stp` ;
 lignes du moteur citées à `61358ac0`) :
