@@ -4215,7 +4215,7 @@ sous-tranche a son plan relu, son exécution et sa vérification :
   DLL qui porte `+0x68` est à établir), portrait du locuteur (vol de 15 pas de l'inventaire généralisé : repos (8,116), taille par
   portrait, 48 × 72 bas aligné, D-E19-49), rampe de couleur 255 → 128 que MGUI ne sait pas rendre (il ne fait que multiplier :
   rapport de manque).
-- Ordre : f0 et f1 d'abord, indépendants ; **E19.s avant f2** ; f2 ; f3 après f2 ; f4 après f2 et G0. **E19.s est le seul
+- Ordre : f0 et f1 d'abord, indépendants ; f2a (logique, sans vue) ; **E19.s avant f2b** (la vue) ; f3 après f2a ; f4 après f2b et G0. **E19.s est le seul
   propriétaire de la formule d'échelle commune des écrans** (résolution virtuelle du moteur, recalcul des écrans au changement
   de taille) ; f2 bâtit son écran dessus sans la modifier (révision n°1 de la relecture du 2026-10-03).
 
@@ -4445,6 +4445,135 @@ boîtes de l'inventaire.
   pixel avec une largeur fixe de 128 (`UiDialogueBoxTests.cs:78-89`), faux pour la boîte du nom ; le verdict du test est juste.
   La branche `chantier/e19f1-dialogue-boxes` du sous-module de l'analyseur (`b92b7b9`) n'est pas mergée : le pointeur du parent la
   désigne, comme les chantiers précédents.
+
+##### 1.2j.3 E19.f2 — Boîte de texte fidèle ⏳ (planifiée : f2a détaillée, f2b esquissée)
+
+**Découpage** (2026-10-03) : **f2a** porte la logique de la boîte au tick près dans la DLL, sans vue (le directeur et son état,
+les opcodes `0x4C` à `0x51`, les sons, les drapeaux à leur glyphe), avec la vague de ré-épingles des tests ; **f2b** branche la vue
+XAML liée à un view model (cadre cuit, glissements, trois lignes en font3, défilement, curseur `ui_dialogue_cursor`, centrage
+`\H`) après E19.s, seul propriétaire de la formule d'échelle des écrans. Nom et portrait : f4 ; choix : f3.
+
+**Découverte** (2026-10-03, lecture seule, deux surfaces, scratchpad de la session) : `e19f2-disc/model/` (modèle au tick près tiré
+du binaire, `model.py`, `selftest()`, traces des trois textes réels) et `e19f2-disc/impact/notes.md` (tests touchés, classes R, C,
+L, U). Faits porteurs **[binaire]** (adresses dans les notes) :
+- **Ordre de l'image** : la mise à jour de la boîte (RenderScene, emplacement 0 du répartiteur `0x80048054`) passe AVANT tous les
+  scripts de la même image et lit la manette lue à l'image précédente (`0x8002C3F4` : `0x8002C3FC` puis `0x8002C404`).
+- **Ouverture** (`0x0D`, `0x5C`, `0xC4` ; `TryOpenDialog` `0x800423F8`) : au tick N, le script continue dans le même tick ; 0 et
+  nouvel essai tant que `g_dialog_flags & 4` ; son 6 au tick N ; mode 1 → MessageBox, sinon MenuOpen (plus aucun script
+  d'événement de N+1 à la fermeture) ; remise à zéro à l'ouverture (`textFlags` 3, délai 1, `scrollMode` 3, `closeMode` 3,
+  verrous `0x4D`/`0x4F`/`0x51` à 0, voix −1, ligne 0, frappe finie 0, curseur éteint et son compteur à 0 ; la minuterie de
+  fermeture et les compteurs de défilement ne sont PAS remis à zéro).
+- **Glissement d'entrée** : y = 240, 236, 231, 226, 221, 216, 212, 207, 202, 197, 192, 188, 183, 178, 173 de N+1 à N+15, 168 à
+  N+16 et N+17, rien à N+18 ; **première lettre à N+19**.
+- **Porte de pas** (une fois par image) : `textFlags & 2` et délai qui tombe à 0 (puis 4) ; ou `textFlags & 1` et Carré
+  **tenu** ; ou `textFlags & 4` et verrou `0x4D` (consommé). Un appui naissant est ignoré pendant la frappe.
+- **Contenu d'un pas** : codes gratuits (`0x0A`, drapeaux `\chiffres` posés à cet instant, `\B` à `\G`, `\H`, `\MCE`, `\V`, `\X`),
+  puis exactement UN de : un glyphe, `\N`, `\A`, `\T` (qui pose aussi le délai à 8), `\Y` (rien de dessiné), la fin du texte (une
+  porte de plus qui lit l'octet 0 : image E ; la minuterie de 360 n'est armée qu'à E et seulement si `closeMode & 1`).
+- **Lignes** : trois visibles ; `\N` en 1re ou 2e ligne passe à la suivante ; en 3e ligne il arme un défilement : attente de 10
+  images (`scrollMode & 1`) ou d'un appui naissant (`& 2`), puis 8 images de +2 px, l'interpréteur n'étant pas appelé pendant ce
+  temps. `\A` : curseur allumé dès l'image du pas, relâché par un appui naissant à partir de l'image suivante, suivi d'une nouvelle
+  ligne ; `\N\A` laisse une ligne vide.
+- **Curseur** : (288,200), image = compteur/10 (quatre images), compteur +1 par image dessinée, remis à 0 seulement à l'ouverture.
+- **Voix** : son `79 + voix` quand un caractère normal est dessiné à un rang pair, rang remis à 0 à chaque nouvelle ligne ; `\W`,
+  `{` et `}` ne comptent pas ; `\B` (−1) et `\G` (4) muets.
+- **Fermeture** (évaluée à partir de E+1) : appui naissant (`closeMode & 2`), minuterie (déclenchement à E+360, `& 1`), verrou
+  `0x51` (`& 4` : déclenchement à `max(L+1, E+1)` pour un `0x51` au tick L ; le verrou n'est posé que si `closeMode & 4` à ce
+  moment, il est effacé à l'ouverture suivante et quand il sert). Image T du déclenchement : son 7, glissement de sortie y = 168,
+  172, 177, 182, 187, 192, 196, 201, 206, 211, 216, 220, 225, 230, 235 de T+1 à T+15, 240 à T+16 et T+17 ; **libération à T+18**
+  (drapeaux, MessageBox et MenuOpen tombent avant les scripts de l'image : `0x39` rend 1, un `0x0D` réessayé ouvre).
+- **`0x4C` à `0x51`** : `0x4C v` → `textFlags = v` ; `0x4D` → verrou si `textFlags & 4` ; `0x4E v` → `scrollMode = v` ; `0x4F` →
+  verrou si `scrollMode & 4` ; `0x50 v` → `closeMode = v` ; `0x51` → verrou si `closeMode & 4` ; aucun ne rend la main.
+- **Deux défauts de l'original, corrigés par l'auteur** : D-E19-62 (le `0x4C` efface le `0x4D` en attente) et D-E19-63 (chaque
+  défilement de 3e ligne attend ses 10 images ou un appui ; le bit 8 résiduel d'un `\A` relâché en 1re ou 2e ligne ne s'applique
+  plus).
+- **Valeurs du modèle sur les trois textes** (pad A du binaire, impossible sur une vraie manette) : 389 `M389_S001` première lettre
+  N+19, T999 à N+94, fin E = N+95 ; 391 S019 E = N+355, déclenchement N+413, `0x39` à N+431 ; 164 `M164_S003` E = N+172.
+- **DLL d'aujourd'hui** (`e19f-plan2/dialog/notes.md`) : page entière d'un coup, fermeture immédiate, minuterie depuis
+  l'ouverture, aucune vue fidèle ni son ; la passe tourne après les événements de carte (`AlundraWorldProxy.cs` ~2217) sur
+  l'instantané de manette de l'image rendue (avis A1 d'E12.a). Le chemin dégradé (sans présentateur) joue le nœud jusqu'au bout
+  d'un coup et ne doit jamais attendre.
+
+**Décision à prendre par cette tranche, consignée en ADR-0029** : la boîte suit le binaire (règles ci-dessus) ; les drapeaux du
+texte sont posés à leur glyphe (fin de D-E12-4, que remplace cette ADR) ; la passe de la boîte tourne au début de chaque tick
+logique, avant les événements de carte, sur la manette du tick précédent ; les deux défauts corrigés.
+
+###### E19.f2a — Logique de la boîte au tick près ⏳ (planifiée)
+
+**Règles.**
+- **F2-R1 — Place de la passe** : dans la boucle des ticks d'`AlundraWorldProxy.Update`, la passe de la boîte tourne au début du
+  tick, avant la passe de la manette du tick (`TickPad.Update`) et avant les événements de carte : elle lit l'état de la manette
+  laissé par le tick précédent, appui naissant et maintien de Carré, comme le binaire lit la manette de l'image précédente ; une
+  boîte ouverte au tick N fait sa première mise à jour à N+1. `gameplayBlocked`, calculé une fois avant la boucle, ne change pas de
+  rôle ; une boîte en mode MenuOpen libérée au tick T+18 rend la main aux scripts dès ce tick (le drapeau tombe avant les
+  événements de carte). L'avis A1 d'E12.a est clos.
+- **F2-R2 — Machine de la boîte** : le directeur porte l'état du binaire (glissements, porte de pas, pas, lignes et défilement,
+  curseur, voix, fermeture, libération) exactement comme les faits ci-dessus, D-E19-62 et D-E19-63 compris, sans dépendre d'une
+  vue : il tourne avec ou sans présentateur visuel ; « a un présentateur » garde son sens d'aujourd'hui (un chemin non dégradé).
+- **F2-R3 — Texte** : la page Yarn est découpée en pas à partir de son texte et de ses marqueurs (`br` = `\N`, `glyph` = un
+  glyphe `\W`, `voice`, `center` = `\H`, `slow` = `\T`, `flag` posé à sa position, `yield` = `\Y`, `empty`) ; `\A` est la frontière
+  de page de l'export (ADR-0006) : une page suivante est un `\A` ; un drapeau est posé dans le pas où l'interpréteur l'atteint (fin
+  de D-E12-4) ; le chemin dégradé reste instantané et pose tous les drapeaux du nœud.
+- **F2-R4 — Opcodes** : `0x4C`, `0x4D`, `0x4E`, `0x4F` portés (taille du binaire, aucun ne rend la main) ; `0x50` et `0x51`
+  suivent le binaire (`0x51` devient un verrou) ; `0x39` attend la libération (T+18).
+- **F2-R5 — Sons** : 6 à l'ouverture (tick N), 7 au déclenchement de la fermeture, voix 79 à 82 ; par le lecteur du monde (le
+  directeur en reçoit un, comme les directeurs d'inventaire).
+- **F2-R6 — Accès de test** : `CurrentLineForTests` rend toujours la page entière (8 fichiers de test l'utilisent) ; un accès à part
+  rend le préfixe tapé et l'état (phase, y, lignes, curseur, attente d'appui) ; aucun mode rapide de production.
+
+**Oracle de test** : `AlundraTextBoxOracle` (projet de tests), port en C# du modèle tiré du binaire, écrit depuis les règles et
+`model.py`, **jamais** depuis le code du directeur ; ses propres tests reprennent les valeurs de `selftest()` (glissements, AB :
+glyphes 19 et 23, fin 27, fermeture par minuterie 387, libération 405 ; pad A : 19, 20, 21, 22, 40 ; `\T` ; défilement de 4
+lignes ; `\N\A` ; verrou `0x4D` ; images du curseur) et les trois textes réels, corrigés de D-E19-62 et D-E19-63 là où ils
+jouent.
+
+**Manette des arcs** (test seulement) : l'aide `RunUntilPressingTheButtonOnEveryDialogueFrame` (`AlundraArcSupport.cs:465-482`) et
+ses copies (A17 `AlundraDay3SceneArcTests.cs:211-234`, contre-preuve de T-B9 `AlundraEntityContactArcTests.cs:340-348`) tiennent
+Carré enfoncé pendant la frappe et, quand la boîte attend un appui (curseur `\A`, ou frappe finie avec `closeMode & 2`), le
+relâchent une image puis l'enfoncent (un appui naissant) ; l'oracle reproduit la même manette.
+
+**Tâches.**
+- **F2A-1 — Oracle, tests d'abord** (test seulement) : l'oracle et ses tests (valeurs de `selftest()` et des trois textes, sous la
+  manette des arcs, calculées d'avance par l'audit des valeurs avec `model.py` corrigé de D-E19-62 et D-E19-63).
+- **F2A-2 — Directeur et opcodes** : F2-R1 à F2-R6 ; tests unitaires de la boîte contre l'oracle (synthétiques et trois textes
+  réels sous la manette des arcs).
+- **F2A-3 — Vague de ré-épingles**, dans le même commit que F2A-2 (chaque commit vert) : classe R (valeurs re-dérivées : nouvelle
+  valeur = ancienne + somme des écarts des boîtes en amont donnés par l'oracle, phases des attentes périodiques des autres acteurs
+  justifiées une à une ; un écart non expliqué est un arrêt) ; classe C (aide et budget `FrameLimit` seulement : toute valeur qui
+  bouge est un arrêt) ; classe L (les 32 lignes `0x4C`/`0x4D` de `story-chain-skipped-opcodes.tsv`, A6 `:38`, `:186`, A11
+  `:356-364`, `AlundraEventProgramRunnerTests.cs:322-330`) ; classe U inchangée.
+- **F2A-4 — ADR-0029** et le plan.
+
+**Acceptation.**
+1. Oracle : ses tests verts aux valeurs écrites d'avance ; tests de la boîte rouges d'abord, verts après.
+2. Tests existants touchés, liste fermée (`e19f2-disc/impact/notes.md` §0) : classe R — `AlundraDialogueFramePassTests.cs:81-136`,
+   `:163-222` ; `AlundraDialogueOpcodeDispatchTests.cs:134-187`, `:268-298` ; `AlundraDialogueOpcodesProductionTests.cs:71-420` ;
+   `AlundraGlobalFreezeEntityUpdateTests.cs:174-187` ; `AlundraSaveBookTests.cs:101-194` et les appels d'`AssertReleased` ;
+   `AlundraDialogueFlagMarkerTests.cs:105-218` ; `AlundraDialogueYarnRenderingTests.cs:143-176` ; A6
+   (`AlundraShipBlockArcTests.cs:199-275`), A8 (`AlundraInoaAwakeningArcTests.cs:194-280`), A20 et A10 et A11
+   (`AlundraInoaDayOneArcTests.cs:69-87`, `:184-284`, `:345-433`), A12 (`AlundraBergusJumpArcTests.cs:44-66`), A9
+   (`AlundraVisionAndCoastArcTests.cs:470-512`) ; classe C — budgets et aides de A2, A4, A4p, T-A19, T-A10v, T-B9, A13 à A18, A1,
+   A1c, A10J, `AlundraSaveBookEndToEndTests` ; classe L ci-dessus ; `AlundraArcSupport.cs` (aide de manette, budgets) ; harnais
+   d'intro : seul le bloc `if (_installDialogueDirector)` de `RunFramesForTest` (`IntroTraceHarnessTests.cs:586-589`). Toute autre
+   assertion qui bouge est un arrêt.
+3. Les six traces à l'octet (la trace d'intro ne voit aucun opcode de dialogue et tourne sans directeur).
+4. `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
+5. **Recette F2a** (auteur, sans vue fidèle avant f2b : la boîte du moteur affiche le préfixe tapé) : la frappe lettre à lettre, le
+  défilement, `\A`, la fermeture après le glissement, le marin 12 de la 389, le réveil à Inoa, Septimus à la 164.
+
+**Retour arrière** : revert des commits (DLL et tests seulement, aucun export).
+
+**Risques.** La vague de ré-épingles (règle de l'écart expliqué) ; les budgets des arcs ; une aide de manette qui bloque (arrêt) ;
+le chemin dégradé qui doit rester instantané ; la catégorie « a un présentateur » qui ne doit pas dépendre d'une vue ; les espaces
+de bord perdus par D-E15-8 raccourcissent la frappe d'un pas à ces bords (écart connu, ADR-0006) ; la place des codes `\X` dans le
+texte (`falcon_update` avant la ligne) n'est pas établie au milieu d'une page.
+
+###### E19.f2b — Vue de la boîte (esquisse, après E19.s et E19.f2a)
+
+Écran XAML lié à un view model au patron d'`AlundraSaveScreen` : cadre cuit (`973a9208-…`), y du glissement, trois lignes font3,
+défilement par découpe (la découpe de MGUI sous l'échelle de la racine est à vérifier), curseur `ui_dialogue_cursor`, centrage `\H`
+par les largeurs des glyphes (table du binaire `0x800993C4` comparée aux avances de `font3.fnt`) ; la boîte du moteur n'est plus
+utilisée par Alundra.
 
 ### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) — E19.k1 ✅ (recette K5 en attente) ; E19.k2 ⏳ (planifiée)
 
