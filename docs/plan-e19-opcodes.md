@@ -225,6 +225,10 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     dans la disposition `Compact`** de l'extracteur (une case par signature) : la disposition `Original` donnait à 2702 des 6909
     sprites exportés la palette d'un autre (PNJ de la chaîne, Rancune de Melzas, 23 icônes d'objets) ; défaut du portage, corrigé
     par une ré-extraction (D-E19-51) ; ADR-0031.
+  - **D-E19-66** — (2026-10-03, la session en mode AUTO, règle « le binaire tranche », E19.m2) La **réapparition des cellules de
+    pluie tire le `rand()` de la bibliothèque C** (générateur à part dans la DLL, état 0 au lancement, jamais réensemencé) et pose
+    `posX = rand() / 102`, comme le binaire ; remplace le choix du flux de D7 (`docs/plan-e9d-mode-cellulaire.md:245`), qui la
+    branchait sur le flux du jeu ; ADR-0032, ADR-0050 du moteur.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -6655,7 +6659,7 @@ n'est demandé, et l'original lirait au-delà de la table (point ouvert à consi
   avec un groupe nul, pas avec une carte d'un autre groupe ; P4 la période de l'auto-chaîne n'est pas épinglée. **Reste la recette T6
   de l'auteur.**
 
-### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 planifiée ; E19.m2 à auditer)
+### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 planifiée ; E19.m3 à auditer)
 
 **Recensement** (2026-10-03, lecture seule ; table complète versionnée dans `docs/plan-e19-m-annexe/backlog-2026-10-03.md`, en
 anglais) : 46 points M-01 à M-46, chacun vérifié contre le code de `bafbd5a`, classé (test seul, commentaire ou doc, petit correctif
@@ -6801,15 +6805,91 @@ commit (DLL seule).
 
 **Risques.** Aucun effet sur les données exportées ; un futur site aléatoire à plusieurs entités tirerait dans l'ordre du binaire.
 
-#### 1.2s.3 E19.m2 — Couches de cellules comme le binaire (O-E19-48, O-E19-50) ⏳ (à auditer)
+#### 1.2s.3 E19.m2 — Couches de cellules comme le binaire (O-E19-48, O-E19-50) ⏳ (planifiée)
 
-Esquisse : générateur `rand()` de la bibliothèque C porté dans la DLL (état 0 au lancement de l'exécutable, jamais réensemencé :
-mot `0x801EEB48` dans la BSS mise à zéro par `0x8008B548` ; `srand` (`0x80081E9C`) sans appelant), branché sur la chute des
-cellules à la place d'`AlundraRandom` ; position `posX = rand() / 102` (0 à 321 ; la formule du moteur, `(u32 × 320) >> 32`,
-`CellularLayerService.cs:397`, ne donne jamais 320 ni 321 : changement du contrat du délégué du moteur) ; les deux écarts
-d'O-E19-50 ; tests du moteur et de la DLL qui bougent (`CellularLayerServiceTests.cs:196-219`,
-`AlundraWorldProxyCellularRandomWiringTests.cs:26-51`, valeurs dans les notes de la découverte). Cartes à cellules de type 2 : 31
-et 391. Audit des valeurs et de la période avant planification ; O-E19-49 à trancher par l'auteur.
+**Faits** **[binaire]** (audit du 2026-10-03, `e19m2-disc/notes.md` du scratchpad, scripts `sim` (le modèle du moteur corrigé égale
+le modèle du binaire), `real391`, `census`) ; les routines à période sont le **type 0** (`0x8005CB38`) et le **type 2**
+(`0x8005D05C`, appelée en `0x8005CAC8`) ; le type 1 (`0x8005CE44`) n'a pas de période et aucune cellule n'en est :
+- **Période** : le compteur s'incrémente à chaque tick ; le pas s'applique quand `|P| <` le compteur d'avant l'incrément
+  (`0x8005CC64`/`0x8005CCBC` pour le type 0, `0x8005D218`/`0x8005D278` pour le type 2), puis le compteur repasse à 0 : **un pas
+  tous les `|P| + 2` ticks** ; `|P|` par `lb` puis `negu` ; compteurs remis à 0 au chargement du fond (`0x8005B47C`/`0x8005B480`
+  dans `0x8005B1E8`) ; tables des pas (`0x801802E0` en X, `0x80180920` en Y, remplies en `0x8005C19C`-`0x8005C23C`) : −1 si D < 0 ou
+  P < 0, +1 sinon, 0 si P = 0, comme `ComputePeriodStepOr` du moteur. Le défilement n'est pas touché (`0x8005C7E0` : `old < |P| - 1`,
+  tous les `|P|` ticks, comme `ScrollingLayerService`). La période va de l'octet signé brut au moteur sans transformation
+  (analyseur `ScrollScreen.cs:527/529`, convertisseur `BackdropReader.cs:357/359` → `BackdropWriter.cs:253`, DLL
+  `BackdropDocument.cs:48/50` → `AlundraBackdropStage.cs:374/376`). Le moteur avance tous les `|P|` ticks (`++Tick >= |P|`,
+  `CasaEngine/Framework/Rendering/CellularLayers/CellularLayerService.cs:303`, `:313`, `:364`, `:371`).
+- **Position dessinée** : le binaire dessine `sx`/`sy` calculés **avant** les bouclages et la réapparition (type 0 : `0x8005CCFC`/
+  `0x8005CD00`, écrits en `0x8005CDF0`/`0x8005CDF4` ; type 2 : `0x8005D2C0`/`0x8005D2C4`, écrits en `0x8005D3AC`/`0x8005D3B0`) ; les
+  bouclages ne changent que la position rangée : au tick d'un bouclage la cellule est hors de l'écran. Le moteur dessine après
+  (`:349-350`, `:403-404`, recalculs `:328/333/341/346`, `:385/390/399-400`) : une cellule bouclée apparaît un tick trop tôt au bord
+  opposé (à la 391, environ 3 bouts de pluie par image au bord haut).
+- **Tirage de la réapparition** : la cellule de type 2 qui passe `sy >= 240` (`0x8005D310`) tire **une fois** le `rand()` de la
+  bibliothèque C (`0x80081E6C` : `s = s × 0x41C64E6D + 0x3039`, rend `(s >> 16) & 0x7FFF`) et pose `posX = rand() / 102` (division
+  signée tronquée, `0x8005D324`-`0x8005D340`, 0 à 321) ; état `0x801EEB48` dans la BSS remise à 0 au lancement (`0x8008B548`), jamais
+  réensemencé (`srand`, `0x80081E9C`, sans appelant) ; trois appelants en tout (la chute des cellules et deux écritures du bloc de
+  carte mémoire, O-E19-49). La DLL branche la réapparition sur `AlundraRandom` (`Alundra/Scripts/AlundraWorldProxy.cs:652`, D7 de
+  `docs/plan-e9d-mode-cellulaire.md:245`) et le moteur calcule `(u32 × 320) >> 32` (`:397`, 0 à 319). Les cartes à cellules de type 2
+  (31 et 391) n'atteignent aucun autre consommateur d'`AlundraRandom`.
+- **Corpus** : 92 couches cellulaires ; type 0 : 450 cellules dans 25 cartes, aucune sur la chaîne ; type 2 : 110 cellules (55 traits
+  de pluie d'un pixel) dans les cartes 31 et **391** (sur la chaîne, le navire dans la tempête) ; type 4 (vagues) : 7800 cellules dans 65
+  cartes, dont 476 et 478, non touchées ; toute cellule de type 2 a une période 0 et un DX 0 : la règle de période ne change pas la pluie.
+
+**Règles.**
+- **M2-R1 — Période (moteur)** : aux quatre endroits, le pas s'applique quand le compteur d'avant l'incrément dépasse `|P|`, puis le
+  compteur repasse à 0 (`if (cell.TickX++ > Math.Abs(PeriodX)) { ... TickX = 0; }`, de même en Y) ; doc de `CellularCellDefinition.cs:46-49`
+  et `docs/engine/cellular-layers.md` §4.
+- **M2-R2 — Position dessinée (moteur)** : `DrawX` reçoit `sx` juste avant le bouclage en X, `DrawY` reçoit `sy` juste avant le
+  bouclage en Y ou la réapparition ; les recalculs d'après sont retirés.
+- **M2-R3 — Réapparition (moteur)** : `cell.PosX = (int)next() / 102` ; le délégué garde sa signature `Func<uint>` et sa doc dit
+  « la prochaine valeur de `rand()` de la bibliothèque C, 0 à 0x7FFF » (`CellularLayerService.cs:22-25`, `:210-216`,
+  `CellularLayerComponent.cs:45-59`, le texte d'avertissement `:69-71`, `cellular-layers.md` §5 et §12, ce dernier déjà périmé : il dit
+  « throws », le code avertit une fois et rend 0) ; ADR du moteur (ADR-0050).
+- **M2-R4 — Générateur de la bibliothèque C (DLL)** : nouveau générateur statique `AlundraLibcRandom` (état 0 au lancement du
+  processus, jamais remis à zéro en production, pas de `srand` ; `Next()` = la formule du binaire ; un accès `internal` à l'état pour
+  les tests) ; `AlundraWorldProxy.cs:652` branché dessus ; doc d'`AlundraRandom.cs:5-19` corrigée ; D-E19-66 remplace le choix du flux
+  de D7 (le partage moteur sans générateur, DLL maîtresse du flux, reste) ; ADR-0032 du parent. Les sauvegardes de la DLL ne tirent
+  rien (O-E19-49, écart consigné dans l'ADR jusqu'à la décision de l'auteur).
+
+**Tâches.**
+- **M2-1 — Moteur, tests d'abord** (sous-module, branche `chantier/e19m2-cellular-binary` **empilée sur** `chantier/e19k2-layer-mask`
+  `987f0c7f` ; `CasaEngine.Launcher/Program.cs` de l'auteur jamais indexé) ; un tick à la fois, valeurs d'aujourd'hui écrites pour le
+  rouge :
+  - T-P1 : cellule normale, x0 100, u1 1000, période X 1 → `DrawX` 100, 101, 102 aux ticks 1, 3, 6 (aujourd'hui 101, 103, 106) ;
+  - T-P2 : cellule normale, y0 100, v1 1000, période Y −2 → `DrawY` 100, 99, 98 aux ticks 2, 4, 8 (aujourd'hui 99, 98, 96) ;
+  - T-P3 : `FallRespawn`, x0 100, u0 = u1 = 0, période X 2 → `DrawX` 100, 101, 102 aux ticks 2, 4, 8 (aujourd'hui 101, 102, 104) ;
+  - bouclages (`CellularLayerServiceTests.cs:132-192`, réécrits) : au tick 1 la position d'avant le bouclage, au tick 2 la bouclée :
+    x0 −20 → −20 puis 315 (aujourd'hui 315 dès le tick 1) ; x0 400 → 400 puis 65 ; y0 −20 → −20 puis 235 ; y0 400 → 400 puis 145 ;
+  - T-W5 : x0 −13, dx −1 → ticks 1 à 4 : −14, −15, −16, 318 (aujourd'hui −14, −15, 319, 318) ;
+  - T-F1 (remplace `:196-219`) : `FallRespawn` x0 7, y0 232, dy 8, u1 = v1 = 15, source qui rend 16320 → tick 1 (7, 240), un appel ;
+    tick 2 (160, −7) ; tick 3 (160, 1) (aujourd'hui (0, −15) au tick 1) ; T-F2 : même cellule, source 32767 → (7, 240), (321, −7),
+    (−14, 1) ; bornes : 32640 → 320 ;
+  - `:111-128` réécrit : 12 ticks, 87 (89 aujourd'hui avec 10 ticks ; 87 aussi aujourd'hui avec 12 : le rouge vient de T-P1 à T-P3).
+- **M2-2 — Moteur, code** : M2-R1 à M2-R3, docs, ADR-0050.
+- **M2-3 — DLL, tests d'abord** (collection des tests qui touchent un état statique aléatoire) : `AlundraLibcRandom` depuis l'état 0
+  rend 0, 21468, 9988, 22117, 3498 (états `0x00003039`, `0xD3DC167E`, `0xA70427DF`, `0xD6651C2C`, `0x0DAA96F5`) ; depuis `0x12345678`
+  rend 2929, état `0x0B719151` ; `AlundraWorldProxyCellularRandomWiringTests.cs:26-51` réécrit : état `0x12345678`, `RandomSource()`
+  rend 2929u, état `0x0B719151`, `AlundraRandom.RandomSeed` inchangé (`0xB017C93D`) ; sur données réelles (sauté si l'export manque) :
+  les couches de la 391 construites comme les construit `AlundraBackdropStage` (`:374-376`), générateur à l'état 0, caméra 0, trois
+  ticks : cellule 2 → (214, 249), (0, −46), (0, −38) ; cellule 30 → (23, 264), (210, −17), (210, 5) ; cellule 47 → (47, 247),
+  (97, −26), (97, 4) ; état après le tick 1 `0xA70427DF`.
+- **M2-4 — DLL, code** : M2-R4, pointeur du sous-module, ADR-0032.
+
+**Acceptation.**
+1. Tests de M2-1 et M2-3 rouges d'abord (valeurs d'aujourd'hui), verts après, valeurs écrites tenues ; une valeur que la mesure
+   contredit est un arrêt.
+2. Tests existants touchés, liste fermée : `CellularLayerServiceTests.cs:111-128`, `:132-192`, `:196-219` ;
+   `AlundraWorldProxyCellularRandomWiringTests.cs:26-51` ; rien d'autre (`CellularLayerMaskTests`,
+   `CellularLayerComponentSubmissionTests`, le test de remise à zéro `:359-381` inchangés).
+3. `CasaEngine.Tests` construit à part et vert ; `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans écart ; les
+   six traces à l'octet ; la liste fermée de la chaîne inchangée.
+
+**Retour arrière** : pointeur du sous-module et revert du commit de la DLL.
+
+**Risques.** Les cellules de type 0 hors de la chaîne qui n'avancent que par leur période ralentissent (cartes 96 à 99, 271, 289, 357,
+481 : 1,25 à 2 fois plus lentes ; les autres de 1 à 29 %) ; la pluie de la 391 change de positions (et peut atteindre 320 ou 321) ;
+`AlundraRandom` n'avance plus d'environ 3 tirages par tick à la 391 (les sites qui y puisent tirent d'autres valeurs qu'avant) ;
+O-E19-51 à O-E19-53 (autres écarts relevés) hors tranche.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
@@ -7189,6 +7269,9 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-48 | **La chute des cellules puise dans le mauvais générateur** (question bornée du 2026-10-03 pour E19.m0) : dans le binaire, la cellule de type 2 (`0x8005CAC8` → `0x8005D05C`) tire sa nouvelle position au `rand()` de la bibliothèque C (`0x80081E6C`, état `0x801EEB48`, constantes 0x41C64E6D/0x3039, rend `(s >> 16) & 0x7FFF`) et pose `posX = rand() / 102` (0 à 321) ; la DLL la branche sur `AlundraRandom` (`AlundraWorldProxy.cs:652` → `CellularLayerService.cs:397`, décision D7), le flux du jeu, que l'original ne touche pas là ; D7 et la décompilation (`GraphicManager.cs:1172`) se trompent. Confirmé par la découverte d'E19.m1 (un seul tirage, seulement quand `sy >= 240`, `0x8005D310` ; division signée, tronquée vers 0). | E19.m2 |
 | O-E19-49 | **Flux de `rand()` et sauvegardes** (découverte d'E19.m1) : le `rand()` de la bibliothèque C n'a que trois appelants dans le binaire, la chute des cellules (`0x8005D31C`) et l'écriture du bloc de carte mémoire (`0x80061150` dans `0x80060E20`, `0x80061584` dans `0x8006122C` : 36 valeurs `r & 0xFF` à l'offset `0x1FB0` du bloc en `0x8018F078`, avant la somme de contrôle) ; les sauvegardes de la DLL passent par le service du moteur et ne tirent rien. À trancher : tirer 36 valeurs à chaque sauvegarde pour garder l'ordre du flux de la chute des cellules, ou consigner l'écart. | Auteur (E19.m2) |
 | O-E19-50 | **Deux écarts des couches de cellules** (découverte d'E19.m1, relevés, non audités) : les deux routines du binaire dessinent à la position d'avant le bouclage (`0x8005CDB0`, `0x8005D3AC`), le moteur à celle d'après (`CellularLayerService.cs:349-350`, `:403-404`) ; le binaire avance d'un pas quand `|P| <` le compteur d'avant l'incrément, donc tous les `|P| + 2` ticks, le moteur tous les `|P|` ticks (`++Tick >= |P|`, `:303`, `:313`, `:364`, `:371` ; `CellularLayerServiceTests.cs:117-128` épingle la règle du moteur) ; la table des pas et une transformation éventuelle de la période par le convertisseur restent à vérifier. | E19.m2 |
+| O-E19-51 | **Compteur des vagues global** (audit d'E19.m2) : `0x800C48C4` est un compteur unique, incrémenté par le pilote des fonds (`0x8005B6D8`-`0x8005B6E8`) **avant** les tests du masque, jamais remis à 0 au chargement ; le moteur en garde un par couche, remis à 0 au chargement et figé quand la couche est masquée : les vagues commencent chaque carte à une autre phase, et à la 475 la vague de l'original avance pendant le masque. Contredit en partie le fait d'E19.k2 (« l'état par tick d'une couche est dans l'appel gardé ») et ADR-0049 du moteur ; le corriger bougerait `CellularLayerMaskTests.cs:82`, `:93`, `:101`. | E19.m3 |
+| O-E19-52 | **Parallaxe des cellules de type 0 tronquée** (audit d'E19.m2) : le binaire calcule le facteur une fois, en entier tronqué `Num/Den` (`0x8005C0AC`), puis `camX × facteur` (`0x8005CB78`) ; aux cartes 123 et 124 (couche 1), les facteurs 1/2 donnent 0 : 59 cellules ne défilent pas dans l'original, le moteur les fait défiler à camX/2. | E19.m3 |
+| O-E19-53 | **Ordre de dessin des cellules d'une couche** (audit d'E19.m2) : le binaire insère chaque cellule en tête du même créneau de la table d'ordre (`0x8005CE08`) : ordre inverse, la cellule 0 dessus ; le moteur donne la même clé à toutes et trie par `List.Sort` (`SpriteRendererComponent.cs:399`), instable ; effet non mesuré. | E19.m3 |
 
 ## 4. Hors périmètre
 
