@@ -407,7 +407,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.d2a ✅ | Après le premier livre (§1.2h) : sauvegardes de test chargées par F9 (D-E19-33) ; arrivée par portail dans les arcs (U3) ; arcs du jour 1 | A10, A11, A20, TH3 | Jour 1 jusqu'au jour 2 ; F9 sur les préréglages du jour 3 et du jour 4 |
 | E19.d2b ✅ | Moteur : sonde d'obstacles dans l'étage champ du contrôleur (ADR-0047 du moteur) ; DLL : contacts entre entités du binaire (D-E19-27 à D-E19-30, D-E19-34 à D-E19-37), natif E 0/1, contact du dialogue ; règle les deux P2 d'E19.d (O-E19-18, 185 `@506`) | T-A19, T-A10v, T-B9, T-C61, TN-3, A11, tests moteur | Le héros bute sur les PNJ et leur parle ; jour 4 : la 185 mène à la 362 |
 | E19.d2c | DLL, en deux sous-tranches (§1.2h.3, ADR-0023) : saut scripté et `IsZForceApplied` (D-E19-31), `0x25`, `CollidedWithEntityZ`, eau et glace du héros (D-E19-32), son du décollage (D-E19-44) ; puis saut à la manette, chutes, dessus d'objets et passager (D-E19-39, D-E19-42, D-E19-43) (O-E19-8, O-E19-19) | UJ, UW, A10J, A12, A10, T-A10v, T-C61, A3 ; SJ, UH, traces « spawn » | Jour 3 : le saut de la 10 jusqu'à la 135 ; saut à la Croix, chutes, objets |
-| E19.e | Recette de bout en bout, plus un test statique : aucun opcode sauté sur la chaîne hors liste d'exceptions | toute la chaîne | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement (avec les recettes d'E16 en attente) |
+| E19.e | (§1.2i) Test statique : la liste fermée des opcodes sautés atteignables sur les 30 cartes de la chaîne ; arcs des scènes du jour 3 (176, 179, 135, 178) ; arrivées sans recouvrement | A13, A14, A15, A17, A18, TH4 étendu, test statique | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement ; `day3-after-dream` jusqu'à la 183 ; `day4-meeting` jusqu'à la 362 |
 | E19.f | Boîte de nom et boîte de texte fidèle (D-E19-4) : export du cadre, écrans XAML liés à un view model, cycle de vie de la boîte de nom, pour `0x0D`/`0x5C`/`0xC4` ; **avec E12.c** (D-E19-38) : portraits, machine à écrire, pagination, curseur, blips et voix, `0x4C`/`0x4D`, table partagée `map_alundra` | tests MGDesktop | Les noms s'affichent au-dessus de la boîte, à la place de l'original |
 | E19.g | Effets visuels (D-E19-7) : export des effets par le convertisseur, réserve de 128 effets aux règles du binaire, `0x90`-`0x94`, `0xA0`-`0xA3`, rendu | cartes à effets | L'aura de 476, les vagues de 391 |
 | E19.h | Attentes en Z et contacts : `0x20`-`0x23`, `0x26`, `0x47`, `0x48` ; `ForceAdjusted` aligné sur le binaire ; glissement le long des murs ; reste du saut (O-E19-27) — `0x25` et `CollidedWithEntityZ` avancés en E19.d2c (D-E19-31) | ciblés | ciblée |
@@ -3793,6 +3793,119 @@ inchangées.
 - Sites `0x2F` qui lisent la Croix hors de la chaîne (51, 440, 477, 143, 475) : la même pression sert le script et le saut,
   comme l'original.
 
+### 1.2i E19.e — La chaîne du jour 3 et du jour 4 prouvée, et un test statique des opcodes sautés ⏳ (plan ; relu et approuvé avant exécution)
+
+**Résultat** : chaque scène du jour 3 et du jour 4 qui ne demande pas le combat est rejouée par un arc sur la vraie DLL (176
+`B[6]`, 179 `B[3]`, 176 `B[7]`, 135, 178), en plus de celles qui le sont déjà (179 `B[2]` A12, 10 `B[20]` A10J, 185 T-A19) ;
+les arrivées de la chaîne qui n'ont pas de vérification ne recouvrent aucune entité ; un test statique ferme la liste des
+opcodes sautés atteignables sur les cartes de la chaîne, et échoue dès qu'un nouveau site apparaît ou qu'une entrée devient
+périmée.
+
+**Découverte** (2026-10-03, lecture seule, HEAD `e7674be`, parcours statique des programmes ; scripts et listes dans le
+scratchpad de la session, `e19e-disc/`). Faits porteurs :
+- **Preuve existante** : de la 389 à la 164 (jour 1), chaque étape a un arc ou un banc (§1.3 ; A0 à A11, A20, TH3b, TH4) ;
+  au jour 3, A12 (179 `B[2]`) et A10J (10 `B[20]`) ; au jour 4, T-A19 (185 → 362). **Sans arc** : 176 `B[6]`, 179 `B[3]`,
+  176 `B[7]`, 135 (`B[14]`, `B[2]`, `C[1]`), 178 (`B[1]`, `C[6]`), les quatre villageois de la 185 (T-A19 pose G120 à G123),
+  et, derrière le combat (E14), le jour 2 (14, 15, 169 à 175), Tarn's Manor (115 à 117), le rêve 44 et la 362 après
+  l'arrivée. La 183 n'a pas de scène (ambiance et portails).
+- **Opcodes sautés** (parcours de flot de contrôle depuis chaque racine — événements B, programmes A, C, D, E, F des
+  enregistrements, racines de `0x40` —, les deux branches de chaque saut conditionnel : un sur-ensemble ; contrôle : il
+  contient tous les ensembles de sautés que les arcs épinglent aujourd'hui) : **198 sites** sur les 30 cartes de la chaîne
+  hors cartes de combat, dont 76 déjà épinglés par un arc ; effets (E19.g) 99, caméra (E19.k) 28, texte (E19.f/E12.c) 32,
+  `0x45`/`0x46` (E19.h) 6, prédicats et restes (E19.l) 33 ; **aucune attente** ; les 9 prédicats suivis d'un consommateur de
+  `Result` sont optionnels (boutiques de la 163, blocs de la 10) ou déjà épinglés (`0x95` d'A10J). Cartes de combat (14, 15,
+  44, 115, 116, 117, 362) : 88 sites, exemptés (E14).
+- **Aucun blocage statique** de 179 `B[2]` jusqu'à l'arrivée sur la 362, après E19.d2c : chaque attente sur drapeau a son
+  poseur (même programme, programme voisin, ou `<<flag>>` de Yarn) ; les arrivées par `0x53` de la chaîne tombent à la hauteur
+  exacte de leur case.
+- **Valeurs des scènes** : émulations du binaire du 2026-10-02 (`e19d2b-disc/scenes`), antérieures à E19.d2c ; les fins de
+  scène, les drapeaux et les destinations de `0x53` sont des données exactes ; les positions de contact suivent la règle
+  exacte d'E19.d2b ; le reste se re-mesure (voir les règles d'épinglage).
+
+**Choix de conduite** (mode AUTO ; techniques, sans effet visible pour le joueur) :
+- le test statique couvre **tous** les programmes des 30 cartes (198 lignes, avec une colonne de niveau : S scène, A ambiance,
+  O optionnel, X hors chaîne), plutôt qu'une liste de programmes à entretenir à la main ;
+- `0x52`, `0x8C`, `0xB9` sont rattachés à E19.l, `0x86` à E14 (ils n'avaient pas de tranche) ;
+- la scène d'avant le rêve (179 `B[1]`) et le rêve 44 restent hors d'E19.e : le rêve demande le combat, et la scène d'avant
+  n'est atteignable qu'après le jour 2 (combat). **Question à l'auteur, O-E19-33** : veut-il un préréglage `day3-start`
+  (179, case (12,22), z1, G203, G1660, table [162] = 176) et un arc de 179 `B[1]` ?
+- les recettes en attente d'E16.a (T7) restent hors d'E19.e : elles visent des lieux hors chaîne (321, 411, 55 à 60).
+
+**Règles d'épinglage des arcs** : exacts, les fins de scène (instruction), les drapeaux posés et effacés (avec leur pc), les
+destinations de `0x53` (données), les relations de contact (règle semi-ouverte d'E19.d2b) ; à ± 2,5 px, les positions finales
+de marche issues de l'émulation (le binaire glisse le long des angles, la DLL non : E19.h) ; les images absolues ne sont pas
+épinglées, seulement l'ordre des événements et la limite d'images ; l'ensemble des sautés de chaque arc doit être inclus dans
+la liste statique (contrôle croisé). Une valeur exacte contredite est un arrêt ; une position hors de ± 2,5 px aussi.
+
+**Tâches.**
+
+- ⏳ **E0 — Plan.** Ce plan, relu jusqu'à READY.
+- ⏳ **E1 — Test statique des opcodes sautés de la chaîne.**
+  - Liste fermée versionnée (`Alundra.Tests/Data/story-chain-skipped-opcodes.tsv`, nom indicatif) : (carte, créneau,
+    programme, pc, opcode, classe, tranche, niveau), les 198 lignes de la découverte ; la liste d'exemption des cartes de
+    combat (14, 15, 44, 115, 116, 117, 362) dans le test.
+  - Oracle « porté » : **le vrai runner**, pas un miroir écrit à la main : pour chaque opcode de taille connue non nulle, un
+    programme `[op, 0…, 0xFF]` sur un hôte factice (comme `AlundraEventProgramRunnerTests`) ; sauté si la trace rend
+    `UnknownSkipped`.
+  - Parcours : port en C# de celui de la découverte (sauts `0x02`, `0x03`, `0x04`, `0x30`, `0x31`, `0x74`, `0x78` à `0x81`,
+    `0x49`, `0x4B` ; racines de `0x40` ; arrêt sur `0xFF`, une taille nulle ou inconnue ; les deux branches), depuis les
+    événements B et les index A, C, D, E, F des enregistrements de chaque carte (`index & 0x7F`).
+  - Échecs : (1) un site atteint et sauté absent de la liste ; (2) une ligne périmée (opcode devenu porté ou site devenu
+    inatteignable) ; (3) une attente (`0x20` à `0x26`, `0x47`, `0x48`, `0x5F`, `0x9F`) ou une taille nulle ou inconnue
+    atteinte au niveau S ; (4) un prédicat ou une branche au niveau S hors des quatre connus (`0x58 @110` de 164 `C[4]` et
+    `C[5]`, `0x84 @183` de 179, `0x95 @6418` de 10 `C[75]`) ; (5) un site sauté par un arc (`SkippedOrExceeded`) absent de la
+    liste (test d'arcs à part, sur les arcs existants).
+  - Rouge d'abord : une ligne retirée de la liste, puis un opcode marqué porté à tort (mutation du test d'oracle), puis un
+    site inventé : chacun fait échouer la bonne règle.
+  - Commit : `test(alundra): close the list of the skipped opcodes reachable on the story chain`
+- ⏳ **E2 — Arcs du jour 3 : A13, A14, A15.**
+  - **A13** (176 `B[6]` @468) : arrivée du `0x53 @451` de la 179 en (11796480 ; 36175872 ; 10485760), drapeaux {G203,
+    G1651, G1652, G1660} ; fin : `0x53 @533` vers la 179 en (27525120 ; 7864320 ; 1048576), G1653 posé à `@530` ; Giles
+    `0x24 @526` finit près de (494 ; 552) px (± 2,5 px).
+  - **A14** (179 `B[3]` @464) : arrivée du `0x53 @533` de la 176 ; drapeaux {G203, G1651, G1652, G1653, G1660} ; fin :
+    `0x53 @568` vers la 176 en (8650752 ; 35127296 ; 10485760), G1654 posé à `@565` ; T800 et T801 posés à `@528`/`@542`,
+    effacés par Nestus à `@1149`/`@1160` ; héros `0x24 @564` au contact de Septimus (relation exacte de la règle d'E19.d2b),
+    près de (27525120 ; 21757952) (± 2,5 px).
+  - **A15** (176 `B[7]` @544) : arrivée du `0x53 @568` de la 179 ; drapeaux {G203, G1651 à G1654, G1660} ; fin : `0x53 @600`
+    vers la 10 en (16515072 ; 61341696 ; 0) ; drapeaux temporaires T0 à T3 posés et effacés dans l'ordre (programme `B[7]`,
+    Septimus `C[1]`, Giles `C[2]`) ; héros `@599` près de (266 ; 231) px (± 2,5 px).
+  - Commit : `test(alundra): arcs of the day-3 scenes of maps 176 and 179`
+- ⏳ **E3 — Arcs de la 135 et de la 178 : A17, A18.**
+  - **A17** (135 `B[14]` @912, `B[2]` @216, `C[1]` @960) : arrivée du `0x53 @2463` de la 10 en (30670848 ; 54001664 ;
+    1048576), drapeaux {G203, G1654} ; fin : `0x11 @1115` (`C[1]`), G14 posé à `@1120`, G1655 posé à `@953` (T1 avant G1655) ;
+    le choix de la boîte 129 accepté (T0 posé par Yarn) ; héros `0x24 @942` au contact de Ronan ; blocs rec8 à rec10 détruits.
+  - **A18** (178 `B[1]` @104, `C[6]` @512) : arrivée par le portail 176.7 en (60555264 ; 26738688 ; 0), direction 16,
+    drapeaux {G203, G1654, G1655} ; deux phases (fin de la première à `0x11 @543`, puis le héros posé en (948 ; 232) px pour
+    la scène `@598`) ; fin : `0x11 @724`, G204 posé à `@721`, G203 effacé à `@718`, `0x38 @708` et `@713` (tables [176] et
+    [162] = 183) ; `@694` et `@697` (marge nulle) non épinglés.
+  - Commit : `test(alundra): arcs of the day-3 scenes of maps 135 and 178`
+- ⏳ **E4 — Arrivées.** TH4 étendu aux arrivées de la chaîne sans vérification : 178 → 183 (portails 0, 1, 2 de la 178, table
+  [176] = 183), 179 → 176 (A13), 176 → 179 (A14), 176 → 10 (A15), 135 → 10 : à la première image après l'adoption, la règle
+  du binaire ne trouve aucune entité qui recouvre le héros. Commit : `test(alundra): no overlap at the arrivals of the day-3 chain`
+- ⏳ **E5 — Vérification et clôture**, comme C6 d'E19.d2c1.
+- ⏳ **E6 — Recette de bout en bout** (auteur) : nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement ; F9 sur
+  `day3-after-dream` jusqu'au retour libre dans la 10, puis la 178 et la 183 à la main ; F9 sur `day4-meeting`, parler aux
+  quatre villageois de la 185, jusqu'à l'arrivée sur la 362.
+
+**Acceptation d'E19.e.**
+1. Le test statique est vert avec exactement la liste fermée, et rouge sur chacune des mutations d'E1.
+2. A13, A14, A15, A17, A18 vont au bout avec les valeurs exactes écrites et les positions dans leurs tolérances ; leurs
+   sautés sont dans la liste statique ; aucune valeur contredite.
+3. Code de test existant touché : TH4 (`AlundraEntityContactArcTests.cs`, nouvelles lignes d'arrivée) ; rien d'autre.
+4. `Alundra.Tests` sans échec en Release puis en Debug, la DLL Debug déployée en dernier, `cmp` sans écart.
+5. Recette E6 faite par l'auteur.
+
+**Risques.**
+- E19.e s'exécute sur le code d'E19.d2c2 tel que vérifié (`103dcb7`), D5 en pause : si D5 est repris, ses correctifs
+  (fenêtre du passager, plateformes en Z, dessus à fleur, escalade depuis un saut) doivent garder les arcs d'E19.e verts,
+  sinon c'est un arrêt de D5. Aucune scène de la chaîne n'utilise `0x3E` ni une plateforme en Z (découverte).
+- Les valeurs des scènes viennent d'émulations d'avant E19.d2c (sauts, contacts en Z) : des arrêts sont possibles ; chacun se
+  tranche par une mesure et une cause, jamais par une ré-épingle sans cause.
+- Contacts à 0 px (176, 178, 179) et marge nulle de `@697` sur la 178 : sensibles à toute différence d'arrondi.
+- O-E19-29 (troncature au pixel à l'atterrissage d'un PNJ) n'est pas vérifiée sur 176, 178, 179 et 135.
+- Les drapeaux posés par Yarn à l'ouverture d'une boîte (T0 de la 135, T900 de la 179, T200/T201 de la 164) dépendent du
+  dialogue actuel ; E19.f (boîte fidèle) devra les garder.
+
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
 Chaque arc part d'une carte chargée seule, avec des drapeaux posés et le héros placé. Les valeurs
@@ -4023,6 +4136,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-30 | **Recette T6 d'E19.b (2026-10-02, auteur)** : la scène de la vision de Lars et Melzas (476) s'affiche mal : carte en partie noire derrière un halo elliptique, personnages mal affichés (captures de l'auteur). Pistes connues, non vérifiées : effets de carte non exportés (l'aura de la 476, E19.g, D-E19-7), masque des couches de fond `0xA4` et balancement `0x8E`/`0x8F` sautés (E19.k), autres opcodes d'affichage sautés sur la 476. À établir par une découverte en lecture seule avant de placer la correction. **Reconnaissance du 2026-10-03** : pendant la vision, les arcs A2 et A4 ne laissent sauter que `0x4C`, `0x92`, `0x93` et `0xA2` (`AlundraVisionArcTests.cs:32`) : trois opcodes d'effets (E19.g) ; `0xA4`, `0x8E` et `0x8F` n'y sont pas exécutés ; l'export de la 476 n'a aucune donnée d'effet (D-E19-7 : le convertisseur ne les exporte pas encore). Piste la plus probable : l'aura de la 476, non dessinée (E19.g) ; non vérifié en jeu. | E19.g (à confirmer) |
 | O-E19-31 | **Cartes sous-marines 159 et 160** (« Fairy cave underwater ») **[binaire, données]** : gravité 3, `ZViscosity` 256 et octet d'en-tête `+8` (exporté sous le nom `SlideEffectId`) à 1, contre 128, 4096 et 0 sur les 481 autres cartes ; l'octet `+8` décale `ForceX` et `ForceY` avant le déplacement (`srav` en `0x8003675C`) : le héros y va deux fois moins vite et un saut dure 178 ticks. La DLL ne lit pas ce décalage (aucun consommateur). Hors de la chaîne. | à placer |
 | O-E19-32 | **`LoadingMap` (`0x36`) en l'air** **[binaire]** : `MovePlayer` passe en `0x2D` quand le héros arrive au-dessus du sol (`0x800325E8`) ; la DLL laisse `0x36` sans effet (`AlundraPlayerManager.cs:256-263`). La 476 fait arriver le héros à 48 px au-dessus du sol (`0x53` de la 390 `@688`). Non porté en E19.d2c2. | à placer |
+| O-E19-33 | **Scène d'avant le rêve** (179 `B[1]`, jour 3) et rêve 44 : la scène n'est atteignable qu'après le jour 2 (combat, E14) et aucun préréglage ne la couvre ; le rêve demande le combat. Question à l'auteur : faut-il un préréglage `day3-start` (179, case (12,22), z1, G203, G1660, table [162] = 176) et un arc de 179 `B[1]` ? Hors d'E19.e en attendant. | à placer |
 
 ## 4. Hors périmètre
 
