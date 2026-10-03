@@ -5843,7 +5843,7 @@ re-simule les 484 planches d'entités depuis `DATAS.BIN` et reproduit chaque pix
   texels (`GameMap.cs:188-194`) : 2646 pixels manquent dans 265 planches (695 dans 74 planches exportées, dont 83 dans
   `map_alundra`) ; la simulation le prouve.
 
-##### 1.2o.1 E19.g G0 — Extracteur : texels semi-transparents, planches d'effets, portraits, colonne impaire ⏳ (relectures n°1 et n°2 REVISE, révisée ; nouvelle époque, relecture de clôture ; annexe des valeurs versionnée)
+##### 1.2o.1 E19.g G0 — Extracteur : texels semi-transparents, planches d'effets, portraits, colonne impaire ✅ (relectures n°1 et n°2 REVISE, révisée ; nouvelle époque, relecture de clôture ; annexe des valeurs versionnée)
 
 **Faits.** Ceux de la découverte ci-dessus et de la cartographie de l'extracteur (`e19f-plan2/extract/notes.md`) : extracteur
 `AlundraDataExtractor` (`Program.cs:77-151`, arguments `<gamePath> <extractionPath>`, dispositions par défaut `original` et
@@ -5931,6 +5931,23 @@ et `Alundra.Tests` sur cet export ; le retour arrière n'est fini que quand ce m
 **Risques.** Une extraction depuis le mauvais checkout ou une construction périmée (G0-R5) ; un `robocopy` lancé depuis Git Bash
 (chemins avec espaces : il ne copie rien) ; la colonne impaire élargit le diff à des RVB (liste écrite d'avance) ; le dernier texel
 dessiné gagne aussi pour l'alpha (déjà le cas pour les couleurs).
+
+- **Fait le 2026-10-03.** Sous-module `alundra-datas-analyser`, branche `chantier/e19g0-extractor` (depuis `b92b7b9`) : `97ca6a2` (R1 code
+  alpha), `876dfd9` (R2 planches d'effets), `109f62e` (R3 portraits), `d8d9230` (R4 colonne impaire), chacun construit (Release).
+  Preuves indépendantes (Python, `DATAS.BIN`) : 0 écart sur les 484 planches d'entités (253 755 392 pixels, RVB et alpha, empreintes
+  de l'annexe égales), 87 planches d'effets et 1435 cases égales à leur décodage (positions de l'annexe, 20 269 références de quads
+  pointant une case juste, 46 quads 0 × 0 laissés à (0,0)), 331 portraits (champs de l'annexe, 895 104 texels), 2646 texels de la
+  colonne impaire présents, 484 JSON égaux à l'ancien une fois retirés `DialoguePortrait` et remis à 0 les `AtlasX/AtlasY` des
+  quads d'effets. Ré-extraction (Release fraîche, chemin en barres obliques, `--no-launch-profile`, 46 s, dossier neuf
+  `remaster-data-extracted-e19g0`, 4537 fichiers) : `diff -rq` contre `data-extracted/` = exactement les 700 lignes de
+  `predicted_changes.txt` (613 M, 87 A), 0 marqueur de texte non décodé. Sauvegardes hors dépôt : `data-extracted.bak-e19g0` (4450
+  fichiers, identique), `remaster-data-extracted.bak-2026-10-03` (ancien remaster, identique à `data-extracted/` avant le miroir) ;
+  nouveau dossier renommé `remaster-data-extracted` ; `robocopy /MIR` depuis PowerShell, `diff -rq` final vide, 4537 fichiers.
+  Tests du convertisseur 418/418. Export en place : manifeste SHA-1 (23 741 fichiers hors DLL, pdb, `.casaeditor/`) avant/après =
+  exactement 105 fichiers changés (les 103 textures, `hero_effects.json`, `report.json`), aucun ajouté ni retiré ; second export
+  identique hors `report.json` ; `Alundra.Tests` 2539/2539 en Release puis en Debug ; `cmp` de la DLL déposée contre la build Debug
+  sans écart ; six traces à l'octet (`git diff --ignore-cr-at-eol` vide), les quatre traces du héros remises par `git checkout`.
+  Écarts au plan : aucun. ADR-0030. Decisions: see ADR-0030.
 
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 

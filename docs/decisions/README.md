@@ -42,3 +42,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0026 | Absolute writes of Z follow the DLL convention (binary minus 1) at spawn, 0x8A and 0x64 | Accepted | 2026-10-03 |
 | ADR-0027 | The native image is 320x240 at an integer scale with black bands | Accepted | 2026-10-03 |
 | ADR-0028 | Every animation switch plays its sound, appearances included | Accepted | 2026-10-03 |
+| ADR-0030 | The extractor writes a per-texel alpha code, effect sheets, dialogue portraits and the odd last column | Accepted | 2026-10-03 |
