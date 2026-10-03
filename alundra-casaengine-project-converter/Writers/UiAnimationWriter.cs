@@ -6,9 +6,9 @@ using Microsoft.Xna.Framework;
 namespace AlundraCasaEngineProjectConverter.Writers;
 
 /// <summary>
-/// Phase 7: the three looping UI animations the screens name as image sources (engine ADR-0038, "Images are
-/// named by asset"; parent ADR-0002): the inventory cursor, a full magic pip, and the money coin. Each is a
-/// UI/Animations/*.anim2d built from the wind_NNN sprites <see cref="UiWriter"/> already wrote, so an MGUI image
+/// Phase 7: the four looping UI animations the screens name as image sources (engine ADR-0038, "Images are
+/// named by asset"; parent ADR-0002): the inventory cursor, a full magic pip, the money coin, and the dialogue
+/// wait cursor. Each is a UI/Animations/*.anim2d built from the wind_NNN sprites <see cref="UiWriter"/> already wrote, so an MGUI image
 /// plays it on the UI clock instead of the screen code swapping sprites on every logic tick.
 ///
 /// Mapping decisions:
@@ -24,7 +24,7 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///  - The cycles, from the original's own counters: cursor 4 x 10 ticks with offsets (0,0) (-1,+1) (-2,+2) (-2,+2)
 ///    (AlundraInventoryDirector.cs:520-524; the offsets are the executable's word tables at 0x800a82c8/0x800a82d8,
 ///    which the decompilation misread as half-words - AlundraInventoryComposer's CursorPhaseX/Y, plan E13.d SI9); magic pip 4 x 10 ticks
-///    (AlundraHudDirector.cs:461-468); coin 4 x 6 ticks (AlundraHudDirector.cs:627-634). The original moves the
+///    (AlundraHudDirector.cs:461-468); coin 4 x 6 ticks (AlundraHudDirector.cs:627-634); dialogue wait cursor 4 x 10 ticks, no offset (ALUN_CD.EXE, plan E19.f1). The original moves the
 ///    cursor one tick after it changes its sprite (the composer's position phase lags the sprite phase); here
 ///    both change together, one 20 ms tick earlier for the offset, within the program's 20 ms tolerance.
 ///  - Ids are stable (<see cref="Ids.For"/> on "anim2d-ui:" + the name), so a screen can name an animation by
@@ -35,6 +35,7 @@ public static class UiAnimationWriter
     public const string InventoryCursorName = "ui_inventory_cursor";
     public const string MagicPipName = "ui_hud_magic_pip";
     public const string CoinName = "ui_hud_coin";
+    public const string DialogueCursorName = "ui_dialogue_cursor";
 
     private const float TickSeconds = 1f / 50f;
     private const string PartId = "image";
@@ -47,6 +48,7 @@ public static class UiAnimationWriter
             new[] { new Point(0, 0), new Point(-1, 1), new Point(-2, 2), new Point(-2, 2) }),
         new(MagicPipName, TicksPerFrame: 10, new[] { 1, 3, 10, 17 }, Offsets: null),
         new(CoinName, TicksPerFrame: 6, new[] { 126, 130, 134, 139 }, Offsets: null),
+        new(DialogueCursorName, TicksPerFrame: 10, new[] { 150, 173, 201, 228 }, Offsets: null),
     };
 
     public static Guid AnimationId(string name) => Ids.For($"anim2d-ui:{name}");

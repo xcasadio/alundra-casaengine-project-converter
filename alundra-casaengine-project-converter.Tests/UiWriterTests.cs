@@ -94,7 +94,7 @@ public class UiWriterTests
         RunConvertUi(inputDirectory => WriteUiFixture(inputDirectory, windEntryCount: 240), (outputDirectory, report) =>
         {
             Assert.Empty(report.Errors);
-            Assert.Equal(3, report.Counters["Assets.UiAnimation"]);
+            Assert.Equal(4, report.Counters["Assets.UiAnimation"]);
 
             // The cursor: 4 x 10 PSX ticks, and the pixel offset of each phase (Y down, screen pixels).
             var cursor = LoadAnimation(outputDirectory, UiAnimationWriter.InventoryCursorName);
@@ -118,6 +118,13 @@ public class UiWriterTests
             var coin = LoadAnimation(outputDirectory, UiAnimationWriter.CoinName);
             AssertSpriteKeyframes(coin, new[] { 0f, 0.12f, 0.24f, 0.36f, 0.48f }, new[] { 126, 130, 134, 139, 139 });
             Assert.Equal(0.48f, coin.GetDurationSeconds(), 5);
+
+            // The dialogue wait cursor: 4 x 10 ticks, no offset (ALUN_CD.EXE, E19.f discovery).
+            var dialogueCursor = LoadAnimation(outputDirectory, "ui_dialogue_cursor");
+            Assert.Equal(AnimationType.Loop, dialogueCursor.AnimationType);
+            AssertSpriteKeyframes(dialogueCursor, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f }, new[] { 150, 173, 201, 228, 228 });
+            Assert.DoesNotContain(dialogueCursor.Tracks, track => track.Property == Animation2dTrackProperty.Position);
+            Assert.Equal(0.8f, dialogueCursor.GetDurationSeconds(), 5);
 
             // The sprite ids are the ones the Alundra DLL already names (AlundraInventoryScreen.cs,
             // AlundraHudScreen.cs): wind_159 and wind_001.
@@ -146,7 +153,7 @@ public class UiWriterTests
         RunConvertUi(inputDirectory => WriteUiFixture(inputDirectory, windEntryCount: 240), (outputDirectory, _) =>
         {
             var files = Directory.EnumerateFiles(Path.Combine(outputDirectory, "UI", "Animations")).ToList();
-            Assert.Equal(3, files.Count);
+            Assert.Equal(4, files.Count);
             foreach (var path in files)
             {
                 Assert.Equal(first[Path.GetFileName(path)], File.ReadAllBytes(path));
@@ -161,7 +168,7 @@ public class UiWriterTests
         {
             Assert.Empty(report.Errors);
             Assert.Equal(0, report.Counters["Assets.UiAnimation"]);
-            Assert.Equal(3, report.Warnings.Count(warning => warning.Contains("skipped: sprite wind_", StringComparison.Ordinal)));
+            Assert.Equal(4, report.Warnings.Count(warning => warning.Contains("skipped: sprite wind_", StringComparison.Ordinal)));
             Assert.Empty(Directory.EnumerateFiles(Path.Combine(outputDirectory, "UI", "Animations")));
         });
     }

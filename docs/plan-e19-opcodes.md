@@ -4340,7 +4340,7 @@ Commits : `test(converter): …` puis `feat(converter): emit text flag codes and
   change avec un commit du seul plan. Avis reporté à E19.m : P4 un `[flag id=abc/]` écrit à la main (propriété texte) lèverait
   une `FormatException` dans `ShowLine` (`AlundraYarnBindings.cs:183`, `Convert.ToInt64`), le convertisseur n'en produit jamais.
 
-##### 1.2j.2 E19.f1 — Cadres du nom et du choix, curseur d'attente ⏳ (planifiée ; relecture n°1 REVISE, révisée)
+##### 1.2j.2 E19.f1 — Cadres du nom et du choix, curseur d'attente 🚧 (planifiée ; relecture n°1 REVISE, révisée)
 
 **Faits.**
 - **Données de la décompilation** (`alundra-datas-analyser/AlundraTools/AlundraEngine/StaticVariables.cs`) : la boîte du nom est

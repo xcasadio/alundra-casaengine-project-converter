@@ -22,6 +22,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- E19.f1: reference images produced independently of the converter's CSVs (see UiDialogueBoxTests). -->
+    <None Update="TestData\*.png" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\alundra-casaengine-project-converter\alundra-casaengine-project-converter.csproj" />
     <ProjectReference Include="..\CasaEngineMonogame\CasaEngine\CasaEngine.csproj" />
     <ProjectReference Include="..\CasaEngineMonogame\CasaEngine.EditorServices\CasaEngine.EditorServices.csproj" />
