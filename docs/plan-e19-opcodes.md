@@ -6101,7 +6101,7 @@ recette sont des couleurs dominantes d'un sprite chacune, sans les changements d
   ponctuels : icônes 84, 69, 82 (rouge, doré, blanc et gris au lieu de l'aplat `#382800`), bâton magique bleu-violet, Thyea et
   Sierra distinctes de Naomi. P4 : le `log.txt` vide non suivi de l'analyseur, recréé par l'extraction (laissé tel quel).
 
-##### 1.2o.2 E19.g G2a — Semi-transparence par texel des sprites d'entités (moteur et convertisseur) ⏳ (révision n°1 après G0b ; relecture n°2 à faire ; exécution après E19.m2)
+##### 1.2o.2 E19.g G2a — Semi-transparence par texel des sprites d'entités (moteur et convertisseur) ⏳ (révision n°1 après G0b ; relecture n°2 REVISE, révision n°2 ; nouvelle époque, relecture de clôture à faire)
 
 **Découpage d'après G0** (2026-10-03) : **G2a** (cette tranche) rend la semi-transparence par texel des sprites d'entités
 (D-E19-52) : moteur et convertisseur ; **G2b** (quads à quatre sommets libres et piste de coins dans `.anim2d`, changement de format,
@@ -6113,7 +6113,10 @@ sur le produit et non sur l'alpha brut, décodage non écrit et lu à tort sur l
 liste fermée des tests, valeurs de la démo, garde des 10 000 entrées au remplissage des sommets ; contradictions C1 (planches en
 disposition `Original` : couleurs et masques d'autres palettes) et C2 (aucun sprite d'entité en mode 2). C1 est levée par G0b
 (§1.2o.1b) ; cette révision n°1 (après G0b) reprend chaque point ; les faits sont recomptés sur l'export d'après G0b
-(`e19g2a-recount/notes.md` du scratchpad).
+(`e19g2a-recount/notes.md` du scratchpad). Relecture n°2 **REVISE** (P2) : la règle de capacité ne pouvait pas être réfutée (le test
+sans périphérique ne voit pas le `VertexBuffer`, et un tampon resté à 40 000 sommets aurait passé) et demandait à tort de faire
+grandir le tampon d'indices. Deux REVISE automatiques : disposition **FIX** (fait corrigé, couture nommée, preuve sur périphérique
+ajoutée à la démo) ; nouvelle époque, une relecture de clôture.
 
 **Faits.**
 - **Données** (export d'après G0b) : 6908 `.sprite` d'entités, dont **1836 semi** (ABR1 1615, ABR0 218, ABR3 3, **ABR2 0**) ; parmi
@@ -6139,8 +6142,11 @@ disposition `Original` : couleurs et masques d'autres palettes) et C2 (aucun spr
   `:104-112`, additif `:62-70`, soustractif `:74-82`, alpha non prémultiplié) appliqués par séries contiguës ; échantillonnage par point
   (`:192`) ; l'effet `_effect` est partagé par `Draw`, `DrawStaticBatch` (`:302-356`) et `DrawDirectly` (`:264-300`) et ses paramètres
   persistent d'un dessin à l'autre, y compris après `TryReloadBuiltInShader` (`:130`) ; capacité fixe de 10 000 entrées
-  (`NbSprites`, `:36-37`) : `UpdateBuffer` (`:395-415`) écrit les sommets de chaque entrée et lève `IndexOutOfRange` à la 10 001e,
-  avant le dessin ; `List.Sort` (`:399`) n'est pas stable ; chargement des textures sans prémultiplication (`Texture2DLoader.cs:12`).
+  (`NbSprites`, `:36-37`) : `UpdateBuffer` (`:395-417`) écrit les sommets de chaque entrée dans `_vertices` (40 000 sommets) et lève
+  `IndexOutOfRange` à la 10 001e, avant le dessin ; le `VertexBuffer` n'existe qu'après `LoadContent` (`:122`, 40 000 sommets) et
+  `SetData` est borné à `NbSprites * 4` (`:416`) ; le tampon d'indices compte six indices `{0, 1, 2, 0, 2, 3}`, réutilisés par le
+  sommet de base `i * 4` de chaque entrée (`:123-124`, `:237`) ; les tests existants évitent `UpdateBuffer` faute de périphérique
+  (`SpriteRendererComponentBlendModeTests.cs:216-220`) ; `List.Sort` (`:399`) n'est pas stable ; chargement des textures sans prémultiplication (`Texture2DLoader.cs:12`).
 - **Tests existants** (audit §2) : aucun test du moteur ne soumet un `AnimatedSpriteComponent` et ne compte ses entrées ; les tests qui
   comptent les entrées en file (fonds, cellules, fondus, couches de tuiles) passent des entrées opaques ou un `SpriteBlendMode`
   explicite : ils ne bougent pas tant que le dédoublement ne dépend que du nouveau mode PSX ; aucun test du convertisseur n'épingle le
@@ -6161,8 +6167,10 @@ disposition `Original` : couleurs et masques d'autres palettes) et C2 (aucun spr
   opaques (fenêtre (0,75 ; 1], état opaque), puis texels STP (fenêtre (0,25 ; 0,75], état du mode : `Mode0` alpha non prémultiplié,
   `Mode1` additif, `Mode2` soustractif, `Mode3` additif avec la couleur (64, 64, 64) qui **remplace** la couleur du composant, le
   binaire n'ayant aucune teinte par entité) ; une partie `None` reste une seule entrée à la fenêtre neutre ; le dédoublement ne dépend
-  que du mode PSX, jamais du `SpriteBlendMode`. **Capacité** : la file peut dépasser 10 000 entrées ; les tableaux de sommets, le tampon
-  de sommets et celui d'indices grandissent pour la contenir (aucune exception, aucune entrée perdue).
+  que du mode PSX, jamais du `SpriteBlendMode`. **Capacité** : la file peut dépasser 10 000 entrées ; `_vertices` et le `VertexBuffer`
+  (recréé à une capacité suffisante) grandissent pour la contenir et la borne de `SetData` suit la capacité réelle ; le tampon
+  d'indices (six indices) ne change pas ; aucune exception, aucune entrée perdue. Le remplissage des sommets est séparé de l'envoi au
+  GPU : une méthode interne de remplissage (tri compris), appelée par `UpdateBuffer`, testable sans périphérique.
 - **G2a-R4 — Convertisseur** : `SpriteWriter` écrit le mode semi de chaque `.sprite` depuis **`SpriteQuad.Spritesheet`** (bit 3 →
   semi ; mode = `(Spritesheet >> 4) & 3`), jamais depuis la `Signature` (1836 sprites) ; les autres `.sprite` ne changent pas.
 - **G2a-R5 — DLL** : rien (les entités passent par le moteur ; la DLL ne pose jamais `AnimatedSpriteComponent.Color`).
@@ -6173,8 +6181,12 @@ disposition `Original` : couleurs et masques d'autres palettes) et C2 (aucun spr
   GPU ; avant le tri, ordre d'insertion ; après le tri, aucun ordre relatif entre les deux entrées d'une partie n'est affirmé) : une
   partie `None` = une entrée, fenêtre neutre, état opaque ; une partie de chaque mode = deux entrées de même clé, fenêtres et états
   ci-dessus, couleur (64, 64, 64) pour `Mode3` ; `SpriteData` lu et écrit avec et sans le champ (absent = `None`, `None` jamais écrit) ;
-  10 001 entrées en file : aucune exception, 10 001 entrées remplies ; les chemins `DrawStaticBatch` et `DrawDirectly` posent la
-  fenêtre neutre (test par une couture interne si le périphérique manque, à nommer dans le plan du moteur). **Démo** du moteur (une
+  10 001 entrées en file : la méthode interne de remplissage ne lève rien et remplit 40 004 sommets, ceux de la 10 001e aux positions
+  de son entrée (aujourd'hui : `IndexOutOfRange`) ; les chemins `DrawStaticBatch` et `DrawDirectly` posent la fenêtre neutre (test
+  par une couture interne si le périphérique manque, à nommer dans le plan du moteur). **Démo de capacité** (sur périphérique, même
+  harnais de capture) : 12 000 sprites opaques de 1 × 1 en file, à clés de tri croissantes ; les 11 999 premiers loin du pixel témoin ;
+  le dernier dans l'ordre de tri, un texel vert pur (0, 255, 0), seul au pixel témoin (loin des bords) sur le fond (100, 150, 200) ; la
+  capture y lit (0, 255, 0) à ±1 (aujourd'hui : `IndexOutOfRange` ; un `VertexBuffer` resté à 40 000 sommets : le fond ou une erreur). **Démo** du moteur (une
   scène, un sprite de chaque mode, à `DepthSortable2DComponent`, sur un fond uni (100, 150, 200) ; texel opaque (60, 40, 20), texel STP
   (120, 80, 40) ; capture du back-buffer en processus, `GetBackBufferData`, pixels loin des bords) : opaque → (60, 40, 20) ; STP
   `Mode0` → (110, 115, 120) ; `Mode1` → (220, 230, 240) ; `Mode2` → (0, 70, 160) ; `Mode3` → (130, 170, 210) ; transparent → le fond ;
@@ -6192,7 +6204,8 @@ disposition `Original` : couleurs et masques d'autres palettes) et C2 (aucun spr
   Médium ligoté). Aucun PNJ ni le héros n'a de partie moyennée (mode 0).
 
 **Acceptation.**
-1. Tests de G2a-1 et G2a-2 rouges d'abord, verts après ; la capture de la démo égale les valeurs ci-dessus à ±1.
+1. Tests de G2a-1 et G2a-2 rouges d'abord, verts après ; les captures des deux démos (modes et capacité) égalent les valeurs
+   ci-dessus à ±1.
 2. Tests existants touchés : **aucun** (moteur, convertisseur, DLL) ; toute assertion existante qui bouge est un arrêt.
 3. Export : exactement 1836 `.sprite` et `report.json` ; dans chaque `.sprite` changé, seul le nouveau champ apparaît ; double export
    identique hors `report.json`.
