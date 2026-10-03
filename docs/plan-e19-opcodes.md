@@ -4139,7 +4139,7 @@ dans la découverte.
   n'est pas touché.
 
 **Tâches.**
-- ⏳ **K0 — Plan** : ce plan, relu jusqu'à READY.
+- ✅ **K0 — Plan** : ce plan, relu jusqu'à READY (REVISE n°1 puis audit des valeurs ; READY à la deuxième relecture, le 2026-10-03).
 - ⏳ **K1 — État, opcodes, pas, tests d'abord.** Tests purs du pas, sur une instance neuve : `[1,1,3,2]` → OffsetX −1, −2, −3,
   −2, −1, 0, 1, 2, 3, 2, 1, 0 (ReachX passe à 1 au pas 3, à 0 au pas 9) et OffsetY −1, −2, −1, 0, 1, 2, 1, 0 (ReachY à 1 au
   pas 2, à 0 au pas 6) ; `[3,1,6,2]` → OffsetX −3, −6, −3, 0, 3, 6, 3, 0 ; `[8,1,8,2]` → −8, 0, 8, 0 ; `[13,11,1,2]` → OffsetX
