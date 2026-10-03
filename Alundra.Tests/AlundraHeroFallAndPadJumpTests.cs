@@ -377,16 +377,24 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
     public void UH7b_ADescentOf3PixelsOrLess_DoesNotFall()
     {
         var field = FlatCells.Create(cell: (cx, _) => (0, 0));
-        // A drop of 3 px: the cells are 16 px, so the 3 px case is the same ground under a hero 3 px above it (the snap of the engine brings it back).
-        var rig = FreeRig(field, z: 3f);
+        // After the settling frame of the montage the engine has already snapped the hero to the ground, so the test puts it 3 px above the ground AFTER it, by the
+        // gesture of UH-14, and observes it at once, outside the air state. The engine's snap of 4 px brings it back without the state ever being entered (the real descent of
+        // 3 px asks for cells of a free height, which FlatCells cannot build: a gap of the montage noted for E19.m).
+        var rig = FreeRig(field);
+        var hero = rig.Hero;
+        hero.PosZ = 196608;
+        hero.PushLogicalPositionToRoot();
+        Assert.Equal(196608, hero.PosZ);
+        Assert.False(hero.HeroAirborne);
         for (var frame = 0; frame < 4; frame++)
         {
             rig.Step();
-            Assert.False(rig.Hero.HeroAirborne);
+            Assert.False(hero.HeroAirborne, $"frame {frame}");
+            Assert.True(hero.TargetAnimationId is not (44u or 45u), $"frame {frame}: target {hero.TargetAnimationId}");
         }
 
-        Assert.Equal(0, rig.Hero.PosZ);
-        Assert.Equal(1, rig.Hero.IsOnGround);
+        Assert.Equal(0, hero.PosZ);
+        Assert.Equal(1, hero.IsOnGround);
     }
 
     [Fact]
@@ -536,6 +544,10 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
         for (var tick = 1; tick <= 24; tick++)
         {
             rig.Step(tick == 1 ? Cross : 0, tick == 1 ? Cross : 0);
+            if (tick <= 21)
+            {
+                Assert.True(rig.Hero.HeroAirborne, $"tick {tick}: the hero took off and is in the state"); // the precondition of the restitution below.
+            }
         }
 
         Assert.Equal(0, rig.Hero.PosZ);
@@ -624,5 +636,54 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
         Assert.False(hero.HeroAirborne);
         Assert.Equal(captured, hero.Controller!.Settings.StepHeight);
         Assert.False(hero.Controller!.IsVerticalOwnedExternally);
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // E19.d2c2 F4 - the climb takes the vertical from the state held by the tick.
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void UJClimb_AJumpNorthAgainstALadderWall_EndsTheStateAtTheEntryOfTheClimb_AndTheClimbHoldsTheEngineValuesUntilItsExit()
+    {
+        // Ladder cells (ground property 12: the slope 6) at height 0 up to row 5, a wall (height 36 cells) from row 4 up: the hero jumps north with Up held, is
+        // stopped by the wall in the air, and at tick 21 its foot is exactly at the ground (the strict landing is the next tick) while the ladder slope reads 6.
+        var field = FlatCells.Create(cell: (_, cy) => (0, cy <= 4 ? 36 : 0), groundProperty: (_, _) => 12);
+        var rig = FreeRig(field);
+        var hero = rig.Hero;
+        var captured = rig.Controller.Settings.StepHeight;
+        Assert.Equal(3f, captured);
+        var entryFrame = 0;
+        for (var frame = 1; frame <= 40 && entryFrame == 0; frame++)
+        {
+            rig.Step(AlundraPadState.Up | (frame == 1 ? Cross : 0), frame == 1 ? Cross : 0);
+            if (hero.TargetAnimationId == AlundraPlayerManager.ClimbingAnimationId)
+            {
+                entryFrame = frame;
+            }
+        }
+
+        Assert.True(entryFrame > 0, "the climb was never entered");
+        Assert.Equal(22, entryFrame);
+        Assert.False(hero.HeroAirborne);
+        Assert.Equal(0f, rig.Controller.Settings.Gravity);
+        Assert.Equal(0f, rig.Controller.Settings.MaxFallSpeed);
+        Assert.True(rig.Controller.IsVerticalOwnedExternally);
+        Assert.Equal(captured, rig.Controller.Settings.StepHeight); // no rule of the climb touches it: the captured value.
+
+        for (var frame = 0; frame < 3; frame++)
+        {
+            rig.Step(AlundraPadState.Up, 0);
+            Assert.Equal(AlundraPlayerManager.ClimbingAnimationId, hero.TargetAnimationId);
+            Assert.False(hero.HeroAirborne);
+            Assert.True(rig.Controller.IsVerticalOwnedExternally);
+        }
+
+        // The lateral exit of the ladder gives the map's gravity and the vertical back.
+        rig.Step(Right, 0);
+        Assert.Equal(0u, hero.TargetAnimationId);
+        Assert.Equal(JumpHeroRig.MapGravity, rig.Controller.Settings.Gravity);
+        Assert.Equal(800f, rig.Controller.Settings.MaxFallSpeed);
+        Assert.False(rig.Controller.IsVerticalOwnedExternally);
+        Assert.False(hero.HeroAirborne);
     }
 }

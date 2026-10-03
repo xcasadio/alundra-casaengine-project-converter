@@ -430,6 +430,7 @@ public class AlundraLadderClimbTests
             previousPosZ = proxy.PosZ;
         }
 
+        var frozenRootZ = entity.RootComponent!.LocalTransform.Position.Z;
         host.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
         AlundraGameplayFreeze.Apply(proxy, gameplayBlocked: true);
         for (var frame = 0; frame < 5; frame++)
@@ -438,6 +439,7 @@ public class AlundraLadderClimbTests
             Assert.Equal(previousPosZ, proxy.PosZ);
             Assert.Equal(previousForce, proxy.ForceZ);
             Assert.True(proxy.Controller!.IsVerticalOwnedExternally);
+            Assert.Equal(frozenRootZ, entity.RootComponent!.LocalTransform.Position.Z); // the root itself holds its height, not only the logical Z.
         }
 
         host.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
@@ -449,6 +451,7 @@ public class AlundraLadderClimbTests
         world.Update(1f / 50f);
         Assert.Equal(previousForce - 32768, proxy.ForceZ);
         Assert.Equal(previousPosZ + proxy.ForceZ, proxy.PosZ);
+        Assert.True(entity.RootComponent!.LocalTransform.Position.Z < frozenRootZ, "the fall resumes after the thaw: the root goes lower");
     }
 
     // -----------------------------------------------------------------------------------------

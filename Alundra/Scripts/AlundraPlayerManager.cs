@@ -494,6 +494,15 @@ public static class AlundraPlayerManager
             return;
         }
 
+        // E19.d2c2 F4: the climb takes the vertical from the state the logic tick holds (a jump whose foot touches the ladder's ground before the strict landing reaches this
+        // portal while the state is up): the state ends first, the engine values it captured go back (its StepHeight above all), then the climb claims them below.
+        if (player.HeroAirborne)
+        {
+            AlundraScriptedMotion.RestoreAirborneEngineValues(player, player.Controller);
+            player.HeroAirborne = false;
+            player.HeroFlyMarked = false;
+        }
+
         player.Controller.Settings.Gravity = 0f;
         player.Controller.Settings.MaxFallSpeed = 0f;
         player.Controller.IsVerticalOwnedExternally = true;

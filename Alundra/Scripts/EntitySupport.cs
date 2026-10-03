@@ -264,10 +264,8 @@ internal static class EntitySupport
     /// NOT <see cref="EntityFlags.NoRiders"/> (<c>(Flags &amp; (Gravity|NoRiders)) == Gravity</c>,
     /// PhysicsEngine.cs:1290); for each such entity, finds another collidable whose top sits EXACTLY at
     /// (not below, not overlapping into) the entity's own feet, with the same asymmetric overlap test as
-    /// <see cref="TryFindSupport"/> - ported field for field, INCLUDING the original's own apparent quirk
-    /// of testing the Y axis with <c>entity.Depth + 1</c> / <c>other.Height + 1</c> instead of
-    /// <c>Height</c>/<c>Height</c> (PhysicsEngine.cs:1338-1356, both variables literally named that way in
-    /// the decompilation) - not "fixed" here, since this is a faithfulness port, not a redesign.
+    /// <see cref="TryFindSupport"/>. E19.d2c2 F1: the Y window of the rider is <c>entity.Height + 1</c> (<c>other.Height + 1</c> on the other side),
+    /// as the binary compares it (<c>CheckRidingEntities</c>, <c>0x80036514</c>, <c>0x80036528</c>, <c>0x800365B0</c>); the decompilation read <c>Depth + 1</c> there.
     /// </summary>
     internal static void UpdateRidingEntities(IReadOnlyList<AlundraEntityScriptProxy> collidables)
     {
@@ -309,7 +307,7 @@ internal static class EntitySupport
         var moddedPosY = entity.PosY + entity.ModY;
         var moddedPosZ = entity.PosZ + entity.ModZ;
         var entityWidth = entity.Width + 1;
-        var entityDepth = entity.Depth + 1; // sic - see UpdateRidingEntities' own doc.
+        var entityHeight = entity.Height + 1; // E19.d2c2 F1: the binary's window, Height + 1 (0x80036514, 0x80036528, 0x800365B0).
 
         for (var j = 0; j < collidables.Count; j++)
         {
@@ -350,7 +348,7 @@ internal static class EntitySupport
                     continue;
                 }
             }
-            else if (!(deltaY < entityDepth)) // sic - see UpdateRidingEntities' own doc.
+            else if (!(deltaY < entityHeight))
             {
                 continue;
             }

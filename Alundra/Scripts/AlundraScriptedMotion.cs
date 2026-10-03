@@ -258,9 +258,14 @@ internal static class AlundraScriptedMotion
             && (hero.Flags & EntityFlags.Gravity) != 0;
         hero.HeadPullGroundTrusted = false;
 
+        // E19.d2c2 F3: the head-of-frame pull held the hero on the flush top of an entity the engine does not see: the state is entered at rest on it (the same entry as a
+        // fall, ForceZ 0, but the hero is on the ground: IsOnGround 1 was given by the pull).
+        var restOnEntity = !hero.HeroAirborne && !impulse && !hero.HeroFlyMarked && hero.HeadPullFlushOnEntity && (hero.Flags & EntityFlags.Gravity) != 0;
+        hero.HeadPullFlushOnEntity = false;
+
         if (!hero.HeroAirborne)
         {
-            if (!impulse && !hero.HeroFlyMarked && !fall)
+            if (!impulse && !hero.HeroFlyMarked && !fall && !restOnEntity)
             {
                 return false;
             }
@@ -273,7 +278,7 @@ internal static class AlundraScriptedMotion
             controller.Settings.MaxFallSpeed = 0f;
             controller.IsVerticalOwnedExternally = true;
             hero.HeroAirborne = true;
-            if (fall)
+            if (fall || restOnEntity)
             {
                 // The binary at rest lands at every tick (ForceZ 0); the climb leaves +-0x10000. The map's gravity then plays from this very tick.
                 hero.ForceZ = 0;
@@ -298,11 +303,13 @@ internal static class AlundraScriptedMotion
         }
 
         // E19.d2c2 S4 (the binary, 0x80037364): carried and without impulse this tick, the force of the hero is the platform's (0 for an object at rest), taken BEFORE the
-        // landing test. The platform is the entity whose logic entity the hero's RidingEntity holds (recalculated at the head of this tick).
+        // landing test. The platform is the entity whose logic entity the hero's RidingEntity holds (recalculated at the head of this tick). F2b: the force of the tick it
+        // copies is the one the carrier had BEFORE its own landing (TickForceZ): the binary computes the forces of all the entities first, so a carrier with gravity at rest
+        // gives -(Gravity << 8) and the hero lands on it at every tick, while ForceZ (zeroed by the landing, as in the binary) stays the carrier's.
         if (!impulse && hero.RidingEntity?.GameplayProxy is AlundraEntityScriptProxy carrier)
         {
             hero.ForceZ = carrier.ForceZ;
-            hero.FinalForceZ = carrier.FinalForceZ;
+            hero.FinalForceZ = carrier.TickForceZ;
         }
         else
         {

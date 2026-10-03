@@ -474,4 +474,156 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
             Assert.True(ReferenceEquals(platform.LogicContextEntity, hero.RidingEntity), $"{label}: riding");
         }
     }
+
+    // -----------------------------------------------------------------------------------------
+    // E19.d2c2 D5a (F1, F2b, F3): the window of the rider, a carrier with gravity at rest, a top flush with the ground.
+    // -----------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// The montage of UH-14 without movement: the hero (at <paramref name="x"/>, <paramref name="y"/>) rests at 16 px on an object of 24 x 16 x 16 whose logical box
+    /// (x 144..168, y 92..108) is offset from its root so that its physical box never meets the hero's body; the object joins the world after the hero. Four settling frames.
+    /// </summary>
+    private static (JumpHeroRig Rig, AlundraEntityScriptProxy Object) RestingOnObjectRig(float x = 156.25f, float y = 100.5f, bool objectGravity = false)
+    {
+        var rig = JumpHeroRig.Build(x: x, y: y, freePad: true);
+        var obj = AddObject(rig.World, rig.Host, "Object", 100, 92, 24, 16, 16, offsetX: 44);
+        if (objectGravity)
+        {
+            // The decay of the force reads the raw fields of the entity (AlundraEntityScriptProxy.EvaluateEntitySupport), as AlundraCollidedWithEntityZTests posts them.
+            obj.Flags |= EntityFlags.Gravity;
+            obj.MapGravityRaw = 128;
+            obj.MapZViscosityRaw = 4096;
+            obj.ResyncControllerFromFlags();
+        }
+
+        rig.Hero.PosZ = 1048576;
+        rig.Hero.PushLogicalPositionToRoot();
+        for (var settle = 0; settle < 4; settle++)
+        {
+            rig.Step();
+        }
+
+        return (rig, obj);
+    }
+
+    /// <summary>The answer of the opcode <c>0x3E</c> run by <paramref name="asker"/> (the hero's own <c>RidingEntity</c> against the logic entity of the asker).</summary>
+    private static int Opcode3EAnswer(AlundraEntityScriptProxy hero, AlundraEntityScriptProxy asker)
+    {
+        var context = new PlayerContext { Player = hero };
+        var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 }, Codes = new[] { 0x3E, 0xFF } };
+        var runner = new AlundraEventProgramRunner(document, new AlundraGameState(), context);
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
+        runner.RunOneScriptCall(asker, state);
+        return state.Result;
+    }
+
+    [Fact]
+    public void UH15_TheHeroWalkingNorthOffAnObject_StopsRidingWhenTheOverlapEnds_AtTheWindowHeightPlusOne_AndFallsThatTick()
+    {
+        var (rig, obj) = RestingOnObjectRig();
+        var hero = rig.Hero;
+        Assert.Same(obj.LogicContextEntity, hero.RidingEntity);
+        var headY = new List<int>();
+        for (var tick = 1; tick <= 12; tick++)
+        {
+            headY.Add(hero.PosY);
+            rig.Step(AlundraPadState.Up, 0);
+            var label = $"tick {tick}";
+            if (tick < 12)
+            {
+                Assert.True(ReferenceEquals(obj.LogicContextEntity, hero.RidingEntity), $"{label}: riding");
+                Assert.True(hero.PosZ == 1048576, $"{label}: posZ {hero.PosZ}");
+            }
+        }
+
+        // The overlap in Y ends at the head of tick 12 (hero y 83.4375 px: the chest, 92 px, is 15.5625 px below the top of the hero's box, whose window is its Height + 1 = 15 px).
+        Assert.True(headY[11] / 65536.0 < 84.0 && headY[10] / 65536.0 > 84.0, $"head of tick 12: y {headY[11] / 65536.0}, of tick 11: {headY[10] / 65536.0}");
+        Assert.Equal(1015808, hero.PosZ);
+        Assert.Equal(-32768, hero.ForceZ);
+        Assert.Null(hero.RidingEntity);
+        Assert.Equal(0, Opcode3EAnswer(hero, obj));
+    }
+
+    [Fact]
+    public void UH18_ARestingCarrierWithGravity_GivesTheHeroItsTickForce_TheHeroLandsOnItAtEveryTick()
+    {
+        var (rig, obj) = RestingOnObjectRig(objectGravity: true);
+        var hero = rig.Hero;
+        for (var tick = 1; tick <= 10; tick++)
+        {
+            rig.Step();
+            var label = $"tick {tick}";
+            Assert.True(ReferenceEquals(obj.LogicContextEntity, hero.RidingEntity), $"{label}: riding");
+            Assert.True(hero.CollidedWithEntityZ == 1, $"{label}: collided {hero.CollidedWithEntityZ}");
+            Assert.True(hero.ForceZ == 0, $"{label}: forceZ {hero.ForceZ}");
+            Assert.True(hero.IsOnGround == 1, $"{label}: onGround {hero.IsOnGround}");
+            Assert.True(hero.PosZ == 1048576, $"{label}: posZ {hero.PosZ}");
+            Assert.True(hero.CurrentAnimationId == 0u, $"{label}: animation {hero.CurrentAnimationId}");
+            Assert.True(Opcode3EAnswer(hero, obj) == 1, $"{label}: 0x3E");
+        }
+
+        // The tick force of the carrier at rest is the pull of the gravity, taken before its own landing (the binary computes the forces of all the entities first).
+        Assert.Equal(-32768, obj.TickForceZ);
+    }
+
+    [Fact]
+    public void UH18_WithoutTheGravityBitOnTheCarrier_TheHeroNeverRaisesTheContact()
+    {
+        var (rig, obj) = RestingOnObjectRig();
+        var hero = rig.Hero;
+        for (var tick = 1; tick <= 10; tick++)
+        {
+            rig.Step();
+            var label = $"tick {tick}";
+            Assert.True(ReferenceEquals(obj.LogicContextEntity, hero.RidingEntity), $"{label}: riding");
+            Assert.True(hero.CollidedWithEntityZ == 0, $"{label}: collided {hero.CollidedWithEntityZ}");
+            Assert.True(hero.PosZ == 1048576, $"{label}: posZ {hero.PosZ}");
+        }
+    }
+
+    [Fact]
+    public void UH17_AnObjectFlushWithTheGroundInAHollow_NeverShowsAnAirFrame_TheHeroRestsOnItAndWalksOnToTheGroundBeyond()
+    {
+        // Cells of 16 px (height 1) with one hollow cell at 0 (cx 8, x 192..216, row 6, y 96..112); an object of 24 x 16 x 16 in the hollow, its top flush with the ground.
+        // The hero (y 103.5: its box, y 96.5..111.5, fits in the single row of the hollow) walks east on the 16 px ground; its box lies wholly over the hollow for a tick or two,
+        // where the engine alone would find no ground. The physical box of the object is offset from its root as in UH-14.
+        var field = FlatCells.Create(cell: (cx, cy) => (0, cx == 8 && cy == 6 ? 0 : 1));
+        var rig = JumpHeroRig.Build(
+            field,
+            configure: (world, host) => AddObject(world, host, "Switch", 148, 96, 24, 16, 16, offsetX: 44),
+            x: 165f,
+            y: 103.5f,
+            z: 16f,
+            freePad: true);
+        var hero = rig.Hero;
+        var obj = rig.Host.All.Single(e => !ReferenceEquals(e, hero));
+        SteadyWalk(rig);
+        Assert.Equal(1048576, hero.PosZ);
+        var riding = new List<int>();
+        var onFlush = 0;
+        for (var tick = 1; tick <= 30; tick++)
+        {
+            rig.Step(Right, 0);
+            var label = $"tick {tick}";
+            Assert.True(hero.CurrentAnimationId == 1u, $"{label}: animation {hero.CurrentAnimationId}");
+            Assert.True(hero.ForceX == 159744, $"{label}: forceX {hero.ForceX}");
+            Assert.True(hero.PosZ == 1048576, $"{label}: posZ {hero.PosZ}");
+            Assert.False(hero.HeroAirborne && hero.CollidedWithEntityZ == 0 && hero.IsOnGround == 0, $"{label}: air frame");
+            if (ReferenceEquals(obj.LogicContextEntity, hero.RidingEntity))
+            {
+                riding.Add(tick);
+                Assert.True(Opcode3EAnswer(hero, obj) == 1, $"{label}: 0x3E");
+            }
+
+            if (hero.HeroAirborne)
+            {
+                onFlush++;
+            }
+        }
+
+        Assert.NotEmpty(riding);
+        Assert.True(onFlush > 0, "the hero entered the state held by the tick at rest on the object (the engine found no ground over the hollow)");
+        Assert.False(hero.HeroAirborne);
+        Assert.Equal(1, hero.IsOnGround);
+    }
 }

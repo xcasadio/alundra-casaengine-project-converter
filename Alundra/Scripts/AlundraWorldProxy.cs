@@ -1736,6 +1736,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         }
 
         proxy.HeadPullGroundTrusted = false;
+        proxy.HeadPullFlushOnEntity = false;
         proxy.HeroAirborne = false;
         proxy.HeroFlyMarked = false;
         proxy.ZHeldByTick = false;

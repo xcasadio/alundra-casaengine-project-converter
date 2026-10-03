@@ -231,6 +231,14 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// <summary>See <see cref="LastTickDeltaX"/>.</summary>
     internal int LastTickDeltaY;
 
+    /// <summary>
+    /// Engine-only (E19.d2c2 F2b): the vertical force of the last tick of this entity as the binary's passes read it, BEFORE its own landing resets it (the binary computes
+    /// the forces of all the entities first, <c>0x80036828</c>, and the passenger copies the carrier's force, <c>0x80037364</c>; only <c>ForceZ</c> is zeroed at the
+    /// landing, <c>0x80037700</c>). A carrier with gravity at rest has -(Gravity &lt;&lt; 8) here at every tick while its <see cref="FinalForceZ"/> is 0 once it has landed.
+    /// The hero carried by this entity takes it as its own tick force. Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal int TickForceZ;
+
     /// <summary>Engine-only (E19.d2c1 R6): the live engine values captured at the entry of the air state (its own gravity, <c>MaxFallSpeed</c> and vertical ownership), given back at the landing.</summary>
     internal float AirborneSavedGravity;
 
@@ -250,6 +258,13 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// on the ground. Cleared by that tick (the decision is taken once per frame).
     /// </summary>
     internal bool HeadPullGroundTrusted;
+
+    /// <summary>
+    /// Engine-only (E19.d2c2 F3): the head-of-frame pull found the engine's ground missing (the engine does not see the boxes of entities) while the top of an entity
+    /// under the box is exactly at the foot (<see cref="IsEntityTopFlushWithFoot"/>): <see cref="IsOnGround"/> was then given 1 and the first tick of the frame enters the
+    /// air state at rest on that entity (no fall, <see cref="ForceZ"/> 0). Cleared by that tick. Only for the hero, with <see cref="HeadPullGroundTrusted"/>.
+    /// </summary>
+    internal bool HeadPullFlushOnEntity;
 
     /// <summary>
     /// Engine-only (E19.d2c2 S1, docs/plan-e19-opcodes.md §1.2h.3.2): the <see cref="MotionTickCount"/> at which <c>MovePlayer</c> last wrote the take-off
@@ -692,6 +707,12 @@ public class AlundraEntityScriptProxy : GameplayProxy
                 ForceZ = force;
                 FinalForceZ = force;
             }
+        }
+
+        // E19.d2c2 F2b: the force of this tick as the binary's passes read it, before the landing below resets it (see TickForceZ). The hero carried by this entity copies it.
+        if (!immediateAtSpawn)
+        {
+            TickForceZ = FinalForceZ;
         }
 
         // Root-cause redo (measured on the real gull, entity 6, map 389, dt~1/123): driving this tick's own
@@ -1149,6 +1170,16 @@ public class AlundraEntityScriptProxy : GameplayProxy
 
             // E19.d2c2 S2: this pull is a reliable ground reading only when the vertical is not held elsewhere (a ladder, a departure, a freeze all declare it external).
             HeadPullGroundTrusted = !HeroAirborne && !Controller.IsVerticalOwnedExternally;
+
+            // E19.d2c2 F3: the engine does not see the boxes of entities, so a hero passing from the ground onto the top of an object of the same height lying in a hollow
+            // reads "not on the ground" here although the binary's FloorHeight (0x80037F28) holds it. The top of an entity exactly at the foot is a ground: IsOnGround 1, and
+            // the first tick enters the state at rest on it.
+            HeadPullFlushOnEntity = false;
+            if (IsPlayer && HeadPullGroundTrusted && IsOnGround == 0 && (Flags & EntityFlags.Gravity) != 0 && IsEntityTopFlushWithFoot())
+            {
+                IsOnGround = 1;
+                HeadPullFlushOnEntity = true;
+            }
         }
 
         if (!IsPlayer)
@@ -1828,6 +1859,18 @@ public class AlundraEntityScriptProxy : GameplayProxy
             && EntitySupport.TryFindSupport(this, ScriptHost.Collidables, terrainHeight + 1, out _, out supportTopZ);
 
         return found ? supportTopZ : terrainHeight;
+    }
+
+    /// <summary>
+    /// E19.d2c2 F3: the top of an entity under the box (the very call of <see cref="ComputeFloorHeight"/>) is exactly at the foot (<c>PosZ + ModZ</c>): the entity is a floor the
+    /// hero stands on, whatever the terrain under it.
+    /// </summary>
+    private bool IsEntityTopFlushWithFoot()
+    {
+        return ScriptHost != null
+            && EntitySupport.IsEligibleSubject(this)
+            && EntitySupport.TryFindSupport(this, ScriptHost.Collidables, ComputeTerrainHeight() + 1, out _, out var supportTopZ)
+            && supportTopZ == PosZ + ModZ;
     }
 
     /// <summary>
