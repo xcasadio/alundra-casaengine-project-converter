@@ -221,6 +221,16 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// <summary>Engine-only (E19.d2c1 R6): the air state ran this tick, so <see cref="PosZ"/> is the tick's and no pull from the root may rewrite it until the next tick.</summary>
     internal bool ZHeldByTick;
 
+    /// <summary>
+    /// Engine-only (E19.d2c2 S4): the horizontal displacement REALIZED by the last kinematic tick of this entity (the position after the step minus the position
+    /// before it, 16.16): what a rider takes along (the hero it carries adds it to its own XY step, the binary adds the carrier's <c>AdjustedForce</c>). The hero
+    /// is updated before the entities that carry it, so what it reads is the displacement of the carrier's previous tick (one tick of phase). Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal int LastTickDeltaX;
+
+    /// <summary>See <see cref="LastTickDeltaX"/>.</summary>
+    internal int LastTickDeltaY;
+
     /// <summary>Engine-only (E19.d2c1 R6): the live engine values captured at the entry of the air state (its own gravity, <c>MaxFallSpeed</c> and vertical ownership), given back at the landing.</summary>
     internal float AirborneSavedGravity;
 
@@ -1794,16 +1804,24 @@ public class AlundraEntityScriptProxy : GameplayProxy
         // site in Update's IsPlayer branch) - FloorHeight is unchanged.
         TerrainHeight = terrainHeight;
 
-        var seed = terrainHeight + 1;
+        FloorHeight = ComputeFloorHeight(terrainHeight);
+    }
 
+    /// <summary>
+    /// The floor under the entity: the top (<c>candidateTop + 1</c>) of the highest eligible entity under its feet that <see cref="EntitySupport.TryFindSupport"/>
+    /// finds seeded at <c>terrainHeight + 1</c>, else <paramref name="terrainHeight"/> itself. The -1 belongs to the seed (seed - 1 == terrainHeight): a found
+    /// entity candidate's own supportTopZ already carries this port's entity-resting +1 convention and passes through unmodified (see
+    /// <see cref="UpdateFloorHeight"/>'s own doc, "THE -1 BELONGS TO THE SEED" paragraph). Shared with the hero's tick (E19.d2c2 S3, <c>IsOnGround</c> in the state
+    /// the tick holds).
+    /// </summary>
+    internal int ComputeFloorHeight(int terrainHeight)
+    {
         var supportTopZ = 0;
-        var found = EntitySupport.IsEligibleSubject(this)
-            && EntitySupport.TryFindSupport(this, ScriptHost.Collidables, seed, out _, out supportTopZ);
+        var found = ScriptHost != null
+            && EntitySupport.IsEligibleSubject(this)
+            && EntitySupport.TryFindSupport(this, ScriptHost.Collidables, terrainHeight + 1, out _, out supportTopZ);
 
-        // The -1 belongs to the seed (seed - 1 == terrainHeight): a found entity candidate's own
-        // supportTopZ already carries this port's own entity-resting +1 convention and must pass through
-        // unmodified (see this method's own doc, "THE -1 BELONGS TO THE SEED" paragraph).
-        FloorHeight = found ? supportTopZ : terrainHeight;
+        return found ? supportTopZ : terrainHeight;
     }
 
     /// <summary>

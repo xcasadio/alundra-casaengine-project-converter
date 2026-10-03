@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using CasaEngine.Framework.Scene.Entities;
 
 namespace Alundra.Scripts;
 
@@ -204,61 +205,85 @@ internal static class EntitySupport
                 continue;
             }
 
-            var moddedPosX = entity.PosX + entity.ModX;
-            var moddedPosY = entity.PosY + entity.ModY;
-            var moddedPosZ = entity.PosZ + entity.ModZ;
-            var entityWidth = entity.Width + 1;
-            var entityDepth = entity.Depth + 1; // sic - see this method's own doc.
-
-            entity.RidingEntity = null;
-
-            for (var j = 0; j < collidables.Count; j++)
-            {
-                if (i == j)
-                {
-                    continue;
-                }
-
-                var other = collidables[j];
-                var otherModX = other.PosX + other.ModX;
-                var otherModY = other.PosY + other.ModY;
-                var otherModZ = other.PosZ + other.ModZ;
-                var otherTopZ = otherModZ + other.Depth + 1;
-
-                if (otherTopZ != moddedPosZ)
-                {
-                    continue;
-                }
-
-                var deltaX = otherModX - moddedPosX;
-                if (deltaX < 0)
-                {
-                    if (!(moddedPosX - otherModX < other.Width + 1))
-                    {
-                        continue;
-                    }
-                }
-                else if (!(deltaX < entityWidth))
-                {
-                    continue;
-                }
-
-                var deltaY = otherModY - moddedPosY;
-                if (deltaY < 0)
-                {
-                    if (!(moddedPosY - otherModY < other.Height + 1))
-                    {
-                        continue;
-                    }
-                }
-                else if (!(deltaY < entityDepth)) // sic - see this method's own doc.
-                {
-                    continue;
-                }
-
-                entity.RidingEntity = other.LogicContextEntity;
-                break;
-            }
+            entity.RidingEntity = FindRidingEntity(entity, collidables);
         }
+    }
+
+    /// <summary>
+    /// E19.d2c2 S4 (binary <c>0x80038998</c> clears the field, <c>0x800364C8</c> sets it again at the head of the entity's tick): the hero's own recalculation, run at
+    /// the head of EVERY tick of the hero, never kept from the previous one. <see cref="AlundraEntityScriptProxy.RidingEntity"/> is the logic entity of what carries
+    /// <paramref name="entity"/> by the exact rule of <see cref="UpdateRidingEntities"/> (<c>(Flags &amp; 0x4100) == 0x100</c>, the top plus one equal to
+    /// <c>ModdedPosZ</c> as it is before this tick's movement, XY overlap), null when nothing does or the flags exclude it. Without a script host: unchanged.
+    /// </summary>
+    internal static void UpdateRidingEntityOfHero(AlundraEntityScriptProxy entity)
+    {
+        var host = entity.ScriptHost;
+        if (host == null)
+        {
+            return;
+        }
+
+        entity.RidingEntity = (entity.Flags & (EntityFlags.Gravity | EntityFlags.NoRiders)) == EntityFlags.Gravity
+            ? FindRidingEntity(entity, host.Collidables)
+            : null;
+    }
+
+    /// <summary>The search of <see cref="UpdateRidingEntities"/> for one entity: the logic entity of the first collidable (other than itself) it rests exactly on, or null.</summary>
+    private static Entity? FindRidingEntity(AlundraEntityScriptProxy entity, IReadOnlyList<AlundraEntityScriptProxy> collidables)
+    {
+        var moddedPosX = entity.PosX + entity.ModX;
+        var moddedPosY = entity.PosY + entity.ModY;
+        var moddedPosZ = entity.PosZ + entity.ModZ;
+        var entityWidth = entity.Width + 1;
+        var entityDepth = entity.Depth + 1; // sic - see UpdateRidingEntities' own doc.
+
+        for (var j = 0; j < collidables.Count; j++)
+        {
+            var other = collidables[j];
+            if (ReferenceEquals(other, entity))
+            {
+                continue;
+            }
+
+            var otherModX = other.PosX + other.ModX;
+            var otherModY = other.PosY + other.ModY;
+            var otherModZ = other.PosZ + other.ModZ;
+            var otherTopZ = otherModZ + other.Depth + 1;
+
+            if (otherTopZ != moddedPosZ)
+            {
+                continue;
+            }
+
+            var deltaX = otherModX - moddedPosX;
+            if (deltaX < 0)
+            {
+                if (!(moddedPosX - otherModX < other.Width + 1))
+                {
+                    continue;
+                }
+            }
+            else if (!(deltaX < entityWidth))
+            {
+                continue;
+            }
+
+            var deltaY = otherModY - moddedPosY;
+            if (deltaY < 0)
+            {
+                if (!(moddedPosY - otherModY < other.Height + 1))
+                {
+                    continue;
+                }
+            }
+            else if (!(deltaY < entityDepth)) // sic - see UpdateRidingEntities' own doc.
+            {
+                continue;
+            }
+
+            return other.LogicContextEntity;
+        }
+
+        return null;
     }
 }

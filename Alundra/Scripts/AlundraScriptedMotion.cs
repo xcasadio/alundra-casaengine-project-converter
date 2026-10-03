@@ -181,6 +181,13 @@ internal static class AlundraScriptedMotion
         entity.CollidedWithEntityZ = 0;
         entity.ZHeldByTick = false;
 
+        // E19.d2c2 S4 (the binary resets the field at 0x80038998 and sets it again at 0x800364C8, at the head of the tick): what carries the hero is recalculated
+        // at the head of EVERY tick of the hero from the position it has before this tick's movement, never kept.
+        if (entity.IsPlayer)
+        {
+            EntitySupport.UpdateRidingEntityOfHero(entity);
+        }
+
         // E19.d2c1 R6: the hero's vertical belongs to the tick while it is in the air state (a scripted jump, 0x1B): after the clears above and BEFORE the XY
         // step, the binary's order (Z before XY, 0x80037E34).
         var airborne = entity.IsPlayer && RunHeroVerticalTick(entity);
@@ -194,11 +201,11 @@ internal static class AlundraScriptedMotion
 
         RunOneKinematicTick(entity, animSetAnimationId);
 
-        // R6: after each tick of the state, IsOnGround is derived from the position after the XY step, not pulled from the engine: PosZ <= terrain (the binary's
-        // !(FloorHeight < PosZ), 0x800380F8, without its +1).
+        // R6: after each tick of the state, IsOnGround is derived from the position after the XY step, not pulled from the engine: PosZ <= the floor (the binary's
+        // !(FloorHeight < PosZ), 0x800380F8, without its +1). E19.d2c2 S3: the floor is the higher of the terrain and the top of an entity under the box.
         if (entity.ZHeldByTick)
         {
-            entity.IsOnGround = entity.PosZ + entity.ModZ <= entity.ComputeTerrainHeight() ? 1 : 0;
+            entity.IsOnGround = entity.PosZ + entity.ModZ <= entity.ComputeFloorHeight(entity.ComputeTerrainHeight()) ? 1 : 0;
         }
 
         entity.MotionTickCount++; // see that field's own doc (ONE-CLOCK invariant instrumentation).
@@ -283,13 +290,39 @@ internal static class AlundraScriptedMotion
             hero.ForceZ = Math.Clamp(force, -terminal, terminal);
         }
 
-        var tickForce = hero.ForceZ;
-        hero.FinalForceZ = tickForce;
-        var terrain = hero.ComputeTerrainHeight();
-        var landed = false;
-        if (tickForce <= 0 && hero.PosZ + hero.ModZ + tickForce < terrain)
+        // E19.d2c2 S4 (the binary, 0x80037364): carried and without impulse this tick, the force of the hero is the platform's (0 for an object at rest), taken BEFORE the
+        // landing test. The platform is the entity whose logic entity the hero's RidingEntity holds (recalculated at the head of this tick).
+        if (!impulse && hero.RidingEntity?.GameplayProxy is AlundraEntityScriptProxy carrier)
         {
-            hero.PosZ = terrain - hero.ModZ;
+            hero.ForceZ = carrier.ForceZ;
+            hero.FinalForceZ = carrier.FinalForceZ;
+        }
+        else
+        {
+            hero.FinalForceZ = hero.ForceZ;
+        }
+
+        var tickForce = hero.FinalForceZ;
+        var terrain = hero.ComputeTerrainHeight();
+
+        // E19.d2c2 S3: the height to land on is the higher of the terrain and the top of an entity under the box, found by the very call of the binary's support
+        // (EvaluateEntitySupport of an NPC: the seed is the reach of this tick's step, clamped up to the terrain + 1).
+        var landingHeight = terrain;
+        var onEntity = false;
+        if (tickForce <= 0 && hero.ScriptHost != null && EntitySupport.IsEligibleSubject(hero))
+        {
+            var seed = Math.Max(hero.PosZ + hero.ModZ + tickForce, terrain + 1);
+            if (EntitySupport.TryFindSupport(hero, hero.ScriptHost.Collidables, seed, out _, out var supportTopZ))
+            {
+                landingHeight = supportTopZ;
+                onEntity = true;
+            }
+        }
+
+        var landed = false;
+        if (tickForce <= 0 && hero.PosZ + hero.ModZ + tickForce < landingHeight)
+        {
+            hero.PosZ = landingHeight - hero.ModZ;
             if (gravity)
             {
                 hero.ForceZ = 0;
@@ -297,7 +330,10 @@ internal static class AlundraScriptedMotion
             }
 
             hero.CollidedWithEntityZ = 1;
-            landed = true;
+
+            // On an entity the hero stays in the state the tick holds (the engine does not see the boxes of entities), with IsOnGround 1; it leaves it only when its
+            // support is the terrain again.
+            landed = !onEntity;
         }
         else
         {
@@ -414,6 +450,16 @@ internal static class AlundraScriptedMotion
         entity.FinalForceY = entity.AdjustedForceY;
         entity.FinalForceZ = entity.ForceZ;
 
+        // E19.d2c2 S4 (the binary, 0x80037364): the hero carried by an entity adds the displacement that entity realized at its last tick to its own XY step.
+        if (entity.IsPlayer && entity.RidingEntity?.GameplayProxy is AlundraEntityScriptProxy carrier)
+        {
+            entity.FinalForceX += carrier.LastTickDeltaX;
+            entity.FinalForceY += carrier.LastTickDeltaY;
+        }
+
+        var startX = entity.PosX;
+        var startY = entity.PosY;
+
         // PhysicsEngine.cs:421-422 (position update) - E3.d/E4.b: for a controller-driven entity,
         // FinalForceX/Y is routed through the mover's own Move instead of committed directly (see
         // AlundraEntityScriptProxy.MoveControllerAndPullPosition's own doc); every other entity (no
@@ -427,6 +473,9 @@ internal static class AlundraScriptedMotion
             entity.PosX += entity.FinalForceX;
             entity.PosY += entity.FinalForceY;
         }
+
+        entity.LastTickDeltaX = entity.PosX - startX;
+        entity.LastTickDeltaY = entity.PosY - startY;
 
         // PhysicsEngine.cs:1698-1700, same formula EntityRecordMapper/AlundraWorldProxy already use to seed
         // TileX/TileY from PosX/PosY elsewhere - kept in sync every tick. TileZ (E4.c deferral, fixed in
