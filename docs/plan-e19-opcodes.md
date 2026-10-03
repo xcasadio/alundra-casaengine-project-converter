@@ -6732,7 +6732,7 @@ n'est demandé, et l'original lirait au-delà de la table (point ouvert à consi
   avec un groupe nul, pas avec une carte d'un autre groupe ; P4 la période de l'auto-chaîne n'est pas épinglée. **Reste la recette T6
   de l'auteur.**
 
-### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 ✅ ; E19.m4 READY, en exécution)
+### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 ✅ ; E19.m4 ✅)
 
 **Recensement** (2026-10-03, lecture seule ; table complète versionnée dans `docs/plan-e19-m-annexe/backlog-2026-10-03.md`, en
 anglais) : 46 points M-01 à M-46, chacun vérifié contre le code de `bafbd5a`, classé (test seul, commentaire ou doc, petit correctif
@@ -7107,7 +7107,7 @@ entrée de la couche (même coût que les parties d'animation).
   cite encore le compteur des vagues (seul le statut renvoie à ADR-0052, conforme au contrat) ; dénominateur nul : le binaire garde
   l'ancien facteur (`0x8005C0B4`), le moteur pose 0 (choix du plan ; aucun cas dans le corpus).
 
-#### 1.2s.5 E19.m4 — Fonds figés pendant le départ d'un passage (O-E19-55) ✅ (relecture n°1 REVISE, révisée ; relecture n°2 READY ; exécutée le 2026-10-03, vérification en attente)
+#### 1.2s.5 E19.m4 — Fonds figés pendant le départ d'un passage (O-E19-55) ✅ (relecture n°1 REVISE, révisée ; relecture n°2 READY ; faite et CONFIRMED le 2026-10-03)
 
 **Faits** **[binaire]** (audit du 2026-10-03, `e19o55-disc/notes.md` du scratchpad, scripts `census`, `values`, `x2` ; DLL citée à
 `f596546`, moteur à `b5a9fbcf`) :
@@ -7182,6 +7182,13 @@ la musique) avance encore pendant le départ alors que le binaire montre une ima
   E19.m4 ». Suite complète `Alundra.Tests` en Debug : 2558 réussis, 0 échec, 0 ignoré (aucun test existant touché) ; Release, `cmp` et
   vérification : session principale. Garde d'octets des six traces : `git diff --ignore-cr-at-eol --exit-code` rend 0 ; les quatre traces
   du héros ont été remises par `git checkout` ; liste fermée de la chaîne inchangée. Décisions : D-E19-67. Decisions: see ADR-0034.
+- ✅ **Vérification d'E19.m4** (2026-10-03) : la session principale a lancé `Alundra.Tests` en Release puis en Debug (2558/2558
+  chacune, la Debug en dernier), `cmp` sans écart, les six traces à l'octet. Vérificateur neuf **CONFIRMED** (parcours d'appels
+  transitif depuis la boucle de transition : 133 fonctions, ni `RenderScene` (`0x8002BD60`), ni `Update` (`0x8002BAEC`), ni le pilote
+  des fonds ; témoin positif depuis `RenderScene` ; rouges rejoués : T-55a 1, T-55b (1, 1) à F0 et (2, 5)/(6, 1)/(482, 365) à F15,
+  T-55c 71 tirages, état `0x277C02BB`, cellule 0 en (284, 27), toutes égales au plan ; isolement : `parallelizeTestCollections` est
+  à `false`, aucune course possible ; 4 passes complètes sans test instable). Avis P4 : ADR-0034 cite D-E9b-2 à la ligne 378, la
+  note est aux lignes 388-389 ; quelques sauts indirects des bibliothèques PsyQ ne sont pas résolus par le parcours.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
