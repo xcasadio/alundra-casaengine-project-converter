@@ -4737,7 +4737,7 @@ recherche, H3-1 gagne UH-APEX-REVERT, le risque disparaît).
   (`AlundraScriptedMotion.cs` ~224) est mis à jour.
 
 **Tâches.**
-- ⏳ **H3-0 — Plan**, relu jusqu'à READY.
+- ✅ **H3-0 — Plan**, relu jusqu'à READY (REVISE n°1, READY à la deuxième relecture le 2026-10-03 ; valeurs auditées).
 - ⏳ **H3-1 — Tests d'abord, puis règles** (montage `JumpHeroRig` et `FlatCells`, IZF de l'animation 2 imposé dans le
   montage) : **UH-APEX-DOWN** (IZF 1408, rebord de 32 px à partir de x = 144, héros en marche vers l'est à x0 = 108, `ForceX`
   159744, Croix au tick 1, droite tenue) : `PosZ` des ticks 1 à 11 = 360448, 688128, 983040, 1245184, 1474560, 1671168,
