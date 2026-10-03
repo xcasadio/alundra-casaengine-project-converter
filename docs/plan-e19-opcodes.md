@@ -3649,7 +3649,52 @@ par `ZImpulseSfx`) ; l'impulsion d'animation est prise au tick (R1) ; `CollidedW
     Wendell ; A12 sous `using` (un arc bloqué ne doit pas laisser l'état global sale).
   Commit : `chore(alundra): close the E19.d2c1 hygiene items`
   - Fait le 2026-10-03 : `SyncAnimation` baisse `ZImpulseTaken` quand plus rien n'est en attente à la validation (UJ-LOCK, `AlundraAnimationImpulseLockTests.cs`, rouge sans le correctif puis vert : 348160 et impulsion sans décroissance). UJ-2 : `0x25` au pc 1 (3 tests verts, les index de `CodeIndex` décalés de 1). Nouveau `AlundraArcGuardAndSoundHostTests.cs`, 4 tests verts d'emblée (ce sont des gardes d'un comportement existant) : la garde T-REG-0 (lève sur un arc gardé qui a rencontré une entité, ne lève pas hors de l'ensemble gardé ni quand le test échoue déjà), et `AlundraWorldProxy.SoundPlayer` rendu par `IAlundraScriptHost.SoundPlayer` (champ posé par réflexion, `InstallAudioSystems` demandant un `Game`). A10J épingle les pas de Giles : Y de 131072 aux images F0+241 à F0+244 puis 106496 à F0+245, mesurés en valeur négative (il va vers les Y décroissants ; le plan donnait les modules). Textes : T-C61 (`0x30 @983` teste G672, `0x05 @990` le pose), doc d'A10 et phase de Meade (`@984`, une image sur deux, T105 effacé par son `0x06 @1026` à l'image 774) à côté de celle de Wendell ; A12 : l'arc est créé sous `using` avant la course (`Run(arc)`), car `Run()` créait l'arc et pouvait lever avant le `using`. `Alundra.Tests` 2301 réussis (2296 + 5), garde d'octets à 0. Aucune assertion existante autre que celles de la liste fermée n'a bougé.
-- ⏳ **D5 — Vérification et clôture**, comme C6. **D6 — Recette** (auteur, avec la recette C7 d'E19.d2c1) : saut sur place
+- ⏳ **D5 — Correctifs de la vérification** (2026-10-03, après le verifier CONFIRMED sur `103dcb7` et les deux
+  contradicteurs ; nouvelle époque de relecture : une relecture de clôture avant exécution). Tests d'abord, une valeur
+  contredite est un arrêt :
+  - **F1 — Fenêtre Y du passager** (contradicteur binaire, P2) : `CheckRidingEntities` compare `deltaY < Height + 1`
+    (`0x80036514`, `0x80036528`, `0x800365B0`) ; `EntitySupport.FindRidingEntity` (`EntitySupport.cs`, branche `deltaY >= 0`)
+    garde la bizarrerie de la décompilation (`Depth + 1`, « sic »), que la physique du héros lit depuis D3. Correctif : `Height
+    + 1`, comme le binaire, pour toute entité (la même fonction sert `0x3E`). Test **UH-15** (coffre 24 × 16 × 16, héros posé
+    dessus, marche vers le nord) : `RidingEntity` nul et chute dès le tick où le recouvrement en Y cesse (`deltaY` > 15 px),
+    pas 17 px plus loin ; `PosZ` 1015808 à ce tick (le binaire, `sc_north.py` : tick 8, 1015809 avec son `+1`).
+  - **F2 — Plateformes qui bougent en Z** (contradicteur binaire, P2 ; D-E19-42) : le binaire calcule `RidingEntity` de toutes
+    les entités sur les positions d'avant tout mouvement, puis les forces de toutes, puis applique la force du tick de la
+    plateforme (`0x800364C8`, `0x80036828`, `0x80037364`) ; la DLL met le héros à jour avant la plateforme dans l'image, et
+    l'égalité exacte `dessus + 1 == ModdedPosZ` se rompt au premier tick où la plateforme change de vitesse en Z : le héros
+    n'est jamais porté par une plateforme qui monte (il passe au travers) ni qui descend (`IsOnGround` alterne). Correctif,
+    écart d'ordre assumé (S4b) : un héros porté au tick précédent par une plateforme dont la boîte le recouvre encore en X et
+    en Y (fenêtre de F1) reste porté même si l'égalité exacte est rompue ; son `PosZ` est recalé sur `dessus + 1` de la
+    plateforme (convention de la DLL) avant le test d'atterrissage, puis il prend la force de la plateforme (`ForceZ` **et**
+    `FinalForceZ`, `0x800373BC`, P4 du même contradicteur) ; il cesse d'être porté par une impulsion (saut), par la fin du
+    recouvrement XY, ou si l'écart dépasse le déplacement de la plateforme sur un tick (plateforme téléportée). Tests
+    **UH-16** (montage d'UH-14, plateforme pilotée en Z par `ForceZ` sans gravité) : montée de 1 px par tick pendant 50
+    ticks : `RidingEntity` non nul, `IsOnGround` 1, `CollidedWithEntityZ` 0 à chaque tick, `PosZ` du héros = dessus + 1 à 1
+    px près (un tick de phase), jamais en dessous du dessus ; descente de 1 px par tick : mêmes invariants, aucune image en
+    animation d'air ; enfoncement de 0,125 px par tick : `RidingEntity` non nul, `CollidedWithEntityZ` 0 ; `0x3E` rend 1 dans
+    les trois cas.
+  - **F3 — Dessus à fleur du sol** (contradicteur binaire, P3, visible : 122 interrupteurs à piétiner, 38 plateformes à
+    quai) : le tirage du moteur ignore les boîtes d'entités et rend `IsOnGround` 0 quand le héros passe du sol au dessus
+    d'un objet de même hauteur posé dans un creux ; `MovePlayer` montre alors une image d'animation de saut. Correctif : au
+    tirage de tête d'image d'un héros hors de l'état, si le moteur rend « pas au sol » mais qu'un dessus d'entité sous la
+    boîte est exactement au pied (la règle de `TryFindSupport`, celle de `FloorHeight` du binaire `0x80037F28`), alors
+    `IsOnGround` vaut 1 et le premier tick entre dans l'état tenu par le tick **au repos sur l'entité** (sans chute, `ForceZ`
+    0). Test **UH-17** (héros en marche vers l'est sur un sol de 16 px ; une case creuse à 0 px ; un interrupteur
+    24 × 16 × 16 posé dans le creux, dessus à 16 px, à fleur du sol) : animation Moving à chaque image, `ForceX` 159744
+    constant, `PosZ` 1048576 constant, `RidingEntity` = l'interrupteur pendant le recouvrement, `0x3E` 1 ; puis retour sur le
+    sol de l'autre côté, sortie de l'état, toujours sans image d'animation d'air.
+  - **F4 — Entrée en escalade pendant l'état** (contradicteur tests, P3, atteignable depuis D1) : le portail de pente 6 de
+    `MovePlayer` peut poser `Climbing` au tick où le pied touche le sol avant l'atterrissage strict ; l'état tenu par le tick
+    continuait alors avec l'escalade. Correctif : l'entrée en escalade (`SuspendGravityForClimb`) termine d'abord l'état
+    (restitution des valeurs capturées, `HeroAirborne` faux), puis l'escalade prend la verticale. Test **UJ-CLIMB** (saut
+    vers le nord contre un mur d'échelle, Haut tenu) : `Climbing`, `HeroAirborne` faux, gravité et `StepHeight` du moteur
+    tenus par l'escalade (`Gravity` 0, verticale externe) puis rendus à la sortie de l'échelle.
+  - **F5 — Tests** (contradicteur tests, P2 introduits) : UH-7b construit une vraie descente de 3 px (cases 3 px plus bas) et
+    assert la hauteur avant la boucle (aucune chute, aucune animation d'air, le moteur aimante) ; le test de gel en pleine
+    chute d'`AlundraLadderClimbTests` retrouve ses assertions sur la racine (`Position.Z` figée sur les 5 images de gel,
+    plus basse après la reprise) ; SJ-17 assert que le héros a décollé (`HeroAirborne` vrai à un tick intermédiaire).
+  - Commit : `fix(alundra): rider window, platforms moving in Z, flush tops and climbing from a jump`
+- ⏳ **D6 — Vérification et clôture**, comme C6. **D7 — Recette** (auteur, avec la recette C7 d'E19.d2c1) : saut sur place
   et en marchant, contrôle en l'air, saut depuis l'eau (plus bas), chute d'un rebord, saut sur un coffre puis descente, une
   plateforme mobile, la falaise de la 10 franchie seule ; une case où la Croix ne fait rien ; après un saut scripté sur la
   61, le héros revient à l'arrêt.
@@ -3674,6 +3719,20 @@ inchangées.
 - Relecture neuve sur `be04f27` : **READY**. Exécution lancée le 2026-10-03 sous la consigne de l'auteur du 2026-10-02 (mode
   AUTO, ni merge ni push).
 
+**Vérification d'E19.d2c2 (2026-10-03, premier passage, avant D5).**
+- Verifier frais sur `103dcb7` : **CONFIRMED** (2301/2301 en Release puis en Debug, `cmp` sans écart, 14 mutations de
+  production attrapées, traces « spawn » égales à la prévision ligne à ligne, liste fermée respectée).
+- Contradicteur tests : aucun P1 ; P2 introduits UH-7b vacant et assertions de racine perdues (→ F5) ; P3 entrée en escalade
+  pendant l'état (→ F4), SJ-17 sans précondition (→ F5), UH-14 prouve le transport en montage seulement (recette D7) ;
+  « rouge d'abord » démontré pour une partie (accepté) ; P4 (noms trompeurs de `MovePlayer_OtherAnimationId_…` et de `SJ4b`,
+  ternaire redondant de SJ-12, multiple de 32768 du test d'échelle, branches sans test) → E19.m.
+- Contradicteur binaire : P2 fenêtre Y du passager (→ F1) ; P2 plateformes en Z jamais porteuses (→ F2) ; P3 `CollidedWithEntityZ`
+  vaut 1 au repos sur un objet **avec gravité** dans le binaire (le passager recopie `FinalForceZ` −32768), 0 dans la DLL →
+  reporté à E19.h avec les lecteurs de `CollidedWithEntityZ` (la phrase de S4 ne vaut que sans gravité) ; P3 dessus à fleur
+  (→ F3) ; P4 copie de `FinalForceZ` (→ F2) ; à vérifier à 144 Hz : un héros sur un dessus à fleur et la gravité temps réel du
+  moteur sur une image sans tick (recette D7). Confirmé fidèle : la table de saut, la queue commune, le front de Croix, le
+  refus `0x4000`, l'atterrissage sur un dessus, S6, `RidingEntity` remis à 0 à chaque tick.
+
 **Acceptation d'E19.d2c2.**
 1. Tests D1 à D3 rouges d'abord, verts après, valeurs écrites tenues ; une valeur contredite est un arrêt.
 2. **Code de test existant touché** — liste fermée ; toute autre assertion existante reste inchangée et verte :
@@ -3689,13 +3748,16 @@ inchangées.
    - **D4** : UJ-2 (`AlundraEventProgramRunnerWaitCollidedZTests.cs`, programme avec `0x25` au pc 1) ; A10J (assertions des
      pas de Giles ajoutées) ; A10 (doc du test, commentaire de Meade) ; T-C61 (commentaire du signal de fin) ; A12
      (`AlundraBergusJumpArcTests.cs` sous `using`) ; `AlundraArcSupport.cs` si le test de la garde T-REG-0 l'exige ;
-   - **D1 à D4** : les montages de `AlundraJumpTestSupport.cs` et `AlundraContactTestSupport.cs` peuvent gagner des aides
+   - **D5** : UH-7b et SJ-17 (`AlundraHeroFallAndPadJumpTests.cs`), le test de gel en pleine chute
+     (`AlundraLadderClimbTests.cs`, assertions de racine rendues) ; tout test de `0x3E` ou de `RidingEntity` dont une valeur
+     dépend de la fenêtre Y (F1) est un arrêt, pas une ré-épingle ;
+   - **D1 à D5** : les montages de `AlundraJumpTestSupport.cs` et `AlundraContactTestSupport.cs` peuvent gagner des aides
      (cases à `ground_property` 0x40 pour UH-5, `LogicContextEntity` des entités, etc.) sans changer leurs comportements
      existants.
    A5, A5r, le couloir de la 392, A3 et toutes les autres épingles restent inchangés ; les traces `highground` et de l'intro
    restent à l'octet.
 3. `Alundra.Tests` sans échec en Release puis en Debug, la DLL Debug déployée en dernier, `cmp` sans écart.
-4. Recette D5 faite par l'auteur.
+4. Recette D7 faite par l'auteur.
 
 **Risques.**
 - Saut perdu sur les images sans tick si le cachet manque (une pression sur six à 60 Hz) : SJ-5b et SJ-5c le gardent.
