@@ -4505,7 +4505,7 @@ avant les événements de carte du même tick, sur la manette du tick précéden
 elle ; écarts nommés dus à l'ordre du moteur (les entités avant le mandataire du monde), acceptés par l'auteur (D-E19-64), sans
 datation, origine par origine dans la table de F2-R1, avec l'ordre propre au harnais d'intro ; les deux défauts corrigés.
 
-###### E19.f2a — Logique de la boîte au tick près ⏳ (après D-E19-64 : relecture REVISE sur le harnais, révisée ; relecture de clôture de cette époque)
+###### E19.f2a — Logique de la boîte au tick près ⚠️ (en pause : la relecture de clôture de l'époque D-E19-64 rend REVISE sur deux points du harnais d'intro, l'origine d'un test et la règle d'appui ; corrigés ci-dessous ; une nouvelle relecture demande l'accord de l'auteur)
 
 **Règles.**
 - **F2-R1 — Ordre d'un tick** (révision n°1 : la porte calculée une fois par image et la boucle de la manette, qui fait tous
@@ -4541,9 +4541,14 @@ datation, origine par origine dans la table de F2-R1, avec l'ordre propre au har
   un appui est donc un maintien d'une image, suivi d'un relâchement. Les tests du harnais qui appuient aujourd'hui par
   `ButtonsJustPressed` seul (`AlundraDialogueOpcodesProductionTests.cs` ~111, ~152, ~246, ~363 ;
   `AlundraGlobalFreezeEntityUpdateTests.cs` ~98, ~176) écrivent `ButtonsHold` pour l'image de l'appui (modification permise, dans
-  la liste fermée) ; l'oracle prend exactement cette manette. Origine des ouvertures des cinq tests qui installent le directeur,
-  nommée dans l'annexe : les tests du marin 12 par des scripts, `SailorThirteen_*` et `AlundraGlobalFreezeEntityUpdateTests` ~86
-  par le rappel (`RunScript`, ~111-117 et ~220-227).
+  la liste fermée) ; l'oracle prend exactement cette manette. **Règle d'appui des tests du harnais** (révision de la relecture
+  de clôture) : celle de l'aide des arcs, Carré tenu pendant la frappe, et, quand la boîte attend un appui (curseur `\A`, ou frappe
+  finie avec `closeMode & 2`), un relâchement d'une image puis un appui ; les fenêtres d'appui et les budgets de
+  `RunFramesForTest` de ces tests deviennent des lignes de l'annexe (valeurs écrites d'avance par l'oracle sous cette manette) et
+  entrent dans la liste fermée. **Origine des ouvertures, test par test** : `SailorTwelve_*` (~85) et
+  `SailorThirteen_FullInteractionChain_*` (~298, l'ouverture vient de la vraie sélection du programme F dans `RunFrame`) par des
+  scripts (première mise à jour à N) ; `SailorThirteen_MonoLine_*` (~201, images 2 et 50) et `AlundraGlobalFreezeEntityUpdateTests`
+  (~86, ouverture en ~116) par le rappel (première mise à jour à N+1) ; le test sans boîte (~438) n'ouvre rien.
 - **F2-R2 — Machine de la boîte** : le directeur porte l'état du binaire (glissements, porte de pas, pas, lignes et défilement,
   curseur, voix, fermeture, libération) exactement comme les faits ci-dessus, D-E19-62 et D-E19-63 compris, sans dépendre d'une
   vue : il tourne avec ou sans présentateur visuel ; « a un présentateur » garde son sens d'aujourd'hui (un chemin non dégradé).
@@ -4618,7 +4623,9 @@ relâchent une image puis l'enfoncent (un appui naissant) ; l'oracle reproduit l
    (`AlundraVisionAndCoastArcTests.cs:470-512`) ; classe C — budgets et aides de A2, A4, A4p, T-A19, T-A10v, T-B9, A13 à A18, A1,
    A1c, A10J, `AlundraSaveBookEndToEndTests` ; classe L ci-dessus ; `AlundraArcSupport.cs` (aide de manette, budgets) ; harnais
    d'intro : seul le bloc `if (_installDialogueDirector)` de `RunFramesForTest` (`IntroTraceHarnessTests.cs:581-591`) et les
-   écritures de manette des tests du harnais nommées en F2-R1 (`ButtonsHold` pour l'image de l'appui) ; les tests du
+   écritures de manette, fenêtres d'appui et budgets de `RunFramesForTest` des tests du harnais nommés en F2-R1
+   (`AlundraDialogueOpcodesProductionTests.cs` ~111, ~152, ~210, ~244-247, ~307, ~357-365 ; `AlundraGlobalFreezeEntityUpdateTests.cs`
+   ~96-98, ~174-177), aux valeurs de l'annexe ; les tests du
    présentateur qui supposent une ligne par page, que l'audit des valeurs nomme dans l'annexe avant F2A-2. Toute autre assertion
    qui bouge est un arrêt.
 3. Les six traces à l'octet (la trace d'intro ne voit aucun opcode de dialogue et tourne sans directeur).
