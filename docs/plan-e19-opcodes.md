@@ -4340,7 +4340,7 @@ Commits : `test(converter): …` puis `feat(converter): emit text flag codes and
   change avec un commit du seul plan. Avis reporté à E19.m : P4 un `[flag id=abc/]` écrit à la main (propriété texte) lèverait
   une `FormatException` dans `ShowLine` (`AlundraYarnBindings.cs:183`, `Convert.ToInt64`), le convertisseur n'en produit jamais.
 
-##### 1.2j.2 E19.f1 — Cadres du nom et du choix, curseur d'attente ⏳ (planifiée)
+##### 1.2j.2 E19.f1 — Cadres du nom et du choix, curseur d'attente ⏳ (planifiée ; relecture n°1 REVISE, révisée)
 
 **Faits.**
 - **Données de la décompilation** (`alundra-datas-analyser/AlundraTools/AlundraEngine/StaticVariables.cs`) : la boîte du nom est
@@ -4353,6 +4353,15 @@ Commits : `test(converter): …` puis `feat(converter): emit text flag codes and
   `UiBoxCells.csv` (1351 cellules), complétés à partir de `StaticVariables.cs` avec preuve par un lecteur indépendant (précédents :
   commits `64978f8` et `8f403d5` du sous-module) ; le convertisseur les lie (`.csproj` `:76-80`) et `UiBoxWriter` cuit **chaque**
   boîte listée (`UI/Textures/<boîte>.png`, son `.texture`, `UI/<boîte>.sprite`, identifiant `Ids.For("sprite-ui:" + boîte)`).
+- **Boîte du nom au repos** **[binaire]** (question bornée du 2026-10-03, `e19f1-namebox/` du scratchpad) : configuration en
+  `0x800A58BC` (X 64, Y 140, 14 × 4), tampons de cellules `0x800A4FFC` et `0x800A545C` ; le seul code qui écrit leurs `x0`/`y0` est
+  `UpdateUiBoxesPosition` (`0x80047DD0`, `x0 = X + 8c` en `0x80047F40`, `y0 = Y + 8r` en `0x80047F44`), appelé par le rendu de la
+  boîte (`0x8005A3E0`, appel en `0x8005A41C`) avant le dessin de la même image (`0x800481F8`, qui ne fait que chaîner les
+  cellules) ; l'ouverture (`0x80059F6C` → `0x8005A268`) et la fermeture (`0x80059FE0`) ne glissent qu'en x et rendent Y = 140. Au
+  repos, le cadre occupe **x 64 à 175, y 140 à 171** ; le nom est centré en `X + (112 − largeur) / 2`, à y = Y + 8 = 148
+  (`0x8005A4F0`-`0x8005A534`). Les `y0` bruts du tableau (144 à 168, 4 px plus bas) ne sont jamais affichés : la boîte du nom est la
+  seule dont les positions brutes diffèrent de sa configuration (boîte du choix, boîte de l'arme, boîte du message et boîte de
+  l'objet contrôlées). La décompilation reproduit les mêmes données brutes.
 - **Curseur d'attente** : 16 × 16, cellules `wind_150`, `wind_173`, `wind_201`, `wind_228` (u 176, 192, 208, 224 ; v 56 ;
   palette 8), 10 ticks par image, sans décalage (binaire, découverte d'E19.f) ; `UiAnimationWriter` écrit déjà trois cycles de ce
   genre (le curseur de l'inventaire, `:35-50`).
@@ -4360,31 +4369,42 @@ Commits : `test(converter): …` puis `feat(converter): emit text flag codes and
 **Règles.**
 - **F1-R1 — Analyseur** (branche dédiée du sous-module `chantier/e19f1-dialogue-boxes`, depuis `master` `242b09a`) : deux lignes
   ajoutées à `UiBoxes.csv`, `g_textTilesConfiguration;64;140;14;4` et `g_uiBoxesConfigurationBackgroundMessageChoice;176;144;16;4`,
-  et leurs 56 + 64 cellules de la copie A, brutes, dans l'ordre des tableaux, à `UiBoxCells.csv` ; les lignes existantes ne
-  changent pas, à l'octet ; aucun code de l'analyseur ne change.
+  et leurs 56 + 64 cellules de la copie A à `UiBoxCells.csv`, dans l'ordre des tableaux ; `u0`, `v0`, `w`, `h` et `clut` bruts ;
+  `x0`/`y0` **aux positions où le binaire les dessine**, `(X + 8·colonne, Y + 8·rangée)` (révision n°1 : pour la boîte du choix
+  et toutes les boîtes déjà listées, ce sont les valeurs brutes ; pour la boîte du nom, les `y0` bruts 144 à 168 sont des données
+  initiales périmées que le binaire réécrit avant tout affichage, voir les faits) ; les lignes existantes ne changent pas, à
+  l'octet ; aucun code de l'analyseur ne change.
 - **F1-R2 — Convertisseur** : `UiBoxWriter` cuit les deux nouvelles boîtes sans changement de code ; un quatrième cycle,
   `ui_dialogue_cursor` (`wind_150`, `173`, `201`, `228`, 10 ticks par image, sans décalage), rejoint `UiAnimationWriter`.
 - **F1-R3** : aucun écran ne les utilise encore (E19.f2 et E19.f3 les brancheront) ; la DLL ne change pas.
 
 **Tâches.**
 - **F1-1 — Analyseur** : les lignes, puis la preuve par un lecteur indépendant (script Python du scratchpad qui relit
-  `StaticVariables.cs` : 14 boîtes et 1471 cellules, aucune manquante ni en trop, même ordre) ; commit du sous-module
+  `StaticVariables.cs` : 14 boîtes et 1471 cellules, aucune manquante ni en trop, même ordre ; chaque cellule tombe dans sa boîte,
+  0 hors boîte sur les 14 ; pour la boîte du nom, `x0`/`y0` = configuration + grille, le reste brut) ; commit du sous-module
   `feat(tables): export the dialogue name and choice boxes as CSV (E19.f1)`.
 - **F1-2 — Convertisseur, tests d'abord** : le cycle `ui_dialogue_cursor` (quatre images, 10 ticks, identifiant stable) ; la cuisson
-  des deux boîtes depuis les vraies données (tailles 112 × 32 et 128 × 32, pixels égaux à ceux de l'aperçu indépendant
-  `boxes_preview.png` découpé aux deux boîtes) ; commit `feat(converter): bake the dialogue name and choice boxes and the wait cursor`
+  des deux boîtes depuis les vraies données (tailles 112 × 32 et 128 × 32), comparée **octet pour octet, alpha compris**, à une
+  référence indépendante (révision n°1 : l'aperçu `boxes_preview.png` ne suit pas les mêmes règles, fond magenta, collage par
+  masque, échelle 4, origine à la boîte englobante) : deux PNG de référence, versionnés comme données de test, produits par un
+  script qui ne lit pas les CSV (il relit les tableaux de `StaticVariables.cs`), fond entièrement transparent, copie brute RGBA de
+  chaque tuile de `data-extracted/ui/wind.png`, origine à la position décidée en F1-R1 ; le test est rouge sur les CSV d'avant et
+  rougit si une cellule bouge de 8 px ou si un texel de coin transparent change ; commit `feat(converter): bake the dialogue name and choice boxes and the wait cursor`
   avec le pointeur du sous-module.
 - **F1-3 — Livraison** : manifeste avant, export complet en place, manifeste après, double export ; `Alundra.Tests` sur le nouvel
   export (garde : la DLL ne change pas).
 
 **Acceptation.**
-1. La preuve du lecteur indépendant (14 et 1471) ; les tests de F1-2 rouges d'abord, verts après.
-2. Tests existants touchés : aucun (les tests du convertisseur qui comptent les boîtes ou les animations, s'il en existe, sont un
-   arrêt et un diagnostic).
+1. La preuve du lecteur indépendant (14 et 1471, 0 cellule hors de sa boîte) ; les tests de F1-2 rouges d'abord, verts après.
+2. Tests existants touchés, liste fermée : `UiWriterTests.cs:97` (`Assets.UiAnimation` 3 → 4), `:149` (fichiers de
+   `UI/Animations` 3 → 4), `:164` (avertissements « skipped: sprite wind_ » du montage à trois entrées 3 → 4), et les assertions
+   du nouveau cycle à côté de celles de `:100-120` ; la doc de classe d'`UiAnimationWriter` (« the three looping UI animations »,
+   `:9`) passe à quatre ; rien d'autre (révision n°1).
 3. Export : exactement sept fichiers nouveaux (`UI/Textures/g_textTilesConfiguration.png` et son `.texture`,
    `UI/g_textTilesConfiguration.sprite`, les trois mêmes pour `g_uiBoxesConfigurationBackgroundMessageChoice`,
    `UI/Animations/ui_dialogue_cursor.anim2d`), deux modifiés (le catalogue `AssetInfos.json`, `report.json`), rien d'autre ;
-   double export identique hors `report.json` ; 0 erreur.
+   double export identique hors `report.json` ; 0 erreur ; `UiBoxes.CellsWithoutTile` reste 0 ; `UI/Textures/g_textTilesConfiguration.png`
+   fait 112 × 32 et `UI/Textures/g_uiBoxesConfigurationBackgroundMessageChoice.png` 128 × 32.
 4. Tests du convertisseur verts ; `Alundra.Tests` vert sur le nouvel export ; les six traces à l'octet.
 
 **Retour arrière** : le pointeur du sous-module et le commit du convertisseur reviennent ; ré-export en place ; la DLL n'a rien à
