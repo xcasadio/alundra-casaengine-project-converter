@@ -5835,7 +5835,7 @@ re-simule les 484 planches d'entités depuis `DATAS.BIN` et reproduit chaque pix
   texels (`GameMap.cs:188-194`) : 2646 pixels manquent dans 265 planches (695 dans 74 planches exportées, dont 83 dans
   `map_alundra`) ; la simulation le prouve.
 
-##### 1.2o.1 E19.g G0 — Extracteur : texels semi-transparents, planches d'effets, portraits, colonne impaire ⏳ (planifiée)
+##### 1.2o.1 E19.g G0 — Extracteur : texels semi-transparents, planches d'effets, portraits, colonne impaire ⏳ (planifiée ; relecture n°1 REVISE, révisée ; annexe des valeurs versionnée)
 
 **Faits.** Ceux de la découverte ci-dessus et de la cartographie de l'extracteur (`e19f-plan2/extract/notes.md`) : extracteur
 `AlundraDataExtractor` (`Program.cs:77-151`, arguments `<gamePath> <extractionPath>`, dispositions par défaut `original` et
@@ -5850,11 +5850,21 @@ sous-module, après une construction Release fraîche ; le sous-module est aujou
 **Règles.**
 - **G0-R1 — Code alpha** : chaque planche écrite par l'extracteur (entités et effets) porte par texel l'alpha 255, 128 ou 0 selon la
   règle ci-dessus ; RVB inchangé ; disposition des planches d'entités inchangée (le dernier texel dessiné gagne).
-- **G0-R2 — Planches d'effets** : une planche par carte et une globale (`map_alundra`), disposition compacte, une case par signature
-  (région et palette : 1436 cases, 87 fichiers) ; `AtlasX/AtlasY` des quads d'effets écrits dans le JSON de la carte.
+- **G0-R2 — Planches d'effets** (révision n°1) : une planche par carte qui a des effets et une globale, nommées
+  `data/map_<n>_effectsheet.png` et `data/map_alundra_effectsheet.png` (87 fichiers, larges de 512) ; disposition compacte ; une
+  case par **(page, palette, région)** — 1436 cases (la clé `Signature` de la disposition compacte existante en donnerait 1438, deux
+  paires ne différant que par les bits ABR, qui appartiennent au quad, pas à la case) ; les 46 quads de taille 0 × 0 de la 161 sont
+  ignorés (aucune case, `AtlasX/AtlasY` restent à 0 ; sinon l'extracteur plante, `ImageHelper.cs:179`) ; `AtlasX/AtlasY` écrits
+  sur les seules références de quads d'effets, jamais sur un objet partagé avec un quad d'entité (13 images d'effets sont partagées
+  avec des entités de `map_alundra`) ; le code alpha est posé **après** le dessin des texels (un dessin par `DrawImage` mêlerait le
+  RVB des texels semi-transparents) ; aucun nouveau champ public sérialisé hors de ceux de G0-R3 (le JSON s'écrit avec
+  `IncludeFields = true`, `Program.cs:17`) et aucune modification de `FromPsxColor` (elle toucherait toutes les palettes, `ui/`,
+  `tiled/` et les planches de tuiles).
 - **G0-R3 — Portraits de dialogue** : pour chaque enregistrement de sprite à portrait, l'image (première image du bloc,
-  `SpriteRecord.GetPortraitImageset`) est écrite dans la planche de la carte à sa région, et un champ de portrait (rectangle d'atlas,
-  taille 48 × 56 ou 48 × 72, palette ; omis quand il n'y en a pas) rejoint le JSON de la carte.
+  `SpriteRecord.GetPortraitImageset`) est écrite dans la planche de la carte à sa région, et un champ **`DialoguePortrait`** rejoint
+  chaque objet d'enregistrement de sprite du JSON de la carte, **de la même forme que `InventoryPortrait`** (image sérialisée :
+  `Spritesheet`, `Palette`, `Sx`, `Sy`, `Swidth`, `Sheight`, les quatre coins, `Signature`, miroirs, `SourceX/Y`, `AtlasX/Y`), **omis
+  quand il est nul** (331 champs dans 184 JSON).
 - **G0-R4 — Colonne impaire** : un quad à `SourceX` impair et `Swidth` impair garde sa dernière colonne (défaut du portage corrigé).
 - **G0-R5 — Ré-extraction et miroir** (D-E19-51, par la session seule) : construction Release fraîche de l'extracteur du
   sous-module ; extraction dans un dossier **neuf** (`D:\development\repo\Alundra Remake\remaster-data-extracted-e19g0`), jamais
@@ -5862,28 +5872,47 @@ sous-module, après une construction Release fraîche ; le sous-module est aujou
   valeurs (tout autre fichier changé est un arrêt) ; garde du texte (aucun marqueur non décodé ; `ReferenceTextDecoderTests` vert) ;
   puis copie de sauvegarde de `data-extracted/` (`data-extracted.bak-e19g0`, hors suivi git), renommage de l'ancien remaster en
   `remaster-data-extracted.bak-2026-10-03` et du dossier neuf en `remaster-data-extracted`, et miroir par `robocopy /MIR` lancé depuis
-  PowerShell ; preuve finale `diff -rq` vide entre le remaster et `data-extracted/`. Rien n'est supprimé.
-- **G0-R6 — Pas d'export** : G0 ne touche ni le convertisseur ni le projet joué ; G1 exportera.
+  PowerShell ; preuve finale `diff -rq` vide entre le remaster et `data-extracted/`. Rien n'est supprimé. Condition de lancement :
+  chemin du jeu en barres obliques et `--no-launch-profile` (sinon `BALANCE.BIN.json` change et le diff sort de la liste). La
+  sauvegarde va **hors du dépôt** : `D:\development\repo\Alundra Remake\data-extracted.bak-e19g0`.
+- **G0-R6 — Export** (révision n°1 : la prochaine exportation emporterait sinon un écart sans propriétaire) : après le miroir, G0
+  fait un export complet en place, sans changer le convertisseur ; manifeste avant et après : exactement les 103 textures de sprites
+  exportées dont la planche source change (lignes `exported_today = 1` de l'annexe ; seule celle de la 398 ne change pas),
+  `Sprites/hero/hero_effects.json` (copie brute des effets de `map_alundra` : 1671 des 2089 quads y prennent un `AtlasX/AtlasY`
+  non nul) et `report.json`, rien d'autre ; double export identique hors `report.json` ; `Alundra.Tests` sur cet export. En jeu, le
+  seul changement visible est la colonne impaire rendue ; le code alpha est ignoré tant que G2 n'existe pas (entités dessinées en
+  opaque, rejet à `<= 0.01`).
 
 **Tâches.**
+- **G0-0 — Annexe des valeurs** (faite, révision n°1) : l'audit des valeurs a écrit, et le plan versionne dans
+  `docs/plan-e19-g0-annexe/`, la liste exacte des fichiers (`predicted_changes.txt` : 613 modifiés, 381 planches d'entités et 232
+  JSON, et 87 ajoutés, 700 lignes) et les fichiers de valeurs (empreintes RGBA des 484 planches d'entités et des 87 planches
+  d'effets, les 1436 cases, les 331 portraits, la classe de chaque changement par planche et par JSON) ; la simulation reproduit
+  aujourd'hui chacune des 484 planches à l'octet près (0 pixel d'écart).
 - **G0-1 — Extracteur** (sous-module, branche `chantier/e19g0-extractor` **empilée sur** `chantier/e19f1-dialogue-boxes` `b92b7b9`) :
   G0-R1 à G0-R4, un commit par règle, chacun construit.
 - **G0-2 — Preuves indépendantes** (scripts du scratchpad, qui ne partagent pas le code de l'extracteur) : la re-simulation des 484
   planches d'entités depuis `DATAS.BIN` (script de la découverte) égale chaque pixel, alpha compris ; les 1436 cases d'effets égales à
-  un décodage indépendant ; les 25 portraits égaux à un décodage indépendant ; les 2646 pixels de la colonne impaire présents.
+  un décodage indépendant ; les 25 portraits égaux à un décodage indépendant ; les 2646 pixels de la colonne impaire présents ; les
+  empreintes de l'annexe égales ; **preuve des JSON** : chaque JSON changé égale sa version de `data-extracted/` une fois retirés les
+  champs `DialoguePortrait` et remis à 0 les `AtlasX/AtlasY` des références de quads d'effets, et chaque référence de quad d'effet
+  désigne une case égale à son décodage indépendant (0 écart, 0 référence vers une case fausse ou absente) ; les quads d'entités
+  gardent leurs coordonnées.
 - **G0-3 — Ré-extraction et diff** (G0-R5, avant le miroir).
 - **G0-4 — Miroir et preuve finale** (G0-R5).
-- **G0-5 — Gardes** : tests du convertisseur et `Alundra.Tests` verts sur le nouveau `data-extracted/` (aucun ne lit l'alpha des
-  planches ni les nouveaux champs ; un test qui bouge est un arrêt).
+- **G0-5 — Gardes et export** : tests du convertisseur verts sur le nouveau `data-extracted/` (aucun ne lit l'alpha des planches ni
+  les nouveaux champs ; un test qui bouge est un arrêt) ; puis l'export de G0-R6 et `Alundra.Tests` dessus.
 - **G0-6 — ADR-0030** (le format des planches de l'extracteur : code alpha par texel ; planches d'effets ; portraits ; colonne
   impaire) ; pointeur du sous-module ; le plan.
 
 **Acceptation.**
 1. Les quatre preuves de G0-2 sans écart.
-2. `diff -rq` de la ré-extraction : exactement la liste écrite d'avance (planches d'entités : alpha seulement pour 205, plus les RVB de
-   la colonne impaire et les pixels des portraits ; 87 planches d'effets nouvelles ; les JSON de cartes nommés) ; texte décodé.
-3. Après le miroir : `diff -rq` vide ; sauvegardes présentes ; tests du convertisseur et `Alundra.Tests` verts.
-4. Aucun fichier du dépôt parent hors du pointeur, de l'ADR et du plan.
+2. `diff -rq` de la ré-extraction : exactement `docs/plan-e19-g0-annexe/predicted_changes.txt` (381 planches d'entités, dont 47
+   par l'alpha seul ; 87 planches d'effets nouvelles ; 232 JSON) ; texte décodé ; la preuve des JSON sans écart.
+3. Après le miroir : `diff -rq` vide ; sauvegardes présentes aux chemins hors du dépôt ; tests du convertisseur verts.
+4. Export (G0-R6) : manifeste exactement comme prévu, double export, `Alundra.Tests` en Release puis en Debug sur l'export, la
+   Debug en dernier, `cmp` sans écart ; les six traces à l'octet.
+5. `git status` du parent : seulement le pointeur du sous-module, l'ADR, le plan et son annexe.
 
 **Retour arrière** : remettre le pointeur du sous-module ; renommer les dossiers dans l'autre sens et refaire le miroir depuis la
 sauvegarde ; rien n'est supprimé.

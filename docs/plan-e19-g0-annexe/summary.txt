@@ -1,0 +1,16 @@
+files simulated: 484; anomalies: [('map_161', 'zero-size effect quads', 46)]
+entity sheets: simulation mismatch vs today PNG (px): 0; PNG modes: Counter({'RGBA': 484})
+entity PNGs that change: 381
+  with alpha-only pixels: 205 files, 1525717 px (of which caused by an odd-column overwrite: 0)
+  STP pixels in today canvas (discovery metric): 1525717 in 205 files; A=128 pixels in predicted sheets: 1525839 in 205 files
+  odd column: added 2646 px in 265 files (A128 among them: 122); RGB overwritten 0 px in 0 files
+  portraits: added 567520 px in 169 files (A128: 0); RGB overwritten 0; records 331 in 184 files; files with a new portrait cell 169
+  removed px: 0; other px: 0; portrait order variant diff px: 0
+  PNGs whose only change is alpha 255->128: 47
+  exported sheets that change: 103 of 104
+effect sheets (new files): 87; cells 1436 (sig-keyed 1438); refs 20315; refs off (0,0) 18921
+  effect sheet STP px 1108345, opaque px 388321, odd-odd cells 179
+  effect files whose JSON does NOT change through effects (all quads at (0,0)): ['map_15', 'map_440']
+  height differs if keyed by Signature: [('map_alundra', 237, 262)]
+JSON that change: 232 (effects 85, portraits 184, both 37); if sig-keyed: 232
+UNION: modified 613 (PNG 381 + JSON 232) + added 87 = 700

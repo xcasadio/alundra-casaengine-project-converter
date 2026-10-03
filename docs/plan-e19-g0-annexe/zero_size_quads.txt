@@ -1,0 +1,2 @@
+zero-size quad references by (file, kind): {('map_161', 'effect'): 46}
+('map_161', 'effect', 0, 3, 0, 0, 0, 0)
