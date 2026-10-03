@@ -4331,6 +4331,59 @@ Commits : `test(converter): …` puis `feat(converter): emit text flag codes and
   présentateur de capture prend l'état de jeu en paramètre facultatif (`null` : aucun drapeau posé) pour laisser les montages existants
   intacts ; (4) la valeur du drapeau est lue en `Int64` (jamais d'exception sur un `id` hors plage, marqueur ignoré).
 
+##### 1.2j.2 E19.f1 — Cadres du nom et du choix, curseur d'attente ⏳ (planifiée)
+
+**Faits.**
+- **Données de la décompilation** (`alundra-datas-analyser/AlundraTools/AlundraEngine/StaticVariables.cs`) : la boîte du nom est
+  la configuration `g_textTilesConfiguration` (X 0x40, Y 0x8C, 14 × 4 cellules, `SpritesA = g_font1_A`, 56 cellules, `:11185-11193`)
+  et la boîte du choix `g_uiBoxesConfigurationBackgroundMessageChoice` (X 0xB0, Y 0x90, 16 × 4, `SpritesA = SPRT_ARRAY_800a45ec`,
+  64 cellules, `:11268-11276`) ; positions conformes au binaire (nom en (64,140), choix en (176,144), découverte d'E19.f). Toutes
+  leurs cellules sont dans l'atlas `wind` (56 sur 56, 64 sur 64 ; `e19f-disc/dll/namebox_tiles.py`, `choicebox_tiles.py`, aperçu
+  `boxes_preview.png` : parchemin, coins transparents).
+- **Chaîne** : l'analyseur porte la disposition des boîtes en deux fichiers de données, `UiBoxes.csv` (12 boîtes) et
+  `UiBoxCells.csv` (1351 cellules), complétés à partir de `StaticVariables.cs` avec preuve par un lecteur indépendant (précédents :
+  commits `64978f8` et `8f403d5` du sous-module) ; le convertisseur les lie (`.csproj` `:76-80`) et `UiBoxWriter` cuit **chaque**
+  boîte listée (`UI/Textures/<boîte>.png`, son `.texture`, `UI/<boîte>.sprite`, identifiant `Ids.For("sprite-ui:" + boîte)`).
+- **Curseur d'attente** : 16 × 16, cellules `wind_150`, `wind_173`, `wind_201`, `wind_228` (u 176, 192, 208, 224 ; v 56 ;
+  palette 8), 10 ticks par image, sans décalage (binaire, découverte d'E19.f) ; `UiAnimationWriter` écrit déjà trois cycles de ce
+  genre (le curseur de l'inventaire, `:35-50`).
+
+**Règles.**
+- **F1-R1 — Analyseur** (branche dédiée du sous-module `chantier/e19f1-dialogue-boxes`, depuis `master` `242b09a`) : deux lignes
+  ajoutées à `UiBoxes.csv`, `g_textTilesConfiguration;64;140;14;4` et `g_uiBoxesConfigurationBackgroundMessageChoice;176;144;16;4`,
+  et leurs 56 + 64 cellules de la copie A, brutes, dans l'ordre des tableaux, à `UiBoxCells.csv` ; les lignes existantes ne
+  changent pas, à l'octet ; aucun code de l'analyseur ne change.
+- **F1-R2 — Convertisseur** : `UiBoxWriter` cuit les deux nouvelles boîtes sans changement de code ; un quatrième cycle,
+  `ui_dialogue_cursor` (`wind_150`, `173`, `201`, `228`, 10 ticks par image, sans décalage), rejoint `UiAnimationWriter`.
+- **F1-R3** : aucun écran ne les utilise encore (E19.f2 et E19.f3 les brancheront) ; la DLL ne change pas.
+
+**Tâches.**
+- **F1-1 — Analyseur** : les lignes, puis la preuve par un lecteur indépendant (script Python du scratchpad qui relit
+  `StaticVariables.cs` : 14 boîtes et 1471 cellules, aucune manquante ni en trop, même ordre) ; commit du sous-module
+  `feat(tables): export the dialogue name and choice boxes as CSV (E19.f1)`.
+- **F1-2 — Convertisseur, tests d'abord** : le cycle `ui_dialogue_cursor` (quatre images, 10 ticks, identifiant stable) ; la cuisson
+  des deux boîtes depuis les vraies données (tailles 112 × 32 et 128 × 32, pixels égaux à ceux de l'aperçu indépendant
+  `boxes_preview.png` découpé aux deux boîtes) ; commit `feat(converter): bake the dialogue name and choice boxes and the wait cursor`
+  avec le pointeur du sous-module.
+- **F1-3 — Livraison** : manifeste avant, export complet en place, manifeste après, double export ; `Alundra.Tests` sur le nouvel
+  export (garde : la DLL ne change pas).
+
+**Acceptation.**
+1. La preuve du lecteur indépendant (14 et 1471) ; les tests de F1-2 rouges d'abord, verts après.
+2. Tests existants touchés : aucun (les tests du convertisseur qui comptent les boîtes ou les animations, s'il en existe, sont un
+   arrêt et un diagnostic).
+3. Export : exactement sept fichiers nouveaux (`UI/Textures/g_textTilesConfiguration.png` et son `.texture`,
+   `UI/g_textTilesConfiguration.sprite`, les trois mêmes pour `g_uiBoxesConfigurationBackgroundMessageChoice`,
+   `UI/Animations/ui_dialogue_cursor.anim2d`), deux modifiés (le catalogue `AssetInfos.json`, `report.json`), rien d'autre ;
+   double export identique hors `report.json` ; 0 erreur.
+4. Tests du convertisseur verts ; `Alundra.Tests` vert sur le nouvel export ; les six traces à l'octet.
+
+**Retour arrière** : le pointeur du sous-module et le commit du convertisseur reviennent ; ré-export en place ; la DLL n'a rien à
+reprendre (elle ne lit pas encore ces fichiers).
+
+**Risques.** Une cellule hors de l'atlas (preuve de F1-1) ; le nom des boîtes, celui des variables de la décompilation, comme les
+boîtes de l'inventaire.
+
 ### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) — E19.k1 ✅ (recette K5 en attente) ; E19.k2 ⏳ (planifiée)
 
 **Découverte** (2026-10-03, lecture seule ; notes et scripts dans le scratchpad de la session, `e19k-disc/`). Faits
