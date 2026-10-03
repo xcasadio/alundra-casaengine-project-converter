@@ -5965,7 +5965,7 @@ dessiné gagne aussi pour l'alpha (déjà le cas pour les couleurs).
   laissé par l'extracteur dans `alundra-datas-analyser/AlundraTools/` (laissé tel quel). Branche de l'analyseur
   `chantier/e19g0-extractor` (`d8d9230`, empilée sur f1), non mergée.
 
-##### 1.2o.1b E19.g G0b — Planches d'entités en disposition compacte (chaque sprite avec sa palette) ✅ (relecture n°1 READY ; exécutée le 2026-10-03, recette G0b-6 à faire par l'auteur)
+##### 1.2o.1b E19.g G0b — Planches d'entités en disposition compacte (chaque sprite avec sa palette) ✅ (relecture n°1 READY ; faite et CONFIRMED le 2026-10-03 ; recette G0b-6 à faire par l'auteur)
 
 **Faits** (mesure des palettes `e19g-palette/notes.md` et audit des valeurs `e19g0b-audit/notes.md` du scratchpad, 2026-10-03,
 lecture seule) :
@@ -6088,6 +6088,14 @@ recette sont des couleurs dominantes d'un sprite chacune, sans les changements d
   `git checkout`. Écarts au plan : aucun (le plan chiffre `Alundra.Tests` à 2539 par héritage de G0 ; la preuve des `.sprite` a utilisé
   le manifeste « avant » faute de copie des anciens fichiers). ADR-0031 (Proposed : décision D-E19-65 de la session en mode AUTO, à
   confirmer par l'auteur). Decisions: see ADR-0031. Reste la recette G0b-6 (auteur).
+- ✅ **Vérification de G0b** (2026-10-03) : vérificateur neuf **CONFIRMED**, par ses propres scripts (décodage de `DATAS.BIN`
+  écrit à part, sans `g0lib`) : diff de l'extracteur limité au défaut et aux textes ; `data-extracted/` égal au remaster, 903 lignes
+  d'écart avec la sauvegarde égales à l'annexe, sauvegardes de G0 intactes ; les 914 789 références d'entités et les 20 315 d'effets
+  égales à leur propre décodage ; les JSON ne changent que par des `AtlasX/AtlasY` d'entités ; export : 7014 lignes égales à l'annexe,
+  les 6909 `.sprite` égaux à l'ancien hors `location.x/y`, double export ; convertisseur 418/418, `Alundra.Tests` 2548/2548 en
+  Release puis en Debug, `cmp` sans écart, traces à l'octet (les quatre du héros remises ensuite par la session) ; contrôles
+  ponctuels : icônes 84, 69, 82 (rouge, doré, blanc et gris au lieu de l'aplat `#382800`), bâton magique bleu-violet, Thyea et
+  Sierra distinctes de Naomi. P4 : le `log.txt` vide non suivi de l'analyseur, recréé par l'extraction (laissé tel quel).
 
 ##### 1.2o.2 E19.g G2a — Semi-transparence par texel des sprites d'entités (moteur et convertisseur) ⚠️ (en pause : relecture n°1 REVISE et contradiction C1 de l'audit, voir la puce « Relecture et audit »)
 
