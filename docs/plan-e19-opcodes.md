@@ -6500,7 +6500,7 @@ n'est demandé, et l'original lirait au-delà de la table (point ouvert à consi
   avec un groupe nul, pas avec une carte d'un autre groupe ; P4 la période de l'auto-chaîne n'est pas épinglée. **Reste la recette T6
   de l'auteur.**
 
-### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 en préparation)
+### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 planifiée)
 
 **Recensement** (2026-10-03, lecture seule ; table complète versionnée dans `docs/plan-e19-m-annexe/backlog-2026-10-03.md`, en
 anglais) : 46 points M-01 à M-46, chacun vérifié contre le code de `bafbd5a`, classé (test seul, commentaire ou doc, petit correctif
@@ -6524,6 +6524,48 @@ plafond absolu) ; **G5** moteur (erreur du réglage qui ne nomme pas la clé) ; 
   des créneaux et plafond de 63 entités (E14 ou E19.m) ; M-36 langue de la section de doc du moteur ; M-39 dépend du préréglage
   `day3-start` (O-E19-33) ; M-41 écraser K1 à K3 avant le merge ; M-27 l'attribution des commits aux exécuteurs ; M-06 et M-08
   (O-E19-2, O-E19-25) relèvent de la décompilation et des scripts de recensement, hors du portage (règle de l'auteur du 2026-10-03).
+
+#### 1.2s.1 E19.m0 — Modes aléatoires de `ResolveDirectionFromParam` (M-04) ⏳ (planifiée)
+
+**Faits** **[binaire]** (question bornée du 2026-10-03, `e19m0-disc/notes.md` du scratchpad) :
+- `0x8003CFC8` : `result = a1 & 0x1F`, `mode = a1 >> 5` (8 ou plus : 0) ; table de sauts en `0x80023C60` : mode 4 → `0x8003D060`,
+  mode 5 → `0x8003D0BC` ; le générateur est écrit en ligne à chaque usage, état en `0x80098708` : `nouveau = germe × 0x7D2B89DD +
+  0xE06A02E7` (32 bits bas, rangés en `0x8003D08C` et `0x8003D0E8`) ; **mode 4** rend `table[nouveau >> 30]`, table en `0x80023644` =
+  {0, 16, 8, 24}, la même que le mode 2 (`AnimationTables.CardinalDirectionTable`) ; **mode 5** rend `nouveau >> 27` (0 à 31) ;
+  `result` n'y sert pas. La décompilation est d'accord (`GameEngine.cs:2354-2359`).
+- C'est le générateur d'`AlundraRandom` (mêmes constantes ; 10 000 pas comparés) ; 93 fonctions du binaire l'utilisent, la DLL en
+  porte deux (`0x0C` = `0x8003D518`, le même calcul que le mode 4 ; `0x8C` = `0x80040438`, `nouveau >> 24`) ; il n'est jamais
+  réensemencé (valeur initiale de l'image de l'exécutable, `0xB017C93D`, comme le champ statique de la DLL).
+- `0x5A` (`0x8003EEF4`) et `0x5B` (`0x8003EF80`) appellent la routine une fois par entité trouvée, **de la dernière trouvée à la
+  première** (tampon `0x8013D8D8`) ; la DLL (`TurnMatchingEntities`) et la décompilation vont dans l'autre sens : sans effet pour les
+  modes 0 à 3, 6 et 7, mais un mode aléatoire distribuerait les tirages autrement. Les deux sites de la 167 (recherche 0x80, l'entité
+  du script seule) n'ont qu'une entité.
+- **Seul `throw` d'opcode atteignable** : `AlundraEventProgramRunner.cs` ~3026 ; sa doc (~2991-2999) dit à tort qu'aucun générateur
+  n'est porté ; le test `ResolveDirectionFromParam_RandomModes_ThrowNotSupported` (`AlundraEventProgramRunnerTests.cs:1924-1933`)
+  épingle l'exception.
+
+**Règles.**
+- **M0-R1** : mode 4 → `AlundraRandom.Next()`, puis `CardinalDirectionTable[nouveau >> 30]` ; mode 5 → `AlundraRandom.Next()`, puis
+  `nouveau >> 27` ; `result` ignoré ; la doc de la méthode dit la règle et les adresses.
+- **M0-R2** : `0x5A` et `0x5B` parcourent les entités trouvées de la dernière à la première, comme le binaire ; la doc de
+  `TurnMatchingEntities` le dit.
+
+**Tâches.**
+- **M0-1 — Tests d'abord** (dans la collection `AlundraRandomStaticStateCollection`, germe posé par le test, état comparé en
+  `(uint)RandomSeed`) : trois appels consécutifs, mode 4 (`0x80`) et mode 5 (`0xA0`) : germe `0xB017C93D` → 0, 24, 24 et 6, 25, 28 ;
+  germe 0 → 24, 8, 16 et 28, 19, 15 ; germe `0x12345678` → 8, 0, 16 et 23, 4, 11 ; en alternance 4, 5, 4 depuis `0xB017C93D` → 0, 25,
+  24 ; `0x9F` se comporte comme `0x80` et `0xBF` comme `0xA0` ; l'ordre : deux entités trouvées par un `0x5A` en mode 5, le premier
+  tirage va à la dernière trouvée ; un test de production : la carte 167 chargée et jouée au-delà de `@144` de `C[4]` de
+  l'enregistrement 1 sans exception, sa direction cible dans {0, 8, 16, 24} après `@144`. Rouges d'abord (l'exception), verts après.
+- **M0-2 — Code** (`AlundraEventProgramRunner.cs`).
+
+**Acceptation.** 1. Tests de M0-1 rouges d'abord, verts après, valeurs écrites tenues. 2. Test existant touché, liste fermée :
+`AlundraEventProgramRunnerTests.cs:1924-1933` (l'exception), remplacé par les tests de valeurs ; rien d'autre. 3. `Alundra.Tests` en
+Release puis en Debug, la Debug en dernier, `cmp` sans écart ; les six traces à l'octet ; la liste fermée de la chaîne inchangée (aucun
+site sur la chaîne). **Retour arrière** : revert du commit (DLL seule).
+
+**Risques.** Les tirages du flux partagé se décalent pour les sites portés suivants (`0x0C`, `0x8C`, et la chute des cellules qui y
+puise à tort, O-E19-48) : le flux de la DLL ne suit déjà pas l'original tirage pour tirage (2 sites sur 93 portés).
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
@@ -6894,6 +6936,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-45 | **Tranché le 2026-10-03 (D-E19-59 : convention de la DLL à l'apparition, `0x8A` et `0x64` dans la même ADR).** **Convention de `PosZ` à l'apparition** (conception d'E19.h1b) : la DLL tient partout `PosZ` = celle du binaire moins 1 (atterrissage à `T`), sauf à l'apparition (`z − ModZ + 1`, fabrique ~657) et dans `0x8A`/`0x64`. Le `+ 1` est perdu au premier tirage de tête d'image pour une entité à contrôleur, ce qui la fait passer à travers un appui exact ; c'est ce que masque aujourd'hui l'appui d'apparition sans portée (O-E19-15). **Question** : passer l'apparition en convention de la DLL (abandonner le `+ 1`, relever à `max(PosZ, T)`), décision transversale à consigner en ADR, ou garder la convention du binaire à l'apparition et la traiter autrement ? Recommandation : convention de la DLL à l'apparition (la fabrique ; `0x8A` et `0x64` à examiner dans la même ADR). | auteur, puis E19.h1b et E19.h2 |
 | O-E19-46 | **Tranché le 2026-10-03 (D-E19-47 : 320 × 240 à bandes, recalculé en temps réel).** **Hauteur affichée** (recette du 2026-10-03, 476) : la DLL montre 320 × 236 (`AlundraCameraMath.CameraDisplayHeight` 236, fenêtre 1280 × 944, valeur de la décompilation) ; le binaire fixe ses environnements de dessin et d'affichage à 320 × 240 (`0x800424AC`, `SetDefDrawEnv`/`SetDefDispEnv` 0x140 × 0xF0) : quatre lignes de moins dans la DLL. La fenêtre est aussi redimensionnable sans bandes (`AllowUserResizing`, zoom fixé par monde sur la hauteur) : élargie, l'image ne couvre plus les côtés. **Question** : passer à 240 (1280 × 960), et que faire d'une fenêtre redimensionnée (bandes, zoom recalculé, ou taille fixe) ? | auteur |
 | O-E19-47 | **Réglé le 2026-10-03 (R3, D-E19-45, ADR-0024).** **Entités détruites jamais recyclées** (recette du 2026-10-03, carte 15) : `0x2C` et les autres recherches par id brut trouvent le mandataire d'une entité détruite, qui reste dans la liste avec son `EntityRefId` ; la scène des Murggs devant le manoir de Tarn (`B[1] @108`-`@111`) tourne sans fin et le contrôle ne revient pas ; même blocage hors combat ailleurs (carte 6, `B[2] @239`). R3 (D-E19-45). | E19.r |
+| O-E19-48 | **La chute des cellules puise dans le mauvais générateur** (question bornée du 2026-10-03 pour E19.m0) : dans le binaire, la cellule de type 2 (`0x8005CAC8` → `0x8005D05C`) tire sa nouvelle position au `rand()` de la bibliothèque C (`0x80081E6C`, état `0x801EEB48`, constantes 0x41C64E6D/0x3039, rend `(s >> 16) & 0x7FFF`) et pose `posX = rand() / 102` (0 à 321) ; la DLL la branche sur `AlundraRandom` (`AlundraWorldProxy.cs:652` → `CellularLayerService.cs:397`, décision D7), le flux du jeu, que l'original ne touche pas là ; D7 et la décompilation (`GraphicManager.cs:1172`) se trompent. | E19.m (G4) |
 
 ## 4. Hors périmètre
 
