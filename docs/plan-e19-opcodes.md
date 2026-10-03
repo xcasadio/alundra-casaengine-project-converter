@@ -4198,7 +4198,7 @@ sous-tranche a son plan relu, son exécution et sa vérification :
   propriétaire de la formule d'échelle commune des écrans** (résolution virtuelle du moteur, recalcul des écrans au changement
   de taille) ; f2 bâtit son écran dessus sans la modifier (révision n°1 de la relecture du 2026-10-03).
 
-##### 1.2j.1 E19.f0 — Drapeaux du texte à leur position ⏳ (planifiée ; relectures n°1 et n°2 REVISE, révisée ; relecture de clôture à faire)
+##### 1.2j.1 E19.f0 — Drapeaux du texte à leur position ⏳ (READY à la relecture de clôture sur `6e6a0cd` ; audit des valeurs fait)
 
 **Faits** (cartographie, `e19f-plan2/yarn/notes.md`) :
 - **[binaire]** un code numérique pose son drapeau temporaire quand l'interpréteur du texte l'atteint et passe au caractère suivant
@@ -4223,14 +4223,16 @@ sous-tranche a son plan relu, son exécution et sa vérification :
   technique : la cadence de la frappe d'E19.f2 en dépend, 922 marqueurs dans les mêmes 155 fichiers) ; plus aucun `<<flag n>>`
   n'est émis ; `<<falcon_update>>` ne change pas ; à une même position, l'ordre du texte source est gardé.
 - **F0-R2 — Transparence** : la coupe des espaces de bord (D-E15-8) et la règle de la page vide ignorent les marqueurs `flag` et
-  `yield` : un espace entre la dernière unité visible et un drapeau reste coupé (sinon 47 pages changeraient de texte) ; une page
+  `yield` : un espace entre la dernière unité visible et un drapeau reste coupé (sinon 32 pages, qui portent 47 codes, changeraient de texte) ; une page
   qui ne porte que des drapeaux et des `\Y` s'écrit avec ses marqueurs dans l'ordre source puis `[empty trimwhitespace=false/]`.
 - **F0-R3 — Garde** : un identifiant au-delà d'`int.MaxValue` est une erreur de conversion (les propriétés entières de Yarn).
 - **F0-R4 — Compteurs** : `Yarn.FlagCommands` de `report.json` est remplacé par `Yarn.FlagMarkers` (932) et `Yarn.YieldMarkers`
-  (922).
+  (922) ; `Yarn.EmptyPages` reste 95 (la règle de la page vide ignore les marqueurs `flag` et `yield`, y compris dans le test de
+  recensement, `ReferenceTextDecoderTests.cs:805` et `:890`).
 - **F0-R5 — DLL, comportement inchangé** (D-E12-4 tient jusqu'à E19.f2 : tous les drapeaux d'une page posés à son affichage) : le
   présentateur de capture pose les drapeaux des marqueurs `flag` de la ligne, dans l'ordre de la liste, à `ShowLine`, avant de
-  transmettre la ligne ; le chemin dégradé (`NullDialoguePresenter.ShowLine`) aussi ; une écriture partagée dans
+  transmettre la ligne ; le chemin dégradé (`NullDialoguePresenter.ShowLine`) aussi (il change de forme : c'est aujourd'hui un
+  singleton statique sans état de jeu, `AlundraEventProgramRunner.cs:1915-1917`) ; une écriture partagée dans
   `AlundraYarnBindings` (`n | 0x8000`, bit `n & 0x1f`, la même que la commande) ; le gestionnaire de la commande `flag` reste (anciens
   exports, montages de test écrits à la main) ; `yield` est ignoré jusqu'à E19.f2.
 - **F0-R6 — Ordre de livraison** : la DLL d'abord (construite et déposée dans `alundra-project/`), puis l'export complet en place ;
@@ -4258,7 +4260,7 @@ sous-tranche a son plan relu, son exécution et sa vérification :
 1. Les tests de F0-1 et F0-3 sont rouges d'abord, verts après.
 2. Code de test existant touché, liste fermée : `YarnTextEmitterTests.cs` (`:172-211`, `:434-480`, `:790-880`),
    `YarnCorpusEquivalenceTests.cs` (`:275-314`, `:351-391`, `:499-536`, `:606-624`, `:792-822`, comparateur `:956` et
-   `:1064-1092`), `ReferenceTextDecoderTests.cs` (`:76-125`, `:452-458`, `:566-586`, `:608-635`, `:692-704`, `:770-897`),
+   `:1064-1092`, commentaire de doc `:913`), `ReferenceTextDecoderTests.cs` (`:76-125`, `:129-135` `Decode_BackslashY_AddsNothing` renommé, `:452-458`, `:566-586`, `:608-635`, `:692-704`, `:770-897`),
    `YarnDialogueWriterTests.cs` (`:687`, `:135`), et le support de test `ReferenceTextDecoder.cs` (forme de commande de
    `ReferenceCommand.Flag`, `:30`, et décodage des codes numériques et de `\Y` en marqueurs positionnés, F0-R7) ; côté DLL, aucun : les montages qui écrivent `<<flag n>>` restent servis par le
    gestionnaire gardé ; `AlundraDialogueOpcodesProductionTests` reste inchangé et vert sur le nouvel export (le `\999` du marin 12
@@ -4269,11 +4271,27 @@ sous-tranche a son plan relu, son exécution et sa vérification :
 4. Tests du convertisseur verts ; `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans écart ; les six traces
    à l'octet.
 
+**Audit des valeurs** (2026-10-03, `e19f0-audit/notes.md` du scratchpad ; l'émetteur porté en Python reproduit les 485 `.yarn`
+exportés à l'octet) : toutes les valeurs tenues (932, 627, 587, 155 sur 485 ; 87, 647, 198 ; 922 `\Y` ; 58 pages de drapeaux
+seuls ; 932 et 922 marqueurs ; texte visible inchangé sur les 31 757 pages ; exactement les 155 tables à drapeaux changent, 311
+chemins) ; chaînes exactes : `M389_S001` p0 finit par `…ta cabine ?[flag id=999 trimwhitespace=false/][yield
+trimwhitespace=false/] #line:M389_S001_p0` ; `M164_S003` p0 `[voice id=0 trimwhitespace=false/]Attends...[flag id=200
+trimwhitespace=false/][yield trimwhitespace=false/]Fais-moi voir ton front.[slow trimwhitespace=false/][slow
+trimwhitespace=false/] #line:M164_S003_p0` ; `M164_S003` p1 `[flag id=201 trimwhitespace=false/]Tu[yield
+trimwhitespace=false/][slow trimwhitespace=false/]...[slow trimwhitespace=false/]...[slow trimwhitespace=false/]tu as la
+cicatrice ! #line:M164_S003_p1` ; `M389_S022` p0 finit par `…on[glyph id=18 trimwhitespace=false/][flag id=999
+trimwhitespace=false/][yield trimwhitespace=false/] #line:M389_S022_p0` ; même position : `M389_S106` p0 finit par
+`…leurs efforts ?[flag id=1004 trimwhitespace=false/][yield trimwhitespace=false/][flag id=999 trimwhitespace=false/][yield
+trimwhitespace=false/] #line:M389_S106_p0` ; page de drapeaux seuls : `M45_S097` p1 `[flag id=999 trimwhitespace=false/][yield
+trimwhitespace=false/][empty trimwhitespace=false/] #line:M45_S097_p1`. Une contradiction de rédaction, corrigée : « 47 pages »
+valait 32 pages portant 47 codes (aucun test n'en dépend). Lacunes réglées dans le texte : `Yarn.EmptyPages` 95, deux entrées
+de la liste fermée, la forme de `NullDialoguePresenter`.
+
 **Retour arrière** (le projet joué n'est pas suivi par git, `.gitignore:64`) : après F0-5, ré-exporter en place avec le
 convertisseur d'avant f0 en **gardant la nouvelle DLL** (elle sert encore la commande `<<flag n>>`) ; ne jamais remettre une DLL
 d'avant f0 sur un export au nouveau format ; le manifeste du projet restauré doit égaler le « manifeste avant » de F0-5.
 
-**Risques.** Livraison dans le mauvais ordre (F0-R6) ; coupe des bords non transparente (47 pages) ; une ligne de drapeaux seuls
+**Risques.** Livraison dans le mauvais ordre (F0-R6) ; coupe des bords non transparente (32 pages) ; une ligne de drapeaux seuls
 jamais compilée (test de F0-1) ; la preuve qui perd son indépendance (F0-R7) ; numéro d'ADR (0025 est le suivant ; E19.s et la
 convention d'apparition prendront les suivants).
 
@@ -4977,7 +4995,7 @@ ses points à concevoir) ; E19.h1 ne garde que les attentes sans question de con
 148, 152, 154, 344, 410, 423 : leur contact en Z dépend de D5) ; une flamme (`0x47`) n'est arrêtée que par un mur tant
 qu'E14 n'écrit pas `HitCounter`.
 
-##### 1.2n.1b E19.h1b1 — Écritures absolues de Z en convention de la DLL (apparition, `0x8A`, `0x64`) ⏳ (planifiée ; relectures n°1 et n°2 REVISE, révisée ; relecture de clôture à faire)
+##### 1.2n.1b E19.h1b1 — Écritures absolues de Z en convention de la DLL (apparition, `0x8A`, `0x64`) ⚠️ (en pause : relecture de clôture REVISE sur `c38f952`, ligne d'ordre « après D5 » devenue ambiguë par le découpage de D5, corrigée ; une nouvelle relecture demande l'accord de l'auteur)
 
 **Décision** : D-E19-59 (l'apparition passe en convention de la DLL, `0x8A` et `0x64` examinés dans la même ADR). E19.h1b est
 coupée en deux : **h1b1** (cette tranche, la convention) puis **h1b2** (`0x20`, `0x22`, `0x23`, Z des entités sans contrôleur,
@@ -5061,7 +5079,9 @@ gravité de carte de toute entité ; esquisse en §1.2n.1c), qui en dépend, com
 4. `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
 5. **Recette H1b1** (auteur) : les piles de caisses des 165, 178 et 179 ; la plateforme flottante de la 83.
 
-**Ordre** : après D5 d'E19.d2c2, avant E19.t (mêmes fichiers) ; une tranche à la fois.
+**Ordre** : après **D5a** d'E19.d2c2 (close), avant E19.t (mêmes fichiers) ; une tranche à la fois. D5b (en pause) ne la bloque
+pas : si une reprise de D5b change l'ordre passager/porteur et déplace les valeurs des gardes de piles de h1b1, c'est un arrêt
+pour D5b, pas pour h1b1.
 
 **Retour arrière** : revert du commit (DLL seule, aucun export).
 
