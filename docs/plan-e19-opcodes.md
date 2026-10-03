@@ -3649,7 +3649,7 @@ par `ZImpulseSfx`) ; l'impulsion d'animation est prise au tick (R1) ; `CollidedW
     Wendell ; A12 sous `using` (un arc bloqué ne doit pas laisser l'état global sale).
   Commit : `chore(alundra): close the E19.d2c1 hygiene items`
   - Fait le 2026-10-03 : `SyncAnimation` baisse `ZImpulseTaken` quand plus rien n'est en attente à la validation (UJ-LOCK, `AlundraAnimationImpulseLockTests.cs`, rouge sans le correctif puis vert : 348160 et impulsion sans décroissance). UJ-2 : `0x25` au pc 1 (3 tests verts, les index de `CodeIndex` décalés de 1). Nouveau `AlundraArcGuardAndSoundHostTests.cs`, 4 tests verts d'emblée (ce sont des gardes d'un comportement existant) : la garde T-REG-0 (lève sur un arc gardé qui a rencontré une entité, ne lève pas hors de l'ensemble gardé ni quand le test échoue déjà), et `AlundraWorldProxy.SoundPlayer` rendu par `IAlundraScriptHost.SoundPlayer` (champ posé par réflexion, `InstallAudioSystems` demandant un `Game`). A10J épingle les pas de Giles : Y de 131072 aux images F0+241 à F0+244 puis 106496 à F0+245, mesurés en valeur négative (il va vers les Y décroissants ; le plan donnait les modules). Textes : T-C61 (`0x30 @983` teste G672, `0x05 @990` le pose), doc d'A10 et phase de Meade (`@984`, une image sur deux, T105 effacé par son `0x06 @1026` à l'image 774) à côté de celle de Wendell ; A12 : l'arc est créé sous `using` avant la course (`Run(arc)`), car `Run()` créait l'arc et pouvait lever avant le `using`. `Alundra.Tests` 2301 réussis (2296 + 5), garde d'octets à 0. Aucune assertion existante autre que celles de la liste fermée n'a bougé.
-- ⏳ **D5 — Correctifs de la vérification** (2026-10-03, après le verifier CONFIRMED sur `103dcb7` et les deux
+- ⚠️ **D5 — Correctifs de la vérification** (2026-10-03, après le verifier CONFIRMED sur `103dcb7` et les deux
   contradicteurs ; nouvelle époque de relecture : une relecture de clôture avant exécution). Tests d'abord, une valeur
   contredite est un arrêt :
   - **F1 — Fenêtre Y du passager** (contradicteur binaire, P2) : `CheckRidingEntities` compare `deltaY < Height + 1`
@@ -3694,6 +3694,26 @@ par `ZImpulseSfx`) ; l'impulsion d'animation est prise au tick (R1) ; `CollidedW
     chute d'`AlundraLadderClimbTests` retrouve ses assertions sur la racine (`Position.Z` figée sur les 5 images de gel,
     plus basse après la reprise) ; SJ-17 assert que le héros a décollé (`HeroAirborne` vrai à un tick intermédiaire).
   - Commit : `fix(alundra): rider window, platforms moving in Z, flush tops and climbing from a jump`
+  - **En pause (2026-10-03)** : la relecture de clôture de cette époque (`4432dae`) rend **REVISE** ; la règle de conduite
+    interdit de relancer seul une boucle de relecture : D5 attend l'auteur. Bloquants : (1) F2/UH-16 : le héros, mis à jour
+    avant la plateforme, monte à `dessus + v` avant elle (`IsOnGround` 0 en fin de tick, animation d'air), et en descente il
+    atterrit sur elle à chaque tick (`CollidedWithEntityZ` 1, `ForceZ` 0) : les valeurs écrites d'UH-16 demandent deux
+    règles de plus ; la condition de fin « écart > déplacement d'un tick » n'est pas définie en Z (aucun `LastTickDeltaZ`) ;
+    (2) F5/UH-7b : `FlatCells` ne connaît que des hauteurs de 16 px, la « vraie descente de 3 px » n'est pas constructible
+    sans choisir une géométrie. Notes : F1 est traçable (fenêtre de 15 px, le recouvrement cesse à `deltaY >= 15 px`, pas
+    `> 15`) ; deux tests à surveiller sous F1 (`AlundraNpcCharacterControllerMoverTests.EntitySearchService_Searches5And6_…`,
+    traces de l'intro par `UpdateRidingEntities`) ; le montage d'UH-17 doit décaler la boîte physique de l'interrupteur
+    (`offsetX`, comme UH-14).
+  - **Révision proposée, prête** (à relire si l'auteur le demande) : F2 (S4b) ajoute « un héros porté n'atterrit pas sur son
+    porteur et ne lève pas `CollidedWithEntityZ` ; `IsOnGround` vaut 1 tant qu'il est porté, quelle que soit la phase d'un
+    tick ; il cesse d'être porté si `|PosZ − (dessus + 1)| > |dernier déplacement réalisé en Z de la plateforme|` (champ
+    `LastTickDeltaZ` mesuré comme `LastTickDeltaX/Y`, borne stricte), épinglé par un cas de téléportation » ; F5 ramène UH-7b
+    à « `PosZ` = 196608 et hors de l'état avant la boucle, sur le montage actuel », et nomme la vraie descente de 3 px un manque
+    de montage (E19.m).
+  - Ce qui reste ouvert tant que D5 attend : deux P2 introduits côté tests (UH-7b vacant, assertions de racine du test de
+    gel) ; deux P2 de fidélité (fenêtre Y du passager, plateformes en Z non porteuses : D-E19-42 n'est pas tenu pour elles) ;
+    le défaut probable d'escalade depuis un saut (F4) ; la pose de saut d'une image sur les dessus à fleur (F3). La chaîne de
+    l'histoire n'en dépend pas (aucun `0x3E` ni plateforme en Z sur la chaîne, d'après la découverte d'E19.e).
 - ⏳ **D6 — Vérification et clôture**, comme C6. **D7 — Recette** (auteur, avec la recette C7 d'E19.d2c1) : saut sur place
   et en marchant, contrôle en l'air, saut depuis l'eau (plus bas), chute d'un rebord, saut sur un coffre puis descente, une
   plateforme mobile, la falaise de la 10 franchie seule ; une case où la Croix ne fait rien ; après un saut scripté sur la
