@@ -5061,7 +5061,7 @@ quads par image (pas de 128 entités du moteur, pas de `.anim2d`) ; la semi-tran
 dans le moteur (rapports de manque, jamais de contournement en amont) ; le tri reprend la formule des entités dans la couche
 triée du monde ; les données d'effets s'exportent en données, pas en images précuites.
 
-### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ⏳
+### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ⏳ (R1, R2 ✅ ; R3, R4 attendent l'auteur)
 
 **Constat de l'auteur** (conversion relancée, DLL reconstruite) : contacts avec les PNJ bons ; sons et musique bons ; boîtes de
 dialogue toujours celles de MGUI ; scène de Lars et Melzas toujours fausse, halo plus petit que la fenêtre ; on traverse les
@@ -5136,6 +5136,15 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
     en (1,2), hauteur 0 en (1,6)), et 3 avertissements là où un seul est attendu. Verts après : `AlundraCellVisualSync` note à la création les cases
     à sol à plat propre (id de sol présent et absent de la surcouche) ; hors de celles-ci un sol copié est adopté quelle que soit sa hauteur ; le cas
     dégradé ne reste que pour ces cases, un seul avertissement par monde. Tests de la 389 inchangés et verts. Aucun écart au plan.
+- ✅ **Vérification de R1 et R2** (2026-10-03) : `Alundra.Tests` 2474 → 2483 (+9), 0 échec, en Release (47 s) puis en Debug
+  (48 s), la Debug en dernier ; `cmp` sans écart (sha256 `70a86bd7...c483`) ; les six traces à l'octet. Vérificateurs neufs :
+  R1 **CONFIRMED** (chaîne d'appels du binaire relue : `0x8002c3d0` → `0x8004be0c`, ses deux portes, les seuls écrivains de
+  `g_drawFrameFlags` ; quatre mutations attrapées : appel vidé, porte du verrou, porte `Idle`, armement avant le chargement) ;
+  R2 **CONFIRMED** (copie et rendu du binaire relus ; sur l'export réel de la 476, 400 sols sur 400 de la chambre de Lars et
+  360 sur 360 de la salle du trône adoptés en (x, y − 3), retirés par le bloc vide, sans avertissement ; le code d'avant
+  reproduit la panne et ses avertissements ; cinq mutations sur six attrapées). Avis reportés à E19.m : P3 aucun test ne
+  couvre la moitié « pose de surcouche au chargement » de la règle de R2 (le code est juste : 20 cases sur 20 adoptées sur la
+  476) ; P4 aucun test ne prend un vrai warp hors de la chambre de la 163 (couvert en deux morceaux ; recette R5).
 - ⏳ **R3 — Recyclage des entités détruites** (plan à écrire, décision D-E19 et ADR) : port d'`UpdateDestroyedEntities`
   (`0x80038634`) juste après chaque passe des événements de carte, sous la même porte ; forme la plus fidèle : remise à zéro du
   mandataire en place sur le gabarit du binaire (état 0, `EntityRefId` −1, drapeaux 0, liens effacés), retiré des listes de mise à
@@ -5401,6 +5410,12 @@ Réservé aux mesures faites en exécutant les tranches.
 - **Suites** : `Alundra.Tests` **2466 avant la sous-tranche, 2474 après** (+8), 0 échec, en Release (45 s) puis en Debug
   (48 s) ; `cmp` sans écart ; liste fermée 140 → 134, 19 cartes sans site.
 - **A10J** : `0x24 @2462` finit à F0+308 (le binaire : F0+308), en (47877120 ; 50790400).
+
+### E19.r, R1 et R2 (2026-10-03)
+
+- **Commits** : enquête `3fe4640`, R1 `05072ef`, R2 `c56b87f`, puis cette clôture.
+- **Suites** : `Alundra.Tests` **2474 avant, 2483 après** (+9 : R1 6, R2 3), 0 échec, en Release (47 s) puis en Debug (48 s) ;
+  `cmp` sans écart.
 
 ## 3. Points ouverts
 
