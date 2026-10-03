@@ -182,6 +182,80 @@ internal static class EntitySupport
     }
 
     /// <summary>
+    /// The absolute ceiling of the binary (<c>0x80036D94</c>, the constant <c>0x7800000</c>, 1920 px), tested before every entity: the top of a box may not go above it.
+    /// </summary>
+    private const int AbsoluteCeiling = 0x7800000;
+
+    /// <summary>
+    /// E19.h3 (H3-R2), port of the ceiling half of the binary's vertical step (<c>0x80036D94</c>) for a rising entity, in the DLL's convention (<c>ModdedPosZ = PosZ + ModZ</c>,
+    /// <c>Depth = SizeZ * 65536 - 1</c>, a floor is its height without the binary's +1). <paramref name="force"/> is the rise of the tick (<c>&gt; 0</c>); the top of the box
+    /// is <c>PosZ + ModZ + Depth</c> and its target that plus <paramref name="force"/>. The absolute ceiling is tested first: a target whose top plus one (the conversion
+    /// of the binary's convention) goes past <see cref="AbsoluteCeiling"/> puts <c>PosZ</c> at <c>0x77FFFFF - Depth - ModZ - 1</c>. Otherwise, for an eligible subject, any
+    /// collidable (not the entity) whose <c>ModdedPosZ</c> is above the current top and at or below the target, and whose XY box overlaps (the semi-open rule of
+    /// <see cref="TryFindSupport"/>), lowers the target to its <c>ModdedPosZ - 1</c> (the lowest wins) and <paramref name="newPosZ"/> is the <c>PosZ</c> that puts the top there.
+    /// Returns true on a contact (the caller sets <c>CollidedWithEntityZ</c> and, with gravity, clears <c>ForceZ</c>).
+    /// </summary>
+    internal static bool TryFindCeiling(
+        AlundraEntityScriptProxy entity, IReadOnlyList<AlundraEntityScriptProxy> collidables, int force, out int newPosZ)
+    {
+        var top = entity.PosZ + entity.ModZ + entity.Depth;
+        var targetTop = top + force;
+
+        if (targetTop + 1 > AbsoluteCeiling)
+        {
+            newPosZ = 0x77FFFFF - entity.Depth - entity.ModZ - 1;
+            return true;
+        }
+
+        newPosZ = 0;
+        if (!IsEligibleSubject(entity))
+        {
+            return false;
+        }
+
+        var moddedPosX = entity.PosX + entity.ModX;
+        var moddedPosY = entity.PosY + entity.ModY;
+        var contact = false;
+
+        for (var i = 0; i < collidables.Count; i++)
+        {
+            var candidate = collidables[i];
+            if (ReferenceEquals(candidate, entity))
+            {
+                continue;
+            }
+
+            var candidateModZ = candidate.PosZ + candidate.ModZ;
+            if (!(top < candidateModZ && candidateModZ <= targetTop))
+            {
+                continue;
+            }
+
+            var deltaX = candidate.PosX + candidate.ModX - moddedPosX;
+            if (deltaX < 0 ? -deltaX >= candidate.Width + 1 : deltaX >= entity.Width + 1)
+            {
+                continue;
+            }
+
+            var deltaY = candidate.PosY + candidate.ModY - moddedPosY;
+            if (deltaY < 0 ? -deltaY >= candidate.Height + 1 : deltaY >= entity.Height + 1)
+            {
+                continue;
+            }
+
+            targetTop = candidateModZ - 1;
+            contact = true;
+        }
+
+        if (contact)
+        {
+            newPosZ = targetTop - entity.Depth - entity.ModZ;
+        }
+
+        return contact;
+    }
+
+    /// <summary>
     /// Port of <c>CheckRidingEntities</c> (PhysicsEngine.cs:1288-1358) - a SEPARATE, EXACT-match test (not
     /// <see cref="TryFindSupport"/>'s own strict-below/highest-wins one) that only feeds
     /// <see cref="AlundraEntityScriptProxy.RidingEntity"/> for <see cref="EntitySearchService"/>'s own

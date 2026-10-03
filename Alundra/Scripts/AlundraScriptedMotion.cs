@@ -201,6 +201,12 @@ internal static class AlundraScriptedMotion
 
         RunOneKinematicTick(entity, animSetAnimationId);
 
+        // E19.h3 (H3-R1): after the XY step, a hero still in the state snaps at the top of its jump.
+        if (airborne && entity.HeroAirborne)
+        {
+            SnapHeroAtApex(entity);
+        }
+
         // R6: after each tick of the state, IsOnGround is derived from the position after the XY step, not pulled from the engine: PosZ <= the floor (the binary's
         // !(FloorHeight < PosZ), 0x800380F8, without its +1). E19.d2c2 S3: the floor is the higher of the terrain and the top of an entity under the box.
         if (entity.ZHeldByTick)
@@ -221,7 +227,7 @@ internal static class AlundraScriptedMotion
     /// go to 0 and the vertical becomes external; they are given back AS CAPTURED at the landing (a gravity already at 0 by a <c>0x17</c> stays 0).</description></item>
     /// <item><description>Force: impulse tick, <c>ForceZ = IZF &lt;&lt; 8</c> with no decay; otherwise, with <see cref="EntityFlags.Gravity"/>, the decay
     /// <c>ForceZ -= Gravity &lt;&lt; 8</c> bounded on both sides by <c>ZViscosity &lt;&lt; 8</c>; without Gravity, unchanged.</description></item>
-    /// <item><description>Step: <c>F &gt; 0</c> rises (no ceiling, E19.h); otherwise the STRICT test <c>PosZ + F &lt; T</c> (<c>T</c>, the terrain under the box at the
+    /// <item><description>Step: <c>F &gt; 0</c> rises (E19.h3: stopped under the bottom of a collidable above or at the absolute ceiling, <see cref="EntitySupport.TryFindCeiling"/>); otherwise the STRICT test <c>PosZ + F &lt; T</c> (<c>T</c>, the terrain under the box at the
     /// position before the XY step): landed means <c>PosZ = T</c>, <c>ForceZ = 0</c> with gravity, <see cref="AlundraEntityScriptProxy.CollidedWithEntityZ"/> 1 and
     /// the state ends; not landed, <c>PosZ += F</c>. The logical <see cref="AlundraEntityScriptProxy.PosZ"/> is the truth; the root follows by a vertical
     /// displacement of the controller (never a teleport: X and Y keep their fraction).</description></item>
@@ -335,6 +341,18 @@ internal static class AlundraScriptedMotion
             // support is the terrain again.
             landed = !onEntity;
         }
+        else if (tickForce > 0 && EntitySupport.TryFindCeiling(hero, hero.ScriptHost?.Collidables ?? Array.Empty<AlundraEntityScriptProxy>(), tickForce, out var ceilingPosZ))
+        {
+            // E19.h3 (H3-R2, binary 0x80036D94): a rise stops under the bottom of a collidable above (or at the absolute ceiling of 1920 px): contact, ForceZ 0 with gravity.
+            hero.PosZ = ceilingPosZ;
+            if (gravity)
+            {
+                hero.ForceZ = 0;
+                hero.FinalForceZ = 0;
+            }
+
+            hero.CollidedWithEntityZ = 1;
+        }
         else
         {
             hero.PosZ += tickForce;
@@ -363,6 +381,35 @@ internal static class AlundraScriptedMotion
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// E19.h3 (H3-R1, binary <c>0x80037848</c>), after the XY step of a tick of the air state: with <see cref="EntityFlags.Gravity"/> and <c>ForceZ == 0</c>, the terrain <c>T'</c>
+    /// under the box at the position after the step; if the hero is at most 3 px above it (<c>PosZ - T' &lt;= 0x30000</c>) or at most 3 px + 1 unit under it
+    /// (<c>T' - PosZ &lt;= 0x30001</c>), <c>PosZ = T'</c> unless an entity occupies the box at <c>T'</c> (the positional search of
+    /// <see cref="AlundraEntityCollision"/>, no skipped flags: the snap is then undone, <c>PosZ</c> unchanged). The state is not left: the next tick lands by the strict test.
+    /// </summary>
+    private static void SnapHeroAtApex(AlundraEntityScriptProxy hero)
+    {
+        if ((hero.Flags & EntityFlags.Gravity) == 0 || hero.ForceZ != 0)
+        {
+            return;
+        }
+
+        var terrain = hero.ComputeTerrainHeight();
+        if (hero.PosZ == terrain || hero.PosZ - terrain > 0x30000 || terrain - hero.PosZ > 0x30001)
+        {
+            return;
+        }
+
+        if (hero.ScriptHost != null && AlundraEntityCollision.FindEntityCollisionCandidate(hero, hero.PosX, hero.PosY, terrain, hero.ScriptHost.Collidables) != null)
+        {
+            return;
+        }
+
+        hero.PosZ = terrain;
+        hero.TileZ = hero.PosZ >> 20;
+        hero.FollowPosZOnRoot();
     }
 
     /// <summary>

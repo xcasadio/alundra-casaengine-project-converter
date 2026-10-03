@@ -4744,7 +4744,7 @@ recherche, H3-1 gagne UH-APEX-REVERT, le risque disparaît).
 
 **Tâches.**
 - ✅ **H3-0 — Plan**, relu jusqu'à READY (REVISE n°1, READY à la deuxième relecture le 2026-10-03 ; valeurs auditées).
-- ⏳ **H3-1 — Tests d'abord, puis règles** (montage `JumpHeroRig` et `FlatCells`, IZF de l'animation 2 imposé dans le
+- ✅ **H3-1 — Tests d'abord, puis règles** (montage `JumpHeroRig` et `FlatCells`, IZF de l'animation 2 imposé dans le
   montage) : **UH-APEX-DOWN** (IZF 1408, rebord de 32 px à partir de x = 144, héros en marche vers l'est à x0 = 108, `ForceX`
   159744, Croix au tick 1, droite tenue) : `PosZ` des ticks 1 à 11 = 360448, 688128, 983040, 1245184, 1474560, 1671168,
   1835008, 1966080, 2064384, 2129920, 2162688 ; tick 12 : `ForceZ` 0, `PosZ` 2097152, `IsOnGround` 1, `CollidedWithEntityZ` 0 ;
@@ -4764,6 +4764,7 @@ recherche, H3-1 gagne UH-APEX-REVERT, le risque disparaît).
   de la fenêtre de 3 px). Les boîtes sont posées par `ContactWorld.AddEntity` (convention de la DLL ; l'audit des valeurs a vérifié que la règle H3-R2
   sans `+ 1` donne exactement ces valeurs) ; une valeur contredite est un arrêt.
   Commit : `feat(alundra): the hero snaps at the top of a jump and stops under ceilings like the binary`
+  - Fait le 2026-10-03 : 6 tests dans `AlundraHeroApexAndCeilingTests` ; rouges d'abord, valeurs du plan lues telles quelles (APEX-DOWN tick 12 `PosZ` 2162688, APEX-UP 2981888, SJ-14 tick 4 1114112, UH-12 tick 2 622592, UH-CAP monte sans fin : 125730816 au tick 2) ; UH-APEX-REVERT passe déjà avant (pas de règle d'aimantation à annuler), prouvé par mutation de l'annulation (build, filtre : rouge ; fichier rendu à l'octet) ; verts après, aucune valeur ré-épinglée ; suite Debug 2466/2466 (2460 + 6), six traces inchangées. `TryFindCeiling` dans `EntitySupport`, aimantation `SnapHeroAtApex` après le pas XY (seulement si l'état en l'air n'est pas quitté à ce tick), commentaire « no ceiling » mis à jour. Écart : UH-CAP n'épingle pas `PosZ` au tick 1 (le montage à 1792 px laisse le héros 1 px plus bas à l'entrée de l'état, valeur hors plan) mais vérifie qu'il est sous le plafond avec contact 0 ; aucune autre.
 - ⏳ **H3-2 — Vérification et clôture.** **H3-3 — Recette** (auteur, hors chaîne) : un saut sous une plateforme suspendue (le
   héros se cogne la tête), un saut vers un rebord à peine plus haut.
 
