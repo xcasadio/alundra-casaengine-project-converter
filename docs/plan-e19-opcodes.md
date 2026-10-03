@@ -5717,7 +5717,7 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
 au sud (O-E19-28 b, aussi contre les cellules) demande l'étape 2 (O-E19-42) ; l'image d'A10J `@2462` peut bouger d'un tick
 (retards connus de la DLL).
 
-### 1.2o E19.g — Effets visuels ⏳ (découverte faite ; questions tranchées le 2026-10-03 : D-E19-51 à D-E19-55 ; plans à écrire)
+### 1.2o E19.g — Effets visuels ⏳ (questions tranchées le 2026-10-03 : D-E19-51 à D-E19-55 ; G0 planifiée ; G1 à G4 à planifier)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B les données, le convertisseur,
 l'analyseur, le moteur et la DLL ; notes, rendus et scripts dans le scratchpad de la session, `e19g-disc/A/notes.md` et
@@ -5787,6 +5787,90 @@ l'analyseur, le moteur et la DLL ; notes, rendus et scripts dans le scratchpad d
 quads par image (pas de 128 entités du moteur, pas de `.anim2d`) ; la semi-transparence par texel et les quads libres se font
 dans le moteur (rapports de manque, jamais de contournement en amont) ; le tri reprend la formule des entités dans la couche
 triée du monde ; les données d'effets s'exportent en données, pas en images précuites.
+
+**Découverte du rendu moteur et du format de G0** (2026-10-03, lecture seule, `e19g2-disc/notes.md` du scratchpad ; un script
+re-simule les 484 planches d'entités depuis `DATAS.BIN` et reproduit chaque pixel exporté) :
+- **Moteur** : `SpriteRendererComponent` est un regroupeur maison à une liste triée, un appel par sprite avec `SpriteBatch.fx`, état de
+  mélange par série (opaque, alpha non prémultiplié, additif, soustractif), échantillonnage par point (`PointClamp`, `:192`) ; les
+  entités sont dessinées en opaque, l'alpha n'y sert qu'au rejet `<= 0.01`. Les effets devront entrer dans la même liste
+  `YSortedWorld`, avec la clé des entités (`WallPlacementOverlay.cs:393-403`).
+- **Schéma de G2 proposé** : fenêtre sur l'alpha brut du texel dans `SpriteBatch.fx` (la fenêtre par défaut reproduit
+  l'existant) ; une entrée semi-transparente = deux dessins disjoints, texels opaques en opaque, texels STP dans l'état de leur mode
+  (ABR0 alpha, ABR1 additif, ABR2 soustractif, ABR3 additif teinté à 64) ; ABR2 ne se fait pas en une passe (MonoGame n'a pas de
+  mélange à double source) ; quad à quatre sommets libres coupé selon la diagonale TR–BL, sans élimination des faces (les quads miroir
+  inversent l'ordre).
+- **Manques du moteur à rapporter** : pas d'API de quad à sommets libres ; pas de semi-transparence par texel ; pas de champ
+  semi/ABR sur `SpriteData` ; pas de piste de déformation par partie dans `.anim2d` (changement de format : ADR du moteur) ; pas de
+  service pour pousser des quads d'effets par image ; mineurs (règle de tri privée, tri instable, plafond de 10 000 entrées non gardé,
+  le mélange alpha réécrit l'alpha du back-buffer).
+- **Format de G0** : un **code alpha par texel** dans chaque planche écrite par l'extracteur, 255 opaque (bit 15 de la couleur clair),
+  128 semi-transparent (bit 15 posé, `0x8000` compris), 0 transparent (`0x0000`) ; le RVB ne change pas ; aucune palette brute (les
+  mots bruts ne reconstruisent pas le masque : 301 quads ambigus). Sans risque avant G2 : le chargement ne prémultiplie pas, les
+  entités sont dessinées en opaque, 0 des 85 icônes d'objets et du HUD et aucun portrait n'ont de texel semi-transparent, 128 se relit
+  exactement par point et donne d'emblée la moyenne PSX dans l'état alpha.
+- **Données** : 2514 quads semi-transparents d'entités et 88 d'effets mêlent texels opaques et STP ; aucun quad non semi ne contient
+  de texel STP ; 205 des 484 planches d'entités changent, **alpha seulement** (1 525 717 pixels de 255 à 128) ; 1836 `.sprite` sont
+  semi-transparents et 1923 `.anim2d` contiennent un quad déformé (30,8 % des références de quads d'entités).
+- **Défaut du portage trouvé** : quand un quad a un `SourceX` impair et un `Swidth` impair, l'extracteur perd sa dernière colonne de
+  texels (`GameMap.cs:188-194`) : 2646 pixels manquent dans 265 planches (695 dans 74 planches exportées, dont 83 dans
+  `map_alundra`) ; la simulation le prouve.
+
+##### 1.2o.1 E19.g G0 — Extracteur : texels semi-transparents, planches d'effets, portraits, colonne impaire ⏳ (planifiée)
+
+**Faits.** Ceux de la découverte ci-dessus et de la cartographie de l'extracteur (`e19f-plan2/extract/notes.md`) : extracteur
+`AlundraDataExtractor` (`Program.cs:77-151`, arguments `<gamePath> <extractionPath>`, dispositions par défaut `original` et
+`compact`) ; sortie 4450 fichiers ; planche de carte 256 × 2048 RGBA ; `SaveSpriteSheet` (`GameMapHelper.cs:109-156`) ne parcourt que
+les animations d'entités et le portrait de l'inventaire ; couleur par `FromPsxColor` (`ImageHelper.cs:12-21`), qui perd le bit 15 ;
+les quads d'effets ont `AtlasX/AtlasY` à 0 (20 315 références) ; 25 banques à portrait (331 occurrences dans 184 cartes), dont deux de
+48 × 72 (enregistrements 122 et 162), toutes les régions cibles vides, pixels et couleurs identiques d'une carte à l'autre (banques
+relogées par carte : l'indice de portrait vient de la carte canonique, la plus basse) ; l'analyseur n'a pas de projet de tests ; la
+régression du texte du 2026-09-19 venait de l'autre checkout de l'analyseur (`926dcb8`, sans `a8598f4`) : on n'extrait que depuis le
+sous-module, après une construction Release fraîche ; le sous-module est aujourd'hui sur `chantier/e19f1-dialogue-boxes` (`b92b7b9`).
+
+**Règles.**
+- **G0-R1 — Code alpha** : chaque planche écrite par l'extracteur (entités et effets) porte par texel l'alpha 255, 128 ou 0 selon la
+  règle ci-dessus ; RVB inchangé ; disposition des planches d'entités inchangée (le dernier texel dessiné gagne).
+- **G0-R2 — Planches d'effets** : une planche par carte et une globale (`map_alundra`), disposition compacte, une case par signature
+  (région et palette : 1436 cases, 87 fichiers) ; `AtlasX/AtlasY` des quads d'effets écrits dans le JSON de la carte.
+- **G0-R3 — Portraits de dialogue** : pour chaque enregistrement de sprite à portrait, l'image (première image du bloc,
+  `SpriteRecord.GetPortraitImageset`) est écrite dans la planche de la carte à sa région, et un champ de portrait (rectangle d'atlas,
+  taille 48 × 56 ou 48 × 72, palette ; omis quand il n'y en a pas) rejoint le JSON de la carte.
+- **G0-R4 — Colonne impaire** : un quad à `SourceX` impair et `Swidth` impair garde sa dernière colonne (défaut du portage corrigé).
+- **G0-R5 — Ré-extraction et miroir** (D-E19-51, par la session seule) : construction Release fraîche de l'extracteur du
+  sous-module ; extraction dans un dossier **neuf** (`D:\development\repo\Alundra Remake\remaster-data-extracted-e19g0`), jamais
+  par-dessus l'existant ; `diff -rq` contre `data-extracted/` : **exactement** la liste de fichiers écrite d'avance par l'audit des
+  valeurs (tout autre fichier changé est un arrêt) ; garde du texte (aucun marqueur non décodé ; `ReferenceTextDecoderTests` vert) ;
+  puis copie de sauvegarde de `data-extracted/` (`data-extracted.bak-e19g0`, hors suivi git), renommage de l'ancien remaster en
+  `remaster-data-extracted.bak-2026-10-03` et du dossier neuf en `remaster-data-extracted`, et miroir par `robocopy /MIR` lancé depuis
+  PowerShell ; preuve finale `diff -rq` vide entre le remaster et `data-extracted/`. Rien n'est supprimé.
+- **G0-R6 — Pas d'export** : G0 ne touche ni le convertisseur ni le projet joué ; G1 exportera.
+
+**Tâches.**
+- **G0-1 — Extracteur** (sous-module, branche `chantier/e19g0-extractor` **empilée sur** `chantier/e19f1-dialogue-boxes` `b92b7b9`) :
+  G0-R1 à G0-R4, un commit par règle, chacun construit.
+- **G0-2 — Preuves indépendantes** (scripts du scratchpad, qui ne partagent pas le code de l'extracteur) : la re-simulation des 484
+  planches d'entités depuis `DATAS.BIN` (script de la découverte) égale chaque pixel, alpha compris ; les 1436 cases d'effets égales à
+  un décodage indépendant ; les 25 portraits égaux à un décodage indépendant ; les 2646 pixels de la colonne impaire présents.
+- **G0-3 — Ré-extraction et diff** (G0-R5, avant le miroir).
+- **G0-4 — Miroir et preuve finale** (G0-R5).
+- **G0-5 — Gardes** : tests du convertisseur et `Alundra.Tests` verts sur le nouveau `data-extracted/` (aucun ne lit l'alpha des
+  planches ni les nouveaux champs ; un test qui bouge est un arrêt).
+- **G0-6 — ADR-0030** (le format des planches de l'extracteur : code alpha par texel ; planches d'effets ; portraits ; colonne
+  impaire) ; pointeur du sous-module ; le plan.
+
+**Acceptation.**
+1. Les quatre preuves de G0-2 sans écart.
+2. `diff -rq` de la ré-extraction : exactement la liste écrite d'avance (planches d'entités : alpha seulement pour 205, plus les RVB de
+   la colonne impaire et les pixels des portraits ; 87 planches d'effets nouvelles ; les JSON de cartes nommés) ; texte décodé.
+3. Après le miroir : `diff -rq` vide ; sauvegardes présentes ; tests du convertisseur et `Alundra.Tests` verts.
+4. Aucun fichier du dépôt parent hors du pointeur, de l'ADR et du plan.
+
+**Retour arrière** : remettre le pointeur du sous-module ; renommer les dossiers dans l'autre sens et refaire le miroir depuis la
+sauvegarde ; rien n'est supprimé.
+
+**Risques.** Une extraction depuis le mauvais checkout ou une construction périmée (G0-R5) ; un `robocopy` lancé depuis Git Bash
+(chemins avec espaces : il ne copie rien) ; la colonne impaire élargit le diff à des RVB (liste écrite d'avance) ; le dernier texel
+dessiné gagne aussi pour l'alpha (déjà le cas pour les couleurs).
 
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 
