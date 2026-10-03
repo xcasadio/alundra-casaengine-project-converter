@@ -3793,7 +3793,7 @@ inchangées.
 - Sites `0x2F` qui lisent la Croix hors de la chaîne (51, 440, 477, 143, 475) : la même pression sert le script et le saut,
   comme l'original.
 
-### 1.2i E19.e — La chaîne du jour 3 et du jour 4 prouvée, et un test statique des opcodes sautés ⏳ (READY le 2026-10-03, en exécution)
+### 1.2i E19.e — La chaîne du jour 3 et du jour 4 prouvée, et un test statique des opcodes sautés ✅ (E0 à E5 faites et CONFIRMED le 2026-10-03 ; recette E6 en attente)
 
 **Résultat** : les scènes scriptées du jour 3 qui ne demandent pas le combat sont rejouées par un arc sur la vraie DLL (176
 `B[6]`, 179 `B[3]`, 176 `B[7]`, 135, 178), en plus de celles qui le sont déjà (179 `B[2]` A12, 10 `B[20]` A10J, et au jour 4
@@ -3930,8 +3930,8 @@ la liste statique (contrôle croisé). Une valeur exacte contredite est un arrê
   Les arrivées sur la 183 (portails 0, 1, 2 de la 178) n'ont pas de scène : elles restent à la recette E6.
   Commit : `test(alundra): no overlap at the arrivals of the day-3 chain`
   - Fait le 2026-10-03 : sept lignes `InlineData` et sept entrées de `ArrivalSpec` dans TH4 (`AlundraEntityContactArcTests.cs`, le seul code de test existant touché ; aucune autre ligne ni aucun autre test modifiés), avec les départs du plan à l'octet : A13, A14, A15, A10J, A17, `135-to-10`, A18. Verts d'emblée : aucune des sept arrivées ne recouvre une entité (la règle du binaire ne trouve aucun obstacle à la première image). Preuve que la ligne discrimine : l'arrivée d'A17 déplacée à la position de Ronan (468 ; 360 ; z 64) fait échouer la seule ligne A17 (copie de sauvegarde, fichier rendu à l'octet ensuite). Écarts : les directions des arrivées ne sont pas dans le plan : les `0x53` donnent 24 (176 depuis `@451`), 0 (179 depuis `@533`, 176 depuis `@568`) et 16 (135, mesuré par A10J) ; le portail 135.0 prend 0 et le 176.7 prend 16 (celle du plan) ; la boîte du héros ne tourne pas, la direction ne change pas le recouvrement. `Alundra.Tests` 2333 réussis (2326 + 7), 0 échec, en Debug ; garde d'octets à 0 (les quatre traces du héros remises par `git checkout`).
-- ⏳ **E5 — Vérification et clôture**, comme C6 d'E19.d2c1.
-- ⏳ **E6 — Recette de bout en bout** (auteur) : nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement ; F9 sur
+- ✅ **E5 — Vérification et clôture**, comme C6 d'E19.d2c1.
+- 🧪 **E6 — Recette de bout en bout** (auteur) : nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement ; F9 sur
   `day3-after-dream` jusqu'au retour libre dans la 10, puis la 178 et la 183 à la main ; F9 sur `day4-meeting`, parler aux
   quatre villageois de la 185, jusqu'à l'arrivée sur la 362.
 
@@ -3956,6 +3956,19 @@ la liste statique (contrôle croisé). Une valeur exacte contredite est un arrê
   d'ambiance ou optionnels, et la recette E6 parcourt le jeu libre de la 179. Nouvelle époque : une seule relecture de
   clôture ; un nouveau REVISE met E19.e en pause.
 - Relecture de clôture sur `8e5f4cb` : **READY**. Exécution lancée le 2026-10-03 (mode AUTO, ni merge ni push).
+
+**Vérification d'E19.e (2026-10-03).**
+- **Commits** : E1 `22e5205`, E2 `2b0beeb`, E3 `c65b5dc`, E4 `7d6bf2d` (tests seulement ; aucun fichier de `Alundra/` ni du
+  moteur). Signature `Claude Sonnet 5.5` imposée par l'outil des exécutants.
+- **Verifier frais : CONFIRMED** sur les critères 1 à 4 : liste versionnée identique octet pour octet à celle de la
+  découverte (fins de ligne mises à part) ; 30 + 7 cartes conformes ; mutations des règles 1, 2, 4 et 5 rejouées (chacune ne
+  fait échouer que sa règle ; celle de la règle 5, faite sur la liste partagée, fait aussi échouer la règle 1, ce qui est
+  inhérent) ; les cinq arcs aux valeurs exactes et dans leurs tolérances ; le choix d'A17 réellement présenté (une mutation
+  qui répond NON fait échouer l'arc à sa limite) ; seul TH4 touché parmi les tests existants ; `Alundra.Tests` 2333/2333 en
+  Release puis en Debug, `cmp` sans écart, traces identiques.
+- **Dispositions** : A17 n'affirme pas lui-même que la boîte de choix s'est ouverte (en mode dégradé `0x44` rendrait 1 sans
+  choix) : P4, reporté à E19.m (une assertion permanente) ; direction d'arrivée du portail 135.0 choisie à 0 par l'exécutant
+  (sans effet sur le recouvrement) : P4, à lire dans une trace de sortie réelle si besoin.
 
 **Acceptation d'E19.e.**
 1. Le test statique est vert avec exactement la liste fermée, et rouge sur chacune des mutations d'E1.
@@ -4170,6 +4183,15 @@ Réservé aux mesures faites en exécutant les tranches.
   `0x11 @354` à 960 (922 avant). A12 (179) : `1A [2] @411` à l'image 287, `0x53 @451` de 359 à 378 (+19). A10J : F0 = image 33,
   héros aux valeurs du binaire à l'unité, eau comprise ; `0x24 @2462` à F0+297.
 - **Temps d'exécution** : chaque nouvel arc sous la seconde ; aucun n'approche 120 s.
+
+### E19.e (2026-10-03)
+
+- **Suites** : `Alundra.Tests` **2301 avant la tranche, 2333 après** (+32 : E1 20, E2 3, E3 2, E4 7), 0 échec, en Release (43 s)
+  puis en Debug (43 s), la Debug en dernier ; `cmp` sans écart (sha256 `87158773...35bc`, DLL inchangée par la tranche).
+- **Test statique** : 198 lignes sur les 30 cartes, exactement celles de la découverte, au premier passage du parcours C#.
+- **Arcs** (images de fin) : A13 343, A14 257, A15 663, A17 700 (`0x11 @1115`), A18 191 puis 1068 (deux phases) ; sautés : A13
+  10 (`0xA2` de `B[10]`), A14 aucun, A15 11, A17 1 (`0xA0 @536`), A18 7 ; contacts exacts : héros contre Septimus (A14),
+  contre Ronan (A17) ; A15 sans aucun pas raccourci par une entité.
 
 ## 3. Points ouverts
 
