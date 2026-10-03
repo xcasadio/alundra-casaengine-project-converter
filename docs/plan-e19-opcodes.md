@@ -6335,6 +6335,16 @@ groupe de la nouvelle carte). **Découverte** (2026-10-03, lecture seule, `e19sn
 **Risques.** Des sons nouveaux partout où un préfab sonore change d'animation (161 préfabs) : c'est la règle ; la table
 anti-doublon par image rendue et non par tick (écart existant) ; une animation cible absente du jeu du préfab (hors chaîne) : rien
 n'est demandé, et l'original lirait au-delà de la table (point ouvert à consigner si l'audit le confirme).
+- ✅ **Vérification d'E19.t** (2026-10-03) : `Alundra.Tests` 2523/2523 en Release puis en Debug, la Debug en dernier ; `cmp` sans
+  écart ; les six traces à l'octet. Vérificateur neuf : **CONFIRMED** (binaire relu en `0x80038BB0`-`0x80038BC8` : banque par
+  l'octet `0xD` ; un seul crochet atteint par trois chemins ; trois sites d'apparition, seuls sites de création ; ses mutations
+  attrapées : demandes d'apparition retirées, R2 levée pour le son, banque lue à l'octet `0xB` ; UJSND renommé seulement ; décalage
+  d'une image de la 392 mesuré : l'opcode à l'image 121, le son et le changement visible à 122, dû à l'ordre existant de la DLL,
+  les événements de carte après les entités, pas à cette tranche). Avis reportés à E19.m : P4 l'ADR-0028, le plan et
+  `AlundraAnimationSoundTests.cs:281` attribuent ce décalage à D-E19-64, qui ne vaut que pour la boîte de dialogue ; P3 le livre de
+  la 179 n'est pas exercé par son vrai opcode (le `0x0B @114` cale l'arc, antérieur) ; P4 le test du groupe au chargement contraste
+  avec un groupe nul, pas avec une carte d'un autre groupe ; P4 la période de l'auto-chaîne n'est pas épinglée. **Reste la recette T6
+  de l'auteur.**
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
@@ -6637,6 +6647,11 @@ Réservé aux mesures faites en exécutant les tranches.
 - **Commits** : plan et relectures jusqu'à `b842c7a` ; `b381de8` (code, tests, ADR-0026, plan) ; puis cette clôture.
 - **Suites** : `Alundra.Tests` **2505 avant, 2510 après** (+5 : la plateforme de la 83, le relevé au terrain, trois gardes de piles), 0
   échec, en Release puis en Debug ; `cmp` sans écart.
+
+### E19.t (2026-10-03)
+
+- **Commits** : plan et relectures jusqu'à `a4a5ce8` ; `541ae72` (code, tests, ADR-0028, plan) ; puis cette clôture.
+- **Suites** : `Alundra.Tests` **2510 avant, 2523 après** (+13), 0 échec, en Release puis en Debug ; `cmp` sans écart.
 
 ## 3. Points ouverts
 
