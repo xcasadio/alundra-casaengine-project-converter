@@ -3708,16 +3708,21 @@ par `ZImpulseSfx`) ; l'impulsion d'animation est prise au tick (R1) ; `CollidedW
     porteur, découverte d'E19.h, surface A) ; `IsOnGround` vaut 1 tant qu'il est porté, quelle que soit la phase du tick (le
     héros est mis à jour avant la plateforme : sans cette règle, il monte à `dessus + v` avant elle et finit le tick en l'air) ;
     il cesse d'être porté par une impulsion (saut), par la fin du recouvrement XY (fenêtre de F1), ou si
-    `|PosZ − (dessus + 1)|` dépasse **strictement** `|LastTickDeltaZ|` de la plateforme : nouveau champ moteur, le déplacement
-    réalisé en Z par le dernier tick cinématique de l'entité, mesuré comme `LastTickDeltaX/Y` (`AlundraScriptedMotion.cs`,
-    position après le pas moins position avant) ; une écriture directe de `PosZ` hors du tick (téléportation) ne le change
-    pas. Tests
+    `|PosZ − (dessus + 1)|` dépasse **strictement** `|LastTickDeltaZ|` de la plateforme : nouveau champ moteur de l'entité, le
+    déplacement réalisé en Z par son dernier tick logique, soit `PosZ` après `EvaluateEntitySupport` moins `PosZ` avant
+    `TickScriptedNpc`, dans le même tick de `Update` (`AlundraEntityScriptProxy.cs` ~1230-1243 : le pas XY de
+    `RunOneKinematicTick` ne bouge jamais `PosZ`, `AlundraScriptedMotion.cs:508-536`, c'est `EvaluateEntitySupport` qui le
+    bouge, `AlundraEntityScriptProxy.cs` ~762, ~857 et ~891) ; mesuré pour les entités autres que le héros seulement (dans D5,
+    le héros ne porte personne ; son champ reste 0) ; une écriture de `PosZ` hors de ce tick (tirage de tête d'image,
+    téléportation d'un montage) ne le change pas ; sur le montage d'UH-16, la montée de 1 px par tick lancée,
+    `LastTickDeltaZ` de la plateforme vaut 65536. Tests (révision n°1 de la relecture du 2026-10-03 : la mesure était placée
+    dans le pas XY)
     **UH-16** (montage d'UH-14, plateforme pilotée en Z par `ForceZ` sans gravité) : montée de 1 px par tick pendant 50
     ticks : `RidingEntity` non nul, `IsOnGround` 1, `CollidedWithEntityZ` 0 à chaque tick, `PosZ` du héros = dessus + 1 à 1
     px près (un tick de phase), jamais en dessous du dessus ; descente de 1 px par tick : mêmes invariants, aucune image en
     animation d'air ; enfoncement de 0,125 px par tick : `RidingEntity` non nul, `CollidedWithEntityZ` 0 ; `0x3E` rend 1 dans
-    les trois cas ; **téléportation** : plateforme au repos sous le héros porté, `PosZ` de la plateforme abaissé de 32 px par
-    écriture directe entre deux images : au tick suivant, `RidingEntity` nul, aucun recalage du héros sur le nouveau dessus,
+    les trois cas ; **téléportation** : plateforme au repos sous le héros porté, `PosZ` de la plateforme abaissé de 32 px entre
+    deux images par écriture poussée à la racine (`PosZ` puis `PushLogicalPositionToRoot`, le geste de placement d'UH-14) : au tick suivant, `RidingEntity` nul, aucun recalage du héros sur le nouveau dessus,
     chute par la gravité depuis le repos (premières hauteurs relevées par l'audit des valeurs sur le montage), atterrissage
     sur la plateforme avec `CollidedWithEntityZ` 1 au tick d'atterrissage.
   - **F2b — Porteur avec gravité au repos** (P3 du contradicteur binaire, reporté à E19.h puis rendu à D5 par D-E19-56) :
@@ -3729,10 +3734,16 @@ par `ZImpulseSfx`) ; l'impulsion d'animation est prise au tick (R1) ; `CollidedW
     le héros porté lit 0 et ne lève jamais le contact. Correctif : la force que le héros porté recopie est la force du tick
     du porteur prise **avant** son atterrissage (la valeur que le binaire lit au même point de la passe) ; rien ne change pour
     un porteur sans gravité (sa force de tick au repos vaut 0 : UH-10, UH-11, SJ-12, SJ-13 et UH-14 gardent leurs valeurs ;
-    les objets de `ContactWorld.AddEntity` n'ont pas le bit `Gravity`). Test **UH-18** (montage d'UH-10, coffre **avec** le bit
-    `Gravity`, posé au sol ; héros posé sur son dessus, sans entrée) : à chaque tick sur 10 ticks, `RidingEntity` = le coffre,
-    `CollidedWithEntityZ` 1, `ForceZ` 0, `IsOnGround` 1, `PosZ` 1048576 constant, animation de repos, `0x3E` 1 ; même montage
-    sans le bit `Gravity` sur le coffre : `CollidedWithEntityZ` 0 à chaque tick (garde).
+    les objets de `ContactWorld.AddEntity` n'ont pas le bit `Gravity`). Test **UH-18** (révisé après la relecture du
+    2026-10-03) : montage d'UH-14 sans mouvement, même objet 24 × 16 × 16 et même décalage `offsetX`, ajouté après le héros
+    (il est mis à jour après lui, comme en production) ; l'objet reçoit le bit `Gravity`, `MapGravityRaw` 128,
+    `MapZViscosityRaw` 4096 puis `ResyncControllerFromFlags` (la décroissance lit les champs bruts de l'entité,
+    `AlundraEntityScriptProxy.cs` ~679-694 ; même geste qu'`AlundraCollidedWithEntityZTests.cs:71-74`) ; héros posé par
+    `PosZ` 1048576 et `PushLogicalPositionToRoot`, sans entrée ; 4 images de calage (l'objet y fait ses premiers ticks, sa
+    force de tick au repos vaut alors −32768) ; puis, à chacun des ticks 1 à 10 : `RidingEntity` = l'objet,
+    `CollidedWithEntityZ` 1, `ForceZ` 0, `IsOnGround` 1, `PosZ` 1048576, animation de repos, `0x3E` 1 ; les valeurs de chaque
+    tick sont confirmées par l'audit des valeurs avant l'exécution. Variante sans le bit `Gravity` sur l'objet (champs bruts
+    laissés à 0) : `CollidedWithEntityZ` 0 aux mêmes ticks (garde).
   - **F3 — Dessus à fleur du sol** (contradicteur binaire, P3, visible : 122 interrupteurs à piétiner, 38 plateformes à
     quai) : le tirage du moteur ignore les boîtes d'entités et rend `IsOnGround` 0 quand le héros passe du sol au dessus
     d'un objet de même hauteur posé dans un creux ; `MovePlayer` montre alors une image d'animation de saut. Correctif : au
@@ -4044,7 +4055,7 @@ la liste statique (contrôle croisé). Une valeur exacte contredite est un arrê
 - Les drapeaux posés par Yarn pendant une boîte (T0 de la 135, après la page 0 du nœud `M135_S001` ; T900 de la 179 ;
   T200/T201 de la 164) dépendent du dialogue actuel ; E19.f (boîte fidèle) devra les garder.
 
-### 1.2j E19.f avec E12.c — La boîte de dialogue fidèle ⏳ (découverte faite ; questions tranchées le 2026-10-03 : D-E19-48 à D-E19-50 ; plan à écrire)
+### 1.2j E19.f avec E12.c — La boîte de dialogue fidèle ⏳ (questions tranchées le 2026-10-03 : D-E19-48 à D-E19-50 ; programme f0 à f4 ; E19.f0 planifiée)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : le binaire, puis la DLL, le moteur et les données ; notes et
 scripts dans le scratchpad de la session, `e19f-disc/binaire/notes.md` et `e19f-disc/dll/notes.md`, aperçu des cadres
@@ -4106,6 +4117,106 @@ scripts dans le scratchpad de la session, `e19f-disc/binaire/notes.md` et `e19f-
 l'auteur sur l'UI) au patron d'`AlundraSaveScreen` ; le `DialogueScreen` du moteur reste dans le moteur, Alundra cesse de
 l'utiliser ; l'élément « 4+ choix » d'E12.c disparaît (le binaire n'en a pas) ; la machine du portrait volant de
 l'inventaire est généralisée, pas dupliquée ; la passe du dialogue va dans la boucle `padTick` (correction d'A1).
+
+**Programme d'E19.f** (2026-10-03, après D-E19-48 à D-E19-50 ; cartographie en lecture seule, trois surfaces, notes dans le
+scratchpad de la session : `e19f-plan2/yarn/notes.md`, `e19f-plan2/dialog/notes.md`, `e19f-plan2/extract/notes.md`). Chaque
+sous-tranche a son plan relu, son exécution et sa vérification :
+- **E19.f0 — Drapeaux du texte à leur position** (convertisseur et DLL, comportement inchangé) : détaillée en §1.2j.1.
+- **E19.f1 — Cadres et curseur** (convertisseur) : cadres du nom (14 × 4 cellules) et du choix (16 × 4) cuits comme celui du
+  texte, animation du curseur d'attente (wind_150, 173, 201, 228, 10 ticks par image). Les deux lignes manquent à `UiBoxes.csv`
+  de l'analyseur, dont le producteur est introuvable (fichier de données) : à établir au plan.
+- **E19.f2 — Boîte fidèle** (DLL) : écran XAML lié à un view model au patron d'`AlundraSaveScreen` ; machine d'état du binaire
+  (glissements d'entrée et de sortie, frappe à 4 images, Carré tenu, `\T`, `\Y`, `0x4C`/`0x4D`, 3 lignes et défilement ligne à
+  ligne, curseur, voix et parité, centrage `\H`, minuterie armée en fin de texte, `0x51` en verrou, sons 6, 7, 79 à 82) ; passe
+  dans la boucle `padTick` sur `TickPad` (avis A1 d'E12.a) ; les drapeaux tirés à leur glyphe (fin de D-E12-4). Grosse vague de
+  ré-épingles : chaque boîte gagne son glissement et sa frappe avant toute fermeture (391 : environ 324, 472 et 376 ticks), les
+  arcs qui appuient sur Carré à chaque image (`AlundraArcSupport.cs:184-187`) doivent relâcher. Reste à établir dans le binaire :
+  le coût en ticks de chaque code, le défilement et le curseur au tick près.
+- **E19.f3 — Choix fidèle** (DLL) : la boîte à deux options du binaire, ouvreur unique `0x80050BA8` (`0x44`, l'écran de
+  sauvegarde, le livre de sauvegarde, trois appelants non identifiés), validation à la Croix, sons 4, 1, 5, 2 et 3 ; un crochet de
+  test remplace `SelectChoiceForTests` (23 sites).
+- **E19.f4 — Nom et portrait** (DLL, après la ré-extraction de G0, D-E19-51) : boîte de nom (ETC 0x100 à 0x1FF ; le champ de la
+  DLL qui porte `+0x68` est à établir), portrait du locuteur (vol de 15 pas de l'inventaire généralisé : repos (8,116), taille par
+  portrait, 48 × 72 bas aligné, D-E19-49), rampe de couleur 255 → 128 que MGUI ne sait pas rendre (il ne fait que multiplier :
+  rapport de manque).
+- Ordre : f0 et f1 d'abord, indépendants ; f2 ; f3 après f2 ; f4 après f2 et G0. E19.s (320 × 240 à bandes) change la formule
+  d'échelle commune des écrans : f2 la reprend.
+
+##### 1.2j.1 E19.f0 — Drapeaux du texte à leur position ⏳ (planifiée)
+
+**Faits** (cartographie, `e19f-plan2/yarn/notes.md`) :
+- **[binaire]** un code numérique pose son drapeau temporaire quand l'interpréteur du texte l'atteint et passe au caractère suivant
+  dans la même étape (`0x80046B9C` à `0x80046CC4`, puis `j 0x80046100`) ; `\Y` termine l'étape (`0x800463B8`, `j 0x80046EBC`).
+- **Export** : `YarnTextEmitter.BuildPageRender` écrit chaque code numérique en `<<flag n>>` avant la ligne de sa page, le drapeau
+  n'entre jamais dans la ligne (`YarnTextEmitter.cs:444-456`, `:475-477`) ; `\Y` ne produit rien (`:309-313`).
+- **Corpus** : 932 codes numériques dans 627 pages, 587 nœuds, 155 des 485 fichiers `.yarn` : 87 avant tout glyphe, 647 après le
+  dernier, 198 au milieu ; 922 `\Y`, dont 921 juste après un drapeau ; 58 pages ne portent que des drapeaux (`[empty/]`) ; 105
+  paires de drapeaux à la même position ; valeur maximale 1005. Le marin 12 (`M389_S001`, `\999` en fin de texte) est de la classe
+  « fin » : traiter le milieu seul ne suffit pas.
+- **Moteur** : Yarn Spinner 3.2.1 ; un marqueur auto-fermant garde sa position exacte (11 182 marqueurs `glyph` le prouvent dans la
+  preuve du corpus) ; le moteur ne change pas.
+- **DLL** : le présentateur de capture ne garde que `br` et `glyph` (`AlundraDialogueCapturePresenter.cs:68`, `:83-107`) ; les
+  drapeaux viennent de la commande `flag` (`AlundraYarnBindings.cs:142-153`) ; le chemin dégradé (`PlayNodeHeadlessToEnd`,
+  `AlundraEventProgramRunner.cs:1896-1928`) ne lit rien des lignes.
+- **Preuve** : `YarnCorpusEquivalenceTests` joue chaque nœud exporté et le compare à `ReferenceTextDecoder`, écrit indépendamment
+  de l'émetteur (`ReferenceTextDecoder.cs:148-150`) ; le comparateur rejette tout nom de marqueur inconnu (`:1064-1080`).
+
+**Règles.**
+- **F0-R1 — Format** : chaque `\<chiffres>` devient `[flag id=N trimwhitespace=false/]` à la position du code dans le texte de la
+  page (N en décimal normalisé, comme aujourd'hui) ; chaque `\Y` devient `[yield trimwhitespace=false/]` à sa position (choix
+  technique : la cadence de la frappe d'E19.f2 en dépend, 922 marqueurs dans les mêmes 155 fichiers) ; plus aucun `<<flag n>>`
+  n'est émis ; `<<falcon_update>>` ne change pas ; à une même position, l'ordre du texte source est gardé.
+- **F0-R2 — Transparence** : la coupe des espaces de bord (D-E15-8) et la règle de la page vide ignorent les marqueurs `flag` et
+  `yield` : un espace entre la dernière unité visible et un drapeau reste coupé (sinon 47 pages changeraient de texte) ; une page
+  qui ne porte que des drapeaux et des `\Y` s'écrit avec ses marqueurs dans l'ordre source puis `[empty trimwhitespace=false/]`.
+- **F0-R3 — Garde** : un identifiant au-delà d'`int.MaxValue` est une erreur de conversion (les propriétés entières de Yarn).
+- **F0-R4 — Compteurs** : `Yarn.FlagCommands` de `report.json` est remplacé par `Yarn.FlagMarkers` (932) et `Yarn.YieldMarkers`
+  (922).
+- **F0-R5 — DLL, comportement inchangé** (D-E12-4 tient jusqu'à E19.f2 : tous les drapeaux d'une page posés à son affichage) : le
+  présentateur de capture pose les drapeaux des marqueurs `flag` de la ligne, dans l'ordre de la liste, à `ShowLine`, avant de
+  transmettre la ligne ; le chemin dégradé (`NullDialoguePresenter.ShowLine`) aussi ; une écriture partagée dans
+  `AlundraYarnBindings` (`n | 0x8000`, bit `n & 0x1f`, la même que la commande) ; le gestionnaire de la commande `flag` reste (anciens
+  exports, montages de test écrits à la main) ; `yield` est ignoré jusqu'à E19.f2.
+- **F0-R6 — Ordre de livraison** : la DLL d'abord (construite et déposée dans `alundra-project/`), puis l'export complet en place ;
+  ni l'un ni l'autre pendant que l'auteur joue (la DLL est verrouillée, le projet est lu par le jeu). Un export au nouveau format
+  avec l'ancienne DLL ne poserait aucun drapeau du texte (le `0x36` du marin 12 ne rendrait jamais la main).
+- **F0-R7 — Indépendance de la preuve** : `ReferenceTextDecoder` est mis à jour depuis ce contrat, jamais depuis l'émetteur.
+
+**Tâches.**
+- **F0-1 — Tests du convertisseur, rouges d'abord** : chaînes exactes de l'émetteur pour `M389_S001` p0, `M164_S003` p0 et p1,
+  `M389_S022` p0 (drapeau de fin après un espace : l'espace est coupé), `\1004\Y\999\Y` (ordre à une même position) ; une page de
+  drapeaux seuls compilée puis relue (positions 0, marqueurs puis `[empty/]`) ; la garde d'identifiant ; le décodeur de référence
+  (marqueurs positionnés, recensement 932 et 922) ; le comparateur accepte `flag` et `yield` et perd son gestionnaire de commande
+  `flag` (un `<<flag>>` restant tombe dans les commandes non gérées) ; tests négatifs : drapeau décalé d'un caractère, drapeau
+  redevenu commande, deux drapeaux d'une même position permutés, un `yield` retiré ; compteurs de l'écrivain.
+- **F0-2 — Émetteur et écrivain** (`Text/YarnTextEmitter.cs`, `Writers/YarnDialogueWriter.cs`).
+- **F0-3 — DLL, tests d'abord** : drapeaux posés à `ShowLine` avant la transmission ; ordre avec `falcon_update` (`M134_S019`) ;
+  chemin dégradé ; ancienne commande toujours servie ; `yield` et tout marqueur inconnu ignorés ; puis le code
+  (`AlundraDialogueCapturePresenter.cs`, `AlundraYarnBindings.cs`, `AlundraEventProgramRunner.cs`).
+- **F0-4 — ADR-0025** (marqueurs de position des codes numériques et de `\Y` ; ADR-0006 passe « partly superseded by ADR-0025 »)
+  et `docs/formats/dialogues-yarn.md` (`:49-63`, `:86`, `:140`, `:144-176`).
+- **F0-5 — Livraison** : build Release puis Debug (la Debug en dernier, `cmp` de la DLL déposée), manifeste avant, export complet en
+  place, manifeste après, double export, `Alundra.Tests` sur le nouvel export.
+
+**Acceptation.**
+1. Les tests de F0-1 et F0-3 sont rouges d'abord, verts après.
+2. Code de test existant touché, liste fermée : `YarnTextEmitterTests.cs` (`:172-211`, `:434-480`, `:790-880`),
+   `YarnCorpusEquivalenceTests.cs` (`:275-314`, `:351-391`, `:499-536`, `:606-624`, `:792-822`, comparateur `:956` et
+   `:1064-1092`), `ReferenceTextDecoderTests.cs` (`:76-125`, `:452-458`, `:566-586`, `:608-635`, `:692-704`, `:770-897`),
+   `YarnDialogueWriterTests.cs` (`:687`, `:135`) ; côté DLL, aucun : les montages qui écrivent `<<flag n>>` restent servis par le
+   gestionnaire gardé ; `AlundraDialogueOpcodesProductionTests` reste inchangé et vert sur le nouvel export (le `\999` du marin 12
+   vient désormais d'un marqueur).
+3. Export : exactement 155 `.yarn`, 155 `.dialogue` et `report.json` changent (plus les entrées de catalogue que l'audit des valeurs
+   aura listées) ; aucun `<<flag` dans les `.yarn` ; compteurs 932 et 922 ; double export identique à l'octet hors `report.json`.
+4. Tests du convertisseur verts ; `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans écart ; les six traces
+   à l'octet.
+
+**Risques.** Livraison dans le mauvais ordre (F0-R6) ; coupe des bords non transparente (47 pages) ; une ligne de drapeaux seuls
+jamais compilée (test de F0-1) ; la preuve qui perd son indépendance (F0-R7) ; numéro d'ADR (0025 est le suivant ; E19.s et la
+convention d'apparition prendront les suivants).
+
+Commits : `test(converter): …` puis `feat(converter): emit text flag codes and \Y as positioned Yarn markers` ;
+`feat(alundra): read positioned flag markers from Yarn lines` ; `docs(adr): …` ; clôture du plan avec les mesures de l'export.
 
 ### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) — E19.k1 ✅ (recette K5 en attente) ; E19.k2 ⏳ (planifiée)
 
