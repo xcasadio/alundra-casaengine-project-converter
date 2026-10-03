@@ -6602,6 +6602,13 @@ puise à tort, O-E19-48) : le flux de la DLL ne suit déjà pas l'original tirag
   germe `0x35E36190`). Test existant touché : seulement `ResolveDirectionFromParam_RandomModes_ThrowNotSupported` (supprimé,
   remplacé). Suite `Alundra.Tests` en Debug : 2548 réussis, 0 échec ; six traces à l'octet (rc 0), les quatre du héros remises.
   Release non lancée (consigne du brief). Écart : aucun.
+- ✅ **Vérification d'E19.m0** (2026-10-03) : la session principale a lancé `Alundra.Tests` en Release puis en Debug (2548/2548
+  chacune, la Debug en dernier), `cmp` sans écart, les six traces à l'octet (la puce « Fait » ne parle que de la Debug de
+  l'exécuteur). Vérificateur neuf : **CONFIRMED** (binaire relu en `0x8003CFC8`-`0x8003D0E8` et table `0x80023644` ; valeurs
+  recalculées par un générateur indépendant ; rouges rejoués en remettant l'exception : 11 sur 11 rouges, dont le test sur les octets
+  réels de la 167 ; l'ordre de parcours inchangé). Avis reporté à E19.m : P4 des tests qui touchent `AlundraRandom` hors de la
+  collection `AlundraRandomStaticStateCollection` (`AlundraPrefabArcSupportTests.cs:19`, `AlundraShipCorridorArcTests.cs:21`),
+  antérieur. **Le plantage probable de la 167 (M-04) est corrigé.**
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
@@ -6920,6 +6927,12 @@ Réservé aux mesures faites en exécutant les tranches.
 - **Commits** : analyseur `97ca6a2`, `876dfd9`, `109f62e`, `d8d9230` ; parent `4e38a69` (pointeur, ADR-0030, plan) ; puis cette clôture.
 - **Données** : `data-extracted/` 4450 → 4537 fichiers (700 lignes de diff, comme l'annexe) ; export en place : 105 fichiers changés ;
   `Alundra.Tests` 2539 inchangé, convertisseur 418 inchangé.
+
+### E19.m0 (2026-10-03)
+
+- **Commits** : plan et relectures jusqu'à `7722354` ; `0c151b6` (code, tests, plan) ; puis cette clôture.
+- **Suites** : `Alundra.Tests` **2539 avant, 2548 après** (+11 nouveaux, −2 : la théorie retirée comptait deux cas), en Release puis
+  en Debug.
 
 ## 3. Points ouverts
 
