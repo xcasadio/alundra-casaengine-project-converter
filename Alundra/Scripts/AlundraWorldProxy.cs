@@ -1871,6 +1871,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 X2 = x2,
                 Y2 = y2,
                 ProgramBMap = programBMap,
+                OriginalProgramBMap = programBMap,
                 Entity = PlayerEntity,
             });
         }
@@ -2324,30 +2325,33 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 continue;
             }
 
-            var mapEventEntity = mapEvent.Entity ?? player;
-
             if (player.TileX < mapEvent.X1 || player.TileX > mapEvent.X2
                 || player.TileY < mapEvent.Y1 || player.TileY > mapEvent.Y2)
             {
-                // Out-of-zone reset, GameEngine.cs:1690-1697 - ported exactly, including the somewhat
-                // surprising choice of resetting the MAP EVENT'S OWN logic entity's EventProgramState
-                // (not the player's own persistent one) each time the player leaves the zone.
-                mapEventEntity.ChildEntity = null;
-                mapEventEntity.EventProgramState.Sp = 0;
-                mapEventEntity.RelativeWarpOffsetX = 0;
-                mapEventEntity.Index = player.Index;
+                // Out-of-zone re-arm, every tick (binary 0x8003C7F0-0x8003C804, E19.j; the decompilation's
+                // GameEngine.cs:1690-1697 writes the logic entity instead, which the binary does not): the SLOT's
+                // program goes back to "not started" (entry 0, pc 0, Result 0), its logic entity back to the hero and
+                // its program byte back to the record's own. No entity is written. The other state fields stay.
+                mapEvent.EventData.Sp = 0;
+                mapEvent.EventData.Codes = null;
+                mapEvent.EventData.CodeIndex = 0;
+                mapEvent.EventData.Result = 0;
+                mapEvent.Entity = player;
+                mapEvent.ProgramBMap = mapEvent.OriginalProgramBMap;
                 continue;
             }
 
             player.ProgramIndexes[ScriptHelper.ProgramBMap] = mapEvent.ProgramBMap;
             player.MapEventProgramId = mapEvent.ProgramBMap;
-            // GameEngine.cs:1702: the original indexes the FIXED g_mapEvents[0x40] array by record
+            // GameEngine.cs:1702: the decompilation indexes the FIXED g_mapEvents[0x40] array by record
             // position (InitializeMapEvents sets g_mapEvents[i].Id = i for every slot, occupied or not),
-            // so "i" there is the record's own slot index. mapEvents here is compacted (only records with
-            // EventCodesBIndex != 0 are kept - see BuildMapEvents), so the loop's own "i" is the compacted
-            // list position, NOT the record index; mapEvent.Id carries the real record index instead.
+            // so "i" there is the record's own slot index. The binary does compact its slot table (0x8003C5F4-
+            // 0x8003C608), with no effect on the data (no record has a zero program byte: 1714 of 1714 checked).
+            // mapEvents here is compacted too (only records with EventCodesBIndex != 0 are kept - see
+            // BuildMapEvents), so the loop's own "i" is the compacted list position, NOT the record index;
+            // mapEvent.Id carries the real record index instead.
             player.EventTrigger = mapEvent.Id;
-            player.LogicEntity = mapEventEntity;
+            player.LogicEntity = mapEvent.Entity ?? player;
             player.EventProgramState.CopyFrom(mapEvent.EventData);
 
             runner.RunScript(player, ScriptHelper.ProgramBMap);
@@ -2725,6 +2729,12 @@ internal sealed class AlundraMapEvent
     public int Id;
     public int X1, Y1, X2, Y2;
     public int ProgramBMap;
+
+    /// <summary>The record's own program byte (+8 of the slot, written once at map load). The program byte the
+    /// interpreter keeps in <see cref="ProgramBMap"/> changes while the program runs (its high bit is the "started"
+    /// mark); out of zone the binary puts this original byte back. Required, so that a missing one cannot turn the
+    /// out-of-zone reset into a permanent disable.</summary>
+    public required int OriginalProgramBMap;
 
     /// <summary>The map-event's own current "logic entity" (initially the player - see
     /// <see cref="AlundraWorldProxy.BuildMapEvents"/>; retargeted by opcodes 0x42/0x43, E19.a, and kept from

@@ -4193,7 +4193,7 @@ corrige au cas par cas (règle de l'auteur), pas en bloc.
 
 **Tâches.**
 - ⏳ **J0 — Plan**, relu jusqu'à READY.
-- ⏳ **J1 — Réarmement, tests d'abord** (montage des tests de la passe, `AlundraWorldProxyEventPassTests` ; sauf mention :
+- ✅ **J1 — Réarmement, tests d'abord** (montage des tests de la passe, `AlundraWorldProxyEventPassTests` ; sauf mention :
   programme B au masque 1, table B `{99, 0}`, zone (0,0)-(10,10), héros en (5,5) dans la zone, en (50,50) hors zone) :
   - **J1-a** `{1A 7, 00, 1A 8, FF}` : dedans, animation remise à 0, dehors, dedans → animation 7 ; hors zone : `Codes` null,
     `Result` 0, entité logique = le héros, `ProgramBMap` 129 (rouge aujourd'hui : 8) ;
@@ -4225,6 +4225,11 @@ corrige au cas par cas (règle de l'auteur), pas en bloc.
   `AlundraEventProgramRunnerLogicEntityTests.cs:171` et `:344`, `AlundraEventProgramRunnerTests.cs:3051`,
   `IntroTraceHarnessTests.cs:681-690` (construction seulement, aucune assertion). Commit :
   `feat(alundra): rearm map events out of zone like the binary`
+  - Fait le 2026-10-03 : champ `OriginalProgramBMap` (`required`) ajouté d'abord, passe inchangée ; 11 tests neufs (J1-a à J1-g, J1-f en 5 cas) et le test existant réécrit
+    (`RunMapEventsPass_PlayerOutOfZone_RearmsTheSlot_AndWritesNoEntity`). Rouges d'avant : 6 des 7 tests J1 plus le réécrit ; J1-f vert (5 cas), moitié 0x80 de J1-e verte.
+    Le premier assert rouge est parfois antérieur à celui du plan (J1-a : `Codes` non nul, J1-c : l'entité logique reste le PNJ, J1-d : `Result` reste 1) ; J1-e lit 130 au lieu de
+    129 ; J1-g lit `0xFF @168` seul au dernier tick, comme écrit. Verts après : toutes les valeurs tenues, aucune ré-épinglée. `Alundra.Tests` Debug 2344 réussis, 0 échec. Écarts : aucun
+    (`OriginalProgramBMap` en champ `required` public, comme les autres champs du type).
 - ⏳ **J2 — Vérification et clôture**, comme les tranches précédentes. **J3 — Recette** (auteur, hors chaîne) : Torla 445,
   sortir de la zone puis y revenir rejoue le son 216 ; une partie de la chaîne sans écart.
 

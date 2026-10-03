@@ -3048,7 +3048,7 @@ public class AlundraEventProgramRunnerTests
         var records = new List<DispatchSnapshot>();
         runner.TraceSink = r => records.Add(new DispatchSnapshot(r.Opcode, r.CodeIndex, r.Kind, r.State.Result));
 
-        var mapEvent = new AlundraMapEvent { Id = 2, X1 = 0, Y1 = 0, X2 = 100, Y2 = 100, ProgramBMap = HatchDoorProgramBMap, Entity = player };
+        var mapEvent = new AlundraMapEvent { Id = 2, X1 = 0, Y1 = 0, X2 = 100, Y2 = 100, ProgramBMap = HatchDoorProgramBMap, OriginalProgramBMap = HatchDoorProgramBMap, Entity = player };
         var mapEvents = new[] { mapEvent };
 
         // Frame 1: fresh state -> InitializeEventData seeds CodeIndex at table[2]=400. Dispatches

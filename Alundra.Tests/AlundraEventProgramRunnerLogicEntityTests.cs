@@ -168,7 +168,7 @@ public class AlundraEventProgramRunnerLogicEntityTests
         var runner = NewRunner(document);
         var hero = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 5, TileY = 5 };
         var npc = Entity(2);
-        var mapEvent = new AlundraMapEvent { Id = 0, X1 = 0, Y1 = 0, X2 = 10, Y2 = 10, ProgramBMap = 129, Entity = npc };
+        var mapEvent = new AlundraMapEvent { Id = 0, X1 = 0, Y1 = 0, X2 = 10, Y2 = 10, ProgramBMap = 129, OriginalProgramBMap = 129, Entity = npc };
 
         AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
 
@@ -341,7 +341,7 @@ public class AlundraEventProgramRunnerLogicEntityTests
         var runner = NewRunner(document, world);
         var hero = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 5, TileY = 5, Status = EntityStatus.Normal };
         world.PlayerEntity = hero;
-        var mapEvent = new AlundraMapEvent { Id = 0, X1 = 0, Y1 = 0, X2 = 10, Y2 = 10, ProgramBMap = 129, Entity = hero };
+        var mapEvent = new AlundraMapEvent { Id = 0, X1 = 0, Y1 = 0, X2 = 10, Y2 = 10, ProgramBMap = 129, OriginalProgramBMap = 129, Entity = hero };
 
         AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
         Assert.Same(npc, mapEvent.Entity);

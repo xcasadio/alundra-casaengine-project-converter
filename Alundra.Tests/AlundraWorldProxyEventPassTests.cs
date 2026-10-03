@@ -1,4 +1,5 @@
 using Alundra.Scripts;
+using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 
@@ -364,7 +365,7 @@ public class AlundraWorldProxyEventPassTests
 
     private static AlundraMapEvent NewMapEvent(
         int x1, int y1, int x2, int y2, int programBMap, AlundraEntityScriptProxy player, int id = 0)
-        => new() { Id = id, X1 = x1, Y1 = y1, X2 = x2, Y2 = y2, ProgramBMap = programBMap, Entity = player };
+        => new() { Id = id, X1 = x1, Y1 = y1, X2 = x2, Y2 = y2, ProgramBMap = programBMap, OriginalProgramBMap = programBMap, Entity = player };
 
     [Fact]
     public void RunMapEventsPass_PlayerInZone_RunsProgramB_AndCopiesStateBack()
@@ -388,10 +389,11 @@ public class AlundraWorldProxyEventPassTests
     }
 
     /// <summary>
-    /// Regression for the A3 fix: GameEngine.cs:1702 indexes the FIXED <c>g_mapEvents[0x40]</c> array by
-    /// RECORD position (every record, including ones whose EventCodesBIndex is 0, occupies a slot -
-    /// InitializeMapEvents sets <c>Id = i</c> for all 0x40 of them). This port's own <c>mapEvents</c> list
-    /// is COMPACTED (BuildMapEvents skips records with EventCodesBIndex == 0 entirely), so a B==0 record
+    /// Regression for the A3 fix: the decompilation (GameEngine.cs:1702) indexes the FIXED <c>g_mapEvents[0x40]</c>
+    /// array by RECORD position (every record, including ones whose EventCodesBIndex is 0, occupies a slot -
+    /// InitializeMapEvents sets <c>Id = i</c> for all 0x40 of them); the binary compacts its slot table
+    /// (0x8003C5F4-0x8003C608), with no effect on the data (no record has a zero program byte). This port's own
+    /// <c>mapEvents</c> list is COMPACTED (BuildMapEvents skips records with EventCodesBIndex == 0 entirely), so a B==0 record
     /// preceding a real one shifts the real one's LIST position away from its own record index -
     /// EventTrigger must still come from <see cref="AlundraMapEvent.Id"/>, never the loop position.
     /// </summary>
@@ -416,22 +418,271 @@ public class AlundraWorldProxyEventPassTests
         Assert.Equal(5, player.EventTrigger); // real.Id, NOT its list position (1)
     }
 
+    /// <summary>
+    /// Out of zone, every tick (RunMapEvents 0x8003C7F0-0x8003C804, E19.j J-R2): the slot's program state goes back to
+    /// "not started" (entry 0, pc 0, Result 0), its logic entity back to the hero and its program byte back to the
+    /// record's own byte - and NO entity is written. The map event's own logic entity (here a distinct one) keeps
+    /// every field it had.
+    /// </summary>
     [Fact]
-    public void RunMapEventsPass_PlayerOutOfZone_ResetsLogicEntityState_AndDoesNotRun()
+    public void RunMapEventsPass_PlayerOutOfZone_RearmsTheSlot_AndWritesNoEntity()
     {
         var runner = new RecordingRunner();
         var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 50, TileY = 50, Index = 7 };
-        var mapEvent = NewMapEvent(0, 0, 10, 10, 129, player);
+        var logic = new AlundraEntityScriptProxy { Index = 3, RelativeWarpOffsetX = 42 };
+        var child = new Entity();
+        logic.ChildEntity = child;
+        logic.EventProgramState.Sp = 0xAB;
+        var mapEvent = NewMapEvent(0, 0, 10, 10, 130, player);
+        mapEvent.OriginalProgramBMap = 129;
+        mapEvent.Entity = logic;
         mapEvent.EventData.Sp = 0xAB;
-        mapEvent.Entity!.ChildEntity = new Entity();
-        mapEvent.Entity.RelativeWarpOffsetX = 42;
+        mapEvent.EventData.Codes = new byte[] { 0x1A, 7, 0xFF };
+        mapEvent.EventData.CodeIndex = 2;
+        mapEvent.EventData.Result = 1;
+        mapEvent.EventData.Parameters[3] = 9;
 
         AlundraWorldProxy.RunMapEventsPass(player, new[] { mapEvent }, runner, playerControlFlags: 0);
 
         Assert.Empty(runner.Calls);
-        Assert.Null(mapEvent.Entity.ChildEntity);
-        Assert.Equal(0, mapEvent.Entity.RelativeWarpOffsetX);
-        Assert.Equal(7, mapEvent.Entity.Index);
+        Assert.Equal(0, mapEvent.EventData.Sp);
+        Assert.Null(mapEvent.EventData.Codes);
+        Assert.Equal(0, mapEvent.EventData.CodeIndex);
+        Assert.Equal(0, mapEvent.EventData.Result);
+        Assert.Equal(9, mapEvent.EventData.Parameters[3]); // the binary keeps the other fields of the state
+        Assert.Same(player, mapEvent.Entity);
+        Assert.Equal(129, mapEvent.ProgramBMap);
+        Assert.Same(child, logic.ChildEntity);
+        Assert.Equal(0xAB, logic.EventProgramState.Sp);
+        Assert.Equal(42, logic.RelativeWarpOffsetX);
+        Assert.Equal(3, logic.Index);
+        Assert.Equal(7, player.Index);
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    // E19.j J1: the out-of-zone re-arm, driven through the real interpreter (docs/plan-e19-opcodes.md §1.2l)
+    // ------------------------------------------------------------------------------------------------
+
+    private sealed class MapEventWorld : IEntityWorldContext
+    {
+        public List<AlundraEntityScriptProxy> Spawned { get; } = new();
+        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => Spawned;
+        public AlundraEntityScriptProxy? PlayerEntity { get; set; }
+        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
+        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public NavigationGrid2D? NavigationGrid => null;
+    }
+
+    private const int InZone = 5;
+    private const int OutOfZone = 50;
+
+    private static EventProgramDocument BProgram(params int[] codes) => new()
+    {
+        MapIndex = 1,
+        EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 },
+        EventCodesBTable = new[] { 99, 0 },
+        Codes = codes,
+    };
+
+    private static AlundraEventProgramRunner RealRunner(EventProgramDocument document, MapEventWorld world)
+        => new(document, new AlundraGameState(), world);
+
+    /// <summary>One tick: the hero stands on (x, x), one <see cref="AlundraWorldProxy.RunMapEventsPass"/>.</summary>
+    private static void Tick(AlundraEntityScriptProxy hero, AlundraMapEvent mapEvent, IEventProgramRunner runner, int x)
+    {
+        hero.TileX = x;
+        hero.TileY = x;
+        AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
+    }
+
+    [Fact]
+    public void RunMapEventsPass_J1a_ProgramLeftMidWay_RestartsFromTheStartOnReentry()
+    {
+        var hero = new AlundraEntityScriptProxy { IsPlayer = true };
+        var world = new MapEventWorld { PlayerEntity = hero };
+        var runner = RealRunner(BProgram(0x1A, 7, 0x00, 0x1A, 8, 0xFF), world);
+        var mapEvent = NewMapEvent(0, 0, 10, 10, 129, hero);
+
+        Tick(hero, mapEvent, runner, InZone);
+        Assert.Equal(7u, hero.TargetAnimationId);
+        hero.TargetAnimationId = 0;
+
+        Tick(hero, mapEvent, runner, OutOfZone);
+        Assert.Null(mapEvent.EventData.Codes);
+        Assert.Equal(0, mapEvent.EventData.Result);
+        Assert.Same(hero, mapEvent.Entity);
+        Assert.Equal(129, mapEvent.ProgramBMap);
+
+        Tick(hero, mapEvent, runner, InZone);
+        Assert.Equal(7u, hero.TargetAnimationId); // from the start again, not the 8 that follows the Break
+    }
+
+    [Fact]
+    public void RunMapEventsPass_J1b_FinishedProgram_RunsAgainAfterALeaveAndReentry()
+    {
+        var hero = new AlundraEntityScriptProxy { IsPlayer = true };
+        var world = new MapEventWorld { PlayerEntity = hero };
+        var runner = RealRunner(BProgram(0x1A, 7, 0xFF), world);
+        var mapEvent = NewMapEvent(0, 0, 10, 10, 129, hero);
+
+        Tick(hero, mapEvent, runner, InZone);
+        Assert.Equal(7u, hero.TargetAnimationId);
+        hero.TargetAnimationId = 0;
+
+        Tick(hero, mapEvent, runner, InZone);
+        Assert.Equal(0u, hero.TargetAnimationId); // finished: it does not run again while the hero stays in
+
+        Tick(hero, mapEvent, runner, OutOfZone);
+
+        Tick(hero, mapEvent, runner, InZone);
+        Assert.Equal(7u, hero.TargetAnimationId);
+    }
+
+    [Fact]
+    public void RunMapEventsPass_J1c_OutOfZone_PutsTheLogicEntityBackOnTheHero_WithoutWritingAnyEntity()
+    {
+        var hero = new AlundraEntityScriptProxy
+        {
+            IsPlayer = true, Status = EntityStatus.Normal, RelativeWarpOffsetX = 17, Index = 9,
+        };
+        var npc = new AlundraEntityScriptProxy
+        {
+            EntityRefId = 5, Status = EntityStatus.Normal, RelativeWarpOffsetX = 42, Index = 3,
+        };
+        var child = new Entity();
+        npc.ChildEntity = child;
+        npc.EventProgramState.Sp = 0xAB;
+        var world = new MapEventWorld { PlayerEntity = hero };
+        world.Spawned.Add(npc);
+        var runner = RealRunner(BProgram(0x43, 5, 0x00, 0x1A, 7, 0xFF), world);
+        var mapEvent = NewMapEvent(0, 0, 10, 10, 129, hero);
+
+        Tick(hero, mapEvent, runner, InZone);
+        Assert.Same(npc, mapEvent.Entity);
+
+        Tick(hero, mapEvent, runner, OutOfZone);
+        Assert.Same(hero, mapEvent.Entity);
+        Assert.Same(child, npc.ChildEntity);
+        Assert.Equal(0xAB, npc.EventProgramState.Sp);
+        Assert.Equal(42, npc.RelativeWarpOffsetX);
+        Assert.Equal(3, npc.Index);
+        Assert.Equal(17, hero.RelativeWarpOffsetX);
+        Assert.Equal(9, hero.Index);
+
+        Tick(hero, mapEvent, runner, InZone); // restarts: 0x43 again, then the Break
+        Assert.Equal(0u, npc.TargetAnimationId);
+        Assert.Same(npc, mapEvent.Entity);
+
+        Tick(hero, mapEvent, runner, InZone);
+        Assert.Equal(7u, npc.TargetAnimationId);
+    }
+
+    [Fact]
+    public void RunMapEventsPass_J1d_OutOfZone_ClearsResult()
+    {
+        var hero = new AlundraEntityScriptProxy { IsPlayer = true };
+        var world = new MapEventWorld { PlayerEntity = hero };
+        // @0 IfTrueGoto 6 ; @3 anim 7 ; @5 end ; @6 anim 8 ; @8 end.
+        var runner = RealRunner(BProgram(0x03, 6, 0, 0x1A, 7, 0xFF, 0x1A, 8, 0xFF), world);
+        var mapEvent = NewMapEvent(0, 0, 10, 10, 129, hero);
+        mapEvent.EventData.Result = 1;
+
+        Tick(hero, mapEvent, runner, OutOfZone);
+        Assert.Equal(0, mapEvent.EventData.Result);
+
+        Tick(hero, mapEvent, runner, InZone);
+        Assert.Equal(7u, hero.TargetAnimationId);
+    }
+
+    [Fact]
+    public void RunMapEventsPass_J1e_ProgramByte_ZeroMaskedIsSkippedBeforeTheZoneTest_StartedByteGoesBackToTheOriginal()
+    {
+        var runner = new RecordingRunner();
+        var hero = new AlundraEntityScriptProxy { IsPlayer = true, TileX = OutOfZone, TileY = OutOfZone };
+
+        var masked = NewMapEvent(0, 0, 10, 10, 129, hero);
+        masked.ProgramBMap = 0x80; // masked to 0: skipped before the zone test, so not put back either
+        var started = NewMapEvent(0, 0, 10, 10, 129, hero);
+        started.ProgramBMap = 130;
+
+        AlundraWorldProxy.RunMapEventsPass(hero, new[] { masked, started }, runner, playerControlFlags: 0);
+
+        Assert.Equal(0x80, masked.ProgramBMap);
+        Assert.Equal(129, started.ProgramBMap);
+        Assert.Empty(runner.Calls);
+    }
+
+    [Theory]
+    [InlineData(4, 6, true)]
+    [InlineData(2, 3, true)]
+    [InlineData(5, 6, false)]
+    [InlineData(4, 7, false)]
+    [InlineData(1, 3, false)]
+    public void RunMapEventsPass_J1f_ZoneBoundsAreInclusive(int tileX, int tileY, bool runs)
+    {
+        var runner = new RecordingRunner();
+        var hero = new AlundraEntityScriptProxy { IsPlayer = true, TileX = tileX, TileY = tileY };
+        var mapEvent = NewMapEvent(2, 3, 4, 6, 129, hero);
+
+        AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
+
+        Assert.Equal(runs ? 1 : 0, runner.Calls.Count);
+    }
+
+    /// <summary>Real data, off the story chain: Torla (inner) 445, record 0 (zone (1,8)-(13,59), program byte 129).</summary>
+    [Fact]
+    public void RunMapEventsPass_J1g_RealMap445Record0_ReplaysItsSoundsOnReentry()
+    {
+        var projectRoot = FindProjectRoot();
+        var document = MapEventProgramLoader.Load(projectRoot, "Torla (inner)-445");
+        Assert.NotNull(document);
+
+        var hero = new AlundraEntityScriptProxy { IsPlayer = true };
+        var world = new MapEventWorld { PlayerEntity = hero };
+        var runner = RealRunner(document!, world);
+        var trace = new List<(int Opcode, int CodeIndex, EventTraceKind Kind)>();
+        runner.TraceSink = r => trace.Add((r.Opcode, r.CodeIndex, r.Kind));
+        var mapEvent = NewMapEvent(1, 8, 13, 59, 129, hero);
+
+        List<(int Opcode, int CodeIndex, EventTraceKind Kind)> TickAt(int x, int y)
+        {
+            trace.Clear();
+            hero.TileX = x;
+            hero.TileY = y;
+            AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
+            return new List<(int, int, EventTraceKind)>(trace);
+        }
+
+        var enter = new[]
+        {
+            (0xBD, 160, EventTraceKind.Degraded), (0xBF, 163, EventTraceKind.Degraded), (0xFF, 168, EventTraceKind.End),
+        };
+
+        Assert.Equal(enter, TickAt(5, 20));
+        Assert.Equal(new[] { (0xFF, 168, EventTraceKind.End) }, TickAt(5, 20));
+        Assert.Empty(TickAt(20, 20));
+        Assert.Equal(enter, TickAt(5, 20));
+    }
+
+    private static string FindProjectRoot()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, "alundra-project");
+            if (Directory.Exists(Path.Combine(candidate, "Maps")))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new InvalidOperationException(
+            $"AlundraWorldProxyEventPassTests: no 'alundra-project/Maps' directory found above "
+            + $"'{AppContext.BaseDirectory}' - the J1-g test needs the real converter export of map 445.");
     }
 
     [Fact]

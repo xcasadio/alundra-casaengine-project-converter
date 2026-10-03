@@ -686,6 +686,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
                 X2 = int.Parse(cp.GetValueOrDefault("X2", "0")),
                 Y2 = int.Parse(cp.GetValueOrDefault("Y2", "0")),
                 ProgramBMap = programBMap,
+                OriginalProgramBMap = programBMap,
                 Entity = _player,
             });
             _referencedBMap.Add(programBMap & 0x7F);
