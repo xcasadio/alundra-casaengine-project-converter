@@ -4212,7 +4212,7 @@ sous-tranche a son plan relu, son exécution et sa vérification :
   propriétaire de la formule d'échelle commune des écrans** (résolution virtuelle du moteur, recalcul des écrans au changement
   de taille) ; f2 bâtit son écran dessus sans la modifier (révision n°1 de la relecture du 2026-10-03).
 
-##### 1.2j.1 E19.f0 — Drapeaux du texte à leur position ✅ (READY à la relecture de clôture sur `6e6a0cd` ; audit des valeurs fait)
+##### 1.2j.1 E19.f0 — Drapeaux du texte à leur position ✅ (CONFIRMED le 2026-10-03)
 
 **Faits** (cartographie, `e19f-plan2/yarn/notes.md`) :
 - **[binaire]** un code numérique pose son drapeau temporaire quand l'interpréteur du texte l'atteint et passe au caractère suivant
@@ -4330,6 +4330,15 @@ Commits : `test(converter): …` puis `feat(converter): emit text flag codes and
   dédié ; (2) pied de commit `Co-Authored-By: Claude Sonnet 5.5` (le modèle réel) au lieu de `Opus 5.5` du brief ; (3) le constructeur du
   présentateur de capture prend l'état de jeu en paramètre facultatif (`null` : aucun drapeau posé) pour laisser les montages existants
   intacts ; (4) la valeur du drapeau est lue en `Int64` (jamais d'exception sur un `id` hors plage, marqueur ignoré).
+- ✅ **Vérification d'E19.f0** (2026-10-03) : `Alundra.Tests` 2504/2504 en Release (45 s) puis en Debug (47 s), la Debug en
+  dernier ; `cmp` sans écart ; les six traces à l'octet. Vérificateur neuf : **CONFIRMED** (les six chaînes de l'audit relues à
+  l'identique dans `alundra-project/` ; son propre manifeste SHA-1 égal au manifeste d'après de l'exécuteur, 311 fichiers changés,
+  0 ajouté, 0 retiré, double export ne différant que par `report.json` ; 932 `[flag`, 922 `[yield`, 0 `<<flag` ; décodeur de
+  référence d'un algorithme distinct de l'émetteur ; quatre mutations attrapées : coupe de fin non transparente, `yield` retiré
+  (dont la preuve du corpus entier), présentateur de capture sans écriture (dont le marin 12 sur le vrai export), chemin dégradé
+  sans écriture ; seule la liste fermée a changé). Note : l'empreinte de la DLL suit le commit (version informationnelle), elle
+  change avec un commit du seul plan. Avis reporté à E19.m : P4 un `[flag id=abc/]` écrit à la main (propriété texte) lèverait
+  une `FormatException` dans `ShowLine` (`AlundraYarnBindings.cs:183`, `Convert.ToInt64`), le convertisseur n'en produit jamais.
 
 ##### 1.2j.2 E19.f1 — Cadres du nom et du choix, curseur d'attente ⏳ (planifiée)
 
@@ -6135,6 +6144,13 @@ Réservé aux mesures faites en exécutant les tranches.
   clôture.
 - **Suites** : `Alundra.Tests` **2491 avant, 2496 après** (+5 : UH-15, UH-17, UH-18 en deux cas, UJ-CLIMB), 0 échec, en Release
   puis en Debug ; `cmp` sans écart. D5b (plateformes qui bougent en Z) reste en pause pour une reprise de conception.
+
+### E19.f0 (2026-10-03)
+
+- **Commits** : plan `99ff51d` à `4fe5b4c` ; `0beab51` (convertisseur), `fa8d86c` (DLL), `cd8cc35` (ADR-0025), `4f65ecd` (plan) ; puis
+  cette clôture.
+- **Suites** : convertisseur 415/415 ; `Alundra.Tests` **2496 avant, 2504 après** (+8), 0 échec, en Release puis en Debug ; export
+  en place : 311 fichiers changés, comme prévu.
 
 ## 3. Points ouverts
 
