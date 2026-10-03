@@ -6732,7 +6732,7 @@ n'est demandé, et l'original lirait au-delà de la table (point ouvert à consi
   avec un groupe nul, pas avec une carte d'un autre groupe ; P4 la période de l'auto-chaîne n'est pas épinglée. **Reste la recette T6
   de l'auteur.**
 
-### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 ✅ (vérification en cours) ; E19.m4 planifiée)
+### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 ✅ ; E19.m4 READY, en exécution)
 
 **Recensement** (2026-10-03, lecture seule ; table complète versionnée dans `docs/plan-e19-m-annexe/backlog-2026-10-03.md`, en
 anglais) : 46 points M-01 à M-46, chacun vérifié contre le code de `bafbd5a`, classé (test seul, commentaire ou doc, petit correctif
@@ -7001,7 +7001,7 @@ O-E19-51 à O-E19-53 (autres écarts relevés) hors tranche.
   `CellularLayerServiceTests` là où le filtre du vérificateur en lance 26 (le nombre de rouges, 13, concorde) ; O-E19-49 n'est
   consigné que dans ADR-0032 (écart côté DLL, conforme à M2-R4). Reste la recette : la pluie de la 391 et les cellules de type 0.
 
-#### 1.2s.4 E19.m3 — Compteur des vagues, parallaxe et ordre des cellules (O-E19-51 à O-E19-53) ✅ (relecture n°1 REVISE, révisée ; relecture n°2 READY ; exécutée le 2026-10-03)
+#### 1.2s.4 E19.m3 — Compteur des vagues, parallaxe et ordre des cellules (O-E19-51 à O-E19-53) ✅ (relecture n°1 REVISE, révisée ; relecture n°2 READY ; faite et CONFIRMED le 2026-10-03)
 
 **Faits** **[binaire]** (audit du 2026-10-03, `e19m3-disc/notes.md` du scratchpad, scripts `values`, `census3`, `otusers`, `stp` ;
 lignes du moteur citées à `61358ac0`) :
@@ -7099,8 +7099,15 @@ lignes du moteur citées à `61358ac0`) :
 
 **Risques.** Les vagues de la chaîne (44, 362, 476, 478) commencent à une autre phase ; la clé par cellule ajoute un champ par
 entrée de la couche (même coût que les parties d'animation).
+- ✅ **Vérification d'E19.m3** (2026-10-03) : la session principale a lancé `Alundra.Tests` en Release puis en Debug (2555/2555
+  chacune, la Debug en dernier), `cmp` sans écart, les six traces à l'octet. Vérificateur neuf **CONFIRMED** (binaire relu en
+  `0x8005B6AC`-`0x8005B72C`, `0x8005D448`, `0x8005C0C4`-`0x8005C158`, `0x8005CB78`/`0x8005CBB8`, `0x8005CE08`-`0x8005CE2C` ; rouges
+  rejoués en remettant les quatre fichiers de production : 16 rouges aux valeurs « aujourd'hui », gardes vertes ; `CasaEngine.Tests`
+  2550/2550 ; seule la liste fermée a bougé ; ADR-0052, statut d'ADR-0049, note au fait d'E19.k2). Avis P4 : le corps d'ADR-0049
+  cite encore le compteur des vagues (seul le statut renvoie à ADR-0052, conforme au contrat) ; dénominateur nul : le binaire garde
+  l'ancien facteur (`0x8005C0B4`), le moteur pose 0 (choix du plan ; aucun cas dans le corpus).
 
-#### 1.2s.5 E19.m4 — Fonds figés pendant le départ d'un passage (O-E19-55) ⏳ (planifiée ; relecture n°1 REVISE, révisée)
+#### 1.2s.5 E19.m4 — Fonds figés pendant le départ d'un passage (O-E19-55) ⏳ (relecture n°1 REVISE, révisée ; relecture n°2 READY ; en exécution)
 
 **Faits** **[binaire]** (audit du 2026-10-03, `e19o55-disc/notes.md` du scratchpad, scripts `census`, `values`, `x2` ; DLL citée à
 `f596546`, moteur à `b5a9fbcf`) :
