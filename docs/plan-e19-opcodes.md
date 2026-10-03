@@ -4712,10 +4712,16 @@ images de TR-V, A10 (Bergus), A12, A10J (Giles).
 
 ##### 1.2n.3 E19.h3 — Aimantation au sommet et plafonds du héros ⏳
 
+**Relecture** (2026-10-03) : REVISE n°1 (le retour arrière de l'aimantation quand une entité occupe la boîte n'avait aucun
+test, alors qu'un héros posé sur un objet garde la porte de l'aimantation ouverte à chaque tick) : corrigé (H3-R1 nomme la
+recherche, H3-1 gagne UH-APEX-REVERT, le risque disparaît).
+
 **Règles d'exécution.**
 - **H3-R1 — Aimantation au sommet** (héros, état en l'air) : au tick où le héros a le bit Gravity et `ForceZ == 0` après le pas
   vertical, après le pas XY, lire le terrain `T'` sous la boîte ; si `PosZ − T' <= 0x30000` et `T' − PosZ <= 0x30001` et
-  qu'aucune entité n'occupe la boîte à `T'` (règle de `FindEntityCollisionCandidate`), `PosZ = T'` (`ModZ` du héros 0) et la
+  qu'aucune entité n'occupe la boîte à `T'` (surcharge positionnelle de `AlundraEntityCollision.FindEntityCollisionCandidate`,
+  avec la position XY d'après le pas, `subjectPosZ = T'`, sans drapeaux de candidats ignorés ; une entité trouvée annule
+  l'aimantation, `PosZ` inchangé), `PosZ = T'` (`ModZ` du héros 0) et la
   racine suit ; `IsOnGround` en sort 1 par la règle existante ; l'état en l'air n'est pas quitté (le tick suivant atterrit
   par le test strict).
 - **H3-R2 — Plafonds** (héros, état en l'air, `F > 0`, avant `PosZ += F`), en convention de la DLL (`ModdedPosZ = PosZ +
@@ -4744,8 +4750,12 @@ images de TR-V, A10 (Bergus), A12, A10J (Giles).
   **UH-12** (dalle posée par `AddEntity(z = 40)`, `PosZ` 2621440) : 327680 ; tick 2 : 524288, `ForceZ` 0, contact 1 ; puis 491520, 425984, 327680,
   196608, 32768 ; tick 8 : 0 (rouge : tick 2 à 622592). **UH-CAP** (héros dans l'état en l'air sans le bit Gravity, `ForceZ`
   64 px par tick depuis 1792 px) : `PosZ` plafonné à `0x7600000 − 1` en convention de la DLL dès le tick 2, contact 0 au tick 1
-  puis 1 à chaque tick, `ForceZ` inchangé (rouge : monte sans fin). Gardes : UH-1 (sol plat, sommet à 27,5 px, aucune aimantation), UH-8 (saut
-  dans l'eau, jamais `ForceZ == 0`). Les boîtes sont posées par `ContactWorld.AddEntity` (convention de la DLL ; l'audit des valeurs a vérifié que la règle H3-R2
+  puis 1 à chaque tick, `ForceZ` inchangé (rouge : monte sans fin). **UH-APEX-REVERT** (montage de SJ-12, caisse `AddObject(…, 190, 90, 30, 24, 2)` de 2 px, saut sur place
+  dans son empreinte) : après l'atterrissage sur le dessus (premier tick après le sommet où `CollidedWithEntityZ` vaut 1),
+  pendant dix ticks, `PosZ` reste 131072 et `IsOnGround` 1 (l'aimantation vers le terrain `T'` = 0, à 2 px, est annulée par
+  la caisse qui occupe la boîte à `T'`) ; rouge, la même règle sans l'annulation : `PosZ` quitte 131072. Gardes : UH-1 (sol
+  plat, sommet à 27,5 px, aucune aimantation), UH-8 (saut dans l'eau, jamais `ForceZ == 0`), SJ-12 (caisse de 16 px, hors
+  de la fenêtre de 3 px). Les boîtes sont posées par `ContactWorld.AddEntity` (convention de la DLL ; l'audit des valeurs a vérifié que la règle H3-R2
   sans `+ 1` donne exactement ces valeurs) ; une valeur contredite est un arrêt.
   Commit : `feat(alundra): the hero snaps at the top of a jump and stops under ceilings like the binary`
 - ⏳ **H3-2 — Vérification et clôture.** **H3-3 — Recette** (auteur, hors chaîne) : un saut sous une plateforme suspendue (le
@@ -4758,8 +4768,7 @@ images de TR-V, A10 (Bergus), A12, A10J (Giles).
 3. `Alundra.Tests` sans échec en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
 4. Recette H3-3 faite par l'auteur.
 
-**Risques.** Les plafonds mobiles (D5) et ceux des PNJ (E19.h2) restent sans plafond ; l'annulation de l'aimantation par une
-entité n'a pas de valeur émulée (règle seule, sans test de valeur).
+**Risques.** Les plafonds mobiles (D5) et ceux des PNJ (E19.h2) restent sans plafond.
 
 ##### 1.2n.4 E19.h4 — Glissement le long des murs (étape 1) et `0x45`/`0x46` ⏳
 
