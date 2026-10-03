@@ -41,13 +41,20 @@ public sealed class AlundraHeroJumpArcTests
         var atInstruction = new Dictionary<(int Slot, int Pc, int Frame), Pose>();
         var afterImage = new Dictionary<int, Pose>();
         var giles = new Dictionary<int, (Pose Pose, EntityStatus Status)>();
+        AlundraEntityScriptProxy? gilesProxy = null;
+        var gilesGoneAt = -1;
         arc.OnInstruction = t => atInstruction.TryAdd((t.Slot, t.Pc, t.Frame), PoseOf(arc.Hero));
         arc.OnFrame = () =>
         {
             afterImage[arc.Frame - 1] = PoseOf(arc.Hero);
             if (arc.EntityByRecord(98) is { } g)
             {
+                gilesProxy = g;
                 giles[arc.Frame - 1] = (PoseOf(g), g.Status);
+            }
+            else if (gilesProxy is not null && gilesGoneAt < 0)
+            {
+                gilesGoneAt = arc.Frame - 1; // the first image at the end of which record 98 is no longer listed (E19.r R3).
             }
         };
 
@@ -163,8 +170,13 @@ public sealed class AlundraHeroJumpArcTests
         Assert.InRange(giles[FrameOf(arc, C, 6401)].Pose.Y / 65536.0, 775 - 2.5, 775 + 2.5);
         Assert.Equal(0, giles[FrameOf(arc, C, 6401)].Pose.X & 0xFFFF); // the truncation of O-E19-29 on the ramp.
         Near(f0 + 266, FrameOf(arc, C, 6410), "Giles 0x19 @6410");
-        var destroyed = giles.Where(g => g.Value.Status == EntityStatus.FlagToDestroy).Min(g => g.Key);
-        Near(f0 + 267, destroyed, "Giles flagged for destruction");
+        // E19.r R3: flagged for destruction by the native E in his update at F0+267 and recycled at the end of that same image: the end-of-image sample never
+        // sees FlagToDestroy; from F0+267 his proxy is Destroyed and record 98 is no longer listed.
+        Assert.DoesNotContain(giles.Values, g => g.Status == EntityStatus.FlagToDestroy);
+        Assert.NotNull(gilesProxy);
+        Assert.Equal(EntityStatus.Destroyed, gilesProxy!.Status);
+        Assert.Null(arc.EntityByRecord(98));
+        Near(f0 + 267, gilesGoneAt, "Giles recycled (no longer listed)");
 
         AssertNoUnexpectedError(arc);
     }

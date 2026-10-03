@@ -95,11 +95,10 @@ internal static class AlundraFrameSyncPasses
 
         // Destroyed-entity visibility (structural piece for the search-driven destroy opcodes, 0x2E
         // in particular): once an entity is flagged for destruction it stops being drawn and stops
-        // being synced here - see DestroyEntity's own V1 scope note on why this is invisibility
-        // rather than full removal/slot recycling. Checked against FlagToDestroy specifically, not
+        // being synced here, until the recycling pass of the same tick or the next one takes it out of the world
+        // (AlundraWorldProxy.RecycleDestroyedEntities, E19.r R3). Checked against FlagToDestroy specifically, not
         // EntityStatus.Destroyed (numeric value 0, the default AlundraEntityScriptProxy.Status a
-        // freshly-constructed-but-never-spawned proxy carries) - no ported code path ever transitions
-        // an entity all the way to Destroyed in V1 (see EntityStatus's own doc on slot recycling).
+        // freshly-constructed-but-never-spawned proxy carries, and the value the recycling gives back).
         if (proxy.Status == EntityStatus.FlagToDestroy)
         {
             entity.IsVisible = false;

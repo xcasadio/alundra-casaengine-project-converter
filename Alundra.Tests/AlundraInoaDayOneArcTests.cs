@@ -403,9 +403,12 @@ public sealed class AlundraInoaDayOneArcTests
         Assert.True(IsTemporarySet(3), "T3");
         Assert.True(arc.Has(C, 451, 0x19), "C[3] never deactivated record 4 (0x19 @451)");
         AssertFrame(arc, C, 451, 189);
-        Assert.Equal(EntityStatus.Deactivated, arc.EntityByRecord(4)!.Status); // at the frame of the end ...
+        var record4 = arc.EntityByRecord(4)!;
+        Assert.Equal(EntityStatus.Deactivated, record4.Status); // at the frame of the end ...
         arc.OneFrame();
-        Assert.Equal(EntityStatus.FlagToDestroy, arc.EntityByRecord(4)!.Status); // ... and destroyed by the native E handler the frame after (D-E19-29).
+        // ... and destroyed by the native E handler the frame after (D-E19-29), in its update, then recycled at the end of the same image (E19.r R3).
+        Assert.Equal(EntityStatus.Destroyed, record4.Status);
+        Assert.Null(arc.EntityByRecord(4));
 
         // The contacts of Septimus, in the order of the plan: record 4 and the hero, nothing else.
         Assert.Equal(new[] { "hero", "rec4" }, septimusContacts.OrderBy(c => c).ToArray());

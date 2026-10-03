@@ -232,12 +232,11 @@ internal static class AlundraEntitySpawnFactory
     /// The cached static delegates mean subscribing allocates nothing beyond the one-time delegate instances shared by every entity; the
     /// handlers resolve the proxy from <c>sender</c>/<c>Owner.GameplayProxy</c> rather than capturing anything per-entity.
     /// <para>
-    /// No unsubscribe on destroy: <see cref="DestroyEntity(AlundraEntityScriptProxy)"/> only ever sets
-    /// <see cref="EntityStatus.FlagToDestroy"/> (V1 scope is invisibility, not removal/slot recycling -
-    /// see that method's own doc), never disposes the entity or its components, so the subscription
-    /// this method makes lives exactly as long as the entity object itself and needs no explicit
-    /// teardown. A FlagToDestroy entity's clock does not step (<see cref="AlundraFrameSyncPasses.StepAnimationClock"/>), so its handlers never run
-    /// again.
+    /// No unsubscribe on destroy: <see cref="AlundraWorldProxy.DestroyEntity(AlundraEntityScriptProxy)"/> only sets
+    /// <see cref="EntityStatus.FlagToDestroy"/>; the recycling of the tick (<see cref="AlundraWorldProxy.RecycleDestroyedEntities"/>, E19.r R3) hands
+    /// the entity to the engine, which releases what its components hold. The subscription this method makes lives exactly as long as the entity
+    /// object itself and needs no explicit teardown. A FlagToDestroy entity's clock does not step (<see cref="AlundraFrameSyncPasses.StepAnimationClock"/>),
+    /// so its handlers never run again.
     /// </para>
     /// </summary>
     internal static void SubscribeAnimationEndBridge(Entity entity)

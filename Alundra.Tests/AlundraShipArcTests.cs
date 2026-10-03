@@ -69,7 +69,8 @@ public sealed class AlundraShipArcTests
             $"the captain advanced {(captainAtWalkStart.Value.Y - captainAtWalkEnd.Value.Y) / 65536.0} px to the north, 80 expected");
 
         Assert.NotEqual(0u, ArcRun.State.GetFlag(870) & (1u << 6));
-        Assert.Equal(EntityStatus.FlagToDestroy, captain.Status);
+        // E19.r R3: B[1] destroys the captain by 0x2E [2] @545 (a map program) and the recycling of the same image puts it back to the template.
+        Assert.Equal(EntityStatus.Destroyed, captain.Status);
         Assert.Equal(0u, ArcRun.State.PlayerControlFlags);
         Assert.Empty(arc.SkippedOrExceeded.ToList());
         Assert.True(arc.Frame < 800);
@@ -107,7 +108,8 @@ public sealed class AlundraShipArcTests
         Assert.True(arc.FirstIndexOf(BProgram, 507, 0x1F) < arc.FirstIndexOf(BProgram, 534, 0x43));
 
         Assert.NotEqual(0u, ArcRun.State.GetFlag(870) & (1u << 6));
-        Assert.Equal(EntityStatus.FlagToDestroy, captain.Status);
+        // E19.r R3: B[1] destroys the captain by 0x2E [2] @545 (a map program) and the recycling of the same image puts it back to the template.
+        Assert.Equal(EntityStatus.Destroyed, captain.Status);
         Assert.Equal(0u, ArcRun.State.PlayerControlFlags);
         Assert.Empty(arc.SkippedOrExceeded.ToList());
         Assert.True(arc.Frame < 800);
@@ -127,10 +129,13 @@ public sealed class AlundraShipArcTests
         using var arc = new ArcRun(new ArcSpec("A1", Zone, Map390, flags, 44, 23, 4, 900));
         Assert.Equal(228u, ArcRun.State.GameFlags[27]);
 
-        arc.OneFrame(); // the load programs of the first frame.
+        // E19.r R3: the first captain destroys itself in its load program (A[2] @433, G870 set), during the entity pass of the first image, and is recycled
+        // in that same image (the box of B3 opens at the image 4 at the earliest): its proxy is captured before the image, then is Destroyed and unlisted.
         var captain1 = arc.EntityByRecord(2) ?? throw new Xunit.Sdk.XunitException("record 2 did not spawn");
+        arc.OneFrame(); // the load programs of the first frame.
         var captain2 = arc.EntityByRecord(3) ?? throw new Xunit.Sdk.XunitException("record 3 (the second captain) did not spawn");
-        Assert.Equal(EntityStatus.FlagToDestroy, captain1.Status);
+        Assert.Equal(EntityStatus.Destroyed, captain1.Status);
+        Assert.Null(arc.EntityByRecord(2));
         Assert.NotEqual(EntityStatus.FlagToDestroy, captain2.Status);
 
         arc.RunUntil(() => AlundraDialogueDirector.Instance.IsOpen, "the dialogue of B3 opens (0x0D @724)");

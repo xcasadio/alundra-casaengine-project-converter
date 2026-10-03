@@ -2093,6 +2093,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 }
 
                 RunMapEventsPass(PlayerEntity, _mapEvents, EventProgramRunner, GameState.PlayerControlFlags);
+
+                // E19.r R3 (docs/plan-e19-opcodes.md section 1.2p, D-E19-45, ADR-0024): the recycling of the destroyed entities, right after each pass of the map
+                // events, as the binary's UpdateEntities (0x8003B3A0) opens with UpdateDestroyedEntities (0x80038634) after RunMapEvents.
+                RecycleDestroyedEntities();
             }
         }
 
@@ -2413,12 +2417,48 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
+    /// E19.r R3 (docs/plan-e19-opcodes.md section 1.2p, D-E19-45, ADR-0024): port of <c>UpdateDestroyedEntities</c> (<c>0x80038634</c>), the first call of
+    /// <c>UpdateEntities</c> (<c>0x8003B3A0</c>). The binary covers every slot in the state <see cref="EntityStatus.FlagToDestroy"/> with its template
+    /// (<c>0x80134368</c>: state 0, <c>+0x48</c> = -1, written in <c>0x8003B21C</c>); the port puts each such proxy back to the same values
+    /// (<see cref="EntityStatus.Destroyed"/>, <see cref="AlundraEntityScriptProxy.EntityRefId"/> = -1), takes it out of <see cref="_spawnedEntities"/> (so out
+    /// of the update lists and the collidables rebuilt after) and hands its entity back to the engine (<see cref="World.RemoveEntity"/>, which releases what
+    /// its components hold at the next engine update). A search by raw id (<c>0x2C</c>, <c>0x2E</c>...) does not test the state of the candidate: a corpse
+    /// stays found until this pass. Nothing else is cleared: a reference kept on a recycled slot sees a slot in the state 0, as in the binary. The hero is never
+    /// recycled. The gate is read here, after the map events (<c>0x8003B38C</c> reads <c>g_playerControlFlags</c> at the head of <c>UpdateEntities</c>): a
+    /// program that destroys an entity and opens a box in the same tick holds the recycling back until the box closes. Without a world (test montages) the
+    /// proxy only leaves the lists.
+    /// </summary>
+    internal void RecycleDestroyedEntities()
+    {
+        if ((GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0)
+        {
+            return;
+        }
+
+        for (var i = _spawnedEntities.Count - 1; i >= 0; i--)
+        {
+            var entity = _spawnedEntities[i];
+            if (entity.GameplayProxy is not AlundraEntityScriptProxy { Status: EntityStatus.FlagToDestroy } proxy
+                || ReferenceEquals(proxy, PlayerEntity))
+            {
+                continue;
+            }
+
+            proxy.Status = EntityStatus.Destroyed;
+            proxy.EntityRefId = -1;
+            _spawnedEntities.RemoveAt(i);
+            _world?.RemoveEntity(entity);
+            Logs.WriteDebug("AlundraWorldProxy: destroyed entity recycled.");
+        }
+    }
+
+    /// <summary>
     /// V1 minimal port of <c>GameEngine.DestroyEntity(Entity, int)</c> @ 0x8003A59C: marks the entity for
     /// destruction (naturally skipped by the pick phase from now on) and logs once at debug level with
     /// the original's numeric effect-id argument (-1 = "use the sprite record's break effect", 6 = the
-    /// sliding-slope break effect, see the pick-phase callers above). Does not remove the entity from the
-    /// CasaEngine world yet (slot recycling, contents spawning and the original's other side effects -
-    /// ActiveEffect/PlatformEntity cleanup, SpawnEntityContents - are later work).
+    /// sliding-slope break effect, see the pick-phase callers above). Does not remove the entity itself: the
+    /// recycling comes later in the tick (<see cref="RecycleDestroyedEntities"/>, E19.r R3); contents spawning and the
+    /// original's other side effects - ActiveEffect/PlatformEntity cleanup, SpawnEntityContents - are later work).
     /// </summary>
     internal void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
     {
@@ -2430,9 +2470,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// V1 port of the single-argument <c>GameEngine.DestroyEntity(Entity)</c> @ 0x8003A774 - the overload
     /// every search-driven destroy opcode (0x2E Script_46_02E) calls once per match, distinct from the
     /// two-argument overload above (which the pick-phase status machine uses, and which also spawns
-    /// break-effect contents). Same V1 scope note as the two-argument overload: does not remove the
-    /// entity from the CasaEngine world (slot recycling is later work - see that overload's own doc) and
-    /// does not port <c>ActiveEffect</c>/<c>PlatformEntity.CarriedEntity</c> cleanup. Clears
+    /// break-effect contents). Same scope note as the two-argument overload: the entity leaves the CasaEngine world
+    /// at the recycling pass (<see cref="RecycleDestroyedEntities"/>), not here, and this does not port <c>ActiveEffect</c>/<c>PlatformEntity.CarriedEntity</c> cleanup. Clears
     /// <see cref="AlundraEntityScriptProxy.EventTrigger"/> like the original, so a same-frame re-scan
     /// (<see cref="RunPendingEventTriggers"/>) does not also try to run whatever program slot this entity
     /// had queued before being destroyed.

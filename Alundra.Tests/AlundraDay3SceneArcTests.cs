@@ -247,6 +247,19 @@ public sealed class AlundraDay3SceneArcTests
         var s = new ArcSamples(arc, new[] { 0 }, new uint[] { 0, 1 }, (B, 912, 942));
         Assert.False(IsSet(1655) || IsSet(14), "G1655 and G14 are not set by the arc's start");
 
+        // E19.r R3: the blocks of the records 8 to 10 exist after B[2] 0x2D @219-@223 and are captured at the trace of 0x2E @272, all three still listed and
+        // flagged for destruction by B[2] (0x2E @268, @270, @272); the recycling of the same tick takes them away.
+        List<AlundraEntityScriptProxy>? blocks = null;
+        var chained = arc.OnInstruction!;
+        arc.OnInstruction = t =>
+        {
+            chained(t);
+            if (t.Slot == B && t.Pc == 272 && t.Opcode == 0x2E)
+            {
+                blocks = arc.Entities.Where(e => e.EntityRefId is >= 8 and <= 10).ToList();
+            }
+        };
+
         // 1. The end signal: 0x11 @1115 of C[1], then G14 by 0x05 @1120.
         RunAcceptingTheChoice(arc, () => arc.Has(C, 1115, 0x11), "C[1] executes 0x11 @1115");
         RunAcceptingTheChoice(arc, () => arc.Has(C, 1120, 0x05), "C[1] executes 0x05 @1120");
@@ -275,9 +288,10 @@ public sealed class AlundraDay3SceneArcTests
 
         // 6. G14 (0x05 @1120), and the blocks of the records 8 to 10 are destroyed.
         Assert.True(IsSet(14), "G14");
-        var blocks = arc.Entities.Where(e => e.EntityRefId is >= 8 and <= 10).ToList();
-        Assert.Equal(3, blocks.Count);
-        Assert.All(blocks, b => Assert.Equal(EntityStatus.FlagToDestroy, b.Status));
+        Assert.NotNull(blocks);
+        Assert.Equal(3, blocks!.Count);
+        Assert.All(blocks, b => Assert.Equal(EntityStatus.Destroyed, b.Status));
+        Assert.All(blocks, b => Assert.DoesNotContain(b, arc.Entities));
         AssertNoUnexpectedError(arc);
     }
 

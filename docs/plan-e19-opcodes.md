@@ -174,6 +174,7 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     au point d'`UpdateDestroyedEntities` (après chaque passe des événements de carte, sous la porte `0x48`) : remise au
     gabarit (`Status` `Destroyed`, `EntityRefId` −1), retrait des listes de la DLL, entité rendue au moteur
     (`World.RemoveEntity`). Remplace la portée « invisibilité, pas retrait ». ADR-0024.
+    Decisions: see ADR-0024.
   - **D-E19-46** — (2026-10-03, l'auteur) Les **caisses et cruches soulevables restent traversables** jusqu'à E14
     (D-E19-28 gardé).
 
@@ -1035,7 +1036,8 @@ puis part vers la 392 (arc A4).
   - **Sites de la 476** : B1 `@63` (bloc caméra, enregistrement 1, en (972, 112, 48)) et B5 `@553`
     (Rancune, enregistrement 0, en (792, 176, 48)) ; le site `@534` est mort.
   - **Corpus** : 684 sites dans 69 cartes ; 191 sont dans des boucles qui supposent la réutilisation des
-    emplacements d'entités, absente de la DLL. C'est une limite connue, notée pour E14 et E19.m.
+    emplacements d'entités : depuis E19.r R3 (D-E19-45) les entités détruites sont retirées et leur `EntityRefId` est libéré, mais la DLL ne
+    réutilise toujours pas le créneau libéré (les nouvelles entités sont ajoutées en fin de liste). C'est une limite connue, notée pour E14 et E19.m.
 - **Déroulé de la 476** : six événements de carte, B1 à B6, sans programme d'entité.
   - Les seules barrières sont `G1640` et `G1641`, T999 (posé par le nœud Yarn à l'ouverture), la poignée
     de main T1000 entre B4 et B2, les attentes `0x37` et `0x39`, et, en A4, quatre marches `0x1E` du bloc.
@@ -1206,7 +1208,7 @@ puis part vers la 392 (arc A4).
 
   | Constat | Priorité | Disposition |
   |---|---|---|
-  | `0x8A` apparaît désormais pour de vrai dans environ 70 cartes. Des programmes en boucle (sanctuaire 28, et 30, 134, 147, 159, 160) font apparaître des entités sans fin tant que le joueur reste sur la carte, car `DestroyEntity` ne retire jamais l'entité du moteur. | P3, introduit | Reporté : limite déjà acceptée par ce plan (risques ci-dessus, E14 ou E19.m). Aucune de ces cartes n'est sur la chaîne. |
+  | `0x8A` apparaît désormais pour de vrai dans environ 70 cartes. Des programmes en boucle (sanctuaire 28, et 30, 134, 147, 159, 160) font apparaître des entités sans fin tant que le joueur reste sur la carte, car la DLL ne réutilise pas les créneaux libérés (depuis E19.r R3 les entités détruites sont retirées du moteur, mais les nouvelles s'ajoutent en fin de liste). | P3, introduit | Reporté : limite déjà acceptée par ce plan (risques ci-dessus, E14 ou E19.m). Aucune de ces cartes n'est sur la chaîne. |
   | Aucun test n'exerce `0x8A` sur le vrai bloc, qui porte un contrôleur : dans les arcs, le bloc est nu et `PushLogicalPositionToRoot` ne fait rien. Le second appel de `PushLogicalPositionToRoot` est hors du `try` de `SpawnEntityByRecordId`. | P3, introduit | Reporté : la recette T6 le couvre ; les arcs avec de vrais contrôleurs viennent avec O-E19-3 (E19.c). |
   | Après l'écriture de la position par `0x8A`, l'état de support et les champs `Tile*` restent ceux de la position du record jusqu'au tick suivant. | P4 | Accepté : même forme que `0x8B` ; sans effet pour le bloc et Rancune, qui ne portent personne. |
   | Tests plus faibles que le plan : l'octet fort n'est testé que sur X ; les arcs ne vérifient pas les parents (bloc → héros, Rancune → bloc) ; le fragment de texte « Tu » de `S102` est faible. | P4 | Reporté à l'hygiène d'E19.c. |
@@ -5067,7 +5069,7 @@ quads par image (pas de 128 entités du moteur, pas de `.anim2d`) ; la semi-tran
 dans le moteur (rapports de manque, jamais de contournement en amont) ; le tri reprend la formule des entités dans la couche
 triée du monde ; les données d'effets s'exportent en données, pas en images précuites.
 
-### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ⏳ (R1, R2, R4 ✅ ; R3 planifiée)
+### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ⏳ (R1, R2, R3, R4 ✅ ; R5 recette de l'auteur)
 
 **Constat de l'auteur** (conversion relancée, DLL reconstruite) : contacts avec les PNJ bons ; sons et musique bons ; boîtes de
 dialogue toujours celles de MGUI ; scène de Lars et Melzas toujours fausse, halo plus petit que la fenêtre ; on traverse les
@@ -5151,7 +5153,7 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
   reproduit la panne et ses avertissements ; cinq mutations sur six attrapées). Avis reportés à E19.m : P3 aucun test ne
   couvre la moitié « pose de surcouche au chargement » de la règle de R2 (le code est juste : 20 cases sur 20 adoptées sur la
   476) ; P4 aucun test ne prend un vrai warp hors de la chambre de la 163 (couvert en deux morceaux ; recette R5).
-- ⏳ **R3 — Recyclage des entités détruites** (D-E19-45, ADR-0024 ; décision de l'auteur du 2026-10-03 : « normalement le moteur
+- ✅ **R3 — Recyclage des entités détruites** (D-E19-45, ADR-0024 ; décision de l'auteur du 2026-10-03 : « normalement le moteur
   recycle les entités à détruire, fais-le » ; les trois Murggs ont bien disparu à la fin de la scène : seul le recyclage manque).
   **Faits** **[binaire]** : `UpdateDestroyedEntities` (`0x80038634`) est le premier appel d'`UpdateEntities` (`0x8003B3A0`),
   sous la porte `g_playerControlFlags & 0x48` ; la boucle principale appelle `RunMapEvents` (`0x8002E100`) puis
@@ -5231,6 +5233,17 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
   comportement du binaire ; le détachement des composants par le moteur pourrait journaliser une erreur (arrêt et diagnostic) ;
   le binaire rend un créneau libéré à la prochaine apparition, la DLL ajoute les nouvelles entités en fin de liste (écart
   existant, non traité par R3).
+  - Fait le 2026-10-03 : rouges d'abord sur le code d'avant : 5 tests unitaires sur 7 (`AlundraDestroyedEntityRecyclingTests`) rouges, `Status` lu
+    `FlagToDestroy` là où `Destroyed` est attendu, et, sur l'image à deux ticks, `0x2C [2]` lu `[0, 0]` là où `[0, 1]` est attendu (les deux gardes,
+    héros jamais recyclé et entité vivante intacte, sont vertes avant et après) ; arc de la 15 (`AlundraTarnMurggArcTests`) rouge : `C[8] 0x2E @890`
+    exécuté (image ~304, programme @784 terminé en `@892`), `B[1]` tourne en `@108` jusqu'à la limite de 1500 images, sans `0x11 @119`. Verts après :
+    `RecycleDestroyedEntities` appelée après chaque passe des événements de carte, 8 tests ajoutés (7 unitaires, 1 arc) ; épingles ré-épinglées
+    aux valeurs prévues du plan, sans écart : A0, A0b (`Destroyed`), A1 (capture avant la première image, `Destroyed`, `EntityByRecord(2)` nul), A11,
+    A17 (blocs capturés à la trace de `0x2E @272`), A10J (recyclage lu à F0+267) ; A8 inchangé. `Alundra.Tests` 2483 → 2491, 0 échec, en Debug
+    seulement (la consigne d'exécution interdisait Release : acceptation 3 à compléter) ; les six traces à l'octet ; aucune erreur nouvelle au
+    journal (`AssertNoUnexpectedError`). Docs « invisibilité, pas retrait » mises à jour (`AlundraWorldProxy.DestroyEntity`, `AlundraFrameSyncPasses.cs`,
+    `AlundraEntitySpawnFactory.cs`, limites du plan). Aucun écart au plan, hormis le périmètre de la limite des `0x8A` (la réutilisation des créneaux
+    libérés reste absente).
 - ✅ **R4 — Boîtes** : décision de l'auteur du 2026-10-03 : **l'écart D-E19-28 est gardé** jusqu'à E14 (D-E19-46).
 - 🧪 **R5 — Recette** (auteur) : sortir de la chambre de la 163 (le HUD glisse à l'écran) ; la 476 (les pièces apparaissent dans
   le cadre) ; la carte 15 après R3.
@@ -5548,7 +5561,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-44 | **Portes manquantes de l'aimantation au sommet** (vérification d'E19.h3, P3) : dans le binaire, l'aimantation (`0x80037848`) n'est atteinte que si le pas XY demande une force (`+0xE4`/`+0xE8` non nuls, sinon saut de `0x800377A0` à `0x80037DC0`) et elle est défaite quand le pas est entièrement bloqué (`0x80037938`-`0x80037948` rendent X, Y et Z) ; la DLL aimante dès que Gravity et `ForceZ == 0`. Émulation : saut sur place sous une boîte dont le bas est à 34 px, le binaire touche le plafond (t1 131072) et atterrit à t4, la DLL s'aimante au sol dès t1. Aucun plafond du corpus n'est à moins de 40 px du terrain. | E19.m |
 | O-E19-45 | **Convention de `PosZ` à l'apparition** (conception d'E19.h1b) : la DLL tient partout `PosZ` = celle du binaire moins 1 (atterrissage à `T`), sauf à l'apparition (`z − ModZ + 1`, fabrique ~657) et dans `0x8A`/`0x64`. Le `+ 1` est perdu au premier tirage de tête d'image pour une entité à contrôleur, ce qui la fait passer à travers un appui exact ; c'est ce que masque aujourd'hui l'appui d'apparition sans portée (O-E19-15). **Question** : passer l'apparition en convention de la DLL (abandonner le `+ 1`, relever à `max(PosZ, T)`), décision transversale à consigner en ADR, ou garder la convention du binaire à l'apparition et la traiter autrement ? Recommandation : convention de la DLL à l'apparition (la fabrique ; `0x8A` et `0x64` à examiner dans la même ADR). | auteur, puis E19.h1b et E19.h2 |
 | O-E19-46 | **Hauteur affichée** (recette du 2026-10-03, 476) : la DLL montre 320 × 236 (`AlundraCameraMath.CameraDisplayHeight` 236, fenêtre 1280 × 944, valeur de la décompilation) ; le binaire fixe ses environnements de dessin et d'affichage à 320 × 240 (`0x800424AC`, `SetDefDrawEnv`/`SetDefDispEnv` 0x140 × 0xF0) : quatre lignes de moins dans la DLL. La fenêtre est aussi redimensionnable sans bandes (`AllowUserResizing`, zoom fixé par monde sur la hauteur) : élargie, l'image ne couvre plus les côtés. **Question** : passer à 240 (1280 × 960), et que faire d'une fenêtre redimensionnée (bandes, zoom recalculé, ou taille fixe) ? | auteur |
-| O-E19-47 | **Entités détruites jamais recyclées** (recette du 2026-10-03, carte 15) : `0x2C` et les autres recherches par id brut trouvent le mandataire d'une entité détruite, qui reste dans la liste avec son `EntityRefId` ; la scène des Murggs devant le manoir de Tarn (`B[1] @108`-`@111`) tourne sans fin et le contrôle ne revient pas ; même blocage hors combat ailleurs (carte 6, `B[2] @239`). R3 (D-E19-45). | E19.r |
+| O-E19-47 | **Réglé le 2026-10-03 (R3, D-E19-45, ADR-0024).** **Entités détruites jamais recyclées** (recette du 2026-10-03, carte 15) : `0x2C` et les autres recherches par id brut trouvent le mandataire d'une entité détruite, qui reste dans la liste avec son `EntityRefId` ; la scène des Murggs devant le manoir de Tarn (`B[1] @108`-`@111`) tourne sans fin et le contrôle ne revient pas ; même blocage hors combat ailleurs (carte 6, `B[2] @239`). R3 (D-E19-45). | E19.r |
 
 ## 4. Hors périmètre
 

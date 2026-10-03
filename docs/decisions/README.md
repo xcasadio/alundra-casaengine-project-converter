@@ -37,3 +37,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0021 | Entity contacts, scripted jumps and the hero's water and ice rules follow the binary, and test saves feed the recipes | Accepted | 2026-10-02 |
 | ADR-0022 | Native-destruction obstacles stay solid, the walk detour waits on entities, and overlaps stay faithful | Accepted | 2026-10-02 |
 | ADR-0023 | The hero jumps, falls and lands like the binary, with the take-off sound, and dialogue fidelity joins E19.f | Accepted | 2026-10-02 |
+| ADR-0024 | Destroyed entities are recycled through the engine like the binary | Accepted | 2026-10-03 |
