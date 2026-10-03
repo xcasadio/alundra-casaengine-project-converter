@@ -426,19 +426,44 @@ public sealed class AlundraEntityContactArcTests
         // The preset day3-after-dream (docs/test-saves.md): map 179, tile (17, 7), z 1, flags G203, G1651 and G1660.
         "day3-after-dream" => new ArcSpec("TH4-day3-after-dream", "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1660 }, 0, 0, 0, 10, RealController: true, Prefabs: true,
             Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, AlundraGameState.ResetAnimationId, 0)),
+
+        // E19.e E4: the other arrivals of the day 3 chain. The first five are the `0x53` of the previous arc (the direction is the operand's), the sixth
+        // the portal 135.0 and the seventh the portal 176.7 (a portal's direction is the hero's when he walks in: not a plan value, the box does not rotate).
+        "A13" => new ArcSpec("TH4-A13", "Inoa", "Inoa-176", new[] { 203, 1651, 1652, 1660 }, 0, 0, 0, 10, RealController: true, Prefabs: true,
+            Arrival: new ArcArrival(11796480, 36175872, 10485760, AlundraGameState.ResetAnimationId, 24)),
+        "A14" => new ArcSpec("TH4-A14", "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1652, 1653, 1660 }, 0, 0, 0, 10, RealController: true, Prefabs: true,
+            Arrival: new ArcArrival(27525120, 7864320, 1048576, AlundraGameState.ResetAnimationId, 0)),
+        "A15" => new ArcSpec("TH4-A15", "Inoa", "Inoa-176", new[] { 203, 1651, 1652, 1653, 1654, 1660 }, 0, 0, 0, 10, RealController: true, Prefabs: true,
+            Arrival: new ArcArrival(8650752, 35127296, 10485760, AlundraGameState.ResetAnimationId, 0)),
+        "A10J" => new ArcSpec("TH4-A10J", "Overworld", "Overworld 2,1-10", new[] { 1654, 203 }, 0, 0, 0, 10, RealController: true, Prefabs: true,
+            Arrival: new ArcArrival(16515072, 61341696, 0, AlundraGameState.ResetAnimationId, 16)),
+        "A17" => new ArcSpec("TH4-A17", "Church", "Church-135", new[] { 203, 1654 }, 0, 0, 0, 10, RealController: true, Prefabs: true,
+            Arrival: new ArcArrival(30670848, 54001664, 1048576, AlundraGameState.ResetAnimationId, 16)),
+        "135-to-10" => new ArcSpec("TH4-135-to-10", "Overworld", "Overworld 2,1-10", new[] { 203, 1654, 1655, 14 }, 0, 0, 0, 10, RealController: true, Prefabs: true,
+            Arrival: new ArcArrival(47972352, 50855936, 0, AlundraGameState.ResetAnimationId, 0)),
+        "A18" => new ArcSpec("TH4-A18", "Inoa", "Inoa (inner)-178", new[] { 203, 1654, 1655 }, 0, 0, 0, 10, RealController: true, Prefabs: true,
+            Arrival: new ArcArrival(60555264, 26738688, 0, AlundraGameState.ResetAnimationId, 16)),
         _ => throw new ArgumentOutOfRangeException(nameof(name)),
     };
 
     /// <summary>
     /// TH4 (D-E19-36): a mover that already overlaps an entity stays blocked, as in the binary, with no exit rule: the arrivals of the chain must therefore
     /// overlap nothing. At the first frame after the adoption, the rule of the binary finds no obstacle for the hero of the arrivals of A20 (162), A10 (165),
-    /// T-A19 (185) and of the preset <c>day3-after-dream</c> (179).
+    /// T-A19 (185), of the preset <c>day3-after-dream</c> (179) and (E19.e E4) of the seven other arrivals of the day 3 chain: A13 (176), A14 (179), A15 (176),
+    /// A10J (10), A17 (135), the portal 135.0 (10) and the portal 176.7 (178).
     /// </summary>
     [Theory]
     [InlineData("A20")]
     [InlineData("A10")]
     [InlineData("T-A19")]
     [InlineData("day3-after-dream")]
+    [InlineData("A13")]
+    [InlineData("A14")]
+    [InlineData("A15")]
+    [InlineData("A10J")]
+    [InlineData("A17")]
+    [InlineData("135-to-10")]
+    [InlineData("A18")]
     public void TH4_TheArrivalOfTheChainOverlapsNoEntity(string arrival)
     {
         using var arc = new ArcRun(ArrivalSpec(arrival));
