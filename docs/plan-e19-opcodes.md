@@ -4750,7 +4750,7 @@ ses points à concevoir) ; E19.h1 ne garde que les attentes sans question de con
 148, 152, 154, 344, 410, 423 : leur contact en Z dépend de D5) ; une flamme (`0x47`) n'est arrêtée que par un mur tant
 qu'E14 n'écrit pas `HitCounter`.
 
-##### 1.2n.1b E19.h1b — `0x20`, Z des entités sans contrôleur, apparition ⏳ (esquisse)
+##### 1.2n.1b E19.h1b — `0x20`, Z des entités sans contrôleur, apparition ⚠️ (esquisse ; en attente de l'auteur : O-E19-45)
 
 Portée : `0x20` (attente de distance en Z, 266 sites), `0x22`/`0x23` (attente d'une hauteur d'enregistrement, 17 sites) et
 la hauteur d'enregistrement gardée sur le mandataire, O-E19-7 (pas vertical et `IsOnGround` de fin de tick pour toute entité
@@ -4767,6 +4767,36 @@ qui l'appellent (`AlundraNpcCharacterControllerMoverTests.cs` ~1844-1850, `Alund
 cible de `0x22` dans la convention de la DLL (`hauteur << 19 − 1`) et sa représentation sur la racine en flottant (impaire, elle
 n'existe pas en `float` au-delà de 256 px : 127 rec17 et rec18 à 304 px), écart de précision à porter au moteur s'il le faut ;
 une entité sans enregistrement sous `0x22` (le binaire imprime une erreur et lit un enregistrement nul ; aucun site).
+
+**Découverte de conception** (2026-10-03, lecture seule, `e19h1b-disc/notes.md`) :
+- **Harnais d'intro** : ses entités sont nues et hors de tout monde (`Owner.World` nul, ni contrôleur ni racine) et il fait sa
+  propre passe verticale, en convention du binaire. Critère propre pour que le nouveau pas sans contrôleur ne s'y applique pas :
+  `Owner?.World?.CollisionField == null`, la dépendance de données du pas lui-même. Il n'est jamais vrai en production pour une
+  entité mise à jour (le moteur pose `World` avant sa boucle ; les 483 cartes portent `AlundraCells`). Aucun test ne bouge.
+- **Gravité de carte** : toutes les entités sans contrôleur ont `MapGravityRaw` et `MapZViscosityRaw` à 0, à cause de la garde
+  `Controller != null` de la fabrique (~604). Lever la garde pour ces deux champs seulement est inerte tant que le nouveau pas ne
+  les lit pas.
+- **Convention de `PosZ` à l'apparition** : la DLL atterrit à `T` (le binaire à `T + 1`), mais la fabrique écrit à l'apparition
+  la convention du binaire, `z − ModZ + 1` (~657). `0x8A` et `0x64` ajoutent aussi `+ 1`. Une entité à contrôleur perd l'unité
+  au premier tirage de tête d'image ; posée sur une autre entité, elle passe alors à travers son appui. C'est la raison d'être de
+  l'appui d'apparition sans portée. Une entité sans contrôleur garde le `+ 1` pour toujours.
+- **Appui d'apparition** : le supprimer sans autre changement ferait s'effondrer les piles de caisses de 165, 178, 179 et 10.
+- **Cible de `0x22`** : la cible du binaire, `hauteur << 19`, est atteignable aux 17 sites. La cible décalée (`− 1`) ne l'est pas
+  à 304 px : la boule monterait sans fin.
+
+**Conception proposée** (soumise à l'auteur, O-E19-45) :
+- (1) le critère `Owner?.World?.CollisionField == null` pour le harnais ;
+- (2) la garde levée pour les deux champs de carte ;
+- (3) **la fabrique abandonne le `+ 1`** et relève l'apparition à `max(PosZ, T)`, convention de la DLL, comme le héros
+  (`AlundraWorldProxy` ~1702). Toute apparition passe alors en convention de la DLL et l'érosion disparaît (une pose en pixels
+  entiers tient exactement sur la racine en flottant) ;
+- (4) les appels de production d'`immediateAtSpawn` disparaissent ; le paramètre reste pour le harnais et ses tests ;
+- (5) `0x22` vise `hauteur << 19` sans conversion : c'est l'égalité du binaire, atteignable, au prix d'une unité 16.16 au-dessus
+  de la convention de la DLL.
+Tests à changer : `AlundraWorldProxySpawnInitializationTests` (~238, ~242, ~286, ~394), A6 (~210 : 9437184), la valeur dérivée du
+marin 11 (26214401 → 26214400, assertions intactes), et les tests qui lisent l'appui trouvé à l'image 0
+(`AlundraNpcCharacterControllerMoverTests` ~1844, ~1951, ~2021 ; `AlundraMovementObstacleProbeTests` ~384-386). Effet sur la trace
+d'intro non mesuré ; à mesurer avant le plan.
 
 ##### 1.2n.2 E19.h2 — État en l'air des PNJ ⏳ (esquisse)
 
@@ -5336,6 +5366,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-42 | **Résolution exacte des contacts** (découverte d'E19.h, surface B, question Q-H2 à l'auteur) : le binaire divise le pas conjointement en 16.16 (`ComputeXYPosition` `0x80037730`) ; une poussée en diagonale contre un PNJ ou contre la pointe d'un coin arrête net Alundra, et le contact est en unités 16.16 (le dernier demi-pas peut s'arrêter 1 à 3 unités avant à l'est et au sud, `ForceAdjusted` un tick plus tard) ; dans la DLL elle glisse le long, et arrive au contact un tick plus tôt à l'est et au sud (O-E19-28 a à d). Le porter demande un plan moteur (un résolveur horizontal tenu par le jeu) et une ADR ; quelques épingles de contact relationnelles bougent de 0 à 3 unités. D-E19-9 ne promettait que le glissement (E19.h4). **Question** : porter la résolution exacte (étape 2), ou accepter le glissement de la DLL ? (recommandé : étape 1 maintenant, étape 2 seulement si l'auteur veut la sensation exacte). | auteur, puis plan moteur |
 | O-E19-43 | **Cycle de palettes de `0xA4`** (E19.k2) : `0xA4 [b1, b2 > 0]` lance un programme de cycle de palettes (`0x80186790`) dont le décalage (`0x800C490C`) s'ajoute à l'octet de palette des tuiles et des couches cellulaires (`0x8005C574`, `0x8005CDBC`, `0x8005D544`) : la carte entière change de couleurs. Non porté par E19.k2 (trace `Degraded`) ; hors chaîne (carte 471 selon la découverte). Il demande un décalage de palette des tuiles dans le moteur. | plus tard (moteur) |
 | O-E19-44 | **Portes manquantes de l'aimantation au sommet** (vérification d'E19.h3, P3) : dans le binaire, l'aimantation (`0x80037848`) n'est atteinte que si le pas XY demande une force (`+0xE4`/`+0xE8` non nuls, sinon saut de `0x800377A0` à `0x80037DC0`) et elle est défaite quand le pas est entièrement bloqué (`0x80037938`-`0x80037948` rendent X, Y et Z) ; la DLL aimante dès que Gravity et `ForceZ == 0`. Émulation : saut sur place sous une boîte dont le bas est à 34 px, le binaire touche le plafond (t1 131072) et atterrit à t4, la DLL s'aimante au sol dès t1. Aucun plafond du corpus n'est à moins de 40 px du terrain. | E19.m |
+| O-E19-45 | **Convention de `PosZ` à l'apparition** (conception d'E19.h1b) : la DLL tient partout `PosZ` = celle du binaire moins 1 (atterrissage à `T`), sauf à l'apparition (`z − ModZ + 1`, fabrique ~657) et dans `0x8A`/`0x64`. Le `+ 1` est perdu au premier tirage de tête d'image pour une entité à contrôleur, ce qui la fait passer à travers un appui exact ; c'est ce que masque aujourd'hui l'appui d'apparition sans portée (O-E19-15). **Question** : passer l'apparition en convention de la DLL (abandonner le `+ 1`, relever à `max(PosZ, T)`), décision transversale à consigner en ADR, ou garder la convention du binaire à l'apparition et la traiter autrement ? Recommandation : convention de la DLL à l'apparition (la fabrique ; `0x8A` et `0x64` à examiner dans la même ADR). | auteur, puis E19.h1b et E19.h2 |
 
 ## 4. Hors périmètre
 
