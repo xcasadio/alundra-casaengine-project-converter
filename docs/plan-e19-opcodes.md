@@ -4635,7 +4635,7 @@ dans l'exécutable, la plupart non portés) ; `0x28`/`0x29` libèrent 15 marches
 s'ouvrent, ce qu'E14 seul fera (aujourd'hui un `Result` périmé peut lancer la scène d'après coffre aussitôt) ; les sous-cas
 `0x50`-`0x56` de `0x82` (8 sites `0x53`, hors chaîne) ne donnent ni vie ni effet (O-E19-39).
 
-### 1.2n E19.h — Attentes en Z, contacts, saut et murs ⏳ (E19.h1, E19.h3, E19.h4 planifiées ; E19.h1b et E19.h2 esquissées)
+### 1.2n E19.h — Attentes en Z, contacts, saut et murs ⏳ (E19.h1, E19.h3, E19.h4 ✅, recettes en attente ; E19.h1b et E19.h2 esquissées ; questions O-E19-41, O-E19-42)
 
 **Découverte** (2026-10-03, lecture seule, trois surfaces : A attentes et contacts en Z, B murs et glissement, C reste du
 saut ; notes, émulations du code du binaire et recensements dans le scratchpad de la session, `e19h-disc/A`, `B`, `C`). Hors
@@ -4847,7 +4847,7 @@ recherche, H3-1 gagne UH-APEX-REVERT, le risque disparaît).
 
 **Risques.** Les plafonds mobiles (D5) et ceux des PNJ (E19.h2) restent sans plafond.
 
-##### 1.2n.4 E19.h4 — Glissement le long des murs (étape 1) et `0x45`/`0x46` ⏳
+##### 1.2n.4 E19.h4 — Glissement le long des murs (étape 1) et `0x45`/`0x46` ✅ (recette H4-4 en attente)
 
 **Relecture** (2026-10-03) : REVISE n°1 (la table du glissement et le test d'un coin bloqué n'étaient que dans les notes ;
 la règle de `ForceAdjusted` se contredisait, une lecture cassant T-R4 et l'autre faisant tomber le FA des PNJ en oblique ;
@@ -4937,7 +4937,15 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
   glissement et 16 px à la vitesse de la marche, sept ticks : F0+305 environ ; le binaire F0+308) ; les tests de mobiles sur de vrais murs (`AlundraNpcCharacterControllerMoverTests`, drapeaux
   sans 0x2000) sont relancés avec le compteur : un changement est un arrêt, avec diagnostic. Commit : `test(alundra): the slide on the story chain`
   - Fait le 2026-10-03 : 6 lignes retirées de la liste versionnée, `MapsWithoutSkippedSite` à 19 (178, 185), A10J aux valeurs du plan (image F0+308 dans [F0+303, F0+309], position exacte (47877120 ; 50790400), `(Z, ForceAdjusted)` (2097152, 1)), commentaire d'UH-6, `ImplementedOpcodes` avec 0x45 et 0x46 ; T-A19 inchangé et vert, tests de mobiles sur les murs inchangés. Commit fusionné avec H4-1 (message de H4-1).
-- ⏳ **H4-3 — Vérification et clôture.** **H4-4 — Recette** (auteur) : le héros glisse le long d'un coin de mur au lieu de
+- ✅ **H4-3 — Vérification et clôture.** Vérifié le 2026-10-03 : `Alundra.Tests` 2466 → 2474 (+8), 0 échec, en Release
+  (45 s) puis en Debug (48 s), la Debug en dernier ; `cmp` sans écart (sha256 `b75702ca...fdc2`) ; les six traces à l'octet.
+  Vérificateur neuf : **CONFIRMED** (table `0x80023734`, coins et ordre des portes relus dans le binaire ; A10J à F0+308 exactement,
+  l'image du binaire ; les glissements d'A10J, A14 et A18 sont des glissements du héros sur un seul coin que le binaire fait
+  aussi ; aucun PNJ ne glisse ; dix mutations attrapées). Avis reportés à E19.m : **P3** des mutations survivent (signe du
+  glissement au sud et à l'est, porte d'entité, règle d'accord, glissement déplacé dans `MoveControllerAndPullPosition`) — le
+  code est juste, des tests manquent ; P4 le terme de table des obliques n'est jamais atteint (échantillon à la position
+  atteinte) ; P4 UO-1 ne passe pas par `0x42`.
+- 🧪 **H4-4 — Recette** (auteur) : le héros glisse le long d'un coin de mur au lieu de
   s'y coller ; sur la 178 et la 185, les marches encadrées par `0x46`/`0x45` s'arrêtent au mur.
 
 **Acceptation d'E19.h4.**
@@ -5271,6 +5279,14 @@ Réservé aux mesures faites en exécutant les tranches.
 - **Commits** : plan `5bbfb42`, révision `de4c4c7`, relecture `3beb2b2`, H3-1 `7030fcf`, puis cette clôture.
 - **Suites** : `Alundra.Tests` **2460 avant la sous-tranche, 2466 après** (+6), 0 échec, en Release (44 s) puis en Debug
   (51 s) ; `cmp` sans écart ; aucun test existant, arc ni trace touché.
+
+### E19.h4 (2026-10-03)
+
+- **Commits** : révisions `d0f401f`, `e172db9`, H4-1 et H4-2 ensemble `a09cd66` (H4-1 seule laissait A10J et la règle 2 rouges),
+  puis cette clôture. Arrêt en exécution tranché par la session principale (glissements d'A14 et A18, épinglés à 1).
+- **Suites** : `Alundra.Tests` **2466 avant la sous-tranche, 2474 après** (+8), 0 échec, en Release (45 s) puis en Debug
+  (48 s) ; `cmp` sans écart ; liste fermée 140 → 134, 19 cartes sans site.
+- **A10J** : `0x24 @2462` finit à F0+308 (le binaire : F0+308), en (47877120 ; 50790400).
 
 ## 3. Points ouverts
 
