@@ -413,7 +413,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.h | Attentes en Z et contacts : `0x20`-`0x23`, `0x26`, `0x47`, `0x48` ; `ForceAdjusted` aligné sur le binaire ; glissement le long des murs ; reste du saut (O-E19-27) — `0x25` et `CollidedWithEntityZ` avancés en E19.d2c (D-E19-31) | ciblés | ciblée |
 | E19.i | ~~Boucles d'animation Loop pour `0x1C`/`0x1D`~~ — **absorbée par E19.c2** (D-E19-18) : le signal de boucle et son pont y arrivent ; le recensement exact est de 208 sites dans 53 cartes, et non 101 dans 30 | — | — |
 | E19.j | Événements de carte : réarmement hors zone du binaire (619 enregistrements, O-E19-11) | ciblés | ciblée |
-| E19.k | Caméra : balancement `0x8E`/`0x8F`, masque des fonds `0xA4` | ciblés | 392, 391 |
+| E19.k (§1.2k) | Caméra : balancement `0x8E`/`0x8F` (E19.k1, DLL seule), masque des fonds `0xA4` (E19.k2, plan moteur) | ciblés | 392, 391 |
 | E19.l | Prédicats, branches et restes : `0x82` (avec la correction d'`AddOneItemIfUnlocked`), `0x83`, `0x84`, `0x87`, `0x3F`, `0x95`, `0x99`, `0x9A`, `0x9F` (avec `InitializeContents`), `0x57`, `0x58`, `0x4A`, `0x2A`, `0x2B`, `0x5D`, etc. ; liste fermée au recensement du moment | ciblés | ciblée |
 | E19.m | Hygiène et clôture : taille de `0x5F` (8), libellés faux, `0x01` qui rend 0, modes aléatoires 4 et 5 de `ResolveDirectionFromParam` ; test statique : aucun opcode atteignable sauté dans le corpus hors E14 (IA native) et E18 (`0xBB`) | corpus | — |
 
@@ -4052,6 +4052,104 @@ scripts dans le scratchpad de la session, `e19f-disc/binaire/notes.md` et `e19f-
 l'auteur sur l'UI) au patron d'`AlundraSaveScreen` ; le `DialogueScreen` du moteur reste dans le moteur, Alundra cesse de
 l'utiliser ; l'élément « 4+ choix » d'E12.c disparaît (le binaire n'en a pas) ; la machine du portrait volant de
 l'inventaire est généralisée, pas dupliquée ; la passe du dialogue va dans la boucle `padTick` (correction d'A1).
+
+### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) ⏳ (E19.k1 planifiée ; E19.k2 esquissée)
+
+**Découverte** (2026-10-03, lecture seule ; notes et scripts dans le scratchpad de la session, `e19k-disc/`). Faits
+porteurs **[binaire]** :
+- Gestionnaires : `0x8E` en `0x80040534` (taille 5), `0x8F` en `0x80040598` (taille 1), `0xA4` en `0x80041098` (taille 3),
+  conformes à `EventOpcodeSizeTable.cs:185,186,207` (libellés faux : « Set scrolling … »).
+- Une structure globale unique en `0x800E4338` : Flag, LimitX/Y, SpeedX/Y, OffsetX/Y, ReachX/Y. **`0x8E [b1,b2,b3,b4]`** :
+  Flag = 1, SpeedX = b1, SpeedY = b2, LimitX = b3, LimitY = b4, octets **non signés** ; ne touche ni Offset ni Reach.
+  **`0x8F`** : Flag = 0, rien d'autre.
+- **Pas de balancement** (`0x8002C894`, première instruction du suivi caméra `0x8002CDA0`, une fois par tick) : si Flag = 0,
+  Limit, Speed et Offset à 0 (**pas Reach**) ; axe X : si LimitX = 0 ou SpeedX = 0, OffsetX = 0 ; axe Y : seul LimitY = 0
+  est testé (`0x8002C944` ; un SpeedY nul fige OffsetY) ; par axe, si Reach = 0 : `Off -= Speed`, et si `Off <= -Limit`,
+  `Off = -Limit` et Reach = 1 ; sinon `Off += Speed`, et si `Off >= Limit`, `Off = Limit` et Reach = 0 (onde triangulaire
+  qui part vers le négatif).
+- **Combinaison avec le suivi** : `camX += ((cibleX − (camX + 0xA0)) >> 4) + OffsetX`, de même en Y avec `0x88` et
+  OffsetY, puis bornes [0, 0x39F] × [0, 0x2CF], la valeur bornée réécrite dans l'état : le décalage est **intégré** au
+  scroll à chaque tick. Le tick de l'accroche (chargement) fait le pas de balancement **sans** ajouter le décalage. Les
+  tuiles, les entités et les fonds (avec leur parallaxe) suivent le scroll ; le HUD et l'UI non.
+- **Chargement de carte** (`0x8002CD54`) : seul Flag repasse à 0 ; le premier pas efface Limit, Speed, Offset ; Reach
+  persiste d'une carte à l'autre (fidèle, gardé).
+- `0xA4` : masque des couches de fond (bit 1 couche 0, bit 2 couche 1 ; une couche masquée est **figée** : ni avance ni
+  tirage aléatoire) et cycle de palettes (second opérande) ; aucun site sur la chaîne ; 21 sites (337 à 345, 347, 471, 475).
+- **DLL** : suivi caméra entier par tick (`AlundraCameraMath.cs:153-164`, `:191-208`, `:224-235`, `:277-293`, `:308-309`) ;
+  `0x8E`, `0x8F`, `0xA4` sautés par leur taille ; aucun état de balancement ; le moteur n'a rien à faire pour le balancement
+  (la DLL pose la cible de la caméra). Pour `0xA4`, `ScrollingLayerService` et `CellularLayerService` du moteur n'ont pas de
+  couche active (manque réel : E19.k2).
+- **Sites de la chaîne** : exactement les 28 lignes `0x8E`/`0x8F` de la liste fermée d'E19.e ; arcs concernés : A5 et A5r
+  (`0x8E @20` épinglé « sauté une fois »), A6 (4 entrées `0x8E` dans son ensemble autorisé), A18 (178 `C[6]`). La 476 n'en a
+  aucun : E19.k ne règle pas O-E19-30.
+
+**Choix de conduite** (techniques) : découpage en E19.k1 (`0x8E`/`0x8F`, DLL seule, maintenant) et E19.k2 (`0xA4`, plan
+moteur d'abord : couche active par identifiant, ni avance, ni dessin, ni tirage ; rapport de manque ; sans site sur la
+chaîne, après les tranches qui débloquent l'histoire) ; Reach persistant d'une carte à l'autre, comme le binaire ; libellés
+de `0x8E`, `0x8F`, `0xA4` corrigés dans E19.k1.
+
+##### 1.2k.1 E19.k1 — Balancement de la caméra ⏳
+
+**Règles d'exécution.**
+- **K1 — État** : un singleton de session `AlundraCameraSway` (nom indicatif) avec les neuf champs du binaire, jamais
+  sauvegardé ; `InitializeWithWorld` ne remet que Flag à 0 ; remis à zéro par `ResetForTests` (ajouté au nettoyage des
+  singletons de `SaveGameDirectorTestSupport`).
+- **K2 — Opcodes** : `0x8E` et `0x8F` dans `Dispatch` comme ci-dessus ; accès par un membre par défaut
+  `IEntityWorldContext.CameraSway => null` (modèle de `ScreenFadeDirector`), implémenté par `AlundraWorldProxy` ; sans
+  état, repli dégradé journalisé une fois (modèle de `0xAF`) ; libellés de la table corrigés (« Camera sway start », « Camera
+  sway stop », « Background layer mask ») ; `0x8E` et `0x8F` ajoutés à `IntroTraceHarnessTests.ImplementedOpcodes`.
+- **K3 — Pas** : un pas de balancement par tick logique, **même sans caméra** (le binaire le fait toujours), règles exactes
+  ci-dessus (asymétrie de l'axe Y comprise).
+- **K4 — Caméra** : dans le pas de suivi par tick (`AdvanceCameraSmoothing`), dans l'espace de scroll de l'original
+  (`ToOriginalScrollSpace`) : pas de balancement, puis suivi, puis ajout de (OffsetX, OffsetY) au scroll, puis bornes, la
+  valeur bornée réécrite ; le tick de l'accroche fait le pas de balancement sans ajouter le décalage (sans balancement,
+  aucun changement).
+
+**Tâches.**
+- ⏳ **K0 — Plan** : ce plan, relu jusqu'à READY.
+- ⏳ **K1 — État, opcodes, pas, tests d'abord.** Tests purs du pas : `[1,1,3,2]` → OffsetX −1, −2, −3, −2, −1, 0, 1, 2, 3, 2,
+  1, 0 (ReachX passe à 1 au pas 3, à 0 au pas 9) et OffsetY −1, −2, −1, 0, 1, 2, 1, 0 (ReachY à 1 au pas 2, à 0 au pas 6) ;
+  `[3,1,6,2]` → OffsetX −3, −6, −3, 0, 3, 6, 3, 0 ; `[8,1,8,2]` → −8, 0, 8, 0 ; `[13,11,1,2]` → OffsetX −1, 1, −1, 1 et OffsetY
+  −2, 2 ; changement en cours (deux pas de `[1,1,3,2]` puis `[8,1,8,2]`) → (−8, Reach 1), 0, 8, 0 ; `0x8F` puis un pas : Speed,
+  Limit, Offset à 0, Reach conservé ; asymétrie : SpeedX 0 → OffsetX 0, SpeedY 0 → OffsetY figé ; opérande 200 lu 200 ;
+  chargement : Flag 0, Reach conservé. Tests du runner : `0x8E` pose les quatre valeurs, `0x8F` pose Flag 0, tailles 5 et 1.
+  Commit : `feat(alundra): port the camera sway opcodes 0x8E and 0x8F`
+- ⏳ **K2 — Caméra, tests d'abord.** Tests purs (cible fixe, sans bornes, état neuf, scroll de l'original) : `[1,1,3,2]` →
+  X −1, −3, −6, −8, −9, −9, −8, −6, −3, −1, 0, 0 ; Y −1, −3, −4, −4, −3, −1, 0, 0 (l'axe Y de rendu de la DLL en est l'opposé
+  si `ToOriginalScrollSpace` l'inverse : le test lit l'espace de l'original) ; avec l'accroche au tick 0 : X 0, −2, −5, −7,
+  −8, −8, −7, −5, −2, 0, +1, 0 puis le régime ; bornée à 0 : 0, 0, 0, 0, 0, 0, 1, 2, 4, 5, 5, 4, 2, 0 ; après `0x8F` à −9, la
+  caméra reste à −9 (zone morte du `>> 4`, E5.c). Commit : `feat(alundra): the camera sway moves the scroll like the binary`
+- ⏳ **K3 — Liste fermée et arcs.** Les 28 lignes `0x8E`/`0x8F` quittent `Alundra.Tests/Data/story-chain-skipped-opcodes.tsv`
+  (198 → 170) ; la 392 entre dans `MapsWithoutSkippedSite` (10 → 11 ; nom et doc du test) ; A5 et A5r : `0x8E @20` exécuté à
+  l'image 0, rien de sauté, paramètres (1,1,3,2), Offset (−1, −1) après l'image 0, OffsetY −2 et ReachY 1 après l'image 1,
+  OffsetX −3 et ReachX 1 après l'image 2, Flag 1 jusqu'au départ ; A6 : les 4 entrées `0x8E` quittent son ensemble autorisé,
+  paramètres (1,1,3,2) après l'image 0, (3,1,6,2) après `@335`, (8,1,8,2) après `@342`, Flag 1 jusqu'à la fin de l'arc (les
+  images de `@335` et `@342` ne sont pas épinglées) ; A18 : (5,3,7,5) après `@608`, (13,11,1,2) après `@618`, Flag 0 après
+  `@683`, tout à 0 au pas suivant. Commit : `test(alundra): the camera sway on the story chain`
+- ⏳ **K4 — Vérification et clôture**, comme les tranches précédentes. **K5 — Recette** (auteur) : la 392 (couloir du
+  navire), la 391 (la coque cède), la 178 (séisme de Septimus) : comparer l'impression à l'original ; à 50 ticks par
+  seconde l'effet ressemble à une secousse de 4 à 6 Hz ; après `0x8F`, la caméra peut rester décalée de 15 px au plus (zone
+  morte d'E5.c).
+
+**Acceptation d'E19.k1.**
+1. Tests K1 et K2 rouges d'abord, verts après, valeurs écrites tenues ; une valeur contredite est un arrêt.
+2. Code de test existant touché, liste fermée : A5 et A5r (`AlundraShipCorridorArcTests.cs`), A6 (`AlundraShipBlockArcTests.cs`),
+   A18 (`AlundraDay3SceneArcTests.cs`), la liste versionnée et `AlundraStoryChainOpcodeAudit.cs`/`AlundraStoryChainSkippedOpcodesTests.cs`
+   (28 lignes, la 392 sans site), `IntroTraceHarnessTests.ImplementedOpcodes`, `SaveGameDirectorTestSupport.cs` (remise à zéro du
+   singleton) ; rien d'autre ; les six traces à l'octet.
+3. `Alundra.Tests` sans échec en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
+4. Recette K5 faite par l'auteur.
+
+**Risques.** Le décalage intégré ne revient pas toujours à zéro après `0x8F` (zone morte d'E5.c, jusqu'à 15 px) ; un état
+de balancement oublié d'une carte à l'autre (Flag remis à 0 au chargement : gardé) ; les fonds suivent le scroll avec leur
+parallaxe : aucune épingle n'existe sur leur position dans les arcs.
+
+##### 1.2k.2 E19.k2 — Masque des fonds `0xA4` ⏳ (esquisse)
+
+Plan moteur et ADR : couche active par identifiant dans `ScrollingLayerService` et `CellularLayerService` (une couche
+inactive ni n'avance, ni ne se dessine, ni ne tire au hasard ; « toutes actives » à chaque `SetLayers`/`Clear`), rapport de
+manque ; côté DLL, `0xA4` pose le masque par `AlundraBackdropStage` ; le second opérande (cycle de palettes, carte 471
+seulement) est consigné en dégradé, à placer. Sites : 337 à 345, 347, 471, 475, hors chaîne.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
