@@ -41,7 +41,7 @@ des fins de ligne LF. Sur le corpus complet : 485 fichiers de chaque (483 cartes
   nœud : la DLL ouvre alors une boîte vide, comme l'original.
 - **Une ligne Yarn par page** (pages séparées par `\A`), d'identifiant `#line:{nœud}_p{k}` ; dans
   l'asset compilé, la clé est la forme de Yarn, `line:{nœud}_p{k}`.
-- Les **commandes** d'une page précèdent sa ligne, dans l'ordre d'apparition de leur code.
+- Les **commandes** d'une page précèdent sa ligne ; la seule est `<<falcon_update>>`. Les drapeaux et `\Y` sont des marqueurs de la ligne (ADR-0025).
 - Le nœud de départ de l'asset est son premier nœud ; la DLL démarre toujours un nœud précis.
 
 ## Correspondance des codes
@@ -52,8 +52,8 @@ Chaque marqueur autofermant porte `trimwhitespace=false` (sans lui, Yarn avale l
 |---|---|
 | `\A` | fin de page (nouvelle ligne Yarn) |
 | `\N` | `[br trimwhitespace=false/]` |
-| `\<chiffres>` | `<<flag n>>` avant la ligne, `n` normalisé (`\0999` = `\999`) ; une commande par code, même répété |
-| `\Y` | rien |
+| `\<chiffres>` | `[flag id=n/]` à la position du code, `n` normalisé (`\0999` = `\999`), au plus `int.MaxValue` ; un marqueur par code, même répété (ADR-0025) |
+| `\Y` | `[yield/]` à la position du code (ADR-0025) |
 | `\B` `\C` `\D` `\E` `\F` `\G` | `[voice id=-1/]` … `[voice id=4/]` (entier) |
 | `\H`, `\T` | `[center/]`, `[slow/]` |
 | `\W<c>` | `[glyph id=N/]`, `N = c − 0x20` (chiffre) ou `c − 0x27` (lettre), formule de l'exécutable ; dessiné par la DLL |
@@ -83,7 +83,9 @@ enregistrées à l'exécution par la DLL avec les mêmes types.
 | `category_remaining()` | `\X5` | seuil moins faucons | `Func<float>` |
 | `game_var(n)` | `\V<n>` | `INT_ARRAY_80191908[n]` | `Func<float, float>` |
 
-Commandes (non déclarées au compilateur) : `<<flag n>>` pose le drapeau temporaire `n` ;
+Les marqueurs `flag` et `yield` sont à la même position que leur code dans le texte, dans l'ordre de la source ; la coupe des espaces de bord et la règle de la page vide les ignorent (une page de drapeaux seuls s'écrit ses marqueurs puis `[empty/]`). La DLL pose le drapeau de chaque marqueur `flag` à l'affichage de la page et ignore `yield` (jusqu'à E19.f2).
+
+Commandes (non déclarées au compilateur) : `<<flag n>>` (anciens exports, plus émise) pose le drapeau temporaire `n` ;
 `<<falcon_update>>` garde l'état qu'elle va changer, puis lance `UpdateNumberOfFalcon` et
 `UpdatePlayerProgressState` (ADR-0007).
 
@@ -133,11 +135,11 @@ crée.
 ## Compteurs de `report.json`
 
 `Yarn.Files`, `Yarn.Nodes`, `Yarn.Lines`, `Yarn.EmptyPages`, `Yarn.GlyphMarkers`,
-`Yarn.FlagCommands`, `Yarn.FalconUpdateCommands`, `Yarn.FunctionCalls`, `Yarn.EmptySlots`,
+`Yarn.FlagMarkers`, `Yarn.YieldMarkers`, `Yarn.FalconUpdateCommands`, `Yarn.FunctionCalls`, `Yarn.EmptySlots`,
 `Yarn.RawTextFilesRemoved` (tables brutes retirées d'un export précédent, toujours écrit), et
 l'inventaire des codes `Yarn.Code.<code>` (`Yarn.Code.\A`, `Yarn.Code.\W2`, `Yarn.Code.U+001A`…),
 qui remplace l'ancien `Dialogues/control-codes.json`. Valeurs sur le corpus complet : 485 fichiers,
-24 784 nœuds, 31 757 lignes, 95 pages vides, 11 182 glyphes, 932 `flag`, 7 `falcon_update`,
+24 784 nœuds, 31 757 lignes, 95 pages vides, 11 182 glyphes, 932 `flag`, 922 `yield`, 7 `falcon_update`,
 20 appels de fonctions, 38 192 emplacements vides sans nœud. La phase 8 charge chaque `.dialogue`
 (programme compilé et textes de ligne exigés) : `Verify.Loaded.dialogue`.
 
@@ -161,8 +163,7 @@ Source Yarn émis :
 title: M134_S019
 ---
 <<falcon_update>>
-<<flag 100>>
-[voice id=0 trimwhitespace=false/]Ramène-moi {category_threshold()} Statuettes de faucons[br trimwhitespace=false/]et je te récompenserai avec cela \:[br trimwhitespace=false/]{category_item_name()}. #line:M134_S019_p0
+[voice id=0 trimwhitespace=false/]Ramène-moi {category_threshold()} Statuettes de faucons[br trimwhitespace=false/]et je te récompenserai avec cela \:[br trimwhitespace=false/]{category_item_name()}.[flag id=100 trimwhitespace=false/][yield trimwhitespace=false/] #line:M134_S019_p0
 ===
 ```
 

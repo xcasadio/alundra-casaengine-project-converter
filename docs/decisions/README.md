@@ -19,7 +19,7 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0003 | The sound effect manifest carries the VAB volume and pan attributes | Accepted | 2026-09-25 |
 | ADR-0004 | Background music follows the executable's sequence state | Accepted | 2026-09-25 |
 | ADR-0005 | The inventory's opening portrait reaches the DLL through map_alundra.json and a one-id index | Accepted | 2026-09-26 |
-| ADR-0006 | All Alundra text is authored as Yarn and the raw text tables are no longer exported | Accepted; `\X` bullet superseded by ADR-0007 | 2026-09-27 |
+| ADR-0006 | All Alundra text is authored as Yarn and the raw text tables are no longer exported | Accepted; partly superseded by ADR-0025 (numeric codes and `\Y`); `\X` bullet superseded by ADR-0007 | 2026-09-27 |
 | ADR-0007 | The falcon update command keeps the state it replaces, and each `\X` reads on the original's side of the update | Accepted | 2026-09-27 |
 | ADR-0008 | The dialogue box uses font3 and draws each glyph marker as the matching font3 character | Accepted | 2026-09-28 |
 | ADR-0009 | font3 cells map to Unicode through their CP1252 byte, for proven characters only | Accepted | 2026-09-28 |
@@ -38,3 +38,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0022 | Native-destruction obstacles stay solid, the walk detour waits on entities, and overlaps stay faithful | Accepted | 2026-10-02 |
 | ADR-0023 | The hero jumps, falls and lands like the binary, with the take-off sound, and dialogue fidelity joins E19.f | Accepted | 2026-10-02 |
 | ADR-0024 | Destroyed entities are recycled through the engine like the binary | Accepted | 2026-10-03 |
+| ADR-0025 | Numeric text codes and \Y are positioned Yarn markers | Accepted | 2026-10-03 |
