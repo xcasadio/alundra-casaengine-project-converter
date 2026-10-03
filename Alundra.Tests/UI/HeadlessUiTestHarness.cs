@@ -75,6 +75,10 @@ internal static class HeadlessUiTestHarness
         public IUIDrawTransaction CreateDrawTransaction(DrawSettings settings, bool deferBegin)
             => throw new NotSupportedException($"{nameof(HeadlessUiTestHarness)} never draws.");
 
+        /// <summary>Gives the surface new bounds, as a window resize gives a game's view a new rectangle (view-local,
+        /// so the origin stays 0, 0): <see cref="MGDesktop.ValidScreenBounds"/> reads them on every call.</summary>
+        public void Resize(int width, int height) => ((HeadlessSurface)Surface).Bounds = new Rectangle(0, 0, width, height);
+
         public void ApplyFrame(UpdateBaseArgs updateArgs)
         {
             UpdateArgs = updateArgs;
@@ -88,16 +92,17 @@ internal static class HeadlessUiTestHarness
 
     private sealed class HeadlessSurface : IUISurface
     {
-        private readonly Rectangle _bounds;
         private readonly IUIRenderTarget _renderTarget;
 
         public HeadlessSurface(Rectangle bounds, IUIRenderTarget renderTarget)
         {
-            _bounds = bounds;
+            Bounds = bounds;
             _renderTarget = renderTarget;
         }
 
-        public Rectangle GetBounds() => _bounds;
+        public Rectangle Bounds { get; set; }
+
+        public Rectangle GetBounds() => Bounds;
 
         public IUIRenderTarget GetRenderTarget() => _renderTarget;
     }

@@ -10,7 +10,7 @@ namespace Alundra.Tests;
 /// <summary>
 /// Covers the pure math of E5.a's scripted camera follow (docs/plan-e5-camera.md) -
 /// <see cref="AlundraCameraMath.ResolveCameraLookAt"/>, <see cref="AlundraCameraMath.ComputeCameraLookAtRenderPosition"/>,
-/// <see cref="AlundraCameraMath.ClampCameraTargetToMap"/>, <see cref="AlundraCameraMath.ComputeCameraZoom"/>
+/// <see cref="AlundraCameraMath.ClampCameraTargetToMap"/>
 /// and <see cref="AlundraCameraMath.ComputeSmoothedCameraTarget"/> (the snap-or-step-then-clamp state
 /// transition) - plus E5.c's own integer scroll port, <see cref="AlundraCameraMath.StepCameraScroll"/>
 /// and <see cref="AlundraCameraMath.AdvanceCameraSmoothing"/> (the per-frame seam
@@ -186,41 +186,6 @@ public class AlundraWorldProxyCameraFollowTests
 
         Assert.InRange(result.X, 160f, 1248f - 160f);
         Assert.InRange(result.Y, -(960f - 120f), -120f);
-    }
-
-    // -----------------------------------------------------------------------------------------
-    // ComputeCameraZoom - runtime framing (decision E5-1)
-    //
-    // FIX (fresh verifier of cc1fc60): the divisor is the original's own DISPLAY height (236,
-    // StaticVariables.ScreenHeight/AlundraDisplay.NativeHeight - the actual rendered framebuffer), not
-    // its separate CLAMP height (240, GraphicManager.cs's own scroll-clamp arithmetic - still used
-    // unchanged by ClampCameraTargetToMap). See AlundraWorldProxy's own CameraDisplayHeight doc for the
-    // full display-vs-clamp investigation (file:line citations). At the real 1280x944 window (944 = 236
-    // x PixelScale 4) this now yields an exact integer zoom of 4 - pixel-perfect - instead of the old
-    // 944/240 = 3.9333.
-    // -----------------------------------------------------------------------------------------
-
-    [Fact]
-    public void ComputeCameraZoom_RealWindowHeight_IsExactlyFour()
-    {
-        // 944 = AlundraDisplay.WindowHeight (236 native x 4 PixelScale) - the actual window this DLL runs
-        // in. Must be an exact integer zoom: pixel-perfect rendering requires it, not merely "close to 4".
-        Assert.Equal(4f, AlundraCameraMath.ComputeCameraZoom(944));
-    }
-
-    [Fact]
-    public void ComputeCameraZoom_ExactMultipleOf236_IsIntegerZoom()
-    {
-        Assert.Equal(2f, AlundraCameraMath.ComputeCameraZoom(472));
-    }
-
-    [Fact]
-    public void ComputeCameraZoom_IsComputedFromViewport_NotHardcoded()
-    {
-        // Different viewport heights must yield different zooms - proves the value is derived, not a
-        // constant 4.
-        Assert.Equal(2f, AlundraCameraMath.ComputeCameraZoom(472));
-        Assert.Equal(1f, AlundraCameraMath.ComputeCameraZoom(236));
     }
 
     // -----------------------------------------------------------------------------------------

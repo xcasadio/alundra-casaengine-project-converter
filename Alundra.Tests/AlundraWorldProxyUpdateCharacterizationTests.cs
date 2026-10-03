@@ -42,9 +42,9 @@ namespace Alundra.Tests;
 /// <c>Entities</c>), so it is the only way to get a resolvable camera into this headless world at all.
 /// Presence is asserted before the first frame (below).</description></item>
 /// <item><description>Because that means <c>CameraComponent.InitializeWithWorld</c> never runs, the
-/// camera's <c>Viewport</c> stays <c>default</c> (Height 0) - <c>ResolveDebugCameraOnce</c> therefore
-/// clamps <c>Zoom</c> down to <see cref="Camera2dComponent.MinimumZoom"/>, not some viewport-derived
-/// value. Pinned as such, not guessed.</description></item>
+/// camera's <c>Viewport</c> stays <c>default</c> (Height 0). Since E19.s the engine owns the zoom
+/// (engine ADR-0048): <c>ResolveDebugCameraOnce</c> no longer touches it, so <c>Zoom</c> stays at the
+/// <see cref="Camera2dComponent"/> default of 1.0. Pinned as such, not guessed.</description></item>
 /// <item><description>An explicit followed target (<see cref="AlundraWorldProxy.EntityFollowedByCamera"/>)
 /// that <see cref="AlundraEntityScriptProxy.IsLoadedNormalOrDeactivated"/>, whose logical position is
 /// moved between frames by stated pixel amounts - without one the look-at never changes and items 4/5/6
@@ -150,7 +150,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
     // -----------------------------------------------------------------------------------------
 
     [Fact]
-    public void FirstFrame_ResolvesPixelSnapAndZoom_AndTargetIsSmoothedTargetPlusOffset()
+    public void FirstFrame_ResolvesPixelSnap_LeavesTheZoomToTheEngine_AndTargetIsSmoothedTargetPlusOffset()
     {
         var world = BuildHeadlessWorld();
         var camera = AddCameraEntity(world);
@@ -167,7 +167,9 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         proxy.Update(0.02f); // exactly one 50Hz logic tick.
 
         Assert.True(camera.PixelSnap);
-        Assert.Equal(Camera2dComponent.MinimumZoom, camera.Zoom);
+        // E19.s: the director no longer poses the zoom (the engine's virtual resolution owns it): the camera
+        // keeps the 1.0 of its mounting, not the MinimumZoom the old viewport-derived zoom clamped to.
+        Assert.Equal(1f, camera.Zoom);
         // Smoothed target (100, -184, 0), snapped, plus the non-zero seeded offset (5, 7, 0) - the SUM,
         // not either value alone, so the pan's own contribution is provably present.
         Assert.Equal(new Vector3(105f, -177f, 0f), camera.Target);
@@ -211,11 +213,11 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
     }
 
     // -----------------------------------------------------------------------------------------
-    // Item 3 - the resolve latch: Zoom/PixelSnap are set on the FIRST frame only.
+    // Item 3 - the resolve latch: PixelSnap is set on the FIRST frame only (the zoom is the engine's).
     // -----------------------------------------------------------------------------------------
 
     [Fact]
-    public void ZoomAndPixelSnap_AreSetOnlyOnFirstFrame_NotRestoredOnLaterFrames()
+    public void PixelSnap_IsSetOnlyOnFirstFrame_AndTheZoomIsNeverTouched()
     {
         var world = BuildHeadlessWorld();
         var camera = AddCameraEntity(world);
@@ -227,7 +229,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
 
         proxy.Update(0.02f); // frame 1 resolves once.
         Assert.True(camera.PixelSnap);
-        Assert.Equal(Camera2dComponent.MinimumZoom, camera.Zoom);
+        Assert.Equal(1f, camera.Zoom);
 
         // Mutate both fields externally between frames.
         camera.Zoom = 42f;

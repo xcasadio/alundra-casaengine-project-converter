@@ -142,10 +142,10 @@ internal sealed class AlundraCameraDirector
     /// method's own doc below for why), shared by <see cref="UpdateCameraFollow"/> and
     /// <see cref="UpdateDebugCameraPan"/> so whichever runs first this frame resolves it. E5-1
     /// (docs/plan-e5-camera.md): also poses the ORIGINAL's own framing on the camera right here, the
-    /// moment it is found - runtime-only (no asset touched, no full export needed):
-    /// <c>Zoom = real viewport height / 236</c> (see <see cref="AlundraCameraMath.ComputeCameraZoom"/> -
-    /// computed from the LIVE viewport, never hardcoded, since <c>CameraComponent.InitializeWithWorld</c>
-    /// already overwrites whatever Zoom/viewport an asset serialized) and <c>PixelSnap = true</c>.
+    /// moment it is found - runtime-only (no asset touched, no full export needed): <c>PixelSnap = true</c>.
+    /// The zoom is NOT set here since E19.s: the engine owns it (engine ADR-0048, the project's virtual
+    /// resolution gives the camera <c>Zoom = k</c> and a viewport the size of the fitted image, at the
+    /// creation of the view and at every window resize).
     ///
     /// <paramref name="world"/> is read at USE TIME only, never captured (S2's extended proof rule
     /// delta (a)) - both call sites below pass <c>AlundraWorldProxy</c>'s own <c>_world</c> field, which
@@ -185,7 +185,6 @@ internal sealed class AlundraCameraDirector
             return;
         }
 
-        _debugCamera.Zoom = AlundraCameraMath.ComputeCameraZoom(_debugCamera.Viewport.Height);
         _debugCamera.PixelSnap = true;
     }
 

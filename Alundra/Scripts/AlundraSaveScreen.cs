@@ -78,18 +78,11 @@ public sealed class AlundraSaveScreen : XamlUIScreenBase, IDisposable
 
     protected override void OnWindowLoaded(MGWindow window)
     {
-        var bounds = window.Desktop.ValidScreenBounds;
-        var pixelScale = Math.Max(1, bounds.Width / NativeWidth);
-
-        window.WindowWidth = bounds.Width;
-        window.WindowHeight = bounds.Height;
-        window.Left = bounds.X;
-        window.Top = bounds.Y;
         window.Padding = new MonoGame.Extended.Thickness(0);
         window.BorderThickness = new MonoGame.Extended.Thickness(0);
 
         _rootCanvas = FindControl<MGCanvas>("RootCanvas");
-        _rootCanvas.RenderTransform.Scale = new Vector2(pixelScale, pixelScale);
+        ApplyScreenBounds(window, window.Desktop.ValidScreenBounds);
 
         foreach (var image in _rootCanvas.TraverseVisualTree().OfType<MGImage>())
         {
@@ -97,5 +90,28 @@ public sealed class AlundraSaveScreen : XamlUIScreenBase, IDisposable
         }
 
         window.WindowDataContext = ViewModel;
+    }
+
+    /// <summary>E19.s (engine ADR-0048): the image is fitted into the window by the engine and the view changes size
+    /// with it, so the window and the integer scale are redone from the new bounds.</summary>
+    protected override void OnScreenBoundsChanged(Rectangle bounds)
+    {
+        if (Window != null && _rootCanvas != null)
+        {
+            ApplyScreenBounds(Window, bounds);
+        }
+    }
+
+    /// <summary>The window takes the bounds of the desktop (the view's rectangle: 320 k wide, so the scale is k) and
+    /// the canvas the integer scale of its native 320 pixels.</summary>
+    private void ApplyScreenBounds(MGWindow window, Rectangle bounds)
+    {
+        var pixelScale = Math.Max(1, bounds.Width / NativeWidth);
+
+        window.WindowWidth = bounds.Width;
+        window.WindowHeight = bounds.Height;
+        window.Left = bounds.X;
+        window.Top = bounds.Y;
+        _rootCanvas!.RenderTransform.Scale = new Vector2(pixelScale, pixelScale);
     }
 }

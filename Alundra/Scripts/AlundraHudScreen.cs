@@ -23,8 +23,10 @@ namespace Alundra.Scripts;
 /// animations.
 ///
 /// <b>Pixel scale (D-E13-9)</b>: an INTEGER factor, <c>Math.Max(1, ValidScreenBounds.Width / 320)</c>
-/// (<c>AlundraDisplay.NativeWidth</c>, re-declared, never referenced), applied ONCE as the canvas's own
-/// <c>RenderTransform.Scale</c> - every element is authored in native pixels, as the inventory's. The presenter's
+/// (<c>AlundraDisplay.NativeWidth</c>, re-declared, never referenced), applied as the canvas's own
+/// <c>RenderTransform.Scale</c> when the window is built and again whenever the engine reports new bounds for the
+/// desktop (E19.s: the engine fits the 320 x 240 image into the window and the view follows it,
+/// <see cref="OnScreenBoundsChanged"/>) - every element is authored in native pixels, as the inventory's. The presenter's
 /// slide, in screen pixels, goes to the same transform's <c>Translation</c>, which MGUI applies after the scale
 /// (<c>UIRenderTransform</c>); MGUI's XAML cannot bind it (gap G9), so this class applies it from the view model.
 ///
@@ -81,18 +83,11 @@ public sealed class AlundraHudScreen : XamlUIScreenBase, IDisposable
 
     protected override void OnWindowLoaded(MGWindow window)
     {
-        var bounds = window.Desktop.ValidScreenBounds;
-        var pixelScale = Math.Max(1, bounds.Width / NativeWidth);
-
-        window.WindowWidth = bounds.Width;
-        window.WindowHeight = bounds.Height;
-        window.Left = bounds.X;
-        window.Top = bounds.Y;
         window.Padding = new MonoGame.Extended.Thickness(0);
         window.BorderThickness = new MonoGame.Extended.Thickness(0);
 
         _canvas = FindControl<MGCanvas>("RootCanvas");
-        _canvas.RenderTransform.Scale = new Vector2(pixelScale, pixelScale);
+        ApplyScreenBounds(window, window.Desktop.ValidScreenBounds);
 
         foreach (var image in _canvas.TraverseVisualTree().OfType<MGImage>())
         {
@@ -101,8 +96,6 @@ public sealed class AlundraHudScreen : XamlUIScreenBase, IDisposable
 
         _equipmentIcon0 = FindControl<MGImage>("EquipmentIcon0");
         _equipmentIcon1 = FindControl<MGImage>("EquipmentIcon1");
-
-        ViewModel.PixelScale = pixelScale;
 
         // A rebuilt window subscribes once.
         ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
@@ -116,6 +109,31 @@ public sealed class AlundraHudScreen : XamlUIScreenBase, IDisposable
         _equipmentIcon0.RenderTransform.Translation = ViewModel.EquipmentIcon0.SubPixelOffset;
         _equipmentIcon1.RenderTransform.Translation = ViewModel.EquipmentIcon1.SubPixelOffset;
         window.WindowDataContext = ViewModel;
+    }
+
+    /// <summary>E19.s (engine ADR-0048): the image is fitted into the window by the engine and the view changes size
+    /// with it, so the window and the integer scale are redone from the new bounds.</summary>
+    protected override void OnScreenBoundsChanged(Rectangle bounds)
+    {
+        if (Window != null && _canvas != null)
+        {
+            ApplyScreenBounds(Window, bounds);
+        }
+    }
+
+    /// <summary>The window takes the bounds of the desktop (the view's rectangle: 320 k wide, so the scale is k) and
+    /// the canvas the integer scale of its native 320 pixels; the view model's factor (the slide of the jauge, the
+    /// centring of the equipment icons) follows, and the presenter's next tick re-places the icons.</summary>
+    private void ApplyScreenBounds(MGWindow window, Rectangle bounds)
+    {
+        var pixelScale = Math.Max(1, bounds.Width / NativeWidth);
+
+        window.WindowWidth = bounds.Width;
+        window.WindowHeight = bounds.Height;
+        window.Left = bounds.X;
+        window.Top = bounds.Y;
+        _canvas!.RenderTransform.Scale = new Vector2(pixelScale, pixelScale);
+        ViewModel.PixelScale = pixelScale;
     }
 
     // The jauge's slide and the icons' sub-pixel offsets go to render transforms, which MGUI's XAML cannot bind (G9).

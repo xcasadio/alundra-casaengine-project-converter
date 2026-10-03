@@ -23,10 +23,10 @@ namespace Alundra.Scripts;
 
 /// <summary>
 /// Owns the pure camera mathematics formerly on <see cref="AlundraWorldProxy"/>: the scripted-follow
-/// scroll/smoothing/clamp/zoom math (<see cref="StepCameraScroll"/>, <see cref="AdvanceCameraSmoothing"/>,
+/// scroll/smoothing/clamp math (<see cref="StepCameraScroll"/>, <see cref="AdvanceCameraSmoothing"/>,
 /// <see cref="ComputeSmoothedCameraTarget"/>, <see cref="ResolveCameraLookAt"/>,
-/// <see cref="ComputeCameraLookAtRenderPosition"/>, <see cref="ClampCameraTargetToMap"/>,
-/// <see cref="ComputeCameraZoom"/>) and the debug-pan math (<see cref="ComputeDebugCameraPanOffset"/>,
+/// <see cref="ComputeCameraLookAtRenderPosition"/>, <see cref="ClampCameraTargetToMap"/>) and the
+/// debug-pan math (<see cref="ComputeDebugCameraPanOffset"/>,
 /// <see cref="ResolveDebugCameraBase"/>), plus the constants only these methods read. Pure `static`,
 /// stateless, moved from <see cref="AlundraWorldProxy"/> by slice R2 of
 /// docs/plan-decoupage-proxies.md - a behaviour-preserving relocation only, see that plan's §3 for
@@ -42,52 +42,19 @@ internal static class AlundraCameraMath
     /// <summary>
     /// E5-1 (docs/plan-e5-camera.md, decision E5-1): the original's own visible-area size in logical
     /// pixels, derived (not guessed) from <c>GraphicManager.cs</c>'s own scroll/clamp constants - see
-    /// <see cref="ClampCameraTargetToMap"/>'s own doc for the arithmetic that pins this to 320x240 rather
-    /// than the unrelated 320x236 "native screen" constant (<c>AlundraDisplay.NativeHeight</c>/
-    /// <c>StaticVariables.ScreenHeight</c> in the decompilation) - a DIFFERENT, framebuffer-crop constant
-    /// this camera's own scroll math never reads.
+    /// <see cref="ClampCameraTargetToMap"/>'s own doc for the arithmetic. Since E19.s (plan
+    /// docs/plan-e19-opcodes.md, D-E19-47) this is also the size of the whole picture: ALUN_CD.EXE sets its
+    /// draw and display environments to 0x140 x 0xF0 (<c>SetDefDrawEnv</c>/<c>SetDefDispEnv</c>,
+    /// <c>0x800424AC</c>), and the engine's virtual resolution (engine ADR-0048) frames exactly 320 x 240 world
+    /// units whatever the window. The 236 the decompilation shows (<c>StaticVariables.ScreenHeight</c>) was
+    /// wrong.
     /// </summary>
     // Internal since E9.a B5 (docs/plan-e9-backdrops-residus.md §5): the backdrop stage anchors its
     // 640x480 canvas on the original's own 320x240 framebuffer, i.e. on these two constants in WORLD
     // units - never on the window's pixel size (CasaEngineGame.ScreenSizeWidth/Height), which the
-    // camera zoom (ComputeCameraZoom) maps onto this very rectangle.
+    // engine's camera zoom maps onto this very rectangle.
     internal const float CameraVisibleWidth = 320f;
     internal const float CameraVisibleHeight = 240f;
-
-    /// <summary>
-    /// FIX (fresh verifier of cc1fc60), investigated in <c>GraphicManager.cs</c>/<c>StaticVariables.cs</c>:
-    /// the original itself uses TWO different heights and they are NOT the same value.
-    /// <list type="bullet">
-    /// <item><description><b>Display height (this constant) = 236.</b>
-    /// <c>StaticVariables.cs:56</c>: <c>public const int ScreenHeight = 236; //224</c> - the trailing
-    /// comment is an earlier (wrong) guess the analyst left in place, 236 is what actually ships. This is
-    /// the height of the real framebuffer: <c>Renderer.cs:22</c> allocates the backbuffer bitmap as
-    /// <c>ScreenWidth x ScreenHeight</c>, and every blit/copy routine in <c>GraphicManager.cs</c> that
-    /// touches the actual displayed surface bounds itself by <c>StaticVariables.ScreenHeight</c> (loop/clip
-    /// bounds at <c>GraphicManager.cs:243,284,2000,2030,2102,2191,2198,2223,2289</c>). It is also exactly
-    /// the converter's own <c>AlundraDisplay.NativeHeight</c> (<c>alundra-casaengine-project-converter/
-    /// AlundraDisplay.cs</c>), which is why the real 1280x944 window (944 = 236 x <c>PixelScale</c> 4) is
-    /// the RIGHT window, not a converter bug - no STOP needed here.</description></item>
-    /// <item><description><b>Clamp height (<see cref="CameraVisibleHeight"/>, 240) is a SEPARATE
-    /// constant</b> the original's scroll code uses for its own arithmetic, never for the framebuffer:
-    /// <c>GraphicManager.cs:117-121</c>'s clamp bound <c>0x2cf</c> (719) = mapHeightPx(960) - 240 - 1 (see
-    /// <see cref="ClampCameraTargetToMap"/>'s own doc for that derivation), and the SAME 240 shows up again,
-    /// completely independently, as <c>GraphicManager.cs:817</c>'s local <c>scrollScreenHeight = 240</c>
-    /// used only by the background-tile-layer scroll/wrap math (<c>GraphicManager.cs:942,1083,1086,1088,
-    /// 1170,1173</c>) and the overlay height at <c>GraphicManager.cs:1256</c> - none of which ever reads
-    /// <c>StaticVariables.ScreenHeight</c>. So the original itself clamps/scrolls as though 240 logical
-    /// rows were visible while only drawing 236 of them to the actual screen (a 4px margin baked into its
-    /// own scroll math, not a rendering bug this port needs to fix) - two genuinely different constants
-    /// for two different purposes, both faithfully kept separate here: <see cref="CameraVisibleHeight"/>
-    /// stays 240 for the CLAMP (<see cref="ClampCameraTargetToMap"/>, still verified against the original's
-    /// own 0x39f/0x2cf), while <see cref="CameraDisplayHeight"/> (236) now drives the ZOOM
-    /// (<see cref="ComputeCameraZoom"/>) so the rendered window is an exact integer multiple of the
-    /// original's own display area - the 320x240 CLAMP window and the 320x236 DISPLAY window overlap
-    /// almost entirely (236 of the clamp's 240 visible rows are actually drawn) and are never meant to be
-    /// the same measurement.</description></item>
-    /// </list>
-    /// </summary>
-    private const float CameraDisplayHeight = 236f;
 
     /// <summary>
     /// E5-1's centre-bias: the original's look-at sits at screen position (0xa0, 0x88) = (160, 136) from
@@ -332,20 +299,6 @@ internal static class AlundraCameraMath
     /// </summary>
     internal static (int X, int Y) ToOriginalScrollSpace(Vector3 target)
         => ((int)target.X - 160, -(int)target.Y - 120);
-
-    /// <summary>
-    /// FIX (fresh verifier of cc1fc60) - pure math factored out for unit testing: the camera's
-    /// <see cref="Camera2dComponent.Zoom"/> that reproduces the original's own
-    /// <see cref="CameraDisplayHeight"/>-tall (236, NOT <see cref="CameraVisibleHeight"/>'s 240 - see that
-    /// constant's own doc for the display-vs-clamp investigation) DISPLAY area for a real
-    /// <paramref name="viewportHeight"/> (<c>Camera2dComponent.ComputeProjectionMatrix</c>'s own visible
-    /// area is <c>viewport / Zoom</c>). Computed at runtime from the LIVE viewport rather than hardcoded,
-    /// per the plan's own instruction - the DLL's own window height (<c>AlundraDisplay.WindowHeight</c> =
-    /// 944 = 236 x <c>PixelScale</c> 4) now divides evenly by 236, so this yields the exact integer zoom 4
-    /// at the real 1280x944 window, restoring pixel-perfect rendering (used to be 944/240 = 3.9333, texels
-    /// stretched over 3-4 device pixels).
-    /// </summary>
-    internal static float ComputeCameraZoom(int viewportHeight) => viewportHeight / CameraDisplayHeight;
 
     /// <summary>
     /// DEBUG ONLY (see <see cref="AlundraCameraDirector.UpdateDebugCameraPan"/>) - the pure math factored out for unit testing:
