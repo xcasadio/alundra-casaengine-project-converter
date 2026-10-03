@@ -5735,7 +5735,7 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
 - 🧪 **R5 — Recette** (auteur) : sortir de la chambre de la 163 (le HUD glisse à l'écran) ; la 476 (les pièces apparaissent dans
   le cadre) ; la carte 15 après R3.
 
-### 1.2q E19.s — Image 320 × 240, facteur entier, bandes noires, suivie en temps réel ⏳ (planifiée ; relecture n°1 REVISE, révisée)
+### 1.2q E19.s — Image 320 × 240, facteur entier, bandes noires, suivie en temps réel 🧪 (exécutée le 2026-10-03 ; recette S6 en attente)
 
 **Décisions** : D-E19-47 (image de l'original, agrandie sans déformation, recalculée en temps réel, bandes noires), D-E19-60
 (facteur entier seulement). **Découverte** (2026-10-03, lecture seule, `e19s-disc/notes.md` du scratchpad de la session).
@@ -5842,6 +5842,44 @@ d'avant E19.s reste compatible avec un export d'E19.s (le réglage n'est lu que 
 **Risques.** Un écran MGUI dans une vue décalée (prouvé par l'écran partagé, jamais par Alundra) ; l'effacement des bandes et
 l'ordre des vues ; l'éditeur ne doit rien voir (S-R2) ; le moteur est ouvert dans Visual Studio par l'auteur : S-1 attend que le
 sous-module soit libre.
+
+- **Fait le 2026-10-03.** Moteur (branche `chantier/e19s-virtual-resolution`, partie de `main` `22228ffd`, plan
+  `ai-agent/tasks/e19s-virtual-resolution-tasks.md`, ADR-0048, `CasaEngine.Launcher/Program.cs` de l'auteur jamais indexé) : `c54cc939` plan,
+  `fb97d4b7` mise en page pure, `b07f3b5e` réglage de projet, `696dcb1a` application à la vue/caméra/bandes, `b236dfbe` rappel des bornes des
+  écrans XAML, `428b0e49` ADR-0048 et doc, `dfaed7a6` clôture du plan (pointeur du sous-module). Parent : `1250f9b` convertisseur (le pointeur y
+  entre, sans quoi ce commit ne se construit pas : écart au brief, qui le rangeait avec la DLL), `e08c467` DLL, `b386132` ADR-0027, puis cette puce.
+  - **Rouges d'abord, valeurs lues.** Mise en page : talon qui rend l'échelle 0, 19 tests sur 22 rouges (1920 × 1080 → 0 au lieu de 4). Réglage de
+    projet : réglage lu null, les cinq déclarations invalides ne lèvent rien. Application : 1920 × 1080 → rectangle (0, 0, 1920, 1080) lu au lieu
+    de (320, 60, 1280, 960) ; 400 × 200 → (0, 0, 1280, 960) lu au lieu de (40, 0, 320, 200) ; prédicat des bandes toujours faux. Rappel des bornes :
+    liste vide lue au lieu de [(0, 0, 960, 720)]. Convertisseur : `DebugHeight` 944 lu au lieu de 960 (`windowHeight / zoom` 236 au lieu de 240) et
+    `VirtualResolution` absent. DLL : `camera.Zoom` 9,99999975E-05 (`MinimumZoom`) lu au lieu de 1 (2 tests) ; les quatre écrans restent à l'échelle
+    2 au lieu de 3 après le passage du bureau de 640 × 480 à 960 × 720 (4 tests). Aucune valeur écrite d'avance n'a été contredite.
+  - **Verts après.** Moteur `CasaEngine.Tests` 2490 sur 2490 (Debug, aucune instabilité de matériaux constatée) ; la table de S-R3 tenue telle
+    quelle (neuf lignes) ; viewport de la caméra 1280 × 960 et aire visible 320 × 240 pour 1920 × 1080 à la création de la vue comme après un
+    redimensionnement, 400 × 200 → viewport 320 × 200. Convertisseur 418 sur 418 (Debug), dont le nouveau test du réglage écrit. DLL
+    `Alundra.Tests` 2505 sur 2505 en Release puis en Debug (la Debug en dernier), `cmp` de `Alundra/bin/Debug/net9.0-windows/Alundra.dll` contre
+    `alundra-project/Alundra.dll` sans écart (2504 avant : 3 tests de zoom retirés, 4 de suivi des écrans ajoutés).
+  - **Tests existants touchés (liste fermée tenue).** `WorldWriterTests.cs` (236 → 240 et doc) ; `AlundraWorldProxyCameraFollowTests.cs` (les trois
+    tests de `ComputeCameraZoom` retirés, doc de tête) ; `AlundraWorldProxyUpdateCharacterizationTests.cs` (deux tests : zoom gardé à 1, noms
+    ajustés `FirstFrame_ResolvesPixelSnap_LeavesTheZoomToTheEngine_...` et `PixelSnap_IsSetOnlyOnFirstFrame_AndTheZoomIsNeverTouched`) ;
+    `HeadlessUiTestHarness.cs` de la DLL (méthode `Resize`, la surface devient modifiable). Aucun autre test n'a changé ni rougi ;
+    `ScreenEffectComponentViewSizeTests`, `Camera2dComponentTests`, `CellularLayerServiceTests`, `BackdropStageDefinitionTests` et les tests de toile
+    des écrans sont inchangés.
+  - **Export.** Manifeste SHA-1 de `alundra-project/` (hors `Alundra.dll`, `Alundra.pdb`, `.casaeditor/` ; 23741 fichiers) avant et après l'export
+    complet en place : exactement `AlundraGame.json` (`DebugHeight` 960, bloc `VirtualResolution` 320 × 240 `IntegerFit`),
+    `Entities/AlundraCamera.entity` (viewport 1280 × 960, zoom 4.0) et `report.json` changent ; vérification de l'export passée (20026 chargés,
+    2391 existences). Double export identique hors `report.json`. Les six traces à l'octet (`git diff --ignore-cr-at-eol --exit-code`), les
+    quatre traces du héros remises par `git checkout`.
+  - **Écarts au plan.** (1) Le pointeur du sous-module entre avec le commit du convertisseur et non avec celui de la DLL, pour que chaque commit se
+    construise. (2) Le rappel des écrans est `XamlUIScreenBase.OnScreenBoundsChanged(Rectangle)`, déclenché par `NotifyScreenBounds`, que
+    `UIRoot.Update` appelle chaque image via `ScreenStack.NotifyScreenBounds` (tous les écrans XAML de la pile, y compris ceux gelés sous un modal) ;
+    chaque écran d'Alundra a une méthode `ApplyScreenBounds` qui refait le calcul d'`OnWindowLoaded`. (3) Réglage nommé `VirtualResolution`
+    (`Width`, `Height`, `Mode`) ; effacement des bandes dans `CasaEngineGame.Draw` juste avant le rendu des vues, la fenêtre du back-buffer
+    posée puis rendue autour du `Clear`. (4) Le document `docs/engine/rendering-2d-3d-spaces.md` est en français comme le reste de ce
+    document. (5) `docs/demarrage-nouvelle-partie.md` (« 320 × 236 ») corrigé aussi. (6) ADR-0027 : le numéro 0026 reste libre.
+  - **Non exécuté en test** (périphérique graphique requis) : l'abonnement à `Window.ClientSizeChanged`, l'effacement noir des bandes, la ligne
+    de `UIRoot.Update`. Les fonctions qu'ils appellent le sont. À voir à la recette S6. Icônes d'équipement du HUD : leur centrage dépend du
+    facteur, il est refait au prochain tick du présentateur, pas dans le rappel.
 
 ### 1.2r E19.t — Son de chaque changement d'animation ⏳ (planifiée ; relecture n°1 REVISE, révisée)
 
