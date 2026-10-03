@@ -5272,7 +5272,7 @@ ses points à concevoir) ; E19.h1 ne garde que les attentes sans question de con
 148, 152, 154, 344, 410, 423 : leur contact en Z dépend de D5) ; une flamme (`0x47`) n'est arrêtée que par un mur tant
 qu'E14 n'écrit pas `HitCounter`.
 
-##### 1.2n.1b E19.h1b1 — Écritures absolues de Z en convention de la DLL (apparition, `0x8A`, `0x64`) ⏳ (relecture de clôture REVISE sur `c38f952`, ligne d'ordre corrigée ; l'auteur demande une relecture neuve, 2026-10-03)
+##### 1.2n.1b E19.h1b1 — Écritures absolues de Z en convention de la DLL (apparition, `0x8A`, `0x64`) ⏳ (READY à la relecture neuve demandée par l'auteur ; audit des valeurs fait le 2026-10-03 : toutes les valeurs tenues, un fait corrigé)
 
 **Décision** : D-E19-59 (l'apparition passe en convention de la DLL, `0x8A` et `0x64` examinés dans la même ADR). E19.h1b est
 coupée en deux : **h1b1** (cette tranche, la convention) puis **h1b2** (`0x20`, `0x22`, `0x23`, Z des entités sans contrôleur,
@@ -5293,10 +5293,15 @@ gravité de carte de toute entité ; esquisse en §1.2n.1c), qui en dépend, com
 - **Recensement** : `0x64` 544 sites dans 155 cartes (62 sur la chaîne), `0x8A` 684 sites dans 69 cartes (49 sur la chaîne). Seul
   effet visible trouvé : sur les cartes 83 et 410, la plateforme flottante (`0x64 @1235`, puis `0x21 @1246`) finit sa première
   montée à 48 px après 32 ticks comme l'original, au lieu de 49 px après 33 aujourd'hui.
-- **Appuis d'apparition à distance** (`e19h1b-disc/spawnsupport_chain.txt`) : aujourd'hui trois entités sans gravité de la chaîne
-  sont collées à un appui situé sous elles : 391 rec0 (bloc transparent, 32 px plus bas, sur rec4 : c'est A6), 172 rec4 et
-  179 rec4 (déclencheurs de clé invisibles, 8 px plus bas, sur rec6). Avec H1b1-R3, elles restent à leur hauteur d'apparition,
-  comme dans le binaire (le bloc de la 391 à 144 px, `T` ; les déclencheurs à 40 px). Changement de comportement voulu.
+- **Appui d'apparition à distance** (corrigé par l'audit des valeurs du 2026-10-03, `e19h1b1-audit/notes.md`) : aujourd'hui, une
+  seule entité de la chaîne est collée à un appui situé sous elle, 391 rec0 (bloc transparent, 32 px plus bas, sur rec4 : c'est
+  A6) ; les déclencheurs de clé 172 rec4 et 179 rec4 apparaissent avant leur appui rec6 (ordre des couches) et restent à 2621441
+  (2621440 après). Avec H1b1-R3, le bloc de la 391 reste à sa hauteur d'apparition, 144 px (`T`), comme dans le binaire.
+- **Butée au terrain** (audit) : elle relève 431 enregistrements du corpus (54 sur les cartes des tests) ; la plupart rejoignaient
+  déjà le terrain au premier tick ; 87 entités sans gravité dont `OffsetZ` > 0 restent plus haut d'au plus `OffsetZ`, comme dans
+  le binaire (aujourd'hui dessinées enfoncées : livres de sauvegarde +2 px aux 178, 179 et 185, cruches rebondissantes +12 px aux
+  15 et 17, tremplins, interrupteurs de lampe…) ; 6 couvercles à gravité tombent de `OffsetZ` après l'apparition ; 4 lasers sans
+  contrôleur restent relevés. Fidèle (D-E19-59), visible : à la recette.
 - **Traces** : aucun octet ne devrait changer (raisonné, non lancé) : `intro-programs-389.txt` est un listage statique, les
   traces du héros passent par un exécuteur vide et leur propre placement, et le harnais d'intro pose toute entité placée au sol à
   `T + 1` dans la même image.
@@ -5351,10 +5356,15 @@ gravité de carte de toute entité ; esquisse en §1.2n.1c), qui en dépend, com
    dérivés : **valeurs inchangées**, seuls leurs commentaires « comme la production » / « as the spawn leaves it » deviennent
    « comme le harnais d'intro » ; **A6** (`AlundraShipBlockArcTests.cs:210`) : `(29097984, 44040192, 7340032)` →
    `(29097984, 44040192, 9437184)` (le bloc de `0x2D @265` n'est plus collé sur le marin 4 : apparition à `z << 16` = 9437184
-   moins `ModZ` 0, égale au terrain `T` de 144 px), commentaire ajusté. Rien d'autre ; aucune épingle d'image ne bouge.
+   moins `ModZ` 0, égale au terrain `T` de 144 px), commentaire ajusté ; commentaires devenus faux, commentaires seulement :
+   `AlundraNpcCharacterControllerMoverTests.cs` ~1833, ~1857, `AlundraAnimationImpulseSpawnTests.cs` ~85, ~111,
+   `AlundraVisionAndCoastArcTests.cs` ~182, l'en-tête de section d'`AlundraTerrainHeightTests.cs`. Rien d'autre ; aucune épingle
+   d'image ne bouge. Ancres de ligne mesurées par l'audit sur `e08c467` : `0x8A` ~2092, `0x64` ~2198, second site d'apparition
+   ~2549, `ComputeTerrainHeight` ~1579-1597, A6 ~211.
 3. Les six traces à l'octet (sinon arrêt et diagnostic).
 4. `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
-5. **Recette H1b1** (auteur) : les piles de caisses des 165, 178 et 179 ; la plateforme flottante de la 83.
+5. **Recette H1b1** (auteur) : les piles de caisses des 165, 178 et 179 ; la plateforme flottante de la 83 ; les livres de
+   sauvegarde des 178, 179 et 185 et les cruches des 15 et 17 (plus haut de quelques pixels, comme l'original).
 
 **Ordre** : après **D5a** d'E19.d2c2 (close), avant E19.t (mêmes fichiers) ; une tranche à la fois. D5b (en pause) ne la bloque
 pas : si une reprise de D5b change l'ordre passager/porteur et déplace les valeurs des gardes de piles de h1b1, c'est un arrêt
