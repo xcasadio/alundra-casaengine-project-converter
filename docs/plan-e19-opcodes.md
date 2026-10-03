@@ -6811,7 +6811,7 @@ commit (DLL seule).
   où l'ordre compte). Avis P4 : `AlundraTurnOrderTests.cs` définit son propre contexte de monde au lieu de reprendre
   `FakeEntityWorldContext` (duplication de montage seulement).
 
-#### 1.2s.3 E19.m2 — Couches de cellules comme le binaire (O-E19-48, O-E19-50) ⏳ (relecture n°1 READY ; en exécution)
+#### 1.2s.3 E19.m2 — Couches de cellules comme le binaire (O-E19-48, O-E19-50) ✅ (relecture n°1 READY ; exécutée le 2026-10-03 ; vérification fraîche, Release et recette à venir)
 
 **Faits** **[binaire]** (audit du 2026-10-03, `e19m2-disc/notes.md` du scratchpad, scripts `sim` (le modèle du moteur corrigé égale
 le modèle du binaire), `real391`, `census`) ; les routines à période sont le **type 0** (`0x8005CB38`) et le **type 2**
@@ -6891,6 +6891,30 @@ le modèle du binaire), `real391`, `census`) ; les routines à période sont le 
    six traces à l'octet ; la liste fermée de la chaîne inchangée.
 
 **Retour arrière** : pointeur du sous-module et revert du commit de la DLL.
+
+Decisions: see ADR-0032 (moteur : ADR-0050).
+
+- **Fait le 2026-10-03** (M2-1 à M2-4 ; moteur : branche `chantier/e19m2-cellular-binary` empilée sur `chantier/e19k2-layer-mask`
+  `987f0c7f`, plan `ai-agent/tasks/e19m2-cellular-binary-tasks.md`, commits `3adb1480` (plan), `78ffdfac` (tests, code, docs),
+  `61358ac0` (ADR-0050) ; parent : `593a2fd` (DLL et pointeur), `a08e863` (ADR-0032)). **Rouges d'abord**, valeurs lues égales aux
+  valeurs « aujourd'hui » du plan. Moteur, 13 tests rouges sur les 55 de `CellularLayerServiceTests` : T-P1 tick 1 attendu 100 lu 101 ;
+  T-P2 tick 2 attendu 100 lu 99 ; T-P3 tick 2 attendu 100 lu 101 ; bouclages au tick 1 attendu −20 lu 315, attendu 400 lu 65, `DrawY`
+  attendu −20 lu 235, attendu 400 lu 145 ; T-W5 tick 3 attendu −16 lu 319 ; T-F1 tick 1 attendu (7, 240) lu (0, −15) ; T-F2 tick 2 :
+  source 32767 attendu 321 lu 0, 32640 attendu 320 lu 0, 102 attendu 1 lu 0 (101 → 0 vert d'avance) ; le test réécrit `:111-128`
+  (12 ticks, 87) était vert d'avance, comme annoncé. DLL (le type posé en talon qui rend 0, état sans effet) : générateur depuis
+  l'état 0 attendu `[0, 21468, 9988, 22117, 3498]` lu `[0, 0, 0, 0, 0]` ; depuis `0x12345678` attendu 2929 lu 0 ; câblage attendu
+  2929 lu 904094096 (`0x35E36190`, la première valeur d'`AlundraRandom`) ; 391 : les positions du tick 1 sont celles d'avant le tirage
+  (identiques), le rouge est l'état après le tick 1, attendu `0xA70427DF` lu 0. **Verts après**, toutes les valeurs écrites tenues,
+  aucune ré-épinglée. Nombres : `CasaEngine.Tests` 2511 sur 2511 (Debug, 2502 avant, +9) ; `Alundra.Tests` Debug 2555 sur 2555 (2552
+  avant, +3 : `AlundraLibcRandomTests`, collection `AlundraRandomStaticStateCollection`, test de la 391 sauté si l'export manque).
+  Tests existants touchés, liste fermée respectée : `CellularLayerServiceTests.cs:111-128`, `:132-192`, `:196-219` (remplacé par
+  T-F1/T-F2) et `AlundraWorldProxyCellularRandomWiringTests.cs:26-51` ; rien d'autre. Six traces à l'octet (`git diff
+  --ignore-cr-at-eol --exit-code` rend 0), quatre traces du héros remises par `git checkout --` ; la liste fermée de la chaîne
+  inchangée. Écarts : le moteur est livré en un commit (tests, code et docs) au lieu de deux : séparer la période et la position
+  dessinée du tirage laissait des tests rouges ; la Release et le `cmp` restent à la session principale. Doc corrigée :
+  `AlundraRandom.cs`, `CellularCellDefinition.cs`, `CellularLayerComponent.cs` (avertissement), `cellular-layers.md` §4, §5, §12
+  (le délégué non câblé avertit une fois et rend 0, il ne lève plus dans la doc). Le titre de la tranche E19.m (`§1.2s`) dit encore
+  « E19.m2 planifiée ».
 
 **Risques.** Les cellules de type 0 hors de la chaîne qui n'avancent que par leur période ralentissent (cartes 96 à 99, 271, 289, 357,
 481 : 1,25 à 2 fois plus lentes ; les autres de 1 à 29 %) ; la pluie de la 391 change de positions (et peut atteindre 320 ou 321) ;
