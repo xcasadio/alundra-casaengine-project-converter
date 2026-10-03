@@ -333,6 +333,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         0x1C, 0x1D, // E19.c1 T4 (wait for animation ends).
         0x24, // E19.d D4 (wait until ForceAdjusted of the logic entity is nonzero).
         0x25, // E19.d2c1 R4 (wait until CollidedWithEntityZ or IsOnGround of the logic entity is nonzero; trace label only).
+        0x21, 0x26, 0x47, 0x48, 0x6F, // E19.h1 H1-1 (Z waits and the Z contact reader).
         0x8E, 0x8F, // E19.k1 K1 (camera sway start and stop).
         0x40, 0x41, // E19.d D6 (set program index and clear the state, set sprite program index).
         // E16.a T6 (docs/plan-e16-etat-partie.md, contract item 4): the 23 opcodes of the two rows that start at 0x0D were

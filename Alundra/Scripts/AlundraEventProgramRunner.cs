@@ -709,6 +709,30 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // skipped, so every jump or fall script ran on without waiting for the landing.
                 return entity.CollidedWithEntityZ != 0 || entity.IsOnGround != 0 ? 1 : 0;
 
+            case 0x21: // Wait Z distance or Z contact - Script_33_021 @ 0x8003DA28 (E19.h1 H1-1, docs/plan-e19-opcodes.md §1.2n.1), PER THE BINARY:
+                       // calls the 0x20 handler (WaitZDistance, same operands) and returns 3 when it ends, else 3 when the LOGIC entity's
+                       // CollidedWithEntityZ (+0x140) is nonzero - from its very first call too - else 0. The 0x20 memo is written in every case.
+                       // No other effect. (0x20 itself stays skipped until E19.h1b.) Size 3.
+                return WaitZDistance(entity, v, state) != 0 || entity.CollidedWithEntityZ != 0 ? 3 : 0;
+
+            case 0x26: // Wait force adjusted or Z contact - Script_38_026 @ 0x8003DBA8 (E19.h1 H1-1), PER THE BINARY: returns 1 when the LOGIC
+                       // entity's ForceAdjusted (+0x13C) or CollidedWithEntityZ (+0x140) is nonzero, else 0. Same shape as 0x24/0x25. Size 1.
+                return entity.ForceAdjusted != 0 || entity.CollidedWithEntityZ != 0 ? 1 : 0;
+
+            case 0x47: // Wait hit or force adjusted - Script_71_047 @ 0x8003E984 (E19.h1 H1-1), PER THE BINARY: returns 1 when the LOGIC entity's
+                       // HitCounter (+0x220) or ForceAdjusted (+0x13C) is nonzero, else 0; Result untouched. HitCounter stays 0 until E14 writes it
+                       // (a flame then advances until a wall stops it, like the original when nobody hits it). Size 1.
+                return entity.HitCounter != 0 || entity.ForceAdjusted != 0 ? 1 : 0;
+
+            case 0x48: // Wait hit or Z contact - Script_72_048 @ 0x8003E9B0 (E19.h1 H1-1), PER THE BINARY: returns 1 when the LOGIC entity's
+                       // HitCounter (+0x220) or CollidedWithEntityZ (+0x140) is nonzero, else 0. Size 1.
+                return entity.HitCounter != 0 || entity.CollidedWithEntityZ != 0 ? 1 : 0;
+
+            case 0x6F: // Is collided with entity Z - Script_111_06F @ 0x8003F9E8 (E19.h1 H1-1): Result = the LOGIC entity's CollidedWithEntityZ
+                       // (+0x140), copied as is like 0x6E does ForceAdjusted. Size 1.
+                state.Result = entity.CollidedWithEntityZ;
+                return 1;
+
             case 0x40: // Set program index - Script_64_040 @ 0x8003E7B8 (E19.d D6, D-E19-22), PER THE BINARY: raises g_clearProgramState,
                        // then ProgramIndexes[v1] = v2 of the LOGIC entity; size 3. The original bounds nothing: v1 >= 6 would write
                        // past the array (no site in the corpus, 426 sites all with v1 from 2 to 5). Documented correction of that defect:
@@ -2390,6 +2414,30 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         }
 
         return 0;
+    }
+
+    /// <summary>
+    /// The Z wait of <c>0x20</c> (<c>0x8003D9BC</c>, E19.h1 H1-1; shared with 0x21, which is the only caller dispatched so far): the first
+    /// call at a pc (the key is <c>CodeIndex</c>, in <c>Parameters[1]</c>) memorises the pc and the entity's PosZ
+    /// (<c>Parameters[2]</c>) and returns 0. Later calls return 3 once <c>|PosZ - memo| &gt;&gt; 16</c> reaches
+    /// <c>v1 | v2 &lt;&lt; 8</c>, else 0. A difference, so no PosZ convention is involved. Reads nothing else.
+    /// </summary>
+    private static int WaitZDistance(AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
+    {
+        if (state.Parameters[1] != state.CodeIndex)
+        {
+            state.Parameters[1] = state.CodeIndex;
+            state.Parameters[2] = entity.PosZ;
+            return 0;
+        }
+
+        var distance = state.Parameters[2] - entity.PosZ;
+        if (distance < 0)
+        {
+            distance = -distance;
+        }
+
+        return (distance >> 16) >= ((v[1] & 0xFF) | ((v[2] & 0xFF) << 8)) ? 3 : 0;
     }
 
     /// <summary>

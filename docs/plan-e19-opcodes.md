@@ -4658,7 +4658,7 @@ ses points à concevoir) ; E19.h1 ne garde que les attentes sans question de con
 
 **Tâches.**
 - ✅ **H1-0 — Plan**, relu jusqu'à READY (REVISE n°1, réduction, audit des valeurs, READY à la deuxième relecture le 2026-10-03).
-- ⏳ **H1-1 — Attentes et `0x6F`, tests d'abord** (montage d'`AlundraEventProgramRunnerWaitCollidedZTests`, opcode au pc 1
+- ✅ **H1-1 — Attentes et `0x6F`, tests d'abord** (montage d'`AlundraEventProgramRunnerWaitCollidedZTests`, opcode au pc 1
   derrière un `0x01`, entité logique avec contrôleur) : **T-Z21** `01 21 10 00 FF` (16 px) : `CollidedWithEntityZ` 1 au premier
   appel → fin aussitôt (`0x21` rend 3, puis `0xFF @4`) ; sinon, `PosZ` 3145728 au premier appel : appel 1 suspendu, `CodeIndex`
   1, `Parameters[2]` 3145728 ; `PosZ` 4194303 → attend ; 4194304 → fin ; vers le bas, 2097152 → fin ; l'entité logique bouge,
@@ -4668,6 +4668,7 @@ ses points à concevoir) ; E19.h1 ne garde que les attentes sans question de con
   reste 7. **T-Z48** `01 48 FF` : `HitCounter` ou `CollidedWithEntityZ` finissent ; `ForceAdjusted` seul attend. **T-Z6F**
   `01 6F FF` : `Result` = `CollidedWithEntityZ` (0 ou 1). Rouges : aujourd'hui chaque opcode est sauté, le programme continue
   au premier appel et `Result` reste tel quel. Commit : `feat(alundra): port the Z wait opcodes 0x21, 0x26, 0x47, 0x48 and 0x6F like the binary`
+  - Fait le 2026-10-03 : 20 cas dans `AlundraZWaitOpcodesTests` ; rouges d'abord sur le code d'avant (12 rouges : opcodes sautés, ex. `0x21` à 16 px rend `(4,0xFF,0)` au lieu de `(1,0x21,0)`, `Parameters[2]` 0 au lieu de 3145728, `0x47`/`0x48`/`0x26` en attente finissent `(1,op,1)`, `0x6F` laisse `Result` à 9 ; les 8 cas « fin immédiate » passaient déjà, le saut rend la même taille), verts après, valeurs écrites tenues ; suite Debug 2460/2460 ; libellés H1-R2 corrigés, `ImplementedOpcodes` reçoit `0x21 0x26 0x47 0x48 0x6F` ; six traces inchangées (`git diff --ignore-cr-at-eol` à 0). Aucun écart au plan ; `0x21` écrit le mémo même quand le contact termine au premier appel (le binaire appelle `0x20` d'abord).
 - ⏳ **H1-2 — Vérification et clôture.** **H1-3 — Recette** (auteur, hors chaîne) : une flamme (carte 26) avance jusqu'au mur
   au lieu de s'éteindre au départ ; sur la chaîne, aucun écart.
 
