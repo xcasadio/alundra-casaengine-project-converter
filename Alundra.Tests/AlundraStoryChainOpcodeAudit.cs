@@ -43,20 +43,22 @@ internal static class AlundraStoryChainOpcodeAudit
     /// <summary>The seven combat maps, exempt (E14 owns them).</summary>
     public static readonly int[] ExemptCombatMaps = { 14, 15, 44, 115, 116, 117, 362 };
 
-    /// <summary>The fifteen chain maps with no skipped site (the 392 joined them with E19.k1, its one site being the camera sway 0x8E;
-    /// the 165, 172, 180 and 182 with E19.l1, whose only sites were the directional branch 0x58).</summary>
-    public static readonly int[] MapsWithoutSkippedSite = { 165, 170, 171, 172, 173, 175, 177, 180, 182, 184, 389, 390, 392, 416, 478 };
+    /// <summary>The seventeen chain maps with no skipped site (the 392 joined them with E19.k1, its one site being the camera sway 0x8E;
+    /// the 165, 172, 180 and 182 with E19.l1, whose only sites were the directional branch 0x58; the 163 and 179 with E19.l2, whose
+    /// only sites were the item and money opcodes).</summary>
+    public static readonly int[] MapsWithoutSkippedSite = { 163, 165, 170, 171, 172, 173, 175, 177, 179, 180, 182, 184, 389, 390, 392, 416, 478 };
 
     /// <summary>Wait opcodes (rule 3): an instruction that waits must never be skipped.</summary>
-    public static readonly int[] WaitOpcodes = { 0x20, 0x21, 0x22, 0x23, 0x26, 0x47, 0x48, 0x5F, 0x9F };
+    public static readonly int[] WaitOpcodes = { 0x20, 0x21, 0x22, 0x23, 0x26, 0x47, 0x48, 0x5F };
 
     /// <summary>The closed set of rule 4: the predicates and branches that write <c>Result</c> or jump.</summary>
-    public static readonly int[] PredicateOpcodes = { 0x52, 0x58, 0x82, 0x84, 0x87, 0x95, 0x99, 0x9A };
+    public static readonly int[] PredicateOpcodes = { 0x52, 0x58, 0x82, 0x83, 0x84, 0x87, 0x95, 0x99, 0x9A, 0x9F };
 
-    /// <summary>The two known level-S sites of rule 4 (the two 164 sites of the directional branch 0x58 left with E19.l1).</summary>
+    /// <summary>The one known level-S site of rule 4 (the two 164 sites of the directional branch 0x58 left with E19.l1, the 179 site of
+    /// the item use 0x84 with E19.l2).</summary>
     public static readonly ProgramSite[] KnownScenePredicateSites =
     {
-        new(179, 'B', 1, 183), new(10, 'C', 75, 6418),
+        new(10, 'C', 75, 6418),
     };
 
     private const string SlotLetters = "ABCDEF";
@@ -432,7 +434,7 @@ internal static class AlundraStoryChainOpcodeAudit
     }
 
     /// <summary>Rule 4: among the level-S lines, the predicates and branches of <see cref="PredicateOpcodes"/> are only at the
-    /// two known sites.</summary>
+    /// one known site.</summary>
     public static IReadOnlyList<ListedSite> Rule4ScenePredicates(IEnumerable<ListedSite> list)
     {
         return list.Where(l => l.Tier == 'S'

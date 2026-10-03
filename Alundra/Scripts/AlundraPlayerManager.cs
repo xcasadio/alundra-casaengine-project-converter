@@ -1042,8 +1042,9 @@ public static class AlundraPlayerManager
     }
 
     /// <summary>Port of <c>AddOneItemIfUnlocked</c> (PlayerManager.cs:4666-4688, 8004e530): gives one more of
-    /// an item unless the player already holds its max count (column 3). Returns the new count, or - as the
-    /// original does - the item id itself when the count was already at its max.</summary>
+    /// an item unless the player already holds its max count (column 3). Returns the new count, or the
+    /// unchanged count when it was already at its max - the binary's own value (8004e58c/8004e5b0: the count is
+    /// returned); the decompilation returned the item id there, which made opcode 0x82 report "given" for nothing.</summary>
     public static int AddOneItemIfUnlocked(AlundraGameState state, AlundraItemTables tables, int itemId)
     {
         if (itemId < 0 || itemId >= ItemsCount)
@@ -1063,7 +1064,39 @@ public static class AlundraPlayerManager
             return numberOfItem + 1;
         }
 
-        return itemId;
+        return numberOfItem;
+    }
+
+    /// <summary>Port of <c>UseItem</c> (8004e5c4, PlayerManager.cs:1871-1897): consumes one of an item. An id out of
+    /// range answers 0 and writes nothing (the original's own quirk: a caller testing for -1 reads it as "used"); a count
+    /// of 0 answers -1 and writes nothing; otherwise the count drops by one and the new count is returned.</summary>
+    public static int UseItem(AlundraGameState state, int itemId)
+    {
+        if (itemId < 0 || itemId >= ItemsCount)
+        {
+            CasaEngine.Core.Logging.Logs.WriteWarning($"AlundraPlayerManager: invalid itemId {itemId} in UseItem.");
+            return 0;
+        }
+
+        var numberOfItem = state.NumberOfItems[itemId * 2 + 1];
+
+        if (numberOfItem == 0)
+        {
+            return -1;
+        }
+
+        state.NumberOfItems[itemId * 2 + 1] = (short)(numberOfItem - 1);
+        return numberOfItem - 1;
+    }
+
+    /// <summary>Port of <c>AddMoney</c> (8004dfd8): <c>SetMoney(Money + amount)</c>. The sum is computed on 32 bits and
+    /// clamped to <c>[0, 9999]</c> as <see cref="SetMoney"/> does - never cast to a <see cref="short"/> first, which
+    /// would wrap a large amount into a negative one.</summary>
+    public static int AddMoney(AlundraGameState state, int amount)
+    {
+        var sum = state.PlayerStats.Money + amount;
+        state.PlayerStats.Money = (short)(sum < 0 ? 0 : sum >= 10000 ? 9999 : sum);
+        return state.PlayerStats.Money;
     }
 
     /// <summary>Port of <c>GetItemTextureIdByItemId</c> (GraphicManager.cs:1910-1914, 8004e168): an item's

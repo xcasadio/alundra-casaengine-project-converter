@@ -63,15 +63,15 @@ public class AlundraStoryChainSkippedOpcodesTests
     }
 
     [Fact]
-    public void Rule4_ScenePredicatesAreOnlyAtTheTwoKnownSites()
+    public void Rule4_ScenePredicatesAreOnlyAtTheOneKnownSite()
     {
         var offenders = Rule4ScenePredicates(TheList());
 
-        Assert.True(offenders.Count == 0, $"{offenders.Count} level-S predicate or branch line(s) beyond the two known sites: {Show(offenders)}");
+        Assert.True(offenders.Count == 0, $"{offenders.Count} level-S predicate or branch line(s) beyond the one known site: {Show(offenders)}");
     }
 
     [Fact]
-    public void TheListIsOnTheChainAndTheFifteenMapsWithoutASiteHaveNone()
+    public void TheListIsOnTheChainAndTheSeventeenMapsWithoutASiteHaveNone()
     {
         var list = TheList();
 
@@ -80,7 +80,7 @@ public class AlundraStoryChainSkippedOpcodesTests
         Assert.Equal(7, ExemptCombatMaps.Distinct().Count());
         Assert.Empty(list.Select(l => l.Site.Map).Distinct().Except(ChainMaps));
         Assert.Empty(MapsWithoutSkippedSite.Intersect(list.Select(l => l.Site.Map)));
-        Assert.Equal(15, MapsWithoutSkippedSite.Length);
+        Assert.Equal(17, MapsWithoutSkippedSite.Length);
         Assert.Empty(MapsWithoutSkippedSite.Except(ChainMaps));
         Assert.Equal(list.Count, list.Select(l => l.Site).Distinct().Count()); // the key is unique.
     }
@@ -254,11 +254,11 @@ public class AlundraStoryChainSkippedOpcodesTests
     }
 
     [Fact]
-    public void Rule4_APredicateOrBranchAtLevelSOutsideTheTwoKnownSitesIsFlagged()
+    public void Rule4_APredicateOrBranchAtLevelSOutsideTheOneKnownSiteIsFlagged()
     {
         var known = new[]
         {
-            Line(179, 'B', 1, 183, 0x84, 'S'), Line(10, 'C', 75, 6418, 0x95, 'S'),
+            Line(10, 'C', 75, 6418, 0x95, 'S'),
         };
 
         Assert.Empty(Rule4ScenePredicates(known));

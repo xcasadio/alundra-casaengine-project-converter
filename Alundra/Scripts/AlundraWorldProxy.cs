@@ -263,6 +263,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     internal AlundraItemTables ItemTables = AlundraItemTables.GetOrCreate(EngineEnvironment.ProjectPath);
 
+    AlundraItemTables? IEntityWorldContext.ItemTables => ItemTables;
+
     /// <summary>
     /// Port of the original global <c>g_activeCollisionEntity</c>: the entity currently involved in the
     /// active collision pair, used by the pick phase to decide whether a touch downgrades all the way

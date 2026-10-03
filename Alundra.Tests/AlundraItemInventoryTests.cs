@@ -365,13 +365,14 @@ public class AlundraItemInventoryTests
     // -------------------------------------------------------------------------------------------------
 
     [Fact]
-    public void AddOneItemIfUnlocked_StopsAtTheMaxCount_AndThenReturnsTheItemId()
+    public void AddOneItemIfUnlocked_StopsAtTheMaxCount_AndThenReturnsTheCount()
     {
         var tables = ItemTablesFixture.LoadReal();
         var state = new AlundraGameState();
 
         Assert.Equal(1, AlundraPlayerManager.AddOneItemIfUnlocked(state, tables, 17)); // max count 1
-        Assert.Equal(17, AlundraPlayerManager.AddOneItemIfUnlocked(state, tables, 17)); // the original's own quirk
+        // The binary (0x8004E58C/0x8004E5B0) returns the count at the maximum; the decompilation returned the item id (17).
+        Assert.Equal(1, AlundraPlayerManager.AddOneItemIfUnlocked(state, tables, 17));
         Assert.Equal(1, AlundraPlayerManager.GetNumberOfItem(state, 17));
     }
 

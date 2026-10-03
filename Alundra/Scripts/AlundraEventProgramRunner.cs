@@ -1360,6 +1360,57 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 state.Result = (uint)AlundraRandom.Next() >> 24 >= (uint)v[1] ? 1 : 0;
                 return 2;
 
+            case 0x82: // Give item or pickup by id - Script_130_082 @ 0x8003FE7C (E19.l2, docs/plan-e19-opcodes.md section 1.2m.2):
+                       // Result = HandleMapTriggerCommand(v1) != 0 (0x80034108). Size 2.
+                state.Result = HandleMapTriggerCommand(v[1]) ? 1 : 0;
+                return 2;
+
+            case 0x83: // If number of item >= value - Script_131_083 @ 0x8003FEC8 (E19.l2): Result = GetNumberOfItem(v1) >= v2.
+                       // Size 3.
+                state.Result = AlundraPlayerManager.GetNumberOfItem(_gameState, v[1]) >= v[2] ? 1 : 0;
+                return 3;
+
+            case 0x84: // Use item - Script_132_084 @ 0x8003FF34 (E19.l2): UseItem(v1); Result = 0 when the count was already 0
+                       // (-1), else 1 - an invalid id answers 1 too, as the binary does. Size 2.
+                state.Result = AlundraPlayerManager.UseItem(_gameState, v[1]) == -1 ? 0 : 1;
+                return 2;
+
+            case 0x98: // Add money - Script_152_098 @ 0x80040A58 (E19.l2): AddMoney(v1 | v2 << 8), Result untouched. Size 3.
+                AlundraPlayerManager.AddMoney(_gameState, v[1] | v[2] << 8);
+                return 3;
+
+            case 0x99: // Try spend money - Script_153_099 @ 0x80040A8C (E19.l2): price = v1 | v2 << 8 (unsigned 16 bits);
+                       // money < price -> Result 0; else money - price and Result 1. Size 3.
+            {
+                var price = v[1] | v[2] << 8;
+                if (_gameState.PlayerStats.Money < price)
+                {
+                    state.Result = 0;
+                }
+                else
+                {
+                    AlundraPlayerManager.AddMoney(_gameState, -price);
+                    state.Result = 1;
+                }
+
+                return 3;
+            }
+
+            case 0x9A: // Enough money - Script_154_09A @ 0x80040B00 (E19.l2): Result = money >= (v1 | v2 << 8), nothing written.
+                       // Size 3.
+                state.Result = _gameState.PlayerStats.Money >= (v[1] | v[2] << 8) ? 1 : 0;
+                return 3;
+
+            case 0x9F: // If chest opened - Script_159_09F @ 0x80040C80 (E19.l2): Result = 1 when the FIRST match of v1's search has
+                       // a non-zero ContentsGameFlag and that flag is set (banks G and T), else 0. It returns its size (2) in
+                       // every case and never suspends: the wait is the script's own shape (00; 9F; 04).
+            {
+                var chests = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+                var chestFlag = chests.Count != 0 ? (uint)chests[0].ContentsGameFlag & 0xFFFF : 0u;
+                state.Result = chestFlag != 0 && (_gameState.GetFlag(chestFlag) & (1u << (int)(chestFlag & 31))) != 0 ? 1 : 0;
+                return 2;
+            }
+
             case 0x8E: // Camera sway start - Script_142_08E @ 0x80040534 (E19.k1, docs/plan-e19-opcodes.md
                        // section 1.2k): Flag = 1, SpeedX = v[1], SpeedY = v[2], LimitX = v[3], LimitY = v[4]
                        // (unsigned bytes); offsets and reach flags untouched. No sway state wired -> degraded
@@ -2590,6 +2641,49 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         }
 
         return entry.Size;
+    }
+
+    /// <summary>
+    /// HandleMapTriggerCommand (0x80034108) behind opcode 0x82. Id 0 gives nothing; 0x45-0x48 add 1, 5, 10 and 30 gold; 0x4F raises
+    /// FalconTemp by one up to 50 and sets G1450; 0x50-0x56 are the hero's life, magic and effect functions (degraded: answers
+    /// "given", writes nothing - O-E19-39); every other id gives one item unless the maximum is reached, the answer being
+    /// <c>count before &lt; AddOneItemIfUnlocked(id)</c>. Without item tables that last branch is degraded (answers 0).
+    /// </summary>
+    private bool HandleMapTriggerCommand(int id)
+    {
+        switch (id)
+        {
+            case 0:
+                return false;
+
+            case 0x45:
+            case 0x46:
+            case 0x47:
+            case 0x48:
+                AlundraPlayerManager.AddMoney(_gameState, id switch { 0x45 => 1, 0x46 => 5, 0x47 => 10, _ => 30 });
+                return true;
+
+            case 0x4F:
+            {
+                var stats = _gameState.PlayerStats;
+                stats.FalconTemp = (short)Math.Min(stats.FalconTemp + 1, 50);
+                _gameState.AddFlag(1450, 1u << (1450 & 31));
+                return true;
+            }
+
+            case >= 0x50 and <= 0x56:
+                LogDegradedOpcodeOnce(0x82, "HandleMapTriggerCommand", "hero life, magic and effects");
+                return true;
+        }
+
+        if (_worldContext.ItemTables is not { } tables)
+        {
+            LogDegradedOpcodeOnce(0x82, "HandleMapTriggerCommand", "item tables");
+            return false;
+        }
+
+        var before = AlundraPlayerManager.GetNumberOfItem(_gameState, id);
+        return before < AlundraPlayerManager.AddOneItemIfUnlocked(_gameState, tables, id);
     }
 
     private void LogDegradedOpcodeOnce(int opcode, string name, string missingSystem)

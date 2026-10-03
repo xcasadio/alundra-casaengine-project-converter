@@ -4521,7 +4521,7 @@ dans l'exécutable, la plupart non portés) ; `0x28`/`0x29` libèrent 15 marches
 
 **Tâches.**
 - ✅ **L2-0 — Plan**, relu jusqu'à READY (READY à la première relecture, le 2026-10-03 ; valeurs auditées).
-- ⏳ **L2-1 — Helpers et opcodes, tests d'abord** (tables réelles `ItemTablesFixture.LoadReal()` ; `Result` de départ 7 ;
+- ✅ **L2-1 — Helpers et opcodes, tests d'abord** (tables réelles `ItemTablesFixture.LoadReal()` ; `Result` de départ 7 ;
   programmes `[op, …, 0x1A, 9, 0xFF]` : l'animation 9 prouve que l'opcode n'a pas suspendu) :
   - `AddOneItemIfUnlocked(17)` deux fois → 1 puis **1** (aujourd'hui 17), compte 1 : le test existant
     `AlundraItemInventoryTests.cs:368-375` est renommé et ré-épinglé (cause établie : le binaire) ;
@@ -4543,13 +4543,15 @@ dans l'exécutable, la plupart non portés) ; `0x28`/`0x29` libèrent 15 marches
     et l'objet 36 lirait 0) ; pour `0x9F`, l'entité qui exécute est Loaded, Normal ou Deactivated ; la « première
     correspondance » est celle du plus petit créneau (la recherche du binaire monte).
   Commit : `feat(alundra): port the item, money and chest opcodes like the binary`
-- ⏳ **L2-2 — Test statique.** La liste versionnée perd 13 lignes (`0x82` × 4, `0x84` × 3, `0x99` × 3, `0x9A` × 3 ; 153 → 140
+  - Fait le 2026-10-03 : 39 tests neufs en 2 fichiers (`AlundraItemAndMoneyOpcodesTests.cs` 33, `AlundraChestOpcodeTests.cs` 6) + le test d'`AddOneItemIfUnlocked` renommé (`…AndThenReturnsTheCount`) et ré-épinglé ; rouges d'abord (seuls changements préalables : le membre `ItemTables` par défaut, `UseItem` et `AddMoney` en signatures sans effet) : 40 sur 40 rouges aux valeurs du plan (`Result` 7 pour chaque opcode sauté ; comptes et argent inchangés ; `AddOneItemIfUnlocked(17)` rend 17 au lieu de 1 ; `UseItem` rend 0 au lieu de −1 sur un compte nul, `AddMoney` 0 au lieu de 9999), aucune garde verte d'avance ; tous verts après, aucune valeur du plan contredite. Écarts : (1) **commits L2-1 et L2-2 fusionnés en un seul** (bissectabilité : porter `0x82`/`0x84`/`0x99`/`0x9A` rougit la règle 2, exactement 1 rouge sur 2440, dont l'ajustement est L2-2) ; (2) `ItemTablesFixture.LoadReal()` ne porte pas les lignes 36, 38, 41, 61 et 88 (maximum 0) : les tests écrivent la même fixture complétée de ces cinq lignes, valeurs de `alundra-project/Data/items-properties.json` (36 max 9, 38 max 1, 41 max 1, 61 max 99, 88 max 1) ; (3) `AlundraWorldProxy.ItemTables` est un champ : le membre d'interface est implémenté explicitement (`IEntityWorldContext.ItemTables`) ; (4) tests ajoutés en plus des valeurs du plan : `0x45`/`0x46` (1 et 5 pièces), `0x82` sans tables (dégradé, `Result` 0), les helpers `AddMoney`/`UseItem`, `0x9F` avec le drapeau 0 posé (garde contre « bit 0 du mot 0 »), les deux ordres de deux correspondances ; (5) libellés de `EventOpcodeSizeTable` corrigés (`0x82`, `0x83`, `0x9F`) ; `IntroTraceHarnessTests.ImplementedOpcodes` reçoit les sept opcodes.
+- ✅ **L2-2 — Test statique.** La liste versionnée perd 13 lignes (`0x82` × 4, `0x84` × 3, `0x99` × 3, `0x9A` × 3 ; 153 → 140
   après E19.l1) ; `MapsWithoutSkippedSite` gagne 163 et 179 (15 → 17 ; le test devient `…TheSeventeenMaps…`,
   `Assert.Equal(17, …)`) ; `WaitOpcodes` perd `0x9F` (le binaire n'attend pas) ; `PredicateOpcodes` gagne `0x83` et `0x9F` ;
   `KnownScenePredicateSites` perd 179 `B[1] @183` et ne garde que 10 `C[75] @6418` (doc « The one known level-S site ») ;
   les deux tests de la règle 4 passent de « two » à « one known site » (noms, message, doc) et l'entrée `known` du test
   fabriqué ne garde que 10 `C[75] @6418 0x95`, ses quatre autres cas inchangés. Aucun arc n'atteint ces sites.
   Commit : `test(alundra): the item and money opcodes leave the skipped list`
+  - Fait le 2026-10-03 : fait dans le commit de L2-1 (fusion, voir L2-1). Liste versionnée 153 → 140 lignes (13 retirées : `0x82` × 4, `0x84` × 3, `0x99` × 3, `0x9A` × 3, rien d'autre au diff) ; `MapsWithoutSkippedSite` 15 → 17 (163, 179), test renommé `…TheSeventeenMaps…` ; `WaitOpcodes` sans `0x9F` ; `PredicateOpcodes` + `0x83`, `0x9F` ; `KnownScenePredicateSites` ne garde que 10 `C[75] @6418` ; règle 4 et ses deux tests renommés `…TheOneKnownSite…` (message, doc, entrée `known` du test fabriqué réduite à 10 `C[75] @6418 0x95`, quatre autres cas inchangés). Rouge avant ajustement : exactement 1 sur 2440, `Rule2_EveryListedLineIsASiteReachedAndSkipped` ; aucun arc n'a bougé. Suite Debug après : 2440 tests (2401 + 39), 0 échec ; les six traces à l'octet (les quatre traces du héros remises par `checkout`).
 - ⏳ **L2-3 — Vérification et clôture.** **L2-4 — Recette** (auteur) : la boutique de la 163 refuse faute d'argent
   (dialogue 140), comme l'original avec une bourse vide ; une partie chargée garde ses objets et son argent.
 

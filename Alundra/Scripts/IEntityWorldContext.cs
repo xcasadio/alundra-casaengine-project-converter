@@ -108,6 +108,13 @@ public interface IEntityWorldContext
     IAlundraSoundPlayer? SoundPlayer => null;
 
     /// <summary>
+    /// This world's item tables (E19.l2, docs/plan-e19-opcodes.md section 1.2m.2) - back the "give item" branch of opcode
+    /// 0x82 (max count per item). A default interface member, same "degraded, skip" shape as <see cref="SoundPlayer"/>:
+    /// null makes that branch a degraded no-op. <see cref="AlundraWorldProxy"/> returns its own tables.
+    /// </summary>
+    AlundraItemTables? ItemTables => null;
+
+    /// <summary>
     /// This session's background-music playback seam (docs/plan-e11c-musique.md, slice C1) - NOT
     /// opcode-backed (fact 1.5: nothing in the intro's own programs changes music), driven instead at
     /// map entry by <see cref="AlundraWorldProxy.InitializeWithWorld"/> itself (item 4 of the plan's own
