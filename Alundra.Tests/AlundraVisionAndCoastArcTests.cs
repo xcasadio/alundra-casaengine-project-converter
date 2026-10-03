@@ -179,7 +179,7 @@ public sealed class AlundraVisionAndCoastArcTests
         AssertFrame(arc, CProgram, 457, 0x05, 2008);
         AssertFrame(arc, BProgram, 245, 0x53, 2262);
 
-        // The block at the first execution of each flag (TileZ, position, PosZ without the spawn "+1").
+        // The block at the first execution of each flag (TileZ, position, PosZ: whole pixels since E19.h1b1, the spawn adds no "+1").
         Assert.Equal(
             new[] { 8, 21, 33, 39, 48 },
             new[] { 437, 442, 447, 452, 457 }.Select(pc => samples.BlockAtFirstFlag[pc].TileZ).ToArray());

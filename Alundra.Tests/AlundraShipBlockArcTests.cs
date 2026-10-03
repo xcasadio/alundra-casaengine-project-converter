@@ -208,7 +208,7 @@ public sealed class AlundraShipBlockArcTests
         Assert.Equal(0u, arrival.DirectionId);
 
         // Frame 0: the block spawned by 0x2D @265 rests one frame on the sailor 4 (spawn support without reach, O-E19-15).
-        Assert.Equal((29097984, 44040192, 7340032), samples.BlockAfter265);
+        Assert.Equal((29097984, 44040192, 9437184), samples.BlockAfter265);
         Assert.Equal(0, FrameOf(arc, B, 265));
         Assert.Equal((1u, 0u), samples.HeroAfter270);
 
@@ -249,7 +249,7 @@ public sealed class AlundraShipBlockArcTests
         Assert.Equal(1, samples.ResultAt388);
         Assert.Equal(1, samples.ResultAt390);
         AssertFrame(arc, B, 449, 703);
-        Assert.Equal((29097984, 46661632, 3145729), samples.Record4After449);
+        Assert.Equal((29097984, 46661632, 3145728), samples.Record4After449);
         Assert.Equal(0u, samples.Record4FlagsAfter457 & 0x100u);
 
         // The block walks south at 0.5 px per tick from frame 728, and reaches row 44 at frame 793.

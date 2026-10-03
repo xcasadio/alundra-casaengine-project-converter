@@ -221,7 +221,7 @@ public sealed class AlundraInoaAwakeningArcTests
         Assert.True(arc.Runner.SaveBookEventRunCount > 0, "the save book never ran");
 
         // The hero during the waits.
-        Assert.Equal((62914560, 9961472, 2359297), samples.HeroAt73);
+        Assert.Equal((62914560, 9961472, 2359296), samples.HeroAt73);
         Assert.True(samples.HeroMovedWhileWaiting.Count == 0, "the hero moved before @190: " + string.Join("; ", samples.HeroMovedWhileWaiting.Take(3)));
         AssertGap(arc, B, 98, 102, 99);
         AssertGap(arc, B, 106, 110, 41);

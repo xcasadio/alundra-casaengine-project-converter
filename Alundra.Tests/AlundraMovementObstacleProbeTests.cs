@@ -378,7 +378,7 @@ public sealed class AlundraMovementObstacleProbeTests
         sailor.CurrentAnimationId = 1;
         sailor.TargetAnimationId = 1;
         sailor.AnimSetsByAnim = new Dictionary<int, AnimSetEntry> { [1] = new AnimSetEntry { Anim = 1, Speed = 160, Acceleration = 0 } };
-        sailor.PosZ = 26214401; // as the spawn leaves it (the offset of one unit of the original): above the top, so the support finds it.
+        sailor.PosZ = 26214401; // as the intro harness leaves it (the offset of one unit of the original): above the top, so the support finds it.
         rig.Host.Rebuild();
         sailor.PushLogicalPositionToRoot();
         sailor.EvaluateEntitySupport(rig.Host.Collidables, immediateAtSpawn: true);

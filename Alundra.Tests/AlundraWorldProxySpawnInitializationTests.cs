@@ -234,8 +234,8 @@ public class AlundraWorldProxySpawnInitializationTests
         Assert.Equal(-8 << 16, proxy.ModY);
         Assert.Equal(0, proxy.ModZ);
 
-        // PosZ = rawZ - ModZ + 1 = (46<<19) - 0 + 1.
-        Assert.Equal((46 << 19) + 1, proxy.PosZ);
+        // PosZ = rawZ - ModZ = (46<<19) - 0 (the DLL convention, D-E19-59; no field passed, so no terrain floor).
+        Assert.Equal(46 << 19, proxy.PosZ);
 
         Assert.Equal(proxy.PosX + proxy.ModX, proxy.ModdedPosX);
         Assert.Equal(proxy.PosY + proxy.ModY, proxy.ModdedPosY);
@@ -283,7 +283,7 @@ public class AlundraWorldProxySpawnInitializationTests
 
         var expectedModZ = 5 << 16;
         Assert.Equal(expectedModZ, proxy.ModZ);
-        Assert.Equal(rawZ - expectedModZ + 1, proxy.PosZ);
+        Assert.Equal(rawZ - expectedModZ, proxy.PosZ);
     }
 
     // -----------------------------------------------------------------------------------------
@@ -389,8 +389,8 @@ public class AlundraWorldProxySpawnInitializationTests
         // CreateEntityFromPrefab is a no-op here, same as elsewhere in this file's fixtures).
         var expectedPosition = AlundraEntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
         Assert.Equal(expectedPosition, entity.RootComponent!.LocalTransform.Position);
-        // PosZ carries the header's -ModZ+1 adjustment ((46<<19) - 0 + 1), unlike the no-catalog case
+        // PosZ carries the header's -ModZ adjustment ((46<<19) - 0), unlike the no-catalog case
         // covered by AlundraWorldProxyTests.CreateEntityFromRecord_ValidPrefabLink_ClonesPrefabAndMapsProxy.
-        Assert.Equal((46 << 19) + 1, proxy.PosZ);
+        Assert.Equal(46 << 19, proxy.PosZ);
     }
 }

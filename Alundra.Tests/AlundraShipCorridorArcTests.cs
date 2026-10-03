@@ -101,7 +101,7 @@ public sealed class AlundraShipCorridorArcTests
         Assert.Contains(arc.Trace, t => t.Opcode == 0x8E && t.Pc == 20 && t.Frame == 0 && t.Kind == EventTraceKind.Implemented);
         AssertTheSway(samples);
         Assert.Equal(0, FrameOf(arc, B, 49));
-        Assert.Equal((47185920, 14155776, 4194305), samples.HeroAfter50);
+        Assert.Equal((47185920, 14155776, 4194304), samples.HeroAfter50);
         Assert.Equal((13u, 0u), samples.HeroAfter58);
 
         // The walk east: 0x5B @64 at frame 121 (animation 3, direction 24), 0x1F @68, then the turns and the hand.

@@ -593,7 +593,7 @@ public class AlundraEventProgramRunnerTests
     }
 
     [Fact]
-    public void SpawnEntityAtPosition_0x8A_WritesTheAbsolutePosition_PlusOneOnZOnly_WithTheLogicEntityAsParent()
+    public void SpawnEntityAtPosition_0x8A_WritesTheAbsolutePosition_InTheDllConvention_WithTheLogicEntityAsParent()
     {
         // E19.b T2 (docs/plan-e19-opcodes.md §1.2d): 0x8A [record 1, X 972 (0xCC,3), Y 112 (112,0), Z 48 (48,0)], the
         // operands of the camera block of map 476. 972 needs its HIGH byte (a read that drops it gives 204).
@@ -611,7 +611,7 @@ public class AlundraEventProgramRunnerTests
         Assert.Equal(1, call.EntityRecordId);
         Assert.Equal(972 << 16, spawned.PosX);
         Assert.Equal(112 << 16, spawned.PosY);
-        Assert.Equal((48 << 16) + 1, spawned.PosZ); // +1 on Z, not on X or Y.
+        Assert.Equal(48 << 16, spawned.PosZ); // the DLL convention (binary - 1): no +1 on Z, as on X and Y (D-E19-59).
         Assert.Equal(8, state.CodeIndex);
         Assert.Equal(7, state.Result); // no Result write.
         Assert.Equal((5 << 16, 7 << 16, 9 << 16), (logic.PosX, logic.PosY, logic.PosZ)); // the logic entity is not moved.
@@ -628,11 +628,11 @@ public class AlundraEventProgramRunnerTests
 
         runner.RunOneScriptCall(NewEntity(), state);
 
-        Assert.Equal((513 << 16, 972 << 16, (300 << 16) + 1), (spawned.PosX, spawned.PosY, spawned.PosZ));
+        Assert.Equal((513 << 16, 972 << 16, 300 << 16), (spawned.PosX, spawned.PosY, spawned.PosZ));
     }
 
     [Fact]
-    public void SpawnEntityAtPosition_0x8A_ZeroPosition_StillGetsThePlusOneOnZ()
+    public void SpawnEntityAtPosition_0x8A_ZeroPosition_WritesZeroOnZ()
     {
         var document = NewDocument(0x8A, 0, 0, 0, 0, 0, 0, 0, 0xFF);
         var spawned = NewEntity();
@@ -643,7 +643,7 @@ public class AlundraEventProgramRunnerTests
 
         Assert.Equal(0, spawned.PosX);
         Assert.Equal(0, spawned.PosY);
-        Assert.Equal(1, spawned.PosZ);
+        Assert.Equal(0, spawned.PosZ);
     }
 
     [Fact]
@@ -689,8 +689,8 @@ public class AlundraEventProgramRunnerTests
 
         Assert.Equal(2, context.SpawnCalls.Count);
         Assert.All(context.SpawnCalls, call => Assert.Equal(1, call.EntityRecordId));
-        Assert.Equal((10 << 16, 20 << 16, (30 << 16) + 1), (first.PosX, first.PosY, first.PosZ));
-        Assert.Equal((11 << 16, 21 << 16, (31 << 16) + 1), (second.PosX, second.PosY, second.PosZ));
+        Assert.Equal((10 << 16, 20 << 16, 30 << 16), (first.PosX, first.PosY, first.PosZ));
+        Assert.Equal((11 << 16, 21 << 16, 31 << 16), (second.PosX, second.PosY, second.PosZ));
     }
 
     [Fact]
@@ -1068,7 +1068,7 @@ public class AlundraEventProgramRunnerTests
     public void SetEntitiesPosition_0x64_SetsPosXYZ_FromRealMap389Operands()
     {
         // The exact operand bytes decoded from map 389's real Load program 139 (events offset 239):
-        // v1=0x80 (owner), x=(2<<8|0x34)<<16, y=(1<<8|0x78)<<16, z=((0<<8|0xa0)<<16)+1.
+        // v1=0x80 (owner), x=(2<<8|0x34)<<16, y=(1<<8|0x78)<<16, z=(0<<8|0xa0)<<16 (DLL convention, no +1).
         var document = NewDocument(0x64, 0x80, 0x34, 0x02, 0x78, 0x01, 0xa0, 0x00, 0xFF);
         var owner = NewEntity();
         var context = new FakeEntityWorldContext();
@@ -1080,7 +1080,7 @@ public class AlundraEventProgramRunnerTests
 
         Assert.Equal(0x234 << 16, owner.PosX);
         Assert.Equal(0x178 << 16, owner.PosY);
-        Assert.Equal((0xa0 << 16) + 1, owner.PosZ);
+        Assert.Equal(0xa0 << 16, owner.PosZ);
         Assert.Equal(8, state.CodeIndex); // stopped at the 0xFF byte
     }
 

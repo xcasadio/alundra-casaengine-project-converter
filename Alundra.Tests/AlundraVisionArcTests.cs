@@ -198,7 +198,7 @@ public sealed class AlundraVisionArcTests
         // 0x8A @63: the camera block (record 1), then 0x67 @71 makes the camera follow it.
         Assert.True(samples.BlockSpawnSeen, "0x8A @63 never ran");
         Assert.True(samples.BlockAtSpawn.HasValue, "record 1 (the camera block) is absent after 0x8A @63");
-        Assert.Equal((972 << 16, 112 << 16, (48 << 16) + 1), samples.BlockAtSpawn!.Value);
+        Assert.Equal((972 << 16, 112 << 16, 48 << 16), samples.BlockAtSpawn!.Value);
         Assert.True(samples.CameraSeen, "0x67 @71 never ran");
         Assert.True(samples.CameraFollowsBlockAt71, "the camera does not follow the block after 0x67 @71");
 
@@ -273,7 +273,7 @@ public sealed class AlundraVisionArcTests
         // Rancune (record 0) spawns at @553.
         Assert.True(samples.RancuneSpawnSeen, "0x8A @553 never ran");
         Assert.True(samples.RancuneAtSpawn.HasValue, "record 0 (Rancune) is absent after 0x8A @553");
-        Assert.Equal((792 << 16, 176 << 16, (48 << 16) + 1), samples.RancuneAtSpawn!.Value);
+        Assert.Equal((792 << 16, 176 << 16, 48 << 16), samples.RancuneAtSpawn!.Value);
 
         // Eight boxes, closed by the script.
         Assert.Equal(8u, (uint)AlundraDialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
@@ -300,7 +300,7 @@ public sealed class AlundraVisionArcTests
             // the next frame on; its Z loses the spawn "+1" at the first adjustment of the root.
             Assert.True(samples.BlockHasControllerAtSpawn, "the block spawned by 0x8A @63 has no controller");
             Assert.False(samples.BlockInWorldAtSpawn, "the block is already a world entity at 0x8A @63");
-            Assert.Equal((63700992, 7340032, 3145729), samples.BlockAtSpawn!.Value);
+            Assert.Equal((63700992, 7340032, 3145728), samples.BlockAtSpawn!.Value);
             Assert.True(samples.NextFrameSeen, "no instruction ran in the frame after 0x8A @63");
             Assert.True(samples.BlockInWorldOnNextFrame, "the block is not a world entity one frame after 0x8A @63");
             Assert.Equal(3145728, samples.BlockZOnNextFrame);

@@ -2068,7 +2068,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// <summary>Script_138_08A (0x8A SpawnEntityAtPosition, <c>0x80040284</c>) - the same spawn as 0x2D (record v[1],
     /// <c>notCheckSpawnZone = 1</c>, the logic entity as parent), then the new entity is put at an ABSOLUTE position:
     /// <c>PosX = (v2 | v3 &lt;&lt; 8) &lt;&lt; 16</c>, <c>PosY = (v4 | v5 &lt;&lt; 8) &lt;&lt; 16</c> and
-    /// <c>PosZ = ((v6 | v7 &lt;&lt; 8) &lt;&lt; 16) + 1</c> (the same +1 on Z as 0x64, and on Z only). A failed spawn is
+    /// <c>PosZ = (v6 | v7 &lt;&lt; 8) &lt;&lt; 16</c> (the binary adds 1 on Z only; the DLL's convention is binary - 1, E19.h1b1, D-E19-59). A failed spawn is
     /// fatal in the original; the port logs a warning once per (opcode, record) and writes nothing, like 0x2D and 0x8B
     /// do for their own failure.</summary>
     private void SpawnEntityAtPosition(AlundraEntityScriptProxy entity, int[] v)
@@ -2089,7 +2089,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
         spawned.PosX = (v[2] + v[3] * 0x100) << 16;
         spawned.PosY = (v[4] + v[5] * 0x100) << 16;
-        spawned.PosZ = ((v[6] + v[7] * 0x100) << 16) + 1;
+        spawned.PosZ = (v[6] + v[7] * 0x100) << 16;
         spawned.PushLogicalPositionToRoot();
     }
 
@@ -2184,7 +2184,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     }
 
     /// <summary>Script_100_064 (0x64) - sets PosX/PosY/PosZ of every matched entity from the raw operand
-    /// bytes, packed as 16.16 fixed-point (PosZ gets the original's own <c>+1</c> bias). Transform
+    /// bytes, packed as 16.16 fixed-point (PosZ does not get the original's own <c>+1</c> bias: the DLL's convention is binary - 1, E19.h1b1, D-E19-59). Transform
     /// re-derivation onto the CasaEngine world position happens later, once per frame, in
     /// <see cref="AlundraWorldProxy"/>'s own per-frame pass - this handler only ever touches the logical
     /// fields, exactly like the original; E3.d's <see cref="AlundraEntityScriptProxy.PushLogicalPositionToRoot"/>
@@ -2195,7 +2195,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     {
         var x = ((v[3] << 8) | v[2]) << 16;
         var y = ((v[5] << 8) | v[4]) << 16;
-        var z = (((v[7] << 8) | v[6]) << 16) + 1;
+        var z = ((v[7] << 8) | v[6]) << 16;
 
         var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
 

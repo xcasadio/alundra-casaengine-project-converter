@@ -355,7 +355,7 @@ internal static class AlundraEntitySpawnFactory
     /// </summary>
     internal static Entity CreateEntityFromRecord(
         TileMapObjectData record, Func<Guid, Entity?>? prefabLoader, ISpriteRecordCatalog? spriteRecordCatalog = null,
-        Entity? parentEntity = null, TileMapData? tileMapData = null)
+        Entity? parentEntity = null, TileMapData? tileMapData = null, ICollisionField? collisionField = null)
     {
         if (TryGetPrefabAssetId(record, out var prefabAssetId))
         {
@@ -384,7 +384,7 @@ internal static class AlundraEntitySpawnFactory
 
             if (prefab != null)
             {
-                return CreateEntityFromPrefab(record, prefab, spriteRecordCatalog, parentEntity, tileMapData);
+                return CreateEntityFromPrefab(record, prefab, spriteRecordCatalog, parentEntity, tileMapData, collisionField);
             }
 
             Logs.WriteWarning(
@@ -398,7 +398,7 @@ internal static class AlundraEntitySpawnFactory
                 + "falling back to a bare entity.");
         }
 
-        return CreateBareEntityFromRecord(record, spriteRecordCatalog, parentEntity, tileMapData);
+        return CreateBareEntityFromRecord(record, spriteRecordCatalog, parentEntity, tileMapData, collisionField);
     }
 
     /// <summary>
@@ -426,7 +426,7 @@ internal static class AlundraEntitySpawnFactory
     /// </summary>
     internal static Entity CreateEntityFromPrefab(
         TileMapObjectData record, Entity prefab, ISpriteRecordCatalog? spriteRecordCatalog = null,
-        Entity? parentEntity = null, TileMapData? tileMapData = null)
+        Entity? parentEntity = null, TileMapData? tileMapData = null, ICollisionField? collisionField = null)
     {
         var entity = prefab.Clone();
         entity.Name = BuildEntityName(record);
@@ -445,11 +445,11 @@ internal static class AlundraEntitySpawnFactory
         if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
         {
             ApplyRecord(record, proxy);
-            ApplySpawnInitialization(record, entity, proxy, spriteRecordCatalog, parentEntity, tileMapData);
+            ApplySpawnInitialization(record, entity, proxy, spriteRecordCatalog, parentEntity, tileMapData, collisionField);
 
             // The prefab's root is the inert TransformComponent (SpriteWriter.WriteEntityPrefab, E3.a);
             // place it in the CasaEngine LOGICAL frame from the logical position
-            // EntityRecordMapper/ApplySpawnInitialization just filled (PosZ already carries the -ModZ+1
+            // EntityRecordMapper/ApplySpawnInitialization just filled (PosZ already carries the -ModZ
             // header adjustment when a header was found).
             // Defensive null-check only: a bank prefab is expected to always carry a root component.
             if (entity.RootComponent != null)
@@ -489,7 +489,7 @@ internal static class AlundraEntitySpawnFactory
     /// </summary>
     internal static Entity CreateBareEntityFromRecord(
         TileMapObjectData record, ISpriteRecordCatalog? spriteRecordCatalog = null, Entity? parentEntity = null,
-        TileMapData? tileMapData = null)
+        TileMapData? tileMapData = null, ICollisionField? collisionField = null)
     {
         var entity = new Entity
         {
@@ -504,7 +504,7 @@ internal static class AlundraEntitySpawnFactory
         if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
         {
             ApplyRecord(record, proxy);
-            ApplySpawnInitialization(record, entity, proxy, spriteRecordCatalog, parentEntity, tileMapData);
+            ApplySpawnInitialization(record, entity, proxy, spriteRecordCatalog, parentEntity, tileMapData, collisionField);
         }
 
         return entity;
@@ -551,7 +551,7 @@ internal static class AlundraEntitySpawnFactory
     /// </summary>
     internal static void ApplySpawnInitialization(
         TileMapObjectData record, Entity entity, AlundraEntityScriptProxy proxy, ISpriteRecordCatalog? spriteRecordCatalog,
-        Entity? parentEntity = null, TileMapData? tileMapData = null)
+        Entity? parentEntity = null, TileMapData? tileMapData = null, ICollisionField? collisionField = null)
     {
         proxy.LogicContextEntity = entity;
 
@@ -650,10 +650,22 @@ internal static class AlundraEntitySpawnFactory
         SubscribeAnimationEndBridge(entity);
 
         // EntityManager.cs:119: the mapper seeded PosZ with the raw pre-clamp elevation
-        // (EntityRecordMapper's documented caveat); this is the -ModZ+1 offset InitializeEntity applies
-        // once the header (hence ModZ) is known. The ground-height clamp (EntityManager.cs:130-136) stays
-        // out - it needs the map's collision cells, a later chantier.
-        proxy.PosZ = proxy.PosZ - proxy.ModZ + 1;
+        // (EntityRecordMapper's documented caveat); this is the -ModZ offset InitializeEntity applies once the header
+        // (hence ModZ) is known. E19.h1b1 (D-E19-59, ADR-0026): the binary adds 1 here (0x80039EA0) and its ground is T + 1;
+        // the DLL's convention is binary - 1 everywhere else, so the unit is not added.
+        proxy.PosZ = proxy.PosZ - proxy.ModZ;
+
+        // EntityManager.cs:130-136 (0x80039EF0): raised to the terrain height when it is not above it. It compares PosZ, not ModdedPosZ,
+        // and in the DLL convention "PosZ <= T + 1 -> T + 1" reads "PosZ <= T -> T". The entity has no world yet (this runs before
+        // World.AddEntity), so the caller hands over its collision field; without one (the intro harness, bare tests) no floor is applied.
+        if (collisionField != null)
+        {
+            var terrainHeight = proxy.ComputeTerrainHeight(collisionField);
+            if (proxy.PosZ <= terrainHeight)
+            {
+                proxy.PosZ = terrainHeight;
+            }
+        }
 
         // EntityManager.cs:123-125.
         proxy.ModdedPosX = proxy.PosX + proxy.ModX;

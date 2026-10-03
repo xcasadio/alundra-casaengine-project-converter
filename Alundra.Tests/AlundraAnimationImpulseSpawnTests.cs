@@ -82,7 +82,7 @@ public sealed class AlundraAnimationImpulseSpawnTests : IDisposable
         var spawnHeight = arrow.PosZ;
         rig.Update();
         var rest = arrow.PosZ;
-        Assert.InRange(spawnHeight - rest, 0, 1); // the unit of the header (+1 of the spawn) is swallowed by the first round trip of the root.
+        Assert.InRange(spawnHeight - rest, 0, 1); // no unit left from the spawn since E19.h1b1 (the DLL convention): at most the round trip of the root.
         for (var tick = 1; tick <= 10; tick++)
         {
             if (tick > 1)
@@ -108,7 +108,7 @@ public sealed class AlundraAnimationImpulseSpawnTests : IDisposable
         var spawnHeight = fireball.PosZ;
         rig.Update();
         var rest = fireball.PosZ;
-        Assert.InRange(spawnHeight - rest, 0, 1); // at the ground: the unit of the header of the spawn.
+        Assert.InRange(spawnHeight - rest, 0, 1); // at the ground: no unit left from the spawn since E19.h1b1 (the DLL convention).
         for (var tick = 1; tick <= 10; tick++)
         {
             if (tick > 1)

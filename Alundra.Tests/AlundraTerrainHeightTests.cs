@@ -89,7 +89,7 @@ public class AlundraTerrainHeightTests
     }
 
     // -----------------------------------------------------------------------------------------
-    // Spawn (immediateAtSpawn: true) - AlundraWorldProxy's own map-load/dynamic-spawn call sites.
+    // Spawn (immediateAtSpawn: true) - the intro harness's spawn-time call (production no longer evaluates one since E19.h1b1).
     // -----------------------------------------------------------------------------------------
 
     [Fact]

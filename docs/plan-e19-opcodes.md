@@ -204,6 +204,7 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     (étape 2) pour l'instant.
   - **D-E19-59** — (2026-10-03, l'auteur, O-E19-45) L'**apparition passe en convention de la DLL** (plus de `+ 1`, relevée à
     `max(PosZ, T)`) ; `0x8A` et `0x64` sont examinés dans la même ADR.
+    Decisions: see ADR-0026.
   - **D-E19-60** — (2026-10-03, l'auteur, E19.s) L'image de 320 × 240 s'agrandit d'un **facteur entier seulement**
     (`k = max(1, floor(min(L / 320, H / 240)))`), centrée, le reste en bandes noires ; tous les pixels restent égaux.
     Decisions: see ADR-0027.
@@ -5324,7 +5325,7 @@ ses points à concevoir) ; E19.h1 ne garde que les attentes sans question de con
 148, 152, 154, 344, 410, 423 : leur contact en Z dépend de D5) ; une flamme (`0x47`) n'est arrêtée que par un mur tant
 qu'E14 n'écrit pas `HitCounter`.
 
-##### 1.2n.1b E19.h1b1 — Écritures absolues de Z en convention de la DLL (apparition, `0x8A`, `0x64`) ⏳ (READY à la relecture neuve demandée par l'auteur ; audit des valeurs fait le 2026-10-03 : toutes les valeurs tenues, un fait corrigé)
+##### 1.2n.1b E19.h1b1 — Écritures absolues de Z en convention de la DLL (apparition, `0x8A`, `0x64`) ✅ (faite le 2026-10-03, tests verts ; reste la vérification indépendante et la recette de l'auteur)
 
 **Décision** : D-E19-59 (l'apparition passe en convention de la DLL, `0x8A` et `0x64` examinés dans la même ADR). E19.h1b est
 coupée en deux : **h1b1** (cette tranche, la convention) puis **h1b2** (`0x20`, `0x22`, `0x23`, Z des entités sans contrôleur,
@@ -5393,6 +5394,26 @@ gravité de carte de toute entité ; esquisse en §1.2n.1c), qui en dépend, com
 - **H1b1-3 — ADR-0026** (les écritures absolues de Z suivent la convention de la DLL, binaire − 1 ; les écritures relatives ne
   changent pas ; pourquoi le pixel et `TileZ` restent identiques : les Z du binaire valent toujours 1 modulo 256 ; les deux
   exceptions, la cible littérale de `0x22` et un héros qui arrive au-dessus du sol ; la butée du binaire compare `PosZ`).
+
+- ✅ **Fait le 2026-10-03** (H1b1-1 à H1b1-3, un seul commit, H1b1-R4). **Rouges d'abord** sur le code d'avant, valeurs lues : carte 83
+  enregistrement 22, `0x21 @1246` finit au **34e appel** (attendu 33), `PosZ` 3211264 (attendu 3145728) ; relevé au terrain
+  synthétique (`SpawnEntityByRecordId`, champ plat de 16 px) `PosZ` **1** (attendu 1048576) ; et les épingles de la liste fermée
+  passées à la valeur écrite d'avance (−1 exactement pour `0x64`/`0x8A`, fabrique 24117248 et `rawZ − ModZ`, A6
+  `(29097984, 44040192, 9437184)`) rouges. **Verts après** : 5 tests ajoutés dans `AlundraAbsoluteZWritesTests` (carte 83 :
+  33e appel et 3145728 ; relevé au terrain : 1048576) et les trois **gardes de piles** (390 rec6 sur rec4 : 4194304 et 5242880 ;
+  163 rec15 sur rec14 et 179 rec12 sur rec11 : 2097152 et 3145728 ; 60 images après le chargement, relation
+  `haut.PosZ + haut.ModZ == bas.PosZ + bas.ModZ + bas.Depth + 1`), **vertes avant et après**. Code : `ApplySpawnInitialization`
+  écrit `PosZ − ModZ` et relève à `T` si `PosZ <= T` quand un champ lui est passé (argument optionnel `collisionField` de
+  `CreateEntityFromRecord`/`CreateEntityFromPrefab`/`CreateBareEntityFromRecord`/`ApplySpawnInitialization`, rempli par
+  `AlundraWorldProxy` aux deux sites de production) ; `T` par une surcharge `ComputeTerrainHeight(ICollisionField?)` ; `0x8A` et
+  `0x64` écrivent `z << 16` ; les deux appels de production d'`immediateAtSpawn` supprimés. Tests existants touchés : la liste
+  fermée seule (valeurs −1, noms « PlusOne » renommés, A6, fabrique) plus les commentaires listés ; les valeurs dérivées de
+  `AlundraNpcCharacterControllerMoverTests` (26214400) et `AlundraMovementObstacleProbeTests` n'ont pas bougé. `Alundra.Tests` en
+  Debug : 2510/2510 (2505 avant, 5 ajoutés) ; les six traces à l'octet (`git diff --ignore-cr-at-eol` : 0), les quatre traces du
+  héros remises à l'état du dépôt par `git checkout`. Écarts : les gardes de piles passent par une arrivée (`ArcSpec.Arrival`)
+  qui place le héros dans la zone de naissance des caisses (la zone se teste contre la tuile du héros AU chargement, et le
+  montage d'arcs pose le héros après) ; la butée n'écrit pas `TerrainHeight` à l'apparition (G4 de l'audit, optionnel : rien ne
+  bouge, `EvaluateEntitySupport` l'écrit au premier tick) ; pas de Release (consigne). ADR-0026.
 
 **Acceptation.**
 1. Tests de H1b1-1 rouges d'abord, verts après, sauf les gardes de piles nommées (vertes avant et après) ; une valeur contredite

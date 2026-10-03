@@ -625,7 +625,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// that method's own doc for why a controller-driven caller cannot supply the terrain half and does
     /// not need to (the engine's own ground-snap already prevents falling through real terrain
     /// independently of this entity-only clamp). <paramref name="immediateAtSpawn"/> true (the ONE-SHOT
-    /// call <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>'s own callers make right at spawn,
+    /// call the intro harness makes right at spawn; since E19.h1b1 (D-E19-59) the production spawn sites make none any more,
     /// before <c>FinalForceZ</c> has ever been computed by a real tick - see that call site's own doc on
     /// the "anti-creux" ordering) instead passes <see cref="int.MinValue"/> as the seed, disabling the
     /// reach gate for this one evaluation only: this is NOT literally <c>CheckEntityCollisionDown</c>'s
@@ -1576,9 +1576,12 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// "sea level" fallback <c>ComputeEntityGroundHeight</c>/the harness's own port already use) - a no-op
     /// return without an installed <c>World.CollisionField</c>.
     /// </summary>
-    internal int ComputeTerrainHeight()
+    internal int ComputeTerrainHeight() => ComputeTerrainHeight(Owner?.World?.CollisionField);
+
+    /// <summary>The same height against an explicit <paramref name="field"/>: E19.h1b1 uses it at spawn, when the entity has no world yet
+    /// (<see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/> runs before <c>World.AddEntity</c>). 0 without a field.</summary>
+    internal int ComputeTerrainHeight(ICollisionField? field)
     {
-        var field = Owner?.World?.CollisionField;
         if (field == null)
         {
             return 0;

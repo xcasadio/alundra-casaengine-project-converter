@@ -773,7 +773,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 // Engine ADR-0037: an entity asset is a template, read fresh for every spawn.
                 var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(
                     record, guid => world.Game.AssetContentManager.LoadCopy<Entity>(guid), SpriteRecordCatalog,
-                    tileMapData: _tileMapData);
+                    tileMapData: _tileMapData, collisionField: CollisionField);
                 var spawnedProxy = entity.GameplayProxy as AlundraEntityScriptProxy;
                 if (spawnedProxy != null)
                 {
@@ -792,10 +792,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 // (PushLogicalPositionToRoot's own gate), same as every other entity today.
                 spawnedProxy?.PushLogicalPositionToRoot();
 
-                // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): ONE support evaluation right
-                // at spawn - see BuildCollidablesSnapshot's own doc on why platform records (0-5) are
-                // already present here for a rider record (11+) to land on.
-                spawnedProxy?.EvaluateEntitySupport(BuildCollidablesSnapshot(), immediateAtSpawn: true);
+                // E19.h1b1 (D-E19-59, H1b1-R3, closes O-E19-15): no spawn-time support evaluation any more (E4.f used to run one, without
+                // reach). The spawn writes whole pixels now (binary - 1), which rest exactly on the root as a float, so the normal support
+                // of the first tick finds the platform under a rider. The intro harness keeps its own call.
             }
             catch (Exception ex)
             {
@@ -2530,7 +2529,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // Engine ADR-0037: an entity asset is a template, read fresh for every spawn.
             var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(
                 record, guid => _world.Game.AssetContentManager.LoadCopy<Entity>(guid), SpriteRecordCatalog,
-                parentEntity: logicEntity.LogicContextEntity, tileMapData: _tileMapData);
+                parentEntity: logicEntity.LogicContextEntity, tileMapData: _tileMapData, collisionField: CollisionField);
             var spawnedProxy = entity.GameplayProxy as AlundraEntityScriptProxy;
             if (spawnedProxy != null)
             {
@@ -2542,11 +2541,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // E4.b: same ground-clamp + root push as the map-load spawn loop above - see that call site's
             // own doc for why this must happen AFTER AddEntity.
             spawnedProxy?.PushLogicalPositionToRoot();
-            // E4.f: same one-shot spawn-time support evaluation as the map-load spawn loop - see
-            // BuildCollidablesSnapshot's own doc. Block 18 (record 18) spawns this way (opcode 0x2D) and
-            // does not land on another entity (its own fall is terrain-only), so this is a no-op for it,
-            // but a future dynamically-spawned rider needs it too.
-            spawnedProxy?.EvaluateEntitySupport(BuildCollidablesSnapshot(), immediateAtSpawn: true);
+            // E19.h1b1: no spawn-time support evaluation here either - see the map-load spawn loop above.
             return spawnedProxy;
         }
         catch (Exception ex)

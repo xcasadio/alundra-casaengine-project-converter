@@ -156,7 +156,7 @@ public class Map389LoadProgramsTests
         Assert.Equal(1u, e11.TargetAnimationId);
         Assert.Equal(0x234 << 16, e11.PosX);
         Assert.Equal(0x178 << 16, e11.PosY);
-        Assert.Equal((0xa0 << 16) + 1, e11.PosZ);
+        Assert.Equal(0xa0 << 16, e11.PosZ);
 
         // Load 140 (E12): SetAnim(0); flag on -> 0x64 SetEntitiesPosition(owner) then SetDirection(0).
         var e12 = new AlundraEntityScriptProxy { TargetDirection = 3 };
@@ -166,7 +166,7 @@ public class Map389LoadProgramsTests
         Assert.Equal(0u, e12.TargetAnimationId);
         Assert.Equal(0x1d4 << 16, e12.PosX);
         Assert.Equal(0x340 << 16, e12.PosY);
-        Assert.Equal((0x80 << 16) + 1, e12.PosZ);
+        Assert.Equal(0x80 << 16, e12.PosZ);
         Assert.Equal(0u, e12.TargetDirection);
 
         // Load 143 (E15): SetAnim(5); flag on -> 0x2E DestroyEntity(owner).

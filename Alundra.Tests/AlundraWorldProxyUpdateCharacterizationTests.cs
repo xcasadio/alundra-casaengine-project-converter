@@ -436,7 +436,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         // The program: 0x64 SetEntitiesPosition(v1=0x80 "owner", x=0x234, y=0x178, z=0xa0), then 0xFF
         // End - the exact operand encoding AlundraEventProgramRunnerTests.
         // SetEntitiesPosition_0x64_SetsPosXYZ_FromRealMap389Operands uses (real map 389 bytes), so the
-        // resulting PosX/PosY/PosZ are 0x234<<16 / 0x178<<16 / (0xa0<<16)+1. Table[1]=0 points slot B's
+        // resulting PosX/PosY/PosZ are 0x234<<16 / 0x178<<16 / 0xa0<<16. Table[1]=0 points slot B's
         // resolved index (masked 1, see above) at code offset 0, the program's own start.
         var document = new EventProgramDocument
         {
@@ -456,11 +456,11 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         // The move actually happened (sanity: proves the 0x64 ran at all, independent of ordering).
         Assert.Equal(0x234 << 16, playerProxy.PosX);
         Assert.Equal(0x178 << 16, playerProxy.PosY);
-        Assert.Equal((0xa0 << 16) + 1, playerProxy.PosZ);
+        Assert.Equal(0xa0 << 16, playerProxy.PosZ);
 
         // Target must reflect the position AFTER the move, in the SAME frame - exactly like the
         // original (look-at update is the LAST thing UpdateEntities does, after RunMapEvents already
-        // ran this frame). lookAt=(0x234,0x178,160) [PosZ>>16 truncates (0xa0<<16)+1 back to 160] ->
+        // ran this frame). lookAt=(0x234,0x178,160) [PosZ>>16 is 160] ->
         // ComputeCameraLookAtRenderPosition = (0x234, -(0x178-160)+16, 0) = (564, -200, 0). No map
         // bounds are wired in this headless montage (_tileMapData stays null), so nothing clamps it,
         // and needsSnap (armed by InitializeWithWorld) makes this frame jump straight there - see item

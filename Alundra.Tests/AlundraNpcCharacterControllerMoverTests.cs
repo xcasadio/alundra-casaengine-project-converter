@@ -1827,16 +1827,14 @@ public class AlundraNpcCharacterControllerMoverTests
 
         // Derived from the REAL spawned platform's own fields (not a hand-transcribed literal): record 2's
         // own PosZ already carries ApplySpawnInitialization's real EntityManager.cs:119 spawn offset
-        // ("PosZ = PosZ - ModZ + 1") by this point, so candidateTop = platformProxy.PosZ + ModZ + Depth,
+        // ("PosZ = PosZ - ModZ", since E19.h1b1 without the binary's "+ 1") by this point, so candidateTop = platformProxy.PosZ + ModZ + Depth,
         // and the support clamp's own "+1" (PhysicsEngine.cs:219/226/240/247, port verified by
         // TryFindSupport_StrictComparator's own unit test above) gives the exact value sailor 11's PosZ
-        // gets pinned to. Comes out to 26214401 (400.0000153px) on the real map-389 export - one 16.16
-        // unit above the naive 50<<19 (26214400/400.0px) a caller ignoring the real spawn offset would
-        // expect.
+        // gets pinned to. Comes out to 26214400 (400.0px) on the real map-389 export.
         var expectedPosZ = platformProxy.PosZ + platformProxy.ModZ + platformProxy.Depth + 1;
         Assert.InRange(expectedPosZ / 65536.0, 399.99, 400.01); // sanity: still ~400px, real header/spawn numbers.
 
-        // Mirrors AlundraWorldProxy's OWN spawn-time call (map-load loop / SpawnEntityByRecordId) -
+        // Mirrors the intro harness's spawn-time call (the production spawn no longer evaluates one since E19.h1b1) -
         // PushLogicalPositionToRoot first (root already placed by CreateEntityFromPrefab's own spawn
         // write), THEN the one-shot immediate support evaluation - BOTH before this test's first
         // World.Update, matching "frame 0 inclusive".
@@ -1854,7 +1852,7 @@ public class AlundraNpcCharacterControllerMoverTests
         // own edge, verified above) - below float32's own representable precision at ~400px magnitude
         // (ULP ~1/32 px, i.e. ~2048 16.16 units). Without AlundraEntityScriptProxy.Update's own
         // WasEntitySupportedLastTick pull-preservation (see that field's own doc), the FIRST real
-        // World.Update would collapse PosZ from 26214401 to 26214400 by re-quantizing it through the
+        // World.Update would collapse PosZ from 26214401 (a margin of one unit) to 26214400 by re-quantizing it through the
         // engine's float Vector3 root transform, permanently defeating the strict comparator one tick after
         // the entity settles. With the fix, PosZ stays the DLL's own source of truth (never re-pulled from
         // the float root) for as long as the entity remains supported - bit-exact across REAL engine ticks,
