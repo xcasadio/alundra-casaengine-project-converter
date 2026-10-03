@@ -414,7 +414,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.i | ~~Boucles d'animation Loop pour `0x1C`/`0x1D`~~ — **absorbée par E19.c2** (D-E19-18) : le signal de boucle et son pont y arrivent ; le recensement exact est de 208 sites dans 53 cartes, et non 101 dans 30 | — | — |
 | E19.j ✅ (§1.2l, recette J3 en attente) | Événements de carte : réarmement hors zone du binaire (619 enregistrements, O-E19-11) ; aucun effet sur la chaîne | ciblés | ciblée |
 | E19.k (§1.2k) | Caméra : balancement `0x8E`/`0x8F` (E19.k1, DLL seule), masque des fonds `0xA4` (E19.k2, plan moteur) | ciblés | 392, 391 |
-| E19.l | Prédicats, branches et restes : `0x82` (avec la correction d'`AddOneItemIfUnlocked`), `0x83`, `0x84`, `0x87`, `0x3F`, `0x95`, `0x99`, `0x9A`, `0x9F` (avec `InitializeContents`), `0x57`, `0x58`, `0x4A`, `0x2A`, `0x2B`, `0x5D`, etc. ; liste fermée au recensement du moment | ciblés | ciblée |
+| E19.l (§1.2m : E19.l1, E19.l2) | Prédicats, branches et restes : `0x82` (avec la correction d'`AddOneItemIfUnlocked`), `0x83`, `0x84`, `0x87`, `0x3F`, `0x95`, `0x99`, `0x9A`, `0x9F` (avec `InitializeContents`), `0x57`, `0x58`, `0x4A`, `0x2A`, `0x2B`, `0x5D`, etc. ; liste fermée au recensement du moment | ciblés | ciblée |
 | E19.m | Hygiène et clôture : taille de `0x5F` (8), libellés faux, `0x01` qui rend 0, modes aléatoires 4 et 5 de `ResolveDirectionFromParam` ; test statique : aucun opcode atteignable sauté dans le corpus hors E14 (IA native) et E18 (`0xBB`) | corpus | — |
 
 - **Ordre** : E19.a → E19.b → E19.c1 → E19.c2 → E19.d → E19.d2a → E19.d2b → E19.d2c → E19.e, puis E19.f. Les tranches de phase 2
@@ -4309,6 +4309,242 @@ sons, dialogues et scènes se rejouent à la réentrée comme dans l'original (a
 Torla) ; le modèle de réentrée est approché ; le moment où TileX change après un `0x64` pris dans le même passage n'est pas
 vérifié (sans effet sur la chaîne).
 
+### 1.2m E19.l — Prédicats, branches et restes ⏳ (E19.l1 et E19.l2 planifiées)
+
+**Découverte** (2026-10-03, lecture seule, deux surfaces : A branches, entités et contrôle ; B objets, argent et coffres ;
+notes, scripts et recensements dans le scratchpad de la session, `e19l-disc/A/notes.md` et `e19l-disc/B/notes.md`). Faits
+porteurs **[binaire]** (table des gestionnaires en `0x80098FAC + 4*op` ; les tailles du binaire égalent celles de la DLL pour
+les 19 opcodes ; aujourd'hui la DLL les saute tous par leur taille, `Result` laissé tel quel) :
+- **`0x28`/`0x29`/`0x2A`/`0x2B`** (`0x8003DC24`-`0x8003DC6C`) : posent ou effacent ClassB (bit 3) et ClassA (bit 0) des
+  drapeaux de l'entité logique, rien d'autre. Seul site de la chaîne : 10 `C[75] @6413` (`0x2B`, S), sans effet visible.
+- **`0x3F`** (`0x8003E734`) : `Result` = 1 s'il existe, parmi les créneaux 0 à N **inclus** (le héros compris), une entité
+  d'état 2 ou 3 (Normal, Deactivated), sans `BlockedByEntity`, dont le `RidingEntity` est l'entité logique ; sinon 0. La
+  décompilation s'arrête avant N et accepte l'état Loaded : le binaire l'emporte. 211 sites, dont 205 interrupteurs au sol ;
+  aucun sur la chaîne.
+- **`0x4A`** (`0x8003E9EC`) : `Result` ≠ 0 → retour à l'entrée du programme (pas = entrée − pc) ; sinon avance de 1.
+- **`0x52`** (`0x8003EB20`) : portail sous le héros (`GetActivatedPortal` `0x8003166C`, 64 enregistrements, case inclusive,
+  premier trouvé, **sans test de `DestMapId`**) → `HandleWarpTransition(portail, hero.TargetAnimationId, hero.TargetDirection)`
+  et `Result` = 1, même quand le warp est désactivé (la transition rend la main aussitôt) ; sinon `Result` = 0 ; taille 1.
+  Sites de la chaîne : 162 `B[2] @216`, 135 `B[13] @909` (X).
+- **`0x57`/`0x58`** (`0x8003EE28`/`0x8003EE5C`) : saut relatif signé lu à `v[1 + 2d]`, `d` = `AnimationDirection` du héros
+  (`0x57`) ou de l'entité logique (`0x58`) ; **jamais de chute** au pc + 9. Sur la chaîne, 14 sites de `0x58`, dont 164
+  `C[4]`/`C[5] @110` (S) : Beaumont et Thyea apparaissent face en bas (d = 0), le binaire prend `@124` (ils restent face en
+  bas), la DLL prend `@119` à chaque passage (face à gauche dix ticks, puis en bas) : **défaut du port**, visible.
+- **`0x5D`** (`0x8003F144`) : toutes les correspondances de la recherche `v1` passent à l'état 3 (Deactivated) ; taille 2.
+- **`0x8C`** (`0x80040438`) : un tirage du générateur partagé (`0x80098708`, mêmes constantes et même graine initiale que
+  `AlundraRandom`) ; `Result` = 1 si `(graine >> 24) >= v1`, sinon 0 (le libellé « < » est inversé).
+- **`0x82`** (`0x8003FE7C`) : `Result` = `HandleMapTriggerCommand(v1) != 0` (`0x80034108`) : id 0 → 0 ; `0x45`-`0x48` →
+  argent +1, +5, +10, +30 (bornes 0 à 9999 sur 32 bits) ; `0x4F` → `FalconTemp` + 1 plafonné à 50 et G1450 posé ; `0x50`-
+  `0x56` → fonctions sur le héros (vie, magie, effets ; deux corps seulement lus dans le binaire), rend 1 ; tout autre id →
+  `GetNumberOfItem(id) < AddOneItemIfUnlocked(id)`. **`AddOneItemIfUnlocked`** (`0x8004E530`) rend le **compte** quand
+  l'objet est au maximum (`0x8004E58C`, `0x8004E5B0`) ; la décompilation et la DLL (`AlundraPlayerManager.cs:1066`) rendent
+  l'id : porté tel quel, `0x82` donnerait `Result` 1 sans rien donner. Sites de la chaîne : 163 `@297`, `@413`, `@529` (O,
+  la boutique), 10 `@995` (X).
+- **`0x83`** (`0x8003FEC8`) : `Result` = `GetNumberOfItem(v1) >= v2`. **`0x84`** (`0x8003FF34`) : `UseItem(v1)` (compte − 1
+  s'il est positif) ; `Result` = 0 si le compte était nul, sinon 1 (un id invalide rend 1). Sites de la chaîne : 179 `B[1]
+  @183` (S, son `Result` est écrasé par `0x44 @287` avant toute lecture), 10 `@707`, 135 `@1421` (X).
+- **`0x98`** (`0x80040A58`) : argent + `v1 | v2 << 8`. **`0x99`** (`0x80040A8C`) : si argent < prix, `Result` 0 ; sinon argent
+  − prix et `Result` 1. **`0x9A`** (`0x80040B00`) : `Result` = argent >= prix, rien d'écrit. Prix non signé sur 16 bits.
+  Sites de la chaîne : 163 (O, la boutique). Aucun son, aucun appel au HUD (le HUD suit déjà `PlayerStats.Money`).
+- **`0x9F`** (`0x80040C80`) : `Result` = 1 si la première correspondance de la recherche `v1` a un `ContentsGameFlag` non
+  nul et que ce drapeau est posé ; **rend toujours 2, n'attend jamais** (l'attente est la forme des scripts, `00; 9F; 04`).
+  Aucun site sur la chaîne. La moitié « drapeau » d'`InitializeContents` est déjà portée (`EntityRecordMapper.cs:170-175`) ;
+  les coffres eux-mêmes (natifs, contenu tiré au hasard) sont d'E14.
+- **`0x87`/`0x95`** : prédicats d'attaque (« touché par une arme de tel type », « une attaque active dans une boîte ») ; les
+  données qu'ils lisent (`TouchingEntity`, attaque courante, boîtes de coup) ne sont écrites par rien dans la DLL (E14). Sur
+  la chaîne, 10 `C[75] @6418` (`0x95`, S) rend 0 dans toutes les scènes, ce que donne déjà le saut.
+- **`0xB9`** (`0x80041A18`) : lance la piste XA `v1` (table de 13 entrées en `0x800C4818`, pas un index de carte) ; la piste
+  11 suit chaque objet reçu (fanfare, d'après le contexte) ; `0xBA` en rend l'état. Aucun XA nulle part (convertisseur, DLL,
+  moteur) ; l'extraction actuelle a perdu l'audio des secteurs XA.
+- **Sauvegarde (E16)** : toutes les écritures restent dans le domaine du format (argent 0 à 9999, comptes entre 0 et le
+  maximum, drapeaux dans les 64 mots) : ni champ nouveau, ni changement de version (ADR-0012).
+
+**Choix de conduite** (techniques) :
+- découpage : **E19.l1** (classes, `0x3F`, `0x4A`, `0x57`/`0x58`, `0x5D`, `0x8C`, et `0x52` avec une entrée du directeur de
+  warp) puis **E19.l2** (objets, argent, `0x9F`, correction d'`AddOneItemIfUnlocked`), exécutées l'une après l'autre (elles
+  partagent la liste fermée et le test statique), après E19.k1 ;
+- `0x28`/`0x29` viennent avec `0x2A`/`0x2B` (O-E19-26 groupe les quatre) ;
+- `0x87`/`0x95` restent sautés jusqu'à E14 (les champs qu'ils lisent n'existent pas ; O-E19-37) ; `0xB9` reste sauté en
+  attendant l'auteur (O-E19-36) ;
+- `0x82` sous-cas `0x50`-`0x56` : `Result` 1, rien d'écrit, trace `Degraded` (l'emplacement de la vie du héros dans le binaire
+  n'est pas établi ; O-E19-39) ;
+- le scanner de portails partagé garde l'arrêt de la décompilation sur `DestMapId == 0` (aucun portail exporté n'en a :
+  sans effet ; O-E19-38) ;
+- les libellés faux des opcodes portés sont corrigés dans leur sous-tranche (aucun test ni aucune trace ne les épingle) ;
+- **boutique de la 163** : une fois `0x9A`/`0x82`/`0x99` portés, un achat demande de l'argent ; sans source d'argent avant
+  E14, la boutique répond « pas assez d'argent » (dialogue 140), comme l'original avec une bourse vide, au lieu du « merci »
+  sans rien donner d'aujourd'hui (le port suit le binaire : à la recette, pas une question).
+
+##### 1.2m.1 E19.l1 — Classes, branches et portail scripté ⏳
+
+**Relecture** (2026-10-03) : REVISE n°1 (les tests fabriqués de la règle 4 rougissent quand 164 quitte les sites connus) ;
+corrigé en L1-2 (option : `PredicateOpcodes` inchangé, entrées des tests réécrites sur les sites restants). Audit des
+valeurs : toutes les valeurs de L1-1, L1-2, L2-1 et L2-2 confirmées contre le binaire et la DLL (`e19l-audit/`), le parcours
+du test statique refait indépendamment (170 lignes aujourd'hui, 153 puis 140 après) ; préconditions de montage ajoutées,
+test de `0x4A` renforcé, prémisse de l'épingle d'A11 écrite.
+
+**Règles d'exécution.**
+- **L1-R1 — Classes** : `0x2A` `Flags |= ClassA`, `0x2B` `Flags &= ~ClassA`, `0x28` `Flags |= ClassB`, `0x29`
+  `Flags &= ~ClassB`, sur l'entité logique, puis `ResyncControllerFromFlags()` (comme `0x16`/`0x17` et `0x62`/`0x63`) ;
+  taille 1.
+- **L1-R2 — `0x3F`** : parcours du héros (s'il existe) puis des entités apparues ; `Result` = 1 au premier qui est Normal ou
+  Deactivated, sans `BlockedByEntity`, et dont `RidingEntity` est `entity.LogicContextEntity` (même comparaison que `0x3E`) ;
+  sinon 0 ; taille 1.
+- **L1-R3 — `0x4A`** : `Result` ≠ 0 → pas = `Parameters[0] − CodeIndex` (comme `0x49`/`0x4B`) ; sinon 1.
+- **L1-R4 — `0x57`/`0x58`** : `d` = `AnimationDirection` du héros (`0x57` ; sans héros, le repli de `0x3E`) ou de l'entité
+  logique (`0x58`), pas = `(short)(v[1 + 2d] | v[2 + 2d] << 8)`, sans chute. Le parcours du test statique
+  (`AlundraStoryChainOpcodeAudit.WalkProgram`) suit les quatre cibles et cesse de suivre la chute pour ces deux opcodes.
+- **L1-R5 — `0x5D`** : chaque correspondance de `GetMatchingEntitiesBySearchType(entity, v1)` passe à `Deactivated` ; taille 2.
+- **L1-R6 — `0x8C`** : `Result` = `((uint)AlundraRandom.Next() >> 24) >= v1 ? 1 : 0` ; taille 2.
+- **L1-R7 — `0x52`** : portail par `AlundraPortalScanner.FindPortalAtTile(host.Portals, héros.TileX, héros.TileY)` ; trouvé →
+  départ par `AlundraWarpDirector.BeginDeparture` avec l'animation et la direction **courantes du héros**
+  (`TargetAnimationId`, `TargetDirection`) au lieu de `0x36` et de la direction de l'appelant (nouveau paramètre, la marche
+  sur un portail garde `0x36`), puis `Result` = 1 (même warp désactivé : `BeginDeparture` rend la main, `Result` 1) ; pas de
+  portail → `Result` 0 ; taille 1. Sans hôte ou sans héros : repli dégradé journalisé une fois, `Result` 0.
+- **L1-R8 — Libellés** : `0x8C` « If random >= value », `0x52` « Use portal under hero », `0x57` « Goto by hero animation
+  direction », `0x58` « Goto by animation direction » ; `IntroTraceHarnessTests.ImplementedOpcodes` reçoit les opcodes portés.
+
+**Tâches.**
+- ✅ **L1-0 — Plan**, relu jusqu'à READY (REVISE n°1, audit des valeurs, READY à la deuxième relecture le 2026-10-03).
+- ⏳ **L1-1 — Opcodes, tests d'abord** (nouveaux fichiers de tests, montage d'`AlundraEventProgramRunnerTests` ; `Result` de
+  départ 7 sauf mention ; rouge = la valeur d'aujourd'hui, l'opcode sauté) :
+  - classes : `[0x2A, 0xFF]`, `Flags` 0x108 → 0x109, `CodeIndex` 1 (rouge 0x108) ; `[0x2B, 0xFF]`, `Flags` 0x101 et masque du
+    contrôleur 0x1040 → 0x100 et 0x40 ; `[0x28, 0xFF]`, 0x100 et 0x40 → 0x108 et 0x41 ; `[0x29, 0xFF]`, 0x109 et 0x1041 →
+    0x101 et 0x1040 (rouges : drapeaux et masque inchangés) ;
+  - `0x3F` `[0x3F, 0xFF]` : un PNJ apparu, Normal, qui porte l'entité (`RidingEntity` = `entity.LogicContextEntity`), `Result`
+    0 avant → 1 (rouge 0) ; le même en Deactivated → 1 ; en Loaded, `Result` 1 avant → 0 (rouge 1 ; la décompilation dirait
+    1) ; le héros porteur, Normal → 1 (rouge 0) ; un porteur avec `BlockedByEntity` posé, `Result` 1 avant → 0 ; personne,
+    `Result` 1 avant → 0 (rouge 1) ;
+  - `0x4A` `[0x00, 0x4A, 0xFF]` lancé à `CodeIndex` 1, `Parameters[0]` 0 : `Result` 1 → `CodeIndex` 1 et la trace montre
+    `0x00 @0` exécuté (saut à 0, `0x00` avance et finit l'appel ; rouge : `CodeIndex` 2, pas de `0x00 @0`) ; `Result` 0 → `CodeIndex` 2 (garde, vert avant) ;
+  - `0x58` sur `[0x58, 9,0, 12,0, 15,0, 18,0, 0x1A,1, 0xFF, 0x1A,2, 0xFF, 0x1A,3, 0xFF, 0x1A,4, 0xFF]` : `AnimationDirection`
+    de l'entité 0, 1, 2, 3 → animation 1, 2, 3, 4 et `CodeIndex` 11, 14, 17, 20 (rouge : 1 et 11 pour tout `d`) ; saut
+    négatif `[0xFF, 0x58, 0xFF,0xFF, 0xFF,0xFF, 0xFF,0xFF, 0xFF,0xFF, 0xFF]` lancé à 1 → `CodeIndex` 0 (rouge 10) ; `0x57` sur
+    le premier programme, entité en `d` 0, héros en `d` 2 → animation 3, `CodeIndex` 17 (rouge 1, 11) ;
+  - `0x5D` `[0x5D, 10, 0xFF]` : un PNJ d'`EntityRefId` 10, Normal → Deactivated, `CodeIndex` 2 (rouge Normal) ; deux
+    correspondances → les deux Deactivated ; aucune → rien, `CodeIndex` 2 ;
+  - `0x8C` (graine posée à `0xB017C93D`, rendue par `AlundraRandom.Reset()` en fin de test) : `[0x8C, 128, 0xFF]` → `Result`
+    0 et graine 32 bits `0x35E36190` (premier tirage, r = 53) ; `v1` 53 → 1 ; `v1` 54 → 0 ; deux appels à `v1` 128 → 0 puis 1
+    (r = 200) (rouges : `Result` 7, graine inchangée) ;
+  - `0x52` `[0x52, 0xFF]` (hôte de test avec un portail dont la case contient le héros ; héros `TargetAnimationId` 44,
+    `TargetDirection` 2) : `Result` 0 avant → 1, `CodeIndex` 1, départ armé (`IsTransitionInProgress`) avec l'animation
+    d'arrivée 44 et la direction 2 (rouge : `Result` 0, aucun départ) ; héros hors de tout portail, `Result` 1 avant → 0
+    (rouge 1) ; warp désactivé, `Result` 0 avant → 1, aucun départ (rouge 0). Le chemin de la marche sur un portail garde
+    l'animation `0x36` (tests existants du directeur inchangés).
+  - **Montage** (audit des valeurs) : l'entité qui exécute est Loaded, Normal ou Deactivated (sinon la recherche par id de
+    `0x5D` ne trouve rien) ; les tests de classes ont un contrôleur vivant, masque initial posé sur ses réglages vivants
+    (piège du setter qui clone) ; `0x57` et `0x52` ont un héros `PlayerEntity` du monde de test ; `0x8C` compare
+    `(uint)AlundraRandom.RandomSeed` (la graine stockée est sur 64 bits), un état neuf ou `CodeIndex` remis à 0 pour le
+    deuxième appel, et la classe dans la collection `AlundraRandomStaticStateCollection` (comme `AlundraRandomOpcodeTests`) ;
+    `0x52` : portail de test de `DestMapId` non nul et < 500, directeurs de warp, de fondu et de musique remis à zéro, dans
+    la collection `AlundraMusicPlayerSingletonCollection`.
+  Commit : `feat(alundra): port the class, branch, riding, random and scripted-portal opcodes`
+- ⏳ **L1-2 — Test statique et arcs.** La liste versionnée perd 17 lignes (`0x58` × 14, `0x2B` × 1, `0x52` × 2 ; 170 → 153
+  après E19.k1) ; le parcours suit les cibles de `0x57`/`0x58` (L1-R4 ; effet calculé sur les 30 cartes : 10 instructions
+  nouvelles, toutes portées, deux `0x00` atteints seulement par la chute disparaissent ; aucune ligne nouvelle) ;
+  `MapsWithoutSkippedSite` gagne 165, 172, 180, 182 (11 → 15 ; le test
+  `TheListIsOnTheChainAndTheElevenMapsWithoutASiteHaveNone` devient `…TheFifteenMaps…`, `Assert.Equal(15, …)`) ; **règle 4** :
+  `PredicateOpcodes` reste tel quel (un opcode porté ne fait plus de ligne sautée) ; `KnownScenePredicateSites` perd 164
+  `C[4]`/`C[5] @110` et garde 179 `B[1] @183` et 10 `C[75] @6418` (doc « The two known level-S sites », et le « four known
+  sites » de la doc de `Rule4ScenePredicates`) ; `Rule4_ScenePredicatesAreOnlyAtTheFourKnownSites` devient `…TheTwoKnownSites`
+  avec le message « beyond the two known sites » ; `Rule4_APredicateOrBranchAtLevelSOutsideTheFourKnownSitesIsFlagged`
+  devient `…TheTwoKnownSites…` : son entrée `known` = les deux sites restants (179 `B[1] @183 0x84`, 10 `C[75] @6418 0x95`),
+  vide ; + 163 `@297 0x82` niveau O → vide ; + `0xA2` niveau S → vide ; + 163 `@297 0x82` niveau S → une ligne ; + 10
+  `C[76] @6418 0x95` niveau S (même pc, autre programme) → une ligne ; le test « deux programmes au même pc » perd son
+  assertion sur 164 pc 110 (il garde 476 pc 112) ; **A11**
+  (`AlundraInoaDayOneArcTests.cs:357-367`) : `(0x58, 110)` quitte l'ensemble autorisé, l'assertion « sauté au moins une fois »
+  devient « `0x58 @110` exécuté au moins une fois, aucune instruction exécutée à `@119`, au moins une à `@124` » (Beaumont et
+  Thyea apparaissent en direction 0, `AlundraEntitySpawnFactory.cs:667-669`, et seuls les `0x27 @470`/`@498`, gardés par T4 et
+  T5, peuvent les tourner : si l'un d'eux s'exécute pendant l'arc, c'est un arrêt, pas une ré-épingle). Les autres arcs (A10J, T-A10v, T-B9, TN-3, T-C61) ne sont pas touchés : leurs entrées
+  autorisées devenues mortes restent (« inclus dans ») ; s'ils rougissent, c'est un arrêt (T-A10v : les bouquets passent
+  au nord de leur porteur et la boucle perd un tick, les épingles sont relatives à la pose ; TN-3 : `0x3F` écrit
+  désormais `Result` ; T-C61 : `0x29 @882` efface ClassB du héros). Commit : `test(alundra): the ported branches on the story chain`
+- ⏳ **L1-3 — Vérification et clôture**, comme les tranches précédentes. **L1-4 — Recette** (auteur) : Inoa 164, Beaumont et
+  Thyea restent face en bas tant que le héros est loin (aujourd'hui ils tournent à gauche par moments) ; la 10, les bouquets du
+  côté de leur porteur ; un donjon à interrupteur au sol (hors chaîne) : l'interrupteur s'enfonce sous le héros.
+
+**Acceptation d'E19.l1.**
+1. Tests de L1-1 rouges d'abord (sauf les gardes nommées), verts après, valeurs écrites tenues ; une valeur contredite est un
+   arrêt.
+2. Code de test existant touché, liste fermée : A11 (`AlundraInoaDayOneArcTests.cs`), la liste versionnée,
+   `AlundraStoryChainOpcodeAudit.cs` et `AlundraStoryChainSkippedOpcodesTests.cs`, `IntroTraceHarnessTests.ImplementedOpcodes` ;
+   rien d'autre ; les six traces à l'octet.
+3. `Alundra.Tests` sans échec en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
+4. Recette L1-4 faite par l'auteur.
+
+**Risques.** `AnimationDirection` est posée une image après le binaire (D-E19-13) : un `0x58` juste après un demi-tour lit
+l'ancienne direction ; les interrupteurs au sol dépendent de l'exactitude de `RidingEntity` pour le héros (E19.d2c2 S4), non
+vérifiée sur un interrupteur ; `0x8C` suit la distribution du binaire, pas sa suite de tirages (267 lecteurs de la graine
+dans l'exécutable, la plupart non portés) ; `0x28`/`0x29` libèrent 15 marches bloquées seulement dans la DLL et en bloquent
+4 sur la 102 (O-E19-26), hors chaîne.
+
+##### 1.2m.2 E19.l2 — Objets, argent et coffres ⏳
+
+**Règles d'exécution.**
+- **L2-R1 — Tables** : membre par défaut `IEntityWorldContext.ItemTables => null`, implémenté par `AlundraWorldProxy` (son
+  `ItemTables`) ; sans tables, la branche « objet » de `0x82` est dégradée (journal une fois, `Result` 0, rien d'écrit).
+- **L2-R2 — `AddOneItemIfUnlocked`** rend le compte quand l'objet est au maximum (binaire `0x8004E58C`/`0x8004E5B0`) ; son seul
+  appelant de production (`InitializeNewGameInventory`) ignore le retour : ni la nouvelle partie ni les préréglages ne
+  changent. Nouveaux helpers au patron des voisins : `UseItem` (`0x8004E5C4` : id hors de [0, 99) → 0 sans écrire ; compte
+  nul → −1 ; sinon compte − 1 écrit et rendu), `AddMoney` (somme sur 32 bits puis bornes [0, 9999], comme `SetMoney`
+  `0x8004DF80`, sans passer par un `short` qui déborde).
+- **L2-R3 — `0x82`** : `Result` = `HandleMapTriggerCommand(v1) != 0 ? 1 : 0`, taille 2, avec l'aiguillage du binaire
+  (id 0 → 0 ; `0x45`-`0x48` → `AddMoney(1/5/10/30)`, 1 ; `0x4F` → `FalconTemp` + 1 plafonné à 50 et G1450, 1 ; `0x50`-`0x56` →
+  1, trace `Degraded` (O-E19-39) ; sinon `GetNumberOfItem(id) < AddOneItemIfUnlocked(id)`).
+- **L2-R4 — `0x83`** `Result` = `GetNumberOfItem(v1) >= v2`, taille 3 ; **`0x84`** `Result` = `UseItem(v1) == −1 ? 0 : 1`,
+  taille 2 ; **`0x98`** `AddMoney(v1 | v2 << 8)`, taille 3, `Result` non touché ; **`0x99`** prix > argent → `Result` 0 ; sinon
+  argent − prix et `Result` 1, taille 3 ; **`0x9A`** `Result` = argent >= prix, taille 3 ; **`0x9F`** `Result` = 1 si la première
+  correspondance de la recherche `v1` a un `ContentsGameFlag` non nul et posé (`AlundraGameState.GetFlag`, banques G et T
+  comme partout), sinon 0, taille 2, sans jamais suspendre.
+- **L2-R5 — Libellés** : `0x82` « Give item or pickup by id », `0x83` « If number of item >= value », `0x9F` « If chest
+  opened » ; `IntroTraceHarnessTests.ImplementedOpcodes` reçoit les opcodes portés.
+
+**Tâches.**
+- ⏳ **L2-0 — Plan**, relu jusqu'à READY.
+- ⏳ **L2-1 — Helpers et opcodes, tests d'abord** (tables réelles `ItemTablesFixture.LoadReal()` ; `Result` de départ 7 ;
+  programmes `[op, …, 0x1A, 9, 0xFF]` : l'animation 9 prouve que l'opcode n'a pas suspendu) :
+  - `AddOneItemIfUnlocked(17)` deux fois → 1 puis **1** (aujourd'hui 17), compte 1 : le test existant
+    `AlundraItemInventoryTests.cs:368-375` est renommé et ré-épinglé (cause établie : le binaire) ;
+  - `0x82` : objet 36 de compte 0 → `Result` 1, `NumberOfItems[73]` = 1 ; objet 36 de compte 8 (maximum 9) → 1, compte 9,
+    encore → 0, compte 9 ; objet 41 (maximum 1) de compte 1 → 0, compte 1 (un port sur le helper d'aujourd'hui rendrait 1) ;
+    id 0 → 0, rien d'écrit ; id 99 → 0, rien d'écrit ; `0x47` argent 9995 → 9999, 1 ; `0x48` argent 0 → 30, 1 ; `0x4F`
+    `FalconTemp` 49 → 50, `GameFlags[45] & 0x400` posé, 1 ; `FalconTemp` 50 → 50, 1 ; `0x53` → 1, rien d'écrit, trace
+    `Degraded` (rouges : `Result` 7, comptes et argent inchangés) ;
+  - `0x83` `[0x83, 61, v2, …]` : compte 0 et `v2` 1 → 0 ; 1 et 1 → 1 ; 3 et 4 → 0 ; 2 et 0 → 1 ; id 99 et 1 → 0 ;
+  - `0x84` : objet 88 de compte 1 → compte 0, `Result` 1 ; compte 0 → 0, `Result` 0 ; id 99 → `Result` 1, rien d'écrit ;
+  - `0x98` : argent 0, `[10, 0]` → 10 ; argent 9990, `[0xFF, 0xFF]` → 9999 ; `Result` reste 7 ;
+  - `0x99` : argent 5, `[5, 0]` → 0, `Result` 1 ; argent 4 → 4, 0 ; argent 2163, `[0x73, 0x08]` → 0, 1 ; argent 2162 →
+    2162, 0 ; argent 9999, `[0xFF, 0xFF]` → 9999, 0 ;
+  - `0x9A` : argent 15, `[15, 0]` → 1, argent inchangé ; 14 → 0 ; 9999 contre `[0xFF, 0xFF]` → 0 ;
+  - `0x9F` `[0x9F, 4, …]` (monde de test, PNJ d'`EntityRefId` 4) : `ContentsGameFlag` 1192 et G1192 posé → 1 ; G1192 clair
+    → 0 ; `ContentsGameFlag` 0 → 0 ; aucune correspondance → 0 ; drapeau temporaire `0x8005` et T5 posé → 1 ; deux
+    correspondances, seule la première décide ; l'animation 9 dans le même appel dans tous les cas.
+  - **Montage** (audit des valeurs) : le monde de test fournit `ItemTables` (sinon la branche « objet » de `0x82` se dégrade
+    et l'objet 36 lirait 0) ; pour `0x9F`, l'entité qui exécute est Loaded, Normal ou Deactivated ; la « première
+    correspondance » est celle du plus petit créneau (la recherche du binaire monte).
+  Commit : `feat(alundra): port the item, money and chest opcodes like the binary`
+- ⏳ **L2-2 — Test statique.** La liste versionnée perd 13 lignes (`0x82` × 4, `0x84` × 3, `0x99` × 3, `0x9A` × 3 ; 153 → 140
+  après E19.l1) ; `MapsWithoutSkippedSite` gagne 163 et 179 (15 → 17 ; le test devient `…TheSeventeenMaps…`,
+  `Assert.Equal(17, …)`) ; `WaitOpcodes` perd `0x9F` (le binaire n'attend pas) ; `PredicateOpcodes` gagne `0x83` et `0x9F` ;
+  `KnownScenePredicateSites` perd 179 `B[1] @183` et ne garde que 10 `C[75] @6418` (doc « The one known level-S site ») ;
+  les deux tests de la règle 4 passent de « two » à « one known site » (noms, message, doc) et l'entrée `known` du test
+  fabriqué ne garde que 10 `C[75] @6418 0x95`, ses quatre autres cas inchangés. Aucun arc n'atteint ces sites.
+  Commit : `test(alundra): the item and money opcodes leave the skipped list`
+- ⏳ **L2-3 — Vérification et clôture.** **L2-4 — Recette** (auteur) : la boutique de la 163 refuse faute d'argent
+  (dialogue 140), comme l'original avec une bourse vide ; une partie chargée garde ses objets et son argent.
+
+**Acceptation d'E19.l2.**
+1. Tests de L2-1 rouges d'abord, verts après, valeurs écrites tenues ; une valeur contredite est un arrêt.
+2. Code de test existant touché, liste fermée : `AlundraItemInventoryTests.cs` (le test d'`AddOneItemIfUnlocked`), la liste
+   versionnée, `AlundraStoryChainOpcodeAudit.cs` et `AlundraStoryChainSkippedOpcodesTests.cs`,
+   `IntroTraceHarnessTests.ImplementedOpcodes` ; rien d'autre ; les six traces à l'octet.
+3. `Alundra.Tests` sans échec en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
+4. Recette L2-4 faite par l'auteur.
+
+**Risques.** Sans source d'argent avant E14, les boutiques refusent tout ; les sondes `0x9F` attendent que les coffres
+s'ouvrent, ce qu'E14 seul fera (aujourd'hui un `Result` périmé peut lancer la scène d'après coffre aussitôt) ; les sous-cas
+`0x50`-`0x56` de `0x82` (8 sites `0x53`, hors chaîne) ne donnent ni vie ni effet (O-E19-39).
+
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
 Chaque arc part d'une carte chargée seule, avec des drapeaux posés et le héros placé. Les valeurs
@@ -4556,9 +4792,13 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-30 | **Recette T6 d'E19.b (2026-10-02, auteur)** : la scène de la vision de Lars et Melzas (476) s'affiche mal : carte en partie noire derrière un halo elliptique, personnages mal affichés (captures de l'auteur). Pistes connues, non vérifiées : effets de carte non exportés (l'aura de la 476, E19.g, D-E19-7), masque des couches de fond `0xA4` et balancement `0x8E`/`0x8F` sautés (E19.k), autres opcodes d'affichage sautés sur la 476. À établir par une découverte en lecture seule avant de placer la correction. **Reconnaissance du 2026-10-03** : pendant la vision, les arcs A2 et A4 ne laissent sauter que `0x4C`, `0x92`, `0x93` et `0xA2` (`AlundraVisionArcTests.cs:32`) : trois opcodes d'effets (E19.g) ; `0xA4`, `0x8E` et `0x8F` n'y sont pas exécutés ; l'export de la 476 n'a aucune donnée d'effet (D-E19-7 : le convertisseur ne les exporte pas encore). Piste la plus probable : l'aura de la 476, non dessinée (E19.g) ; non vérifié en jeu. | E19.g (à confirmer) |
 | O-E19-31 | **Cartes sous-marines 159 et 160** (« Fairy cave underwater ») **[binaire, données]** : gravité 3, `ZViscosity` 256 et octet d'en-tête `+8` (exporté sous le nom `SlideEffectId`) à 1, contre 128, 4096 et 0 sur les 481 autres cartes ; l'octet `+8` décale `ForceX` et `ForceY` avant le déplacement (`srav` en `0x8003675C`) : le héros y va deux fois moins vite et un saut dure 178 ticks. La DLL ne lit pas ce décalage (aucun consommateur). Hors de la chaîne. | à placer |
 | O-E19-32 | **`LoadingMap` (`0x36`) en l'air** **[binaire]** : `MovePlayer` passe en `0x2D` quand le héros arrive au-dessus du sol (`0x800325E8`) ; la DLL laisse `0x36` sans effet (`AlundraPlayerManager.cs:256-263`). La 476 fait arriver le héros à 48 px au-dessus du sol (`0x53` de la 390 `@688`). Non porté en E19.d2c2. | à placer |
-| O-E19-33 | **Scène d'avant le rêve** (179 `B[1]`, jour 3) et rêve 44 : la scène n'est atteignable qu'après le jour 2 (combat, E14) et aucun préréglage ne la couvre ; le rêve demande le combat. Question à l'auteur : faut-il un préréglage `day3-start` (179, case (12,22), z1, G203, G1660, table [162] = 176) et un arc de 179 `B[1]` ? Hors d'E19.e en attendant. | à placer |
+| O-E19-33 | **Scène d'avant le rêve** (179 `B[1]`, jour 3) et rêve 44 : la scène n'est atteignable qu'après le jour 2 (combat, E14) et aucun préréglage ne la couvre ; le rêve demande le combat. Question à l'auteur : faut-il un préréglage `day3-start` (179, case (12,22), z1, G203, G1660, table [162] = 176) et un arc de 179 `B[1]` ? Hors d'E19.e en attendant. **Complément du 2026-10-03** (découverte d'E19.l) : la scène d'avant le rêve (179 `B[1] @183`) retire le livre d'Elna (objet 88), donné à la 117 `@167` ; un préréglage `day3-start` fidèle porterait `NumberOfItems[177]` = 1. | à placer |
 | O-E19-34 | **Paramètres effacés au redémarrage d'un programme** (découverte d'E19.j, D7) : `InitializeEventData` efface tous les paramètres (`Array.Clear`, `AlundraEventProgramRunner.cs:352`) alors que le binaire ne réécrit que l'entrée et le pc (`0x80041EE4`) et garde +8..+0x28 (clé d'attente, compteur de `0x37`…) : un programme suspendu sur son premier `0x37` continue son compte dans le binaire et le recommence dans la DLL ; 19 programmes B à zone bornée et 243 programmes C commencent par `0x37`, 47 par `0x0B`. | E19.m |
 | O-E19-35 | **Termes additifs du suivi et écrivains natifs du balancement** (audit d'E19.k1, P4-a et P4-b) : la formule du suivi caméra du binaire ajoute aussi `0x800DD870` (X) et `0x800DD874` (Y), effacés à chaque tick et au chargement, le terme Y écrit par du code natif (`0x8007F350`) ; la structure du balancement (`0x800E4338`) a d'autres écrivains natifs que `0x8E`/`0x8F` : la magie séisme la sauvegarde et la restaure (`0x80035D00`/`0x80034E08`) et pose Flag (`0x80035DF4`), des comportements d'entités l'écrivent (`0x80061E78`, `0x8006224C`…). L'instance de session d'E19.k1 doit leur servir. | E14 |
+| O-E19-36 | **Pistes XA (`0xB9`, `0xBA`)** (découverte d'E19.l, question Q-A1 à l'auteur) : `0xB9 [v]` lance la piste XA `v` (table de 13 entrées en `0x800C4818`) ; la piste 11 suit chaque objet reçu (fanfare, d'après le contexte des scripts), 7 à 10 sont des thèmes d'événement ; 42 sites dans 26 cartes, aucun sur la chaîne. Les entendre demande trois travaux : décoder les pistes depuis l'image brute `Alundra (France).bin` (l'`ARAN_XA.XA` extrait a perdu l'audio), un lecteur de flux ponctuel dans le moteur, et `0xBA` « occupé » tant qu'une piste joue (contraire de D-E11-5 : la boîte « vous avez obtenu » attendrait la fin de la fanfare). Sinon, un sans-effet explicite et journalisé garde le silence d'aujourd'hui. **Question** : veut-il entendre les pistes XA ? | auteur, puis une tranche XA |
+| O-E19-37 | **`0x87` et `0x95`** (prédicats d'attaque) : ils lisent `TouchingEntity`, l'attaque courante et les boîtes de coup, que rien n'écrit dans la DLL ; restés sautés jusqu'à E14 (sur la chaîne, 10 `C[75] @6418` rend 0 dans toutes les scènes, comme le saut). Avec eux, la question Q-A2 : sur la 226 (le poulet, `C[14]`), quatre sites de `0x95` lisent les index 8 à 11 au-delà de la table des armes ; le binaire lit les octets suivants (seul 10, la flèche, peut correspondre), la décompilation lèverait une exception : copier ou corriger ? | E14 |
+| O-E19-38 | **Scanner de portails** : la décompilation (et la DLL, `AlundraPortalTrigger.cs:21-32`) s'arrête sur un portail de `DestMapId` nul, le binaire (`0x8003166C` et ses 5 appelants) ne le teste jamais ; aucun des 3316 portails exportés n'a `DestMapId` nul : sans effet, gardé par E19.l1. | E19.m |
+| O-E19-39 | **`0x82`, sous-cas `0x50` à `0x56`** (vie, magie et effets du héros) : portés en E19.l2 comme « `Result` 1, rien d'écrit, trace `Degraded` » ; seuls `0x53` (vie max + 1, vie pleine, son `0x31`, effets) et `0x54` (vie + 2) ont été lus dans le binaire, et l'emplacement de la vie du héros (entité `+0x14/+0x18` ou `PlayerStats`) et leur synchronisation n'y sont pas établis. 8 sites `0x53` (vases de vie), aucun sur la chaîne. | E14, E19.g |
 
 ## 4. Hors périmètre
 
