@@ -2599,8 +2599,8 @@ la saisie d'un emplacement de sauvegarde par le joueur (E16.e) ; l'historique co
   de test peuvent se comporter comme une partie incohérente ; la recette reste sur la chaîne.
 - F9 charge le plus récent : une ancienne sauvegarde de date future ou un créneau récent illisible bloque F9 (limite
   connue d'ADR-0013).
-- La phase du HUD n'est pas sauvegardée : après F9 dans un processus neuf, le HUD peut rester fermé (déjà le cas des
-  recettes F9 précédentes).
+- La phase du HUD n'est pas sauvegardée : après F9, la jauge est armée par l'entrée de carte comme dans l'original (R1) :
+  elle glisse à l'écran si les drapeaux sauvés portent le verrou G1662, et reste cachée sinon.
 - Construire l'outil redéploie la DLL dans `alundra-project/` dans la configuration de la build : une build Release la
   remplace par une DLL sans F9.
 
@@ -5105,7 +5105,7 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
   5). Décision de l'auteur (R4).
 
 **Tâches.**
-- ⏳ **R1 — HUD à l'entrée de carte** : `AlundraHudDirector.InstallForMapEntry` appelle `InitializeHudPositionBeforeHide()` (port
+- ✅ **R1 — HUD à l'entrée de carte** : `AlundraHudDirector.InstallForMapEntry` appelle `InitializeHudPositionBeforeHide()` (port
   de l'appel en `0x8002c3d0` ; ses deux portes du binaire y sont déjà : le verrou G1662 et `Phase == Idle`) ; docs fausses
   corrigées (`AlundraHudDirector.cs` ~22-26, ~200-217, ~235-242, ~449-451 ; doc d'`InstallHudSystems` dans `AlundraWorldProxy.cs`
   ~1066-1072 ; `docs/intro-roadmap.md` ligne 9 du tableau ~333 ; `docs/test-saves.md` ; ce plan ~2602 ;
@@ -5116,6 +5116,12 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
   `AttachToWorld_RePointsWithoutResetting_InstallForMapEntry_DoesNotResetEither` reste vert. Écart connu : un portail d'effet 3
   vers la même carte (28 dans les données, hors chaîne) recharge le monde dans la DLL (D-T-7) et armera aussi le HUD.
   Commit : `fix(alundra): arm the HUD at map entry like the binary`
+  - Fait le 2026-10-03 : rouges d'abord sur le code d'avant, `Phase` lue `Idle` là où `Opening` est attendu (directeur seul, mandataire
+    sur la 389 avec G1662 posé en session, chargement d'une sauvegarde portant G1662) ; les cas verrou clair et nouvelle partie
+    sur la 389 étaient déjà `Idle` (gardes, verts avant et après). Verts après : `InstallForMapEntry` appelle
+    `InitializeHudPositionBeforeHide()`, 6 tests ajoutés (2 dans `AlundraHudDirectorTests`, 2 dans `AlundraNewGameEntryTests`, 2 cas
+    d'une théorie dans `AlundraSaveGameApplyTests`) ; le test existant `AttachToWorld_RePointsWithoutResetting_...` reste vert.
+    Aucun écart au plan.
 - ⏳ **R2 — Sols copiés par `0x85`** : `AlundraCellVisualSync` note à la création les cases **sans sol à plat à elles** (aucun
   sol au chargement, ou un sol de chargement qui était une pose de la surcouche) ; dans `ProcessCellFloor`, une case mutée sans
   entrée de sol dans le modèle et sans sol à plat à elle adopte son nouveau sol dans la surcouche triée, quelle que soit sa

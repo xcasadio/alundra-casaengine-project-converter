@@ -45,6 +45,7 @@ public sealed class AlundraNewGameEntryTests : IDisposable
         AlundraScreenFadeDirector.Instance.ResetForTests();
         AlundraMusicPlayer.Instance.ResetForTests();
         AlundraBgmFadeDirector.Instance.ResetForTests(); // F5: joins the music-player singleton collection.
+        AlundraHudDirector.Instance.ResetForTests(); // E19.r R1: the map entry now arms the jauge.
     }
 
     public void Dispose()
@@ -56,6 +57,7 @@ public sealed class AlundraNewGameEntryTests : IDisposable
         AlundraScreenFadeDirector.Instance.ResetForTests();
         AlundraMusicPlayer.Instance.ResetForTests();
         AlundraBgmFadeDirector.Instance.ResetForTests();
+        AlundraHudDirector.Instance.ResetForTests();
     }
 
     // -----------------------------------------------------------------------------------------------
@@ -160,6 +162,28 @@ public sealed class AlundraNewGameEntryTests : IDisposable
         Assert.Equal(0, stats.Money);
 
         Assert.False(HudScriptOpenRequestIsRaised());
+    }
+
+    /// <summary>E19.r R1: a New Game on map 389 has no latch (G1662), so the map entry arms nothing - the jauge stays
+    /// hidden until the wake-up scene on map 163 sets it (0x05 at @208) and the next warp re-enters the block.</summary>
+    [Fact]
+    public void MapEntry_NewGameOn389_LeavesTheHudIdle()
+    {
+        InitializeNewGameEntryOnMap389();
+
+        Assert.Equal(AlundraHudDirector.HudPhase.Idle, AlundraHudDirector.Instance.Phase);
+    }
+
+    /// <summary>E19.r R1 (0x8002c3d0): the map-entry block calls <c>InitializeHudPositionBeforeHide</c>; with the latch
+    /// set in the session by an earlier map, the jauge starts to slide in on this map's entry.</summary>
+    [Fact]
+    public void MapEntry_WithTheLatchSetInTheSession_ArmsTheHudAppearance()
+    {
+        AlundraGameState.Instance.AddFlag(AlundraHudDirector.PersistentLatchFlag, AlundraHudDirector.PersistentLatchMask);
+
+        InitializeNewGameEntryOnMap389();
+
+        Assert.Equal(AlundraHudDirector.HudPhase.Opening, AlundraHudDirector.Instance.Phase);
     }
 
     // -----------------------------------------------------------------------------------------------

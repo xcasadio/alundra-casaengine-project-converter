@@ -22,8 +22,8 @@ namespace Alundra.Scripts;
 /// <para>SESSION-scoped singleton, same shape as <see cref="AlundraDialogueDirector"/>/
 /// <see cref="AlundraScreenFadeDirector"/>: <see cref="AttachToWorld"/> re-points this session's
 /// <see cref="AlundraGameState"/> reference WITHOUT touching any animated state;
-/// <see cref="InstallForMapEntry"/> is the separate map-entry call, which this class's own doc explains
-/// is a deliberate NO-OP (see that method's own doc for the evidence).</para>
+/// <see cref="InstallForMapEntry"/> is the separate map-entry call, which arms the appearance when the persistent
+/// latch is set (the main loop's map-entry block, 0x8002c3d0 - see that method's own doc).</para>
 /// </summary>
 public sealed class AlundraHudDirector
 {
@@ -198,22 +198,19 @@ public sealed class AlundraHudDirector
     }
 
     /// <summary>
-    /// Map-entry hook, called from <see cref="AlundraWorldProxy"/>'s own per-map install pass for
-    /// symmetry with every other session-scoped director (<see cref="AlundraDialogueDirector.InstallForMapEntry"/>,
-    /// <see cref="AlundraScreenFadeDirector.InstallForMapEntry"/>) - deliberately a NO-OP here.
-    ///
-    /// <b>Evidence checked (mission item 5), none found</b>: <c>g_drawFrameFlags</c> (0x80176310),
-    /// <c>INT_800a827c</c> (0x800A827C) and <c>g_playerDataHud</c> (0x800A8284) are plain top-level
-    /// globals, never members of <c>g_saveData</c> - no map-load routine in this repository's own
-    /// decompilation writes any of them (the only two writers of the animated state are
-    /// <c>HudManager.InitializeHpAndMp</c>/<c>FUN_8004b770</c>, both cited on <see cref="ArmAppearance"/>'s
-    /// own doc, and neither runs from a map-transition call site - only from the script-driven "please
-    /// appear" trigger, branch (ii) of <see cref="RunTriggerMachine"/>). Exactly like
-    /// <see cref="AlundraGameState.PlayerStats"/> (E13 C0), this animated state survives a map change.
+    /// Map-entry hook, called from <see cref="AlundraWorldProxy"/>'s own per-map install pass: the port of the
+    /// <c>InitializeHudPositionBeforeHide</c> call of the main loop's map-entry block (0x8002c3d0, GameEngine.cs:215, right
+    /// after <c>InitializeScrollingMode</c> and before the first <c>Update</c>; <c>LoadMapSounds</c> calls it a second time at
+    /// 0x8004a160, a no-op after the first since <c>g_drawFrameFlags</c> is then 5). The block runs for EVERY warp, so a script
+    /// that sets the persistent latch (flag 1662) directly, as map 163's wake-up scene does at <c>@208</c>, brings the jauge in
+    /// at the next map entry: <see cref="InitializeHudPositionBeforeHide"/> checks the latch and
+    /// <c>g_drawFrameFlags == 0</c> (<see cref="Phase"/> idle), and does nothing otherwise - an open jauge is left as it is,
+    /// without a jump, and the animated values (HP, MP, money) are never touched, they survive a map change like
+    /// <see cref="AlundraGameState.PlayerStats"/> (E13 C0).
     /// </summary>
     public void InstallForMapEntry()
     {
-        // Deliberately empty - see this method's own doc.
+        InitializeHudPositionBeforeHide();
     }
 
     /// <summary>
@@ -232,13 +229,14 @@ public sealed class AlundraHudDirector
     }
 
     /// <summary>
-    /// E13.d D4: the inventory's own call to <c>HudManager.InitializeHudPositionBeforeHide</c>
-    /// (MainInventoryManager.cs:850, called from <c>FUN_80056598</c> on Start/L2/R2). The original guard
-    /// is TWO conditions (HudManager.cs:42-57): the persistent latch (flag 1662/mask 0x40000000) AND
-    /// <c>g_drawFrameFlags == 0</c> - <see cref="ArmAppearance"/> only re-checks the second one itself
-    /// (<c>Phase != Idle</c>), because every OTHER call site reaches it right after branch (ii) sets the
-    /// latch itself (see <see cref="ArmAppearance"/>'s own doc) - so this wrapper checks the latch here,
-    /// the one guard <see cref="ArmAppearance"/> does not.
+    /// E13.d D4, E19.r R1: the original <c>HudManager.InitializeHudPositionBeforeHide</c> with its two guards
+    /// (HudManager.cs:42-57): the persistent latch (flag 1662/mask 0x40000000) AND <c>g_drawFrameFlags == 0</c>.
+    /// Called by the inventory (MainInventoryManager.cs:850, from <c>FUN_80056598</c> on Start/L2/R2), the save
+    /// screen's close and <see cref="InstallForMapEntry"/> (0x8002c3d0) - none of which has just set the latch
+    /// itself. <see cref="ArmAppearance"/> only re-checks the second guard (<c>Phase != Idle</c>), because its
+    /// other caller, branch (ii) of <see cref="RunTriggerMachine"/>, sets the latch the line before (see
+    /// <see cref="ArmAppearance"/>'s own doc) - so this wrapper checks the latch here, the one guard
+    /// <see cref="ArmAppearance"/> does not.
     /// </summary>
     internal void InitializeHudPositionBeforeHide()
     {
@@ -447,8 +445,9 @@ public sealed class AlundraHudDirector
     /// Port of <c>HudManager.InitializeHudPositionBeforeHide</c> (0x8004be0c, HudManager.cs:41-56).
     /// Named by EFFECT: despite its original name this ARMS THE APPEARANCE - guard
     /// <c>g_drawFrameFlags == 0</c> (the companion guard, <c>GameFlags[0x33] &amp; 0x40000000 != 0</c>,
-    /// is guaranteed by <see cref="RunTriggerMachine"/>'s own call order: the persistent latch is set
-    /// the line right before this runs, branch (ii)), tween from <see cref="ClosedY"/> to
+    /// is guaranteed by <see cref="RunTriggerMachine"/>'s own call order when called from branch (ii): the
+    /// persistent latch is set the line right before this runs; the other callers go through
+    /// <see cref="InitializeHudPositionBeforeHide"/>, which checks it), tween from <see cref="ClosedY"/> to
     /// <see cref="OpenTargetY"/>, <c>g_drawFrameFlags = 0x5</c> (assignment, not OR - HudManager.cs:55).
     ///
     /// Also ports the ONE side effect of <c>FUN_8004b770</c> (0x8004b770, "init hud" - the render

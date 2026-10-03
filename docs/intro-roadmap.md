@@ -330,7 +330,7 @@ gardé par 0x800C du Tick 140), 0x59/0x27 (idem).
 | 6 | 0 | `EffectManager.InitializeEffectSlots` | GameEngine.cs:472 | pool d'effets | non porté |
 | 7 | 0 | `GameEngine.WarpPlayer` | GameEngine.cs:878-973 | fondu d'entrée, `g_warpDelayFrames = 10` | non porté |
 | 8 | 0 | `GameEngine.InitializeScrollingMode` | GameEngine.cs:214 | mode de scroll caméra | non porté |
-| 9 | 0 | `HudManager.InitializeHudPositionBeforeHide` | GameEngine.cs:215 | HUD | non porté |
+| 9 | 0 | `HudManager.InitializeHudPositionBeforeHide` | GameEngine.cs:215 | HUD | porté (E19.r R1) : `AlundraHudDirector.InstallForMapEntry` arme l'apparition si le verrou 1662 est posé |
 | 10 | 0 | `GameEngine.LoadMapSounds` | GameEngine.cs:216 | BGM/SFX de la map | non porté (audio exporté en Phase 4, non branché) |
 | 11 | 0 | `GraphicManager.ResetDebugRenderingState` | GameEngine.cs:218 | debug | sans objet |
 | 12 | 1 | `PadManager.UpdatePads` | GameEngine.cs:1517 | lecture manette | non branché au proxy |

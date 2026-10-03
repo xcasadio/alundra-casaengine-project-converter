@@ -469,6 +469,47 @@ public sealed class AlundraHudDirectorTests : IDisposable
     }
 
     // -----------------------------------------------------------------------------------------
+    // E19.r R1 - the map-entry block of the main loop (0x8002c3d0) calls InitializeHudPositionBeforeHide:
+    // latch (G1662) set and g_drawFrameFlags == 0 -> the jauge slides in. Without the latch, nothing.
+    // -----------------------------------------------------------------------------------------
+
+    [Fact]
+    public void InstallForMapEntry_LatchSetAndIdle_ArmsTheAppearance_ThenSlidesInThroughTheMeasuredTable()
+    {
+        var expected = new[] { -41, -38, -34, -30, -26, -22, -19, -15, -11, -7, -3, 0, 4, 8, 12, 16, 16, 16 };
+        var state = new AlundraGameState();
+        state.AddFlag(PersistentLatchFlag, PersistentLatchMask);
+        var director = AlundraHudDirector.Instance;
+        director.AttachToWorld(state);
+        Assert.Equal(AlundraHudDirector.HudPhase.Idle, director.Phase);
+
+        director.InstallForMapEntry();
+
+        Assert.Equal(AlundraHudDirector.HudPhase.Opening, director.Phase);
+        var actual = new int[18];
+        for (var i = 0; i < 18; i++)
+        {
+            director.Tick();
+            actual[i] = director.Y;
+        }
+
+        Assert.Equal(expected, actual);
+        Assert.Equal(AlundraHudDirector.HudPhase.Displayed, director.Phase);
+    }
+
+    [Fact]
+    public void InstallForMapEntry_LatchClear_StaysIdle()
+    {
+        var director = AlundraHudDirector.Instance;
+        director.AttachToWorld(new AlundraGameState());
+
+        director.InstallForMapEntry();
+
+        Assert.Equal(AlundraHudDirector.HudPhase.Idle, director.Phase);
+        Assert.False(director.IsDrawn);
+    }
+
+    // -----------------------------------------------------------------------------------------
     // Mission item 6.d - the director advances at its production call site
     // (AlundraWorldProxy.Update) even while a modal dialogue box is open.
     // -----------------------------------------------------------------------------------------

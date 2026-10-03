@@ -174,6 +174,28 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
         Assert.All(State.NumberOfItems, count => Assert.Equal(0, count)); // ... and its items in.
     }
 
+    /// <summary>E19.r R1: a save carrying the latch G1662 (the jauge was brought on before the save) loaded onto its
+    /// arrival map: the load runs inside the map installation, then the HUD install runs the map-entry call
+    /// (0x8002c3d0), which sees the loaded latch and arms the appearance; without the latch in the save, nothing.</summary>
+    [Theory]
+    [InlineData(true, AlundraHudDirector.HudPhase.Opening)]
+    [InlineData(false, AlundraHudDirector.HudPhase.Idle)]
+    public void AMapEntryAfterALoad_ArmsTheHud_OnlyWhenTheSaveCarriesTheLatch(bool latchInSave, AlundraHudDirector.HudPhase expected)
+    {
+        var save = RichSave();
+        save.GameFlags[AlundraHudDirector.PersistentLatchFlag >> 5] = latchInSave ? AlundraHudDirector.PersistentLatchMask : 0u;
+        Assert.True(save.TryValidate(RealRules(), out var error), error);
+        ArmLoad(save);
+        Assert.Equal(AlundraHudDirector.HudPhase.Idle, AlundraHudDirector.Instance.Phase);
+
+        var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
+        AddHeroPawn(world);
+        InitializeWithRealProject(new AlundraWorldProxy(), world);
+
+        Assert.False(Director.HasPendingLoad);
+        Assert.Equal(expected, AlundraHudDirector.Instance.Phase);
+    }
+
     [Theory]
     [InlineData(390)]
     [InlineData(null)]

@@ -60,7 +60,8 @@ the meeting starts, and Septimus stalls until E19.d2b.
 - the local state of a map (positions of the entities, open boxes, the state of programs): the map restarts from its
   own load programs;
 - the hero's direction (always 0) and animation (`0x36`): the save has neither;
-- the HUD phase (not saved: after F9 in a fresh process the HUD may stay closed).
+- the HUD phase (not saved: after F9 the jauge is armed by the map entry like the original's, so it slides in when the
+  saved flags carry the latch G1662, and stays hidden otherwise).
 
 The presets pose only what the targeted maps read: another map visited from a test save may behave as an inconsistent
 game.

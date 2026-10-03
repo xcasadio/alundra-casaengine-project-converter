@@ -1065,9 +1065,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
     /// <summary>
     /// E13 C1 (docs/plan-e13-hud.md): re-points the SESSION-scoped <see cref="AlundraHudDirector.Instance"/>
-    /// at this world's own <see cref="GameState"/>, then runs its (currently empty) map-entry hook -
-    /// same "AttachToWorld re-points, InstallForMapEntry is the separate map-entry call" shape as every
-    /// other session-scoped director in this DLL. No presenter, no UI view lookup: this director has no
+    /// at this world's own <see cref="GameState"/>, then runs its map-entry hook, which arms the jauge's
+    /// appearance when the persistent latch (flag 1662) is set (E19.r R1: the port of the main loop's map-entry
+    /// block, 0x8002c3d0) - same "AttachToWorld re-points, InstallForMapEntry is the separate map-entry call"
+    /// shape as every other session-scoped director in this DLL. No presenter, no UI view lookup: this director has no
     /// view seam at all (see its own class doc).
     /// </summary>
     internal void InstallHudSystems()

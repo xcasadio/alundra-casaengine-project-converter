@@ -228,8 +228,8 @@ la fait **revenir**, si elle est cachée (`g_drawFrameFlags == 0`) et que le ver
 | Original | Portage (`AlundraHudDirector`) |
 |---|---|
 | `InitializeHudPosition`, garde `(g_drawFrameFlags & 3) == 1` | **`ArmDisappearance`**, garde `((int)Phase & 3) == 1`, porté ligne à ligne (`:322-346`), privé |
-| `InitializeHudPositionBeforeHide`, gardes verrou 1662 et `g_drawFrameFlags == 0`, `SetTransitionType(1)` | **`ArmAppearance`** (`:350` et suivantes), privé, qui porte aussi l'effet de `FUN_8004b770` armé par `SetTransitionType(1)` ; la garde du verrou y est garantie par l'appelant |
-| — | aujourd'hui atteints seulement par les drapeaux 1813 (ouverture animée) et 1814 (fermeture instantanée) dans `RunTriggerMachine` (`:288-319`) |
+| `InitializeHudPositionBeforeHide`, gardes verrou 1662 et `g_drawFrameFlags == 0`, `SetTransitionType(1)` | **`ArmAppearance`** (`:350` et suivantes), privé, qui porte aussi l'effet de `FUN_8004b770` armé par `SetTransitionType(1)` ; la garde du verrou y est garantie par l'appelant de la branche (ii) ; les autres appelants (inventaire, écran de sauvegarde, entrée de carte depuis E19.r R1) passent par `InitializeHudPositionBeforeHide`, qui la vérifie |
+| — | atteints par les drapeaux 1813 (ouverture animée) et 1814 (fermeture instantanée) dans `RunTriggerMachine` (`:288-319`), et par l'entrée de carte (`InstallForMapEntry`, `0x8002c3d0`, depuis E19.r R1) |
 
 Rien ne manque : D4 rend ces deux ports appelables par l'inventaire, avec la garde du verrou pour
 `ArmAppearance`.
