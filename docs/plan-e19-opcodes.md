@@ -3834,6 +3834,17 @@ par `ZImpulseSfx`) ; l'impulsion d'animation est prise au tick (R1) ; `CollidedW
     gel) ; deux P2 de fidélité (fenêtre Y du passager, plateformes en Z non porteuses : D-E19-42 n'est pas tenu pour elles) ;
     le défaut probable d'escalade depuis un saut (F4) ; la pose de saut d'une image sur les dessus à fleur (F3). La chaîne de
     l'histoire n'en dépend pas (aucun `0x3E` ni plateforme en Z sur la chaîne, d'après la découverte d'E19.e).
+  - ✅ **Vérification de D5a** (2026-10-03) : exécution `950b85e` ; `Alundra.Tests` 2496/2496 en Release (42 s) puis en Debug
+    (43 s), la Debug en dernier ; `cmp` sans écart (sha256 `dbdccbc8...44df`) ; les six traces à l'octet. Vérificateur neuf :
+    **CONFIRMED** (binaire relu : fenêtre `Height + 1` des deux côtés, `0x80036514`/`0x80036528`/`0x800365B0`/`0x800365C4` ;
+    `0x80037364` écrit `ForceZ` et `FinalForceZ` du passager depuis `FinalForceZ` du porteur, `0x80037700` ne remet à 0 que
+    `ForceZ` ; quatre mutations de production, chacune attrapée par son test : `Depth + 1` remis (UH-15), copie de
+    `FinalForceZ` du porteur (UH-18), drapeau de F3 coupé (UH-17), bloc de F4 coupé (UJ-CLIMB) ; seule la liste fermée a
+    changé ; UH-10, UH-11, UH-14, SJ-12, SJ-13 inchangés). Écarts déclarés jugés acceptables : F2b garde `ForceZ` du porteur pour
+    le héros (ne se voit que si un script écrit `FinalForceZ` seul) ; F3 limité au héros à `Gravity` et tirage de confiance ; F4
+    baisse aussi `HeroFlyMarked` ; UH-15 encadre la tête à 84 px aux ticks 11 et 12. Avis reportés à E19.m : P4 UH-17 n'épingle
+    pas les ticks où le héros est porté ; P4 l'écart de `ForceZ` de F2b (à reprendre avec D5b : recopier `TickForceZ` dans les
+    deux champs).
 - ⏳ **D6 — Vérification et clôture**, comme C6. **D7 — Recette** (auteur, avec la recette C7 d'E19.d2c1) : saut sur place
   et en marchant, contrôle en l'air, saut depuis l'eau (plus bas), chute d'un rebord, saut sur un coffre puis descente, une
   plateforme mobile, la falaise de la 10 franchie seule ; une case où la Croix ne fait rien ; après un saut scripté sur la
@@ -6044,6 +6055,13 @@ Réservé aux mesures faites en exécutant les tranches.
 - **Commits** : plan `8c9590a`, révision `672e3ef`, R3 `dbcd680` (code, tests, ADR-0024, plan), puis cette clôture.
 - **Suites** : `Alundra.Tests` **2483 avant, 2491 après** (+8 : 7 tests de recyclage, l'arc de la carte 15), 0 échec, en Release
   puis en Debug ; `cmp` sans écart. La scène des Murggs finit vers l'image 307 de l'arc.
+
+### E19.d2c2, D5a (2026-10-03)
+
+- **Commits** : plan et relectures `3eb96b1`, `22f4ca8`, `99ff51d`, `6e6a0cd`, `c38f952`, `4fe5b4c` ; D5a `950b85e` ; puis cette
+  clôture.
+- **Suites** : `Alundra.Tests` **2491 avant, 2496 après** (+5 : UH-15, UH-17, UH-18 en deux cas, UJ-CLIMB), 0 échec, en Release
+  puis en Debug ; `cmp` sans écart. D5b (plateformes qui bougent en Z) reste en pause pour une reprise de conception.
 
 ## 3. Points ouverts
 
