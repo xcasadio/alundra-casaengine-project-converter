@@ -4140,7 +4140,7 @@ dans la découverte.
 
 **Tâches.**
 - ✅ **K0 — Plan** : ce plan, relu jusqu'à READY (REVISE n°1 puis audit des valeurs ; READY à la deuxième relecture, le 2026-10-03).
-- ⏳ **K1 — État, opcodes, pas, tests d'abord.** Tests purs du pas, sur une instance neuve : `[1,1,3,2]` → OffsetX −1, −2, −3,
+- ✅ **K1 — État, opcodes, pas, tests d'abord.** Tests purs du pas, sur une instance neuve : `[1,1,3,2]` → OffsetX −1, −2, −3,
   −2, −1, 0, 1, 2, 3, 2, 1, 0 (ReachX passe à 1 au pas 3, à 0 au pas 9) et OffsetY −1, −2, −1, 0, 1, 2, 1, 0 (ReachY à 1 au
   pas 2, à 0 au pas 6) ; `[3,1,6,2]` → OffsetX −3, −6, −3, 0, 3, 6, 3, 0 ; `[8,1,8,2]` → −8, 0, 8, 0 ; `[13,11,1,2]` → OffsetX
   −1, 1, −1, 1 et OffsetY −2, 2 ; changement en cours (deux pas de `[1,1,3,2]` puis `[8,1,8,2]`) → (−8, Reach 1), 0, 8, 0 ;
@@ -4148,6 +4148,7 @@ dans la découverte.
   ReachY 0, LimitY 2 → OffsetY 1, ReachY 0 (figé) ; SpeedY 0 avec OffsetY −3, ReachY 0, LimitY 2 → OffsetY −2, ReachY 1 ;
   opérande 200 lu 200 ; chargement (`InitializeWithWorld`) : Flag 0, Reach conservé. Tests du runner : `0x8E` pose les
   quatre valeurs, `0x8F` pose Flag 0, tailles 5 et 1. Commit : `feat(alundra): port the camera sway opcodes 0x8E and 0x8F`
+  - Fait le 2026-10-03 : 17 tests dans `AlundraCameraSwayTests.cs` ; rouges d'abord sur le code sans comportement (état et paramètres présents, `Step` vide, opcodes non dispatchés) : 16 rouges (valeurs lues : suites toutes à 0, `UnknownSkipped` au lieu de `Implemented`, Flag 1 après chargement) et 1 vert d'avance (`SpeedY` nul qui fige `OffsetY`, vrai trivialement avec un pas vide) ; tous verts après. Écarts : un seul constructeur interne sans paramètre (au lieu d'un privé plus un interne) ; setters internes pour poser l'état des tests ; `AlundraCameraSway` est publique car `IEntityWorldContext` l'est. Les deux libellés et `0xA4` de la table sont corrigés. Suite Debug après K1 : 3 rouges attendus de la liste fermée, `0x8E` étant désormais exécuté (A5 et A5r, `Rule2_EveryListedLineIsASiteReachedAndSkipped`), résolus par K3 ; le reste vert.
 - ⏳ **K2 — Caméra, tests d'abord.** Tests purs (cible fixe, sans bornes sauf mention, instance neuve, valeurs lues dans
   l'espace de scroll de l'original par `ToOriginalScrollSpace`, relatives au repos), un appel
   `AdvanceCameraSmoothing(…, ticksThisFrame: 1, …, sway)` par tick : `[1,1,3,2]` → X −1, −3, −6, −8, −9, −9, −8, −6, −3, −1,

@@ -1300,6 +1300,33 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
                 return 7;
 
+            case 0x8E: // Camera sway start - Script_142_08E @ 0x80040534 (E19.k1, docs/plan-e19-opcodes.md
+                       // section 1.2k): Flag = 1, SpeedX = v[1], SpeedY = v[2], LimitX = v[3], LimitY = v[4]
+                       // (unsigned bytes); offsets and reach flags untouched. No sway state wired -> degraded
+                       // skip by size, same shape as 0xAF below.
+                if (_worldContext.CameraSway is { } swayStart)
+                {
+                    swayStart.Start(v[1], v[2], v[3], v[4]);
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0x8E, "CameraSwayStart", "camera sway");
+                }
+
+                return 5;
+
+            case 0x8F: // Camera sway stop - Script_143_08F @ 0x80040598: Flag = 0, nothing else.
+                if (_worldContext.CameraSway is { } swayStop)
+                {
+                    swayStop.Stop();
+                }
+                else
+                {
+                    LogDegradedOpcodeOnce(0x8F, "CameraSwayStop", "camera sway");
+                }
+
+                return 1;
+
             case 0xB0: // Set warp fade color and duration - Script_176_0B0 (E10.b): machine A, the "warp"
                        // timer - its colours are DEAD in this port (§1.1: their only output has zero
                        // readers in the decompilation) - only its flag/duration matter, consumed by

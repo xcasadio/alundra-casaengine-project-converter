@@ -144,6 +144,14 @@ public interface IEntityWorldContext
     IAlundraScreenFadeDirector? ScreenFadeDirector => null;
 
     /// <summary>
+    /// This session's camera sway seam (E19.k1, docs/plan-e19-opcodes.md section 1.2k) - backs opcodes 0x8E/0x8F in
+    /// <see cref="AlundraEventProgramRunner.Dispatch"/>. A default interface member, same "degraded, skip" shape as
+    /// <see cref="ScreenFadeDirector"/> above. <see cref="AlundraWorldProxy"/> installs the session-scoped
+    /// <see cref="AlundraCameraSway.Instance"/>.
+    /// </summary>
+    AlundraCameraSway? CameraSway => null;
+
+    /// <summary>
     /// This session's dialogue-flow seam (E12.a, docs/plan-e12-dialogues.md) - backs opcodes
     /// 0x0D/0x39/0x44/0x50/0x51/0x5C in <see cref="AlundraEventProgramRunner.Dispatch"/>. A default
     /// interface member, same "degraded, skip" shape as <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/>/

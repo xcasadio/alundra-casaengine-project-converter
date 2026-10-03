@@ -488,6 +488,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     public IAlundraScreenFadeDirector ScreenFadeDirector => AlundraScreenFadeDirector.Instance;
 
     /// <summary>
+    /// This session's camera sway (E19.k1, docs/plan-e19-opcodes.md section 1.2k) - the SESSION-scoped
+    /// <see cref="AlundraCameraSway.Instance"/>, NOT a per-world instance. Always non-null.
+    /// </summary>
+    public AlundraCameraSway CameraSway => AlundraCameraSway.Instance;
+
+    /// <summary>
     /// This session's dialogue-flow seam (E12.a, docs/plan-e12-dialogues.md) - the SESSION-scoped
     /// <see cref="AlundraDialogueDirector.Instance"/> (D-C-6/D-E10-6 lesson, see that class's own doc),
     /// NOT a per-world instance. Always non-null: unlike <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/>,
@@ -579,6 +585,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     public override void InitializeWithWorld(World world)
     {
         _world = world;
+
+        // E19.k1 (docs/plan-e19-opcodes.md section 1.2k): the binary's map load (0x8002CD54) only returns the
+        // camera sway Flag to 0 (the first step then clears Limit, Speed and Offset; Reach persists). At the
+        // head, before every early return below, so a world without a tile map clears it too.
+        AlundraCameraSway.Instance.OnMapLoad();
 
         // E5.a (decision E5-2): port of GraphicManager.cs's own g_isCameraScrolling = 1 at map load - the
         // next UpdateCameraFollow call snaps straight to that frame's look-at instead of scrolling in from

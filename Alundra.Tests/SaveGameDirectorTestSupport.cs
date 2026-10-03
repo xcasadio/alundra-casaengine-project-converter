@@ -117,6 +117,7 @@ internal static class SaveGameDirectorTestSupport
         AlundraGameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
         AlundraScreenFadeDirector.Instance.ResetForTests();
+        AlundraCameraSway.Instance.ResetForTests();
         AlundraMusicPlayer.Instance.ResetForTests();
         AlundraBgmFadeDirector.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
