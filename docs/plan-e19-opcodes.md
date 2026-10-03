@@ -229,6 +229,9 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     pluie tire le `rand()` de la bibliothèque C** (générateur à part dans la DLL, état 0 au lancement, jamais réensemencé) et pose
     `posX = rand() / 102`, comme le binaire ; remplace le choix du flux de D7 (`docs/plan-e9d-mode-cellulaire.md:245`), qui la
     branchait sur le flux du jeu ; ADR-0032, ADR-0050 du moteur.
+  - **D-E19-67** — (2026-10-03, la session en mode AUTO, règle « le binaire tranche », E19.m4) Les **fonds ne reçoivent aucun tick
+    pendant le départ d'un passage** (de l'image d'armement à la fin du fondu), comme la boucle de transition du binaire, qui
+    n'appelle pas `RenderScene` ; ADR-0034.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -6729,7 +6732,7 @@ n'est demandé, et l'original lirait au-delà de la table (point ouvert à consi
   avec un groupe nul, pas avec une carte d'un autre groupe ; P4 la période de l'auto-chaîne n'est pas épinglée. **Reste la recette T6
   de l'auteur.**
 
-### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 planifiée)
+### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 ✅ (vérification en cours) ; E19.m4 planifiée)
 
 **Recensement** (2026-10-03, lecture seule ; table complète versionnée dans `docs/plan-e19-m-annexe/backlog-2026-10-03.md`, en
 anglais) : 46 points M-01 à M-46, chacun vérifié contre le code de `bafbd5a`, classé (test seul, commentaire ou doc, petit correctif
@@ -7096,6 +7099,58 @@ lignes du moteur citées à `61358ac0`) :
 
 **Risques.** Les vagues de la chaîne (44, 362, 476, 478) commencent à une autre phase ; la clé par cellule ajoute un champ par
 entrée de la couche (même coût que les parties d'animation).
+
+#### 1.2s.5 E19.m4 — Fonds figés pendant le départ d'un passage (O-E19-55) ⏳ (planifiée)
+
+**Faits** **[binaire]** (audit du 2026-10-03, `e19o55-disc/notes.md` du scratchpad, scripts `census`, `values`, `x2` ; DLL citée à
+`f596546`, moteur à `b5a9fbcf`) :
+- Pendant un départ, la boucle de transition (`0x8002C490`-`0x8002C4C0`) n'appelle que `UpdatePads` (`0x8002E38C`), le tick des
+  effets (`0x80044440`), le flux du son (`0x8004B1D4`), la fin d'image (`0x80042798`) et une fonction vide (`0x800815E4`) : jamais
+  `RenderScene` ni `Update`. Le pilote des fonds, le suivi de la caméra, le dessin des entités, l'interface et le post-traitement ne
+  sont atteints que par `RenderScene` : rien des fonds n'avance (cadence, défilement automatique, cellules, tirages `rand()`, compteur des
+  vagues `0x800C48C4`, programme de palettes). L'écran montre une copie figée de la dernière image (`StartWarpTransition` `0x80044320`
+  la copie par `MoveImage` en `0x8004434C` ; chaque tick du type 0, `0x800435E0`, en pose une copie sous la tuile du fondu) ; 16
+  itérations.
+- Arrivée : le chargement fait `Update(1)` (`0x8002C3E4`) sans rendu ; le fond de la nouvelle carte avance pour la première fois au
+  premier `RenderScene` (`0x8002BE18`), au même tick que le premier pas du fondu d'arrivée (`0x8002BE44`) : le portage fait de même.
+- Correspondance : l'image j du portage = (`Update` n° j puis `RenderScene` j) du binaire, `Update(1)` étant l'image 1
+  (`docs/plan-camera-premiere-frame.md:37-38`) ; un départ est armé dans `Update` n° u (portail `0x800314FC`, opcode `0x53`
+  `0x8003EC80`), donc `RenderScene` u ne tourne jamais : **aucun tick des fonds de l'image d'armement F0 à F15**.
+- Le portage pousse les ticks sans condition (`Alundra/Scripts/AlundraWorldProxy.cs:2196`, commentaire `:2192-2195`) ; toute source de
+  départ (portail dans la mise à jour du héros, `0x53`, chargement F9) pose `IsTransitionInProgress` avant cette ligne, dans la même
+  image ; les services du moteur avancent alors (`ScrollingLayerComponent.cs:54-57`, `CellularLayerComponent.cs:85-87`) ; le fondu se
+  pose à F15 (`AlundraWarpDirector.cs:614-621`) : 16 ticks de fond en trop par départ. Une image à 0 tick ne change aucun état des deux
+  services. Effet sur la chaîne : la pluie de la 391 continue de tomber pendant le départ vers la 416 (7 à 31 pixels par tick, le cas le
+  plus visible) ; mer de la 389 et de la 416 (1 à 4 pixels) ; vagues de la 476 et de la 478 ; jours 3-4 : 14, 15, 162, 169, 176, 183
+  (mer), 44 et 362 (vagues) ; avec E19.m3 (compteur des vagues global), 16 ticks de vague en trop par départ.
+
+**Règle.**
+- **M4-R1** : `PushFrame` reçoit 0 tick quand `AlundraWarpDirector.Instance.IsTransitionInProgress` (le même prédicat que le balancement
+  de la caméra, `AlundraCameraDirector.cs:219`), `ticksThisFrame` sinon ; l'image est toujours poussée (cible de la caméra et
+  défilement à jour) ; pas de garde sur `gameplayBlocked` (sous `MenuOpen` le binaire continue `RenderScene` ;
+  `BackdropPushProductionTests.cs:101-121` l'épingle) ; commentaire `:2192-2195`, doc de `PushFrame` (`AlundraBackdropStage.cs:461-474`),
+  note sur D-E9b-2 (`docs/plan-e9b-backdrops-moteur.md:378`) ; décision D-E19-67, ADR-0034 du parent. Exact à 1 tick par image ; une
+  image de rattrapage peut laisser jusqu'à 3 ticks d'écart.
+
+**Tâches.**
+- **M4-1 — Tests d'abord** (amorce `Update(0.02f)`, puis K images, puis `BeginDeparture` comme `AlundraWarpDepartureTests.cs:239-301`,
+  puis 16 × `Update(0.02f)` ; montages sans caméra : défilement (−160, −120)) :
+  - T-55a (montage de la 389, deux services attachés) : `PendingTicks` après chacune des images F0 à F15 → 0 (aujourd'hui 1 dès F0) ;
+    gardes : `FramesPushed` +1 à chaque image ; `InstallForMapEntry` puis un `Update` → 1 (inchangé) ;
+  - T-55b (mer de la 389, couche 0, `stage.Load`, `Advance()` après chaque image, K = 9, donc t = 10 à l'armement : `AutoScroll`
+    (1, 2), `Timer` (0, 0)) : après F15, `AutoScroll` (1, 2), `Timer` (0, 0) (aujourd'hui (2, 5) et (6, 1) ; après F0 seule, `Timer`
+    (1, 1)) ;
+  - T-55c (pluie de la 391, générateur `rand()` à l'état 0 après le chargement ; le tick d'amorce fait 17 tirages, état `0x7E7099A9`) :
+    après F15, toujours 17 tirages, état `0x7E7099A9`, cellule 0 en (251, 202) (aujourd'hui 71 tirages, état `0x277C02BB`, cellule 0
+    en (284, 27)) ; saute si l'export manque.
+- **M4-2 — Code** : M4-R1, docs, ADR-0034.
+
+**Acceptation.** 1. Tests de M4-1 rouges d'abord (valeurs d'aujourd'hui), verts après, valeurs écrites tenues ; une valeur que la
+mesure contredit est un arrêt. 2. Tests existants touchés : aucun. 3. `Alundra.Tests` en Release puis en Debug, la Debug en dernier,
+`cmp` sans écart ; les six traces à l'octet ; la liste fermée de la chaîne inchangée. **Retour arrière** : revert du commit (DLL seule).
+
+**Risques.** Le reste de la scène (suivi de la caméra, animation des entités, physique des PNJ, tuiles animées, HUD, dialogue, fondu de
+la musique) avance encore pendant le départ alors que le binaire montre une image figée (O-E19-57, hors tranche).
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
@@ -7475,12 +7530,13 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-48 | **La chute des cellules puise dans le mauvais générateur** (question bornée du 2026-10-03 pour E19.m0) : dans le binaire, la cellule de type 2 (`0x8005CAC8` → `0x8005D05C`) tire sa nouvelle position au `rand()` de la bibliothèque C (`0x80081E6C`, état `0x801EEB48`, constantes 0x41C64E6D/0x3039, rend `(s >> 16) & 0x7FFF`) et pose `posX = rand() / 102` (0 à 321) ; la DLL la branche sur `AlundraRandom` (`AlundraWorldProxy.cs:652` → `CellularLayerService.cs:397`, décision D7), le flux du jeu, que l'original ne touche pas là ; D7 et la décompilation (`GraphicManager.cs:1172`) se trompent. Confirmé par la découverte d'E19.m1 (un seul tirage, seulement quand `sy >= 240`, `0x8005D310` ; division signée, tronquée vers 0). | E19.m2 |
 | O-E19-49 | **Flux de `rand()` et sauvegardes** (découverte d'E19.m1) : le `rand()` de la bibliothèque C n'a que trois appelants dans le binaire, la chute des cellules (`0x8005D31C`) et l'écriture du bloc de carte mémoire (`0x80061150` dans `0x80060E20`, `0x80061584` dans `0x8006122C` : 36 valeurs `r & 0xFF` à l'offset `0x1FB0` du bloc en `0x8018F078`, avant la somme de contrôle) ; les sauvegardes de la DLL passent par le service du moteur et ne tirent rien. À trancher : tirer 36 valeurs à chaque sauvegarde pour garder l'ordre du flux de la chute des cellules, ou consigner l'écart. | Auteur (E19.m2) |
 | O-E19-50 | **Deux écarts des couches de cellules** (découverte d'E19.m1, relevés, non audités) : les deux routines du binaire dessinent à la position d'avant le bouclage (`0x8005CDB0`, `0x8005D3AC`), le moteur à celle d'après (`CellularLayerService.cs:349-350`, `:403-404`) ; le binaire avance d'un pas quand `|P| <` le compteur d'avant l'incrément, donc tous les `|P| + 2` ticks, le moteur tous les `|P|` ticks (`++Tick >= |P|`, `:303`, `:313`, `:364`, `:371` ; `CellularLayerServiceTests.cs:117-128` épingle la règle du moteur) ; la table des pas et une transformation éventuelle de la période par le convertisseur restent à vérifier. | E19.m2 |
-| O-E19-51 | **Compteur des vagues global** (audit d'E19.m2) : `0x800C48C4` est un compteur unique, incrémenté par le pilote des fonds (`0x8005B6D8`-`0x8005B6E8`) **avant** les tests du masque, jamais remis à 0 au chargement ; le moteur en garde un par couche, remis à 0 au chargement et figé quand la couche est masquée : les vagues commencent chaque carte à une autre phase, et à la 475 la vague de l'original avance pendant le masque. Contredit en partie le fait d'E19.k2 (« l'état par tick d'une couche est dans l'appel gardé ») et ADR-0049 du moteur ; le corriger bougerait `CellularLayerMaskTests.cs:82`, `:93`, `:101`. Confirmé et planifié (§1.2s.4). | E19.m3 |
-| O-E19-52 | **Parallaxe des cellules de type 0 tronquée** (audit d'E19.m2) : le binaire calcule le facteur une fois, en entier tronqué `Num/Den` (`0x8005C0AC`), puis `camX × facteur` (`0x8005CB78`) ; aux cartes 123 et 124 (couche 1), les facteurs 1/2 donnent 0 : 59 cellules ne défilent pas dans l'original, le moteur les fait défiler à camX/2. Confirmé et planifié (§1.2s.4). | E19.m3 |
-| O-E19-53 | **Ordre de dessin des cellules d'une couche** (audit d'E19.m2) : le binaire insère chaque cellule en tête du même créneau de la table d'ordre (`0x8005CE08`) : ordre inverse, la cellule 0 dessus ; le moteur donne la même clé à toutes et trie par `List.Sort` (`SpriteRendererComponent.cs:399`), instable ; effet non mesuré. Confirmé et planifié (§1.2s.4). | E19.m3 |
+| O-E19-51 | **Réglé le 2026-10-03 (E19.m3, ADR-0052 du moteur).** **Compteur des vagues global** (audit d'E19.m2) : `0x800C48C4` est un compteur unique, incrémenté par le pilote des fonds (`0x8005B6D8`-`0x8005B6E8`) **avant** les tests du masque, jamais remis à 0 au chargement ; le moteur en garde un par couche, remis à 0 au chargement et figé quand la couche est masquée : les vagues commencent chaque carte à une autre phase, et à la 475 la vague de l'original avance pendant le masque. Contredit en partie le fait d'E19.k2 (« l'état par tick d'une couche est dans l'appel gardé ») et ADR-0049 du moteur ; le corriger bougerait `CellularLayerMaskTests.cs:82`, `:93`, `:101`. Confirmé et planifié (§1.2s.4). | E19.m3 |
+| O-E19-52 | **Réglé le 2026-10-03 (E19.m3, ADR-0052 du moteur).** **Parallaxe des cellules de type 0 tronquée** (audit d'E19.m2) : le binaire calcule le facteur une fois, en entier tronqué `Num/Den` (`0x8005C0AC`), puis `camX × facteur` (`0x8005CB78`) ; aux cartes 123 et 124 (couche 1), les facteurs 1/2 donnent 0 : 59 cellules ne défilent pas dans l'original, le moteur les fait défiler à camX/2. Confirmé et planifié (§1.2s.4). | E19.m3 |
+| O-E19-53 | **Réglé le 2026-10-03 (E19.m3, ADR-0052 du moteur).** **Ordre de dessin des cellules d'une couche** (audit d'E19.m2) : le binaire insère chaque cellule en tête du même créneau de la table d'ordre (`0x8005CE08`) : ordre inverse, la cellule 0 dessus ; le moteur donne la même clé à toutes et trie par `List.Sort` (`SpriteRendererComponent.cs:399`), instable ; effet non mesuré. Confirmé et planifié (§1.2s.4). | E19.m3 |
 | O-E19-54 | **La pluie de la 391 et de la 31 est opaque dans l'original** (audit d'E19.m3) : ses 720 texels ont le bit STP éteint (table de couleurs envoyée en `0x8005B2A0` égale à la palette extraite) et la PS1 ne mêle que les texels STP ; le portage la dessine à 50 % (couche `Average`, alpha 128 de la DLL) ; les texels des vagues ont tous le bit allumé (justes). Remède naturel : le mécanisme par texel de G2a étendu aux couches cellulaires (audit à faire). | E19.g (après G2a) |
-| O-E19-55 | **Les fonds avancent pendant un fondu de passage** (audit d'E19.m3) : la boucle de transition du binaire (`0x8002C490`-`0x8002C4C0`) n'appelle pas `RenderScene` ; la DLL pousse les ticks des fonds sans condition (`AlundraWorldProxy.cs:2192-2196`). | E19.m (à auditer) |
+| O-E19-55 | **Les fonds avancent pendant un fondu de passage** (audit d'E19.m3) : la boucle de transition du binaire (`0x8002C490`-`0x8002C4C0`) n'appelle pas `RenderScene` ; la DLL pousse les ticks des fonds sans condition (`AlundraWorldProxy.cs:2192-2196`). Audité le 2026-10-03 : 16 ticks en trop par départ (F0 à F15), planifié (§1.2s.5). | E19.m4 |
 | O-E19-56 | **Le type 2 ignore le décalage de palette `0x800C490C`** (`0x8005D370`-`0x8005D394`), contrairement aux types 0 et 4 et aux tuiles ; à retenir si le cycle de palettes (O-E19-43) est porté. Et : le service du moteur survit à un retour au titre ; on n'a pas vérifié si l'original relance l'exécutable (et remet le compteur des vagues à 0) à ce moment. | Note |
+| O-E19-57 | **Le binaire montre une image figée pendant le départ d'un passage** (audit d'O-E19-55) : la boucle de transition n'appelle ni `Update` ni `RenderScene` ; l'écran est une copie de la dernière image sous le fondu. Le portage continue d'avancer et de dessiner la scène : suivi de la caméra, animation des entités (le gel ne touche que `GameplayBlockedMask`, `AlundraWorldProxy.cs:2261-2266`, `AlundraGameplayFreeze.cs:38-40`), physique des PNJ, tuiles animées (temps réel), HUD, dialogue, fondu de la musique (non vérifié dans le binaire). Aussi : l'initialisation du fondu de type 0 du binaire remet la couleur courante à 0 (`0x80042F68`-`0x80042F70`), le portage la garde (`BeginWarpDepartureFade`). À trancher : figer la scène entière (capture de la dernière image par le moteur) ou garder l'écart. | Auteur |
 
 ## 4. Hors périmètre
 
