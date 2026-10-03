@@ -414,7 +414,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.i | ~~Boucles d'animation Loop pour `0x1C`/`0x1D`~~ — **absorbée par E19.c2** (D-E19-18) : le signal de boucle et son pont y arrivent ; le recensement exact est de 208 sites dans 53 cartes, et non 101 dans 30 | — | — |
 | E19.j ✅ (§1.2l, recette J3 en attente) | Événements de carte : réarmement hors zone du binaire (619 enregistrements, O-E19-11) ; aucun effet sur la chaîne | ciblés | ciblée |
 | E19.k (§1.2k ; E19.k1 ✅, recette K5 en attente) | Caméra : balancement `0x8E`/`0x8F` (E19.k1, DLL seule), masque des fonds `0xA4` (E19.k2, plan moteur) | ciblés | 392, 391 |
-| E19.l (§1.2m : E19.l1, E19.l2) | Prédicats, branches et restes : `0x82` (avec la correction d'`AddOneItemIfUnlocked`), `0x83`, `0x84`, `0x87`, `0x3F`, `0x95`, `0x99`, `0x9A`, `0x9F` (avec `InitializeContents`), `0x57`, `0x58`, `0x4A`, `0x2A`, `0x2B`, `0x5D`, etc. ; liste fermée au recensement du moment | ciblés | ciblée |
+| E19.l (§1.2m : E19.l1 ✅, recette en attente ; E19.l2) | Prédicats, branches et restes : `0x82` (avec la correction d'`AddOneItemIfUnlocked`), `0x83`, `0x84`, `0x87`, `0x3F`, `0x95`, `0x99`, `0x9A`, `0x9F` (avec `InitializeContents`), `0x57`, `0x58`, `0x4A`, `0x2A`, `0x2B`, `0x5D`, etc. ; liste fermée au recensement du moment | ciblés | ciblée |
 | E19.m | Hygiène et clôture : taille de `0x5F` (8), libellés faux, `0x01` qui rend 0, modes aléatoires 4 et 5 de `ResolveDirectionFromParam` ; test statique : aucun opcode atteignable sauté dans le corpus hors E14 (IA native) et E18 (`0xBB`) | corpus | — |
 
 - **Ordre** : E19.a → E19.b → E19.c1 → E19.c2 → E19.d → E19.d2a → E19.d2b → E19.d2c → E19.e, puis E19.f. Les tranches de phase 2
@@ -4318,7 +4318,7 @@ sons, dialogues et scènes se rejouent à la réentrée comme dans l'original (a
 Torla) ; le modèle de réentrée est approché ; le moment où TileX change après un `0x64` pris dans le même passage n'est pas
 vérifié (sans effet sur la chaîne).
 
-### 1.2m E19.l — Prédicats, branches et restes ⏳ (E19.l1 et E19.l2 planifiées)
+### 1.2m E19.l — Prédicats, branches et restes ⏳ (E19.l1 ✅, recette L1-4 en attente ; E19.l2 relue READY)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : A branches, entités et contrôle ; B objets, argent et coffres ;
 notes, scripts et recensements dans le scratchpad de la session, `e19l-disc/A/notes.md` et `e19l-disc/B/notes.md`). Faits
@@ -4384,7 +4384,7 @@ les 19 opcodes ; aujourd'hui la DLL les saute tous par leur taille, `Result` lai
   E14, la boutique répond « pas assez d'argent » (dialogue 140), comme l'original avec une bourse vide, au lieu du « merci »
   sans rien donner d'aujourd'hui (le port suit le binaire : à la recette, pas une question).
 
-##### 1.2m.1 E19.l1 — Classes, branches et portail scripté ⏳
+##### 1.2m.1 E19.l1 — Classes, branches et portail scripté ✅ (recette L1-4 en attente)
 
 **Relecture** (2026-10-03) : REVISE n°1 (les tests fabriqués de la règle 4 rougissent quand 164 quitte les sites connus) ;
 corrigé en L1-2 (option : `PredicateOpcodes` inchangé, entrées des tests réécrites sur les sites restants). Audit des
@@ -4470,7 +4470,16 @@ test de `0x4A` renforcé, prémisse de l'épingle d'A11 écrite.
   au nord de leur porteur et la boucle perd un tick, les épingles sont relatives à la pose ; TN-3 : `0x3F` écrit
   désormais `Result` ; T-C61 : `0x29 @882` efface ClassB du héros). Commit : `test(alundra): the ported branches on the story chain`
   - Fait le 2026-10-03 : fait dans le commit de L1-1 (fusion, voir L1-1). Liste versionnée 170 → 153 lignes (17 retirées : `0x58` × 14, `0x2B` × 1, `0x52` × 2, rien d'autre au diff) ; le parcours suit les quatre cibles de `0x57`/`0x58` et cesse de suivre leur chute : aucune ligne nouvelle (règle 1 verte) ; `MapsWithoutSkippedSite` 11 → 15 (165, 172, 180, 182), test renommé `…TheFifteenMapsWithoutASiteHaveNone` ; `KnownScenePredicateSites` ne garde que 179 `B[1] @183` et 10 `C[75] @6418`, règle 4 et ses deux tests renommés `…TheTwoKnownSites…` avec les entrées du plan ; `PredicateOpcodes` inchangé ; le test des deux programmes au même pc ne garde que 476 pc 112 ; A11 : `(0x58, 110)` hors de l'ensemble autorisé, `0x58 @110` exécuté, rien à `@119`, au moins une instruction à `@124`, et aucun `0x27 @470`/`@498` exécuté (la prémisse, ajoutée en assertion) ; `ImplementedOpcodes` reçoit les 11 opcodes. Rouges avant ajustement (suite complète après les opcodes) : exactement 2 sur 2401, `Rule2_EveryListedLineIsASiteReachedAndSkipped` (17 lignes périmées) et A11 (`0x58 @110 never skipped`) ; A10J, T-A10v, T-B9, TN-3 et T-C61 n'ont pas bougé. Suite Debug après : 2401 tests, 0 échec ; les six traces à l'octet (contenu identique, les quatre traces du héros remises par `checkout`).
-- ⏳ **L1-3 — Vérification et clôture**, comme les tranches précédentes. **L1-4 — Recette** (auteur) : Inoa 164, Beaumont et
+- ✅ **L1-3 — Vérification et clôture.** Vérifié le 2026-10-03 : `Alundra.Tests` 2371 → 2401 (+30), 0 échec, en Release
+  (47 s) puis en Debug (43 s), la Debug en dernier ; `cmp` sans écart (sha256 `32c651d2...727f`) ; les six traces à l'octet.
+  Vérificateur neuf : **CONFIRMED** (chaque gestionnaire relu dans le binaire ; douze mutations sur quatorze attrapées ; le
+  parcours, tous les opcodes portés remis en « sautés », retrouve exactement les 17 lignes retirées et aucun site de
+  `0x28`, `0x29`, `0x2A`, `0x3F`, `0x4A`, `0x57`, `0x5D`, `0x8C` sur la chaîne ; seul appelant de production du nouveau
+  paramètre : `0x52`). Avis reportés à E19.m : **P3** aucun test ne distingue, pour `0x58`, l'entité logique du héros (le
+  code lit bien l'entité logique, comme le binaire) ; P4 aucun test n'épingle l'arrêt de la chute de `0x57`/`0x58` dans le
+  parcours ; P4 le masque `& 3` n'existe pas dans le binaire (sans effet sur le domaine 0 à 3) ; P4 ligne d'attribution
+  du commit au nom de l'exécuteur.
+- 🧪 **L1-4 — Recette** (auteur) : Inoa 164, Beaumont et
   Thyea restent face en bas tant que le héros est loin (aujourd'hui ils tournent à gauche par moments) ; la 10, les bouquets du
   côté de leur porteur ; un donjon à interrupteur au sol (hors chaîne) : l'interrupteur s'enfonce sous le héros.
 
@@ -4511,7 +4520,7 @@ dans l'exécutable, la plupart non portés) ; `0x28`/`0x29` libèrent 15 marches
   opened » ; `IntroTraceHarnessTests.ImplementedOpcodes` reçoit les opcodes portés.
 
 **Tâches.**
-- ⏳ **L2-0 — Plan**, relu jusqu'à READY.
+- ✅ **L2-0 — Plan**, relu jusqu'à READY (READY à la première relecture, le 2026-10-03 ; valeurs auditées).
 - ⏳ **L2-1 — Helpers et opcodes, tests d'abord** (tables réelles `ItemTablesFixture.LoadReal()` ; `Result` de départ 7 ;
   programmes `[op, …, 0x1A, 9, 0xFF]` : l'animation 9 prouve que l'opcode n'a pas suspendu) :
   - `AddOneItemIfUnlocked(17)` deux fois → 1 puis **1** (aujourd'hui 17), compte 1 : le test existant
@@ -4775,6 +4784,15 @@ Réservé aux mesures faites en exécutant les tranches.
   puis en Debug (42 s) ; `cmp` sans écart.
 - **Arcs** : épingles A5, A5r, A6 et A18 vertes du premier coup aux valeurs écrites ; A6 n'atteint que `0x8E @260`, `@335`,
   `@342` avant le départ ; liste fermée 198 → 170, la 392 sans site.
+
+### E19.l1 (2026-10-03)
+
+- **Commits** : plan `16ff2be`, L1-1 et L1-2 ensemble `02277fe` (L1-1 seule laissait la règle 2 et A11 rouges), puis cette
+  clôture.
+- **Suites** : `Alundra.Tests` **2371 avant la sous-tranche, 2401 après** (+30), 0 échec, en Release (47 s) puis en Debug
+  (43 s) ; `cmp` sans écart.
+- **Arcs** : A11 réécrit (`0x58 @110` exécuté, rien à `@119`, au moins une instruction à `@124`, aucun `0x27 @470`/`@498`) ;
+  A10J, T-A10v, T-B9, TN-3 et T-C61 inchangés et verts ; liste fermée 170 → 153, 15 cartes sans site.
 
 ## 3. Points ouverts
 
