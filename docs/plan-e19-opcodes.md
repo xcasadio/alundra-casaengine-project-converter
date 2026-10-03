@@ -4836,7 +4836,9 @@ les bits ; le cycle de palettes (`b2 > 0`) sort d'E19.k2 : consigné (O-E19-43),
 
 **Tâches.**
 - ✅ **K2-0 — Plan**, relu jusqu'à READY (REVISE n°1, READY à la deuxième relecture le 2026-10-03).
-- ⏳ **K2-1 — Moteur, tests d'abord** (branche `chantier/e19k2-layer-mask` du sous-module, depuis la `main` du moteur) :
+- ⏳ **K2-1 — Moteur, tests d'abord** (branche `chantier/e19k2-layer-mask` du sous-module, **empilée sur
+  `chantier/e19s-virtual-resolution` (`dfaed7a6`)** : le pointeur du parent ne peut désigner qu'un commit et doit garder E19.s ;
+  plan du moteur dans son `ai-agent/tasks/`, comme l'exige son `AGENTS.md`) :
   défilement, deux couches d'identifiants 0 et 1 avec défilement automatique et cadence : `SetLayerActive(1, false)` puis trois
   ticks → la couche 0 avance, la couche 1 garde ses compteurs et son défilement d'avant et n'est pas soumise ; puis
   `SetLayerActive(1, true)` → les deux avancent ; une seule couche d'identifiant 1 placée à l'index 0 : `SetLayerActive(0, false)`
