@@ -182,6 +182,7 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     E19.s).
   - **D-E19-48** — (2026-10-03, l'auteur, Q-F1) Les **drapeaux posés au milieu d'un texte** sont portés par des marqueurs de
     position dans le Yarn (format, émetteur, preuve d'équivalence du corpus ; ADR au plan d'E19.f).
+    Decisions: see ADR-0025.
   - **D-E19-49** — (2026-10-03, l'auteur, Q-F2) Les **portraits de 48 × 72** (enregistrements 122 et 162) s'affichent entiers, au
     même endroit, bas aligné : défaut de l'original corrigé.
   - **D-E19-50** — (2026-10-03, l'auteur, Q-F3) La **boîte de choix fidèle** (deux options côte à côte, validée à la Croix, sons)
@@ -4211,7 +4212,7 @@ sous-tranche a son plan relu, son exécution et sa vérification :
   propriétaire de la formule d'échelle commune des écrans** (résolution virtuelle du moteur, recalcul des écrans au changement
   de taille) ; f2 bâtit son écran dessus sans la modifier (révision n°1 de la relecture du 2026-10-03).
 
-##### 1.2j.1 E19.f0 — Drapeaux du texte à leur position 🚧 (READY à la relecture de clôture sur `6e6a0cd` ; audit des valeurs fait)
+##### 1.2j.1 E19.f0 — Drapeaux du texte à leur position ✅ (READY à la relecture de clôture sur `6e6a0cd` ; audit des valeurs fait)
 
 **Faits** (cartographie, `e19f-plan2/yarn/notes.md`) :
 - **[binaire]** un code numérique pose son drapeau temporaire quand l'interpréteur du texte l'atteint et passe au caractère suivant
@@ -4310,6 +4311,25 @@ convention d'apparition prendront les suivants).
 
 Commits : `test(converter): …` puis `feat(converter): emit text flag codes and \Y as positioned Yarn markers` ;
 `feat(alundra): read positioned flag markers from Yarn lines` ; `docs(adr): …` ; clôture du plan avec les mesures de l'export.
+
+- **Fait le 2026-10-03** (commits `0beab51` convertisseur, `fa8d86c` DLL, `cd8cc35` ADR-0025). **Rouges d'abord** : convertisseur, 31 tests rouges
+  sur le code d'avant (par exemple `M389_S001` p0 lu `<<flag 999>>` avant la ligne au lieu des marqueurs, `Yarn.FlagMarkers`
+  lu 0, `2147483648` accepté, `WholeCorpus_EveryPageOfEveryNodeMatchesTheReferenceDecoder` 628 pages en écart) ; les tests du
+  décodeur de référence étaient verts d'emblée (F0-R7 : mis à jour depuis le contrat) ; DLL, 5 tests rouges sur 8
+  (drapeau de milieu de texte jamais posé à l'affichage, page de drapeaux seuls, drapeau lu `False` à `ShowLine`, chemin dégradé), les
+  trois autres (commande ancienne, `yield` et marqueur inconnu ignorés, présentateur sans état) verts d'avance. **Verts après** :
+  convertisseur 415/415, `Alundra.Tests` 2504/2504 (Debug, avant puis après le nouvel export, `AlundraDialogueOpcodesProductionTests` vert).
+  **Livraison dans l'ordre F0-R6** : DLL Release puis Debug, `cmp` sans écart avec `alundra-project/Alundra.dll` (avant et après les
+  exports et la suite) ; manifeste avant 23 734 fichiers, export complet en place (`dotnet run --project
+  alundra-casaengine-project-converter -c Release -- data-extracted alundra-project`), manifeste après : exactement 311 fichiers
+  changés (155 `.yarn`, 155 `.dialogue`, `report.json`), identiques à la liste de l'audit, 0 ajouté, 0 retiré ; double export :
+  seul `report.json` diffère ; aucun `<<flag` dans les 485 `.yarn` ; `report.json` : `Yarn.FlagMarkers` 932, `Yarn.YieldMarkers` 922,
+  `Yarn.EmptyPages` 95, 0 erreur, 6 avertissements d'avant (maps.json, EntityNames.csv, sprites). Garde d'octets des six traces : 0 ;
+  les quatre traces du héros réécrites en LF par la suite ont été remises par `git checkout`. **Écarts** : (1) l'ordre « dans l'ordre de
+  la liste » des écritures de drapeaux n'est pas observable (des OU sur des bits) : il est tenu par l'itération de la liste, sans test
+  dédié ; (2) pied de commit `Co-Authored-By: Claude Sonnet 5.5` (le modèle réel) au lieu de `Opus 5.5` du brief ; (3) le constructeur du
+  présentateur de capture prend l'état de jeu en paramètre facultatif (`null` : aucun drapeau posé) pour laisser les montages existants
+  intacts ; (4) la valeur du drapeau est lue en `Int64` (jamais d'exception sur un `id` hors plage, marqueur ignoré).
 
 ### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) — E19.k1 ✅ (recette K5 en attente) ; E19.k2 ⏳ (planifiée)
 
