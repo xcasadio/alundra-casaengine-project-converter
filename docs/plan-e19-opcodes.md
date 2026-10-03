@@ -407,7 +407,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.d2a ✅ | Après le premier livre (§1.2h) : sauvegardes de test chargées par F9 (D-E19-33) ; arrivée par portail dans les arcs (U3) ; arcs du jour 1 | A10, A11, A20, TH3 | Jour 1 jusqu'au jour 2 ; F9 sur les préréglages du jour 3 et du jour 4 |
 | E19.d2b ✅ | Moteur : sonde d'obstacles dans l'étage champ du contrôleur (ADR-0047 du moteur) ; DLL : contacts entre entités du binaire (D-E19-27 à D-E19-30, D-E19-34 à D-E19-37), natif E 0/1, contact du dialogue ; règle les deux P2 d'E19.d (O-E19-18, 185 `@506`) | T-A19, T-A10v, T-B9, T-C61, TN-3, A11, tests moteur | Le héros bute sur les PNJ et leur parle ; jour 4 : la 185 mène à la 362 |
 | E19.d2c | DLL, en deux sous-tranches (§1.2h.3, ADR-0023) : saut scripté et `IsZForceApplied` (D-E19-31), `0x25`, `CollidedWithEntityZ`, eau et glace du héros (D-E19-32), son du décollage (D-E19-44) ; puis saut à la manette, chutes, dessus d'objets et passager (D-E19-39, D-E19-42, D-E19-43) (O-E19-8, O-E19-19) | UJ, UW, A10J, A12, A10, T-A10v, T-C61, A3 ; SJ, UH, traces « spawn » | Jour 3 : le saut de la 10 jusqu'à la 135 ; saut à la Croix, chutes, objets |
-| E19.e | (§1.2i) Test statique : la liste fermée des opcodes sautés atteignables sur les 30 cartes de la chaîne ; arcs des scènes du jour 3 (176, 179, 135, 178) ; arrivées sans recouvrement | A13, A14, A15, A17, A18, TH4 étendu, test statique | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement ; `day3-after-dream` jusqu'à la 183 ; `day4-meeting` jusqu'à la 362 |
+| E19.e | (§1.2i) Test statique : la liste fermée des opcodes sautés atteignables sur les 30 cartes de la chaîne ; arcs des scènes scriptées du jour 3 (176, 179, 135, 178) ; arrivées sans recouvrement ; les villageois de la 185 et 179 `B[1]` exclus (recette, O-E19-33) | A13, A14, A15, A17, A18, TH4 étendu, test statique | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement ; `day3-after-dream` jusqu'à la 183 ; `day4-meeting` jusqu'à la 362 |
 | E19.f | Boîte de nom et boîte de texte fidèle (D-E19-4) : export du cadre, écrans XAML liés à un view model, cycle de vie de la boîte de nom, pour `0x0D`/`0x5C`/`0xC4` ; **avec E12.c** (D-E19-38) : portraits, machine à écrire, pagination, curseur, blips et voix, `0x4C`/`0x4D`, table partagée `map_alundra` | tests MGDesktop | Les noms s'affichent au-dessus de la boîte, à la place de l'original |
 | E19.g | Effets visuels (D-E19-7) : export des effets par le convertisseur, réserve de 128 effets aux règles du binaire, `0x90`-`0x94`, `0xA0`-`0xA3`, rendu | cartes à effets | L'aura de 476, les vagues de 391 |
 | E19.h | Attentes en Z et contacts : `0x20`-`0x23`, `0x26`, `0x47`, `0x48` ; `ForceAdjusted` aligné sur le binaire ; glissement le long des murs ; reste du saut (O-E19-27) — `0x25` et `CollidedWithEntityZ` avancés en E19.d2c (D-E19-31) | ciblés | ciblée |
@@ -3449,7 +3449,7 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
 - `0x25` devient bloquant sur environ 465 sites : une entité qui n'atterrit jamais (sans gravité, gravité effacée par
   `0x63`, entité sans contrôleur dont la DLL ne met pas `IsOnGround` à jour) cale là où l'opcode était ignoré. Sur la
   chaîne : aucun site de ce genre recensé dans les programmes d'enregistrement ; les programmes B reciblés par
-  `0x42`/`0x43` restent à recenser (E19.e).
+  `0x42`/`0x43` restent à recenser : **reporté à E19.h** (disposition de la relecture d'E19.e, 2026-10-03 : voir §1.2i).
 - Giles et Bergus : leur `0x25` et leurs images dépendent de l'aimantation de 4 px du moteur (D-E19-40) : épingles
   relationnelles à ± 1 image ; les PNJ dont le dernier point en l'air est au-dessus de 4 px atterrissent par
   `PushLogicalPositionToRoot` et perdent leur fraction (O-E19-29, épinglé par UJ-1c).
@@ -3795,8 +3795,11 @@ inchangées.
 
 ### 1.2i E19.e — La chaîne du jour 3 et du jour 4 prouvée, et un test statique des opcodes sautés ⏳ (plan ; relu et approuvé avant exécution)
 
-**Résultat** : chaque scène du jour 3 et du jour 4 qui ne demande pas le combat est rejouée par un arc sur la vraie DLL (176
-`B[6]`, 179 `B[3]`, 176 `B[7]`, 135, 178), en plus de celles qui le sont déjà (179 `B[2]` A12, 10 `B[20]` A10J, 185 T-A19) ;
+**Résultat** : les scènes scriptées du jour 3 qui ne demandent pas le combat sont rejouées par un arc sur la vraie DLL (176
+`B[6]`, 179 `B[3]`, 176 `B[7]`, 135, 178), en plus de celles qui le sont déjà (179 `B[2]` A12, 10 `B[20]` A10J, et au jour 4
+la réunion de la 185, T-A19) ; **exclus d'E19.e** : les quatre villageois de la 185 (des dialogues que le joueur déclenche
+par contact, que T-A19 remplace en posant G120 à G123 ; seule la recette E6 les vérifie, un arc A21 reste possible plus
+tard), la scène d'avant le rêve 179 `B[1]` (O-E19-33) et tout ce qui demande le combat (E14) ;
 les arrivées de la chaîne qui n'ont pas de vérification ne recouvrent aucune entité ; un test statique ferme la liste des
 opcodes sautés atteignables sur les cartes de la chaîne, et échoue dès qu'un nouveau site apparaît ou qu'une entrée devient
 périmée.
@@ -3937,6 +3940,17 @@ la liste statique (contrôle croisé). Une valeur exacte contredite est un arrê
   tracés, la 183 laissée à la recette).
 - L'auditeur a recalculé la liste (198 lignes, ligne à ligne), les comptes par opcode, l'absence d'attente, les quatre sites
   S connus, et toutes les valeurs exactes d'A13, A14, A17 et A18 : justes.
+
+- Relecture neuve sur `535cf7b` : **REVISE** (second). Bloquants et dispositions de la session principale : (1) le résultat
+  disait « chaque scène du jour 3 et du jour 4 » alors que les villageois de la 185 n'ont pas d'arc : **FIX par réduction**,
+  le résultat et la ligne du §1.1 les excluent nommément (recette E6, A21 possible plus tard) ; (2) le recensement, hérité
+  d'E19.d2c1, des `0x25` des programmes B reciblés par `0x42`/`0x43` (une entité qui n'atterrit jamais calerait) n'était ni
+  fait ni reporté : **DEFER à E19.h**, propriétaire des attentes en Z et de l'état en l'air des PNJ. Raison : les `0x25`
+  du chemin critique de la chaîne sont tous exercés par un arc qui va au bout (179 `@415` A12, 10 `@2455` et `@6393` A10J,
+  165 `@838` et `@843` A10 ; 10 `@4741` et `@5545` T-A10v hors chaîne) ; les autres sites recensés de la chaîne (165 `@865`
+  et `@1166`, 172 `@610`, 174 `@203`, 179 `@1114`, 181 `@207` ; 135 `@2483` hors chaîne) sont dans des programmes
+  d'ambiance ou optionnels, et la recette E6 parcourt le jeu libre de la 179. Nouvelle époque : une seule relecture de
+  clôture ; un nouveau REVISE met E19.e en pause.
 
 **Acceptation d'E19.e.**
 1. Le test statique est vert avec exactement la liste fermée, et rouge sur chacune des mutations d'E1.
