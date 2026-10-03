@@ -3793,7 +3793,7 @@ inchangées.
 - Sites `0x2F` qui lisent la Croix hors de la chaîne (51, 440, 477, 143, 475) : la même pression sert le script et le saut,
   comme l'original.
 
-### 1.2i E19.e — La chaîne du jour 3 et du jour 4 prouvée, et un test statique des opcodes sautés ⏳ (plan ; relu et approuvé avant exécution)
+### 1.2i E19.e — La chaîne du jour 3 et du jour 4 prouvée, et un test statique des opcodes sautés ⏳ (READY le 2026-10-03, en exécution)
 
 **Résultat** : les scènes scriptées du jour 3 qui ne demandent pas le combat sont rejouées par un arc sur la vraie DLL (176
 `B[6]`, 179 `B[3]`, 176 `B[7]`, 135, 178), en plus de celles qui le sont déjà (179 `B[2]` A12, 10 `B[20]` A10J, et au jour 4
@@ -3842,7 +3842,7 @@ la liste statique (contrôle croisé). Une valeur exacte contredite est un arrê
 
 **Tâches.**
 
-- ⏳ **E0 — Plan.** Ce plan, relu jusqu'à READY.
+- ✅ **E0 — Plan.** Ce plan, relu jusqu'à READY.
 - ⏳ **E1 — Test statique des opcodes sautés de la chaîne.**
   - **Cartes** : les 30 cartes de la chaîne, 389, 390, 476, 478, 392, 391, 416, 163, 162, 165, 164, 172, 169, 170, 171,
     173, 174, 175, 10, 179, 176, 177, 178, 180, 181, 182, 135, 183, 184, 185 (dix n'ont aucun site sauté : 170, 171, 173,
@@ -3951,6 +3951,7 @@ la liste statique (contrôle croisé). Une valeur exacte contredite est un arrê
   et `@1166`, 172 `@610`, 174 `@203`, 179 `@1114`, 181 `@207` ; 135 `@2483` hors chaîne) sont dans des programmes
   d'ambiance ou optionnels, et la recette E6 parcourt le jeu libre de la 179. Nouvelle époque : une seule relecture de
   clôture ; un nouveau REVISE met E19.e en pause.
+- Relecture de clôture sur `8e5f4cb` : **READY**. Exécution lancée le 2026-10-03 (mode AUTO, ni merge ni push).
 
 **Acceptation d'E19.e.**
 1. Le test statique est vert avec exactement la liste fermée, et rouge sur chacune des mutations d'E1.
