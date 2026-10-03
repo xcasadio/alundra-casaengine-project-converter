@@ -4062,7 +4062,7 @@ porteurs **[binaire]** :
 - Une structure globale unique en `0x800E4338` : Flag, LimitX/Y, SpeedX/Y, OffsetX/Y, ReachX/Y. **`0x8E [b1,b2,b3,b4]`** :
   Flag = 1, SpeedX = b1, SpeedY = b2, LimitX = b3, LimitY = b4, octets **non signés** ; ne touche ni Offset ni Reach.
   **`0x8F`** : Flag = 0, rien d'autre.
-- **Pas de balancement** (`0x8002C894`, première instruction du suivi caméra `0x8002CDA0`, une fois par tick) : si Flag = 0,
+- **Pas de balancement** (`0x8002C894`, premier appel du suivi caméra `0x8002CDA0`, en `0x8002CDD8`, une fois par tick) : si Flag = 0,
   Limit, Speed et Offset à 0 (**pas Reach**) ; axe X : si LimitX = 0 ou SpeedX = 0, OffsetX = 0 ; axe Y : seul LimitY = 0
   est testé (`0x8002C944` ; un SpeedY nul fige OffsetY) ; par axe, si Reach = 0 : `Off -= Speed`, et si `Off <= -Limit`,
   `Off = -Limit` et Reach = 1 ; sinon `Off += Speed`, et si `Off >= Limit`, `Off = Limit` et Reach = 0 (onde triangulaire
@@ -4071,6 +4071,9 @@ porteurs **[binaire]** :
   OffsetY, puis bornes [0, 0x39F] × [0, 0x2CF], la valeur bornée réécrite dans l'état : le décalage est **intégré** au
   scroll à chaque tick. Le tick de l'accroche (chargement) fait le pas de balancement **sans** ajouter le décalage. Les
   tuiles, les entités et les fonds (avec leur parallaxe) suivent le scroll ; le HUD et l'UI non.
+- **Transition** (audit des valeurs) : le portail (`0x800314FC`) et `0x53` (`0x8003EC80`) arment le départ ; la boucle
+  d'images sort aussitôt (`0x8002C454`-`0x8002C45C`) et la boucle de transition n'appelle ni le rendu ni le suivi : pas
+  de balancement pendant le fondu de départ.
 - **Chargement de carte** (`0x8002CD54`) : seul Flag repasse à 0 ; le premier pas efface Limit, Speed, Offset ; Reach
   persiste d'une carte à l'autre (fidèle, gardé).
 - `0xA4` : masque des couches de fond (bit 1 couche 0, bit 2 couche 1 ; une couche masquée est **figée** : ni avance ni
@@ -4090,59 +4093,109 @@ de `0x8E`, `0x8F`, `0xA4` corrigés dans E19.k1.
 
 ##### 1.2k.1 E19.k1 — Balancement de la caméra ⏳
 
+**Relecture** (2026-10-03) : REVISE n°1 (site du pas sans caméra, tick de l'accroche, épingle d'A18) ; audit des valeurs :
+toutes les valeurs de K1 et K2 confirmées par un modèle indépendant (`e19k-audit/model.py`), un P2 (le binaire ne balance
+pas pendant le fondu de départ), trois P3 et six P4. Dispositions : les trois blocages, le P2 et les trois P3 **corrigés**
+ci-dessous (K1, K3, K4, K2, K2b, K3 des tâches) ; P4-a et P4-b (deux termes additifs du suivi et autres écrivains natifs de
+la structure) consignés en O-E19-35 ; P4-c (fréquences de la recette) corrigé en K5 ; P4-d (frame de rattrapage : tous les
+scripts avant les pas de caméra, motif existant) en risque ; P4-e (remise à zéro) en K1 ; P4-f (« premier appel ») corrigé
+dans la découverte.
+
 **Règles d'exécution.**
-- **K1 — État** : un singleton de session `AlundraCameraSway` (nom indicatif) avec les neuf champs du binaire, jamais
-  sauvegardé ; `InitializeWithWorld` ne remet que Flag à 0 ; remis à zéro par `ResetForTests` (ajouté au nettoyage des
-  singletons de `SaveGameDirectorTestSupport`).
+- **K1 — État** : une classe `AlundraCameraSway` (nom indicatif) avec les neuf champs du binaire et son pas (K3) ; un
+  constructeur interne pour les tests purs ; une instance de session `AlundraCameraSway.Instance` (modèle
+  d'`AlundraScreenFadeDirector.Instance`), jamais sauvegardée. `InitializeWithWorld` ne remet que Flag à 0, **en tête,
+  avant ses retours anticipés**. `ResetForTests` (les neuf champs à 0, Reach compris) est ajouté à
+  `SaveGameDirectorTestSupport.ResetSingletons`, que les arcs appellent déjà (`AlundraArcSupport.cs:301`) : chaque arc part
+  d'un état neuf.
 - **K2 — Opcodes** : `0x8E` et `0x8F` dans `Dispatch` comme ci-dessus ; accès par un membre par défaut
-  `IEntityWorldContext.CameraSway => null` (modèle de `ScreenFadeDirector`), implémenté par `AlundraWorldProxy` ; sans
-  état, repli dégradé journalisé une fois (modèle de `0xAF`) ; libellés de la table corrigés (« Camera sway start », « Camera
-  sway stop », « Background layer mask ») ; `0x8E` et `0x8F` ajoutés à `IntroTraceHarnessTests.ImplementedOpcodes`.
-- **K3 — Pas** : un pas de balancement par tick logique, **même sans caméra** (le binaire le fait toujours), règles exactes
-  ci-dessus (asymétrie de l'axe Y comprise).
-- **K4 — Caméra** : dans le pas de suivi par tick (`AdvanceCameraSmoothing`), dans l'espace de scroll de l'original
-  (`ToOriginalScrollSpace`) : pas de balancement, puis suivi, puis ajout de (OffsetX, OffsetY) au scroll, puis bornes, la
-  valeur bornée réécrite ; le tick de l'accroche fait le pas de balancement sans ajouter le décalage (sans balancement,
-  aucun changement).
+  `IEntityWorldContext.CameraSway => null` (modèle de `ScreenFadeDirector`), implémenté par `AlundraWorldProxy` (qui rend
+  `AlundraCameraSway.Instance`) ; sans état, repli dégradé journalisé une fois (modèle de `0xAF`) ; libellés de la table
+  corrigés (« Camera sway start », « Camera sway stop », « Background layer mask ») ; `0x8E` et `0x8F` ajoutés à
+  `IntroTraceHarnessTests.ImplementedOpcodes`.
+- **K3 — Pas et site.** Le pas suit les règles exactes de la découverte (asymétrie de l'axe Y comprise : avec SpeedY nul,
+  OffsetY est figé dans les bornes, mais borné avec bascule de Reach s'il est au-delà). Le binaire n'appelle le pas qu'au
+  début du suivi caméra (premier appel, `0x8002CDD8`) : dans la DLL, **un seul site**, `AlundraCameraDirector.UpdateCameraFollow`,
+  appelé une fois par frame dans le bloc caméra d'`AlundraWorldProxy.Update`, **après** la passe des événements de carte et
+  celle des déclencheurs en attente (`AlundraWorldProxy.cs:2070-2113`), sans autre garde que celles du suivi (le bloc caméra
+  ne passe pas par `gameplayBlocked` : inchangé). Il fait **exactement `ticksThisFrame` pas** : avec caméra, un pas par tick
+  dans `AdvanceCameraSmoothing` (K4) ; sans caméra (`_debugCamera == null`, cas des arcs), les `ticksThisFrame` pas juste
+  avant le retour anticipé. **Pendant une transition** (`AlundraWarpDirector.Instance.IsTransitionInProgress`, lu au bloc
+  caméra) : aucun pas de balancement et aucun ajout du décalage ; le binaire sort de sa boucle d'images dès que le départ
+  est armé (`0x8002C454`-`0x8002C45C`) et sa boucle de transition (`0x8002C490`-`0x8002C4C0`) n'appelle ni le rendu ni le
+  suivi (audit : exact pour `0x53`, au plus un pas d'écart pour un portail). Le suivi lui-même pendant la transition reste
+  tel qu'aujourd'hui (hors tranche).
+- **K4 — Caméra.** `ComputeSmoothedCameraTarget` gagne un paramètre facultatif, le décalage du tick (espace de scroll),
+  ajouté **entre le pas de suivi et la borne**, en rendu `X += OffsetX` et `Y −= OffsetY` (`ToOriginalScrollSpace` :
+  scrollY = −renderY − 120), jamais sur l'accroche. `AdvanceCameraSmoothing` gagne un paramètre facultatif
+  `AlundraCameraSway? sway = null` : à chaque tick de sa boucle, le pas de balancement puis le suivi avec le décalage de ce
+  tick. **Accroche** : une frame d'accroche à N ≥ 1 ticks fait d'abord le tick d'accroche (pas de balancement, accroche à
+  la cible bornée, ni suivi ni décalage), puis N − 1 ticks complets : N pas de balancement, N − 1 pas de suivi ; à 0 tick
+  (fonctions pures seulement : le directeur n'accroche qu'avec un tick), l'accroche seule, sans pas. Sans balancement
+  (`sway` nul, ou Flag 0 et état nul), rien d'observable ne change : après l'accroche, l'état est un point fixe du suivi
+  vers la même cible (la cible est calculée une fois par frame), d'où les épingles existantes intactes. Le commentaire
+  « No tick is consumed » (`AlundraCameraMath.cs:178-183`) est réécrit : l'accroche consomme le premier tick, comme le tick
+  de chargement du binaire. **Signatures existantes gardées** (paramètres facultatifs) : `AlundraWorldProxyCameraFollowTests.cs`
+  n'est pas touché.
 
 **Tâches.**
 - ⏳ **K0 — Plan** : ce plan, relu jusqu'à READY.
-- ⏳ **K1 — État, opcodes, pas, tests d'abord.** Tests purs du pas : `[1,1,3,2]` → OffsetX −1, −2, −3, −2, −1, 0, 1, 2, 3, 2,
-  1, 0 (ReachX passe à 1 au pas 3, à 0 au pas 9) et OffsetY −1, −2, −1, 0, 1, 2, 1, 0 (ReachY à 1 au pas 2, à 0 au pas 6) ;
-  `[3,1,6,2]` → OffsetX −3, −6, −3, 0, 3, 6, 3, 0 ; `[8,1,8,2]` → −8, 0, 8, 0 ; `[13,11,1,2]` → OffsetX −1, 1, −1, 1 et OffsetY
-  −2, 2 ; changement en cours (deux pas de `[1,1,3,2]` puis `[8,1,8,2]`) → (−8, Reach 1), 0, 8, 0 ; `0x8F` puis un pas : Speed,
-  Limit, Offset à 0, Reach conservé ; asymétrie : SpeedX 0 → OffsetX 0, SpeedY 0 → OffsetY figé ; opérande 200 lu 200 ;
-  chargement : Flag 0, Reach conservé. Tests du runner : `0x8E` pose les quatre valeurs, `0x8F` pose Flag 0, tailles 5 et 1.
-  Commit : `feat(alundra): port the camera sway opcodes 0x8E and 0x8F`
-- ⏳ **K2 — Caméra, tests d'abord.** Tests purs (cible fixe, sans bornes, état neuf, scroll de l'original) : `[1,1,3,2]` →
-  X −1, −3, −6, −8, −9, −9, −8, −6, −3, −1, 0, 0 ; Y −1, −3, −4, −4, −3, −1, 0, 0 (l'axe Y de rendu de la DLL en est l'opposé
-  si `ToOriginalScrollSpace` l'inverse : le test lit l'espace de l'original) ; avec l'accroche au tick 0 : X 0, −2, −5, −7,
-  −8, −8, −7, −5, −2, 0, +1, 0 puis le régime ; bornée à 0 : 0, 0, 0, 0, 0, 0, 1, 2, 4, 5, 5, 4, 2, 0 ; après `0x8F` à −9, la
-  caméra reste à −9 (zone morte du `>> 4`, E5.c). Commit : `feat(alundra): the camera sway moves the scroll like the binary`
+- ⏳ **K1 — État, opcodes, pas, tests d'abord.** Tests purs du pas, sur une instance neuve : `[1,1,3,2]` → OffsetX −1, −2, −3,
+  −2, −1, 0, 1, 2, 3, 2, 1, 0 (ReachX passe à 1 au pas 3, à 0 au pas 9) et OffsetY −1, −2, −1, 0, 1, 2, 1, 0 (ReachY à 1 au
+  pas 2, à 0 au pas 6) ; `[3,1,6,2]` → OffsetX −3, −6, −3, 0, 3, 6, 3, 0 ; `[8,1,8,2]` → −8, 0, 8, 0 ; `[13,11,1,2]` → OffsetX
+  −1, 1, −1, 1 et OffsetY −2, 2 ; changement en cours (deux pas de `[1,1,3,2]` puis `[8,1,8,2]`) → (−8, Reach 1), 0, 8, 0 ;
+  `0x8F` puis un pas : Speed, Limit, Offset à 0, Reach conservé ; asymétrie : SpeedX 0 → OffsetX 0 ; SpeedY 0 avec OffsetY 1,
+  ReachY 0, LimitY 2 → OffsetY 1, ReachY 0 (figé) ; SpeedY 0 avec OffsetY −3, ReachY 0, LimitY 2 → OffsetY −2, ReachY 1 ;
+  opérande 200 lu 200 ; chargement (`InitializeWithWorld`) : Flag 0, Reach conservé. Tests du runner : `0x8E` pose les
+  quatre valeurs, `0x8F` pose Flag 0, tailles 5 et 1. Commit : `feat(alundra): port the camera sway opcodes 0x8E and 0x8F`
+- ⏳ **K2 — Caméra, tests d'abord.** Tests purs (cible fixe, sans bornes sauf mention, instance neuve, valeurs lues dans
+  l'espace de scroll de l'original par `ToOriginalScrollSpace`, relatives au repos), un appel
+  `AdvanceCameraSmoothing(…, ticksThisFrame: 1, …, sway)` par tick : `[1,1,3,2]` → X −1, −3, −6, −8, −9, −9, −8, −6, −3, −1,
+  0, 0 ; Y −1, −3, −4, −4, −3, −1, 0, 0 ; avec l'accroche au premier appel (`needsSnap: true`, 1 tick) : X 0, −2, −5, −7, −8,
+  −8, −7, −5, −2, 0, +1, 0 puis le régime ; une frame d'accroche à 3 ticks (un seul appel, `needsSnap: true`,
+  `ticksThisFrame: 3`) → X −5, Y −3, Offset (−3, −1), Reach (1, 1) ; bornée à 0 (bornes de carte, repos au bord gauche) :
+  0, 0, 0, 0, 0, 0, 1, 2, 4, 5, 5, 4, 2, 0 ; après `0x8F` à −9, la caméra reste à −9 (zone morte du `>> 4`, E5.c).
+  **K2b — Câblage**, nouveau fichier `AlundraCameraSwayWiringTests.cs` (montage caméra d'`AlundraWorldProxyUpdateCharacterizationTests`
+  : entité caméra, entité suivie immobile, `proxy.Update(0.02f)` = un tick ; état de session remis à zéro) : (a) caméra au
+  repos (frames sans balancement jusqu'à l'arrêt), puis Flag 1 `[1,1,3,2]` posé sur `AlundraCameraSway.Instance`, puis trois
+  frames → `Target` dans l'espace de scroll, relatif au repos : X −1, −3, −6 ; Y −1, −3, −4 ; (b) monde sans caméra, même
+  état, trois frames → Offset (−3, −1), Reach (1, 1) ; (c) transition armée (montage d'`AlundraInventoryDirectorTests.cs:255-265`,
+  `BeginDeparture`), état `[1,1,3,2]` après un pas, une frame → état de balancement inchangé, et avec caméra `Target`
+  inchangé. (a) et (b) rouges avant K2 (aucun pas, aucun ajout), (c) vert avant (garde). Commit :
+  `feat(alundra): the camera sway moves the scroll like the binary`
 - ⏳ **K3 — Liste fermée et arcs.** Les 28 lignes `0x8E`/`0x8F` quittent `Alundra.Tests/Data/story-chain-skipped-opcodes.tsv`
-  (198 → 170) ; la 392 entre dans `MapsWithoutSkippedSite` (10 → 11 ; nom et doc du test) ; A5 et A5r : `0x8E @20` exécuté à
-  l'image 0, rien de sauté, paramètres (1,1,3,2), Offset (−1, −1) après l'image 0, OffsetY −2 et ReachY 1 après l'image 1,
-  OffsetX −3 et ReachX 1 après l'image 2, Flag 1 jusqu'au départ ; A6 : les 4 entrées `0x8E` quittent son ensemble autorisé,
-  paramètres (1,1,3,2) après l'image 0, (3,1,6,2) après `@335`, (8,1,8,2) après `@342`, Flag 1 jusqu'à la fin de l'arc (les
-  images de `@335` et `@342` ne sont pas épinglées) ; A18 : (5,3,7,5) après `@608`, (13,11,1,2) après `@618`, Flag 0 après
-  `@683`, tout à 0 au pas suivant. Commit : `test(alundra): the camera sway on the story chain`
+  (198 → 170) ; la 392 entre dans `MapsWithoutSkippedSite` (10 → 11 ; nom et doc du test,
+  `AlundraStoryChainOpcodeAudit.cs:46-47`, `AlundraStoryChainSkippedOpcodesTests.cs:74-83`) ; A5 et A5r : `0x8E @20` exécuté à
+  l'image 0, rien de sauté (lignes 91 et 143 changées, ensembles autorisés des lignes 142 et 186 resserrés), paramètres
+  (1,1,3,2), Offset (−1, −1) après l'image 0, OffsetY −2 et ReachY 1 après l'image 1, OffsetX −3 et ReachX 1 après l'image 2,
+  Flag 1 jusqu'au départ ; A6 : les 4 entrées `0x8E` quittent son ensemble autorisé (lignes 33, 36-37), paramètres (1,1,3,2)
+  après l'image 0, (3,1,6,2) après `@335`, (8,1,8,2) après `@342`, Flag 1 jusqu'à la fin de l'arc (les images de `@335` et
+  `@342` ne sont pas épinglées) ; A18 : (5,3,7,5) après `@608`, (13,11,1,2) après `@618`, Flag 0 après `@683`, puis au pas
+  suivant Limit, Speed et Offset à 0 (Reach non épinglé : sa valeur dépend du nombre de pas depuis `@618`). Commit :
+  `test(alundra): the camera sway on the story chain`
 - ⏳ **K4 — Vérification et clôture**, comme les tranches précédentes. **K5 — Recette** (auteur) : la 392 (couloir du
-  navire), la 391 (la coque cède), la 178 (séisme de Septimus) : comparer l'impression à l'original ; à 50 ticks par
-  seconde l'effet ressemble à une secousse de 4 à 6 Hz ; après `0x8F`, la caméra peut rester décalée de 15 px au plus (zone
-  morte d'E5.c).
+  navire), la 391 (la coque cède), la 178 (séisme de Septimus) : comparer l'impression à l'original. À 50 ticks par seconde,
+  `[1,1,3,2]` et `[3,1,6,2]` font une secousse de 4 à 6 Hz, `[8,1,8,2]` 12,5 Hz, `[5,3,7,5]` 8,3 Hz en X et 6,25 Hz en Y,
+  `[13,11,1,2]` 25 Hz ; l'amplitude à l'écran est l'intégrale du décalage (0 à −9 px pour `[1,1,3,2]`) ; après `0x8F`, la
+  caméra peut rester décalée de 15 px au plus (zone morte d'E5.c) ; aucun balancement pendant le fondu de départ.
 
 **Acceptation d'E19.k1.**
-1. Tests K1 et K2 rouges d'abord, verts après, valeurs écrites tenues ; une valeur contredite est un arrêt.
+1. Tests K1, K2 et K2b rouges d'abord (sauf K2b (c), garde), verts après, valeurs écrites tenues ; une valeur contredite est
+   un arrêt.
 2. Code de test existant touché, liste fermée : A5 et A5r (`AlundraShipCorridorArcTests.cs`), A6 (`AlundraShipBlockArcTests.cs`),
    A18 (`AlundraDay3SceneArcTests.cs`), la liste versionnée et `AlundraStoryChainOpcodeAudit.cs`/`AlundraStoryChainSkippedOpcodesTests.cs`
-   (28 lignes, la 392 sans site), `IntroTraceHarnessTests.ImplementedOpcodes`, `SaveGameDirectorTestSupport.cs` (remise à zéro du
-   singleton) ; rien d'autre ; les six traces à l'octet.
+   (28 lignes, la 392 sans site), `IntroTraceHarnessTests.ImplementedOpcodes`, `SaveGameDirectorTestSupport.cs` (remise à
+   zéro du singleton) ; rien d'autre (`AlundraWorldProxyCameraFollowTests.cs` et les autres tests de caméra inchangés) ; les
+   six traces à l'octet.
 3. `Alundra.Tests` sans échec en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
 4. Recette K5 faite par l'auteur.
 
 **Risques.** Le décalage intégré ne revient pas toujours à zéro après `0x8F` (zone morte d'E5.c, jusqu'à 15 px) ; un état
-de balancement oublié d'une carte à l'autre (Flag remis à 0 au chargement : gardé) ; les fonds suivent le scroll avec leur
-parallaxe : aucune épingle n'existe sur leur position dans les arcs.
+de balancement oublié d'une carte à l'autre (Flag remis à 0 au chargement : gardé ; Reach persiste, comme le binaire) ; les
+fonds suivent le scroll avec leur parallaxe : aucune épingle n'existe sur leur position dans les arcs ; sur une frame de
+rattrapage à plusieurs ticks, les scripts de tous les ticks passent avant les pas de caméra (motif existant de la DLL ; les
+arcs, à un tick par frame, n'en dépendent pas) ; les deux termes additifs du suivi et les écrivains natifs de la structure
+(O-E19-35) restent à porter avec E14.
 
 ##### 1.2k.2 E19.k2 — Masque des fonds `0xA4` ⏳ (esquisse)
 
@@ -4486,6 +4539,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-32 | **`LoadingMap` (`0x36`) en l'air** **[binaire]** : `MovePlayer` passe en `0x2D` quand le héros arrive au-dessus du sol (`0x800325E8`) ; la DLL laisse `0x36` sans effet (`AlundraPlayerManager.cs:256-263`). La 476 fait arriver le héros à 48 px au-dessus du sol (`0x53` de la 390 `@688`). Non porté en E19.d2c2. | à placer |
 | O-E19-33 | **Scène d'avant le rêve** (179 `B[1]`, jour 3) et rêve 44 : la scène n'est atteignable qu'après le jour 2 (combat, E14) et aucun préréglage ne la couvre ; le rêve demande le combat. Question à l'auteur : faut-il un préréglage `day3-start` (179, case (12,22), z1, G203, G1660, table [162] = 176) et un arc de 179 `B[1]` ? Hors d'E19.e en attendant. | à placer |
 | O-E19-34 | **Paramètres effacés au redémarrage d'un programme** (découverte d'E19.j, D7) : `InitializeEventData` efface tous les paramètres (`Array.Clear`, `AlundraEventProgramRunner.cs:352`) alors que le binaire ne réécrit que l'entrée et le pc (`0x80041EE4`) et garde +8..+0x28 (clé d'attente, compteur de `0x37`…) : un programme suspendu sur son premier `0x37` continue son compte dans le binaire et le recommence dans la DLL ; 19 programmes B à zone bornée et 243 programmes C commencent par `0x37`, 47 par `0x0B`. | E19.m |
+| O-E19-35 | **Termes additifs du suivi et écrivains natifs du balancement** (audit d'E19.k1, P4-a et P4-b) : la formule du suivi caméra du binaire ajoute aussi `0x800DD870` (X) et `0x800DD874` (Y), effacés à chaque tick et au chargement, le terme Y écrit par du code natif (`0x8007F350`) ; la structure du balancement (`0x800E4338`) a d'autres écrivains natifs que `0x8E`/`0x8F` : la magie séisme la sauvegarde et la restaure (`0x80035D00`/`0x80034E08`) et pose Flag (`0x80035DF4`), des comportements d'entités l'écrivent (`0x80061E78`, `0x8006224C`…). L'instance de session d'E19.k1 doit leur servir. | E14 |
 
 ## 4. Hors périmètre
 
