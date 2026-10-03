@@ -230,6 +230,14 @@ public class AlundraEntityScriptProxy : GameplayProxy
     /// <summary>See <see cref="AirborneSavedGravity"/>.</summary>
     internal bool AirborneSavedVerticalOwned;
 
+    /// <summary>
+    /// Engine-only (E19.d2c2 S1, docs/plan-e19-opcodes.md §1.2h.3.2): the <see cref="MotionTickCount"/> at which <c>MovePlayer</c> last wrote the take-off
+    /// animation (2 or <c>0x2B</c>), -1 for never. <c>MovePlayer</c> runs once per rendered frame while the binary's runs once per tick: while no tick has run
+    /// since (a frame without tick) it does not rewrite the take-off target, so the jump is not lost between the press and the first tick that takes the
+    /// impulse. Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal int JumpStartTickStamp = -1;
+
     /// <summary>The impulse (<see cref="AnimSetEntry.IsZForceApplied"/>) of <paramref name="animationId"/> in this entity's animation sets, 0 when it has none.</summary>
     internal int ZImpulseOf(uint animationId)
         => AnimSetsByAnim != null && AnimSetsByAnim.TryGetValue((int)animationId, out var entry) ? entry.IsZForceApplied : 0;

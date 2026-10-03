@@ -286,6 +286,18 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
     /// controller samples the pad - then the world's.</summary>
     private static void OneFrame(AlundraWorldProxy proxy)
     {
+        // E19.d2c2 D1 (disposition de la session principale): the production frame runs the world's runtime systems (the character motion system of the
+        // controllers) before the entities (World.Update); without it the hero's controller never grounds and S1's air predicate takes him for airborne.
+        var world = Spawned(proxy).Select(e => e.OwnerEntity?.World).First(w => w != null)!;
+        foreach (var hero in Spawned(proxy).Where(e => e.IsPlayer && e.OwnerEntity != null))
+        {
+            if (!world.Entities.Contains(hero.OwnerEntity!))
+            {
+                world.Entities.Add(hero.OwnerEntity!); // the montage adds the hero by hand; the motion system registers controllers from the world's entity list.
+            }
+        }
+
+        world.RuntimeSystems.Update(CasaEngine.Core.Time.FrameTime.FromElapsedTime(0.02f, world.UpdateSequence + 1L));
         foreach (var entity in Spawned(proxy).ToList())
         {
             entity.Update(0.02f);

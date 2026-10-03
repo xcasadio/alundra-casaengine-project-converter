@@ -208,6 +208,16 @@ internal sealed class RecordingSoundPlayer : IAlundraSoundPlayer
     }
 }
 
+/// <summary>E19.d2c2: a pad the test writes by hand (held buttons, buttons pressed THIS frame); the hero's controller reads it every frame.</summary>
+internal sealed class HeroPad
+{
+    public uint Hold;
+
+    public uint Pressed;
+
+    public AlundraPadState State => new() { ButtonsHold = Hold, ButtonsJustPressed = Pressed };
+}
+
 /// <summary>
 /// E19.d2c1 (docs/plan-e19-opcodes.md §1.2h.3.1, C3/C4): the hero montage of the plan (annex A.1): a real <see cref="World"/> on a field of
 /// synthetic cells (<see cref="CellsField"/>, height 0 unless a test gives its own), a hero pawn with the REAL exported controller settings
@@ -234,6 +244,17 @@ internal sealed class JumpHeroRig
     public required Entity HeroEntity { get; init; }
 
     public CharacterControllerComponent Controller => Hero.Controller!;
+
+    /// <summary>The pad of the montage (E19.d2c2: only a montage built with <c>freePad</c> reads it; otherwise the pad is locked and empty).</summary>
+    public HeroPad Pad { get; init; } = new();
+
+    /// <summary>One update with the buttons <paramref name="hold"/> held and <paramref name="pressed"/> pressed this frame (E19.d2c2).</summary>
+    public void Step(uint hold = 0, uint pressed = 0, float elapsed = 0.02f)
+    {
+        Pad.Hold = hold;
+        Pad.Pressed = pressed;
+        Update(elapsed);
+    }
 
     /// <summary>The root height of the hero (pixels).</summary>
     public float RootZ => HeroEntity.RootComponent!.LocalTransform.Position.Z;
@@ -266,10 +287,12 @@ internal sealed class JumpHeroRig
         float y = 100.5f,
         float z = 0f,
         float groundSnapDistance = -1f,
-        bool gravityFlag = true)
+        bool gravityFlag = true,
+        bool freePad = false)
     {
-        var controller = new AlundraPlayerController { PadStateProviderForTests = () => default };
-        var host = new ContactHost(playerControlFlags: AlundraGameState.PlayerControlBits.ControlLocked, playerController: controller);
+        var pad = new HeroPad();
+        var controller = new AlundraPlayerController { PadStateProviderForTests = () => freePad ? pad.State : default };
+        var host = new ContactHost(playerControlFlags: freePad ? 0 : AlundraGameState.PlayerControlBits.ControlLocked, playerController: controller);
         var world = ContactWorld.BuildWorld(field ?? FlatCells.Create(), probeFactory?.Invoke(host));
         configure?.Invoke(world, host);
 
@@ -299,12 +322,14 @@ internal sealed class JumpHeroRig
             [1] = new AnimSetEntry { Anim = 1, Speed = 208, Acceleration = 1 },
             [2] = new AnimSetEntry { Anim = 2, Speed = 208, Acceleration = 1, IsZForceApplied = 1280, Sfx = 10 },
             [43] = new AnimSetEntry { Anim = 43, Speed = 0, Acceleration = 1, IsZForceApplied = 1280, Sfx = 10 },
+            [44] = new AnimSetEntry { Anim = 44, Speed = 196, Acceleration = 1 },
+            [45] = new AnimSetEntry { Anim = 45, Speed = 0, Acceleration = 1 },
         };
         hero.CurrentAnimationId = 0;
         hero.TargetAnimationId = 0;
         host.All.Insert(0, hero);
 
-        var rig = new JumpHeroRig { World = world, Host = host, Hero = hero, HeroEntity = entity };
+        var rig = new JumpHeroRig { World = world, Host = host, Hero = hero, HeroEntity = entity, Pad = pad };
         rig.Update(); // the settling update.
         return rig;
     }
@@ -338,7 +363,7 @@ internal static class FlatCells
     /// A field of <paramref name="width"/> x <paramref name="height"/> cells, every one of walkability 0 and height 0 - or, with <paramref name="cell"/>, the
     /// walkability (<c>0x08</c> water, <c>0x10</c> the x160 bit, <c>0x20</c> ice) and the height (in cells of 16 px) that function gives for the cell (x, y).
     /// </summary>
-    public static AlundraCellsCollisionField Create(int width = 40, int height = 40, Func<int, int, (int Walkability, int Height)>? cell = null)
+    public static AlundraCellsCollisionField Create(int width = 40, int height = 40, Func<int, int, (int Walkability, int Height)>? cell = null, Func<int, int, int>? groundProperty = null)
     {
         var count = width * height;
         string Zeros()
@@ -363,12 +388,23 @@ internal static class FlatCells
             return sb.Append(']').ToString();
         }
 
+        string GroundPropertyColumn()
+        {
+            var sb = new StringBuilder("[");
+            for (var i = 0; i < count; i++)
+            {
+                sb.Append(i == 0 ? "" : ",").Append(groundProperty!(i % width, i / width));
+            }
+
+            return sb.Append(']').ToString();
+        }
+
         var walkabilityJson = cell == null ? Zeros() : Column(c => c.Walkability);
         var heightJson = cell == null ? Zeros() : Column(c => c.Height);
 
         var tileMapData = new TileMapData { MapSize = new CasaEngine.Core.Math.Size(width, height) };
         tileMapData.CustomProperties["AlundraCells"] =
-            "{\"map_index\":1,\"cell_count\":" + count + ",\"walkability\":" + walkabilityJson + ",\"ground_property\":" + Zeros()
+            "{\"map_index\":1,\"cell_count\":" + count + ",\"walkability\":" + walkabilityJson + ",\"ground_property\":" + (groundProperty == null ? Zeros() : GroundPropertyColumn())
             + ",\"slope\":" + Zeros() + ",\"height\":" + heightJson + ",\"tile_id\":" + Zeros() + ",\"wall_tiles_offset\":" + Zeros()
             + ",\"wall_tiles\":{}}";
         Assert.True(AlundraCellsCollisionField.TryCreate(tileMapData, "flat_cells", out var field));

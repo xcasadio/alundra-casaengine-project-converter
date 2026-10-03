@@ -248,6 +248,9 @@ public sealed class AlundraAnimationImpulseSpawnTests : IDisposable
         Assert.True(hero.SpawnAnimationActive);
         Assert.Equal(2u, hero.SpawnAnimationId);
 
+        // E19.d2c2 (S1): the hero is control-locked from here on, as a scripted arrival is; otherwise the tail of MovePlayer rewrites the animation 2 (a jump
+        // state) to Idle at the first frame on the ground and the test would no longer discriminate the exemption of R2.
+        ArcRun.State.PlayerControlFlags |= AlundraGameState.PlayerControlBits.ControlLocked;
         var rest = hero.PosZ;
         for (var tick = 1; tick <= 5; tick++)
         {

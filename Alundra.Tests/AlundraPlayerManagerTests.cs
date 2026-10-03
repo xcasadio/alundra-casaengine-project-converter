@@ -95,12 +95,18 @@ public class AlundraPlayerManagerTests
     [Fact]
     public void MovePlayer_OtherAnimationId_LeftUnchanged_NotPortedCase()
     {
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x2D /* Jump */, TargetDirection = 0 };
+        // E19.d2c2 S1: 0x2D (in the air, no direction) IS a ported case now: on the ground (a bare proxy is never in the air) with Right held it goes back to
+        // Moving, like the binary's tail. A case that is still not ported stays untouched.
+        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x2D /* air, still */, TargetDirection = 0 };
         var pad = new AlundraPadState { ButtonsHold = AlundraPadState.Right };
 
         AlundraPlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
 
-        Assert.Equal(0x2Du, player.TargetAnimationId); // untouched - Jump is not one of the ported cases.
+        Assert.Equal(1u, player.TargetAnimationId);
+
+        var unported = new AlundraEntityScriptProxy { TargetAnimationId = 0x20 /* not one of the ported cases */, TargetDirection = 0 };
+        AlundraPlayerManager.MovePlayer(unported, in pad, NewUnlockedState(), host: null);
+        Assert.Equal(0x20u, unported.TargetAnimationId);
     }
 
     // -----------------------------------------------------------------------------------------

@@ -83,6 +83,21 @@ public static class AlundraPlayerManager
     /// <summary>PlayerAnimation.Moving = 0x01 (PlayerAnimation.cs:6).</summary>
     private const uint MovingAnimationId = 0x01;
 
+    /// <summary>PlayerAnimation.JumpWalking = 2 (E19.d2c2 S1): the take-off of the Cross edge with a direction held.</summary>
+    private const uint JumpWalkingAnimationId = 0x02;
+
+    /// <summary>PlayerAnimation 0x2B (E19.d2c2 S1): the take-off of the Cross edge without a direction.</summary>
+    private const uint JumpStandingAnimationId = 0x2B;
+
+    /// <summary>PlayerAnimation 0x2C (E19.d2c2 S1): in the air with a direction held.</summary>
+    private const uint AirMovingAnimationId = 0x2C;
+
+    /// <summary>PlayerAnimation 0x2D (E19.d2c2 S1): in the air without a direction.</summary>
+    private const uint AirStillAnimationId = 0x2D;
+
+    /// <summary>The bit of <see cref="AlundraEntityScriptProxy.CombinedVramFlagsOR"/> (a ground property of 0x40) on which the Cross does not jump.</summary>
+    private const uint NoJumpVramFlag = 0x4000;
+
     /// <summary>PlayerAnimation.LoadingMap = 0x36 (PlayerAnimation.cs:62) - the animation
     /// <c>ResetEntityState</c>/<c>AlundraWorldProxy</c>'s own pawn-adoption spawns the hero with
     /// (<see cref="AlundraGameState.ResetAnimationId"/>).</summary>
@@ -276,7 +291,19 @@ public static class AlundraPlayerManager
             }
             else if (interact == 0)
             {
-                player.TargetAnimationId = buttonsHold != 0 ? MovingAnimationId : IdleAnimationId;
+                ApplyGroundOrAirTail(player, in pad, buttonsHold);
+            }
+        }
+        // E19.d2c2 S1 (binary 0x80031E84 and the common tail 0x80031EA8): the jump states keep the direction of the stick WITHOUT the interaction check, then take
+        // the same tail. The take-off states (2, 0x2B) are not rewritten while no tick ran since the tail wrote them (JumpStartTickStamp): MovePlayer runs once per
+        // rendered frame, the binary's once per tick, and a frame without tick must not lose the jump between the press and the tick that takes the impulse.
+        else if (player.TargetAnimationId is JumpWalkingAnimationId or JumpStandingAnimationId or AirMovingAnimationId or AirStillAnimationId)
+        {
+            var takeOff = player.TargetAnimationId is JumpWalkingAnimationId or JumpStandingAnimationId;
+            if (!takeOff || player.JumpStartTickStamp != player.MotionTickCount)
+            {
+                player.TargetDirection = dir;
+                ApplyGroundOrAirTail(player, in pad, buttonsHold);
             }
         }
         // Climbing(0x0E)/ClimbStill(0x35) case, PlayerManager.cs:675-731 (docs/plan-echelles-chiffrage.md
@@ -391,6 +418,38 @@ public static class AlundraPlayerManager
         // TargetAnimationId is neither of the three ported values above keeps it unchanged.
 
         // PlayerManager.cs:947-950 (END: UpdateItemEffectState, SetPlayerHpMax/SetPlayerHp) - NOT PORTED.
+    }
+
+    /// <summary>
+    /// E19.d2c2 S1: the common tail of the Idle/Moving and jump states (binary <c>0x80031EA8</c>), in this order. In the air (the controller's ground contact
+    /// when the hero has a controller, <see cref="AlundraEntityScriptProxy.HeroAirborne"/> for a bare proxy of a test): 0x2C with a direction held, else 0x2D.
+    /// On the ground: the edge of the Cross (<c>ButtonsJustPressed</c>) takes off - the walking jump (2) with a direction held, else the standing one (0x2B) -
+    /// unless the cells forbid it (<c>VramOR &amp; 0x4000</c>: the case ends, nothing changes, not even the Moving), and the tick stamp is taken; otherwise
+    /// Moving or Idle. <c>TryUseItem</c>, <c>PlayerTryAction</c>, <c>PlayerTryAttack</c> and the run of the Triangle stay no-ops of the port. The branch
+    /// <c>LoadingMap</c> to 0x2D stays unported (O-E19-32).
+    /// </summary>
+    private static void ApplyGroundOrAirTail(AlundraEntityScriptProxy player, in AlundraPadState pad, uint buttonsHold)
+    {
+        var airborne = player.Controller != null ? player.IsOnGround == 0 : player.HeroAirborne;
+        if (airborne)
+        {
+            player.TargetAnimationId = buttonsHold != 0 ? AirMovingAnimationId : AirStillAnimationId;
+            return;
+        }
+
+        if ((pad.ButtonsJustPressed & AlundraPadState.Cross) != 0)
+        {
+            if ((player.CombinedVramFlagsOR & NoJumpVramFlag) != 0)
+            {
+                return;
+            }
+
+            player.TargetAnimationId = buttonsHold != 0 ? JumpWalkingAnimationId : JumpStandingAnimationId;
+            player.JumpStartTickStamp = player.MotionTickCount;
+            return;
+        }
+
+        player.TargetAnimationId = buttonsHold != 0 ? MovingAnimationId : IdleAnimationId;
     }
 
     /// <summary>

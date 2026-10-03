@@ -3592,12 +3592,14 @@ par `ZImpulseSfx`) ; l'impulsion d'animation est prise au tick (R1) ; `CollidedW
 - ✅ **D0 — Plan ; mesure de base des arcs à vrai contrôleur** : A5, A5r, le couloir de la 392 (direction tenue juste
   après `PlaceHero`) et TN-3 (arrivée à 32 px au-dessus d'une case de 16 px : le héros tombe de 16 px au départ) sont
   mesurés tels quels avant D1 ; tout écart d'une de leurs épingles après D1 ou D2 est un arrêt.
-- ⏳ **D1 — États de saut et cachet (S1), tests d'abord.** SJ-1 à SJ-4 (annexe B.2.2, avec la correction C.saut-dll sur le
+- ✅ **D1 — États de saut et cachet (S1), tests d'abord.** SJ-1 à SJ-4 (annexe B.2.2, avec la correction C.saut-dll sur le
   prédicat d'air), SJ-8 (menus, boîtes), UH-4 (bords de Croix : en l'air sans effet ; rebond au tick 22 ; Croix tenue sans
   nouveau front ; Croix et Carré la même image : l'interaction l'emporte), UH-5 (case `VramOR & 0x4000` : Idle, pas
   même Moving), le retour à Idle ou Moving après un saut scripté sur un héros relâché en animation 44. Test existant rouge
   par construction : `MovePlayer_OtherAnimationId` (`0x2D` + Droite → 1). UJ-7 (E19.d2c1) passe sous `ControlLocked` :
   sinon S1 remplace l'animation 2 par Idle dès la première image au sol et le test ne discrimine plus l'exemption R2.
+  - Fait le 2026-10-03 : nouveau fichier `AlundraHeroJumpStatesTests.cs`, 26 tests (SJ-1 a à f, SJ-2, SJ-3, SJ-4, SJ-8 a et b, UH-4 a à c, UH-5, retour à Idle/Moving après un saut scripté, dont relâché en l'air). Rouge d'abord sur le code d'avant : 22 rouges, 4 verts d'emblée qui sont des gardes d'un chemin existant (SJ1c, SJ1e, SJ8a, UH4c) ; verts après S1, du premier coup, aux valeurs écrites. `Alundra.Tests` 2254 réussis (2228 + 26). Écarts : SJ-3, Triangle seul donne Idle (le plan l'emporte sur l'annexe, « inchangé ») ; UH-4 d est couvert avec SJ-1 e (MovePlayer direct, hôte à PNJ). S1 seul déplace déjà 47 lignes `posX`/`targetAnim` de chaque trace « spawn » (celles de l'annexe B.2.1, valeurs de `posX` du plan tenues) : non committées avec D1, remises par `git checkout`, elles se committent avec D2 aux valeurs complètes.
+  - **Arrêt et disposition (session principale)** : `AlundraSaveBookEndToEndTests.RealMap17_TheBook_Oui_…` rougissait (animation 44 au lieu de Moving, jamais d'interaction avec le livre). Cause mesurée : le montage n'appelle jamais les systèmes d'exécution du monde ; le contrôleur du héros n'est jamais mis à jour, `IsGrounded` reste faux à vie, et le prédicat d'air de S1 prend le héros pour « en l'air ». Aucun effet en production (le contrôleur tourne à chaque image, World.cs:531). Correctif de montage, seul `OneFrame` change : il fait tourner `RuntimeSystems.Update` en tête d'image, après avoir inscrit le héros (ajouté à la main) dans `World.Entities` que le système de mouvement parcourt. Aucune autre ligne ni assertion du test ne change.
 - ⏳ **D2 — Saut à la manette en monde réel, chutes (S1, S2), tests d'abord.** UH-1 à UH-3 (tables S-A, S-B, S-B2, S-B3,
   S-I, S-B4 de l'annexe B.1), SJ-5, SJ-5b, SJ-5c, SJ-6, **SJ-6b** (deux ticks dans l'image du front : une impulsion,
   `PosZ` 622592 ; la cible reste 2 ou `0x2B` pendant les deux ticks de l'image, d'où `ForceX` 159744 au second tick d'un
@@ -3671,6 +3673,7 @@ inchangées.
 2. **Code de test existant touché** — liste fermée ; toute autre assertion existante reste inchangée et verte :
    - **D1** : `AlundraPlayerManagerTests.MovePlayer_OtherAnimationId` (`0x2D` + Droite → 1) ; UJ-7
      (`AlundraAnimationImpulseSpawnTests.cs`, sous `ControlLocked`) ;
+   - **D1** : `AlundraSaveBookEndToEndTests` (`OneFrame` seul, montage : contrôleurs tenus à jour en tête d'image ; disposition de la session principale) ;
    - **D2** : `HeroTraceHarnessTests` (épingles de la chute : première image en l'air 221 à `posZ` 2064384, atterrissage à
      231 ; commentaires ; la note « chute » de l'en-tête des deux traces « spawn » si elle parle de la gravité du moteur) ;
      les deux traces `docs/hero-trace-389-spawn-*.txt` régénérées aux valeurs prévues ;
