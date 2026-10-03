@@ -4803,7 +4803,7 @@ rattrapage à plusieurs ticks, les scripts de tous les ticks passent avant les p
 arcs, à un tick par frame, n'en dépendent pas) ; les deux termes additifs du suivi et les écrivains natifs de la structure
 (O-E19-35) restent à porter avec E14.
 
-##### 1.2k.2 E19.k2 — Masque des fonds `0xA4` ⏳ (planifiée)
+##### 1.2k.2 E19.k2 — Masque des fonds `0xA4` 🧪 (recette K2-4 en attente ; verifier frais K2-3 à lancer)
 
 **Relecture** (2026-10-03) : REVISE n°1 (le masque du binaire porte sur les deux sortes de couches, défilement et
 cellulaire, et la 475 masque une couche 0 cellulaire ; l'index d'une couche est son identifiant du binaire, pas sa place dans
@@ -4844,7 +4844,7 @@ les bits ; le cycle de palettes (`b2 > 0`) sort d'E19.k2 : consigné (O-E19-43),
 
 **Tâches.**
 - ✅ **K2-0 — Plan**, relu jusqu'à READY (REVISE n°1, READY à la deuxième relecture le 2026-10-03).
-- ⏳ **K2-1 — Moteur, tests d'abord** (branche `chantier/e19k2-layer-mask` du sous-module, **empilée sur
+- ✅ **K2-1 — Moteur, tests d'abord** (branche `chantier/e19k2-layer-mask` du sous-module, **empilée sur
   `chantier/e19s-virtual-resolution` (`dfaed7a6`)** : le pointeur du parent ne peut désigner qu'un commit et doit garder E19.s ;
   plan du moteur dans son `ai-agent/tasks/`, comme l'exige son `AGENTS.md`) :
   défilement, deux couches d'identifiants 0 et 1 avec défilement automatique et cadence : `SetLayerActive(1, false)` puis trois
@@ -4854,13 +4854,33 @@ les bits ; le cycle de palettes (`b2 > 0`) sort d'E19.k2 : consigné (O-E19-43),
   couche d'identifiant 0 : `SetLayerActive(0, false)` puis trois ticks → positions, vagues et générateur aléatoire inchangés
   (aucun tirage), aucune soumission ; `true` → elle reprend. ADR du moteur. Commit (moteur) :
   `feat(rendering): scrolling and cellular layers can be switched off, frozen and not drawn`
-- ⏳ **K2-2 — DLL, tests d'abord** : runner avec un contexte de test qui enregistre les masques : `[0xA4, 1, 0, 0xFF]` → masque 1,
+  - Fait le 2026-10-03 : moteur, branche `chantier/e19k2-layer-mask` (empilée sur `chantier/e19s-virtual-resolution` `dfaed7a6`), trois commits :
+    plan du moteur `7350f247`, K2-1 `79ef3532`, ADR-0049 `987f0c7f` (`ai-agent/tasks/e19k2-layer-mask-tasks.md`). API posée d'abord en
+    talon sans effet (`SetLayerActive` ne fait rien, `IsLayerActive` rend vrai), puis 12 tests neufs (`ScrollingLayerMaskTests` 6,
+    `CellularLayerMaskTests` 6) : 8 rouges d'avant (premier assert lu : `IsLayerActive` faux attendu, vrai lu ; compteur attendu 0, lu 2 ;
+    soumission attendue vide, non vide), 4 verts d'avance (`SetLayers` et `Clear` remettent tout actif, vrais avec le talon). Après
+    l'implémentation toutes les valeurs écrites tenues, aucune ré-épinglée. `IsLayerActive(index)` est le lecteur par position ajouté
+    à l'API du plan (pour les tests et la DLL). Une couche inactive est figée en entier, décalages enroulés compris. Écart : aucun test
+    existant du moteur touché ; `CasaEngine.Tests` 2490 puis **2502** sur 2502 (Debug), 0 échec.
+- ✅ **K2-2 — DLL, tests d'abord** : runner avec un contexte de test qui enregistre les masques : `[0xA4, 1, 0, 0xFF]` → masque 1,
   `CodeIndex` 3 (rouge : sauté, aucun masque) ; `[0xA4, 2, 0, …]` → 2 ; `[0xA4, 0, 0, …]` → 0 ; `[0xA4, 7, 0, …]` → 3 ;
   `[0xA4, 3, 5, …]` → 3 et une trace `Degraded` ; contexte sans fonds (membre par défaut) → trace `Degraded`, un journal.
   Scène des fonds avec les deux services de test et la forme de la 475 (couche 0 cellulaire, couche 1 de défilement) : masque 0
   → les deux inactives ; masque 3 → actives ; masque 1 → seule la cellulaire active ; scène sans service → un journal, rien
   d'autre. Pointeur du sous-module mis à jour dans le même commit. Commit :
   `feat(alundra): port the background layer mask opcode 0xA4`
+  - Fait le 2026-10-03 : 16 tests neufs dans `AlundraBackgroundLayerMaskTests` (runner : 8, scène des fonds : 8). Rouges d'avant (stubs :
+    membre d'interface par défaut et `SetLayerMask` sans effet) : les 16 rouges ; l'opcode lu comme `UnknownSkipped` (attendu `Implemented`
+    ou `Degraded`), `CodeIndex` 3 déjà tenu, aucun masque enregistré ; `SetLayerMask` lu faux (attendu vrai). Verts après : toutes les
+    valeurs écrites tenues (modes 1, 2, 0, 7 → masques 1, 2, 0, 3 ; `[3, 5]` → masque 3 et `Degraded` ; contexte sans fonds → `Degraded`,
+    un journal ; la 475 : masque 0 → les deux inactives, 3 → actives, 1 → seule la cellulaire (identifiant 0) active ; sans service : un
+    journal, rendu vrai), aucune ré-épinglée. Un mode au-delà de 3 (`0xFC`) est masqué par `& 3` (cas ajouté). Écarts : (1) `b2 > 0` avec
+    un contexte qui ne traite pas les fonds ne journalise que la dégradation « sans fonds » (une seule des deux causes, même trace) ;
+    (2) la clé de journal « une fois » du cycle de palettes est `0x1A4`, distincte de celle de `0xA4`. Test existant touché :
+    `IntroTraceHarnessTests.ImplementedOpcodes` (`0xA4` ajouté) seulement. `Alundra.Tests` 2523 puis **2539** sur 2539 (+16), 0 échec, en
+    Release (54 s) puis en Debug (54 s), la Debug en dernier ; `cmp` de `Alundra/bin/Debug/net9.0-windows/Alundra.dll` et
+    `alundra-project/Alundra.dll` sans écart (sha256 `cf538c38...`) ; les six traces à l'octet (`git diff --ignore-cr-at-eol` rend 0, les
+    quatre traces du héros remises par `git checkout`) ; `story-chain-skipped-opcodes.tsv` non touché.
 - ⏳ **K2-3 — Vérification et clôture.** **K2-4 — Recette** (auteur, hors chaîne) : la 475, la couche cellulaire s'éteint et se
   rallume avec la scène ; une carte de 337 à 345.
 
