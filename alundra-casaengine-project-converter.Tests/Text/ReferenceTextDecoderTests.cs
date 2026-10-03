@@ -76,9 +76,12 @@ public class ReferenceTextDecoderTests
     public void Decode_NumericCode_NormalisesValue(string source, string expectedValue)
     {
         var page = Assert.Single(ReferenceTextDecoder.Decode(source));
-        var command = Assert.Single(page.Commands);
-        Assert.Equal("flag", command.Name);
-        Assert.Equal(expectedValue, Assert.Single(command.Arguments));
+        Assert.Empty(page.Commands);
+        Assert.Equal("ab", page.Text);
+        var marker = Assert.Single(page.Markers);
+        Assert.Equal("flag", marker.Name);
+        Assert.Equal(1, marker.Position);
+        Assert.Equal(expectedValue, marker.Properties["id"]);
     }
 
     [Fact]
@@ -87,15 +90,26 @@ public class ReferenceTextDecoderTests
         // "\12345a" is one flag(12345) then the visible text "a", not "\1" + "2345a".
         var page = Assert.Single(ReferenceTextDecoder.Decode("\\12345a"));
         Assert.Equal("a", page.Text);
-        var command = Assert.Single(page.Commands);
-        Assert.Equal("12345", Assert.Single(command.Arguments));
+        Assert.Equal("flag@0 id=12345", Assert.Single(page.Markers).ToCanonicalString());
     }
 
     [Fact]
-    public void Decode_SeveralFlags_KeepSourceOrder()
+    public void Decode_SeveralFlags_KeepSourceOrderAtTheirPositions()
     {
         var page = Assert.Single(ReferenceTextDecoder.Decode("a\\5b\\3c"));
-        Assert.Equal(new[] { "flag(5)", "flag(3)" }, page.Commands.Select(c => c.ToCanonicalString()));
+        Assert.Equal("abc", page.Text);
+        Assert.Equal(new[] { "flag@1 id=5", "flag@2 id=3" }, page.Markers.Select(m => m.ToCanonicalString()));
+    }
+
+    [Fact]
+    public void Decode_FlagsAndYieldsAtTheSamePosition_KeepSourceOrder()
+    {
+        // M389_S106 p0 ends with "\1004\Y\999\Y".
+        var page = Assert.Single(ReferenceTextDecoder.Decode("Fin ?\\1004\\Y\\999\\Y"));
+        Assert.Equal("Fin ?", page.Text);
+        Assert.Equal(
+            new[] { "flag@5 id=1004", "yield@5", "flag@5 id=999", "yield@5" },
+            page.Markers.Select(m => m.ToCanonicalString()));
     }
 
     [Fact]
@@ -104,22 +118,52 @@ public class ReferenceTextDecoderTests
         Assert.Throws<ReferenceTextDecoderException>(() => ReferenceTextDecoder.Decode("\\99999999999999999999"));
     }
 
+    [Fact]
+    public void Decode_NumericCode_ShouldFitAnInt()
+    {
+        var page = Assert.Single(ReferenceTextDecoder.Decode("\\2147483647"));
+        Assert.Equal("flag@0 id=2147483647", page.Markers[0].ToCanonicalString());
+        Assert.Throws<ReferenceTextDecoderException>(() => ReferenceTextDecoder.Decode("\\2147483648"));
+    }
+
+    [Fact]
+    public void Decode_FlagIsTransparentToTheEdgeSpaceTrim()
+    {
+        // F0-R2: the space between the last visible unit and a flag is still removed (M389_S022 p0),
+        // and so is the one between a leading flag and the first visible unit.
+        var trailing = Assert.Single(ReferenceTextDecoder.Decode("on \\999\\Y"));
+        Assert.Equal("on", trailing.Text);
+        Assert.Equal(new[] { "flag@2 id=999", "yield@2" }, trailing.Markers.Select(m => m.ToCanonicalString()));
+
+        var leading = Assert.Single(ReferenceTextDecoder.Decode(" \\201 Tu"));
+        Assert.Equal("Tu", leading.Text);
+        Assert.Equal("flag@0 id=201", Assert.Single(leading.Markers).ToCanonicalString());
+
+        var interior = Assert.Single(ReferenceTextDecoder.Decode("a \\5 b"));
+        Assert.Equal("a  b", interior.Text);
+        Assert.Equal("flag@2 id=5", Assert.Single(interior.Markers).ToCanonicalString());
+    }
+
     // ---------------------------------------------------------------------------------------
     // Command order (\X vs numeric)
     // ---------------------------------------------------------------------------------------
 
     [Fact]
-    public void Decode_CommandOrder_FalconUpdateBeforeFlag()
+    public void Decode_XThenFlag_FalconUpdateCommandAndFlagAtItsPosition()
     {
         var page = Assert.Single(ReferenceTextDecoder.Decode("\\X1 a \\0100"));
-        Assert.Equal(new[] { "falcon_update", "flag(100)" }, page.Commands.Select(c => c.ToCanonicalString()));
+        Assert.Equal(new[] { "falcon_update" }, page.Commands.Select(c => c.ToCanonicalString()));
+        Assert.Equal("90002 a", page.Text);
+        Assert.Equal("flag@7 id=100", Assert.Single(page.Markers).ToCanonicalString());
     }
 
     [Fact]
-    public void Decode_CommandOrder_FlagBeforeFalconUpdate()
+    public void Decode_FlagThenX_FalconUpdateCommandAndFlagAtItsPosition()
     {
         var page = Assert.Single(ReferenceTextDecoder.Decode("\\0100 a \\X1"));
-        Assert.Equal(new[] { "flag(100)", "falcon_update" }, page.Commands.Select(c => c.ToCanonicalString()));
+        Assert.Equal(new[] { "falcon_update" }, page.Commands.Select(c => c.ToCanonicalString()));
+        Assert.Equal("a 90002", page.Text);
+        Assert.Equal("flag@0 id=100", Assert.Single(page.Markers).ToCanonicalString());
     }
 
     // ---------------------------------------------------------------------------------------
@@ -127,11 +171,12 @@ public class ReferenceTextDecoderTests
     // ---------------------------------------------------------------------------------------
 
     [Fact]
-    public void Decode_BackslashY_AddsNothing()
+    public void Decode_BackslashY_BecomesAYieldMarkerAtItsPosition()
     {
         var page = Assert.Single(ReferenceTextDecoder.Decode("a\\Yb"));
         Assert.Equal("ab", page.Text);
         Assert.Empty(page.Commands);
+        Assert.Equal("yield@1", Assert.Single(page.Markers).ToCanonicalString());
     }
 
     // ---------------------------------------------------------------------------------------
@@ -449,12 +494,14 @@ public class ReferenceTextDecoderTests
     }
 
     [Fact]
-    public void Decode_EmptyPage_FlagsOnly_KeepsTheirCommands()
+    public void Decode_EmptyPage_FlagsOnly_KeepsTheirMarkersThenEmpty()
     {
         var page = Assert.Single(ReferenceTextDecoder.Decode("\\999\\Y"));
         Assert.Equal("", page.Text);
-        Assert.Equal("empty", Assert.Single(page.Markers).Name);
-        Assert.Equal("flag(999)", Assert.Single(page.Commands).ToCanonicalString());
+        Assert.Equal(
+            new[] { "flag@0 id=999", "yield@0", "empty@0" },
+            page.Markers.Select(m => m.ToCanonicalString()));
+        Assert.Empty(page.Commands);
     }
 
     [Fact]
@@ -571,13 +618,15 @@ public class ReferenceTextDecoderTests
             "Pis encore : notre relation avec les dieux\na étédétruite.\nMaisil n'est pas trop tard pour",
             new[]
             {
+                ReferenceMarker.Flag(401, 48),
+                ReferenceMarker.Yield(48),
                 ReferenceMarker.Slow(62),
                 ReferenceMarker.Glyph(18, 62),
                 ReferenceMarker.Slow(62),
                 ReferenceMarker.Glyph(18, 62),
                 ReferenceMarker.Slow(62),
             },
-            new[] { ReferenceCommand.Flag(401) },
+            Array.Empty<ReferenceCommand>(),
             Array.Empty<ReferenceCall>());
 
         Assert.Equal(89, page.Text.Length);
@@ -619,8 +668,8 @@ public class ReferenceTextDecoderTests
 
         var expectedP1 = new ReferencePage(
             "",
-            new[] { ReferenceMarker.Empty(0) },
-            new[] { ReferenceCommand.Flag(999) },
+            new[] { ReferenceMarker.Flag(999, 0), ReferenceMarker.Yield(0), ReferenceMarker.Empty(0) },
+            Array.Empty<ReferenceCommand>(),
             Array.Empty<ReferenceCall>());
         Assert.Equal(expectedP1.ToCanonicalString(), pages[1].ToCanonicalString());
 
@@ -695,8 +744,8 @@ public class ReferenceTextDecoderTests
 
         var expected = new ReferencePage(
             $"Ramène-moi 90003 Statuettes de faucons\net je te récompenserai avec cela :\n{ReferenceTextDecoder.CategoryItemNameWitness}.",
-            new[] { ReferenceMarker.Voice(0, 0) },
-            new[] { ReferenceCommand.FalconUpdate, ReferenceCommand.Flag(100) },
+            new[] { ReferenceMarker.Voice(0, 0), ReferenceMarker.Flag(100, 82), ReferenceMarker.Yield(82) },
+            new[] { ReferenceCommand.FalconUpdate },
             new[] { ReferenceCall.CategoryThreshold, ReferenceCall.CategoryItemName });
 
         Assert.Equal(expected.ToCanonicalString(), page.ToCanonicalString());
@@ -786,7 +835,8 @@ public class ReferenceTextDecoderTests
         var slowMarkers = 0;
         var glyphMarkers = 0;
         var newlines = 0;
-        var flagCommands = 0;
+        var flagMarkers = 0;
+        var yieldMarkers = 0;
         var falconUpdateCommands = 0;
         var callCount = 0;
 
@@ -802,7 +852,8 @@ public class ReferenceTextDecoderTests
             {
                 pageCount++;
 
-                if (page.Text.Length == 0 && page.Markers.Count == 1 && page.Markers[0].Name == "empty")
+                var visibleMarkers = page.Markers.Where(m => m.Name is not ("flag" or "yield")).ToList();
+                if (page.Text.Length == 0 && visibleMarkers.Count == 1 && visibleMarkers[0].Name == "empty")
                 {
                     emptyPages++;
                 }
@@ -815,6 +866,8 @@ public class ReferenceTextDecoderTests
                         case "center": centerMarkers++; break;
                         case "slow": slowMarkers++; break;
                         case "glyph": glyphMarkers++; break;
+                        case "flag": flagMarkers++; break;
+                        case "yield": yieldMarkers++; break;
                     }
                 }
 
@@ -822,11 +875,7 @@ public class ReferenceTextDecoderTests
 
                 foreach (var command in page.Commands)
                 {
-                    if (command.Name == "flag")
-                    {
-                        flagCommands++;
-                    }
-                    else if (command.Name == "falcon_update")
+                    if (command.Name == "falcon_update")
                     {
                         falconUpdateCommands++;
                     }
@@ -893,7 +942,8 @@ public class ReferenceTextDecoderTests
         Assert.Equal(5319, slowMarkers);
         Assert.Equal(11182, glyphMarkers);
         Assert.Equal(24707, newlines);
-        Assert.Equal(932, flagCommands);
+        Assert.Equal(932, flagMarkers);
+        Assert.Equal(922, yieldMarkers);
         Assert.Equal(7, falconUpdateCommands);
         Assert.Equal(20, callCount);
     }

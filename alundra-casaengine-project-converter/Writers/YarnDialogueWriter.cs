@@ -371,7 +371,8 @@ public static class YarnDialogueWriter
         report.Increment("Yarn.Lines", emitResult.Statistics.Lines);
         report.Increment("Yarn.EmptyPages", emitResult.Statistics.EmptyPages);
         report.Increment("Yarn.GlyphMarkers", emitResult.Statistics.GlyphMarkers);
-        report.Increment("Yarn.FlagCommands", emitResult.Statistics.FlagCommands);
+        report.Increment("Yarn.FlagMarkers", emitResult.Statistics.FlagMarkers);
+        report.Increment("Yarn.YieldMarkers", emitResult.Statistics.YieldMarkers);
         report.Increment("Yarn.FalconUpdateCommands", emitResult.Statistics.FalconUpdateCommands);
         report.Increment("Yarn.FunctionCalls", emitResult.Statistics.FunctionCalls);
     }

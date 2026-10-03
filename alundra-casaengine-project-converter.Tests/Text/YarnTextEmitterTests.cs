@@ -169,11 +169,11 @@ public class YarnTextEmitterTests
     // ---- Numeric flags (\<digits>) ----------------------------------------------------------
 
     [Fact]
-    public void Emit_NumericCode_BecomesFlagCommandBeforeLine()
+    public void Emit_NumericCode_BecomesFlagMarkerAtItsPosition()
     {
         var source = EmitSingle("T6", "\\100Texte");
 
-        Assert.Equal("title: T6\n---\n<<flag 100>>\nTexte #line:T6_p0\n===\n", source);
+        Assert.Equal("title: T6\n---\n[flag id=100 trimwhitespace=false/]Texte #line:T6_p0\n===\n", source);
         AssertCompilesWithNoDiagnostic(Compile(source));
     }
 
@@ -194,19 +194,20 @@ public class YarnTextEmitterTests
         var padded = EmitSingle("T8", "\\0999Texte");
 
         Assert.Equal(plain, padded);
-        Assert.Contains("<<flag 999>>", plain);
+        Assert.Contains("[flag id=999 trimwhitespace=false/]", plain);
+        Assert.DoesNotContain("<<flag", plain);
         AssertCompilesWithNoDiagnostic(Compile(plain));
     }
 
     // ---- \Y ("ends the render step, the page continues", drops nothing else) ------------------
 
     [Fact]
-    public void Emit_Y_ProducesNoTextButKeepsFlagBefore()
+    public void Emit_Y_BecomesAYieldMarkerAfterTheFlag()
     {
-        // Named example: "\401\Ydétruite." -> one line, <<flag 401>> before it.
+        // Named example: "\401\Ydétruite." -> one line, a flag marker then a yield marker, then the text.
         var source = EmitSingle("T9", "\\401\\Ydétruite.");
 
-        Assert.Equal("title: T9\n---\n<<flag 401>>\ndétruite. #line:T9_p0\n===\n", source);
+        Assert.Equal("title: T9\n---\n[flag id=401 trimwhitespace=false/][yield trimwhitespace=false/]détruite. #line:T9_p0\n===\n", source);
         AssertCompilesWithNoDiagnostic(Compile(source));
     }
 
@@ -431,23 +432,23 @@ public class YarnTextEmitterTests
     }
 
     [Fact]
-    public void Emit_CommandOrder_XBeforeFlag_PutsFalconUpdateFirst()
+    public void Emit_XBeforeFlag_PutsFalconUpdateCommandThenTheFlagInTheLine()
     {
         var source = EmitSingle("TORD1", "\\X1a\\0100b");
 
         Assert.Equal(
-            "title: TORD1\n---\n<<falcon_update>>\n<<flag 100>>\n{falcon()}ab #line:TORD1_p0\n===\n",
+            "title: TORD1\n---\n<<falcon_update>>\n{falcon()}a[flag id=100 trimwhitespace=false/]b #line:TORD1_p0\n===\n",
             source);
         AssertCompilesWithNoDiagnostic(Compile(source));
     }
 
     [Fact]
-    public void Emit_CommandOrder_FlagBeforeX_PutsFlagFirst()
+    public void Emit_FlagBeforeX_KeepsFalconUpdateAsTheOnlyCommand()
     {
         var source = EmitSingle("TORD2", "\\0100a\\X1b");
 
         Assert.Equal(
-            "title: TORD2\n---\n<<flag 100>>\n<<falcon_update>>\na{falcon()}b #line:TORD2_p0\n===\n",
+            "title: TORD2\n---\n<<falcon_update>>\n[flag id=100 trimwhitespace=false/]a{falcon()}b #line:TORD2_p0\n===\n",
             source);
         AssertCompilesWithNoDiagnostic(Compile(source));
     }
@@ -462,7 +463,7 @@ public class YarnTextEmitterTests
         Assert.Empty(result.Errors);
         Assert.Equal(1, result.Statistics.EmptyPages);
         Assert.Equal(
-            "title: TEMPTY\n---\n<<flag 999>>\n[empty trimwhitespace=false/] #line:TEMPTY_p0\n===\n",
+            "title: TEMPTY\n---\n[flag id=999 trimwhitespace=false/][yield trimwhitespace=false/][empty trimwhitespace=false/] #line:TEMPTY_p0\n===\n",
             result.Source);
         AssertCompilesWithNoDiagnostic(Compile(result.Source));
     }
@@ -470,11 +471,11 @@ public class YarnTextEmitterTests
     [Fact]
     public void Emit_ABoundedFlagAndYPage_IsEmpty()
     {
-        // Named example: a page "\A\999\Y\A" (<<flag 999>>, then [empty/]).
+        // Named example: a page "\A\999\Y\A" (the flag and yield markers, then [empty/]).
         var source = EmitSingle("TEMPTY2", "\\A\\999\\Y\\A");
 
         Assert.Equal(
-            "title: TEMPTY2\n---\n[empty trimwhitespace=false/] #line:TEMPTY2_p0\n<<flag 999>>\n[empty trimwhitespace=false/] #line:TEMPTY2_p1\n[empty trimwhitespace=false/] #line:TEMPTY2_p2\n===\n",
+            "title: TEMPTY2\n---\n[empty trimwhitespace=false/] #line:TEMPTY2_p0\n[flag id=999 trimwhitespace=false/][yield trimwhitespace=false/][empty trimwhitespace=false/] #line:TEMPTY2_p1\n[empty trimwhitespace=false/] #line:TEMPTY2_p2\n===\n",
             source);
         AssertCompilesWithNoDiagnostic(Compile(source));
     }
@@ -801,10 +802,9 @@ public class YarnTextEmitterTests
         Assert.Equal(
             "title: M134_S019\n---\n"
             + "<<falcon_update>>\n"
-            + "<<flag 100>>\n"
             + "[voice id=0 trimwhitespace=false/]Ramène-moi {category_threshold()} Statuettes de faucons"
             + "[br trimwhitespace=false/]et je te récompenserai avec cela \\:"
-            + "[br trimwhitespace=false/]{category_item_name()}. #line:M134_S019_p0\n"
+            + "[br trimwhitespace=false/]{category_item_name()}.[flag id=100 trimwhitespace=false/][yield trimwhitespace=false/] #line:M134_S019_p0\n"
             + "===\n",
             result.Source);
         AssertCompilesWithNoDiagnostic(Compile(result.Source));
@@ -822,18 +822,20 @@ public class YarnTextEmitterTests
     }
 
     [Fact]
-    public void Emit_Statistics_CountsGlyphsFlagsFalconUpdatesAndFunctionCalls()
+    public void Emit_Statistics_CountsGlyphsFlagsYieldsFalconUpdatesAndFunctionCalls()
     {
-        var result = YarnTextEmitter.Emit(new[] { new YarnTextEntry("TSTAT2", "\\W2\\100\\X1\\V3") });
+        var result = YarnTextEmitter.Emit(new[] { new YarnTextEntry("TSTAT2", "\\W2\\100\\Y\\X1\\V3") });
 
         Assert.Empty(result.Errors);
         Assert.Equal(1, result.Statistics.GlyphMarkers);
-        Assert.Equal(1, result.Statistics.FlagCommands);
+        Assert.Equal(1, result.Statistics.FlagMarkers);
+        Assert.Equal(1, result.Statistics.YieldMarkers);
         Assert.Equal(1, result.Statistics.FalconUpdateCommands);
         Assert.Equal(2, result.Statistics.FunctionCalls); // falcon() and game_var(3)
         Assert.Equal(1, result.Statistics.Lines);
         Assert.Equal(1, result.Statistics.CodeCounts["\\W2"]);
         Assert.Equal(1, result.Statistics.CodeCounts["\\digits"]);
+        Assert.Equal(1, result.Statistics.CodeCounts["\\Y"]);
         Assert.Equal(1, result.Statistics.CodeCounts["\\X1"]);
         Assert.Equal(1, result.Statistics.CodeCounts["\\V3"]);
         AssertCompilesWithNoDiagnostic(Compile(result.Source));
@@ -842,14 +844,14 @@ public class YarnTextEmitterTests
     // ---- Repeated numeric codes (P2 fix: no per-value dedup) -----------------------------------
 
     [Fact]
-    public void Emit_RepeatedNumericCode_ProducesOneFlagCommandPerOccurrence()
+    public void Emit_RepeatedNumericCode_ProducesOneFlagMarkerPerOccurrence()
     {
         // Real corpus case: map 389 string 108, page 0 holds \1001 twice.
         var result = YarnTextEmitter.Emit(new[] { new YarnTextEntry("TREPEAT", "\\1001\\Ya\\1001\\Y") });
 
         Assert.Empty(result.Errors);
         Assert.Equal(
-            "title: TREPEAT\n---\n<<flag 1001>>\n<<flag 1001>>\na #line:TREPEAT_p0\n===\n",
+            "title: TREPEAT\n---\n[flag id=1001 trimwhitespace=false/][yield trimwhitespace=false/]a[flag id=1001 trimwhitespace=false/][yield trimwhitespace=false/] #line:TREPEAT_p0\n===\n",
             result.Source);
         AssertCompilesWithNoDiagnostic(Compile(result.Source));
     }
@@ -860,20 +862,130 @@ public class YarnTextEmitterTests
         var result = YarnTextEmitter.Emit(new[] { new YarnTextEntry("TREPEATSTAT", "\\1005a\\1005b\\1005c\\1005") });
 
         Assert.Empty(result.Errors);
-        Assert.Equal(4, result.Statistics.FlagCommands);
+        Assert.Equal(4, result.Statistics.FlagMarkers);
         Assert.Equal(4, result.Statistics.CodeCounts["\\digits"]);
         AssertCompilesWithNoDiagnostic(Compile(result.Source));
     }
 
     [Fact]
-    public void Emit_RepeatedNumericCode_OrderInterleavesWithFalconUpdateAtFirstXRank()
+    public void Emit_RepeatedNumericCode_FlagsKeepTheirPositionAroundTheFalconCall()
     {
         var source = EmitSingle("TREPEATORD", "\\1001\\X1\\1001");
 
         Assert.Equal(
-            "title: TREPEATORD\n---\n<<flag 1001>>\n<<falcon_update>>\n<<flag 1001>>\n{falcon()} #line:TREPEATORD_p0\n===\n",
+            "title: TREPEATORD\n---\n<<falcon_update>>\n[flag id=1001 trimwhitespace=false/]{falcon()}[flag id=1001 trimwhitespace=false/] #line:TREPEATORD_p0\n===\n",
             source);
         AssertCompilesWithNoDiagnostic(Compile(source));
+    }
+
+    // ---- Positioned flag and yield markers (E19.f0, D-E19-48, ADR-0025) -------------------------------
+
+    [Fact]
+    public void Emit_M389S001p0_PutsTheEndFlagAndYieldAfterTheLastCharacter()
+    {
+        // Named corpus example (the sailor 12): the \999 is at the END of the text.
+        var source = EmitSingle(
+            "M389_S001",
+            "\\CQu'est-ce que tu veux, petit ? As-tu\\Nencore oublié où se trouve\\Nta cabine ?\\999\\Y");
+
+        Assert.Equal(
+            "title: M389_S001\n---\n"
+            + "[voice id=0 trimwhitespace=false/]Qu'est-ce que tu veux, petit ? As-tu[br trimwhitespace=false/]"
+            + "encore oublié où se trouve[br trimwhitespace=false/]ta cabine ?[flag id=999 trimwhitespace=false/]"
+            + "[yield trimwhitespace=false/] #line:M389_S001_p0\n===\n",
+            source);
+        AssertCompilesWithNoDiagnostic(Compile(source));
+    }
+
+    [Fact]
+    public void Emit_M164S003_KeepsMidTextAndLeadingFlagsAtTheirPositions()
+    {
+        var source = EmitSingle(
+            "M164_S003",
+            "\\CAttends...\\0200\\YFais-moi voir ton front.\\T\\T\\A\\0201Tu\\Y\\T...\\T...\\Ttu as la cicatrice !");
+
+        Assert.Equal(
+            "title: M164_S003\n---\n"
+            + "[voice id=0 trimwhitespace=false/]Attends...[flag id=200 trimwhitespace=false/][yield trimwhitespace=false/]"
+            + "Fais-moi voir ton front.[slow trimwhitespace=false/][slow trimwhitespace=false/] #line:M164_S003_p0\n"
+            + "[flag id=201 trimwhitespace=false/]Tu[yield trimwhitespace=false/][slow trimwhitespace=false/]..."
+            + "[slow trimwhitespace=false/]...[slow trimwhitespace=false/]tu as la cicatrice ! #line:M164_S003_p1\n"
+            + "===\n",
+            source);
+        AssertCompilesWithNoDiagnostic(Compile(source));
+    }
+
+    [Fact]
+    public void Emit_M389S022p0_CutsTheSpaceBeforeATrailingFlag()
+    {
+        // F0-R2: "on\W2 \999\Y" - the space between the glyph and the flag is trimmed as before
+        // (without it the visible text of 32 pages would change); the interior " On se dirige" stays.
+        var source = EmitSingle(
+            "M389_S022",
+            "\\CCap...Capitaine !\\1000\\Y On se dirige\\Ndroit vers les récifs ! Accrochez-vous ! Sainte\\Nmère de Dieu, on\\W2 \\999\\Y");
+
+        Assert.Equal(
+            "title: M389_S022\n---\n"
+            + "[voice id=0 trimwhitespace=false/]Cap...Capitaine ![flag id=1000 trimwhitespace=false/]"
+            + "[yield trimwhitespace=false/] On se dirige[br trimwhitespace=false/]droit vers les récifs ! "
+            + "Accrochez-vous ! Sainte[br trimwhitespace=false/]mère de Dieu, on[glyph id=18 trimwhitespace=false/]"
+            + "[flag id=999 trimwhitespace=false/][yield trimwhitespace=false/] #line:M389_S022_p0\n===\n",
+            source);
+        AssertCompilesWithNoDiagnostic(Compile(source));
+    }
+
+    [Fact]
+    public void Emit_FlagAndYieldsAtTheSamePosition_KeepTheSourceOrder()
+    {
+        var source = EmitSingle("TSAMEPOS", "Fin ?\\1004\\Y\\999\\Y");
+
+        Assert.Equal(
+            "title: TSAMEPOS\n---\nFin ?[flag id=1004 trimwhitespace=false/][yield trimwhitespace=false/]"
+            + "[flag id=999 trimwhitespace=false/][yield trimwhitespace=false/] #line:TSAMEPOS_p0\n===\n",
+            source);
+        AssertCompilesWithNoDiagnostic(Compile(source));
+    }
+
+    [Fact]
+    public void Emit_LeadingSpaceAfterALeadingFlag_IsTrimmed()
+    {
+        var source = EmitSingle("TLEADFLAG", " \\201 Tu");
+
+        Assert.Equal("title: TLEADFLAG\n---\n[flag id=201 trimwhitespace=false/]Tu #line:TLEADFLAG_p0\n===\n", source);
+    }
+
+    [Fact]
+    public void Emit_PageOfFlagsOnly_CompilesAndReadsBackAtPositionZeroThenEmpty()
+    {
+        var (line, result) = EmitCompileAndParse("\\999\\Y", "TFLAGSONLY");
+
+        Assert.Equal(1, result.Statistics.EmptyPages);
+        Assert.Equal(string.Empty, line.Text);
+        Assert.Equal(
+            new[] { "flag@0", "yield@0", "empty@0" },
+            line.Attributes.Select(a => $"{a.Name}@{a.Position}"));
+        var flag = line.Attributes[0];
+        Assert.Equal(999, Convert.ToInt32(flag.Properties["id"], System.Globalization.CultureInfo.InvariantCulture));
+    }
+
+    [Fact]
+    public void Emit_FlagMarker_CompilesAndReadsBackAtItsPosition()
+    {
+        var (line, _) = EmitCompileAndParse("ab\\5\\Ycd");
+
+        Assert.Equal("abcd", line.Text);
+        Assert.Equal(new[] { "flag@2", "yield@2" }, line.Attributes.Select(a => $"{a.Name}@{a.Position}"));
+    }
+
+    [Fact]
+    public void Emit_NumericCodeAboveIntMaxValue_IsAnErrorButIntMaxValueIsNot()
+    {
+        var tooBig = YarnTextEmitter.Emit(new[] { new YarnTextEntry("TINTBIG", "a\\2147483648b") });
+        Assert.DoesNotContain("TINTBIG", tooBig.Source);
+        Assert.Contains(tooBig.Errors, e => e.Title == "TINTBIG" && e.Message.Contains("2147483648"));
+
+        var largest = EmitSingle("TINTMAX", "a\\2147483647b");
+        Assert.Contains("[flag id=2147483647 trimwhitespace=false/]", largest);
     }
 
     // ---- Numeric code overflow (P3 fix: never throws) ------------------------------------------

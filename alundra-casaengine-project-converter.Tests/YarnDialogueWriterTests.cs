@@ -132,7 +132,9 @@ public class YarnDialogueWriterTests
             Assert.Equal(135, report.Counters["Yarn.Lines"]);
             Assert.Equal(0, report.Counters.GetValueOrDefault("Yarn.EmptyPages"));
             Assert.Equal(0, report.Counters.GetValueOrDefault("Yarn.GlyphMarkers"));
-            Assert.Equal(0, report.Counters.GetValueOrDefault("Yarn.FlagCommands"));
+            Assert.Equal(0, report.Counters.GetValueOrDefault("Yarn.FlagMarkers"));
+            Assert.Equal(0, report.Counters.GetValueOrDefault("Yarn.YieldMarkers"));
+            Assert.False(report.Counters.ContainsKey("Yarn.FlagCommands"));
             Assert.Equal(0, report.Counters.GetValueOrDefault("Yarn.FalconUpdateCommands"));
             Assert.Equal(0, report.Counters.GetValueOrDefault("Yarn.FunctionCalls"));
             // Empty slots: map 4 (indices 1-2, 2) + map 5 (none) + Shared (none) + Etc (1024 - 3 = 1021).
@@ -684,7 +686,9 @@ public class YarnDialogueWriterTests
             Assert.Equal(31757, report.Counters["Yarn.Lines"]);
             Assert.Equal(95, report.Counters["Yarn.EmptyPages"]);
             Assert.Equal(11182, report.Counters["Yarn.GlyphMarkers"]);
-            Assert.Equal(932, report.Counters["Yarn.FlagCommands"]);
+            Assert.Equal(932, report.Counters["Yarn.FlagMarkers"]);
+            Assert.Equal(922, report.Counters["Yarn.YieldMarkers"]);
+            Assert.False(report.Counters.ContainsKey("Yarn.FlagCommands"));
             Assert.Equal(7, report.Counters["Yarn.FalconUpdateCommands"]);
             Assert.Equal(20, report.Counters["Yarn.FunctionCalls"]);
             Assert.Equal(38192, report.Counters["Yarn.EmptySlots"]);

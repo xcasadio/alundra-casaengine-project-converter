@@ -21,14 +21,12 @@ public sealed class ReferenceTextDecoderException : Exception
 }
 
 /// <summary>
-/// One command executed before a page's line is delivered: <c>flag</c> (one numeric code) or
-/// <c>falcon_update</c> (the single command a page holding any <c>\X</c> gets).
+/// One command executed before a page's line is delivered: <c>falcon_update</c> (the single command a
+/// page holding any <c>\X</c> gets). Numeric codes and <c>\Y</c> are no longer commands (D-E19-48,
+/// ADR-0025): they are the positioned <c>flag</c> and <c>yield</c> markers of <see cref="ReferenceMarker"/>.
 /// </summary>
 public sealed record ReferenceCommand(string Name, IReadOnlyList<string> Arguments)
 {
-    public static ReferenceCommand Flag(uint value)
-        => new("flag", new[] { value.ToString(CultureInfo.InvariantCulture) });
-
     public static readonly ReferenceCommand FalconUpdate = new("falcon_update", Array.Empty<string>());
 
     public string ToCanonicalString()
@@ -72,6 +70,13 @@ public sealed record ReferenceMarker(string Name, int Position, IReadOnlyDiction
         => new("glyph", position, Props(("id", id.ToString(CultureInfo.InvariantCulture))));
 
     public static ReferenceMarker Empty(int position) => new("empty", position, Props());
+
+    /// <summary>A numeric code <c>\&lt;digits&gt;</c>: the flag it sets, at its text position (D-E19-48).</summary>
+    public static ReferenceMarker Flag(int id, int position)
+        => new("flag", position, Props(("id", id.ToString(CultureInfo.InvariantCulture))));
+
+    /// <summary>A <c>\Y</c>: ends the render step, at its text position (D-E19-48).</summary>
+    public static ReferenceMarker Yield(int position) => new("yield", position, Props());
 
     private static IReadOnlyDictionary<string, string> Props(params (string Key, string Value)[] entries)
     {
@@ -197,10 +202,10 @@ public static class ReferenceTextDecoder
                     }
 
                     var digits = source.Substring(digitsStart, j - digitsStart);
-                    uint value;
+                    int value;
                     try
                     {
-                        value = uint.Parse(digits, NumberStyles.None, CultureInfo.InvariantCulture);
+                        value = int.Parse(digits, NumberStyles.None, CultureInfo.InvariantCulture);
                     }
                     catch (OverflowException ex)
                     {
@@ -208,7 +213,7 @@ public static class ReferenceTextDecoder
                             $"Numeric code overflow '\\{digits}' in {location.Describe()}.", ex);
                     }
 
-                    current.Commands.Add(ReferenceCommand.Flag(value));
+                    current.AddElement(Element.MarkerAt(ReferenceMarker.Flag(value, 0)));
                     i = j;
                     continue;
                 }
@@ -229,6 +234,7 @@ public static class ReferenceTextDecoder
                         continue;
 
                     case 'Y':
+                        current.AddElement(Element.MarkerAt(ReferenceMarker.Yield(0)));
                         i += 2;
                         continue;
 
@@ -456,10 +462,10 @@ public static class ReferenceTextDecoder
     /// <summary>
     /// The page's own element stream while it is being built: text runs (merged char by char),
     /// line breaks, markers and function calls, in source order - exactly the sequence D-E15-8's
-    /// edge-space rule is defined over. Numeric codes and <c>\Y</c> never enter this stream: they only
-    /// ever produce <see cref="Commands"/>, so they take no part in edge-space trimming or the
-    /// empty-page check, matching the contract's "after removing numeric codes and \Y" wording for
-    /// free.
+    /// edge-space rule is defined over. Numeric codes and <c>\Y</c> enter it as <c>flag</c> and
+    /// <c>yield</c> markers (D-E19-48), but are transparent to the edge-space trim and to the empty-page
+    /// check (F0-R2): a space between the last visible unit and a flag is still removed, and a page
+    /// holding only flags and yields is still empty.
     /// </summary>
     private sealed class PageBuilder
     {
@@ -494,30 +500,44 @@ public static class ReferenceTextDecoder
             // D-E15-8: only U+0020 spaces are removed, only from the sequence's two edges, only
             // while the leading/trailing element is plain visible text - never past a line break,
             // marker, glyph or function call, and a line break itself is never removed.
-            while (elements.Count > 0 && elements[0].Kind == ElementKind.Text)
+            // flag and yield markers are transparent (F0-R2): the walk goes through them. A text run
+            // that strips down to nothing stays as an empty run, which adds nothing to the text.
+            for (var k = 0; k < elements.Count; k++)
             {
-                var stripped = elements[0].Text!.TrimStart(' ');
-                if (stripped.Length == 0)
+                if (IsTransparent(elements[k]))
                 {
-                    elements.RemoveAt(0);
+                    continue;
                 }
-                else
+
+                if (elements[k].Kind != ElementKind.Text)
                 {
-                    elements[0] = Element.TextRun(stripped);
+                    break;
+                }
+
+                var stripped = elements[k].Text!.TrimStart(' ');
+                elements[k] = Element.TextRun(stripped);
+                if (stripped.Length > 0)
+                {
                     break;
                 }
             }
 
-            while (elements.Count > 0 && elements[^1].Kind == ElementKind.Text)
+            for (var k = elements.Count - 1; k >= 0; k--)
             {
-                var stripped = elements[^1].Text!.TrimEnd(' ');
-                if (stripped.Length == 0)
+                if (IsTransparent(elements[k]))
                 {
-                    elements.RemoveAt(elements.Count - 1);
+                    continue;
                 }
-                else
+
+                if (elements[k].Kind != ElementKind.Text)
                 {
-                    elements[^1] = Element.TextRun(stripped);
+                    break;
+                }
+
+                var stripped = elements[k].Text!.TrimEnd(' ');
+                elements[k] = Element.TextRun(stripped);
+                if (stripped.Length > 0)
+                {
                     break;
                 }
             }
@@ -550,14 +570,17 @@ public static class ReferenceTextDecoder
             }
 
             var text = textBuilder.ToString();
-            if (text.Length == 0 && markers.Count == 0 && calls.Count == 0)
+            if (text.Length == 0 && calls.Count == 0 && markers.All(m => m.Name is "flag" or "yield"))
             {
-                markers = new List<ReferenceMarker> { ReferenceMarker.Empty(0) };
+                markers.Add(ReferenceMarker.Empty(0));
             }
 
             return new ReferencePage(text, markers, new List<ReferenceCommand>(Commands), calls);
         }
     }
+
+    private static bool IsTransparent(Element element)
+        => element.Kind == ElementKind.Marker && element.Marker!.Name is "flag" or "yield";
 
     private enum ElementKind
     {

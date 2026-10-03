@@ -4211,7 +4211,7 @@ sous-tranche a son plan relu, son exécution et sa vérification :
   propriétaire de la formule d'échelle commune des écrans** (résolution virtuelle du moteur, recalcul des écrans au changement
   de taille) ; f2 bâtit son écran dessus sans la modifier (révision n°1 de la relecture du 2026-10-03).
 
-##### 1.2j.1 E19.f0 — Drapeaux du texte à leur position ⏳ (READY à la relecture de clôture sur `6e6a0cd` ; audit des valeurs fait)
+##### 1.2j.1 E19.f0 — Drapeaux du texte à leur position 🚧 (READY à la relecture de clôture sur `6e6a0cd` ; audit des valeurs fait)
 
 **Faits** (cartographie, `e19f-plan2/yarn/notes.md`) :
 - **[binaire]** un code numérique pose son drapeau temporaire quand l'interpréteur du texte l'atteint et passe au caractère suivant

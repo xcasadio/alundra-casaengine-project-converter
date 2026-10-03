@@ -15,7 +15,7 @@ public sealed record YarnTextEntry(string Title, string Source);
 /// <summary>
 /// A code found in <paramref name="Title"/>'s page <paramref name="PageIndex"/> that has no mapping to
 /// Yarn (docs/plan-e15-yarn.md §1): an unsupported escape, a missing or invalid <c>\W</c>/<c>\V</c>/
-/// <c>\X</c> operand, a numeric code too large for a 32-bit unsigned integer, a raw control character
+/// <c>\X</c> operand, a numeric code too large for a 32-bit signed integer, a raw control character
 /// other than <c>0x1A</c>/<c>0x1C</c>, an <c>\X0</c> reached after another <c>\X</c> of the same page,
 /// or a page whose rendered line would start with Yarn syntax (<c>===</c>, <c>---</c>, <c>-&gt;</c>,
 /// <c>=&gt;</c>). The whole node is left out of the emitted source when it has at least one such error.
@@ -42,7 +42,8 @@ public sealed class YarnEmitStatistics
     public int Lines { get; internal set; }
     public int EmptyPages { get; internal set; }
     public int GlyphMarkers { get; internal set; }
-    public int FlagCommands { get; internal set; }
+    public int FlagMarkers { get; internal set; }
+    public int YieldMarkers { get; internal set; }
     public int FalconUpdateCommands { get; internal set; }
     public int FunctionCalls { get; internal set; }
 
@@ -72,14 +73,17 @@ public sealed record YarnTextEmitResult(string Source, IReadOnlyList<YarnEmitErr
 /// <code>
 /// title: &lt;title&gt;
 /// ---
-/// &lt;commands of page 0, one per line&gt;
+/// &lt;commands of page 0, one per line: only &lt;&lt;falcon_update&gt;&gt;&gt;
 /// &lt;line of page 0&gt; #line:&lt;title&gt;_p0
 /// ...
 /// ===
 /// </code>
+/// A numeric code <c>\&lt;digits&gt;</c> and a <c>\Y</c> are not commands: they are the zero-length
+/// markers <c>[flag id=N/]</c> and <c>[yield/]</c> in the line, at their position in the text
+/// (D-E19-48, ADR-0025).
 /// A node whose source has at least one code with no mapping (an unsupported escape, a missing or
 /// invalid operand, a raw control character, an <c>\X0</c> read after another <c>\X</c> of the same
-/// page, a numeric code too large for an unsigned 32-bit integer, or a page whose line would start
+/// page, a numeric code too large for a signed 32-bit integer, or a page whose line would start
 /// with Yarn syntax: <c>===</c>, <c>---</c>, <c>-&gt;</c>, <c>=&gt;</c>) is left out of
 /// <see cref="YarnTextEmitResult.Source"/> entirely, and each such code is
 /// reported once in <see cref="YarnTextEmitResult.Errors"/>. This never throws: bad data becomes an
@@ -139,7 +143,8 @@ public static class YarnTextEmitter
         var lineCount = 0;
         var emptyPageCount = 0;
         var glyphCount = 0;
-        var flagCommandCount = 0;
+        var flagMarkerCount = 0;
+        var yieldMarkerCount = 0;
         var falconCommandCount = 0;
         var functionCallCount = 0;
 
@@ -149,14 +154,7 @@ public static class YarnTextEmitter
             foreach (var command in render.Commands)
             {
                 builder.Append(command).Append('\n');
-                if (string.Equals(command, "<<falcon_update>>", StringComparison.Ordinal))
-                {
-                    falconCommandCount++;
-                }
-                else
-                {
-                    flagCommandCount++;
-                }
+                falconCommandCount++;
             }
 
             builder.Append(render.Body).Append(" #line:").Append(entry.Title).Append("_p").Append(pageIndex).Append('\n');
@@ -168,6 +166,8 @@ public static class YarnTextEmitter
             }
 
             glyphCount += render.GlyphCount;
+            flagMarkerCount += render.FlagCount;
+            yieldMarkerCount += render.YieldCount;
             functionCallCount += render.FunctionCallCount;
         }
 
@@ -177,7 +177,8 @@ public static class YarnTextEmitter
         statistics.Lines += lineCount;
         statistics.EmptyPages += emptyPageCount;
         statistics.GlyphMarkers += glyphCount;
-        statistics.FlagCommands += flagCommandCount;
+        statistics.FlagMarkers += flagMarkerCount;
+        statistics.YieldMarkers += yieldMarkerCount;
         statistics.FalconUpdateCommands += falconCommandCount;
         statistics.FunctionCalls += functionCallCount;
 
@@ -195,7 +196,8 @@ public static class YarnTextEmitter
     private sealed record GlyphToken(int Id) : PageToken; // \W<c>, or the raw ETC bytes 0x1A/0x1C
     private sealed record GameVarToken(int Index) : PageToken; // \V<digit>
     private sealed record FalconToken(char Code) : PageToken; // \X<0-5>
-    private sealed record FlagToken(uint Value) : PageToken; // \<digits>, normalised
+    private sealed record FlagToken(int Value) : PageToken; // \<digits>, normalised
+    private sealed record YieldToken : PageToken; // \Y
 
     /// <summary>
     /// Walks one entry's raw source once, dispatching on the character after every '\' exactly as
@@ -240,9 +242,9 @@ public static class YarnTextEmitter
                     }
 
                     var digits = source[start..end];
-                    if (!uint.TryParse(digits, NumberStyles.None, CultureInfo.InvariantCulture, out var value))
+                    if (!int.TryParse(digits, NumberStyles.None, CultureInfo.InvariantCulture, out var value))
                     {
-                        AddError($"numeric code '\\{digits}' does not fit an unsigned 32-bit integer");
+                        AddError($"numeric code '\\{digits}' does not fit a signed 32-bit integer");
                         index = end;
                         continue;
                     }
@@ -307,7 +309,8 @@ public static class YarnTextEmitter
                         index += 2;
                         continue;
                     case 'Y':
-                        // "Ends the current render step only, the page continues": no token, no text.
+                        // Ends the current render step, the page continues: a zero-length marker at its position.
+                        pages[pageIndex].Add(new YieldToken());
                         statistics.CountCode("\\Y");
                         index += 2;
                         continue;
@@ -423,13 +426,18 @@ public static class YarnTextEmitter
     private sealed record SlowElement : Element;
     private sealed record GlyphElement(int Id) : Element;
     private sealed record FunctionCallElement(string Name, string? Argument) : Element;
+    private sealed record FlagElement(int Id) : Element;
+    private sealed record YieldElement : Element;
 
-    private sealed record PageRender(IReadOnlyList<string> Commands, string Body, bool IsEmpty, int GlyphCount, int FunctionCallCount);
+    private sealed record PageRender(
+        IReadOnlyList<string> Commands, string Body, bool IsEmpty, int GlyphCount, int FlagCount, int YieldCount, int FunctionCallCount);
 
     /// <summary>
     /// Builds one page's commands and rendered line body. Every numeric code produces its own
-    /// <c>&lt;&lt;flag n&gt;&gt;</c> command, in source order (repeats included), interleaved with the
-    /// single <c>&lt;&lt;falcon_update&gt;&gt;</c> at the rank of the page's first <c>\X</c> (§1).
+    /// <c>[flag id=n/]</c> marker and every <c>\Y</c> a <c>[yield/]</c> marker, at their position in the
+    /// text, in source order (repeats included): no <c>&lt;&lt;flag n&gt;&gt;</c> command any more
+    /// (D-E19-48). The only command is the single <c>&lt;&lt;falcon_update&gt;&gt;</c> of a page holding
+    /// any <c>\X</c> (§1).
     /// <c>\X</c> is resolved to its function by code and by whether it is the first <c>\X</c> of the
     /// page (ADR-0007); an <c>\X0</c> that is not the first is reported as an error into
     /// <paramref name="errors"/> instead of guessing a function for it. A page whose rendered line
@@ -445,9 +453,6 @@ public static class YarnTextEmitter
         {
             switch (token)
             {
-                case FlagToken flag:
-                    commands.Add($"<<flag {flag.Value.ToString(CultureInfo.InvariantCulture)}>>");
-                    break;
                 case FalconToken when !falconCommandAdded:
                     falconCommandAdded = true;
                     commands.Add("<<falcon_update>>");
@@ -472,8 +477,13 @@ public static class YarnTextEmitter
         {
             switch (token)
             {
-                case FlagToken:
-                    // Never part of the visible line: only affects the commands above.
+                case FlagToken flag:
+                    FlushText();
+                    elements.Add(new FlagElement(flag.Value));
+                    break;
+                case YieldToken:
+                    FlushText();
+                    elements.Add(new YieldElement());
                     break;
                 case TextToken text:
                     textBuffer.Append(text.Char);
@@ -543,11 +553,13 @@ public static class YarnTextEmitter
             }
         }
 
-        var isEmpty = elements.Count == 0;
-        var renderedBody = RenderElements(elements, out var glyphCount, out var functionCallCount);
-        var body = isEmpty ? "[empty trimwhitespace=false/]" : renderedBody;
+        // F0-R2: flag and yield markers are transparent to the empty-page rule too; a page holding only
+        // markers of those two kinds keeps them, in source order, and then gets [empty/].
+        var isEmpty = elements.All(IsPositionMarker);
+        var renderedBody = RenderElements(elements, out var glyphCount, out var flagCount, out var yieldCount, out var functionCallCount);
+        var body = isEmpty ? renderedBody + "[empty trimwhitespace=false/]" : renderedBody;
 
-        return new PageRender(commands, body, isEmpty, glyphCount, functionCallCount);
+        return new PageRender(commands, body, isEmpty, glyphCount, flagCount, yieldCount, functionCallCount);
     }
 
     /// <summary>
@@ -598,40 +610,71 @@ public static class YarnTextEmitter
     /// visible result deterministically instead of relying on Yarn's own trimming, by removing U+0020
     /// spaces from the start while the leading elements are text, and from the end while the trailing
     /// elements are text. A line break is never removed, so a leading or trailing <c>\N</c> stays a
-    /// leading or trailing marker.
+    /// leading or trailing marker. The <c>flag</c> and <c>yield</c> markers are transparent (F0-R2):
+    /// the walk goes through them, so a space between the last visible unit and a flag is still removed.
     /// </summary>
     private static void TrimEdgeSpaces(List<Element> elements)
     {
-        while (elements.Count > 0 && elements[0] is TextElement head)
+        var head = 0;
+        while (head < elements.Count)
         {
-            var trimmed = head.Text.TrimStart(' ');
-            if (trimmed.Length == 0)
+            if (IsPositionMarker(elements[head]))
             {
-                elements.RemoveAt(0);
+                head++;
                 continue;
             }
 
-            elements[0] = new TextElement(trimmed);
+            if (elements[head] is not TextElement text)
+            {
+                break;
+            }
+
+            var trimmed = text.Text.TrimStart(' ');
+            if (trimmed.Length == 0)
+            {
+                elements.RemoveAt(head);
+                continue;
+            }
+
+            elements[head] = new TextElement(trimmed);
             break;
         }
 
-        while (elements.Count > 0 && elements[^1] is TextElement tail)
+        var tail = elements.Count - 1;
+        while (tail >= 0)
         {
-            var trimmed = tail.Text.TrimEnd(' ');
-            if (trimmed.Length == 0)
+            if (IsPositionMarker(elements[tail]))
             {
-                elements.RemoveAt(elements.Count - 1);
+                tail--;
                 continue;
             }
 
-            elements[^1] = new TextElement(trimmed);
+            if (elements[tail] is not TextElement text)
+            {
+                break;
+            }
+
+            var trimmed = text.Text.TrimEnd(' ');
+            if (trimmed.Length == 0)
+            {
+                elements.RemoveAt(tail);
+                tail--;
+                continue;
+            }
+
+            elements[tail] = new TextElement(trimmed);
             break;
         }
     }
 
-    private static string RenderElements(List<Element> elements, out int glyphCount, out int functionCallCount)
+    private static bool IsPositionMarker(Element element) => element is FlagElement or YieldElement;
+
+    private static string RenderElements(
+        List<Element> elements, out int glyphCount, out int flagCount, out int yieldCount, out int functionCallCount)
     {
         glyphCount = 0;
+        flagCount = 0;
+        yieldCount = 0;
         functionCallCount = 0;
         var builder = new StringBuilder();
 
@@ -657,6 +700,14 @@ public static class YarnTextEmitter
                 case GlyphElement glyph:
                     builder.Append("[glyph id=").Append(glyph.Id).Append(" trimwhitespace=false/]");
                     glyphCount++;
+                    break;
+                case FlagElement flag:
+                    builder.Append("[flag id=").Append(flag.Id.ToString(CultureInfo.InvariantCulture)).Append(" trimwhitespace=false/]");
+                    flagCount++;
+                    break;
+                case YieldElement:
+                    builder.Append("[yield trimwhitespace=false/]");
+                    yieldCount++;
                     break;
                 case FunctionCallElement call:
                     builder.Append('{').Append(call.Name).Append('(');

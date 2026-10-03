@@ -273,7 +273,7 @@ public class YarnCorpusEquivalenceTests : IClassFixture<YarnCorpusEquivalenceTes
     }
 
     [Fact]
-    public void NamedCase_M135_S090_p3_HasASingleFlag401Command()
+    public void NamedCase_M135_S090_p3_HasAFlag401MarkerAndAYieldBeforeDetruite()
     {
         if (!_fixture.Available)
         {
@@ -289,9 +289,10 @@ public class YarnCorpusEquivalenceTests : IClassFixture<YarnCorpusEquivalenceTes
         // Copied from ReferenceTextDecoderTests.NamedCase2_M135_S090_p3: the numeric code \401 never
         // enters the visible text, so "a été" and "détruite." are adjacent with no space between them.
         Assert.Equal("Pis encore : notre relation avec les dieux\na étédétruite.\nMaisil n'est pas trop tard pour", page.Text);
-        var command = Assert.Single(page.Commands);
-        Assert.Equal("flag", command.Name);
-        Assert.Equal("401", command.Arguments[0]);
+        Assert.Empty(page.Commands);
+        var flag = Assert.Single(page.Markers, m => m.Name == "flag");
+        Assert.Equal("401", flag.Properties["id"]);
+        Assert.Equal(48, flag.Position);
 
         // F1: hand-written expectation, independent of the reference decoder - copied from
         // ReferenceTextDecoderTests.NamedCase2_M135_S090_p3's own literal.
@@ -299,13 +300,15 @@ public class YarnCorpusEquivalenceTests : IClassFixture<YarnCorpusEquivalenceTes
             "Pis encore : notre relation avec les dieux\na étédétruite.\nMaisil n'est pas trop tard pour",
             new[]
             {
+                ReferenceMarker.Flag(401, 48),
+                ReferenceMarker.Yield(48),
                 ReferenceMarker.Slow(62),
                 ReferenceMarker.Glyph(18, 62),
                 ReferenceMarker.Slow(62),
                 ReferenceMarker.Glyph(18, 62),
                 ReferenceMarker.Slow(62),
             },
-            new[] { ReferenceCommand.Flag(401) },
+            Array.Empty<ReferenceCommand>(),
             Array.Empty<ReferenceCall>());
         Assert.Equal(expectedPage.ToCanonicalString(), comparator.ToCanonicalString(page));
 
@@ -371,8 +374,8 @@ public class YarnCorpusEquivalenceTests : IClassFixture<YarnCorpusEquivalenceTes
             Array.Empty<ReferenceCall>());
         var expectedP1 = new ReferencePage(
             "",
-            new[] { ReferenceMarker.Empty(0) },
-            new[] { ReferenceCommand.Flag(999) },
+            new[] { ReferenceMarker.Flag(999, 0), ReferenceMarker.Yield(0), ReferenceMarker.Empty(0) },
+            Array.Empty<ReferenceCommand>(),
             Array.Empty<ReferenceCall>());
         var expectedP2 = new ReferencePage(
             "Pars d'ici, Alundra ! Fais\nvite ! La destruction arrive !\n",
@@ -515,9 +518,10 @@ public class YarnCorpusEquivalenceTests : IClassFixture<YarnCorpusEquivalenceTes
             "Ramène-moi 90003 Statuettes de faucons\net je te récompenserai avec cela :\n⟦objet⟧.",
             page.Text);
 
-        Assert.Equal(2, page.Commands.Count(c => c.Name is "falcon_update" or "flag"));
-        Assert.Contains(page.Commands, c => c.Name == "falcon_update");
-        Assert.Contains(page.Commands, c => c.Name == "flag" && c.Arguments[0] == "100");
+        var command = Assert.Single(page.Commands);
+        Assert.Equal("falcon_update", command.Name);
+        Assert.Contains(page.Markers, m => m.Name == "flag" && m.Properties["id"] == "100");
+        Assert.Contains(page.Markers, m => m.Name == "yield");
         Assert.Contains(page.Calls, c => c.Name == "category_threshold");
         Assert.Contains(page.Calls, c => c.Name == "category_item_name");
         Assert.Equal(string.Empty, page.Speaker);
@@ -526,8 +530,8 @@ public class YarnCorpusEquivalenceTests : IClassFixture<YarnCorpusEquivalenceTes
         // ReferenceTextDecoderTests.NamedCase8_M134_S019_p0's own literal.
         var expectedPage = new ReferencePage(
             $"Ramène-moi 90003 Statuettes de faucons\net je te récompenserai avec cela :\n{ReferenceTextDecoder.CategoryItemNameWitness}.",
-            new[] { ReferenceMarker.Voice(0, 0) },
-            new[] { ReferenceCommand.FalconUpdate, ReferenceCommand.Flag(100) },
+            new[] { ReferenceMarker.Voice(0, 0), ReferenceMarker.Flag(100, 82), ReferenceMarker.Yield(82) },
+            new[] { ReferenceCommand.FalconUpdate },
             new[] { ReferenceCall.CategoryThreshold, ReferenceCall.CategoryItemName });
         Assert.Equal(expectedPage.ToCanonicalString(), comparator.ToCanonicalString(page));
 
@@ -604,18 +608,18 @@ public class YarnCorpusEquivalenceTests : IClassFixture<YarnCorpusEquivalenceTes
     }
 
     [Fact]
-    public void Discriminates_AFlagCommandRemoved()
+    public void Discriminates_AFlagMarkerRemoved()
     {
         const string title = "Neg_Flag";
-        const string source = "\\100Bonjour"; // <<flag 100>> before the line.
+        const string source = "\\100Bonjour"; // [flag id=100/] at position 0.
 
         var (goodPages, comparator) = CompileAndPlayOne(title, source);
         var reference = ReferenceTextDecoder.Decode(source);
         Assert.Empty(ComparePagesAndCommands(comparator, title, reference, goodPages));
 
-        var corruptedYarn = BuildSingleNodeYarn(title, "Bonjour"); // flag command dropped
+        var corruptedYarn = BuildSingleNodeYarn(title, "Bonjour"); // flag marker dropped
         var badPages = CompileAndPlayYarn(title, corruptedYarn, out var badComparator);
-        Assert.Empty(badPages[0].Commands);
+        Assert.Empty(badPages[0].Markers);
         var mismatches = ComparePagesAndCommands(badComparator, title, reference, badPages);
 
         var expectedMismatch =
@@ -790,10 +794,91 @@ public class YarnCorpusEquivalenceTests : IClassFixture<YarnCorpusEquivalenceTes
     }
 
     [Fact]
+    public void Discriminates_AFlagMarkerShiftedByOneCharacter()
+    {
+        const string title = "Neg_FlagShift";
+        const string source = "ab\\5cd";
+
+        var (goodPages, comparator) = CompileAndPlayOne(title, source);
+        var reference = ReferenceTextDecoder.Decode(source);
+        Assert.Empty(ComparePagesAndCommands(comparator, title, reference, goodPages));
+        Assert.Equal("text=abcd; markers=[flag@2 id=5]; commands=[]; calls=[]", comparator.ToCanonicalString(goodPages[0]));
+
+        var corruptedYarn = BuildSingleNodeYarn(title, "abc[flag id=5 trimwhitespace=false/]d");
+        var badPages = CompileAndPlayYarn(title, corruptedYarn, out var badComparator);
+        var mismatches = ComparePagesAndCommands(badComparator, title, reference, badPages);
+
+        Assert.Equal("text=abcd; markers=[flag@3 id=5]; commands=[]; calls=[]", badComparator.ToCanonicalString(badPages[0]));
+        Assert.Equal(
+            new[] { $"{title}_p0:\n  expected: {reference[0].ToCanonicalString()}\n  actual:   {badComparator.ToCanonicalString(badPages[0])}" },
+            mismatches);
+    }
+
+    [Fact]
+    public void Discriminates_AFlagMarkerTurnedBackIntoACommand()
+    {
+        const string title = "Neg_FlagCommand";
+        const string source = "ab\\5cd";
+
+        var reference = ReferenceTextDecoder.Decode(source);
+
+        // The pre-E19.f0 form: the flag as a command before the line. The comparator no longer serves a
+        // "flag" command, so it surfaces as unhandled and the marker is missing from the page.
+        var corruptedYarn = "title: " + title + "\n---\n<<flag 5>>\nabcd #line:" + title + "_p0\n===\n";
+        var badPages = CompileAndPlayYarn(title, corruptedYarn, out var badComparator);
+        var mismatches = ComparePagesAndCommands(badComparator, title, reference, badPages);
+
+        Assert.Equal(new[] { "flag(5)" }, badComparator.UnhandledCommands);
+        Assert.Equal("text=abcd; markers=[]; commands=[]; calls=[]", badComparator.ToCanonicalString(badPages[0]));
+        Assert.Single(mismatches);
+    }
+
+    [Fact]
+    public void Discriminates_TwoFlagsOfTheSamePositionPermuted()
+    {
+        const string title = "Neg_FlagOrder";
+        const string source = "Fin\\1004\\Y\\999\\Y";
+
+        var (goodPages, comparator) = CompileAndPlayOne(title, source);
+        var reference = ReferenceTextDecoder.Decode(source);
+        Assert.Empty(ComparePagesAndCommands(comparator, title, reference, goodPages));
+
+        var corruptedYarn = BuildSingleNodeYarn(
+            title,
+            "Fin[flag id=999 trimwhitespace=false/][yield trimwhitespace=false/]"
+            + "[flag id=1004 trimwhitespace=false/][yield trimwhitespace=false/]");
+        var badPages = CompileAndPlayYarn(title, corruptedYarn, out var badComparator);
+        var mismatches = ComparePagesAndCommands(badComparator, title, reference, badPages);
+
+        Assert.Equal(
+            new[] { $"{title}_p0:\n  expected: {reference[0].ToCanonicalString()}\n  actual:   {badComparator.ToCanonicalString(badPages[0])}" },
+            mismatches);
+    }
+
+    [Fact]
+    public void Discriminates_AYieldMarkerRemoved()
+    {
+        const string title = "Neg_Yield";
+        const string source = "ab\\5\\Ycd";
+
+        var (goodPages, comparator) = CompileAndPlayOne(title, source);
+        var reference = ReferenceTextDecoder.Decode(source);
+        Assert.Empty(ComparePagesAndCommands(comparator, title, reference, goodPages));
+
+        var corruptedYarn = BuildSingleNodeYarn(title, "ab[flag id=5 trimwhitespace=false/]cd");
+        var badPages = CompileAndPlayYarn(title, corruptedYarn, out var badComparator);
+        var mismatches = ComparePagesAndCommands(badComparator, title, reference, badPages);
+
+        Assert.Equal(
+            new[] { $"{title}_p0:\n  expected: {reference[0].ToCanonicalString()}\n  actual:   {badComparator.ToCanonicalString(badPages[0])}" },
+            mismatches);
+    }
+
+    [Fact]
     public void Discriminates_ACommandLeftAfterTheLastLine()
     {
         const string title = "Neg_Pending";
-        const string source = "\\100Bonjour"; // <<flag 100>> before the line.
+        const string source = "\\X1Bonjour"; // <<falcon_update>> before the line.
 
         var emit = YarnTextEmitter.Emit(new List<YarnTextEntry> { new(title, source) });
         Assert.Empty(emit.Errors);
@@ -801,10 +886,10 @@ public class YarnCorpusEquivalenceTests : IClassFixture<YarnCorpusEquivalenceTes
         var goodPages = CompileAndPlayYarn(title, emit.Source, out var goodComparator);
         Assert.Empty(ComparePagesAndCommands(goodComparator, title, reference, goodPages));
 
-        // Corrupt the emitter's output: the flag command moves after the node's last line.
+        // Corrupt the emitter's output: the falcon_update command moves after the node's last line.
         var corruptedYarn = emit.Source.Replace(
-            "<<flag 100>>\nBonjour #line:" + title + "_p0\n",
-            "Bonjour #line:" + title + "_p0\n<<flag 100>>\n",
+            "<<falcon_update>>\n{falcon()}Bonjour #line:" + title + "_p0\n",
+            "{falcon()}Bonjour #line:" + title + "_p0\n<<falcon_update>>\n",
             StringComparison.Ordinal);
         Assert.NotEqual(emit.Source, corruptedYarn); // guard: the replacement actually matched something.
 
@@ -910,8 +995,8 @@ public class YarnCorpusEquivalenceTests : IClassFixture<YarnCorpusEquivalenceTes
     /// <summary>
     /// Plays one node of a <see cref="DialogueAsset"/> on a real <see cref="YarnDialogueRunner"/>,
     /// registering the seven functions of <see cref="AlundraYarnFunctions"/> with the exact witness
-    /// values of <see cref="ReferenceTextDecoder"/> and the two commands ("flag", "falcon_update") the
-    /// contract defines, and turns every delivered <see cref="DialogueLine"/> into a
+    /// values of <see cref="ReferenceTextDecoder"/> and the one command ("falcon_update") the
+    /// contract defines (the flag is a positioned marker since E19.f0, no longer a command), and turns every delivered <see cref="DialogueLine"/> into a
     /// <see cref="ActualPage"/>: commands and calls logged since the previous line (or since the start
     /// of the node) are attributed to the line that follows them, exactly like the original decoder
     /// attributes them to the page that reads them - the same rule the T3 whole-corpus preview verified.
@@ -953,7 +1038,6 @@ public class YarnCorpusEquivalenceTests : IClassFixture<YarnCorpusEquivalenceTes
             _runner = new YarnDialogueRunner(_presenter);
             _runner.UnhandledCommand += (_, e) => UnhandledCommands.Add($"{e.Name}({string.Join(",", e.Arguments)})");
 
-            _runner.AddCommandHandler("flag", args => _commandLog.Add(("flag", args)));
             _runner.AddCommandHandler("falcon_update", args => _commandLog.Add(("falcon_update", args)));
 
             _runner.RegisterFunction(AlundraYarnFunctions.FalconTemp, (Func<float>)(() =>
@@ -1072,6 +1156,8 @@ public class YarnCorpusEquivalenceTests : IClassFixture<YarnCorpusEquivalenceTes
                     case "slow":
                     case "glyph":
                     case "empty":
+                    case "flag":
+                    case "yield":
                         markers.Add(new ReferenceMarker(attribute.Name, position, BuildMarkerProperties(attribute.Properties)));
                         break;
                     default:
@@ -1085,7 +1171,6 @@ public class YarnCorpusEquivalenceTests : IClassFixture<YarnCorpusEquivalenceTes
             {
                 commands.Add(name switch
                 {
-                    "flag" => ReferenceCommand.Flag(uint.Parse(args[0], CultureInfo.InvariantCulture)),
                     "falcon_update" => ReferenceCommand.FalconUpdate,
                     _ => throw new InvalidOperationException($"unexpected command '{name}'"),
                 });
