@@ -4211,44 +4211,62 @@ arcs, à un tick par frame, n'en dépendent pas) ; les deux termes additifs du s
 
 ##### 1.2k.2 E19.k2 — Masque des fonds `0xA4` ⏳ (planifiée)
 
-**Faits porteurs** **[binaire]** (découverte d'E19.k, `e19k-disc/notes.md`) : `0xA4 [b1, b2]` (`0x80041098`, taille 3) appelle
-`0x8005D668(b1, b2)` : mode des fonds `0x8018678C = b1`, banque de palettes `0x80181BE4 = b2`, `0x800C490C` (décalage de
-palette) remis à 0, et si `b2 > 0` un programme de cycle de palettes (`0x80186790`). Le dessin des fonds (`0x8005B670`) ne
-traite la couche 0 que si `mode & 1` (`0x8005B848`) et la couche 1 que si `mode & 2` ; l'état par tick d'une couche
-(cadence d'animation, défilement automatique, tirages) est **dans** l'appel gardé : une couche masquée est **figée** et non
-dessinée ; la surcouche (`0x8005BA40`) ne dépend que de l'en-tête de la carte, pas du masque. Au chargement de carte,
-`SetScrollingMode(3, 0)` (`0x8005B63C`) : les deux couches actives, banque 0. Le décalage `0x800C490C` s'ajoute à l'octet de
-palette des **tuiles** et des couches cellulaires (`0x8005C574`, `0x8005CDBC`, `0x8005D544`) : le cycle de palettes touche toute
-la carte. Recensement : 21 sites (cartes 337 à 345, 347, 471, 475), aucun sur la chaîne.
+**Relecture** (2026-10-03) : REVISE n°1 (le masque du binaire porte sur les deux sortes de couches, défilement et
+cellulaire, et la 475 masque une couche 0 cellulaire ; l'index d'une couche est son identifiant du binaire, pas sa place dans
+le service, car l'export écarte des couches ; l'accès du runner à la scène des fonds n'était pas nommé) : corrigé ci-dessous.
+
+**Faits porteurs** **[binaire]** (découverte d'E19.k, `e19k-disc/notes.md`, `dis_8005b848.txt`) : `0xA4 [b1, b2]`
+(`0x80041098`, taille 3) appelle `0x8005D668(b1, b2)` : mode des fonds `0x8018678C = b1`, banque de palettes `0x80181BE4 = b2`,
+`0x800C490C` (décalage de palette) remis à 0, et si `b2 > 0` un programme de cycle de palettes (`0x80186790`). Le dessin des
+fonds (`0x8005B670`) ne traite la couche d'identifiant 0 que si `mode & 1` et la couche d'identifiant 1 que si `mode & 2`
+(`0x8005B848`) ; chaque couche traitée l'est selon son octet de mode : 1 « tuiles » (`0x8005C294`, défilement), 2
+« cellulaire » (`0x8005C8BC`) ; l'état par tick d'une couche (cadence d'animation, défilement automatique, vagues et tirages
+aléatoires du cellulaire) est **dans** l'appel gardé : une couche masquée est **figée** et non dessinée, quelle que soit sa
+sorte ; la surcouche (`0x8005BA40`) ne dépend que de l'en-tête de la carte. Au chargement, `SetScrollingMode(3, 0)`
+(`0x8005B63C`) : les deux couches actives, banque 0. Le décalage `0x800C490C` s'ajoute à l'octet de palette des tuiles et des
+couches cellulaires (`0x8005C574`, `0x8005CDBC`, `0x8005D544`) : le cycle de palettes touche toute la carte. Recensement : 21
+sites (cartes 337 à 345, 347, 471, 475), aucun sur la chaîne ; à la 475, la couche 0 est cellulaire et `0xA4 [0,0] @52`,
+`[3,0] @330`, `[0,0] @355` l'éteignent et la rallument.
 
 **Choix de conduite** (techniques) : le masque est un manque du moteur (aucune couche active ou inactive dans
-`ScrollingLayerService`) : il se porte dans le moteur (branche dédiée du sous-module, ADR du moteur), jamais contourné dans la
-DLL ; le cycle de palettes (`b2 > 0`, carte 471 seulement selon la découverte) touche les tuiles et sort d'E19.k2 : consigné
-(O-E19-43), trace `Degraded` ; la DLL pose le masque par `AlundraBackdropStage`, qui pousse déjà les couches au service.
+`ScrollingLayerService` ni dans `CellularLayerService`) : il se porte dans le moteur (branche dédiée du sous-module, ADR du
+moteur), par une API générique keyée par l'identifiant de couche déjà porté par les définitions (`ScrollingLayerDefinition.
+StableId`, `CellularLayerDefinition.LayerId`, posés depuis le `LayerId` du binaire par `AlundraBackdropStage`) ; la DLL traduit
+les bits ; le cycle de palettes (`b2 > 0`) sort d'E19.k2 : consigné (O-E19-43), trace `Degraded`.
 
 **Règles d'exécution.**
-- **K2-R1 — Moteur** : `ScrollingLayerService` gagne un masque des couches actives (`SetActiveLayerMask(int mask)`, bit `i` =
-  couche `i`) ; une couche inactive n'avance pas (`AdvanceLayerOneTick` sauté, son état figé) et ne se dessine pas
-  (`ScrollingLayerComponent`) ; `SetLayers` et `Clear` remettent toutes les couches actives ; le masque d'une couche
-  absente est sans effet. Tests du moteur (`CasaEngine.Tests`, à côté de `ScrollingLayerServiceTests`) ; ADR du moteur.
-- **K2-R2 — DLL** : `0xA4 [b1, b2]` : `AlundraBackdropStage.SetLayerMask(b1 & 3)` qui l'applique au service attaché (sans
-  service : rien, journal une fois) ; `b2 > 0` : journal une fois et trace `Degraded` (O-E19-43) ; taille 3 ; au chargement,
-  le masque revient à 3 par `SetLayers` (comme `SetScrollingMode(3, 0)`). L'index de couche du service est celui du binaire
-  (ordre d'export des couches d'E9.b, à vérifier en premier ; s'il diffère, arrêt).
+- **K2-R1 — Moteur** : `ScrollingLayerService.SetLayerActive(int stableId, bool active)` et `CellularLayerService.SetLayerActive(
+  int layerId, bool active)` : chaque couche dont l'identifiant correspond prend l'état ; une couche inactive n'avance pas (ni
+  `AdvanceLayerOneTick`, ni vagues, ni tirage aléatoire, son état figé) et ne se dessine pas (`ScrollingLayerComponent`,
+  `CellularLayerComponent` : aucune soumission) ; un identifiant absent est sans effet ; `SetLayers` et `Clear` remettent toutes
+  les couches actives. Tests du moteur à côté de `ScrollingLayerServiceTests` et `CellularLayerServiceTests` ; ADR du moteur.
+- **K2-R2 — DLL** : membre par défaut `IEntityWorldContext.SetBackgroundLayerMask(int mask) => false` (« non traité ») ;
+  `AlundraWorldProxy` l'implémente en le passant à son `AlundraBackdropStage`, qui appelle pour chaque identifiant `id` de 0 à 1
+  `SetLayerActive(id, (mask & (1 << id)) != 0)` sur chacun des deux services attachés et rend `true` ; sans aucun service
+  attaché, la scène journalise une fois « no layer service attached » et rend `true`. Le runner : `0xA4 [b1, b2]` appelle
+  `SetBackgroundLayerMask(b1 & 3)` ; s'il rend `false` (contexte sans fonds), journal une fois et trace `Degraded` ; `b2 > 0` :
+  journal une fois et trace `Degraded` (O-E19-43) ; taille 3. Au chargement, `SetLayers` remet tout actif (comme
+  `SetScrollingMode(3, 0)`).
 
 **Tâches.**
 - ⏳ **K2-0 — Plan**, relu jusqu'à READY.
-- ⏳ **K2-1 — Moteur, tests d'abord** (branche `chantier/e19k2-layer-mask` du sous-module, depuis la `main` du moteur) : deux
-  couches avec défilement automatique et cadence d'animation ; masque 1 puis trois ticks : la couche 0 avance, la couche 1
-  garde son état d'avant (compteurs, défilement) et n'est pas dessinée ; masque 3 : les deux avancent ; `SetLayers` puis aucun
-  masque : les deux actives ; masque 0 : aucune n'avance ni ne se dessine. ADR. Commit (moteur) :
-  `feat(rendering): scrolling layers can be masked off, frozen and not drawn`
-- ⏳ **K2-2 — DLL, tests d'abord** : `[0xA4, 1, 0, 0xFF]` → masque 1 poussé au service, `CodeIndex` 3 (rouge : sauté, aucun
-  masque) ; `[0xA4, 2, 0, …]` → 2 ; `[0xA4, 0, 0, …]` → 0 ; `[0xA4, 3, 5, …]` → 3 et une trace `Degraded` ; sans service : rien,
-  un journal ; chargement d'une carte après un masque 1 : 3. Pointeur du sous-module mis à jour dans le même commit. Commit :
+- ⏳ **K2-1 — Moteur, tests d'abord** (branche `chantier/e19k2-layer-mask` du sous-module, depuis la `main` du moteur) :
+  défilement, deux couches d'identifiants 0 et 1 avec défilement automatique et cadence : `SetLayerActive(1, false)` puis trois
+  ticks → la couche 0 avance, la couche 1 garde ses compteurs et son défilement d'avant et n'est pas soumise ; puis
+  `SetLayerActive(1, true)` → les deux avancent ; une seule couche d'identifiant 1 placée à l'index 0 : `SetLayerActive(0, false)`
+  est sans effet, `SetLayerActive(1, false)` la fige et la cache ; `SetLayers` après un masque : toutes actives. Cellulaire, une
+  couche d'identifiant 0 : `SetLayerActive(0, false)` puis trois ticks → positions, vagues et générateur aléatoire inchangés
+  (aucun tirage), aucune soumission ; `true` → elle reprend. ADR du moteur. Commit (moteur) :
+  `feat(rendering): scrolling and cellular layers can be switched off, frozen and not drawn`
+- ⏳ **K2-2 — DLL, tests d'abord** : runner avec un contexte de test qui enregistre les masques : `[0xA4, 1, 0, 0xFF]` → masque 1,
+  `CodeIndex` 3 (rouge : sauté, aucun masque) ; `[0xA4, 2, 0, …]` → 2 ; `[0xA4, 0, 0, …]` → 0 ; `[0xA4, 7, 0, …]` → 3 ;
+  `[0xA4, 3, 5, …]` → 3 et une trace `Degraded` ; contexte sans fonds (membre par défaut) → trace `Degraded`, un journal.
+  Scène des fonds avec les deux services de test et la forme de la 475 (couche 0 cellulaire, couche 1 de défilement) : masque 0
+  → les deux inactives ; masque 3 → actives ; masque 1 → seule la cellulaire active ; scène sans service → un journal, rien
+  d'autre. Pointeur du sous-module mis à jour dans le même commit. Commit :
   `feat(alundra): port the background layer mask opcode 0xA4`
-- ⏳ **K2-3 — Vérification et clôture.** **K2-4 — Recette** (auteur, hors chaîne) : une carte de 337 à 345 où un fond s'éteint et
-  se rallume.
+- ⏳ **K2-3 — Vérification et clôture.** **K2-4 — Recette** (auteur, hors chaîne) : la 475, la couche cellulaire s'éteint et se
+  rallume avec la scène ; une carte de 337 à 345.
 
 **Acceptation d'E19.k2.**
 1. Tests de K2-1 et K2-2 rouges d'abord, verts après, valeurs écrites tenues.
@@ -4257,7 +4275,7 @@ DLL ; le cycle de palettes (`b2 > 0`, carte 471 seulement selon la découverte) 
 3. `CasaEngine.Tests` sans échec ; `Alundra.Tests` sans échec en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
 4. Recette K2-4 faite par l'auteur.
 
-**Risques.** Le cycle de palettes de la 471 reste absent (O-E19-43) ; l'ordre des couches du service doit être celui du binaire.
+**Risques.** Le cycle de palettes de la 471 reste absent (O-E19-43).
 
 ### 1.2l E19.j — Réarmement des événements de carte hors zone ✅ (recette J3 en attente)
 
