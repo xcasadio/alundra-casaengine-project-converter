@@ -3795,7 +3795,8 @@ par `ZImpulseSfx`) ; l'impulsion d'animation est prise au tick (R1) ; `CollidedW
     passe ; (2) la téléportation d'UH-16 partait d'une plateforme à 0 px, que l'atterrissage au terrain remettait en place :
     **corrigé**, départ au sommet de la montée ; (3) la précondition d'UH-7b était déjà aimantée par la mise à jour de calage de
     `FreeRig` : **corrigé**, pose et observation après le calage. Deux REVISE automatiques : nouvelle époque de relecture,
-    une seule relecture de clôture ; un nouveau REVISE met D5 en pause pour l'auteur.
+    une seule relecture de clôture ; un nouveau REVISE met D5 en pause pour l'auteur. **Relecture de clôture sur `99ff51d` :
+    READY.**
   - **Historique** : la relecture de clôture de l'époque précédente (`4432dae`) rendait **REVISE** : (1) F2/UH-16 : le héros,
     mis à jour avant la plateforme, monte à `dessus + v` avant elle (`IsOnGround` 0 en fin de tick, animation d'air), et en
     descente il atterrit sur elle à chaque tick (`CollidedWithEntityZ` 1, `ForceZ` 0) ; la condition de fin n'était pas définie
@@ -4172,7 +4173,7 @@ sous-tranche a son plan relu, son exécution et sa vérification :
   propriétaire de la formule d'échelle commune des écrans** (résolution virtuelle du moteur, recalcul des écrans au changement
   de taille) ; f2 bâtit son écran dessus sans la modifier (révision n°1 de la relecture du 2026-10-03).
 
-##### 1.2j.1 E19.f0 — Drapeaux du texte à leur position ⏳ (planifiée ; relecture n°1 REVISE, révisée)
+##### 1.2j.1 E19.f0 — Drapeaux du texte à leur position ⏳ (planifiée ; relectures n°1 et n°2 REVISE, révisée ; relecture de clôture à faire)
 
 **Faits** (cartographie, `e19f-plan2/yarn/notes.md`) :
 - **[binaire]** un code numérique pose son drapeau temporaire quand l'interpréteur du texte l'atteint et passe au caractère suivant
@@ -4233,7 +4234,8 @@ sous-tranche a son plan relu, son exécution et sa vérification :
 2. Code de test existant touché, liste fermée : `YarnTextEmitterTests.cs` (`:172-211`, `:434-480`, `:790-880`),
    `YarnCorpusEquivalenceTests.cs` (`:275-314`, `:351-391`, `:499-536`, `:606-624`, `:792-822`, comparateur `:956` et
    `:1064-1092`), `ReferenceTextDecoderTests.cs` (`:76-125`, `:452-458`, `:566-586`, `:608-635`, `:692-704`, `:770-897`),
-   `YarnDialogueWriterTests.cs` (`:687`, `:135`) ; côté DLL, aucun : les montages qui écrivent `<<flag n>>` restent servis par le
+   `YarnDialogueWriterTests.cs` (`:687`, `:135`), et le support de test `ReferenceTextDecoder.cs` (forme de commande de
+   `ReferenceCommand.Flag`, `:30`, et décodage des codes numériques et de `\Y` en marqueurs positionnés, F0-R7) ; côté DLL, aucun : les montages qui écrivent `<<flag n>>` restent servis par le
    gestionnaire gardé ; `AlundraDialogueOpcodesProductionTests` reste inchangé et vert sur le nouvel export (le `\999` du marin 12
    vient désormais d'un marqueur).
 3. Export : exactement 155 `.yarn`, 155 `.dialogue` et `report.json` changent, rien d'autre (le catalogue ne change pas :
@@ -4950,7 +4952,7 @@ ses points à concevoir) ; E19.h1 ne garde que les attentes sans question de con
 148, 152, 154, 344, 410, 423 : leur contact en Z dépend de D5) ; une flamme (`0x47`) n'est arrêtée que par un mur tant
 qu'E14 n'écrit pas `HitCounter`.
 
-##### 1.2n.1b E19.h1b1 — Écritures absolues de Z en convention de la DLL (apparition, `0x8A`, `0x64`) ⏳ (planifiée)
+##### 1.2n.1b E19.h1b1 — Écritures absolues de Z en convention de la DLL (apparition, `0x8A`, `0x64`) ⏳ (planifiée ; relecture n°1 REVISE, révisée)
 
 **Décision** : D-E19-59 (l'apparition passe en convention de la DLL, `0x8A` et `0x64` examinés dans la même ADR). E19.h1b est
 coupée en deux : **h1b1** (cette tranche, la convention) puis **h1b2** (`0x20`, `0x22`, `0x23`, Z des entités sans contrôleur,
@@ -4971,14 +4973,24 @@ gravité de carte de toute entité ; esquisse en §1.2n.1c), qui en dépend, com
 - **Recensement** : `0x64` 544 sites dans 155 cartes (62 sur la chaîne), `0x8A` 684 sites dans 69 cartes (49 sur la chaîne). Seul
   effet visible trouvé : sur les cartes 83 et 410, la plateforme flottante (`0x64 @1235`, puis `0x21 @1246`) finit sa première
   montée à 48 px après 32 ticks comme l'original, au lieu de 49 px après 33 aujourd'hui.
+- **Appuis d'apparition à distance** (`e19h1b-disc/spawnsupport_chain.txt`) : aujourd'hui trois entités sans gravité de la chaîne
+  sont collées à un appui situé sous elles : 391 rec0 (bloc transparent, 32 px plus bas, sur rec4 : c'est A6), 172 rec4 et
+  179 rec4 (déclencheurs de clé invisibles, 8 px plus bas, sur rec6). Avec H1b1-R3, elles restent à leur hauteur d'apparition,
+  comme dans le binaire (le bloc de la 391 à 144 px, `T` ; les déclencheurs à 40 px). Changement de comportement voulu.
 - **Traces** : aucun octet ne devrait changer (raisonné, non lancé) : `intro-programs-389.txt` est un listage statique, les
   traces du héros passent par un exécuteur vide et leur propre placement, et le harnais d'intro pose toute entité placée au sol à
   `T + 1` dans la même image.
 
 **Règles.**
-- **H1b1-R1 — Apparition** : la fabrique écrit `PosZ = (z << 16) − ModZ`, puis le relève à `max(PosZ, T)` en comparant `PosZ`
-  (comme le binaire, `0x80039EF0`), `T` la hauteur du terrain sous l'entité dans la convention de la DLL (comme l'arrivée du
-  héros, `AlundraWorldProxy` ~1702) ; sans monde (harnais d'intro), `T` vaut 0 comme aujourd'hui.
+- **H1b1-R1 — Apparition** (révision n°1) : la fabrique écrit `PosZ = (z << 16) − ModZ`, puis, **si un champ de collision lui
+  est passé**, le relève à `T` quand `PosZ <= T` (le binaire : `PosZ <= T + 1 → PosZ = T + 1`, en comparant `PosZ` et non
+  `ModdedPosZ`, `0x80039EF0`, décompilation `EntityManager.cs:128-136`). `T` est la hauteur de `ComputeEntityGroundHeight` : le
+  maximum des quatre coins de l'empreinte de l'enregistrement par `AlundraTerrainProbe.SampleTerrainHeightCorner`, le même
+  échantillonnage que `ComputeTerrainHeight` (`AlundraEntityScriptProxy.cs` ~1548-1566), pas celui de `ClampToGround` (boîte
+  physique). La fabrique n'a jamais de monde (`ApplySpawnInitialization` s'exécute avant `world.AddEntity`,
+  `AlundraWorldProxy.cs` ~774-791) : `AlundraWorldProxy` lui passe son `CollisionField` (chargement de carte et
+  `SpawnEntityByRecordId`) par un argument optionnel ; le harnais d'intro n'en passe pas, et sans champ **aucune butée** n'est
+  appliquée (ni à 0). H1b1 possède O-E19-6 (relevé au terrain à l'apparition), retiré de la portée d'E19.h1b2.
 - **H1b1-R2 — `0x8A` et `0x64`** écrivent `PosZ = z << 16`, sans `+ 1` et sans butée (le binaire n'en a pas) ; `0x65`, `0x89` et
   `0x8B` ne changent pas.
 - **H1b1-R3 — Appui d'apparition** : les deux appels de production d'`immediateAtSpawn` disparaissent (une pose en pixels
@@ -4992,7 +5004,8 @@ gravité de carte de toute entité ; esquisse en §1.2n.1c), qui en dépend, com
   enregistrement 22 : `0x21 @1246` finit au 33e appel de son programme (l'appel de `0x64` compté comme le 1er) avec `PosZ`
   3145728 (aujourd'hui 34e, 3211264) ; nouveaux tests de production : les piles de caisses des cartes 165, 178, 179 et 10 restent
   empilées (chaque caisse à `PosZ` = dessus de celle du dessous, 60 images après le chargement) ; une apparition sous le terrain est
-  relevée à `T`.
+  relevée à `T` en passant par `AlundraWorldProxy` avec un vrai champ (chargement de carte ou `SpawnEntityByRecordId`), rouge
+  avant, vert après.
 - **H1b1-2 — Code** (`AlundraEntitySpawnFactory.cs`, `AlundraEventProgramRunner.cs`, `AlundraWorldProxy.cs`).
 - **H1b1-3 — ADR-0026** (les écritures absolues de Z suivent la convention de la DLL, binaire − 1 ; les écritures relatives ne
   changent pas ; pourquoi le pixel et `TileZ` restent identiques : les Z du binaire valent toujours 1 modulo 256 ; les deux
@@ -5005,13 +5018,18 @@ gravité de carte de toute entité ; esquisse en §1.2n.1c), qui en dépend, com
    `AlundraWorldProxyUpdateCharacterizationTests.cs:437-461`, `AlundraVisionArcTests.cs:201`, `:276`, `:299-303`,
    `AlundraShipBlockArcTests.cs:252`, `AlundraShipCorridorArcTests.cs:104`, `AlundraInoaAwakeningArcTests.cs:224` ; pour la
    fabrique `AlundraWorldProxySpawnInitializationTests.cs:238` (→ 24117248), `:286` (`rawZ − ModZ`), `:394` (→ 24117248) ;
-   valeurs dérivées `AlundraNpcCharacterControllerMoverTests.cs:1836`, `:1948`, `:2026` (→ 26214400, assertions intactes) ; A6
-   (`AlundraShipBlockArcTests.cs:210`) et les tests qui lisent l'appui d'apparition à l'image 0
-   (`AlundraNpcCharacterControllerMoverTests.cs` ~1844, ~1951, ~2021 ; `AlundraMovementObstacleProbeTests.cs` ~384-386) aux
-   valeurs que l'audit des valeurs aura recalculées avant l'exécution. Rien d'autre ; aucune épingle d'image ne bouge.
+   valeurs dérivées `AlundraNpcCharacterControllerMoverTests.cs:1836`, `:1948`, `:2026` : code inchangé, la valeur dérivée de la
+   plateforme née de la fabrique devient 26214400 d'elle-même (`InRange(399.99, 400.01)` et la racine à 400 tiennent) ; ces tests
+   et `AlundraMovementObstacleProbeTests.cs:366-393` appellent `immediateAtSpawn` eux-mêmes, avec des Z posés à la main ou
+   dérivés : **valeurs inchangées**, seuls leurs commentaires « comme la production » / « as the spawn leaves it » deviennent
+   « comme le harnais d'intro » ; **A6** (`AlundraShipBlockArcTests.cs:210`) : `(29097984, 44040192, 7340032)` →
+   `(29097984, 44040192, 9437184)` (le bloc de `0x2D @265` n'est plus collé sur le marin 4 : apparition à `z << 16` = 9437184
+   moins `ModZ` 0, égale au terrain `T` de 144 px), commentaire ajusté. Rien d'autre ; aucune épingle d'image ne bouge.
 3. Les six traces à l'octet (sinon arrêt et diagnostic).
 4. `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
 5. **Recette H1b1** (auteur) : les piles de caisses des 165, 178 et 179 ; la plateforme flottante de la 83.
+
+**Ordre** : après D5 d'E19.d2c2, avant E19.t (mêmes fichiers) ; une tranche à la fois.
 
 **Retour arrière** : revert du commit (DLL seule, aucun export).
 
@@ -5023,7 +5041,7 @@ d'intro, qui relit la fabrique (garde des six traces).
 
 Portée : `0x20` (attente de distance en Z, 266 sites), `0x22`/`0x23` (attente d'une hauteur d'enregistrement, 17 sites) et
 la hauteur d'enregistrement gardée sur le mandataire, O-E19-7 (pas vertical et `IsOnGround` de fin de tick pour toute entité
-sans contrôleur), O-E19-6 (relevé au terrain à l'apparition) et O-E19-15 (aucun appui sur une entité à l'apparition).
+sans contrôleur), et O-E19-15 (aucun appui sur une entité à l'apparition) ; O-E19-6 (relevé au terrain à l'apparition) passe à E19.h1b1.
 **À concevoir avant le plan** (blocages de la relecture d'E19.h1) : (1) la cohabitation avec la passe verticale du harnais
 d'intro (`IntroTraceHarnessTests.cs` ~738, ~861, ~895, ~959-1028), qui pilote déjà des mandataires nus sans monde ni gravité ;
 (2) la résolution de la gravité et de la viscosité brutes de la carte pour toute entité apparue, contrôleur ou non
@@ -5518,7 +5536,7 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
 - 🧪 **R5 — Recette** (auteur) : sortir de la chambre de la 163 (le HUD glisse à l'écran) ; la 476 (les pièces apparaissent dans
   le cadre) ; la carte 15 après R3.
 
-### 1.2q E19.s — Image 320 × 240, facteur entier, bandes noires, suivie en temps réel ⏳ (planifiée)
+### 1.2q E19.s — Image 320 × 240, facteur entier, bandes noires, suivie en temps réel ⏳ (planifiée ; relecture n°1 REVISE, révisée)
 
 **Décisions** : D-E19-47 (image de l'original, agrandie sans déformation, recalculée en temps réel, bandes noires), D-E19-60
 (facteur entier seulement). **Découverte** (2026-10-03, lecture seule, `e19s-disc/notes.md` du scratchpad de la session).
@@ -5572,7 +5590,11 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
   | 400 × 200 | 1 | (40, 0, 320, 200) |
 
 - **S-R4 — Temps réel** : hors éditeur (`!UseExternalViewManagement`), le moteur s'abonne à `Window.ClientSizeChanged` et
-  applique la mise en page : la vue unique prend le rectangle (`ViewportRect`), sa caméra 2D prend `Zoom = k` ; même calcul à la
+  applique la mise en page : la vue unique prend le rectangle (`ViewportRect`), sa caméra 2D prend `Zoom = k` **et un
+  viewport de la taille du rectangle rogné** (la projection se calcule sur le viewport de la caméra, `Camera2dComponent.cs:84-88`,
+  aujourd'hui posé à la taille de la fenêtre par `CameraComponent.cs:95-96, 106-110` et `CasaEngineGame.cs:283, 299-300` :
+  sans cela, une fenêtre de 1920 × 1080 au zoom 4 montrerait 480 × 270 unités écrasées dans 1280 × 960), posé après
+  `World.OnScreenResized` ; même calcul à la
   création de la vue (`DefaultRuntimeViewBootstrapper`) et dans `OnScreenResized` ; quand le rectangle ne couvre pas la fenêtre,
   le back-buffer entier est effacé en noir avant les vues, à chaque image.
 - **S-R5 — Écrans** : le moteur ajoute à `XamlUIScreenBase` un rappel de changement des bornes de l'écran (manque relevé : seul
@@ -5584,8 +5606,9 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
 **Tâches.**
 - **S-1 — Moteur, tests d'abord** (branche dédiée du sous-module `chantier/e19s-virtual-resolution`, depuis la `main` du
   moteur ; ne jamais indexer `CasaEngine.Launcher/Program.cs`, modification locale de l'auteur) : la fonction de mise en page
-  (table de S-R3), le réglage de projet (lecture, écriture, absent = inerte), l'amorce de la vue, `OnScreenResized` (rectangle et
-  zoom), l'abonnement à `ClientSizeChanged`, l'effacement des bandes, le rappel des écrans XAML ; ADR du moteur (numéro suivant au
+  (table de S-R3), le réglage de projet (lecture, écriture, absent = inerte), l'amorce de la vue, `OnScreenResized` (rectangle,
+  zoom et viewport de la caméra : fenêtre 1920 × 1080, k 4 → viewport de la caméra 1280 × 960 et aire visible 320 × 240, à la
+  création de la vue comme après un redimensionnement ; fenêtre 400 × 200 → viewport 320 × 200), l'abonnement à `ClientSizeChanged`, l'effacement des bandes, le rappel des écrans XAML ; ADR du moteur (numéro suivant au
   moment de l'exécution) et `docs/engine/rendering-2d-3d-spaces.md`.
 - **S-2 — Convertisseur** : `AlundraDisplay` (240, doc), écriture du réglage dans `AlundraGame.json`, `WorldWriter` (doc
   « 320x236 ») ; tests : `WorldWriterTests.cs:340` (236 → 240) et doc `:296-303`, nouveau test du réglage écrit ;
@@ -5601,7 +5624,9 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
 **Acceptation.**
 1. Tests de S-1 à S-3 rouges d'abord, verts après ; la table de S-R3 tenue telle quelle.
 2. Tests existants touchés, liste fermée : `WorldWriterTests.cs:296-345` ; `AlundraWorldProxyCameraFollowTests.cs:192-224`
-   (retirés) ; les tests de toile des écrans (`AlundraHudScreenXamlTests.cs:196-212` et ses trois frères) seulement si la source
+   (retirés) ; `AlundraWorldProxyUpdateCharacterizationTests.cs:153-174` et `:217-240` (le directeur ne pose plus le zoom :
+   `camera.Zoom` garde sa valeur d'avant, 1,0, le défaut du montage, `Camera2dComponent.cs:26`, au lieu de `MinimumZoom` ;
+   `PixelSnap` posé une fois, inchangé ; les noms qui parlent du zoom ajustés) ; les tests de toile des écrans (`AlundraHudScreenXamlTests.cs:196-212` et ses trois frères) seulement si la source
    de l'échelle change de forme, valeurs inchangées (640 × 480 → 2). `ScreenEffectComponentViewSizeTests`,
    `Camera2dComponentTests`, `CellularLayerServiceTests` et `BackdropStageDefinitionTests` inchangés.
 3. Export : exactement `AlundraGame.json` (`DebugHeight` 960 et le réglage), `Entities/AlundraCamera.entity` (hauteur du
@@ -5619,7 +5644,12 @@ d'avant E19.s reste compatible avec un export d'E19.s (le réglage n'est lu que 
 l'ordre des vues ; l'éditeur ne doit rien voir (S-R2) ; le moteur est ouvert dans Visual Studio par l'auteur : S-1 attend que le
 sous-module soit libre.
 
-### 1.2r E19.t — Son de chaque changement d'animation ⏳ (planifiée)
+### 1.2r E19.t — Son de chaque changement d'animation ⏳ (planifiée ; relecture n°1 REVISE, révisée)
+
+**Ordre et propriété** (révision n°1) : E19.t s'exécute **après D5 d'E19.d2c2 et après E19.h1b1**, qui touchent les mêmes
+fichiers (`AlundraScriptedMotion.cs` pour D5 ; les sites d'apparition d'`AlundraWorldProxy.cs` et la fabrique pour h1b1) ; une
+seule tranche à la fois possède ces fichiers. Sa base est le commit de clôture d'E19.h1b1 : les ancres de ce texte (mesurées sur
+`99ff51d`) et sa liste fermée sont re-mesurées sur cette base par l'audit des valeurs avant l'exécution.
 
 **Décisions** : D-E19-57 (toutes les entités, apparition comprise), D-E19-61 (sons d'apparition au chargement résolus avec le
 groupe de la nouvelle carte). **Découverte** (2026-10-03, lecture seule, `e19snd-disc/notes.md` du scratchpad de la session).
@@ -5667,7 +5697,9 @@ groupe de la nouvelle carte). **Découverte** (2026-10-03, lecture seule, `e19sn
   maintien, même animation redemandée → rien ; auto-chaîne → une demande par cycle (héros, animation 15 → 22) ; 476 `0x8A @553`
   → 219 demandé au tick de l'opcode ; Melzas au chargement de la 476 → 219 demandé à l'initialisation du monde, que la banque
   résout en 864 dans le groupe 62 ; 392 `0x5B [0x81, 3, 0x43] @64` → 13 ; le livre, 179 `@224` et 178 `@728` → 204 une fois
-  chacun ; arrivée du héros → le son de son animation d'arrivée.
+  chacun ; arrivée du héros par `AdoptPlayerPawn` dans l'animation 43 → `[10]`, et le premier changement n'ajoute aucune seconde
+  demande (l'animation d'arrivée par défaut, 0x36, n'a pas de son : elle ne prouverait rien) ; retirer la demande de
+  `AdoptPlayerPawn` doit rendre ce test rouge.
 - **T-2 — Code** : le crochet dans la passe de changement (`AlundraFrameSyncPasses.cs`, `AlundraEntityScriptProxy.StepAnimationClock`),
   l'apparition (`AlundraWorldProxy`, fabrique), le retrait de R8.
 - **T-3 — ADR-0028** (chaque changement d'animation joue son son, apparition comprise ; octet `0xD` ; groupe de la nouvelle carte ;
