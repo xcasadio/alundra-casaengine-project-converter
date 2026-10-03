@@ -4167,7 +4167,7 @@ seulement) est consigné en dégradé, à placer. Sites : 337 à 345, 347, 471, 
 - **DLL** (`AlundraWorldProxy.cs:2309-2359`, hors zone `:2335-2338`) : suit la décompilation : écrit sur l'entité logique
   (`ChildEntity`, `Sp`, `RelativeWarpOffsetX`, `Index`) et ne remet ni `EventData`, ni l'entité logique, ni l'octet de
   programme : un programme quitté reprend au lieu de recommencer, un programme fini ne se rejoue jamais. `BuildMapEvents`
-  (`:1845-1877`) ne garde pas l'octet d'origine de l'enregistrement. Le commentaire `:2344-2348` et la doc du test `:389-397`
+  (`:1845-1877`) ne garde pas l'octet d'origine de l'enregistrement. Le commentaire `:2344-2348` et la doc du test `:390-397`
   disent que la table des créneaux n'est pas compactée ; le binaire la compacte (`0x8003C5F4`-`0x8003C608`) ; sans effet
   (aucun enregistrement à octet nul sur 1714).
 - **Recensement** : 1714 enregistrements, 619 à zone bornée dans 190 cartes ; sur les 30 cartes de la chaîne, 8, et **aucune
@@ -4189,7 +4189,7 @@ corrige au cas par cas (règle de l'auteur), pas en bloc.
   `EventData.Codes = null`, `EventData.CodeIndex = 0` (la forme déjà utilisée pour « entrée et pc à 0 »,
   `AlundraEventProgramRunner.cs:450-451`, `:472-473`), `EventData.Result = 0`, entité logique de l'événement = le héros,
   `ProgramBMap` = l'octet d'origine ; **plus aucune écriture sur une entité**. Le runner n'est pas touché.
-- **J-R3** : le commentaire `AlundraWorldProxy.cs:2344-2348` et la doc du test `:389-397` disent la compaction du binaire.
+- **J-R3** : le commentaire `AlundraWorldProxy.cs:2344-2348` et la doc du test `:390-397` disent la compaction du binaire.
 
 **Tâches.**
 - ⏳ **J0 — Plan**, relu jusqu'à READY.
@@ -4208,8 +4208,19 @@ corrige au cas par cas (règle de l'auteur), pas en bloc.
   - **J1-g** (réel, hors chaîne) : carte 445, enregistrement 0, zone (1,8)-(13,59), octet 129 : dedans (5,20), dedans, dehors
     (20,20), dedans → trace `BD @160`, `BF @163`, fin `@168` ; puis fin `@168` ; puis rien ; puis `BD @160`, `BF @163`, fin
     `@168` (rouge : fin `@168` seule au dernier tick).
+  - **Montage** (audit des valeurs du 2026-10-03 : les sept valeurs attendues et rouges confirmées) : vrai runner
+    (`new AlundraEventProgramRunner(doc, new AlundraGameState(), world)`, comme
+    `AlundraEventProgramRunnerLogicEntityTests.cs:163-168`), monde avec `PlayerEntity` = le héros ; position par les champs
+    `TileX`/`TileY` du héros ; `playerControlFlags` à 0 ; un appel de `RunMapEventsPass` = un tick. J1-c : héros en `Status`
+    Normal, PNJ d'`EntityRefId` 5 dans `Spawned` ; l'entité logique se lit sur `mapEvent.Entity` ; `Sp` 0xAB posé sur
+    `npc.EventProgramState.Sp` ; le rouge se lit aussi à l'issue du 3e tick (animation du PNJ 0, aujourd'hui 7). J1-b : la
+    remise à 0 de l'animation après le 1er tick est porteuse. J1-d : `Result` 1 posé sur `mapEvent.EventData.Result`.
+    J1-e : la moitié 0x80 est verte aujourd'hui, seule la moitié 130 est rouge (octet d'origine 129 dans les deux cas).
+    J1-f : chaque position sur un événement neuf, seul « tourne ou non » est vérifié. J1-g : l'enregistrement 0 seul (en
+    (20,20) l'enregistrement 1 est dans sa zone), trace vidée à chaque tick, `BD` et `BF` tracés `Degraded` sans lecteur
+    de son ; données de `alundra-project/` par `MapEventProgramLoader.Load(root, "Torla (inner)-445")`.
   Tests existants touchés : `RunMapEventsPass_PlayerOutOfZone_ResetsLogicEntityState_AndDoesNotRun`
-  (`AlundraWorldProxyEventPassTests.cs:419-435`, réécrit au comportement du binaire) ; la doc du test `:389-397` (J-R3) ; la
+  (`AlundraWorldProxyEventPassTests.cs:419-435`, réécrit au comportement du binaire) ; la doc du test `:390-397` (J-R3) ; la
   construction de `AlundraMapEvent` (octet d'origine) dans `NewMapEvent` (`:365-367`),
   `AlundraEventProgramRunnerLogicEntityTests.cs:171` et `:344`, `AlundraEventProgramRunnerTests.cs:3051`,
   `IntroTraceHarnessTests.cs:681-690` (construction seulement, aucune assertion). Commit :
