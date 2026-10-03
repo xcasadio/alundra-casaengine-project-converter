@@ -412,7 +412,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.g | Effets visuels (D-E19-7) : export des effets par le convertisseur, réserve de 128 effets aux règles du binaire, `0x90`-`0x94`, `0xA0`-`0xA3`, rendu | cartes à effets | L'aura de 476, les vagues de 391 |
 | E19.h | Attentes en Z et contacts : `0x20`-`0x23`, `0x26`, `0x47`, `0x48` ; `ForceAdjusted` aligné sur le binaire ; glissement le long des murs ; reste du saut (O-E19-27) — `0x25` et `CollidedWithEntityZ` avancés en E19.d2c (D-E19-31) | ciblés | ciblée |
 | E19.i | ~~Boucles d'animation Loop pour `0x1C`/`0x1D`~~ — **absorbée par E19.c2** (D-E19-18) : le signal de boucle et son pont y arrivent ; le recensement exact est de 208 sites dans 53 cartes, et non 101 dans 30 | — | — |
-| E19.j (§1.2l) | Événements de carte : réarmement hors zone du binaire (619 enregistrements, O-E19-11) ; aucun effet sur la chaîne | ciblés | ciblée |
+| E19.j ✅ (§1.2l, recette J3 en attente) | Événements de carte : réarmement hors zone du binaire (619 enregistrements, O-E19-11) ; aucun effet sur la chaîne | ciblés | ciblée |
 | E19.k (§1.2k) | Caméra : balancement `0x8E`/`0x8F` (E19.k1, DLL seule), masque des fonds `0xA4` (E19.k2, plan moteur) | ciblés | 392, 391 |
 | E19.l | Prédicats, branches et restes : `0x82` (avec la correction d'`AddOneItemIfUnlocked`), `0x83`, `0x84`, `0x87`, `0x3F`, `0x95`, `0x99`, `0x9A`, `0x9F` (avec `InitializeContents`), `0x57`, `0x58`, `0x4A`, `0x2A`, `0x2B`, `0x5D`, etc. ; liste fermée au recensement du moment | ciblés | ciblée |
 | E19.m | Hygiène et clôture : taille de `0x5F` (8), libellés faux, `0x01` qui rend 0, modes aléatoires 4 et 5 de `ResolveDirectionFromParam` ; test statique : aucun opcode atteignable sauté dans le corpus hors E14 (IA native) et E18 (`0xBB`) | corpus | — |
@@ -4204,7 +4204,7 @@ inactive ni n'avance, ni ne se dessine, ni ne tire au hasard ; « toutes actives
 manque ; côté DLL, `0xA4` pose le masque par `AlundraBackdropStage` ; le second opérande (cycle de palettes, carte 471
 seulement) est consigné en dégradé, à placer. Sites : 337 à 345, 347, 471, 475, hors chaîne.
 
-### 1.2l E19.j — Réarmement des événements de carte hors zone ⏳ (plan)
+### 1.2l E19.j — Réarmement des événements de carte hors zone ✅ (recette J3 en attente)
 
 **Découverte** (2026-10-03, lecture seule ; notes et scripts dans le scratchpad de la session, `e19j-disc/`). Faits porteurs
 **[binaire]** :
@@ -4245,7 +4245,8 @@ corrige au cas par cas (règle de l'auteur), pas en bloc.
 - **J-R3** : le commentaire `AlundraWorldProxy.cs:2344-2348` et la doc du test `:390-397` disent la compaction du binaire.
 
 **Tâches.**
-- ⏳ **J0 — Plan**, relu jusqu'à READY.
+- ✅ **J0 — Plan**, relu jusqu'à READY (READY à la première relecture ; audit des valeurs : les sept valeurs attendues et
+  rouges confirmées, montage précisé).
 - ✅ **J1 — Réarmement, tests d'abord** (montage des tests de la passe, `AlundraWorldProxyEventPassTests` ; sauf mention :
   programme B au masque 1, table B `{99, 0}`, zone (0,0)-(10,10), héros en (5,5) dans la zone, en (50,50) hors zone) :
   - **J1-a** `{1A 7, 00, 1A 8, FF}` : dedans, animation remise à 0, dehors, dedans → animation 7 ; hors zone : `Codes` null,
@@ -4283,8 +4284,15 @@ corrige au cas par cas (règle de l'auteur), pas en bloc.
     Le premier assert rouge est parfois antérieur à celui du plan (J1-a : `Codes` non nul, J1-c : l'entité logique reste le PNJ, J1-d : `Result` reste 1) ; J1-e lit 130 au lieu de
     129 ; J1-g lit `0xFF @168` seul au dernier tick, comme écrit. Verts après : toutes les valeurs tenues, aucune ré-épinglée. `Alundra.Tests` Debug 2344 réussis, 0 échec. Écarts : aucun
     (`OriginalProgramBMap` en champ `required` public, comme les autres champs du type).
-- ⏳ **J2 — Vérification et clôture**, comme les tranches précédentes. **J3 — Recette** (auteur, hors chaîne) : Torla 445,
-  sortir de la zone puis y revenir rejoue le son 216 ; une partie de la chaîne sans écart.
+- ✅ **J2 — Vérification et clôture.** Vérifié le 2026-10-03 : `Alundra.Tests` 2333 → 2344 (+11), 0 échec, en Release
+  (44 s) puis en Debug (46 s), la Debug en dernier ; `cmp` sans écart (sha256 `3b554ab0...4a1e`) ; les six traces à l'octet.
+  Vérificateur neuf : **CONFIRMED** (rouges d'avant reproduits en remettant l'ancien bloc ; neuf mutations d'une ligne,
+  toutes attrapées ; au retour dans la zone, redémarrage depuis `table[octet & 0x7F]` et réécriture du créneau en fin de
+  passage ; aucun autre lecteur des champs du créneau, rien dans la sauvegarde ; J1-g contre l'export réel de la 445).
+  Avis P4, reportés : J1-f ne teste pas la borne juste sous Y1 ; les remises à 0 de `Sp` et `CodeIndex` ne sont épinglées
+  que par le test réécrit (`InitializeEventData` les réécrit de toute façon).
+- 🧪 **J3 — Recette** (auteur, hors chaîne) : Torla 445, sortir de la zone puis y revenir rejoue le son 216 ; une partie
+  de la chaîne sans écart.
 
 **Acceptation d'E19.j.**
 1. Tests J1 rouges d'abord (sauf J1-f, garde des bornes), verts après, valeurs écrites tenues ; une valeur contredite est un arrêt.
@@ -4501,6 +4509,14 @@ Réservé aux mesures faites en exécutant les tranches.
   10 (`0xA2` de `B[10]`), A14 aucun, A15 11, A17 1 (`0xA0 @536`), A18 7 ; contacts exacts : héros contre Septimus (A14),
   contre Ronan (A17) ; A15 sans aucun pas raccourci par une entité.
 
+### E19.j (2026-10-03)
+
+- **Commits** : plan `2d64b90`, précisions de montage `f24c4cf`, J1 `dedd1f8`, puis cette clôture.
+- **Suites** : `Alundra.Tests` **2333 avant la tranche, 2344 après** (+11 : J1-a à J1-g, J1-f en 5 cas ; un test existant
+  réécrit), 0 échec, en Release (44 s) puis en Debug (46 s) ; `cmp` sans écart.
+- **Rouges d'avant** (ancien bloc remis par le vérificateur) : 7 sur 32 du filtre ; J1-b lit 0 au lieu de 7, J1-d `Result` 1,
+  J1-e 130 au lieu de 129, J1-g `0xFF @168` seul ; J1-f vert (garde des bornes).
+
 ## 3. Points ouverts
 
 | Réf | Sujet | Tranche |
@@ -4514,7 +4530,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-8 | `IsZForceApplied` (`+0xF8`) n'est pas porté : au tick d'un changement d'animation, le binaire remplace `ForceZ` par la valeur du jeu d'animation (131 des 395 enregistrements de sprite en ont une non nulle). Il suppose l'animation résolue avant la physique, ce que D-E19-13 ne fait pas. **Avancé le 2026-10-02 (D-E19-31)** : l'impulsion se pose dans `StepAnimationClock`, au tick du binaire ; seul le changement de vitesse horizontale des PNJ garde le retard D-E19-13. | E19.d2c |
 | O-E19-9 | Les 5 animations Loop de durée 0 de l'export (banque 127 anim 0 gauche et droite, banque 151 anim 1 haut, gauche et bas) sont invisibles dans le moteur : la clé cachée de fin tombe au même instant 0 que l'image. Le binaire montre l'image figée. À corriger au convertisseur (export complet à relancer). | à placer |
 | O-E19-10 | ~~Défaut du moteur sur le chemin en temps réel~~ — **réglé le 2026-10-01 par le moteur (`cc6f498e`, R2) et vérifié par le plan moteur (R1 à R4, 0 échec)** ; question d'origine : défaut du moteur sur le chemin en temps réel : à 0,02 s par image, 197 des 5205 Loop de durée positive de l'export ne bouclent jamais (le temps tombe pile sur la durée, puis la dépasse), et le sprite montre la pose cachée de fin (exemple : animations 53 et 55 du héros). **Correction planifiée** (D-E19-19) : tâche T1.1 du plan moteur d'E19.c2. | E19.c2 |
-| O-E19-11 | La remise à zéro hors zone d'un événement de carte diffère du binaire : la DLL écrit sur l'entité de l'événement et ne remet pas `mapEvent.EventData` à zéro, le binaire (`0x8003C7F0`-`0x8003C804`) remet le pc et l'entrée de l'état de l'événement, `state+0x2C`, l'entité logique et l'octet de programme. Un programme B réentré reprend dans la DLL et recommence dans le binaire. Sans effet sur la 478 et la 416 (zones de toute la carte). | E19.j |
+| O-E19-11 | ~~Réarmement hors zone~~ — **réglé le 2026-10-03 par E19.j** (`dedd1f8`, CONFIRMED) ; question d'origine : la remise à zéro hors zone d'un événement de carte diffère du binaire : la DLL écrit sur l'entité de l'événement et ne remet pas `mapEvent.EventData` à zéro, le binaire (`0x8003C7F0`-`0x8003C804`) remet le pc et l'entrée de l'état de l'événement, `state+0x2C`, l'entité logique et l'octet de programme. Un programme B réentré reprend dans la DLL et recommence dans le binaire. Sans effet sur la 478 et la 416 (zones de toute la carte). | E19.j |
 | O-E19-12 | ~~Base de la branche moteur d'E19.c2~~ — **réglé le 2026-10-01 (D-E19-20)** : l'auteur a mergé `chantier/field-move-to-contact` dans `main` du moteur (`74e97293`) ; la branche d'E19.c2 part de `main`. | E19.c2 |
 | O-E19-13 | ~~Le moment de la fin Hold de Ronan~~ — **réglé le 2026-10-01 : A3 resserré épingle 26 (premier `0x1A @856`), 25 et 66 images, mesurés égaux** ; question d'origine : le moment de la fin Hold de Ronan (`0x1C @854`, image 25 de la 478) vient de l'horloge à virgule flottante du moteur, à ± 1 tick du binaire : il n'est pas épinglé. **Se ferme en E19.c2** : A3 resserré épingle 25 et 66 images. | E19.c2 |
 | O-E19-15 | À l'apparition, `EvaluateEntitySupport(…, immediateAtSpawn: true)` accepte un support sans limite de portée : le bloc de la 391, apparu à 144 px au-dessus du marin 4, se pose une image sur sa tête (`PosZ` 7340032) avant de revenir sur le terrain. La fidélité de cet appui au binaire n'est pas vérifiée. | E19.h |
