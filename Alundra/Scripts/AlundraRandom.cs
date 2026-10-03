@@ -3,11 +3,12 @@
 namespace Alundra.Scripts;
 
 /// <summary>
-/// The original engine's ONE shared random stream (D7, docs/plan-e9d-mode-cellulaire.md) -
-/// transcribed verbatim from <c>alundra-datas-analyser/AlundraTools/AlundraEngine/Random.cs</c>. Not
-/// present anywhere else in the DLL before this slice - a <c>CellularCellType.FallRespawn</c> cell's
-/// respawn abscissa draws from THIS stream, not a private generator, because the original game shares
-/// one seed across every random draw (dialogue, AI, combat, and this).
+/// The game's shared random stream (D7, docs/plan-e9d-mode-cellulaire.md) - transcribed verbatim from
+/// <c>alundra-datas-analyser/AlundraTools/AlundraEngine/Random.cs</c>. It is NOT the stream a
+/// <c>CellularCellType.FallRespawn</c> cell's respawn abscissa draws from: the binary draws that from the C
+/// library <c>rand()</c> (<see cref="AlundraLibcRandom"/>, E19.m2, D-E19-66, ADR-0032), which replaced the
+/// choice D7 made. D7 and the decompilation were wrong on that point; the rest of the game's draws (dialogue,
+/// AI, combat) still use this stream.
 ///
 /// <see cref="Next"/> wraps the multiplication in 64 bits (matching the original's own <c>ulong</c>
 /// arithmetic) and returns only the LOW 32 bits, held in a <see cref="ulong"/> so callers reading it as

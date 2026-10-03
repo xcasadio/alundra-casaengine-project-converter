@@ -641,15 +641,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // when the service is null but world.Game is not (§4 arrêt in production).
         _backdropStage.AttachService(world.Game?.ScrollingLayerComponent?.Service);
 
-        // D-E9d: the sibling cellular mechanism - same attach-before-Load shape. D7: this world's
-        // FallRespawn cells (if any) draw from the game's ONE shared random stream, never a private
-        // generator - wired here, unconditionally, so it is never left unwired by the time a
-        // FallRespawn cell's Advance() actually needs it.
+        // D-E9d: the sibling cellular mechanism - same attach-before-Load shape. E19.m2 (D-E19-66, ADR-0032):
+        // this world's FallRespawn cells (if any) draw from the C library rand() of the original
+        // (AlundraLibcRandom, a stream of its own - not the game's AlundraRandom) - wired here,
+        // unconditionally, so it is never left unwired by the time a FallRespawn cell's Advance() needs it.
         var cellularComponent = world.Game?.CellularLayerComponent;
         _backdropStage.AttachCellularService(cellularComponent?.Service);
         if (cellularComponent != null)
         {
-            cellularComponent.RandomSource = () => (uint)AlundraRandom.Next();
+            cellularComponent.RandomSource = () => (uint)AlundraLibcRandom.Next();
         }
 
         _backdropStage.Load(world, EngineEnvironment.ProjectPath);
