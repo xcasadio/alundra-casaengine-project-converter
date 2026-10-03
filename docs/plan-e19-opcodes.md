@@ -4504,7 +4504,7 @@ avant les événements de carte du même tick, sur la manette du tick précéden
 elle ; écarts nommés dus à l'ordre du moteur (les entités avant le mandataire du monde), acceptés par l'auteur (D-E19-64), sans
 datation, origine par origine dans la table de F2-R1, avec l'ordre propre au harnais d'intro ; les deux défauts corrigés.
 
-###### E19.f2a — Logique de la boîte au tick près ⏳ (relectures n°1, n°2 et de clôture REVISE ; l'auteur a tranché l'ordre, D-E19-64 ; révisée, relecture demandée par cette décision)
+###### E19.f2a — Logique de la boîte au tick près ⏳ (après D-E19-64 : relecture REVISE sur le harnais, révisée ; relecture de clôture de cette époque)
 
 **Règles.**
 - **F2-R1 — Ordre d'un tick** (révision n°1 : la porte calculée une fois par image et la boucle de la manette, qui fait tous
@@ -4531,11 +4531,18 @@ datation, origine par origine dans la table de F2-R1, avec l'ordre propre au har
   | Script d'entité | **N** à un tick par image (un tick tôt) ; rattrapage : la passe 0 de l'image | **k** (un tick tôt) ; rattrapage : passe 0 | **T+19** à un tick par image (un tick tard) ; rattrapage : premier tick de l'image suivante |
   | Déclencheur en attente | N+1 à un tick par image ; rattrapage : première passe de l'image suivante | même règle | T+18 à un tick par image ; rattrapage : une itération j < (indice de la passe de libération) la voit déjà (tôt) |
 
-  **Harnais d'intro** (seul son bloc `if (_installDialogueDirector)` change, `IntroTraceHarnessTests.cs` ~586-589) : la passe
-  de la boîte y tourne après tout le reste de l'image (`RunFrame`) : une ouverture de l'image N, quelle que soit son origine (script
-  ou rappel du test), fait sa première mise à jour à N ; une écriture de l'image k agit à k ; une libération à la passe de l'image
-  T+18 est vue par les scripts à T+19. L'oracle prend l'ordre du harnais pour les cinq tests qui y installent le directeur
-  (`AlundraDialogueOpcodesProductionTests`, quatre tests, et `AlundraGlobalFreezeEntityUpdateTests` ~86).
+  **Harnais d'intro** (seul son bloc `if (_installDialogueDirector)` change, `IntroTraceHarnessTests.cs` ~581-591) : chaque image
+  y fait `RunFrame` (scripts), puis la passe de la boîte, puis le rappel du test (`afterEachFrame`). Par origine : **scripts** de
+  `RunFrame` (entité, événement de carte, déclencheur en attente) : première mise à jour à N, écriture qui agit à k ; **rappel du
+  test** : première mise à jour à N+1, écriture qui agit à k+1 ; une libération à la passe de l'image T+18 est vue par le rappel à
+  T+18 et par les scripts à T+19. **Manette** : le bloc tient un miroir de `TickPad` mis à jour à chaque image avant la passe de la
+  boîte à partir de `LastPadState.ButtonsHold` (que le rappel de l'image précédente a écrit : c'est la manette du tick précédent) ;
+  un appui est donc un maintien d'une image, suivi d'un relâchement. Les tests du harnais qui appuient aujourd'hui par
+  `ButtonsJustPressed` seul (`AlundraDialogueOpcodesProductionTests.cs` ~111, ~152, ~246, ~363 ;
+  `AlundraGlobalFreezeEntityUpdateTests.cs` ~98, ~176) écrivent `ButtonsHold` pour l'image de l'appui (modification permise, dans
+  la liste fermée) ; l'oracle prend exactement cette manette. Origine des ouvertures des cinq tests qui installent le directeur,
+  nommée dans l'annexe : les tests du marin 12 par des scripts, `SailorThirteen_*` et `AlundraGlobalFreezeEntityUpdateTests` ~86
+  par le rappel (`RunScript`, ~111-117 et ~220-227).
 - **F2-R2 — Machine de la boîte** : le directeur porte l'état du binaire (glissements, porte de pas, pas, lignes et défilement,
   curseur, voix, fermeture, libération) exactement comme les faits ci-dessus, D-E19-62 et D-E19-63 compris, sans dépendre d'une
   vue : il tourne avec ou sans présentateur visuel ; « a un présentateur » garde son sens d'aujourd'hui (un chemin non dégradé).
@@ -4609,7 +4616,8 @@ relâchent une image puis l'enfoncent (un appui naissant) ; l'oracle reproduit l
    (`AlundraInoaDayOneArcTests.cs:69-87`, `:184-284`, `:345-433`), A12 (`AlundraBergusJumpArcTests.cs:44-66`), A9
    (`AlundraVisionAndCoastArcTests.cs:470-512`) ; classe C — budgets et aides de A2, A4, A4p, T-A19, T-A10v, T-B9, A13 à A18, A1,
    A1c, A10J, `AlundraSaveBookEndToEndTests` ; classe L ci-dessus ; `AlundraArcSupport.cs` (aide de manette, budgets) ; harnais
-   d'intro : seul le bloc `if (_installDialogueDirector)` de `RunFramesForTest` (`IntroTraceHarnessTests.cs:586-589`) ; les tests du
+   d'intro : seul le bloc `if (_installDialogueDirector)` de `RunFramesForTest` (`IntroTraceHarnessTests.cs:581-591`) et les
+   écritures de manette des tests du harnais nommées en F2-R1 (`ButtonsHold` pour l'image de l'appui) ; les tests du
    présentateur qui supposent une ligne par page, que l'audit des valeurs nomme dans l'annexe avant F2A-2. Toute autre assertion
    qui bouge est un arrêt.
 3. Les six traces à l'octet (la trace d'intro ne voit aucun opcode de dialogue et tourne sans directeur).
@@ -6116,7 +6124,7 @@ sous-module soit libre.
   couverts par la recette S6. **Reste la recette S6 de l'auteur.** Branche du moteur `chantier/e19s-virtual-resolution` (`dfaed7a6`),
   non mergée : le pointeur du parent la désigne.
 
-### 1.2r E19.t — Son de chaque changement d'animation ⏳ (planifiée ; relecture n°1 REVISE, révisée)
+### 1.2r E19.t — Son de chaque changement d'animation ⏳ (READY ; audit des valeurs : une contradiction, un cas de test remplacé)
 
 **Ordre et propriété** (révision n°1) : E19.t s'exécute **après D5 d'E19.d2c2 et après E19.h1b1**, qui touchent les mêmes
 fichiers (`AlundraScriptedMotion.cs` pour D5 ; les sites d'apparition d'`AlundraWorldProxy.cs` et la fabrique pour h1b1) ; une
@@ -6147,6 +6155,21 @@ groupe de la nouvelle carte). **Découverte** (2026-10-03, lecture seule, `e19sn
   (`SpriteWriter.cs:1023-1025`) et lus (`SpriteRecordCatalog.cs:72-102`) ; la décompilation lit l'octet `0xB` (`EntityManager.cs:241-245`),
   faux contre le binaire sur 91 des 2405 jeux. Recensement : 161 préfabs sur 395 et 471 jeux sur 2405 portent un son ; 80 jeux ont
   le bit de banque.
+- **Audit des valeurs** (2026-10-03, `e19t-audit/notes.md` du scratchpad) : toutes les valeurs de T-1 tenues (héros 93 → 480,
+  `0edffd14` 5 → 365, auto-chaîne 15 → 22, 476 `0x8A @553` → 219 → 864 dans le groupe 62, 392 `@64` → 13, le livre 204 une fois
+  à la 179 `@224` et à la 178 `@728`, ce dernier livre né de `0x2D [2] @537`, arrivée en 43 → `[10]`), **sauf une** : Melzas
+  (enregistrement 0 de la 476) n'apparaît **jamais** au chargement, son `SpriteDirection` 0x80 n'ayant pas le bit 0x40 que demande
+  l'apparition au chargement (binaire `0x8003A260`-`0x8003A278`, appel en `0x8003B308` ; `AlundraEntitySpawnFactory.cs:87-92`) ;
+  il n'apparaît que par `0x8A @534` et `0x8A @553`. Sur les 483 cartes, 20 enregistrements ont un préfab qui sonne en animation 0
+  et aucun ne peut apparaître au chargement : D-E19-61 ne touche, sur la chaîne, que l'arrivée du héros dans l'animation 55 (son
+  229, banque 4), les autres sons du héros étant dans la banque système. Le test « Melzas au chargement » est remplacé par un
+  montage synthétique de la même règle ; l'auteur en est informé. Ancres re-mesurées sur `b381de8` : `ZImpulseSfxOf`
+  `AlundraEntityScriptProxy.cs:282-283`, `StepAnimationClock` des PNJ `:1220` et du héros `:1310`, `SyncAnimation` `:1357`,
+  animation d'apparition `AlundraEntitySpawnFactory.cs:680-690`, `SpawnEntityByRecordId` `AlundraWorldProxy.cs:2504-2563` ; la
+  demande d'arrivée vient après l'affectation des jeux d'animation du héros (`AlundraWorldProxy.cs` ~1747) ; le test d'arrivée
+  demande un faux moteur audio ou un point d'appui interne (le lecteur du monde est remis à neuf en ~963). Aucun test à lecteur
+  enregistreur ne gagne de demande : la liste fermée est UJSND seul (renommé, contenu inchangé, `[10]`, `[10]`, `[]`, `[]`).
+  Point ouvert : la carte 10 `@5651`, `0x1A [16]` sur l'enregistrement 78 (Beaumont), vise une animation absente de son jeu.
 - **DLL d'aujourd'hui** : seul le décollage du héros joue (R8, `AlundraScriptedMotion.cs:242-245`, `ZImpulseSfxOf`,
   `AlundraEntityScriptProxy.cs:267`, qui ignore `+ 0x100`).
 
@@ -6167,8 +6190,10 @@ groupe de la nouvelle carte). **Découverte** (2026-10-03, lecture seule, `e19sn
 - **T-1 — Tests d'abord** (valeurs de la découverte, confirmées par l'audit des valeurs avant l'exécution) : héros, animation 93
   → 480 (bit de banque) ; préfab `0edffd14`, animation 5 → 365 (la décompilation donnerait 109) ; `Sfx` 0, tour de boucle,
   maintien, même animation redemandée → rien ; auto-chaîne → une demande par cycle (héros, animation 15 → 22) ; 476 `0x8A @553`
-  → 219 demandé au tick de l'opcode ; Melzas au chargement de la 476 → 219 demandé à l'initialisation du monde, que la banque
-  résout en 864 dans le groupe 62 ; 392 `0x5B [0x81, 3, 0x43] @64` → 13 ; le livre, 179 `@224` et 178 `@728` → 204 une fois
+  → 219 demandé au tick de l'opcode, que la banque résout en 864 dans le groupe 62 ; **son d'apparition au chargement résolu dans
+  le groupe de la nouvelle carte** (D-E19-61), montage synthétique : un enregistrement chargeable dont l'animation 0 porte un son
+  de groupe, chargé après une carte d'un autre groupe → la demande se résout dans le groupe de la nouvelle carte (révision de
+  l'audit : aucun enregistrement réel ne le permet, voir les faits) ; 392 `0x5B [0x81, 3, 0x43] @64` → 13 ; le livre, 179 `@224` et 178 `@728` → 204 une fois
   chacun ; arrivée du héros par `AdoptPlayerPawn` dans l'animation 43 → `[10]`, et le premier changement n'ajoute aucune seconde
   demande (l'animation d'arrivée par défaut, 0x36, n'a pas de son : elle ne prouverait rien) ; retirer la demande de
   `AdoptPlayerPawn` doit rendre ce test rouge.
@@ -6186,8 +6211,7 @@ groupe de la nouvelle carte). **Découverte** (2026-10-03, lecture seule, `e19sn
    `AlundraEventProgramRunnerTests.cs:174` et `:3615`) ; `AlundraSoundOpcodesProductionTests` (23 demandes) inchangé ; les arcs
    n'ont pas de lecteur ; les six traces à l'octet (aucune demande de son n'y est écrite).
 3. `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
-4. **Recette T6** (auteur) : en entrant dans la 476 depuis la 390, le grognement de Melzas au chargement (corrigé), puis à
-   `@553` ; la page du livre des 178 et 179, une fois ; le sprint de la 392 ; le son du saut inchangé.
+4. **Recette T6** (auteur) : à la 476, le grognement de Melzas à son apparition par `0x8A @534` et `@553` ; la page du livre des 178 et 179, une fois ; le sprint de la 392 ; le son du saut inchangé.
 
 **Retour arrière** : revert du commit (DLL seule, aucun export).
 
@@ -6541,7 +6565,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-38 | **Scanner de portails** : la décompilation (et la DLL, `AlundraPortalTrigger.cs:21-32`) s'arrête sur un portail de `DestMapId` nul, le binaire (`0x8003166C` et ses 5 appelants) ne le teste jamais ; aucun des 3316 portails exportés n'a `DestMapId` nul : sans effet, gardé par E19.l1. | E19.m |
 | O-E19-39 | **`0x82`, sous-cas `0x50` à `0x56`** (vie, magie et effets du héros) : portés en E19.l2 comme « `Result` 1, rien d'écrit, trace `Degraded` » ; seuls `0x53` (vie max + 1, vie pleine, son `0x31`, effets) et `0x54` (vie + 2) ont été lus dans le binaire, et l'emplacement de la vie du héros (entité `+0x14/+0x18` ou `PlayerStats`) et leur synchronisation n'y sont pas établis. 8 sites `0x53` (vases de vie), aucun sur la chaîne. | E14, E19.g |
 | O-E19-40 | **Aimantation de descente** (découverte d'E19.h, surface C) : le moteur accepte un sol jusqu'à 4 px sous le pied, une fois par image sur tout le déplacement de l'image (`CharacterControllerComponent.Update`, `GroundSnapDistance` 4 exporté par `SpriteWriter.cs` ~389 et ~432) ; le binaire, 3 px par tick (`0x80037848`). Sur la chaîne, aucune descente de plus de 3 px par tick ; l'écart ne se voit qu'aux images de rattrapage (une pose de chute d'une image). Exporter 3 px casserait SJ-11 et les épingles des PNJ. Un plan moteur (sol résolu par tick) ou un pas vertical tenu par la DLL au sol : consigné, liée à D5 (F3, UH-7b). | plus tard (moteur) |
-| O-E19-41 | **Tranché le 2026-10-03 (D-E19-57 : porté pour toutes les entités, son à l'arrivée compris).** **Sons des changements d'animation** (découverte d'E19.h, surface C, question Q-H1 à l'auteur) : le binaire (`UpdateAnimation` `0x80038BB0`-`0x80038BC8`) joue le son de l'animation à chaque changement d'animation de **toute** entité (nouvelle animation, nouvelle ligne de direction, fin de chaîne, `0x1C`, et l'apparition, `InitializeEntity`) ; identifiant `Sfx`, + 0x100 si le bit 0x20 de l'octet 0xD ; la DLL ne joue que le décollage du héros (R8). Porté, il ajoute des sons dans des scènes de la chaîne : 476 (Melzas, 219 au chargement et à `0x8A @553`, 220 à `0x59 @572`), 392 (la course du héros à `0x5B @64`, son 13), le livre de la 178 et de la 179 (204 deux fois), la boule de fer de la 135 (120 à chaque cycle) ; un héros qui arrive par `0x53` en animation de saut réentend le son du décollage. **Questions** : porter la règle pour toutes les entités maintenant (recommandé : oui, comme l'original) ? garder le son à l'arrivée (recommandé : oui, même porte que les autres sons) ? | auteur, puis une sous-tranche d'E19.h |
+| O-E19-41 | **Tranché le 2026-10-03 (D-E19-57 : porté pour toutes les entités, son à l'arrivée compris ; l'audit d'E19.t corrige deux faits de la découverte : Melzas n'apparaît pas au chargement, le livre joue 204 une seule fois).** **Sons des changements d'animation** (découverte d'E19.h, surface C, question Q-H1 à l'auteur) : le binaire (`UpdateAnimation` `0x80038BB0`-`0x80038BC8`) joue le son de l'animation à chaque changement d'animation de **toute** entité (nouvelle animation, nouvelle ligne de direction, fin de chaîne, `0x1C`, et l'apparition, `InitializeEntity`) ; identifiant `Sfx`, + 0x100 si le bit 0x20 de l'octet 0xD ; la DLL ne joue que le décollage du héros (R8). Porté, il ajoute des sons dans des scènes de la chaîne : 476 (Melzas, 219 au chargement et à `0x8A @553`, 220 à `0x59 @572`), 392 (la course du héros à `0x5B @64`, son 13), le livre de la 178 et de la 179 (204 deux fois), la boule de fer de la 135 (120 à chaque cycle) ; un héros qui arrive par `0x53` en animation de saut réentend le son du décollage. **Questions** : porter la règle pour toutes les entités maintenant (recommandé : oui, comme l'original) ? garder le son à l'arrivée (recommandé : oui, même porte que les autres sons) ? | auteur, puis une sous-tranche d'E19.h |
 | O-E19-42 | **Tranché le 2026-10-03 (D-E19-58 : le glissement de la DLL est gardé).** **Résolution exacte des contacts** (découverte d'E19.h, surface B, question Q-H2 à l'auteur) : le binaire divise le pas conjointement en 16.16 (`ComputeXYPosition` `0x80037730`) ; une poussée en diagonale contre un PNJ ou contre la pointe d'un coin arrête net Alundra, et le contact est en unités 16.16 (le dernier demi-pas peut s'arrêter 1 à 3 unités avant à l'est et au sud, `ForceAdjusted` un tick plus tard) ; dans la DLL elle glisse le long, et arrive au contact un tick plus tôt à l'est et au sud (O-E19-28 a à d). Le porter demande un plan moteur (un résolveur horizontal tenu par le jeu) et une ADR ; quelques épingles de contact relationnelles bougent de 0 à 3 unités. D-E19-9 ne promettait que le glissement (E19.h4). **Question** : porter la résolution exacte (étape 2), ou accepter le glissement de la DLL ? (recommandé : étape 1 maintenant, étape 2 seulement si l'auteur veut la sensation exacte). | auteur, puis plan moteur |
 | O-E19-43 | **Cycle de palettes de `0xA4`** (E19.k2) : `0xA4 [b1, b2 > 0]` lance un programme de cycle de palettes (`0x80186790`) dont le décalage (`0x800C490C`) s'ajoute à l'octet de palette des tuiles et des couches cellulaires (`0x8005C574`, `0x8005CDBC`, `0x8005D544`) : la carte entière change de couleurs. Non porté par E19.k2 (trace `Degraded`) ; hors chaîne (carte 471 selon la découverte). Il demande un décalage de palette des tuiles dans le moteur. | plus tard (moteur) |
 | O-E19-44 | **Portes manquantes de l'aimantation au sommet** (vérification d'E19.h3, P3) : dans le binaire, l'aimantation (`0x80037848`) n'est atteinte que si le pas XY demande une force (`+0xE4`/`+0xE8` non nuls, sinon saut de `0x800377A0` à `0x80037DC0`) et elle est défaite quand le pas est entièrement bloqué (`0x80037938`-`0x80037948` rendent X, Y et Z) ; la DLL aimante dès que Gravity et `ForceZ == 0`. Émulation : saut sur place sous une boîte dont le bas est à 34 px, le binaire touche le plafond (t1 131072) et atterrit à t4, la DLL s'aimante au sol dès t1. Aucun plafond du corpus n'est à moins de 40 px du terrain. | E19.m |
