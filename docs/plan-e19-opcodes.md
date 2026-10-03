@@ -6524,8 +6524,12 @@ plafond absolu) ; **G5** moteur (erreur du réglage qui ne nomme pas la clé) ; 
   des créneaux et plafond de 63 entités (E14 ou E19.m) ; M-36 langue de la section de doc du moteur ; M-39 dépend du préréglage
   `day3-start` (O-E19-33) ; M-41 écraser K1 à K3 avant le merge ; M-27 l'attribution des commits aux exécuteurs ; M-06 et M-08
   (O-E19-2, O-E19-25) relèvent de la décompilation et des scripts de recensement, hors du portage (règle de l'auteur du 2026-10-03).
+- **M-47** (ajouté par E19.m0) : `0x5A`/`0x5B` parcourent les entités trouvées de la dernière à la première dans le binaire
+  (`0x8003EEF4`, `0x8003EF80`), la DLL de la première à la dernière ; effet sur les modes aléatoires et sur le mode 6 quand le héros est
+  trouvé avec d'autres entités ; à recenser (sites en mode 6 avec une recherche qui rend le héros et une autre entité) puis à porter
+  (groupe G4).
 
-#### 1.2s.1 E19.m0 — Modes aléatoires de `ResolveDirectionFromParam` (M-04) ⏳ (planifiée)
+#### 1.2s.1 E19.m0 — Modes aléatoires de `ResolveDirectionFromParam` (M-04) ⏳ (planifiée ; relecture n°1 REVISE, resserrée)
 
 **Faits** **[binaire]** (question bornée du 2026-10-03, `e19m0-disc/notes.md` du scratchpad) :
 - `0x8003CFC8` : `result = a1 & 0x1F`, `mode = a1 >> 5` (8 ou plus : 0) ; table de sauts en `0x80023C60` : mode 4 → `0x8003D060`,
@@ -6537,9 +6541,11 @@ plafond absolu) ; **G5** moteur (erreur du réglage qui ne nomme pas la clé) ; 
   porte deux (`0x0C` = `0x8003D518`, le même calcul que le mode 4 ; `0x8C` = `0x80040438`, `nouveau >> 24`) ; il n'est jamais
   réensemencé (valeur initiale de l'image de l'exécutable, `0xB017C93D`, comme le champ statique de la DLL).
 - `0x5A` (`0x8003EEF4`) et `0x5B` (`0x8003EF80`) appellent la routine une fois par entité trouvée, **de la dernière trouvée à la
-  première** (tampon `0x8013D8D8`) ; la DLL (`TurnMatchingEntities`) et la décompilation vont dans l'autre sens : sans effet pour les
-  modes 0 à 3, 6 et 7, mais un mode aléatoire distribuerait les tirages autrement. Les deux sites de la 167 (recherche 0x80, l'entité
-  du script seule) n'ont qu'une entité.
+  première** (tampon `0x8013D8D8`) ; la DLL (`TurnMatchingEntities`) et la décompilation vont dans l'autre sens. L'ordre compte pour
+  un mode aléatoire et pour le **mode 6** (direction du héros) quand le héros est l'une des entités trouvées (recherches 0x82 et 0x84,
+  `EntitySearchService.cs:134-143`, `:156-166`) : relevé par la relecture n°1, il sort de cette tranche (M-47, groupe G4, avec le
+  recensement des sites en mode 6). Les deux sites de la 167 (recherche 0x80, l'entité du script seule) n'ont qu'une entité : l'ordre
+  n'y joue pas.
 - **Seul `throw` d'opcode atteignable** : `AlundraEventProgramRunner.cs` ~3026 ; sa doc (~2991-2999) dit à tort qu'aucun générateur
   n'est porté ; le test `ResolveDirectionFromParam_RandomModes_ThrowNotSupported` (`AlundraEventProgramRunnerTests.cs:1924-1933`)
   épingle l'exception.
@@ -6547,20 +6553,23 @@ plafond absolu) ; **G5** moteur (erreur du réglage qui ne nomme pas la clé) ; 
 **Règles.**
 - **M0-R1** : mode 4 → `AlundraRandom.Next()`, puis `CardinalDirectionTable[nouveau >> 30]` ; mode 5 → `AlundraRandom.Next()`, puis
   `nouveau >> 27` ; `result` ignoré ; la doc de la méthode dit la règle et les adresses.
-- **M0-R2** : `0x5A` et `0x5B` parcourent les entités trouvées de la dernière à la première, comme le binaire ; la doc de
-  `TurnMatchingEntities` le dit.
+- **M0-R2** (révision n°1) : l'ordre de parcours ne change pas dans cette tranche (M-47).
 
 **Tâches.**
 - **M0-1 — Tests d'abord** (dans la collection `AlundraRandomStaticStateCollection`, germe posé par le test, état comparé en
   `(uint)RandomSeed`) : trois appels consécutifs, mode 4 (`0x80`) et mode 5 (`0xA0`) : germe `0xB017C93D` → 0, 24, 24 et 6, 25, 28 ;
   germe 0 → 24, 8, 16 et 28, 19, 15 ; germe `0x12345678` → 8, 0, 16 et 23, 4, 11 ; en alternance 4, 5, 4 depuis `0xB017C93D` → 0, 25,
-  24 ; `0x9F` se comporte comme `0x80` et `0xBF` comme `0xA0` ; l'ordre : deux entités trouvées par un `0x5A` en mode 5, le premier
-  tirage va à la dernière trouvée ; un test de production : la carte 167 chargée et jouée au-delà de `@144` de `C[4]` de
-  l'enregistrement 1 sans exception, sa direction cible dans {0, 8, 16, 24} après `@144`. Rouges d'abord (l'exception), verts après.
+  24 ; `0x9F` se comporte comme `0x80` et `0xBF` comme `0xA0` ; **test sur les octets réels** (révision n°1, au lieu d'un arc) : les
+  `Codes` de `alundra-project/Maps/Inoa/Inoa (inner)-167/events/Inoa (inner)-167.events.json` (l'octet 144 vaut `0x5A`, suivi de
+  `0x80, 0x80`) chargés dans un document du runner, l'état placé à `CodeIndex` 144, l'entité du script seule (recherche 0x80), germe
+  `0xB017C93D` : un appel du runner n'élève aucune exception, `CodeIndex` passe à 147, la direction cible de l'entité vaut 0 (premier
+  tirage du mode 4) ; le test saute si l'export est absent, comme les autres tests sur données réelles. Rouges d'abord (l'exception
+  de `:3026`), verts après.
 - **M0-2 — Code** (`AlundraEventProgramRunner.cs`).
 
 **Acceptation.** 1. Tests de M0-1 rouges d'abord, verts après, valeurs écrites tenues. 2. Test existant touché, liste fermée :
-`AlundraEventProgramRunnerTests.cs:1924-1933` (l'exception), remplacé par les tests de valeurs ; rien d'autre. 3. `Alundra.Tests` en
+`AlundraEventProgramRunnerTests.cs:1924-1933` (l'exception), remplacé par les tests de valeurs ; rien d'autre (l'ordre de parcours
+ne change pas). 3. `Alundra.Tests` en
 Release puis en Debug, la Debug en dernier, `cmp` sans écart ; les six traces à l'octet ; la liste fermée de la chaîne inchangée (aucun
 site sur la chaîne). **Retour arrière** : revert du commit (DLL seule).
 
