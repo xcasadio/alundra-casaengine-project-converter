@@ -5122,7 +5122,7 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
     `InitializeHudPositionBeforeHide()`, 6 tests ajoutés (2 dans `AlundraHudDirectorTests`, 2 dans `AlundraNewGameEntryTests`, 2 cas
     d'une théorie dans `AlundraSaveGameApplyTests`) ; le test existant `AttachToWorld_RePointsWithoutResetting_...` reste vert.
     Aucun écart au plan.
-- ⏳ **R2 — Sols copiés par `0x85`** : `AlundraCellVisualSync` note à la création les cases **sans sol à plat à elles** (aucun
+- ✅ **R2 — Sols copiés par `0x85`** : `AlundraCellVisualSync` note à la création les cases **sans sol à plat à elles** (aucun
   sol au chargement, ou un sol de chargement qui était une pose de la surcouche) ; dans `ProcessCellFloor`, une case mutée sans
   entrée de sol dans le modèle et sans sol à plat à elle adopte son nouveau sol dans la surcouche triée, quelle que soit sa
   hauteur, placé en (x, y − hauteur) avec `WallPlacementOverlay.ComputeFloorSortKey(y, ComputeDepthSlot(raw), newStableId)`
@@ -5131,6 +5131,11 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
   vide ajoute des entrées de sol en (x, y − 3) aux bons identifiants locaux ; recopier le bloc vide les retire ; un sol de hauteur
   0 copié dans une case vide est adopté ; une case à sol à plat reste dégradée, un seul avertissement ; les tests de la 389
   inchangés. Commit : `fix(alundra): draw floors that 0x85 copies into empty cells like the binary`
+  - Fait le 2026-10-03 : 3 tests ajoutés dans `AlundraCellVisualSyncTests` (carte synthétique 2 × 8 ; sols de hauteur 3 et 0 copiés dans des
+    cases vides, recopie du vide, cases à sol à plat). Rouges d'abord sur le code d'avant : 0 entrée de surcouche là où une est attendue (hauteur 3
+    en (1,2), hauteur 0 en (1,6)), et 3 avertissements là où un seul est attendu. Verts après : `AlundraCellVisualSync` note à la création les cases
+    à sol à plat propre (id de sol présent et absent de la surcouche) ; hors de celles-ci un sol copié est adopté quelle que soit sa hauteur ; le cas
+    dégradé ne reste que pour ces cases, un seul avertissement par monde. Tests de la 389 inchangés et verts. Aucun écart au plan.
 - ⏳ **R3 — Recyclage des entités détruites** (plan à écrire, décision D-E19 et ADR) : port d'`UpdateDestroyedEntities`
   (`0x80038634`) juste après chaque passe des événements de carte, sous la même porte ; forme la plus fidèle : remise à zéro du
   mandataire en place sur le gabarit du binaire (état 0, `EntityRefId` −1, drapeaux 0, liens effacés), retiré des listes de mise à

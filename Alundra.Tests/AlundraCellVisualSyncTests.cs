@@ -733,6 +733,194 @@ public class AlundraCellVisualSyncTests : IDisposable
     }
 
     // -----------------------------------------------------------------------------------------
+    // E19.r R2: floors that 0x85 copies into cells with no flat floor of their own (map 476)
+    // -----------------------------------------------------------------------------------------
+
+    /// <summary>2 columns x 8 rows. Column 0 holds the sources: (0,5) a height-3 floor (raw 60, local 5),
+    /// (0,6) a height-0 floor (raw 61, local 9), (0,7) an empty cell. Column 1 holds the destinations:
+    /// (1,3) and (1,4) own a flat floor at load (raw 60, height 0), every other cell is empty - the shape
+    /// of map 476's empty vision area (E19.r R2). No wall stacks, no placement documents.</summary>
+    private static (TileMapComponent Component, AlundraCellStore Store, AlundraCellVisualSync Sync) CreateEmptyAreaFixture()
+    {
+        const int width = 2;
+        const int height = 8;
+        var (component, _) = CreateSyntheticComponent(width, height);
+
+        string Ints(int[] values) => "[" + string.Join(",", values) + "]";
+
+        var tileId = new int[width * height];
+        var cellHeight = new int[width * height];
+        Array.Fill(tileId, 0xffff);
+        tileId[0 + 2 * 5] = 60;
+        cellHeight[0 + 2 * 5] = 3;
+        tileId[0 + 2 * 6] = 61;
+        tileId[1 + 2 * 3] = 60;
+        tileId[1 + 2 * 4] = 60;
+
+        var zeros = new int[width * height];
+        var alundraCellsJson =
+            $"{{\"map_index\":1,\"cell_count\":{width * height},\"walkability\":{Ints(zeros)},\"ground_property\":{Ints(zeros)},"
+            + $"\"slope\":{Ints(zeros)},\"height\":{Ints(cellHeight)},\"tile_id\":{Ints(tileId)},\"wall_tiles_offset\":{Ints(zeros)},"
+            + "\"wall_tiles\":{}}";
+        var tileMapData = new TileMapData { MapSize = new CasaEngine.Core.Math.Size(width, height) };
+        tileMapData.CustomProperties["AlundraCells"] = alundraCellsJson;
+
+        Assert.True(AlundraCellsCollisionField.TryCreate(tileMapData, "map_476_like", out _, out var cellRecords));
+        Assert.True(AlundraCellStore.TryCreate(cellRecords!, width, height, "map_476_like", out var store));
+
+        var sync = AlundraCellVisualSync.Create(
+            component, store!, width, height, "map_476_like", component.TileSetData,
+            wallRecords: null, submittedWallIndices: Array.Empty<int>(),
+            floorRecords: null, submittedFloorIndices: Array.Empty<int>(),
+            navigationGridAccessor: () => null);
+        store!.CellsMutated += sync.OnCellsMutated;
+        return (component, store, sync);
+    }
+
+    /// <summary><see cref="CreateSmallSyntheticComponent"/> generalised to <paramref name="width"/> x
+    /// <paramref name="height"/> cells (one flat layer, every cell at local tile id 5, local id 9 also
+    /// registered).</summary>
+    private static (TileMapComponent Component, TileSetData TileSetData) CreateSyntheticComponent(int width, int height)
+    {
+        var world = new World();
+        var game = (CasaEngineGame)RuntimeHelpers.GetUninitializedObject(typeof(CasaEngineGame));
+        var componentsField = typeof(Game).GetField("_components", BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.NotNull(componentsField);
+        componentsField!.SetValue(game, new GameComponentCollection());
+        SetProperty(world, nameof(World.Game), game);
+
+        var entity = new Entity();
+        SetProperty(entity, nameof(Entity.World), world);
+
+        var component = new TileMapComponent { ChunkTileSize = 2 };
+        entity.RootComponent = component;
+
+        var tileMapData = new TileMapData { MapSize = new CasaEngine.Core.Math.Size(width, height) };
+        var layerData = new TileMapLayerData();
+        var layer = new TileMapLayer(layerData);
+        for (var i = 0; i < width * height; i++)
+        {
+            layerData.tiles.Add(5);
+            layer.Tiles.Add(new StubTile());
+            layer.CollisionObjects.Add(null);
+        }
+
+        tileMapData.Layers.Add(layerData);
+        component.TileMapData = tileMapData;
+
+        var tileSetData = new TileSetData { TileSize = new CasaEngine.Core.Math.Size(16, 16) };
+        var tile5 = new StaticTileData { Id = 5, Location = new Rectangle(0, 0, 16, 16) };
+        tile5.CustomProperties["TileId"] = "60";
+        var tile9 = new StaticTileData { Id = 9, Location = new Rectangle(0, 0, 16, 16) };
+        tile9.CustomProperties["TileId"] = "61";
+        tileSetData.AddTile(tile5);
+        tileSetData.AddTile(tile9);
+        component.TileSetData = tileSetData;
+
+        GetPrivateList<TileSetData>(component, "_tileSets").Add(tileSetData);
+        GetPrivateList<Texture2D>(component, "_tileSetTextures").Add(null!);
+
+        GetLayers(component).Add(layer);
+        InvokeBuildChunks(component, layer, 0);
+
+        return (component, tileSetData);
+    }
+
+    [Fact]
+    public void CopyingAnElevatedFloorIntoAnEmptyCell_AddsItAtXYMinusHeight_AndCopyingEmptyRemovesIt()
+    {
+        var (component, store, sync) = CreateEmptyAreaFixture();
+        Assert.Empty(ReadSortedOverlayEntries(component));
+
+        // (0,5) is a height-3 floor (raw 60, local 5); (1,5) has no floor and no flat floor at load.
+        store.CopyCellRectangle(0, 5, 1, 1, 1, 5);
+        sync.FlushPendingOverlayReconstruction();
+
+        var entry = Assert.Single(ReadSortedOverlayEntries(component));
+        Assert.Equal((0, 5, 1, 2), (entry.TileSetIndex, entry.TileId, entry.GridX, entry.GridY));
+        Assert.True(WallPlacementOverlay.ComputeFloorSortKey(5, 0, 0).Equals(entry.SortKey));
+
+        // Copying the empty cell (0,7) back over it removes the floor.
+        store.CopyCellRectangle(0, 7, 1, 1, 1, 5);
+        sync.FlushPendingOverlayReconstruction();
+        Assert.Empty(ReadSortedOverlayEntries(component));
+    }
+
+    [Fact]
+    public void CopyingAHeightZeroFloorIntoAnEmptyCell_AdoptsIt()
+    {
+        var (component, store, sync) = CreateEmptyAreaFixture();
+
+        // (0,6) is a height-0 floor (raw 61, local 9); (1,6) has no flat floor of its own.
+        store.CopyCellRectangle(0, 6, 1, 1, 1, 6);
+        sync.FlushPendingOverlayReconstruction();
+
+        var entry = Assert.Single(ReadSortedOverlayEntries(component));
+        Assert.Equal((0, 9, 1, 6), (entry.TileSetIndex, entry.TileId, entry.GridX, entry.GridY));
+        Assert.True(WallPlacementOverlay.ComputeFloorSortKey(6, 0, 0).Equals(entry.SortKey));
+    }
+
+    [Fact]
+    public void CopyingAnElevatedFloorOntoACellWithAFlatFloor_StaysDegraded_OneWarningPerWorld()
+    {
+        var (component, store, sync) = CreateEmptyAreaFixture();
+
+        using var warnings = CapturingWarningLogger.Install();
+
+        // (1,3) and (1,4) own a flat floor at load: adopting an elevated floor would double-draw it.
+        store.CopyCellRectangle(0, 5, 1, 1, 1, 3);
+        store.CopyCellRectangle(0, 5, 1, 1, 1, 4);
+        store.CopyCellRectangle(0, 5, 1, 1, 1, 3);
+        sync.FlushPendingOverlayReconstruction();
+
+        Assert.Empty(ReadSortedOverlayEntries(component));
+        Assert.Single(warnings.WarningMessages, m => m.Contains("degraded"));
+    }
+
+    /// <summary>Captures every <see cref="Logs.WriteWarning"/> call for one test, then unregisters itself
+    /// (same private-field reflection precedent as <c>BackdropStageLoadTests.CapturingWarningLogger</c>).</summary>
+    private sealed class CapturingWarningLogger : CasaEngine.Core.Logging.ILogger, IDisposable
+    {
+        public List<string> WarningMessages { get; } = new();
+
+        public void Close()
+        {
+        }
+
+        public void WriteTrace(string msg)
+        {
+        }
+
+        public void WriteDebug(string msg)
+        {
+        }
+
+        public void WriteInfo(string msg)
+        {
+        }
+
+        public void WriteWarning(string msg) => WarningMessages.Add(msg);
+
+        public void WriteError(string msg)
+        {
+        }
+
+        public static CapturingWarningLogger Install()
+        {
+            var logger = new CapturingWarningLogger();
+            CasaEngine.Core.Logging.Logs.AddLogger(logger);
+            return logger;
+        }
+
+        public void Dispose()
+        {
+            var field = typeof(CasaEngine.Core.Logging.Logs).GetField("_loggers", BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.NotNull(field);
+            ((List<CasaEngine.Core.Logging.ILogger>)field!.GetValue(null)!).Remove(this);
+        }
+    }
+
+    // -----------------------------------------------------------------------------------------
     // Shared lookup helper
     // -----------------------------------------------------------------------------------------
 

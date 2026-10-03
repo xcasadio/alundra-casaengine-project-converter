@@ -47,8 +47,9 @@ namespace Alundra.Scripts;
 /// every tile after it keeps its original <c>k</c> (and therefore its original draw row).
 ///
 /// Degraded, never fatal (Conception): an unmapped raw tile id, a mutated floor living outside the
-/// original placements (D-E7-3's own degraded case - proved unreachable on map 389, plan fact 10, but the
-/// precheck below still exists for any future map/opcode), or a derived position landing off the map, are
+/// original placements ON A CELL THAT OWNS A FLAT FLOOR (D-E7-3's own degraded case - proved unreachable on
+/// map 389, plan fact 10; a cell with no flat floor of its own, such as map 476's empty vision area that 0x85
+/// fills with height-3 rooms, adopts the floor instead - E19.r R2), or a derived position landing off the map, are
 /// all a single warning (or, for the off-map case, deliberately no warning at all - plan fact 15, the
 /// export itself drops those silently) and a skipped entry - never an exception, since
 /// <see cref="TileMapComponent.AddSortedOverlayTile"/> itself throws on a bad reference and this class
@@ -70,6 +71,12 @@ public sealed class AlundraCellVisualSync
 
     private readonly Dictionary<(int X, int Y), OverlayLiveEntry> _floorModel = new();
     private readonly Dictionary<(int X, int Y, int K), OverlayLiveEntry> _wallModel = new();
+
+    // E19.r R2: the cells that own a flat floor of their own at load (a floor id the placement overlay did
+    // NOT strip). Every other cell has nothing flat to double-draw, so a floor 0x85 copies into it is adopted
+    // into the sorted overlay whatever its height.
+    private readonly HashSet<(int X, int Y)> _flatFloorCells = new();
+    private bool _degradedWarned;
     private int _nextFloorStableId;
     private int _nextWallStableId;
     private bool _overlayDirty;
@@ -141,6 +148,17 @@ public sealed class AlundraCellVisualSync
             }
 
             sync._nextFloorStableId = floorRecords.Count;
+        }
+
+        for (var y = 0; y < height; y++)
+        {
+            for (var x = 0; x < width; x++)
+            {
+                if (cellStore.GetFloorTileId(x, y) != NoFloorTileId && !sync._floorModel.ContainsKey((x, y)))
+                {
+                    sync._flatFloorCells.Add((x, y));
+                }
+            }
         }
 
         return sync;
@@ -234,23 +252,30 @@ public sealed class AlundraCellVisualSync
 
         var height = _cellStore.GetHeight(x, y);
 
-        if (!hadExisting && height == 0)
+        if (!hadExisting && _flatFloorCells.Contains(key))
         {
-            // Ordinary ground-level floor, never stripped from its flat layer - nothing to adopt, and
-            // NOT the D-E7-3 degraded case (that one requires an elevated floor - see below).
-            return;
-        }
+            if (height == 0)
+            {
+                // Ordinary ground-level floor, never stripped from its flat layer - nothing to adopt, and
+                // NOT the D-E7-3 degraded case (that one requires an elevated floor - see below).
+                return;
+            }
 
-        if (!hadExisting && height != 0)
-        {
-            // D-E7-3's degraded case: an elevated floor mutated into existence outside the original
-            // AlundraFloorPlacements - its flat tile was never stripped, so adopting it into the overlay
-            // would double-draw it. Proved unreachable on map 389 (plan fact 10); still handled here for
-            // any future map/opcode. Left exactly as loaded (flat), one warning.
-            Logs.WriteWarning(
-                $"AlundraCellVisualSync: world '{_worldName}' - cell ({x},{y}) mutated to an elevated floor "
-                + $"(height={height}) that was never in the original AlundraFloorPlacements; left flat and "
-                + "un-adopted (degraded).");
+            // D-E7-3's degraded case, now only for a cell whose own flat floor lives in a flat layer: an
+            // elevated floor mutated onto it outside the original AlundraFloorPlacements - its flat tile was
+            // never stripped, so adopting it into the overlay would double-draw it. Left exactly as loaded
+            // (flat), one warning per world. A cell with NO flat floor of its own (map 476's empty vision
+            // area, which 0x85 fills with height-3 rooms: E19.r R2) has nothing to double-draw and falls
+            // through to the adoption below, like the binary, which redraws floors from the live cell array.
+            if (!_degradedWarned)
+            {
+                _degradedWarned = true;
+                Logs.WriteWarning(
+                    $"AlundraCellVisualSync: world '{_worldName}' - cell ({x},{y}) mutated to an elevated floor "
+                    + $"(height={height}) over a flat floor that was never in the original AlundraFloorPlacements; "
+                    + "left flat and un-adopted (degraded); further cells of this world are silent.");
+            }
+
             return;
         }
 
