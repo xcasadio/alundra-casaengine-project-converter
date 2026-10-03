@@ -4340,7 +4340,7 @@ Commits : `test(converter): …` puis `feat(converter): emit text flag codes and
   change avec un commit du seul plan. Avis reporté à E19.m : P4 un `[flag id=abc/]` écrit à la main (propriété texte) lèverait
   une `FormatException` dans `ShowLine` (`AlundraYarnBindings.cs:183`, `Convert.ToInt64`), le convertisseur n'en produit jamais.
 
-##### 1.2j.2 E19.f1 — Cadres du nom et du choix, curseur d'attente ✅ (planifiée ; relecture n°1 REVISE, révisée)
+##### 1.2j.2 E19.f1 — Cadres du nom et du choix, curseur d'attente ✅ (CONFIRMED le 2026-10-03)
 
 **Faits.**
 - **Données de la décompilation** (`alundra-datas-analyser/AlundraTools/AlundraEngine/StaticVariables.cs`) : la boîte du nom est
@@ -4429,6 +4429,15 @@ reprendre (elle ne lit pas encore ces fichiers).
 
 **Risques.** Une cellule hors de l'atlas (preuve de F1-1) ; le nom des boîtes, celui des variables de la décompilation, comme les
 boîtes de l'inventaire.
+- ✅ **Vérification d'E19.f1** (2026-10-03) : convertisseur 417/417 (Release), `Alundra.Tests` 2504/2504 en Release puis en Debug,
+  la Debug en dernier ; `cmp` sans écart ; les six traces à l'octet. Vérificateur neuf : **CONFIRMED** (son propre lecteur de
+  `StaticVariables.cs` retrouve les 120 cellules, l'ancien CSV est un préfixe exact du nouveau ; binaire relu en `0x800A58BC` et
+  `0x80047DD0` ; les deux boîtes reconstruites une troisième fois, égales octet pour octet aux références et à l'export ; deux
+  mutations à lui attrapées, une cellule de la boîte du choix déplacée de 8 px et un texel transparent changé ; empreintes de
+  l'export égales au manifeste d'après). Avis reporté à E19.m : P4 le message d'échec d'`UiDialogueBoxTests` calcule la position du
+  pixel avec une largeur fixe de 128 (`UiDialogueBoxTests.cs:78-89`), faux pour la boîte du nom ; le verdict du test est juste.
+  La branche `chantier/e19f1-dialogue-boxes` du sous-module de l'analyseur (`b92b7b9`) n'est pas mergée : le pointeur du parent la
+  désigne, comme les chantiers précédents.
 
 ### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) — E19.k1 ✅ (recette K5 en attente) ; E19.k2 ⏳ (planifiée)
 
@@ -6188,6 +6197,12 @@ Réservé aux mesures faites en exécutant les tranches.
   cette clôture.
 - **Suites** : convertisseur 415/415 ; `Alundra.Tests` **2496 avant, 2504 après** (+8), 0 échec, en Release puis en Debug ; export
   en place : 311 fichiers changés, comme prévu.
+
+### E19.f1 (2026-10-03)
+
+- **Commits** : plan `3e6f285`, `60d9699` ; analyseur `b92b7b9` (branche `chantier/e19f1-dialogue-boxes`) ; parent `2e86c87`, `512177c` ;
+  puis cette clôture.
+- **Suites** : convertisseur **415 avant, 417 après** ; `Alundra.Tests` 2504 inchangé ; export en place : 7 fichiers nouveaux, 2 modifiés.
 
 ## 3. Points ouverts
 
