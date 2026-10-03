@@ -7100,7 +7100,7 @@ lignes du moteur citées à `61358ac0`) :
 **Risques.** Les vagues de la chaîne (44, 362, 476, 478) commencent à une autre phase ; la clé par cellule ajoute un champ par
 entrée de la couche (même coût que les parties d'animation).
 
-#### 1.2s.5 E19.m4 — Fonds figés pendant le départ d'un passage (O-E19-55) ⏳ (planifiée)
+#### 1.2s.5 E19.m4 — Fonds figés pendant le départ d'un passage (O-E19-55) ⏳ (planifiée ; relecture n°1 REVISE, révisée)
 
 **Faits** **[binaire]** (audit du 2026-10-03, `e19o55-disc/notes.md` du scratchpad, scripts `census`, `values`, `x2` ; DLL citée à
 `f596546`, moteur à `b5a9fbcf`) :
@@ -7124,12 +7124,20 @@ entrée de la couche (même coût que les parties d'animation).
   plus visible) ; mer de la 389 et de la 416 (1 à 4 pixels) ; vagues de la 476 et de la 478 ; jours 3-4 : 14, 15, 162, 169, 176, 183
   (mer), 44 et 362 (vagues) ; avec E19.m3 (compteur des vagues global), 16 ticks de vague en trop par départ.
 
+**Prérequis et base** (révision n°1) : aucune dépendance de code envers E19.m3 (les valeurs de M4-1 sont les mêmes avant et après
+E19.m3 : une image à 0 tick ne change aucun état, le compteur des vagues global compris ; la 391 n'a que des cellules de type 2).
+Mais les deux tranches partagent ce checkout, les sorties de `Alundra.Tests`, le `cmp` et les traces : M4-1 ne commence qu'après la
+clôture d'E19.m3 (vérification CONFIRMED, Release et Debug faits, pointeur du sous-module committé), sur le commit parent qui
+consigne cette clôture et le sous-module qu'il désigne (`chantier/e19m3-cellular-order` `a885f226`) ; l'acceptation 3 se mesure sur
+ce pointeur ; les quatre traces du héros sont remises par `git checkout` avant de commencer et après chaque suite.
+
 **Règle.**
 - **M4-R1** : `PushFrame` reçoit 0 tick quand `AlundraWarpDirector.Instance.IsTransitionInProgress` (le même prédicat que le balancement
   de la caméra, `AlundraCameraDirector.cs:219`), `ticksThisFrame` sinon ; l'image est toujours poussée (cible de la caméra et
   défilement à jour) ; pas de garde sur `gameplayBlocked` (sous `MenuOpen` le binaire continue `RenderScene` ;
   `BackdropPushProductionTests.cs:101-121` l'épingle) ; commentaire `:2192-2195`, doc de `PushFrame` (`AlundraBackdropStage.cs:461-474`),
-  note sur D-E9b-2 (`docs/plan-e9b-backdrops-moteur.md:378`) ; décision D-E19-67, ADR-0034 du parent. Exact à 1 tick par image ; une
+  note sur D-E9b-2 (`docs/plan-e9b-backdrops-moteur.md:378`), et la phrase d'E19.m3 « la DLL compte aussi les ticks des fondus de
+  passage, O-E19-55 » (§1.2s.4) reçoit « (corrigé par E19.m4) » ; décision D-E19-67, ADR-0034 du parent. Exact à 1 tick par image ; une
   image de rattrapage peut laisser jusqu'à 3 ticks d'écart.
 
 **Tâches.**
@@ -7142,7 +7150,8 @@ entrée de la couche (même coût que les parties d'animation).
     (1, 1)) ;
   - T-55c (pluie de la 391, générateur `rand()` à l'état 0 après le chargement ; le tick d'amorce fait 17 tirages, état `0x7E7099A9`) :
     après F15, toujours 17 tirages, état `0x7E7099A9`, cellule 0 en (251, 202) (aujourd'hui 71 tirages, état `0x277C02BB`, cellule 0
-    en (284, 27)) ; saute si l'export manque.
+    en (284, 27)) ; saute si l'export manque ; dans la collection `AlundraRandomStaticStateCollection` (il pose l'état de
+    `AlundraLibcRandom`, global au processus).
 - **M4-2 — Code** : M4-R1, docs, ADR-0034.
 
 **Acceptation.** 1. Tests de M4-1 rouges d'abord (valeurs d'aujourd'hui), verts après, valeurs écrites tenues ; une valeur que la
