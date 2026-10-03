@@ -5749,7 +5749,7 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
 au sud (O-E19-28 b, aussi contre les cellules) demande l'étape 2 (O-E19-42) ; l'image d'A10J `@2462` peut bouger d'un tick
 (retards connus de la DLL).
 
-### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b planifiée ; G2a en pause, après G0b ; G2b, G1/G3, G4 à planifier)
+### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a en pause, après G0b ; G2b, G1/G3, G4 à planifier)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B les données, le convertisseur,
 l'analyseur, le moteur et la DLL ; notes, rendus et scripts dans le scratchpad de la session, `e19g-disc/A/notes.md` et
@@ -5965,7 +5965,7 @@ dessiné gagne aussi pour l'alpha (déjà le cas pour les couleurs).
   laissé par l'extracteur dans `alundra-datas-analyser/AlundraTools/` (laissé tel quel). Branche de l'analyseur
   `chantier/e19g0-extractor` (`d8d9230`, empilée sur f1), non mergée.
 
-##### 1.2o.1b E19.g G0b — Planches d'entités en disposition compacte (chaque sprite avec sa palette) ⏳ (relecture n°1 READY ; en exécution)
+##### 1.2o.1b E19.g G0b — Planches d'entités en disposition compacte (chaque sprite avec sa palette) ✅ (relecture n°1 READY ; exécutée le 2026-10-03, recette G0b-6 à faire par l'auteur)
 
 **Faits** (mesure des palettes `e19g-palette/notes.md` et audit des valeurs `e19g0b-audit/notes.md` du scratchpad, 2026-10-03,
 lecture seule) :
@@ -6065,6 +6065,29 @@ en place dont le manifeste égale le manifeste « avant » (hors `report.json`),
 espaces : rien n'est copié) ; l'exemple de la doc d'usage copié (il réécrirait `tiled/` et `BALANCE.BIN.json`) ; les octets des PNG
 ne se prédisent pas (preuve par pixels décodés et tailles) ; textures hors puissance de deux (déjà présentes) ; les couleurs de la
 recette sont des couleurs dominantes d'un sprite chacune, sans les changements de palette faits en jeu.
+
+- **Fait le 2026-10-03.** Sous-module `alundra-datas-analyser`, branche `chantier/e19g0b-compact` (depuis `d8d9230`) : `51b77d8` (G0b-R1 :
+  défaut `Compact` à `Program.cs:147`, `GameMapHelper.SaveSpriteSheet`, commentaires de `GameMapHelper.cs` et `SiImage.cs`, table de la doc
+  d'usage ; aucun autre code), construit en Release (0 erreur). Ré-extraction (Release, aucune option de disposition, chemin en barres
+  obliques, `--no-launch-profile`, dossier neuf `remaster-data-extracted-e19g0b`, 4537 fichiers) : `diff -rq` contre `data-extracted/` =
+  exactement les 903 lignes de `predicted_changes.txt` (903 M, aucun A ni D). Preuves indépendantes (Python, `DATAS.BIN`, empreinte
+  de `expected_cells_compact.tsv` vérifiée d'abord), 0 écart : (a) 484 planches, taille et empreinte RGBA égales à l'annexe, alpha dans
+  {0, 128, 255} ; (b) 484 JSON égaux à l'ancien une fois les 914 789 `AtlasX/AtlasY` d'entités remplacés par les cases de l'annexe,
+  rien d'autre ; (c) 332 portraits (1 inventaire, 331 dialogue) à leur position ; (d) 914 789 références, chacune sur une case égale à
+  son décodage ; (e) 0 marqueur de texte non décodé. Miroir : `data-extracted.bak-e19g0b` (copie, 4537 fichiers, identique avant le
+  miroir), ancien remaster renommé `remaster-data-extracted.bak-e19g0b`, dossier neuf renommé `remaster-data-extracted`, `robocopy /MIR`
+  depuis PowerShell, `diff -rq` final vide (4537 fichiers) ; les sauvegardes de G0 (`data-extracted.bak-e19g0`,
+  `remaster-data-extracted.bak-2026-10-03`) sont intactes (4450 fichiers chacune). Convertisseur : G0b-R4 (doc de
+  `SpriteWriterInventoryPortraitTests`, aucune valeur ni assertion), tests 418/418. Export en place : manifeste SHA-1 (23 741
+  fichiers hors DLL, pdb, `.casaeditor/`) avant/après = exactement les 7014 lignes de `export_predicted_changes.txt` (aucun ajout ni
+  retrait) ; les 6909 `.sprite` changés égalent leur ancien octet pour octet (empreinte SHA-1 du manifeste « avant ») une fois
+  `location.x/y` remis à l'ancienne valeur, et leur position égale `export_sprites.tsv` ; les 104 textures égales à la planche source,
+  taille et empreinte RGBA de `export_textures.tsv` ; second export identique hors `report.json` ; `Alundra.Tests` 2548/2548 en
+  Release puis en Debug (2548 et non 2539 : les tests ajoutés par E19.m0 depuis G0, aucun test ne bouge) ; `cmp` de la DLL déposée contre
+  la build Debug sans écart ; six traces à l'octet (`git diff --ignore-cr-at-eol` vide), les quatre traces du héros remises par
+  `git checkout`. Écarts au plan : aucun (le plan chiffre `Alundra.Tests` à 2539 par héritage de G0 ; la preuve des `.sprite` a utilisé
+  le manifeste « avant » faute de copie des anciens fichiers). ADR-0031 (Proposed : décision D-E19-65 de la session en mode AUTO, à
+  confirmer par l'auteur). Decisions: see ADR-0031. Reste la recette G0b-6 (auteur).
 
 ##### 1.2o.2 E19.g G2a — Semi-transparence par texel des sprites d'entités (moteur et convertisseur) ⚠️ (en pause : relecture n°1 REVISE et contradiction C1 de l'audit, voir la puce « Relecture et audit »)
 

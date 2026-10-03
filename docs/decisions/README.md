@@ -43,3 +43,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0027 | The native image is 320x240 at an integer scale with black bands | Accepted | 2026-10-03 |
 | ADR-0028 | Every animation switch plays its sound, appearances included | Accepted | 2026-10-03 |
 | ADR-0030 | The extractor writes a per-texel alpha code, effect sheets, dialogue portraits and the odd last column | Accepted | 2026-10-03 |
+| ADR-0031 | The entity sprite sheets are written in the Compact layout, one cell per Signature | Proposed | 2026-10-03 |

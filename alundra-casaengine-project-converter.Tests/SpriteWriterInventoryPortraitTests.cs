@@ -14,7 +14,10 @@ namespace AlundraCasaEngineProjectConverter.Tests;
 /// The inventory's opening portrait (docs/plan-portrait-inventaire.md, PI5): sprite record 0's portrait
 /// image reaches the converter only through <c>map_alundra.json</c>'s top-level
 /// <see cref="SpriteBankReader.InventoryPortraitPropertyName"/>, since no animation uses it. The values below
-/// are the real portrait's (page 2, palette 16, atlas (200, 568), 48x56, signature 61779762221058).
+/// are the real portrait's (page 2, palette 16, 48x56, signature 61779762221058) and the atlas position
+/// (200, 568) it had in the Original sheet layout when the fixture was written; the extractor now writes the
+/// Compact layout, which puts the real portrait at (431, 121). The writer copies the position it reads, so the
+/// fixture keeps the Original values.
 /// </summary>
 public class SpriteWriterInventoryPortraitTests
 {

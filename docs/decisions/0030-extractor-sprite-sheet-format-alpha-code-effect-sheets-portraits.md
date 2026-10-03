@@ -1,6 +1,6 @@
 # ADR-0030: The extractor writes a per-texel alpha code, effect sheets, dialogue portraits and the odd last column
 
-- **Status**: Accepted
+- **Status**: Accepted; entity sheet layout amended by ADR-0031
 - **Date**: 2026-10-03
 - **Source**: `docs/plan-e19-opcodes.md`, section "E19.g G0" (decisions D-E19-49, D-E19-51, D-E19-52, same file `:186-193`); value annex `docs/plan-e19-g0-annexe/`
 
