@@ -6721,7 +6721,7 @@ n'est demandé, et l'original lirait au-delà de la table (point ouvert à consi
   avec un groupe nul, pas avec une carte d'un autre groupe ; P4 la période de l'auto-chaîne n'est pas épinglée. **Reste la recette T6
   de l'auteur.**
 
-### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 à auditer)
+### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 planifiée)
 
 **Recensement** (2026-10-03, lecture seule ; table complète versionnée dans `docs/plan-e19-m-annexe/backlog-2026-10-03.md`, en
 anglais) : 46 points M-01 à M-46, chacun vérifié contre le code de `bafbd5a`, classé (test seul, commentaire ou doc, petit correctif
@@ -6989,6 +6989,78 @@ O-E19-51 à O-E19-53 (autres écarts relevés) hors tranche.
   liste fermée des tests existants a bougé ; ADR-0050 et ADR-0032). Avis P4 : la puce « Fait » compte 55 tests dans
   `CellularLayerServiceTests` là où le filtre du vérificateur en lance 26 (le nombre de rouges, 13, concorde) ; O-E19-49 n'est
   consigné que dans ADR-0032 (écart côté DLL, conforme à M2-R4). Reste la recette : la pluie de la 391 et les cellules de type 0.
+
+#### 1.2s.4 E19.m3 — Compteur des vagues, parallaxe et ordre des cellules (O-E19-51 à O-E19-53) ⏳ (planifiée)
+
+**Faits** **[binaire]** (audit du 2026-10-03, `e19m3-disc/notes.md` du scratchpad, scripts `values`, `census3`, `otusers`, `stp` ;
+lignes du moteur citées à `61358ac0`) :
+- **O-E19-51, compteur des vagues** : `0x800C48C4` est un mot unique pour les deux couches ; trois instructions seulement y touchent
+  (`0x8005B6D8` lecture, `0x8005B6E8` écriture, `0x8005D448` lecture par les cellules de vague, type 4) ; le pilote des fonds
+  `0x8005B670` l'incrémente une fois par tick de la boucle principale (appelé seulement par `RenderScene`, `0x8002BE18`, dans la boucle
+  `0x8002C3F4`-`0x8002C45C`), **après** le test `Infos.Enabled` de la carte (`0x8005B6AC` : une carte sans fond ne le fait pas
+  avancer) et **avant** le programme de palettes et les deux tests du masque (`0x8005B700`, `0x8005B72C`) ; la boucle de transition ne
+  l'avance pas ; il vaut 0 au lancement (donnée initialisée de l'image, décalage de fichier `0xA50C4`, hors de la zone mise à zéro) ;
+  rien ne le remet à 0 (ni `0x8005B2E0`-`0x8005B3B0` au chargement, ni `0x8005D668`) ; la formule n'use que `(compteur × k) & 0xFF`.
+  Le moteur garde un compteur par couche (`CellularLayerService.cs:73`, `:258`, `:561`), remis à 0 au chargement et figé quand la
+  couche est masquée (repris de la décompilation, `GraphicManager.cs:1011`). Le fait d'E19.k2 « l'état par tick d'une couche (cadence
+  d'animation, défilement automatique, vagues et tirages aléatoires du cellulaire) est **dans** l'appel gardé » et ADR-0049 du moteur
+  (`:15`, `:26`) se trompent pour les **vagues seulement** ; le reste (cadence, positions et compteurs de période, tirages, défilement,
+  « non dessinée ») tient. Cartes à vagues sur la chaîne : 44, 362, 476, 478 (phase de départ différente, sans autre effet) ; la seule
+  couche cellulaire masquée par `0xA4` est à la 475, hors de la chaîne. La phase exacte de l'original dépend de tous les ticks depuis
+  le lancement et n'est pas atteignable (la DLL compte aussi les ticks des fondus de passage, O-E19-55).
+- **O-E19-52, parallaxe du type 0** : le facteur est calculé une fois, en division entière signée tronquée (`0x8005C0AC`-`0x8005C158`),
+  puis `cam × facteur` à chaque tick (`0x8005CB78` en X, `0x8005CBB8` en Y) ; le type 2 calcule `cam × Num / Den` à chaque tick
+  (`0x8005D0C4`/`0x8005D0D4`, `0x8005D13C`/`0x8005D14C`), comme le moteur ; le type 4 n'a pas de terme de caméra. Le moteur applique
+  `ComputeCameraBase` aux cellules normales (`:327-328`). Effet : cartes 123 et 124, couche 1, 30 cellules par carte (des points
+  opaques de 1 × 1) fixes à l'écran dans l'original, qui défilent aujourd'hui à la moitié de la caméra ; hors de la chaîne.
+- **O-E19-53, ordre de dessin** : chaque cellule (type 0 `0x8005CE08`, type 1 `0x8005D008`, type 2 `0x8005D3C4`, type 4 `0x8005D5AC`) est
+  insérée en tête d'un même créneau de la table d'ordre, puis la primitive de mode de la couche par-dessus (`0x8005B998`-`0x8005B9E4`) :
+  **la cellule 0 est dessinée en dernier, dessus** ; l'ordre entre couches du moteur est déjà le bon. Le moteur donne une clé par couche
+  (`CellularLayerComponent.cs:209`) puis `List.Sort` (`SpriteRendererComponent.cs:399`) : jusqu'à 16 entrées l'ordre de soumission
+  est gardé (la dernière cellule dessus, l'inverse de l'original), au-delà il n'est pas défini. Effet sur la chaîne : la 391 (traits de
+  pluie qui se chevauchent : 472 ticks sur 600 ont des pixels qui dépendent de l'ordre, jusqu'à 462 pixels par tick).
+
+**Règles.**
+- **M3-R1 — Compteur des vagues (moteur)** : un seul octet au niveau du service remplace le compteur par couche ; il avance de 1 à
+  chaque tick, avant la boucle des couches, dès que des couches ont été posées depuis le dernier `Clear` (l'équivalent moteur de
+  `Infos.Enabled` : la DLL vide toujours et ne pose des couches que si la carte a un fond, `AlundraBackdropStage.cs:202-222`,
+  `BackdropWriter.cs:117`) ; `SetLayers`, `Clear` et `ResetLayerRuntimeState` ne le remettent jamais à 0 ; le masque ne le fige pas ;
+  `TryGetLayerState` le rapporte (`:510`) ; aucune nouvelle API publique ; ADR-0052 du moteur, qui amende ADR-0049 (vagues
+  seulement) ; le fait d'E19.k2 reçoit une note de correction.
+- **M3-R2 — Parallaxe (moteur)** : cellules normales seulement : `den != 0 ? cam × (num / den) : 0` en X et en Y (division entière
+  tronquée) ; `FallRespawn` garde `ComputeCameraBase` ; docs `CellularCellDefinition.cs:35-36` et `cellular-layers.md:61`.
+- **M3-R3 — Ordre (moteur)** : une clé par cellule, bâtie dans la boucle des cellules avec `LocalSortOffset = −c` (même procédé que
+  `AnimatedSpriteComponent.BuildPartSortKey`) : la cellule 0 dessinée en dernier ; aucun tri stable ; l'ordre entre couches inchangé.
+
+**Tâches.**
+- **M3-1 — Moteur, tests d'abord** (branche du sous-module **empilée sur** celle de G2a, `chantier/e19g2a-psx-semi`, une fois G2a
+  faite ; plan du moteur dans son `ai-agent/tasks/`) ; valeurs d'aujourd'hui écrites pour le rouge (montage : table des vagues
+  `lut[i] = i`, `BWavePhase` 1, `BWaveWeight` 128, `X0 = Y0 = 50`, donc `DrawX = 42 + compteur`) :
+  - recharge : 3 ticks, `SetLayers` de nouveau, 1 tick → compteur 4, `DrawX` 46 (aujourd'hui 1, 43) ; 2 ticks, `Clear`, 3 ticks,
+    `SetLayers`, 1 tick → 3, 45 (aujourd'hui 1, 43) ; 5 ticks, remise à zéro de l'état, 1 tick → 6, 48 (aujourd'hui 1, 43) ; deux
+    couches, la couche 0 masquée 2 ticks, puis 1 tick → les deux à 3, 45 (aujourd'hui 1, 43 et 3, 45) ; test du masque avec la table :
+    tick de reprise → 5, 47 (aujourd'hui 2, 44) ;
+  - parallaxe (cellule normale en (100, 100), un tick) : facteur 1/2, caméra (100, 60) → (100, 100) (aujourd'hui (50, 70)) ; 3/2,
+    caméra (10, 10) → (90, 90) (aujourd'hui (85, 85)) ; −1/2, caméra (10, 10) → (100, 100) (aujourd'hui (105, 105)) ; gardes : 1/1
+    inchangé ; `FallRespawn` 1/2, caméra (100, 60) → (50, 70) inchangé ;
+  - ordre : trois cellules → `LocalSortOffset` 0, −1, −2 et des `CompareTo` strictement ordonnés (aujourd'hui tous 0) ; cellules
+    `[Normal, ScriptTrack, Normal]` → décalages 0 et −2 ; garde : toute clé de la couche 1 se trie avant toute clé de la couche 0 ;
+    après le tri (méthode de remplissage de G2a) l'ordre 2, 1, 0 (aujourd'hui 0, 1, 2).
+- **M3-2 — Moteur, code** : M3-R1 à M3-R3, docs, ADR-0052 ; pointeur du sous-module ; note de correction au fait d'E19.k2 dans le plan.
+
+**Acceptation.**
+1. Tests de M3-1 rouges d'abord (valeurs d'aujourd'hui), verts après, valeurs écrites tenues ; une valeur que la mesure contredit est
+   un arrêt.
+2. Tests existants touchés, liste fermée : `CellularLayerMaskTests.cs:93` (réécrit : cellules et cadence figées, compteur 4), `:101`
+   (2 → 5), `:122` (1 → 3), `:133` (0 → 2) ; `CellularLayerServiceTests.cs:487` (0 → 5) ; rien d'autre (`CellularLayerMaskTests.cs:82`
+   et `CellularLayerServiceTests.cs:110`, `:115`, `:117`, `:134` ne bougent pas ; côté DLL, rien).
+3. `CasaEngine.Tests` construit à part et vert ; `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans écart ; les
+   six traces à l'octet.
+
+**Retour arrière** : pointeur du sous-module.
+
+**Risques.** Les vagues de la chaîne (44, 362, 476, 478) commencent à une autre phase ; la clé par cellule ajoute un champ par
+entrée de la couche (même coût que les parties d'animation).
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
@@ -7368,9 +7440,12 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-48 | **La chute des cellules puise dans le mauvais générateur** (question bornée du 2026-10-03 pour E19.m0) : dans le binaire, la cellule de type 2 (`0x8005CAC8` → `0x8005D05C`) tire sa nouvelle position au `rand()` de la bibliothèque C (`0x80081E6C`, état `0x801EEB48`, constantes 0x41C64E6D/0x3039, rend `(s >> 16) & 0x7FFF`) et pose `posX = rand() / 102` (0 à 321) ; la DLL la branche sur `AlundraRandom` (`AlundraWorldProxy.cs:652` → `CellularLayerService.cs:397`, décision D7), le flux du jeu, que l'original ne touche pas là ; D7 et la décompilation (`GraphicManager.cs:1172`) se trompent. Confirmé par la découverte d'E19.m1 (un seul tirage, seulement quand `sy >= 240`, `0x8005D310` ; division signée, tronquée vers 0). | E19.m2 |
 | O-E19-49 | **Flux de `rand()` et sauvegardes** (découverte d'E19.m1) : le `rand()` de la bibliothèque C n'a que trois appelants dans le binaire, la chute des cellules (`0x8005D31C`) et l'écriture du bloc de carte mémoire (`0x80061150` dans `0x80060E20`, `0x80061584` dans `0x8006122C` : 36 valeurs `r & 0xFF` à l'offset `0x1FB0` du bloc en `0x8018F078`, avant la somme de contrôle) ; les sauvegardes de la DLL passent par le service du moteur et ne tirent rien. À trancher : tirer 36 valeurs à chaque sauvegarde pour garder l'ordre du flux de la chute des cellules, ou consigner l'écart. | Auteur (E19.m2) |
 | O-E19-50 | **Deux écarts des couches de cellules** (découverte d'E19.m1, relevés, non audités) : les deux routines du binaire dessinent à la position d'avant le bouclage (`0x8005CDB0`, `0x8005D3AC`), le moteur à celle d'après (`CellularLayerService.cs:349-350`, `:403-404`) ; le binaire avance d'un pas quand `|P| <` le compteur d'avant l'incrément, donc tous les `|P| + 2` ticks, le moteur tous les `|P|` ticks (`++Tick >= |P|`, `:303`, `:313`, `:364`, `:371` ; `CellularLayerServiceTests.cs:117-128` épingle la règle du moteur) ; la table des pas et une transformation éventuelle de la période par le convertisseur restent à vérifier. | E19.m2 |
-| O-E19-51 | **Compteur des vagues global** (audit d'E19.m2) : `0x800C48C4` est un compteur unique, incrémenté par le pilote des fonds (`0x8005B6D8`-`0x8005B6E8`) **avant** les tests du masque, jamais remis à 0 au chargement ; le moteur en garde un par couche, remis à 0 au chargement et figé quand la couche est masquée : les vagues commencent chaque carte à une autre phase, et à la 475 la vague de l'original avance pendant le masque. Contredit en partie le fait d'E19.k2 (« l'état par tick d'une couche est dans l'appel gardé ») et ADR-0049 du moteur ; le corriger bougerait `CellularLayerMaskTests.cs:82`, `:93`, `:101`. | E19.m3 |
-| O-E19-52 | **Parallaxe des cellules de type 0 tronquée** (audit d'E19.m2) : le binaire calcule le facteur une fois, en entier tronqué `Num/Den` (`0x8005C0AC`), puis `camX × facteur` (`0x8005CB78`) ; aux cartes 123 et 124 (couche 1), les facteurs 1/2 donnent 0 : 59 cellules ne défilent pas dans l'original, le moteur les fait défiler à camX/2. | E19.m3 |
-| O-E19-53 | **Ordre de dessin des cellules d'une couche** (audit d'E19.m2) : le binaire insère chaque cellule en tête du même créneau de la table d'ordre (`0x8005CE08`) : ordre inverse, la cellule 0 dessus ; le moteur donne la même clé à toutes et trie par `List.Sort` (`SpriteRendererComponent.cs:399`), instable ; effet non mesuré. | E19.m3 |
+| O-E19-51 | **Compteur des vagues global** (audit d'E19.m2) : `0x800C48C4` est un compteur unique, incrémenté par le pilote des fonds (`0x8005B6D8`-`0x8005B6E8`) **avant** les tests du masque, jamais remis à 0 au chargement ; le moteur en garde un par couche, remis à 0 au chargement et figé quand la couche est masquée : les vagues commencent chaque carte à une autre phase, et à la 475 la vague de l'original avance pendant le masque. Contredit en partie le fait d'E19.k2 (« l'état par tick d'une couche est dans l'appel gardé ») et ADR-0049 du moteur ; le corriger bougerait `CellularLayerMaskTests.cs:82`, `:93`, `:101`. Confirmé et planifié (§1.2s.4). | E19.m3 |
+| O-E19-52 | **Parallaxe des cellules de type 0 tronquée** (audit d'E19.m2) : le binaire calcule le facteur une fois, en entier tronqué `Num/Den` (`0x8005C0AC`), puis `camX × facteur` (`0x8005CB78`) ; aux cartes 123 et 124 (couche 1), les facteurs 1/2 donnent 0 : 59 cellules ne défilent pas dans l'original, le moteur les fait défiler à camX/2. Confirmé et planifié (§1.2s.4). | E19.m3 |
+| O-E19-53 | **Ordre de dessin des cellules d'une couche** (audit d'E19.m2) : le binaire insère chaque cellule en tête du même créneau de la table d'ordre (`0x8005CE08`) : ordre inverse, la cellule 0 dessus ; le moteur donne la même clé à toutes et trie par `List.Sort` (`SpriteRendererComponent.cs:399`), instable ; effet non mesuré. Confirmé et planifié (§1.2s.4). | E19.m3 |
+| O-E19-54 | **La pluie de la 391 et de la 31 est opaque dans l'original** (audit d'E19.m3) : ses 720 texels ont le bit STP éteint (table de couleurs envoyée en `0x8005B2A0` égale à la palette extraite) et la PS1 ne mêle que les texels STP ; le portage la dessine à 50 % (couche `Average`, alpha 128 de la DLL) ; les texels des vagues ont tous le bit allumé (justes). Remède naturel : le mécanisme par texel de G2a étendu aux couches cellulaires (audit à faire). | E19.g (après G2a) |
+| O-E19-55 | **Les fonds avancent pendant un fondu de passage** (audit d'E19.m3) : la boucle de transition du binaire (`0x8002C490`-`0x8002C4C0`) n'appelle pas `RenderScene` ; la DLL pousse les ticks des fonds sans condition (`AlundraWorldProxy.cs:2192-2196`). | E19.m (à auditer) |
+| O-E19-56 | **Le type 2 ignore le décalage de palette `0x800C490C`** (`0x8005D370`-`0x8005D394`), contrairement aux types 0 et 4 et aux tuiles ; à retenir si le cycle de palettes (O-E19-43) est porté. Et : le service du moteur survit à un retour au titre ; on n'a pas vérifié si l'original relance l'exécutable (et remet le compteur des vagues à 0) à ce moment. | Note |
 
 ## 4. Hors périmètre
 
