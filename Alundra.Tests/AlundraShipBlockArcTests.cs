@@ -30,11 +30,10 @@ public sealed class AlundraShipBlockArcTests
     private static ArcSpec A6Spec => new(
         "A6", "The Klark", "Ship Klark (night, break, Event)-391", new[] { 1641 }, 15, 28, 7, 1500, RealController: true, Prefabs: true);
 
-    /// <summary>The instructions the map still skips: none of them suspends (effects E19.g, camera sway E19.k, typewriter E12.c).</summary>
+    /// <summary>The instructions the map still skips: none of them suspends (effects E19.g, typewriter E12.c); the camera sway 0x8E is executed since E19.k1.</summary>
     private static readonly HashSet<(int Opcode, int Pc)> AllowedSkipped = new()
     {
         (0xA2, 228), (0xA2, 236), (0xA2, 244), (0xA2, 252), (0xA2, 408),
-        (0x8E, 260), (0x8E, 335), (0x8E, 342), (0x8E, 721),
         (0x94, 417), (0x94, 425), (0x94, 433), (0x94, 441), (0x94, 503),
         (0x4C, 706),
     };
@@ -56,6 +55,32 @@ public sealed class AlundraShipBlockArcTests
         public (uint Anim, uint Direction)? BlockAt470;
         public (int PosY, int TileY)? BlockAt491;
         public int? Record4PosYAt528;
+
+        /// <summary>E19.k1 K3: the camera sway parameters (speedX, speedY, limitX, limitY) after frame 0, after 0x8E @335 and after
+        /// 0x8E @342, and the frames after which its flag was not 1.</summary>
+        public (int SpeedX, int SpeedY, int LimitX, int LimitY)? SwayAfterFrame0;
+        public (int SpeedX, int SpeedY, int LimitX, int LimitY)? SwayAfter335;
+        public (int SpeedX, int SpeedY, int LimitX, int LimitY)? SwayAfter342;
+        public readonly List<int> FramesWithTheSwayOff = new();
+
+        private static (int, int, int, int) SwayParameters()
+        {
+            var sway = AlundraCameraSway.Instance;
+            return (sway.SpeedX, sway.SpeedY, sway.LimitX, sway.LimitY);
+        }
+
+        public void TakeFrame(ArcRun arc)
+        {
+            if (arc.Frame == 1)
+            {
+                SwayAfterFrame0 = SwayParameters();
+            }
+
+            if (AlundraCameraSway.Instance.Flag != 1)
+            {
+                FramesWithTheSwayOff.Add(arc.Frame - 1);
+            }
+        }
 
         public void Take(ArcRun arc, ArcInstruction t)
         {
@@ -96,6 +121,12 @@ public sealed class AlundraShipBlockArcTests
                     break;
                 case 390 when ResultAt390 == null:
                     ResultAt390 = arc.Hero.EventProgramState.Result;
+                    break;
+                case 335 when t.Opcode == 0x8E && SwayAfter335 == null:
+                    SwayAfter335 = SwayParameters();
+                    break;
+                case 342 when t.Opcode == 0x8E && SwayAfter342 == null:
+                    SwayAfter342 = SwayParameters();
                     break;
                 case 449 when t.Opcode == 0x64 && Record4After449 == null:
                     var r4 = arc.EntityByRecord(4);
@@ -145,6 +176,7 @@ public sealed class AlundraShipBlockArcTests
         var serialAtStart = AlundraDialogueDirector.Instance.OpenSerial;
         var samples = new Samples();
         arc.OnInstruction = t => samples.Take(arc, t);
+        arc.OnFrame = () => samples.TakeFrame(arc);
 
         // 1. The end signal.
         arc.RunUntil(() => arc.Has(B, 540, 0x53), "B1 executes 0x53 @540 towards map 416");
@@ -152,6 +184,16 @@ public sealed class AlundraShipBlockArcTests
         // 2. Only the expected instructions skipped, none cut off by the loop guard; 0x4C @706 three times.
         AssertSkippedWithin(arc, AllowedSkipped);
         Assert.Equal(3, arc.SkippedOrExceeded.Count(t => t.Opcode == 0x4C && t.Pc == 706));
+
+        // The camera sway (E19.k1): the 0x8E are executed, none skipped; [1,1,3,2] after frame 0, [3,1,6,2] after @335,
+        // [8,1,8,2] after @342 (the frames of @335 and @342 are not pinned), armed until the end of the arc.
+        Assert.Empty(arc.SkippedOrExceeded.Where(t => t.Opcode is 0x8E or 0x8F));
+        // (0x8E @721 is not reached before the departure, measured; it stays outside the allowed set all the same.)
+        Assert.Equal(new[] { 260, 335, 342 }, arc.Trace.Where(t => t.Opcode == 0x8E).Select(t => t.Pc).Distinct().OrderBy(pc => pc).ToArray());
+        Assert.Equal((1, 1, 3, 2), samples.SwayAfterFrame0);
+        Assert.Equal((3, 1, 6, 2), samples.SwayAfter335);
+        Assert.Equal((8, 1, 8, 2), samples.SwayAfter342);
+        Assert.Empty(samples.FramesWithTheSwayOff);
 
         // 3. The rest, in the order of the plan.
         AssertFrame(arc, B, 540, 1149);

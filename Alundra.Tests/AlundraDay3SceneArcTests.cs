@@ -304,6 +304,41 @@ public sealed class AlundraDay3SceneArcTests
         Assert.Equal((ushort)176, ArcRun.State.MapIdToInternalMapIndexTable[176]);
         Assert.Equal((ushort)162, ArcRun.State.MapIdToInternalMapIndexTable[162]);
 
+        // E19.k1 K3: the camera sway of Septimus' earthquake, sampled right after 0x8E @608, 0x8E @618 and 0x8F @683 (C[6]), and at
+        // the end of the frame of @683.
+        var sway = AlundraCameraSway.Instance;
+        (int SpeedX, int SpeedY, int LimitX, int LimitY)? swayAt608 = null, swayAt618 = null;
+        (int Flag, int SpeedX, int SpeedY, int LimitX, int LimitY, int OffsetX, int OffsetY)? swayAt683 = null, swayAfterTheFrameOf683 = null;
+        var frameOf683 = -1;
+        arc.OnInstruction = t =>
+        {
+            if (t.Slot != C)
+            {
+                return;
+            }
+
+            if (t.Opcode == 0x8E && t.Pc == 608)
+            {
+                swayAt608 = (sway.SpeedX, sway.SpeedY, sway.LimitX, sway.LimitY);
+            }
+            else if (t.Opcode == 0x8E && t.Pc == 618)
+            {
+                swayAt618 = (sway.SpeedX, sway.SpeedY, sway.LimitX, sway.LimitY);
+            }
+            else if (t.Opcode == 0x8F && t.Pc == 683)
+            {
+                frameOf683 = t.Frame;
+                swayAt683 = (sway.Flag, sway.SpeedX, sway.SpeedY, sway.LimitX, sway.LimitY, sway.OffsetX, sway.OffsetY);
+            }
+        };
+        arc.OnFrame = () =>
+        {
+            if (frameOf683 == arc.Frame - 1 && swayAfterTheFrameOf683 == null)
+            {
+                swayAfterTheFrameOf683 = (sway.Flag, sway.SpeedX, sway.SpeedY, sway.LimitX, sway.LimitY, sway.OffsetX, sway.OffsetY);
+            }
+        };
+
         // 1. Phase 1: the end 0x11 @543.
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(C, 543, 0x11), "C[6] executes 0x11 @543");
         Assert.False(arc.Has(C, 587, 0x30), "the second phase does not start before the hero is in the box");
@@ -314,6 +349,13 @@ public sealed class AlundraDay3SceneArcTests
 
         // 3. Only the instructions of the closed list are skipped.
         AssertSkippedAreListed(arc, 178);
+
+        // The camera sway (E19.k1): [5,3,7,5] after @608, [13,11,1,2] after @618, flag 0 after @683, then at the next step Limit, Speed and
+        // Offset at 0 (Reach is not pinned: its value depends on the number of steps since @618).
+        Assert.Equal((5, 3, 7, 5), swayAt608);
+        Assert.Equal((13, 11, 1, 2), swayAt618);
+        Assert.Equal(0, swayAt683?.Flag);
+        Assert.Equal((0, 0, 0, 0, 0, 0, 0), swayAfterTheFrameOf683);
 
         // 4. The end: the two 0x38, G203 cleared by 0x06 @718, G204 set by 0x05 @721, in this order.
         Assert.True(arc.Has(C, 708, 0x38) && arc.Has(C, 713, 0x38), "0x38 @708 and @713 never ran");

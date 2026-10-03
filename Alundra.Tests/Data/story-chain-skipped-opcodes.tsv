@@ -21,14 +21,10 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 476	B	5	mapevent4 zone(0,0,51,59)	264	0xA2	Create effect with pos	EFFET	E19.g	S	A2/A4 (jeu d opcodes)
 476	B	5	mapevent4 zone(0,0,51,59)	272	0x93	Set effect pos	EFFET	E19.g	S	A2/A4 (jeu d opcodes)
 476	B	5	mapevent4 zone(0,0,51,59)	280	0x92	Set effect anim	EFFET	E19.g	S	A2/A4 (jeu d opcodes)
-392	B	1	mapevent0 zone(0,0,51,59)	20	0x8E	Set scrolling parameters	CAMERA	E19.k	S	A5/A5r (0x8E@20 une fois)
 391	B	1	mapevent0 zone(0,0,51,59)	228	0xA2	Create effect with pos	EFFET	E19.g	S	A6 (liste exacte)
 391	B	1	mapevent0 zone(0,0,51,59)	236	0xA2	Create effect with pos	EFFET	E19.g	S	A6 (liste exacte)
 391	B	1	mapevent0 zone(0,0,51,59)	244	0xA2	Create effect with pos	EFFET	E19.g	S	A6 (liste exacte)
 391	B	1	mapevent0 zone(0,0,51,59)	252	0xA2	Create effect with pos	EFFET	E19.g	S	A6 (liste exacte)
-391	B	1	mapevent0 zone(0,0,51,59)	260	0x8E	Set scrolling parameters	CAMERA	E19.k	S	A6 (liste exacte)
-391	B	1	mapevent0 zone(0,0,51,59)	335	0x8E	Set scrolling parameters	CAMERA	E19.k	S	A6 (liste exacte)
-391	B	1	mapevent0 zone(0,0,51,59)	342	0x8E	Set scrolling parameters	CAMERA	E19.k	S	A6 (liste exacte)
 391	B	1	mapevent0 zone(0,0,51,59)	408	0xA2	Create effect with pos	EFFET	E19.g	S	A6 (liste exacte)
 391	B	1	mapevent0 zone(0,0,51,59)	417	0x94	Set effect forces	EFFET	E19.g	S	A6 (liste exacte)
 391	B	1	mapevent0 zone(0,0,51,59)	425	0x94	Set effect forces	EFFET	E19.g	S	A6 (liste exacte)
@@ -36,7 +32,6 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 391	B	1	mapevent0 zone(0,0,51,59)	441	0x94	Set effect forces	EFFET	E19.g	S	A6 (liste exacte)
 391	B	1	mapevent0 zone(0,0,51,59)	503	0x94	Set effect forces	EFFET	E19.g	S	A6 (liste exacte)
 391	B	1	mapevent0 zone(0,0,51,59)	706	0x4C	Set text flags	TEXTE	E19.f/E12.c	S	A6 (liste exacte)
-391	B	1	mapevent0 zone(0,0,51,59)	721	0x8E	Set scrolling parameters	CAMERA	E19.k	S	A6 (liste exacte)
 163	B	2	mapevent1 zone(0,0,51,59)	277	0x9A	Enough money?	PREDICAT argent	E19.l	O	
 163	B	2	mapevent1 zone(0,0,51,59)	297	0x82	Handle map trigger	ACTION+PREDICAT (declencheur de carte)	E19.l	O	
 163	B	2	mapevent1 zone(0,0,51,59)	316	0x99	Try spend money	ARGENT (depense)	E19.l	O	
@@ -88,21 +83,15 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 169	B	4	mapevent3 zone(0,0,51,59)	436	0xA2	Create effect with pos	EFFET	E19.g	A	
 169	B	4	mapevent3 zone(0,0,51,59)	444	0xA2	Create effect with pos	EFFET	E19.g	A	
 169	B	4	mapevent3 zone(0,0,51,59)	452	0xA2	Create effect with pos	EFFET	E19.g	A	
-174	C	3	rec2 Nadia (femme insomniaque)	177	0x8E	Set scrolling parameters	CAMERA	E19.k	O	
 174	C	3	rec2 Nadia (femme insomniaque)	182	0x90	Create effect	EFFET	E19.g	O	
 174	C	3	rec2 Nadia (femme insomniaque)	184	0x90	Create effect	EFFET	E19.g	O	
 174	C	3	rec2 Nadia (femme insomniaque)	186	0x90	Create effect	EFFET	E19.g	O	
-174	C	3	rec2 Nadia (femme insomniaque)	207	0x8F	Set scrolling flag = 0	CAMERA	E19.k	O	
 10	B	1	mapevent0 zone(0,0,51,59)	415	0x90	Create effect	EFFET	E19.g	A	
 10	B	3	mapevent2 zone(0,0,51,59)	707	0x84	Use item	OBJET (consomme/utilise)	E19.l	X	
 10	B	3	mapevent2 zone(0,0,51,59)	726	0x90	Create effect	EFFET	E19.g	X	
-10	B	5	mapevent4 zone(0,0,51,59)	849	0x8E	Set scrolling parameters	CAMERA	E19.k	X	
-10	B	5	mapevent4 zone(0,0,51,59)	859	0x8E	Set scrolling parameters	CAMERA	E19.k	X	
-10	B	5	mapevent4 zone(0,0,51,59)	866	0x8E	Set scrolling parameters	CAMERA	E19.k	X	
 10	B	5	mapevent4 zone(0,0,51,59)	871	0x90	Create effect	EFFET	E19.g	X	
 10	B	5	mapevent4 zone(0,0,51,59)	873	0x92	Set effect anim	EFFET	E19.g	X	
 10	B	5	mapevent4 zone(0,0,51,59)	881	0x92	Set effect anim	EFFET	E19.g	X	
-10	B	5	mapevent4 zone(0,0,51,59)	884	0x8F	Set scrolling flag = 0	CAMERA	E19.k	X	
 10	B	8	mapevent7 zone(0,0,51,59)	995	0x82	Handle map trigger	ACTION+PREDICAT (declencheur de carte)	E19.l	X	
 10	B	17	mapevent16 zone(0,0,51,59)	2188	0x91	Disable effect	EFFET	E19.g	X	
 10	B	21	mapevent20 zone(0,0,51,59)	2500	0x90	Create effect	EFFET	E19.g	X	
@@ -118,11 +107,7 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 10	D	1	rec1 Bloc transparent (1×1×2)	6688	0x87	If TouchingEntity anim value	PREDICAT coup recu	E19.l/E14	O	
 10	D	1	rec1 Bloc transparent (1×1×2)	6697	0x90	Create effect	EFFET	E19.g	O	
 10	C	7	rec8 Bloc transparent (1×1×2)	2828	0x90	Create effect	EFFET	E19.g	S	A10J / T-A10v / T-B9
-10	C	7	rec8 Bloc transparent (1×1×2)	2842	0x8E	Set scrolling parameters	CAMERA	E19.k	S	
-10	C	7	rec8 Bloc transparent (1×1×2)	2852	0x8E	Set scrolling parameters	CAMERA	E19.k	S	
-10	C	7	rec8 Bloc transparent (1×1×2)	2859	0x8E	Set scrolling parameters	CAMERA	E19.k	S	
 10	C	7	rec8 Bloc transparent (1×1×2)	2864	0x92	Set effect anim	EFFET	E19.g	S	
-10	C	7	rec8 Bloc transparent (1×1×2)	2872	0x8F	Set scrolling flag = 0	CAMERA	E19.k	S	
 10	C	17	rec33 Meia	3129	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	O	
 10	C	26	rec36 Sierra (mère)	3833	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	T-B9
 10	C	26	rec36 Sierra (mère)	3847	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	T-B9
@@ -135,8 +120,6 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 10	D	3	rec102 Bloc transparent (1×1×2)	6713	0x90	Create effect	EFFET	E19.g	O	
 10	C	75	rec104 Bloc transparent (1×1×2)	6413	0x2B	Clear EntityFlags.ClassA	BIT DE CLASSE	E19.l (O-E19-26)	S	A10J / T-A10v / T-B9
 10	C	75	rec104 Bloc transparent (1×1×2)	6418	0x95	Check entities attacking hitbox	PREDICAT coup recu	E19.l/E14	S	A10J / T-A10v / T-B9
-10	C	75	rec104 Bloc transparent (1×1×2)	6429	0x8E	Set scrolling parameters	CAMERA	E19.k	S	
-10	C	75	rec104 Bloc transparent (1×1×2)	6436	0x8F	Set scrolling flag = 0	CAMERA	E19.k	S	
 179	B	1	mapevent0 zone(3,6,19,23)	183	0x84	Use item	OBJET (consomme/utilise)	E19.l	S	
 176	B	10	mapevent9 zone(0,0,51,59)	676	0xA2	Create effect with pos	EFFET	E19.g	A	
 176	B	10	mapevent9 zone(0,0,51,59)	684	0xA2	Create effect with pos	EFFET	E19.g	A	
@@ -154,17 +137,12 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 178	B	1	mapevent0 zone(32,5,50,29)	129	0x45	Clear EntityFlags.NoObstacleSlide	GLISSEMENT (NoObstacleSlide)	E19.h (O-E19-20)	S	
 178	B	1	mapevent0 zone(32,5,50,29)	134	0x46	Set EntityFlags.NoObstacleSlide	GLISSEMENT (NoObstacleSlide)	E19.h (O-E19-20)	S	
 178	B	1	mapevent0 zone(32,5,50,29)	157	0x45	Clear EntityFlags.NoObstacleSlide	GLISSEMENT (NoObstacleSlide)	E19.h (O-E19-20)	S	
-178	C	6	rec15 Septimus (chercheur)	608	0x8E	Set scrolling parameters	CAMERA	E19.k	S	
-178	C	6	rec15 Septimus (chercheur)	618	0x8E	Set scrolling parameters	CAMERA	E19.k	S	
-178	C	6	rec15 Septimus (chercheur)	683	0x8F	Set scrolling flag = 0	CAMERA	E19.k	S	
 180	C	4	rec0 Lutas (gros bonhomme)	146	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	O	
 180	C	3	rec1 Fein (femme du gros)	95	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	O	
 180	C	5	rec3 Bonaire (homme endormi à jamais)	215	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	O	
-181	C	3	rec2 Nadia (femme insomniaque)	181	0x8E	Set scrolling parameters	CAMERA	E19.k	O	
 181	C	3	rec2 Nadia (femme insomniaque)	186	0x90	Create effect	EFFET	E19.g	O	
 181	C	3	rec2 Nadia (femme insomniaque)	188	0x90	Create effect	EFFET	E19.g	O	
 181	C	3	rec2 Nadia (femme insomniaque)	190	0x90	Create effect	EFFET	E19.g	O	
-181	C	3	rec2 Nadia (femme insomniaque)	211	0x8F	Set scrolling flag = 0	CAMERA	E19.k	O	
 182	C	2	rec0 Sybill (aux yeux rouges)	79	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	O	
 182	C	1	rec1 Sierra (mère)	27	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	O	
 135	B	5	mapevent4 zone(0,0,51,59)	536	0xA0	Adjusted effect pos	EFFET	E19.g	A	
@@ -179,15 +157,9 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 135	C	6	rec13 Septimus (chercheur)	1421	0x84	Use item	OBJET (consomme/utilise)	E19.l	X	
 135	C	6	rec13 Septimus (chercheur)	1445	0xA0	Adjusted effect pos	EFFET	E19.g	X	
 135	C	6	rec13 Septimus (chercheur)	1462	0xA0	Adjusted effect pos	EFFET	E19.g	X	
-135	C	6	rec13 Septimus (chercheur)	1640	0x8E	Set scrolling parameters	CAMERA	E19.k	X	
-135	C	6	rec13 Septimus (chercheur)	1655	0x8F	Set scrolling flag = 0	CAMERA	E19.k	X	
 135	C	6	rec13 Septimus (chercheur)	1731	0xA0	Adjusted effect pos	EFFET	E19.g	X	
 135	C	6	rec13 Septimus (chercheur)	1741	0xA0	Adjusted effect pos	EFFET	E19.g	X	
-135	C	6	rec13 Septimus (chercheur)	1920	0x8E	Set scrolling parameters	CAMERA	E19.k	X	
-135	C	6	rec13 Septimus (chercheur)	1937	0x8F	Set scrolling flag = 0	CAMERA	E19.k	X	
 135	C	6	rec13 Septimus (chercheur)	1952	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	X	
-135	C	6	rec13 Septimus (chercheur)	2048	0x8E	Set scrolling parameters	CAMERA	E19.k	X	
-135	C	6	rec13 Septimus (chercheur)	2058	0x8F	Set scrolling flag = 0	CAMERA	E19.k	X	
 135	C	8	rec16 Ronan (prêtre)	2430	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
 135	C	8	rec16 Ronan (prêtre)	2441	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
 135	C	8	rec16 Ronan (prêtre)	2446	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	

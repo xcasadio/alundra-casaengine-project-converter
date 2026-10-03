@@ -38,6 +38,15 @@ public sealed class AlundraShipCorridorArcTests
         public int? ResultAt114;
         public uint? DirectionAfter120;
 
+        /// <summary>E19.k1 K3: the camera sway after every frame (the arc has no camera, so only the state of the sway).</summary>
+        public readonly Dictionary<int, (int Flag, int SpeedX, int SpeedY, int LimitX, int LimitY, int OffsetX, int OffsetY, int ReachX, int ReachY)> SwayAfterFrame = new();
+
+        public void TakeFrame(ArcRun arc)
+        {
+            var sway = AlundraCameraSway.Instance;
+            SwayAfterFrame[arc.Frame - 1] = (sway.Flag, sway.SpeedX, sway.SpeedY, sway.LimitX, sway.LimitY, sway.OffsetX, sway.OffsetY, sway.ReachX, sway.ReachY);
+        }
+
         public void Take(ArcRun arc, ArcInstruction t)
         {
             if (t.Slot != B)
@@ -82,13 +91,15 @@ public sealed class AlundraShipCorridorArcTests
     private static void RunPart1(ArcRun arc, Samples samples)
     {
         arc.OnInstruction = t => samples.Take(arc, t);
+        arc.OnFrame = () => samples.TakeFrame(arc);
         arc.RunUntil(() => arc.Has(B, 104, 0x11), "B1 executes 0x11 @104 (the hero takes the hand)");
     }
 
     private static void AssertPart1(ArcRun arc, Samples samples)
     {
-        // Frame 0: the camera sway (0x8E @20, skipped), the lock (0x10 @49), the placement of the hero (0x64 @50).
-        Assert.True(arc.SkippedOrExceeded.Any(t => t.Opcode == 0x8E && t.Pc == 20 && t.Frame == 0), "0x8E @20 was not skipped at frame 0");
+        // Frame 0: the camera sway (0x8E @20, executed, E19.k1), the lock (0x10 @49), the placement of the hero (0x64 @50).
+        Assert.Contains(arc.Trace, t => t.Opcode == 0x8E && t.Pc == 20 && t.Frame == 0 && t.Kind == EventTraceKind.Implemented);
+        AssertTheSway(samples);
         Assert.Equal(0, FrameOf(arc, B, 49));
         Assert.Equal((47185920, 14155776, 4194305), samples.HeroAfter50);
         Assert.Equal((13u, 0u), samples.HeroAfter58);
@@ -109,6 +120,18 @@ public sealed class AlundraShipCorridorArcTests
         }
         AssertFrame(arc, B, 104, 204);
         Assert.Equal((50798592, 14155776, 32, 13, 4, 0u), samples.HeroAt104);
+    }
+
+    /// <summary>E19.k1 K3: <c>0x8E [1,1,3,2]</c> at frame 0 arms the sway, one step per tick (the arc has no camera), the flag stays
+    /// 1 until the departure.</summary>
+    private static void AssertTheSway(Samples samples)
+    {
+        var s = samples.SwayAfterFrame;
+        Assert.Equal((1, 1, 1, 3, 2), (s[0].Flag, s[0].SpeedX, s[0].SpeedY, s[0].LimitX, s[0].LimitY));
+        Assert.Equal((-1, -1), (s[0].OffsetX, s[0].OffsetY)); // after frame 0.
+        Assert.Equal((-2, 1), (s[1].OffsetY, s[1].ReachY)); // after frame 1.
+        Assert.Equal((-3, 1), (s[2].OffsetX, s[2].ReachX)); // after frame 2.
+        Assert.All(s, frame => Assert.Equal(1, frame.Value.Flag)); // armed until the departure.
     }
 
     private static void AssertTheDepartureToMap391()
@@ -138,9 +161,9 @@ public sealed class AlundraShipCorridorArcTests
         arc.HoldDirections(AlundraPadState.Down);
         arc.RunUntil(() => AlundraWarpDirector.Instance.HasPendingArrival, "the portal (22, 23) of map 392 departs towards map 391");
 
-        // 2. Only 0x8E @20 skipped, once.
-        AssertSkippedWithin(arc, new HashSet<(int, int)> { (0x8E, 20) });
-        Assert.Equal(1, arc.SkippedOrExceeded.Count(t => t.Opcode == 0x8E && t.Pc == 20));
+        // 2. Nothing skipped (0x8E @20 is executed, once).
+        AssertNothingSkippedOrExceeded(arc);
+        Assert.Equal(1, arc.Trace.Count(t => t.Opcode == 0x8E && t.Pc == 20));
 
         // 3. The rest, in the order of the plan.
         AssertPart1(arc, samples);
@@ -168,6 +191,7 @@ public sealed class AlundraShipCorridorArcTests
         var heroAtTheEndOfFrame = new Dictionary<int, (int X, int Y)>();
         arc.OnFrame = () =>
         {
+            samples.TakeFrame(arc);
             flagsAtTheEndOfFrame[arc.Frame - 1] = ArcRun.State.PlayerControlFlags;
             heroAtTheEndOfFrame[arc.Frame - 1] = (arc.Hero.PosX, arc.Hero.PosY);
         };
@@ -183,7 +207,8 @@ public sealed class AlundraShipCorridorArcTests
         arc.HoldDirections(AlundraPadState.Down);
         arc.RunUntil(() => AlundraWarpDirector.Instance.HasPendingArrival, "the portal (22, 23) of map 392 departs towards map 391");
 
-        AssertSkippedWithin(arc, new HashSet<(int, int)> { (0x8E, 20) });
+        AssertNothingSkippedOrExceeded(arc);
+        Assert.Equal(1, arc.Trace.Count(t => t.Opcode == 0x8E && t.Pc == 20));
 
         AssertPart1(arc, samples);
         AssertFrame(arc, B, 107, 220);

@@ -43,8 +43,8 @@ internal static class AlundraStoryChainOpcodeAudit
     /// <summary>The seven combat maps, exempt (E14 owns them).</summary>
     public static readonly int[] ExemptCombatMaps = { 14, 15, 44, 115, 116, 117, 362 };
 
-    /// <summary>The ten chain maps with no skipped site.</summary>
-    public static readonly int[] MapsWithoutSkippedSite = { 170, 171, 173, 175, 177, 184, 389, 390, 416, 478 };
+    /// <summary>The eleven chain maps with no skipped site (the 392 joined them with E19.k1, its one site being the camera sway 0x8E).</summary>
+    public static readonly int[] MapsWithoutSkippedSite = { 170, 171, 173, 175, 177, 184, 389, 390, 392, 416, 478 };
 
     /// <summary>Wait opcodes (rule 3): an instruction that waits must never be skipped.</summary>
     public static readonly int[] WaitOpcodes = { 0x20, 0x21, 0x22, 0x23, 0x26, 0x47, 0x48, 0x5F, 0x9F };
