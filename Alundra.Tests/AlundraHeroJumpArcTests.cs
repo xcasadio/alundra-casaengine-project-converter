@@ -151,6 +151,14 @@ public sealed class AlundraHeroJumpArcTests
         Assert.NotEqual(0, gilesStart.X & 0xFFFF);
         var gilesEnd = giles[FrameOf(arc, C, 6398)].Pose;
         Assert.InRange(gilesEnd.X / 65536.0, 732.3, 733.3);
+        // The mechanism of O-E19-29 itself: his Y step is 2.0 px (131072) at the images F0+241 to F0+244 (each landing on a new height rounds X down), then the 1.625 px (106496)
+        // of the ramp; he goes towards the smaller Y, so the steps are negative.
+        for (var image = f0 + 241; image <= f0 + 245; image++)
+        {
+            var step = giles[image].Pose.Y - giles[image - 1].Pose.Y;
+            Assert.True(step == -(image <= f0 + 244 ? 131072 : 106496), $"Giles's Y step at F0+{image - f0}: {step}");
+        }
+
         Near(f0 + 255, FrameOf(arc, C, 6401), "Giles 0x24 @6400 returns");
         Assert.InRange(giles[FrameOf(arc, C, 6401)].Pose.Y / 65536.0, 775 - 2.5, 775 + 2.5);
         Assert.Equal(0, giles[FrameOf(arc, C, 6401)].Pose.X & 0xFFFF); // the truncation of O-E19-29 on the ramp.

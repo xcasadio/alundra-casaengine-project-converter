@@ -108,7 +108,7 @@ public class AlundraEventProgramRunnerWaitCollidedZTests
     [Fact]
     public void UJ2_TheWaitHasNoSideEffect_NoDetourNoDirectionNoAnimation_EvenWithANavigationGrid()
     {
-        var document = NewDocument(0x25, 0xFF);
+        var document = NewDocument(0x01, 0x25, 0xFF); // 0x25 at pc 1, as the first case: the pc 0 would hide a stray write to Parameters[1].
         var (runner, _) = NewRunner(document, new GridWorld());
         var owner = new AlundraEntityScriptProxy
         {
@@ -125,12 +125,12 @@ public class AlundraEventProgramRunnerWaitCollidedZTests
         for (var call = 0; call < 10; call++)
         {
             runner.RunOneScriptCall(owner, state);
-            Assert.Equal(0, state.CodeIndex);
+            Assert.Equal(1, state.CodeIndex);
         }
 
         owner.IsOnGround = 1;
         runner.RunOneScriptCall(owner, state);
-        Assert.Equal(1, state.CodeIndex);
+        Assert.Equal(2, state.CodeIndex);
 
         Assert.Equal(5u, owner.TargetDirection);
         Assert.Equal(7u, owner.TargetAnimationId);

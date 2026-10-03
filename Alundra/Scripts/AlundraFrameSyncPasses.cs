@@ -117,6 +117,9 @@ internal static class AlundraFrameSyncPasses
         if (!TryResolveAnimationTarget(proxy, out var newCurrentAnimationId, out var newAnimationDirection)
             && !chainRestartRequested)
         {
+            // E19.d2c2 D4: nothing is pending at the end of the frame (a switch seen at a tick, then cancelled by the entity's script before this validation): the
+            // lock of the impulse taken at that tick is lowered, or the next switch would get no impulse.
+            proxy.ZImpulseTaken = false;
             return;
         }
 

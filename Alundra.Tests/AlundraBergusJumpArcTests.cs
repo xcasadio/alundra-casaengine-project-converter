@@ -27,9 +27,9 @@ public sealed class AlundraBergusJumpArcTests
     /// <summary>The state of Bergus (the entity of the record) at the end of every frame, from the first frame the program is seen.</summary>
     private sealed record Sample(int Frame, int PosZ, int ForceZ, int IsOnGround, int CollidedWithEntityZ, int IsZForceApplied);
 
-    private static (ArcRun Arc, List<Sample> Samples) Run()
+    /// <summary>Drives the arc (created by the test under a <c>using</c>, so a blocked arc still restores the global state) to the end signal.</summary>
+    private static List<Sample> Run(ArcRun arc)
     {
-        var arc = new ArcRun(A12Spec);
         var samples = new List<Sample>();
         var previous = arc.OnFrame;
         arc.OnFrame = () =>
@@ -42,14 +42,14 @@ public sealed class AlundraBergusJumpArcTests
         };
 
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(B, 451, 0x53), "B[2] executes 0x53 @451");
-        return (arc, samples);
+        return samples;
     }
 
     [Fact]
     public void A12_BergusJumpsOnMap179_TheWaitForTheLandingEnds_TheSceneLeavesByThe0x53()
     {
-        var (arc, samples) = Run();
-        using var _ = arc;
+        using var arc = new ArcRun(A12Spec); // under `using` before the run: an arc blocked in it must not leave the global state dirty.
+        var samples = Run(arc);
 
         // 1. The end signal (0x53 @451, reached by the run above), then nothing skipped, nothing cut off by the loop guard: the base of C0, measured
         // on the DLL before C1 (0x25 skipped), skipped exactly (0x25, 415); R4 ports it.

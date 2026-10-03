@@ -143,8 +143,8 @@ public sealed class AlundraInoaDayOneArcTests
     /// A10 (no flag): the hero arrives by portal 162.3 on map 165 (the first visit to Meade's house). B[1] sees the hero at tile (12, 22)
     /// (height 1: U3), places five actors, sets T100; B[2] then plays the visit, handing the scene to the actors one temporary flag at
     /// a time (T101, T102, T103, T104, T102, T105), each cleared by its own actor; <c>0x11 @354</c> ends it with G3 set. The two
-    /// <c>0x25</c> of Bergus (<c>@838</c>, <c>@843</c>) are executed since E19.d2c1 C1 (R4): each returns 1 at its first call, Bergus resting on
-    /// the ground; the jumps themselves (the impulse) come with C2, which re-pins the frames of the arc.
+    /// <c>0x25</c> of Bergus (<c>@838</c>, <c>@843</c>) wait for the landing of his jump (E19.d2c1 C1/C2, R4): each runs 20 times and returns 1 at the landing, 20
+    /// ticks after the impulse of the animation, which re-pins the frames of the arc.
     /// </summary>
     [Fact]
     public void A10_TheFirstVisitOnMap165_TheActorsPassTheSceneOnByFlags_ThePlayerGetsTheHandBack()
@@ -245,7 +245,8 @@ public sealed class AlundraInoaDayOneArcTests
         // 0x25 that ends at 503 is followed by the next jump), at rest from 525.
         // T102 is cleared one image later than a plain +38 shift of the base (581 -> 620, not 619): Wendell (rec0, program @740) polls T102 once every
         // three images (37 [1] waits two, then 0x00 ends the call and the next one jumps back to @747), on the images that are multiples of 3: 489 in the
-        // base, 528 here (T102 is set at 527), so his dialog @764 starts at 528 and lasts the same 92 images; T105 follows at 621.
+        // base, 528 here (T102 is set at 527), so his dialog @764 starts at 528 and lasts the same 92 images; T105 follows at 621. Meade (program @984) has a phase of
+        // his own, next to Wendell's: he polls T105 once every two images, so T105 (set at 621) is cleared by his 0x06 @1026 at the image 774, i.e. edge 775.
         Assert.Equal(526, samples.FlagEdges[3].Cleared);
         Assert.Equal((527, 620), (samples.FlagEdges[4].Set, samples.FlagEdges[4].Cleared));
         Assert.Equal((621, 775), (samples.FlagEdges[5].Set, samples.FlagEdges[5].Cleared));

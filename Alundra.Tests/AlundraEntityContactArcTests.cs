@@ -482,7 +482,7 @@ public sealed class AlundraEntityContactArcTests
             }
         };
 
-        // 1. The end signal: the instruction that ends the scene, 0x30 @983 (it sets G672, in the frame of the end of 0x1E @980).
+        // 1. The end signal: the instruction that ends the scene, 0x30 @983 (it tests G672, in the frame of the end of 0x1E @980; 0x05 @990 is the one that sets it).
         arc.RunUntil(() => arc.Has(B, 983, 0x30), "B[6] executes 0x30 @983 (G672) after 0x1E @980");
 
         // 2. Only the instructions the measure shows are skipped (the rest of B[6] is not played).
