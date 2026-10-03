@@ -217,6 +217,9 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-63** — (2026-10-03, l'auteur, E19.f2) Le **bit de défilement résiduel** (une attente `\A` relâchée en 1re ou 2e
     ligne fait sauter au défilement suivant de 3e ligne, dans la même boîte, son attente de 10 images) est un défaut de
     l'original, **corrigé** : chaque défilement de 3e ligne attend ses 10 images ou un appui.
+  - **D-E19-64** — (2026-10-03, l'auteur, E19.f2a) L'**écart d'un tick dû à l'ordre du moteur** (les entités avant le mandataire
+    du monde) est accepté pour la boîte de texte : pas de datation des ouvertures et des écritures ; les écarts sont nommés par
+    origine dans ADR-0029 (F2-R1) et l'oracle en tient compte.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -4447,7 +4450,7 @@ boîtes de l'inventaire.
   La branche `chantier/e19f1-dialogue-boxes` du sous-module de l'analyseur (`b92b7b9`) n'est pas mergée : le pointeur du parent la
   désigne, comme les chantiers précédents.
 
-##### 1.2j.3 E19.f2 — Boîte de texte fidèle ⏳ (planifiée : f2a détaillée, f2b esquissée ; relectures n°1 et n°2 REVISE, révisée ; nouvelle époque, relecture de clôture)
+##### 1.2j.3 E19.f2 — Boîte de texte fidèle ⏳ (planifiée : f2a détaillée, f2b esquissée ; ordre tranché par l'auteur, D-E19-64)
 
 **Découpage** (2026-10-03) : **f2a** porte la logique de la boîte au tick près dans la DLL, sans vue (le directeur et son état,
 les opcodes `0x4C` à `0x51`, les sons, les drapeaux à leur glyphe), avec la vague de ré-épingles des tests ; **f2b** branche la vue
@@ -4498,13 +4501,10 @@ L, U). Faits porteurs **[binaire]** (adresses dans les notes) :
 **Décision à prendre par cette tranche, consignée en ADR-0029** : la boîte suit le binaire (règles ci-dessus) ; les drapeaux du
 texte sont posés à leur glyphe (fin de D-E12-4, que remplace cette ADR) ; à chaque tick logique, la passe de la boîte tourne
 avant les événements de carte du même tick, sur la manette du tick précédent, et la porte des événements de carte est relue après
-elle ; chaque ouverture et chaque écriture de script sur la boîte (`0x4C` à `0x51`) est datée de son tick logique global et la
-machine de la boîte ne la voit qu'à partir de la passe du tick suivant, quelle que soit son origine (ordre et table par origine en
-F2-R1) ; écarts nommés, dus à l'ordre du moteur (les entités avant le mandataire du monde) : un script d'entité voit une libération
-au premier tick de l'image suivante, et une ouverture par un déclencheur en attente sur une image de rattrapage agit à la première
-passe de l'image suivante ; les deux défauts corrigés.
+elle ; écarts nommés dus à l'ordre du moteur (les entités avant le mandataire du monde), acceptés par l'auteur (D-E19-64), sans
+datation, origine par origine dans la table de F2-R1, avec l'ordre propre au harnais d'intro ; les deux défauts corrigés.
 
-###### E19.f2a — Logique de la boîte au tick près ⏳ (planifiée ; relectures n°1 et n°2 REVISE, révisée ; nouvelle époque, relecture de clôture)
+###### E19.f2a — Logique de la boîte au tick près ⏳ (relectures n°1, n°2 et de clôture REVISE ; l'auteur a tranché l'ordre, D-E19-64 ; révisée, relecture demandée par cette décision)
 
 **Règles.**
 - **F2-R1 — Ordre d'un tick** (révision n°1 : la porte calculée une fois par image et la boucle de la manette, qui fait tous
@@ -4518,22 +4518,24 @@ passe de l'image suivante ; les deux défauts corrigés.
   mise à jour à N+1 ; une boîte libérée à T+18 rend la main aux événements de carte dès T+18, en mode 1 comme en mode MenuOpen ;
   sur une image de rattrapage, boîte et événements de carte s'entrelacent tick par tick (B0 M0 B1 M1), comme le binaire ; le
   déclencheur d'inventaire ne change pas de place. L'avis A1 d'E12.a est clos.
-  **Horodatage** (révision n°2 : le moteur met à jour les entités avant le mandataire du monde, `AlundraEntityScriptProxy.cs`
-  ~1090-1091 et ~1209-1213, `AlundraWorldProxy.cs` ~1946-1956 ; sans datation, une boîte ouverte ou verrouillée par un script
-  d'entité, les marins de la 389 ou le livre de sauvegarde, serait vue un tick trop tôt) : chaque tick logique a un numéro global
-  (`AlundraLogicClock` : ticks des images closes + indice du tick dans l'image), posé par chaque boucle de ticks avant ses
-  scripts (entités, événements de carte, déclencheurs en attente) ; le directeur date chaque ouverture et chaque écriture de script
-  sur la boîte (`0x4C` à `0x51`) ; ce qui est immédiat dans le binaire le reste (drapeau d'activité, MessageBox/MenuOpen, son 6,
-  texte chargé, ce que lisent `0x39` et l'ouverture suivante, la lecture de `closeMode` par `0x51`) ; la machine de la boîte, à la
-  passe du tick t, ne prend en compte que les ouvertures et écritures datées d'un tick < t. Par origine (N = tick de l'ouverture,
-  k = tick d'un verrou, T = déclenchement de la fermeture) :
+  **Écarts dus à l'ordre du moteur** (D-E19-64 ; le moteur met à jour les entités, scripts compris, avant le mandataire du
+  monde, `AlundraEntityScriptProxy.cs` ~1090-1091 et ~1209-1213, `AlundraWorldProxy.cs` ~1946-1956 ; les déclencheurs en
+  attente tournent après la boucle des ticks, ~2127-2133 ; aucune datation) : ce qui est immédiat dans le binaire le reste
+  (drapeau d'activité, MessageBox/MenuOpen, son 6, texte chargé, ce que lisent `0x39` et l'ouverture suivante) ; la passe de la
+  boîte voit tout ce qui a été écrit avant elle. Par origine (N = tick de l'ouverture, k = tick d'une écriture `0x4C` à `0x51`,
+  T = déclenchement de la fermeture ; « rattrapage » = image de plusieurs ticks, indices j dans l'image) :
 
-  | Origine | 1re mise à jour | Effet d'un verrou | Libération vue par cette origine |
+  | Origine | 1re mise à jour | Effet d'une écriture | Libération vue par cette origine |
   |---|---|---|---|
   | Événement de carte | N+1 (binaire) | k+1 (binaire) | T+18 (binaire) |
-  | Script d'entité | N+1 (binaire, par la datation) | k+1 (binaire) | **T+19** à un tick par image ; sur une image de rattrapage, le premier tick de l'image suivante (écart nommé) |
-  | Déclencheur en attente | N+1 à un tick par image ; sur une image de rattrapage, la première passe de l'image suivante (écart nommé) | même règle | T+18 |
+  | Script d'entité | **N** à un tick par image (un tick tôt) ; rattrapage : la passe 0 de l'image | **k** (un tick tôt) ; rattrapage : passe 0 | **T+19** à un tick par image (un tick tard) ; rattrapage : premier tick de l'image suivante |
+  | Déclencheur en attente | N+1 à un tick par image ; rattrapage : première passe de l'image suivante | même règle | T+18 à un tick par image ; rattrapage : une itération j < (indice de la passe de libération) la voit déjà (tôt) |
 
+  **Harnais d'intro** (seul son bloc `if (_installDialogueDirector)` change, `IntroTraceHarnessTests.cs` ~586-589) : la passe
+  de la boîte y tourne après tout le reste de l'image (`RunFrame`) : une ouverture de l'image N, quelle que soit son origine (script
+  ou rappel du test), fait sa première mise à jour à N ; une écriture de l'image k agit à k ; une libération à la passe de l'image
+  T+18 est vue par les scripts à T+19. L'oracle prend l'ordre du harnais pour les cinq tests qui y installent le directeur
+  (`AlundraDialogueOpcodesProductionTests`, quatre tests, et `AlundraGlobalFreezeEntityUpdateTests` ~86).
 - **F2-R2 — Machine de la boîte** : le directeur porte l'état du binaire (glissements, porte de pas, pas, lignes et défilement,
   curseur, voix, fermeture, libération) exactement comme les faits ci-dessus, D-E19-62 et D-E19-63 compris, sans dépendre d'une
   vue : il tourne avec ou sans présentateur visuel ; « a un présentateur » garde son sens d'aujourd'hui (un chemin non dégradé).
@@ -4559,8 +4561,9 @@ passe de l'image suivante ; les deux défauts corrigés.
 
 **Oracle de test** : `AlundraTextBoxOracle` (projet de tests), port en C# du modèle tiré du binaire, écrit depuis les règles et
 `model.py`, **jamais** depuis le code du directeur ; il lit la **page Yarn exportée** (texte et marqueurs, espaces de bord déjà
-coupés par D-E15-8), pas le texte brut des cartes, et l'origine de chaque ouverture et de chaque attente de libération (pour les
-écarts nommés de F2-R1) ; ses propres tests reprennent les valeurs de `selftest()` (glissements, AB :
+coupés par D-E15-8), pas le texte brut des cartes, et l'origine de chaque ouverture, écriture et attente de libération avec
+l'ordre de son hôte (production ou harnais d'intro) : il calcule les valeurs de la DLL selon la table de F2-R1, et celles du binaire
+pour les écarts ; ses propres tests reprennent les valeurs de `selftest()` (glissements, AB :
 glyphes 19 et 23, fin 27, fermeture par minuterie 387, libération 405 ; pad A : 19, 20, 21, 22, 40 ; `\T` ; défilement de 4
 lignes ; `\N\A` ; verrou `0x4D` ; images du curseur) et les trois textes réels, corrigés de D-E19-62 et D-E19-63 là où ils
 jouent.
@@ -4579,7 +4582,7 @@ relâchent une image puis l'enfoncent (un appui naissant) ; l'oracle reproduit l
   `docs/plan-e19-f2a-valeurs.md` (patron de `docs/plan-e19-d2c-valeurs.md`), une ligne par assertion de classe R de la liste
   fermée : valeur d'avant ; boîtes traversées ; durée de chaque boîte aujourd'hui (déduite des règles d'aujourd'hui : une page par
   appui, fermeture au tick de l'appui ou du `0x51`, avec la manette des arcs d'aujourd'hui) et sous la boîte fidèle (oracle, sous
-  la nouvelle manette des arcs) ; nature de l'épingle et nouvelle valeur. Deux natures : **(a) valeur de la boîte** (tests de la
+  la nouvelle manette des arcs, avec l'origine de chaque ouverture et l'ordre de l'hôte, F2-R1) ; nature de l'épingle et nouvelle valeur. Deux natures : **(a) valeur de la boîte** (tests de la
   boîte, A6 dont les attentes sont pures, A8, A9, A20, A12 ré-ancré) : nouvelle valeur écrite d'avance ; **(b) ré-ancrage** (A10,
   A11 : attentes périodiques d'autres acteurs, attentes physiques `0x24`/`0x0B`) : l'épingle absolue devient « image de libération
   de la dernière boîte traversée + l'écart d'aujourd'hui », écart écrit d'avance, avec une marge écrite d'avance égale à la période
@@ -4590,9 +4593,9 @@ relâchent une image puis l'enfoncent (un appui naissant) ; l'oracle reproduit l
   seulement : toute valeur qui bouge est un arrêt) ; classe L (les 32 lignes `0x4C`/`0x4D` de `story-chain-skipped-opcodes.tsv`,
   A6 `:38`, `:186`, A11 `:356-364`, `AlundraEventProgramRunnerTests.cs:322-330`) ; classe U inchangée ; tests nouveaux : la
   libération d'une boîte MenuOpen vue par un `0x39` d'événement de carte à T+18, l'entrelacement sur une image de rattrapage, une
-  boîte ouverte par un script d'entité (première mise à jour à N+1, premier glyphe à N+19, valeurs écrites d'avance) et sa
-  libération vue par un script d'entité à T+19, un verrou `0x51` posé par un script d'entité qui agit à k+1, une boîte qui finit sa
-  frappe pendant un choix en attente, le préfixe reçu par le présentateur.
+  boîte ouverte par un script d'entité (première mise à jour à N, premier glyphe à N+18, écart nommé, valeurs écrites d'avance) et
+  sa libération vue par un script d'entité à T+19, un `0x51` posé par un script d'entité qui agit à k, une boîte qui finit sa frappe
+  pendant un choix en attente, le préfixe reçu par le présentateur.
 - **F2A-4 — ADR-0029** et le plan.
 
 **Acceptation.**
