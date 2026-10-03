@@ -41,7 +41,6 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 163	B	4	mapevent3 zone(0,0,51,59)	509	0x9A	Enough money?	PREDICAT argent	E19.l	O	
 163	B	4	mapevent3 zone(0,0,51,59)	529	0x82	Handle map trigger	ACTION+PREDICAT (declencheur de carte)	E19.l	O	
 163	B	4	mapevent3 zone(0,0,51,59)	548	0x99	Try spend money	ARGENT (depense)	E19.l	O	
-162	B	2	mapevent1 zone(0,0,51,59)	216	0x52	Use portal	PORTAIL (warp + Result)	non assigne (E19.l "etc.")	X	
 162	B	9	mapevent8 zone(0,0,51,59)	608	0xA2	Create effect with pos	EFFET	E19.g	A	A20 (11 x 0xA2 a l image 0)
 162	B	9	mapevent8 zone(0,0,51,59)	616	0xA2	Create effect with pos	EFFET	E19.g	A	A20 (11 x 0xA2 a l image 0)
 162	B	9	mapevent8 zone(0,0,51,59)	624	0xA2	Create effect with pos	EFFET	E19.g	A	A20 (11 x 0xA2 a l image 0)
@@ -53,7 +52,6 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 162	B	9	mapevent8 zone(0,0,51,59)	672	0xA2	Create effect with pos	EFFET	E19.g	A	A20 (11 x 0xA2 a l image 0)
 162	B	9	mapevent8 zone(0,0,51,59)	680	0xA2	Create effect with pos	EFFET	E19.g	A	A20 (11 x 0xA2 a l image 0)
 162	B	9	mapevent8 zone(0,0,51,59)	688	0xA2	Create effect with pos	EFFET	E19.g	A	A20 (11 x 0xA2 a l image 0)
-165	C	22	rec27 Giles (homme religieux)	2260	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	O	
 164	C	2	rec1 Septimus (chercheur)	331	0x4C	Set text flags	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
 164	C	2	rec1 Septimus (chercheur)	350	0x4D	Try to activate textAutoAdvanceFlag	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
 164	C	2	rec1 Septimus (chercheur)	351	0x4C	Set text flags	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
@@ -67,9 +65,6 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 164	C	2	rec1 Septimus (chercheur)	395	0x4D	Try to activate textAutoAdvanceFlag	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
 164	C	2	rec1 Septimus (chercheur)	398	0x4D	Try to activate textAutoAdvanceFlag	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
 164	C	2	rec1 Septimus (chercheur)	402	0x4C	Set text flags	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
-164	C	4	rec6 Beaumont (chef du village)	110	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	S	A11 (4C/4D une fois, 0x58@110 repete)
-164	C	5	rec7 Thyea (épouse)	110	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	S	A11 (4C/4D une fois, 0x58@110 repete)
-172	C	22	rec27 Giles (homme religieux)	1704	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	O	
 169	B	4	mapevent3 zone(0,0,51,59)	356	0xA2	Create effect with pos	EFFET	E19.g	A	
 169	B	4	mapevent3 zone(0,0,51,59)	364	0xA2	Create effect with pos	EFFET	E19.g	A	
 169	B	4	mapevent3 zone(0,0,51,59)	372	0xA2	Create effect with pos	EFFET	E19.g	A	
@@ -108,17 +103,13 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 10	D	1	rec1 Bloc transparent (1×1×2)	6697	0x90	Create effect	EFFET	E19.g	O	
 10	C	7	rec8 Bloc transparent (1×1×2)	2828	0x90	Create effect	EFFET	E19.g	S	A10J / T-A10v / T-B9
 10	C	7	rec8 Bloc transparent (1×1×2)	2864	0x92	Set effect anim	EFFET	E19.g	S	
-10	C	17	rec33 Meia	3129	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	O	
 10	C	26	rec36 Sierra (mère)	3833	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	T-B9
 10	C	26	rec36 Sierra (mère)	3847	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	T-B9
 10	C	26	rec36 Sierra (mère)	3849	0x4D	Try to activate textAutoAdvanceFlag	TEXTE	E19.f/E12.c	X	T-B9
-10	C	44	rec69 I74_Bouquet de fleurs	4666	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	O	T-A10v
-10	C	54	rec81 I74_Bouquet de fleurs	5470	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	O	T-A10v
 10	C	58	rec83 Ronan (prêtre)	5808	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
 10	C	74	rec98 Giles (homme religieux)	6406	0x90	Create effect	EFFET	E19.g	S	A10J / T-A10v / T-B9
 10	D	3	rec102 Bloc transparent (1×1×2)	6704	0x87	If TouchingEntity anim value	PREDICAT coup recu	E19.l/E14	O	
 10	D	3	rec102 Bloc transparent (1×1×2)	6713	0x90	Create effect	EFFET	E19.g	O	
-10	C	75	rec104 Bloc transparent (1×1×2)	6413	0x2B	Clear EntityFlags.ClassA	BIT DE CLASSE	E19.l (O-E19-26)	S	A10J / T-A10v / T-B9
 10	C	75	rec104 Bloc transparent (1×1×2)	6418	0x95	Check entities attacking hitbox	PREDICAT coup recu	E19.l/E14	S	A10J / T-A10v / T-B9
 179	B	1	mapevent0 zone(3,6,19,23)	183	0x84	Use item	OBJET (consomme/utilise)	E19.l	S	
 176	B	10	mapevent9 zone(0,0,51,59)	676	0xA2	Create effect with pos	EFFET	E19.g	A	
@@ -137,14 +128,9 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 178	B	1	mapevent0 zone(32,5,50,29)	129	0x45	Clear EntityFlags.NoObstacleSlide	GLISSEMENT (NoObstacleSlide)	E19.h (O-E19-20)	S	
 178	B	1	mapevent0 zone(32,5,50,29)	134	0x46	Set EntityFlags.NoObstacleSlide	GLISSEMENT (NoObstacleSlide)	E19.h (O-E19-20)	S	
 178	B	1	mapevent0 zone(32,5,50,29)	157	0x45	Clear EntityFlags.NoObstacleSlide	GLISSEMENT (NoObstacleSlide)	E19.h (O-E19-20)	S	
-180	C	4	rec0 Lutas (gros bonhomme)	146	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	O	
-180	C	3	rec1 Fein (femme du gros)	95	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	O	
-180	C	5	rec3 Bonaire (homme endormi à jamais)	215	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	O	
 181	C	3	rec2 Nadia (femme insomniaque)	186	0x90	Create effect	EFFET	E19.g	O	
 181	C	3	rec2 Nadia (femme insomniaque)	188	0x90	Create effect	EFFET	E19.g	O	
 181	C	3	rec2 Nadia (femme insomniaque)	190	0x90	Create effect	EFFET	E19.g	O	
-182	C	2	rec0 Sybill (aux yeux rouges)	79	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	O	
-182	C	1	rec1 Sierra (mère)	27	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	O	
 135	B	5	mapevent4 zone(0,0,51,59)	536	0xA0	Adjusted effect pos	EFFET	E19.g	A	
 135	B	5	mapevent4 zone(0,0,51,59)	549	0xA0	Adjusted effect pos	EFFET	E19.g	A	
 135	B	13	mapevent12 zone(0,0,51,59)	821	0xA2	Create effect with pos	EFFET	E19.g	X	
@@ -152,14 +138,11 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 135	B	13	mapevent12 zone(0,0,51,59)	858	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
 135	B	13	mapevent12 zone(0,0,51,59)	864	0x92	Set effect anim	EFFET	E19.g	X	
 135	B	13	mapevent12 zone(0,0,51,59)	869	0x92	Set effect anim	EFFET	E19.g	X	
-135	B	13	mapevent12 zone(0,0,51,59)	909	0x52	Use portal	PORTAIL (warp + Result)	non assigne (E19.l "etc.")	X	
-135	C	1	rec0 Ronan (prêtre)	1008	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	O	
 135	C	6	rec13 Septimus (chercheur)	1421	0x84	Use item	OBJET (consomme/utilise)	E19.l	X	
 135	C	6	rec13 Septimus (chercheur)	1445	0xA0	Adjusted effect pos	EFFET	E19.g	X	
 135	C	6	rec13 Septimus (chercheur)	1462	0xA0	Adjusted effect pos	EFFET	E19.g	X	
 135	C	6	rec13 Septimus (chercheur)	1731	0xA0	Adjusted effect pos	EFFET	E19.g	X	
 135	C	6	rec13 Septimus (chercheur)	1741	0xA0	Adjusted effect pos	EFFET	E19.g	X	
-135	C	6	rec13 Septimus (chercheur)	1952	0x58	Directional branch	BRANCHE (tour de PNJ selon sa direction)	E19.l	X	
 135	C	8	rec16 Ronan (prêtre)	2430	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
 135	C	8	rec16 Ronan (prêtre)	2441	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
 135	C	8	rec16 Ronan (prêtre)	2446	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	

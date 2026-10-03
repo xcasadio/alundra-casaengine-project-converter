@@ -43,8 +43,9 @@ internal static class AlundraStoryChainOpcodeAudit
     /// <summary>The seven combat maps, exempt (E14 owns them).</summary>
     public static readonly int[] ExemptCombatMaps = { 14, 15, 44, 115, 116, 117, 362 };
 
-    /// <summary>The eleven chain maps with no skipped site (the 392 joined them with E19.k1, its one site being the camera sway 0x8E).</summary>
-    public static readonly int[] MapsWithoutSkippedSite = { 170, 171, 173, 175, 177, 184, 389, 390, 392, 416, 478 };
+    /// <summary>The fifteen chain maps with no skipped site (the 392 joined them with E19.k1, its one site being the camera sway 0x8E;
+    /// the 165, 172, 180 and 182 with E19.l1, whose only sites were the directional branch 0x58).</summary>
+    public static readonly int[] MapsWithoutSkippedSite = { 165, 170, 171, 172, 173, 175, 177, 180, 182, 184, 389, 390, 392, 416, 478 };
 
     /// <summary>Wait opcodes (rule 3): an instruction that waits must never be skipped.</summary>
     public static readonly int[] WaitOpcodes = { 0x20, 0x21, 0x22, 0x23, 0x26, 0x47, 0x48, 0x5F, 0x9F };
@@ -52,10 +53,10 @@ internal static class AlundraStoryChainOpcodeAudit
     /// <summary>The closed set of rule 4: the predicates and branches that write <c>Result</c> or jump.</summary>
     public static readonly int[] PredicateOpcodes = { 0x52, 0x58, 0x82, 0x84, 0x87, 0x95, 0x99, 0x9A };
 
-    /// <summary>The four known level-S sites of rule 4.</summary>
+    /// <summary>The two known level-S sites of rule 4 (the two 164 sites of the directional branch 0x58 left with E19.l1).</summary>
     public static readonly ProgramSite[] KnownScenePredicateSites =
     {
-        new(164, 'C', 4, 110), new(164, 'C', 5, 110), new(179, 'B', 1, 183), new(10, 'C', 75, 6418),
+        new(179, 'B', 1, 183), new(10, 'C', 75, 6418),
     };
 
     private const string SlotLetters = "ABCDEF";
@@ -203,6 +204,17 @@ internal static class AlundraStoryChainOpcodeAudit
                             break;
                         case 0x74:
                             work.Push(pc + S16(pc + 1, pc + 2));
+                            break;
+                        case 0x57:
+                        case 0x58:
+                            // E19.l1: the directional branch takes one of four targets (the offset read at 1 + 2d) and never
+                            // falls through to pc + 9.
+                            for (var direction = 0; direction < 4; direction++)
+                            {
+                                work.Push(pc + S16(pc + 1 + 2 * direction, pc + 2 + 2 * direction));
+                            }
+
+                            stop = true;
                             break;
                         case 0x78:
                             marks.Add(pc + 3);
@@ -420,7 +432,7 @@ internal static class AlundraStoryChainOpcodeAudit
     }
 
     /// <summary>Rule 4: among the level-S lines, the predicates and branches of <see cref="PredicateOpcodes"/> are only at the
-    /// four known sites.</summary>
+    /// two known sites.</summary>
     public static IReadOnlyList<ListedSite> Rule4ScenePredicates(IEnumerable<ListedSite> list)
     {
         return list.Where(l => l.Tier == 'S'

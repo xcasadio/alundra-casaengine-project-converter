@@ -351,20 +351,25 @@ public sealed class AlundraInoaDayOneArcTests
         Assert.Equal((41, 7, 1), (arc.Hero.TileX, arc.Hero.TileY, arc.Hero.TileZ));
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(C, 437, 0x38), "C[2] executes 0x38 @437");
 
-        // 2. Skipped: the four 0x4C and the nine 0x4D of the plan, once each; 0x58 @110 (the C programs of Beaumont and Thyea, through
-        // @100) as many times as it takes while the hero is not near them - never pinned. Nothing else, nothing cut off by the guard.
+        // 2. Skipped: the four 0x4C and the nine 0x4D of the plan, once each. Nothing else, nothing cut off by the guard.
+        // E19.l1: 0x58 @110 (the C programs of Beaumont and Thyea, through @100) is executed, no longer skipped.
         var textOnce = new HashSet<(int, int)>
         {
             (0x4C, 331), (0x4C, 351), (0x4C, 356), (0x4C, 402),
             (0x4D, 350), (0x4D, 361), (0x4D, 373), (0x4D, 376), (0x4D, 379), (0x4D, 382), (0x4D, 392), (0x4D, 395), (0x4D, 398),
         };
-        AssertSkippedWithin(arc, textOnce.Append((0x58, 110)).ToHashSet());
+        AssertSkippedWithin(arc, textOnce);
         foreach (var (opcode, pc) in textOnce)
         {
             Assert.Equal(1, arc.SkippedOrExceeded.Count(t => t.Opcode == opcode && t.Pc == pc));
         }
 
-        Assert.True(arc.SkippedOrExceeded.Count(t => t.Opcode == 0x58 && t.Pc == 110) > 0, "0x58 @110 never skipped");
+        // Beaumont and Thyea appear facing down (direction 0, AlundraEntitySpawnFactory.cs:667-669) and only the 0x27 @470/@498 (guarded by T4 and
+        // T5) can turn them: while none runs, the branch @110 takes its direction-0 target @124 and never the fall-through @119 the old skip took.
+        Assert.DoesNotContain(arc.Trace, t => t.Slot == C && t.Opcode == 0x27 && t.Pc is 470 or 498);
+        Assert.True(arc.Trace.Count(t => t.Slot == C && t.Pc == 110 && t.Opcode == 0x58) > 0, "0x58 @110 never executed");
+        Assert.DoesNotContain(arc.Trace, t => t.Slot == C && t.Pc == 119);
+        Assert.Contains(arc.Trace, t => t.Slot == C && t.Pc == 124);
 
         // 3. The rest, in the order of the plan.
         // The interaction: record 1's F program ran once (T0).

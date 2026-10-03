@@ -641,6 +641,28 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 entity.ResyncControllerFromFlags();
                 return 1;
 
+            case 0x28: // Set class B - Script_40_028 @ 0x8003DC24 (E19.l1, docs/plan-e19-opcodes.md section 1.2m): ClassB
+                       // (bit 3) of the logic entity's flags, nothing else. Size 1. The controller's walkability mask
+                       // follows (ResyncControllerFromFlags, like 0x16/0x17 and 0x62/0x63).
+                entity.Flags |= EntityFlags.ClassB;
+                entity.ResyncControllerFromFlags();
+                return 1;
+
+            case 0x29: // Clear class B - Script_41_029 @ 0x8003DC40.
+                entity.Flags &= ~EntityFlags.ClassB;
+                entity.ResyncControllerFromFlags();
+                return 1;
+
+            case 0x2A: // Set class A - Script_42_02A @ 0x8003DC54: ClassA (bit 0).
+                entity.Flags |= EntityFlags.ClassA;
+                entity.ResyncControllerFromFlags();
+                return 1;
+
+            case 0x2B: // Clear class A - Script_43_02B @ 0x8003DC6C.
+                entity.Flags &= ~EntityFlags.ClassA;
+                entity.ResyncControllerFromFlags();
+                return 1;
+
             case 0x19: // Deactivate entity - Script_25_019 (EntityEventHandlers.cs:729-733).
                 entity.Status = EntityStatus.Deactivated;
                 return 1;
@@ -971,6 +993,38 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // instruction (size 1, see EventOpcodeSizeTable).
                 return state.Result == 0 ? state.Parameters[0] - state.CodeIndex : 1;
 
+            case 0x4A: // If true restart - Script_74_04A @ 0x8003E9EC (E19.l1): the same jump as 0x49, but only when
+                       // Result != 0; otherwise advances past the 1-byte instruction.
+                return state.Result != 0 ? state.Parameters[0] - state.CodeIndex : 1;
+
+            case 0x57: // Goto by hero animation direction - Script_87_057 @ 0x8003EE28 (E19.l1): relative signed jump read at
+                       // v[1 + 2d], d = the HERO's AnimationDirection; never falls through to pc + 9. No hero spawned:
+                       // degraded, d = 0 (the hero's resting direction), same once-logged warning as 0x3E.
+                if (_worldContext.PlayerEntity is { } branchHero)
+                {
+                    return DirectionalJump(v, branchHero.AnimationDirection);
+                }
+
+                LogDegradedNoPlayerOpcodeOnce(0x57, "GotoByHeroAnimationDirection");
+                return DirectionalJump(v, 0);
+
+            case 0x58: // Goto by animation direction - Script_88_058 @ 0x8003EE5C (E19.l1): the same jump, d = the LOGIC
+                       // entity's AnimationDirection (164 C[4]/C[5] @110: Beaumont and Thyea appear facing down, d = 0,
+                       // and the binary takes @124 - the old skip fell through to @119 and turned them left).
+                return DirectionalJump(v, entity.AnimationDirection);
+
+            case 0x5D: // Deactivate matching entities - Script_93_05D @ 0x8003F144 (E19.l1): every match of v1's search goes
+                       // to state 3 (Deactivated). Size 2. No Result.
+            {
+                var deactivated = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
+                foreach (var match in deactivated)
+                {
+                    match.Status = EntityStatus.Deactivated;
+                }
+
+                return 2;
+            }
+
             case 0x59: // Set entity anim - Script_89_059 @ 0x8003EE8C (E19.a T3, docs/plan-e19-opcodes.md):
                        // for every entity matched by v1's search type (reference: the logic entity),
                        // TargetAnimationId = v2. Size 3. Covers the 669 "hero at rest" sites [0x81, 0]
@@ -1300,6 +1354,12 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
                 return 7;
 
+            case 0x8C: // If random >= value - Script_140_08C @ 0x80040438 (E19.l1): one draw of the shared generator
+                       // (AlundraRandom, the same constants and initial seed as the binary's 0x80098708);
+                       // Result = 1 when (seed >> 24) >= v1, else 0 (the old label said "<", inverted). Size 2.
+                state.Result = (uint)AlundraRandom.Next() >> 24 >= (uint)v[1] ? 1 : 0;
+                return 2;
+
             case 0x8E: // Camera sway start - Script_142_08E @ 0x80040534 (E19.k1, docs/plan-e19-opcodes.md
                        // section 1.2k): Flag = 1, SpeedX = v[1], SpeedY = v[2], LimitX = v[3], LimitY = v[4]
                        // (unsigned bytes); offsets and reach flags untouched. No sway state wired -> degraded
@@ -1417,6 +1477,36 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 return 4;
             }
 
+            case 0x52: // Use portal under hero - Script_82_052 @ 0x8003EB20 (E19.l1, docs/plan-e19-opcodes.md section 1.2m):
+                       // the portal under the hero (GetActivatedPortal, first match, same scanner as the walk onto a
+                       // portal) -> HandleWarpTransition with the hero's CURRENT TargetAnimationId and TargetDirection
+                       // (the walk onto a portal gives 0x36 and the portal's own arrival direction), Result = 1 - even
+                       // when the warp is disabled, where the departure simply does not start (BeginDeparture's own
+                       // [R8] test); no portal -> Result = 0. Size 1. No hero or no host (no portal list): degraded,
+                       // Result = 0.
+                if (_worldContext.PlayerEntity is not { } portalHero)
+                {
+                    state.Result = 0;
+                    LogDegradedNoPlayerOpcodeOnce(0x52, "UsePortalUnderHero");
+                }
+                else if (portalHero.ScriptHost is not { } portalHost)
+                {
+                    state.Result = 0;
+                    LogDegradedOpcodeOnce(0x52, "UsePortalUnderHero", "script host");
+                }
+                else if (AlundraPortalScanner.FindPortalAtTile(portalHost.Portals, portalHero.TileX, portalHero.TileY) is { } portalUnderHero)
+                {
+                    AlundraWarpDirector.Instance.BeginDeparture(
+                        portalUnderHero, portalHero.TargetDirection, portalHero, _gameState, arrivalAnimationId: portalHero.TargetAnimationId);
+                    state.Result = 1;
+                }
+                else
+                {
+                    state.Result = 0;
+                }
+
+                return 1;
+
             case 0x53: // Change map - Script_ChangeMap_053 (EntityEventHandlers.cs:1554-1585, T7,
                        // docs/plan-transitions-carte.md, section "T7 - Opcodes 0x53, 0x9B, 0x9C"):
                        // v[1]/v[2] = desired map INDEX (v[2]<<8|v[1] - already the internal index, no
@@ -1499,6 +1589,32 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 }
 
                 return 1;
+
+            case 0x3F: // Is any entity riding me - Script_63_03F @ 0x8003E734 (E19.l1), PER THE BINARY: Result = 1 when one of
+                       // the slots 0 to N INCLUSIVE (the hero included) is Normal or Deactivated (not Loaded: the
+                       // decompilation accepts it and stops before N), has no BlockedByEntity, and rides the logic
+                       // entity (same comparison as 0x3E); otherwise 0. Size 1.
+            {
+                var carried = 0;
+                if (IsRidingTheLogicEntity(_worldContext.PlayerEntity, entity))
+                {
+                    carried = 1;
+                }
+                else
+                {
+                    foreach (var rider in _worldContext.SpawnedEntities)
+                    {
+                        if (IsRidingTheLogicEntity(rider, entity))
+                        {
+                            carried = 1;
+                            break;
+                        }
+                    }
+                }
+
+                state.Result = carried;
+                return 1;
+            }
 
             case 0x42: // Set logic entity to the player - Script_66_042 @ 0x8003E808 (E19.a T2, D-E19-2,
                        // docs/plan-e19-opcodes.md §0.2.3), PER THE BINARY: writes the OWNER's word (+0x230) -
@@ -2099,6 +2215,23 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
         var z = v[5] | (v[6] << 8);
         _worldContext.SetForcedCameraLookAt(x, y, z);
     }
+
+    /// <summary>0x57/0x58 (E19.l1): the relative signed jump the binary reads at <c>v[1 + 2d]</c> (low then high byte),
+    /// <c>d</c> being an <see cref="AlundraEntityScriptProxy.AnimationDirection"/> (0 to 3). The delta is taken from the
+    /// instruction's own start and there is never a fall-through to <c>pc + 9</c>.</summary>
+    private static int DirectionalJump(int[] v, int direction)
+    {
+        var index = 1 + 2 * (direction & 3);
+        return (short)(v[index] | (v[index + 1] << 8));
+    }
+
+    /// <summary>0x3F (E19.l1): whether <paramref name="candidate"/> is Normal or Deactivated, not blocked, and rides
+    /// <paramref name="logicEntity"/> (the comparison 0x3E makes for the hero).</summary>
+    private static bool IsRidingTheLogicEntity(AlundraEntityScriptProxy? candidate, AlundraEntityScriptProxy logicEntity)
+        => candidate != null
+           && candidate.Status.IsActive()
+           && candidate.BlockedByEntity == null
+           && ReferenceEquals(candidate.RidingEntity, logicEntity.LogicContextEntity);
 
     /// <summary>Script_55_037 (0x37 Wait) - suspends (returns 0) until <c>v[1]</c> frames have elapsed
     /// since this same instruction was first reached, tracked in Parameters[1]/[2] the same way the

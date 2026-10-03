@@ -312,7 +312,8 @@ public sealed class AlundraWarpDirector
         AlundraPortalRecord portal,
         uint arrivalDirectionId,
         AlundraEntityScriptProxy player,
-        AlundraGameState state)
+        AlundraGameState state,
+        uint? arrivalAnimationId = null)
     {
         // [R8] (T3's own note, §1.2.g/T3's "Déviation consignée"): the original only tests
         // g_isWarpDisabled INSIDE HandleWarpTransition - T3's predicate folds the same test upstream for
@@ -348,7 +349,7 @@ public sealed class AlundraWarpDirector
             (tileX * TileWidth + TileWidth / 2) << 16,
             (deltaY * TileHeight + TileHeight / 2) << 16,
             portal.ZLevel << 20,
-            animationId: 0x36, // PlayerManager.cs:3480/3484's own literal (LoadingMap).
+            animationId: arrivalAnimationId ?? 0x36, // PlayerManager.cs:3480/3484's own literal (LoadingMap); opcode 0x52 gives the hero's own.
             directionId: arrivalDirectionId,
             effectId,
             player,
