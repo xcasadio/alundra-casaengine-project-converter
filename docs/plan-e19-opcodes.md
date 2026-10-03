@@ -414,7 +414,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.i | ~~Boucles d'animation Loop pour `0x1C`/`0x1D`~~ — **absorbée par E19.c2** (D-E19-18) : le signal de boucle et son pont y arrivent ; le recensement exact est de 208 sites dans 53 cartes, et non 101 dans 30 | — | — |
 | E19.j ✅ (§1.2l, recette J3 en attente) | Événements de carte : réarmement hors zone du binaire (619 enregistrements, O-E19-11) ; aucun effet sur la chaîne | ciblés | ciblée |
 | E19.k (§1.2k ; E19.k1 ✅, recette K5 en attente) | Caméra : balancement `0x8E`/`0x8F` (E19.k1, DLL seule), masque des fonds `0xA4` (E19.k2, plan moteur) | ciblés | 392, 391 |
-| E19.l (§1.2m : E19.l1 ✅, recette en attente ; E19.l2) | Prédicats, branches et restes : `0x82` (avec la correction d'`AddOneItemIfUnlocked`), `0x83`, `0x84`, `0x87`, `0x3F`, `0x95`, `0x99`, `0x9A`, `0x9F` (avec `InitializeContents`), `0x57`, `0x58`, `0x4A`, `0x2A`, `0x2B`, `0x5D`, etc. ; liste fermée au recensement du moment | ciblés | ciblée |
+| E19.l ✅ (§1.2m ; recettes en attente ; `0x87`/`0x95` → E14, `0xB9` → auteur) | Prédicats, branches et restes : `0x82` (avec la correction d'`AddOneItemIfUnlocked`), `0x83`, `0x84`, `0x87`, `0x3F`, `0x95`, `0x99`, `0x9A`, `0x9F` (avec `InitializeContents`), `0x57`, `0x58`, `0x4A`, `0x2A`, `0x2B`, `0x5D`, etc. ; liste fermée au recensement du moment | ciblés | ciblée |
 | E19.m | Hygiène et clôture : taille de `0x5F` (8), libellés faux, `0x01` qui rend 0, modes aléatoires 4 et 5 de `ResolveDirectionFromParam` ; test statique : aucun opcode atteignable sauté dans le corpus hors E14 (IA native) et E18 (`0xBB`) | corpus | — |
 
 - **Ordre** : E19.a → E19.b → E19.c1 → E19.c2 → E19.d → E19.d2a → E19.d2b → E19.d2c → E19.e, puis E19.f. Les tranches de phase 2
@@ -4318,7 +4318,7 @@ sons, dialogues et scènes se rejouent à la réentrée comme dans l'original (a
 Torla) ; le modèle de réentrée est approché ; le moment où TileX change après un `0x64` pris dans le même passage n'est pas
 vérifié (sans effet sur la chaîne).
 
-### 1.2m E19.l — Prédicats, branches et restes ⏳ (E19.l1 ✅, recette L1-4 en attente ; E19.l2 relue READY)
+### 1.2m E19.l — Prédicats, branches et restes ✅ (recettes L1-4 et L2-4 en attente ; `0x87`/`0x95` → E14, `0xB9` → auteur)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : A branches, entités et contrôle ; B objets, argent et coffres ;
 notes, scripts et recensements dans le scratchpad de la session, `e19l-disc/A/notes.md` et `e19l-disc/B/notes.md`). Faits
@@ -4498,7 +4498,7 @@ vérifiée sur un interrupteur ; `0x8C` suit la distribution du binaire, pas sa 
 dans l'exécutable, la plupart non portés) ; `0x28`/`0x29` libèrent 15 marches bloquées seulement dans la DLL et en bloquent
 4 sur la 102 (O-E19-26), hors chaîne.
 
-##### 1.2m.2 E19.l2 — Objets, argent et coffres ⏳
+##### 1.2m.2 E19.l2 — Objets, argent et coffres ✅ (recette L2-4 en attente)
 
 **Règles d'exécution.**
 - **L2-R1 — Tables** : membre par défaut `IEntityWorldContext.ItemTables => null`, implémenté par `AlundraWorldProxy` (son
@@ -4552,7 +4552,14 @@ dans l'exécutable, la plupart non portés) ; `0x28`/`0x29` libèrent 15 marches
   fabriqué ne garde que 10 `C[75] @6418 0x95`, ses quatre autres cas inchangés. Aucun arc n'atteint ces sites.
   Commit : `test(alundra): the item and money opcodes leave the skipped list`
   - Fait le 2026-10-03 : fait dans le commit de L2-1 (fusion, voir L2-1). Liste versionnée 153 → 140 lignes (13 retirées : `0x82` × 4, `0x84` × 3, `0x99` × 3, `0x9A` × 3, rien d'autre au diff) ; `MapsWithoutSkippedSite` 15 → 17 (163, 179), test renommé `…TheSeventeenMaps…` ; `WaitOpcodes` sans `0x9F` ; `PredicateOpcodes` + `0x83`, `0x9F` ; `KnownScenePredicateSites` ne garde que 10 `C[75] @6418` ; règle 4 et ses deux tests renommés `…TheOneKnownSite…` (message, doc, entrée `known` du test fabriqué réduite à 10 `C[75] @6418 0x95`, quatre autres cas inchangés). Rouge avant ajustement : exactement 1 sur 2440, `Rule2_EveryListedLineIsASiteReachedAndSkipped` ; aucun arc n'a bougé. Suite Debug après : 2440 tests (2401 + 39), 0 échec ; les six traces à l'octet (les quatre traces du héros remises par `checkout`).
-- ⏳ **L2-3 — Vérification et clôture.** **L2-4 — Recette** (auteur) : la boutique de la 163 refuse faute d'argent
+- ✅ **L2-3 — Vérification et clôture.** Vérifié le 2026-10-03 : `Alundra.Tests` 2401 → 2440 (+39), 0 échec, en Release
+  (42 s) puis en Debug (47 s), la Debug en dernier ; `cmp` sans écart (sha256 `b5324d4e...33f8`) ; les six traces à l'octet.
+  Vérificateur neuf : **CONFIRMED** (chaque gestionnaire relu dans le binaire, dont la table de `HandleMapTriggerCommand` ;
+  dix-sept mutations sur dix-huit attrapées ; seul appelant de production d'`AddOneItemIfUnlocked` sans effet ; aucun
+  changement de la sauvegarde ; le monde de production fournit bien `ItemTables`). Avis reporté à E19.m : P4 aucun test ne
+  distingue le cas explicite de l'id 0 de `0x82` de la branche par défaut (même résultat sur les données réelles : l'objet
+  0 a un maximum de 0).
+- 🧪 **L2-4 — Recette** (auteur) : la boutique de la 163 refuse faute d'argent
   (dialogue 140), comme l'original avec une bourse vide ; une partie chargée garde ses objets et son argent.
 
 **Acceptation d'E19.l2.**
@@ -4795,6 +4802,14 @@ Réservé aux mesures faites en exécutant les tranches.
   (43 s) ; `cmp` sans écart.
 - **Arcs** : A11 réécrit (`0x58 @110` exécuté, rien à `@119`, au moins une instruction à `@124`, aucun `0x27 @470`/`@498`) ;
   A10J, T-A10v, T-B9, TN-3 et T-C61 inchangés et verts ; liste fermée 170 → 153, 15 cartes sans site.
+
+### E19.l2 (2026-10-03)
+
+- **Commits** : L2-1 et L2-2 ensemble `cb7453f` (L2-1 seule laissait la règle 2 rouge), puis cette clôture.
+- **Suites** : `Alundra.Tests` **2401 avant la sous-tranche, 2440 après** (+39), 0 échec, en Release (42 s) puis en Debug
+  (47 s) ; `cmp` sans écart.
+- **Test statique** : liste fermée 153 → 140, 17 cartes sans site ; `0x9F` n'est plus une attente ; un seul site de
+  prédicat de niveau S reste connu, 10 `C[75] @6418` (`0x95`, E14).
 
 ## 3. Points ouverts
 
