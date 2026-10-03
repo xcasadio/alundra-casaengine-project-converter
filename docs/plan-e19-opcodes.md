@@ -413,7 +413,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.h | Attentes en Z et contacts : `0x20`-`0x23`, `0x26`, `0x47`, `0x48` ; `ForceAdjusted` aligné sur le binaire ; glissement le long des murs ; reste du saut (O-E19-27) — `0x25` et `CollidedWithEntityZ` avancés en E19.d2c (D-E19-31) | ciblés | ciblée |
 | E19.i | ~~Boucles d'animation Loop pour `0x1C`/`0x1D`~~ — **absorbée par E19.c2** (D-E19-18) : le signal de boucle et son pont y arrivent ; le recensement exact est de 208 sites dans 53 cartes, et non 101 dans 30 | — | — |
 | E19.j ✅ (§1.2l, recette J3 en attente) | Événements de carte : réarmement hors zone du binaire (619 enregistrements, O-E19-11) ; aucun effet sur la chaîne | ciblés | ciblée |
-| E19.k (§1.2k) | Caméra : balancement `0x8E`/`0x8F` (E19.k1, DLL seule), masque des fonds `0xA4` (E19.k2, plan moteur) | ciblés | 392, 391 |
+| E19.k (§1.2k ; E19.k1 ✅, recette K5 en attente) | Caméra : balancement `0x8E`/`0x8F` (E19.k1, DLL seule), masque des fonds `0xA4` (E19.k2, plan moteur) | ciblés | 392, 391 |
 | E19.l (§1.2m : E19.l1, E19.l2) | Prédicats, branches et restes : `0x82` (avec la correction d'`AddOneItemIfUnlocked`), `0x83`, `0x84`, `0x87`, `0x3F`, `0x95`, `0x99`, `0x9A`, `0x9F` (avec `InitializeContents`), `0x57`, `0x58`, `0x4A`, `0x2A`, `0x2B`, `0x5D`, etc. ; liste fermée au recensement du moment | ciblés | ciblée |
 | E19.m | Hygiène et clôture : taille de `0x5F` (8), libellés faux, `0x01` qui rend 0, modes aléatoires 4 et 5 de `ResolveDirectionFromParam` ; test statique : aucun opcode atteignable sauté dans le corpus hors E14 (IA native) et E18 (`0xBB`) | corpus | — |
 
@@ -4053,7 +4053,7 @@ l'auteur sur l'UI) au patron d'`AlundraSaveScreen` ; le `DialogueScreen` du mote
 l'utiliser ; l'élément « 4+ choix » d'E12.c disparaît (le binaire n'en a pas) ; la machine du portrait volant de
 l'inventaire est généralisée, pas dupliquée ; la passe du dialogue va dans la boucle `padTick` (correction d'A1).
 
-### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) ⏳ (E19.k1 planifiée ; E19.k2 esquissée)
+### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) — E19.k1 ✅ (recette K5 en attente) ; E19.k2 ⏳ (esquissée)
 
 **Découverte** (2026-10-03, lecture seule ; notes et scripts dans le scratchpad de la session, `e19k-disc/`). Faits
 porteurs **[binaire]** :
@@ -4091,7 +4091,7 @@ moteur d'abord : couche active par identifiant, ni avance, ni dessin, ni tirage 
 chaîne, après les tranches qui débloquent l'histoire) ; Reach persistant d'une carte à l'autre, comme le binaire ; libellés
 de `0x8E`, `0x8F`, `0xA4` corrigés dans E19.k1.
 
-##### 1.2k.1 E19.k1 — Balancement de la caméra ⏳
+##### 1.2k.1 E19.k1 — Balancement de la caméra ✅ (recette K5 en attente)
 
 **Relecture** (2026-10-03) : REVISE n°1 (site du pas sans caméra, tick de l'accroche, épingle d'A18) ; audit des valeurs :
 toutes les valeurs de K1 et K2 confirmées par un modèle indépendant (`e19k-audit/model.py`), un P2 (le binaire ne balance
@@ -4176,7 +4176,16 @@ dans la découverte.
   suivant Limit, Speed et Offset à 0 (Reach non épinglé : sa valeur dépend du nombre de pas depuis `@618`). Commit :
   `test(alundra): the camera sway on the story chain`
   - Fait le 2026-10-03 : les 28 lignes `0x8E`/`0x8F` retirées de la liste (198 → 170, aucune autre ligne ne bouge : 28 suppressions et rien d'autre au diff) ; `MapsWithoutSkippedSite` passe à 11 avec la 392 (nom du test renommé `…TheElevenMapsWithoutASiteHaveNone`). Rouges d'abord : A5, A5r et `Rule2_EveryListedLineIsASiteReachedAndSkipped` étaient rouges depuis K1 (`0x8E` exécuté) ; les pins réécrits (`0x8E @20` exécuté à l'image 0, rien de sauté, (1,1,3,2), Offset (−1,−1) / OffsetY −2 ReachY 1 / OffsetX −3 ReachX 1 après les images 0, 1, 2, Flag 1 jusqu'au départ ; A6 : (1,1,3,2) après l'image 0, (3,1,6,2) après `@335`, (8,1,8,2) après `@342`, Flag 1 à chaque image ; A18 : (5,3,7,5) après `@608`, (13,11,1,2) après `@618`, Flag 0 après `@683` puis tout à 0 à la fin de la même image) sont tous tombés verts du premier coup, aucune valeur écrite contredite. Écart : `0x8E @721` de A6 n'est pas atteint avant le départ (mesuré) : il sort de l'ensemble autorisé sans être épinglé. Suite Debug : 2371 tests, 0 échec ; aucun test hors de la liste fermée touché.
-- ⏳ **K4 — Vérification et clôture**, comme les tranches précédentes. **K5 — Recette** (auteur) : la 392 (couloir du
+- ✅ **K4 — Vérification et clôture.** Vérifié le 2026-10-03 : `Alundra.Tests` 2344 → 2371 (+27), 0 échec, en Release
+  (45 s) puis en Debug (42 s), la Debug en dernier ; `cmp` sans écart (sha256 `797de8ba...a719`) ; les six traces à l'octet.
+  Vérificateur neuf : **CONFIRMED** (douze mutations de production, toutes attrapées : double pas, garde de transition,
+  décalage après la borne ou sur l'accroche, accroche sans tick, asymétrie de Y, Reach remis au chargement, signe de Y,
+  aucun pas sans caméra, `OnMapLoad` absent ou après les retours anticipés, effacement de Flag 0 ; frames à plusieurs
+  ticks par le vrai `Update`, avec et sans caméra). Avis reportés : **P3** les commits K1 et K2 laissent A5, A5r et la
+  règle 2 rouges jusqu'à K3 (branche verte à K3, non bissectable entre les deux ; une écrasure avant le merge est à la
+  main de l'auteur) ; P4 `0x8E @721` d'A6 n'est atteint par aucun arc ; P4 constructeur interne unique et mutateurs
+  internes au lieu d'un constructeur privé plus un interne.
+- 🧪 **K5 — Recette** (auteur) : la 392 (couloir du
   navire), la 391 (la coque cède), la 178 (séisme de Septimus) : comparer l'impression à l'original. À 50 ticks par seconde,
   `[1,1,3,2]` et `[3,1,6,2]` font une secousse de 4 à 6 Hz, `[8,1,8,2]` 12,5 Hz, `[5,3,7,5]` 8,3 Hz en X et 6,25 Hz en Y,
   `[13,11,1,2]` 25 Hz ; l'amplitude à l'écran est l'intégrale du décalage (0 à −9 px pour `[1,1,3,2]`) ; après `0x8F`, la
@@ -4755,6 +4764,15 @@ Réservé aux mesures faites en exécutant les tranches.
   réécrit), 0 échec, en Release (44 s) puis en Debug (46 s) ; `cmp` sans écart.
 - **Rouges d'avant** (ancien bloc remis par le vérificateur) : 7 sur 32 du filtre ; J1-b lit 0 au lieu de 7, J1-d `Result` 1,
   J1-e 130 au lieu de 129, J1-g `0xFF @168` seul ; J1-f vert (garde des bornes).
+
+### E19.k1 (2026-10-03)
+
+- **Commits** : plan `cd8a69b`, révision `411189f`, relecture `1b992b0`, K1 `88ce888`, K2 `015eb5d`, K3 `9946ce9`, puis cette
+  clôture.
+- **Suites** : `Alundra.Tests` **2344 avant la tranche, 2371 après** (+27 : K1 17, K2 7, K2b 3), 0 échec, en Release (45 s)
+  puis en Debug (42 s) ; `cmp` sans écart.
+- **Arcs** : épingles A5, A5r, A6 et A18 vertes du premier coup aux valeurs écrites ; A6 n'atteint que `0x8E @260`, `@335`,
+  `@342` avant le départ ; liste fermée 198 → 170, la 392 sans site.
 
 ## 3. Points ouverts
 
