@@ -4772,18 +4772,46 @@ recherche, H3-1 gagne UH-APEX-REVERT, le risque disparaît).
 
 ##### 1.2n.4 E19.h4 — Glissement le long des murs (étape 1) et `0x45`/`0x46` ⏳
 
+**Relecture** (2026-10-03) : REVISE n°1 (la table du glissement et le test d'un coin bloqué n'étaient que dans les notes ;
+la règle de `ForceAdjusted` se contredisait, une lecture cassant T-R4 et l'autre faisant tomber le FA des PNJ en oblique ;
+les épingles d'A10J et les comptes du test statique étaient laissés à la mesure) : corrigé (H4-R2 complète, H4-R4, H4-2).
+
 **Règles d'exécution.**
 - **H4-R1 — `0x45`/`0x46`** : `Flags &= ~NoObstacleSlide` / `Flags |= NoObstacleSlide` sur l'entité logique, taille 1, sans
   `Result` ni resynchronisation du contrôleur.
-- **H4-R2 — Glissement** (autour de `MoveControllerAndPullPosition`) : après le `Move` d'un tick d'une direction **cardinale**
-  (0, 8, 16, 24), si aucun axe n'a progressé, qu'aucune entité n'est en contact, que `Flags & 0x2000 == 0` et que `TargetDirection < 32` :
-  calculer les quatre coins du binaire (`x1 = (PosX + ModX) >> 16`, `x2 = (PosX + ModX + Width) >> 16`, de même en Y) à la
-  position + 1 unité dans le sens de `FinalForce`, par `AlundraCellsCollisionField.TrySampleGround` avec le masque du héros
-  (`WalkabilityMaskFor(Flags)`), appliquer la table du binaire (`0x80023734`, découverte), et si elle donne un déplacement, un
-  second `Move` (un seul par tick). En **oblique**, pas de second `Move` (le moteur a déjà avancé l'axe libre, O-E19-28 a) :
-  seule la règle de `ForceAdjusted` change (levé si aucun axe n'a progressé, comme le binaire qui glisse le long du mur).
-  `ForceAdjusted` = 1 seulement si ni le pas ni le glissement n'ont progressé, ou si le glissement est interdit (entité, bit
-  `0x2000`, cas « FA » de la table). Compteur `SlideCount` sur le mandataire.
+- **H4-R2 — Glissement** (autour de `MoveControllerAndPullPosition`, un tick, convention de la DLL, directions du binaire :
+  0 sud (+Y), 8 ouest, 16 nord, 24 est ; la ligne est choisie par `TargetDirection`, cardinale si `TargetDirection & 7 == 0`) :
+  - **coins** : à la position atteinte par le premier `Move`, avancée d'une unité 16.16 dans le sens de la marche (cardinale),
+    `x1 = (PosX + ModX) >> 16`, `x2 = (PosX + ModX + Width) >> 16`, `y1`, `y2` de même (`Width = SizeX × 65536 − 1`, `Height =
+    SizeY × 65536 − 1`), coins `[0] = (x1, y1)`, `[1] = (x2, y1)`, `[2] = (x1, y2)`, `[3] = (x2, y2)` ; un coin est **bloqué**
+    si l'échantillon `AlundraCellsCollisionField.TrySampleGround` de son point n'est pas marchable pour le masque du héros
+    (`WalkabilityMaskFor(Flags)`) **ou** si la hauteur du sol y dépasse le pied plus la hauteur de marche du contrôleur
+    (`StepHeight` : 3 px au sol, 0 en l'air, S6), la règle des coins du moteur (`IsHorizontalMoveBlocked`) ;
+  - **table** (`0x80023734`) :
+
+    | direction | `ForceAdjusted` si | sinon, déplacement du glissement |
+    |---|---|---|
+    | 0 sud | ([2] et [3]) ou [0] ou [1] | Y 0 ; X + 0xC000 si [2] seul, − 0xC000 si [3] seul |
+    | 8 ouest | ([0] et [2]) ou [1] ou [3] | X 0 ; Y + 0x8000 si [0] seul, − 0x8000 si [2] seul |
+    | 16 nord | ([0] et [1]) ou [2] ou [3] | Y 0 ; X + 0xC000 si [0] seul, − 0xC000 si [1] seul |
+    | 24 est | ([1] et [3]) ou [0] ou [2] | X 0 ; Y + 0x8000 si [1] seul, − 0x8000 si [3] seul |
+    | 1-7 sud-ouest | [0] et [3] | (oblique : pas de second `Move`) |
+    | 9-15 nord-ouest | [1] et [2] | idem |
+    | 17-23 nord-est | [0] et [3] | idem |
+    | 25-31 sud-est | [1] et [2] | idem |
+
+  - **cardinale** : si le premier `Move` n'a pas progressé sur son axe, qu'aucune entité n'est en contact
+    (`XCollisionEntity` du premier `Move` nul), que `Flags & 0x2000 == 0` et que `TargetDirection < 32`, et que la table ne
+    donne pas `ForceAdjusted`, un second `Move` du déplacement de la table (un seul par tick ; aucun si le déplacement est
+    nul) ; `SlideCount` (compteur du mandataire) augmente de 1 à chaque second `Move` effectivement fait ;
+  - **oblique** : pas de second `Move` (le moteur a déjà avancé l'axe libre, O-E19-28 a).
+- **H4-R4 — `ForceAdjusted`** (un seul prédicat, sur les résultats par axe du premier `Move` et du `Move` de glissement) :
+  - cardinale : FA = 0 si le premier `Move` a progressé sur son axe ; sinon FA = 1 si le glissement est interdit (entité en
+    contact, bit `0x2000`, `TargetDirection >= 32`), si la table donne FA, si le déplacement est nul, ou si le `Move` de
+    glissement n'a pas progressé ; sinon 0 ;
+  - oblique : FA = (l'axe bloqué n'a pas progressé) **et** (glissement interdit, ou table FA, ou aucun axe n'a progressé).
+  T-R4 (pas qui progresse et finit contre une entité : FA 0) reste vert ; un PNJ marqué `0x2000` qui pousse en oblique le long
+  d'un mur garde FA 1 (aujourd'hui et dans le binaire).
 - **H4-R3** : le commentaire d'UH-6 (`AlundraHeroObjectTopsTests.cs` ~173-185) dit le résultat : {1, 2, 3} pour x0 de 131 à 133
   est celui du binaire, la ligne de l'annexe ({2, 3}) était fausse.
 
@@ -4802,13 +4830,18 @@ recherche, H3-1 gagne UH-APEX-REVERT, le risque disparaît).
   `ForceAdjusted` 0 à chaque tick (rouge : 1 dès le tick 6) ; `PosY` reste celle d'aujourd'hui (25837920 au tick 5 : pas de
   second `Move` en oblique ; l'avance par axe du moteur reste, O-E19-28 a). **UO-1** `46 FF` sur `Flags` 0x100 → 0x2100, `45 FF` → 0x100, pc + 1, `Result` intact ; par `0x42` dans un
   programme d'enregistrement, c'est le bit du héros qui change. **UO-2** : T-SL2 piloté par le script (`46` puis la marche : pas
-  de glissement, `ForceAdjusted` au tick 9 ; `45` : le glissement reprend). Garde d'arcs `ArcsWithoutSlide` : `SlideCount` 0
+  de glissement, `ForceAdjusted` au tick 9 ; `45` : le glissement reprend). **T-SL6** (garde) : un mobile marqué `0x2000` qui
+  pousse en oblique (direction 20) contre un mur de cellules garde `ForceAdjusted` 1 dès le tick du contact (vert avant et
+  après). T-R4 inchangé et vert. Garde d'arcs `ArcsWithoutSlide` : `SlideCount` 0
   sur tous les arcs à vrai contrôleur, sauf A10J. Commit : `feat(alundra): the hero slides along walls like the binary (stage 1)`
 - ⏳ **H4-2 — Liste fermée et arcs.** Les 6 lignes `0x45`/`0x46` quittent la liste versionnée (178 `B[1] @105`, `@129`, `@134`,
-  `@157` ; 185 `B[1] @92`, `@108`) ; `MapsWithoutSkippedSite` reçoit les cartes laissées sans ligne (à compter sur la liste du
-  moment, après E19.l2) ; **A10J** (`AlundraHeroJumpArcTests.cs` ~125-131) : `0x24 @2462` finit à la position du binaire
-  (47877120 ; 50790400), après un seul glissement de + 0,75 px à y = 791 contre la cellule (29,48) ; l'image reste
-  relationnelle (fenêtre de l'arc) ; les tests de mobiles sur de vrais murs (`AlundraNpcCharacterControllerMoverTests`, drapeaux
+  `@157` ; 185 `B[1] @92`, `@108` ; 140 → 134), seules lignes de ces deux cartes : `MapsWithoutSkippedSite` reçoit 178 et 185
+  (17 → 19), le test devient `…TheNineteenMaps…` avec `Assert.Equal(19, …)` ; **A10J** (`AlundraHeroJumpArcTests.cs` ~125-132) :
+  `0x24 @2462` finit à la position du binaire, exacte, (47877120 ; 50790400) (aujourd'hui (47827968 ; 51838976) : le héros, à
+  32 px, bute à y = 791 contre la cellule (29,48) de 48 px par son seul coin nord-ouest ; un glissement de + 0,75 px le dégage,
+  puis il marche 16 px vers le nord jusqu'à la rangée 47, haute de 96 px, à y = 775,0) ; `(Z, ForceAdjusted)` à `@2463` reste
+  (2097152, 1) ; la fenêtre d'image devient [F0+303, F0+309] (aujourd'hui [F0+295, F0+299], fin à F0+297 ; plus un tick de
+  glissement et 16 px à la vitesse de la marche, sept ticks : F0+305 environ ; le binaire F0+308) ; les tests de mobiles sur de vrais murs (`AlundraNpcCharacterControllerMoverTests`, drapeaux
   sans 0x2000) sont relancés avec le compteur : un changement est un arrêt, avec diagnostic. Commit : `test(alundra): the slide on the story chain`
 - ⏳ **H4-3 — Vérification et clôture.** **H4-4 — Recette** (auteur) : le héros glisse le long d'un coin de mur au lieu de
   s'y coller ; sur la 178 et la 185, les marches encadrées par `0x46`/`0x45` s'arrêtent au mur.
