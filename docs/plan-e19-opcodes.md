@@ -7018,7 +7018,7 @@ lignes du moteur citées à `61358ac0`) :
   (`:15`, `:26`) se trompent pour les **vagues seulement** ; le reste (cadence, positions et compteurs de période, tirages, défilement,
   « non dessinée ») tient. Cartes à vagues sur la chaîne : 44, 362, 476, 478 (phase de départ différente, sans autre effet) ; la seule
   couche cellulaire masquée par `0xA4` est à la 475, hors de la chaîne. La phase exacte de l'original dépend de tous les ticks depuis
-  le lancement et n'est pas atteignable (la DLL compte aussi les ticks des fondus de passage, O-E19-55).
+  le lancement et n'est pas atteignable (la DLL compte aussi les ticks des fondus de passage, O-E19-55 ; corrigé par E19.m4).
 - **O-E19-52, parallaxe du type 0** : le facteur est calculé une fois, en division entière signée tronquée (`0x8005C0AC`-`0x8005C158`),
   puis `cam × facteur` à chaque tick (`0x8005CB78` en X, `0x8005CBB8` en Y) ; le type 2 calcule `cam × Num / Den` à chaque tick
   (`0x8005D0C4`/`0x8005D0D4`, `0x8005D13C`/`0x8005D14C`), comme le moteur ; le type 4 n'a pas de terme de caméra. Le moteur applique
@@ -7107,7 +7107,7 @@ entrée de la couche (même coût que les parties d'animation).
   cite encore le compteur des vagues (seul le statut renvoie à ADR-0052, conforme au contrat) ; dénominateur nul : le binaire garde
   l'ancien facteur (`0x8005C0B4`), le moteur pose 0 (choix du plan ; aucun cas dans le corpus).
 
-#### 1.2s.5 E19.m4 — Fonds figés pendant le départ d'un passage (O-E19-55) ⏳ (relecture n°1 REVISE, révisée ; relecture n°2 READY ; en exécution)
+#### 1.2s.5 E19.m4 — Fonds figés pendant le départ d'un passage (O-E19-55) ✅ (relecture n°1 REVISE, révisée ; relecture n°2 READY ; exécutée le 2026-10-03, vérification en attente)
 
 **Faits** **[binaire]** (audit du 2026-10-03, `e19o55-disc/notes.md` du scratchpad, scripts `census`, `values`, `x2` ; DLL citée à
 `f596546`, moteur à `b5a9fbcf`) :
@@ -7167,6 +7167,21 @@ mesure contredit est un arrêt. 2. Tests existants touchés : aucun. 3. `Alundra
 
 **Risques.** Le reste de la scène (suivi de la caméra, animation des entités, physique des PNJ, tuiles animées, HUD, dialogue, fondu de
 la musique) avance encore pendant le départ alors que le binaire montre une image figée (O-E19-57, hors tranche).
+
+- **Fait le 2026-10-03** (M4-1, M4-2 ; DLL seule, moteur intact, sous-module resté à `a885f226`). Nouveau fichier
+  `Alundra.Tests/BackdropWarpDepartureFreezeTests.cs` (3 tests : T-55a et T-55b dans `BackdropWarpDepartureFreezeTests`, collection
+  `AlundraMusicPlayerSingletonCollection` car `BeginDeparture` arme le fondu de la musique ; T-55c dans `BackdropWarpDepartureRainTests`,
+  collection `AlundraRandomStaticStateCollection`, sauté si l'export manque). **Rouges d'abord** sur le code d'avant, valeurs lues égales
+  aux valeurs « aujourd'hui » du plan : T-55a `PendingTicks` 1 dès F0 (attendu 0) ; T-55b après F0 `Timer` (1, 1) (attendu (0, 0)) ;
+  T-55c 71 tirages après F15 (attendu 17). Les tests s'arrêtant à la première assertion fausse, les valeurs de F15 de T-55b ((2, 5),
+  (6, 1), décalage (482, 365)) et l'état `0x277C02BB` de T-55c n'ont pas été lus séparément : ils restent ceux de l'audit. **Verts après**,
+  valeurs écrites tenues sans écart (T-55b : auto-défilement (1, 2) et `Timer` (0, 0) après chacune des images F0 à F15, décalage
+  (481, 362) ; T-55c : 17 tirages, état `0x7E7099A9`, cellule 0 en (251, 202) ; T-55a : `FramesPushed` +1 par image, 1 tick après
+  `InstallForMapEntry`). Code : M4-R1 à `AlundraWorldProxy.cs` (`PushFrame(IsTransitionInProgress ? 0 : ticksThisFrame, ...)`), commentaire
+  et doc de `PushFrame` mis à jour, note sur D-E9b-2 dans `docs/plan-e9b-backdrops-moteur.md`, phrase d'E19.m3 (§1.2s.4) « corrigé par
+  E19.m4 ». Suite complète `Alundra.Tests` en Debug : 2558 réussis, 0 échec, 0 ignoré (aucun test existant touché) ; Release, `cmp` et
+  vérification : session principale. Garde d'octets des six traces : `git diff --ignore-cr-at-eol --exit-code` rend 0 ; les quatre traces
+  du héros ont été remises par `git checkout` ; liste fermée de la chaîne inchangée. Décisions : D-E19-67. Decisions: see ADR-0034.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
@@ -7550,7 +7565,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-52 | **Réglé le 2026-10-03 (E19.m3, ADR-0052 du moteur).** **Parallaxe des cellules de type 0 tronquée** (audit d'E19.m2) : le binaire calcule le facteur une fois, en entier tronqué `Num/Den` (`0x8005C0AC`), puis `camX × facteur` (`0x8005CB78`) ; aux cartes 123 et 124 (couche 1), les facteurs 1/2 donnent 0 : 59 cellules ne défilent pas dans l'original, le moteur les fait défiler à camX/2. Confirmé et planifié (§1.2s.4). | E19.m3 |
 | O-E19-53 | **Réglé le 2026-10-03 (E19.m3, ADR-0052 du moteur).** **Ordre de dessin des cellules d'une couche** (audit d'E19.m2) : le binaire insère chaque cellule en tête du même créneau de la table d'ordre (`0x8005CE08`) : ordre inverse, la cellule 0 dessus ; le moteur donne la même clé à toutes et trie par `List.Sort` (`SpriteRendererComponent.cs:399`), instable ; effet non mesuré. Confirmé et planifié (§1.2s.4). | E19.m3 |
 | O-E19-54 | **La pluie de la 391 et de la 31 est opaque dans l'original** (audit d'E19.m3) : ses 720 texels ont le bit STP éteint (table de couleurs envoyée en `0x8005B2A0` égale à la palette extraite) et la PS1 ne mêle que les texels STP ; le portage la dessine à 50 % (couche `Average`, alpha 128 de la DLL) ; les texels des vagues ont tous le bit allumé (justes). Remède naturel : le mécanisme par texel de G2a étendu aux couches cellulaires (audit à faire). | E19.g (après G2a) |
-| O-E19-55 | **Les fonds avancent pendant un fondu de passage** (audit d'E19.m3) : la boucle de transition du binaire (`0x8002C490`-`0x8002C4C0`) n'appelle pas `RenderScene` ; la DLL pousse les ticks des fonds sans condition (`AlundraWorldProxy.cs:2192-2196`). Audité le 2026-10-03 : 16 ticks en trop par départ (F0 à F15), planifié (§1.2s.5). | E19.m4 |
+| O-E19-55 | ~~Les fonds avancent pendant un fondu de passage~~ — **réglé le 2026-10-03 par E19.m4 (D-E19-67, ADR-0034), vérification en attente** ; question d'origine : (audit d'E19.m3) la boucle de transition du binaire (`0x8002C490`-`0x8002C4C0`) n'appelle pas `RenderScene` ; la DLL poussait les ticks des fonds sans condition (`AlundraWorldProxy.cs:2192-2196`) : 16 ticks en trop par départ (F0 à F15). | E19.m4 |
 | O-E19-56 | **Le type 2 ignore le décalage de palette `0x800C490C`** (`0x8005D370`-`0x8005D394`), contrairement aux types 0 et 4 et aux tuiles ; à retenir si le cycle de palettes (O-E19-43) est porté. Et : le service du moteur survit à un retour au titre ; on n'a pas vérifié si l'original relance l'exécutable (et remet le compteur des vagues à 0) à ce moment. | Note |
 | O-E19-57 | **Le binaire montre une image figée pendant le départ d'un passage** (audit d'O-E19-55) : la boucle de transition n'appelle ni `Update` ni `RenderScene` ; l'écran est une copie de la dernière image sous le fondu. Le portage continue d'avancer et de dessiner la scène : suivi de la caméra, animation des entités (le gel ne touche que `GameplayBlockedMask`, `AlundraWorldProxy.cs:2261-2266`, `AlundraGameplayFreeze.cs:38-40`), physique des PNJ, tuiles animées (temps réel), HUD, dialogue, fondu de la musique (non vérifié dans le binaire). Aussi : l'initialisation du fondu de type 0 du binaire remet la couleur courante à 0 (`0x80042F68`-`0x80042F70`), le portage la garde (`BeginWarpDepartureFade`). À trancher : figer la scène entière (capture de la dernière image par le moteur) ou garder l'écart. | Auteur |
 
