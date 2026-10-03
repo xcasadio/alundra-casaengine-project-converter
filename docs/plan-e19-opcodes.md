@@ -5961,7 +5961,7 @@ dessiné gagne aussi pour l'alpha (déjà le cas pour les couleurs).
   laissé par l'extracteur dans `alundra-datas-analyser/AlundraTools/` (laissé tel quel). Branche de l'analyseur
   `chantier/e19g0-extractor` (`d8d9230`, empilée sur f1), non mergée.
 
-##### 1.2o.2 E19.g G2a — Semi-transparence par texel des sprites d'entités (moteur et convertisseur) ⏳ (planifiée)
+##### 1.2o.2 E19.g G2a — Semi-transparence par texel des sprites d'entités (moteur et convertisseur) ⚠️ (en pause : relecture n°1 REVISE et contradiction C1 de l'audit, voir la puce « Relecture et audit »)
 
 **Découpage d'après G0** (2026-10-03) : **G2a** (cette tranche) rend la semi-transparence par texel des sprites d'entités
 (D-E19-52) : moteur et convertisseur ; **G2b** (quads à quatre sommets libres et piste de coins dans `.anim2d`, changement de format,
@@ -6021,6 +6021,22 @@ opcodes) ; **G4** recette. G2a ne dépend que de G0 (fait : le code alpha est da
    `cmp` sans écart ; les six traces à l'octet.
 
 **Retour arrière** : pointeur du sous-module et commit du convertisseur ; ré-export en place, manifeste égal au manifeste d'avant.
+
+**Relecture et audit** (2026-10-03, `e19g2a-audit/notes.md` du scratchpad) : relecture n°1 **REVISE** : la fenêtre par défaut doit
+porter sur le produit `tex × Color` (aujourd'hui le rejet), pas sur l'alpha brut (une surcouche de fondu à alpha presque nul serait
+dessinée), les fenêtres STP sur l'alpha brut ; le décodage n'est pas écrit (drapeau semi `Spritesheet & 0x08`, mode
+`(Spritesheet >> 4) & 3`, à lire sur `SpriteQuad.Spritesheet` et non sur l'octet bas de la `Signature`, sans quoi 11 montages de test
+deviendraient semi) ; la liste fermée des tests (l'audit : aucun, si la double soumission ne dépend que du nouveau mode) ; la démo sans
+valeurs (l'audit les donne : fond (100, 150, 200), texel STP (120, 80, 40) → mode 0 (110, 115, 120), mode 1 (220, 230, 240), mode 2
+(0, 70, 160), mode 3 (130, 170, 210), à un niveau près, RVB seulement) ; la garde des 10 000 entrées est à mettre au remplissage des
+sommets (`SpriteRendererComponent.cs:401-414`), pas dans la boucle de dessin. **Contradiction C1 de l'audit** (arrêt) : sur les sprites
+exportés, 235 sprites semi n'ont aucun texel STP (environ 230 seraient dessinés entièrement opaques) et 463 sprites non semi en portent :
+les planches d'entités sont en disposition « originale » (une case par région de la VRAM, la dernière palette peinte gagne), si bien que
+les variantes de palette d'une même région partagent une case ; 3442 des 6908 sprites d'entités sont dans une case partagée par
+plusieurs palettes. Si leurs palettes diffèrent en couleur, **les couleurs de ces variantes sont déjà fausses aujourd'hui** (défaut du
+portage, antérieur à G2a) : une mesure est en cours. **Contradiction C2** : aucun sprite d'entité n'est en mode 2 (montage
+synthétique). G2a attend la décision sur C1 (passer les planches d'entités en disposition compacte, une case par signature, dans une
+ré-extraction G0b, avant G2a, ou accepter la limite) ; recommandation : corriger d'abord (G0b).
 
 **Risques.** Les quads déformés restent dessinés en rectangle jusqu'à G2b ; la teinte du mode 3 (64 au lieu de 63 pour les fonds) ;
 l'alpha du back-buffer réécrit par le mode 0 (captures en processus) ; un sprite partagé par des quads de modes différents est
