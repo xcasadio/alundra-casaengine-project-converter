@@ -253,7 +253,7 @@ public class AlundraHeroJumpTests
     }
 
     [Fact]
-    public void UJSND_TheTakeOffSoundIsAskedOnceAtTheTickOfTheImpulse_NeverForTheFlyOpcode_NorAtAnArrival()
+    public void UJSND_TheSoundOfASwitchIsAskedOnceAtTheTickOfTheSwitch_NeverForTheFlyOpcode_NorAtTheFirstSwitchOfAnArrival()
     {
         var sounds = new RecordingSoundPlayer();
         var rig = JumpHeroRig.Build();

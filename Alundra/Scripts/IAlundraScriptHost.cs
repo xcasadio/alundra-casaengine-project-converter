@@ -85,8 +85,8 @@ public interface IAlundraScriptHost
     IReadOnlyList<AlundraPortalRecord> Portals => Array.Empty<AlundraPortalRecord>();
 
     /// <summary>
-    /// E19.d2c1 R8 (docs/plan-e19-opcodes.md §1.2h.3.1): this world's sound-effect player, which the hero's take-off reaches (the sound of the animation that
-    /// gives the impulse). Default-implemented as null, like <see cref="Portals"/>, so no other host needs to change - only
+    /// E19.t (docs/plan-e19-opcodes.md §1.2r, D-E19-57): this world's sound-effect player, which every change of animation reaches (the sound of the new
+    /// animation, <see cref="AlundraEntityScriptProxy.AnimationSoundOf"/>; the hero's take-off is one of them). Default-implemented as null, like <see cref="Portals"/>, so no other host needs to change - only
     /// <see cref="AlundraWorldProxy"/> overrides it, with its own player (<see cref="AlundraWorldProxy.SoundPlayer"/>).
     /// </summary>
     IAlundraSoundPlayer? SoundPlayer => null;

@@ -1,6 +1,6 @@
 # ADR-0023: The hero jumps, falls and lands like the binary, with the take-off sound, and dialogue fidelity joins E19.f
 
-- **Status**: Accepted
+- **Status**: Accepted; partly superseded by ADR-0028 (the "take-off only" sound scope of D-E19-44)
 - **Date**: 2026-10-02
 - **Source**: this chantier: `docs/plan-e19-opcodes.md` §0.1 (decisions D-E19-38 to D-E19-44, taken with the author on 2026-10-02 after the recipe of slice E19.d2b and the discovery of slice E19.d2c), §1.2h.3 (E19.d2c) and its value annex `docs/plan-e19-d2c-valeurs.md`. Extends D-E19-31 (ADR-0021); moves the E12.c slice of `docs/plan-e12-dialogues.md` into E19.f.
 

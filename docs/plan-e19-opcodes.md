@@ -200,6 +200,7 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-56** — (2026-10-03, l'auteur) **D5 d'E19.d2c2 reprend** avec sa révision (relecture de clôture, puis exécution).
   - **D-E19-57** — (2026-10-03, l'auteur, O-E19-41) Le **son de chaque changement d'animation** est porté pour toutes les entités,
     son à l'arrivée compris.
+    Decisions: see ADR-0028.
   - **D-E19-58** — (2026-10-03, l'auteur, O-E19-42) Le **glissement de la DLL est gardé** ; pas de résolution exacte des contacts
     (étape 2) pour l'instant.
   - **D-E19-59** — (2026-10-03, l'auteur, O-E19-45) L'**apparition passe en convention de la DLL** (plus de `+ 1`, relevée à
@@ -6126,7 +6127,7 @@ sous-module soit libre.
   couverts par la recette S6. **Reste la recette S6 de l'auteur.** Branche du moteur `chantier/e19s-virtual-resolution` (`dfaed7a6`),
   non mergée : le pointeur du parent la désigne.
 
-### 1.2r E19.t — Son de chaque changement d'animation ⏳ (READY ; audit des valeurs : une contradiction, un cas de test remplacé)
+### 1.2r E19.t — Son de chaque changement d'animation 🧪 (exécutée le 2026-10-03 ; recette T6 en attente)
 
 **Ordre et propriété** (révision n°1) : E19.t s'exécute **après D5 d'E19.d2c2 et après E19.h1b1**, qui touchent les mêmes
 fichiers (`AlundraScriptedMotion.cs` pour D5 ; les sites d'apparition d'`AlundraWorldProxy.cs` et la fabrique pour h1b1) ; une
@@ -6203,6 +6204,29 @@ groupe de la nouvelle carte). **Découverte** (2026-10-03, lecture seule, `e19sn
   l'apparition (`AlundraWorldProxy`, fabrique), le retrait de R8.
 - **T-3 — ADR-0028** (chaque changement d'animation joue son son, apparition comprise ; octet `0xD` ; groupe de la nouvelle carte ;
   remplace la portée « décollage seul » d'ADR-0023).
+  - Fait le 2026-10-03 (🧪 : la recette T6 de l'auteur manque). **Rouges d'abord** sur le code d'avant (`AlundraAnimationSoundTests`, 13 tests, 12
+    rouges ; valeurs lues) : héros 93 → 480 `[]` (attendu `[480]`) ; `0edffd14` 5 → 365 `[]` (attendu `[365]`) ; maintien `[]` (attendu `[8]`) ; tour
+    de boucle et même animation redemandée `[]` (attendu `[9]`) ; auto-chaîne 15 → 22 : aucune demande ; 476 `0x8A @553` : 0 demande de 219 (attendu
+    1) ; 392 `0x5B @64` : 0 demande de 13 (attendu 1) ; livre de la 178 `@728` : 0 demande de 204 (attendu 1) ; livre de la 179 `[]` (attendu
+    `[204]`) ; arrivée du héros par `AdoptPlayerPawn` en animation 43 `[]` (attendu `[10]`) ; son d'apparition au chargement `[]` (attendu le clip
+    du groupe 62) ; le test « `Sfx` 0 » est vert d'emblée (garde). **Verts après** : 13/13. **Mutations jetables** (fichiers restaurés, `cmp` sans
+    écart) : l'exemption R2 levée pour le son → rouges : arrivée en 43 et 476 (seconde demande) ; octet `0xB` (`Flags`) pour la banque → rouges :
+    93 → 480 et 5 → 365 ; une demande à chaque tick de l'animation courante (tour de boucle, maintien) → 7 rouges (maintien, boucle, même
+    animation, auto-chaîne, livres 178 et 179, 392) ; la demande d'`AdoptPlayerPawn` retirée → rouge : arrivée en 43 (point d'appui du test : le
+    lecteur du monde remplacé par un enregistreur par réflexion sur son champ, puis `AdoptPlayerPawn` rappelé comme UJ-7 le fait, sans changement de
+    production). **Suite Debug** `Alundra.Tests` : 2523/2523 (2510 + 13), `AlundraSoundOpcodesProductionTests` toujours 23 demandes, UJSND renommé
+    (`UJSND_TheSoundOfASwitchIsAskedOnceAtTheTickOfTheSwitch_...`), contenu inchangé ; garde d'octets des six traces : `git diff
+    --ignore-cr-at-eol --exit-code` rend 0, les quatre traces du héros remises en LF. Le crochet est `AlundraFrameSyncPasses.GiveImpulse`
+    (`AnimationSoundOf` dans le proxy d'entité, octet `0xD`) ; l'apparition demande par `RequestAppearanceSound` (chargement, `AdoptPlayerPawn`,
+    `SpawnEntityByRecordId`) ; R8 et `ZImpulseSfx` retirés. **Écarts** : (1) la 179 : B[1] ne s'exécute pas de bout en bout dans l'arc (son `0x0B
+    @114` attend une marche de Septimus que le montage ne produit pas, 3000 images), le livre est donc créé par l'appel de production de l'opcode
+    (`SpawnEntityByRecordId`, enregistrement 2) puis reçoit l'animation 1 comme `0x1A` ; (2) la 392 : la liste exacte `[13]` est remplacée par « un
+    seul 13, à l'image 121 à 123 » (les opcodes de son de la scène demandent d'autres ids : 306, 85, 57, 303 ×2) ; la demande suit l'opcode d'une image
+    (D-E19-64) ; (3) l'auto-chaîne 15 → 22 est jouée sur un PNJ à sprite avec les valeurs du jeu d'animation du héros (le montage héros n'a pas de
+    sprite) ; (4) le chargement : montage synthétique sur la 476 réelle (bit `0x40` de l'enregistrement 0 posé, jeu à moteur audio factice), la
+    demande se résout en 864 (clip du groupe 62) ; (5) « l'exemption R2 s'applique au son » est lue comme « l'exemption est levée pour le son » ;
+    (6) `ArcRun` reçoit un paramètre optionnel `beforeInitialize` (support de test) ; (7) l'acceptation 3 « Release puis Debug » n'a eu que la Debug
+    (consigne d'exécution : pas de Release ici).
 
 **Acceptation.**
 1. Tests de T-1 rouges d'abord, verts après ; une valeur contredite est un arrêt.

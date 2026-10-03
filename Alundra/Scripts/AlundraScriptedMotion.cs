@@ -238,12 +238,6 @@ internal static class AlundraScriptedMotion
     {
         var impulse = hero.IsZForceApplied != 0;
 
-        // R8: the sound of the take-off, once per impulse (the impulse is cleared by every StepAnimationClock, so a catch-up frame gives it at one tick only).
-        if (impulse && hero.ZImpulseSfx > 0)
-        {
-            hero.ScriptHost?.SoundPlayer?.PlaySfx(hero.ZImpulseSfx);
-        }
-
         var controller = hero.Controller;
         if (controller == null || hero.OwnerEntity?.RootComponent == null)
         {

@@ -201,13 +201,6 @@ public class AlundraEntityScriptProxy : GameplayProxy
     internal uint SpawnAnimationId;
 
     /// <summary>
-    /// Engine-only (E19.d2c1 R8): the sound (<see cref="AnimSetEntry.Sfx"/>, 0 for none) of the animation whose impulse the hero takes at this tick;
-    /// <see cref="AlundraFrameSyncPasses.StepAnimationClock"/> clears it with <see cref="IsZForceApplied"/> and posts it with the impulse, the hero's tick
-    /// asks the world's sound player for it. Not copied by <see cref="Clone"/>.
-    /// </summary>
-    internal int ZImpulseSfx;
-
-    /// <summary>
     /// Engine-only (E19.d2c1 R6, docs/plan-e19-opcodes.md §1.2h.3.1): the hero is in the air state the logic tick holds (a scripted jump, an impulse of
     /// the animation, or <c>0x1B</c> on the hero). While it is up, <see cref="AlundraScriptedMotion"/> owns the vertical - the force of the tick, the strict
     /// landing test, the exact <see cref="PosZ"/> - and the engine only follows the root: its gravity is 0, its vertical external with a positive latch. No
@@ -278,9 +271,16 @@ public class AlundraEntityScriptProxy : GameplayProxy
     internal int ZImpulseOf(uint animationId)
         => AnimSetsByAnim != null && AnimSetsByAnim.TryGetValue((int)animationId, out var entry) ? entry.IsZForceApplied : 0;
 
-    /// <summary>The sound (<see cref="AnimSetEntry.Sfx"/>, 0 for none) of <paramref name="animationId"/> in this entity's animation sets.</summary>
-    internal int ZImpulseSfxOf(uint animationId)
-        => AnimSetsByAnim != null && AnimSetsByAnim.TryGetValue((int)animationId, out var entry) ? entry.Sfx : 0;
+    /// <summary>
+    /// E19.t (D-E19-57, ADR-0028): the sound identifier <c>UpdateAnimation</c> asks for when the entity switches to <paramref name="animationId"/>
+    /// (<c>0x80038BB0</c>): the byte 0xC of the animation set (<see cref="AnimSetEntry.Sfx"/>), plus 0x100 when the bit 0x20 of the byte 0xD is set
+    /// (<see cref="AnimSetEntry.Acceleration"/> in the export; the decompilation reads the byte 0xB, wrong for 91 of the 2405 sets). 0 when the animation
+    /// is not in the entity's sets; a result that is not positive asks nothing.
+    /// </summary>
+    internal int AnimationSoundOf(uint animationId)
+        => AnimSetsByAnim != null && AnimSetsByAnim.TryGetValue((int)animationId, out var entry)
+            ? entry.Sfx + ((entry.Acceleration & 0x20) != 0 ? 0x100 : 0)
+            : 0;
     public int AnimFlags;
     public int ForceZ;//rise/fall speed
     public int TargetForceX, TargetForceY;

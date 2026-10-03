@@ -36,8 +36,9 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0020 | Opcode 0x24 is ported with a census of its waits, and opcodes 0x40/0x41 are ported in full | Accepted | 2026-10-01 |
 | ADR-0021 | Entity contacts, scripted jumps and the hero's water and ice rules follow the binary, and test saves feed the recipes | Accepted | 2026-10-02 |
 | ADR-0022 | Native-destruction obstacles stay solid, the walk detour waits on entities, and overlaps stay faithful | Accepted | 2026-10-02 |
-| ADR-0023 | The hero jumps, falls and lands like the binary, with the take-off sound, and dialogue fidelity joins E19.f | Accepted | 2026-10-02 |
+| ADR-0023 | The hero jumps, falls and lands like the binary, with the take-off sound, and dialogue fidelity joins E19.f | Accepted; partly superseded by ADR-0028 (the "take-off only" sound scope) | 2026-10-02 |
 | ADR-0024 | Destroyed entities are recycled through the engine like the binary | Accepted | 2026-10-03 |
 | ADR-0025 | Numeric text codes and \Y are positioned Yarn markers | Accepted | 2026-10-03 |
 | ADR-0026 | Absolute writes of Z follow the DLL convention (binary minus 1) at spawn, 0x8A and 0x64 | Accepted | 2026-10-03 |
 | ADR-0027 | The native image is 320x240 at an integer scale with black bands | Accepted | 2026-10-03 |
+| ADR-0028 | Every animation switch plays its sound, appearances included | Accepted | 2026-10-03 |

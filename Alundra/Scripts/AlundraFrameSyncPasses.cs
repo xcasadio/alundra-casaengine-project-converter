@@ -215,7 +215,6 @@ internal static class AlundraFrameSyncPasses
     internal static void StepAnimationClock(AlundraEntityScriptProxy proxy)
     {
         proxy.IsZForceApplied = 0;
-        proxy.ZImpulseSfx = 0;
         if (proxy.Status == EntityStatus.FlagToDestroy)
         {
             return;
@@ -273,11 +272,19 @@ internal static class AlundraFrameSyncPasses
         proxy.ZImpulseTaken = true;
     }
 
-    /// <summary>E19.d2c1 R1/R8: posts the impulse of <paramref name="animationId"/>; for the hero, also its sound (the take-off sound the hero's tick asks the world for).</summary>
+    /// <summary>
+    /// E19.d2c1 R1, E19.t T-R1 (D-E19-57): the one place a change of animation is acted on at its tick - posts the impulse of <paramref name="animationId"/> and
+    /// asks the world's sound player for its sound (<see cref="AlundraEntityScriptProxy.AnimationSoundOf"/>, for every entity, nothing when it is not positive).
+    /// The appearance's first switch never reaches it (R2, <see cref="TakeZImpulse"/>), a loop turn, a hold and the same animation asked again are no switch.
+    /// </summary>
     private static void GiveImpulse(AlundraEntityScriptProxy proxy, uint animationId)
     {
         proxy.IsZForceApplied = proxy.ZImpulseOf(animationId);
-        proxy.ZImpulseSfx = proxy.IsPlayer && proxy.IsZForceApplied != 0 ? proxy.ZImpulseSfxOf(animationId) : 0;
+        var sound = proxy.AnimationSoundOf(animationId);
+        if (sound > 0)
+        {
+            proxy.ScriptHost?.SoundPlayer?.PlaySfx(sound);
+        }
     }
 
     /// <summary>

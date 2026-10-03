@@ -123,7 +123,9 @@ internal sealed class ArcRun : IDisposable
 
     public static AlundraGameState State => AlundraGameState.Instance;
 
-    public ArcRun(ArcSpec spec)
+    /// <param name="spec">What the arc loads and runs.</param>
+    /// <param name="beforeInitialize">E19.t: called on the world right before <c>InitializeWithWorld</c> (the montage of the map-load tests: a game with audio, a record edited).</param>
+    public ArcRun(ArcSpec spec, Action<World>? beforeInitialize = null)
     {
         Spec = spec;
 
@@ -201,6 +203,7 @@ internal sealed class ArcRun : IDisposable
             }
 
             Proxy = new AlundraWorldProxy();
+            beforeInitialize?.Invoke(world);
             Proxy.InitializeWithWorld(world);
             typeof(AlundraBackdropStage).GetField("_clearColorApplied", BindingFlags.Instance | BindingFlags.NonPublic)!
                 .SetValue(Proxy._backdropStage, true); // the headless montage has no view for the clear colour.

@@ -782,6 +782,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
                 world.AddEntity(entity);
                 _spawnedEntities.Add(entity);
+                RequestAppearanceSound(spawnedProxy); // E19.t T-R2: the sound of the animation of the appearance, in the group of this (new) map.
 
                 // E4.b ("Spawn" item, docs/plan-e4-deplacement-scripte.md): ground-clamp + root push for a
                 // controller-driven NPC, after CreateEntityFromPrefab's own spawn-time root write (which had to
@@ -1753,6 +1754,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 + $"'{world.Name}'; Flags/SpriteProgramIndexes/AnimSetsByAnim left at their defaults.");
         }
 
+        // E19.t T-R2 (D-E19-57, D-E19-61): the arrival is an appearance, so the sound of its animation is asked here, with the world's player (the group of
+        // the new map). After the header above: the hero's animation sets are only known from there. The first switch of the animation is exempt (R2).
+        RequestAppearanceSound(proxy);
+
         // E16.a (D-E16-30, docs/plan-e16-etat-partie.md, T3.1): the hero's own spawn-time TerrainHeight
         // (+0x138) write - port of InitializeEntity (0x80039D04, EntityManager.cs:127-128), which the
         // original runs for EVERY entity, player slot 0 included, right after its position/footprint are
@@ -2484,6 +2489,26 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     }
 
     /// <summary>
+    /// E19.t T-R2 (D-E19-57): asks the world's sound player for the sound of <paramref name="spawned"/>'s animation of appearance (animation 0 for a record, the
+    /// arrival animation for the hero), as <c>InitializeEntity</c> does when it makes its first switch (<c>Current = ~Target</c>, <c>0x80039DAC</c>). The DLL's
+    /// first switch is exempt (R2, <see cref="AlundraEntityScriptProxy.SpawnAnimationActive"/>), so this is the only request of the appearance. Nothing when
+    /// the entity has no appearance animation, no sound or the world no player.
+    /// </summary>
+    private void RequestAppearanceSound(AlundraEntityScriptProxy? spawned)
+    {
+        if (spawned == null || !spawned.SpawnAnimationActive)
+        {
+            return;
+        }
+
+        var sound = spawned.AnimationSoundOf(spawned.SpawnAnimationId);
+        if (sound > 0)
+        {
+            SoundPlayer?.PlaySfx(sound);
+        }
+    }
+
+    /// <summary>
     /// Backs opcodes 0x2D (Script_45_02D), 0x8A and 0x8B via <see cref="IEntityWorldContext"/>. Faithful port of
     /// <c>GameEngine.SpawnEntity(parent, entityId, notCheckSpawnZone)</c> (GameEngine.cs:679-758)
     /// restricted to <c>notCheckSpawnZone = 1</c>, the only value the opcode ever passes - so only the
@@ -2538,6 +2563,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
             _world.AddEntity(entity);
             _spawnedEntities.Add(entity);
+            RequestAppearanceSound(spawnedProxy); // E19.t T-R2: at the tick of the opcode (0x2D, 0x8A, 0x8B).
             // E4.b: same ground-clamp + root push as the map-load spawn loop above - see that call site's
             // own doc for why this must happen AFTER AddEntity.
             spawnedProxy?.PushLogicalPositionToRoot();
@@ -2586,7 +2612,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     // interface's own default (empty) only covers hosts from OTHER slices/tests that never override it.
     IReadOnlyList<AlundraPortalRecord> IAlundraScriptHost.Portals => _portals;
 
-    /// <summary>E19.d2c1 R8: the sound player the hero's take-off reaches through the host seam (the world's own, <see cref="SoundPlayer"/>).</summary>
+    /// <summary>E19.t: the sound player the changes of animation reach through the host seam (the world's own, <see cref="SoundPlayer"/>).</summary>
     IAlundraSoundPlayer? IAlundraScriptHost.SoundPlayer => SoundPlayer;
 
     // T4 (docs/plan-transitions-carte.md §3): the override T3's own comment (formerly here) named in
