@@ -170,6 +170,12 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     valeurs prévues d'avance.
   - **D-E19-44** — Le **son du décollage** d'Alundra (son 10 de l'original) est joué dès E19.d2c, s'il se retrouve dans la
     banque de sons de la DLL ; sinon il est consigné.
+  - **D-E19-45** — (2026-10-03, l'auteur, recette E19.r) Les **entités détruites sont recyclées** comme dans le binaire,
+    au point d'`UpdateDestroyedEntities` (après chaque passe des événements de carte, sous la porte `0x48`) : remise au
+    gabarit (`Status` `Destroyed`, `EntityRefId` −1), retrait des listes de la DLL, entité rendue au moteur
+    (`World.RemoveEntity`). Remplace la portée « invisibilité, pas retrait ». ADR-0024.
+  - **D-E19-46** — (2026-10-03, l'auteur) Les **caisses et cruches soulevables restent traversables** jusqu'à E14
+    (D-E19-28 gardé).
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -5061,7 +5067,7 @@ quads par image (pas de 128 entités du moteur, pas de `.anim2d`) ; la semi-tran
 dans le moteur (rapports de manque, jamais de contournement en amont) ; le tri reprend la formule des entités dans la couche
 triée du monde ; les données d'effets s'exportent en données, pas en images précuites.
 
-### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ⏳ (R1, R2 ✅ ; R3, R4 attendent l'auteur)
+### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ⏳ (R1, R2, R4 ✅ ; R3 planifiée)
 
 **Constat de l'auteur** (conversion relancée, DLL reconstruite) : contacts avec les PNJ bons ; sons et musique bons ; boîtes de
 dialogue toujours celles de MGUI ; scène de Lars et Melzas toujours fausse, halo plus petit que la fenêtre ; on traverse les
@@ -5145,12 +5151,56 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
   reproduit la panne et ses avertissements ; cinq mutations sur six attrapées). Avis reportés à E19.m : P3 aucun test ne
   couvre la moitié « pose de surcouche au chargement » de la règle de R2 (le code est juste : 20 cases sur 20 adoptées sur la
   476) ; P4 aucun test ne prend un vrai warp hors de la chambre de la 163 (couvert en deux morceaux ; recette R5).
-- ⏳ **R3 — Recyclage des entités détruites** (plan à écrire, décision D-E19 et ADR) : port d'`UpdateDestroyedEntities`
-  (`0x80038634`) juste après chaque passe des événements de carte, sous la même porte ; forme la plus fidèle : remise à zéro du
-  mandataire en place sur le gabarit du binaire (état 0, `EntityRefId` −1, drapeaux 0, liens effacés), retiré des listes de mise à
-  jour et de collision, caché ; arc rouge d'abord sur la carte 15 (arrêt attendu en `B[1] @109`, puis jusqu'à `0x11 @119`) ;
-  épingles existantes qui observent un cadavre à re-mesurer (A11 ~406-408, A18 ~278-280, A8 ~113-114 et ~251).
-- ⏳ **R4 — Boîtes** : décision de l'auteur (garder D-E19-28 jusqu'à E14, ou avancer une tranche « porter et lancer »).
+- ⏳ **R3 — Recyclage des entités détruites** (D-E19-45, ADR-0024 ; décision de l'auteur du 2026-10-03 : « normalement le moteur
+  recycle les entités à détruire, fais-le » ; les trois Murggs ont bien disparu à la fin de la scène : seul le recyclage manque).
+  **Faits** **[binaire]** : `UpdateDestroyedEntities` (`0x80038634`) est le premier appel d'`UpdateEntities` (`0x8003B3A0`),
+  sous la porte `g_playerControlFlags & 0x48` ; la boucle principale appelle `RunMapEvents` (`0x8002E100`) puis
+  `UpdateEntities` (`0x8002E108`) ; chaque créneau d'état 4 (`FlagToDestroy`) est recouvert par le gabarit (`0x80134368`, état 0,
+  `+0x48` = −1, écrit en `0x8003B21C`) ; la recherche par id brut (`0x8003C954`) ne teste pas l'état du candidat : un cadavre
+  reste trouvable jusqu'au recyclage. **Moteur** : `World.RemoveEntity` appelle `Entity.Destroy()` (`ToBeRemoved`), et la boucle
+  de `World.Update` retire l'entité et rend ce que tiennent ses composants (ADR-0037 du moteur).
+  **Règles.**
+  - **R3-R1 — Point de recyclage** : dans `AlundraWorldProxy.Update`, juste après **chaque** appel de `RunMapEventsPass` de la
+    boucle des ticks (dans la même porte `!gameplayBlocked`), une passe `RecycleDestroyedEntities` ; ordre par image de la DLL :
+    entités, événements de carte, recyclage, comme le binaire par tick (événements, recyclage, entités) ; un cadavre laissé par
+    un script d'entité est vu par exactement une passe d'événements, un cadavre laissé par un programme de carte disparaît dans
+    la même image.
+  - **R3-R2 — Recyclage** : chaque mandataire d'état `FlagToDestroy` de `_spawnedEntities` (jamais le héros) est remis au
+    gabarit du binaire (`Status` = `Destroyed`, `EntityRefId` = −1), retiré de `_spawnedEntities` (et donc des listes de mise à
+    jour et des collidables reconstruites ensuite), et son entité est rendue au moteur par `World.RemoveEntity` ; une carte
+    sans monde (montages de test) : retrait des listes seulement.
+  - **R3-R3 — Références** : rien d'autre n'est effacé : comme dans le binaire, une référence gardée sur un créneau recyclé voit
+    un créneau à l'état 0 (les lecteurs testent déjà « Loaded, Normal ou Deactivated » : cible de la caméra, entité logique d'un
+    événement, recherches) ; `RidingEntity`/`PlatformEntity` sont recalculés à chaque tick depuis les collidables.
+  - **R3-R4 — Docs** : la portée « invisibilité, pas retrait » disparaît des docs (`AlundraWorldProxy.DestroyEntity`,
+    `AlundraFrameSyncPasses.cs` ~96-107, `AlundraEntitySpawnFactory.cs` ~236) et des limites du plan (~1031-1032, ~1203).
+  **Tâches et tests** (tests d'abord) :
+  - **R3-1 — Recyclage, tests unitaires** : un PNJ d'`EntityRefId` 2 passé en `FlagToDestroy` : `0x2C [2]` rend `Result` 0 avant
+    la passe, 1 après ; après la passe, son `Status` est `Destroyed`, son `EntityRefId` −1, il n'est plus dans
+    `SpawnedEntities` et son entité est marquée `ToBeRemoved` ; avec `PlayerControlFlags & 0x48` non nul, rien n'est recyclé ;
+    sur une image à deux ticks, un cadavre posé par le premier passage des événements est recyclé avant le second. Rouges
+    d'aujourd'hui : `Result` 0 après la passe (aucune passe), `Status` `FlagToDestroy`.
+  - **R3-2 — Arc de la carte 15** (nouveau fichier, vrais préfabs) : héros en case (26,21), z 7, G1650 clair ; la scène des
+    Murggs va au bout : `C[6] 0x2E @712`, `C[7] @777`, `C[8] @890` exécutés, puis `B[1]` `0x05` G1650 `@114`, `0x2E [24] @117`,
+    `0x11 @119`, `PlayerControlFlags & 0x04` à 0 à la fin, dans une limite de 1500 images. Rouge d'aujourd'hui : `B[1]` tourne
+    sans fin en `@108`-`@111` (l'arc s'arrête à la limite sans `0x11 @119`).
+  - **R3-3 — Épingles qui observent un cadavre** (ré-épinglées, cause établie : le recyclage du binaire) : **A11**
+    (`AlundraInoaDayOneArcTests.cs` ~406-408) : le mandataire du record 4 capturé à l'image de `0x19 @451` (`Deactivated`) est
+    `Destroyed` une image plus tard et `EntityByRecord(4)` est nul (détruit par le gestionnaire natif E puis recyclé dans la même
+    image) ; **A18** (`AlundraDay3SceneArcTests.cs` ~276-280) : les blocs d'`EntityRefId` 8 à 10, capturés au départ de l'arc, sont
+    `Destroyed` à la fin et aucun ne reste dans `Entities` ; **A8** (`AlundraInoaAwakeningArcTests.cs` ~113-114, ~251) :
+    `JessStatusAfter185` devient l'état du mandataire de Jess capturé avant sa destruction (`Destroyed`). Les instants exacts sont
+    confirmés par l'audit des valeurs avant l'exécution ; une valeur contredite reste un arrêt.
+  - **R3-4 — Décision et ADR** : D-E19-45 au plan, ADR-0024 (skill `adr`), ligne au tableau, O-E19-47 réglé.
+  Commit : `fix(alundra): recycle destroyed entities through the engine like the binary` (le code, les tests, l'ADR et le plan
+  ensemble, pour que le commit reste vert).
+  **Acceptation.** 1. Tests de R3-1 et R3-2 rouges d'abord, verts après. 2. Code de test existant touché, liste fermée : A11, A18,
+  A8 (leurs seules épingles de cadavre) et les tests de l'harnais d'arcs s'il faut y exposer la capture ; rien d'autre ; les six
+  traces à l'octet (le harnais d'intro ne passe pas par `AlundraWorldProxy.Update`). 3. `Alundra.Tests` sans échec en Release
+  puis en Debug, `cmp` sans écart. 4. Recette (auteur) : la carte 15, le contrôle revient après les Murggs.
+  **Risques.** D'autres attentes hors combat se débloquent (exemple : carte 6, `B[2] @239`, l'attente de Jess) : c'est le
+  comportement du binaire ; une épingle d'arc non recensée qui observe un cadavre rougira : arrêt et diagnostic.
+- ✅ **R4 — Boîtes** : décision de l'auteur du 2026-10-03 : **l'écart D-E19-28 est gardé** jusqu'à E14 (D-E19-46).
 - 🧪 **R5 — Recette** (auteur) : sortir de la chambre de la 163 (le HUD glisse à l'écran) ; la 476 (les pièces apparaissent dans
   le cadre) ; la carte 15 après R3.
 
@@ -5467,6 +5517,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-44 | **Portes manquantes de l'aimantation au sommet** (vérification d'E19.h3, P3) : dans le binaire, l'aimantation (`0x80037848`) n'est atteinte que si le pas XY demande une force (`+0xE4`/`+0xE8` non nuls, sinon saut de `0x800377A0` à `0x80037DC0`) et elle est défaite quand le pas est entièrement bloqué (`0x80037938`-`0x80037948` rendent X, Y et Z) ; la DLL aimante dès que Gravity et `ForceZ == 0`. Émulation : saut sur place sous une boîte dont le bas est à 34 px, le binaire touche le plafond (t1 131072) et atterrit à t4, la DLL s'aimante au sol dès t1. Aucun plafond du corpus n'est à moins de 40 px du terrain. | E19.m |
 | O-E19-45 | **Convention de `PosZ` à l'apparition** (conception d'E19.h1b) : la DLL tient partout `PosZ` = celle du binaire moins 1 (atterrissage à `T`), sauf à l'apparition (`z − ModZ + 1`, fabrique ~657) et dans `0x8A`/`0x64`. Le `+ 1` est perdu au premier tirage de tête d'image pour une entité à contrôleur, ce qui la fait passer à travers un appui exact ; c'est ce que masque aujourd'hui l'appui d'apparition sans portée (O-E19-15). **Question** : passer l'apparition en convention de la DLL (abandonner le `+ 1`, relever à `max(PosZ, T)`), décision transversale à consigner en ADR, ou garder la convention du binaire à l'apparition et la traiter autrement ? Recommandation : convention de la DLL à l'apparition (la fabrique ; `0x8A` et `0x64` à examiner dans la même ADR). | auteur, puis E19.h1b et E19.h2 |
 | O-E19-46 | **Hauteur affichée** (recette du 2026-10-03, 476) : la DLL montre 320 × 236 (`AlundraCameraMath.CameraDisplayHeight` 236, fenêtre 1280 × 944, valeur de la décompilation) ; le binaire fixe ses environnements de dessin et d'affichage à 320 × 240 (`0x800424AC`, `SetDefDrawEnv`/`SetDefDispEnv` 0x140 × 0xF0) : quatre lignes de moins dans la DLL. La fenêtre est aussi redimensionnable sans bandes (`AllowUserResizing`, zoom fixé par monde sur la hauteur) : élargie, l'image ne couvre plus les côtés. **Question** : passer à 240 (1280 × 960), et que faire d'une fenêtre redimensionnée (bandes, zoom recalculé, ou taille fixe) ? | auteur |
+| O-E19-47 | **Entités détruites jamais recyclées** (recette du 2026-10-03, carte 15) : `0x2C` et les autres recherches par id brut trouvent le mandataire d'une entité détruite, qui reste dans la liste avec son `EntityRefId` ; la scène des Murggs devant le manoir de Tarn (`B[1] @108`-`@111`) tourne sans fin et le contrôle ne revient pas ; même blocage hors combat ailleurs (carte 6, `B[2] @239`). R3 (D-E19-45). | E19.r |
 
 ## 4. Hors périmètre
 
