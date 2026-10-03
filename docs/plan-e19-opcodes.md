@@ -409,7 +409,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.d2c | DLL, en deux sous-tranches (§1.2h.3, ADR-0023) : saut scripté et `IsZForceApplied` (D-E19-31), `0x25`, `CollidedWithEntityZ`, eau et glace du héros (D-E19-32), son du décollage (D-E19-44) ; puis saut à la manette, chutes, dessus d'objets et passager (D-E19-39, D-E19-42, D-E19-43) (O-E19-8, O-E19-19) | UJ, UW, A10J, A12, A10, T-A10v, T-C61, A3 ; SJ, UH, traces « spawn » | Jour 3 : le saut de la 10 jusqu'à la 135 ; saut à la Croix, chutes, objets |
 | E19.e | (§1.2i) Test statique : la liste fermée des opcodes sautés atteignables sur les 30 cartes de la chaîne ; arcs des scènes scriptées du jour 3 (176, 179, 135, 178) ; arrivées sans recouvrement ; les villageois de la 185 et 179 `B[1]` exclus (recette, O-E19-33) | A13, A14, A15, A17, A18, TH4 étendu, test statique | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement ; `day3-after-dream` jusqu'à la 183 ; `day4-meeting` jusqu'à la 362 |
 | E19.f ⚠️ (§1.2j, attend l'auteur : Q-F1 à Q-F3) | Boîte de nom et boîte de texte fidèle (D-E19-4) : export du cadre, écrans XAML liés à un view model, cycle de vie de la boîte de nom, pour `0x0D`/`0x5C`/`0xC4` ; **avec E12.c** (D-E19-38) : portraits, machine à écrire, pagination, curseur, blips et voix, `0x4C`/`0x4D`, table partagée `map_alundra` | tests MGDesktop | Les noms s'affichent au-dessus de la boîte, à la place de l'original |
-| E19.g | Effets visuels (D-E19-7) : export des effets par le convertisseur, réserve de 128 effets aux règles du binaire, `0x90`-`0x94`, `0xA0`-`0xA3`, rendu | cartes à effets | L'aura de 476, les vagues de 391 |
+| E19.g ⚠️ (§1.2o, attend l'auteur : Q-G1 à Q-G5) | Effets visuels (D-E19-7) : export des effets par le convertisseur, réserve de 128 effets aux règles du binaire, `0x90`-`0x94`, `0xA0`-`0xA3`, rendu | cartes à effets | L'aura de 476, les vagues de 391 |
 | E19.h (§1.2n : h1, h1b, h2, h3, h4) | Attentes en Z et contacts : `0x20`-`0x23`, `0x26`, `0x47`, `0x48` ; `ForceAdjusted` aligné sur le binaire ; glissement le long des murs ; reste du saut (O-E19-27) — `0x25` et `CollidedWithEntityZ` avancés en E19.d2c (D-E19-31) | ciblés | ciblée |
 | E19.i | ~~Boucles d'animation Loop pour `0x1C`/`0x1D`~~ — **absorbée par E19.c2** (D-E19-18) : le signal de boucle et son pont y arrivent ; le recensement exact est de 208 sites dans 53 cartes, et non 101 dans 30 | — | — |
 | E19.j ✅ (§1.2l, recette J3 en attente) | Événements de carte : réarmement hors zone du binaire (619 enregistrements, O-E19-11) ; aucun effet sur la chaîne | ciblés | ciblée |
@@ -4825,6 +4825,77 @@ recherche, H3-1 gagne UH-APEX-REVERT, le risque disparaît).
 au sud (O-E19-28 b, aussi contre les cellules) demande l'étape 2 (O-E19-42) ; l'image d'A10J `@2462` peut bouger d'un tick
 (retards connus de la DLL).
 
+### 1.2o E19.g — Effets visuels ⚠️ (découverte faite le 2026-10-03 ; programme en attente de l'auteur : Q-G1 à Q-G5)
+
+**Découverte** (2026-10-03, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B les données, le convertisseur,
+l'analyseur, le moteur et la DLL ; notes, rendus et scripts dans le scratchpad de la session, `e19g-disc/A/notes.md` et
+`e19g-disc/B/notes.md`). Faits porteurs **[binaire, données]** :
+- **Réserve** : 128 créneaux de 0x80 octets en `0x80138608`, état 0 (libre) ou 2 (actif) ; le plus petit créneau libre gagne
+  (`0x8003B9C4`) ; réserve pleine : la création rend 0, rien d'autre ; vidée à chaque chargement de carte (`0x8003C1A4`) ;
+  un effet détruit est libéré un tick après sa fin. 84 sites de création : 3 opcodes, 1 au chargement, 80 natifs (30 du
+  joueur, 10 du moteur commun, 39 d'IA et de boss).
+- **Opcodes** `0x90`-`0x94`, `0xA0`-`0xA3` (tailles justes) : un script désigne un effet par l'**index de son enregistrement
+  de carte**, jamais par une poignée ; chaque opcode agit sur tous les créneaux de cet index ; aucun `Result`, aucune
+  suspension ; `0x93`/`0xA2` posent `z = (u16 << 16) + 1`, `0x94` des forces `s16 << 8`, `0xA1`/`0xA3` la première entité de la
+  recherche.
+- **Mise à jour**, une fois par tick logique après les événements de carte et les entités (`0x8003C410`) : liste d'images de
+  3 octets (délai en ticks, ensemble d'images), fin 0 = détruire, 1 = boucler ; quatre modes de position (libre avec forces,
+  attaché, figé, forces avec la profondeur d'une entité) ; ni collision, ni son ; gelée sous `& 0x48` mais toujours dessinée.
+- **Chargement** : les enregistrements d'effets de la carte (12 octets : zone, drapeaux 0x80 table de carte, 0x40 apparition
+  au chargement, index de table, X, Y, Z, animation) ; 544 enregistrements dans 157 cartes, **251 apparaissent seuls au
+  chargement** (effets d'ambiance) ; la décompilation parcourt la mauvaise table et inverse le test de zone (le binaire
+  l'emporte).
+- **Rendu** : la même liste de sprites et le même tri par rangée que les entités (`0x8002DB48`, case `16 × min(depth >> 20, 59)
+  + 6`) ; chaque image est un **quad texturé à quatre sommets libres**, avec sa page, sa palette et son mode de mélange PSX
+  (additif dominant, soustractif, moyenne) et la semi-transparence **par texel** (bit STP de la palette : 609 quads mêlent texels
+  opaques et semi-transparents) ; 63 % des références de quads sont déformées (mises à l'échelle, parallélogrammes,
+  rotations). Deux banques : celle de la carte et une globale (29 sprites).
+- **Données** : enregistrements, tables, images et quads sont déjà dans `data-extracted/data/map_N.json` et
+  `map_alundra.json` ; **aucun pixel d'effet n'est extrait** (1397 quads vides, 40 partiels dans les planches), et le bit STP
+  est perdu dans les palettes JSON. Le convertisseur n'exporte rien d'utile (`hero_effects.json`, copie brute non lue). Le
+  moteur sait un mode de mélange par sprite et une clé de tri, mais **ni quad à sommets libres, ni semi-transparence par
+  texel** (manques à rapporter).
+- **Sur la chaîne, des effets portent le décor** : 476 l'aura de la vision (ellipse additive, trois faisceaux, tourbillon,
+  dans une zone sans tuiles) ; 391 des **pièces du pont arrière et un mât brisé** (pas des vagues), qui comblent la poupe que
+  les tuiles laissent noire puis dérivent pendant le fondu ; 135 **l'autel** qui glisse de 72 px pour découvrir l'escalier ;
+  10 **le rocher** de la grotte qui roule ; Inoa la fumée des cheminées et les **portes ouvertes** ; 174/181 trois éclats
+  blancs ; 163 quatre rais de lumière aux fenêtres. La liste fermée de la chaîne en compte 99 lignes.
+
+**Programme proposé** (chaque étape, un plan relu et vérifié, comme les tranches d'E19) :
+- **G0 — Extracteur** (sous-module de l'analyseur, branche dédiée) : planches d'effets par carte et globale, une case par région
+  et palette, palettes brutes (bit STP gardé) ; puis **ré-extraction** et miroir prouvé (`diff -rq` vide hors les fichiers
+  attendus). Piège connu : le remaster ré-extrait le 2026-09-19 a perdu le décodage du texte (mémoire de session) : ne jamais
+  mirer à l'aveugle.
+- **G1 — Convertisseur** : export des effets en données (animations, images, ensembles d'images, quads à quatre sommets avec
+  page, palette, mode de mélange et masque STP), invariants (544 enregistrements, 251 au chargement, 136 + 29 tables, 363 vraies
+  animations, 83 cases de remplissage écartées), export complet en place et double export.
+- **G2 — Moteur** (sous-module, branche dédiée, ADR) : dessin de quads à sommets libres et mélange PSX par texel (masque STP),
+  inerte tant que la DLL ne pousse rien ; tests du moteur et démo.
+- **G3a — DLL** : la réserve de 128 créneaux aux règles du binaire, l'apparition au chargement, la mise à jour par tick, la
+  poussée par image vers le moteur (patron d'`AlundraBackdropStage`) ; **G3b** : les neuf opcodes et les arcs (la liste fermée
+  perd ses 99 lignes `EFFET`, les arcs A2/A4, A6, A10/A11, T-A10v, T-B9, A10J, A13, A15, A17 vérifient l'état de la réserve).
+- **G4 — Recette** (auteur) : 476 (O-E19-30), 391, 162/169/176/183, 10, 174/181, 135, avec captures du back-buffer.
+
+**Questions à l'auteur** (elles changent le travail ; le programme attend) :
+- **Q-G1 — Ré-extraction** : G0 change l'extracteur de l'analyseur et ré-extrait les données du remaster hors du dépôt
+  (`Alundra Remake/remaster-data-extracted`), puis les mire dans `data-extracted/`. D'accord pour la faire, et dans quel cadre
+  (en séance avec l'auteur, ou par la session seule avec la preuve `diff -rq`) ?
+- **Q-G2 — Entités aussi** : le même travail du moteur rendrait aussi la semi-transparence (7824 quads d'entités, le héros
+  compris, dessinés opaques aujourd'hui) et les quads déformés des entités (environ 16 % des références). Le faire dans E19.g, ou
+  garder les entités telles qu'aujourd'hui ?
+- **Q-G3 — Effets d'ambiance** : les 251 effets qui apparaissent seuls au chargement s'allument d'un coup sur toutes les cartes
+  (fidèle, visible partout), ou d'abord sur les cartes de la chaîne ?
+- **Q-G4 — Effets natifs** : étincelles d'attaque, ramassage de vie et de magie, entrée et sortie de warp, éclats d'ennemis,
+  éclaboussures (40 sites du joueur et du moteur commun, visibles sur toutes les cartes, la chaîne comprise) : dans E19.g, ou
+  avec l'IA native (E14) ?
+- **Q-G5 — Rais de lumière de la 163** : dans l'original, les quatre rais finissent leur animation et disparaissent 11 ticks
+  après l'arrivée, sans doute pendant le fondu d'entrée. Garder, ou corriger comme un défaut de l'original (rais allumés) ?
+
+**Choix de conduite déjà pris** (techniques) : la DLL tient la réserve et la machine d'animation au tick et pousse une liste de
+quads par image (pas de 128 entités du moteur, pas de `.anim2d`) ; la semi-transparence par texel et les quads libres se font
+dans le moteur (rapports de manque, jamais de contournement en amont) ; le tri reprend la formule des entités dans la couche
+triée du monde ; les données d'effets s'exportent en données, pas en images précuites.
+
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
 Chaque arc part d'une carte chargée seule, avec des drapeaux posés et le héros placé. Les valeurs
@@ -5095,7 +5166,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-27 | **Reste du saut, non porté en E19.d2c** : aimantation de 3 px au sommet, plafonds (`0x80036D94`), sons des changements d'animation autres que le décollage du héros (`0x800490FC`), ~~`+0xF8` surchargé pour le type 0x14~~ (fausse piste, découverte d'E19.h : le registre de base vaut `entity + 0x20`) ; tolérance de marche de 3 px en l'air du moteur (le binaire n'en a aucune ; **avancée en E19.d2c2, S6**) ; la descente de 4 px que le moteur aimante (le binaire tombe au-delà de 3 px). **Avancés en E19.d2c (2026-10-02)** : dessus d'entités et règle du passager pour le héros (D-E19-42), son du décollage (D-E19-44). | E19.h |
 | O-E19-28 | **Écarts acceptés du contact entre entités** (E19.d2b) : avance par axe du moteur contre division conjointe du binaire (un mobile qui pousse en diagonale contre une entité glisse ; 5,6 % des pas obliques bloqués finissent jusqu'à 2 px ailleurs) ; `ForceAdjusted` sur contact d'entité 0 à 2 ticks plus tôt à l'est et au sud ; contact au flottant (4 à 8 unités 16.16) ; `XCollisionEntity` écrit pour tout mobile (le binaire le met à 0 dans la moitié des ticks raccourcis d'un mobile sans gravité ou en l'air) ; liste d'un tick de retard pour `0x62`/`0x63` et les créations par script ; ordre de mise à jour par entité au lieu de par créneau ; Z des PNJ en retard d'un tick. | E19.h |
 | O-E19-29 | **Troncature au pixel à l'atterrissage** (relecture d'E19.d2b) : quand un PNJ à contrôleur atterrit sur une nouvelle hauteur de terrain, `EvaluateEntitySupport` (`AlundraEntityScriptProxy.cs:700-735`, `wasAlreadyLanded` faux à chaque changement de hauteur) appelle `PushLogicalPositionToRoot`, et `ResolveLogicalPosition` (`AlundraEntitySpawnFactory.cs:472-479`) ramène X et Y au pixel entier inférieur ; le binaire garde la fraction. Sur une rampe qui change de hauteur à chaque pixel, la vitesse double et le cortège de la 10 `B[13]` (chapitre 18) cale, avec ou sans blocage d'entités. Question à l'auteur : tranche à part. **L'auteur, le 2026-10-02 : plus tard, dans une tranche à part.** Vu aussi sur Giles dans A10J (E19.d2c1 C4) : sur la rampe (30,49), X ramené à 732,0 et une montée de 2,0 px par image, `0x24 @6400` deux images plus tôt ; épinglé dans l'arc avec ce renvoi. | tranche à part, plus tard |
-| O-E19-30 | **Recette T6 d'E19.b (2026-10-02, auteur)** : la scène de la vision de Lars et Melzas (476) s'affiche mal : carte en partie noire derrière un halo elliptique, personnages mal affichés (captures de l'auteur). Pistes connues, non vérifiées : effets de carte non exportés (l'aura de la 476, E19.g, D-E19-7), masque des couches de fond `0xA4` et balancement `0x8E`/`0x8F` sautés (E19.k), autres opcodes d'affichage sautés sur la 476. À établir par une découverte en lecture seule avant de placer la correction. **Reconnaissance du 2026-10-03** : pendant la vision, les arcs A2 et A4 ne laissent sauter que `0x4C`, `0x92`, `0x93` et `0xA2` (`AlundraVisionArcTests.cs:32`) : trois opcodes d'effets (E19.g) ; `0xA4`, `0x8E` et `0x8F` n'y sont pas exécutés ; l'export de la 476 n'a aucune donnée d'effet (D-E19-7 : le convertisseur ne les exporte pas encore). Piste la plus probable : l'aura de la 476, non dessinée (E19.g) ; non vérifié en jeu. | E19.g (à confirmer) |
+| O-E19-30 | **Recette T6 d'E19.b (2026-10-02, auteur)** : la scène de la vision de Lars et Melzas (476) s'affiche mal : carte en partie noire derrière un halo elliptique, personnages mal affichés (captures de l'auteur). Pistes connues, non vérifiées : effets de carte non exportés (l'aura de la 476, E19.g, D-E19-7), masque des couches de fond `0xA4` et balancement `0x8E`/`0x8F` sautés (E19.k), autres opcodes d'affichage sautés sur la 476. À établir par une découverte en lecture seule avant de placer la correction. **Reconnaissance du 2026-10-03** : pendant la vision, les arcs A2 et A4 ne laissent sauter que `0x4C`, `0x92`, `0x93` et `0xA2` (`AlundraVisionArcTests.cs:32`) : trois opcodes d'effets (E19.g) ; `0xA4`, `0x8E` et `0x8F` n'y sont pas exécutés ; l'export de la 476 n'a aucune donnée d'effet (D-E19-7 : le convertisseur ne les exporte pas encore). Piste la plus probable : l'aura de la 476, non dessinée (E19.g) ; non vérifié en jeu. **Découverte d'E19.g (2026-10-03)** : la DLL ne dessine aucun effet ; à la 476, l'aura de la vision est un effet additif dans une zone sans tuiles (noire par construction) ; « le halo elliptique » des captures n'est donc probablement pas l'aura (non dessinée) ; non vérifié en jeu. | E19.g (à confirmer) |
 | O-E19-31 | **Cartes sous-marines 159 et 160** (« Fairy cave underwater ») **[binaire, données]** : gravité 3, `ZViscosity` 256 et octet d'en-tête `+8` (exporté sous le nom `SlideEffectId`) à 1, contre 128, 4096 et 0 sur les 481 autres cartes ; l'octet `+8` décale `ForceX` et `ForceY` avant le déplacement (`srav` en `0x8003675C`) : le héros y va deux fois moins vite et un saut dure 178 ticks. La DLL ne lit pas ce décalage (aucun consommateur). Hors de la chaîne. | à placer |
 | O-E19-32 | **`LoadingMap` (`0x36`) en l'air** **[binaire]** : `MovePlayer` passe en `0x2D` quand le héros arrive au-dessus du sol (`0x800325E8`) ; la DLL laisse `0x36` sans effet (`AlundraPlayerManager.cs:256-263`). La 476 fait arriver le héros à 48 px au-dessus du sol (`0x53` de la 390 `@688`). Non porté en E19.d2c2. | à placer |
 | O-E19-33 | **Scène d'avant le rêve** (179 `B[1]`, jour 3) et rêve 44 : la scène n'est atteignable qu'après le jour 2 (combat, E14) et aucun préréglage ne la couvre ; le rêve demande le combat. Question à l'auteur : faut-il un préréglage `day3-start` (179, case (12,22), z1, G203, G1660, table [162] = 176) et un arc de 179 `B[1]` ? Hors d'E19.e en attendant. **Complément du 2026-10-03** (découverte d'E19.l) : la scène d'avant le rêve (179 `B[1] @183`) retire le livre d'Elna (objet 88), donné à la 117 `@167` ; un préréglage `day3-start` fidèle porterait `NumberOfItems[177]` = 1. | à placer |
