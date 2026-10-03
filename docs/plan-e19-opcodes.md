@@ -209,6 +209,12 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-61** — (2026-10-03, l'auteur) Les **sons d'apparition au chargement d'une carte** se résolvent avec le groupe de
     sons de la **nouvelle** carte : défaut de l'original corrigé (le binaire initialise les entités en `0x8002C3AC` avant de
     poser le nouveau groupe en `0x8004A09C`, ces sons sont donc cherchés dans le groupe de la carte précédente).
+  - **D-E19-62** — (2026-10-03, l'auteur, E19.f2) Le **`0x4D` resté en attente** (un `0x4D` suivi dans le même tick d'un
+    `0x4C` sans le bit 4 se déclenche au `0x4C 4` suivant ; 164 `@350`, 138 `@543` et `@557`) est un défaut de l'original,
+    **corrigé** : le `0x4C` efface le `0x4D` en attente.
+  - **D-E19-63** — (2026-10-03, l'auteur, E19.f2) Le **bit de défilement résiduel** (une attente `\A` relâchée en 1re ou 2e
+    ligne fait sauter au défilement suivant de 3e ligne, dans la même boîte, son attente de 10 images) est un défaut de
+    l'original, **corrigé** : chaque défilement de 3e ligne attend ses 10 images ou un appui.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -5136,7 +5142,7 @@ ses points à concevoir) ; E19.h1 ne garde que les attentes sans question de con
 148, 152, 154, 344, 410, 423 : leur contact en Z dépend de D5) ; une flamme (`0x47`) n'est arrêtée que par un mur tant
 qu'E14 n'écrit pas `HitCounter`.
 
-##### 1.2n.1b E19.h1b1 — Écritures absolues de Z en convention de la DLL (apparition, `0x8A`, `0x64`) ⚠️ (en pause : relecture de clôture REVISE sur `c38f952`, ligne d'ordre « après D5 » devenue ambiguë par le découpage de D5, corrigée ; une nouvelle relecture demande l'accord de l'auteur)
+##### 1.2n.1b E19.h1b1 — Écritures absolues de Z en convention de la DLL (apparition, `0x8A`, `0x64`) ⏳ (relecture de clôture REVISE sur `c38f952`, ligne d'ordre corrigée ; l'auteur demande une relecture neuve, 2026-10-03)
 
 **Décision** : D-E19-59 (l'apparition passe en convention de la DLL, `0x8A` et `0x64` examinés dans la même ADR). E19.h1b est
 coupée en deux : **h1b1** (cette tranche, la convention) puis **h1b2** (`0x20`, `0x22`, `0x23`, Z des entités sans contrôleur,
