@@ -221,6 +221,10 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-64** — (2026-10-03, l'auteur, E19.f2a) L'**écart d'un tick dû à l'ordre du moteur** (les entités avant le mandataire
     du monde) est accepté pour la boîte de texte : pas de datation des ouvertures et des écritures ; les écarts sont nommés par
     origine dans ADR-0029 (F2-R1) et l'oracle en tient compte.
+  - **D-E19-65** — (2026-10-03, la session en mode AUTO, à confirmer par l'auteur, E19.g G0b) Les **planches d'entités passent
+    dans la disposition `Compact`** de l'extracteur (une case par signature) : la disposition `Original` donnait à 2702 des 6909
+    sprites exportés la palette d'un autre (PNJ de la chaîne, Rancune de Melzas, 23 icônes d'objets) ; défaut du portage, corrigé
+    par une ré-extraction (D-E19-51) ; ADR-0031.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -5745,7 +5749,7 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
 au sud (O-E19-28 b, aussi contre les cellules) demande l'étape 2 (O-E19-42) ; l'image d'A10J `@2462` peut bouger d'un tick
 (retards connus de la DLL).
 
-### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55 ; G0 ✅ ; G2a planifiée ; G2b, G1/G3, G4 à planifier)
+### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b planifiée ; G2a en pause, après G0b ; G2b, G1/G3, G4 à planifier)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B les données, le convertisseur,
 l'analyseur, le moteur et la DLL ; notes, rendus et scripts dans le scratchpad de la session, `e19g-disc/A/notes.md` et
@@ -5961,6 +5965,107 @@ dessiné gagne aussi pour l'alpha (déjà le cas pour les couleurs).
   laissé par l'extracteur dans `alundra-datas-analyser/AlundraTools/` (laissé tel quel). Branche de l'analyseur
   `chantier/e19g0-extractor` (`d8d9230`, empilée sur f1), non mergée.
 
+##### 1.2o.1b E19.g G0b — Planches d'entités en disposition compacte (chaque sprite avec sa palette) ⏳ (planifiée)
+
+**Faits** (mesure des palettes `e19g-palette/notes.md` et audit des valeurs `e19g0b-audit/notes.md` du scratchpad, 2026-10-03,
+lecture seule) :
+- Les planches d'entités sont écrites dans la disposition `Original` (défaut de `--spritesheet-layout`,
+  `alundra-datas-analyser/AlundraTools/AlundraDataExtractor/Program.cs:147`) : une case par région de la VRAM ; les variantes de
+  palette d'une même région partagent la case et la dernière peinte gagne. 11 803 des 46 497 images uniques ne sont pas dans leur
+  case. Dans l'export, **2702 des 6909 sprites** posés sur une planche d'entités montrent des pixels qui ne sont pas les leurs (2700
+  en couleur, 2 par le seul bit STP), dans 172 des 364 dossiers d'entités : sur la chaîne, Thyea et Sierra avec la palette de Naomi
+  (21/21 chacune), Kisha avec celle de Fein, Talis avec celle de Bergus, Yustel avec celle de Myra, Bonaire avec celle de Lutas,
+  Gustav avec celle de Yuri, Lyman et Jaylen avec celle de Zane, la Rancune de Melzas presque noire (47 sprites sur 74) ; **23 des
+  85 icônes d'objets** (le petit cœur, 1 Gilda et le grand cristal en aplat `#382800`, le bâton magique brun au lieu de bleu-violet,
+  les tomes de la Terre, de l'Eau et du Feu sur la palette 32) ; le héros : 44 sprites, aucun dans une animation jouée aujourd'hui ;
+  Naomi : aucun. Défaut du portage : l'original lit chaque quad dans la VRAM avec sa propre palette.
+- La disposition `Compact` existe (`GameMapHelper.cs:249-301` : une case par `Signature`, la plus haute d'abord puis par signature,
+  512 de large, 1 px de marge) et passe par la même fonction que l'`Original` (`SaveSpriteSheet`, `:126-168`) : énumération
+  (animations, portrait de l'inventaire, portraits de dialogue, `:391-444`), toile de mots bruts (`DrawSpriteWords`), code alpha
+  (`SaveWordCanvas`, `:197-221`), colonne impaire (`GameMap.cs:224-229`), tamponnage des positions par signature (`:160-167`) ; le
+  choix de la disposition (`:143-148`) ne fixe que les positions : **les règles de G0 tiennent, aucun code de l'extracteur n'est à
+  changer**. Les planches d'effets n'en dépendent pas (les 13 signatures de `map_alundra` à la fois d'entités et d'effets sont des
+  objets distincts, sans position commune).
+- Le convertisseur ne lit que `AtlasX/AtlasY` (`SpriteBankReader.cs:564-565` ; le portrait de l'inventaire `:242-255`) et les écrit
+  dans le `.sprite` (`SpriteWriter.cs:905`) ; les identifiants de sprites viennent de la planche et de la signature (`:822-825`) :
+  inchangés, comme l'index des icônes (`ItemsWriter.cs:155-170`) ; les `.texture` ne portent pas de taille. Aucun test du
+  convertisseur, de la DLL ni du moteur n'épingle une position ou une taille réelle (montages synthétiques) ; la DLL ne lit que la
+  largeur et la hauteur des sprites (`AlundraHudScreen.cs:196-197`, `AlundraInventoryScreen.cs:177-178`) ; le moteur ne se sert de la
+  position que comme rectangle source. Le jeu tourne en HiDef ; 661 PNG exportés ne sont déjà pas en puissance de deux.
+- Simulation de l'audit : les 484 planches d'aujourd'hui re-simulées à 0 pixel près (RGBA) et les 914 789 références d'entités à
+  leur position ; en `Compact`, **6909 des 6909** découpes exportées égalent leur propre décodage ; sur les sprites exportés, les
+  sprites non semi qui portent des texels STP passent de 463 à 0 et les sprites semi sans texel STP de 235 à 4 (C1 de G2a levée).
+
+**Règles.**
+- **G0b-R1 — Disposition** (D-E19-65) : les planches d'entités (`data/map_<n>_spritesheet.png`, `data/map_alundra_spritesheet.png`)
+  sont écrites dans la disposition `Compact` ; le défaut de `--spritesheet-layout` passe à `Compact` (`Program.cs:147`), pour qu'une
+  ré-extraction aux options par défaut ne revienne pas en silence à l'`Original` ; les textes qui disent l'ancien défaut suivent
+  (`GameMapHelper.cs:10-13`, `:126`, `:223-233`, `SiImage.cs:48-53`, la table des options et la phrase qui la précède dans
+  `alundra-datas-analyser/docs/alundra-tiled-map-exporter-usage.md:26-31`) ; aucun autre code de l'extracteur ne change.
+- **G0b-R2 — Ré-extraction et miroir** (D-E19-51, comme G0-R5) : construction Release fraîche de l'extracteur du sous-module ;
+  extraction aux options par défaut (aucune option de disposition passée), chemin du jeu en barres obliques, `--no-launch-profile`,
+  dans un dossier **neuf** `D:\development\repo\Alundra Remake\remaster-data-extracted-e19g0b` ; `diff -rq` contre `data-extracted/` :
+  **exactement** `docs/plan-e19-g0b-annexe/predicted_changes.txt` (903 `M` : les 484 planches d'entités et 419 JSON ; aucun `A`,
+  aucun `D` ; tout autre fichier changé est un arrêt) ; garde du texte (aucun marqueur non décodé) ; puis sauvegardes **hors du
+  dépôt** `D:\development\repo\Alundra Remake\data-extracted.bak-e19g0b` (copie de `data-extracted/`) et
+  `remaster-data-extracted.bak-e19g0b` (l'ancien remaster renommé ; les sauvegardes de G0 restent en place), renommage du dossier
+  neuf en `remaster-data-extracted`, miroir par `robocopy /MIR` lancé depuis PowerShell ; preuve finale `diff -rq` vide. L'exemple
+  de commande de la doc d'usage de l'analyseur (`:40`, chemin à barres obliques inverses, construction Debug, écriture dans le
+  remaster lui-même, `--tiled-tileset-layout original`) n'est jamais copié. Rien n'est supprimé.
+- **G0b-R3 — Export** : après le miroir, export complet en place, sans changer le code du convertisseur ; manifeste avant et après
+  (comme G0-R6) : **exactement** `docs/plan-e19-g0b-annexe/export_predicted_changes.txt` (7014 `M` : les 104
+  `Sprites/Textures/*_spritesheet.png`, 6908 `Entities/**/*.sprite`, `UI/Portraits/sprite_61779762221058.sprite`, `report.json` ;
+  aucun ajout ni retrait) ; dans chaque `.sprite` changé, seuls `location.x` et `location.y` changent ; double export identique hors
+  `report.json`.
+- **G0b-R4 — Convertisseur, commentaire** : la doc de `SpriteWriterInventoryPortraitTests` (`:13-17`) dit que la position (200, 568)
+  est celle du vrai portrait ; elle devient (431, 121) : la doc dit que le montage reprend les valeurs de la disposition `Original`
+  au moment de l'écriture et que l'écrivain recopie la position lue ; aucune valeur ni assertion du test ne change.
+- **G0b-R5 — DLL et moteur** : rien.
+
+**Tâches.**
+- **G0b-0 — Annexe des valeurs** (faite) : `docs/plan-e19-g0b-annexe/` (liste du diff de la ré-extraction, liste du manifeste de
+  l'export, tailles et empreintes RGBA des 484 planches d'entités en `Compact`, positions des 332 portraits, changements par JSON,
+  textures exportées, icônes fausses ; les deux gros fichiers, cases et `.sprite`, restent dans le scratchpad avec leur empreinte).
+- **G0b-1 — Extracteur** (sous-module, branche `chantier/e19g0b-compact` **empilée sur** `chantier/e19g0-extractor` `d8d9230`) :
+  G0b-R1, un commit, construit en Release.
+- **G0b-2 — Ré-extraction, diff et preuves** (G0b-R2, avant le miroir), preuves par scripts du scratchpad qui ne partagent pas le
+  code de l'extracteur : (a) chaque planche d'entités : taille et empreinte RGBA égales à `expected_entity_sheets_compact.tsv` ;
+  (b) **preuve des JSON** : chaque JSON changé égale sa version de `data-extracted/` une fois chaque `AtlasX/AtlasY` de référence
+  d'entité remplacé par sa valeur de `expected_cells_compact.tsv` (empreinte de l'annexe vérifiée d'abord), rien d'autre ; (c) les
+  332 portraits à leur position de `expected_portraits_compact.tsv` ; (d) chaque référence d'entité désigne une case dont les pixels
+  égalent son propre décodage depuis `DATAS.BIN` (0 écart) ; (e) garde du texte.
+- **G0b-3 — Miroir et preuve finale** (G0b-R2).
+- **G0b-4 — Gardes et export** : tests du convertisseur verts sur le nouveau `data-extracted/` (418 ; un test qui bouge est un
+  arrêt) ; G0b-R4 ; export de G0b-R3, manifeste, double export, chaque `.sprite` changé égal à l'ancien hors `location.x/y` et sa
+  nouvelle position égale à `export_sprites.tsv` ; `Alundra.Tests` en Release puis en Debug sur l'export, la Debug en dernier, `cmp`
+  sans écart ; les six traces à l'octet.
+- **G0b-5 — ADR-0031** (planches d'entités en disposition `Compact` ; elle amende la ligne « Original layout » d'ADR-0030, dont le
+  statut gagne « entity sheet layout amended by ADR-0031 ») ; pointeur du sous-module ; le plan.
+- **G0b-6 — Recette** (auteur) : (1) carte 10, Thyea, Sierra et Naomi côte à côte : Thyea en robe verte (`#587050`), cheveux blond
+  pâle, Sierra en robe gris lavande (`#9890a0`), Naomi inchangée en bleu, Kisha aux cheveux blond orangé ; (2) carte 476, la Rancune
+  de Melzas : corps bleu (`#104888`), plus de silhouette noire ; (3) carte 362, Lyman et Jaylen avec leurs propres couleurs ; (4)
+  objets : un cœur tombé rouge (`#883038`), un Gilda doré, le cristal blanc et gris, les trois tomes de couleurs différentes, le bâton
+  magique bleu-violet ; (5) gardes : portrait de l'inventaire identique, le héros (attente, marche) et Naomi inchangés.
+
+**Acceptation.**
+1. G0b-1 construit ; aucun changement de l'extracteur hors G0b-R1.
+2. `diff -rq` de la ré-extraction : exactement `predicted_changes.txt` (903 lignes) ; les cinq preuves de G0b-2 sans écart.
+3. Après le miroir : `diff -rq` vide ; les sauvegardes présentes ; tests du convertisseur verts (418).
+4. Export : manifeste exactement `export_predicted_changes.txt` (7014 lignes), double export, les `.sprite` changés seulement en
+   `location.x/y`, aux positions de `export_sprites.tsv` ; `Alundra.Tests` en Release puis en Debug (aucun test touché), `cmp` sans
+   écart ; les six traces à l'octet.
+5. `git status` du parent : seulement le pointeur du sous-module, le commentaire de G0b-R4, ADR-0031, le statut d'ADR-0030, l'index
+   des ADR, le plan et son annexe.
+
+**Retour arrière** : remettre le pointeur du sous-module ; renommer les dossiers dans l'autre sens (`remaster-data-extracted` →
+`remaster-data-extracted-e19g0b`, `remaster-data-extracted.bak-e19g0b` → `remaster-data-extracted`) et refaire le miroir ; export complet
+en place dont le manifeste égale le manifeste « avant » (hors `report.json`), puis `Alundra.Tests` ; rien n'est supprimé.
+
+**Risques.** Une extraction depuis le mauvais checkout ou une construction périmée ; un `robocopy` lancé depuis Git Bash (chemins avec
+espaces : rien n'est copié) ; l'exemple de la doc d'usage copié (il réécrirait `tiled/` et `BALANCE.BIN.json`) ; les octets des PNG
+ne se prédisent pas (preuve par pixels décodés et tailles) ; textures hors puissance de deux (déjà présentes) ; les couleurs de la
+recette sont des couleurs dominantes d'un sprite chacune, sans les changements de palette faits en jeu.
+
 ##### 1.2o.2 E19.g G2a — Semi-transparence par texel des sprites d'entités (moteur et convertisseur) ⚠️ (en pause : relecture n°1 REVISE et contradiction C1 de l'audit, voir la puce « Relecture et audit »)
 
 **Découpage d'après G0** (2026-10-03) : **G2a** (cette tranche) rend la semi-transparence par texel des sprites d'entités
@@ -6036,7 +6141,10 @@ les variantes de palette d'une même région partagent une case ; 3442 des 6908 
 plusieurs palettes. Si leurs palettes diffèrent en couleur, **les couleurs de ces variantes sont déjà fausses aujourd'hui** (défaut du
 portage, antérieur à G2a) : une mesure est en cours. **Contradiction C2** : aucun sprite d'entité n'est en mode 2 (montage
 synthétique). G2a attend la décision sur C1 (passer les planches d'entités en disposition compacte, une case par signature, dans une
-ré-extraction G0b, avant G2a, ou accepter la limite) ; recommandation : corriger d'abord (G0b).
+ré-extraction G0b, avant G2a, ou accepter la limite) ; recommandation : corriger d'abord (G0b). **Mesure faite** (2026-10-03) :
+2702 des 6909 sprites exportés montrent des pixels qui ne sont pas les leurs ; la disposition `Compact` les remet tous et ramène
+les sprites non semi à texels STP de 463 à 0, les sprites semi sans texel STP de 235 à 4 : G0b planifiée (§1.2o.1b, D-E19-65) ;
+G2a reprendra après G0b, avec la révision de la relecture n°1 et les faits recomptés sur le nouvel export.
 
 **Risques.** Les quads déformés restent dessinés en rectangle jusqu'à G2b ; la teinte du mode 3 (64 au lieu de 63 pour les fonds) ;
 l'alpha du back-buffer réécrit par le mode 0 (captures en processus) ; un sprite partagé par des quads de modes différents est

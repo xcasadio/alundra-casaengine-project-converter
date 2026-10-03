@@ -1,0 +1,9 @@
+sources 484; baseline re-simulation: PNG mismatch 0 px, AtlasX/AtlasY mismatch 0 refs
+entity sheets that change: 484 of 484 (empty sheets 65 -> 512x1)
+unique images 46497; unique images whose own pixels the Original sheet does not hold: 11803
+JSON that change: 419; entity refs 914789, of which AtlasX/AtlasY change 914789
+non-enumerated SiImage objects (neither entity nor effect): 0, non-zero AtlasX/AtlasY 0
+heights: max ('data/map_95_spritesheet.png', 1494); > 2048: 0
+export: .sprite files 7199; on an entity sheet 6909 ({'under_Entities': 6908, 'under_UI': 1}); location changes 6909; new crop == own decode 6909; shown pixels change 2702
+export textures: 104; texture copies equal to their source today: 104
+anomalies: []

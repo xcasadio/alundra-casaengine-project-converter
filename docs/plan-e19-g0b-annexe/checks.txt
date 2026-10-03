@@ -1,0 +1,19 @@
+1. map_alundra signatures in both entity and effect enumerations: 13; with a common AtlasX/AtlasY today: 0 (entity side: one Original position each = True)
+3. story-chain folders: shown-pixel changes / sprites in the folder (sheet):
+   Thyea (épouse): 21 / 21 {'map_10_spritesheet': 21}
+   Sierra (mère): 21 / 21 {'map_10_spritesheet': 21}
+   Kisha (petite sœur): 21 / 26 {'map_10_spritesheet': 26}
+   Rumi (mère des jumeaux): 14 / 21 {'map_10_spritesheet': 21}
+   Talis (fils): 12 / 23 {'map_10_spritesheet': 23}
+   Yustel (vieille voyante): 14 / 21 {'map_10_spritesheet': 21}
+   Bonaire (homme endormi à jamais): 19 / 28 {'map_10_spritesheet': 28}
+   Gustav (ivrogne): 22 / 28 {'map_138_spritesheet': 28}
+   Lyman (mineur): 14 / 22 {'map_6_spritesheet': 22}
+   Jaylen (mineur): 14 / 22 {'map_6_spritesheet': 22}
+   ◆Muruta (griffes) Niv.1: 18 / 63 {'map_1_spritesheet': 63}
+   Rancune de Melzas: 47 / 74 {'map_115_spritesheet': 74}
+   Naomi (épouse courageuse): 0 / 21 {'map_10_spritesheet': 21}
+   Alundra: 44 / 438 {'map_alundra_spritesheet': 438}
+   folders with at least one shown-pixel change: 172 of 364
+4. exported textures 104: new heights min 48 max 1494; pixels before 54525952 after 21201408
+   inventory portrait sprite: {'path': 'UI/Portraits/sprite_61779762221058.sprite', 'sheet': 'map_alundra_spritesheet', 'Signature': '61779762221058', 'old_x': '200', 'old_y': '568', 'new_x': '431', 'new_y': '121', 'w': '48', 'h': '56', 'location_changes': '1', 'new_crop_equals_own_decode': '1', 'shown_pixels_change': '0'}

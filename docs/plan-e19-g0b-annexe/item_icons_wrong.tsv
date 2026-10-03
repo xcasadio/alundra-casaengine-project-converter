@@ -1,0 +1,24 @@
+item	folder	Signature	detail
+7	I07_Bâton magique	34187967471879	own_pal=33	opaque=149	rgb_diff=149	gt24=142	extra=0	writer_pals=35:149	writer_banks=alundra_45:149
+22	I22_Objet 022	35285572329223	own_pal=31	opaque=500	rgb_diff=50	gt24=50	extra=0	writer_pals=34:50	writer_banks=alundra_117:50
+23	I23_Objet 023	35288536064775	own_pal=35	opaque=240	rgb_diff=199	gt24=49	extra=0	writer_pals=30:199	writer_banks=alundra_61:199
+24	I24_Objet 024	35287999193863	own_pal=35	opaque=363	rgb_diff=292	gt24=265	extra=0	writer_pals=31:292	writer_banks=alundra_67:292
+29	I29_Objet 029	35288000765959	own_pal=32	opaque=299	rgb_diff=269	gt24=244	extra=0	writer_pals=34:269	writer_banks=alundra_68:269
+30	I30_Objet 030	35289600368391	own_pal=31	opaque=320	rgb_diff=281	gt24=229	extra=0	writer_pals=30:281	writer_banks=alundra_69:281
+32	I32_Cape de sable	35290146677255	own_pal=34	opaque=362	rgb_diff=314	gt24=246	extra=0	writer_pals=31:314	writer_banks=alundra_70:314
+43	I43_Tome de la Terre (haut)	35289074507271	own_pal=30	opaque=283	rgb_diff=253	gt24=170	extra=0	writer_pals=32:253	writer_banks=alundra_79:253
+44	I44_Tome de la Terre (bas)	35289072934407	own_pal=30	opaque=430	rgb_diff=430	gt24=311	extra=0	writer_pals=32:430	writer_banks=alundra_80:430
+45	I45_Tome du démon d’eau (haut)	35289074508295	own_pal=34	opaque=283	rgb_diff=253	gt24=189	extra=0	writer_pals=32:253	writer_banks=alundra_79:253
+46	I46_Tome du démon d’eau (bas)	35289072935431	own_pal=34	opaque=430	rgb_diff=430	gt24=338	extra=0	writer_pals=32:430	writer_banks=alundra_80:430
+47	I47_Tome du dragon de feu (haut)	35289074508551	own_pal=35	opaque=283	rgb_diff=253	gt24=189	extra=0	writer_pals=32:253	writer_banks=alundra_79:253
+48	I48_Tome du dragon de feu (bas)	35289072935687	own_pal=35	opaque=430	rgb_diff=430	gt24=338	extra=0	writer_pals=32:430	writer_banks=alundra_80:430
+52	I52_Anneau d’ogre	35289609806599	own_pal=35	opaque=158	rgb_diff=133	gt24=119	extra=0	writer_pals=31:133	writer_banks=alundra_84:133
+60	I60_Clé de l’ascenseur	34191707218439	own_pal=34	opaque=169	rgb_diff=164	gt24=143	extra=0	writer_pals=32:164	writer_banks=alundra_103:164
+69	I69_1 Gilda	16565424103943	own_pal=34	opaque=116	rgb_diff=116	gt24=116	extra=0	writer_pals=37:116	writer_banks=alundra_99:116
+70	I70_5 Gildas	16565423054599	own_pal=31	opaque=180	rgb_diff=165	gt24=138	extra=0	writer_pals=30:165	writer_banks=alundra_100:165
+72	I72_30 Gildas	25391444072967	own_pal=26	opaque=208	rgb_diff=208	gt24=189	extra=0	writer_pals=37:208	writer_banks=alundra_102:208
+81	I81_Petit cristal	26459025973767	own_pal=34	opaque=88	rgb_diff=88	gt24=88	extra=0	writer_pals=37:88	writer_banks=alundra_111:88
+82	I82_Grand cristal	26458623320583	own_pal=34	opaque=220	rgb_diff=220	gt24=220	extra=0	writer_pals=37:220	writer_banks=alundra_112:220
+84	I84_Petit cœur	8831541191687	own_pal=36	opaque=38	rgb_diff=38	gt24=33	extra=0	writer_pals=37:38	writer_banks=alundra_114:38
+85	I85_Cœur moyen	17696084730887	own_pal=36	opaque=93	rgb_diff=93	gt24=74	extra=0	writer_pals=37:93	writer_banks=alundra_115:93
+86	I86_Grand cœur	26491775099911	own_pal=36	opaque=237	rgb_diff=237	gt24=185	extra=0	writer_pals=37:237	writer_banks=alundra_116:237
