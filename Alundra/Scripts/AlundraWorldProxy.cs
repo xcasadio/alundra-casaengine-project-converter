@@ -496,6 +496,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     public AlundraCameraSway CameraSway => AlundraCameraSway.Instance;
 
     /// <summary>
+    /// Opcode 0xA4's background layer mask (E19.k2, docs/plan-e19-opcodes.md section 1.2k.2): forwarded to this world's
+    /// backdrop stage, which switches the layers of the attached engine services on or off by identifier.
+    /// </summary>
+    public bool SetBackgroundLayerMask(int mask) => _backdropStage.SetLayerMask(mask);
+
+    /// <summary>
     /// This session's dialogue-flow seam (E12.a, docs/plan-e12-dialogues.md) - the SESSION-scoped
     /// <see cref="AlundraDialogueDirector.Instance"/> (D-C-6/D-E10-6 lesson, see that class's own doc),
     /// NOT a per-world instance. Always non-null: unlike <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/>,

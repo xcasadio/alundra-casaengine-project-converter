@@ -1444,6 +1444,21 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 return 2;
             }
 
+            case 0xA4: // Background layer mask - Script_164_0A4 (E19.k2, docs/plan-e19-opcodes.md section 1.2k.2):
+                       // calls 0x8005D668(v1, v2): the mode of the backgrounds = v1 (only bits 0 and 1 are read by the
+                       // drawing routine, one per layer identifier), the palette bank = v2, and when v2 > 0 a palette
+                       // cycle program starts (NOT ported, O-E19-43: traced Degraded, logged once). Size 3.
+                if (!_worldContext.SetBackgroundLayerMask(v[1] & 3))
+                {
+                    LogDegradedOpcodeOnce(0xA4, "BackgroundLayerMask", "background layers");
+                }
+                else if (v[2] > 0)
+                {
+                    LogDegradedPaletteCycleOnce();
+                }
+
+                return 3;
+
             case 0x8E: // Camera sway start - Script_142_08E @ 0x80040534 (E19.k1, docs/plan-e19-opcodes.md
                        // section 1.2k): Flag = 1, SpeedX = v[1], SpeedY = v[2], LimitX = v[3], LimitY = v[4]
                        // (unsigned bytes); offsets and reach flags untouched. No sway state wired -> degraded
@@ -2749,6 +2764,21 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
         var before = AlundraPlayerManager.GetNumberOfItem(_gameState, id);
         return before < AlundraPlayerManager.AddOneItemIfUnlocked(_gameState, tables, id);
+    }
+
+    /// <summary>Opcode 0xA4 with a palette bank above 0 (O-E19-43): the mask is applied, the palette cycle is not.</summary>
+    private void LogDegradedPaletteCycleOnce()
+    {
+        _lastDispatchKind = EventTraceKind.Degraded;
+
+        // 0x1A4 = 0xA4 with a high marker bit: a key of its own in the once-per-opcode set, apart from the
+        // "no backdrops" degradation of the same opcode.
+        if (_loggedDegradedOpcodes.Add(0x1A4))
+        {
+            Logs.WriteDebug(
+                "AlundraEventProgramRunner: opcode 0xa4 (BackgroundLayerMask) palette bank above 0 "
+                + "(palette cycle not ported, O-E19-43) - mask applied, cycle skipped.");
+        }
     }
 
     private void LogDegradedOpcodeOnce(int opcode, string name, string missingSystem)

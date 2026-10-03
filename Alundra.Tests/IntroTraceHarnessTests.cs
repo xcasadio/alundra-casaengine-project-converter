@@ -336,6 +336,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         0x21, 0x26, 0x47, 0x48, 0x6F, // E19.h1 H1-1 (Z waits and the Z contact reader).
         0x45, 0x46, // E19.h4 H4-R1 (clear and set NoObstacleSlide).
         0x8E, 0x8F, // E19.k1 K1 (camera sway start and stop).
+        0xA4, // E19.k2 K2-2 (background layer mask; the palette cycle of a bank above 0 stays degraded, O-E19-43).
         0x40, 0x41, // E19.d D6 (set program index and clear the state, set sprite program index).
         // E16.a T6 (docs/plan-e16-etat-partie.md, contract item 4): the 23 opcodes of the two rows that start at 0x0D were
         // ported by earlier slices (dialogue, map change, HUD, audio, ...) and already have a Dispatch

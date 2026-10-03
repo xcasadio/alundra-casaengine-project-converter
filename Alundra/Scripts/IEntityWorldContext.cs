@@ -159,6 +159,15 @@ public interface IEntityWorldContext
     AlundraCameraSway? CameraSway => null;
 
     /// <summary>
+    /// Sets the background layer mask of opcode 0xA4 (E19.k2, docs/plan-e19-opcodes.md section 1.2k.2): bit 0 switches
+    /// the layer of identifier 0 on or off, bit 1 the layer of identifier 1 (the identifiers of the binary). Returns
+    /// <see langword="true"/> when this context handles backdrops, <see langword="false"/> ("not handled") otherwise -
+    /// a default interface member, same "degraded, skip" shape as <see cref="CameraSway"/> above, so every EXISTING
+    /// implementer keeps compiling unmodified. <see cref="AlundraWorldProxy"/> forwards it to its backdrop stage.
+    /// </summary>
+    bool SetBackgroundLayerMask(int mask) => false;
+
+    /// <summary>
     /// This session's dialogue-flow seam (E12.a, docs/plan-e12-dialogues.md) - backs opcodes
     /// 0x0D/0x39/0x44/0x50/0x51/0x5C in <see cref="AlundraEventProgramRunner.Dispatch"/>. A default
     /// interface member, same "degraded, skip" shape as <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/>/

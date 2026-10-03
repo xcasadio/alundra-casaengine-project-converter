@@ -102,6 +102,43 @@ internal sealed class AlundraBackdropStage
         _cellularService = service;
     }
 
+    /// <summary>Set once the "no layer service attached" warning of <see cref="SetLayerMask"/> was logged.</summary>
+    private bool _loggedMaskWithoutService;
+
+    /// <summary>
+    /// Opcode 0xA4's mask (E19.k2, docs/plan-e19-opcodes.md section 1.2k.2, rule K2-R2): for each layer identifier of the
+    /// binary <c>id</c> from 0 to 1, <c>SetLayerActive(id, (mask &amp; (1 &lt;&lt; id)) != 0)</c> on the attached scrolling
+    /// and cellular services - the binary tests bit 0 for the layer of identifier 0 and bit 1 for the layer of identifier 1,
+    /// whatever their kind, and a masked layer is frozen and not drawn (engine side, ADR-0049). A layer is addressed by its
+    /// identifier (<c>StableId</c> / <c>LayerId</c>, set from the binary's own id by <see cref="BuildDefinitions"/> /
+    /// <see cref="BuildCellularDefinitions"/>), never by its place in the service: the export drops some layers. A new
+    /// <see cref="Load"/> makes every layer active again (the binary's own <c>SetScrollingMode(3, 0)</c> at map load).
+    /// With no service attached (headless montage) it logs once and still reports handled, so the opcode does not trace
+    /// as degraded for that reason alone.
+    /// </summary>
+    internal bool SetLayerMask(int mask)
+    {
+        if (_service == null && _cellularService == null)
+        {
+            if (!_loggedMaskWithoutService)
+            {
+                _loggedMaskWithoutService = true;
+                Logs.WriteWarning("AlundraBackdropStage: background layer mask set but no layer service attached; ignored.");
+            }
+
+            return true;
+        }
+
+        for (var id = 0; id <= 1; id++)
+        {
+            var active = (mask & (1 << id)) != 0;
+            _service?.SetLayerActive(id, active);
+            _cellularService?.SetLayerActive(id, active);
+        }
+
+        return true;
+    }
+
     /// <summary>Faithful port (E2, docs/plan-e2-rendu.md) of the original engine's own background clear
     /// (<c>AlundraGame.Draw</c>'s <c>GraphicsDevice.Clear(Color.Black)</c>, both for the game's off-screen
     /// render target and the final backbuffer blit -
