@@ -5965,7 +5965,7 @@ dessiné gagne aussi pour l'alpha (déjà le cas pour les couleurs).
   laissé par l'extracteur dans `alundra-datas-analyser/AlundraTools/` (laissé tel quel). Branche de l'analyseur
   `chantier/e19g0-extractor` (`d8d9230`, empilée sur f1), non mergée.
 
-##### 1.2o.1b E19.g G0b — Planches d'entités en disposition compacte (chaque sprite avec sa palette) ⏳ (planifiée)
+##### 1.2o.1b E19.g G0b — Planches d'entités en disposition compacte (chaque sprite avec sa palette) ⏳ (relecture n°1 READY ; en exécution)
 
 **Faits** (mesure des palettes `e19g-palette/notes.md` et audit des valeurs `e19g0b-audit/notes.md` du scratchpad, 2026-10-03,
 lecture seule) :
@@ -6624,7 +6624,7 @@ n'est demandé, et l'original lirait au-delà de la table (point ouvert à consi
   avec un groupe nul, pas avec une carte d'un autre groupe ; P4 la période de l'auto-chaîne n'est pas épinglée. **Reste la recette T6
   de l'auteur.**
 
-### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 planifiée)
+### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 planifiée ; E19.m2 à auditer)
 
 **Recensement** (2026-10-03, lecture seule ; table complète versionnée dans `docs/plan-e19-m-annexe/backlog-2026-10-03.md`, en
 anglais) : 46 points M-01 à M-46, chacun vérifié contre le code de `bafbd5a`, classé (test seul, commentaire ou doc, petit correctif
@@ -6651,7 +6651,7 @@ plafond absolu) ; **G5** moteur (erreur du réglage qui ne nomme pas la clé) ; 
 - **M-47** (ajouté par E19.m0) : `0x5A`/`0x5B` parcourent les entités trouvées de la dernière à la première dans le binaire
   (`0x8003EEF4`, `0x8003EF80`), la DLL de la première à la dernière ; effet sur les modes aléatoires et sur le mode 6 quand le héros est
   trouvé avec d'autres entités ; à recenser (sites en mode 6 avec une recherche qui rend le héros et une autre entité) puis à porter
-  (groupe G4).
+  (groupe G4). Recensé le 2026-10-03 (aucun site réel où l'ordre compte) : E19.m1, avec M-10.
 
 #### 1.2s.1 E19.m0 — Modes aléatoires de `ResolveDirectionFromParam` (M-04) ✅ (relectures n°1 et n°2 REVISE ; resserrée et corrigée ; relecture de clôture)
 
@@ -6717,6 +6717,60 @@ puise à tort, O-E19-48) : le flux de la DLL ne suit déjà pas l'original tirag
   réels de la 167 ; l'ordre de parcours inchangé). Avis reporté à E19.m : P4 des tests qui touchent `AlundraRandom` hors de la
   collection `AlundraRandomStaticStateCollection` (`AlundraPrefabArcSupportTests.cs:19`, `AlundraShipCorridorArcTests.cs:21`),
   antérieur. **Le plantage probable de la 167 (M-04) est corrigé.**
+
+#### 1.2s.2 E19.m1 — Balayage des portails (M-10) et ordre de `0x5A`/`0x5B` (M-47) ⏳ (planifiée)
+
+**Faits** **[binaire]** (question bornée du 2026-10-03, `e19m1-disc/notes.md` du scratchpad, scripts et sorties à côté) :
+- **M-10** : la recherche de portail `0x8003166C` lit la case du héros (`hero+0x120`, `+0x124`), parcourt les 64 créneaux de 12 octets
+  de la table en `*(0x800E4334)+0x42C`, compare en octets signés `X >= e[0]`, `X <= e[2]`, `Y >= e[1]`, `Y <= e[3]` et rend le premier
+  créneau qui contient la case, ou 0 après 64 (`0x800316E8`) ; elle ne lit jamais `+4` (la carte de destination), ni aucun de ses
+  cinq appelants (`0x8002F188`, `0x8002F1D4`, `0x8002F2D0`, `0x8002F378`, `0x8003EB2C`) ; le départ du passage (`0x80031340`) ne se
+  sert de `+4` que comme index de la table des cartes (`0x800313A0`). La DLL rend `null` quand le créneau trouvé a
+  `DestMapId == 0` (`Alundra/Scripts/AlundraPortalTrigger.cs:28`, doc `:13-20`) ; le test
+  `AlundraPortalDetectionTests.cs:79-94` l'épingle. Corpus : 3316 portails dans 483 cartes, aucun de destination 0, aucune coordonnée
+  de 128 ou plus, ordre des créneaux gardé : **sans effet sur les données exportées**.
+- **M-47** : `0x5A` (`0x8003EEF4`) et `0x5B` (`0x8003EF80`) parcourent le tampon `0x8013D8D8` de `buf[n-1]` à `buf[0]` (`0x5B` pose
+  `+0x88` avant l'appel de `0x8003CFC8`) ; la recherche (`0x8003C954`) remplit le tampon dans l'ordre des créneaux (`0x81`, `0x82`,
+  `0x84` partent du créneau 0, le héros ; l'id brut, `0x83` et `0x85`-`0x8B` du créneau 1) ; le mode 6 lit le `+0x8C` du héros, que la
+  boucle écrit ; les modes 4 et 5 tirent au générateur. La DLL (`TurnMatchingEntities`, `AlundraEventProgramRunner.cs:2978-2988`)
+  parcourt de la première à la dernière ; sa liste commence aussi par le héros (`AdoptPlayerPawn` avant les enregistrements,
+  `AlundraWorldProxy.cs:732`, `:750`). Recensement : 1700 sites atteints (`0x5A` 578, `0x5B` 1122) dans 218 cartes ; **aucun site où
+  l'ordre compte** (les deux sites aléatoires, 167 `@144` et `@186`, cherchent par `0x80`, une entité ; les sites en mode 6, 113
+  `@1221` et 394 `@398`/`@408`, par des recherches d'une entité) : sans effet observable sur un site réel.
+
+**Règles.**
+- **M1-R1** : `FindPortalAtTile` rend le premier créneau qui contient la case, quelle que soit sa destination ; la doc cite le binaire.
+- **M1-R2** : `TurnMatchingEntities` parcourt les entités trouvées de la dernière à la première ; la doc cite `0x8003EEF4` et
+  `0x8003EF80` ; la phrase « Known gap » de la doc de `ResolveDirectionFromParam` est retirée.
+
+**Tâches.**
+- **M1-1 — Tests d'abord** (valeurs d'aujourd'hui écrites pour le rouge ; une valeur que la mesure contredit est un arrêt) :
+  - portails : `[P(index 0 : X 5..5, Y 5..5, destination 0), P(index 1 : X 0..10, Y 0..10, destination 200)]`, case (5, 5) → trouvé,
+    `Index` 0, `DestMapId` 0 (aujourd'hui `null`) ; le test `AlundraPortalDetectionTests.cs:79-94` est réécrit en ce sens (son
+    `Assert.Null` de `:93` devient ces assertions, son nom suit) ;
+  - ordre (collection `AlundraRandomStaticStateCollection`, germe posé par le test, contexte de monde factice, deux entités trouvées
+    `[A, B]` par la recherche `0x83`, germe `0xB017C93D`) : `0x5A 0x83 0x80` → A 24, B 0 (aujourd'hui A 0, B 24) ; `0x5A 0x83 0xA0` →
+    A 25, B 6 (aujourd'hui A 6, B 25) ; `0x5B 0x83 0x05 0xA0` → les deux en animation 5, A 25, B 6 ; mode 6 : le héros (direction 4)
+    et X trouvés `[héros, X]` par `0x5A 0x82 0xC3` → héros 7, X 7 (aujourd'hui X 10).
+- **M1-2 — Code** : M1-R1 et M1-R2.
+
+**Acceptation.** 1. Tests de M1-1 rouges d'abord (valeurs d'aujourd'hui), verts après, valeurs écrites tenues. 2. Test existant
+touché, liste fermée : `AlundraPortalDetectionTests.cs:79-94` (réécrit) ; rien d'autre (les tests de `0x5A`/`0x5B`,
+`AlundraEventProgramRunnerTests.cs:1804-1844`, n'ont qu'une entité trouvée). 3. `Alundra.Tests` en Release puis en Debug, la Debug
+en dernier, `cmp` sans écart ; les six traces à l'octet ; la liste fermée de la chaîne inchangée. **Retour arrière** : revert du
+commit (DLL seule).
+
+**Risques.** Aucun effet sur les données exportées ; un futur site aléatoire à plusieurs entités tirerait dans l'ordre du binaire.
+
+#### 1.2s.3 E19.m2 — Couches de cellules comme le binaire (O-E19-48, O-E19-50) ⏳ (à auditer)
+
+Esquisse : générateur `rand()` de la bibliothèque C porté dans la DLL (état 0 au lancement de l'exécutable, jamais réensemencé :
+mot `0x801EEB48` dans la BSS mise à zéro par `0x8008B548` ; `srand` (`0x80081E9C`) sans appelant), branché sur la chute des
+cellules à la place d'`AlundraRandom` ; position `posX = rand() / 102` (0 à 321 ; la formule du moteur, `(u32 × 320) >> 32`,
+`CellularLayerService.cs:397`, ne donne jamais 320 ni 321 : changement du contrat du délégué du moteur) ; les deux écarts
+d'O-E19-50 ; tests du moteur et de la DLL qui bougent (`CellularLayerServiceTests.cs:196-219`,
+`AlundraWorldProxyCellularRandomWiringTests.cs:26-51`, valeurs dans les notes de la découverte). Cartes à cellules de type 2 : 31
+et 391. Audit des valeurs et de la période avant planification ; O-E19-49 à trancher par l'auteur.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
@@ -7093,7 +7147,9 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-45 | **Tranché le 2026-10-03 (D-E19-59 : convention de la DLL à l'apparition, `0x8A` et `0x64` dans la même ADR).** **Convention de `PosZ` à l'apparition** (conception d'E19.h1b) : la DLL tient partout `PosZ` = celle du binaire moins 1 (atterrissage à `T`), sauf à l'apparition (`z − ModZ + 1`, fabrique ~657) et dans `0x8A`/`0x64`. Le `+ 1` est perdu au premier tirage de tête d'image pour une entité à contrôleur, ce qui la fait passer à travers un appui exact ; c'est ce que masque aujourd'hui l'appui d'apparition sans portée (O-E19-15). **Question** : passer l'apparition en convention de la DLL (abandonner le `+ 1`, relever à `max(PosZ, T)`), décision transversale à consigner en ADR, ou garder la convention du binaire à l'apparition et la traiter autrement ? Recommandation : convention de la DLL à l'apparition (la fabrique ; `0x8A` et `0x64` à examiner dans la même ADR). | auteur, puis E19.h1b et E19.h2 |
 | O-E19-46 | **Tranché le 2026-10-03 (D-E19-47 : 320 × 240 à bandes, recalculé en temps réel).** **Hauteur affichée** (recette du 2026-10-03, 476) : la DLL montre 320 × 236 (`AlundraCameraMath.CameraDisplayHeight` 236, fenêtre 1280 × 944, valeur de la décompilation) ; le binaire fixe ses environnements de dessin et d'affichage à 320 × 240 (`0x800424AC`, `SetDefDrawEnv`/`SetDefDispEnv` 0x140 × 0xF0) : quatre lignes de moins dans la DLL. La fenêtre est aussi redimensionnable sans bandes (`AllowUserResizing`, zoom fixé par monde sur la hauteur) : élargie, l'image ne couvre plus les côtés. **Question** : passer à 240 (1280 × 960), et que faire d'une fenêtre redimensionnée (bandes, zoom recalculé, ou taille fixe) ? | auteur |
 | O-E19-47 | **Réglé le 2026-10-03 (R3, D-E19-45, ADR-0024).** **Entités détruites jamais recyclées** (recette du 2026-10-03, carte 15) : `0x2C` et les autres recherches par id brut trouvent le mandataire d'une entité détruite, qui reste dans la liste avec son `EntityRefId` ; la scène des Murggs devant le manoir de Tarn (`B[1] @108`-`@111`) tourne sans fin et le contrôle ne revient pas ; même blocage hors combat ailleurs (carte 6, `B[2] @239`). R3 (D-E19-45). | E19.r |
-| O-E19-48 | **La chute des cellules puise dans le mauvais générateur** (question bornée du 2026-10-03 pour E19.m0) : dans le binaire, la cellule de type 2 (`0x8005CAC8` → `0x8005D05C`) tire sa nouvelle position au `rand()` de la bibliothèque C (`0x80081E6C`, état `0x801EEB48`, constantes 0x41C64E6D/0x3039, rend `(s >> 16) & 0x7FFF`) et pose `posX = rand() / 102` (0 à 321) ; la DLL la branche sur `AlundraRandom` (`AlundraWorldProxy.cs:652` → `CellularLayerService.cs:397`, décision D7), le flux du jeu, que l'original ne touche pas là ; D7 et la décompilation (`GraphicManager.cs:1172`) se trompent. | E19.m (G4) |
+| O-E19-48 | **La chute des cellules puise dans le mauvais générateur** (question bornée du 2026-10-03 pour E19.m0) : dans le binaire, la cellule de type 2 (`0x8005CAC8` → `0x8005D05C`) tire sa nouvelle position au `rand()` de la bibliothèque C (`0x80081E6C`, état `0x801EEB48`, constantes 0x41C64E6D/0x3039, rend `(s >> 16) & 0x7FFF`) et pose `posX = rand() / 102` (0 à 321) ; la DLL la branche sur `AlundraRandom` (`AlundraWorldProxy.cs:652` → `CellularLayerService.cs:397`, décision D7), le flux du jeu, que l'original ne touche pas là ; D7 et la décompilation (`GraphicManager.cs:1172`) se trompent. Confirmé par la découverte d'E19.m1 (un seul tirage, seulement quand `sy >= 240`, `0x8005D310` ; division signée, tronquée vers 0). | E19.m2 |
+| O-E19-49 | **Flux de `rand()` et sauvegardes** (découverte d'E19.m1) : le `rand()` de la bibliothèque C n'a que trois appelants dans le binaire, la chute des cellules (`0x8005D31C`) et l'écriture du bloc de carte mémoire (`0x80061150` dans `0x80060E20`, `0x80061584` dans `0x8006122C` : 36 valeurs `r & 0xFF` à l'offset `0x1FB0` du bloc en `0x8018F078`, avant la somme de contrôle) ; les sauvegardes de la DLL passent par le service du moteur et ne tirent rien. À trancher : tirer 36 valeurs à chaque sauvegarde pour garder l'ordre du flux de la chute des cellules, ou consigner l'écart. | Auteur (E19.m2) |
+| O-E19-50 | **Deux écarts des couches de cellules** (découverte d'E19.m1, relevés, non audités) : les deux routines du binaire dessinent à la position d'avant le bouclage (`0x8005CDB0`, `0x8005D3AC`), le moteur à celle d'après (`CellularLayerService.cs:349-350`, `:403-404`) ; le binaire avance d'un pas quand `|P| <` le compteur d'avant l'incrément, donc tous les `|P| + 2` ticks, le moteur tous les `|P|` ticks (`++Tick >= |P|`, `:303`, `:313`, `:364`, `:371` ; `CellularLayerServiceTests.cs:117-128` épingle la règle du moteur) ; la table des pas et une transformation éventuelle de la période par le convertisseur restent à vérifier. | E19.m2 |
 
 ## 4. Hors périmètre
 
