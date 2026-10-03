@@ -176,10 +176,18 @@ internal static class AlundraCameraMath
     /// sprite slides across the screen on its own (see <see cref="AlundraCameraDirector.UpdateCameraFollow"/>'s own doc).
     ///
     /// <paramref name="needsSnap"/> (map entry, port of <c>g_isCameraScrolling = 1</c>) snaps straight to
-    /// the clamped target BEFORE the loop. No tick is consumed for it: after the snap the state is a FIXED
-    /// POINT of any further step this frame - the target is either already reached (delta 0, increment 0)
-    /// or outside the bounds, in which case the step moves outward and the clamp pins it right back onto
-    /// the same bound - so decrementing would be unobservable.
+    /// the clamped target BEFORE the loop. E19.k1: the snap CONSUMES the first tick of the frame, like the
+    /// binary's load tick (<c>0x8002CD54</c>, which steps the sway but adds no offset): a snap frame of N >= 1
+    /// ticks is the snap tick (one <paramref name="sway"/> step, no offset, no follow step) then N - 1 full ticks,
+    /// i.e. N sway steps and N - 1 follow steps; at 0 ticks, the snap alone. Without a sway nothing observable
+    /// changes: after the snap the state is a FIXED POINT of any further follow step toward the same target
+    /// (the target is computed once per frame) - it is either already reached (delta 0, increment 0) or
+    /// outside the bounds, in which case the step moves outward and the clamp pins it right back onto the same
+    /// bound - so the pre-E19.k1 "no tick consumed" and this are indistinguishable.
+    ///
+    /// <para><paramref name="sway"/> (E19.k1): each full tick first steps the sway
+    /// (<see cref="AlundraCameraSway.Step"/>), then follows with that tick's offset
+    /// (<see cref="ComputeSmoothedCameraTarget"/>). A null <paramref name="sway"/> adds nothing.</para>
     ///
     /// <para><b>Integer invariant.</b> The state is always whole-numbered: the target is built from ints
     /// (<see cref="ComputeCameraLookAtRenderPosition"/>), <see cref="StepCameraScroll"/> adds an integer,
@@ -190,18 +198,28 @@ internal static class AlundraCameraMath
     /// </summary>
     internal static Vector3 AdvanceCameraSmoothing(
         Vector3 previousSmoothedTarget, bool needsSnap, Vector3 lookAtRenderTarget,
-        int ticksThisFrame, int? mapWidthPx, int? mapHeightPx)
+        int ticksThisFrame, int? mapWidthPx, int? mapHeightPx, AlundraCameraSway? sway = null)
     {
         var smoothed = previousSmoothedTarget;
+        var fullTicks = ticksThisFrame;
 
         if (needsSnap)
         {
             smoothed = ComputeSmoothedCameraTarget(smoothed, true, lookAtRenderTarget, mapWidthPx, mapHeightPx);
+            if (ticksThisFrame >= 1)
+            {
+                // The snap tick: its sway step, no offset, no follow step.
+                sway?.Step();
+                fullTicks = ticksThisFrame - 1;
+            }
         }
 
-        for (var tick = 0; tick < ticksThisFrame; tick++)
+        for (var tick = 0; tick < fullTicks; tick++)
         {
-            smoothed = ComputeSmoothedCameraTarget(smoothed, false, lookAtRenderTarget, mapWidthPx, mapHeightPx);
+            sway?.Step();
+            smoothed = ComputeSmoothedCameraTarget(
+                smoothed, false, lookAtRenderTarget, mapWidthPx, mapHeightPx,
+                sway?.OffsetX ?? 0, sway?.OffsetY ?? 0);
         }
 
         return smoothed;
@@ -220,14 +238,21 @@ internal static class AlundraCameraMath
     /// matching <see cref="AlundraCameraDirector.UpdateCameraFollow"/>'s own <c>_tileMapData == null</c> case.
     /// E5.c: one call is one 50Hz LOGIC TICK, no longer one rendered frame - see
     /// <see cref="AdvanceCameraSmoothing"/>, which is what production calls.
+    ///
+    /// <para>E19.k1: <paramref name="swayOffsetX"/>/<paramref name="swayOffsetY"/> are this tick's camera sway
+    /// offsets (<see cref="AlundraCameraSway"/>, in the ORIGINAL's scroll space), added to the scroll BETWEEN the
+    /// follow step and the clamp, like the binary (<c>camX += ((targetX - (camX + 0xA0)) >> 4) + OffsetX</c>, then
+    /// the bounds, the clamped value written back): render <c>X += OffsetX</c> and, the Y axes being opposed
+    /// (<see cref="ToOriginalScrollSpace"/>), <c>Y -= OffsetY</c>. Never added on a snap.</para>
     /// </summary>
     internal static Vector3 ComputeSmoothedCameraTarget(
         Vector3 previousSmoothedTarget, bool needsSnap, Vector3 lookAtRenderTarget,
-        int? mapWidthPx, int? mapHeightPx)
+        int? mapWidthPx, int? mapHeightPx, int swayOffsetX = 0, int swayOffsetY = 0)
     {
         var smoothed = needsSnap
             ? lookAtRenderTarget
-            : StepCameraScroll(previousSmoothedTarget, lookAtRenderTarget);
+            : StepCameraScroll(previousSmoothedTarget, lookAtRenderTarget)
+              + new Vector3(swayOffsetX, -swayOffsetY, 0f);
 
         return mapWidthPx.HasValue && mapHeightPx.HasValue
             ? ClampCameraTargetToMap(smoothed, mapWidthPx.Value, mapHeightPx.Value)

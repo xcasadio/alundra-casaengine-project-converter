@@ -211,8 +211,25 @@ internal sealed class AlundraCameraDirector
     /// </summary>
     internal void UpdateCameraFollow(int ticksThisFrame, AlundraEntityScriptProxy? followedByCamera, int? mapWidthPx, int? mapHeightPx)
     {
+        // E19.k1 (docs/plan-e19-opcodes.md section 1.2k.1, K3/K4): the ONE site of the camera sway step - the
+        // binary steps it once per tick at the head of its camera follow (0x8002CDD8), so exactly
+        // ticksThisFrame steps here, after the map-event passes (the caller's own order). During a warp
+        // transition neither a step nor an offset: the binary leaves its frame loop as soon as the departure is
+        // armed (0x8002C454-0x8002C45C) and its transition loop calls neither the render nor the follow.
+        var sway = AlundraCameraSway.Instance;
+        var swayActive = !AlundraWarpDirector.Instance.IsTransitionInProgress;
+
         if (_debugCamera == null)
         {
+            // No camera (the story arcs): the sway still advances, just before the early return.
+            if (swayActive)
+            {
+                for (var tick = 0; tick < ticksThisFrame; tick++)
+                {
+                    sway.Step();
+                }
+            }
+
             return;
         }
 
@@ -248,7 +265,7 @@ internal sealed class AlundraCameraDirector
         // g_cameraScrollingX/Y assignment (fresh verifier of cc1fc60).
         _cameraSmoothedTarget = AlundraCameraMath.AdvanceCameraSmoothing(
             _cameraSmoothedTarget, snapsThisFrame, target, ticksThisFrame,
-            mapWidthPx, mapHeightPx);
+            mapWidthPx, mapHeightPx, swayActive ? sway : null);
 
         if (ticksThisFrame > 0)
         {
