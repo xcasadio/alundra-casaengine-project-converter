@@ -3843,7 +3843,7 @@ la liste statique (contrôle croisé). Une valeur exacte contredite est un arrê
 **Tâches.**
 
 - ✅ **E0 — Plan.** Ce plan, relu jusqu'à READY.
-- ⏳ **E1 — Test statique des opcodes sautés de la chaîne.**
+- ✅ **E1 — Test statique des opcodes sautés de la chaîne.**
   - **Cartes** : les 30 cartes de la chaîne, 389, 390, 476, 478, 392, 391, 416, 163, 162, 165, 164, 172, 169, 170, 171,
     173, 174, 175, 10, 179, 176, 177, 178, 180, 181, 182, 135, 183, 184, 185 (dix n'ont aucun site sauté : 170, 171, 173,
     175, 177, 184, 389, 390, 416, 478) ; les 7 cartes de combat exemptées, 14, 15, 44, 115, 116, 117, 362. Toutes deux
@@ -3886,6 +3886,7 @@ la liste statique (contrôle croisé). Une valeur exacte contredite est un arrê
     S ; (5) dans A13, la ligne de l'un de ses sites sautés retirée d'une copie de la liste. Chacune fait échouer sa règle,
     et elle seule.
   - Commit : `test(alundra): close the list of the skipped opcodes reachable on the story chain`
+  - Fait le 2026-10-03 : liste `Alundra.Tests/Data/story-chain-skipped-opcodes.tsv` (copie à l'octet des 198 lignes de la découverte, CRLF), helpers `AlundraStoryChainOpcodeAudit.cs` (oracle par le vrai runner, parcours porté de `cfg.py`, règles 1 à 5 en fonctions) et `AlundraStoryChainSkippedOpcodesTests.cs` (20 tests : 6 sur le corpus, dont une par règle 1 à 4, 1 sur l'oracle, 6 sur le parcours, 7 sur les fonctions de règle dont celle de la règle 5 sur une trace fabriquée, sans arc). Aucun fichier de `Alundra/` touché. Le parcours C# redonne exactement les 198 lignes du premier coup (règles 1 et 2 vertes, aucune ré-épingle) ; les tests sont donc verts d'emblée, la preuve qu'ils discriminent est dans les mutations. Mutations, chacune ne fait échouer que sa règle : (1) la ligne 476 `B[2]` `@326` retirée de la liste, seul `Rule1_...` rouge ; (2) une ligne `0x0B` ajoutée pour 179 `B[1]` `@114`, seul `Rule2_...` rouge ; (4) 163 `B[2]` `@297` `0x82` de O à S, seul `Rule4_...` rouge ; (3) la fonction de la règle 3 privée de sa clause d'attente, les deux tests de règle 3 rouges (programme fabriqué avec `0x20`, et chaque opcode d'attente) ; (5) la fonction de la règle 5 privée de son filtre `UnknownSkipped`, seul le test de règle 5 rouge ; la mutation (5) du plan sur A13 n'existe pas encore (A13 vient en E2) : elle est faite sur l'entrée fabriquée. Fichiers rendus à l'octet après chaque mutation. Écarts au plan : le test du corpus s'exécute sur toute la liste (pas de sous-ensemble) ; la liste est trouvée en remontant les dossiers depuis les binaires (pas de copie dans `bin`) ; un export absent fait ÉCHOUER le test (convention des arcs). `Alundra.Tests` 2321 réussis (2301 + 20), 0 échec, en Debug ; garde d'octets à 0 (les quatre traces du héros remises par `git checkout`).
 - ⏳ **E2 — Arcs du jour 3 : A13, A14, A15.**
   - **A13** (176 `B[6]` @468) : arrivée du `0x53 @451` de la 179 en (11796480 ; 36175872 ; 10485760), drapeaux {G203,
     G1651, G1652, G1660} ; fin : `0x53 @533` vers la 179 en (27525120 ; 7864320 ; 1048576), G1653 posé à `@530` ; Giles
