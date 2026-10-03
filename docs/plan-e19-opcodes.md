@@ -4777,7 +4777,7 @@ garde les escaliers. Valeurs du binaire déjà connues : UJ-1b (atterrit au tick
 à s+23), le rebord (chute au tick 5 au lieu de 4). **Avant le plan** : une émulation de la boucle de scène du binaire pour les
 images de TR-V, A10 (Bergus), A12, A10J (Giles).
 
-##### 1.2n.3 E19.h3 — Aimantation au sommet et plafonds du héros ⏳
+##### 1.2n.3 E19.h3 — Aimantation au sommet et plafonds du héros ✅ (recette H3-3 en attente)
 
 **Relecture** (2026-10-03) : REVISE n°1 (le retour arrière de l'aimantation quand une entité occupe la boîte n'avait aucun
 test, alors qu'un héros posé sur un objet garde la porte de l'aimantation ouverte à chaque tick) : corrigé (H3-R1 nomme la
@@ -4826,7 +4826,16 @@ recherche, H3-1 gagne UH-APEX-REVERT, le risque disparaît).
   sans `+ 1` donne exactement ces valeurs) ; une valeur contredite est un arrêt.
   Commit : `feat(alundra): the hero snaps at the top of a jump and stops under ceilings like the binary`
   - Fait le 2026-10-03 : 6 tests dans `AlundraHeroApexAndCeilingTests` ; rouges d'abord, valeurs du plan lues telles quelles (APEX-DOWN tick 12 `PosZ` 2162688, APEX-UP 2981888, SJ-14 tick 4 1114112, UH-12 tick 2 622592, UH-CAP monte sans fin : 125730816 au tick 2) ; UH-APEX-REVERT passe déjà avant (pas de règle d'aimantation à annuler), prouvé par mutation de l'annulation (build, filtre : rouge ; fichier rendu à l'octet) ; verts après, aucune valeur ré-épinglée ; suite Debug 2466/2466 (2460 + 6), six traces inchangées. `TryFindCeiling` dans `EntitySupport`, aimantation `SnapHeroAtApex` après le pas XY (seulement si l'état en l'air n'est pas quitté à ce tick), commentaire « no ceiling » mis à jour. Écart : UH-CAP n'épingle pas `PosZ` au tick 1 (le montage à 1792 px laisse le héros 1 px plus bas à l'entrée de l'état, valeur hors plan) mais vérifie qu'il est sous le plafond avec contact 0 ; aucune autre.
-- ⏳ **H3-2 — Vérification et clôture.** **H3-3 — Recette** (auteur, hors chaîne) : un saut sous une plateforme suspendue (le
+- ✅ **H3-2 — Vérification et clôture.** Vérifié le 2026-10-03 : `Alundra.Tests` 2460 → 2466 (+6), 0 échec, en Release
+  (44 s) puis en Debug (51 s), la Debug en dernier ; `cmp` sans écart (sha256 `c4091898...5902`) ; les six traces à l'octet
+  (une première clôture avait échoué : la DLL déployée était tenue par le jeu ouvert et par Visual Studio ; relancée une fois
+  le jeu fermé). Vérificateur neuf : **CONFIRMED** (règles relues dans le binaire, émulation de SJ-14 refaite, rouges d'avant
+  reproduits, sept mutations du cœur des règles attrapées ; un héros posé sur un objet de 1 à 3 px n'est jamais tiré dedans).
+  Avis reportés : **P3** le binaire n'aimante pas un tick sans force XY ni un tick dont le pas est entièrement bloqué
+  (O-E19-44 ; aucun site connu dans le corpus) ; P4 les bords des fenêtres de l'aimantation, la porte Gravity, le plafond
+  testé avant les entités ne sont pas épinglés ; P4 au plafond la DLL remet aussi `FinalForceZ` à 0, et au plafond absolu
+  le binaire continue de parcourir les entités (hors chaîne).
+- 🧪 **H3-3 — Recette** (auteur, hors chaîne) : un saut sous une plateforme suspendue (le
   héros se cogne la tête), un saut vers un rebord à peine plus haut.
 
 **Acceptation d'E19.h3.**
@@ -5255,6 +5264,12 @@ Réservé aux mesures faites en exécutant les tranches.
 - **Suites** : `Alundra.Tests` **2440 avant la sous-tranche, 2460 après** (+20), 0 échec, en Release (44 s) puis en Debug
   (46 s) ; `cmp` sans écart ; la liste fermée de la chaîne inchangée (140 lignes).
 
+### E19.h3 (2026-10-03)
+
+- **Commits** : plan `5bbfb42`, révision `de4c4c7`, relecture `3beb2b2`, H3-1 `7030fcf`, puis cette clôture.
+- **Suites** : `Alundra.Tests` **2460 avant la sous-tranche, 2466 après** (+6), 0 échec, en Release (44 s) puis en Debug
+  (51 s) ; `cmp` sans écart ; aucun test existant, arc ni trace touché.
+
 ## 3. Points ouverts
 
 | Réf | Sujet | Tranche |
@@ -5302,6 +5317,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-41 | **Sons des changements d'animation** (découverte d'E19.h, surface C, question Q-H1 à l'auteur) : le binaire (`UpdateAnimation` `0x80038BB0`-`0x80038BC8`) joue le son de l'animation à chaque changement d'animation de **toute** entité (nouvelle animation, nouvelle ligne de direction, fin de chaîne, `0x1C`, et l'apparition, `InitializeEntity`) ; identifiant `Sfx`, + 0x100 si le bit 0x20 de l'octet 0xD ; la DLL ne joue que le décollage du héros (R8). Porté, il ajoute des sons dans des scènes de la chaîne : 476 (Melzas, 219 au chargement et à `0x8A @553`, 220 à `0x59 @572`), 392 (la course du héros à `0x5B @64`, son 13), le livre de la 178 et de la 179 (204 deux fois), la boule de fer de la 135 (120 à chaque cycle) ; un héros qui arrive par `0x53` en animation de saut réentend le son du décollage. **Questions** : porter la règle pour toutes les entités maintenant (recommandé : oui, comme l'original) ? garder le son à l'arrivée (recommandé : oui, même porte que les autres sons) ? | auteur, puis une sous-tranche d'E19.h |
 | O-E19-42 | **Résolution exacte des contacts** (découverte d'E19.h, surface B, question Q-H2 à l'auteur) : le binaire divise le pas conjointement en 16.16 (`ComputeXYPosition` `0x80037730`) ; une poussée en diagonale contre un PNJ ou contre la pointe d'un coin arrête net Alundra, et le contact est en unités 16.16 (le dernier demi-pas peut s'arrêter 1 à 3 unités avant à l'est et au sud, `ForceAdjusted` un tick plus tard) ; dans la DLL elle glisse le long, et arrive au contact un tick plus tôt à l'est et au sud (O-E19-28 a à d). Le porter demande un plan moteur (un résolveur horizontal tenu par le jeu) et une ADR ; quelques épingles de contact relationnelles bougent de 0 à 3 unités. D-E19-9 ne promettait que le glissement (E19.h4). **Question** : porter la résolution exacte (étape 2), ou accepter le glissement de la DLL ? (recommandé : étape 1 maintenant, étape 2 seulement si l'auteur veut la sensation exacte). | auteur, puis plan moteur |
 | O-E19-43 | **Cycle de palettes de `0xA4`** (E19.k2) : `0xA4 [b1, b2 > 0]` lance un programme de cycle de palettes (`0x80186790`) dont le décalage (`0x800C490C`) s'ajoute à l'octet de palette des tuiles et des couches cellulaires (`0x8005C574`, `0x8005CDBC`, `0x8005D544`) : la carte entière change de couleurs. Non porté par E19.k2 (trace `Degraded`) ; hors chaîne (carte 471 selon la découverte). Il demande un décalage de palette des tuiles dans le moteur. | plus tard (moteur) |
+| O-E19-44 | **Portes manquantes de l'aimantation au sommet** (vérification d'E19.h3, P3) : dans le binaire, l'aimantation (`0x80037848`) n'est atteinte que si le pas XY demande une force (`+0xE4`/`+0xE8` non nuls, sinon saut de `0x800377A0` à `0x80037DC0`) et elle est défaite quand le pas est entièrement bloqué (`0x80037938`-`0x80037948` rendent X, Y et Z) ; la DLL aimante dès que Gravity et `ForceZ == 0`. Émulation : saut sur place sous une boîte dont le bas est à 34 px, le binaire touche le plafond (t1 131072) et atterrit à t4, la DLL s'aimante au sol dès t1. Aucun plafond du corpus n'est à moins de 40 px du terrain. | E19.m |
 
 ## 4. Hors périmètre
 
