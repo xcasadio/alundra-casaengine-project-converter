@@ -5753,7 +5753,7 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
 au sud (O-E19-28 b, aussi contre les cellules) demande l'étape 2 (O-E19-42) ; l'image d'A10J `@2462` peut bouger d'un tick
 (retards connus de la DLL).
 
-### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a révisée après G0b, relecture n°2 à faire ; G2b, G1/G3, G4 à planifier)
+### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a READY, en exécution ; G2b, G1/G3, G4 à planifier)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B les données, le convertisseur,
 l'analyseur, le moteur et la DLL ; notes, rendus et scripts dans le scratchpad de la session, `e19g-disc/A/notes.md` et
@@ -6101,7 +6101,7 @@ recette sont des couleurs dominantes d'un sprite chacune, sans les changements d
   ponctuels : icônes 84, 69, 82 (rouge, doré, blanc et gris au lieu de l'aplat `#382800`), bâton magique bleu-violet, Thyea et
   Sierra distinctes de Naomi. P4 : le `log.txt` vide non suivi de l'analyseur, recréé par l'extraction (laissé tel quel).
 
-##### 1.2o.2 E19.g G2a — Semi-transparence par texel des sprites d'entités (moteur et convertisseur) ⏳ (révision n°1 après G0b ; relecture n°2 REVISE, révision n°2 ; nouvelle époque, relecture de clôture à faire)
+##### 1.2o.2 E19.g G2a — Semi-transparence par texel des sprites d'entités (moteur et convertisseur) ⏳ (révision n°1 après G0b ; relecture n°2 REVISE, révision n°2 ; nouvelle époque, relecture de clôture READY ; en exécution)
 
 **Découpage d'après G0** (2026-10-03) : **G2a** (cette tranche) rend la semi-transparence par texel des sprites d'entités
 (D-E19-52) : moteur et convertisseur ; **G2b** (quads à quatre sommets libres et piste de coins dans `.anim2d`, changement de format,
@@ -6692,7 +6692,7 @@ n'est demandé, et l'original lirait au-delà de la table (point ouvert à consi
   avec un groupe nul, pas avec une carte d'un autre groupe ; P4 la période de l'auto-chaîne n'est pas épinglée. **Reste la recette T6
   de l'auteur.**
 
-### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ (vérification en cours) ; E19.m3 à auditer)
+### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 à auditer)
 
 **Recensement** (2026-10-03, lecture seule ; table complète versionnée dans `docs/plan-e19-m-annexe/backlog-2026-10-03.md`, en
 anglais) : 46 points M-01 à M-46, chacun vérifié contre le code de `bafbd5a`, classé (test seul, commentaire ou doc, petit correctif
@@ -6844,7 +6844,7 @@ commit (DLL seule).
   où l'ordre compte). Avis P4 : `AlundraTurnOrderTests.cs` définit son propre contexte de monde au lieu de reprendre
   `FakeEntityWorldContext` (duplication de montage seulement).
 
-#### 1.2s.3 E19.m2 — Couches de cellules comme le binaire (O-E19-48, O-E19-50) ✅ (relecture n°1 READY ; exécutée le 2026-10-03 ; vérification fraîche, Release et recette à venir)
+#### 1.2s.3 E19.m2 — Couches de cellules comme le binaire (O-E19-48, O-E19-50) ✅ (relecture n°1 READY ; faite et CONFIRMED le 2026-10-03 ; recette à venir)
 
 **Faits** **[binaire]** (audit du 2026-10-03, `e19m2-disc/notes.md` du scratchpad, scripts `sim` (le modèle du moteur corrigé égale
 le modèle du binaire), `real391`, `census`) ; les routines à période sont le **type 0** (`0x8005CB38`) et le **type 2**
@@ -6953,6 +6953,13 @@ Decisions: see ADR-0032 (moteur : ADR-0050).
 481 : 1,25 à 2 fois plus lentes ; les autres de 1 à 29 %) ; la pluie de la 391 change de positions (et peut atteindre 320 ou 321) ;
 `AlundraRandom` n'avance plus d'environ 3 tirages par tick à la 391 (les sites qui y puisent tirent d'autres valeurs qu'avant) ;
 O-E19-51 à O-E19-53 (autres écarts relevés) hors tranche.
+- ✅ **Vérification d'E19.m2** (2026-10-03) : la session principale a lancé `Alundra.Tests` en Release puis en Debug (2555/2555
+  chacune, la Debug en dernier), `cmp` sans écart, les six traces à l'octet. Vérificateur neuf **CONFIRMED** (binaire relu en
+  `0x8005CC30`-`0x8005CCE8`, `0x8005D1DC`-`0x8005D2A8`, `0x8005D31C`-`0x8005D340` et `0x80081E6C` ; rouges rejoués en remettant les
+  fichiers de production : 13 rouges côté moteur aux valeurs « aujourd'hui », 4 côté DLL ; `CasaEngine.Tests` 2511/2511 ; seule la
+  liste fermée des tests existants a bougé ; ADR-0050 et ADR-0032). Avis P4 : la puce « Fait » compte 55 tests dans
+  `CellularLayerServiceTests` là où le filtre du vérificateur en lance 26 (le nombre de rouges, 13, concorde) ; O-E19-49 n'est
+  consigné que dans ADR-0032 (écart côté DLL, conforme à M2-R4). Reste la recette : la pluie de la 391 et les cellules de type 0.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
