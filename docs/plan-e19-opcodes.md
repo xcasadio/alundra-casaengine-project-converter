@@ -3841,22 +3841,47 @@ la liste statique (contrôle croisé). Une valeur exacte contredite est un arrê
 
 - ⏳ **E0 — Plan.** Ce plan, relu jusqu'à READY.
 - ⏳ **E1 — Test statique des opcodes sautés de la chaîne.**
-  - Liste fermée versionnée (`Alundra.Tests/Data/story-chain-skipped-opcodes.tsv`, nom indicatif) : (carte, créneau,
-    programme, pc, opcode, classe, tranche, niveau), les 198 lignes de la découverte ; la liste d'exemption des cartes de
-    combat (14, 15, 44, 115, 116, 117, 362) dans le test.
-  - Oracle « porté » : **le vrai runner**, pas un miroir écrit à la main : pour chaque opcode de taille connue non nulle, un
-    programme `[op, 0…, 0xFF]` sur un hôte factice (comme `AlundraEventProgramRunnerTests`) ; sauté si la trace rend
+  - **Cartes** : les 30 cartes de la chaîne, 389, 390, 476, 478, 392, 391, 416, 163, 162, 165, 164, 172, 169, 170, 171,
+    173, 174, 175, 10, 179, 176, 177, 178, 180, 181, 182, 135, 183, 184, 185 (dix n'ont aucun site sauté : 170, 171, 173,
+    175, 177, 184, 389, 390, 416, 478) ; les 7 cartes de combat exemptées, 14, 15, 44, 115, 116, 117, 362. Toutes deux
+    écrites dans le test.
+  - **Liste fermée versionnée** : `Alundra.Tests/Data/story-chain-skipped-opcodes.tsv` (nom indicatif), **copie à l'identique**
+    des 198 lignes de `exceptions-core.tsv` de la découverte (scratchpad de la session,
+    `e19e-disc/tools/exceptions-core.tsv`, construit à `e7674be` ; recalculé ligne à ligne par l'auditeur indépendant du
+    2026-10-03 avec son propre parcours) ; colonnes gardées : carte, créneau, index de programme, pc, opcode, classe,
+    tranche, niveau (S scène, A ambiance, O optionnel, X hors chaîne). La clé d'une ligne est (carte, créneau, programme,
+    pc) : deux pc servent deux programmes (164 `@110`, `C[4]` et `C[5]` ; 476 `@112`, `B[4]` et `B[5]`). Le niveau est une
+    donnée de la liste (135 `C[1]` reste O : son `0x58 @1008` est sur le chemin d'après la scène). Si le parcours en C#
+    ne redonne pas exactement ces 198 lignes sur le code d'E19.d2c2 (`103dcb7`), c'est un **arrêt**.
+  - **Oracle « porté »** : le vrai runner, pas un miroir écrit à la main : pour chaque opcode de taille connue non nulle,
+    un programme `[op, 0…, 0xFF]` sur un hôte factice (comme `AlundraEventProgramRunnerTests`) ; sauté si la trace rend
     `UnknownSkipped`.
-  - Parcours : port en C# de celui de la découverte (sauts `0x02`, `0x03`, `0x04`, `0x30`, `0x31`, `0x74`, `0x78` à `0x81`,
-    `0x49`, `0x4B` ; racines de `0x40` ; arrêt sur `0xFF`, une taille nulle ou inconnue ; les deux branches), depuis les
-    événements B et les index A, C, D, E, F des enregistrements de chaque carte (`index & 0x7F`).
-  - Échecs : (1) un site atteint et sauté absent de la liste ; (2) une ligne périmée (opcode devenu porté ou site devenu
-    inatteignable) ; (3) une attente (`0x20` à `0x26`, `0x47`, `0x48`, `0x5F`, `0x9F`) ou une taille nulle ou inconnue
-    atteinte au niveau S ; (4) un prédicat ou une branche au niveau S hors des quatre connus (`0x58 @110` de 164 `C[4]` et
-    `C[5]`, `0x84 @183` de 179, `0x95 @6418` de 10 `C[75]`) ; (5) un site sauté par un arc (`SkippedOrExceeded`) absent de la
-    liste (test d'arcs à part, sur les arcs existants).
-  - Rouge d'abord : une ligne retirée de la liste, puis un opcode marqué porté à tort (mutation du test d'oracle), puis un
-    site inventé : chacun fait échouer la bonne règle.
+  - **Parcours** (port en C# de celui de la découverte, vérifié par l'auditeur contre `Dispatch`) : depuis les événements B
+    de la carte et les index A, C, D, E, F de ses enregistrements (`index & 0x7F`), plus les racines de `0x40` ; sauts suivis
+    `0x02` ; `0x03`, `0x04` (les deux branches) ; `0x30`, `0x31` (décalage en v3/v4) ; `0x74` (v1/v2) ; `0x78` (+3, marque),
+    `0x79` (+3 conditionnel), `0x7B`, `0x7C` (+5), `0x7D` (retour), `0x7E`, `0x7F` (taille 1), `0x80`, `0x81` (taille 3)
+    (`0x7A` n'est pas porté : sauté par sa taille 3) ; `0x49`, `0x4B` (retour à l'entrée du programme) ; `0x00` taille 1,
+    le parcours continue ; arrêt sur `0xFF`, une taille nulle ou inconnue. Les tables F des cartes 177 et 184 ont 16 entrées
+    qui chevauchent le code : ce sont de vrais programmes, le chargeur ne doit pas les rejeter.
+  - **Règles** (chacune une fonction testée à part sur des entrées fabriquées, puis appliquée au corpus) :
+    1. tout site atteint et sauté est une ligne de la liste ;
+    2. toute ligne de la liste est un site atteint et sauté (une ligne périmée échoue : opcode devenu porté ou site devenu
+       inatteignable) ;
+    3. aucun opcode d'attente **sauté** (`0x20` à `0x23`, `0x26`, `0x47`, `0x48`, `0x5F`, `0x9F`) ni opcode de taille nulle
+       ou inconnue n'est atteint sur les 30 cartes, à aucun niveau (l'auditeur n'en trouve aucun) ;
+    4. parmi les lignes de niveau S, les opcodes de prédicat ou de branche sautés, l'ensemble fermé {`0x52`, `0x58`,
+       `0x82`, `0x84`, `0x87`, `0x95`, `0x99`, `0x9A`} (ceux qui écrivent `Result` ou sautent), n'apparaissent qu'aux quatre
+       sites connus : `0x58 @110` de 164 `C[4]` et `C[5]`, `0x84 @183` de 179 `B[1]`, `0x95 @6418` de 10 `C[75]` ;
+    5. **seulement pour les nouveaux arcs A13, A14, A15, A17 et A18, dans leurs propres tests** : toute entrée de leur trace
+       de type `UnknownSkipped` (les types `LoopBudgetExceeded` et `UnknownNoSizeTerminated` sont des échecs à part), sur la
+       carte de l'arc (chaque arc s'arrête à son `0x53`, avant de changer de carte), ramenée à la clé (carte, créneau, index
+       de programme retrouvé par le début de programme, pc), est une ligne de la liste. Les arcs existants ne sont pas
+       retouchés.
+  - **Rouge d'abord, une mutation par règle** (tests permanents des fonctions de règle sur des entrées fabriquées, plus un
+    essai jetable sur le corpus) : (1) une ligne retirée de la liste ; (2) une ligne ajoutée pour un site d'opcode porté
+    (`0x0B`) ; (3) un programme fabriqué qui contient `0x20` ; (4) la ligne 163 `0x82 @297` passée du niveau O au niveau
+    S ; (5) dans A13, la ligne de l'un de ses sites sautés retirée d'une copie de la liste. Chacune fait échouer sa règle,
+    et elle seule.
   - Commit : `test(alundra): close the list of the skipped opcodes reachable on the story chain`
 - ⏳ **E2 — Arcs du jour 3 : A13, A14, A15.**
   - **A13** (176 `B[6]` @468) : arrivée du `0x53 @451` de la 179 en (11796480 ; 36175872 ; 10485760), drapeaux {G203,
@@ -3867,31 +3892,58 @@ la liste statique (contrôle croisé). Une valeur exacte contredite est un arrê
     effacés par Nestus à `@1149`/`@1160` ; héros `0x24 @564` au contact de Septimus (relation exacte de la règle d'E19.d2b),
     près de (27525120 ; 21757952) (± 2,5 px).
   - **A15** (176 `B[7]` @544) : arrivée du `0x53 @568` de la 179 ; drapeaux {G203, G1651 à G1654, G1660} ; fin : `0x53 @600`
-    vers la 10 en (16515072 ; 61341696 ; 0) ; drapeaux temporaires T0 à T3 posés et effacés dans l'ordre (programme `B[7]`,
-    Septimus `C[1]`, Giles `C[2]`) ; héros `@599` près de (266 ; 231) px (± 2,5 px).
+    vers la 10 en (16515072 ; 61341696 ; 0) ; drapeaux temporaires posés : T0 par `B[7]` `@561`, T2 par Septimus (rec5
+    `C[1]`) `@812`, T1 et T3 par Giles (rec6 `C[2]`) `@850` et `@860` ; attentes satisfaites : Septimus attend T0 `@776` et
+    T1 `@792`, Giles T2 `@853`, `B[7]` T3 `@588` ; aucun programme ne les efface (ils tombent tous à l'arrivée sur la 10,
+    `InstallForMapEntry`) ; héros `@599` près de (266 ; 231) px (± 2,5 px ; il passe à 0,625 px de Giles : une
+    troncature d'O-E19-29 sur un PNJ peut faire basculer cette marge, ce serait un arrêt).
   - Commit : `test(alundra): arcs of the day-3 scenes of maps 176 and 179`
 - ⏳ **E3 — Arcs de la 135 et de la 178 : A17, A18.**
-  - **A17** (135 `B[14]` @912, `B[2]` @216, `C[1]` @960) : arrivée du `0x53 @2463` de la 10 en (30670848 ; 54001664 ;
+  - **A17** (135 `B[14]` @912, `B[2]` @216, `C[1]` @960, et `B[1]` @136 qui active Ronan rec0 sous G203 et fait apparaître
+    Giles rec28 par `0x8A @159`) : arrivée du `0x53 @2463` de la 10 en (30670848 ; 54001664 ;
     1048576), drapeaux {G203, G1654} ; fin : `0x11 @1115` (`C[1]`), G14 posé à `@1120`, G1655 posé à `@953` (T1 avant G1655) ;
     le choix de la boîte 129 accepté (T0 posé par Yarn) ; héros `0x24 @942` au contact de Ronan ; blocs rec8 à rec10 détruits.
   - **A18** (178 `B[1]` @104, `C[6]` @512) : arrivée par le portail 176.7 en (60555264 ; 26738688 ; 0), direction 16,
-    drapeaux {G203, G1654, G1655} ; deux phases (fin de la première à `0x11 @543`, puis le héros posé en (948 ; 232) px pour
-    la scène `@598`) ; fin : `0x11 @724`, G204 posé à `@721`, G203 effacé à `@718`, `0x38 @708` et `@713` (tables [176] et
+    drapeaux {G203, G1654, G1655} ; deux phases (fin de la première à `0x11 @543`, puis `PlaceHero(948, 232, 16)` : une entrée choisie
+    dans la boîte du `0x3B @576 [39,40,13,15,1,1]`, case (39,14) de hauteur 1, non une mesure) ; le z 0 de l'arrivée vient
+    de l'enregistrement du portail et `ClampToGround` le remonte : z n'est pas épinglé après l'adoption ; fin : `0x11 @724`, G204 posé à `@721`, G203 effacé à `@718`, `0x38 @708` et `@713` (tables [176] et
     [162] = 183) ; `@694` et `@697` (marge nulle) non épinglés.
   - Commit : `test(alundra): arcs of the day-3 scenes of maps 135 and 178`
-- ⏳ **E4 — Arrivées.** TH4 étendu aux arrivées de la chaîne sans vérification : 178 → 183 (portails 0, 1, 2 de la 178, table
-  [176] = 183), 179 → 176 (A13), 176 → 179 (A14), 176 → 10 (A15), 135 → 10 : à la première image après l'adoption, la règle
-  du binaire ne trouve aucune entité qui recouvre le héros. Commit : `test(alundra): no overlap at the arrivals of the day-3 chain`
+- ⏳ **E4 — Arrivées.** TH4 (`AlundraEntityContactArcTests.cs`) gagne une ligne par arrivée de la chaîne qui n'en a pas : à
+  la première image après l'adoption, la règle du binaire ne trouve aucune entité qui recouvre le héros. Départs (toutes les
+  valeurs tracées aux octets par l'auditeur du 2026-10-03) :
+  - 179 → 176 : carte 176, `0x53 @451` de la 179, (11796480 ; 36175872 ; 10485760), drapeaux {G203, G1651, G1652, G1660} ;
+  - 176 → 179 : carte 179, `0x53 @533` de la 176, (27525120 ; 7864320 ; 1048576), drapeaux {G203, G1651, G1652, G1653, G1660} ;
+  - 179 → 176 : carte 176, `0x53 @568` de la 179, (8650752 ; 35127296 ; 10485760), drapeaux {G203, G1651 à G1654, G1660} ;
+  - 176 → 10 : carte 10, `0x53 @600` de la 176, (16515072 ; 61341696 ; 0), drapeaux {G1654, G203} (ceux d'A10J) ;
+  - 10 → 135 : carte 135, `0x53 @2463` de la 10, (30670848 ; 54001664 ; 1048576), drapeaux {G203, G1654} ;
+  - 135 → 10 : carte 10, portail 135.0 (case (19,52) de la 135 vers la case (30,48) de la 10, z 0), (47972352 ; 50855936 ;
+    0), drapeaux {G203, G1654, G1655, G14} ;
+  - 176 → 178 : carte 178, portail 176.7 (case (2,22) vers (38,25), z 0, direction 16), (60555264 ; 26738688 ; 0), drapeaux
+    {G203, G1654, G1655}.
+  Les arrivées sur la 183 (portails 0, 1, 2 de la 178) n'ont pas de scène : elles restent à la recette E6.
+  Commit : `test(alundra): no overlap at the arrivals of the day-3 chain`
 - ⏳ **E5 — Vérification et clôture**, comme C6 d'E19.d2c1.
 - ⏳ **E6 — Recette de bout en bout** (auteur) : nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement ; F9 sur
   `day3-after-dream` jusqu'au retour libre dans la 10, puis la 178 et la 183 à la main ; F9 sur `day4-meeting`, parler aux
   quatre villageois de la 185, jusqu'à l'arrivée sur la 362.
 
+**Relecture d'E19.e (2026-10-03).**
+- Plan-verifier frais et auditeur des valeurs indépendant, sur `ace3aa7` : **REVISE**. Bloquants : la liste des 30 cartes
+  et la source des 198 lignes n'étaient pas écrites ; les règles 3 à 5 du test statique n'étaient ni définies ni éprouvées ;
+  les nouvelles lignes de TH4 n'avaient pas de départ ; les drapeaux T0 à T3 d'A15 étaient dits effacés par des programmes
+  (aucun ne le fait). Corrigés : E1 réécrit (cartes, source, clé, ensemble fermé de la règle 4, règle 5 limitée aux nouveaux
+  arcs, une mutation par règle), A15, A17 (`B[1]`), A18 (`PlaceHero` avec z, z de l'arrivée non épinglé), E4 (sept départs
+  tracés, la 183 laissée à la recette).
+- L'auditeur a recalculé la liste (198 lignes, ligne à ligne), les comptes par opcode, l'absence d'attente, les quatre sites
+  S connus, et toutes les valeurs exactes d'A13, A14, A17 et A18 : justes.
+
 **Acceptation d'E19.e.**
 1. Le test statique est vert avec exactement la liste fermée, et rouge sur chacune des mutations d'E1.
 2. A13, A14, A15, A17, A18 vont au bout avec les valeurs exactes écrites et les positions dans leurs tolérances ; leurs
    sautés sont dans la liste statique ; aucune valeur contredite.
-3. Code de test existant touché : TH4 (`AlundraEntityContactArcTests.cs`, nouvelles lignes d'arrivée) ; rien d'autre.
+3. Code de test existant touché : TH4 (`AlundraEntityContactArcTests.cs`, nouvelles lignes d'arrivée de E4) ; rien d'autre
+   (les nouveaux tests et la liste versionnée sont des fichiers neufs ; les arcs existants ne sont pas retouchés).
 4. `Alundra.Tests` sans échec en Release puis en Debug, la DLL Debug déployée en dernier, `cmp` sans écart.
 5. Recette E6 faite par l'auteur.
 
@@ -3903,8 +3955,8 @@ la liste statique (contrôle croisé). Une valeur exacte contredite est un arrê
   tranche par une mesure et une cause, jamais par une ré-épingle sans cause.
 - Contacts à 0 px (176, 178, 179) et marge nulle de `@697` sur la 178 : sensibles à toute différence d'arrondi.
 - O-E19-29 (troncature au pixel à l'atterrissage d'un PNJ) n'est pas vérifiée sur 176, 178, 179 et 135.
-- Les drapeaux posés par Yarn à l'ouverture d'une boîte (T0 de la 135, T900 de la 179, T200/T201 de la 164) dépendent du
-  dialogue actuel ; E19.f (boîte fidèle) devra les garder.
+- Les drapeaux posés par Yarn pendant une boîte (T0 de la 135, après la page 0 du nœud `M135_S001` ; T900 de la 179 ;
+  T200/T201 de la 164) dépendent du dialogue actuel ; E19.f (boîte fidèle) devra les garder.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
