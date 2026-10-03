@@ -5328,7 +5328,7 @@ ses points à concevoir) ; E19.h1 ne garde que les attentes sans question de con
 148, 152, 154, 344, 410, 423 : leur contact en Z dépend de D5) ; une flamme (`0x47`) n'est arrêtée que par un mur tant
 qu'E14 n'écrit pas `HitCounter`.
 
-##### 1.2n.1b E19.h1b1 — Écritures absolues de Z en convention de la DLL (apparition, `0x8A`, `0x64`) ✅ (faite le 2026-10-03, tests verts ; reste la vérification indépendante et la recette de l'auteur)
+##### 1.2n.1b E19.h1b1 — Écritures absolues de Z en convention de la DLL (apparition, `0x8A`, `0x64`) ✅ (CONFIRMED le 2026-10-03 ; recette H1b1 en attente)
 
 **Décision** : D-E19-59 (l'apparition passe en convention de la DLL, `0x8A` et `0x64` examinés dans la même ADR). E19.h1b est
 coupée en deux : **h1b1** (cette tranche, la convention) puis **h1b2** (`0x20`, `0x22`, `0x23`, Z des entités sans contrôleur,
@@ -5450,6 +5450,14 @@ pour D5b, pas pour h1b1.
 
 **Risques.** Une pile qui s'effondre sans l'appui d'apparition (tests de H1b1-1, arrêt) ; une épingle hors liste ; le harnais
 d'intro, qui relit la fabrique (garde des six traces).
+- ✅ **Vérification d'E19.h1b1** (2026-10-03) : `Alundra.Tests` 2510/2510 en Release puis en Debug, la Debug en dernier ; `cmp` sans
+  écart ; les six traces à l'octet. Vérificateur neuf : **CONFIRMED** (binaire relu : apparition `0x80039EA0`-`0x80039EF0`, `0x64`
+  `0x8003F668`-`0x8003F670`, `0x8A` `0x80040318`-`0x80040320` ; rouges d'avant rejoués sur le code d'avant, 34 au lieu de 33 et 1 au
+  lieu de 1048576, gardes de piles vertes avant ; mutation `+1` remis dans `0x64` attrapée ; seule la liste fermée a changé). Écarts
+  déclarés acceptés. Avis : P4 commentaires périmés sur l'appui d'apparition (`AlundraWorldProxy.cs:1763-1765`,
+  `AlundraEntityScriptProxy.cs` ~742-747) → E19.m ; écart préexistant, hors de la tranche : le binaire écrit `TerrainHeight` à
+  l'apparition (`0x80039EF8`), la DLL au premier tick seulement, si bien que `0x8D` (`PosZ <= TerrainHeight + 1`,
+  `AlundraEventProgramRunner.cs:1808`) lit 0 avant le premier tick d'une entité → E19.h1b2.
 
 ##### 1.2n.1c E19.h1b2 — `0x20`, `0x22`, `0x23`, Z des entités sans contrôleur ⏳ (esquisse, après E19.h1b1)
 
@@ -6482,6 +6490,12 @@ Réservé aux mesures faites en exécutant les tranches.
   `b386132` (ADR-0027), `a7e57cf` ; puis cette clôture.
 - **Suites** : `CasaEngine.Tests` 2490 ; convertisseur **417 avant, 418 après** ; `Alundra.Tests` **2504 avant, 2505 après** (3 retirés,
   4 ajoutés) ; export en place : 3 fichiers changés, comme prévu.
+
+### E19.h1b1 (2026-10-03)
+
+- **Commits** : plan et relectures jusqu'à `b842c7a` ; `b381de8` (code, tests, ADR-0026, plan) ; puis cette clôture.
+- **Suites** : `Alundra.Tests` **2505 avant, 2510 après** (+5 : la plateforme de la 83, le relevé au terrain, trois gardes de piles), 0
+  échec, en Release puis en Debug ; `cmp` sans écart.
 
 ## 3. Points ouverts
 
