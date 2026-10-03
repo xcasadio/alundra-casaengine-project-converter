@@ -385,7 +385,8 @@ reproductible au chiffre près.
   fois (règle « lire le journal d'abord ») et c'est un **arrêt** §4 en production. Chaque frame,
   `PushFrame(ticks, camera)` = `service.SetFrame(scroll.X, scroll.Y, ticks, Target)` — **au même site**
   que `UpdateAndDrawBackdrop` aujourd'hui (`AlundraWorldProxy.cs:1520`), inconditionnel, hors porte de
-  gel, après la caméra résolue, avant le fondu ; ne dépend ni de `world.Game`, ni de `HasContent`, ni du
+  gel, après la caméra résolue, avant le fondu (E19.m4, D-E19-67, ADR-0034 du parent : `ticks` vaut 0 pendant
+  le départ d'un passage, la trame est toujours poussée) ; ne dépend ni de `world.Game`, ni de `HasContent`, ni du
   nombre de couches. `ticks` vient de `LogicTicksThisFrame` (plancher collant compris) ; `scrollX/Y` de
   `ToOriginalScrollSpace(Target)` ; `cameraTarget` = `ResolvedCamera.Target` (poussé plutôt que lu sur
   `ActiveView` : site de production pinable headless, aucune vue requise). Le composant consomme l'état

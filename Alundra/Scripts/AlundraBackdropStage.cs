@@ -465,8 +465,10 @@ internal sealed class AlundraBackdropStage
     /// <see cref="ScrollingLayerService.SetFrame"/> alongside <paramref name="ticksThisFrame"/> and the
     /// UNCONVERTED <c>Target</c> (still needed engine-side to place the covering quads in world space).
     /// Called from <c>AlundraWorldProxy.Update</c> at the exact site the retired
-    /// <c>UpdateAndDrawBackdrop</c> used to occupy (D-E9b-2, S2): unconditional, outside the gameplay
+    /// <c>UpdateAndDrawBackdrop</c> used to occupy (D-E9b-2, S2): every frame, outside the gameplay
     /// freeze gate, independent of <c>world.Game</c> or of whether this world has any layers at all.
+    /// E19.m4 (D-E19-67, ADR-0034): the caller passes 0 ticks while a warp departure is in progress (the binary's
+    /// transition loop never reaches its backdrop driver); the frame itself is still pushed.
     ///
     /// D-E9d: also pushes the SAME <paramref name="ticksThisFrame"/>/scroll/target to
     /// <see cref="_cellularService"/> (independently a no-op while <see langword="null"/>) - this is the

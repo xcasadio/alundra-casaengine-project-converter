@@ -2190,10 +2190,17 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // delta (a)), and the resolved camera is passed in rather than re-looked-up (delta (a), the one
         // named for S3) since it is _cameraDirector's own state.
         // E9.b (D-E9b-2): PushFrame replaces UpdateAndDrawBackdrop at this same site - same position in
-        // frame order (right after the camera resolve, before the fade push below), still unconditional
-        // and still outside the gameplay freeze gate: it depends on neither world.Game nor HasContent.
+        // frame order (right after the camera resolve, before the fade push below), still outside the gameplay
+        // freeze gate (a dialogue or the inventory does not stop the backdrops: the binary's RenderScene keeps
+        // running under them): it depends on neither world.Game nor HasContent.
+        // E19.m4 (docs/plan-e19-opcodes.md section 1.2s.5, M4-R1, D-E19-67, ADR-0034): the frame is always pushed (camera
+        // target and scroll), but with 0 ticks while a warp departure is in progress, from the arming frame to the end
+        // of the fade: the binary's transition loop (0x8002C490-0x8002C4C0) never calls RenderScene, the only road to the
+        // backdrop driver, so nothing of the backdrops advances there. Same predicate as the camera sway gate.
         _backdropStage.ApplyOriginalBackgroundClearColorOnce(_world);
-        _backdropStage.PushFrame(ticksThisFrame, _cameraDirector.ResolvedCamera);
+        _backdropStage.PushFrame(
+            AlundraWarpDirector.Instance.IsTransitionInProgress ? 0 : ticksThisFrame,
+            _cameraDirector.ResolvedCamera);
 
         // E10.b (docs/plan-e10-fondu.md, §1.6/D-E10-8): the fade pass - positioned here purely for
         // frame-order consistency with the camera/backdrop block above, NOT because it depends on
