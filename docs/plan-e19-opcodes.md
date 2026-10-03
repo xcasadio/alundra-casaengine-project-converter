@@ -5069,7 +5069,7 @@ quads par image (pas de 128 entités du moteur, pas de `.anim2d`) ; la semi-tran
 dans le moteur (rapports de manque, jamais de contournement en amont) ; le tri reprend la formule des entités dans la couche
 triée du monde ; les données d'effets s'exportent en données, pas en images précuites.
 
-### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ⏳ (R1, R2, R3, R4 ✅ ; R5 recette de l'auteur)
+### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 
 **Constat de l'auteur** (conversion relancée, DLL reconstruite) : contacts avec les PNJ bons ; sons et musique bons ; boîtes de
 dialogue toujours celles de MGUI ; scène de Lars et Melzas toujours fausse, halo plus petit que la fenêtre ; on traverse les
@@ -5244,6 +5244,15 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
     journal (`AssertNoUnexpectedError`). Docs « invisibilité, pas retrait » mises à jour (`AlundraWorldProxy.DestroyEntity`, `AlundraFrameSyncPasses.cs`,
     `AlundraEntitySpawnFactory.cs`, limites du plan). Aucun écart au plan, hormis le périmètre de la limite des `0x8A` (la réutilisation des créneaux
     libérés reste absente).
+- ✅ **Vérification de R3** (2026-10-03) : relecture READY à la deuxième passe, exécution `dbcd680` ; `Alundra.Tests` 2483 → 2491
+  (+8), 0 échec, en Release (48 s) puis en Debug (48 s), la Debug en dernier ; `cmp` sans écart (sha256 `c7a3f0dc...cb45`) ; les six
+  traces à l'octet. Vérificateur neuf : **CONFIRMED** (chaîne du binaire relue : `0x8002E100` puis `0x8002E108`, la porte relue en
+  `0x8003B38C`, `0x80038634` sur 64 créneaux, gabarit ; six mutations de production, toutes attrapées ; rouge d'avant reproduit :
+  `C[8] 0x2E @890` exécuté vers l'image 305, `B[1]` bloqué en `@108` jusqu'à la limite ; aucune référence périmée ni erreur au
+  journal sur 300 images de plus et 120 images de marche avec Carré ; seule la liste fermée des tests a changé). Écart signalé
+  par l'exécuteur : la passe vit dans le bloc `PlayerEntity != null`, comme les événements de carte (un monde sans héros ne
+  recycle rien). Avis reportés à E19.m : P4 les tests de recyclage ne remettent pas l'état de session à zéro entre eux ; P4 le
+  verrou d'interaction du héros pourrait viser une entité recyclée (non reproduit, chemin déjà présent avant R3).
 - ✅ **R4 — Boîtes** : décision de l'auteur du 2026-10-03 : **l'écart D-E19-28 est gardé** jusqu'à E14 (D-E19-46).
 - 🧪 **R5 — Recette** (auteur) : sortir de la chambre de la 163 (le HUD glisse à l'écran) ; la 476 (les pièces apparaissent dans
   le cadre) ; la carte 15 après R3.
@@ -5510,6 +5519,12 @@ Réservé aux mesures faites en exécutant les tranches.
 - **Commits** : enquête `3fe4640`, R1 `05072ef`, R2 `c56b87f`, puis cette clôture.
 - **Suites** : `Alundra.Tests` **2474 avant, 2483 après** (+9 : R1 6, R2 3), 0 échec, en Release (47 s) puis en Debug (48 s) ;
   `cmp` sans écart.
+
+### E19.r, R3 (2026-10-03)
+
+- **Commits** : plan `8c9590a`, révision `672e3ef`, R3 `dbcd680` (code, tests, ADR-0024, plan), puis cette clôture.
+- **Suites** : `Alundra.Tests` **2483 avant, 2491 après** (+8 : 7 tests de recyclage, l'arc de la carte 15), 0 échec, en Release
+  puis en Debug ; `cmp` sans écart. La scène des Murggs finit vers l'image 307 de l'arc.
 
 ## 3. Points ouverts
 
