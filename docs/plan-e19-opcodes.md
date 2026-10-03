@@ -5948,6 +5948,18 @@ dessiné gagne aussi pour l'alpha (déjà le cas pour les couleurs).
   identique hors `report.json` ; `Alundra.Tests` 2539/2539 en Release puis en Debug ; `cmp` de la DLL déposée contre la build Debug
   sans écart ; six traces à l'octet (`git diff --ignore-cr-at-eol` vide), les quatre traces du héros remises par `git checkout`.
   Écarts au plan : aucun. ADR-0030. Decisions: see ADR-0030.
+- ✅ **Vérification de G0** (2026-10-03) : vérificateur neuf **CONFIRMED** (preuves rejouées sur l'état actuel contre la sauvegarde :
+  0 écart ; son propre `diff -rq` = l'annexe à la ligne près, 700 lignes ; dossiers : sauvegarde 4450, ancien remaster 4450, remaster et
+  `data-extracted/` 4537, `diff -rq` vides deux à deux ; 571 planches à alpha dans {0, 128, 255} ; 331 `DialoguePortrait` de la forme
+  d'`InventoryPortrait` ; export : 23 741 empreintes égales au manifeste d'après, 105 fichiers changés égaux à la règle de l'annexe ;
+  convertisseur 418/418 ; `Alundra.Tests` 2539/2539 en Debug ; `cmp` sans écart ; traces à l'octet). **Point pour l'auteur** (P3) : la
+  correction de la colonne impaire est dans la fonction partagée `GameMap.CropSpriteIndices` (`GameMap.cs:224-229`), qui sert aussi
+  les moteurs de rendu de la décompilation (`GraphicManager`, `MainInventoryManager`, `HudManager`, `SubInventoryManager`,
+  `EntityEventHandlers`, la visionneuse) : la décompilation garde désormais elle aussi la colonne ; le portage n'en dépend pas (aucune
+  référence à `AlundraEngine` dans le convertisseur ni la DLL) ; règle de l'auteur du 2026-10-03 (ne pas corriger la décompilation) :
+  accepter et le dire dans ADR-0030, ou déplacer la correction dans un chemin propre à l'extracteur. P4 un `log.txt` vide non suivi
+  laissé par l'extracteur dans `alundra-datas-analyser/AlundraTools/` (laissé tel quel). Branche de l'analyseur
+  `chantier/e19g0-extractor` (`d8d9230`, empilée sur f1), non mergée.
 
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 
@@ -6759,6 +6771,12 @@ Réservé aux mesures faites en exécutant les tranches.
 
 - **Commits** : moteur `7350f247`, `79ef3532`, `987f0c7f` (ADR-0049) ; parent `0d14dfd`, `6688fc9` ; puis cette clôture.
 - **Suites** : `CasaEngine.Tests` **2490 avant, 2502 après** ; `Alundra.Tests` **2523 avant, 2539 après** (+16), en Release puis en Debug.
+
+### E19.g G0 (2026-10-03)
+
+- **Commits** : analyseur `97ca6a2`, `876dfd9`, `109f62e`, `d8d9230` ; parent `4e38a69` (pointeur, ADR-0030, plan) ; puis cette clôture.
+- **Données** : `data-extracted/` 4450 → 4537 fichiers (700 lignes de diff, comme l'annexe) ; export en place : 105 fichiers changés ;
+  `Alundra.Tests` 2539 inchangé, convertisseur 418 inchangé.
 
 ## 3. Points ouverts
 
