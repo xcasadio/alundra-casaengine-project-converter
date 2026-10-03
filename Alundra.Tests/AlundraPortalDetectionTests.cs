@@ -77,11 +77,10 @@ public class AlundraPortalDetectionTests : IDisposable
     }
 
     [Fact]
-    public void FindPortalAtTile_DestMapIdZero_BlocksScan_EvenWhenALaterSlotAlsoMatches()
+    public void FindPortalAtTile_DestMapIdZero_IsReturnedLikeAnyOtherSlot_TheLaterSlotIsNeverReached()
     {
-        // Required mutation (T3 ticket): "continuer le balayage après une destination nulle -> le test
-        // de blocage tombe". Slot 0 matches with DestMapId == 0 (must return null and STOP); slot 1 also
-        // matches the same tile with a real destination - it must never be reached.
+        // E19.m1 (M-10, binary 0x8003166C): the scan never reads the destination map id. Slot 0 matches with
+        // DestMapId == 0 and is returned as is; slot 1 also matches the same tile and is never reached.
         var portals = new List<AlundraPortalRecord>
         {
             Portal(0, 5, 5, 5, 5, destMapId: 0),
@@ -90,7 +89,9 @@ public class AlundraPortalDetectionTests : IDisposable
 
         var found = AlundraPortalScanner.FindPortalAtTile(portals, 5, 5);
 
-        Assert.Null(found);
+        Assert.NotNull(found);
+        Assert.Equal(0, found!.Index);
+        Assert.Equal(0, found.DestMapId);
     }
 
     [Fact]

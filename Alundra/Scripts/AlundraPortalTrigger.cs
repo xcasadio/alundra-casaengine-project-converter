@@ -13,11 +13,11 @@ internal static class AlundraPortalScanner
     /// <summary>
     /// First slot (in <paramref name="portals"/> order - i.e. record/slot order, §1.2.b) whose
     /// <c>[X1,X2] x [Y1,Y2]</c> rectangle contains (<paramref name="tileX"/>, <paramref name="tileY"/>)
-    /// wins - NOT the smallest/closest rectangle, the FIRST match, exactly the original's own
-    /// <c>foreach</c> + early return (<c>GameEngine.cs:2420-2434</c>). A winning slot whose
-    /// <c>DestMapId == 0</c> returns null and STOPS the scan right there (the original's own
-    /// <c>return null;</c> inside the loop body, not a <c>continue</c> to the next slot) - a later slot
-    /// that might also contain the tile is never reached.
+    /// wins - NOT the smallest/closest rectangle, the FIRST match. Binary <c>0x8003166C</c> (E19.m1, M-10):
+    /// it walks the 64 slots of 12 bytes and returns the first one that holds the hero tile; it never reads
+    /// the slot's destination map id (+4), so a slot with <c>DestMapId == 0</c> is returned like any other
+    /// (the decompilation's <c>return null</c> for it is not in the binary) and a later slot that might also
+    /// contain the tile is never reached.
     /// </summary>
     internal static AlundraPortalRecord? FindPortalAtTile(IReadOnlyList<AlundraPortalRecord> portals, int tileX, int tileY)
     {
@@ -25,7 +25,7 @@ internal static class AlundraPortalScanner
         {
             if (tileX >= portal.X1 && tileX <= portal.X2 && tileY >= portal.Y1 && tileY <= portal.Y2)
             {
-                return portal.DestMapId == 0 ? null : portal;
+                return portal;
             }
         }
 

@@ -6749,7 +6749,15 @@ puise à tort, O-E19-48) : le flux de la DLL ne suit déjà pas l'original tirag
   collection `AlundraRandomStaticStateCollection` (`AlundraPrefabArcSupportTests.cs:19`, `AlundraShipCorridorArcTests.cs:21`),
   antérieur. **Le plantage probable de la 167 (M-04) est corrigé.**
 
-#### 1.2s.2 E19.m1 — Balayage des portails (M-10) et ordre de `0x5A`/`0x5B` (M-47) ⏳ (planifiée)
+#### 1.2s.2 E19.m1 — Balayage des portails (M-10) et ordre de `0x5A`/`0x5B` (M-47) ✅ (faite le 2026-10-03)
+
+- **Fait le 2026-10-03** (branche `chantier/e19-opcodes`). **Rouges d'abord** sur le code d'avant, valeurs lues égales aux valeurs
+  « aujourd'hui » écrites : portail `null` ; mode 5 sur `0x5A` et `0x5B` : A 6 (écrit 25) ; mode 4 : A 0 (écrit 24) ; mode 6 : X 10
+  (écrit 7). **Verts après** M1-R1 et M1-R2, valeurs écrites tenues (A 24, B 0 ; A 25, B 6 ; `0x5B` animation 5 pour les deux ; héros
+  7, X 7 ; germe final `0xC81B4C37`). Tests : `AlundraPortalDetectionTests` (1 réécrit, `FindPortalAtTile_DestMapIdZero_IsReturnedLikeAnyOtherSlot_TheLaterSlotIsNeverReached`)
+  et `AlundraTurnOrderTests` (4 nouveaux, collection `AlundraRandomStaticStateCollection`). Suite complète Debug : 2552 réussis, 0
+  échec. Six traces à l'octet (`git diff --ignore-cr-at-eol`) sans écart. Écarts : aucun. La Release et le `cmp` restent à la
+  clôture, par la session principale.
 
 **Faits** **[binaire]** (question bornée du 2026-10-03, `e19m1-disc/notes.md` du scratchpad, scripts et sorties à côté) :
 - **M-10** : la recherche de portail `0x8003166C` lit la case du héros (`hero+0x120`, `+0x124`), parcourt les 64 créneaux de 12 octets

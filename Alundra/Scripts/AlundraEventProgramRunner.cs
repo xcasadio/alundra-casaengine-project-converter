@@ -2972,13 +2972,19 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// and, when <paramref name="animationId"/> is non-null (0x5B only), also writes
     /// <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> first (matching the original's own
     /// assignment order, EntityEventHandlers.cs:1726-1729 - the anim id itself never influences direction
-    /// resolution, so the order has no observable effect, but is kept faithful anyway).</summary>
+    /// resolution, so the order has no observable effect, but is kept faithful anyway). The entities found
+    /// are walked from the LAST to the FIRST, like the binary (E19.m1, M-47): <c>0x8003EEF4</c> (0x5A) and
+    /// <c>0x8003EF80</c> (0x5B) read the search buffer <c>0x8013D8D8</c> from index n-1 down to 0, which
+    /// decides which entity takes which draw in modes 4 and 5 and, in mode 6, that the hero (found first)
+    /// is processed last.</summary>
     private void TurnMatchingEntities(AlundraEntityScriptProxy entity, int searchType, uint directionParam, uint? animationId)
     {
         var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, searchType, _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
 
-        foreach (var match in matches)
+        for (var i = matches.Count - 1; i >= 0; i--)
         {
+            var match = matches[i];
+
             if (animationId.HasValue)
             {
                 match.TargetAnimationId = animationId.Value;
@@ -2996,8 +3002,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     /// <c>result</c> (E19.m0, docs/plan-e19-opcodes.md 1.2s.1): mode 4 (0x8003D060) returns
     /// <c>CardinalDirectionTable[new &gt;&gt; 30]</c> (table at 0x80023644, the same one as mode 2), mode 5
     /// (0x8003D0BC) returns <c>new &gt;&gt; 27</c> (0..31); both store the new seed (0x8003D08C, 0x8003D0E8)
-    /// and are reached through the jump table at 0x80023C60 from 0x8003CFC8. Known gap: the binary walks the
-    /// matches of 0x5A/0x5B from the last to the first, the DLL from the first to the last (M-47).
+    /// and are reached through the jump table at 0x80023C60 from 0x8003CFC8.
     /// </summary>
     internal uint ResolveDirectionFromParam(AlundraEntityScriptProxy entity, uint encodedDir)
     {
