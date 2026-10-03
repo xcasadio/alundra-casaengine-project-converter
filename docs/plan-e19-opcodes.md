@@ -3690,7 +3690,8 @@ par `ZImpulseSfx`) ; l'impulsion d'animation est prise au tick (R1) ; `CollidedW
     Wendell ; A12 sous `using` (un arc bloqué ne doit pas laisser l'état global sale).
   Commit : `chore(alundra): close the E19.d2c1 hygiene items`
   - Fait le 2026-10-03 : `SyncAnimation` baisse `ZImpulseTaken` quand plus rien n'est en attente à la validation (UJ-LOCK, `AlundraAnimationImpulseLockTests.cs`, rouge sans le correctif puis vert : 348160 et impulsion sans décroissance). UJ-2 : `0x25` au pc 1 (3 tests verts, les index de `CodeIndex` décalés de 1). Nouveau `AlundraArcGuardAndSoundHostTests.cs`, 4 tests verts d'emblée (ce sont des gardes d'un comportement existant) : la garde T-REG-0 (lève sur un arc gardé qui a rencontré une entité, ne lève pas hors de l'ensemble gardé ni quand le test échoue déjà), et `AlundraWorldProxy.SoundPlayer` rendu par `IAlundraScriptHost.SoundPlayer` (champ posé par réflexion, `InstallAudioSystems` demandant un `Game`). A10J épingle les pas de Giles : Y de 131072 aux images F0+241 à F0+244 puis 106496 à F0+245, mesurés en valeur négative (il va vers les Y décroissants ; le plan donnait les modules). Textes : T-C61 (`0x30 @983` teste G672, `0x05 @990` le pose), doc d'A10 et phase de Meade (`@984`, une image sur deux, T105 effacé par son `0x06 @1026` à l'image 774) à côté de celle de Wendell ; A12 : l'arc est créé sous `using` avant la course (`Run(arc)`), car `Run()` créait l'arc et pouvait lever avant le `using`. `Alundra.Tests` 2301 réussis (2296 + 5), garde d'octets à 0. Aucune assertion existante autre que celles de la liste fermée n'a bougé.
-- ⏳ **D5 — Correctifs de la vérification** (2026-10-03, après le verifier CONFIRMED sur `103dcb7` et les deux
+- ⏳ **D5 — Correctifs de la vérification** — resserrée en **D5a** (F1, F2b, F3, F4, F5) ; **F2 en D5b, en pause** (voir l'audit
+  ci-dessous) — (2026-10-03, après le verifier CONFIRMED sur `103dcb7` et les deux
   contradicteurs ; nouvelle époque de relecture : une relecture de clôture avant exécution ; **révisé le 2026-10-03 à la
   demande de l'auteur, D-E19-56** : F2 complété, F2b ajouté (le P3 du passager sur un porteur avec gravité), F5 réduit). Tests d'abord, une valeur
   contredite est un arrêt :
@@ -3797,6 +3798,29 @@ par `ZImpulseSfx`) ; l'impulsion d'animation est prise au tick (R1) ; `CollidedW
     `FreeRig` : **corrigé**, pose et observation après le calage. Deux REVISE automatiques : nouvelle époque de relecture,
     une seule relecture de clôture ; un nouveau REVISE met D5 en pause pour l'auteur. **Relecture de clôture sur `99ff51d` :
     READY.**
+  - **Audit des valeurs** (2026-10-03, sur `6e6a0cd`, `e19d2c2-audit-d5/notes.md` du scratchpad) : F1, F2b, F3, F4 et F5
+    tenus (valeurs ci-dessous) ; **F2 contredit** : C1 la règle « `IsOnGround` 1 tant qu'il est porté » déplacerait UH-10 (au
+    tick 25, le héros est encore porté en tête de tick mais son pas le sort du coffre ; le binaire rend 0 à ce tick) ; C2 la
+    montée d'UH-16 lancée par `ForceZ` seul laisse le héros 1 px sous le dessus au tick 1 ; C3 la descente et l'enfoncement
+    enchaînés font tomber le héros ; G1 (conception) : la force recopiée a un tick de retard, la tolérance `|LastTickDeltaZ|`
+    ne couvre pas un changement de vitesse : à l'arrêt d'une montée le héros saute, à l'arrêt ou au ralentissement d'une
+    descente il **passe au travers** de la plateforme (la production a le même retard : un script arrête la plateforme pendant
+    son propre tick, après celui du héros). **Disposition** (session principale) : D5 est resserrée en **D5a** (F1, F2b, F3, F4,
+    F5, valeurs tenues, exécutable) ; **F2 passe en D5b**, en pause : sa conception est à reprendre (par exemple résoudre le
+    passager après le tick de son porteur) et à soumettre à l'auteur ; la chaîne de l'histoire n'en dépend pas (aucun `0x3E`
+    ni plateforme en Z sur la chaîne). Nouvelle époque de relecture pour D5a : une seule relecture de clôture.
+  - **D5a — valeurs de l'audit, écrites d'avance** : UH-15, montage d'UH-14 (coffre décalé par `offsetX` 44, sans quoi sa boîte
+    physique touche le corps du héros dès le départ), Haut tenu depuis l'arrêt : le recouvrement cesse au **tick 12** (tête à
+    `PosY` 83,4375 px, `deltaY` 15,5625 px ; le recouvrement tient tant que `PosY > 84 px`), `PosZ` 1015808 à ce tick, chute
+    ensuite (l'ancienne fenêtre `Depth + 1` le portait 17 px plus loin ; le tick 8 du binaire, `sc_north.py`, vient d'une force
+    nord artificielle, non comparable) ; UH-18 : force de tick du porteur −32768, ticks 1 à 10 tenus
+    (`CollidedWithEntityZ` 1, `ForceZ` 0, `IsOnGround` 1, `PosZ` 1048576 ; seule la première image de calage donne 0), variante
+    sans `Gravity` : 0 ; UH-17 : héros placé à `y` 103,5 (dans [103, 104]) pour que sa boîte tienne dans une seule rangée de
+    cases, sinon une case creuse ne retire jamais le sol au moteur et F3 n'est pas exercé ; UJ-CLIMB : `StepHeight` 3 pendant
+    l'escalade, puis `Gravity` 1250, `MaxFallSpeed` 800, verticale non externe après l'échelle ; UH-7b : `PosZ` 196608 hors de
+    l'état, `HeroAirborne` faux à chaque image, fin à `PosZ` 0 et `IsOnGround` 1 ; SJ-17 : `HeroAirborne` vrai aux ticks 1 à 21 ;
+    test de gel : racine figée 5 images, plus basse après la reprise. Les remises à 0 de `FinalForceZ` à l'atterrissage du
+    porteur sont en `AlundraEntityScriptProxy.cs:801-805` et `:866-870`.
   - **Historique** : la relecture de clôture de l'époque précédente (`4432dae`) rendait **REVISE** : (1) F2/UH-16 : le héros,
     mis à jour avant la plateforme, monte à `dessus + v` avant elle (`IsOnGround` 0 en fin de tick, animation d'air), et en
     descente il atterrit sur elle à chaque tick (`CollidedWithEntityZ` 1, `ForceZ` 0) ; la condition de fin n'était pas définie
@@ -3862,8 +3886,9 @@ inchangées.
    - **D4** : UJ-2 (`AlundraEventProgramRunnerWaitCollidedZTests.cs`, programme avec `0x25` au pc 1) ; A10J (assertions des
      pas de Giles ajoutées) ; A10 (doc du test, commentaire de Meade) ; T-C61 (commentaire du signal de fin) ; A12
      (`AlundraBergusJumpArcTests.cs` sous `using`) ; `AlundraArcSupport.cs` si le test de la garde T-REG-0 l'exige ;
-   - **D5** : UH-7b et SJ-17 (`AlundraHeroFallAndPadJumpTests.cs`), le test de gel en pleine chute
-     (`AlundraLadderClimbTests.cs`, assertions de racine rendues) ; nouveaux tests UH-15 à UH-18 et UJ-CLIMB ; aucune valeur
+   - **D5a** : UH-7b et SJ-17 (`AlundraHeroFallAndPadJumpTests.cs`), le test de gel en pleine chute
+     (`AlundraLadderClimbTests.cs`, assertions de racine rendues) ; nouveaux tests UH-15, UH-17, UH-18 et UJ-CLIMB (UH-16 part
+     avec F2 en D5b ; UH-10 ne bouge pas sans la règle d'`IsOnGround` de F2) ; aucune valeur
      existante de `CollidedWithEntityZ` ne change (F2b ne touche que les porteurs avec gravité, absents des montages actuels) ; tout test de `0x3E` ou de `RidingEntity` dont une valeur
      dépend de la fenêtre Y (F1) est un arrêt, pas une ré-épingle ;
    - **D1 à D5** : les montages de `AlundraJumpTestSupport.cs` et `AlundraContactTestSupport.cs` peuvent gagner des aides
@@ -4952,7 +4977,7 @@ ses points à concevoir) ; E19.h1 ne garde que les attentes sans question de con
 148, 152, 154, 344, 410, 423 : leur contact en Z dépend de D5) ; une flamme (`0x47`) n'est arrêtée que par un mur tant
 qu'E14 n'écrit pas `HitCounter`.
 
-##### 1.2n.1b E19.h1b1 — Écritures absolues de Z en convention de la DLL (apparition, `0x8A`, `0x64`) ⏳ (planifiée ; relecture n°1 REVISE, révisée)
+##### 1.2n.1b E19.h1b1 — Écritures absolues de Z en convention de la DLL (apparition, `0x8A`, `0x64`) ⏳ (planifiée ; relectures n°1 et n°2 REVISE, révisée ; relecture de clôture à faire)
 
 **Décision** : D-E19-59 (l'apparition passe en convention de la DLL, `0x8A` et `0x64` examinés dans la même ADR). E19.h1b est
 coupée en deux : **h1b1** (cette tranche, la convention) puis **h1b2** (`0x20`, `0x22`, `0x23`, Z des entités sans contrôleur,
@@ -4996,15 +5021,21 @@ gravité de carte de toute entité ; esquisse en §1.2n.1c), qui en dépend, com
 - **H1b1-R3 — Appui d'apparition** : les deux appels de production d'`immediateAtSpawn` disparaissent (une pose en pixels
   entiers tient exactement sur la racine en flottant : l'appui normal du premier tick la trouve) ; le paramètre reste pour le
   harnais d'intro et ses tests.
+- **H1b1-R5 — O-E19-15** : h1b1 ferme O-E19-15 en production (l'appui d'apparition sans portée disparaît des deux sites de
+  production, `AlundraWorldProxy.cs:798` et `:2548`) ; le harnais d'intro et les tests qui l'appellent gardent le paramètre.
 - **H1b1-R4 — Ensemble** : R1 à R3 partent dans le même commit (convertir `0x8A`/`0x64` seuls laisserait une entité posée sur une
   plateforme née de la fabrique une unité dans sa boîte, sans appui).
 
 **Tâches.**
 - **H1b1-1 — Tests d'abord** : les épingles déplacées de −1 (liste fermée ci-dessous) ; nouveau test de production carte 83,
   enregistrement 22 : `0x21 @1246` finit au 33e appel de son programme (l'appel de `0x64` compté comme le 1er) avec `PosZ`
-  3145728 (aujourd'hui 34e, 3211264) ; nouveaux tests de production : les piles de caisses des cartes 165, 178, 179 et 10 restent
-  empilées (chaque caisse à `PosZ` = dessus de celle du dessous, 60 images après le chargement) ; une apparition sous le terrain est
-  relevée à `T` en passant par `AlundraWorldProxy` avec un vrai champ (chargement de carte ou `SpawnEntityByRecordId`), rouge
+  3145728 (aujourd'hui 34e, 3211264), rouge avant, vert après ; **gardes de piles** (vertes avant et après, exemptées de la règle
+  « rouge d'abord » ; rouges avant = arrêt et diagnostic), sur les cartes réelles chargées par le support d'arcs en vrais préfabs,
+  60 images après le chargement, `haut.PosZ + haut.ModZ == bas.PosZ + bas.ModZ + bas.Depth + 1` et les valeurs : 390 rec6 sur
+  rec4 (bas 4194304, haut 5242880), 163 rec15 sur rec14 (bas 2097152, haut 3145728), 179 rec12 sur rec11 (bas 2097152, haut
+  3145728) (`e19h1b-disc/spawnsupport_chain.txt`) ; **relevé au terrain**, montage synthétique sur le chemin de production
+  (`SpawnEntityByRecordId` d'`AlundraWorldProxy` avec un vrai champ, terrain plat de 16 px, enregistrement à `z` 0 et `ModZ` 0,
+  au patron d'`AlundraWorldProxySpawnInitializationTests`) : `PosZ` 1 aujourd'hui (aucune butée), 1048576 (`T`) après, rouge
   avant, vert après.
 - **H1b1-2 — Code** (`AlundraEntitySpawnFactory.cs`, `AlundraEventProgramRunner.cs`, `AlundraWorldProxy.cs`).
 - **H1b1-3 — ADR-0026** (les écritures absolues de Z suivent la convention de la DLL, binaire − 1 ; les écritures relatives ne
@@ -5012,7 +5043,8 @@ gravité de carte de toute entité ; esquisse en §1.2n.1c), qui en dépend, com
   exceptions, la cible littérale de `0x22` et un héros qui arrive au-dessus du sol ; la butée du binaire compare `PosZ`).
 
 **Acceptation.**
-1. Tests de H1b1-1 rouges d'abord, verts après ; une valeur contredite est un arrêt.
+1. Tests de H1b1-1 rouges d'abord, verts après, sauf les gardes de piles nommées (vertes avant et après) ; une valeur contredite
+   est un arrêt.
 2. Tests existants touchés, liste fermée : pour `0x64`/`0x8A` (−1 exactement) `AlundraEventProgramRunnerTests.cs:596-646`
    (noms « PlusOne » à renommer), `:692-693`, `:1071-1083`, `Map389LoadProgramsTests.cs:159`, `:169`,
    `AlundraWorldProxyUpdateCharacterizationTests.cs:437-461`, `AlundraVisionArcTests.cs:201`, `:276`, `:299-303`,
@@ -5036,21 +5068,20 @@ gravité de carte de toute entité ; esquisse en §1.2n.1c), qui en dépend, com
 **Risques.** Une pile qui s'effondre sans l'appui d'apparition (tests de H1b1-1, arrêt) ; une épingle hors liste ; le harnais
 d'intro, qui relit la fabrique (garde des six traces).
 
-##### 1.2n.1c E19.h1b2 — `0x20`, Z des entités sans contrôleur, apparition ⏳ (esquisse, après E19.h1b1)
+##### 1.2n.1c E19.h1b2 — `0x20`, `0x22`, `0x23`, Z des entités sans contrôleur ⏳ (esquisse, après E19.h1b1)
 
 
 Portée : `0x20` (attente de distance en Z, 266 sites), `0x22`/`0x23` (attente d'une hauteur d'enregistrement, 17 sites) et
 la hauteur d'enregistrement gardée sur le mandataire, O-E19-7 (pas vertical et `IsOnGround` de fin de tick pour toute entité
-sans contrôleur), et O-E19-15 (aucun appui sur une entité à l'apparition) ; O-E19-6 (relevé au terrain à l'apparition) passe à E19.h1b1.
+sans contrôleur) ; O-E19-6 (relevé au terrain à l'apparition) et O-E19-15 (appui d'apparition sans portée) passent à E19.h1b1, avec la
+convention de `PosZ` à l'apparition, A6 et les deux sites de production d'`immediateAtSpawn`.
 **À concevoir avant le plan** (blocages de la relecture d'E19.h1) : (1) la cohabitation avec la passe verticale du harnais
 d'intro (`IntroTraceHarnessTests.cs` ~738, ~861, ~895, ~959-1028), qui pilote déjà des mandataires nus sans monde ni gravité ;
 (2) la résolution de la gravité et de la viscosité brutes de la carte pour toute entité apparue, contrôleur ou non
-(`AlundraEntitySpawnFactory.cs` ~604-606), avec un test sur préfab réel sans contrôleur (260 rec17 ou 47 rec3) ; (3) une seule
-convention de `PosZ` à l'apparition, cohérente avec la règle d'`IsOnGround` de la DLL (sol = `T`, sans le `+1` du binaire), et
-les valeurs d'A6 et de Wendell re-dérivées sur elle ; (4) le sort du paramètre `immediateAtSpawn` et de ses deux sites de
-production (`AlundraWorldProxy.cs` ~793-798, ~2503-2508), l'ordre relevé, racine, appui, et la liste fermée complète des tests
-qui l'appellent (`AlundraNpcCharacterControllerMoverTests.cs` ~1844-1850, `AlundraMovementObstacleProbeTests.cs` ~384-386,
-`AlundraTerrainHeightTests.cs` ~96-120, `AlundraJumpTestSupport.cs` pour un montage sans contrôleur, A6 ~210-211) ; (5) la
+(`AlundraEntitySpawnFactory.cs` ~604-606), avec un test sur préfab réel sans contrôleur (260 rec17 ou 47 rec3) ; (3) et (4) **passés à E19.h1b1** (convention de `PosZ` à
+l'apparition, A6, les deux sites de production d'`immediateAtSpawn`) ; reste ici : les appelants du paramètre dans le harnais et les tests
+(`AlundraNpcCharacterControllerMoverTests.cs` ~1844-1850, `AlundraMovementObstacleProbeTests.cs` ~384-386, `AlundraTerrainHeightTests.cs` ~96-120,
+`AlundraJumpTestSupport.cs` pour un montage sans contrôleur) ; (5) la
 cible de `0x22` dans la convention de la DLL (`hauteur << 19 − 1`) et sa représentation sur la racine en flottant (impaire, elle
 n'existe pas en `float` au-delà de 256 px : 127 rec17 et rec18 à 304 px), écart de précision à porter au moteur s'il le faut ;
 une entité sans enregistrement sous `0x22` (le binaire imprime une erreur et lit un enregistrement nul ; aucun site).
@@ -6008,7 +6039,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-11 | ~~Réarmement hors zone~~ — **réglé le 2026-10-03 par E19.j** (`dedd1f8`, CONFIRMED) ; question d'origine : la remise à zéro hors zone d'un événement de carte diffère du binaire : la DLL écrit sur l'entité de l'événement et ne remet pas `mapEvent.EventData` à zéro, le binaire (`0x8003C7F0`-`0x8003C804`) remet le pc et l'entrée de l'état de l'événement, `state+0x2C`, l'entité logique et l'octet de programme. Un programme B réentré reprend dans la DLL et recommence dans le binaire. Sans effet sur la 478 et la 416 (zones de toute la carte). | E19.j |
 | O-E19-12 | ~~Base de la branche moteur d'E19.c2~~ — **réglé le 2026-10-01 (D-E19-20)** : l'auteur a mergé `chantier/field-move-to-contact` dans `main` du moteur (`74e97293`) ; la branche d'E19.c2 part de `main`. | E19.c2 |
 | O-E19-13 | ~~Le moment de la fin Hold de Ronan~~ — **réglé le 2026-10-01 : A3 resserré épingle 26 (premier `0x1A @856`), 25 et 66 images, mesurés égaux** ; question d'origine : le moment de la fin Hold de Ronan (`0x1C @854`, image 25 de la 478) vient de l'horloge à virgule flottante du moteur, à ± 1 tick du binaire : il n'est pas épinglé. **Se ferme en E19.c2** : A3 resserré épingle 25 et 66 images. | E19.c2 |
-| O-E19-15 | À l'apparition, `EvaluateEntitySupport(…, immediateAtSpawn: true)` accepte un support sans limite de portée : le bloc de la 391, apparu à 144 px au-dessus du marin 4, se pose une image sur sa tête (`PosZ` 7340032) avant de revenir sur le terrain. La fidélité de cet appui au binaire n'est pas vérifiée. | E19.h |
+| O-E19-15 | À l'apparition, `EvaluateEntitySupport(…, immediateAtSpawn: true)` accepte un support sans limite de portée : le bloc de la 391, apparu à 144 px au-dessus du marin 4, se pose une image sur sa tête (`PosZ` 7340032) avant de revenir sur le terrain. La fidélité de cet appui au binaire n'est pas vérifiée. | E19.h1b1 (H1b1-R3, H1b1-R5) |
 | O-E19-14 | Un test statique qui compte les attentes `0x1C`/`0x1D` sur une animation absente du préfab de l'acteur (attendu : 3, les Flammes des cartes 35, 38 et 39), pour voir arriver tout nouveau cas avec une future exportation. | E19.m |
 | O-E19-16 | **Arrêt de D5 (recensement de `0x24`)** : 26 des 59 sites atteignables des cartes du chemin de l'histoire (Inoa 162-182, 44, 10) ne finissent pas sur « mur trouvé » dans le modèle statique (rapport `docs/census-0x24-waits.md`) : 17 « aucun mur » et 9 « indéterminé ». Dont 8 sous main tenue : le héros marche jusqu'à un mur depuis une position que le programme ne fixe pas (cartes 10 `@1212` et `@2462`, 176 `@599`, 178 `@123`, `@141`, `@146`, `@151`, 179 `@564`) ; sans main tenue : des villageois de la 10 qui marchent jusqu'au bord de la carte (`@4973`, `@5061`, `@5163`, `@5275`, `@5344`, `@5430`, `@5588`, `@5905`, où l'original termine par le rognage d'écran, non porté) et leurs sites suivants indéterminés, le héros de la 10 `@1047` et Nestus de la 165 (`@932`, `@943`). **Question** : D4 (`0x24` et U1 à U4) et D5 se commitent-ils tels quels, en acceptant ces sites comme risque connu jusqu'à E19.h (contacts, rognage d'écran) et à leurs arcs, ou faut-il d'abord porter le rognage d'écran de la carte et vérifier les positions d'arrivée du héros des sites sous main tenue ? Recommandation : commiter D4 et D5 avec le rapport (le port suit le binaire ; sur le chemin de l'histoire seuls les 8 sites sous main tenue peuvent bloquer le joueur, et ils se vérifient par un arc à l'arrivée de chaque carte) et ouvrir le rognage d'écran dans E19.h. D6 à D9 attendent cette réponse (A8 ne passe qu'avec D4 et D6). **Réglé le 2026-10-01 (D-E19-24 à D-E19-26)** : une vérification en lecture seule, contre-vérifiée, a montré que les 26 sites venaient de positions de départ fausses dans le modèle (les villageois de la 10 et Nestus de la 165 n'apparaissent pas à la position de leur enregistrement mais par `0x8A`, ou `0x2D` puis `0x64` ; le héros part de ses vraies arrivées, non de toute la carte). Corrigé, le chemin n'a plus aucun site « aucun mur » ni « indéterminé ». Elle a aussi trouvé, au-delà de la 163, deux blocages sans rapport avec `0x24` (O-E19-18, O-E19-19) et l'absence du rognage au bord de la carte (O-E19-17). | E19.d (D4, D5) |
 | O-E19-17 | **Rognage au bord de la carte** **[binaire]** : `ApplyEntityForces` (`0x800366FC`) borne le pas de toute entité de la liste physique (le héros toujours ; les autres sauf portées) à la grille de 52 × 60 cases (x de 0 à 1248 px, y de 0 à 960 px, bornes posées par `SetEntityDimensions` `0x80039C40`) et lève alors `ForceAdjusted` (`0x8003679C`, `0x800367D4`) : dans l'original, une marche vers le bord finit toujours. La DLL ne le porte pas (`AlundraScriptedMotion.RunOneKinematicTick`, et le champ de cellules ramène un point hors grille à la case de bord) : une entité peut sortir de la carte. Change aussi Alundra en jeu libre au bord des cartes (portails sur les cases de bord à vérifier). | tranche à part, plus tard (D-E19-25) |
