@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Alundra.Scripts;
+using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
 using static Alundra.Tests.ArcChecks;
@@ -11,8 +12,8 @@ using static Alundra.Tests.ArcChecks;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E19.e E2 (docs/plan-e19-opcodes.md section 1.2i): the scripted scenes of the day 3 that need no combat, as arcs on the real exported maps with the
-/// export's prefabs and the real hero: A13 (176 <c>B[6]</c>), A14 (179 <c>B[3]</c>), A15 (176 <c>B[7]</c>). Pinning rules of the plan:
+/// E19.e E2 and E3 (docs/plan-e19-opcodes.md section 1.2i): the scripted scenes of the day 3 that need no combat, as arcs on the real exported maps with the
+/// export's prefabs and the real hero: A13 (176 <c>B[6]</c>), A14 (179 <c>B[3]</c>), A15 (176 <c>B[7]</c>), A17 (135) and A18 (178). Pinning rules of the plan:
 /// exact the ends of the scenes (instruction), the flags set and cleared (with their pc), the destinations of <c>0x53</c> and the contact relations (the
 /// semi-open rule of E19.d2b); +-2.5 px the final positions of the walks, measured by the emulation of the binary before E19.d2c; the absolute images are not
 /// pinned, only the order of the events and the frame limit. The opcodes the interpreter skips in each arc must all be lines of the closed list of E19.e E1
@@ -193,6 +194,135 @@ public sealed class AlundraDay3SceneArcTests
 
         // 6. 0x53 @600: map 10, (16515072, 61341696, 0).
         AssertPendingArrival(10, 16515072, 61341696, 0);
+        AssertNoUnexpectedError(arc);
+    }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // A17 - map 135, the church, Ronan (day 3)
+    // ----------------------------------------------------------------------------------------------------------
+
+    private static ArcSpec A17Spec => new(
+        "A17", "Church", "Church-135", new[] { 203, 1654 }, 0, 0, 0, 2500,
+        RealController: true, Prefabs: true,
+        Arrival: new ArcArrival(30670848, 54001664, 1048576, AlundraGameState.ResetAnimationId, 16));
+
+    /// <summary>Frames until <paramref name="done"/>, pressing Square on every frame that starts with a dialogue open, and answering the choice of a box the
+    /// first option (OUI), as a player who accepts. Fails at the arc's frame limit.</summary>
+    private static void RunAcceptingTheChoice(ArcRun arc, Func<bool> done, string signal)
+    {
+        while (!done())
+        {
+            if (arc.Frame >= arc.Spec.FrameLimit)
+            {
+                Assert.Fail(arc.StuckMessage(signal));
+            }
+
+            if (AlundraDialogueDirector.Instance.IsAwaitingChoice)
+            {
+                Assert.True(AlundraDialogueDirector.Instance.SelectChoiceForTests(0));
+                arc.OneFrame();
+            }
+            else if (AlundraDialogueDirector.Instance.IsOpen)
+            {
+                arc.Press(AlundraPadState.Square);
+            }
+            else
+            {
+                arc.OneFrame();
+            }
+        }
+    }
+
+    /// <summary>
+    /// A17 (G203, G1654): the hero arrives on map 135 by the <c>0x53 @2463</c> of the map 10 (A10J). B[1] (program @136) activates Ronan (record 0) under G203
+    /// and makes Giles (record 28) appear (<c>0x8A @159</c>). B[14] (program @912) walks the hero to Ronan (<c>0x24 @942</c>), sets T1 (<c>0x05 @945</c>) and, after
+    /// the box of Ronan, G1655 (<c>0x05 @953</c>). Ronan's program C[1] (@960) opens the box 129 (<c>0x0D @1048</c>), waits for T0, which Yarn sets after the first
+    /// page (<c>0x36 @1053</c>), asks the choice (<c>0x44 @1056</c>) - accepted here -, ends with <c>0x11 @1115</c> and sets G14 (<c>0x05 @1120</c>). The blocks
+    /// of records 8 to 10 are destroyed.
+    /// </summary>
+    [Fact]
+    public void A17_TheChurchOnMap135_TheHeroStopsAtRonan_TheChoiceIsAccepted_TheSceneSetsG1655AndG14()
+    {
+        using var arc = new ArcRun(A17Spec);
+        var s = new ArcSamples(arc, new[] { 0 }, new uint[] { 0, 1 }, (B, 912, 942));
+        Assert.False(IsSet(1655) || IsSet(14), "G1655 and G14 are not set by the arc's start");
+
+        // 1. The end signal: 0x11 @1115 of C[1], then G14 by 0x05 @1120.
+        RunAcceptingTheChoice(arc, () => arc.Has(C, 1115, 0x11), "C[1] executes 0x11 @1115");
+        RunAcceptingTheChoice(arc, () => arc.Has(C, 1120, 0x05), "C[1] executes 0x05 @1120");
+
+        // 2. Only the instructions of the closed list are skipped.
+        AssertSkippedAreListed(arc, 135);
+
+        // 3. B[1]: Ronan is active (record 0) and Giles (record 28) appeared by 0x8A @159.
+        Assert.True(arc.Has(B, 159, 0x8A), "0x8A @159 never ran");
+        Assert.NotNull(arc.EntityByRecord(28));
+        Assert.Equal(EntityStatus.Normal, arc.EntityByRecord(0)!.Status);
+
+        // 4. The hero ends 0x24 @942 against Ronan, edge against edge (the hero's east edge at x + 11, Ronan's west edge at x - 10).
+        var at942 = s[B, 912, 942];
+        Assert.Equal(at942.Hero.X + 11 * Px, at942.Rec(0).X - 10 * Px);
+
+        // 5. T1 is set (0x05 @945) before G1655 (0x05 @953); T0 is set by Yarn during the box, before the choice (0x44 @1056); the choice is accepted
+        // (the branch of 0x03 @1059 that goes to 0x05 @1072).
+        Assert.True(arc.Has(B, 945, 0x05) && arc.Has(B, 953, 0x05), "0x05 @945 and @953 never ran");
+        Assert.True(FrameOf(arc, B, 945) <= FrameOf(arc, B, 953), "T1 (@945) is set before G1655 (@953)");
+        Assert.True(s.FirstSet.ContainsKey(1), "T1 never set");
+        Assert.True(IsSet(1655), "G1655");
+        Assert.True(s.FirstSet.ContainsKey(0), "T0 (set by Yarn) never set");
+        Assert.True(s.FirstSet[0] <= FrameOf(arc, C, 1056) + 1, "T0 is set before the choice");
+        Assert.True(arc.Has(C, 1056, 0x44) && arc.Has(C, 1072, 0x05), "the choice (0x44 @1056) is accepted: 0x05 @1072 runs");
+
+        // 6. G14 (0x05 @1120), and the blocks of the records 8 to 10 are destroyed.
+        Assert.True(IsSet(14), "G14");
+        var blocks = arc.Entities.Where(e => e.EntityRefId is >= 8 and <= 10).ToList();
+        Assert.Equal(3, blocks.Count);
+        Assert.All(blocks, b => Assert.Equal(EntityStatus.FlagToDestroy, b.Status));
+        AssertNoUnexpectedError(arc);
+    }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // A18 - map 178, the house, two phases (day 3)
+    // ----------------------------------------------------------------------------------------------------------
+
+    private static ArcSpec A18Spec => new(
+        "A18", "Inoa", "Inoa (inner)-178", new[] { 203, 1654, 1655 }, 0, 0, 0, 4000,
+        RealController: true, Prefabs: true,
+        Arrival: new ArcArrival(60555264, 26738688, 0, AlundraGameState.ResetAnimationId, 16));
+
+    /// <summary>
+    /// A18 (G203, G1654, G1655): the hero arrives on map 178 by the portal 176.7. Septimus (record 15, C program @512) talks to the hero and the first phase ends
+    /// with <c>0x11 @543</c>; the program then waits for the hero in the box of <c>0x3B @576 [39,40,13,15,1,1]</c>: the arc places him at (948, 232, 16), the tile
+    /// (39, 14) of height 1, an entry chosen in the box and not a measure. The second phase ends with <c>0x38 @708</c> and <c>@713</c> (the tables [176] and
+    /// [162] now say 183), G203 cleared (<c>0x06 @718</c>), G204 set (<c>0x05 @721</c>) and <c>0x11 @724</c>. The z of the arrival comes from the record of the portal (0)
+    /// and <c>ClampToGround</c> raises it: it is not pinned. <c>@694</c> and <c>@697</c> (a margin of zero) are not pinned either.
+    /// </summary>
+    [Fact]
+    public void A18_TheHouseOnMap178_TwoPhases_TheTablesSay183_G203IsClearedAndG204Set()
+    {
+        using var arc = new ArcRun(A18Spec);
+        Assert.Equal((ushort)176, ArcRun.State.MapIdToInternalMapIndexTable[176]);
+        Assert.Equal((ushort)162, ArcRun.State.MapIdToInternalMapIndexTable[162]);
+
+        // 1. Phase 1: the end 0x11 @543.
+        arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(C, 543, 0x11), "C[6] executes 0x11 @543");
+        Assert.False(arc.Has(C, 587, 0x30), "the second phase does not start before the hero is in the box");
+
+        // 2. Phase 2: the hero in the box of 0x3B @576, then the end 0x11 @724.
+        arc.PlaceHero(948, 232, 16);
+        arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(C, 724, 0x11), "C[6] executes 0x11 @724");
+
+        // 3. Only the instructions of the closed list are skipped.
+        AssertSkippedAreListed(arc, 178);
+
+        // 4. The end: the two 0x38, G203 cleared by 0x06 @718, G204 set by 0x05 @721, in this order.
+        Assert.True(arc.Has(C, 708, 0x38) && arc.Has(C, 713, 0x38), "0x38 @708 and @713 never ran");
+        Assert.Equal((ushort)183, ArcRun.State.MapIdToInternalMapIndexTable[176]);
+        Assert.Equal((ushort)183, ArcRun.State.MapIdToInternalMapIndexTable[162]);
+        Assert.True(arc.Has(C, 718, 0x06) && arc.Has(C, 721, 0x05), "0x06 @718 and 0x05 @721 never ran");
+        Assert.True(FrameOf(arc, C, 718) <= FrameOf(arc, C, 721) && FrameOf(arc, C, 721) <= FrameOf(arc, C, 724), "the order @718, @721, @724");
+        Assert.False(IsSet(203), "G203 is cleared");
+        Assert.True(IsSet(204), "G204 is set");
         AssertNoUnexpectedError(arc);
     }
 }
