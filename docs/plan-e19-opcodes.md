@@ -6753,7 +6753,7 @@ puise à tort, O-E19-48) : le flux de la DLL ne suit déjà pas l'original tirag
   collection `AlundraRandomStaticStateCollection` (`AlundraPrefabArcSupportTests.cs:19`, `AlundraShipCorridorArcTests.cs:21`),
   antérieur. **Le plantage probable de la 167 (M-04) est corrigé.**
 
-#### 1.2s.2 E19.m1 — Balayage des portails (M-10) et ordre de `0x5A`/`0x5B` (M-47) ✅ (faite le 2026-10-03)
+#### 1.2s.2 E19.m1 — Balayage des portails (M-10) et ordre de `0x5A`/`0x5B` (M-47) ✅ (faite et CONFIRMED le 2026-10-03)
 
 - **Fait le 2026-10-03** (branche `chantier/e19-opcodes`). **Rouges d'abord** sur le code d'avant, valeurs lues égales aux valeurs
   « aujourd'hui » écrites : portail `null` ; mode 5 sur `0x5A` et `0x5B` : A 6 (écrit 25) ; mode 4 : A 0 (écrit 24) ; mode 6 : X 10
@@ -6804,8 +6804,14 @@ en dernier, `cmp` sans écart ; les six traces à l'octet ; la liste fermée de 
 commit (DLL seule).
 
 **Risques.** Aucun effet sur les données exportées ; un futur site aléatoire à plusieurs entités tirerait dans l'ordre du binaire.
+- ✅ **Vérification d'E19.m1** (2026-10-03) : la session principale a lancé `Alundra.Tests` en Release puis en Debug (2552/2552
+  chacune, la Debug en dernier), `cmp` sans écart, les six traces à l'octet. Vérificateur neuf **CONFIRMED** (binaire relu en
+  `0x8003166C`-`0x800316FC`, `0x8003EEF4` et `0x8003EF80` ; rouges rejoués en remettant les deux fichiers de production : 5 rouges
+  aux valeurs « aujourd'hui » du plan ; recensements rejoués sur l'export d'aujourd'hui : aucun portail de destination 0, aucun site
+  où l'ordre compte). Avis P4 : `AlundraTurnOrderTests.cs` définit son propre contexte de monde au lieu de reprendre
+  `FakeEntityWorldContext` (duplication de montage seulement).
 
-#### 1.2s.3 E19.m2 — Couches de cellules comme le binaire (O-E19-48, O-E19-50) ⏳ (planifiée)
+#### 1.2s.3 E19.m2 — Couches de cellules comme le binaire (O-E19-48, O-E19-50) ⏳ (relecture n°1 READY ; en exécution)
 
 **Faits** **[binaire]** (audit du 2026-10-03, `e19m2-disc/notes.md` du scratchpad, scripts `sim` (le modèle du moteur corrigé égale
 le modèle du binaire), `real391`, `census`) ; les routines à période sont le **type 0** (`0x8005CB38`) et le **type 2**
