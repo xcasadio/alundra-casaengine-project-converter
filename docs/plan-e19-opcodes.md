@@ -410,7 +410,7 @@ scratchpad de la session (`progress/captain.md`, `progress/sweep.md`, `e19-0/*.m
 | E19.e | (§1.2i) Test statique : la liste fermée des opcodes sautés atteignables sur les 30 cartes de la chaîne ; arcs des scènes scriptées du jour 3 (176, 179, 135, 178) ; arrivées sans recouvrement ; les villageois de la 185 et 179 `B[1]` exclus (recette, O-E19-33) | A13, A14, A15, A17, A18, TH4 étendu, test statique | Nouvelle partie jusqu'au livre de la 163, sauvegarde, rechargement ; `day3-after-dream` jusqu'à la 183 ; `day4-meeting` jusqu'à la 362 |
 | E19.f ⚠️ (§1.2j, attend l'auteur : Q-F1 à Q-F3) | Boîte de nom et boîte de texte fidèle (D-E19-4) : export du cadre, écrans XAML liés à un view model, cycle de vie de la boîte de nom, pour `0x0D`/`0x5C`/`0xC4` ; **avec E12.c** (D-E19-38) : portraits, machine à écrire, pagination, curseur, blips et voix, `0x4C`/`0x4D`, table partagée `map_alundra` | tests MGDesktop | Les noms s'affichent au-dessus de la boîte, à la place de l'original |
 | E19.g | Effets visuels (D-E19-7) : export des effets par le convertisseur, réserve de 128 effets aux règles du binaire, `0x90`-`0x94`, `0xA0`-`0xA3`, rendu | cartes à effets | L'aura de 476, les vagues de 391 |
-| E19.h | Attentes en Z et contacts : `0x20`-`0x23`, `0x26`, `0x47`, `0x48` ; `ForceAdjusted` aligné sur le binaire ; glissement le long des murs ; reste du saut (O-E19-27) — `0x25` et `CollidedWithEntityZ` avancés en E19.d2c (D-E19-31) | ciblés | ciblée |
+| E19.h (§1.2n : h1, h1b, h2, h3, h4) | Attentes en Z et contacts : `0x20`-`0x23`, `0x26`, `0x47`, `0x48` ; `ForceAdjusted` aligné sur le binaire ; glissement le long des murs ; reste du saut (O-E19-27) — `0x25` et `CollidedWithEntityZ` avancés en E19.d2c (D-E19-31) | ciblés | ciblée |
 | E19.i | ~~Boucles d'animation Loop pour `0x1C`/`0x1D`~~ — **absorbée par E19.c2** (D-E19-18) : le signal de boucle et son pont y arrivent ; le recensement exact est de 208 sites dans 53 cartes, et non 101 dans 30 | — | — |
 | E19.j ✅ (§1.2l, recette J3 en attente) | Événements de carte : réarmement hors zone du binaire (619 enregistrements, O-E19-11) ; aucun effet sur la chaîne | ciblés | ciblée |
 | E19.k (§1.2k ; E19.k1 ✅, recette K5 en attente) | Caméra : balancement `0x8E`/`0x8F` (E19.k1, DLL seule), masque des fonds `0xA4` (E19.k2, plan moteur) | ciblés | 392, 391 |
@@ -4574,6 +4574,247 @@ dans l'exécutable, la plupart non portés) ; `0x28`/`0x29` libèrent 15 marches
 s'ouvrent, ce qu'E14 seul fera (aujourd'hui un `Result` périmé peut lancer la scène d'après coffre aussitôt) ; les sous-cas
 `0x50`-`0x56` de `0x82` (8 sites `0x53`, hors chaîne) ne donnent ni vie ni effet (O-E19-39).
 
+### 1.2n E19.h — Attentes en Z, contacts, saut et murs ⏳ (E19.h1, E19.h3, E19.h4 planifiées ; E19.h1b et E19.h2 esquissées)
+
+**Découverte** (2026-10-03, lecture seule, trois surfaces : A attentes et contacts en Z, B murs et glissement, C reste du
+saut ; notes, émulations du code du binaire et recensements dans le scratchpad de la session, `e19h-disc/A`, `B`, `C`). Hors
+périmètre, nommément : D5 d'E19.d2c2 (en pause pour l'auteur), O-E19-29, O-E19-17, O-E19-31, O-E19-32, E14. Faits porteurs
+**[binaire]** :
+- **Sept attentes** (aucune ne pose `Result`, toutes suspendent au même pc, aucune n'est atteinte sur les 30 cartes de la
+  chaîne ; la décompilation est juste sauf le cas sans enregistrement de `0x22`) : `0x20` (`0x8003D9BC`, taille 3) attend que
+  `|PosZ − PosZ du premier appel| >> 16 >= v1 | v2 << 8` sur l'entité logique (mémo sur le pc ; ne lit pas `+0x140`, libellé
+  faux) ; `0x21` (`0x8003DA28`, 3) = `0x20` **ou** `CollidedWithEntityZ`, dès le premier appel ; `0x22` (`0x8003DA70`, 1) attend
+  `PosZ == hauteur de l'enregistrement << 19` exactement et ne fait que borner `ForceZ` pour ne pas dépasser (jamais de
+  poussée) ; `0x23` (`0x8003DB28`, 1) = `0x22` **ou** `CollidedWithEntityZ` (libellé faux) ; `0x26` (`0x8003DBA8`, 1) attend
+  `ForceAdjusted` ou `CollidedWithEntityZ` ; `0x47` (`0x8003E984`, 1) attend `HitCounter` ou `ForceAdjusted` (libellé faux) ;
+  `0x48` (`0x8003E9B0`, 1) attend `HitCounter` ou `CollidedWithEntityZ` (aucun site). `0x6F` (`0x8003F9E8`, 1) :
+  `Result` = `CollidedWithEntityZ`. Recensement : `0x20` 266 sites dans 78 cartes, `0x21` 16, `0x22` 16, `0x23` 1, `0x26` 28,
+  `0x47` 11 (les flammes de 26, 29, 94, 106, 110, 111, 352), `0x6F` 16.
+- **Toute entité active intègre Z** (`0x80038364`, sans notion de contrôleur) et reçoit en fin de passe `IsOnGround =
+  !(FloorHeight < PosZ)` (`0x800380F8`) ; la DLL ne bouge jamais en Z une entité sans contrôleur et n'écrit jamais son
+  `IsOnGround` (O-E19-7 ; 12 préfabs sans contrôleur, 67 enregistrements, dont 476 rec0, 135 rec26, 173 rec4, 180 rec4, 185
+  rec10 sur la chaîne, qui n'y reçoivent jamais de force en Z). Deux `0x20` du corpus attendent sur une entité sans
+  contrôleur : 47 `C[4] @442`, 260 `C[5] @747`.
+- **Apparition** (`InitializeEntity` `0x80039D04`) : `TerrainHeight` = terrain sous la boîte, `PosZ` relevé à `T + 1` s'il est
+  en dessous (`0x80039EF0`-`0x80039F2C`), `FloorHeight` et `IsOnGround` calculés ; **aucun appui sur une entité à
+  l'apparition** (terrain seul, `0x800370C4`). La DLL ne fait rien à l'apparition (le monde n'est pas encore posé : O-E19-6)
+  et accepte un appui sur une entité à toute distance (O-E19-15).
+- **Glissement** (`ComputeXYPosition` `0x80037730`, appelé par `MoveEntity` `0x80037E34` après `ComputeZPosition`) : le pas
+  est divisé de moitié jusqu'au contact ; au tick sans aucun demi-pas accepté, contre une **cellule**, une seule tentative de
+  glissement (table `0x80023734` : ± 0,75 px de côté pour un pas nord ou sud, ± 0,5 px pour est ou ouest, un axe annulé en
+  oblique) ; `ForceAdjusted` n'est levé qu'en `0x80037D54` (pas de progrès, glissement interdit ou impossible). Glissement
+  interdit par le bit `0x2000` de `+0x6C` (`0x800379C4`), que posent `0x46` (`0x8003E96C`) et effacent `0x45`
+  (`0x8003E954`) ; 244 des 395 en-têtes de sprite le portent : sur la chaîne, **seul le héros glisse** (tous les PNJ nommés
+  portent le bit). La décompilation se trompe en trois points (le binaire l'emporte).
+- **Aimantation au sommet** (`0x80037848`) : avec le bit Gravity et `ForceZ == 0` après le pas, `PosZ = T + 1` si la montée
+  est d'au plus 3 px + 1 unité ou la descente d'au plus 3 px, défaite si une entité occupe la boîte. **Plafonds**
+  (`0x80036D94`) : en montée, le haut de la boîte s'arrête sous le bas d'une entité collidable au-dessus,
+  `CollidedWithEntityZ` = 1, `ForceZ` = 0 avec Gravity ; plafond absolu `0x77FFFFF` (1920 px), testé avant tout. Sur la
+  chaîne : aucun rebord à moins de 3 px d'un sommet de saut, aucun plafond sur le chemin d'un arc.
+- **Sons des changements d'animation** (`0x80038BB0`) : tout changement d'animation de toute entité, l'apparition comprise,
+  joue le son de l'animation (`Sfx`, + 0x100 si le bit 0x20 de l'octet 0xD) ; la DLL ne joue que le décollage du héros (R8).
+- `+0xF8` « surchargé pour le type 0x14 » (O-E19-27) est une fausse piste (le registre de base vaut `entity + 0x20` :
+  `+0x118`, `PosY`) : retiré.
+
+**Choix de conduite** (techniques) :
+- découpage : **E19.h1** (`0x21`, `0x26`, `0x47`, `0x48`, `0x6F`), **E19.h1b** (`0x20`, `0x22`, `0x23`, Z des entités sans
+  contrôleur, apparition, conventions de `PosZ` ; esquissée, réduite d'E19.h1 après sa relecture et l'audit des valeurs),
+  **E19.h3** (reste du saut du héros :
+  aimantation au sommet, plafonds), **E19.h4** (glissement, étape 1 de la DLL, et `0x45`/`0x46`), E19.h1, E19.h3 et E19.h4 exécutées dans cet ordre ;
+  **E19.h2** (état en l'air des PNJ tenu par le tick, Z avant XY, atterrissage strict, sans l'aimantation de 4 px du moteur :
+  ferme D-E19-40 et « Z des PNJ en retard » d'O-E19-28) est esquissée : ses épingles d'arcs (A10, A12, A10J, TR-V) demandent
+  d'abord une émulation de la boucle de scène du binaire ;
+- `0x47` se porte maintenant avec `HitCounter` à 0 (E14 l'écrira) : aujourd'hui chaque flamme se désactive un tick après son
+  départ, une fois portée elle avance jusqu'au mur, comme l'original quand on ne la frappe pas (hors chaîne) ;
+- le P3 du passager (`CollidedWithEntityZ` 1 au repos sur un porteur avec gravité) reste à la décision de l'auteur sur D5 ;
+- l'aimantation de descente de 4 px du moteur, une fois par image, contre 3 px par tick dans le binaire : écart consigné
+  (O-E19-40), visible seulement aux images de rattrapage ; exporter 3 px casserait SJ-11 et les épingles des PNJ ;
+- **questions à l'auteur** (consignées, elles n'arrêtent pas h1, h3 et h4) : Q-H1 sons des changements d'animation pour
+  toutes les entités (O-E19-41) ; Q-H2 résolution exacte des contacts, étape 2 du glissement, plan moteur (O-E19-42).
+
+##### 1.2n.1 E19.h1 — Attentes `0x21`, `0x26`, `0x47`, `0x48` et `0x6F` ⏳
+
+**Relecture** (2026-10-03) : REVISE n°1, quatre blocages, tous sur la partie « Z sans contrôleur et apparition » (le harnais
+d'intro pilote déjà des mandataires nus par sa propre passe verticale ; une entité sans contrôleur n'a ni gravité ni
+viscosité de carte en production ; la convention de `PosZ` à l'apparition contredit la règle d'`IsOnGround` ; le remplaçant
+de l'appui d'apparition et les tests qui le vérifient ne sont pas spécifiés). Audit des valeurs : les valeurs des attentes
+confirmées contre le binaire ; `0x22` compare `PosZ` à `hauteur << 19` dans la convention du binaire, alors que la `PosZ` de
+la DLL vaut celle du binaire moins 1, et à 304 px la cible convertie (impaire) n'est pas représentable sur la racine en
+flottant de la DLL. Disposition : **réduction** ; `0x20` (qui calerait sur deux entités sans contrôleur, 47 `C[4] @442`, 260
+`C[5] @747`), `0x22`, `0x23`, la hauteur d'enregistrement, le Z sans contrôleur et l'apparition passent en E19.h1b (esquissée,
+ses points à concevoir) ; E19.h1 ne garde que les attentes sans question de convention ni entité sans contrôleur, et `0x6F`.
+
+**Règles d'exécution.**
+- **H1-R1 — Attentes** : `0x21`, `0x26`, `0x47`, `0x48` portées comme attentes sur l'entité logique (rendre 0 = suspendre au
+  même pc, comme `0x24`/`0x25`) ; `0x21` = (distance en Z depuis le premier appel atteinte : `|PosZ − PosZ du premier appel|
+  >> 16 >= v1 | v2 << 8`, la règle de `0x20`, une différence, donc sans question de convention) **ou** `CollidedWithEntityZ`,
+  dès le premier appel ; mémo du premier appel : `Parameters[1]` = `CodeIndex`, `Parameters[2]` = `PosZ` ; `0x26` :
+  `ForceAdjusted` ou `CollidedWithEntityZ` ; `0x47` : `HitCounter` ou `ForceAdjusted` ; `0x48` : `HitCounter` ou
+  `CollidedWithEntityZ`. `0x6F` : `Result` = `CollidedWithEntityZ`, taille 1. `0x20`, `0x22`, `0x23` restent sautés (E19.h1b).
+- **H1-R2 — Libellés** : « Wait Z distance » (`0x20`), « Wait Z distance or Z contact » (`0x21`), « Wait height target »
+  (`0x22`), « Wait height target or Z contact » (`0x23`), « Wait hit or ForceAdjusted » (`0x47`), « Wait hit or Z contact »
+  (`0x48`) ; `IntroTraceHarnessTests.ImplementedOpcodes` reçoit les opcodes portés. La règle 3 du test statique et
+  `WaitOpcodes` ne changent pas (elles ne regardent que les attentes sautées).
+
+**Tâches.**
+- ✅ **H1-0 — Plan**, relu jusqu'à READY (REVISE n°1, réduction, audit des valeurs, READY à la deuxième relecture le 2026-10-03).
+- ⏳ **H1-1 — Attentes et `0x6F`, tests d'abord** (montage d'`AlundraEventProgramRunnerWaitCollidedZTests`, opcode au pc 1
+  derrière un `0x01`, entité logique avec contrôleur) : **T-Z21** `01 21 10 00 FF` (16 px) : `CollidedWithEntityZ` 1 au premier
+  appel → fin aussitôt (`0x21` rend 3, puis `0xFF @4`) ; sinon, `PosZ` 3145728 au premier appel : appel 1 suspendu, `CodeIndex`
+  1, `Parameters[2]` 3145728 ; `PosZ` 4194303 → attend ; 4194304 → fin ; vers le bas, 2097152 → fin ; l'entité logique bouge,
+  pas le propriétaire → fin ; `CollidedWithEntityZ` 1 à un appel suivant → fin. **T-Z26** `01 26 FF` : (`ForceAdjusted`,
+  `CollidedWithEntityZ`) (0, 0) attend ; (1, 0), (0, 1), (1, 1) finissent ; dix appels sans effet de bord. **T-Z47** `01 47 FF` :
+  (`HitCounter`, `ForceAdjusted`) (0, 0) attend ; (1, 0), (0, 1) finissent ; `CollidedWithEntityZ` 1 seul attend ; `Result` 7
+  reste 7. **T-Z48** `01 48 FF` : `HitCounter` ou `CollidedWithEntityZ` finissent ; `ForceAdjusted` seul attend. **T-Z6F**
+  `01 6F FF` : `Result` = `CollidedWithEntityZ` (0 ou 1). Rouges : aujourd'hui chaque opcode est sauté, le programme continue
+  au premier appel et `Result` reste tel quel. Commit : `feat(alundra): port the Z wait opcodes 0x21, 0x26, 0x47, 0x48 and 0x6F like the binary`
+- ⏳ **H1-2 — Vérification et clôture.** **H1-3 — Recette** (auteur, hors chaîne) : une flamme (carte 26) avance jusqu'au mur
+  au lieu de s'éteindre au départ ; sur la chaîne, aucun écart.
+
+**Acceptation d'E19.h1.**
+1. Tests de H1-1 rouges d'abord, verts après, valeurs écrites tenues ; une valeur contredite est un arrêt.
+2. Code de test existant touché, liste fermée : `IntroTraceHarnessTests.ImplementedOpcodes` ; rien d'autre (la liste
+   versionnée ne change pas : aucun de ces opcodes n'est atteint sur la chaîne) ; les six traces à l'octet.
+3. `Alundra.Tests` sans échec en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
+4. Recette H1-3 faite par l'auteur.
+
+**Risques.** Une attente portée peut caler hors chaîne là où le saut laissait passer (ascenseurs et trappes de `0x21`, 52, 83,
+148, 152, 154, 344, 410, 423 : leur contact en Z dépend de D5) ; une flamme (`0x47`) n'est arrêtée que par un mur tant
+qu'E14 n'écrit pas `HitCounter`.
+
+##### 1.2n.1b E19.h1b — `0x20`, Z des entités sans contrôleur, apparition ⏳ (esquisse)
+
+Portée : `0x20` (attente de distance en Z, 266 sites), `0x22`/`0x23` (attente d'une hauteur d'enregistrement, 17 sites) et
+la hauteur d'enregistrement gardée sur le mandataire, O-E19-7 (pas vertical et `IsOnGround` de fin de tick pour toute entité
+sans contrôleur), O-E19-6 (relevé au terrain à l'apparition) et O-E19-15 (aucun appui sur une entité à l'apparition).
+**À concevoir avant le plan** (blocages de la relecture d'E19.h1) : (1) la cohabitation avec la passe verticale du harnais
+d'intro (`IntroTraceHarnessTests.cs` ~738, ~861, ~895, ~959-1028), qui pilote déjà des mandataires nus sans monde ni gravité ;
+(2) la résolution de la gravité et de la viscosité brutes de la carte pour toute entité apparue, contrôleur ou non
+(`AlundraEntitySpawnFactory.cs` ~604-606), avec un test sur préfab réel sans contrôleur (260 rec17 ou 47 rec3) ; (3) une seule
+convention de `PosZ` à l'apparition, cohérente avec la règle d'`IsOnGround` de la DLL (sol = `T`, sans le `+1` du binaire), et
+les valeurs d'A6 et de Wendell re-dérivées sur elle ; (4) le sort du paramètre `immediateAtSpawn` et de ses deux sites de
+production (`AlundraWorldProxy.cs` ~793-798, ~2503-2508), l'ordre relevé, racine, appui, et la liste fermée complète des tests
+qui l'appellent (`AlundraNpcCharacterControllerMoverTests.cs` ~1844-1850, `AlundraMovementObstacleProbeTests.cs` ~384-386,
+`AlundraTerrainHeightTests.cs` ~96-120, `AlundraJumpTestSupport.cs` pour un montage sans contrôleur, A6 ~210-211) ; (5) la
+cible de `0x22` dans la convention de la DLL (`hauteur << 19 − 1`) et sa représentation sur la racine en flottant (impaire, elle
+n'existe pas en `float` au-delà de 256 px : 127 rec17 et rec18 à 304 px), écart de précision à porter au moteur s'il le faut ;
+une entité sans enregistrement sous `0x22` (le binaire imprime une erreur et lit un enregistrement nul ; aucun site).
+
+##### 1.2n.2 E19.h2 — État en l'air des PNJ ⏳ (esquisse)
+
+Port borné, au patron de R6 du héros : un état en l'air des PNJ tenu par le tick (entré par une impulsion, une force `0x1B`/`0x5E`
+ou un pas sans atterrissage), sentinelle positive déclarée au moteur, pas en Z **avant** le pas XY sur le terrain d'avant le pas,
+atterrissage strict, `IsOnGround` par la règle du sol après le tick (jamais `Controller.IsGrounded`) ; hors de l'état, le moteur
+garde les escaliers. Valeurs du binaire déjà connues : UJ-1b (atterrit au tick 22, `ForceZ` −327680 au tick 21), UJ-7 (`0x25`
+à s+23), le rebord (chute au tick 5 au lieu de 4). **Avant le plan** : une émulation de la boucle de scène du binaire pour les
+images de TR-V, A10 (Bergus), A12, A10J (Giles).
+
+##### 1.2n.3 E19.h3 — Aimantation au sommet et plafonds du héros ⏳
+
+**Règles d'exécution.**
+- **H3-R1 — Aimantation au sommet** (héros, état en l'air) : au tick où le héros a le bit Gravity et `ForceZ == 0` après le pas
+  vertical, après le pas XY, lire le terrain `T'` sous la boîte ; si `PosZ − T' <= 0x30000` et `T' − PosZ <= 0x30001` et
+  qu'aucune entité n'occupe la boîte à `T'` (règle de `FindEntityCollisionCandidate`), `PosZ = T'` (`ModZ` du héros 0) et la
+  racine suit ; `IsOnGround` en sort 1 par la règle existante ; l'état en l'air n'est pas quitté (le tick suivant atterrit
+  par le test strict).
+- **H3-R2 — Plafonds** (héros, état en l'air, `F > 0`, avant `PosZ += F`), en convention de la DLL (`ModdedPosZ = PosZ +
+  ModZ`, `Depth = SizeZ × 65536 − 1`) : `haut = PosZ + ModZ + Depth`, `haut cible = haut + F` ; si le héros est un sujet
+  éligible (`IsEligibleSubject`), toute collidable `c` autre que lui avec `haut < c.ModdedPosZ <= haut cible` et le
+  recouvrement XY semi-ouvert → `haut cible = c.ModdedPosZ − 1`, contact (le plus bas l'emporte) ; contact : `PosZ = haut cible
+  − Depth − ModZ`. Plafond absolu, constante du binaire testée avant tout : si `haut cible + 1 > 0x7800000`, `PosZ =
+  0x77FFFFF − Depth − ModZ − 1`, contact (le `+ 1` de conversion ne vaut que pour cette constante). Contact :
+  `CollidedWithEntityZ` = 1, `ForceZ` = 0 avec Gravity ; l'état continue (H3-R1 peut jouer au même tick). Fonction
+  `TryFindCeiling` au patron de `TryFindSupport`. Un plafond **mobile** (l'entité au-dessus doit d'abord bouger) relève de
+  D5 : seul le plafond immobile est porté.
+- **H3-R3** : O-E19-27 perd l'élément `+0xF8` (fausse piste) ; le commentaire « no ceiling, E19.h »
+  (`AlundraScriptedMotion.cs` ~224) est mis à jour.
+
+**Tâches.**
+- ⏳ **H3-0 — Plan**, relu jusqu'à READY.
+- ⏳ **H3-1 — Tests d'abord, puis règles** (montage `JumpHeroRig` et `FlatCells`, IZF de l'animation 2 imposé dans le
+  montage) : **UH-APEX-DOWN** (IZF 1408, rebord de 32 px à partir de x = 144, héros en marche vers l'est à x0 = 108, `ForceX`
+  159744, Croix au tick 1, droite tenue) : `PosZ` des ticks 1 à 11 = 360448, 688128, 983040, 1245184, 1474560, 1671168,
+  1835008, 1966080, 2064384, 2129920, 2162688 ; tick 12 : `ForceZ` 0, `PosZ` 2097152, `IsOnGround` 1, `CollidedWithEntityZ` 0 ;
+  tick 13 : `CollidedWithEntityZ` 1, animation 1 (rouge : tick 12 2162688 et `IsOnGround` 0, atterrissage au tick 14, marche au
+  tick 15). **UH-APEX-UP** (IZF 1664, rebord de 48 px à partir de x = 144, x0 = 120) : tick 14 `PosZ` 3145728, `PosX` 8866816,
+  `IsOnGround` 1 (rouge : `PosZ` 2981888 au tick 14). **SJ-14** (boîte de 24 × 16 × 32 posée par `AddEntity(z = 48)`, `PosZ` 3145728, saut sur place
+  de 32 px) : `PosZ` ticks 1 à 3 = 327680, 622592, 884736 ; tick 4 : 1048576, `ForceZ` 0, `CollidedWithEntityZ` 1 ; ticks 5 à 11
+  = 1015808, 950272, 851968, 720896, 557056, 360448, 131072 ; tick 12 : 0, atterri (rouge : tick 4 à 1114112, contact 0).
+  **UH-12** (dalle posée par `AddEntity(z = 40)`, `PosZ` 2621440) : 327680 ; tick 2 : 524288, `ForceZ` 0, contact 1 ; puis 491520, 425984, 327680,
+  196608, 32768 ; tick 8 : 0 (rouge : tick 2 à 622592). **UH-CAP** (héros dans l'état en l'air sans le bit Gravity, `ForceZ`
+  64 px par tick depuis 1792 px) : `PosZ` plafonné à `0x7600000 − 1` en convention de la DLL dès le tick 2, contact 0 au tick 1
+  puis 1 à chaque tick, `ForceZ` inchangé (rouge : monte sans fin). Gardes : UH-1 (sol plat, sommet à 27,5 px, aucune aimantation), UH-8 (saut
+  dans l'eau, jamais `ForceZ == 0`). Les boîtes sont posées par `ContactWorld.AddEntity` (convention de la DLL ; l'audit des valeurs a vérifié que la règle H3-R2
+  sans `+ 1` donne exactement ces valeurs) ; une valeur contredite est un arrêt.
+  Commit : `feat(alundra): the hero snaps at the top of a jump and stops under ceilings like the binary`
+- ⏳ **H3-2 — Vérification et clôture.** **H3-3 — Recette** (auteur, hors chaîne) : un saut sous une plateforme suspendue (le
+  héros se cogne la tête), un saut vers un rebord à peine plus haut.
+
+**Acceptation d'E19.h3.**
+1. Tests de H3-1 rouges d'abord (sauf les gardes), verts après, valeurs écrites tenues ; une valeur contredite est un arrêt.
+2. Code de test existant touché : aucun (A10J, A12, A10, A3, T-A10v, les tests UJ, UH et SJ, les traces du héros inchangés) ;
+   les six traces à l'octet.
+3. `Alundra.Tests` sans échec en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
+4. Recette H3-3 faite par l'auteur.
+
+**Risques.** Les plafonds mobiles (D5) et ceux des PNJ (E19.h2) restent sans plafond ; l'annulation de l'aimantation par une
+entité n'a pas de valeur émulée (règle seule, sans test de valeur).
+
+##### 1.2n.4 E19.h4 — Glissement le long des murs (étape 1) et `0x45`/`0x46` ⏳
+
+**Règles d'exécution.**
+- **H4-R1 — `0x45`/`0x46`** : `Flags &= ~NoObstacleSlide` / `Flags |= NoObstacleSlide` sur l'entité logique, taille 1, sans
+  `Result` ni resynchronisation du contrôleur.
+- **H4-R2 — Glissement** (autour de `MoveControllerAndPullPosition`) : après le `Move` d'un tick d'une direction **cardinale**
+  (0, 8, 16, 24), si aucun axe n'a progressé, qu'aucune entité n'est en contact, que `Flags & 0x2000 == 0` et que `TargetDirection < 32` :
+  calculer les quatre coins du binaire (`x1 = (PosX + ModX) >> 16`, `x2 = (PosX + ModX + Width) >> 16`, de même en Y) à la
+  position + 1 unité dans le sens de `FinalForce`, par `AlundraCellsCollisionField.TrySampleGround` avec le masque du héros
+  (`WalkabilityMaskFor(Flags)`), appliquer la table du binaire (`0x80023734`, découverte), et si elle donne un déplacement, un
+  second `Move` (un seul par tick). En **oblique**, pas de second `Move` (le moteur a déjà avancé l'axe libre, O-E19-28 a) :
+  seule la règle de `ForceAdjusted` change (levé si aucun axe n'a progressé, comme le binaire qui glisse le long du mur).
+  `ForceAdjusted` = 1 seulement si ni le pas ni le glissement n'ont progressé, ou si le glissement est interdit (entité, bit
+  `0x2000`, cas « FA » de la table). Compteur `SlideCount` sur le mandataire.
+- **H4-R3** : le commentaire d'UH-6 (`AlundraHeroObjectTopsTests.cs` ~173-185) dit le résultat : {1, 2, 3} pour x0 de 131 à 133
+  est celui du binaire, la ligne de l'annexe ({2, 3}) était fausse.
+
+**Tâches.**
+- ⏳ **H4-0 — Plan**, relu jusqu'à READY.
+- ⏳ **H4-1 — Tests d'abord, puis règles** (montage `JumpHeroRig`, `FlatCells`, cellule de marche 0x40 bloquante, masque de marche du
+  héros posé à 0x40 sur les réglages vivants de son contrôleur (le montage le laisse à 0 aujourd'hui), boîte du héros −10, −7,
+  21 × 15, Gravity, sol plat) : **T-SL1** (cellule (10,10) bloquée, héros en (263,0 ; 200,0), Haut tenu, force
+  −79872 puis −159744) : `PosY` des ticks 1 à 8 = 13027328, 12867584, 12707840, 12548096, 12388352, 12228608, 12068864, 11993088,
+  `PosX` 17235968 ; ticks 9 à 23 : `PosX` + 49152 par tick (17285120 … 17973248), `PosY` 11993088 ; tick 24 `PosY` 11833344, tick
+  25 11673600 ; `ForceAdjusted` 0 à chaque tick (rouge : `PosX` reste 17235968, `ForceAdjusted` 1 dès le tick 9). **T-SL2** :
+  le même avec `Flags |= 0x2000` : `PosX` 17235968 pour toujours, `ForceAdjusted` 1 dès le tick 9 (garde, vert avant). **T-SL3**
+  (ouest, héros en (300,0 ; 177,0), `FinalForceX` −159744 imposé dès le tick 1) : contact `PosX` 17956864 au tick 11 ; ticks 12 à 23 `PosY` +
+  32768 par tick jusqu'à 11993088 ; tick 24 `PosX` 17797120 ; `ForceAdjusted` 0 (rouge : bloqué à 274,0, `ForceAdjusted` 1 dès
+  le tick 12). **T-SL4** (oblique NE, direction 20, force 112944 / −75296, mur aux cellules x ≥ 12, héros en (270,0 ; 400,0)) :
+  `ForceAdjusted` 0 à chaque tick (rouge : 1 dès le tick 6) ; `PosY` reste celle d'aujourd'hui (25837920 au tick 5 : pas de
+  second `Move` en oblique ; l'avance par axe du moteur reste, O-E19-28 a). **UO-1** `46 FF` sur `Flags` 0x100 → 0x2100, `45 FF` → 0x100, pc + 1, `Result` intact ; par `0x42` dans un
+  programme d'enregistrement, c'est le bit du héros qui change. **UO-2** : T-SL2 piloté par le script (`46` puis la marche : pas
+  de glissement, `ForceAdjusted` au tick 9 ; `45` : le glissement reprend). Garde d'arcs `ArcsWithoutSlide` : `SlideCount` 0
+  sur tous les arcs à vrai contrôleur, sauf A10J. Commit : `feat(alundra): the hero slides along walls like the binary (stage 1)`
+- ⏳ **H4-2 — Liste fermée et arcs.** Les 6 lignes `0x45`/`0x46` quittent la liste versionnée (178 `B[1] @105`, `@129`, `@134`,
+  `@157` ; 185 `B[1] @92`, `@108`) ; `MapsWithoutSkippedSite` reçoit les cartes laissées sans ligne (à compter sur la liste du
+  moment, après E19.l2) ; **A10J** (`AlundraHeroJumpArcTests.cs` ~125-131) : `0x24 @2462` finit à la position du binaire
+  (47877120 ; 50790400), après un seul glissement de + 0,75 px à y = 791 contre la cellule (29,48) ; l'image reste
+  relationnelle (fenêtre de l'arc) ; les tests de mobiles sur de vrais murs (`AlundraNpcCharacterControllerMoverTests`, drapeaux
+  sans 0x2000) sont relancés avec le compteur : un changement est un arrêt, avec diagnostic. Commit : `test(alundra): the slide on the story chain`
+- ⏳ **H4-3 — Vérification et clôture.** **H4-4 — Recette** (auteur) : le héros glisse le long d'un coin de mur au lieu de
+  s'y coller ; sur la 178 et la 185, les marches encadrées par `0x46`/`0x45` s'arrêtent au mur.
+
+**Acceptation d'E19.h4.**
+1. Tests de H4-1 rouges d'abord (sauf les gardes), verts après, valeurs écrites tenues ; une valeur contredite est un arrêt.
+2. Code de test existant touché, liste fermée : A10J (`AlundraHeroJumpArcTests.cs`), la liste versionnée,
+   `AlundraStoryChainOpcodeAudit.cs`/`AlundraStoryChainSkippedOpcodesTests.cs`, le commentaire d'UH-6,
+   `IntroTraceHarnessTests.ImplementedOpcodes` ; rien d'autre ; les six traces à l'octet.
+3. `Alundra.Tests` sans échec en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
+4. Recette H4-4 faite par l'auteur.
+
+**Risques.** Le glissement en oblique garde l'avance par axe du moteur (O-E19-28 a) ; le reste de contact en 16.16 à l'est et
+au sud (O-E19-28 b, aussi contre les cellules) demande l'étape 2 (O-E19-42) ; l'image d'A10J `@2462` peut bouger d'un tick
+(retards connus de la DLL).
+
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
 Chaque arc part d'une carte chargée seule, avec des drapeaux posés et le héros placé. Les valeurs
@@ -4841,7 +5082,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-24 | **Calage à l'entrée sud de la case (37,46) de la 10** [émulation] : sous le blocage fidèle, si le joueur entre dans la zone de `B[9]` par le sud (y ≥ 744), le héros garé bloque l'approche de Septimus (`0x0B @3643`) et la scène cale avant T510 dans l'original émulé. Défaut de l'original à corriger (règle de l'auteur) ou à reproduire : à trancher dans le plan d'E19.d2b. **Tranché le 2026-10-02 (D-E19-37)** : reproduit et noté (contre-épreuve de T-B9) ; l'accès par le sud dépend d'échelles non modélisées ; correctifs possibles relevés : rayon de `0x0B @1176` du héros 32 → 24, ou de `0x0B @3643` de Septimus 44 → 36 (un octet sur les cartes 10 et 331), ou héros verrouillé non obstacle (change A11). | à rouvrir quand le chapitre 16 sera jouable |
 | O-E19-25 | **Recensement des marches `0x0B`/`0x1E`** (découverte d'E19.d2, scratchpad) : avant tout réemploi de ses totaux, corriger son modèle (`0x62`/`0x63` sur le marcheur, glissement des directions obliques, départs écrits après le site, départs partagés avant une étiquette « règle »). **Scripts archivés le 2026-10-02** à la demande de l'auteur dans `research/census/` (archive, pas un outil : README avec les défauts connus ; seuls quatre chemins d'import vers le scratchpad ont changé). | E19.m |
 | O-E19-26 | **`0x28` à `0x2B`** (bits de classe A/B du marcheur, `0x8003DC24`-`0x8003DC6C`) : 15 marches bloquées seulement dans la DLL (Muruta des cartes 2 et 384, chariots de la mine 61, 63, 66 et 328), aucune sur une carte de l'histoire ; les porter ajoute 4 blocages sur la 102. | E19.l |
-| O-E19-27 | **Reste du saut, non porté en E19.d2c** : aimantation de 3 px au sommet, plafonds (`0x80036D94`), sons des changements d'animation autres que le décollage du héros (`0x800490FC`), `+0xF8` surchargé pour le type 0x14 ; tolérance de marche de 3 px en l'air du moteur (le binaire n'en a aucune ; **avancée en E19.d2c2, S6**) ; la descente de 4 px que le moteur aimante (le binaire tombe au-delà de 3 px). **Avancés en E19.d2c (2026-10-02)** : dessus d'entités et règle du passager pour le héros (D-E19-42), son du décollage (D-E19-44). | E19.h |
+| O-E19-27 | **Reste du saut, non porté en E19.d2c** : aimantation de 3 px au sommet, plafonds (`0x80036D94`), sons des changements d'animation autres que le décollage du héros (`0x800490FC`), ~~`+0xF8` surchargé pour le type 0x14~~ (fausse piste, découverte d'E19.h : le registre de base vaut `entity + 0x20`) ; tolérance de marche de 3 px en l'air du moteur (le binaire n'en a aucune ; **avancée en E19.d2c2, S6**) ; la descente de 4 px que le moteur aimante (le binaire tombe au-delà de 3 px). **Avancés en E19.d2c (2026-10-02)** : dessus d'entités et règle du passager pour le héros (D-E19-42), son du décollage (D-E19-44). | E19.h |
 | O-E19-28 | **Écarts acceptés du contact entre entités** (E19.d2b) : avance par axe du moteur contre division conjointe du binaire (un mobile qui pousse en diagonale contre une entité glisse ; 5,6 % des pas obliques bloqués finissent jusqu'à 2 px ailleurs) ; `ForceAdjusted` sur contact d'entité 0 à 2 ticks plus tôt à l'est et au sud ; contact au flottant (4 à 8 unités 16.16) ; `XCollisionEntity` écrit pour tout mobile (le binaire le met à 0 dans la moitié des ticks raccourcis d'un mobile sans gravité ou en l'air) ; liste d'un tick de retard pour `0x62`/`0x63` et les créations par script ; ordre de mise à jour par entité au lieu de par créneau ; Z des PNJ en retard d'un tick. | E19.h |
 | O-E19-29 | **Troncature au pixel à l'atterrissage** (relecture d'E19.d2b) : quand un PNJ à contrôleur atterrit sur une nouvelle hauteur de terrain, `EvaluateEntitySupport` (`AlundraEntityScriptProxy.cs:700-735`, `wasAlreadyLanded` faux à chaque changement de hauteur) appelle `PushLogicalPositionToRoot`, et `ResolveLogicalPosition` (`AlundraEntitySpawnFactory.cs:472-479`) ramène X et Y au pixel entier inférieur ; le binaire garde la fraction. Sur une rampe qui change de hauteur à chaque pixel, la vitesse double et le cortège de la 10 `B[13]` (chapitre 18) cale, avec ou sans blocage d'entités. Question à l'auteur : tranche à part. **L'auteur, le 2026-10-02 : plus tard, dans une tranche à part.** Vu aussi sur Giles dans A10J (E19.d2c1 C4) : sur la rampe (30,49), X ramené à 732,0 et une montée de 2,0 px par image, `0x24 @6400` deux images plus tôt ; épinglé dans l'arc avec ce renvoi. | tranche à part, plus tard |
 | O-E19-30 | **Recette T6 d'E19.b (2026-10-02, auteur)** : la scène de la vision de Lars et Melzas (476) s'affiche mal : carte en partie noire derrière un halo elliptique, personnages mal affichés (captures de l'auteur). Pistes connues, non vérifiées : effets de carte non exportés (l'aura de la 476, E19.g, D-E19-7), masque des couches de fond `0xA4` et balancement `0x8E`/`0x8F` sautés (E19.k), autres opcodes d'affichage sautés sur la 476. À établir par une découverte en lecture seule avant de placer la correction. **Reconnaissance du 2026-10-03** : pendant la vision, les arcs A2 et A4 ne laissent sauter que `0x4C`, `0x92`, `0x93` et `0xA2` (`AlundraVisionArcTests.cs:32`) : trois opcodes d'effets (E19.g) ; `0xA4`, `0x8E` et `0x8F` n'y sont pas exécutés ; l'export de la 476 n'a aucune donnée d'effet (D-E19-7 : le convertisseur ne les exporte pas encore). Piste la plus probable : l'aura de la 476, non dessinée (E19.g) ; non vérifié en jeu. | E19.g (à confirmer) |
@@ -4854,6 +5095,9 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-37 | **`0x87` et `0x95`** (prédicats d'attaque) : ils lisent `TouchingEntity`, l'attaque courante et les boîtes de coup, que rien n'écrit dans la DLL ; restés sautés jusqu'à E14 (sur la chaîne, 10 `C[75] @6418` rend 0 dans toutes les scènes, comme le saut). Avec eux, la question Q-A2 : sur la 226 (le poulet, `C[14]`), quatre sites de `0x95` lisent les index 8 à 11 au-delà de la table des armes ; le binaire lit les octets suivants (seul 10, la flèche, peut correspondre), la décompilation lèverait une exception : copier ou corriger ? | E14 |
 | O-E19-38 | **Scanner de portails** : la décompilation (et la DLL, `AlundraPortalTrigger.cs:21-32`) s'arrête sur un portail de `DestMapId` nul, le binaire (`0x8003166C` et ses 5 appelants) ne le teste jamais ; aucun des 3316 portails exportés n'a `DestMapId` nul : sans effet, gardé par E19.l1. | E19.m |
 | O-E19-39 | **`0x82`, sous-cas `0x50` à `0x56`** (vie, magie et effets du héros) : portés en E19.l2 comme « `Result` 1, rien d'écrit, trace `Degraded` » ; seuls `0x53` (vie max + 1, vie pleine, son `0x31`, effets) et `0x54` (vie + 2) ont été lus dans le binaire, et l'emplacement de la vie du héros (entité `+0x14/+0x18` ou `PlayerStats`) et leur synchronisation n'y sont pas établis. 8 sites `0x53` (vases de vie), aucun sur la chaîne. | E14, E19.g |
+| O-E19-40 | **Aimantation de descente** (découverte d'E19.h, surface C) : le moteur accepte un sol jusqu'à 4 px sous le pied, une fois par image sur tout le déplacement de l'image (`CharacterControllerComponent.Update`, `GroundSnapDistance` 4 exporté par `SpriteWriter.cs` ~389 et ~432) ; le binaire, 3 px par tick (`0x80037848`). Sur la chaîne, aucune descente de plus de 3 px par tick ; l'écart ne se voit qu'aux images de rattrapage (une pose de chute d'une image). Exporter 3 px casserait SJ-11 et les épingles des PNJ. Un plan moteur (sol résolu par tick) ou un pas vertical tenu par la DLL au sol : consigné, liée à D5 (F3, UH-7b). | plus tard (moteur) |
+| O-E19-41 | **Sons des changements d'animation** (découverte d'E19.h, surface C, question Q-H1 à l'auteur) : le binaire (`UpdateAnimation` `0x80038BB0`-`0x80038BC8`) joue le son de l'animation à chaque changement d'animation de **toute** entité (nouvelle animation, nouvelle ligne de direction, fin de chaîne, `0x1C`, et l'apparition, `InitializeEntity`) ; identifiant `Sfx`, + 0x100 si le bit 0x20 de l'octet 0xD ; la DLL ne joue que le décollage du héros (R8). Porté, il ajoute des sons dans des scènes de la chaîne : 476 (Melzas, 219 au chargement et à `0x8A @553`, 220 à `0x59 @572`), 392 (la course du héros à `0x5B @64`, son 13), le livre de la 178 et de la 179 (204 deux fois), la boule de fer de la 135 (120 à chaque cycle) ; un héros qui arrive par `0x53` en animation de saut réentend le son du décollage. **Questions** : porter la règle pour toutes les entités maintenant (recommandé : oui, comme l'original) ? garder le son à l'arrivée (recommandé : oui, même porte que les autres sons) ? | auteur, puis une sous-tranche d'E19.h |
+| O-E19-42 | **Résolution exacte des contacts** (découverte d'E19.h, surface B, question Q-H2 à l'auteur) : le binaire divise le pas conjointement en 16.16 (`ComputeXYPosition` `0x80037730`) ; une poussée en diagonale contre un PNJ ou contre la pointe d'un coin arrête net Alundra, et le contact est en unités 16.16 (le dernier demi-pas peut s'arrêter 1 à 3 unités avant à l'est et au sud, `ForceAdjusted` un tick plus tard) ; dans la DLL elle glisse le long, et arrive au contact un tick plus tôt à l'est et au sud (O-E19-28 a à d). Le porter demande un plan moteur (un résolveur horizontal tenu par le jeu) et une ADR ; quelques épingles de contact relationnelles bougent de 0 à 3 unités. D-E19-9 ne promettait que le glissement (E19.h4). **Question** : porter la résolution exacte (étape 2), ou accepter le glissement de la DLL ? (recommandé : étape 1 maintenant, étape 2 seulement si l'auteur veut la sensation exacte). | auteur, puis plan moteur |
 
 ## 4. Hors périmètre
 
