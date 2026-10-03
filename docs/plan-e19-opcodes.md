@@ -4632,7 +4632,7 @@ périmètre, nommément : D5 d'E19.d2c2 (en pause pour l'auteur), O-E19-29, O-E1
 - **questions à l'auteur** (consignées, elles n'arrêtent pas h1, h3 et h4) : Q-H1 sons des changements d'animation pour
   toutes les entités (O-E19-41) ; Q-H2 résolution exacte des contacts, étape 2 du glissement, plan moteur (O-E19-42).
 
-##### 1.2n.1 E19.h1 — Attentes `0x21`, `0x26`, `0x47`, `0x48` et `0x6F` ⏳
+##### 1.2n.1 E19.h1 — Attentes `0x21`, `0x26`, `0x47`, `0x48` et `0x6F` ✅ (recette H1-3 en attente)
 
 **Relecture** (2026-10-03) : REVISE n°1, quatre blocages, tous sur la partie « Z sans contrôleur et apparition » (le harnais
 d'intro pilote déjà des mandataires nus par sa propre passe verticale ; une entité sans contrôleur n'a ni gravité ni
@@ -4669,7 +4669,13 @@ ses points à concevoir) ; E19.h1 ne garde que les attentes sans question de con
   `01 6F FF` : `Result` = `CollidedWithEntityZ` (0 ou 1). Rouges : aujourd'hui chaque opcode est sauté, le programme continue
   au premier appel et `Result` reste tel quel. Commit : `feat(alundra): port the Z wait opcodes 0x21, 0x26, 0x47, 0x48 and 0x6F like the binary`
   - Fait le 2026-10-03 : 20 cas dans `AlundraZWaitOpcodesTests` ; rouges d'abord sur le code d'avant (12 rouges : opcodes sautés, ex. `0x21` à 16 px rend `(4,0xFF,0)` au lieu de `(1,0x21,0)`, `Parameters[2]` 0 au lieu de 3145728, `0x47`/`0x48`/`0x26` en attente finissent `(1,op,1)`, `0x6F` laisse `Result` à 9 ; les 8 cas « fin immédiate » passaient déjà, le saut rend la même taille), verts après, valeurs écrites tenues ; suite Debug 2460/2460 ; libellés H1-R2 corrigés, `ImplementedOpcodes` reçoit `0x21 0x26 0x47 0x48 0x6F` ; six traces inchangées (`git diff --ignore-cr-at-eol` à 0). Aucun écart au plan ; `0x21` écrit le mémo même quand le contact termine au premier appel (le binaire appelle `0x20` d'abord).
-- ⏳ **H1-2 — Vérification et clôture.** **H1-3 — Recette** (auteur, hors chaîne) : une flamme (carte 26) avance jusqu'au mur
+- ✅ **H1-2 — Vérification et clôture.** Vérifié le 2026-10-03 : `Alundra.Tests` 2440 → 2460 (+20), 0 échec, en Release
+  (44 s) puis en Debug (46 s), la Debug en dernier ; `cmp` sans écart (sha256 `21786093...9869`) ; les six traces à l'octet.
+  Vérificateur neuf : **CONFIRMED** (chaque gestionnaire relu dans le binaire, décalage arithmétique, ordre du mémo de `0x21`
+  au premier appel ; mutations attrapées ; aucun site de ces cinq opcodes sur une entité sans contrôleur ni sur la chaîne).
+  Avis reportés à E19.m : P4 l'octet fort de la distance de `0x21` n'est pas testé (tous les sites du corpus ont `v2` 0) ; P4
+  un décalage logique et l'ordre du mémo ne sont pas observables.
+- 🧪 **H1-3 — Recette** (auteur, hors chaîne) : une flamme (carte 26) avance jusqu'au mur
   au lieu de s'éteindre au départ ; sur la chaîne, aucun écart.
 
 **Acceptation d'E19.h1.**
@@ -5165,6 +5171,12 @@ Réservé aux mesures faites en exécutant les tranches.
   (47 s) ; `cmp` sans écart.
 - **Test statique** : liste fermée 153 → 140, 17 cartes sans site ; `0x9F` n'est plus une attente ; un seul site de
   prédicat de niveau S reste connu, 10 `C[75] @6418` (`0x95`, E14).
+
+### E19.h1 (2026-10-03)
+
+- **Commits** : plan `5bbfb42`, H1-1 `b3a4d5d`, puis cette clôture.
+- **Suites** : `Alundra.Tests` **2440 avant la sous-tranche, 2460 après** (+20), 0 échec, en Release (44 s) puis en Debug
+  (46 s) ; `cmp` sans écart ; la liste fermée de la chaîne inchangée (140 lignes).
 
 ## 3. Points ouverts
 
