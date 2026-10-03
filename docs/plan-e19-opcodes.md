@@ -4446,7 +4446,7 @@ boîtes de l'inventaire.
   La branche `chantier/e19f1-dialogue-boxes` du sous-module de l'analyseur (`b92b7b9`) n'est pas mergée : le pointeur du parent la
   désigne, comme les chantiers précédents.
 
-##### 1.2j.3 E19.f2 — Boîte de texte fidèle ⏳ (planifiée : f2a détaillée, f2b esquissée)
+##### 1.2j.3 E19.f2 — Boîte de texte fidèle ⏳ (planifiée : f2a détaillée, f2b esquissée ; relecture n°1 REVISE, révisée)
 
 **Découpage** (2026-10-03) : **f2a** porte la logique de la boîte au tick près dans la DLL, sans vue (le directeur et son état,
 les opcodes `0x4C` à `0x51`, les sons, les drapeaux à leur glyphe), avec la vague de ré-épingles des tests ; **f2b** branche la vue
@@ -4495,21 +4495,35 @@ L, U). Faits porteurs **[binaire]** (adresses dans les notes) :
   d'un coup et ne doit jamais attendre.
 
 **Décision à prendre par cette tranche, consignée en ADR-0029** : la boîte suit le binaire (règles ci-dessus) ; les drapeaux du
-texte sont posés à leur glyphe (fin de D-E12-4, que remplace cette ADR) ; la passe de la boîte tourne au début de chaque tick
-logique, avant les événements de carte, sur la manette du tick précédent ; les deux défauts corrigés.
+texte sont posés à leur glyphe (fin de D-E12-4, que remplace cette ADR) ; à chaque tick logique, la passe de la boîte tourne
+avant les événements de carte du même tick, sur la manette du tick précédent, et la porte des événements de carte est relue après
+elle (ordre détaillé en F2-R1) ; écart nommé : les scripts d'entités, mis à jour par le moteur avant le mandataire du monde, voient
+une libération un tick plus tard que le binaire ; les deux défauts corrigés.
 
-###### E19.f2a — Logique de la boîte au tick près ⏳ (planifiée)
+###### E19.f2a — Logique de la boîte au tick près ⏳ (planifiée ; relecture n°1 REVISE, révisée)
 
 **Règles.**
-- **F2-R1 — Place de la passe** : dans la boucle des ticks d'`AlundraWorldProxy.Update`, la passe de la boîte tourne au début du
-  tick, avant la passe de la manette du tick (`TickPad.Update`) et avant les événements de carte : elle lit l'état de la manette
-  laissé par le tick précédent, appui naissant et maintien de Carré, comme le binaire lit la manette de l'image précédente ; une
-  boîte ouverte au tick N fait sa première mise à jour à N+1. `gameplayBlocked`, calculé une fois avant la boucle, ne change pas de
-  rôle ; une boîte en mode MenuOpen libérée au tick T+18 rend la main aux scripts dès ce tick (le drapeau tombe avant les
-  événements de carte). L'avis A1 d'E12.a est clos.
+- **F2-R1 — Ordre d'un tick** (révision n°1 : la porte calculée une fois par image et la boucle de la manette, qui fait tous
+  les ticks avant les événements de carte, contredisaient l'ordre du binaire, `AlundraWorldProxy.cs` ~1998-1999, ~2022-2061,
+  ~2082-2101, ~2127-2132) : la passe de la manette enregistre l'état de Carré de chaque tick (maintien et appui naissant) ; la
+  boucle des ticks des événements de carte devient une boucle qui tourne toujours (même jeu bloqué) et fait, à chaque tick k :
+  (1) la passe de la boîte, sur l'état de Carré du tick k−1 (celui de la dernière passe de l'image précédente pour k = 0), comme le
+  binaire lit la manette de l'image précédente ; (2) la porte relue (`GameplayBlockedMask`, transition de warp) ; (3) si le héros
+  existe et la porte est ouverte, les événements de carte puis le recyclage (R3) ; les déclencheurs en attente relisent la porte
+  après la boucle ; l'ancienne passe de dialogue (~2217) disparaît. Conséquences : une boîte ouverte au tick N fait sa première
+  mise à jour à N+1 ; une boîte libérée à T+18 rend la main aux événements de carte dès T+18, en mode 1 comme en mode MenuOpen ;
+  sur une image de rattrapage, boîte et événements de carte s'entrelacent tick par tick (B0 M0 B1 M1), comme le binaire ; **écart
+  nommé** : les scripts d'entités, mis à jour par le moteur avant le mandataire du monde (ordre existant de la DLL), voient la
+  libération à T+19 et un verrou `0x4D`/`0x51` posé par un script d'entité au tick k agit à la passe de la boîte de k+1 ; le
+  déclencheur d'inventaire ne change pas de place. L'avis A1 d'E12.a est clos.
 - **F2-R2 — Machine de la boîte** : le directeur porte l'état du binaire (glissements, porte de pas, pas, lignes et défilement,
   curseur, voix, fermeture, libération) exactement comme les faits ci-dessus, D-E19-62 et D-E19-63 compris, sans dépendre d'une
   vue : il tourne avec ou sans présentateur visuel ; « a un présentateur » garde son sens d'aujourd'hui (un chemin non dégradé).
+  **Pendant un choix en attente** (révision n°1), la machine de la boîte continue de tourner comme dans le binaire (la boîte de
+  choix est un autre emplacement du répartiteur) : le retour immédiat sur `_awaitingChoice` (`AlundraDialogueDirector.cs:314`)
+  ne gèle plus la boîte ; la liste de choix du moteur reste celle d'aujourd'hui jusqu'à E19.f3. **L**, le tick du `0x51` qui suit
+  un choix, est le tick où `0x44` rend son résultat (le premier appel de `0x44` après `SelectChoiceForTests`) ; le `0x51` qui le
+  suit dans le même tick pose le verrou ; l'oracle prend la même définition.
 - **F2-R3 — Texte** : la page Yarn est découpée en pas à partir de son texte et de ses marqueurs (`br` = `\N`, `glyph` = un
   glyphe `\W`, `voice`, `center` = `\H`, `slow` = `\T`, `flag` posé à sa position, `yield` = `\Y`, `empty`) ; `\A` est la frontière
   de page de l'export (ADR-0006) : une page suivante est un `\A` ; un drapeau est posé dans le pas où l'interpréteur l'atteint (fin
@@ -4518,11 +4532,16 @@ logique, avant les événements de carte, sur la manette du tick précédent ; l
   suivent le binaire (`0x51` devient un verrou) ; `0x39` attend la libération (T+18).
 - **F2-R5 — Sons** : 6 à l'ouverture (tick N), 7 au déclenchement de la fermeture, voix 79 à 82 ; par le lecteur du monde (le
   directeur en reçoit un, comme les directeurs d'inventaire).
-- **F2-R6 — Accès de test** : `CurrentLineForTests` rend toujours la page entière (8 fichiers de test l'utilisent) ; un accès à part
-  rend le préfixe tapé et l'état (phase, y, lignes, curseur, attente d'appui) ; aucun mode rapide de production.
+- **F2-R6 — Préfixe et accès de test** (révision n°1) : en f2a, la boîte du moteur montre le **préfixe tapé** : le directeur
+  renvoie au présentateur, à chaque pas qui change le texte visible, la page tapée jusque-là (glyphes en font3, retours de ligne) ;
+  le présentateur de capture ne pose plus les drapeaux à `ShowLine` (le directeur les pose à leur pas, F2-R3) ; `CurrentLineForTests`
+  lit la page entière **chez le directeur**, plus chez le présentateur (8 fichiers de test l'utilisent) ; un accès à part rend le
+  préfixe tapé et l'état (phase, y, lignes, curseur, attente d'appui) ; aucun mode rapide de production. Tests : le présentateur
+  reçoit un préfixe qui grandit ; `CurrentLineForTests` rend la page entière pendant la frappe.
 
 **Oracle de test** : `AlundraTextBoxOracle` (projet de tests), port en C# du modèle tiré du binaire, écrit depuis les règles et
-`model.py`, **jamais** depuis le code du directeur ; ses propres tests reprennent les valeurs de `selftest()` (glissements, AB :
+`model.py`, **jamais** depuis le code du directeur ; il lit la **page Yarn exportée** (texte et marqueurs, espaces de bord déjà
+coupés par D-E15-8), pas le texte brut des cartes ; ses propres tests reprennent les valeurs de `selftest()` (glissements, AB :
 glyphes 19 et 23, fin 27, fermeture par minuterie 387, libération 405 ; pad A : 19, 20, 21, 22, 40 ; `\T` ; défilement de 4
 lignes ; `\N\A` ; verrou `0x4D` ; images du curseur) et les trois textes réels, corrigés de D-E19-62 et D-E19-63 là où ils
 jouent.
@@ -4537,15 +4556,27 @@ relâchent une image puis l'enfoncent (un appui naissant) ; l'oracle reproduit l
   manette des arcs, calculées d'avance par l'audit des valeurs avec `model.py` corrigé de D-E19-62 et D-E19-63).
 - **F2A-2 — Directeur et opcodes** : F2-R1 à F2-R6 ; tests unitaires de la boîte contre l'oracle (synthétiques et trois textes
   réels sous la manette des arcs).
-- **F2A-3 — Vague de ré-épingles**, dans le même commit que F2A-2 (chaque commit vert) : classe R (valeurs re-dérivées : nouvelle
-  valeur = ancienne + somme des écarts des boîtes en amont donnés par l'oracle, phases des attentes périodiques des autres acteurs
-  justifiées une à une ; un écart non expliqué est un arrêt) ; classe C (aide et budget `FrameLimit` seulement : toute valeur qui
-  bouge est un arrêt) ; classe L (les 32 lignes `0x4C`/`0x4D` de `story-chain-skipped-opcodes.tsv`, A6 `:38`, `:186`, A11
-  `:356-364`, `AlundraEventProgramRunnerTests.cs:322-330`) ; classe U inchangée.
+- **F2A-0 — Table des épingles, avant F2A-2** (révision n°1) : l'audit des valeurs écrit l'annexe versionnée
+  `docs/plan-e19-f2a-valeurs.md` (patron de `docs/plan-e19-d2c-valeurs.md`), une ligne par assertion de classe R de la liste
+  fermée : valeur d'avant ; boîtes traversées ; durée de chaque boîte aujourd'hui (déduite des règles d'aujourd'hui : une page par
+  appui, fermeture au tick de l'appui ou du `0x51`, avec la manette des arcs d'aujourd'hui) et sous la boîte fidèle (oracle, sous
+  la nouvelle manette des arcs) ; nature de l'épingle et nouvelle valeur. Deux natures : **(a) valeur de la boîte** (tests de la
+  boîte, A6 dont les attentes sont pures, A8, A9, A20, A12 ré-ancré) : nouvelle valeur écrite d'avance ; **(b) ré-ancrage** (A10,
+  A11 : attentes périodiques d'autres acteurs, attentes physiques `0x24`/`0x0B`) : l'épingle absolue devient « image de libération
+  de la dernière boîte traversée + l'écart d'aujourd'hui », écart écrit d'avance, avec une marge écrite d'avance égale à la période
+  de l'attente périodique de l'acteur qui suit (Wendell 3, Meade 2) ; toute autre différence est un arrêt. Budgets `FrameLimit` :
+  fin prédite + 20 %. La table est commitée avant F2A-2.
+- **F2A-3 — Vague de ré-épingles**, dans le même commit que F2A-2 (chaque commit vert) : chaque assertion de classe R prend la
+  valeur de sa ligne de la table, rien d'autre ; une mesure qui diffère de la table est un arrêt ; classe C (aide et budget
+  seulement : toute valeur qui bouge est un arrêt) ; classe L (les 32 lignes `0x4C`/`0x4D` de `story-chain-skipped-opcodes.tsv`,
+  A6 `:38`, `:186`, A11 `:356-364`, `AlundraEventProgramRunnerTests.cs:322-330`) ; classe U inchangée ; tests nouveaux : la
+  libération d'une boîte MenuOpen vue par un `0x39` d'événement de carte à T+18, l'entrelacement sur une image de rattrapage, une
+  boîte qui finit sa frappe pendant un choix en attente, le préfixe reçu par le présentateur.
 - **F2A-4 — ADR-0029** et le plan.
 
 **Acceptation.**
-1. Oracle : ses tests verts aux valeurs écrites d'avance ; tests de la boîte rouges d'abord, verts après.
+1. Oracle : ses tests verts aux valeurs écrites d'avance ; l'annexe des épingles commitée avant F2A-2 ; tests de la boîte rouges
+   d'abord, verts après ; chaque épingle ré-épinglée égale à sa ligne de l'annexe.
 2. Tests existants touchés, liste fermée (`e19f2-disc/impact/notes.md` §0) : classe R — `AlundraDialogueFramePassTests.cs:81-136`,
    `:163-222` ; `AlundraDialogueOpcodeDispatchTests.cs:134-187`, `:268-298` ; `AlundraDialogueOpcodesProductionTests.cs:71-420` ;
    `AlundraGlobalFreezeEntityUpdateTests.cs:174-187` ; `AlundraSaveBookTests.cs:101-194` et les appels d'`AssertReleased` ;
@@ -4554,8 +4585,9 @@ relâchent une image puis l'enfoncent (un appui naissant) ; l'oracle reproduit l
    (`AlundraInoaDayOneArcTests.cs:69-87`, `:184-284`, `:345-433`), A12 (`AlundraBergusJumpArcTests.cs:44-66`), A9
    (`AlundraVisionAndCoastArcTests.cs:470-512`) ; classe C — budgets et aides de A2, A4, A4p, T-A19, T-A10v, T-B9, A13 à A18, A1,
    A1c, A10J, `AlundraSaveBookEndToEndTests` ; classe L ci-dessus ; `AlundraArcSupport.cs` (aide de manette, budgets) ; harnais
-   d'intro : seul le bloc `if (_installDialogueDirector)` de `RunFramesForTest` (`IntroTraceHarnessTests.cs:586-589`). Toute autre
-   assertion qui bouge est un arrêt.
+   d'intro : seul le bloc `if (_installDialogueDirector)` de `RunFramesForTest` (`IntroTraceHarnessTests.cs:586-589`) ; les tests du
+   présentateur qui supposent une ligne par page, que l'audit des valeurs nomme dans l'annexe avant F2A-2. Toute autre assertion
+   qui bouge est un arrêt.
 3. Les six traces à l'octet (la trace d'intro ne voit aucun opcode de dialogue et tourne sans directeur).
 4. `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
 5. **Recette F2a** (auteur, sans vue fidèle avant f2b : la boîte du moteur affiche le préfixe tapé) : la frappe lettre à lettre, le
