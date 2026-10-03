@@ -6423,6 +6423,31 @@ n'est demandé, et l'original lirait au-delà de la table (point ouvert à consi
   avec un groupe nul, pas avec une carte d'un autre groupe ; P4 la période de l'auto-chaîne n'est pas épinglée. **Reste la recette T6
   de l'auteur.**
 
+### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 en préparation)
+
+**Recensement** (2026-10-03, lecture seule ; table complète versionnée dans `docs/plan-e19-m-annexe/backlog-2026-10-03.md`, en
+anglais) : 46 points M-01 à M-46, chacun vérifié contre le code de `bafbd5a`, classé (test seul, commentaire ou doc, petit correctif
+de production, décision de l'auteur, autre tranche) et groupé : **G1** tests seuls, faisables maintenant ; **G1-late** tests seuls,
+après f2a ; **G2a/G2b** commentaires et docs ; **G3** interpréteur et table des tailles, après f2a (`0x5F` de taille 8, libellés
+`0x35`/`0x36` inversés qui changent deux traces, `InitializeEventData`, recherches sans allocation) ; **G4** petits correctifs de
+fidélité hors f2a et G0 (balayage des portails, deux portes de l'aimantation au sommet, exemption d'apparition et ligne de direction,
+plafond absolu) ; **G5** moteur (erreur du réglage qui ne nomme pas la clé) ; **G6** décisions de l'auteur ou autres tranches ;
+**G7** tests statiques du corpus, en dernier. La marche de la chaîne portée en Python retrouve exactement les 134 lignes de
+`story-chain-skipped-opcodes.tsv`.
+- **M-04, à corriger d'abord (E19.m0)** : les modes aléatoires 4 et 5 de `ResolveDirectionFromParam` lèvent toujours
+  `NotSupportedException` (`AlundraEventProgramRunner.cs` ~3024-3030) ; le mode 4 est atteint à la carte 167 (Inoa, intérieur),
+  enregistrement 1, `C[4]` `@144` et `@186` (`0x5A [0x80, 0x80]`), environ 120 ticks après le chargement si T1 n'est pas posé ; rien ne
+  rattrape l'exception : **plantage probable du jeu** (preuve statique, non reproduite). Le générateur du binaire est déjà porté
+  (`AlundraRandom`).
+- **Points pour l'auteur** (G6) : M-03 `0x01` rend 0 dans la décompilation, 1 dans la DLL (0 site du corpus ; des tests s'en servent
+  comme bourrage) ; M-05 le test statique « aucun opcode atteignable sauté hors E14 et E18 » ne peut pas passer de longtemps : 22
+  opcodes (483 sites) sans propriétaire (`0x60` 172 sites, `0x6A`, `0x96`, `0x6B`, `0x6D`, `0x97`, `0xAA`, `0x72`, `0x56`, `0x61`,
+  `0xC3`, `0x6C`, `0xB2`, `0xA9`, `0xB5`, `0x88`, `0xC0`, `0xC1`, `0xC2`, `0xB6`, `0xB3`, `0x3D`), les autres à E19.g (1427), E14 (318),
+  E19.h1b2 (283), E19.f (97), `0xB9` (42), E18 (2) : proposition, une liste versionnée avec une colonne de propriétaire ; M-12 réemploi
+  des créneaux et plafond de 63 entités (E14 ou E19.m) ; M-36 langue de la section de doc du moteur ; M-39 dépend du préréglage
+  `day3-start` (O-E19-33) ; M-41 écraser K1 à K3 avant le merge ; M-27 l'attribution des commits aux exécuteurs ; M-06 et M-08
+  (O-E19-2, O-E19-25) relèvent de la décompilation et des scripts de recensement, hors du portage (règle de l'auteur du 2026-10-03).
+
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
 Chaque arc part d'une carte chargée seule, avec des drapeaux posés et le héros placé. Les valeurs
