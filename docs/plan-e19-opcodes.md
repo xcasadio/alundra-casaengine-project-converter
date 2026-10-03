@@ -5159,9 +5159,21 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
   `+0x48` = −1, écrit en `0x8003B21C`) ; la recherche par id brut (`0x8003C954`) ne teste pas l'état du candidat : un cadavre
   reste trouvable jusqu'au recyclage. **Moteur** : `World.RemoveEntity` appelle `Entity.Destroy()` (`ToBeRemoved`), et la boucle
   de `World.Update` retire l'entité et rend ce que tiennent ses composants (ADR-0037 du moteur).
+  **Relecture** (2026-10-03) : REVISE n°1 et audit des valeurs : la liste fermée des tests touchés était incomplète (A0, A0b,
+  A1 et A10J observent un cadavre ; l'épingle des blocs est dans A17, pas A18 ; A8 ne change pas) et la porte `0x48` est relue
+  après les événements de carte (`0x8003B38C`) : corrigé ci-dessous. Critère de l'audit : tout `EntityByRecord`, toute lecture
+  d'`Entities` et toute référence capturée dans `Alundra.Tests/*Arc*.cs` dont l'enregistrement est détruit (`0x2E`, `0x19` suivi
+  du gestionnaire natif E, programmes de chargement) avant la lecture ; fichiers examinés : tous les arcs, les tests de
+  sauvegarde, les tests unitaires sur hôte de test et le harnais d'intro (qui ne passent pas par `AlundraWorldProxy.Update`) ;
+  sans changement : T-A19, T-A10v, A3, A6, A1c, A15, TH3b, TH4, T-C61, les gardes des `Dispose`. L'ordre du moteur est établi :
+  `World.Update` met à jour les entités, retire celles marquées `ToBeRemoved`, puis appelle le mandataire du monde ; `ArcRun.OneFrame`
+  fait de même : une destruction faite dans la mise à jour d'une entité précède toujours les événements de carte et le recyclage
+  de la même image.
   **Règles.**
   - **R3-R1 — Point de recyclage** : dans `AlundraWorldProxy.Update`, juste après **chaque** appel de `RunMapEventsPass` de la
-    boucle des ticks (dans la même porte `!gameplayBlocked`), une passe `RecycleDestroyedEntities` ; ordre par image de la DLL :
+    boucle des ticks, une passe `RecycleDestroyedEntities`, gardée par `PlayerControlFlags & 0x48` **relu après la passe des
+    événements** (le binaire relit les drapeaux au début d'`UpdateEntities`, `0x8003B38C` : un programme de carte qui détruit
+    une entité et ouvre une boîte au même tick retarde le recyclage jusqu'à la fermeture) ; ordre par image de la DLL :
     entités, événements de carte, recyclage, comme le binaire par tick (événements, recyclage, entités) ; un cadavre laissé par
     un script d'entité est vu par exactement une passe d'événements, un cadavre laissé par un programme de carte disparaît dans
     la même image.
@@ -5184,22 +5196,41 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
     Murggs va au bout : `C[6] 0x2E @712`, `C[7] @777`, `C[8] @890` exécutés, puis `B[1]` `0x05` G1650 `@114`, `0x2E [24] @117`,
     `0x11 @119`, `PlayerControlFlags & 0x04` à 0 à la fin, dans une limite de 1500 images. Rouge d'aujourd'hui : `B[1]` tourne
     sans fin en `@108`-`@111` (l'arc s'arrête à la limite sans `0x11 @119`).
-  - **R3-3 — Épingles qui observent un cadavre** (ré-épinglées, cause établie : le recyclage du binaire) : **A11**
-    (`AlundraInoaDayOneArcTests.cs` ~406-408) : le mandataire du record 4 capturé à l'image de `0x19 @451` (`Deactivated`) est
-    `Destroyed` une image plus tard et `EntityByRecord(4)` est nul (détruit par le gestionnaire natif E puis recyclé dans la même
-    image) ; **A18** (`AlundraDay3SceneArcTests.cs` ~276-280) : les blocs d'`EntityRefId` 8 à 10, capturés au départ de l'arc, sont
-    `Destroyed` à la fin et aucun ne reste dans `Entities` ; **A8** (`AlundraInoaAwakeningArcTests.cs` ~113-114, ~251) :
-    `JessStatusAfter185` devient l'état du mandataire de Jess capturé avant sa destruction (`Destroyed`). Les instants exacts sont
-    confirmés par l'audit des valeurs avant l'exécution ; une valeur contredite reste un arrêt.
+  - **R3-3 — Épingles qui observent un cadavre** (ré-épinglées, cause établie : le recyclage du binaire ; valeurs re-dérivées par
+    l'audit) :
+    - **A11** (`AlundraInoaDayOneArcTests.cs` ~406-408) : le mandataire du record 4, capturé à l'image de `0x19 @451` (189,
+      `Deactivated`), est `Destroyed` après une image (190 : détruit par le gestionnaire natif E dans sa mise à jour, recyclé
+      à la fin de la même image) et `EntityByRecord(4)` est nul ;
+    - **A17** (`AlundraDay3SceneArcTests.cs` ~276-280, l'épingle des blocs) : les blocs d'`EntityRefId` 8 à 10 n'existent qu'après
+      `B[2] 0x2D @219`-`@223` ; ils sont capturés à la trace de `0x2E @272` (tous trois encore listés, `FlagToDestroy`) ; détruits
+      par le programme de carte `B[2]` (`0x2E` `@268`, `@270`, `@272`), ils sont recyclés au même tick : à la fin de l'arc, chacun
+      est `Destroyed` et aucun ne reste dans `Entities` ;
+    - **A0** et **A0b** (`AlundraShipArcTests.cs` ~72, ~110) : le capitaine (record 2), détruit par `B[1] 0x2E [2] @545`
+      (programme de carte), est recyclé dans l'image où l'arc s'arrête : `captain.Status` est `Destroyed` ;
+    - **A1** (`AlundraShipArcTests.cs` ~130-134) : avec G870 posé, le record 2 se détruit dans son programme de chargement
+      (`A[2] @433`) pendant la passe des entités de l'image 0 et il est recyclé dans l'image 0 (la boîte de `B[3]` n'ouvre qu'à
+      l'image 4 ou plus tard) : le mandataire est capturé avant la première image, il est `Destroyed` après elle, et
+      `EntityByRecord(2)` est nul ;
+    - **A10J** (`AlundraHeroJumpArcTests.cs` ~43-50, ~144, ~166-167) : Giles (record 98) passe `Deactivated` par `0x19 @6410` à
+      F0+266, est détruit par le gestionnaire natif E à F0+267 et recyclé dans la même image : l'épingle « marqué pour destruction
+      à F0+267 » devient « le mandataire de Giles est `Destroyed` et `EntityByRecord(98)` nul à partir de F0+267 » (l'échantillon
+      ne voit plus jamais `FlagToDestroy`) ;
+    - **A8** (`AlundraInoaAwakeningArcTests.cs`) : **inchangé** : l'échantillon de Jess est pris par la trace juste après
+      `0x2E [0] @185`, dans la passe des événements, avant le recyclage : il lit encore `FlagToDestroy`.
   - **R3-4 — Décision et ADR** : D-E19-45 au plan, ADR-0024 (skill `adr`), ligne au tableau, O-E19-47 réglé.
   Commit : `fix(alundra): recycle destroyed entities through the engine like the binary` (le code, les tests, l'ADR et le plan
   ensemble, pour que le commit reste vert).
-  **Acceptation.** 1. Tests de R3-1 et R3-2 rouges d'abord, verts après. 2. Code de test existant touché, liste fermée : A11, A18,
-  A8 (leurs seules épingles de cadavre) et les tests de l'harnais d'arcs s'il faut y exposer la capture ; rien d'autre ; les six
-  traces à l'octet (le harnais d'intro ne passe pas par `AlundraWorldProxy.Update`). 3. `Alundra.Tests` sans échec en Release
+  **Acceptation.** 1. Tests de R3-1 et R3-2 rouges d'abord, verts après ; l'exécution rouge de R3-2 sur le code d'aujourd'hui
+  doit montrer `C[8] 0x2E @890` exécuté (sinon le script du Murgg 2 cale aussi : arrêt et diagnostic). 2. Code de test existant
+  touché, liste fermée : A11, A17, A0, A0b, A1, A10J (leurs seules épingles de cadavre) et `AlundraArcSupport.cs` s'il faut y
+  exposer une capture ; rien d'autre ; les six traces à l'octet (le harnais d'intro ne passe pas par
+  `AlundraWorldProxy.Update`) ; aucune erreur nouvelle au journal (`AssertNoUnexpectedError`) quand le moteur détache les
+  composants d'une entité recyclée. 3. `Alundra.Tests` sans échec en Release
   puis en Debug, `cmp` sans écart. 4. Recette (auteur) : la carte 15, le contrôle revient après les Murggs.
   **Risques.** D'autres attentes hors combat se débloquent (exemple : carte 6, `B[2] @239`, l'attente de Jess) : c'est le
-  comportement du binaire ; une épingle d'arc non recensée qui observe un cadavre rougira : arrêt et diagnostic.
+  comportement du binaire ; le détachement des composants par le moteur pourrait journaliser une erreur (arrêt et diagnostic) ;
+  le binaire rend un créneau libéré à la prochaine apparition, la DLL ajoute les nouvelles entités en fin de liste (écart
+  existant, non traité par R3).
 - ✅ **R4 — Boîtes** : décision de l'auteur du 2026-10-03 : **l'écart D-E19-28 est gardé** jusqu'à E14 (D-E19-46).
 - 🧪 **R5 — Recette** (auteur) : sortir de la chambre de la 163 (le HUD glisse à l'écran) ; la 476 (les pièces apparaissent dans
   le cadre) ; la carte 15 après R3.
