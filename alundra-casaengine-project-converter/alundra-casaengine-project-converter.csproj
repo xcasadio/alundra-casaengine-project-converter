@@ -37,6 +37,12 @@
     <None Include="..\alundra-datas-analyser\AlundraTools\AlundraTools\FontCharWidths.csv" Link="FontCharWidths.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <!-- docs/plan-e19-opcodes.md, slice E19.f2b0, F2B0-R2: same "linked, not copied" precedent - the
+         analyser owns the whole glyph table of g_fontCharWidthTable (width, height, srcX, srcY,
+         yOffset per raw code; FontCharWidths.csv keeps only the width), this converter only reads it. -->
+    <None Include="..\alundra-datas-analyser\AlundraTools\AlundraTools\FontGlyphTable.csv" Link="FontGlyphTable.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <!-- docs/plan-e12-dialogues.md, slice E12.b, D-E12-6: unlike the tables above, this one is not in
          the decompiled code at all - it is the first 1024 int16 of the game's own ETC_RES.R file, so
          the analyser dumped it once straight off that file (see EtcIndexTable.csv's own header

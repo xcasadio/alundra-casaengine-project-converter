@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -44,13 +45,17 @@ public class FontWriterTests
             Assert.Equal("Textures/font3.png", font.PageFile);
 
             // Each of the 17 proven characters (D-E15-16) points at its own CP1252 cell.
+            // E19.f2b0: the rectangle is the binary's own glyph table entry for that raw code (the
+            // annex), not the 16x16 grid cell.
+            var annex = ReadAnnex();
             foreach (var (character, rawCode) in ProvenHighCharacters)
             {
-                AssertGlyph(font, character, rawCode % 16 * 16, rawCode / 16 * 16);
+                var entry = annex[rawCode];
+                AssertGlyph(font, character, entry.SrcX, entry.SrcY, entry.Width, entry.Height);
             }
 
-            // ASCII is identity: 'A' is raw 65 -> cell (1, 4).
-            AssertGlyph(font, 'A', 1 * 16, 4 * 16);
+            // ASCII is identity: 'A' is raw 65 -> source (16, 64), 7 wide in the binary's table.
+            AssertGlyph(font, 'A', 16, 64, 7, 16);
         });
     }
 
@@ -132,7 +137,7 @@ public class FontWriterTests
             // 'œ' U+0153 <- raw 0x9C (156). CP1252 byte 0x9C is 'œ', but as a bare Latin-1/Unicode
             // code point U+009C is a control character - the one case that is not raw-code-equals-
             // codepoint (D-E15-16, FontWriter class doc comment).
-            AssertGlyph(font, 'œ', 0x9C % 16 * 16, 0x9C / 16 * 16);
+            AssertGlyph(font, 'œ', 195, 144, 9, 16); // the binary's table entry of raw 0x9C (E19.f2b0)
             Assert.False(font.Chars.ContainsKey(0x9C), "raw code 0x9C must not appear as a codepoint on its own");
         });
     }
@@ -179,12 +184,146 @@ public class FontWriterTests
             Assert.NotNull(glyph);
             Assert.Equal(9 * 16, glyph!.TextureRectangle.X);
             Assert.Equal(14 * 16, glyph.TextureRectangle.Y);
-            Assert.Equal(16, glyph.TextureRectangle.Width);
+            Assert.Equal(5, glyph.TextureRectangle.Width); // E19.f2b0: the binary's table entry (was the 16px cell)
             Assert.Equal(5, glyph.XAdvance); // FontCharWidths.csv row "233;5"
 
             Assert.NotNull(font.Glyphs['à']);
             Assert.NotNull(font.Glyphs['Ç']);
             Assert.NotNull(font.Glyphs['A']);
+        });
+    }
+
+    /// <summary>
+    /// E19.f2b0, T1: every char line carries the binary's glyph table entry of its raw code
+    /// (<c>RenderTextBitmap</c> copies <c>w x h</c> texels from <c>(srcX, srcY)</c> to <c>(pen, yoff)</c> and
+    /// advances the pen by <c>w</c>) - not the 16x16 grid cell of the source record.
+    /// </summary>
+    [Fact]
+    public void ConvertFont_EveryCharLineCarriesTheBinarysGlyphTableEntryOfItsRawCode()
+    {
+        var annex = ReadAnnex();
+
+        RunConversion((outputDirectory, report) =>
+        {
+            Assert.Empty(report.Errors);
+
+            var font = ParseBmFont(Path.Combine(outputDirectory, "UI", "font3.fnt"));
+            Assert.Equal(145, font.Chars.Count);
+
+            var wrong = new List<int>();
+            foreach (var (codepoint, glyph) in font.Chars)
+            {
+                var entry = annex[RawCodeOf(codepoint)];
+                var expected = (entry.SrcX, entry.SrcY, entry.Width, entry.Height, 0, entry.YOffset, entry.Width);
+                var actual = (glyph.X, glyph.Y, glyph.Width, glyph.Height, glyph.XOffset, glyph.YOffset, glyph.XAdvance);
+                if (expected != actual)
+                {
+                    wrong.Add(codepoint);
+                }
+            }
+
+            Assert.True(
+                wrong.Count == 0,
+                $"{wrong.Count} char lines differ from the binary's table (codepoints: {string.Join(", ", wrong.Order())}).");
+        });
+    }
+
+    /// <summary>
+    /// E19.f2b0, T2: what a renderer draws from a char line equals what the binary draws for its raw code.
+    /// Both are stamped, unclipped, on a transparent band (the line's rectangle at
+    /// <c>(xoffset, yoffset)</c>, the table's at <c>(0, yoff)</c>) and only texels of non-zero alpha count,
+    /// compared as sets of (position, RGBA) - an empty texel and a missing texel are the same on screen.
+    /// </summary>
+    [Fact]
+    public void ConvertFont_EveryCharLineDrawsTheSameOpaqueTexelsAsTheBinary()
+    {
+        if (FindRealFile("font3.png") is null)
+        {
+            return; // real data-extracted/ui/font3.png needed, like the neighbouring real-data tests
+        }
+
+        var annex = ReadAnnex();
+
+        RunConversion((outputDirectory, report) =>
+        {
+            Assert.Empty(report.Errors);
+
+            var font = ParseBmFont(Path.Combine(outputDirectory, "UI", "font3.fnt"));
+            using var page = new Bitmap(Path.Combine(outputDirectory, "UI", "Textures", "font3.png"));
+
+            HashSet<(int X, int Y, int Argb)> Stamp(int x, int y, int width, int height, int dx, int dy)
+            {
+                var texels = new HashSet<(int, int, int)>();
+                for (var row = 0; row < height; row++)
+                {
+                    for (var column = 0; column < width; column++)
+                    {
+                        var sx = x + column;
+                        var sy = y + row;
+                        if (sx < 0 || sy < 0 || sx >= page.Width || sy >= page.Height)
+                        {
+                            continue; // outside the page: transparent
+                        }
+
+                        var color = page.GetPixel(sx, sy);
+                        if (color.A != 0)
+                        {
+                            texels.Add((dx + column, dy + row, color.ToArgb()));
+                        }
+                    }
+                }
+
+                return texels;
+            }
+
+            var different = new List<int>();
+            foreach (var (codepoint, glyph) in font.Chars)
+            {
+                var entry = annex[RawCodeOf(codepoint)];
+                var drawn = Stamp(glyph.X, glyph.Y, glyph.Width, glyph.Height, glyph.XOffset, glyph.YOffset);
+                var expected = Stamp(entry.SrcX, entry.SrcY, entry.Width, entry.Height, 0, entry.YOffset);
+                if (!drawn.SetEquals(expected))
+                {
+                    different.Add(RawCodeOf(codepoint));
+                }
+            }
+
+            Assert.True(
+                different.Count == 0,
+                $"{different.Count} glyphs draw other texels than the binary (raw codes: {string.Join(", ", different.Order())}).");
+        });
+    }
+
+    /// <summary>E19.f2b0, T3: the 256 rows of font3-charset.json carry the binary's rectangle too.</summary>
+    [Fact]
+    public void ConvertFont_EveryCharsetRowCarriesTheBinarysRectangle()
+    {
+        var annex = ReadAnnex();
+
+        RunConversion((outputDirectory, report) =>
+        {
+            Assert.Empty(report.Errors);
+
+            using var document = JsonDocument.Parse(
+                File.ReadAllText(Path.Combine(outputDirectory, "UI", "font3-charset.json"), Encoding.UTF8));
+            var rows = document.RootElement.EnumerateArray().ToList();
+            Assert.Equal(256, rows.Count);
+
+            var wrong = new List<int>();
+            foreach (var row in rows)
+            {
+                var rawCode = row.GetProperty("raw_code").GetInt32();
+                var entry = annex[rawCode];
+                if (row.GetProperty("x").GetInt32() != entry.SrcX
+                    || row.GetProperty("y").GetInt32() != entry.SrcY
+                    || row.GetProperty("width").GetInt32() != entry.Width
+                    || row.GetProperty("height").GetInt32() != entry.Height)
+                {
+                    wrong.Add(rawCode);
+                }
+            }
+
+            Assert.True(wrong.Count == 0, $"{wrong.Count} charset rows differ from the binary's table.");
         });
     }
 
@@ -275,14 +414,63 @@ public class FontWriterTests
         return null;
     }
 
-    private static void AssertGlyph(BmFontDocument font, char character, int x, int y)
+    private static void AssertGlyph(BmFontDocument font, char character, int x, int y, int width, int height)
     {
         Assert.True(font.Chars.TryGetValue(character, out var glyph), $"no char id={(int)character} ('{character}')");
         Assert.Equal(x, glyph!.X);
         Assert.Equal(y, glyph.Y);
-        Assert.Equal(16, glyph.Width);
-        Assert.Equal(16, glyph.Height);
+        Assert.Equal(width, glyph.Width);
+        Assert.Equal(height, glyph.Height);
     }
+
+    /// <summary>One row of the annex: the binary's glyph table entry of a raw code.</summary>
+    private sealed record AnnexEntry(int Width, int Height, int SrcX, int SrcY, int YOffset);
+
+    /// <summary>
+    /// docs/plan-e19-f2b0-annexe/glyph_table.txt: the table at 0x800993C4 of ALUN_CD.EXE, dumped off the
+    /// binary and independent of both the decompilation and the analyser's FontGlyphTable.csv, so it is
+    /// the reference these tests compare the export against (never the converter's own output).
+    /// Columns: idx (hex raw code), w, h, srcX, srcY, yoff.
+    /// </summary>
+    private static Dictionary<int, AnnexEntry> ReadAnnex()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, "docs", "plan-e19-f2b0-annexe", "glyph_table.txt");
+            if (File.Exists(candidate))
+            {
+                var result = new Dictionary<int, AnnexEntry>();
+                foreach (var line in File.ReadAllLines(candidate))
+                {
+                    var fields = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    if (fields.Length != 6 || fields[0] == "idx")
+                    {
+                        continue;
+                    }
+
+                    result[int.Parse(fields[0], NumberStyles.HexNumber, CultureInfo.InvariantCulture)] = new AnnexEntry(
+                        int.Parse(fields[1], CultureInfo.InvariantCulture),
+                        int.Parse(fields[2], CultureInfo.InvariantCulture),
+                        int.Parse(fields[3], CultureInfo.InvariantCulture),
+                        int.Parse(fields[4], CultureInfo.InvariantCulture),
+                        int.Parse(fields[5], CultureInfo.InvariantCulture));
+                }
+
+                Assert.Equal(256, result.Count);
+                return result;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new InvalidOperationException(
+            $"no 'docs/plan-e19-f2b0-annexe/glyph_table.txt' found above '{AppContext.BaseDirectory}'.");
+    }
+
+    // The raw game code a font3.fnt char id came from: identity below 128, and 'œ' (U+0153) is raw 0x9C;
+    // every other proven high character is its own CP1252 byte (FontWriter's ProvenHighCodepoints).
+    private static int RawCodeOf(int codepoint) => codepoint == 0x0153 ? 0x9C : codepoint;
 
     private static void AssertXAdvance(BmFontDocument font, char character, int expectedAdvance)
     {
@@ -327,6 +515,8 @@ public class FontWriterTests
                         Y = fields["y"].AsInt(),
                         Width = fields["width"].AsInt(),
                         Height = fields["height"].AsInt(),
+                        XOffset = fields["xoffset"].AsInt(),
+                        YOffset = fields["yoffset"].AsInt(),
                         XAdvance = fields["xadvance"].AsInt(),
                     };
                     break;
@@ -377,6 +567,8 @@ public class FontWriterTests
         public int Y { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
+        public int XOffset { get; set; }
+        public int YOffset { get; set; }
         public int XAdvance { get; set; }
     }
 }

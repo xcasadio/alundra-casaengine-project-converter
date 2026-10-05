@@ -4845,7 +4845,7 @@ part (Q9, O-E19-64).
   (`FontGlyphTable.csv` + l'entrée `<None Update>`) ; le CSV a été relevé sur `g_fontCharWidthTable` (déclaré en
   `AlundraEngine/StaticVariables.cs:9483`, 1280 entiers) par `e19f2b0-exec/dump_csv.py` du scratchpad, hors du dépôt ; script de
   comparaison `cmp_csv_annex.py` : 256 lignes, en-tête exact, **0 écart** avec l'annexe.
-- **F2B0-2 — Convertisseur, tests d'abord** (données réelles, `data-extracted/`, sortie anticipée si absent comme les tests voisins ;
+- ✅ **F2B0-2 — Convertisseur, tests d'abord** (données réelles, `data-extracted/`, sortie anticipée si absent comme les tests voisins ;
   l'annexe est lue dans le dépôt, jamais le CSV de l'analyseur ni la sortie du convertisseur comme référence) :
   - **T1** : pour chacune des 145 lignes `char`, `(x, y, width, height, xoffset, yoffset, xadvance)` = `(srcX, srcY, w, h, 0, yoff, w)`
     de la ligne de l'annexe de son code brut ; rouge aujourd'hui sur 129 lignes ;
@@ -4861,6 +4861,17 @@ part (Q9, O-E19-64).
     attendues ; ses appels `:49` (les 17 caractères prouvés : rectangles de l'annexe), `:53` ('A' → (16, 64, 7, 16)), `:135` ('œ' →
     (195, 144, 9, 16)) ; `:182` (largeur du rectangle de 'é' 16 → 5 ; X 144 et Y 224 inchangés) ; plus ceux que nomme F2B0-0 ;
     `AlundraFont3GlyphTests.cs:508-510` reste vert ('é' toujours en 144, 224).
+  **Fait le 2026-10-05.** Analyseur : `a958d86` (F2B0-1). Convertisseur : `FontGlyphTableCatalogReader`, lien de `FontGlyphTable.csv`
+  au csproj, `FontWriter` (rectangle et `yoffset` par code brut ; repli sur l'enregistrement avec avertissement si le CSV ou une
+  ligne manque ; `yoffset` n'entre pas dans `font3-charset.json`, dont la forme ne change pas), `docs/formats/font.md`, ADR-0036
+  (Proposed : décision de la session, à confirmer par l'auteur). **Rouge d'abord, valeurs lues avant le changement du code** :
+  T1 **129** lignes `char` (les 112 codes 16 à 127 et les 17 caractères prouvés ; les codes 0 à 15 verts) ; T2 **exactement** les 16 codes 30, 31, 39, 44, 45, 49, 58, 121, 122,
+  123, 127, 156, 171, 176, 187, 233 (le code 17 vert) ; T3 **238** lignes ; la liste fermée rouge aussi : le 'é' (largeur 16 au lieu
+  de 5), 'œ' (x 192 au lieu de 195) et l'aide `AssertGlyph` sur les 17 caractères prouvés. Tests : `AssertGlyph` prend la largeur et
+  la hauteur, appels `:49` (rectangles de l'annexe), `A` (16, 64, 7, 16), 'œ' (195, 144, 9, 16), 'é' largeur 5 ; nouveau
+  `FontGlyphTableCatalogReaderTests` (3 tests : lecture, ligne mal formée avec avertissement, CSV lié : 256 lignes). **Vert après** :
+  les 12 tests des deux classes ; suite complète du convertisseur **618/618** (Debug). Le repli (CSV absent) n'a pas de test : il
+  faudrait retirer le CSV du dossier de sortie des tests.
 - **F2B0-3 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement `UI/font3.fnt`,
   `UI/font3-charset.json` et `report.json` ; double export identique hors `report.json`.
 - **F2B0-4 — Vérification** (vérificateur neuf). **F2B0-5 — Recette** (auteur) : dans l'inventaire et l'écran de sauvegarde, virgules,

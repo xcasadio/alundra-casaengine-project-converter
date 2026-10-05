@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using AlundraCasaEngineProjectConverter.Readers;
 using CasaEngine.EditorServices;
 using CasaEngine.Framework.Assets;
@@ -15,9 +16,15 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 /// Mapping decisions:
 ///  - ui/font3.json is 256 records {Code, X, Y, Width, Height, Palette}. In the extracted data every
 ///    glyph is 16x16 with Palette 8 and sits exactly at X = (Code % 16) * 16, Y = (Code / 16) * 16
-///    in the 256x256 atlas. The rectangles are still taken from the file rather than recomputed from
-///    the grid - the file is the source of truth - but a deviation from the grid is reported, since
-///    it would mean the atlas layout changed under us.
+///    in the 256x256 atlas. That 16x16 grid cell is NOT what the original draws (docs/plan-e19-opcodes.md,
+///    E19.f2b0, ADR-0036): <c>RenderTextBitmap</c> (0x800478C4) copies, for each raw code, the
+///    w x h texels the glyph table at 0x800993C4 gives from (srcX, srcY) to (pen, yoff). Each glyph's
+///    rectangle (<c>x</c>, <c>y</c>, <c>width</c>, <c>height</c>, in the char lines and in
+///    font3-charset.json) and its <c>yoffset</c> therefore come from <c>FontGlyphTable.csv</c>
+///    (<see cref="FontGlyphTableCatalogReader"/>), by the glyph's raw code. The source record's own
+///    rectangle is only the fallback when the CSV or a row is missing (a warning), and the check that
+///    the records still follow the grid stays, since a deviation would mean the atlas layout changed
+///    under us.
 ///  - font3.png goes through TextureAssetWriter into UI/Textures/, the same folder and catalog shape
 ///    Phase 7 gives every other UI texture, so the font's page is a catalogued asset and not a
 ///    stray file. The .fnt itself is catalogued too, as a plain file entry: it is not a CasaEngine
@@ -49,7 +56,8 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    game code - not by its resolved Unicode codepoint. Every row, whether or not it has a proven
 ///    character, carries its own <c>RawCode</c> and its own advance from the table. A code the CSV
 ///    has no row for (should not happen - it lists all 256 raw codes) falls back to the 16px cell
-///    width, reported as a warning.
+///    width, reported as a warning. The table's <c>width</c> equals that advance on all 145 lines
+///    written; <c>xadvance</c> and the choice of characters (ADR-0009) are unchanged by E19.f2b0.
 /// </summary>
 public static class FontWriter
 {
@@ -128,8 +136,9 @@ public static class FontWriter
         }
 
         var advanceByRawCode = ReadCharWidths(report);
+        var glyphTable = ReadGlyphTable(report);
 
-        var charsetRows = BuildCharset(records, advanceByRawCode, report);
+        var charsetRows = BuildCharset(records, advanceByRawCode, glyphTable, report);
         WriteFontFile(outputDirectory, charsetRows, report);
         WriteCharsetFile(outputDirectory, charsetRows);
 
@@ -161,6 +170,29 @@ public static class FontWriter
         return result.AdvanceByRawCode;
     }
 
+    // docs/plan-e19-opcodes.md, slice E19.f2b0: FontGlyphTable.csv ships with the converter the same
+    // way FontCharWidths.csv does (see alundra-casaengine-project-converter.csproj). Missing: every
+    // glyph falls back to the rectangle of its source record, reported as a warning.
+    private static IReadOnlyDictionary<int, FontGlyphTableCatalogReader.GlyphEntry> ReadGlyphTable(ConversionReport report)
+    {
+        var csvPath = Path.Combine(AppContext.BaseDirectory, "FontGlyphTable.csv");
+        if (!File.Exists(csvPath))
+        {
+            report.Warnings.Add(
+                $"Font: FontGlyphTable.csv not found at '{csvPath}'; every glyph falls back to the "
+                + "rectangle of its ui/font3.json record.");
+            return new Dictionary<int, FontGlyphTableCatalogReader.GlyphEntry>();
+        }
+
+        var result = FontGlyphTableCatalogReader.Read(csvPath);
+        foreach (var warning in result.Warnings)
+        {
+            report.Warnings.Add(warning);
+        }
+
+        return result.EntryByRawCode;
+    }
+
     private static List<FontGlyphRecord> ReadGlyphRecords(string fontJsonPath)
     {
         using var stream = File.OpenRead(fontJsonPath);
@@ -184,7 +216,10 @@ public static class FontWriter
     }
 
     private static List<CharsetRow> BuildCharset(
-        List<FontGlyphRecord> records, IReadOnlyDictionary<int, int> advanceByRawCode, ConversionReport report)
+        List<FontGlyphRecord> records,
+        IReadOnlyDictionary<int, int> advanceByRawCode,
+        IReadOnlyDictionary<int, FontGlyphTableCatalogReader.GlyphEntry> glyphTable,
+        ConversionReport report)
     {
         var rows = new List<CharsetRow>(records.Count);
 
@@ -211,16 +246,31 @@ public static class FontWriter
                     + $"falling back to the fixed {CellSize}px cell width.");
             }
 
+            // E19.f2b0: the rectangle the original copies for this raw code; the source record's own
+            // rectangle only when the table has no row for it.
+            int x = record.X, y = record.Y, width = record.Width, height = record.Height, yOffset = 0;
+            if (glyphTable.TryGetValue(record.Code, out var entry))
+            {
+                (x, y, width, height, yOffset) = (entry.SrcX, entry.SrcY, entry.Width, entry.Height, entry.YOffset);
+            }
+            else if (glyphTable.Count > 0)
+            {
+                report.Warnings.Add(
+                    $"Font: FontGlyphTable.csv has no row for raw code {record.Code}; "
+                    + "falling back to the rectangle of its ui/font3.json record.");
+            }
+
             var hasCharacter = TryGetCodepoint(record.Code, out var codepoint);
 
             rows.Add(new CharsetRow
             {
                 RawCode = record.Code,
                 Codepoint = hasCharacter ? codepoint : null,
-                X = record.X,
-                Y = record.Y,
-                Width = record.Width,
-                Height = record.Height,
+                X = x,
+                Y = y,
+                Width = width,
+                Height = height,
+                YOffset = yOffset,
                 Palette = record.Palette,
                 Advance = advance,
                 InFont = hasCharacter,
@@ -274,7 +324,7 @@ public static class FontWriter
             builder.AppendLine(string.Create(
                 CultureInfo.InvariantCulture,
                 $"char id={row.Codepoint!.Value} x={row.X} y={row.Y} width={row.Width} height={row.Height} "
-                + $"xoffset=0 yoffset=0 xadvance={row.Advance} page=0 chnl=15"));
+                + $"xoffset=0 yoffset={row.YOffset} xadvance={row.Advance} page=0 chnl=15"));
         }
 
         var targetDirectory = Path.Combine(outputDirectory, UiRelativeDirectory);
@@ -319,7 +369,8 @@ public static class FontWriter
 
     /// <summary>
     /// One row of UI/font3-charset.json: the raw game code, the code point it was mapped to (null when
-    /// D-E15-16 has no proven character for this cell), its cell in the atlas, the source palette
+    /// D-E15-16 has no proven character for this cell), its rectangle in the atlas (the binary's glyph
+    /// table entry since E19.f2b0, no longer the 16x16 grid cell), the source palette
     /// (which has nowhere to live in a .fnt) and whether the row produced a "char id" line - so the raw
     /// code and everything the .fnt cannot hold stays recoverable. <see cref="DuplicateOfRawCode"/> is
     /// always null now that no two raw codes can claim the same codepoint (see the class doc comment);
@@ -333,6 +384,12 @@ public static class FontWriter
         public int Y { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
+
+        /// <summary>The table's <c>yOffset</c>, written as the char line's <c>yoffset</c>; not part of the
+        /// charset JSON, whose shape does not change.</summary>
+        [JsonIgnore]
+        public int YOffset { get; set; }
+
         public int Palette { get; set; }
         public int Advance { get; set; }
         public bool InFont { get; set; }

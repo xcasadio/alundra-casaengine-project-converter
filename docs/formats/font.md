@@ -5,9 +5,9 @@ Code : [`Writers/FontWriter.cs`](../../alundra-casaengine-project-converter/Writ
 
 ## Ce que c'est
 
-La police bitmap d'Alundra (`ui/font3.png` + `ui/font3.json`, 256 glyphes de 16×16) convertie en un
-fichier **BMFont** (`.fnt`) qu'une bibliothèque de rendu de texte standard sait charger, plus une
-table compagnon qui garde tout ce qu'un `.fnt` ne peut pas représenter.
+La police bitmap d'Alundra (`ui/font3.png` + `ui/font3.json`, 256 glyphes dans une grille de cases de
+16×16) convertie en un fichier **BMFont** (`.fnt`) qu'une bibliothèque de rendu de texte standard sait
+charger, plus une table compagnon qui garde tout ce qu'un `.fnt` ne peut pas représenter.
 
 ## Où c'est écrit
 
@@ -57,11 +57,29 @@ texte et n'avait aucun glyphe pour « œ » ; seul « ° » était juste. Comme 
 possible : `duplicate_of_raw_code` vaut toujours `null`. Sur les 256 glyphes source, 145 ont une
 ligne `char` (`Font.Glyphs` = 145 dans `report.json`).
 
+## Rectangles : la table de glyphes du binaire
+
+Le jeu original ne dessine pas la case 16×16 de la grille : `RenderTextBitmap` (`0x800478C4`) copie,
+pour chaque code brut, les `w × h` texels que donne la table de `0x800993C4` (256 entrées de 20 octets
+`{w, h, srcX, srcY, yoff}`) depuis `(srcX, srcY)` de `FONT3.TIM`, puis avance la plume de `w`. Le
+convertisseur lit cette table dans `FontGlyphTable.csv` (livré avec lui, relevé par l'analyseur sur
+`g_fontCharWidthTable`, colonnes `code;width;height;srcX;srcY;yOffset`, 256 lignes) et en tire, par le
+code brut de la case, `x`, `y`, `width`, `height` et `yoffset` de chaque ligne `char` ainsi que
+`x`, `y`, `width`, `height` de chaque entrée de `font3-charset.json`. Sans cela, 129 des 145 lignes
+`char` désignaient une autre fenêtre que le binaire et 16 glyphes se dessinaient autrement (virgule,
+tiret, « 1 », deux-points, « œ », guillemets, « ° », pixels de la case voisine après « y », « z », « é »).
+Décision : ADR-0036 (`docs/plan-e19-opcodes.md`, E19.f2b0).
+
+Le contrôle de grille sur les enregistrements de `ui/font3.json` reste (un écart est un avertissement) ;
+si `FontGlyphTable.csv` ou une de ses lignes manque, le rectangle de l'enregistrement source est repris,
+avec un avertissement dans `report.json`. `xadvance` et le choix des caractères ne changent pas.
+
 ## Largeurs proportionnelles
 
 Chaque `xadvance` vient de `FontCharWidths.csv` (livré avec le convertisseur, portage brut de la
 table `g_fontCharWidthTable` de l'exécutable, `docs/plan-e12-dialogues.md`, E12.b), lu par le code
-brut de la case et non par son point de code. Un code absent du CSV retombe sur la largeur de
+brut de la case et non par son point de code ; il égale la colonne `width` de `FontGlyphTable.csv`
+sur les 145 lignes écrites. Un code absent du CSV retombe sur la largeur de
 cellule (16px) avec un avertissement dans `report.json`.
 
 ## Schéma — `font3.fnt` (BMFont, format texte)
@@ -73,8 +91,9 @@ Sections standard BMFont :
 - `page id=0 file="Textures/font3.png"` — chemin relatif au `.fnt`, avec des slashs directs.
 - `chars count=N` — recalculé à partir des lignes réellement écrites.
 - une ligne `char id=... x=... y=... width=... height=... xoffset=0 yoffset=0 xadvance=... page=0 chnl=15`
-  par case qui a un caractère, `id` étant le point de code Unicode et `xadvance` la largeur
-  proportionnelle de la case.
+  par case qui a un caractère, `id` étant le point de code Unicode, `x`, `y`, `width`, `height` et
+  `yoffset` le rectangle de la table du binaire (voir plus haut ; `yoffset` vaut 0 sur les 256 entrées
+  du binaire) et `xadvance` la largeur proportionnelle de la case.
 
 ## Schéma — `font3-charset.json`
 
@@ -84,8 +103,8 @@ Un tableau, une entrée par glyphe source (256 entrées, triées par code brut) 
 |---|---|---|---|
 | `raw_code` | int | Code brut du jeu (0–255) | `Code` (`ui/font3.json`) |
 | `codepoint` | int ou null | Point de code Unicode de la case (règle ci-dessus), `null` si la case n'a pas de caractère prouvé | dérivé de `Code` |
-| `x`, `y` | int | Position du glyphe dans l'atlas 256×256 | `X`, `Y` |
-| `width`, `height` | int | Dimensions du glyphe (16×16 attendu) | `Width`, `Height` |
+| `x`, `y` | int | Position du glyphe dans l'atlas 256×256 : `srcX`, `srcY` de la table du binaire | `FontGlyphTable.csv` (repli : `X`, `Y`) |
+| `width`, `height` | int | Dimensions du glyphe : `w`, `h` de la table du binaire (jusqu'à 16×16) | `FontGlyphTable.csv` (repli : `Width`, `Height`) |
 | `palette` | int | Palette source (n'a nulle part où vivre dans un `.fnt`) | `Palette` |
 | `advance` | int | Largeur proportionnelle de la case (`xadvance` du `.fnt`) | `FontCharWidths.csv` |
 | `in_font` | bool | Ce code a-t-il produit une ligne `char` dans le `.fnt` | dérivé (faux si `codepoint` est `null`) |
@@ -106,6 +125,25 @@ Un tableau, une entrée par glyphe source (256 entrées, triées par code brut) 
   "height": 16,
   "palette": 8,
   "advance": 16,
+  "in_font": true,
+  "duplicate_of_raw_code": null,
+  "reason": null
+}
+```
+
+Une entrée de `UI/font3-charset.json` où le rectangle n'est plus la case de la grille (`A`, code brut 65 :
+case de la grille en (16, 64), 16×16 ; table du binaire : 7 de large) :
+
+```json
+{
+  "raw_code": 65,
+  "codepoint": 65,
+  "x": 16,
+  "y": 64,
+  "width": 7,
+  "height": 16,
+  "palette": 8,
+  "advance": 7,
   "in_font": true,
   "duplicate_of_raw_code": null,
   "reason": null
