@@ -7901,7 +7901,7 @@ pas de `cmp` changé, traces non touchées.
 
 **Règles et tâches** (une ligne par point ; « mutation » = remplacement par script de la ligne nommée, la production remise ensuite,
 `git diff` vide ; la classe du test d'abord, la suite entière pour les points marqués) :
-- **M6-0 — Mesure d'abord** : `h4v_mut.py sign_s` du scratchpad sur toute la suite `Alundra.Tests` (Debug) : si A14
+- ✅ **M6-0 — Mesure d'abord** : `h4v_mut.py sign_s` du scratchpad sur toute la suite `Alundra.Tests` (Debug) : si A14
   (`AlundraArcSupport.cs:282-287`, la seule glissade vers le sud de la suite) rougit, TSL7 ne tue rien de neuf et M-31 « signe sud » se
   clôt sans test (précédent de M-23) ; sinon TSL7 est ajouté. Le résultat est écrit dans ce plan avant M6-2.
 - **M6-1 — M-19a** : renommer `MovePlayer_OtherAnimationId_LeftUnchanged_NotPortedCase` (`AlundraPlayerManagerTests.cs:95-110`), dont
@@ -7911,7 +7911,7 @@ pas de `cmp` changé, traces non touchées.
   `SJ4b_ATakeOffWithoutAStampOfThisTick_IsRewrittenByTheTail_EvenOnAFrameWithoutTick`, et corriger le commentaire `:266` (le héros est
   `JumpStanding`, pas « walking » ; `MotionTickCount - 1` vaut −1, la valeur « sans tampon » par défaut,
   `AlundraEntityScriptProxy.cs:268`). Aucune mutation (des noms).
-- **M6-2 — M-31, nouveaux tests dans `AlundraHeroSlideTests.cs`** (valeurs du modèle, écrites d'avance ; une valeur lue différente est
+- ✅ **M6-2 — M-31, nouveaux tests dans `AlundraHeroSlideTests.cs`** (valeurs du modèle, écrites d'avance ; une valeur lue différente est
   un arrêt) :
   - **TSL7** (si M6-0 le garde) : T-SL1 en miroir, héros en (263,0 ; 135,0), Bas tenu, vitesse d'animation 312 : Y aux ticks 1 à 8 de
     8927232 à 9961472 ; X = 17235968 + 49152 × (t − 8) aux ticks 9 à 23 ; Y 10121216 puis 10280960 aux ticks 24 et 25 ; FA 0 ;
@@ -7951,6 +7951,15 @@ pas de `cmp` changé, traces non touchées.
 3. `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans écart ; les six traces à l'octet.
 
 **Retour arrière** : revert des commits de la tranche (tests seuls).
+
+- **Fait le 2026-10-05** (commits dans l'ordre des tâches ; production, export, sous-modules et traces non touchés).
+  - **M6-0** : `h4v_mut.py sign_s` sur toute la suite `Alundra.Tests` (Debug, sans filtre) : **2647 sur 2647 verts** ; A14 ne rougit pas,
+    donc TSL7 est ajouté (il tue ce que la suite ne tuait pas).
+  - **M6-2** : `Rig` d'`AlundraHeroSlideTests.cs` gagne deux paramètres facultatifs (`probeFactory`, `configure`) ; TSL7 à TSL10 ajoutés,
+    verts sur la production à la première exécution avec exactement les valeurs écrites d'avance (y compris les contacts du moteur vers le
+    sud et l'est, 152,0 et 229,0 : aucun écart, aucun arrêt). Classe entière (12 tests) sous chaque mutation, un seul test rouge :
+    `sign_s` : TSL7 rouge, tick 9 X 17186816 ; `sign_e` : TSL8 rouge, tick 12 Y 11567104 ; `gateent` : TSL9 rouge, tick 9 X 17285120 et
+    1 glissade ; `accord` : TSL10 rouge, tick 1 FA 0. Production remise après chaque mutation (octet pour octet).
 
 ### 1.2u Recette de l'auteur du 2026-10-05 ⏳ (constat consigné ; deux défauts enquêtés)
 
