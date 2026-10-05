@@ -410,6 +410,49 @@ public class BackdropWriterTests
         }
     }
 
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void ConvertBackdrops_ForAMapWithTheOverlayGate_ExportsTheRawBGColorAAsTheOverlayBlendMode(int bgColorA)
+    {
+        RunConversion(mapLocations =>
+        {
+            var mapIndex = 389;
+            mapLocations[mapIndex] = new MapLocation("TestZone", "Open Sea-389");
+        },
+        (outputDirectory, report) =>
+        {
+            var companionPath = Path.Combine(
+                outputDirectory, "Maps", "TestZone", "Open Sea-389", "backdrop", "Open Sea-389.backdrop.json");
+            var document = JsonDocument.Parse(File.ReadAllText(companionPath)).RootElement;
+
+            Assert.True(document.GetProperty("OverlayEnabled").GetBoolean());
+            Assert.Equal(bgColorA, document.GetProperty("OverlayBlendMode").GetInt32());
+        },
+        bgColorA: bgColorA,
+        overlayColorBytes: new byte[] { 50, 0, 0 });
+    }
+
+    [Fact]
+    public void ConvertBackdrops_WithBGColorAZero_OmitsTheOverlayBlendMode()
+    {
+        RunConversion(mapLocations =>
+        {
+            var mapIndex = 389;
+            mapLocations[mapIndex] = new MapLocation("TestZone", "Open Sea-389");
+        },
+        (outputDirectory, report) =>
+        {
+            var companionPath = Path.Combine(
+                outputDirectory, "Maps", "TestZone", "Open Sea-389", "backdrop", "Open Sea-389.backdrop.json");
+            var document = JsonDocument.Parse(File.ReadAllText(companionPath)).RootElement;
+
+            Assert.False(document.GetProperty("OverlayEnabled").GetBoolean());
+            Assert.False(document.TryGetProperty("OverlayBlendMode", out _));
+        },
+        bgColorA: 0);
+    }
+
     [Fact]
     public void ConvertBackdrops_WithBGColorAZero_EmitsOverlayEnabledFalse()
     {

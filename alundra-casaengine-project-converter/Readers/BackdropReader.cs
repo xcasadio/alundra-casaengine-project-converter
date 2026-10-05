@@ -129,15 +129,19 @@ public sealed class BackdropLayerDocument
 ///
 /// Per-map full-screen tint overlay (<see cref="OverlayEnabled"/>/<see cref="OverlayColorR"/>/G/B -
 /// GraphicManager.RenderTileOverlayLayer @ 0x8005BA40, re-verified against the current source): gated
-/// on <c>Infos.Enabled != 0 &amp;&amp; Infos.BGColorA != 0</c> (BGColorA == 1 and == 2 render
-/// identically - both take the "not extended" branch below; the corpus never sets BGColorA &gt;=
-/// 0x65, which would switch to an unreached 4-corner gradient (OverlayExt) - not modeled here, a
-/// documented deviation). The RGB color is NOT <c>Infos.BGColorR/G/B</c> - those three bytes are
+/// on <c>Infos.Enabled != 0 &amp;&amp; Infos.BGColorA != 0</c>. BGColorA is also the blend mode of the
+/// overlay (<see cref="OverlayBlendMode"/>, E19.g G2d): 1 to 4 pick the semi-transparency rate
+/// <c>BGColorA - 1</c> in the same table as the layers (0x8018CF66 + 2 * BGColorA, read at
+/// 0x8005BAAC-0x8005BAC4), i.e. 1 average, 2 additive, 3 subtractive, 4 quarter; the corpus holds only
+/// 1 (15 maps) and 2 (map 293, the burning Inoa). The corpus never sets BGColorA &gt;= 0x65, which
+/// would switch to an unreached 4-corner gradient (OverlayExt) - not modeled here, a documented
+/// deviation. The RGB color is NOT <c>Infos.BGColorR/G/B</c> - those three bytes are
 /// decoys the renderer never reads. The real color is the first 3 bytes at the <c>Overlay</c> pointer
 /// inside <see cref="Readers.BackdropReadResult.Data"/> (Data[Overlay], Data[Overlay+1],
 /// Data[Overlay+2] = R,G,B, 0-255); the 4th byte ("Hold", a per-frame animation-hold counter) is 0 on
 /// every observed map in the corpus, so it is sanity-checked but not modeled as animation. The
-/// original draws this as a 320x240 rectangle at alpha 0.5, depth <c>SpriteDepth.BackgroundUI -
+/// original draws this as an untextured 320x240 rectangle (a flat primitive blends every pixel with the
+/// mode above; the decompilation lost that read and always showed an alpha of 0.5), depth <c>SpriteDepth.BackgroundUI -
 /// 2000</c> - one step below the Ground=1 bucket above (-1000) and so always painted first within it,
 /// but still above every floor/wall/entity/Ground=0 backdrop.
 ///
@@ -164,6 +168,14 @@ public sealed class BackdropDocument
     public byte OverlayColorR { get; set; }
     public byte OverlayColorG { get; set; }
     public byte OverlayColorB { get; set; }
+
+    /// <summary>
+    /// The raw <c>Infos.BGColorA</c> byte, the blend mode of the overlay (1 average, 2 additive, 3 subtractive,
+    /// 4 quarter; E19.g G2d, O-E19-58). Omitted from the JSON when 0 (no overlay), so a map without a tint, and an
+    /// export that predates the field, read as 0.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public int OverlayBlendMode { get; set; }
     public int[]? WaveLut { get; set; }
     public List<BackdropLayerDocument> Layers { get; set; } = new();
 
@@ -261,6 +273,7 @@ public static class BackdropReader
                 document.OverlayColorR = data[overlayPointer];
                 document.OverlayColorG = data[overlayPointer + 1];
                 document.OverlayColorB = data[overlayPointer + 2];
+                document.OverlayBlendMode = bgColorA;
             }
             else
             {

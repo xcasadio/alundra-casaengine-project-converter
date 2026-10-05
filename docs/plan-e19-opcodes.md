@@ -6903,7 +6903,7 @@ couche 1 de la 44 (le portage efface en noir ; la couleur d'effacement du binair
   (40, 40, 40, 255) en `Mode0` → `AlphaBlend`, (40, 40, 40, 128) ; `Mode2` → `Subtractive` ; `Mode3` (50, 0, 0) → `Additive`,
   (13, 0, 0, 255) ; constructeur à deux arguments → l'entrée d'aujourd'hui (rouges d'abord : le constructeur à trois arguments n'existe
   pas, rouge de compilation) ; la démo ci-dessus.
-- **G2d-2 — Convertisseur, tests d'abord** : `bgColorA` 2 → `"OverlayBlendMode": 2` (aujourd'hui absent) ; 1 → 1 ; 0 → pas de propriété
+- ✅ **G2d-2 — Convertisseur, tests d'abord** : `bgColorA` 2 → `"OverlayBlendMode": 2` (aujourd'hui absent) ; 1 → 1 ; 0 → pas de propriété
   et `OverlayEnabled` faux (déjà vert).
 - **G2d-3 — DLL, tests d'abord** : compagnon réel de la 293 → `Mode1`, (50, 0, 0, 255) (aujourd'hui (50, 0, 0, 128) sans mode ; rouge
   tant que l'export n'a pas le champ) ; compagnon réel de la 96 (v = 1) → `Mode0`, (40, 40, 40, 255) (aujourd'hui (40, 40, 40, 128)
@@ -6943,6 +6943,11 @@ impossible aujourd'hui).
   `Background tint PSX mode 0` lue (70, 95, 120) (alpha de back-buffer 191) aux trois points. Rouge de la démo, la soumission de la teinte
   rendue aveugle au mode : `Mode1` lu (50, 0, 0), `Mode0` lu (40, 40, 40), 6 contrôles sur 6 rouges. La démo de G2c, non modifiée,
   passe encore ses 6 contrôles sur 6. Lectures et images dans `scratchpad/e19g2d-exec/demo-out/`.
+  **Convertisseur** (G2d-2) : `BackdropDocument.OverlayBlendMode` (`[JsonIgnore(Condition = WhenWritingDefault)]`, valeur brute de
+  `BGColorA`, posée dans la branche de succès après les trois octets de couleur), docs de `BackdropReader.cs` (la phrase « 1 et 2
+  se dessinent pareil » tombe) et `docs/formats/backdrops.md` (gate, mode de mélange, ligne de la table des champs). Rouges d'abord :
+  `bgColorA` 1 et 2 → `KeyNotFoundException` (propriété `OverlayBlendMode` absente là où 1 et 2 sont attendus), 2 rouges sur 3 ; le
+  cas 0 → propriété absente et `OverlayEnabled` faux était vert d'avance (garde). Verts après : tests du convertisseur 621/621.
 
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 

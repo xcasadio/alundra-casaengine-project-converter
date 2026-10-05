@@ -57,16 +57,21 @@ Format source dérivé de `GraphicManager.RenderAllTileLayers`/`RenderLayerToBuf
 indépendamment des couches de tuiles ci-dessus, un rectangle plein écran (320x240) semi-transparent
 par-dessus toute la scène - un ciel qui s'assombrit, une teinte d'intérieur... Porte :
 
-- **Gate** : `Infos.Enabled != 0 && Infos.BGColorA != 0`. `BGColorA == 1` et `== 2` rendent à
-  l'identique (branche "non étendue"). Le corpus ne contient aucune map avec `BGColorA >= 0x65`, qui
-  basculerait vers un dégradé 4 coins (`OverlayExt`) jamais atteint ici - **non exporté**, écart
-  documenté.
+- **Gate** : `Infos.Enabled != 0 && Infos.BGColorA != 0`. Le corpus ne contient aucune map avec
+  `BGColorA >= 0x65`, qui basculerait vers un dégradé 4 coins (`OverlayExt`) jamais atteint ici -
+  **non exporté**, écart documenté.
+- **Mode de mélange** : `BGColorA` règle aussi le mélange (`OverlayBlendMode`, valeur brute de
+  `BGColorA`). De 1 à 4, c'est le taux de semi-transparence `BGColorA - 1` lu dans la même table que
+  celle des couches (`*(u16*)(0x8018CF66 + 2 * BGColorA)`, `0x8005BAAC`-`0x8005BAC4`) : 1 moyenne,
+  2 additif, 3 soustractif, 4 quart. Le corpus ne contient que 1 (15 maps) et 2 (la 293, Inoa en
+  feu, couleur (50, 0, 0), additive). Le champ est omis du JSON quand il vaut 0.
 - **Couleur** : **pas** `Infos.BGColorR/G/B` - ces trois octets sont des leurres, jamais lus par le
   rendu. La vraie couleur est aux 3 premiers octets du pointeur `Overlay` dans `Data`
   (`Data[Overlay]`, `Data[Overlay+1]`, `Data[Overlay+2]` = R,G,B) ; le 4e octet ("Hold", un compteur
   d'animation par frame) vaut 0 sur toutes les maps observées - vérifié, pas modélisé comme
   animation.
-- **Alpha** 0.5, profondeur `SpriteDepth.BackgroundUI - 2000` : au-dessus de tout sol/mur/entité/fond
+- **Mélange** : une primitive sans texture, donc chaque pixel mêle selon le mode ci-dessus (la
+  décompilation, qui a perdu la lecture du taux, montrait toujours un alpha de 0.5), profondeur `SpriteDepth.BackgroundUI - 2000` : au-dessus de tout sol/mur/entité/fond
   `Ground=0`, mais en dessous du bucket `Ground=1` (-1000) ci-dessus.
 - 16 maps du corpus passent la gate : 7 avec une couche `Tiles` (18/19/403/404/405/406/450) et 9
   purement `Cellular` (96/97/98/99/271/289/293/357/481) - ces dernières reçoivent quand même un
@@ -169,6 +174,7 @@ Racine :
 | `AnimNum` | int | Nombre de sous-images d'animation de tuile |
 | `OverlayEnabled` | bool | `Infos.Enabled != 0 && Infos.BGColorA != 0` (voir la section incrustation ci-dessus) |
 | `OverlayColorR`/`G`/`B` | byte | Couleur lue à `Data[Overlay..Overlay+2]` ; 0 si `OverlayEnabled` est faux |
+| `OverlayBlendMode` | int | Valeur brute de `Infos.BGColorA` (1 moyenne, 2 additif, 3 soustractif, 4 quart) ; **absent** quand il vaut 0 (pas d'incrustation) |
 | `WaveLut` | int[256]? | Table de la sinusoïde `WaveX`, partagée par les deux couches ; absente si `WaveLUT == 0` |
 | `CellularSheetTextureAssetIds` | (guid?)[8]? | Id catalogue de la feuille 256x256 baked par `PalDex` (voir section dédiée ci-dessus) ; `null` aux index de palette non utilisés ; **absent** (pas même `null`) si aucune couche n'est `Cellular` |
 | `Layers[]` | objet | Une entrée par couche (0 et 1, toujours 2 entrées) |
