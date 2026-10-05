@@ -28,3 +28,10 @@
 - An animation absent from the entity's set asks nothing; the original would read past its table (open point: map 10 `@5651`, `0x1A [16]` on record 78).
 - The request of an entity runs before the world proxy's own pass in the same frame, so a switch written by a map-event program is heard one frame after the opcode (D-E19-64).
 - Rolling back is a revert of the commit (DLL only, no export).
+
+## Amendment (E19.m5, M-38)
+
+The consequence "a switch written by a map-event program is heard one frame after the opcode (D-E19-64)" names the wrong cause.
+D-E19-64 accepts that gap for the text box only. The lag comes from the DLL's existing frame order: the engine updates every entity,
+script and animation step included, before the world proxy, whose `Update` runs the map events (`AlundraWorldProxy`). The verifier of
+E19.t measured it on map 392: `0x5B @64` at frame 121, the sound and the visible switch at frame 122. No decision of E19.t changes it.

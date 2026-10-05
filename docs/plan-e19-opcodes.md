@@ -6863,7 +6863,7 @@ groupe de la nouvelle carte). **Découverte** (2026-10-03, lecture seule, `e19sn
     @114` attend une marche de Septimus que le montage ne produit pas, 3000 images), le livre est donc créé par l'appel de production de l'opcode
     (`SpawnEntityByRecordId`, enregistrement 2) puis reçoit l'animation 1 comme `0x1A` ; (2) la 392 : la liste exacte `[13]` est remplacée par « un
     seul 13, à l'image 121 à 123 » (les opcodes de son de la scène demandent d'autres ids : 306, 85, 57, 303 ×2) ; la demande suit l'opcode d'une image
-    (D-E19-64) ; (3) l'auto-chaîne 15 → 22 est jouée sur un PNJ à sprite avec les valeurs du jeu d'animation du héros (le montage héros n'a pas de
+    (ordre existant de la DLL : les événements de carte passent après les entités ; D-E19-64 ne vaut que pour la boîte, M-38) ; (3) l'auto-chaîne 15 → 22 est jouée sur un PNJ à sprite avec les valeurs du jeu d'animation du héros (le montage héros n'a pas de
     sprite) ; (4) le chargement : montage synthétique sur la 476 réelle (bit `0x40` de l'enregistrement 0 posé, jeu à moteur audio factice), la
     demande se résout en 864 (clip du groupe 62) ; (5) « l'exemption R2 s'applique au son » est lue comme « l'exemption est levée pour le son » ;
     (6) `ArcRun` reçoit un paramètre optionnel `beforeInitialize` (support de test) ; (7) l'acceptation 3 « Release puis Debug » n'a eu que la Debug

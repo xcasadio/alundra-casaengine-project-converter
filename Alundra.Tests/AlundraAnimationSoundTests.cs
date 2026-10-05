@@ -278,7 +278,7 @@ public sealed class AlundraAnimationSoundTests
         var sounds = Inject(arc);
         arc.RunUntil(() => arc.Has(B, 104, 0x11), "B1 executes 0x11 @104 (the hero takes the hand)");
 
-        // 0x5B @64 (frame 121) sets the hero's animation 3; the hero's tick of the frame after it (the world proxy runs after the entities, D-E19-64) asks
+        // 0x5B @64 (frame 121) sets the hero's animation 3; the hero's tick of the frame after it (the DLL's frame order: the engine updates the entities before the world proxy runs the map events; D-E19-64 covers the text box only) asks
         // its sound 13, once: the animations 13 (@58) and 0 (@72, @78, @84) have none. (The scene's own sound opcodes ask other ids.)
         Assert.Equal(1, sounds.Ids.Count(id => id == 13));
         Assert.InRange(sounds.Requests.Single(r => r.Id == 13).Frame, 121, 123);
