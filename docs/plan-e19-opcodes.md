@@ -4964,7 +4964,7 @@ oracle, DLL seule), f2b1c (écran, présentateur, preuve au pixel) ; règle de S
 par un fournisseur d'avances injecté ; épingle MonoGame relevée (D-E19-85) ; retard d'une image accepté et consigné (O-E19-65) ;
 les autres pertes d'espaces de bord consignées pour l'auteur (O-E19-67).
 
-###### E19.f2b1a — Ligne centrée S025 au convertisseur (D-E19-78, D-E19-84) 🚧 (planifiée le 2026-10-05 ; relectures n°1 et n°2 REVISE ; blocage n°2 (classement rouge ou vert des cas drapeau) : FIX ; nouvelle époque, relecture de clôture à faire ; exécution commencée le 2026-10-06)
+###### E19.f2b1a — Ligne centrée S025 au convertisseur (D-E19-78, D-E19-84) 🧪 (faite le 2026-10-06, vérification à faire)
 
 **Règles.**
 - **F2B1A-R1 — Émetteur** (`alundra-casaengine-project-converter/Text/YarnTextEmitter.cs`) : si la dernière ligne d'une page (les
@@ -5021,7 +5021,7 @@ les autres pertes d'espaces de bord consignées pour l'auteur (O-E19-67).
   **R3 faite le 2026-10-06** : `docs/plan-e15-yarn.md` (D-E15-8, tableau, puce de l'oracle), `docs/formats/dialogues-yarn.md` (nouvelle
   ligne du tableau, espaces de bord, transparence de `flag` et `yield`, limites), commentaire d'`AlundraTextBoxOracle.cs`, note de F0-R2
   ci-dessus, ADR-0038 (`docs/decisions/`, index à jour ; ADR-0036 et ADR-0037 étaient pris), statut d'ADR-0006 « partly superseded by ADR-0038 ».
-- ⏳ **F2B1A-2 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement six fichiers (le `.yarn` et le
+- ✅ **F2B1A-2 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement six fichiers (le `.yarn` et le
   `.dialogue` de `Maps/Pub/Pub (Ring)-472`, `Pub (Shooting)-473` et `Pub (Roulette)-474` ; la ligne 137 des `.yarn` ; dans les
   `.dialogue`, la seule clé `line:M47x_S025_p0` des `line_texts`, `program_base64` inchangé ; chaque ligne grandit de 37 octets,
   8 espaces et `[empty trimwhitespace=false/]`) et `report.json`, comme en F2B0-3 : `Counters`, `WarningsByCategory`, `Warnings` et
@@ -5036,6 +5036,20 @@ convertisseur ; `Alundra.Tests` en Release puis en Debug, `cmp`, six traces à l
 **Risques** : la page S025 tape 8 pas de plus (43 au lieu de 35), comme le binaire (ADR-0029) ; aucun arc ne passe par les cartes 472
 à 474. La décompilation retire les espaces de fin dans `CalculateTextWidthFromScript` (`TextDecoder.cs:967-970`, une DÉVIATION) : elle
 n'est pas une référence de largeur, et elle n'est pas corrigée.
+
+**Fait le 2026-10-06.** Émetteur (`YarnTextEmitter.cs` : `LastLineIsCentred`, `TrimEdgeSpaces(elements, keepTrailingSpaces)`, garde
+`[empty trimwhitespace=false/]` en fin de page), oracle indépendant (`ReferenceTextDecoder.PageBuilder.Build`), tests (15 nouveaux : 11 de
+l'émetteur, 3 de l'oracle, le cas nommé `NamedCase_M472_S025_...` ; rouges d'abord, valeurs ci-dessus), docs et ADR-0038. Suite du
+convertisseur : 636 sur 636 (621 + 15). **Export complet en place** (Release) : manifeste SHA-1 avant et après (23 741 fichiers, hors
+`Alundra.dll`, `Alundra.pdb`, `.casaeditor/`) : exactement les sept chemins prévus, soit les six fichiers (`.yarn` et `.dialogue` de
+`Pub (Ring)-472`, `Pub (Shooting)-473`, `Pub (Roulette)-474`) et `report.json` ; la ligne 137 des `.yarn` finit par `Roulette` + 8 espaces +
+`[empty trimwhitespace=false/] #line:M47x_S025_p0` ; dans les `.dialogue`, la clé `line:M47x_S025_p0` finit par la même chaîne (227 caractères) ;
+`report.json` : `Counters`, `WarningsByCategory`, `Warnings`, `Errors` et `OutputFileCount` égaux, seuls changent les durées et
+`OutputSizeBytes` (1 287 737 643 → 1 287 737 870, +227) et `OutputSizeMegabytes` (1228,082 → 1228,083). Second export : seul `report.json`
+diffère du premier. `Alundra.Tests` : 2 663 sur 2 663 en Release puis en Debug, aucun test n'a bougé ; `cmp` de `Alundra.dll` identique ;
+six traces identiques à l'octet (hors fins de ligne). Reste : la recette (F2B1A-3) avec f2b1c ; l'égalité de `program_base64` avant et
+après n'est pas diffée sur l'export (pas de copie « avant » hors manifeste), elle repose sur la découverte (7 063 octets identiques au
+prototype).
 
 ###### E19.f2b1b — État dessiné de la boîte et oracle étendu (R1, T1) ⏳ (planifiée le 2026-10-05 ; relecture n°1 REVISE (passe de fin de défilement, lecteur d'avances), révisée ; relecture n°2 READY ; après f2b1a)
 
