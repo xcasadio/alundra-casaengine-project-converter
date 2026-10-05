@@ -4964,7 +4964,7 @@ oracle, DLL seule), f2b1c (écran, présentateur, preuve au pixel) ; règle de S
 par un fournisseur d'avances injecté ; épingle MonoGame relevée (D-E19-85) ; retard d'une image accepté et consigné (O-E19-65) ;
 les autres pertes d'espaces de bord consignées pour l'auteur (O-E19-67).
 
-###### E19.f2b1a — Ligne centrée S025 au convertisseur (D-E19-78, D-E19-84) 🧪 (faite le 2026-10-06, vérification à faire)
+###### E19.f2b1a — Ligne centrée S025 au convertisseur (D-E19-78, D-E19-84) 🧪 (relectures n°1 et n°2 REVISE, FIX ; relecture de clôture READY ; faite et CONFIRMED le 2026-10-06 ; recette avec f2b1c)
 
 **Règles.**
 - **F2B1A-R1 — Émetteur** (`alundra-casaengine-project-converter/Text/YarnTextEmitter.cs`) : si la dernière ligne d'une page (les
@@ -5050,8 +5050,14 @@ diffère du premier. `Alundra.Tests` : 2 663 sur 2 663 en Release puis en Debug,
 six traces identiques à l'octet (hors fins de ligne). Reste : la recette (F2B1A-3) avec f2b1c ; l'égalité de `program_base64` avant et
 après n'est pas diffée sur l'export (pas de copie « avant » hors manifeste), elle repose sur la découverte (7 063 octets identiques au
 prototype).
+- ✅ **Vérification d'E19.f2b1a** (F2B1A-3, 2026-10-06) : vérificateur neuf **CONFIRMED** : rouges d'abord rejoués en remettant
+  l'émetteur et l'oracle d'avant par script (13 rouges, les deux gardes vertes ; émetteur seul : 5 rouges, dont l'équivalence du
+  corpus sur exactement les trois pages S025), 636/636 à HEAD ; liste fermée tenue (ajouts seuls) ; export re-dérivé (export à
+  l'émetteur d'avant, puis à HEAD) : exactement les sept chemins, ligne 137 des `.yarn`, la seule clé `line:M47x_S025_p0` des
+  `.dialogue` (+37 octets), **`program_base64` identique** (le point laissé ouvert par l'exécuteur) ; double export ; `Alundra.Tests`
+  2663/2663 en Release puis en Debug, `cmp` sans écart, six traces ; ADR-0038.
 
-###### E19.f2b1b — État dessiné de la boîte et oracle étendu (R1, T1) 🧪 (faite le 2026-10-06, vérification à faire ; relecture n°1 REVISE (passe de fin de défilement, lecteur d'avances), révisée ; relecture n°2 READY ; après f2b1a)
+###### E19.f2b1b — État dessiné de la boîte et oracle étendu (R1, T1) ✅ (relecture n°1 REVISE, révisée ; relecture n°2 READY ; faite et CONFIRMED le 2026-10-06)
 
 **Règles.**
 - **F2B1B-R1 — Boîte** (`Alundra/Scripts/AlundraDialogueBox.cs`, membres internes, noms indicatifs, `dll-notes.md` §1.3), écrit
@@ -5134,8 +5140,18 @@ la variante testée une fois, S025 de la 472 sur l'export de f2b1a (43 pas, larg
 `cmp` de `Alundra.dll` (Debug contre `alundra-project`) identique ; six traces identiques à l'octet (hors fins de ligne), les quatre
 traces rejouées par la suite remises à l'état commité. Pas d'export (seule la DLL change), pas de changement du convertisseur ni du moteur.
 Reste : la vérification (F2B1B-3), l'ADR n'étant pas prévue pour cette tranche.
+- ✅ **Vérification d'E19.f2b1b** (F2B1B-3, 2026-10-06) : vérificateur neuf **CONFIRMED** (`524f3ac`, `f0e2c2a`) : rouge de compilation
+  reproduit (les membres de la tranche et `AlundraFont3Advances` absents) ; rouge de valeurs (captures des lignes et largeur `\H`
+  neutralisées) : 9 tests sur 16 rouges (les six tables, la variante, S025, le dossier sans `font3.fnt`), les 7 tests de l'oracle
+  verts, puis 16/16 ; suites rejouées dans une copie de HEAD hors du dépôt. **Incident** : à 01:15:36, trois fichiers suivis
+  (`AlundraWorldProxy.cs`, `AlundraCameraMath.cs`, `AlundraCameraDirector.cs`) ont été réécrits avec leurs versions de `015eb5d`
+  (2026-10-03). Cause probable : le dossier de sauvegarde partagé `bak/` du scratchpad gardait des copies du 2026-10-03 ; la
+  restauration de la vérification les a remises avec ses propres fichiers. Le contenu égalait des blobs historiques (aucun travail
+  unique) : rangé dans un `git stash` nommé le 2026-10-06, l'arbre est revenu à HEAD. Les suites de l'exécution (avant 01:15) et de
+  la vérification (copie isolée) ne sont pas touchées. Le dossier `bak/` est laissé tel quel (son renommage a été refusé par le
+  classifieur du mode auto) ; les consignes des agents interdisent de s'en servir.
 
-###### E19.f2b1c — Écran de la boîte, présentateur et preuve au pixel (R2 à R6, T2 à T5) ⏳ (planifiée le 2026-10-05 ; relectures n°1 et n°2 REVISE ; blocage n°2 (prévision de l'export) : FIX, avis P3 et P4 repris ; nouvelle époque, relecture de clôture à faire ; après f2b1b)
+###### E19.f2b1c — Écran de la boîte, présentateur et preuve au pixel (R2 à R6, T2 à T5) ⏳ (planifiée le 2026-10-05 ; relectures n°1 et n°2 REVISE ; blocage n°2 (prévision de l'export) : FIX, avis P3 et P4 repris ; nouvelle époque, relecture de clôture READY ; première exécution arrêtée le 2026-10-06 sur un arbre sale (incident de f2b1b), relancée)
 
 **Règles.**
 - **F2B1C-R2 — View model** `AlundraTextBoxViewModel`, au patron d'`AlundraSaveScreenViewModel` (notification au seul changement) :
