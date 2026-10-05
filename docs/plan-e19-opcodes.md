@@ -6262,7 +6262,7 @@ signature) ; la croissance des tampons alloue pendant le dessin (rare : plus de 
   vérifier si `data-extracted/` manque (documenté) ; la remise de la fenêtre après `TryReloadBuiltInShader` et la croissance du
   `VertexBuffer` n'ont pas de test sans périphérique (lecture du code et démo de capacité). Reste la recette G2a-4 (auteur).
 
-##### 1.2o.3 E19.g G2c — Semi-transparence par texel des fonds (O-E19-54) ⏳ (planifiée)
+##### 1.2o.3 E19.g G2c — Semi-transparence par texel des fonds (O-E19-54) ⏳ (relecture n°1 READY)
 
 **Faits** **[binaire, données]** (découverte du 2026-10-03, `e19o54-disc/notes.md` du scratchpad ; deux vérifications indépendantes
 du 2026-10-05, `e19o54-verify-binary/verify.md` (recensement refait sur `DATAS.BIN` brut, rien de réfuté) et
@@ -7302,7 +7302,7 @@ la musique) avance encore pendant le départ alors que le binaire montre une ima
   à `false`, aucune course possible ; 4 passes complètes sans test instable). Avis P4 : ADR-0034 cite D-E9b-2 à la ligne 378, la
   note est aux lignes 388-389 ; quelques sauts indirects des bibliothèques PsyQ ne sont pas résolus par le parcours.
 
-#### 1.2s.6 E19.m5 — Hygiène des tests (G1) et deux commentaires (G2a) ⏳ (planifiée)
+#### 1.2s.6 E19.m5 — Hygiène des tests (G1) et deux commentaires (G2a) ⏳ (planifiée ; relecture n°1 REVISE, révisée)
 
 **Faits** (découverte du 2026-10-05, `e19m5-disc/notes.md` du scratchpad, et vérification adverse, `e19m5-verify/verify.md`) : aucun
 fichier de test du périmètre n'a changé depuis le recensement (`bafbd5a`) ; toutes les lignes sont relocalisées à `0d5849f`. Le code de
@@ -7342,7 +7342,8 @@ assertion doit tuer alors que les tests existants la laissent passer.
 - **M-38** (le retard d'une image de la 392 attribué à D-E19-64) : le commentaire de `AlundraAnimationSoundTests.cs:281`, une section
   « Amendment » ajoutée à ADR-0028 (sa ligne 29 n'est pas réécrite, précédent d'ADR-0020) et la phrase de l'écart (2) d'E19.t dans ce
   plan (deux lignes : la coupure de ligne et l'indentation comptent) nomment la vraie cause : l'ordre de la DLL (le moteur met à jour
-  les entités avant le mandataire du monde, qui fait tourner les événements de carte) ; textes exacts dans les notes de la découverte.
+  les entités avant le mandataire du monde, qui fait tourner les événements de carte) ; textes exacts versionnés dans
+  `docs/plan-e19-m-annexe/m5-m38-texts.md` (révision n°1), avec le contrôle après l'édition.
 - **M-46** : dans `AlundraAnimationImpulseTests.cs:304-312`, `Assert.Equal(-8388608, withGravity.Npc.TickForceZ)` (binaire
   `0x80036AF4`-`0x80036B04` : ni déclin ni borne) ; mutations : borne de l'impulsion (`AlundraEntityScriptProxy.cs:690`) → -1048576 ;
   marqueur avec gravité envoyé au déclin (`:688`) → -32768 ; E19.m5 reprend ce point de l'hygiène de d2c2 (D6).
@@ -7367,8 +7368,9 @@ ADR-0034) restent tels quels (une ADR ne se réécrit pas ; leurs statuts et ce 
 1. Chaque mutation nommée rougit le test retenu avec la valeur écrite ; la production remise, tout est vert ; les valeurs écrites
    d'avance tiennent (une contradiction est un arrêt).
 2. Tests existants touchés, liste fermée : `UiDialogueBoxTests.cs` (le helper et son appel), `TZ21_ACollisionAtTheFirstCallEndsAtOnce`
-   et le test d'impulsion de `:304-312` (une assertion ajoutée chacun), les trois classes de M-33 (constructeur et `Dispose` seulement) ;
-   rien d'autre.
+   et le test d'impulsion de `:304-312` (une assertion ajoutée chacun), les trois classes de M-33 (constructeur et `Dispose` seulement),
+   `AlundraAnimationSoundTests.cs:281` (le commentaire de M-38, aucune assertion) ; rien d'autre (un `git diff --stat` de la tranche ne
+   montre aucun fichier de test hors de cette liste et des nouveaux tests).
 3. Tests du convertisseur ; `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans écart (M-35 touche un fichier de
    production) ; les six traces à l'octet.
 
