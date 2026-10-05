@@ -28,6 +28,8 @@ import sys
 
 SP = r"C:\Users\casad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad"
 sys.path.insert(0, os.path.join(SP, 'e19f2-disc', 'model'))
+# Annex copy (docs/plan-e19-f2b1-annexe/scripts): prefer the model.py versioned next to this file.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import model as M  # noqa: E402  (read-only reference model)
 from model import BOX_X, BOX_Y, BOX_Y_OUT, SCROLL_LEN, _tdiv, glyph_char  # noqa: E402
 
