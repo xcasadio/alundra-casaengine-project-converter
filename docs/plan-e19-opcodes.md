@@ -248,6 +248,18 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     la musique garde l'état de fin de boucle (canaux atténués ou panoramiques des pistes 1, 7, 15, 18, 25, 32), comme l'original.
   - **D-E19-73** — (2026-10-05, l'auteur, O-E19-62) Chaque musique est **rendue jusqu'à son deuxième saut** (option B : intro et
     deux passages de la boucle ; les fichiers de musique doublent de taille).
+  - **D-E19-74** — (2026-10-05, l'auteur, O-E19-62) Le **point de boucle du moteur** (`SoundAsset.LoopStartSample`, déplacement du
+    lecteur WAV, `MusicPlayer` qui revient au point de boucle, plafond de tampons par mise à jour) se fait dans la tranche S2 de
+    la branche moteur de l'auteur `chantier/audio-modern` (ADR-0055), pas dans la pile E19 ; la partie données, convertisseur et
+    DLL de la boucle au repère (§1.2w) attend S2.
+  - **D-E19-75** — (2026-10-05, l'auteur) La **marge du flux de musique** (3 tampons, environ 280 ms, 96 ms au pire près d'une
+    couture) se **mesure d'abord** (durée des chargements de carte qui gardent la musique) avant de la changer (O-E19-63).
+  - **D-E19-76** — (2026-10-05, l'auteur) Les **7 musiques sans boucle** (26, 36, 37, 38, 40, 42, 43) gardent leur **traîne de
+    relâchement** (rendu jusqu'à 60 images muettes, 0,03 à 1,9 s), au lieu de la coupure nette d'aujourd'hui.
+  - **D-E19-77** — (2026-10-05, l'auteur, E19.f2a) Les épingles d'arcs que la boîte fidèle change au-delà de ses propres valeurs
+    (A6 : branche T1000 de la 391 ; A10 et A11 : chemin critique ; gardes « aucun contact » de A6, A8, A9, A10, A20 ; budgets bornés
+    de T-A19, T-B9, A14, A15, A18) sont **simulées d'abord** : leurs valeurs sont écrites d'avance par une simulation, pas mesurées
+    après le code.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -7789,7 +7801,7 @@ DLL reboucle le fichier entier et rejoue ce silence à chaque tour ; une extract
   une copie des anciennes données : 129 rouges, 50 verts (T-D, T-E) ; convertisseur 612/612, `Alundra.Tests` 2570/2570 en Release
   puis en Debug, `cmp` sans écart, six traces à l'octet ; aucun `log.txt` d'extraction dans le dépôt. Reste la recette X2-5 (auteur).
 
-### 1.2w Boucle au repère de la séquence (D-E19-70, D-E19-72, D-E19-73, O-E19-62) ⏳ (à planifier après X2)
+### 1.2w Boucle au repère de la séquence (D-E19-70, D-E19-72, D-E19-73, O-E19-62) ⏳ (préparée le 2026-10-05 ; la partie moteur va dans S2 d'audio-modern, D-E19-74 ; données, convertisseur et DLL après S2)
 
 Esquisse (découverte du 2026-10-05, `loop-disc/notes.md` et `loop-disc-verify/verify.md` du scratchpad) : le pilote du binaire
 (libsnd) mémorise la position au contrôleur 99 = 20 et y revient au contrôleur 99 = 30 quand le compte vaut 127 (`0x8008CA40`), sans
@@ -7802,6 +7814,14 @@ point de boucle au lieu de rembobiner (`SoundAsset.LoopStartSample`, `WavStreamR
 par mise à jour borné) ; la DLL joue par le service de musique du moteur au lieu de `PlayClip` en boucle entière ; la piste 14 suit les
 valeurs de l'analyseur (14552 au lieu de 14551, inaudible) ; les WAV passent d'environ 700 Mo à 1,34 Go par copie. Risques : la marge du
 flux (environ 280 ms) pendant un chargement de carte ; les accesseurs de test du lecteur de la DLL changent de type.
+
+**Préparation du 2026-10-05** (`loop-engine/notes.md`, `loop-data/notes.md` du scratchpad et leurs contre-vérifications) :
+partie données (L-b) : oracle exact des 45 pistes au rendu de l'option B (fichier `[0, J2)`, `LoopStartFrame` = J1, `LoopStartSample` =
+J1 × 735, fondu linéaire de 735 échantillons de la dernière image vers les 735 qui précèdent J1, plafond 480 s, traîne des 7 pistes
+sans boucle, D-E19-76), 46 fichiers de données et 47 de l'export prévus, WAV de 700 Mo à 1,343 Go ; partie moteur (L-a) : conception
+prête (champ, déplacement, `FillQueue`, plafond de tampons, valeurs de test), confiée à S2 d'audio-modern (D-E19-74) ; la DLL lira la
+musique par le service de musique du moteur avec le point de boucle ; `LoopDetected` vaut vrai aussi sur les pistes sans boucle :
+un champ `Looping` à part est nécessaire.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
@@ -8193,6 +8213,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-60 | **Réglé le 2026-10-05 (E19.s2, ADR-0054 du moteur ; recette S2-5 en attente).** **L'interface MGUI est mal découpée dans une vue à bandes** (recette du 2026-10-05, §1.2u) : découpes écrites en pixels de la vue dans le ciseau absolu du périphérique (`CasaDrawTransaction.cs:742-767`) et ciseau périmé après un agrandissement ; inventaire, HUD, sous-inventaire, écran de sauvegarde, boîte du moteur. | E19.s2 (moteur) |
 | O-E19-61 | **Réglé le 2026-10-05 (X2 ; recette X2-5 en attente).** **Un reste de la piste précédente en tête de 41 musiques** (D-E19-69 : se corrige) (le « ding » de la 389) : l'extracteur rend les 46 pistes dans un seul moteur sonore ; la séquence 25 de l'original est muette pendant 0,6 s. Correction X2 de `plan-extraction-bgm.md`, D-X-5 à amender. | Auteur, puis X2 |
 | O-E19-62 | **La musique reboucle tout le fichier** au lieu du repère de boucle de la séquence (`0x8008CA40`) : l'intro (22,6 s pour la 25) est rejouée toutes les 121 s ; contredit `plan-e11c-musique.md:43-48`. D-E19-70 : se porte. | E11 (à planifier) |
+| O-E19-63 | **Marge du flux de musique** (préparation de la boucle au repère, 2026-10-05) : 3 tampons de 16 Kio à 44,1 kHz, environ 280 ms (96 ms au pire près d'une couture de boucle) ; un chargement de carte qui garde la musique bloque le fil du jeu (plus d'une seconde en Debug pour la 478) ; mesurer la plus longue image de chaque passage (harnais hors dépôt) avant de régler la profondeur (D-E19-75). | Mesure |
 
 ## 4. Hors périmètre
 
