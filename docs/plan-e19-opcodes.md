@@ -7641,7 +7641,10 @@ déplace aucune assertion).
 **Suites** : O-E19-60 (découpe de MGUI dans une vue décalée : tranche du moteur, E19.s2) ; O-E19-61 (reste de piste en tête des musiques :
 X2, décision de l'auteur sur D-X-5) ; O-E19-62 (boucle au repère de la séquence).
 
-### 1.2v X2 — Musique : un système sonore neuf par piste (D-E19-69, O-E19-61) ⏳ (planifiée)
+### 1.2v X2 — Musique : un système sonore neuf par piste (D-E19-69, O-E19-61) ⏳ (planifiée ; relecture n°1 REVISE, révisée)
+
+**Contrat** (révision n°1) : cette section remplace la tranche X2 et les arrêts de `docs/plan-extraction-bgm.md` pour X2 ; ce
+document y renvoie désormais (sa règle d'abandon « un octet des pistes 1–18 » et ses arrêts de X1 ne s'appliquent pas à X2).
 
 **Faits** (audit des valeurs du 2026-10-05, `x2-audit/notes.md` du scratchpad, et contre-vérification, `x2-audit-verify/verify.md` ;
 annexe versionnée `docs/plan-e19-x2-annexe/`) :

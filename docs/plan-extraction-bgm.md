@@ -244,10 +244,11 @@ attaché à deux artefacts nommés.)*
 **Ce que cette tranche ne fait PAS** : elle ne touche pas au convertisseur, ne relance pas l'export du
 projet, et ne branche pas la musique dans le jeu.
 
-### X2 — Isolation par piste *(à approuver plus tard, subordonnée à X1)*
+### X2 — Isolation par piste *(contrat : `docs/plan-e19-opcodes.md` §1.2v, D-E19-69, 2026-10-05)*
 
-Réinitialiser le système sonore entre deux pistes. **Abandonnée si elle déplace un seul octet des
-pistes 1–18** (D-X-5).
+Réinitialiser le système sonore entre deux pistes. Le contrat, les valeurs et les arrêts de cette tranche sont ceux du §1.2v de
+`docs/plan-e19-opcodes.md` (annexe `docs/plan-e19-x2-annexe/`) : la règle d'abandon d'origine (« un seul octet des pistes 1–18 »)
+ne vaut plus (D-X-5 amendée : 44 pistes changent par construction, seule la piste 1 reste identique à l'octet).
 
 ### X3 — L'anomalie de l'index 44 *(investigation séparée)*
 
@@ -278,7 +279,7 @@ détruisait (aucun baseline préservé). **Le plafond de relecture est atteint :
 PAS été re-relue.** Les deux dernières corrections sont textuelles et locales — un ajout d'étape et une
 correction de politique — mais l'utilisateur approuve en le sachant.
 
-**Arrêts** : une BGM de 1 à 18, un des 996 WAV de bruitages ou `sound/sfx.json` qui bouge ; un
+**Arrêts** (de X1 seulement ; X2 a les siens, `docs/plan-e19-opcodes.md` §1.2v) : une BGM de 1 à 18, un des 996 WAV de bruitages ou `sound/sfx.json` qui bouge ; un
 déclenchement de garde sur le site SFX ou exportateur ; toute modification hors des trois fichiers nommés ;
 toute tentative de « réparer » la piste 19 en prétendant retrouver le comportement d'origine (§1.3) ;
 et si `--verify-bgm` ne reproduit pas le profil du §1.4 avant correctif, il ne mesure pas le défaut.
