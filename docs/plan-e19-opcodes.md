@@ -6262,7 +6262,7 @@ signature) ; la croissance des tampons alloue pendant le dessin (rare : plus de 
   vérifier si `data-extracted/` manque (documenté) ; la remise de la fenêtre après `TryReloadBuiltInShader` et la croissance du
   `VertexBuffer` n'ont pas de test sans périphérique (lecture du code et démo de capacité). Reste la recette G2a-4 (auteur).
 
-##### 1.2o.3 E19.g G2c — Semi-transparence par texel des fonds (O-E19-54) ⏳ (relecture n°1 READY)
+##### 1.2o.3 E19.g G2c — Semi-transparence par texel des fonds (O-E19-54) 🧪 (relecture n°1 READY ; G2c-1 à G2c-4 faites, G2c-5 et la recette G2c-6 en attente)
 
 **Faits** **[binaire, données]** (découverte du 2026-10-03, `e19o54-disc/notes.md` du scratchpad ; deux vérifications indépendantes
 du 2026-10-05, `e19o54-verify-binary/verify.md` (recensement refait sur `DATAS.BIN` brut, rien de réfuté) et
@@ -6323,7 +6323,7 @@ annexe des valeurs versionnée `docs/plan-e19-g2c-annexe/`) :
 **Tâches.**
 - **G2c-0 — Annexe des valeurs** (faite) : `docs/plan-e19-g2c-annexe/` (la liste exacte de l'export, 187 PNG et `report.json` ; le détail
   par PNG ; le recensement par couche).
-- **G2c-1 — Moteur, tests d'abord** (sous-module, branche empilée sur `chantier/e19m3-cellular-order` `a885f226`, qui porte G2a ; plan
+- ✅ **G2c-1 — Moteur, tests d'abord** (sous-module, branche empilée sur `chantier/e19m3-cellular-order` `a885f226`, qui porte G2a ; plan
   du moteur dans son `ai-agent/tasks/` ; `CasaEngine.Launcher/Program.cs` de l'auteur jamais indexé) : au niveau de la file (comme
   G2a) : une couche de défilement d'un quad en `Mode0` → **2** entrées de même clé : [opaque, (0,75 ; 1], blanc] puis [`AlphaBlend`,
   (0,25 ; 0,75], blanc] (aujourd'hui 1 entrée, `definition.Blend`, (−1 ; 2]) ; `Mode1` → additif ; `Mode2` → soustractif ; `Mode3` →
@@ -6333,18 +6333,18 @@ annexe des valeurs versionnée `docs/plan-e19-g2c-annexe/`) :
   fond (100, 150, 200), pixels loin des bords, ±1 par canal : un texel (96, 96, 88, α255) d'une couche `Mode0` → (96, 96, 88) ; un
   texel (24, 32, 24, α128) d'une couche `Mode0` → (62, 91, 112) ; un texel (96, 96, 96, α128) d'une couche `Mode1` → (196, 246, 255) ;
   un texel (120, 80, 40, α128) d'une couche `None` → (120, 80, 40).
-- **G2c-2 — Convertisseur, tests d'abord** : synthétiques : le mot `0x83E0` → (α128, 0, 248, 0) dans `Build` (toile) et dans
+- ✅ **G2c-2 — Convertisseur, tests d'abord** : synthétiques : le mot `0x83E0` → (α128, 0, 248, 0) dans `Build` (toile) et dans
   `BuildTileSheet` (aujourd'hui α255) ; gardes : `0x03E0` → α255 ; `0x0000` → α0 ; `0x8000` → (α128, 0, 0, 0) (aujourd'hui
   (α255, 0, 0, 0)) ; données réelles (`data-extracted/`, sortie anticipée si absent, comme les tests voisins) : la 44, couche 1,
   pixel (79, 38), mot `0x8C83` → (24, 32, 24, α128) ; pixel (78, 34), `0x0020` → (0, 8, 0, α255) ; la 476, `cellsheet0`, (0, 0),
   `0xB18C` → (96, 96, 96, α128) ; la 389, `layer0`, (46, 23), `0x94C5` → (40, 48, 40, α128) ; la 391, `cellsheet0`, (2, 0), `0x2D8C` →
   (96, 96, 88, α255) (garde ; la 31 de même).
-- **G2c-3 — DLL, tests d'abord** : résolveur : (`Ground` vrai, 1) → `Mode0`, blanc (aujourd'hui `AlphaBlend`, α128) ; (`Ground` faux,
+- ✅ **G2c-3 — DLL, tests d'abord** : résolveur : (`Ground` vrai, 1) → `Mode0`, blanc (aujourd'hui `AlphaBlend`, α128) ; (`Ground` faux,
   1) → `Mode0` (aujourd'hui `Opaque`) ; 2 → `Mode1` ; 3 → `Mode2` ; 4 → `Mode3` (aujourd'hui `Additive`, 63) ; 0 et 99 → `None` ;
   compagnons réels : la 391 cellulaire → `Mode0`, blanc (aujourd'hui `AlphaBlend`, α128) ; la 44 couche 1 → `Mode0` (aujourd'hui
   `Opaque`) ; la 44 couche 0 cellulaire → `Mode1` ; la 389 → `Mode0` ; la 321 → `None` ; le test garde de G2c-R4 (rouge sur l'export
   d'aujourd'hui, vert après l'export).
-- **G2c-4 — Export et preuves** : manifeste SHA-1 avant et après (comme G0b) : exactement `export_predicted_changes.txt` (188
+- ✅ **G2c-4 — Export et preuves** : manifeste SHA-1 avant et après (comme G0b) : exactement `export_predicted_changes.txt` (188
   lignes) ; pour chaque PNG changé, le décodage avec l'alpha 128 remis à 255 égale l'ancien, et ses pixels STP sont ceux de
   `export_predicted_pngs.tsv` ; double export identique hors `report.json`.
 - **G2c-5 — Vérification**, **G2c-6 — Recette** (auteur, sur l'export de G2c, avec une capture du back-buffer) : la 391, la pluie
@@ -6369,6 +6369,51 @@ manifeste « avant » (hors `report.json`).
 worktree : copier le projet exporté) ; G2a-4 non recettée (le chemin PNG est prouvé par la démo de G2c) ; ce qui se trouve sous la
 couche 1 de la 44 (le portage efface en noir ; la couleur d'effacement du binaire n'est pas relue) ; l'octet de palette 30 (cartes 1,
 13, 17, 153, 439) reste la palette 0 (O-E19-59) ; la surcouche additive de la 293 hors tranche (O-E19-58).
+
+- **Fait le 2026-10-05** (G2c-1 à G2c-4, exécuteur en mode AUTO). **Moteur** (sous-module, branche `chantier/e19g2c-backdrop-stp` depuis
+  `a885f226`, plan `ai-agent/tasks/e19g2c-backdrop-stp-tasks.md`, la modification locale de l'auteur dans `CasaEngine.Launcher/Program.cs`
+  jamais indexée) : `6553d3db` plan, `c33c12fd` (E1 : champ `PsxSemiTransparency` des deux définitions, surcharge interne de `DrawSprite`,
+  `Submit` des deux composants), `61543a13` (E2 : démo), `3b05301f` (E3 : docs et ADR-0053). Rouges d'abord sur le code d'avant (champ,
+  surcharge qui ignore le mode, `Submit` qui l'appelle), valeurs lues égales aux valeurs écrites d'avance : couche de défilement en
+  `Mode0` à `Mode3` et `Mode0` à `Blend = Additive` : 1 entrée là où 2 sont attendues ; couche cellulaire de 3 cellules, mêmes cas : 3
+  entrées là où 6 sont attendues (10 rouges sur 12 ; les cas `None`, une entrée au `Blend` de la couche, étaient verts d'avance). Verts
+  après : `CasaEngine.Tests` 2562/2562 (+12), aucun test existant touché. Démo `Background layers PSX semi-transparency` (quatre couches
+  de défilement et une couche cellulaire `Mode0` à `Blend = Additive`, feuilles PNG générées dans `CasaEngine.Demos/Content/PsxBackdropLayers/`
+  et chargées par `Texture2DLoader` : l'alpha 128 d'un PNG est gardé, hypothèse prouvée ; sonde `BackBufferProbe`, `GetBackBufferData`,
+  Debug 1024 × 768, à ±1) : 6 contrôles sur 6, texel (96, 96, 88, α255) d'une couche `Mode0` lu (96, 96, 88) ; texel (24, 32, 24, α128)
+  `Mode0` lu (62, 91, 112) (alpha de back-buffer 191) ; texel (96, 96, 96, α128) `Mode1` lu (196, 246, 255) ; texel (120, 80, 40, α128)
+  sans mode lu (120, 80, 40) ; la cellule `Mode0` lue (62, 91, 112) ; fond lu (100, 150, 200) ; image
+  `scratchpad/e19g2c-exec/demo-out/backdrop-layers.png`, lectures `backdrop-layers.txt`. Rouge de la démo, la soumission des couches
+  rendue aveugle au mode : `Mode0` STP lu (24, 32, 24), `Mode1` STP lu (96, 96, 96), cellule lue (124, 182, 224) (le `Blend` additif
+  de la couche, ignoré quand un mode est posé), 3 contrôles sur 6 rouges (`backdrop-layers-red.txt`). ADR-0053 du moteur.
+  **Convertisseur** : `BackdropImageBuilder.DrawTile` écrit l'alpha 128 pour un texel STP, 255 pour un autre texel dessiné, 0 pour le mot
+  `0x0000` ; tests 432/432 (420 + 12 dans `BackdropStpAlphaTests`, rouges d'abord : 8 rouges sur 12, l'alpha 255 lu là où 128 est attendu
+  sur `0x83E0` et `0x8000` dans `Build` et `BuildTileSheet`, sur le mot `0x8C83` de la 44 (79, 38), le mot `0x94C5` de la 389 (46, 23),
+  le mot `0xB18C` de la 476 ; les gardes `0x03E0`, la 391 et la 31 (word `0x2D8C`, alpha 255) étaient verts d'avance ; les RVB lus égalent
+  ceux écrits d'avance, et le pixel (78, 34) de la 44 `0x0020` lu (0, 8, 0, α255)). **DLL** : `AlundraBackdropStage.ResolveLayerPsxSemiTransparency(int
+  blendMode)` remplace `ResolveGroundLayerBlend` (0 → `None`, 1 → `Mode0`, 2 → `Mode1`, 3 → `Mode2`, 4 → `Mode3`, autre → `None`), les
+  définitions portent ce mode, un `Blend` opaque et une teinte blanche, `Ground` ne choisit que la passe ; rouges d'abord (15 rouges sur 37
+  des tests `BackdropStage*`, le résolveur d'abord sans comportement) : mode lu `None` là où `Mode0` à `Mode3` sont attendus (résolveur,
+  389, 159, 391, 420, 44, définitions synthétiques), et, sur la théorie cellulaire `(true, 1..4)`, le blend d'aujourd'hui lu `AlphaBlend`,
+  `Additive`, `Subtractive`, `Additive` là où `Opaque` est attendu (les anciennes assertions de la 389, 159, 391 et 420 portaient déjà
+  `AlphaBlend` α128, `Additive`, `AlphaBlend` α128, `Additive`) ; les gardes (`None` de la 321, résolveur à 0, 99 et −1) étaient verts
+  d'avance ; le test garde sur l'export d'avant lit l'alpha
+  255 au pixel (46, 23) de `layer0` de la 389 là où 128 est attendu ; verts après : `Alundra.Tests` 2566/2566 (Debug, sur le nouvel
+  export). **Export** en place (`dotnet run -c Release`, 1 min, 23 744 fichiers, vérification PASSED) : manifeste SHA-1 (23 741 fichiers
+  hors DLL, pdb, `.casaeditor/`) avant/après = exactement les 188 lignes de `export_predicted_changes.txt` (187 PNG et `report.json`) ;
+  pour chacun des 187 PNG, le décodage avec l'alpha 128 remis à 255 égale celui de l'ancien PNG (RVB et alpha), les alphas sont
+  seulement 0, 128 et 255, son nombre de pixels d'alpha 128 égale `stp_px` et son nombre de pixels dessinés `drawn_px` de
+  `export_predicted_pngs.tsv` (7 092 983 pixels STP en tout) ; second export identique hors `report.json` ; `Alundra.dll` déposée
+  inchangée par l'export (construite avant, `cmp` sans écart avec la build Debug) ; six traces à l'octet (`git diff
+  --ignore-cr-at-eol` vide), les quatre traces du héros remises par `git checkout`. Écarts au plan : (1) le résolveur ne prend pas
+  `Ground` (le plan l'écrit « sur le seul `BlendMode` ») : les cas `(Ground vrai, 1)` et `(Ground faux, 1)` sont vérifiés par
+  `BuildDefinitions` sur un document synthétique (`Ground` vrai et faux : `Mode0`, blanc, opaque, passe selon `Ground`) ; (2) les
+  compagnons réels de la 389, 391, 44 et 321 sont lus dans un nouveau fichier `BackdropStagePsxSemiTransparencyTests.cs` (le test de la 321
+  de `BackdropStageDefinitionTests` reste intact : sa liste fermée n'en parle pas), et le test garde y décode le PNG à la main (le projet
+  de tests n'a pas de bibliothèque d'images) ; (3) les tests du convertisseur sont dans un nouveau fichier (`BackdropWriterTests.cs`
+  intact) ; (4) la démo ajoute une couche cellulaire aux quatre valeurs du plan (même surcharge, autre composant) ; (5) la `Release` de
+  `Alundra.Tests` n'est pas lancée ici (le vérificateur la lance). Decisions: see ADR-0035 (moteur : ADR-0053). Reste : G2c-5
+  (vérification) et G2c-6 (recette de l'auteur sur l'export de G2c).
 
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 
@@ -7761,7 +7806,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-51 | **Réglé le 2026-10-03 (E19.m3, ADR-0052 du moteur).** **Compteur des vagues global** (audit d'E19.m2) : `0x800C48C4` est un compteur unique, incrémenté par le pilote des fonds (`0x8005B6D8`-`0x8005B6E8`) **avant** les tests du masque, jamais remis à 0 au chargement ; le moteur en garde un par couche, remis à 0 au chargement et figé quand la couche est masquée : les vagues commencent chaque carte à une autre phase, et à la 475 la vague de l'original avance pendant le masque. Contredit en partie le fait d'E19.k2 (« l'état par tick d'une couche est dans l'appel gardé ») et ADR-0049 du moteur ; le corriger bougerait `CellularLayerMaskTests.cs:82`, `:93`, `:101`. Confirmé et planifié (§1.2s.4). | E19.m3 |
 | O-E19-52 | **Réglé le 2026-10-03 (E19.m3, ADR-0052 du moteur).** **Parallaxe des cellules de type 0 tronquée** (audit d'E19.m2) : le binaire calcule le facteur une fois, en entier tronqué `Num/Den` (`0x8005C0AC`), puis `camX × facteur` (`0x8005CB78`) ; aux cartes 123 et 124 (couche 1), les facteurs 1/2 donnent 0 : 59 cellules ne défilent pas dans l'original, le moteur les fait défiler à camX/2. Confirmé et planifié (§1.2s.4). | E19.m3 |
 | O-E19-53 | **Réglé le 2026-10-03 (E19.m3, ADR-0052 du moteur).** **Ordre de dessin des cellules d'une couche** (audit d'E19.m2) : le binaire insère chaque cellule en tête du même créneau de la table d'ordre (`0x8005CE08`) : ordre inverse, la cellule 0 dessus ; le moteur donne la même clé à toutes et trie par `List.Sort` (`SpriteRendererComponent.cs:399`), instable ; effet non mesuré. Confirmé et planifié (§1.2s.4). | E19.m3 |
-| O-E19-54 | **La pluie de la 391 et de la 31 est opaque dans l'original** (audit d'E19.m3) : ses 720 texels ont le bit STP éteint (table de couleurs envoyée en `0x8005B2A0` égale à la palette extraite) et la PS1 ne mêle que les texels STP ; le portage la dessine à 50 % (couche `Average`, alpha 128 de la DLL) ; les texels des vagues ont tous le bit allumé (justes). Remède naturel : le mécanisme par texel de G2a étendu aux couches cellulaires (audit à faire). Audité et vérifié le 2026-10-05 : 11 couches fausses (la pluie des 391 et 31 trop transparente, la couche 1 des 41, 44, 109-114, 470 trop opaque) ; planifié (§1.2o.3). | E19.g G2c |
+| O-E19-54 | **La pluie de la 391 et de la 31 est opaque dans l'original** (audit d'E19.m3) : ses 720 texels ont le bit STP éteint (table de couleurs envoyée en `0x8005B2A0` égale à la palette extraite) et la PS1 ne mêle que les texels STP ; le portage la dessine à 50 % (couche `Average`, alpha 128 de la DLL) ; les texels des vagues ont tous le bit allumé (justes). Remède naturel : le mécanisme par texel de G2a étendu aux couches cellulaires (audit à faire). Audité et vérifié le 2026-10-05 : 11 couches fausses (la pluie des 391 et 31 trop transparente, la couche 1 des 41, 44, 109-114, 470 trop opaque) ; planifié (§1.2o.3) ; **livré le 2026-10-05** (G2c-1 à G2c-4, ADR-0035), recette G2c-6 en attente. | E19.g G2c |
 | O-E19-55 | ~~Les fonds avancent pendant un fondu de passage~~ — **réglé le 2026-10-03 par E19.m4 (D-E19-67, ADR-0034), vérification en attente** ; question d'origine : (audit d'E19.m3) la boucle de transition du binaire (`0x8002C490`-`0x8002C4C0`) n'appelle pas `RenderScene` ; la DLL poussait les ticks des fonds sans condition (`AlundraWorldProxy.cs:2192-2196`) : 16 ticks en trop par départ (F0 à F15). | E19.m4 |
 | O-E19-56 | **Le type 2 ignore le décalage de palette `0x800C490C`** (`0x8005D370`-`0x8005D394`), contrairement aux types 0 et 4 et aux tuiles ; à retenir si le cycle de palettes (O-E19-43) est porté. Et : le service du moteur survit à un retour au titre ; on n'a pas vérifié si l'original relance l'exécutable (et remet le compteur des vagues à 0) à ce moment. | Note |
 | O-E19-57 | **Le binaire montre une image figée pendant le départ d'un passage** (audit d'O-E19-55) : la boucle de transition n'appelle ni `Update` ni `RenderScene` ; l'écran est une copie de la dernière image sous le fondu. Le portage continue d'avancer et de dessiner la scène : suivi de la caméra, animation des entités (le gel ne touche que `GameplayBlockedMask`, `AlundraWorldProxy.cs:2261-2266`, `AlundraGameplayFreeze.cs:38-40`), physique des PNJ, tuiles animées (temps réel), HUD, dialogue, fondu de la musique (non vérifié dans le binaire). Aussi : l'initialisation du fondu de type 0 du binaire remet la couleur courante à 0 (`0x80042F68`-`0x80042F70`), le portage la garde (`BeginWarpDepartureFade`). À trancher : figer la scène entière (capture de la dernière image par le moteur) ou garder l'écart. | Auteur |
