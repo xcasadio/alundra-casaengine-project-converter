@@ -6908,7 +6908,7 @@ couche 1 de la 44 (le portage efface en noir ; la couleur d'effacement du binair
 - **G2d-3 — DLL, tests d'abord** : compagnon réel de la 293 → `Mode1`, (50, 0, 0, 255) (aujourd'hui (50, 0, 0, 128) sans mode ; rouge
   tant que l'export n'a pas le champ) ; compagnon réel de la 96 (v = 1) → `Mode0`, (40, 40, 40, 255) (aujourd'hui (40, 40, 40, 128)
   sans mode) ; synthétiques : 3 → `Mode2`, 4 → `Mode3`, 0 et 5 → `Mode0`.
-- **G2d-4 — Export et preuves** : manifeste SHA-1 avant et après : exactement l'annexe ; chaque compagnon gagne exactement la ligne
+- ✅ **G2d-4 — Export et preuves** : manifeste SHA-1 avant et après : exactement l'annexe ; chaque compagnon gagne exactement la ligne
   `  "OverlayBlendMode": v,` (CRLF) après `"OverlayColorB"` (+26 octets ; v = 2 pour la 293, 1 pour les 15 autres) ; dans `report.json`,
   `OutputSizeBytes` + 416 et les durées ; aucun PNG, `.texture` ni `AssetInfos.json` ; double export identique hors `report.json`.
 - **G2d-5 — Vérification**. **G2d-6 — Recette** (auteur, si la 293 est atteignable ; sinon la démo en tient lieu) : Inoa en feu un peu
@@ -6948,6 +6948,13 @@ impossible aujourd'hui).
   se dessinent pareil » tombe) et `docs/formats/backdrops.md` (gate, mode de mélange, ligne de la table des champs). Rouges d'abord :
   `bgColorA` 1 et 2 → `KeyNotFoundException` (propriété `OverlayBlendMode` absente là où 1 et 2 sont attendus), 2 rouges sur 3 ; le
   cas 0 → propriété absente et `OverlayEnabled` faux était vert d'avance (garde). Verts après : tests du convertisseur 621/621.
+  **Export** (G2d-4, export complet en place, convertisseur en Release, verrou de `Alundra.dll` vérifié libre ; manifestes SHA-1 avec les
+  scripts de G0b, hors `Alundra.dll`, `Alundra.pdb` et `.casaeditor/`, 23 741 fichiers avant et après) : 17 fichiers changés, **égaux à
+  l'annexe** `export_predicted_changes.txt` (16 compagnons et `report.json`) ; aucun fichier ajouté ni retiré ; aucun PNG, `.texture` ni
+  `AssetInfos.json` changé. Preuve par compagnon : en retirant la ligne `  "OverlayBlendMode": v,` (CRLF) placée juste après
+  `"OverlayColorB"`, le SHA-1 égale celui de l'export d'avant, et le fichier gagne exactement 26 octets (donc 416 octets pour les 16 ;
+  `OutputSizeBytes` de `report.json` lu 1 287 737 541 après) ; v = 2 pour la 293 (Inoa en feu), v = 1 pour les 15 autres. Second export :
+  manifeste identique au premier, seul `report.json` diffère.
 
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 
