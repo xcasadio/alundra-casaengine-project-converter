@@ -5760,7 +5760,7 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
 au sud (O-E19-28 b, aussi contre les cellules) demande l'étape 2 (O-E19-42) ; l'image d'A10J `@2462` peut bouger d'un tick
 (retards connus de la DLL).
 
-### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2c planifiée ; G2b, G1/G3, G4 à planifier)
+### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2c 🧪 (CONFIRMED le 2026-10-05, recette G2c-6 en attente) ; G2b, G1/G3, G4 à planifier)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B les données, le convertisseur,
 l'analyseur, le moteur et la DLL ; notes, rendus et scripts dans le scratchpad de la session, `e19g-disc/A/notes.md` et
@@ -6262,7 +6262,7 @@ signature) ; la croissance des tampons alloue pendant le dessin (rare : plus de 
   vérifier si `data-extracted/` manque (documenté) ; la remise de la fenêtre après `TryReloadBuiltInShader` et la croissance du
   `VertexBuffer` n'ont pas de test sans périphérique (lecture du code et démo de capacité). Reste la recette G2a-4 (auteur).
 
-##### 1.2o.3 E19.g G2c — Semi-transparence par texel des fonds (O-E19-54) 🧪 (relecture n°1 READY ; G2c-1 à G2c-4 faites, G2c-5 et la recette G2c-6 en attente)
+##### 1.2o.3 E19.g G2c — Semi-transparence par texel des fonds (O-E19-54) 🧪 (relecture n°1 READY ; faite et CONFIRMED le 2026-10-05 ; recette G2c-6 en attente)
 
 **Faits** **[binaire, données]** (découverte du 2026-10-03, `e19o54-disc/notes.md` du scratchpad ; deux vérifications indépendantes
 du 2026-10-05, `e19o54-verify-binary/verify.md` (recensement refait sur `DATAS.BIN` brut, rien de réfuté) et
@@ -6414,6 +6414,13 @@ couche 1 de la 44 (le portage efface en noir ; la couleur d'effacement du binair
   intact) ; (4) la démo ajoute une couche cellulaire aux quatre valeurs du plan (même surcharge, autre composant) ; (5) la `Release` de
   `Alundra.Tests` n'est pas lancée ici (le vérificateur la lance). Decisions: see ADR-0035 (moteur : ADR-0053). Reste : G2c-5
   (vérification) et G2c-6 (recette de l'auteur sur l'export de G2c).
+- ✅ **Vérification de G2c** (G2c-5, 2026-10-05) : vérificateur neuf **CONFIRMED** : `Alundra.Tests` 2566/2566 en Release puis en
+  Debug (la Debug en dernier), `cmp` sans écart, les six traces à l'octet ; `CasaEngine.Tests` 2562/2562 (deux fois), convertisseur
+  432/432 ; manifeste recalculé : exactement les 188 lignes de l'annexe, chaque PNG égal à l'ancien une fois l'alpha 128 remis à 255,
+  7 092 983 pixels STP comme au tsv, aucun des 58 PNG inchangés n'a d'alpha 128, double export ; démo relancée sur le périphérique
+  (6 contrôles sur 6, texture chargée d'un PNG) ; binaire relu (`0x8005BBF4`, `0x8005BC34`/`0x8005BC64`, `0x8005B958`-`0x8005B9E4`).
+  Avis P4 : 14 rouges côté DLL au lieu de 15 (le test garde ne peut rougir que sur l'ancien export, montré à part) ; la branche `None`
+  de la surcharge interne rend une entrée opaque (aucun appelant aujourd'hui ne lui passe `None`). Reste la recette G2c-6 (auteur).
 
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 
