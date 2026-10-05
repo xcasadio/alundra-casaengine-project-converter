@@ -4826,13 +4826,20 @@ part (Q9, O-E19-64).
 - **F2B0-R3** : ni la DLL ni le moteur ne changent.
 
 **Tâches.**
-- **F2B0-0 — Mesure d'abord** (hors du dépôt) : une sonde jetable charge par `StaticSpriteFont.FromBMFont` un `font3.fnt` réécrit par
+- ✅ **F2B0-0 — Mesure d'abord** (hors du dépôt) : une sonde jetable charge par `StaticSpriteFont.FromBMFont` un `font3.fnt` réécrit par
   script avec les rectangles de l'annexe et mesure les textes que mesure `AlundraFont3GlyphTests.cs` (`:399`, `:468`, `:502-529`), seul
   test d'`Alundra.Tests` qui lit le vrai `font3.fnt` (`:349`, `:386`), avec le `.fnt` d'aujourd'hui et le nouveau ; résultat écrit
   dans l'annexe avant F2B0-2. Une mesure qui change fait de son test un test « qui bouge », ajouté à la liste fermée avec sa nouvelle
   valeur ; sinon il reste inchangé. Les autres tests qui chargent une police font3 ne peuvent pas bouger : ils prennent la police CPU
   de substitution (`CpuFont3Loader`, par exemple `AlundraInventoryScreenFontTests.cs:39-49`, `AlundraScreensFollowTheWindowTests.cs:76`)
   ou ne lisent que le nom de famille (`AlundraInventoryScreenXamlTests.cs`, `AlundraSaveScreenXamlTests.cs`).
+  **Fait le 2026-10-05** (scratchpad `e19f2b0-exec/`, `rewrite_fnt.py`) : le binaire de test Debug de `Alundra.Tests` copié deux fois
+  hors du dépôt, chaque copie avec son propre `alundra-project/UI/font3.fnt` au-dessus (A : celui d'aujourd'hui ; B : ses 145 lignes
+  `char` réécrites avec `x, y, width, height, yoffset` de l'annexe par code brut, `xadvance` inchangé) et la même `font3.png`
+  (`FindProjectRoot` trouve la copie avant le vrai dossier) ; `dotnet test --filter AlundraFont3GlyphTests` sur un vrai GPU : **9/9
+  verts en A comme en B**, aucun test ignoré. Les mesures du fichier sont des différences de largeurs de `MeasureText` comparées à
+  `xadvance` (inchangé) et un test de coupure de ligne ; les lignes `:508-510` ('é' en 144, 224) tiennent aussi en B. **Aucun test
+  ne bouge : la liste fermée n'est pas étendue.**
 - **F2B0-1 — Analyseur** : le CSV, puis un script de comparaison : le CSV égale l'annexe sur les 256 lignes (aucun test dans
   l'analyseur).
 - **F2B0-2 — Convertisseur, tests d'abord** (données réelles, `data-extracted/`, sortie anticipée si absent comme les tests voisins ;
