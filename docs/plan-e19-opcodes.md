@@ -4544,7 +4544,7 @@ avant les événements de carte du même tick, sur la manette du tick précéden
 elle ; écarts nommés dus à l'ordre du moteur (les entités avant le mandataire du monde), acceptés par l'auteur (D-E19-64), sans
 datation, origine par origine dans la table de F2-R1, avec l'ordre propre au harnais d'intro ; les deux défauts corrigés.
 
-###### E19.f2a — Logique de la boîte au tick près ⏳ (relance accordée par l'auteur le 2026-10-05, D-E19-71 ; relecture du 2026-10-05 REVISE : liste fermée incomplète à HEAD et ancres déplacées ; recensement refait, contre-vérifié, liste et ancres révisées ; nouvelle relecture)
+###### E19.f2a — Logique de la boîte au tick près ⏳ (relance accordée par l'auteur le 2026-10-05, D-E19-71 ; liste fermée refaite à HEAD, relecture READY ; annexe des épingles et arcs simulés (D-E19-77) le 2026-10-05 ; relecture de l'annexe à faire)
 
 **Règles.**
 - **F2-R1 — Ordre d'un tick** (révision n°1 : la porte calculée une fois par image et la boucle de la manette, qui fait tous
@@ -4623,7 +4623,10 @@ jouent.
 **Manette des arcs** (test seulement) : l'aide `RunUntilPressingTheButtonOnEveryDialogueFrame` (`AlundraArcSupport.cs:465-482`) et
 ses copies (A17 `AlundraDay3SceneArcTests.cs:211-234`, contre-preuve de T-B9 `AlundraEntityContactArcTests.cs:340-348`) tiennent
 Carré enfoncé pendant la frappe et, quand la boîte attend un appui (curseur `\A`, ou frappe finie avec `closeMode & 2`), le
-relâchent une image puis l'enfoncent (un appui naissant) ; l'oracle reproduit la même manette.
+relâchent une image puis l'enfoncent (un appui naissant) ; l'oracle reproduit la même manette. Forme exacte (révision du
+2026-10-05, celle de l'oracle et de la simulation) : Carré tenu à l'image f si une boîte est ouverte et pas (la boîte attend un
+appui et Carré était tenu à f−1) ; elle donne un second front de Carré deux images après chaque appui consommé, sans effet sur les
+arcs simulés ; l'aide de F2A-3 la reproduit telle quelle.
 
 **Tâches.**
 - **F2A-1 — Oracle, tests d'abord** (test seulement) : l'oracle et ses tests (valeurs de `selftest()` et des trois textes, sous la
@@ -4639,7 +4642,13 @@ relâchent une image puis l'enfoncent (un appui naissant) ; l'oracle reproduit l
   A11 : attentes périodiques d'autres acteurs, attentes physiques `0x24`/`0x0B`) : l'épingle absolue devient « image de libération
   de la dernière boîte traversée + l'écart d'aujourd'hui », écart écrit d'avance, avec une marge écrite d'avance égale à la période
   de l'attente périodique de l'acteur qui suit (Wendell 3, Meade 2) ; toute autre différence est un arrêt. Budgets `FrameLimit` :
-  fin prédite + 20 %. La table est commitée avant F2A-2.
+  max(budget d'aujourd'hui, ⌈1,2 × fin prédite⌉) (révision du 2026-10-05 : un budget ne baisse jamais). **Arcs simulés**
+  (D-E19-77) : les épingles d'A6 (branche T1000 de la 391, `:192`, `:208`), d'A10 (chemin critique de S030), d'A11, les gardes
+  « aucun contact » d'A6, A8, A9, A10, A20, A15 et les budgets de T-A19, T-B9, A14, A15, A18 sont écrits d'avance par une
+  simulation hors du dépôt (`f2a-sim/` du scratchpad : port en C# du modèle du binaire comme boîte, ordre de F2-R1, tout le reste
+  étant la DLL d'aujourd'hui ; validée contre le modèle Python (59 scénarios, 475 tirages) et contre les valeurs d'aujourd'hui
+  (13 tests sans écart) ; contre-vérifiée par une seconde exécution identique à l'octet, `f2a-sim-verify/verify.md`) ; l'annexe
+  les reprend. La table est commitée avant F2A-2.
 - **F2A-3 — Vague de ré-épingles**, dans le même commit que F2A-2 (chaque commit vert) : chaque assertion de classe R prend la
   valeur de sa ligne de la table, rien d'autre ; une mesure qui diffère de la table est un arrêt ; classe C (aide et budget
   seulement : toute valeur qui bouge est un arrêt) ; classe L (les 32 lignes `0x4C`/`0x4D` de `story-chain-skipped-opcodes.tsv`,
