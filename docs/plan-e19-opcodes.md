@@ -4794,7 +4794,7 @@ compteur de ticks de la boîte (Q5) ; preuve au pixel par un test sur GPU réel 
 `GpuDeviceHost.cs` est interne à `CasaEngine.Tests` : nouveau harnais) ; marge par défaut des textes des écrans existants consignée à
 part (Q9, O-E19-64).
 
-###### E19.f2b0 — Rectangles des glyphes font3 depuis la table du binaire ⏳ (planifiée le 2026-10-05 ; relecture à faire)
+###### E19.f2b0 — Rectangles des glyphes font3 depuis la table du binaire ⏳ (planifiée le 2026-10-05 ; relecture n°1 REVISE (règle de comparaison de T2), révisée ; relecture n°2 à faire)
 
 **Faits** **[binaire, données]** (`f2b-disc/glyphs.py`, `glyphpix.py` du scratchpad ; recompte du 2026-10-05,
 `merge-1005/f2b0_counts.py`) :
@@ -4802,7 +4802,7 @@ part (Q9, O-E19-64).
   `(plume, yoff)`, puis avance la plume de `w` (`0x80047C08`-`0x80047C18`). La table est en `0x800993C4` : 256 entrées de 20 octets
   `{w, h, srcX, srcY, yoff}`, indexées par le code brut ; annexe versionnée `docs/plan-e19-f2b0-annexe/glyph_table.txt`, relevée sur le
   binaire. Tous les `yoff` valent 0 ; aucune entrée n'a une largeur ou une hauteur nulle. Le tableau décompilé `g_fontCharWidthTable`
-  (`StaticVariables.cs:9484`) l'égale sur ses 1280 entiers ; `FontCharWidths.csv` de l'analyseur n'en publie que le champ 0 (l'avance).
+  (déclaré en `StaticVariables.cs:9483`) l'égale sur ses 1280 entiers ; `FontCharWidths.csv` de l'analyseur n'en publie que le champ 0 (l'avance).
 - **Portage** : `FontWriter` écrit pour chaque glyphe la case 16 × 16 de son enregistrement source (`ui/font3.json`, la grille
   `x = code % 16 × 16`, `y = code / 16 × 16`), `xoffset = yoffset = 0`, `xadvance` = l'avance du CSV (égale à `w` sur les 145 lignes).
   Sur les 145 lignes `char` de `UI/font3.fnt`, **129** ont un autre rectangle que le binaire (seuls les codes 0 à 15, cases pleines,
@@ -4827,27 +4827,30 @@ part (Q9, O-E19-64).
 
 **Tâches.**
 - **F2B0-0 — Mesure d'abord** (hors du dépôt) : une sonde jetable charge par `StaticSpriteFont.FromBMFont` un `font3.fnt` réécrit par
-  script avec les rectangles de l'annexe et mesure les textes que mesurent `AlundraFont3GlyphTests.cs` (`:399`, `:468`, `:502-529`) et
-  les autres tests d'`Alundra.Tests` qui chargent font3 (`AlundraDialoguePresenterFontTests.cs`, `AlundraInventoryScreenFontTests.cs`,
-  `AlundraInventoryScreenXamlTests.cs`, `AlundraSaveScreenXamlTests.cs`, `AlundraScreensFollowTheWindowTests.cs`,
-  `AlundraScreenBindingReleaseTests.cs`), avec le `.fnt` d'aujourd'hui et le nouveau ; résultat écrit dans l'annexe avant F2B0-2.
-  Une mesure qui change fait de son test un test « qui bouge », ajouté à la liste fermée avec sa nouvelle valeur ; sinon il reste
-  inchangé.
+  script avec les rectangles de l'annexe et mesure les textes que mesure `AlundraFont3GlyphTests.cs` (`:399`, `:468`, `:502-529`), seul
+  test d'`Alundra.Tests` qui lit le vrai `font3.fnt` (`:349`, `:386`), avec le `.fnt` d'aujourd'hui et le nouveau ; résultat écrit
+  dans l'annexe avant F2B0-2. Une mesure qui change fait de son test un test « qui bouge », ajouté à la liste fermée avec sa nouvelle
+  valeur ; sinon il reste inchangé. Les autres tests qui chargent une police font3 ne peuvent pas bouger : ils prennent la police CPU
+  de substitution (`CpuFont3Loader`, par exemple `AlundraInventoryScreenFontTests.cs:39-49`, `AlundraScreensFollowTheWindowTests.cs:76`)
+  ou ne lisent que le nom de famille (`AlundraInventoryScreenXamlTests.cs`, `AlundraSaveScreenXamlTests.cs`).
 - **F2B0-1 — Analyseur** : le CSV, puis un script de comparaison : le CSV égale l'annexe sur les 256 lignes (aucun test dans
   l'analyseur).
 - **F2B0-2 — Convertisseur, tests d'abord** (données réelles, `data-extracted/`, sortie anticipée si absent comme les tests voisins ;
   l'annexe est lue dans le dépôt, jamais le CSV de l'analyseur ni la sortie du convertisseur comme référence) :
   - **T1** : pour chacune des 145 lignes `char`, `(x, y, width, height, xoffset, yoffset, xadvance)` = `(srcX, srcY, w, h, 0, yoff, w)`
     de la ligne de l'annexe de son code brut ; rouge aujourd'hui sur 129 lignes ;
-  - **T2** : pour chacune des 145, les texels découpés dans `UI/Textures/font3.png` par le rectangle de la ligne `char` et posés à
-    `(xoffset, yoffset)` égalent ceux découpés par le rectangle de l'annexe et posés à `(0, yoff)` ; rouge aujourd'hui sur exactement
-    les codes 30, 31, 39, 44, 45, 49, 58, 121, 122, 123, 127, 156, 171, 176, 187 et 233, vert sur les 129 autres ;
+  - **T2** : pour chacune des 145, deux empreintes sur une bande transparente, sans découpe : les texels de `UI/Textures/font3.png`
+    pris dans le rectangle de la ligne `char` et posés à `(xoffset, yoffset)`, et ceux pris dans le rectangle de l'annexe et posés à
+    `(0, yoff)` ; seuls les texels d'alpha non nul comptent ; les deux empreintes sont égales comme ensembles de (position, RGBA) (la
+    règle de `f2b-disc/glyphpix.py`) ; rouge aujourd'hui sur exactement les codes 30, 31, 39, 44, 45, 49, 58, 121, 122, 123, 127, 156,
+    171, 176, 187 et 233, vert sur les 129 autres (le code 17, rectangle 1 × 1 dans la table, est vert : sa case est entièrement
+    transparente) ;
   - **T3** : les lignes de `font3-charset.json` portent le rectangle de l'annexe (256 lignes ; rouge aujourd'hui sur 238) ;
   - lecteur : 256 lignes lues ; une ligne mal formée donne un avertissement ;
   - tests existants qui bougent, liste fermée : `FontWriterTests.cs`, l'aide `AssertGlyph` (`:278-285`) prend la largeur et la hauteur
     attendues ; ses appels `:49` (les 17 caractères prouvés : rectangles de l'annexe), `:53` ('A' → (16, 64, 7, 16)), `:135` ('œ' →
     (195, 144, 9, 16)) ; `:182` (largeur du rectangle de 'é' 16 → 5 ; X 144 et Y 224 inchangés) ; plus ceux que nomme F2B0-0 ;
-    `AlundraFont3GlyphTests.cs:507-508` reste vert ('é' toujours en 144, 224).
+    `AlundraFont3GlyphTests.cs:508-510` reste vert ('é' toujours en 144, 224).
 - **F2B0-3 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement `UI/font3.fnt`,
   `UI/font3-charset.json` et `report.json` ; double export identique hors `report.json`.
 - **F2B0-4 — Vérification** (vérificateur neuf). **F2B0-5 — Recette** (auteur) : dans l'inventaire et l'écran de sauvegarde, virgules,
@@ -6639,7 +6642,7 @@ couche 1 de la 44 (le portage efface en noir ; la couleur d'effacement du binair
   Avis P4 : 14 rouges côté DLL au lieu de 15 (le test garde ne peut rougir que sur l'ancien export, montré à part) ; la branche `None`
   de la surcharge interne rend une entrée opaque (aucun appelant aujourd'hui ne lui passe `None`). Reste la recette G2c-6 (auteur).
 
-##### 1.2o.4 E19.g G2d — Surcouche des fonds au mode du binaire (O-E19-58) ⏳ (planifiée le 2026-10-05 ; relecture à faire)
+##### 1.2o.4 E19.g G2d — Surcouche des fonds au mode du binaire (O-E19-58) ⏳ (planifiée le 2026-10-05 ; relecture n°1 REVISE (démo), révisée ; relecture n°2 à faire)
 
 **Faits** **[binaire, données]** (découverte du 2026-10-05, `o58-disc/notes.md` du scratchpad ; contre-vérification indépendante,
 `o58-disc-verify/verify.md`, scripts refaits, rien de réfuté hors du numéro d'ADR du moteur) :
@@ -6670,8 +6673,14 @@ couche 1 de la 44 (le portage efface en noir ; la couleur d'effacement du binair
   de même z et de fenêtre neutre : `Mode0` → `AlphaBlend` avec `(R, G, B, 128)` ; `Mode1` → `Additive` avec `(R, G, B, 255)` ; `Mode2`
   → `Subtractive` avec `(R, G, B, 255)` ; `Mode3` → `Additive` avec chaque canal multiplié par 64/255, arrondi au plus proche (13 pour
   50 ; inutilisé dans les données, choix de la session, même facteur que le `Mode3` de G2a) ; `None` → l'entrée d'aujourd'hui. Démo
-  obligatoire (`CasaEngineMonogame/AGENTS.md:44`) : un cas de teinte ajouté à la démo des couches de G2c, sonde du back-buffer, fond
-  (100, 150, 200), à ±1 : teinte (50, 0, 0) en `Mode1` → (150, 150, 200) ; teinte (40, 40, 40) en `Mode0` → (70, 95, 120). Docs :
+  obligatoire (`CasaEngineMonogame/AGENTS.md:44`), **sœur** de celle de G2c, qui n'est pas touchée (le service des couches ne porte
+  qu'une teinte, qui couvre toute la vue au-dessus de la passe `Background` : ajoutée à la démo de G2c, elle changerait ses contrôles
+  `BackdropLayersPsxSemiTransparencyDemo.cs:94-99`) : deux classes de démo dans `CasaEngine.Demos/Demos/PsxSemiTransparency/`, une par
+  cas, chacune avec la seule couche de fond unie de G2c (`Content/PsxBackdropLayers/background.png`, (100, 150, 200), passe
+  `Background`) et une teinte, lancées depuis le dossier `CasaEngine.Demos` par `CASAENGINE_START_DEMO="Background tint PSX mode 1"`
+  puis `CASAENGINE_START_DEMO="Background tint PSX mode 0"` (titres indicatifs), sonde `BackBufferProbe`, à ±1 par canal, aux points
+  de couche (48, 48), (160, 120) et (300, 220) : teinte (50, 0, 0) en `Mode1` → (150, 150, 200) aux trois points ; teinte (40, 40, 40)
+  en `Mode0` → (70, 95, 120) aux trois points. Plan du moteur dans son `ai-agent/tasks/` (précédent de G2c). Docs :
   `docs/engine/scrolling-layers.md:96-97`, `docs/engine/sprite-psx-semi-transparency.md:41-42` ; ADR du moteur 0056 (0055 est celle
   d'audio-modern).
 - **G2d-R2 — Convertisseur** : `[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public int OverlayBlendMode`, la valeur
@@ -6687,15 +6696,15 @@ couche 1 de la 44 (le portage efface en noir ; la couleur d'effacement du binair
 
 **Tâches.**
 - **G2d-0 — Annexe** : `docs/plan-e19-g2d-annexe/export_predicted_changes.txt` (17 lignes : 16 compagnons et `report.json`).
-- **G2d-1 — Moteur, tests d'abord** (au niveau de la file) : teinte (50, 0, 0, 255) en `Mode1` → une entrée `Additive`, (50, 0, 0, 255) ;
+- **G2d-1 — Moteur, tests d'abord** (au niveau de la file, dans `CasaEngine.Tests/Rendering/ScrollingLayers/ScrollingLayerPsxSemiTransparencyTests.cs`) : teinte (50, 0, 0, 255) en `Mode1` → une entrée `Additive`, (50, 0, 0, 255) ;
   (40, 40, 40, 255) en `Mode0` → `AlphaBlend`, (40, 40, 40, 128) ; `Mode2` → `Subtractive` ; `Mode3` (50, 0, 0) → `Additive`,
   (13, 0, 0, 255) ; constructeur à deux arguments → l'entrée d'aujourd'hui (rouges d'abord : le constructeur à trois arguments n'existe
   pas, rouge de compilation) ; la démo ci-dessus.
 - **G2d-2 — Convertisseur, tests d'abord** : `bgColorA` 2 → `"OverlayBlendMode": 2` (aujourd'hui absent) ; 1 → 1 ; 0 → pas de propriété
   et `OverlayEnabled` faux (déjà vert).
 - **G2d-3 — DLL, tests d'abord** : compagnon réel de la 293 → `Mode1`, (50, 0, 0, 255) (aujourd'hui (50, 0, 0, 128) sans mode ; rouge
-  tant que l'export n'a pas le champ) ; une carte à v = 1 (la 96 ou la 18) → `Mode0`, (R, G, B, 255) ; synthétiques : 3 → `Mode2`, 4 →
-  `Mode3`, 0 et 5 → `Mode0`.
+  tant que l'export n'a pas le champ) ; compagnon réel de la 96 (v = 1) → `Mode0`, (40, 40, 40, 255) (aujourd'hui (40, 40, 40, 128)
+  sans mode) ; synthétiques : 3 → `Mode2`, 4 → `Mode3`, 0 et 5 → `Mode0`.
 - **G2d-4 — Export et preuves** : manifeste SHA-1 avant et après : exactement l'annexe ; chaque compagnon gagne exactement la ligne
   `  "OverlayBlendMode": v,` (CRLF) après `"OverlayColorB"` (+26 octets ; v = 2 pour la 293, 1 pour les 15 autres) ; dans `report.json`,
   `OutputSizeBytes` + 416 et les durées ; aucun PNG, `.texture` ni `AssetInfos.json` ; double export identique hors `report.json`.
@@ -6705,8 +6714,8 @@ couche 1 de la 44 (le portage efface en noir ; la couleur d'effacement du binair
 **Acceptation.**
 1. Tests de G2d-1 à G2d-3 rouges d'abord, verts après ; la démo égale les valeurs à ±1.
 2. Aucun test existant ne bouge (les tests du moteur utilisent le constructeur à deux arguments ; ceux de la DLL ne lisent que
-   `Assert.Null(tint)` et la clé ; ceux du convertisseur ne listent pas les propriétés) ; toute assertion existante qui bouge est un
-   arrêt.
+   `Assert.Null(tint)` et la clé ; ceux du convertisseur ne listent pas les propriétés) ; la démo de G2c n'est pas modifiée (ses
+   contrôles `:94-99` inchangés) et passe encore ses six contrôles ; toute assertion existante qui bouge est un arrêt.
 3. Export : exactement l'annexe ; double export ; la garde verte sur cet export.
 4. `CasaEngine.Tests` (construit à part) ; tests du convertisseur ; `Alundra.Tests` en Release puis en Debug sur l'export, la Debug en
    dernier, `cmp` sans écart ; les six traces à l'octet.
@@ -7880,7 +7889,7 @@ déplace aucune assertion).
   convertisseur 433/433, `cmp` sans écart, six traces à l'octet. Avis P4 : les mutations n'ont été rejouées que sur la classe du test,
   pas sur toute la suite.
 
-#### 1.2s.7 E19.m6 — Hygiène des tests : M-19, M-31, moitié surcouche de M-32 ⏳ (planifiée le 2026-10-05 ; relecture à faire)
+#### 1.2s.7 E19.m6 — Hygiène des tests : M-19, M-31, moitié surcouche de M-32 ⏳ (planifiée le 2026-10-05 ; relecture n°1 READY)
 
 **Faits** (découverte du 2026-10-05, lecture seule, à `d353136` ; contre-vérifiée ; notes versionnées, en anglais :
 `docs/plan-e19-m-annexe/m6-discovery-2026-10-05.md` et `m6-discovery-verify-2026-10-05.md`) : aucun fichier de la tranche n'a changé
@@ -8506,7 +8515,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-55 | ~~Les fonds avancent pendant un fondu de passage~~ — **réglé le 2026-10-03 par E19.m4 (D-E19-67, ADR-0034), vérification en attente** ; question d'origine : (audit d'E19.m3) la boucle de transition du binaire (`0x8002C490`-`0x8002C4C0`) n'appelle pas `RenderScene` ; la DLL poussait les ticks des fonds sans condition (`AlundraWorldProxy.cs:2192-2196`) : 16 ticks en trop par départ (F0 à F15). | E19.m4 |
 | O-E19-56 | **Le type 2 ignore le décalage de palette `0x800C490C`** (`0x8005D370`-`0x8005D394`), contrairement aux types 0 et 4 et aux tuiles ; à retenir si le cycle de palettes (O-E19-43) est porté. Et : le service du moteur survit à un retour au titre ; on n'a pas vérifié si l'original relance l'exécutable (et remet le compteur des vagues à 0) à ce moment. | Note |
 | O-E19-57 | **Le binaire montre une image figée pendant le départ d'un passage** (audit d'O-E19-55) : la boucle de transition n'appelle ni `Update` ni `RenderScene` ; l'écran est une copie de la dernière image sous le fondu. Le portage continue d'avancer et de dessiner la scène : suivi de la caméra, animation des entités (le gel ne touche que `GameplayBlockedMask`, `AlundraWorldProxy.cs:2261-2266`, `AlundraGameplayFreeze.cs:38-40`), physique des PNJ, tuiles animées (temps réel), HUD, dialogue, fondu de la musique (non vérifié dans le binaire). Aussi : l'initialisation du fondu de type 0 du binaire remet la couleur courante à 0 (`0x80042F68`-`0x80042F70`), le portage la garde (`BeginWarpDepartureFade`). À trancher : figer la scène entière (capture de la dernière image par le moteur) ou garder l'écart. | Auteur |
-| O-E19-58 | **Planifié le 2026-10-05 (E19.g G2d, §1.2o.4, D-E19-82).** **La surcouche de la 293 (Inoa en feu) est additive dans l'original** (vérification d'O-E19-54) : `BGColorA` 2 → `TILE` d'ABR 1 de (50, 0, 0) ; le portage moyenne `(50, 0, 0, 128)` (le convertisseur ne garde que `OverlayEnabled = BGColorA != 0`, `BackdropReader.cs:254-255` ; le moteur dessine la teinte en `AlphaBlend`, `ScrollingLayerComponent.cs:208` ; la DLL pose α128, `AlundraBackdropStage.cs:295`) : la scène est assombrie de moitié et teintée au lieu d'être un peu rougie ; hors de la chaîne. | E19.g |
+| O-E19-58 | **Planifié le 2026-10-05 (E19.g G2d, §1.2o.4, D-E19-82).** **La surcouche de la 293 (Inoa en feu) est additive dans l'original** (vérification d'O-E19-54) : `BGColorA` 2 → `TILE` d'ABR 1 de (50, 0, 0) ; le portage moyenne `(50, 0, 0, 128)` (le convertisseur ne garde que `OverlayEnabled = BGColorA != 0`, `BackdropReader.cs:254-255` ; le moteur dessine la teinte en `AlphaBlend`, `ScrollingLayerComponent.cs:209` ; la DLL pose α128, `AlundraBackdropStage.cs:298`) : la scène est assombrie de moitié et teintée au lieu d'être un peu rougie ; hors de la chaîne. | E19.g |
 | O-E19-59 | **Octet de palette 30 des tuiles** (cartes 1, 13, 17, 153, 439, couche 1, tuiles 249-251) : le binaire lit l'identifiant de palette en `0x800CA24C`, au-delà de la table (l'entrée 3 de la table d'ordre du tampon de dessin 0) : valeur d'exécution, aucune correction statique juste ; le convertisseur pose la palette 0 (`BackdropImageBuilder.cs:79-82`), opaque. | Note |
 | O-E19-60 | **Réglé le 2026-10-05 (E19.s2, ADR-0054 du moteur ; recette S2-5 en attente).** **L'interface MGUI est mal découpée dans une vue à bandes** (recette du 2026-10-05, §1.2u) : découpes écrites en pixels de la vue dans le ciseau absolu du périphérique (`CasaDrawTransaction.cs:742-767`) et ciseau périmé après un agrandissement ; inventaire, HUD, sous-inventaire, écran de sauvegarde, boîte du moteur. | E19.s2 (moteur) |
 | O-E19-61 | **Réglé le 2026-10-05 (X2 ; recette X2-5 en attente).** **Un reste de la piste précédente en tête de 41 musiques** (D-E19-69 : se corrige) (le « ding » de la 389) : l'extracteur rend les 46 pistes dans un seul moteur sonore ; la séquence 25 de l'original est muette pendant 0,6 s. Correction X2 de `plan-extraction-bgm.md`, D-X-5 à amender. | Auteur, puis X2 |
