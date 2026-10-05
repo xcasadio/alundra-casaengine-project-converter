@@ -5181,8 +5181,9 @@ Reste : la vérification (F2B1B-3), l'ADR n'étant pas prévue pour cette tranch
   (`CasaEngineMonogame/Directory.Packages.props:18`, D-E19-85) ; suite entière en Release puis en Debug.
 
 **Tâches.**
-- **F2B1C-0 — Épingle d'abord** : R6 avant tout rouge de T5 (sinon T5 serait rouge parce que le runtime 3.8.4.1 refuse l'effet du moteur,
+- ✅ **F2B1C-0 — Épingle d'abord** : R6 avant tout rouge de T5 (sinon T5 serait rouge parce que le runtime 3.8.4.1 refuse l'effet du moteur,
   pas pour ses valeurs) ; suite entière en Release puis en Debug avec la nouvelle épingle, aucun test ne bouge.
+  - Fait le 2026-10-06 : `Alundra.Tests.csproj:17` en 3.8.5.1 ; `Alundra.Tests` 2679 / 2679 en Release puis 2679 / 2679 en Debug, 0 échec, aucun test ne bouge ; `cmp` Debug/projet sans écart ; les six traces à l'octet (gardien exit 0, puis `git checkout` des quatre fichiers). Commit : `test(alundra): pin MonoGame 3.8.5.1 in Alundra.Tests like the engine (E19.f2b1c)`.
 - **F2B1C-1 — Tests d'abord** :
   - T2 (view model, sans affichage) : pour chaque passe de S1 à S6, les propriétés déduites des tables par R2 et par la règle de la
     passe de fin de défilement de F2B1B-1 ; sur S4 passe 100 (la seule) : `Row0` (« deux », `Left` 0, `Top` 1), `Row1` (« trois », 0, 17),
