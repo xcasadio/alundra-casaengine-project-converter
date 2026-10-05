@@ -272,6 +272,18 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-82** — (2026-10-05, choix technique de la session, O-E19-58) La surcouche des fonds porte la **valeur brute de
     `BGColorA`** dans un champ `OverlayBlendMode` du document de fond (pas un mode déjà résolu par le convertisseur) ; la DLL
     la traduit en mode PSX par la table des couches (ADR-0053 : le jeu choisit le mode, le moteur ne connaît pas la table).
+  - **D-E19-83** — (2026-10-05, la session, d'après le binaire ; précise le troisième détail de D-E19-81) La passe qui finit un
+    défilement montre les lignes **déjà décalées** : la rangée de jambages à y = 172 n'est **pas dessinée** par le binaire (H1 : la
+    même passe efface l'ancienne bande du haut par `ClearImage`, `0x80045E30`, mise dans la même file que `LoadImage` et `DrawOTag`,
+    avant le `DrawOTag` de l'interface). Lecture statique confirmée deux fois, sans émulateur ; la variante « avant décalage » reste
+    derrière une seule constante ; à confirmer par l'auteur (recette ou capture d'émulateur).
+  - **D-E19-84** — (2026-10-05, choix technique de la session, met en œuvre D-E19-78) Règle de S025 : quand la dernière ligne d'une
+    page contient un `\H`, ses espaces de fin sont gardées et protégées par `[empty trimwhitespace=false/]` en fin de ligne (Yarn 3.2.1
+    retire les espaces de fin de ligne mais garde celles qui précèdent un marqueur auto-fermant) ; le marqueur `empty`, déjà connu
+    comme sans effet de la DLL et des oracles, est réutilisé.
+  - **D-E19-85** — (2026-10-05, choix technique de la session) L'épingle MonoGame d'`Alundra.Tests` suit celle du moteur (3.8.4.1 →
+    3.8.5.1) : sans elle, un test ne peut pas créer le runtime du bureau sur GPU (« This MGFX effect seems to be for a newer release
+    of MonoGame »).
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -4901,18 +4913,177 @@ manifeste « avant » (hors `report.json`).
 **Risques** : la mesure des textes par FontStashSharp (F2B0-0 ; un paquet binaire, non lisible) ; la place exacte des pixels sous MGUI
 n'est prouvée qu'en f2b1 (test sur GPU) ; les écrans en font3 existants changent (voulu : les glyphes du binaire).
 
-###### E19.f2b1 — Vue de la boîte (esquisse, après E19.f2b0)
+###### E19.f2b1 — Vue de la boîte : découverte du 2026-10-05, découpée en E19.f2b1a, E19.f2b1b et E19.f2b1c ⏳
 
-Écran XAML lié à un view model au patron d'`AlundraSaveScreen`, **modal** (D-E19-80) : R1, un instantané pur « passe dessinée » écrit
-à la fin de chaque passe de la boîte (`Drawn`, `Y`, haut et hauteur de la découpe, lignes telles que dessinées, avant le décalage sur
-la passe qui finit un défilement, x de chaque ligne avec la largeur `\H` de sa bande, image du curseur) ; R2, le view model ; R3,
-`TextBoxScreen.xaml` (cadre, curseur, toile de découpe de 258 de large avec trois textes font3 : marge 0, `LinePadding` 0, sans retour
-à la ligne, sans mise en forme, blanc) ; R4, l'écran et un présentateur appelé juste après chaque passe de la boîte ; R5, le directeur
-n'envoie plus le préfixe tapé au moteur (la boîte du moteur ne montre plus que les choix jusqu'à E19.f3, D-E19-79). Détails fins
-fidèles (D-E19-81). Ligne S025 corrigée au convertisseur (D-E19-78). Tests : instantané contre l'oracle (étendu depuis le binaire et
-`model.py`), view model sans affichage, XAML sur un `MGDesktop`, test au pixel sur GPU réel (référence `f2b-disc/refcompose.py`),
-recette. Tests qui bougent à recenser à HEAD (`AlundraDialogueBoxOrderTests.cs:360`, `:366-380`, `AlundraDialogueFramePassTests.cs:246`,
-`AlundraDialoguePresenterWiringTests.cs:138-186`, `:199-265`, peut-être `AlundraDialogueOutOfBandCloseTests.cs:48-69`).
+**Découverte** (2026-10-05, lecture seule ; quatre surfaces, chacune contre-vérifiée par un relecteur adverse qui a refait ses
+scripts ; notes, valeurs et scripts versionnés, en anglais, dans `docs/plan-e19-f2b1-annexe/`) ; faits porteurs :
+- **Yarn et S025** (`s025-notes.md`, `s025-verify.md`) : YarnSpinner 3.2.1 (`CasaEngineMonogame/Directory.Packages.props:25-26`)
+  retire à la compilation les espaces de fin de ligne, avec ou sans `#line`, et garde celles qui précèdent un marqueur auto-fermant
+  (`empty`, `yield`, `flag`, nom inconnu) ; une espace insécable finale est aussi retirée. Sur les 823 `\H` du corpus, seules les
+  trois pages S025 des cartes 472 à 474 changent de largeur (125 dans le binaire, 93 exporté) ; `DATAS.BIN` porte les mêmes trois
+  chaînes ; le binaire tape les espaces comme tout caractère.
+- **État dessiné** **[binaire]** (`oracle-notes.md`, `oracle-verify.md`, `dll-notes.md`, `dll-verify.md`) : découpe calculée avant le
+  glissement, depuis l'Y de la passe précédente (`haut = min(Yprécédent + 4, 239)`, `hauteur = min(50, 240 − haut)`, x 32, largeur 258) ;
+  la première passe d'entrée découpe depuis 168 (haut 172), car l'ouverture n'écrit pas l'Y de configuration ; une passe de
+  défilement ne passe que par `ScrollText` (pas de curseur) ; la passe de relâchement ne dessine rien, pas même le cadre
+  (`0x80047CB8`, `0x80048144`) ; x d'une bande : 32, ou `16 + (288 − w)/2` avec la largeur `\H` rangée par bande, effacée à l'ouverture
+  et pour la nouvelle bande du bas en fin de défilement ; curseur : compteur + 1 bouclé à 40, image = compteur / 10 (9 passes
+  d'image 0 la première fois, puis 10), u 0xB0 à 0xE0, v 0x38, en (288, Y + 32) ; décalages de défilement 2 à 16 ; la passe qui finit
+  un défilement ne montre pas l'ancienne rangée (D-E19-83). Sur 24 431 chaînes, la ligne la plus large fait 255 pixels (la coupe à
+  255 ne joue jamais sur le texte fixe) ; un seul `\H` en milieu de ligne (carte 394, chaîne 5, largeur 47, x 136).
+- **DLL** : `Open` pose Y = 240 (`AlundraDialogueBox.cs:246`) : la découpe de la première passe demande un miroir de l'Y de
+  configuration du binaire ; le jeton de centrage est ignoré (`:606-607`) ; le présentateur est appelé à `Open` (`:249`, `:265`),
+  `Pass` (`:438`), `Released` (`:480`), `NotifyPresenterClosed` (`:505`), `OpenChoice` (`:522`) ; après R5, la réponse à un choix
+  laisserait la fenêtre du moteur ouverte et vide : `TakeChoiceResult` (`AlundraDialogueDirector.cs:532-544`) doit la fermer quand une
+  boîte est active ; les écrans `IsTopmost` se dessinent dans l'ordre d'ajout ; aucun `0x44` balayé (51 à 101 sites, recensement
+  partiel) ne suit l'ouverture d'une boîte sans attente : « pousser à `Open`, caché jusqu'à `Drawn` » reste un repli documenté.
+- **Vue MGUI** (`view-notes.md`, `view-verify.md`) : la XAML proposée (`view-notes.md` §1.2) se dessine au texel près sur GPU réel à ×1,
+  ×2 et ×3, aussi dans une vue décalée (ADR-0054 du moteur), contre un compositeur indépendant ; attributs porteurs : `Padding="0"`,
+  `WrapText="False"` et `Width="255"` sur chaque ligne, `BorderThickness="0"` sur la fenêtre ; `LF` et `CR` font des retours à la
+  ligne même sans mise en forme (une ligne n'en contient jamais) ; la largeur mesurée d'un texte est la somme des `xadvance` (f2b0 ne
+  change aucune largeur) ; une liaison modifiée n'atteint les pixels qu'au `Desktop.Update()` suivant, l'interface étant mise à jour
+  avant le monde (`CasaEngineGame.cs:537`, `:555`) : la vue a une image de retard sur la boîte, comme tous les écrans d'Alundra
+  (O-E19-65) ; `Alundra.Tests` épingle MonoGame 3.8.4.1 (`Alundra.Tests.csproj:17`), le moteur 3.8.5.1 : `CasaDesktopRuntime` refuse
+  alors l'effet compilé (D-E19-85) ; le décalage (+1, +1) des textes font3 des écrans existants est mesuré (O-E19-64).
+- **Palette** : le `font3.png` exporté vient de la CLUT de FONT3.TIM ; les bandes du binaire prennent la palette 8 de `WIND.CL` ; elles
+  diffèrent sur l'index 4 (O-E19-66).
+
+**Choix de conduite** (techniques, session) : trois tranches dans l'ordre f2b1a (S025 au convertisseur), f2b1b (état dessiné et
+oracle, DLL seule), f2b1c (écran, présentateur, preuve au pixel) ; règle de S025 (D-E19-84) ; largeurs `\H` lues dans `font3.fnt`
+par un fournisseur d'avances injecté ; épingle MonoGame relevée (D-E19-85) ; retard d'une image accepté et consigné (O-E19-65) ;
+les autres pertes d'espaces de bord consignées pour l'auteur (O-E19-67).
+
+###### E19.f2b1a — Ligne centrée S025 au convertisseur (D-E19-78, D-E19-84) ⏳ (planifiée le 2026-10-05 ; relecture à faire)
+
+**Règles.**
+- **F2B1A-R1 — Émetteur** (`alundra-casaengine-project-converter/Text/YarnTextEmitter.cs`) : si la dernière ligne d'une page (les
+  éléments après son dernier `\N`, ou toute la page) contient un `\H`, les espaces de fin de la page ne sont pas retirées ; si la page
+  finit alors par un texte qui se termine par une espace, `[empty trimwhitespace=false/]` est ajouté en fin de ligne ; un `flag` ou un
+  `yield` final protège déjà les espaces (pas de garde ajoutée) ; le retrait des espaces de début, et celui de toute autre page, ne
+  change pas. Trois endroits (`BuildPageRender` ~`:536-537` et ~`:558-560`, `TrimEdgeSpaces` ~`:616`) et une aide privée
+  `LastLineIsCentred` ; docs de la classe et des deux méthodes. Prototype : `s025-notes.md` §3.2.
+- **F2B1A-R2 — Oracle indépendant** : `ReferenceTextDecoder.PageBuilder.Build` (`:496-580`) prend la même règle, écrite depuis la
+  décision, jamais depuis l'émetteur (règle d'ADR-0025).
+- **F2B1A-R3 — Docs** : `docs/plan-e15-yarn.md`, D-E15-8 (`:58-59`), la ligne du tableau `:203`, la puce de l'oracle `:335` :
+  l'exception et D-E19-78 ; `docs/formats/dialogues-yarn.md` (`:64` `[empty]`, `:66` espaces de bord, `:195`) ; nouvelle ADR du
+  parent (prochain numéro libre) qui cite ADR-0025 et note les trois textes d'inventaire `0x206`, `0x239`, `0x2A6` (pertes d'ETC hors
+  de la boîte) ; statut d'ADR-0006 « partly superseded by ADR-NNNN » (précédent d'ADR-0025).
+
+**Tâches.**
+- **F2B1A-1 — Tests d'abord** (convertisseur) : `YarnTextEmitterTests.cs` : `EmitSingle("TCENTER8", "\\HFlorin\\W5Roulette" + 8
+  espaces)` égale `title: TCENTER8\n---\n[center trimwhitespace=false/]Florin[glyph id=21 trimwhitespace=false/]Roulette` + 8 espaces
+  + `[empty trimwhitespace=false/] #line:TCENTER8_p0\n===\n` ; compilé et lu : texte `FlorinRoulette` + 8 espaces, attributs center@0,
+  glyph@6, empty@22, `EmptyPages` 0 ; et les cas du tableau de `s025-notes.md` §3.1 (`\HHi` inchangé ; `\HHi` + 3 espaces ; dernière
+  ligne centrée `Haut   \N\HBas  ` ; ligne centrée non dernière `\HHaut\NBas   ` inchangée ; drapeau après les espaces, sans garde ;
+  drapeau puis espaces ; `\H` et des espaces seules ; deux pages ; espaces de début retirées, de fin gardées) ;
+  `ReferenceTextDecoderTests.cs` : `Decode("\\HFlorin\\W5Roulette" + 8 espaces)` → texte `FlorinRoulette` + 8 espaces, marqueurs
+  [center@0, glyph@6 id=21, empty@22] ; `YarnCorpusEquivalenceTests.WholeCorpus_EveryPageOfEveryNodeMatchesTheReferenceDecoder`
+  (`:46-108`) : rouge sur exactement `M472_S025_p0`, `M473_S025_p0` et `M474_S025_p0` quand seul l'émetteur a bougé, vert quand
+  l'oracle suit ; chaîne canonique après : `text=Roue de la fortune !\nFlorinRoulette` + 8 espaces + `; markers=[voice@0 id=-1,
+  center@0, center@21, glyph@27 id=21, empty@43]; commands=[]; calls=[]` ; totaux inchangés (485 fichiers, 24 784 nœuds, 31 757 pages,
+  95 pages vides). Tests existants qui bougent : aucun (les tests des espaces de bord, `Decode_WholeCorpus_MatchesMeasuredCensus` et
+  `YarnDialogueWriterTests.cs:687` restent verts) ; toute autre assertion qui bouge est un arrêt.
+- **F2B1A-2 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement six fichiers (le `.yarn` et le
+  `.dialogue` de `Maps/Pub/Pub (Ring)-472`, `Pub (Shooting)-473` et `Pub (Roulette)-474` ; la ligne 137 des `.yarn` ; dans les
+  `.dialogue`, la seule clé `line:M47x_S025_p0` des `line_texts`, `program_base64` inchangé) et `report.json` (durées seulement) ;
+  double export identique hors `report.json` ; `Alundra.Tests` en Release puis en Debug : aucun test ne bouge.
+- **F2B1A-3 — Vérification**. La recette se fait avec f2b1c (la ligne « Florin … Roulette » centrée à x 97 au Pub, cartes 472 à 474).
+
+**Acceptation** : tests rouges d'abord avec les valeurs ci-dessus ; export : exactement les six fichiers ; double export ; tests du
+convertisseur ; `Alundra.Tests` en Release puis en Debug, `cmp`, six traces à l'octet.
+**Retour arrière** : revert des commits du parent, puis export complet en place égal au manifeste « avant » (hors `report.json`).
+**Risques** : la page S025 tape 8 pas de plus (43 au lieu de 35), comme le binaire (ADR-0029) ; aucun arc ne passe par les cartes 472
+à 474.
+
+###### E19.f2b1b — État dessiné de la boîte et oracle étendu (R1, T1) ⏳ (planifiée le 2026-10-05 ; relecture à faire ; après f2b1a)
+
+**Règles.**
+- **F2B1B-R1 — Boîte** (`Alundra/Scripts/AlundraDialogueBox.cs`, membres internes, noms indicatifs, `dll-notes.md` §1.3), écrit
+  pendant `Pass` : `Drawn` (faux sur la passe de relâchement ; `Open` et `Reset` l'effacent) ; un miroir privé `_cfgY` de l'Y de
+  configuration du binaire (168 au départ, écrit par le glissement, remis à 168 au relâchement et par `Reset`, non touché par `Open`) ;
+  `ClipTop = min(_cfgY + 4, 239)` et `ClipHeight = min(50, 240 − ClipTop)`, calculés en tête de `Pass`, avant le glissement ; les
+  lignes telles que dessinées, `Row(r)` (texte font3 de la bande r), et leur décalage de défilement ; sur la passe qui finit un
+  défilement, les lignes **après** le décalage, décalage 0 (D-E19-83), la variante « avant le décalage, décalage 16 » derrière une
+  seule constante ; `_lineWidth[3]`, la largeur `\H` de chaque bande, posée au jeton `Center` (`:606`) par la somme des avances des
+  jetons jusqu'au prochain `NewLine`, `CursorWait` ou la fin, effacée à `Open` et pour la bande vidée en fin de défilement (`:500`),
+  après le dessin de la passe ; `RowX(r) = w == 0 ? 32 : 16 + (288 − w) / 2` ; `CursorImage` inchangé (il suit déjà le binaire), −1 posé
+  explicitement sur une passe de défilement. Les avances viennent d'un fournisseur injecté (`int Advance(char)`) : en production, les
+  `xadvance` du `UI/font3.fnt` exporté, lus une fois depuis le dossier du projet (absent : largeur 0, pas de centrage, un
+  avertissement journalisé une fois) ; dans les tests, une table. `Y` et le reste de l'état ne changent pas
+  (`AlundraDialogueBoxOracleComparisonTests.cs:235-240` ne bouge pas).
+- **F2B1B-R2 — Oracle de test** (`Alundra.Tests/AlundraTextBoxOracle.cs`) : l'état dessiné, porté de
+  `docs/plan-e19-f2b1-annexe/scripts/model_drawn.py`, jamais du code de la boîte ; l'Y de l'oracle part toujours de 240 ; la découpe
+  vient du miroir de configuration (168).
+
+**Tâches.**
+- **F2B1B-1 — Tests d'abord** : T1, pour les six scénarios de l'annexe (`values/S1.csv` à `S6.csv`, `scenarios.md` : ouverture et
+  glissement d'entrée ; frappe d'une page de deux lignes ; lignes centrées (111 → x 104, 125 → x 97) ; défilement ; sortie (à Y 172, 177,
+  182 et 187, la découpe en retard coupe le bas de la ligne 3) ; images du curseur) : à chaque passe, `Drawn`, Y, haut et hauteur de la
+  découpe, lignes et leur x, décalage et image du curseur égaux à la table ; l'oracle C# étendu égal aux mêmes tables ; un cas réel
+  nommé, S025 de la 472 sur l'export de f2b1a (largeurs 111 et 125, x 104 et 97, 43 pas tapés ; aujourd'hui 93, x 113, 35 pas). Rouges
+  d'abord (membres absents : rouge de compilation, puis valeurs). Tests existants qui bougent : aucun ; toute assertion existante qui
+  bouge est un arrêt.
+- **F2B1B-2 — Suites** : `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (pas d'export : seule la DLL change).
+- **F2B1B-3 — Vérification**.
+
+**Acceptation** : T1 rouge puis vert sur les six tables et le cas réel ; aucun test existant touché ; suites, `cmp`, traces.
+**Retour arrière** : revert des commits.
+**Risques** : H1 n'est prouvée que par lecture (une capture d'émulateur la trancherait ; la variante est une constante) ; l'Y de
+configuration du binaire (`0x8009CFBC`) est partagée par sept entrées de la table des boîtes : « 168 à l'ouverture » vaut si chaque
+glissement s'est achevé.
+
+###### E19.f2b1c — Écran de la boîte, présentateur et preuve au pixel (R2 à R6, T2 à T5) ⏳ (planifiée le 2026-10-05 ; relecture à faire ; après f2b1b)
+
+**Règles.**
+- **F2B1C-R2 — View model** `AlundraTextBoxViewModel`, au patron d'`AlundraSaveScreenViewModel` (notification au seul changement) :
+  `RootVisibility`, `Frame.Top`, `Clip.Top` et `Clip.Height`, `Row0..2.Text/Left/Top` (`Left = x − 32`, `Top = Y + 5 + 16 i − décalage −
+  ClipTop`, relatifs à la toile de découpe), `Cursor.SourceName` (`wind_150`, `wind_173`, `wind_201`, `wind_228`), `Cursor.Top`,
+  `Cursor.Visibility` ; une ligne ne contient jamais `LF` ni `CR`.
+- **F2B1C-R3 — XAML** `alundra-project/UI/Screens/TextBoxScreen.xaml` et son enveloppe `.uiscreen` (versionnés, ADR-0002 du parent ;
+  catalogués par `UiWriter.RegisterVersionedScreens`) : la XAML de `view-notes.md` §1.2 (fenêtre 320 × 240, `BorderThickness="0"`,
+  cadre par son GUID `973a9208-…`, curseur par son nom, toile `TextClip` de 258 de large, trois `TextBlock` font3 blancs `Padding="0"
+  LinePadding="0" WrapText="False" VerticalContentAlignment="Top" Width="255" AllowsInlineFormatting="False"`) ; modal (D-E19-80) ;
+  suit la fenêtre comme `AlundraSaveScreen` (`OnWindowLoaded`, `OnScreenBoundsChanged`).
+- **F2B1C-R4 — Écran et présentateur** : `AlundraTextBoxScreen` (`XamlUIScreenBase`) ; `AlundraTextBoxPresenter` (construit avec le
+  directeur, `Apply` interne), appelé juste après chaque passe de la boîte (`AlundraWorldProxy.cs:2113`, avant la lecture de la porte
+  et le `continue` de `:2119`) ; câblage par une reprise `TryWireTextBoxScreenOnce` copiée de `:1399-1419` (avec une garde
+  d'exception), un point d'entrée de test copié de `:1424`, la liste de reprise `:2086-2090`, la libération dans `OnEndPlay`
+  (`:2764-2790`) ; l'écran est poussé à la première passe dessinée et retiré au relâchement.
+- **F2B1C-R5 — Directeur** : `ShowTypedText` (`:394-405`, appels `:265` et `:438`) et les champs du préfixe tapé de la boîte (`:92-94`,
+  `TypedTextForTests` `:633`) disparaissent ; `_presenter` garde les choix, `Close`, `HasPresenter`, `NotifyPresenterClosed` et
+  `CurrentLineForTests` ; `TakeChoiceResult` (`:532-544`) ferme la fenêtre du moteur quand une boîte est active. Jusqu'à E19.f3
+  (D-E19-79), la fenêtre de choix du moteur peut couvrir la boîte.
+- **F2B1C-R6 — Épingle MonoGame** : `Alundra.Tests.csproj:17` passe de 3.8.4.1 à 3.8.5.1, la version du moteur
+  (`CasaEngineMonogame/Directory.Packages.props:18`, D-E19-85) ; suite entière en Release puis en Debug.
+
+**Tâches.**
+- **F2B1C-1 — Tests d'abord** :
+  - T2 (view model, sans affichage) : pour chaque passe de S1 à S6, les propriétés égales aux tables ;
+  - T3 (XAML sur un `MGDesktop` par `UIScreenLoader`) : éléments, attributs porteurs, enveloppe, données de conception ; suit la
+    fenêtre à ×2 et ×3 (`AlundraScreensFollowTheWindowTests.cs`) ; bornes au repos : cadre (16, 168, 288, 56), curseur
+    (288, 200, 16, 16), découpe (32, 172, 258, 50), lignes en (32, 173), (32, 189), (32, 205) ;
+  - T4 (câblage) : reprise, libération à `OnEndPlay`, ordre d'empilement avec un choix, fermeture de la fenêtre du moteur après la
+    réponse ;
+  - T5 (GPU réel, ignoré sans GPU par un attribut au patron de `[GpuFact]` du moteur) : bureau MGUI dessiné dans une cible, relu,
+    comparé au compositeur de l'annexe (`scripts/refcompose2.py`) et aux points de `pixels.md` : repos, défilement 6, fin de
+    défilement (le point (33, 172) a la couleur du cadre (184, 176, 144), D-E19-83), sortie à Y 182, ligne centrée ; à ×1 et ×2 ; et un
+    état Y ≥ 232 dans une fenêtre qui n'est pas en 4:3 : rien sous la toile de 320 × 240 ;
+  - tests existants qui bougent, liste fermée (`dll-notes.md` §3, contre-vérifiée) : `AlundraDialogueBoxOrderTests.cs:360` (vers la ligne
+    dessinée 0 pendant l'attente) et `:366-380` (K6, vers les lignes par passe de R1) ; `AlundraDialogueFramePassTests.cs:246` (vers la
+    ligne dessinée « p » et un `OpenChoice` qui atteint le nouveau présentateur) ; `AlundraDialoguePresenterWiringTests.cs:179` et `:257`
+    (vers `OpenChoice`) et le nom du test de `:139` (`…WiresAPresenterThatPushesOnOpen`) ; restent verts
+    `AlundraDialogueOutOfBandCloseTests.cs:48-69` et le `PrefixRecordingPresenter` du montage (gardé capable de choix) ; toute autre
+    assertion qui bouge est un arrêt.
+- **F2B1C-2 — Export et preuves** : manifeste avant et après : l'enveloppe et la XAML cataloguées (liste exacte écrite après lecture de
+  `UiWriter.RegisterVersionedScreens`, avant l'export : `AssetInfos.json` et `report.json` attendus) et rien d'autre ; double export.
+- **F2B1C-3 — Vérification**. **F2B1C-4 — Recette** (auteur) : la boîte d'Alundra (cadre, trois lignes, curseur, glissement, défilement)
+  remplace celle de MGUI, sauf pour les choix (E19.f3) ; la ligne S025 centrée au Pub.
+
+**Acceptation** : T2 à T5 rouges d'abord puis verts (T5 sur le GPU de la machine) ; liste fermée ; export ; `CasaEngine.Tests` non
+touché ; `Alundra.Tests` en Release puis en Debug avec la nouvelle épingle, `cmp`, six traces.
+**Retour arrière** : revert des commits, export complet en place égal au manifeste « avant ».
+**Risques** : le chemin de production (`UIRoot`, `CasaUIAssetProvider`) n'est prouvé que par la recette ; un seul GPU essayé (AMD RX
+9060 XT) ; le retard d'une image (O-E19-65) ; l'épingle relevée touche toute la suite.
 
 ### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) — E19.k1 ✅ (recette K5 en attente) ; E19.k2 ⏳ (planifiée)
 
@@ -8588,6 +8759,9 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-62 | **La musique reboucle tout le fichier** au lieu du repère de boucle de la séquence (`0x8008CA40`) : l'intro (22,6 s pour la 25) est rejouée toutes les 121 s ; contredit `plan-e11c-musique.md:43-48`. D-E19-70 : se porte. | E11 (à planifier) |
 | O-E19-63 | **Marge du flux de musique** (préparation de la boucle au repère, 2026-10-05) : 3 tampons de 16 Kio à 44,1 kHz, environ 280 ms (96 ms au pire près d'une couture de boucle) ; un chargement de carte qui garde la musique bloque le fil du jeu (plus d'une seconde en Debug pour la 478) ; mesurer la plus longue image de chaque passage (harnais hors dépôt) avant de régler la profondeur (D-E19-75). | Mesure |
 | O-E19-64 | **Marge par défaut des textes font3 des écrans existants** (découverte d'E19.f2b, 2026-10-05) : `MGTextBlock` a par défaut une marge (1, 1, 1, 1), `LinePadding` 2, le centrage vertical et le retour à la ligne (`MGTextBlock.cs:1363`, `MGTheme.cs:721`) ; aucune XAML d'Alundra (inventaire, sous-inventaire, sauvegarde) ne les pose ; hypothèse : leurs textes sont dessinés un pixel à droite et un pixel plus bas que dans le binaire ; à mesurer par le test au pixel sur GPU d'E19.f2b1, puis corriger dans une tranche à part. | E19.f2b1, puis tranche à part |
+| O-E19-65 | **La vue des écrans d'Alundra a une image de retard sur la logique** (découverte d'E19.f2b1, 2026-10-05) : une liaison modifiée n'atteint les pixels qu'au `Desktop.Update()` suivant, l'interface étant mise à jour avant le monde (`CasaEngineGame.cs:537` puis `:555`, `UIRoot.cs:131` seul appelant) ; un changement de `Image.SourceName` s'applique aussitôt (63 texels mesurés : nouveau curseur sur l'ancienne disposition). Tous les écrans d'Alundra l'ont aujourd'hui. Ordre de mise à jour du moteur : manque à consigner, pas à contourner. | Moteur (rapport), auteur |
+| O-E19-66 | **Couleur de l'index 4 de `font3.png`** (contre-vérification de l'oracle d'E19.f2b1) : les bandes et le curseur du binaire prennent l'entrée 8 de la table de CLUT remplie depuis `taki\screen\wind.cl` (`0x80044B7C`-`0x80044B8C`) ; le `font3.png` exporté vient de la CLUT de FONT3.TIM : égal sur 13 des 14 index, l'index 4 vaut (82, 90, 57) contre (74, 82, 57) ; 44 texels, seulement dans les glyphes 4, 14, 15, 21 à 29 et `@` (le `\W5` de S025 est le glyphe 21). Correction côté export, hors f2b1. | Convertisseur, à planifier |
+| O-E19-67 | **Autres espaces de bord perdues** (découverte de S025, 2026-10-05 ; D-E19-78 ne vise que S025) : `M311_S029` et `M398_S029`, page 1 (une espace de début après un code de drapeau, retirée par la règle F0-R2 de l'émetteur : la ligne commence 4 pixels plus à gauche que dans le binaire, déduit du code, non vu) ; 30 pages `_S022` et `_S108` de 15 cartes (espaces avant un drapeau ou un `yield` final, retirées par l'émetteur : temps de frappe) ; 105 pages non centrées à espaces de fin (un pas de frappe par espace) ; 56 pages d'ETC (bourrage d'enregistrement ; trois textes d'inventaire `0x206`, `0x239`, `0x2A6` perdent une espace). Les corriger change des épingles d'arcs d'E19.f2a (par exemple `M391_S022`). | Auteur |
 
 ## 4. Hors périmètre
 
