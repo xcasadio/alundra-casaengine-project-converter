@@ -4544,7 +4544,7 @@ avant les événements de carte du même tick, sur la manette du tick précéden
 elle ; écarts nommés dus à l'ordre du moteur (les entités avant le mandataire du monde), acceptés par l'auteur (D-E19-64), sans
 datation, origine par origine dans la table de F2-R1, avec l'ordre propre au harnais d'intro ; les deux défauts corrigés.
 
-###### E19.f2a — Logique de la boîte au tick près 🧪 (relance accordée par l'auteur le 2026-10-05, D-E19-71 ; liste fermée refaite à HEAD, relecture READY ; annexe des épingles et arcs simulés (D-E19-77) le 2026-10-05 ; relecture de l'annexe à faire)
+###### E19.f2a — Logique de la boîte au tick près 🧪 (relance accordée par l'auteur le 2026-10-05, D-E19-71 ; liste fermée refaite à HEAD, relecture READY ; annexe des épingles et arcs simulés (D-E19-77) ; relecture avec l'annexe READY ; faite et CONFIRMED le 2026-10-05 ; recette F2a en attente)
 
 **Règles.**
 - **F2-R1 — Ordre d'un tick** (révision n°1 : la porte calculée une fois par image et la boucle de la manette, qui fait tous
@@ -4737,6 +4737,16 @@ arcs simulés ; l'aide de F2A-3 la reproduit telle quelle.
 le chemin dégradé qui doit rester instantané ; la catégorie « a un présentateur » qui ne doit pas dépendre d'une vue ; les espaces
 de bord perdus par D-E15-8 raccourcissent la frappe d'un pas à ces bords (écart connu, ADR-0006) ; la place des codes `\X` dans le
 texte (`falcon_update` avant la ligne) n'est pas établie au milieu d'une page.
+- ✅ **Vérification d'E19.f2a** (2026-10-05) : vérificateur neuf **CONFIRMED** : annexe commitée avant F2A-2 ; l'oracle de test suit
+  `model.py` ligne à ligne (rejoué : valeurs de l'annexe B retrouvées) ; la boîte et l'ordre de F2-R1 suivent le plan (équivalents à la
+  copie de la simulation) ; chaque ré-épingle égale sa ligne d'annexe, rien hors de la liste fermée n'a bougé ; tests nouveaux rouges
+  par mutation de la production (ordre d'avant : 25 rouges ; manette du tick courant : 23 ; sans D-E19-62 : 2 ; sans D-E19-63 : 2) ;
+  `Alundra.Tests` 2647/2647 en Release puis en Debug, `cmp` sans écart, six traces à l'octet ; ADR-0029. Avis reportés : P3 les
+  vérifications de fermeture du harnais sont des fenêtres (`>= 40 and < 230`), pas les épingles 224/232 de l'annexe ; P4 quelques
+  remises du livre prouvent « remis à la fin » et non « dès le Tick 134 » ; P4 une boîte ouverte par un événement de carte annonce
+  Y = 240 à son tick d'ouverture (168 dans le binaire ; ne compte que pour la vue, f2b) ; P4 `AlundraVisionArcTests.cs:32` liste
+  encore `0x4C` parmi les opcodes permis à sauter ; risque R2 (le relâchement de la boîte efface aussi `MenuOpen` pendant l'écran de
+  sauvegarde, comme le binaire). Reste la recette F2a (auteur) : la boîte du moteur montre le préfixe tapé (la vue fidèle est f2b).
 
 ###### E19.f2b — Vue de la boîte (esquisse, après E19.s et E19.f2a)
 
