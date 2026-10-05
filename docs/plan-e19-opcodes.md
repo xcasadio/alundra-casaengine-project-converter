@@ -6776,7 +6776,7 @@ sous-module soit libre.
   couverts par la recette S6. **Reste la recette S6 de l'auteur.** Branche du moteur `chantier/e19s-virtual-resolution` (`dfaed7a6`),
   non mergée : le pointeur du parent la désigne.
 
-#### 1.2q.1 E19.s2 — Découpe de l'interface MGUI dans une vue à bandes (O-E19-60) ⏳ (planifiée)
+#### 1.2q.1 E19.s2 — Découpe de l'interface MGUI dans une vue à bandes (O-E19-60) ⏳ (planifiée ; relecture n°1 REVISE, révisée)
 
 **Faits** (enquête et contre-vérification de la recette du 2026-10-05, `recipe-1005/inventory/notes.md` et
 `recipe-1005/inventory-verify/verify.md` du scratchpad ; observation de l'auteur, D-E19-71 : HUD et boîtes MGUI coupés ou absents dans la
@@ -6805,8 +6805,15 @@ vue ne commence pas au coin de la fenêtre :
   `:757` et pour `PushRectangleClip(null)` `:653-678`), et le ramène dans l'espace de la vue quand il le relit (`CurrentClipBounds`,
   `:68`, que comparent `MGElement.cs:5277`, `MGDesktop.cs:1721` et les grilles) ; la sauvegarde et la remise des valeurs brutes du
   périphérique (`:657/666`, `:688/696`) ne changent pas ; une vue à l'origine (cible de rendu, éditeur) ne change pas.
-- **S2-R2 — Ciseau rafraîchi au redimensionnement** : l'hôte d'exécution (ou `CasaEngineGame.OnWindowClientSizeChanged`, `:342-357`)
-  remet le ciseau du périphérique au tampon entier sur `ClientSizeChanged`, comme les hôtes de MGUI et de l'éditeur.
+- **S2-R2 — Ciseau rafraîchi au redimensionnement** (révision n°1) : un seul propriétaire, `CasaEngineGame.OnWindowClientSizeChanged`
+  (`:342-357`, abonné à `Window.ClientSizeChanged` en `:468-472` quand le jeu gère ses vues ; l'éditeur, en gestion externe des vues,
+  a déjà son hôte, `CasaGameRenderHost.cs:33-41`) : sa **première instruction**, avant le retour anticipé sans résolution virtuelle
+  (`:344-347`), appelle un utilitaire interne et statique nommé, `UiDeviceScissor.ResetToBackBuffer(GraphicsDevice device)` (espace
+  de noms du backend MonoGame de l'interface), qui pose **sans condition** `device.ScissorRectangle = (0, 0,
+  PresentationParameters.BackBufferWidth, PresentationParameters.BackBufferHeight)`. Sans condition, à la différence des hôtes de
+  MGUI et de l'éditeur (qui ne remettent le ciseau que s'il égale l'ancienne taille) : entre deux images, aucun appelant de
+  l'exécution ne tient un ciseau voulu (la photographie par vue, `GraphicsStateSnapshot`, le prend au début de chaque vue et le
+  rend à la fin) ; une valeur périmée quelconque est ainsi effacée. Aucun désabonnement nouveau (le jeu vit autant que sa fenêtre).
 - **S2-R3 — Doc et ADR** : ADR du moteur (prochain numéro libre, 0054 aujourd'hui ; amende la partie interface d'ADR-0048) ; la doc de
   la résolution virtuelle dit que les découpes de l'interface sont locales à la vue.
 
@@ -6817,13 +6824,16 @@ vue ne commence pas au coin de la fenêtre :
   `CasaDesktopRuntime` les charge) :
   - T-S2-1 : cible de rendu 256 × 192, vue (64, 32, 128, 96), une transaction qui pousse la découpe (8, 8, 32, 32) et remplit toute la
     vue en rouge : le pixel absolu (80, 48) est rouge (aujourd'hui : la couleur de fond, la découpe tombe hors du dessin) ;
-  - T-S2-2 : même montage, ciseau du périphérique semé à (0, 0, 96, 64), découpe (0, 0, 128, 96), puis le gestionnaire de
-    redimensionnement de S2-R2 appelé : le ciseau du périphérique égale le tampon entier et le pixel absolu (100, 80) est rouge
-    (aujourd'hui : la couleur de fond) ;
+  - T-S2-2 (révision n°1) : le harnais crée un tampon arrière de 256 × 192 ; cible de rendu 256 × 192 posée, vue (64, 32, 128, 96),
+    ciseau du périphérique semé à (0, 0, 96, 64) ; dans cet ordre : `UiDeviceScissor.ResetToBackBuffer(device)` → le ciseau vaut
+    exactement (0, 0, 256, 192) ; puis la transaction pousse la découpe (0, 0, 128, 96) et remplit toute la vue en rouge ; puis la
+    lecture : le pixel absolu (100, 80) est rouge (aujourd'hui : l'utilitaire n'existe pas ; sans l'appel, avec S2-R1 seul, la
+    découpe vaut (64, 32, 128, 96) ∩ (0, 0, 96, 64) = (64, 32, 32, 32) et le pixel est la couleur de fond) ;
   - T-S2-3 (témoin) : vue à l'origine, découpe (8, 8, 32, 32) : le pixel (16, 16) est rouge avant et après (il fixe l'orientation du
     harnais, GL retournant l'axe Y) ;
-  - T-S2-4 (sans GPU) : la relecture `CurrentClipBounds` rend la découpe en espace de vue (vue (521, 46, 1600, 1200), découpe
-    (40, 80, 840, 240) écrite (561, 126, 840, 240) dans le périphérique, relue (40, 80, 840, 240)).
+  - T-S2-4 (révision n°1 : sur le même harnais GPU) : cible de rendu 2200 × 1300 posée, ciseau du périphérique à (0, 0, 2200, 1300),
+    vue (521, 46, 1600, 1200) ; la transaction pousse la découpe (40, 80, 840, 240) : le ciseau du périphérique vaut
+    (561, 126, 840, 240) et `CurrentClipBounds` relit (40, 80, 840, 240) (aujourd'hui : le périphérique vaut (40, 80, 840, 240)).
   **Démo** : la démo en écran partagé reçoit un élément d'interface dans la vue décalée ; sonde du back-buffer en processus : un pixel
   au milieu de cet élément a sa couleur (aujourd'hui : il manque).
 - **S2-2 — Moteur, code** : S2-R1 à S2-R3.
@@ -6832,8 +6842,9 @@ vue ne commence pas au coin de la fenêtre :
   sous-inventaire, le HUD (après une prise d'objet), une boîte de dialogue, l'écran de sauvegarde.
 
 **Acceptation.**
-1. Tests de S2-1 rouges d'abord (T-S2-1, T-S2-2, T-S2-4 ; le témoin vert avant et après), verts après ; la sonde de la démo voit
-   l'élément de la vue décalée.
+1. Tests de S2-1 rouges d'abord sur le code de `3b05301f` pour le défaut lui-même (T-S2-1 et T-S2-4 ; T-S2-2 rouge une fois
+   S2-R1 posé et l'utilitaire réduit à ne rien faire, puis vert avec S2-R2 ; le témoin vert avant et après), verts après ; la sonde de
+   la démo voit l'élément de la vue décalée.
 2. Tests existants touchés : aucun (moteur, MGUI, DLL, convertisseur).
 3. `CasaEngine.Tests` (construit à part) et `MGUI.Tests` ; `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans
    écart ; les six traces à l'octet.
