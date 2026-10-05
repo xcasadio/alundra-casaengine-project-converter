@@ -6845,7 +6845,7 @@ couche 1 de la 44 (le portage efface en noir ; la couleur d'effacement du binair
   Avis P4 : 14 rouges côté DLL au lieu de 15 (le test garde ne peut rougir que sur l'ancien export, montré à part) ; la branche `None`
   de la surcharge interne rend une entrée opaque (aucun appelant aujourd'hui ne lui passe `None`). Reste la recette G2c-6 (auteur).
 
-##### 1.2o.4 E19.g G2d — Surcouche des fonds au mode du binaire (O-E19-58) 🚧 (planifiée le 2026-10-05 ; relecture n°1 REVISE (démo), révisée ; relecture n°2 READY ; moteur fait le 2026-10-06)
+##### 1.2o.4 E19.g G2d — Surcouche des fonds au mode du binaire (O-E19-58) 🧪 (faite le 2026-10-06, vérification à faire ; planifiée le 2026-10-05 ; relecture n°1 REVISE (démo), révisée ; relecture n°2 READY)
 
 **Faits** **[binaire, données]** (découverte du 2026-10-05, `o58-disc/notes.md` du scratchpad ; contre-vérification indépendante,
 `o58-disc-verify/verify.md`, scripts refaits, rien de réfuté hors du numéro d'ADR du moteur) :
@@ -6911,7 +6911,7 @@ couche 1 de la 44 (le portage efface en noir ; la couleur d'effacement du binair
 - ✅ **G2d-4 — Export et preuves** : manifeste SHA-1 avant et après : exactement l'annexe ; chaque compagnon gagne exactement la ligne
   `  "OverlayBlendMode": v,` (CRLF) après `"OverlayColorB"` (+26 octets ; v = 2 pour la 293, 1 pour les 15 autres) ; dans `report.json`,
   `OutputSizeBytes` + 416 et les durées ; aucun PNG, `.texture` ni `AssetInfos.json` ; double export identique hors `report.json`.
-- **G2d-5 — Vérification**. **G2d-6 — Recette** (auteur, si la 293 est atteignable ; sinon la démo en tient lieu) : Inoa en feu un peu
+- **G2d-5 — Vérification** (à faire : vérificateur neuf). **G2d-6 — Recette** (auteur, si la 293 est atteignable ; sinon la démo en tient lieu) : Inoa en feu un peu
   rougie, plus assombrie ; les 15 autres cartes inchangées.
 
 **Acceptation.**
@@ -6963,6 +6963,14 @@ impossible aujourd'hui).
   → `None` là où `Mode1` est attendu ; compagnon réel de la 96 → `None` là où `Mode0` est attendu ; les gardes (lecture de
   `OverlayBlendMode` 2 sur la 293, pas de teinte sans la porte, désérialisation du champ) étaient verts d'avance. Verts après :
   `Alundra.Tests` Debug 2663/2663, aucun test existant touché (les tests existants ne lisent que `Assert.Null(tint)` et la clé).
+  **Suites finales** : `CasaEngine.Tests` (construit à part) 2740/2740 ; tests du convertisseur 621/621 ; `Alundra.Tests` en Release
+  2663/2663 puis en Debug 2663/2663 (la Debug en dernier) ; `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`
+  sans écart ; garde des traces (`git diff --ignore-cr-at-eol --exit-code` sur les six fichiers) sortie 0, puis les quatre traces
+  régénérées remises par `git checkout` (jamais committées). Rien d'arrêt : aucune valeur écrite d'avance contredite, aucun test
+  existant hors liste fermée n'a bougé. Commits du parent : `66f5b1c` (pointeur du moteur, G2d-1), `25c7f7e` (convertisseur, G2d-2),
+  `4d89f81` (export, G2d-4), `54fc55f` (DLL, G2d-3). Restent G2d-5 (vérification) et G2d-6 (recette de l'auteur : la 293 si
+  atteignable, sinon les démos du moteur en tiennent lieu ; Inoa en feu un peu rougie, plus assombrie ; les 15 autres cartes
+  inchangées).
 
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 
