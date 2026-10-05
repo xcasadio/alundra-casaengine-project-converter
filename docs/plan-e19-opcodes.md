@@ -6905,7 +6905,7 @@ couche 1 de la 44 (le portage efface en noir ; la couleur d'effacement du binair
   pas, rouge de compilation) ; la démo ci-dessus.
 - ✅ **G2d-2 — Convertisseur, tests d'abord** : `bgColorA` 2 → `"OverlayBlendMode": 2` (aujourd'hui absent) ; 1 → 1 ; 0 → pas de propriété
   et `OverlayEnabled` faux (déjà vert).
-- **G2d-3 — DLL, tests d'abord** : compagnon réel de la 293 → `Mode1`, (50, 0, 0, 255) (aujourd'hui (50, 0, 0, 128) sans mode ; rouge
+- ✅ **G2d-3 — DLL, tests d'abord** : compagnon réel de la 293 → `Mode1`, (50, 0, 0, 255) (aujourd'hui (50, 0, 0, 128) sans mode ; rouge
   tant que l'export n'a pas le champ) ; compagnon réel de la 96 (v = 1) → `Mode0`, (40, 40, 40, 255) (aujourd'hui (40, 40, 40, 128)
   sans mode) ; synthétiques : 3 → `Mode2`, 4 → `Mode3`, 0 et 5 → `Mode0`.
 - ✅ **G2d-4 — Export et preuves** : manifeste SHA-1 avant et après : exactement l'annexe ; chaque compagnon gagne exactement la ligne
@@ -6955,6 +6955,14 @@ impossible aujourd'hui).
   `"OverlayColorB"`, le SHA-1 égale celui de l'export d'avant, et le fichier gagne exactement 26 octets (donc 416 octets pour les 16 ;
   `OutputSizeBytes` de `report.json` lu 1 287 737 541 après) ; v = 2 pour la 293 (Inoa en feu), v = 1 pour les 15 autres. Second export :
   manifeste identique au premier, seul `report.json` diffère.
+  **DLL** (G2d-3) : `BackdropDocument.OverlayBlendMode`, `BuildDefinitions` pose la teinte `(R, G, B, 255)` avec le mode du résolveur des
+  couches (1 `Mode0`, 2 `Mode1`, 3 `Mode2`, 4 `Mode3` ; 0 et 5 `Mode0`), docs d'`AlundraBackdropStage` et de `BackdropDocument` ; ADR-0037
+  du parent (`Accepted`, ligne d'index). Nouveau fichier `Alundra.Tests/BackdropStageOverlayBlendTests.cs` (10 cas). Rouges d'abord (champ
+  de `BackdropDocument` ajouté sans comportement, export déjà fait) : 8 rouges sur 10, valeurs lues : synthétiques 1 à 5 et 0 → mode
+  `None` (aujourd'hui, sans mode) là où `Mode0`, `Mode1`, `Mode2`, `Mode3`, `Mode0` et `Mode0` sont attendus ; compagnon réel de la 293
+  → `None` là où `Mode1` est attendu ; compagnon réel de la 96 → `None` là où `Mode0` est attendu ; les gardes (lecture de
+  `OverlayBlendMode` 2 sur la 293, pas de teinte sans la porte, désérialisation du champ) étaient verts d'avance. Verts après :
+  `Alundra.Tests` Debug 2663/2663, aucun test existant touché (les tests existants ne lisent que `Assert.Null(tint)` et la clé).
 
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 

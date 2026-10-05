@@ -244,8 +244,9 @@ internal sealed class AlundraBackdropStage
     /// <see cref="Guid.Empty"/>, NEVER an exception and NEVER a shortened array (D-E9-9's own fallback
     /// runs afterward, engine-side - see <see cref="ScrollingLayerComponent.ResolveTextures"/>). The
     /// overlay tint is independent of any layer (mirrors the old renderer's own "layers and/or tint"
-    /// <c>HasContent</c> contract) - <c>(R, G, B, 128)</c> at <see cref="RenderPass2D.Effects"/>
-    /// sorting −1, strictly below every <c>Ground=1</c> layer's <c>SortingLayer</c> 0 key. The
+    /// <c>HasContent</c> contract) - <c>(R, G, B, 255)</c> with the PSX mode of the map's <c>BGColorA</c>
+    /// (<see cref="BackdropDocument.OverlayBlendMode"/>, E19.g G2d; the average when it is 0 or past the table) at
+    /// <see cref="RenderPass2D.Effects"/> sorting −1, strictly below every <c>Ground=1</c> layer's <c>SortingLayer</c> 0 key. The
     /// configuration is always the fixed 640x480 canvas / 320x240 view (D-E9b-5).
     /// </summary>
     internal static (ScrollingLayerDefinition[] Layers, ScrollingTintDefinition? Tint, ScrollingLayerConfiguration Configuration) BuildDefinitions(
@@ -295,9 +296,18 @@ internal sealed class AlundraBackdropStage
         ScrollingTintDefinition? tintDefinition = null;
         if (document.OverlayEnabled)
         {
-            var tintColor = new Color(document.OverlayColorR, document.OverlayColorG, document.OverlayColorB, (byte)128);
+            // E19.g G2d (O-E19-58, ADR-0037): the colour is opaque and the mode of the map (BGColorA) alone decides the blend
+            // state; the engine bakes the alpha of the average itself. No mode (0: an export that predates the field, or any
+            // value past the table of the binary) keeps today's drawing, the average.
+            var tintColor = new Color(document.OverlayColorR, document.OverlayColorG, document.OverlayColorB, (byte)255);
             var tintSortKey = new RenderSortKey2D((int)RenderPass2D.Effects, -1, 0, 0, 0, 0, 0);
-            tintDefinition = new ScrollingTintDefinition(tintColor, tintSortKey);
+            var tintMode = ResolveLayerPsxSemiTransparency(document.OverlayBlendMode);
+            if (tintMode == SpritePsxSemiTransparency.None)
+            {
+                tintMode = SpritePsxSemiTransparency.Mode0;
+            }
+
+            tintDefinition = new ScrollingTintDefinition(tintColor, tintSortKey, tintMode);
         }
 
         // 640x480: the original's own wrapping canvas size (D-E9b-5) - was BackdropOffsetMath.CanvasWidth/

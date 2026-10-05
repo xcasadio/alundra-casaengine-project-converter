@@ -130,6 +130,13 @@ public sealed class BackdropDocument
     public byte OverlayColorB { get; set; }
 
     /// <summary>
+    /// The raw <c>BGColorA</c> byte of the map, the blend mode of the overlay tint (E19.g G2d, O-E19-58): 1 average,
+    /// 2 additive, 3 subtractive, 4 quarter. Absent from the JSON when 0 and from a companion written before the field
+    /// existed, which <see cref="System.Text.Json.JsonSerializer"/> leaves at 0 - read as the average, today's drawing.
+    /// </summary>
+    public int OverlayBlendMode { get; set; }
+
+    /// <summary>
     /// Per-tick sine-like displacement table (256 entries) consumed by every <c>WaveX</c> cellular
     /// cell (D-E9d) - mirror of <c>AlundraCasaEngineProjectConverter.Readers.BackdropDocument.WaveLut</c>.
     /// Absent from a companion with no Cellular layer, which <see cref="System.Text.Json.JsonSerializer"/>
