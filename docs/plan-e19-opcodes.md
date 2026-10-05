@@ -6618,7 +6618,7 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
 - 🧪 **R5 — Recette** (auteur) : sortir de la chambre de la 163 (le HUD glisse à l'écran) ; la 476 (les pièces apparaissent dans
   le cadre) ; la carte 15 après R3.
 
-### 1.2q E19.s — Image 320 × 240, facteur entier, bandes noires, suivie en temps réel ⚠️ (exécutée le 2026-10-03 ; recette S6 du 2026-10-05 : halo fidèle, interface MGUI mal découpée avec des bandes, O-E19-60)
+### 1.2q E19.s — Image 320 × 240, facteur entier, bandes noires, suivie en temps réel ⚠️ (exécutée le 2026-10-03 ; recette S6 du 2026-10-05 : halo fidèle, interface MGUI mal découpée avec des bandes, O-E19-60 → E19.s2 planifiée)
 
 **Décisions** : D-E19-47 (image de l'original, agrandie sans déformation, recalculée en temps réel, bandes noires), D-E19-60
 (facteur entier seulement). **Découverte** (2026-10-03, lecture seule, `e19s-disc/notes.md` du scratchpad de la session).
@@ -6775,6 +6775,74 @@ sous-module soit libre.
   demande l'anglais pour `docs/` (à l'auteur) ; P4 trois branchements sans test (`UIRoot.cs:135`, `CasaEngineGame.cs:472`, `:638`),
   couverts par la recette S6. **Reste la recette S6 de l'auteur.** Branche du moteur `chantier/e19s-virtual-resolution` (`dfaed7a6`),
   non mergée : le pointeur du parent la désigne.
+
+#### 1.2q.1 E19.s2 — Découpe de l'interface MGUI dans une vue à bandes (O-E19-60) ⏳ (planifiée)
+
+**Faits** (enquête et contre-vérification de la recette du 2026-10-05, `recipe-1005/inventory/notes.md` et
+`recipe-1005/inventory-verify/verify.md` du scratchpad ; observation de l'auteur, D-E19-71 : HUD et boîtes MGUI coupés ou absents dans la
+fenêtre agrandie) : la mise en page, l'échelle et les positions de l'interface sont justes ; deux défauts du moteur, visibles dès que la
+vue ne commence pas au coin de la fenêtre :
+- **(1) Espace de la découpe** : MGUI calcule chaque rectangle de découpe en pixels de la vue (`MGElement.cs:5255`, `:5270` ; bureau
+  `(0, 0, largeur, hauteur)` de la vue, `MGDesktop.cs:1231`, `CasaRenderSurfaceAdapter.cs:20-24`) ; `CasaDrawTransaction.SetClipTarget`
+  l'écrit tel quel dans `GraphicsDevice.ScissorRectangle` (`CasaEngine/Framework/UI/Backend/MonoGame/CasaDrawTransaction.cs:742-767`,
+  intersection `:749-752`, écriture `:757`, repli `GetViewport(0)`) et `CurrentClipBounds` le relit tel quel (`:68`) ; MonoGame 3.8.5.1
+  DesktopGL applique le ciseau en pixels absolus du tampon (`GL.Scissor` sans terme de vue), tandis que `SpriteBatch` dessine
+  relativement à l'origine de la vue : chaque élément est dessiné à `rect + origine` mais découpé à `rect`.
+- **(2) Ciseau périmé** : la première découpe de l'interface s'intersecte avec la valeur que tient le périphérique ; après un
+  agrandissement par la fenêtre, elle vaut encore la taille de départ (0, 0, 1280, 960) (dernier `Reset` du périphérique ; `SetRenderTargets`
+  null → null ne fait rien ; `PlatformClear` remet le ciseau d'avant) ; l'hôte d'exécution (`CasaEngine/.../UI/ViewRenderHost.cs`) n'a
+  pas de rafraîchissement sur `ClientSizeChanged`, alors que l'hôte de MGUI (`MGUI.MonoGame.Integration/Rendering/RenderHost.cs:56-64`)
+  et celui de l'éditeur (`CasaGameRenderHost.cs:33-41`) l'ont.
+- Touché : toute l'interface MGUI dessinée dans la vue du jeu (inventaire, sous-inventaire, HUD, écran de sauvegarde, boîte de dialogue
+  du moteur) ; pas le monde (sprites sans découpe, `SpriteRendererComponent.cs:224`, `:338`, `:401`). E19.s l'avait manqué : sa preuve
+  d'interface dans une vue décalée (la démo en écran partagé, `SplitScreenDemo.cs:117-123`) n'a d'interface que dans la vue à
+  l'origine. Les harnais sans dessin (`Alundra.Tests/UI/HeadlessUiTestHarness.cs:75-76`) ne voient rien ; un harnais sur vrai GPU existe
+  dans `MGUI.Tests` (`Integration/GpuDeviceHost.cs:19-40`, `[GpuFact]` `:157-166`, qui saute sans GPU).
+
+**Règles.**
+- **S2-R1 — Découpe dans l'espace de la vue** : `CasaDrawTransaction` décale chaque rectangle de découpe par l'origine de la vue courante
+  (`GraphicsDevice.Viewport.X/Y`) quand il l'écrit dans le périphérique (avant l'intersection et la comparaison `:749-754`, pour le repli
+  `:757` et pour `PushRectangleClip(null)` `:653-678`), et le ramène dans l'espace de la vue quand il le relit (`CurrentClipBounds`,
+  `:68`, que comparent `MGElement.cs:5277`, `MGDesktop.cs:1721` et les grilles) ; la sauvegarde et la remise des valeurs brutes du
+  périphérique (`:657/666`, `:688/696`) ne changent pas ; une vue à l'origine (cible de rendu, éditeur) ne change pas.
+- **S2-R2 — Ciseau rafraîchi au redimensionnement** : l'hôte d'exécution (ou `CasaEngineGame.OnWindowClientSizeChanged`, `:342-357`)
+  remet le ciseau du périphérique au tampon entier sur `ClientSizeChanged`, comme les hôtes de MGUI et de l'éditeur.
+- **S2-R3 — Doc et ADR** : ADR du moteur (prochain numéro libre, 0054 aujourd'hui ; amende la partie interface d'ADR-0048) ; la doc de
+  la résolution virtuelle dit que les découpes de l'interface sont locales à la vue.
+
+**Tâches.**
+- **S2-1 — Moteur, tests d'abord** (sous-module, branche empilée sur `chantier/e19g2c-backdrop-stp` `3b05301f` ; plan du moteur dans
+  son `ai-agent/tasks/` ; `CasaEngine.Launcher/Program.cs` de l'auteur jamais indexé) : un harnais sur vrai GPU porté de `MGUI.Tests`
+  dans `CasaEngine.Tests` (même `[GpuFact]` qui saute sans GPU ; les contenus du moteur à côté des binaires de test si
+  `CasaDesktopRuntime` les charge) :
+  - T-S2-1 : cible de rendu 256 × 192, vue (64, 32, 128, 96), une transaction qui pousse la découpe (8, 8, 32, 32) et remplit toute la
+    vue en rouge : le pixel absolu (80, 48) est rouge (aujourd'hui : la couleur de fond, la découpe tombe hors du dessin) ;
+  - T-S2-2 : même montage, ciseau du périphérique semé à (0, 0, 96, 64), découpe (0, 0, 128, 96), puis le gestionnaire de
+    redimensionnement de S2-R2 appelé : le ciseau du périphérique égale le tampon entier et le pixel absolu (100, 80) est rouge
+    (aujourd'hui : la couleur de fond) ;
+  - T-S2-3 (témoin) : vue à l'origine, découpe (8, 8, 32, 32) : le pixel (16, 16) est rouge avant et après (il fixe l'orientation du
+    harnais, GL retournant l'axe Y) ;
+  - T-S2-4 (sans GPU) : la relecture `CurrentClipBounds` rend la découpe en espace de vue (vue (521, 46, 1600, 1200), découpe
+    (40, 80, 840, 240) écrite (561, 126, 840, 240) dans le périphérique, relue (40, 80, 840, 240)).
+  **Démo** : la démo en écran partagé reçoit un élément d'interface dans la vue décalée ; sonde du back-buffer en processus : un pixel
+  au milieu de cet élément a sa couleur (aujourd'hui : il manque).
+- **S2-2 — Moteur, code** : S2-R1 à S2-R3.
+- **S2-3 — Parent** : pointeur du sous-module, le plan ; aucun code de la DLL ; pas d'export.
+- **S2-4 — Vérification**, **S2-5 — Recette** (auteur) : fenêtre agrandie (à la souris, et en plein écran) : l'inventaire entier, le
+  sous-inventaire, le HUD (après une prise d'objet), une boîte de dialogue, l'écran de sauvegarde.
+
+**Acceptation.**
+1. Tests de S2-1 rouges d'abord (T-S2-1, T-S2-2, T-S2-4 ; le témoin vert avant et après), verts après ; la sonde de la démo voit
+   l'élément de la vue décalée.
+2. Tests existants touchés : aucun (moteur, MGUI, DLL, convertisseur).
+3. `CasaEngine.Tests` (construit à part) et `MGUI.Tests` ; `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans
+   écart ; les six traces à l'octet.
+
+**Retour arrière** : pointeur du sous-module.
+
+**Risques.** Un appelant qui poserait exprès un ciseau avant un dessin d'interface (aucun trouvé dans l'exécution) ; une vue décalée
+dans l'éditeur (partage d'écran) change, vers le juste ; les tests sur GPU sautent sur une machine sans GPU (la recette et la démo
+restent la preuve).
 
 ### 1.2r E19.t — Son de chaque changement d'animation ✅ (exécutée le 2026-10-03 ; recette T6 validée le 2026-10-05 ; le « ding » du début vient de la musique, O-E19-61)
 
