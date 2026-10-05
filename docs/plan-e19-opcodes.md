@@ -6776,7 +6776,7 @@ sous-module soit libre.
   couverts par la recette S6. **Reste la recette S6 de l'auteur.** Branche du moteur `chantier/e19s-virtual-resolution` (`dfaed7a6`),
   non mergée : le pointeur du parent la désigne.
 
-#### 1.2q.1 E19.s2 — Découpe de l'interface MGUI dans une vue à bandes (O-E19-60) ⏳ (planifiée ; relecture n°1 REVISE, révisée)
+#### 1.2q.1 E19.s2 — Découpe de l'interface MGUI dans une vue à bandes (O-E19-60) 🧪 (exécutée le 2026-10-05 ; reste S2-4 (vérificateur) et la recette S2-5 de l'auteur)
 
 **Faits** (enquête et contre-vérification de la recette du 2026-10-05, `recipe-1005/inventory/notes.md` et
 `recipe-1005/inventory-verify/verify.md` du scratchpad ; observation de l'auteur, D-E19-71 : HUD et boîtes MGUI coupés ou absents dans la
@@ -6854,6 +6854,35 @@ vue ne commence pas au coin de la fenêtre :
 **Risques.** Un appelant qui poserait exprès un ciseau avant un dessin d'interface (aucun trouvé dans l'exécution) ; une vue décalée
 dans l'éditeur (partage d'écran) change, vers le juste ; les tests sur GPU sautent sur une machine sans GPU (la recette et la démo
 restent la preuve).
+
+- **Fait le 2026-10-05** (S2-1 à S2-3, exécuteur en mode AUTO). **Moteur** (sous-module, branche `chantier/e19s2-ui-clip-view-space`
+  depuis `chantier/e19g2c-backdrop-stp` `3b05301f`, quatre commits : plan `4d16e526`, tests et code `f896e581`, démo `4abbe80c`, ADR et
+  doc `a6efd2a9`). La modification locale de l'auteur dans `CasaEngine.Launcher/Program.cs` n'a pas été indexée.
+- **Rouges d'abord, valeurs lues** (les tests ont tourné sur le GPU de la machine, aucun n'a sauté ; harnais `GpuDeviceHost` porté de
+  `MGUI.Tests`, `CasaEngine.Tests/UI/Backend/`). Sur le code de `3b05301f`, l'utilitaire `UiDeviceScissor.ResetToBackBuffer` posé sans
+  effet pour que le projet compile : T-S2-1 le pixel absolu (80, 48) lit (100, 149, 237), la couleur de fond, au lieu de rouge ; T-S2-4
+  le ciseau du périphérique lit (40, 80, 840, 240) au lieu de (561, 126, 840, 240) ; T-S2-3 (témoin) vert. S2-R1 posé, l'utilitaire
+  toujours sans effet : T-S2-1, T-S2-4 et le témoin verts ; T-S2-2 rouge, le pixel (100, 80) lit (100, 149, 237) comme prédit et le
+  ciseau après l'appel lit (0, 0, 96, 64) au lieu de (0, 0, 256, 192). Utilitaire réel et appel en première instruction de
+  `CasaEngineGame.OnWindowClientSizeChanged` (S2-R2) : les quatre tests verts, aux valeurs écrites, sans en changer une.
+- **Démo** (`SplitScreenDemo`, fenêtre 1024 × 768, vue de droite (512, 0, 512, 768), un écran XAML rouge plein de 160 × 80 posé en (20,
+  300) de la vue, sous le panneau de statistiques que le moteur dessine après l'interface ; sonde du back-buffer en processus
+  (`GetBackBufferData`), lancée depuis `CasaEngine.Demos/`, se ferme seule, jamais de capture du bureau) : pixel (612, 312). Rouge
+  d'abord avec `CasaDrawTransaction.cs` de `3b05301f` : (30, 30, 51), la couleur de fond, l'élément manque ; vert avec le code :
+  (255, 0, 0), `result=PASS`. Sorties et images dans `e19s2-exec/` du scratchpad (`pixels-red.txt`, `pixels-green.txt`, `shot-red.png`,
+  `shot-green.png`).
+- **Suites** : `CasaEngine.Tests` 2567 sur 2567 (Debug, aucun saut) ; `MGUI.Tests` 3108 sur 3108 (Debug) ; `Alundra.Tests` Debug 2570
+  sur 2570 ; garde d'octets des six traces à 0, les quatre traces du héros remises par `git checkout`. Aucun test existant touché.
+- **Écarts** : (1) les tâches S2-1 (tests) et S2-2 (code) sont dans un seul commit moteur, `f896e581`, parce que chaque commit doit
+  rester vert (les tests sont rouges sur le code d'avant) ; (2) l'élément de la démo est en (20, 300) et non au coin : le panneau de
+  statistiques de la vue (`ShowDebugOverlay`) est dessiné après l'interface et le recouvrait ; (3) la sonde lit au-dessus du texte de
+  l'élément (le texte est centré et sa clarté faussait le pixel du milieu) ; (4) dans T-S2-2 la lecture du pixel est vérifiée avant celle
+  du ciseau, pour que les deux valeurs rouges soient lues au même passage (les deux assertions sont dans le test) ; (5) la Release n'est
+  pas lancée ici (le vérificateur la lance : `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans écart).
+- **Reste** : S2-4 (vérificateur, Release comprise) et S2-5 (recette de l'auteur : fenêtre agrandie à la souris et en plein écran,
+  inventaire entier, sous-inventaire, HUD après une prise d'objet, boîte de dialogue, écran de sauvegarde). Rien poussé, rien mergé.
+  Branche du moteur `chantier/e19s2-ui-clip-view-space` (`a6efd2a9`) : le pointeur du parent la désigne.
+- Decisions: see ADR-0054 (moteur).
 
 ### 1.2r E19.t — Son de chaque changement d'animation ✅ (exécutée le 2026-10-03 ; recette T6 validée le 2026-10-05 ; le « ding » du début vient de la musique, O-E19-61)
 
