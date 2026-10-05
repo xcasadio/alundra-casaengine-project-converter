@@ -877,6 +877,89 @@ public class AlundraCellVisualSyncTests : IDisposable
         Assert.Single(warnings.WarningMessages, m => m.Contains("degraded"));
     }
 
+    /// <summary>E19.m6 M6-4: <see cref="CreateEmptyAreaFixture"/>'s grid (2 x 8, same sources in column 0) with ONE floor placement at load: the cell (1,7) holds a
+    /// height-3 floor (raw 60, local 5) drawn by the overlay at (1,4) (<c>WallPlacementOverlay.ApplyFloor</c> strips the flat tile there). No other flat floor.</summary>
+    private static (TileMapComponent Component, AlundraCellStore Store, AlundraCellVisualSync Sync, IReadOnlyList<int> Submitted) CreateFloorPlacementAtLoadFixture()
+    {
+        const int width = 2;
+        const int height = 8;
+        var (component, _) = CreateSyntheticComponent(width, height);
+
+        string Ints(int[] values) => "[" + string.Join(",", values) + "]";
+
+        var tileId = new int[width * height];
+        var cellHeight = new int[width * height];
+        Array.Fill(tileId, 0xffff);
+        tileId[0 + 2 * 5] = 60;
+        cellHeight[0 + 2 * 5] = 3;
+        tileId[0 + 2 * 6] = 61;
+        tileId[1 + 2 * 7] = 60;
+        cellHeight[1 + 2 * 7] = 3;
+
+        var zeros = new int[width * height];
+        var alundraCellsJson =
+            $"{{\"map_index\":1,\"cell_count\":{width * height},\"walkability\":{Ints(zeros)},\"ground_property\":{Ints(zeros)},"
+            + $"\"slope\":{Ints(zeros)},\"height\":{Ints(cellHeight)},\"tile_id\":{Ints(tileId)},\"wall_tiles_offset\":{Ints(zeros)},"
+            + "\"wall_tiles\":{}}";
+        var tileMapData = new TileMapData { MapSize = new CasaEngine.Core.Math.Size(width, height) };
+        tileMapData.CustomProperties["AlundraCells"] = alundraCellsJson;
+
+        Assert.True(AlundraCellsCollisionField.TryCreate(tileMapData, "map_476_like", out _, out var cellRecords));
+        Assert.True(AlundraCellStore.TryCreate(cellRecords!, width, height, "map_476_like", out var store));
+
+        // The placement: cell (1,7), plane 0, drawn at (1,4), gid 6 = FirstGid + local tile id 5, depth slot 0.
+        var floorRecords = new FloorPlacementRecords
+        {
+            MapIndex = 1,
+            Count = 1,
+            CellX = new[] { 1 },
+            CellY = new[] { 7 },
+            Plane = new[] { 0 },
+            X = new[] { 1 },
+            Y = new[] { 4 },
+            Gid = new[] { 6 },
+            DepthSlot = new[] { 0 },
+        };
+        var submitted = WallPlacementOverlay.ApplyFloor(component, floorRecords, "map_476_like");
+
+        var sync = AlundraCellVisualSync.Create(
+            component, store!, width, height, "map_476_like", component.TileSetData,
+            wallRecords: null, submittedWallIndices: Array.Empty<int>(),
+            floorRecords: floorRecords, submittedFloorIndices: submitted,
+            navigationGridAccessor: () => null);
+        store!.CellsMutated += sync.OnCellsMutated;
+        return (component, store, sync, submitted);
+    }
+
+    [Fact]
+    public void AFloorPlacedAtLoad_EmptiedThenRefilled_IsAdoptedAgain_WithoutWarning()
+    {
+        var (component, store, sync, submitted) = CreateFloorPlacementAtLoadFixture();
+        Assert.Equal(new[] { 0 }, submitted);
+
+        var before = Assert.Single(ReadSortedOverlayEntries(component));
+        Assert.Equal((0, 5, 1, 4), (before.TileSetIndex, before.TileId, before.GridX, before.GridY));
+        Assert.True(WallPlacementOverlay.ComputeFloorSortKey(7, 0, 0).Equals(before.SortKey));
+
+        using var warnings = CapturingWarningLogger.Install();
+
+        // (0,7) is an empty cell: copying it over (1,7) removes the floor placed at load.
+        store.CopyCellRectangle(0, 7, 1, 1, 1, 7);
+        sync.FlushPendingOverlayReconstruction();
+        Assert.Empty(ReadSortedOverlayEntries(component));
+
+        // (0,5) is a height-3 floor (raw 60, local 5): refilled, the cell is adopted again at (1, 7 - 3) with the next stable id (records.Count = 1).
+        store.CopyCellRectangle(0, 5, 1, 1, 1, 7);
+        sync.FlushPendingOverlayReconstruction();
+
+        var entries = ReadSortedOverlayEntries(component);
+        var degradedWarnings = warnings.WarningMessages.Count(m => m.Contains("degraded"));
+        Assert.True(entries.Count == 1 && degradedWarnings == 0, $"after the refill: {entries.Count} overlay entries, {degradedWarnings} degraded warnings");
+        var after = entries[0];
+        Assert.Equal((0, 5, 1, 4), (after.TileSetIndex, after.TileId, after.GridX, after.GridY));
+        Assert.True(WallPlacementOverlay.ComputeFloorSortKey(7, 0, 1).Equals(after.SortKey));
+    }
+
     /// <summary>Captures every <see cref="Logs.WriteWarning"/> call for one test, then unregisters itself
     /// (same private-field reflection precedent as <c>BackdropStageLoadTests.CapturingWarningLogger</c>).</summary>
     private sealed class CapturingWarningLogger : CasaEngine.Core.Logging.ILogger, IDisposable

@@ -7931,7 +7931,7 @@ pas de `cmp` changé, traces non touchées.
 - ✅ **M6-3 — M-31 UO-1 par `0x42`** : nouveau test dans `AlundraEventProgramRunnerLogicEntityTests.cs` (son `FakeWorld`, `:28-47`, patron
   de `:260-277`) : `42 46 FF` puis `45 FF` : drapeaux du héros 0x100 → 0x2100 → 0x100 ; propriétaire inchangé ; `CodeIndex` 2 puis 1 ;
   `Result` gardé. Mutation : `AlundraEventProgramRunner.cs:668` et `:672`, `entity.Flags` → `owner.Flags` → héros 256 au lieu de 8448.
-- **M6-4 — M-32, moitié surcouche** : nouvelle fixture 2 × 8 avec une pose de sol au chargement (case (1, 7), hauteur 3, dessinée en
+- ✅ **M6-4 — M-32, moitié surcouche** : nouvelle fixture 2 × 8 avec une pose de sol au chargement (case (1, 7), hauteur 3, dessinée en
   (1, 4)) par `WallPlacementOverlay.ApplyFloor`, et un test dans `AlundraCellVisualSyncTests.cs` : la case vidée puis remplie : avant,
   une entrée (0, 5, 1, 4) de clé `ComputeFloorSortKey(7, 0, 0)` ; vidée, aucune ; remplie, (0, 5, 1, 4) de clé `(7, 0, 1)`, sans
   avertissement. Mutation (suite entière) : `AlundraCellVisualSync.cs:157` sans `&& !sync._floorModel.ContainsKey((x, y))` → 0 entrée
@@ -7967,6 +7967,11 @@ pas de `cmp` changé, traces non touchées.
     `AlundraEventProgramRunnerLogicEntityTests.cs` : vert sur la production (drapeaux du héros 0x100, 0x2100, 0x100 ; propriétaire
     inchangé ; `CodeIndex` 2 puis 1 ; `Result` 7 gardé). Mutation `uo1` (`AlundraEventProgramRunner.cs:668` et `:672`, `entity.Flags` →
     `owner.Flags`), classe entière (24 tests) : un seul rouge, le nouveau, héros 256 au lieu de 8448. Production remise.
+  - **M6-4** : nouvelle fixture 2 × 8 (`CreateFloorPlacementAtLoadFixture`, pose de sol au chargement en (1, 7), hauteur 3, dessinée en
+    (1, 4)) et test `AFloorPlacedAtLoad_EmptiedThenRefilled_IsAdoptedAgain_WithoutWarning` dans `AlundraCellVisualSyncTests.cs` : vert
+    sur la production (avant : (0, 5, 1, 4) de clé `(7, 0, 0)` ; vidée : aucune entrée ; remplie : (0, 5, 1, 4) de clé `(7, 0, 1)`, sans
+    avertissement). Mutation `m32` (`AlundraCellVisualSync.cs:157` sans `&& !sync._floorModel.ContainsKey((x, y))`), suite entière
+    (2653 tests) : un seul rouge, le nouveau, 0 entrée et 1 avertissement « degraded » après le remplissage. Production remise.
 
 ### 1.2u Recette de l'auteur du 2026-10-05 ⏳ (constat consigné ; deux défauts enquêtés)
 
