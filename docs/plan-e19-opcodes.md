@@ -7641,7 +7641,7 @@ déplace aucune assertion).
 **Suites** : O-E19-60 (découpe de MGUI dans une vue décalée : tranche du moteur, E19.s2) ; O-E19-61 (reste de piste en tête des musiques :
 X2, décision de l'auteur sur D-X-5) ; O-E19-62 (boucle au repère de la séquence).
 
-### 1.2v X2 — Musique : un système sonore neuf par piste (D-E19-69, O-E19-61) 🧪 (X2-0 à X2-3 faites le 2026-10-05 ; reste X2-4 (vérification) et X2-5 (recette de l'auteur))
+### 1.2v X2 — Musique : un système sonore neuf par piste (D-E19-69, O-E19-61) 🧪 (faite et CONFIRMED le 2026-10-05 ; recette X2-5 de l'auteur en attente)
 
 **Contrat** (révision n°1) : cette section remplace la tranche X2 et les arrêts de `docs/plan-extraction-bgm.md` pour X2 ; ce
 document y renvoie désormais (sa règle d'abandon « un octet des pistes 1–18 » et ses arrêts de X1 ne s'appliquent pas à X2).
@@ -7744,6 +7744,13 @@ DLL reboucle le fichier entier et rejoue ce silence à chaque tour ; une extract
   - **Suites** : convertisseur 612 sur 612 (Debug) ; `Alundra.Tests` en Debug sur l'export 2570 sur 2570 (la Release est lancée
     par le vérificateur), DLL déposée identique à la Debug (`cmp`) ; garde d'octets des six traces à 0, les quatre traces du héros
     remises. Aucun écart avec le texte du plan.
+- ✅ **Vérification de X2** (X2-4, 2026-10-05) : vérificateur neuf **CONFIRMED** : diff de l'extracteur limité à X2-R1 ; `data-extracted/`
+  égal au remaster (4536 fichiers), 46 lignes d'écart avec `data-extracted.bak-x2` égales à l'annexe, 45 WAV et `bgm.json` aux
+  empreintes de l'annexe, sauvegardes précédentes intactes ; recalculés sur les nouvelles données : `bgm_025` nul sur ses 36 premières
+  images, chaque piste nulle avant l'image de sa première note, 45 entrées sans la 44, `Frames` égaux ; export : son propre manifeste
+  égal à l'annexe (47 lignes, SHA-1 de `export_values.tsv`, compteurs du rapport), double export ; les 179 nouveaux tests rejoués sur
+  une copie des anciennes données : 129 rouges, 50 verts (T-D, T-E) ; convertisseur 612/612, `Alundra.Tests` 2570/2570 en Release
+  puis en Debug, `cmp` sans écart, six traces à l'octet ; aucun `log.txt` d'extraction dans le dépôt. Reste la recette X2-5 (auteur).
 
 ### 1.2w Boucle au repère de la séquence (D-E19-70, D-E19-72, D-E19-73, O-E19-62) ⏳ (à planifier après X2)
 
@@ -8147,7 +8154,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-58 | **La surcouche de la 293 (Inoa en feu) est additive dans l'original** (vérification d'O-E19-54) : `BGColorA` 2 → `TILE` d'ABR 1 de (50, 0, 0) ; le portage moyenne `(50, 0, 0, 128)` (le convertisseur ne garde que `OverlayEnabled = BGColorA != 0`, `BackdropReader.cs:254-255` ; le moteur dessine la teinte en `AlphaBlend`, `ScrollingLayerComponent.cs:208` ; la DLL pose α128, `AlundraBackdropStage.cs:295`) : la scène est assombrie de moitié et teintée au lieu d'être un peu rougie ; hors de la chaîne. | E19.g |
 | O-E19-59 | **Octet de palette 30 des tuiles** (cartes 1, 13, 17, 153, 439, couche 1, tuiles 249-251) : le binaire lit l'identifiant de palette en `0x800CA24C`, au-delà de la table (l'entrée 3 de la table d'ordre du tampon de dessin 0) : valeur d'exécution, aucune correction statique juste ; le convertisseur pose la palette 0 (`BackdropImageBuilder.cs:79-82`), opaque. | Note |
 | O-E19-60 | **Réglé le 2026-10-05 (E19.s2, ADR-0054 du moteur ; recette S2-5 en attente).** **L'interface MGUI est mal découpée dans une vue à bandes** (recette du 2026-10-05, §1.2u) : découpes écrites en pixels de la vue dans le ciseau absolu du périphérique (`CasaDrawTransaction.cs:742-767`) et ciseau périmé après un agrandissement ; inventaire, HUD, sous-inventaire, écran de sauvegarde, boîte du moteur. | E19.s2 (moteur) |
-| O-E19-61 | **Un reste de la piste précédente en tête de 41 musiques** (D-E19-69 : se corrige) (le « ding » de la 389) : l'extracteur rend les 46 pistes dans un seul moteur sonore ; la séquence 25 de l'original est muette pendant 0,6 s. Correction X2 de `plan-extraction-bgm.md`, D-X-5 à amender. | Auteur, puis X2 |
+| O-E19-61 | **Réglé le 2026-10-05 (X2 ; recette X2-5 en attente).** **Un reste de la piste précédente en tête de 41 musiques** (D-E19-69 : se corrige) (le « ding » de la 389) : l'extracteur rend les 46 pistes dans un seul moteur sonore ; la séquence 25 de l'original est muette pendant 0,6 s. Correction X2 de `plan-extraction-bgm.md`, D-X-5 à amender. | Auteur, puis X2 |
 | O-E19-62 | **La musique reboucle tout le fichier** au lieu du repère de boucle de la séquence (`0x8008CA40`) : l'intro (22,6 s pour la 25) est rejouée toutes les 121 s ; contredit `plan-e11c-musique.md:43-48`. D-E19-70 : se porte. | E11 (à planifier) |
 
 ## 4. Hors périmètre
