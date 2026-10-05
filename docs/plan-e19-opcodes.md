@@ -6845,7 +6845,7 @@ couche 1 de la 44 (le portage efface en noir ; la couleur d'effacement du binair
   Avis P4 : 14 rouges côté DLL au lieu de 15 (le test garde ne peut rougir que sur l'ancien export, montré à part) ; la branche `None`
   de la surcharge interne rend une entrée opaque (aucun appelant aujourd'hui ne lui passe `None`). Reste la recette G2c-6 (auteur).
 
-##### 1.2o.4 E19.g G2d — Surcouche des fonds au mode du binaire (O-E19-58) ⏳ (planifiée le 2026-10-05 ; relecture n°1 REVISE (démo), révisée ; relecture n°2 READY)
+##### 1.2o.4 E19.g G2d — Surcouche des fonds au mode du binaire (O-E19-58) 🚧 (planifiée le 2026-10-05 ; relecture n°1 REVISE (démo), révisée ; relecture n°2 READY ; moteur fait le 2026-10-06)
 
 **Faits** **[binaire, données]** (découverte du 2026-10-05, `o58-disc/notes.md` du scratchpad ; contre-vérification indépendante,
 `o58-disc-verify/verify.md`, scripts refaits, rien de réfuté hors du numéro d'ADR du moteur) :
@@ -6898,8 +6898,8 @@ couche 1 de la 44 (le portage efface en noir ; la couleur d'effacement du binair
   compagnon de la 293 : un export périmé échoue haut et fort.
 
 **Tâches.**
-- **G2d-0 — Annexe** : `docs/plan-e19-g2d-annexe/export_predicted_changes.txt` (17 lignes : 16 compagnons et `report.json`).
-- **G2d-1 — Moteur, tests d'abord** (au niveau de la file, dans `CasaEngine.Tests/Rendering/ScrollingLayers/ScrollingLayerPsxSemiTransparencyTests.cs`) : teinte (50, 0, 0, 255) en `Mode1` → une entrée `Additive`, (50, 0, 0, 255) ;
+- ✅ **G2d-0 — Annexe** : `docs/plan-e19-g2d-annexe/export_predicted_changes.txt` (17 lignes : 16 compagnons et `report.json`).
+- ✅ **G2d-1 — Moteur, tests d'abord** (au niveau de la file, dans `CasaEngine.Tests/Rendering/ScrollingLayers/ScrollingLayerPsxSemiTransparencyTests.cs`) : teinte (50, 0, 0, 255) en `Mode1` → une entrée `Additive`, (50, 0, 0, 255) ;
   (40, 40, 40, 255) en `Mode0` → `AlphaBlend`, (40, 40, 40, 128) ; `Mode2` → `Subtractive` ; `Mode3` (50, 0, 0) → `Additive`,
   (13, 0, 0, 255) ; constructeur à deux arguments → l'entrée d'aujourd'hui (rouges d'abord : le constructeur à trois arguments n'existe
   pas, rouge de compilation) ; la démo ci-dessus.
@@ -6929,6 +6929,20 @@ manifeste « avant » (hors `report.json`).
 **Risques** : la couverture de la 293 par la teinte (un quad testé en profondeur au z de la caméra ; les tuiles statiques portent des
 décalages de profondeur par passe) n'est pas vérifiée, la même avant et après ; la 293 est hors de la chaîne (recette peut-être
 impossible aujourd'hui).
+
+- **Fait le 2026-10-06** (G2d-1, exécuteur). **Moteur** (sous-module, branche `chantier/e19g2d-overlay-blend` depuis `main` `ebeb81c9`,
+  plan `ai-agent/tasks/e19g2d-overlay-blend-tasks.md`, la modification locale de l'auteur dans `CasaEngine.Launcher/Program.cs` jamais
+  indexée) : `451d5f91` (E1 : constructeur à trois arguments de `ScrollingTintDefinition`, `ScrollingLayerComponent.Submit` à une entrée
+  à l'état du mode, 6 tests dans `ScrollingLayerPsxSemiTransparencyTests`), `06329626` (E2 : deux démos sœurs
+  `BackgroundTintPsxMode1Demo` et `BackgroundTintPsxMode0Demo`, base `BackgroundTintPsxDemoBase`), `33324030` (E3 : docs et ADR-0056).
+  Rouges d'abord sur le code d'avant avec le constructeur ajouté sans comportement, valeurs lues égales aux valeurs écrites d'avance :
+  `Mode1` et `Mode3` `AlphaBlend` là où `Additive` est attendu, `Mode2` `AlphaBlend` là où `Subtractive` est attendu, `Mode0` couleur
+  (40, 40, 40, 255) là où (40, 40, 40, 128) est attendu (4 rouges sur 6 ; le constructeur à deux arguments et la clé de tri étaient verts
+  d'avance). Verts après : `CasaEngine.Tests` 2740/2740 (+6 ici), aucun test existant touché. Démos lancées depuis `CasaEngine.Demos/`
+  (Debug, 1024 × 768, à ±1) : `Background tint PSX mode 1` lue (150, 150, 200) aux trois points (48, 48), (160, 120), (300, 220) ;
+  `Background tint PSX mode 0` lue (70, 95, 120) (alpha de back-buffer 191) aux trois points. Rouge de la démo, la soumission de la teinte
+  rendue aveugle au mode : `Mode1` lu (50, 0, 0), `Mode0` lu (40, 40, 40), 6 contrôles sur 6 rouges. La démo de G2c, non modifiée,
+  passe encore ses 6 contrôles sur 6. Lectures et images dans `scratchpad/e19g2d-exec/demo-out/`.
 
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 
