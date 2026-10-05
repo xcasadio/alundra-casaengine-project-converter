@@ -4794,7 +4794,7 @@ compteur de ticks de la boîte (Q5) ; preuve au pixel par un test sur GPU réel 
 `GpuDeviceHost.cs` est interne à `CasaEngine.Tests` : nouveau harnais) ; marge par défaut des textes des écrans existants consignée à
 part (Q9, O-E19-64).
 
-###### E19.f2b0 — Rectangles des glyphes font3 depuis la table du binaire ⏳ (planifiée le 2026-10-05 ; relecture n°1 REVISE (règle de comparaison de T2), révisée ; relecture n°2 READY)
+###### E19.f2b0 — Rectangles des glyphes font3 depuis la table du binaire 🧪 (faite le 2026-10-05, vérification à faire ; planifiée le 2026-10-05 ; relecture n°1 REVISE (règle de comparaison de T2), révisée ; relecture n°2 READY)
 
 **Faits** **[binaire, données]** (`f2b-disc/glyphs.py`, `glyphpix.py` du scratchpad ; recompte du 2026-10-05,
 `merge-1005/f2b0_counts.py`) :
@@ -4872,8 +4872,19 @@ part (Q9, O-E19-64).
   `FontGlyphTableCatalogReaderTests` (3 tests : lecture, ligne mal formée avec avertissement, CSV lié : 256 lignes). **Vert après** :
   les 12 tests des deux classes ; suite complète du convertisseur **618/618** (Debug). Le repli (CSV absent) n'a pas de test : il
   faudrait retirer le CSV du dossier de sortie des tests.
-- **F2B0-3 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement `UI/font3.fnt`,
+- ✅ **F2B0-3 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement `UI/font3.fnt`,
   `UI/font3-charset.json` et `report.json` ; double export identique hors `report.json`.
+  **Fait le 2026-10-05** (scratchpad `e19f2b0-exec/`, `manifest.py` et `cmpman.py` de G0b ; export
+  `dotnet run --project alundra-casaengine-project-converter -c Release -- data-extracted alundra-project`, sans suppression
+  préalable, hors `Alundra.dll`, `Alundra.pdb`, `.casaeditor/`) : manifeste avant 23 741 fichiers, après 23 741 ; **changés
+  exactement `UI/font3-charset.json`, `UI/font3.fnt`, `report.json`**, aucun ajouté ni retiré. Vérification de l'export : 20 026
+  chargés, 2 390 existants, PASSED. `report.json` : `Counters`, `WarningsByCategory`, `Warnings` (0), `Errors` (0) égaux à
+  l'avant ; seuls changent `TotalDurationSeconds`, les durées de phase et `OutputSizeBytes` (1 287 720 524 → 1 287 737 122).
+  Le `font3.fnt` d'après : 129 lignes `char` changées sur 145. **Double export** : le second manifeste n'a que `report.json`
+  de changé. Suites sur cet export : convertisseur **618/618** ; `Alundra.Tests` Release **2653/2653** puis Debug **2653/2653**
+  (la Debug en dernier, DLL non verrouillée aux deux builds) ; `cmp` de `Alundra/bin/Debug/net9.0-windows/Alundra.dll` contre
+  `alundra-project/Alundra.dll` sans écart ; garde d'octets des six traces à 0, les quatre traces du héros remises par
+  `git checkout --`. `CasaEngine.Tests` non touché.
 - **F2B0-4 — Vérification** (vérificateur neuf). **F2B0-5 — Recette** (auteur) : dans l'inventaire et l'écran de sauvegarde, virgules,
   tirets, deux-points, « 1 », guillemets, « œ » et « ° » à leur place ; plus de pixels parasites à droite de « y », « z », « é ».
 
