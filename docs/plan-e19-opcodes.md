@@ -5051,7 +5051,7 @@ six traces identiques à l'octet (hors fins de ligne). Reste : la recette (F2B1A
 après n'est pas diffée sur l'export (pas de copie « avant » hors manifeste), elle repose sur la découverte (7 063 octets identiques au
 prototype).
 
-###### E19.f2b1b — État dessiné de la boîte et oracle étendu (R1, T1) ⏳ (planifiée le 2026-10-05 ; relecture n°1 REVISE (passe de fin de défilement, lecteur d'avances), révisée ; relecture n°2 READY ; après f2b1a)
+###### E19.f2b1b — État dessiné de la boîte et oracle étendu (R1, T1) 🧪 (faite le 2026-10-06, vérification à faire ; relecture n°1 REVISE (passe de fin de défilement, lecteur d'avances), révisée ; relecture n°2 READY ; après f2b1a)
 
 **Règles.**
 - **F2B1B-R1 — Boîte** (`Alundra/Scripts/AlundraDialogueBox.cs`, membres internes, noms indicatifs, `dll-notes.md` §1.3), écrit
@@ -5104,8 +5104,8 @@ prototype).
   tables, liste CPU : l'oracle est porté du modèle, ses tables sont tenues d'emblée). **Vert** : 16 sur 16 ; suite entière en Release
   2 679 sur 2 679 (2 663 + 16), aucune assertion existante n'a bougé. Valeurs du cas réel : 43 pas tapés, largeurs 111 et 125, x 104 et 97
   par le lecteur de production sur `alundra-project/UI/font3.fnt` ; sans le fichier : largeurs 0, x 32, un seul avertissement.
-- ⏳ **F2B1B-2 — Suites** : `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (pas d'export : seule la DLL change).
-- **F2B1B-3 — Vérification**.
+- ✅ **F2B1B-2 — Suites** : `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (pas d'export : seule la DLL change).
+- ⏳ **F2B1B-3 — Vérification**.
 
 **Acceptation** : T1 rouge puis vert sur les six tables et le cas réel ; aucun test existant touché ; suites, `cmp`, traces.
 **Retour arrière** : revert des commits.
@@ -5113,6 +5113,27 @@ prototype).
 configuration du binaire (`0x8009CFBC`) est partagée par sept entrées de la table des boîtes : « 168 à l'ouverture » vaut si chaque
 glissement s'est achevé ; un second `\H` ou un `\V` après le premier sur une même ligne n'existe pas dans le corpus
 (`dll-notes.md:108-110`) : non couvert.
+
+**Fait le 2026-10-06.** La boîte (`AlundraDialogueBox`) écrit pendant `Pass` l'état dessiné : `Drawn` (faux avant l'ouverture, sur la passe de
+relâchement et fermée ; `Open` et `Reset` l'effacent), le miroir privé `_cfgY` (168 au départ, écrit par le glissement, remis à 168 au
+relâchement et par `Reset`, intact à `Open`), `ClipTop` et `ClipHeight` calculés en tête de passe avant le glissement, les trois lignes
+(`Row`, `RowX`, `RowWidth`) et `RowOffset`, la largeur `\H` par bande posée au jeton `Center` (somme des avances jusqu'au prochain `NewLine`,
+`CursorWait` ou la fin) et effacée à `Open` et pour la bande vidée en fin de défilement, et sur la passe de fin de défilement les lignes
+après le décalage à décalage 0 (D-E19-83) ; la variante « avant le décalage, décalage 16 » est la constante
+`AlundraDialogueBox.ScrollEndDrawsPreShiftRows` (faux), que `DrawsPreShiftRowsAtScrollEnd` reprend par défaut pour qu'un test fixe les deux.
+`CursorImage` vaut −1 sur une passe de défilement par un drapeau de passe (`_scrollPass`) ; `Y` et le reste de l'état n'ont pas bougé
+(`AlundraDialogueBoxOracleComparisonTests.cs:235-240` intact). Les avances viennent de `AlundraFont3Advances` (lit `UI/font3.fnt`,
+`char id=N … xadvance=M`, clés en points de code ; cache par chemin de projet, `ResetForTests` ; fichier absent : table vide, largeur 0,
+x 32, un avertissement par chemin ; un point de code absent de la table compte 0) ; le directeur l'appelle par
+`IAlundraDialogueBoxHost.Advance`, un fournisseur interne `AdvanceProviderForTests` le remplace dans les tests. L'oracle de test
+(`AlundraTextBoxOracle.cs`) porte l'état dessiné et `CalcTextWidth` de `model_drawn.py` et `model.py`, jamais de la boîte ; l'Y de
+l'oracle part de 240 et la découpe vient du miroir (168). **Preuves** : T1 rouge (compilation, puis 9 rouges sur 16 membres à vide) puis
+vert, 16 sur 16 : les six tables de l'annexe tenues par l'oracle et par la boîte (règle unique de la passe de fin de défilement : S4 passe 100),
+la variante testée une fois, S025 de la 472 sur l'export de f2b1a (43 pas, largeurs 111 et 125, x 104 et 97) et un projet sans `font3.fnt`
+(largeur 0, x 32, un avertissement). `Alundra.Tests` : 2 679 sur 2 679 en Release puis en Debug (2 663 + 16), aucun test existant n'a bougé ;
+`cmp` de `Alundra.dll` (Debug contre `alundra-project`) identique ; six traces identiques à l'octet (hors fins de ligne), les quatre
+traces rejouées par la suite remises à l'état commité. Pas d'export (seule la DLL change), pas de changement du convertisseur ni du moteur.
+Reste : la vérification (F2B1B-3), l'ADR n'étant pas prévue pour cette tranche.
 
 ###### E19.f2b1c — Écran de la boîte, présentateur et preuve au pixel (R2 à R6, T2 à T5) ⏳ (planifiée le 2026-10-05 ; relectures n°1 et n°2 REVISE ; blocage n°2 (prévision de l'export) : FIX, avis P3 et P4 repris ; nouvelle époque, relecture de clôture à faire ; après f2b1b)
 
