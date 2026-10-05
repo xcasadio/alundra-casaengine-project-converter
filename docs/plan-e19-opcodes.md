@@ -232,6 +232,10 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-67** — (2026-10-03, la session en mode AUTO, règle « le binaire tranche », E19.m4) Les **fonds ne reçoivent aucun tick
     pendant le départ d'un passage** (de l'image d'armement à la fin du fondu), comme la boucle de transition du binaire, qui
     n'appelle pas `RenderScene` ; ADR-0034.
+  - **D-E19-68** — (2026-10-05, la session en mode AUTO, règle « le binaire tranche », E19.g G2c) Les **fonds rendent la
+    semi-transparence par texel** comme les sprites d'entités (G2a) : le bit STP de chaque texel dans les planches des fonds
+    (alpha 128), le mode PSX de la couche = `BlendMode − 1`, sans porte `Ground` (celle d'E10 §1.8 tombe) ; ADR du parent et du
+    moteur.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -5756,7 +5760,7 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
 au sud (O-E19-28 b, aussi contre les cellules) demande l'étape 2 (O-E19-42) ; l'image d'A10J `@2462` peut bouger d'un tick
 (retards connus de la DLL).
 
-### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2b, G1/G3, G4 à planifier)
+### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2c planifiée ; G2b, G1/G3, G4 à planifier)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B les données, le convertisseur,
 l'analyseur, le moteur et la DLL ; notes, rendus et scripts dans le scratchpad de la session, `e19g-disc/A/notes.md` et
@@ -6258,6 +6262,114 @@ signature) ; la croissance des tampons alloue pendant le dessin (rare : plus de 
   vérifier si `data-extracted/` manque (documenté) ; la remise de la fenêtre après `TryReloadBuiltInShader` et la croissance du
   `VertexBuffer` n'ont pas de test sans périphérique (lecture du code et démo de capacité). Reste la recette G2a-4 (auteur).
 
+##### 1.2o.3 E19.g G2c — Semi-transparence par texel des fonds (O-E19-54) ⏳ (planifiée)
+
+**Faits** **[binaire, données]** (découverte du 2026-10-03, `e19o54-disc/notes.md` du scratchpad ; deux vérifications indépendantes
+du 2026-10-05, `e19o54-verify-binary/verify.md` (recensement refait sur `DATAS.BIN` brut, rien de réfuté) et
+`e19o54-verify-code/verify.md` (cuisson refaite depuis le code du convertisseur, rien de réfuté, corrections reprises ci-dessous) ;
+annexe des valeurs versionnée `docs/plan-e19-g2c-annexe/`) :
+- **Binaire** : les tuiles des fonds (`SPRT_16`, `0x8005BB24`) et les cellules (types 0, 2, 4, `SPRT`, `0x8005BDD4`) sont posées une
+  fois au chargement en texture brute, avec le bit semi = `BlendMode ≠ 0` (`SetSemiTrans`, `0x8005BC34`, `0x8005BC64`, `0x8005BFB4`,
+  `0x8005C03C`) ; l'ABR de la couche vaut `BlendMode − 1`, par la primitive de mode posée en tête du créneau de la couche
+  (`0x8005B958`-`0x8005B9E4`) ; `Ground` ne choisit que le créneau (`0x8005B8B0`) ; rien n'écrit ensuite l'octet de code d'une
+  primitive. La table de couleurs envoyée en `0x8005B2A0` égale les `PaletteWords` extraits (bit 15 compris) sur les 192 cartes à
+  fond. **[PSX]** une primitive semi ne mêle que ses texels STP (bit 15), les autres sont opaques ; une primitive non semi dessine
+  tout texel non nul opaque.
+- **Recensement** (224 couches) : 11 couches sont fausses aujourd'hui : la pluie (cellules de type 2, `BlendMode` 1) des cartes **391**
+  et 31, dont les 720 texels ont le bit STP éteint, est **opaque** dans l'original et dessinée à 50 % par le portage ; la couche 1
+  (tuiles, `Ground` faux, `BlendMode` 1) des cartes 41, **44**, 109 à 114 et 470 porte un mot STP (`0x8C83`, 518 pixels de toile en
+  81 poses sur la 44) que l'original mêle et que le portage dessine opaque. Toutes les autres couches semi sont entièrement STP
+  (leur mélange par couche est juste) et toutes les couches opaques sont justes ; aucun texel `0x8000`.
+- **Portage** : le convertisseur écrit l'alpha 255 pour tout texel dessiné (`BackdropImageBuilder.DrawTile`, `:213` ; `stp` calculé
+  `:199` ne sert qu'au test de transparence `:200`) ; les 245 PNG de fonds exportés égalent une cuisson indépendante ; la DLL choisit
+  le mélange par `ResolveGroundLayerBlend` (`AlundraBackdropStage.cs:438-458` : `Ground` et 1 → `AlphaBlend` teinte α128, 2 →
+  `Additive`, 3 → `Subtractive`, 4 → `Additive` teinte (63, 63, 63), sinon `Opaque`), appelé par `BuildDefinitions` (`:261`,
+  `:287-288`) et `BuildCellularDefinitions` (`:353`, `:386-387`) ; la porte `Ground` vient d'E10 (`docs/plan-e10-fondu.md` §1.8,
+  `:129-131` : « analyse manquante ; n'y pas toucher ») ; le moteur dessine chaque quad ou cellule par la surcharge publique
+  `Texture2D` + ciseaux + `SpriteBlendMode` (`SpriteRendererComponent.cs:769-775`), une entrée, fenêtre neutre ; le chemin à deux
+  entrées de G2a n'existe que pour un `Sprite` (`:618-652`) ; le cœur privé prend déjà `alphaMin`/`alphaMax` (`:797-859`).
+- **Ordre de livraison** : les trois moitiés ne sont pas sûres séparément : de nouveaux PNG (alpha 128) avec la DLL d'aujourd'hui
+  dessinent les 50 couches de mer à 25 % (texel de la 389 (85, 124, 160) au lieu de (70, 99, 120)) ; un nouveau moteur et une nouvelle
+  DLL avec les PNG d'aujourd'hui dessinent opaques la mer de la 389, les vagues des 476/478/362/44 et toute couche additive ou
+  soustractive. Aucun test existant ne voit ces états mixtes (les tests sur données réelles lisent les compagnons, inchangés).
+- **Dépendance** : G2a est 🧪 (recette G2a-4 en attente) et n'est pas sur `main` du moteur ; la démo de G2a crée sa texture par
+  `SetData` : le chargement d'un PNG à alpha 128 par `Texture2DLoader.cs:12` (`Texture2D.FromStream`) n'est pas prouvé (hypothèse :
+  pas de prémultiplication, alpha gardé).
+
+**Règles.**
+- **G2c-R1 — Convertisseur (règle A)** : `BackdropImageBuilder.DrawTile` écrit l'alpha 128 pour un texel STP, 255 pour un texel non
+  STP dessiné, 0 pour le mot `0x0000` (le code de G0) ; RVB inchangé ; dans toutes les planches de fonds, quel que soit le mélange de
+  la couche (la planche = le contenu de la VRAM ; le bit semi et l'ABR restent dans le `BlendMode` du compagnon) ; doc de la classe
+  (`:19-24`) et `docs/formats/backdrops.md` (décodage des couleurs) ; compteurs et invariants inchangés.
+- **G2c-R2 — Moteur** : `ScrollingLayerDefinition` et `CellularLayerDefinition` gagnent un champ public `SpritePsxSemiTransparency
+  PsxSemiTransparency` (défaut `None`) ; une nouvelle surcharge **interne** de `DrawSprite` (`Texture2D`, rectangle source, origine,
+  position, rotation, échelle, couleur, z, clé de tri, effets, ciseaux, mode PSX) : `None` → une entrée identique à celle de la
+  surcharge existante ; un mode → les deux entrées de G2a (texels opaques, fenêtre (0,75 ; 1], état opaque ; texels STP, fenêtre
+  (0,25 ; 0,75], état du mode, couleur (64, 64, 64) pour `Mode3`), même clé et même z ; la surcharge `Sprite` n'est pas redirigée sur
+  elle (elle garde son `drawDebug`) ; `ScrollingLayerComponent.Submit` (`:259-271`) et `CellularLayerComponent.Submit` (`:242-254`)
+  l'appellent quand le champ n'est pas `None` (`Blend` alors ignoré), l'appel existant sinon ; la clé par cellule d'E19.m3 est
+  gardée ; la surcouche de teinte n'est pas touchée ; docs : `CellularLayerDefinition.cs:10-12`, `docs/engine/scrolling-layers.md`,
+  `cellular-layers.md`, `sprite-psx-semi-transparency.md` ; ADR du moteur (prochain numéro libre, 0053 aujourd'hui).
+- **G2c-R3 — DLL** : un résolveur sur le seul `BlendMode` remplace `ResolveGroundLayerBlend` : 0 → `None`, 1 → `Mode0`, 2 → `Mode1`,
+  3 → `Mode2`, 4 → `Mode3`, toute autre valeur → `None` (choix : le binaire lirait une table au-delà, aucun cas dans le corpus) ;
+  teinte blanche pour toute couche ; `Blend = Opaque` quand un mode est posé (le mode seul décide) ; `Ground` ne choisit plus que la
+  passe (`:262`) ; docs de `AlundraBackdropStage` (`:233-235`, `:318-319`, `:429-437`) ; la porte `Ground` d'E10 tombe : note dans
+  `docs/plan-e10-fondu.md` §1.8 vers la nouvelle ADR du parent (prochain numéro libre, 0035 aujourd'hui) ; D-E19-68.
+- **G2c-R4 — Livraison verrouillée et garde** : convertisseur, moteur et DLL arrivent ensemble ; l'export complet en place suit la
+  construction de la DLL ; un test de la DLL sur l'export réel (convention locale : échoue si l'export manque,
+  `BackdropStageDefinitionTests.cs:28-32`) lit l'alpha 128 au pixel (46, 23) de `layer0` de la 389 et au pixel (0, 0) de `cellsheet0`
+  de la 476, et l'alpha 255 au pixel (2, 0) de `cellsheet0` de la 391 : un export périmé échoue haut et fort.
+
+**Tâches.**
+- **G2c-0 — Annexe des valeurs** (faite) : `docs/plan-e19-g2c-annexe/` (la liste exacte de l'export, 187 PNG et `report.json` ; le détail
+  par PNG ; le recensement par couche).
+- **G2c-1 — Moteur, tests d'abord** (sous-module, branche empilée sur `chantier/e19m3-cellular-order` `a885f226`, qui porte G2a ; plan
+  du moteur dans son `ai-agent/tasks/` ; `CasaEngine.Launcher/Program.cs` de l'auteur jamais indexé) : au niveau de la file (comme
+  G2a) : une couche de défilement d'un quad en `Mode0` → **2** entrées de même clé : [opaque, (0,75 ; 1], blanc] puis [`AlphaBlend`,
+  (0,25 ; 0,75], blanc] (aujourd'hui 1 entrée, `definition.Blend`, (−1 ; 2]) ; `Mode1` → additif ; `Mode2` → soustractif ; `Mode3` →
+  additif avec (64, 64, 64) ; une couche cellulaire de 3 cellules en `Mode0` → **6** entrées, les entrées 2c et 2c+1 avec
+  `LocalSortOffset` −c (aujourd'hui 3) ; `None` inchangé (une entrée, `definition.Blend`). **Démo** du moteur (cas ajouté à la démo de
+  G2a ou démo sœur, sonde du back-buffer, même harnais), avec une texture **chargée depuis un PNG** par le chargeur du moteur, sur un
+  fond (100, 150, 200), pixels loin des bords, ±1 par canal : un texel (96, 96, 88, α255) d'une couche `Mode0` → (96, 96, 88) ; un
+  texel (24, 32, 24, α128) d'une couche `Mode0` → (62, 91, 112) ; un texel (96, 96, 96, α128) d'une couche `Mode1` → (196, 246, 255) ;
+  un texel (120, 80, 40, α128) d'une couche `None` → (120, 80, 40).
+- **G2c-2 — Convertisseur, tests d'abord** : synthétiques : le mot `0x83E0` → (α128, 0, 248, 0) dans `Build` (toile) et dans
+  `BuildTileSheet` (aujourd'hui α255) ; gardes : `0x03E0` → α255 ; `0x0000` → α0 ; `0x8000` → (α128, 0, 0, 0) (aujourd'hui
+  (α255, 0, 0, 0)) ; données réelles (`data-extracted/`, sortie anticipée si absent, comme les tests voisins) : la 44, couche 1,
+  pixel (79, 38), mot `0x8C83` → (24, 32, 24, α128) ; pixel (78, 34), `0x0020` → (0, 8, 0, α255) ; la 476, `cellsheet0`, (0, 0),
+  `0xB18C` → (96, 96, 96, α128) ; la 389, `layer0`, (46, 23), `0x94C5` → (40, 48, 40, α128) ; la 391, `cellsheet0`, (2, 0), `0x2D8C` →
+  (96, 96, 88, α255) (garde ; la 31 de même).
+- **G2c-3 — DLL, tests d'abord** : résolveur : (`Ground` vrai, 1) → `Mode0`, blanc (aujourd'hui `AlphaBlend`, α128) ; (`Ground` faux,
+  1) → `Mode0` (aujourd'hui `Opaque`) ; 2 → `Mode1` ; 3 → `Mode2` ; 4 → `Mode3` (aujourd'hui `Additive`, 63) ; 0 et 99 → `None` ;
+  compagnons réels : la 391 cellulaire → `Mode0`, blanc (aujourd'hui `AlphaBlend`, α128) ; la 44 couche 1 → `Mode0` (aujourd'hui
+  `Opaque`) ; la 44 couche 0 cellulaire → `Mode1` ; la 389 → `Mode0` ; la 321 → `None` ; le test garde de G2c-R4 (rouge sur l'export
+  d'aujourd'hui, vert après l'export).
+- **G2c-4 — Export et preuves** : manifeste SHA-1 avant et après (comme G0b) : exactement `export_predicted_changes.txt` (188
+  lignes) ; pour chaque PNG changé, le décodage avec l'alpha 128 remis à 255 égale l'ancien, et ses pixels STP sont ceux de
+  `export_predicted_pngs.tsv` ; double export identique hors `report.json`.
+- **G2c-5 — Vérification**, **G2c-6 — Recette** (auteur, sur l'export de G2c, avec une capture du back-buffer) : la 391, la pluie
+  blanche et opaque ; la 44, la couche du fond (traits vert sombre mêlés) ; la 389 et la 416, la mer inchangée ; les 476 et 478, les
+  vagues inchangées.
+
+**Acceptation.**
+1. Tests de G2c-1 à G2c-3 rouges d'abord (valeurs d'aujourd'hui), verts après ; la démo égale les valeurs ci-dessus à ±1.
+2. Tests existants touchés, liste fermée : `BackdropStageBlendTests.cs` (les trois tests) ; `BackdropStageDefinitionTests.cs:64-65` et
+   `:103` ; `BackdropStageCellularDefinitionTests.cs:50`, `:123-124` et la théorie `:298-329` ; rien d'autre, ni côté moteur (les tests
+   des couches ne posent jamais le nouveau champ ; `SpriteRendererComponentPsxSemiTransparencyTests.cs:69-81` reste à une entrée) ni
+   côté convertisseur (`BackdropWriterTests.cs` : aucune palette STP) ; restent aussi inchangés `AlundraLibcRandomTests.cs:82`,
+   `CellularLayerCellOrderTests.cs`, `ScrollingLayerMaskTests.cs`, `CellularLayerMaskTests.cs`, les tests de soumission des couches.
+3. Export : exactement `export_predicted_changes.txt` ; double export ; le test garde vert sur cet export.
+4. `CasaEngine.Tests` (construit à part) ; tests du convertisseur ; `Alundra.Tests` en Release puis en Debug sur l'export, la Debug en
+   dernier, `cmp` sans écart ; les six traces à l'octet.
+
+**Retour arrière** : pointeur du sous-module, revert des commits du parent, puis export complet en place dont le manifeste égale le
+manifeste « avant » (hors `report.json`).
+
+**Risques.** Un état mixte (une moitié sans l'autre) dessine faux : la livraison et la recette se font sur l'ensemble (recette en
+worktree : copier le projet exporté) ; G2a-4 non recettée (le chemin PNG est prouvé par la démo de G2c) ; ce qui se trouve sous la
+couche 1 de la 44 (le portage efface en noir ; la couleur d'effacement du binaire n'est pas relue) ; l'octet de palette 30 (cartes 1,
+13, 17, 153, 439) reste la palette 0 (O-E19-59) ; la surcouche additive de la 293 hors tranche (O-E19-58).
+
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 
 **Constat de l'auteur** (conversion relancée, DLL reconstruite) : contacts avec les PNJ bons ; sons et musique bons ; boîtes de
@@ -6732,7 +6844,7 @@ n'est demandé, et l'original lirait au-delà de la table (point ouvert à consi
   avec un groupe nul, pas avec une carte d'un autre groupe ; P4 la période de l'auto-chaîne n'est pas épinglée. **Reste la recette T6
   de l'auteur.**
 
-### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 ✅ ; E19.m4 ✅)
+### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 ✅ ; E19.m4 ✅ ; E19.m5 planifiée)
 
 **Recensement** (2026-10-03, lecture seule ; table complète versionnée dans `docs/plan-e19-m-annexe/backlog-2026-10-03.md`, en
 anglais) : 46 points M-01 à M-46, chacun vérifié contre le code de `bafbd5a`, classé (test seul, commentaire ou doc, petit correctif
@@ -7190,6 +7302,82 @@ la musique) avance encore pendant le départ alors que le binaire montre une ima
   à `false`, aucune course possible ; 4 passes complètes sans test instable). Avis P4 : ADR-0034 cite D-E9b-2 à la ligne 378, la
   note est aux lignes 388-389 ; quelques sauts indirects des bibliothèques PsyQ ne sont pas résolus par le parcours.
 
+#### 1.2s.6 E19.m5 — Hygiène des tests (G1) et deux commentaires (G2a) ⏳ (planifiée)
+
+**Faits** (découverte du 2026-10-05, `e19m5-disc/notes.md` du scratchpad, et vérification adverse, `e19m5-verify/verify.md`) : aucun
+fichier de test du périmètre n'a changé depuis le recensement (`bafbd5a`) ; toutes les lignes sont relocalisées à `0d5849f`. Le code de
+production est tenu pour juste : le rouge d'abord se fait **par mutation scriptée** d'une ligne de production nommée, que la nouvelle
+assertion doit tuer alors que les tests existants la laissent passer.
+
+**Points retenus.**
+- **M-14** (`0x1C` relance et drapeau d'apparition) : nouveau `UJ10b_…` dans `AlundraAnimationImpulseTests.cs` (après UJ-10, `:215-253`,
+  même programme `01 1A 03 1C 01 1C 01 FF`, même montage, `RelaunchRunner` `:193-213`) : juste après la mise à jour 23, poser
+  `SpawnAnimationActive = true` et `SpawnAnimationId = JumpNpcRig.ImpulseAnimation` (le geste d'UJ-6b) ; affirmer : drapeau encore vrai
+  après la mise à jour 31 ; **`impulseUpdates[1] == 32`** (la seule assertion qui tue la mutation : « drapeau faux après 32 » est aussi
+  vrai sous elle) ; le vol `Flight1360[i] == posZ[31 + i]` pour i de 0 à 21. Mesurer d'abord le `impulseUpdates[1]` d'UJ-10 (32 attendu ;
+  une contradiction est un arrêt). Mutation : supprimer `AlundraEventProgramRunner.cs:2511` → l'impulsion vient à la mise à jour 63.
+  Le commentaire du test dit que le montage pose le drapeau dans un état que la production n'atteint pas (il tombe à la première
+  validation).
+- **M-22** (`UiDialogueBoxTests.cs:84`, message qui suppose une largeur de 128) : `FirstDifference(expected, actual, width)`, appel
+  `:67` ; nouveau `[Fact]` : octet 470 d'une boîte de 112 de large → `"470 (pixel 5, 1, channel 2): expected 0, got 1"` ; mutation :
+  le diviseur remis à 128 → `pixel 117, 0`.
+- **M-24** (`0x58` lit l'entité logique) : nouveau test dans `AlundraClassAndBranchOpcodesTests.cs` : entité de direction 1, héros
+  (`Context.PlayerEntity`) de direction 2 → `TargetAnimationId` 2, `CodeIndex` 14 ; mutation : `:1047` lit le héros s'il existe → 3
+  et 17 (aucun test unitaire ne la tue aujourd'hui ; l'arc A11 n'est pas établi).
+- **M-28** (`0x82` d'identifiant 0) : nouveau test dans `AlundraItemAndMoneyOpcodesTests.cs` avec des tables où l'objet 0 a un maximum
+  de 1 (`rows[0] = {0, 0, 0, 1, 65535}`, `ItemTablesFixture`) ; précondition : `AddOneItemIfUnlocked(sonde, tables, 0) == 1` ; puis
+  `82 00 1A 09 FF` → `Result` 0, aucun objet ni argent écrit ; mutation : supprimer `case 0: return false;` (`:2736-2737`) → `Result` 1.
+- **M-29** (`0x21`) : (1) nouveau `TZ21_TheHighByteOfTheDistanceCounts_256Px`, codes `01 21 00 01 FF` (256 pixels), Z de départ 3145728 :
+  à 19922943 l'attente continue, à 19922944 elle finit ; mutation : `:2472` sans l'octet haut → finit à 19922943 ; (2) dans
+  `TZ21_ACollisionAtTheFirstCallEndsAtOnce`, `Assert.Equal(3145728, state.Parameters[2])` (l'ordre des appels du binaire, `0x8003DA34`
+  avant `0x8003DA48`) ; mutation : opérandes de `:725` inversés → 0 ; (3) le décalage arithmétique ou logique ne diffère qu'au
+  repliement de `int.MinValue`, hors d'atteinte du jeu : **accepté**, sans test.
+- **M-33** (moitié de remise à zéro) : `AlundraDestroyedEntityRecyclingTests` devient `IDisposable` et remet les quatre porteurs de
+  session (motif D-T-14, `AlundraWorldProxyGlobalFreezeTests.cs:43-66`) dans son constructeur et son `Dispose` ; de même
+  `AlundraBackgroundLayerMaskTests` et `AlundraWorldProxyCellularRandomWiringTests`, qui construisent un `AlundraWorldProxy` sans
+  remise ; aucune assertion ne bouge. Démonstration jetable (non committée) : `MenuOpen` posé en tête du constructeur sans la remise
+  de l'état du jeu → 4 rouges (`:116`, `:142`, `:156`, `:191`), 3 verts ; avec la remise, 7 verts. La moitié « verrou d'interaction sur
+  un mandataire recyclé » est de la production (G4) : hors tranche.
+- **M-35** : `Alundra/Scripts/AlundraHudComposer.cs:43`, « 320x236 » → « 320x240 » (binaire `0x800424AC`-`0x8004251C`, ADR-0027).
+- **M-38** (le retard d'une image de la 392 attribué à D-E19-64) : le commentaire de `AlundraAnimationSoundTests.cs:281`, une section
+  « Amendment » ajoutée à ADR-0028 (sa ligne 29 n'est pas réécrite, précédent d'ADR-0020) et la phrase de l'écart (2) d'E19.t dans ce
+  plan (deux lignes : la coupure de ligne et l'indentation comptent) nomment la vraie cause : l'ordre de la DLL (le moteur met à jour
+  les entités avant le mandataire du monde, qui fait tourner les événements de carte) ; textes exacts dans les notes de la découverte.
+- **M-46** : dans `AlundraAnimationImpulseTests.cs:304-312`, `Assert.Equal(-8388608, withGravity.Npc.TickForceZ)` (binaire
+  `0x80036AF4`-`0x80036B04` : ni déclin ni borne) ; mutations : borne de l'impulsion (`AlundraEntityScriptProxy.cs:690`) → -1048576 ;
+  marqueur avec gravité envoyé au déclin (`:688`) → -32768 ; E19.m5 reprend ce point de l'hygiène de d2c2 (D6).
+
+**Clos sans changement** (vérification) : **M-23** (la prémisse est fausse : le test existant est le seul à tuer une mutation qui ne
+ferait que désactiver ; l'ajout ne tuerait rien de neuf) ; **M-40** (a) et (b) (les mutations citées sont déjà tuées : le test existant
+de la 476, quel que soit l'ordre, et TD6). **Reportés** à une tranche d'hygiène suivante (E19.m6, découverte à faire) : M-19 (trois
+sous-points hors du territoire de D5b : `AlundraPlayerManagerTests.cs:95`, `AlundraHeroJumpStatesTests.cs:264`,
+`AlundraLadderClimbTests.cs:423`), M-31, la moitié « surcouche » de M-32, la duplication du contexte de `AlundraTurnOrderTests.cs` (avis
+d'E19.m1). Restent où ils sont : M-16, M-17 et SJ-12 (D5b), la moitié test de M-45 (après G4). Avis des clôtures : celui d'E19.m0
+(`AlundraRandom` hors de la collection) est sans objet, `parallelizeTestCollections` étant à `false` ; celui d'E19.m2 (55 au lieu de 26
+tests comptés) est corrigé dans la puce d'E19.m2 par cette tranche ; ceux d'E19.m3 (corps d'ADR-0049) et d'E19.m4 (ligne citée par
+ADR-0034) restent tels quels (une ADR ne se réécrit pas ; leurs statuts et ce plan renvoient au bon endroit).
+
+**Tâches.**
+- **M5-1 — Tests et mutations** : pour chaque point retenu, le test ajouté ou renforcé, vert sur la production ; puis la mutation
+  scriptée de la ligne nommée (script dans le scratchpad, jamais committée), le test filtré rouge avec la valeur lue, la production
+  remise (`git diff` vide sur les fichiers de production) ; la démonstration de M-33 de même.
+- **M5-2 — Commentaires et docs** : M-35, M-38 (test, ADR-0028, plan), la puce d'E19.m2.
+
+**Acceptation.**
+1. Chaque mutation nommée rougit le test retenu avec la valeur écrite ; la production remise, tout est vert ; les valeurs écrites
+   d'avance tiennent (une contradiction est un arrêt).
+2. Tests existants touchés, liste fermée : `UiDialogueBoxTests.cs` (le helper et son appel), `TZ21_ACollisionAtTheFirstCallEndsAtOnce`
+   et le test d'impulsion de `:304-312` (une assertion ajoutée chacun), les trois classes de M-33 (constructeur et `Dispose` seulement) ;
+   rien d'autre.
+3. Tests du convertisseur ; `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans écart (M-35 touche un fichier de
+   production) ; les six traces à l'octet.
+
+**Retour arrière** : revert des commits (tests, un commentaire de la DLL, docs).
+
+**Risques.** UJ10b dépend du montage de `JumpNpcRig` (territoire de D5b, utilisé sans être modifié) ; l'esquisse d'E19.h2 retouchera
+UJ-1b dans le même fichier ; f2a refond la boucle des événements de carte que les tests de recyclage traversent (la remise à zéro ne
+déplace aucune assertion).
+
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
 Chaque arc part d'une carte chargée seule, avec des drapeaux posés et le héros placé. Les valeurs
@@ -7571,10 +7759,12 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-51 | **Réglé le 2026-10-03 (E19.m3, ADR-0052 du moteur).** **Compteur des vagues global** (audit d'E19.m2) : `0x800C48C4` est un compteur unique, incrémenté par le pilote des fonds (`0x8005B6D8`-`0x8005B6E8`) **avant** les tests du masque, jamais remis à 0 au chargement ; le moteur en garde un par couche, remis à 0 au chargement et figé quand la couche est masquée : les vagues commencent chaque carte à une autre phase, et à la 475 la vague de l'original avance pendant le masque. Contredit en partie le fait d'E19.k2 (« l'état par tick d'une couche est dans l'appel gardé ») et ADR-0049 du moteur ; le corriger bougerait `CellularLayerMaskTests.cs:82`, `:93`, `:101`. Confirmé et planifié (§1.2s.4). | E19.m3 |
 | O-E19-52 | **Réglé le 2026-10-03 (E19.m3, ADR-0052 du moteur).** **Parallaxe des cellules de type 0 tronquée** (audit d'E19.m2) : le binaire calcule le facteur une fois, en entier tronqué `Num/Den` (`0x8005C0AC`), puis `camX × facteur` (`0x8005CB78`) ; aux cartes 123 et 124 (couche 1), les facteurs 1/2 donnent 0 : 59 cellules ne défilent pas dans l'original, le moteur les fait défiler à camX/2. Confirmé et planifié (§1.2s.4). | E19.m3 |
 | O-E19-53 | **Réglé le 2026-10-03 (E19.m3, ADR-0052 du moteur).** **Ordre de dessin des cellules d'une couche** (audit d'E19.m2) : le binaire insère chaque cellule en tête du même créneau de la table d'ordre (`0x8005CE08`) : ordre inverse, la cellule 0 dessus ; le moteur donne la même clé à toutes et trie par `List.Sort` (`SpriteRendererComponent.cs:399`), instable ; effet non mesuré. Confirmé et planifié (§1.2s.4). | E19.m3 |
-| O-E19-54 | **La pluie de la 391 et de la 31 est opaque dans l'original** (audit d'E19.m3) : ses 720 texels ont le bit STP éteint (table de couleurs envoyée en `0x8005B2A0` égale à la palette extraite) et la PS1 ne mêle que les texels STP ; le portage la dessine à 50 % (couche `Average`, alpha 128 de la DLL) ; les texels des vagues ont tous le bit allumé (justes). Remède naturel : le mécanisme par texel de G2a étendu aux couches cellulaires (audit à faire). | E19.g (après G2a) |
+| O-E19-54 | **La pluie de la 391 et de la 31 est opaque dans l'original** (audit d'E19.m3) : ses 720 texels ont le bit STP éteint (table de couleurs envoyée en `0x8005B2A0` égale à la palette extraite) et la PS1 ne mêle que les texels STP ; le portage la dessine à 50 % (couche `Average`, alpha 128 de la DLL) ; les texels des vagues ont tous le bit allumé (justes). Remède naturel : le mécanisme par texel de G2a étendu aux couches cellulaires (audit à faire). Audité et vérifié le 2026-10-05 : 11 couches fausses (la pluie des 391 et 31 trop transparente, la couche 1 des 41, 44, 109-114, 470 trop opaque) ; planifié (§1.2o.3). | E19.g G2c |
 | O-E19-55 | ~~Les fonds avancent pendant un fondu de passage~~ — **réglé le 2026-10-03 par E19.m4 (D-E19-67, ADR-0034), vérification en attente** ; question d'origine : (audit d'E19.m3) la boucle de transition du binaire (`0x8002C490`-`0x8002C4C0`) n'appelle pas `RenderScene` ; la DLL poussait les ticks des fonds sans condition (`AlundraWorldProxy.cs:2192-2196`) : 16 ticks en trop par départ (F0 à F15). | E19.m4 |
 | O-E19-56 | **Le type 2 ignore le décalage de palette `0x800C490C`** (`0x8005D370`-`0x8005D394`), contrairement aux types 0 et 4 et aux tuiles ; à retenir si le cycle de palettes (O-E19-43) est porté. Et : le service du moteur survit à un retour au titre ; on n'a pas vérifié si l'original relance l'exécutable (et remet le compteur des vagues à 0) à ce moment. | Note |
 | O-E19-57 | **Le binaire montre une image figée pendant le départ d'un passage** (audit d'O-E19-55) : la boucle de transition n'appelle ni `Update` ni `RenderScene` ; l'écran est une copie de la dernière image sous le fondu. Le portage continue d'avancer et de dessiner la scène : suivi de la caméra, animation des entités (le gel ne touche que `GameplayBlockedMask`, `AlundraWorldProxy.cs:2261-2266`, `AlundraGameplayFreeze.cs:38-40`), physique des PNJ, tuiles animées (temps réel), HUD, dialogue, fondu de la musique (non vérifié dans le binaire). Aussi : l'initialisation du fondu de type 0 du binaire remet la couleur courante à 0 (`0x80042F68`-`0x80042F70`), le portage la garde (`BeginWarpDepartureFade`). À trancher : figer la scène entière (capture de la dernière image par le moteur) ou garder l'écart. | Auteur |
+| O-E19-58 | **La surcouche de la 293 (Inoa en feu) est additive dans l'original** (vérification d'O-E19-54) : `BGColorA` 2 → `TILE` d'ABR 1 de (50, 0, 0) ; le portage moyenne `(50, 0, 0, 128)` (le convertisseur ne garde que `OverlayEnabled = BGColorA != 0`, `BackdropReader.cs:254-255` ; le moteur dessine la teinte en `AlphaBlend`, `ScrollingLayerComponent.cs:208` ; la DLL pose α128, `AlundraBackdropStage.cs:295`) : la scène est assombrie de moitié et teintée au lieu d'être un peu rougie ; hors de la chaîne. | E19.g |
+| O-E19-59 | **Octet de palette 30 des tuiles** (cartes 1, 13, 17, 153, 439, couche 1, tuiles 249-251) : le binaire lit l'identifiant de palette en `0x800CA24C`, au-delà de la table (l'entrée 3 de la table d'ordre du tampon de dessin 0) : valeur d'exécution, aucune correction statique juste ; le convertisseur pose la palette 0 (`BackdropImageBuilder.cs:79-82`), opaque. | Note |
 
 ## 4. Hors périmètre
 
