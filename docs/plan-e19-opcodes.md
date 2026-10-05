@@ -6896,7 +6896,7 @@ n'est demandé, et l'original lirait au-delà de la table (point ouvert à consi
   avec un groupe nul, pas avec une carte d'un autre groupe ; P4 la période de l'auto-chaîne n'est pas épinglée. **Reste la recette T6
   de l'auteur.**
 
-### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 ✅ ; E19.m4 ✅ ; E19.m5 planifiée)
+### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 ✅ ; E19.m4 ✅ ; E19.m5 ✅)
 
 **Recensement** (2026-10-03, lecture seule ; table complète versionnée dans `docs/plan-e19-m-annexe/backlog-2026-10-03.md`, en
 anglais) : 46 points M-01 à M-46, chacun vérifié contre le code de `bafbd5a`, classé (test seul, commentaire ou doc, petit correctif
@@ -7134,7 +7134,7 @@ Decisions: see ADR-0032 (moteur : ADR-0050).
 - **Fait le 2026-10-03** (M2-1 à M2-4 ; moteur : branche `chantier/e19m2-cellular-binary` empilée sur `chantier/e19k2-layer-mask`
   `987f0c7f`, plan `ai-agent/tasks/e19m2-cellular-binary-tasks.md`, commits `3adb1480` (plan), `78ffdfac` (tests, code, docs),
   `61358ac0` (ADR-0050) ; parent : `593a2fd` (DLL et pointeur), `a08e863` (ADR-0032)). **Rouges d'abord**, valeurs lues égales aux
-  valeurs « aujourd'hui » du plan. Moteur, 13 tests rouges sur les 55 de `CellularLayerServiceTests` : T-P1 tick 1 attendu 100 lu 101 ;
+  valeurs « aujourd'hui » du plan. Moteur, 13 tests rouges sur les 26 de `CellularLayerServiceTests` (22 `[Fact]` et les 4 cas de la `[Theory]` ; la puce disait 55 par erreur, corrigé par E19.m5) : T-P1 tick 1 attendu 100 lu 101 ;
   T-P2 tick 2 attendu 100 lu 99 ; T-P3 tick 2 attendu 100 lu 101 ; bouclages au tick 1 attendu −20 lu 315, attendu 400 lu 65, `DrawY`
   attendu −20 lu 235, attendu 400 lu 145 ; T-W5 tick 3 attendu −16 lu 319 ; T-F1 tick 1 attendu (7, 240) lu (0, −15) ; T-F2 tick 2 :
   source 32767 attendu 321 lu 0, 32640 attendu 320 lu 0, 102 attendu 1 lu 0 (101 → 0 vert d'avance) ; le test réécrit `:111-128`
@@ -7354,7 +7354,7 @@ la musique) avance encore pendant le départ alors que le binaire montre une ima
   à `false`, aucune course possible ; 4 passes complètes sans test instable). Avis P4 : ADR-0034 cite D-E9b-2 à la ligne 378, la
   note est aux lignes 388-389 ; quelques sauts indirects des bibliothèques PsyQ ne sont pas résolus par le parcours.
 
-#### 1.2s.6 E19.m5 — Hygiène des tests (G1) et deux commentaires (G2a) ⏳ (relectures n°1 et n°2 REVISE ; disposition FIX du contrôle de M-38 ; nouvelle époque, relecture de clôture)
+#### 1.2s.6 E19.m5 — Hygiène des tests (G1) et deux commentaires (G2a) ✅ (relectures n°1 et n°2 REVISE ; disposition FIX du contrôle de M-38 ; nouvelle époque, relecture de clôture READY ; faite le 2026-10-05, vérification à venir)
 
 **Faits** (découverte du 2026-10-05, `e19m5-disc/notes.md` du scratchpad, et vérification adverse, `e19m5-verify/verify.md`) : aucun
 fichier de test du périmètre n'a changé depuis le recensement (`bafbd5a`) ; toutes les lignes sont relocalisées à `0d5849f`. Le code de
@@ -7431,6 +7431,37 @@ ADR-0034) restent tels quels (une ADR ne se réécrit pas ; leurs statuts et ce 
 **Risques.** UJ10b dépend du montage de `JumpNpcRig` (territoire de D5b, utilisé sans être modifié) ; l'esquisse d'E19.h2 retouchera
 UJ-1b dans le même fichier ; f2a refond la boucle des événements de carte que les tests de recyclage traversent (la remise à zéro ne
 déplace aucune assertion).
+
+- **Fait le 2026-10-05** (M5-1 et M5-2 ; commits `e35cd5e` (tests) et `3d3166b` (commentaires, ADR-0028, phrase d'E19.t), puis ce plan).
+  **Rouge par mutation scriptée** (script du scratchpad, jamais committé ; production remise par `git checkout --`, `git diff` vide ; pour M-22,
+  dont le « code » est l'assistant du fichier de test, le fichier est remis à son contenu d'avant la mutation). Chaque test était vert
+  d'avance sur la production, chaque mutation ne rougit que lui, les valeurs écrites d'avance tiennent toutes :
+  - **M-14** `UJ10b_…` : suppression de `AlundraEventProgramRunner.cs:2511` → `Expected 32, Actual 63` (UJ-10, lancé avec, reste vert) ; la
+    valeur 32 attendue de la mesure d'UJ-10 est tenue.
+  - **M-22** `FirstDifference_LocatesThePixelInTheBoxWidth` : diviseur remis à 128 → `"470 (pixel 117, 0, channel 2): …"` au lieu de
+    `"470 (pixel 5, 1, channel 2): …"`.
+  - **M-24** `DirectionalBranch_0x58_WithAHeroFacingElsewhere_…` : `:1047` lit le héros s'il existe → `Expected 2, Actual 3` (les cinq autres
+    tests `0x58` et `0x57` verts ; l'arc A11 n'est pas mesuré : aucun test unitaire ne tuait la mutation).
+  - **M-28** `Give_0x82_Id0_AnswersZero_EvenWhenTheItem0HasAMaximum` : suppression de `case 0: return false;` → `Expected 0, Actual 1`
+    (précondition `AddOneItemIfUnlocked(…, 0) == 1` tenue).
+  - **M-29** `TZ21_TheHighByteOfTheDistanceCounts_256Px` : `:2472` sans l'octet haut, puis avec `<< 7` → l'attente finit à 19922943
+    (`Expected [(1, 33, 0)], Actual [(1, 33, 3), (4, 255, 0)]`, les deux fois) ; assertion `Parameters[2] == 3145728` ajoutée à
+    `TZ21_ACollisionAtTheFirstCallEndsAtOnce` : opérandes de `:725` inversés → `Expected 3145728, Actual 0` ; le décalage arithmétique
+    ou logique : accepté, sans test.
+  - **M-46** `Assert.Equal(-8388608, withGravity.Npc.TickForceZ)` : impulsion bornée (`AlundraEntityScriptProxy.cs`, règle de l'impulsion) →
+    `Actual -1048576` ; marqueur avec gravité envoyé au déclin → `Actual -32768`. E19.d2c2 D6 n'a plus à reprendre ce point.
+  - **M-33** : `: IDisposable`, remise des quatre porteurs dans le constructeur et `Dispose` des trois classes
+    (`AlundraDestroyedEntityRecyclingTests`, `AlundraBackgroundLayerMaskTests`, `AlundraWorldProxyCellularRandomWiringTests`) ; aucune
+    assertion ne bouge. Démonstration jetable (non committée) : `MenuOpen` posé en tête du constructeur de la première classe, sans la
+    remise de l'état du jeu → 4 rouges (`TheCorpseIsSeen…`, `AMapProgramThatDestroysAndOpens…` `Expected FlagToDestroy, Actual Normal`,
+    `ACorpseThatTheEntitiesLeft…`, `OnAnImageOfTwoTicks…`), 3 verts ; avec la remise, 7 verts.
+  - **M-35** (`AlundraHudComposer.cs:43`, 320x240) et **M-38** (commentaire de `AlundraAnimationSoundTests.cs:281`, section « Amendment »
+    d'ADR-0028 sans toucher à sa ligne 29, phrase de l'écart (2) d'E19.t) : les trois contrôles de l'annexe tiennent. La puce d'E19.m2 est
+    corrigée (26 tests, pas 55).
+  - **Nombres** : `Alundra.Tests` Debug 2570 réussis, 0 échec (dont quatre nouveaux de cette tranche : UJ10b, `0x58`, `0x82`, `TZ21` octet haut ; les autres viennent d'E19.g G2c) ;
+    convertisseur 433 sur 433 (un de plus). Six traces à l'octet (`git diff --ignore-cr-at-eol --exit-code` rend 0), quatre traces du héros
+    remises par `git checkout --`. La DLL de `Alundra.Tests` en Debug est identique (`cmp`) à celle d'`alundra-project/`. Liste fermée de
+    l'acceptation 2 respectée. Écarts : aucun ; la Release (M-35 touche un fichier de production) reste au vérificateur.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
