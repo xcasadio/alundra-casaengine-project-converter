@@ -4532,7 +4532,7 @@ avant les événements de carte du même tick, sur la manette du tick précéden
 elle ; écarts nommés dus à l'ordre du moteur (les entités avant le mandataire du monde), acceptés par l'auteur (D-E19-64), sans
 datation, origine par origine dans la table de F2-R1, avec l'ordre propre au harnais d'intro ; les deux défauts corrigés.
 
-###### E19.f2a — Logique de la boîte au tick près ⏳ (la relecture de clôture de l'époque D-E19-64 rend REVISE sur deux points du harnais d'intro, l'origine d'un test et la règle d'appui ; corrigés ci-dessous ; relance accordée par l'auteur le 2026-10-05, D-E19-71 : nouvelle relecture)
+###### E19.f2a — Logique de la boîte au tick près ⏳ (relance accordée par l'auteur le 2026-10-05, D-E19-71 ; relecture du 2026-10-05 REVISE : liste fermée incomplète à HEAD et ancres déplacées ; recensement refait, contre-vérifié, liste et ancres révisées ; nouvelle relecture)
 
 **Règles.**
 - **F2-R1 — Ordre d'un tick** (révision n°1 : la porte calculée une fois par image et la boucle de la manette, qui fait tous
@@ -4641,20 +4641,57 @@ relâchent une image puis l'enfoncent (un appui naissant) ; l'oracle reproduit l
 **Acceptation.**
 1. Oracle : ses tests verts aux valeurs écrites d'avance ; l'annexe des épingles commitée avant F2A-2 ; tests de la boîte rouges
    d'abord, verts après ; chaque épingle ré-épinglée égale à sa ligne de l'annexe.
-2. Tests existants touchés, liste fermée (`e19f2-disc/impact/notes.md` §0) : classe R — `AlundraDialogueFramePassTests.cs:81-136`,
-   `:163-222` ; `AlundraDialogueOpcodeDispatchTests.cs:134-187`, `:268-298` ; `AlundraDialogueOpcodesProductionTests.cs:71-420` ;
-   `AlundraGlobalFreezeEntityUpdateTests.cs:174-187` ; `AlundraSaveBookTests.cs:101-194` et les appels d'`AssertReleased` ;
-   `AlundraDialogueFlagMarkerTests.cs:105-218` ; `AlundraDialogueYarnRenderingTests.cs:143-176` ; A6
-   (`AlundraShipBlockArcTests.cs:199-275`), A8 (`AlundraInoaAwakeningArcTests.cs:194-280`), A20 et A10 et A11
-   (`AlundraInoaDayOneArcTests.cs:69-87`, `:184-284`, `:345-433`), A12 (`AlundraBergusJumpArcTests.cs:44-66`), A9
-   (`AlundraVisionAndCoastArcTests.cs:470-512`) ; classe C — budgets et aides de A2, A4, A4p, T-A19, T-A10v, T-B9, A13 à A18, A1,
-   A1c, A10J, `AlundraSaveBookEndToEndTests` ; classe L ci-dessus ; `AlundraArcSupport.cs` (aide de manette, budgets) ; harnais
-   d'intro : seul le bloc `if (_installDialogueDirector)` de `RunFramesForTest` (`IntroTraceHarnessTests.cs:581-591`) et les
-   écritures de manette, fenêtres d'appui et budgets de `RunFramesForTest` des tests du harnais nommés en F2-R1
-   (`AlundraDialogueOpcodesProductionTests.cs` ~111, ~152, ~210, ~244-247, ~307, ~357-365 ; `AlundraGlobalFreezeEntityUpdateTests.cs`
-   ~96-98, ~174-177), aux valeurs de l'annexe ; les tests du
-   présentateur qui supposent une ligne par page, que l'audit des valeurs nomme dans l'annexe avant F2A-2. Toute autre assertion
-   qui bouge est un arrêt.
+2. Tests existants touchés, liste fermée (révision du 2026-10-05 : recensement à HEAD `6d933e4`, `f2a-census/notes.md` et
+   `f2a-census/closed_list.md` du scratchpad, contre-vérifié, `f2a-census-verify/verify.md` ; il reprend et complète
+   `e19f2-disc/impact/notes.md` §0 et ses classes R, C, L, U) :
+   classe R — `AlundraDialogueFramePassTests.cs:80-136`, `:160-222` ; `AlundraDialogueOpcodeDispatchTests.cs:134-185`, `:268-296` ;
+   `AlundraDialogueOpcodesProductionTests.cs:70-173`, `:186-273`, `:287-425` ; `AlundraGlobalFreezeEntityUpdateTests.cs:174-188`
+   (`Assert.False(director.IsOpen)` :188 compris) ; `AlundraSaveBookTests.cs:125-194` et `AssertReleased` (:101-123) à ses appels
+   :179, :193, :267, :285, :339, :353, :427, :439 ; `AlundraDialogueFlagMarkerTests.cs:104-182`, `:199-217` ;
+   `AlundraDialogueYarnRenderingTests.cs:142-174` ; A6 (`AlundraShipBlockArcTests.cs:172-284`, budget :31), A8
+   (`AlundraInoaAwakeningArcTests.cs:184-293`, budget :34), A20, A10 et A11 (`AlundraInoaDayOneArcTests.cs:42-92`, `:149-285`,
+   `:309-435`, budgets :31, :99, :292), A12 (`AlundraBergusJumpArcTests.cs:31-85`, budget :23), A9
+   (`AlundraVisionAndCoastArcTests.cs:467-513`, budget :425) ;
+   classe C — aides et budgets, aucune valeur ne bouge : A2 (`AlundraVisionArcTests.cs:34`, :175-218), A4 et A4p (`:36`, `:39`,
+   :226-235, corps `RunA4` :238-324), T-A19, T-A10v, T-B9 et sa contre-preuve (`AlundraEntityContactArcTests.cs:36`, `:136`,
+   `:259`, `:336`, borne `arc.Frame < 1400` et boucle :340-348), A13 à A18 (`AlundraDay3SceneArcTests.cs:61`, `:100`, `:150`, `:205`,
+   `:303`, boucle d'A17 :211-234), A1 et A1c (`AlundraShipArcTests.cs:129`, `:165`, `:194`, `:207`), A10J
+   (`AlundraHeroJumpArcTests.cs:25`), `AlundraSaveBookEndToEndTests.cs` (:165, :170, :182, :191, :198),
+   `AlundraSaveScreenDirectorTests.cs:782-832` et `:834-871` (le vrai livre : `BookTick(62)` deux fois, boucles `< 400` et `< 100`,
+   `BookTick(60)` ; fin sur `PlayerControlFlags == 0`, :831, :869 ; risque : le relâchement de la boîte efface aussi `MenuOpen`,
+   `AlundraDialogueDirector.cs:293`, en plein écran de sauvegarde, sans assertion qui le lise), et deux tests d'E19.t :
+   `AlundraAnimationSoundTests.cs:287-309` (`T1_Map178_…` : ArcSpec en ligne « A18 », budget :291, aide :296 et :298, épingles
+   relatives :306 et :308 ; il ne traverse que S019 @512 et S014 @539 de C[6], le second `RunUntil` finissant au `0xFF @735` du
+   programme du livre) et `:238-270` (`T1_Map476_0x8A_At553_…` : `A4pSpec`, budget d'A4p, `RunUntil` :263 qui traverse la seule
+   boîte S104 @786, épingles relatives :266, :267, :269) ; pour ces arcs, les gardes de `Dispose` (`AlundraArcSupport.cs:274`
+   « A4p » sans contact, `:285` « A18 » une glissade) gardent leur valeur ;
+   classe L — les 32 lignes `0x4C`/`0x4D` de `Data/story-chain-skipped-opcodes.tsv` (règle 2, `AlundraStoryChainSkippedOpcodesTests.cs:49-55`),
+   `TheMapsWithTwoProgramsAtOnePcAreTwoLines` (`:88-94`, le compte de la 476 @112 passe de 2 à 0 avec ces lignes), A6 `:38` et
+   `:186`, A11 `:356-364`, `AlundraEventProgramRunnerTests.cs:322-334` ;
+   aides de test — `AlundraArcSupport.cs:468-486` (aide de manette des arcs ; `CloseDialogueWithTheButton` :450-462 seulement si
+   l'audit la change ; `AlundraPrefabArcSupportTests.cs:197-218` ne bouge que si la nouvelle aide change `Press` ou `_held`) ;
+   harnais d'intro — seul le bloc `if (_installDialogueDirector)` de `RunFramesForTest` (`IntroTraceHarnessTests.cs:587-590`) et,
+   dans les tests du harnais nommés en F2-R1, les écritures de manette, fenêtres d'appui et budgets de `RunFramesForTest`
+   (`AlundraDialogueOpcodesProductionTests.cs` :96, :111, :152, :210, :244-247, :307, :357-365 ; `AlundraGlobalFreezeEntityUpdateTests.cs`
+   :96-98, :174-177), aux valeurs de l'annexe ;
+   tests dont le sort dépend d'un choix de conception, tranché et écrit dans l'annexe avant F2A-2 :
+   `AlundraDialoguePresenterWiringTests.cs:138-186` et `:199-265` (écran poussé dès `Open`, assertions :179-180 et :257-258),
+   `AlundraDialogueOutOfBandCloseTests.cs:48-69` (fermeture par la fenêtre, assertions :67-68) et les appels d'`AssertReleased`
+   :211 et :305 d'`AlundraSaveBookTests.cs` (après `NotifyPresenterClosed()`, même choix), `AlundraAnimationSoundTests.cs:311-339`
+   (`T1_Map179_…`, liste exacte des sons :338 : inchangée si le directeur reçoit le lecteur du monde à l'installation, F2-R5, car la
+   boîte S029 @369 de la 179 peut s'ouvrir avant l'image 123) ; les tests du présentateur qui supposent une ligne par page, que
+   l'audit des valeurs nomme dans l'annexe avant F2A-2 ;
+   classe U, inchangée, entre autres : `AlundraSaveBookTests.cs` appels :227, :241, :253 (aucune boîte) ;
+   `AlundraAnimationSoundTests.cs:272-285` (`T1_Map392_…` : aucune boîte avant `0x11 @104`, la seule boîte de la 392, `0D [249,0]`
+   @150 de B[2], attend la manette vers le bas, que le test ne pose jamais), `:345-374`, `:376-418` ; `AlundraAbsoluteZWritesTests.cs` ;
+   `BackdropWarpDepartureFreezeTests.cs` ; les arcs sans boîte (A0, A0b, A3, A5, A5r, A7, TN-3, T-C61, TH4, UJ-7, S6c, R3-2). Toute
+   autre assertion qui bouge est un arrêt.
+
+   **Ré-ancrage à HEAD** (révision du 2026-10-05, valant pour toute la section ; vérifié ligne à ligne par la contre-vérification) :
+   `AlundraWorldProxy.cs` ~1998-1999 → 2008-2009, ~2022-2061 → 2032-2071, ~2082-2101 → 2092-2112, ~2127-2132/2133 → 2137-2142/2143,
+   ~2217 → 2234-2237, ~1946-1956 → 1956-1966 (`Update` en 1968) ; `AlundraArcSupport.cs:465-482` → 468-486, 447-459 → 450-462 ;
+   `IntroTraceHarnessTests.cs` ~581-591 → 582-592 (bloc `if` 587-590) ; inchangés : `AlundraEntityScriptProxy.cs` 1090-1091 et
+   1209-1213, `AlundraDialogueDirector.cs:314`, A17 :211-234, T-B9 :340-348, les lignes du harnais citées en F2-R1.
 3. Les six traces à l'octet (la trace d'intro ne voit aucun opcode de dialogue et tourne sans directeur).
 4. `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans écart.
 5. **Recette F2a** (auteur, sans vue fidèle avant f2b : la boîte du moteur affiche le préfixe tapé) : la frappe lettre à lettre, le
