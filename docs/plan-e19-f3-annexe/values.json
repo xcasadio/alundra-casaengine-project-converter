@@ -1,0 +1,4722 @@
+{
+ "bare": [
+  {
+   "name": "V1 validate the default (OUI) at once",
+   "pad": {
+    "N+19": "0x40"
+   },
+   "default_sel": 0,
+   "anim0": 0,
+   "events": [
+    [
+     0,
+     "0x44 first entry"
+    ],
+    [
+     0,
+     "sfx 4 (open)"
+    ],
+    [
+     37,
+     "0x44 resolved Result=1"
+    ],
+    [
+     37,
+     "continues"
+    ]
+   ],
+   "result": 1,
+   "summary": {
+    "init": 1,
+    "first_draw": 2,
+    "interactive": 19,
+    "first_out": 20,
+    "closed": 37,
+    "sounds": [
+     [
+      19,
+      5
+     ],
+     [
+      19,
+      2
+     ]
+    ]
+   },
+   "table": [
+    {
+     "t": 0,
+     "update": "(opener runs in the script phase)",
+     "sfx": [
+      4
+     ]
+    },
+    {
+     "t": 1,
+     "update": "init",
+     "drawn": false,
+     "sfx": [],
+     "closed": false
+    },
+    {
+     "t": 2,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 311,
+     "label0_x": 327,
+     "label1_x": 375,
+     "cursor_x": 331,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 3,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 301,
+     "label0_x": 317,
+     "label1_x": 365,
+     "cursor_x": 321,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 4,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 292,
+     "label0_x": 308,
+     "label1_x": 356,
+     "cursor_x": 312,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 5,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 282,
+     "label0_x": 298,
+     "label1_x": 346,
+     "cursor_x": 302,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 6,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 272,
+     "label0_x": 288,
+     "label1_x": 336,
+     "cursor_x": 292,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 7,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 263,
+     "label0_x": 279,
+     "label1_x": 327,
+     "cursor_x": 283,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 8,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 253,
+     "label0_x": 269,
+     "label1_x": 317,
+     "cursor_x": 273,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 9,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 244,
+     "label0_x": 260,
+     "label1_x": 308,
+     "cursor_x": 264,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 10,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 234,
+     "label0_x": 250,
+     "label1_x": 298,
+     "cursor_x": 254,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 11,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 224,
+     "label0_x": 240,
+     "label1_x": 288,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 12,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 215,
+     "label0_x": 231,
+     "label1_x": 279,
+     "cursor_x": 235,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 13,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 205,
+     "label0_x": 221,
+     "label1_x": 269,
+     "cursor_x": 225,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 14,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 196,
+     "label0_x": 212,
+     "label1_x": 260,
+     "cursor_x": 216,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 15,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 186,
+     "label0_x": 202,
+     "label1_x": 250,
+     "cursor_x": 206,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 16,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 17,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 18,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 19,
+     "update": "active",
+     "drawn": true,
+     "sfx": [
+      5,
+      2
+     ],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 20,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 21,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 185,
+     "label0_x": 201,
+     "label1_x": 249,
+     "cursor_x": 205,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 22,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 195,
+     "label0_x": 211,
+     "label1_x": 259,
+     "cursor_x": 215,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 23,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 204,
+     "label0_x": 220,
+     "label1_x": 268,
+     "cursor_x": 224,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 24,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 214,
+     "label0_x": 230,
+     "label1_x": 278,
+     "cursor_x": 234,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 25,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 224,
+     "label0_x": 240,
+     "label1_x": 288,
+     "cursor_x": 244,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 26,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 233,
+     "label0_x": 249,
+     "label1_x": 297,
+     "cursor_x": 253,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 27,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 243,
+     "label0_x": 259,
+     "label1_x": 307,
+     "cursor_x": 263,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 28,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 252,
+     "label0_x": 268,
+     "label1_x": 316,
+     "cursor_x": 272,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 29,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 262,
+     "label0_x": 278,
+     "label1_x": 326,
+     "cursor_x": 282,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 30,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 272,
+     "label0_x": 288,
+     "label1_x": 336,
+     "cursor_x": 292,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 31,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 281,
+     "label0_x": 297,
+     "label1_x": 345,
+     "cursor_x": 301,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 32,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 291,
+     "label0_x": 307,
+     "label1_x": 355,
+     "cursor_x": 311,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 33,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 300,
+     "label0_x": 316,
+     "label1_x": 364,
+     "cursor_x": 320,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 34,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 310,
+     "label0_x": 326,
+     "label1_x": 374,
+     "cursor_x": 330,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 35,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 320,
+     "label0_x": 336,
+     "label1_x": 384,
+     "cursor_x": 340,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 36,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 320,
+     "label0_x": 336,
+     "label1_x": 384,
+     "cursor_x": 340,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 37,
+     "update": "out",
+     "drawn": false,
+     "sfx": [],
+     "closed": true
+    }
+   ]
+  },
+  {
+   "name": "V2 Right at N+19 then Cross at N+22 (NON)",
+   "pad": {
+    "N+19": "0x2000",
+    "N+22": "0x40"
+   },
+   "default_sel": 0,
+   "anim0": 0,
+   "events": [
+    [
+     0,
+     "0x44 first entry"
+    ],
+    [
+     0,
+     "sfx 4 (open)"
+    ],
+    [
+     40,
+     "0x44 resolved Result=0"
+    ],
+    [
+     40,
+     "continues"
+    ]
+   ],
+   "result": 0,
+   "summary": {
+    "init": 1,
+    "first_draw": 2,
+    "interactive": 19,
+    "first_out": 23,
+    "closed": 40,
+    "sounds": [
+     [
+      19,
+      1
+     ],
+     [
+      22,
+      5
+     ],
+     [
+      22,
+      3
+     ]
+    ]
+   },
+   "table": [
+    {
+     "t": 0,
+     "update": "(opener runs in the script phase)",
+     "sfx": [
+      4
+     ]
+    },
+    {
+     "t": 1,
+     "update": "init",
+     "drawn": false,
+     "sfx": [],
+     "closed": false
+    },
+    {
+     "t": 2,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 311,
+     "label0_x": 327,
+     "label1_x": 375,
+     "cursor_x": 331,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 3,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 301,
+     "label0_x": 317,
+     "label1_x": 365,
+     "cursor_x": 321,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 4,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 292,
+     "label0_x": 308,
+     "label1_x": 356,
+     "cursor_x": 312,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 5,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 282,
+     "label0_x": 298,
+     "label1_x": 346,
+     "cursor_x": 302,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 6,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 272,
+     "label0_x": 288,
+     "label1_x": 336,
+     "cursor_x": 292,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 7,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 263,
+     "label0_x": 279,
+     "label1_x": 327,
+     "cursor_x": 283,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 8,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 253,
+     "label0_x": 269,
+     "label1_x": 317,
+     "cursor_x": 273,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 9,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 244,
+     "label0_x": 260,
+     "label1_x": 308,
+     "cursor_x": 264,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 10,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 234,
+     "label0_x": 250,
+     "label1_x": 298,
+     "cursor_x": 254,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 11,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 224,
+     "label0_x": 240,
+     "label1_x": 288,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 12,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 215,
+     "label0_x": 231,
+     "label1_x": 279,
+     "cursor_x": 235,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 13,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 205,
+     "label0_x": 221,
+     "label1_x": 269,
+     "cursor_x": 225,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 14,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 196,
+     "label0_x": 212,
+     "label1_x": 260,
+     "cursor_x": 216,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 15,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 186,
+     "label0_x": 202,
+     "label1_x": 250,
+     "cursor_x": 206,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 16,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 17,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 18,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 19,
+     "update": "active",
+     "drawn": true,
+     "sfx": [
+      1
+     ],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 20,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 21,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 22,
+     "update": "active",
+     "drawn": true,
+     "sfx": [
+      5,
+      3
+     ],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 23,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 24,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 185,
+     "label0_x": 201,
+     "label1_x": 249,
+     "cursor_x": 253,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 25,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 195,
+     "label0_x": 211,
+     "label1_x": 259,
+     "cursor_x": 263,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 26,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 204,
+     "label0_x": 220,
+     "label1_x": 268,
+     "cursor_x": 272,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 27,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 214,
+     "label0_x": 230,
+     "label1_x": 278,
+     "cursor_x": 282,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 28,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 224,
+     "label0_x": 240,
+     "label1_x": 288,
+     "cursor_x": 292,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 29,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 233,
+     "label0_x": 249,
+     "label1_x": 297,
+     "cursor_x": 301,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 30,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 243,
+     "label0_x": 259,
+     "label1_x": 307,
+     "cursor_x": 311,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 31,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 252,
+     "label0_x": 268,
+     "label1_x": 316,
+     "cursor_x": 320,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 32,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 262,
+     "label0_x": 278,
+     "label1_x": 326,
+     "cursor_x": 330,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 33,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 272,
+     "label0_x": 288,
+     "label1_x": 336,
+     "cursor_x": 340,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 34,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 281,
+     "label0_x": 297,
+     "label1_x": 345,
+     "cursor_x": 349,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 35,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 291,
+     "label0_x": 307,
+     "label1_x": 355,
+     "cursor_x": 359,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 36,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 300,
+     "label0_x": 316,
+     "label1_x": 364,
+     "cursor_x": 368,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 37,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 310,
+     "label0_x": 326,
+     "label1_x": 374,
+     "cursor_x": 378,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 38,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 320,
+     "label0_x": 336,
+     "label1_x": 384,
+     "cursor_x": 388,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 39,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 320,
+     "label0_x": 336,
+     "label1_x": 384,
+     "cursor_x": 388,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 40,
+     "update": "out",
+     "drawn": false,
+     "sfx": [],
+     "closed": true
+    }
+   ]
+  },
+  {
+   "name": "V3 Cross held N+10..N+27 (no edge at N+19), pressed again N+30",
+   "pad": {
+    "N+10": "0x40",
+    "N+11": "0x40",
+    "N+12": "0x40",
+    "N+13": "0x40",
+    "N+14": "0x40",
+    "N+15": "0x40",
+    "N+16": "0x40",
+    "N+17": "0x40",
+    "N+18": "0x40",
+    "N+19": "0x40",
+    "N+20": "0x40",
+    "N+21": "0x40",
+    "N+22": "0x40",
+    "N+23": "0x40",
+    "N+24": "0x40",
+    "N+25": "0x40",
+    "N+26": "0x40",
+    "N+27": "0x40",
+    "N+30": "0x40"
+   },
+   "default_sel": 0,
+   "anim0": 0,
+   "events": [
+    [
+     0,
+     "0x44 first entry"
+    ],
+    [
+     0,
+     "sfx 4 (open)"
+    ],
+    [
+     48,
+     "0x44 resolved Result=1"
+    ],
+    [
+     48,
+     "continues"
+    ]
+   ],
+   "result": 1,
+   "summary": {
+    "init": 1,
+    "first_draw": 2,
+    "interactive": 19,
+    "first_out": 31,
+    "closed": 48,
+    "sounds": [
+     [
+      30,
+      5
+     ],
+     [
+      30,
+      2
+     ]
+    ]
+   },
+   "table": [
+    {
+     "t": 0,
+     "update": "(opener runs in the script phase)",
+     "sfx": [
+      4
+     ]
+    },
+    {
+     "t": 1,
+     "update": "init",
+     "drawn": false,
+     "sfx": [],
+     "closed": false
+    },
+    {
+     "t": 2,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 311,
+     "label0_x": 327,
+     "label1_x": 375,
+     "cursor_x": 331,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 3,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 301,
+     "label0_x": 317,
+     "label1_x": 365,
+     "cursor_x": 321,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 4,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 292,
+     "label0_x": 308,
+     "label1_x": 356,
+     "cursor_x": 312,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 5,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 282,
+     "label0_x": 298,
+     "label1_x": 346,
+     "cursor_x": 302,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 6,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 272,
+     "label0_x": 288,
+     "label1_x": 336,
+     "cursor_x": 292,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 7,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 263,
+     "label0_x": 279,
+     "label1_x": 327,
+     "cursor_x": 283,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 8,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 253,
+     "label0_x": 269,
+     "label1_x": 317,
+     "cursor_x": 273,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 9,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 244,
+     "label0_x": 260,
+     "label1_x": 308,
+     "cursor_x": 264,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 10,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 234,
+     "label0_x": 250,
+     "label1_x": 298,
+     "cursor_x": 254,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 11,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 224,
+     "label0_x": 240,
+     "label1_x": 288,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 12,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 215,
+     "label0_x": 231,
+     "label1_x": 279,
+     "cursor_x": 235,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 13,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 205,
+     "label0_x": 221,
+     "label1_x": 269,
+     "cursor_x": 225,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 14,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 196,
+     "label0_x": 212,
+     "label1_x": 260,
+     "cursor_x": 216,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 15,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 186,
+     "label0_x": 202,
+     "label1_x": 250,
+     "cursor_x": 206,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 16,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 17,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 18,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 19,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 20,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 21,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 22,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 23,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 24,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 25,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 26,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 27,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 28,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 29,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 30,
+     "update": "active",
+     "drawn": true,
+     "sfx": [
+      5,
+      2
+     ],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 31,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 32,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 185,
+     "label0_x": 201,
+     "label1_x": 249,
+     "cursor_x": 205,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 33,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 195,
+     "label0_x": 211,
+     "label1_x": 259,
+     "cursor_x": 215,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 34,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 204,
+     "label0_x": 220,
+     "label1_x": 268,
+     "cursor_x": 224,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 35,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 214,
+     "label0_x": 230,
+     "label1_x": 278,
+     "cursor_x": 234,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 36,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 224,
+     "label0_x": 240,
+     "label1_x": 288,
+     "cursor_x": 244,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 37,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 233,
+     "label0_x": 249,
+     "label1_x": 297,
+     "cursor_x": 253,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 38,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 243,
+     "label0_x": 259,
+     "label1_x": 307,
+     "cursor_x": 263,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 39,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 252,
+     "label0_x": 268,
+     "label1_x": 316,
+     "cursor_x": 272,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 40,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 262,
+     "label0_x": 278,
+     "label1_x": 326,
+     "cursor_x": 282,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 41,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 272,
+     "label0_x": 288,
+     "label1_x": 336,
+     "cursor_x": 292,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 42,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 281,
+     "label0_x": 297,
+     "label1_x": 345,
+     "cursor_x": 301,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 43,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 291,
+     "label0_x": 307,
+     "label1_x": 355,
+     "cursor_x": 311,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 44,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 300,
+     "label0_x": 316,
+     "label1_x": 364,
+     "cursor_x": 320,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 45,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 310,
+     "label0_x": 326,
+     "label1_x": 374,
+     "cursor_x": 330,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 46,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 320,
+     "label0_x": 336,
+     "label1_x": 384,
+     "cursor_x": 340,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 47,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 320,
+     "label0_x": 336,
+     "label1_x": 384,
+     "cursor_x": 340,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 48,
+     "update": "out",
+     "drawn": false,
+     "sfx": [],
+     "closed": true
+    }
+   ]
+  },
+  {
+   "name": "V4 Right held N+19..N+59, Left at N+60, Cross at N+62",
+   "pad": {
+    "N+19": "0x2000",
+    "N+20": "0x2000",
+    "N+21": "0x2000",
+    "N+22": "0x2000",
+    "N+23": "0x2000",
+    "N+24": "0x2000",
+    "N+25": "0x2000",
+    "N+26": "0x2000",
+    "N+27": "0x2000",
+    "N+28": "0x2000",
+    "N+29": "0x2000",
+    "N+30": "0x2000",
+    "N+31": "0x2000",
+    "N+32": "0x2000",
+    "N+33": "0x2000",
+    "N+34": "0x2000",
+    "N+35": "0x2000",
+    "N+36": "0x2000",
+    "N+37": "0x2000",
+    "N+38": "0x2000",
+    "N+39": "0x2000",
+    "N+40": "0x2000",
+    "N+41": "0x2000",
+    "N+42": "0x2000",
+    "N+43": "0x2000",
+    "N+44": "0x2000",
+    "N+45": "0x2000",
+    "N+46": "0x2000",
+    "N+47": "0x2000",
+    "N+48": "0x2000",
+    "N+49": "0x2000",
+    "N+50": "0x2000",
+    "N+51": "0x2000",
+    "N+52": "0x2000",
+    "N+53": "0x2000",
+    "N+54": "0x2000",
+    "N+55": "0x2000",
+    "N+56": "0x2000",
+    "N+57": "0x2000",
+    "N+58": "0x2000",
+    "N+59": "0x2000",
+    "N+60": "0x8000",
+    "N+62": "0x40"
+   },
+   "default_sel": 0,
+   "anim0": 0,
+   "events": [
+    [
+     0,
+     "0x44 first entry"
+    ],
+    [
+     0,
+     "sfx 4 (open)"
+    ],
+    [
+     80,
+     "0x44 resolved Result=1"
+    ],
+    [
+     80,
+     "continues"
+    ]
+   ],
+   "result": 1,
+   "summary": {
+    "init": 1,
+    "first_draw": 2,
+    "interactive": 19,
+    "first_out": 63,
+    "closed": 80,
+    "sounds": [
+     [
+      19,
+      1
+     ],
+     [
+      60,
+      1
+     ],
+     [
+      62,
+      5
+     ],
+     [
+      62,
+      2
+     ]
+    ]
+   },
+   "table": [
+    {
+     "t": 0,
+     "update": "(opener runs in the script phase)",
+     "sfx": [
+      4
+     ]
+    },
+    {
+     "t": 1,
+     "update": "init",
+     "drawn": false,
+     "sfx": [],
+     "closed": false
+    },
+    {
+     "t": 2,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 311,
+     "label0_x": 327,
+     "label1_x": 375,
+     "cursor_x": 331,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 3,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 301,
+     "label0_x": 317,
+     "label1_x": 365,
+     "cursor_x": 321,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 4,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 292,
+     "label0_x": 308,
+     "label1_x": 356,
+     "cursor_x": 312,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 5,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 282,
+     "label0_x": 298,
+     "label1_x": 346,
+     "cursor_x": 302,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 6,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 272,
+     "label0_x": 288,
+     "label1_x": 336,
+     "cursor_x": 292,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 7,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 263,
+     "label0_x": 279,
+     "label1_x": 327,
+     "cursor_x": 283,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 8,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 253,
+     "label0_x": 269,
+     "label1_x": 317,
+     "cursor_x": 273,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 9,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 244,
+     "label0_x": 260,
+     "label1_x": 308,
+     "cursor_x": 264,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 10,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 234,
+     "label0_x": 250,
+     "label1_x": 298,
+     "cursor_x": 254,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 11,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 224,
+     "label0_x": 240,
+     "label1_x": 288,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 12,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 215,
+     "label0_x": 231,
+     "label1_x": 279,
+     "cursor_x": 235,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 13,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 205,
+     "label0_x": 221,
+     "label1_x": 269,
+     "cursor_x": 225,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 14,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 196,
+     "label0_x": 212,
+     "label1_x": 260,
+     "cursor_x": 216,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 15,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 186,
+     "label0_x": 202,
+     "label1_x": 250,
+     "cursor_x": 206,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 16,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 17,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 18,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 19,
+     "update": "active",
+     "drawn": true,
+     "sfx": [
+      1
+     ],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 20,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 21,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 22,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 23,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 24,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 25,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 26,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 27,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 28,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 29,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 30,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 31,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 32,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 33,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 34,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 35,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 36,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 37,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 38,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 39,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 40,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 41,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 42,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 43,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 44,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 45,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 46,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 47,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 48,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 49,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 50,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 51,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 52,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 53,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 54,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 55,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 56,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 57,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 58,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 59,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 60,
+     "update": "active",
+     "drawn": true,
+     "sfx": [
+      1
+     ],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 61,
+     "update": "active",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 62,
+     "update": "active",
+     "drawn": true,
+     "sfx": [
+      5,
+      2
+     ],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 63,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 64,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 185,
+     "label0_x": 201,
+     "label1_x": 249,
+     "cursor_x": 205,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 65,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 195,
+     "label0_x": 211,
+     "label1_x": 259,
+     "cursor_x": 215,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 66,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 204,
+     "label0_x": 220,
+     "label1_x": 268,
+     "cursor_x": 224,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 67,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 214,
+     "label0_x": 230,
+     "label1_x": 278,
+     "cursor_x": 234,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 68,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 224,
+     "label0_x": 240,
+     "label1_x": 288,
+     "cursor_x": 244,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 69,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 233,
+     "label0_x": 249,
+     "label1_x": 297,
+     "cursor_x": 253,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 70,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 243,
+     "label0_x": 259,
+     "label1_x": 307,
+     "cursor_x": 263,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 71,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 252,
+     "label0_x": 268,
+     "label1_x": 316,
+     "cursor_x": 272,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 72,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 262,
+     "label0_x": 278,
+     "label1_x": 326,
+     "cursor_x": 282,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 73,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 272,
+     "label0_x": 288,
+     "label1_x": 336,
+     "cursor_x": 292,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 74,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 281,
+     "label0_x": 297,
+     "label1_x": 345,
+     "cursor_x": 301,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 75,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 291,
+     "label0_x": 307,
+     "label1_x": 355,
+     "cursor_x": 311,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 76,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 300,
+     "label0_x": 316,
+     "label1_x": 364,
+     "cursor_x": 320,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 77,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 310,
+     "label0_x": 326,
+     "label1_x": 374,
+     "cursor_x": 330,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 78,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 320,
+     "label0_x": 336,
+     "label1_x": 384,
+     "cursor_x": 340,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 79,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 320,
+     "label0_x": 336,
+     "label1_x": 384,
+     "cursor_x": 340,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 80,
+     "update": "out",
+     "drawn": false,
+     "sfx": [],
+     "closed": true
+    }
+   ]
+  },
+  {
+   "name": "V5 Cross+Right together at N+19",
+   "pad": {
+    "N+19": "0x2040"
+   },
+   "default_sel": 0,
+   "anim0": 0,
+   "events": [
+    [
+     0,
+     "0x44 first entry"
+    ],
+    [
+     0,
+     "sfx 4 (open)"
+    ],
+    [
+     37,
+     "0x44 resolved Result=1"
+    ],
+    [
+     37,
+     "continues"
+    ]
+   ],
+   "result": 1,
+   "summary": {
+    "init": 1,
+    "first_draw": 2,
+    "interactive": 19,
+    "first_out": 20,
+    "closed": 37,
+    "sounds": [
+     [
+      19,
+      5
+     ],
+     [
+      19,
+      2
+     ],
+     [
+      19,
+      1
+     ]
+    ]
+   },
+   "table": [
+    {
+     "t": 0,
+     "update": "(opener runs in the script phase)",
+     "sfx": [
+      4
+     ]
+    },
+    {
+     "t": 1,
+     "update": "init",
+     "drawn": false,
+     "sfx": [],
+     "closed": false
+    },
+    {
+     "t": 2,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 311,
+     "label0_x": 327,
+     "label1_x": 375,
+     "cursor_x": 331,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 3,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 301,
+     "label0_x": 317,
+     "label1_x": 365,
+     "cursor_x": 321,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 4,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 292,
+     "label0_x": 308,
+     "label1_x": 356,
+     "cursor_x": 312,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 5,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 282,
+     "label0_x": 298,
+     "label1_x": 346,
+     "cursor_x": 302,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 6,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 272,
+     "label0_x": 288,
+     "label1_x": 336,
+     "cursor_x": 292,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 7,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 263,
+     "label0_x": 279,
+     "label1_x": 327,
+     "cursor_x": 283,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 8,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 253,
+     "label0_x": 269,
+     "label1_x": 317,
+     "cursor_x": 273,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 9,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 244,
+     "label0_x": 260,
+     "label1_x": 308,
+     "cursor_x": 264,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 10,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 234,
+     "label0_x": 250,
+     "label1_x": 298,
+     "cursor_x": 254,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 11,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 224,
+     "label0_x": 240,
+     "label1_x": 288,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 12,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 215,
+     "label0_x": 231,
+     "label1_x": 279,
+     "cursor_x": 235,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 13,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 205,
+     "label0_x": 221,
+     "label1_x": 269,
+     "cursor_x": 225,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 14,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 196,
+     "label0_x": 212,
+     "label1_x": 260,
+     "cursor_x": 216,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 15,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 186,
+     "label0_x": 202,
+     "label1_x": 250,
+     "cursor_x": 206,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 16,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 17,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 18,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 19,
+     "update": "active",
+     "drawn": true,
+     "sfx": [
+      5,
+      2,
+      1
+     ],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 20,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 21,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 185,
+     "label0_x": 201,
+     "label1_x": 249,
+     "cursor_x": 253,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 22,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 195,
+     "label0_x": 211,
+     "label1_x": 259,
+     "cursor_x": 263,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 23,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 204,
+     "label0_x": 220,
+     "label1_x": 268,
+     "cursor_x": 272,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 24,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 214,
+     "label0_x": 230,
+     "label1_x": 278,
+     "cursor_x": 282,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 25,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 224,
+     "label0_x": 240,
+     "label1_x": 288,
+     "cursor_x": 292,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 26,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 233,
+     "label0_x": 249,
+     "label1_x": 297,
+     "cursor_x": 301,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 27,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 243,
+     "label0_x": 259,
+     "label1_x": 307,
+     "cursor_x": 311,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 28,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 252,
+     "label0_x": 268,
+     "label1_x": 316,
+     "cursor_x": 320,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 29,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 262,
+     "label0_x": 278,
+     "label1_x": 326,
+     "cursor_x": 330,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 30,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 272,
+     "label0_x": 288,
+     "label1_x": 336,
+     "cursor_x": 340,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 31,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 281,
+     "label0_x": 297,
+     "label1_x": 345,
+     "cursor_x": 349,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 32,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 291,
+     "label0_x": 307,
+     "label1_x": 355,
+     "cursor_x": 359,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 33,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 300,
+     "label0_x": 316,
+     "label1_x": 364,
+     "cursor_x": 368,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 34,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 310,
+     "label0_x": 326,
+     "label1_x": 374,
+     "cursor_x": 378,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 35,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 320,
+     "label0_x": 336,
+     "label1_x": 384,
+     "cursor_x": 388,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 36,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 320,
+     "label0_x": 336,
+     "label1_x": 384,
+     "cursor_x": 388,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 37,
+     "update": "out",
+     "drawn": false,
+     "sfx": [],
+     "closed": true
+    }
+   ]
+  },
+  {
+   "name": "V6 variant opener, default NON, Cross at N+19",
+   "pad": {
+    "N+19": "0x40"
+   },
+   "default_sel": 1,
+   "anim0": 0,
+   "events": [
+    [
+     0,
+     "0x44 first entry"
+    ],
+    [
+     0,
+     "sfx 4 (open)"
+    ],
+    [
+     37,
+     "0x44 resolved Result=0"
+    ],
+    [
+     37,
+     "continues"
+    ]
+   ],
+   "result": 0,
+   "summary": {
+    "init": 1,
+    "first_draw": 2,
+    "interactive": 19,
+    "first_out": 20,
+    "closed": 37,
+    "sounds": [
+     [
+      19,
+      5
+     ],
+     [
+      19,
+      3
+     ]
+    ]
+   },
+   "table": [
+    {
+     "t": 0,
+     "update": "(opener runs in the script phase)",
+     "sfx": [
+      4
+     ]
+    },
+    {
+     "t": 1,
+     "update": "init",
+     "drawn": false,
+     "sfx": [],
+     "closed": false
+    },
+    {
+     "t": 2,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 311,
+     "label0_x": 327,
+     "label1_x": 375,
+     "cursor_x": 379,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 3,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 301,
+     "label0_x": 317,
+     "label1_x": 365,
+     "cursor_x": 369,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 4,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 292,
+     "label0_x": 308,
+     "label1_x": 356,
+     "cursor_x": 360,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 5,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 282,
+     "label0_x": 298,
+     "label1_x": 346,
+     "cursor_x": 350,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 6,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 272,
+     "label0_x": 288,
+     "label1_x": 336,
+     "cursor_x": 340,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 7,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 263,
+     "label0_x": 279,
+     "label1_x": 327,
+     "cursor_x": 331,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 8,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 253,
+     "label0_x": 269,
+     "label1_x": 317,
+     "cursor_x": 321,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 9,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 244,
+     "label0_x": 260,
+     "label1_x": 308,
+     "cursor_x": 312,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 10,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 234,
+     "label0_x": 250,
+     "label1_x": 298,
+     "cursor_x": 302,
+     "cursor_img": 0,
+     "sel": 1
+    },
+    {
+     "t": 11,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 224,
+     "label0_x": 240,
+     "label1_x": 288,
+     "cursor_x": 292,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 12,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 215,
+     "label0_x": 231,
+     "label1_x": 279,
+     "cursor_x": 283,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 13,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 205,
+     "label0_x": 221,
+     "label1_x": 269,
+     "cursor_x": 273,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 14,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 196,
+     "label0_x": 212,
+     "label1_x": 260,
+     "cursor_x": 264,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 15,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 186,
+     "label0_x": 202,
+     "label1_x": 250,
+     "cursor_x": 254,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 16,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 17,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 18,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 19,
+     "update": "active",
+     "drawn": true,
+     "sfx": [
+      5,
+      3
+     ],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 20,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 244,
+     "cursor_img": 1,
+     "sel": 1
+    },
+    {
+     "t": 21,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 185,
+     "label0_x": 201,
+     "label1_x": 249,
+     "cursor_x": 253,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 22,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 195,
+     "label0_x": 211,
+     "label1_x": 259,
+     "cursor_x": 263,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 23,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 204,
+     "label0_x": 220,
+     "label1_x": 268,
+     "cursor_x": 272,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 24,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 214,
+     "label0_x": 230,
+     "label1_x": 278,
+     "cursor_x": 282,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 25,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 224,
+     "label0_x": 240,
+     "label1_x": 288,
+     "cursor_x": 292,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 26,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 233,
+     "label0_x": 249,
+     "label1_x": 297,
+     "cursor_x": 301,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 27,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 243,
+     "label0_x": 259,
+     "label1_x": 307,
+     "cursor_x": 311,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 28,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 252,
+     "label0_x": 268,
+     "label1_x": 316,
+     "cursor_x": 320,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 29,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 262,
+     "label0_x": 278,
+     "label1_x": 326,
+     "cursor_x": 330,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 30,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 272,
+     "label0_x": 288,
+     "label1_x": 336,
+     "cursor_x": 340,
+     "cursor_img": 2,
+     "sel": 1
+    },
+    {
+     "t": 31,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 281,
+     "label0_x": 297,
+     "label1_x": 345,
+     "cursor_x": 349,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 32,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 291,
+     "label0_x": 307,
+     "label1_x": 355,
+     "cursor_x": 359,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 33,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 300,
+     "label0_x": 316,
+     "label1_x": 364,
+     "cursor_x": 368,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 34,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 310,
+     "label0_x": 326,
+     "label1_x": 374,
+     "cursor_x": 378,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 35,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 320,
+     "label0_x": 336,
+     "label1_x": 384,
+     "cursor_x": 388,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 36,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 320,
+     "label0_x": 336,
+     "label1_x": 384,
+     "cursor_x": 388,
+     "cursor_img": 3,
+     "sel": 1
+    },
+    {
+     "t": 37,
+     "update": "out",
+     "drawn": false,
+     "sfx": [],
+     "closed": true
+    }
+   ]
+  },
+  {
+   "name": "V7 anim0 = 17 (counter left by an earlier box), Cross at N+19",
+   "pad": {
+    "N+19": "0x40"
+   },
+   "default_sel": 0,
+   "anim0": 17,
+   "events": [
+    [
+     0,
+     "0x44 first entry"
+    ],
+    [
+     0,
+     "sfx 4 (open)"
+    ],
+    [
+     37,
+     "0x44 resolved Result=1"
+    ],
+    [
+     37,
+     "continues"
+    ]
+   ],
+   "result": 1,
+   "summary": {
+    "init": 1,
+    "first_draw": 2,
+    "interactive": 19,
+    "first_out": 20,
+    "closed": 37,
+    "sounds": [
+     [
+      19,
+      5
+     ],
+     [
+      19,
+      2
+     ]
+    ]
+   },
+   "table": [
+    {
+     "t": 0,
+     "update": "(opener runs in the script phase)",
+     "sfx": [
+      4
+     ]
+    },
+    {
+     "t": 1,
+     "update": "init",
+     "drawn": false,
+     "sfx": [],
+     "closed": false
+    },
+    {
+     "t": 2,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 311,
+     "label0_x": 327,
+     "label1_x": 375,
+     "cursor_x": 331,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 3,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 301,
+     "label0_x": 317,
+     "label1_x": 365,
+     "cursor_x": 321,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 4,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 292,
+     "label0_x": 308,
+     "label1_x": 356,
+     "cursor_x": 312,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 5,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 282,
+     "label0_x": 298,
+     "label1_x": 346,
+     "cursor_x": 302,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 6,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 272,
+     "label0_x": 288,
+     "label1_x": 336,
+     "cursor_x": 292,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 7,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 263,
+     "label0_x": 279,
+     "label1_x": 327,
+     "cursor_x": 283,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 8,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 253,
+     "label0_x": 269,
+     "label1_x": 317,
+     "cursor_x": 273,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 9,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 244,
+     "label0_x": 260,
+     "label1_x": 308,
+     "cursor_x": 264,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 10,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 234,
+     "label0_x": 250,
+     "label1_x": 298,
+     "cursor_x": 254,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 11,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 224,
+     "label0_x": 240,
+     "label1_x": 288,
+     "cursor_x": 244,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 12,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 215,
+     "label0_x": 231,
+     "label1_x": 279,
+     "cursor_x": 235,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 13,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 205,
+     "label0_x": 221,
+     "label1_x": 269,
+     "cursor_x": 225,
+     "cursor_img": 2,
+     "sel": 0
+    },
+    {
+     "t": 14,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 196,
+     "label0_x": 212,
+     "label1_x": 260,
+     "cursor_x": 216,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 15,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 186,
+     "label0_x": 202,
+     "label1_x": 250,
+     "cursor_x": 206,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 16,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 17,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 18,
+     "update": "in",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 19,
+     "update": "active",
+     "drawn": true,
+     "sfx": [
+      5,
+      2
+     ],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 20,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 176,
+     "label0_x": 192,
+     "label1_x": 240,
+     "cursor_x": 196,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 21,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 185,
+     "label0_x": 201,
+     "label1_x": 249,
+     "cursor_x": 205,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 22,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 195,
+     "label0_x": 211,
+     "label1_x": 259,
+     "cursor_x": 215,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 23,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 204,
+     "label0_x": 220,
+     "label1_x": 268,
+     "cursor_x": 224,
+     "cursor_img": 3,
+     "sel": 0
+    },
+    {
+     "t": 24,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 214,
+     "label0_x": 230,
+     "label1_x": 278,
+     "cursor_x": 234,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 25,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 224,
+     "label0_x": 240,
+     "label1_x": 288,
+     "cursor_x": 244,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 26,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 233,
+     "label0_x": 249,
+     "label1_x": 297,
+     "cursor_x": 253,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 27,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 243,
+     "label0_x": 259,
+     "label1_x": 307,
+     "cursor_x": 263,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 28,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 252,
+     "label0_x": 268,
+     "label1_x": 316,
+     "cursor_x": 272,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 29,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 262,
+     "label0_x": 278,
+     "label1_x": 326,
+     "cursor_x": 282,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 30,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 272,
+     "label0_x": 288,
+     "label1_x": 336,
+     "cursor_x": 292,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 31,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 281,
+     "label0_x": 297,
+     "label1_x": 345,
+     "cursor_x": 301,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 32,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 291,
+     "label0_x": 307,
+     "label1_x": 355,
+     "cursor_x": 311,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 33,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 300,
+     "label0_x": 316,
+     "label1_x": 364,
+     "cursor_x": 320,
+     "cursor_img": 0,
+     "sel": 0
+    },
+    {
+     "t": 34,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 310,
+     "label0_x": 326,
+     "label1_x": 374,
+     "cursor_x": 330,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 35,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 320,
+     "label0_x": 336,
+     "label1_x": 384,
+     "cursor_x": 340,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 36,
+     "update": "out",
+     "drawn": true,
+     "sfx": [],
+     "closed": false,
+     "frame_x": 320,
+     "label0_x": 336,
+     "label1_x": 384,
+     "cursor_x": 340,
+     "cursor_img": 1,
+     "sel": 0
+    },
+    {
+     "t": 37,
+     "update": "out",
+     "drawn": false,
+     "sfx": [],
+     "closed": true
+    }
+   ]
+  }
+ ],
+ "sailor12": [
+  {
+   "textpad": "A",
+   "choice_open": 94,
+   "cross_seen": 113,
+   "events": [
+    [
+     0,
+     "open S001"
+    ],
+    [
+     0,
+     "0x50 4"
+    ],
+    [
+     94,
+     "0x36 T999"
+    ],
+    [
+     94,
+     "0x44 first entry"
+    ],
+    [
+     94,
+     "sfx 4 (open)"
+    ],
+    [
+     131,
+     "0x44 resolved Result=1"
+    ],
+    [
+     131,
+     "0x51"
+    ],
+    [
+     150,
+     "open S002"
+    ],
+    [
+     333,
+     "0x39 released"
+    ]
+   ],
+   "text": {
+    "open": 0,
+    "first_glyph": 19,
+    "last_glyph": 93,
+    "typing_done": 95,
+    "close_trigger": 132,
+    "dialog_closed": 150,
+    "release_0x39": null,
+    "glyphs": 73,
+    "blips": 37
+   },
+   "choice": {
+    "init": 1,
+    "first_draw": 2,
+    "interactive": 19,
+    "first_out": 20,
+    "closed": 37,
+    "sounds": [
+     [
+      19,
+      5
+     ],
+     [
+      19,
+      2
+     ]
+    ]
+   }
+  },
+  {
+   "textpad": "B",
+   "choice_open": 319,
+   "cross_seen": 338,
+   "events": [
+    [
+     0,
+     "open S001"
+    ],
+    [
+     0,
+     "0x50 4"
+    ],
+    [
+     319,
+     "0x36 T999"
+    ],
+    [
+     319,
+     "0x44 first entry"
+    ],
+    [
+     319,
+     "sfx 4 (open)"
+    ],
+    [
+     356,
+     "0x44 resolved Result=1"
+    ],
+    [
+     356,
+     "0x51"
+    ],
+    [
+     375,
+     "open S002"
+    ]
+   ],
+   "text": {
+    "open": 0,
+    "first_glyph": 19,
+    "last_glyph": 315,
+    "typing_done": 323,
+    "close_trigger": 357,
+    "dialog_closed": 375,
+    "release_0x39": null,
+    "glyphs": 73,
+    "blips": 37
+   },
+   "choice": {
+    "init": 1,
+    "first_draw": 2,
+    "interactive": 19,
+    "first_out": 20,
+    "closed": 37,
+    "sounds": [
+     [
+      19,
+      5
+     ],
+     [
+      19,
+      2
+     ]
+    ]
+   }
+  }
+ ],
+ "savebook": {
+  "name": "V9 save book: choice opens over a box still typing",
+  "choice_open": 61,
+  "events": [
+   [
+    0,
+    "open ETC0x40"
+   ],
+   [
+    0,
+    "0x50 4"
+   ],
+   [
+    61,
+    "0x44 first entry"
+   ],
+   [
+    61,
+    "sfx 4 (open)"
+   ],
+   [
+    98,
+    "0x44 resolved Result=1"
+   ],
+   [
+    98,
+    "0x51"
+   ],
+   [
+    134,
+    "0x39 released"
+   ]
+  ],
+  "text": {
+   "open": 0,
+   "first_glyph": 19,
+   "last_glyph": 111,
+   "typing_done": 115,
+   "close_trigger": 116,
+   "dialog_closed": 134,
+   "release_0x39": 134,
+   "glyphs": 24,
+   "blips": 0
+  },
+  "choice": {
+   "init": 1,
+   "first_draw": 2,
+   "interactive": 19,
+   "first_out": 20,
+   "closed": 37,
+   "sounds": [
+    [
+     19,
+     5
+    ],
+    [
+     19,
+     2
+    ]
+   ]
+  },
+  "text_row_at_choice_open": [
+   "Enregistrer",
+   "",
+   ""
+  ],
+  "text_row_at_cross": [
+   "Enregistrer tes ",
+   "",
+   ""
+  ],
+  "text_row_at_result": [
+   "Enregistrer tes prog",
+   "",
+   ""
+  ],
+  "glyph_count_at_choice_open": 11
+ }
+}
