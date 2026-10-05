@@ -5076,7 +5076,7 @@ prototype).
   vient du miroir de configuration (168).
 
 **Tâches.**
-- **F2B1B-1 — Tests d'abord** (budget : une exécution et une vérification) : T1, pour les six scénarios de l'annexe (`values/S1.csv` à `S6.csv`, `scenarios.md` : ouverture et
+- ✅ **F2B1B-1 — Tests d'abord** (budget : une exécution et une vérification) : T1, pour les six scénarios de l'annexe (`values/S1.csv` à `S6.csv`, `scenarios.md` : ouverture et
   glissement d'entrée ; frappe d'une page de deux lignes ; lignes centrées (111 → x 104, 125 → x 97) ; défilement ; sortie (à Y 172, 177,
   182 et 187, la découpe en retard coupe le bas de la ligne 3) ; images du curseur) : à chaque passe, `Drawn`, Y, haut et hauteur de la
   découpe, lignes et leur x, décalage et image du curseur égaux à la table ; l'oracle C# étendu égal aux mêmes tables, dans leur forme ;
@@ -5091,7 +5091,20 @@ prototype).
   et 97, 43 pas tapés, par le lecteur de production ; (b) un dossier de projet sans `font3.fnt` : largeur 0, x 32, exactement un
   avertissement. Rouges d'abord : au départ de f2b1b, l'export porte déjà les 43 pas (f2b1a) : le rouge est de compilation (membres et
   lecteur absents), puis de valeurs. Tests existants qui bougent : aucun ; toute assertion existante qui bouge est un arrêt.
-- **F2B1B-2 — Suites** : `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (pas d'export : seule la DLL change).
+  **Mesuré le 2026-10-06.** Fichiers : `Alundra.Tests/AlundraTextBoxDrawnStateTests.cs` (16 tests : l'oracle sur les six tables, la liste CPU de
+  la passe de fin de défilement, la boîte sur les six tables, la variante de la constante, le cas réel S025 de la 472, un projet sans
+  `font3.fnt`), `AlundraTextBoxOracle.cs` étendu (`CfgY`, `LineWidth`, `Drawn`, `CalcTextWidth` porté de `model.py`), et côté DLL
+  `AlundraDialogueBox` (`Drawn`, `ClipTop`, `ClipHeight`, `Row`, `RowX`, `RowWidth`, `RowOffset`, `ScrollEndDrawsPreShiftRows` et son
+  réglage `DrawsPreShiftRowsAtScrollEnd`), `AlundraDialogueDirector.AdvanceProviderForTests`, `AlundraFont3Advances` (lecteur de
+  production, cache par chemin de projet). **Rouge de compilation** : les membres et le lecteur absents (`Drawn`, `ClipTop`,
+  `ClipHeight`, `RowOffset`, `Row`, `RowX`, `RowWidth`, `ScrollEndDrawsPreShiftRows`, `DrawsPreShiftRowsAtScrollEnd`,
+  `AdvanceProviderForTests`, `AlundraFont3Advances`). **Rouge de valeurs** (membres posés à vide) : 9 rouges sur 16, 7 verts ; les 6
+  boîtes sur les tables (`drawn` faux à la passe 1, la table dit vrai), la variante, S025 (largeurs attendues (111, 125), obtenues
+  (0, 0)) et le projet sans `font3.fnt` (la ligne 0 « Roue de la fortune ! » attendue, vide obtenue) ; les 7 verts sont l'oracle (six
+  tables, liste CPU : l'oracle est porté du modèle, ses tables sont tenues d'emblée). **Vert** : 16 sur 16 ; suite entière en Release
+  2 679 sur 2 679 (2 663 + 16), aucune assertion existante n'a bougé. Valeurs du cas réel : 43 pas tapés, largeurs 111 et 125, x 104 et 97
+  par le lecteur de production sur `alundra-project/UI/font3.fnt` ; sans le fichier : largeurs 0, x 32, un seul avertissement.
+- ⏳ **F2B1B-2 — Suites** : `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (pas d'export : seule la DLL change).
 - **F2B1B-3 — Vérification**.
 
 **Acceptation** : T1 rouge puis vert sur les six tables et le cas réel ; aucun test existant touché ; suites, `cmp`, traces.

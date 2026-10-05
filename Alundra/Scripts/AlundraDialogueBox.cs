@@ -53,6 +53,9 @@ internal interface IAlundraDialogueBoxHost
 
     /// <summary>The slide of the exit ended: the box is released.</summary>
     void Released();
+
+    /// <summary>The advance in pixels of the glyph the box shows as <paramref name="display"/> (font3): what the width of a centred line is made of (F2B1B-R1).</summary>
+    int Advance(char display);
 }
 
 /// <summary>
@@ -85,6 +88,12 @@ internal sealed class AlundraDialogueBox
     private const int OpenSound = 6;
     private const int CloseSound = 7;
     private const int FirstVoiceSound = 79;
+    private const int ScreenHeight = 240;
+    private const int ClipTopOffset = 4;   // top = min(cfg.Y + 5 - 1, 239)
+    private const int ClipHeightMax = 50;
+    private const int FrameX = 16;
+    private const int FrameWidthPx = 36 * 8;
+    private const int RowTextX = 32;
 
     private readonly IAlundraDialogueBoxHost _host;
     private readonly List<DialogueToken> _tokens = new();
@@ -121,6 +130,15 @@ internal sealed class AlundraDialogueBox
     private int _scrollPixels;
     private readonly StringBuilder[] _bands = { new(), new(), new() };
 
+    // The drawn state (see Drawn).
+    private int _cfgY = OpenY;               // the binary's cfg Y (0x8009CFBC + 2): written by the slide, restored at the release, never by an opening
+    private readonly int[] _lineWidth = new int[3];   // the \H width of each band (0x80149BE8), 0 = not centred
+    private readonly string[] _bandText = { string.Empty, string.Empty, string.Empty };
+    private readonly bool[] _bandDirty = new bool[3];
+    private readonly string[] _rowText = { string.Empty, string.Empty, string.Empty };
+    private readonly int[] _rowWidth = new int[3];
+    private bool _scrollPass;
+
     public AlundraDialogueBox(IAlundraDialogueBoxHost host)
     {
         _host = host;
@@ -146,7 +164,7 @@ internal sealed class AlundraDialogueBox
     public bool IsCursorShown => _cursorShown;
 
     /// <summary>The image (0 to 3) of the cursor, one per ten passes drawn; -1 while no cursor is shown.</summary>
-    public int CursorImage => _cursorShown ? _cursorCounter / 10 : -1;
+    public int CursorImage => _cursorShown && !_scrollPass ? _cursorCounter / 10 : -1;
 
     /// <summary>The cursor of <c>\A</c> is shown, or the typing is done with the button allowed to close: what a press answers.</summary>
     public bool IsWaitingForPress => IsActive && !IsSliding && ((!_typingDone && !_scrollPending && (_textFlags & 8) != 0) || (_typingDone && (_closeMode & 2) != 0));
@@ -205,6 +223,40 @@ internal sealed class AlundraDialogueBox
         _bands[_bufferShift % 3].ToString(), _bands[(_bufferShift + 1) % 3].ToString(), _bands[(_bufferShift + 2) % 3].ToString(),
     };
 
+    // ---- the drawn state of the last pass (E19.f2b1b F2B1B-R1, docs/plan-e19-f2b1-annexe/dll-notes.md section 1.3, oracle-notes.md section 1): what MsgBoxRender 0x80046EF0 puts in the
+    // ordering table. Written during Pass, because two of its inputs (the Y of the previous pass, the top band of a scroll that ends) do not survive the pass.
+
+    /// <summary>
+    /// H1 (oracle-notes.md section 5, D-E19-83): on the pass that ends a scroll the binary clears the VRAM band of the old top row before the ordering table is drawn, so what it shows is
+    /// the picture of the next pass - the rows AFTER the shift, at offset 0 (false, the default). True: the rows before the shift at offset 16 (the CPU draw list: the old top line
+    /// shows its descender row at y = 172 for one pass). Proven only by reading the call order; a capture of an emulator would settle it, and this constant is all that changes.
+    /// </summary>
+    internal const bool ScrollEndDrawsPreShiftRows = false;
+
+    /// <summary>The variant of <see cref="ScrollEndDrawsPreShiftRows"/>, settable so a test can pin both.</summary>
+    public bool DrawsPreShiftRowsAtScrollEnd { get; set; } = ScrollEndDrawsPreShiftRows;
+
+    /// <summary>The last <see cref="Pass"/> drew the box (false on the pass that releases it, before the opening and when closed; <see cref="Open"/> and <see cref="Reset"/> clear it).</summary>
+    public bool Drawn { get; private set; }
+
+    /// <summary>The clip of the pass: <c>min(cfgY + 4, 239)</c> from the Y of the configuration as the PREVIOUS pass left it (168 at the start), computed before the slide of the pass.</summary>
+    public int ClipTop { get; private set; } = Math.Min(OpenY + ClipTopOffset, ScreenHeight - 1);
+
+    /// <summary>The height of the clip: <c>min(50, 240 - ClipTop)</c>.</summary>
+    public int ClipHeight { get; private set; } = ClipHeightMax;
+
+    /// <summary>The pixels the rows are drawn above their place (0 outside a scroll and on the pass that ends it, 2 to 16 in between; 16 on the ending pass with the variant).</summary>
+    public int RowOffset { get; private set; }
+
+    /// <summary>The font3 text of row <paramref name="r"/> (0 to 2, top to bottom) as the last pass drew it.</summary>
+    public string Row(int r) => _rowText[r];
+
+    /// <summary>The <c>\H</c> width of row <paramref name="r"/> as drawn (0: not centred).</summary>
+    public int RowWidth(int r) => _rowWidth[r];
+
+    /// <summary>The x of row <paramref name="r"/>: 32, or <c>16 + (288 - width) / 2</c> for a centred row (0x80045640-0x800456B8).</summary>
+    public int RowX(int r) => _rowWidth[r] == 0 ? RowTextX : FrameX + (FrameWidthPx - _rowWidth[r]) / 2;
+
     /// <summary>True once, after a pass that changed <see cref="TypedText"/> or began a page: the view asks for it to be shown.</summary>
     public bool TakeTypedChanged()
     {
@@ -221,11 +273,13 @@ internal sealed class AlundraDialogueBox
         _typed.Clear();
         _pendingNewLines = 0;
         _typedChanged = true;
-        foreach (var band in _bands)
+        for (var band = 0; band < 3; band++)
         {
-            band.Clear();
+            ClearBand(band);
+            _lineWidth[band] = 0;
         }
 
+        Drawn = false;
         _lineIndex = 0;
         _bufferShift = 0;
         _voiceRank = 0;
@@ -277,9 +331,38 @@ internal sealed class AlundraDialogueBox
         _textFlags = 3;
         _scrollMode = 3;
         _closeMode = 3;
-        foreach (var band in _bands)
+        for (var band = 0; band < 3; band++)
         {
-            band.Clear();
+            ClearBand(band);
+            _lineWidth[band] = 0;
+        }
+
+        Drawn = false;
+        _cfgY = OpenY;
+    }
+
+    private void ClearBand(int band)
+    {
+        _bands[band].Clear();
+        _bandDirty[band] = true;
+    }
+
+    /// <summary>The rows as the pass draws them: the text of each band, rotated by the shift, with its \H width, and the pixels they are drawn above their place.</summary>
+    private void CaptureRows(int offset)
+    {
+        Drawn = true;
+        RowOffset = offset;
+        for (var row = 0; row < 3; row++)
+        {
+            var band = (_bufferShift + row) % 3;
+            if (_bandDirty[band])
+            {
+                _bandText[band] = _bands[band].ToString();
+                _bandDirty[band] = false;
+            }
+
+            _rowText[row] = _bandText[band];
+            _rowWidth[row] = _lineWidth[band];
         }
     }
 
@@ -335,10 +418,16 @@ internal sealed class AlundraDialogueBox
     public void Pass(bool squareHeld, bool squarePressed)
     {
         _scrollPixels = 0;
+        _scrollPass = false;
+        Drawn = false;
         if (!IsActive)
         {
             return;
         }
+
+        // The clip comes first, from the Y of the configuration as the previous pass left it (0x80046F10-0x80046FC4).
+        ClipTop = Math.Min(_cfgY + ClipTopOffset, ScreenHeight - 1);
+        ClipHeight = Math.Min(ClipHeightMax, ScreenHeight - ClipTop);
 
         if (IsSliding)
         {
@@ -348,6 +437,7 @@ internal sealed class AlundraDialogueBox
                 if (IsClosing)
                 {
                     Y = OpenY;
+                    _cfgY = OpenY; // the configuration restored from the slide origin (0x80047038-0x80047050); this pass draws nothing
                     _flags = 0;
                     _cursorShown = false;
                     _host.Released();
@@ -356,6 +446,7 @@ internal sealed class AlundraDialogueBox
             }
 
             AnimateCursor();
+            CaptureRows(0);
             return;
         }
 
@@ -363,17 +454,20 @@ internal sealed class AlundraDialogueBox
         {
             EvaluateClose(squarePressed);
             AnimateCursor();
+            CaptureRows(0);
             return;
         }
 
         if (_scrollPending)
         {
+            _scrollPass = true; // ScrollText only: no RenderText, no cursor
             Scroll(squarePressed);
             return;
         }
 
         Interpret(squareHeld, squarePressed);
         AnimateCursor();
+        CaptureRows(0);
     }
 
     private void BeginSlide(int from, int to)
@@ -395,11 +489,13 @@ internal sealed class AlundraDialogueBox
         if (_slideStep != SlideStepCount)
         {
             Y = _slideFrom + (_slideTo - _slideFrom) * _slideStep / SlideStepCount;
+            _cfgY = Y;
             _slideStep++;
         }
         else
         {
             Y = _slideTo;
+            _cfgY = Y;
             _slideSettle--;
         }
 
@@ -487,17 +583,34 @@ internal sealed class AlundraDialogueBox
             if (!start)
             {
                 _cursorShown = false;
+                CaptureRows(0);
                 return;
             }
         }
 
         _scrollLeft--;
         _scrollPixels = (ScrollPasses - _scrollLeft) * 16 / ScrollPasses;
-        if (_scrollLeft == 0)
+        if (_scrollLeft != 0)
         {
-            _scrollPending = false;
-            _bufferShift = (_bufferShift + 1) % 3;
-            _bands[(_bufferShift + _lineIndex) % 3].Clear();
+            CaptureRows(_scrollPixels);
+            return;
+        }
+
+        // The pass that ends the scroll. The binary draws the rows with the old shift and then clears the VRAM band of the old top row, before the ordering table is drawn:
+        // by default the box shows the rows after the shift at offset 0 (D-E19-83), or, with the variant, the rows before the shift at offset 16.
+        if (DrawsPreShiftRowsAtScrollEnd)
+        {
+            CaptureRows(_scrollPixels);
+        }
+
+        _scrollPending = false;
+        _bufferShift = (_bufferShift + 1) % 3;
+        var cleared = (_bufferShift + _lineIndex) % 3;
+        ClearBand(cleared);
+        _lineWidth[cleared] = 0; // 0x80045DD8-0x80045DEC: the width of the new bottom band, after the rows were drawn
+        if (!DrawsPreShiftRowsAtScrollEnd)
+        {
+            CaptureRows(0);
         }
     }
 
@@ -604,6 +717,7 @@ internal sealed class AlundraDialogueBox
                     _voice = token.Value;
                     continue;
                 case DialogueTokenKind.Center:
+                    _lineWidth[(_bufferShift + _lineIndex) % 3] = WidthOfTheRestOfTheLine(); // 0x800469F0
                     continue;
                 case DialogueTokenKind.Character:
                     Draw(token.Display, counted: true);
@@ -627,6 +741,27 @@ internal sealed class AlundraDialogueBox
         }
     }
 
+    /// <summary>CalcTextWidth 0x8004771C from the token after the centre token: the advances of the glyphs up to the next new line, the cursor of the page boundary or the end of the text; the other tokens are free.</summary>
+    private int WidthOfTheRestOfTheLine()
+    {
+        var width = 0;
+        for (var i = _next; i < _tokens.Count; i++)
+        {
+            var token = _tokens[i];
+            if (token.Kind is DialogueTokenKind.NewLine or DialogueTokenKind.CursorWait)
+            {
+                break;
+            }
+
+            if (token.Kind is DialogueTokenKind.Character or DialogueTokenKind.MarkedGlyph)
+            {
+                width += _host.Advance(token.Display);
+            }
+        }
+
+        return width;
+    }
+
     private void Draw(char display, bool counted)
     {
         for (; _pendingNewLines > 0; _pendingNewLines--)
@@ -636,7 +771,9 @@ internal sealed class AlundraDialogueBox
 
         _typed.Append(display);
         GlyphCount++;
-        _bands[(_bufferShift + _lineIndex) % 3].Append(display);
+        var band = (_bufferShift + _lineIndex) % 3;
+        _bands[band].Append(display);
+        _bandDirty[band] = true;
         _typedChanged = true;
         if (!counted)
         {

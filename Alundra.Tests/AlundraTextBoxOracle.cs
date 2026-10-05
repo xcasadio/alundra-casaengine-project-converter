@@ -39,6 +39,14 @@ internal sealed class AlundraTextBoxOracle
     public const int DelayReset = 4;        // 0x80149BD0, set at 0x80045548 at every open
     public const int BoxY = 168;
     public const int BoxYOut = 240;
+    private const int BoxX = 16;               // entry cfg 0x8009CFBC: x
+    private const int FrameWidthPx = 36 * 8;   // cfg.w * 8
+    private const int ClipX = BoxX + 16;       // entry +8 = 16
+    private const int ClipWidth = 32 * 8 + 2;  // entry +0xC = 32
+    private const int ClipHeightMax = 6 * 8 + 2; // entry +0xE = 6
+    private const int RowY0 = 5;               // entry +0xA
+    private const int CursorX = BoxX + FrameWidthPx - 16;
+    private const int CursorDy = 7 * 8 - 24;
     public const int SoundOpen = 6;
     public const int SoundClose = 7;
     public const int SoundVoice0 = 0x4F;
@@ -117,6 +125,15 @@ internal sealed class AlundraTextBoxOracle
     public int ScrollPixels;
     public int Delay = 1;
 
+    // E19.f2b1b F2B1B-R2: the DRAWN state of a pass (docs/plan-e19-f2b1-annexe/scripts/model_drawn.py and oracle-notes.md section 1, ported from the model, never from the
+    // box). CfgY is the binary's configuration Y (0x8009CFBC + 2): 168 at the start, written by the slide, restored at the release, untouched by an opening; Y above starts at 240
+    // (the position the frame is drawn at) and the clip of a pass is computed from CfgY as the PREVIOUS pass left it.
+    public int CfgY = BoxY;
+    public readonly int[] LineWidth = new int[3]; // 0x80149BE8: the \H width of each band, 0 = not centred
+    public OracleDrawn? Drawn;                    // what the pass drew; null when it drew nothing (closed, opening pass, release pass)
+    private int _passCfgYBefore;
+    private (int X, int Top, int Width, int Height) _passClip;
+
     // What one pass did (cleared by the host before each pass).
     public readonly List<string> Notes = new();
     public readonly List<int> Sounds = new();
@@ -153,6 +170,8 @@ internal sealed class AlundraTextBoxOracle
         CursorImage = null;
         ScrollPixels = 0;
         Delay = 1; // the first gate falls on the first interpreter call
+        Array.Clear(LineWidth);
+        Drawn = null;
     }
 
     // ------------------------------------------------------------ script side
@@ -219,9 +238,12 @@ internal sealed class AlundraTextBoxOracle
     public void Render(bool held, bool pressed)
     {
         ScrollPixels = 0;
+        Drawn = null;
         var before = GlyphTotal;
         if ((DialogFlags & 4) != 0)
         {
+            _passCfgYBefore = CfgY;
+            _passClip = ClipFor(CfgY); // 0x80046F10-0x80046FC4: BEFORE UpdateUiBoxesPosition, from the Y the previous pass left
             MsgBoxRender(held, pressed);
         }
 
@@ -233,12 +255,17 @@ internal sealed class AlundraTextBoxOracle
         if ((DialogFlags & 3) != 0)
         {
             var done = _slide.Update(ref Y);
-            if (done)
+            if (!done)
+            {
+                CfgY = Y; // UpdateUiBoxesPosition writes cfg.Y
+            }
+            else
             {
                 DialogFlags &= ~1;
                 if ((DialogFlags & 2) != 0)
                 {
                     Y = BoxY;
+                    CfgY = BoxY; // cfg restored from the slide origin (0x80047038-0x80047050)
                     DialogClosed();
                     return;
                 }
@@ -289,6 +316,8 @@ internal sealed class AlundraTextBoxOracle
         {
             CursorImage = null;
         }
+
+        Capture("RenderText", 0, cursor: true, ending: false);
     }
 
     private void ProcessClose(bool pressed)
@@ -358,6 +387,7 @@ internal sealed class AlundraTextBoxOracle
             {
                 CursorShown = 0;
                 CursorImage = null;
+                Capture("ScrollText", 0, cursor: false, ending: false);
                 return;
             }
         }
@@ -365,11 +395,14 @@ internal sealed class AlundraTextBoxOracle
         ScrollCount--;
         ScrollPixels = (ScrollLength - ScrollCount) * 16 / ScrollLength;
         CursorImage = null;
+        Capture("ScrollText", ScrollPixels, cursor: false, ending: ScrollCount == 0); // the rows are drawn BEFORE the shift
         if (ScrollCount == 0)
         {
             ScrollPending = 0;
             BufferX = (BufferX + 1) % 3;
-            Bands[(BufferX + LineIndex) % 3].Clear();
+            var band = (BufferX + LineIndex) % 3;
+            Bands[band].Clear();
+            LineWidth[band] = 0; // 0x80045DD8-0x80045DEC, after the rows were drawn
             Notes.Add("scroll-done");
         }
     }
@@ -540,7 +573,8 @@ internal sealed class AlundraTextBoxOracle
                     Cursor++;
                     continue;
                 case 'H':
-                    Cursor++; // the width of the line (centering) only matters to the view
+                    Cursor++;
+                    LineWidth[Band] = CalcTextWidth(Cursor); // 0x800469F0: the width of the REST of the text, up to a \A, a \N or the end
                     continue;
                 case 'M':
                     Cursor++;
@@ -588,6 +622,126 @@ internal sealed class AlundraTextBoxOracle
         var glyph = _text[Cursor];
         Cursor++;
         Draw(glyph, counted: true);
+    }
+
+    // ------------------------------------------------------------ the drawn state (F2B1B-R2)
+    private static (int X, int Top, int Width, int Height) ClipFor(int cfgY)
+    {
+        var top = Math.Min(cfgY + RowY0 - 1, 239);
+        var height = top + ClipHeightMax < 240 ? ClipHeightMax : 240 - top;
+        return (ClipX, top, ClipWidth, height);
+    }
+
+    private static string GlyphsText(IEnumerable<int> glyphs)
+    {
+        var sb = new StringBuilder();
+        foreach (var glyph in glyphs)
+        {
+            sb.Append((glyph >= 0x20 && glyph < 0x7F) || (glyph >= 0xA0 && glyph <= 0xFF) ? ((char)glyph).ToString() : $"<{glyph}>");
+        }
+
+        return sb.ToString();
+    }
+
+    private OracleDrawnRow RowOf(int i, int offset)
+    {
+        var band = (BufferX + i) % 3;
+        var width = LineWidth[band];
+        var x = width == 0 ? BoxX + 16 : BoxX + (FrameWidthPx - width) / 2; // 0x80045640-0x800456B8, the MIPS div truncates toward zero like C#
+        return new OracleDrawnRow(GlyphsText(Bands[band]), x, Y + RowY0 + 16 * i - offset);
+    }
+
+    private void Capture(string kind, int offset, bool cursor, bool ending)
+    {
+        var rows = new[] { RowOf(0, offset), RowOf(1, offset), RowOf(2, offset) };
+        var visible = (OracleDrawnRow[])rows.Clone();
+        if (ending)
+        {
+            visible[0] = visible[0] with { Text = string.Empty }; // the ClearImage of the old top band runs before the OT is drawn (H1)
+        }
+
+        OracleCursor? cursorState = null;
+        if (cursor && CursorShown != 0 && CursorImage is { } image)
+        {
+            cursorState = new OracleCursor(image, 0xB0 + 0x10 * image, CursorX, Y + CursorDy);
+        }
+
+        Drawn = new OracleDrawn(kind, _passCfgYBefore, Y, _passClip.X, _passClip.Top, _passClip.Width, _passClip.Height, offset, ending, rows, visible, cursorState);
+    }
+
+    /// <summary>CalcTextWidth 0x8004771C (jump table 0x80024098): the sum of the widths of the text from <paramref name="i"/> to the first 0, \A or \N.</summary>
+    private int CalcTextWidth(int i)
+    {
+        var b = _text;
+        var total = 0;
+        while (i < b.Count && b[i] != 0)
+        {
+            var c0 = b[i];
+            if (c0 == 0x7B)
+            {
+                total += Widths[(b[i + 1] + 0x50) & 0xFF];
+                i += 2;
+                continue;
+            }
+
+            if (c0 == 0x7D)
+            {
+                total += Widths[(b[i + 1] + 0x90) & 0xFF];
+                i += 2;
+                continue;
+            }
+
+            if (c0 != 0x5C)
+            {
+                total += Widths[c0];
+                i++;
+                continue;
+            }
+
+            i++;
+            var c = i < b.Count ? b[i] : 0;
+            var k = c - 0x30;
+            if (k < 0 || k >= 0x2A)
+            {
+                continue; // the code char is read again as a normal char (0x800478A4)
+            }
+
+            var ch = (char)c;
+            if (ch is >= '0' and <= '9')
+            {
+                while (i < b.Count && b[i] is >= 0x30 and <= 0x39)
+                {
+                    i++;
+                }
+
+                continue;
+            }
+
+            switch (ch)
+            {
+                case 'W':
+                {
+                    i++;
+                    var a = b[i];
+                    total += Widths[a < 0x41 ? (a - 0x20) & 0xFF : (a - 0x27) & 0xFF];
+                    i++;
+                    continue;
+                }
+
+                case 'X':
+                    i += 2;
+                    continue;
+                case 'B' or 'C' or 'D' or 'E' or 'F' or 'G' or 'T' or 'Y':
+                    i++;
+                    continue;
+                case 'A' or 'N':
+                    return total;
+                default:
+                    continue; // ':'..'@', H, I-M, O-S, U, V: the code char is counted as a normal char
+            }
+        }
+
+        return total;
     }
 
     // ------------------------------------------------------------ what the tests read
@@ -653,6 +807,16 @@ internal sealed class AlundraTextBoxOracle
         FlagsSet.Clear();
     }
 }
+
+/// <summary>One band as drawn: its text (glyphs as characters, <c>&lt;n&gt;</c> for a glyph with no character), its x and its y.</summary>
+internal sealed record OracleDrawnRow(string Text, int X, int Y);
+
+/// <summary>The cursor of <c>\A</c> as drawn: its image (0 to 3), its texture u (0xB0 + 0x10 image), and where.</summary>
+internal sealed record OracleCursor(int Image, int U, int X, int Y);
+
+/// <summary>What one pass drew (<c>model_drawn.py</c>'s <c>drawn</c>): <see cref="RowsCpu"/> is the draw list of the CPU, <see cref="RowsVisible"/> what the GPU shows (the old top row blanked on the pass that ends a scroll).</summary>
+internal sealed record OracleDrawn(string Kind, int CfgYBefore, int Y, int ClipX, int ClipTop, int ClipWidth, int ClipHeight, int Offset, bool Ending,
+    OracleDrawnRow[] RowsCpu, OracleDrawnRow[] RowsVisible, OracleCursor? Cursor);
 
 /// <summary>
 /// F2-R3, the oracle's side: an exported Yarn page (its text and its markers, the edge spaces already cut by D-E15-8, except the trailing spaces of a centred last line, kept by D-E19-78) back to the bytes of

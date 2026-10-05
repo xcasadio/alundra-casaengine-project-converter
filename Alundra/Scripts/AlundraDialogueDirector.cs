@@ -165,6 +165,9 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     /// <summary>The box the world draws: its state is read by the view (E19.f2b) and by the tests; only this director writes it.</summary>
     internal AlundraDialogueBox Box => _box;
 
+    /// <summary>Test-only seam (F2B1B-R1): the advance of a glyph, in place of the production reader of <c>UI/font3.fnt</c>; set and put back by the test (<c>try</c>/<c>finally</c>).</summary>
+    internal Func<char, int>? AdvanceProviderForTests { get; set; }
+
     /// <summary>Re-points this session-scoped instance at the current world's own presenter/game state/sound player -
     /// called by <see cref="AlundraWorldProxy.InstallDialogueSystems"/> on every world install. Deliberately
     /// does NOT touch the box, the page state or the choice state (same
@@ -459,6 +462,14 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     }
 
     void IAlundraDialogueBoxHost.PlaySound(int sfxId) => _soundPlayer?.PlaySfx(sfxId);
+
+    int IAlundraDialogueBoxHost.Advance(char display)
+    {
+        var provider = AdvanceProviderForTests;
+        return provider != null
+            ? provider(display)
+            : AlundraFont3Advances.GetOrCreate(CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath).Advance(display);
+    }
 
     void IAlundraDialogueBoxHost.PageTurned()
     {
