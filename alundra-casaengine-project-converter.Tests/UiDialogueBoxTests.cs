@@ -64,7 +64,7 @@ public class UiDialogueBoxTests
 
             Assert.Equal((width, height), (referenceWidth, referenceHeight));
             Assert.Equal((width, height), (bakedWidth, bakedHeight));
-            Assert.True(reference.AsSpan().SequenceEqual(baked), $"{box}: first differing byte at {FirstDifference(reference, baked)}");
+            Assert.True(reference.AsSpan().SequenceEqual(baked), $"{box}: first differing byte at {FirstDifference(reference, baked, width)}");
         }
         finally
         {
@@ -75,13 +75,23 @@ public class UiDialogueBoxTests
         }
     }
 
-    private static string FirstDifference(byte[] expected, byte[] actual)
+    [Fact]
+    public void FirstDifference_LocatesThePixelInTheBoxWidth()
+    {
+        var expected = new byte[112 * 32 * 4]; // the name box is 112 wide: byte 470 is pixel (5, 1), channel 2.
+        var actual = (byte[])expected.Clone();
+        actual[470] = 1;
+
+        Assert.Equal("470 (pixel 5, 1, channel 2): expected 0, got 1", FirstDifference(expected, actual, 112));
+    }
+
+    private static string FirstDifference(byte[] expected, byte[] actual, int width)
     {
         for (var i = 0; i < Math.Min(expected.Length, actual.Length); i++)
         {
             if (expected[i] != actual[i])
             {
-                return $"{i} (pixel {i / 4 % 128}, {i / 4 / 128}, channel {i % 4}): expected {expected[i]}, got {actual[i]}";
+                return $"{i} (pixel {i / 4 % width}, {i / 4 / width}, channel {i % 4}): expected {expected[i]}, got {actual[i]}";
             }
         }
 

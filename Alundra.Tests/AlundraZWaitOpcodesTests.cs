@@ -66,6 +66,28 @@ public class AlundraZWaitOpcodesTests
     }
 
     [Fact]
+    public void TZ21_TheHighByteOfTheDistanceCounts_256Px()
+    {
+        var document = NewDocument(0x01, 0x21, 0x00, 0x01, 0xFF); // 0x0100 = 256 px
+        var (runner, trace) = NewRunner(document);
+        var owner = NewEntity();
+        owner.PosZ = 3145728;
+        var state = StateFor(document);
+        runner.RunOneScriptCall(owner, state);
+        Assert.Equal(new[] { (0, 0x01, 1), (1, 0x21, 0) }, Shape(trace));
+
+        owner.PosZ = 19922943; // 255.99 px up: still waiting.
+        trace.Clear();
+        runner.RunOneScriptCall(owner, state);
+        Assert.Equal(new[] { (1, 0x21, 0) }, Shape(trace));
+
+        owner.PosZ = 19922944; // 256 px up: ends.
+        trace.Clear();
+        runner.RunOneScriptCall(owner, state);
+        Assert.Equal(new[] { (1, 0x21, 3), (4, 0xFF, 0) }, Shape(trace));
+    }
+
+    [Fact]
     public void TZ21_TheDistanceIsAbsolute_DownwardEndsToo()
     {
         var document = NewDocument(0x01, 0x21, 0x10, 0x00, 0xFF);
@@ -118,6 +140,7 @@ public class AlundraZWaitOpcodesTests
 
         Assert.Equal(new[] { (0, 0x01, 1), (1, 0x21, 3), (4, 0xFF, 0) }, Shape(trace));
         Assert.Equal(EventTraceKind.End, trace[^1].Kind);
+        Assert.Equal(3145728, state.Parameters[2]); // the distance test runs first (0x8003DA34) and memorises PosZ before the collision test (0x8003DA48).
     }
 
     [Fact]

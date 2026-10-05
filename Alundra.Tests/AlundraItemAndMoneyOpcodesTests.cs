@@ -182,6 +182,34 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     }
 
     [Fact]
+    public void Give_0x82_Id0_AnswersZero_EvenWhenTheItem0HasAMaximum()
+    {
+        // Tables where the item 0 has a maximum of 1: the default branch (AddOneItemIfUnlocked) would give it, so only the explicit "case 0" of the binary
+        // (jump table 0x80023234, entry 0 = 0x8003413C: returns 0) answers 0 here. With the real tables (maximum 0) both paths answer 0.
+        var rows = ItemTablesFixture.RealProperties();
+        rows[0] = new[] { 0, 0, 0, 1, 65535 };
+        var projectPath = ItemTablesFixture.Write(rows, ItemTablesFixture.RealDrops(), ItemTablesFixture.RealIcons());
+        AlundraItemTables tables;
+        try
+        {
+            tables = new AlundraItemTables(projectPath);
+        }
+        finally
+        {
+            Directory.Delete(projectPath, recursive: true);
+        }
+
+        Assert.Equal(1, AlundraPlayerManager.AddOneItemIfUnlocked(new AlundraGameState(), tables, 0)); // the montage discriminates: the default branch would give it.
+
+        var gameState = new AlundraGameState();
+        var state = Run(new[] { 0x82, 0, 0x1A, 9, 0xFF }, gameState, new Context { Tables = tables });
+
+        Assert.Equal(0, state.Result);
+        Assert.All(gameState.NumberOfItems, count => Assert.Equal(0, count));
+        Assert.Equal(0, gameState.PlayerStats.Money);
+    }
+
+    [Fact]
     public void Give_0x82_Id0x47_AddsTenGold_ClampedTo9999()
     {
         var gameState = StateWithMoney(9995);

@@ -20,8 +20,26 @@ namespace Alundra.Tests;
 /// the identifier of the binary, not by its place in the service). A palette bank <c>b2 &gt; 0</c> (the palette cycle,
 /// O-E19-43) is not ported: logged once, traced as degraded.
 /// </summary>
-public sealed class AlundraBackgroundLayerMaskTests
+public sealed class AlundraBackgroundLayerMaskTests : IDisposable
 {
+    public AlundraBackgroundLayerMaskTests()
+    {
+        // D-T-14 (docs/plan-transitions-carte.md): this class constructs an AlundraWorldProxy, so it resets the session carriers in its constructor (the
+        // isolation-carrying element) and in Dispose (hygiene).
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
+        AlundraWarpDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
+        AlundraWarpDirector.Instance.ResetForTests();
+    }
+
     // ---------------------------------------------------------------------------------------
     // The opcode through the real interpreter
     // ---------------------------------------------------------------------------------------

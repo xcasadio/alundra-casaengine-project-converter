@@ -293,6 +293,20 @@ public sealed class AlundraClassAndBranchOpcodesTests
         Assert.Equal(17, state.CodeIndex);
     }
 
+    [Fact]
+    public void DirectionalBranch_0x58_WithAHeroFacingElsewhere_ReadsTheLogicEntitysDirection()
+    {
+        var entity = NewEntity();
+        entity.AnimationDirection = 1;
+        var hero = new AlundraEntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal, AnimationDirection = 2 };
+        var context = new Context { PlayerEntity = hero };
+
+        var state = Run(DirectionalBranch, entity, context);
+
+        Assert.Equal(2u, entity.TargetAnimationId); // 0x58 reads the logic entity's own direction (0x8003EE5C); the hero's would give 3.
+        Assert.Equal(14, state.CodeIndex);
+    }
+
     // ---------------------------------------------------------------------------------------
     // 0x5D - every match goes to state 3
     // ---------------------------------------------------------------------------------------

@@ -23,8 +23,26 @@ namespace Alundra.Tests;
 /// and <see cref="AlundraLibcRandom.State"/>.
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
-public sealed class AlundraWorldProxyCellularRandomWiringTests
+public sealed class AlundraWorldProxyCellularRandomWiringTests : System.IDisposable
 {
+    public AlundraWorldProxyCellularRandomWiringTests()
+    {
+        // D-T-14 (docs/plan-transitions-carte.md): this class constructs an AlundraWorldProxy, so it resets the session carriers in its constructor (the
+        // isolation-carrying element) and in Dispose (hygiene).
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
+        AlundraWarpDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
+        AlundraWarpDirector.Instance.ResetForTests();
+    }
+
     [Fact]
     public void InitializeWithWorld_WiresRandomSource_ToTheLibcRandAndLeavesTheGameStreamUntouched()
     {

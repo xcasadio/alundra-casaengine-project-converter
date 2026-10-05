@@ -253,6 +253,56 @@ public sealed class AlundraAnimationImpulseTests
     }
 
     [Fact]
+    public void UJ10b_ARelaunchByX1COfTheAppearanceAnimation_ClearsTheAppearanceFlag_AndGivesItsImpulse()
+    {
+        // The montage of UJ-10, plus the appearance flag raised on the animation 3 right after the first landing (the gesture of UJ-6b). Production never
+        // reaches this state (the flag drops at an entity's first validation); the montage forces it to pin that the 0x1C relaunch is an ordinary switch
+        // and clears the flag (E19.d2c1 R2), so that the clock gives the impulse at the relaunch: with the flag still up TakeZImpulse returns early.
+        var document = new EventProgramDocument
+        {
+            MapIndex = 1,
+            EventCodesATable = new[] { 0, 0 },
+            EventCodesBTable = new[] { 0, 0 },
+            EventCodesCTable = new[] { 0, 0 },
+            Codes = new[] { 0x01, 0x1A, JumpNpcRig.ImpulseAnimation, 0x1C, 0x01, 0x1C, 0x01, 0xFF },
+        };
+        var runner = new AlundraEventProgramRunner(document, new AlundraGameState());
+        var gated = new RelaunchRunner(runner);
+        var rig = JumpNpcRig.BuildWithSprite(new[] { JumpNpcRig.Loop(0, 1.6f), JumpNpcRig.Hold(JumpNpcRig.ImpulseAnimation, 0.6f, impulse: 1360) }, gated);
+        gated.Enabled = true;
+
+        var impulseUpdates = new List<int>();
+        var posZ = new List<int>();
+        var flag = new List<bool>();
+        for (var update = 1; update <= 90; update++)
+        {
+            rig.Update();
+            posZ.Add(rig.Npc.PosZ);
+            if (rig.Npc.IsZForceApplied != 0)
+            {
+                impulseUpdates.Add(update);
+            }
+
+            if (update == 23)
+            {
+                rig.Npc.SpawnAnimationActive = true;
+                rig.Npc.SpawnAnimationId = JumpNpcRig.ImpulseAnimation;
+            }
+
+            flag.Add(rig.Npc.SpawnAnimationActive);
+        }
+
+        Assert.Equal(1, impulseUpdates[0]);
+        Assert.True(flag[30], "nothing is pending from the update 24 to 31: no validation clears the flag"); // flag[i] is the flag after the update i + 1.
+        Assert.Equal(32, impulseUpdates[1]); // the 1C of the update 32 relaunches; the flag is down, so the clock gives the impulse at once (63 with the flag left up).
+        Assert.False(flag[31]);
+        for (var i = 0; i < Flight1360.Length; i++)
+        {
+            Assert.True(Flight1360[i] == posZ[31 + i], $"update {32 + i}: PosZ {posZ[31 + i]}, {Flight1360[i]} expected");
+        }
+    }
+
+    [Fact]
     public void UJDir_AChangeOfTheDirectionRowGivesTheImpulseAgain()
     {
         var rig = JumpNpcRig.Build(impulse: 1360);
@@ -310,6 +360,7 @@ public sealed class AlundraAnimationImpulseTests
         Assert.Equal(0, withGravity.Npc.PosZ);
         Assert.Equal(0, withGravity.Npc.ForceZ);
         Assert.Equal(1, withGravity.Npc.CollidedWithEntityZ);
+        Assert.Equal(-8388608, withGravity.Npc.TickForceZ); // IZF -32768 << 8, no decay, no bound (0x80036AF4-0x80036B04).
     }
 
     [Fact]

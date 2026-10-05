@@ -17,8 +17,26 @@ namespace Alundra.Tests;
 /// map events). Driven through the world's own <c>Update</c> on the headless montage of the freeze tests: a hero, an NPC of record 2 and a runner that
 /// stands for the map event program and asks the search of <c>0x2C [2]</c> (<c>Result</c> = no entity of record 2) at every pass.
 /// </summary>
-public sealed class AlundraDestroyedEntityRecyclingTests
+public sealed class AlundraDestroyedEntityRecyclingTests : IDisposable
 {
+    public AlundraDestroyedEntityRecyclingTests()
+    {
+        // D-T-14 (docs/plan-transitions-carte.md): this class constructs an AlundraWorldProxy, so it resets the session carriers in its constructor (the
+        // isolation-carrying element) and in Dispose (hygiene).
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
+        AlundraWarpDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
+        AlundraWarpDirector.Instance.ResetForTests();
+    }
+
     private const int Record = 2;
 
     /// <summary>Stands for a map program: at every pass it records what <c>0x2C [2]</c> would answer, then runs the scripted action of that pass.</summary>
