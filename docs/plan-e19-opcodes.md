@@ -4794,7 +4794,7 @@ compteur de ticks de la boîte (Q5) ; preuve au pixel par un test sur GPU réel 
 `GpuDeviceHost.cs` est interne à `CasaEngine.Tests` : nouveau harnais) ; marge par défaut des textes des écrans existants consignée à
 part (Q9, O-E19-64).
 
-###### E19.f2b0 — Rectangles des glyphes font3 depuis la table du binaire ⏳ (planifiée le 2026-10-05 ; relecture n°1 REVISE (règle de comparaison de T2), révisée ; relecture n°2 à faire)
+###### E19.f2b0 — Rectangles des glyphes font3 depuis la table du binaire ⏳ (planifiée le 2026-10-05 ; relecture n°1 REVISE (règle de comparaison de T2), révisée ; relecture n°2 READY)
 
 **Faits** **[binaire, données]** (`f2b-disc/glyphs.py`, `glyphpix.py` du scratchpad ; recompte du 2026-10-05,
 `merge-1005/f2b0_counts.py`) :
@@ -6642,7 +6642,7 @@ couche 1 de la 44 (le portage efface en noir ; la couleur d'effacement du binair
   Avis P4 : 14 rouges côté DLL au lieu de 15 (le test garde ne peut rougir que sur l'ancien export, montré à part) ; la branche `None`
   de la surcharge interne rend une entrée opaque (aucun appelant aujourd'hui ne lui passe `None`). Reste la recette G2c-6 (auteur).
 
-##### 1.2o.4 E19.g G2d — Surcouche des fonds au mode du binaire (O-E19-58) ⏳ (planifiée le 2026-10-05 ; relecture n°1 REVISE (démo), révisée ; relecture n°2 à faire)
+##### 1.2o.4 E19.g G2d — Surcouche des fonds au mode du binaire (O-E19-58) ⏳ (planifiée le 2026-10-05 ; relecture n°1 REVISE (démo), révisée ; relecture n°2 READY)
 
 **Faits** **[binaire, données]** (découverte du 2026-10-05, `o58-disc/notes.md` du scratchpad ; contre-vérification indépendante,
 `o58-disc-verify/verify.md`, scripts refaits, rien de réfuté hors du numéro d'ADR du moteur) :
@@ -7889,7 +7889,7 @@ déplace aucune assertion).
   convertisseur 433/433, `cmp` sans écart, six traces à l'octet. Avis P4 : les mutations n'ont été rejouées que sur la classe du test,
   pas sur toute la suite.
 
-#### 1.2s.7 E19.m6 — Hygiène des tests : M-19, M-31, moitié surcouche de M-32 ✅ (faite le 2026-10-05 ; relecture n°1 READY)
+#### 1.2s.7 E19.m6 — Hygiène des tests : M-19, M-31, moitié surcouche de M-32 ✅ (relecture n°1 READY ; faite et CONFIRMED le 2026-10-05)
 
 **Faits** (découverte du 2026-10-05, lecture seule, à `d353136` ; contre-vérifiée ; notes versionnées, en anglais :
 `docs/plan-e19-m-annexe/m6-discovery-2026-10-05.md` et `m6-discovery-verify-2026-10-05.md`) : aucun fichier de la tranche n'a changé
@@ -7977,6 +7977,14 @@ pas de `cmp` changé, traces non touchées.
   - **Suites** : `Alundra.Tests` 2653 sur 2653 en Release puis en Debug (la Debug en dernier), `cmp` de la DLL de `Debug` et de
     `alundra-project/Alundra.dll` sans écart, garde d'octets des six traces à 0 (les quatre traces du héros remises). Aucun écart avec
     les valeurs écrites d'avance, aucun arrêt.
+- ✅ **Vérification d'E19.m6** (2026-10-05) : vérificateur neuf **CONFIRMED** : diff `897504b..5812c63` limité à cinq fichiers de
+  test et au plan, `git diff` vide sur `Alundra/` ; liste fermée tenue (deux renommages, le commentaire de SJ4b, deux paramètres
+  facultatifs de `Rig`) ; M6-0 rejouée (avec `sign_s`, 1 échec sur 2653 : TSL7 seul ; A14 vert, TSL7 gardé) ; chaque mutation
+  rejouée sur **toute la suite** : un seul rouge, le nouveau test, avec la valeur écrite d'avance (`sign_s` X 17186816 au tick 9 ;
+  `sign_e` Y 11567104 au tick 12 ; `gateent` X 17285120 et 1 glissade ; `accord` FA 0 au tick 1 ; `uo1` 256 au lieu de 8448 ; `m32`
+  0 entrée et 1 avertissement « degraded ») ; `Alundra.Tests` 2653/2653 en Release puis en Debug, `cmp` sans écart, six traces à
+  l'octet. Avis P4 : TSL7, TSL8 et TSL10 portent quelques assertions de plus que le plan (X aux ticks 1 à 8, Y au tick 24, 0 glissade
+  au tick 1), vertes et sans masquer de mutation ; le nom de TSL9 (« ForceAdjustedFromTheNextTick ») est indirect.
 
 ### 1.2u Recette de l'auteur du 2026-10-05 ⏳ (constat consigné ; deux défauts enquêtés)
 
