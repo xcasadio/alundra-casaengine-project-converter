@@ -6776,7 +6776,7 @@ sous-module soit libre.
   couverts par la recette S6. **Reste la recette S6 de l'auteur.** Branche du moteur `chantier/e19s-virtual-resolution` (`dfaed7a6`),
   non mergée : le pointeur du parent la désigne.
 
-#### 1.2q.1 E19.s2 — Découpe de l'interface MGUI dans une vue à bandes (O-E19-60) 🧪 (exécutée le 2026-10-05 ; reste S2-4 (vérificateur) et la recette S2-5 de l'auteur)
+#### 1.2q.1 E19.s2 — Découpe de l'interface MGUI dans une vue à bandes (O-E19-60) 🧪 (faite et CONFIRMED le 2026-10-05 ; recette S2-5 de l'auteur en attente)
 
 **Faits** (enquête et contre-vérification de la recette du 2026-10-05, `recipe-1005/inventory/notes.md` et
 `recipe-1005/inventory-verify/verify.md` du scratchpad ; observation de l'auteur, D-E19-71 : HUD et boîtes MGUI coupés ou absents dans la
@@ -6883,6 +6883,12 @@ restent la preuve).
   inventaire entier, sous-inventaire, HUD après une prise d'objet, boîte de dialogue, écran de sauvegarde). Rien poussé, rien mergé.
   Branche du moteur `chantier/e19s2-ui-clip-view-space` (`a6efd2a9`) : le pointeur du parent la désigne.
 - Decisions: see ADR-0054 (moteur).
+- ✅ **Vérification d'E19.s2** (S2-4, 2026-10-05) : vérificateur neuf **CONFIRMED** : rouges rejoués sur le périphérique (T-S2-1
+  (80, 48) lit le fond (100, 149, 237) ; T-S2-4 lit (40, 80, 840, 240) ; T-S2-2 rouge avec S2-R1 seul, vert avec S2-R2 ; le témoin
+  vert partout) ; démo relancée (pixel (612, 312) de l'élément de la vue décalée : (255, 0, 0), (30, 30, 51) avec la transaction
+  d'avant) ; `CasaEngine.Tests` 2567/2567, `MGUI.Tests` 3108/3108, `Alundra.Tests` 2570/2570 en Release puis en Debug, `cmp` sans
+  écart, six traces à l'octet ; le rafraîchissement lit la nouvelle taille (MonoGame met à jour le tampon avant l'évènement). Reste
+  la recette S2-5 (auteur).
 
 ### 1.2r E19.t — Son de chaque changement d'animation ✅ (exécutée le 2026-10-03 ; recette T6 validée le 2026-10-05 ; le « ding » du début vient de la musique, O-E19-61)
 
@@ -8018,7 +8024,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-57 | **Le binaire montre une image figée pendant le départ d'un passage** (audit d'O-E19-55) : la boucle de transition n'appelle ni `Update` ni `RenderScene` ; l'écran est une copie de la dernière image sous le fondu. Le portage continue d'avancer et de dessiner la scène : suivi de la caméra, animation des entités (le gel ne touche que `GameplayBlockedMask`, `AlundraWorldProxy.cs:2261-2266`, `AlundraGameplayFreeze.cs:38-40`), physique des PNJ, tuiles animées (temps réel), HUD, dialogue, fondu de la musique (non vérifié dans le binaire). Aussi : l'initialisation du fondu de type 0 du binaire remet la couleur courante à 0 (`0x80042F68`-`0x80042F70`), le portage la garde (`BeginWarpDepartureFade`). À trancher : figer la scène entière (capture de la dernière image par le moteur) ou garder l'écart. | Auteur |
 | O-E19-58 | **La surcouche de la 293 (Inoa en feu) est additive dans l'original** (vérification d'O-E19-54) : `BGColorA` 2 → `TILE` d'ABR 1 de (50, 0, 0) ; le portage moyenne `(50, 0, 0, 128)` (le convertisseur ne garde que `OverlayEnabled = BGColorA != 0`, `BackdropReader.cs:254-255` ; le moteur dessine la teinte en `AlphaBlend`, `ScrollingLayerComponent.cs:208` ; la DLL pose α128, `AlundraBackdropStage.cs:295`) : la scène est assombrie de moitié et teintée au lieu d'être un peu rougie ; hors de la chaîne. | E19.g |
 | O-E19-59 | **Octet de palette 30 des tuiles** (cartes 1, 13, 17, 153, 439, couche 1, tuiles 249-251) : le binaire lit l'identifiant de palette en `0x800CA24C`, au-delà de la table (l'entrée 3 de la table d'ordre du tampon de dessin 0) : valeur d'exécution, aucune correction statique juste ; le convertisseur pose la palette 0 (`BackdropImageBuilder.cs:79-82`), opaque. | Note |
-| O-E19-60 | **L'interface MGUI est mal découpée dans une vue à bandes** (recette du 2026-10-05, §1.2u) : découpes écrites en pixels de la vue dans le ciseau absolu du périphérique (`CasaDrawTransaction.cs:742-767`) et ciseau périmé après un agrandissement ; inventaire, HUD, sous-inventaire, écran de sauvegarde, boîte du moteur. | E19.s2 (moteur) |
+| O-E19-60 | **Réglé le 2026-10-05 (E19.s2, ADR-0054 du moteur ; recette S2-5 en attente).** **L'interface MGUI est mal découpée dans une vue à bandes** (recette du 2026-10-05, §1.2u) : découpes écrites en pixels de la vue dans le ciseau absolu du périphérique (`CasaDrawTransaction.cs:742-767`) et ciseau périmé après un agrandissement ; inventaire, HUD, sous-inventaire, écran de sauvegarde, boîte du moteur. | E19.s2 (moteur) |
 | O-E19-61 | **Un reste de la piste précédente en tête de 41 musiques** (D-E19-69 : se corrige) (le « ding » de la 389) : l'extracteur rend les 46 pistes dans un seul moteur sonore ; la séquence 25 de l'original est muette pendant 0,6 s. Correction X2 de `plan-extraction-bgm.md`, D-X-5 à amender. | Auteur, puis X2 |
 | O-E19-62 | **La musique reboucle tout le fichier** au lieu du repère de boucle de la séquence (`0x8008CA40`) : l'intro (22,6 s pour la 25) est rejouée toutes les 121 s ; contredit `plan-e11c-musique.md:43-48`. D-E19-70 : se porte. | E11 (à planifier) |
 
