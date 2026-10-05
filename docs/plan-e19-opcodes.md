@@ -244,6 +244,10 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-71** — (2026-10-05, l'auteur) **E19.f2a reprend** : une relecture de sa révision, puis l'exécution si elle est READY.
     Le diagnostic de l'inventaire (O-E19-60) est confirmé par l'observation de l'auteur : HUD et boîtes MGUI coupés ou absents dans
     la fenêtre agrandie.
+  - **D-E19-72** — (2026-10-05, l'auteur, O-E19-62) La boucle au repère est **fidèle au binaire** : à partir du deuxième passage,
+    la musique garde l'état de fin de boucle (canaux atténués ou panoramiques des pistes 1, 7, 15, 18, 25, 32), comme l'original.
+  - **D-E19-73** — (2026-10-05, l'auteur, O-E19-62) Chaque musique est **rendue jusqu'à son deuxième saut** (option B : intro et
+    deux passages de la boucle ; les fichiers de musique doublent de taille).
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -7636,6 +7640,93 @@ déplace aucune assertion).
 
 **Suites** : O-E19-60 (découpe de MGUI dans une vue décalée : tranche du moteur, E19.s2) ; O-E19-61 (reste de piste en tête des musiques :
 X2, décision de l'auteur sur D-X-5) ; O-E19-62 (boucle au repère de la séquence).
+
+### 1.2v X2 — Musique : un système sonore neuf par piste (D-E19-69, O-E19-61) ⏳ (planifiée)
+
+**Faits** (audit des valeurs du 2026-10-05, `x2-audit/notes.md` du scratchpad, et contre-vérification, `x2-audit-verify/verify.md` ;
+annexe versionnée `docs/plan-e19-x2-annexe/`) :
+- L'extracteur (`alundra-datas-analyser/AlundraTools/AlundraDataExtractor/Program.cs`, `ExtractDataFromBgm` `:177-246`) construit un
+  `SoundBin`, un mélangeur et un `GameEngine` (`:185-190`) et y rend les 46 pistes à la suite (`:199-241`) : chaque piste commence par
+  ce qui sonne encore à la fin de la précédente (le « ding » de la 389, §1.2u). `--render-bgm` (`:686-761`) rend une piste depuis des
+  objets neufs (`:701-706`), par le même pas d'image, le même seuil d'audibilité (64) et le même `WriteStereoWav` (`:764-785`) ; il ne
+  diffère que par le nombre d'images (`--frames` au lieu de la détection de boucle), le nom du fichier, l'absence de refus des rendus
+  muets et de JSON.
+- **Oracle** : deux dérivations indépendantes (A : le rendu et l'écriture de l'extracteur appelés par réflexion avec des objets neufs
+  par piste ; B : `--render-bgm`, un processus par piste, avec `--frames` = `Frames`) s'accordent à l'octet sur les 45 pistes écrites ;
+  le même harnais en mode « aujourd'hui » reproduit `data-extracted/sound/bgm/` et `bgm.json` à l'octet. Aucun état sonore statique ne
+  passe d'un moteur à l'autre.
+- **Effet** : piste 1 identique à l'octet ; **44 pistes changent** (2 à 43, 45, 46 ; 23 jusqu'à leur dernière image, 21 convergent
+  plus tôt) ; `Frames` et `LoopDetected` égaux partout ; chaque piste est nulle avant l'image de sa première note du pilote ;
+  `FirstAudibleFrame` = cette image, ou une à deux de plus (2, 11, 22, 27, 35, 43). La piste 44 (aujourd'hui la traîne de la 43) est
+  rendue muette : refusée (D-X-4, D-X-7), son fichier supprimé, absente de `bgm.json` ; aucune carte, aucun site `0xA7`, aucune liste de
+  remplacement (`0x800A81E4`), aucun autre exécutable ne la joue.
+- **Diffs prévus** : ré-extraction = 45 `M` et 1 `D` (`predicted_extract_changes.txt`), rien d'autre (une extraction complète avec le
+  code d'aujourd'hui dans un dossier neuf égale `data-extracted/` à l'octet) ; export = 47 `M` (`predicted_export_changes.txt` : 44
+  `Musics/*.wav`, `Musics/bgm-manifest.json`, `AssetInfos.json` (une entrée de moins), `report.json`) ; compteurs du rapport : voir le
+  README de l'annexe ; `alundra-project/Musics/bgm_044.wav` reste sur le disque, sans référence (`AudioWriter` ne supprime rien).
+- Consommateurs : la DLL ne lit que l'index et l'identifiant de l'asset (`AlundraMusicPlayer.cs:424-475`) ; les tests sur le vrai
+  manifeste cherchent l'index 25 (`AlundraMusicPlayerTests.cs:188-198`, `AlundraWarpDepartureTests.cs:891-899`) : inchangés.
+
+**Règles.**
+- **X2-R1 — Extracteur** (sous-module de l'analyseur, branche empilée sur `chantier/e19g0b-compact` `51b77d8`) : dans la boucle de
+  `ExtractDataFromBgm`, chaque piste est rendue par un `SoundBin`, un mélangeur, un `GameEngine`, `StaticVariables.Initialize` et
+  `InitializeSoundSystem` **neufs** (le nombre de pistes vient d'une instance à part, hors de la boucle) ; le commentaire de
+  `--verify-bgm` (`:600-606`), qui dit partager la forme de l'extraction, est corrigé ; aucun autre code ne change.
+- **X2-R2 — Ré-extraction et miroir** (comme G0b-R2) : construction Release fraîche ; lancée **hors du dépôt** (le journal `log.txt`
+  s'écrit dans le dossier courant), chemin du jeu en barres obliques, sans option, dans un dossier neuf
+  `D:\development\repo\Alundra Remake\remaster-data-extracted-x2` ; sortie attendue : `BGM 44: rendered SILENT (123 frames, peak 0/0) -
+  not exported`, `Extracted BGM: rendered=45 silent=1 failed=0 (of 46)`, `pitch guard hits: sequencer=9 sfx=0 exporter=0` ; `diff -rq`
+  contre `data-extracted/` = exactement `predicted_extract_changes.txt` ; les 45 WAV égaux à `oracle_sha256.tsv` ; `bgm.json` égal au
+  SHA-256 du README ; tout autre écart est un arrêt ; sauvegardes hors du dépôt `data-extracted.bak-x2` et
+  `remaster-data-extracted.bak-x2` (les précédentes restent), renommage, `robocopy /MIR` depuis PowerShell, `diff -rq` final vide
+  (4536 fichiers). Rien n'est supprimé hors de `sound/bgm/bgm_044.wav` (voulu, sauvegardé).
+- **X2-R3 — Export** : en place, sans changer le convertisseur ; manifeste avant et après = exactement `predicted_export_changes.txt`,
+  SHA-1 de `bgm-manifest.json` et d'`AssetInfos.json` égaux à `export_values.tsv`, compteurs du rapport comme au README, aucun
+  avertissement sur `bgm_044.wav` ; double export identique hors `report.json` ; `Musics/bgm_044.wav` laissé sur le disque.
+
+**Tâches.**
+- **X2-0 — Annexe des valeurs** (faite) : `docs/plan-e19-x2-annexe/`.
+- **X2-1 — Tests d'abord** (projet de tests du convertisseur, données réelles, sortie anticipée si `data-extracted/` manque : rouge
+  prouvé sur cette machine) : T-A les 36 × 735 premières trames stéréo de `bgm_025.wav` sont toutes à 0 (aujourd'hui max 4297) ; T-B
+  `[Theory]` par piste, image de première note du pilote (1:34, 2:57, 3:19, 4:30, 5:36, 6:36, 7:28, 8:30, 9:36, 10:36, 11:53, 12:63,
+  13:63, 14:43, 15:36, 16:31, 17:42, 18:36, 19:20, 20:32, 21:36, 22:36, 23:45, 24:33, 25:36, 26:39, 27:36, 28:36, 29:34, 30:36, 31:36,
+  32:84, 33:32, 34:36, 35:36, 36:26, 37:18, 38:20, 39:36, 40:18, 41:36, 42:31, 43:44) : (a) `FirstAudibleFrame` du `bgm.json` ≥ cette
+  image (rouge aujourd'hui sur 41 lignes) ; (b) les échantillons avant cette image tous à 0 (rouge sur 42 lignes) ; T-C `bgm.json` a
+  45 entrées, sans index 44, et pas de `bgm_044.wav` (rouge aujourd'hui) ; gardes T-D (`Frames` par piste, `tracks.tsv`) et T-E
+  (`bgm_001.wav` au SHA-256 de l'annexe) ; théorie dorée : les 45 SHA-256 de `oracle_sha256.tsv`.
+- **X2-2 — Extracteur** : X2-R1, un commit, construit.
+- **X2-3 — Ré-extraction, miroir, export** : X2-R2 et X2-R3 ; tests du convertisseur verts sur le nouveau `data-extracted/`.
+- **X2-4 — Vérification**, **X2-5 — Recette** (auteur) : la 389 démarre sans ding ; une autre carte : sa musique démarre après son
+  vrai silence d'entrée.
+
+**Acceptation.**
+1. Tests de X2-1 rouges d'abord (sur le `data-extracted/` d'aujourd'hui), verts après ; T-D et T-E verts avant et après.
+2. Ré-extraction : sortie console attendue ; `diff -rq` exactement l'annexe ; 45 WAV et `bgm.json` aux empreintes de l'annexe ; miroir
+   vérifié ; sauvegardes présentes.
+3. Export : manifeste exactement l'annexe ; double export.
+4. Tests du convertisseur ; `Alundra.Tests` en Release puis en Debug sur l'export, la Debug en dernier, `cmp` sans écart ; les six
+   traces à l'octet ; aucun test existant ne bouge.
+
+**Retour arrière** : pointeur du sous-module ; renommer les dossiers dans l'autre sens et refaire le miroir depuis
+`remaster-data-extracted.bak-x2` ; export complet en place dont le manifeste égale le manifeste « avant » (hors `report.json`).
+
+**Risques.** Chaque musique commence par son vrai silence (0,3 à 1,4 s) ; tant que la boucle au repère (§1.2w) n'est pas faite, la
+DLL reboucle le fichier entier et rejoue ce silence à chaque tour ; une extraction lancée depuis le dossier de l'analyseur y recrée
+`log.txt` ; un `robocopy` lancé depuis Git Bash ne copie rien.
+
+### 1.2w Boucle au repère de la séquence (D-E19-70, D-E19-72, D-E19-73, O-E19-62) ⏳ (à planifier après X2)
+
+Esquisse (découverte du 2026-10-05, `loop-disc/notes.md` et `loop-disc-verify/verify.md` du scratchpad) : le pilote du binaire
+(libsnd) mémorise la position au contrôleur 99 = 20 et y revient au contrôleur 99 = 30 quand le compte vaut 127 (`0x8008CA40`), sans
+rien remettre à zéro ; 38 pistes bouclent, 8 jouent une fois (26, 36, 37, 38, 40, 42, 43, 44) ; à partir du deuxième passage, l'état
+est stable (égal au premier saut et au deuxième) mais diffère du premier passage sur 10 pistes (canaux atténués ou panoramiques, notes
+tenues) : **fidèle au binaire** (D-E19-72). **Option B** (D-E19-73) : l'extracteur rend jusqu'au deuxième saut J2 (plafond porté à au
+moins 454 s), `bgm.json` gagne `LoopStartFrame` = J1 et `LoopStartSample` = J1 × 735 (44 100 Hz), un fondu d'une image au point de
+bouclage ; `Looping` faux pour les 8 pistes sans boucle ; le moteur lit la musique en flux (`MusicPlayer`, ADR-0001) et revient au
+point de boucle au lieu de rembobiner (`SoundAsset.LoopStartSample`, `WavStreamReader` qui se place sur une trame, nombre de tampons
+par mise à jour borné) ; la DLL joue par le service de musique du moteur au lieu de `PlayClip` en boucle entière ; la piste 14 suit les
+valeurs de l'analyseur (14552 au lieu de 14551, inaudible) ; les WAV passent d'environ 700 Mo à 1,34 Go par copie. Risques : la marge du
+flux (environ 280 ms) pendant un chargement de carte ; les accesseurs de test du lecteur de la DLL changent de type.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
