@@ -7354,7 +7354,7 @@ la musique) avance encore pendant le départ alors que le binaire montre une ima
   à `false`, aucune course possible ; 4 passes complètes sans test instable). Avis P4 : ADR-0034 cite D-E9b-2 à la ligne 378, la
   note est aux lignes 388-389 ; quelques sauts indirects des bibliothèques PsyQ ne sont pas résolus par le parcours.
 
-#### 1.2s.6 E19.m5 — Hygiène des tests (G1) et deux commentaires (G2a) ⏳ (planifiée ; relecture n°1 REVISE, révisée)
+#### 1.2s.6 E19.m5 — Hygiène des tests (G1) et deux commentaires (G2a) ⏳ (relectures n°1 et n°2 REVISE ; disposition FIX du contrôle de M-38 ; nouvelle époque, relecture de clôture)
 
 **Faits** (découverte du 2026-10-05, `e19m5-disc/notes.md` du scratchpad, et vérification adverse, `e19m5-verify/verify.md`) : aucun
 fichier de test du périmètre n'a changé depuis le recensement (`bafbd5a`) ; toutes les lignes sont relocalisées à `0d5849f`. Le code de

@@ -53,7 +53,12 @@ la demande suit l'opcode d'une image
     (ordre existant de la DLL : les événements de carte passent après les entités ; D-E19-64 ne vaut que pour la boîte, M-38) ;
 ```
 
-## Check after the edit
+## Check after the edit (revised after review n°2: the ADR is amended, never rewritten)
 
-`rg -n "D-E19-64" Alundra.Tests/AlundraAnimationSoundTests.cs docs/decisions/0028-*.md` shows no line that gives D-E19-64 as the cause
-of the delay; the test comment, the ADR amendment and the plan sentence each name the DLL's frame order.
+- `rg -n "D-E19-64" Alundra.Tests/AlundraAnimationSoundTests.cs` finds only the new comment at `:281`, which names the DLL's frame order
+  and says D-E19-64 covers the text box only.
+- `rg -n "D-E19-64" docs/decisions/0028-every-animation-switch-plays-its-sound-appearances-included.md` finds line 29, unchanged (the
+  expected leftover of an amend-only ADR), and the lines of the `## Amendment (E19.m5, M-38)` section, which comes after it and names
+  the DLL's frame order as the cause.
+- The plan sentence of E19.t "Écarts" (2) reads "(ordre existant de la DLL : les événements de carte passent après les entités ;
+  D-E19-64 ne vaut que pour la boîte, M-38)".
