@@ -6896,7 +6896,7 @@ n'est demandé, et l'original lirait au-delà de la table (point ouvert à consi
   avec un groupe nul, pas avec une carte d'un autre groupe ; P4 la période de l'auto-chaîne n'est pas épinglée. **Reste la recette T6
   de l'auteur.**
 
-### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 ✅ ; E19.m4 ✅ ; E19.m5 ✅)
+### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 ✅ ; E19.m4 ✅ ; E19.m5 ✅ ; E19.m6 (M-19, M-31, moitié surcouche de M-32) à découvrir)
 
 **Recensement** (2026-10-03, lecture seule ; table complète versionnée dans `docs/plan-e19-m-annexe/backlog-2026-10-03.md`, en
 anglais) : 46 points M-01 à M-46, chacun vérifié contre le code de `bafbd5a`, classé (test seul, commentaire ou doc, petit correctif
@@ -7354,7 +7354,7 @@ la musique) avance encore pendant le départ alors que le binaire montre une ima
   à `false`, aucune course possible ; 4 passes complètes sans test instable). Avis P4 : ADR-0034 cite D-E9b-2 à la ligne 378, la
   note est aux lignes 388-389 ; quelques sauts indirects des bibliothèques PsyQ ne sont pas résolus par le parcours.
 
-#### 1.2s.6 E19.m5 — Hygiène des tests (G1) et deux commentaires (G2a) ✅ (relectures n°1 et n°2 REVISE ; disposition FIX du contrôle de M-38 ; nouvelle époque, relecture de clôture READY ; faite le 2026-10-05, vérification à venir)
+#### 1.2s.6 E19.m5 — Hygiène des tests (G1) et deux commentaires (G2a) ✅ (relectures n°1 et n°2 REVISE ; disposition FIX du contrôle de M-38 ; nouvelle époque, relecture de clôture READY ; faite et CONFIRMED le 2026-10-05)
 
 **Faits** (découverte du 2026-10-05, `e19m5-disc/notes.md` du scratchpad, et vérification adverse, `e19m5-verify/verify.md`) : aucun
 fichier de test du périmètre n'a changé depuis le recensement (`bafbd5a`) ; toutes les lignes sont relocalisées à `0d5849f`. Le code de
@@ -7462,6 +7462,13 @@ déplace aucune assertion).
     convertisseur 433 sur 433 (un de plus). Six traces à l'octet (`git diff --ignore-cr-at-eol --exit-code` rend 0), quatre traces du héros
     remises par `git checkout --`. La DLL de `Alundra.Tests` en Debug est identique (`cmp`) à celle d'`alundra-project/`. Liste fermée de
     l'acceptation 2 respectée. Écarts : aucun ; la Release (M-35 touche un fichier de production) reste au vérificateur.
+- ✅ **Vérification d'E19.m5** (2026-10-05) : relecture de clôture de la nouvelle époque **READY** ; vérificateur neuf
+  **CONFIRMED** : chaque mutation rejouée par son propre script sur la ligne nommée, classe entière : seul le test retenu rougit, avec la
+  valeur écrite (32 → 63 ; `pixel 117, 0` ; 2 → 3 ; `Result` 0 → 1 ; fin à 19922943 ; 3145728 → 0 ; -8388608 → -1048576 et -32768),
+  la production remise, `git diff` vide ; démonstration de M-33 rejouée (4 rouges, 3 verts ; 7 verts avec la remise) ; liste fermée
+  tenue ; textes de M-38 égaux à l'annexe, ligne 29 d'ADR-0028 inchangée ; `Alundra.Tests` 2570/2570 en Release puis en Debug,
+  convertisseur 433/433, `cmp` sans écart, six traces à l'octet. Avis P4 : les mutations n'ont été rejouées que sur la classe du test,
+  pas sur toute la suite.
 
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
