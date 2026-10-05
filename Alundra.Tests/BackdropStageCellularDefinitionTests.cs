@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Alundra.Scripts;
+using CasaEngine.Framework.Assets.Sprites;
 using CasaEngine.Framework.Rendering.CellularLayers;
 using CasaEngine.Framework.Rendering.Depth;
 using Microsoft.Xna.Framework;
@@ -46,8 +47,9 @@ public class BackdropStageCellularDefinitionTests
         Assert.Equal(1, layer.AnimTimer); // LAYER's own AnimTimer.
         Assert.Equal(1, layer.AnimNum); // DOCUMENT's own AnimNum.
         Assert.True(layer.Ground);
-        // Ground=true, BlendMode 2 -> Additive, white (same policy the Tiles path resolves).
-        Assert.Equal(SpriteBlendMode.Additive, layer.Blend);
+        // BlendMode 2 -> Mode1 (additive), the mode alone decides: opaque white layer (E19.g G2c, same policy as the Tiles path).
+        Assert.Equal(SpritePsxSemiTransparency.Mode1, layer.PsxSemiTransparency);
+        Assert.Equal(SpriteBlendMode.Opaque, layer.Blend);
         Assert.Equal(Color.White, layer.Tint);
         Assert.Equal(0, layer.SortingLayer);
         Assert.Equal(1, layer.OrderInLayer); // DepthOrder.
@@ -119,9 +121,10 @@ public class BackdropStageCellularDefinitionTests
         Assert.Equal(0, firstCell.DX);
         Assert.Equal(8, firstCell.DY);
 
-        // Ground=true, BlendMode 1 -> AlphaBlend, (255,255,255,128) - same policy as the Tiles path.
-        Assert.Equal(SpriteBlendMode.AlphaBlend, layer.Blend);
-        Assert.Equal(new Color(255, 255, 255, 128), layer.Tint);
+        // BlendMode 1 -> Mode0 (average) - same policy as the Tiles path; the rain texels have no STP bit, the engine draws them opaque.
+        Assert.Equal(SpritePsxSemiTransparency.Mode0, layer.PsxSemiTransparency);
+        Assert.Equal(SpriteBlendMode.Opaque, layer.Blend);
+        Assert.Equal(Color.White, layer.Tint);
     }
 
     // -----------------------------------------------------------------------------------------
@@ -293,9 +296,9 @@ public class BackdropStageCellularDefinitionTests
         Assert.Empty(Assert.Single(layers).SheetTextureAssetIds);
     }
 
-    /// <summary>The Ground/blend policy for a Cellular layer matches EXACTLY what the Tiles path
-    /// resolves for the same (Ground, BlendMode) inputs - both call the SAME
-    /// <see cref="AlundraBackdropStage.ResolveGroundLayerBlend"/>, no second policy.</summary>
+    /// <summary>The PSX mode of a Cellular layer matches EXACTLY what the Tiles path resolves for the same
+    /// (Ground, BlendMode) inputs - both call the SAME <see cref="AlundraBackdropStage.ResolveLayerPsxSemiTransparency"/>,
+    /// no second policy; the blend of the layer is opaque white whatever the mode (E19.g G2c).</summary>
     [Theory]
     [InlineData(true, 1)]
     [InlineData(true, 2)]
@@ -323,9 +326,9 @@ public class BackdropStageCellularDefinitionTests
         var layers = AlundraBackdropStage.BuildCellularDefinitions(document);
         var layer = Assert.Single(layers);
 
-        var (expectedBlend, expectedTint) = AlundraBackdropStage.ResolveGroundLayerBlend(ground, blendMode);
-        Assert.Equal(expectedBlend, layer.Blend);
-        Assert.Equal(expectedTint, layer.Tint);
+        Assert.Equal(AlundraBackdropStage.ResolveLayerPsxSemiTransparency(blendMode), layer.PsxSemiTransparency);
+        Assert.Equal(SpriteBlendMode.Opaque, layer.Blend);
+        Assert.Equal(Color.White, layer.Tint);
     }
 
     // -----------------------------------------------------------------------------------------

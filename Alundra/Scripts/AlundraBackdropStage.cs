@@ -11,6 +11,7 @@ using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Application.Components;
 using CasaEngine.Framework.Assets.Animations;
+using CasaEngine.Framework.Assets.Sprites;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Physics;
 using CasaEngine.Framework.Rendering.CellularLayers;
@@ -231,9 +232,11 @@ internal sealed class AlundraBackdropStage
     /// two guards as that method's own early-`continue` - a <c>Disabled</c>/<c>Cellular</c> layer, a
     /// <c>Tiles</c> layer with a null <see cref="BackdropScrollarData"/>, or one with an empty
     /// <see cref="BackdropLayerData.TextureAssetId"/> is silently absent from the result, never an
-    /// exception); <c>Ground</c>/<c>BlendMode</c> resolve to (<c>Pass</c>, <c>Blend</c>, <c>Tint</c>)
-    /// through <see cref="ResolveGroundLayerBlend"/> (the definition this method now owns - see that
-    /// method's own doc); <c>SortingLayer</c> is always 0, <c>OrderInLayer</c> is
+    /// exception); <c>Ground</c> only chooses the pass (<see cref="RenderPass2D.Effects"/> or
+    /// <see cref="RenderPass2D.Background"/>) and <c>BlendMode</c> resolves to the PSX mode of the layer through
+    /// <see cref="ResolveLayerPsxSemiTransparency"/> (E19.g G2c, D-E19-68: the layer is an opaque white one, its
+    /// <c>Blend</c> and <c>Tint</c> are not used, the engine draws the opaque and the STP texels of its sheet in
+    /// two passes); <c>SortingLayer</c> is always 0, <c>OrderInLayer</c> is
     /// <see cref="BackdropLayerData.DepthOrder"/>, <c>StableId</c> is <see cref="BackdropLayerData.LayerId"/>;
     /// frame ids reuse <see cref="ResolveFrameAssetIds"/> (same
     /// <c>FrameTextureAssetIds ?? [TextureAssetId]</c> fallback already tested there) then convert each
@@ -258,7 +261,6 @@ internal sealed class AlundraBackdropStage
             }
 
             var scrollar = layer.Scrollar;
-            var (blendMode, tint) = ResolveGroundLayerBlend(layer.Ground, layer.BlendMode);
             var renderPass = layer.Ground ? RenderPass2D.Effects : RenderPass2D.Background;
 
             var frameAssetIds = ResolveFrameAssetIds(layer);
@@ -284,8 +286,9 @@ internal sealed class AlundraBackdropStage
                 SortingLayer = 0,
                 OrderInLayer = layer.DepthOrder,
                 StableId = layer.LayerId,
-                Blend = blendMode,
-                Tint = tint,
+                Blend = SpriteBlendMode.Opaque,
+                Tint = Color.White,
+                PsxSemiTransparency = ResolveLayerPsxSemiTransparency(layer.BlendMode),
             });
         }
 
@@ -314,9 +317,10 @@ internal sealed class AlundraBackdropStage
     /// D-E9d - PURE translation of a loaded <see cref="BackdropDocument"/> into the engine mechanism's
     /// own <c>CellularLayerDefinition[]</c> (<c>CasaEngine.Framework.Rendering.CellularLayers</c>): a
     /// layer is translated only if <c>Mode == "Cellular" &amp;&amp; Cellular != null</c> (same
-    /// early-<c>continue</c> shape <see cref="BuildDefinitions"/> applies for <c>Tiles</c>); <c>Ground</c>/
-    /// <c>BlendMode</c> resolve through the SAME <see cref="ResolveGroundLayerBlend"/> policy the
-    /// <c>Tiles</c> path uses (D6 - do not write a second policy); <c>SortingLayer</c> is always 0,
+    /// early-<c>continue</c> shape <see cref="BuildDefinitions"/> applies for <c>Tiles</c>); <c>BlendMode</c>
+    /// resolves to the PSX mode of the layer through the SAME <see cref="ResolveLayerPsxSemiTransparency"/> policy
+    /// the <c>Tiles</c> path uses (D6 - do not write a second policy; E19.g G2c: an opaque white layer, the mode
+    /// alone decides, the render pass derives from <c>Ground</c> engine-side); <c>SortingLayer</c> is always 0,
     /// <c>OrderInLayer</c> is <see cref="BackdropLayerData.DepthOrder"/>, <c>LayerId</c> is
     /// <see cref="BackdropLayerData.LayerId"/>.
     ///
@@ -350,7 +354,6 @@ internal sealed class AlundraBackdropStage
             }
 
             var cellular = layer.Cellular;
-            var (blendMode, tint) = ResolveGroundLayerBlend(layer.Ground, layer.BlendMode);
 
             var cells = new CellularCellDefinition[cellular.Cells.Count];
             for (var cellIndex = 0; cellIndex < cellular.Cells.Count; cellIndex++)
@@ -383,8 +386,9 @@ internal sealed class AlundraBackdropStage
                 AnimTimer = layer.AnimTimer, // LAYER level (mapping trap - see class doc above).
                 AnimNum = document.AnimNum, // DOCUMENT level (mapping trap - see class doc above).
                 Ground = layer.Ground,
-                Blend = blendMode,
-                Tint = tint,
+                Blend = SpriteBlendMode.Opaque,
+                Tint = Color.White,
+                PsxSemiTransparency = ResolveLayerPsxSemiTransparency(layer.BlendMode),
                 AWaveY = cellular.AWaveY,
                 AWavePhase = cellular.AWavePhase,
                 AWaveAmp = cellular.AWaveAmp,
@@ -427,34 +431,28 @@ internal sealed class AlundraBackdropStage
     }
 
     /// <summary>
-    /// E10.b (docs/plan-e10-fondu.md §1.8) - the ORIGINAL's own backdrop blend mapping
-    /// (GraphicManager.cs:846-853): 1 = average, 2 = additive white, 3 = subtractive white, 4 = additive
-    /// tint (63,63,63). Only <paramref name="ground"/> == <see langword="true"/> layers are re-mapped -
-    /// the <c>(Ground = false, BlendMode 1)</c> bucket stays Opaque, untouched (out of scope - see the
-    /// T8 tests for the full rationale). Moved here from the now-retired <c>BackdropRenderer</c> (plan
-    /// E9.b, D-E9b-8: "la définition passe sur le stage") with its signature UNCHANGED, so the T8 pins
-    /// stay green unedited.
+    /// E19.g G2c (D-E19-68, ADR-0035; replaces the E10.b mapping of <c>ResolveGroundLayerBlend</c> of
+    /// docs/plan-e10-fondu.md §1.8, which gave one blend per layer and only to the <c>Ground</c> ones) - the PSX
+    /// semi-transparency mode of a backdrop layer, from its <c>BlendMode</c> ALONE. [binary] The tiles
+    /// (<c>0x8005BB24</c>) and the cells (<c>0x8005BDD4</c>) are set once at load with the semi bit equal to
+    /// <c>BlendMode != 0</c> (<c>SetSemiTrans</c>, <c>0x8005BC34</c>, <c>0x8005BC64</c>, <c>0x8005BFB4</c>, <c>0x8005C03C</c>) and the
+    /// rate of the layer is <c>BlendMode - 1</c>, by the primitive of mode set at the head of its slot
+    /// (<c>0x8005B958</c>-<c>0x8005B9E4</c>); <c>Ground</c> only chooses the slot (<c>0x8005B8B0</c>). 0 = not semi-transparent
+    /// (<see cref="SpritePsxSemiTransparency.None"/>), 1 = average (<c>Mode0</c>), 2 = additive (<c>Mode1</c>), 3 = subtractive
+    /// (<c>Mode2</c>), 4 = quarter (<c>Mode3</c>). Any other value is <c>None</c>: the binary would read a table past its end and
+    /// no layer of the corpus has one. A semi-transparent primitive only blends its STP texels (bit 15 of the colour word, alpha 128
+    /// in the exported sheets), the others are drawn opaque: the engine does that per texel.
     /// </summary>
-    internal static (SpriteBlendMode BlendMode, Color Tint) ResolveGroundLayerBlend(bool ground, int blendMode)
+    internal static SpritePsxSemiTransparency ResolveLayerPsxSemiTransparency(int blendMode)
     {
-        if (ground)
+        return blendMode switch
         {
-            switch (blendMode)
-            {
-                case 1: // Average - true semi-transparency via AlphaBlend.
-                    return (SpriteBlendMode.AlphaBlend, new Color(255, 255, 255, 128));
-                case 2: // Additive white.
-                    return (SpriteBlendMode.Additive, Color.White);
-                case 3: // Subtractive white.
-                    return (SpriteBlendMode.Subtractive, Color.White);
-                case 4: // Additive, tint (63,63,63).
-                    return (SpriteBlendMode.Additive, new Color(63, 63, 63));
-            }
-        }
-
-        // Every other combination - including the deliberately untouched (Ground=false, BlendMode 1)
-        // bucket - keeps the pre-existing fixed behavior.
-        return (SpriteBlendMode.Opaque, Color.White);
+            1 => SpritePsxSemiTransparency.Mode0,
+            2 => SpritePsxSemiTransparency.Mode1,
+            3 => SpritePsxSemiTransparency.Mode2,
+            4 => SpritePsxSemiTransparency.Mode3,
+            _ => SpritePsxSemiTransparency.None,
+        };
     }
 
     /// <summary>

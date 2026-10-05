@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Application.Components;
+using CasaEngine.Framework.Assets.Sprites;
 using CasaEngine.Framework.Rendering.Depth;
 using CasaEngine.Framework.Rendering.ScrollingLayers;
 using Microsoft.Xna.Framework;
@@ -61,8 +62,9 @@ public class BackdropStageDefinitionTests
         Assert.Equal(0, layer.SortingLayer);
         Assert.Equal(1, layer.OrderInLayer); // DepthOrder.
         Assert.Equal(0, layer.StableId); // LayerId.
-        Assert.Equal(SpriteBlendMode.AlphaBlend, layer.Blend); // Ground=true, BlendMode 1 (Average).
-        Assert.Equal(new Color(255, 255, 255, 128), layer.Tint);
+        Assert.Equal(SpritePsxSemiTransparency.Mode0, layer.PsxSemiTransparency); // BlendMode 1 (Average).
+        Assert.Equal(SpriteBlendMode.Opaque, layer.Blend); // the mode alone decides (E19.g G2c).
+        Assert.Equal(Color.White, layer.Tint);
 
         Assert.Null(tint); // OverlayEnabled is false.
         AssertFixedConfiguration(configuration);
@@ -100,7 +102,8 @@ public class BackdropStageDefinitionTests
         Assert.Equal(0, layer.SortingLayer);
         Assert.Equal(1, layer.OrderInLayer);
         Assert.Equal(0, layer.StableId);
-        Assert.Equal(SpriteBlendMode.Additive, layer.Blend); // Ground=true, BlendMode 2.
+        Assert.Equal(SpritePsxSemiTransparency.Mode1, layer.PsxSemiTransparency); // BlendMode 2 (Additive).
+        Assert.Equal(SpriteBlendMode.Opaque, layer.Blend); // the mode alone decides (E19.g G2c).
         Assert.Equal(Color.White, layer.Tint);
 
         Assert.Null(tint);

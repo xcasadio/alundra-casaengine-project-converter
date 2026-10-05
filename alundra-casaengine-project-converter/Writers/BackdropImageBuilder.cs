@@ -18,15 +18,21 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 /// transparent) whose low/high nibble select a 16px column/row in the 256x256 tile sheet, and a
 /// palette index (0-7) into PaletteWords. A tile sheet pixel is itself transparent when its 15-bit
 /// RGB is zero and its semi-transparency (STP) bit is clear - PSX convention, matching
-/// GetScrollBitmap's isTransparentBlack check. Opaque and semi-transparent (STP) pixels are both
-/// baked at full alpha into the one exported texture; which BlendMode the whole layer draws with is
-/// carried separately in the companion JSON (see BackdropLayerDocument.BlendMode) rather than
-/// re-derived per pixel, since a renderer applies one blend state per draw call already.
+/// GetScrollBitmap's isTransparentBlack check. The sheets are the content of the PSX video memory
+/// (E19.g G2c, D-E19-68): an STP pixel is baked at alpha 128, any other drawn pixel at alpha 255,
+/// the word 0x0000 at alpha 0 (not drawn), the RGB unchanged - whatever the blend of the layer, which
+/// is carried separately in the companion JSON (see BackdropLayerDocument.BlendMode): a primitive of
+/// a semi-transparent layer only blends the STP texels, the others are drawn opaque, so the engine
+/// draws the two groups in two passes from this alpha.
 /// </summary>
 public static class BackdropImageBuilder
 {
     private const int TileSheetWidth = 256;
     private const int TileSheetStride = TileSheetWidth / 2;
+
+    // Alpha of an STP texel (the engine's window (0.25 ; 0.75]) and of any other drawn texel (the window (0.75 ; 1]).
+    private const byte StpAlpha = 128;
+    private const byte OpaqueAlpha = 255;
 
     /// <summary>
     /// Returns null when every tile in the grid is empty (index 0) - an all-transparent PNG would
@@ -210,7 +216,7 @@ public static class BackdropImageBuilder
                 pixels[pixelIndex + 0] = color.B;
                 pixels[pixelIndex + 1] = color.G;
                 pixels[pixelIndex + 2] = color.R;
-                pixels[pixelIndex + 3] = 255;
+                pixels[pixelIndex + 3] = stp ? StpAlpha : OpaqueAlpha;
                 wroteAnyPixel = true;
             }
         }

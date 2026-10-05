@@ -1,4 +1,5 @@
 using Alundra.Scripts;
+using CasaEngine.Framework.Assets.Sprites;
 using CasaEngine.Framework.Rendering.Depth;
 using Microsoft.Xna.Framework;
 using Xunit;
@@ -6,52 +7,72 @@ using Xunit;
 namespace Alundra.Tests;
 
 /// <summary>
-/// Plan E9.b (docs/plan-e9b-backdrops-moteur.md, §3 "S2") - T8 (docs/plan-e10-fondu.md, slice E10.b,
-/// §1.8), the original's own backdrop blend mapping, moved here from the now-retired
-/// <c>BackdropRendererTests</c> unedited (<see cref="AlundraBackdropStage.ResolveGroundLayerBlend"/>
-/// kept its signature UNCHANGED when D-E9b-8 moved the definition onto the stage).
+/// E19.g G2c (rule G2c-R3, D-E19-68, ADR-0035) - the backdrop layers render the per-texel PSX semi-transparency like the original
+/// binary: the mode of a layer is <c>BlendMode - 1</c> (the primitive of mode set at the head of its slot, <c>0x8005B958</c>-<c>0x8005B9E4</c>),
+/// <c>Ground</c> only chooses the pass. Replaces the E10.b mapping of <c>ResolveGroundLayerBlend</c> (one blend per layer, gated on
+/// <c>Ground</c>), whose three tests became these three.
 /// </summary>
 public class BackdropStageBlendTests
 {
     [Fact]
-    public void ResolveGroundLayerBlend_MapsAllFourGroundBlendModes_ExactBlendAndTintPairs()
+    public void ResolveLayerPsxSemiTransparency_MapsBlendModes1To4_ToTheFourPsxModes()
     {
-        // 1 = Average, unchanged from before this slice.
-        var (blend1, tint1) = AlundraBackdropStage.ResolveGroundLayerBlend(ground: true, blendMode: 1);
-        Assert.Equal(SpriteBlendMode.AlphaBlend, blend1);
-        Assert.Equal(new Color(255, 255, 255, 128), tint1);
-
-        // 2 = Additive, white.
-        var (blend2, tint2) = AlundraBackdropStage.ResolveGroundLayerBlend(ground: true, blendMode: 2);
-        Assert.Equal(SpriteBlendMode.Additive, blend2);
-        Assert.Equal(Color.White, tint2);
-
-        // 3 = Subtractive, white.
-        var (blend3, tint3) = AlundraBackdropStage.ResolveGroundLayerBlend(ground: true, blendMode: 3);
-        Assert.Equal(SpriteBlendMode.Subtractive, blend3);
-        Assert.Equal(Color.White, tint3);
-
-        // 4 = Additive, tint (63,63,63) - the 0.247 vs 0.25 quantization gap documented on the method.
-        var (blend4, tint4) = AlundraBackdropStage.ResolveGroundLayerBlend(ground: true, blendMode: 4);
-        Assert.Equal(SpriteBlendMode.Additive, blend4);
-        Assert.Equal(new Color(63, 63, 63), tint4);
+        Assert.Equal(SpritePsxSemiTransparency.Mode0, AlundraBackdropStage.ResolveLayerPsxSemiTransparency(1)); // average
+        Assert.Equal(SpritePsxSemiTransparency.Mode1, AlundraBackdropStage.ResolveLayerPsxSemiTransparency(2)); // additive
+        Assert.Equal(SpritePsxSemiTransparency.Mode2, AlundraBackdropStage.ResolveLayerPsxSemiTransparency(3)); // subtractive
+        Assert.Equal(SpritePsxSemiTransparency.Mode3, AlundraBackdropStage.ResolveLayerPsxSemiTransparency(4)); // quarter
     }
 
-    [Fact]
-    public void ResolveGroundLayerBlend_GroundFalseBlendMode1_StaysOpaque_OutOfScopeBucketUntouched()
+    [Theory]
+    [InlineData(0)] // the layer is not semi-transparent
+    [InlineData(99)] // the binary would read a table past its end: no case in the corpus
+    [InlineData(-1)]
+    public void ResolveLayerPsxSemiTransparency_ZeroAndUnknownBlendModes_AreNone(int blendMode)
     {
-        // The deliberately untouched bucket (§1.8): (Ground=false, BlendMode 1) x34 on the export - the
-        // original gates this one per-pixel on the STP bit (unanalyzed) - must stay Opaque.
-        var (blend, tint) = AlundraBackdropStage.ResolveGroundLayerBlend(ground: false, blendMode: 1);
-        Assert.Equal(SpriteBlendMode.Opaque, blend);
-        Assert.Equal(Color.White, tint);
+        Assert.Equal(SpritePsxSemiTransparency.None, AlundraBackdropStage.ResolveLayerPsxSemiTransparency(blendMode));
     }
 
-    [Fact]
-    public void ResolveGroundLayerBlend_UnknownGroundBlendMode_FallsBackToOpaqueWhite()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void BuildDefinitions_TheModeFollowsTheBlendModeAlone_AndTheLayerIsOpaqueWhiteWhateverGround(bool ground)
     {
-        var (blend, tint) = AlundraBackdropStage.ResolveGroundLayerBlend(ground: true, blendMode: 99);
-        Assert.Equal(SpriteBlendMode.Opaque, blend);
-        Assert.Equal(Color.White, tint);
+        var document = new BackdropDocument
+        {
+            Layers = new List<BackdropLayerData>
+            {
+                new()
+                {
+                    LayerId = 0,
+                    Mode = "Tiles",
+                    Ground = ground,
+                    BlendMode = 1,
+                    Scrollar = new BackdropScrollarData { FactorXDenom = 1, FactorYDenom = 1 },
+                    TextureAssetId = Guid.NewGuid().ToString(),
+                },
+                new()
+                {
+                    LayerId = 1,
+                    Mode = "Cellular",
+                    Ground = ground,
+                    BlendMode = 4,
+                    Cellular = new BackdropCellularData(),
+                },
+            },
+        };
+
+        var (scrolling, _, _) = AlundraBackdropStage.BuildDefinitions(document);
+        var cellular = AlundraBackdropStage.BuildCellularDefinitions(document);
+
+        var tiles = Assert.Single(scrolling);
+        Assert.Equal(SpritePsxSemiTransparency.Mode0, tiles.PsxSemiTransparency);
+        Assert.Equal(SpriteBlendMode.Opaque, tiles.Blend);
+        Assert.Equal(Color.White, tiles.Tint);
+        Assert.Equal(ground ? RenderPass2D.Effects : RenderPass2D.Background, tiles.Pass);
+
+        var cells = Assert.Single(cellular);
+        Assert.Equal(SpritePsxSemiTransparency.Mode3, cells.PsxSemiTransparency);
+        Assert.Equal(SpriteBlendMode.Opaque, cells.Blend);
+        Assert.Equal(Color.White, cells.Tint);
     }
 }
