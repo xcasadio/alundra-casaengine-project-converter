@@ -4840,8 +4840,11 @@ part (Q9, O-E19-64).
   verts en A comme en B**, aucun test ignoré. Les mesures du fichier sont des différences de largeurs de `MeasureText` comparées à
   `xadvance` (inchangé) et un test de coupure de ligne ; les lignes `:508-510` ('é' en 144, 224) tiennent aussi en B. **Aucun test
   ne bouge : la liste fermée n'est pas étendue.**
-- **F2B0-1 — Analyseur** : le CSV, puis un script de comparaison : le CSV égale l'annexe sur les 256 lignes (aucun test dans
-  l'analyseur).
+- ✅ **F2B0-1 — Analyseur** : le CSV, puis un script de comparaison : le CSV égale l'annexe sur les 256 lignes (aucun test dans
+  l'analyseur). **Fait le 2026-10-05** : branche `chantier/e19f2b0-glyph-table` depuis `master` `db69b82`, commit `a958d86`
+  (`FontGlyphTable.csv` + l'entrée `<None Update>`) ; le CSV a été relevé sur `g_fontCharWidthTable` (déclaré en
+  `AlundraEngine/StaticVariables.cs:9483`, 1280 entiers) par `e19f2b0-exec/dump_csv.py` du scratchpad, hors du dépôt ; script de
+  comparaison `cmp_csv_annex.py` : 256 lignes, en-tête exact, **0 écart** avec l'annexe.
 - **F2B0-2 — Convertisseur, tests d'abord** (données réelles, `data-extracted/`, sortie anticipée si absent comme les tests voisins ;
   l'annexe est lue dans le dépôt, jamais le CSV de l'analyseur ni la sortie du convertisseur comme référence) :
   - **T1** : pour chacune des 145 lignes `char`, `(x, y, width, height, xoffset, yoffset, xadvance)` = `(srcX, srcY, w, h, 0, yoff, w)`
