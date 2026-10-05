@@ -7641,7 +7641,7 @@ déplace aucune assertion).
 **Suites** : O-E19-60 (découpe de MGUI dans une vue décalée : tranche du moteur, E19.s2) ; O-E19-61 (reste de piste en tête des musiques :
 X2, décision de l'auteur sur D-X-5) ; O-E19-62 (boucle au repère de la séquence).
 
-### 1.2v X2 — Musique : un système sonore neuf par piste (D-E19-69, O-E19-61) ⏳ (planifiée ; relecture n°1 REVISE, révisée)
+### 1.2v X2 — Musique : un système sonore neuf par piste (D-E19-69, O-E19-61) 🧪 (X2-0 à X2-3 faites le 2026-10-05 ; reste X2-4 (vérification) et X2-5 (recette de l'auteur))
 
 **Contrat** (révision n°1) : cette section remplace la tranche X2 et les arrêts de `docs/plan-extraction-bgm.md` pour X2 ; ce
 document y renvoie désormais (sa règle d'abandon « un octet des pistes 1–18 » et ses arrêts de X1 ne s'appliquent pas à X2).
@@ -7716,6 +7716,34 @@ annexe versionnée `docs/plan-e19-x2-annexe/`) :
 **Risques.** Chaque musique commence par son vrai silence (0,3 à 1,4 s) ; tant que la boucle au repère (§1.2w) n'est pas faite, la
 DLL reboucle le fichier entier et rejoue ce silence à chaque tour ; une extraction lancée depuis le dossier de l'analyseur y recrée
 `log.txt` ; un `robocopy` lancé depuis Git Bash ne copie rien.
+
+- **Fait le 2026-10-05** (X2-1 à X2-3 ; commits : sous-module `chantier/x2-bgm-per-track` `db69b82` (depuis `51b77d8`), parent
+  `48139b8` (tests et pointeur), puis ce plan ; recette X2-5 et vérification X2-4 en attente).
+  - **Tests d'abord** : `alundra-casaengine-project-converter.Tests/BgmFreshSoundSystemTests.cs` (179 cas, données réelles, sortie
+    anticipée si `data-extracted/` ou l'annexe manque ; les valeurs T-D et la théorie dorée sont lues dans l'annexe). Rouges sur le
+    `data-extracted/` d'avant : 129 échecs, 50 réussites. T-A : maximum lu 4297 (attendu 0) ; T-B (a) 41 lignes rouges, (b) 42 ;
+    T-C 46 entrées lues (attendu 45) ; théorie dorée 44 rouges sur 45 (la piste 1 verte) ; T-D (45 cas) et T-E verts. Aucune valeur
+    contredite. Verts après le miroir : 612 sur 612 aux tests du convertisseur (433 existants + 179), aucun test existant n'a bougé.
+  - **Extracteur** (X2-R1) : un `SoundBin`, un mélangeur, un `GameEngine`, `StaticVariables.Initialize` et `InitializeSoundSystem`
+    neufs dans la boucle de `ExtractDataFromBgm`, le nombre de pistes lu d'un `SoundBin` à part ; commentaire de `--verify-bgm`
+    corrigé ; construit en Release, 0 erreur.
+  - **Ré-extraction** (X2-R2) : lancée depuis le scratchpad (hors du dépôt), sans option, dans
+    `D:/development/repo/Alundra Remake/remaster-data-extracted-x2`. Console : `BGM 44: rendered SILENT (123 frames, peak 0/0) - not
+    exported`, `Extracted BGM: rendered=45 silent=1 failed=0 (of 46)`, `pitch guard hits: sequencer=9 sfx=0 exporter=0`. `diff -rq`
+    contre `data-extracted/` : 46 lignes, exactement `predicted_extract_changes.txt` (45 `M`, 1 `D`) ; les 45 WAV aux SHA-256 de
+    `oracle_sha256.tsv` (0 écart) ; `sound/bgm.json` à `c1e9d685…4e641`.
+  - **Dossiers** : sauvegardes `Alundra Remake/data-extracted.bak-x2` (`robocopy /E`) et `remaster-data-extracted.bak-x2` (ancien
+    remaster renommé, identique à `data-extracted/` avant : `diff -rq` vide) ; dossier neuf renommé `remaster-data-extracted` ;
+    `robocopy /MIR` depuis PowerShell (4536 copiés, 1 en trop retiré : `bgm_044.wav`) ; preuve finale `diff -rq` vide, 4536
+    fichiers. Les sauvegardes précédentes sont intactes. Rien d'autre supprimé.
+  - **Export** (X2-R3) : manifeste SHA-1 avant et après (23741 fichiers hors `Alundra.dll`, `Alundra.pdb`, `.casaeditor/`) =
+    exactement les 47 lignes de `predicted_export_changes.txt` ; SHA-1 des 44 `Musics/*.wav`, de `bgm-manifest.json` et d'`AssetInfos.json`
+    égaux à `export_values.tsv` ; compteurs du rapport comme au README (`Audio.Bgm` 46 → 45, `WavCopied` 1042 → 1041, `Verify.Assets`
+    22417 → 22416, `ExistenceChecked` 2391 → 2390, `ExistenceChecked.wav` 1042 → 1041) ; vérification PASSED, aucun avertissement sur
+    `bgm_044.wav` ; double export identique hors `report.json` ; `Musics/bgm_044.wav` laissé sur le disque.
+  - **Suites** : convertisseur 612 sur 612 (Debug) ; `Alundra.Tests` en Debug sur l'export 2570 sur 2570 (la Release est lancée
+    par le vérificateur), DLL déposée identique à la Debug (`cmp`) ; garde d'octets des six traces à 0, les quatre traces du héros
+    remises. Aucun écart avec le texte du plan.
 
 ### 1.2w Boucle au repère de la séquence (D-E19-70, D-E19-72, D-E19-73, O-E19-62) ⏳ (à planifier après X2)
 
