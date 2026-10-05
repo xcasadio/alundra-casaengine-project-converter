@@ -159,6 +159,9 @@ choisit pas « la bonne valeur », on choisit la moins mensongère et la plus fa
   entière de dépendance entre pistes — ce que l'anomalie de l'index 44 laisse justement soupçonner.
   Si elle déplace ne serait-ce qu'un octet des pistes 1–18, **on l'abandonne** : la robustesse ne vaut
   pas une régression sur des données correctes.
+  **Amendée le 2026-10-05 par l'auteur (D-E19-69, `docs/plan-e19-opcodes.md`)** : la prémisse « pistes 1-18 correctes » est
+  fausse : les pistes 2 à 18 (et 41 des 46 pistes) commencent par un reste de la piste précédente (le « ding » de la 389).
+  Seule la piste 1 reste un oracle d'identité octet à octet ; X2 se fait.
 
 ## 4. Tranches
 

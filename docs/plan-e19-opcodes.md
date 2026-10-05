@@ -236,6 +236,14 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     semi-transparence par texel** comme les sprites d'entités (G2a) : le bit STP de chaque texel dans les planches des fonds
     (alpha 128), le mode PSX de la couche = `BlendMode − 1`, sans porte `Ground` (celle d'E10 §1.8 tombe) ; ADR du parent et du
     moteur.
+  - **D-E19-69** — (2026-10-05, l'auteur, O-E19-61) Le **reste de piste en tête des musiques se corrige** : chaque piste est rendue
+    par un système sonore neuf (tranche X2 de `docs/plan-extraction-bgm.md`), ré-extraction de la musique, miroir et export ; D-X-5
+    est amendée (les pistes 2 à 18 portent aujourd'hui le reste : seule la piste 1 est un oracle d'identité).
+  - **D-E19-70** — (2026-10-05, l'auteur, O-E19-62) La **musique reboucle au repère de boucle de sa séquence**, comme l'original
+    (`0x8008CA40`), et non sur le fichier entier.
+  - **D-E19-71** — (2026-10-05, l'auteur) **E19.f2a reprend** : une relecture de sa révision, puis l'exécution si elle est READY.
+    Le diagnostic de l'inventaire (O-E19-60) est confirmé par l'observation de l'auteur : HUD et boîtes MGUI coupés ou absents dans
+    la fenêtre agrandie.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -4520,7 +4528,7 @@ avant les événements de carte du même tick, sur la manette du tick précéden
 elle ; écarts nommés dus à l'ordre du moteur (les entités avant le mandataire du monde), acceptés par l'auteur (D-E19-64), sans
 datation, origine par origine dans la table de F2-R1, avec l'ordre propre au harnais d'intro ; les deux défauts corrigés.
 
-###### E19.f2a — Logique de la boîte au tick près ⚠️ (en pause : la relecture de clôture de l'époque D-E19-64 rend REVISE sur deux points du harnais d'intro, l'origine d'un test et la règle d'appui ; corrigés ci-dessous ; une nouvelle relecture demande l'accord de l'auteur)
+###### E19.f2a — Logique de la boîte au tick près ⏳ (la relecture de clôture de l'époque D-E19-64 rend REVISE sur deux points du harnais d'intro, l'origine d'un test et la règle d'appui ; corrigés ci-dessous ; relance accordée par l'auteur le 2026-10-05, D-E19-71 : nouvelle relecture)
 
 **Règles.**
 - **F2-R1 — Ordre d'un tick** (révision n°1 : la porte calculée une fois par image et la boucle de la manette, qui fait tous
@@ -7903,8 +7911,8 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-58 | **La surcouche de la 293 (Inoa en feu) est additive dans l'original** (vérification d'O-E19-54) : `BGColorA` 2 → `TILE` d'ABR 1 de (50, 0, 0) ; le portage moyenne `(50, 0, 0, 128)` (le convertisseur ne garde que `OverlayEnabled = BGColorA != 0`, `BackdropReader.cs:254-255` ; le moteur dessine la teinte en `AlphaBlend`, `ScrollingLayerComponent.cs:208` ; la DLL pose α128, `AlundraBackdropStage.cs:295`) : la scène est assombrie de moitié et teintée au lieu d'être un peu rougie ; hors de la chaîne. | E19.g |
 | O-E19-59 | **Octet de palette 30 des tuiles** (cartes 1, 13, 17, 153, 439, couche 1, tuiles 249-251) : le binaire lit l'identifiant de palette en `0x800CA24C`, au-delà de la table (l'entrée 3 de la table d'ordre du tampon de dessin 0) : valeur d'exécution, aucune correction statique juste ; le convertisseur pose la palette 0 (`BackdropImageBuilder.cs:79-82`), opaque. | Note |
 | O-E19-60 | **L'interface MGUI est mal découpée dans une vue à bandes** (recette du 2026-10-05, §1.2u) : découpes écrites en pixels de la vue dans le ciseau absolu du périphérique (`CasaDrawTransaction.cs:742-767`) et ciseau périmé après un agrandissement ; inventaire, HUD, sous-inventaire, écran de sauvegarde, boîte du moteur. | E19.s2 (moteur) |
-| O-E19-61 | **Un reste de la piste précédente en tête de 41 musiques** (le « ding » de la 389) : l'extracteur rend les 46 pistes dans un seul moteur sonore ; la séquence 25 de l'original est muette pendant 0,6 s. Correction X2 de `plan-extraction-bgm.md`, D-X-5 à amender. | Auteur, puis X2 |
-| O-E19-62 | **La musique reboucle tout le fichier** au lieu du repère de boucle de la séquence (`0x8008CA40`) : l'intro (22,6 s pour la 25) est rejouée toutes les 121 s ; contredit `plan-e11c-musique.md:43-48`. | E11 (à planifier) |
+| O-E19-61 | **Un reste de la piste précédente en tête de 41 musiques** (D-E19-69 : se corrige) (le « ding » de la 389) : l'extracteur rend les 46 pistes dans un seul moteur sonore ; la séquence 25 de l'original est muette pendant 0,6 s. Correction X2 de `plan-extraction-bgm.md`, D-X-5 à amender. | Auteur, puis X2 |
+| O-E19-62 | **La musique reboucle tout le fichier** au lieu du repère de boucle de la séquence (`0x8008CA40`) : l'intro (22,6 s pour la 25) est rejouée toutes les 121 s ; contredit `plan-e11c-musique.md:43-48`. D-E19-70 : se porte. | E11 (à planifier) |
 
 ## 4. Hors périmètre
 
