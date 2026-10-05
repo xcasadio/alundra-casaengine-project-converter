@@ -56,7 +56,9 @@ Réponses de l'auteur à la mesure d'E15.0 (2026-09-27) :
   deviennent le même marqueur.
 - **D-E15-7 — Les emplacements `#Disuse` sont gardés** (écrits `\#Disuse`).
 - **D-E15-8 — Les espaces de début et de fin de page sont perdus**, comme Yarn les retire ; c'est
-  documenté, aucun lecteur actuel n'en dépend.
+  documenté, aucun lecteur actuel n'en dépend. **Exception (D-E19-78, D-E19-84, ADR-0038)** : les espaces de fin d'une page dont
+  la dernière ligne porte un `\H` sont gardées (le binaire les compte dans la largeur de centrage), suivies de
+  `[empty trimwhitespace=false/]` pour que le compilateur Yarn ne les retire pas ; seule S025 des cartes 472 à 474 est touchée.
 - **D-E15-9 — Les effets de bord de `\X` passent par une commande** placée avant la ligne, les
   valeurs par des fonctions sans effet de bord. Précisée le 2026-09-27 à la relecture de clôture
   d'E15.b (ADR-0007) : la commande garde l'état qu'elle va changer (faucons temporaires, indice de
@@ -200,7 +202,7 @@ tableau pour la lisibilité.
 | `\B` … `\G`, `\H`, `\T` | marqueurs gardés pour E12.c : `[voice id=-1…4/]`, `[center/]`, `[slow/]` (`\M\CE` n'apparaît nulle part dans le corpus : pas de correspondance) |
 | `:` | `\:` (sinon Yarn fait du début de ligne un nom de personnage, même avec une espace avant le `:`) |
 | `#` (seulement dans `#Disuse`) | `\#` ; les `#Disuse` sont gardés (D-E15-7) |
-| Espaces de début et de fin de page | perdus, Yarn les retire à la compilation (D-E15-8) |
+| Espaces de début et de fin de page | perdus, Yarn les retire à la compilation (D-E15-8) ; exception : les espaces de fin d'une dernière ligne centrée (`\H`) sont gardées, suivies de `[empty trimwhitespace=false/]` (D-E19-78) |
 | `[`, `]`, `{`, `}`, `//`, `<<`, `\` isolé | absents du corpus ; le writer les échappe quand même |
 
 Chaque fichier est compilé en un `.dialogue` catalogué à côté de sa source `.yarn`. Le bytecode
@@ -332,7 +334,8 @@ déclarent pas au compilateur (Yarn les compile comme du texte).
 
 **Oracle d'équivalence** (tâche T6). Pour chaque page, la sortie comparée est un quadruplet :
 1. le **texte visible** : substitutions faites, markup analysé, `[br/]` rendu par un saut de ligne,
-   espaces de bord retirés (D-E15-8) ; ce retrait ne touche que des espaces, jamais un saut de
+   espaces de bord retirés (D-E15-8), sauf les espaces de fin d'une dernière ligne centrée, gardées
+   et suivies d'un marqueur `empty` (D-E19-78, ADR-0038) ; ce retrait ne touche que des espaces, jamais un saut de
    ligne : un `\N` en bord de page reste un saut de ligne, des deux côtés ;
 2. la liste ordonnée des **marqueurs** : nom, propriétés (hors `trimwhitespace`), position dans le
    texte visible ; `glyph` compris, avec son identifiant ;

@@ -4314,6 +4314,8 @@ sous-tranche a son plan relu, son exécution et sa vérification :
 - **F0-R2 — Transparence** : la coupe des espaces de bord (D-E15-8) et la règle de la page vide ignorent les marqueurs `flag` et
   `yield` : un espace entre la dernière unité visible et un drapeau reste coupé (sinon 32 pages, qui portent 47 codes, changeraient de texte) ; une page
   qui ne porte que des drapeaux et des `\Y` s'écrit avec ses marqueurs dans l'ordre source puis `[empty trimwhitespace=false/]`.
+  *Note (E19.f2b1a, D-E19-84, ADR-0038)* : quand la dernière ligne d'une page est centrée (`\H`), ses espaces de fin sont gardées
+  même avant un drapeau ou un `\Y` final ; la règle ci-dessus ne vaut pas pour ce cas.
 - **F0-R3 — Garde** : un identifiant au-delà d'`int.MaxValue` est une erreur de conversion (les propriétés entières de Yarn).
 - **F0-R4 — Compteurs** : `Yarn.FlagCommands` de `report.json` est remplacé par `Yarn.FlagMarkers` (932) et `Yarn.YieldMarkers`
   (922) ; `Yarn.EmptyPages` reste 95 (la règle de la page vide ignore les marqueurs `flag` et `yield`, y compris dans le test de
@@ -5016,6 +5018,9 @@ les autres pertes d'espaces de bord consignées pour l'auteur (O-E19-67).
   `WholeCorpus_EveryPageOfEveryNodeMatchesTheReferenceDecoder` sur exactement `M472_S025_p0`, `M473_S025_p0`, `M474_S025_p0`, attendu sans
   espaces ni `empty`, obtenu `FlorinRoulette` + 8 espaces et `empty@43`) ; l'oracle changé à son tour : 636 sur 636 verts (le canon
   s'écrit `\n` en deux caractères dans la chaîne canonique, d'où `\\n` dans le test) ; aucune assertion existante n'a bougé.
+  **R3 faite le 2026-10-06** : `docs/plan-e15-yarn.md` (D-E15-8, tableau, puce de l'oracle), `docs/formats/dialogues-yarn.md` (nouvelle
+  ligne du tableau, espaces de bord, transparence de `flag` et `yield`, limites), commentaire d'`AlundraTextBoxOracle.cs`, note de F0-R2
+  ci-dessus, ADR-0038 (`docs/decisions/`, index à jour ; ADR-0036 et ADR-0037 étaient pris), statut d'ADR-0006 « partly superseded by ADR-0038 ».
 - ⏳ **F2B1A-2 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement six fichiers (le `.yarn` et le
   `.dialogue` de `Maps/Pub/Pub (Ring)-472`, `Pub (Shooting)-473` et `Pub (Roulette)-474` ; la ligne 137 des `.yarn` ; dans les
   `.dialogue`, la seule clé `line:M47x_S025_p0` des `line_texts`, `program_base64` inchangé ; chaque ligne grandit de 37 octets,

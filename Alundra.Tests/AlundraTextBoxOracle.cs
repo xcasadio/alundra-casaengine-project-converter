@@ -655,7 +655,7 @@ internal sealed class AlundraTextBoxOracle
 }
 
 /// <summary>
-/// F2-R3, the oracle's side: an exported Yarn page (its text and its markers, the edge spaces already cut by D-E15-8) back to the bytes of
+/// F2-R3, the oracle's side: an exported Yarn page (its text and its markers, the edge spaces already cut by D-E15-8, except the trailing spaces of a centred last line, kept by D-E19-78) back to the bytes of
 /// the original's box: <c>br</c> is <c>\N</c>, <c>glyph</c> a glyph <c>\W</c>, <c>voice</c>, <c>center</c> is <c>\H</c>, <c>slow</c> is <c>\T</c>,
 /// <c>flag</c> is <c>\digits</c>, <c>yield</c> is <c>\Y</c>, <c>empty</c> nothing; a following page is an <c>\A</c> (the export's page
 /// boundary, ADR-0006). Read from the raw <c>LineTexts</c> of the asset, never from the engine's markup parser nor from the director.

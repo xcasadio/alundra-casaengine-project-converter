@@ -62,8 +62,9 @@ Chaque marqueur autofermant porte `trimwhitespace=false` (sans lui, Yarn avale l
 | page avec au moins un `\X` | **une** `<<falcon_update>>` avant la ligne |
 | `\X0` … `\X5` | fonction choisie par le code et sa place dans la page (tableau suivant) |
 | page sans texte (fin de chaîne par `\A`, page qui ne pose qu'un drapeau) | `[empty trimwhitespace=false/]` |
+| page dont la dernière ligne, centrée (`\H`), finit par des espaces | espaces gardées, puis `[empty trimwhitespace=false/]` en fin de ligne (D-E19-78, D-E19-84) ; sans espace de fin, rien de plus |
 | `:` `#` `[` `]` `{` `}` `/` `<` `>` | `\:` `\#` `\[` `\]` `\{` `\}` `\/` `\<` `\>` |
-| espaces en bord de page | retirés (D-E15-8) ; un saut de ligne en bord de page est gardé |
+| espaces en bord de page | retirés (D-E15-8), sauf les espaces de fin d'une dernière ligne centrée (ligne ci-dessus) ; un saut de ligne en bord de page est gardé |
 
 Un code sans correspondance (absent du corpus) écarte son nœud avec une erreur de `report.json` ;
 l'export ne lève jamais d'exception pour une donnée.
@@ -83,7 +84,7 @@ enregistrées à l'exécution par la DLL avec les mêmes types.
 | `category_remaining()` | `\X5` | seuil moins faucons | `Func<float>` |
 | `game_var(n)` | `\V<n>` | `INT_ARRAY_80191908[n]` | `Func<float, float>` |
 
-Les marqueurs `flag` et `yield` sont à la même position que leur code dans le texte, dans l'ordre de la source ; la coupe des espaces de bord et la règle de la page vide les ignorent (une page de drapeaux seuls s'écrit ses marqueurs puis `[empty/]`). La DLL pose le drapeau de chaque marqueur `flag` à l'affichage de la page et ignore `yield` (jusqu'à E19.f2).
+Les marqueurs `flag` et `yield` sont à la même position que leur code dans le texte, dans l'ordre de la source ; la coupe des espaces de bord et la règle de la page vide les ignorent (une page de drapeaux seuls s'écrit ses marqueurs puis `[empty/]`) ; exception : quand la dernière ligne de la page est centrée, ses espaces de fin sont gardées même avant un `flag` ou un `yield` final, qui les protège alors sans `[empty/]` supplémentaire (D-E19-78, D-E19-84). La DLL pose le drapeau de chaque marqueur `flag` à l'affichage de la page et ignore `yield` (jusqu'à E19.f2).
 
 Commandes (non déclarées au compilateur) : `<<flag n>>` (anciens exports, plus émise) pose le drapeau temporaire `n` ;
 `<<falcon_update>>` garde l'état qu'elle va changer, puis lance `UpdateNumberOfFalcon` et
@@ -192,7 +193,7 @@ tête, et aucun `Speaker`.
 
 ## Limites
 
-- Les espaces en bord de page sont perdus (Yarn les retire) ; aucun lecteur actuel n'en dépend.
+- Les espaces en bord de page sont perdus (Yarn les retire) ; aucun lecteur actuel n'en dépend. Seule exception : les espaces de fin d'une dernière ligne centrée (S025 des cartes 472 à 474), gardées et suivies de `[empty trimwhitespace=false/]` (D-E19-78, ADR-0038).
 - Les marqueurs `voice`, `center`, `slow` sont gardés pour la fidélité des dialogues (E12.c) ; la DLL
   les ignore à l'affichage tant qu'E12.c n'est pas faite.
 - Le pluriel français intégré de Yarn Spinner 3.2.1 est faux : ne pas s'en servir.
