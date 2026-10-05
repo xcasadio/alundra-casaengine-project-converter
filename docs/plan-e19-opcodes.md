@@ -4544,7 +4544,7 @@ avant les événements de carte du même tick, sur la manette du tick précéden
 elle ; écarts nommés dus à l'ordre du moteur (les entités avant le mandataire du monde), acceptés par l'auteur (D-E19-64), sans
 datation, origine par origine dans la table de F2-R1, avec l'ordre propre au harnais d'intro ; les deux défauts corrigés.
 
-###### E19.f2a — Logique de la boîte au tick près ⏳ (relance accordée par l'auteur le 2026-10-05, D-E19-71 ; liste fermée refaite à HEAD, relecture READY ; annexe des épingles et arcs simulés (D-E19-77) le 2026-10-05 ; relecture de l'annexe à faire)
+###### E19.f2a — Logique de la boîte au tick près 🧪 (relance accordée par l'auteur le 2026-10-05, D-E19-71 ; liste fermée refaite à HEAD, relecture READY ; annexe des épingles et arcs simulés (D-E19-77) le 2026-10-05 ; relecture de l'annexe à faire)
 
 **Règles.**
 - **F2-R1 — Ordre d'un tick** (révision n°1 : la porte calculée une fois par image et la boucle de la manette, qui fait tous
@@ -4719,6 +4719,19 @@ arcs simulés ; l'aide de F2A-3 la reproduit telle quelle.
   défilement, `\A`, la fermeture après le glissement, le marin 12 de la 389, le réveil à Inoa, Septimus à la 164.
 
 **Retour arrière** : revert des commits (DLL et tests seulement, aucun export).
+
+- **Fait le 2026-10-05** (exécuteur, Debug, vérification Release et recette de l'auteur à faire ; ADR-0029, « Decisions: see ADR-0029 ») :
+  annexe commitée en premier ; F2A-1 (oracle `AlundraTextBoxOracle`, 27 tests verts aux valeurs de l'annexe, section B) ; F2A-2 et F2A-3 dans un
+  même commit (directeur et machine `AlundraDialogueBox`, `0x4C` à `0x4F`, sons, drapeaux à leur pas, ordre de F2-R1 dans `AlundraWorldProxy`, aide
+  de manette des arcs de la forme exacte du plan, harnais d'intro). **Rouges d'abord** : directeur et ordre changés, tests encore aux valeurs d'avant
+  (aide des arcs incluse) : 40 échecs sur 2597 (messages lus : A6 fin 1149 attendue 2463, A8 1025 pour 2446, A9 `frameAfterTheBoxClosed` 8 pour 123,
+  boîtes du livre fermées au tick du verrou au lieu de 134, etc.). **Verts après** : 2647 sur 2647 en Debug, dont 43 arcs ; les 66 `AssertFrame` des
+  arcs mesurent exactement la valeur écrite (écart 0, journal temporaire retiré) ; chaque épingle de la liste fermée égale sa ligne de l'annexe, aucun
+  écart, aucun arrêt ; classe C : aucune valeur ne bouge hors budgets. Tests nouveaux : 10 d'ordre (K-1 à K-7, `AlundraDialogueBoxOrderTests`), 38
+  contre l'oracle image par image (36 boîtes synthétiques à deux origines, avec et sans manette, les trois textes réels, un balayage de 15 cartes ;
+  mutations de D-E19-62, D-E19-63 et du délai de pas prises par ces tests), 2 de `0x4C` à `0x4F`. Écarts : 32 lignes de `story-chain-skipped-opcodes.tsv`
+  retirées ; `UnknownOpcode_KnownSize_SkipsBySize` passe de `0x4C` à `0x93` ; `CapturePresenter` perd son paramètre `gameState`. Garde d'octets des six
+  traces : 0.
 
 **Risques.** La vague de ré-épingles (règle de l'écart expliqué) ; les budgets des arcs ; une aide de manette qui bloque (arrêt) ;
 le chemin dégradé qui doit rester instantané ; la catégorie « a un présentateur » qui ne doit pas dépendre d'une vue ; les espaces
