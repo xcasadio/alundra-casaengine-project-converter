@@ -81,6 +81,10 @@ public sealed record YarnTextEmitResult(string Source, IReadOnlyList<YarnEmitErr
 /// A numeric code <c>\&lt;digits&gt;</c> and a <c>\Y</c> are not commands: they are the zero-length
 /// markers <c>[flag id=N/]</c> and <c>[yield/]</c> in the line, at their position in the text
 /// (D-E19-48, ADR-0025).
+/// The spaces at the edges of a page are removed (D-E15-8), except the ones that end a page whose last
+/// line holds a <c>\H</c> (D-E19-78, D-E19-84): they are kept, and a page that then ends on a space gets a
+/// final <c>[empty trimwhitespace=false/]</c> so the Yarn compiler, which drops the spaces that end a line,
+/// keeps them (ADR-0038).
 /// A node whose source has at least one code with no mapping (an unsupported escape, a missing or
 /// invalid operand, a raw control character, an <c>\X0</c> read after another <c>\X</c> of the same
 /// page, a numeric code too large for a signed 32-bit integer, or a page whose line would start
@@ -442,7 +446,8 @@ public static class YarnTextEmitter
     /// page (ADR-0007); an <c>\X0</c> that is not the first is reported as an error into
     /// <paramref name="errors"/> instead of guessing a function for it. A page whose rendered line
     /// would start with a Yarn syntax marker (<c>===</c>, <c>---</c>, <c>-&gt;</c>, <c>=&gt;</c>) is
-    /// also reported as an error instead of being emitted as-is.
+    /// also reported as an error instead of being emitted as-is. The trailing spaces of a page whose last
+    /// line is centred are kept and guarded by <c>[empty trimwhitespace=false/]</c> (D-E19-78, D-E19-84).
     /// </summary>
     private static PageRender BuildPageRender(string title, int pageIndex, List<PageToken> tokens, List<YarnEmitError> errors)
     {
@@ -534,7 +539,12 @@ public static class YarnTextEmitter
         }
 
         FlushText();
-        TrimEdgeSpaces(elements);
+
+        // D-E19-78, D-E19-84: the last line of a page holding a \H keeps the spaces that end it. The original's
+        // CalcTextWidth counts every one (4 px each in font3) and the text box types them; Yarn drops the
+        // spaces that end a compiled line, so they are protected by a zero-length marker (see below).
+        var keepTrailingSpaces = LastLineIsCentred(elements);
+        TrimEdgeSpaces(elements, keepTrailingSpaces);
 
         // Checked on the page's leading raw text, before EscapeText: only a TextElement can ever start
         // with one of these (every marker and function call renders as '[' or '{'), and checking the
@@ -557,7 +567,15 @@ public static class YarnTextEmitter
         // markers of those two kinds keeps them, in source order, and then gets [empty/].
         var isEmpty = elements.All(IsPositionMarker);
         var renderedBody = RenderElements(elements, out var glyphCount, out var flagCount, out var yieldCount, out var functionCallCount);
-        var body = isEmpty ? renderedBody + "[empty trimwhitespace=false/]" : renderedBody;
+
+        // Yarn 3.2.1 keeps the spaces that precede a self-closing marker but removes the ones that end a line
+        // (probed with the project's compiler and parser): a page that ends on kept spaces gets the no-op
+        // [empty/] right after them. A trailing flag or yield marker already protects them.
+        var endsOnKeptSpaces = keepTrailingSpaces
+            && elements.Count > 0
+            && elements[^1] is TextElement { Text: var lastText }
+            && lastText.EndsWith(' ');
+        var body = isEmpty || endsOnKeptSpaces ? renderedBody + "[empty trimwhitespace=false/]" : renderedBody;
 
         return new PageRender(commands, body, isEmpty, glyphCount, flagCount, yieldCount, functionCallCount);
     }
@@ -612,8 +630,11 @@ public static class YarnTextEmitter
     /// elements are text. A line break is never removed, so a leading or trailing <c>\N</c> stays a
     /// leading or trailing marker. The <c>flag</c> and <c>yield</c> markers are transparent (F0-R2):
     /// the walk goes through them, so a space between the last visible unit and a flag is still removed.
+    /// Exception (D-E19-78, D-E19-84): with <paramref name="keepTrailingSpaces"/> the trailing walk is
+    /// skipped (the page's last line is centred), so every trailing space stays, flag or yield markers
+    /// included.
     /// </summary>
-    private static void TrimEdgeSpaces(List<Element> elements)
+    private static void TrimEdgeSpaces(List<Element> elements, bool keepTrailingSpaces)
     {
         var head = 0;
         while (head < elements.Count)
@@ -640,7 +661,7 @@ public static class YarnTextEmitter
             break;
         }
 
-        var tail = elements.Count - 1;
+        var tail = keepTrailingSpaces ? -1 : elements.Count - 1;
         while (tail >= 0)
         {
             if (IsPositionMarker(elements[tail]))
@@ -665,6 +686,26 @@ public static class YarnTextEmitter
             elements[tail] = new TextElement(trimmed);
             break;
         }
+    }
+
+    /// <summary>
+    /// Whether the last line of the page (the elements after its last <c>\N</c>, or the whole page) holds a
+    /// <c>\H</c> centring marker (D-E19-78): the original's centring width counts the spaces that end it.
+    /// </summary>
+    private static bool LastLineIsCentred(List<Element> elements)
+    {
+        for (var index = elements.Count - 1; index >= 0; index--)
+        {
+            switch (elements[index])
+            {
+                case CenterElement:
+                    return true;
+                case LineBreakElement:
+                    return false;
+            }
+        }
+
+        return false;
     }
 
     private static bool IsPositionMarker(Element element) => element is FlagElement or YieldElement;

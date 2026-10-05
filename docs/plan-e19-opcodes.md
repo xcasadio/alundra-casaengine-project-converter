@@ -4962,7 +4962,7 @@ oracle, DLL seule), f2b1c (écran, présentateur, preuve au pixel) ; règle de S
 par un fournisseur d'avances injecté ; épingle MonoGame relevée (D-E19-85) ; retard d'une image accepté et consigné (O-E19-65) ;
 les autres pertes d'espaces de bord consignées pour l'auteur (O-E19-67).
 
-###### E19.f2b1a — Ligne centrée S025 au convertisseur (D-E19-78, D-E19-84) ⏳ (planifiée le 2026-10-05 ; relectures n°1 et n°2 REVISE ; blocage n°2 (classement rouge ou vert des cas drapeau) : FIX ; nouvelle époque, relecture de clôture à faire)
+###### E19.f2b1a — Ligne centrée S025 au convertisseur (D-E19-78, D-E19-84) 🚧 (planifiée le 2026-10-05 ; relectures n°1 et n°2 REVISE ; blocage n°2 (classement rouge ou vert des cas drapeau) : FIX ; nouvelle époque, relecture de clôture à faire ; exécution commencée le 2026-10-06)
 
 **Règles.**
 - **F2B1A-R1 — Émetteur** (`alundra-casaengine-project-converter/Text/YarnTextEmitter.cs`) : si la dernière ligne d'une page (les
@@ -4982,7 +4982,7 @@ les autres pertes d'espaces de bord consignées pour l'auteur (O-E19-67).
   de la boîte) ; statut d'ADR-0006 « partly superseded by ADR-NNNN » (précédent d'ADR-0025).
 
 **Tâches.**
-- **F2B1A-1 — Tests d'abord** (convertisseur) : `YarnTextEmitterTests.cs` : `EmitSingle("TCENTER8", "\\HFlorin\\W5Roulette" + 8
+- ✅ **F2B1A-1 — Tests d'abord** (convertisseur) : `YarnTextEmitterTests.cs` : `EmitSingle("TCENTER8", "\\HFlorin\\W5Roulette" + 8
   espaces)` égale `title: TCENTER8\n---\n[center trimwhitespace=false/]Florin[glyph id=21 trimwhitespace=false/]Roulette` + 8 espaces
   + `[empty trimwhitespace=false/] #line:TCENTER8_p0\n===\n` ; compilé et lu : texte `FlorinRoulette` + 8 espaces, attributs center@0,
   glyph@6, empty@22, `EmptyPages` 0 ; et les cas du tableau de `s025-notes.md` §3.1 (`\HHi` inchangé ; `\HHi` + 3 espaces ; dernière
@@ -5008,14 +5008,22 @@ les autres pertes d'espaces de bord consignées pour l'auteur (O-E19-67).
   Tests existants qui bougent : aucun (les tests des espaces de bord,
   `Decode_WholeCorpus_MatchesMeasuredCensus` et `YarnDialogueWriterTests.cs:687` restent verts) ; suite du convertisseur : 621 plus
   les nouveaux ; toute autre assertion qui bouge est un arrêt.
-- **F2B1A-2 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement six fichiers (le `.yarn` et le
+  **Mesuré le 2026-10-06** (suite du convertisseur, `--blame-hang-timeout 300s`) : sur le code d'avant, 636 tests (621 + 15 nouveaux),
+  13 rouges et 623 verts ; les 13 rouges : neuf de l'émetteur (TCENTER8 en émission et en compilé-lu, `\HHi` + 3 espaces, `Haut   \N\HBas  `,
+  `\HAbc  \999`, `\HAbc  \999  `, `\H` et des espaces seules, deux pages, espaces de début retirées et de fin gardées), trois de l'oracle
+  (`\HFlorin\W5Roulette` + 8 espaces, `\HAbc  \999`, `\HAbc  \999  `) et le cas nommé `NamedCase_M472_S025_...` ; les deux gardes vertes
+  d'avance : `\HHi` et `\HHaut\NBas   `. Avec le seul émetteur changé : 5 rouges (les trois de l'oracle, le cas nommé, et
+  `WholeCorpus_EveryPageOfEveryNodeMatchesTheReferenceDecoder` sur exactement `M472_S025_p0`, `M473_S025_p0`, `M474_S025_p0`, attendu sans
+  espaces ni `empty`, obtenu `FlorinRoulette` + 8 espaces et `empty@43`) ; l'oracle changé à son tour : 636 sur 636 verts (le canon
+  s'écrit `\n` en deux caractères dans la chaîne canonique, d'où `\\n` dans le test) ; aucune assertion existante n'a bougé.
+- ⏳ **F2B1A-2 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement six fichiers (le `.yarn` et le
   `.dialogue` de `Maps/Pub/Pub (Ring)-472`, `Pub (Shooting)-473` et `Pub (Roulette)-474` ; la ligne 137 des `.yarn` ; dans les
   `.dialogue`, la seule clé `line:M47x_S025_p0` des `line_texts`, `program_base64` inchangé ; chaque ligne grandit de 37 octets,
   8 espaces et `[empty trimwhitespace=false/]`) et `report.json`, comme en F2B0-3 : `Counters`, `WarningsByCategory`, `Warnings` et
   `Errors` égaux, `OutputFileCount` inchangé ; seuls changent les durées et `OutputSizeBytes`/`OutputSizeMegabytes` (environ +222
   octets, la taille variant aussi de quelques dizaines d'octets entre deux exports du même code, vérification de G2d) ;
   double export identique hors `report.json` ; `Alundra.Tests` en Release puis en Debug : aucun test ne bouge.
-- **F2B1A-3 — Vérification**. La recette se fait avec f2b1c (la ligne « Florin … Roulette » centrée à x 97 au Pub, cartes 472 à 474).
+- ⏳ **F2B1A-3 — Vérification**. La recette se fait avec f2b1c (la ligne « Florin … Roulette » centrée à x 97 au Pub, cartes 472 à 474).
 
 **Acceptation** : tests rouges d'abord avec les valeurs ci-dessus ; export : exactement les six fichiers ; double export ; tests du
 convertisseur ; `Alundra.Tests` en Release puis en Debug, `cmp`, six traces à l'octet.

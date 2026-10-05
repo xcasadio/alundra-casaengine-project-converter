@@ -502,6 +502,25 @@ public static class ReferenceTextDecoder
             // marker, glyph or function call, and a line break itself is never removed.
             // flag and yield markers are transparent (F0-R2): the walk goes through them. A text run
             // that strips down to nothing stays as an empty run, which adds nothing to the text.
+            // Exception (D-E19-78, D-E19-84): when the page's last line (after its last line break, or the
+            // whole page) holds a centre marker, the original's centring width counts the spaces that end
+            // it, so the trailing trim is skipped; a page that then ends on a text run ending on a space
+            // gets an empty marker after the text (a trailing flag or yield already protects the spaces).
+            var keepTrailingSpaces = false;
+            for (var k = elements.Count - 1; k >= 0; k--)
+            {
+                if (elements[k].Kind == ElementKind.LineBreak)
+                {
+                    break;
+                }
+
+                if (elements[k].Kind == ElementKind.Marker && elements[k].Marker!.Name == "center")
+                {
+                    keepTrailingSpaces = true;
+                    break;
+                }
+            }
+
             for (var k = 0; k < elements.Count; k++)
             {
                 if (IsTransparent(elements[k]))
@@ -522,7 +541,7 @@ public static class ReferenceTextDecoder
                 }
             }
 
-            for (var k = elements.Count - 1; k >= 0; k--)
+            for (var k = keepTrailingSpaces ? -1 : elements.Count - 1; k >= 0; k--)
             {
                 if (IsTransparent(elements[k]))
                 {
@@ -573,6 +592,14 @@ public static class ReferenceTextDecoder
             if (text.Length == 0 && calls.Count == 0 && markers.All(m => m.Name is "flag" or "yield"))
             {
                 markers.Add(ReferenceMarker.Empty(0));
+            }
+
+            if (keepTrailingSpaces
+                && elements.Count > 0
+                && elements[^1].Kind == ElementKind.Text
+                && elements[^1].Text!.EndsWith(' '))
+            {
+                markers.Add(ReferenceMarker.Empty(text.Length));
             }
 
             return new ReferencePage(text, markers, new List<ReferenceCommand>(Commands), calls);

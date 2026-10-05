@@ -480,6 +480,43 @@ public class ReferenceTextDecoderTests
     }
 
     // ---------------------------------------------------------------------------------------
+    // Centred last line keeps its trailing spaces (D-E19-78, D-E19-84)
+    // ---------------------------------------------------------------------------------------
+
+    [Fact]
+    public void Decode_CentredLastLine_KeepsTrailingSpacesAndAddsEmptyAfterThem()
+    {
+        var page = Assert.Single(ReferenceTextDecoder.Decode("\\HFlorin\\W5Roulette        "));
+
+        Assert.Equal("FlorinRoulette        ", page.Text);
+        Assert.Equal(
+            new[] { "center@0", "glyph@6 id=21", "empty@22" },
+            page.Markers.Select(m => m.ToCanonicalString()));
+    }
+
+    [Fact]
+    public void Decode_CentredLastLine_FlagAfterTheSpaces_KeepsThemWithoutEmpty()
+    {
+        var page = Assert.Single(ReferenceTextDecoder.Decode("\\HAbc  \\999"));
+
+        Assert.Equal("Abc  ", page.Text);
+        Assert.Equal(
+            new[] { "center@0", "flag@5 id=999" },
+            page.Markers.Select(m => m.ToCanonicalString()));
+    }
+
+    [Fact]
+    public void Decode_CentredLastLine_FlagThenSpaces_KeepsBothAndEndsOnEmpty()
+    {
+        var page = Assert.Single(ReferenceTextDecoder.Decode("\\HAbc  \\999  "));
+
+        Assert.Equal("Abc    ", page.Text);
+        Assert.Equal(
+            new[] { "center@0", "flag@5 id=999", "empty@7" },
+            page.Markers.Select(m => m.ToCanonicalString()));
+    }
+
+    // ---------------------------------------------------------------------------------------
     // Empty pages
     // ---------------------------------------------------------------------------------------
 

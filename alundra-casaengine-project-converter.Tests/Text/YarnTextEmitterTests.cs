@@ -517,6 +517,128 @@ public class YarnTextEmitterTests
         AssertCompilesWithNoDiagnostic(Compile(source));
     }
 
+    // ---- Centred last line keeps its trailing spaces (D-E19-78, D-E19-84) ----------------------------
+
+    [Fact]
+    public void Emit_CentredLastLine_KeepsTrailingSpacesAndGuardsThemWithEmpty()
+    {
+        // S025 of maps 472 to 474: the original counts the 8 spaces in the width of the centred line.
+        var source = EmitSingle("TCENTER8", "\\HFlorin\\W5Roulette        ");
+
+        Assert.Equal(
+            "title: TCENTER8\n---\n[center trimwhitespace=false/]Florin[glyph id=21 trimwhitespace=false/]Roulette        [empty trimwhitespace=false/] #line:TCENTER8_p0\n===\n",
+            source);
+        AssertCompilesWithNoDiagnostic(Compile(source));
+    }
+
+    [Fact]
+    public void EmitCompileAndParse_CentredLastLine_TrailingSpacesSurviveTheYarnCompiler()
+    {
+        var (line, result) = EmitCompileAndParse("\\HFlorin\\W5Roulette        ", "TCENTER8");
+
+        Assert.Equal("FlorinRoulette        ", line.Text);
+        Assert.Equal(
+            new[] { "center@0", "glyph@6", "empty@22" },
+            line.Attributes.OrderBy(a => a.Position).ThenBy(a => a.Name, StringComparer.Ordinal).Select(a => $"{a.Name}@{a.Position}"));
+        Assert.Equal(0, result.Statistics.EmptyPages);
+    }
+
+    [Fact]
+    public void Emit_CentredPageWithoutTrailingSpaces_IsUnchanged()
+    {
+        var source = EmitSingle("TH0", "\\HHi");
+
+        Assert.Equal("title: TH0\n---\n[center trimwhitespace=false/]Hi #line:TH0_p0\n===\n", source);
+    }
+
+    [Fact]
+    public void Emit_CentredPageWithTrailingSpaces_KeepsThem()
+    {
+        var source = EmitSingle("TH3", "\\HHi   ");
+
+        Assert.Equal(
+            "title: TH3\n---\n[center trimwhitespace=false/]Hi   [empty trimwhitespace=false/] #line:TH3_p0\n===\n",
+            source);
+        AssertCompilesWithNoDiagnostic(Compile(source));
+    }
+
+    [Fact]
+    public void Emit_CentredLastLineAfterAnotherLine_KeepsTrailingSpaces()
+    {
+        var source = EmitSingle("TLAST", "Haut   \\N\\HBas  ");
+
+        Assert.Equal(
+            "title: TLAST\n---\nHaut   [br trimwhitespace=false/][center trimwhitespace=false/]Bas  [empty trimwhitespace=false/] #line:TLAST_p0\n===\n",
+            source);
+        AssertCompilesWithNoDiagnostic(Compile(source));
+    }
+
+    [Fact]
+    public void Emit_CentredLineThatIsNotTheLast_StillLosesTheTrailingSpaces()
+    {
+        var source = EmitSingle("TFIRST", "\\HHaut\\NBas   ");
+
+        Assert.Equal(
+            "title: TFIRST\n---\n[center trimwhitespace=false/]Haut[br trimwhitespace=false/]Bas #line:TFIRST_p0\n===\n",
+            source);
+        AssertCompilesWithNoDiagnostic(Compile(source));
+    }
+
+    [Fact]
+    public void Emit_CentredLastLine_FlagAfterTheSpaces_KeepsThemWithoutAGuard()
+    {
+        var source = EmitSingle("TFLAG1", "\\HAbc  \\999");
+
+        Assert.Equal(
+            "title: TFLAG1\n---\n[center trimwhitespace=false/]Abc  [flag id=999 trimwhitespace=false/] #line:TFLAG1_p0\n===\n",
+            source);
+        AssertCompilesWithNoDiagnostic(Compile(source));
+    }
+
+    [Fact]
+    public void Emit_CentredLastLine_FlagThenSpaces_KeepsBothRunsAndGuardsTheEnd()
+    {
+        var source = EmitSingle("TFLAG2", "\\HAbc  \\999  ");
+
+        Assert.Equal(
+            "title: TFLAG2\n---\n[center trimwhitespace=false/]Abc  [flag id=999 trimwhitespace=false/]  [empty trimwhitespace=false/] #line:TFLAG2_p0\n===\n",
+            source);
+        AssertCompilesWithNoDiagnostic(Compile(source));
+    }
+
+    [Fact]
+    public void Emit_CentredMarkerAndSpacesOnly_KeepsTheSpaces()
+    {
+        var source = EmitSingle("TCSP", "\\H   ");
+
+        Assert.Equal(
+            "title: TCSP\n---\n[center trimwhitespace=false/]   [empty trimwhitespace=false/] #line:TCSP_p0\n===\n",
+            source);
+        AssertCompilesWithNoDiagnostic(Compile(source));
+    }
+
+    [Fact]
+    public void Emit_TwoCentredPages_EachGetsItsOwnGuard()
+    {
+        var source = EmitSingle("T2P", "\\HA  \\A\\HB  ");
+
+        Assert.Equal(
+            "title: T2P\n---\n[center trimwhitespace=false/]A  [empty trimwhitespace=false/] #line:T2P_p0\n[center trimwhitespace=false/]B  [empty trimwhitespace=false/] #line:T2P_p1\n===\n",
+            source);
+        AssertCompilesWithNoDiagnostic(Compile(source));
+    }
+
+    [Fact]
+    public void Emit_CentredPage_LeadingSpacesRemovedTrailingSpacesKept()
+    {
+        var source = EmitSingle("TEDGE", "  \\HFoo  ");
+
+        Assert.Equal(
+            "title: TEDGE\n---\n[center trimwhitespace=false/]Foo  [empty trimwhitespace=false/] #line:TEDGE_p0\n===\n",
+            source);
+        AssertCompilesWithNoDiagnostic(Compile(source));
+    }
+
     // ---- Engine round-trip: empty page, trailing br, leading marker ----------------------------
 
     [Fact]

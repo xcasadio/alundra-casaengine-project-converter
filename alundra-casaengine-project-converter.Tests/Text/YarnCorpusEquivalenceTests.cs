@@ -428,6 +428,28 @@ public class YarnCorpusEquivalenceTests : IClassFixture<YarnCorpusEquivalenceTes
     }
 
     [Fact]
+    public void NamedCase_M472_S025_CentredLastLineKeepsItsEightTrailingSpaces()
+    {
+        if (!_fixture.Available)
+        {
+            return;
+        }
+
+        var title = _fixture.FindTitleStartingWith("M472_S025");
+        var comparator = new Comparator();
+        var asset = _fixture.FindAssetForTitle(title);
+        var pages = comparator.Play(asset, title);
+
+        // Hand-written expectation, independent of the reference decoder (D-E19-78, D-E19-84): the
+        // original counts the 8 spaces that end the centred line "Florin" + glyph 21 + "Roulette".
+        const string expected =
+            "text=Roue de la fortune !\\nFlorinRoulette        ; markers=[voice@0 id=-1, center@0, center@21, glyph@27 id=21, empty@43]; commands=[]; calls=[]";
+        Assert.Equal(expected, comparator.ToCanonicalString(pages[0]));
+        Assert.Equal(_fixture.ExpectedByTitle[title][0].ToCanonicalString(), comparator.ToCanonicalString(pages[0]));
+        Assert.Empty(comparator.UnhandledCommands);
+    }
+
+    [Fact]
     public void NamedCase_M472_S011_Pages0To1_MatchTheReferenceDecoder()
     {
         if (!_fixture.Available)
