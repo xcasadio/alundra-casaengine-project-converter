@@ -7928,7 +7928,7 @@ pas de `cmp` changé, traces non touchées.
     Y 13053952, FA 1 (le FA du binaire) ; tick 2 : Y 12947456, FA 0. Mutation `accord` (`:586`) → FA 0 au tick 1.
   - Les contacts exacts du moteur vers le sud et l'est (152,0 pour TSL7, 229,0 pour TSL8) sont fondés (émulation float32 du moteur,
     `e19m6-disc-verify/engine_contact_f32.py`) mais pas encore exécutés : la première exécution les mesure ; un écart est un arrêt.
-- **M6-3 — M-31 UO-1 par `0x42`** : nouveau test dans `AlundraEventProgramRunnerLogicEntityTests.cs` (son `FakeWorld`, `:28-47`, patron
+- ✅ **M6-3 — M-31 UO-1 par `0x42`** : nouveau test dans `AlundraEventProgramRunnerLogicEntityTests.cs` (son `FakeWorld`, `:28-47`, patron
   de `:260-277`) : `42 46 FF` puis `45 FF` : drapeaux du héros 0x100 → 0x2100 → 0x100 ; propriétaire inchangé ; `CodeIndex` 2 puis 1 ;
   `Result` gardé. Mutation : `AlundraEventProgramRunner.cs:668` et `:672`, `entity.Flags` → `owner.Flags` → héros 256 au lieu de 8448.
 - **M6-4 — M-32, moitié surcouche** : nouvelle fixture 2 × 8 avec une pose de sol au chargement (case (1, 7), hauteur 3, dessinée en
@@ -7963,6 +7963,10 @@ pas de `cmp` changé, traces non touchées.
     sud et l'est, 152,0 et 229,0 : aucun écart, aucun arrêt). Classe entière (12 tests) sous chaque mutation, un seul test rouge :
     `sign_s` : TSL7 rouge, tick 9 X 17186816 ; `sign_e` : TSL8 rouge, tick 12 Y 11567104 ; `gateent` : TSL9 rouge, tick 9 X 17285120 et
     1 glissade ; `accord` : TSL10 rouge, tick 1 FA 0. Production remise après chaque mutation (octet pour octet).
+  - **M6-3** : nouveau test `NoObstacleSlide_0x46And0x45_AfterA0x42_WriteTheFlagsOfTheHero_NotTheOwners_ResultUntouched` dans
+    `AlundraEventProgramRunnerLogicEntityTests.cs` : vert sur la production (drapeaux du héros 0x100, 0x2100, 0x100 ; propriétaire
+    inchangé ; `CodeIndex` 2 puis 1 ; `Result` 7 gardé). Mutation `uo1` (`AlundraEventProgramRunner.cs:668` et `:672`, `entity.Flags` →
+    `owner.Flags`), classe entière (24 tests) : un seul rouge, le nouveau, héros 256 au lieu de 8448. Production remise.
 
 ### 1.2u Recette de l'auteur du 2026-10-05 ⏳ (constat consigné ; deux défauts enquêtés)
 

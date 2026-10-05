@@ -277,6 +277,39 @@ public class AlundraEventProgramRunnerLogicEntityTests
     }
 
     [Fact]
+    public void NoObstacleSlide_0x46And0x45_AfterA0x42_WriteTheFlagsOfTheHero_NotTheOwners_ResultUntouched()
+    {
+        // E19.m6 M6-3: UO-1 runs 0x45/0x46 on an entity that is its own logic entity, so the handlers' operand (the logic entity) is never told apart from the owner.
+        // Here the owner retargets the hero with 0x42: the bit 0x2000 lands on the hero's flags, the owner's are not written.
+        var world = new FakeWorld();
+        var hero = new AlundraEntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal, Flags = 0x100 };
+        world.PlayerEntity = hero;
+        var owner = Entity(1);
+        var ownerFlags = owner.Flags;
+
+        var set = NewDocument(0x42, 0x46, 0xFF);
+        var setState = StateFor(set);
+        setState.Result = 7;
+        NewRunner(set, world).RunOneScriptCall(owner, setState);
+
+        Assert.Same(hero, owner.LogicEntity);
+        Assert.Equal(0x2100u, hero.Flags);
+        Assert.Equal(ownerFlags, owner.Flags);
+        Assert.Equal(2, setState.CodeIndex);
+        Assert.Equal(7, setState.Result);
+
+        var clear = NewDocument(0x45, 0xFF);
+        var clearState = StateFor(clear);
+        clearState.Result = 7;
+        NewRunner(clear, world).RunOneScriptCall(owner, clearState); // the owner's word still points at the hero.
+
+        Assert.Equal(0x100u, hero.Flags);
+        Assert.Equal(ownerFlags, owner.Flags);
+        Assert.Equal(1, clearState.CodeIndex);
+        Assert.Equal(7, clearState.Result);
+    }
+
+    [Fact]
     public void SetLogicEntityToPlayer_0x42_WithoutAHero_LeavesTheContext_IsDegraded_AndAdvancesBy1()
     {
         var document = NewDocument(0x42, 0x1A, 7, 0xFF);
