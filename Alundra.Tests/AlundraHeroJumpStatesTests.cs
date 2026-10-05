@@ -261,9 +261,10 @@ public sealed class AlundraHeroJumpStatesTests
     }
 
     [Fact]
-    public void SJ4b_WithoutTheStamp_TheTakeOffWouldBeLostOnAFrameWithoutTick()
+    public void SJ4b_ATakeOffWithoutAStampOfThisTick_IsRewrittenByTheTail_EvenOnAFrameWithoutTick()
     {
-        // The guard of the stamp: the walking take-off on the ground is the case of a stamp equal to the tick count only.
+        // The guard of the stamp: the standing take-off (JumpStanding) on the ground is kept only when its stamp equals the tick count; a stamp of an earlier tick, or none
+        // (MotionTickCount - 1, i.e. -1, the default value without a stamp), lets the tail rewrite it to Idle.
         var hero = Hero(JumpStanding);
         hero.JumpStartTickStamp = hero.MotionTickCount - 1;
         Move(hero, Pad());

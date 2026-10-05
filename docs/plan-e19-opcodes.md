@@ -7904,7 +7904,7 @@ pas de `cmp` changé, traces non touchées.
 - ✅ **M6-0 — Mesure d'abord** : `h4v_mut.py sign_s` du scratchpad sur toute la suite `Alundra.Tests` (Debug) : si A14
   (`AlundraArcSupport.cs:282-287`, la seule glissade vers le sud de la suite) rougit, TSL7 ne tue rien de neuf et M-31 « signe sud » se
   clôt sans test (précédent de M-23) ; sinon TSL7 est ajouté. Le résultat est écrit dans ce plan avant M6-2.
-- **M6-1 — M-19a** : renommer `MovePlayer_OtherAnimationId_LeftUnchanged_NotPortedCase` (`AlundraPlayerManagerTests.cs:95-110`), dont
+- ✅ **M6-1 — M-19a** : renommer `MovePlayer_OtherAnimationId_LeftUnchanged_NotPortedCase` (`AlundraPlayerManagerTests.cs:95-110`), dont
   le nom contredit `:98-99` et `:105` (0x2D → Moving), par exemple
   `MovePlayer_AirStillOnTheGround_GoesBackToMoving_AnUnportedAnimationIsLeftUnchanged` ; corps inchangé ; l'historique du plan qui cite
   l'ancien nom n'est pas réécrit. **M-19b** : renommer SJ4b (`AlundraHeroJumpStatesTests.cs:263-271`), par exemple
@@ -7955,6 +7955,9 @@ pas de `cmp` changé, traces non touchées.
 - **Fait le 2026-10-05** (commits dans l'ordre des tâches ; production, export, sous-modules et traces non touchés).
   - **M6-0** : `h4v_mut.py sign_s` sur toute la suite `Alundra.Tests` (Debug, sans filtre) : **2647 sur 2647 verts** ; A14 ne rougit pas,
     donc TSL7 est ajouté (il tue ce que la suite ne tuait pas).
+  - **M6-1** : les deux renommages (M-19a, M-19b) et le commentaire de SJ4b faits, corps et assertions inchangés ; aucune
+    mutation (des noms). Nouveaux noms : `MovePlayer_AirStillOnTheGround_GoesBackToMoving_AnUnportedAnimationIsLeftUnchanged` et
+    `SJ4b_ATakeOffWithoutAStampOfThisTick_IsRewrittenByTheTail_EvenOnAFrameWithoutTick`.
   - **M6-2** : `Rig` d'`AlundraHeroSlideTests.cs` gagne deux paramètres facultatifs (`probeFactory`, `configure`) ; TSL7 à TSL10 ajoutés,
     verts sur la production à la première exécution avec exactement les valeurs écrites d'avance (y compris les contacts du moteur vers le
     sud et l'est, 152,0 et 229,0 : aucun écart, aucun arrêt). Classe entière (12 tests) sous chaque mutation, un seul test rouge :

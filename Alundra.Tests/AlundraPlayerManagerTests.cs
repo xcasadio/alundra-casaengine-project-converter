@@ -93,7 +93,7 @@ public class AlundraPlayerManagerTests
     }
 
     [Fact]
-    public void MovePlayer_OtherAnimationId_LeftUnchanged_NotPortedCase()
+    public void MovePlayer_AirStillOnTheGround_GoesBackToMoving_AnUnportedAnimationIsLeftUnchanged()
     {
         // E19.d2c2 S1: 0x2D (in the air, no direction) IS a ported case now: on the ground (a bare proxy is never in the air) with Right held it goes back to
         // Moving, like the binary's tail. A case that is still not ported stays untouched.
