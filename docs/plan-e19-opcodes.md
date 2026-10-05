@@ -7315,7 +7315,7 @@ n'est demandé, et l'original lirait au-delà de la table (point ouvert à consi
   avec un groupe nul, pas avec une carte d'un autre groupe ; P4 la période de l'auto-chaîne n'est pas épinglée. **Reste la recette T6
   de l'auteur.**
 
-### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 ✅ ; E19.m4 ✅ ; E19.m5 ✅ ; E19.m6 (M-19, M-31, moitié surcouche de M-32) ⏳ planifiée le 2026-10-05)
+### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 ✅ ; E19.m4 ✅ ; E19.m5 ✅ ; E19.m6 (M-19, M-31, moitié surcouche de M-32) ✅ faite le 2026-10-05)
 
 **Recensement** (2026-10-03, lecture seule ; table complète versionnée dans `docs/plan-e19-m-annexe/backlog-2026-10-03.md`, en
 anglais) : 46 points M-01 à M-46, chacun vérifié contre le code de `bafbd5a`, classé (test seul, commentaire ou doc, petit correctif
@@ -7889,7 +7889,7 @@ déplace aucune assertion).
   convertisseur 433/433, `cmp` sans écart, six traces à l'octet. Avis P4 : les mutations n'ont été rejouées que sur la classe du test,
   pas sur toute la suite.
 
-#### 1.2s.7 E19.m6 — Hygiène des tests : M-19, M-31, moitié surcouche de M-32 ⏳ (planifiée le 2026-10-05 ; relecture n°1 READY)
+#### 1.2s.7 E19.m6 — Hygiène des tests : M-19, M-31, moitié surcouche de M-32 ✅ (faite le 2026-10-05 ; relecture n°1 READY)
 
 **Faits** (découverte du 2026-10-05, lecture seule, à `d353136` ; contre-vérifiée ; notes versionnées, en anglais :
 `docs/plan-e19-m-annexe/m6-discovery-2026-10-05.md` et `m6-discovery-verify-2026-10-05.md`) : aucun fichier de la tranche n'a changé
@@ -7972,6 +7972,11 @@ pas de `cmp` changé, traces non touchées.
     sur la production (avant : (0, 5, 1, 4) de clé `(7, 0, 0)` ; vidée : aucune entrée ; remplie : (0, 5, 1, 4) de clé `(7, 0, 1)`, sans
     avertissement). Mutation `m32` (`AlundraCellVisualSync.cs:157` sans `&& !sync._floorModel.ContainsKey((x, y))`), suite entière
     (2653 tests) : un seul rouge, le nouveau, 0 entrée et 1 avertissement « degraded » après le remplissage. Production remise.
+  - **Clôtures** : M-19c, la glissade dans `MoveControllerAndPullPosition`, le terme oblique de la table et l'avis d'E19.m1 sont
+    clos sans changement, pour les raisons écrites ci-dessus ; aucun fichier de production touché (`git diff` vide sur `Alundra/`).
+  - **Suites** : `Alundra.Tests` 2653 sur 2653 en Release puis en Debug (la Debug en dernier), `cmp` de la DLL de `Debug` et de
+    `alundra-project/Alundra.dll` sans écart, garde d'octets des six traces à 0 (les quatre traces du héros remises). Aucun écart avec
+    les valeurs écrites d'avance, aucun arrêt.
 
 ### 1.2u Recette de l'auteur du 2026-10-05 ⏳ (constat consigné ; deux défauts enquêtés)
 
