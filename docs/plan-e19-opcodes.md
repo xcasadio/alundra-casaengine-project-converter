@@ -260,6 +260,18 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     (A6 : branche T1000 de la 391 ; A10 et A11 : chemin critique ; gardes « aucun contact » de A6, A8, A9, A10, A20 ; budgets bornés
     de T-A19, T-B9, A14, A15, A18) sont **simulées d'abord** : leurs valeurs sont écrites d'avance par une simulation, pas mesurées
     après le code.
+  - **D-E19-78** — (2026-10-05, l'auteur, découverte d'E19.f2b, Q2) La ligne centrée `Florin\W5Roulette` (S025 des cartes 472,
+    473 et 474) perd ses 8 espaces de fin (D-E15-8) : largeur 93 au lieu des 125 du binaire, ligne à x 113 au lieu de 97. **Se
+    corrige au convertisseur** (pas un écart nommé).
+  - **D-E19-79** — (2026-10-05, l'auteur, Q4) Les **choix (E19.f3) viennent juste après E19.f2b** ; d'ici là, la fenêtre de
+    choix du moteur peut couvrir une partie de la boîte.
+  - **D-E19-80** — (2026-10-05, l'auteur, Q6) L'écran de la boîte de texte est **modal, comme la boîte du moteur aujourd'hui**.
+  - **D-E19-81** — (2026-10-05, l'auteur, Q8) Les **détails fins de la vue sont fidèles au binaire** : retard de la découpe
+    pendant la sortie de la boîte, chaque ligne coupée à 255 pixels, rangée de jambages d'une image à y = 172 en fin de
+    défilement.
+  - **D-E19-82** — (2026-10-05, choix technique de la session, O-E19-58) La surcouche des fonds porte la **valeur brute de
+    `BGColorA`** dans un champ `OverlayBlendMode` du document de fond (pas un mode déjà résolu par le convertisseur) ; la DLL
+    la traduit en mode PSX par la table des couches (ADR-0053 : le jeu choisit le mode, le moteur ne connaît pas la table).
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -4748,12 +4760,124 @@ texte (`falcon_update` avant la ligne) n'est pas établie au milieu d'une page.
   encore `0x4C` parmi les opcodes permis à sauter ; risque R2 (le relâchement de la boîte efface aussi `MenuOpen` pendant l'écran de
   sauvegarde, comme le binaire). Reste la recette F2a (auteur) : la boîte du moteur montre le préfixe tapé (la vue fidèle est f2b).
 
-###### E19.f2b — Vue de la boîte (esquisse, après E19.s et E19.f2a)
+###### E19.f2b — Vue de la boîte ⏳ (découverte du 2026-10-05 faite ; découpée en E19.f2b0, planifiée, et E19.f2b1, esquissée ; D-E19-78 à D-E19-81)
 
-Écran XAML lié à un view model au patron d'`AlundraSaveScreen` : cadre cuit (`973a9208-…`), y du glissement, trois lignes font3,
-défilement par découpe (la découpe de MGUI sous l'échelle de la racine est à vérifier), curseur `ui_dialogue_cursor`, centrage `\H`
-par les largeurs des glyphes (table du binaire `0x800993C4` comparée aux avances de `font3.fnt`) ; la boîte du moteur n'est plus
-utilisée par Alundra.
+**Découverte** (2026-10-05, lecture seule ; `f2b-disc/notes.md` du scratchpad, contre-vérifiée par `f2b-disc-verify/verify.md`) ;
+faits porteurs **[binaire]** :
+- **Ordre** : une table d'ordre locale de 10 créneaux ; créneau 0 : les cellules du cadre (`0x800481F8`) puis le curseur d'attente ;
+  créneau 2 : une découpe `DR_AREA` puis les trois bandes de texte ; créneau 3 : la zone de dessin plein écran remise (`0x80058134`).
+  La découpe du texte ne s'applique jamais au cadre ni au curseur.
+- **Géométrie** (table `0x800A731C`, entrée 0 `{cfg 0x8009CFBC, 16, 5, 32, 6}`) : cadre en `(16, Y)`, 288 × 56 (le sprite déjà exporté
+  `973a9208-…`) ; chaque ligne est une bande de 255 × 16 en x = 32, ou `16 + (288 − w)/2` après `\H`, y = `Y + 5 + 16i − défilement` ;
+  découpe `(32, min(Yprécédent + 4, 239), 258, min(50, 240 − haut))`, soit x 32-289, y 172-221 au repos ; curseur en `(288, Y + 32)`,
+  images u 0xB0, 0xC0, 0xD0, 0xE0, v 0x38 ; bandes et curseur opaques, sans modulation.
+- **Détails d'une image** : la découpe est calculée avant que `UpdateUiBoxesPosition` (`0x80046FF4`) ne déplace Y : pendant la sortie,
+  elle garde l'Y de la passe précédente et coupe les ΔY − 1 dernières rangées de la ligne 3 (à Y = 172, les rangées 13 à 15 ; à Y = 177,
+  182 et 187, les rangées 12 à 15, la ligne de base de 93 des 107 glyphes) ; la passe qui finit un défilement dessine les anciennes
+  bandes au décalage 16 avant de les décaler (`0x80045AA0` avant `0x80045D68`) ; la première passe d'entrée découpe depuis la
+  position précédente (168, découpe en y = 172), pas depuis 240 (`InitializeDialogMessage` n'écrit pas la position).
+- **`\H`** : `CalcTextWidth` (`0x8004771C`) du reste de la ligne, rangé par bande, effacé à l'ouverture et pour la nouvelle bande du bas
+  à la fin d'un défilement ; la boîte de la DLL ignore le centrage (`AlundraDialogueBox.cs:606-607`). Corpus : 823 marqueurs `[center]`
+  dans 171 fichiers Yarn, largeurs de 27 à 254 ; la largeur tirée du Yarn égale celle du binaire sur 210 des 211 textes distincts ;
+  l'exception est S025 des cartes 472 à 474 (D-E19-78). La table de sauts de `CalcTextWidth` (`0x80024098`) : seuls B à G, T et Y
+  sautent un caractère, X deux, W suit le chemin des glyphes ; `\V` est lu comme un glyphe.
+- **font3** : les avances de `font3.fnt` égalent la table `0x800993C4` sur les 145 caractères, mais les rectangles sont les cases
+  16 × 16 de la grille : E19.f2b0.
+- **Moteur** (lecture du code) : un enfant `ClipToBounds` sous l'échelle de la racine est découpé (E19.s2 met la découpe dans la vue) ;
+  la police bitmap font3 se résout sans décalage d'origine, à l'échelle 1, échantillonnage point ; mais `MGTextBlock` a par défaut une
+  marge (1, 1, 1, 1), `LinePadding` 2, le centrage vertical et le retour à la ligne (`MGTextBlock.cs:1363`, `MGTheme.cs:721`) ; aucune
+  XAML d'Alundra ne pose la marge de ses textes (O-E19-64).
+
+**Choix de conduite** (techniques, session) : f2b0 en tranche à part, avec un nouveau CSV de l'analyseur (Q3) ; largeurs de `\H` lues
+dans les avances de `font3.fnt` (Q1 ; un port de `CalcTextWidth` suivrait la table de sauts, pas les notes) ; curseur réglé sur le
+compteur de ticks de la boîte (Q5) ; preuve au pixel par un test sur GPU réel dans `Alundra.Tests`, ignoré sans GPU (Q7 ;
+`GpuDeviceHost.cs` est interne à `CasaEngine.Tests` : nouveau harnais) ; marge par défaut des textes des écrans existants consignée à
+part (Q9, O-E19-64).
+
+###### E19.f2b0 — Rectangles des glyphes font3 depuis la table du binaire ⏳ (planifiée le 2026-10-05 ; relecture à faire)
+
+**Faits** **[binaire, données]** (`f2b-disc/glyphs.py`, `glyphpix.py` du scratchpad ; recompte du 2026-10-05,
+`merge-1005/f2b0_counts.py`) :
+- `RenderTextBitmap` (`0x800478C4`) copie, pour chaque caractère tapé, `w × h` texels de FONT3.TIM depuis `(srcX, srcY)` vers
+  `(plume, yoff)`, puis avance la plume de `w` (`0x80047C08`-`0x80047C18`). La table est en `0x800993C4` : 256 entrées de 20 octets
+  `{w, h, srcX, srcY, yoff}`, indexées par le code brut ; annexe versionnée `docs/plan-e19-f2b0-annexe/glyph_table.txt`, relevée sur le
+  binaire. Tous les `yoff` valent 0 ; aucune entrée n'a une largeur ou une hauteur nulle. Le tableau décompilé `g_fontCharWidthTable`
+  (`StaticVariables.cs:9484`) l'égale sur ses 1280 entiers ; `FontCharWidths.csv` de l'analyseur n'en publie que le champ 0 (l'avance).
+- **Portage** : `FontWriter` écrit pour chaque glyphe la case 16 × 16 de son enregistrement source (`ui/font3.json`, la grille
+  `x = code % 16 × 16`, `y = code / 16 × 16`), `xoffset = yoffset = 0`, `xadvance` = l'avance du CSV (égale à `w` sur les 145 lignes).
+  Sur les 145 lignes `char` de `UI/font3.fnt`, **129** ont un autre rectangle que le binaire (seuls les codes 0 à 15, cases pleines,
+  sont égaux) ; **16** glyphes se dessinent autrement : `, - 1 :` et `œ « ° »` décalés, `' y z { é` avec des pixels de la case voisine,
+  les codes 30, 31 et 127 (rectangle 1 × 1 dans le binaire) dessinent une case entière ; `font3-charset.json` porte la case de la grille
+  pour ses 256 lignes, dont 238 changeraient. Tous les écrans en font3 sont touchés (inventaire, sous-inventaire, sauvegarde, boîte).
+
+**Règles.**
+- **F2B0-R1 — Analyseur** (sous-module, branche `chantier/e19f2b0-glyph-table` depuis `master` `db69b82`) : nouveau
+  `AlundraTools/AlundraTools/FontGlyphTable.csv`, en-tête `code;width;height;srcX;srcY;yOffset`, 256 lignes (codes 0 à 255), relevé une
+  fois sur `g_fontCharWidthTable` (5 entiers par code, dans cet ordre) par un outil jetable hors du dépôt, comme `FontCharWidths.csv`
+  (`eb38cac`) ; la décompilation n'est pas modifiée ; une entrée `<None Update>` avec `CopyToOutputDirectory` et un commentaire, au
+  patron de `FontCharWidths.csv` (`AlundraTools.csproj:33-41`) ; `FontCharWidths.csv` inchangé.
+- **F2B0-R2 — Convertisseur** : lien du nouveau CSV dans `alundra-casaengine-project-converter.csproj`, comme `FontCharWidths.csv`
+  (`:37`) ; lecteur `FontGlyphTableCatalogReader` au patron de `FontCharWidthCatalogReader` (ligne mal formée : avertissement, ligne
+  ignorée) ; dans `FontWriter`, le rectangle de chaque glyphe (lignes `char` et lignes de `font3-charset.json`) vient de la table, par
+  son code brut, et `yoffset` vaut le `yOffset` de la table ; `xadvance` et le choix des caractères (ADR-0009) inchangés ; CSV absent ou
+  code sans ligne : le rectangle de l'enregistrement, avec un avertissement (patron du repli de l'avance) ; le contrôle de la grille
+  sur les enregistrements source reste ; docs : commentaire de classe de `FontWriter`, `docs/formats/font.md` (`x`, `y`, `width`,
+  `height` : le rectangle de la table du binaire ; exemple) ; ADR du parent (prochain numéro libre).
+- **F2B0-R3** : ni la DLL ni le moteur ne changent.
+
+**Tâches.**
+- **F2B0-0 — Mesure d'abord** (hors du dépôt) : une sonde jetable charge par `StaticSpriteFont.FromBMFont` un `font3.fnt` réécrit par
+  script avec les rectangles de l'annexe et mesure les textes que mesurent `AlundraFont3GlyphTests.cs` (`:399`, `:468`, `:502-529`) et
+  les autres tests d'`Alundra.Tests` qui chargent font3 (`AlundraDialoguePresenterFontTests.cs`, `AlundraInventoryScreenFontTests.cs`,
+  `AlundraInventoryScreenXamlTests.cs`, `AlundraSaveScreenXamlTests.cs`, `AlundraScreensFollowTheWindowTests.cs`,
+  `AlundraScreenBindingReleaseTests.cs`), avec le `.fnt` d'aujourd'hui et le nouveau ; résultat écrit dans l'annexe avant F2B0-2.
+  Une mesure qui change fait de son test un test « qui bouge », ajouté à la liste fermée avec sa nouvelle valeur ; sinon il reste
+  inchangé.
+- **F2B0-1 — Analyseur** : le CSV, puis un script de comparaison : le CSV égale l'annexe sur les 256 lignes (aucun test dans
+  l'analyseur).
+- **F2B0-2 — Convertisseur, tests d'abord** (données réelles, `data-extracted/`, sortie anticipée si absent comme les tests voisins ;
+  l'annexe est lue dans le dépôt, jamais le CSV de l'analyseur ni la sortie du convertisseur comme référence) :
+  - **T1** : pour chacune des 145 lignes `char`, `(x, y, width, height, xoffset, yoffset, xadvance)` = `(srcX, srcY, w, h, 0, yoff, w)`
+    de la ligne de l'annexe de son code brut ; rouge aujourd'hui sur 129 lignes ;
+  - **T2** : pour chacune des 145, les texels découpés dans `UI/Textures/font3.png` par le rectangle de la ligne `char` et posés à
+    `(xoffset, yoffset)` égalent ceux découpés par le rectangle de l'annexe et posés à `(0, yoff)` ; rouge aujourd'hui sur exactement
+    les codes 30, 31, 39, 44, 45, 49, 58, 121, 122, 123, 127, 156, 171, 176, 187 et 233, vert sur les 129 autres ;
+  - **T3** : les lignes de `font3-charset.json` portent le rectangle de l'annexe (256 lignes ; rouge aujourd'hui sur 238) ;
+  - lecteur : 256 lignes lues ; une ligne mal formée donne un avertissement ;
+  - tests existants qui bougent, liste fermée : `FontWriterTests.cs`, l'aide `AssertGlyph` (`:278-285`) prend la largeur et la hauteur
+    attendues ; ses appels `:49` (les 17 caractères prouvés : rectangles de l'annexe), `:53` ('A' → (16, 64, 7, 16)), `:135` ('œ' →
+    (195, 144, 9, 16)) ; `:182` (largeur du rectangle de 'é' 16 → 5 ; X 144 et Y 224 inchangés) ; plus ceux que nomme F2B0-0 ;
+    `AlundraFont3GlyphTests.cs:507-508` reste vert ('é' toujours en 144, 224).
+- **F2B0-3 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement `UI/font3.fnt`,
+  `UI/font3-charset.json` et `report.json` ; double export identique hors `report.json`.
+- **F2B0-4 — Vérification** (vérificateur neuf). **F2B0-5 — Recette** (auteur) : dans l'inventaire et l'écran de sauvegarde, virgules,
+  tirets, deux-points, « 1 », guillemets, « œ » et « ° » à leur place ; plus de pixels parasites à droite de « y », « z », « é ».
+
+**Acceptation.**
+1. T1 à T3 rouges d'abord avec les valeurs ci-dessus, verts après ; le CSV égale l'annexe.
+2. Tests existants touchés : la liste fermée ci-dessus ; toute autre assertion qui bouge est un arrêt.
+3. Export : exactement les trois fichiers ; double export.
+4. Tests du convertisseur ; `Alundra.Tests` en Release puis en Debug sur l'export, la Debug en dernier, `cmp` sans écart ; les six
+   traces à l'octet ; `CasaEngine.Tests` n'est pas touché.
+
+**Retour arrière** : pointeur de l'analyseur, revert des commits du parent, puis export complet en place dont le manifeste égale le
+manifeste « avant » (hors `report.json`).
+
+**Risques** : la mesure des textes par FontStashSharp (F2B0-0 ; un paquet binaire, non lisible) ; la place exacte des pixels sous MGUI
+n'est prouvée qu'en f2b1 (test sur GPU) ; les écrans en font3 existants changent (voulu : les glyphes du binaire).
+
+###### E19.f2b1 — Vue de la boîte (esquisse, après E19.f2b0)
+
+Écran XAML lié à un view model au patron d'`AlundraSaveScreen`, **modal** (D-E19-80) : R1, un instantané pur « passe dessinée » écrit
+à la fin de chaque passe de la boîte (`Drawn`, `Y`, haut et hauteur de la découpe, lignes telles que dessinées, avant le décalage sur
+la passe qui finit un défilement, x de chaque ligne avec la largeur `\H` de sa bande, image du curseur) ; R2, le view model ; R3,
+`TextBoxScreen.xaml` (cadre, curseur, toile de découpe de 258 de large avec trois textes font3 : marge 0, `LinePadding` 0, sans retour
+à la ligne, sans mise en forme, blanc) ; R4, l'écran et un présentateur appelé juste après chaque passe de la boîte ; R5, le directeur
+n'envoie plus le préfixe tapé au moteur (la boîte du moteur ne montre plus que les choix jusqu'à E19.f3, D-E19-79). Détails fins
+fidèles (D-E19-81). Ligne S025 corrigée au convertisseur (D-E19-78). Tests : instantané contre l'oracle (étendu depuis le binaire et
+`model.py`), view model sans affichage, XAML sur un `MGDesktop`, test au pixel sur GPU réel (référence `f2b-disc/refcompose.py`),
+recette. Tests qui bougent à recenser à HEAD (`AlundraDialogueBoxOrderTests.cs:360`, `:366-380`, `AlundraDialogueFramePassTests.cs:246`,
+`AlundraDialoguePresenterWiringTests.cs:138-186`, `:199-265`, peut-être `AlundraDialogueOutOfBandCloseTests.cs:48-69`).
 
 ### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) — E19.k1 ✅ (recette K5 en attente) ; E19.k2 ⏳ (planifiée)
 
@@ -5853,7 +5977,7 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
 au sud (O-E19-28 b, aussi contre les cellules) demande l'étape 2 (O-E19-42) ; l'image d'A10J `@2462` peut bouger d'un tick
 (retards connus de la DLL).
 
-### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2c 🧪 (CONFIRMED le 2026-10-05, recette G2c-6 en attente) ; G2b, G1/G3, G4 à planifier)
+### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2c 🧪 (CONFIRMED le 2026-10-05, recette G2c-6 en attente) ; G2d ⏳ (planifiée le 2026-10-05, O-E19-58) ; G2b, G1/G3, G4 à planifier)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B les données, le convertisseur,
 l'analyseur, le moteur et la DLL ; notes, rendus et scripts dans le scratchpad de la session, `e19g-disc/A/notes.md` et
@@ -6515,6 +6639,85 @@ couche 1 de la 44 (le portage efface en noir ; la couleur d'effacement du binair
   Avis P4 : 14 rouges côté DLL au lieu de 15 (le test garde ne peut rougir que sur l'ancien export, montré à part) ; la branche `None`
   de la surcharge interne rend une entrée opaque (aucun appelant aujourd'hui ne lui passe `None`). Reste la recette G2c-6 (auteur).
 
+##### 1.2o.4 E19.g G2d — Surcouche des fonds au mode du binaire (O-E19-58) ⏳ (planifiée le 2026-10-05 ; relecture à faire)
+
+**Faits** **[binaire, données]** (découverte du 2026-10-05, `o58-disc/notes.md` du scratchpad ; contre-vérification indépendante,
+`o58-disc-verify/verify.md`, scripts refaits, rien de réfuté hors du numéro d'ADR du moteur) :
+- L'octet `header+0x23` (`Infos.BGColorA`, v) règle la surcouche : v = 0, rien (portes `0x8005B5E8` au chargement, `0x8005B760` à
+  chaque image) ; v = 1 à 4, un `TILE` semi-transparent de 320 × 240 en (0, 0), code 0x62, d'ABR `v − 1`, lu dans la même table que
+  celle des couches (`*(u16*)(0x8018CF66 + 2v)`, `0x8005BAAC`-`0x8005BAC4`) ; v = 5 à 100 lirait au-delà de la table ; v = 101 à 104, un
+  dégradé `POLY_G4`. Couleur : `Data[header+0x10]` (`Overlay`), une seule entrée de durée 0 sur les 16 cartes : couleur fixe, déjà
+  juste dans l'export. **[PSX]** une primitive sans texture mêle chaque pixel.
+- **Recensement** (330 cartes) : v vaut 0 sur 314, 1 sur 15 (18, 19, 96 à 99, 271, 289, 357, 403 à 406, 450, 481) et **2 sur la 293**
+  seule (Inoa en feu, couleur (50, 0, 0)) : la 293 est **additive** dans l'original ; le portage la moyenne, la scène y est assombrie
+  de moitié au lieu d'être un peu rougie (un gris moyen (128, 128, 128) donne (89, 64, 64) au lieu de (178, 128, 128)). Les 15 autres
+  sont justes.
+- **Ordre** : la surcouche est dessinée après les couches `Ground` = 0, le monde et les boîtes de débogage, avant les couches
+  `Ground` ≠ 0 (non teintées), puis le fondu et l'interface ; la clé de tri du portage (Effects, couche −1) suit déjà cet ordre.
+- **Portage** : le convertisseur ne garde que `OverlayEnabled = BGColorA != 0` (`BackdropReader.cs:254-255`) ; la DLL pose la teinte
+  `(R, G, B, 128)` (`AlundraBackdropStage.cs:298`) ; le moteur n'a que `Color` et `SortKey` dans `ScrollingTintDefinition`
+  (`:6-23`) et dessine la teinte en `AlphaBlend` (`ScrollingLayerComponent.cs:209`). Origine : la décompilation
+  (`GraphicManager.cs:1251-1350`, alpha 0,5) a perdu la lecture de l'ABR, d'où la phrase « BGColorA 1 et 2 se dessinent pareil »
+  (`BackdropReader.cs:132-133`). Le chemin à deux entrées des couches (G2a, G2c) ne convient pas à la teinte (pixel blanc d'alpha 255 :
+  l'entrée opaque la dessinerait opaque) : une entrée, avec l'état de mélange du mode.
+- Un ancien export se lit avec la nouvelle DLL (`BackdropLoader.cs:88`, options par défaut, champ absent → 0) ; une ancienne DLL lit
+  le nouvel export (champ inconnu ignoré).
+
+**Règles.**
+- **G2d-R1 — Moteur** (sous-module, branche `chantier/e19g2d-overlay-blend` depuis `main` `ebeb81c9`) : `ScrollingTintDefinition`
+  gagne `SpritePsxSemiTransparency PsxSemiTransparency` par un nouveau constructeur à trois arguments ; celui à deux arguments donne
+  `None` (aujourd'hui) ; `ScrollingLayerComponent.Submit` (`:189-211`) soumet, pour un mode autre que `None`, **une** entrée de même clé,
+  de même z et de fenêtre neutre : `Mode0` → `AlphaBlend` avec `(R, G, B, 128)` ; `Mode1` → `Additive` avec `(R, G, B, 255)` ; `Mode2`
+  → `Subtractive` avec `(R, G, B, 255)` ; `Mode3` → `Additive` avec chaque canal multiplié par 64/255, arrondi au plus proche (13 pour
+  50 ; inutilisé dans les données, choix de la session, même facteur que le `Mode3` de G2a) ; `None` → l'entrée d'aujourd'hui. Démo
+  obligatoire (`CasaEngineMonogame/AGENTS.md:44`) : un cas de teinte ajouté à la démo des couches de G2c, sonde du back-buffer, fond
+  (100, 150, 200), à ±1 : teinte (50, 0, 0) en `Mode1` → (150, 150, 200) ; teinte (40, 40, 40) en `Mode0` → (70, 95, 120). Docs :
+  `docs/engine/scrolling-layers.md:96-97`, `docs/engine/sprite-psx-semi-transparency.md:41-42` ; ADR du moteur 0056 (0055 est celle
+  d'audio-modern).
+- **G2d-R2 — Convertisseur** : `[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public int OverlayBlendMode`, la valeur
+  brute de `BGColorA` (D-E19-82), après `OverlayColorB` (`BackdropReader.cs:166`), posée dans la branche de succès (`:259-264`) ; docs
+  `:130-142` et `:150-151` (la phrase « 1 et 2 se dessinent pareil » tombe), `docs/formats/backdrops.md:54-75` et `:170-171`.
+- **G2d-R3 — DLL** : le champ dans `BackdropDocument.cs` ; dans `BuildDefinitions`, le mode de la teinte par le résolveur des couches
+  de G2c (1 → `Mode0`, 2 → `Mode1`, 3 → `Mode2`, 4 → `Mode3`) ; toute autre valeur (aucune dans le corpus ; 0 pour un ancien export) →
+  `Mode0`, le rendu d'aujourd'hui (choix de la session) ; couleur `(R, G, B, 255)` ; docs d'`AlundraBackdropStage` ; ADR du parent
+  (prochain numéro libre, 0036 aujourd'hui).
+- **G2d-R4 — Ordre et garde** : moteur d'abord (la DLL ne compile pas sans le champ), puis convertisseur et export complet en place,
+  puis DLL ; un test de la DLL sur l'export réel (convention locale : échoue si l'export manque) lit `OverlayBlendMode` 2 dans le
+  compagnon de la 293 : un export périmé échoue haut et fort.
+
+**Tâches.**
+- **G2d-0 — Annexe** : `docs/plan-e19-g2d-annexe/export_predicted_changes.txt` (17 lignes : 16 compagnons et `report.json`).
+- **G2d-1 — Moteur, tests d'abord** (au niveau de la file) : teinte (50, 0, 0, 255) en `Mode1` → une entrée `Additive`, (50, 0, 0, 255) ;
+  (40, 40, 40, 255) en `Mode0` → `AlphaBlend`, (40, 40, 40, 128) ; `Mode2` → `Subtractive` ; `Mode3` (50, 0, 0) → `Additive`,
+  (13, 0, 0, 255) ; constructeur à deux arguments → l'entrée d'aujourd'hui (rouges d'abord : le constructeur à trois arguments n'existe
+  pas, rouge de compilation) ; la démo ci-dessus.
+- **G2d-2 — Convertisseur, tests d'abord** : `bgColorA` 2 → `"OverlayBlendMode": 2` (aujourd'hui absent) ; 1 → 1 ; 0 → pas de propriété
+  et `OverlayEnabled` faux (déjà vert).
+- **G2d-3 — DLL, tests d'abord** : compagnon réel de la 293 → `Mode1`, (50, 0, 0, 255) (aujourd'hui (50, 0, 0, 128) sans mode ; rouge
+  tant que l'export n'a pas le champ) ; une carte à v = 1 (la 96 ou la 18) → `Mode0`, (R, G, B, 255) ; synthétiques : 3 → `Mode2`, 4 →
+  `Mode3`, 0 et 5 → `Mode0`.
+- **G2d-4 — Export et preuves** : manifeste SHA-1 avant et après : exactement l'annexe ; chaque compagnon gagne exactement la ligne
+  `  "OverlayBlendMode": v,` (CRLF) après `"OverlayColorB"` (+26 octets ; v = 2 pour la 293, 1 pour les 15 autres) ; dans `report.json`,
+  `OutputSizeBytes` + 416 et les durées ; aucun PNG, `.texture` ni `AssetInfos.json` ; double export identique hors `report.json`.
+- **G2d-5 — Vérification**. **G2d-6 — Recette** (auteur, si la 293 est atteignable ; sinon la démo en tient lieu) : Inoa en feu un peu
+  rougie, plus assombrie ; les 15 autres cartes inchangées.
+
+**Acceptation.**
+1. Tests de G2d-1 à G2d-3 rouges d'abord, verts après ; la démo égale les valeurs à ±1.
+2. Aucun test existant ne bouge (les tests du moteur utilisent le constructeur à deux arguments ; ceux de la DLL ne lisent que
+   `Assert.Null(tint)` et la clé ; ceux du convertisseur ne listent pas les propriétés) ; toute assertion existante qui bouge est un
+   arrêt.
+3. Export : exactement l'annexe ; double export ; la garde verte sur cet export.
+4. `CasaEngine.Tests` (construit à part) ; tests du convertisseur ; `Alundra.Tests` en Release puis en Debug sur l'export, la Debug en
+   dernier, `cmp` sans écart ; les six traces à l'octet.
+
+**Retour arrière** : pointeur du sous-module, revert des commits du parent, puis export complet en place dont le manifeste égale le
+manifeste « avant » (hors `report.json`).
+
+**Risques** : la couverture de la 293 par la teinte (un quad testé en profondeur au z de la caméra ; les tuiles statiques portent des
+décalages de profondeur par passe) n'est pas vérifiée, la même avant et après ; la 293 est hors de la chaîne (recette peut-être
+impossible aujourd'hui).
+
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 
 **Constat de l'auteur** (conversion relancée, DLL reconstruite) : contacts avec les PNJ bons ; sons et musique bons ; boîtes de
@@ -7103,7 +7306,7 @@ n'est demandé, et l'original lirait au-delà de la table (point ouvert à consi
   avec un groupe nul, pas avec une carte d'un autre groupe ; P4 la période de l'auto-chaîne n'est pas épinglée. **Reste la recette T6
   de l'auteur.**
 
-### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 ✅ ; E19.m4 ✅ ; E19.m5 ✅ ; E19.m6 (M-19, M-31, moitié surcouche de M-32) à découvrir)
+### 1.2s E19.m — Hygiène et clôture ⏳ (recensement fait le 2026-10-03 ; E19.m0 ✅ ; E19.m1 ✅ ; E19.m2 ✅ ; E19.m3 ✅ ; E19.m4 ✅ ; E19.m5 ✅ ; E19.m6 (M-19, M-31, moitié surcouche de M-32) ⏳ planifiée le 2026-10-05)
 
 **Recensement** (2026-10-03, lecture seule ; table complète versionnée dans `docs/plan-e19-m-annexe/backlog-2026-10-03.md`, en
 anglais) : 46 points M-01 à M-46, chacun vérifié contre le code de `bafbd5a`, classé (test seul, commentaire ou doc, petit correctif
@@ -7677,6 +7880,69 @@ déplace aucune assertion).
   convertisseur 433/433, `cmp` sans écart, six traces à l'octet. Avis P4 : les mutations n'ont été rejouées que sur la classe du test,
   pas sur toute la suite.
 
+#### 1.2s.7 E19.m6 — Hygiène des tests : M-19, M-31, moitié surcouche de M-32 ⏳ (planifiée le 2026-10-05 ; relecture à faire)
+
+**Faits** (découverte du 2026-10-05, lecture seule, à `d353136` ; contre-vérifiée ; notes versionnées, en anglais :
+`docs/plan-e19-m-annexe/m6-discovery-2026-10-05.md` et `m6-discovery-verify-2026-10-05.md`) : aucun fichier de la tranche n'a changé
+depuis le recensement, sauf `AlundraTurnOrderTests.cs` (créé par E19.m1) ; le code de la glissade (`AlundraScriptedMotion.cs:557-668`)
+est celui d'E19.h4 (`a09cd66`) ; un modèle 16.16 de la glissade (`e19m6-disc/slide_model.py`) retrouve toutes les valeurs épinglées de
+T-SL1 et T-SL3 ; signes de la glissade relus dans le binaire (table `0x80023734` ; direction 0 : +0xC000 en `0x80037A6C`, −0xC000 en
+`0x80037BA8` ; direction 24 : +0x8000 en `0x80037C18`, −0x8000 en `0x80037C44`). Aucun fichier de production ne change : pas d'export,
+pas de `cmp` changé, traces non touchées.
+
+**Règles et tâches** (une ligne par point ; « mutation » = remplacement par script de la ligne nommée, la production remise ensuite,
+`git diff` vide ; la classe du test d'abord, la suite entière pour les points marqués) :
+- **M6-0 — Mesure d'abord** : `h4v_mut.py sign_s` du scratchpad sur toute la suite `Alundra.Tests` (Debug) : si A14
+  (`AlundraArcSupport.cs:282-287`, la seule glissade vers le sud de la suite) rougit, TSL7 ne tue rien de neuf et M-31 « signe sud » se
+  clôt sans test (précédent de M-23) ; sinon TSL7 est ajouté. Le résultat est écrit dans ce plan avant M6-2.
+- **M6-1 — M-19a** : renommer `MovePlayer_OtherAnimationId_LeftUnchanged_NotPortedCase` (`AlundraPlayerManagerTests.cs:95-110`), dont
+  le nom contredit `:98-99` et `:105` (0x2D → Moving), par exemple
+  `MovePlayer_AirStillOnTheGround_GoesBackToMoving_AnUnportedAnimationIsLeftUnchanged` ; corps inchangé ; l'historique du plan qui cite
+  l'ancien nom n'est pas réécrit. **M-19b** : renommer SJ4b (`AlundraHeroJumpStatesTests.cs:263-271`), par exemple
+  `SJ4b_ATakeOffWithoutAStampOfThisTick_IsRewrittenByTheTail_EvenOnAFrameWithoutTick`, et corriger le commentaire `:266` (le héros est
+  `JumpStanding`, pas « walking » ; `MotionTickCount - 1` vaut −1, la valeur « sans tampon » par défaut,
+  `AlundraEntityScriptProxy.cs:268`). Aucune mutation (des noms).
+- **M6-2 — M-31, nouveaux tests dans `AlundraHeroSlideTests.cs`** (valeurs du modèle, écrites d'avance ; une valeur lue différente est
+  un arrêt) :
+  - **TSL7** (si M6-0 le garde) : T-SL1 en miroir, héros en (263,0 ; 135,0), Bas tenu, vitesse d'animation 312 : Y aux ticks 1 à 8 de
+    8927232 à 9961472 ; X = 17235968 + 49152 × (t − 8) aux ticks 9 à 23 ; Y 10121216 puis 10280960 aux ticks 24 et 25 ; FA 0 ;
+    15 glissades. Mutation `sign_s` (`:641`) → X 17186816 au tick 9.
+  - **TSL8** : T-SL3 en miroir, héros en (203,0 ; 177,0), `SteadyWalk(24, 159744, 0)`, Droite tenue : contact X 15007744 au tick 11 ;
+    Y = 11599872 + 32768 × (t − 11) aux ticks 12 à 23 ; X 15167488 au tick 24 ; 12 glissades (égal au binaire). Mutation `sign_e`
+    (`:653`) → Y 11567104 au tick 12.
+  - **TSL9** : T-SL1 plus une entité « Wall » sur la case (10, 10) par `JumpHeroRig.Build(probeFactory, configure)` avec
+    `ContactWorld.AddEntity(…, "Wall", 250, 167, 0, -10, -7, 0, 24, 16, 32)` (patron d'UJ12, `AlundraHeroJumpTests.cs:185-191`) ; la case
+    bloquante est requise : ticks 1 à 8 comme T-SL1 ; `XCollisionEntity` est le mur dès le tick 8 ; ticks 9 à 12 : X 17235968, FA 1,
+    0 glissade. Mutation `gateent` (`:595`) → X 17285120 et 1 glissade au tick 9. L'aide privée `Rig` (`:46-52`) peut gagner deux
+    paramètres facultatifs.
+  - **TSL10** : héros en (250,0 ; 200,0) contre les cases x ≤ 9, `SteadyWalk(16, -159744, 0)`, Haut tenu : tick 1 : X 16384000,
+    Y 13053952, FA 1 (le FA du binaire) ; tick 2 : Y 12947456, FA 0. Mutation `accord` (`:586`) → FA 0 au tick 1.
+  - Les contacts exacts du moteur vers le sud et l'est (152,0 pour TSL7, 229,0 pour TSL8) sont fondés (émulation float32 du moteur,
+    `e19m6-disc-verify/engine_contact_f32.py`) mais pas encore exécutés : la première exécution les mesure ; un écart est un arrêt.
+- **M6-3 — M-31 UO-1 par `0x42`** : nouveau test dans `AlundraEventProgramRunnerLogicEntityTests.cs` (son `FakeWorld`, `:28-47`, patron
+  de `:260-277`) : `42 46 FF` puis `45 FF` : drapeaux du héros 0x100 → 0x2100 → 0x100 ; propriétaire inchangé ; `CodeIndex` 2 puis 1 ;
+  `Result` gardé. Mutation : `AlundraEventProgramRunner.cs:668` et `:672`, `entity.Flags` → `owner.Flags` → héros 256 au lieu de 8448.
+- **M6-4 — M-32, moitié surcouche** : nouvelle fixture 2 × 8 avec une pose de sol au chargement (case (1, 7), hauteur 3, dessinée en
+  (1, 4)) par `WallPlacementOverlay.ApplyFloor`, et un test dans `AlundraCellVisualSyncTests.cs` : la case vidée puis remplie : avant,
+  une entrée (0, 5, 1, 4) de clé `ComputeFloorSortKey(7, 0, 0)` ; vidée, aucune ; remplie, (0, 5, 1, 4) de clé `(7, 0, 1)`, sans
+  avertissement. Mutation (suite entière) : `AlundraCellVisualSync.cs:157` sans `&& !sync._floorModel.ContainsKey((x, y))` → 0 entrée
+  et un avertissement « degraded ».
+- **Clos sans changement** (raisons écrites ici) : **M-19c** (`AlundraLadderClimbTests.cs:423`) : la mutation `gravity && !fall`
+  (`AlundraScriptedMotion.cs:292`) est déjà tuée par UH-7 (`AlundraHeroFallAndPadJumpTests.cs:353`, `:355`), précédent de M-23 ; la
+  glissade dans `MoveControllerAndPullPosition` : équivalente en production (seuls appelants `:518` et `:663` ; seul un appel direct la
+  verrait) ; le terme oblique de la table (`:605-613`) : inatteignable à l'étape 1 (les coins sont lus à une position que le moteur a
+  acceptée ; étape 2 non portée, D-E19-58) ; l'avis d'E19.m1 sur le contexte de `AlundraTurnOrderTests.cs` : 27 classes privées et une
+  interne implémentent `IEntityWorldContext` dans 27 fichiers de test, la convention du dépôt.
+
+**Acceptation.**
+1. Chaque nouveau test est vert sur la production et rougit sous sa mutation avec la valeur écrite ci-dessus (classe entière ; suite
+   entière pour M6-0 et M6-4) ; la production remise, `git diff` vide.
+2. Tests existants touchés, liste fermée : les deux renommages et le commentaire de M6-1 ; l'aide `Rig` d'`AlundraHeroSlideTests.cs`
+   (paramètres facultatifs, si TSL9 en a besoin) ; rien d'autre.
+3. `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp` sans écart ; les six traces à l'octet.
+
+**Retour arrière** : revert des commits de la tranche (tests seuls).
+
 ### 1.2u Recette de l'auteur du 2026-10-05 ⏳ (constat consigné ; deux défauts enquêtés)
 
 **Constat de l'auteur** (DLL et export de `cc948ec`, deux captures) :
@@ -8240,12 +8506,13 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-55 | ~~Les fonds avancent pendant un fondu de passage~~ — **réglé le 2026-10-03 par E19.m4 (D-E19-67, ADR-0034), vérification en attente** ; question d'origine : (audit d'E19.m3) la boucle de transition du binaire (`0x8002C490`-`0x8002C4C0`) n'appelle pas `RenderScene` ; la DLL poussait les ticks des fonds sans condition (`AlundraWorldProxy.cs:2192-2196`) : 16 ticks en trop par départ (F0 à F15). | E19.m4 |
 | O-E19-56 | **Le type 2 ignore le décalage de palette `0x800C490C`** (`0x8005D370`-`0x8005D394`), contrairement aux types 0 et 4 et aux tuiles ; à retenir si le cycle de palettes (O-E19-43) est porté. Et : le service du moteur survit à un retour au titre ; on n'a pas vérifié si l'original relance l'exécutable (et remet le compteur des vagues à 0) à ce moment. | Note |
 | O-E19-57 | **Le binaire montre une image figée pendant le départ d'un passage** (audit d'O-E19-55) : la boucle de transition n'appelle ni `Update` ni `RenderScene` ; l'écran est une copie de la dernière image sous le fondu. Le portage continue d'avancer et de dessiner la scène : suivi de la caméra, animation des entités (le gel ne touche que `GameplayBlockedMask`, `AlundraWorldProxy.cs:2261-2266`, `AlundraGameplayFreeze.cs:38-40`), physique des PNJ, tuiles animées (temps réel), HUD, dialogue, fondu de la musique (non vérifié dans le binaire). Aussi : l'initialisation du fondu de type 0 du binaire remet la couleur courante à 0 (`0x80042F68`-`0x80042F70`), le portage la garde (`BeginWarpDepartureFade`). À trancher : figer la scène entière (capture de la dernière image par le moteur) ou garder l'écart. | Auteur |
-| O-E19-58 | **La surcouche de la 293 (Inoa en feu) est additive dans l'original** (vérification d'O-E19-54) : `BGColorA` 2 → `TILE` d'ABR 1 de (50, 0, 0) ; le portage moyenne `(50, 0, 0, 128)` (le convertisseur ne garde que `OverlayEnabled = BGColorA != 0`, `BackdropReader.cs:254-255` ; le moteur dessine la teinte en `AlphaBlend`, `ScrollingLayerComponent.cs:208` ; la DLL pose α128, `AlundraBackdropStage.cs:295`) : la scène est assombrie de moitié et teintée au lieu d'être un peu rougie ; hors de la chaîne. | E19.g |
+| O-E19-58 | **Planifié le 2026-10-05 (E19.g G2d, §1.2o.4, D-E19-82).** **La surcouche de la 293 (Inoa en feu) est additive dans l'original** (vérification d'O-E19-54) : `BGColorA` 2 → `TILE` d'ABR 1 de (50, 0, 0) ; le portage moyenne `(50, 0, 0, 128)` (le convertisseur ne garde que `OverlayEnabled = BGColorA != 0`, `BackdropReader.cs:254-255` ; le moteur dessine la teinte en `AlphaBlend`, `ScrollingLayerComponent.cs:208` ; la DLL pose α128, `AlundraBackdropStage.cs:295`) : la scène est assombrie de moitié et teintée au lieu d'être un peu rougie ; hors de la chaîne. | E19.g |
 | O-E19-59 | **Octet de palette 30 des tuiles** (cartes 1, 13, 17, 153, 439, couche 1, tuiles 249-251) : le binaire lit l'identifiant de palette en `0x800CA24C`, au-delà de la table (l'entrée 3 de la table d'ordre du tampon de dessin 0) : valeur d'exécution, aucune correction statique juste ; le convertisseur pose la palette 0 (`BackdropImageBuilder.cs:79-82`), opaque. | Note |
 | O-E19-60 | **Réglé le 2026-10-05 (E19.s2, ADR-0054 du moteur ; recette S2-5 en attente).** **L'interface MGUI est mal découpée dans une vue à bandes** (recette du 2026-10-05, §1.2u) : découpes écrites en pixels de la vue dans le ciseau absolu du périphérique (`CasaDrawTransaction.cs:742-767`) et ciseau périmé après un agrandissement ; inventaire, HUD, sous-inventaire, écran de sauvegarde, boîte du moteur. | E19.s2 (moteur) |
 | O-E19-61 | **Réglé le 2026-10-05 (X2 ; recette X2-5 en attente).** **Un reste de la piste précédente en tête de 41 musiques** (D-E19-69 : se corrige) (le « ding » de la 389) : l'extracteur rend les 46 pistes dans un seul moteur sonore ; la séquence 25 de l'original est muette pendant 0,6 s. Correction X2 de `plan-extraction-bgm.md`, D-X-5 à amender. | Auteur, puis X2 |
 | O-E19-62 | **La musique reboucle tout le fichier** au lieu du repère de boucle de la séquence (`0x8008CA40`) : l'intro (22,6 s pour la 25) est rejouée toutes les 121 s ; contredit `plan-e11c-musique.md:43-48`. D-E19-70 : se porte. | E11 (à planifier) |
 | O-E19-63 | **Marge du flux de musique** (préparation de la boucle au repère, 2026-10-05) : 3 tampons de 16 Kio à 44,1 kHz, environ 280 ms (96 ms au pire près d'une couture de boucle) ; un chargement de carte qui garde la musique bloque le fil du jeu (plus d'une seconde en Debug pour la 478) ; mesurer la plus longue image de chaque passage (harnais hors dépôt) avant de régler la profondeur (D-E19-75). | Mesure |
+| O-E19-64 | **Marge par défaut des textes font3 des écrans existants** (découverte d'E19.f2b, 2026-10-05) : `MGTextBlock` a par défaut une marge (1, 1, 1, 1), `LinePadding` 2, le centrage vertical et le retour à la ligne (`MGTextBlock.cs:1363`, `MGTheme.cs:721`) ; aucune XAML d'Alundra (inventaire, sous-inventaire, sauvegarde) ne les pose ; hypothèse : leurs textes sont dessinés un pixel à droite et un pixel plus bas que dans le binaire ; à mesurer par le test au pixel sur GPU d'E19.f2b1, puis corriger dans une tranche à part. | E19.f2b1, puis tranche à part |
 
 ## 4. Hors périmètre
 

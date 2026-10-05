@@ -1,0 +1,17 @@
+Maps/Desert Mini Puzle to Shrine/Desert Mini Puzle to Shrine-403/backdrop/Desert Mini Puzle to Shrine-403.backdrop.json
+Maps/Desert Mini Puzle to Shrine/Desert Mini Puzle to Shrine-404/backdrop/Desert Mini Puzle to Shrine-404.backdrop.json
+Maps/Desert Mini Puzle to Shrine/Desert Mini Puzle to Shrine-405/backdrop/Desert Mini Puzle to Shrine-405.backdrop.json
+Maps/Desert Mini Puzle to Shrine/Desert Mini Puzle to Shrine-406/backdrop/Desert Mini Puzle to Shrine-406.backdrop.json
+Maps/Desert/Desert-450/backdrop/Desert-450.backdrop.json
+Maps/Giles Nightmare/Giles Nightmare-99/backdrop/Giles Nightmare-99.backdrop.json
+Maps/Inoa/Inoa (burning)-293/backdrop/Inoa (burning)-293.backdrop.json
+Maps/Inoa/Inoa (night)-289/backdrop/Inoa (night)-289.backdrop.json
+Maps/Inoa/Inoa (night, Kline Event)-357/backdrop/Inoa (night, Kline Event)-357.backdrop.json
+Maps/Inoa/Inoa (night, Sybil crime scene)-481/backdrop/Inoa (night, Sybil crime scene)-481.backdrop.json
+Maps/Inoa/Inoa-271/backdrop/Inoa-271.backdrop.json
+Maps/Overworld/Overworld 4,1-18/backdrop/Overworld 4,1-18.backdrop.json
+Maps/Overworld/Overworld 4,2-19/backdrop/Overworld 4,2-19.backdrop.json
+Maps/Unused Nightmare/Unused Nightmare (Boss _ Dream Eater)-98/backdrop/Unused Nightmare (Boss _ Dream Eater)-98.backdrop.json
+Maps/Unused Nightmare/Unused Nightmare-96/backdrop/Unused Nightmare-96.backdrop.json
+Maps/Unused Nightmare/Unused Nightmare-97/backdrop/Unused Nightmare-97.backdrop.json
+report.json
