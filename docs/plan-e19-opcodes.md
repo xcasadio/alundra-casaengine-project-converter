@@ -5389,7 +5389,7 @@ ses points à concevoir) ; E19.h1 ne garde que les attentes sans question de con
 148, 152, 154, 344, 410, 423 : leur contact en Z dépend de D5) ; une flamme (`0x47`) n'est arrêtée que par un mur tant
 qu'E14 n'écrit pas `HitCounter`.
 
-##### 1.2n.1b E19.h1b1 — Écritures absolues de Z en convention de la DLL (apparition, `0x8A`, `0x64`) ✅ (CONFIRMED le 2026-10-03 ; recette H1b1 en attente)
+##### 1.2n.1b E19.h1b1 — Écritures absolues de Z en convention de la DLL (apparition, `0x8A`, `0x64`) ✅ (CONFIRMED le 2026-10-03 ; recette H1b1 validée le 2026-10-05)
 
 **Décision** : D-E19-59 (l'apparition passe en convention de la DLL, `0x8A` et `0x64` examinés dans la même ADR). E19.h1b est
 coupée en deux : **h1b1** (cette tranche, la convention) puis **h1b2** (`0x20`, `0x22`, `0x23`, Z des entités sans contrôleur,
@@ -6262,7 +6262,7 @@ signature) ; la croissance des tampons alloue pendant le dessin (rare : plus de 
   vérifier si `data-extracted/` manque (documenté) ; la remise de la fenêtre après `TryReloadBuiltInShader` et la croissance du
   `VertexBuffer` n'ont pas de test sans périphérique (lecture du code et démo de capacité). Reste la recette G2a-4 (auteur).
 
-##### 1.2o.3 E19.g G2c — Semi-transparence par texel des fonds (O-E19-54) 🧪 (relecture n°1 READY ; faite et CONFIRMED le 2026-10-05 ; recette G2c-6 en attente)
+##### 1.2o.3 E19.g G2c — Semi-transparence par texel des fonds (O-E19-54) 🧪 (relecture n°1 READY ; faite et CONFIRMED le 2026-10-05 ; recette G2c-6 : pluie et mer validées le 2026-10-05, la 44 à voir)
 
 **Faits** **[binaire, données]** (découverte du 2026-10-03, `e19o54-disc/notes.md` du scratchpad ; deux vérifications indépendantes
 du 2026-10-05, `e19o54-verify-binary/verify.md` (recensement refait sur `DATAS.BIN` brut, rien de réfuté) et
@@ -6610,7 +6610,7 @@ session, `recipe-bugs/<point>/notes.md` et `recipe-bugs/<point>-verify/`) :
 - 🧪 **R5 — Recette** (auteur) : sortir de la chambre de la 163 (le HUD glisse à l'écran) ; la 476 (les pièces apparaissent dans
   le cadre) ; la carte 15 après R3.
 
-### 1.2q E19.s — Image 320 × 240, facteur entier, bandes noires, suivie en temps réel 🧪 (exécutée le 2026-10-03 ; recette S6 en attente)
+### 1.2q E19.s — Image 320 × 240, facteur entier, bandes noires, suivie en temps réel ⚠️ (exécutée le 2026-10-03 ; recette S6 du 2026-10-05 : halo fidèle, interface MGUI mal découpée avec des bandes, O-E19-60)
 
 **Décisions** : D-E19-47 (image de l'original, agrandie sans déformation, recalculée en temps réel, bandes noires), D-E19-60
 (facteur entier seulement). **Découverte** (2026-10-03, lecture seule, `e19s-disc/notes.md` du scratchpad de la session).
@@ -6768,7 +6768,7 @@ sous-module soit libre.
   couverts par la recette S6. **Reste la recette S6 de l'auteur.** Branche du moteur `chantier/e19s-virtual-resolution` (`dfaed7a6`),
   non mergée : le pointeur du parent la désigne.
 
-### 1.2r E19.t — Son de chaque changement d'animation 🧪 (exécutée le 2026-10-03 ; recette T6 en attente)
+### 1.2r E19.t — Son de chaque changement d'animation ✅ (exécutée le 2026-10-03 ; recette T6 validée le 2026-10-05 ; le « ding » du début vient de la musique, O-E19-61)
 
 **Ordre et propriété** (révision n°1) : E19.t s'exécute **après D5 d'E19.d2c2 et après E19.h1b1**, qui touchent les mêmes
 fichiers (`AlundraScriptedMotion.cs` pour D5 ; les sites d'apparition d'`AlundraWorldProxy.cs` et la fabrique pour h1b1) ; une
@@ -7470,6 +7470,51 @@ déplace aucune assertion).
   convertisseur 433/433, `cmp` sans écart, six traces à l'octet. Avis P4 : les mutations n'ont été rejouées que sur la classe du test,
   pas sur toute la suite.
 
+### 1.2u Recette de l'auteur du 2026-10-05 ⏳ (constat consigné ; deux défauts enquêtés)
+
+**Constat de l'auteur** (DLL et export de `cc948ec`, deux captures) :
+- **S6** (E19.s) : fenêtre agrandie : **l'inventaire s'affiche mal** (capture : seuls des morceaux de panneaux en pierre, petits et
+  coupés, à gauche de l'image) ; le halo de la 476 paraît « plus petit en hauteur que la fenêtre ».
+- **G2a/G0b** : Melzas bien affiché. **G2c** : la pluie (391) et la mer (389) bien dessinées. **H1b1** : les piles de caisses bien
+  empilées ; on les traverse toujours (D-E19-46, voulu jusqu'à E14). **T6** : les sons sont joués ; au tout début, un « ding » puis le
+  cri de la mouette, « le ding fait-il partie du jeu original ? ». Boîtes de dialogue toujours celles de MGUI (E19.f2 non faite).
+
+**Enquête** (2026-10-05, lecture seule, un enquêteur et un contre-vérificateur par point ; `recipe-1005/<point>/notes.md` et
+`recipe-1005/<point>-verify/verify.md` du scratchpad) :
+- **Halo** : la couche cellulaire 0 de la 476 (bandes à vagues, additives) couvre tout l'écran 320 × 240 ; les bandes noires en haut et
+  en bas de la capture sont celles du facteur entier (D-E19-47) : **fidèle**, rien à corriger.
+- **Inventaire** (confirmé par le contre-vérificateur, avec une correction) : la mise en page et l'échelle sont justes ; **deux défauts
+  du moteur** dans le dessin de MGUI, visibles seulement quand la vue ne commence pas au coin de la fenêtre (les bandes d'E19.s) :
+  (1) les rectangles de découpe de MGUI, locaux à la vue, sont écrits tels quels dans `GraphicsDevice.ScissorRectangle`
+  (`CasaEngine/Framework/UI/Backend/MonoGame/CasaDrawTransaction.cs:742-767`, écriture `:757`, relecture `:68`), que MonoGame applique
+  en pixels absolus du tampon (DesktopGL 3.8.5.1, `GL.Scissor` sans décalage de vue) alors que les sprites sont dessinés relativement
+  à la vue : chaque élément est découpé à `rect` au lieu de `rect + bandes` ; (2) la première découpe de l'interface s'intersecte avec
+  la découpe laissée dans le périphérique, encore (0, 0, 1280, 960) après un agrandissement (aucun rafraîchissement sur
+  `ClientSizeChanged` dans `ViewRenderHost`, alors que les hôtes de MGUI et de l'éditeur le font : `RenderHost.cs:56-64`,
+  `CasaGameRenderHost.cs:33-41`). Le modèle prédit chaque bord de la capture à 1 ou 2 pixels près (facteur 5, vue (521, 46, 1600,
+  1200)). Touche **toute l'interface MGUI en jeu** dès qu'il y a des bandes : HUD, sous-inventaire, écran de sauvegarde, boîte de
+  dialogue du moteur (prédiction par le code, non vue à l'écran) ; le monde n'est pas touché (sprites sans découpe). Correction : moteur
+  seul (A : décaler les découpes par l'origine de la vue à l'écriture et à la relecture ; B′ : rafraîchir la découpe du périphérique sur
+  `ClientSizeChanged`, comme les deux autres hôtes) ; test sur GPU réel à porter du harnais de `MGUI.Tests`
+  (`Integration/GpuDeviceHost.cs`) ; ADR du moteur. E19.s l'avait manqué : sa preuve d'interface dans une vue décalée (la démo en
+  écran partagé) n'avait d'interface que dans la vue à l'origine.
+- **« Ding »** (confirmé) : ce n'est pas un bruitage ni E19.t ; ce sont les 0,6 premières secondes de `Musics/bgm_025.wav`, la musique
+  de la 389 : un sol5 en cloche (784 Hz, partiel à 4,2 kHz), **reste de la fin de la piste 24** ; la séquence 25 du binaire n'a aucune
+  note avant le tick 480 (0,600 s, image 36) et l'original la joue depuis son début (`0x8004B234`, `0x80049B60`). Cause : l'extracteur
+  de l'analyseur rend les 46 pistes à la suite dans un seul moteur sonore (`AlundraDataExtractor/Program.cs:185-190`, boucle
+  `:199-216`) : **41 des 46 pistes** (2 à 31, 33 à 43) commencent par un reste de la précédente. Correction : un système sonore neuf par
+  piste (tranche X2 de `docs/plan-extraction-bgm.md`, jamais faite), ré-extraction de la musique, miroir, export ; la décision D-X-5
+  (« abandonner si un octet des pistes 1 à 18 bouge ») repose sur une prémisse fausse (les pistes 2 à 18 ont ce reste) :
+  **décision de l'auteur**. Effet de bord : chaque musique retrouve son vrai silence d'entrée (0,3 à 1,4 s). Le cri de la mouette est
+  probablement le bruitage 301 (« Marin-passager-mouette », image 2) ; à l'oreille de l'auteur.
+- **Boucle de la musique** (relevé en passant, confirmé) : la DLL reboucle tout le fichier (`AlundraMusicPlayer.cs:384-385`) ; l'original
+  revient au repère de boucle de la séquence (`0x8008CA40` : `0x14` mémorise, `0x1E` y revient) ; pour la 25, le repère est au tick
+  11510 (22,63 s, période 121,2 s) : le portage rejoue l'intro de 22 s, et le ding, toutes les 2 minutes ; contredit
+  `docs/plan-e11c-musique.md:43-48`.
+
+**Suites** : O-E19-60 (découpe de MGUI dans une vue décalée : tranche du moteur, E19.s2) ; O-E19-61 (reste de piste en tête des musiques :
+X2, décision de l'auteur sur D-X-5) ; O-E19-62 (boucle au repère de la séquence).
+
 ### 1.3 Arcs de test (support d'E19.a, réutilisé par les tranches suivantes)
 
 Chaque arc part d'une carte chargée seule, avec des drapeaux posés et le héros placé. Les valeurs
@@ -7857,6 +7902,9 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-57 | **Le binaire montre une image figée pendant le départ d'un passage** (audit d'O-E19-55) : la boucle de transition n'appelle ni `Update` ni `RenderScene` ; l'écran est une copie de la dernière image sous le fondu. Le portage continue d'avancer et de dessiner la scène : suivi de la caméra, animation des entités (le gel ne touche que `GameplayBlockedMask`, `AlundraWorldProxy.cs:2261-2266`, `AlundraGameplayFreeze.cs:38-40`), physique des PNJ, tuiles animées (temps réel), HUD, dialogue, fondu de la musique (non vérifié dans le binaire). Aussi : l'initialisation du fondu de type 0 du binaire remet la couleur courante à 0 (`0x80042F68`-`0x80042F70`), le portage la garde (`BeginWarpDepartureFade`). À trancher : figer la scène entière (capture de la dernière image par le moteur) ou garder l'écart. | Auteur |
 | O-E19-58 | **La surcouche de la 293 (Inoa en feu) est additive dans l'original** (vérification d'O-E19-54) : `BGColorA` 2 → `TILE` d'ABR 1 de (50, 0, 0) ; le portage moyenne `(50, 0, 0, 128)` (le convertisseur ne garde que `OverlayEnabled = BGColorA != 0`, `BackdropReader.cs:254-255` ; le moteur dessine la teinte en `AlphaBlend`, `ScrollingLayerComponent.cs:208` ; la DLL pose α128, `AlundraBackdropStage.cs:295`) : la scène est assombrie de moitié et teintée au lieu d'être un peu rougie ; hors de la chaîne. | E19.g |
 | O-E19-59 | **Octet de palette 30 des tuiles** (cartes 1, 13, 17, 153, 439, couche 1, tuiles 249-251) : le binaire lit l'identifiant de palette en `0x800CA24C`, au-delà de la table (l'entrée 3 de la table d'ordre du tampon de dessin 0) : valeur d'exécution, aucune correction statique juste ; le convertisseur pose la palette 0 (`BackdropImageBuilder.cs:79-82`), opaque. | Note |
+| O-E19-60 | **L'interface MGUI est mal découpée dans une vue à bandes** (recette du 2026-10-05, §1.2u) : découpes écrites en pixels de la vue dans le ciseau absolu du périphérique (`CasaDrawTransaction.cs:742-767`) et ciseau périmé après un agrandissement ; inventaire, HUD, sous-inventaire, écran de sauvegarde, boîte du moteur. | E19.s2 (moteur) |
+| O-E19-61 | **Un reste de la piste précédente en tête de 41 musiques** (le « ding » de la 389) : l'extracteur rend les 46 pistes dans un seul moteur sonore ; la séquence 25 de l'original est muette pendant 0,6 s. Correction X2 de `plan-extraction-bgm.md`, D-X-5 à amender. | Auteur, puis X2 |
+| O-E19-62 | **La musique reboucle tout le fichier** au lieu du repère de boucle de la séquence (`0x8008CA40`) : l'intro (22,6 s pour la 25) est rejouée toutes les 121 s ; contredit `plan-e11c-musique.md:43-48`. | E11 (à planifier) |
 
 ## 4. Hors périmètre
 
