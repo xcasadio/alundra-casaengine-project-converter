@@ -47,3 +47,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0032 | The cellular rain respawn draws the C library rand() of the binary | Accepted | 2026-10-03 |
 | ADR-0033 | The converter writes the PSX semi-transparency mode of each entity sprite | Accepted | 2026-10-03 |
 | ADR-0034 | The backdrops get no tick during a warp departure, like the binary | Accepted | 2026-10-03 |
+| ADR-0035 | The backdrop layers render the PSX semi-transparency per texel, like the binary | Accepted | 2026-10-05 |

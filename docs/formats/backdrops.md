@@ -101,6 +101,12 @@ quintets de 5 bits) selon la **convention PSX**, bits bas → rouge :
 - `g = ((paletteWord >> 5) & 0x1F) << 3`
 - `b = ((paletteWord >> 10) & 0x1F) << 3`
 
+**Alpha** (E19.g G2c, ADR-0035) : les planches sont le contenu de la VRAM. Un texel dont le mot a le bit `STP` (bit 15) est écrit à
+l'alpha **128**, tout autre texel dessiné à l'alpha **255**, le mot `0x0000` à l'alpha 0 (non dessiné) ; le RVB est inchangé. Cela
+vaut pour toutes les planches (toiles `Tiles`, trames d'animation, planches de cellules), quel que soit le mélange de la couche : le
+bit semi et le taux restent dans `BlendMode` du compagnon. Dans le binaire, une primitive semi-transparente ne mêle que ses texels
+STP, les autres sont opaques : le moteur dessine les deux groupes en deux passes (alpha 255 opaque, alpha 128 au mode de la couche).
+
 L'expansion `<< 3` (5 bits → 8 bits, **sans** réplication des bits de poids fort) et l'ordre
 d'écriture des octets dans le tampon BGRA (`B, G, R, A`) sont indépendants de cette convention et ne
 changent pas. Les chemins **tilesets** et **sprites** appliquent la même convention rouge/bits-bas
@@ -175,7 +181,7 @@ Racine :
 | `Mode` | string | `"Tiles"`, `"Cellular"` ou `"Disabled"` |
 | `DepthOrder` | int | 1 pour la couche 0, 0 pour la couche 1 - voir la note `Ground` ci-dessus |
 | `Ground` | bool | Bucket de profondeur (voir ci-dessus) |
-| `BlendMode` | int | `LayerInfos.BlendMode` (0=aucun, 1=moyenne, 2=additif, 3=soustractif, 4=additif atténué) |
+| `BlendMode` | int | `LayerInfos.BlendMode` (0=aucun, 1=moyenne, 2=additif, 3=soustractif, 4=additif atténué) ; le mode PSX de la couche vaut `BlendMode - 1` (la DLL le pose, `Ground` ne choisit que la passe), il ne s'applique qu'aux texels STP de la planche |
 | `AnimTimer` | int | `LayerInfos.AnimTimer` |
 | `TextureAssetId` | guid? | Id catalogue du `.texture` de la trame 0, seulement pour `Mode == "Tiles"` non vide |
 | `FrameTextureAssetIds` | guid[]? | Un id par trame d'animation V (`[0] == TextureAssetId`), longueur `AnimNum` ; **absent** (pas même `null`) si `AnimNum <= 1` ou si la couche n'est pas `Tiles` |

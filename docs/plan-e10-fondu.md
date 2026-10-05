@@ -131,6 +131,13 @@ l'original y gate la fusion **par pixel** sur le bit STP (`:1233-1246`), analyse
 toucher. Cartes témoins de la correction : **Coal Mine (First Entrance)-61** (soustractif),
 **Lars' Crypt-21** (additif-atténué) — invisibles sur la 389, qui est du type déjà correct.
 
+**Mise à jour du 2026-10-05 (E19.g G2c, D-E19-68, ADR-0035)** : la porte `Ground` tombe et l'« analyse manquante » est faite : dans le
+binaire le mode de fusion d'une couche est `BlendMode - 1`, posé par la primitive de mode de son créneau ; `Ground` ne choisit que le
+créneau ; une primitive semi-transparente ne mêle que ses texels STP (bit 15 du mot de couleur) et dessine les autres opaques. Les
+planches des fonds portent donc les texels STP à l'alpha 128 et la DLL pose le mode PSX de chaque couche (`Mode0` à `Mode3`) à partir du
+seul `BlendMode`, le moteur dessinant les deux groupes de texels en deux passes. Le mapping et les cartes témoins ci-dessus restent
+vrais pour les couches entièrement STP ; le bucket `(Ground=false, BlendMode 1)` n'est plus « hors périmètre ».
+
 ## 2. Les contraintes
 
 - **Code moteur → revue non négociable** : sur M1/M2, le plan-verifier a trouvé un vrai défaut à
