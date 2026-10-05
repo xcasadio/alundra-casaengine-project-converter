@@ -206,8 +206,9 @@ public sealed class AlundraDay3SceneArcTests
         RealController: true, Prefabs: true,
         Arrival: new ArcArrival(30670848, 54001664, 1048576, AlundraGameState.ResetAnimationId, 16));
 
-    /// <summary>Frames until <paramref name="done"/>, pressing Square on every frame that starts with a dialogue open, and answering the choice of a box the
-    /// first option (OUI), as a player who accepts. Fails at the arc's frame limit.</summary>
+    /// <summary>Frames until <paramref name="done"/>, with the button of the arcs' rule on the frames that start with a dialogue open (E19.f2a: held while the box
+    /// types, released then pressed when it waits for a press), and answering the choice of a box the first option (OUI) at the start of the frame, as a player
+    /// who accepts. Fails at the arc's frame limit.</summary>
     private static void RunAcceptingTheChoice(ArcRun arc, Func<bool> done, string signal)
     {
         while (!done())
@@ -220,17 +221,12 @@ public sealed class AlundraDay3SceneArcTests
             if (AlundraDialogueDirector.Instance.IsAwaitingChoice)
             {
                 Assert.True(AlundraDialogueDirector.Instance.SelectChoiceForTests(0));
-                arc.OneFrame();
             }
-            else if (AlundraDialogueDirector.Instance.IsOpen)
-            {
-                arc.Press(AlundraPadState.Square);
-            }
-            else
-            {
-                arc.OneFrame();
-            }
+
+            arc.OneFrameWithTheDialogueButton();
         }
+
+        arc.LetGoOfTheDialogueButton();
     }
 
     /// <summary>

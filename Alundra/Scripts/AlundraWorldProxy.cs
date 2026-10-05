@@ -149,6 +149,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     private readonly Dictionary<int, TileMapObjectData> _entityRecordsByIndex = new();
 
+    /// <summary>E19.f2a F2-R1: the square button (held, rising edge) of each logic tick of the current frame, recorded by the pad pass of <see cref="Update"/>.</summary>
+    private readonly List<(bool Held, bool Pressed)> _squareOfTick = new();
+
+    /// <summary>E19.f2a F2-R1: the square button of the last tick of the previous frame: what the box pass of tick 0 reads.</summary>
+    private (bool Held, bool Pressed) _squareOfLastTick;
+
     /// <summary>
     /// Per-frame working list for <see cref="Update"/>: cleared and refilled from
     /// <see cref="_spawnedEntities"/> every frame instead of allocating a temporary list in the hot
@@ -1209,7 +1215,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         _dialoguePresenter = presenter;
         _dialoguePresenterWired = presenter != null;
 
-        AlundraDialogueDirector.Instance.AttachToWorld(presenter, GameState);
+        AlundraDialogueDirector.Instance.AttachToWorld(presenter, GameState, SoundPlayer);
         AlundraDialogueDirector.Instance.InstallForMapEntry();
     }
 
@@ -1242,7 +1248,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         _dialoguePresenter?.Dispose();
         _dialoguePresenter = new AlundraDialoguePresenter(uiView, _world?.Game?.UIFonts, _world?.Game?.AssetContentManager);
-        AlundraDialogueDirector.Instance.AttachToWorld(_dialoguePresenter, GameState);
+        AlundraDialogueDirector.Instance.AttachToWorld(_dialoguePresenter, GameState, SoundPlayer);
         _dialoguePresenterWired = true;
         Logs.WriteInfo("AlundraWorldProxy: dialogue presenter wired to the active UI view (post-bootstrap retry).");
     }
@@ -2029,9 +2035,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // directors' per-frame work and AlundraInventoryPostProcess.Run the "render" half, the post-process
         // AFTER both directors for THIS tick, as the original runs it after all thirteen of its callbacks
         // (GraphicManager.cs:1677-1706 - its own post-process runs after its own callback-table loop).
+        // E19.f2a F2-R1 (docs/plan-e19-opcodes.md section 1.2j.3): the pad pass records the square button of EACH tick (hold and rising edge): the
+        // pass of the dialogue box, in the loop of the map events below, reads the square of the tick BEFORE, as the binary's box reads the pad
+        // sampled during the previous frame.
+        _squareOfTick.Clear();
         for (var padTick = 0; padTick < ticksThisFrame; padTick++)
         {
             GameState.TickPad.Update(GameState.LastPadState.ButtonsHold);
+            _squareOfTick.Add(((GameState.TickPad.ButtonsHold & AlundraPadState.Square) != 0, (GameState.TickPad.ButtonsJustPressed & AlundraPadState.Square) != 0));
             UpdateInventoryPortraitHeadPoint();
             AlundraInventoryDirector.Instance.Tick(PlayerEntity);
             AlundraSubInventoryDirector.Instance.Tick();
@@ -2089,27 +2100,48 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // SAME mask in the original (GameEngine.cs:1667-1671). This outer check covers the call site
         // independently of RunMapEventsPass's own internal guard (below, near :1466) - a MenuOpen dialogue
         // box must freeze this pass even if that internal guard's own shape ever changes.
-        if (PlayerEntity != null && !gameplayBlocked)
+        // E19.f2a F2-R1 (docs/plan-e19-opcodes.md section 1.2j.3, ADR-0029): ONE loop of the logic ticks that always runs, the game blocked or not. At each
+        // tick k it does, in the order of the binary's frame (RenderScene, whose callback dispatcher 0x80048054 runs the dialogue box, then Update(0)):
+        // (1) the pass of the dialogue box, on the square button of the tick k-1 (the last tick of the previous frame for k = 0); (2) the gate read again
+        // (GameplayBlockedMask, the transition of a warp), since the box may have been released or opened by this very pass; (3) when the hero exists and
+        // the gate is open, the map events then the recycling (R3). Frame-counted map-event chronology (GameEngine.RunMapEvents originally ran once per the
+        // fixed 50 Hz frame). A frame of several ticks interleaves the box and the map events tick by tick (B0 M0 B1 M1), like the binary. The scripts of the
+        // entities already ran this frame, before this proxy (see this method's own doc): the origin table of F2-R1 follows from that order.
+        for (var tick = 0; tick < ticksThisFrame; tick++)
         {
-            // Frame-counted map-event chronology (GameEngine.RunMapEvents originally ran once per the
-            // fixed 50 Hz frame) - gated the same way as every entity's own pick/run pass.
-            for (var tick = 0; tick < ticksThisFrame; tick++)
+            var (squareHeld, squarePressed) = tick == 0 ? _squareOfLastTick : _squareOfTick[tick - 1];
+            AlundraDialogueDirector.Instance.Pass(squareHeld, squarePressed);
+
+            var tickBlocked = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
+                || AlundraWarpDirector.Instance.IsTransitionInProgress;
+            if (PlayerEntity == null || tickBlocked)
             {
-                // E19.c2 (docs/plan-e19-opcodes.md §1.2f): the passes after the first of a catch-up frame stand for ticks whose
-                // UpdateAnimation (0x80038B6C) already switched the animations a previous pass asked for, clearing their Hold flag:
-                // clear it here too, so a 0x1C does not count the same Hold end again. A no-op at 0 or 1 tick per frame.
-                if (tick > 0)
-                {
-                    AlundraFrameSyncPasses.ClearHoldFlagsOfPendingSwitches(_spawnedEntities);
-                }
-
-                RunMapEventsPass(PlayerEntity, _mapEvents, EventProgramRunner, GameState.PlayerControlFlags);
-
-                // E19.r R3 (docs/plan-e19-opcodes.md section 1.2p, D-E19-45, ADR-0024): the recycling of the destroyed entities, right after each pass of the map
-                // events, as the binary's UpdateEntities (0x8003B3A0) opens with UpdateDestroyedEntities (0x80038634) after RunMapEvents.
-                RecycleDestroyedEntities();
+                continue;
             }
+
+            // E19.c2 (docs/plan-e19-opcodes.md §1.2f): the passes after the first of a catch-up frame stand for ticks whose
+            // UpdateAnimation (0x80038B6C) already switched the animations a previous pass asked for, clearing their Hold flag:
+            // clear it here too, so a 0x1C does not count the same Hold end again. A no-op at 0 or 1 tick per frame.
+            if (tick > 0)
+            {
+                AlundraFrameSyncPasses.ClearHoldFlagsOfPendingSwitches(_spawnedEntities);
+            }
+
+            RunMapEventsPass(PlayerEntity, _mapEvents, EventProgramRunner, GameState.PlayerControlFlags);
+
+            // E19.r R3 (docs/plan-e19-opcodes.md section 1.2p, D-E19-45, ADR-0024): the recycling of the destroyed entities, right after each pass of the map
+            // events, as the binary's UpdateEntities (0x8003B3A0) opens with UpdateDestroyedEntities (0x80038634) after RunMapEvents.
+            RecycleDestroyedEntities();
         }
+
+        if (ticksThisFrame > 0)
+        {
+            _squareOfLastTick = _squareOfTick[ticksThisFrame - 1];
+        }
+
+        // The triggers in waiting read the gate again after the loop: the box passes above may have opened or released one.
+        gameplayBlocked = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
+            || AlundraWarpDirector.Instance.IsTransitionInProgress;
 
         // E7.b (docs/plan-e7-mutation-tuiles.md, "coalescer par frame"): applies at most one overlay
         // reconstruction for however many 0x54/0x55/0x85 opcodes the loop above just dispatched (a map's
@@ -2223,18 +2255,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // frame-stale one (see AlundraWarpDirector.Advance's own doc).
         AlundraWarpDirector.Instance.Advance(ticksThisFrame);
 
-        // E12.a fix, found by the closing verifier (F1): the dialogue box's advance/close pass belongs
-        // to the FRAME LOOP, exactly like the original's UIManager.ProcessEtcTextAdvance which runs
-        // every main-loop frame INDEPENDENTLY of scripts (UI/UIManager.cs:855-880). It used to live
-        // only inside opcode 0x39's dispatch - but six of map 389's seven sailors open their box from
-        // a mono-line F(Interact) program with NO 0x39 at all, so the box could never advance, close,
-        // or time out: a permanent softlock with MenuOpen blocking every later map event. One tick per
-        // LOGIC tick (the original's pass runs once per its 50 Hz frame); a closed box makes this a
-        // cheap no-op.
-        for (var dialogueTick = 0; dialogueTick < ticksThisFrame; dialogueTick++)
-        {
-            AlundraDialogueDirector.Instance.Tick();
-        }
+        // E19.f2a F2-R1: the dialogue box's pass no longer lives here: it runs inside the loop of the logic ticks above, BEFORE the map events of each tick
+        // (the binary's RenderScene runs the box before Update(0)), whether the game is blocked or not (E12.a F1: the box must advance, close and release
+        // by itself, independently of any script, or a MenuOpen box would freeze the map events for good).
 
         // E13 C1 (docs/plan-e13-hud.md, D-E13-8): the HUD director's own tick, right next to the
         // dialogue pass above and for the exact same reason - it must keep rolling/rattraping while a

@@ -988,15 +988,34 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 return 1;
             }
 
+            case 0x4C: // Set text flags - Script @ 0x800450B0 (E19.f2a F2-R4, docs/plan-e19-opcodes.md section 1.2j.3): textFlags = v1 (1 the held
+                       // button gates a step, 2 the delay does, 4 a 0x4D does, 8 waits for the cursor's press) and a 0x4D in waiting is
+                       // cleared (D-E19-62). Size 2, never gives the hand back.
+                _worldContext.DialogueDirector?.SetTextFlags(v[1]);
+                return 2;
+
+            case 0x4D: // Try to activate textAutoAdvanceFlag - @ 0x80045088 (F2-R4): latches one step of the typing when textFlags & 4. Size 1.
+                _worldContext.DialogueDirector?.LatchTextStep();
+                return 1;
+
+            case 0x4E: // Set scroll mode - @ 0x800450E4 (F2-R4): scrollMode = v1 (1 waits ten passes, 2 a press, 4 a 0x4F, 8 starts at once). Size 2.
+                _worldContext.DialogueDirector?.SetScrollMode(v[1]);
+                return 2;
+
+            case 0x4F: // Activate scroll auto advance - @ 0x800450BC (F2-R4): latches the start of a scroll when scrollMode & 4. Size 1.
+                _worldContext.DialogueDirector?.LatchScrollStart();
+                return 1;
+
             case 0x50: // Set dialog choice (misnomer, §1.3 - really sets the CLOSE-MODE mask) -
                        // Script_SetDialogChoice_50 (E12.a): bit0 auto-timer (360 ticks), bit1 button,
                        // bit2 script (0x51). No presenter needed to just remember the mask value.
                 _worldContext.DialogueDirector?.SetCloseMask(v[1]);
                 return 2;
 
-            case 0x51: // Get dialog choice (misnomer, §1.3 - really a script-close REQUEST) -
-                       // Script_GetDialogChoice_51 (E12.a): honoured only while the mask's bit2 is set
-                       // (AlundraDialogueDirector.RequestScriptClose's own doc). No Result either way.
+            case 0x51: // Get dialog choice (misnomer, §1.3 - really a script-close LATCH) -
+                       // Script_GetDialogChoice_51 (E12.a, E19.f2a F2-R4): latched only while the mask's bit2 is set
+                       // (AlundraDialogueDirector.RequestScriptClose's own doc); the box takes the latch once its typing is done.
+                       // No Result either way.
                 _worldContext.DialogueDirector?.RequestScriptClose();
                 return 1;
 

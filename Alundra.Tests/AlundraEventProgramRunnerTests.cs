@@ -322,9 +322,9 @@ public class AlundraEventProgramRunnerTests
     [Fact]
     public void UnknownOpcode_KnownSize_SkipsBySize()
     {
-        // 0x4C "Set text flags" (size 2, the typewriter: E12.c) is not one of the implemented handlers - skipped by its
-        // table size. (It was 0x08 "Turn" until E19.c1 ported it.)
-        var document = NewDocument(0x4C, 0, 0x1A, 4, 0xFF);
+        // 0x93 "Set effect pos" (size 8, the effects: E19.g) is not one of the implemented handlers - skipped by its
+        // table size. (It was 0x4C "Set text flags" until E19.f2a ported it (F2-R4), and 0x08 "Turn" until E19.c1 ported that.)
+        var document = NewDocument(0x93, 0, 0, 0, 0, 0, 0, 0, 0x1A, 4, 0xFF);
         var runner = NewRunner(document);
         var entity = NewEntity();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };

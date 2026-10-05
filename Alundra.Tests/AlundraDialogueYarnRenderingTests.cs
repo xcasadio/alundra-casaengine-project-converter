@@ -160,15 +160,22 @@ public sealed class AlundraDialogueYarnRenderingTests : IDisposable
         Assert.NotEqual(0u, gameState.GetFlag(flag10) & mask10);
         Assert.Equal(0u, gameState.GetFlag(flag20) & mask20);
 
-        // Turn to page 1 (no command there): still not set.
-        gameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
-        Director.Tick();
+        // E19.f2a: the director asks the Yarn runner for a page at the release of the cursor of the page before. The cursor of page 0 (9 letters) shows at the
+        // pass 55 and a press the box sees at 56 turns to page 1 (no command there): still not set.
+        var passes = new DialogueBoxPassDriver(Director, gameState);
+        passes.PressSeenAt(56);
+        passes.PressSeenAt(93);
+        passes.RunTo(55);
+        Assert.Equal(0, Director.PageIndexForTests);
+        passes.RunTo(56);
         Assert.Equal(1, Director.PageIndexForTests);
         Assert.Equal(0u, gameState.GetFlag(flag20) & mask20);
 
-        // Turn to page 2: only NOW does its own flag get set.
-        gameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
-        Director.Tick();
+        // The cursor of page 1 (8 letters, typed from the pass 60) shows at 92 and a press seen at 93 turns to page 2: only NOW does its own flag get set.
+        passes.RunTo(92);
+        Assert.Equal(0u, gameState.GetFlag(flag20) & mask20);
+        passes.RunTo(93);
+        Assert.Equal(2, Director.PageIndexForTests);
         Assert.NotEqual(0u, gameState.GetFlag(flag20) & mask20);
         Assert.Contains("page two", Director.CurrentLineForTests?.Text ?? string.Empty);
     }

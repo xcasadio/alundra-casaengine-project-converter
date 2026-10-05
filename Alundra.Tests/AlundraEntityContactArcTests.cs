@@ -33,7 +33,7 @@ public sealed class AlundraEntityContactArcTests
     // ----------------------------------------------------------------------------------------------------------
 
     private static ArcSpec A19Spec => new(
-        "T-A19", "Inoa", "Inoa (inner)-185", new[] { 204, 120, 121, 122, 123 }, 0, 0, 0, 1700,
+        "T-A19", "Inoa", "Inoa (inner)-185", new[] { 204, 120, 121, 122, 123 }, 0, 0, 0, 4031, // E19.f2a: 1700 before; the simulated end is 3359 (annex V-123)
         RealController: true, Prefabs: true,
         Arrival: new ArcArrival(60555264, 24641536, 0, AlundraGameState.ResetAnimationId, 16));
 
@@ -256,7 +256,7 @@ public sealed class AlundraEntityContactArcTests
     [Fact]
     public void TB9_SeptimusAndTheBlockOnMap10_BothStopAtRec41_TheSceneSetsG482()
     {
-        using var arc = new ArcRun(B9Spec(3200));
+        using var arc = new ArcRun(B9Spec(4361)); // E19.f2a: 3200 before; the simulated end is 3634 (annex V-125)
         var s = new ArcSamples(arc, new[] { 39, 41 }, new uint[] { 510, 511, 512, 514, 515 },
             (C, 3636, 3670), (B, 1132, 1212), (C, 3636, 3673), (B, 1132, 1215), (C, 3636, 3693), (C, 3636, 3725), (C, 3636, 3731), (C, 3636, 3734));
         AlundraEntityScriptProxy? rec41 = null;
@@ -339,16 +339,10 @@ public sealed class AlundraEntityContactArcTests
 
         while (arc.Frame < 1400)
         {
-            if (AlundraDialogueDirector.Instance.IsOpen)
-            {
-                arc.Press(AlundraPadState.Square);
-            }
-            else
-            {
-                arc.OneFrame();
-            }
+            arc.OneFrameWithTheDialogueButton(); // the arcs' rule of the button (E19.f2a): held while the box types, released then pressed when it waits.
         }
 
+        arc.LetGoOfTheDialogueButton();
         var septimus = arc.EntityByRecord(39)!;
         Assert.False(s.FirstSet.ContainsKey(510), "T510 was set: the scene did not stall");
         Assert.Equal((57409536, 51912704), (septimus.PosX, septimus.PosY));

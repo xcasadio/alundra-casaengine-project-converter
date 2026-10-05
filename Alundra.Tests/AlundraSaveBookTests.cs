@@ -150,13 +150,16 @@ public sealed class AlundraSaveBookTests : IDisposable
         Assert.True(Dialogue.IsAwaitingChoice);
         Assert.Equal(new[] { "OUI", "NON" }, Dialogue.ChoicesForTests);
 
-        // State 4: OUI closes the box first, then waits.
+        // State 4: OUI asks the box to close (the latch of 0x51), then waits. E19.f2a: the box is still up at the Tick 63 - it types to its end (Tick 115),
+        // triggers its close at 116 and is released at 134.
         Assert.True(Dialogue.SelectChoiceForTests(0));
         Tick();
         Assert.Equal(AlundraSaveBook.StateCapture, BookState);
-        Assert.False(Dialogue.IsOpen);
+        Assert.True(Dialogue.IsOpen);
         Assert.False(Dialogue.IsAwaitingChoice);
-        Assert.Equal(AlundraGameState.PlayerControlBits.ControlLocked, State.PlayerControlFlags);
+        Assert.Equal(
+            AlundraGameState.PlayerControlBits.ControlLocked | AlundraGameState.PlayerControlBits.MessageBox,
+            State.PlayerControlFlags);
 
         // State 5: 61 ticks, then the capture and the screen.
         Tick(Wait - 1);
@@ -169,8 +172,17 @@ public sealed class AlundraSaveBookTests : IDisposable
         Assert.Equal(0, _screen.FailuresStarted);
         Assert.True(_slots.NothingCalled); // the book itself never writes.
 
+        // The box of the question is released at the Tick 134, while the book already waits for the screen (annex V-36): up at 133, down at 134.
+        Tick(9);
+        Assert.True(Dialogue.IsOpen);
+        Assert.Equal(
+            AlundraGameState.PlayerControlBits.ControlLocked | AlundraGameState.PlayerControlBits.MessageBox,
+            State.PlayerControlFlags);
+        Tick();
+        Assert.False(Dialogue.IsOpen);
+
         // State 6: waits for the screen's end, then the reset.
-        Tick(50);
+        Tick(40);
         Assert.Equal(AlundraSaveBook.StateWaitScreen, BookState);
         Assert.Equal(AlundraGameState.PlayerControlBits.ControlLocked, State.PlayerControlFlags);
         _screen.IsActive = false;
@@ -190,6 +202,9 @@ public sealed class AlundraSaveBookTests : IDisposable
         Assert.Empty(_screen.Started);
         Assert.Equal(0, _screen.FailuresStarted);
         Assert.Equal(1, _screen.FlowEnded);
+        // E19.f2a: the box of the question (24 letters, opened at the Tick 1, typed from the Tick 19, done at 115) is released by its own close, 18 ticks after
+        // the latch of the book is taken at the Tick 116 - the Tick 134 - whatever tick the book itself let go of it at (a latch set at the Tick 63 is taken at 116).
+        Tick(71);
         AssertReleased();
     }
 
@@ -264,6 +279,9 @@ public sealed class AlundraSaveBookTests : IDisposable
         Tick(Wait);
 
         Assert.Empty(_screen.Started);
+        // E19.f2a: the box of the question (24 letters, opened at the Tick 1, typed from the Tick 19, done at 115) is released by its own close, 18 ticks after
+        // the latch of the book is taken at the Tick 116 - the Tick 134 - whatever tick the book itself let go of it at (a latch set at the Tick 63 is taken at 116).
+        Tick(72);
         AssertReleased();
     }
 
@@ -282,6 +300,9 @@ public sealed class AlundraSaveBookTests : IDisposable
 
         Assert.NotEqual(3, BookState);
         Assert.False(Dialogue.IsAwaitingChoice);
+        // E19.f2a: the box of the question (24 letters, opened at the Tick 1, typed from the Tick 19, done at 115) is released by its own close, 18 ticks after
+        // the latch of the book is taken at the Tick 116 - the Tick 134 - whatever tick the book itself let go of it at (a latch set at the Tick 63 is taken at 116).
+        Tick(72);
         AssertReleased();
     }
 
@@ -336,6 +357,9 @@ public sealed class AlundraSaveBookTests : IDisposable
 
         _screen.IsActive = false;
         Tick();
+        // E19.f2a: the box of the question (24 letters, opened at the Tick 1, typed from the Tick 19, done at 115) is released by its own close, 18 ticks after
+        // the latch of the book is taken at the Tick 116 - the Tick 134 - whatever tick the book itself let go of it at (a latch set at the Tick 63 is taken at 116).
+        Tick(9);
         AssertReleased();
     }
 
@@ -350,6 +374,9 @@ public sealed class AlundraSaveBookTests : IDisposable
 
         Assert.Single(_screen.Started); // asked, refused.
         Assert.Equal(1, _screen.FlowEnded);
+        // E19.f2a: the box of the question (24 letters, opened at the Tick 1, typed from the Tick 19, done at 115) is released by its own close, 18 ticks after
+        // the latch of the book is taken at the Tick 116 - the Tick 134 - whatever tick the book itself let go of it at (a latch set at the Tick 63 is taken at 116).
+        Tick(10);
         AssertReleased();
     }
 
@@ -436,6 +463,9 @@ public sealed class AlundraSaveBookTests : IDisposable
         Dialogue.SelectChoiceForTests(0);
         Tick(1 + Wait);
 
+        // E19.f2a: the box of the question (24 letters, opened at the Tick 1, typed from the Tick 19, done at 115) is released by its own close, 18 ticks after
+        // the latch of the book is taken at the Tick 116 - the Tick 134 - whatever tick the book itself let go of it at (a latch set at the Tick 63 is taken at 116).
+        Tick(10);
         AssertReleased();
     }
 

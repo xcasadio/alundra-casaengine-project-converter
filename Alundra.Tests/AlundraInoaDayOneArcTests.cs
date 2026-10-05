@@ -28,7 +28,7 @@ public sealed class AlundraInoaDayOneArcTests
     // ----------------------------------------------------------------------------------------------------------
 
     private static ArcSpec A20Spec => new(
-        "A20", "Inoa", "Inoa-162", Array.Empty<int>(), 0, 0, 0, 160,
+        "A20", "Inoa", "Inoa-162", Array.Empty<int>(), 0, 0, 0, 402,
         RealController: true, Prefabs: true,
         Arrival: new ArcArrival(47972352, 27787264, 0, AlundraGameState.ResetAnimationId, 0));
 
@@ -65,7 +65,7 @@ public sealed class AlundraInoaDayOneArcTests
             }
         };
 
-        // 1. The end signal (the box is closed by one press of Square per frame).
+        // 1. The end signal (the box is typed with Square held and closed by the press of the arcs' rule, E19.f2a).
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(B, 596, 0x11), "B[7] executes 0x11 @596");
 
         // 2. Exactly the eleven 0xA2 of B[9] skipped, nothing else, nothing cut off by the loop guard.
@@ -82,7 +82,7 @@ public sealed class AlundraInoaDayOneArcTests
         Assert.NotNull(sybillAt588);
         Assert.True(sybillAt588!.Value.X >= 732 << 16, $"Sybill ends her walk at x = {sybillAt588.Value.X / 65536.0} px, 732 or more expected");
         Assert.Equal((48021504, 472 << 16), sybillAt588); // measured on the first pass: 732.75 px (overshoot of 0.75 px).
-        AssertFrame(arc, B, 596, 134);
+        AssertFrame(arc, B, 596, 334);
         var endFrame = FrameOf(arc, B, 596);
         Assert.Equal(new[] { endFrame }, FramesOf(arc, B, 597, 0x05).ToArray()); // G1659 in the same call.
         Assert.True(IsSet(1659), "G1659");
@@ -96,7 +96,7 @@ public sealed class AlundraInoaDayOneArcTests
     // ----------------------------------------------------------------------------------------------------------
 
     private static ArcSpec A10Spec => new(
-        "A10", "Inoa", "Inoa (inner)-165", Array.Empty<int>(), 0, 0, 0, 1100,
+        "A10", "Inoa", "Inoa (inner)-165", Array.Empty<int>(), 0, 0, 0, 2132,
         RealController: true, Prefabs: true,
         Arrival: new ArcArrival(19660800, 23592960, 0, AlundraGameState.ResetAnimationId, 16));
 
@@ -180,25 +180,26 @@ public sealed class AlundraInoaDayOneArcTests
             }
         };
 
-        // 1. The end signal: 0x11 @354 of the program @236 (slot B); the boxes are closed by one press per frame.
+        // 1. The end signal: 0x11 @354 of the program @236 (slot B); the boxes are typed and closed under the arcs' rule of the button (E19.f2a).
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(B, 354, 0x11), "B[2] executes 0x11 @354");
 
         // 2. Nothing skipped, nothing cut off by the loop guard (E19.d2c1 R4: 0x25 is ported).
         AssertNothingSkippedOrExceeded(arc);
 
-        // The two jumps of Bergus (E19.d2c1 C2, valeurs du plan): `0x25 @838` runs 20 times from the frame 484 and returns at 503, @839 and @841 in the same
-        // call; `0x25 @843` runs 20 times from 506 and returns at 525, @844, @846 and `0x06 @847` in the same call.
-        Assert.Equal(Enumerable.Range(484, 20).ToList(), FramesOf(arc, C, 838, 0x25));
-        Assert.Equal(503, FrameOf(arc, C, 839));
-        Assert.Equal(503, FrameOf(arc, C, 841));
-        Assert.Equal(Enumerable.Range(506, 20).ToList(), FramesOf(arc, C, 843, 0x25));
-        foreach (var pc in new[] { 844, 846, 847 })
-        {
-            Assert.Equal(525, FrameOf(arc, C, pc));
-        }
+        // The two jumps of Bergus (E19.d2c1 C2): `0x25 @838` runs 20 times and returns at its 20th, @839 and @841 in the same call; `0x25 @843` runs 20 times
+        // from 619 and returns at 638, @844 and @846 in the same call (a `0x39`: FrameOf gives its FIRST execution, 638, and it waits for the release of the box
+        // M165_S030 that Bergus sees at 696 - annex V-95, R4), then `0x06 @847` at 696. Since E19.f2a the box S030 (opened by B[2] at 592, typed, released
+        // at 695) comes between the two events that were 2 images apart: T104 is set at 593 and Bergus starts at 594, so every frame moves by 113.
+        Assert.Equal(Enumerable.Range(597, 20).ToList(), FramesOf(arc, C, 838, 0x25));
+        Assert.Equal(616, FrameOf(arc, C, 839));
+        Assert.Equal(616, FrameOf(arc, C, 841));
+        Assert.Equal(Enumerable.Range(619, 20).ToList(), FramesOf(arc, C, 843, 0x25));
+        Assert.Equal(638, FrameOf(arc, C, 844));
+        Assert.Equal(638, FrameOf(arc, C, 846));
+        Assert.Equal(696, FrameOf(arc, C, 847));
 
         // 3. The rest, in the order of the plan.
-        AssertFrame(arc, B, 354, 960); // 922 before E19.d2c1 C2: the two jumps of Bergus take 20 ticks each, as the binary's.
+        AssertFrame(arc, B, 354, 1775); // 960 before E19.f2a (922 before E19.d2c1 C2): the release of the last box (M165_S000, seen by B[2] at 1768) plus 7.
         Assert.Equal(236, arc.Trace.First(t => t.Slot == B && t.Pc == 354 && t.Opcode == 0x11).ProgramStart); // E19.d2b B7: the program @236, as the plan says.
         var endFrame = FrameOf(arc, B, 354);
         Assert.Equal(new[] { endFrame }, FramesOf(arc, B, 351, 0x05).ToArray()); // G3 in the same image.
@@ -247,24 +248,26 @@ public sealed class AlundraInoaDayOneArcTests
         // three images (37 [1] waits two, then 0x00 ends the call and the next one jumps back to @747), on the images that are multiples of 3: 489 in the
         // base, 528 here (T102 is set at 527), so his dialog @764 starts at 528 and lasts the same 92 images; T105 follows at 621. Meade (program @984) has a phase of
         // his own, next to Wendell's: he polls T105 once every two images, so T105 (set at 621) is cleared by his 0x06 @1026 at the image 774, i.e. edge 775.
-        Assert.Equal(526, samples.FlagEdges[3].Cleared);
-        Assert.Equal((527, 620), (samples.FlagEdges[4].Set, samples.FlagEdges[4].Cleared));
-        Assert.Equal((621, 775), (samples.FlagEdges[5].Set, samples.FlagEdges[5].Cleared));
+        // E19.f2a (annex V-97 to V-99, simulated; the margins 2 and 3 are the periods of Bergus and of Wendell): T104 is cleared at 697, T102 set at 698 and
+        // cleared at 791, T105 set at 792 and cleared at 947.
+        Assert.Equal(697, samples.FlagEdges[3].Cleared);
+        Assert.Equal((698, 791), (samples.FlagEdges[4].Set, samples.FlagEdges[4].Cleared));
+        Assert.Equal((792, 947), (samples.FlagEdges[5].Set, samples.FlagEdges[5].Cleared));
         int[] flight =
         {
             348160, 663552, 946176, 1196032, 1413120, 1597440, 1748992, 1867776, 1953792, 2007040, 2027520, 2015232, 1970176, 1892352, 1781760, 1638400,
             1462272, 1253376, 1011712, 737280, 430080, 90112,
         };
         int HeightAfterImage(int image) => samples.BergusHeights.Single(h => h.Frame == image + 1).PosZ;
-        var rest = HeightAfterImage(480);
+        var rest = HeightAfterImage(593); // E19.f2a: 480 before; the flights start at 594 and 616, the rest returns at 638
         for (var i = 0; i < flight.Length; i++)
         {
-            Assert.Equal(rest + flight[i], HeightAfterImage(481 + i));
-            Assert.Equal(rest + flight[i], HeightAfterImage(503 + i));
+            Assert.Equal(rest + flight[i], HeightAfterImage(594 + i));
+            Assert.Equal(rest + flight[i], HeightAfterImage(616 + i));
         }
 
-        Assert.Equal(rest, HeightAfterImage(525));
-        Assert.Equal(rest, HeightAfterImage(526));
+        Assert.Equal(rest, HeightAfterImage(638));
+        Assert.Equal(rest, HeightAfterImage(639));
 
         // The actors (slot C, the clearing 0x06): rec5 @703 (program @648), Wendell @774 (program @740, twice), Nestus @944 (program
         // @880), Bergus @847 (program @804), Meade @1026 (program @984). The frame of each edge is the frame after the 0x06.
@@ -289,7 +292,7 @@ public sealed class AlundraInoaDayOneArcTests
     // ----------------------------------------------------------------------------------------------------------
 
     private static ArcSpec A11Spec => new(
-        "A11", "Inoa", "Inoa (inner)-164", new[] { 3, 201 }, 44, 7, 1, 240, RealController: true, Prefabs: true);
+        "A11", "Inoa", "Inoa (inner)-164", new[] { 3, 201 }, 44, 7, 1, 2488, RealController: true, Prefabs: true);
 
     /// <summary>
     /// A11 (G3 and G201 set): the hero touches Septimus (record 1, at (1092, 120)); the contact entity is record 1 (as in A9) and the
@@ -351,17 +354,17 @@ public sealed class AlundraInoaDayOneArcTests
         Assert.Equal((41, 7, 1), (arc.Hero.TileX, arc.Hero.TileY, arc.Hero.TileZ));
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(C, 437, 0x38), "C[2] executes 0x38 @437");
 
-        // 2. Skipped: the four 0x4C and the nine 0x4D of the plan, once each. Nothing else, nothing cut off by the guard.
+        // 2. Skipped: nothing - the four 0x4C and the nine 0x4D of the plan are executed since E19.f2a (F2-R4), none skipped. Nothing cut off by the guard.
         // E19.l1: 0x58 @110 (the C programs of Beaumont and Thyea, through @100) is executed, no longer skipped.
         var textOnce = new HashSet<(int, int)>
         {
             (0x4C, 331), (0x4C, 351), (0x4C, 356), (0x4C, 402),
             (0x4D, 350), (0x4D, 361), (0x4D, 373), (0x4D, 376), (0x4D, 379), (0x4D, 382), (0x4D, 392), (0x4D, 395), (0x4D, 398),
         };
-        AssertSkippedWithin(arc, textOnce);
+        AssertSkippedWithin(arc, new HashSet<(int, int)>());
         foreach (var (opcode, pc) in textOnce)
         {
-            Assert.Equal(1, arc.SkippedOrExceeded.Count(t => t.Opcode == opcode && t.Pc == pc));
+            Assert.Equal(0, arc.SkippedOrExceeded.Count(t => t.Opcode == opcode && t.Pc == pc));
         }
 
         // Beaumont and Thyea appear facing down (direction 0, AlundraEntitySpawnFactory.cs:667-669) and only the 0x27 @470/@498 (guarded by T4 and
@@ -392,7 +395,7 @@ public sealed class AlundraInoaDayOneArcTests
 
         // The end: 0x38 @437 of C[2] (program @240); G4, G8, G202 set, G201 cleared, [162] = 169, no lock, T3 set, record 4 deactivated.
         Assert.Equal(240, arc.Trace.First(t => t.Slot == C && t.Pc == 437 && t.Opcode == 0x38).ProgramStart);
-        AssertFrame(arc, C, 437, 189);
+        AssertFrame(arc, C, 437, 2071);
         Assert.True(IsSet(4), "G4");
         Assert.True(IsSet(8), "G8");
         Assert.True(IsSet(202), "G202");
@@ -402,7 +405,7 @@ public sealed class AlundraInoaDayOneArcTests
         Assert.False(AlundraDialogueDirector.Instance.IsOpen);
         Assert.True(IsTemporarySet(3), "T3");
         Assert.True(arc.Has(C, 451, 0x19), "C[3] never deactivated record 4 (0x19 @451)");
-        AssertFrame(arc, C, 451, 189);
+        AssertFrame(arc, C, 451, 2071);
         var record4 = arc.EntityByRecord(4)!;
         Assert.Equal(EntityStatus.Deactivated, record4.Status); // at the frame of the end ...
         arc.OneFrame();
@@ -421,12 +424,13 @@ public sealed class AlundraInoaDayOneArcTests
         Assert.Equal(at346.Rec(1).X - 10 * 65536, at346.Hero.X + 11 * 65536); // edge against edge, whatever the place of the hero in the zone.
         Assert.True(samples[C, 240, 386].Rec(1).X >= 68222976, "Septimus ends 0x0B @386 at x = 1041 px or more");
 
-        // T200 is seen set at the frame of the opening of box 131, T201 at the first press (the frames 12 and 13).
-        Assert.Equal(FrameOf(arc, C, 325) + 1, samples.FirstSet[200]);
-        Assert.Equal(samples.FirstSet[200] + 1, samples.FirstSet[201]);
+        // T200 is set by the step of its glyph, 28 passes after the opening of box 131 (0x0D @325) and seen the frame after, T201 at the pass of the text that follows the
+        // press (69 frames later: the cursor of the page, the 0x4C 3 and the 0x4D of @350-@351, the press of the arcs' rule). E19.f2a, annex V-104 and V-105.
+        Assert.Equal(FrameOf(arc, C, 325) + 29, samples.FirstSet[200]);
+        Assert.Equal(samples.FirstSet[200] + 69, samples.FirstSet[201]);
 
-        // The absolute frames (first measurement, +/- 3).
-        foreach (var (slot, pc, frame) in new[] { (C, 276, 5), (C, 289, 9), (B, 86, 10), (C, 325, 11), (C, 353, 48), (C, 417, 175) })
+        // The absolute frames (E19.f2a, annex V-106 to V-111: simulated, +/- 2 for Septimus's period; they were 5, 9, 10, 11, 48 and 175 with the box of the early ports).
+        foreach (var (slot, pc, frame) in new[] { (C, 276, 5), (C, 289, 409), (B, 86, 410), (C, 325, 411), (C, 353, 477), (C, 417, 681) })
         {
             AssertFrame(arc, slot, pc, frame);
         }

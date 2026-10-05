@@ -90,6 +90,8 @@ internal sealed class ArcRun : IDisposable
     private uint _hold;
     private uint _held;
     private uint _heldPreviousFrame;
+    private bool _dialogueHold;
+    private bool _dialogueHoldPreviousFrame;
     private readonly World? _realWorld;
 
     public ArcSpec Spec { get; }
@@ -185,8 +187,8 @@ internal sealed class ArcRun : IDisposable
             var controller = world.PlayerControllers.OfType<AlundraPlayerController>().Single();
             controller.PadStateProviderForTests = () => new AlundraPadState
             {
-                ButtonsHold = _hold | _held,
-                ButtonsJustPressed = _hold | (_held & ~_heldPreviousFrame),
+                ButtonsHold = _hold | _held | (_dialogueHold ? AlundraPadState.Square : 0),
+                ButtonsJustPressed = _hold | (_held & ~_heldPreviousFrame) | (_dialogueHold && !_dialogueHoldPreviousFrame ? AlundraPadState.Square : 0),
             };
 
             if (spec.Arrival is { } arrival)
@@ -387,6 +389,7 @@ internal sealed class ArcRun : IDisposable
         Proxy.Update(0.02f);
         Frame++;
         _heldPreviousFrame = _held;
+        _dialogueHoldPreviousFrame = _dialogueHold;
         OnFrame?.Invoke();
     }
 
@@ -461,29 +464,44 @@ internal sealed class ArcRun : IDisposable
         }, signal);
     }
 
-    /// <summary>E19.d: frames until <paramref name="done"/> holds, pressing Square on EVERY frame that starts with a dialogue open
-    /// (from the frame that follows the opening to the one that closes it: as many presses as pages), like a player who never lets
-    /// go of the button. <see cref="CloseDialogueWithTheButton"/> alternates a press and a frame without the button and stays as it
-    /// is for the arcs that pinned it. Fails at the arc's frame limit.</summary>
+    /// <summary>E19.d, rule of E19.f2a (docs/plan-e19-opcodes.md, "Manette des arcs"): frames until <paramref name="done"/> holds, with Square held on
+    /// every frame that starts with a dialogue open and not waiting for a press - the typing is as fast as it goes, like a player who never lets go of
+    /// the button - and, when the box waits for a press (the cursor of <c>\A</c>, or the typing done with the close mode's button bit), released for one
+    /// frame and then pressed again (a rising edge): Square is held at the frame f if a box is open and not (the box waits for a press and Square was
+    /// held at f - 1). <see cref="CloseDialogueWithTheButton"/> alternates a press and a frame without the button and stays as it is for the arcs that
+    /// pinned it. Fails at the arc's frame limit; the button is let go when the helper returns.</summary>
     public void RunUntilPressingTheButtonOnEveryDialogueFrame(Func<bool> done, string signal)
     {
-        while (!done())
+        try
         {
-            if (Frame >= Spec.FrameLimit)
+            while (!done())
             {
-                throw new XunitException(StuckMessage(signal));
-            }
+                if (Frame >= Spec.FrameLimit)
+                {
+                    throw new XunitException(StuckMessage(signal));
+                }
 
-            if (AlundraDialogueDirector.Instance.IsOpen)
-            {
-                Press(AlundraPadState.Square);
-            }
-            else
-            {
-                OneFrame();
+                OneFrameWithTheDialogueButton();
             }
         }
+        finally
+        {
+            LetGoOfTheDialogueButton();
+        }
     }
+
+    /// <summary>One frame under the rule of <see cref="RunUntilPressingTheButtonOnEveryDialogueFrame"/>, for the arcs whose own loop must also pick a choice:
+    /// Square is held during it when a dialogue is open and not (the box waits for a press and Square was held during the frame before). The button stays
+    /// as it is after the frame; <see cref="LetGoOfTheDialogueButton"/> lets go of it when the loop ends.</summary>
+    public void OneFrameWithTheDialogueButton()
+    {
+        var director = AlundraDialogueDirector.Instance;
+        _dialogueHold = director.IsOpen && !(director.Box.IsWaitingForPress && _dialogueHoldPreviousFrame);
+        OneFrame();
+    }
+
+    /// <summary>Lets go of the button of <see cref="OneFrameWithTheDialogueButton"/>.</summary>
+    public void LetGoOfTheDialogueButton() => _dialogueHold = false;
 
     /// <summary>The hero pawn of <see cref="ArcSpec.RealController"/> mode: the box of the export's hero (21x15x32, local
     /// (0.5, 0.5, 16)) and a <see cref="CharacterControllerComponent"/> with the export's settings, added to the world

@@ -141,8 +141,13 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         director.Open(DialogueTestAssets.SinglePage("Hello", "hello"), "Start", controlMode: 1);
         Assert.Equal(3, director.CloseMaskForTests);
 
-        gameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
-        director.Tick();
+        // E19.f2a: "hello" is typed from the pass 19 and ends at 39; a press the box sees at the pass 40 triggers the close, and the box is released
+        // 18 passes later - open after the pass 57, closed at the pass 58.
+        var passes = new DialogueBoxPassDriver(director, gameState);
+        passes.PressSeenAt(40);
+        passes.RunTo(57);
+        Assert.True(director.IsOpen);
+        passes.RunTo(58);
 
         Assert.False(director.IsOpen);
     }
@@ -157,12 +162,20 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         director.Open(DialogueTestAssets.SinglePage("Hello", "hello"), "Start", controlMode: 1);
         director.SetCloseMask(4);
 
-        gameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
-        director.Tick();
+        // The press of the old test was written before the first tick: the box sees it at the pass 2, while it still slides in. It changes nothing, and the
+        // button alone never closes a mask-4 box.
+        var passes = new DialogueBoxPassDriver(director, gameState);
+        passes.PressSeenAt(2);
+        passes.RunTo(2);
         Assert.True(director.IsOpen); // button alone must NOT close mask-4 boxes.
 
+        // E19.f2a: 0x51 is a latch the box takes once its typing is done: "hello" ends at 39, the latch triggers the close at 40, the release is at 58.
         var closed = director.RequestScriptClose();
         Assert.True(closed);
+        Assert.True(director.IsOpen);
+        passes.RunTo(57);
+        Assert.True(director.IsOpen);
+        passes.RunTo(58);
         Assert.False(director.IsOpen);
     }
 
@@ -176,6 +189,13 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         director.Open(DialogueTestAssets.SinglePage("First", "first"), "Start", controlMode: 1);
         director.SetCloseMask(4);
         Assert.True(director.RequestScriptClose());
+        Assert.True(director.IsOpen);
+
+        // E19.f2a: the latch is set before the first pass, "first" ends at 39, the close triggers at 40 and the box is released at 58.
+        var passes = new DialogueBoxPassDriver(director, gameState);
+        passes.RunTo(57);
+        Assert.True(director.IsOpen);
+        passes.RunTo(58);
         Assert.False(director.IsOpen);
 
         // Mutation target (T3): "ne pas remettre -> T3 tombe" - a SECOND open must reset the mask back
@@ -263,6 +283,55 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         Assert.Equal(3, state.CodeIndex); // 0x50 (2) + 0x51 (1) = 3, both advanced without a director.
     }
 
+    // ---- E19.f2a F2-R4: 0x4C to 0x4F ------------------------------------------------------------------
+
+    [Fact]
+    public void Opcodes0x4CTo0x4F_AreExecutedBySize_NoneGivesTheHandBack_AndTheyReachTheBox()
+    {
+        var gameState = new AlundraGameState();
+        var context = NewRealDialogueContext(gameState);
+        var director = AlundraDialogueDirector.Instance;
+        director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 1);
+
+        // 0x4C [4] (size 2: manual typing), 0x4D (size 1: one step latched), 0x4E [6] (size 2), 0x4F (size 1), 0x50 [4] (size 2), 0x51 (size 1): nine bytes
+        // and one more instruction, in one call - none of them suspends the script.
+        var document = NewDocument(0x4C, 4, 0x4D, 0x4E, 6, 0x4F, 0x50, 4, 0x51, 0x1A, 9, 0xFF);
+        var runner = NewRunner(document, gameState, context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(9u, entity.TargetAnimationId); // the instruction after the six was reached in the same call
+        Assert.Equal(4, director.Box.TextFlags);
+        Assert.Equal(6, director.Box.ScrollMode);
+        Assert.Equal(4, director.CloseMaskForTests);
+
+        // The 0x4D latched while the text flags say a 0x4D gates (bit 4): the first call of the interpreter, the pass 19, types a letter and nothing else ever does.
+        var passes = new DialogueBoxPassDriver(director, gameState);
+        passes.RunTo(18);
+        Assert.Equal(0, director.Box.GlyphCount);
+        passes.RunTo(19);
+        Assert.Equal(1, director.Box.GlyphCount);
+        passes.RunTo(80);
+        Assert.Equal(1, director.Box.GlyphCount);
+    }
+
+    [Fact]
+    public void Degraded_0x4CTo0x4F_NoDirector_AdvanceBySizeWithoutThrowing()
+    {
+        var gameState = new AlundraGameState();
+        var context = new FakeEntityWorldContext { DialogueDirector = null };
+        var document = NewDocument(0x4C, 4, 0x4D, 0x4E, 6, 0x4F, 0xFF);
+        var runner = NewRunner(document, gameState, context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(6, state.CodeIndex); // 2 + 1 + 2 + 1, the 0xFF at 6.
+    }
+
     // ---- T6: control-flag gates -------------------------------------------------------------------
 
     [Fact]
@@ -279,6 +348,15 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
 
         director.SetCloseMask(4);
         Assert.True(director.RequestScriptClose());
+
+        // E19.f2a: the close is the box's, not the opcode's: "box" ends at 31, the latch triggers the close at 32, and MessageBox falls with the release at the
+        // pass 50 (counted from this opening).
+        var boxPasses = new DialogueBoxPassDriver(director, gameState);
+        boxPasses.RunTo(49);
+        Assert.Equal(
+            AlundraGameState.PlayerControlBits.MessageBox,
+            gameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MessageBox);
+        boxPasses.RunTo(50);
         Assert.Equal(
             0u,
             gameState.PlayerControlFlags & (AlundraGameState.PlayerControlBits.MessageBox | AlundraGameState.PlayerControlBits.MenuOpen));
@@ -290,6 +368,14 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
 
         director.SetCloseMask(4);
         Assert.True(director.RequestScriptClose());
+
+        // "menu box" ends at 51, the close triggers at 52 and MenuOpen falls with the release at the pass 70.
+        var menuPasses = new DialogueBoxPassDriver(director, gameState);
+        menuPasses.RunTo(69);
+        Assert.Equal(
+            AlundraGameState.PlayerControlBits.MenuOpen,
+            gameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
+        menuPasses.RunTo(70);
         Assert.Equal(
             0u,
             gameState.PlayerControlFlags & (AlundraGameState.PlayerControlBits.MessageBox | AlundraGameState.PlayerControlBits.MenuOpen));

@@ -422,6 +422,10 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     // 0x39/0x44/0x51 from that set is still behaviourally inert for every OTHER test.
     private readonly bool _installDialogueDirector;
 
+    /// <summary>E19.f2a (F2-R1): the harness's mirror of the world proxy's pad pass for the dialogue box - the square button as it was at the previous frame, with its
+    /// rising edge, derived from <c>LastPadState.ButtonsHold</c> the way <see cref="AlundraTickPad"/> derives it in production.</summary>
+    private readonly AlundraTickPad _dialoguePadMirror = new();
+
     // Includes the player (index 0) - mirrors AlundraWorldProxy's own _spawnedEntities, which also holds
     // the player (SpawnPlayerEntity adds it before any record) - see IEntityWorldContext.SpawnedEntities's
     // own doc for why that matters (a search opcode must be able to find the player too).
@@ -584,9 +588,15 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
             // advance/close belongs to the frame loop, not to opcode 0x39) - the harness IS the frame
             // owner here, exactly as it mirrors the other world-level passes. One tick per simulated
             // frame (the harness runs one logic tick per frame, per its own class doc).
+            // E19.f2a (F2-R1): the order of a frame here is RunFrame (the scripts), the pass of the box, the callback of the test. The pass reads the pad
+            // of the PREVIOUS frame: the mirror is updated from LastPadState.ButtonsHold, which the callback of the previous frame wrote - so a press is a
+            // hold of one frame, followed by a release.
             if (_installDialogueDirector)
             {
-                AlundraDialogueDirector.Instance.Tick();
+                _dialoguePadMirror.Update(_gameState.LastPadState.ButtonsHold);
+                AlundraDialogueDirector.Instance.Pass(
+                    (_dialoguePadMirror.ButtonsHold & AlundraPadState.Square) != 0,
+                    (_dialoguePadMirror.ButtonsJustPressed & AlundraPadState.Square) != 0);
             }
 
             afterEachFrame?.Invoke(this);

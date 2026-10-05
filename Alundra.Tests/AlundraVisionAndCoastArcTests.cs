@@ -499,11 +499,14 @@ public sealed class AlundraVisionAndCoastArcTests
         Assert.Equal(0, samples.WendellCounterAfter541);
         Assert.Equal(10u, samples.WendellTargetAfter541);
 
-        // The box was closed before the end of the wait: nothing else delays the rest of the program.
-        Assert.True(frameAfterTheBoxClosed <= f530 + 91, $"the box closed at frame {frameAfterTheBoxClosed}, after the end of the wait (frame {f530 + 91})");
+        // E19.f2a: the box of Wendell is a script-entity box typed at the binary's pace (first glyph at f530 + 18, the typing done at f530 + 98, the close
+        // triggered by the helper's presses at f530 + 100, the release at f530 + 118) and Wendell's 0x39 waits for it: the wait of 91 frames ends BEFORE the
+        // box is released, so the rest of the program comes at f530 + 119, one tick after the release (an entity script sees it a tick late, F2-R1). The 0x39
+        // is first executed at f530 + 91 (FrameOf gives its first execution); it blocks until the release.
+        Assert.Equal(f530 + 119, frameAfterTheBoxClosed);
         Assert.Equal(f530 + 91, FrameOf(arc, CProgram, 543, 0x39));
-        Assert.Equal(f530 + 91, FrameOf(arc, CProgram, 544, 0x06));
-        Assert.Equal(f530 + 91, FrameOf(arc, CProgram, 547, 0x11));
+        Assert.Equal(f530 + 119, FrameOf(arc, CProgram, 544, 0x06));
+        Assert.Equal(f530 + 119, FrameOf(arc, CProgram, 547, 0x11));
 
         // The end: the hand is back, T0 is clear, one box opened.
         Assert.Equal(0u, ArcRun.State.PlayerControlFlags);

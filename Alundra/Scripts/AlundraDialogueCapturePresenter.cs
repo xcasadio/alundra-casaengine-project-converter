@@ -23,25 +23,29 @@ namespace Alundra.Scripts;
 /// <see cref="WorldPresenter"/>: <c>[br/]</c> becomes a line break and <c>[glyph id=N/]</c> becomes
 /// character <c>N</c> of font3, both inserted from the END of the attribute list so earlier positions
 /// stay valid. <c>voice</c>/<c>center</c>/<c>slow</c>/<c>empty</c> are left in the data for the later
-/// dialogue-fidelity step (E12.c) and ignored here. Before forwarding, it also sets the flag of every
-/// <c>[flag id=N/]</c> marker of the line (E19.f0, D-E19-48); <c>[yield/]</c> is ignored until E19.f2. A non-empty <see cref="DialogueLine.Speaker"/> is
+/// dialogue-fidelity step (E12.c) and ignored here. Until E19.f2a it also set the flag of every
+/// <c>[flag id=N/]</c> marker of the line (E19.f0, D-E19-48) at the display of the page. A non-empty <see cref="DialogueLine.Speaker"/> is
 /// logged once - E15.b's corpus proof (<c>YarnCorpusEquivalenceTests</c>) found none on the real export.
+/// <para/>
+/// E19.f2a (docs/plan-e19-opcodes.md, F2-R3, F2-R6): the director now cuts each page into the steps of its box, sets the flags of a page at their
+/// glyph and sends the world presenter only the page typed so far. So when a <see cref="LineSink"/> is given, a line goes to it instead of to
+/// <see cref="WorldPresenter"/>, and the runner's closes (a <c>Stop</c> or the end of the dialogue) are swallowed: the director owns the lifetime
+/// of the presenter. No flag is set here any more.
 /// </summary>
 public sealed class AlundraDialogueCapturePresenter : IDialoguePresenter
 {
     private static bool _loggedSpeakerOnce;
 
-    private readonly AlundraGameState? _gameState;
-
-    /// <param name="worldPresenter">Where every transformed line is forwarded.</param>
-    /// <param name="gameState">Where the line's <c>flag</c> markers are written (E19.f0); <c>null</c> for a
-    /// presenter built bare by a test that does not care about flags - then no flag is written.</param>
-    public AlundraDialogueCapturePresenter(IDialoguePresenter worldPresenter, AlundraGameState? gameState = null)
+    /// <param name="worldPresenter">Where every transformed line is forwarded (unless a <see cref="LineSink"/> takes it).</param>
+    public AlundraDialogueCapturePresenter(IDialoguePresenter worldPresenter)
     {
         ArgumentNullException.ThrowIfNull(worldPresenter);
         WorldPresenter = worldPresenter;
-        _gameState = gameState;
     }
+
+    /// <summary>E19.f2a: where each line the runner delivers goes INSTEAD of <see cref="WorldPresenter"/> - the director, which cuts it into the steps of its
+    /// box. While it is set, <see cref="Close"/> is swallowed too: the director closes the world's presenter itself, at the release of the box.</summary>
+    public Action<DialogueLine>? LineSink { get; set; }
 
     /// <summary>The presenter every transformed line/choice/close is forwarded to - re-pointed by
     /// <see cref="AlundraDialogueDirector.AttachToWorld"/> without rebuilding this instance or the
@@ -72,11 +76,10 @@ public sealed class AlundraDialogueCapturePresenter : IDialoguePresenter
                 + $"('{line.Speaker}') - E15.b's corpus proof found none; shown without a speaker prefix.");
         }
 
-        // E19.f0 (D-E19-48): the line's flag markers are set here, at the page's display and before the line
-        // goes on (D-E12-4 holds until E19.f2 draws each flag at its glyph).
-        if (_gameState is not null)
+        if (LineSink != null)
         {
-            AlundraYarnBindings.ApplyFlagMarkers(_gameState, line);
+            LineSink(line);
+            return true;
         }
 
         return WorldPresenter.ShowLine(new DialogueLine(ToFont3Text(line)));
@@ -86,7 +89,7 @@ public sealed class AlundraDialogueCapturePresenter : IDialoguePresenter
 
     public bool SelectChoice(int index) => WorldPresenter.SelectChoice(index);
 
-    public bool Close() => WorldPresenter.Close();
+    public bool Close() => LineSink != null || WorldPresenter.Close();
 
     /// <summary>
     /// Item 4: <c>[br/]</c> -&gt; <c>'\n'</c>, <c>[glyph id=N/]</c> -&gt; character <c>N</c> of font3,

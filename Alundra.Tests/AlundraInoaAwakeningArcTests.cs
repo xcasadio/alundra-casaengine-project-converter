@@ -31,7 +31,7 @@ public sealed class AlundraInoaAwakeningArcTests
     private static readonly int[] ShopRecords = { 3, 4, 5, 6, 8 };
 
     private static ArcSpec A8Spec => new(
-        "A8", "Inoa", "Inoa (inner)-163", Array.Empty<int>(), 40, 9, 2, 1300, RealController: true, Prefabs: true);
+        "A8", "Inoa", "Inoa (inner)-163", Array.Empty<int>(), 40, 9, 2, 2937, RealController: true, Prefabs: true);
 
     private sealed class Samples
     {
@@ -190,14 +190,14 @@ public sealed class AlundraInoaAwakeningArcTests
         arc.OnInstruction = t => samples.Take(arc, t);
         arc.OnFrame = () => samples.TakeFrame(arc);
 
-        // 1. The end signal (the five boxes are closed by one press of Square per frame).
+        // 1. The end signal (the five boxes are typed with Square held and closed by the press of the arcs' rule, E19.f2a).
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => arc.Has(B, 201, 0x11), "B[1] executes 0x11 @201");
 
         // 2. Nothing skipped or exceeded.
         AssertNothingSkippedOrExceeded(arc);
 
         // 3. The rest, in the order of the plan.
-        AssertFrame(arc, B, 201, 1025);
+        AssertFrame(arc, B, 201, 2446);
         var endFrame = FrameOf(arc, B, 201);
         foreach (var (pc, opcode) in new[] { (198, 0x05), (202, 0x06), (205, 0x05), (208, 0x05) })
         {
@@ -256,12 +256,12 @@ public sealed class AlundraInoaAwakeningArcTests
         Assert.Equal((58681344, 9961472), samples.HeroAt194);
         AssertGap(arc, B, 190, 194, 27);
 
-        // The boxes (pages + 1 frames from the opening to the next instruction) and the waits.
-        AssertGap(arc, B, 117, 121, 3);
-        AssertGap(arc, B, 123, 127, 4);
-        AssertGap(arc, B, 129, 133, 4);
-        AssertGap(arc, B, 163, 167, 4);
-        AssertGap(arc, B, 169, 173, 3);
+        // The boxes (from the opening to the release the 0x39 sees, typed at the binary's pace: E19.f2a) and the waits.
+        AssertGap(arc, B, 117, 121, 191);
+        AssertGap(arc, B, 123, 127, 309);
+        AssertGap(arc, B, 129, 133, 306);
+        AssertGap(arc, B, 163, 167, 371);
+        AssertGap(arc, B, 169, 173, 262);
         AssertGap(arc, B, 121, 123, 46);
         AssertGap(arc, B, 127, 129, 46);
         AssertGap(arc, B, 133, 135, 46);
@@ -273,8 +273,8 @@ public sealed class AlundraInoaAwakeningArcTests
         // The absolute frames.
         foreach (var (pc, frame) in new[]
         {
-            (98, 253), (106, 413), (115, 516), (123, 565), (129, 615), (135, 665), (143, 690), (157, 815),
-            (163, 833), (169, 868), (181, 913), (184, 997), (190, 998),
+            (98, 253), (106, 413), (115, 516), (123, 753), (129, 1108), (135, 1460), (143, 1485), (157, 1610),
+            (163, 1628), (169, 2030), (181, 2334), (184, 2418), (190, 2419),
         })
         {
             AssertFrame(arc, B, pc, frame);

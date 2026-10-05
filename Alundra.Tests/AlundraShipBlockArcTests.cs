@@ -28,14 +28,13 @@ public sealed class AlundraShipBlockArcTests
     private const int C = ScriptHelper.ProgramCTick;
 
     private static ArcSpec A6Spec => new(
-        "A6", "The Klark", "Ship Klark (night, break, Event)-391", new[] { 1641 }, 15, 28, 7, 1500, RealController: true, Prefabs: true);
+        "A6", "The Klark", "Ship Klark (night, break, Event)-391", new[] { 1641 }, 15, 28, 7, 2957, RealController: true, Prefabs: true);
 
     /// <summary>The instructions the map still skips: none of them suspends (effects E19.g, typewriter E12.c); the camera sway 0x8E is executed since E19.k1.</summary>
     private static readonly HashSet<(int Opcode, int Pc)> AllowedSkipped = new()
     {
         (0xA2, 228), (0xA2, 236), (0xA2, 244), (0xA2, 252), (0xA2, 408),
         (0x94, 417), (0x94, 425), (0x94, 433), (0x94, 441), (0x94, 503),
-        (0x4C, 706),
     };
 
     private sealed class Samples
@@ -181,22 +180,23 @@ public sealed class AlundraShipBlockArcTests
         // 1. The end signal.
         arc.RunUntil(() => arc.Has(B, 540, 0x53), "B1 executes 0x53 @540 towards map 416");
 
-        // 2. Only the expected instructions skipped, none cut off by the loop guard; 0x4C @706 three times.
+        // 2. Only the expected instructions skipped, none cut off by the loop guard; 0x4C @706 is executed since E19.f2a (F2-R4), never skipped.
         AssertSkippedWithin(arc, AllowedSkipped);
-        Assert.Equal(3, arc.SkippedOrExceeded.Count(t => t.Opcode == 0x4C && t.Pc == 706));
+        Assert.Equal(0, arc.SkippedOrExceeded.Count(t => t.Opcode == 0x4C && t.Pc == 706));
 
         // The camera sway (E19.k1): the 0x8E are executed, none skipped; [1,1,3,2] after frame 0, [3,1,6,2] after @335,
         // [8,1,8,2] after @342 (the frames of @335 and @342 are not pinned), armed until the end of the arc.
         Assert.Empty(arc.SkippedOrExceeded.Where(t => t.Opcode is 0x8E or 0x8F));
-        // (0x8E @721 is not reached before the departure, measured; it stays outside the allowed set all the same.)
-        Assert.Equal(new[] { 260, 335, 342 }, arc.Trace.Where(t => t.Opcode == 0x8E).Select(t => t.Pc).Distinct().OrderBy(pc => pc).ToArray());
+        // (0x8E @721 is reached since E19.f2a: the box of the third text sets T1000 at its step (tick 1419), 320 ticks before T999, and the branch @716-@733 of the
+        // sub-program @706 runs on every tick between - 321 times, ticks 1419 to 1739, annex V-70b.)
+        Assert.Equal(new[] { 260, 335, 342, 721 }, arc.Trace.Where(t => t.Opcode == 0x8E).Select(t => t.Pc).Distinct().OrderBy(pc => pc).ToArray());
         Assert.Equal((1, 1, 3, 2), samples.SwayAfterFrame0);
         Assert.Equal((3, 1, 6, 2), samples.SwayAfter335);
         Assert.Equal((8, 1, 8, 2), samples.SwayAfter342);
         Assert.Empty(samples.FramesWithTheSwayOff);
 
         // 3. The rest, in the order of the plan.
-        AssertFrame(arc, B, 540, 1149);
+        AssertFrame(arc, B, 540, 2463);
         Assert.True(AlundraWarpDirector.Instance.HasPendingArrival);
         var arrival = AlundraWarpDirector.Instance.ArrivalRecordForTests;
         Assert.Equal(416u, arrival.MapIndex);
@@ -205,7 +205,7 @@ public sealed class AlundraShipBlockArcTests
         Assert.Equal(1048576, arrival.PosZ);
         Assert.Equal(2, arrival.EffectId);
         Assert.Equal(0u, arrival.AnimationId);
-        Assert.Equal(0u, arrival.DirectionId);
+        Assert.Equal(16u, arrival.DirectionId); // 0x5A [130, 65] @726 turned every entity, the hero's too, to 0x10 on each tick of the branch (V-70c); 0x53 @540 copies it.
 
         // Frame 0: the block spawned by 0x2D @265 rests one frame on the sailor 4 (spawn support without reach, O-E19-15).
         Assert.Equal((29097984, 44040192, 9437184), samples.BlockAfter265);
@@ -226,53 +226,54 @@ public sealed class AlundraShipBlockArcTests
         AssertFrame(arc, B, 291, 179);
         Assert.Equal((18, 42, 9), samples.BlockAt291);
 
-        // The three boxes (script-closed): opened at 180, 273 and 444, closed by 0x51 @739 exactly 61 frames later.
-        Assert.Equal(new[] { 180, 273, 444 }, new[] { 295, 306, 327 }.Select(pc => FrameOf(arc, B, pc)).ToArray());
-        Assert.Equal(new[] { 241, 334, 505 }, FramesOf(arc, B, 739, 0x51));
-        Assert.Equal(new[] { 61, 61, 61 }, new[] { 180, 273, 444 }.Zip(FramesOf(arc, B, 739, 0x51), (open, close) => close - open).ToArray());
+        // The three boxes (script-closed), typed at the binary's pace (E19.f2a): opened at 180, 643 and 1332, closed by 0x51 @739 at 592, 1203 and 1800, that is
+        // 412, 560 and 468 frames later (the end of each text, then the wait of 60).
+        Assert.Equal(new[] { 180, 643, 1332 }, new[] { 295, 306, 327 }.Select(pc => FrameOf(arc, B, pc)).ToArray());
+        Assert.Equal(new[] { 592, 1203, 1800 }, FramesOf(arc, B, 739, 0x51));
+        Assert.Equal(new[] { 412, 560, 468 }, new[] { 180, 643, 1332 }.Zip(FramesOf(arc, B, 739, 0x51), (open, close) => close - open).ToArray());
         Assert.Equal(3u, (uint)AlundraDialogueDirector.Instance.OpenSerial - (uint)serialAtStart);
         Assert.False(AlundraDialogueDirector.Instance.IsOpen);
 
         // 0x5E: the sailors' lifts, read after the instruction.
-        AssertFrame(arc, B, 321, 413);
+        AssertFrame(arc, B, 321, 1301);
         Assert.Equal((6, 393216), samples.ForceZAfter5E[321]);
-        AssertFrame(arc, B, 368, 619);
+        AssertFrame(arc, B, 368, 1933);
         Assert.Equal((2, 524288), samples.ForceZAfter5E[368]);
-        AssertFrame(arc, B, 377, 640);
+        AssertFrame(arc, B, 377, 1954);
         Assert.Equal((3, 393216), samples.ForceZAfter5E[377]);
-        AssertFrame(arc, B, 497, 854);
+        AssertFrame(arc, B, 497, 2168);
         Assert.Equal((0, 24576), samples.ForceZAfter5E[497]);
 
-        AssertFrame(arc, B, 347, 568); // T0 set
-        AssertFrame(arc, B, 388, 702);
-        AssertFrame(arc, B, 390, 702);
+        AssertFrame(arc, B, 347, 1882); // T0 set
+        AssertFrame(arc, B, 388, 2016);
+        AssertFrame(arc, B, 390, 2016);
         Assert.Equal(1, samples.ResultAt388);
         Assert.Equal(1, samples.ResultAt390);
-        AssertFrame(arc, B, 449, 703);
+        AssertFrame(arc, B, 449, 2017);
         Assert.Equal((29097984, 46661632, 3145728), samples.Record4After449);
         Assert.Equal(0u, samples.Record4FlagsAfter457 & 0x100u);
 
-        // The block walks south at 0.5 px per tick from frame 728, and reaches row 44 at frame 793.
-        AssertFrame(arc, B, 470, 728);
+        // The block walks south at 0.5 px per tick from frame 2042, and reaches row 44 at frame 2107.
+        AssertFrame(arc, B, 470, 2042);
         Assert.Equal((1u, 0u), samples.BlockAt470);
-        AssertFrame(arc, B, 491, 793);
+        AssertFrame(arc, B, 491, 2107);
         Assert.True(samples.BlockAt491 is { PosY: >= 46137344, TileY: 44 }, $"the block at 0x5B @491: {samples.BlockAt491}");
 
         // The loop and the end: 40 steps of record 4, then the wait of 120 frames.
-        AssertFrame(arc, B, 514, 987);
+        AssertFrame(arc, B, 514, 2301);
         Assert.Equal(40, FramesOf(arc, B, 517, 0x65).Count);
         Assert.Equal(40, FramesOf(arc, B, 525, 0x74).Count);
-        Assert.Equal(Enumerable.Range(988, 40).ToArray(), FramesOf(arc, B, 517, 0x65).ToArray());
+        Assert.Equal(Enumerable.Range(2302, 40).ToArray(), FramesOf(arc, B, 517, 0x65).ToArray());
         Assert.Equal(51904512, samples.Record4PosYAt528);
-        AssertFrame(arc, B, 528, 1027);
-        AssertFrame(arc, B, 529, 1028);
+        AssertFrame(arc, B, 528, 2341);
+        AssertFrame(arc, B, 529, 2342);
         Assert.Equal(121, FrameOf(arc, B, 540) - FrameOf(arc, B, 529));
 
         // B2 (program @552): the flashes and the end.
         Assert.Equal(
             new[] { 62, 184, 206, 448, 510 },
             new[] { 581, 599, 617, 635, 653 }.Select(pc => FrameOf(arc, B, pc)).ToArray());
-        AssertFrame(arc, B, 761, 633);
+        AssertFrame(arc, B, 761, 1899); // B2's cycle of 694 frames reads T0 (set at 1882) at 1898, then @761 at 1899 (V-70)
 
         // The end state.
         Assert.Equal(0x04u, ArcRun.State.PlayerControlFlags);

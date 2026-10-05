@@ -31,12 +31,13 @@ public sealed class AlundraVisionArcTests
     /// once). 0x4C only matters to the typewriter (E12.c); 0x92, 0x93 and 0xA2 are effects (E19.g).</summary>
     private static readonly HashSet<int> AllowedSkippedOpcodes = new() { 0x4C, 0x92, 0x93, 0xA2 };
 
-    private static ArcSpec A2Spec => new("A2", Zone, Map476, new[] { 1640 }, 0, 0, 3, 1500);
+    // The budgets are those of E19.f2a (annex V-120 to V-122): max(the budget of before, 1.2 times the end predicted by the oracle) - the boxes of the vision are typed at the binary's pace.
+    private static ArcSpec A2Spec => new("A2", Zone, Map476, new[] { 1640 }, 0, 0, 3, 2499);
 
-    private static ArcSpec A4Spec => new("A4", Zone, Map476, new[] { 1641 }, 0, 0, 0, 2500);
+    private static ArcSpec A4Spec => new("A4", Zone, Map476, new[] { 1641 }, 0, 0, 0, 10865);
 
     /// <summary>A4p (E19.c1, D-E19-14): A4 with the export's real prefabs, loaded by the production spawn path.</summary>
-    internal static ArcSpec A4pSpec => new("A4p", Zone, Map476, new[] { 1641 }, 0, 0, 0, 2500, RealController: true, Prefabs: true);
+    internal static ArcSpec A4pSpec => new("A4p", Zone, Map476, new[] { 1641 }, 0, 0, 0, 10865, RealController: true, Prefabs: true);
 
     internal sealed record BoxSample(int Opcode, uint OpenSerial, string Text);
 

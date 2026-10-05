@@ -86,11 +86,13 @@ public class AlundraStoryChainSkippedOpcodesTests
     }
 
     [Fact]
-    public void TheMapsWithTwoProgramsAtOnePcAreTwoLines()
+    public void TheMapsWithTwoProgramsAtOnePcAreTwoLines_NoneSinceThe0x4CIsPorted()
     {
         var list = TheList();
 
-        Assert.Equal(2, list.Count(l => l.Site.Map == 476 && l.Site.Pc == 112));
+        // The two programs of the map 476 that share the pc 112 held a 0x4C each (the two lines of this test before E19.f2a): the opcode is ported (F2-R4), the
+        // sites are no longer skipped and their two lines are gone from the list.
+        Assert.Equal(0, list.Count(l => l.Site.Map == 476 && l.Site.Pc == 112));
     }
 
     // -----------------------------------------------------------------------------------------

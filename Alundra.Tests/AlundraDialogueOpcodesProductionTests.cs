@@ -85,6 +85,8 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
             var sim = new HeadlessIntroSimulation(projectRoot, WorldName, document!, installDialogueDirector: true);
 
             var director = AlundraDialogueDirector.Instance;
+            var serialAtStart = director.OpenSerial;
+            var button = new DialogueHarnessButton();
             var reachedOpen = false;
             var reachedAwaitingChoice = false;
             var choiceMade = false;
@@ -106,10 +108,8 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                     SeedFlag(s.GameState, InteractArmedFlag);
                 }
 
-                // Clear the one-shot "just pressed" pad snapshot every frame (a real pad only reports a
-                // fresh press once) - re-armed below only on the exact frame it is needed.
-                s.GameState.LastPadState = default;
-
+                // E19.f2a: the pad is written at the END of this callback by the rule of the harness's button (held while a box types, released then
+                // pressed when it waits for a press), read by the pass of the box of the next frame.
                 if (director.IsOpen && !reachedOpen)
                 {
                     reachedOpen = true;
@@ -141,16 +141,16 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                     }
                 }
 
-                if (choiceMade && director.IsOpen && !director.IsAwaitingChoice && !reachedFollowUpBox)
+                // The follow-up box (idx2) opens at the frame 116, once the question's box (closed by the script's 0x51, mask 4) is released at 115: it is the
+                // second box of this run.
+                if (choiceMade && director.OpenSerial == serialAtStart + 2 && director.IsOpen && !director.IsAwaitingChoice && !reachedFollowUpBox)
                 {
                     reachedFollowUpBox = true;
                     // idx2's own text ("...CINQUIEME fois...") - confirms the OUI branch was taken.
                     Assert.Contains("CINQUIEME", director.CurrentLineForTests?.Text ?? "");
-
-                    // Press the interact button on THIS frame to close the follow-up box via 0x39's own
-                    // button-close path (default mask 3).
-                    s.GameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
                 }
+
+                s.GameState.LastPadState = new AlundraPadState { ButtonsHold = button.HoldForThisFrame(director) };
             });
 
             Assert.True(reachedOpen, "the dialogue never opened - the 860/0x800C entry guard was not crossed.");
@@ -206,11 +206,13 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
             var stillOpenLongAfterProgramEnded = false;
             var closedOnButton = false;
             var reopenedAfterClose = false;
+            var button = new DialogueHarnessButton();
 
-            sim.RunFramesForTest(60, s =>
+            // E19.f2a (annex V-21 to V-25): the box opens in the callback of the frame 2 (the first pass is at 3), types from the pass 21, shows the cursor of
+            // the page boundary at 106 (released at 108 by the press the rule gives), ends at 204, closes at 206 and is released at 224, which this callback sees at
+            // 224 and the scripts at 225: the interaction works again at 225, so the budget is 270.
+            sim.RunFramesForTest(270, s =>
             {
-                s.GameState.LastPadState = default;
-
                 if (s.Frame == 1)
                 {
                     AlundraDialogueDirector.Instance.AttachToWorld(new DialogueService(), s.GameState);
@@ -238,15 +240,9 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                     stillOpenLongAfterProgramEnded = director.IsOpen;
                 }
 
-                // Frames 39..47: press interact each frame while the box is open - a page a press until
-                // the last page's press closes it (each press is seen by the NEXT frame's per-frame
-                // tick, which runs before this hook).
-                if (s.Frame is >= 39 and < 48 && director.IsOpen)
-                {
-                    s.GameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
-                }
-
-                if (s.Frame is >= 40 and < 50 && !closedOnButton && !director.IsOpen)
+                // Frames 39..224: the button of the harness's rule is held while the box types and pressed when it waits for a press (a page a press, and the
+                // last page's press closes it) - written at the end of this callback, read by the pass of the NEXT frame.
+                if (s.Frame is >= 40 and < 230 && !closedOnButton && !director.IsOpen)
                 {
                     closedOnButton =
                         (s.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) == 0;
@@ -254,11 +250,13 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
 
                 // And the world is NOT wedged: the same interaction works again (pre-fix, the stale
                 // open box made every later 0x0D retry forever).
-                if (s.Frame == 50)
+                if (s.Frame == 225)
                 {
                     s.Runner.RunScript(sailorThirteen!, ScriptHelper.ProgramFInteract);
                     reopenedAfterClose = director.IsOpen;
                 }
+
+                s.GameState.LastPadState = new AlundraPadState { ButtonsHold = button.HoldForThisFrame(director) };
             });
 
             Assert.True(openedWithMenuOpen, "sailor 13's F(Interact) program did not open the box with MenuOpen posed.");
@@ -303,8 +301,12 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
             var openSurvivedItsOwnPress = false;
             var closedOnLaterPresses = false;
             var reopenedUncommanded = false;
+            var button = new DialogueHarnessButton();
 
-            sim.RunFramesForTest(120, s =>
+            // E19.f2a (annex V-26 to V-31): the press of the frame 10 is the player's (the interaction); the box opens in RunFrame of the frame 11 (its first pass is
+            // at 11), shows its cursor at 114, ends at 212, closes at 214 and is released at 232, seen by this callback at 232 and by the scripts at 233; the window
+            // without a reopening is kept at 65 frames, from 234 to 298, so the budget is 358.
+            sim.RunFramesForTest(358, s =>
             {
                 var player = s.PlayerEntity;
                 Assert.NotNull(player);
@@ -352,16 +354,16 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                 player.PosY = sailor.PosY;
                 player.PosZ = sailor.PosZ;
 
-                // Press Square once at frame 10 (to open), then repeatedly at 40..48 while the box is
-                // open (a page a press until close) - and NEVER after 48.
-                if (s.Frame == 10 || (s.Frame is >= 40 and < 49 && director.IsOpen))
+                // Press Square once at frame 10 (to open); once the box is open the rule of the harness's button takes over (held while the box types, a press
+                // when it waits for one - a page a press until close) and nothing presses after the release.
+                if (s.Frame == 10)
                 {
                     pressThisFrame = true;
                 }
 
                 var pad = pressThisFrame
                     ? new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square }
-                    : default;
+                    : new AlundraPadState { ButtonsHold = button.HoldForThisFrame(director) };
                 s.GameState.LastPadState = pad; // the production player branch publishes it likewise.
 
                 // Mirror 1 - the player branch's MovePlayer call (production site pinned by
@@ -399,15 +401,15 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                     openSurvivedItsOwnPress = director.IsOpen;
                 }
 
-                if (s.Frame is >= 41 and < 55 && !closedOnLaterPresses && !director.IsOpen)
+                if (s.Frame is >= 41 and < 240 && !closedOnLaterPresses && !director.IsOpen)
                 {
                     closedOnLaterPresses =
                         (s.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) == 0;
                 }
 
-                // Frames 55..120: still overlapping the sailor, contact live again, but NO press -
+                // Frames 234..298: still overlapping the sailor, contact live again, but NO press -
                 // the consumed assignment must never resurrect the dialogue (D-E12D-4).
-                if (s.Frame > 55 && director.IsOpen)
+                if (s.Frame > 233 && director.IsOpen)
                 {
                     reopenedUncommanded = true;
                 }

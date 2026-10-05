@@ -12,10 +12,11 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E19.f0 (docs/plan-e19-opcodes.md, F0-3; D-E19-48, ADR-0025): the DLL reads the positioned
-/// <c>[flag id=N/]</c> markers of a Yarn line. Behaviour is unchanged (D-E12-4 holds until E19.f2): every
-/// flag of a page is set when the page is shown, in the order of the marker list, before the line goes to
-/// the world presenter; <c>[yield/]</c> and any unknown marker are ignored; the old <c>&lt;&lt;flag n&gt;&gt;</c>
-/// command is still served; the degraded (no-director) path reads the markers too.
+/// <c>[flag id=N/]</c> markers of a Yarn line. Since E19.f2a (F2-R3, the end of D-E12-4) a flag is set when the box's own step
+/// reaches it - at the glyph where the marker sits, on the pass the director's box takes that step - and no longer when the page is shown; the
+/// capture presenter sets none; <c>[yield/]</c> (a step in which nothing is drawn) and any unknown marker set no flag; the old
+/// <c>&lt;&lt;flag n&gt;&gt;</c> command is still served at the display of the page; the degraded (no-director) path reads the markers too and
+/// stays instantaneous.
 /// </summary>
 public sealed class AlundraDialogueFlagMarkerTests : IDisposable
 {
@@ -112,21 +113,39 @@ public sealed class AlundraDialogueFlagMarkerTests : IDisposable
             "Salut" + Flag(10) + Yield + " ami", "page one", Flag(20) + "page two");
 
         Director.Open(asset, "Start", controlMode: 1);
+        var passes = new DialogueBoxPassDriver(Director, gameState);
 
-        // Page 0: the flag sits mid-text but is set at the page's display (D-E12-4), the later one is not.
-        Assert.True(IsSet(gameState, 10));
+        // Page 0: the flag sits mid-text and is set by the step of its \Y, the pass 39 (E19.f2a, the end of D-E12-4); the later one is not set yet. The
+        // director holds the whole page.
+        Assert.False(IsSet(gameState, 10));
         Assert.False(IsSet(gameState, 20));
         Assert.Equal("Salut ami", Director.CurrentLineForTests?.Text);
+        passes.RunTo(38);
+        Assert.False(IsSet(gameState, 10));
+        passes.RunTo(39);
+        Assert.True(IsSet(gameState, 10));
 
-        gameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
-        Director.Tick();
+        // The cursor of the page boundary shows at the pass 59, and a press the box sees at the pass 60 turns the page.
+        passes.PressSeenAt(60);
+        passes.RunTo(59);
+        Assert.True(Director.Box.IsCursorShown);
+        passes.RunTo(60);
         Assert.Equal(1, Director.PageIndexForTests);
         Assert.False(IsSet(gameState, 20));
+        Assert.Equal("page one", Director.CurrentLineForTests?.Text);
 
-        gameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
-        Director.Tick();
-        Assert.True(IsSet(gameState, 20));
+        // The second cursor shows at the pass 96 (the delay of the step is not reduced by the pass of the release); a press seen at 97 turns to page two,
+        // whose flag is set by its first step, the pass 101.
+        passes.PressSeenAt(97);
+        passes.RunTo(96);
+        Assert.True(Director.Box.IsCursorShown);
+        passes.RunTo(97);
+        Assert.Equal(2, Director.PageIndexForTests);
         Assert.Equal("page two", Director.CurrentLineForTests?.Text);
+        passes.RunTo(100);
+        Assert.False(IsSet(gameState, 20));
+        passes.RunTo(101);
+        Assert.True(IsSet(gameState, 20));
     }
 
     [Fact]
@@ -140,9 +159,22 @@ public sealed class AlundraDialogueFlagMarkerTests : IDisposable
             "EndFlags", "Start", "Fin ?" + Flag(1004) + Yield + Flag(999) + Yield);
 
         Director.Open(asset, "Start", controlMode: 1);
+        var passes = new DialogueBoxPassDriver(Director, gameState);
 
+        // Each \Y is a step of its own: 1004 at the pass 39, 999 at 43, the end of the text at 47.
+        Assert.False(IsSet(gameState, 1004));
+        passes.RunTo(38);
+        Assert.False(IsSet(gameState, 1004));
+        passes.RunTo(39);
         Assert.True(IsSet(gameState, 1004));
+        Assert.False(IsSet(gameState, 999));
+        passes.RunTo(42);
+        Assert.False(IsSet(gameState, 999));
+        passes.RunTo(43);
         Assert.True(IsSet(gameState, 999));
+        Assert.False(Director.Box.IsTypingDone);
+        passes.RunTo(47);
+        Assert.True(Director.Box.IsTypingDone);
         Assert.Equal("Fin ?", Director.CurrentLineForTests?.Text);
     }
 
@@ -157,8 +189,15 @@ public sealed class AlundraDialogueFlagMarkerTests : IDisposable
             "FlagsOnly", "Start", Flag(999) + Yield + "[empty trimwhitespace=false/]");
 
         Director.Open(asset, "Start", controlMode: 1);
+        var passes = new DialogueBoxPassDriver(Director, gameState);
 
+        // The flag is set by the first step (the pass 19), the \Y takes it, the end of the text comes at 23.
+        passes.RunTo(18);
+        Assert.False(IsSet(gameState, 999));
+        passes.RunTo(19);
         Assert.True(IsSet(gameState, 999));
+        passes.RunTo(23);
+        Assert.True(Director.Box.IsTypingDone);
         Assert.Equal(string.Empty, Director.CurrentLineForTests?.Text);
     }
 
@@ -197,13 +236,13 @@ public sealed class AlundraDialogueFlagMarkerTests : IDisposable
     // ---- ordering relative to the line and to falcon_update ---------------------------------------
 
     [Fact]
-    public void Flags_AreSetBeforeTheLineIsTransmitted_AfterFalconUpdate()
+    public void TheCapturePresenter_SetsNoFlag_FalconUpdateStillRunsBeforeTheLine()
     {
         // M134_S019 shape: falcon_update first, then the line ending "...{falcon()}.[flag 100][yield]".
         var gameState = new AlundraGameState();
         gameState.PlayerStats.FalconTemp = 4;
         var world = new SnapshotPresenter(() => $"flag100={IsSet(gameState, 100)};falcon={gameState.PlayerStats.Falcon}");
-        var capture = new AlundraDialogueCapturePresenter(world, gameState);
+        var capture = new AlundraDialogueCapturePresenter(world);
         var runner = new YarnDialogueRunner(capture);
         new AlundraYarnBindings(gameState).Register(runner);
 
@@ -212,7 +251,8 @@ public sealed class AlundraDialogueFlagMarkerTests : IDisposable
 
         runner.Start(asset, "Start");
 
-        Assert.Equal(new[] { "flag100=True;falcon=4" }, world.SnapshotsAtShowLine);
+        // E19.f2a F2-R6: the flag of the page is the director's, set at its glyph - the capture presenter sets none; falcon_update, a command, still ran first.
+        Assert.Equal(new[] { "flag100=False;falcon=4" }, world.SnapshotsAtShowLine);
         Assert.Single(world.Texts);
     }
 

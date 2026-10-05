@@ -967,6 +967,9 @@ internal sealed class OracleScript
 internal sealed record OracleRow(int Frame, string Phase, string[] Notes, int Drawn, int[] Flags, int Y, int[] Sounds, int? Cursor, string[] Rows, int ScrollPixels,
     bool Held, bool Pressed);
 
+/// <summary>The state of the box at the end of a frame (after every phase of that frame): what a host that samples the DLL after its tick sees.</summary>
+internal sealed record OracleFrameEnd(int Frame, string Phase, int Y, int GlyphTotal, bool CursorShown, bool MessageBox, bool MenuOpen);
+
 /// <summary>
 /// The order of a frame of a host (F2-R1). <b>Production</b>: the scripts of the entities (E), the pass of the box, the events of the map (M), the
 /// triggers in waiting (P). <b>Intro harness</b>: the scripts of RunFrame (R), the pass of the box, the callback of the test (C). A script
@@ -995,6 +998,15 @@ internal sealed class OracleHost
     public List<(int Frame, string Phase, string What)> Events { get; } = new();
 
     public List<OracleRow> Rows { get; } = new();
+
+    /// <summary>The state of the box at the end of each frame, in order.</summary>
+    public List<OracleFrameEnd> Ends { get; } = new();
+
+    /// <summary>Every temporary flag set by the box's steps, with the frame of the pass that set it.</summary>
+    public List<(int Frame, int Flag)> AllFlags { get; } = new();
+
+    /// <summary>Every sound of every frame (6 at an opening, 7 at a close trigger, 79 and above for the voices), the ones of the scripts included.</summary>
+    public List<(int Frame, int Sound)> AllSounds { get; } = new();
 
     /// <summary>Adds a script of <paramref name="phase"/>; it runs from frame <paramref name="startFrame"/> on.</summary>
     public void Add(string phase, Func<OracleScript, IEnumerable<int>> script, int startFrame = 0) => _scripts.Add((phase, script, null, true, startFrame));
@@ -1041,6 +1053,10 @@ internal sealed class OracleHost
         }
 
         _pad.EndFrame(frame, Box);
+        AllSounds.AddRange(Box.Sounds.Select(s => (frame, s)));
+        AllFlags.AddRange(Box.FlagsSet.Select(f => (frame, f)));
+        Ends.Add(new OracleFrameEnd(frame, Box.Phase, Box.Y, Box.GlyphTotal, Box.CursorShown != 0, (Box.Control & AlundraTextBoxOracle.MessageBoxBit) != 0,
+            (Box.Control & AlundraTextBoxOracle.MenuOpenBit) != 0));
         Frame++;
     }
 
@@ -1068,8 +1084,8 @@ internal sealed class OracleHost
     public List<int> EventFrames(string what) =>
         Events.Where(e => e.What == what || e.What.StartsWith(what, StringComparison.Ordinal)).Select(e => e.Frame).ToList();
 
-    /// <summary>The frames of the sounds (6, 7, voices) of every pass.</summary>
-    public List<(int Frame, int Sound)> SoundFrames() => Rows.SelectMany(r => r.Sounds.Select(s => (r.Frame, s))).ToList();
+    /// <summary>The frames of the sounds (6, 7, voices) of every frame.</summary>
+    public List<(int Frame, int Sound)> SoundFrames() => AllSounds.ToList();
 
     /// <summary>First and last glyph, end of typing E, trigger T and release R of the first box.</summary>
     public (int? First, int? Last, int? E, int? T, int? R) Summary()

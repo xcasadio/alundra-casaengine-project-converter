@@ -92,11 +92,12 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
             int codeIndexAtFreeze = 0;
             var frozenHeld = true;
             var closedOnButton = false;
+            var button = new DialogueHarnessButton();
 
-            sim.RunFramesForTest(60, s =>
+            // E19.f2a (annex V-32 to V-35b): the box opens in the callback of the frame 2 and is released at 224 (the end of the run is 224 + 45, the budget 269),
+            // the button being the harness's rule (held while the box types, released then pressed when it waits for a press).
+            sim.RunFramesForTest(269, s =>
             {
-                s.GameState.LastPadState = default;
-
                 if (s.Frame == 1)
                 {
                     AlundraDialogueDirector.Instance.AttachToWorld(new DialogueService(), s.GameState);
@@ -169,18 +170,15 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
                     }
                 }
 
-                // Frames 39..47: press interact each frame while the box is open - same closing window as
-                // SailorThirteen's own test.
-                if (s.Frame is >= 39 and < 48 && director.IsOpen)
-                {
-                    s.GameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
-                }
-
-                if (s.Frame is >= 40 and < 50 && !closedOnButton && !director.IsOpen)
+                // Frames 3..224: the button of the harness's rule, written at the end of this callback and read by the pass of the next frame - same
+                // closing as SailorThirteen's own test.
+                if (s.Frame is >= 40 and < 230 && !closedOnButton && !director.IsOpen)
                 {
                     closedOnButton =
                         (s.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) == 0;
                 }
+
+                s.GameState.LastPadState = new AlundraPadState { ButtonsHold = button.HoldForThisFrame(director) };
             });
 
             Assert.True(frozenHeld, "the NPC's pose, program pick and animation must all stay frozen while MenuOpen is posed.");

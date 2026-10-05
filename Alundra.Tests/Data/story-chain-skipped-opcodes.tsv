@@ -13,8 +13,6 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 476	B	2	mapevent1 zone(0,0,51,59)	454	0x92	Set effect anim	EFFET	E19.g	S	A2/A4 (jeu d opcodes 4C,92,93,A2)
 476	B	2	mapevent1 zone(0,0,51,59)	459	0x92	Set effect anim	EFFET	E19.g	S	A2/A4 (jeu d opcodes 4C,92,93,A2)
 476	B	2	mapevent1 zone(0,0,51,59)	476	0x92	Set effect anim	EFFET	E19.g	S	A2/A4 (jeu d opcodes 4C,92,93,A2)
-476	B	4	mapevent3 zone(0,0,51,59)	112	0x4C	Set text flags	TEXTE	E19.f/E12.c	S	A2/A4 (jeu d opcodes)
-476	B	5	mapevent4 zone(0,0,51,59)	112	0x4C	Set text flags	TEXTE	E19.f/E12.c	S	A2/A4 (jeu d opcodes)
 476	B	5	mapevent4 zone(0,0,51,59)	134	0x93	Set effect pos	EFFET	E19.g	S	A2/A4 (jeu d opcodes)
 476	B	5	mapevent4 zone(0,0,51,59)	176	0x93	Set effect pos	EFFET	E19.g	S	A2/A4 (jeu d opcodes)
 476	B	5	mapevent4 zone(0,0,51,59)	188	0x93	Set effect pos	EFFET	E19.g	S	A2/A4 (jeu d opcodes)
@@ -31,7 +29,6 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 391	B	1	mapevent0 zone(0,0,51,59)	433	0x94	Set effect forces	EFFET	E19.g	S	A6 (liste exacte)
 391	B	1	mapevent0 zone(0,0,51,59)	441	0x94	Set effect forces	EFFET	E19.g	S	A6 (liste exacte)
 391	B	1	mapevent0 zone(0,0,51,59)	503	0x94	Set effect forces	EFFET	E19.g	S	A6 (liste exacte)
-391	B	1	mapevent0 zone(0,0,51,59)	706	0x4C	Set text flags	TEXTE	E19.f/E12.c	S	A6 (liste exacte)
 162	B	9	mapevent8 zone(0,0,51,59)	608	0xA2	Create effect with pos	EFFET	E19.g	A	A20 (11 x 0xA2 a l image 0)
 162	B	9	mapevent8 zone(0,0,51,59)	616	0xA2	Create effect with pos	EFFET	E19.g	A	A20 (11 x 0xA2 a l image 0)
 162	B	9	mapevent8 zone(0,0,51,59)	624	0xA2	Create effect with pos	EFFET	E19.g	A	A20 (11 x 0xA2 a l image 0)
@@ -43,19 +40,6 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 162	B	9	mapevent8 zone(0,0,51,59)	672	0xA2	Create effect with pos	EFFET	E19.g	A	A20 (11 x 0xA2 a l image 0)
 162	B	9	mapevent8 zone(0,0,51,59)	680	0xA2	Create effect with pos	EFFET	E19.g	A	A20 (11 x 0xA2 a l image 0)
 162	B	9	mapevent8 zone(0,0,51,59)	688	0xA2	Create effect with pos	EFFET	E19.g	A	A20 (11 x 0xA2 a l image 0)
-164	C	2	rec1 Septimus (chercheur)	331	0x4C	Set text flags	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
-164	C	2	rec1 Septimus (chercheur)	350	0x4D	Try to activate textAutoAdvanceFlag	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
-164	C	2	rec1 Septimus (chercheur)	351	0x4C	Set text flags	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
-164	C	2	rec1 Septimus (chercheur)	356	0x4C	Set text flags	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
-164	C	2	rec1 Septimus (chercheur)	361	0x4D	Try to activate textAutoAdvanceFlag	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
-164	C	2	rec1 Septimus (chercheur)	373	0x4D	Try to activate textAutoAdvanceFlag	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
-164	C	2	rec1 Septimus (chercheur)	376	0x4D	Try to activate textAutoAdvanceFlag	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
-164	C	2	rec1 Septimus (chercheur)	379	0x4D	Try to activate textAutoAdvanceFlag	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
-164	C	2	rec1 Septimus (chercheur)	382	0x4D	Try to activate textAutoAdvanceFlag	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
-164	C	2	rec1 Septimus (chercheur)	392	0x4D	Try to activate textAutoAdvanceFlag	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
-164	C	2	rec1 Septimus (chercheur)	395	0x4D	Try to activate textAutoAdvanceFlag	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
-164	C	2	rec1 Septimus (chercheur)	398	0x4D	Try to activate textAutoAdvanceFlag	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
-164	C	2	rec1 Septimus (chercheur)	402	0x4C	Set text flags	TEXTE	E19.f/E12.c	S	A11 (4C/4D une fois, 0x58@110 repete)
 169	B	4	mapevent3 zone(0,0,51,59)	356	0xA2	Create effect with pos	EFFET	E19.g	A	
 169	B	4	mapevent3 zone(0,0,51,59)	364	0xA2	Create effect with pos	EFFET	E19.g	A	
 169	B	4	mapevent3 zone(0,0,51,59)	372	0xA2	Create effect with pos	EFFET	E19.g	A	
@@ -79,23 +63,12 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 10	B	5	mapevent4 zone(0,0,51,59)	881	0x92	Set effect anim	EFFET	E19.g	X	
 10	B	17	mapevent16 zone(0,0,51,59)	2188	0x91	Disable effect	EFFET	E19.g	X	
 10	B	21	mapevent20 zone(0,0,51,59)	2500	0x90	Create effect	EFFET	E19.g	X	
-10	B	21	mapevent20 zone(0,0,51,59)	2558	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
-10	B	21	mapevent20 zone(0,0,51,59)	2563	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
-10	B	21	mapevent20 zone(0,0,51,59)	2579	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
-10	B	21	mapevent20 zone(0,0,51,59)	2584	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
-10	B	21	mapevent20 zone(0,0,51,59)	2598	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
-10	B	21	mapevent20 zone(0,0,51,59)	2603	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
-10	B	21	mapevent20 zone(0,0,51,59)	2621	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
 10	B	21	mapevent20 zone(0,0,51,59)	2640	0x91	Disable effect	EFFET	E19.g	X	
 10	B	22	mapevent21 zone(0,0,51,59)	2689	0x90	Create effect	EFFET	E19.g	A	A10J / T-A10v / T-B9
 10	D	1	rec1 Bloc transparent (1×1×2)	6688	0x87	If TouchingEntity anim value	PREDICAT coup recu	E19.l/E14	O	
 10	D	1	rec1 Bloc transparent (1×1×2)	6697	0x90	Create effect	EFFET	E19.g	O	
 10	C	7	rec8 Bloc transparent (1×1×2)	2828	0x90	Create effect	EFFET	E19.g	S	A10J / T-A10v / T-B9
 10	C	7	rec8 Bloc transparent (1×1×2)	2864	0x92	Set effect anim	EFFET	E19.g	S	
-10	C	26	rec36 Sierra (mère)	3833	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	T-B9
-10	C	26	rec36 Sierra (mère)	3847	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	T-B9
-10	C	26	rec36 Sierra (mère)	3849	0x4D	Try to activate textAutoAdvanceFlag	TEXTE	E19.f/E12.c	X	T-B9
-10	C	58	rec83 Ronan (prêtre)	5808	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
 10	C	74	rec98 Giles (homme religieux)	6406	0x90	Create effect	EFFET	E19.g	S	A10J / T-A10v / T-B9
 10	D	3	rec102 Bloc transparent (1×1×2)	6704	0x87	If TouchingEntity anim value	PREDICAT coup recu	E19.l/E14	O	
 10	D	3	rec102 Bloc transparent (1×1×2)	6713	0x90	Create effect	EFFET	E19.g	O	
@@ -119,17 +92,12 @@ map	slot	program	label	pc	opcode	name	class	slice	tier(S=scene,A=ambient,O=optio
 135	B	5	mapevent4 zone(0,0,51,59)	549	0xA0	Adjusted effect pos	EFFET	E19.g	A	
 135	B	13	mapevent12 zone(0,0,51,59)	821	0xA2	Create effect with pos	EFFET	E19.g	X	
 135	B	13	mapevent12 zone(0,0,51,59)	829	0x92	Set effect anim	EFFET	E19.g	X	
-135	B	13	mapevent12 zone(0,0,51,59)	858	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
 135	B	13	mapevent12 zone(0,0,51,59)	864	0x92	Set effect anim	EFFET	E19.g	X	
 135	B	13	mapevent12 zone(0,0,51,59)	869	0x92	Set effect anim	EFFET	E19.g	X	
 135	C	6	rec13 Septimus (chercheur)	1445	0xA0	Adjusted effect pos	EFFET	E19.g	X	
 135	C	6	rec13 Septimus (chercheur)	1462	0xA0	Adjusted effect pos	EFFET	E19.g	X	
 135	C	6	rec13 Septimus (chercheur)	1731	0xA0	Adjusted effect pos	EFFET	E19.g	X	
 135	C	6	rec13 Septimus (chercheur)	1741	0xA0	Adjusted effect pos	EFFET	E19.g	X	
-135	C	8	rec16 Ronan (prêtre)	2430	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
-135	C	8	rec16 Ronan (prêtre)	2441	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
-135	C	8	rec16 Ronan (prêtre)	2446	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
-135	C	8	rec16 Ronan (prêtre)	2457	0x4C	Set text flags	TEXTE	E19.f/E12.c	X	
 135	C	9	rec24 Boule de fer (grande)	2490	0xA3	Create effect with entity pos	EFFET	E19.g	X	
 183	B	15	mapevent14 zone(0,0,51,59)	872	0xA2	Create effect with pos	EFFET	E19.g	A	
 183	B	15	mapevent14 zone(0,0,51,59)	880	0xA2	Create effect with pos	EFFET	E19.g	A	

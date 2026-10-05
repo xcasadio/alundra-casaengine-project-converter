@@ -1,6 +1,8 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using CasaEngine.Framework.Dialogue.Assets;
 using CasaEngine.Framework.Dialogue.Presentation;
 using CasaEngine.Framework.Dialogue.Runtime;
@@ -13,7 +15,7 @@ namespace Alundra.Scripts;
 /// E12.a, D-E12-5: "the moteur is MECHANISM, the DLL is POLICY" - the engine's own
 /// <see cref="IDialoguePresenter"/> knows nothing about the close-mode mask, numeric control-code flags,
 /// paging on <c>\A</c>, or <see cref="AlundraGameState.PlayerControlFlags"/>; all of that lives here).
-/// Backs opcodes 0x0D/0x39/0x44/0x50/0x51/0x5C in <see cref="AlundraEventProgramRunner.Dispatch"/> via
+/// Backs opcodes 0x0D/0x39/0x44/0x4C-0x51/0x5C in <see cref="AlundraEventProgramRunner.Dispatch"/> via
 /// <see cref="IEntityWorldContext.DialogueDirector"/> - a default interface member (same shape as
 /// <see cref="IEntityWorldContext.ScreenFadeDirector"/>), so every EXISTING implementer keeps compiling
 /// unmodified, degrading to null (skip-by-size, once-logged) exactly like that seam.
@@ -26,43 +28,53 @@ public interface IAlundraDialogueDirector
     /// member itself is null - see that interface member's own doc).</summary>
     bool HasPresenter { get; }
 
-    /// <summary>Port of the original's own "is a dialog box currently open" state - true from a
-    /// successful <see cref="Open"/> until <see cref="AlundraDialogueDirector.Close"/> runs (button,
-    /// script, or auto-timer).</summary>
+    /// <summary>Port of the original's own "is a dialog box currently open" state (<c>g_dialog_flags &amp; 4</c>) - true from a
+    /// successful <see cref="Open"/> until the box is RELEASED, 18 passes after its close was triggered (E19.f2a, F2-R2): the
+    /// slide of the exit is part of the open box, and opcode 0x39 waits for the release.</summary>
     bool IsOpen { get; }
 
     /// <summary>True while a choice list (opcode 0x44) is open and unresolved.</summary>
     bool IsAwaitingChoice { get; }
 
     /// <summary>
-    /// Opcode 0x0D/0x5C's own "open" half (Dispatch itself owns the reentrancy guard - see that method's
-    /// own doc on why 0x0D checks <see cref="IsOpen"/> BEFORE calling this, T2): resets the close-mode
-    /// mask to 3 (§1.2/T3), applies <paramref name="controlMode"/>'s
-    /// <see cref="AlundraGameState.PlayerControlBits.MessageBox"/>/
-    /// <see cref="AlundraGameState.PlayerControlBits.MenuOpen"/> bit, and starts <paramref name="node"/>
-    /// of <paramref name="asset"/> on this director's own Yarn runner (docs/plan-e15-yarn.md, E15.c
-    /// contract item 2), which delivers its first page immediately - the page's own commands/functions
-    /// run at that moment, as the numeric control-code flags did before E15.c (D-E12-4). Either
+    /// Opcode 0x0D/0x5C/0xC4's own "open" half (Dispatch itself owns the reentrancy guard - see that method's
+    /// own doc on why 0x0D checks <see cref="IsOpen"/> BEFORE calling this, T2): resets the box to the state of
+    /// <c>InitializeDialogMessage</c> (text flags 3, close mode 3, scroll mode 3, the latches off), applies
+    /// <paramref name="controlMode"/>'s <see cref="AlundraGameState.PlayerControlBits.MessageBox"/> (1) or
+    /// <see cref="AlundraGameState.PlayerControlBits.MenuOpen"/> (anything else) bit, plays sound 6, and starts
+    /// <paramref name="node"/> of <paramref name="asset"/> on this director's own Yarn runner (docs/plan-e15-yarn.md, E15.c
+    /// contract item 2), whose first page is cut into the steps of the box (E19.f2a, F2-R3): the box types it one step at a time
+    /// from its own passes. The page's commands/functions run when the runner delivers it. Either
     /// <paramref name="asset"/> null, <paramref name="node"/> null, or a node absent from the asset opens
     /// an empty box instead (D-E15-10), exactly as an out-of-range/never-loaded local string did before.
     /// </summary>
     void Open(DialogueAsset? asset, string? node, int controlMode);
 
+    /// <summary>Opcode 0x4C - sets the text flags (1 the held button gates a step, 2 the delay does, 4 a 0x4D does, 8 waits for the cursor's press) and
+    /// clears a 0x4D in waiting (D-E19-62). Gives the hand back to nobody.</summary>
+    void SetTextFlags(int flags);
+
+    /// <summary>Opcode 0x4D - latches one step of the typing, when the text flags say a latch gates (bit 4).</summary>
+    void LatchTextStep();
+
+    /// <summary>Opcode 0x4E - sets the scroll mode (1 waits ten passes, 2 a press, 4 a 0x4F, 8 starts at once).</summary>
+    void SetScrollMode(int mode);
+
+    /// <summary>Opcode 0x4F - latches the start of a scroll, when the scroll mode says a latch starts it (bit 4).</summary>
+    void LatchScrollStart();
+
     /// <summary>Opcode 0x50 - sets the close-mode mask (bit0 auto-timer/bit1 button/bit2 script, §1.2).</summary>
     void SetCloseMask(int mask);
 
-    /// <summary>Opcode 0x51 - honoured only while <see cref="IsOpen"/> and the mask's bit2 (script-close)
-    /// is set (§1.2); returns whether it actually closed anything, though the opcode itself writes no
-    /// <c>Result</c> either way (see that opcode's own dispatch doc).</summary>
+    /// <summary>Opcode 0x51 - latches the close of the box, when the close mode's bit2 (script-close) is set (§1.2); the box takes the latch once its
+    /// typing is done, so the close triggers at the first pass after the end of the typing that sees it. Returns whether the latch was set, though
+    /// the opcode itself writes no <c>Result</c> either way (see that opcode's own dispatch doc).</summary>
     bool RequestScriptClose();
 
-    /// <summary>Polled once per dispatch of opcode 0x39 (the only "re-checked every frame while blocking"
-    /// site on the ordinary, non-choice path - see this method's own class doc): while
-    /// <see cref="IsOpen"/> and NOT <see cref="IsAwaitingChoice"/>, advances to the next page on a
-    /// freshly-pressed interact button (unconditional - the close-mode mask only ever gates the FINAL
-    /// close, never an intermediate page turn) or closes once the last page is showing and either the
-    /// button-close bit (mask bit1) or the auto-timer (mask bit0, 360 ticks) allows it. A no-op while
-    /// closed or while a choice is being asked (the choice UI owns input then).</summary>
+    /// <summary>One pass of the box for a host that has no world proxy to run it (the unit tests): the pass takes the square button of the PREVIOUS
+    /// call - the binary's box reads the pad sampled during the previous frame - then this call records the square of
+    /// <see cref="AlundraGameState.LastPadState"/> (<c>ButtonsHold</c>, the rising edge being taken against the previous call). The world proxy
+    /// does not call this: it calls <see cref="AlundraDialogueDirector.Pass"/> itself, on the square of its own pad pass (F2-R1).</summary>
     void Tick();
 
     /// <summary>Opcode 0x44's own first-entry half: opens a generic choice list (labels already resolved
@@ -89,30 +101,35 @@ public interface IAlundraDialogueDirector
 /// that actually resets that state, from <see cref="AlundraWorldProxy.InstallDialogueSystems"/>'s own
 /// install preamble (docs/plan-e12-dialogues.md, "AttachToWorld re-points without touching state,
 /// map-entry reset in the install preamble").
+/// <para/>
+/// E19.f2a (docs/plan-e19-opcodes.md section 1.2j.3, F2-R1 to F2-R6, ADR-0029): the box is the binary's, to the tick. The director owns an
+/// <see cref="AlundraDialogueBox"/> (the machine: slides, typing steps, lines and scroll, cursor, voices, close and release) and feeds it the
+/// pages the Yarn runner delivers, cut into steps from their text and markers; the world proxy runs <see cref="Pass"/> once per logic tick
+/// BEFORE the scripts of that tick. The presenter receives, at each step that changes the visible text, the page typed so far (the view of
+/// E19.f2b will draw the box itself); the text flags of a page are set at their glyph, not at the display of the page.
 /// </summary>
-public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
+public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundraDialogueBoxHost
 {
     /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares.</summary>
     public static readonly AlundraDialogueDirector Instance = new();
 
-    private const uint AutoCloseTicks = 360; // §1.2 - mask bit0.
     private const int DefaultCloseMask = 3; // §1.2 - bit0 (auto-timer) | bit1 (button), the original's default g_etcAnimationMode.
-    private const int CloseMaskAutoTimerBit = 0x1;
-    private const int CloseMaskButtonBit = 0x2;
-    private const int CloseMaskScriptBit = 0x4;
-    private const uint InteractButtonBit = AlundraPadState.Square; // §1.2/D-E12-4: bit 0x80, just-pressed.
+    private const uint SquareBit = AlundraPadState.Square; // §1.2/D-E12-4: bit 0x80.
 
     private AlundraDialogueDirector()
     {
+        _box = new AlundraDialogueBox(this);
     }
 
+    private readonly AlundraDialogueBox _box;
     private IDialoguePresenter? _presenter;
     private AlundraGameState? _gameState;
+    private IAlundraSoundPlayer? _soundPlayer;
 
     // E15.c T5 (docs/plan-e15-yarn.md, contract item 2): this director's own Yarn runner, built on a
-    // capture presenter (AlundraDialogueCapturePresenter) that forwards every transformed line to
-    // _presenter (the world's own presenter, above) - NEVER built directly on _presenter, which is
-    // reattached on every AttachToWorld while these two persist. Rebuilt only when the game state
+    // capture presenter (AlundraDialogueCapturePresenter) - NEVER built directly on _presenter, which is
+    // reattached on every AttachToWorld while these two persist. The capture presenter hands each page the runner delivers to
+    // OnPageShown (E19.f2a); only the typed prefix reaches _presenter. Rebuilt only when the game state
     // actually changes (a new world/map - InstallForMapEntry resets open/page state right after anyway);
     // a same-game-state re-point (TryWireDialoguePresenterOnce's "presenter appears later this frame")
     // just re-points the capture presenter's own WorldPresenter, keeping any dialogue already running.
@@ -120,18 +137,21 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
     private YarnDialogueRunner? _runner;
     private AlundraGameState? _boundGameState;
 
-    private bool _isOpen;
-    private int _closeMask = DefaultCloseMask;
     private int _pageCount;
+    private int _pagesDelivered;
     private int _pageIndex;
-    private uint _ticksSinceOpenOrPage;
+    private DialogueLine _pageLine = DialogueLine.Empty;
+
+    // The square button of the previous call of Tick (the seam of the hosts without a world proxy).
+    private bool _tickSquareHeld;
+    private bool _tickSquarePressed;
 
     private bool _awaitingChoice;
     private int? _pendingChoiceResult;
     private EventHandler<DialogueChoiceSelectedEventArgs>? _choiceHandler;
 
     public bool HasPresenter => _presenter != null;
-    public bool IsOpen => _isOpen;
+    public bool IsOpen => _box.IsActive;
     public bool IsAwaitingChoice => _awaitingChoice;
 
     /// <summary>
@@ -142,17 +162,23 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
     /// </summary>
     public int OpenSerial { get; private set; }
 
-    /// <summary>Re-points this session-scoped instance at the current world's own presenter/game state -
+    /// <summary>The box the world draws: its state is read by the view (E19.f2b) and by the tests; only this director writes it.</summary>
+    internal AlundraDialogueBox Box => _box;
+
+    /// <summary>Re-points this session-scoped instance at the current world's own presenter/game state/sound player -
     /// called by <see cref="AlundraWorldProxy.InstallDialogueSystems"/> on every world install. Deliberately
-    /// does NOT touch <see cref="_isOpen"/>/<see cref="_closeMask"/>/<see cref="_pageCount"/>/choice state (same
+    /// does NOT touch the box, the page state or the choice state (same
     /// contract as <see cref="AlundraMusicPlayer.AttachToWorld"/>/<see cref="AlundraScreenFadeDirector.AttachToWorld"/>)
-    /// - only <see cref="InstallForMapEntry"/> does that. <paramref name="presenter"/> null is a valid,
+    /// - only <see cref="InstallForMapEntry"/> does that: the box goes on running, its page already known, even when the
+    /// presenter is gone (E19.f2a, F2-R2). <paramref name="presenter"/> null is a valid,
     /// tolerated value (no UI view available for this world's active render view) - <see cref="HasPresenter"/>
-    /// then drives every opcode's own degraded fallback.</summary>
-    public void AttachToWorld(IDialoguePresenter? presenter, AlundraGameState? gameState)
+    /// then drives every opcode's own degraded fallback. <paramref name="soundPlayer"/> plays the sounds of the box (6 at the opening, 7 at the close,
+    /// 79 to 82 for the voices, F2-R5).</summary>
+    public void AttachToWorld(IDialoguePresenter? presenter, AlundraGameState? gameState, IAlundraSoundPlayer? soundPlayer = null)
     {
         _presenter = presenter;
         _gameState = gameState;
+        _soundPlayer = soundPlayer;
 
         if (presenter == null || gameState == null)
         {
@@ -175,7 +201,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
         // First attach, or a genuinely different game state (a new world/map) - InstallForMapEntry runs
         // right after this from the same install call and resets open/page state anyway, so there is no
         // Yarn state worth preserving across this rebuild.
-        _capturePresenter = new AlundraDialogueCapturePresenter(presenter, gameState);
+        _capturePresenter = new AlundraDialogueCapturePresenter(presenter) { LineSink = OnPageShown };
         _runner = new YarnDialogueRunner(_capturePresenter) { VariableStorage = new AlundraYarnVariableStorage(gameState) };
         new AlundraYarnBindings(gameState).Register(_runner);
         _boundGameState = gameState;
@@ -190,46 +216,37 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
     /// this DLL: no separate, independently deletable call site).</summary>
     public void InstallForMapEntry()
     {
-        if (_isOpen)
+        if (_box.IsActive)
         {
             ClearControlFlags();
         }
 
         UnsubscribeChoiceHandler();
 
-        _isOpen = false;
-        _closeMask = DefaultCloseMask;
+        _box.Reset();
         _pageCount = 0;
+        _pagesDelivered = 0;
         _pageIndex = 0;
-        _ticksSinceOpenOrPage = 0;
+        _pageLine = DialogueLine.Empty;
         _awaitingChoice = false;
         _pendingChoiceResult = null;
-        _swallowOpeningButtonPress = false;
+        _tickSquareHeld = false;
+        _tickSquarePressed = false;
         _runner?.Stop();
+        _presenter?.Close(); // the runner's own close is swallowed by the capture presenter: the presenter of the world is closed here
     }
-
-    /// <summary>E12.d (D-E12D-6): true when the interact button was ALREADY just-pressed in the pad
-    /// snapshot at the moment <see cref="Open"/> ran - i.e. the very press that triggered the
-    /// interaction that opened this box. The first <see cref="Tick"/> then ignores the button (the
-    /// auto-timer still counts), so the opening press cannot advance or close what it just opened.
-    /// The original is protected upstream instead: its advance pass is suppressed during the box's
-    /// opening animation and text decoding (UIManager.Fun_80046ef0:104-119, g_dialog_flags &amp; 3 /
-    /// g_textPrimitives) - a strictly LONGER suppression window than this one-snapshot swallow.</summary>
-    private bool _swallowOpeningButtonPress;
 
     /// <inheritdoc/>
     public void Open(DialogueAsset? asset, string? node, int controlMode)
     {
         OpenSerial++; // E16.e L4: see the property's own doc.
-        _closeMask = DefaultCloseMask; // §1.2/T3: every open resets the close-mode mask to 3.
-        _swallowOpeningButtonPress =
-            _gameState != null && (_gameState.LastPadState.ButtonsJustPressed & InteractButtonBit) != 0;
         _pageIndex = 0;
-        _ticksSinceOpenOrPage = 0;
-        _isOpen = true;
+        _pagesDelivered = 0;
+        _pageLine = DialogueLine.Empty;
         _awaitingChoice = false;
         _pendingChoiceResult = null;
 
+        _box.Open(); // sound 6 and the reset of the text state: the box is open from this tick, its first pass is the next one
         ApplyControlMode(controlMode);
 
         var pageCount = asset != null && node != null ? CountPages(asset, node) : 0;
@@ -243,8 +260,9 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
             // D-E15-10: absent node/asset (or no runner attached at all) opens an empty box, same as an
             // out-of-range/never-loaded local string did before E15.c.
             _pageCount = 1;
-            _capturePresenter?.ShowLine(DialogueLine.Empty);
         }
+
+        ShowTypedText();
     }
 
     /// <summary>
@@ -271,15 +289,10 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
             return;
         }
 
-        switch (controlMode)
-        {
-            case 1: // §1.2: MessageBox (0x10) - player frozen, world/scripts keep ticking.
-                _gameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MessageBox;
-                break;
-            case 0: // §1.2: MenuOpen (0x08) - map events/world updates pause too.
-                _gameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
-                break;
-        }
+        // The binary: MessageBox (0x10, player frozen, the scripts keep ticking) for 1, MenuOpen (0x08, map events and world updates pause too) otherwise.
+        _gameState.PlayerControlFlags |= controlMode == 1
+            ? AlundraGameState.PlayerControlBits.MessageBox
+            : AlundraGameState.PlayerControlBits.MenuOpen;
     }
 
     private void ClearControlFlags()
@@ -293,109 +306,203 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
         _gameState.PlayerControlFlags &= ~(AlundraGameState.PlayerControlBits.MessageBox | AlundraGameState.PlayerControlBits.MenuOpen);
     }
 
-    /// <inheritdoc/>
-    public void SetCloseMask(int mask) => _closeMask = mask;
+    // ---- the page: the runner delivers it, the box types it
 
-    /// <inheritdoc/>
-    public bool RequestScriptClose()
+    /// <summary>Called by the capture presenter each time the runner delivers a page (the first at <see cref="Open"/>, the next at the release of a
+    /// cursor): keeps the page as the director's current line and appends its steps to the box (F2-R3).</summary>
+    private void OnPageShown(DialogueLine line)
     {
-        if (!_isOpen || (_closeMask & CloseMaskScriptBit) == 0)
+        _pageLine = new DialogueLine(AlundraDialogueCapturePresenter.ToFont3Text(line));
+        _pagesDelivered++;
+        _box.AppendPage(Tokenize(line), hasFollowingPage: _pagesDelivered < _pageCount);
+    }
+
+    /// <summary>F2-R3: cuts a page into steps from its text and its zero-length markers: <c>br</c> a new line, <c>glyph</c> a glyph, <c>voice</c>,
+    /// <c>center</c>, <c>slow</c>, <c>flag</c> set at its position, <c>yield</c> a step in which nothing is drawn, <c>empty</c> nothing. Any other
+    /// marker is ignored. A character of the text is one step; a line feed (0x0A) is free.</summary>
+    internal static List<DialogueToken> Tokenize(DialogueLine line)
+    {
+        var tokens = new List<DialogueToken>();
+        var markers = line.Attributes.Where(a => a.Length == 0).OrderBy(a => a.Position).ToList(); // a stable sort: the markers of one position keep their order
+        var next = 0;
+        for (var i = 0; i <= line.Text.Length; i++)
+        {
+            while (next < markers.Count && markers[next].Position <= i)
+            {
+                AppendMarker(tokens, markers[next++]);
+            }
+
+            if (i < line.Text.Length && line.Text[i] != '\n')
+            {
+                tokens.Add(new DialogueToken(DialogueTokenKind.Character, 0, line.Text[i]));
+            }
+        }
+
+        return tokens;
+    }
+
+    private static void AppendMarker(List<DialogueToken> tokens, DialogueMarkupAttribute marker)
+    {
+        switch (marker.Name)
+        {
+            case "br":
+                tokens.Add(new DialogueToken(DialogueTokenKind.NewLine));
+                break;
+            case "glyph" when TryReadId(marker, out var glyphId):
+                tokens.Add(new DialogueToken(DialogueTokenKind.MarkedGlyph, glyphId, (char)glyphId));
+                break;
+            case "voice" when TryReadId(marker, out var voice):
+                tokens.Add(new DialogueToken(DialogueTokenKind.Voice, voice));
+                break;
+            case "center":
+                tokens.Add(new DialogueToken(DialogueTokenKind.Center));
+                break;
+            case "slow":
+                tokens.Add(new DialogueToken(DialogueTokenKind.Slow));
+                break;
+            case "flag" when TryReadId(marker, out var flag) && flag >= 0:
+                tokens.Add(new DialogueToken(DialogueTokenKind.Flag, flag));
+                break;
+            case "yield":
+                tokens.Add(new DialogueToken(DialogueTokenKind.Yield));
+                break;
+        }
+    }
+
+    private static bool TryReadId(DialogueMarkupAttribute marker, out int id)
+    {
+        id = 0;
+        if (!marker.Properties.TryGetValue("id", out var value) || value is null)
         {
             return false;
         }
 
-        Close();
-        return true;
+        try
+        {
+            id = Convert.ToInt32(value, CultureInfo.InvariantCulture);
+            return true;
+        }
+        catch (Exception ex) when (ex is FormatException or InvalidCastException or OverflowException)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>Sends the presenter the page typed so far, when the last pass (or the opening) changed it (F2-R6). Not while a choice list waits: the
+    /// engine's service drops its choices when it is shown a line, and the list stays the engine's until E19.f3 (F2-R2) - the box keeps typing and
+    /// the text is sent after the answer.</summary>
+    private void ShowTypedText()
+    {
+        if (_awaitingChoice)
+        {
+            return;
+        }
+
+        if (_box.TakeTypedChanged())
+        {
+            _presenter?.ShowLine(new DialogueLine(_box.TypedText));
+        }
+    }
+
+    // ---- the box's own opcodes
+
+    /// <inheritdoc/>
+    public void SetTextFlags(int flags) => _box.SetTextFlags(flags);
+
+    /// <inheritdoc/>
+    public void LatchTextStep() => _box.LatchStep();
+
+    /// <inheritdoc/>
+    public void SetScrollMode(int mode) => _box.SetScrollMode(mode);
+
+    /// <inheritdoc/>
+    public void LatchScrollStart() => _box.LatchScroll();
+
+    /// <inheritdoc/>
+    public void SetCloseMask(int mask) => _box.SetCloseMode(mask);
+
+    /// <inheritdoc/>
+    public bool RequestScriptClose() => _box.LatchClose();
+
+    // ---- the pass
+
+    /// <summary>
+    /// One pass of the box (F2-R1, step 1 of a logic tick): the world proxy calls it at the start of every tick, before the gate is re-read and
+    /// before the map events of the tick, with the square button of the tick BEFORE. Runs the machine, then sends the presenter the typed text if
+    /// the pass changed it.
+    /// </summary>
+    public void Pass(bool squareHeld, bool squarePressed)
+    {
+        PassCountForTests++;
+        _box.Pass(squareHeld, squarePressed);
+        ShowTypedText();
     }
 
     /// <inheritdoc/>
     public void Tick()
     {
-        if (!_isOpen || _awaitingChoice)
+        Pass(_tickSquareHeld, _tickSquarePressed);
+
+        var held = _gameState != null && (_gameState.LastPadState.ButtonsHold & SquareBit) != 0;
+        _tickSquarePressed = held && !_tickSquareHeld;
+        _tickSquareHeld = held;
+    }
+
+    // ---- IAlundraDialogueBoxHost
+
+    void IAlundraDialogueBoxHost.FlagReached(int flag)
+    {
+        if (_gameState != null)
         {
-            return;
-        }
-
-        _ticksSinceOpenOrPage++;
-
-        var buttonPressed = _gameState != null && (_gameState.LastPadState.ButtonsJustPressed & InteractButtonBit) != 0;
-
-        // D-E12D-6: the press that opened this box does not also advance it (see the field's own doc).
-        if (_swallowOpeningButtonPress)
-        {
-            _swallowOpeningButtonPress = false;
-            buttonPressed = false;
-        }
-        var autoTimerElapsed = (_closeMask & CloseMaskAutoTimerBit) != 0 && _ticksSinceOpenOrPage >= AutoCloseTicks;
-
-        if (!buttonPressed && !autoTimerElapsed)
-        {
-            return;
-        }
-
-        if (HasMorePages())
-        {
-            // §1.2: the auto-timer only ever CLOSES the box - it never auto-turns a page.
-            if (buttonPressed)
-            {
-                AdvancePage();
-            }
-
-            return;
-        }
-
-        var canClose = autoTimerElapsed || (buttonPressed && (_closeMask & CloseMaskButtonBit) != 0);
-        if (canClose)
-        {
-            Close();
+            AlundraYarnBindings.SetTextFlag(_gameState, (uint)flag);
         }
     }
 
-    private bool HasMorePages() => _pageIndex + 1 < _pageCount;
+    void IAlundraDialogueBoxHost.PlaySound(int sfxId) => _soundPlayer?.PlaySfx(sfxId);
 
-    /// <summary>Turns the page: only ever called while a real Yarn dialogue is running (the empty-box
-    /// path of <see cref="Open"/> sets <see cref="_pageCount"/> to 1, so <see cref="HasMorePages"/> is
-    /// never true there). Item 2: the runner is asked to continue ONLY when the page actually turns, so
-    /// each page's own commands/functions run exactly at its display - never earlier.</summary>
-    private void AdvancePage()
+    void IAlundraDialogueBoxHost.PageTurned()
     {
         _pageIndex++;
-        _ticksSinceOpenOrPage = 0;
+
+        // The next page is asked of the Yarn runner now, so that its own commands/functions run exactly at its turn - never earlier.
         _runner?.Continue();
+    }
+
+    void IAlundraDialogueBoxHost.Released()
+    {
+        _pageCount = 0;
+        _pagesDelivered = 0;
+        _pageIndex = 0;
+        ClearControlFlags();
+
+        // Closing the box stops any Yarn dialogue still active (the capture presenter swallows the runner's own close) and closes the presenter.
+        _runner?.Stop();
+        _presenter?.Close();
     }
 
     /// <summary>
     /// The UI closed the box out of band - the window's own close control, not Alundra's interact
-    /// button. Brings the LOGICAL box down with it so the control flags it posted are cleared and the
-    /// world resumes: without this the window vanished while this director still held the box open,
+    /// button. Brings the LOGICAL box down with it, at once (like <see cref="InstallForMapEntry"/>: no slide of the exit) so the control flags it
+    /// posted are cleared and the world resumes: without this the window vanished while this director still held the box open,
     /// leaving MenuOpen posted with no visible box left to dismiss it, which froze NPCs and the player
     /// until the interact button was pressed as well (reported in play, 2026-09-02).
     ///
-    /// No-op when no box is open, which is also the re-entry guard: <see cref="Close"/> calls the
-    /// presenter's own Close, and a presenter that answers by calling back into here finds
-    /// <see cref="_isOpen"/> already false.
+    /// No-op when no box is open, which is also the re-entry guard: the presenter that reports its own close is not asked to close again.
     /// </summary>
     internal void NotifyPresenterClosed()
     {
-        if (!_isOpen)
+        if (!_box.IsActive)
         {
             return;
         }
 
-        Close();
-    }
-
-    private void Close()
-    {
-        _isOpen = false;
+        _box.Reset();
         _pageCount = 0;
+        _pagesDelivered = 0;
         _pageIndex = 0;
         ClearControlFlags();
-        // Item 2: closing the box calls the runner's own Stop - which stops any Yarn dialogue still
-        // active and unconditionally closes the capture presenter, which forwards to the world's own
-        // presenter (the same effect _presenter?.Close() had before E15.c, for the empty-box path too:
-        // Open shows DialogueLine.Empty on the SAME capture presenter, never _presenter directly).
         _runner?.Stop();
+        _presenter?.Close(); // the box is already down: a presenter that answers by calling back into here finds no box open
     }
 
     /// <inheritdoc/>
@@ -453,16 +560,15 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
     /// E16.e L5 (docs/plan-e16-etat-partie.md, the closing review of 2026-09-29): closes a choice list asked WITHOUT
     /// a box (<see cref="OpenChoice"/> with no <see cref="Open"/> before it) - the save screen's OUI/NON. After an
     /// answer the engine's service stays open (<c>DialogueService.SelectChoice</c>) and nothing else removes the
-    /// dialogue screen, while the private <see cref="Close"/> would clear <c>MessageBox</c>/<c>MenuOpen</c>, which the
+    /// dialogue screen, while the release of a box would clear <c>MessageBox</c>/<c>MenuOpen</c>, which the
     /// save screen keeps until its state <c>0x63</c>. So this clears the choice in waiting and any result not yet
     /// taken, stops listening to the presenter, and closes the presenter (<c>_presenter?.Close()</c>, which removes
-    /// the screen). It never touches <see cref="AlundraGameState.PlayerControlFlags"/> and never goes through
-    /// <see cref="Close"/>: the presenter's call back (<see cref="NotifyPresenterClosed"/>) finds no box open.
+    /// the screen). It never touches <see cref="AlundraGameState.PlayerControlFlags"/>.
     /// Returns false, doing nothing, while a box is open (<see cref="IsOpen"/>): that choice is not a lone one.
     /// </summary>
     internal bool CloseStandaloneChoice()
     {
-        if (_isOpen)
+        if (_box.IsActive)
         {
             return false;
         }
@@ -490,21 +596,27 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
         UnsubscribeChoiceHandler();
         _presenter = null;
         _gameState = null;
+        _soundPlayer = null;
         _capturePresenter = null;
         _runner = null;
         _boundGameState = null;
-        _isOpen = false;
-        _closeMask = DefaultCloseMask;
+        _box.Reset();
         _pageCount = 0;
+        _pagesDelivered = 0;
         _pageIndex = 0;
-        _ticksSinceOpenOrPage = 0;
+        _pageLine = DialogueLine.Empty;
+        _tickSquareHeld = false;
+        _tickSquarePressed = false;
         _awaitingChoice = false;
         _pendingChoiceResult = null;
-        _swallowOpeningButtonPress = false;
+        PassCountForTests = 0;
     }
 
+    /// <summary>Test-only accessor: how many passes of the box ran since the last <see cref="ResetForTests"/> (one per logic tick, whether a box is open or not).</summary>
+    internal int PassCountForTests { get; private set; }
+
     /// <summary>Test-only accessor (T3): the close-mode mask currently in effect.</summary>
-    internal int CloseMaskForTests => _closeMask;
+    internal int CloseMaskForTests => _box.CloseMode;
 
     /// <summary>Test-only accessor: how many pages the currently open dialogue was split into (0 when
     /// closed).</summary>
@@ -513,9 +625,12 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector
     /// <summary>Test-only accessor: the zero-based index of the page currently shown.</summary>
     internal int PageIndexForTests => _pageIndex;
 
-    /// <summary>Test-only accessor: the attached presenter's own current line, or null if none is
-    /// attached - avoids reflection in tests that need to see what was actually shown.</summary>
-    internal DialogueLine? CurrentLineForTests => _presenter?.CurrentLine;
+    /// <summary>Test-only accessor: the WHOLE current page as the director holds it (the text of the line the runner delivered, in font3), or null when no
+    /// presenter is attached - the presenter itself only ever sees the typed prefix (F2-R6).</summary>
+    internal DialogueLine? CurrentLineForTests => _presenter == null ? null : _pageLine;
+
+    /// <summary>Test-only accessor: the page typed so far, as the presenter received it last (F2-R6): the glyphs in font3 and the line breaks reached.</summary>
+    internal string TypedTextForTests => _box.TypedText;
 
     /// <summary>Test-only accessor: the attached presenter's own currently displayed choice labels (empty
     /// when none is awaiting selection).</summary>

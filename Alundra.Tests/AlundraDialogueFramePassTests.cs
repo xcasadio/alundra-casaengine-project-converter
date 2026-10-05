@@ -88,15 +88,35 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         Assert.True(director.IsOpen);
         Assert.NotEqual(0u, proxy.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen);
 
-        // One tick with no button: the pass runs but nothing closes the box yet.
+        // E19.f2a (F2-R1): one Update is one tick and the pass of the box of that tick, on the square button of the tick BEFORE. One tick with no button:
+        // the pass runs but nothing closes the box yet.
         proxy.Update(1f / 50f);
         Assert.True(director.IsOpen);
 
-        // Just-pressed interact on the NEXT tick - Update's own pass (the only Tick driver here: no
-        // 0x39, no harness mirror) must close the box and lift MenuOpen. Before the F1 fix this frame
-        // changed nothing and the box stayed open forever.
-        proxy.GameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
+        // A press written before the Update 2 is read by the pass 3, while the box still slides in (the slide does not read the pad): nothing changes.
+        proxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Square };
         proxy.Update(1f / 50f);
+        proxy.GameState.LastPadState = default;
+        for (var update = 3; update <= 46; update++)
+        {
+            proxy.Update(1f / 50f);
+        }
+
+        Assert.True(director.IsOpen);
+
+        // The text "bonjour" is typed from the pass 19 to the pass 43 and ends at 47. The square held before the Update 47 and released before the Update
+        // 48 is a press the box sees at the pass 48: the box triggers its close at 48 (Update's own pass is the only driver here: no 0x39, no harness
+        // mirror), slides out, and is released 18 passes later - open after the Update 65, released at the Update 66, lifting MenuOpen.
+        proxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Square };
+        proxy.Update(1f / 50f); // 47
+        proxy.GameState.LastPadState = default;
+        for (var update = 48; update <= 65; update++)
+        {
+            proxy.Update(1f / 50f);
+            Assert.True(director.IsOpen, $"the box is released after the Update {update}, 66 expected");
+        }
+
+        proxy.Update(1f / 50f); // 66
 
         Assert.False(director.IsOpen);
         Assert.Equal(0u, proxy.GameState.PlayerControlFlags
@@ -112,20 +132,19 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 1);
         Assert.True(director.IsOpen);
 
-        // 0.06 s frames = 3 logic ticks each (cap is 4). The default close mask's auto-timer fires at
-        // 360 TICKS: ~300 ticks in (100 frames) the box must still be open, ~402 ticks in (34 more) it
-        // must have auto-closed. A pass that ticked once per FRAME instead of once per TICK would only
-        // have counted ~134 by then and still be open - this is the mutation this test exists to kill
-        // (the checkpoints sit ~60 ticks away from the threshold on each side, far beyond the +/-1 tick
-        // of float-accumulator drift).
-        for (var frame = 0; frame < 100; frame++)
+        // 0.06 s frames = 3 logic ticks each (cap is 4). The default close mask's auto-timer is armed at the end of the typing (the pass 47) and fires 360
+        // passes later: the box is released 18 passes after that, at the pass 425. ~363 ticks in (121 frames) the box must still be open, ~486 ticks in
+        // (41 more) it must have closed. A pass that ticked once per FRAME instead of once per TICK would only have counted ~162 by then and still be open -
+        // this is the mutation this test exists to kill (the checkpoints sit ~60 ticks away from the release on each side, far beyond the +/-1 tick of
+        // float-accumulator drift).
+        for (var frame = 0; frame < 121; frame++)
         {
             proxy.Update(0.06f);
         }
 
         Assert.True(director.IsOpen);
 
-        for (var frame = 0; frame < 34; frame++)
+        for (var frame = 0; frame < 41; frame++)
         {
             proxy.Update(0.06f);
         }
@@ -158,39 +177,38 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
     }
 
     [Fact]
-    public void OpeningPress_IsSwallowed_ButtonOnly_TheTimerStillCounts()
+    public void OpeningPress_DoesNotTouchTheSlide_APressSeenAt48ClosesTheBox_AndTheTimerStillClosesIt()
     {
-        // E12.d T4 (docs/plan-e12d-interaction-joueur.md D-E12D-6): a box opened WHILE the interact
-        // button is just-pressed (the very press that triggered the interaction) must not advance or
-        // close on its own opening press - and the swallow must eat exactly ONE snapshot: a fresh
-        // press on a later tick closes normally, and the auto-timer is never suspended by it.
+        // E12.d T4 (docs/plan-e12d-interaction-joueur.md D-E12D-6), redone for E19.f2a: a box opened WHILE the interact button is held (the very press that
+        // triggered the interaction) does not read the pad while it slides in (the slide, 18 passes, never does), so the opening press cannot advance or close
+        // what it just opened and nothing needs to swallow it any more; the box closes on a press its pass sees once the typing is done (the pass 48: the
+        // text "bonjour" ends at 47), is released 18 passes later (66), and the auto-timer, armed at the end of the typing, still closes it alone at 425.
         var gameState = new AlundraGameState();
         var director = AlundraDialogueDirector.Instance;
         director.AttachToWorld(new DialogueService(), gameState);
 
-        gameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
         director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 0);
         Assert.True(director.IsOpen);
 
-        director.Tick(); // same still-live snapshot: swallowed, the box must survive.
+        var passes = new DialogueBoxPassDriver(director, gameState);
+        passes.HoldBetween(1, 2); // the opening press, still held for the first two ticks
+        passes.PressSeenAt(48);
+        passes.RunTo(2);
+        Assert.True(director.IsOpen); // the held square did not close the box while it slides in
+        passes.RunTo(65);
         Assert.True(director.IsOpen);
-
-        gameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
-        director.Tick(); // a FRESH press one tick later closes normally (mask bit1).
+        passes.RunTo(66);
         Assert.False(director.IsOpen);
 
-        // And the timer half: same swallowed opening, then NO button ever again - the 360-tick
-        // auto-close (mask bit0) must still fire, proving the swallow only ate the button, not time.
-        gameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
+        // And the timer half: the same opening, then NO button ever again - the 360-pass auto-close (mask bit0), armed at the end of the typing (47), triggers at
+        // 407 and releases at 425: open after 424 passes, closed at the 425th.
+        gameState.LastPadState = new AlundraPadState { ButtonsHold = AlundraPadState.Square };
         director.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 0);
         gameState.LastPadState = default;
-        for (var tick = 0; tick < 359; tick++)
-        {
-            director.Tick();
-        }
-
+        var timerPasses = new DialogueBoxPassDriver(director, gameState);
+        timerPasses.RunTo(424);
         Assert.True(director.IsOpen);
-        director.Tick();
+        timerPasses.RunTo(425);
         Assert.False(director.IsOpen);
     }
 
@@ -212,12 +230,19 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
 
         Assert.True(director.IsOpen);
 
-        // The surviving page state must keep driving the NEW presenter: a button tick advances to page
-        // two and shows it there - proof the pages/index really survived the re-point, not just a flag.
-        gameState.LastPadState = new AlundraPadState { ButtonsJustPressed = AlundraPadState.Square };
-        director.Tick();
+        // The surviving page state must keep driving the NEW presenter: the cursor of the page boundary shows at the pass 47, a press the box sees at the
+        // pass 48 turns the page - proof the pages/index really survived the re-point, not just a flag - and the first letter of the second page, typed at the
+        // pass 52, reaches the new presenter.
+        var passes = new DialogueBoxPassDriver(director, gameState);
+        passes.PressSeenAt(48);
+        passes.RunTo(47);
+        Assert.True(director.Box.IsCursorShown);
+        passes.RunTo(48);
 
         Assert.True(director.IsOpen);
+        Assert.Equal(1, director.PageIndexForTests);
         Assert.Contains("page deux", director.CurrentLineForTests?.Text ?? "");
+        passes.RunTo(52);
+        Assert.Equal("p", rePointedPresenter.CurrentLine.Text);
     }
 }

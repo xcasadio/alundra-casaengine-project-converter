@@ -20,7 +20,7 @@ public sealed class AlundraBergusJumpArcTests
     private const int C = ScriptHelper.ProgramCTick;
 
     private static ArcSpec A12Spec => new(
-        "A12", "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1660 }, 0, 0, 0, 2500,
+        "A12", "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1660 }, 0, 0, 0, 2734,
         RealController: true, Prefabs: true,
         Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, AlundraGameState.ResetAnimationId, 0));
 
@@ -55,15 +55,16 @@ public sealed class AlundraBergusJumpArcTests
         // on the DLL before C1 (0x25 skipped), skipped exactly (0x25, 415); R4 ports it.
         AssertNothingSkippedOrExceeded(arc);
 
-        // 2. The frames. F is the image of `1A [2] @411`: 287, as in the base measured on the DLL before C1. With the impulse (E19.d2c1 C2) the wait of the landing
-        // lasts: `37 [3] @413` returns at F+4, `0x25 @415` executes from F+4 to F+23 (20 executions) and returns at F+23, `1A [0] @416` runs in the same call, and
-        // `0x53 @451` comes 19 images later than the base (359): at 378.
-        const int f = 287;
-        Assert.Equal(f, FrameOf(arc, B, 411));
+        // 2. The frames. F is the image of `1A [2] @411`: 287 in the base measured on the DLL before C1, 1058 since E19.f2a (the box of Septimus M179_S017 is seen
+        // released at 890 and the next 168 frames are the walk). With the impulse (E19.d2c1 C2) the wait of the landing lasts: `37 [3] @413` returns at F+4,
+        // `0x25 @415` executes from F+4 to F+23 (20 executions) and returns at F+23, `1A [0] @416` runs in the same call, and `0x53 @451` comes 19 images later
+        // than the base: at 2277 (the nine boxes of the scene are typed at the binary's pace and none of the later waits moves).
+        var f = FrameOf(arc, B, 411);
+        Assert.Equal(1058, f);
         Assert.Equal(f + 4, FramesOf(arc, B, 413, 0x37)[^1]);
         Assert.Equal(Enumerable.Range(f + 4, 20).ToList(), FramesOf(arc, B, 415, 0x25));
         Assert.Equal(f + 23, FrameOf(arc, B, 416));
-        Assert.Equal(359 + 19, FrameOf(arc, B, 451));
+        Assert.Equal(2277, FrameOf(arc, B, 451));
 
         // 3. Bergus (record 8): above his rest at the images F+1 to F+22 (the state at the end of the image) by the flight list of UJ-1, at rest from F+23.
         int[] flight =
