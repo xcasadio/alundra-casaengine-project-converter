@@ -1,0 +1,36 @@
+== 0x20 @0x8003D9BC  operands [16, 0]  (distance 16 px)
+  PosZ   3145728 Collided 0 -> result 0  memo key set memo value 3145728
+  PosZ   3145728 Collided 0 -> result 0  memo key set memo value 3145728
+  PosZ   4194303 Collided 0 -> result 0  memo key set memo value 3145728
+  PosZ   4194304 Collided 0 -> result 3  memo key set memo value 3145728
+  PosZ   2097152 Collided 0 -> result 3  memo key set memo value 3145728
+  PosZ   2097153 Collided 0 -> result 0  memo key set memo value 3145728
+  PosZ   3145728 Collided 1 -> result 0  memo key set memo value 3145728
+== 0x20 @0x8003D9BC  operands [0, 1]  (distance 256 px)
+  PosZ   3145728 Collided 0 -> result 0  memo key set memo value 3145728
+  PosZ  19922943 Collided 0 -> result 0  memo key set memo value 3145728
+  PosZ  19922944 Collided 0 -> result 3  memo key set memo value 3145728
+  PosZ -13631488 Collided 0 -> result 3  memo key set memo value 3145728
+== 0x21 @0x8003DA28  operands [16, 0]  (distance 16 px)
+  PosZ   3145728 Collided 1 -> result 3  memo key set memo value 3145728
+== 0x21 @0x8003DA28  operands [16, 0]  (distance 16 px)
+  PosZ   3145728 Collided 0 -> result 0  memo key set memo value 3145728
+  PosZ   3145728 Collided 1 -> result 3  memo key set memo value 3145728
+  PosZ   3145728 Collided 0 -> result 0  memo key set memo value 3145728
+  PosZ   4194304 Collided 0 -> result 3  memo key set memo value 3145728
+== 0x22 @0x8003DA70  record Height 20  (target Height<<19 = 10485760 = 160 px)
+  PosZ  10485000 ForceZ         0 Collided 0 -> result 0  ForceZ out         0  memo key set memo value 10485760
+  PosZ  10485000 ForceZ     32768 Collided 0 -> result 0  ForceZ out       760  memo key set memo value 10485760
+  PosZ  10485000 ForceZ       700 Collided 0 -> result 0  ForceZ out       700  memo key set memo value 10485760
+  PosZ  10485760 ForceZ         0 Collided 0 -> result 1  ForceZ out         0  memo key set memo value 10485760
+  PosZ  10485761 ForceZ        -5 Collided 0 -> result 0  ForceZ out        -1  memo key set memo value 10485760
+  PosZ  10485761 ForceZ         0 Collided 0 -> result 0  ForceZ out         0  memo key set memo value 10485760
+  PosZ  10000000 ForceZ    -32768 Collided 0 -> result 0  ForceZ out    -32768  memo key set memo value 10485760
+  PosZ  10000000 ForceZ    600000 Collided 0 -> result 0  ForceZ out    485760  memo key set memo value 10485760
+  PosZ  10485760 ForceZ     32768 Collided 1 -> result 1  ForceZ out     32768  memo key set memo value 10485760
+== 0x23 @0x8003DB28  record Height 30  (target Height<<19 = 15728640 = 240 px)
+  PosZ  15000000 ForceZ         0 Collided 0 -> result 0  ForceZ out         0  memo key set memo value 15728640
+  PosZ  15000000 ForceZ     32768 Collided 0 -> result 0  ForceZ out     32768  memo key set memo value 15728640
+  PosZ  15000000 ForceZ     32768 Collided 1 -> result 1  ForceZ out     32768  memo key set memo value 15728640
+  PosZ  15728640 ForceZ         0 Collided 0 -> result 1  ForceZ out         0  memo key set memo value 15728640
+== 0x22 without record: result 0, error print hit 1 time(s), memo value (Height byte read at address 9 of RAM, here 0 in the empty emulated RAM) = 0

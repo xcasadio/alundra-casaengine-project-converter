@@ -284,6 +284,9 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-85** — (2026-10-05, choix technique de la session) L'épingle MonoGame d'`Alundra.Tests` suit celle du moteur (3.8.4.1 →
     3.8.5.1) : sans elle, un test ne peut pas créer le runtime du bureau sur GPU (« This MGFX effect seems to be for a newer release
     of MonoGame »).
+  - **D-E19-87** — (2026-10-06, choix technique de la session, E19.h1b2) Pour une entité sans contrôleur : atterrissage strict et
+    `IsOnGround` de position (convention de la DLL, exacte), impulsion partagée par le pas vertical comme dans le binaire ; `0x22`
+    garde la cible littérale d'ADR-0026 ; `0x22` sans enregistrement journalise une fois et finit l'attente.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -6098,7 +6101,7 @@ d'intro, qui relit la fabrique (garde des six traces).
   l'apparition (`0x80039EF8`), la DLL au premier tick seulement, si bien que `0x8D` (`PosZ <= TerrainHeight + 1`,
   `AlundraEventProgramRunner.cs:1808`) lit 0 avant le premier tick d'une entité → E19.h1b2.
 
-##### 1.2n.1c E19.h1b2 — `0x20`, `0x22`, `0x23`, Z des entités sans contrôleur ⏳ (esquisse, après E19.h1b1)
+##### 1.2n.1c E19.h1b2 — `0x20`, `0x22`, `0x23`, Z des entités sans contrôleur ⏳ (découverte du 2026-10-06 faite ; planifiée le 2026-10-06 ; relecture à faire)
 
 
 Portée : `0x20` (attente de distance en Z, 266 sites), `0x22`/`0x23` (attente d'une hauteur d'enregistrement, 17 sites) et
@@ -6145,6 +6148,94 @@ Tests à changer : `AlundraWorldProxySpawnInitializationTests` (~238, ~242, ~286
 marin 11 (26214401 → 26214400, assertions intactes), et les tests qui lisent l'appui trouvé à l'image 0
 (`AlundraNpcCharacterControllerMoverTests` ~1844, ~1951, ~2021 ; `AlundraMovementObstacleProbeTests` ~384-386). Effet sur la trace
 d'intro non mesuré ; à mesurer avant le plan.
+
+**Découverte du 2026-10-06** (lecture seule, deux surfaces, chacune contre-vérifiée par un relecteur adverse qui a refait ses
+modèles et relu le binaire ; notes versionnées, en anglais, dans `docs/plan-e19-h1b2-annexe/`) ; les points (3) et (4) de l'esquisse
+sont faits par E19.h1b1 (ADR-0026) ; faits porteurs **[binaire]** :
+- **Gestionnaires** (exécutés par un interpréteur MIPS sur le vrai code) : `0x20` (`0x8003D9BC`, taille 3) est une attente pure sur
+  `PosZ` de l'entité logique (le premier appel mémorise le pc et `PosZ` et rend 0, même avec la limite 0 ; ensuite il rend 3 dès que
+  `(|mémo − PosZ| >> 16) >= (v1 | v2 << 8)`, en pixels ; il ne lit pas le contact) : c'est exactement `WaitZDistance` de la DLL
+  (`AlundraEventProgramRunner.cs:2476`), déjà utilisée par `0x21`. `0x22` (`0x8003DA70`, taille 1) : le premier appel mémorise la
+  cible `octet 9 de l'enregistrement << 19` et rend 0 ; ensuite il rend 1 à l'égalité exacte avec `PosZ`, sinon il ramène `ForceZ` à
+  l'écart **seulement** s'il le dépasse dans le sens de l'écart (il ne crée ni n'inverse jamais une force) et rend 0. `0x23` : `0x22` ou
+  un contact en Z ; `0x21` : `0x20` ou un contact ; les deux finissent au premier appel si le contact est déjà posé. Un gestionnaire
+  qui rend 0 termine l'appel du programme pour ce tick.
+- **Pas vertical** (le binaire n'a pas de notion de contrôleur) : ordre du tick : programmes, listes, animation, physique (toutes les
+  forces, puis `ComputeZ` avant `ComputeXY` par entité, puis la passe de fin) ; un `1B` déplace l'entité dans le même tick. Avec le
+  bit de gravité, `ForceZ − (G << 8)` borné des deux côtés à `±(V << 8)` (G et V : mots bruts de l'en-tête de carte, 128/4096 sur 481
+  cartes, 3/256 sur les 159 et 160). Atterrissage pour `F <= 0` si `PosZ + ModZ + F <= T` (binaire) ; en convention de la DLL
+  (binaire − 1) le test est **strict** et `IsOnGround` est de position (`PosZ + ModZ <= sol`, `0x800380F8`). Plafond de 1920 px. Pas
+  d'aimantation pour une entité sans force XY. Un modèle (`binary-notes.md`) égale le vrai code sur 460 scénarios × 40 ticks
+  (contre-vérification : 700 × 30) ; la formulation native de la DLL égale « binaire − 1 » sur 200 000 tirages (300 000).
+- **Corpus** : 266 sites `0x20` (78 cartes), 16 `0x22` atteignables, 1 `0x23` ; aucun sur les 30 cartes de la chaîne (le `0x22` de la
+  178 @386 est mort) ; **aucun arc** ne les traverse. Seules deux attentes en Z portent sur une entité sans contrôleur : **47 `C[4]`
+  @442** (Sara rec3, gravité effacée, `1B` à −32768 par tick : 96 px en **192** appels, à 64 px, sans contact) et **260 `C[5]` @747**
+  (l'armure rec17, +32768 par tick : 32 px en **64** appels ; le même programme tourne aussi sur rec16, qui a un contrôleur). 12
+  préfabs sans contrôleur (6 utilisés par 67 enregistrements), tous à `OffsetZ` 0, mis à jour à chaque image ; les 7 avec gravité
+  apparaissent exactement au repos.
+- **DLL** : `0x20`, `0x22`, `0x23` n'ont pas de `case` et sont sautés par leur taille (`UnknownOpcode`, `:1853`) ; le mandataire ne
+  garde aucune hauteur d'enregistrement (le `PosZ = Height << 19` du mappeur, `EntityRecordMapper.cs:196-200`, est écrasé par la
+  fabrique) ; une entité sans contrôleur ne bouge jamais en Z (portes `Controller != null` en `AlundraEntityScriptProxy.cs` 685, 758,
+  772, 791, 801, 934) ; la fabrique ne pose `MapGravityRaw`/`MapZViscosityRaw` que pour une entité à contrôleur
+  (`AlundraEntitySpawnFactory.cs:603-606`). **Couplage** : porter `0x20` seul figerait 47 et 260 pour toujours (leur `1B` ne déplace
+  rien aujourd'hui) : opcodes et pas vertical ensemble. Aucun changement du moteur (une entité sans contrôleur est toute entière ; la
+  cible littérale est représentable en flottant pour une entité à contrôleur, même à 304 px).
+
+**Choix de conduite** (techniques, session ; D-E19-87) : cible de `0x22` littérale, `hauteur << 19`, comme le veut ADR-0026 (acceptée) ;
+la contre-vérification montre qu'elle finit **un tick tôt sur une descente** (le seul site en descente, 115 `B[2]` @367, hors chaîne :
+320 appels au lieu de 321) : écart consigné pour l'auteur (O-E19-68), ADR-0026 non réécrite ; atterrissage **strict** et `IsOnGround`
+de position pour une entité sans contrôleur (exact en convention de la DLL ; le `<=` des PNJ à contrôleur reste lié à l'aimantation de
+4 px du moteur, D-E19-40) ; impulsion (`IsZForceApplied`) partagée par le nouveau pas, comme dans le binaire (inerte en production : aucun
+des 6 préfabs) ; `0x22` sans enregistrement (aucun site ; le binaire lit une mémoire quelconque) : avertissement journalisé une fois et
+fin de l'attente.
+
+**Règles.**
+- **H1B2-R1 — Opcodes** (`AlundraEventProgramRunner.cs`) : `case 0x20` → `WaitZDistance(…)` ; `case 0x22` : premier appel au pc,
+  mémoriser la cible `hauteur d'enregistrement << 19` et rendre 0 ; ensuite 1 si `PosZ == cible`, sinon ramener `ForceZ` à l'écart
+  s'il le dépasse dans le sens de l'écart et rendre 0 ; `case 0x23` : `0x22`, puis `CollidedWithEntityZ != 0` → 1 ; sans
+  enregistrement : avertissement une fois, 1 ; le commentaire `:724` et la doc de `WaitZDistance` (`:2471`) mis à jour.
+- **H1B2-R2 — Hauteur d'enregistrement** : un membre du mandataire, posé par le mappeur seulement quand `Height` se lit ; « aucun
+  enregistrement » pour le héros et les mandataires de test nus.
+- **H1B2-R3 — Garde de la fabrique** : `AlundraEntitySpawnFactory.cs:603-606` coupé en deux : les quatre champs de carte posés dès que
+  `tileMapData != null` ; les lignes propres au contrôleur restent sous la garde.
+- **H1B2-R4 — Pas vertical sans contrôleur** (dans le mandataire, méthode sœur de `EvaluateEntitySupport`) : condition `Controller ==
+  null && Owner?.World?.CollisionField != null && !immediateAtSpawn && actif` (le critère exclut le harnais d'intro, dont les entités
+  sont hors monde : il garde **toutes** les nouvelles écritures, décroissance, `IsOnGround`, `TileZ`, `PosZ`) ; même décroissance
+  bornée, même amorce et mêmes fins (trouvé, atterrissage) qu'un PNJ à contrôleur, avec `PosZ += FinalForceZ` au lieu de
+  `Controller.Move` ; atterrissage strict ; `IsOnGround` de position ; `TileZ` rafraîchi après le pas ; une entité `FlagToDestroy` est
+  sautée.
+
+**Tâches.**
+- **H1B2-1 — Tests d'abord** (valeurs de l'annexe, écrites d'avance ; une valeur lue différente est un arrêt) :
+  - gestionnaires (au patron d'`AlundraZWaitOpcodesTests`), lignes de `handlers_emu.txt` : `0x20 [16,0]` depuis 3145728 : 4194303 → 0,
+    4194304 → 3, 2097152 → 3, contact seul → 0 ; `[0,1]` finit à 19922944 ; `0x22` hauteur 20 : cible 10485760 ; (10485000, 32768) → `ForceZ`
+    760 ; (10485760, 0) → 1 ; (10485761, −5) → −1 ; (10485761, 0) : attente sans fin ; `ForceZ` de mauvais signe : attente sans fin ;
+    `0x23` : un contact la termine loin de la cible ; `0x22` sans enregistrement : 1 et un avertissement ;
+  - pas vertical (montage `ContactWorld.AddEntity(withController: false)`), tables Z-1 à Z-9 de `traces.out` passées en convention de
+    la DLL (binaire − 1), par exemple Z-3 (chute de 5 px : 294912, 229376, 131072, puis 0 au tick 4 avec `IsOnGround` 1 et contact 0,
+    contact 1 dès le tick 5) ;
+  - cas réels (`scen_real.out`) : 260 rec17, `0x20 [32,0]` rend à son 64e appel après le premier, montée de 2097152 exactement ;
+    47 rec3, `0x20 [96,0]` au 192e appel, `PosZ` 4194304 (64 px), sans contact ; la garde levée sur un préfab réel sans contrôleur
+    avec le `TileMapData` de sa carte (`MapGravityRaw` 128, `MapZViscosityRaw` 4096) ;
+  - le mappeur pose la hauteur d'enregistrement (`EntityRecordMapperTests`) ;
+  - garde du harnais : un mandataire nu avec gravité et champs bruts posés, sans monde, garde `ForceZ`, `PosZ` et `IsOnGround` ;
+  - tests existants qui bougent, liste fermée : `IntroTraceHarnessTests.cs:319` (`ImplementedOpcodes` gagne `0x20`, `0x22`, `0x23`) ;
+    à garder verts sans changement : `AlundraTerrainHeightTests.cs:129-146`, `AlundraCollidedWithEntityZTests.cs:64-90`,
+    `AlundraMovementObstacleProbeTests.cs:367-393`, les appelants d'`immediateAtSpawn` (`AlundraNpcCharacterControllerMoverTests.cs`
+    `:1842`, `:1949`, `:2019`, `AlundraMovementObstacleProbeTests.cs:384`, `AlundraTerrainHeightTests.cs:102`, `:117`), les arcs (A1c :
+    les 6 caisses de la 390 passent à `CollidedWithEntityZ` et `IsOnGround` 1 sans bouger, aucun programme de la 390 ne les lit ; si une
+    assertion d'A1c les lit, c'est un arrêt), le TSV des opcodes sautés (aucune ligne pour ces trois opcodes) ; toute autre assertion
+    qui bouge est un arrêt.
+- **H1B2-2 — Suites** : `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp`, six traces à l'octet (le harnais est
+  exclu par le critère ; `docs/intro-programs-389.txt` ne nomme pas ces opcodes) ; pas d'export (DLL seule).
+- **H1B2-3 — Vérification** (vérificateur neuf). **H1B2-4 — Recette** (auteur, hors de la chaîne) : la 47 (Sara descend de 96 px), la
+  260 (l'armure monte de 32 px), un ascenseur de la 22.
+
+**Acceptation** : tests de H1B2-1 rouges d'abord (opcodes sautés, entité figée) puis verts avec les valeurs écrites ; liste fermée ;
+suites, `cmp`, traces. **Retour arrière** : revert des commits. **Risques** : l'ordre du tick (si le pas tombe un tick plus tard, les
+attentes finissent au 65e ou au 193e appel : c'est un arrêt) ; la cible littérale sur la descente de la 115 (O-E19-68) ; les attentes
+des programmes `B` finissent un tick tôt dans la DLL (connu, O-E19-28) ; changements visibles hors chaîne pour la recette (ascenseurs,
+trappes, boules, la chute de Sara).
 
 ##### 1.2n.2 E19.h2 — État en l'air des PNJ ⏳ (esquisse)
 
@@ -8967,6 +9058,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-65 | **La vue des écrans d'Alundra a une image de retard sur la logique** (découverte d'E19.f2b1, 2026-10-05) : une liaison modifiée n'atteint les pixels qu'au `Desktop.Update()` suivant, l'interface étant mise à jour avant le monde (`CasaEngineGame.cs:537` puis `:555`, `UIRoot.cs:131` seul appelant) ; un changement de `Image.SourceName` s'applique aussitôt (63 texels mesurés : nouveau curseur sur l'ancienne disposition). Tous les écrans d'Alundra l'ont aujourd'hui. Ordre de mise à jour du moteur : manque à consigner, pas à contourner. | Moteur (rapport), auteur |
 | O-E19-66 | **Couleur de l'index 4 de `font3.png`** (contre-vérification de l'oracle d'E19.f2b1) : les bandes et le curseur du binaire prennent l'entrée 8 de la table de CLUT remplie depuis `taki\screen\wind.cl` (`0x80044B7C`-`0x80044B8C`) ; le `font3.png` exporté vient de la CLUT de FONT3.TIM : égal sur 13 des 14 index, l'index 4 vaut (82, 90, 57) contre (74, 82, 57) ; 44 texels, seulement dans les glyphes 4, 14, 15, 21 à 29 et `@` (le `\W5` de S025 est le glyphe 21). Correction côté export, hors f2b1. | Convertisseur, à planifier |
 | O-E19-67 | **Autres espaces de bord perdues** (découverte de S025, 2026-10-05 ; D-E19-78 ne vise que S025) : `M311_S029` et `M398_S029`, page 1 (une espace de début après un code de drapeau, retirée par la règle F0-R2 de l'émetteur : la ligne commence 4 pixels plus à gauche que dans le binaire, déduit du code, non vu) ; 30 pages `_S022` et `_S108` de 15 cartes (espaces avant un drapeau ou un `yield` final, retirées par l'émetteur : temps de frappe) ; 105 pages non centrées à espaces de fin (un pas de frappe par espace) ; 56 pages d'ETC (bourrage d'enregistrement ; trois textes d'inventaire `0x206`, `0x239`, `0x2A6` perdent une espace). Les corriger change des épingles d'arcs d'E19.f2a (par exemple `M391_S022`). | Auteur |
+| O-E19-68 | **Cible littérale de `0x22` sur une descente** (contre-vérification de la découverte d'E19.h1b2, 2026-10-06) : la cible `hauteur << 19` d'ADR-0026 est exacte au tick sur les montées, mais finit **un tick tôt** sur une descente (vrai code, 112 → 48 px à −32768 : binaire 129 appels, cible littérale 128, cible décalée `(H << 19) − 1` 129). Un seul des 17 sites descend : 115 `B[2]` @367 (hors chaîne ; 321 appels dans le binaire, 320 avec la cible littérale). Une règle par sens (décalée sous 256 px, littérale au-dessus) serait exacte aux 17 sites ; elle changerait ADR-0026. | Auteur |
 
 ## 4. Hors périmètre
 
