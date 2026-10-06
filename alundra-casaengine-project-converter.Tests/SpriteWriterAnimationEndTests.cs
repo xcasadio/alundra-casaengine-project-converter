@@ -136,6 +136,94 @@ public class SpriteWriterAnimationEndTests
             });
     }
 
+    // E19.m7 (O-E19-9): a Loop animation whose only displayed frame lasts 0 ticks (Delay 0x80) keeps that
+    // frame visible, like the binary (UpdateAnimation holds it for 2^32 - 1 ticks).
+    private static string ZeroTickDisplayedFrameJson(int sector5Id)
+    {
+        return $$"""
+            { "Delay": 128, "Images": { "DepthSortValue": 1, "Images": [
+                { "Spritesheet": 0, "Palette": 0, "AtlasX": 0, "AtlasY": 0, "Swidth": 16, "Sheight": 16, "X1": -8, "Y1": -16, "X2": 8, "Y2": -16, "X3": -8, "Y3": 0, "X4": 8, "Y4": 0, "Signature": {{sector5Id}}0 },
+                { "Spritesheet": 0, "Palette": 0, "AtlasX": 20, "AtlasY": 0, "Swidth": 16, "Sheight": 16, "X1": -6, "Y1": -20, "X2": 10, "Y2": -20, "X3": -6, "Y3": -4, "X4": 10, "Y4": -4, "Signature": {{sector5Id}}1 }
+            ] } }
+            """;
+    }
+
+    [Fact]
+    public void ConvertSprites_ZeroDurationLoop_KeepsEveryPartVisibleAtZero()
+    {
+        RunConversion(
+            sector5Id: 64,
+            terminatorFrameJson: """{ "Delay": 1 }""",
+            (outputDirectory, _, _) =>
+            {
+                var animationData = LoadAnimation(outputDirectory, "bank64_anim0_down.anim2d");
+                Assert.Equal(AnimationType.Loop, animationData.AnimationType);
+                Assert.Equal(0f, animationData.GetDurationSeconds());
+
+                var visibleTracks = animationData.Tracks
+                    .Where(t => t.Property == Animation2dTrackProperty.Visible).ToList();
+                Assert.Equal(2, visibleTracks.Count);
+                foreach (var track in visibleTracks)
+                {
+                    var key = Assert.Single(track.VisibleKeyframes);
+                    Assert.Equal(0f, key.TimeSeconds);
+                    Assert.True(key.Value);
+                }
+            },
+            ZeroTickDisplayedFrameJson(64));
+    }
+
+    [Fact]
+    public void ConvertSprites_ZeroDurationLoop_StaysVisibleThroughTheEngineSampler()
+    {
+        RunConversion(
+            sector5Id: 65,
+            terminatorFrameJson: """{ "Delay": 1 }""",
+            (outputDirectory, _, _) =>
+            {
+                var animationData = LoadAnimation(outputDirectory, "bank65_anim0_down.anim2d");
+                var sampler = new Animation2dCompositionSampler(Animation2dCompositionAdapter.Create(animationData));
+
+                sampler.Reset();
+                for (var tick = 0; tick < 100; tick++)
+                {
+                    sampler.Update(0.02f);
+                    Assert.Equal(0, sampler.LastUpdateLoopTurns);
+                    Assert.Equal(2, sampler.RuntimeState.Parts.Count);
+                    Assert.All(sampler.RuntimeState.Parts, part => Assert.True(part.Visible));
+                }
+            },
+            ZeroTickDisplayedFrameJson(65));
+    }
+
+    [Fact]
+    public void ConvertSprites_LoopWithTwoTickFrame_KeepsTheTerminalHideKey()
+    {
+        // Guard: a non-zero duration still gets the terminal all-parts-hidden key.
+        RunConversion(
+            sector5Id: 66,
+            terminatorFrameJson: """{ "Delay": 1 }""",
+            (outputDirectory, _, _) =>
+            {
+                var animationData = LoadAnimation(outputDirectory, "bank66_anim0_down.anim2d");
+                var track = animationData.Tracks.Single(
+                    t => t.TargetPartId == "part0" && t.Property == Animation2dTrackProperty.Visible);
+                Assert.Equal(2, track.VisibleKeyframes.Count);
+                Assert.Equal(0f, track.VisibleKeyframes[0].TimeSeconds);
+                Assert.True(track.VisibleKeyframes[0].Value);
+                Assert.Equal(0.04f, track.VisibleKeyframes[1].TimeSeconds, 5);
+                Assert.False(track.VisibleKeyframes[1].Value);
+            },
+            ZeroTickDisplayedFrameJson(66).Replace("\"Delay\": 128", "\"Delay\": 130"));
+    }
+
+    private static Animation2dData LoadAnimation(string outputDirectory, string fileName)
+    {
+        var animationData = new Animation2dData();
+        animationData.Load(JObject.Parse(File.ReadAllText(FindEntityAsset(outputDirectory, fileName))));
+        return animationData;
+    }
+
     /// <summary>
     /// Converts a one-bank, one-animation, two-displayed-frame fixture whose trailing control frame
     /// is <paramref name="terminatorFrameJson"/>, then hands the output directory, the report and
@@ -144,8 +232,10 @@ public class SpriteWriterAnimationEndTests
     /// </summary>
     private static void RunConversion(
         int sector5Id, string terminatorFrameJson,
-        Action<string, ConversionReport, IReadOnlyDictionary<string, Guid>> assert)
+        Action<string, ConversionReport, IReadOnlyDictionary<string, Guid>> assert,
+        string? displayedFramesJson = null)
     {
+        var displayedFrames = displayedFramesJson ?? DefaultDisplayedFramesJson(sector5Id);
         var inputDirectory = CreateTempDirectory();
         var outputDirectory = CreateTempDirectory();
         var previousProjectPath = EngineEnvironment.ProjectPath;
@@ -167,12 +257,7 @@ public class SpriteWriterAnimationEndTests
                                 "Header": { "Sector5Id": {{sector5Id}} },
                                 "AnimSets": [ { "PreloadedAnims": [
                                     { "Frames": [
-                                        { "Delay": 136, "Images": { "DepthSortValue": 1, "Images": [
-                                            { "Spritesheet": 0, "Palette": 0, "AtlasX": 0, "AtlasY": 0, "Swidth": 16, "Sheight": 16, "X1": -8, "Y1": -16, "X2": 8, "Y2": -16, "X3": -8, "Y3": 0, "X4": 8, "Y4": 0, "Signature": {{sector5Id}}0 }
-                                        ] } },
-                                        { "Delay": 138, "Images": { "DepthSortValue": 2, "Images": [
-                                            { "Spritesheet": 0, "Palette": 0, "AtlasX": 20, "AtlasY": 0, "Swidth": 16, "Sheight": 16, "X1": -6, "Y1": -20, "X2": 10, "Y2": -20, "X3": -6, "Y3": -4, "X4": 10, "Y4": -4, "Signature": {{sector5Id}}1 }
-                                        ] } },
+                                        {{displayedFrames}},
                                         {{terminatorFrameJson}}
                                     ] },
                                     null, null, null
@@ -205,6 +290,19 @@ public class SpriteWriterAnimationEndTests
             Directory.Delete(inputDirectory, recursive: true);
             Directory.Delete(outputDirectory, recursive: true);
         }
+    }
+
+    /// <summary>The two displayed frames (Delay 136 and 138, one quad each) every fixture used so far shares.</summary>
+    private static string DefaultDisplayedFramesJson(int sector5Id)
+    {
+        return $$"""
+            { "Delay": 136, "Images": { "DepthSortValue": 1, "Images": [
+                { "Spritesheet": 0, "Palette": 0, "AtlasX": 0, "AtlasY": 0, "Swidth": 16, "Sheight": 16, "X1": -8, "Y1": -16, "X2": 8, "Y2": -16, "X3": -8, "Y3": 0, "X4": 8, "Y4": 0, "Signature": {{sector5Id}}0 }
+            ] } },
+            { "Delay": 138, "Images": { "DepthSortValue": 2, "Images": [
+                { "Spritesheet": 0, "Palette": 0, "AtlasX": 20, "AtlasY": 0, "Swidth": 16, "Sheight": 16, "X1": -6, "Y1": -20, "X2": 10, "Y2": -20, "X3": -6, "Y3": -4, "X4": 10, "Y4": -4, "Signature": {{sector5Id}}1 }
+            ] } }
+            """;
     }
 
     private static string FindEntityAsset(string outputDirectory, string fileName)
