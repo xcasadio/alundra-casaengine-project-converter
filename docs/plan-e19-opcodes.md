@@ -8809,7 +8809,7 @@ fichiers hors catalogue pour `AssetVerifier.CheckCatalogCoverage`), puis export 
 prévision, un test existant qui bouge, un fichier hors de la liste. **Risques** : le compagnon de carte ne sert à rien tant que G3a ne
 le lit pas (aucun effet visible avant G3c) ; 748 images ont une case toute transparente (légitime : la PS1 ne les dessine pas non plus).
 
-###### E19.g G3a — Réserve des effets, apparition au chargement et tick (DLL) ⏳ (planifiée le 2026-10-06 ; relecture n°1 : READY (code), REVISE (binaire : moment de l'apparition), révisée ; relecture n°2 à faire)
+###### E19.g G3a — Réserve des effets, apparition au chargement et tick (DLL) ⏳ (planifiée le 2026-10-06 ; relecture n°1 : READY (code), REVISE (binaire : moment de l'apparition), révisée ; relecture n°2 : READY (binaire), REVISE (code : tuile du héros), disposition FIX ; nouvelle époque, relecture de clôture à faire)
 
 DLL seule (ni moteur, ni export : G1 est livré, ADR-0043) ; rien ne se voit encore (le dessin est G3c) et aucun opcode n'est porté (G3b).
 Déclencheur de risque : modèle d'état nouveau tiré du binaire (relecture et vérificateur neuf). Faits et valeurs : `docs/plan-e19-g1g3-annexe/`
@@ -8838,8 +8838,10 @@ Déclencheur de risque : modèle d'état nouveau tiré du binaire (relecture et 
   dont la zone inclusive contient la tuile du héros apparaît, dans l'ordre des enregistrements, aux créneaux 0 à n − 1 ; position
   `x = (X × 12 + 12) << 16`, `y = (Y × 8 + 8) << 16`, `z = Z << 19` ; banque = `Flags & 0x80`. L'apparition se fait **une fois le héros
   posé sur sa tuile d'arrivée et avant le premier tick d'effet du monde** (le binaire crée le héros et écrit sa tuile avant
-  `0x8003C1A4`) : au premier `Update` du mandataire, avant sa boucle de ticks, la tuile lue dans `PlayerEntity.TileX` et `PlayerEntity.TileY`
-  (`AlundraEntityScriptProxy.cs:317-318`). Aucune création ne peut la précéder : les scripts d'entités de la première image tournent avant le
+  `0x8003C1A4`) : la tuile du héros est **relevée dans `InitializeWithWorld`, juste après la création du héros** (`PlayerEntity.TileX` et
+  `PlayerEntity.TileY`, `AlundraEntityScriptProxy.cs:317-318`, au même moment que le test de zone des entités, `AlundraWorldProxy.cs:795`),
+  avant tout tick d'entité (le script et la physique du héros la récrivent dès le tick 0, `AlundraScriptedMotion.cs:535-536`) ; l'apparition
+  se fait au premier `Update` du mandataire, avant sa boucle de ticks, avec cette tuile relevée. Aucune création ne peut la précéder : les scripts d'entités de la première image tournent avant le
   mandataire, mais toute opération d'effet est mise en file et appliquée seulement dans la boucle des effets (G3B-R3), après l'apparition ;
   les créneaux du chargement sont donc toujours 0 à n − 1. Sans héros (montages sans héros) : la tuile (0, 0) et un
   avertissement une fois (les 41 enregistrements de la chaîne ont la zone entière (0, 0)-(51, 59) ; seuls 6 enregistrements hors de la
@@ -8870,14 +8872,20 @@ Déclencheur de risque : modèle d'état nouveau tiré du binaire (relecture et 
   restreintes par un montage synthétique (tuile dedans, tuile dehors) ; le chargeur (compagnon absent, illisible, global en cache) ;
   l'apparition avant le premier tick (les rais de la 163 libérés au tick 11, pas 10 ni 12) ; une image à deux ticks donne le même état
   que deux images d'un tick ; une création mise en file avant le premier `Update` du mandataire sur la 391 (créateur générique) : les
-  créneaux du chargement restent 0 à 4 aux positions de l'oracle et la nouvelle prend le créneau 5, rien n'est effacé.
+  créneaux du chargement restent 0 à 4 aux positions de l'oracle et la nouvelle prend le créneau 5, rien n'est effacé ; le héros qui change
+  de tuile pendant la mise à jour des entités de la première image (avant le premier `Update` du mandataire) : l'apparition d'un
+  enregistrement à zone restreinte suit la tuile d'arrivée relevée, pas la nouvelle.
 - **G3a-2 — Code**, ADR du parent (la réserve des effets vit dans la DLL, au tick, comme le binaire ; le moteur ne la connaît pas) ;
   **G3a-3 — Vérification**.
 - **Acceptation** : prévision commitée avant le code ; tests rouges puis verts ; aucun test existant ne bouge (rien ne lit la réserve) ;
   `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (identiques : les effets n'ont aucun effet de jeu). **Arrêts** : une valeur
   qui contredit les oracles, un test existant qui bouge, un fichier hors de la liste. **Retour arrière** : revert.
 
-###### E19.g G3b — Les neuf opcodes d'effets (DLL) ⏳ (planifiée le 2026-10-06, après G3a ; relecture n°1 REVISE (binaire : ticks gelés, créneau placé par `0xA2`/`0xA3` ; code : liste fermée), révisée ; relecture n°2 à faire)
+- **Disposition de la relecture n°2** (2026-10-06, règle des deux REVISE) : un seul bloquant, **FIX** — la tuile du héros relevée
+  à sa création dans `InitializeWithWorld`, un test où elle change pendant la première image. Nouvelle époque ; une seule relecture de
+  clôture.
+
+###### E19.g G3b — Les neuf opcodes d'effets (DLL) ⏳ (planifiée le 2026-10-06, après G3a ; relecture n°1 REVISE (binaire : ticks gelés, créneau placé par `0xA2`/`0xA3` ; code : liste fermée), révisée ; relecture n°2 : READY (code), REVISE (binaire : valeurs de la 391), disposition FIX ; nouvelle époque, relecture de clôture à faire)
 
 DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (liste fermée et arcs). Faits : `dll-notes.md` §4 et §6,
 `binary-data-verify.md` (sites, valeurs), `README.md` de l'annexe (391 : cinq `0xA2`).
@@ -8921,9 +8929,12 @@ DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (list
   → un créneau de l'enregistrement 0, brut (62 914 560, 10 485 760, 3 145 729), animation 1 ; `0x92 [0, 0]` puis l'aura dessinée aux ticks
   0 à 222 et libérée au tick 223 ; `0x92 [0, 1]` appliqué avant 223 mises à jour la ranime en animation 1 ; la suite des animations de l'arc
   A2/A4 ; `0x91 [0]` à la fin libère le créneau. 391 : 5 créneaux à l'entrée, les cinq `0xA2` (pc 228, 236, 244, 252, 408) et les forces
-  (0, 50, 0), (0, 36, 0), (0, 100, 0), (0, 50, 0), (0, 50, 0) ; réserve finale de 10 créneaux : **chacun avec (enregistrement, x, y, z)**, les
-  créneaux 0 à 4 toujours en (996, 504, 0), (996, 600, 0), (996, 696, 0), (996, 792, 0), (1020, 792, 0), les créneaux 5 à 9 créés par les cinq
-  `0xA2` (enregistrements 3, 4, 0, 1, 2) à leurs positions. 162 : 7 + 11 = 18 créneaux, l'enregistrement 5 en porte 12, **chacun à sa
+  (0, 50, 0), (0, 36, 0), (0, 100, 0), (0, 50, 0), (0, 50, 0) ; deux instantanés de la réserve de 10 créneaux, **(enregistrement, x, y, z) en
+  16.16 brut pour chaque créneau** : (1) après la cinquième `0xA2` (pc 408) et avant la première `0x94` (pc 417) : les créneaux 0 à 4 aux
+  positions du chargement (996, 504, 0), (996, 600, 0), (996, 696, 0), (996, 792, 0), (1020, 792, 0) px, les créneaux 5 à 9 créés par les
+  cinq `0xA2` (enregistrements 3, 4, 0, 1, 2) à leurs positions ; (2) 100 ticks après la cinquième `0x94` : chaque créneau a bougé des forces
+  de son enregistrement fois le nombre de ticks, la copie du chargement comprise (les forces de `0x94` touchent tous les créneaux de
+  l'enregistrement) : le créneau 0 et le créneau 7 (enregistrement 0) ont le même écart en y, 1 280 000 (`scenarios_out.txt`). 162 : 7 + 11 = 18 créneaux, l'enregistrement 5 en porte 12, **chacun à sa
   position**. Une `0xA3` sans entité trouvée laisse la réserve inchangée. Toutes ces valeurs sont calculées par un script de l'annexe
   (`g3b-golden.tsv`), depuis les programmes réels et le modèle validé sur le binaire (`fxpool.py`, `oracle_ops`), jamais recopiées à la main. 135 : `0xA0 [0, −72, 0, 0]` x 468 → 396, `[0, 0, 8, 0]` y 376 → 384. 10 : un créneau à l'entrée (enregistrement 4),
   `0x92 [0, 1]` @2864 (le rocher : 62 images puis fin). Une image de deux ticks avec une opération d'entité au tick 1 : le même état qu'à un
@@ -8938,6 +8949,9 @@ DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (list
   en Debug, `cmp`, six traces identiques. **Arrêts** : une valeur qui contredit la prévision, une assertion hors de la liste qui bouge, un
   fichier hors de la liste. **Retour arrière** : revert.
 
+- **Disposition de la relecture n°2** (2026-10-06, règle des deux REVISE) : un seul bloquant, **FIX** — les valeurs de la 391 aux
+  deux instants nommés, en 16.16 brut, les forces appliquées aux deux copies de chaque enregistrement. Nouvelle époque ; une seule
+  relecture de clôture.
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 validée le 2026-10-06 : HUD à la sortie de la chambre, pièces de la 476, contrôle rendu à la 15 (recette du 2026-10-06, §1.2x))
 
 **Constat de l'auteur** (conversion relancée, DLL reconstruite) : contacts avec les PNJ bons ; sons et musique bons ; boîtes de
