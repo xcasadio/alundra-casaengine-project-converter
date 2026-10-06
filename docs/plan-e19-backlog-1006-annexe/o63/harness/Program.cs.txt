@@ -1,0 +1,353 @@
+// O-E19-63 frame-time harness (out of the repository). Hosts a CasaEngineGame on the real export exactly like
+// CasaEngine.Launcher/Program.cs does (same loggers and verbosity, same runtime context, MGUI factory, project
+// path), then drives world changes with GameManager.SetWorldToLoad (the call AlundraWarpDirector.Advance makes)
+// and times every frame with Stopwatch.
+//
+// Parameters come from environment variables, NOT the command line: CasaEngineGame.Initialize reads
+// Environment.GetCommandLineArgs()[1] and [2] as project file and content path in non-FINAL builds.
+//   O63_PROJECT  path of AlundraGame.json
+//   O63_OUT      output directory (log.txt, frames.csv, transitions.csv, run.txt)
+//   O63_PASSES   number of passes over the route (default 2)
+//   O63_SETTLE   frames between two triggers (default 240)
+//   O63_MUTE     1 = mute the Master bus in memory (default 1); the project file is never written
+
+using System.Diagnostics;
+using System.Globalization;
+using System.Reflection;
+using System.Text;
+using System.Text.Json;
+using CasaEngine.Core.Logging;
+using CasaEngine.Engine.Environment;
+using CasaEngine.Framework.Application;
+using CasaEngine.Framework.UI;
+using Microsoft.Xna.Framework;
+
+public static class Program
+{
+    [STAThread]
+    static int Main()
+    {
+        string projectFileName = Environment.GetEnvironmentVariable("O63_PROJECT");
+        string outDir = Environment.GetEnvironmentVariable("O63_OUT");
+        int passes = int.Parse(Environment.GetEnvironmentVariable("O63_PASSES") ?? "2", CultureInfo.InvariantCulture);
+        int settle = int.Parse(Environment.GetEnvironmentVariable("O63_SETTLE") ?? "240", CultureInfo.InvariantCulture);
+        bool mute = (Environment.GetEnvironmentVariable("O63_MUTE") ?? "1") == "1";
+        Directory.CreateDirectory(outDir);
+
+        try
+        {
+            // Same as the launcher (it writes log.txt in its working directory; here, in the output directory).
+            Logs.AddLogger(new DebugLogger());
+            Logs.AddLogger(new FileLogger(Path.Combine(outDir, "log.txt")));
+            Logs.Verbosity = LogVerbosity.Trace;
+
+            EngineEnvironment.ProjectPath = Path.GetFullPath(Path.GetDirectoryName(projectFileName));
+
+            // The gameplay assembly is the copy next to this exe (gameplay\Alundra.dll), loaded with Assembly.LoadFile
+            // like the default AssemblyManager loader does: the repository's alundra-project\Alundra.dll is never opened.
+            string gameplayPath = Path.Combine(AppContext.BaseDirectory, "gameplay", "Alundra.dll");
+            GameSettings.AssemblyManager.AssemblyLoader = _ => Assembly.LoadFile(gameplayPath);
+
+            var runtimeContext = GameSettings.CreateRuntimeContext();
+            runtimeContext.UIViewRuntimeFactory = new MguiViewRuntimeFactory();
+
+            var worldIndex = JsonSerializer.Deserialize<Dictionary<string, string>>(
+                File.ReadAllText(Path.Combine(EngineEnvironment.ProjectPath, "Maps", "world-index.json")));
+            var musicIndex = JsonSerializer.Deserialize<Dictionary<string, int>>(
+                File.ReadAllText(Path.Combine(EngineEnvironment.ProjectPath, "Maps", "music-index.json")));
+
+            using var game = new TimedGame(projectFileName, runtimeContext, worldIndex, musicIndex, outDir, passes, settle, mute);
+            game.Run();
+            game.WriteResults();
+            return 0;
+        }
+        catch (Exception e)
+        {
+            File.WriteAllText(Path.Combine(outDir, "exception.txt"), e.ToString());
+            return 1;
+        }
+    }
+}
+
+public sealed class TimedGame : CasaEngineGame
+{
+    // One pass. "*" = setup step that changes the track (measured, but not a music-keeping transition).
+    private static readonly (int Map, bool Setup)[] Route =
+    {
+        (390, false), (389, false),
+        (2, true), (6, false), (7, false), (6, false), (2, false),
+        (162, true), (164, false), (162, false), (168, false), (162, false),
+        (389, true),
+    };
+
+    private readonly Dictionary<string, string> _worldIndex;
+    private readonly Dictionary<string, int> _musicIndex;
+    private readonly string _outDir;
+    private readonly int _passes;
+    private readonly int _settle;
+    private readonly bool _mute;
+
+    private readonly List<FrameRecord> _frames = new(20000);
+    private readonly List<TransitionRecord> _transitions = new();
+    private readonly StringBuilder _runLog = new();
+
+    private long _prevUpdateStart;
+    private long _prevUpdateEnd;
+    private long _frameIndex;
+    private long _lastTriggerFrame = -1;
+    private long _worldLoadedTimestamp;
+    private int _worldChangedCount;
+    private int _expectedWorldChanges = 1; // the startup load of FirstWorldLoaded
+    private int _routeStep;
+    private int _currentMap = 389;
+    private FrameRecord _current;
+    private Type _musicPlayerType;
+    private object _musicPlayer;
+
+    public TimedGame(string projectFileName, EngineRuntimeContext runtimeContext,
+        Dictionary<string, string> worldIndex, Dictionary<string, int> musicIndex, string outDir, int passes, int settle, bool mute)
+        : base(projectFileName, runtimeContext: runtimeContext)
+    {
+        _worldIndex = worldIndex;
+        _musicIndex = musicIndex;
+        _outDir = outDir;
+        _passes = passes;
+        _settle = settle;
+        _mute = mute;
+        // Same value the non-FINAL default would compute without command-line arguments.
+        ContentPath = Path.Combine(AppContext.BaseDirectory, "Content");
+        // O63_NOSLEEP=1 (default): the harness window is usually not the foreground window, and MonoGame then sleeps
+        // InactiveSleepTime (20 ms) at the start of every Tick. A player's window is active, so remove that sleep.
+        if ((Environment.GetEnvironmentVariable("O63_NOSLEEP") ?? "1") == "1")
+        {
+            InactiveSleepTime = TimeSpan.Zero;
+        }
+        GameManager.WorldLoaded += (_, _) => _worldLoadedTimestamp = Stopwatch.GetTimestamp();
+        GameManager.WorldChanged += (_, _) =>
+        {
+            _worldChangedCount++;
+            if (_worldChangedCount > _expectedWorldChanges)
+            {
+                _runLog.AppendLine($"UNEXPECTED world change at frame {_frameIndex} (count {_worldChangedCount}, expected {_expectedWorldChanges})");
+                _expectedWorldChanges = _worldChangedCount;
+            }
+        };
+    }
+
+    private static double Ms(long ticks) => ticks * 1000.0 / Stopwatch.Frequency;
+
+    protected override void Update(GameTime gameTime)
+    {
+        long t0 = Stopwatch.GetTimestamp();
+        _frameIndex++;
+        _current = new FrameRecord
+        {
+            Frame = _frameIndex,
+            IntervalMs = _prevUpdateStart == 0 ? 0 : Ms(t0 - _prevUpdateStart),
+            Gen0 = GC.CollectionCount(0),
+            Gen2 = GC.CollectionCount(2),
+            Map = _currentMap,
+        };
+        _prevUpdateStart = t0;
+
+        if (_frameIndex == 2 && _mute)
+        {
+            AudioSystemComponent.IsMuted = true;
+        }
+
+        int totalSteps = Route.Length * _passes;
+        bool trigger = false;
+        if (_routeStep < totalSteps && _frameIndex - Math.Max(_lastTriggerFrame, 0) >= _settle && _frameIndex >= _settle * 2)
+        {
+            var step = Route[_routeStep % Route.Length];
+            string path = _worldIndex[step.Map.ToString(CultureInfo.InvariantCulture)];
+            var tr = new TransitionRecord
+            {
+                Pass = _routeStep / Route.Length + 1,
+                From = _currentMap,
+                To = step.Map,
+                Setup = step.Setup,
+                TrackFrom = _musicIndex[_currentMap.ToString(CultureInfo.InvariantCulture)],
+                TrackTo = _musicIndex[step.Map.ToString(CultureInfo.InvariantCulture)],
+                TriggerFrame = _frameIndex,
+                MusicBefore = ReadMusic(),
+                TriggerTimestamp = t0,
+            };
+            _transitions.Add(tr);
+            _expectedWorldChanges++;
+            _worldLoadedTimestamp = 0;
+            GameManager.SetWorldToLoad(path);
+            _currentMap = step.Map;
+            _lastTriggerFrame = _frameIndex;
+            _routeStep++;
+            trigger = true;
+        }
+        else if (_routeStep >= totalSteps && _frameIndex - _lastTriggerFrame >= _settle)
+        {
+            if (_transitions.Count > 0 && _transitions[^1].MusicAfter == null)
+            {
+                _transitions[^1].MusicAfter = ReadMusic();
+            }
+
+            Exit();
+        }
+
+        // Before the next trigger, note the music state that the previous transition left.
+        if (_transitions.Count > 0 && !trigger && _frameIndex - _lastTriggerFrame == _settle - 1)
+        {
+            _transitions[^1].MusicAfter = ReadMusic();
+        }
+
+        base.Update(gameTime);
+
+        long t1 = Stopwatch.GetTimestamp();
+        _current.UpdateMs = Ms(t1 - t0);
+        // The audio component updates last in base.Update (ComponentOrder), so the end of Update is the
+        // moment the music queue is topped up: this is the fill-to-fill gap.
+        _current.FillGapMs = _prevUpdateEnd == 0 ? 0 : Ms(t1 - _prevUpdateEnd);
+        _prevUpdateEnd = t1;
+        _current.Trigger = trigger;
+        if (trigger)
+        {
+            _transitions[^1].LoadMs = _worldLoadedTimestamp == 0 ? -1 : Ms(_worldLoadedTimestamp - t0);
+        }
+
+        // Safety net: never run forever.
+        if (_frameIndex > 200000)
+        {
+            _runLog.AppendLine("frame cap reached");
+            Exit();
+        }
+    }
+
+    protected override void Draw(GameTime gameTime)
+    {
+        long t2 = Stopwatch.GetTimestamp();
+        base.Draw(gameTime);
+        long t3 = Stopwatch.GetTimestamp();
+        if (_current != null)
+        {
+            _current.DrawMs = Ms(t3 - t2);
+            _frames.Add(_current);
+            _current = null;
+        }
+    }
+
+    private string ReadMusic()
+    {
+        try
+        {
+            if (_musicPlayerType == null)
+            {
+                var asm = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == "Alundra");
+                _musicPlayerType = asm?.GetType("Alundra.Scripts.AlundraMusicPlayer");
+                _musicPlayer = _musicPlayerType?.GetField("Instance", BindingFlags.Public | BindingFlags.Static)?.GetValue(null);
+            }
+
+            if (_musicPlayer == null)
+            {
+                return "n/a";
+            }
+
+            object index = _musicPlayerType.GetProperty("CurrentMapSoundIndex")?.GetValue(_musicPlayer);
+            object voice = _musicPlayerType.GetField("_currentVoice", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(_musicPlayer);
+            return $"idx={index} voice={FormatVoice(voice)}";
+        }
+        catch (Exception e)
+        {
+            return "err:" + e.GetType().Name;
+        }
+    }
+
+    private static string FormatVoice(object voice)
+    {
+        if (voice == null)
+        {
+            return "null";
+        }
+
+        var sb = new StringBuilder();
+        foreach (var f in voice.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+        {
+            sb.Append(f.Name.TrimStart('<').Split('>')[0]).Append(':').Append(f.GetValue(voice)).Append(' ');
+        }
+
+        foreach (var p in voice.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
+        {
+            if (p.GetIndexParameters().Length == 0)
+            {
+                sb.Append(p.Name).Append(':').Append(p.GetValue(voice)).Append(' ');
+            }
+        }
+
+        return sb.ToString().Trim().Replace(',', ';');
+    }
+
+    public void WriteResults()
+    {
+        var inv = CultureInfo.InvariantCulture;
+        var fsb = new StringBuilder();
+        fsb.AppendLine("frame,map,trigger,interval_ms,update_ms,draw_ms,fill_gap_ms,gen0,gen2");
+        foreach (var f in _frames)
+        {
+            fsb.AppendLine(string.Format(inv, "{0},{1},{2},{3:F3},{4:F3},{5:F3},{6:F3},{7},{8}",
+                f.Frame, f.Map, f.Trigger ? 1 : 0, f.IntervalMs, f.UpdateMs, f.DrawMs, f.FillGapMs, f.Gen0, f.Gen2));
+        }
+
+        File.WriteAllText(Path.Combine(_outDir, "frames.csv"), fsb.ToString());
+
+        var tsb = new StringBuilder();
+        tsb.AppendLine("pass,from,to,setup,track_from,track_to,trigger_frame,load_ms,music_before,music_after");
+        foreach (var t in _transitions)
+        {
+            tsb.AppendLine(string.Format(inv, "{0},{1},{2},{3},{4},{5},{6},{7:F3},\"{8}\",\"{9}\"",
+                t.Pass, t.From, t.To, t.Setup ? 1 : 0, t.TrackFrom, t.TrackTo, t.TriggerFrame, t.LoadMs, t.MusicBefore, t.MusicAfter));
+        }
+
+        File.WriteAllText(Path.Combine(_outDir, "transitions.csv"), tsb.ToString());
+
+        _runLog.AppendLine($"frames={_frames.Count} transitions={_transitions.Count} worldChanged={_worldChangedCount}");
+        _runLog.AppendLine($"CasaEngine={typeof(CasaEngineGame).Assembly.Location} debuggable={IsDebug(typeof(CasaEngineGame).Assembly)}");
+        var alundra = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == "Alundra");
+        _runLog.AppendLine($"Alundra={alundra?.Location} debuggable={(alundra == null ? "n/a" : IsDebug(alundra).ToString())}");
+        _runLog.AppendLine($"Harness debuggable={IsDebug(typeof(TimedGame).Assembly)}");
+        _runLog.AppendLine($"Runtime={System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription} TieredCompilation={AppContext.GetData("System.Runtime.TieredCompilation") ?? "default"}");
+        _runLog.AppendLine($"VSync={GetDisplaySettings().IsVSyncEnabled} FixedTimeStep={IsFixedTimeStep} Backbuffer={GraphicsDevice.PresentationParameters.BackBufferWidth}x{GraphicsDevice.PresentationParameters.BackBufferHeight} Adapter={GraphicsDevice.Adapter.Description}");
+        _runLog.AppendLine($"Muted={_mute} AudioAvailable={AudioSystemComponent.IsAudioAvailable} IsActiveAtEnd={IsActive} InactiveSleepTime={InactiveSleepTime.TotalMilliseconds}ms");
+        File.WriteAllText(Path.Combine(_outDir, "run.txt"), _runLog.ToString());
+    }
+
+    private static bool IsDebug(Assembly a)
+    {
+        var d = a.GetCustomAttribute<DebuggableAttribute>();
+        return d != null && d.IsJITOptimizerDisabled;
+    }
+
+    private sealed class FrameRecord
+    {
+        public long Frame;
+        public int Map;
+        public bool Trigger;
+        public double IntervalMs;
+        public double UpdateMs;
+        public double DrawMs;
+        public double FillGapMs;
+        public int Gen0;
+        public int Gen2;
+    }
+
+    private sealed class TransitionRecord
+    {
+        public int Pass;
+        public int From;
+        public int To;
+        public bool Setup;
+        public int TrackFrom;
+        public int TrackTo;
+        public long TriggerFrame;
+        public long TriggerTimestamp;
+        public double LoadMs;
+        public string MusicBefore;
+        public string MusicAfter;
+    }
+}
