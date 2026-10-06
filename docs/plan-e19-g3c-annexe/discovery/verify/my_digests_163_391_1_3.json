@@ -1,0 +1,22 @@
+{
+ "163_rays_tick0_k1": {
+  "quads": 8,
+  "lit": 3840,
+  "sha1": "8be82e40f923b8d1a9c06f5030faea08b6359e49"
+ },
+ "163_rays_tick0_k3": {
+  "quads": 8,
+  "lit": 34560,
+  "sha1": "2356a8852057d58d42d235df903b4e11e561631d"
+ },
+ "391_pieces_tick0_k1": {
+  "quads": 6,
+  "lit": 8100,
+  "sha1": "801a081a47c2a7091c5918124890d931de0d5872"
+ },
+ "391_pieces_tick0_k3": {
+  "quads": 6,
+  "lit": 72900,
+  "sha1": "23edcdbfea2215bdf5593d4e99e82fb451b27101"
+ }
+}

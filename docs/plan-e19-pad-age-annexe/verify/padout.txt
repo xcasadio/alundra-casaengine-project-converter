@@ -1,0 +1,52 @@
+PADFIX=0 tpf=4: question pending after the Cross frame=True, after the next frame=True
+PADFIX=0 tpf=2: question pending after the Cross frame=True, after the next frame=True
+PADFIX=0 tpf=1: question pending after the Cross frame=True, after the next frame=True
+PADFIX=0 tpf=3: question pending after the Cross frame=True, after the next frame=True
+PADFIX=0 SquareWait tpf=2: still waiting after the press frame=True, frames after it to leave=9
+PADFIX=0 SquareWait tpf=3: still waiting after the press frame=True, frames after it to leave=6
+PADFIX=0 SquareWait tpf=1: still waiting after the press frame=True, frames after it to leave=19
+PADFIX=0 NON Right@P+19 Cross@P+20: opened tick 0, taken tick 39, saved False
+PADFIX=0 NON Right@P+24 Cross@P+25: opened tick 0, taken tick 44, saved False
+PADFIX=0 NON Right@P+18 Cross@P+19: opened tick 0, taken tick 38, saved False
+PADFIX=0 NON Right@P+17 Cross@P+18: opened tick 0, taken tick 37, saved True
+PADFIX=0 NON Right@P+21 Cross@P+22: opened tick 0, taken tick 41, saved False
+PADFIX=0 NON Right@P+16 Cross@P+17: opened tick 0, taken tick -1, saved False
+PADFIX=0 NON Right@P+20 Cross@P+21: opened tick 0, taken tick 40, saved False
+PADFIX=0 NON Right@P+14 Cross@P+15: opened tick 0, taken tick -1, saved False
+PADFIX=0 OUI Cross@P+17: opened tick 0, taken tick -1, saved False
+PADFIX=0 OUI Cross@P+21: opened tick 0, taken tick 40, saved True
+PADFIX=0 OUI Cross@P+14: opened tick 0, taken tick -1, saved False
+PADFIX=0 OUI Cross@P+16: opened tick 0, taken tick -1, saved False
+PADFIX=0 OUI Cross@P+18: opened tick 0, taken tick 37, saved True
+PADFIX=0 OUI Cross@P+19: opened tick 0, taken tick 38, saved True
+PADFIX=0 OUI Cross@P+24: opened tick 0, taken tick 43, saved True
+PADFIX=0 OUI Cross@P+15: opened tick 0, taken tick -1, saved False
+PADFIX=0 OUI Cross@P+20: opened tick 0, taken tick 39, saved True
+PADFIX=0 Down tpf=2: selection before=0, after press frame=1, after next=1
+PADFIX=0 Down tpf=1: selection before=0, after press frame=1, after next=1
+PADFIX=1 tpf=4: question pending after the Cross frame=True, after the next frame=True
+PADFIX=1 tpf=2: question pending after the Cross frame=True, after the next frame=True
+PADFIX=1 tpf=1: question pending after the Cross frame=False, after the next frame=True
+PADFIX=1 tpf=3: question pending after the Cross frame=True, after the next frame=True
+PADFIX=1 SquareWait tpf=2: still waiting after the press frame=True, frames after it to leave=10
+PADFIX=1 SquareWait tpf=3: still waiting after the press frame=True, frames after it to leave=6
+PADFIX=1 SquareWait tpf=1: still waiting after the press frame=True, frames after it to leave=20
+PADFIX=1 NON Right@P+19 Cross@P+20: opened tick 1, taken tick 39, saved False
+PADFIX=1 NON Right@P+24 Cross@P+25: opened tick 1, taken tick 44, saved False
+PADFIX=1 NON Right@P+18 Cross@P+19: opened tick 1, taken tick 38, saved True
+PADFIX=1 NON Right@P+17 Cross@P+18: opened tick 1, taken tick -1, saved False
+PADFIX=1 NON Right@P+21 Cross@P+22: opened tick 1, taken tick 41, saved False
+PADFIX=1 NON Right@P+16 Cross@P+17: opened tick 1, taken tick -1, saved False
+PADFIX=1 NON Right@P+20 Cross@P+21: opened tick 1, taken tick 40, saved False
+PADFIX=1 NON Right@P+14 Cross@P+15: opened tick 1, taken tick -1, saved False
+PADFIX=1 OUI Cross@P+17: opened tick 1, taken tick -1, saved False
+PADFIX=1 OUI Cross@P+21: opened tick 1, taken tick 40, saved True
+PADFIX=1 OUI Cross@P+14: opened tick 1, taken tick -1, saved False
+PADFIX=1 OUI Cross@P+16: opened tick 1, taken tick -1, saved False
+PADFIX=1 OUI Cross@P+18: opened tick 1, taken tick -1, saved False
+PADFIX=1 OUI Cross@P+19: opened tick 1, taken tick 38, saved True
+PADFIX=1 OUI Cross@P+24: opened tick 1, taken tick 43, saved True
+PADFIX=1 OUI Cross@P+15: opened tick 1, taken tick -1, saved False
+PADFIX=1 OUI Cross@P+20: opened tick 1, taken tick 39, saved True
+PADFIX=1 Down tpf=2: selection before=0, after press frame=1, after next=1
+PADFIX=1 Down tpf=1: selection before=0, after press frame=0, after next=1

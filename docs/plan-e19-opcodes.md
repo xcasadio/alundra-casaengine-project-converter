@@ -5657,6 +5657,50 @@ valeur qui contredit les grilles, un test existant qui bouge en dehors de `:613`
 hors de la liste fermée ci-dessus. **Recette F3C-4** : livre
 de sauvegarde, répondre tard à la question « sauvegarder ? » (OUI puis NON).
 
+###### E19.f3d — Âge du mot de manette de l'écran de sauvegarde (D-E19-99, O-E19-75) ⏳ (découverte de nuit du 2026-10-06 faite et contre-vérifiée ; planifiée le 2026-10-06 ; relecture à faire)
+
+DLL seule. Déclencheur de risque : temps de réaction de l'écran de sauvegarde (relecture et vérificateur neuf). Faits et valeurs :
+`docs/plan-e19-pad-age-annexe/` (`notes.md`, `patch-proposal.diff.txt`, `probe-tests.cs.txt` ; `verify/verify.md` l'emporte : fins de
+ligne, lignes périmées à annoter, ancre textuelle ; voir le `README.md` de l'annexe).
+
+**Découverte.** [binaire] La boucle principale (`0x8002C3F4`) fait `RenderScene` (`0x8002C3FC`) puis `Update(0)` (`0x8002C404`) ; la
+manette est échantillonnée une fois par image, par le premier `Update(0)` (`0x8002BB5C` → `0x8002E38C` → `0x8002E250`) ; tous les
+lecteurs du mot de l'écran de sauvegarde tournent dans `RenderScene` (créneau 0 : Carré de la boîte de texte ; créneau 3 : choix ;
+créneau 10 : menu de fichier, Croix, Bas, Haut ; processus de carte mémoire `0x8005EC98`, état `0x3F5`, Carré à `0x800601D0`) et lisent
+donc l'échantillon de l'image d'avant. Vrai code : une Croix à P est lue par le créneau 10 à P+1 ; la réponse la plus tôt acceptée est à
+P+19 (P+14 à P+18 jamais), prise à P+38 ; l'attente de Carré sort à P+20 (compteur `0x800C4978` contre `0x13`). [dépôt] La passe du
+dialogue lit déjà le tick d'avant (`_choicePadOfTick[tick - 1]`, `_choicePadOfLastTick` au tick 0) ; l'écran lit le tick courant
+(`var (screenPressed, screenInterval) = _choicePadOfTick[tick];`) : 18 échantillons au lieu de 19, l'attente de Carré 19 au lieu de 20.
+
+- **F3D-R1** : l'écran lit le mot du tick d'avant, comme la passe : `var (screenPressed, screenInterval) = tick == 0 ? _choicePadOfLastTick :
+  _choicePadOfTick[tick - 1];` (citer l'ancre textuelle, pas un numéro de ligne : G3c touche le même fichier). Rien d'autre ne change en
+  production (ni la passe, ni F2-R1, ni F3A-R3) ; les aides de test du directeur restent à l'âge 0 (dit une fois dans le résumé de la
+  classe de tests) : l'âge est prouvé au niveau du mandataire.
+- **Fichiers** (liste fermée) : production `Alundra/Scripts/AlundraWorldProxy.cs` (la ligne ; les commentaires de `_choicePadOfTick`,
+  de `_choicePadOfLastTick` et de la seconde boucle), `Alundra/Scripts/AlundraSaveScreenDirector.cs` (documentation XML seulement) ;
+  tests `Alundra.Tests/AlundraSaveScreenTickOrderTests.cs`, `Alundra.Tests/AlundraSaveBookEndToEndTests.cs` ; documents : ce plan (D-E19-99,
+  F3C-R2, les lignes de f3c qui citent l'âge, O-E19-75), ADR-0040 (statut et corps), `docs/plan-e19-save-order-annexe/notes.md`,
+  `docs/plan-e19-f3-annexe/census-notes.md`, la nouvelle ADR du parent et son index. Fins de ligne : CRLF pour le mandataire, le
+  directeur, `AlundraSaveScreenTickOrderTests.cs`, `docs/decisions/README.md` et ce plan ; LF pour le test de bout en bout, ADR-0040 et
+  les notes de `plan-e19-save-order-annexe` ; édition à l'octet, jamais `sed -i`.
+- ⏳ **F3D-1 — Tests d'abord** (rouges sur le code d'aujourd'hui ; valeurs mesurées par le vrai mandataire, `probe-tests.cs.txt`) :
+  `TheCross_IsReadByTheScreenOneTickAfterItsPress` : (1, faux), (2, vrai), (3, vrai) ;
+  `ThePadAnswer_IsTakenFromTheNineteenthSampleAfterTheOpeningPress` : OUI à 18 → (−1, faux), OUI à 19 → (38, vrai), OUI à 20 → (39, vrai),
+  NON à 18 → (38, vrai) (la Droite est perdue), NON à 19 → (39, faux), NON à 20 → (40, faux) ;
+  `TheSquareOfTheWait_IsReadOneTickAfterItsPress` : (1, 20), (2, 10), (3, 6) ; `TheDownOfThePicker_IsReadOneTickAfterItsPress` : (1, 0),
+  (2, 1) ; la grille `TheAnswer_IsTakenInTheTickOfTheClosePass_NotOneTickLater` remise en forme (`Frame(1, Cross)`, `Assert.False(pending)`,
+  `Frame(1)`, `Assert.True(pending)`, crochet compté depuis l'ouvreur), ses 12 valeurs inchangées (37, 37, 20, 19, 19, 20, 19, 18, 10, 10,
+  10, 10) ; le livre de bout en bout : un `Frames(proxy, 1)` avant l'assertion de la question, observations 62/139/116/39/42. Rouges
+  attendus : 18 sur les 96 tests des deux fichiers.
+- ⏳ **F3D-2 — Code**, ADR du parent (prochain numéro libre, revérifié avant le commit), documents.
+- ⏳ **F3D-3 — Vérification** par un vérificateur neuf.
+- **Acceptation** : 18 rouges d'abord, puis verts ; quatre mutants rougissent chacun au moins un test (le tick 0 qui lit `default` ;
+  les ticks suivants qui lisent leur propre tick ; le mot pressé vieilli seul ; le mot par intervalle vieilli seul ; la découverte en
+  compte 22, 8, 16 et 2) ; `Alundra.Tests` en Release puis en Debug (3034 + 14 = 3048), `cmp`, six traces identiques. **Arrêts** : un
+  test hors de la liste qui bouge, une valeur qui contredit l'annexe, un fichier hors de la liste. **Retour arrière** : revert.
+- **Recette F3D-4** (auteur) : le livre de sauvegarde de bout en bout ; l'écran réagit un tick (20 ms) plus tard à Croix, Haut, Bas et
+  Carré ; une seconde Croix dans les 18 échantillons qui suivent l'appui d'ouverture est perdue, comme dans le binaire.
+
 ###### E19.f4 — Nom et portrait du locuteur : découverte du 2026-10-06, découpée en E19.f4a, E19.f4b et E19.f4c ⏳
 
 **Découverte** (2026-10-06, lecture seule, deux surfaces, chacune contre-vérifiée ; versionnée, en anglais, dans
@@ -8611,7 +8655,7 @@ agrandie (écart voulu, D-E19-92, écrit dans l'ADR du moteur) ; le shader suppo
 le drapeau « sale » des bornes d'entités ne suit que
 le premier sprite visible (faiblesse d'avant, documentée, non corrigée ici) ; la frise de l'éditeur ne montre pas la piste.
 
-##### 1.2o.6 E19.g G1/G3 — Export, réserve et opcodes des effets ⏳ (découverte du 2026-10-06 faite, deux surfaces contre-vérifiées ; l'auteur a tranché O-E19-72 et O-E19-73 : D-E19-96, D-E19-97 ; plans à écrire)
+##### 1.2o.6 E19.g G1/G3 — Export, réserve et opcodes des effets ⏳ (découverte du 2026-10-06 faite, deux surfaces contre-vérifiées ; l'auteur a tranché O-E19-72 et O-E19-73 : D-E19-96, D-E19-97 ; G1 ✅, G3a ✅, G3b ✅ ; G2e, G3c et G3d planifiées le 2026-10-06 (nuit), relecture à faire)
 
 **Découverte** (2026-10-06, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B le convertisseur, le moteur et la DLL ;
 chacune contre-vérifiée par un relecteur neuf qui a re-dérivé les faits de son côté ; versionnée, en anglais, dans
@@ -8675,6 +8719,12 @@ prouvés par l'exécution du vrai code du binaire dans l'interpréteur MIPS (0 �
 - **G3d — DLL** (D-E19-96) : l'interface des créateurs natifs (banque, sprite, animation, index d'enregistrement ; modes 1 et 3)
   et `0x82 0x53` entier (l'emplacement de la vie du héros est à établir dans le binaire, O-E19-39). Après G3a.
 - **G4 — Recette** de l'auteur : 476 d'abord.
+
+**Découverte de nuit** (2026-10-06, lecture seule, trois surfaces : G2e et G3c, G3d, âge du mot de manette (E19.f3d) ; chacune
+contre-vérifiée par un relecteur neuf ; versionnée dans `docs/plan-e19-g3c-annexe/`, `docs/plan-e19-g3d-annexe/` et
+`docs/plan-e19-pad-age-annexe/`, le reste du chantier dans `docs/plan-e19-backlog-1006-annexe/` ; chaque `README.md` liste les
+corrections du relecteur qui l'emportent). Ordre d'exécution de la nuit (une tranche à la fois ; les écritures du moteur s'empilent,
+R-BR) : E19.f3d, G2e, G3c, G3d ; les numéros d'ADR sont pris dans cet ordre, chacun revérifié avant son commit.
 
 
 ###### E19.g G1 — Export des effets (convertisseur) ✅ (faite et CONFIRMED le 2026-10-06 ; planifiée le 2026-10-06 ; relecture n°1 REVISE (compteur des textures, cases d'animation, valeurs de la 163, retour arrière), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06)
@@ -9076,6 +9126,192 @@ carte dont la première image ne crée rien. Le reste de la suite est vert.
   l'enregistrement 0 reçoit sa force à pc 417, au moins ~250 ticks avant la cinquième `0x94` (`AlundraShipBlockArcTests.cs:244-259`), et
   1 280 000 venait du scénario synthétique S1. Correctif écrit (écart depuis pc 503 sur N ticks non gelés, forces des vrais opérandes).
   **En pause** : une nouvelle relecture seulement sur décision de l'auteur.
+
+###### E19.g G2e — Service des quads d'effets (moteur) ⏳ (découverte de nuit du 2026-10-06 faite et contre-vérifiée ; planifiée le 2026-10-06 ; relecture à faire)
+
+Moteur seul (sous-module `CasaEngineMonogame`, branche `chantier/e19-suite2` du moteur, empilée sur la pointe épinglée `dd1f8afa`, R-BR) ;
+inerte pour Alundra tant que G3c ne pousse rien (aucun export, aucun code de la DLL). Déclencheur de risque : API publique nouvelle du
+moteur et preuve au pixel (relecture et vérificateur neuf). Faits : `docs/plan-e19-g3c-annexe/discovery/notes.md` (§1, §3.2, §6) et
+`discovery/verify/verify.md`, qui l'emporte (R1 : règle haut-gauche des égalités de couverture ; M4 : couture publique des textures).
+- **G2E-R1 — Quad d'effet** : une valeur `EffectQuad` porte l'index de sa planche, la fenêtre brute de la PS1 (`Rectangle` ; le
+  producteur recule déjà d'un texel un axe miroir), les quatre coins en unités du monde, y vers le haut, dans l'ordre des données
+  (haut-gauche, haut-droite, bas-gauche, bas-droite), le mode (`SpritePsxSemiTransparency`) et la clé (`RenderSortKey2D`). Le rendu pose
+  z = 0 (le z de rendu des entités) et `Color.White` (le polygone du binaire est brut, `SetShadeTex(1)`).
+- **G2E-R2 — Service** sans GPU `EffectQuadService` : `SetSheets(planches)` (identifiants d'assets de texture ; un identifiant vide pour une
+  planche absente ; incrémente une version), `SetFrame(quads)` (copie ; l'image poussée reste jusqu'au prochain `SetFrame` ou `Clear`),
+  `Clear()` (planches et image vidées, version incrémentée). Noms indicatifs ; la forme suit `CellularLayerService`.
+- **G2E-R3 — Composant** `EffectQuadComponent : GameComponent`, au patron de `CellularLayerComponent` : à chaque `Update`, si la version
+  des planches a changé, résolution par `AssetContentManager.Acquire<Texture>` (poignées libérées à la résolution suivante et à `Dispose`),
+  ou par la couture publique `ResolveTextures(Func<Guid, Texture2D>)` (démo, tests) ; une planche qui ne se charge pas : un avertissement
+  une fois, ses quads sautés ; un index hors des planches ou une planche absente : quad sauté. Puis chaque quad de l'image est soumis par
+  `SpriteRendererComponent.DrawPsxQuad(texture, fenêtre, coins, Color.White, 0, in clé, mode, ciseau)` (surcharge à ciseau explicite,
+  testable sans GPU, ciseau résolu comme `CellularLayerComponent`), depuis son propre `Update`, après `GameManager.UpdateWorld` où la
+  DLL pousse ; `IsFixedTimeStep` vaut false dans `AlundraGame.json` : une soumission par image dessinée.
+- **G2E-R4 — Enregistrement** : `ComponentUpdateOrder.EffectQuads` ajouté après `CellularLayers` (`ComponentOrder.cs`), propriété et
+  création dans `CasaEngineGame.cs` à côté des couches cellulaires.
+- **G2E-R5 — Ordre** : le composant ne trie pas ; l'ordre est celui de la passe des sprites (`RenderSortKey2D`), que le producteur fixe
+  par la clé (G3c : l'image 0 en dernier par le décalage local).
+- **Fichiers** (liste fermée) : moteur, nouveaux `CasaEngine/Framework/Rendering/EffectQuads/EffectQuad.cs`,
+  `CasaEngine/Framework/Rendering/EffectQuads/EffectQuadService.cs`, `CasaEngine/Framework/Application/Components/EffectQuadComponent.cs`,
+  `CasaEngine.Tests/Rendering/EffectQuads/EffectQuadServiceTests.cs`,
+  `CasaEngine.Tests/Rendering/EffectQuads/EffectQuadComponentSubmissionTests.cs`,
+  `CasaEngine.Demos/Demos/PsxSemiTransparency/EffectQuadDemo.cs`, `docs/engine/effect-quads.md`, l'ADR du moteur et
+  `ai-agent/tasks/e19g2e-effect-quads-tasks.md` ; modifiés `CasaEngine/Framework/Application/ComponentOrder.cs`,
+  `CasaEngine/Framework/Application/CasaEngineGame.cs`, `CasaEngine.Demos/DemosGame.cs`, `docs/README.md`, `docs/decisions/README.md`,
+  `ai-agent/README.md` ; parent : la prévision dans `docs/plan-e19-g3c-annexe/` (G2e-0), le pointeur du sous-module, ce plan. Jamais
+  `CasaEngine.Launcher/Program.cs` (modification de l'auteur) ; indexer fichier par fichier.
+- **Numéro d'ADR du moteur** : 1 + le plus grand numéro de **toutes** les branches locales du moteur (`chantier/demo-browser` de l'auteur
+  porte 0070) : 0071 aujourd'hui, revérifié juste avant le commit ; écart à R-BR (2), qui ne balaie pas `demo-browser`, consigné ici.
+- ⏳ **G2e-0 — Prévision d'abord** (parent, commitée avant le code du moteur) : `docs/plan-e19-g3c-annexe/g2e-predict.py` et ses
+  sorties : les scènes de la démo (géométrie, fenêtres, modes, clés, facteurs), B(k) avec la **règle haut-gauche** pour les égalités
+  exactes de couverture (texte d'ADR-0068 du moteur ; jamais `tie_sign` de `g2b1_predict.py`, verify R1), les empreintes et les zones de
+  bruit (texel décidé à moins de 1/16 de texel, couverture à moins de 1/16 de pixel), à × 1 et × 3 ; scènes : la texture d'adresses
+  synthétique de 512 × 1105, un quad à la structure réelle de l'aura (9 images, axes miroir, ABR 0 à 2 et opaque), une image miroir à
+  l'origine de fenêtre −1 (texel −1 pincé à la colonne 0), des pixels d'égalité exacte près de v ≈ 1100 ; le script rejoue les cas de
+  G2b-1 sans écart (garde contre une régression de la règle). La démo reproduit ces scènes telles quelles.
+- ⏳ **G2e-1 — Tests d'abord** (rouges sur des types vides) : un quad `None` donne 1 entrée, un quad d'un mode en donne 2 de même clé,
+  z et coins ; l'ordre des clés gardé (image 0 en dernier) ; une image poussée reste jusqu'à la suivante ; `Clear` vide ; une résolution
+  par version, poignées libérées à la suivante et à `Dispose` ; une planche en échec (un avertissement, ses quads sautés) ; index hors
+  plage et planche absente sautés ; ciseau transmis ; la couture `ResolveTextures`.
+- ⏳ **G2e-2 — Code, démo, doc, ADR** ; la démo est capturée par la route de vidage de `PsxFreeQuadDemo` (back-buffer en processus) à
+  × 1 et × 3 et comparée à G2e-0.
+- ⏳ **G2e-3 — Pointeur** : montée du pointeur du sous-module dans le parent ; `git merge-base --is-ancestor dd1f8afa <nouveau>`.
+- ⏳ **G2e-4 — Vérification** par un vérificateur neuf.
+- **Acceptation** : prévision commitée avant le code ; tests rouges puis verts ; démo égale à G2e-0 hors des zones de bruit à × 1 et × 3
+  (un pixel différent est un arrêt, tranché par preuve, jamais une tolérance) ; les tests existants `SpriteRendererComponent*`,
+  `CellularLayer*`, `ScrollingLayer*` et `Animation2dCornerTrackTests` ne bougent pas ; `CasaEngine.Tests` bâti explicitement (hors du
+  `.sln`) et vert (4126 plus les nouveaux) ; `Alundra.Tests` en Release puis en Debug (aucun ne bouge), `cmp`, six traces identiques.
+  **Arrêts** : un test existant qui bouge, un fichier hors de la liste, une collision d'ADR, un pixel différent. **Retour arrière** :
+  revert des commits du moteur et du pointeur.
+
+###### E19.g G3c — Effets poussés et dessinés (DLL), preuve au pixel ⏳ (découverte de nuit du 2026-10-06 faite et contre-vérifiée ; planifiée le 2026-10-06, après G2e ; relecture à faire)
+
+DLL seule ; compile contre le pointeur du moteur monté par G2e (livraison verrouillée comme G2c) ; aucun export (G1 est livré).
+Déclencheur de risque : rendu de jeu nouveau et preuve au pixel (relecture et vérificateur neuf). Faits : `docs/plan-e19-g3c-annexe/discovery/`
+(`notes.md` §2 à §6 ; `verify/verify.md` l'emporte : R1 à R3, M1 à M3, M5).
+- **G3C-R1 — Ancre** [binaire, émetteur `0x8002DB48` exécuté, 3000 essais, 0 écart] : `ax = x >> 16`, `ay = (y − z) >> 16`, décalages
+  arithmétiques sur 32 bits ; le `+1` sur z de `0x93`/`0xA2` monte la ligne (z brut 3 145 729 → ligne 119 ; 3 145 728 → 120).
+- **G3C-R2 — Élimination** [binaire] : tout le créneau (toutes ses images) est sauté sauf si l'ancre à l'écran `(ax − scrollX, ay −
+  scrollY)` est dans −128..448 × −128..368, bornes comprises ; défilement `AlundraCameraMath.ToOriginalScrollSpace(camera.Target)` ; sans
+  caméra, aucune élimination.
+- **G3C-R3 — Quads** : pour chaque image k (0 à N − 1) de l'ensemble courant du créneau (`CurrentImageSet` ; créneau sauté s'il est nul) :
+  coins du monde `(ax + Xi, −(ay + Yi))` dans l'ordre des données ; fenêtre brute `(U − mx, V − my, W, H)` avec `mx = C0 > C2`,
+  `my = C1 > C5` (la case exportée est celle de l'extracteur ; 519 images miroir en X à U = 0 et 137 en Y à V = 0 ont l'origine −1, pincée
+  à la colonne 0 par l'échantillonneur : le dépassement accepté de G2b) ; mode `Semi ? Abr + 1 : None` ; planche 0 (compagnon de la carte)
+  si l'ensemble vient de la table de la carte (`CurrentMapTable`), sinon 1 (compagnon global).
+- **G3C-R4 — Clé** : passe `YSortedWorld`, couche 300 (celles des entités, `Alundra.entity:542-554`), ordre 0, élévation
+  `16 · clamp(DepthKey >> 20, 0, 59) + 6` (`WallPlacementOverlay.ComputeEntityElevation((int)slot.DepthKey, 0)`, sans code nouveau),
+  coordonnée `100 · ay` (cohérente avec les entités), décalage local `N − 1 − k`, identifiant stable l'index du créneau. [binaire] Dans un
+  créneau, l'image 0 est dessinée en dernier ; entre créneaux, la clé de profondeur la plus petite d'abord (tri de `0x8002E130`). **Écart
+  consigné** : à clés égales, l'ordre du binaire vient d'un tri rapide instable sur toute la liste des entités et des effets (P = 0,5) ;
+  la DLL est stable par index de créneau ; cas visible, 391 créneaux 3 et 4 (même clé, images opaques de 48 × 39 à 24 px) : binaire, le 3
+  dessus ; DLL, le 4 dessus ; à voir en recette.
+- **G3C-R5 — Poussée** : `AlundraEffectStage.AttachService(service)` avant `Load` (à côté de l'attache du service des fonds) ; `Load`
+  fait `Clear` puis `SetSheets(carte, globale)` (un identifiant nul reste une planche absente) ; `AlundraEffectStage.PushFrame(caméra)`
+  (publique, pour le harnais) est appelée juste après la poussée des fonds (`_backdropStage.PushFrame(`), à chaque image rendue, même
+  quand `0x48` gèle les ticks ou qu'un départ de warp fait 0 tick ; image vide quand rien n'est actif ; créneaux parcourus par index
+  (`Slots`, pas l'itérateur `ActiveSlots`), tampons réutilisés ; service nul (montages sans tête) : rien, sans avertissement nouveau.
+- **Fichiers** (liste fermée) : `Alundra/Scripts/AlundraEffectStage.cs`, `Alundra/Scripts/AlundraWorldProxy.cs`, en option un nouveau
+  `Alundra/Scripts/AlundraEffectQuadBuilder.cs` (construction pure des quads) ; nouveau `Alundra.Tests/AlundraEffectQuadPushTests.cs`
+  (règles et garde) ; `docs/formats/effects.md` (la phrase qui dit que rien ne les charge), `docs/editeur-couverture-dll.md`, l'ADR du
+  parent et son index, ce plan, l'annexe `docs/plan-e19-g3c-annexe/`. `hero_effects.json` reste exporté (le retirer change l'export,
+  hors de G3c).
+- ⏳ **G3c-0 — Prévision d'abord** (commitée avant le code) : `docs/plan-e19-g3c-annexe/g3c_model.py` (lit seulement le JSON de l'export
+  et la planche PNG ; ancre, coins, recul miroir, ordre, mélange par texel, B(k) avec la **règle haut-gauche**, jamais `tie_sign`) et
+  `g3c_expected.json` (empreintes, zones de bruit, sondes, à × 1 et × 3, fond (24, 40, 56)) ; scènes : aura de 476 (`SpawnPlaced(0, 960,
+  160, 48)`, animation 1, défilement (800, −8), ancre (160, 119)) aux ticks 0, 2 et 16 du créneau ; rais de la 163 au tick 0, défilement
+  (220, 40) ; pièces de la 391 au tick 0, défilement (836, 640) ; **scènes miroir** (verify M2) : 476 effet 0 animation 3 image 2 (14 quads,
+  3 miroir), 327 effet 0 animation 3 image 3 (3 quads miroir, un à l'origine −1) ; une image de la 378 effet 1 (ABR2) **ou** de la 7
+  effet 1 (ABR0) avec des miroirs (verify M3), choisie par le script. Recoupements : couverture de l'aura égale à celle du marcheur
+  matériel (`redux.py`) ; 163 et 391 égales aux empreintes de la découverte ; aura égale aux empreintes haut-gauche de `verify.md` §2.
+- ⏳ **G3c-1 — Tests d'abord** (rouges) : ancre (z + 1 : ligne 119 contre 120), bornes de l'élimination (x −129 non, −128 oui, 448 oui,
+  449 non ; y −129, −128, 368, 369), fenêtres miroir (U = 0 : origine −1), modes `Abr` 0 à 3 → `Mode0` à `Mode3`, planche 0 ou 1, champs de
+  la clé (aura : élévation 214, coordonnée 100 × 119), décalage local (image 0 en dernier), image poussée gelée (`0x48`) et pendant un
+  départ de warp, image vide, ensemble nul sauté, service nul sans exception ; au niveau du mandataire, un vrai `EffectQuadService` reçoit
+  l'image après `Update` (391 : les quads de ses créneaux au tick 0, comptés par G3c-0) ; garde sur le vrai export : chaque
+  `SheetTextureAssetId` non nul (87 des 158 documents : 86 cartes et le global ; 71 nuls admis) résout dans `AssetInfos.json` vers une
+  `.texture` dont le PNG existe.
+- ⏳ **G3c-2 — Code, ADR, docs**.
+- ⏳ **G3c-3 — Preuve au pixel** : harnais hors dépôt (référence `Alundra.dll` par `HintPath`, jamais par `ProjectReference` : la copie
+  d'après-build écrit dans `alundra-project/`) : un `CasaEngineGame` sur le vrai export, caméra `Zoom = k`, `Target = (scrollX + w / 2k,
+  −(scrollY + h / 2k))`, chargeur de la banque, `Load`, `AttachService`, `SpawnPlaced`/`Create`/animation, `RunFrame`, `PushFrame`, capture
+  `GetBackBufferData` en processus (format de vidage de `PsxFreeQuadDemo`) ; chaque scène à × 1 et × 3 comparée à G3c-0. Le harnais ne
+  couvre ni le câblage du mandataire (le test du mandataire avec un vrai service le fait) ni la caméra à résolution virtuelle du jeu
+  (G2b-4 et G4).
+- ⏳ **G3c-4 — Vérification** par un vérificateur neuf.
+- **Acceptation** : prévision commitée avant le code ; tests rouges puis verts ; chaque pixel hors des zones de bruit égal à G3c-0 à × 1
+  et × 3 (pixels mêlés `Mode0` à ±1) ; résiduels rapportés sans bloquer (B(1) contre le marcheur matériel ; D-E19-92 à × 3 sur l'aura) ;
+  aucun test existant ne bouge (les montages sans tête ont un service nul) ; `Alundra.Tests` en Release puis en Debug, `cmp`, six traces
+  identiques. **Arrêts** : un pixel différent hors bruit (tranché par preuve), un test existant qui bouge, un fichier hors de la liste.
+  **Retour arrière** : revert.
+- **Recette G4** (auteur) : la 476 d'abord (aura), puis la 163 (rais) et la 391 (pièces ; ordre des créneaux 3 et 4).
+
+###### E19.g G3d — Créateurs natifs et vase de vie `0x82 0x53` (DLL) ⏳ (découverte de nuit du 2026-10-06 faite et contre-vérifiée ; O-E19-39 établi ; planifiée le 2026-10-06 ; relecture à faire)
+
+DLL seule (aucun export : l'effet global 14 est exporté) ; après G3a et G3b ; ne dépend pas de G3c (rien ne se voit avant G3c).
+Déclencheur de risque : comportement de script nouveau, vie du héros (relecture et vérificateur neuf). Faits et valeurs :
+`docs/plan-e19-g3d-annexe/discovery/` (`notes.md`, `lib/g3d-golden.tsv`, `lib/g3d-modes13.tsv`, `data/sites53.out` ; `verify/verify.md`
+l'emporte, voir le `README.md` de l'annexe).
+
+**Découverte.** [binaire] `0x82` (`0x8003FE7C`) lit `code[1]`, appelle `HandleMapTriggerCommand` (`0x80034108`), écrit `Result`, rend la
+taille 2 et ne suspend pas ; `0x53` va à `IncreaseHpMaxAndCreateEffect` (`0x800333AC`) sur l'entité joueur ; chaque sous-cas `0x50` à
+`0x56` rend 1. `0x800333AC` : `HpMax += 1` (sans plafond ici), `Hp = HpMax` (entité `+0x18`, `+0x14`), son `0x31`, 8 effets en anneau puis
+4 étincelles (banque globale, effet 14, animation 0, à la position du héros, z + 0x100000) ; les 12 créneaux sont dessinés aux ticks 0
+à 27 et libérés au 28 ; empreinte mémoire : la vie de l'entité, la graine, `Result`, les créneaux, rien d'autre. **O-E19-39 établi** : la
+vie vivante est l'entité 0 ; `g_playerStats` en est le miroir, copié à la fin de chaque `MovePlayer` (bornes 0..50 et 0..HpMax) ; le HUD
+lit les stats. La DLL n'a qu'une source, `AlundraGameState.PlayerStats` (HUD, sauvegarde). 8 sites `82 53` : 134 (pc 1083, 1331, 1387,
+1443), 258 (614), 298 (668), 302 (624), 398 (1202), hors de la chaîne ; `0x800333AC` a aussi deux appelants natifs (coffres, 39 avec
+`Contents == 0x53`, et vases ramassés, entité `I83`) : ceux-là viennent avec E14.
+
+- **G3D-R1 — Sous-cas `0x53`** : taille 2, `Result` 1, pas de suspension ; `case 0x53` avant la plage `0x50`-`0x56` (les autres sous-cas
+  restent dégradés). Ordre : la vie, le son tout de suite (`SoundPlayer?.PlaySfx(0x31)`), puis les effets mis en file par
+  `EffectStage.Emit` (position du héros lue à l'émission, `PlayerEntity.PosX/PosY/PosZ`). **Vie** (variante A, couture provisoire) :
+  `SetPlayerHpMax(état, HpMax + 1)` puis `SetPlayerHp(état, ancien HpMax + 1)`, par les setters (plafond 50 et validation de la
+  sauvegarde tenus) ; égale à la chaîne réelle (vase puis fin de `MovePlayer`) sur 1326 cas. Sans héros ou sans stage : la vie et le son
+  sont faits, les effets sautés avec une trace `Degraded` une fois par exécuteur, de clé distincte de celle de `0x82`.
+- **G3D-R2 — Effets** : une fonction pure (nouveau `AlundraNativeEffects`) qui reçoit la réserve et la position du héros (E14 la
+  réutilisera pour les coffres et les ramassages), appelée dans la fermeture de l'opération, avec la réserve telle qu'à l'application :
+  8 fois `Create(table globale, effet 14, animation 0, hx, hy, hz + 0x100000)` et, pour un créneau créé, `X += OffX[j] << 13`,
+  `Y += OffY[j] << 13`, `ForceX = −(OffX[j] << 9)`, `ForceY = −(OffY[j] << 9)`, `ForceZ = 0`, avec `OffX = [0, −543, −768, −543, 0, 543,
+  768, 543]` et `OffY = [512, 362, 0, −362, −512, −362, 0, 362]` (`0x80023654 + 8j`, `0x80023694 + 8j`) ; puis 4 fois `Create(...)` et, pour
+  un créneau créé seulement, deux tirages `r1`, `r2` d'`AlundraRandom` : `ForceX = hi32(r1 × 0x20001) − 0x10000`, `ForceY = hi32(r2 ×
+  0x30001) − 0x18000`, `ForceZ = 0x40000` ; tout en `unchecked` (z + 0x100000 déborde au-dessus de 0x7FF00000) ; une réserve pleine crée moins
+  de créneaux et tire moins.
+- **G3D-R3 — Valeurs** : lignes `V`, `S`, `T`, `F` et `P` de `g3d-golden.tsv`.
+- **G3D-R4 — Modes 1 et 3** (D-E19-96 : l'interface des créateurs natifs ; second commit) : créateur attaché (mode 1 : position de
+  l'ancre, décalage de position, décalage de profondeur) et créateur détaché (mode 3 : position donnée, ancre, décalage de profondeur) ;
+  mise à jour : mode 1, ancre au statut 0 → mode 2, sinon `pos = ancre + décalage`, `profondeur = clé de l'ancre + décalage de profondeur`,
+  statut 4 → mode 2, puis le code du mode 3 : `pos += forces`, si statut ≠ 0 la profondeur de l'ancre, statut 0 ou 4 → mode 2 ; mode 2 :
+  rien. L'ancre est une interface (position 16.16, clé de profondeur, statut ; la clé `+0x1BC` de l'entité du binaire) ; aucune entité de
+  la DLL ne l'implémente encore (5 sites attachés et 1 détaché, tous natifs : E14). Valeurs : `g3d-modes13.tsv` (8 scénarios du vrai
+  code). La clé de profondeur d'un créneau attaché vient de son ancre ; G3c la lit comme les autres (`DepthKey`).
+- **Écarts à écrire dans l'ADR** : (1) le binaire met les stats à jour au `MovePlayer` suivant, la DLL tout de suite : au plus 1 tick
+  (20 ms) aux 8 sites (toutes les boîtes autour sont en mode 1 ; le seul mode 0 proche, 302 pc 629, est un bras jamais pris) ; porter un
+  jour la synchronisation de fin de `MovePlayer` impose de passer en même temps à la vie portée par l'entité (variante B), sinon elle
+  écraserait les stats par les valeurs 0 de l'entité ; (2) le binaire tire les nombres à la position du script, la DLL à l'application de
+  la file, après les tirages des scripts de la même image : l'ordre diffère dès qu'un autre script tire dans la même image (aucune
+  instruction `0x0C` ni `0x8C` sur les cinq cartes ; modes de marche aléatoire non balayés).
+- **Fichiers** (liste fermée) : `Alundra/Scripts/AlundraEventProgramRunner.cs`, nouveau `Alundra/Scripts/AlundraNativeEffects.cs`,
+  `Alundra/Scripts/AlundraPlayerManager.cs` (assistant de vie, à côté de `SetPlayerHpMax`), `Alundra/Scripts/AlundraEffectReservoir.cs`
+  (G3D-R4) ; tests : nouveau `Alundra.Tests/AlundraNativeEffectTests.cs` (collection `AlundraRandomStaticStateCollection`) et
+  `Alundra.Tests/AlundraItemAndMoneyOpcodesTests.cs` (`Give_0x82_Id0x53_AnswersOne_WritesNothing_AndTracesDegraded` réécrit, plus un test
+  où `0x50` reste dégradé) ; l'annexe (`g3d-golden.py`, `g3d-golden.tsv`, `g3d-rules-check.py`, `g3d-modes13.py`, `g3d-modes13.tsv`, à la
+  racine de `docs/plan-e19-g3d-annexe/`) ; ce plan (O-E19-39 réduit à `0x50`-`0x52` et `0x54`-`0x56`) ; l'ADR du parent et son index.
+- ⏳ **G3d-0 — Prévision** : les tables et leurs scripts copiés à la racine de l'annexe (déjà générés par le vrai code ; `--check`).
+- ⏳ **G3d-1 — Tests d'abord** (rouges) : lignes `V`/`S`/`T`/`F` rejouées par le stage (`RunFrame(0)` pour `S`, `RunFrame(1)` pour `T`) ;
+  `[0x82, 0x53, 0x1A, 9, 0xFF]` par le vrai exécuteur : `Result` 1, l'animation 9 prouve l'absence de suspension, stats 10/10 → 11/11, son
+  `[0x31]` joué avant les effets, 12 créneaux, `(uint)AlundraRandom.RandomSeed` = `0xC5BF9705` depuis la graine par défaut ; plafond
+  (HpMax 49 → 50/50 ; à 50 → 50/50, sauvegarde valide) ; HUD (après quelques ticks du directeur, le HpMax affiché atteint 11) ; garde sur
+  les 8 sites (les octets `82 53` aux 8 (carte, pc) de l'export) ; dégradés (sans héros, sans stage : vie et son faits ; `0x50` reste
+  `Result` 1 dégradé) ; G3D-R4 contre `g3d-modes13.tsv`.
+- ⏳ **G3d-2 — Code** (G3D-R1 à R3, puis G3D-R4 en second commit), ADR du parent.
+- ⏳ **G3d-3 — Vérification** par un vérificateur neuf.
+- **Acceptation** : tests rouges puis verts ; seul le test du `0x53` nommé ci-dessus bouge ; aucun arc, aucune trace, aucune ligne de la
+  liste fermée ; `Alundra.Tests` en Release puis en Debug, `cmp`, six traces identiques. **Arrêts** : une valeur qui contredit l'annexe,
+  un autre test qui bouge, un fichier hors de la liste. **Retour arrière** : revert.
+- **Recette** : preuve sans tête seulement (aucune sauvegarde de test n'atteint les cartes 134, 258, 298, 302 et 398) ; en jeu, à la
+  première visite d'une de ces cartes : vie max + 1, vie pleine, son ; l'anneau et les étincelles se voient après G3c.
+
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 validée le 2026-10-06 : HUD à la sortie de la chambre, pièces de la 476, contrôle rendu à la 15 (recette du 2026-10-06, §1.2x))
 
 **Constat de l'auteur** (conversion relancée, DLL reconstruite) : contacts avec les PNJ bons ; sons et musique bons ; boîtes de
@@ -10509,7 +10745,7 @@ défaut signalé ; aucune note écrite.
   L1-4) ; l'ondulation du HUD (E13.a), l'étoile de l'éditeur (T4.7), l'exemple MGUI (PI3), le monde gelé en dialogue (T2), le parcours
   M3.
 
-### 1.2w Boucle au repère de la séquence (D-E19-70, D-E19-72, D-E19-73, O-E19-62) ⏳ (préparée le 2026-10-05 ; la partie moteur va dans S2 d'audio-modern, D-E19-74 ; données, convertisseur et DLL après S2)
+### 1.2w Boucle au repère de la séquence (D-E19-70, D-E19-72, D-E19-73, O-E19-62) ⚠️ (préparée le 2026-10-05 ; la partie moteur va dans S2 d'audio-modern, D-E19-74 ; données, convertisseur et DLL après S2 ; **en pause le 2026-10-06** : S2 est mergé sans la partie moteur, question O-E19-76)
 
 Esquisse (découverte du 2026-10-05, `loop-disc/notes.md` et `loop-disc-verify/verify.md` du scratchpad) : le pilote du binaire
 (libsnd) mémorise la position au contrôleur 99 = 20 et y revient au contrôleur 99 = 30 quand le compte vaut 127 (`0x8008CA40`), sans
@@ -10933,7 +11169,9 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-72 | **Tranché le 2026-10-06 (D-E19-96 : interface des créateurs et `0x82 0x53`).** **Portée de D-E19-54 (effets natifs)** (découverte d'E19.g G1/G3, 2026-10-06) : D-E19-54 repose sur une lecture fausse : il n'existe aucun effet de warp sur un changement de carte (les « effets de warp » sont des effets d'objets, bombes et magies, E14) ; les scripts n'atteignent que `0x82 0x53` (vase de vie, 8 sites hors de la chaîne ; il change aussi la vie, O-E19-39) et `0xBB` (E18). **Choix** : (A) E19.g livre l'interface des créateurs natifs et l'effet de `0x82 0x53` (avec sa vie max + 1, vie pleine, son `0x31`), le reste avec son consommateur (E14, déplacement, E18) ; (B) E19.g ne livre que les effets des enregistrements et des scripts, tous les natifs et `0x82 0x53` avec E14. | Auteur |
 | O-E19-73 | **Tranché le 2026-10-06 (D-E19-97 : même règle).** **D-E19-92 pour les quads d'effets** (découverte d'E19.g G1/G3, 2026-10-06) : D-E19-92 (quads déformés à la résolution de l'écran) nomme les sprites d'entités ; 63 % des références de quads d'effets sont déformées (l'aura de 476). La même règle vaut-elle pour les effets ? | Auteur |
 | O-E19-74 | **Tranché le 2026-10-06 (l'auteur : renuméroter l'ADR de G2d ; 0061 étant pris sur le main du moteur, elle prend 0066).** **Numéros d'ADR du moteur en double** (2026-10-06) : l'ADR-0056 du moteur existe deux fois, sur `chantier/e19g2d-overlay-blend` (teinte des fonds, G2d, cette session) et sur `chantier/audio-modern` de l'auteur (0056 à 0060). Proposition : renuméroter celle de G2d en 0061 (références : l'ADR, l'index, `scrolling-layers.md`, `sprite-psx-semi-transparency.md`, quatre commentaires C#, le plan, ADR-0037 du parent) après la recette, et prendre les suivantes (G2b-1, G2b-2) après le dernier numéro des deux lignées, revérifié avant chaque commit. | Auteur |
-| O-E19-75 | **Âge du mot de manette de l'écran de sauvegarde** (contre-vérification de la découverte d'E19.f3c, 2026-10-06) : les créneaux 3 et 10 du binaire lisent le même mot de manette ; dans le portage, l'écran lit celui du tick courant et la passe du dialogue celui du tick d'avant ; entre l'appui qui ouvre la question et la réponse la plus rapide, le binaire compte 19 échantillons, le portage 17 aujourd'hui, 18 après E19.f3c. Tranche à part après E19.f3c (D-E19-99) ; les épingles qui dépendent de la manette du sélecteur bougeront. | Session (D-E19-99) |
+| O-E19-75 | **Planifiée le 2026-10-06 en E19.f3d.** **Âge du mot de manette de l'écran de sauvegarde** (contre-vérification de la découverte d'E19.f3c, 2026-10-06) : les créneaux 3 et 10 du binaire lisent le même mot de manette ; dans le portage, l'écran lit celui du tick courant et la passe du dialogue celui du tick d'avant ; entre l'appui qui ouvre la question et la réponse la plus rapide, le binaire compte 19 échantillons, le portage 17 aujourd'hui, 18 après E19.f3c. Tranche à part après E19.f3c (D-E19-99) ; les épingles qui dépendent de la manette du sélecteur bougeront. | Session (D-E19-99) |
+| O-E19-76 | **Question à l'auteur : propriétaire de la partie moteur de la boucle au repère** (découverte de nuit du 2026-10-06, contre-vérifiée, `docs/plan-e19-backlog-1006-annexe/`) : D-E19-74 confiait la partie moteur (`SoundAsset.LoopStartSample`, déplacement du lecteur de flux, `FillQueue` et le travailleur) à S2 d'audio-modern ; S2 est mergé dans `main` sans elle (`LoopStartSample` : 0 occurrence sur toutes les branches du moteur ; les deux boucles font `Rewind()`, `MusicPlayer.cs:373` et `StreamingWorker.cs:263`) ; la DLL joue toujours la musique comme un clip résident bouclé en entier. **Choix** : (A) la session la fait sur la pile E19 (tranche L-a : plan, relecture, vérificateur), puis L-b (données, convertisseur, DLL) après la mesure O-E19-63 ; (B) elle reste à la ligne audio de l'auteur. Recommandation de la session : (A). La section 1.2w est en pause jusqu'à la réponse. | Auteur |
+| O-E19-77 | **Âge des mots de manette de l'inventaire et du sous-inventaire** (découverte de nuit d'E19.f3d, contre-vérifiée, `docs/plan-e19-pad-age-annexe/`) : la mise à jour par image de l'inventaire (créneau 6, `0x80056598`) et celle du sous-inventaire (créneau 4, `0x80053328`, six lectures par intervalle) lisent leurs mots dans `RenderScene`, donc l'échantillon de l'image d'avant ; les directeurs d'inventaire du portage lisent `TickPad` du tick courant. Même classe qu'O-E19-75, mais pas une seule ligne : à découvrir et planifier. | Session |
 
 ## 4. Hors périmètre
 

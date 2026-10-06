@@ -1,0 +1,239 @@
+// SCRATCH ONLY (D-E19-99 discovery, never in the repository). Drop it as Alundra.Tests/ProbePadAgeTests.cs in a PHYSICAL COPY of the repository (setup.cmd), build, then
+//   PADAGE_OUT=<dir> PADAGE_TAG=<tag> dotnet test Alundra.Tests -c Debug --no-build --filter FullyQualifiedName~ProbePadAgeTests
+// It measures, through the REAL AlundraWorldProxy.Update, the grid of AlundraSaveScreenTickOrderTests (old shape and new shape), the real-pad answers (earliest accepted press), the
+// Square wait and the Down of the picker. Results of the two runs (today's proxy = tag base, fixed proxy = tag fix): probe-out/padage-probe-base.txt and padage-probe-fix.txt.
+#nullable enable
+using System;
+using System.IO;
+using System.Text;
+using Alundra.Scripts;
+using Xunit;
+using Xunit.Abstractions;
+using static Alundra.Tests.SaveGameDirectorTestSupport;
+
+namespace Alundra.Tests;
+
+[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+public sealed class ProbePadAgeTests : IDisposable
+{
+    private readonly ITestOutputHelper _out;
+    private AlundraSaveBookTests.RecordingUIViewRuntime _uiView = new();
+    private AlundraSaveScreenDirectorTests.SlotsBySlot _slots = new();
+    private AlundraWorldProxy _proxy = null!;
+
+    public ProbePadAgeTests(ITestOutputHelper output)
+    {
+        _out = output;
+        Setup();
+    }
+
+    private void Setup()
+    {
+        ResetSingletons();
+        AlundraEtcStringTable.ResetForTests();
+        AlundraSaveBook.Instance.ResetForTests();
+        AlundraSaveScreenDirector.Instance.ResetForTests();
+        _uiView = new();
+        _slots = new();
+        var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
+        _proxy = new AlundraWorldProxy();
+        _proxy.InitializeWithWorld(world);
+        _proxy.PlayerEntity = new AlundraEntityScriptProxy();
+        AlundraEtcStringTable.SetEtcDialogueAssetForTests(
+            DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
+        AlundraDialogueDirector.Instance.AttachToWorld(new AlundraDialoguePresenter(_uiView), _proxy.GameState);
+        AlundraSaveGameDirector.Instance.RulesFactoryForTests = RealRules;
+        AlundraSaveGameDirector.Instance.SaveSlots = _slots;
+        AlundraSaveScreenDirector.Instance.AttachToWorld(_proxy.GameState, null);
+    }
+
+    public void Dispose()
+    {
+        ResetSingletons();
+        AlundraEtcStringTable.ResetForTests();
+        AlundraSaveBook.Instance.ResetForTests();
+        AlundraSaveScreenDirector.Instance.ResetForTests();
+    }
+
+    private static AlundraSaveScreenDirector Director => AlundraSaveScreenDirector.Instance;
+
+    private static AlundraDialogueDirector Dialogue => AlundraDialogueDirector.Instance;
+
+    private void Frame(int ticks, uint hold = 0)
+    {
+        _proxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = hold };
+        _proxy.Update(0.02f * ticks);
+    }
+
+    private void StartAndSettlePicker()
+    {
+        Assert.True(Director.Start(ValidSave()));
+        for (var i = 0; i < 60; i++)
+        {
+            Frame(1);
+        }
+
+        Assert.True(Director.IsPickerActive);
+    }
+
+    // old shape = the test of f3c (Frame(1, Cross) then the question must be pending); new shape = an extra Frame(1) (the screen reads the Cross one tick later)
+    private int Grid(int tpf, int arm, int choice, bool newShape)
+    {
+        Setup();
+        StartAndSettlePicker();
+        Frame(1, AlundraPadState.Cross);
+        if (newShape)
+        {
+            Frame(1);
+        }
+
+        if (!Director.IsQuestionPending)
+        {
+            return -1;
+        }
+
+        for (var t = 1; t <= arm; t += tpf)
+        {
+            Frame(tpf);
+        }
+
+        Assert.True(Dialogue.SelectChoiceForTests(choice));
+        var frames = 0;
+        while (Director.IsQuestionPending && frames < 150)
+        {
+            Frame(tpf);
+            frames++;
+        }
+
+        return frames;
+    }
+
+    // real-pad answers: the opening Cross at tick 0, OUI = Cross at q, NON = Right at q then Cross at q + 1; 1 tick per frame
+    private string PadAnswer(int q, bool non)
+    {
+        Setup();
+        StartAndSettlePicker();
+        int opener = -1, taken = -1, end = -1;
+        for (var g = 0; g < q + 160; g++)
+        {
+            uint hold = 0;
+            if (g == 0)
+            {
+                hold = AlundraPadState.Cross;
+            }
+            else if (!non && g == q)
+            {
+                hold = AlundraPadState.Cross;
+            }
+            else if (non && g == q)
+            {
+                hold = AlundraPadState.Right;
+            }
+            else if (non && g == q + 1)
+            {
+                hold = AlundraPadState.Cross;
+            }
+
+            Frame(1, hold);
+            if (opener < 0 && Director.IsQuestionPending)
+            {
+                opener = g;
+            }
+
+            if (opener >= 0 && taken < 0 && !Director.IsQuestionPending)
+            {
+                taken = g;
+            }
+
+            if (taken >= 0 && end < 0 && !Director.IsPickerActive)
+            {
+                end = g;
+            }
+        }
+
+        return $"opener={opener} taken={taken} pickerEnd={end} saveCalls={_slots.SaveCalls.Count}";
+    }
+
+    private string SquareWait(int ticksPerFrame)
+    {
+        Setup();
+        Assert.True(Director.StartFailure());
+        var guard = 0;
+        while (Director.State != AlundraSaveScreenDirector.StateWaitSquare && guard++ < 400)
+        {
+            Frame(1);
+        }
+
+        for (var i = 0; i < 30; i++)
+        {
+            Frame(1);
+        }
+
+        Frame(ticksPerFrame, AlundraPadState.Square);
+        var leftAt = -1;
+        for (var i = 1; i <= 80 && leftAt < 0; i++)
+        {
+            Frame(ticksPerFrame);
+            if (Director.State != AlundraSaveScreenDirector.StateWaitSquare)
+            {
+                leftAt = i;
+            }
+        }
+
+        return $"leftWaitSquareAfter(frames after the press frame) = {leftAt}";
+    }
+
+    private string DownAge(int ticksPerFrame)
+    {
+        Setup();
+        StartAndSettlePicker();
+        var sb = new StringBuilder();
+        sb.Append($"sel before={Director.Selection}; ");
+        Frame(ticksPerFrame, AlundraPadState.Down);
+        sb.Append($"after press frame={Director.Selection}; ");
+        for (var i = 1; i <= 3; i++)
+        {
+            Frame(ticksPerFrame);
+            sb.Append($"+{i}={Director.Selection}; ");
+        }
+
+        return sb.ToString();
+    }
+
+    [Fact]
+    public void Probe()
+    {
+        var sb = new StringBuilder();
+        foreach (var (tpf, arm, c) in new[] { (1, 0, 0), (1, 1, 1), (1, 17, 0), (1, 18, 0), (1, 26, 0), (1, 26, 1), (2, 0, 0), (2, 2, 1), (2, 18, 0), (2, 26, 0), (2, 26, 1), (2, 28, 0), (3, 3, 1), (3, 0, 0) })
+        {
+            sb.AppendLine($"GRID {tpf},{arm},{c}: old={Grid(tpf, arm, c, false)} new={Grid(tpf, arm, c, true)}");
+        }
+
+        for (var q = 15; q <= 21; q++)
+        {
+            sb.AppendLine($"PADOUI q={q}: {PadAnswer(q, false)}");
+        }
+
+        for (var q = 15; q <= 21; q++)
+        {
+            sb.AppendLine($"PADNON q={q}: {PadAnswer(q, true)}");
+        }
+
+        foreach (var tpf in new[] { 1, 2, 3 })
+        {
+            sb.AppendLine($"SQUARE tpf={tpf}: {SquareWait(tpf)}");
+        }
+
+        foreach (var tpf in new[] { 1, 2 })
+        {
+            sb.AppendLine($"DOWN tpf={tpf}: {DownAge(tpf)}");
+        }
+
+        _out.WriteLine(sb.ToString());
+        var outDir = Environment.GetEnvironmentVariable("PADAGE_OUT");
+        if (!string.IsNullOrEmpty(outDir))
+        {
+            File.WriteAllText(Path.Combine(outDir, "padage-probe-" + Environment.GetEnvironmentVariable("PADAGE_TAG") + ".txt"), sb.ToString());
+        }
+    }
+}

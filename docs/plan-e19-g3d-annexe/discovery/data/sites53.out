@@ -1,0 +1,155 @@
+sites by sweep: 8  by plain byte scan: 8
+plain-scan positions not in sweep: []
+=== map 134 program C[4] pc 1083 (instruction #16 of 22)
+      1066  A6 Load bgm                           00
+      1068  0D Dialog                             91 01
+      1071  50 Set dialog choice                  04
+      1073  B9 Start CD streaming                 0B
+      1075  00 Break                              
+      1076  BA Check if loading from CD           
+      1077  03 If true goto                       FE FF
+      1080  51 Get dialog choice                  
+      1081  39 Wait for dialog                    
+      1082  A5 Stop all sound                     
+  <==  1083  82 Give item or pickup by id          53
+      1085  06 Flag off                           65 80
+      1088  8A Spawn entity at position           11 FC 03 28 03 A0 00
+      1096  2E Destroy entity                     80
+      1098  FF End script                         
+      1099  00 Break                              
+=== map 134 program C[9] pc 1331 (instruction #16 of 22)
+      1314  A6 Load bgm                           00
+      1316  0D Dialog                             91 01
+      1319  50 Set dialog choice                  04
+      1321  B9 Start CD streaming                 0B
+      1323  00 Break                              
+      1324  BA Check if loading from CD           
+      1325  03 If true goto                       FE FF
+      1328  51 Get dialog choice                  
+      1329  39 Wait for dialog                    
+      1330  A5 Stop all sound                     
+  <==  1331  82 Give item or pickup by id          53
+      1333  06 Flag off                           65 80
+      1336  8A Spawn entity at position           11 FC 03 28 03 A0 00
+      1344  2E Destroy entity                     80
+      1346  FF End script                         
+      1347  00 Break                              
+=== map 134 program C[10] pc 1387 (instruction #16 of 22)
+      1370  A6 Load bgm                           00
+      1372  0D Dialog                             91 01
+      1375  50 Set dialog choice                  04
+      1377  B9 Start CD streaming                 0B
+      1379  00 Break                              
+      1380  BA Check if loading from CD           
+      1381  03 If true goto                       FE FF
+      1384  51 Get dialog choice                  
+      1385  39 Wait for dialog                    
+      1386  A5 Stop all sound                     
+  <==  1387  82 Give item or pickup by id          53
+      1389  06 Flag off                           65 80
+      1392  8A Spawn entity at position           11 FC 03 28 03 A0 00
+      1400  2E Destroy entity                     80
+      1402  FF End script                         
+      1403  00 Break                              
+=== map 134 program C[11] pc 1443 (instruction #16 of 21)
+      1426  A6 Load bgm                           00
+      1428  0D Dialog                             91 01
+      1431  50 Set dialog choice                  04
+      1433  B9 Start CD streaming                 0B
+      1435  00 Break                              
+      1436  BA Check if loading from CD           
+      1437  03 If true goto                       FE FF
+      1440  51 Get dialog choice                  
+      1441  39 Wait for dialog                    
+      1442  A5 Stop all sound                     
+  <==  1443  82 Give item or pickup by id          53
+      1445  06 Flag off                           65 80
+      1448  2E Destroy entity                     80
+      1450  FF End script                         
+      1451  00 Break                              
+=== map 258 program B[5] pc 614 (instruction #47 of 56)
+       594  99 Try spend money                    F4 01
+       597  A6 Load bgm                           00
+       599  5C Dialog with entity                 81 B9 01
+       603  50 Set dialog choice                  04
+       605  B9 Start CD streaming                 0B
+       607  00 Break                              
+       608  BA Check if loading from CD           
+       609  03 If true goto                       FE FF
+       612  51 Get dialog choice                  
+       613  39 Wait for dialog                    
+  <==   614  82 Give item or pickup by id          53
+       616  5D Set entity Status = 3              06
+       618  A5 Stop all sound                     
+       619  5C Dialog with entity                 01 89 01
+       623  39 Wait for dialog                    
+       624  11 Player gain control                
+       625  05 Flag on                            C4 02
+       628  06 Flag off                           F4 81
+       631  FF End script                         
+=== map 298 program B[5] pc 668 (instruction #35 of 63)
+       644  02 Goto                               BC FF
+       647  00 Break                              
+       648  9A Enough money?                      90 01
+       651  03 If true goto                       11 00
+       654  5C Dialog with entity                 01 8C 01
+       658  39 Wait for dialog                    
+       659  5C Dialog with entity                 01 90 01
+       663  39 Wait for dialog                    
+       664  02 Goto                               D8 FF
+       667  00 Break                              
+  <==   668  82 Give item or pickup by id          53
+       670  03 If true goto                       11 00
+       673  5C Dialog with entity                 01 8B 01
+       677  39 Wait for dialog                    
+       678  5C Dialog with entity                 01 90 01
+       682  39 Wait for dialog                    
+       683  02 Goto                               C5 FF
+       686  00 Break                              
+       687  99 Try spend money                    90 01
+       690  A6 Load bgm                           00
+       692  0D Dialog                             92 01
+=== map 302 program C[8] pc 624 (instruction #14 of 26)
+       607  A6 Load bgm                           00
+       609  0D Dialog                             84 01
+       612  50 Set dialog choice                  04
+       614  B9 Start CD streaming                 0B
+       616  00 Break                              
+       617  BA Check if loading from CD           
+       618  03 If true goto                       FE FF
+       621  51 Get dialog choice                  
+       622  39 Wait for dialog                    
+       623  A5 Stop all sound                     
+  <==   624  82 Give item or pickup by id          53
+       626  03 If true goto                       0E 00
+       629  0D Dialog                             85 00
+       632  06 Flag off                           0B 80
+       635  11 Player gain control                
+       636  02 Goto                               DC FF
+       639  00 Break                              
+       640  05 Flag on                            C4 02
+       643  11 Player gain control                
+       644  2E Destroy entity                     80
+       646  FF End script                         
+=== map 398 program B[6] pc 1202 (instruction #73 of 86)
+      1181  00 Break                              
+      1182  99 Try spend money                    90 01
+      1185  2E Destroy entity                     06
+      1187  A6 Load bgm                           00
+      1189  5C Dialog with entity                 81 A4 01
+      1193  50 Set dialog choice                  04
+      1195  B9 Start CD streaming                 0B
+      1197  00 Break                              
+      1198  BA Check if loading from CD           
+      1199  03 If true goto                       FE FF
+  <==  1202  82 Give item or pickup by id          53
+      1204  51 Get dialog choice                  
+      1205  39 Wait for dialog                    
+      1206  A5 Stop all sound                     
+      1207  5C Dialog with entity                 00 8F 01
+      1211  05 Flag on                            54 04
+      1214  39 Wait for dialog                    
+      1215  5C Dialog with entity                 00 94 01
+      1219  39 Wait for dialog                    
+      1220  11 Player gain control                
+      1221  FF End script                         

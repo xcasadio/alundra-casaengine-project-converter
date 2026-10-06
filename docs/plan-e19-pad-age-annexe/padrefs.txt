@@ -1,0 +1,75 @@
+8002ac68 addiu $a3, $v0, 0x6f18             -> 80126f18
+8002ad3c addiu $s0, $v0, 0x6f18             -> 80126f18
+8002ae44 lhu   $v0, 0x6f40($v0)             -> 80126f40
+8002ae8c addiu $a0, $v0, 0x6f18             -> 80126f18
+8002af30 addiu $a0, $v0, 0x6f18             -> 80126f18
+8002afdc addiu $a0, $v0, 0x6f18             -> 80126f18
+8002b070 addiu $a0, $v0, 0x6f18             -> 80126f18
+8002b104 addiu $a0, $v0, 0x6f18             -> 80126f18
+8002b198 addiu $a0, $v0, 0x6f18             -> 80126f18
+8002b478 addiu $a2, $v0, 0x6f18             -> 80126f18
+8002bba8 lhu   $v1, 0x6f28($v0)             -> 80126f28
+8002bca0 addiu $v1, $v0, 0x6f18             -> 80126f18
+8002e314 addiu $v0, $v0, 0x6f18             -> 80126f18
+8002e360 addiu $v1, $v0, 0x6f18             -> 80126f18
+8002e36c sw    $a0, 0x6f18($v0)             -> 80126f18
+8002e3a8 addiu $s0, $s0, 0x6f18             -> 80126f18
+8002eabc lhu   $v0, 0x6f2a($v0)             -> 80126f2a
+8002eb34 addiu $v1, $v0, 0x6f18             -> 80126f18
+8002ed68 lhu   $v0, 0x6f2a($v0)             -> 80126f2a
+8002ef18 lhu   $v0, 0x6f2a($v0)             -> 80126f2a
+8002f204 lhu   $v0, 0x6f28($v0)             -> 80126f28
+8002f3b8 lhu   $v0, 0x6f28($v0)             -> 80126f28
+8002f4a4 addiu $v1, $v0, 0x6f18             -> 80126f18
+80030c54 lhu   $v0, 0x6f28($v0)             -> 80126f28
+80031cd4 lhu   $v0, 0x6f28($v0)             -> 80126f28
+80031ecc addiu $a0, $v0, 0x6f18             -> 80126f18
+80031fa8 lhu   $v0, 0x6f28($v0)             -> 80126f28
+8003208c lhu   $v0, 0x6f28($v0)             -> 80126f28
+800320fc lhu   $v0, 0x6f28($v0)             -> 80126f28
+80032178 lhu   $v0, 0x6f28($v0)             -> 80126f28
+80032354 lhu   $a1, 0x6f2a($v0)             -> 80126f2a
+800324e4 lhu   $v0, 0x6f2a($v0)             -> 80126f2a
+800326d0 lhu   $v0, 0x6f2a($v0)             -> 80126f2a
+8003dd94 addiu $v0, $v0, 0x6f18             -> 80126f18
+80041758 addiu $a0, $a0, 0x6f18             -> 80126f18
+800459fc lhu   $v0, 0x6f2a($v0)             -> 80126f2a
+80045e80 lbu   $v0, 0x6f2a($v0)             -> 80126f2a
+8004602c lhu   $v0, 0x6f2a($v0)             -> 80126f2a
+800460b0 lhu   $v0, 0x6f28($v0)             -> 80126f28
+8004a3e4 addiu $s0, $v0, 0x6f18             -> 80126f18
+8004a460 lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+8004a498 lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+8004a4c8 lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+8004a504 lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+8004a548 lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+8004a9dc lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+8004aa4c lhu   $v1, 0x6f2e($v0)             -> 80126f2e
+8004aaa4 lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+8004f2c8 addiu $s0, $v0, 0x6f18             -> 80126f18
+8004f8a8 lhu   $a3, 0x6f2e($v0)             -> 80126f2e
+8004f9dc lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+8004fa2c lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+8004faa4 lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+8004ffdc lhu   $v0, 0x6f2a($v0)             -> 80126f2a
+8005010c lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+80050144 lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+80051254 sh    $zero, 0x6f2a($v0)           -> 80126f2a
+80051764 addiu $s0, $v0, 0x6f18             -> 80126f18
+80051984 lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+800519d4 lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+80051a4c lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+80053548 addiu $s1, $v0, 0x6f18             -> 80126f18
+800555b8 lhu   $v1, 0x6f28($v0)             -> 80126f28
+800567c8 lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+8005680c lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+80056870 lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+800568d4 lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+80056918 addiu $s0, $v0, 0x6f18             -> 80126f18
+800594cc lhu   $a0, 0x6f2e($v0)             -> 80126f2e
+800598dc lhu   $v0, 0x6f2e($v0)             -> 80126f2e
+8005f360 lhu   $v0, 0x6f2a($v0)             -> 80126f2a
+8005fbb8 lhu   $v0, 0x6f2a($v0)             -> 80126f2a
+8005fe6c lhu   $v0, 0x6f2a($v0)             -> 80126f2a
+800601d0 lhu   $v0, 0x6f2a($v0)             -> 80126f2a
+8007bd9c lhu   $v0, 0x6f28($v0)             -> 80126f28

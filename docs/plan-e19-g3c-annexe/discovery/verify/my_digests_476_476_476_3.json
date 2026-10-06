@@ -1,0 +1,17 @@
+{
+ "476_aura_tick0_k3": {
+  "quads": 9,
+  "lit": 90968,
+  "sha1": "bda9e52c6a2ebbafd14de98d1be96a0433045cbb"
+ },
+ "476_aura_tick2_k3": {
+  "quads": 8,
+  "lit": 87052,
+  "sha1": "44577bffda90382a6cf0300ab044a75ef7d6f3c8"
+ },
+ "476_aura_tick16_k3": {
+  "quads": 7,
+  "lit": 70756,
+  "sha1": "c440a862e56ae8369fc0c1e24fb033fd3a755dea"
+ }
+}
