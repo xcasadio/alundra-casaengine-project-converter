@@ -4,6 +4,26 @@ using System.Collections.Generic;
 
 namespace Alundra.Scripts;
 
+/// <summary>
+/// What an attached or detached native effect (modes 1 and 3) follows: the position, the depth key and the status of an entity of the binary (the key is <c>+0x1BC</c> of the entity). No entity of the DLL
+/// implements it yet (the five attached creators and the detached one are native sites of E13 and E14).
+/// </summary>
+public interface IAlundraEffectAnchor
+{
+    /// <summary>The position, 16.16 (the binary's <c>+0x114/118/11C</c>).</summary>
+    int PosX { get; }
+
+    int PosY { get; }
+
+    int PosZ { get; }
+
+    /// <summary>The depth key of the entity (<c>+0x1BC</c>) the effect's own key follows.</summary>
+    uint DepthKey { get; }
+
+    /// <summary>The status of the entity: 0 free (gone), 4 flagged to be destroyed; any other value is alive.</summary>
+    int Status { get; }
+}
+
 /// <summary>One slot of the effect reservoir (the binary's 0x80-byte slot, <c>0x80138608 + 0x80 * i</c>); see <see cref="AlundraEffectReservoir"/>.</summary>
 public sealed class AlundraEffectSlot
 {
@@ -16,8 +36,22 @@ public sealed class AlundraEffectSlot
     /// <summary>The record that created it (the index the script opcodes name), -1 for a creation that does not come from a record.</summary>
     public int RecordIndex { get; internal set; } = -1;
 
-    /// <summary>0 free with forces, 2 frozen; 1 and 3 (attached to an entity) are created only by native code (E19.g G3d).</summary>
+    /// <summary>0 free with forces, 1 attached to an anchor (<see cref="AlundraEffectReservoir.CreateAttached"/>), 2 frozen, 3 detached from its anchor but following its depth key
+    /// (<see cref="AlundraEffectReservoir.CreateDetached"/>); 1 and 3 are created only by native code (E19.g G3d, G3D-R4).</summary>
     public int Mode { get; internal set; }
+
+    /// <summary>The entity a slot of mode 1 or 3 follows; null in the other modes.</summary>
+    public IAlundraEffectAnchor? Anchor { get; internal set; }
+
+    /// <summary>Added to the anchor's depth key (the binary's <c>+0x60</c>).</summary>
+    public int DepthOffset { get; internal set; }
+
+    /// <summary>Added to the anchor's position in mode 1 (the binary's <c>+0x48/4C/50</c>).</summary>
+    public int OffsetX { get; internal set; }
+
+    public int OffsetY { get; internal set; }
+
+    public int OffsetZ { get; internal set; }
 
     /// <summary>Position, 16.16 (the binary's <c>+0x3C/40/44</c>).</summary>
     public int X { get; set; }
@@ -165,6 +199,39 @@ public sealed class AlundraEffectReservoir
 
     /// <summary>The generic creator of mode 0 (<c>CreateEffectEntity 0x8003BDD8</c>, E19.g G3d): not from a record, at the given 16.16 position.</summary>
     public AlundraEffectSlot? Create(bool mapTable, int effect, int animation, int x, int y, int z) => CreateCore(-1, mapTable, effect, animation, x, y, z);
+
+    /// <summary>The creator of mode 1 (<c>0x8003BE74</c>, G3D-R4): the slot starts at the anchor's position and follows it at the given offsets, its depth key at the anchor's plus <paramref name="depthOffset"/>.
+    /// The forces are set by the caller afterwards, like the binary's native code does.</summary>
+    public AlundraEffectSlot? CreateAttached(bool mapTable, int effect, int animation, IAlundraEffectAnchor anchor, int depthOffset, int offsetX, int offsetY, int offsetZ)
+    {
+        var slot = CreateCore(-1, mapTable, effect, animation, anchor.PosX, anchor.PosY, anchor.PosZ);
+        if (slot != null)
+        {
+            slot.Mode = 1;
+            slot.Anchor = anchor;
+            slot.DepthOffset = depthOffset;
+            slot.OffsetX = offsetX;
+            slot.OffsetY = offsetY;
+            slot.OffsetZ = offsetZ;
+        }
+
+        return slot;
+    }
+
+    /// <summary>The creator of mode 3 (<c>0x8003BFE8</c>, G3D-R4): the slot starts at the given position, moves by its own forces and takes the anchor's depth key plus <paramref name="depthOffset"/>
+    /// while the anchor lives.</summary>
+    public AlundraEffectSlot? CreateDetached(bool mapTable, int effect, int animation, IAlundraEffectAnchor anchor, int depthOffset, int x, int y, int z)
+    {
+        var slot = CreateCore(-1, mapTable, effect, animation, x, y, z);
+        if (slot != null)
+        {
+            slot.Mode = 3;
+            slot.Anchor = anchor;
+            slot.DepthOffset = depthOffset;
+        }
+
+        return slot;
+    }
 
     /// <summary>Frees a slot at once (the binary's status 0).</summary>
     public void Free(AlundraEffectSlot slot)
@@ -368,6 +435,11 @@ public sealed class AlundraEffectReservoir
         slot.Active = true;
         slot.RecordIndex = recordIndex;
         slot.Mode = 0;
+        slot.Anchor = null;
+        slot.DepthOffset = 0;
+        slot.OffsetX = 0;
+        slot.OffsetY = 0;
+        slot.OffsetZ = 0;
         slot.X = x;
         slot.Y = y;
         slot.Z = z;
@@ -473,18 +545,68 @@ public sealed class AlundraEffectReservoir
 
     private static void Move(AlundraEffectSlot slot)
     {
-        // Mode 0: the forces, then the key. Mode 2 stays put; modes 1 and 3 are created only by native code (G3d).
-        if (slot.Mode != 0)
+        // Mode 0: the forces, then the key. Mode 2 stays put. Modes 1 and 3 are created only by native code (G3d, G3D-R4, Move 0x8003C284).
+        switch (slot.Mode)
         {
-            return;
-        }
+            case 0:
+                unchecked
+                {
+                    slot.X += slot.ForceX;
+                    slot.Z += slot.ForceZ;
+                    slot.Y += slot.ForceY;
+                    slot.DepthKey = (uint)((slot.Y & (int)0xFFFF0000) + (slot.Z >> 16) + (slot.Idsv << 16));
+                }
 
+                return;
+
+            case 1:
+            case 3:
+                MoveFollower(slot);
+                return;
+        }
+    }
+
+    /// <summary>
+    /// Modes 1 and 3. Mode 1 first: an anchor of status 0 freezes the slot (mode 2) and nothing else happens; any other status puts the slot at the anchor plus its offsets with the key of
+    /// the anchor plus the depth offset, and status 4 freezes it. Then, for mode 1 whatever happened above (the binary's code falls through), and for mode 3 straight away: the forces are added to the
+    /// position, the key follows the anchor again unless its status is 0, and status 0 or 4 freezes the slot. So an anchor of status 0 still gives its forces to the slot on the update that freezes it.
+    /// </summary>
+    private static void MoveFollower(AlundraEffectSlot slot)
+    {
+        var anchor = slot.Anchor!;
         unchecked
         {
+            if (slot.Mode == 1)
+            {
+                if (anchor.Status == 0)
+                {
+                    slot.Mode = 2;
+                }
+                else
+                {
+                    slot.X = anchor.PosX + slot.OffsetX;
+                    slot.Y = anchor.PosY + slot.OffsetY;
+                    slot.Z = anchor.PosZ + slot.OffsetZ;
+                    slot.DepthKey = anchor.DepthKey + (uint)slot.DepthOffset;
+                    if (anchor.Status == 4)
+                    {
+                        slot.Mode = 2;
+                    }
+                }
+            }
+
             slot.X += slot.ForceX;
-            slot.Z += slot.ForceZ;
             slot.Y += slot.ForceY;
-            slot.DepthKey = (uint)((slot.Y & (int)0xFFFF0000) + (slot.Z >> 16) + (slot.Idsv << 16));
+            slot.Z += slot.ForceZ;
+            if (anchor.Status != 0)
+            {
+                slot.DepthKey = anchor.DepthKey + (uint)slot.DepthOffset;
+            }
+
+            if (anchor.Status == 0 || anchor.Status == 4)
+            {
+                slot.Mode = 2;
+            }
         }
     }
 

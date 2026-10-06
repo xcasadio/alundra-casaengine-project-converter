@@ -532,4 +532,126 @@ public sealed class AlundraNativeEffectTests : IDisposable
         Assert.Equal(s.Seed, (uint)AlundraRandom.RandomSeed);
         Assert.Equal(new[] { 49 }, rig.Sound.Played.ToArray());
     }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    // G3D-R4: the native creators of modes 1 (attached) and 3 (detached), against g3d-modes13.tsv
+    // ---------------------------------------------------------------------------------------------------------------------
+
+    private static readonly string[][] Modes13 = ReadTable("g3d-modes13.tsv");
+
+    public static IEnumerable<object[]> Modes13Cases() => Modes13.Where(r => r[0] == "C").Select(r => new object[] { r[1] });
+
+    private sealed class Anchor : IAlundraEffectAnchor
+    {
+        public int PosX { get; set; }
+        public int PosY { get; set; }
+        public int PosZ { get; set; }
+        public uint DepthKey { get; set; }
+        public int Status { get; set; }
+
+        /// <summary>A row <c>E</c>: <c>E name update status x y z depthkey</c>.</summary>
+        public void Set(string[] e)
+        {
+            Status = int.Parse(e[3]);
+            PosX = int.Parse(e[4]);
+            PosY = int.Parse(e[5]);
+            PosZ = int.Parse(e[6]);
+            DepthKey = uint.Parse(e[7]);
+        }
+    }
+
+    [Fact]
+    public void TheModes13Table_HoldsEightScenarios_OfSixUpdates()
+    {
+        Assert.Equal(8, Modes13.Count(r => r[0] == "C"));
+        Assert.Equal(48, Modes13.Count(r => r[0] == "E"));
+        Assert.Equal(48, Modes13.Count(r => r[0] == "M"));
+        Assert.Equal(3, Modes13.Count(r => r[0] == "C" && r[2] == "detached"));
+    }
+
+    [Theory]
+    [MemberData(nameof(Modes13Cases))]
+    public void TheCreators_AndTheUpdates_OfTheModes1And3_AreTheRowsOfTheBinary(string name)
+    {
+        var c = Modes13.Single(r => r[0] == "C" && r[1] == name);
+        var updates = Modes13.Where(r => r[0] == "E" && r[1] == name).OrderBy(r => int.Parse(r[2])).ToList();
+        var results = Modes13.Where(r => r[0] == "M" && r[1] == name).OrderBy(r => int.Parse(r[2])).ToList();
+        Assert.Equal(6, updates.Count);
+        Assert.Equal(6, results.Count);
+
+        var reservoir = new AlundraEffectReservoir(Bank());
+        var anchor = new Anchor();
+        anchor.Set(updates[0]);
+        var offsets = (X: int.Parse(c[11]), Y: int.Parse(c[12]), Z: int.Parse(c[13]));
+        var depthOffset = int.Parse(c[14]);
+        var slot = c[2] == "attached"
+            ? reservoir.CreateAttached(false, 14, 0, anchor, depthOffset, offsets.X, offsets.Y, offsets.Z)
+            : reservoir.CreateDetached(false, 14, 0, anchor, depthOffset, int.Parse(c[5]), int.Parse(c[6]), int.Parse(c[7]));
+        Assert.NotNull(slot);
+        slot!.ForceX = int.Parse(c[8]); // the native code writes the forces after the creator
+        slot.ForceY = int.Parse(c[9]);
+        slot.ForceZ = int.Parse(c[10]);
+
+        Assert.Equal(int.Parse(c[3]), slot.Index);
+        Assert.Equal(int.Parse(c[4]), slot.Mode);
+        Assert.Equal(new[] { int.Parse(c[5]), int.Parse(c[6]), int.Parse(c[7]) }, new[] { slot.X, slot.Y, slot.Z });
+        Assert.Equal(new[] { offsets.X, offsets.Y, offsets.Z }, new[] { slot.OffsetX, slot.OffsetY, slot.OffsetZ });
+        Assert.Equal(depthOffset, slot.DepthOffset);
+        Assert.Same(anchor, slot.Anchor);
+        Assert.Equal(-1, slot.RecordIndex);
+
+        for (var u = 0; u < 6; u++)
+        {
+            anchor.Set(updates[u]);
+            reservoir.Tick(false);
+
+            var m = results[u];
+            Assert.Equal(int.Parse(m[3]), slot.Mode);
+            Assert.Equal(new[] { int.Parse(m[4]), int.Parse(m[5]), int.Parse(m[6]) }, new[] { slot.X, slot.Y, slot.Z });
+            Assert.Equal(Convert.ToUInt32(m[7], 16), slot.DepthKey);
+            Assert.Equal(m[8] == "1", slot.Active);
+        }
+    }
+
+    [Fact]
+    public void AnAnchorOfStatus0_StillReceivesTheForcesOnTheUpdateThatFreezesIt_ThenNothingMoves()
+    {
+        var reservoir = new AlundraEffectReservoir(Bank());
+        var anchor = new Anchor { Status = 2, PosX = 100, PosY = 200, PosZ = 300, DepthKey = 7 };
+        var slot = reservoir.CreateAttached(false, 14, 0, anchor, 0, 1, 2, 3)!;
+        slot.ForceX = 10;
+
+        reservoir.Tick(false);
+        Assert.Equal((1, 111), (slot.Mode, slot.X)); // anchor + offset (101), then the forces of the fall-through (+ 10)
+
+        anchor.Status = 0;
+        anchor.PosX = 5000;
+        reservoir.Tick(false);
+        Assert.Equal((2, 121), (slot.Mode, slot.X)); // not re-derived from the anchor (5001), the forces still added
+
+        reservoir.Tick(false);
+        Assert.Equal((2, 121), (slot.Mode, slot.X)); // mode 2: nothing
+    }
+
+    [Fact]
+    public void TheCreatorsOfMode0_ResetWhatTheModes1And3Set_AndAFullReservoirCreatesNothing()
+    {
+        var reservoir = new AlundraEffectReservoir(Bank());
+        var anchor = new Anchor { Status = 2 };
+        var attached = reservoir.CreateAttached(false, 14, 0, anchor, 5, 1, 2, 3)!;
+        reservoir.Free(attached);
+
+        var plain = reservoir.Create(false, 14, 0, 9, 9, 9)!;
+
+        Assert.Same(attached, plain);
+        Assert.Equal((0, 0, 0, 0, 0, 0), (plain.Mode, plain.DepthOffset, plain.OffsetX, plain.OffsetY, plain.OffsetZ, plain.Anchor is null ? 0 : 1));
+
+        for (var i = reservoir.ActiveCount; i < AlundraEffectReservoir.SlotCount; i++)
+        {
+            Assert.NotNull(reservoir.CreateDetached(false, 14, 0, anchor, 0, 0, 0, 0));
+        }
+
+        Assert.Null(reservoir.CreateAttached(false, 14, 0, anchor, 0, 0, 0, 0));
+        Assert.Null(reservoir.CreateDetached(false, 14, 0, anchor, 0, 0, 0, 0));
+    }
 }
