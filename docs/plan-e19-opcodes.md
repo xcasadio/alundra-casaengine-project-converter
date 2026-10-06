@@ -5884,7 +5884,7 @@ une extension sans vérité binaire (D-E19-90) ; `GetMatchingEntitiesBySearchTyp
   `cmp` sans écart, six traces. Avis P4 : la remise avant la garde de `NotifyPresenterClosed` n'est vérifiée que par lecture (à
   voir en jeu : deux dialogues de suite avec le même locuteur).
 
-###### E19.f4c — Vue du nom et du portrait ⏳ (découverte du 2026-10-06 faite et contre-vérifiée ; D-E19-100, D-E19-101 ; planifiée en f4c1, f4c2, f4c3 ; relecture à faire ; exécution après la recette et l'approbation de l'auteur)
+###### E19.f4c — Vue du nom et du portrait ⏳ (découverte du 2026-10-06 faite et contre-vérifiée ; D-E19-100, D-E19-101 ; planifiée en f4c1, f4c2, f4c3 ; relecture n°1 REVISE (masque de la passe additive, fichiers de f4c1, propriétaire de `Brightness`, classes de comparaison), révisée ; relecture n°2 à faire ; exécution après la recette et l'approbation de l'auteur)
 
 **Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais, dans `docs/plan-e19-f4c-annexe/` : `notes*.md`,
 `verify.md`, la XAML proposée `proposal-TextBoxScreen.xaml` validée par une sonde sur GPU hors du dépôt, et le générateur
@@ -5913,17 +5913,27 @@ une extension sans vérité binaire (D-E19-90) ; `GetMatchingEntitiesBySearchTyp
 
 ###### E19.f4c1 — Teinte au-dessus de 1 dans MGUI (manque G11) ⏳ (planifiée le 2026-10-06)
 
-MGUI (sous-module du moteur, branche dédiée) ; inerte tant qu'aucune image ne pose la propriété. Déclencheur : manque d'une
-bibliothèque partagée (MGUI ADR).
-- **F4C1-R1** : une propriété `MGImage.Brightness` (défaut 1, liable, attribut XAML de l'élément `Image`, `Controls.cs:1264-1312`) :
-  à k ≤ 1, la couleur de texture multipliée par k (comme aujourd'hui avec une couleur) ; à k > 1, l'image dessinée normalement puis une
-  seconde fois en `BlendType.Additive` avec la couleur (k − 1), en réglant le `DrawSettings` le temps du second dessin (précédent :
-  `MGImage.cs:239-262`, le filtre de réduction).
-- **Tâches** : tests d'abord (MGUI : propriété, défaut, analyse XAML, liaison ; dessin au niveau des appels : un seul dessin à k ≤ 1, deux
-  à k > 1 avec le mélange additif et la couleur (k − 1)) ; ADR de MGUI (numéro par la règle R-BR (2), 0021 aujourd'hui) ; branche par la
-  règle R-BR (1) ; entrée G11 du
-  rapport des manques du moteur (`ai-agent/audits/mgui-gaps-from-xaml-screens.md`, en français) close ; vérification ; suites MGUI et
-  moteur, montée des pointeurs (MGUI dans le moteur, moteur dans le parent), `Alundra.Tests` en Release puis en Debug, `cmp`, six traces.
+MGUI (sous-module du moteur ; branche `chantier/e19f4c1-image-brightness` créée par la règle R-BR (1) depuis le commit de MGUI que le moteur
+épingle) ; inerte tant qu'aucune image ne pose la propriété. Déclencheur : manque d'une bibliothèque partagée (ADR de MGUI).
+- **F4C1-R1** : une propriété `MGImage.Brightness` (`float`, défaut 1, notifiée, liable, attribut XAML de l'élément `Image`,
+  `MGUI.Core/UI/XAML/Controls.cs:1264-1312`). **Masques exacts** (octets ; l'opacité de l'élément s'applique ensuite comme aujourd'hui,
+  `MGTextureData.cs:22`) :
+  - k = 1 : un seul dessin, inchangé (blanc, A = 255) ;
+  - k < 1 : un seul dessin, masque RVB = `round(255 · k)` sur les trois canaux, **A = 255** ;
+  - k > 1 : un premier dessin inchangé (blanc, A = 255), puis un second en `BlendType.Additive` (`BlendState.Additive` : source × alpha
+    source + destination) avec masque RVB = `round(255 · (k − 1))` sur les trois canaux et **A = 255** (un alpha de masque inférieur
+    ajouterait texel · (k − 1)² ; un texel transparent, alpha 0, n'ajoute rien), le `DrawSettings` réglé le temps du second dessin
+    (précédent : `MGImage.cs:239-262`, le filtre de réduction) puis rendu.
+- **Fichiers** (liste fermée) : MGUI `MGUI.Core/UI/MGImage.cs`, `MGUI.Core/UI/XAML/Controls.cs`, nouveaux `MGUI.Tests/Controls/MGImageBrightnessTests.cs`
+  et `MGUI.Tests/Integration/MGImageBrightnessGpuTests.cs` (au patron de `MGUI.Tests/Integration/PrimitiveBatchBlendStateGpuTests.cs`),
+  l'ADR (`Docs/decisions/`, numéro par la règle R-BR (2), 0021 aujourd'hui) et son index `Docs/decisions/README.md` ; l'exemple
+  `MGUI.Samples/Controls/Image.xaml` **n'est pas touché** ; moteur : `ai-agent/audits/mgui-gaps-from-xaml-screens.md` (entrée G11 close,
+  en français) et le pointeur de MGUI ; parent : le pointeur du moteur et ce plan.
+- **Tâches** : tests d'abord : propriété, défaut 1, analyse XAML, liaison ; au niveau des appels, les masques enregistrés (RVB **et** A) pour
+  k = 127/128, 1, 1,5 et 255/128 (un seul dessin à k ≤ 1, deux à k > 1, le second en additif) ; **un test au pixel sur GPU** : un texel opaque
+  t sur fond noir, à k = 1,5 et k = 255/128, attendu `min(255, t · k)` à 2/255 près par canal (ce test rougit si le second masque a un alpha
+  inférieur à 255) ; code ; ADR ; entrée G11 ; vérification ; suites MGUI et moteur, montée des pointeurs (MGUI dans le moteur, moteur
+  dans le parent, chacune vérifiée par la règle R-BR (1)), `Alundra.Tests` en Release puis en Debug, `cmp`, six traces.
 
 ###### E19.f4c2 — Vue du nom et du portrait du dialogue ⏳ (planifiée le 2026-10-06, après f4c1)
 
@@ -5935,6 +5945,8 @@ DLL et écran XAML seulement (aucun export : `UI/Screens/*` est versionné à la
 - **F4C2-R2 — View models** : `TextBoxNameViewModel` (`Left`, `TextLeft`, `Text`, `Visibility`) ; `InventoryPortraitViewModel.ApplyDialogue(portrait,
   DialoguePortraitRef?)` (méthode ajoutée) : translation (X − 8, Y − 116) (un 48 × 72 garde `CanvasTop` 116, l'écart est dans la translation),
   échelle (largeur dessinée / 48, hauteur dessinée / hauteur de l'image), `Brightness` = Rgb / 128 ; une passe 0 × 0 reste visible à l'échelle 0.
+  **f4c2 possède la propriété** `InventoryPortraitViewModel.Brightness` (défaut 1, notifiée au changement) : elle l'ajoute ; f4c3 ne fait
+  que la poser dans l'`Apply` de l'inventaire.
 - **F4C2-R3 — Présentateur** : surcharge `Apply(box, speakerDrawn)` ; l'écran est poussé à la première passe où la boîte, le nom ou le
   portrait est dessiné, un `Apply` par tick, retiré quand plus rien n'est dessiné (le cas S5 : à N+40 seuls le nom et le portrait sont
   dessinés) ; quand seuls le nom et le portrait sont dessinés, `Frame`, `Cursor` et `TextClip` sont repliés ; un portrait laissé au repos sans
@@ -5951,12 +5963,16 @@ DLL et écran XAML seulement (aucun export : `UI/Screens/*` est versionné à la
 - **F4C2-0 — Prévision d'abord** : le générateur de l'annexe (chemins relatifs au dépôt, variantes `_psx` retirées) écrit les états des
   view models par image et les images de référence : S1 Jess (entité (200, 150, 0), caméra (40, 20)) aux images N+1, N+2, N+8, N+13, N+16, N+21,
   N+22, N+25, N+36, N+37, N+38 à N+40 ; S8 (48 × 72, Miming) ; S5 N+37 à N+42 ; S2 (portrait seul), S3 (nom seul) ; les 60 noms à x 64, 303 et
-  150 ; la vue décalée (97, 41) à × 2 et × 3 ; référence du vol : la règle du centre à la résolution de l'écran, les rangées et colonnes à
-  égalité flottante listées et exclues ; référence de la rampe : le modèle de la PS1 (texel × k saturé), tolérance 8/255 par canal ; les
-  portraits énumérés par identifiant (`portraits_table.tsv`, le portrait de la banque 15 est dans `Entities/`).
-- **F4C2-1 — Tests d'abord** : correspondance des view models par passe contre `values.json` S1 à S9 ; durée de vie en union sur S5 ;
-  verrou de la source ; test XAML des trois éléments (ordre, attributs, identifiants) ; données de conception ; tests sur GPU (repos exacts,
-  noms exacts, vol égal à la référence hors égalités, rampe à 8/255, ordre : (19, 168) portrait (72, 48, 32) sur (88, 96, 72), (71, 171) nom
+  150 ; la vue décalée (97, 41) à × 2 et × 3 ; les états générés portent `Portrait.Brightness` = Rgb / 128 ; les portraits énumérés par
+  identifiant (`portraits_table.tsv`, le portrait de la banque 15 est dans `Entities/`). **Classe de comparaison de chaque image épinglée**,
+  écrite dans l'annexe avec son Rgb et son fichier de référence : Rgb = 128 → **exacte** (le portrait au repos ; hors rangées et colonnes à
+  égalité flottante pendant un vol) ; Rgb ≠ 128 (toute passe d'ouverture et de retour, **y compris la passe au repos du déclencheur T, Rgb
+  127**, par exemple S1 N+22) → référence = échantillonnage à la règle du centre à la résolution de l'écran puis modulation de la PS1
+  (`psx_modulate`, texel × k saturé), **tolérance 8/255 par canal**, égalités exclues ; tout pixel hors du quad du portrait (cadre, texte, nom)
+  reste exact. Le générateur (`gen_cases.py`, `f4c_ref.py`) est complété pour écrire `Brightness` et les références teintées.
+- **F4C2-1 — Tests d'abord** : correspondance des view models par passe contre `values.json` S1 à S9 (`Brightness` compris) ; durée de vie en union sur S5 ;
+  verrou de la source ; test XAML des trois éléments (ordre, attributs, identifiants) ; données de conception ; tests sur GPU, chaque image
+  dans sa classe (images à Rgb 128 exactes, images à Rgb ≠ 128 à 8/255, noms exacts, ordre : (19, 168) portrait (72, 48, 32) sur (88, 96, 72), (71, 171) nom
   (72, 64, 56) sur (144, 136, 112), (110, 149) premier texel d'encre de « Jess » (41, 49, 16)) ; mesure du temps de chargement des trois plus
   grandes feuilles (au-delà de 20 ms : arrêt, préchargement à décider). Test existant qui bouge, seul : `RootCanvas_..._HoldsTheFrameTheCursorThenTheTextClip`
   (enfants `[Frame, Cursor, TextClip]` → `[Frame, Cursor, TextClip, PortraitImage, NameFrame, NameText]`, tailles d'images ajoutées) ;
@@ -5964,10 +5980,11 @@ DLL et écran XAML seulement (aucun export : `UI/Screens/*` est versionné à la
 - **F4C2-2 — Code**, docs, ADR ; **F4C2-3 — Vérification** ; **Recette F4C2-4** : Jess (carte 6), Miming (banque 122, 48 × 72), deux
   locuteurs de suite, un nom sans portrait, un site `0xC4`.
 
-###### E19.f4c3 — Rampe du portrait de l'inventaire (D-E19-100) ⏳ (planifiée le 2026-10-06, après f4c1)
+###### E19.f4c3 — Rampe du portrait de l'inventaire (D-E19-100) ⏳ (planifiée le 2026-10-06, **après f4c2**, qui ajoute la propriété)
 
-DLL et écrans XAML de l'inventaire : `Brightness` = Rgb / 128 lié sur le portrait de l'inventaire (le `Rgb` est déjà calculé,
-`AlundraInventoryPortrait.cs:234`, `:241`) ; fichiers : `AlundraInventoryViewModel.cs`, les deux XAML qui portent le portrait ; tests : la
+DLL et écrans XAML de l'inventaire : `Brightness` = Rgb / 128 posé dans l'`Apply` de l'inventaire et lié sur le portrait de l'inventaire
+(le `Rgb` est déjà calculé, `AlundraInventoryPortrait.cs:234`, `:241`) ; fichiers : `AlundraInventoryViewModel.cs` (l'`Apply` de
+l'inventaire seulement), les deux XAML qui portent le portrait ; tests : la
 correspondance Rgb → `Brightness` par passe, un test sur GPU à 8/255 sur une passe d'ouverture et une de retour ; la ligne D2 du plan du
 portrait de l'inventaire annotée (« remplacée par D-E19-100 ») ; vérification ; recette : ouvrir et fermer l'inventaire, l'éclair du
 portrait.
