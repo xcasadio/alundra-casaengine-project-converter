@@ -6044,14 +6044,37 @@ DLL et écran XAML seulement (aucun export : `UI/Screens/*` est versionné à la
 - **F4C2-2 — Code**, docs, ADR ; **F4C2-3 — Vérification** ; **Recette F4C2-4** : Jess (carte 6), Miming (banque 122, 48 × 72), deux
   locuteurs de suite, un nom sans portrait, un site `0xC4`.
 
-###### E19.f4c3 — Rampe du portrait de l'inventaire (D-E19-100) ⏳ (planifiée le 2026-10-06, **après f4c2**, qui ajoute la propriété)
+###### E19.f4c3 — Rampe du portrait de l'inventaire (D-E19-100) ⏳ (planifiée le 2026-10-06, **après f4c2**, qui ajoute la propriété ; relecture n°1 REVISE (liste fermée, prévisions), révisée ; relecture n°2 à faire)
 
-DLL et écrans XAML de l'inventaire : `Brightness` = Rgb / 128 posé dans l'`Apply` de l'inventaire et lié sur le portrait de l'inventaire
-(le `Rgb` est déjà calculé, `AlundraInventoryPortrait.cs:234`, `:241`) ; fichiers : `AlundraInventoryViewModel.cs` (l'`Apply` de
-l'inventaire seulement), les deux XAML qui portent le portrait ; tests : la
-correspondance Rgb → `Brightness` par passe, un test sur GPU à 8/255 sur une passe d'ouverture et une de retour ; la ligne D2 du plan du
-portrait de l'inventaire annotée (« remplacée par D-E19-100 ») ; vérification ; recette : ouvrir et fermer l'inventaire, l'éclair du
-portrait.
+DLL et écrans XAML de l'inventaire seulement : la propriété `InventoryPortraitViewModel.Brightness` (ajoutée par f4c2) est posée dans
+l'`Apply` de l'inventaire et liée sur le portrait des deux écrans ; le `Rgb` est déjà calculé (`AlundraInventoryPortrait.cs:234`,
+`:241`).
+- **F4C3-R1** : `AlundraInventoryViewModel.Apply(portrait, sourceId)` (`AlundraInventoryViewModel.cs:169-187`) pose `Brightness =
+  portrait.Rgb / 128f` à chaque appel qui a une source, avec la translation et l'échelle ; sur le retour anticipé sans source
+  (élément replié), `Brightness` n'est pas touchée.
+- **F4C3-R2** : l'attribut `Brightness="{dataBinding:MGBinding Path=Portrait.Brightness}"` ajouté à l'élément `PortraitImage` de
+  `alundra-project/UI/Screens/InventoryScreen.xaml:60` et de `alundra-project/UI/Screens/SubInventoryScreen.xaml:59` ; les
+  `.design.json` ne changent pas.
+- **Prévision** (formes closes d'`AlundraInventoryPortrait`, recalculées le 2026-10-06 ; s va de 15 à 1, largeur × hauteur dessinées,
+  `Brightness` = Rgb / 128) — ouverture : s 15 : 0 × 0, Rgb 255 (1,9921875) ; 14 : 3 × 3, 246 ; 13 : 6 × 7, 237 ; 12 : 9 × 11, 229 ;
+  11 : 12 × 14, 220 ; 10 : 16 × 18, 212 ; 9 : 19 × 22, 203 ; 8 : 22 × 26, 195 ; 7 : 25 × 29, 186 ; 6 : 28 × 33, 178 ; 5 : 32 × 37, 169 ;
+  4 : 35 × 41, 161 ; 3 : 38 × 44, 152 ; 2 : 41 × 48, 144 ; 1 : 44 × 52, 135 (1,0546875) ; repos : 48 × 56, 128 (1) ; retour : s 15 :
+  48 × 56, 127 (0,9921875) ; 14 : 44 × 52, 135 ; 13 : 41 × 48, 144 ; 12 : 38 × 44, 152 ; 11 : 35 × 41, 161 ; 10 : 32 × 37, 169 ; 9 :
+  28 × 33, 178 ; 8 : 25 × 29, 186 ; 7 : 22 × 26, 195 ; 6 : 19 × 22, 203 ; 5 : 16 × 18, 212 ; 4 : 12 × 14, 220 ; 3 : 9 × 11, 229 ; 2 :
+  6 × 7, 237 ; 1 : 3 × 3, 246 (1,921875) ; dernière passe (fin du retour) : 0 × 0, Rgb 0 (`Brightness` 0, échelle 0, invisible) ; au
+  repos, inactif : Rgb 0, `Brightness` 0, échelle 0.
+- **Rendu sur GPU** : pas de test sur GPU propre à f4c3 (resserrement de la relecture n°1) : le rendu de `Brightness` au-delà de 1
+  est prouvé sur GPU par f4c1 (test au pixel de MGUI, masques et saturation) et, sur un portrait réel en vol, par f4c2 ; f4c3 ne change
+  qu'une liaison et une affectation, prouvées sans GPU ; la recette le regarde en jeu.
+- **Fichiers** (liste fermée) : `Alundra/Scripts/AlundraInventoryViewModel.cs` (l'`Apply` de l'inventaire seulement) ;
+  `alundra-project/UI/Screens/InventoryScreen.xaml`, `alundra-project/UI/Screens/SubInventoryScreen.xaml` ; tests
+  `Alundra.Tests/AlundraInventoryPortraitWiringTests.cs` (la table ci-dessus, cycle entier ouverture, repos, retour, fin, et le retour
+  anticipé sans source), `Alundra.Tests/UI/AlundraInventoryScreenXamlTests.cs` et `Alundra.Tests/UI/AlundraSubInventoryScreenXamlTests.cs`
+  (l'attribut `Brightness` du `PortraitImage` lié à `Portrait.Brightness`) ; documents : `docs/plan-portrait-inventaire.md` (la ligne du
+  tableau des décisions D2, `:213`, et la phrase « **Écarté par l'auteur** (D2 … ) » de la section Couleur, `:92`, annotées
+  « remplacée par D-E19-100 (2026-10-06) » ; la ligne `:540` du journal reste telle quelle) et ce plan.
+- **Tâches** : F4C3-1 tests d'abord (rouges : `Brightness` reste à sa valeur par défaut 1, l'attribut manque) ; F4C3-2 code et XAML ;
+  F4C3-3 vérification ; recette : ouvrir et fermer l'inventaire et le sous-inventaire, l'éclair du portrait.
 
 **Acceptation** (chaque tranche) : tests rouges puis verts, aucun test existant ne bouge hors ceux nommés ; tests sur GPU verts sur le GPU de
 l'auteur (ils sont ignorés sans GPU : leur exécution est la preuve) ; `Alundra.Tests` en Release puis en Debug, `cmp`, six traces. **Retour
@@ -8308,51 +8331,100 @@ pour Alundra tant que rien ne l'appelle ; aucun chemin existant ne change (ni `S
   confirmé par le relecteur (décalage d'un demi-pixel d'écran, terme de pente, ordre des cases, égalité 1:1 de `check_bk.py`).
   Nouvelle époque de préparation ; une seule relecture de clôture.
 
-###### E19.g G2b-2 — Piste de coins de `.anim2d` (moteur) ⏳ (planifiée le 2026-10-06, après G2b-1)
+###### E19.g G2b-2 — Piste de coins de `.anim2d` (moteur) ⏳ (planifiée le 2026-10-06, après G2b-1 ; relecture n°1 REVISE (liste fermée, sites, schéma, acceptation), révisée ; relecture n°2 à faire)
 
-Changement de format du moteur (ADR) ; inerte tant qu'aucun fichier ne porte la piste (un fichier d'aujourd'hui se relit et se
-réécrit à l'octet). Déclencheur de risque : format sérialisé.
-- **G2b2-R1 — Modèle** : `Animation2dTrackProperty.Corners` ajouté **en fin** d'énumération ; une image clé `time_seconds`, `enabled`,
-  `top_left`, `top_right`, `bottom_left`, `bottom_right` (décalages en pixels, y vers le haut, depuis la valeur de la piste `Position` de la
-  partie, multipliés par l'échelle de l'entité comme la position) et `source_offset` (recul entier de la fenêtre source, 0 ou −1 par axe) ;
-  interpolation
-  par pas ; liste JSON `corner_keyframes` écrite seulement si elle n'est pas vide ; avant la première clé et sur une clé `enabled = false`,
-  la partie se dessine en rectangle comme aujourd'hui.
-- **G2b2-R2 — Sites qui doivent suivre** (pièges de perte silencieuse, `engine-notes.md` 2.3 et `data-verify.md` C6) : `Animation2dTrackData.Load`,
-  `Animation2dCompositionAdapter.CloneTrack`, l'aiguillage de l'échantillonneur (`Animation2dCompositionSampler`) et l'état de partie
-  (`HasCorners` remis à faux par `ApplyDefaults`), `Animation2dData.GetDurationSeconds`, `EditorAssetJsonSerializer.SaveAnimation2dTrackData`,
-  l'instantané d'annulation de l'éditeur (`Animation2dAssetInspectorPanel.SerializeAnimationTrack`), `AnimationAssetDataConverter` et
-  `AnimationClipAsset` (empreinte de la propriété `Rotation`) ; la piste n'est pas montrée dans la frise de l'éditeur (documenté).
-- **G2b2-R3 — Dessin** : `AnimatedSpriteComponent.DrawComposedAnimation` appelle `DrawPsxQuad` pour une partie aux coins actifs (fenêtre source du
-  sprite décalée de `source_offset`, coins = position de la partie + coins, mêmes clé, z et mode PSX qu'aujourd'hui) ; la rotation et les
-  retournements de la partie sont ignorés pour cette image ; les autres parties ne changent pas.
+Changement de format du moteur (ADR) ; inerte pour Alundra tant qu'aucun fichier ne porte la piste (un fichier d'aujourd'hui se relit et se
+réécrit à l'octet). Déclencheur de risque : format sérialisé. Branche du moteur `chantier/e19g2b2-corner-track`, créée par la règle R-BR (1)
+depuis le commit que le parent épingle à l'exécution (la pointe de G2b-1) ; ADR du moteur par R-BR (2). **G2b-2 monte le pointeur du
+parent à sa fin** (le moteur porte alors la propriété ; aucun fichier exporté ne l'utilise encore), si bien que G2b-3 compile contre elle.
+- **G2b2-R1 — Modèle et schéma** : `Animation2dTrackProperty.Corners` ajouté **en fin** d'énumération (`Animation2dTrackData.cs:7-16`) ; un
+  nouveau type `Animation2dCornersKeyframeData(float TimeSeconds, bool Enabled, Vector2 TopLeft, Vector2 TopRight, Vector2 BottomLeft,
+  Vector2 BottomRight, Point SourceOffset)` à côté des autres (fin d'`Animation2dTrackData.cs`) ; la liste `CornerKeyframes` de la piste ;
+  JSON `corner_keyframes` écrit **seulement s'il n'est pas vide**. Une clé active s'écrit
+  `{ "time_seconds": 0.1, "enabled": true, "top_left": { "x": -12.0, "y": 12.0 }, "top_right": { "x": 12.0, "y": 12.0 },
+  "bottom_left": { "x": -12.0, "y": -12.0 }, "bottom_right": { "x": 12.0, "y": -12.0 }, "source_offset": { "x": -1, "y": 0 } }`
+  (vecteurs au format des autres vecteurs du fichier, `source_offset` en entiers) ; une clé désactivée s'écrit `{ "time_seconds": 0.3,
+  "enabled": false }` (coins et décalage omis). À la lecture, un champ manquant vaut zéro (`enabled` manquant : faux) ; `source_offset`
+  accepte tout entier (le format est général ; seul le convertisseur se borne à 0 et −1). Coins = décalages en pixels, y vers le haut, depuis
+  la valeur de la piste `Position` de la partie, multipliés par l'échelle de l'entité comme la position. Avant la première clé et sur une clé
+  désactivée, la partie se dessine en rectangle comme aujourd'hui.
+- **G2b2-R2 — Sites qui doivent suivre** (pièges de perte silencieuse ; tous lisent `Animation2dTrackData` ou l'état de partie) :
+  `Animation2dTrackData.Load` (la liste) ; `Animation2dCompositionAdapter.CloneTrack` (`Animation2dCompositionAdapter.cs:87-129`) ;
+  l'aiguillage de `Animation2dCompositionSampler` (le cas `Corners`, pas à pas, dernière clé au temps ou avant) ; `Animation2dPartRuntimeState`
+  (`HasCorners`, `CornerTopLeft`, `CornerTopRight`, `CornerBottomLeft`, `CornerBottomRight`, `CornerSourceOffset`, remis à faux et à zéro par
+  `Reset`) ; `Animation2dData.GetDurationSeconds` (`Animation2dData.cs:78-103`, la liste comprise) ;
+  `EditorAssetJsonSerializer.SaveAnimation2dTrackData` (`CasaEngine.EditorServices/EditorAssetJsonSerializer.cs:248-266`) ; l'instantané
+  d'annulation de l'éditeur `Animation2dAssetInspectorPanel.SerializeAnimationTrack` (`CasaEngine.Editor/Controls/Animation2dAssetInspectorPanel.cs`) ;
+  la piste n'est pas montrée dans la frise de l'éditeur (documenté). `AnimationAssetDataConverter` et `AnimationClipAsset` portent les clips
+  3D (quaternions) : **aucun changement**.
+- **G2b2-R3 — Dessin** : `AnimatedSpriteComponent.DrawComposedAnimation` appelle `DrawPsxQuad` (G2b-1) pour une partie aux coins actifs : fenêtre
+  source du sprite décalée de `CornerSourceOffset`, coins = position de la partie + coins, mêmes clé, z et mode PSX qu'aujourd'hui ; la
+  rotation, les retournements de la partie **et le `SpriteEffect` du composant** sont ignorés pour cette partie (les coins portent tout ; la
+  DLL ne pose jamais ce `SpriteEffect` ; écrit dans la doc et l'ADR) ; les autres parties ne changent pas.
 - **G2b2-R4 — Bornes** : `Animation2dBoundsCalculator` prend la boîte des coins d'une partie qui en a (sinon le rectangle d'aujourd'hui).
-- **Tâches** : tests d'abord (chargement et réécriture d'un fichier sans piste identiques à l'octet, aller-retour d'une piste, échantillonneur :
-  désactivée avant la première clé, valeurs, clé de désactivation, remise à zéro ; `CloneTrack` ; durées inchangées ; bornes ; instantané
-  de l'éditeur ; dessin d'une partie aux coins par le chemin du quad, au niveau du lot) ; docs (`docs/engine/animation2d-composed-format-v1.md`,
-  `docs/editor/animation2d_editor_casaengine.md`) ; ADR du moteur ; vérification. Aucun test existant ne bouge.
+- **Fichiers** (liste fermée) : moteur `CasaEngine/Framework/Assets/Animations/Animation2dTrackData.cs`, `Animation2dCompositionAdapter.cs`,
+  `Animation2dCompositionSampler.cs`, `Animation2dPartRuntimeState.cs`, `Animation2dData.cs`, `Animation2dBoundsCalculator.cs`,
+  `CasaEngine/Framework/Scene/Entities/Components/AnimatedSpriteComponent.cs`, `CasaEngine.EditorServices/EditorAssetJsonSerializer.cs`,
+  `CasaEngine.Editor/Controls/Animation2dAssetInspectorPanel.cs` ; nouveaux tests `CasaEngine.Tests/Animation/Animation2dCornerTrackTests.cs`
+  (modèle, chargement, réécriture, échantillonneur, `CloneTrack`, durées, bornes, dessin au niveau du lot) et
+  `CasaEngine.Tests/EditorServices/Animation2dCornerTrackSerializationTests.cs` (sérialiseur et instantané de l'éditeur) ; docs
+  `docs/engine/animation2d-composed-format-v1.md`, `docs/editor/animation2d_editor_casaengine.md` ; l'ADR du moteur et
+  `docs/decisions/README.md` ; `ai-agent/tasks/e19g2b2-corner-track-tasks.md` et sa ligne dans `ai-agent/README.md` ; parent : le pointeur et
+  ce plan.
+- **Tâches** : G2b2-1 tests d'abord, **rouges** avec l'API présente et sans comportement (membre `Corners`, type et liste vides, rien de lu ni
+  d'écrit) : aller-retour de chaque champ d'une clé active, une clé désactivée écrite sans coins ni décalage, champs manquants à zéro ;
+  échantillonneur (désactivée avant la première clé, valeurs, clé de désactivation, `Reset`) ; `CloneTrack` (une piste chargée est lue par
+  l'échantillonneur) ; durées inchangées quand les clés tombent sur les temps des clés `Sprite` ; bornes ; instantané d'annulation de l'éditeur
+  qui garde la liste ; une partie aux coins actifs passe par `DrawPsxQuad` (au niveau du lot) ; **réécriture à l'octet** d'un fichier réel,
+  `alundra-project/Entities/Alundra/bankalundra_0_anim1_down.anim2d`, chargé puis réécrit par `EditorAssetJsonSerializer` : identique avant le
+  changement (point de départ vérifié d'abord) et après ; G2b2-2 code ; docs ; ADR ; G2b2-3 vérification.
+- **Acceptation** : `CasaEngine.Tests` buildé explicitement, `dotnet test --no-build --blame-hang-timeout 300s` ; aucun test existant ne bouge
+  (en particulier `Animation2dAuthoringDataTests`, `Animation2dCompositionSamplerLoopWrapTests`, `AnimatedSpriteLogicalEndClockTests`,
+  `AnimatedSpriteCollisionTimelineTests`, `CasaUIAssetProviderAnimatedImageTests`, `AnimatedSpriteComposedSortTests`,
+  `AnimatedSpriteWorldInitializationTests`, `AuthoringAssetJsonSerializerTests`) ; après la montée du pointeur : `git merge-base --is-ancestor`
+  de l'ancien pointeur vers le nouveau, `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (rien ne doit bouger). **Arrêts** : un
+  fichier hors de la liste, un test existant qui bouge, une réécriture qui n'est plus à l'octet, un pointeur qui ne descend pas de l'ancien.
+  **Retour arrière** : revert du moteur et du pointeur.
 
-###### E19.g G2b-3 — Export des coins et livraison verrouillée (convertisseur) ⏳ (planifiée le 2026-10-06, après G2b-2)
+###### E19.g G2b-3 — Export des coins (convertisseur) ⏳ (planifiée le 2026-10-06, après G2b-2 ; relecture n°1 REVISE (prévision clé par clé, garde, ordre du pointeur), révisée ; relecture n°2 à faire)
 
-Parent : convertisseur, export, pointeur du moteur montés ensemble (un moteur d'avant ne relit pas un fichier qui porte `Corners` :
-`Enum.Parse` lève, livraison verrouillée comme G2c). Déclencheur de risque : format exporté.
+Parent : convertisseur et export. Le pointeur du moteur est déjà sur la pointe de G2b-2 (monté par G2b-2) : chaque commit du parent de
+G2b-3 compile, et un export avec `Corners` n'est jamais lu par un moteur qui ne la connaît pas. Déclencheur de risque : format exporté.
 - **G2b3-R1 — Coins** : dans `SpriteWriter.ConvertAnimation`, une partie qui a au moins une image déformée (tout sauf un rectangle de la
   taille de la source, miroir compris) reçoit une piste `Corners` **ajoutée après toutes les pistes existantes** (aucun nom de piste existant
-  ne change) ; clés aux mêmes temps que les clés `Sprite` de la partie, **seulement aux changements** d'état (coins actifs ou désactivés),
-  aucune clé pour l'image finale répétée d'une animation `Hold`/`Chain` (même état) ; coins = coins bruts de la PS1 (y retourné) −
-  `Position` de l'image ; `source_offset` = (−mx ; −my) avec mx = `X1 > X2`, my = `Y1 > Y3` (la règle de l'extracteur). Les pistes d'aujourd'hui (`Sprite`,
-  `Position`, `Visible`, retournements) ne changent pas ; aucun `.sprite`, `.texture` ni entrée du catalogue ne change.
-- **G2b3-R2 — Compteurs** : `Sprites.QuadsDeformed` 49 348, `Sprites.CornerTracks`, `Sprites.CornerKeyframes` (valeurs de la prévision).
-- **Tâches** : G2b3-0 prévision d'abord, régénérée avec la règle finale (l'annexe d'aujourd'hui, `predicted_corner_tracks_per_file.json`,
-  date d'avant la règle corrigée) : exactement les 1923 `.anim2d` de `predicted_anim2d_changes.tsv` et `report.json` modifiés, 7697 identiques
-  à l'octet ; par fichier, les pistes ajoutées (partie, temps, état, coins, décalage) ; les compteurs ; G2b3-1 tests d'abord (convertisseur :
-  les cas de `engine-notes.md` 3.2 avec leur `source_offset` ; une animation sans quad déformé n'a pas de piste ;
-  `Alundra.Tests` : garde sur l'export réel (une animation déformée connue porte sa piste, durée inchangée)) ; G2b3-2 montée du pointeur du
-  moteur, export complet en place, manifeste avant/après égal à la prévision, chaque `.anim2d` modifié privé de ses pistes ajoutées égal à
-  l'ancien, double export, suites, `cmp`, six traces ; docs (classe `SpriteWriter`, paragraphe « Per-frame quad corners » du `README.md`
-  racine, ligne de risque de G2a « les quads déformés restent dessinés en rectangle jusqu'à G2b » close) ; ADR du parent ; G2b3-3 vérification.
+  ne change) ; clés aux mêmes temps que les clés `Sprite` de la partie (le temps cumulé en `float` de `SpriteWriter.cs:527-537`),
+  **seulement aux changements** d'état (coins actifs ou désactivés) ; une clé désactivée quand une image simple suit une image déformée
+  dans la même partie ; aucune clé pour une image cachée ni pour l'image finale répétée d'une animation `Hold`/`Chain` (même état) ;
+  coins = coins bruts de la PS1 (y retourné) − `Position` de l'image ; `source_offset` = (−mx ; −my) avec mx = `X1 > X2`, my = `Y1 > Y3`
+  (la règle de l'extracteur). Les pistes d'aujourd'hui (`Sprite`, `Position`, `Visible`, retournements) ne changent pas ; aucun `.sprite`,
+  `.texture` ni entrée du catalogue ne change.
+- **G2b3-R2 — Compteurs** : `Sprites.QuadsDeformed` (49 348), `Sprites.CornerTracks`, `Sprites.CornerKeyframes` (clés actives et clés
+  désactivées comptées ensemble) ; valeurs de G2b3-0.
+- **Fichiers** (liste fermée) : `alundra-casaengine-project-converter/Writers/SpriteWriter.cs` ; tests du convertisseur
+  (`alundra-casaengine-project-converter.Tests/SpriteWriterCornerTrackTests.cs`, nouveau) ; `Alundra.Tests/AlundraCornerTrackExportGuardTests.cs`
+  (nouveau) ; `README.md` racine (paragraphe « Per-frame quad corners ») ; l'ADR du parent et `docs/decisions/README.md` ; l'annexe
+  `docs/plan-e19-g2b-annexe/` (fichiers de G2b3-0) ; ce plan (la ligne de risque de G2a « les quads déformés restent dessinés en rectangle
+  jusqu'à G2b » close) ; l'export.
+- **G2b3-0 — Prévision d'abord** (commitée avant le code) : un script `docs/plan-e19-g2b-annexe/g2b3-predict.py`, calculé depuis
+  `data-extracted/` **sans le code du convertisseur** (dédoublonnage des banques du convertisseur : `map_alundra` d'abord, puis les cartes
+  dans l'ordre, la première occurrence gagne ; classement des quads ; temps cumulés en `float32` comme écrits) ; il écrit
+  `g2b3-prediction.json` (par fichier `.anim2d` : chaque clé ajoutée, partie, temps, `enabled`, les quatre coins, `source_offset`), la liste
+  des fichiers modifiés (exactement les 1923 de `predicted_anim2d_changes.tsv`, sinon arrêt), les compteurs, et pour le fichier de garde
+  `Entities/Coffre d'Anzes/bankalundra_227_anim1_down.anim2d` (ouverture du coffre d'Anzes, chaîne 163, 170, 177, 184) : le nombre de
+  clés de chaque piste `Corners`, la première clé entière et la durée `DurationSeconds` lue dans l'export d'aujourd'hui.
+- **G2b3-1 — Tests d'abord** : convertisseur : les cas de `engine-notes.md` 3.2 avec leur `source_offset` ; une animation sans quad déformé n'a
+  pas de piste ; une partie mixte (clé désactivée) ; une suite d'images déformées identiques (une seule clé) ; une image cachée (pas de clé) ;
+  l'image finale répétée d'un `Hold` (pas de clé). `Alundra.Tests` : la garde sur le fichier de garde (pistes `Corners` et première clé égales
+  à G2b3-0, durée inchangée), **rouge sur l'export d'aujourd'hui**.
+- **G2b3-2 — Export et preuves** : export complet en place, manifeste avant/après égal à la prévision (les 1923 `.anim2d` et `report.json`,
+  7697 identiques à l'octet) ; **les pistes `Corners` ajoutées de chaque fichier égales clé par clé à `g2b3-prediction.json` (0 écart)** et
+  chaque temps égal à un temps de clé `Sprite` de la même partie ; chaque fichier privé de ses pistes ajoutées égal à l'ancien ; compteurs ;
+  double export ; suites du convertisseur ; `Alundra.Tests` en Release puis en Debug (la garde verte), `cmp`, six traces ; docs ; ADR du parent.
+- **G2b3-3 — Vérification**.
 - **Recette G2b-4** (auteur) : Rancune de Melzas sur la 476, ouverture du coffre d'Anzes (163, 170, 177, 184), le héros (entrée dans le
   sable `0x20`, pose de victoire `0x5B`), à × 1 si possible puis au facteur de jeu.
+- **Arrêts** : une valeur qui contredit `g2b3-prediction.json`, un fichier modifié hors de la liste des 1923, un test existant qui bouge.
+  **Retour arrière** : revert, export complet égal au manifeste « avant ».
 
 **Retour arrière** (chaque tranche) : revert du sous-module et du pointeur ; pour G2b-3, export complet égal au manifeste « avant ».
 **Arrêts** : un test existant qui bouge, une valeur mesurée qui contredit l'oracle ou la prévision, un fichier hors de la liste.
