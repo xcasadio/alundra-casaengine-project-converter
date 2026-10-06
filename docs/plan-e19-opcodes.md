@@ -4924,7 +4924,7 @@ n'est prouvée qu'en f2b1 (test sur GPU) ; les écrans en font3 existants change
   six traces à l'octet. Avis P4 : le repli « CSV absent » n'a pas de test ; la note de F2B0-3 « `Warnings` (0) » veut dire « 0
   différence » (`report.json` porte 6 avertissements antérieurs, identiques avant et après).
 
-###### E19.f2b1 — Vue de la boîte : découverte du 2026-10-05, découpée en E19.f2b1a, E19.f2b1b et E19.f2b1c ⏳
+###### E19.f2b1 — Vue de la boîte : découverte du 2026-10-05, découpée en E19.f2b1a, E19.f2b1b et E19.f2b1c 🧪 (les trois faites et CONFIRMED le 2026-10-06 ; recettes F2B1A-3 et F2B1C-4 en attente)
 
 **Découverte** (2026-10-05, lecture seule ; quatre surfaces, chacune contre-vérifiée par un relecteur adverse qui a refait ses
 scripts ; notes, valeurs et scripts versionnés, en anglais, dans `docs/plan-e19-f2b1-annexe/`) ; faits porteurs :
@@ -5151,7 +5151,7 @@ Reste : la vérification (F2B1B-3), l'ADR n'étant pas prévue pour cette tranch
   la vérification (copie isolée) ne sont pas touchées. Le dossier `bak/` est laissé tel quel (son renommage a été refusé par le
   classifieur du mode auto) ; les consignes des agents interdisent de s'en servir.
 
-###### E19.f2b1c — Écran de la boîte, présentateur et preuve au pixel (R2 à R6, T2 à T5) 🧪 (faite le 2026-10-06, vérification à faire ; planifiée le 2026-10-05 ; relectures n°1 et n°2 REVISE ; blocage n°2 (prévision de l'export) : FIX, avis P3 et P4 repris ; nouvelle époque, relecture de clôture READY ; première exécution arrêtée le 2026-10-06 sur un arbre sale (incident de f2b1b), relancée)
+###### E19.f2b1c — Écran de la boîte, présentateur et preuve au pixel (R2 à R6, T2 à T5) 🧪 (relectures n°1 et n°2 REVISE, FIX ; relecture de clôture READY ; faite et CONFIRMED le 2026-10-06 ; recette F2B1C-4 en attente)
 
 **Règles.**
 - **F2B1C-R2 — View model** `AlundraTextBoxViewModel`, au patron d'`AlundraSaveScreenViewModel` (notification au seul changement) :
@@ -5229,8 +5229,18 @@ touché ; `Alundra.Tests` en Release puis en Debug avec la nouvelle épingle, `c
 9060 XT) ; le retard d'une image (O-E19-65) ; l'épingle relevée touche toute la suite.
 
 **Fait le 2026-10-06** (commits `b4cfe21` épingle, `10484c8` écran, présentateur, tests et R5, puis le commit de ce résultat) : la boîte de dialogue est dessinée par `TextBoxScreen` (modal, XAML de `view-notes.md` §1.2 avec `BorderThickness="0"`, enveloppe d'identifiant `5a6a4f8c-bcfc-4abf-9581-a687e4ad2228`, données de conception), liée à `AlundraTextBoxViewModel` que `AlundraTextBoxPresenter` écrit après chaque passe (poussé à la première passe dessinée, retiré dès que la boîte n'est plus dessinée) ; la fenêtre du moteur ne porte plus que les choix et se ferme avec la réponse quand une boîte est active ; le préfixe tapé a disparu. Preuves : `Alundra.Tests` 2679 → 2719 (+40), 0 échec, 0 ignoré, en Release puis en Debug (Debug en dernier), `cmp` `Alundra/bin/Debug/net9.0-windows/Alundra.dll` / `alundra-project/Alundra.dll` identiques, les six traces à l'octet (gardien : sortie 0, puis `git checkout` des quatre fichiers), `CasaEngine.Tests` et le convertisseur non touchés (pas de test du convertisseur), export (voir F2B1C-2) ; le test au pixel a tourné sur le GPU de la machine (AMD Radeon RX 9060 XT, DesktopGL), 9 tests sur 9 verts à ×1 et ×2 (la vue décalée à ×2 et ×3). Aucun arrêt : aucune valeur écrite d'avance n'a été contredite ; aucun manque du moteur ni de MGUI nouveau (le retard d'une image, O-E19-65, reste consigné). À faire : F2B1C-3 (vérificateur neuf) puis F2B1C-4 (recette de l'auteur).
+- ✅ **Vérification d'E19.f2b1c** (F2B1C-3, 2026-10-06) : vérificateur neuf **CONFIRMED** (`b4cfe21`, `10484c8`, `3f9e780`) :
+  `Alundra.Tests` 2719/2719 en Release puis en Debug (reconstruction forcée), les 9 tests au pixel exécutés sur le GPU ; rouges d'abord
+  rejoués par mutations (R5 annulé : 3 rouges, K6, l'empilement et l'écran poussé à `OpenChoice` ; `Apply` vide : 20 ; `Tick` du
+  présentateur vide : 7 ; le mandataire ne l'appelle plus : 3 ; les trois fichiers de l'écran retirés : T3, T5, le suivi de fenêtre et
+  le câblage ; sans `Padding="0"` : 9), la production remise ; valeurs de T2 sur S4 passe 100 et sa variante, bornes de T3, ordre
+  d'empilement de T4, points de T5 égaux au plan ; épingle MonoGame égale à celle du moteur ; liste fermée tenue ; export re-dérivé :
+  exactement les trois fichiers ajoutés, `AssetInfos.json` (l'enveloppe `5a6a4f8c-…`, `TextBoxScreen`) et les compteurs prévus de
+  `report.json` ; `cmp` sans écart, six traces. Avis P4 : `OnEndPlay` libère l'écran sans le retirer de la vue (comme l'écran de
+  sauvegarde ; à voir en recette en quittant un monde au milieu d'un dialogue) ; le chemin de production et un seul GPU, déjà en
+  risque.
 
-### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) — E19.k1 ✅ (recette K5 en attente) ; E19.k2 ⏳ (planifiée)
+### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) — E19.k1 ✅ (recette K5 en attente) ; E19.k2 🧪 (faite et vérifiée le 2026-10-03, recette K2-4 en attente)
 
 **Découverte** (2026-10-03, lecture seule ; notes et scripts dans le scratchpad de la session, `e19k-disc/`). Faits
 porteurs **[binaire]** :
