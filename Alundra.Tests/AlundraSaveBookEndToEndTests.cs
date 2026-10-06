@@ -176,6 +176,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         Frames(proxy, 20);
         Assert.Equal(1, Screen.Selection);
         Press(proxy, AlundraPadState.Cross);
+        Frames(proxy, 1); // D-E19-99: the screen reads the pad of the tick before (the binary's slot 10 reads the sample of the previous frame): the question opens one frame after the press.
         Assert.True(AlundraDialogueDirector.Instance.IsAwaitingChoice);
         Assert.True(AlundraDialogueDirector.Instance.SelectChoiceForTests(0));
 

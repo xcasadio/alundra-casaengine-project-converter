@@ -13,7 +13,9 @@ namespace Alundra.Tests;
 /// E19.f3c (docs/plan-e19-opcodes.md, D-E19-93; annex docs/plan-e19-save-order-annexe/): the order of the save screen inside
 /// <see cref="AlundraWorldProxy.Update"/>, through the REAL proxy. The binary's RenderScene runs the callback dispatcher (slot 3, the
 /// choice box) then slot 10 (the file menu, the save screen's question) in the same frame: the screen ticks after the dialogue pass,
-/// in the second loop, on the pad words of its own tick.
+/// in the second loop. D-E19-99: on the pad words of the tick BEFORE (the last tick of the previous frame at tick 0), like the pass: slots 0, 3 and 10
+/// and the memory-card process all run in RenderScene, before the pad sampler of the frame's Update(0), and read the previous frame's sample. The helpers of the
+/// director tests (<c>AlundraSaveScreenDirectorTests</c>) keep presenting their words at age 0 by design: the age is proved here, at the proxy.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraSaveScreenTickOrderTests : IDisposable
@@ -70,12 +72,14 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
         Assert.True(Director.IsPickerActive);
     }
 
-    /// <summary>The scenario of <c>DownDuringTheQuestion</c> through the proxy: Cross at the first tick (the opener), the hook armed after
-    /// <paramref name="armAfterTicks"/> ticks, then the number of FRAMES (of <paramref name="ticksPerFrame"/> ticks) until the screen takes the answer.</summary>
+    /// <summary>The scenario of <c>DownDuringTheQuestion</c> through the proxy: Cross at the first tick, read by the screen one tick later (the opener, D-E19-99), the hook armed
+    /// after <paramref name="armAfterTicks"/> ticks counted from the OPENER, then the number of FRAMES (of <paramref name="ticksPerFrame"/> ticks) until the screen takes the answer.</summary>
     private int FramesToTheAnswer(int ticksPerFrame, int armAfterTicks, int choice)
     {
         StartAndSettlePicker();
         Frame(1, AlundraPadState.Cross);
+        Assert.False(Director.IsQuestionPending); // the screen reads the pad of the tick before: the Cross is read by the next tick
+        Frame(1); // the opener
         Assert.True(Director.IsQuestionPending);
         Assert.True(Dialogue.IsAwaitingChoice);
         for (var t = 1; t <= armAfterTicks; t += ticksPerFrame)
@@ -145,6 +149,122 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
         }
 
         Assert.NotEqual(AlundraSaveScreenDirector.StateWaitSquare, Director.State);
+    }
+
+    /// <summary>D-E19-99: the question opens one tick after the Cross whatever the grouping of the ticks into frames: in the next frame when the Cross frame has one tick, in the same frame
+    /// (its tick 1) from two ticks.</summary>
+    [Theory]
+    [InlineData(1, false)]
+    [InlineData(2, true)]
+    [InlineData(3, true)]
+    public void TheCross_IsReadByTheScreenOneTickAfterItsPress(int ticksPerFrame, bool openedInTheCrossFrame)
+    {
+        StartAndSettlePicker();
+        Frame(ticksPerFrame, AlundraPadState.Cross);
+        Assert.Equal(openedInTheCrossFrame, Director.IsQuestionPending);
+        Frame(1);
+        Assert.True(Director.IsQuestionPending);
+        Assert.True(Dialogue.IsAwaitingChoice);
+    }
+
+    /// <summary>Answers the question with the pad alone, one tick per frame: the Cross that opens it at tick 0, then OUI (Cross at <paramref name="q"/>) or NON (Right at q, Cross at q + 1).
+    /// Returns the tick at the end of which the screen has taken the answer (-1: never) and whether the slot was written (OUI).</summary>
+    private (int Taken, bool Saved) AnswerByThePad(int q, bool non)
+    {
+        StartAndSettlePicker();
+        var opened = false;
+        var taken = -1;
+        for (var tick = 0; tick < q + 160; tick++)
+        {
+            uint hold = 0;
+            if (tick == 0)
+            {
+                hold = AlundraPadState.Cross;
+            }
+            else if (tick == q)
+            {
+                hold = non ? AlundraPadState.Right : AlundraPadState.Cross;
+            }
+            else if (non && tick == q + 1)
+            {
+                hold = AlundraPadState.Cross;
+            }
+
+            Frame(1, hold);
+            if (!opened && Director.IsQuestionPending)
+            {
+                opened = true;
+            }
+            else if (opened && taken < 0 && !Director.IsQuestionPending)
+            {
+                taken = tick;
+            }
+        }
+
+        return (taken, _slots.SaveCalls.Count == 1);
+    }
+
+    /// <summary>D-E19-99, the age of the pad word: the binary counts 19 pad samples between the press that opens the question and the earliest press the choice box takes (the screen reads the opening
+    /// press one sample late, the choice box opens, slides in for 18 passes, and reads from its 19th pass). A press at the 18th sample is dropped (the box still slides in); the Right of a NON must
+    /// also come at the 19th sample or later. Ticks are counted from the opening press (tick 0).</summary>
+    [Theory]
+    [InlineData(false, 18, -1, false)]
+    [InlineData(false, 19, 38, true)]
+    [InlineData(false, 20, 39, true)]
+    [InlineData(true, 18, 38, true)] // the Right at 18 is dropped: the Cross at 19 answers OUI
+    [InlineData(true, 19, 39, false)]
+    [InlineData(true, 20, 40, false)]
+    public void ThePadAnswer_IsTakenFromTheNineteenthSampleAfterTheOpeningPress(bool non, int q, int expectedTaken, bool expectedSaved)
+    {
+        Assert.Equal((expectedTaken, expectedSaved), AnswerByThePad(q, non));
+    }
+
+    /// <summary>D-E19-99: the Square of the wait state (the binary's state 0x3F5 of the memory-card process, in RenderScene) is read one tick after its press: frames from the press frame until the
+    /// screen leaves <see cref="AlundraSaveScreenDirector.StateWaitSquare"/>.</summary>
+    [Theory]
+    [InlineData(1, 20)]
+    [InlineData(2, 10)]
+    [InlineData(3, 6)]
+    public void TheSquareOfTheWait_IsReadOneTickAfterItsPress(int ticksPerFrame, int expectedFrames)
+    {
+        Assert.True(Director.StartFailure());
+        var guard = 0;
+        while (Director.State != AlundraSaveScreenDirector.StateWaitSquare && guard++ < 400)
+        {
+            Frame(1);
+        }
+
+        Assert.Equal(AlundraSaveScreenDirector.StateWaitSquare, Director.State);
+        for (var i = 0; i < 30; i++)
+        {
+            Frame(1);
+        }
+
+        Frame(ticksPerFrame, AlundraPadState.Square);
+        Assert.Equal(AlundraSaveScreenDirector.StateWaitSquare, Director.State);
+        var frames = 0;
+        while (Director.State == AlundraSaveScreenDirector.StateWaitSquare && frames < 80)
+        {
+            Frame(ticksPerFrame);
+            frames++;
+        }
+
+        Assert.Equal(expectedFrames, frames);
+    }
+
+    /// <summary>D-E19-99: the Down of the picker (the binary's slot 10, by-interval word) is read one tick after its press: the selection moves in the next frame with one tick per frame, in the
+    /// same frame (its tick 1) with two.</summary>
+    [Theory]
+    [InlineData(1, 0)]
+    [InlineData(2, 1)]
+    public void TheDownOfThePicker_IsReadOneTickAfterItsPress(int ticksPerFrame, int selectionAfterThePressFrame)
+    {
+        StartAndSettlePicker();
+        Assert.Equal(0, Director.Selection);
+        Frame(ticksPerFrame, AlundraPadState.Down);
+        Assert.Equal(selectionAfterThePressFrame, Director.Selection);
+        Frame(ticksPerFrame);
+        Assert.Equal(1, Director.Selection);
     }
 
     private sealed class CountingRunner : IEventProgramRunner
