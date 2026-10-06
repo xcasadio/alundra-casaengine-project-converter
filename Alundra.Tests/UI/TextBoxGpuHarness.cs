@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.ExceptionServices;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -133,6 +134,20 @@ internal static class TextBoxGpu
     }
 
     public static GraphicsDevice Device => _game!.GraphicsDevice;
+
+    /// <summary>E19.f4c2: the SHA-1 (lower-case hex) of the RGB bytes of a render, the alpha channel left out - the digest of the name images of the f4c annex (<c>names-digests.tsv</c>).</summary>
+    public static string Sha1OfRgb(Color[] pixels)
+    {
+        var bytes = new byte[pixels.Length * 3];
+        for (var i = 0; i < pixels.Length; i++)
+        {
+            bytes[3 * i] = pixels[i].R;
+            bytes[3 * i + 1] = pixels[i].G;
+            bytes[3 * i + 2] = pixels[i].B;
+        }
+
+        return Convert.ToHexString(SHA1.HashData(bytes)).ToLowerInvariant();
+    }
 
     /// <summary>The one session (runtime, assets, font) of the process, built on first use on the GPU thread.</summary>
     public static Session GetSession() => Invoke(() => _session ??= new Session(_game!));

@@ -26,6 +26,8 @@ namespace Alundra.Tests.UI;
 public sealed class AlundraTextBoxScreenXamlTests
 {
     private const string FrameSourceName = "973a9208-c867-57fe-bee3-cf30237221ef";
+    private const string NameFrameSourceName = "91ca17ae-e279-5a45-bb45-b15fbabdde68";   // the baked 112 x 32 frame of the name (g_textTilesConfiguration)
+    private const string JessPortraitId = "56f5809a-a47b-564e-b7f7-a66be1f98b04";        // bank 4, 48 x 56
 
     private static readonly string[] RowNames = { "Row0", "Row1", "Row2" };
 
@@ -55,6 +57,8 @@ public sealed class AlundraTextBoxScreenXamlTests
         (desktop, runtime) = HeadlessUiTestHarness.NewDesktop(imageSizes: new Dictionary<string, (int, int)>
         {
             [FrameSourceName] = (288, 56),
+            [NameFrameSourceName] = (112, 32),
+            [JessPortraitId] = (48, 56),
             ["wind_150"] = (16, 16),
             ["wind_173"] = (16, 16),
             ["wind_201"] = (16, 16),
@@ -120,6 +124,10 @@ public sealed class AlundraTextBoxScreenXamlTests
         Assert.Equal(("deuxième ligne", 0, 17), (viewModel.Row1.Text, viewModel.Row1.Left, viewModel.Row1.Top));
         Assert.Equal((string.Empty, 0, 33), (viewModel.Row2.Text, viewModel.Row2.Left, viewModel.Row2.Top));
         Assert.Equal(("wind_150", 200, Visibility.Visible), (viewModel.Cursor.SourceName, viewModel.Cursor.Top, viewModel.Cursor.Visibility));
+
+        // E19.f4c2: the preview shows the portrait only (as the inventory's design data does: no translation, no scale, no brightness); the name box and the visibilities of the frame and the clip keep their defaults.
+        Assert.Equal((JessPortraitId, Visibility.Visible), (viewModel.Portrait.SourceName, viewModel.Portrait.Visibility));
+        Assert.Equal((Visibility.Collapsed, Visibility.Visible, Visibility.Visible), (viewModel.NameBox.Visibility, viewModel.Frame.Visibility, viewModel.Clip.Visibility));
     }
 
     /// <summary>No title bar and no close button (the original has none); the window is a bare 320 x 240 shell: no border, no padding, no background.</summary>
@@ -140,7 +148,7 @@ public sealed class AlundraTextBoxScreenXamlTests
     }
 
     [Fact]
-    public void RootCanvas_IsNativeThreeTwentyByTwoForty_AndHoldsTheFrameTheCursorThenTheTextClip()
+    public void RootCanvas_IsNativeThreeTwentyByTwoForty_AndHoldsTheFrameTheCursorTheTextClipThePortraitTheNameFrameThenTheNameText()
     {
         var window = LoadWindow(out _);
         var canvas = Element<MGCanvas>(window, "RootCanvas");
@@ -148,8 +156,9 @@ public sealed class AlundraTextBoxScreenXamlTests
         Assert.Equal(320, canvas.PreferredWidth);
         Assert.Equal(240, canvas.PreferredHeight);
 
-        // The draw order of the binary's slot 0 then slot 2: the frame, the cursor over it, then the text, over the cursor.
-        Assert.Equal(new[] { "Frame", "Cursor", "TextClip" }, canvas.Children.Select(child => child.Name ?? string.Empty).ToList());
+        // The draw order of the binary's slot 0 then slot 2: the frame, the cursor over it, then the text, over the cursor; then (E19.f4c2) slot 3, the portrait over the frame and the
+        // text, then slots 5 and 6, the name frame over the portrait and the name text over its frame.
+        Assert.Equal(new[] { "Frame", "Cursor", "TextClip", "PortraitImage", "NameFrame", "NameText" }, canvas.Children.Select(child => child.Name ?? string.Empty).ToList());
     }
 
     [Fact]
@@ -190,6 +199,80 @@ public sealed class AlundraTextBoxScreenXamlTests
             Assert.Equal(255, row.PreferredWidth);
             Assert.Equal(VerticalAlignment.Top, row.VerticalContentAlignment);
         }
+    }
+
+    /// <summary>E19.f4c2 F4C2-R1: the three elements of the speaker. The portrait sits at its rest position (8, 116) and the flight moves it through the bound render transform
+    /// (MGUI ADR-0020), its tint through the bound <c>Brightness</c> (MGUI ADR-0021); the name frame is the baked 112 x 32 frame at y 140; the name is a font3 text at y 148, no
+    /// padding, no wrap, no width (the binary's clip never cuts a name).</summary>
+    [Fact]
+    public void ThePortraitAndTheNameBox_CarryTheAttributesThatDecideTheirPixels()
+    {
+        var window = LoadWindow(out _);
+        var portrait = Element<MGImage>(window, "PortraitImage");
+        var nameFrame = Element<MGImage>(window, "NameFrame");
+        var nameText = Element<MGTextBlock>(window, "NameText");
+
+        Assert.Equal(Stretch.None, portrait.Stretch);
+        Assert.Equal((8, 116), (portrait.CanvasLeft, portrait.CanvasTop));
+        Assert.Equal(Stretch.None, nameFrame.Stretch);
+        Assert.Equal(NameFrameSourceName, nameFrame.SourceName);
+        Assert.Equal(140, nameFrame.CanvasTop);
+        Assert.Equal("font3", nameText.FontFamily);
+        Assert.False(nameText.AllowsInlineFormatting);
+        Assert.False(nameText.WrapText);
+        Assert.Equal(0f, nameText.LinePadding);
+        Assert.Equal((0, 0, 0, 0), (nameText.Padding.Left, nameText.Padding.Top, nameText.Padding.Right, nameText.Padding.Bottom));
+        Assert.Equal(VerticalAlignment.Top, nameText.VerticalContentAlignment);
+        Assert.Equal(148, nameText.CanvasTop);
+        Assert.Null(nameText.PreferredWidth);
+    }
+
+    [Fact]
+    public void TheSpeakerBindings_PushTheViewModel_ToThePortraitAndTheNameBox_AndTheFrameAndTheClipFollowTheirVisibility()
+    {
+        var window = LoadWindow(out var desktop, out var runtime);
+        var viewModel = new AlundraTextBoxViewModel { RootVisibility = Visibility.Visible };
+        window.WindowDataContext = viewModel;
+
+        viewModel.NameBox.Left = 64;
+        viewModel.NameBox.TextLeft = 109;
+        viewModel.NameBox.Text = "Jess";
+        viewModel.NameBox.Visibility = Visibility.Visible;
+        viewModel.Portrait.SourceName = JessPortraitId;
+        viewModel.Portrait.Translation = new Vector2(81, -9);
+        viewModel.Portrait.Scale = new Vector2(22f / 48f, 26f / 56f);
+        viewModel.Portrait.Brightness = 195f / 128f;
+        viewModel.Portrait.Visibility = Visibility.Visible;
+        viewModel.Frame.Visibility = Visibility.Collapsed;
+        viewModel.Clip.Visibility = Visibility.Collapsed;
+        Settle(runtime, desktop);
+
+        var portrait = Element<MGImage>(window, "PortraitImage");
+        var nameFrame = Element<MGImage>(window, "NameFrame");
+        var nameText = Element<MGTextBlock>(window, "NameText");
+        Assert.Equal(JessPortraitId, portrait.SourceName);
+        Assert.Equal(new Vector2(81, -9), portrait.RenderTransform.Translation);
+        Assert.Equal(new Vector2(22f / 48f, 26f / 56f), portrait.RenderTransform.Scale);
+        Assert.Equal(195f / 128f, portrait.Brightness);
+        Assert.Equal(Visibility.Visible, portrait.Visibility);
+        Assert.Equal(new Rectangle(64, 140, 112, 32), nameFrame.LayoutBounds);
+        Assert.Equal(Visibility.Visible, nameFrame.Visibility);
+        Assert.Equal(("Jess", 109, Visibility.Visible), (nameText.Text, nameText.CanvasLeft, nameText.Visibility));
+        Assert.Equal(Visibility.Collapsed, Element<MGImage>(window, "Frame").Visibility);
+        Assert.Equal(Visibility.Collapsed, Element<MGCanvas>(window, "TextClip").Visibility);
+
+        // The name leaves and the text box comes back.
+        viewModel.NameBox.Visibility = Visibility.Collapsed;
+        viewModel.Portrait.Visibility = Visibility.Collapsed;
+        viewModel.Frame.Visibility = Visibility.Visible;
+        viewModel.Clip.Visibility = Visibility.Visible;
+        Settle(runtime, desktop);
+
+        Assert.Equal(Visibility.Collapsed, nameFrame.Visibility);
+        Assert.Equal(Visibility.Collapsed, nameText.Visibility);
+        Assert.Equal(Visibility.Collapsed, portrait.Visibility);
+        Assert.Equal(Visibility.Visible, Element<MGImage>(window, "Frame").Visibility);
+        Assert.Equal(Visibility.Visible, Element<MGCanvas>(window, "TextClip").Visibility);
     }
 
     /// <summary>Every bound member reaches its element, and the elements sit at the bounds of the original at rest: the frame (16, 168, 288, 56), the cursor

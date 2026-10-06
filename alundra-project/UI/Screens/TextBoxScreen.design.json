@@ -28,6 +28,10 @@
       "SourceName": "wind_150",
       "Top": 200,
       "Visibility": "Visible"
+    },
+    "Portrait": {
+      "SourceName": "56f5809a-a47b-564e-b7f7-a66be1f98b04",
+      "Visibility": "Visible"
     }
   }
 }

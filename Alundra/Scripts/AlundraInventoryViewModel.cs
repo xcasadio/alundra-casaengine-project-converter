@@ -105,6 +105,7 @@ public sealed class InventoryPortraitViewModel : ViewModelBase
     private Guid _sourceId;
     private Vector2 _translation;
     private Vector2 _scale = Vector2.One;
+    private float _brightness = 1f;
     private Visibility _visibility = Visibility.Collapsed;
 
     /// <summary>The portrait sprite's asset id (<c>Data/inventory-portrait.json</c>), null until known.</summary>
@@ -159,6 +160,55 @@ public sealed class InventoryPortraitViewModel : ViewModelBase
                 NotifyPropertyChanged();
             }
         }
+    }
+
+    /// <summary>
+    /// E19.f4c2 (D-E19-100, MGUI ADR-0021): the tint of the portrait, the original's vertex colour over 128: 1 is the texture as it is, above 1 it brightens (up to 2, the original's
+    /// 255), below 1 it darkens. Bound to <c>Image.Brightness</c>. f4c2 owns the property and the dialogue's writer (<see cref="ApplyDialogue"/>); the inventories' <see cref="Apply"/> sets it in E19.f4c3.
+    /// </summary>
+    public float Brightness
+    {
+        get => _brightness;
+        set
+        {
+            if (_brightness != value)
+            {
+                _brightness = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
+
+    // The rest position of the dialogue's portrait in TextBoxScreen.xaml (CanvasLeft, CanvasTop): the flight and the tall portraits' gap are in the translation.
+    private const int DialogueRestX = 8;
+    private const int DialogueRestY = 116;
+
+    /// <summary>
+    /// E19.f4c2 (F4C2-R2): writes what the dialogue's portrait machine drew this pass (<paramref name="portrait"/>, <see cref="AlundraDialogueDirector.Portrait"/>) for the image of
+    /// <paramref name="source"/> (the speaker's portrait as the opening locked it, <see cref="AlundraDialogueDirector.PortraitSource"/>). Nothing drawn this pass, or no source, collapses
+    /// the element. Else the translation is the quad's top-left minus (8, 116) - the image sits at (8, 116) in the XAML, so a 48 x 72 portrait (rest (8, 100)) has a translation of -16 at rest -
+    /// the scale is the drawn size over the image's own size (48 x its height), the brightness is Rgb / 128, and a pass of 0 x 0 stays visible at the scale 0, exactly the original's 0 x 0 quad
+    /// (no visibility change in flight, as the inventories).
+    /// </summary>
+    internal void ApplyDialogue(AlundraInventoryPortrait portrait, DialoguePortraitRef? source)
+    {
+        ArgumentNullException.ThrowIfNull(portrait);
+        if (!portrait.DrawnThisStep || !source.HasValue)
+        {
+            Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        var image = source.Value;
+        if (_sourceId != image.SpriteAssetId || _sourceName == null)
+        {
+            SourceName = image.SpriteAssetId.ToString("D");
+        }
+
+        Translation = new Vector2(portrait.X - DialogueRestX, portrait.Y - DialogueRestY);
+        Scale = new Vector2(portrait.DrawnWidth / (float)AlundraInventoryPortrait.FullWidth, portrait.DrawnHeight / (float)image.Height);
+        Brightness = portrait.Rgb / 128f;
+        Visibility = Visibility.Visible;
     }
 
     /// <summary>Writes the quad <paramref name="portrait"/> drew this tick. A quad with no area (idle, the first

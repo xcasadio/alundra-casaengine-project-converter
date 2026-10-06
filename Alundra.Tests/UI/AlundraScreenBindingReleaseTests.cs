@@ -89,6 +89,28 @@ public sealed class AlundraScreenBindingReleaseTests : IDisposable
         Assert.Equal(0, BindingsOn(tree));
     }
 
+    /// <summary>E19.f4c2: the text box screen is rebuilt at every world change too, and now binds the speaker's portrait (render transform, brightness, visibility), the name frame and the
+    /// name text: none of those bindings may outlive the screen.</summary>
+    [Fact]
+    public void ADisposedTextBoxScreen_LeavesNoBindingOnItsWindow_TheSpeakerElementsIncluded()
+    {
+        var assets = TextBoxScreenAssets.New();
+        var screen = new AlundraTextBoxScreen(assets, new UIFontRegistry(assets));
+        var (desktop, _) = HeadlessUiTestHarness.NewDesktop();
+        var tree = screen.BuildWindow(desktop).TraverseVisualTree().ToHashSet();
+        Assert.NotEqual(0, BindingsOn(tree));
+        foreach (var name in new[] { "PortraitImage", "NameFrame", "NameText" })
+        {
+            Assert.True(
+                DataBindingManager.Bindings.Any(binding => binding.TargetObject is MGElement element && tree.Contains(element) && element.Name == name),
+                $"'{name}' has no binding on the live window");
+        }
+
+        screen.Dispose();
+
+        Assert.Equal(0, BindingsOn(tree));
+    }
+
     [Fact]
     public void ADisposedHudScreen_LeavesNoBindingOnItsWindow()
     {

@@ -6001,7 +6001,7 @@ MGUI (sous-module du moteur ; branche `chantier/e19f4c1-image-brightness` créé
   `notes.md`) est sans effet : les tests suivent la règle du centre, D-E19-101 fait foi. Nouvelle époque ; une seule relecture de
   clôture.
 
-###### E19.f4c2 — Vue du nom et du portrait du dialogue 🚧 (planifiée le 2026-10-06, après f4c1 ; F4C2-0 faite le 2026-10-06)
+###### E19.f4c2 — Vue du nom et du portrait du dialogue 🧪 (faite le 2026-10-06, vérification à faire)
 
 DLL et écran XAML seulement (aucun export : `UI/Screens/*` est versionné à la main).
 - **F4C2-R1 — XAML** (`proposal-TextBoxScreen.xaml`) : après `TextClip`, `PortraitImage` (repos (8, 116) dans la XAML, vol par
@@ -6058,7 +6058,23 @@ DLL et écran XAML seulement (aucun export : `UI/Screens/*` est versionné à la
   - **Un écart de la découverte, corrigé ici** : à Rgb = 128 la modulation `psx_modulate` n'est pas l'identité sur les texels exportés (72 devient 74 : l'export écrit `t5 << 3`, la
     modèle rend `(o5 << 3) | (o5 >> 2)`) ; la référence du portrait au repos est donc le texel tel quel (« exacte », comme le plan l'écrit) ; la modulation ne vaut que pour Rgb ≠ 128, où
     les 8/255 la couvrent.
-  - Tâches : ✅ F4C2-0 ; ⏳ F4C2-1 tests d'abord ; ⏳ F4C2-2 code, docs, ADR ; ⏳ F4C2-3 vérification ; ⏳ F4C2-4 recette.
+  - Tâches : ✅ F4C2-0 ; ✅ F4C2-1 tests d'abord ; ✅ F4C2-2 code, docs, ADR-0042 ; 🧪 F4C2-3 vérification (relecture indépendante) à faire ; ⏳ F4C2-4 recette de l'auteur.
+  - **Fait le 2026-10-06 (F4C2-1 à F4C2-2, mode AUTO, rien poussé, rien mergé).** Parent seulement (moteur et MGUI inchangés, pointeurs inchangés : moteur `face4b1e`). ADR-0042 du parent (le plus grand
+    numéro trouvé sur `main` et `chantier/e19-suite` : 0041).
+  - **Rouge d'abord** (propriétés et méthodes sans effet, XAML d'avant) : 29 tests rouges sur 71 des cinq classes touchées. Valeurs : classe exacte, 12 images sur 17 différentes (S1 N+16 : 4826 pixels, premier en
+    (30, 116) obtenu (100, 149, 237) attendu (16, 8, 8)) ; classe à 8/255, 24 images sur 36 ; 180 noms sur 180 et 25 portraits sur 25 différents ; point d'ordre (19, 168) obtenu (88, 96, 72) attendu
+    (72, 48, 32) ; S1 : 75 images hors des tables (S5 : 156) (premier : N+1, nom `Collapsed` au lieu de (320, 365, Jess)) ; S2 : portrait `Collapsed` au lieu de (152, -18), échelle 0, brillance 1,9921875 ; union S5 :
+    à l'image 43 (N+40) « seul le locuteur est dessiné et l'écran n'est pas posé » ; XAML : enfants `[Frame, Cursor, TextClip]` sans les trois éléments.
+  - **Vert** : les 71 tests des cinq classes (aucun ignoré : la GPU de la machine les exécute). Classe exacte : 17 images, 0 écart ; classe à 8/255 : 36 images, 0 écart ; 180 noms (60 × x 64, 303, 150) : 0 écart
+    d'empreinte ; 25 portraits au repos : 0 pixel ; points d'ordre : (19, 168) (72, 48, 32), (71, 171) (72, 64, 56), (110, 149) (41, 49, 16), (64, 140) fond ; contrôle portrait et nom masqués : (88, 96, 72) et
+    (144, 136, 112). Mutant « `Brightness` = 1 » : la classe à 8/255 rougit (12 images sur 36, par exemple N+8 : obtenu (40, 24, 16) attendu (57, 33, 24) dans le quad).
+  - **Préchargement mesuré** (meilleur de 3, décodage et envoi à la GPU) : `map_327` 512 × 1188 : 9,6 ms ; `map_321` 512 × 643 : 5,3 ms ; `map_10` 512 × 554 : 5,7 ms ; 13 feuilles distinctes. Sous 20 ms : **pas de
+    préchargement**.
+  - **Tests qui bougent** (liste fermée) : `RootCanvas_..._HoldsTheFrameTheCursorThenTheTextClip` (renommé, six enfants) ; `ApplyingTheSameStateTwice_...` (écouteurs NameBox et Portrait) ; la donnée de conception (assertions
+    ajoutées). Aucune autre assertion existante modifiée.
+  - **Suites** : `Alundra.Tests` 2946 verts en Release puis 2946 en Debug (2916 avant, 30 nouveaux) ; `cmp` de `Alundra.dll` identique ; six traces : garde sans écart. Pas d'export (aucun fichier généré).
+  - Fichiers : `TextBoxScreen.xaml`, `TextBoxScreen.design.json`, `AlundraTextBoxViewModel.cs`, `AlundraInventoryViewModel.cs` (propriété `Brightness` et `ApplyDialogue`), `AlundraTextBoxPresenter.cs`,
+    `AlundraDialogueNameBox.cs` (`Text`), `AlundraDialogueDirector.cs` (`PortraitSource`), les tests de la liste fermée dont le nouveau `AlundraSpeakerPixelTests.cs`, l'annexe, ADR-0042 et son index.
 
 ###### E19.f4c3 — Rampe du portrait de l'inventaire (D-E19-100) ⏳ (planifiée le 2026-10-06, **après f4c2**, qui ajoute la propriété ; relecture n°1 REVISE (liste fermée, prévisions), révisée ; relecture n°2 à faire)
 

@@ -137,6 +137,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     private readonly AlundraDialogueNameBox _nameBox = new();
     private readonly AlundraInventoryPortrait _portrait = new();
     private AlundraEntityScriptProxy? _portraitSpeaker;
+    private DialoguePortraitRef? _portraitSource;
     private readonly HashSet<int> _warnedPortraitSpriteTypes = new();
     private readonly Func<char, int> _advanceDelegate;
     private readonly Func<int, string?> _nameTextDelegate;
@@ -198,6 +199,10 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
 
     /// <summary>E19.f4b: the dialogue's own instance of the portrait machine (rest (8, 172 - h)); the inventories' is <see cref="AlundraInventoryPortrait.Instance"/>, never touched here.</summary>
     internal AlundraInventoryPortrait Portrait => _portrait;
+
+    /// <summary>E19.f4c2 (F4C2-R4): the image of the portrait whose start the machine accepted, locked at the opening with <see cref="PortraitSpeaker"/> (null while no start was accepted): the view never reads the
+    /// speaker's live field, which a speaker destroyed and recycled by another entity (ADR-0024) would change in the middle of the return flight.</summary>
+    internal DialoguePortraitRef? PortraitSource => _portraitSource;
 
     /// <summary>E19.f4b: the speaker whose start the portrait machine accepted, the one its return flies to (null while no start was accepted).</summary>
     internal AlundraEntityScriptProxy? PortraitSpeaker => _portraitSpeaker;
@@ -478,6 +483,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
                 if (_portrait.Start(head.X, head.Y, PortraitRestX, PortraitRestBottom - portrait.Height, AlundraInventoryPortrait.FullWidth, portrait.Height))
                 {
                     _portraitSpeaker = speaker;
+                    _portraitSource = portrait;
                 }
             }
             else if (_warnedPortraitSpriteTypes.Add(speaker.SpriteType))
@@ -507,6 +513,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
         _nameBox.Reset();
         _portrait.ResetSessionForLoad();
         _portraitSpeaker = null;
+        _portraitSource = null;
     }
 
     // ---- the pass

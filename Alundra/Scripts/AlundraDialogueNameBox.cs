@@ -3,7 +3,7 @@ using System;
 
 namespace Alundra.Scripts;
 
-/// <summary>What one drawn pass of the name box shows (E19.f4b: the logic only, the view is E19.f4c). Positions are screen pixels; the frame is at <see cref="AlundraDialogueNameBox.FrameY"/>, the text at <see cref="AlundraDialogueNameBox.TextY"/>.</summary>
+/// <summary>What one drawn pass of the name box shows (E19.f4b: the logic; the view is E19.f4c2, <see cref="TextBoxNameViewModel"/>). Positions are screen pixels; the frame is at <see cref="AlundraDialogueNameBox.FrameY"/>, the text at <see cref="AlundraDialogueNameBox.TextY"/>.</summary>
 internal sealed record NameBoxDrawnState(int FrameX, int TextX);
 
 /// <summary>
@@ -48,6 +48,9 @@ internal sealed class AlundraDialogueNameBox
     /// <summary>The ETC index of the name shown (<c>0x80180288</c>).</summary>
     public int NameId { get; private set; }
 
+    /// <summary>E19.f4c2: the ETC text of the name, locked at the opening (<see cref="TryOpen"/>): the view reads this, never the speaker or the ETC again.</summary>
+    public string Text { get; private set; } = string.Empty;
+
     /// <summary>The width of the text, the sum of the font3 advances of its glyphs.</summary>
     public int TextWidth { get; private set; }
 
@@ -84,6 +87,7 @@ internal sealed class AlundraDialogueNameBox
         }
 
         NameId = id;
+        Text = text;
         TextWidth = width;
         IsSlotOpen = true;
         Flags = FlagSlidingIn | FlagOpen;

@@ -603,4 +603,107 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
 
         Assert.Null(proxy.ChoiceScreenForTests);
     }
+
+    // ---- E19.f4c2 F4C2-R3: the speaker keeps the screen up ------------------------------------------------------------------------------------------
+
+    private static AlundraEntityScriptProxy Speaker(int spriteType = 0x104) => SpeakerRig.Speaker(spriteType, portrait: true);
+
+    /// <summary>S5 of the f4 annex (two dialogues in a row, the same speaker): the second speaker's portrait first draws on image 41 (N+38) and its name on 43 (N+40), while the first box is
+    /// still leaving (released on image 43) and the second box first draws on image 44 (N+41): on image 43 ONLY the speaker is drawn. The screen is pushed once and removed once (the
+    /// union of what the box, the name and the portrait draw), the frame, the cursor and the text fold for that image, and the presenter writes the view model once per tick.</summary>
+    [Fact]
+    public void TwoSpeakersInARow_KeepTheScreenUpWhileOnlyTheSpeakerIsDrawn_PushedOnceRemovedOnce_OneApplyPerTick()
+    {
+        using var rig = new SpeakerRig();
+        var speaker = Speaker();
+        var ui = new AlundraSaveBookTests.RecordingUIViewRuntime();
+        var screen = new FakeTextBoxScreen();
+        var viewModel = new AlundraTextBoxViewModel();
+        var presenter = new AlundraTextBoxPresenter(rig.Director, viewModel, screen, ui);
+        var dialogues = new[] { SpeakerRig.Codes0D(SpeakerRig.TextAb), SpeakerRig.Codes0D(SpeakerRig.TextCd) };
+        var next = 0;
+        var onlyTheSpeaker = new List<int>();
+
+        for (var f = 0; f < 110; f++)
+        {
+            rig.Pass();
+            var applied = viewModel.AppliedCount;
+            var wasPushed = presenter.IsPushedForTests;
+            presenter.Tick();
+
+            var anything = rig.Director.Box.Drawn || rig.Director.NameBox.Drawn is not null || rig.Director.Portrait.DrawnThisStep;
+            Assert.True(viewModel.AppliedCount - applied == (anything || wasPushed ? 1 : 0), $"image {f}: Apply ran {viewModel.AppliedCount - applied} time(s), anything {anything}, pushed before {wasPushed}");
+            if (anything && !rig.Director.Box.Drawn)
+            {
+                onlyTheSpeaker.Add(f);
+                Assert.True(presenter.IsPushedForTests, $"image {f}: only the speaker is drawn and the screen is not pushed");
+                Assert.Equal(Visibility.Visible, viewModel.RootVisibility);
+                Assert.Equal((Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed), (viewModel.Frame.Visibility, viewModel.Clip.Visibility, viewModel.Cursor.Visibility));
+            }
+
+            if (next < dialogues.Length && f >= 3 && rig.Run(speaker, dialogues[next]))
+            {
+                next++;
+            }
+        }
+
+        Assert.Equal(new IUIScreen[] { screen }, ui.Pushed);
+        Assert.Equal(new IUIScreen[] { screen }, ui.Removed);
+        Assert.Contains(43, onlyTheSpeaker); // N+40: the satellites alone (values.json S5)
+        Assert.False(presenter.IsPushedForTests);
+    }
+
+    /// <summary>A portrait left at rest with no box keeps the screen, as the binary keeps drawing it, until the map entry or the presenter's close (F4B-R4).</summary>
+    [Fact]
+    public void APortraitLeftAtRestWithNoBox_KeepsTheScreen_UntilTheMapEntry()
+    {
+        using var rig = new SpeakerRig();
+        var ui = new AlundraSaveBookTests.RecordingUIViewRuntime();
+        var screen = new FakeTextBoxScreen();
+        var viewModel = new AlundraTextBoxViewModel();
+        var presenter = new AlundraTextBoxPresenter(rig.Director, viewModel, screen, ui);
+
+        rig.Director.OpenSpeaker(Speaker()); // a speaker's portrait and name, and no box
+        for (var f = 0; f < 40; f++)
+        {
+            rig.Director.Pass(false, false);
+            presenter.Tick();
+        }
+
+        Assert.Equal(new IUIScreen[] { screen }, ui.Pushed);
+        Assert.Empty(ui.Removed);
+        Assert.False(rig.Director.Box.Drawn);
+        Assert.Equal(Visibility.Visible, viewModel.RootVisibility);
+        Assert.Equal((Visibility.Collapsed, Visibility.Collapsed, Visibility.Collapsed), (viewModel.Frame.Visibility, viewModel.Clip.Visibility, viewModel.Cursor.Visibility));
+        Assert.Equal((Visibility.Visible, new Vector2(0, 0), new Vector2(1, 1), 1f), (viewModel.Portrait.Visibility, viewModel.Portrait.Translation, viewModel.Portrait.Scale, viewModel.Portrait.Brightness));
+        Assert.Equal((64, 109, "Jess", Visibility.Visible), (viewModel.NameBox.Left ?? -1, viewModel.NameBox.TextLeft ?? -1, viewModel.NameBox.Text, viewModel.NameBox.Visibility));
+
+        rig.Director.InstallForMapEntry(); // the satellites are put back to a map entry's state
+        presenter.Tick();
+        Assert.Equal(new IUIScreen[] { screen }, ui.Removed);
+        Assert.False(presenter.IsPushedForTests);
+        Assert.Equal(Visibility.Collapsed, viewModel.RootVisibility);
+    }
+
+    [Fact]
+    public void TheOutOfBandClose_RemovesTheScreenOfAPortraitAtRest()
+    {
+        using var rig = new SpeakerRig();
+        var ui = new AlundraSaveBookTests.RecordingUIViewRuntime();
+        var screen = new FakeTextBoxScreen();
+        var presenter = new AlundraTextBoxPresenter(rig.Director, new AlundraTextBoxViewModel(), screen, ui);
+
+        rig.Director.OpenSpeaker(Speaker());
+        for (var f = 0; f < 30; f++)
+        {
+            rig.Director.Pass(false, false);
+            presenter.Tick();
+        }
+
+        Assert.True(presenter.IsPushedForTests);
+
+        rig.Director.NotifyPresenterClosed();
+        presenter.Tick();
+        Assert.Equal(new IUIScreen[] { screen }, ui.Removed);
+    }
 }

@@ -28,15 +28,27 @@
 
   <Canvas Name="RootCanvas" Width="320" Height="240" Visibility="{dataBinding:MGBinding Path=RootVisibility}">
 
-    <Image Name="Frame" Stretch="None" SourceName="973a9208-c867-57fe-bee3-cf30237221ef" CanvasLeft="16" CanvasTop="{dataBinding:MGBinding Path=Frame.Top}" />
+    <Image Name="Frame" Stretch="None" SourceName="973a9208-c867-57fe-bee3-cf30237221ef" CanvasLeft="16" CanvasTop="{dataBinding:MGBinding Path=Frame.Top}" Visibility="{dataBinding:MGBinding Path=Frame.Visibility}" />
 
     <Image Name="Cursor" Stretch="None" SourceName="{dataBinding:MGBinding Path=Cursor.SourceName}" CanvasLeft="288" CanvasTop="{dataBinding:MGBinding Path=Cursor.Top}" Visibility="{dataBinding:MGBinding Path=Cursor.Visibility}" />
 
-    <Canvas Name="TextClip" Width="258" Height="{dataBinding:MGBinding Path=Clip.Height}" CanvasLeft="32" CanvasTop="{dataBinding:MGBinding Path=Clip.Top}" ClipToBounds="True">
+    <Canvas Name="TextClip" Width="258" Height="{dataBinding:MGBinding Path=Clip.Height}" CanvasLeft="32" CanvasTop="{dataBinding:MGBinding Path=Clip.Top}" ClipToBounds="True" Visibility="{dataBinding:MGBinding Path=Clip.Visibility}">
       <TextBlock Name="Row0" Text="{dataBinding:MGBinding Path=Row0.Text}" CanvasLeft="{dataBinding:MGBinding Path=Row0.Left}" CanvasTop="{dataBinding:MGBinding Path=Row0.Top}" FontFamily="font3" Foreground="White" AllowsInlineFormatting="False" Padding="0" LinePadding="0" WrapText="False" VerticalContentAlignment="Top" Width="255" />
       <TextBlock Name="Row1" Text="{dataBinding:MGBinding Path=Row1.Text}" CanvasLeft="{dataBinding:MGBinding Path=Row1.Left}" CanvasTop="{dataBinding:MGBinding Path=Row1.Top}" FontFamily="font3" Foreground="White" AllowsInlineFormatting="False" Padding="0" LinePadding="0" WrapText="False" VerticalContentAlignment="Top" Width="255" />
       <TextBlock Name="Row2" Text="{dataBinding:MGBinding Path=Row2.Text}" CanvasLeft="{dataBinding:MGBinding Path=Row2.Left}" CanvasTop="{dataBinding:MGBinding Path=Row2.Top}" FontFamily="font3" Foreground="White" AllowsInlineFormatting="False" Padding="0" LinePadding="0" WrapText="False" VerticalContentAlignment="Top" Width="255" />
     </Canvas>
+
+    <!-- E19.f4c2 (docs/plan-e19-opcodes.md, F4C2-R1; annex docs/plan-e19-f4c-annexe/proposal-TextBoxScreen.xaml): the speaker, ordering-table slots 3, 5 and 6, above the frame, the cursor and the
+         text (slot 3: the portrait, whose pass the machine of AlundraInventoryPortrait runs, the dialogue's own instance), then the name box (slot 5: the baked 112 x 32 frame by its fixed
+         id, g_textTilesConfiguration; slot 6: the name in font3 centred in it). The portrait sits at its rest (8, 116) here and the flight moves and scales it through the bindable
+         render transform, anchored at its top-left corner (MGUI ADR-0020, as the inventory's portrait does), its tint through the bindable Brightness (the vertex colour over 128, MGUI ADR-0021).
+         A 48 x 72 portrait keeps CanvasTop 116: its gap to its rest (8, 100) is in the translation. The name has no Width: the binary's clip never cuts a name (60 names x 30 positions).
+         Frame, TextClip and Cursor fold by their own Visibility when only the speaker is drawn. -->
+    <Image Name="PortraitImage" Stretch="None" SourceName="{dataBinding:MGBinding Path=Portrait.SourceName}" CanvasLeft="8" CanvasTop="116" RenderTransformTranslation="{dataBinding:MGBinding Path=Portrait.Translation}" RenderTransformScale="{dataBinding:MGBinding Path=Portrait.Scale}" Brightness="{dataBinding:MGBinding Path=Portrait.Brightness}" Visibility="{dataBinding:MGBinding Path=Portrait.Visibility}" />
+
+    <Image Name="NameFrame" Stretch="None" SourceName="91ca17ae-e279-5a45-bb45-b15fbabdde68" CanvasLeft="{dataBinding:MGBinding Path=NameBox.Left}" CanvasTop="140" Visibility="{dataBinding:MGBinding Path=NameBox.Visibility}" />
+
+    <TextBlock Name="NameText" Text="{dataBinding:MGBinding Path=NameBox.Text}" CanvasLeft="{dataBinding:MGBinding Path=NameBox.TextLeft}" CanvasTop="148" FontFamily="font3" Foreground="White" AllowsInlineFormatting="False" Padding="0" LinePadding="0" WrapText="False" VerticalContentAlignment="Top" Visibility="{dataBinding:MGBinding Path=NameBox.Visibility}" />
 
   </Canvas>
 </Window>
