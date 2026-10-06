@@ -95,6 +95,10 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    speed above all - docs/plan-conversion-totale.md E2 requires the hero's speed to come from the
 ///    original data, not be invented) from the same numbers the original engine used, instead of the
 ///    frame timing this converter already exports for rendering.
+///  - Data/sprite-records.json also carries, only for the 25 banks whose header sets bit 0x80 of FlagsPortraitShadowType, a
+///    "DialoguePortrait" {SpriteAssetId, Width, Height} (E19.f4a, parent ADR-0005 extended; docs/formats/sprite-records.md): the
+///    .sprite of the speaker's dialogue portrait (UI/Portraits/, or the animation sprite already exported when the portrait cell is
+///    also an animation quad: bank 15) and its true size. It is omitted when there is none, so the other 370 entries keep their bytes.
 ///  - D-N-6 (docs/plan-nettoyage-convertisseur.md): every asset and fixture shape this writer
 ///    constructs now gets a deterministic id via the engine's additive Guid constructors
 ///    (ObjectBase(Guid) and its per-type overrides) plus Ids.For(&lt;stable key&gt;) - prefab entity
@@ -150,6 +154,7 @@ public static class SpriteWriter
         var textureAssetIdsBySpritesheet = new Dictionary<string, Guid>(StringComparer.OrdinalIgnoreCase);
         var spriteAssetIdsByKey = new Dictionary<(string Spritesheet, long Signature), Guid>();
         var headerFieldsByPrefabId = new Dictionary<Guid, SpriteRecordHeader>();
+        var dialoguePortraitsByPrefabId = new Dictionary<Guid, DialoguePortraitJson>();
         var idsvAnimDirsByPrefabId = new Dictionary<Guid, List<AnimDirIdsv>>();
         var animSetHeadersByPrefabId = new Dictionary<Guid, IReadOnlyList<AnimSetHeader>>();
 
@@ -163,13 +168,19 @@ public static class SpriteWriter
 
         ConvertInventoryPortrait(inputDirectory, outputDirectory, textureAssetIdsBySpritesheet, spriteAssetIdsByKey, report);
 
+        ConvertDialoguePortraits(
+            banks, inputDirectory, outputDirectory, textureAssetIdsBySpritesheet, spriteAssetIdsByKey,
+            prefabAssetIdsByBankKey, dialoguePortraitsByPrefabId, report);
+
         EditorAssetCatalogService.Save();
 
         report.Increment("Assets.Sprite", spriteAssetIdsByKey.Count);
         report.Increment("Sprites.Textures", textureAssetIdsBySpritesheet.Count);
 
         PreserveHeroEffects(inputDirectory, outputDirectory, report);
-        WriteSpriteRecords(outputDirectory, headerFieldsByPrefabId, idsvAnimDirsByPrefabId, animSetHeadersByPrefabId, report);
+        WriteSpriteRecords(
+            outputDirectory, headerFieldsByPrefabId, idsvAnimDirsByPrefabId, animSetHeadersByPrefabId,
+            dialoguePortraitsByPrefabId, report);
 
         return prefabAssetIdsByBankKey;
     }
@@ -886,6 +897,59 @@ public static class SpriteWriter
     }
 
     /// <summary>
+    /// The dialogue portraits (E19.f4a, docs/plan-e19-opcodes.md, parent ADR-0005 extended): each bank whose canonical record
+    /// carries a <see cref="SpriteBank.DialoguePortrait"/> gets its portrait emitted as a <c>.sprite</c> under
+    /// <see cref="InventoryPortraitRelativeDirectory"/> (the same folder as the inventory portrait: a UI image, owned by no entity
+    /// bank), through the same name and deterministic id as every quad (<see cref="EnsureSpriteData"/>), and the link
+    /// {id, true size} is recorded for the speaker's prefab in Data/sprite-records.json. It runs after every bank, so a portrait cell
+    /// that is also a quad of an animation (bank 15, Bonaire) resolves to the sprite already exported in its entity folder: no
+    /// second file, and the folder is only created when there is a portrait to write. A bank whose prefab was not emitted is skipped
+    /// (its texture failed: an error is already reported).
+    /// </summary>
+    private static void ConvertDialoguePortraits(
+        IReadOnlyList<SpriteBank> banks,
+        string inputDirectory,
+        string outputDirectory,
+        Dictionary<string, Guid> textureAssetIdsBySpritesheet,
+        Dictionary<(string Spritesheet, long Signature), Guid> spriteAssetIdsByKey,
+        Dictionary<string, Guid> prefabAssetIdsByBankKey,
+        Dictionary<Guid, DialoguePortraitJson> dialoguePortraitsByPrefabId,
+        ConversionReport report)
+    {
+        foreach (var bank in banks)
+        {
+            var portrait = bank.DialoguePortrait;
+            if (portrait == null || !prefabAssetIdsByBankKey.TryGetValue(bank.BankKey, out var prefabAssetId))
+            {
+                continue;
+            }
+
+            Guid spriteAssetId;
+            if (spriteAssetIdsByKey.TryGetValue((bank.SourceSpritesheetFileName, portrait.Signature), out var existingId))
+            {
+                spriteAssetId = existingId;
+            }
+            else
+            {
+                var textureAssetId = EnsureSpritesheetTexture(
+                    inputDirectory, outputDirectory, bank.SourceSpritesheetFileName, textureAssetIdsBySpritesheet);
+                Directory.CreateDirectory(Path.Combine(outputDirectory, InventoryPortraitRelativeDirectory));
+                spriteAssetId = EnsureSpriteData(
+                    portrait, bank.SourceSpritesheetFileName, textureAssetId, InventoryPortraitRelativeDirectory,
+                    spriteAssetIdsByKey, outputDirectory);
+            }
+
+            dialoguePortraitsByPrefabId[prefabAssetId] = new DialoguePortraitJson
+            {
+                SpriteAssetId = spriteAssetId.ToString(),
+                Width = portrait.Width,
+                Height = portrait.Height,
+            };
+            report.Increment("Sprites.DialoguePortrait");
+        }
+    }
+
+    /// <summary>
     /// The PSX semi-transparency mode of a quad (E19.g G2a, ADR-0033, D-E19-52). The primitive of the original binary reads it
     /// on the first byte of the image record, which is <see cref="SpriteQuad.Spritesheet"/>: bit 3 enables the semi-transparency
     /// and bits 4-5 are the ABR, the blend rate (0 average, 1 additive, 2 subtractive, 3 quarter); bits 6-7 are never read.
@@ -998,6 +1062,7 @@ public static class SpriteWriter
         Dictionary<Guid, SpriteRecordHeader> headerFieldsByPrefabId,
         Dictionary<Guid, List<AnimDirIdsv>> idsvAnimDirsByPrefabId,
         Dictionary<Guid, IReadOnlyList<AnimSetHeader>> animSetHeadersByPrefabId,
+        Dictionary<Guid, DialoguePortraitJson> dialoguePortraitsByPrefabId,
         ConversionReport report)
     {
         var recordsByPrefabId = new Dictionary<string, SpriteRecordJson>(StringComparer.Ordinal);
@@ -1051,6 +1116,7 @@ public static class SpriteWriter
                         Unknown = animSetHeader.Unknown,
                     })
                     .ToList(),
+                DialoguePortrait = dialoguePortraitsByPrefabId.GetValueOrDefault(prefabAssetId),
             };
         }
 
@@ -1101,6 +1167,22 @@ public static class SpriteWriter
         public int Contents { get; set; }
         public List<AnimDirIdsvJson> IdsvAnimDirs { get; set; } = new();
         public List<AnimSetJson> AnimSets { get; set; } = new();
+
+        /// <summary>
+        /// The speaker's dialogue portrait (E19.f4a): omitted when null, so the 370 entries of the banks without one keep
+        /// the bytes they always had.
+        /// </summary>
+        [System.Text.Json.Serialization.JsonIgnore(
+            Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        public DialoguePortraitJson? DialoguePortrait { get; set; }
+    }
+
+    /// <summary>The JSON shape of "DialoguePortrait": the .sprite asset and its true size (48 x 56, or 48 x 72), mirrored by the DLL's DialoguePortraitRef.</summary>
+    private sealed class DialoguePortraitJson
+    {
+        public string SpriteAssetId { get; set; } = string.Empty;
+        public int Width { get; set; }
+        public int Height { get; set; }
     }
 
     /// <summary>

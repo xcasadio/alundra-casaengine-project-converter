@@ -208,6 +208,12 @@ public sealed class SpriteBank
     /// </summary>
     public SpriteRecordHeader Header = new();
 
+    /// <summary>
+    /// The dialogue portrait of the bank's canonical record (E19.f4a), a quad of the bank's own spritesheet, or null when the
+    /// record has none (the header's FlagsPortraitShadowType bit 0x80 is clear on 370 of the 395 banks).
+    /// </summary>
+    public SpriteQuad? DialoguePortrait;
+
     public string BankKey => IsAlundraBank ? $"alundra_{Sector5Id}" : $"{Sector5Id}";
 }
 
@@ -233,6 +239,15 @@ public static class SpriteBankReader
     /// animation uses that image, so no bank's quads reach it (docs/plan-portrait-inventaire.md, P2).
     /// </summary>
     public const string InventoryPortraitPropertyName = "InventoryPortrait";
+
+    /// <summary>
+    /// The field of a sprite record that carries its dialogue portrait (E19.f4a): a quad of the map's own spritesheet, present
+    /// exactly where the header's <c>FlagsPortraitShadowType</c> has <see cref="DialoguePortraitFlag"/> set (25 banks).
+    /// </summary>
+    public const string DialoguePortraitPropertyName = "DialoguePortrait";
+
+    /// <summary>The bit of <c>FlagsPortraitShadowType</c> (header byte packed into entity flags bits 16-23, 0x800000) that says the entity has a dialogue portrait.</summary>
+    public const int DialoguePortraitFlag = 0x80;
 
     /// <summary>
     /// Reads <c>map_alundra.json</c>'s <see cref="InventoryPortraitPropertyName"/> as a quad of the
@@ -338,6 +353,15 @@ public static class SpriteBankReader
             }
 
             var bodyBox = ReadBodyBox(headerElement);
+            var header = ReadHeader(headerElement, bodyBox);
+            var dialoguePortrait = ReadDialoguePortrait(recordElement);
+            if (dialoguePortrait == null && (header.FlagsPortraitShadowType & DialoguePortraitFlag) != 0)
+            {
+                report.Warnings.Add(
+                    $"bank_{bankKey}: the header sets the dialogue-portrait flag (FlagsPortraitShadowType bit 0x{DialoguePortraitFlag:X2}) "
+                    + $"but the record carries no {DialoguePortraitPropertyName}: its speakers open without a portrait.");
+            }
+
             banksByKey[bankKey] = new SpriteBank
             {
                 Sector5Id = sector5Id,
@@ -347,9 +371,19 @@ public static class SpriteBankReader
                 AnimSets = animSets,
                 AnimSetHeaders = animSetHeaders,
                 BodyBox = bodyBox,
-                Header = ReadHeader(headerElement, bodyBox),
+                Header = header,
+                DialoguePortrait = dialoguePortrait,
             };
         }
+    }
+
+    /// <summary>The record's <see cref="DialoguePortraitPropertyName"/> as a quad, or null when the record has none (the common case).</summary>
+    private static SpriteQuad? ReadDialoguePortrait(JsonElement recordElement)
+    {
+        return recordElement.TryGetProperty(DialoguePortraitPropertyName, out var portraitElement)
+               && portraitElement.ValueKind == JsonValueKind.Object
+            ? ReadQuad(portraitElement)
+            : null;
     }
 
     /// <summary>

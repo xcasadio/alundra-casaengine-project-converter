@@ -5581,7 +5581,7 @@ pixel, rapport de manque).
   entrées identiques) ; dans `report.json`, chaque compteur qui change avec sa valeur prévue : `Sprites.DialoguePortrait` 25 (nouveau),
   `Assets.Sprite` + 24, `Verify.LoadableFilesOnDisk` + 24, `Verify.Assets` + 24, `Verify.Loaded` + 24, `Verify.Loaded.sprite` + 24,
   `Metrics.OutputFileCount` + 24 ; `Warnings`, `WarningsByCategory`, `Errors` et tous les autres compteurs inchangés.
-- ⏳ **F4A-1 — Tests d'abord** (convertisseur), au patron de `SpriteWriterInventoryPortraitTests.cs` : un enregistrement à portrait →
+- ✅ **F4A-1 — Tests d'abord** (convertisseur), au patron de `SpriteWriterInventoryPortraitTests.cs` : un enregistrement à portrait →
   identifiant, dossier, champ ; bit `0x80` posé et champ absent → exactement un avertissement ; bit éteint et champ absent → aucun
   avertissement, aucun fichier, aucun champ ; la banque 15 réutilisée (aucun fichier dans `UI/Portraits/` pour elle) ; un portrait de
   48 × 72 garde sa taille ; le champ omis dans `sprite-records.json` quand il est nul ; sur données réelles, les 25 identifiants égaux à
@@ -5591,6 +5591,16 @@ pixel, rapport de manque).
   ajoutés et modifiés, compteurs de `report.json`, tableau `Warnings` identique à l'octet) ; double export ; tests du convertisseur ;
   `Alundra.Tests` en Release puis en Debug, `cmp`, six traces.
 - ⏳ **F4A-3 — Vérification**.
+
+**Fait le 2026-10-06 (F4A-1)** : tests écrits d'abord (`SpriteWriterDialoguePortraitTests.cs`, 6 tests ; `SpriteRecordCatalogTests.cs`, 3 tests ajoutés), **rouges
+sur le code d'avant** avec des types vides pour compiler : convertisseur 5 rouges sur 6 (`Sprites.DialoguePortrait` absent, aucun avertissement alors que le bit
+`0x80` est posé, `UI/Portraits/sprite_12201.sprite` introuvable, données réelles : attendu les banques `[0, 3, 4, 5, 6, …]`, obtenu `[]` ; le test « bit éteint, champ
+absent » est vert d'emblée, c'est la garde du changement additif), DLL 2 rouges sur 3 (`DialoguePortrait` nul au lieu de `bf75c68e-…` 48 × 72 ; export réel : bit `0x80`
+sans champ ; la tolérance à l'absence est verte d'emblée). Puis le code : `SpriteBank.DialoguePortrait` lu dans `SpriteBankReader` (avertissement seulement si
+bit `0x80` posé et champ absent), `SpriteWriter.ConvertDialoguePortraits` après la boucle des banques et `ConvertInventoryPortrait`, avant
+`EditorAssetCatalogService.Save()` (réutilise l'identifiant d'un sprite déjà exporté : banque 15), champ `DialoguePortrait` omis quand nul dans
+`sprite-records.json`, `DialoguePortraitRef` et `SpriteRecordHeader.DialoguePortrait` dans la DLL (types figés pour E19.f4b). Verts : 6/6 convertisseur,
+suite du convertisseur 642/642 ; DLL 12/13, le test sur l'export réel reste rouge jusqu'à F4A-2 (l'export n'a pas encore le champ).
 
 **Fait le 2026-10-06 (F4A-0)** : prévision écrite et commitée avant tout code, `docs/plan-e19-f4-annexe/f4a-export-prediction.md`, calculée par
 `docs/plan-e19-f4-annexe/f4a-predict.py` (uuid5 indépendant, 25 identifiants égaux à `portraits_table.tsv`, 25 identifiants de préfab retrouvés) ; un

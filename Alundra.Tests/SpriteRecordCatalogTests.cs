@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Alundra.Scripts;
 using Xunit;
 
@@ -268,6 +270,115 @@ public class SpriteRecordCatalogTests : IDisposable
         Assert.True(header.AnimSets.TryGetValue(54, out var loadingMap));
         Assert.Equal(0, loadingMap.Speed);
         Assert.Equal(64, loadingMap.Acceleration);
+    }
+
+    // ---- E19.f4a: the optional dialogue-portrait link (parent ADR-0005 extended; the type is frozen for E19.f4b) ----
+
+    [Fact]
+    public void TryGet_EntryWithDialoguePortrait_ReadsItsIdAndTrueSize()
+    {
+        var prefabAssetId = Guid.Parse("fd375feb-2f77-447e-aedb-c3fa44c64edd");
+        var portraitId = Guid.Parse("bf75c68e-424f-57c9-8f6a-535f33d769d7");
+        WriteSpriteRecords(
+            "{\n"
+            + $"  \"{prefabAssetId}\": {{\n"
+            + "    \"MoreFlags\": 0, \"CanPickup\": 0, \"FlagsPortraitShadowType\": 131,\n"
+            + "    \"ProgramLoad\": 0, \"ProgramTick\": 0, \"ProgramTouch\": 0, \"ProgramDeactivate\": 0,\n"
+            + "    \"ProgramInteract\": 0,\n"
+            + "    \"OffsetX\": 0, \"OffsetY\": 0, \"OffsetZ\": 0, \"SizeX\": 0, \"SizeY\": 0, \"SizeZ\": 0,\n"
+            + "    \"Contents\": 0,\n"
+            + $"    \"DialoguePortrait\": {{ \"SpriteAssetId\": \"{portraitId}\", \"Width\": 48, \"Height\": 72 }}\n"
+            + "  }\n"
+            + "}");
+
+        var catalog = new SpriteRecordCatalog(_projectPath);
+
+        Assert.True(catalog.TryGet(prefabAssetId, out var header));
+        Assert.NotNull(header.DialoguePortrait);
+        Assert.Equal(portraitId, header.DialoguePortrait!.Value.SpriteAssetId);
+        Assert.Equal(48, header.DialoguePortrait.Value.Width);
+        Assert.Equal(72, header.DialoguePortrait.Value.Height);
+    }
+
+    [Fact]
+    public void TryGet_EntryWithoutDialoguePortrait_ToleratesItsAbsence()
+    {
+        var prefabAssetId = Guid.Parse("fd375feb-2f77-447e-aedb-c3fa44c64edd");
+        WriteSpriteRecords(
+            "{\n"
+            + $"  \"{prefabAssetId}\": {{\n"
+            + "    \"MoreFlags\": 128, \"CanPickup\": 96, \"FlagsPortraitShadowType\": 0,\n"
+            + "    \"ProgramLoad\": 0, \"ProgramTick\": 0, \"ProgramTouch\": 0, \"ProgramDeactivate\": 0,\n"
+            + "    \"ProgramInteract\": 0,\n"
+            + "    \"OffsetX\": 0, \"OffsetY\": 0, \"OffsetZ\": 0, \"SizeX\": 0, \"SizeY\": 0, \"SizeZ\": 0,\n"
+            + "    \"Contents\": 0\n"
+            + "  }\n"
+            + "}");
+
+        var catalog = new SpriteRecordCatalog(_projectPath);
+
+        Assert.True(catalog.TryGet(prefabAssetId, out var header));
+        Assert.Null(header.DialoguePortrait);
+        Assert.Equal(128, header.MoreFlags);
+    }
+
+    /// <summary>
+    /// Real-export anchor test (E19.f4a): the 25 banks whose header sets bit 0x80 (<c>FlagsPortraitShadowType</c>) each carry a
+    /// <c>DialoguePortrait</c> in <c>Data/sprite-records.json</c>, and nothing else does; the 25 sprite ids and sizes are
+    /// those of <c>docs/plan-e19-f4-annexe/portraits_table.tsv</c> (48 x 72 for banks 122 and 162). Self-skips when the export
+    /// or the annex is not present.
+    /// </summary>
+    [Fact]
+    public void RealExport_Every0x80Entry_CarriesItsDialoguePortrait_AndOnlyThose()
+    {
+        var projectRoot = FindProjectRoot();
+        var tablePath = FindUp(Path.Combine("docs", "plan-e19-f4-annexe", "portraits_table.tsv"));
+        if (projectRoot is null || tablePath is null)
+        {
+            return;
+        }
+
+        var expected = File.ReadAllLines(tablePath).Skip(1)
+            .Select(line => line.Split('\t'))
+            .Select(columns => (Id: Guid.Parse(columns[3]), Width: int.Parse(columns[4]), Height: int.Parse(columns[5])))
+            .OrderBy(entry => entry.Id)
+            .ToList();
+        Assert.Equal(25, expected.Count);
+
+        using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(projectRoot, "Data", "sprite-records.json")));
+        var flagged = 0;
+        var linked = new List<(Guid Id, int Width, int Height)>();
+        foreach (var entry in document.RootElement.EnumerateObject())
+        {
+            var hasFlag = (entry.Value.GetProperty("FlagsPortraitShadowType").GetInt32() & 0x80) != 0;
+            var hasPortrait = entry.Value.TryGetProperty("DialoguePortrait", out var portrait);
+            Assert.Equal(hasFlag, hasPortrait);
+            flagged += hasFlag ? 1 : 0;
+            if (hasPortrait)
+            {
+                linked.Add((portrait.GetProperty("SpriteAssetId").GetGuid(), portrait.GetProperty("Width").GetInt32(), portrait.GetProperty("Height").GetInt32()));
+            }
+        }
+
+        Assert.Equal(25, flagged);
+        Assert.Equal(expected, linked.OrderBy(entry => entry.Id).ToList());
+    }
+
+    private static string? FindUp(string relativePath)
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, relativePath);
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        return null;
     }
 
     private static string? FindProjectRoot()

@@ -11,6 +11,13 @@ using CasaEngine.Engine.Environment;
 namespace Alundra.Scripts;
 
 /// <summary>
+/// The dialogue portrait of a speaker prefab (E19.f4a, parent ADR-0005 extended): the <c>.sprite</c> asset it is drawn from and its
+/// true size in pixels (48 x 56, or 48 x 72 for the two tall portraits). Read from the optional <c>DialoguePortrait</c> field of
+/// a <c>Data/sprite-records.json</c> entry, present exactly where the header's <c>FlagsPortraitShadowType</c> has bit 0x80.
+/// </summary>
+public readonly record struct DialoguePortraitRef(Guid SpriteAssetId, int Width, int Height);
+
+/// <summary>
 /// One Data/sprite-records.json entry (see <c>AlundraCasaEngineProjectConverter.Writers.SpriteWriter</c>,
 /// which documents the field list and packing rules this DLL still needs): the raw
 /// <c>SpriteRecord.Header</c> fields of a bank prefab, keyed by that prefab's own asset id (the same
@@ -34,6 +41,12 @@ public readonly struct SpriteRecordHeader
     public int SizeY { get; init; }
     public int SizeZ { get; init; }
     public int Contents { get; init; }
+
+    /// <summary>
+    /// The speaker's dialogue portrait (see <see cref="DialoguePortraitRef"/>), or null when the record has none: the
+    /// 370 prefabs whose header bit 0x80 is clear, and any export made before E19.f4a (backward-tolerant like every other field).
+    /// </summary>
+    public DialoguePortraitRef? DialoguePortrait { get; init; }
 
     /// <summary>
     /// One entry per (AnimSet index, direction) the bank's converter run actually converted, each
@@ -282,6 +295,7 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
         [JsonInclude] public int Contents { get; set; }
         [JsonInclude] public List<AnimDirIdsvJson>? IdsvAnimDirs { get; set; }
         [JsonInclude] public List<AnimSetJson>? AnimSets { get; set; }
+        [JsonInclude] public DialoguePortraitJson? DialoguePortrait { get; set; }
 
         public SpriteRecordHeader ToHeader() => new()
         {
@@ -300,6 +314,9 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
             SizeY = SizeY,
             SizeZ = SizeZ,
             Contents = Contents,
+            DialoguePortrait = Guid.TryParse(DialoguePortrait?.SpriteAssetId, out var portraitSpriteAssetId)
+                ? new DialoguePortraitRef(portraitSpriteAssetId, DialoguePortrait!.Width, DialoguePortrait.Height)
+                : null,
             IdsvAnimDirs = IdsvAnimDirs == null
                 ? Array.Empty<AnimDirIdsv>()
                 : IdsvAnimDirs
@@ -335,6 +352,14 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
                         Unknown = entry.Unknown,
                     }),
         };
+    }
+
+    // No naming policy: field names/order match SpriteWriter.DialoguePortraitJson exactly. An unparseable or missing id reads as no portrait.
+    private sealed class DialoguePortraitJson
+    {
+        [JsonInclude] public string? SpriteAssetId { get; set; }
+        [JsonInclude] public int Width { get; set; }
+        [JsonInclude] public int Height { get; set; }
     }
 
     // No naming policy: field names/order match SpriteWriter.AnimDirIdsvJson exactly.
