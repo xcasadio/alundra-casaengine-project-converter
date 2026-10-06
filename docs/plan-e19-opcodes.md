@@ -5938,7 +5938,7 @@ une extension sans vérité binaire (D-E19-90) ; `GetMatchingEntitiesBySearchTyp
 - **Préchargement** : 13 feuilles ; deux mesurées (3,5 à 5 ms) ; les plus grandes (Melzas 512 × 1188, cartes 321 et 10) estimées à 10 à 18 ms,
   près d'un tick : **à mesurer** dans les tests avant de renoncer au préchargement.
 
-###### E19.f4c1 — Teinte au-dessus de 1 dans MGUI (manque G11) ⏳ (planifiée le 2026-10-06)
+###### E19.f4c1 — Teinte au-dessus de 1 dans MGUI (manque G11) 🧪 (faite le 2026-10-06, vérification à faire)
 
 MGUI (sous-module du moteur ; branche `chantier/e19f4c1-image-brightness` créée par la règle R-BR (1) depuis le commit de MGUI que le moteur
 épingle) ; inerte tant qu'aucune image ne pose la propriété. Déclencheur : manque d'une bibliothèque partagée (ADR de MGUI).
@@ -5967,6 +5967,30 @@ MGUI (sous-module du moteur ; branche `chantier/e19f4c1-image-brightness` créé
   inférieur à 255) ; code ; **exemple lancé une fois** (k = 1, 1,5 et 2, capture du tampon d'image en processus) ; ADR ; entrée G11 ;
   vérification ; suites MGUI et moteur, montée des pointeurs (MGUI dans le moteur, moteur
   dans le parent, chacune vérifiée par la règle R-BR (1)), `Alundra.Tests` en Release puis en Debug, `cmp`, six traces.
+
+- **Fait le 2026-10-06** (mode AUTO, rien poussé, rien mergé). Tâches : ✅ tests d'abord (rouges sur le code d'avant, valeurs du plan) ;
+  ✅ code ; ✅ exemple lancé ; ✅ ADR ; ✅ entrée G11 ; ✅ suites et pointeurs ; 🧪 vérification (relecture indépendante) à faire.
+  - **MGUI** : branche `chantier/e19f4c1-image-brightness` depuis `d3e0cd1` (le commit épinglé par le moteur), commit `39f2405` ;
+    ADR-0021 (le plus grand numéro trouvé sur toutes les branches de MGUI : 0020). Liste de fichiers fermée respectée (12 fichiers :
+    `MGImage.cs`, `XAML/Controls.cs`, les deux tests, l'ADR et son index, l'exemple en trois fichiers, le `.csproj`, `Compendium.xaml(.cs)`).
+  - **Rouge, avant le code de dessin** (propriété seule, sans effet sur le rendu) : à k = 127/128 le masque enregistré est (255, 255, 255, 255)
+    au lieu de (253, 253, 253, 255) ; à k = 1,5 et k = 255/128, un seul dessin au lieu de deux ; avec `TextureColor`, (200, 100, 50, 255)
+    au lieu de (100, 50, 25, 255) ; sur GPU, le texel (100, 60, 200) sorti à 100 en R pour k = 1,5 et k = 255/128 (attendu 150 et 199, à 2/255 près).
+    La propriété, le défaut 1, la notification, l'analyse XAML et la liaison étaient verts dès la propriété.
+  - **Vert, avec le code** : 12 tests de f4c1 (9 sur les appels, 3 au pixel sur GPU, aucun ignoré). Masques enregistrés : k = 1 : un dessin,
+    (255, 255, 255, 255) ; k = 127/128 : un dessin, (253, 253, 253, 255) ; k = 1,5 : deux dessins, (255, 255, 255, 255) puis additif
+    (128, 128, 128, 255) ; k = 255/128 : deux dessins, (255, 255, 255, 255) puis additif (253, 253, 253, 255). Les réglages de dessin sont
+    rendus tels quels ; à k ≤ 1 `SetDrawSettings` n'est jamais appelé. Le test au pixel passe pour un texel (100, 60, 200).
+  - **Exemple lancé** (`MGUI.Samples/Features/ImageBrightness.xaml`, harnais hors dépôt, capture du tampon d'image en processus, curseur à
+    liaison à deux sens et image liée au même view model) : k = 1 : l'image liée égale l'image de référence au pixel près (maximum (213, 214, 214)) ;
+    k = 1,5 et k = 2 : maximum (255, 255, 255), moyenne de la zone 96,2 et 108,4 contre 77,8 à k = 1.
+  - **Suites** : MGUI 3120 verts (dont 12 nouveaux), moteur 2748 verts (`CasaEngine.Tests` construit explicitement) ; `Alundra.Tests` 2916 verts
+    en Release puis 2916 en Debug ; `cmp` de `Alundra.dll` identique ; six traces : garde sans écart (les quatre traces de héros rendues à l'état de HEAD).
+  - **Moteur** : branche `chantier/e19f4c1-image-brightness` depuis `9c75c872` (le commit épinglé par le parent), commit `010a2c2f` (pointeur de MGUI
+    et entrée G11 close de l'audit) ; aucune ADR du moteur. Pointeurs : `merge-base --is-ancestor` réussi pour MGUI (`d3e0cd1` vers `39f2405`) et pour le
+    moteur (`9c75c872` vers `010a2c2f`).
+  - **Limites écrites dans l'ADR** : au-dessus de 2 la teinte se comporte comme 2 (le masque sature à 255), un négatif comme 0 ; un second dessin
+    coûte un vidage du lot de sprites.
 
 - **Disposition de la relecture n°2** (2026-10-06, règle des deux REVISE) : un seul bloquant, **FIX** — l'exemple MGUI exigé par les
   règles du moteur entre dans la liste fermée de f4c1 (patron de G9) avec un lancement ; deux notes mineures prises au passage
