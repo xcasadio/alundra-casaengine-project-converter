@@ -1,0 +1,19 @@
+anim2d files 9624 {'Loop': 5211, 'Once': 4413}
+duration 0: 5
+   ('Loop', 'Entities\\Interrupteur tricolore\\bank127_anim0_left.anim2d')
+   ('Loop', 'Entities\\Interrupteur tricolore\\bank127_anim0_right.anim2d')
+   ('Loop', 'Entities\\YM08 barrière u=eau d=feu l=sable r=glace\\bank151_anim1_down.anim2d')
+   ('Loop', 'Entities\\YM08 barrière u=eau d=feu l=sable r=glace\\bank151_anim1_left.anim2d')
+   ('Loop', 'Entities\\YM08 barrière u=eau d=feu l=sable r=glace\\bank151_anim1_up.anim2d')
+files with two keys at one instant on a track: 5
+   ('Loop', 'Entities\\Interrupteur tricolore\\bank127_anim0_left.anim2d', 0.0)
+   ('Loop', 'Entities\\Interrupteur tricolore\\bank127_anim0_right.anim2d', 0.0)
+   ('Loop', 'Entities\\YM08 barrière u=eau d=feu l=sable r=glace\\bank151_anim1_down.anim2d', 0.0)
+   ('Loop', 'Entities\\YM08 barrière u=eau d=feu l=sable r=glace\\bank151_anim1_left.anim2d', 0.0)
+   ('Loop', 'Entities\\YM08 barrière u=eau d=feu l=sable r=glace\\bank151_anim1_up.anim2d', 0.0)
+files whose every part is invisible at t=0: 5
+   ('Loop', 'Entities\\Interrupteur tricolore\\bank127_anim0_left.anim2d', 0.0)
+   ('Loop', 'Entities\\Interrupteur tricolore\\bank127_anim0_right.anim2d', 0.0)
+   ('Loop', 'Entities\\YM08 barrière u=eau d=feu l=sable r=glace\\bank151_anim1_down.anim2d', 0.0)
+   ('Loop', 'Entities\\YM08 barrière u=eau d=feu l=sable r=glace\\bank151_anim1_left.anim2d', 0.0)
+   ('Loop', 'Entities\\YM08 barrière u=eau d=feu l=sable r=glace\\bank151_anim1_up.anim2d', 0.0)

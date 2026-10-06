@@ -1,0 +1,52 @@
+== bank 127 map 75 record 127 animsets 5 header-keys ['Sector5Id', 'BinOffset', 'MemoryAddress', 'SpriteInfoMemoryAddress', 'AnimationOffsetsPointer', 'AnimationsPointer']
+ animset 0 hdr={'IsZForceApplied': 0, 'DownOffset': 0, 'UpOffset': 6, 'LeftOffset': 12, 'RightOffset': 18, 'AnimationOffsets': [0, 6, 12, 18], 'Speed': 0, 'Unknown': 0}
+  anim0 down: D=0x82 TIL=255 q=1 | D=0x01 TIL=0 q=0
+  anim0 up: D=0x82 TIL=255 q=1 | D=0x01 TIL=0 q=0
+  anim0 left: D=0x80 TIL=255 q=1 | D=0x01 TIL=0 q=0
+  anim0 right: D=0x80 TIL=255 q=1 | D=0x01 TIL=0 q=0
+ animset 1 hdr={'IsZForceApplied': 0, 'DownOffset': 24, 'UpOffset': 30, 'LeftOffset': 36, 'RightOffset': 42, 'AnimationOffsets': [24, 30, 36, 42], 'Speed': 0, 'Unknown': 0}
+  anim1 down: D=0x82 TIL=255 q=1 | D=0x01 TIL=0 q=0
+  anim1 up: D=0x82 TIL=255 q=1 | D=0x01 TIL=0 q=0
+  anim1 left: D=0x82 TIL=255 q=1 | D=0x01 TIL=0 q=0
+  anim1 right: D=0x82 TIL=255 q=1 | D=0x01 TIL=0 q=0
+ animset 2 hdr={'IsZForceApplied': 0, 'DownOffset': 48, 'UpOffset': 115, 'LeftOffset': 182, 'RightOffset': 249, 'AnimationOffsets': [48, 115, 182, 249], 'Speed': 0, 'Unknown': 0}
+  anim2 down: D=0x84 TIL=255 q=1 | D=0x84 TIL=255 q=1 | D=0x84 TIL=255 q=1 | D=0x82 TIL=255 q=1 | D=0x82 TIL=255 q=1 | D=0x82 TIL=255 q=1 | D=0x82 TIL=255 q=1 | D=0x84 TIL=255 q=1 | D=0x86 TIL=255 q=1 | D=0x86 TIL=255 q=1 | D=0x8A TIL=255 q=1 | D=0x86 TIL=255 q=1 | D=0x8F TIL=255 q=1 | D=0x00 TIL=1 q=0
+  anim2 up: D=0x84 TIL=255 q=1 | D=0x84 TIL=255 q=1 | D=0x84 TIL=255 q=1 | D=0x82 TIL=255 q=1 | D=0x82 TIL=255 q=1 | D=0x82 TIL=255 q=1 | D=0x82 TIL=255 q=1 | D=0x84 TIL=255 q=1 | D=0x86 TIL=255 q=1 | D=0x86 TIL=255 q=1 | D=0x8A TIL=255 q=1 | D=0x86 TIL=255 q=1 | D=0x8F TIL=255 q=1 | D=0x00 TIL=1 q=0
+  anim2 left: D=0x84 TIL=255 q=1 | D=0x84 TIL=255 q=1 | D=0x84 TIL=255 q=1 | D=0x82 TIL=255 q=1 | D=0x82 TIL=255 q=1 | D=0x82 TIL=255 q=1 | D=0x82 TIL=255 q=1 | D=0x84 TIL=255 q=1 | D=0x86 TIL=255 q=1 | D=0x86 TIL=255 q=1 | D=0x8A TIL=255 q=1 | D=0x86 TIL=255 q=1 | D=0x8F TIL=255 q=1 | D=0x00 TIL=1 q=0
+  anim2 right: D=0x84 TIL=255 q=1 | D=0x84 TIL=255 q=1 | D=0x84 TIL=255 q=1 | D=0x82 TIL=255 q=1 | D=0x82 TIL=255 q=1 | D=0x82 TIL=255 q=1 | D=0x82 TIL=255 q=1 | D=0x84 TIL=255 q=1 | D=0x86 TIL=255 q=1 | D=0x86 TIL=255 q=1 | D=0x8A TIL=255 q=1 | D=0x86 TIL=255 q=1 | D=0x8F TIL=255 q=1 | D=0x00 TIL=1 q=0
+ animset 3 hdr={'IsZForceApplied': 0, 'DownOffset': 316, 'UpOffset': 322, 'LeftOffset': 328, 'RightOffset': 334, 'AnimationOffsets': [316, 322, 328, 334], 'Speed': 0, 'Unknown': 0}
+  anim3 down: D=0x84 TIL=0 q=1 | D=0x01 TIL=0 q=0
+  anim3 up: D=0x84 TIL=0 q=1 | D=0x01 TIL=0 q=0
+  anim3 left: D=0x84 TIL=0 q=1 | D=0x01 TIL=0 q=0
+  anim3 right: D=0x84 TIL=0 q=1 | D=0x01 TIL=0 q=0
+ animset 4 hdr={'IsZForceApplied': 0, 'DownOffset': 340, 'UpOffset': 346, 'LeftOffset': 352, 'RightOffset': 358, 'AnimationOffsets': [340, 346, 352, 358], 'Speed': 160, 'Unknown': 0}
+  anim4 down: D=0x84 TIL=0 q=1 | D=0x01 TIL=0 q=0
+  anim4 up: D=0x84 TIL=0 q=1 | D=0x01 TIL=0 q=0
+  anim4 left: D=0x84 TIL=0 q=1 | D=0x01 TIL=0 q=0
+  anim4 right: D=0x84 TIL=0 q=1 | D=0x01 TIL=0 q=0
+== bank 151 map 48 record 151 animsets 5 header-keys ['Sector5Id', 'BinOffset', 'MemoryAddress', 'SpriteInfoMemoryAddress', 'AnimationOffsetsPointer', 'AnimationsPointer']
+ animset 0 hdr={'IsZForceApplied': 0, 'DownOffset': 0, 'UpOffset': 21, 'LeftOffset': 42, 'RightOffset': 63, 'AnimationOffsets': [0, 21, 42, 63], 'Speed': 0, 'Unknown': 0}
+  anim0 down: D=0x8A TIL=255 q=4 | D=0x8A TIL=255 q=4 | D=0x8A TIL=255 q=4 | D=0x8A TIL=255 q=4 | D=0x01 TIL=0 q=0
+  anim0 up: D=0x8A TIL=255 q=4 | D=0x8A TIL=255 q=4 | D=0x8A TIL=255 q=4 | D=0x8A TIL=255 q=4 | D=0x01 TIL=0 q=0
+  anim0 left: D=0x8A TIL=255 q=4 | D=0x8A TIL=255 q=4 | D=0x8A TIL=255 q=4 | D=0x8A TIL=255 q=4 | D=0x01 TIL=0 q=0
+  anim0 right: D=0x8A TIL=255 q=4 | D=0x8A TIL=255 q=4 | D=0x8A TIL=255 q=4 | D=0x8A TIL=255 q=4 | D=0x01 TIL=0 q=0
+ animset 1 hdr={'IsZForceApplied': 0, 'DownOffset': 84, 'UpOffset': 90, 'LeftOffset': 96, 'RightOffset': 102, 'AnimationOffsets': [84, 90, 96, 102], 'Speed': 0, 'Unknown': 0}
+  anim1 down: D=0x80 TIL=255 q=4 | D=0x01 TIL=0 q=0
+  anim1 up: D=0x80 TIL=255 q=4 | D=0x01 TIL=0 q=0
+  anim1 left: D=0x80 TIL=255 q=4 | D=0x01 TIL=0 q=0
+  anim1 right: D=0x8A TIL=255 q=4 | D=0x01 TIL=0 q=0
+ animset 2 hdr={'IsZForceApplied': 0, 'DownOffset': 108, 'UpOffset': 155, 'LeftOffset': 202, 'RightOffset': 249, 'AnimationOffsets': [108, 155, 202, 249], 'Speed': 0, 'Unknown': 0}
+  anim2 down: D=0x85 TIL=255 q=2 | D=0x85 TIL=255 q=4 | D=0x84 TIL=255 q=4 | D=0x83 TIL=255 q=2 | D=0x82 TIL=255 q=4 | D=0x82 TIL=255 q=4 | D=0x82 TIL=255 q=2 | D=0x82 TIL=255 q=4 | D=0x82 TIL=255 q=4 | D=0x00 TIL=3 q=0
+  anim2 up: D=0x85 TIL=255 q=2 | D=0x85 TIL=255 q=4 | D=0x84 TIL=255 q=4 | D=0x83 TIL=255 q=2 | D=0x82 TIL=255 q=4 | D=0x82 TIL=255 q=4 | D=0x82 TIL=255 q=2 | D=0x82 TIL=255 q=4 | D=0x82 TIL=255 q=4 | D=0x00 TIL=3 q=0
+  anim2 left: D=0x85 TIL=255 q=2 | D=0x85 TIL=255 q=4 | D=0x84 TIL=255 q=4 | D=0x83 TIL=255 q=2 | D=0x82 TIL=255 q=4 | D=0x82 TIL=255 q=4 | D=0x82 TIL=255 q=2 | D=0x82 TIL=255 q=4 | D=0x82 TIL=255 q=4 | D=0x00 TIL=3 q=0
+  anim2 right: D=0x85 TIL=255 q=2 | D=0x85 TIL=255 q=4 | D=0x84 TIL=255 q=4 | D=0x83 TIL=255 q=2 | D=0x82 TIL=255 q=4 | D=0x82 TIL=255 q=4 | D=0x82 TIL=255 q=2 | D=0x82 TIL=255 q=4 | D=0x82 TIL=255 q=4 | D=0x00 TIL=3 q=0
+ animset 3 hdr={'IsZForceApplied': 0, 'DownOffset': 296, 'UpOffset': 393, 'LeftOffset': 490, 'RightOffset': 587, 'AnimationOffsets': [296, 393, 490, 587], 'Speed': 0, 'Unknown': 0}
+  anim3 down: D=0x83 TIL=255 q=2 | D=0x83 TIL=255 q=2 | D=0x83 TIL=255 q=2 | D=0x83 TIL=255 q=2 | D=0x83 TIL=255 q=2 | D=0x82 TIL=255 q=4 | D=0x82 TIL=255 q=4 | D=0x86 TIL=255 q=4 | D=0x85 TIL=255 q=4 | D=0x84 TIL=255 q=4 | D=0x84 TIL=255 q=4 | D=0x85 TIL=255 q=10 | D=0x85 TIL=255 q=10 | D=0x85 TIL=255 q=10 | D=0x86 TIL=255 q=10 | D=0x86 TIL=255 q=10 | D=0x87 TIL=255 q=10 | D=0x87 TIL=255 q=10 | D=0x85 TIL=0 q=1 | D=0x00 TIL=128 q=0
+  anim3 up: D=0x83 TIL=255 q=2 | D=0x83 TIL=255 q=2 | D=0x83 TIL=255 q=2 | D=0x83 TIL=255 q=2 | D=0x83 TIL=255 q=2 | D=0x82 TIL=255 q=4 | D=0x82 TIL=255 q=4 | D=0x86 TIL=255 q=4 | D=0x85 TIL=255 q=4 | D=0x84 TIL=255 q=4 | D=0x84 TIL=255 q=4 | D=0x85 TIL=255 q=10 | D=0x85 TIL=255 q=10 | D=0x85 TIL=255 q=10 | D=0x86 TIL=255 q=10 | D=0x86 TIL=255 q=10 | D=0x87 TIL=255 q=10 | D=0x87 TIL=255 q=10 | D=0x85 TIL=0 q=1 | D=0x00 TIL=128 q=0
+  anim3 left: D=0x83 TIL=255 q=2 | D=0x83 TIL=255 q=2 | D=0x83 TIL=255 q=2 | D=0x83 TIL=255 q=2 | D=0x83 TIL=255 q=2 | D=0x82 TIL=255 q=4 | D=0x82 TIL=255 q=4 | D=0x86 TIL=255 q=4 | D=0x85 TIL=255 q=4 | D=0x84 TIL=255 q=4 | D=0x84 TIL=255 q=4 | D=0x85 TIL=255 q=10 | D=0x85 TIL=255 q=10 | D=0x85 TIL=255 q=10 | D=0x86 TIL=255 q=10 | D=0x86 TIL=255 q=10 | D=0x87 TIL=255 q=10 | D=0x87 TIL=255 q=10 | D=0x85 TIL=0 q=1 | D=0x00 TIL=128 q=0
+  anim3 right: D=0x83 TIL=255 q=2 | D=0x83 TIL=255 q=2 | D=0x83 TIL=255 q=2 | D=0x83 TIL=255 q=2 | D=0x83 TIL=255 q=2 | D=0x82 TIL=255 q=4 | D=0x82 TIL=255 q=4 | D=0x86 TIL=255 q=4 | D=0x85 TIL=255 q=4 | D=0x84 TIL=255 q=4 | D=0x84 TIL=255 q=4 | D=0x85 TIL=255 q=10 | D=0x85 TIL=255 q=10 | D=0x85 TIL=255 q=10 | D=0x86 TIL=255 q=10 | D=0x86 TIL=255 q=10 | D=0x87 TIL=255 q=10 | D=0x87 TIL=255 q=10 | D=0x85 TIL=0 q=1 | D=0x00 TIL=128 q=0
+ animset 4 hdr={'IsZForceApplied': 0, 'DownOffset': 684, 'UpOffset': 705, 'LeftOffset': 726, 'RightOffset': 747, 'AnimationOffsets': [684, 705, 726, 747], 'Speed': 0, 'Unknown': 0}
+  anim4 down: D=0x8A TIL=255 q=3 | D=0x8A TIL=255 q=3 | D=0x8A TIL=255 q=3 | D=0x8A TIL=255 q=3 | D=0x01 TIL=0 q=0
+  anim4 up: D=0x8A TIL=255 q=3 | D=0x8A TIL=255 q=3 | D=0x8A TIL=255 q=3 | D=0x8A TIL=255 q=3 | D=0x01 TIL=0 q=0
+  anim4 left: D=0x8A TIL=255 q=3 | D=0x8A TIL=255 q=3 | D=0x8A TIL=255 q=3 | D=0x8A TIL=255 q=3 | D=0x01 TIL=0 q=0
+  anim4 right: D=0x8A TIL=255 q=3 | D=0x8A TIL=255 q=3 | D=0x8A TIL=255 q=3 | D=0x8A TIL=255 q=3 | D=0x01 TIL=0 q=0

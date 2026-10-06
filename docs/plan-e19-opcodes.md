@@ -10641,6 +10641,54 @@ pas de `cmp` changé, traces non touchées.
   l'octet. Avis P4 : TSL7, TSL8 et TSL10 portent quelques assertions de plus que le plan (X aux ticks 1 à 8, Y au tick 24, 0 glissade
   au tick 1), vertes et sans masquer de mutation ; le nom de TSL9 (« ForceAdjustedFromTheNextTick ») est indirect.
 
+#### 1.2s.8 E19.m7 — Boucles de durée nulle visibles (O-E19-9) ⏳ (découverte de nuit du 2026-10-07 faite ; planifiée le 2026-10-07 ; relecture à faire)
+
+Convertisseur et export (ni moteur, ni DLL en production). Déclencheur de risque : format exporté (relecture et vérificateur neuf).
+Faits : `docs/plan-e19-o9-annexe/` (`notes.md` ; le vrai code du binaire exécuté dans l'interpréteur, `run_update_animation.py` et
+`.out` ; recensement de l'export, `scan_anim2d.py` et `.out`). Exécution **après G2e et G3d** : l'export en place change des fichiers que
+lisent les tests de la DLL ; rien d'autre ne tourne pendant l'export.
+
+**Découverte.** [données] Cinq animations Loop n'ont qu'une image affichée de `Delay` 0x80 (0 tick : convention `0x80 | ticks`, le lecteur
+garde `Delay & 0x7F`, `SpriteBankReader.cs`) suivie du terminateur de boucle : banque 127 anim 0 gauche et droite (1 quad ; lue dans
+`map_75.json`), banque 151 anim 1 bas, haut et gauche (4 quads ; `map_48.json`) ; leurs voisines de même forme ont 0x82 et 0x8A ; un
+`Delay` brut de 128 n'existe nulle part ailleurs. Le convertisseur pose la clé de l'image et la clé de masquage du terminateur au même
+instant 0 (`SpriteWriter.cs`) : la piste `Visible` vaut `true@0, false@0`. [binaire] `UpdateAnimation` (`0x80038AB4`, appelée à chaque tick
+depuis `0x80038E18`) décrémente le compte à rebours (`+0xA8`) **avant** de le tester (`0x80038BD8`-`0x80038BE8`) : une image à 0 tick
+donne 0xFFFFFFFF au tick suivant, l'image est tenue 2³² − 1 ticks ; le vrai code exécuté 600 ticks sur les cinq : l'image 0 reste
+affichée à chaque tick, le compteur de tours (`+0xB0`) reste 0 (témoins : 0x82 boucle tous les 2 ticks, 0x8A tous les 10). [moteur]
+`TryEvaluateBool` garde la dernière clé au plus tard à t (`Animation2dCompositionSampler.cs`) : `true@0, false@0` est invisible ; une
+boucle de durée 0 est déjà gérée (échantillonnée à t = 0, aucun tour compté, `AnimatedSpriteComponent.cs`) : le moteur ne change pas.
+[export] Sur les 9624 `.anim2d` (5211 Loop), exactement ces 5 ont une durée 0, et ce sont les seuls à deux clés au même instant.
+
+- **M7-R1** : dans `SpriteWriter.ConvertAnimation`, quand la fin est `Loop` et la durée cumulée de l'animation vaut 0, le terminateur
+  n'émet rien (sa seule sortie est la clé `Visible` à `false` de chaque partie) : chaque partie garde `[true@0]`, durée 0, comme le
+  binaire. Rien ne change pour une durée non nulle (les tests existants utilisent 10, 136 ou 138). Hors de portée : un compteur ou un
+  avertissement du rapport (il changerait `report.json`), une image à 0 tick au milieu d'une animation plus longue (aucune dans les
+  données ; le binaire s'y figerait).
+- **Fichiers** (liste fermée) : `alundra-casaengine-project-converter/Writers/SpriteWriter.cs` (la garde et son commentaire),
+  `alundra-casaengine-project-converter.Tests/SpriteWriterAnimationEndTests.cs` (l'aide prend un JSON d'images affichées optionnel, défaut
+  inchangé ; les tests), nouveau `Alundra.Tests/AlundraZeroDurationLoopExportGuardTests.cs` (garde sur le vrai export : les 5 fichiers,
+  chaque partie `Visible = [true@0]`, durée 0 ; dossiers relus dans l'export, dont `YM08 barrière u=eau d=feu l=sable r=glace` avec son
+  accent), ce plan (ligne O-E19-9), l'export en place.
+- ⏳ **M7-0 — Prévision** : la liste des 5 fichiers et des clés retirées (1 par fichier de la banque 127, 4 par fichier de la banque 151,
+  une par partie), tirée de `scan_anim2d.out` ; l'export de référence « avant » refait au HEAD (convertisseur en Release) et son
+  manifeste SHA-1 (hors `Alundra.dll`, `Alundra.pdb` et `.casaeditor/`).
+- ⏳ **M7-1 — Tests d'abord** (rouges au HEAD) : T1 une image affichée de `Delay` 128 à 2 quads puis le terminateur de boucle : Loop,
+  durée 0, chaque piste `Visible` exactement `[true@0]` ; T2 la même animation par l'échantillonneur (patron de
+  `SpriteWriterCollisionTests.cs`), 100 mises à jour de 0,02 s : chaque partie visible, aucun tour de boucle ; T3 (garde, verte avant et
+  après) : `Delay` 130 puis le terminateur garde `[true@0, false@0.04]` ; la garde de la DLL, rouge sur l'export d'aujourd'hui.
+- ⏳ **M7-2 — Code, export et preuves** : export complet en place (`dotnet run --project alundra-casaengine-project-converter -c Release --
+  data-extracted alundra-project`, `Alundra.dll` déverrouillé avant) ; manifeste après : exactement les 5 fichiers prévus changent (plus
+  `report.json` si l'export de référence le change déjà, horodatage), 0 ajouté, 0 retiré ; double export : seul `report.json` peut
+  différer ; suites du convertisseur ; `Alundra.Tests` en Release puis en Debug (la garde verte, aucun autre test ne bouge), `cmp`, six
+  traces.
+- ⏳ **M7-3 — Vérification** par un vérificateur neuf.
+- **Acceptation** : tests rouges puis verts ; manifeste égal à la prévision ; double export ; aucune autre suite ne bouge. **Arrêts** : un
+  fichier exporté hors des 5 qui change, un test existant qui bouge, un fichier hors de la liste. **Retour arrière** : revert, export
+  complet égal au manifeste « avant ».
+- **Recette M7-4** (auteur) : la barrière de la banque 151 (cartes 48 à 53, 435 à 438) et l'interrupteur tricolore (75, 137) : l'image
+  s'affiche figée (hypothèse non tracée : quels scripts choisissent ces animations).
+
 ### 1.2u Recette de l'auteur du 2026-10-05 ⏳ (constat consigné ; deux défauts enquêtés)
 
 **Constat de l'auteur** (DLL et export de `cc948ec`, deux captures) :
@@ -11172,7 +11220,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-6 | **Résolu par E19.h1b1 (CONFIRMED le 2026-10-03 ; relevé au terrain à l'apparition, H1b1 possède O-E19-6).** À l'apparition, l'ajustement au sol (`ClampToGround`) et `TerrainHeight` ne font rien en production : `World.AddEntity` ne fait que mettre l'entité en file, et `Entity.World` n'est posé qu'à l'intégration suivante. Le commentaire d'`AlundraWorldProxy.cs:773-778` dit le contraire (corrigé en E19.c1 T7). Faut-il corriger le comportement ? | E19.h |
 | O-E19-7 | **Résolu par E19.h1b2 (faite et CONFIRMED ; pas vertical et `IsOnGround` de fin de tick pour toute entité).** Une entité sans contrôleur ne bouge jamais en Z dans la DLL, alors que le binaire intègre Z pour toute entité active (`MoveEntity` `0x80037E34` → `ComputeZPosition`). Sur la chaîne, tous les enregistrements ont un contrôleur. | E19.h |
 | O-E19-8 | `IsZForceApplied` (`+0xF8`) n'est pas porté : au tick d'un changement d'animation, le binaire remplace `ForceZ` par la valeur du jeu d'animation (131 des 395 enregistrements de sprite en ont une non nulle). Il suppose l'animation résolue avant la physique, ce que D-E19-13 ne fait pas. **Avancé le 2026-10-02 (D-E19-31)** : l'impulsion se pose dans `StepAnimationClock`, au tick du binaire ; seul le changement de vitesse horizontale des PNJ garde le retard D-E19-13. | E19.d2c |
-| O-E19-9 | Les 5 animations Loop de durée 0 de l'export (banque 127 anim 0 gauche et droite, banque 151 anim 1 haut, gauche et bas) sont invisibles dans le moteur : la clé cachée de fin tombe au même instant 0 que l'image. Le binaire montre l'image figée. À corriger au convertisseur (export complet à relancer). | à placer |
+| O-E19-9 | **Planifiée le 2026-10-07 en E19.m7 (binaire prouvé : l'image 0 reste affichée, aucun tour compté).** Les 5 animations Loop de durée 0 de l'export (banque 127 anim 0 gauche et droite, banque 151 anim 1 haut, gauche et bas) sont invisibles dans le moteur : la clé cachée de fin tombe au même instant 0 que l'image. Le binaire montre l'image figée. À corriger au convertisseur (export complet à relancer). | à placer |
 | O-E19-10 | ~~Défaut du moteur sur le chemin en temps réel~~ — **réglé le 2026-10-01 par le moteur (`cc6f498e`, R2) et vérifié par le plan moteur (R1 à R4, 0 échec)** ; question d'origine : défaut du moteur sur le chemin en temps réel : à 0,02 s par image, 197 des 5205 Loop de durée positive de l'export ne bouclent jamais (le temps tombe pile sur la durée, puis la dépasse), et le sprite montre la pose cachée de fin (exemple : animations 53 et 55 du héros). **Correction planifiée** (D-E19-19) : tâche T1.1 du plan moteur d'E19.c2. | E19.c2 |
 | O-E19-11 | ~~Réarmement hors zone~~ — **réglé le 2026-10-03 par E19.j** (`dedd1f8`, CONFIRMED) ; question d'origine : la remise à zéro hors zone d'un événement de carte diffère du binaire : la DLL écrit sur l'entité de l'événement et ne remet pas `mapEvent.EventData` à zéro, le binaire (`0x8003C7F0`-`0x8003C804`) remet le pc et l'entrée de l'état de l'événement, `state+0x2C`, l'entité logique et l'octet de programme. Un programme B réentré reprend dans la DLL et recommence dans le binaire. Sans effet sur la 478 et la 416 (zones de toute la carte). | E19.j |
 | O-E19-12 | ~~Base de la branche moteur d'E19.c2~~ — **réglé le 2026-10-01 (D-E19-20)** : l'auteur a mergé `chantier/field-move-to-contact` dans `main` du moteur (`74e97293`) ; la branche d'E19.c2 part de `main`. | E19.c2 |
