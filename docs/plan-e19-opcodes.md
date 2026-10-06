@@ -5411,7 +5411,7 @@ les largeurs 19 et 23 sont celles du binaire, à poser en f3b).
   Écart de l'exécution : la machine ne décode pas les échappements `{c` et `}c` des libellés (aucun libellé du corpus n'en porte) ;
   les largeurs des libellés (19 et 23) vont à f3b.
 
-###### E19.f3b — Écran du choix et preuve au pixel ⏳ (planifiée le 2026-10-06 ; relecture à faire)
+###### E19.f3b — Écran du choix et preuve au pixel ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (liste fermée du test de l'écran de sauvegarde), révisée ; relecture n°2 à faire)
 
 **Découverte** (2026-10-06, `docs/plan-e19-f3-annexe/view/view-notes.md`, contre-vérifiée par `view-verify.md` ; la XAML proposée,
 l'enveloppe, les données de conception et les classes proposées sont dans `view/proposal/`, les images de référence dans `view/pixels/`,
@@ -5441,8 +5441,8 @@ d'ajout est l'ordre de dessin (les deux fenêtres sont `IsTopmost`) ; une pressi
   `AlundraDialogueDirector.ChoiceBox` à côté de `Box` ; le commentaire de classe du directeur (~:108-109, « the engine's presenter is only
   the choices' window (until E19.f3) ») mis à jour ; `HasPresenter` garde son sens.
 - **F3B-R4 — Manque consigné, pas contourné** : une fenêtre remise sur le bureau n'est mise en page qu'au `Desktop.Update` suivant ;
-  après un choix **annulé** en plein glissement (`CancelChoice`, `Open` pendant un choix, entrée de carte), la première image du choix
-  suivant montre l'ancien cadre (1898 à 3556 texels selon l'instant de l'annulation) ; aucun cas du corpus connu ; consigné avec O-E19-65
+  après un choix **annulé** (pendant un glissement ou au repos : `CancelChoice`, `Open` pendant un choix, entrée de carte), la première
+  image du choix suivant montre l'ancien cadre (1898 à 3556 texels selon l'instant de l'annulation, le pire au repos) ; aucun cas du corpus connu ; consigné avec O-E19-65
   (côté moteur : mettre en page une fenêtre remise avant son premier dessin), sans garde côté écran.
 
 **Tâches.**
@@ -5455,13 +5455,18 @@ d'ajout est l'ordre de dessin (les deux fenêtres sont `IsTopmost`) ; une pressi
   - présentateur et câblage : poussé à N+2, retiré à N+37 (OUI) et N+38 (NON), boîte de texte d'abord, reprise, `OnEndPlay`, entrée de carte,
     le mandataire le fait tourner après le présentateur de la boîte ; suivi de la fenêtre (`AlundraScreensFollowTheWindowTests.cs`) ;
   - pixels (`AlundraChoicePixelTests`, sur GPU, `[AlundraGpuFact]`) : les 19 images de `view/pixels/` et les points de `view/points.md` à ×1
-    et ×2, la vue décalée, le recouvrement de la boîte de texte (la ligne `mrow` du fond est `NON OUI`, comme l'image de référence) et le
-    contrôle de l'ordre inverse ;
+    et ×2, la vue décalée, le recouvrement de la boîte de texte (le fond `mrow` de l'image de référence : ligne 0 = 18 glyphes 0x1A,
+    ligne 1 = `NON OUI`, `view/compositor/ref.py:124-125`) et le contrôle de l'ordre inverse ; ces tests doivent **avoir tourné** sur le GPU
+    de la machine (pas ignorés) ;
   - tests existants qui bougent, liste fermée : `AlundraTextBoxWiringTests.cs` le test d'empilement (~:175-209 : `Pushed == [boîte,
     choix]` après N+2, `Removed == [choix]` à la réponse, 37 passes) et `AChoiceWithoutABox_StillClosesThroughTheStandaloneRoute`
     (~:212-224 : un choix seul pousse `[choix]`, `CloseStandaloneChoice` le retire au tick suivant du présentateur) ;
-    `Scripts/AlundraSaveScreenPresenterTests.cs` `Question_…` (~:139-165) : son banc gagne un présentateur du choix et son assertion passe
-    à `[sauvegarde, choix]` pendant la question ; l'harnais `UI/TextBoxGpuHarness.cs` `TextBoxScreenAssets.New()` enregistre aussi
+    `Scripts/AlundraSaveScreenPresenterTests.cs` `Question_…` (`:139-165`) : son banc gagne un présentateur du choix qui partage `_uiView`
+    et tourne dans l'aide `Tick` (`:59-68`) après `AlundraDialogueDirector.Instance.Tick()` et après le présentateur de l'écran ; ses
+    assertions : `:144` et `:147` (`Pushed == [écran]`, avant N+2) inchangées ; `:148` (`Removed` vide) inchangée ; `taken` 38 inchangé ;
+    une nouvelle assertion après la boucle : `Pushed == [écran, choix]` ; `:160` `Assert.Empty(_uiView.Removed)` devient
+    `Removed == [choix]` (le choix est retiré à sa passe de fermeture, l'écran lit la réponse au tick suivant, O-E19-69) ; `:161`
+    inchangée ; `:164` devient `Removed == [choix, écran]` ; l'harnais `UI/TextBoxGpuHarness.cs` `TextBoxScreenAssets.New()` enregistre aussi
     l'enveloppe du choix (`withTheScreen: false` garde son sens) ; restent verts sans changement : `AlundraDialoguePresenterWiringTests.cs:179-181`
     et `:259` (aucun tick entre l'ouverture et l'assertion), `AlundraChoiceBoxTests`, les tests du directeur, `AlundraTextBoxPixelTests`,
     `AlundraTextBoxScreenXamlTests`, les tests du convertisseur ; toute autre assertion qui bouge est un arrêt. Rouges d'abord.
@@ -5469,12 +5474,14 @@ d'ajout est l'ordre de dessin (les deux fenêtres sont `IsTopmost`) ; une pressi
   place : exactement trois fichiers ajoutés (`UI/Screens/ChoiceScreen.xaml`, `.uiscreen`, `.design.json`), `AssetInfos.json` (une entrée de
   plus, l'enveloppe `a623e495-…` `ChoiceScreen`, placée juste avant `DialogueScreen`) et `report.json` : `Assets.UiScreen` 6 → 7,
   `Verify.Loaded.uiscreen` 6 → 7, `Verify.Assets` 22417 → 22418, `Verify.Loaded` 20027 → 20028, `Verify.LoadableFilesOnDisk` 20027 → 20028,
-  `Metrics.OutputFileCount` 23747 → 23750 ; `Warnings`, `WarningsByCategory`, `Errors` inchangés ; double export.
+  `Metrics.OutputFileCount` 23747 → 23750, `Metrics.OutputSizeBytes` + la taille sur disque des trois fichiers (4212 octets pour les
+  fichiers de `view/proposal/` en fins de ligne CRLF, à remesurer après leur création), plus la variation habituelle de `report.json`
+  entre deux exports ; `Warnings`, `WarningsByCategory`, `Errors` inchangés ; double export.
 - **F3B-3 — Vérification**. **F3B-4 — Recette** (auteur) : le marin 12 de la 389 (choix sur une boîte tapée), la question du livre de
   sauvegarde, le OUI/NON du menu de fichier de l'écran de sauvegarde : entrée par la droite, curseur animé au-dessus du libellé choisi,
   validation à la Croix seule, sortie, la boîte de texte intacte dessous.
 
-**Acceptation** : tests rouges d'abord puis verts (pixels sur le GPU de la machine) ; liste fermée ; export ; `Alundra.Tests` en Release puis
+**Acceptation** : tests rouges d'abord puis verts (pixels exécutés sur le GPU de la machine, pas ignorés) ; liste fermée ; export ; `Alundra.Tests` en Release puis
 en Debug, `cmp`, six traces. **Retour arrière** : revert, export complet égal au manifeste « avant » (hors `report.json`). **Risques** : le
 chemin de production (`UIRoot`, `CasaUIAssetProvider`) n'est prouvé que par la recette ; un seul GPU ; la manette sous deux écrans
 modaux, prouvée par la recette ; le manque de F3B-R4.
@@ -9533,7 +9540,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-67 | **Autres espaces de bord perdues** (découverte de S025, 2026-10-05 ; D-E19-78 ne vise que S025) : `M311_S029` et `M398_S029`, page 1 (une espace de début après un code de drapeau, retirée par la règle F0-R2 de l'émetteur : la ligne commence 4 pixels plus à gauche que dans le binaire, déduit du code, non vu) ; 30 pages `_S022` et `_S108` de 15 cartes (espaces avant un drapeau ou un `yield` final, retirées par l'émetteur : temps de frappe) ; 105 pages non centrées à espaces de fin (un pas de frappe par espace) ; 56 pages d'ETC (bourrage d'enregistrement ; trois textes d'inventaire `0x206`, `0x239`, `0x2A6` perdent une espace). Les corriger change des épingles d'arcs d'E19.f2a (par exemple `M391_S022`). | Auteur |
 | O-E19-68 | **Cible littérale de `0x22` sur une descente** (contre-vérification de la découverte d'E19.h1b2, 2026-10-06) : la cible `hauteur << 19` d'ADR-0026 est exacte au tick sur les montées, mais finit **un tick tôt** sur une descente (vrai code, 112 → 48 px à −32768 : binaire 129 appels, cible littérale 128, cible décalée `(H << 19) − 1` 129). Un seul des 17 sites descend : 115 `B[2]` @367 (hors chaîne ; 321 appels dans le binaire, 320 avec la cible littérale). Une règle par sens (décalée sous 256 px, littérale au-dessus) serait exacte aux 17 sites ; elle changerait ADR-0026. | Auteur |
 | O-E19-69 | **L'écran de sauvegarde tourne avant le dialogue dans le mandataire** (relecture d'E19.f3a, 2026-10-06) : le binaire fait le créneau 3 (choix) avant le créneau 10 (menu de fichier de l'écran de sauvegarde) dans la même image ; le mandataire fait l'écran dans la première boucle de ticks (`AlundraWorldProxy.cs:2117`) et la passe du dialogue (boîte puis choix) dans la seconde : une réponse donnée tard parvient à l'écran un tick plus tard (`DownDuringTheQuestion` 20 au lieu de 19) ; une réponse au plus tôt, au même tick. Corriger demande de déplacer le tick de l'écran après la passe du dialogue (valeurs d'E16 à reprendre). | Auteur, puis tranche à part |
-| O-E19-70 | **Image périmée à la remise d'une fenêtre** (découverte d'E19.f3b, 2026-10-06) : une fenêtre MGUI retirée puis remise sur le bureau n'est mise en page qu'au `Desktop.Update` suivant ; après un choix annulé en plein glissement, la première image du choix suivant montre l'ancien cadre (1898 à 3556 texels) ; aucun cas du corpus connu. Même famille qu'O-E19-65 ; côté moteur : mettre en page une fenêtre remise avant son premier dessin. | Moteur (rapport), auteur |
+| O-E19-70 | **Image périmée à la remise d'une fenêtre** (découverte d'E19.f3b, 2026-10-06) : une fenêtre MGUI retirée puis remise sur le bureau n'est mise en page qu'au `Desktop.Update` suivant ; après un choix annulé en plein glissement, la première image du choix suivant montre l'ancien cadre (1898 à 3556 texels) ; aucun cas du corpus connu. Même famille qu'O-E19-65 ; côté moteur : mettre en page une fenêtre remise avant son premier dessin ; le pire cas est une annulation au repos (3556 texels). | Moteur (rapport), auteur |
 
 ## 4. Hors périmètre
 
