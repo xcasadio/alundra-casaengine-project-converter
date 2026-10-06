@@ -5289,7 +5289,7 @@ annulation ni souris, compteur du curseur persistant) ; découpage en f3a (machi
 la fenêtre du moteur n'est plus poussée pour un choix) puis f3b (l'écran XAML du choix et sa preuve au pixel), exécutées l'une après
 l'autre (entre les deux, le choix fonctionne à la manette sans être dessiné) ; les invites de carte mémoire restent hors périmètre.
 
-###### E19.f3a — Logique du choix au tick près ⏳ (planifiée le 2026-10-06 ; relecture à faire)
+###### E19.f3a — Logique du choix au tick près ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (`CancelChoice`), révisée ; relecture n°2 à faire)
 
 **Règles.**
 - **F3A-R1 — Machine** : nouvelle classe interne `AlundraChoiceBox`, portage de `ChoiceBox` de `docs/plan-e19-f3-annexe/model/choice_model.py`
@@ -5302,15 +5302,20 @@ l'autre (entre les deux, le choix fonctionne à la manette sans être dessiné) 
   l'ouverture) ; la fenêtre du moteur n'est plus utilisée pour un choix (ni `ShowChoices` ni écran poussé ; la fermeture ajoutée par
   E19.f2b1c dans `TakeChoiceResult` n'a plus d'objet) ; `TakeChoiceResult` ne rend le résultat qu'une fois écrit par la machine (C+18),
   et `IsAwaitingChoice` reste vrai jusqu'à sa lecture (c'est ce qui fait redemander un `0x44` revisité) ; `CloseStandaloneChoice`
-  ferme la machine (`IsAwaitingChoice` faux, `TakeChoiceResult` nul) ; `Open` annule un choix en attente, comme aujourd'hui (aucun cas du
-  corpus) ; `InstallForMapEntry` remet la machine à zéro ; le compteur du curseur n'est remis que par `ResetForTests` ; un `Tick()` sans
+  ferme la machine (`IsAwaitingChoice` faux, `TakeChoiceResult` nul) et rend toujours faux tant qu'une boîte est ouverte
+  (`AlundraSaveScreenDirectorTests.cs:612-619`) ; **`CancelChoice`** (`:552-557`, l'abandon ou la remise du livre) ferme aussi la
+  machine : `IsAwaitingChoice` faux, `TakeChoiceResult` nul, `ChoicesForTests` vide, plus aucune passe, aucun son ni résultat ensuite ;
+  `Open` annule un choix en attente, comme aujourd'hui (aucun cas du corpus), et ferme la machine de même ; `InstallForMapEntry` remet la machine à zéro ; le compteur du curseur n'est remis que par `ResetForTests` ; un `Tick()` sans
   choix ouvert ne fait rien. `HasPresenter` garde son sens (un présentateur du moteur est attaché). Le gestionnaire `0x44`, le livre et
   l'écran de sauvegarde ne changent pas (seule la latence de `TakeChoiceResult` bouge).
-- **F3A-R3 — Placement** (`AlundraWorldProxy.Update`) : la passe du choix tourne une fois par tick **en tête de la première boucle**, avant
+- **F3A-R3 — Placement** (`AlundraWorldProxy.Update`) : la passe du choix est une méthode à part du directeur (nom indicatif
+  `ChoicePass()`, distincte de `Pass(bool, bool)` de la boîte de texte) ; elle tourne une fois par tick **en tête de la première boucle**, avant
   `TickPad.Update` (`:2106`) et avant le tick de l'écran de sauvegarde (`:2117`) : le créneau 3 du binaire passe avant le créneau 10 et
-  avant la phase des programmes (`binary-notes.md` §5) ; elle précède aussi la passe de la boîte de texte (seconde boucle) : sans état
-  partagé, seul l'ordre de deux sons d'un même tick en dépend. Les aides de test qui font tourner l'écran de sauvegarde font tourner
-  la passe du choix avant lui.
+  avant la phase des programmes (`binary-notes.md` §5) ; elle précède aussi la passe de la boîte de texte (seconde boucle), alors que le
+  binaire fait la boîte (créneau 0) avant le choix (créneau 3) : **écart voulu**, sans état partagé, seul l'ordre de deux sons d'un
+  même tick en dépend. Les aides de test qui font tourner l'écran de sauvegarde font tourner la passe du choix avant lui ; le bloc du
+  harnais d'intro (`IntroTraceHarnessTests.cs:595-600`), qui n'appelle que `Pass(bool, bool)`, appelle aussi `ChoicePass()` à chaque
+  tick, avant (le marin 12 en dépend) ; le montage de la boîte et le pilote des passes de même.
 - **F3A-R4 — Crochet de test** : `SelectChoiceForTests(i)` garde son nom et devient une réponse **à la manette** : il arme des appuis
   consommés seulement par les passes actives (Gauche ou Droite jusqu'à l'option i, puis Croix, un appui par passe, à partir de la
   première passe active qui suit l'armement) ; il rend vrai tant que `IsAwaitingChoice` ; il est idempotent. `ChoicesForTests` rend les
@@ -5323,15 +5328,20 @@ l'autre (entre les deux, le choix fonctionne à la manette sans être dessiné) 
     curseur, image, sélection, sons ; tick de résolution et `Result`) ; cinq séquences de manette réelles par le mandataire (fin à N+50,
     N+52, N+37, N+80, jamais ; `sim-notes.md`) ; un `0x44` avec un directeur sans présentateur (aujourd'hui aucun test : à épingler avant
     le changement, valeur d'aujourd'hui gardée) ; une sortie de monde pendant un choix (`InstallForMapEntry` remet la machine) ;
+    `CancelChoice` : un choix ouvert, quelques passes, `CancelChoice`, puis des passes jusqu'au-delà de N+40 avec la Croix enfoncée :
+    aucun son après l'annulation, `TakeChoiceResult()` nul, `ChoicesForTests` vide (rouge aujourd'hui : la machine n'existe pas) ;
   - tests existants qui bougent, liste fermée = `docs/plan-e19-f3-annexe/sim-pins.md` §0 à §5, avec ses valeurs « fidèles », dans
     l'ordre du binaire (choix avant écran) : en particulier la répartie à 37 ou 38 ticks de l'ouvreur (OUI, NON) ; K5 (`(E, T, R)` =
     (56, 67, 85), vu à 86) ; le livre (OUI pris au Tick 99, capture au Tick 160, libération de la boîte au Tick 134 avant la capture, NON au
     Tick 100, `Tick(37 + Wait)` = 98) ; l'aide `AnswerAndClose` (`Tick(37 + 18)` = 55 pour OUI, `Tick(38 + 18)` = 56 pour NON) ;
     `DownDuringTheQuestion_ThenOui_…` **19** ticks (ordre du binaire ; 20 dans l'ordre d'aujourd'hui) ; A17 (`0x03 @1059` à 637, `0x11
     @1115` à 1162, `0x05 @1120` à 1193, fin à 1194, budget 2500 inchangé) ; le marin 12 (choix pris à l'image 133, boîte suivante après
-    152, fin après 354, budget 400) ; le livre de bout en bout (sélecteur après 139, écran après 116) ; les assertions de la fenêtre du
-    moteur (§4 de la table) disparaissent ou passent à `ChoicesForTests` ; l'aide `AlundraArcSupport.OneFrameWithTheDialogueButton`
-    et le bloc du harnais d'intro (`IntroTraceHarnessTests.cs` ~594-600) pilotent la Croix quand un choix attend ; restent verts sans
+    152, fin après 354, budget 400) ; le livre de bout en bout (sélecteur après 139, écran après 116) : ces valeurs du §5 sont des
+    **observations** mesurées par la simulation (à `db8d61c`, avant E19.h1b2), aucun test ne les épingle ; seuls les budgets
+    (`FrameLimit` 2500 d'A17, 400 du marin 12, 300 et 400 du livre) sont tenus ; l'exécution les remesure à HEAD et les consigne (un
+    écart d'observation n'est pas un arrêt, un budget dépassé l'est) ; les assertions de la fenêtre du moteur (§4 de la table)
+    disparaissent ou passent à `ChoicesForTests` ; A17 répond par le crochet (appelé à chaque image tant que le choix attend, il rend
+    vrai), comme dans la simulation ; `AlundraArcSupport.OneFrameWithTheDialogueButton` ne change pas ; restent verts sans
     changement : les lecteurs de `ChoicesForTests` et d'`IsAwaitingChoice`, `RunToTheQuestion` et ses appelants, l'oracle de la boîte
     (K5 de `AlundraTextBoxOracleTests.cs:320`, les trois `O20_Sailor12Of389_*`, qui modélisent `0x44` par un `Hold(1)` et ne lisent pas
     le directeur) ; toute autre assertion qui bouge, ou une valeur lue qui diffère de la table, est un arrêt.
