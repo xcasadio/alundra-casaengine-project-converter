@@ -8531,7 +8531,7 @@ prouvés par l'exécution du vrai code du binaire dans l'interpréteur MIPS (0 �
 - **G4 — Recette** de l'auteur : 476 d'abord.
 
 
-###### E19.g G1 — Export des effets (convertisseur) ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (compteur des textures, cases d'animation, valeurs de la 163, retour arrière), révisée ; relecture n°2 READY ; exécution après la recette et l'approbation de l'auteur)
+###### E19.g G1 — Export des effets (convertisseur) 🚧 (en cours le 2026-10-06 : G1-0 faite ; planifiée le 2026-10-06 ; relecture n°1 REVISE (compteur des textures, cases d'animation, valeurs de la 163, retour arrière), révisée ; relecture n°2 READY ; exécution après la recette et l'approbation de l'auteur)
 
 Parent seul : ni moteur, ni DLL. Déclencheur de risque : nouveau format de données exporté (relecture du plan et vérificateur neuf
 obligatoires). Données de départ : `data-extracted/` tel quel (G0 a déjà tout extrait : aucune ré-extraction, aucun changement de
@@ -8584,7 +8584,7 @@ l'extracteur). Faits et valeurs : `docs/plan-e19-g1g3-annexe/` (`converter-notes
   planches, pas en `.sprite` (coins libres, mode par quad ; choix de conduite de la section 1.2o).
 
 **Tâches.**
-- ⏳ **G1-0 — Prévision d'abord** (script hors du dépôt, depuis `data-extracted/` et l'export du moment) : `docs/plan-e19-g1g3-annexe/g1-predict.py`
+- ✅ **G1-0 — Prévision d'abord** (script hors du dépôt, depuis `data-extracted/` et l'export du moment) : `docs/plan-e19-g1g3-annexe/g1-predict.py`
   et `g1-export-prediction.md`, commités avant G1-1 : **ajoutés** exactement 157 compagnons de carte, le compagnon global, 87 PNG et 87
   `.texture` (chemins listés) ; **modifiés** exactement `AssetInfos.json` (+ 174 entrées, identifiants `Ids.For("texture-raw:…")` et
   `Ids.For("texture-wrapper:…")` recalculés par un uuid5 indépendant) et `report.json` ; **supprimés** aucun ; pour chaque compagnon, l'empreinte
@@ -8605,6 +8605,22 @@ l'extracteur). Faits et valeurs : `docs/plan-e19-g1g3-annexe/` (`converter-notes
   `docs/plan-e19-g0-annexe/expected_effect_sheets.tsv`) ; double export (seul `report.json` diffère) ; suite du convertisseur ;
   `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (la DLL ne change pas).
 - ⏳ **G1-3 — Vérification** : vérificateur neuf (rouges d'abord rejoués, prévision re-dérivée, invariants, double export).
+
+**Fait le 2026-10-06 (G1-0).** `docs/plan-e19-g1g3-annexe/g1-predict.py` (indépendant du convertisseur ; mode `check` qui rejoue
+la preuve sur un export) et `g1-export-prediction.md` commités avant tout code. Valeurs : **332 ajoutés** (157 compagnons de carte,
+le compagnon global `Data/effects/effects-global.json`, 87 PNG, 87 `.texture`), **modifiés** `AssetInfos.json` (+174 entrées
+ajoutées en fin dans l'ordre des cartes puis la table globale ; SHA-1 prévu du fichier entier `a09917c3…`) et `report.json`, aucun
+supprimé ; compteurs `Effects.*` : 544 / 251 / 350 / 194 / 165 / 363 / 83 / 5148 / 2832 / 12 307 / 23 / 157 / 87 / 0 ;
+`Verify.Assets` 22 442 vers 22 616, `Verify.Loaded`, `Verify.Loaded.texture`, `Verify.LoadableFilesOnDisk`,
+`Verify.ExistenceChecked` et `.png` +87, `Metrics.OutputFileCount` 23 774 vers 24 106, `Assets.Texture` 483, `Warnings` 6 et
+`Messages` 7 inchangés. Les identifiants du catalogue sont recalculés par un uuid5 indépendant (vérifié sur 20 entrées
+existantes), le contenu des `.texture` prévu depuis un `.texture` existant.
+⚠️ **Écart au plan, mesuré (sans conséquence sur G1) : le ré-export de référence ne change pas que `report.json`.** Le dossier
+`alundra-project/` datait d'avant la montée du pointeur du moteur d'E19.h1b3 (H1B3-R1) : le ré-export de référence (convertisseur
+inchangé, Release) a réécrit **383 fichiers `.entity`**, qui portent maintenant le champ moteur `min_move_distance` (0,001), plus
+`report.json` ; compteurs, avertissements et messages identiques à l'export précédent (aucun compteur ne bouge). Cause : le
+moteur, pas le convertisseur. Le manifeste « avant » de G1-2 est donc celui du ré-export de référence (23 771 fichiers hors DLL,
+PDB et `.casaeditor/`) ; l'égalité de ce ré-export à lui-même se prouve par le double export de G1-2.
 
 **Acceptation** : prévision commitée avant le code ; tests rouges puis verts ; export égal à la prévision ; double export ; suites,
 `cmp`, traces. **Retour arrière** : revert, puis suppression exacte des chemins ajoutés listés par G1-0 (les dossiers `effects/` des cartes
