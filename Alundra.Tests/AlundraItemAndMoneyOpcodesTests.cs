@@ -270,16 +270,38 @@ public sealed class AlundraItemAndMoneyOpcodesTests
     }
 
     [Fact]
-    public void Give_0x82_Id0x53_AnswersOne_WritesNothing_AndTracesDegraded()
+    public void Give_0x82_Id0x53_WithoutAStage_AnswersOne_RaisesTheLife_GivesNoItem_AndTracesDegraded()
     {
+        // E19.g G3d (the life vessel): the life is raised through the setters whatever the host; the effects need a stage and a hero (no stage here: skipped, so no number is drawn).
         var gameState = new AlundraGameState();
+        gameState.PlayerStats.Hp = 4;
         var trace = new List<EventTraceRecord>();
 
         var state = Run(new[] { 0x82, 0x53, 0x1A, 9, 0xFF }, gameState, trace: trace);
 
         Assert.Equal(1, state.Result);
         Assert.All(gameState.NumberOfItems, count => Assert.Equal(0, count));
-        Assert.Equal(10, gameState.PlayerStats.HpMax);
+        Assert.Equal((11, 11), ((int)gameState.PlayerStats.Hp, (int)gameState.PlayerStats.HpMax));
+        Assert.Equal(EventTraceKind.Degraded, trace.First(record => record.Opcode == 0x82).Kind);
+    }
+
+    [Theory]
+    [InlineData(0x50)]
+    [InlineData(0x51)]
+    [InlineData(0x52)]
+    [InlineData(0x54)]
+    [InlineData(0x55)]
+    [InlineData(0x56)]
+    public void Give_0x82_TheOtherHeroSubCases_StayDegraded_AnswerOne_AndWriteNothing(int id)
+    {
+        var gameState = new AlundraGameState();
+        var trace = new List<EventTraceRecord>();
+
+        var state = Run(new[] { 0x82, id, 0x1A, 9, 0xFF }, gameState, trace: trace);
+
+        Assert.Equal(1, state.Result);
+        Assert.All(gameState.NumberOfItems, count => Assert.Equal(0, count));
+        Assert.Equal((10, 10), ((int)gameState.PlayerStats.Hp, (int)gameState.PlayerStats.HpMax));
         Assert.Equal(EventTraceKind.Degraded, trace.First(record => record.Opcode == 0x82).Kind);
     }
 
