@@ -32,8 +32,14 @@ public class AlundraHeightWaitOpcodesTests
 
     private static EventProgramState StateFor(EventProgramDocument document) => new() { Codes = document.CodesAsBytes() };
 
-    private static AlundraEntityScriptProxy NewEntity(int? recordHeight = null) =>
-        new() { EntityRefId = 1, Status = EntityStatus.Normal, RecordHeight = recordHeight };
+    private static AlundraEntityScriptProxy NewEntity(int? recordHeight = null, bool withController = false) =>
+        new()
+        {
+            EntityRefId = 1,
+            Status = EntityStatus.Normal,
+            RecordHeight = recordHeight,
+            Controller = withController ? new CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent() : null,
+        };
 
     private static (int CodeIndex, int Opcode, int Size)[] Shape(List<EventTraceRecord> trace) =>
         trace.Select(r => (r.CodeIndex, r.Opcode, r.Size)).ToArray();
@@ -157,7 +163,7 @@ public class AlundraHeightWaitOpcodesTests
     }
 
     [Fact]
-    public void TZ22_TheFirstCallMemorisesTheLiteralTargetOfTheRecordHeight_AndLeavesTheForce()
+    public void TZ22_TheFirstCallMemorisesTheShiftedTargetOfTheRecordHeight_AndLeavesTheForce()
     {
         var document = NewDocument(0x01, 0x22, 0xFF);
         var (runner, trace) = NewRunner(document);
@@ -171,26 +177,51 @@ public class AlundraHeightWaitOpcodesTests
         Assert.Equal(new[] { (0, 0x01, 1), (1, 0x22, 0) }, Shape(trace));
         Assert.Equal(EventTraceKind.Implemented, trace[^1].Kind);
         Assert.Equal(1, state.Parameters[1]);
-        Assert.Equal(10485760, state.Parameters[2]); // 20 << 19, no conversion of convention.
+        Assert.Equal(10485759, state.Parameters[2]); // (20 << 19) - 1: the binary's +1 on every position, in the DLL's frame (ADR-0026, E19.h1b3).
         Assert.Equal(32768, owner.ForceZ);
     }
 
     [Fact]
     public void TZ22_ClampsTheForceToTheGapWhenItWouldOvershoot_AndNeverPushes()
     {
-        // (PosZ, ForceZ) -> (result, ForceZ out), height 20 (target 10485760): rows of handlers_emu.txt.
-        Assert.Equal((0, 760), Drop(SecondCall22(20, 10485000, 32768)));
-        Assert.Equal((0, 700), Drop(SecondCall22(20, 10485000, 700)));
-        Assert.Equal((1, 0), Drop(SecondCall22(20, 10485760, 0)));
-        Assert.Equal((0, -1), Drop(SecondCall22(20, 10485761, -5)));
-        Assert.Equal((0, 485760), Drop(SecondCall22(20, 10000000, 600000))); // 485760: the gap.
+        // (PosZ, ForceZ) -> (result, ForceZ out), height 20 (target 10485759 in the DLL's frame): rows of handler-rows.txt (the annex of E19.h1b3).
+        Assert.Equal((0, 760), Drop(SecondCall22(20, 10484999, 32768)));
+        Assert.Equal((0, 700), Drop(SecondCall22(20, 10484999, 700)));
+        Assert.Equal((1, 0), Drop(SecondCall22(20, 10485759, 0)));
+        Assert.Equal((0, -1), Drop(SecondCall22(20, 10485760, -5)));
+        Assert.Equal((0, 485760), Drop(SecondCall22(20, 9999999, 600000))); // 485760: the gap.
 
         // The faithful stalls: no force is created or reversed.
-        Assert.Equal((0, 0), Drop(SecondCall22(20, 10485761, 0)));
-        Assert.Equal((0, -32768), Drop(SecondCall22(20, 10000000, -32768)));
+        Assert.Equal((0, 0), Drop(SecondCall22(20, 10485760, 0)));
+        Assert.Equal((0, -32768), Drop(SecondCall22(20, 9999999, -32768)));
 
         // Equality ends the wait at once, the force untouched; the contact does not matter to 0x22.
-        Assert.Equal((1, 32768), Drop(SecondCall22(20, 10485760, 32768, contact: 1)));
+        Assert.Equal((1, 32768), Drop(SecondCall22(20, 10485759, 32768, contact: 1)));
+
+        // More rows of handler-rows.txt: a descent from one above the target is clamped to -1 whatever the force, a force far above the target is not.
+        Assert.Equal((0, -1), Drop(SecondCall22(20, 10485760, -32768)));
+        Assert.Equal((0, -32768), Drop(SecondCall22(20, 10518528, -32768)));
+        Assert.Equal((0, -6), Drop(SecondCall22(20, 10485765, -32768)));
+    }
+
+    [Theory]
+    [InlineData(20, false, 10485759)]
+    [InlineData(20, true, 10485759)]
+    [InlineData(38, false, 19922943)]
+    [InlineData(38, true, 19922944)] // a controller's root is a float32 in pixels: no odd value above 256 px, the target stays literal (E19.h1b3 H1B3-R2).
+    [InlineData(33, false, 17301503)]
+    [InlineData(33, true, 17301504)]
+    [InlineData(32, true, 16777215)] // the shifted target 2^24 - 1 is the last one a controller can hold.
+    public void TZ22_TheMemoIsTheShiftedTarget_ExceptForAControllerAbove256Pixels(int height, bool withController, int expectedMemo)
+    {
+        var document = NewDocument(0x01, 0x22, 0xFF);
+        var (runner, _) = NewRunner(document);
+        var owner = NewEntity(height, withController);
+        var state = StateFor(document);
+
+        runner.RunOneScriptCall(owner, state);
+
+        Assert.Equal(expectedMemo, state.Parameters[2]);
     }
 
     private static (int Result, int ForceZ) Drop((int Result, int ForceZ, int Memo) row) => (row.Result, row.ForceZ);
@@ -223,14 +254,14 @@ public class AlundraHeightWaitOpcodesTests
     {
         var document = NewDocument(0x01, 0x23, 0xFF);
         var (runner, trace) = NewRunner(document);
-        var owner = NewEntity(30); // target 15728640.
+        var owner = NewEntity(30); // target 15728639.
         owner.PosZ = 15000000;
         var state = StateFor(document);
 
         runner.RunOneScriptCall(owner, state);
         Assert.Equal(new[] { (0, 0x01, 1), (1, 0x23, 0) }, Shape(trace));
         Assert.Equal(EventTraceKind.Implemented, trace[^1].Kind);
-        Assert.Equal(15728640, state.Parameters[2]);
+        Assert.Equal(15728639, state.Parameters[2]);
 
         owner.ForceZ = 32768; // the gap is 728640: no clamp.
         trace.Clear();
@@ -251,7 +282,7 @@ public class AlundraHeightWaitOpcodesTests
         var document = NewDocument(0x01, 0x23, 0xFF);
         var (runner, trace) = NewRunner(document);
         var owner = NewEntity(30);
-        owner.PosZ = 15728640;
+        owner.PosZ = 15728639;
         var state = StateFor(document);
         runner.RunOneScriptCall(owner, state);
         trace.Clear();
@@ -266,7 +297,7 @@ public class AlundraHeightWaitOpcodesTests
         runner2.RunOneScriptCall(far, state2);
         Assert.Equal(new[] { (0, 0x01, 1), (1, 0x23, 1), (2, 0xFF, 0) }, Shape(trace2));
         Assert.Equal(EventTraceKind.Implemented, trace2[1].Kind);
-        Assert.Equal(15728640, state2.Parameters[2]);
+        Assert.Equal(15728639, state2.Parameters[2]);
     }
 
     /// <summary>Captures every warning of the process while the test runs (the suite runs its collections one after the other).</summary>

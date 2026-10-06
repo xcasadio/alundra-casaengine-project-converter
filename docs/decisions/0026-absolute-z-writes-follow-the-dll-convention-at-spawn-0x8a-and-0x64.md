@@ -1,6 +1,6 @@
 # ADR-0026: Absolute writes of Z follow the DLL convention (binary minus 1) at spawn, 0x8A and 0x64
 
-- **Status**: Accepted
+- **Status**: Accepted (its first exception, the literal target of 0x22, is replaced by ADR-0041)
 - **Date**: 2026-10-03 (decision D-E19-59 of the author, 2026-10-03, O-E19-45)
 - **Source**: this chantier: `docs/plan-e19-opcodes.md` section 1.2n.1b E19.h1b1 (rules H1b1-R1 to H1b1-R5), D-E19-59, O-E19-45. Binary: `ALUN_CD.EXE` (France) at `0x80039EA0`-`0x80039F04` (spawn), `0x8003F654`-`0x8003F670` (0x64), `0x80040308`-`0x80040320` (0x8A).
 

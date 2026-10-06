@@ -624,6 +624,10 @@ internal static class AlundraEntitySpawnFactory
             // this method (see AdoptPlayerPawn instead) so this flag never touches the hero's own
             // engine-driven vertical.
             proxy.Controller.IsVerticalOwnedExternally = true;
+
+            // E19.h1b3 (D-E19-98, ADR-0065 of the engine): the script's own vertical steps can be one fixed-point unit (1/65536 px): the last, clamped
+            // step of the descent at 0x22 is -1 raw unit. The engine drops any displacement of 0.001 px or less by default; this controller applies them all.
+            proxy.Controller.Settings.MinMoveDistance = 0f;
         }
 
         // E16.e L1/SE6 (docs/plan-e16-etat-partie.md): the sprite type EntityManager.cs:69 stores

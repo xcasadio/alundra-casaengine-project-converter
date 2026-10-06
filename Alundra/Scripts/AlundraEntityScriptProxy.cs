@@ -83,7 +83,8 @@ public class AlundraEntityScriptProxy : GameplayProxy
 
     /// <summary>
     /// E19.h1b2 (H1B2-R2, docs/plan-e19-opcodes.md §1.2n.1c): the <c>Height</c> byte of the entity's record (record byte 9, which the binary reads at
-    /// <c>+0x44</c> + 9), raw: the target of <c>0x22</c>/<c>0x23</c> is this value shifted left by 19, literally (ADR-0026). Set by
+    /// <c>+0x44</c> + 9), raw: the target of <c>0x22</c>/<c>0x23</c> is this value shifted left by 19, minus 1 in the DLL's frame (ADR-0026, E19.h1b3), literal
+    /// above 256 px for a controller (see <c>WaitHeightTarget</c>). Set by
     /// <see cref="EntityRecordMapper"/> only when the record carries a <c>Height</c>; null for the hero and the bare proxies of the tests ("no record").
     /// </summary>
     public int? RecordHeight;

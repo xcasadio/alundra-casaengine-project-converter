@@ -7065,7 +7065,7 @@ trappes, boules, la chute de Sara).
   compte d'appels, un appel par image) ; le pas fait deux recherches d'appui bornées (atterrissage, puis sol de fin de tick, comme la
   passe de fin du binaire).
 
-##### 1.2n.1d E19.h1b3 — Cible de `0x22` du binaire (D-E19-94, D-E19-98) 🚧 (planifiée le 2026-10-06 ; relecture n°1 REVISE (17 sites testés, branche du moteur, numéro d'ADR), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06 ; H1B3-1 faite, H1B3-2 en cours)
+##### 1.2n.1d E19.h1b3 — Cible de `0x22` du binaire (D-E19-94, D-E19-98) 🧪 (faite le 2026-10-06, vérification à faire ; planifiée le 2026-10-06 ; relecture n°1 REVISE (17 sites testés, branche du moteur, numéro d'ADR), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06)
 
 **Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais, dans `docs/plan-e19-op22-annexe/` : `notes.md`,
 `verify.md`, `site-table.txt`, `handler-rows.txt`, `gen_rows.py`, `all17.py`, `rand_rules.py`, et la sonde sur la vraie DLL
@@ -7113,7 +7113,7 @@ inchangés ; `TZ23_IsTheHeightWait...` `:233` 15728640 → 15728639 ; `TZ23_TheT
 **Tâches.**
 - ✅ **H1B3-1 — Moteur** : tests d'abord (par défaut un déplacement de moins de 0,001 px est jeté, à 0 il est appliqué ; clonage, chargement,
   validation, sérialiseur) ; code ; docs ; ADR ; suites du moteur (`CasaEngine.Tests` buildé explicitement) ; vérification ; montée du pointeur.
-- ⏳ **H1B3-2 — DLL** : tests d'abord : lignes du gestionnaire et une `Theory` (hauteur, contrôleur, mémo) dans `AlundraHeightWaitOpcodesTests.cs` ;
+- ✅ **H1B3-2 — DLL** : tests d'abord : lignes du gestionnaire et une `Theory` (hauteur, contrôleur, mémo) dans `AlundraHeightWaitOpcodesTests.cs` ;
   dans le nouveau `AlundraHeightTargetSitesTests.cs`, **une `Theory` sur les 33 instances des 17 sites** de `site-table.txt` (par le vrai
   `ArcRun` sur l'export réel, contrôleur réel et préfabs), chacune avec la mise en place de `op22-probe-tests.cs.txt` (tuile du héros dans la
   porte du programme, image d'arrivée ; 363 : drapeau 32769 bit 1 posé après le chargement de la carte ; 36 C[4] : drapeau 32774 bit 6 posé
@@ -7136,6 +7136,21 @@ revérifié juste avant le commit, aucune collision. Rouges d'abord sur la propr
 attendu 0, lu 0,001), les gardes (défaut, `Move` par défaut, `Move` nul à 0) verts d'avance. Verts après : suite du moteur 2748/2748. Le commentaire du
 défaut de `0,001f * 0,001f` (non identique au bit près à l'ancienne constante `0.000001f`) ne change aucun cas atteignable (pas de `n / 65536f` égal à 0,001).
 Pointeur du parent monté de `33324030` à `9c75c872` ; `git merge-base --is-ancestor 33324030 9c75c872` (dans le sous-module) réussit.
+
+**Fait le 2026-10-06 (H1B3-2, DLL).** Commits du parent (branche `chantier/e19-suite`) : `6b25151` (pointeur `33324030` -> `9c75c872`, `merge-base --is-ancestor`
+réussi) puis le commit de la DLL (règle, tests, ADR-0041, index, ce plan). **ADR du parent : 0041** (1 + le plus grand numéro trouvé sur `main` (0035) et
+`chantier/e19-suite` (0040), revérifié avant le commit, aucune collision). Rouges d'abord, sur le code d'avant avec le pointeur monté : sur les 33
+instances, **19 rouges** (127 rec6, rec7, rec11, rec12, rec8, rec9, rec13 à rec16, 89 rec20 à rec25, 363 rec0, 36 C[4] : fin de `PosZ` d'un cran trop haute,
+ex. 127 rec6 lu (20, 180, 160, 10485760) pour (20, 180, 160, 10485759) ; 115 : lu (756, 1076, 320, 3145728) pour (756, 1077, 321, 3145727)) et **14 verts
+d'avance** (127 rec17, rec18, et les 12 plafonds de la 36) ; `AlundraHeightWaitOpcodesTests` : 9 rouges (la ligne (10484999, 32768) lue 761 pour 760,
+le mémo de la hauteur 20 lu 10485760, de la 33 sans contrôleur 17301504, de la 38 sans contrôleur 19922944, de la 32 avec contrôleur 16777216, et les deux
+tests de `0x23` ré-épinglés). Verts après : 50/50 sur ces deux classes. Règle : `WaitHeightTarget` mémorise `(Height << 19) - 1`, la littérale pour un
+contrôleur dont la cible décalée est >= 2^24 ; `MinMoveDistance = 0` dans la fabrique à côté d'`IsVerticalOwnedExternally`. Tests ré-épinglés : les quatre de
+la liste fermée (`TZ22_TheFirstCall...` renommé `TZ22_TheFirstCallMemorisesTheShiftedTarget...`, `TZ22_ClampsTheForce...`, `TZ23_IsTheHeightWait...`,
+`TZ23_TheTargetEndsItToo...`), plus, dans `TZ22_ClampsTheForce...` seulement, trois lignes de `handler-rows.txt` ajoutées et une `Theory` de sept mémos ;
+aucun autre test ne bouge. Suites : `Alundra.Tests` Release 2916/2916 puis Debug 2916/2916 ; `cmp` de `Alundra.dll` identique ; six traces inchangées
+(`git diff --ignore-cr-at-eol` vide, les quatre `hero-trace` restaurés). Moteur : 2748/2748 (voir plus haut). Recette H1B3-3 : à l'auteur (carte 115, la plateforme
+`B[2]` qui descend, le héros reprend la main).
 
 **Acceptation** : rouges d'abord ; les 33 instances des 17 sites égales aux valeurs ci-dessus (nombre d'appels du binaire) ; aucun autre
 test ni arc ne bouge ; six traces ; après la montée du pointeur, `git merge-base --is-ancestor` de l'ancien pointeur vers le nouveau réussit.

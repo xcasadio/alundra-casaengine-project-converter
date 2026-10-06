@@ -2521,8 +2521,12 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
     /// <summary>
     /// The height wait of <c>0x22</c> (<c>0x8003DA70</c>, E19.h1b2 H1B2-R1; <c>0x23</c> calls it first), PER THE BINARY. The first call at a pc (the key is
-    /// <c>CodeIndex</c>, in <c>Parameters[1]</c>) memorises the target, the record's <c>Height</c> byte shifted left by 19 (<c>Parameters[2]</c>, literally: no conversion
-    /// of the DLL's convention, ADR-0026), and returns 0 without testing anything. Later calls return 1 when <c>PosZ</c> equals the target exactly, else bring
+    /// <c>CodeIndex</c>, in <c>Parameters[1]</c>) memorises the target (<c>Parameters[2]</c>) and returns 0 without testing anything. The binary's target is the
+    /// record's <c>Height</c> byte shifted left by 19, compared with a <c>PosZ</c> that carries a +1 on every position (rest, spawn, landing: <c>T + 1</c>);
+    /// in the DLL's frame (ADR-0026, <c>PosZ_dll = PosZ_b - 1</c>) the same comparison is with <c>(Height &lt;&lt; 19) - 1</c> (E19.h1b3, D-E19-94, D-E19-98,
+    /// ADR-0041 of the parent). The one exception is an entity with a controller whose shifted target is 2^24 or more: the controller's root is a float32 in
+    /// pixels, which holds no odd value from 256 px, so the shifted target would be unreachable (the ball would rise for ever) and the literal one is kept
+    /// (the call count of the binary is the same there, the ascent being aligned). Later calls return 1 when <c>PosZ</c> equals the target exactly, else bring
     /// <c>ForceZ</c> back to the gap only when it overshoots in the direction of the gap (it never creates or reverses a force: an entity at rest or moving away
     /// waits for ever, as in the binary) and return 0. An entity with no record (the hero, a bare proxy of a test; no site in the corpus, the binary
     /// prints an error and reads a null record) logs one warning and ends the wait at once.
@@ -2543,7 +2547,14 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
             }
 
             state.Parameters[1] = state.CodeIndex;
-            state.Parameters[2] = height << 19;
+            var literalTarget = height << 19;
+            var memo = literalTarget - 1;
+            if (entity.Controller != null && memo >= 1 << 24)
+            {
+                memo = literalTarget;
+            }
+
+            state.Parameters[2] = memo;
             return 0;
         }
 
