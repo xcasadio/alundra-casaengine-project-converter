@@ -5458,30 +5458,47 @@ l'original, quasi absent du corpus) n'est pas reproduit ; découpage : f4a (expo
 nom, vol du portrait, oracle porté de `f4_model.py`, valeurs `values.json` S1 à S7), f4c (vue : ajouts à `TextBoxScreen.xaml`, test au
 pixel, rapport de manque).
 
-###### E19.f4a — Export des portraits de dialogue ⏳ (planifiée le 2026-10-06 ; relecture à faire)
+###### E19.f4a — Export des portraits de dialogue ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (avertissement, prévision de l'export), révisée ; relecture n°2 à faire ; exécutée après E19.f3b)
 
 **Règles.**
 - **F4A-R1 — Lecture** : `SpriteBankReader` lit le `DialoguePortrait` de l'enregistrement canonique de chaque banque (la première carte
-  qui la porte, `SpriteBankReader.cs:300-330`) dans un nouveau membre de la banque.
-- **F4A-R2 — Écriture** : `SpriteWriter` écrit un `.sprite` par banque à portrait dans `UI/Portraits/`, au patron du portrait de
-  l'inventaire (`SpriteWriter.cs:828`, `:842-887`), identifiant `SpriteAssetId(feuille, signature)` (`:822`), catalogué ; la banque 15
-  réutilise l'identifiant et le fichier déjà exportés (`spriteAssetIdsByKey`, `:151`) ; la taille vraie est gardée (48 × 72 pour les
-  banques 122 et 162) ; le portrait ne prend pas le mode PSX de semi-transparence des sprites (ADR-0033) : le quad du binaire est opaque.
-- **F4A-R3 — Lien** : un champ facultatif `DialoguePortrait` (`SpriteAssetId`, `Width`, `Height`) par préfab dans `Data/sprite-records.json`
-  (`SpriteWriter.cs:985-1060`), lu par la DLL en tolérant son absence (`SpriteRecordCatalog.cs:262-330`, `SpriteRecordHeader` `:15-60`) ;
-  compteur `Sprites.DialoguePortrait` (25) au patron de `Sprites.InventoryPortrait` ; docs `docs/formats/` du format des enregistrements de
-  sprites ; ADR du parent (prochain numéro libre ; elle étend ADR-0005).
+  qui la porte, `SpriteBankReader.cs:302-351`) dans un nouveau membre de la banque. Avertissement, une fois par banque, **seulement**
+  si le bit `0x80` de `FlagsPortraitShadowType` est posé et que le champ manque ; bit éteint et champ absent (370 des 395 banques) :
+  rien, ni avertissement, ni fichier, ni champ ; sur l'export réel, le champ est présent exactement là où le bit est posé
+  (`dll-verify.md`), donc aucun avertissement nouveau.
+- **F4A-R2 — Écriture** : une passe des portraits de dialogue dans `SpriteWriter`, **après** la boucle des banques (`SpriteWriter.cs:156-162`),
+  à côté de `ConvertInventoryPortrait`, **avant** `EditorAssetCatalogService.Save()` et l'incrément d'`Assets.Sprite` (`:166-168`) ; un
+  `.sprite` par banque à portrait dans `UI/Portraits/`, au patron du portrait de l'inventaire (`:822`, `:842-887`), identifiant
+  `SpriteAssetId(feuille, signature)`, catalogué ; la banque 15 (Bonaire) réutilise l'identifiant `cb5544da-…` et le fichier déjà exportés
+  dans `Entities/` (`spriteAssetIdsByKey`, `:151`) : aucun fichier écrit pour elle ; le dossier `UI/Portraits/` n'est créé que s'il y a un
+  portrait à écrire (`SpriteWriterInventoryPortraitTests.cs:86` reste vert) ; la taille vraie est gardée (`quad.Width`/`Height`,
+  `:928` : 48 × 72 pour les banques 122 et 162). Le mode PSX de semi-transparence des sprites (`ReadPsxSemiTransparency`, `:931`) vaut
+  `None` pour les 25 signatures (le bit 3 n'est jamais posé) : rien à forcer.
+- **F4A-R3 — Lien** : un champ facultatif `DialoguePortrait` (`SpriteAssetId`, `Width`, `Height`) par préfab dans
+  `Data/sprite-records.json` (une entrée par préfab, `SpriteWriter.cs:1006-1015`), **omis quand il est nul** (condition d'omission sur la
+  propriété : les 370 autres entrées restent identiques à l'octet) ; lu par la DLL en tolérant son absence (`SpriteRecordCatalog.cs:263-338`,
+  `SpriteRecordHeader` `:20-65`) ; compteur `Sprites.DialoguePortrait` (25) au patron de `Sprites.InventoryPortrait` ; doc : un nouveau
+  fichier de format pour `sprite-records.json` dans `docs/formats/` et sa ligne dans l'index `docs/formats/README.md` (aucun document ne
+  le décrit aujourd'hui) ; ADR du parent (prochain numéro libre, 0039 aujourd'hui, à revérifier) qui étend ADR-0005.
 
 **Tâches.**
-- **F4A-0 — Prévision d'abord** (script hors du dépôt, depuis `data-extracted/` et `portraits_table.tsv`) : la liste exacte des fichiers
-  ajoutés (24 `UI/Portraits/*.sprite`, identifiants de `portraits_table.tsv`), des entrées de `sprite-records.json` qui gagnent le champ
-  (les préfabs des 331 enregistrements), et des compteurs de `report.json` ; écrite dans l'annexe avant F4A-1.
+- **F4A-0 — Prévision d'abord** (script hors du dépôt, depuis `data-extracted/`, `portraits_table.tsv` et le `report.json` de l'export du
+  moment, celui d'après E19.f3b) : un fichier d'annexe `docs/plan-e19-f4-annexe/f4a-export-prediction.md`, commité avant F4A-1, qui liste :
+  **ajoutés** exactement les 24 `UI/Portraits/sprite_<signature>.sprite` (identifiants de `portraits_table.tsv`, banque 15 exclue) ;
+  **modifiés** exactement `Data/sprite-records.json`, `AssetInfos.json` et `report.json` ; **supprimés** aucun ; dans `sprite-records.json`,
+  les **25** identifiants de préfab dont l'en-tête a le bit `0x80`, chacun avec son `SpriteAssetId`, `Width` et `Height` (toutes les autres
+  entrées identiques) ; dans `report.json`, chaque compteur qui change avec sa valeur prévue : `Sprites.DialoguePortrait` 25 (nouveau),
+  `Assets.Sprite` + 24, `Verify.LoadableFilesOnDisk` + 24, `Verify.Assets` + 24, `Verify.Loaded` + 24, `Verify.Loaded.sprite` + 24,
+  `Metrics.OutputFileCount` + 24 ; `Warnings`, `WarningsByCategory`, `Errors` et tous les autres compteurs inchangés.
 - **F4A-1 — Tests d'abord** (convertisseur), au patron de `SpriteWriterInventoryPortraitTests.cs` : un enregistrement à portrait →
-  identifiant, dossier, champ ; champ absent → rien et un avertissement seulement ; la banque 15 réutilisée ; un portrait de 48 × 72
-  garde sa taille ; sur données réelles, les 25 identifiants égaux à `portraits_table.tsv` ; DLL : `SpriteRecordCatalog` lit le champ et
-  tolère son absence. Rouges d'abord. Tests existants qui bougent : aucun (changement additif) ; toute assertion qui bouge est un arrêt.
-- **F4A-2 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement la prévision de F4A-0 ; double
-  export ; tests du convertisseur ; `Alundra.Tests` en Release puis en Debug, `cmp`, six traces.
+  identifiant, dossier, champ ; bit `0x80` posé et champ absent → exactement un avertissement ; bit éteint et champ absent → aucun
+  avertissement, aucun fichier, aucun champ ; la banque 15 réutilisée (aucun fichier dans `UI/Portraits/` pour elle) ; un portrait de
+  48 × 72 garde sa taille ; le champ omis dans `sprite-records.json` quand il est nul ; sur données réelles, les 25 identifiants égaux à
+  `portraits_table.tsv` ; DLL : `SpriteRecordCatalog` lit le champ et tolère son absence. Rouges d'abord. Tests existants qui bougent :
+  aucun (changement additif) ; toute assertion qui bouge est un arrêt.
+- **F4A-2 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement la prévision de F4A-0 (chemins
+  ajoutés et modifiés, compteurs de `report.json`, tableau `Warnings` identique à l'octet) ; double export ; tests du convertisseur ;
+  `Alundra.Tests` en Release puis en Debug, `cmp`, six traces.
 - **F4A-3 — Vérification**.
 
 **Acceptation** : tests rouges d'abord puis verts ; export égal à la prévision ; double export ; suites, `cmp`, traces. **Retour arrière** :
