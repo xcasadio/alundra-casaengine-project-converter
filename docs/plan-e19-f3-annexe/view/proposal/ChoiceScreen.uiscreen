@@ -1,0 +1,9 @@
+{
+  "id": "a623e495-f197-475c-887d-042140ec7248",
+  "name": "ChoiceScreen",
+  "source_xaml_file": "ChoiceScreen.xaml",
+  "theme_name": "",
+  "preview_resolution": { "x": 320, "y": 240 },
+  "resource_files": [],
+  "design_time_data_file": "ChoiceScreen.design.json"
+}

@@ -1,0 +1,21 @@
+{
+  "view_model_type": "AlundraChoiceViewModel",
+  "values": {
+    "RootVisibility": "Visible",
+    "Frame": {
+      "Left": 176
+    },
+    "Label0": {
+      "Text": "OUI",
+      "Left": 192
+    },
+    "Label1": {
+      "Text": "NON",
+      "Left": 240
+    },
+    "Cursor": {
+      "SourceName": "wind_173",
+      "Left": 196
+    }
+  }
+}
