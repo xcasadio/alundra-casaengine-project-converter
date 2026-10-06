@@ -6101,7 +6101,7 @@ d'intro, qui relit la fabrique (garde des six traces).
   l'apparition (`0x80039EF8`), la DLL au premier tick seulement, si bien que `0x8D` (`PosZ <= TerrainHeight + 1`,
   `AlundraEventProgramRunner.cs:1808`) lit 0 avant le premier tick d'une entité → E19.h1b2.
 
-##### 1.2n.1c E19.h1b2 — `0x20`, `0x22`, `0x23`, Z des entités sans contrôleur ⏳ (découverte du 2026-10-06 faite ; planifiée le 2026-10-06 ; relecture à faire)
+##### 1.2n.1c E19.h1b2 — `0x20`, `0x22`, `0x23`, Z des entités sans contrôleur ⏳ (découverte du 2026-10-06 faite ; planifiée le 2026-10-06 ; relecture n°1 REVISE, révisée ; relecture n°2 à faire)
 
 
 Portée : `0x20` (attente de distance en Z, 266 sites), `0x22`/`0x23` (attente d'une hauteur d'enregistrement, 17 sites) et
@@ -6200,41 +6200,62 @@ fin de l'attente.
   `tileMapData != null` ; les lignes propres au contrôleur restent sous la garde.
 - **H1B2-R4 — Pas vertical sans contrôleur** (dans le mandataire, méthode sœur de `EvaluateEntitySupport`) : condition `Controller ==
   null && Owner?.World?.CollisionField != null && !immediateAtSpawn && actif` (le critère exclut le harnais d'intro, dont les entités
-  sont hors monde : il garde **toutes** les nouvelles écritures, décroissance, `IsOnGround`, `TileZ`, `PosZ`) ; même décroissance
-  bornée, même amorce et mêmes fins (trouvé, atterrissage) qu'un PNJ à contrôleur, avec `PosZ += FinalForceZ` au lieu de
-  `Controller.Move` ; atterrissage strict ; `IsOnGround` de position ; `TileZ` rafraîchi après le pas ; une entité `FlagToDestroy` est
-  sautée.
+  sont hors monde : il garde **toutes** les nouvelles écritures, décroissance, `IsOnGround`, `TileZ`, `PosZ`) ; règles du binaire en
+  convention de la DLL (`binary-notes.md` §2.3 à §2.7) : impulsion ou décroissance bornée des deux côtés, puis `FinalForceZ = ForceZ` ;
+  `F > 0` : si `PosZ + ModZ + Depth + 1 + F > 0x7800000`, `PosZ = 0x77FFFFE − ModZ − Depth`, contact, `ForceZ = 0` avec la gravité
+  (plafond absolu de 1920 px), sinon `PosZ += F` ; `F <= 0` : si `PosZ + ModZ + F < T` (strict), `PosZ = T − ModZ`, contact, `ForceZ = 0`
+  **avec la gravité seulement** (`FinalForceZ` garde la force du tick : au repos avec gravité, `FinalForceZ` −32768 et contact 1 à
+  chaque tick), sinon `PosZ += F` ; `IsOnGround = PosZ <= sol` (sol = `T`, ou le dessus d'une entité + 1) ; `TileZ` rafraîchi après
+  le pas ; une entité `FlagToDestroy` est sautée. Site : appelé à la place de la branche « trouvé » sans contrôleur
+  d'`EvaluateEntitySupport` (`AlundraEntityScriptProxy.cs:770-790`) quand le critère tient (une seule recherche d'appui par tick),
+  après le programme du tick (`:1212-1213`), comme le binaire (programmes, puis physique). Hors du pas : les plafonds formés par
+  d'autres entités pendant une montée (la DLL ne les a que pour le héros ; écart consigné, aucun cas du corpus) et l'ordre XY puis Z
+  (le binaire fait Z puis XY ; aucune entité sans contrôleur du corpus ne bouge dans les deux).
 
 **Tâches.**
 - **H1B2-1 — Tests d'abord** (valeurs de l'annexe, écrites d'avance ; une valeur lue différente est un arrêt) :
   - gestionnaires (au patron d'`AlundraZWaitOpcodesTests`), lignes de `handlers_emu.txt` : `0x20 [16,0]` depuis 3145728 : 4194303 → 0,
     4194304 → 3, 2097152 → 3, contact seul → 0 ; `[0,1]` finit à 19922944 ; `0x22` hauteur 20 : cible 10485760 ; (10485000, 32768) → `ForceZ`
     760 ; (10485760, 0) → 1 ; (10485761, −5) → −1 ; (10485761, 0) : attente sans fin ; `ForceZ` de mauvais signe : attente sans fin ;
-    `0x23` : un contact la termine loin de la cible ; `0x22` sans enregistrement : 1 et un avertissement ;
-  - pas vertical (montage `ContactWorld.AddEntity(withController: false)`), tables Z-1 à Z-9 de `traces.out` passées en convention de
-    la DLL (binaire − 1), par exemple Z-3 (chute de 5 px : 294912, 229376, 131072, puis 0 au tick 4 avec `IsOnGround` 1 et contact 0,
-    contact 1 dès le tick 5) ;
-  - cas réels (`scen_real.out`) : 260 rec17, `0x20 [32,0]` rend à son 64e appel après le premier, montée de 2097152 exactement ;
-    47 rec3, `0x20 [96,0]` au 192e appel, `PosZ` 4194304 (64 px), sans contact ; la garde levée sur un préfab réel sans contrôleur
-    avec le `TileMapData` de sa carte (`MapGravityRaw` 128, `MapZViscosityRaw` 4096) ;
+    `0x23` : un contact la termine loin de la cible, avec la mémoire `Parameters[2]` = 15728640 (`handlers_emu.txt`) et le genre de
+    trace `Implemented` (un saut par la taille ne pose ni l'une ni l'autre) ; `0x22` sans enregistrement : 1, le genre de trace
+    `Implemented` et exactement un avertissement de texte `Opcode 0x22 without an entity record: the wait ends.` ;
+  - pas vertical (montage `ContactWorld.AddEntity(withController: false)`), tables Z-1 à Z-9 de `traces.out` : la colonne `PosZ`, déjà en
+    convention de la DLL, telle quelle (la colonne `binary PosZ` n'est pas l'attendu), avec `ForceZ`, `FinalForceZ`, contact et
+    `IsOnGround` ; par exemple Z-3 (chute de 5 px : 294912, 229376, 131072, puis 0 au tick 4 avec `IsOnGround` 1 et contact 0, contact 1
+    dès le tick 5) ; Z-9 (plafond, contact à 123731967 pour une taille Z de 32) ;
+  - cas réels (`scen_real.out`), au montage d'`AlundraAbsoluteZWritesTests.cs:29-57` (`ArcRun` avec `RealController: true, Prefabs:
+    true` sur la vraie carte, ticks par `World.Update`, appels comptés par `OnInstruction` sur le créneau C comme `FirstClimbEnd`) :
+    le programme de tick d'un enregistrement est pris à chaque image dès la deuxième (`PickEventTrigger`,
+    `AlundraEntityScriptProxy.cs:1420-1426`) ; la 260 « Inoa (inner) », enregistrement 17, a `EventCodesC_TickIndex` 133 = 128 + 5
+    (`C[5]`), la 47 « Unused Dream (Boss) (Beta Surferboys Dream) », enregistrement 3, a 132 = 128 + 4 (`C[4]`) (export, couche
+    `Entities` du `.tmj`) ; si c0 est l'appel où `0x20` s'exécute pour la première fois : sur la 260, l'instruction qui suit
+    l'attente (`BD` @750) s'exécute pour la première fois à l'appel c0 + 64, avec une montée de 2097152 exactement depuis le `PosZ` de
+    l'appel c0 ; sur la 47, `1B [0,0]` @445 à l'appel c0 + 192, `PosZ` 4194304 (64 px), sans contact ; un enregistrement absent
+    (zone gardée par un drapeau) est un arrêt ; la garde levée sur un préfab réel sans contrôleur avec le `TileMapData` de sa carte
+    (`MapGravityRaw` 128, `MapZViscosityRaw` 4096) ;
   - le mappeur pose la hauteur d'enregistrement (`EntityRecordMapperTests`) ;
-  - garde du harnais : un mandataire nu avec gravité et champs bruts posés, sans monde, garde `ForceZ`, `PosZ` et `IsOnGround` ;
+  - **garde** (verte avant et après ; rouge avant = arrêt et diagnostic) : un mandataire nu avec gravité et champs bruts posés, sans
+    monde, garde `ForceZ`, `PosZ` et `IsOnGround` (le harnais d'intro) ;
   - tests existants qui bougent, liste fermée : `IntroTraceHarnessTests.cs:319` (`ImplementedOpcodes` gagne `0x20`, `0x22`, `0x23`) ;
     à garder verts sans changement : `AlundraTerrainHeightTests.cs:129-146`, `AlundraCollidedWithEntityZTests.cs:64-90`,
     `AlundraMovementObstacleProbeTests.cs:367-393`, les appelants d'`immediateAtSpawn` (`AlundraNpcCharacterControllerMoverTests.cs`
     `:1842`, `:1949`, `:2019`, `AlundraMovementObstacleProbeTests.cs:384`, `AlundraTerrainHeightTests.cs:102`, `:117`), les arcs (A1c :
-    les 6 caisses de la 390 passent à `CollidedWithEntityZ` et `IsOnGround` 1 sans bouger, aucun programme de la 390 ne les lit ; si une
-    assertion d'A1c les lit, c'est un arrêt), le TSV des opcodes sautés (aucune ligne pour ces trois opcodes) ; toute autre assertion
+    les 16 PNJ nus de la 390, caisses et marins, passent à `CollidedWithEntityZ` et `IsOnGround` 1 sans bouger ; aucun programme de
+    la 390 ne les lit, et les assertions d'A1c, `AlundraShipArcTests.cs:195-207`, non plus ; A4p, A17 et TH4-A17, T-A19 et TH4-A19
+    font tourner des entités sans contrôleur dans un monde : inchangés), le TSV des opcodes sautés (aucune ligne pour ces trois opcodes) ; toute autre assertion
     qui bouge est un arrêt.
 - **H1B2-2 — Suites** : `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp`, six traces à l'octet (le harnais est
   exclu par le critère ; `docs/intro-programs-389.txt` ne nomme pas ces opcodes) ; pas d'export (DLL seule).
 - **H1B2-3 — Vérification** (vérificateur neuf). **H1B2-4 — Recette** (auteur, hors de la chaîne) : la 47 (Sara descend de 96 px), la
   260 (l'armure monte de 32 px), un ascenseur de la 22.
 
-**Acceptation** : tests de H1B2-1 rouges d'abord (opcodes sautés, entité figée) puis verts avec les valeurs écrites ; liste fermée ;
+**Acceptation** : tests de H1B2-1 rouges d'abord (opcodes sautés, entité figée), sauf la garde nommée, puis verts avec les valeurs
+écrites ; les deux cas réels passent par la vraie boucle (`World.Update`, `proxy.Update`) ; liste fermée ;
 suites, `cmp`, traces. **Retour arrière** : revert des commits. **Risques** : l'ordre du tick (si le pas tombe un tick plus tard, les
 attentes finissent au 65e ou au 193e appel : c'est un arrêt) ; la cible littérale sur la descente de la 115 (O-E19-68) ; les attentes
-des programmes `B` finissent un tick tôt dans la DLL (connu, O-E19-28) ; changements visibles hors chaîne pour la recette (ascenseurs,
+des programmes `B` finissent un tick tôt dans la DLL (connu, O-E19-28) ; pas de plafond formé par une autre entité et ordre XY puis Z
+pour une entité sans contrôleur (écarts sans cas dans le corpus) ; changements visibles hors chaîne pour la recette (ascenseurs,
 trappes, boules, la chute de Sara).
 
 ##### 1.2n.2 E19.h2 — État en l'air des PNJ ⏳ (esquisse)
