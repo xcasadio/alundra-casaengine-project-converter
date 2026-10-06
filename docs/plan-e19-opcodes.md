@@ -5569,7 +5569,7 @@ convertisseur n'a pas changé (pas de tests du convertisseur). Restent la vérif
   248 texels ; liste fermée tenue ; export re-dérivé (les trois fichiers, l'entrée d'`AssetInfos.json`, les compteurs) et double
   export ; `Alundra.Tests` 2802/2802 en Release puis en Debug, `cmp` sans écart, six traces.
 
-###### E19.f3c — Ordre de l'écran de sauvegarde (D-E19-93) 🧪 (faite et CONFIRMED le 2026-10-06, recette F3C-4 en attente ; planifiée le 2026-10-06 ; relecture n°1 REVISE (liste des fichiers de test), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06, exécutée en mode AUTO)
+###### E19.f3c — Ordre de l'écran de sauvegarde (D-E19-93) ✅ (faite et CONFIRMED le 2026-10-06, recette F3C-4 validée par l'auteur le 2026-10-06 ; planifiée le 2026-10-06 ; relecture n°1 REVISE (liste des fichiers de test), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06, exécutée en mode AUTO)
 
 **Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais et en français, dans `docs/plan-e19-save-order-annexe/` :
 `notes.md`, `verify.md`, le modèle `hostmodel.py`, les preuves `slotorder*.py`, le correctif proposé `patch-proposal.diff.txt` et les tests
@@ -6009,7 +6009,7 @@ MGUI (sous-module du moteur ; branche `chantier/e19f4c1-image-brightness` créé
   `notes.md`) est sans effet : les tests suivent la règle du centre, D-E19-101 fait foi. Nouvelle époque ; une seule relecture de
   clôture.
 
-###### E19.f4c2 — Vue du nom et du portrait du dialogue 🧪 (faite et CONFIRMED le 2026-10-06 (`da5b7ee`, `7eee50e`, ADR-0042 ; vérificateur neuf : rouges d'abord rejoués (29 sur 71), générateur rejoué égal à l'annexe, 17 images exactes et 36 à 8/255 sur GPU, 180 noms et 25 portraits, mutant `Brightness = 1` rouge, préchargement inutile (9,6 ms au plus), `Alundra.Tests` 2946 en Release puis en Debug, `cmp`, six traces ; avis P4 : le contrôle de la table de glyphes contre le binaire a tourné sur la table de f2b0), recette F4C2-4 en attente)
+###### E19.f4c2 — Vue du nom et du portrait du dialogue ✅ (faite et CONFIRMED le 2026-10-06 (`da5b7ee`, `7eee50e`, ADR-0042 ; vérificateur neuf : rouges d'abord rejoués (29 sur 71), générateur rejoué égal à l'annexe, 17 images exactes et 36 à 8/255 sur GPU, 180 noms et 25 portraits, mutant `Brightness = 1` rouge, préchargement inutile (9,6 ms au plus), `Alundra.Tests` 2946 en Release puis en Debug, `cmp`, six traces ; avis P4 : le contrôle de la table de glyphes contre le binaire a tourné sur la table de f2b0), recette F4C2-4 validée par l'auteur le 2026-10-06)
 
 DLL et écran XAML seulement (aucun export : `UI/Screens/*` est versionné à la main).
 - **F4C2-R1 — XAML** (`proposal-TextBoxScreen.xaml`) : après `TextClip`, `PortraitImage` (repos (8, 116) dans la XAML, vol par
@@ -6084,7 +6084,7 @@ DLL et écran XAML seulement (aucun export : `UI/Screens/*` est versionné à la
   - Fichiers : `TextBoxScreen.xaml`, `TextBoxScreen.design.json`, `AlundraTextBoxViewModel.cs`, `AlundraInventoryViewModel.cs` (propriété `Brightness` et `ApplyDialogue`), `AlundraTextBoxPresenter.cs`,
     `AlundraDialogueNameBox.cs` (`Text`), `AlundraDialogueDirector.cs` (`PortraitSource`), les tests de la liste fermée dont le nouveau `AlundraSpeakerPixelTests.cs`, l'annexe, ADR-0042 et son index.
 
-###### E19.f4c3 — Rampe du portrait de l'inventaire (D-E19-100) 🧪 (faite et CONFIRMED le 2026-10-06 (`9799984` ; vérificateur neuf : rouges d'abord rejoués (4 sur 108), mutant du retour anticipé rouge, table du cycle entier égale au plan, liste fermée tenue, `Alundra.Tests` 2948 en Release puis en Debug, `cmp`, six traces ; aucun avis), recette en attente : ouvrir et fermer l'inventaire et le sous-inventaire ; planifiée le 2026-10-06, **après f4c2**, qui ajoute la propriété ; relecture n°1 REVISE (liste fermée, prévisions), révisée ; relecture n°2 READY)
+###### E19.f4c3 — Rampe du portrait de l'inventaire (D-E19-100) ✅ (faite et CONFIRMED le 2026-10-06 (`9799984` ; vérificateur neuf : rouges d'abord rejoués (4 sur 108), mutant du retour anticipé rouge, table du cycle entier égale au plan, liste fermée tenue, `Alundra.Tests` 2948 en Release puis en Debug, `cmp`, six traces ; aucun avis), recette validée par l'auteur le 2026-10-06 (inventaire et sous-inventaire) ; planifiée le 2026-10-06, **après f4c2**, qui ajoute la propriété ; relecture n°1 REVISE (liste fermée, prévisions), révisée ; relecture n°2 READY)
 
 DLL et écrans XAML de l'inventaire seulement : la propriété `InventoryPortraitViewModel.Brightness` (ajoutée par f4c2) est posée dans
 l'`Apply` de l'inventaire et liée sur le portrait des deux écrans ; le `Rgb` est déjà calculé (`AlundraInventoryPortrait.cs:234`,
@@ -7164,7 +7164,7 @@ trappes, boules, la chute de Sara).
   compte d'appels, un appel par image) ; le pas fait deux recherches d'appui bornées (atterrissage, puis sol de fin de tick, comme la
   passe de fin du binaire).
 
-##### 1.2n.1d E19.h1b3 — Cible de `0x22` du binaire (D-E19-94, D-E19-98) 🧪 (faite et CONFIRMED le 2026-10-06 (moteur `9c75c872`, ADR-0065 du moteur, ADR-0041 du parent ; vérificateur neuf : rouges d'abord rejoués, les 33 instances égales à l'annexe, sans le réglage du moteur la 115 bloque, moteur 2748, `Alundra.Tests` 2916 en Release puis en Debug, `cmp`, six traces ; avis P4 seulement), recette H1B3-3 en attente ; planifiée le 2026-10-06 ; relecture n°1 REVISE (17 sites testés, branche du moteur, numéro d'ADR), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06)
+##### 1.2n.1d E19.h1b3 — Cible de `0x22` du binaire (D-E19-94, D-E19-98) 🧪 (faite et CONFIRMED le 2026-10-06 (moteur `9c75c872`, ADR-0065 du moteur, ADR-0041 du parent ; vérificateur neuf : rouges d'abord rejoués, les 33 instances égales à l'annexe, sans le réglage du moteur la 115 bloque, moteur 2748, `Alundra.Tests` 2916 en Release puis en Debug, `cmp`, six traces ; avis P4 seulement), recette H1B3-3 en attente (la 115 n'est pas vérifiable par l'auteur aujourd'hui, 2026-10-06) ; planifiée le 2026-10-06 ; relecture n°1 REVISE (17 sites testés, branche du moteur, numéro d'ADR), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06)
 
 **Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais, dans `docs/plan-e19-op22-annexe/` : `notes.md`,
 `verify.md`, `site-table.txt`, `handler-rows.txt`, `gen_rows.py`, `all17.py`, `rand_rules.py`, et la sonde sur la vraie DLL
@@ -8550,7 +8550,7 @@ inchangés (aucun manifeste à produire : aucun fichier exporté ne porte encore
 fermée (la fixture et les deux fichiers de test sont ceux de la liste). Écart de la lettre du plan, sans effet : la branche du moteur est
 `chantier/e19-suite2` (demande de l'auteur) et non `chantier/e19g2b2-corner-track`. Reste : la vérification fraîche (`verifier`) de la tranche, puis G2b-3.
 
-###### E19.g G2b-3 — Export des coins (convertisseur) 🧪 (faite et CONFIRMED le 2026-10-06 (`3906931`, `8c48a76`, `a9f1bc3`, `db178bc`, ADR-0044 ; vérificateur neuf : prévision rejouée à l'octet, rouges d'abord rejoués, garde rouge sur l'ancien export puis verte, 1923 `.anim2d` et `report.json` modifiés, 45 237 clés égales à la prévision, sans écart, chaque fichier privé de ses pistes égal à l'ancien, double export, convertisseur 666, `Alundra.Tests` 2950 en Release puis en Debug, `cmp`, six traces), recette G2b-4 en attente ; planifiée le 2026-10-06, après G2b-2 ; relecture n°1 REVISE (prévision clé par clé, garde, ordre du pointeur), révisée ; relecture n°2 REVISE (chemin du fichier de garde), disposition FIX ; nouvelle époque, relecture de clôture READY)
+###### E19.g G2b-3 — Export des coins (convertisseur) 🧪 (faite et CONFIRMED le 2026-10-06 (`3906931`, `8c48a76`, `a9f1bc3`, `db178bc`, ADR-0044 ; vérificateur neuf : prévision rejouée à l'octet, rouges d'abord rejoués, garde rouge sur l'ancien export puis verte, 1923 `.anim2d` et `report.json` modifiés, 45 237 clés égales à la prévision, sans écart, chaque fichier privé de ses pistes égal à l'ancien, double export, convertisseur 666, `Alundra.Tests` 2950 en Release puis en Debug, `cmp`, six traces), recette G2b-4 en attente (pas vérifiable par l'auteur aujourd'hui, 2026-10-06) ; planifiée le 2026-10-06, après G2b-2 ; relecture n°1 REVISE (prévision clé par clé, garde, ordre du pointeur), révisée ; relecture n°2 REVISE (chemin du fichier de garde), disposition FIX ; nouvelle époque, relecture de clôture READY)
 
 Parent : convertisseur et export. Le pointeur du moteur est déjà sur la pointe de G2b-2 (monté par G2b-2) : chaque commit du parent de
 G2b-3 compile, et un export avec `Corners` n'est jamais lu par un moteur qui ne la connaît pas. Déclencheur de risque : format exporté.
