@@ -8293,7 +8293,7 @@ quads quelconques).
 numéro de l'ADR du moteur par R-BR (2) : le plus grand numéro trouvé est 0067 (`main` et `chantier/audio-modern`), donc **0068**, à revérifier
 juste avant le commit.
 - ✅ **G2b1-0** prévision (annexe `docs/plan-e19-g2b-annexe/` : `g2b1_predict.py`, `g2b1_predictions.json`, `g2b1-predictions.md`).
-- ✅ **G2b1-1** tests d'abord (puis le code de la soumission, du lot et du shader) · ✅ **G2b1-2** démo sur GPU · ⏳ **G2b1-3** docs, ADR, fichier de tâches · ⏳ **G2b1-4** pointeur et suites.
+- ✅ **G2b1-1** tests d'abord (puis le code de la soumission, du lot et du shader) · ✅ **G2b1-2** démo sur GPU · ✅ **G2b1-3** docs, ADR, fichier de tâches · ⏳ **G2b1-4** pointeur et suites.
 
 **G2b1-0 faite le 2026-10-06** : `g2b1_predict.py` (modèle exact B(k) en rationnels, `redux.py` pour R, sans virgule flottante) ; texture
 d'adresse de 16 × 16 (couleur unique par texel, STP aux texels où (i + j) % 4 == 1, texel (15, 15) = fond) ; 14 cas (huit quads : agrandissement
@@ -8337,6 +8337,13 @@ par paire, 0 différence). **Exécution rouge** (`DrawPsxQuad` temporairement r�
 4698, `Mode1` et `Mode0` 66 et 652 chacun, miroirs 1:1 64 et 576) ; les lignes 1:1 non miroir (a) restent égales (le rectangle englobant les dessine
 comme le quad), les miroirs échouent. Zone de bruit vide (géométrie entière) : aucun pixel ignoré. Commits moteur `760c9f61`
 (shader) et `e56db3bc` (démo).
+
+**G2b1-3 faite le 2026-10-06** : `docs/engine/sprite-psx-semi-transparency.md` (section « Free quads », la ligne « Quads with four free vertices
+are not covered » remplacée), ADR-0068 du moteur (`docs/decisions/0068-free-psx-quads-draw-at-the-screen-resolution.md`, numéro revérifié juste avant le
+commit : 0067 au plus sur `main`, `chantier/audio-modern` et les branches `chantier/e19*`, aucun 0068 ; la règle à la résolution de l'écran, son écart
+aux facteurs k > 1, le signe de `ddy`) et sa ligne d'index, `ai-agent/tasks/e19g2b-free-quads-tasks.md` et sa ligne dans `ai-agent/README.md`. Suite du
+moteur (`CasaEngine.Tests` buildé explicitement, `--blame-hang-timeout 300s`) : 2760 sur 2760 (12 nouveaux, aucun test existant ne bouge). Commit
+moteur `ec042323`.
 
 Moteur seul (sous-module, branche `chantier/e19g2b-free-quads` empilée sur la pointe de G2d `33324030`, que le parent épingle) ; inerte
 pour Alundra tant que rien ne l'appelle ; aucun chemin existant ne change (ni `SpriteBatch.fx`, ni les tuiles, ni les fonds, ni
