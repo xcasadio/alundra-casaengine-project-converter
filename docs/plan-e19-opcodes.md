@@ -7826,7 +7826,7 @@ impossible aujourd'hui).
   2663/2663 en Release puis en Debug, `cmp` sans écart, six traces à l'octet. Avis P4 : la couverture de la 293 par la teinte reste à
   voir en recette ; `OutputSizeBytes` varie de quelques dizaines d'octets entre deux exports du même code (fichiers hors manifeste).
 
-##### 1.2o.5 E19.g G2b — Quads à quatre sommets libres (sprites d'entités déformés) ⏳ (découverte du 2026-10-06 faite ; l'auteur a tranché O-E19-71 : résolution de l'écran, D-E19-92 ; planifiée le 2026-10-06 en G2b-1, G2b-2, G2b-3 ; relecture n°1 REVISE (règle aux facteurs k > 1, seuils de la démo, champs réutilisés, place de l'epsilon), révisée ; relecture n°2 à faire ; exécution après la recette de l'auteur)
+##### 1.2o.5 E19.g G2b — Quads à quatre sommets libres (sprites d'entités déformés) ⏳ (découverte du 2026-10-06 faite ; l'auteur a tranché O-E19-71 : résolution de l'écran, D-E19-92 ; planifiée le 2026-10-06 en G2b-1, G2b-2, G2b-3 ; relecture n°1 REVISE (règle aux facteurs k > 1, seuils de la démo, champs réutilisés, place de l'epsilon), révisée ; relecture n°2 REVISE (précision de l'échantillonneur), disposition FIX ; nouvelle époque, relecture de clôture à faire ; exécution après la recette de l'auteur)
 
 **Découverte** (2026-10-06, lecture seule, deux surfaces, chacune contre-vérifiée ; versionnée, en anglais, dans `docs/plan-e19-g2b-annexe/`)
 ; faits porteurs :
@@ -7907,10 +7907,13 @@ pour Alundra tant que rien ne l'appelle ; aucun chemin existant ne change (ni `S
   **plus 1/4096 de texel** (l'égalité tranchée vers le haut) ; vérifiable au niveau du lot, sans GPU.
 - **G2b1-R6 — Shader** : un nouveau fichier `Content/Shaders/PsxQuad.fx` (et sa ligne dans `Content.mgcb`), utilisé **seulement** pour les
   séries d'entrées `PsxQuad` : sommet = celui de `SpriteBatch.fx` plus un décalage d'un demi-pixel d'écran vers la droite et le bas
-  (paramètre posé au dessin depuis la fenêtre d'affichage) ; pixel = coordonnée de texture moins `(0,5 k − 0,5) (ddx(uv) + ddy(uv))` (k,
-  pixels d'écran par unité du monde, posé au dessin depuis la projection et la fenêtre d'affichage, entier par ADR-0048), puis la logique de
-  pixel de `SpriteBatch.fx` recopiée (fenêtre alpha brute, rejet `<= 0,01`). `SpriteBatch.fx` et son rechargement
-  (`TryReloadBuiltInShader`) ne changent pas.
+  (paramètre posé au dessin depuis la fenêtre d'affichage) ; pixel : t = coordonnée de texture × taille de la texture (en texels), t moins
+  `(0,5 k − 0,5) (ddx(t) + ddy(t))` (k, pixels d'écran par unité du monde, posé au dessin depuis la projection et la fenêtre d'affichage,
+  entier par ADR-0048), puis **le shader choisit lui-même le texel** : index = `floor(t)`, lecture au centre de ce texel
+  (`(index + 0,5) / taille`) ; l'échantillonneur ne décide donc rien (sous Direct3D 11, il ne garantit que 8 bits sous le texel,
+  `D3D11_SUBTEXEL_FRACTIONAL_BIT_COUNT`, soit 1/256 de texel : un pixel juste sous une frontière basculerait) ; la taille de la texture
+  est un paramètre posé au dessin à chaque changement de texture ; puis la logique de pixel de `SpriteBatch.fx` recopiée (fenêtre alpha
+  brute, rejet `<= 0,01`). `SpriteBatch.fx` et son rechargement (`TryReloadBuiltInShader`) ne changent pas.
 - **Fichiers** (liste fermée) : moteur `CasaEngine/Framework/Application/Components/SpriteRendererComponent.cs`,
   `CasaEngine/Content/Shaders/PsxQuad.fx`, `CasaEngine/Content/Content.mgcb`, les fichiers de test nouveaux sous `CasaEngine.Tests/Rendering/`,
   la démo nouvelle sous `CasaEngine.Demos/Demos/PsxSemiTransparency/` et son inscription (`CasaEngine.Demos/DemosGame.cs`),
@@ -7923,9 +7926,13 @@ pour Alundra tant que rien ne l'appelle ; aucun chemin existant ne change (ni `S
   miroir (élimination), et **deux lignes 1:1** : (a) coins 1:1 par `DrawPsxQuad`, (b) le même par le chemin rectangle ; pour chaque cas, aux
   facteurs × 1 et × 3 : l'image B(k) (texel et couleur par pixel), le nombre de pixels couverts (le dénominateur), à × 1 le nombre de
   pixels où B diffère de R ; la **zone de bruit** (pixels dont le texel B est à moins de 2⁻¹⁰ texel d'une frontière, hors égalités exactes,
-  ou dont le coin haut-gauche est à moins de 2⁻¹⁰ px d'un bord) ; les **sondes** : pixels où B = R à × 1, à au moins 1/16 de texel de
+  ou dont le coin haut-gauche est à moins de 2⁻¹⁰ px d'un bord ; la marge couvre l'arithmétique flottante 32 bits du shader, pas
+  l'échantillonneur, qui ne décide pas du texel, G2b1-R6) et, par cas et par facteur, la plus petite distance à une frontière parmi les
+  pixels gardés dans la comparaison ; les **sondes** : pixels où B = R à × 1, à au moins 1/16 de texel de
   toute frontière et à au moins 1/16 px de tout bord ; une **table des mutations** (autre diagonale, sans demi-pixel de géométrie, sans demi-
-  texel, sans recul du miroir, sans le terme de pente) avec, pour chacune, au moins une sonde qu'elle change à × 1 ou à × 3 ; l'égalité 1:1
+  texel, sans recul du miroir, sans le terme de pente, texel choisi par l'échantillonneur au lieu du shader) avec, pour chacune, au moins
+  une sonde qu'elle change à × 1 ou à × 3, ou la raison pour laquelle aucune sonde ne peut la voir (la dernière : seulement dans la zone
+  entre 2⁻¹⁰ et 2⁻⁸ texel, à mesurer, sans seuil) ; l'égalité 1:1
   (a) = (b) pixel pour pixel à × 1 et à × 3.
 - **G2b1-1 — Tests d'abord**, au niveau du lot, sans GPU : ordre des cases et coordonnées lues case par case (diagonale TR-BL), coordonnées
   non retournées avec le recul du miroir, décalage constant 0,5 + 1/4096 texel (une mutation « sans epsilon » rend ce test rouge),
@@ -7945,6 +7952,12 @@ pour Alundra tant que rien ne l'appelle ; aucun chemin existant ne change (ni `S
   démo égale à la prévision ; `Alundra.Tests` en Release puis en Debug après la montée du pointeur, `cmp`, six traces (rien ne doit bouger).
   **Arrêts** : un fichier hors de la liste, un test existant qui bouge, une valeur de la démo qui contredit G2b1-0, un modèle B(k) dont la
   ligne 1:1 (a) diffère de (b).
+
+- **Disposition de la relecture n°2** (2026-10-06, règle des deux REVISE) : un seul bloquant, **FIX** — le texel est choisi par le
+  shader (`floor(t)` puis lecture au centre du texel), jamais par l'échantillonneur, dont la précision garantie sous Direct3D 11 est
+  1/256 de texel ; G2b1-0 donne la plus petite distance à une frontière gardée dans la comparaison. Le reste de l'algèbre a été
+  confirmé par le relecteur (décalage d'un demi-pixel d'écran, terme de pente, ordre des cases, égalité 1:1 de `check_bk.py`).
+  Nouvelle époque de préparation ; une seule relecture de clôture.
 
 ###### E19.g G2b-2 — Piste de coins de `.anim2d` (moteur) ⏳ (planifiée le 2026-10-06, après G2b-1)
 
