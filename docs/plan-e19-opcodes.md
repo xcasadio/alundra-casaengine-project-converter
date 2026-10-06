@@ -7029,7 +7029,7 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
 au sud (O-E19-28 b, aussi contre les cellules) demande l'étape 2 (O-E19-42) ; l'image d'A10J `@2462` peut bouger d'un tick
 (retards connus de la DLL).
 
-### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2c 🧪 (CONFIRMED le 2026-10-05, recette G2c-6 en attente) ; G2d 🧪 (CONFIRMED le 2026-10-06, recette G2d-6 en attente) ; G2b ⏳ (découverte faite, D-E19-92, plan à écrire) ; G1/G3 ⏳ (découverte faite, D-E19-96 et D-E19-97, plans à écrire) ; G4 à planifier)
+### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2c 🧪 (CONFIRMED le 2026-10-05, recette G2c-6 en attente) ; G2d 🧪 (CONFIRMED le 2026-10-06, recette G2d-6 en attente) ; G2b ⏳ (planifiée, enveloppe et G2b-1 READY) ; G1/G3 ⏳ (découverte faite, D-E19-96 et D-E19-97 ; G1 READY ; G3 à planifier) ; G4 à planifier)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B les données, le convertisseur,
 l'analyseur, le moteur et la DLL ; notes, rendus et scripts dans le scratchpad de la session, `e19g-disc/A/notes.md` et
@@ -7826,7 +7826,7 @@ impossible aujourd'hui).
   2663/2663 en Release puis en Debug, `cmp` sans écart, six traces à l'octet. Avis P4 : la couverture de la 293 par la teinte reste à
   voir en recette ; `OutputSizeBytes` varie de quelques dizaines d'octets entre deux exports du même code (fichiers hors manifeste).
 
-##### 1.2o.5 E19.g G2b — Quads à quatre sommets libres (sprites d'entités déformés) ⏳ (découverte du 2026-10-06 faite ; l'auteur a tranché O-E19-71 : résolution de l'écran, D-E19-92 ; planifiée le 2026-10-06 en G2b-1, G2b-2, G2b-3 ; relecture n°1 REVISE (règle aux facteurs k > 1, seuils de la démo, champs réutilisés, place de l'epsilon), révisée ; relecture n°2 REVISE (précision de l'échantillonneur), disposition FIX ; nouvelle époque, relecture de clôture à faire ; exécution après la recette de l'auteur)
+##### 1.2o.5 E19.g G2b — Quads à quatre sommets libres (sprites d'entités déformés) ⏳ (découverte du 2026-10-06 faite ; l'auteur a tranché O-E19-71 : résolution de l'écran, D-E19-92 ; planifiée le 2026-10-06 en G2b-1, G2b-2, G2b-3 ; relecture n°1 REVISE (règle aux facteurs k > 1, seuils de la démo, champs réutilisés, place de l'epsilon), révisée ; relecture n°2 REVISE (précision de l'échantillonneur), disposition FIX ; nouvelle époque, relecture de clôture READY (enveloppe et G2b-1) ; exécution après la recette et l'approbation de l'auteur)
 
 **Découverte** (2026-10-06, lecture seule, deux surfaces, chacune contre-vérifiée ; versionnée, en anglais, dans `docs/plan-e19-g2b-annexe/`)
 ; faits porteurs :
@@ -8078,7 +8078,7 @@ prouvés par l'exécution du vrai code du binaire dans l'interpréteur MIPS (0 �
 - **G4 — Recette** de l'auteur : 476 d'abord.
 
 
-###### E19.g G1 — Export des effets (convertisseur) ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (compteur des textures, cases d'animation, valeurs de la 163, retour arrière), révisée ; relecture n°2 à faire ; exécution après la recette de l'auteur)
+###### E19.g G1 — Export des effets (convertisseur) ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (compteur des textures, cases d'animation, valeurs de la 163, retour arrière), révisée ; relecture n°2 READY ; exécution après la recette et l'approbation de l'auteur)
 
 Parent seul : ni moteur, ni DLL. Déclencheur de risque : nouveau format de données exporté (relecture du plan et vérificateur neuf
 obligatoires). Données de départ : `data-extracted/` tel quel (G0 a déjà tout extrait : aucune ré-extraction, aucun changement de
