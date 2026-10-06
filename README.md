@@ -223,6 +223,26 @@ Phase 3 turns each frame's `SiFrame.CollisionData` into `collision_keyframes` on
 - An animation with no collision data at all gets no `collision_keyframes` key: those assets are
   byte-identical to what earlier runs produced.
 
+## Per-frame quad corners
+
+The PS1 draws every entity image as a free four-vertex quad, so scaling, rotation, shear and mirroring live in the
+image's corners. Phase 3 keeps drawing the 69.2 % of the images that are a rectangle of the source size (mirrors
+included) through the part `Position` and the flip tracks, and writes the other 30.8 % (49 348 of 160 355 quad
+references, 1 923 `.anim2d`) as a `Corners` track (engine ADR-0069, parent ADR-0044), counters
+`Sprites.QuadsDeformed`, `Sprites.CornerTracks` (6 432) and `Sprites.CornerKeyframes` (45 237: 38 910 active, 6 327
+disabled):
+
+- **Appended.** The `Corners` tracks come after every other track of the animation, so no existing track name
+  moves and the other 7 697 `.anim2d`, the `.sprite` and `.texture` files are byte-identical.
+- **Change-only keys.** Keys sit on the times of the part's `Sprite` keys, only where the state changes. A plain
+  image after a deformed one writes a disabled key (the part is drawn as a rectangle again); a hidden image and the
+  repeated last image of a `Hold`/`Chain` animation write none.
+- **Values.** An active key holds the raw PS1 corners (y flipped) minus the image's `Position`, in the data order
+  top-left, top-right, bottom-left, bottom-right, and `source_offset` = (-mx, -my) with mx = `X1 > X2`,
+  my = `Y1 > Y3` (a mirrored axis names its source window one texel early).
+- **Delivery.** An engine that does not know the `Corners` property cannot load these files: converter, engine
+  and export travel together.
+
 ## Per-entity body prefabs and the world space policy
 
 Besides the per-frame hitboxes above, an Alundra sprite record declares one body volume for the

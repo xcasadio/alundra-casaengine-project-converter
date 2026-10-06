@@ -57,3 +57,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0041 | The target of 0x22 is the binary's target in the DLL's frame, with a per-controller minimum move distance | Accepted | 2026-10-06 |
 | ADR-0042 | The dialogue shows the speaker's name and portrait through the text box screen | Accepted | 2026-10-06 |
 | ADR-0043 | The effects are exported as raw companions and sheets, not as sprites | Accepted | 2026-10-06 |
+| ADR-0044 | The quad corners of deformed entity images are exported as a Corners track appended to the .anim2d | Accepted | 2026-10-06 |
