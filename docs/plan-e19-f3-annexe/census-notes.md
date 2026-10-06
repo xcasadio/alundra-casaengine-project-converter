@@ -184,7 +184,7 @@ K5 is the pinned example: values unchanged by timing the press (frame 70).
 ## 5. Facts that decide placement and design, with evidence
 
 - The box pass reads the pad of the previous tick through `_squareOfTick[tick-1]` / `_squareOfLastTick` (`AlundraWorldProxy.cs:2175`, `:2206`); the TickPad fields read before `Update` in the first loop are that same pad: no extra state.
-- Save screen: `Tick()` in the first loop (`:2117`) reads `TickPad` AFTER `Update(k)` (current tick, one tick earlier than the binary's frame, D-E19-64-like), so it opens the question at S and its poll must come after the choice pass of the same tick to see C+18 as the binary's slot 10 does. [E19.f3c: done, on the pad words of its own tick.]
+- Save screen: `Tick()` in the first loop (`:2117`) reads `TickPad` AFTER `Update(k)` (current tick, one tick earlier than the binary's frame, D-E19-64-like), so it opens the question at S and its poll must come after the choice pass of the same tick to see C+18 as the binary's slot 10 does. [E19.f3c: done, on the pad words of its own tick. E19.f3d, D-E19-99, ADR-0047: since then on the pad words of the tick before.]
 - `AlundraSaveBook` is an entity script: it runs in `AlundraEntityScriptProxy.Update`, BEFORE the proxy (`World.cs:443-491`, D-E19-64), hence the "first pass one tick early, result seen one tick late" row.
 - 0x44 programs run from map events (second loop `:2197`), entity scripts and pending triggers; the corpus has 101 sites, all over a mode-1 box (`dll-notes.md` 2).
 - Cross is the only button of the choice; Square (the text box's) and Circle/Triangle are never read: `dll-verify`/`binary-verify` 1 row 8. So Square can keep closing/advancing the box underneath while a choice is up (the arcs' Square hold continues).

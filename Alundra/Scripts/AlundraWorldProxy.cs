@@ -155,10 +155,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <summary>E19.f2a F2-R1: the square button of the last tick of the previous frame: what the box pass of tick 0 reads.</summary>
     private (bool Held, bool Pressed) _squareOfLastTick;
 
-    /// <summary>E19.f3a F3A-R3: the pad words the choice box reads (just pressed, by interval) of each logic tick of the current frame, recorded by the pad pass of <see cref="Update"/>.</summary>
+    /// <summary>E19.f3a F3A-R3: the pad words the choice box reads (just pressed, by interval) of each logic tick of the current frame, recorded by the pad pass of <see cref="Update"/>. D-E19-99: the save screen reads the same words, of the tick before.</summary>
     private readonly List<(uint Pressed, uint Interval)> _choicePadOfTick = new();
 
-    /// <summary>E19.f3a F3A-R3: the pad words of the last tick of the previous frame: what the choice pass of tick 0 reads.</summary>
+    /// <summary>E19.f3a F3A-R3: the pad words of the last tick of the previous frame: what the choice pass and (D-E19-99) the save screen read at tick 0.</summary>
     private (uint Pressed, uint Interval) _choicePadOfLastTick;
 
     /// <summary>
@@ -2280,10 +2280,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // E19.f3c F3C-R1 (D-E19-93, docs/plan-e19-opcodes.md): the save screen - its state machine then its transition's render, as UpdateMemoryCardProcess
             // then UpdateUserInterface in the original's RenderScene (GraphicManager.cs:62-63) - runs AFTER the pass of the dialogue box and its choice box, as the
             // binary's slot 10 (the file menu) after its slot 3 (the choice) in the dispatcher's ascending order: the answer written by a close pass is read in
-            // the same tick. F3C-R2: it gets the pad words of THIS tick (TickPad only holds the last tick's edges here); the gate below is read after it, so
-            // the MenuOpen it posts freezes the map events of the same tick. Never open together with an inventory: the inventory's trigger refuses while it is
+            // the same tick. F3C-R2: it gets the pad words recorded per tick (TickPad only holds the last tick's edges here); D-E19-99: those of the tick BEFORE (the last tick of the
+            // previous frame at tick 0), the tuple the pass above reads: the memory-card process and the slots 0, 3 and 10 all run in RenderScene, before the pad sampler of the frame's Update(0).
+            // The gate below is read after it, so the MenuOpen it posts freezes the map events of the same tick. Never open together with an inventory: the inventory's trigger refuses while it is
             // active (J9). Its presenter reads the state the director just reached (E16.e T4, L5).
-            var (screenPressed, screenInterval) = _choicePadOfTick[tick];
+            var (screenPressed, screenInterval) = tick == 0 ? _choicePadOfLastTick : _choicePadOfTick[tick - 1];
             AlundraSaveScreenDirector.Instance.Tick(screenPressed, screenInterval);
             _saveScreenPresenter?.Tick();
 

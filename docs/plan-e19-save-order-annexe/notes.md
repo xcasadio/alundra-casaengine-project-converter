@@ -82,7 +82,7 @@ The screen reads `TickPad` of the CURRENT tick (lag 0), the pass reads the pad o
 Target: screen tick and its presenter in loop 2, after `_choicePresenter?.Tick()` and before `var tickBlocked` (`:2261`): the MenuOpen it posts is read by the gate of the same tick (map events of the tick frozen, as today and as the binary: state machine
 then `RunMapEvents` gated by `GameplayBlockedMask`); the screen runs even when the hero is missing or the gate closed (the old loop 1 was unconditional, the `continue` comes after).
 
-Pad words: `_choicePadOfTick[tick]` (JustPressed, ByInterval of THIS tick): same words as the screen read in loop 1, so the picker's input timing is unchanged (lag 0 kept).
+Pad words: `_choicePadOfTick[tick]` (JustPressed, ByInterval of THIS tick): same words as the screen read in loop 1, so the picker's input timing is unchanged (lag 0 kept). [E19.f3d, D-E19-99, ADR-0047: superseded, the screen now reads the words of the tick before.]
 
 Tick relation in the model (N = tick of the opener, i.e. the screen tick that sees Cross):
 - order A (today): the pass of the SAME tick is the machine's init pass (N+1 happens at tick N), interactive N+18, closed N+36, accepted by the screen at N+37 (the screen runs before the pass): the count N -> acceptance is 37 for an answer given at the earliest,
