@@ -287,7 +287,9 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-86** — (2026-10-06, choix de la session sous la règle de l'auteur « le binaire tranche », D-E19-72, D-E19-81 ; à confirmer
     par l'auteur) La **boîte de choix suit le binaire** : disposition horizontale OUI/NON, Gauche et Droite, validation à la Croix seule,
     ni annulation ni souris (la liste verticale de boutons du moteur n'est plus utilisée pour les choix), compteur du curseur
-    persistant d'une boîte à l'autre ; les invites de carte mémoire du binaire restent hors périmètre (ADR-0014).
+    persistant d'une boîte à l'autre ; les invites de carte mémoire du binaire restent hors périmètre (ADR-0014). Elle précise D-E19-50
+    (l'auteur, 2026-10-03 : la boîte de choix fidèle, deux options côte à côte, validée à la Croix) ; reste à confirmer : l'abandon de la
+    souris.
   - **D-E19-87** — (2026-10-06, choix technique de la session, E19.h1b2) Pour une entité sans contrôleur : atterrissage strict et
     `IsOnGround` de position (convention de la DLL, exacte), impulsion partagée par le pas vertical comme dans le binaire ; `0x22`
     garde la cible littérale d'ADR-0026 ; `0x22` sans enregistrement journalise une fois et finit l'attente.
@@ -295,6 +297,9 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     `SelectChoiceForTests` garde son nom et répond **à la manette** (appuis armés, consommés par les passes actives) ; la passe du
     choix tourne à la fin de `Pass(bool, bool)`, juste après la boîte de texte (créneaux 0 puis 3), le câblage mesuré par la
     simulation ; l'ordre du mandataire entre l'écran de sauvegarde et le dialogue ne change pas (O-E19-69).
+  - **D-E19-89** — (2026-10-06, choix de la session, E19.f4, précédent de la décision D2 de l'auteur pour le portrait de
+    l'inventaire) La rampe de couleur du portrait (255 → 128, au-dessus de 1) n'est pas rendue : teinte normale, manque de MGUI
+    consigné (G11), pas contourné.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -5411,6 +5416,91 @@ Au patron d'E19.f2b1c : `AlundraChoiceScreen` (XAML, `ChoiceScreen.xaml`, son en
 la boîte de texte (créneau séparé dans le binaire ; la question de l'écran de sauvegarde est seule), poussé après elle, au-dessus ;
 test au pixel sur GPU réel (harnais d'E19.f2b1c), valeurs écrites d'avance par un compositeur indépendant ; export : l'enveloppe
 cataloguée.
+
+
+###### E19.f4 — Nom et portrait du locuteur : découverte du 2026-10-06, découpée en E19.f4a, E19.f4b et E19.f4c ⏳
+
+**Découverte** (2026-10-06, lecture seule, deux surfaces, chacune contre-vérifiée ; versionnée, en anglais, dans
+`docs/plan-e19-f4-annexe/` ; le modèle `model/f4_model.py` égale le vrai code sur 80 puis 300 cas tirés, 0 écart) ; faits porteurs
+**[binaire]** :
+- **Ouverture** : seuls `0x0D` (`0x8003D578`), `0x5C` (`0x8003F01C`) et `0xC4` (`0x80041DA8`) portent nom et portrait, dans l'ordre
+  portrait, nom, puis `TryOpenDialog` (avant son test « déjà ouverte ») ; `0x0D` prend **l'entité logique** du programme (mot `+0x230`
+  du propriétaire, réécrit par `0x42`/`0x43` ; la DLL la passe déjà à `Dispatch`) ; `0x5C` et `0xC4` prennent la première entité trouvée
+  par la recherche `v1` (indice le plus bas ; rien trouvé : ni nom ni portrait, la boîte s'ouvre quand même) ; `0xC4` prend le nom de ses
+  opérandes `v2 | v3 << 8`. Identifiant du locuteur : `entity+0x68` (l'octet de l'enregistrement, + 0x100 pour un sprite de carte ; 0
+  pour le héros) = `AlundraEntityScriptProxy.SpriteType` ; portrait si `Flags & 0x800000`. Le livre de sauvegarde et les textes de
+  passage ouvrent une boîte nue.
+- **Boîte de nom** : ouverte au tick de l'opcode ; refusée si une boîte de nom est déjà ouverte ou se ferme, si l'identifiant sort de
+  `0x100..0x1FF` ou si la chaîne ETC est vide (60 noms sur 256, lettres simples, largeurs 19 à 56) ; glissement x = 320 + trunc(−256 ·
+  (k − 1) / 15) à la passe k (320, 303, 286, … 82, puis 64 dès la passe 16) ; texte en x = x du cadre + trunc((112 − w) / 2), y 148,
+  palette 8 de `WIND.CL` ; la découpe ne coupe jamais un vrai nom ; fermée au déclencheur de fermeture T de la boîte de texte (64, 81,
+  98, … 302, 320, 320), libérée à T+17 (la boîte de texte à T+18).
+- **Portrait** : un quad opaque modulé, première image du sprite du locuteur ; vol de 15 passes depuis le point de tête du locuteur vers
+  le repos (8, 116), coin haut-gauche, de 0 × 0 à 48 × 56 ; couleur de sommet identique sur les trois canaux : 255 → 135 à l'ouverture,
+  128 au repos, 127 → 246 au retour (128 = 1, 255 ≈ 1,99, saturé) ; retour vers la position du locuteur à cet instant, dernière passe
+  dégénérée 0 × 0 à T+15 ; le quad à l'écran fait toujours 48 × 56 (une image de 48 × 72 est écrasée : défaut corrigé par D-E19-49) ;
+  même machine que le portrait de l'inventaire (repos (248, 104) là-bas). Ordre de dessin : cadre et lignes du texte, portrait, cadre du
+  nom (et cadre du choix, curseur), texte du nom, libellés du choix.
+- **Corpus et données** : 2847 sites (`0x0D` 2055, `0x5C` 761, `0xC4` 31) ; 331 enregistrements à portrait dans 184 cartes, **25**
+  banques (324 de 48 × 56, 7 de 48 × 72 : banques 122 et 162), mêmes pixels dans chaque carte ; chaque portrait a un nom ; le héros n'a
+  ni nom ni portrait. Le champ `DialoguePortrait` est dans l'extraction mais **pas exporté** (`SpriteBankReader`, `SpriteWriter` ne lisent
+  que `InventoryPortrait`) ; la banque 15 (Bonaire) a déjà son sprite exporté (même case qu'un quad d'animation). Le cadre du nom
+  (`91ca17ae-…`, 112 × 32) et les avances de font3 existent.
+- **DLL** : aucune trace du locuteur aujourd'hui (`0x5C` ignore `v[1]`, `0xC4` ses opérandes, `OpenDialog` ne prend ni entité ni
+  locuteur) ; le portrait de l'inventaire (`AlundraInventoryPortrait`, `InventoryPortraitViewModel`) a son repos et sa taille en dur.
+- **MGUI** : la rampe au-dessus de 1 ne se rend pas (`MGImage.TextureColor` ne fait que multiplier ; `BlendType.Additive` n'existe que dans
+  `DrawSettings`, sans propriété d'élément) : manque à consigner (G11 de l'audit des manques de MGUI).
+
+**Choix de conduite** (session) : la rampe de couleur suit le précédent du portrait de l'inventaire (décision D2 de l'auteur : teinte
+normale) et le manque est consigné, pas contourné (D-E19-89) ; les portraits de 48 × 72 s'affichent entiers, bas aligné au repos
+(haut 100, bas 172), le vol étendu à h = 72 (D-E19-49) ; le tampon de texte partagé que l'ouvreur du nom efface (défaut possible de
+l'original, quasi absent du corpus) n'est pas reproduit ; découpage : f4a (export des portraits), f4b (logique : locuteur, boîte de
+nom, vol du portrait, oracle porté de `f4_model.py`, valeurs `values.json` S1 à S7), f4c (vue : ajouts à `TextBoxScreen.xaml`, test au
+pixel, rapport de manque).
+
+###### E19.f4a — Export des portraits de dialogue ⏳ (planifiée le 2026-10-06 ; relecture à faire)
+
+**Règles.**
+- **F4A-R1 — Lecture** : `SpriteBankReader` lit le `DialoguePortrait` de l'enregistrement canonique de chaque banque (la première carte
+  qui la porte, `SpriteBankReader.cs:300-330`) dans un nouveau membre de la banque.
+- **F4A-R2 — Écriture** : `SpriteWriter` écrit un `.sprite` par banque à portrait dans `UI/Portraits/`, au patron du portrait de
+  l'inventaire (`SpriteWriter.cs:828`, `:842-887`), identifiant `SpriteAssetId(feuille, signature)` (`:822`), catalogué ; la banque 15
+  réutilise l'identifiant et le fichier déjà exportés (`spriteAssetIdsByKey`, `:151`) ; la taille vraie est gardée (48 × 72 pour les
+  banques 122 et 162) ; le portrait ne prend pas le mode PSX de semi-transparence des sprites (ADR-0033) : le quad du binaire est opaque.
+- **F4A-R3 — Lien** : un champ facultatif `DialoguePortrait` (`SpriteAssetId`, `Width`, `Height`) par préfab dans `Data/sprite-records.json`
+  (`SpriteWriter.cs:985-1060`), lu par la DLL en tolérant son absence (`SpriteRecordCatalog.cs:262-330`, `SpriteRecordHeader` `:15-60`) ;
+  compteur `Sprites.DialoguePortrait` (25) au patron de `Sprites.InventoryPortrait` ; docs `docs/formats/` du format des enregistrements de
+  sprites ; ADR du parent (prochain numéro libre ; elle étend ADR-0005).
+
+**Tâches.**
+- **F4A-0 — Prévision d'abord** (script hors du dépôt, depuis `data-extracted/` et `portraits_table.tsv`) : la liste exacte des fichiers
+  ajoutés (24 `UI/Portraits/*.sprite`, identifiants de `portraits_table.tsv`), des entrées de `sprite-records.json` qui gagnent le champ
+  (les préfabs des 331 enregistrements), et des compteurs de `report.json` ; écrite dans l'annexe avant F4A-1.
+- **F4A-1 — Tests d'abord** (convertisseur), au patron de `SpriteWriterInventoryPortraitTests.cs` : un enregistrement à portrait →
+  identifiant, dossier, champ ; champ absent → rien et un avertissement seulement ; la banque 15 réutilisée ; un portrait de 48 × 72
+  garde sa taille ; sur données réelles, les 25 identifiants égaux à `portraits_table.tsv` ; DLL : `SpriteRecordCatalog` lit le champ et
+  tolère son absence. Rouges d'abord. Tests existants qui bougent : aucun (changement additif) ; toute assertion qui bouge est un arrêt.
+- **F4A-2 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement la prévision de F4A-0 ; double
+  export ; tests du convertisseur ; `Alundra.Tests` en Release puis en Debug, `cmp`, six traces.
+- **F4A-3 — Vérification**.
+
+**Acceptation** : tests rouges d'abord puis verts ; export égal à la prévision ; double export ; suites, `cmp`, traces. **Retour arrière** :
+revert, export complet égal au manifeste « avant ». **Risques** : 13 feuilles distinctes portent les portraits : le premier locuteur de
+chaque feuille fera charger la feuille au premier affichage (f4c décide d'un préchargement).
+
+###### E19.f4b — Locuteur, boîte de nom et vol du portrait (logique) ⏳ (esquisse, après E19.f4a)
+
+Le locuteur résolu par opcode (`0x0D` entité logique, `0x5C` première trouvée, `0xC4` nom des opérandes), passé à `Open` avant son test
+« déjà ouverte » ; la machine de la boîte de nom (glissement, refus, fermeture à T, libération à T+17) ; le vol du portrait généralisé
+(repos du dialogue (8, 116), de l'inventaire (248, 104), taille par portrait, 48 × 72 bas aligné, point de tête pris au départ et au
+retour) ; remises à l'entrée de carte, à la fermeture hors bande et au chargement ; oracle porté de `model/f4_model.py`, valeurs
+`values.json` S1 à S7 ; tests de l'inventaire gardés par une surcharge additive.
+
+###### E19.f4c — Vue du nom et du portrait ⏳ (esquisse, après E19.f4b)
+
+`PortraitImage`, `NameFrame` et `NameText` ajoutés à `TextBoxScreen.xaml` (l'idiome du portrait de l'inventaire : repos dans la XAML, vol
+par translation et échelle liées, ADR-0020 de MGUI), sous-view models appliqués après `Apply(box)` ; préchargement des feuilles ; test au
+pixel sur GPU ; rapport du manque G11 (rampe au-dessus de 1).
 
 
 ### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) — E19.k1 ✅ (recette K5 en attente) ; E19.k2 🧪 (faite et vérifiée le 2026-10-03, recette K2-4 en attente)

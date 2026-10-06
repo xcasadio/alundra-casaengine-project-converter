@@ -1,0 +1,482 @@
+{
+ "0x100": {
+  "name": "Beaumont",
+  "w": 56,
+  "x_rest": 92,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 148
+ },
+ "0x101": {
+  "name": "Thyea",
+  "w": 33,
+  "x_rest": 103,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 136
+ },
+ "0x102": {
+  "name": "Talis",
+  "w": 28,
+  "x_rest": 106,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 134
+ },
+ "0x103": {
+  "name": "Yustel",
+  "w": 33,
+  "x_rest": 103,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 136
+ },
+ "0x104": {
+  "name": "Jess",
+  "w": 21,
+  "x_rest": 109,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 130
+ },
+ "0x105": {
+  "name": "Ronan",
+  "w": 37,
+  "x_rest": 101,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 138
+ },
+ "0x106": {
+  "name": "Sybill",
+  "w": 32,
+  "x_rest": 104,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 136
+ },
+ "0x107": {
+  "name": "Sierra",
+  "w": 35,
+  "x_rest": 102,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 137
+ },
+ "0x108": {
+  "name": "Olen",
+  "w": 24,
+  "x_rest": 108,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 132
+ },
+ "0x109": {
+  "name": "Lyman",
+  "w": 39,
+  "x_rest": 100,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 139
+ },
+ "0x10a": {
+  "name": "Jaylen",
+  "w": 36,
+  "x_rest": 102,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 138
+ },
+ "0x10b": {
+  "name": "Zane",
+  "w": 27,
+  "x_rest": 106,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 133
+ },
+ "0x10c": {
+  "name": "Septimus",
+  "w": 51,
+  "x_rest": 94,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 145
+ },
+ "0x10d": {
+  "name": "Nadia",
+  "w": 33,
+  "x_rest": 103,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 136
+ },
+ "0x10e": {
+  "name": "Myra",
+  "w": 30,
+  "x_rest": 105,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 135
+ },
+ "0x10f": {
+  "name": "Bonaire",
+  "w": 43,
+  "x_rest": 98,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 141
+ },
+ "0x110": {
+  "name": "Phineas",
+  "w": 43,
+  "x_rest": 98,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 141
+ },
+ "0x111": {
+  "name": "Kline",
+  "w": 28,
+  "x_rest": 106,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 134
+ },
+ "0x112": {
+  "name": "Giles",
+  "w": 25,
+  "x_rest": 107,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 132
+ },
+ "0x113": {
+  "name": "Kisha",
+  "w": 30,
+  "x_rest": 105,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 135
+ },
+ "0x114": {
+  "name": "Elene",
+  "w": 29,
+  "x_rest": 105,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 134
+ },
+ "0x115": {
+  "name": "Gustav",
+  "w": 37,
+  "x_rest": 101,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 138
+ },
+ "0x116": {
+  "name": "Bergus",
+  "w": 37,
+  "x_rest": 101,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 138
+ },
+ "0x117": {
+  "name": "Nestus",
+  "w": 35,
+  "x_rest": 102,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 137
+ },
+ "0x118": {
+  "name": "Meade",
+  "w": 35,
+  "x_rest": 102,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 137
+ },
+ "0x119": {
+  "name": "Rumi",
+  "w": 31,
+  "x_rest": 104,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 135
+ },
+ "0x11a": {
+  "name": "Wendell",
+  "w": 44,
+  "x_rest": 98,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 142
+ },
+ "0x11b": {
+  "name": "Yuri",
+  "w": 25,
+  "x_rest": 107,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 132
+ },
+ "0x11c": {
+  "name": "Naomi",
+  "w": 36,
+  "x_rest": 102,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 138
+ },
+ "0x11d": {
+  "name": "Nava",
+  "w": 28,
+  "x_rest": 106,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 134
+ },
+ "0x11e": {
+  "name": "Cephas",
+  "w": 38,
+  "x_rest": 101,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 139
+ },
+ "0x11f": {
+  "name": "Lutas",
+  "w": 31,
+  "x_rest": 104,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 135
+ },
+ "0x120": {
+  "name": "Fein",
+  "w": 24,
+  "x_rest": 108,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 132
+ },
+ "0x12e": {
+  "name": "Meia",
+  "w": 27,
+  "x_rest": 106,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 133
+ },
+ "0x14b": {
+  "name": "Elene",
+  "w": 29,
+  "x_rest": 105,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 134
+ },
+ "0x14c": {
+  "name": "Bonaire",
+  "w": 43,
+  "x_rest": 98,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 141
+ },
+ "0x14d": {
+  "name": "Myra",
+  "w": 30,
+  "x_rest": 105,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 135
+ },
+ "0x14e": {
+  "name": "Nadia",
+  "w": 33,
+  "x_rest": 103,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 136
+ },
+ "0x153": {
+  "name": "Sara",
+  "w": 27,
+  "x_rest": 106,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 133
+ },
+ "0x15d": {
+  "name": "Meia",
+  "w": 27,
+  "x_rest": 106,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 133
+ },
+ "0x162": {
+  "name": "Lurvy",
+  "w": 33,
+  "x_rest": 103,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 136
+ },
+ "0x16e": {
+  "name": "Jeal",
+  "w": 22,
+  "x_rest": 109,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 131
+ },
+ "0x174": {
+  "name": "Stenia",
+  "w": 35,
+  "x_rest": 102,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 137
+ },
+ "0x17a": {
+  "name": "Miming",
+  "w": 44,
+  "x_rest": 98,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 142
+ },
+ "0x17b": {
+  "name": "Bonaire",
+  "w": 43,
+  "x_rest": 98,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 141
+ },
+ "0x18f": {
+  "name": "Keysmith",
+  "w": 49,
+  "x_rest": 95,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 144
+ },
+ "0x190": {
+  "name": "Meia",
+  "w": 27,
+  "x_rest": 106,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 133
+ },
+ "0x19b": {
+  "name": "Uma",
+  "w": 26,
+  "x_rest": 107,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 133
+ },
+ "0x19c": {
+  "name": "Wilda",
+  "w": 33,
+  "x_rest": 103,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 136
+ },
+ "0x1a0": {
+  "name": "Kohei",
+  "w": 29,
+  "x_rest": 105,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 134
+ },
+ "0x1a1": {
+  "name": "Merrick",
+  "w": 44,
+  "x_rest": 98,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 142
+ },
+ "0x1a2": {
+  "name": "Melzas",
+  "w": 39,
+  "x_rest": 100,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 139
+ },
+ "0x1aa": {
+  "name": "Melzas",
+  "w": 39,
+  "x_rest": 100,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 139
+ },
+ "0x1b0": {
+  "name": "Vul",
+  "w": 19,
+  "x_rest": 110,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 129
+ },
+ "0x1bc": {
+  "name": "Lars",
+  "w": 25,
+  "x_rest": 107,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 132
+ },
+ "0x1be": {
+  "name": "Ronan",
+  "w": 37,
+  "x_rest": 101,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 138
+ },
+ "0x1ed": {
+  "name": "Nirude",
+  "w": 38,
+  "x_rest": 101,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 139
+ },
+ "0x1ef": {
+  "name": "Nirude",
+  "w": 38,
+  "x_rest": 101,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 139
+ },
+ "0x1fa": {
+  "name": "Zazan",
+  "w": 36,
+  "x_rest": 102,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 138
+ },
+ "0x1fd": {
+  "name": "Zorgia",
+  "w": 36,
+  "x_rest": 102,
+  "clipped_left": false,
+  "clip_px": 0,
+  "right": 138
+ }
+}
