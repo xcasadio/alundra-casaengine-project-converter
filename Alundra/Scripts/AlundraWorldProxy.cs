@@ -385,6 +385,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <summary>E19.f2b1c F2B1C-R4: the text box screen this proxy built; it holds font3, and <see cref="OnEndPlay"/> disposes it like <see cref="_saveScreen"/>.</summary>
     private AlundraTextBoxScreen? _textBoxScreen;
 
+    /// <summary>E19.f3b F3B-R3: the per-proxy retry gate of <see cref="TryWireChoiceScreenOnce"/>, the shape of <see cref="_textBoxScreenWired"/>.</summary>
+    private bool _choiceScreenWired;
+
+    /// <summary>E19.f3b F3B-R3: the presenter that pushes/removes <see cref="AlundraChoiceScreen"/> and writes its view model after each pass of the choice box - null until
+    /// <see cref="TryWireChoiceScreenOnce"/> succeeds, or a test attaches one (<see cref="AttachChoicePresenterForTests"/>).</summary>
+    private AlundraChoicePresenter? _choicePresenter;
+
+    /// <summary>E19.f3b F3B-R3: the choice screen this proxy built; it holds font3, and <see cref="OnEndPlay"/> disposes it like <see cref="_textBoxScreen"/>.</summary>
+    private AlundraChoiceScreen? _choiceScreen;
+
     /// <summary>Engine ADR-0037: the HUD screen this proxy built. It holds its glyph and icon sprites, and
     /// <see cref="OnEndPlay"/> disposes it so they are given back when this world ends.</summary>
     private AlundraHudScreen? _hudScreen;
@@ -1469,6 +1479,56 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         }
     }
 
+    /// <summary>
+    /// E19.f3b F3B-R3 (docs/plan-e19-opcodes.md): <see cref="TryWireTextBoxScreenOnce"/>'s shape for the choice screen, called right after it - retry-until-success, once per frame,
+    /// since the UI view appears after <see cref="InitializeWithWorld"/>. The screen is pushed by its presenter at the first drawn pass of the choice box, after the text box's.
+    /// A failure to build it (the export has no choice screen or no font3) is logged once and ends the retries: the choice machine runs without a view.
+    /// </summary>
+    internal void TryWireChoiceScreenOnce()
+    {
+        if (_choiceScreenWired)
+        {
+            return;
+        }
+
+        var uiView = _world?.Game?.GameManager?.ViewManager?.GetActiveUIView();
+        var assetContentManager = _world?.Game?.AssetContentManager;
+        var fonts = _world?.Game?.UIFonts;
+        if (uiView == null || assetContentManager == null || fonts == null)
+        {
+            return; // retry next frame.
+        }
+
+        _choiceScreenWired = true;
+        try
+        {
+            var choiceScreen = new AlundraChoiceScreen(assetContentManager, fonts);
+            _choiceScreen = choiceScreen;
+            _choicePresenter = new AlundraChoicePresenter(AlundraDialogueDirector.Instance, choiceScreen.ViewModel, choiceScreen, uiView);
+            Logs.WriteInfo("AlundraWorldProxy: choice screen wired to the active UI view (post-bootstrap retry).");
+        }
+        catch (Exception ex)
+        {
+            Logs.WriteError($"AlundraWorldProxy: the choice screen could not be built, the choice box will not be drawn: {ex.Message}");
+        }
+    }
+
+    /// <summary>Test-only seam: attaches an <see cref="AlundraChoicePresenter"/> over the session's <see cref="AlundraDialogueDirector.Instance"/>, against any view model, screen and
+    /// UI view - the shape of <see cref="AttachTextBoxPresenterForTests"/>.</summary>
+    internal void AttachChoicePresenterForTests(AlundraChoiceViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
+    {
+        _choicePresenter = new AlundraChoicePresenter(AlundraDialogueDirector.Instance, viewModel, screen, uiView);
+    }
+
+    /// <summary>Test-only seam: the choice screen this proxy holds (built by <see cref="TryWireChoiceScreenOnce"/> or attached by a test), null once <see cref="OnEndPlay"/> gave it back.</summary>
+    internal AlundraChoiceScreen? ChoiceScreenForTests => _choiceScreen;
+
+    /// <summary>Test-only seam: the choice screen <see cref="OnEndPlay"/> disposes, as <see cref="TryWireChoiceScreenOnce"/> would have built it (which needs a live game).</summary>
+    internal void AttachChoiceScreenForTests(AlundraChoiceScreen screen)
+    {
+        _choiceScreen = screen;
+    }
+
     /// <summary>Test-only seam: attaches an <see cref="AlundraSaveScreenPresenter"/> over the session's
     /// <see cref="AlundraSaveScreenDirector.Instance"/>, against any view model, screen and UI view - the shape of
     /// <see cref="AttachSubInventoryPresenterForTests"/>.</summary>
@@ -2159,6 +2219,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         TryWireSubInventoryScreenOnce();
         TryWireSaveScreenOnce();
         TryWireTextBoxScreenOnce();
+        TryWireChoiceScreenOnce();
 
         // C1 (docs/plan-camera-ordre-frame.md §3): map-events run FIRST, before the camera block - a
         // faithful port of the original's own frame order (GameEngine.cs:1638-1664/1743-1753:
@@ -2188,6 +2249,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // E19.f2b1c F2B1C-R4: the text box screen reads what the pass just drew, before the gate is read and before the `continue` below (the pass runs whether the
             // hero exists and the gate is open or not), and once per pass: a frame of several ticks draws only its last pass, but each pass is applied in order.
             _textBoxPresenter?.Tick();
+
+            // E19.f3b F3B-R3: the choice screen reads what the same pass drew for the choice box (the pass runs it last), right after the text box's presenter: when both become drawn
+            // in one tick the text box is pushed first, and the choice above it.
+            _choicePresenter?.Tick();
 
             var tickBlocked = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
                 || AlundraWarpDirector.Instance.IsTransitionInProgress;
@@ -2858,6 +2923,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         _textBoxScreen?.Dispose();
         _textBoxScreen = null;
         _textBoxPresenter = null;
+
+        // E19.f3b F3B-R3: and the choice screen.
+        _choiceScreen?.Dispose();
+        _choiceScreen = null;
+        _choicePresenter = null;
 
         // Engine ADR-0037: the HUD screen gives back its sprites the same way.
         _hudScreen?.Dispose();

@@ -1,0 +1,39 @@
+<Window xmlns="clr-namespace:MGUI.Core.UI.XAML;assembly=MGUI.Core"
+        xmlns:dataBinding="clr-namespace:MGUI.Core.UI.DataBinding;assembly=MGUI.Core"
+        Left="0" Top="0" Width="320" Height="240"
+        TitleText=""
+        IsTitleBarVisible="False"
+        IsTopmost="True"
+        IsUserResizable="False"
+        Padding="0"
+        BorderThickness="0"
+        Background="rgba(0,0,0,0)">
+
+  <!-- E19.f3b (docs/plan-e19-opcodes.md): the OUI / NON box of the original (slot 3 of its callback table, cfg 0x800A4FEC), versioned as a project asset (parent ADR-0002) next to
+       TextBoxScreen.xaml: this file, ChoiceScreen.uiscreen and ChoiceScreen.design.json live in alundra-project/UI/Screens/; the converter catalogues the envelope and never writes
+       here. Same shell as TextBoxScreen.xaml: no title bar, a full-screen transparent window whose sole content is a Canvas authored in NATIVE pixels (320x240); the code
+       (AlundraChoiceScreen) resizes the window to the real screen bounds and applies the whole integer pixel scale once, as the canvas own RenderTransform.Scale (engine ADR-0006).
+       Every value that moves is bound to the window data context, an AlundraChoiceViewModel the presenter writes after each pass of the choice box; what never moves (the rows of
+       the frame, of the labels and of the cursor: cfg.y 144, cfg.y + 8, cfg.y - 8) is declared here.
+
+       Draw order (back to front) is the binary's: the frame cells, then the cursor, then the two labels (OT slot 5 then slot 6). No clip: the binary draws the box over the whole
+       screen, and the root canvas only cuts what leaves the 320x240 image during the slides. The frame is the baked 128x32 sprite of the choice box
+       (g_uiBoxesConfigurationBackgroundMessageChoice, E19.f1), by its fixed id: its name is shared by three assets (png, texture, sprite). The cursor is one of four sprites by name
+       (wind_150, wind_173, wind_201, wind_228), as the text box's. The window carries BorderThickness="0" itself (a window draws a border and insets its content otherwise).
+
+       The two labels are font3 texts drawn pixel for pixel (annex view-notes.md section 1.2): Padding="0" (the default 1 pixel padding would shift the glyphs one right and one
+       down), LinePadding="0", WrapText="False", inline formatting off (the texts come from the game). The width of a label is its text: the binary draws it as a sprite as wide as the
+       text (OUI 19, NON 23). -->
+
+  <Canvas Name="RootCanvas" Width="320" Height="240" Visibility="{dataBinding:MGBinding Path=RootVisibility}">
+
+    <Image Name="Frame" Stretch="None" SourceName="829f31a7-39d1-5fc5-b436-befd59b50985" CanvasLeft="{dataBinding:MGBinding Path=Frame.Left}" CanvasTop="144" />
+
+    <Image Name="Cursor" Stretch="None" SourceName="{dataBinding:MGBinding Path=Cursor.SourceName}" CanvasLeft="{dataBinding:MGBinding Path=Cursor.Left}" CanvasTop="136" />
+
+    <TextBlock Name="Label0" Text="{dataBinding:MGBinding Path=Label0.Text}" CanvasLeft="{dataBinding:MGBinding Path=Label0.Left}" CanvasTop="152" FontFamily="font3" Foreground="White" AllowsInlineFormatting="False" Padding="0" LinePadding="0" WrapText="False" VerticalContentAlignment="Top" />
+
+    <TextBlock Name="Label1" Text="{dataBinding:MGBinding Path=Label1.Text}" CanvasLeft="{dataBinding:MGBinding Path=Label1.Left}" CanvasTop="152" FontFamily="font3" Foreground="White" AllowsInlineFormatting="False" Padding="0" LinePadding="0" WrapText="False" VerticalContentAlignment="Top" />
+
+  </Canvas>
+</Window>

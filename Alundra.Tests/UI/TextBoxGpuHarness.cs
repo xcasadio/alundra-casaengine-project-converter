@@ -454,7 +454,7 @@ public sealed class AlundraGpuFactAttribute : FactAttribute
     }
 }
 
-/// <summary>E19.f2b1c: the asset manager of the tests that build the real <see cref="Alundra.Scripts.AlundraTextBoxScreen"/> (the envelope of the exported project and the
+/// <summary>E19.f2b1c: the asset manager of the tests that build the real <see cref="Alundra.Scripts.AlundraTextBoxScreen"/> (and, E19.f3b, <see cref="Alundra.Scripts.AlundraChoiceScreen"/>: the envelopes of the exported project and the
 /// font3 of the registry, loaded on the CPU), as <c>AlundraScreensFollowTheWindowTests</c> builds it.</summary>
 internal static class TextBoxScreenAssets
 {
@@ -477,13 +477,19 @@ internal static class TextBoxScreenAssets
             Name = "TextBoxScreen",
             FileName = Path.Combine("UI", "Screens", "TextBoxScreen.uiscreen"),
         };
+        // E19.f3b: the envelope of the choice screen too; `withTheScreen: false` still means "no screen asset" (neither of the two).
+        var choiceInfo = new CasaEngine.Framework.Assets.AssetInfo(Guid.Parse(Alundra.Scripts.AlundraChoiceScreen.ScreenAssetId))
+        {
+            Name = "ChoiceScreen",
+            FileName = Path.Combine("UI", "Screens", "ChoiceScreen.uiscreen"),
+        };
         var font3Info = new CasaEngine.Framework.Assets.AssetInfo(Alundra.Scripts.AlundraInventoryScreen.Font3FontAssetId) { Name = "font3", FileName = Path.Combine("UI", "font3.fnt") };
         var assets = new CasaEngine.Framework.Assets.AssetContentManager
         {
             RuntimeContext = new CasaEngine.Framework.Application.EngineRuntimeContext(
                 null,
                 SaveGameDirectorTestSupport.FindProjectRoot(),
-                id => withTheScreen && id == screenInfo.Id ? screenInfo : id == font3Info.Id ? font3Info : null),
+                id => withTheScreen && id == screenInfo.Id ? screenInfo : withTheScreen && id == choiceInfo.Id ? choiceInfo : id == font3Info.Id ? font3Info : null),
         };
         assets.RegisterAssetLoader(typeof(CasaEngine.Framework.UI.MGUI.UIScreenAsset), new ScreenEnvelopeLoader());
         assets.RegisterAssetLoader(typeof(CasaEngine.Framework.Assets.Fonts.BitmapFont), new AlundraInventoryScreenFontTests.CpuFont3Loader());

@@ -26,8 +26,10 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
     private readonly AlundraSaveBookTests.RecordingUIViewRuntime _uiView = new();
     private readonly AlundraDialoguePresenter _dialoguePresenter;
     private readonly FakeSaveScreen _screen = new();
+    private readonly FakeSaveScreen _choiceScreen = new();
     private readonly AlundraSaveScreenViewModel _viewModel = new();
     private readonly AlundraSaveScreenPresenter _presenter;
+    private readonly AlundraChoicePresenter _choicePresenter;
     private readonly AlundraSaveScreenDirectorTests.SlotsBySlot _slots = new();
 
     public AlundraSaveScreenPresenterTests()
@@ -41,6 +43,7 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         AlundraSaveGameDirector.Instance.SaveSlots = _slots;
         Director.AttachToWorld(State, null);
         _presenter = new AlundraSaveScreenPresenter(Director, _viewModel, _screen, _uiView);
+        _choicePresenter = new AlundraChoicePresenter(AlundraDialogueDirector.Instance, new AlundraChoiceViewModel(), _choiceScreen, _uiView); // E19.f3b: on the same view
     }
 
     public void Dispose() => ResetAll();
@@ -64,6 +67,7 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
             Director.Tick();
             AlundraDialogueDirector.Instance.Tick(); // E19.f3a: the pass of the dialogue director (its choice box) after the screen, the order of the world proxy
             _presenter.Tick();
+            _choicePresenter.Tick(); // E19.f3b: after the save screen's presenter, as the choice screen is pushed above it
         }
     }
 
@@ -134,8 +138,8 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         Assert.Equal(Visibility.Visible, _viewModel.RecordBox3.Visibility);
     }
 
-    /// <summary>L5: during OUI/NON the dialogue screen (Modal) is pushed over the save screen (Menu), which stays;
-    /// after the answer the dialogue screen alone goes, and the save screen stays pushed until its end.</summary>
+    /// <summary>L5: during OUI/NON the choice screen (Modal, E19.f3b) is pushed over the save screen (Menu), which stays;
+    /// at the close pass of the choice box the choice screen alone goes, and the save screen stays pushed until its end.</summary>
     [Fact]
     public void Question_TheDialogueScreenGoesOverTheSaveScreen_AndLeavesAlone()
     {
@@ -157,11 +161,12 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         }
 
         Assert.Equal(38, taken); // NON, armed in the tick of the Cross: taken 38 ticks later
-        Assert.Empty(_uiView.Removed);
+        Assert.Equal(new IUIScreen[] { _screen, _choiceScreen }, _uiView.Pushed); // E19.f3b: the choice screen went up at N+2, above the save screen
+        Assert.Equal(new IUIScreen[] { _choiceScreen }, _uiView.Removed); // and went at its close pass, the tick before the save screen read the answer (O-E19-69)
         Assert.True(_presenter.IsPushedForTests);
 
         TickUntilIdle();
-        Assert.Equal(new IUIScreen[] { _screen }, _uiView.Removed);
+        Assert.Equal(new IUIScreen[] { _choiceScreen, _screen }, _uiView.Removed);
     }
 
     /// <summary>The production call site: the director and the presenter tick inside

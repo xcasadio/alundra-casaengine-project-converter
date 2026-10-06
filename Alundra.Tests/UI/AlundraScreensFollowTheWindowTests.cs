@@ -171,4 +171,18 @@ public sealed class AlundraScreensFollowTheWindowTests : IDisposable
 
         AssertFollowsTheDesktop(screen, () => screen.BuildWindow(desktop), runtime, desktop);
     }
+
+    /// <summary>E19.f3b (F3B-R3): the choice screen is modal like the text box screen it is drawn above and follows the window the same way.</summary>
+    [Fact]
+    public void TheChoiceScreen_RescalesItsCanvas_WhenTheDesktopBoundsChange()
+    {
+        var assets = NewAssets(AlundraChoiceScreen.ScreenAssetId, "ChoiceScreen");
+        using var screen = new AlundraChoiceScreen(assets, new UIFontRegistry(assets));
+        var (desktop, runtime) = HeadlessUiTestHarness.NewDesktop();
+
+        Assert.True(screen.IsModal);
+        Assert.Equal(UILayer.Modal, screen.Layer);
+
+        AssertFollowsTheDesktop(screen, () => screen.BuildWindow(desktop), runtime, desktop);
+    }
 }

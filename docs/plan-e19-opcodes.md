@@ -5411,7 +5411,7 @@ les largeurs 19 et 23 sont celles du binaire, à poser en f3b).
   Écart de l'exécution : la machine ne décode pas les échappements `{c` et `}c` des libellés (aucun libellé du corpus n'en porte) ;
   les largeurs des libellés (19 et 23) vont à f3b.
 
-###### E19.f3b — Écran du choix et preuve au pixel ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (liste fermée du test de l'écran de sauvegarde), révisée ; relecture n°2 à faire)
+###### E19.f3b — Écran du choix et preuve au pixel 🧪 (faite le 2026-10-06, vérification à faire)
 
 **Découverte** (2026-10-06, `docs/plan-e19-f3-annexe/view/view-notes.md`, contre-vérifiée par `view-verify.md` ; la XAML proposée,
 l'enveloppe, les données de conception et les classes proposées sont dans `view/proposal/`, les images de référence dans `view/pixels/`,
@@ -5446,7 +5446,7 @@ d'ajout est l'ordre de dessin (les deux fenêtres sont `IsTopmost`) ; une pressi
   (côté moteur : mettre en page une fenêtre remise avant son premier dessin), sans garde côté écran.
 
 **Tâches.**
-- **F3B-1 — Tests d'abord** :
+- ✅ **F3B-1 — Tests d'abord** :
   - XAML (`AlundraChoiceScreenXamlTests`, patron de `AlundraTextBoxScreenXamlTests`) : enveloppe, données de conception, fenêtre modale
     nue, enfants dans l'ordre `Frame`, `Cursor`, `Label0`, `Label1`, cadre par GUID, attributs des libellés, `AllowsClickThrough` faux,
     bornes au repos : cadre (176, 144, 128 × 32), curseur (196, 136, 16 × 16), libellés en (192, 152) et (240, 152) ;
@@ -5470,14 +5470,14 @@ d'ajout est l'ordre de dessin (les deux fenêtres sont `IsTopmost`) ; une pressi
     l'enveloppe du choix (`withTheScreen: false` garde son sens) ; restent verts sans changement : `AlundraDialoguePresenterWiringTests.cs:179-181`
     et `:259` (aucun tick entre l'ouverture et l'assertion), `AlundraChoiceBoxTests`, les tests du directeur, `AlundraTextBoxPixelTests`,
     `AlundraTextBoxScreenXamlTests`, les tests du convertisseur ; toute autre assertion qui bouge est un arrêt. Rouges d'abord.
-- **F3B-2 — Export et preuves** : manifeste « avant » pris **avant** l'ajout des trois fichiers ; manifeste « après » l'export complet en
+- ✅ **F3B-2 — Export et preuves** : manifeste « avant » pris **avant** l'ajout des trois fichiers ; manifeste « après » l'export complet en
   place : exactement trois fichiers ajoutés (`UI/Screens/ChoiceScreen.xaml`, `.uiscreen`, `.design.json`), `AssetInfos.json` (une entrée de
   plus, l'enveloppe `a623e495-…` `ChoiceScreen`, placée juste avant `DialogueScreen`) et `report.json` : `Assets.UiScreen` 6 → 7,
   `Verify.Loaded.uiscreen` 6 → 7, `Verify.Assets` 22417 → 22418, `Verify.Loaded` 20027 → 20028, `Verify.LoadableFilesOnDisk` 20027 → 20028,
   `Metrics.OutputFileCount` 23747 → 23750, `Metrics.OutputSizeBytes` + la taille sur disque des trois fichiers (4212 octets pour les
   fichiers de `view/proposal/` en fins de ligne CRLF, à remesurer après leur création), plus la variation habituelle de `report.json`
   entre deux exports ; `Warnings`, `WarningsByCategory`, `Errors` inchangés ; double export.
-- **F3B-3 — Vérification**. **F3B-4 — Recette** (auteur) : le marin 12 de la 389 (choix sur une boîte tapée), la question du livre de
+- ⏳ **F3B-3 — Vérification**. ⏳ **F3B-4 — Recette** (auteur) : le marin 12 de la 389 (choix sur une boîte tapée), la question du livre de
   sauvegarde, le OUI/NON du menu de fichier de l'écran de sauvegarde : entrée par la droite, curseur animé au-dessus du libellé choisi,
   validation à la Croix seule, sortie, la boîte de texte intacte dessous.
 
@@ -5485,6 +5485,28 @@ d'ajout est l'ordre de dessin (les deux fenêtres sont `IsTopmost`) ; une pressi
 en Debug, `cmp`, six traces. **Retour arrière** : revert, export complet égal au manifeste « avant » (hors `report.json`). **Risques** : le
 chemin de production (`UIRoot`, `CasaUIAssetProvider`) n'est prouvé que par la recette ; un seul GPU ; la manette sous deux écrans
 modaux, prouvée par la recette ; le manque de F3B-R4.
+
+**Fait le 2026-10-06** (un commit, tests, code, trois fichiers du projet et plan ensemble). Code : `Alundra/Scripts/AlundraChoiceViewModel.cs`,
+`AlundraChoiceScreen.cs`, `AlundraChoicePresenter.cs` (la proposition de `view/proposal/`, sauf que la table des sprites du curseur est celle d'`AlundraTextBoxViewModel`,
+passée `internal`) ; `AlundraDialogueDirector.ChoiceBox` (et son commentaire de classe) ; `AlundraWorldProxy` (`TryWireChoiceScreenOnce` appelée juste après celle de la boîte,
+tick du présentateur juste après celui de la boîte, libération dans `OnEndPlay`, les quatre accès de test) ; projet : `UI/Screens/ChoiceScreen.xaml`, `.uiscreen`
+(`a623e495-f197-475c-887d-042140ec7248`) et `.design.json`, égaux à `view/proposal/` (4212 octets en CRLF). Tests d'abord : sur le code d'avant, la compilation échoue
+(`AlundraChoiceViewModel` et `AlundraChoicePresenter` inconnus : les 34 tests nouveaux et les deux tests déplacés de `AlundraTextBoxWiringTests` et
+`AlundraSaveScreenPresenterTests`) ; avec les trois classes et les trois fichiers mais sans le tick du mandataire, 2 tests sont rouges à la valeur (le mandataire ne pousse que
+`[boîte]` au lieu de `[boîte, choix]`, et ne pousse rien pour un choix seul) et les 75 autres des classes touchées sont verts, dont les 11 tests au pixel, **exécutés sur le GPU
+de la machine, aucun ignoré** ; avec le tick, 77/77. Contrôle de sensibilité : sans `Padding="0"` des libellés, 8 tests sont rouges, dont **248 texels** de différence au repos
+(OUI et NON, x1), 114 à la glissade d'entrée de V1 N+5 ; l'ordre inverse des fenêtres diffère de 338 à 345 texels à x1 sur les trois images de
+recouvrement (le test les borne à ces valeurs). Pixels : les 19 images de `view/pixels/` à x1 et x2 (0 texel d'écart) et les points de `view/points.md` à x1 et x2, la vue
+décalée (97, 41) à x2 et x3 sur V1 N+2, N+3, N+35 et V6 N+2 (rien hors de la vue, l'intérieur égal à l'image sans décalage). Tests déplacés, liste fermée respectée :
+`WithAChoice_TheTextBoxIsPushedFirst_...` (`[boîte, choix]` après N+2, `Removed == [choix]` à 37 passes), `AChoiceWithoutABox_...` (`[choix]`, retiré au tick suivant),
+`Question_...` de l'écran de sauvegarde (`taken` 38 inchangé, `Pushed == [écran, choix]`, `Removed == [choix]` puis `[choix, écran]`) ; le harnais `TextBoxScreenAssets.New()`
+enregistre l'enveloppe du choix. Export complet en place, le convertisseur en Release : le changement est exactement la prévision (manifeste SHA-1 hors `Alundra.dll`, `Alundra.pdb`,
+`.casaeditor/` : 23 744 fichiers avant, 23 747 après ; `UI/Screens/ChoiceScreen.xaml`, `.uiscreen`, `.design.json` ajoutés, `AssetInfos.json` (l'entrée juste avant
+`DialogueScreen`) et `report.json` modifiés, rien d'autre) ; `report.json` : `Assets.UiScreen` 6 -> 7, `Verify.Loaded.uiscreen` 6 -> 7, `Verify.Assets` 22417 -> 22418,
+`Verify.Loaded` et `Verify.LoadableFilesOnDisk` 20027 -> 20028, `Metrics.OutputFileCount` 23747 -> 23750, `OutputSizeBytes` +23 369 (les 4212 octets des trois fichiers, l'entrée
+d'`AssetInfos.json` et la taille de `Alundra.dll` reconstruite depuis le dernier export, que le compte du rapport inclut) ; avertissements et erreurs inchangés ; double export : seul
+`report.json` diffère. Vert : `Alundra.Tests` **2802/2802** en Release puis en Debug (2768 avant, 34 nouveaux, aucun ignoré), `cmp` identique, six traces inchangées ; le
+convertisseur n'a pas changé (pas de tests du convertisseur). Restent la vérification (vérificateur neuf) et la recette de l'auteur (F3B-4).
 
 ###### E19.f4 — Nom et portrait du locuteur : découverte du 2026-10-06, découpée en E19.f4a, E19.f4b et E19.f4c ⏳
 

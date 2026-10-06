@@ -26,7 +26,7 @@ namespace Alundra.Tests;
 /// E19.f2b1c T4 (docs/plan-e19-opcodes.md, F2B1C-R4 and R5): the wiring of the text box screen. The presenter pushes the screen at the first drawn pass of the box, writes the
 /// view model after each pass and removes the screen when the box is no longer drawn (the release, the out-of-band close, the map entry); the world proxy ticks it right
 /// after each pass of the box, whether or not the hero exists; the screen is given back at the end of the world; the retry builds it once the view appears; with a choice, the
-/// text box screen is pushed first and the engine's window above it, which goes when the answer is taken.
+/// text box screen is pushed first and the choice screen (E19.f3b) above it, which goes when the answer is taken.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraTextBoxWiringTests : IDisposable
@@ -172,24 +172,26 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
     // ---- the order with a choice ----------------------------------------------------------------------------------------------------
 
     [Fact]
-    public void WithAChoice_TheTextBoxIsPushedFirst_TheEnginesWindowAboveIt_AndTheAnswerClosesOnlyTheEnginesWindow()
+    public void WithAChoice_TheTextBoxIsPushedFirst_TheChoiceScreenAboveIt_AndTheAnswerRemovesOnlyTheChoiceScreen()
     {
         var uiView = new AlundraSaveBookTests.RecordingUIViewRuntime();
-        var enginePresenter = new AlundraDialoguePresenter(uiView);
-        var rig = new Rig(enginePresenter);
-        // The rig's own view is not the one of the engine presenter: share one view so the order of the two screens is observed.
+        var rig = new Rig();
+        // The rig's own view is not the one shared here: share one view so the order of the two screens is observed.
         var textBox = new AlundraTextBoxPresenter(Director, rig.ViewModel, rig.Screen, uiView);
+        var choiceScreen = new FakeTextBoxScreen();
+        var choice = new AlundraChoicePresenter(Director, new AlundraChoiceViewModel(), choiceScreen, uiView);
         Director.Open(Bonjour(), "Start", 1);
         for (var i = 0; i < 25; i++)
         {
             Director.Pass(false, false);
             textBox.Tick();
+            choice.Tick();
         }
 
-        Assert.Equal(new IUIScreen[] { rig.Screen }, uiView.Pushed); // opening the box pushed nothing of the engine's
+        Assert.Equal(new IUIScreen[] { rig.Screen }, uiView.Pushed); // opening the box pushed nothing of the choice's
 
         Director.OpenChoice(new[] { "OUI", "NON" });
-        Assert.Equal(new IUIScreen[] { rig.Screen }, uiView.Pushed); // E19.f3a: the engine's window is not pushed any more
+        Assert.Equal(new IUIScreen[] { rig.Screen }, uiView.Pushed); // the opener's tick draws nothing
         Assert.Equal(UILayer.Modal, rig.Screen.Layer);
 
         Assert.True(Director.SelectChoiceForTests(0));
@@ -199,12 +201,22 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
         {
             Director.Pass(false, false);
             textBox.Tick();
+            choice.Tick();
             passes++;
+            if (passes == 1)
+            {
+                Assert.Equal(new IUIScreen[] { rig.Screen }, uiView.Pushed); // N+1, the init pass: nothing drawn
+            }
+
+            if (passes == 2)
+            {
+                Assert.Equal(new IUIScreen[] { rig.Screen, choiceScreen }, uiView.Pushed); // N+2: the first drawn pass, the text box first, the choice above it
+            }
         }
 
         Assert.Equal(37, passes);
         Assert.Equal(1, answer);
-        Assert.Empty(uiView.Removed); // the answer closes nothing of the text box
+        Assert.Equal(new IUIScreen[] { choiceScreen }, uiView.Removed); // the answer removes only the choice screen
         Assert.True(textBox.IsPushedForTests);
     }
 
@@ -212,14 +224,120 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
     public void AChoiceWithoutABox_StillClosesThroughTheStandaloneRoute()
     {
         var uiView = new AlundraSaveBookTests.RecordingUIViewRuntime();
-        var enginePresenter = new AlundraDialoguePresenter(uiView);
-        _ = new Rig(enginePresenter);
+        _ = new Rig();
+        var choiceScreen = new FakeTextBoxScreen();
+        var choice = new AlundraChoicePresenter(Director, new AlundraChoiceViewModel(), choiceScreen, uiView);
 
         Director.OpenChoice(new[] { "OUI", "NON" });
-        Assert.Empty(uiView.Pushed); // E19.f3a: the engine's window is not pushed any more
+        for (var i = 0; i < 3; i++)
+        {
+            Director.Pass(false, false);
+            choice.Tick();
+        }
+
+        Assert.Equal(new IUIScreen[] { choiceScreen }, uiView.Pushed); // a lone choice pushes its screen alone, at N+2
         Assert.True(Director.CloseStandaloneChoice());
-        Assert.Empty(uiView.Removed);
+        Assert.Empty(uiView.Removed); // the screen goes at the next tick of the presenter
         Assert.False(Director.IsAwaitingChoice);
+
+        choice.Tick();
+        Assert.Equal(new IUIScreen[] { choiceScreen }, uiView.Removed);
+        Assert.False(choice.IsPushedForTests);
+    }
+
+    // ---- the choice presenter ------------------------------------------------------------------------------------------------------
+
+    private sealed class ChoiceRig
+    {
+        public readonly AlundraSaveBookTests.RecordingUIViewRuntime UiView = new();
+        public readonly FakeTextBoxScreen Screen = new();
+        public readonly AlundraChoiceViewModel ViewModel = new();
+        public readonly AlundraChoicePresenter Presenter;
+
+        public ChoiceRig()
+        {
+            Director.AttachToWorld(new DialogueService(), new AlundraGameState());
+            Director.InstallForMapEntry();
+            Presenter = new AlundraChoicePresenter(Director, ViewModel, Screen, UiView);
+        }
+
+        /// <summary>One pass of the director (which runs the choice box last) then the tick of the presenter, as the world proxy does after each pass.</summary>
+        public void Pass()
+        {
+            Director.Pass(false, false);
+            Presenter.Tick();
+        }
+    }
+
+    [Theory]
+    [InlineData(0, 37)]
+    [InlineData(1, 38)]
+    public void TheChoicePresenter_PushesAtNPlus2_AppliesEachPass_AndRemovesAtTheClosePass(int option, int closePass)
+    {
+        var rig = new ChoiceRig();
+        Director.OpenChoice(new[] { "OUI", "NON" });
+        rig.Presenter.Tick();
+        Assert.Empty(rig.UiView.Pushed); // the opener's tick draws nothing
+        Assert.Equal(Visibility.Collapsed, rig.ViewModel.RootVisibility);
+
+        Assert.True(Director.SelectChoiceForTests(option));
+        for (var pass = 1; pass < closePass; pass++)
+        {
+            rig.Pass();
+            Assert.True(
+                (pass < 2 ? 0 : 1) == rig.UiView.Pushed.Count,
+                $"pass N+{pass}: pushed {rig.UiView.Pushed.Count}");
+            Assert.True(0 == rig.UiView.Removed.Count, $"pass N+{pass}: removed {rig.UiView.Removed.Count}");
+        }
+
+        Assert.Equal(new IUIScreen[] { rig.Screen }, rig.UiView.Pushed);
+        Assert.Equal(Visibility.Visible, rig.ViewModel.RootVisibility);
+        Assert.Equal(closePass - 2, rig.ViewModel.AppliedCount); // applied at each pass from the push (N+2) to the one before the close pass
+
+        rig.Pass(); // the close pass writes the result and draws nothing
+        Assert.Equal(new IUIScreen[] { rig.Screen }, rig.UiView.Removed);
+        Assert.False(rig.Presenter.IsPushedForTests);
+        Assert.Equal(Visibility.Collapsed, rig.ViewModel.RootVisibility);
+        Assert.Equal(option == 0 ? 1 : 0, Director.TakeChoiceResult());
+    }
+
+    [Fact]
+    public void TheChoicePresenter_PushesTheScreenAgainForASecondChoice()
+    {
+        var rig = new ChoiceRig();
+        for (var round = 0; round < 2; round++)
+        {
+            Director.OpenChoice(new[] { "OUI", "NON" });
+            Assert.True(Director.SelectChoiceForTests(0));
+            for (var pass = 1; pass <= 37; pass++)
+            {
+                rig.Pass();
+            }
+
+            Assert.NotNull(Director.TakeChoiceResult());
+        }
+
+        Assert.Equal(new IUIScreen[] { rig.Screen, rig.Screen }, rig.UiView.Pushed);
+        Assert.Equal(new IUIScreen[] { rig.Screen, rig.Screen }, rig.UiView.Removed);
+    }
+
+    [Fact]
+    public void TheChoicePresenter_RemovesTheScreen_WhenTheMapEntryResetsTheMachine()
+    {
+        var rig = new ChoiceRig();
+        Director.OpenChoice(new[] { "OUI", "NON" });
+        for (var pass = 1; pass <= 10; pass++)
+        {
+            rig.Pass();
+        }
+
+        Assert.Single(rig.UiView.Pushed);
+
+        Director.InstallForMapEntry();
+        rig.Presenter.Tick();
+        Assert.Equal(new IUIScreen[] { rig.Screen }, rig.UiView.Removed);
+        Assert.False(rig.Presenter.IsPushedForTests);
+        Assert.Equal(Visibility.Collapsed, rig.ViewModel.RootVisibility);
     }
 
     // ---- the world proxy ------------------------------------------------------------------------------------------------------------
@@ -290,6 +408,52 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
         Assert.Equal(new IUIScreen[] { screen }, view.Removed);
     }
 
+    [Fact]
+    public void TheWorldProxy_TicksTheChoicePresenterAfterTheTextBoxPresenter_AndEvenWithoutAHero()
+    {
+        using var montage = new DialogueBoxMontage();
+        var view = new AlundraSaveBookTests.RecordingUIViewRuntime();
+        var textBoxScreen = new FakeTextBoxScreen();
+        var choiceScreen = new FakeTextBoxScreen();
+        var choiceViewModel = new AlundraChoiceViewModel();
+        montage.Proxy.PlayerEntity = null; // the passes run without a hero, so do the presenters
+
+        // The box and the choice are drawn before any presenter exists (the passes of the proxy run them): the first tick of the two presenters is the same tick.
+        montage.Director.Open(Bonjour(), "Start", 1);
+        montage.RunFrames(25);
+        montage.Director.OpenChoice(new[] { "OUI", "NON" });
+        montage.RunFrames(2); // N+1 (init), N+2 (first drawn pass)
+        Assert.True(montage.Director.ChoiceBox.Drawn is not null);
+        Assert.True(montage.Director.Box.Drawn);
+
+        // Attached in the reverse order on purpose: only the proxy's own order decides which one pushes first.
+        montage.Proxy.AttachChoicePresenterForTests(choiceViewModel, choiceScreen, view);
+        montage.Proxy.AttachTextBoxPresenterForTests(new AlundraTextBoxViewModel(), textBoxScreen, view);
+        montage.RunFrame();
+
+        Assert.Equal(new IUIScreen[] { textBoxScreen, choiceScreen }, view.Pushed); // the text box first, the choice above it
+        Assert.Equal(1, choiceViewModel.AppliedCount);
+
+        montage.RunFrame(0.06f); // three logic ticks: three passes, each followed by the presenters
+        Assert.Equal(4, choiceViewModel.AppliedCount);
+    }
+
+    [Fact]
+    public void TheWorldProxy_RemovesTheChoiceScreen_OnAMapEntryReset()
+    {
+        using var montage = new DialogueBoxMontage();
+        var view = new AlundraSaveBookTests.RecordingUIViewRuntime();
+        var screen = new FakeTextBoxScreen();
+        montage.Proxy.AttachChoicePresenterForTests(new AlundraChoiceViewModel(), screen, view);
+        montage.Director.OpenChoice(new[] { "OUI", "NON" });
+        montage.RunFrames(10);
+        Assert.Single(view.Pushed);
+
+        montage.Director.InstallForMapEntry();
+        montage.RunFrame();
+        Assert.Equal(new IUIScreen[] { screen }, view.Removed);
+    }
+
     // ---- the end of the world and the retry ---------------------------------------------------------------------------------------------
 
     [Fact]
@@ -304,6 +468,22 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
         proxy.OnEndPlay(null!);
 
         Assert.True(assets.CollectUnreferenced() >= 1, "the envelope of the screen is no longer held");
+        proxy.OnEndPlay(null!); // idempotent
+    }
+
+    [Fact]
+    public void OnEndPlay_GivesTheChoiceScreenBack()
+    {
+        var assets = TextBoxScreenAssets.New();
+        var screen = new AlundraChoiceScreen(assets, new UIFontRegistry(assets));
+        var proxy = new AlundraWorldProxy();
+        proxy.AttachChoiceScreenForTests(screen);
+        Assert.Equal(0, assets.CollectUnreferenced()); // held by the screen
+
+        proxy.OnEndPlay(null!);
+
+        Assert.True(assets.CollectUnreferenced() >= 1, "the envelope of the choice screen is no longer held");
+        Assert.Null(proxy.ChoiceScreenForTests);
         proxy.OnEndPlay(null!); // idempotent
     }
 
@@ -379,5 +559,48 @@ public sealed class AlundraTextBoxWiringTests : IDisposable
         proxy.TryWireTextBoxScreenOnce();
 
         Assert.Null(proxy.TextBoxScreenForTests);
+    }
+
+    [Fact]
+    public void TheChoiceRetry_BuildsTheScreenOnceTheViewAppears_AndTheScreenIsGivenBackAtTheEnd()
+    {
+        var assets = TextBoxScreenAssets.New();
+        var uiView = new AlundraSaveBookTests.RecordingUIViewRuntime();
+        var world = NewWorld(uiView: null, assets);
+        var proxy = new AlundraWorldProxy();
+        proxy.InitializeWithWorld(world);
+
+        proxy.TryWireChoiceScreenOnce();
+        Assert.Null(proxy.ChoiceScreenForTests); // no view yet: retried
+
+        var view = (RenderView)RuntimeHelpers.GetUninitializedObject(typeof(RenderView));
+        view.UIView = uiView;
+        view.Enabled = true;
+        view.IsVisible = true;
+        world.Game.GameManager.ViewManager.Add(view);
+        world.Game.GameManager.ViewManager.SetActive(view);
+
+        proxy.TryWireChoiceScreenOnce();
+        Assert.NotNull(proxy.ChoiceScreenForTests);
+        var wired = proxy.ChoiceScreenForTests;
+        proxy.TryWireChoiceScreenOnce();
+        Assert.Same(wired, proxy.ChoiceScreenForTests); // wired once
+
+        proxy.OnEndPlay(world);
+        Assert.Null(proxy.ChoiceScreenForTests);
+    }
+
+    [Fact]
+    public void TheChoiceRetry_LogsAndDoesNotThrow_WhenTheExportHasNoChoiceScreen()
+    {
+        var assets = TextBoxScreenAssets.New(withTheScreen: false);
+        var world = NewWorld(new AlundraSaveBookTests.RecordingUIViewRuntime(), assets);
+        var proxy = new AlundraWorldProxy();
+        proxy.InitializeWithWorld(world);
+
+        proxy.TryWireChoiceScreenOnce();
+        proxy.TryWireChoiceScreenOnce();
+
+        Assert.Null(proxy.ChoiceScreenForTests);
     }
 }

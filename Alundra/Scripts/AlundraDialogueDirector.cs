@@ -105,8 +105,8 @@ public interface IAlundraDialogueDirector
 /// E19.f2a (docs/plan-e19-opcodes.md section 1.2j.3, F2-R1 to F2-R6, ADR-0029): the box is the binary's, to the tick. The director owns an
 /// <see cref="AlundraDialogueBox"/> (the machine: slides, typing steps, lines and scroll, cursor, voices, close and release) and feeds it the
 /// pages the Yarn runner delivers, cut into steps from their text and markers; the world proxy runs <see cref="Pass"/> once per logic tick
-/// BEFORE the scripts of that tick. The box is drawn by the text box screen (E19.f2b1c, <see cref="AlundraTextBoxPresenter"/> reads the box after each pass); the
-/// engine's presenter is only the choices' window (until E19.f3). The text flags of a page are set at their glyph, not at the display of the page.
+/// BEFORE the scripts of that tick. The box is drawn by the text box screen (E19.f2b1c, <see cref="AlundraTextBoxPresenter"/> reads the box after each pass), the choice box by the choice screen
+/// (E19.f3b, <see cref="AlundraChoicePresenter"/> reads it after the same pass); the engine's presenter no longer draws anything for a choice. The text flags of a page are set at their glyph, not at the display of the page.
 /// </summary>
 public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundraDialogueBoxHost
 {
@@ -171,6 +171,9 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
 
     /// <summary>The box the world draws: its state is read by the view (E19.f2b) and by the tests; only this director writes it.</summary>
     internal AlundraDialogueBox Box => _box;
+
+    /// <summary>E19.f3b: the choice box (OUI / NON) the world draws: its state is read by the choice presenter (<see cref="AlundraChoicePresenter"/>) and by the tests; only this director writes it.</summary>
+    internal AlundraChoiceBox ChoiceBox => _choice;
 
     /// <summary>Test-only seam (F2B1B-R1): the advance of a glyph, in place of the production reader of <c>UI/font3.fnt</c>; set and put back by the test (<c>try</c>/<c>finally</c>).</summary>
     internal Func<char, int>? AdvanceProviderForTests { get; set; }
