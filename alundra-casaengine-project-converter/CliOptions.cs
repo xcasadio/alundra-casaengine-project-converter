@@ -2,7 +2,7 @@ namespace AlundraCasaEngineProjectConverter;
 
 public sealed class CliOptions
 {
-    /// <summary>The last phase Program.cs runs (Phase9.Backdrops) - see D-N-3.</summary>
+    /// <summary>The last phase Program.cs runs (Phase9.Backdrops, Phase9.Effects) - see D-N-3.</summary>
     private const int LastPhase = 9;
 
     public required string InputDirectory { get; init; }

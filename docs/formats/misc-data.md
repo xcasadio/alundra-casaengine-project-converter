@@ -100,9 +100,9 @@ Code : [`Writers/SpriteWriter.cs`](../../alundra-casaengine-project-converter/Wr
 (`PreserveHeroEffects`, Phase 3).
 
 **Ce que c'est** : les `SpriteEffectRecords` du héros (`data/map_alundra.json`,
-`SpriteInfo.SpriteEffectRecords`) — des effets visuels liés au héros dont les index `Spritesheet`
-dépassent la plage normale 0–7, suggérant une source graphique différente de celle que le correctif
-d'empaquetage d'atlas couvre.
+`SpriteInfo.SpriteEffectRecords`) — les 29 tables d'effets partagées par toutes les cartes. Le champ `Spritesheet` d'une image se décode ainsi : page de texture bits 0 à 2
+(0 à 6), semi-transparence bit 3, mode de mélange PS1 (ABR) bits 4 et 5 ; il ne sort donc pas de la plage 0–7 pour la page. Ces tables sont
+désormais exportées en clair et en entier par E19.g G1 (voir [`effects.md`](effects.md), `Data/effects/effects-global.json`).
 
 **Où c'est écrit** : `Sprites/hero/hero_effects.json`, recopie brute de la valeur JSON source
 (`effectsElement.GetRawText()` — aucun renommage, aucune restructuration).

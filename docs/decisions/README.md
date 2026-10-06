@@ -56,3 +56,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0040 | The save screen ticks after the dialogue pass, like slot 10 after slot 3 in the binary | Accepted | 2026-10-06 |
 | ADR-0041 | The target of 0x22 is the binary's target in the DLL's frame, with a per-controller minimum move distance | Accepted | 2026-10-06 |
 | ADR-0042 | The dialogue shows the speaker's name and portrait through the text box screen | Accepted | 2026-10-06 |
+| ADR-0043 | The effects are exported as raw companions and sheets, not as sprites | Accepted | 2026-10-06 |

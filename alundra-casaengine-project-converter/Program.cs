@@ -135,11 +135,16 @@ if (options.Phase >= 7)
         UiBoxWriter.ConvertUiBoxes(options.InputDirectory, options.OutputDirectory, report));
 }
 
-// Phase 9: each map's scrolling background layers (the PSX parallax backdrop).
+// Phase 9: each map's scrolling background layers (the PSX parallax backdrop), then its effects.
 if (options.Phase >= 9)
 {
     report.RunPhase("Phase9.Backdrops", () =>
         BackdropWriter.ConvertBackdrops(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report));
+
+    // E19.g G1: the effects of each map and of the global table (raw companions + effect sheets). After the
+    // backdrops, before the verification, which loads the sheets' texture wrappers.
+    report.RunPhase("Phase9.Effects", () =>
+        EffectWriter.ConvertEffects(options.InputDirectory, options.OutputDirectory, options.MapFilter, mapLocations, report));
 }
 
 // Phase 8: load every generated asset back through its engine class. On by default - assets that

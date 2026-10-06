@@ -8531,7 +8531,7 @@ prouvés par l'exécution du vrai code du binaire dans l'interpréteur MIPS (0 �
 - **G4 — Recette** de l'auteur : 476 d'abord.
 
 
-###### E19.g G1 — Export des effets (convertisseur) 🚧 (en cours le 2026-10-06 : G1-0 et G1-1 faites ; planifiée le 2026-10-06 ; relecture n°1 REVISE (compteur des textures, cases d'animation, valeurs de la 163, retour arrière), révisée ; relecture n°2 READY ; exécution après la recette et l'approbation de l'auteur)
+###### E19.g G1 — Export des effets (convertisseur) 🧪 (faite le 2026-10-06, vérification à faire ; planifiée le 2026-10-06 ; relecture n°1 REVISE (compteur des textures, cases d'animation, valeurs de la 163, retour arrière), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06)
 
 Parent seul : ni moteur, ni DLL. Déclencheur de risque : nouveau format de données exporté (relecture du plan et vérificateur neuf
 obligatoires). Données de départ : `data-extracted/` tel quel (G0 a déjà tout extrait : aucune ré-extraction, aucun changement de
@@ -8599,7 +8599,7 @@ l'extracteur). Faits et valeurs : `docs/plan-e19-g1g3-annexe/` (`converter-notes
   animations : 0 `Loop`, 1 et 2 `Destroy`, chacune une image de 10 ticks ; 1 case de remplissage retirée), 161
   (les 23 images dégénérées retirées) ; garde des invariants de l'exécution complète. Rouges d'abord ; aucun test existant ne bouge (un
   test existant qui bouge est un arrêt).
-- ⏳ **G1-2 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place (sans `Alundra.dll`, `Alundra.pdb`, `.casaeditor/`) :
+- ✅ **G1-2 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place (sans `Alundra.dll`, `Alundra.pdb`, `.casaeditor/`) :
   exactement la prévision de G1-0 ; chaque compagnon analysé égal à son empreinte prévue ; preuve référentielle (chaque fenêtre dans sa
   planche, chaque `SheetTextureAssetId` résolu dans `AssetInfos.json` vers un `.texture` dont le PNG a l'empreinte de
   `docs/plan-e19-g0-annexe/expected_effect_sheets.tsv`) ; double export (seul `report.json` diffère) ; suite du convertisseur ;
@@ -8632,6 +8632,24 @@ utilisation avec leur IDSV, image dégénérée et ensemble vidé qui reste, qua
 planches et entrées du catalogue sauvegardé, déterminisme, valeurs réelles des cartes 476, 391, 163 et 161, et la garde des invariants
 de l'exécution complète (544 / 251 / 350 / 194 / 165 / 363 / 83 / 5148 / 2832 / 12 307 / 23 / 157 / 87 / 0, `Assets.Texture` inchangé).
 Aucun test existant ne bouge (aucun fichier de test existant modifié).
+
+**Fait le 2026-10-06 (G1-2, export et preuves).** `EffectBankReader` (`Readers/`), `EffectWriter` (`Writers/`, `Phase9.Effects` après
+`Phase9.Backdrops`, `EditorAssetCatalogService.Save()`), `MapLocation.EffectsDirectory` et `EffectsRelativePath`, `docs/formats/effects.md`
+et sa ligne dans le README des formats, la phrase réfutée de `misc-data.md` corrigée, ADR-0043 du parent (numéro libre revérifié sur
+`main` : 0035, et sur `chantier/e19-suite` : 0042). Compagnon : membres, enregistrements, animations et ensembles chacun sur sa
+ligne, images compactes, clés et formats fixes. **Tests : verts 17 sur 17** (`EffectWriterTests`, dont les quatre cartes réelles et la
+garde des invariants de la série complète), suite du convertisseur **659** (dont les 17 nouveaux, aucun échec), `Alundra.Tests` **2946** en Release puis en
+Debug, `cmp` de la DLL égal, six traces inchangées (guard `--ignore-cr-at-eol`, les quatre traces de héros restaurées par
+`checkout`). **Export complet en place (Release), manifeste avant (le ré-export de référence) et après : exactement la prévision de
+G1-0** : 332 ajoutés, `AssetInfos.json` et `report.json` modifiés, aucun supprimé ; `g1-predict.py check` PASSED (ensemble des
+chemins, SHA-1 de `AssetInfos.json` entier, des 87 PNG et des 87 `.texture`, empreinte canonique de chacun des 158 compagnons,
+compteurs `Effects.*` et `Verify.*`, autres compteurs, `Warnings` 6 et `Messages` 7 inchangés, `Errors` 0,
+`Metrics.OutputFileCount` 24 106) ; preuve référentielle : 12 307 images, 87 planches, chaque fenêtre dans sa planche, chaque
+`SheetTextureAssetId` résolu vers un `.texture` dont le PNG a l'empreinte de `expected_effect_sheets.tsv`. **Double export** : deux
+exports consécutifs du code final, seul `report.json` diffère (durées et taille du dossier). `Verification: PASSED (20 139 loaded,
+2 477 existence-checked)`. Incident sans suite : lors d'un premier export, la phase 1 a signalé une erreur de fichier verrouillé
+(`map_395`, `AssetInfos.json` utilisé par un autre processus, probablement l'antivirus ou l'indexeur) ; ce premier rapport comptait 482
+cartes ; l'export a été relancé tel quel et les deux suivants sont propres (0 erreur). G1-3 (vérificateur neuf) reste à faire.
 
 **Acceptation** : prévision commitée avant le code ; tests rouges puis verts ; export égal à la prévision ; double export ; suites,
 `cmp`, traces. **Retour arrière** : revert, puis suppression exacte des chemins ajoutés listés par G1-0 (les dossiers `effects/` des cartes
