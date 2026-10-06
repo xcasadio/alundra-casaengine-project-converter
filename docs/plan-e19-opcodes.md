@@ -291,9 +291,10 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-87** — (2026-10-06, choix technique de la session, E19.h1b2) Pour une entité sans contrôleur : atterrissage strict et
     `IsOnGround` de position (convention de la DLL, exacte), impulsion partagée par le pas vertical comme dans le binaire ; `0x22`
     garde la cible littérale d'ADR-0026 ; `0x22` sans enregistrement journalise une fois et finit l'attente.
-  - **D-E19-88** — (2026-10-06, choix technique de la session, E19.f3a) Le crochet de test `SelectChoiceForTests` garde son nom et
-    répond **à la manette** (appuis armés, consommés par les passes actives) ; la passe du choix tourne en tête de la première boucle
-    de ticks du mandataire, avant la manette et l'écran de sauvegarde, comme le créneau 3 du binaire avant le créneau 10.
+  - **D-E19-88** — (2026-10-06, choix technique de la session, E19.f3a ; révisé après la relecture n°2) Le crochet de test
+    `SelectChoiceForTests` garde son nom et répond **à la manette** (appuis armés, consommés par les passes actives) ; la passe du
+    choix tourne à la fin de `Pass(bool, bool)`, juste après la boîte de texte (créneaux 0 puis 3), le câblage mesuré par la
+    simulation ; l'ordre du mandataire entre l'écran de sauvegarde et le dialogue ne change pas (O-E19-69).
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -5289,7 +5290,7 @@ annulation ni souris, compteur du curseur persistant) ; découpage en f3a (machi
 la fenêtre du moteur n'est plus poussée pour un choix) puis f3b (l'écran XAML du choix et sa preuve au pixel), exécutées l'une après
 l'autre (entre les deux, le choix fonctionne à la manette sans être dessiné) ; les invites de carte mémoire restent hors périmètre.
 
-###### E19.f3a — Logique du choix au tick près ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (`CancelChoice`), révisée ; relecture n°2 à faire)
+###### E19.f3a — Logique du choix au tick près ⏳ (planifiée le 2026-10-06 ; relectures n°1 et n°2 REVISE ; blocages n°2 (où tourne la passe, test de `CancelChoice`) : FIX ; nouvelle époque, relecture de clôture à faire)
 
 **Règles.**
 - **F3A-R1 — Machine** : nouvelle classe interne `AlundraChoiceBox`, portage de `ChoiceBox` de `docs/plan-e19-f3-annexe/model/choice_model.py`
@@ -5308,14 +5309,24 @@ l'autre (entre les deux, le choix fonctionne à la manette sans être dessiné) 
   `Open` annule un choix en attente, comme aujourd'hui (aucun cas du corpus), et ferme la machine de même ; `InstallForMapEntry` remet la machine à zéro ; le compteur du curseur n'est remis que par `ResetForTests` ; un `Tick()` sans
   choix ouvert ne fait rien. `HasPresenter` garde son sens (un présentateur du moteur est attaché). Le gestionnaire `0x44`, le livre et
   l'écran de sauvegarde ne changent pas (seule la latence de `TakeChoiceResult` bouge).
-- **F3A-R3 — Placement** (`AlundraWorldProxy.Update`) : la passe du choix est une méthode à part du directeur (nom indicatif
-  `ChoicePass()`, distincte de `Pass(bool, bool)` de la boîte de texte) ; elle tourne une fois par tick **en tête de la première boucle**, avant
-  `TickPad.Update` (`:2106`) et avant le tick de l'écran de sauvegarde (`:2117`) : le créneau 3 du binaire passe avant le créneau 10 et
-  avant la phase des programmes (`binary-notes.md` §5) ; elle précède aussi la passe de la boîte de texte (seconde boucle), alors que le
-  binaire fait la boîte (créneau 0) avant le choix (créneau 3) : **écart voulu**, sans état partagé, seul l'ordre de deux sons d'un
-  même tick en dépend. Les aides de test qui font tourner l'écran de sauvegarde font tourner la passe du choix avant lui ; le bloc du
-  harnais d'intro (`IntroTraceHarnessTests.cs:595-600`), qui n'appelle que `Pass(bool, bool)`, appelle aussi `ChoicePass()` à chaque
-  tick, avant (le marin 12 en dépend) ; le montage de la boîte et le pilote des passes de même.
+- **F3A-R3 — Où tourne la passe du choix** (révision n°2 : le câblage mesuré par la simulation, `sim-notes.md:31-33`) : la passe du
+  choix est appelée **à la fin de `Pass(bool, bool)`**, juste après la passe de la boîte de texte (créneau 0 puis créneau 3, comme le
+  binaire) ; `Tick()` du directeur, qui appelle `Pass`, en fait donc exactement une ; aucune aide n'appelle la passe du choix à part.
+  Manette lue par la passe du choix : le mot du tick précédent, comme le Carré de la boîte : dans le mandataire, l'enregistrement de
+  `GameState.TickPad` pris pour le tick (à côté de `_squareOfTick`) ; sans mandataire, `Tick()` le tire de `GameState.LastPadState` par
+  le `AlundraTickPad` du directeur, avec un appel de retard ; les appuis armés par le crochet (F3A-R4) passent avant la manette.
+  Le mandataire ne change pas d'ordre : `Pass` reste dans la seconde boucle de ticks (`AlundraWorldProxy.cs` ~:2173-2180), après les
+  programmes d'entités et avant les événements de carte du tick ; l'écran de sauvegarde tourne dans la première boucle (`:2117`),
+  donc **avant** la passe du choix : une réponse donnée tard lui parvient un tick plus tard que dans le binaire (qui fait le créneau
+  3 avant le créneau 10) ; une réponse donnée au plus tôt lui parvient au même tick (S+37). Écart préexistant, consigné (O-E19-69),
+  pas corrigé par cette tranche ; la valeur de la table est celle de l'ordre d'aujourd'hui (`DownDuringTheQuestion` : **20**).
+  Aides de test, une passe du choix par tick, sans double compte : `AlundraSaveBookTests.Tick` (`:79-87`, créneau C du livre puis
+  `Dialogue.Tick()`) inchangée ; l'aide `Tick` d'`AlundraSaveScreenDirectorTests` gagne un `Dialogue.Tick()` **après** le tick de
+  l'écran (l'ordre du mandataire) ; les blocs `BookTick` (`:792-801`, `:850`), qui appellent déjà `Dialogue.Tick()` puis le tick du
+  directeur de l'écran (pas l'aide), ne changent pas ; l'aide d'`AlundraSaveScreenPresenterTests` (`:59-66`) gagne un
+  `Dialogue.Tick()` après le tick de l'écran ; le montage de la boîte et le pilote des passes appellent `Pass` comme aujourd'hui (la
+  passe du choix vient avec) ; le bloc du harnais d'intro (`IntroTraceHarnessTests.cs:595-600`) aussi (le marin 12 en dépend). Les
+  valeurs de `sim-pins.md` §2 et §3 sont celles de ce câblage (99, 100, 98, 116, 55, 56 et 20).
 - **F3A-R4 — Crochet de test** : `SelectChoiceForTests(i)` garde son nom et devient une réponse **à la manette** : il arme des appuis
   consommés seulement par les passes actives (Gauche ou Droite jusqu'à l'option i, puis Croix, un appui par passe, à partir de la
   première passe active qui suit l'armement) ; il rend vrai tant que `IsAwaitingChoice` ; il est idempotent. `ChoicesForTests` rend les
@@ -5328,13 +5339,16 @@ l'autre (entre les deux, le choix fonctionne à la manette sans être dessiné) 
     curseur, image, sélection, sons ; tick de résolution et `Result`) ; cinq séquences de manette réelles par le mandataire (fin à N+50,
     N+52, N+37, N+80, jamais ; `sim-notes.md`) ; un `0x44` avec un directeur sans présentateur (aujourd'hui aucun test : à épingler avant
     le changement, valeur d'aujourd'hui gardée) ; une sortie de monde pendant un choix (`InstallForMapEntry` remet la machine) ;
-    `CancelChoice` : un choix ouvert, quelques passes, `CancelChoice`, puis des passes jusqu'au-delà de N+40 avec la Croix enfoncée :
-    aucun son après l'annulation, `TakeChoiceResult()` nul, `ChoicesForTests` vide (rouge aujourd'hui : la machine n'existe pas) ;
+    `CancelChoice` (directeur sans mandataire, `Tick()` par tick) : un choix ouvert, `SelectChoiceForTests(0)` armé, quelques passes
+    avant N+19, `CancelChoice`, puis des passes jusqu'au-delà de N+40 : à chaque passe après l'annulation, la phase exposée est
+    « fermée » et rien n'est dessiné, aucun son, `TakeChoiceResult()` nul, `ChoicesForTests` vide, `IsAwaitingChoice` faux ; le test est
+    rouge contre une variante où `CancelChoice` ne ferait qu'effacer l'attente et les libellés (l'appui armé jouerait alors 5 et 2 à N+19
+    et écrirait 1 à N+37) ; rouge aujourd'hui (la machine n'existe pas) ;
   - tests existants qui bougent, liste fermée = `docs/plan-e19-f3-annexe/sim-pins.md` §0 à §5, avec ses valeurs « fidèles », dans
-    l'ordre du binaire (choix avant écran) : en particulier la répartie à 37 ou 38 ticks de l'ouvreur (OUI, NON) ; K5 (`(E, T, R)` =
+    l'ordre du mandataire (écran, puis dialogue et choix) : en particulier la répartie à 37 ou 38 ticks de l'ouvreur (OUI, NON) ; K5 (`(E, T, R)` =
     (56, 67, 85), vu à 86) ; le livre (OUI pris au Tick 99, capture au Tick 160, libération de la boîte au Tick 134 avant la capture, NON au
     Tick 100, `Tick(37 + Wait)` = 98) ; l'aide `AnswerAndClose` (`Tick(37 + 18)` = 55 pour OUI, `Tick(38 + 18)` = 56 pour NON) ;
-    `DownDuringTheQuestion_ThenOui_…` **19** ticks (ordre du binaire ; 20 dans l'ordre d'aujourd'hui) ; A17 (`0x03 @1059` à 637, `0x11
+    `DownDuringTheQuestion_ThenOui_…` **20** ticks (ordre du mandataire, F3A-R3 ; 19 dans l'ordre du binaire, O-E19-69) ; A17 (`0x03 @1059` à 637, `0x11
     @1115` à 1162, `0x05 @1120` à 1193, fin à 1194, budget 2500 inchangé) ; le marin 12 (choix pris à l'image 133, boîte suivante après
     152, fin après 354, budget 400) ; le livre de bout en bout (sélecteur après 139, écran après 116) : ces valeurs du §5 sont des
     **observations** mesurées par la simulation (à `db8d61c`, avant E19.h1b2), aucun test ne les épingle ; seuls les budgets
@@ -5349,7 +5363,8 @@ l'autre (entre les deux, le choix fonctionne à la manette sans être dessiné) 
   héros n'ouvrent aucun choix) ; pas d'export.
 - **F3A-3 — Vérification** (vérificateur neuf). La recette se fait avec f3b.
 
-**Acceptation** : la machine égale le modèle sur V1 à V7 ; les tests de la liste fermée prennent les valeurs fidèles de la table ;
+**Acceptation** : la machine égale le modèle sur V1 à V7 ; chaque aide fait exactement une passe du choix par tick ; les tests de la
+liste fermée prennent les valeurs fidèles de la table ;
 aucune autre assertion ne bouge ; suites, `cmp`, traces. **Retour arrière** : revert des commits. **Risques** : entre f3a et f3b, un
 choix n'est pas dessiné (f3b suit) ; le placement en tête de la première boucle fait passer, aux images de rattrapage (plusieurs ticks
 par image), toutes les passes du choix avant les programmes de cartes de l'image ; le chemin réel de la manette jusqu'à la passe du
@@ -9217,6 +9232,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-66 | **Couleur de l'index 4 de `font3.png`** (contre-vérification de l'oracle d'E19.f2b1) : les bandes et le curseur du binaire prennent l'entrée 8 de la table de CLUT remplie depuis `taki\screen\wind.cl` (`0x80044B7C`-`0x80044B8C`) ; le `font3.png` exporté vient de la CLUT de FONT3.TIM : égal sur 13 des 14 index, l'index 4 vaut (82, 90, 57) contre (74, 82, 57) ; 44 texels, seulement dans les glyphes 4, 14, 15, 21 à 29 et `@` (le `\W5` de S025 est le glyphe 21). Correction côté export, hors f2b1. | Convertisseur, à planifier |
 | O-E19-67 | **Autres espaces de bord perdues** (découverte de S025, 2026-10-05 ; D-E19-78 ne vise que S025) : `M311_S029` et `M398_S029`, page 1 (une espace de début après un code de drapeau, retirée par la règle F0-R2 de l'émetteur : la ligne commence 4 pixels plus à gauche que dans le binaire, déduit du code, non vu) ; 30 pages `_S022` et `_S108` de 15 cartes (espaces avant un drapeau ou un `yield` final, retirées par l'émetteur : temps de frappe) ; 105 pages non centrées à espaces de fin (un pas de frappe par espace) ; 56 pages d'ETC (bourrage d'enregistrement ; trois textes d'inventaire `0x206`, `0x239`, `0x2A6` perdent une espace). Les corriger change des épingles d'arcs d'E19.f2a (par exemple `M391_S022`). | Auteur |
 | O-E19-68 | **Cible littérale de `0x22` sur une descente** (contre-vérification de la découverte d'E19.h1b2, 2026-10-06) : la cible `hauteur << 19` d'ADR-0026 est exacte au tick sur les montées, mais finit **un tick tôt** sur une descente (vrai code, 112 → 48 px à −32768 : binaire 129 appels, cible littérale 128, cible décalée `(H << 19) − 1` 129). Un seul des 17 sites descend : 115 `B[2]` @367 (hors chaîne ; 321 appels dans le binaire, 320 avec la cible littérale). Une règle par sens (décalée sous 256 px, littérale au-dessus) serait exacte aux 17 sites ; elle changerait ADR-0026. | Auteur |
+| O-E19-69 | **L'écran de sauvegarde tourne avant le dialogue dans le mandataire** (relecture d'E19.f3a, 2026-10-06) : le binaire fait le créneau 3 (choix) avant le créneau 10 (menu de fichier de l'écran de sauvegarde) dans la même image ; le mandataire fait l'écran dans la première boucle de ticks (`AlundraWorldProxy.cs:2117`) et la passe du dialogue (boîte puis choix) dans la seconde : une réponse donnée tard parvient à l'écran un tick plus tard (`DownDuringTheQuestion` 20 au lieu de 19) ; une réponse au plus tôt, au même tick. Corriger demande de déplacer le tick de l'écran après la passe du dialogue (valeurs d'E16 à reprendre). | Auteur, puis tranche à part |
 
 ## 4. Hors périmètre
 
