@@ -223,8 +223,17 @@ public sealed class AlundraEffectStageWiringTests : IDisposable
 
     private static ArcSpec Ship391 => new("G3a-391", "The Klark", "Ship Klark (night, break, Event)-391", new[] { 1641 }, 15, 28, 7, 200, RealController: true, Prefabs: true);
 
+    // B1 of map 391 also runs four 0xA2 (pc 228, 236, 244, 252) in the first frame: they take the slots 5 to 8 (rows S391a 5 to 8 of g3b-golden.tsv, raw 16.16).
+    private static readonly (int Record, int X, int Y, int Z)[] FourA2OfB1 =
+    {
+        (3, 22020096, 45613056, 5242881),
+        (4, 36175872, 45613056, 5242881),
+        (0, 22020096, 50855936, 5242881),
+        (1, 31981568, 50855936, 5242881),
+    };
+
     [Fact]
-    public void Map391_AfterTheFirstFrame_HoldsTheFiveLoadSlotsOfTheBinary_AtTheirPositions()
+    public void Map391_AfterTheFirstFrame_HoldsTheFiveLoadSlotsOfTheBinary_AtTheirPositions_AndTheFourA2OfB1()
     {
         using var arc = new ArcRun(Ship391);
 
@@ -232,29 +241,35 @@ public sealed class AlundraEffectStageWiringTests : IDisposable
 
         var load = EffectGolden.Scenario("S391").Select(r => (Slot: int.Parse(r[2]), Record: int.Parse(r[3]), X: int.Parse(r[4]), Y: int.Parse(r[5]), Z: int.Parse(r[6]), Anim: int.Parse(r[7]))).ToList();
         var slots = arc.Proxy._effectStage.Reservoir.ActiveSlots.ToList();
-        Assert.Equal(5, slots.Count);
+        Assert.Equal(9, slots.Count);
         foreach (var row in load)
         {
             var slot = slots[row.Slot];
             Assert.Equal((row.Slot, row.Record, row.X, row.Y, row.Z, row.Anim), (slot.Index, slot.RecordIndex, slot.X, slot.Y, slot.Z, slot.TargetAnimation));
             Assert.NotNull(slot.CurrentImageSet); // updated at the tick 0 of the first frame
         }
+        for (var i = 0; i < FourA2OfB1.Length; i++)
+        {
+            var slot = slots[5 + i];
+            Assert.Equal((5 + i, FourA2OfB1[i].Record, FourA2OfB1[i].X, FourA2OfB1[i].Y, FourA2OfB1[i].Z), (slot.Index, slot.RecordIndex, slot.X, slot.Y, slot.Z));
+        }
     }
 
     [Fact]
-    public void Map391_ACreationQueuedBeforeTheFirstUpdateOfTheProxy_TakesSlot5_NothingIsErased()
+    public void Map391_ACreationQueuedBeforeTheFirstUpdateOfTheProxy_TakesSlot9_AfterTheMapEventCreations_NothingIsErased()
     {
         using var arc = new ArcRun(Ship391);
-        arc.Proxy._effectStage.Queue(0, 0, r => r.Create(true, 0, 0, 5 << 16, 6 << 16, 7 << 16));
+        // Source rank 1 (entities): applied after the map-event creations (rank 0) of the same tick.
+        arc.Proxy._effectStage.Queue(0, 1, r => r.Create(true, 0, 0, 5 << 16, 6 << 16, 7 << 16));
 
         arc.OneFrame();
 
         var slots = arc.Proxy._effectStage.Reservoir.ActiveSlots.ToList();
-        Assert.Equal(6, slots.Count);
-        Assert.Equal(new[] { 0, 1, 2, 3, 4, 5 }, slots.Select(s => s.Index).ToArray());
-        Assert.Equal(new[] { 0, 1, 2, 3, 4, -1 }, slots.Select(s => s.RecordIndex).ToArray());
-        Assert.Equal(new[] { 65273856, 65273856, 65273856, 65273856, 66846720, 5 << 16 }, slots.Select(s => s.X).ToArray());
-        Assert.Equal(new[] { 33030144, 39321600, 45613056, 51904512, 51904512, 6 << 16 }, slots.Select(s => s.Y).ToArray());
+        Assert.Equal(10, slots.Count);
+        Assert.Equal(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }, slots.Select(s => s.Index).ToArray());
+        Assert.Equal(new[] { 0, 1, 2, 3, 4, 3, 4, 0, 1, -1 }, slots.Select(s => s.RecordIndex).ToArray());
+        Assert.Equal(new[] { 65273856, 65273856, 65273856, 65273856, 66846720, 22020096, 36175872, 22020096, 31981568, 5 << 16 }, slots.Select(s => s.X).ToArray());
+        Assert.Equal(new[] { 33030144, 39321600, 45613056, 51904512, 51904512, 45613056, 45613056, 50855936, 50855936, 6 << 16 }, slots.Select(s => s.Y).ToArray());
     }
 
     private static ArcSpec Dream109(ArcArrival? arrival) =>

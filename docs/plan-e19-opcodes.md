@@ -8965,7 +8965,7 @@ DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (list
 - **Fichiers** (liste fermée) : `Alundra/Scripts/AlundraEventProgramRunner.cs` (gestionnaires, marque du tick), `Alundra/Scripts/IEntityWorldContext.cs`,
   `Alundra/Scripts/AlundraEffectReservoir.cs` (les opérations par enregistrement), `Alundra.Tests/AlundraEffectReservoirTests.cs` (leurs tests),
   `Alundra/Scripts/AlundraWorldProxy.cs` (l'hôte, la marque des boucles), `Alundra/Scripts/AlundraEntityScriptProxy.cs` (la marque du tick de
-  l'entité), `Alundra/Scripts/AlundraEffectStage.cs` (la file des opérations) ; tests : nouveau `Alundra.Tests/AlundraEffectOpcodeTests.cs` ;
+  l'entité), `Alundra/Scripts/AlundraEffectStage.cs` (la file des opérations) ; tests : nouveau `Alundra.Tests/AlundraEffectOpcodeTests.cs`, et `Alundra.Tests/AlundraEffectStageWiringTests.cs` (les deux tests de la 391, FIX du 2026-10-06) ;
   `Alundra.Tests/Data/story-chain-skipped-opcodes.tsv` (les 99 lignes `EFFET` retirées, 102 → 3 : la 10 garde ses 3 lignes `PREDICAT coup
   reçu`) ; `AlundraStoryChainOpcodeAudit.cs` (`MapsWithoutSkippedSite` 19 → 28 : + 135, 162, 169, 174, 176, 181, 183, 391, 476) et
   `AlundraStoryChainSkippedOpcodesTests.cs` (l'assertion 19 → 28) ; les arcs `AlundraVisionArcTests.cs` (A2/A4), `AlundraShipBlockArcTests.cs`
@@ -9061,6 +9061,8 @@ carte dont la première image ne crée rien. Le reste de la suite est vert.
   créneaux 0 à 4 du chargement à leurs positions et les quatre `0xA2` de `B1` (pc 228, 236, 244, 252) aux créneaux 5 à 8, positions des
   lignes `S391a` 5 à 8 de `g3b-golden.tsv` (9 créneaux) ; la création mise en file par une entité avant le premier `Update` vient après les
   créations des événements de carte du même tick (rang) : créneau 9, rien d'effacé (10 créneaux). Puis un vérificateur neuf sur G3b entière.
+
+**Fait le 2026-10-06 (FIX).** `AlundraEffectStageWiringTests.cs` : rouges (9 et 10 créneaux), puis verts : 9 créneaux, 0 à 4 inchangés, 5 à 8 = enregistrements 3, 4, 0, 1 à (22020096, 45613056, 5242881), (36175872, 45613056, 5242881), (22020096, 50855936, 5242881), (31981568, 50855936, 5242881) (lignes `S391a` 5 à 8) ; la création en file prend le créneau 9 (10 créneaux, rien d'effacé), son rang de source passe de 0 à 1 (rang des entités, G3B-R3).
 
 - **Acceptation** : rouges puis verts ; les ensembles de sauts autorisés des arcs nommés vidés de leurs opcodes d'effets et remplacés par
   les assertions de la réserve ; aucune autre assertion ne bouge (A10/A11 sur 165/164 ne bougent pas) ; `Alundra.Tests` en Release puis
