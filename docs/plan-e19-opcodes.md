@@ -8860,7 +8860,7 @@ Déclencheur de risque : modèle d'état nouveau tiré du binaire (relecture et 
   nouveaux tests `Alundra.Tests/AlundraEffectReservoirTests.cs`, `Alundra.Tests/AlundraEffectBankLoaderTests.cs`,
   `Alundra.Tests/AlundraEffectStageWiringTests.cs` ; l'annexe (`docs/plan-e19-g1g3-annexe/g3a-golden.tsv`, table générée depuis
   `anims_oracle.json` et `load_oracle.json`, et son script) ; l'ADR du parent (prochain numéro libre) et son index ; ce plan.
-- **G3a-0 — Prévision d'abord** (commitée avant le code) : `g3a-golden.tsv` tiré des oracles du binaire (pas de littéraux recopiés à la
+- ✅ **G3a-0 — Prévision d'abord** (commitée avant le code) : `g3a-golden.tsv` tiré des oracles du binaire (pas de littéraux recopiés à la
   main) : pour les 363 animations, la fin, S, le dernier tick dessiné (S, ou infini en boucle) et le tick de libération (S + 1) ; pour
   chaque carte, les créneaux à l'entrée (enregistrement, x, y, z) à la tuile (0, 0) (245 créneaux sur 79 cartes) ; les scénarios : rais de
   la 163 (animation 1, dessinés aux ticks 0 à 10, libérés au tick 11, D-E19-55) ; 391 (5 créneaux à l'entrée, enregistrements 0 à 4 en
@@ -8877,6 +8877,19 @@ Déclencheur de risque : modèle d'état nouveau tiré du binaire (relecture et 
   enregistrement à zone restreinte suit la tuile d'arrivée relevée, pas la nouvelle.
 - **G3a-2 — Code**, ADR du parent (la réserve des effets vit dans la DLL, au tick, comme le binaire ; le moteur ne la connaît pas) ;
   **G3a-3 — Vérification**.
+
+**Fait le 2026-10-06 (G3a-0).** `docs/plan-e19-g1g3-annexe/g3a-golden.py` et `g3a-golden.tsv` (643 lignes, généré ; `--check` rejoue la
+génération) commités avant tout code. Tirés des oracles du binaire (`anims_oracle.json`, `load_oracle.json`, `scenarios_out.txt`) et, pour
+ce que les oracles ne portent pas (listes d'images, zones), de l'export de G1, recoupé avec les oracles (le script s'arrête sur tout
+écart) : **363** lignes `A` (130 `Destroy`, 233 `Loop` ; vie S, dernier tick dessiné S, tick de libération S + 1, images et IDSV du
+premier ensemble, images de chaque case), **245** lignes `L` (créneaux à l'entrée à la tuile (0, 0), 79 cartes), **6** lignes `Z` (78 rec 2
+(37,40)-(51,59) ; 109 rec 4, 5, 6 (27,0)-(51,27) ; 424 rec 0 (2,40)-(23,59) ; 445 rec 0 (13,7)-(33,33) : les 251 enregistrements à `0x40` moins les 245
+créneaux), scénarios `S391` (5 créneaux, enregistrements 0 à 4, animations 0, 1, 2, 3, 3), `S163` (4 rais actifs aux ticks 0 à 10, 0 au tick 11),
+`S476` (aura : drapeau posé et dernier tick dessiné 222, libérée au tick 223, clé de profondeur du tick 0 : 13 893 680) et `S476-revive` (une
+bascule d'animation avant 223 mises à jour (219 à 222) ranime, à 223 le créneau est libéré). Écart noté, sans conséquence : le premier
+ensemble de `m161:0:3` compte 25 images pour le binaire et 2 dans l'export (les 23 images dégénérées de la 161, retirées par G1) : le
+test attend la valeur de l'export pour cette ligne (dernière colonne).
+
 - **Acceptation** : prévision commitée avant le code ; tests rouges puis verts ; aucun test existant ne bouge (rien ne lit la réserve) ;
   `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (identiques : les effets n'ont aucun effet de jeu). **Arrêts** : une valeur
   qui contredit les oracles, un test existant qui bouge, un fichier hors de la liste. **Retour arrière** : revert.
