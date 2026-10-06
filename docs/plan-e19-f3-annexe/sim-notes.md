@@ -98,6 +98,7 @@ Model V8 (pad A) and the DLL run of the sailor test differ in absolute frames (o
 
 1. The hook must be armed before N+19 to answer at the earliest. A later arming presses at the next pass: `DownDuringTheQuestion` arms 26 ticks after the Cross (the box has been interactive since 18),
    answers at the next pass and takes **20 ticks in order A, 19 in order B**. For an on-time answer the count is 37/38 in both orders.
+   E19.f3c (D-E19-93, 2026-10-06): the world proxy now runs order B.
 2. The save screen tick order (`AlundraWorldProxy.cs:2117` runs `AlundraSaveScreenDirector.Instance.Tick()` in the pad loop, the box passes later in the frame): with the order of today the screen sees an answer at
    the same count as the binary for an on-time answer, because the opener runs one pass early and the consumer one pass late. To mirror slot 3 before slot 10 literally the choice pass would have to precede
    that call; the counts change only for late answers (+1).

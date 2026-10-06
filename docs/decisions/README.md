@@ -53,3 +53,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0037 | The backdrop overlay tint draws with the PSX mode of the map, like the binary | Accepted | 2026-10-06 |
 | ADR-0038 | The trailing spaces of a centred last line are kept, guarded by empty | Accepted | 2026-10-06 |
 | ADR-0039 | The dialogue portraits are exported as sprites and linked from sprite-records.json | Accepted | 2026-10-06 |
+| ADR-0040 | The save screen ticks after the dialogue pass, like slot 10 after slot 3 in the binary | Accepted | 2026-10-06 |

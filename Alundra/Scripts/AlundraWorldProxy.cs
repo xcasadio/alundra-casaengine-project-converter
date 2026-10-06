@@ -2182,12 +2182,6 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             AlundraSubInventoryDirector.Instance.Tick();
             AlundraInventoryPostProcess.Instance.Run();
 
-            // E16.e L5 (docs/plan-e16-etat-partie.md): the save screen - its state machine then its transition's
-            // render, as UpdateMemoryCardProcess then UpdateUserInterface in the original's RenderScene
-            // (GraphicManager.cs:62-63). It reads TickPad's edges, so it runs inside this loop too. Never open
-            // together with an inventory: the inventory's trigger refuses while it is active (J9).
-            AlundraSaveScreenDirector.Instance.Tick();
-
             // docs/plan-portrait-inventaire.md P4/PI8: the portrait steps once per tick HERE, after both
             // directors' per-frame work and the post-process and before the presenters - the original's own
             // DisplayUserInterface (0x8002be64) runs right after the callbacks and the post-process
@@ -2209,10 +2203,6 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // screens are never pushed together (D-E13D-26), so their push/remove order here never matters,
             // but running both inside the loop keeps every presenter reading this SAME tick's director state.
             _subInventoryPresenter?.Tick();
-
-            // E16.e T4 (docs/plan-e16-etat-partie.md, L5): the save screen's presenter, reading the state its
-            // director reached earlier in this same tick.
-            _saveScreenPresenter?.Tick();
         }
 
         // E12.a wiring fix: must run BEFORE the map-events pass below - a scripted dialogue opened
@@ -2257,6 +2247,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // E19.f3b F3B-R3: the choice screen reads what the same pass drew for the choice box (the pass runs it last), right after the text box's presenter: when both become drawn
             // in one tick the text box is pushed first, and the choice above it.
             _choicePresenter?.Tick();
+
+            // E19.f3c F3C-R1 (D-E19-93, docs/plan-e19-opcodes.md): the save screen - its state machine then its transition's render, as UpdateMemoryCardProcess
+            // then UpdateUserInterface in the original's RenderScene (GraphicManager.cs:62-63) - runs AFTER the pass of the dialogue box and its choice box, as the
+            // binary's slot 10 (the file menu) after its slot 3 (the choice) in the dispatcher's ascending order: the answer written by a close pass is read in
+            // the same tick. F3C-R2: it gets the pad words of THIS tick (TickPad only holds the last tick's edges here); the gate below is read after it, so
+            // the MenuOpen it posts freezes the map events of the same tick. Never open together with an inventory: the inventory's trigger refuses while it is
+            // active (J9). Its presenter reads the state the director just reached (E16.e T4, L5).
+            var (screenPressed, screenInterval) = _choicePadOfTick[tick];
+            AlundraSaveScreenDirector.Instance.Tick(screenPressed, screenInterval);
+            _saveScreenPresenter?.Tick();
 
             var tickBlocked = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
                 || AlundraWarpDirector.Instance.IsTransitionInProgress;

@@ -418,9 +418,23 @@ public sealed class AlundraSaveScreenDirector : IAlundraSaveBookScreen
     /// One logic tick, from <see cref="AlundraWorldProxy.Update"/>'s per-tick loop: the state machine
     /// (<c>UpdateMemoryCardProcess</c>, <c>GraphicManager.cs:62</c>), then the active transition's render
     /// (<c>UpdateUserInterface</c>, which the original runs right after it in the same frame). A no-op at rest or
-    /// without an attached game state. Never throws: the service calls are guarded.
+    /// without an attached game state. Never throws: the service calls are guarded. This overload reads the pad words of
+    /// <c>TickPad</c> (the last tick's edges): the hosts that drive the director by hand; the world proxy calls
+    /// <see cref="Tick(uint, uint)"/> with the words of the tick.
     /// </summary>
     public void Tick()
+    {
+        var pad = _gameState?.TickPad;
+        Tick(pad?.ButtonsJustPressed ?? 0, pad?.ButtonsJustPressedByInterval ?? 0);
+    }
+
+    private uint _padPressed;
+    private uint _padInterval;
+
+    /// <summary>E19.f3c (D-E19-93): the same tick on the pad words of THIS tick (<c>ButtonsJustPressed</c> for Square,
+    /// <c>ButtonsJustPressedByInterval</c> for Cross, Up and Down): the world proxy records them per tick, and the tick runs after the dialogue
+    /// pass, in the loop of the passes, where <c>TickPad</c> holds only the edges of the last tick of the frame.</summary>
+    public void Tick(uint buttonsJustPressed, uint buttonsJustPressedByInterval)
     {
         if (_gameState == null || !IsActive)
         {
@@ -429,6 +443,8 @@ public sealed class AlundraSaveScreenDirector : IAlundraSaveBookScreen
             return;
         }
 
+        _padPressed = buttonsJustPressed;
+        _padInterval = buttonsJustPressedByInterval;
         RunState(_gameState);
         RunTransition(_gameState);
     }
@@ -538,7 +554,7 @@ public sealed class AlundraSaveScreenDirector : IAlundraSaveBookScreen
                     _fadeSubstate = 1;
                 }
 
-                if ((state.TickPad.ButtonsJustPressed & AlundraPadState.Square) != 0)
+                if ((_padPressed & AlundraPadState.Square) != 0)
                 {
                     RequestMessageClose();
                     _fadeSubstate = 1;
@@ -948,7 +964,7 @@ public sealed class AlundraSaveScreenDirector : IAlundraSaveBookScreen
     /// (<c>ButtonsJustPressedByInterval</c>, the key repeat).</summary>
     private void RunPickerInput(AlundraGameState state)
     {
-        var pad = state.TickPad.ButtonsJustPressedByInterval;
+        var pad = _padInterval;
 
         if ((pad & AlundraPadState.Cross) != 0)
         {

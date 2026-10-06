@@ -63,7 +63,7 @@ The book is an ENTITY script (slot C 72): its origin row in section 2.
 ### 1.4 `AlundraSaveScreenDirector.cs` (1283 lines)
 `:357-360` map entry (`CloseStandaloneChoice` -> `CancelChoice`), `:930-935` the PickerQuestion branch (`PollAnswer` -> `ArmPickerClose`), `:949-958` Cross by interval asks, `:971-973` stale doc,
 `:976-1003` `AskQuestion` (`:984` HasPresenter, `:1000` `OpenChoice`, `:1001` `_questionOpened`), `:1007-1036` `PollAnswer` (`:1021` take, `:1032` `CloseStandaloneChoice`: delete, the machine closes itself at C+18), `:1245` reset.
-The screen's own tick is in the FIRST per-tick loop (`AlundraWorldProxy.cs:2117`).
+The screen's own tick is in the FIRST per-tick loop (`AlundraWorldProxy.cs:2117`). [E19.f3c, D-E19-93, 2026-10-06: it moved to the second loop, after the dialogue pass.]
 
 ### 1.5 `AlundraWorldProxy.cs`
 `:153-156` `_squareOfTick` / `_squareOfLastTick` (stay); `:2104-2144` first loop: insert at the top (before `:2106`) the choice pass and, right after it, the choice presenter's tick; `:2148-2153` the wiring retries
@@ -89,7 +89,7 @@ Ticks relative to the opener tick N (the tick in which `OpenChoice` runs), OUI a
 | map event / `0x44` of a map program (second loop, after the box pass) | N+1 (binary) | N+19 | N+37 | N+37 same tick (binary) | N+1 | N+37 same tick (binary) |
 | pending trigger (after the loops) | N+1 | N+19 | N+37 | same frame (binary) | N+1 | same frame |
 | entity script (before the proxy: the save book, the sailors' C programs) | N (1 early, as the box, D-E19-64) | N+18 | N+36 | N+37 (1 late; = the binary's N+37) | N | N+37 |
-| save screen (first loop, `:2117`) | N+1 (binary: choice pass before the screen tick) | N+19 | N+37 | N+37 same tick (binary) | N (1 early) | N+38 (1 late) |
+| save screen (first loop, `:2117`; second loop after the dialogue pass since E19.f3c) | N+1 (binary: choice pass before the screen tick) | N+19 | N+37 | N+37 same tick (binary) | N (1 early) | N+38 (1 late) |
 
 [calc] `dllsim.py` host_screen: opener S, active from S+19, Cross seen S+19, closed and polled S+37 (OUI), S+38 (NON, Right S+19, Cross S+20); sounds (S,4), (S+19,5),(S+19,2) / (S+19,1),(S+20,5),(S+20,3).
 Catch-up frames (several ticks): (A) puts all the choice passes of the frame before the map-event passes (a `0x44` can see its result up to n-1 ticks early); (B) keeps the interleave.
@@ -184,7 +184,7 @@ K5 is the pinned example: values unchanged by timing the press (frame 70).
 ## 5. Facts that decide placement and design, with evidence
 
 - The box pass reads the pad of the previous tick through `_squareOfTick[tick-1]` / `_squareOfLastTick` (`AlundraWorldProxy.cs:2175`, `:2206`); the TickPad fields read before `Update` in the first loop are that same pad: no extra state.
-- Save screen: `Tick()` in the first loop (`:2117`) reads `TickPad` AFTER `Update(k)` (current tick, one tick earlier than the binary's frame, D-E19-64-like), so it opens the question at S and its poll must come after the choice pass of the same tick to see C+18 as the binary's slot 10 does.
+- Save screen: `Tick()` in the first loop (`:2117`) reads `TickPad` AFTER `Update(k)` (current tick, one tick earlier than the binary's frame, D-E19-64-like), so it opens the question at S and its poll must come after the choice pass of the same tick to see C+18 as the binary's slot 10 does. [E19.f3c: done, on the pad words of its own tick.]
 - `AlundraSaveBook` is an entity script: it runs in `AlundraEntityScriptProxy.Update`, BEFORE the proxy (`World.cs:443-491`, D-E19-64), hence the "first pass one tick early, result seen one tick late" row.
 - 0x44 programs run from map events (second loop `:2197`), entity scripts and pending triggers; the corpus has 101 sites, all over a mode-1 box (`dll-notes.md` 2).
 - Cross is the only button of the choice; Square (the text box's) and Circle/Triangle are never read: `dll-verify`/`binary-verify` 1 row 8. So Square can keep closing/advancing the box underneath while a choice is up (the arcs' Square hold continues).

@@ -296,6 +296,7 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     `SelectChoiceForTests` garde son nom et répond **à la manette** (appuis armés, consommés par les passes actives) ; la passe du
     choix tourne à la fin de `Pass(bool, bool)`, juste après la boîte de texte (créneaux 0 puis 3), le câblage mesuré par la
     simulation ; l'ordre du mandataire entre l'écran de sauvegarde et le dialogue ne change pas (O-E19-69).
+    **Ce dernier point est remplacé par D-E19-93 (E19.f3c, faite le 2026-10-06) : l'écran tourne désormais après la passe du dialogue.**
   - **D-E19-89** — (2026-10-06, choix de la session, E19.f4, précédent de la décision D2 de l'auteur pour le portrait de
     l'inventaire) La rampe de couleur du portrait (255 → 128, au-dessus de 1) n'est pas rendue : teinte normale, manque de MGUI
     consigné (G11), pas contourné. **Remplacée le 2026-10-06 par D-E19-100.**
@@ -5372,9 +5373,10 @@ l'autre (entre les deux, le choix fonctionne à la manette sans être dessiné) 
   donc **avant** la passe du choix : une réponse donnée tard lui parvient un tick plus tard que dans le binaire (qui fait le créneau
   3 avant le créneau 10) ; une réponse donnée au plus tôt lui parvient au même tick (S+37). Écart préexistant, consigné (O-E19-69),
   pas corrigé par cette tranche ; la valeur de la table est celle de l'ordre d'aujourd'hui (`DownDuringTheQuestion` : **20**).
+  **[Corrigé par E19.f3c (D-E19-93, 2026-10-06) : l'écran tourne après la passe du dialogue, dans la seconde boucle, et `DownDuringTheQuestion` vaut 19.]**
   Aides de test, une passe du choix par tick, sans double compte : `AlundraSaveBookTests.Tick` (`:79-87`, créneau C du livre puis
   `Dialogue.Tick()`) inchangée ; l'aide `Tick` d'`AlundraSaveScreenDirectorTests` gagne un `Dialogue.Tick()` **après** le tick de
-  l'écran (l'ordre du mandataire) ; les blocs `BookTick` (`:792-801`, `:850`), qui appellent déjà `Dialogue.Tick()` puis le tick du
+  l'écran (l'ordre du mandataire d'alors ; E19.f3c l'inverse : `Dialogue.Tick()` puis le tick de l'écran) ; les blocs `BookTick` (`:792-801`, `:850`), qui appellent déjà `Dialogue.Tick()` puis le tick du
   directeur de l'écran (pas l'aide), ne changent pas ; l'aide d'`AlundraSaveScreenPresenterTests` (`:59-66`) gagne un
   `Dialogue.Tick()` après le tick de l'écran ; le montage de la boîte et le pilote des passes appellent `Pass` comme aujourd'hui (la
   passe du choix vient avec) ; le bloc du harnais d'intro (`IntroTraceHarnessTests.cs:595-600`) aussi (le marin 12 en dépend). Les
@@ -5397,10 +5399,10 @@ l'autre (entre les deux, le choix fonctionne à la manette sans être dessiné) 
     rouge contre une variante où `CancelChoice` ne ferait qu'effacer l'attente et les libellés (l'appui armé jouerait alors 5 et 2 à N+19
     et écrirait 1 à N+37) ; rouge aujourd'hui (la machine n'existe pas) ;
   - tests existants qui bougent, liste fermée = `docs/plan-e19-f3-annexe/sim-pins.md` §0 à §5, avec ses valeurs « fidèles », dans
-    l'ordre du mandataire (écran, puis dialogue et choix) : en particulier la répartie à 37 ou 38 ticks de l'ouvreur (OUI, NON) ; K5 (`(E, T, R)` =
+    l'ordre du mandataire (écran, puis dialogue et choix ; dialogue et choix, puis écran depuis E19.f3c) : en particulier la répartie à 37 ou 38 ticks de l'ouvreur (OUI, NON) ; K5 (`(E, T, R)` =
     (56, 67, 85), vu à 86) ; le livre (OUI pris au Tick 99, capture au Tick 160, libération de la boîte au Tick 134 avant la capture, NON au
     Tick 100, `Tick(37 + Wait)` = 98) ; l'aide `AnswerAndClose` (`Tick(37 + 18)` = 55 pour OUI, `Tick(38 + 18)` = 56 pour NON) ;
-    `DownDuringTheQuestion_ThenOui_…` **20** ticks (ordre du mandataire, F3A-R3 ; 19 dans l'ordre du binaire, O-E19-69) ; A17 (`0x03 @1059` à 637, `0x11
+    `DownDuringTheQuestion_ThenOui_…` **20** ticks (ordre du mandataire, F3A-R3 ; 19 dans l'ordre du binaire, O-E19-69 ; 19 depuis E19.f3c) ; A17 (`0x03 @1059` à 637, `0x11
     @1115` à 1162, `0x05 @1120` à 1193, fin à 1194, budget 2500 inchangé) ; le marin 12 (choix pris à l'image 133, boîte suivante après
     152, fin après 354, budget 400) ; le livre de bout en bout (sélecteur après 139, écran après 116) : ces valeurs du §5 sont des
     **observations** mesurées par la simulation (à `db8d61c`, avant E19.h1b2), aucun test ne les épingle ; seuls les budgets
@@ -5418,7 +5420,7 @@ l'autre (entre les deux, le choix fonctionne à la manette sans être dessiné) 
 **Acceptation** : la machine égale le modèle sur V1 à V7 ; chaque aide fait exactement une passe du choix par tick ; les tests de la
 liste fermée prennent les valeurs fidèles de la table ;
 aucune autre assertion ne bouge ; suites, `cmp`, traces. **Retour arrière** : revert des commits. **Risques** : entre f3a et f3b, un
-choix n'est pas dessiné (f3b suit) ; l'écran de sauvegarde reçoit une réponse tardive un tick après le binaire (O-E19-69) ; le chemin réel de la manette jusqu'à la passe du
+choix n'est pas dessiné (f3b suit) ; l'écran de sauvegarde reçoit une réponse tardive un tick après le binaire (O-E19-69, corrigé par E19.f3c) ; le chemin réel de la manette jusqu'à la passe du
 choix pendant qu'une boîte est ouverte n'est prouvé que par la recette (le crochet injecte les appuis).
 
 **Fait le 2026-10-06** (un commit, tests et code ensemble). Code : `Alundra/Scripts/AlundraChoiceBox.cs` (la machine, portage de `ChoiceBox`, et
@@ -5509,7 +5511,7 @@ d'ajout est l'ordre de dessin (les deux fenêtres sont `IsTopmost`) ; une pressi
     et tourne dans l'aide `Tick` (`:59-68`) après `AlundraDialogueDirector.Instance.Tick()` et après le présentateur de l'écran ; ses
     assertions : `:144` et `:147` (`Pushed == [écran]`, avant N+2) inchangées ; `:148` (`Removed` vide) inchangée ; `taken` 38 inchangé ;
     une nouvelle assertion après la boucle : `Pushed == [écran, choix]` ; `:160` `Assert.Empty(_uiView.Removed)` devient
-    `Removed == [choix]` (le choix est retiré à sa passe de fermeture, l'écran lit la réponse au tick suivant, O-E19-69) ; `:161`
+    `Removed == [choix]` (le choix est retiré à sa passe de fermeture, l'écran lit la réponse au tick suivant, O-E19-69 ; au même tick depuis E19.f3c) ; `:161`
     inchangée ; `:164` devient `Removed == [choix, écran]` ; l'harnais `UI/TextBoxGpuHarness.cs` `TextBoxScreenAssets.New()` enregistre aussi
     l'enveloppe du choix (`withTheScreen: false` garde son sens) ; restent verts sans changement : `AlundraDialoguePresenterWiringTests.cs:179-181`
     et `:259` (aucun tick entre l'ouverture et l'assertion), `AlundraChoiceBoxTests`, les tests du directeur, `AlundraTextBoxPixelTests`,
@@ -5559,7 +5561,7 @@ convertisseur n'a pas changé (pas de tests du convertisseur). Restent la vérif
   248 texels ; liste fermée tenue ; export re-dérivé (les trois fichiers, l'entrée d'`AssetInfos.json`, les compteurs) et double
   export ; `Alundra.Tests` 2802/2802 en Release puis en Debug, `cmp` sans écart, six traces.
 
-###### E19.f3c — Ordre de l'écran de sauvegarde (D-E19-93) 🚧 (planifiée le 2026-10-06 ; relecture n°1 REVISE (liste des fichiers de test), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06, exécutée en mode AUTO ; F3C-1 faite)
+###### E19.f3c — Ordre de l'écran de sauvegarde (D-E19-93) 🧪 (faite le 2026-10-06, vérification à faire ; planifiée le 2026-10-06 ; relecture n°1 REVISE (liste des fichiers de test), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06, exécutée en mode AUTO)
 
 **Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais et en français, dans `docs/plan-e19-save-order-annexe/` :
 `notes.md`, `verify.md`, le modèle `hostmodel.py`, les preuves `slotorder*.py`, le correctif proposé `patch-proposal.diff.txt` et les tests
@@ -5608,7 +5610,7 @@ de deux ticks : armement 0/2/18/26/26/28, OUI/NON/OUI/OUI/NON/OUI → ancien 19/
   avec un compteur, `Director.Start`, un `Update`, le compteur ne bouge pas ; au patron de `AlundraSaveGameDirectorLoadTests.cs:373`) ;
   l'aide `Tick` de `AlundraSaveScreenDirectorTests.cs:75-82` passe à `Dialogue.Tick(); TickScreen(hold);` et `:613` à 19 ; l'aide de
   `Alundra.Tests/Scripts/AlundraSaveScreenPresenterTests.cs:62-72` suit le nouvel ordre ; commentaires `:73-74`, `:68`, `:165` réécrits.
-- 🚧 **F3C-2 — Code** (F3C-R1, F3C-R2), docs, ADR.
+- ✅ **F3C-2 — Code** (F3C-R1, F3C-R2), docs, ADR.
 - ⏳ **F3C-3 — Vérification** (vérificateur neuf).
 
 **Fait le 2026-10-06 (F3C-1)** : tests écrits d'abord, nouveau fichier `Alundra.Tests/AlundraSaveScreenTickOrderTests.cs` (18 tests : les 12 cases des
@@ -5620,6 +5622,21 @@ carte sur 1 et 2 ticks). **Rouges sur le code d'avant** : 8 cases sur 12 des gri
 choix, écran, présentateur de l'écran), commentaires `:73-74`, `:68`, `:165` réécrits, `DownDuringTheQuestion` 20 → 19 : seule valeur existante qui bouge
 (`AnswerAndClose` 55/56, `Carousel_Closing` 37, `Cross_AsksOuiNon` 37, `Question_TheDialogueScreenGoesOverTheSaveScreen` 38 inchangés). Aucune valeur mesurée
 ne contredit le plan ou son annexe.
+
+**Fait le 2026-10-06 (F3C-2)** : F3C-R1 et F3C-R2 appliquées. `AlundraWorldProxy.Update` : le tick de l'écran et son présentateur quittent la première boucle et
+passent dans la seconde, juste après `_choicePresenter?.Tick()` et avant `var tickBlocked`, avec le mot de manette du tick (`_choicePadOfTick[tick]`) ;
+`AlundraSaveScreenDirector.Tick(uint justPressed, uint justPressedByInterval)` (Carré lu dans les fronts, Croix, Haut et Bas dans le mot par intervalle ; deux
+champs), `Tick()` sans argument les tire de `TickPad` pour les hôtes de test. **Verts** : les 8 cases rouges des grilles, Croix, Carré (1, 2, 3 ticks), gel ; les
+12 valeurs sont celles de la grille écrite d'avance. **Mutants rejoués** (chacun rougit) : `Tick()` sans argument dans la seconde boucle (3 rouges : Croix à deux
+ticks, Carré à 2 et 3 ticks) ; Carré lu dans `TickPad` (2 rouges : Carré à 2 et 3 ticks) ; tick de l'écran remis dans la première boucle (8 rouges : les cases
+des grilles) ; écran déplacé après le `continue` des événements de carte (17 rouges, dont le livre de bout en bout `RealMap17_…`) ; écran dans une troisième
+boucle après les événements de carte (2 rouges : le test de gel à 1 et 2 ticks, toutes les cases des grilles restant vertes). Suites : `Alundra.Tests` 2875/2875 en
+Release puis en Debug (dont 18 nouveaux), `cmp` de `Alundra.dll` Debug et du projet identique, six traces sans écart (les quatre traces réécrites par les
+tests sont restaurées). Documents : ADR-0040 du parent, lignes décrivant l'ancien ordre annotées (D-E19-88, F3A-R3, liste des pins, risques de f3a, f3b, O-E19-69,
+`sim-pins.md`, `sim-notes.md`, `census-notes.md`). Conséquences consignées dans l'ADR : l'automate de l'écran passe aussi après la passe (inobservable dans les flux
+réels : le livre attend 61 ticks après la fermeture de sa boîte), le déclencheur de l'inventaire ne voit plus, aux ticks 1 et suivants d'une image à plusieurs ticks,
+l'état de l'écran de la même image (négligeable), l'âge du mot de manette reste un écart (O-E19-75, D-E19-99 : 19 échantillons dans le binaire, 18 dans le
+portage). Aucun arrêt : aucune valeur mesurée ne contredit le plan ou son annexe. Aucun export, aucun moteur ; recette F3C-4 à l'auteur.
 
 **Acceptation** : nouveaux tests rouges puis verts (les cases des grilles qui changent sont rouges sur l'ordre d'aujourd'hui ; les tests de
 Croix, de Carré et de gel sont verts sur le code d'aujourd'hui et rouges sur leur mutant) ; mutants rejoués : `Tick()` sans argument dans la seconde boucle, Carré lu dans
@@ -10295,7 +10312,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-66 | **Couleur de l'index 4 de `font3.png`** (contre-vérification de l'oracle d'E19.f2b1) : les bandes et le curseur du binaire prennent l'entrée 8 de la table de CLUT remplie depuis `taki\screen\wind.cl` (`0x80044B7C`-`0x80044B8C`) ; le `font3.png` exporté vient de la CLUT de FONT3.TIM : égal sur 13 des 14 index, l'index 4 vaut (82, 90, 57) contre (74, 82, 57) ; 44 texels, seulement dans les glyphes 4, 14, 15, 21 à 29 et `@` (le `\W5` de S025 est le glyphe 21). Correction côté export, hors f2b1. | Convertisseur, à planifier |
 | O-E19-67 | **Tranché le 2026-10-06 (D-E19-95 : écart gardé).** **Autres espaces de bord perdues** (découverte de S025, 2026-10-05 ; D-E19-78 ne vise que S025) : `M311_S029` et `M398_S029`, page 1 (une espace de début après un code de drapeau, retirée par la règle F0-R2 de l'émetteur : la ligne commence 4 pixels plus à gauche que dans le binaire, déduit du code, non vu) ; 30 pages `_S022` et `_S108` de 15 cartes (espaces avant un drapeau ou un `yield` final, retirées par l'émetteur : temps de frappe) ; 105 pages non centrées à espaces de fin (un pas de frappe par espace) ; 56 pages d'ETC (bourrage d'enregistrement ; trois textes d'inventaire `0x206`, `0x239`, `0x2A6` perdent une espace). Les corriger change des épingles d'arcs d'E19.f2a (par exemple `M391_S022`). | Auteur |
 | O-E19-68 | **Tranché le 2026-10-06 (D-E19-94 : à corriger).** **Cible littérale de `0x22` sur une descente** (contre-vérification de la découverte d'E19.h1b2, 2026-10-06) : la cible `hauteur << 19` d'ADR-0026 est exacte au tick sur les montées, mais finit **un tick tôt** sur une descente (vrai code, 112 → 48 px à −32768 : binaire 129 appels, cible littérale 128, cible décalée `(H << 19) − 1` 129). Un seul des 17 sites descend : 115 `B[2]` @367 (hors chaîne ; 321 appels dans le binaire, 320 avec la cible littérale). Une règle par sens (décalée sous 256 px, littérale au-dessus) serait exacte aux 17 sites ; elle changerait ADR-0026. | Auteur |
-| O-E19-69 | **Tranché le 2026-10-06 (D-E19-93 : à corriger).** **L'écran de sauvegarde tourne avant le dialogue dans le mandataire** (relecture d'E19.f3a, 2026-10-06) : le binaire fait le créneau 3 (choix) avant le créneau 10 (menu de fichier de l'écran de sauvegarde) dans la même image ; le mandataire fait l'écran dans la première boucle de ticks (`AlundraWorldProxy.cs:2117`) et la passe du dialogue (boîte puis choix) dans la seconde : une réponse donnée tard parvient à l'écran un tick plus tard (`DownDuringTheQuestion` 20 au lieu de 19) ; une réponse au plus tôt, au même tick. Corriger demande de déplacer le tick de l'écran après la passe du dialogue (valeurs d'E16 à reprendre). | Auteur, puis tranche à part |
+| O-E19-69 | **Tranché le 2026-10-06 (D-E19-93 : à corriger) ; corrigé par E19.f3c le 2026-10-06 (l'écran tourne après la passe du dialogue).** **L'écran de sauvegarde tourne avant le dialogue dans le mandataire** (relecture d'E19.f3a, 2026-10-06) : le binaire fait le créneau 3 (choix) avant le créneau 10 (menu de fichier de l'écran de sauvegarde) dans la même image ; le mandataire fait l'écran dans la première boucle de ticks (`AlundraWorldProxy.cs:2117`) et la passe du dialogue (boîte puis choix) dans la seconde : une réponse donnée tard parvient à l'écran un tick plus tard (`DownDuringTheQuestion` 20 au lieu de 19) ; une réponse au plus tôt, au même tick. Corriger demande de déplacer le tick de l'écran après la passe du dialogue (valeurs d'E16 à reprendre). | Auteur, puis tranche à part |
 | O-E19-70 | **Image périmée à la remise d'une fenêtre** (découverte d'E19.f3b, 2026-10-06) : une fenêtre MGUI retirée puis remise sur le bureau n'est mise en page qu'au `Desktop.Update` suivant ; après un choix annulé en plein glissement, la première image du choix suivant montre l'ancien cadre (1898 à 3556 texels) ; aucun cas du corpus connu. Même famille qu'O-E19-65 ; côté moteur : mettre en page une fenêtre remise avant son premier dessin ; le pire cas est une annulation au repos (3556 texels). | Moteur (rapport), auteur |
 | O-E19-71 | **Tranché le 2026-10-06 (D-E19-92 : résolution de l'écran).** **Quads déformés et facteur d'agrandissement** (découverte d'E19.g G2b, 2026-10-06) : 49 348 quads d'entités (30,8 %) sont déformés dans le binaire (échelle, miroir tourné, parallélogramme, quad quelconque) ; la scène est dessinée directement dans l'écran agrandi (ADR-0048 du moteur), donc à k > 1 un quad déformé ne donne pas des blocs k × k de pixels de la PS1 (D-E19-60). **Choix** : (A) quads dessinés à la résolution de l'écran, exacts à k = 1 et pour les quads 1:1, plus lisses que la PS1 aux autres facteurs, écart écrit dans l'ADR ; (C) la scène dessinée dans une cible de 320 × 240 puis agrandie, exacte à tout facteur, ADR-0048 révisée et travail du moteur en plus. Recommandation de la session : (C), seule fidèle à D-E19-60, si le coût moteur est acceptable. | Auteur |
 | O-E19-72 | **Tranché le 2026-10-06 (D-E19-96 : interface des créateurs et `0x82 0x53`).** **Portée de D-E19-54 (effets natifs)** (découverte d'E19.g G1/G3, 2026-10-06) : D-E19-54 repose sur une lecture fausse : il n'existe aucun effet de warp sur un changement de carte (les « effets de warp » sont des effets d'objets, bombes et magies, E14) ; les scripts n'atteignent que `0x82 0x53` (vase de vie, 8 sites hors de la chaîne ; il change aussi la vie, O-E19-39) et `0xBB` (E18). **Choix** : (A) E19.g livre l'interface des créateurs natifs et l'effet de `0x82 0x53` (avec sa vie max + 1, vie pleine, son `0x31`), le reste avec son consommateur (E14, déplacement, E18) ; (B) E19.g ne livre que les effets des enregistrements et des scripts, tous les natifs et `0x82 0x53` avec E14. | Auteur |
