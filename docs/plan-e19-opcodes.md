@@ -927,6 +927,14 @@ flottant 32 bits dans le scratchpad `e19a2/`) :
   - toute autre épingle qui bouge est un arrêt : elle se signale, elle ne s'adapte pas en silence.
 - ✅ **T3 — La cabine avec un vrai contrôleur, en deux niveaux de test** :
   *(fait le 2026-09-29 : `AlundraCabinWalkTests` (2 cas, dt 0,02 et 1/60, rails posés comme B2, masque `0x41` vérifié, `PosY == 215 << 16` après la troisième marche, les quatre marches atteignent leur distance) ; `ArcSpec.RealController` et le mode « vrai contrôleur » d'`ArcRun` (politique `Runtime`, `PhysicsWorld`, héros à contrôleur, `ResyncControllerFromFlags`, `PushLogicalPositionToRoot`, `world.Update` seul) ; A1c vert à dt 0,02 dans la limite de 900 images ; `LoadHeroControllerSettings` et `LoadHeroHeader` dans `HeroWorldFixture` ; P3 du constructeur d'`ArcRun` corrigé (nettoyage sur échec) avec un test dédié, vu rouge sans le correctif ; les deux diagnostics `Zz*` supprimés. Mutation réelle côté moteur (rejet entier remis, code restauré à l'octet près) : A1c échoue en nommant `0x1E @658`, le test de la cabine attend 14090240 et lit 14098432, les épingles des traces et des deux tests d'adoption échouent. `Alundra.Tests` 1916/1916.)*
+  - **Merge du 2026-10-06** (demandé par l'auteur, branche `chantier/assimp-glb-intermediate-lock` du moteur comprise) : une autre
+    session avait déjà mergé dans les `main` du moteur (`38001c7c`) et du parent (`f05da4d`) la pile E19 jusqu'à la renumérotation de
+    l'ADR de G2d (0066), la branche assimp, l'audio (S5, S6b), le curseur de MGUI et le sélecteur d'assets ; cette session a intégré la
+    suite (G1, f4c2, G2b-1) par des branches `integration/merge-2026-10-06b` (moteur `19aa21fe`, parent `0b8df5d`), suites vertes avant
+    (moteur 4105, MGUI 3174, convertisseur 659, `Alundra.Tests` 2946 en Release puis en Debug, `cmp`, six traces), puis avancé les `main`
+    en avance rapide ; MGUI `develop` (`18b2c14a`) et l'analyseur `master` (`a958d86`) les contenaient déjà ; rien poussé. **La suite
+    du travail part de `chantier/e19-suite2` dans le parent, le moteur, MGUI et l'analyseur** (demande de l'auteur) : les commits des
+    sous-modules vont sur cette branche, qui tient lieu des branches dédiées que nomment encore les tranches.
   - **cabine seule** : un test durable sur les vraies cellules de la 390, avec l'en-tête et les réglages
     réels du héros, le masque `0x41` vérifié, et les quatre marches.
     - Les rails sont posés comme B2 les pose, par `records.Walkability[y * largeur + x] |= 1` sur le
@@ -8428,7 +8436,7 @@ pour Alundra tant que rien ne l'appelle ; aucun chemin existant ne change (ni `S
   confirmé par le relecteur (décalage d'un demi-pixel d'écran, terme de pente, ordre des cases, égalité 1:1 de `check_bk.py`).
   Nouvelle époque de préparation ; une seule relecture de clôture.
 
-###### E19.g G2b-2 — Piste de coins de `.anim2d` (moteur) ⏳ (planifiée le 2026-10-06, après G2b-1 ; relecture n°1 REVISE (liste fermée, sites, schéma, acceptation), révisée ; relecture n°2 REVISE (fixture de la réécriture à l'octet), disposition FIX ; nouvelle époque, relecture de clôture à faire)
+###### E19.g G2b-2 — Piste de coins de `.anim2d` (moteur) ⏳ (planifiée le 2026-10-06, après G2b-1 ; relecture n°1 REVISE (liste fermée, sites, schéma, acceptation), révisée ; relecture n°2 REVISE (fixture de la réécriture à l'octet), disposition FIX ; nouvelle époque, relecture de clôture READY)
 
 Changement de format du moteur (ADR) ; inerte pour Alundra tant qu'aucun fichier ne porte la piste (un fichier d'aujourd'hui se relit et se
 réécrit à l'octet). Déclencheur de risque : format sérialisé. Branche du moteur `chantier/e19g2b2-corner-track`, créée par la règle R-BR (1)
@@ -8493,7 +8501,7 @@ parent à sa fin** (le moteur porte alors la propriété ; aucun fichier export�
   moteur, trouvée par la remontée vers la solution, réécrite par `EditorAssetWriterService.SaveDocument`, point de départ à l'octet exigé.
   Nouvelle époque ; une seule relecture de clôture.
 
-###### E19.g G2b-3 — Export des coins (convertisseur) ⏳ (planifiée le 2026-10-06, après G2b-2 ; relecture n°1 REVISE (prévision clé par clé, garde, ordre du pointeur), révisée ; relecture n°2 REVISE (chemin du fichier de garde), disposition FIX ; nouvelle époque, relecture de clôture à faire)
+###### E19.g G2b-3 — Export des coins (convertisseur) ⏳ (planifiée le 2026-10-06, après G2b-2 ; relecture n°1 REVISE (prévision clé par clé, garde, ordre du pointeur), révisée ; relecture n°2 REVISE (chemin du fichier de garde), disposition FIX ; nouvelle époque, relecture de clôture READY)
 
 Parent : convertisseur et export. Le pointeur du moteur est déjà sur la pointe de G2b-2 (monté par G2b-2) : chaque commit du parent de
 G2b-3 compile, et un export avec `Corners` n'est jamais lu par un moteur qui ne la connaît pas. Déclencheur de risque : format exporté.
