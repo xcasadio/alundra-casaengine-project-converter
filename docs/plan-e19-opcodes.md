@@ -5884,7 +5884,7 @@ une extension sans vérité binaire (D-E19-90) ; `GetMatchingEntitiesBySearchTyp
   `cmp` sans écart, six traces. Avis P4 : la remise avant la garde de `NotifyPresenterClosed` n'est vérifiée que par lecture (à
   voir en jeu : deux dialogues de suite avec le même locuteur).
 
-###### E19.f4c — Vue du nom et du portrait ⏳ (découverte du 2026-10-06 faite et contre-vérifiée ; D-E19-100, D-E19-101 ; planifiée en f4c1, f4c2, f4c3 ; relecture n°1 REVISE (masque de la passe additive, fichiers de f4c1, propriétaire de `Brightness`, classes de comparaison), révisée ; relecture n°2 REVISE (exemple MGUI), disposition FIX ; nouvelle époque, relecture de clôture à faire ; exécution après la recette et l'approbation de l'auteur)
+###### E19.f4c — Vue du nom et du portrait ⏳ (découverte du 2026-10-06 faite et contre-vérifiée ; D-E19-100, D-E19-101 ; planifiée en f4c1, f4c2, f4c3 ; relecture n°1 REVISE (masque de la passe additive, fichiers de f4c1, propriétaire de `Brightness`, classes de comparaison), révisée ; relecture n°2 REVISE (exemple MGUI), disposition FIX ; nouvelle époque, relecture de clôture READY (enveloppe, f4c1, f4c2) ; exécution après la recette et l'approbation de l'auteur)
 
 **Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais, dans `docs/plan-e19-f4c-annexe/` : `notes*.md`,
 `verify.md`, la XAML proposée `proposal-TextBoxScreen.xaml` validée par une sonde sur GPU hors du dépôt, et le générateur
