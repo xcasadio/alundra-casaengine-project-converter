@@ -8933,7 +8933,7 @@ fait sur la pile seule, la lecture par tick dans la boucle des événements est 
   à sa création dans `InitializeWithWorld`, un test où elle change pendant la première image. Nouvelle époque ; une seule relecture de
   clôture.
 
-###### E19.g G3b — Les neuf opcodes d'effets (DLL) ⏳ (planifiée le 2026-10-06, après G3a ; relecture n°1 REVISE (binaire : ticks gelés, créneau placé par `0xA2`/`0xA3` ; code : liste fermée), révisée ; relecture n°2 : READY (code), REVISE (binaire : valeurs de la 391), disposition FIX ; nouvelle époque, relecture de clôture REVISE (début de l'écart du second instantané de la 391) : **⚠️ en pause** (règle des relectures : pas de nouveau tour sans l'auteur) ; correctif écrit ci-dessous, une nouvelle relecture sur décision de l'auteur)
+###### E19.g G3b — Les neuf opcodes d'effets (DLL) 🚧 (approuvée par l'auteur le 2026-10-06, exécution en cours ; planifiée le 2026-10-06, après G3a ; relecture n°1 REVISE (binaire : ticks gelés, créneau placé par `0xA2`/`0xA3` ; code : liste fermée), révisée ; relecture n°2 : READY (code), REVISE (binaire : valeurs de la 391), disposition FIX ; nouvelle époque, relecture de clôture REVISE (début de l'écart du second instantané de la 391) : **⚠️ en pause** (règle des relectures : pas de nouveau tour sans l'auteur) ; correctif écrit ci-dessous, une nouvelle relecture sur décision de l'auteur)
 
 DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (liste fermée et arcs). Faits : `dll-notes.md` §4 et §6,
 `binary-data-verify.md` (sites, valeurs), `README.md` de l'annexe (391 : cinq `0xA2`).
@@ -8973,7 +8973,7 @@ DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (list
   `AlundraDay3SceneArcTests.cs` (A13, A15, A17 par la règle 5) ; `AlundraEventProgramRunnerTests.cs`
   (`UnknownOpcode_KnownSize_SkipsBySize` repointé vers un opcode encore non porté) ; ce plan ; l'ADR du parent (prochain numéro libre) et
   son index `docs/decisions/README.md` ; l'annexe (`docs/plan-e19-g1g3-annexe/g3b-golden.tsv` et son script).
-- **G3b-0 — Prévision d'abord** (annexe, commitée avant le code, tirée de `oracle_ops`/`scenarios` du binaire) : 476 `0xA2 [0, 960, 160, 48]`
+- ✅ **G3b-0 — Prévision d'abord** (annexe, commitée avant le code, tirée de `oracle_ops`/`scenarios` du binaire) : 476 `0xA2 [0, 960, 160, 48]`
   → un créneau de l'enregistrement 0, brut (62 914 560, 10 485 760, 3 145 729), animation 1 ; `0x92 [0, 0]` puis l'aura dessinée aux ticks
   0 à 222 et libérée au tick 223 ; `0x92 [0, 1]` appliqué avant 223 mises à jour la ranime en animation 1 ; la suite des animations de l'arc
   A2/A4 ; `0x91 [0]` à la fin libère le créneau. 391 : 5 créneaux à l'entrée, les cinq `0xA2` (pc 228, 236, 244, 252, 408) et les forces
@@ -8993,9 +8993,28 @@ DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (list
   tick par image. Trois cas de file : (a) une `0xA2` puis une boîte qui pose `0x40` au même tick : le créneau existe, figé et lisible
   (animation non avancée) avant la fermeture de la boîte ; (b) une `0x90` au tick qui lance un départ de warp : le créneau existe pendant
   le départ ; (c) la file est vide après chaque `Update`.
-- **G3b-1 — Tests d'abord** (les valeurs ci-dessus, rouges sur le code d'aujourd'hui où les opcodes sont sautés) ; les lignes de la liste
+- ⏳ **G3b-1 — Tests d'abord** (les valeurs ci-dessus, rouges sur le code d'aujourd'hui où les opcodes sont sautés) ; les lignes de la liste
   fermée, l'audit et les arcs **dans le même commit que les gestionnaires** (convention du plan) ; **G3b-2 — Code**, ADR ; **G3b-3 —
   Vérification**.
+**Fait le 2026-10-06 (G3b-0).** `docs/plan-e19-g1g3-annexe/g3b-golden.py` et `g3b-golden.tsv` (189 lignes, généré ; `--check` rejoue la génération)
+commités avant tout code. Les 99 sites d'effets de la liste fermée (lignes `OP` : carte, programme, pc, opcode, octets d'opérande relus dans l'export) sont
+passés, avec leurs vrais opérandes, dans `fxpool.py` (le modèle du binaire) sur les tables d'effets de G1, puis recoupés avec `scenarios_out.txt` (le vrai code du
+binaire : S1 de la 391, S2 de la 476, S4 de la 135, S5 de la réserve) et `load_oracle.json` (le script s'arrête sur tout écart ; aucun écart). Valeurs :
+476 `0xA2` @326 → créneau de l'enregistrement 0 en (62 914 560, 10 485 760, 3 145 729), animation 1, la `0x93` @334 le laisse là, les 12 `0x92` du programme 2 dans
+l'ordre des pc visent les animations 0, 1, 3, 1, 3, 3, 1, 3, 3, 3, 1, 3, après `0x92 [0, 0]` l'aura est dessinée aux ticks 0 à 222 et libérée au tick 223, une
+bascule vers l'animation 1 après 219 à 222 mises à jour la ranime (statut 2 soixante ticks plus tard), après 223 ou 224 non (statut 0). 391 : premier instant, dix
+créneaux (les créneaux 0 à 4 du chargement, puis 5 à 9 des `0xA2` aux enregistrements 3, 4, 0, 1, 2, en (336, 696, 80), (552, 696, 80), (336, 776, 80), (488, 776, 80),
+(444, 584, 176) px, z brut + 1) ; forces par enregistrement 0 à 4 : fy 12 800, 9 216, 25 600, 12 800, 12 800 (fx et fz nuls) ; second instant : écart sur N = 100 ticks
+non gelés depuis la cinquième `0x94`, par créneau, y : 1 280 000 (enregistrements 0, 3, 4, copie du chargement et copie créée), 921 600 (enregistrement 1),
+2 560 000 (enregistrement 2), x et z inchangés ; le recoupement avec S1 (quatre `0x94`, créneaux 0 à 3 : 1 280 000, 921 600, 2 560 000, 1 280 000) tient. 162 : 7 + 11 =
+18 créneaux, l'enregistrement 5 en porte 12, chacun à sa position (table `S162`). 135 : l'autel (x 468, y 376, z 64 px) passe à y 384 par la première `0xA0` puis à x 396
+par la seconde ; `0xA3` @2490 (enregistrement 1, effet global 13, clé 0x80) : un créneau à la position de l'entité, aucun sans entité. 10 : un créneau à l'entrée
+(enregistrement 4), `0x90 [0]` @2828 puis `0x92 [0, 1]` @2864 : le rocher, 62 images, dessiné aux ticks 0 à 154, libéré au tick 155. Réserve pleine (391 + 123 `0x90 [3]`) :
+128 créneaux, une création de plus ne change rien, `0x91 [4]` libère le créneau 4 et la création suivante le reprend. `0x91 [3]` libère d'un coup les deux créneaux
+(3 et 5) de l'enregistrement 3 ; `0x90 [9]` (hors de la table) ne crée rien. Écart noté, sans conséquence : le plan écrit « `0x91 [0]` à la fin » de la 476 ; le seul
+`0x91` de cette carte est dans le bloc mort @497 (pc 512, aucun saut n'y mène), il n'est donc pas dans la liste fermée ni dans l'arc : l'effet de `0x91` est testé sur la
+391 et la réserve pleine (oracles S5 et « deux créneaux de l'enregistrement 3 »).
+
 - **Acceptation** : rouges puis verts ; les ensembles de sauts autorisés des arcs nommés vidés de leurs opcodes d'effets et remplacés par
   les assertions de la réserve ; aucune autre assertion ne bouge (A10/A11 sur 165/164 ne bougent pas) ; `Alundra.Tests` en Release puis
   en Debug, `cmp`, six traces identiques. **Arrêts** : une valeur qui contredit la prévision, une assertion hors de la liste qui bouge, un
