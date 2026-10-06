@@ -6101,7 +6101,7 @@ d'intro, qui relit la fabrique (garde des six traces).
   l'apparition (`0x80039EF8`), la DLL au premier tick seulement, si bien que `0x8D` (`PosZ <= TerrainHeight + 1`,
   `AlundraEventProgramRunner.cs:1808`) lit 0 avant le premier tick d'une entité → E19.h1b2.
 
-##### 1.2n.1c E19.h1b2 — `0x20`, `0x22`, `0x23`, Z des entités sans contrôleur 🧪 (faite le 2026-10-06, vérification à faire)
+##### 1.2n.1c E19.h1b2 — `0x20`, `0x22`, `0x23`, Z des entités sans contrôleur 🧪 (relecture n°1 REVISE, révisée ; relecture n°2 READY ; faite et CONFIRMED le 2026-10-06 ; recette H1B2-4 en attente)
 
 
 Portée : `0x20` (attente de distance en Z, 266 sites), `0x22`/`0x23` (attente d'une hauteur d'enregistrement, 17 sites) et
@@ -6261,6 +6261,17 @@ attentes finissent au 65e ou au 193e appel : c'est un arrêt) ; la cible littér
 des programmes `B` finissent un tick tôt dans la DLL (connu, O-E19-28) ; pas de plafond formé par une autre entité et ordre XY puis Z
 pour une entité sans contrôleur (écarts sans cas dans le corpus) ; changements visibles hors chaîne pour la recette (ascenseurs,
 trappes, boules, la chute de Sara).
+- ✅ **Vérification d'E19.h1b2** (H1B2-3, 2026-10-06) : vérificateur neuf **CONFIRMED** (`3940630`) : rouges d'abord rejoués dans une
+  copie isolée de HEAD (les cinq fichiers de production remis à `21fee93`) : 24 des 25 nouveaux tests rouges avec les valeurs de
+  l'exécuteur, la garde verte ; les onze tables Z-1 à Z-9 de `traces.out` comparées ligne à ligne aux tests (0 écart, aucune ligne
+  non testée), les lignes de `handlers_emu.txt` tenues ; cas réels par la vraie boucle (`World.Update`, `proxy.Update`) : 260 rec17,
+  `BD @750` à l'appel c0 + 64, montée de 2097152 ; 47 rec3, `1B @445` à c0 + 192 (image 1777), `PosZ` 4194304, sans contact ; liste
+  fermée tenue (`ImplementedOpcodes` seul) ; `Alundra.Tests` 2744/2744 en Release puis en Debug, `cmp` sans écart, six traces.
+  Écarts de montage (sans valeur contredite) : les deux enregistrements n'apparaissent pas au chargement de la carte (`SpriteDirection`
+  sans le bit 0x40) ; les tests les font apparaître par `SpawnEntityByRecordId`, le chemin de production de `0x2D` et `0x8B` ; le
+  programme de Sara demande cinq drapeaux et trois dialogues ; les tests mesurent c0 et la fin par les changements de `ForceZ` (égal au
+  compte d'appels, un appel par image) ; le pas fait deux recherches d'appui bornées (atterrissage, puis sol de fin de tick, comme la
+  passe de fin du binaire).
 
 ##### 1.2n.2 E19.h2 — État en l'air des PNJ ⏳ (esquisse)
 
