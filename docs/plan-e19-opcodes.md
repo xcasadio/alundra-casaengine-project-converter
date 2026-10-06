@@ -7826,7 +7826,7 @@ impossible aujourd'hui).
   2663/2663 en Release puis en Debug, `cmp` sans écart, six traces à l'octet. Avis P4 : la couverture de la 293 par la teinte reste à
   voir en recette ; `OutputSizeBytes` varie de quelques dizaines d'octets entre deux exports du même code (fichiers hors manifeste).
 
-##### 1.2o.5 E19.g G2b — Quads à quatre sommets libres (sprites d'entités déformés) ⏳ (découverte du 2026-10-06 faite ; l'auteur a tranché O-E19-71 : résolution de l'écran, D-E19-92 ; planifiée le 2026-10-06 en G2b-1, G2b-2, G2b-3 ; relecture à faire ; exécution après la recette de l'auteur)
+##### 1.2o.5 E19.g G2b — Quads à quatre sommets libres (sprites d'entités déformés) ⏳ (découverte du 2026-10-06 faite ; l'auteur a tranché O-E19-71 : résolution de l'écran, D-E19-92 ; planifiée le 2026-10-06 en G2b-1, G2b-2, G2b-3 ; relecture n°1 REVISE (règle aux facteurs k > 1, seuils de la démo, champs réutilisés, place de l'epsilon), révisée ; relecture n°2 à faire ; exécution après la recette de l'auteur)
 
 **Découverte** (2026-10-06, lecture seule, deux surfaces, chacune contre-vérifiée ; versionnée, en anglais, dans `docs/plan-e19-g2b-annexe/`)
 ; faits porteurs :
@@ -7851,57 +7851,100 @@ impossible aujourd'hui).
   l'agrandir, ce qu'ADR-0048 a écarté (O-E19-71).
 
 
-**Règle de texel corrigée** (contre-vérification, `data-verify.md` C1, faits de PCSX-Redux vérifiés sur matériel) : au pixel entier x, la
-PS1 lit le texel `floor(u + 0,5)` ; la couverture suit la règle haut-gauche aux positions entières. Un GPU qui échantillonne au centre
-des pixels lit le même texel si le quad est **décalé d'un demi-pixel** (+0,5 en x, +0,5 vers le bas) et ses coordonnées de texture
-**d'un demi-texel** (+0,5), la fenêtre de la case **reculée d'un texel sur un axe miroir** (`X1 > X2`, `Y1 > Y3`, la règle de
-l'extracteur : la case est la fenêtre `SourceX`/`SourceY`) ; égalité tranchée vers le haut (epsilon 1/4096 de texel). Pour un quad 1:1
-les deux demi-décalages s'annulent : le chemin d'aujourd'hui est retrouvé au bit près, à tout facteur. Écart restant à × 1 contre le
-marcheur matériel (pentes 16.16 tronquées) : 0,56 % des texels, 0,12 % des couleurs ; débordement d'un texel hors de la case : 0,0035 %
-des pixels montrent un texel que la gouttière transparente cache (accepté, documenté, ni extracteur ni bornage). Oracle : le portage du
-marcheur de PCSX-Redux `docs/plan-e19-g2b-annexe/redux.py` (validé sur 49 sondes matérielles).
+**Règle de texel corrigée** (contre-vérification, `data-verify.md` C1, faits de PCSX-Redux vérifiés sur matériel) : au point entier
+(x, y), la PS1 lit le texel `floor(u + 0,5)` (de même en v) ; la couverture suit la règle haut-gauche aux points entiers. Écart restant
+d'un modèle exact contre le marcheur matériel (pentes 16.16 tronquées) : 0,56 % des texels, 0,12 % des couleurs sur le corpus ;
+débordement d'un texel hors de la case : 0,0035 % des pixels montrent un texel que la gouttière transparente cache (accepté, documenté,
+ni extracteur ni bornage). La fenêtre de la case est **reculée d'un texel sur un axe miroir** (`X1 > X2`, `Y1 > Y3`, la règle de
+l'extracteur : la case est la fenêtre `SourceX`/`SourceY`). Oracle : le portage du marcheur de PCSX-Redux
+`docs/plan-e19-g2b-annexe/redux.py` (validé sur 49 sondes matérielles).
+
+**Règle à la résolution de l'écran** (D-E19-92 ; de la session, après la relecture n°1) : au facteur entier k (pixels d'écran par pixel
+de la PS1), pour le pixel d'écran (sx, sy) :
+- **couverture** : le **coin haut-gauche** du pixel d'écran, (sx / k, sy / k) en unités de la PS1, est testé contre le quad, règle
+  haut-gauche ;
+- **texel** : `floor(u(p) + 0,5)` (de même en v), avec p = ((sx + 0,5) / k − 0,5, (sy + 0,5) / k − 0,5) : la position de la PS1 qui précède
+  d'un demi-pixel de la PS1 le centre du pixel d'écran, u étant l'application affine du triangle dessiné ; égalité tranchée vers le haut.
+À k = 1, c'est exactement la règle de la PS1 (exact à × 1). Pour un quad 1:1 (simple ou miroir), c'est exactement le chemin rectangle
+d'aujourd'hui **à tout facteur** (même couverture `[kL, kR)`, même texel `floor((sx + 0,5) / k − L) + u0`). Pour un quad déformé à k > 1 :
+plus lisse que la PS1 agrandie (bords et frontières de texels au pixel d'écran), sans décalage d'ensemble. Mise en œuvre (G2b-1) : la
+géométrie décalée d'un demi-pixel **d'écran** (vers la droite et le bas), les coordonnées de texture décalées de 0,5 texel (constante),
+puis, dans le shader, du terme `−(0,5 k − 0,5) (ddx(uv) + ddy(uv))` (nul à k = 1 ; il porte la pente propre à chaque triangle, donc les
+quads quelconques).
 
 **Choix de conduite** (techniques, de la session ; D-E19-92, D-E19-97) :
-- Le moteur reçoit **une seule entrée de quad libre**, générale : texture, fenêtre source en texels (flottants), quatre coins, couleur,
-  profondeur, clé de tri, mode PSX ; elle sert aux parties d'entités (G2b) et aux effets (G2e). Le moteur ne connaît pas la convention de
-  la PS1 : les **producteurs** (le convertisseur pour les entités, la DLL pour les effets) écrivent les coins avec le demi-pixel et le
-  décalage de fenêtre (+0,5 − miroir) ; seule l'égalité tranchée vers le haut est une règle du moteur.
-- Les quads 1:1 (simples et miroirs alignés, 69,2 %) restent sur le chemin d'aujourd'hui : les 7697 `.anim2d` sans quad déformé ne
-  changent pas.
-- Rendu à la résolution de l'écran (ADR-0048 du moteur gardée) : exact à × 1, plus lisse que la PS1 aux autres facteurs.
+- Le moteur reçoit **une seule entrée de quad de la PS1**, `DrawPsxQuad` : texture, fenêtre source en texels (avec le recul d'un texel
+  d'un axe miroir), quatre coins en unités du monde (= pixels de la PS1), couleur, profondeur, clé de tri, mode PSX ; il applique
+  lui-même la règle ci-dessus (une seule place pour les entités et les effets). Les **producteurs** (le convertisseur pour les entités,
+  la DLL pour les effets) donnent les coins bruts de la PS1 et le recul de la fenêtre.
+- Les quads 1:1 des entités (simples et miroirs alignés, 69,2 %) restent sur le chemin d'aujourd'hui : les 7697 `.anim2d` sans quad
+  déformé ne changent pas ; les quads 1:1 des effets passent par `DrawPsxQuad`, au même résultat à tout facteur.
+- Rendu à la résolution de l'écran (ADR-0048 du moteur gardée) : exact à × 1, 1:1 égal au chemin rectangle à tout facteur, déformés plus
+  lisses à k > 1.
 
 ###### E19.g G2b-1 — Quad libre du moteur ⏳ (planifiée le 2026-10-06)
 
 Moteur seul (sous-module, branche `chantier/e19g2b-free-quads` empilée sur la pointe de G2d `33324030`, que le parent épingle) ; inerte
-pour Alundra tant que rien ne l'appelle. Déclencheur de risque : acceptation inter-composants (le même quad sert G2b-2, G2b-3, G2e).
-- **G2b1-R1 — Soumission** : une entrée `DrawQuad` de `SpriteRendererComponent` (texture, fenêtre source en texels flottants, coins
-  haut-gauche, haut-droit, bas-gauche, bas-droit en coordonnées du monde, y vers le haut, couleur, z, clé de tri facultative, mode PSX) ;
-  matrice du monde = translation seule (le centre), sommets = décalages depuis le centre ; coordonnées de texture = coins de la fenêtre,
-  **jamais retournées** (le miroir est dans la géométrie). Les deux chemins de tri (clé et `zOrder`) l'acceptent.
+pour Alundra tant que rien ne l'appelle ; aucun chemin existant ne change (ni `SpriteBatch.fx`, ni les tuiles, ni les fonds, ni
+`DrawDirectly`). Déclencheur de risque : acceptation inter-composants (le même quad sert G2b-2, G2b-3, G2e).
+- **G2b1-R1 — Soumission** : une entrée `DrawPsxQuad` de `SpriteRendererComponent` (texture, fenêtre source en texels, coins haut-gauche,
+  haut-droit, bas-gauche, bas-droit en coordonnées du monde, y vers le haut, couleur, z, clé de tri facultative, mode PSX) ; les deux
+  chemins de tri (clé et `zOrder`) l'acceptent. Elle **n'utilise pas** le cœur du sprite (qui écrit le carré unité et une matrice
+  d'échelle) et assigne **chaque champ** de `SpriteDisplayData` : `TopLeft`, `TopRight`, `BottomLeft`, `BottomRight` (positions =
+  décalages des coins depuis leur centre, coordonnées de texture = coins de la fenêtre **jamais retournés**, le miroir est dans la
+  géométrie), `Color`, `Texture`, `WorldMatrix` (translation seule : le centre, z), `ScissorRectangle` (= `GraphicsDevice.ScissorRectangle`,
+  comme les entrées de sprite), `SortKey`, `HasSortKey`, `BlendMode`, `AlphaMin`/`AlphaMax` (neutres sans mode), `IgnoresDepth` = faux, et
+  les deux champs nouveaux `NoCull` = vrai et `PsxQuad` = vrai ; le cœur du sprite pose `NoCull` = faux et `PsxQuad` = faux (une entrée
+  réutilisée du réservoir ne garde rien).
 - **G2b1-R2 — Diagonale** : les coins sont écrits dans les cases TR, BR, BL, TL du lot, si bien que le tampon d'index existant
-  (`{0,1,2, 0,2,3}`, `SpriteRendererComponent.cs:150`) et `FillVertices` (`:485-513`) donnent les triangles (TR, BR, BL) et (TR, BL, TL) :
-  la diagonale TR-BL de la PS1 ; ni le tampon d'index ni `FillVertices` ne changent.
-- **G2b1-R3 — Élimination des faces** : un champ `NoCull` par entrée (posé par `DrawQuad`, **remis à faux** dans le cœur commun pour une
-  entrée réutilisée du réservoir, patron d'`IgnoresDepth`, ADR-0034) ; les séries contiguës d'entrées `NoCull` sont dessinées en
-  `RasterizerState.CullNone`, l'état d'avant restauré ; les autres entrées ne changent pas.
-- **G2b1-R4 — Mode PSX** : la règle des deux entrées d'ADR-0051 (texels opaques puis texels STP, même clé, même z), les deux avec les
-  mêmes coins.
-- **G2b1-R5 — Égalité** : une coordonnée de texture exactement sur une frontière de texel lit le texel supérieur (epsilon 1/4096 de texel,
-  dans le shader ou sur les coordonnées des sommets ; le plan d'exécution du moteur choisit et le teste).
-- **Tâches** : G2b1-0 prévision d'abord (annexe : valeurs attendues des cas synthétiques et des six échantillons réels S1 à S6 régénérées par
-  `redux.py` avec la règle corrigée, et les comptes de mutation : autre diagonale, sans demi-pixel, sans demi-texel, sans recul du miroir,
-  sans epsilon) ; G2b1-1 tests d'abord au niveau du lot, sans GPU (ordre des cases et coordonnées lues case par case, coordonnées non
-  retournées, `NoCull` posé et remis à faux sur une entrée réutilisée, deux entrées pour un mode, matrice de translation seule) ; rouges
-  avec l'API sans comportement ; G2b1-2 démo du moteur sur GPU (nouvelle scène à côté de `PsxSemiTransparencyDemo`, sonde du tampon
-  d'image, × 1, un pixel par unité du monde) : agrandissement × 4 (contrôle), miroir × 1,5, parallélogramme, trapèze (les deux diagonales
-  diffèrent), un quad `Mode1` et un `Mode0` (valeurs de G2a), un quad miroir visible (élimination), un quad aux coins 1:1 égal au chemin
-  rectangle au pixel près à × 1 et à × 3 ; sondes à plus de 1,5 px des bords et de la diagonale, égales à l'oracle ; image entière : au
-  plus 0,15 % de couleurs différentes de l'oracle ; une exécution rouge sur le code d'avant ; G2b1-3 docs (`docs/engine/sprite-psx-semi-transparency.md`,
-  la ligne « Quads with four free vertices are not covered » remplacée), ADR du moteur (numéro : O-E19-74), fichier de tâches du moteur
-  (`ai-agent/tasks/e19g2b-free-quads-tasks.md`) ; G2b1-4 vérification.
+  (`{0,1,2, 0,2,3}`, `SpriteRendererComponent.cs:150`) et `FillVertices` donnent les triangles (TR, BR, BL) et (TR, BL, TL) : la diagonale
+  TR-BL de la PS1 ; ni le tampon d'index ni `FillVertices` ne changent.
+- **G2b1-R3 — Élimination des faces** : les séries contiguës d'entrées `NoCull` sont dessinées en `RasterizerState.CullNone`, l'état
+  d'avant restauré ; les autres entrées ne changent pas.
+- **G2b1-R4 — Mode PSX** : la règle des deux entrées d'ADR-0051 (texels opaques puis texels STP, même clé, même z, même fenêtre alpha),
+  les deux avec les mêmes coins.
+- **G2b1-R5 — Décalages constants, sur le processeur** : `DrawPsxQuad` ajoute aux coordonnées de texture des quatre sommets 0,5 texel
+  **plus 1/4096 de texel** (l'égalité tranchée vers le haut) ; vérifiable au niveau du lot, sans GPU.
+- **G2b1-R6 — Shader** : un nouveau fichier `Content/Shaders/PsxQuad.fx` (et sa ligne dans `Content.mgcb`), utilisé **seulement** pour les
+  séries d'entrées `PsxQuad` : sommet = celui de `SpriteBatch.fx` plus un décalage d'un demi-pixel d'écran vers la droite et le bas
+  (paramètre posé au dessin depuis la fenêtre d'affichage) ; pixel = coordonnée de texture moins `(0,5 k − 0,5) (ddx(uv) + ddy(uv))` (k,
+  pixels d'écran par unité du monde, posé au dessin depuis la projection et la fenêtre d'affichage, entier par ADR-0048), puis la logique de
+  pixel de `SpriteBatch.fx` recopiée (fenêtre alpha brute, rejet `<= 0,01`). `SpriteBatch.fx` et son rechargement
+  (`TryReloadBuiltInShader`) ne changent pas.
+- **Fichiers** (liste fermée) : moteur `CasaEngine/Framework/Application/Components/SpriteRendererComponent.cs`,
+  `CasaEngine/Content/Shaders/PsxQuad.fx`, `CasaEngine/Content/Content.mgcb`, les fichiers de test nouveaux sous `CasaEngine.Tests/Rendering/`,
+  la démo nouvelle sous `CasaEngine.Demos/Demos/PsxSemiTransparency/` et son inscription (`CasaEngine.Demos/DemosGame.cs`),
+  `docs/engine/sprite-psx-semi-transparency.md`, l'ADR du moteur et l'index `docs/decisions/README.md`, `ai-agent/tasks/e19g2b-free-quads-tasks.md`
+  et sa ligne dans `ai-agent/README.md` ; parent : `docs/plan-e19-g2b-annexe/` (fichiers de prévision de G2b1-0), le pointeur du sous-module,
+  ce plan.
+- **G2b1-0 — Prévision d'abord** (scripts de l'annexe, commités avant tout code ; règle de la session ci-dessus en rationnels exacts, modèle
+  « B(k) », et `redux.py`, modèle « R ») : une texture d'adresse de 8 × 8 (chaque texel d'une couleur unique) et les cas : agrandissement × 4
+  (contrôle), miroir × 1,5, parallélogramme, trapèze (les deux diagonales diffèrent), un quad `Mode1` et un `Mode0` (valeurs de G2a), un quad
+  miroir (élimination), et **deux lignes 1:1** : (a) coins 1:1 par `DrawPsxQuad`, (b) le même par le chemin rectangle ; pour chaque cas, aux
+  facteurs × 1 et × 3 : l'image B(k) (texel et couleur par pixel), le nombre de pixels couverts (le dénominateur), à × 1 le nombre de
+  pixels où B diffère de R ; la **zone de bruit** (pixels dont le texel B est à moins de 2⁻¹⁰ texel d'une frontière, hors égalités exactes,
+  ou dont le coin haut-gauche est à moins de 2⁻¹⁰ px d'un bord) ; les **sondes** : pixels où B = R à × 1, à au moins 1/16 de texel de
+  toute frontière et à au moins 1/16 px de tout bord ; une **table des mutations** (autre diagonale, sans demi-pixel de géométrie, sans demi-
+  texel, sans recul du miroir, sans le terme de pente) avec, pour chacune, au moins une sonde qu'elle change à × 1 ou à × 3 ; l'égalité 1:1
+  (a) = (b) pixel pour pixel à × 1 et à × 3.
+- **G2b1-1 — Tests d'abord**, au niveau du lot, sans GPU : ordre des cases et coordonnées lues case par case (diagonale TR-BL), coordonnées
+  non retournées avec le recul du miroir, décalage constant 0,5 + 1/4096 texel (une mutation « sans epsilon » rend ce test rouge),
+  matrice de translation seule, deux entrées pour un mode, **une entrée réutilisée** amorcée avec `IgnoresDepth` = vrai, un ciseau non
+  par défaut, une fenêtre alpha non neutre et un mode de mélange, puis prise par `DrawPsxQuad` (chaque champ de G2b1-R1 à sa valeur) et
+  l'inverse (une entrée de quad réutilisée par un sprite : `NoCull` et `PsxQuad` faux) ; rouges avec `DrawPsxQuad` présent et vide.
+- **G2b1-2 — Démo sur GPU** (scène nouvelle à côté de `PsxSemiTransparencyDemo`, sonde du tampon d'image `BackBufferProbe`, à × 1 et à × 3
+  selon la résolution virtuelle d'E19.s) : chaque pixel couvert hors zone de bruit égal à B(k) (dénominateur : les pixels couverts du cas
+  hors zone de bruit ; seuil : 0 différence) ; chaque sonde égale à B ; la ligne 1:1 (a) égale à (b) pixel pour pixel aux deux facteurs ;
+  une **exécution rouge** avec `DrawPsxQuad` réduit à un dessin du rectangle englobant par le chemin d'aujourd'hui (les cas déformés
+  échouent).
+- **G2b1-3** docs (`docs/engine/sprite-psx-semi-transparency.md` : la ligne « Quads with four free vertices are not covered » remplacée par
+  le chemin du quad et sa règle), ADR du moteur (numéro : O-E19-74 ; la règle à la résolution de l'écran et son écart aux facteurs k > 1),
+  fichier de tâches ; **G2b1-4** vérification.
 - **Acceptation** : suites du moteur (`CasaEngine.Tests` buildé explicitement, `--blame-hang-timeout 300s`), aucun test existant ne bouge
   (`SpriteRendererComponent{BlendMode,Capacity,PsxSemiTransparency}Tests`, tests de tri et des couches : un test qui bouge est un arrêt) ;
-  démo égale à l'oracle ; `Alundra.Tests` en Release puis en Debug après la montée du pointeur, `cmp`, six traces (rien ne doit bouger).
+  démo égale à la prévision ; `Alundra.Tests` en Release puis en Debug après la montée du pointeur, `cmp`, six traces (rien ne doit bouger).
+  **Arrêts** : un fichier hors de la liste, un test existant qui bouge, une valeur de la démo qui contredit G2b1-0, un modèle B(k) dont la
+  ligne 1:1 (a) diffère de (b).
 
 ###### E19.g G2b-2 — Piste de coins de `.anim2d` (moteur) ⏳ (planifiée le 2026-10-06, après G2b-1)
 
@@ -7909,7 +7952,8 @@ Changement de format du moteur (ADR) ; inerte tant qu'aucun fichier ne porte la 
 réécrit à l'octet). Déclencheur de risque : format sérialisé.
 - **G2b2-R1 — Modèle** : `Animation2dTrackProperty.Corners` ajouté **en fin** d'énumération ; une image clé `time_seconds`, `enabled`,
   `top_left`, `top_right`, `bottom_left`, `bottom_right` (décalages en pixels, y vers le haut, depuis la valeur de la piste `Position` de la
-  partie, multipliés par l'échelle de l'entité comme la position) et `uv_offset` (décalage de la fenêtre source en texels) ; interpolation
+  partie, multipliés par l'échelle de l'entité comme la position) et `source_offset` (recul entier de la fenêtre source, 0 ou −1 par axe) ;
+  interpolation
   par pas ; liste JSON `corner_keyframes` écrite seulement si elle n'est pas vide ; avant la première clé et sur une clé `enabled = false`,
   la partie se dessine en rectangle comme aujourd'hui.
 - **G2b2-R2 — Sites qui doivent suivre** (pièges de perte silencieuse, `engine-notes.md` 2.3 et `data-verify.md` C6) : `Animation2dTrackData.Load`,
@@ -7917,8 +7961,8 @@ réécrit à l'octet). Déclencheur de risque : format sérialisé.
   (`HasCorners` remis à faux par `ApplyDefaults`), `Animation2dData.GetDurationSeconds`, `EditorAssetJsonSerializer.SaveAnimation2dTrackData`,
   l'instantané d'annulation de l'éditeur (`Animation2dAssetInspectorPanel.SerializeAnimationTrack`), `AnimationAssetDataConverter` et
   `AnimationClipAsset` (empreinte de la propriété `Rotation`) ; la piste n'est pas montrée dans la frise de l'éditeur (documenté).
-- **G2b2-R3 — Dessin** : `AnimatedSpriteComponent.DrawComposedAnimation` appelle `DrawQuad` pour une partie aux coins actifs (fenêtre source du
-  sprite décalée de `uv_offset`, coins = position de la partie + coins, mêmes clé, z et mode PSX qu'aujourd'hui) ; la rotation et les
+- **G2b2-R3 — Dessin** : `AnimatedSpriteComponent.DrawComposedAnimation` appelle `DrawPsxQuad` pour une partie aux coins actifs (fenêtre source du
+  sprite décalée de `source_offset`, coins = position de la partie + coins, mêmes clé, z et mode PSX qu'aujourd'hui) ; la rotation et les
   retournements de la partie sont ignorés pour cette image ; les autres parties ne changent pas.
 - **G2b2-R4 — Bornes** : `Animation2dBoundsCalculator` prend la boîte des coins d'une partie qui en a (sinon le rectangle d'aujourd'hui).
 - **Tâches** : tests d'abord (chargement et réécriture d'un fichier sans piste identiques à l'octet, aller-retour d'une piste, échantillonneur :
@@ -7933,14 +7977,14 @@ Parent : convertisseur, export, pointeur du moteur montés ensemble (un moteur d
 - **G2b3-R1 — Coins** : dans `SpriteWriter.ConvertAnimation`, une partie qui a au moins une image déformée (tout sauf un rectangle de la
   taille de la source, miroir compris) reçoit une piste `Corners` **ajoutée après toutes les pistes existantes** (aucun nom de piste existant
   ne change) ; clés aux mêmes temps que les clés `Sprite` de la partie, **seulement aux changements** d'état (coins actifs ou désactivés),
-  aucune clé pour l'image finale répétée d'une animation `Hold`/`Chain` (même état) ; coins = coins de la PS1 (y retourné) + (0,5 ; −0,5) −
-  `Position` de l'image ; `uv_offset` = (0,5 − mx ; 0,5 − my) avec mx = `X1 > X2`, my = `Y1 > Y3`. Les pistes d'aujourd'hui (`Sprite`,
+  aucune clé pour l'image finale répétée d'une animation `Hold`/`Chain` (même état) ; coins = coins bruts de la PS1 (y retourné) −
+  `Position` de l'image ; `source_offset` = (−mx ; −my) avec mx = `X1 > X2`, my = `Y1 > Y3` (la règle de l'extracteur). Les pistes d'aujourd'hui (`Sprite`,
   `Position`, `Visible`, retournements) ne changent pas ; aucun `.sprite`, `.texture` ni entrée du catalogue ne change.
 - **G2b3-R2 — Compteurs** : `Sprites.QuadsDeformed` 49 348, `Sprites.CornerTracks`, `Sprites.CornerKeyframes` (valeurs de la prévision).
 - **Tâches** : G2b3-0 prévision d'abord, régénérée avec la règle finale (l'annexe d'aujourd'hui, `predicted_corner_tracks_per_file.json`,
   date d'avant la règle corrigée) : exactement les 1923 `.anim2d` de `predicted_anim2d_changes.tsv` et `report.json` modifiés, 7697 identiques
   à l'octet ; par fichier, les pistes ajoutées (partie, temps, état, coins, décalage) ; les compteurs ; G2b3-1 tests d'abord (convertisseur :
-  les cas de `engine-notes.md` 3.2 recalculés avec le demi-pixel et le décalage ; une animation sans quad déformé n'a pas de piste ;
+  les cas de `engine-notes.md` 3.2 avec leur `source_offset` ; une animation sans quad déformé n'a pas de piste ;
   `Alundra.Tests` : garde sur l'export réel (une animation déformée connue porte sa piste, durée inchangée)) ; G2b3-2 montée du pointeur du
   moteur, export complet en place, manifeste avant/après égal à la prévision, chaque `.anim2d` modifié privé de ses pistes ajoutées égal à
   l'ancien, double export, suites, `cmp`, six traces ; docs (classe `SpriteWriter`, paragraphe « Per-frame quad corners » du `README.md`
@@ -7950,7 +7994,9 @@ Parent : convertisseur, export, pointeur du moteur montés ensemble (un moteur d
 
 **Retour arrière** (chaque tranche) : revert du sous-module et du pointeur ; pour G2b-3, export complet égal au manifeste « avant ».
 **Arrêts** : un test existant qui bouge, une valeur mesurée qui contredit l'oracle ou la prévision, un fichier hors de la liste.
-**Risques** : 30,8 % des références d'entités changent d'aspect (recette nécessaire) ; le drapeau « sale » des bornes d'entités ne suit que
+**Risques** : 30,8 % des références d'entités changent d'aspect (recette nécessaire) ; à k > 1, un quad déformé est plus lisse que la PS1
+agrandie (écart voulu, D-E19-92, écrit dans l'ADR du moteur) ; le shader suppose une caméra orthographique sans rotation (celle du jeu) ;
+le drapeau « sale » des bornes d'entités ne suit que
 le premier sprite visible (faiblesse d'avant, documentée, non corrigée ici) ; la frise de l'éditeur ne montre pas la piste.
 
 ##### 1.2o.6 E19.g G1/G3 — Export, réserve et opcodes des effets ⏳ (découverte du 2026-10-06 faite, deux surfaces contre-vérifiées ; l'auteur a tranché O-E19-72 et O-E19-73 : D-E19-96, D-E19-97 ; plans à écrire)
