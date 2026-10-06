@@ -52,3 +52,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0036 | The font3 glyph rectangles come from the glyph table of the binary | Proposed | 2026-10-05 |
 | ADR-0037 | The backdrop overlay tint draws with the PSX mode of the map, like the binary | Accepted | 2026-10-06 |
 | ADR-0038 | The trailing spaces of a centred last line are kept, guarded by empty | Accepted | 2026-10-06 |
+| ADR-0039 | The dialogue portraits are exported as sprites and linked from sprite-records.json | Accepted | 2026-10-06 |

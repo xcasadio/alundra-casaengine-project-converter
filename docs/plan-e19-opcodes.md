@@ -5548,7 +5548,7 @@ l'original, quasi absent du corpus) n'est pas reproduit ; découpage : f4a (expo
 nom, vol du portrait, oracle porté de `f4_model.py`, valeurs `values.json` S1 à S7), f4c (vue : ajouts à `TextBoxScreen.xaml`, test au
 pixel, rapport de manque).
 
-###### E19.f4a — Export des portraits de dialogue ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (avertissement, prévision de l'export), révisée ; relecture n°2 READY ; exécutée après E19.f3b)
+###### E19.f4a — Export des portraits de dialogue 🧪 (faite le 2026-10-06, vérification à faire ; planifiée le 2026-10-06 ; relecture n°1 REVISE (avertissement, prévision de l'export), révisée ; relecture n°2 READY ; exécutée après E19.f3b)
 
 **Règles.**
 - **F4A-R1 — Lecture** : `SpriteBankReader` lit le `DialoguePortrait` de l'enregistrement canonique de chaque banque (la première carte
@@ -5587,10 +5587,22 @@ pixel, rapport de manque).
   48 × 72 garde sa taille ; le champ omis dans `sprite-records.json` quand il est nul ; sur données réelles, les 25 identifiants égaux à
   `portraits_table.tsv` ; DLL : `SpriteRecordCatalog` lit le champ et tolère son absence. Rouges d'abord. Tests existants qui bougent :
   aucun (changement additif) ; toute assertion qui bouge est un arrêt.
-- ⏳ **F4A-2 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement la prévision de F4A-0 (chemins
+- ✅ **F4A-2 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement la prévision de F4A-0 (chemins
   ajoutés et modifiés, compteurs de `report.json`, tableau `Warnings` identique à l'octet) ; double export ; tests du convertisseur ;
   `Alundra.Tests` en Release puis en Debug, `cmp`, six traces.
-- ⏳ **F4A-3 — Vérification**.
+- 🧪 **F4A-3 — Vérification**.
+
+**Fait le 2026-10-06 (F4A-2)** : export complet en place (convertisseur en Release), manifestes SHA-1 avant/après (sans `Alundra.dll`, `Alundra.pdb`,
+`.casaeditor/`) : 23747 → 23771 fichiers, **27 changements, égaux à la prévision de F4A-0** (24 ajoutés `UI/Portraits/sprite_<signature>.sprite`, 3 modifiés :
+`Data/sprite-records.json`, `AssetInfos.json`, `report.json`, 0 supprimé). Preuves : `sprite-records.json` privé de ses 25 blocs `DialoguePortrait` (dernier champ de la
+fiche, 3 clés) a le SHA-1 d'avant (les 370 autres entrées sont donc identiques à l'octet) ; `AssetInfos.json` privé des 24 entrées `UI/Portraits/` a le SHA-1
+d'avant ; compteurs de `report.json` exactement ceux prévus (`Sprites.DialoguePortrait` 25, `Assets.Sprite` 6909 → 6933, `Verify.LoadableFilesOnDisk`,
+`Verify.Assets`, `Verify.Loaded`, `Verify.Loaded.sprite` + 24 (20028 → 20052, 22418 → 22442, 20028 → 20052, 7199 → 7223), `Metrics.OutputFileCount` 23750 → 23774),
+`Warnings` (6), `WarningsByCategory`, `Errors` et `Messages` identiques ; les 24 `.sprite` sans mode PSX. Vérification de l'export : PASSED (20052 chargés). **Double export** : seul
+`report.json` diffère. Un ré-export de référence avant tout code (HEAD `30a845c`) ne changeait que `report.json`. Suites : convertisseur 642/642 ; `Alundra.Tests` Release 2805/2805
+puis Debug 2805/2805 (le test sur l'export réel, rouge avant l'export, est vert) ; `cmp` de `Alundra.dll` Debug et du projet identique ; garde des six traces
+sans écart (les quatre traces réécrites par les tests sont restaurées, rien de commité). Documents : `docs/formats/sprite-records.md` (nouveau, et sa ligne dans
+`docs/formats/README.md`), ADR-0039 (étend ADR-0005). Aucun arrêt : aucune valeur mesurée ne contredit le plan ou son annexe.
 
 **Fait le 2026-10-06 (F4A-1)** : tests écrits d'abord (`SpriteWriterDialoguePortraitTests.cs`, 6 tests ; `SpriteRecordCatalogTests.cs`, 3 tests ajoutés), **rouges
 sur le code d'avant** avec des types vides pour compiler : convertisseur 5 rouges sur 6 (`Sprites.DialoguePortrait` absent, aucun avertissement alors que le bit
