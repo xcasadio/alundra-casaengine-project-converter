@@ -466,4 +466,183 @@ public sealed class AlundraEffectReservoirTests
         reservoir.Tick(frozen: false);
         Assert.Equal((0, 0, false), (second.CurrentAnimation, second.CurrentImageSetIndex, second.Destroying));
     }
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    // E19.g G3b (G3B-R2): the operations by record
+    // ---------------------------------------------------------------------------------------------------------------------
+
+    /// <summary>Two records of one effect (a loop animation 0, a destroy animation 1 of two ticks), neither flagged for the load spawn.</summary>
+    private static AlundraEffectReservoir TwoRecords(List<string>? warnings = null) => Reservoir(EffectGolden.Synthetic(new[]
+    {
+        EffectGolden.Anim("Loop", new[] { 5, 0 }),
+        EffectGolden.Anim("Destroy", new[] { 1, 1 }, new[] { 1, 2 }),
+    }, 3, EffectGolden.Record(0x80, 3, 4, 1, 0), EffectGolden.Record(0x80, 5, 6, 2, 0)), warnings);
+
+    [Fact]
+    public void FreeRecord_FreesEverySlotOfTheRecord_TheOneInItsDestroyTickToo_AndNoOtherRecord()
+    {
+        var reservoir = TwoRecords();
+        var a = reservoir.Spawn(0)!;
+        var b = reservoir.Spawn(1)!;
+        var c = reservoir.Spawn(0)!;
+        var dying = reservoir.Spawn(0)!;
+        dying.TargetAnimation = 1;
+        reservoir.Tick(frozen: false);
+        reservoir.Tick(frozen: false);
+        reservoir.Tick(frozen: false); // S = 2: the flag is set at the third update
+        Assert.True(dying.Active && dying.Destroying);
+
+        reservoir.FreeRecord(0);
+
+        Assert.Equal((false, true, false, false), (a.Active, b.Active, c.Active, dying.Active));
+        reservoir.FreeRecord(9); // outside the table: nothing
+        Assert.Equal(1, reservoir.ActiveCount);
+    }
+
+    [Fact]
+    public void SetAnimation_AimsEverySlotOfTheRecord_TheSwitchHappensAtTheNextUpdate()
+    {
+        var reservoir = TwoRecords();
+        var a = reservoir.Spawn(0)!;
+        var other = reservoir.Spawn(1)!;
+        reservoir.Tick(frozen: false);
+
+        reservoir.SetAnimation(0, 1);
+
+        Assert.Equal((1, 0, 0), (a.TargetAnimation, a.CurrentAnimation, other.TargetAnimation));
+        reservoir.Tick(frozen: false);
+        Assert.Equal((1, 1), (a.CurrentAnimation, a.CurrentImageSetIndex));
+        Assert.Equal(0, other.CurrentAnimation);
+    }
+
+    [Fact]
+    public void SetAnimation_OutsideTheTable_WarnsOnce_AndLeavesTheSlot()
+    {
+        var warnings = new List<string>();
+        var reservoir = TwoRecords(warnings);
+        var a = reservoir.Spawn(0)!;
+
+        reservoir.SetAnimation(0, 2); // the table holds two animations
+        reservoir.SetAnimation(0, 7);
+
+        Assert.Equal(0, a.TargetAnimation);
+        Assert.Single(warnings);
+        reservoir.Tick(frozen: false);
+        Assert.True(a.Active);
+        Assert.False(a.Destroying);
+    }
+
+    [Fact]
+    public void PlaceRecord_PutsTheOperandsInTheHighWord_AndAddsOneToZ_OnEverySlotOfTheRecordOnly()
+    {
+        var reservoir = TwoRecords();
+        var a = reservoir.Spawn(0)!;
+        var b = reservoir.Spawn(0)!;
+        var other = reservoir.Spawn(1)!;
+        var before = (other.X, other.Y, other.Z);
+
+        reservoir.PlaceRecord(0, 960, 160, 48);
+
+        Assert.Equal((62914560, 10485760, 3145729), (a.X, a.Y, a.Z));
+        Assert.Equal((a.X, a.Y, a.Z), (b.X, b.Y, b.Z));
+        Assert.Equal(before, (other.X, other.Y, other.Z));
+        reservoir.PlaceRecord(0, 0xFFFF, 0x8000, 0xFFFF); // the unsigned 16-bit operands wrap to 32 bits like the binary's shift
+        Assert.Equal((-65536, int.MinValue, -65535), (a.X, a.Y, a.Z));
+    }
+
+    [Fact]
+    public void AddPosition_AddsTheOperandsInTheHighWord_TwosComplement_NoPlusOne()
+    {
+        var reservoir = TwoRecords();
+        var a = reservoir.Spawn(0)!;
+        a.X = 468 << 16;
+        a.Y = 376 << 16;
+        a.Z = 64 << 16;
+
+        reservoir.AddPosition(0, 0xFFB8, 8, 0); // -72, +8, 0
+
+        Assert.Equal((396 << 16, 384 << 16, 64 << 16), (a.X, a.Y, a.Z));
+    }
+
+    [Fact]
+    public void SetForces_TakesTheSignedOperandsShiftedBy8_AndTheSlotMovesByThemEachTick()
+    {
+        var reservoir = TwoRecords();
+        var a = reservoir.Spawn(0)!;
+        var b = reservoir.Spawn(1)!;
+        reservoir.Tick(frozen: false);
+        var origin = (a.X, a.Y, a.Z);
+
+        reservoir.SetForces(0, 0xFFFF, 50, 0xFF00); // -1, 50, -256
+
+        Assert.Equal((-256, 12800, -65536), (a.ForceX, a.ForceY, a.ForceZ));
+        Assert.Equal((0, 0, 0), (b.ForceX, b.ForceY, b.ForceZ));
+        reservoir.Tick(frozen: false);
+        reservoir.Tick(frozen: false);
+        Assert.Equal((origin.X - 512, origin.Y + 25600, origin.Z - 131072), (a.X, a.Y, a.Z));
+    }
+
+    [Fact]
+    public void MoveRecordToEntity_PutsEverySlotAtTheEntityPlusTheOffsets_NoPlusOne()
+    {
+        var reservoir = TwoRecords();
+        var a = reservoir.Spawn(0)!;
+        var b = reservoir.Spawn(0)!;
+        var other = reservoir.Spawn(1)!;
+        var before = (other.X, other.Y, other.Z);
+
+        reservoir.MoveRecordToEntity(0, (100 << 16) + 77, (60 << 16) + 5, (8 << 16) + 1, 0xFFFD, 2, 1); // d = (-3, 2, 1)
+
+        Assert.Equal((97 << 16) + 77, a.X);
+        Assert.Equal((62 << 16) + 5, a.Y);
+        Assert.Equal((9 << 16) + 1, a.Z);
+        Assert.Equal((a.X, a.Y, a.Z), (b.X, b.Y, b.Z));
+        Assert.Equal(before, (other.X, other.Y, other.Z));
+    }
+
+    [Fact]
+    public void SpawnPlaced_PlacesOnlyTheSlotItCreated_TheOthersOfTheRecordStay()
+    {
+        var reservoir = TwoRecords();
+        var old = reservoir.Spawn(0)!;
+        var before = (old.X, old.Y, old.Z);
+
+        var created = reservoir.SpawnPlaced(0, 960, 160, 48);
+
+        Assert.NotNull(created);
+        Assert.NotSame(old, created);
+        Assert.Equal((62914560, 10485760, 3145729), (created!.X, created.Y, created.Z));
+        Assert.Equal(before, (old.X, old.Y, old.Z));
+        Assert.Equal(0, created.TargetAnimation); // the animation stays the record's
+        Assert.Null(reservoir.SpawnPlaced(9, 1, 2, 3)); // outside the table: nothing
+        Assert.Equal(2, reservoir.ActiveCount);
+    }
+
+    [Fact]
+    public void SpawnPlaced_OnAFullReservoir_CreatesNothing_AndMovesNothing()
+    {
+        var reservoir = TwoRecords();
+        for (var i = 0; i < AlundraEffectReservoir.SlotCount; i++)
+        {
+            Assert.NotNull(reservoir.Spawn(0));
+        }
+
+        var before = reservoir.ActiveSlots.Select(s => (s.X, s.Y, s.Z)).ToArray();
+        Assert.Null(reservoir.SpawnPlaced(0, 960, 160, 48));
+        Assert.Null(reservoir.SpawnAtEntity(0, 1, 2, 3, 4, 5, 6));
+        Assert.Equal(before, reservoir.ActiveSlots.Select(s => (s.X, s.Y, s.Z)).ToArray());
+    }
+
+    [Fact]
+    public void SpawnAtEntity_PlacesOnlyTheNewSlot_AtTheEntityPlusTheOffsets_NoPlusOne()
+    {
+        var reservoir = TwoRecords();
+        var old = reservoir.Spawn(1)!;
+        var before = (old.X, old.Y, old.Z);
+
+        var created = reservoir.SpawnAtEntity(1, 300 << 16, 200 << 16, 16 << 16, 0xFFFF, 0, 2);
+
+        Assert.Equal((299 << 16, 200 << 16, 18 << 16), (created!.X, created.Y, created.Z));
+        Assert.Equal(before, (old.X, old.Y, old.Z));
+    }
 }

@@ -168,6 +168,14 @@ public interface IEntityWorldContext
     bool SetBackgroundLayerMask(int mask) => false;
 
     /// <summary>
+    /// This world's effect stage (E19.g G3b, docs/plan-e19-opcodes.md section 1.2o.6) - backs opcodes 0x90 to 0x94 and 0xA0 to 0xA3 in
+    /// <see cref="AlundraEventProgramRunner.Dispatch"/>, which queue their operation on it. A default interface member, same "degraded, skip by size"
+    /// shape as <see cref="CameraSway"/> above, defaulting to null so every EXISTING implementer keeps compiling unmodified.
+    /// <see cref="AlundraWorldProxy"/> returns its own stage.
+    /// </summary>
+    AlundraEffectStage? EffectStage => null;
+
+    /// <summary>
     /// This session's dialogue-flow seam (E12.a, docs/plan-e12-dialogues.md) - backs opcodes
     /// 0x0D/0x39/0x44/0x50/0x51/0x5C in <see cref="AlundraEventProgramRunner.Dispatch"/>. A default
     /// interface member, same "degraded, skip" shape as <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/>/

@@ -23,7 +23,7 @@ namespace Alundra.Scripts;
 /// in the same order without update: the queue is empty when <see cref="RunFrame"/> returns.
 /// </para>
 /// </summary>
-internal sealed class AlundraEffectStage
+public sealed class AlundraEffectStage
 {
     private readonly List<PendingOperation> _queue = new();
     private AlundraEffectBank _bank = AlundraEffectBank.Empty;
@@ -99,6 +99,15 @@ internal sealed class AlundraEffectStage
     {
         _queue.Add(new PendingOperation(tick, rank, _sequence++, operation));
     }
+
+    /// <summary>Marks the operations emitted from now on with the logic <paramref name="tick"/> of the loop that runs the script and the <paramref name="rank"/> of its source (0 map events, 1 entities, 2 pending triggers).</summary>
+    public void BeginSource(int tick, int rank) => throw new NotImplementedException("E19.g G3b-2");
+
+    /// <summary>Ends the marking of <see cref="BeginSource"/>: what is emitted afterwards carries the tick 0 and the rank 0.</summary>
+    public void EndSource() => throw new NotImplementedException("E19.g G3b-2");
+
+    /// <summary>What the opcode handlers call: <see cref="Queue"/> with the mark of <see cref="BeginSource"/>.</summary>
+    public void Emit(Action<AlundraEffectReservoir> operation) => throw new NotImplementedException("E19.g G3b-2");
 
     /// <summary>
     /// One rendered frame of <paramref name="ticks"/> logic ticks: at each tick the operations marked with it are applied, then the reservoir is updated unless that tick is frozen

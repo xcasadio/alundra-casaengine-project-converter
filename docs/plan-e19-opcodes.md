@@ -8993,7 +8993,7 @@ DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (list
   tick par image. Trois cas de file : (a) une `0xA2` puis une boîte qui pose `0x40` au même tick : le créneau existe, figé et lisible
   (animation non avancée) avant la fermeture de la boîte ; (b) une `0x90` au tick qui lance un départ de warp : le créneau existe pendant
   le départ ; (c) la file est vide après chaque `Update`.
-- ⏳ **G3b-1 — Tests d'abord** (les valeurs ci-dessus, rouges sur le code d'aujourd'hui où les opcodes sont sautés) ; les lignes de la liste
+- ✅ **G3b-1 — Tests d'abord** (les valeurs ci-dessus, rouges sur le code d'aujourd'hui où les opcodes sont sautés) ; les lignes de la liste
   fermée, l'audit et les arcs **dans le même commit que les gestionnaires** (convention du plan) ; **G3b-2 — Code**, ADR ; **G3b-3 —
   Vérification**.
 **Fait le 2026-10-06 (G3b-0).** `docs/plan-e19-g1g3-annexe/g3b-golden.py` et `g3b-golden.tsv` (189 lignes, généré ; `--check` rejoue la génération)
@@ -9014,6 +9014,20 @@ par la seconde ; `0xA3` @2490 (enregistrement 1, effet global 13, clé 0x80) : u
 (3 et 5) de l'enregistrement 3 ; `0x90 [9]` (hors de la table) ne crée rien. Écart noté, sans conséquence : le plan écrit « `0x91 [0]` à la fin » de la 476 ; le seul
 `0x91` de cette carte est dans le bloc mort @497 (pc 512, aucun saut n'y mène), il n'est donc pas dans la liste fermée ni dans l'arc : l'effet de `0x91` est testé sur la
 391 et la réserve pleine (oracles S5 et « deux créneaux de l'enregistrement 3 »).
+
+**Fait le 2026-10-06 (G3b-1, tests d'abord).** `Alundra.Tests/AlundraEffectOpcodeTests.cs` (nouveau, 35 cas dont ceux des théories) et dix tests par
+opération dans `AlundraEffectReservoirTests.cs` (réserve pleine comprise) ; surface ajoutée pour qu'ils compilent, corps levant `NotImplementedException`
+(comme G3a) : sur `AlundraEffectReservoir` `FreeRecord`, `SetAnimation`, `PlaceRecord` (`0x93`, z + 1), `AddPosition`, `SetForces`, `MoveRecordToEntity`, `SpawnPlaced`
+(`0xA2`), `SpawnAtEntity` (`0xA3`) ; sur `AlundraEffectStage` `BeginSource(tick, rang)`, `EndSource()` et `Emit(opération)` (la file avec la marque courante) ; sur
+`IEntityWorldContext` le membre par défaut `EffectStage` (nul). `AlundraEffectStage` devient publique (un membre d'interface publique la porte). Les tests passent les
+vrais opérandes des vrais programmes (octets de l'export lus à leur pc) dans le vrai interpréteur et comparent aux lignes de `g3b-golden.tsv` : 476 (aura, vie, bascule,
+suite des 12 `0x92`, créneau en destruction), 391 (premier instant, forces, écart sur N = 100 ticks, recoupement S1), 162, 135 (`0xA0`, `0xA3` avec et sans entité), 10
+(rocher), la réserve pleine, `0x90` hors de la table, `0x91` de deux créneaux, `0xA1`, animation hors de la table (un avertissement, opération ignorée), sans scène
+d'effets (chaque opcode se dégrade et avance de sa taille), la file (marque de tick, rang, image de deux ticks, tick gelé, départ de warp, vide après chaque `Update`).
+**Rouges d'abord** sur le code d'aujourd'hui (opcodes sautés par leur taille, corps levant `NotImplementedException`) : 45 échecs sur 59 cas des deux classes ;
+les 14 verts sont les 13 tests de G3a de la réserve et le garde-fou `TheGoldenSites_AreTheBytesOfTheRealPrograms` (les 99 lignes `OP` égales aux octets de l'export) ;
+les cas à 223 et 224 mises à jour de la bascule de la 476 exigent le créneau (son indice d'enregistrement) avant l'opcode, sans quoi ils passeraient à vide. Les lignes de la liste
+fermée, l'audit, les arcs et les gestionnaires viennent dans le même commit (G3b-2, convention du plan).
 
 - **Acceptation** : rouges puis verts ; les ensembles de sauts autorisés des arcs nommés vidés de leurs opcodes d'effets et remplacés par
   les assertions de la réserve ; aucune autre assertion ne bouge (A10/A11 sur 165/164 ne bougent pas) ; `Alundra.Tests` en Release puis
