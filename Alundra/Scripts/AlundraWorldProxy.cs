@@ -582,6 +582,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     internal readonly AlundraBackdropStage _backdropStage = new();
 
+    /// <summary>E19.g G3a (docs/plan-e19-opcodes.md, section 1.2o.6): the effect reservoir of this world - bank, load-time spawn and per-tick loop. Built in this field initializer like
+    /// <see cref="_backdropStage"/> (trap 9 above).</summary>
+    internal readonly AlundraEffectStage _effectStage = new();
+
     /// <summary>Bug fix (see <see cref="AlundraLogicClock"/>'s own class doc for the full diagnosis): this
     /// world's ONE shared 50 Hz logic clock - every spawned entity's own <see cref="AlundraEntityScriptProxy.Update"/>
     /// and this proxy's own <see cref="Update"/> read <see cref="LogicTicksThisFrame"/> off this SAME

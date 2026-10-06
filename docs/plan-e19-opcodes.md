@@ -8866,7 +8866,7 @@ Déclencheur de risque : modèle d'état nouveau tiré du binaire (relecture et 
   la 163 (animation 1, dessinés aux ticks 0 à 10, libérés au tick 11, D-E19-55) ; 391 (5 créneaux à l'entrée, enregistrements 0 à 4 en
   (996, 504, 0), (996, 600, 0), (996, 696, 0), (996, 792, 0), (1020, 792, 0), animations 0, 1, 2, 3, 3) ; 162 (7 créneaux à l'entrée) ;
   les 6 enregistrements à zone restreinte.
-- **G3a-1 — Tests d'abord**, rouges sur des types vides : la réserve contre `g3a-golden.tsv` (chaque animation jouée jusqu'à sa
+- ✅ **G3a-1 — Tests d'abord**, rouges sur des types vides : la réserve contre `g3a-golden.tsv` (chaque animation jouée jusqu'à sa
   libération ou deux périodes) ; l'apparition sur les 157 cartes du vrai export contre la table ; la 129e création sans effet ; libérer
   le créneau 5 puis créer reprend le 5 ; la porte `0x48` (rien ne bouge, créneau gardé) ; 0 tick pendant un départ de warp ; les 6 zones
   restreintes par un montage synthétique (tuile dedans, tuile dehors) ; le chargeur (compagnon absent, illisible, global en cache) ;
@@ -8889,6 +8889,26 @@ créneaux), scénarios `S391` (5 créneaux, enregistrements 0 à 4, animations 0
 bascule d'animation avant 223 mises à jour (219 à 222) ranime, à 223 le créneau est libéré). Écart noté, sans conséquence : le premier
 ensemble de `m161:0:3` compte 25 images pour le binaire et 2 dans l'export (les 23 images dégénérées de la 161, retirées par G1) : le
 test attend la valeur de l'export pour cette ligne (dernière colonne).
+
+**Fait le 2026-10-06 (G3a-1, tests d'abord).** Trois fichiers de tests (`AlundraEffectReservoirTests`, `AlundraEffectBankLoaderTests`,
+`AlundraEffectStageWiringTests`) écrits contre les trois types de la liste fermée réduits à leur surface (les données du chargeur sont
+réelles, les corps de `AlundraEffectBank`, `AlundraEffectBankLoader`, `AlundraEffectReservoir` et `AlundraEffectStage` lèvent
+`NotImplementedException`) et le champ `_effectStage` du mandataire (sans câblage) : **rouges 37 sur 37** (`dotnet test --no-build
+--filter`, Release : 13 de la réserve, 7 du chargeur, 17 du câblage). Couverture : les 363 animations contre `g3a-golden.tsv` (image
+courante à chaque tick, dernier tick dessiné, libération à S + 1, deux périodes des boucles) ; l'apparition sur les 483 cartes du vrai
+export (245 créneaux, 79 cartes, position, banque, animation de chaque enregistrement) ; les 6 zones restreintes (tuile dedans aux deux
+coins, dehors d'un cran de chaque côté) ; la 129e création sans effet et sans journal, le créneau 5 libéré puis repris ; la porte
+(rien ne bouge, créneau gardé, un créneau détruit n'est pas libéré tant que la porte tient) ; le mode 0 et la clé de profondeur
+(`(y & 0xFFFF0000) + (z >> 16) + (IDSV << 16)`) ; animation, effet ou fin introuvables (un avertissement, destruction) ; l'aura de la 476
+(drapeau et dernier tick dessiné 222, libérée au 223, profondeur 13 893 680, bascule avant 223 mises à jour : 5 valeurs) ; le
+chargeur (pas de nom ni d'identifiant de carte, index absent, compagnon absent sans avertissement, illisible : un avertissement,
+global en cache) ; la pile : rais de la 163 libérés au tick 11 (pas 10 ni 12), 391 (5 créneaux, création en file avant le premier
+`Update` : 6 créneaux, la nouvelle au 5), une image à deux ticks égale deux images d'un tick, un tick gelé dans une image, la file
+(tick, rang, émission ; vide en fin d'image ; image sans tick), sans héros (tuile (0, 0), un avertissement) ; dans le mandataire : la 391
+au premier `Update`, la tuile d'arrivée relevée à la création du héros (carte 109, enregistrements 4, 5 et 6, dedans puis dehors, sans
+et avec arrivée), les effets sans héros, la porte `0x48` seule (`0x08`, `0x40` figent ; `0x01`, `0x07`, `0x37`, `0x80` non), une image de
+deux ticks et une image sans tick, un départ de warp (0 tick, la file appliquée). Aucun test existant ni fichier de test existant
+modifié.
 
 - **Acceptation** : prévision commitée avant le code ; tests rouges puis verts ; aucun test existant ne bouge (rien ne lit la réserve) ;
   `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (identiques : les effets n'ont aucun effet de jeu). **Arrêts** : une valeur
