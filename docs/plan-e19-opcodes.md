@@ -5573,7 +5573,7 @@ pixel, rapport de manque).
   le décrit aujourd'hui) ; ADR du parent (prochain numéro libre, 0039 aujourd'hui, à revérifier) qui étend ADR-0005.
 
 **Tâches.**
-- **F4A-0 — Prévision d'abord** (script hors du dépôt, depuis `data-extracted/`, `portraits_table.tsv` et le `report.json` de l'export du
+- ✅ **F4A-0 — Prévision d'abord** (script hors du dépôt, depuis `data-extracted/`, `portraits_table.tsv` et le `report.json` de l'export du
   moment, celui d'après E19.f3b) : un fichier d'annexe `docs/plan-e19-f4-annexe/f4a-export-prediction.md`, commité avant F4A-1, qui liste :
   **ajoutés** exactement les 24 `UI/Portraits/sprite_<signature>.sprite` (identifiants de `portraits_table.tsv`, banque 15 exclue) ;
   **modifiés** exactement `Data/sprite-records.json`, `AssetInfos.json` et `report.json` ; **supprimés** aucun ; dans `sprite-records.json`,
@@ -5581,16 +5581,22 @@ pixel, rapport de manque).
   entrées identiques) ; dans `report.json`, chaque compteur qui change avec sa valeur prévue : `Sprites.DialoguePortrait` 25 (nouveau),
   `Assets.Sprite` + 24, `Verify.LoadableFilesOnDisk` + 24, `Verify.Assets` + 24, `Verify.Loaded` + 24, `Verify.Loaded.sprite` + 24,
   `Metrics.OutputFileCount` + 24 ; `Warnings`, `WarningsByCategory`, `Errors` et tous les autres compteurs inchangés.
-- **F4A-1 — Tests d'abord** (convertisseur), au patron de `SpriteWriterInventoryPortraitTests.cs` : un enregistrement à portrait →
+- ⏳ **F4A-1 — Tests d'abord** (convertisseur), au patron de `SpriteWriterInventoryPortraitTests.cs` : un enregistrement à portrait →
   identifiant, dossier, champ ; bit `0x80` posé et champ absent → exactement un avertissement ; bit éteint et champ absent → aucun
   avertissement, aucun fichier, aucun champ ; la banque 15 réutilisée (aucun fichier dans `UI/Portraits/` pour elle) ; un portrait de
   48 × 72 garde sa taille ; le champ omis dans `sprite-records.json` quand il est nul ; sur données réelles, les 25 identifiants égaux à
   `portraits_table.tsv` ; DLL : `SpriteRecordCatalog` lit le champ et tolère son absence. Rouges d'abord. Tests existants qui bougent :
   aucun (changement additif) ; toute assertion qui bouge est un arrêt.
-- **F4A-2 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement la prévision de F4A-0 (chemins
+- ⏳ **F4A-2 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place : exactement la prévision de F4A-0 (chemins
   ajoutés et modifiés, compteurs de `report.json`, tableau `Warnings` identique à l'octet) ; double export ; tests du convertisseur ;
   `Alundra.Tests` en Release puis en Debug, `cmp`, six traces.
-- **F4A-3 — Vérification**.
+- ⏳ **F4A-3 — Vérification**.
+
+**Fait le 2026-10-06 (F4A-0)** : prévision écrite et commitée avant tout code, `docs/plan-e19-f4-annexe/f4a-export-prediction.md`, calculée par
+`docs/plan-e19-f4-annexe/f4a-predict.py` (uuid5 indépendant, 25 identifiants égaux à `portraits_table.tsv`, 25 identifiants de préfab retrouvés) ; un
+ré-export de référence en place à `30a845c` ne change que `report.json` (durées) : l'arbre est bien l'export de HEAD. Prévu : 24 ajoutés dans
+`UI/Portraits/`, 3 modifiés (`Data/sprite-records.json`, `AssetInfos.json`, `report.json`), 0 supprimé, `Sprites.DialoguePortrait` 25, `Assets.Sprite` 6909 → 6933,
+`Verify.Loaded.sprite` 7199 → 7223, `Metrics.OutputFileCount` 23750 → 23774.
 
 **Acceptation** : tests rouges d'abord puis verts ; export égal à la prévision ; double export ; suites, `cmp`, traces. **Retour arrière** :
 revert, export complet égal au manifeste « avant ». **Risques** : 13 feuilles distinctes portent les portraits : le premier locuteur de
