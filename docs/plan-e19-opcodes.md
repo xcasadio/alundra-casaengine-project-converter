@@ -8286,7 +8286,26 @@ quads quelconques).
 - Rendu à la résolution de l'écran (ADR-0048 du moteur gardée) : exact à × 1, 1:1 égal au chemin rectangle à tout facteur, déformés plus
   lisses à k > 1.
 
-###### E19.g G2b-1 — Quad libre du moteur ⏳ (planifiée le 2026-10-06)
+###### E19.g G2b-1 — Quad libre du moteur 🚧 (planifiée le 2026-10-06 ; exécution commencée le 2026-10-06, mode AUTO accordé par l'auteur)
+
+**État d'exécution** (2026-10-06) : la branche du moteur `chantier/e19g2b-free-quads` part, par la règle R-BR (1), du commit que le parent
+épingle à l'exécution, `face4b1e` (pointe de `chantier/e19g2d-adr-renumber`), et non de `33324030` (ancienne formulation de ce plan) ;
+numéro de l'ADR du moteur par R-BR (2) : le plus grand numéro trouvé est 0067 (`main` et `chantier/audio-modern`), donc **0068**, à revérifier
+juste avant le commit.
+- ✅ **G2b1-0** prévision (annexe `docs/plan-e19-g2b-annexe/` : `g2b1_predict.py`, `g2b1_predictions.json`, `g2b1-predictions.md`).
+- ⏳ **G2b1-1** tests d'abord · ⏳ **G2b1-2** code et démo sur GPU · ⏳ **G2b1-3** docs, ADR, fichier de tâches · ⏳ **G2b1-4** pointeur et suites.
+
+**G2b1-0 faite le 2026-10-06** : `g2b1_predict.py` (modèle exact B(k) en rationnels, `redux.py` pour R, sans virgule flottante) ; texture
+d'adresse de 16 × 16 (couleur unique par texel, STP aux texels où (i + j) % 4 == 1, texel (15, 15) = fond) ; 14 cas (huit quads : agrandissement
+× 4, miroir × 1,5, parallélogramme, trapèze, `Mode1`, `Mode0`, miroir X et miroir Y à 1:1, plus les trois paires de lignes 1:1 (a) quad et
+(b) chemin rectangle) aux facteurs × 1 et × 3. Valeurs mesurées : dénominateurs (pixels couverts hors zone de bruit, la zone de bruit est
+vide pour tous les cas : géométrie entière) agrandissement × 4 1024 / 9216, miroir × 1,5 144 / 1296, parallélogramme 576 / 5184, trapèze
+616 / 5592, `Mode1` et `Mode0` 144 / 1296, miroirs 1:1 64 / 576 ; plus petite distance à une frontière de texel parmi les pixels gardés 0,0111
+(trapèze × 3), nulle part dans [2⁻¹⁰, 2⁻⁸) : la mutation « texel choisi par l'échantillonneur » n'a donc aucune sonde (fermée par construction,
+le shader choisit le texel) ; B contre R à × 1 : 0 pixel de différence partout sauf le parallélogramme, 24 pixels sur 576 (pentes 16.16
+tronquées de R, comme l'annexe l'attendait) ; mutations : chacune est vue par au moins une sonde (autre diagonale : trapèze 298 sondes à × 1 ;
+sans demi-pixel de géométrie : 68 sondes (miroir × 1,5, × 1) ; sans demi-texel ; sans recul du miroir : 110 (miroir × 1,5, × 1) ; sans terme de
+pente : 1320 (agrandissement × 4, × 3)) ; égalité 1:1 (a) = (b) pixel pour pixel aux facteurs × 1 et × 3 pour les trois paires.
 
 Moteur seul (sous-module, branche `chantier/e19g2b-free-quads` empilée sur la pointe de G2d `33324030`, que le parent épingle) ; inerte
 pour Alundra tant que rien ne l'appelle ; aucun chemin existant ne change (ni `SpriteBatch.fx`, ni les tuiles, ni les fonds, ni
