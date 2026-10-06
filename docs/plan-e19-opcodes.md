@@ -5657,7 +5657,7 @@ valeur qui contredit les grilles, un test existant qui bouge en dehors de `:613`
 hors de la liste fermée ci-dessus. **Recette F3C-4** : livre
 de sauvegarde, répondre tard à la question « sauvegarder ? » (OUI puis NON).
 
-###### E19.f3d — Âge du mot de manette de l'écran de sauvegarde (D-E19-99, O-E19-75) ⏳ (découverte de nuit du 2026-10-06 faite et contre-vérifiée ; planifiée le 2026-10-06 ; relecture n°1 REVISE (portée du compte des rouges), révisée ; relecture n°2 READY (deux angles))
+###### E19.f3d — Âge du mot de manette de l'écran de sauvegarde (D-E19-99, O-E19-75) 🧪 (faite le 2026-10-06 (`060138e` tests, `0e50b0f` code et ADR-0047), vérification à faire ; découverte de nuit du 2026-10-06 faite et contre-vérifiée ; planifiée le 2026-10-06 ; relecture n°1 REVISE (portée du compte des rouges), révisée ; relecture n°2 READY (deux angles))
 
 DLL seule. Déclencheur de risque : temps de réaction de l'écran de sauvegarde (relecture et vérificateur neuf). Faits et valeurs :
 `docs/plan-e19-pad-age-annexe/` (`notes.md`, `patch-proposal.diff.txt`, `probe-tests.cs.txt` ; `verify/verify.md` l'emporte : fins de
@@ -5683,7 +5683,7 @@ dialogue lit déjà le tick d'avant (`_choicePadOfTick[tick - 1]`, `_choicePadOf
   `docs/plan-e19-f3-annexe/census-notes.md`, la nouvelle ADR du parent et son index. Fins de ligne : CRLF pour le mandataire, le
   directeur, `AlundraSaveScreenTickOrderTests.cs`, `docs/plan-e19-f3-annexe/census-notes.md`, `docs/decisions/README.md` et ce plan ; LF
   pour le test de bout en bout, ADR-0040 et les notes de `plan-e19-save-order-annexe` ; édition à l'octet, jamais `sed -i`.
-- ⏳ **F3D-1 — Tests d'abord** (rouges sur le code d'aujourd'hui ; valeurs mesurées par le vrai mandataire, `probe-tests.cs.txt`) :
+- ✅ **F3D-1 — Tests d'abord** (rouges sur le code d'aujourd'hui ; valeurs mesurées par le vrai mandataire, `probe-tests.cs.txt`) :
   `TheCross_IsReadByTheScreenOneTickAfterItsPress` : (1, faux), (2, vrai), (3, vrai) ;
   `ThePadAnswer_IsTakenFromTheNineteenthSampleAfterTheOpeningPress` : OUI à 18 → (−1, faux), OUI à 19 → (38, vrai), OUI à 20 → (39, vrai),
   NON à 18 → (38, vrai) (la Droite est perdue), NON à 19 → (39, faux), NON à 20 → (40, faux) ;
@@ -5695,13 +5695,19 @@ dialogue lit déjà le tick d'avant (`_choicePadOfTick[tick - 1]`, `_choicePadOf
   et `AlundraSaveBookEndToEndTests`) : **18 rouges sur 34** (les 12 cases de la grille ; `TheCross` à 1 tick par image ; OUI à 18 et
   NON à 18 ; `TheSquareOfTheWait` à 1 et 2 ; `TheDownOfThePicker` à 1), puis 34 sur 34 avec le correctif (le 96 de l'annexe compte
   cinq classes de sauvegarde filtrées par la découverte, pas ces deux fichiers).
-- ⏳ **F3D-2 — Code**, ADR du parent (prochain numéro libre, revérifié avant le commit), documents.
+- ✅ **F3D-2 — Code**, ADR du parent (prochain numéro libre, revérifié avant le commit), documents.
 - ⏳ **F3D-3 — Vérification** par un vérificateur neuf.
 - **Acceptation** : 18 rouges sur 34 d'abord, puis 34 sur 34 ; quatre mutants rougissent chacun **au moins un** test des deux fichiers
   (le tick 0 qui lit `default` ; les ticks suivants qui lisent leur propre tick ; le mot pressé vieilli seul ; le mot par intervalle
   vieilli seul ; les comptes 22, 8, 16 et 2 de la découverte portent sur ses cinq classes et ne sont pas des valeurs attendues) ;
   `Alundra.Tests` en Release puis en Debug (le total d'avant la tranche plus 14), `cmp`, six traces identiques. **Arrêts** : un
   test hors de la liste qui bouge, une valeur qui contredit l'annexe, un fichier hors de la liste. **Retour arrière** : revert.
+**Fait le 2026-10-06 (F3D-1, F3D-2).** `060138e` (tests) puis `0e50b0f` (code, commentaires, ADR-0047, annotations d'ADR-0040, de
+`plan-e19-save-order-annexe/notes.md` et de `plan-e19-f3-annexe/census-notes.md`, ligne de l'index). Mesures : sur les deux fichiers de
+tests, **18 rouges sur 34** sur le code d'avant (les 12 cases de la grille, `TheCross` à 1 tick par image, OUI à 18 et NON à 18,
+`TheSquareOfTheWait` à 1 et 2, `TheDownOfThePicker` à 1), puis 34 sur 34 ; mutants : 22, 8, 16 et 2 rouges (chacun au moins un) ;
+`Alundra.Tests` **3051** en Release puis en Debug, `cmp` de la DLL égal, traces : seules les quatre traces du héros changent, en fins
+de ligne seulement (restaurées). ADR-0047 (plus grand numéro de toutes les branches locales : 0046, revérifié avant le commit).
 - **Recette F3D-4** (auteur) : le livre de sauvegarde de bout en bout ; l'écran réagit un tick plus tard (20 ms à un tick par image) à
   Croix, Haut, Bas et Carré ; une seconde Croix dans les 18 échantillons qui suivent l'appui d'ouverture est perdue, comme dans le binaire.
 
@@ -9199,7 +9205,7 @@ moteur et preuve au pixel (relecture et vérificateur neuf). Faits : `docs/plan-
   **Arrêts** : un test existant qui bouge, un fichier hors de la liste, une collision d'ADR, un pixel différent. **Retour arrière** :
   revert des commits du moteur et du pointeur.
 
-###### E19.g G3c — Effets poussés et dessinés (DLL), preuve au pixel ⏳ (découverte de nuit du 2026-10-06 faite et contre-vérifiée ; planifiée le 2026-10-06, après G2e ; relecture n°1 REVISE (coordonnée de l'aura, ordre du harnais), révisée ; relecture n°2 REVISE (tolérance des pixels mêlés, valeur attendue du test du mandataire), disposition FIX ; nouvelle époque, relecture de clôture à faire)
+###### E19.g G3c — Effets poussés et dessinés (DLL), preuve au pixel ⚠️ (découverte de nuit du 2026-10-06 faite et contre-vérifiée ; planifiée le 2026-10-06, après G2e ; relecture n°1 REVISE (coordonnée de l'aura, ordre du harnais), révisée ; relecture n°2 REVISE (tolérance des pixels mêlés, valeur attendue du test du mandataire), disposition FIX ; nouvelle époque, relecture de clôture REVISE (la condition d'arrêt de G3c-3 exigeait des empreintes exactes) : **en pause** (règle des relectures : pas de nouveau tour sans l'auteur) ; correctif écrit ci-dessous, une nouvelle relecture sur décision de l'auteur)
 
 DLL seule ; compile contre le pointeur du moteur monté par G2e (livraison verrouillée comme G2c) ; aucun export (G1 est livré).
 Déclencheur de risque : rendu de jeu nouveau et preuve au pixel (relecture et vérificateur neuf). Faits : `docs/plan-e19-g3c-annexe/discovery/`
@@ -9224,6 +9230,10 @@ Déclencheur de risque : rendu de jeu nouveau et preuve au pixel (relecture et v
   la DLL est stable par index de créneau ; cas visible, 391 créneaux 3 et 4 (même clé, images opaques de 48 × 39 à 24 px) : binaire, le 3
   dessus ; DLL, le 4 dessus ; à voir en recette. Un effet et une entité de mêmes passe, couche, élévation et coordonnée se départagent
   par leurs décalages locaux et identifiants stables : ordre entre types non fixé par le binaire (même tri instable), écart accepté.
+  Deux créneaux de même clé à plusieurs images sont dessinés image par image entrelacés (le décalage local passe avant l'identifiant
+  stable : créneau 3 image 1, créneau 4 image 1, créneau 3 image 0, créneau 4 image 0), quand le binaire garde les images d'un élément
+  ensemble dans sa chaîne : même écart des clés égales, sans effet sur les scènes de preuve (les créneaux 3 et 4 de la 391 ont une
+  image chacun).
 - **G3C-R5 — Poussée** : `AlundraEffectStage.AttachService(service)` (**publique**) avant `Load` (à côté de l'attache du service des
   fonds) ; `Load` fait `Clear` puis `SetSheets(carte, globale)` ; `AttachService` fait de même aussitôt si une banque est déjà chargée
   (l'ordre d'attache ne change rien) ; les identifiants du compagnon (chaînes) deviennent des `Guid`, `Guid.Empty` pour un nul ou un
@@ -9265,8 +9275,11 @@ Déclencheur de risque : rendu de jeu nouveau et preuve au pixel (relecture et v
   d'après-build écrit dans `alundra-project/`) : un `CasaEngineGame` sur le vrai export, caméra `Zoom = k`, `Target = (scrollX + w / 2k,
   −(scrollY + h / 2k))`, `AttachService`, chargeur de la banque, `Load`, `SpawnPlaced`/`Create`/animation, `RunFrame`, `PushFrame`, capture
   `GetBackBufferData` en processus (format de vidage de `PsxFreeQuadDemo`), image de 320k × 240k ; chaque scène à × 1 et × 3 comparée à
-  G3c-0 par `docs/plan-e19-g3c-annexe/g3c_compare.py` (même règle que `g2e_compare.py`). Si le harnais ne se construit pas ou ne
-  redonne pas les empreintes de la 163 et de la 391 (scènes sans ambiguïté), **arrêt de G3c-3** : rapport, pas de réglage au jugé. Le harnais ne
+  G3c-0 par `docs/plan-e19-g3c-annexe/g3c_compare.py` (même règle que `g2e_compare.py`). Si le harnais ne se construit pas, ou si
+  `g3c_compare.py` ne sort pas 0 sur les captures de la 163 et de la 391 (scènes sans ambiguïté ; pixels opaques exacts, pixels mêlés
+  d'un mode PSX à ±1 par canal, la règle de l'acceptation ; jamais l'égalité de l'empreinte SHA-1 d'une capture, la 163 étant toute
+  en `Mode1`), **arrêt de G3c-3** : rapport, pas de réglage au jugé. Les recoupements par empreinte de G3c-0 comparent modèle à
+  modèle et restent. Le harnais ne
   couvre ni le câblage du mandataire (le test du mandataire avec un vrai service le fait) ni la caméra à résolution virtuelle du jeu
   (G2b-4 et G4).
 - ⏳ **G3c-4 — Vérification** par un vérificateur neuf.
@@ -9285,6 +9298,15 @@ Déclencheur de risque : rendu de jeu nouveau et preuve au pixel (relecture et v
   comparateur `g3c_compare.py` nommé, taille de capture 320k × 240k, arrêt de G3c-3 si le harnais ne redonne pas les empreintes de la
   163 et de la 391, analyse des identifiants recopiée (la méthode des fonds est privée). Nouvelle époque ; une seule relecture de
   clôture.
+
+- **Relecture de clôture** (2026-10-06) : **REVISE**, un bloquant (P2) : la condition d'arrêt de G3c-3 demandait que le harnais
+  « redonne les empreintes » de la 163 et de la 391, c'est-à-dire l'égalité au bit de l'image, alors que l'acceptation admet ±1 par
+  canal sur les pixels mêlés et que la 163 n'a que des quads `Mode1`. Correctif écrit (la condition d'arrêt suit la règle de
+  `g3c_compare.py`) ; avis repris : l'entrelacement des images de deux créneaux de même clé ajouté à l'écart consigné ; pour le test
+  du mandataire sur la 391, aucun montage prêt (`BuildRealMap389World` est figé sur la 389, `AlundraWorldProxyGlobalFreezeTests.cs`) :
+  précédents `BuildRealMap390World` (`AlundraWarpArrivalTests.cs`) et `ArcRun` (`AlundraArcSupport.cs`), `EngineEnvironment.ProjectPath`
+  posé, caméra non résolue (aucune élimination). **En pause** : une nouvelle relecture seulement sur décision de l'auteur. G2e et
+  G3d, READY, ne dépendent pas de G3c et continuent.
 
 ###### E19.g G3d — Créateurs natifs et vase de vie `0x82 0x53` (DLL) ⏳ (découverte de nuit du 2026-10-06 faite et contre-vérifiée ; O-E19-39 établi ; planifiée le 2026-10-06 ; relecture n°1 : READY (faits), REVISE (exécution : contrôle de la prévision), révisée ; relecture n°2 READY (deux angles))
 
@@ -11216,7 +11238,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-72 | **Tranché le 2026-10-06 (D-E19-96 : interface des créateurs et `0x82 0x53`).** **Portée de D-E19-54 (effets natifs)** (découverte d'E19.g G1/G3, 2026-10-06) : D-E19-54 repose sur une lecture fausse : il n'existe aucun effet de warp sur un changement de carte (les « effets de warp » sont des effets d'objets, bombes et magies, E14) ; les scripts n'atteignent que `0x82 0x53` (vase de vie, 8 sites hors de la chaîne ; il change aussi la vie, O-E19-39) et `0xBB` (E18). **Choix** : (A) E19.g livre l'interface des créateurs natifs et l'effet de `0x82 0x53` (avec sa vie max + 1, vie pleine, son `0x31`), le reste avec son consommateur (E14, déplacement, E18) ; (B) E19.g ne livre que les effets des enregistrements et des scripts, tous les natifs et `0x82 0x53` avec E14. | Auteur |
 | O-E19-73 | **Tranché le 2026-10-06 (D-E19-97 : même règle).** **D-E19-92 pour les quads d'effets** (découverte d'E19.g G1/G3, 2026-10-06) : D-E19-92 (quads déformés à la résolution de l'écran) nomme les sprites d'entités ; 63 % des références de quads d'effets sont déformées (l'aura de 476). La même règle vaut-elle pour les effets ? | Auteur |
 | O-E19-74 | **Tranché le 2026-10-06 (l'auteur : renuméroter l'ADR de G2d ; 0061 étant pris sur le main du moteur, elle prend 0066).** **Numéros d'ADR du moteur en double** (2026-10-06) : l'ADR-0056 du moteur existe deux fois, sur `chantier/e19g2d-overlay-blend` (teinte des fonds, G2d, cette session) et sur `chantier/audio-modern` de l'auteur (0056 à 0060). Proposition : renuméroter celle de G2d en 0061 (références : l'ADR, l'index, `scrolling-layers.md`, `sprite-psx-semi-transparency.md`, quatre commentaires C#, le plan, ADR-0037 du parent) après la recette, et prendre les suivantes (G2b-1, G2b-2) après le dernier numéro des deux lignées, revérifié avant chaque commit. | Auteur |
-| O-E19-75 | **Planifiée le 2026-10-06 en E19.f3d.** **Âge du mot de manette de l'écran de sauvegarde** (contre-vérification de la découverte d'E19.f3c, 2026-10-06) : les créneaux 3 et 10 du binaire lisent le même mot de manette ; dans le portage, l'écran lit celui du tick courant et la passe du dialogue celui du tick d'avant ; entre l'appui qui ouvre la question et la réponse la plus rapide, le binaire compte 19 échantillons, le portage 17 aujourd'hui, 18 après E19.f3c. Tranche à part après E19.f3c (D-E19-99) ; les épingles qui dépendent de la manette du sélecteur bougeront. | Session (D-E19-99) |
+| O-E19-75 | **Planifiée le 2026-10-06 en E19.f3d ; faite le 2026-10-06 (`0e50b0f`, ADR-0047), vérification à faire.** **Âge du mot de manette de l'écran de sauvegarde** (contre-vérification de la découverte d'E19.f3c, 2026-10-06) : les créneaux 3 et 10 du binaire lisent le même mot de manette ; dans le portage, l'écran lit celui du tick courant et la passe du dialogue celui du tick d'avant ; entre l'appui qui ouvre la question et la réponse la plus rapide, le binaire compte 19 échantillons, le portage 17 aujourd'hui, 18 après E19.f3c. Tranche à part après E19.f3c (D-E19-99) ; les épingles qui dépendent de la manette du sélecteur bougeront. | Session (D-E19-99) |
 | O-E19-76 | **Question à l'auteur : propriétaire de la partie moteur de la boucle au repère** (découverte de nuit du 2026-10-06, contre-vérifiée, `docs/plan-e19-backlog-1006-annexe/`) : D-E19-74 confiait la partie moteur (`SoundAsset.LoopStartSample`, déplacement du lecteur de flux, `FillQueue` et le travailleur) à S2 d'audio-modern ; S2 est mergé dans `main` sans elle (`LoopStartSample` : 0 occurrence sur toutes les branches du moteur ; les deux boucles font `Rewind()`, `MusicPlayer.cs:373` et `StreamingWorker.cs:263`) ; la DLL joue toujours la musique comme un clip résident bouclé en entier. **Choix** : (A) la session la fait sur la pile E19 (tranche L-a : plan, relecture, vérificateur), puis L-b (données, convertisseur, DLL) après la mesure O-E19-63 ; (B) elle reste à la ligne audio de l'auteur. Recommandation de la session : (A). La section 1.2w est en pause jusqu'à la réponse. | Auteur |
 | O-E19-77 | **Âge des mots de manette de l'inventaire et du sous-inventaire** (découverte de nuit d'E19.f3d, contre-vérifiée, `docs/plan-e19-pad-age-annexe/`) : la mise à jour par image de l'inventaire (créneau 6, `0x80056598`) et celle du sous-inventaire (créneau 4, `0x80053328`, six lectures par intervalle) lisent leurs mots dans `RenderScene`, donc l'échantillon de l'image d'avant ; les directeurs d'inventaire du portage lisent `TickPad` du tick courant. Même classe qu'O-E19-75, mais pas une seule ligne : à découvrir et planifier. | Session |
 
