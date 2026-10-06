@@ -376,6 +376,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
             var gameState = new AlundraGameState();
             gameState.PlayerStats.HpMax = (short)hpMaxBefore;
             gameState.PlayerStats.Hp = (short)hpBefore;
+            gameState.PlayerStats.WeaponId = 1; // the New Game weapon: a state the save validation accepts
 
             Exec(new Host { Stage = NewStage(), Sound = new RecordingSound(), PlayerEntity = HeroAt(0, 0, 0) }, gameState, VesselProgram);
 

@@ -741,6 +741,18 @@ public static class AlundraPlayerManager
         return stats.HpMax;
     }
 
+    /// <summary>
+    /// The stats side of <c>IncreaseHpMaxAndCreateEffect</c> (0x800333AC, E19.g G3d, parent ADR-0048): the maximum goes up by one (capped at 50 by <see cref="SetPlayerHpMax"/>) and the life
+    /// is filled to the raised value (<see cref="SetPlayerHp"/> clamps it to the new maximum). The binary raises the hero entity and mirrors it into the stats at the end of the next
+    /// <c>MovePlayer</c>; this port has no entity-borne life yet, so the stats change at once (provisional seam, see the ADR).
+    /// </summary>
+    public static void IncreaseHpMaxAndFill(AlundraGameState state)
+    {
+        var raised = state.PlayerStats.HpMax + 1;
+        SetPlayerHpMax(state, raised);
+        SetPlayerHp(state, (short)raised);
+    }
+
     /// <summary>PlayerManager.SetPlayerHp (0x8004dd30, PlayerManager.cs:1734-1761, IsGodMode override at
     /// :1751-1755 excluded). Clamped to
     /// <c>[0, HpMax]</c> - not to a fixed constant, to whatever <see cref="AlundraPlayerStats.HpMax"/>

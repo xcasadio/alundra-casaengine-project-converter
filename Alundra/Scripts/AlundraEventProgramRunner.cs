@@ -2988,8 +2988,9 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
     /// <summary>
     /// HandleMapTriggerCommand (0x80034108) behind opcode 0x82. Id 0 gives nothing; 0x45-0x48 add 1, 5, 10 and 30 gold; 0x4F raises
-    /// FalconTemp by one up to 50 and sets G1450; 0x50-0x56 are the hero's life, magic and effect functions (degraded: answers
-    /// "given", writes nothing - O-E19-39); every other id gives one item unless the maximum is reached, the answer being
+    /// FalconTemp by one up to 50 and sets G1450; 0x53 is the life vessel (<see cref="UseLifeVessel"/>, E19.g G3d); the other
+    /// 0x50-0x56 are the hero's magic and life functions (degraded: answers "given", writes nothing - O-E19-39); every other id
+    /// gives one item unless the maximum is reached, the answer being
     /// <c>count before &lt; AddOneItemIfUnlocked(id)</c>. Without item tables that last branch is degraded (answers 0).
     /// </summary>
     private bool HandleMapTriggerCommand(int id)
@@ -3014,6 +3015,10 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                 return true;
             }
 
+            case 0x53:
+                UseLifeVessel();
+                return true;
+
             case >= 0x50 and <= 0x56:
                 LogDegradedOpcodeOnce(0x82, "HandleMapTriggerCommand", "hero life, magic and effects");
                 return true;
@@ -3027,6 +3032,34 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
         var before = AlundraPlayerManager.GetNumberOfItem(_gameState, id);
         return before < AlundraPlayerManager.AddOneItemIfUnlocked(_gameState, tables, id);
+    }
+
+    /// <summary>
+    /// The life vessel, sub-case 0x53 of opcode 0x82 (<c>IncreaseHpMaxAndCreateEffect 0x800333AC</c>, E19.g G3d, parent ADR-0048), in the binary's order: the life, the sound at once, then the
+    /// effects. The life is the hero's stats raised through their setters (maximum + 1, capped at 50, then the life filled to the raised value). The effects are queued on the effect stage with the
+    /// hero position read now; without a stage or without a hero they are skipped (the life and the sound are still done), degraded with a key of its own (0x182, apart from 0x82's).
+    /// </summary>
+    private void UseLifeVessel()
+    {
+        AlundraPlayerManager.IncreaseHpMaxAndFill(_gameState);
+        _worldContext.SoundPlayer?.PlaySfx(AlundraNativeEffects.LifeVesselSfx);
+
+        if (_worldContext.EffectStage is { } stage && _worldContext.PlayerEntity is { } hero)
+        {
+            var (heroX, heroY, heroZ) = (hero.PosX, hero.PosY, hero.PosZ);
+            stage.Emit(reservoir => AlundraNativeEffects.CreateLifeVesselEffects(reservoir, heroX, heroY, heroZ));
+            return;
+        }
+
+        _lastDispatchKind = EventTraceKind.Degraded;
+
+        // 0x182 = 0x82 with a high marker bit: a key of its own in the once-per-opcode set, apart from the degradations of the other 0x82 sub-cases.
+        if (_loggedDegradedOpcodes.Add(0x182))
+        {
+            Logs.WriteDebug(
+                "AlundraEventProgramRunner: opcode 0x82 sub-case 0x53 (life vessel) has no effect stage or no hero "
+                + "- life and sound done, effects skipped.");
+        }
     }
 
     /// <summary>Opcode 0xA4 with a palette bank above 0 (O-E19-43): the mask is applied, the palette cycle is not.</summary>
