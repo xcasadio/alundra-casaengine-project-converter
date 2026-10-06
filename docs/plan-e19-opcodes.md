@@ -5458,7 +5458,7 @@ l'original, quasi absent du corpus) n'est pas reproduit ; découpage : f4a (expo
 nom, vol du portrait, oracle porté de `f4_model.py`, valeurs `values.json` S1 à S7), f4c (vue : ajouts à `TextBoxScreen.xaml`, test au
 pixel, rapport de manque).
 
-###### E19.f4a — Export des portraits de dialogue ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (avertissement, prévision de l'export), révisée ; relecture n°2 à faire ; exécutée après E19.f3b)
+###### E19.f4a — Export des portraits de dialogue ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (avertissement, prévision de l'export), révisée ; relecture n°2 READY ; exécutée après E19.f3b)
 
 **Règles.**
 - **F4A-R1 — Lecture** : `SpriteBankReader` lit le `DialoguePortrait` de l'enregistrement canonique de chaque banque (la première carte
@@ -5505,13 +5505,60 @@ pixel, rapport de manque).
 revert, export complet égal au manifeste « avant ». **Risques** : 13 feuilles distinctes portent les portraits : le premier locuteur de
 chaque feuille fera charger la feuille au premier affichage (f4c décide d'un préchargement).
 
-###### E19.f4b — Locuteur, boîte de nom et vol du portrait (logique) ⏳ (esquisse, après E19.f4a)
+###### E19.f4b — Locuteur, boîte de nom et vol du portrait (logique) ⏳ (planifiée le 2026-10-06 ; relecture à faire ; après E19.f4a)
 
-Le locuteur résolu par opcode (`0x0D` entité logique, `0x5C` première trouvée, `0xC4` nom des opérandes), passé à `Open` avant son test
-« déjà ouverte » ; la machine de la boîte de nom (glissement, refus, fermeture à T, libération à T+17) ; le vol du portrait généralisé
-(repos du dialogue (8, 116), de l'inventaire (248, 104), taille par portrait, 48 × 72 bas aligné, point de tête pris au départ et au
-retour) ; remises à l'entrée de carte, à la fermeture hors bande et au chargement ; oracle porté de `model/f4_model.py`, valeurs
-`values.json` S1 à S7 ; tests de l'inventaire gardés par une surcharge additive.
+**Règles** (`binary-notes.md` §1 à §4 et §7, contre-vérifiées ; DLL seule, sans vue : f4c dessine).
+- **F4B-R1 — Locuteur, à chaque tentative** (`AlundraEventProgramRunner.cs`, `0x0D`, `0x5C`, `0xC4`) : avant le test « déjà ouverte » de
+  l'ouverture de la boîte (ordre du binaire : portrait, nom, puis la boîte), un appel séparé du directeur (nom indicatif
+  `OpenSpeaker(...)`, les appels d'`Open` existants ne changent pas) : `0x0D` prend **l'entité logique** du programme (celle que
+  `Dispatch` reçoit) ; `0x5C` la première entité trouvée par la recherche `v1` (indice le plus bas, `EntitySearchService`) ; rien trouvé :
+  ni nom ni portrait (la boîte s'ouvre) ; `0xC4` : même recherche et même porte, nom pris des opérandes `v2 | v3 << 8`. Identifiant du
+  nom : `SpriteType` du locuteur (`0x100` + octet pour un sprite de carte, 0 pour le héros) ; portrait si `Flags & 0x800000` et que
+  l'enregistrement de sprite porte un `DialoguePortrait` (champ d'E19.f4a ; absent : avertissement une fois, le nom reste). Comme le
+  binaire, ces ouvertures sont refaites à chaque tick de tentative (une ouverture refusée ne fait rien).
+- **F4B-R2 — Boîte de nom** (nouvelle classe interne, portage de `model/f4_model.py`) : refusée si une boîte de nom est ouverte ou se
+  ferme (drapeaux 5, 4 ou 6), si l'identifiant sort de `0x100..0x1FF`, ou si la chaîne ETC (`AlundraEtcStringTable.TryResolveText`) est
+  vide ; ouverte au tick de l'opcode ; passe k : x = 320 + trunc(−256 · (k − 1) / 15), 64 dès la passe 16, drapeaux 5 → 4 à la passe 18 ;
+  texte en x = x du cadre + trunc((112 − w) / 2), w par `AlundraFont3Advances` (égales aux largeurs du binaire, `names_widths.json`),
+  y 148 ; fermée au déclencheur de fermeture T de la boîte de texte (même tick que le son 7) : 64, 81, 98, … 302, 320, 320, libérée à T+17,
+  sans dessin à la passe de libération ; une fermeture pendant l'entrée repart de l'x courant.
+- **F4B-R3 — Portrait** : la machine d'`AlundraInventoryPortrait` généralisée **par addition** (le constructeur et `Start(headX, headY)`
+  de l'inventaire gardent leur repos (248, 104) et leur taille) : repos, taille de la texture et ancre en paramètres ; une **seconde
+  instance** pour le dialogue (le binaire partage un seul bloc entre inventaire et dialogue, mais leur croisement est inatteignable en
+  jeu : choix de la session) ; repos (8, 116) ; ouverture ignorée tant que l'état n'est pas 0 ; point de tête pris **au départ** (`sx =
+  x − camX`, `sy = y − camY − z − 0x20`, entiers des 16.16 du locuteur) et **au retour** (la position du locuteur à cet instant) ; passes
+  c = 15 … 1 : position `repos + trunc(écart · c / 15)`, taille trunc(48 · (15 − c) / 15) × trunc(56 · (15 − c) / 15) à l'aller et
+  trunc(48 · c / 15) × trunc(56 · c / 15) au retour ; couleur 127 + trunc(128 · c / 15) à l'aller, 127 + trunc(128 · (15 − c) / 15) au retour,
+  128 au repos (calculée et exposée ; rendue en teinte normale, D-E19-89) ; dernière passe du retour dégénérée (0 × 0) à T+15, plus rien
+  dès T+16 ; un portrait de 48 × 72 s'affiche entier, bas aligné au repos (haut 100, bas 172, D-E19-49), tailles du vol à h = 72 :
+  (0,0) (3,4) (6,9) (9,14) (12,19) (16,24) (19,28) (22,33) (25,38) (28,43) (32,48) (35,52) (38,57) (41,62) (44,67) (choix dérivé).
+- **F4B-R4 — Ordre et remises** : les passes du nom et du portrait du dialogue tournent à la fin de `Pass(bool, bool)`, après la boîte de
+  texte et le choix (créneaux 0, 3, 12, puis le portrait), avant les programmes du tick ; l'entrée de carte, la fermeture hors bande et le
+  chargement d'une partie remettent les deux à zéro (le binaire en `0x80044C28` et `0x80044C40`) ; sans présentateur
+  (`HasPresenter` faux) : ni nom ni portrait, comme la boîte.
+
+**Tâches.**
+- **F4B-1 — Tests d'abord** :
+  - oracle de test porté de `docs/plan-e19-f4-annexe/model/f4_model.py` (jamais du code de la DLL) ; T1 : la DLL égale `values.json` S1 à
+    S7 image par image sur les colonnes du nom et du portrait (nom et portrait, portrait seul, nom seul, ni l'un ni l'autre, deux
+    dialogues de suite, `0xC4` avec un nom explicite, `0x5C` sans trouvaille), puis l'oracle sur des suites tirées comme `validate.py` ;
+  - règles : locuteur des trois opcodes (dont deux entités au même `EntityRefId` : la plus basse gagne ; aucune trouvaille ; l'entité
+    logique après un `0x43`) ; refus (hors plage, chaîne vide, déjà ouverte ou en fermeture) ; `SpriteType` d'un PNJ réel ; le 48 × 72 ;
+    les points de tête au départ et au retour ; les remises ; le cas dégradé sans présentateur ;
+  - corpus : chaque site de `speaker_sites.tsv` hors des programmes qui contiennent un `0x43` donne la classe de locuteur attendue ;
+  - tests existants qui bougent : aucun (les tests du portrait de l'inventaire, `AlundraInventoryPortraitTests.cs`,
+    `AlundraInventoryPortraitWiringTests.cs:74-257`, les tests XAML de l'inventaire et du sous-inventaire, `AlundraSaveGameLoadResetTests.cs:267-325`
+    et `AlundraSaveGameApplyTests.cs:285` restent verts par l'addition ; `AlundraDialogueSpeakerOpcodeTests.cs` reste vert : son entité
+    logique nue a `SpriteType` −1 et `Flags` 0, ni nom ni portrait ; son commentaire d'en-tête « ignored until E19.f » et celui de
+    `AlundraEventProgramRunner.cs:1043-1044` sont mis à jour) ; toute assertion qui bouge est un arrêt. Rouges d'abord.
+- **F4B-2 — Suites** : `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (la boîte, le nom et le portrait sont de la présentation ;
+  aucune trace ne bouge) ; pas d'export.
+- **F4B-3 — Vérification**.
+
+**Acceptation** : T1 égal aux tables ; règles et corpus verts ; liste fermée ; suites. **Retour arrière** : revert. **Risques** : un
+locuteur détruit ou recyclé au retour (ADR-0024) lit des données périmées dans le binaire : la DLL prend le dernier point connu ;
+le croisement inventaire/dialogue du bloc partagé n'est pas reproduit (inatteignable) ; l'ordre de dessin et les durées de vie
+indépendantes de la vue sont pour f4c.
 
 ###### E19.f4c — Vue du nom et du portrait ⏳ (esquisse, après E19.f4b)
 
