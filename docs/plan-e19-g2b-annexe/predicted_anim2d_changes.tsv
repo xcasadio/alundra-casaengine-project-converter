@@ -1,0 +1,1924 @@
+path	bank	animset	dir	frames	parts	deformed_slots	animated_slots	mixed_slots	deformed_keyframes	keyframes_of_deformed_slots	rect_scaled	parallelogram	general
+Entities/Alundra/bankalundra_0_anim15_down.anim2d	alundra_0	15	down	7	3	2	0	2	2	12	2	0	0
+Entities/Alundra/bankalundra_0_anim15_left.anim2d	alundra_0	15	left	7	3	2	0	2	2	12	2	0	0
+Entities/Alundra/bankalundra_0_anim15_right.anim2d	alundra_0	15	right	7	3	2	0	2	2	12	2	0	0
+Entities/Alundra/bankalundra_0_anim15_up.anim2d	alundra_0	15	up	7	3	2	0	2	2	12	2	0	0
+Entities/Alundra/bankalundra_0_anim24_down.anim2d	alundra_0	24	down	12	10	4	0	4	4	15	4	0	0
+Entities/Alundra/bankalundra_0_anim24_left.anim2d	alundra_0	24	left	12	10	4	0	4	4	16	4	0	0
+Entities/Alundra/bankalundra_0_anim24_right.anim2d	alundra_0	24	right	12	10	4	0	4	4	16	4	0	0
+Entities/Alundra/bankalundra_0_anim24_up.anim2d	alundra_0	24	up	12	9	4	0	4	4	15	4	0	0
+Entities/Alundra/bankalundra_0_anim25_down.anim2d	alundra_0	25	down	52	12	11	11	8	477	561	218	222	37
+Entities/Alundra/bankalundra_0_anim25_left.anim2d	alundra_0	25	left	52	12	11	11	8	479	561	222	216	41
+Entities/Alundra/bankalundra_0_anim25_right.anim2d	alundra_0	25	right	52	12	11	11	8	478	561	218	220	40
+Entities/Alundra/bankalundra_0_anim25_up.anim2d	alundra_0	25	up	52	12	11	11	8	479	561	221	221	37
+Entities/Alundra/bankalundra_0_anim26_left.anim2d	alundra_0	26	left	30	4	1	0	0	29	29	0	29	0
+Entities/Alundra/bankalundra_0_anim26_right.anim2d	alundra_0	26	right	30	4	1	0	0	29	29	0	29	0
+Entities/Alundra/bankalundra_0_anim27_left.anim2d	alundra_0	27	left	8	4	1	1	0	7	7	0	7	0
+Entities/Alundra/bankalundra_0_anim27_right.anim2d	alundra_0	27	right	8	4	1	1	0	7	7	0	7	0
+Entities/Alundra/bankalundra_0_anim30_left.anim2d	alundra_0	30	left	7	4	1	1	0	6	6	0	6	0
+Entities/Alundra/bankalundra_0_anim30_right.anim2d	alundra_0	30	right	7	4	1	1	0	6	6	0	6	0
+Entities/Alundra/bankalundra_0_anim32_down.anim2d	alundra_0	32	down	19	7	3	3	3	23	53	23	0	0
+Entities/Alundra/bankalundra_0_anim32_left.anim2d	alundra_0	32	left	19	7	3	3	3	23	53	23	0	0
+Entities/Alundra/bankalundra_0_anim32_right.anim2d	alundra_0	32	right	19	7	3	3	3	23	53	23	0	0
+Entities/Alundra/bankalundra_0_anim32_up.anim2d	alundra_0	32	up	19	7	3	3	3	23	53	23	0	0
+Entities/Alundra/bankalundra_0_anim33_down.anim2d	alundra_0	33	down	19	7	2	2	2	20	36	20	0	0
+Entities/Alundra/bankalundra_0_anim33_left.anim2d	alundra_0	33	left	19	7	2	2	2	20	36	20	0	0
+Entities/Alundra/bankalundra_0_anim33_right.anim2d	alundra_0	33	right	19	7	2	2	2	20	36	20	0	0
+Entities/Alundra/bankalundra_0_anim33_up.anim2d	alundra_0	33	up	19	7	2	2	2	20	36	20	0	0
+Entities/Alundra/bankalundra_0_anim34_down.anim2d	alundra_0	34	down	5	1	1	1	1	2	4	2	0	0
+Entities/Alundra/bankalundra_0_anim34_left.anim2d	alundra_0	34	left	5	1	1	1	1	2	4	2	0	0
+Entities/Alundra/bankalundra_0_anim34_right.anim2d	alundra_0	34	right	5	1	1	1	1	2	4	2	0	0
+Entities/Alundra/bankalundra_0_anim34_up.anim2d	alundra_0	34	up	5	1	1	1	1	2	4	2	0	0
+Entities/Alundra/bankalundra_0_anim35_down.anim2d	alundra_0	35	down	5	1	1	1	1	2	4	2	0	0
+Entities/Alundra/bankalundra_0_anim35_left.anim2d	alundra_0	35	left	5	1	1	1	1	2	4	2	0	0
+Entities/Alundra/bankalundra_0_anim35_right.anim2d	alundra_0	35	right	5	1	1	1	1	2	4	2	0	0
+Entities/Alundra/bankalundra_0_anim35_up.anim2d	alundra_0	35	up	5	1	1	1	1	2	4	2	0	0
+Entities/Alundra/bankalundra_0_anim36_down.anim2d	alundra_0	36	down	5	1	1	1	1	2	4	2	0	0
+Entities/Alundra/bankalundra_0_anim36_left.anim2d	alundra_0	36	left	5	1	1	1	1	2	4	2	0	0
+Entities/Alundra/bankalundra_0_anim36_right.anim2d	alundra_0	36	right	5	1	1	1	1	2	4	2	0	0
+Entities/Alundra/bankalundra_0_anim36_up.anim2d	alundra_0	36	up	5	1	1	1	1	2	4	2	0	0
+Entities/Alundra/bankalundra_0_anim40_down.anim2d	alundra_0	40	down	7	3	1	0	1	1	3	1	0	0
+Entities/Alundra/bankalundra_0_anim40_left.anim2d	alundra_0	40	left	7	3	1	0	1	1	4	1	0	0
+Entities/Alundra/bankalundra_0_anim40_right.anim2d	alundra_0	40	right	7	3	1	0	1	1	4	1	0	0
+Entities/Alundra/bankalundra_0_anim40_up.anim2d	alundra_0	40	up	7	3	1	0	1	1	4	1	0	0
+Entities/Alundra/bankalundra_0_anim41_down.anim2d	alundra_0	41	down	7	6	4	4	3	18	24	18	0	0
+Entities/Alundra/bankalundra_0_anim41_left.anim2d	alundra_0	41	left	7	6	4	4	3	18	24	18	0	0
+Entities/Alundra/bankalundra_0_anim41_right.anim2d	alundra_0	41	right	7	6	4	4	3	18	24	18	0	0
+Entities/Alundra/bankalundra_0_anim41_up.anim2d	alundra_0	41	up	7	6	4	4	3	18	24	18	0	0
+Entities/Alundra/bankalundra_0_anim42_down.anim2d	alundra_0	42	down	5	6	5	5	0	20	20	5	9	6
+Entities/Alundra/bankalundra_0_anim42_left.anim2d	alundra_0	42	left	5	7	7	5	2	21	25	6	11	4
+Entities/Alundra/bankalundra_0_anim42_right.anim2d	alundra_0	42	right	5	7	7	5	2	21	25	6	11	4
+Entities/Alundra/bankalundra_0_anim42_up.anim2d	alundra_0	42	up	5	7	6	5	1	21	24	5	9	7
+Entities/Alundra/bankalundra_0_anim4_down.anim2d	alundra_0	4	down	9	6	5	5	0	40	40	10	18	12
+Entities/Alundra/bankalundra_0_anim4_left.anim2d	alundra_0	4	left	9	7	6	5	1	42	48	12	22	8
+Entities/Alundra/bankalundra_0_anim4_right.anim2d	alundra_0	4	right	9	7	6	5	1	42	48	12	22	8
+Entities/Alundra/bankalundra_0_anim4_up.anim2d	alundra_0	4	up	9	6	5	5	0	40	40	10	18	12
+Entities/Alundra/bankalundra_0_anim50_down.anim2d	alundra_0	50	down	8	6	4	4	4	12	22	9	1	2
+Entities/Alundra/bankalundra_0_anim50_left.anim2d	alundra_0	50	left	8	6	4	4	4	12	22	9	1	2
+Entities/Alundra/bankalundra_0_anim50_right.anim2d	alundra_0	50	right	8	6	4	4	4	12	22	9	1	2
+Entities/Alundra/bankalundra_0_anim50_up.anim2d	alundra_0	50	up	8	6	4	4	4	12	22	9	1	2
+Entities/Alundra/bankalundra_0_anim51_down.anim2d	alundra_0	51	down	10	9	7	7	5	49	62	32	13	4
+Entities/Alundra/bankalundra_0_anim51_left.anim2d	alundra_0	51	left	10	9	7	7	5	49	62	32	13	4
+Entities/Alundra/bankalundra_0_anim51_right.anim2d	alundra_0	51	right	10	9	7	7	5	49	62	32	13	4
+Entities/Alundra/bankalundra_0_anim51_up.anim2d	alundra_0	51	up	10	9	7	7	5	49	62	32	13	4
+Entities/Alundra/bankalundra_0_anim52_down.anim2d	alundra_0	52	down	6	6	4	4	4	12	18	8	3	1
+Entities/Alundra/bankalundra_0_anim52_left.anim2d	alundra_0	52	left	6	6	4	4	4	12	18	8	3	1
+Entities/Alundra/bankalundra_0_anim52_right.anim2d	alundra_0	52	right	6	6	4	4	4	12	18	8	3	1
+Entities/Alundra/bankalundra_0_anim52_up.anim2d	alundra_0	52	up	6	6	4	4	4	12	18	8	3	1
+Entities/Alundra/bankalundra_0_anim55_left.anim2d	alundra_0	55	left	8	4	1	1	0	7	7	0	7	0
+Entities/Alundra/bankalundra_0_anim55_right.anim2d	alundra_0	55	right	8	4	1	1	0	7	7	0	7	0
+Entities/Alundra/bankalundra_0_anim57_down.anim2d	alundra_0	57	down	7	5	4	4	4	12	18	12	0	0
+Entities/Alundra/bankalundra_0_anim57_left.anim2d	alundra_0	57	left	7	5	4	4	4	12	18	12	0	0
+Entities/Alundra/bankalundra_0_anim57_right.anim2d	alundra_0	57	right	7	5	4	4	4	12	18	12	0	0
+Entities/Alundra/bankalundra_0_anim57_up.anim2d	alundra_0	57	up	7	5	4	4	4	12	18	12	0	0
+Entities/Alundra/bankalundra_0_anim60_down.anim2d	alundra_0	60	down	27	5	5	2	4	34	55	34	0	0
+Entities/Alundra/bankalundra_0_anim60_left.anim2d	alundra_0	60	left	27	5	5	2	4	34	55	34	0	0
+Entities/Alundra/bankalundra_0_anim60_right.anim2d	alundra_0	60	right	27	5	5	2	4	34	55	34	0	0
+Entities/Alundra/bankalundra_0_anim60_up.anim2d	alundra_0	60	up	27	5	5	2	4	34	55	34	0	0
+Entities/Alundra/bankalundra_0_anim72_down.anim2d	alundra_0	72	down	18	12	10	6	10	95	132	95	0	0
+Entities/Alundra/bankalundra_0_anim72_left.anim2d	alundra_0	72	left	18	14	10	5	10	94	132	94	0	0
+Entities/Alundra/bankalundra_0_anim72_right.anim2d	alundra_0	72	right	18	14	10	5	10	94	132	94	0	0
+Entities/Alundra/bankalundra_0_anim72_up.anim2d	alundra_0	72	up	18	14	10	5	10	94	132	94	0	0
+Entities/Alundra/bankalundra_0_anim87_down.anim2d	alundra_0	87	down	7	6	3	3	3	12	18	12	0	0
+Entities/Alundra/bankalundra_0_anim87_left.anim2d	alundra_0	87	left	7	6	3	3	3	12	18	12	0	0
+Entities/Alundra/bankalundra_0_anim87_right.anim2d	alundra_0	87	right	7	6	3	3	3	12	18	12	0	0
+Entities/Alundra/bankalundra_0_anim87_up.anim2d	alundra_0	87	up	7	6	3	3	3	12	18	12	0	0
+Entities/Alundra/bankalundra_0_anim91_down.anim2d	alundra_0	91	down	35	7	5	4	5	38	87	12	13	13
+Entities/Alundra/bankalundra_0_anim91_left.anim2d	alundra_0	91	left	35	7	5	4	5	38	87	12	13	13
+Entities/Alundra/bankalundra_0_anim91_right.anim2d	alundra_0	91	right	35	7	5	4	5	38	87	12	13	13
+Entities/Alundra/bankalundra_0_anim91_up.anim2d	alundra_0	91	up	35	7	5	4	5	38	87	12	13	13
+Entities/Alundra/bankalundra_0_anim93_down.anim2d	alundra_0	93	down	13	7	5	4	4	23	42	4	6	13
+Entities/Alundra/bankalundra_0_anim93_left.anim2d	alundra_0	93	left	13	7	5	4	4	23	42	4	6	13
+Entities/Alundra/bankalundra_0_anim93_right.anim2d	alundra_0	93	right	13	7	5	4	4	23	42	4	6	13
+Entities/Alundra/bankalundra_0_anim93_up.anim2d	alundra_0	93	up	13	7	5	4	4	23	42	4	6	13
+Entities/Armure cassable/bank149_anim2_down.anim2d	149	2	down	23	9	5	5	5	31	78	31	0	0
+Entities/Armure cassable/bank149_anim2_left.anim2d	149	2	left	23	9	5	5	5	31	78	31	0	0
+Entities/Armure cassable/bank149_anim2_right.anim2d	149	2	right	23	9	5	5	5	31	78	31	0	0
+Entities/Armure cassable/bank149_anim2_up.anim2d	149	2	up	23	9	5	5	5	31	78	31	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim0_down.anim2d	140	0	down	5	1	1	1	0	4	4	4	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim0_left.anim2d	140	0	left	5	1	1	1	0	4	4	4	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim0_right.anim2d	140	0	right	5	1	1	1	0	4	4	4	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim0_up.anim2d	140	0	up	5	1	1	1	0	4	4	4	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim1_down.anim2d	140	1	down	5	1	1	1	0	4	4	4	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim1_left.anim2d	140	1	left	5	1	1	1	0	4	4	4	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim1_right.anim2d	140	1	right	5	1	1	1	0	4	4	4	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim1_up.anim2d	140	1	up	5	1	1	1	0	4	4	4	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim2_down.anim2d	140	2	down	2	1	1	0	0	1	1	1	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim2_left.anim2d	140	2	left	2	1	1	0	0	1	1	1	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim2_right.anim2d	140	2	right	2	1	1	0	0	1	1	1	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim2_up.anim2d	140	2	up	2	1	1	0	0	1	1	1	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim3_down.anim2d	140	3	down	2	1	1	0	0	1	1	1	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim3_left.anim2d	140	3	left	2	1	1	0	0	1	1	1	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim3_right.anim2d	140	3	right	2	1	1	0	0	1	1	1	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim3_up.anim2d	140	3	up	2	1	1	0	0	1	1	1	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim4_down.anim2d	140	4	down	3	1	1	0	0	2	2	2	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim4_left.anim2d	140	4	left	3	1	1	0	0	2	2	2	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim4_right.anim2d	140	4	right	3	1	1	0	0	2	2	2	0	0
+Entities/Bois flottant .01 sur l’eau _ .23 en l’air/bank140_anim4_up.anim2d	140	4	up	3	1	1	0	0	2	2	2	0	0
+Entities/Bombe/bankalundra_2_anim0_down.anim2d	alundra_2	0	down	5	7	2	0	2	2	8	2	0	0
+Entities/Bombe/bankalundra_2_anim0_left.anim2d	alundra_2	0	left	5	7	2	0	2	2	8	2	0	0
+Entities/Bombe/bankalundra_2_anim0_right.anim2d	alundra_2	0	right	5	7	2	0	2	2	8	2	0	0
+Entities/Bombe/bankalundra_2_anim0_up.anim2d	alundra_2	0	up	5	7	2	0	2	2	8	2	0	0
+Entities/Bombe/bankalundra_2_anim1_down.anim2d	alundra_2	1	down	17	7	6	4	5	31	50	31	0	0
+Entities/Bombe/bankalundra_2_anim1_left.anim2d	alundra_2	1	left	17	7	6	4	5	31	50	31	0	0
+Entities/Bombe/bankalundra_2_anim1_right.anim2d	alundra_2	1	right	17	7	6	4	5	31	50	31	0	0
+Entities/Bombe/bankalundra_2_anim1_up.anim2d	alundra_2	1	up	17	7	6	4	5	31	50	31	0	0
+Entities/Bombe/bankalundra_2_anim2_down.anim2d	alundra_2	2	down	5	7	2	0	2	2	8	2	0	0
+Entities/Bombe/bankalundra_2_anim2_left.anim2d	alundra_2	2	left	5	7	2	0	2	2	8	2	0	0
+Entities/Bombe/bankalundra_2_anim2_right.anim2d	alundra_2	2	right	5	7	2	0	2	2	8	2	0	0
+Entities/Bombe/bankalundra_2_anim2_up.anim2d	alundra_2	2	up	5	7	2	0	2	2	8	2	0	0
+Entities/Boule de feu chargée/bankalundra_12_anim0_down.anim2d	alundra_12	0	down	5	2	2	0	0	8	8	8	0	0
+Entities/Boule de feu chargée/bankalundra_12_anim0_left.anim2d	alundra_12	0	left	5	2	2	0	0	8	8	0	8	0
+Entities/Boule de feu chargée/bankalundra_12_anim0_right.anim2d	alundra_12	0	right	5	2	2	0	0	8	8	0	8	0
+Entities/Boule de feu chargée/bankalundra_12_anim0_up.anim2d	alundra_12	0	up	5	2	2	0	0	8	8	8	0	0
+Entities/Boule de feu chargée/bankalundra_12_anim1_down.anim2d	alundra_12	1	down	13	1	1	1	1	4	12	4	0	0
+Entities/Boule de feu chargée/bankalundra_12_anim1_left.anim2d	alundra_12	1	left	13	1	1	1	1	4	12	4	0	0
+Entities/Boule de feu chargée/bankalundra_12_anim1_right.anim2d	alundra_12	1	right	13	1	1	1	1	4	12	4	0	0
+Entities/Boule de feu chargée/bankalundra_12_anim1_up.anim2d	alundra_12	1	up	13	1	1	1	1	4	12	4	0	0
+Entities/Boule de feu chargée/bankalundra_12_anim3_down.anim2d	alundra_12	3	down	13	1	1	1	1	4	12	4	0	0
+Entities/Boule de feu chargée/bankalundra_12_anim3_left.anim2d	alundra_12	3	left	13	1	1	1	1	4	12	4	0	0
+Entities/Boule de feu chargée/bankalundra_12_anim3_right.anim2d	alundra_12	3	right	13	1	1	1	1	4	12	4	0	0
+Entities/Boule de feu chargée/bankalundra_12_anim3_up.anim2d	alundra_12	3	up	13	1	1	1	1	4	12	4	0	0
+Entities/Boule de feu/bankalundra_11_anim0_down.anim2d	alundra_11	0	down	5	1	1	1	0	4	4	4	0	0
+Entities/Boule de feu/bankalundra_11_anim0_left.anim2d	alundra_11	0	left	5	1	1	0	0	4	4	0	4	0
+Entities/Boule de feu/bankalundra_11_anim0_right.anim2d	alundra_11	0	right	5	1	1	0	0	4	4	0	4	0
+Entities/Boule de feu/bankalundra_11_anim0_up.anim2d	alundra_11	0	up	5	1	1	0	0	4	4	4	0	0
+Entities/Boule de feu/bankalundra_11_anim1_down.anim2d	alundra_11	1	down	13	2	2	2	0	24	24	24	0	0
+Entities/Boule de feu/bankalundra_11_anim1_left.anim2d	alundra_11	1	left	13	2	2	2	0	24	24	24	0	0
+Entities/Boule de feu/bankalundra_11_anim1_right.anim2d	alundra_11	1	right	13	2	2	2	0	24	24	24	0	0
+Entities/Boule de feu/bankalundra_11_anim1_up.anim2d	alundra_11	1	up	13	2	2	2	0	24	24	24	0	0
+Entities/Boule de glace chargée/bankalundra_15_anim0_down.anim2d	alundra_15	0	down	5	3	3	2	1	10	11	6	4	0
+Entities/Boule de glace chargée/bankalundra_15_anim0_left.anim2d	alundra_15	0	left	5	3	3	2	1	10	11	10	0	0
+Entities/Boule de glace chargée/bankalundra_15_anim0_right.anim2d	alundra_15	0	right	5	3	3	2	1	10	11	10	0	0
+Entities/Boule de glace chargée/bankalundra_15_anim0_up.anim2d	alundra_15	0	up	5	3	3	2	1	10	11	6	4	0
+Entities/Boule de glace chargée/bankalundra_15_anim1_down.anim2d	alundra_15	1	down	15	7	3	3	3	8	20	8	0	0
+Entities/Boule de glace chargée/bankalundra_15_anim1_left.anim2d	alundra_15	1	left	15	7	3	3	3	8	20	8	0	0
+Entities/Boule de glace chargée/bankalundra_15_anim1_right.anim2d	alundra_15	1	right	15	7	3	3	3	8	20	8	0	0
+Entities/Boule de glace chargée/bankalundra_15_anim1_up.anim2d	alundra_15	1	up	15	7	3	3	3	8	20	8	0	0
+Entities/Boule de glace/bankalundra_14_anim0_down.anim2d	alundra_14	0	down	5	3	3	3	0	11	11	7	4	0
+Entities/Boule de glace/bankalundra_14_anim0_left.anim2d	alundra_14	0	left	5	3	3	3	0	11	11	11	0	0
+Entities/Boule de glace/bankalundra_14_anim0_right.anim2d	alundra_14	0	right	5	3	3	3	0	11	11	11	0	0
+Entities/Boule de glace/bankalundra_14_anim0_up.anim2d	alundra_14	0	up	5	3	3	3	0	11	11	7	4	0
+Entities/Boule de glace/bankalundra_14_anim1_down.anim2d	alundra_14	1	down	9	5	2	1	2	4	10	4	0	0
+Entities/Boule de glace/bankalundra_14_anim1_left.anim2d	alundra_14	1	left	9	5	2	1	2	4	10	4	0	0
+Entities/Boule de glace/bankalundra_14_anim1_right.anim2d	alundra_14	1	right	9	5	2	1	2	4	10	4	0	0
+Entities/Boule de glace/bankalundra_14_anim1_up.anim2d	alundra_14	1	up	9	5	2	1	2	5	11	5	0	0
+Entities/Boîte bicolore rouge_bleu/bank105_anim2_down.anim2d	105	2	down	8	6	5	2	3	7	15	7	0	0
+Entities/Boîte bicolore rouge_bleu/bank105_anim2_left.anim2d	105	2	left	8	6	5	2	3	7	15	7	0	0
+Entities/Boîte bicolore rouge_bleu/bank105_anim2_right.anim2d	105	2	right	8	6	5	2	3	7	15	7	0	0
+Entities/Boîte bicolore rouge_bleu/bank105_anim2_up.anim2d	105	2	up	8	6	5	2	3	7	15	7	0	0
+Entities/Boîte bicolore rouge_bleu/bank105_anim3_down.anim2d	105	3	down	9	8	5	2	5	7	20	7	0	0
+Entities/Boîte bicolore rouge_bleu/bank105_anim3_left.anim2d	105	3	left	9	8	5	2	5	7	20	7	0	0
+Entities/Boîte bicolore rouge_bleu/bank105_anim3_right.anim2d	105	3	right	9	8	5	2	5	7	20	7	0	0
+Entities/Boîte bicolore rouge_bleu/bank105_anim3_up.anim2d	105	3	up	9	8	5	2	5	7	20	7	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim0_down.anim2d	141	0	down	9	2	2	2	2	12	16	12	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim0_left.anim2d	141	0	left	9	2	2	2	2	12	16	12	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim0_right.anim2d	141	0	right	9	2	2	2	2	12	16	12	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim0_up.anim2d	141	0	up	9	2	2	2	2	12	16	12	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim2_down.anim2d	141	2	down	17	12	11	8	5	58	110	58	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim2_left.anim2d	141	2	left	17	12	11	8	5	58	110	58	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim2_right.anim2d	141	2	right	17	12	11	8	5	58	110	58	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim2_up.anim2d	141	2	up	17	12	11	8	5	58	110	58	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim3_down.anim2d	141	3	down	9	6	6	6	0	48	48	48	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim3_left.anim2d	141	3	left	9	6	6	6	0	48	48	48	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim3_right.anim2d	141	3	right	9	6	6	6	0	48	48	48	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim3_up.anim2d	141	3	up	9	6	6	6	0	48	48	48	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim4_down.anim2d	141	4	down	9	6	6	6	0	48	48	48	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim4_left.anim2d	141	4	left	9	6	6	6	0	48	48	48	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim4_right.anim2d	141	4	right	9	6	6	6	0	48	48	48	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim4_up.anim2d	141	4	up	9	6	6	6	0	48	48	48	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim5_down.anim2d	141	5	down	9	6	6	6	0	48	48	48	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim5_left.anim2d	141	5	left	9	6	6	6	0	48	48	48	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim5_right.anim2d	141	5	right	9	6	6	6	0	48	48	48	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim5_up.anim2d	141	5	up	9	6	6	6	0	48	48	48	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim6_down.anim2d	141	6	down	9	11	8	4	3	19	37	19	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim6_left.anim2d	141	6	left	9	11	8	4	3	19	37	19	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim6_right.anim2d	141	6	right	9	11	8	4	3	19	37	19	0	0
+Entities/Bulle .0-1-2 support _3-4 non support/bank141_anim6_up.anim2d	141	6	up	9	11	8	4	3	19	37	19	0	0
+Entities/Cercueil/bank132_anim2_down.anim2d	132	2	down	8	1	1	0	1	1	7	1	0	0
+Entities/Cercueil/bank132_anim2_left.anim2d	132	2	left	8	1	1	0	1	1	7	1	0	0
+Entities/Cercueil/bank132_anim2_right.anim2d	132	2	right	8	1	1	0	1	1	7	1	0	0
+Entities/Cercueil/bank132_anim2_up.anim2d	132	2	up	8	1	1	0	1	1	7	1	0	0
+Entities/Cercueil/bank132_anim3_down.anim2d	132	3	down	2	1	1	0	0	1	1	1	0	0
+Entities/Cercueil/bank132_anim3_left.anim2d	132	3	left	2	1	1	0	0	1	1	1	0	0
+Entities/Cercueil/bank132_anim3_right.anim2d	132	3	right	2	1	1	0	0	1	1	1	0	0
+Entities/Cercueil/bank132_anim3_up.anim2d	132	3	up	2	1	1	0	0	1	1	1	0	0
+Entities/Champignon non ennemi/bank189_anim0_down.anim2d	189	0	down	14	1	1	1	1	6	13	6	0	0
+Entities/Champignon non ennemi/bank189_anim0_left.anim2d	189	0	left	14	1	1	1	1	6	13	6	0	0
+Entities/Champignon non ennemi/bank189_anim0_right.anim2d	189	0	right	14	1	1	1	1	6	13	6	0	0
+Entities/Champignon non ennemi/bank189_anim0_up.anim2d	189	0	up	14	1	1	1	1	6	13	6	0	0
+Entities/Champignon non ennemi/bank189_anim1_down.anim2d	189	1	down	7	1	1	1	0	6	6	6	0	0
+Entities/Champignon non ennemi/bank189_anim1_left.anim2d	189	1	left	7	1	1	1	0	6	6	6	0	0
+Entities/Champignon non ennemi/bank189_anim1_right.anim2d	189	1	right	7	1	1	1	0	6	6	6	0	0
+Entities/Champignon non ennemi/bank189_anim1_up.anim2d	189	1	up	7	1	1	1	0	6	6	6	0	0
+Entities/Chaîne .0 traversable _1 détruite _2 attente/bank147_anim1_down.anim2d	147	1	down	13	37	30	15	25	210	256	210	0	0
+Entities/Chaîne .0 traversable _1 détruite _2 attente/bank147_anim1_left.anim2d	147	1	left	13	37	30	15	25	210	256	210	0	0
+Entities/Chaîne .0 traversable _1 détruite _2 attente/bank147_anim1_right.anim2d	147	1	right	13	37	30	15	25	210	256	210	0	0
+Entities/Chaîne .0 traversable _1 détruite _2 attente/bank147_anim1_up.anim2d	147	1	up	13	37	30	15	25	210	256	210	0	0
+Entities/Coffre au trésor/bankalundra_30_anim2_down.anim2d	alundra_30	2	down	24	13	3	3	3	15	60	15	0	0
+Entities/Coffre au trésor/bankalundra_30_anim2_left.anim2d	alundra_30	2	left	24	13	3	3	3	15	60	15	0	0
+Entities/Coffre au trésor/bankalundra_30_anim2_right.anim2d	alundra_30	2	right	24	13	3	3	3	15	60	15	0	0
+Entities/Coffre au trésor/bankalundra_30_anim2_up.anim2d	alundra_30	2	up	24	13	3	3	3	15	60	15	0	0
+Entities/Coffre d’Anzes/bankalundra_227_anim1_down.anim2d	alundra_227	1	down	14	12	10	3	9	16	58	16	0	0
+Entities/Coffre d’Anzes/bankalundra_227_anim1_left.anim2d	alundra_227	1	left	14	12	10	3	9	16	58	16	0	0
+Entities/Coffre d’Anzes/bankalundra_227_anim1_right.anim2d	alundra_227	1	right	14	12	10	3	9	16	58	16	0	0
+Entities/Coffre d’Anzes/bankalundra_227_anim1_up.anim2d	alundra_227	1	up	14	12	10	3	9	16	58	16	0	0
+Entities/Colonne de glace/bank134_anim2_down.anim2d	134	2	down	2	1	1	0	0	1	1	1	0	0
+Entities/Colonne de glace/bank134_anim2_left.anim2d	134	2	left	2	1	1	0	0	1	1	1	0	0
+Entities/Colonne de glace/bank134_anim2_right.anim2d	134	2	right	2	1	1	0	0	1	1	1	0	0
+Entities/Colonne de glace/bank134_anim2_up.anim2d	134	2	up	2	1	1	0	0	1	1	1	0	0
+Entities/Colonne de glace/bank134_anim5_down.anim2d	134	5	down	17	10	9	6	5	55	72	55	0	0
+Entities/Colonne de glace/bank134_anim5_left.anim2d	134	5	left	17	10	9	6	5	55	72	55	0	0
+Entities/Colonne de glace/bank134_anim5_right.anim2d	134	5	right	17	10	9	6	5	55	72	55	0	0
+Entities/Colonne de glace/bank134_anim5_up.anim2d	134	5	up	17	10	9	6	5	55	72	55	0	0
+Entities/Flamme/bank63_anim0_down.anim2d	63	0	down	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim0_left.anim2d	63	0	left	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim0_right.anim2d	63	0	right	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim0_up.anim2d	63	0	up	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim1_down.anim2d	63	1	down	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim1_left.anim2d	63	1	left	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim1_right.anim2d	63	1	right	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim1_up.anim2d	63	1	up	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim2_down.anim2d	63	2	down	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim2_left.anim2d	63	2	left	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim2_right.anim2d	63	2	right	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim2_up.anim2d	63	2	up	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim3_down.anim2d	63	3	down	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim3_left.anim2d	63	3	left	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim3_right.anim2d	63	3	right	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim3_up.anim2d	63	3	up	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim4_down.anim2d	63	4	down	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim4_left.anim2d	63	4	left	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim4_right.anim2d	63	4	right	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim4_up.anim2d	63	4	up	9	2	2	2	1	8	12	8	0	0
+Entities/Flamme/bank63_anim5_down.anim2d	63	5	down	7	2	1	1	1	4	6	4	0	0
+Entities/Flamme/bank63_anim5_left.anim2d	63	5	left	7	2	1	1	1	4	6	4	0	0
+Entities/Flamme/bank63_anim5_right.anim2d	63	5	right	7	2	1	1	1	4	6	4	0	0
+Entities/Flamme/bank63_anim5_up.anim2d	63	5	up	7	2	1	1	1	4	6	4	0	0
+Entities/Flamme/bank63_anim7_down.anim2d	63	7	down	30	2	2	2	2	26	42	26	0	0
+Entities/Flamme/bank63_anim7_left.anim2d	63	7	left	30	2	2	2	2	26	42	26	0	0
+Entities/Flamme/bank63_anim7_right.anim2d	63	7	right	30	2	2	2	2	26	42	26	0	0
+Entities/Flamme/bank63_anim7_up.anim2d	63	7	up	30	2	2	2	2	26	42	26	0	0
+Entities/Flamme/bank63_anim8_down.anim2d	63	8	down	21	2	2	1	1	9	21	9	0	0
+Entities/Flamme/bank63_anim8_left.anim2d	63	8	left	21	2	2	1	1	9	21	9	0	0
+Entities/Flamme/bank63_anim8_right.anim2d	63	8	right	21	2	2	1	1	9	21	9	0	0
+Entities/Flamme/bank63_anim8_up.anim2d	63	8	up	21	2	2	1	1	9	21	9	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim0_down.anim2d	81	0	down	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim0_left.anim2d	81	0	left	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim0_right.anim2d	81	0	right	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim0_up.anim2d	81	0	up	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim1_down.anim2d	81	1	down	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim1_left.anim2d	81	1	left	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim1_right.anim2d	81	1	right	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim1_up.anim2d	81	1	up	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim2_down.anim2d	81	2	down	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim2_left.anim2d	81	2	left	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim2_right.anim2d	81	2	right	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim2_up.anim2d	81	2	up	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim3_down.anim2d	81	3	down	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim3_left.anim2d	81	3	left	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim3_right.anim2d	81	3	right	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim3_up.anim2d	81	3	up	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim4_down.anim2d	81	4	down	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim4_left.anim2d	81	4	left	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim4_right.anim2d	81	4	right	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim4_up.anim2d	81	4	up	9	2	2	2	1	8	12	8	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim5_down.anim2d	81	5	down	7	2	1	1	1	4	6	4	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim5_left.anim2d	81	5	left	7	2	1	1	1	4	6	4	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim5_right.anim2d	81	5	right	7	2	1	1	1	4	6	4	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim5_up.anim2d	81	5	up	7	2	1	1	1	4	6	4	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim7_down.anim2d	81	7	down	30	2	2	2	2	26	42	26	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim7_left.anim2d	81	7	left	30	2	2	2	2	26	42	26	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim7_right.anim2d	81	7	right	30	2	2	2	2	26	42	26	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim7_up.anim2d	81	7	up	30	2	2	2	2	26	42	26	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim8_down.anim2d	81	8	down	21	2	2	1	1	9	21	9	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim8_left.anim2d	81	8	left	21	2	2	1	1	9	21	9	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim8_right.anim2d	81	8	right	21	2	2	1	1	9	21	9	0	0
+Entities/Flammes (pour Ice Rod)/bank81_anim8_up.anim2d	81	8	up	21	2	2	1	1	9	21	9	0	0
+Entities/Flammes horizontales/bank87_anim0_down.anim2d	87	0	down	5	2	2	2	0	6	6	6	0	0
+Entities/Flammes horizontales/bank87_anim0_left.anim2d	87	0	left	5	2	2	2	0	6	6	6	0	0
+Entities/Flammes horizontales/bank87_anim0_right.anim2d	87	0	right	5	2	2	2	0	6	6	6	0	0
+Entities/Flammes horizontales/bank87_anim0_up.anim2d	87	0	up	5	2	2	2	0	6	6	6	0	0
+Entities/Flammes horizontales/bank87_anim1_down.anim2d	87	1	down	4	4	4	1	1	11	12	11	0	0
+Entities/Flammes horizontales/bank87_anim1_left.anim2d	87	1	left	4	5	5	1	1	12	13	12	0	0
+Entities/Flammes horizontales/bank87_anim1_right.anim2d	87	1	right	4	5	5	1	1	12	13	12	0	0
+Entities/Flammes horizontales/bank87_anim1_up.anim2d	87	1	up	4	4	4	1	1	11	12	11	0	0
+Entities/Flammes horizontales/bank87_anim2_down.anim2d	87	2	down	6	4	4	1	1	12	14	12	0	0
+Entities/Flammes horizontales/bank87_anim2_left.anim2d	87	2	left	6	5	5	1	1	13	15	13	0	0
+Entities/Flammes horizontales/bank87_anim2_right.anim2d	87	2	right	6	5	5	1	1	13	15	13	0	0
+Entities/Flammes horizontales/bank87_anim2_up.anim2d	87	2	up	6	4	4	1	1	12	14	12	0	0
+Entities/Flammes horizontales/bank87_anim3_down.anim2d	87	3	down	5	3	3	3	1	9	11	9	0	0
+Entities/Flammes horizontales/bank87_anim3_left.anim2d	87	3	left	5	4	4	3	1	13	15	13	0	0
+Entities/Flammes horizontales/bank87_anim3_right.anim2d	87	3	right	5	4	4	3	1	13	15	13	0	0
+Entities/Flammes horizontales/bank87_anim3_up.anim2d	87	3	up	5	3	3	3	1	9	11	9	0	0
+Entities/Flèches Niv.1/bankalundra_3_anim0_down.anim2d	alundra_3	0	down	5	1	1	1	0	4	4	0	4	0
+Entities/Flèches Niv.1/bankalundra_3_anim0_up.anim2d	alundra_3	0	up	5	1	1	1	0	4	4	0	4	0
+Entities/Flèches Niv.1/bankalundra_3_anim1_down.anim2d	alundra_3	1	down	9	1	1	1	1	7	8	1	6	0
+Entities/Flèches Niv.1/bankalundra_3_anim1_left.anim2d	alundra_3	1	left	9	1	1	1	1	7	8	1	6	0
+Entities/Flèches Niv.1/bankalundra_3_anim1_right.anim2d	alundra_3	1	right	9	1	1	1	1	7	8	1	6	0
+Entities/Flèches Niv.1/bankalundra_3_anim1_up.anim2d	alundra_3	1	up	9	1	1	1	1	7	8	1	6	0
+Entities/Flèches Niv.2/bankalundra_4_anim0_down.anim2d	alundra_4	0	down	5	1	1	1	0	4	4	0	4	0
+Entities/Flèches Niv.2/bankalundra_4_anim0_up.anim2d	alundra_4	0	up	5	1	1	1	0	4	4	0	4	0
+Entities/Flèches Niv.2/bankalundra_4_anim1_down.anim2d	alundra_4	1	down	9	1	1	1	1	7	8	1	6	0
+Entities/Flèches Niv.2/bankalundra_4_anim1_left.anim2d	alundra_4	1	left	9	1	1	1	1	7	8	1	6	0
+Entities/Flèches Niv.2/bankalundra_4_anim1_right.anim2d	alundra_4	1	right	9	1	1	1	1	7	8	1	6	0
+Entities/Flèches Niv.2/bankalundra_4_anim1_up.anim2d	alundra_4	1	up	9	1	1	1	1	7	8	1	6	0
+Entities/Flèches chargées/bankalundra_7_anim0_down.anim2d	alundra_7	0	down	5	6	6	2	3	13	19	9	4	0
+Entities/Flèches chargées/bankalundra_7_anim0_left.anim2d	alundra_7	0	left	5	5	3	3	2	8	12	8	0	0
+Entities/Flèches chargées/bankalundra_7_anim0_right.anim2d	alundra_7	0	right	5	5	3	3	2	8	12	8	0	0
+Entities/Flèches chargées/bankalundra_7_anim0_up.anim2d	alundra_7	0	up	5	6	6	3	3	13	19	9	4	0
+Entities/Goutte d’eau/bank135_anim2_down.anim2d	135	2	down	8	5	3	1	2	6	12	6	0	0
+Entities/Goutte d’eau/bank135_anim2_left.anim2d	135	2	left	8	5	3	1	2	6	12	6	0	0
+Entities/Goutte d’eau/bank135_anim2_right.anim2d	135	2	right	8	5	3	1	2	6	12	6	0	0
+Entities/Goutte d’eau/bank135_anim2_up.anim2d	135	2	up	8	5	3	1	2	6	12	6	0	0
+Entities/Grand visage (Aida)/bank90_anim0_down.anim2d	90	0	down	6	5	2	2	2	6	9	6	0	0
+Entities/Grand visage (Aida)/bank90_anim0_left.anim2d	90	0	left	6	5	2	2	2	6	9	6	0	0
+Entities/Grand visage (Aida)/bank90_anim0_right.anim2d	90	0	right	6	5	2	2	2	6	9	6	0	0
+Entities/Grand visage (Aida)/bank90_anim0_up.anim2d	90	0	up	6	5	2	2	2	6	9	6	0	0
+Entities/Grand visage (Aida)/bank90_anim10_down.anim2d	90	10	down	6	5	2	2	2	6	9	6	0	0
+Entities/Grand visage (Aida)/bank90_anim10_left.anim2d	90	10	left	6	5	2	2	2	6	9	6	0	0
+Entities/Grand visage (Aida)/bank90_anim10_right.anim2d	90	10	right	6	5	2	2	2	6	9	6	0	0
+Entities/Grand visage (Aida)/bank90_anim10_up.anim2d	90	10	up	6	5	2	2	2	6	9	6	0	0
+Entities/Grand visage (Aida)/bank90_anim12_down.anim2d	90	12	down	6	5	2	2	2	6	9	6	0	0
+Entities/Grand visage (Aida)/bank90_anim12_left.anim2d	90	12	left	6	5	2	2	2	6	9	6	0	0
+Entities/Grand visage (Aida)/bank90_anim12_right.anim2d	90	12	right	6	5	2	2	2	6	9	6	0	0
+Entities/Grand visage (Aida)/bank90_anim12_up.anim2d	90	12	up	6	5	2	2	2	6	9	6	0	0
+Entities/Grand visage (Aida)/bank90_anim7_down.anim2d	90	7	down	17	9	5	4	5	22	47	22	0	0
+Entities/Grand visage (Aida)/bank90_anim7_left.anim2d	90	7	left	17	9	5	4	5	22	47	22	0	0
+Entities/Grand visage (Aida)/bank90_anim7_right.anim2d	90	7	right	17	9	5	4	5	22	47	22	0	0
+Entities/Grand visage (Aida)/bank90_anim7_up.anim2d	90	7	up	17	9	5	4	5	22	47	22	0	0
+Entities/Grand visage (Aida)/bank90_anim8_down.anim2d	90	8	down	17	9	5	4	5	22	47	22	0	0
+Entities/Grand visage (Aida)/bank90_anim8_left.anim2d	90	8	left	17	9	5	4	5	22	47	22	0	0
+Entities/Grand visage (Aida)/bank90_anim8_right.anim2d	90	8	right	17	9	5	4	5	22	47	22	0	0
+Entities/Grand visage (Aida)/bank90_anim8_up.anim2d	90	8	up	17	9	5	4	5	22	47	22	0	0
+Entities/Grand visage (Aida)/bank90_anim9_down.anim2d	90	9	down	17	9	5	4	5	22	47	22	0	0
+Entities/Grand visage (Aida)/bank90_anim9_left.anim2d	90	9	left	17	9	5	4	5	22	47	22	0	0
+Entities/Grand visage (Aida)/bank90_anim9_right.anim2d	90	9	right	17	9	5	4	5	22	47	22	0	0
+Entities/Grand visage (Aida)/bank90_anim9_up.anim2d	90	9	up	17	9	5	4	5	22	47	22	0	0
+Entities/Générateur/bank138_anim1_down.anim2d	138	1	down	36	4	2	2	2	35	44	35	0	0
+Entities/Générateur/bank138_anim1_left.anim2d	138	1	left	36	4	2	2	2	35	44	35	0	0
+Entities/Générateur/bank138_anim1_right.anim2d	138	1	right	36	4	2	2	2	35	44	35	0	0
+Entities/Générateur/bank138_anim1_up.anim2d	138	1	up	36	4	2	2	2	35	44	35	0	0
+Entities/Générateur/bank138_anim2_down.anim2d	138	2	down	5	1	1	1	1	2	4	2	0	0
+Entities/Générateur/bank138_anim2_left.anim2d	138	2	left	5	1	1	1	1	2	4	2	0	0
+Entities/Générateur/bank138_anim2_right.anim2d	138	2	right	5	1	1	1	1	2	4	2	0	0
+Entities/Générateur/bank138_anim2_up.anim2d	138	2	up	5	1	1	1	1	2	4	2	0	0
+Entities/Générateur/bank138_anim3_down.anim2d	138	3	down	5	1	1	1	1	2	4	2	0	0
+Entities/Générateur/bank138_anim3_left.anim2d	138	3	left	5	1	1	1	1	2	4	2	0	0
+Entities/Générateur/bank138_anim3_right.anim2d	138	3	right	5	1	1	1	1	2	4	2	0	0
+Entities/Générateur/bank138_anim3_up.anim2d	138	3	up	5	1	1	1	1	2	4	2	0	0
+Entities/I62_Emblème du sang de pigeon/bankalundra_92_anim1_down.anim2d	alundra_92	1	down	2	1	1	0	0	1	1	1	0	0
+Entities/I62_Emblème du sang de pigeon/bankalundra_92_anim1_left.anim2d	alundra_92	1	left	2	1	1	0	0	1	1	1	0	0
+Entities/I62_Emblème du sang de pigeon/bankalundra_92_anim1_right.anim2d	alundra_92	1	right	2	1	1	0	0	1	1	1	0	0
+Entities/I62_Emblème du sang de pigeon/bankalundra_92_anim1_up.anim2d	alundra_92	1	up	2	1	1	0	0	1	1	1	0	0
+Entities/I63_Emblème azur/bankalundra_93_anim1_down.anim2d	alundra_93	1	down	2	1	1	0	0	1	1	1	0	0
+Entities/I63_Emblème azur/bankalundra_93_anim1_left.anim2d	alundra_93	1	left	2	1	1	0	0	1	1	1	0	0
+Entities/I63_Emblème azur/bankalundra_93_anim1_right.anim2d	alundra_93	1	right	2	1	1	0	0	1	1	1	0	0
+Entities/I63_Emblème azur/bankalundra_93_anim1_up.anim2d	alundra_93	1	up	2	1	1	0	0	1	1	1	0	0
+Entities/I64_Emblème de topaze/bankalundra_94_anim1_down.anim2d	alundra_94	1	down	2	1	1	0	0	1	1	1	0	0
+Entities/I64_Emblème de topaze/bankalundra_94_anim1_left.anim2d	alundra_94	1	left	2	1	1	0	0	1	1	1	0	0
+Entities/I64_Emblème de topaze/bankalundra_94_anim1_right.anim2d	alundra_94	1	right	2	1	1	0	0	1	1	1	0	0
+Entities/I64_Emblème de topaze/bankalundra_94_anim1_up.anim2d	alundra_94	1	up	2	1	1	0	0	1	1	1	0	0
+Entities/I65_Emblème brun/bankalundra_95_anim1_down.anim2d	alundra_95	1	down	2	1	1	0	0	1	1	1	0	0
+Entities/I65_Emblème brun/bankalundra_95_anim1_left.anim2d	alundra_95	1	left	2	1	1	0	0	1	1	1	0	0
+Entities/I65_Emblème brun/bankalundra_95_anim1_right.anim2d	alundra_95	1	right	2	1	1	0	0	1	1	1	0	0
+Entities/I65_Emblème brun/bankalundra_95_anim1_up.anim2d	alundra_95	1	up	2	1	1	0	0	1	1	1	0	0
+Entities/I66_Emblème écarlate/bankalundra_96_anim1_down.anim2d	alundra_96	1	down	2	1	1	0	0	1	1	1	0	0
+Entities/I66_Emblème écarlate/bankalundra_96_anim1_left.anim2d	alundra_96	1	left	2	1	1	0	0	1	1	1	0	0
+Entities/I66_Emblème écarlate/bankalundra_96_anim1_right.anim2d	alundra_96	1	right	2	1	1	0	0	1	1	1	0	0
+Entities/I66_Emblème écarlate/bankalundra_96_anim1_up.anim2d	alundra_96	1	up	2	1	1	0	0	1	1	1	0	0
+Entities/I67_Emblème vert sombre/bankalundra_97_anim1_down.anim2d	alundra_97	1	down	2	1	1	0	0	1	1	1	0	0
+Entities/I67_Emblème vert sombre/bankalundra_97_anim1_left.anim2d	alundra_97	1	left	2	1	1	0	0	1	1	1	0	0
+Entities/I67_Emblème vert sombre/bankalundra_97_anim1_right.anim2d	alundra_97	1	right	2	1	1	0	0	1	1	1	0	0
+Entities/I67_Emblème vert sombre/bankalundra_97_anim1_up.anim2d	alundra_97	1	up	2	1	1	0	0	1	1	1	0	0
+Entities/I68_Emblème d’argent/bankalundra_98_anim1_down.anim2d	alundra_98	1	down	2	1	1	0	0	1	1	1	0	0
+Entities/I68_Emblème d’argent/bankalundra_98_anim1_left.anim2d	alundra_98	1	left	2	1	1	0	0	1	1	1	0	0
+Entities/I68_Emblème d’argent/bankalundra_98_anim1_right.anim2d	alundra_98	1	right	2	1	1	0	0	1	1	1	0	0
+Entities/I68_Emblème d’argent/bankalundra_98_anim1_up.anim2d	alundra_98	1	up	2	1	1	0	0	1	1	1	0	0
+Entities/I69_1 Gilda/bankalundra_99_anim0_down.anim2d	alundra_99	0	down	5	5	5	0	0	11	11	11	0	0
+Entities/I69_1 Gilda/bankalundra_99_anim0_left.anim2d	alundra_99	0	left	5	5	5	0	0	11	11	11	0	0
+Entities/I69_1 Gilda/bankalundra_99_anim0_right.anim2d	alundra_99	0	right	5	5	5	0	0	11	11	11	0	0
+Entities/I69_1 Gilda/bankalundra_99_anim0_up.anim2d	alundra_99	0	up	5	5	5	0	0	11	11	11	0	0
+Entities/Interrupteur (allumage)/bank51_anim1_down.anim2d	51	1	down	9	4	3	3	2	11	16	11	0	0
+Entities/Interrupteur (allumage)/bank51_anim1_left.anim2d	51	1	left	9	4	3	3	2	11	16	11	0	0
+Entities/Interrupteur (allumage)/bank51_anim1_right.anim2d	51	1	right	9	4	3	3	2	11	16	11	0	0
+Entities/Interrupteur (allumage)/bank51_anim1_up.anim2d	51	1	up	9	4	3	3	2	11	16	11	0	0
+Entities/Interrupteur (allumage)/bank51_anim2_down.anim2d	51	2	down	9	3	2	2	2	7	12	7	0	0
+Entities/Interrupteur (allumage)/bank51_anim2_left.anim2d	51	2	left	9	3	2	2	2	7	12	7	0	0
+Entities/Interrupteur (allumage)/bank51_anim2_right.anim2d	51	2	right	9	3	2	2	2	7	12	7	0	0
+Entities/Interrupteur (allumage)/bank51_anim2_up.anim2d	51	2	up	9	3	2	2	2	7	12	7	0	0
+Entities/Interrupteur (allumage)/bank51_anim3_down.anim2d	51	3	down	17	3	2	2	2	12	24	12	0	0
+Entities/Interrupteur (allumage)/bank51_anim3_left.anim2d	51	3	left	17	3	2	2	2	12	24	12	0	0
+Entities/Interrupteur (allumage)/bank51_anim3_right.anim2d	51	3	right	17	3	2	2	2	12	24	12	0	0
+Entities/Interrupteur (allumage)/bank51_anim3_up.anim2d	51	3	up	17	3	2	2	2	12	24	12	0	0
+Entities/Interrupteur (bascule)/bank52_anim0_down.anim2d	52	0	down	5	2	1	0	0	4	4	0	4	0
+Entities/Interrupteur (bascule)/bank52_anim0_left.anim2d	52	0	left	5	2	1	0	0	4	4	4	0	0
+Entities/Interrupteur (bascule)/bank52_anim0_right.anim2d	52	0	right	5	2	1	0	0	4	4	4	0	0
+Entities/Interrupteur (bascule)/bank52_anim0_up.anim2d	52	0	up	5	2	1	0	0	4	4	0	4	0
+Entities/Interrupteur (bascule)/bank52_anim1_down.anim2d	52	1	down	7	2	1	1	0	6	6	1	3	2
+Entities/Interrupteur (bascule)/bank52_anim1_left.anim2d	52	1	left	7	2	2	1	2	6	12	1	3	2
+Entities/Interrupteur (bascule)/bank52_anim1_right.anim2d	52	1	right	7	2	1	1	0	6	6	1	3	2
+Entities/Interrupteur (bascule)/bank52_anim1_up.anim2d	52	1	up	7	2	1	1	0	6	6	1	3	2
+Entities/Interrupteur (bascule)/bank52_anim2_down.anim2d	52	2	down	7	2	1	1	0	6	6	1	3	2
+Entities/Interrupteur (bascule)/bank52_anim2_left.anim2d	52	2	left	7	2	1	1	0	6	6	1	3	2
+Entities/Interrupteur (bascule)/bank52_anim2_right.anim2d	52	2	right	7	2	1	1	0	6	6	1	3	2
+Entities/Interrupteur (bascule)/bank52_anim2_up.anim2d	52	2	up	7	2	2	1	2	6	12	1	3	2
+Entities/Interrupteur (levier)/bank49_anim0_down.anim2d	49	0	down	2	2	1	0	0	1	1	0	1	0
+Entities/Interrupteur (levier)/bank49_anim0_left.anim2d	49	0	left	2	2	1	0	0	1	1	0	1	0
+Entities/Interrupteur (levier)/bank49_anim0_right.anim2d	49	0	right	2	2	1	0	0	1	1	0	1	0
+Entities/Interrupteur (levier)/bank49_anim0_up.anim2d	49	0	up	2	2	1	0	0	1	1	0	1	0
+Entities/Interrupteur (levier)/bank49_anim1_down.anim2d	49	1	down	2	2	1	0	0	1	1	0	1	0
+Entities/Interrupteur (levier)/bank49_anim1_left.anim2d	49	1	left	2	2	1	0	0	1	1	0	1	0
+Entities/Interrupteur (levier)/bank49_anim1_right.anim2d	49	1	right	2	2	1	0	0	1	1	0	1	0
+Entities/Interrupteur (levier)/bank49_anim1_up.anim2d	49	1	up	2	2	1	0	0	1	1	0	1	0
+Entities/Interrupteur (levier)/bank49_anim2_down.anim2d	49	2	down	11	2	1	1	1	9	10	0	7	2
+Entities/Interrupteur (levier)/bank49_anim2_left.anim2d	49	2	left	11	2	1	1	1	9	10	0	7	2
+Entities/Interrupteur (levier)/bank49_anim2_right.anim2d	49	2	right	11	2	1	1	1	9	10	0	7	2
+Entities/Interrupteur (levier)/bank49_anim2_up.anim2d	49	2	up	11	2	1	1	1	9	10	0	7	2
+Entities/Interrupteur (levier)/bank49_anim3_down.anim2d	49	3	down	11	2	1	1	1	9	10	0	7	2
+Entities/Interrupteur (levier)/bank49_anim3_left.anim2d	49	3	left	11	2	1	1	1	9	10	0	7	2
+Entities/Interrupteur (levier)/bank49_anim3_right.anim2d	49	3	right	11	2	1	1	1	9	10	0	7	2
+Entities/Interrupteur (levier)/bank49_anim3_up.anim2d	49	3	up	11	2	1	1	1	9	10	0	7	2
+Entities/Interrupteur (mur)/bank50_anim0_down.anim2d	50	0	down	2	3	1	0	0	1	1	1	0	0
+Entities/Interrupteur (mur)/bank50_anim0_left.anim2d	50	0	left	2	3	1	0	0	1	1	1	0	0
+Entities/Interrupteur (mur)/bank50_anim0_right.anim2d	50	0	right	2	3	1	0	0	1	1	1	0	0
+Entities/Interrupteur (mur)/bank50_anim0_up.anim2d	50	0	up	2	3	1	0	0	1	1	1	0	0
+Entities/Interrupteur (mur)/bank50_anim1_down.anim2d	50	1	down	2	3	1	0	0	1	1	1	0	0
+Entities/Interrupteur (mur)/bank50_anim1_left.anim2d	50	1	left	2	3	1	0	0	1	1	1	0	0
+Entities/Interrupteur (mur)/bank50_anim1_right.anim2d	50	1	right	2	3	1	0	0	1	1	1	0	0
+Entities/Interrupteur (mur)/bank50_anim1_up.anim2d	50	1	up	2	3	1	0	0	1	1	1	0	0
+Entities/Interrupteur (mur)/bank50_anim2_down.anim2d	50	2	down	5	3	1	1	0	4	4	4	0	0
+Entities/Interrupteur (mur)/bank50_anim2_left.anim2d	50	2	left	5	3	1	1	0	4	4	4	0	0
+Entities/Interrupteur (mur)/bank50_anim2_right.anim2d	50	2	right	5	3	1	1	0	4	4	4	0	0
+Entities/Interrupteur (mur)/bank50_anim2_up.anim2d	50	2	up	5	3	1	1	0	4	4	4	0	0
+Entities/Interrupteur (mur)/bank50_anim3_down.anim2d	50	3	down	5	3	1	1	0	4	4	4	0	0
+Entities/Interrupteur (mur)/bank50_anim3_left.anim2d	50	3	left	5	3	1	1	0	4	4	4	0	0
+Entities/Interrupteur (mur)/bank50_anim3_right.anim2d	50	3	right	5	3	1	1	0	4	4	4	0	0
+Entities/Interrupteur (mur)/bank50_anim3_up.anim2d	50	3	up	5	3	1	1	0	4	4	4	0	0
+Entities/Interrupteur de lampe/bank142_anim1_down.anim2d	142	1	down	5	4	1	1	1	2	4	2	0	0
+Entities/Interrupteur de lampe/bank142_anim1_left.anim2d	142	1	left	5	4	1	1	1	2	4	2	0	0
+Entities/Interrupteur de lampe/bank142_anim1_right.anim2d	142	1	right	5	4	1	1	1	2	4	2	0	0
+Entities/Interrupteur de lampe/bank142_anim1_up.anim2d	142	1	up	5	4	1	1	1	2	4	2	0	0
+Entities/Interrupteur à ballon/bank173_anim0_down.anim2d	173	0	down	7	3	1	1	1	4	6	4	0	0
+Entities/Interrupteur à ballon/bank173_anim0_left.anim2d	173	0	left	7	3	1	1	1	4	6	4	0	0
+Entities/Interrupteur à ballon/bank173_anim0_right.anim2d	173	0	right	7	3	1	1	1	4	6	4	0	0
+Entities/Interrupteur à ballon/bank173_anim0_up.anim2d	173	0	up	7	3	1	1	1	4	6	4	0	0
+Entities/Interrupteur à ballon/bank173_anim1_down.anim2d	173	1	down	7	3	1	1	1	4	6	4	0	0
+Entities/Interrupteur à ballon/bank173_anim1_left.anim2d	173	1	left	7	3	1	1	1	4	6	4	0	0
+Entities/Interrupteur à ballon/bank173_anim1_right.anim2d	173	1	right	7	3	1	1	1	4	6	4	0	0
+Entities/Interrupteur à ballon/bank173_anim1_up.anim2d	173	1	up	7	3	1	1	1	4	6	4	0	0
+Entities/Interrupteur à ballon/bank173_anim2_down.anim2d	173	2	down	12	7	5	5	5	30	47	30	0	0
+Entities/Interrupteur à ballon/bank173_anim2_left.anim2d	173	2	left	12	7	5	5	5	30	47	30	0	0
+Entities/Interrupteur à ballon/bank173_anim2_right.anim2d	173	2	right	12	7	5	5	5	30	47	30	0	0
+Entities/Interrupteur à ballon/bank173_anim2_up.anim2d	173	2	up	12	7	5	5	5	30	47	30	0	0
+Entities/Interrupteur à ballon/bank173_anim3_down.anim2d	173	3	down	12	7	5	5	5	30	47	30	0	0
+Entities/Interrupteur à ballon/bank173_anim3_left.anim2d	173	3	left	12	7	5	5	5	30	47	30	0	0
+Entities/Interrupteur à ballon/bank173_anim3_right.anim2d	173	3	right	12	7	5	5	5	30	47	30	0	0
+Entities/Interrupteur à ballon/bank173_anim3_up.anim2d	173	3	up	12	7	5	5	5	30	47	30	0	0
+Entities/Interrupteur à ballon/bank173_anim4_down.anim2d	173	4	down	7	3	1	1	1	4	6	4	0	0
+Entities/Interrupteur à ballon/bank173_anim4_left.anim2d	173	4	left	7	3	1	1	1	4	6	4	0	0
+Entities/Interrupteur à ballon/bank173_anim4_right.anim2d	173	4	right	7	3	1	1	1	4	6	4	0	0
+Entities/Interrupteur à ballon/bank173_anim4_up.anim2d	173	4	up	7	3	1	1	1	4	6	4	0	0
+Entities/Interrupteur à ballon/bank173_anim5_down.anim2d	173	5	down	7	3	1	1	1	4	6	4	0	0
+Entities/Interrupteur à ballon/bank173_anim5_left.anim2d	173	5	left	7	3	1	1	1	4	6	4	0	0
+Entities/Interrupteur à ballon/bank173_anim5_right.anim2d	173	5	right	7	3	1	1	1	4	6	4	0	0
+Entities/Interrupteur à ballon/bank173_anim5_up.anim2d	173	5	up	7	3	1	1	1	4	6	4	0	0
+Entities/Interrupteur à ballon/bank173_anim6_down.anim2d	173	6	down	12	7	5	5	5	30	47	30	0	0
+Entities/Interrupteur à ballon/bank173_anim6_left.anim2d	173	6	left	12	7	5	5	5	30	47	30	0	0
+Entities/Interrupteur à ballon/bank173_anim6_right.anim2d	173	6	right	12	7	5	5	5	30	47	30	0	0
+Entities/Interrupteur à ballon/bank173_anim6_up.anim2d	173	6	up	12	7	5	5	5	30	47	30	0	0
+Entities/Interrupteur à ballon/bank173_anim7_down.anim2d	173	7	down	12	7	5	5	5	30	47	30	0	0
+Entities/Interrupteur à ballon/bank173_anim7_left.anim2d	173	7	left	12	7	5	5	5	30	47	30	0	0
+Entities/Interrupteur à ballon/bank173_anim7_right.anim2d	173	7	right	12	7	5	5	5	30	47	30	0	0
+Entities/Interrupteur à ballon/bank173_anim7_up.anim2d	173	7	up	12	7	5	5	5	30	47	30	0	0
+Entities/Laser (_)/bankalundra_251_anim0_down.anim2d	alundra_251	0	down	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim0_left.anim2d	alundra_251	0	left	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim0_right.anim2d	alundra_251	0	right	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim0_up.anim2d	alundra_251	0	up	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim1_down.anim2d	alundra_251	1	down	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim1_left.anim2d	alundra_251	1	left	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim1_right.anim2d	alundra_251	1	right	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim1_up.anim2d	alundra_251	1	up	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim2_down.anim2d	alundra_251	2	down	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim2_left.anim2d	alundra_251	2	left	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim2_right.anim2d	alundra_251	2	right	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim2_up.anim2d	alundra_251	2	up	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim3_down.anim2d	alundra_251	3	down	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim3_left.anim2d	alundra_251	3	left	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim3_right.anim2d	alundra_251	3	right	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim3_up.anim2d	alundra_251	3	up	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim4_down.anim2d	alundra_251	4	down	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim4_left.anim2d	alundra_251	4	left	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim4_right.anim2d	alundra_251	4	right	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim4_up.anim2d	alundra_251	4	up	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim5_down.anim2d	alundra_251	5	down	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim5_left.anim2d	alundra_251	5	left	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim5_right.anim2d	alundra_251	5	right	6	2	2	2	2	8	10	8	0	0
+Entities/Laser (_)/bankalundra_251_anim5_up.anim2d	alundra_251	5	up	6	2	2	2	2	8	10	8	0	0
+Entities/Magie de feu Niv.1/bankalundra_20_anim0_down.anim2d	alundra_20	0	down	30	4	4	3	2	78	98	78	0	0
+Entities/Magie de feu Niv.1/bankalundra_20_anim0_left.anim2d	alundra_20	0	left	30	4	4	3	2	78	98	78	0	0
+Entities/Magie de feu Niv.1/bankalundra_20_anim0_right.anim2d	alundra_20	0	right	30	4	4	3	2	78	98	78	0	0
+Entities/Magie de feu Niv.1/bankalundra_20_anim0_up.anim2d	alundra_20	0	up	30	4	4	3	2	78	98	78	0	0
+Entities/Magie de feu Niv.2/bankalundra_21_anim0_down.anim2d	alundra_21	0	down	40	17	17	17	14	295	365	295	0	0
+Entities/Magie de feu Niv.2/bankalundra_21_anim0_left.anim2d	alundra_21	0	left	40	17	17	17	14	295	365	295	0	0
+Entities/Magie de feu Niv.2/bankalundra_21_anim0_right.anim2d	alundra_21	0	right	40	17	17	17	14	295	365	295	0	0
+Entities/Magie de feu Niv.2/bankalundra_21_anim0_up.anim2d	alundra_21	0	up	40	17	17	17	14	295	365	295	0	0
+Entities/Magie de terre Niv.1/bankalundra_16_anim0_down.anim2d	alundra_16	0	down	13	2	2	2	2	22	24	22	0	0
+Entities/Magie de terre Niv.1/bankalundra_16_anim0_left.anim2d	alundra_16	0	left	13	2	2	2	2	22	24	22	0	0
+Entities/Magie de terre Niv.1/bankalundra_16_anim0_right.anim2d	alundra_16	0	right	13	2	2	2	2	22	24	22	0	0
+Entities/Magie de terre Niv.1/bankalundra_16_anim0_up.anim2d	alundra_16	0	up	13	2	2	2	2	22	24	22	0	0
+Entities/Magie de terre Niv.1/bankalundra_16_anim1_down.anim2d	alundra_16	1	down	7	5	4	2	1	19	20	19	0	0
+Entities/Magie de terre Niv.1/bankalundra_16_anim1_left.anim2d	alundra_16	1	left	7	5	4	2	1	19	20	19	0	0
+Entities/Magie de terre Niv.1/bankalundra_16_anim1_right.anim2d	alundra_16	1	right	7	5	4	2	1	19	20	19	0	0
+Entities/Magie de terre Niv.1/bankalundra_16_anim1_up.anim2d	alundra_16	1	up	7	5	4	2	1	19	20	19	0	0
+Entities/Magie de terre Niv.1/bankalundra_16_anim2_down.anim2d	alundra_16	2	down	5	2	2	1	0	8	8	8	0	0
+Entities/Magie de terre Niv.1/bankalundra_16_anim2_left.anim2d	alundra_16	2	left	5	2	2	1	0	8	8	8	0	0
+Entities/Magie de terre Niv.1/bankalundra_16_anim2_right.anim2d	alundra_16	2	right	5	2	2	1	0	8	8	8	0	0
+Entities/Magie de terre Niv.1/bankalundra_16_anim2_up.anim2d	alundra_16	2	up	5	2	2	1	0	8	8	8	0	0
+Entities/Magie de terre Niv.2/bankalundra_17_anim0_down.anim2d	alundra_17	0	down	17	1	1	1	0	16	16	1	10	5
+Entities/Magie de terre Niv.2/bankalundra_17_anim0_left.anim2d	alundra_17	0	left	17	1	1	1	0	16	16	1	10	5
+Entities/Magie de terre Niv.2/bankalundra_17_anim0_right.anim2d	alundra_17	0	right	17	1	1	1	0	16	16	1	10	5
+Entities/Magie de terre Niv.2/bankalundra_17_anim0_up.anim2d	alundra_17	0	up	17	1	1	1	0	16	16	1	10	5
+Entities/Magie de terre Niv.2/bankalundra_17_anim1_down.anim2d	alundra_17	1	down	24	14	14	14	4	225	229	225	0	0
+Entities/Magie de terre Niv.2/bankalundra_17_anim1_left.anim2d	alundra_17	1	left	24	14	14	14	4	225	229	225	0	0
+Entities/Magie de terre Niv.2/bankalundra_17_anim1_right.anim2d	alundra_17	1	right	24	14	14	14	4	225	229	225	0	0
+Entities/Magie de terre Niv.2/bankalundra_17_anim1_up.anim2d	alundra_17	1	up	24	14	14	14	4	225	229	225	0	0
+Entities/Magie de terre Niv.2/bankalundra_17_anim2_down.anim2d	alundra_17	2	down	73	1	1	1	0	72	72	2	35	35
+Entities/Magie de terre Niv.2/bankalundra_17_anim2_left.anim2d	alundra_17	2	left	73	1	1	1	0	72	72	2	35	35
+Entities/Magie de terre Niv.2/bankalundra_17_anim2_right.anim2d	alundra_17	2	right	73	1	1	1	0	72	72	2	35	35
+Entities/Magie de terre Niv.2/bankalundra_17_anim2_up.anim2d	alundra_17	2	up	73	1	1	1	0	72	72	2	35	35
+Entities/Magie de vent Niv.1/bankalundra_22_anim0_down.anim2d	alundra_22	0	down	15	4	3	3	2	18	29	16	2	0
+Entities/Magie de vent Niv.1/bankalundra_22_anim0_left.anim2d	alundra_22	0	left	15	4	3	3	2	18	29	16	2	0
+Entities/Magie de vent Niv.1/bankalundra_22_anim0_right.anim2d	alundra_22	0	right	15	4	3	3	2	18	29	16	2	0
+Entities/Magie de vent Niv.1/bankalundra_22_anim0_up.anim2d	alundra_22	0	up	15	4	3	3	2	18	29	16	2	0
+Entities/Magie de vent Niv.2 (bas)/bankalundra_24_anim0_down.anim2d	alundra_24	0	down	76	10	10	10	1	606	640	606	0	0
+Entities/Magie de vent Niv.2 (bas)/bankalundra_24_anim0_left.anim2d	alundra_24	0	left	76	10	10	10	1	606	640	606	0	0
+Entities/Magie de vent Niv.2 (bas)/bankalundra_24_anim0_right.anim2d	alundra_24	0	right	76	10	10	10	1	606	640	606	0	0
+Entities/Magie de vent Niv.2 (bas)/bankalundra_24_anim0_up.anim2d	alundra_24	0	up	76	10	10	10	1	606	640	606	0	0
+Entities/Magie d’eau Niv.2/bankalundra_19_anim0_down.anim2d	alundra_19	0	down	14	3	1	1	1	9	13	9	0	0
+Entities/Magie d’eau Niv.2/bankalundra_19_anim0_left.anim2d	alundra_19	0	left	14	3	1	1	1	9	13	9	0	0
+Entities/Magie d’eau Niv.2/bankalundra_19_anim0_right.anim2d	alundra_19	0	right	14	3	1	1	1	9	13	9	0	0
+Entities/Magie d’eau Niv.2/bankalundra_19_anim0_up.anim2d	alundra_19	0	up	14	3	1	1	1	9	13	9	0	0
+Entities/Magie d’eau Niv.2/bankalundra_19_anim1_down.anim2d	alundra_19	1	down	8	4	2	2	1	11	14	11	0	0
+Entities/Magie d’eau Niv.2/bankalundra_19_anim1_left.anim2d	alundra_19	1	left	8	4	2	2	1	11	14	11	0	0
+Entities/Magie d’eau Niv.2/bankalundra_19_anim1_right.anim2d	alundra_19	1	right	8	4	2	2	1	11	14	11	0	0
+Entities/Magie d’eau Niv.2/bankalundra_19_anim1_up.anim2d	alundra_19	1	up	8	4	2	2	1	11	14	11	0	0
+Entities/Médium ligoté/bank104_anim0_down.anim2d	104	0	down	5	11	8	0	0	32	32	0	16	16
+Entities/Médium ligoté/bank104_anim0_left.anim2d	104	0	left	5	11	8	0	0	32	32	0	16	16
+Entities/Médium ligoté/bank104_anim0_right.anim2d	104	0	right	5	11	8	0	0	32	32	0	16	16
+Entities/Médium ligoté/bank104_anim0_up.anim2d	104	0	up	5	11	8	0	0	32	32	0	16	16
+Entities/Médium ligoté/bank104_anim1_down.anim2d	104	1	down	4	11	10	8	2	26	30	10	8	8
+Entities/Médium ligoté/bank104_anim1_left.anim2d	104	1	left	4	11	10	8	2	26	30	10	8	8
+Entities/Médium ligoté/bank104_anim1_right.anim2d	104	1	right	4	11	10	8	2	26	30	10	8	8
+Entities/Médium ligoté/bank104_anim1_up.anim2d	104	1	up	4	11	10	8	2	26	30	10	8	8
+Entities/Médium ligoté/bank104_anim2_down.anim2d	104	2	down	26	12	11	8	9	62	117	10	32	20
+Entities/Médium ligoté/bank104_anim2_left.anim2d	104	2	left	26	12	11	8	9	62	117	10	32	20
+Entities/Médium ligoté/bank104_anim2_right.anim2d	104	2	right	26	12	11	8	9	62	117	10	32	20
+Entities/Médium ligoté/bank104_anim2_up.anim2d	104	2	up	26	12	11	8	9	62	117	10	32	20
+Entities/Nuage de sable/bankalundra_236_anim0_down.anim2d	alundra_236	0	down	10	2	2	2	1	12	13	12	0	0
+Entities/Nuage de sable/bankalundra_236_anim0_left.anim2d	alundra_236	0	left	10	2	2	2	1	12	13	12	0	0
+Entities/Nuage de sable/bankalundra_236_anim0_right.anim2d	alundra_236	0	right	10	2	2	2	1	12	13	12	0	0
+Entities/Nuage de sable/bankalundra_236_anim0_up.anim2d	alundra_236	0	up	10	2	2	2	1	12	13	12	0	0
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim0_down.anim2d	39	0	down	5	1	1	0	0	4	4	4	0	0
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim0_left.anim2d	39	0	left	5	1	1	0	0	4	4	4	0	0
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim0_right.anim2d	39	0	right	5	1	1	0	0	4	4	4	0	0
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim0_up.anim2d	39	0	up	5	1	1	0	0	4	4	4	0	0
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim1_down.anim2d	39	1	down	7	1	1	0	0	6	6	6	0	0
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim1_left.anim2d	39	1	left	7	1	1	1	0	6	6	3	2	1
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim1_right.anim2d	39	1	right	7	1	1	1	0	6	6	3	2	1
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim1_up.anim2d	39	1	up	7	1	1	0	0	6	6	6	0	0
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim2_down.anim2d	39	2	down	7	1	1	0	0	6	6	6	0	0
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim2_left.anim2d	39	2	left	7	1	1	1	0	6	6	3	2	1
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim2_right.anim2d	39	2	right	7	1	1	1	0	6	6	3	2	1
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim2_up.anim2d	39	2	up	7	1	1	0	0	6	6	6	0	0
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim3_down.anim2d	39	3	down	7	1	1	0	0	6	6	6	0	0
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim3_left.anim2d	39	3	left	7	1	1	1	0	6	6	3	2	1
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim3_right.anim2d	39	3	right	7	1	1	1	0	6	6	3	2	1
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim3_up.anim2d	39	3	up	7	1	1	0	0	6	6	6	0	0
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim4_down.anim2d	39	4	down	7	1	1	0	0	6	6	6	0	0
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim4_left.anim2d	39	4	left	7	1	1	1	0	6	6	3	2	1
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim4_right.anim2d	39	4	right	7	1	1	1	0	6	6	3	2	1
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim4_up.anim2d	39	4	up	7	1	1	0	0	6	6	6	0	0
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim6_down.anim2d	39	6	down	5	1	1	0	0	4	4	4	0	0
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim6_left.anim2d	39	6	left	5	1	1	0	0	4	4	4	0	0
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim6_right.anim2d	39	6	right	5	1	1	0	0	4	4	4	0	0
+Entities/Pierre (destructible à la boule de fer) 1/bank39_anim6_up.anim2d	39	6	up	5	1	1	0	0	4	4	4	0	0
+Entities/Pierre (destructible à la boule de fer) 2/bank40_anim1_left.anim2d	40	1	left	7	1	1	1	1	3	6	0	3	0
+Entities/Pierre (destructible à la boule de fer) 2/bank40_anim1_right.anim2d	40	1	right	7	1	1	1	1	3	6	0	3	0
+Entities/Pierre (destructible à la boule de fer) 2/bank40_anim2_left.anim2d	40	2	left	7	1	1	1	1	3	6	0	3	0
+Entities/Pierre (destructible à la boule de fer) 2/bank40_anim2_right.anim2d	40	2	right	7	1	1	1	1	3	6	0	3	0
+Entities/Pierre (destructible à la boule de fer) 2/bank40_anim3_left.anim2d	40	3	left	7	1	1	1	1	3	6	0	3	0
+Entities/Pierre (destructible à la boule de fer) 2/bank40_anim3_right.anim2d	40	3	right	7	1	1	1	1	3	6	0	3	0
+Entities/Pierre (destructible à la boule de fer) 2/bank40_anim4_left.anim2d	40	4	left	7	1	1	1	1	3	6	0	3	0
+Entities/Pierre (destructible à la boule de fer) 2/bank40_anim4_right.anim2d	40	4	right	7	1	1	1	1	3	6	0	3	0
+Entities/Pilier de feu (Ice Rod)/bank60_anim0_down.anim2d	60	0	down	5	2	2	2	0	6	6	6	0	0
+Entities/Pilier de feu (Ice Rod)/bank60_anim0_left.anim2d	60	0	left	5	2	2	2	0	6	6	6	0	0
+Entities/Pilier de feu (Ice Rod)/bank60_anim0_right.anim2d	60	0	right	5	2	2	2	0	6	6	6	0	0
+Entities/Pilier de feu (Ice Rod)/bank60_anim0_up.anim2d	60	0	up	5	2	2	2	0	6	6	6	0	0
+Entities/Pilier de feu (Ice Rod)/bank60_anim1_down.anim2d	60	1	down	4	4	4	1	1	11	12	11	0	0
+Entities/Pilier de feu (Ice Rod)/bank60_anim1_left.anim2d	60	1	left	4	4	4	1	1	11	12	11	0	0
+Entities/Pilier de feu (Ice Rod)/bank60_anim1_right.anim2d	60	1	right	4	4	4	1	1	11	12	11	0	0
+Entities/Pilier de feu (Ice Rod)/bank60_anim1_up.anim2d	60	1	up	4	4	4	1	1	11	12	11	0	0
+Entities/Pilier de feu (Ice Rod)/bank60_anim2_down.anim2d	60	2	down	6	4	4	1	1	12	14	12	0	0
+Entities/Pilier de feu (Ice Rod)/bank60_anim2_left.anim2d	60	2	left	6	4	4	1	1	12	14	12	0	0
+Entities/Pilier de feu (Ice Rod)/bank60_anim2_right.anim2d	60	2	right	6	4	4	1	1	12	14	12	0	0
+Entities/Pilier de feu (Ice Rod)/bank60_anim2_up.anim2d	60	2	up	6	4	4	1	1	12	14	12	0	0
+Entities/Pilier de feu (Ice Rod)/bank60_anim3_down.anim2d	60	3	down	5	3	3	3	1	9	11	9	0	0
+Entities/Pilier de feu (Ice Rod)/bank60_anim3_left.anim2d	60	3	left	5	3	3	3	1	9	11	9	0	0
+Entities/Pilier de feu (Ice Rod)/bank60_anim3_right.anim2d	60	3	right	5	3	3	3	1	9	11	9	0	0
+Entities/Pilier de feu (Ice Rod)/bank60_anim3_up.anim2d	60	3	up	5	3	3	3	1	9	11	9	0	0
+Entities/Plateforme flottante (grande)/bank57_anim5_down.anim2d	57	5	down	8	4	4	4	4	16	25	16	0	0
+Entities/Plateforme flottante (grande)/bank57_anim5_left.anim2d	57	5	left	8	4	4	4	4	16	25	16	0	0
+Entities/Plateforme flottante (grande)/bank57_anim5_right.anim2d	57	5	right	8	4	4	4	4	16	25	16	0	0
+Entities/Plateforme flottante (grande)/bank57_anim5_up.anim2d	57	5	up	8	4	4	4	4	16	25	16	0	0
+Entities/Plateforme flottante (grande)/bank57_anim6_down.anim2d	57	6	down	8	4	4	4	4	16	25	16	0	0
+Entities/Plateforme flottante (grande)/bank57_anim6_left.anim2d	57	6	left	8	4	4	4	4	16	25	16	0	0
+Entities/Plateforme flottante (grande)/bank57_anim6_right.anim2d	57	6	right	8	4	4	4	4	16	25	16	0	0
+Entities/Plateforme flottante (grande)/bank57_anim6_up.anim2d	57	6	up	8	4	4	4	4	16	25	16	0	0
+Entities/Plateforme flottante (petite)/bank56_anim5_down.anim2d	56	5	down	6	1	1	1	1	3	5	3	0	0
+Entities/Plateforme flottante (petite)/bank56_anim5_left.anim2d	56	5	left	6	1	1	1	1	3	5	3	0	0
+Entities/Plateforme flottante (petite)/bank56_anim5_right.anim2d	56	5	right	6	1	1	1	1	3	5	3	0	0
+Entities/Plateforme flottante (petite)/bank56_anim5_up.anim2d	56	5	up	6	1	1	1	1	3	5	3	0	0
+Entities/Plateforme flottante (petite)/bank56_anim6_down.anim2d	56	6	down	6	1	1	1	1	3	5	3	0	0
+Entities/Plateforme flottante (petite)/bank56_anim6_left.anim2d	56	6	left	6	1	1	1	1	3	5	3	0	0
+Entities/Plateforme flottante (petite)/bank56_anim6_right.anim2d	56	6	right	6	1	1	1	1	3	5	3	0	0
+Entities/Plateforme flottante (petite)/bank56_anim6_up.anim2d	56	6	up	6	1	1	1	1	3	5	3	0	0
+Entities/Plateforme flottante fragile (grande)/bank66_anim5_down.anim2d	66	5	down	2	4	4	0	0	4	4	0	4	0
+Entities/Plateforme flottante fragile (grande)/bank66_anim5_left.anim2d	66	5	left	2	4	4	0	0	4	4	0	4	0
+Entities/Plateforme flottante fragile (grande)/bank66_anim5_right.anim2d	66	5	right	2	4	4	0	0	4	4	0	4	0
+Entities/Plateforme flottante fragile (grande)/bank66_anim5_up.anim2d	66	5	up	2	4	4	0	0	4	4	0	4	0
+Entities/Plateforme lance-flammes/bank53_anim0_down.anim2d	53	0	down	5	3	2	2	1	6	8	6	0	0
+Entities/Plateforme lance-flammes/bank53_anim0_left.anim2d	53	0	left	5	3	2	2	1	6	8	6	0	0
+Entities/Plateforme lance-flammes/bank53_anim0_right.anim2d	53	0	right	5	3	2	2	1	6	8	6	0	0
+Entities/Plateforme lance-flammes/bank53_anim0_up.anim2d	53	0	up	5	3	2	2	1	6	8	6	0	0
+Entities/Plateforme lance-flammes/bank53_anim1_down.anim2d	53	1	down	4	5	4	1	1	11	12	11	0	0
+Entities/Plateforme lance-flammes/bank53_anim1_left.anim2d	53	1	left	4	5	4	1	1	11	12	11	0	0
+Entities/Plateforme lance-flammes/bank53_anim1_right.anim2d	53	1	right	4	5	4	1	1	11	12	11	0	0
+Entities/Plateforme lance-flammes/bank53_anim1_up.anim2d	53	1	up	4	5	4	1	1	11	12	11	0	0
+Entities/Plateforme lance-flammes/bank53_anim2_down.anim2d	53	2	down	6	5	4	1	2	12	16	12	0	0
+Entities/Plateforme lance-flammes/bank53_anim2_left.anim2d	53	2	left	6	5	4	1	2	12	16	12	0	0
+Entities/Plateforme lance-flammes/bank53_anim2_right.anim2d	53	2	right	6	5	4	1	2	12	16	12	0	0
+Entities/Plateforme lance-flammes/bank53_anim2_up.anim2d	53	2	up	6	5	4	1	2	12	16	12	0	0
+Entities/Plateforme lance-flammes/bank53_anim3_down.anim2d	53	3	down	5	4	3	3	2	9	12	9	0	0
+Entities/Plateforme lance-flammes/bank53_anim3_left.anim2d	53	3	left	5	4	3	3	2	9	12	9	0	0
+Entities/Plateforme lance-flammes/bank53_anim3_right.anim2d	53	3	right	5	4	3	3	2	9	12	9	0	0
+Entities/Plateforme lance-flammes/bank53_anim3_up.anim2d	53	3	up	5	4	3	3	2	9	12	9	0	0
+Entities/Plateforme lance-flammes/bank53_anim5_down.anim2d	53	5	down	4	5	4	1	1	11	12	11	0	0
+Entities/Plateforme lance-flammes/bank53_anim5_left.anim2d	53	5	left	4	5	4	1	1	11	12	11	0	0
+Entities/Plateforme lance-flammes/bank53_anim5_right.anim2d	53	5	right	4	5	4	1	1	11	12	11	0	0
+Entities/Plateforme lance-flammes/bank53_anim5_up.anim2d	53	5	up	4	5	4	1	1	11	12	11	0	0
+Entities/Plateforme lance-flammes/bank53_anim6_down.anim2d	53	6	down	6	5	4	1	2	12	16	12	0	0
+Entities/Plateforme lance-flammes/bank53_anim6_left.anim2d	53	6	left	6	5	4	1	2	12	16	12	0	0
+Entities/Plateforme lance-flammes/bank53_anim6_right.anim2d	53	6	right	6	5	4	1	2	12	16	12	0	0
+Entities/Plateforme lance-flammes/bank53_anim6_up.anim2d	53	6	up	6	5	4	1	2	12	16	12	0	0
+Entities/Plateforme lance-flammes/bank53_anim7_down.anim2d	53	7	down	5	4	3	3	2	9	12	9	0	0
+Entities/Plateforme lance-flammes/bank53_anim7_left.anim2d	53	7	left	5	4	3	3	2	9	12	9	0	0
+Entities/Plateforme lance-flammes/bank53_anim7_right.anim2d	53	7	right	5	4	3	3	2	9	12	9	0	0
+Entities/Plateforme lance-flammes/bank53_anim7_up.anim2d	53	7	up	5	4	3	3	2	9	12	9	0	0
+Entities/Pot magique (boïng)/bank153_anim1_down.anim2d	153	1	down	12	4	1	1	1	6	11	6	0	0
+Entities/Pot magique (boïng)/bank153_anim1_left.anim2d	153	1	left	12	4	1	1	1	6	11	6	0	0
+Entities/Pot magique (boïng)/bank153_anim1_right.anim2d	153	1	right	12	4	1	1	1	6	11	6	0	0
+Entities/Pot magique (boïng)/bank153_anim1_up.anim2d	153	1	up	12	4	1	1	1	6	11	6	0	0
+Entities/Pot magique (boïng)/bank153_anim3_down.anim2d	153	3	down	8	2	1	1	1	6	7	6	0	0
+Entities/Pot magique (boïng)/bank153_anim3_left.anim2d	153	3	left	8	2	1	1	1	6	7	6	0	0
+Entities/Pot magique (boïng)/bank153_anim3_right.anim2d	153	3	right	8	2	1	1	1	6	7	6	0	0
+Entities/Pot magique (boïng)/bank153_anim3_up.anim2d	153	3	up	8	2	1	1	1	6	7	6	0	0
+Entities/Pot magique (boïng)/bank153_anim4_down.anim2d	153	4	down	2	2	1	0	0	1	1	1	0	0
+Entities/Pot magique (boïng)/bank153_anim4_left.anim2d	153	4	left	2	2	1	0	0	1	1	1	0	0
+Entities/Pot magique (boïng)/bank153_anim4_right.anim2d	153	4	right	2	2	1	0	0	1	1	1	0	0
+Entities/Pot magique (boïng)/bank153_anim4_up.anim2d	153	4	up	2	2	1	0	0	1	1	1	0	0
+Entities/Pot magique (boïng)/bank153_anim5_down.anim2d	153	5	down	10	2	1	1	1	6	9	6	0	0
+Entities/Pot magique (boïng)/bank153_anim5_left.anim2d	153	5	left	10	2	1	1	1	6	9	6	0	0
+Entities/Pot magique (boïng)/bank153_anim5_right.anim2d	153	5	right	10	2	1	1	1	6	9	6	0	0
+Entities/Pot magique (boïng)/bank153_anim5_up.anim2d	153	5	up	10	2	1	1	1	6	9	6	0	0
+Entities/Projectile (boomerang)/bankalundra_153_anim0_down.anim2d	alundra_153	0	down	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (boomerang)/bankalundra_153_anim0_left.anim2d	alundra_153	0	left	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (boomerang)/bankalundra_153_anim0_right.anim2d	alundra_153	0	right	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (boomerang)/bankalundra_153_anim0_up.anim2d	alundra_153	0	up	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (boomerang)/bankalundra_153_anim1_down.anim2d	alundra_153	1	down	5	1	1	1	0	4	4	4	0	0
+Entities/Projectile (boomerang)/bankalundra_153_anim1_left.anim2d	alundra_153	1	left	5	1	1	1	0	4	4	4	0	0
+Entities/Projectile (boomerang)/bankalundra_153_anim1_right.anim2d	alundra_153	1	right	5	1	1	1	0	4	4	4	0	0
+Entities/Projectile (boomerang)/bankalundra_153_anim1_up.anim2d	alundra_153	1	up	5	1	1	1	0	4	4	4	0	0
+Entities/Projectile (chute)/bankalundra_151_anim0_down.anim2d	alundra_151	0	down	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (chute)/bankalundra_151_anim0_left.anim2d	alundra_151	0	left	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (chute)/bankalundra_151_anim0_right.anim2d	alundra_151	0	right	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (chute)/bankalundra_151_anim0_up.anim2d	alundra_151	0	up	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (chute)/bankalundra_151_anim1_down.anim2d	alundra_151	1	down	5	1	1	1	0	4	4	4	0	0
+Entities/Projectile (chute)/bankalundra_151_anim1_left.anim2d	alundra_151	1	left	5	1	1	1	0	4	4	4	0	0
+Entities/Projectile (chute)/bankalundra_151_anim1_right.anim2d	alundra_151	1	right	5	1	1	1	0	4	4	4	0	0
+Entities/Projectile (chute)/bankalundra_151_anim1_up.anim2d	alundra_151	1	up	5	1	1	1	0	4	4	4	0	0
+Entities/Projectile (ligne droite)/bankalundra_150_anim0_down.anim2d	alundra_150	0	down	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (ligne droite)/bankalundra_150_anim0_left.anim2d	alundra_150	0	left	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (ligne droite)/bankalundra_150_anim0_right.anim2d	alundra_150	0	right	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (ligne droite)/bankalundra_150_anim0_up.anim2d	alundra_150	0	up	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (ligne droite)/bankalundra_150_anim1_down.anim2d	alundra_150	1	down	5	1	1	1	0	4	4	4	0	0
+Entities/Projectile (ligne droite)/bankalundra_150_anim1_left.anim2d	alundra_150	1	left	5	1	1	1	0	4	4	4	0	0
+Entities/Projectile (ligne droite)/bankalundra_150_anim1_right.anim2d	alundra_150	1	right	5	1	1	1	0	4	4	4	0	0
+Entities/Projectile (ligne droite)/bankalundra_150_anim1_up.anim2d	alundra_150	1	up	5	1	1	1	0	4	4	4	0	0
+Entities/Projectile (parabolique)/bankalundra_152_anim0_down.anim2d	alundra_152	0	down	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (parabolique)/bankalundra_152_anim0_left.anim2d	alundra_152	0	left	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (parabolique)/bankalundra_152_anim0_right.anim2d	alundra_152	0	right	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (parabolique)/bankalundra_152_anim0_up.anim2d	alundra_152	0	up	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (parabolique)/bankalundra_152_anim1_down.anim2d	alundra_152	1	down	5	1	1	1	0	4	4	4	0	0
+Entities/Projectile (parabolique)/bankalundra_152_anim1_left.anim2d	alundra_152	1	left	5	1	1	1	0	4	4	4	0	0
+Entities/Projectile (parabolique)/bankalundra_152_anim1_right.anim2d	alundra_152	1	right	5	1	1	1	0	4	4	4	0	0
+Entities/Projectile (parabolique)/bankalundra_152_anim1_up.anim2d	alundra_152	1	up	5	1	1	1	0	4	4	4	0	0
+Entities/Projectile (parabolique)/bankalundra_152_anim2_down.anim2d	alundra_152	2	down	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (parabolique)/bankalundra_152_anim2_left.anim2d	alundra_152	2	left	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (parabolique)/bankalundra_152_anim2_right.anim2d	alundra_152	2	right	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile (parabolique)/bankalundra_152_anim2_up.anim2d	alundra_152	2	up	5	1	1	0	0	4	4	4	0	0
+Entities/Projectile de magie de feu Niv.1/bankalundra_23_anim0_down.anim2d	alundra_23	0	down	5	3	3	3	0	12	12	12	0	0
+Entities/Projectile de magie de feu Niv.1/bankalundra_23_anim0_left.anim2d	alundra_23	0	left	5	3	3	3	0	12	12	12	0	0
+Entities/Projectile de magie de feu Niv.1/bankalundra_23_anim0_right.anim2d	alundra_23	0	right	5	3	3	3	0	12	12	12	0	0
+Entities/Projectile de magie de feu Niv.1/bankalundra_23_anim0_up.anim2d	alundra_23	0	up	5	3	3	3	0	12	12	12	0	0
+Entities/Projectile de magie de feu Niv.1/bankalundra_23_anim1_down.anim2d	alundra_23	1	down	6	2	2	1	2	5	7	5	0	0
+Entities/Projectile de magie de feu Niv.1/bankalundra_23_anim1_left.anim2d	alundra_23	1	left	6	2	2	1	2	5	7	5	0	0
+Entities/Projectile de magie de feu Niv.1/bankalundra_23_anim1_right.anim2d	alundra_23	1	right	6	2	2	1	2	5	7	5	0	0
+Entities/Projectile de magie de feu Niv.1/bankalundra_23_anim1_up.anim2d	alundra_23	1	up	6	2	2	1	2	5	7	5	0	0
+Entities/Rampe de saut/bank84_anim1_down.anim2d	84	1	down	12	4	1	1	1	6	11	6	0	0
+Entities/Rampe de saut/bank84_anim1_left.anim2d	84	1	left	12	4	1	1	1	6	11	6	0	0
+Entities/Rampe de saut/bank84_anim1_right.anim2d	84	1	right	12	4	1	1	1	6	11	6	0	0
+Entities/Rampe de saut/bank84_anim1_up.anim2d	84	1	up	12	4	1	1	1	6	11	6	0	0
+Entities/Rampe de saut/bank84_anim3_down.anim2d	84	3	down	8	2	1	1	1	6	7	6	0	0
+Entities/Rampe de saut/bank84_anim3_left.anim2d	84	3	left	8	2	1	1	1	6	7	6	0	0
+Entities/Rampe de saut/bank84_anim3_right.anim2d	84	3	right	8	2	1	1	1	6	7	6	0	0
+Entities/Rampe de saut/bank84_anim3_up.anim2d	84	3	up	8	2	1	1	1	6	7	6	0	0
+Entities/Rampe de saut/bank84_anim4_down.anim2d	84	4	down	2	2	1	0	0	1	1	1	0	0
+Entities/Rampe de saut/bank84_anim4_left.anim2d	84	4	left	2	2	1	0	0	1	1	1	0	0
+Entities/Rampe de saut/bank84_anim4_right.anim2d	84	4	right	2	2	1	0	0	1	1	1	0	0
+Entities/Rampe de saut/bank84_anim4_up.anim2d	84	4	up	2	2	1	0	0	1	1	1	0	0
+Entities/Rampe de saut/bank84_anim5_down.anim2d	84	5	down	10	2	1	1	1	6	9	6	0	0
+Entities/Rampe de saut/bank84_anim5_left.anim2d	84	5	left	10	2	1	1	1	6	9	6	0	0
+Entities/Rampe de saut/bank84_anim5_right.anim2d	84	5	right	10	2	1	1	1	6	9	6	0	0
+Entities/Rampe de saut/bank84_anim5_up.anim2d	84	5	up	10	2	1	1	1	6	9	6	0	0
+Entities/Rancune de Melzas/bank170_anim0_down.anim2d	170	0	down	14	14	14	12	6	107	118	18	51	38
+Entities/Rancune de Melzas/bank170_anim0_left.anim2d	170	0	left	14	14	14	12	6	107	118	18	51	38
+Entities/Rancune de Melzas/bank170_anim0_right.anim2d	170	0	right	14	14	14	12	6	107	118	18	51	38
+Entities/Rancune de Melzas/bank170_anim0_up.anim2d	170	0	up	14	14	14	12	6	107	118	18	51	38
+Entities/Rancune de Melzas/bank170_anim1_down.anim2d	170	1	down	9	8	8	8	3	47	56	47	0	0
+Entities/Rancune de Melzas/bank170_anim1_left.anim2d	170	1	left	9	8	8	8	3	47	56	47	0	0
+Entities/Rancune de Melzas/bank170_anim1_right.anim2d	170	1	right	9	8	8	8	3	47	56	47	0	0
+Entities/Rancune de Melzas/bank170_anim1_up.anim2d	170	1	up	9	8	8	8	3	47	56	47	0	0
+Entities/Rancune de Melzas/bank170_anim2_down.anim2d	170	2	down	29	11	11	11	2	289	291	289	0	0
+Entities/Rancune de Melzas/bank170_anim2_left.anim2d	170	2	left	29	11	11	11	2	289	291	289	0	0
+Entities/Rancune de Melzas/bank170_anim2_right.anim2d	170	2	right	29	11	11	11	2	289	291	289	0	0
+Entities/Rancune de Melzas/bank170_anim2_up.anim2d	170	2	up	29	11	11	11	2	289	291	289	0	0
+Entities/Rocher roulant (grand)/bank59_anim1_left.anim2d	59	1	left	7	1	1	1	1	3	6	0	3	0
+Entities/Rocher roulant (grand)/bank59_anim1_right.anim2d	59	1	right	7	1	1	1	1	3	6	0	3	0
+Entities/Rocher roulant (grand)/bank59_anim2_left.anim2d	59	2	left	7	1	1	1	1	3	6	0	3	0
+Entities/Rocher roulant (grand)/bank59_anim2_right.anim2d	59	2	right	7	1	1	1	1	3	6	0	3	0
+Entities/Rocher roulant (grand)/bank59_anim3_left.anim2d	59	3	left	7	1	1	1	1	3	6	0	3	0
+Entities/Rocher roulant (grand)/bank59_anim3_right.anim2d	59	3	right	7	1	1	1	1	3	6	0	3	0
+Entities/Rocher roulant (grand)/bank59_anim4_left.anim2d	59	4	left	7	1	1	1	1	3	6	0	3	0
+Entities/Rocher roulant (grand)/bank59_anim4_right.anim2d	59	4	right	7	1	1	1	1	3	6	0	3	0
+Entities/Rocher roulant (petit)/bank58_anim0_down.anim2d	58	0	down	5	1	1	0	0	4	4	4	0	0
+Entities/Rocher roulant (petit)/bank58_anim0_left.anim2d	58	0	left	5	1	1	0	0	4	4	4	0	0
+Entities/Rocher roulant (petit)/bank58_anim0_right.anim2d	58	0	right	5	1	1	0	0	4	4	4	0	0
+Entities/Rocher roulant (petit)/bank58_anim0_up.anim2d	58	0	up	5	1	1	0	0	4	4	4	0	0
+Entities/Rocher roulant (petit)/bank58_anim1_down.anim2d	58	1	down	7	1	1	0	0	6	6	6	0	0
+Entities/Rocher roulant (petit)/bank58_anim1_left.anim2d	58	1	left	7	1	1	1	0	6	6	3	2	1
+Entities/Rocher roulant (petit)/bank58_anim1_right.anim2d	58	1	right	7	1	1	1	0	6	6	3	2	1
+Entities/Rocher roulant (petit)/bank58_anim1_up.anim2d	58	1	up	7	1	1	0	0	6	6	6	0	0
+Entities/Rocher roulant (petit)/bank58_anim2_down.anim2d	58	2	down	7	1	1	0	0	6	6	6	0	0
+Entities/Rocher roulant (petit)/bank58_anim2_left.anim2d	58	2	left	7	1	1	1	0	6	6	3	2	1
+Entities/Rocher roulant (petit)/bank58_anim2_right.anim2d	58	2	right	7	1	1	1	0	6	6	3	2	1
+Entities/Rocher roulant (petit)/bank58_anim2_up.anim2d	58	2	up	7	1	1	0	0	6	6	6	0	0
+Entities/Rocher roulant (petit)/bank58_anim3_down.anim2d	58	3	down	7	1	1	0	0	6	6	6	0	0
+Entities/Rocher roulant (petit)/bank58_anim3_left.anim2d	58	3	left	7	1	1	1	0	6	6	3	2	1
+Entities/Rocher roulant (petit)/bank58_anim3_right.anim2d	58	3	right	7	1	1	1	0	6	6	3	2	1
+Entities/Rocher roulant (petit)/bank58_anim3_up.anim2d	58	3	up	7	1	1	0	0	6	6	6	0	0
+Entities/Rocher roulant (petit)/bank58_anim4_down.anim2d	58	4	down	7	1	1	0	0	6	6	6	0	0
+Entities/Rocher roulant (petit)/bank58_anim4_left.anim2d	58	4	left	7	1	1	1	0	6	6	3	2	1
+Entities/Rocher roulant (petit)/bank58_anim4_right.anim2d	58	4	right	7	1	1	1	0	6	6	3	2	1
+Entities/Rocher roulant (petit)/bank58_anim4_up.anim2d	58	4	up	7	1	1	0	0	6	6	6	0	0
+Entities/Rocher roulant (petit)/bank58_anim6_down.anim2d	58	6	down	5	1	1	0	0	4	4	4	0	0
+Entities/Rocher roulant (petit)/bank58_anim6_left.anim2d	58	6	left	5	1	1	0	0	4	4	4	0	0
+Entities/Rocher roulant (petit)/bank58_anim6_right.anim2d	58	6	right	5	1	1	0	0	4	4	4	0	0
+Entities/Rocher roulant (petit)/bank58_anim6_up.anim2d	58	6	up	5	1	1	0	0	4	4	4	0	0
+Entities/Ronces enflammées 112/bankalundra_239_anim1_down.anim2d	alundra_239	1	down	16	6	6	6	6	38	84	38	0	0
+Entities/Ronces enflammées 112/bankalundra_239_anim1_left.anim2d	alundra_239	1	left	16	6	6	6	6	38	84	38	0	0
+Entities/Ronces enflammées 112/bankalundra_239_anim1_right.anim2d	alundra_239	1	right	16	6	6	6	6	38	84	38	0	0
+Entities/Ronces enflammées 112/bankalundra_239_anim1_up.anim2d	alundra_239	1	up	16	6	6	6	6	38	84	38	0	0
+Entities/Ronces enflammées 222/bankalundra_238_anim1_down.anim2d	alundra_238	1	down	16	5	5	5	5	33	70	33	0	0
+Entities/Ronces enflammées 222/bankalundra_238_anim1_left.anim2d	alundra_238	1	left	16	5	5	5	5	33	70	33	0	0
+Entities/Ronces enflammées 222/bankalundra_238_anim1_right.anim2d	alundra_238	1	right	16	5	5	5	5	33	70	33	0	0
+Entities/Ronces enflammées 222/bankalundra_238_anim1_up.anim2d	alundra_238	1	up	16	5	5	5	5	33	70	33	0	0
+Entities/Sara (femme du rêve)/bank83_anim3_down.anim2d	83	3	down	17	2	2	2	1	9	19	9	0	0
+Entities/Sara (femme du rêve)/bank83_anim3_left.anim2d	83	3	left	17	2	2	2	1	9	19	9	0	0
+Entities/Sara (femme du rêve)/bank83_anim3_right.anim2d	83	3	right	17	2	2	2	1	9	19	9	0	0
+Entities/Sara (femme du rêve)/bank83_anim3_up.anim2d	83	3	up	17	2	2	2	1	9	19	9	0	0
+Entities/Sara (femme du rêve)/bank83_anim4_down.anim2d	83	4	down	17	2	2	2	1	9	19	9	0	0
+Entities/Sara (femme du rêve)/bank83_anim4_left.anim2d	83	4	left	17	2	2	2	1	9	19	9	0	0
+Entities/Sara (femme du rêve)/bank83_anim4_right.anim2d	83	4	right	17	2	2	2	1	9	19	9	0	0
+Entities/Sara (femme du rêve)/bank83_anim4_up.anim2d	83	4	up	17	2	2	2	1	9	19	9	0	0
+Entities/Sol piquant/bank62_anim2_down.anim2d	62	2	down	5	2	1	0	1	1	4	1	0	0
+Entities/Sol piquant/bank62_anim2_left.anim2d	62	2	left	5	2	1	0	1	1	4	1	0	0
+Entities/Sol piquant/bank62_anim2_right.anim2d	62	2	right	5	2	1	0	1	1	4	1	0	0
+Entities/Sol piquant/bank62_anim2_up.anim2d	62	2	up	5	2	1	0	1	1	4	1	0	0
+Entities/Sol piquant/bank62_anim3_down.anim2d	62	3	down	5	2	1	0	1	1	4	1	0	0
+Entities/Sol piquant/bank62_anim3_left.anim2d	62	3	left	5	2	1	0	1	1	4	1	0	0
+Entities/Sol piquant/bank62_anim3_right.anim2d	62	3	right	5	2	1	0	1	1	4	1	0	0
+Entities/Sol piquant/bank62_anim3_up.anim2d	62	3	up	5	2	1	0	1	1	4	1	0	0
+Entities/Statue de roi, serviteur et déesse/bank114_anim5_down.anim2d	114	5	down	21	5	4	3	4	13	35	13	0	0
+Entities/Statue de roi, serviteur et déesse/bank114_anim5_left.anim2d	114	5	left	21	5	4	3	4	13	35	13	0	0
+Entities/Statue de roi, serviteur et déesse/bank114_anim5_right.anim2d	114	5	right	21	5	4	3	4	13	35	13	0	0
+Entities/Statue de roi, serviteur et déesse/bank114_anim5_up.anim2d	114	5	up	21	5	4	3	4	13	35	13	0	0
+Entities/Statue divine de Melzas/bank171_anim2_down.anim2d	171	2	down	38	11	8	3	8	12	146	12	0	0
+Entities/Statue divine de Melzas/bank171_anim2_left.anim2d	171	2	left	38	11	8	3	8	12	146	12	0	0
+Entities/Statue divine de Melzas/bank171_anim2_right.anim2d	171	2	right	38	11	8	3	8	12	146	12	0	0
+Entities/Statue divine de Melzas/bank171_anim2_up.anim2d	171	2	up	38	11	8	3	8	12	146	12	0	0
+Entities/Torche/bank137_anim0_down.anim2d	137	0	down	9	3	1	1	1	2	8	2	0	0
+Entities/Torche/bank137_anim0_left.anim2d	137	0	left	9	3	1	1	1	2	8	2	0	0
+Entities/Torche/bank137_anim0_right.anim2d	137	0	right	9	3	1	1	1	2	8	2	0	0
+Entities/Torche/bank137_anim0_up.anim2d	137	0	up	9	3	1	1	1	2	8	2	0	0
+Entities/Torche/bank137_anim1_down.anim2d	137	1	down	9	3	1	1	1	2	8	2	0	0
+Entities/Torche/bank137_anim1_left.anim2d	137	1	left	9	3	1	1	1	2	8	2	0	0
+Entities/Torche/bank137_anim1_right.anim2d	137	1	right	9	3	1	1	1	2	8	2	0	0
+Entities/Torche/bank137_anim1_up.anim2d	137	1	up	9	3	1	1	1	2	8	2	0	0
+Entities/Torche/bank137_anim3_down.anim2d	137	3	down	9	3	1	1	1	2	8	2	0	0
+Entities/Torche/bank137_anim3_left.anim2d	137	3	left	9	3	1	1	1	2	8	2	0	0
+Entities/Torche/bank137_anim3_right.anim2d	137	3	right	9	3	1	1	1	2	8	2	0	0
+Entities/Torche/bank137_anim3_up.anim2d	137	3	up	9	3	1	1	1	2	8	2	0	0
+Entities/Torche/bank137_anim4_down.anim2d	137	4	down	9	3	1	1	1	2	8	2	0	0
+Entities/Torche/bank137_anim4_left.anim2d	137	4	left	9	3	1	1	1	2	8	2	0	0
+Entities/Torche/bank137_anim4_right.anim2d	137	4	right	9	3	1	1	1	2	8	2	0	0
+Entities/Torche/bank137_anim4_up.anim2d	137	4	up	9	3	1	1	1	2	8	2	0	0
+Entities/YM08 barrière u=eau d=feu l=sable r=glace/bank151_anim0_down.anim2d	151	0	down	5	4	1	1	1	3	4	3	0	0
+Entities/YM08 barrière u=eau d=feu l=sable r=glace/bank151_anim0_up.anim2d	151	0	up	5	4	1	1	1	2	4	2	0	0
+Entities/YM08 barrière u=eau d=feu l=sable r=glace/bank151_anim3_down.anim2d	151	3	down	20	10	9	9	9	62	98	62	0	0
+Entities/YM08 barrière u=eau d=feu l=sable r=glace/bank151_anim3_left.anim2d	151	3	left	20	10	9	9	9	62	98	62	0	0
+Entities/YM08 barrière u=eau d=feu l=sable r=glace/bank151_anim3_right.anim2d	151	3	right	20	10	9	9	9	62	98	62	0	0
+Entities/YM08 barrière u=eau d=feu l=sable r=glace/bank151_anim3_up.anim2d	151	3	up	20	10	9	9	9	62	98	62	0	0
+Entities/bank_alundra_10/bankalundra_10_anim0_down.anim2d	alundra_10	0	down	5	1	1	1	0	4	4	4	0	0
+Entities/bank_alundra_10/bankalundra_10_anim0_left.anim2d	alundra_10	0	left	5	1	1	0	0	4	4	0	4	0
+Entities/bank_alundra_10/bankalundra_10_anim0_right.anim2d	alundra_10	0	right	5	1	1	0	0	4	4	0	4	0
+Entities/bank_alundra_10/bankalundra_10_anim0_up.anim2d	alundra_10	0	up	5	1	1	0	0	4	4	4	0	0
+Entities/bank_alundra_10/bankalundra_10_anim1_down.anim2d	alundra_10	1	down	13	2	2	2	0	24	24	24	0	0
+Entities/bank_alundra_10/bankalundra_10_anim1_left.anim2d	alundra_10	1	left	13	2	2	2	0	24	24	24	0	0
+Entities/bank_alundra_10/bankalundra_10_anim1_right.anim2d	alundra_10	1	right	13	2	2	2	0	24	24	24	0	0
+Entities/bank_alundra_10/bankalundra_10_anim1_up.anim2d	alundra_10	1	up	13	2	2	2	0	24	24	24	0	0
+Entities/bank_alundra_13/bankalundra_13_anim0_down.anim2d	alundra_13	0	down	5	3	3	3	0	11	11	7	4	0
+Entities/bank_alundra_13/bankalundra_13_anim0_left.anim2d	alundra_13	0	left	5	3	3	3	0	11	11	11	0	0
+Entities/bank_alundra_13/bankalundra_13_anim0_right.anim2d	alundra_13	0	right	5	3	3	3	0	11	11	11	0	0
+Entities/bank_alundra_13/bankalundra_13_anim0_up.anim2d	alundra_13	0	up	5	3	3	3	0	11	11	7	4	0
+Entities/bank_alundra_13/bankalundra_13_anim1_down.anim2d	alundra_13	1	down	9	5	2	1	2	4	10	4	0	0
+Entities/bank_alundra_13/bankalundra_13_anim1_left.anim2d	alundra_13	1	left	9	5	2	1	2	4	10	4	0	0
+Entities/bank_alundra_13/bankalundra_13_anim1_right.anim2d	alundra_13	1	right	9	5	2	1	2	4	10	4	0	0
+Entities/bank_alundra_13/bankalundra_13_anim1_up.anim2d	alundra_13	1	up	9	5	2	1	2	5	11	5	0	0
+Entities/bank_alundra_154/bankalundra_154_anim0_down.anim2d	alundra_154	0	down	32	1	1	1	1	30	31	30	0	0
+Entities/bank_alundra_154/bankalundra_154_anim0_left.anim2d	alundra_154	0	left	32	1	1	1	1	30	31	30	0	0
+Entities/bank_alundra_154/bankalundra_154_anim0_right.anim2d	alundra_154	0	right	32	1	1	1	1	30	31	30	0	0
+Entities/bank_alundra_154/bankalundra_154_anim0_up.anim2d	alundra_154	0	up	32	1	1	1	1	30	31	30	0	0
+Entities/bank_alundra_250/bankalundra_250_anim0_down.anim2d	alundra_250	0	down	5	2	1	1	1	3	4	3	0	0
+Entities/bank_alundra_250/bankalundra_250_anim0_left.anim2d	alundra_250	0	left	5	2	1	1	1	3	4	3	0	0
+Entities/bank_alundra_250/bankalundra_250_anim0_right.anim2d	alundra_250	0	right	5	2	1	1	1	3	4	3	0	0
+Entities/bank_alundra_250/bankalundra_250_anim0_up.anim2d	alundra_250	0	up	5	2	1	1	1	3	4	3	0	0
+Entities/bank_alundra_250/bankalundra_250_anim1_down.anim2d	alundra_250	1	down	8	2	2	2	2	6	12	6	0	0
+Entities/bank_alundra_250/bankalundra_250_anim1_left.anim2d	alundra_250	1	left	8	2	2	2	2	6	12	6	0	0
+Entities/bank_alundra_250/bankalundra_250_anim1_right.anim2d	alundra_250	1	right	8	2	2	2	2	6	12	6	0	0
+Entities/bank_alundra_250/bankalundra_250_anim1_up.anim2d	alundra_250	1	up	8	2	2	2	2	6	12	6	0	0
+Entities/bank_alundra_5/bankalundra_5_anim0_down.anim2d	alundra_5	0	down	5	1	1	1	0	4	4	0	4	0
+Entities/bank_alundra_5/bankalundra_5_anim0_up.anim2d	alundra_5	0	up	5	1	1	1	0	4	4	0	4	0
+Entities/bank_alundra_5/bankalundra_5_anim1_down.anim2d	alundra_5	1	down	9	1	1	1	1	7	8	1	6	0
+Entities/bank_alundra_5/bankalundra_5_anim1_left.anim2d	alundra_5	1	left	9	1	1	1	1	7	8	1	6	0
+Entities/bank_alundra_5/bankalundra_5_anim1_right.anim2d	alundra_5	1	right	9	1	1	1	1	7	8	1	6	0
+Entities/bank_alundra_5/bankalundra_5_anim1_up.anim2d	alundra_5	1	up	9	1	1	1	1	7	8	1	6	0
+Entities/bank_alundra_6/bankalundra_6_anim0_down.anim2d	alundra_6	0	down	5	1	1	1	0	4	4	0	4	0
+Entities/bank_alundra_6/bankalundra_6_anim0_up.anim2d	alundra_6	0	up	5	1	1	1	0	4	4	0	4	0
+Entities/bank_alundra_6/bankalundra_6_anim1_down.anim2d	alundra_6	1	down	9	1	1	1	1	7	8	1	6	0
+Entities/bank_alundra_6/bankalundra_6_anim1_left.anim2d	alundra_6	1	left	9	1	1	1	1	7	8	1	6	0
+Entities/bank_alundra_6/bankalundra_6_anim1_right.anim2d	alundra_6	1	right	9	1	1	1	1	7	8	1	6	0
+Entities/bank_alundra_6/bankalundra_6_anim1_up.anim2d	alundra_6	1	up	9	1	1	1	1	7	8	1	6	0
+Entities/bank_alundra_8/bankalundra_8_anim0_down.anim2d	alundra_8	0	down	5	7	7	2	3	17	23	9	8	0
+Entities/bank_alundra_8/bankalundra_8_anim0_left.anim2d	alundra_8	0	left	5	7	3	3	0	12	12	12	0	0
+Entities/bank_alundra_8/bankalundra_8_anim0_right.anim2d	alundra_8	0	right	5	7	3	3	0	12	12	12	0	0
+Entities/bank_alundra_8/bankalundra_8_anim0_up.anim2d	alundra_8	0	up	5	7	7	2	3	17	23	9	8	0
+Entities/bank_alundra_9/bankalundra_9_anim0_down.anim2d	alundra_9	0	down	9	8	8	3	3	42	54	18	24	0
+Entities/bank_alundra_9/bankalundra_9_anim0_left.anim2d	alundra_9	0	left	9	8	3	3	0	24	24	24	0	0
+Entities/bank_alundra_9/bankalundra_9_anim0_right.anim2d	alundra_9	0	right	9	8	3	3	0	24	24	24	0	0
+Entities/bank_alundra_9/bankalundra_9_anim0_up.anim2d	alundra_9	0	up	9	8	8	3	3	42	54	18	24	0
+Entities/Épée d’onde Niv.1/bankalundra_27_anim0_down.anim2d	alundra_27	0	down	14	6	6	5	1	48	49	48	0	0
+Entities/Épée d’onde Niv.1/bankalundra_27_anim0_left.anim2d	alundra_27	0	left	14	6	6	6	0	48	48	48	0	0
+Entities/Épée d’onde Niv.1/bankalundra_27_anim0_right.anim2d	alundra_27	0	right	14	6	6	6	0	48	48	48	0	0
+Entities/Épée d’onde Niv.1/bankalundra_27_anim0_up.anim2d	alundra_27	0	up	14	6	6	6	0	48	48	48	0	0
+Entities/Épée d’onde Niv.2/bankalundra_28_anim0_down.anim2d	alundra_28	0	down	14	10	10	9	0	72	72	60	12	0
+Entities/Épée d’onde Niv.2/bankalundra_28_anim0_left.anim2d	alundra_28	0	left	14	10	10	9	0	72	72	60	12	0
+Entities/Épée d’onde Niv.2/bankalundra_28_anim0_right.anim2d	alundra_28	0	right	14	10	10	9	0	72	72	60	12	0
+Entities/Épée d’onde Niv.2/bankalundra_28_anim0_up.anim2d	alundra_28	0	up	14	10	10	10	0	76	76	62	14	0
+Entities/Épée d’onde Niv.3/bankalundra_29_anim0_down.anim2d	alundra_29	0	down	14	12	12	11	5	88	96	58	25	5
+Entities/Épée d’onde Niv.3/bankalundra_29_anim0_left.anim2d	alundra_29	0	left	14	12	12	11	2	88	96	58	25	5
+Entities/Épée d’onde Niv.3/bankalundra_29_anim0_right.anim2d	alundra_29	0	right	14	12	12	11	2	88	96	58	25	5
+Entities/Épée d’onde Niv.3/bankalundra_29_anim0_up.anim2d	alundra_29	0	up	14	12	12	12	2	92	100	59	28	5
+Entities/◆Abyss (droite)/bank230_anim0_down.anim2d	230	0	down	5	3	3	3	2	10	12	10	0	0
+Entities/◆Abyss (droite)/bank230_anim0_left.anim2d	230	0	left	5	3	3	3	2	10	12	10	0	0
+Entities/◆Abyss (droite)/bank230_anim0_right.anim2d	230	0	right	5	3	3	3	2	10	12	10	0	0
+Entities/◆Abyss (droite)/bank230_anim0_up.anim2d	230	0	up	5	3	3	3	2	10	12	10	0	0
+Entities/◆Abyss (droite)/bank230_anim10_down.anim2d	230	10	down	7	3	3	3	0	18	18	18	0	0
+Entities/◆Abyss (droite)/bank230_anim10_left.anim2d	230	10	left	7	3	3	3	0	18	18	18	0	0
+Entities/◆Abyss (droite)/bank230_anim10_right.anim2d	230	10	right	7	3	3	3	0	18	18	18	0	0
+Entities/◆Abyss (droite)/bank230_anim10_up.anim2d	230	10	up	7	3	3	3	0	18	18	18	0	0
+Entities/◆Abyss (droite)/bank230_anim1_down.anim2d	230	1	down	5	3	3	3	2	10	12	10	0	0
+Entities/◆Abyss (droite)/bank230_anim1_left.anim2d	230	1	left	5	3	3	3	2	10	12	10	0	0
+Entities/◆Abyss (droite)/bank230_anim1_right.anim2d	230	1	right	5	3	3	3	2	10	12	10	0	0
+Entities/◆Abyss (droite)/bank230_anim1_up.anim2d	230	1	up	5	3	3	3	2	10	12	10	0	0
+Entities/◆Abyss (droite)/bank230_anim2_down.anim2d	230	2	down	10	3	3	3	2	21	23	21	0	0
+Entities/◆Abyss (droite)/bank230_anim2_left.anim2d	230	2	left	10	3	3	3	2	21	23	21	0	0
+Entities/◆Abyss (droite)/bank230_anim2_right.anim2d	230	2	right	10	3	3	3	2	21	23	21	0	0
+Entities/◆Abyss (droite)/bank230_anim2_up.anim2d	230	2	up	10	3	3	3	2	21	23	21	0	0
+Entities/◆Abyss (droite)/bank230_anim3_down.anim2d	230	3	down	7	3	3	3	0	18	18	18	0	0
+Entities/◆Abyss (droite)/bank230_anim3_left.anim2d	230	3	left	7	3	3	3	0	18	18	18	0	0
+Entities/◆Abyss (droite)/bank230_anim3_right.anim2d	230	3	right	7	3	3	3	0	18	18	18	0	0
+Entities/◆Abyss (droite)/bank230_anim3_up.anim2d	230	3	up	7	3	3	3	0	18	18	18	0	0
+Entities/◆Abyss (droite)/bank230_anim5_down.anim2d	230	5	down	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss (droite)/bank230_anim5_left.anim2d	230	5	left	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss (droite)/bank230_anim5_right.anim2d	230	5	right	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss (droite)/bank230_anim5_up.anim2d	230	5	up	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss (droite)/bank230_anim6_down.anim2d	230	6	down	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss (droite)/bank230_anim6_left.anim2d	230	6	left	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss (droite)/bank230_anim6_right.anim2d	230	6	right	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss (droite)/bank230_anim6_up.anim2d	230	6	up	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss (droite)/bank230_anim7_down.anim2d	230	7	down	13	2	1	1	1	10	12	10	0	0
+Entities/◆Abyss (droite)/bank230_anim7_left.anim2d	230	7	left	13	2	1	1	1	10	12	10	0	0
+Entities/◆Abyss (droite)/bank230_anim7_right.anim2d	230	7	right	13	2	1	1	1	10	12	10	0	0
+Entities/◆Abyss (droite)/bank230_anim7_up.anim2d	230	7	up	13	2	1	1	1	10	12	10	0	0
+Entities/◆Abyss (droite)/bank230_anim9_down.anim2d	230	9	down	17	5	4	4	3	45	48	45	0	0
+Entities/◆Abyss (droite)/bank230_anim9_left.anim2d	230	9	left	17	5	4	4	3	45	48	45	0	0
+Entities/◆Abyss (droite)/bank230_anim9_right.anim2d	230	9	right	17	5	4	4	3	45	48	45	0	0
+Entities/◆Abyss (droite)/bank230_anim9_up.anim2d	230	9	up	17	5	4	4	3	45	48	45	0	0
+Entities/◆Abyss (gauche)/bank231_anim0_down.anim2d	231	0	down	5	3	3	3	2	10	12	10	0	0
+Entities/◆Abyss (gauche)/bank231_anim0_left.anim2d	231	0	left	5	3	3	3	2	10	12	10	0	0
+Entities/◆Abyss (gauche)/bank231_anim0_right.anim2d	231	0	right	5	3	3	3	2	10	12	10	0	0
+Entities/◆Abyss (gauche)/bank231_anim0_up.anim2d	231	0	up	5	3	3	3	2	10	12	10	0	0
+Entities/◆Abyss (gauche)/bank231_anim10_down.anim2d	231	10	down	7	3	3	3	0	18	18	18	0	0
+Entities/◆Abyss (gauche)/bank231_anim10_left.anim2d	231	10	left	7	3	3	3	0	18	18	18	0	0
+Entities/◆Abyss (gauche)/bank231_anim10_right.anim2d	231	10	right	7	3	3	3	0	18	18	18	0	0
+Entities/◆Abyss (gauche)/bank231_anim10_up.anim2d	231	10	up	7	3	3	3	0	18	18	18	0	0
+Entities/◆Abyss (gauche)/bank231_anim1_down.anim2d	231	1	down	5	3	3	3	2	10	12	10	0	0
+Entities/◆Abyss (gauche)/bank231_anim1_left.anim2d	231	1	left	5	3	3	3	2	10	12	10	0	0
+Entities/◆Abyss (gauche)/bank231_anim1_right.anim2d	231	1	right	5	3	3	3	2	10	12	10	0	0
+Entities/◆Abyss (gauche)/bank231_anim1_up.anim2d	231	1	up	5	3	3	3	2	10	12	10	0	0
+Entities/◆Abyss (gauche)/bank231_anim2_down.anim2d	231	2	down	10	3	3	3	2	21	23	21	0	0
+Entities/◆Abyss (gauche)/bank231_anim2_left.anim2d	231	2	left	10	3	3	3	2	21	23	21	0	0
+Entities/◆Abyss (gauche)/bank231_anim2_right.anim2d	231	2	right	10	3	3	3	2	21	23	21	0	0
+Entities/◆Abyss (gauche)/bank231_anim2_up.anim2d	231	2	up	10	3	3	3	2	21	23	21	0	0
+Entities/◆Abyss (gauche)/bank231_anim3_down.anim2d	231	3	down	7	3	3	3	0	18	18	18	0	0
+Entities/◆Abyss (gauche)/bank231_anim3_left.anim2d	231	3	left	7	3	3	3	0	18	18	18	0	0
+Entities/◆Abyss (gauche)/bank231_anim3_right.anim2d	231	3	right	7	3	3	3	0	18	18	18	0	0
+Entities/◆Abyss (gauche)/bank231_anim3_up.anim2d	231	3	up	7	3	3	3	0	18	18	18	0	0
+Entities/◆Abyss (gauche)/bank231_anim5_down.anim2d	231	5	down	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss (gauche)/bank231_anim5_left.anim2d	231	5	left	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss (gauche)/bank231_anim5_right.anim2d	231	5	right	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss (gauche)/bank231_anim5_up.anim2d	231	5	up	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss (gauche)/bank231_anim6_down.anim2d	231	6	down	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss (gauche)/bank231_anim6_left.anim2d	231	6	left	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss (gauche)/bank231_anim6_right.anim2d	231	6	right	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss (gauche)/bank231_anim6_up.anim2d	231	6	up	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss (gauche)/bank231_anim7_down.anim2d	231	7	down	13	2	1	1	1	10	12	10	0	0
+Entities/◆Abyss (gauche)/bank231_anim7_left.anim2d	231	7	left	13	2	1	1	1	10	12	10	0	0
+Entities/◆Abyss (gauche)/bank231_anim7_right.anim2d	231	7	right	13	2	1	1	1	10	12	10	0	0
+Entities/◆Abyss (gauche)/bank231_anim7_up.anim2d	231	7	up	13	2	1	1	1	10	12	10	0	0
+Entities/◆Abyss (gauche)/bank231_anim9_down.anim2d	231	9	down	17	5	4	4	3	45	48	45	0	0
+Entities/◆Abyss (gauche)/bank231_anim9_left.anim2d	231	9	left	17	5	4	4	3	45	48	45	0	0
+Entities/◆Abyss (gauche)/bank231_anim9_right.anim2d	231	9	right	17	5	4	4	3	45	48	45	0	0
+Entities/◆Abyss (gauche)/bank231_anim9_up.anim2d	231	9	up	17	5	4	4	3	45	48	45	0	0
+Entities/◆Abyss (projectiles-bulles)/bank228_anim0_down.anim2d	228	0	down	48	1	1	1	1	44	47	44	0	0
+Entities/◆Abyss (projectiles-bulles)/bank228_anim0_left.anim2d	228	0	left	48	1	1	1	1	44	47	44	0	0
+Entities/◆Abyss (projectiles-bulles)/bank228_anim0_right.anim2d	228	0	right	48	1	1	1	1	44	47	44	0	0
+Entities/◆Abyss (projectiles-bulles)/bank228_anim0_up.anim2d	228	0	up	48	1	1	1	1	44	47	44	0	0
+Entities/◆Abyss (projectiles-bulles)/bank228_anim1_down.anim2d	228	1	down	8	4	4	4	0	19	19	19	0	0
+Entities/◆Abyss (projectiles-bulles)/bank228_anim1_left.anim2d	228	1	left	8	4	4	4	0	19	19	19	0	0
+Entities/◆Abyss (projectiles-bulles)/bank228_anim1_right.anim2d	228	1	right	8	4	4	4	0	19	19	19	0	0
+Entities/◆Abyss (projectiles-bulles)/bank228_anim1_up.anim2d	228	1	up	8	4	4	4	0	19	19	19	0	0
+Entities/◆Abyss (projectiles-bulles)/bank228_anim2_down.anim2d	228	2	down	24	2	2	2	2	32	34	32	0	0
+Entities/◆Abyss (projectiles-bulles)/bank228_anim2_left.anim2d	228	2	left	24	2	2	2	2	32	34	32	0	0
+Entities/◆Abyss (projectiles-bulles)/bank228_anim2_right.anim2d	228	2	right	24	2	2	2	2	32	34	32	0	0
+Entities/◆Abyss (projectiles-bulles)/bank228_anim2_up.anim2d	228	2	up	24	2	2	2	2	32	34	32	0	0
+Entities/◆Abyss Niv.1/bank229_anim0_down.anim2d	229	0	down	7	3	2	2	0	12	12	12	0	0
+Entities/◆Abyss Niv.1/bank229_anim0_left.anim2d	229	0	left	7	3	2	2	0	12	12	12	0	0
+Entities/◆Abyss Niv.1/bank229_anim0_right.anim2d	229	0	right	7	3	2	2	0	12	12	12	0	0
+Entities/◆Abyss Niv.1/bank229_anim0_up.anim2d	229	0	up	7	3	2	2	0	12	12	12	0	0
+Entities/◆Abyss Niv.1/bank229_anim1_down.anim2d	229	1	down	7	3	2	2	0	12	12	12	0	0
+Entities/◆Abyss Niv.1/bank229_anim1_left.anim2d	229	1	left	7	3	2	2	0	12	12	12	0	0
+Entities/◆Abyss Niv.1/bank229_anim1_right.anim2d	229	1	right	7	3	2	2	0	12	12	12	0	0
+Entities/◆Abyss Niv.1/bank229_anim1_up.anim2d	229	1	up	7	3	2	2	0	12	12	12	0	0
+Entities/◆Abyss Niv.1/bank229_anim2_down.anim2d	229	2	down	17	3	3	3	3	34	48	34	0	0
+Entities/◆Abyss Niv.1/bank229_anim2_left.anim2d	229	2	left	17	3	3	3	3	34	48	34	0	0
+Entities/◆Abyss Niv.1/bank229_anim2_right.anim2d	229	2	right	17	3	3	3	3	34	48	34	0	0
+Entities/◆Abyss Niv.1/bank229_anim2_up.anim2d	229	2	up	17	3	3	3	3	34	48	34	0	0
+Entities/◆Abyss Niv.1/bank229_anim3_down.anim2d	229	3	down	27	5	5	5	5	69	91	69	0	0
+Entities/◆Abyss Niv.1/bank229_anim3_left.anim2d	229	3	left	27	5	5	5	5	69	91	69	0	0
+Entities/◆Abyss Niv.1/bank229_anim3_right.anim2d	229	3	right	27	5	5	5	5	69	91	69	0	0
+Entities/◆Abyss Niv.1/bank229_anim3_up.anim2d	229	3	up	27	5	5	5	5	69	91	69	0	0
+Entities/◆Abyss Niv.1/bank229_anim4_down.anim2d	229	4	down	7	2	2	2	0	12	12	12	0	0
+Entities/◆Abyss Niv.1/bank229_anim4_left.anim2d	229	4	left	7	2	2	2	0	12	12	12	0	0
+Entities/◆Abyss Niv.1/bank229_anim4_right.anim2d	229	4	right	7	2	2	2	0	12	12	12	0	0
+Entities/◆Abyss Niv.1/bank229_anim4_up.anim2d	229	4	up	7	2	2	2	0	12	12	12	0	0
+Entities/◆Abyss Niv.1/bank229_anim5_down.anim2d	229	5	down	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss Niv.1/bank229_anim5_left.anim2d	229	5	left	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss Niv.1/bank229_anim5_right.anim2d	229	5	right	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss Niv.1/bank229_anim5_up.anim2d	229	5	up	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss Niv.1/bank229_anim6_down.anim2d	229	6	down	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss Niv.1/bank229_anim6_left.anim2d	229	6	left	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss Niv.1/bank229_anim6_right.anim2d	229	6	right	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss Niv.1/bank229_anim6_up.anim2d	229	6	up	5	2	1	0	0	4	4	4	0	0
+Entities/◆Abyss Niv.1/bank229_anim7_down.anim2d	229	7	down	28	2	2	1	1	14	31	14	0	0
+Entities/◆Abyss Niv.1/bank229_anim7_left.anim2d	229	7	left	28	2	2	1	1	14	31	14	0	0
+Entities/◆Abyss Niv.1/bank229_anim7_right.anim2d	229	7	right	28	2	2	1	1	14	31	14	0	0
+Entities/◆Abyss Niv.1/bank229_anim7_up.anim2d	229	7	up	28	2	2	1	1	14	31	14	0	0
+Entities/◆Abyss Niv.1/bank229_anim8_down.anim2d	229	8	down	7	2	2	2	0	12	12	12	0	0
+Entities/◆Abyss Niv.1/bank229_anim8_left.anim2d	229	8	left	7	2	2	2	0	12	12	12	0	0
+Entities/◆Abyss Niv.1/bank229_anim8_right.anim2d	229	8	right	7	2	2	2	0	12	12	12	0	0
+Entities/◆Abyss Niv.1/bank229_anim8_up.anim2d	229	8	up	7	2	2	2	0	12	12	12	0	0
+Entities/◆Après Melzas/bank207_anim0_down.anim2d	207	0	down	7	8	8	8	7	41	48	41	0	0
+Entities/◆Après Melzas/bank207_anim0_left.anim2d	207	0	left	7	8	8	8	7	41	48	41	0	0
+Entities/◆Après Melzas/bank207_anim0_right.anim2d	207	0	right	7	8	8	8	7	41	48	41	0	0
+Entities/◆Après Melzas/bank207_anim0_up.anim2d	207	0	up	7	8	8	8	7	41	48	41	0	0
+Entities/◆Après Melzas/bank207_anim1_down.anim2d	207	1	down	7	8	8	0	8	24	48	24	0	0
+Entities/◆Après Melzas/bank207_anim1_left.anim2d	207	1	left	7	8	8	0	8	24	48	24	0	0
+Entities/◆Après Melzas/bank207_anim1_right.anim2d	207	1	right	7	8	8	0	8	24	48	24	0	0
+Entities/◆Après Melzas/bank207_anim1_up.anim2d	207	1	up	7	8	8	0	8	24	48	24	0	0
+Entities/◆Beannoïde/bank79_anim16_down.anim2d	79	16	down	14	2	1	1	1	10	13	10	0	0
+Entities/◆Beannoïde/bank79_anim16_left.anim2d	79	16	left	14	2	1	1	1	10	13	10	0	0
+Entities/◆Beannoïde/bank79_anim16_right.anim2d	79	16	right	14	2	1	1	1	10	13	10	0	0
+Entities/◆Beannoïde/bank79_anim16_up.anim2d	79	16	up	14	2	1	1	1	10	13	10	0	0
+Entities/◆Beannoïde/bank79_anim18_down.anim2d	79	18	down	14	2	1	1	1	10	13	10	0	0
+Entities/◆Beannoïde/bank79_anim18_left.anim2d	79	18	left	14	2	1	1	1	10	13	10	0	0
+Entities/◆Beannoïde/bank79_anim18_right.anim2d	79	18	right	14	2	1	1	1	10	13	10	0	0
+Entities/◆Beannoïde/bank79_anim18_up.anim2d	79	18	up	14	2	1	1	1	10	13	10	0	0
+Entities/◆Beannoïde/bank79_anim4_down.anim2d	79	4	down	14	1	1	1	1	10	13	10	0	0
+Entities/◆Beannoïde/bank79_anim4_left.anim2d	79	4	left	14	2	1	1	1	10	13	10	0	0
+Entities/◆Beannoïde/bank79_anim4_right.anim2d	79	4	right	14	2	1	1	1	10	13	10	0	0
+Entities/◆Beannoïde/bank79_anim4_up.anim2d	79	4	up	14	2	1	1	1	10	13	10	0	0
+Entities/◆Bombardement de Roein/bank192_anim0_down.anim2d	192	0	down	9	4	4	4	1	17	18	17	0	0
+Entities/◆Bombardement de Roein/bank192_anim0_left.anim2d	192	0	left	9	4	4	4	1	17	18	17	0	0
+Entities/◆Bombardement de Roein/bank192_anim0_right.anim2d	192	0	right	9	4	4	4	1	17	18	17	0	0
+Entities/◆Bombardement de Roein/bank192_anim0_up.anim2d	192	0	up	9	4	4	4	1	17	18	17	0	0
+Entities/◆Bombardement de Roein/bank192_anim1_down.anim2d	192	1	down	3	4	4	3	0	7	7	7	0	0
+Entities/◆Bombardement de Roein/bank192_anim1_left.anim2d	192	1	left	3	4	4	3	0	7	7	7	0	0
+Entities/◆Bombardement de Roein/bank192_anim1_right.anim2d	192	1	right	3	4	4	3	0	7	7	7	0	0
+Entities/◆Bombardement de Roein/bank192_anim1_up.anim2d	192	1	up	3	4	4	3	0	7	7	7	0	0
+Entities/◆Bombardement de Roein/bank192_anim2_down.anim2d	192	2	down	11	4	4	3	2	19	23	19	0	0
+Entities/◆Bombardement de Roein/bank192_anim2_left.anim2d	192	2	left	11	4	4	3	2	19	23	19	0	0
+Entities/◆Bombardement de Roein/bank192_anim2_right.anim2d	192	2	right	11	4	4	3	2	19	23	19	0	0
+Entities/◆Bombardement de Roein/bank192_anim2_up.anim2d	192	2	up	11	4	4	3	2	19	23	19	0	0
+Entities/◆Bombardement de Roein/bank192_anim3_down.anim2d	192	3	down	3	4	4	3	0	7	7	7	0	0
+Entities/◆Bombardement de Roein/bank192_anim3_left.anim2d	192	3	left	3	4	4	3	0	7	7	7	0	0
+Entities/◆Bombardement de Roein/bank192_anim3_right.anim2d	192	3	right	3	4	4	3	0	7	7	7	0	0
+Entities/◆Bombardement de Roein/bank192_anim3_up.anim2d	192	3	up	3	4	4	3	0	7	7	7	0	0
+Entities/◆Bombardement de Roein/bank192_anim4_down.anim2d	192	4	down	3	4	4	3	0	7	7	7	0	0
+Entities/◆Bombardement de Roein/bank192_anim4_left.anim2d	192	4	left	3	4	4	3	0	7	7	7	0	0
+Entities/◆Bombardement de Roein/bank192_anim4_right.anim2d	192	4	right	3	4	4	3	0	7	7	7	0	0
+Entities/◆Bombardement de Roein/bank192_anim4_up.anim2d	192	4	up	3	4	4	3	0	7	7	7	0	0
+Entities/◆Bombardement de Roein/bank192_anim5_down.anim2d	192	5	down	3	4	4	3	0	7	7	7	0	0
+Entities/◆Bombardement de Roein/bank192_anim5_left.anim2d	192	5	left	3	4	4	3	0	7	7	7	0	0
+Entities/◆Bombardement de Roein/bank192_anim5_right.anim2d	192	5	right	3	4	4	3	0	7	7	7	0	0
+Entities/◆Bombardement de Roein/bank192_anim5_up.anim2d	192	5	up	3	4	4	3	0	7	7	7	0	0
+Entities/◆Boss lézard Niv.1/bank238_anim6_down.anim2d	238	6	down	7	5	3	3	3	9	17	9	0	0
+Entities/◆Boss lézard Niv.1/bank238_anim6_left.anim2d	238	6	left	7	5	3	3	3	9	17	9	0	0
+Entities/◆Boss lézard Niv.1/bank238_anim6_right.anim2d	238	6	right	7	5	3	3	3	9	17	9	0	0
+Entities/◆Boss lézard Niv.1/bank238_anim6_up.anim2d	238	6	up	7	5	3	3	3	9	17	9	0	0
+Entities/◆Boss lézard Niv.1/bank238_anim7_down.anim2d	238	7	down	10	6	3	3	3	15	27	15	0	0
+Entities/◆Boss lézard Niv.1/bank238_anim7_left.anim2d	238	7	left	10	6	3	3	3	15	27	15	0	0
+Entities/◆Boss lézard Niv.1/bank238_anim7_right.anim2d	238	7	right	10	6	3	3	3	15	27	15	0	0
+Entities/◆Boss lézard Niv.1/bank238_anim7_up.anim2d	238	7	up	10	6	3	3	3	15	27	15	0	0
+Entities/◆Bouclier de Roein/bank194_anim2_down.anim2d	194	2	down	12	2	2	2	1	11	13	11	0	0
+Entities/◆Bouclier de Roein/bank194_anim2_left.anim2d	194	2	left	12	2	2	2	1	11	13	11	0	0
+Entities/◆Bouclier de Roein/bank194_anim2_right.anim2d	194	2	right	12	2	2	2	1	11	13	11	0	0
+Entities/◆Bouclier de Roein/bank194_anim2_up.anim2d	194	2	up	12	2	2	2	1	11	13	11	0	0
+Entities/◆Boule de feu/bank159_anim0_down.anim2d	159	0	down	5	1	1	1	0	4	4	4	0	0
+Entities/◆Boule de feu/bank159_anim0_left.anim2d	159	0	left	5	1	1	1	0	4	4	4	0	0
+Entities/◆Boule de feu/bank159_anim0_right.anim2d	159	0	right	5	1	1	1	0	4	4	4	0	0
+Entities/◆Boule de feu/bank159_anim0_up.anim2d	159	0	up	5	1	1	1	0	4	4	4	0	0
+Entities/◆Boule de feu/bank159_anim1_down.anim2d	159	1	down	35	7	7	6	2	149	183	149	0	0
+Entities/◆Boule de feu/bank159_anim1_left.anim2d	159	1	left	35	7	7	6	2	149	183	149	0	0
+Entities/◆Boule de feu/bank159_anim1_right.anim2d	159	1	right	35	7	7	6	2	149	183	149	0	0
+Entities/◆Boule de feu/bank159_anim1_up.anim2d	159	1	up	35	7	7	6	2	149	183	149	0	0
+Entities/◆Boule de feu/bank159_anim2_down.anim2d	159	2	down	5	1	1	1	0	4	4	4	0	0
+Entities/◆Boule de feu/bank159_anim2_left.anim2d	159	2	left	5	1	1	1	0	4	4	4	0	0
+Entities/◆Boule de feu/bank159_anim2_right.anim2d	159	2	right	5	1	1	1	0	4	4	4	0	0
+Entities/◆Boule de feu/bank159_anim2_up.anim2d	159	2	up	5	1	1	1	0	4	4	4	0	0
+Entities/◆Boule de feu/bank159_anim3_down.anim2d	159	3	down	5	1	1	1	0	4	4	4	0	0
+Entities/◆Boule de feu/bank159_anim3_left.anim2d	159	3	left	5	1	1	1	0	4	4	4	0	0
+Entities/◆Boule de feu/bank159_anim3_right.anim2d	159	3	right	5	1	1	1	0	4	4	4	0	0
+Entities/◆Boule de feu/bank159_anim3_up.anim2d	159	3	up	5	1	1	1	0	4	4	4	0	0
+Entities/◆Boule de feu/bank159_anim4_down.anim2d	159	4	down	5	1	1	1	0	4	4	4	0	0
+Entities/◆Boule de feu/bank159_anim4_left.anim2d	159	4	left	5	1	1	1	0	4	4	4	0	0
+Entities/◆Boule de feu/bank159_anim4_right.anim2d	159	4	right	5	1	1	1	0	4	4	4	0	0
+Entities/◆Boule de feu/bank159_anim4_up.anim2d	159	4	up	5	1	1	1	0	4	4	4	0	0
+Entities/◆Bras, projectiles/bank208_anim11_down.anim2d	208	11	down	5	2	2	2	0	8	8	0	8	0
+Entities/◆Bras, projectiles/bank208_anim11_left.anim2d	208	11	left	5	2	2	2	0	8	8	0	8	0
+Entities/◆Bras, projectiles/bank208_anim11_right.anim2d	208	11	right	5	2	2	2	0	8	8	0	8	0
+Entities/◆Bras, projectiles/bank208_anim11_up.anim2d	208	11	up	5	2	2	2	0	8	8	0	8	0
+Entities/◆Bras, projectiles/bank208_anim12_down.anim2d	208	12	down	5	2	2	2	0	8	8	0	8	0
+Entities/◆Bras, projectiles/bank208_anim12_left.anim2d	208	12	left	5	2	2	2	0	8	8	0	8	0
+Entities/◆Bras, projectiles/bank208_anim12_right.anim2d	208	12	right	5	2	2	2	0	8	8	0	8	0
+Entities/◆Bras, projectiles/bank208_anim12_up.anim2d	208	12	up	5	2	2	2	0	8	8	0	8	0
+Entities/◆Bras, projectiles/bank208_anim13_down.anim2d	208	13	down	5	2	2	2	0	8	8	0	8	0
+Entities/◆Bras, projectiles/bank208_anim13_left.anim2d	208	13	left	5	2	2	2	0	8	8	0	8	0
+Entities/◆Bras, projectiles/bank208_anim13_right.anim2d	208	13	right	5	2	2	2	0	8	8	0	8	0
+Entities/◆Bras, projectiles/bank208_anim13_up.anim2d	208	13	up	5	2	2	2	0	8	8	0	8	0
+Entities/◆Bras, projectiles/bank208_anim14_down.anim2d	208	14	down	5	2	2	2	0	8	8	0	8	0
+Entities/◆Bras, projectiles/bank208_anim14_left.anim2d	208	14	left	5	2	2	2	0	8	8	0	8	0
+Entities/◆Bras, projectiles/bank208_anim14_right.anim2d	208	14	right	5	2	2	2	0	8	8	0	8	0
+Entities/◆Bras, projectiles/bank208_anim14_up.anim2d	208	14	up	5	2	2	2	0	8	8	0	8	0
+Entities/◆Bras, projectiles/bank208_anim7_down.anim2d	208	7	down	16	1	1	1	1	5	15	5	0	0
+Entities/◆Bras, projectiles/bank208_anim7_left.anim2d	208	7	left	16	1	1	1	1	5	15	5	0	0
+Entities/◆Bras, projectiles/bank208_anim7_right.anim2d	208	7	right	16	1	1	1	1	5	15	5	0	0
+Entities/◆Bras, projectiles/bank208_anim7_up.anim2d	208	7	up	16	1	1	1	1	5	15	5	0	0
+Entities/◆Bras, projectiles/bank208_anim8_down.anim2d	208	8	down	16	1	1	1	1	5	15	5	0	0
+Entities/◆Bras, projectiles/bank208_anim8_left.anim2d	208	8	left	16	1	1	1	1	5	15	5	0	0
+Entities/◆Bras, projectiles/bank208_anim8_right.anim2d	208	8	right	16	1	1	1	1	5	15	5	0	0
+Entities/◆Bras, projectiles/bank208_anim8_up.anim2d	208	8	up	16	1	1	1	1	5	15	5	0	0
+Entities/◆Bras, projectiles/bank208_anim9_down.anim2d	208	9	down	10	8	8	8	5	40	60	40	0	0
+Entities/◆Bras, projectiles/bank208_anim9_left.anim2d	208	9	left	10	8	8	8	5	40	60	40	0	0
+Entities/◆Bras, projectiles/bank208_anim9_right.anim2d	208	9	right	10	8	8	8	5	40	60	40	0	0
+Entities/◆Bras, projectiles/bank208_anim9_up.anim2d	208	9	up	10	8	8	8	5	40	60	40	0	0
+Entities/◆Cercle magique de Zoldia/bank254_anim0_down.anim2d	254	0	down	20	9	8	7	6	53	82	53	0	0
+Entities/◆Cercle magique de Zoldia/bank254_anim0_left.anim2d	254	0	left	20	9	8	7	6	53	82	53	0	0
+Entities/◆Cercle magique de Zoldia/bank254_anim0_right.anim2d	254	0	right	20	9	8	7	6	53	82	53	0	0
+Entities/◆Cercle magique de Zoldia/bank254_anim0_up.anim2d	254	0	up	20	9	8	7	6	53	82	53	0	0
+Entities/◆Cercle magique de Zoldia/bank254_anim2_down.anim2d	254	2	down	20	9	8	7	6	53	82	53	0	0
+Entities/◆Cercle magique de Zoldia/bank254_anim2_left.anim2d	254	2	left	20	9	8	7	6	53	82	53	0	0
+Entities/◆Cercle magique de Zoldia/bank254_anim2_right.anim2d	254	2	right	20	9	8	7	6	53	82	53	0	0
+Entities/◆Cercle magique de Zoldia/bank254_anim2_up.anim2d	254	2	up	20	9	8	7	6	53	82	53	0	0
+Entities/◆Cercle magique de Zoldia/bank254_anim3_down.anim2d	254	3	down	20	9	8	7	6	53	82	53	0	0
+Entities/◆Cercle magique de Zoldia/bank254_anim3_left.anim2d	254	3	left	20	9	8	7	6	53	82	53	0	0
+Entities/◆Cercle magique de Zoldia/bank254_anim3_right.anim2d	254	3	right	20	9	8	7	6	53	82	53	0	0
+Entities/◆Cercle magique de Zoldia/bank254_anim3_up.anim2d	254	3	up	20	9	8	7	6	53	82	53	0	0
+Entities/◆Chute de rochers de Nilude (111)/bank247_anim2_down.anim2d	247	2	down	10	7	3	3	3	21	25	21	0	0
+Entities/◆Chute de rochers de Nilude (111)/bank247_anim2_left.anim2d	247	2	left	10	7	3	3	3	21	25	21	0	0
+Entities/◆Chute de rochers de Nilude (111)/bank247_anim2_right.anim2d	247	2	right	10	7	3	3	3	21	25	21	0	0
+Entities/◆Chute de rochers de Nilude (111)/bank247_anim2_up.anim2d	247	2	up	10	7	3	3	3	21	25	21	0	0
+Entities/◆Chute de rochers de Nilude (112)/bank246_anim2_down.anim2d	246	2	down	10	7	3	3	3	21	25	21	0	0
+Entities/◆Chute de rochers de Nilude (112)/bank246_anim2_left.anim2d	246	2	left	10	7	3	3	3	21	25	21	0	0
+Entities/◆Chute de rochers de Nilude (112)/bank246_anim2_right.anim2d	246	2	right	10	7	3	3	3	21	25	21	0	0
+Entities/◆Chute de rochers de Nilude (112)/bank246_anim2_up.anim2d	246	2	up	10	7	3	3	3	21	25	21	0	0
+Entities/◆Chute de rochers de Nilude (222)/bank240_anim2_down.anim2d	240	2	down	10	7	3	3	3	24	27	24	0	0
+Entities/◆Chute de rochers de Nilude (222)/bank240_anim2_left.anim2d	240	2	left	10	7	3	3	3	24	27	24	0	0
+Entities/◆Chute de rochers de Nilude (222)/bank240_anim2_right.anim2d	240	2	right	10	7	3	3	3	24	27	24	0	0
+Entities/◆Chute de rochers de Nilude (222)/bank240_anim2_up.anim2d	240	2	up	10	7	3	3	3	24	27	24	0	0
+Entities/◆Double de Melzas/bank168_anim11_down.anim2d	168	11	down	63	14	4	3	4	131	208	131	0	0
+Entities/◆Double de Melzas/bank168_anim11_left.anim2d	168	11	left	63	14	4	3	4	131	208	131	0	0
+Entities/◆Double de Melzas/bank168_anim11_right.anim2d	168	11	right	63	14	4	3	4	131	208	131	0	0
+Entities/◆Double de Melzas/bank168_anim11_up.anim2d	168	11	up	63	14	4	3	4	131	208	131	0	0
+Entities/◆Double de Melzas/bank168_anim1_down.anim2d	168	1	down	14	13	12	9	11	21	53	21	0	0
+Entities/◆Double de Melzas/bank168_anim1_left.anim2d	168	1	left	14	13	12	9	11	21	53	21	0	0
+Entities/◆Double de Melzas/bank168_anim1_right.anim2d	168	1	right	14	13	12	9	11	21	53	21	0	0
+Entities/◆Double de Melzas/bank168_anim1_up.anim2d	168	1	up	14	13	12	9	11	21	53	21	0	0
+Entities/◆Double de Melzas/bank168_anim2_down.anim2d	168	2	down	12	13	12	9	11	21	45	21	0	0
+Entities/◆Double de Melzas/bank168_anim2_left.anim2d	168	2	left	12	13	12	9	11	21	45	21	0	0
+Entities/◆Double de Melzas/bank168_anim2_right.anim2d	168	2	right	12	13	12	9	11	21	45	21	0	0
+Entities/◆Double de Melzas/bank168_anim2_up.anim2d	168	2	up	12	13	12	9	11	21	45	21	0	0
+Entities/◆Double de Melzas/bank168_anim4_down.anim2d	168	4	down	22	12	6	4	6	34	113	11	20	3
+Entities/◆Double de Melzas/bank168_anim4_left.anim2d	168	4	left	22	12	6	4	6	34	113	11	20	3
+Entities/◆Double de Melzas/bank168_anim4_right.anim2d	168	4	right	22	12	6	4	6	34	113	11	20	3
+Entities/◆Double de Melzas/bank168_anim4_up.anim2d	168	4	up	22	12	6	4	6	34	113	11	20	3
+Entities/◆Double de Melzas/bank168_anim5_down.anim2d	168	5	down	5	8	3	2	2	9	12	9	0	0
+Entities/◆Double de Melzas/bank168_anim5_left.anim2d	168	5	left	5	8	3	2	2	9	12	9	0	0
+Entities/◆Double de Melzas/bank168_anim5_right.anim2d	168	5	right	5	8	3	2	2	9	12	9	0	0
+Entities/◆Double de Melzas/bank168_anim5_up.anim2d	168	5	up	5	8	3	2	2	9	12	9	0	0
+Entities/◆Dragon/bank223_anim8_down.anim2d	223	8	down	21	11	3	3	3	21	40	21	0	0
+Entities/◆Dragon/bank223_anim8_left.anim2d	223	8	left	21	11	3	3	3	21	40	21	0	0
+Entities/◆Dragon/bank223_anim8_right.anim2d	223	8	right	21	11	3	3	3	21	40	21	0	0
+Entities/◆Dragon/bank223_anim8_up.anim2d	223	8	up	21	11	3	3	3	21	40	21	0	0
+Entities/◆Dragon/bank223_anim9_down.anim2d	223	9	down	22	20	11	11	10	105	167	18	69	18
+Entities/◆Dragon/bank223_anim9_left.anim2d	223	9	left	22	20	11	11	10	105	167	18	69	18
+Entities/◆Dragon/bank223_anim9_right.anim2d	223	9	right	22	20	11	11	10	105	167	18	69	18
+Entities/◆Dragon/bank223_anim9_up.anim2d	223	9	up	22	20	11	11	10	105	167	18	69	18
+Entities/◆Effet d’aspiration/bank221_anim0_down.anim2d	221	0	down	33	6	6	5	1	152	156	56	76	20
+Entities/◆Effet d’aspiration/bank221_anim0_left.anim2d	221	0	left	33	6	6	5	1	152	156	56	76	20
+Entities/◆Effet d’aspiration/bank221_anim0_right.anim2d	221	0	right	33	6	6	5	1	152	156	56	76	20
+Entities/◆Effet d’aspiration/bank221_anim0_up.anim2d	221	0	up	33	6	6	5	1	152	156	56	76	20
+Entities/◆Effet d’aspiration/bank221_anim1_down.anim2d	221	1	down	9	6	6	5	1	38	39	14	19	5
+Entities/◆Effet d’aspiration/bank221_anim1_left.anim2d	221	1	left	9	6	6	5	1	38	39	14	19	5
+Entities/◆Effet d’aspiration/bank221_anim1_right.anim2d	221	1	right	9	6	6	5	1	38	39	14	19	5
+Entities/◆Effet d’aspiration/bank221_anim1_up.anim2d	221	1	up	9	6	6	5	1	38	39	14	19	5
+Entities/◆Effet d’aspiration/bank221_anim2_down.anim2d	221	2	down	33	6	6	5	1	152	156	56	76	20
+Entities/◆Effet d’aspiration/bank221_anim2_left.anim2d	221	2	left	33	6	6	5	1	152	156	56	76	20
+Entities/◆Effet d’aspiration/bank221_anim2_right.anim2d	221	2	right	33	6	6	5	1	152	156	56	76	20
+Entities/◆Effet d’aspiration/bank221_anim2_up.anim2d	221	2	up	33	6	6	5	1	152	156	56	76	20
+Entities/◆Flammes de dragon/bank224_anim0_down.anim2d	224	0	down	9	6	6	6	1	26	29	1	18	7
+Entities/◆Flammes de dragon/bank224_anim0_left.anim2d	224	0	left	9	6	6	6	1	26	29	1	18	7
+Entities/◆Flammes de dragon/bank224_anim0_right.anim2d	224	0	right	9	6	6	6	1	26	29	1	18	7
+Entities/◆Flammes de dragon/bank224_anim0_up.anim2d	224	0	up	9	6	6	6	1	26	29	1	18	7
+Entities/◆Flammes de dragon/bank224_anim1_down.anim2d	224	1	down	5	6	5	5	0	17	17	1	11	5
+Entities/◆Flammes de dragon/bank224_anim1_left.anim2d	224	1	left	5	6	5	5	0	17	17	1	11	5
+Entities/◆Flammes de dragon/bank224_anim1_right.anim2d	224	1	right	5	6	5	5	0	17	17	1	11	5
+Entities/◆Flammes de dragon/bank224_anim1_up.anim2d	224	1	up	5	6	5	5	0	17	17	1	11	5
+Entities/◆Flammes de dragon/bank224_anim2_down.anim2d	224	2	down	6	4	3	2	0	6	6	0	5	1
+Entities/◆Flammes de dragon/bank224_anim2_left.anim2d	224	2	left	6	4	3	2	0	6	6	0	5	1
+Entities/◆Flammes de dragon/bank224_anim2_right.anim2d	224	2	right	6	4	3	2	0	6	6	0	5	1
+Entities/◆Flammes de dragon/bank224_anim2_up.anim2d	224	2	up	6	4	3	2	0	6	6	0	5	1
+Entities/◆Flammes de dragon/bank224_anim3_down.anim2d	224	3	down	5	2	1	1	0	4	4	1	3	0
+Entities/◆Flammes de dragon/bank224_anim3_left.anim2d	224	3	left	5	2	1	1	0	4	4	1	3	0
+Entities/◆Flammes de dragon/bank224_anim3_right.anim2d	224	3	right	5	2	1	1	0	4	4	1	3	0
+Entities/◆Flammes de dragon/bank224_anim3_up.anim2d	224	3	up	5	2	1	1	0	4	4	1	3	0
+Entities/◆Flammes de dragon/bank224_anim4_down.anim2d	224	4	down	25	2	1	1	0	24	24	6	18	0
+Entities/◆Flammes de dragon/bank224_anim4_left.anim2d	224	4	left	25	2	1	1	0	24	24	6	18	0
+Entities/◆Flammes de dragon/bank224_anim4_right.anim2d	224	4	right	25	2	1	1	0	24	24	6	18	0
+Entities/◆Flammes de dragon/bank224_anim4_up.anim2d	224	4	up	25	2	1	1	0	24	24	6	18	0
+Entities/◆Flèche Niv.1/bank95_anim0_down.anim2d	95	0	down	5	1	1	0	0	4	4	0	4	0
+Entities/◆Flèche Niv.1/bank95_anim0_up.anim2d	95	0	up	5	1	1	0	0	4	4	0	4	0
+Entities/◆Flèche Niv.1/bank95_anim1_down.anim2d	95	1	down	19	1	1	1	1	17	18	1	12	4
+Entities/◆Flèche Niv.1/bank95_anim1_left.anim2d	95	1	left	19	1	1	1	1	17	18	1	12	4
+Entities/◆Flèche Niv.1/bank95_anim1_right.anim2d	95	1	right	19	1	1	1	1	17	18	1	12	4
+Entities/◆Flèche Niv.1/bank95_anim1_up.anim2d	95	1	up	19	1	1	1	1	17	18	1	12	4
+Entities/◆Flèche Niv.1/bank95_anim2_down.anim2d	95	2	down	5	1	1	0	0	4	4	0	4	0
+Entities/◆Flèche Niv.1/bank95_anim2_up.anim2d	95	2	up	5	1	1	0	0	4	4	0	4	0
+Entities/◆Fourneau Niv.1/bank211_anim9_down.anim2d	211	9	down	4	1	1	1	1	2	3	2	0	0
+Entities/◆Fourneau Niv.1/bank211_anim9_left.anim2d	211	9	left	4	1	1	1	1	2	3	2	0	0
+Entities/◆Fourneau Niv.1/bank211_anim9_right.anim2d	211	9	right	4	1	1	1	1	2	3	2	0	0
+Entities/◆Fourneau Niv.1/bank211_anim9_up.anim2d	211	9	up	4	1	1	1	1	2	3	2	0	0
+Entities/◆Frère Rayon (aîné) Niv.1/bank244_anim11_down.anim2d	244	11	down	13	2	2	2	2	13	24	13	0	0
+Entities/◆Frère Rayon (aîné) Niv.1/bank244_anim11_left.anim2d	244	11	left	13	2	2	2	2	13	24	13	0	0
+Entities/◆Frère Rayon (aîné) Niv.1/bank244_anim11_right.anim2d	244	11	right	13	2	2	2	2	13	24	13	0	0
+Entities/◆Frère Rayon (aîné) Niv.1/bank244_anim11_up.anim2d	244	11	up	13	2	2	2	2	13	24	13	0	0
+Entities/◆Frère Rayon (aîné) Niv.1/bank244_anim4_down.anim2d	244	4	down	13	4	2	2	2	9	21	9	0	0
+Entities/◆Frère Rayon (aîné) Niv.1/bank244_anim4_left.anim2d	244	4	left	13	4	2	2	2	9	21	9	0	0
+Entities/◆Frère Rayon (aîné) Niv.1/bank244_anim4_right.anim2d	244	4	right	13	4	2	2	2	9	21	9	0	0
+Entities/◆Frère Rayon (aîné) Niv.1/bank244_anim4_up.anim2d	244	4	up	13	4	2	2	2	9	21	9	0	0
+Entities/◆Frère Rayon (aîné) Niv.1/bank244_anim5_down.anim2d	244	5	down	13	4	2	2	2	9	21	9	0	0
+Entities/◆Frère Rayon (aîné) Niv.1/bank244_anim5_left.anim2d	244	5	left	13	4	2	2	2	9	21	9	0	0
+Entities/◆Frère Rayon (aîné) Niv.1/bank244_anim5_right.anim2d	244	5	right	13	4	2	2	2	9	21	9	0	0
+Entities/◆Frère Rayon (aîné) Niv.1/bank244_anim5_up.anim2d	244	5	up	13	4	2	2	2	9	21	9	0	0
+Entities/◆Frère Rayon (aîné) Niv.1/bank244_anim8_down.anim2d	244	8	down	13	2	2	2	2	13	24	13	0	0
+Entities/◆Frère Rayon (aîné) Niv.1/bank244_anim8_left.anim2d	244	8	left	13	2	2	2	2	13	24	13	0	0
+Entities/◆Frère Rayon (aîné) Niv.1/bank244_anim8_right.anim2d	244	8	right	13	2	2	2	2	13	24	13	0	0
+Entities/◆Frère Rayon (aîné) Niv.1/bank244_anim8_up.anim2d	244	8	up	13	2	2	2	2	13	24	13	0	0
+Entities/◆Frère Rayon (cadet)/bank245_anim11_down.anim2d	245	11	down	13	2	2	2	2	13	24	13	0	0
+Entities/◆Frère Rayon (cadet)/bank245_anim11_left.anim2d	245	11	left	13	2	2	2	2	13	24	13	0	0
+Entities/◆Frère Rayon (cadet)/bank245_anim11_right.anim2d	245	11	right	13	2	2	2	2	13	24	13	0	0
+Entities/◆Frère Rayon (cadet)/bank245_anim11_up.anim2d	245	11	up	13	2	2	2	2	13	24	13	0	0
+Entities/◆Frère Rayon (cadet)/bank245_anim4_down.anim2d	245	4	down	13	4	2	2	2	9	21	9	0	0
+Entities/◆Frère Rayon (cadet)/bank245_anim4_left.anim2d	245	4	left	13	4	2	2	2	9	21	9	0	0
+Entities/◆Frère Rayon (cadet)/bank245_anim4_right.anim2d	245	4	right	13	4	2	2	2	9	21	9	0	0
+Entities/◆Frère Rayon (cadet)/bank245_anim4_up.anim2d	245	4	up	13	4	2	2	2	9	21	9	0	0
+Entities/◆Frère Rayon (cadet)/bank245_anim5_down.anim2d	245	5	down	13	4	2	2	2	9	21	9	0	0
+Entities/◆Frère Rayon (cadet)/bank245_anim5_left.anim2d	245	5	left	13	4	2	2	2	9	21	9	0	0
+Entities/◆Frère Rayon (cadet)/bank245_anim5_right.anim2d	245	5	right	13	4	2	2	2	9	21	9	0	0
+Entities/◆Frère Rayon (cadet)/bank245_anim5_up.anim2d	245	5	up	13	4	2	2	2	9	21	9	0	0
+Entities/◆Frère Rayon (cadet)/bank245_anim8_down.anim2d	245	8	down	13	2	2	2	2	13	24	13	0	0
+Entities/◆Frère Rayon (cadet)/bank245_anim8_left.anim2d	245	8	left	13	2	2	2	2	13	24	13	0	0
+Entities/◆Frère Rayon (cadet)/bank245_anim8_right.anim2d	245	8	right	13	2	2	2	2	13	24	13	0	0
+Entities/◆Frère Rayon (cadet)/bank245_anim8_up.anim2d	245	8	up	13	2	2	2	2	13	24	13	0	0
+Entities/◆Frères Rayon (gaz toxique)/bank214_anim0_down.anim2d	214	0	down	26	13	13	11	6	214	240	214	0	0
+Entities/◆Frères Rayon (gaz toxique)/bank214_anim0_left.anim2d	214	0	left	26	13	13	11	6	214	240	214	0	0
+Entities/◆Frères Rayon (gaz toxique)/bank214_anim0_right.anim2d	214	0	right	26	13	13	11	6	214	240	214	0	0
+Entities/◆Frères Rayon (gaz toxique)/bank214_anim0_up.anim2d	214	0	up	26	13	13	11	6	214	240	214	0	0
+Entities/◆Frères Rayon (gaz toxique)/bank214_anim1_down.anim2d	214	1	down	26	11	11	10	5	166	183	166	0	0
+Entities/◆Frères Rayon (gaz toxique)/bank214_anim1_left.anim2d	214	1	left	26	11	11	10	5	166	183	166	0	0
+Entities/◆Frères Rayon (gaz toxique)/bank214_anim1_right.anim2d	214	1	right	26	11	11	10	5	166	183	166	0	0
+Entities/◆Frères Rayon (gaz toxique)/bank214_anim1_up.anim2d	214	1	up	26	11	11	10	5	166	183	166	0	0
+Entities/◆Frères Rayon (gaz toxique)/bank214_anim2_down.anim2d	214	2	down	17	7	7	5	0	56	56	56	0	0
+Entities/◆Frères Rayon (gaz toxique)/bank214_anim2_left.anim2d	214	2	left	17	7	7	6	0	60	60	60	0	0
+Entities/◆Frères Rayon (gaz toxique)/bank214_anim2_right.anim2d	214	2	right	17	7	7	6	0	60	60	60	0	0
+Entities/◆Frères Rayon (gaz toxique)/bank214_anim2_up.anim2d	214	2	up	17	7	7	5	0	56	56	56	0	0
+Entities/◆Grand rocher du roi/bank251_anim1_down.anim2d	251	1	down	14	12	10	6	8	28	70	28	0	0
+Entities/◆Grand rocher du roi/bank251_anim1_left.anim2d	251	1	left	14	12	10	6	8	28	70	28	0	0
+Entities/◆Grand rocher du roi/bank251_anim1_right.anim2d	251	1	right	14	12	10	6	8	28	70	28	0	0
+Entities/◆Grand rocher du roi/bank251_anim1_up.anim2d	251	1	up	14	12	10	6	8	28	70	28	0	0
+Entities/◆Homme momie Niv.1/bank169_anim3_down.anim2d	169	3	down	11	3	2	1	2	5	19	5	0	0
+Entities/◆Homme momie Niv.1/bank169_anim3_left.anim2d	169	3	left	11	3	2	1	2	5	19	5	0	0
+Entities/◆Homme momie Niv.1/bank169_anim3_right.anim2d	169	3	right	11	3	2	1	2	5	19	5	0	0
+Entities/◆Homme momie Niv.2/bank198_anim3_down.anim2d	198	3	down	11	3	2	1	2	5	19	5	0	0
+Entities/◆Homme momie Niv.2/bank198_anim3_left.anim2d	198	3	left	11	3	2	1	2	5	19	5	0	0
+Entities/◆Homme momie Niv.2/bank198_anim3_right.anim2d	198	3	right	11	3	2	1	2	5	19	5	0	0
+Entities/◆Homme-insecte Niv.1/bank145_anim0_down.anim2d	145	0	down	5	2	1	1	1	2	4	2	0	0
+Entities/◆Homme-insecte Niv.1/bank145_anim0_left.anim2d	145	0	left	5	2	1	1	1	2	4	2	0	0
+Entities/◆Homme-insecte Niv.1/bank145_anim0_right.anim2d	145	0	right	5	2	1	1	1	2	4	2	0	0
+Entities/◆Homme-insecte Niv.1/bank145_anim0_up.anim2d	145	0	up	5	2	1	1	1	2	4	2	0	0
+Entities/◆Homme-insecte Niv.1/bank145_anim3_down.anim2d	145	3	down	19	3	1	1	1	9	18	9	0	0
+Entities/◆Homme-insecte Niv.1/bank145_anim3_left.anim2d	145	3	left	19	3	2	1	2	6	36	6	0	0
+Entities/◆Homme-insecte Niv.1/bank145_anim3_right.anim2d	145	3	right	19	3	1	1	1	5	18	5	0	0
+Entities/◆Homme-insecte Niv.1/bank145_anim3_up.anim2d	145	3	up	19	3	1	1	1	8	18	8	0	0
+Entities/◆Homme-insecte Niv.1/bank145_anim4_down.anim2d	145	4	down	11	2	1	1	1	3	10	3	0	0
+Entities/◆Homme-insecte Niv.1/bank145_anim4_left.anim2d	145	4	left	11	2	1	1	1	3	10	3	0	0
+Entities/◆Homme-insecte Niv.1/bank145_anim4_right.anim2d	145	4	right	11	2	1	1	1	3	10	3	0	0
+Entities/◆Homme-insecte Niv.1/bank145_anim4_up.anim2d	145	4	up	11	2	1	1	1	3	10	3	0	0
+Entities/◆Homme-insecte Niv.1/bank145_anim5_down.anim2d	145	5	down	8	2	1	0	1	1	7	1	0	0
+Entities/◆Homme-insecte Niv.1/bank145_anim5_left.anim2d	145	5	left	8	2	1	0	1	1	7	1	0	0
+Entities/◆Homme-insecte Niv.1/bank145_anim5_right.anim2d	145	5	right	8	2	1	0	1	1	7	1	0	0
+Entities/◆Homme-insecte Niv.1/bank145_anim5_up.anim2d	145	5	up	8	2	1	0	1	1	7	1	0	0
+Entities/◆Homme-lézard (lance) Niv.1/bank109_anim10_down.anim2d	109	10	down	5	3	1	0	0	4	4	0	4	0
+Entities/◆Homme-lézard (lance) Niv.1/bank109_anim10_up.anim2d	109	10	up	5	3	1	0	0	4	4	0	4	0
+Entities/◆Homme-lézard (lance) Niv.1/bank109_anim1_down.anim2d	109	1	down	5	2	1	1	1	2	4	0	2	0
+Entities/◆Homme-lézard (lance) Niv.1/bank109_anim1_up.anim2d	109	1	up	5	3	1	1	1	3	4	0	3	0
+Entities/◆Homme-lézard (lance) Niv.1/bank109_anim2_down.anim2d	109	2	down	5	3	1	0	0	4	4	0	4	0
+Entities/◆Homme-lézard (lance) Niv.1/bank109_anim3_down.anim2d	109	3	down	5	3	1	0	1	1	4	0	1	0
+Entities/◆Homme-lézard (lance) Niv.1/bank109_anim3_up.anim2d	109	3	up	5	3	1	1	1	2	4	1	1	0
+Entities/◆Homme-lézard (lance) Niv.1/bank109_anim4_down.anim2d	109	4	down	5	3	1	0	0	4	4	0	4	0
+Entities/◆Homme-lézard (lance) Niv.1/bank109_anim4_up.anim2d	109	4	up	5	3	1	0	0	4	4	0	4	0
+Entities/◆Homme-ombre Niv.1/bank184_anim2_down.anim2d	184	2	down	5	4	1	1	1	3	4	3	0	0
+Entities/◆Homme-ombre Niv.1/bank184_anim2_left.anim2d	184	2	left	5	5	1	1	1	3	4	3	0	0
+Entities/◆Homme-ombre Niv.1/bank184_anim2_right.anim2d	184	2	right	5	5	1	1	1	3	4	3	0	0
+Entities/◆Homme-ombre Niv.1/bank184_anim2_up.anim2d	184	2	up	5	4	1	1	1	2	4	2	0	0
+Entities/◆Homme-ombre Niv.1/bank184_anim3_down.anim2d	184	3	down	11	4	2	1	1	8	11	8	0	0
+Entities/◆Homme-ombre Niv.1/bank184_anim3_left.anim2d	184	3	left	11	5	1	1	1	7	10	7	0	0
+Entities/◆Homme-ombre Niv.1/bank184_anim3_right.anim2d	184	3	right	11	5	1	1	1	7	10	7	0	0
+Entities/◆Homme-ombre Niv.1/bank184_anim3_up.anim2d	184	3	up	11	4	2	1	1	8	11	8	0	0
+Entities/◆Homme-ombre Niv.1/bank184_anim4_down.anim2d	184	4	down	17	4	3	3	3	14	46	14	0	0
+Entities/◆Homme-ombre Niv.1/bank184_anim4_left.anim2d	184	4	left	17	5	3	3	3	18	46	18	0	0
+Entities/◆Homme-ombre Niv.1/bank184_anim4_right.anim2d	184	4	right	17	5	3	3	3	18	46	18	0	0
+Entities/◆Homme-ombre Niv.1/bank184_anim4_up.anim2d	184	4	up	17	4	3	2	3	12	46	12	0	0
+Entities/◆Homme-ombre Niv.1/bank184_anim5_down.anim2d	184	5	down	9	2	1	1	1	7	8	7	0	0
+Entities/◆Homme-ombre Niv.1/bank184_anim5_left.anim2d	184	5	left	9	2	1	1	1	7	8	7	0	0
+Entities/◆Homme-ombre Niv.1/bank184_anim5_right.anim2d	184	5	right	9	2	1	1	1	7	8	7	0	0
+Entities/◆Homme-ombre Niv.1/bank184_anim5_up.anim2d	184	5	up	9	2	1	1	1	7	8	7	0	0
+Entities/◆Laser à tête chercheuse/bank163_anim0_down.anim2d	163	0	down	27	2	2	2	1	35	39	35	0	0
+Entities/◆Laser à tête chercheuse/bank163_anim0_left.anim2d	163	0	left	27	2	2	2	1	35	39	35	0	0
+Entities/◆Laser à tête chercheuse/bank163_anim0_right.anim2d	163	0	right	27	2	2	2	1	35	39	35	0	0
+Entities/◆Laser à tête chercheuse/bank163_anim0_up.anim2d	163	0	up	27	2	2	2	1	35	39	35	0	0
+Entities/◆Loup-garou Niv.1/bank226_anim2_down.anim2d	226	2	down	5	3	1	0	1	1	4	1	0	0
+Entities/◆Loup-garou Niv.1/bank226_anim2_left.anim2d	226	2	left	5	3	1	0	1	1	4	1	0	0
+Entities/◆Loup-garou Niv.1/bank226_anim2_right.anim2d	226	2	right	5	3	1	0	1	1	4	1	0	0
+Entities/◆Loup-garou Niv.1/bank226_anim2_up.anim2d	226	2	up	5	3	1	0	1	1	4	1	0	0
+Entities/◆Loup-garou Niv.1/bank226_anim3_down.anim2d	226	3	down	63	4	2	2	2	90	122	90	0	0
+Entities/◆Loup-garou Niv.1/bank226_anim3_left.anim2d	226	3	left	63	4	2	2	2	90	122	90	0	0
+Entities/◆Loup-garou Niv.1/bank226_anim3_right.anim2d	226	3	right	63	4	2	2	2	90	122	90	0	0
+Entities/◆Loup-garou Niv.1/bank226_anim3_up.anim2d	226	3	up	63	4	2	2	2	90	122	90	0	0
+Entities/◆Magie de Zoldia/bank213_anim0_down.anim2d	213	0	down	17	1	1	1	0	16	16	1	10	5
+Entities/◆Magie de Zoldia/bank213_anim0_left.anim2d	213	0	left	17	1	1	1	0	16	16	1	10	5
+Entities/◆Magie de Zoldia/bank213_anim0_right.anim2d	213	0	right	17	1	1	1	0	16	16	1	10	5
+Entities/◆Magie de Zoldia/bank213_anim0_up.anim2d	213	0	up	17	1	1	1	0	16	16	1	10	5
+Entities/◆Magie de Zoldia/bank213_anim1_down.anim2d	213	1	down	24	14	14	14	4	225	229	225	0	0
+Entities/◆Magie de Zoldia/bank213_anim1_left.anim2d	213	1	left	24	14	14	14	4	225	229	225	0	0
+Entities/◆Magie de Zoldia/bank213_anim1_right.anim2d	213	1	right	24	14	14	14	4	225	229	225	0	0
+Entities/◆Magie de Zoldia/bank213_anim1_up.anim2d	213	1	up	24	14	14	14	4	225	229	225	0	0
+Entities/◆Magie de Zoldia/bank213_anim2_down.anim2d	213	2	down	73	1	1	1	0	72	72	2	35	35
+Entities/◆Magie de Zoldia/bank213_anim2_left.anim2d	213	2	left	73	1	1	1	0	72	72	2	35	35
+Entities/◆Magie de Zoldia/bank213_anim2_right.anim2d	213	2	right	73	1	1	1	0	72	72	2	35	35
+Entities/◆Magie de Zoldia/bank213_anim2_up.anim2d	213	2	up	73	1	1	1	0	72	72	2	35	35
+Entities/◆Melzas (corps principal)/bank162_anim11_down.anim2d	162	11	down	63	14	4	3	4	131	208	131	0	0
+Entities/◆Melzas (corps principal)/bank162_anim11_left.anim2d	162	11	left	63	14	4	3	4	131	208	131	0	0
+Entities/◆Melzas (corps principal)/bank162_anim11_right.anim2d	162	11	right	63	14	4	3	4	131	208	131	0	0
+Entities/◆Melzas (corps principal)/bank162_anim11_up.anim2d	162	11	up	63	14	4	3	4	131	208	131	0	0
+Entities/◆Melzas (corps principal)/bank162_anim1_down.anim2d	162	1	down	14	13	12	9	11	21	53	21	0	0
+Entities/◆Melzas (corps principal)/bank162_anim1_left.anim2d	162	1	left	14	13	12	9	11	21	53	21	0	0
+Entities/◆Melzas (corps principal)/bank162_anim1_right.anim2d	162	1	right	14	13	12	9	11	21	53	21	0	0
+Entities/◆Melzas (corps principal)/bank162_anim1_up.anim2d	162	1	up	14	13	12	9	11	21	53	21	0	0
+Entities/◆Melzas (corps principal)/bank162_anim2_down.anim2d	162	2	down	12	13	12	9	11	21	45	21	0	0
+Entities/◆Melzas (corps principal)/bank162_anim2_left.anim2d	162	2	left	12	13	12	9	11	21	45	21	0	0
+Entities/◆Melzas (corps principal)/bank162_anim2_right.anim2d	162	2	right	12	13	12	9	11	21	45	21	0	0
+Entities/◆Melzas (corps principal)/bank162_anim2_up.anim2d	162	2	up	12	13	12	9	11	21	45	21	0	0
+Entities/◆Melzas (corps principal)/bank162_anim4_down.anim2d	162	4	down	22	12	6	4	6	34	113	11	20	3
+Entities/◆Melzas (corps principal)/bank162_anim4_left.anim2d	162	4	left	22	12	6	4	6	34	113	11	20	3
+Entities/◆Melzas (corps principal)/bank162_anim4_right.anim2d	162	4	right	22	12	6	4	6	34	113	11	20	3
+Entities/◆Melzas (corps principal)/bank162_anim4_up.anim2d	162	4	up	22	12	6	4	6	34	113	11	20	3
+Entities/◆Melzas (corps principal)/bank162_anim5_down.anim2d	162	5	down	5	8	3	2	2	9	12	9	0	0
+Entities/◆Melzas (corps principal)/bank162_anim5_left.anim2d	162	5	left	5	8	3	2	2	9	12	9	0	0
+Entities/◆Melzas (corps principal)/bank162_anim5_right.anim2d	162	5	right	5	8	3	2	2	9	12	9	0	0
+Entities/◆Melzas (corps principal)/bank162_anim5_up.anim2d	162	5	up	5	8	3	2	2	9	12	9	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim0_down.anim2d	232	0	down	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim0_left.anim2d	232	0	left	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim0_right.anim2d	232	0	right	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim0_up.anim2d	232	0	up	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim1_down.anim2d	232	1	down	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim1_left.anim2d	232	1	left	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim1_right.anim2d	232	1	right	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim1_up.anim2d	232	1	up	7	1	1	1	1	4	6	4	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim2_down.anim2d	232	2	down	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim2_left.anim2d	232	2	left	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim2_right.anim2d	232	2	right	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim2_up.anim2d	232	2	up	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim3_down.anim2d	232	3	down	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim3_left.anim2d	232	3	left	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim3_right.anim2d	232	3	right	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim3_up.anim2d	232	3	up	7	1	1	1	1	4	6	4	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim8_down.anim2d	232	8	down	13	1	1	1	1	7	12	7	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim8_left.anim2d	232	8	left	13	1	1	1	1	7	12	7	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim8_right.anim2d	232	8	right	13	1	1	1	1	7	12	7	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim8_up.anim2d	232	8	up	13	1	1	1	1	7	12	7	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim9_down.anim2d	232	9	down	13	1	1	1	1	7	12	7	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim9_left.anim2d	232	9	left	13	1	1	1	1	7	12	7	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim9_right.anim2d	232	9	right	13	1	1	1	1	7	12	7	0	0
+Entities/◆Mille-pattes (corps principal)/bank232_anim9_up.anim2d	232	9	up	13	1	1	1	1	7	12	7	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim0_down.anim2d	234	0	down	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim0_left.anim2d	234	0	left	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim0_right.anim2d	234	0	right	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim0_up.anim2d	234	0	up	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim1_down.anim2d	234	1	down	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim1_left.anim2d	234	1	left	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim1_right.anim2d	234	1	right	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim1_up.anim2d	234	1	up	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim2_down.anim2d	234	2	down	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim2_left.anim2d	234	2	left	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim2_right.anim2d	234	2	right	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim2_up.anim2d	234	2	up	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim3_down.anim2d	234	3	down	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim3_left.anim2d	234	3	left	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim3_right.anim2d	234	3	right	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim3_up.anim2d	234	3	up	7	1	1	1	1	5	6	5	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim8_down.anim2d	234	8	down	13	1	1	1	1	6	12	6	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim8_left.anim2d	234	8	left	13	1	1	1	1	6	12	6	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim8_right.anim2d	234	8	right	13	1	1	1	1	6	12	6	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim8_up.anim2d	234	8	up	13	1	1	1	1	7	12	7	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim9_down.anim2d	234	9	down	13	1	1	1	1	6	12	6	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim9_left.anim2d	234	9	left	13	1	1	1	1	7	12	7	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim9_right.anim2d	234	9	right	13	1	1	1	1	6	12	6	0	0
+Entities/◆Mille-pattes (queue)/bank234_anim9_up.anim2d	234	9	up	13	1	1	1	1	7	12	7	0	0
+Entities/◆Mille-pattes (tronc 2)/bank236_anim8_down.anim2d	236	8	down	13	3	3	3	3	20	36	20	0	0
+Entities/◆Mille-pattes (tronc 2)/bank236_anim8_left.anim2d	236	8	left	13	3	3	3	3	20	36	20	0	0
+Entities/◆Mille-pattes (tronc 2)/bank236_anim8_right.anim2d	236	8	right	13	3	3	3	3	20	36	20	0	0
+Entities/◆Mille-pattes (tronc 2)/bank236_anim8_up.anim2d	236	8	up	13	3	3	3	3	20	36	20	0	0
+Entities/◆Mille-pattes (tronc 2)/bank236_anim9_down.anim2d	236	9	down	13	3	3	3	3	20	36	20	0	0
+Entities/◆Mille-pattes (tronc 2)/bank236_anim9_left.anim2d	236	9	left	13	3	3	3	3	19	36	19	0	0
+Entities/◆Mille-pattes (tronc 2)/bank236_anim9_right.anim2d	236	9	right	13	3	3	3	3	20	36	20	0	0
+Entities/◆Mille-pattes (tronc 2)/bank236_anim9_up.anim2d	236	9	up	13	3	3	3	3	19	36	19	0	0
+Entities/◆Mille-pattes (tronc)/bank233_anim8_down.anim2d	233	8	down	13	3	3	3	3	20	36	20	0	0
+Entities/◆Mille-pattes (tronc)/bank233_anim8_left.anim2d	233	8	left	13	3	3	3	3	20	36	20	0	0
+Entities/◆Mille-pattes (tronc)/bank233_anim8_right.anim2d	233	8	right	13	3	3	3	3	20	36	20	0	0
+Entities/◆Mille-pattes (tronc)/bank233_anim8_up.anim2d	233	8	up	13	3	3	3	3	20	36	20	0	0
+Entities/◆Mille-pattes (tronc)/bank233_anim9_down.anim2d	233	9	down	13	3	3	3	3	20	36	20	0	0
+Entities/◆Mille-pattes (tronc)/bank233_anim9_left.anim2d	233	9	left	13	3	3	3	3	19	36	19	0	0
+Entities/◆Mille-pattes (tronc)/bank233_anim9_right.anim2d	233	9	right	13	3	3	3	3	20	36	20	0	0
+Entities/◆Mille-pattes (tronc)/bank233_anim9_up.anim2d	233	9	up	13	3	3	3	3	19	36	19	0	0
+Entities/◆Mille-pattes (œufs explosifs)/bank249_anim0_down.anim2d	249	0	down	15	1	1	1	1	13	14	13	0	0
+Entities/◆Mille-pattes (œufs explosifs)/bank249_anim0_left.anim2d	249	0	left	15	1	1	1	1	13	14	13	0	0
+Entities/◆Mille-pattes (œufs explosifs)/bank249_anim0_right.anim2d	249	0	right	15	1	1	1	1	13	14	13	0	0
+Entities/◆Mille-pattes (œufs explosifs)/bank249_anim0_up.anim2d	249	0	up	15	1	1	1	1	13	14	13	0	0
+Entities/◆Mille-pattes (œufs explosifs)/bank249_anim4_down.anim2d	249	4	down	20	1	1	1	1	10	19	10	0	0
+Entities/◆Mille-pattes (œufs explosifs)/bank249_anim4_left.anim2d	249	4	left	20	1	1	1	1	10	19	10	0	0
+Entities/◆Mille-pattes (œufs explosifs)/bank249_anim4_right.anim2d	249	4	right	20	1	1	1	1	10	19	10	0	0
+Entities/◆Mille-pattes (œufs explosifs)/bank249_anim4_up.anim2d	249	4	up	20	1	1	1	1	10	19	10	0	0
+Entities/◆Monsieur Aspiration/bank220_anim0_down.anim2d	220	0	down	9	12	1	1	1	6	8	6	0	0
+Entities/◆Monsieur Aspiration/bank220_anim0_left.anim2d	220	0	left	9	12	1	1	1	6	8	6	0	0
+Entities/◆Monsieur Aspiration/bank220_anim0_right.anim2d	220	0	right	9	12	1	1	1	6	8	6	0	0
+Entities/◆Monsieur Aspiration/bank220_anim0_up.anim2d	220	0	up	9	12	1	1	1	6	8	6	0	0
+Entities/◆Monsieur Aspiration/bank220_anim1_down.anim2d	220	1	down	8	13	7	1	7	22	49	22	0	0
+Entities/◆Monsieur Aspiration/bank220_anim1_left.anim2d	220	1	left	8	13	7	1	7	22	49	22	0	0
+Entities/◆Monsieur Aspiration/bank220_anim1_right.anim2d	220	1	right	8	13	7	1	7	22	49	22	0	0
+Entities/◆Monsieur Aspiration/bank220_anim1_up.anim2d	220	1	up	8	13	7	1	7	22	49	22	0	0
+Entities/◆Monsieur Aspiration/bank220_anim2_down.anim2d	220	2	down	9	13	5	1	0	40	40	40	0	0
+Entities/◆Monsieur Aspiration/bank220_anim2_left.anim2d	220	2	left	9	13	5	1	0	40	40	40	0	0
+Entities/◆Monsieur Aspiration/bank220_anim2_right.anim2d	220	2	right	9	13	5	1	0	40	40	40	0	0
+Entities/◆Monsieur Aspiration/bank220_anim2_up.anim2d	220	2	up	9	13	5	1	0	40	40	40	0	0
+Entities/◆Monsieur Aspiration/bank220_anim3_down.anim2d	220	3	down	7	13	7	1	7	22	42	22	0	0
+Entities/◆Monsieur Aspiration/bank220_anim3_left.anim2d	220	3	left	7	13	7	1	7	22	42	22	0	0
+Entities/◆Monsieur Aspiration/bank220_anim3_right.anim2d	220	3	right	7	13	7	1	7	22	42	22	0	0
+Entities/◆Monsieur Aspiration/bank220_anim3_up.anim2d	220	3	up	7	13	7	1	7	22	42	22	0	0
+Entities/◆Monsieur Aspiration/bank220_anim4_down.anim2d	220	4	down	23	13	7	2	3	122	154	122	0	0
+Entities/◆Monsieur Aspiration/bank220_anim4_left.anim2d	220	4	left	23	13	7	2	3	122	154	122	0	0
+Entities/◆Monsieur Aspiration/bank220_anim4_right.anim2d	220	4	right	23	13	7	2	3	122	154	122	0	0
+Entities/◆Monsieur Aspiration/bank220_anim4_up.anim2d	220	4	up	23	13	7	2	3	122	154	122	0	0
+Entities/◆Monsieur Aspiration/bank220_anim5_down.anim2d	220	5	down	32	13	2	1	2	28	62	28	0	0
+Entities/◆Monsieur Aspiration/bank220_anim5_left.anim2d	220	5	left	32	13	2	1	2	28	62	28	0	0
+Entities/◆Monsieur Aspiration/bank220_anim5_right.anim2d	220	5	right	32	13	2	1	2	28	62	28	0	0
+Entities/◆Monsieur Aspiration/bank220_anim5_up.anim2d	220	5	up	32	13	2	1	2	28	62	28	0	0
+Entities/◆Monsieur Aspiration/bank220_anim6_down.anim2d	220	6	down	5	13	5	0	0	20	20	20	0	0
+Entities/◆Monsieur Aspiration/bank220_anim6_left.anim2d	220	6	left	5	13	5	0	0	20	20	20	0	0
+Entities/◆Monsieur Aspiration/bank220_anim6_right.anim2d	220	6	right	5	13	5	0	0	20	20	20	0	0
+Entities/◆Monsieur Aspiration/bank220_anim6_up.anim2d	220	6	up	5	13	5	0	0	20	20	20	0	0
+Entities/◆Monsieur Aspiration/bank220_anim7_down.anim2d	220	7	down	27	13	11	6	6	120	166	120	0	0
+Entities/◆Monsieur Aspiration/bank220_anim7_left.anim2d	220	7	left	27	13	11	6	6	120	166	120	0	0
+Entities/◆Monsieur Aspiration/bank220_anim7_right.anim2d	220	7	right	27	13	11	6	6	120	166	120	0	0
+Entities/◆Monsieur Aspiration/bank220_anim7_up.anim2d	220	7	up	27	13	11	6	6	120	166	120	0	0
+Entities/◆Nirude (avec corps)/bank239_anim10_down.anim2d	239	10	down	18	10	3	2	3	6	51	6	0	0
+Entities/◆Nirude (avec corps)/bank239_anim10_left.anim2d	239	10	left	18	10	3	2	3	6	51	6	0	0
+Entities/◆Nirude (avec corps)/bank239_anim10_right.anim2d	239	10	right	18	10	3	2	3	6	51	6	0	0
+Entities/◆Nirude (avec corps)/bank239_anim10_up.anim2d	239	10	up	18	10	3	2	3	6	51	6	0	0
+Entities/◆Nirude (avec corps)/bank239_anim11_down.anim2d	239	11	down	16	10	2	2	2	4	30	4	0	0
+Entities/◆Nirude (avec corps)/bank239_anim11_left.anim2d	239	11	left	16	10	2	2	2	4	30	4	0	0
+Entities/◆Nirude (avec corps)/bank239_anim11_right.anim2d	239	11	right	16	10	2	2	2	4	30	4	0	0
+Entities/◆Nirude (avec corps)/bank239_anim11_up.anim2d	239	11	up	16	10	2	2	2	4	30	4	0	0
+Entities/◆Nirude (avec corps)/bank239_anim2_down.anim2d	239	2	down	17	10	5	5	5	36	80	36	0	0
+Entities/◆Nirude (avec corps)/bank239_anim2_left.anim2d	239	2	left	17	10	5	5	5	36	80	36	0	0
+Entities/◆Nirude (avec corps)/bank239_anim2_right.anim2d	239	2	right	17	10	5	5	5	36	80	36	0	0
+Entities/◆Nirude (avec corps)/bank239_anim2_up.anim2d	239	2	up	17	10	5	5	5	36	80	36	0	0
+Entities/◆Nirude (avec corps)/bank239_anim3_down.anim2d	239	3	down	17	10	5	5	5	36	80	36	0	0
+Entities/◆Nirude (avec corps)/bank239_anim3_left.anim2d	239	3	left	17	10	5	5	5	36	80	36	0	0
+Entities/◆Nirude (avec corps)/bank239_anim3_right.anim2d	239	3	right	17	10	5	5	5	36	80	36	0	0
+Entities/◆Nirude (avec corps)/bank239_anim3_up.anim2d	239	3	up	17	10	5	5	5	36	80	36	0	0
+Entities/◆Nirude (avec corps)/bank239_anim4_down.anim2d	239	4	down	17	10	5	5	5	36	80	36	0	0
+Entities/◆Nirude (avec corps)/bank239_anim4_left.anim2d	239	4	left	17	10	5	5	5	36	80	36	0	0
+Entities/◆Nirude (avec corps)/bank239_anim4_right.anim2d	239	4	right	17	10	5	5	5	36	80	36	0	0
+Entities/◆Nirude (avec corps)/bank239_anim4_up.anim2d	239	4	up	17	10	5	5	5	36	80	36	0	0
+Entities/◆Nirude (avec corps)/bank239_anim5_down.anim2d	239	5	down	17	14	11	9	10	48	153	48	0	0
+Entities/◆Nirude (avec corps)/bank239_anim5_left.anim2d	239	5	left	17	14	11	9	10	48	153	48	0	0
+Entities/◆Nirude (avec corps)/bank239_anim5_right.anim2d	239	5	right	17	14	11	9	10	48	153	48	0	0
+Entities/◆Nirude (avec corps)/bank239_anim5_up.anim2d	239	5	up	17	14	11	9	10	48	153	48	0	0
+Entities/◆Nirude (avec corps)/bank239_anim6_down.anim2d	239	6	down	17	14	11	9	10	48	153	48	0	0
+Entities/◆Nirude (avec corps)/bank239_anim6_left.anim2d	239	6	left	17	14	11	9	10	48	153	48	0	0
+Entities/◆Nirude (avec corps)/bank239_anim6_right.anim2d	239	6	right	17	14	11	9	10	48	153	48	0	0
+Entities/◆Nirude (avec corps)/bank239_anim6_up.anim2d	239	6	up	17	14	11	9	10	48	153	48	0	0
+Entities/◆Nirude (avec corps)/bank239_anim7_down.anim2d	239	7	down	17	14	11	9	10	48	153	48	0	0
+Entities/◆Nirude (avec corps)/bank239_anim7_left.anim2d	239	7	left	17	14	11	9	10	48	153	48	0	0
+Entities/◆Nirude (avec corps)/bank239_anim7_right.anim2d	239	7	right	17	14	11	9	10	48	153	48	0	0
+Entities/◆Nirude (avec corps)/bank239_anim7_up.anim2d	239	7	up	17	14	11	9	10	48	153	48	0	0
+Entities/◆Nirude (pensée résiduelle)/bank237_anim0_down.anim2d	237	0	down	12	8	8	8	8	72	88	72	0	0
+Entities/◆Nirude (pensée résiduelle)/bank237_anim0_left.anim2d	237	0	left	12	8	8	8	8	72	88	72	0	0
+Entities/◆Nirude (pensée résiduelle)/bank237_anim0_right.anim2d	237	0	right	12	8	8	8	8	72	88	72	0	0
+Entities/◆Nirude (pensée résiduelle)/bank237_anim0_up.anim2d	237	0	up	12	8	8	8	8	72	88	72	0	0
+Entities/◆Nirude (pensée résiduelle)/bank237_anim1_down.anim2d	237	1	down	14	7	4	4	4	32	46	32	0	0
+Entities/◆Nirude (pensée résiduelle)/bank237_anim1_left.anim2d	237	1	left	14	7	4	4	4	32	46	32	0	0
+Entities/◆Nirude (pensée résiduelle)/bank237_anim1_right.anim2d	237	1	right	14	7	4	4	4	32	46	32	0	0
+Entities/◆Nirude (pensée résiduelle)/bank237_anim1_up.anim2d	237	1	up	14	7	4	4	4	32	46	32	0	0
+Entities/◆Nirude (pensée résiduelle)/bank237_anim2_down.anim2d	237	2	down	6	4	2	2	0	10	10	10	0	0
+Entities/◆Nirude (pensée résiduelle)/bank237_anim2_left.anim2d	237	2	left	6	4	2	2	0	10	10	10	0	0
+Entities/◆Nirude (pensée résiduelle)/bank237_anim2_right.anim2d	237	2	right	6	4	2	2	0	10	10	10	0	0
+Entities/◆Nirude (pensée résiduelle)/bank237_anim2_up.anim2d	237	2	up	6	4	2	2	0	10	10	10	0	0
+Entities/◆Nirude (pensée résiduelle)/bank237_anim4_down.anim2d	237	4	down	15	4	4	4	4	27	38	27	0	0
+Entities/◆Nirude (pensée résiduelle)/bank237_anim4_left.anim2d	237	4	left	15	4	4	4	4	27	38	27	0	0
+Entities/◆Nirude (pensée résiduelle)/bank237_anim4_right.anim2d	237	4	right	15	4	4	4	4	27	38	27	0	0
+Entities/◆Nirude (pensée résiduelle)/bank237_anim4_up.anim2d	237	4	up	15	4	4	4	4	27	38	27	0	0
+Entities/◆Oiseau de feu Niv.1/bank217_anim3_down.anim2d	217	3	down	6	7	1	0	1	1	3	1	0	0
+Entities/◆Oiseau de feu Niv.1/bank217_anim3_up.anim2d	217	3	up	6	7	1	0	1	1	3	1	0	0
+Entities/◆Orc (hache) Niv.1/bank82_anim1_down.anim2d	82	1	down	7	3	1	0	1	1	6	1	0	0
+Entities/◆Orc (masse) Niv.1/bank85_anim1_down.anim2d	85	1	down	7	3	1	0	1	1	6	1	0	0
+Entities/◆Orc (masse) Niv.1/bank85_anim3_down.anim2d	85	3	down	7	4	1	1	1	4	6	0	4	0
+Entities/◆Orc (masse) Niv.1/bank85_anim3_left.anim2d	85	3	left	7	4	1	1	1	4	6	0	3	1
+Entities/◆Orc (masse) Niv.1/bank85_anim3_right.anim2d	85	3	right	7	4	1	1	1	4	6	0	3	1
+Entities/◆Orc (masse) Niv.1/bank85_anim3_up.anim2d	85	3	up	7	4	1	1	1	4	6	0	2	2
+Entities/◆P-Zoldia Niv.1/bank196_anim12_down.anim2d	196	12	down	41	1	1	1	1	18	40	1	17	0
+Entities/◆P-Zoldia Niv.1/bank196_anim12_left.anim2d	196	12	left	41	1	1	1	1	18	40	1	17	0
+Entities/◆P-Zoldia Niv.1/bank196_anim12_right.anim2d	196	12	right	41	1	1	1	1	18	40	1	17	0
+Entities/◆P-Zoldia Niv.1/bank196_anim12_up.anim2d	196	12	up	41	1	1	1	1	18	40	1	17	0
+Entities/◆P-Zoldia Niv.1/bank196_anim13_down.anim2d	196	13	down	11	7	6	5	5	25	33	14	8	3
+Entities/◆P-Zoldia Niv.1/bank196_anim13_left.anim2d	196	13	left	11	7	6	5	5	25	33	14	8	3
+Entities/◆P-Zoldia Niv.1/bank196_anim13_right.anim2d	196	13	right	11	7	6	5	5	25	33	14	8	3
+Entities/◆P-Zoldia Niv.1/bank196_anim13_up.anim2d	196	13	up	11	7	6	5	5	25	33	14	8	3
+Entities/◆P-Zoldia Niv.1/bank196_anim14_down.anim2d	196	14	down	16	1	1	1	1	6	15	0	6	0
+Entities/◆P-Zoldia Niv.1/bank196_anim14_left.anim2d	196	14	left	16	1	1	1	1	6	15	0	6	0
+Entities/◆P-Zoldia Niv.1/bank196_anim14_right.anim2d	196	14	right	16	1	1	1	1	6	15	0	6	0
+Entities/◆P-Zoldia Niv.1/bank196_anim14_up.anim2d	196	14	up	16	1	1	1	1	6	15	0	6	0
+Entities/◆P-Zoldia Niv.1/bank196_anim16_down.anim2d	196	16	down	37	1	1	1	1	17	36	1	16	0
+Entities/◆P-Zoldia Niv.1/bank196_anim16_left.anim2d	196	16	left	37	1	1	1	1	17	36	1	16	0
+Entities/◆P-Zoldia Niv.1/bank196_anim16_right.anim2d	196	16	right	37	1	1	1	1	17	36	1	16	0
+Entities/◆P-Zoldia Niv.1/bank196_anim16_up.anim2d	196	16	up	37	1	1	1	1	17	36	1	16	0
+Entities/◆P-Zoldia Niv.1/bank196_anim3_down.anim2d	196	3	down	11	5	3	2	3	10	25	10	0	0
+Entities/◆P-Zoldia Niv.1/bank196_anim3_left.anim2d	196	3	left	11	5	2	2	2	8	20	8	0	0
+Entities/◆P-Zoldia Niv.1/bank196_anim3_right.anim2d	196	3	right	11	5	2	2	2	8	20	8	0	0
+Entities/◆P-Zoldia Niv.1/bank196_anim3_up.anim2d	196	3	up	11	5	1	1	1	4	8	4	0	0
+Entities/◆P-Zoldia Niv.1/bank196_anim4_down.anim2d	196	4	down	13	11	7	5	7	31	56	19	9	3
+Entities/◆P-Zoldia Niv.1/bank196_anim4_left.anim2d	196	4	left	13	12	7	6	7	31	58	19	9	3
+Entities/◆P-Zoldia Niv.1/bank196_anim4_right.anim2d	196	4	right	13	12	7	6	7	31	58	19	9	3
+Entities/◆P-Zoldia Niv.1/bank196_anim4_up.anim2d	196	4	up	13	12	7	6	7	31	58	19	9	3
+Entities/◆P-Zoldia Niv.1/bank196_anim5_down.anim2d	196	5	down	13	11	7	5	7	31	59	19	9	3
+Entities/◆P-Zoldia Niv.1/bank196_anim5_left.anim2d	196	5	left	13	12	7	6	7	31	62	19	9	3
+Entities/◆P-Zoldia Niv.1/bank196_anim5_right.anim2d	196	5	right	13	12	7	6	7	31	62	19	9	3
+Entities/◆P-Zoldia Niv.1/bank196_anim5_up.anim2d	196	5	up	13	12	7	6	7	31	62	19	9	3
+Entities/◆P-Zoldia Niv.2/bank197_anim12_down.anim2d	197	12	down	41	1	1	1	1	18	40	1	17	0
+Entities/◆P-Zoldia Niv.2/bank197_anim12_left.anim2d	197	12	left	41	1	1	1	1	18	40	1	17	0
+Entities/◆P-Zoldia Niv.2/bank197_anim12_right.anim2d	197	12	right	41	1	1	1	1	18	40	1	17	0
+Entities/◆P-Zoldia Niv.2/bank197_anim12_up.anim2d	197	12	up	41	1	1	1	1	18	40	1	17	0
+Entities/◆P-Zoldia Niv.2/bank197_anim13_down.anim2d	197	13	down	11	7	6	5	5	25	33	14	8	3
+Entities/◆P-Zoldia Niv.2/bank197_anim13_left.anim2d	197	13	left	11	7	6	5	5	25	33	14	8	3
+Entities/◆P-Zoldia Niv.2/bank197_anim13_right.anim2d	197	13	right	11	7	6	5	5	25	33	14	8	3
+Entities/◆P-Zoldia Niv.2/bank197_anim13_up.anim2d	197	13	up	11	7	6	5	5	25	33	14	8	3
+Entities/◆P-Zoldia Niv.2/bank197_anim14_down.anim2d	197	14	down	16	1	1	1	1	6	15	0	6	0
+Entities/◆P-Zoldia Niv.2/bank197_anim14_left.anim2d	197	14	left	16	1	1	1	1	6	15	0	6	0
+Entities/◆P-Zoldia Niv.2/bank197_anim14_right.anim2d	197	14	right	16	1	1	1	1	6	15	0	6	0
+Entities/◆P-Zoldia Niv.2/bank197_anim14_up.anim2d	197	14	up	16	1	1	1	1	6	15	0	6	0
+Entities/◆P-Zoldia Niv.2/bank197_anim16_down.anim2d	197	16	down	37	1	1	1	1	17	36	1	16	0
+Entities/◆P-Zoldia Niv.2/bank197_anim16_left.anim2d	197	16	left	37	1	1	1	1	17	36	1	16	0
+Entities/◆P-Zoldia Niv.2/bank197_anim16_right.anim2d	197	16	right	37	1	1	1	1	17	36	1	16	0
+Entities/◆P-Zoldia Niv.2/bank197_anim16_up.anim2d	197	16	up	37	1	1	1	1	17	36	1	16	0
+Entities/◆P-Zoldia Niv.2/bank197_anim3_down.anim2d	197	3	down	11	5	3	2	3	10	25	10	0	0
+Entities/◆P-Zoldia Niv.2/bank197_anim3_left.anim2d	197	3	left	11	5	2	2	2	8	20	8	0	0
+Entities/◆P-Zoldia Niv.2/bank197_anim3_right.anim2d	197	3	right	11	5	2	2	2	8	20	8	0	0
+Entities/◆P-Zoldia Niv.2/bank197_anim3_up.anim2d	197	3	up	11	5	1	1	1	4	8	4	0	0
+Entities/◆P-Zoldia Niv.2/bank197_anim4_down.anim2d	197	4	down	13	11	7	5	7	31	56	19	9	3
+Entities/◆P-Zoldia Niv.2/bank197_anim4_left.anim2d	197	4	left	13	12	7	6	7	31	58	19	9	3
+Entities/◆P-Zoldia Niv.2/bank197_anim4_right.anim2d	197	4	right	13	12	7	6	7	31	58	19	9	3
+Entities/◆P-Zoldia Niv.2/bank197_anim4_up.anim2d	197	4	up	13	12	7	6	7	31	58	19	9	3
+Entities/◆P-Zoldia Niv.2/bank197_anim5_down.anim2d	197	5	down	13	11	7	5	7	31	59	19	9	3
+Entities/◆P-Zoldia Niv.2/bank197_anim5_left.anim2d	197	5	left	13	12	7	6	7	31	62	19	9	3
+Entities/◆P-Zoldia Niv.2/bank197_anim5_right.anim2d	197	5	right	13	12	7	6	7	31	62	19	9	3
+Entities/◆P-Zoldia Niv.2/bank197_anim5_up.anim2d	197	5	up	13	12	7	6	7	31	62	19	9	3
+Entities/◆Petit slime/bank222_anim16_down.anim2d	222	16	down	14	2	1	1	1	10	13	10	0	0
+Entities/◆Petit slime/bank222_anim16_left.anim2d	222	16	left	14	2	1	1	1	10	13	10	0	0
+Entities/◆Petit slime/bank222_anim16_right.anim2d	222	16	right	14	2	1	1	1	10	13	10	0	0
+Entities/◆Petit slime/bank222_anim16_up.anim2d	222	16	up	14	2	1	1	1	10	13	10	0	0
+Entities/◆Petit slime/bank222_anim18_down.anim2d	222	18	down	14	2	1	1	1	10	13	10	0	0
+Entities/◆Petit slime/bank222_anim18_left.anim2d	222	18	left	14	2	1	1	1	10	13	10	0	0
+Entities/◆Petit slime/bank222_anim18_right.anim2d	222	18	right	14	2	1	1	1	10	13	10	0	0
+Entities/◆Petit slime/bank222_anim18_up.anim2d	222	18	up	14	2	1	1	1	10	13	10	0	0
+Entities/◆Petit slime/bank222_anim4_down.anim2d	222	4	down	14	1	1	1	1	10	13	10	0	0
+Entities/◆Petit slime/bank222_anim4_left.anim2d	222	4	left	14	2	1	1	1	10	13	10	0	0
+Entities/◆Petit slime/bank222_anim4_right.anim2d	222	4	right	14	2	1	1	1	10	13	10	0	0
+Entities/◆Petit slime/bank222_anim4_up.anim2d	222	4	up	14	2	1	1	1	10	13	10	0	0
+Entities/◆Projectile Niv.1-116/bank116_anim1_down.anim2d	116	1	down	14	2	1	1	1	5	13	5	0	0
+Entities/◆Projectile Niv.1-116/bank116_anim1_left.anim2d	116	1	left	14	2	1	1	1	5	13	5	0	0
+Entities/◆Projectile Niv.1-116/bank116_anim1_right.anim2d	116	1	right	14	2	1	1	1	5	13	5	0	0
+Entities/◆Projectile Niv.1-116/bank116_anim1_up.anim2d	116	1	up	14	2	1	1	1	5	13	5	0	0
+Entities/◆Projectile Niv.1-155/bank155_anim1_down.anim2d	155	1	down	9	2	2	2	2	7	13	7	0	0
+Entities/◆Projectile Niv.1-155/bank155_anim1_left.anim2d	155	1	left	9	2	2	2	2	7	13	7	0	0
+Entities/◆Projectile Niv.1-155/bank155_anim1_right.anim2d	155	1	right	9	2	2	2	2	7	13	7	0	0
+Entities/◆Projectile Niv.1-155/bank155_anim1_up.anim2d	155	1	up	9	2	2	2	2	7	13	7	0	0
+Entities/◆Projectile Niv.1-176/bank176_anim1_down.anim2d	176	1	down	7	2	2	2	1	10	11	10	0	0
+Entities/◆Projectile Niv.1-176/bank176_anim1_left.anim2d	176	1	left	7	2	2	2	1	10	11	10	0	0
+Entities/◆Projectile Niv.1-176/bank176_anim1_right.anim2d	176	1	right	7	2	2	2	1	10	11	10	0	0
+Entities/◆Projectile Niv.1-176/bank176_anim1_up.anim2d	176	1	up	7	2	2	2	1	10	11	10	0	0
+Entities/◆Projectile Niv.1-206/bank206_anim1_down.anim2d	206	1	down	6	1	1	1	1	3	5	3	0	0
+Entities/◆Projectile Niv.1-206/bank206_anim1_left.anim2d	206	1	left	6	1	1	1	1	3	5	3	0	0
+Entities/◆Projectile Niv.1-206/bank206_anim1_right.anim2d	206	1	right	6	1	1	1	1	3	5	3	0	0
+Entities/◆Projectile Niv.1-206/bank206_anim1_up.anim2d	206	1	up	6	1	1	1	1	3	5	3	0	0
+Entities/◆Projectile Niv.1-212/bank212_anim0_down.anim2d	212	0	down	7	1	1	1	1	5	6	5	0	0
+Entities/◆Projectile Niv.1-212/bank212_anim0_left.anim2d	212	0	left	7	1	1	1	1	5	6	5	0	0
+Entities/◆Projectile Niv.1-212/bank212_anim0_right.anim2d	212	0	right	7	1	1	1	0	6	6	6	0	0
+Entities/◆Projectile Niv.1-212/bank212_anim0_up.anim2d	212	0	up	7	1	1	1	1	5	6	5	0	0
+Entities/◆Projectile/bank74_anim0_down.anim2d	74	0	down	5	1	1	1	1	2	4	2	0	0
+Entities/◆Projectile/bank74_anim0_left.anim2d	74	0	left	5	1	1	1	1	2	4	2	0	0
+Entities/◆Projectile/bank74_anim0_right.anim2d	74	0	right	5	1	1	1	1	2	4	2	0	0
+Entities/◆Projectile/bank74_anim0_up.anim2d	74	0	up	5	1	1	1	1	2	4	2	0	0
+Entities/◆Projectile/bank74_anim1_down.anim2d	74	1	down	8	1	1	1	1	5	7	5	0	0
+Entities/◆Projectile/bank74_anim1_left.anim2d	74	1	left	8	1	1	1	1	5	7	5	0	0
+Entities/◆Projectile/bank74_anim1_right.anim2d	74	1	right	8	1	1	1	1	5	7	5	0	0
+Entities/◆Projectile/bank74_anim1_up.anim2d	74	1	up	8	1	1	1	1	5	7	5	0	0
+Entities/◆Projectiles (plumes) Niv.1/bank218_anim0_down.anim2d	218	0	down	5	1	1	0	0	4	4	4	0	0
+Entities/◆Projectiles (plumes) Niv.1/bank218_anim0_left.anim2d	218	0	left	5	1	1	0	0	4	4	4	0	0
+Entities/◆Projectiles (plumes) Niv.1/bank218_anim0_right.anim2d	218	0	right	5	1	1	0	0	4	4	4	0	0
+Entities/◆Projectiles (plumes) Niv.1/bank218_anim0_up.anim2d	218	0	up	5	1	1	0	0	4	4	4	0	0
+Entities/◆Projectiles (plumes) Niv.1/bank218_anim1_down.anim2d	218	1	down	33	5	5	4	0	110	110	110	0	0
+Entities/◆Projectiles (plumes) Niv.1/bank218_anim1_left.anim2d	218	1	left	33	5	5	4	0	110	110	110	0	0
+Entities/◆Projectiles (plumes) Niv.1/bank218_anim1_right.anim2d	218	1	right	33	5	5	4	0	110	110	110	0	0
+Entities/◆Projectiles (plumes) Niv.1/bank218_anim1_up.anim2d	218	1	up	33	5	5	4	0	110	110	110	0	0
+Entities/◆Projectiles (étincelles) Niv.1/bank219_anim0_down.anim2d	219	0	down	5	2	2	0	1	6	8	2	4	0
+Entities/◆Projectiles (étincelles) Niv.1/bank219_anim0_left.anim2d	219	0	left	5	2	2	0	1	6	8	2	4	0
+Entities/◆Projectiles (étincelles) Niv.1/bank219_anim0_right.anim2d	219	0	right	5	2	2	0	1	6	8	2	4	0
+Entities/◆Projectiles (étincelles) Niv.1/bank219_anim0_up.anim2d	219	0	up	5	2	2	0	1	6	8	2	4	0
+Entities/◆Projectiles (étincelles) Niv.1/bank219_anim1_down.anim2d	219	1	down	6	2	1	0	0	5	5	0	5	0
+Entities/◆Projectiles (étincelles) Niv.1/bank219_anim1_left.anim2d	219	1	left	6	2	1	0	0	5	5	0	5	0
+Entities/◆Projectiles (étincelles) Niv.1/bank219_anim1_right.anim2d	219	1	right	6	2	1	0	0	5	5	0	5	0
+Entities/◆Projectiles (étincelles) Niv.1/bank219_anim1_up.anim2d	219	1	up	6	2	1	0	0	5	5	0	5	0
+Entities/◆Projectiles de Zoldia/bank255_anim2_down.anim2d	255	2	down	4	1	1	0	0	3	3	3	0	0
+Entities/◆Projectiles de Zoldia/bank255_anim2_left.anim2d	255	2	left	4	1	1	0	0	3	3	3	0	0
+Entities/◆Projectiles de Zoldia/bank255_anim2_right.anim2d	255	2	right	4	1	1	0	0	3	3	3	0	0
+Entities/◆Projectiles de Zoldia/bank255_anim2_up.anim2d	255	2	up	4	1	1	0	0	3	3	3	0	0
+Entities/◆Projectiles de Zoldia/bank255_anim3_down.anim2d	255	3	down	7	1	1	0	0	6	6	6	0	0
+Entities/◆Projectiles de Zoldia/bank255_anim3_left.anim2d	255	3	left	7	1	1	0	1	5	6	5	0	0
+Entities/◆Projectiles de Zoldia/bank255_anim3_right.anim2d	255	3	right	7	1	1	0	1	5	6	5	0	0
+Entities/◆Projectiles de Zoldia/bank255_anim3_up.anim2d	255	3	up	7	1	1	0	0	6	6	6	0	0
+Entities/◆Projectiles de Zoldia/bank255_anim4_down.anim2d	255	4	down	8	1	1	1	1	5	7	5	0	0
+Entities/◆Projectiles de Zoldia/bank255_anim4_left.anim2d	255	4	left	8	1	1	1	1	5	7	5	0	0
+Entities/◆Projectiles de Zoldia/bank255_anim4_right.anim2d	255	4	right	8	1	1	1	1	5	7	5	0	0
+Entities/◆Projectiles de Zoldia/bank255_anim4_up.anim2d	255	4	up	8	1	1	1	1	5	7	5	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim0_down.anim2d	167	0	down	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim0_left.anim2d	167	0	left	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim0_right.anim2d	167	0	right	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim0_up.anim2d	167	0	up	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim1_down.anim2d	167	1	down	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim1_left.anim2d	167	1	left	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim1_right.anim2d	167	1	right	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim1_up.anim2d	167	1	up	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim2_down.anim2d	167	2	down	13	3	3	2	2	24	30	24	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim2_left.anim2d	167	2	left	13	3	3	2	2	24	30	24	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim2_right.anim2d	167	2	right	13	3	3	2	2	24	30	24	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim2_up.anim2d	167	2	up	13	3	3	2	2	24	30	24	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim3_down.anim2d	167	3	down	5	3	3	2	2	5	8	5	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim3_left.anim2d	167	3	left	5	3	3	2	2	5	8	5	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim3_right.anim2d	167	3	right	5	3	3	2	2	5	8	5	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim3_up.anim2d	167	3	up	5	3	3	2	2	5	8	5	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim4_down.anim2d	167	4	down	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim4_left.anim2d	167	4	left	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim4_right.anim2d	167	4	right	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim4_up.anim2d	167	4	up	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim5_down.anim2d	167	5	down	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim5_left.anim2d	167	5	left	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim5_right.anim2d	167	5	right	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim5_up.anim2d	167	5	up	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim6_down.anim2d	167	6	down	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim6_left.anim2d	167	6	left	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim6_right.anim2d	167	6	right	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim6_up.anim2d	167	6	up	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim7_down.anim2d	167	7	down	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim7_left.anim2d	167	7	left	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim7_right.anim2d	167	7	right	17	3	3	2	2	32	40	32	0	0
+Entities/◆Projectiles à tête chercheuse (lents)/bank167_anim7_up.anim2d	167	7	up	17	3	3	2	2	32	40	32	0	0
+Entities/◆Roche élémentaire/bank242_anim1_down.anim2d	242	1	down	10	4	4	3	2	17	19	17	0	0
+Entities/◆Roche élémentaire/bank242_anim1_left.anim2d	242	1	left	10	4	4	3	2	17	19	17	0	0
+Entities/◆Roche élémentaire/bank242_anim1_right.anim2d	242	1	right	10	4	4	3	2	17	19	17	0	0
+Entities/◆Roche élémentaire/bank242_anim1_up.anim2d	242	1	up	10	4	4	3	2	17	19	17	0	0
+Entities/◆Ronan divin corrompu/bank190_anim1_down.anim2d	190	1	down	6	11	1	0	1	1	5	1	0	0
+Entities/◆Ronan divin corrompu/bank190_anim5_down.anim2d	190	5	down	30	12	1	1	1	12	29	12	0	0
+Entities/◆Ronan divin corrompu/bank190_anim5_left.anim2d	190	5	left	30	12	1	1	1	12	29	12	0	0
+Entities/◆Ronan divin corrompu/bank190_anim5_right.anim2d	190	5	right	30	12	1	1	1	12	29	12	0	0
+Entities/◆Ronan divin corrompu/bank190_anim5_up.anim2d	190	5	up	30	12	1	1	1	12	29	12	0	0
+Entities/◆Ronan divin corrompu/bank190_anim7_down.anim2d	190	7	down	27	10	8	8	8	53	100	53	0	0
+Entities/◆Ronan divin corrompu/bank190_anim7_left.anim2d	190	7	left	27	10	8	8	8	53	100	53	0	0
+Entities/◆Ronan divin corrompu/bank190_anim7_right.anim2d	190	7	right	27	10	8	8	8	53	100	53	0	0
+Entities/◆Ronan divin corrompu/bank190_anim7_up.anim2d	190	7	up	27	10	8	8	8	53	100	53	0	0
+Entities/◆Slime géant (corps)/bank216_anim0_down.anim2d	216	0	down	13	4	3	3	2	16	24	16	0	0
+Entities/◆Slime géant (corps)/bank216_anim0_left.anim2d	216	0	left	13	4	3	3	2	16	24	16	0	0
+Entities/◆Slime géant (corps)/bank216_anim0_right.anim2d	216	0	right	13	4	3	3	2	16	24	16	0	0
+Entities/◆Slime géant (corps)/bank216_anim0_up.anim2d	216	0	up	13	4	3	3	2	16	24	16	0	0
+Entities/◆Slime géant (corps)/bank216_anim1_down.anim2d	216	1	down	13	4	3	3	2	16	24	16	0	0
+Entities/◆Slime géant (corps)/bank216_anim1_left.anim2d	216	1	left	13	4	3	3	2	16	24	16	0	0
+Entities/◆Slime géant (corps)/bank216_anim1_right.anim2d	216	1	right	13	4	3	3	2	16	24	16	0	0
+Entities/◆Slime géant (corps)/bank216_anim1_up.anim2d	216	1	up	13	4	3	3	2	16	24	16	0	0
+Entities/◆Slime géant (corps)/bank216_anim2_down.anim2d	216	2	down	16	4	4	3	3	17	37	17	0	0
+Entities/◆Slime géant (corps)/bank216_anim2_left.anim2d	216	2	left	16	4	4	3	3	17	37	17	0	0
+Entities/◆Slime géant (corps)/bank216_anim2_right.anim2d	216	2	right	16	4	4	3	3	17	37	17	0	0
+Entities/◆Slime géant (corps)/bank216_anim2_up.anim2d	216	2	up	16	4	4	3	3	17	37	17	0	0
+Entities/◆Slime géant (corps)/bank216_anim3_down.anim2d	216	3	down	5	3	2	0	2	4	8	4	0	0
+Entities/◆Slime géant (corps)/bank216_anim3_left.anim2d	216	3	left	5	3	2	0	2	4	8	4	0	0
+Entities/◆Slime géant (corps)/bank216_anim3_right.anim2d	216	3	right	5	3	2	0	2	4	8	4	0	0
+Entities/◆Slime géant (corps)/bank216_anim3_up.anim2d	216	3	up	5	3	2	0	2	4	8	4	0	0
+Entities/◆Slime géant (corps)/bank216_anim4_down.anim2d	216	4	down	26	3	2	2	2	22	37	22	0	0
+Entities/◆Slime géant (corps)/bank216_anim4_left.anim2d	216	4	left	26	3	2	2	2	22	37	22	0	0
+Entities/◆Slime géant (corps)/bank216_anim4_right.anim2d	216	4	right	26	3	2	2	2	22	37	22	0	0
+Entities/◆Slime géant (corps)/bank216_anim4_up.anim2d	216	4	up	26	3	2	2	2	22	37	22	0	0
+Entities/◆Slime géant (corps)/bank216_anim5_down.anim2d	216	5	down	27	2	2	2	2	23	37	23	0	0
+Entities/◆Slime géant (corps)/bank216_anim5_left.anim2d	216	5	left	27	2	2	2	2	23	37	23	0	0
+Entities/◆Slime géant (corps)/bank216_anim5_right.anim2d	216	5	right	27	2	2	2	2	23	37	23	0	0
+Entities/◆Slime géant (corps)/bank216_anim5_up.anim2d	216	5	up	27	2	2	2	2	23	37	23	0	0
+Entities/◆Slime géant (grand)/bank203_anim0_down.anim2d	203	0	down	13	4	3	3	2	16	24	16	0	0
+Entities/◆Slime géant (grand)/bank203_anim0_left.anim2d	203	0	left	13	4	3	3	2	16	24	16	0	0
+Entities/◆Slime géant (grand)/bank203_anim0_right.anim2d	203	0	right	13	4	3	3	2	16	24	16	0	0
+Entities/◆Slime géant (grand)/bank203_anim0_up.anim2d	203	0	up	13	4	3	3	2	16	24	16	0	0
+Entities/◆Slime géant (grand)/bank203_anim1_down.anim2d	203	1	down	13	4	3	3	2	16	24	16	0	0
+Entities/◆Slime géant (grand)/bank203_anim1_left.anim2d	203	1	left	13	4	3	3	2	16	24	16	0	0
+Entities/◆Slime géant (grand)/bank203_anim1_right.anim2d	203	1	right	13	4	3	3	2	16	24	16	0	0
+Entities/◆Slime géant (grand)/bank203_anim1_up.anim2d	203	1	up	13	4	3	3	2	16	24	16	0	0
+Entities/◆Slime géant (grand)/bank203_anim2_down.anim2d	203	2	down	16	4	4	3	3	17	37	17	0	0
+Entities/◆Slime géant (grand)/bank203_anim2_left.anim2d	203	2	left	16	4	4	3	3	17	37	17	0	0
+Entities/◆Slime géant (grand)/bank203_anim2_right.anim2d	203	2	right	16	4	4	3	3	17	37	17	0	0
+Entities/◆Slime géant (grand)/bank203_anim2_up.anim2d	203	2	up	16	4	4	3	3	17	37	17	0	0
+Entities/◆Slime géant (grand)/bank203_anim3_down.anim2d	203	3	down	5	3	2	2	1	6	8	6	0	0
+Entities/◆Slime géant (grand)/bank203_anim3_left.anim2d	203	3	left	5	3	2	2	1	6	8	6	0	0
+Entities/◆Slime géant (grand)/bank203_anim3_right.anim2d	203	3	right	5	3	2	2	1	6	8	6	0	0
+Entities/◆Slime géant (grand)/bank203_anim3_up.anim2d	203	3	up	5	3	2	2	1	6	8	6	0	0
+Entities/◆Slime géant (grand)/bank203_anim4_down.anim2d	203	4	down	26	3	3	3	2	24	39	24	0	0
+Entities/◆Slime géant (grand)/bank203_anim4_left.anim2d	203	4	left	26	3	3	3	2	24	39	24	0	0
+Entities/◆Slime géant (grand)/bank203_anim4_right.anim2d	203	4	right	26	3	3	3	2	24	39	24	0	0
+Entities/◆Slime géant (grand)/bank203_anim4_up.anim2d	203	4	up	26	3	3	3	2	24	39	24	0	0
+Entities/◆Slime géant (grand)/bank203_anim5_down.anim2d	203	5	down	27	2	2	2	2	23	37	23	0	0
+Entities/◆Slime géant (grand)/bank203_anim5_left.anim2d	203	5	left	27	2	2	2	2	23	37	23	0	0
+Entities/◆Slime géant (grand)/bank203_anim5_right.anim2d	203	5	right	27	2	2	2	2	23	37	23	0	0
+Entities/◆Slime géant (grand)/bank203_anim5_up.anim2d	203	5	up	27	2	2	2	2	23	37	23	0	0
+Entities/◆Slime géant (grand)/bank203_anim6_down.anim2d	203	6	down	18	3	3	3	2	26	30	26	0	0
+Entities/◆Slime géant (grand)/bank203_anim6_left.anim2d	203	6	left	18	3	3	3	2	26	30	26	0	0
+Entities/◆Slime géant (grand)/bank203_anim6_right.anim2d	203	6	right	18	3	3	3	2	26	30	26	0	0
+Entities/◆Slime géant (grand)/bank203_anim6_up.anim2d	203	6	up	18	3	3	3	2	26	30	26	0	0
+Entities/◆Slime géant (petit)/bank204_anim0_down.anim2d	204	0	down	13	4	4	4	0	36	36	36	0	0
+Entities/◆Slime géant (petit)/bank204_anim0_left.anim2d	204	0	left	13	4	4	4	0	36	36	36	0	0
+Entities/◆Slime géant (petit)/bank204_anim0_right.anim2d	204	0	right	13	4	4	4	0	36	36	36	0	0
+Entities/◆Slime géant (petit)/bank204_anim0_up.anim2d	204	0	up	13	4	4	4	0	36	36	36	0	0
+Entities/◆Slime géant (petit)/bank204_anim1_down.anim2d	204	1	down	13	4	4	4	0	36	36	36	0	0
+Entities/◆Slime géant (petit)/bank204_anim1_left.anim2d	204	1	left	13	4	4	4	0	36	36	36	0	0
+Entities/◆Slime géant (petit)/bank204_anim1_right.anim2d	204	1	right	13	4	4	4	0	36	36	36	0	0
+Entities/◆Slime géant (petit)/bank204_anim1_up.anim2d	204	1	up	13	4	4	4	0	36	36	36	0	0
+Entities/◆Slime géant (petit)/bank204_anim2_down.anim2d	204	2	down	5	3	3	0	0	12	12	12	0	0
+Entities/◆Slime géant (petit)/bank204_anim2_left.anim2d	204	2	left	5	3	3	0	0	12	12	12	0	0
+Entities/◆Slime géant (petit)/bank204_anim2_right.anim2d	204	2	right	5	3	3	0	0	12	12	12	0	0
+Entities/◆Slime géant (petit)/bank204_anim2_up.anim2d	204	2	up	5	3	3	0	0	12	12	12	0	0
+Entities/◆Slime géant (petit)/bank204_anim3_down.anim2d	204	3	down	15	3	3	3	2	15	25	15	0	0
+Entities/◆Slime géant (petit)/bank204_anim3_left.anim2d	204	3	left	15	3	3	3	2	15	25	15	0	0
+Entities/◆Slime géant (petit)/bank204_anim3_right.anim2d	204	3	right	15	3	3	3	2	15	25	15	0	0
+Entities/◆Slime géant (petit)/bank204_anim3_up.anim2d	204	3	up	15	3	3	3	2	15	25	15	0	0
+Entities/◆Slime géant (petit)/bank204_anim4_down.anim2d	204	4	down	15	3	3	3	2	15	25	15	0	0
+Entities/◆Slime géant (petit)/bank204_anim4_left.anim2d	204	4	left	15	3	3	3	2	15	25	15	0	0
+Entities/◆Slime géant (petit)/bank204_anim4_right.anim2d	204	4	right	15	3	3	3	2	15	25	15	0	0
+Entities/◆Slime géant (petit)/bank204_anim4_up.anim2d	204	4	up	15	3	3	3	2	15	25	15	0	0
+Entities/◆Slime géant (œil)/bank215_anim0_down.anim2d	215	0	down	13	3	2	0	2	12	24	12	0	0
+Entities/◆Slime géant (œil)/bank215_anim0_left.anim2d	215	0	left	13	3	2	0	2	12	24	12	0	0
+Entities/◆Slime géant (œil)/bank215_anim0_right.anim2d	215	0	right	13	3	2	0	2	12	24	12	0	0
+Entities/◆Slime géant (œil)/bank215_anim0_up.anim2d	215	0	up	13	3	2	0	2	12	24	12	0	0
+Entities/◆Slime géant (œil)/bank215_anim1_down.anim2d	215	1	down	13	3	2	0	2	12	24	12	0	0
+Entities/◆Slime géant (œil)/bank215_anim1_left.anim2d	215	1	left	13	3	2	0	2	12	24	12	0	0
+Entities/◆Slime géant (œil)/bank215_anim1_right.anim2d	215	1	right	13	3	2	0	2	12	24	12	0	0
+Entities/◆Slime géant (œil)/bank215_anim1_up.anim2d	215	1	up	13	3	2	0	2	12	24	12	0	0
+Entities/◆Slime géant (œil)/bank215_anim2_down.anim2d	215	2	down	9	4	2	0	1	8	12	8	0	0
+Entities/◆Slime géant (œil)/bank215_anim2_left.anim2d	215	2	left	9	4	2	0	1	8	12	8	0	0
+Entities/◆Slime géant (œil)/bank215_anim2_right.anim2d	215	2	right	9	4	2	0	1	8	12	8	0	0
+Entities/◆Slime géant (œil)/bank215_anim2_up.anim2d	215	2	up	9	4	2	0	1	8	12	8	0	0
+Entities/◆Slime géant (œil)/bank215_anim3_down.anim2d	215	3	down	7	1	1	1	1	3	6	3	0	0
+Entities/◆Slime géant (œil)/bank215_anim3_left.anim2d	215	3	left	7	1	1	1	1	3	6	3	0	0
+Entities/◆Slime géant (œil)/bank215_anim3_right.anim2d	215	3	right	7	1	1	1	1	3	6	3	0	0
+Entities/◆Slime géant (œil)/bank215_anim3_up.anim2d	215	3	up	7	1	1	1	1	3	6	3	0	0
+Entities/◆Slime gélatineux/bank73_anim4_down.anim2d	73	4	down	13	1	1	1	1	9	12	9	0	0
+Entities/◆Slime gélatineux/bank73_anim4_left.anim2d	73	4	left	13	1	1	1	1	9	12	9	0	0
+Entities/◆Slime gélatineux/bank73_anim4_right.anim2d	73	4	right	13	1	1	1	1	9	12	9	0	0
+Entities/◆Slime gélatineux/bank73_anim4_up.anim2d	73	4	up	13	1	1	1	1	9	12	9	0	0
+Entities/◆Souffle de dragon/bank158_anim0_down.anim2d	158	0	down	9	8	8	7	2	36	39	8	24	4
+Entities/◆Souffle de dragon/bank158_anim0_left.anim2d	158	0	left	9	8	8	7	2	36	39	8	24	4
+Entities/◆Souffle de dragon/bank158_anim0_right.anim2d	158	0	right	9	8	8	7	2	36	39	8	24	4
+Entities/◆Souffle de dragon/bank158_anim0_up.anim2d	158	0	up	9	8	8	7	2	36	39	8	24	4
+Entities/◆Souffle de dragon/bank158_anim1_down.anim2d	158	1	down	5	8	8	8	2	27	30	10	14	3
+Entities/◆Souffle de dragon/bank158_anim1_left.anim2d	158	1	left	5	8	8	8	2	27	30	10	14	3
+Entities/◆Souffle de dragon/bank158_anim1_right.anim2d	158	1	right	5	8	8	8	2	27	30	10	14	3
+Entities/◆Souffle de dragon/bank158_anim1_up.anim2d	158	1	up	5	8	8	8	2	27	30	10	14	3
+Entities/◆Souffle de dragon/bank158_anim2_down.anim2d	158	2	down	6	7	7	4	3	18	21	12	4	2
+Entities/◆Souffle de dragon/bank158_anim2_left.anim2d	158	2	left	6	7	7	4	3	18	21	12	4	2
+Entities/◆Souffle de dragon/bank158_anim2_right.anim2d	158	2	right	6	7	7	4	3	18	21	12	4	2
+Entities/◆Souffle de dragon/bank158_anim2_up.anim2d	158	2	up	6	7	7	4	3	18	21	12	4	2
+Entities/◆Spores Niv.1/bank188_anim0_down.anim2d	188	0	down	9	1	1	1	1	6	8	6	0	0
+Entities/◆Spores Niv.1/bank188_anim0_left.anim2d	188	0	left	9	1	1	1	1	6	8	6	0	0
+Entities/◆Spores Niv.1/bank188_anim0_right.anim2d	188	0	right	9	1	1	1	1	6	8	6	0	0
+Entities/◆Spores Niv.1/bank188_anim0_up.anim2d	188	0	up	9	1	1	1	1	6	8	6	0	0
+Entities/◆Spores Niv.1/bank188_anim1_down.anim2d	188	1	down	6	3	3	3	3	10	13	10	0	0
+Entities/◆Spores Niv.1/bank188_anim1_left.anim2d	188	1	left	6	3	3	3	3	10	13	10	0	0
+Entities/◆Spores Niv.1/bank188_anim1_right.anim2d	188	1	right	6	3	3	3	3	10	13	10	0	0
+Entities/◆Spores Niv.1/bank188_anim1_up.anim2d	188	1	up	6	3	3	3	3	10	13	10	0	0
+Entities/◆Tentacule/bank209_anim7_down.anim2d	209	7	down	7	1	1	1	1	5	6	5	0	0
+Entities/◆Tentacule/bank209_anim7_left.anim2d	209	7	left	7	1	1	1	1	5	6	5	0	0
+Entities/◆Tentacule/bank209_anim7_right.anim2d	209	7	right	7	1	1	1	1	5	6	5	0	0
+Entities/◆Tentacule/bank209_anim7_up.anim2d	209	7	up	7	1	1	1	1	5	6	5	0	0
+Entities/◆Tentacule/bank209_anim8_down.anim2d	209	8	down	7	1	1	1	1	5	6	5	0	0
+Entities/◆Tentacule/bank209_anim8_left.anim2d	209	8	left	7	1	1	1	1	5	6	5	0	0
+Entities/◆Tentacule/bank209_anim8_right.anim2d	209	8	right	7	1	1	1	1	5	6	5	0	0
+Entities/◆Tentacule/bank209_anim8_up.anim2d	209	8	up	7	1	1	1	1	5	6	5	0	0
+Entities/◆Tortue de roche Niv.1/bank181_anim3_down.anim2d	181	3	down	27	6	4	4	4	54	86	42	9	3
+Entities/◆Tortue de roche Niv.1/bank181_anim3_left.anim2d	181	3	left	27	7	7	7	7	58	139	46	9	3
+Entities/◆Tortue de roche Niv.1/bank181_anim3_right.anim2d	181	3	right	27	7	7	7	7	58	139	46	9	3
+Entities/◆Tortue de roche Niv.1/bank181_anim3_up.anim2d	181	3	up	27	6	4	4	3	54	68	42	9	3
+Entities/◆Tortue de roche Niv.2/bank185_anim3_down.anim2d	185	3	down	27	6	4	4	4	54	86	42	9	3
+Entities/◆Tortue de roche Niv.2/bank185_anim3_left.anim2d	185	3	left	27	7	7	7	7	58	139	46	9	3
+Entities/◆Tortue de roche Niv.2/bank185_anim3_right.anim2d	185	3	right	27	7	7	7	7	58	139	46	9	3
+Entities/◆Tortue de roche Niv.2/bank185_anim3_up.anim2d	185	3	up	27	6	4	4	3	54	68	42	9	3
+Entities/◆Triple projectile de dragon/bank225_anim0_down.anim2d	225	0	down	5	2	2	2	0	8	8	8	0	0
+Entities/◆Triple projectile de dragon/bank225_anim0_left.anim2d	225	0	left	5	2	2	2	0	8	8	8	0	0
+Entities/◆Triple projectile de dragon/bank225_anim0_right.anim2d	225	0	right	5	2	2	2	0	8	8	8	0	0
+Entities/◆Triple projectile de dragon/bank225_anim0_up.anim2d	225	0	up	5	2	2	2	0	8	8	8	0	0
+Entities/◆Triple projectile de dragon/bank225_anim1_down.anim2d	225	1	down	5	2	2	2	0	8	8	8	0	0
+Entities/◆Triple projectile de dragon/bank225_anim1_left.anim2d	225	1	left	5	2	2	2	0	8	8	8	0	0
+Entities/◆Triple projectile de dragon/bank225_anim1_right.anim2d	225	1	right	5	2	2	2	0	8	8	8	0	0
+Entities/◆Triple projectile de dragon/bank225_anim1_up.anim2d	225	1	up	5	2	2	2	0	8	8	8	0	0
+Entities/◆Tête de roche Niv.1/bank139_anim5_down.anim2d	139	5	down	22	9	7	6	7	23	50	23	0	0
+Entities/◆Tête de roche Niv.1/bank139_anim5_left.anim2d	139	5	left	22	9	7	6	7	23	50	23	0	0
+Entities/◆Tête de roche Niv.1/bank139_anim5_right.anim2d	139	5	right	22	9	7	6	7	23	50	23	0	0
+Entities/◆Tête de roche Niv.1/bank139_anim5_up.anim2d	139	5	up	22	9	7	6	7	23	50	23	0	0
+Entities/◆Wilda (tête)/bank156_anim0_down.anim2d	156	0	down	17	8	8	2	4	104	128	90	5	9
+Entities/◆Wilda (tête)/bank156_anim0_left.anim2d	156	0	left	17	8	8	2	4	104	128	90	5	9
+Entities/◆Wilda (tête)/bank156_anim0_right.anim2d	156	0	right	17	8	8	2	4	104	128	90	5	9
+Entities/◆Wilda (tête)/bank156_anim0_up.anim2d	156	0	up	17	8	8	2	4	104	128	90	5	9
+Entities/◆Wilda (tête)/bank156_anim10_down.anim2d	156	10	down	8	6	6	5	1	20	22	6	10	4
+Entities/◆Wilda (tête)/bank156_anim10_left.anim2d	156	10	left	8	6	6	5	1	20	22	6	10	4
+Entities/◆Wilda (tête)/bank156_anim10_right.anim2d	156	10	right	8	6	6	5	1	20	22	6	10	4
+Entities/◆Wilda (tête)/bank156_anim10_up.anim2d	156	10	up	8	6	6	5	1	20	22	6	10	4
+Entities/◆Wilda (tête)/bank156_anim11_down.anim2d	156	11	down	33	8	8	3	4	228	256	180	28	20
+Entities/◆Wilda (tête)/bank156_anim11_left.anim2d	156	11	left	33	8	8	3	4	228	256	180	28	20
+Entities/◆Wilda (tête)/bank156_anim11_right.anim2d	156	11	right	33	8	8	3	4	228	256	180	28	20
+Entities/◆Wilda (tête)/bank156_anim11_up.anim2d	156	11	up	33	8	8	3	4	228	256	180	28	20
+Entities/◆Wilda (tête)/bank156_anim12_down.anim2d	156	12	down	17	8	8	2	4	104	128	90	5	9
+Entities/◆Wilda (tête)/bank156_anim12_left.anim2d	156	12	left	17	8	8	2	4	104	128	90	5	9
+Entities/◆Wilda (tête)/bank156_anim12_right.anim2d	156	12	right	17	8	8	2	4	104	128	90	5	9
+Entities/◆Wilda (tête)/bank156_anim12_up.anim2d	156	12	up	17	8	8	2	4	104	128	90	5	9
+Entities/◆Wilda (tête)/bank156_anim1_down.anim2d	156	1	down	9	8	7	2	2	52	56	12	26	14
+Entities/◆Wilda (tête)/bank156_anim1_left.anim2d	156	1	left	9	8	7	2	2	52	56	12	26	14
+Entities/◆Wilda (tête)/bank156_anim1_right.anim2d	156	1	right	9	8	7	2	2	52	56	12	26	14
+Entities/◆Wilda (tête)/bank156_anim1_up.anim2d	156	1	up	9	8	7	2	2	52	56	12	26	14
+Entities/◆Wilda (tête)/bank156_anim2_down.anim2d	156	2	down	13	8	7	6	2	78	84	29	40	9
+Entities/◆Wilda (tête)/bank156_anim2_left.anim2d	156	2	left	13	8	7	6	2	78	84	29	40	9
+Entities/◆Wilda (tête)/bank156_anim2_right.anim2d	156	2	right	13	8	7	6	2	78	84	29	40	9
+Entities/◆Wilda (tête)/bank156_anim2_up.anim2d	156	2	up	13	8	7	6	2	78	84	29	40	9
+Entities/◆Wilda (tête)/bank156_anim3_down.anim2d	156	3	down	13	12	11	7	3	81	88	31	40	10
+Entities/◆Wilda (tête)/bank156_anim3_left.anim2d	156	3	left	13	12	11	7	3	81	88	31	40	10
+Entities/◆Wilda (tête)/bank156_anim3_right.anim2d	156	3	right	13	12	11	7	3	81	88	31	40	10
+Entities/◆Wilda (tête)/bank156_anim3_up.anim2d	156	3	up	13	12	11	7	3	81	88	31	40	10
+Entities/◆Wilda (tête)/bank156_anim4_down.anim2d	156	4	down	17	8	8	5	4	106	128	90	6	10
+Entities/◆Wilda (tête)/bank156_anim4_left.anim2d	156	4	left	17	8	8	5	4	106	128	90	6	10
+Entities/◆Wilda (tête)/bank156_anim4_right.anim2d	156	4	right	17	8	8	5	4	106	128	90	6	10
+Entities/◆Wilda (tête)/bank156_anim4_up.anim2d	156	4	up	17	8	8	5	4	106	128	90	6	10
+Entities/◆Wilda (tête)/bank156_anim5_down.anim2d	156	5	down	17	8	7	2	2	104	112	90	5	9
+Entities/◆Wilda (tête)/bank156_anim5_left.anim2d	156	5	left	17	8	7	2	2	104	112	90	5	9
+Entities/◆Wilda (tête)/bank156_anim5_right.anim2d	156	5	right	17	8	7	2	2	104	112	90	5	9
+Entities/◆Wilda (tête)/bank156_anim5_up.anim2d	156	5	up	17	8	7	2	2	104	112	90	5	9
+Entities/◆Wilda (tête)/bank156_anim6_down.anim2d	156	6	down	9	8	8	5	3	54	64	12	27	15
+Entities/◆Wilda (tête)/bank156_anim6_left.anim2d	156	6	left	9	8	8	5	3	54	64	12	27	15
+Entities/◆Wilda (tête)/bank156_anim6_right.anim2d	156	6	right	9	8	8	5	3	54	64	12	27	15
+Entities/◆Wilda (tête)/bank156_anim6_up.anim2d	156	6	up	9	8	8	5	3	54	64	12	27	15
+Entities/◆Wilda (tête)/bank156_anim7_down.anim2d	156	7	down	9	8	7	2	2	52	56	12	26	14
+Entities/◆Wilda (tête)/bank156_anim7_left.anim2d	156	7	left	9	8	7	2	2	52	56	12	26	14
+Entities/◆Wilda (tête)/bank156_anim7_right.anim2d	156	7	right	9	8	7	2	2	52	56	12	26	14
+Entities/◆Wilda (tête)/bank156_anim7_up.anim2d	156	7	up	9	8	7	2	2	52	56	12	26	14
+Entities/◆Wilda (tête)/bank156_anim8_down.anim2d	156	8	down	10	8	7	2	2	58	63	13	29	16
+Entities/◆Wilda (tête)/bank156_anim8_left.anim2d	156	8	left	10	8	7	2	2	58	63	13	29	16
+Entities/◆Wilda (tête)/bank156_anim8_right.anim2d	156	8	right	10	8	7	2	2	58	63	13	29	16
+Entities/◆Wilda (tête)/bank156_anim8_up.anim2d	156	8	up	10	8	7	2	2	58	63	13	29	16
+Entities/◆Wilda (tête)/bank156_anim9_down.anim2d	156	9	down	14	6	5	0	0	65	65	13	39	13
+Entities/◆Wilda (tête)/bank156_anim9_left.anim2d	156	9	left	14	6	5	0	0	65	65	13	39	13
+Entities/◆Wilda (tête)/bank156_anim9_right.anim2d	156	9	right	14	6	5	0	0	65	65	13	39	13
+Entities/◆Wilda (tête)/bank156_anim9_up.anim2d	156	9	up	14	6	5	0	0	65	65	13	39	13
+Entities/◆Zazan-Roi Muruta/bank250_anim3_down.anim2d	250	3	down	8	4	2	1	2	3	14	3	0	0
+Entities/◆Zazan-Roi Muruta/bank250_anim3_left.anim2d	250	3	left	8	4	2	1	2	3	14	3	0	0
+Entities/◆Zazan-Roi Muruta/bank250_anim3_right.anim2d	250	3	right	8	4	2	1	2	3	14	3	0	0
+Entities/◆Zazan-Roi Muruta/bank250_anim3_up.anim2d	250	3	up	8	4	2	1	2	3	14	3	0	0
+Entities/◆Zazan-Roi Muruta/bank250_anim9_down.anim2d	250	9	down	12	2	1	1	1	5	11	5	0	0
+Entities/◆Zazan-Roi Muruta/bank250_anim9_left.anim2d	250	9	left	12	2	1	1	1	5	11	5	0	0
+Entities/◆Zazan-Roi Muruta/bank250_anim9_right.anim2d	250	9	right	12	2	1	1	1	5	11	5	0	0
+Entities/◆Zazan-Roi Muruta/bank250_anim9_up.anim2d	250	9	up	12	2	1	1	1	5	11	5	0	0
+Entities/◆Zombie Niv.1/bank193_anim6_right.anim2d	193	6	right	5	3	2	0	1	2	5	2	0	0
+Entities/◆Zorgia/bank253_anim10_down.anim2d	253	10	down	20	5	3	3	3	20	41	20	0	0
+Entities/◆Zorgia/bank253_anim10_left.anim2d	253	10	left	20	5	3	3	3	20	41	20	0	0
+Entities/◆Zorgia/bank253_anim10_right.anim2d	253	10	right	20	5	3	3	3	20	41	20	0	0
+Entities/◆Zorgia/bank253_anim10_up.anim2d	253	10	up	20	5	3	3	3	20	41	20	0	0
+Entities/◆Zorgia/bank253_anim3_down.anim2d	253	3	down	31	9	8	6	6	88	127	64	24	0
+Entities/◆Zorgia/bank253_anim3_left.anim2d	253	3	left	31	9	8	6	4	88	119	58	30	0
+Entities/◆Zorgia/bank253_anim3_right.anim2d	253	3	right	31	9	8	6	4	88	119	58	30	0
+Entities/◆Zorgia/bank253_anim3_up.anim2d	253	3	up	31	9	8	8	1	98	107	58	40	0
+Entities/◆Zorgia/bank253_anim4_down.anim2d	253	4	down	33	12	11	3	6	105	169	105	0	0
+Entities/◆Zorgia/bank253_anim4_left.anim2d	253	4	left	33	12	11	3	6	105	169	105	0	0
+Entities/◆Zorgia/bank253_anim4_right.anim2d	253	4	right	33	12	11	3	6	105	169	105	0	0
+Entities/◆Zorgia/bank253_anim4_up.anim2d	253	4	up	33	12	11	3	6	105	169	105	0	0
+Entities/◆Zorgia/bank253_anim5_down.anim2d	253	5	down	50	18	15	12	15	232	387	192	31	9
+Entities/◆Zorgia/bank253_anim5_left.anim2d	253	5	left	50	18	15	12	15	232	387	192	31	9
+Entities/◆Zorgia/bank253_anim5_right.anim2d	253	5	right	50	18	15	12	15	232	387	192	31	9
+Entities/◆Zorgia/bank253_anim5_up.anim2d	253	5	up	50	18	15	12	15	232	387	192	31	9
+Entities/◆Élément Niv.1/bank241_anim10_down.anim2d	241	10	down	15	4	4	4	4	22	53	22	0	0
+Entities/◆Élément Niv.1/bank241_anim10_left.anim2d	241	10	left	15	4	4	4	4	22	53	22	0	0
+Entities/◆Élément Niv.1/bank241_anim10_right.anim2d	241	10	right	15	4	4	4	4	22	53	22	0	0
+Entities/◆Élément Niv.1/bank241_anim10_up.anim2d	241	10	up	15	4	4	4	4	22	53	22	0	0
+Entities/◆Élément Niv.1/bank241_anim5_down.anim2d	241	5	down	10	4	4	3	2	17	19	17	0	0
+Entities/◆Élément Niv.1/bank241_anim5_left.anim2d	241	5	left	10	4	4	3	2	17	19	17	0	0
+Entities/◆Élément Niv.1/bank241_anim5_right.anim2d	241	5	right	10	4	4	3	2	17	19	17	0	0
+Entities/◆Élément Niv.1/bank241_anim5_up.anim2d	241	5	up	10	4	4	3	2	17	19	17	0	0

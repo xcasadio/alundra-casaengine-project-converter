@@ -276,7 +276,7 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     défilement montre les lignes **déjà décalées** : la rangée de jambages à y = 172 n'est **pas dessinée** par le binaire (H1 : la
     même passe efface l'ancienne bande du haut par `ClearImage`, `0x80045E30`, mise dans la même file que `LoadImage` et `DrawOTag`,
     avant le `DrawOTag` de l'interface). Lecture statique confirmée deux fois, sans émulateur ; la variante « avant décalage » reste
-    derrière une seule constante ; à confirmer par l'auteur (recette ou capture d'émulateur).
+    derrière une seule constante ; réponse de l'auteur le 2026-10-06 : D-E19-91.
   - **D-E19-84** — (2026-10-05, choix technique de la session, met en œuvre D-E19-78) Règle de S025 : quand la dernière ligne d'une
     page contient un `\H`, ses espaces de fin sont gardées et protégées par `[empty trimwhitespace=false/]` en fin de ligne (Yarn 3.2.1
     retire les espaces de fin de ligne mais garde celles qui précèdent un marqueur auto-fermant) ; le marqueur `empty`, déjà connu
@@ -284,12 +284,11 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-85** — (2026-10-05, choix technique de la session) L'épingle MonoGame d'`Alundra.Tests` suit celle du moteur (3.8.4.1 →
     3.8.5.1) : sans elle, un test ne peut pas créer le runtime du bureau sur GPU (« This MGFX effect seems to be for a newer release
     of MonoGame »).
-  - **D-E19-86** — (2026-10-06, choix de la session sous la règle de l'auteur « le binaire tranche », D-E19-72, D-E19-81 ; à confirmer
-    par l'auteur) La **boîte de choix suit le binaire** : disposition horizontale OUI/NON, Gauche et Droite, validation à la Croix seule,
+  - **D-E19-86** — (2026-10-06, choix de la session sous la règle de l'auteur « le binaire tranche », D-E19-72, D-E19-81 ; **confirmé
+    par l'auteur le 2026-10-06** : manette seule) La **boîte de choix suit le binaire** : disposition horizontale OUI/NON, Gauche et Droite, validation à la Croix seule,
     ni annulation ni souris (la liste verticale de boutons du moteur n'est plus utilisée pour les choix), compteur du curseur
     persistant d'une boîte à l'autre ; les invites de carte mémoire du binaire restent hors périmètre (ADR-0014). Elle précise D-E19-50
-    (l'auteur, 2026-10-03 : la boîte de choix fidèle, deux options côte à côte, validée à la Croix) ; reste à confirmer : l'abandon de la
-    souris.
+    (l'auteur, 2026-10-03 : la boîte de choix fidèle, deux options côte à côte, validée à la Croix).
   - **D-E19-87** — (2026-10-06, choix technique de la session, E19.h1b2) Pour une entité sans contrôleur : atterrissage strict et
     `IsOnGround` de position (convention de la DLL, exacte), impulsion partagée par le pas vertical comme dans le binaire ; `0x22`
     garde la cible littérale d'ADR-0026 ; `0x22` sans enregistrement journalise une fois et finit l'attente.
@@ -300,9 +299,24 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-89** — (2026-10-06, choix de la session, E19.f4, précédent de la décision D2 de l'auteur pour le portrait de
     l'inventaire) La rampe de couleur du portrait (255 → 128, au-dessus de 1) n'est pas rendue : teinte normale, manque de MGUI
     consigné (G11), pas contourné.
-  - **D-E19-90** — (2026-10-06, choix de la session, E19.f4b, prolonge D-E19-49 ; à confirmer par l'auteur) Un portrait de 48 × 72 vole
+  - **D-E19-90** — (2026-10-06, choix de la session, E19.f4b, prolonge D-E19-49 ; **confirmé par l'auteur le 2026-10-06**) Un portrait de 48 × 72 vole
     comme un 48 × 56, ancre haut-gauche, vers le repos (8, 172 − h) = (8, 100) : il finit bas aligné sur le bas des autres (172) ; les
     tailles du vol suivent h = 72 ; sa passe dégénérée est posée en (8, 100) (invisible).
+  - **D-E19-91** — (2026-10-06, l'auteur, réponse sur D-E19-83) Le texte de la boîte **ne déborde jamais** du rectangle de texte
+    contenu dans l'image du cadre, comme dans l'original ; tout débordement vu dans le portage est un défaut à corriger. La vue
+    fidèle (E19.f2b1c) découpe déjà le texte au rectangle du binaire (x 32 à 289, y 172 à 221 au repos, à l'intérieur du cadre) ;
+    la recette le vérifie ; un débordement observé est à corriger.
+  - **D-E19-92** — (2026-10-06, l'auteur, O-E19-71) Les **quads déformés** des sprites d'entités (G2b) se dessinent **à la résolution
+    de l'écran** : exacts à ×1 et pour les quads 1:1, plus lisses que la PS1 aux autres facteurs ; l'écart est écrit dans l'ADR ;
+    ADR-0048 du moteur (pas de cible intermédiaire) n'est pas révisée.
+  - **D-E19-93** — (2026-10-06, l'auteur, O-E19-69) L'**ordre de l'écran de sauvegarde** se corrige (tranche à part) : son tick passe
+    après la passe du dialogue, comme le créneau 10 du binaire après le créneau 3 ; les valeurs de tests d'E16 qui en dépendent
+    sont ré-épinglées.
+  - **D-E19-94** — (2026-10-06, l'auteur, O-E19-68) La **cible de `0x22`** se corrige : une règle par sens de déplacement, exacte
+    au tick sur les 17 sites (cible décalée sous 256 px, littérale au-dessus, d'après la contre-vérification d'E19.h1b2) ; nouvelle
+    ADR qui remplace en partie l'exception d'ADR-0026.
+  - **D-E19-95** — (2026-10-06, l'auteur, O-E19-67) Les **autres espaces de bord perdues** à l'export Yarn (hors S025) restent un
+    écart consigné, sans correction.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -5411,7 +5425,7 @@ les largeurs 19 et 23 sont celles du binaire, à poser en f3b).
   Écart de l'exécution : la machine ne décode pas les échappements `{c` et `}c` des libellés (aucun libellé du corpus n'en porte) ;
   les largeurs des libellés (19 et 23) vont à f3b.
 
-###### E19.f3b — Écran du choix et preuve au pixel 🧪 (faite le 2026-10-06, vérification à faire)
+###### E19.f3b — Écran du choix et preuve au pixel 🧪 (relecture n°1 REVISE, révisée ; relecture n°2 READY ; faite et CONFIRMED le 2026-10-06 ; recette F3B-4 en attente)
 
 **Découverte** (2026-10-06, `docs/plan-e19-f3-annexe/view/view-notes.md`, contre-vérifiée par `view-verify.md` ; la XAML proposée,
 l'enveloppe, les données de conception et les classes proposées sont dans `view/proposal/`, les images de référence dans `view/pixels/`,
@@ -5508,6 +5522,13 @@ d'`AssetInfos.json` et la taille de `Alundra.dll` reconstruite depuis le dernier
 `report.json` diffère. Vert : `Alundra.Tests` **2802/2802** en Release puis en Debug (2768 avant, 34 nouveaux, aucun ignoré), `cmp` identique, six traces inchangées ; le
 convertisseur n'a pas changé (pas de tests du convertisseur). Restent la vérification (vérificateur neuf) et la recette de l'auteur (F3B-4).
 
+- ✅ **Vérification d'E19.f3b** (F3B-3, 2026-10-06) : vérificateur neuf **CONFIRMED** (`30a845c`) : rouges d'abord rejoués dans une
+  copie isolée (rouge de compilation, puis 2 rouges de valeur sans le tick du mandataire) ; les trois fichiers d'écran égaux à
+  `view/proposal/` (même blob) ; règle du view model, poussée à N+2 et retrait à N+37/N+38, ordre boîte puis choix ; les 11 tests au
+  pixel exécutés sur le GPU (aucun ignoré), les 19 images et les points de `points.md` sans écart ; mutation du `Padding` : 8 rouges,
+  248 texels ; liste fermée tenue ; export re-dérivé (les trois fichiers, l'entrée d'`AssetInfos.json`, les compteurs) et double
+  export ; `Alundra.Tests` 2802/2802 en Release puis en Debug, `cmp` sans écart, six traces.
+
 ###### E19.f4 — Nom et portrait du locuteur : découverte du 2026-10-06, découpée en E19.f4a, E19.f4b et E19.f4c ⏳
 
 **Découverte** (2026-10-06, lecture seule, deux surfaces, chacune contre-vérifiée ; versionnée, en anglais, dans
@@ -5548,7 +5569,7 @@ l'original, quasi absent du corpus) n'est pas reproduit ; découpage : f4a (expo
 nom, vol du portrait, oracle porté de `f4_model.py`, valeurs `values.json` S1 à S7), f4c (vue : ajouts à `TextBoxScreen.xaml`, test au
 pixel, rapport de manque).
 
-###### E19.f4a — Export des portraits de dialogue 🧪 (faite le 2026-10-06, vérification à faire ; planifiée le 2026-10-06 ; relecture n°1 REVISE (avertissement, prévision de l'export), révisée ; relecture n°2 READY ; exécutée après E19.f3b)
+###### E19.f4a — Export des portraits de dialogue ✅ (relecture n°1 REVISE, révisée ; relecture n°2 READY ; faite et CONFIRMED le 2026-10-06)
 
 **Règles.**
 - **F4A-R1 — Lecture** : `SpriteBankReader` lit le `DialoguePortrait` de l'enregistrement canonique de chaque banque (la première carte
@@ -5624,7 +5645,15 @@ ré-export de référence en place à `30a845c` ne change que `report.json` (dur
 revert, export complet égal au manifeste « avant ». **Risques** : 13 feuilles distinctes portent les portraits : le premier locuteur de
 chaque feuille fera charger la feuille au premier affichage (f4c décide d'un préchargement).
 
-###### E19.f4b — Locuteur, boîte de nom et vol du portrait (logique) 🧪 (faite le 2026-10-06, vérification à faire ; planifiée le 2026-10-06 ; relecture n°1 REVISE (contrat de T1, vol en 48 × 72, entrées de la DLL), révisée après une passe de conception contre-vérifiée ; relecture n°2 READY ; exécutée après E19.f4a)
+- ✅ **Vérification d'E19.f4a** (F4A-3, 2026-10-06) : vérificateur neuf **CONFIRMED** (`94e0a46` prévision, `31db6c0`, `eeed643`) :
+  prévision commitée avant le code ; rouges d'abord rejoués règle par règle dans une copie isolée ; les 25 triplets
+  (`SpriteAssetId`, `Width`, `Height`) égaux à `portraits_table.tsv` ; banque 15 réutilisée (aucun fichier dans `UI/Portraits/`) ;
+  48 × 72 gardé (banques 122 et 162) ; avertissement seulement bit `0x80` posé et champ absent ; champ nul omis (`sprite-records.json`
+  sans les 25 blocs égal à l'ancien à l'octet) ; manifeste re-dérivé (24 ajoutés, `AssetInfos.json`, `sprite-records.json`,
+  `report.json` ; `Sprites.DialoguePortrait` 25, `Assets.Sprite` 6909 → 6933, `Verify.*` + 24, `OutputFileCount` 23750 → 23774) ;
+  double export ; convertisseur 642/642, `Alundra.Tests` 2805/2805 en Release puis en Debug, `cmp` sans écart, six traces ; ADR-0039.
+
+###### E19.f4b — Locuteur, boîte de nom et vol du portrait (logique) ✅ (relecture n°1 REVISE, révisée ; relecture n°2 READY ; faite et CONFIRMED le 2026-10-06 ; la vue est f4c)
 
 **Conception** (2026-10-06, `docs/plan-e19-f4-annexe/f4b-design-notes.md` et sa contre-vérification `f4b-design-verify.md` ; scripts versionnés
 dans `model/`, lancés depuis l'annexe : `check_regression.py` redonne S1 à S7 sans écart, `gen_sequences.py` redonne
@@ -5756,6 +5785,14 @@ fermée ; suites. **Retour arrière** : revert. **Risques** : la boîte de texte
 à N+22 sur « AB » (valeurs d'E19.f2a, non rejouées ici : la colonne `phase` le dira au premier rouge) ; la règle du vol en 48 × 72 est
 une extension sans vérité binaire (D-E19-90) ; `GetMatchingEntitiesBySearchType` alloue une liste à chaque tick de nouvelle tentative de
 `0x5C`/`0xC4` (au plus une quarantaine par boîte) ; l'ordre de dessin et les durées de vie indépendantes de la vue sont pour f4c.
+
+- ✅ **Vérification d'E19.f4b** (F4B-3, 2026-10-06) : vérificateur neuf **CONFIRMED** (`f4af632`) : le modèle Python redonne S1 à S9 et
+  les empreintes à l'octet ; l'oracle C# égal au modèle (empreintes SHA-256 des 40 graines, 19 compteurs, SplitMix64) ; T1 au contrat
+  fermé, S1 à S9 verts ; machines de la DLL égales à l'oracle sur les 40 graines ; règles et corpus (2273 sites décidables) verts ;
+  rouges d'abord rejoués dans une copie isolée (33 rouges : les 32 de l'exécuteur et un test de corpus sans `Maps` dans la copie) ;
+  aucun test existant modifié ; fichiers de production égaux à la liste fermée ; `Alundra.Tests` 2857/2857 en Release puis en Debug,
+  `cmp` sans écart, six traces. Avis P4 : la remise avant la garde de `NotifyPresenterClosed` n'est vérifiée que par lecture (à
+  voir en jeu : deux dialogues de suite avec le même locuteur).
 
 ###### E19.f4c — Vue du nom et du portrait ⏳ (esquisse, après E19.f4b)
 
@@ -6986,7 +7023,7 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
 au sud (O-E19-28 b, aussi contre les cellules) demande l'étape 2 (O-E19-42) ; l'image d'A10J `@2462` peut bouger d'un tick
 (retards connus de la DLL).
 
-### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2c 🧪 (CONFIRMED le 2026-10-05, recette G2c-6 en attente) ; G2d 🧪 (CONFIRMED le 2026-10-06, recette G2d-6 en attente) ; G2b, G1/G3, G4 à planifier)
+### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2c 🧪 (CONFIRMED le 2026-10-05, recette G2c-6 en attente) ; G2d 🧪 (CONFIRMED le 2026-10-06, recette G2d-6 en attente) ; G2b ⏳ (découverte faite, D-E19-92, plan à écrire) ; G1/G3, G4 à planifier)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B les données, le convertisseur,
 l'analyseur, le moteur et la DLL ; notes, rendus et scripts dans le scratchpad de la session, `e19g-disc/A/notes.md` et
@@ -7782,6 +7819,31 @@ impossible aujourd'hui).
   l'annexe, +26 octets par compagnon, `OutputSizeBytes` + 416 ; `CasaEngine.Tests` 2740/2740, convertisseur 621/621, `Alundra.Tests`
   2663/2663 en Release puis en Debug, `cmp` sans écart, six traces à l'octet. Avis P4 : la couverture de la 293 par la teinte reste à
   voir en recette ; `OutputSizeBytes` varie de quelques dizaines d'octets entre deux exports du même code (fichiers hors manifeste).
+
+##### 1.2o.5 E19.g G2b — Quads à quatre sommets libres (sprites d'entités déformés) ⏳ (découverte du 2026-10-06 faite ; l'auteur a tranché O-E19-71 : résolution de l'écran, D-E19-92 ; plan à écrire)
+
+**Découverte** (2026-10-06, lecture seule, deux surfaces, chacune contre-vérifiée ; versionnée, en anglais, dans `docs/plan-e19-g2b-annexe/`)
+; faits porteurs :
+- **[binaire]** `0x8002DB48`, seul émetteur des images d'entités et d'effets (appelé par `0x8002E1D4`), fait une `POLY_FT4` par image de
+  14 octets : les octets 6 à 13 sont quatre sommets signés (haut-gauche, haut-droit, bas-gauche, bas-droit) ajoutés à l'ancre ; UV `(u, v)`,
+  `(u + w, v)`, `(u, v + h)`, `(u + w, v + h)` ; aucun champ de miroir, rotation ou échelle : tout est dans ces huit octets ; prouvé par
+  l'exécution de la vraie routine sur les 160 355 quads d'entités (0 écart). Le GPU de la PS1 dessine deux triangles (HG, HD, BG) et (HD,
+  BG, BD) : diagonale HD-BG ; la règle de texel vérifiée sur matériel (PCSX-Redux, `floor(u + 0,5)`) diffère de celle supposée d'abord.
+- **Recensement** : 160 355 références de quads dans 395 banques ; 89 740 rectangles simples, 21 267 miroirs alignés, 40 763 rectangles
+  mis à l'échelle, 6 397 parallélogrammes, 2 188 quads quelconques : **49 348 déformées** (30,8 %), dont 33 341 semi-transparentes ; 1923
+  animations (`.anim2d`) en portent ; sur les 30 cartes de la chaîne : le héros (92 animations sur 376, aucune de marche, saut ou épée
+  usuelle), Rancune de Melzas (476), le coffre d'Anzes (163, 170, 177, 184).
+- **Portage** : le convertisseur ne garde que le centre, deux drapeaux de miroir et la taille ; le moteur dessine des rectangles
+  (diagonale HG-BD) ; le lot du moteur porte déjà quatre sommets par entrée ; il faudrait une piste de coins dans `.anim2d` (format du
+  moteur, ADR), une soumission de quad libre (ordre des sommets donnant la diagonale de la PS1, retournement des quads de sens négatif
+  pour l'élimination des faces), les bornes calculées sur les coins ; export : exactement les 1923 `.anim2d` (prévision par fichier dans
+  l'annexe) et `report.json` ; la DLL ne change pas.
+- **Question d'architecture** : la scène est dessinée directement dans le tampon d'écran agrandi (ADR-0048 du moteur : pas de cible
+  intermédiaire) ; à un facteur k > 1, un quad déformé est échantillonné par pixel d'écran et ne donne pas des blocs k × k uniformes de
+  pixels de la PS1 (D-E19-60 : « tous les pixels restent égaux ») : 99,2 % des rectangles mis à l'échelle diffèrent de la PS1 à k = 4
+  quelle que soit la convention ; l'exactitude à tout facteur demande de dessiner la scène dans une cible de 320 × 240 puis de
+  l'agrandir, ce qu'ADR-0048 a écarté (O-E19-71).
+
 
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 
@@ -9614,10 +9676,11 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-64 | **Marge par défaut des textes font3 des écrans existants** (découverte d'E19.f2b, 2026-10-05) : `MGTextBlock` a par défaut une marge (1, 1, 1, 1), `LinePadding` 2, le centrage vertical et le retour à la ligne (`MGTextBlock.cs:1363`, `MGTheme.cs:721`) ; aucune XAML d'Alundra (inventaire, sous-inventaire, sauvegarde) ne les pose. **Mesuré** sur GPU réel par la découverte d'E19.f2b1 (`docs/plan-e19-f2b1-annexe/view-verify.md`, point 9) : le vrai `SaveScreen.xaml` avec son vrai view model dessine les textes font3 un pixel à droite et un pixel plus bas, à ×1 et ×2 ; `Padding="0"` sur le `TextBlock` l'annule. À corriger dans une tranche à part. | Tranche à part |
 | O-E19-65 | **La vue des écrans d'Alundra a une image de retard sur la logique** (découverte d'E19.f2b1, 2026-10-05) : une liaison modifiée n'atteint les pixels qu'au `Desktop.Update()` suivant, l'interface étant mise à jour avant le monde (`CasaEngineGame.cs:537` puis `:555`, `UIRoot.cs:131` seul appelant) ; un changement de `Image.SourceName` s'applique aussitôt (63 texels mesurés : nouveau curseur sur l'ancienne disposition). Tous les écrans d'Alundra l'ont aujourd'hui. Ordre de mise à jour du moteur : manque à consigner, pas à contourner. | Moteur (rapport), auteur |
 | O-E19-66 | **Couleur de l'index 4 de `font3.png`** (contre-vérification de l'oracle d'E19.f2b1) : les bandes et le curseur du binaire prennent l'entrée 8 de la table de CLUT remplie depuis `taki\screen\wind.cl` (`0x80044B7C`-`0x80044B8C`) ; le `font3.png` exporté vient de la CLUT de FONT3.TIM : égal sur 13 des 14 index, l'index 4 vaut (82, 90, 57) contre (74, 82, 57) ; 44 texels, seulement dans les glyphes 4, 14, 15, 21 à 29 et `@` (le `\W5` de S025 est le glyphe 21). Correction côté export, hors f2b1. | Convertisseur, à planifier |
-| O-E19-67 | **Autres espaces de bord perdues** (découverte de S025, 2026-10-05 ; D-E19-78 ne vise que S025) : `M311_S029` et `M398_S029`, page 1 (une espace de début après un code de drapeau, retirée par la règle F0-R2 de l'émetteur : la ligne commence 4 pixels plus à gauche que dans le binaire, déduit du code, non vu) ; 30 pages `_S022` et `_S108` de 15 cartes (espaces avant un drapeau ou un `yield` final, retirées par l'émetteur : temps de frappe) ; 105 pages non centrées à espaces de fin (un pas de frappe par espace) ; 56 pages d'ETC (bourrage d'enregistrement ; trois textes d'inventaire `0x206`, `0x239`, `0x2A6` perdent une espace). Les corriger change des épingles d'arcs d'E19.f2a (par exemple `M391_S022`). | Auteur |
-| O-E19-68 | **Cible littérale de `0x22` sur une descente** (contre-vérification de la découverte d'E19.h1b2, 2026-10-06) : la cible `hauteur << 19` d'ADR-0026 est exacte au tick sur les montées, mais finit **un tick tôt** sur une descente (vrai code, 112 → 48 px à −32768 : binaire 129 appels, cible littérale 128, cible décalée `(H << 19) − 1` 129). Un seul des 17 sites descend : 115 `B[2]` @367 (hors chaîne ; 321 appels dans le binaire, 320 avec la cible littérale). Une règle par sens (décalée sous 256 px, littérale au-dessus) serait exacte aux 17 sites ; elle changerait ADR-0026. | Auteur |
-| O-E19-69 | **L'écran de sauvegarde tourne avant le dialogue dans le mandataire** (relecture d'E19.f3a, 2026-10-06) : le binaire fait le créneau 3 (choix) avant le créneau 10 (menu de fichier de l'écran de sauvegarde) dans la même image ; le mandataire fait l'écran dans la première boucle de ticks (`AlundraWorldProxy.cs:2117`) et la passe du dialogue (boîte puis choix) dans la seconde : une réponse donnée tard parvient à l'écran un tick plus tard (`DownDuringTheQuestion` 20 au lieu de 19) ; une réponse au plus tôt, au même tick. Corriger demande de déplacer le tick de l'écran après la passe du dialogue (valeurs d'E16 à reprendre). | Auteur, puis tranche à part |
+| O-E19-67 | **Tranché le 2026-10-06 (D-E19-95 : écart gardé).** **Autres espaces de bord perdues** (découverte de S025, 2026-10-05 ; D-E19-78 ne vise que S025) : `M311_S029` et `M398_S029`, page 1 (une espace de début après un code de drapeau, retirée par la règle F0-R2 de l'émetteur : la ligne commence 4 pixels plus à gauche que dans le binaire, déduit du code, non vu) ; 30 pages `_S022` et `_S108` de 15 cartes (espaces avant un drapeau ou un `yield` final, retirées par l'émetteur : temps de frappe) ; 105 pages non centrées à espaces de fin (un pas de frappe par espace) ; 56 pages d'ETC (bourrage d'enregistrement ; trois textes d'inventaire `0x206`, `0x239`, `0x2A6` perdent une espace). Les corriger change des épingles d'arcs d'E19.f2a (par exemple `M391_S022`). | Auteur |
+| O-E19-68 | **Tranché le 2026-10-06 (D-E19-94 : à corriger).** **Cible littérale de `0x22` sur une descente** (contre-vérification de la découverte d'E19.h1b2, 2026-10-06) : la cible `hauteur << 19` d'ADR-0026 est exacte au tick sur les montées, mais finit **un tick tôt** sur une descente (vrai code, 112 → 48 px à −32768 : binaire 129 appels, cible littérale 128, cible décalée `(H << 19) − 1` 129). Un seul des 17 sites descend : 115 `B[2]` @367 (hors chaîne ; 321 appels dans le binaire, 320 avec la cible littérale). Une règle par sens (décalée sous 256 px, littérale au-dessus) serait exacte aux 17 sites ; elle changerait ADR-0026. | Auteur |
+| O-E19-69 | **Tranché le 2026-10-06 (D-E19-93 : à corriger).** **L'écran de sauvegarde tourne avant le dialogue dans le mandataire** (relecture d'E19.f3a, 2026-10-06) : le binaire fait le créneau 3 (choix) avant le créneau 10 (menu de fichier de l'écran de sauvegarde) dans la même image ; le mandataire fait l'écran dans la première boucle de ticks (`AlundraWorldProxy.cs:2117`) et la passe du dialogue (boîte puis choix) dans la seconde : une réponse donnée tard parvient à l'écran un tick plus tard (`DownDuringTheQuestion` 20 au lieu de 19) ; une réponse au plus tôt, au même tick. Corriger demande de déplacer le tick de l'écran après la passe du dialogue (valeurs d'E16 à reprendre). | Auteur, puis tranche à part |
 | O-E19-70 | **Image périmée à la remise d'une fenêtre** (découverte d'E19.f3b, 2026-10-06) : une fenêtre MGUI retirée puis remise sur le bureau n'est mise en page qu'au `Desktop.Update` suivant ; après un choix annulé en plein glissement, la première image du choix suivant montre l'ancien cadre (1898 à 3556 texels) ; aucun cas du corpus connu. Même famille qu'O-E19-65 ; côté moteur : mettre en page une fenêtre remise avant son premier dessin ; le pire cas est une annulation au repos (3556 texels). | Moteur (rapport), auteur |
+| O-E19-71 | **Tranché le 2026-10-06 (D-E19-92 : résolution de l'écran).** **Quads déformés et facteur d'agrandissement** (découverte d'E19.g G2b, 2026-10-06) : 49 348 quads d'entités (30,8 %) sont déformés dans le binaire (échelle, miroir tourné, parallélogramme, quad quelconque) ; la scène est dessinée directement dans l'écran agrandi (ADR-0048 du moteur), donc à k > 1 un quad déformé ne donne pas des blocs k × k de pixels de la PS1 (D-E19-60). **Choix** : (A) quads dessinés à la résolution de l'écran, exacts à k = 1 et pour les quads 1:1, plus lisses que la PS1 aux autres facteurs, écart écrit dans l'ADR ; (C) la scène dessinée dans une cible de 320 × 240 puis agrandie, exacte à tout facteur, ADR-0048 révisée et travail du moteur en plus. Recommandation de la session : (C), seule fidèle à D-E19-60, si le coût moteur est acceptable. | Auteur |
 
 ## 4. Hors périmètre
 
