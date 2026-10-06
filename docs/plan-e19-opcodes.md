@@ -8809,7 +8809,7 @@ fichiers hors catalogue pour `AssetVerifier.CheckCatalogCoverage`), puis export 
 prévision, un test existant qui bouge, un fichier hors de la liste. **Risques** : le compagnon de carte ne sert à rien tant que G3a ne
 le lit pas (aucun effet visible avant G3c) ; 748 images ont une case toute transparente (légitime : la PS1 ne les dessine pas non plus).
 
-###### E19.g G3a — Réserve des effets, apparition au chargement et tick (DLL) ⏳ (planifiée le 2026-10-06 ; relecture à faire)
+###### E19.g G3a — Réserve des effets, apparition au chargement et tick (DLL) ⏳ (planifiée le 2026-10-06 ; relecture n°1 : READY (code), REVISE (binaire : moment de l'apparition), révisée ; relecture n°2 à faire)
 
 DLL seule (ni moteur, ni export : G1 est livré, ADR-0043) ; rien ne se voit encore (le dessin est G3c) et aucun opcode n'est porté (G3b).
 Déclencheur de risque : modèle d'état nouveau tiré du binaire (relecture et vérificateur neuf). Faits et valeurs : `docs/plan-e19-g1g3-annexe/`
@@ -8834,11 +8834,14 @@ Déclencheur de risque : modèle d'état nouveau tiré du binaire (relecture et 
 - **G3A-R4 — Convention de tick** : le tick 0 d'un créneau est sa première mise à jour (le tick même de sa création, puisque les effets
   passent après les événements de carte et les entités). Une animation `Destroy` de durée S (somme des délais) est dessinée aux ticks 0 à
   S et libérée au tick S + 1. `anims_oracle.json` compte à partir de 1 : `observed_destroy_tick` = S + 1 et `observed_free_tick` = S + 2.
-- **G3A-R5 — Apparition au chargement** [binaire] : à l'entrée dans la carte, la réserve est vidée puis chaque enregistrement à `Flags & 0x40`
+- **G3A-R5 — Apparition au chargement** [binaire] : à l'entrée dans la carte (la réserve est neuve : un monde, une réserve), chaque enregistrement à `Flags & 0x40`
   dont la zone inclusive contient la tuile du héros apparaît, dans l'ordre des enregistrements, aux créneaux 0 à n − 1 ; position
   `x = (X × 12 + 12) << 16`, `y = (Y × 8 + 8) << 16`, `z = Z << 19` ; banque = `Flags & 0x80`. L'apparition se fait **une fois le héros
   posé sur sa tuile d'arrivée et avant le premier tick d'effet du monde** (le binaire crée le héros et écrit sa tuile avant
-  `0x8003C1A4`) : au premier `Update` du mandataire, avant sa boucle de ticks. Sans héros (montages sans héros) : la tuile (0, 0) et un
+  `0x8003C1A4`) : au premier `Update` du mandataire, avant sa boucle de ticks, la tuile lue dans `PlayerEntity.TileX` et `PlayerEntity.TileY`
+  (`AlundraEntityScriptProxy.cs:317-318`). Aucune création ne peut la précéder : les scripts d'entités de la première image tournent avant le
+  mandataire, mais toute opération d'effet est mise en file et appliquée seulement dans la boucle des effets (G3B-R3), après l'apparition ;
+  les créneaux du chargement sont donc toujours 0 à n − 1. Sans héros (montages sans héros) : la tuile (0, 0) et un
   avertissement une fois (les 41 enregistrements de la chaîne ont la zone entière (0, 0)-(51, 59) ; seuls 6 enregistrements hors de la
   chaîne en dépendent).
 - **G3A-R6 — Tick dans le mandataire** : une boucle des ticks logiques de l'image, après la boucle des événements de carte et celle des
@@ -8850,7 +8853,7 @@ Déclencheur de risque : modèle d'état nouveau tiré du binaire (relecture et 
 - **G3A-R7 — Lecture** : la réserve expose, pour les tests et pour G3c, les créneaux actifs dans l'ordre des créneaux avec leur ensemble
   d'images courant, leur position et leur clé de profondeur.
 - **Fichiers** (liste fermée) : nouveaux `Alundra/Scripts/AlundraEffectBank.cs` (types et chargeur), `Alundra/Scripts/AlundraEffectReservoir.cs`
-  (réserve pure, sans type du moteur), `Alundra/Scripts/AlundraEffectStage.cs` (banque, réserve, apparition, tick ; initialiseur de
+  (réserve pure, sans type du moteur), `Alundra/Scripts/AlundraEffectStage.cs` (banque, réserve, apparition, file des opérations, tick ; initialiseur de
   champ du mandataire, comme `_backdropStage`) ; `Alundra/Scripts/AlundraWorldProxy.cs` (le champ, l'apparition, la boucle, la porte par tick) ;
   nouveaux tests `Alundra.Tests/AlundraEffectReservoirTests.cs`, `Alundra.Tests/AlundraEffectBankLoaderTests.cs`,
   `Alundra.Tests/AlundraEffectStageWiringTests.cs` ; l'annexe (`docs/plan-e19-g1g3-annexe/g3a-golden.tsv`, table générée depuis
@@ -8866,14 +8869,15 @@ Déclencheur de risque : modèle d'état nouveau tiré du binaire (relecture et 
   le créneau 5 puis créer reprend le 5 ; la porte `0x48` (rien ne bouge, créneau gardé) ; 0 tick pendant un départ de warp ; les 6 zones
   restreintes par un montage synthétique (tuile dedans, tuile dehors) ; le chargeur (compagnon absent, illisible, global en cache) ;
   l'apparition avant le premier tick (les rais de la 163 libérés au tick 11, pas 10 ni 12) ; une image à deux ticks donne le même état
-  que deux images d'un tick.
+  que deux images d'un tick ; une création mise en file avant le premier `Update` du mandataire sur la 391 (créateur générique) : les
+  créneaux du chargement restent 0 à 4 aux positions de l'oracle et la nouvelle prend le créneau 5, rien n'est effacé.
 - **G3a-2 — Code**, ADR du parent (la réserve des effets vit dans la DLL, au tick, comme le binaire ; le moteur ne la connaît pas) ;
   **G3a-3 — Vérification**.
 - **Acceptation** : prévision commitée avant le code ; tests rouges puis verts ; aucun test existant ne bouge (rien ne lit la réserve) ;
   `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (identiques : les effets n'ont aucun effet de jeu). **Arrêts** : une valeur
   qui contredit les oracles, un test existant qui bouge, un fichier hors de la liste. **Retour arrière** : revert.
 
-###### E19.g G3b — Les neuf opcodes d'effets (DLL) ⏳ (planifiée le 2026-10-06, après G3a ; relecture à faire)
+###### E19.g G3b — Les neuf opcodes d'effets (DLL) ⏳ (planifiée le 2026-10-06, après G3a ; relecture n°1 REVISE (binaire : ticks gelés, créneau placé par `0xA2`/`0xA3` ; code : liste fermée), révisée ; relecture n°2 à faire)
 
 DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (liste fermée et arcs). Faits : `dll-notes.md` §4 et §6,
 `binary-data-verify.md` (sites, valeurs), `README.md` de l'annexe (391 : cinq `0xA2`).
@@ -8882,20 +8886,28 @@ DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (list
   de `v1` ; `0x93` (8) `x = u16 << 16`, `y = u16 << 16`, `z = (u16 << 16) + 1` ; `0x94` (8) forces `s16 << 8` ; `0xA0` (8) `x, y, z += u16 << 16`
   (complément à deux, sans + 1) ; `0xA1` (9) première entité de la recherche `v2` (aucune : rien), `pos = sa position + d << 16` sur chaque
   créneau de `v1`, sans + 1 ; `0xA2` (8) `Spawn(v1, force)` puis, si créé, la position de `0x93` (+ 1 sur z), l'animation reste celle de
-  l'enregistrement ; `0xA3` (9) recherche puis apparition et `pos = position de la première entité + d << 16`, sans + 1. Chaque opération
-  agit sur **tous** les créneaux actifs dont l'index d'enregistrement vaut `v1`, celui de son tick de destruction compris ; aucune ne rend de
-  `Result` ni ne suspend. La recherche de `0xA1`/`0xA3` passe par `EntitySearchService.GetMatchingEntitiesBySearchType`, comme `0x9F`.
+  l'enregistrement ; `0xA3` (9) recherche (aucune entité : **rien n'est créé**) puis apparition et `pos = position de la première entité + d << 16`,
+  sans + 1. `0x91`, `0x92`, `0x93`, `0x94`, `0xA0` et `0xA1` agissent sur **tous** les créneaux actifs dont l'index d'enregistrement vaut `v1`,
+  celui de son tick de destruction compris ; `0xA2` et `0xA3` ne placent **que le créneau qu'ils viennent de créer** (les autres créneaux du
+  même enregistrement ne bougent pas : sur la 391, les créneaux 0 à 4 du chargement restent en place). Aucune ne rend de `Result` ni ne suspend. La recherche de `0xA1`/`0xA3` passe par `EntitySearchService.GetMatchingEntitiesBySearchType`, comme `0x9F`.
   Règles défensives : enregistrement hors de la table : rien (comme le binaire) ; animation hors de la table : un avertissement une fois,
   l'opération ignorée.
-- **G3B-R2 — Hôte** : `IEntityWorldContext.EffectReservoir` (membre par défaut nul, comme `CameraSway`) ; sans hôte, le gestionnaire se
-  dégrade (trace `Degraded`, avance de sa taille).
+- **G3B-R2 — Hôte** : `IEntityWorldContext.EffectStage`, de type `AlundraEffectStage?` (déclaré dans `AlundraEffectStage.cs`, membre par
+  défaut nul, comme `CameraSway`), implémenté par le mandataire (son champ) ; le gestionnaire y met l'opération en file ; sans hôte, il se
+  dégrade (trace `Degraded`, avance de sa taille). La réserve (`AlundraEffectReservoir`) gagne les opérations par enregistrement :
+  libérer, animation cible, position posée (+ 1 sur z), position ajoutée, forces, position depuis une entité, et l'apparition suivie du
+  placement du seul créneau créé.
 - **G3B-R3 — Ordre dans une image à plusieurs ticks** : chaque opération est **marquée** du tick logique qui l'émet (l'indice de la boucle
   des événements de carte, de celle des déclencheurs en attente, ou de la boucle de ticks de l'entité, `AlundraEntityScriptProxy.cs:1313`)
   et d'un rang de source (événements de carte, puis entités, puis déclencheurs en attente, comme l'ordre du binaire : événements de
   carte, puis entités) ; au tick t de la boucle des effets (G3A-R6), les opérations marquées t sont appliquées dans l'ordre (rang, ordre
   d'émission) **avant** la mise à jour du tick t. Les scripts ne lisent jamais l'état des effets : ce report est invisible pour eux. À un
-  tick par image (le cas courant), c'est l'ordre d'émission.
+  tick par image (le cas courant), c'est l'ordre d'émission. Les opérations marquées t sont **toujours** appliquées au tick t, même quand ce
+  tick est gelé par `& 0x48` (seule la mise à jour est sautée, comme le binaire qui écrit la réserve tout de suite) ; dans une image sans tick
+  d'effet (départ de warp) et pour tout reste en fin de boucle, elles sont appliquées dans l'ordre (tick, rang, émission) sans mise à jour ;
+  **la file est vide à la fin de chaque image**.
 - **Fichiers** (liste fermée) : `Alundra/Scripts/AlundraEventProgramRunner.cs` (gestionnaires, marque du tick), `Alundra/Scripts/IEntityWorldContext.cs`,
+  `Alundra/Scripts/AlundraEffectReservoir.cs` (les opérations par enregistrement), `Alundra.Tests/AlundraEffectReservoirTests.cs` (leurs tests),
   `Alundra/Scripts/AlundraWorldProxy.cs` (l'hôte, la marque des boucles), `Alundra/Scripts/AlundraEntityScriptProxy.cs` (la marque du tick de
   l'entité), `Alundra/Scripts/AlundraEffectStage.cs` (la file des opérations) ; tests : nouveau `Alundra.Tests/AlundraEffectOpcodeTests.cs` ;
   `Alundra.Tests/Data/story-chain-skipped-opcodes.tsv` (les 99 lignes `EFFET` retirées, 102 → 3 : la 10 garde ses 3 lignes `PREDICAT coup
@@ -8903,15 +8915,21 @@ DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (list
   `AlundraStoryChainSkippedOpcodesTests.cs` (l'assertion 19 → 28) ; les arcs `AlundraVisionArcTests.cs` (A2/A4), `AlundraShipBlockArcTests.cs`
   (A6), `AlundraInoaDayOneArcTests.cs` (A20), `AlundraEntityContactArcTests.cs` (A10J, T-A10v, T-B9), `AlundraHeroJumpArcTests.cs`,
   `AlundraDay3SceneArcTests.cs` (A13, A15, A17 par la règle 5) ; `AlundraEventProgramRunnerTests.cs`
-  (`UnknownOpcode_KnownSize_SkipsBySize` repointé vers un opcode encore non porté) ; ce plan ; l'ADR du parent (prochain numéro libre).
+  (`UnknownOpcode_KnownSize_SkipsBySize` repointé vers un opcode encore non porté) ; ce plan ; l'ADR du parent (prochain numéro libre) et
+  son index `docs/decisions/README.md` ; l'annexe (`docs/plan-e19-g1g3-annexe/g3b-golden.tsv` et son script).
 - **G3b-0 — Prévision d'abord** (annexe, commitée avant le code, tirée de `oracle_ops`/`scenarios` du binaire) : 476 `0xA2 [0, 960, 160, 48]`
   → un créneau de l'enregistrement 0, brut (62 914 560, 10 485 760, 3 145 729), animation 1 ; `0x92 [0, 0]` puis l'aura dessinée aux ticks
   0 à 222 et libérée au tick 223 ; `0x92 [0, 1]` appliqué avant 223 mises à jour la ranime en animation 1 ; la suite des animations de l'arc
   A2/A4 ; `0x91 [0]` à la fin libère le créneau. 391 : 5 créneaux à l'entrée, les cinq `0xA2` (pc 228, 236, 244, 252, 408) et les forces
-  (0, 50, 0), (0, 36, 0), (0, 100, 0), (0, 50, 0), (0, 50, 0) ; réserve finale de 10 créneaux. 162 : 7 + 11 = 18 créneaux, l'enregistrement 5
-  en porte 12. 135 : `0xA0 [0, −72, 0, 0]` x 468 → 396, `[0, 0, 8, 0]` y 376 → 384. 10 : un créneau à l'entrée (enregistrement 4),
+  (0, 50, 0), (0, 36, 0), (0, 100, 0), (0, 50, 0), (0, 50, 0) ; réserve finale de 10 créneaux : **chacun avec (enregistrement, x, y, z)**, les
+  créneaux 0 à 4 toujours en (996, 504, 0), (996, 600, 0), (996, 696, 0), (996, 792, 0), (1020, 792, 0), les créneaux 5 à 9 créés par les cinq
+  `0xA2` (enregistrements 3, 4, 0, 1, 2) à leurs positions. 162 : 7 + 11 = 18 créneaux, l'enregistrement 5 en porte 12, **chacun à sa
+  position**. Une `0xA3` sans entité trouvée laisse la réserve inchangée. Toutes ces valeurs sont calculées par un script de l'annexe
+  (`g3b-golden.tsv`), depuis les programmes réels et le modèle validé sur le binaire (`fxpool.py`, `oracle_ops`), jamais recopiées à la main. 135 : `0xA0 [0, −72, 0, 0]` x 468 → 396, `[0, 0, 8, 0]` y 376 → 384. 10 : un créneau à l'entrée (enregistrement 4),
   `0x92 [0, 1]` @2864 (le rocher : 62 images puis fin). Une image de deux ticks avec une opération d'entité au tick 1 : le même état qu'à un
-  tick par image.
+  tick par image. Trois cas de file : (a) une `0xA2` puis une boîte qui pose `0x40` au même tick : le créneau existe, figé et lisible
+  (animation non avancée) avant la fermeture de la boîte ; (b) une `0x90` au tick qui lance un départ de warp : le créneau existe pendant
+  le départ ; (c) la file est vide après chaque `Update`.
 - **G3b-1 — Tests d'abord** (les valeurs ci-dessus, rouges sur le code d'aujourd'hui où les opcodes sont sautés) ; les lignes de la liste
   fermée, l'audit et les arcs **dans le même commit que les gestionnaires** (convention du plan) ; **G3b-2 — Code**, ADR ; **G3b-3 —
   Vérification**.
