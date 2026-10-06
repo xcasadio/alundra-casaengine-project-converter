@@ -1,0 +1,152 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Alundra.Scripts;
+using Xunit;
+
+namespace Alundra.Tests;
+
+/// <summary>O-E19-77 COUNTER-CHECK probe (physical scratch copy only, never in the repository). The real AlundraWorldProxy.Update,
+/// elapsed = FixedTickSeconds (exactly one logic tick per frame, asserted), the physical word of sample s published as LastPadState
+/// before frame s. Writes one row per tick (full state, not only changes): s, flag6, sel6, flag4, sel4, post, menuOpen, sounds.</summary>
+[Collection("O77Probe")]
+public sealed class O77VerifyProbeTests : IDisposable
+{
+    private const string OutDir = @"C:\Users\casad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\night-o77-disc\verify";
+    private const int P = 5;
+
+    private sealed class Rec : IAlundraSoundPlayer
+    {
+        public readonly List<int> Requests = new();
+        public void PlaySfx(int sfxId) => Requests.Add(sfxId);
+        public void RemixVoice(int sfxId, int left, int right) { }
+        public void FlushFrameSounds() { }
+        public void StopAllSfx() { }
+    }
+
+    public O77VerifyProbeTests() => Reset();
+
+    public void Dispose() => Reset();
+
+    private static void Reset()
+    {
+        AlundraInventoryDirector.Instance.ResetForTests();
+        AlundraSubInventoryDirector.Instance.ResetForTests();
+        AlundraInventoryPostProcess.Instance.ResetForTests();
+        AlundraHudDirector.Instance.ResetForTests();
+        AlundraDialogueDirector.Instance.ResetForTests();
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
+        AlundraWarpDirector.Instance.ResetForTests();
+        AlundraScreenFadeDirector.Instance.ResetForTests();
+        AlundraMusicPlayer.Instance.ResetForTests();
+        AlundraBgmFadeDirector.Instance.ResetForTests();
+        AlundraEtcStringTable.ResetForTests();
+    }
+
+    private static IEnumerable<string> Run(string name, Dictionary<int, uint> presses, int frames)
+    {
+        Reset();
+        var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
+        var proxy = new AlundraWorldProxy();
+        proxy.InitializeWithWorld(world);
+        proxy.PlayerEntity = new AlundraEntityScriptProxy();
+        var rec = new Rec();
+        var tables = ItemTablesFixture.LoadReal();
+        AlundraInventoryDirector.Instance.AttachToWorld(proxy.GameState, tables, rec);
+        AlundraSubInventoryDirector.Instance.AttachToWorld(proxy.GameState, tables, rec);
+        var inv = AlundraInventoryDirector.Instance;
+        var sub = AlundraSubInventoryDirector.Instance;
+        var post = AlundraInventoryPostProcess.Instance;
+        uint prevWord = 0;
+        for (var f = 1; f <= P + frames; f++)
+        {
+            presses.TryGetValue(f - P, out var word);
+            proxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = word };
+            rec.Requests.Clear();
+            proxy.Update(AlundraScriptedMotion.FixedTickSeconds);
+
+            // one tick per frame: TickPad stepped exactly once (its edge equals word & ~previous word).
+            Assert.Equal(word, proxy.GameState.TickPad.ButtonsHold);
+            Assert.Equal(word & ~prevWord, proxy.GameState.TickPad.ButtonsJustPressed);
+            prevWord = word;
+            var menuOpen = (proxy.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0 ? 1 : 0;
+            yield return $"{name}\t{f - P}\t{inv.ForbiddenWarpFlag}\t{inv.SelectedSlotId}\t{sub.State}\t{sub.SelectedPosition}\t{post.State}\t{menuOpen}\t{string.Join(",", rec.Requests)}";
+        }
+    }
+
+    [Fact]
+    public void Probe_Schedules()
+    {
+        var path = Path.Combine(OutDir, "port-rows" + (Environment.GetEnvironmentVariable("O77MUT") ?? "") + ".tsv");
+        var rows = new List<string>();
+        foreach (var (name, presses, frames) in O77VerifySchedules.All())
+        {
+            rows.AddRange(Run(name, presses, frames).ToList());
+        }
+
+        File.WriteAllLines(path, rows);
+    }
+
+    /// <summary>Adjacent check: per tick, did the proxy reach the map-events pass (open Start at P, close Start at P+19)?</summary>
+    [Fact]
+    public void Probe_MapEventsWindow()
+    {
+        Reset();
+        var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
+        var proxy = new AlundraWorldProxy();
+        proxy.InitializeWithWorld(world);
+        proxy.PlayerEntity = new AlundraEntityScriptProxy();
+        var rec = new Rec();
+        var tables = ItemTablesFixture.LoadReal();
+        AlundraInventoryDirector.Instance.AttachToWorld(proxy.GameState, tables, rec);
+        AlundraSubInventoryDirector.Instance.AttachToWorld(proxy.GameState, tables, rec);
+        var rows = new List<string>();
+        for (var f = 1; f <= P + 45; f++)
+        {
+            var word = f - P == 0 || f - P == 19 ? AlundraPadState.Start : 0u;
+            proxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = word };
+            var before = AlundraWorldProxy.O77MapEventPasses;
+            proxy.Update(AlundraScriptedMotion.FixedTickSeconds);
+            var menuOpen = (proxy.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0 ? 1 : 0;
+            rows.Add($"{f - P}	{AlundraWorldProxy.O77MapEventPasses - before}	{menuOpen}");
+        }
+
+        File.WriteAllLines(Path.Combine(OutDir, "port-mapevents.tsv"), rows);
+    }
+}
+
+internal static class O77VerifySchedules
+{
+    public static IEnumerable<(string Name, Dictionary<int, uint> Presses, int Frames)> All()
+    {
+        const uint st = AlundraPadState.Start, dn = AlundraPadState.Down, up = AlundraPadState.Up, rt = AlundraPadState.Right,
+            lf = AlundraPadState.Left, l1 = AlundraPadState.L1, tri = AlundraPadState.Triangle, r2 = AlundraPadState.R2, l2 = AlundraPadState.L2;
+        yield return ("A_down18", new() { [0] = st, [18] = dn }, 30);
+        yield return ("B_down19", new() { [0] = st, [18 + 1] = dn }, 30);
+        yield return ("C_close19_start37", new() { [0] = st, [19] = st, [37] = st }, 60);
+        yield return ("D_close19_start38", new() { [0] = st, [19] = st, [38] = st }, 60);
+        yield return ("E_sub_right55", new() { [0] = st, [19] = l1, [55] = rt }, 64);
+        yield return ("F_sub_right56", new() { [0] = st, [19] = l1, [56] = rt }, 64);
+        yield return ("G_back_down94", new() { [0] = st, [19] = l1, [56] = l1, [94] = dn }, 100);
+        var hold = new Dictionary<int, uint> { [0] = st };
+        for (var k = 10; k <= 45; k++)
+        {
+            hold[k] = dn;
+        }
+
+        yield return ("H_down_held", hold, 50);
+        // two schedules NOT in the discovery's 21:
+        yield return ("I_sub_up56_left57_tri58_l2_reopen", new() { [0] = st, [19] = l1, [56] = up, [57] = lf, [58] = tri, [76] = l2, [77] = l2 | dn }, 100);
+        var hold2 = new Dictionary<int, uint> { [0] = r2, [19] = tri };
+        for (var k = 30; k <= 70; k++)
+        {
+            hold2[k] = st | lf; // Start held across the close completion: only its edge reopens, repeat must not
+        }
+
+        yield return ("J_tri_close_start_held", hold2, 80);
+    }
+}

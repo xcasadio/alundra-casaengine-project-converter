@@ -1,0 +1,11 @@
+EQUAL     A_down18                             35 samples compared, binary state/sound changes at samples [0, 1, 18]
+EQUAL     B_down19                             35 samples compared, binary state/sound changes at samples [0, 1, 18, 19, 20]
+EQUAL     C_close19_start37                    65 samples compared, binary state/sound changes at samples [0, 1, 18, 19, 20, 37]
+EQUAL     D_close19_start38                    65 samples compared, binary state/sound changes at samples [0, 1, 18, 19, 20, 37, 38, 39, 56]
+EQUAL     E_sub_right55                        69 samples compared, binary state/sound changes at samples [0, 1, 18, 19, 20, 37, 38, 55]
+EQUAL     F_sub_right56                        69 samples compared, binary state/sound changes at samples [0, 1, 18, 19, 20, 37, 38, 55, 56, 57]
+EQUAL     G_back_down94                        105 samples compared, binary state/sound changes at samples [0, 1, 18, 19, 20, 37, 38, 55, 56, 57, 74, 75, 93, 94, 95]
+EQUAL     H_down_held                          55 samples compared, binary state/sound changes at samples [0, 1, 18, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46]
+EQUAL     I_sub_up56_left57_tri58_l2_reopen    105 samples compared, binary state/sound changes at samples [0, 1, 18, 19, 20, 37, 38, 55, 56, 57, 58, 59, 76]
+EQUAL     J_tri_close_start_held               85 samples compared, binary state/sound changes at samples [0, 1, 18, 19, 20, 37]
+10 schedules, 0 different

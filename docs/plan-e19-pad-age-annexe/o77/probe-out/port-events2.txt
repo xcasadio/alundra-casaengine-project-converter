@@ -1,0 +1,293 @@
+== open only  presses(rel P): +0:0x800
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+== open + Down at P+18  presses(rel P): +0:0x800, +18:0x4000
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+   tick P+19 (TickPad sample P+19): snd1
+   tick P+19 (TickPad sample P+19): sel6 0->6
+== open + Down at P+19  presses(rel P): +0:0x800, +19:0x4000
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+   tick P+20 (TickPad sample P+20): snd1
+   tick P+20 (TickPad sample P+20): sel6 0->6
+== open + Down at P+20  presses(rel P): +0:0x800, +20:0x4000
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+   tick P+21 (TickPad sample P+21): snd1
+   tick P+21 (TickPad sample P+21): sel6 0->6
+== open + Start at P+19 (close)  presses(rel P): +0:0x800, +19:0x800
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+   tick P+20 (TickPad sample P+20): snd5
+   tick P+20 (TickPad sample P+20): flag6 1->3
+   tick P+38 (TickPad sample P+38): flag6 3->0
+   tick P+38 (TickPad sample P+38): menuOpen 1->0
+   tick P+38 (TickPad sample P+38): drawn6 1->0
+== open, close at P+19, Start again at P+37  presses(rel P): +0:0x800, +19:0x800, +37:0x800
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+   tick P+20 (TickPad sample P+20): snd5
+   tick P+20 (TickPad sample P+20): flag6 1->3
+   tick P+38 (TickPad sample P+38): flag6 3->0
+   tick P+38 (TickPad sample P+38): menuOpen 1->0
+   tick P+38 (TickPad sample P+38): drawn6 1->0
+== open, close at P+19, Start again at P+38  presses(rel P): +0:0x800, +19:0x800, +38:0x800
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+   tick P+20 (TickPad sample P+20): snd5
+   tick P+20 (TickPad sample P+20): flag6 1->3
+   tick P+38 (TickPad sample P+38): flag6 3->0
+   tick P+38 (TickPad sample P+38): menuOpen 1->0
+   tick P+38 (TickPad sample P+38): drawn6 1->0
+== open, Triangle at P+19  presses(rel P): +0:0x800, +19:0x10
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+   tick P+20 (TickPad sample P+20): snd5
+   tick P+20 (TickPad sample P+20): flag6 1->3
+   tick P+38 (TickPad sample P+38): flag6 3->0
+   tick P+38 (TickPad sample P+38): menuOpen 1->0
+   tick P+38 (TickPad sample P+38): drawn6 1->0
+== open, L1 at P+19 (to sub-inventory)  presses(rel P): +0:0x800, +19:0x4
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+   tick P+20 (TickPad sample P+20): snd5
+   tick P+20 (TickPad sample P+20): flag6 1->3
+   tick P+20 (TickPad sample P+20): post 0->1
+   tick P+38 (TickPad sample P+38): snd4
+   tick P+38 (TickPad sample P+38): flag6 3->0
+   tick P+38 (TickPad sample P+38): flag4 0->5
+   tick P+38 (TickPad sample P+38): post 1->0
+   tick P+38 (TickPad sample P+38): drawn6 1->0
+   tick P+39 (TickPad sample P+39): drawn4 0->1
+   tick P+56 (TickPad sample P+56): flag4 5->1
+== open, L1 at P+19, Right at P+55  presses(rel P): +0:0x800, +19:0x4, +55:0x2000
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+   tick P+20 (TickPad sample P+20): snd5
+   tick P+20 (TickPad sample P+20): flag6 1->3
+   tick P+20 (TickPad sample P+20): post 0->1
+   tick P+38 (TickPad sample P+38): snd4
+   tick P+38 (TickPad sample P+38): flag6 3->0
+   tick P+38 (TickPad sample P+38): flag4 0->5
+   tick P+38 (TickPad sample P+38): post 1->0
+   tick P+38 (TickPad sample P+38): drawn6 1->0
+   tick P+39 (TickPad sample P+39): drawn4 0->1
+   tick P+56 (TickPad sample P+56): flag4 5->1
+== open, L1 at P+19, Right at P+56  presses(rel P): +0:0x800, +19:0x4, +56:0x2000
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+   tick P+20 (TickPad sample P+20): snd5
+   tick P+20 (TickPad sample P+20): flag6 1->3
+   tick P+20 (TickPad sample P+20): post 0->1
+   tick P+38 (TickPad sample P+38): snd4
+   tick P+38 (TickPad sample P+38): flag6 3->0
+   tick P+38 (TickPad sample P+38): flag4 0->5
+   tick P+38 (TickPad sample P+38): post 1->0
+   tick P+38 (TickPad sample P+38): drawn6 1->0
+   tick P+39 (TickPad sample P+39): drawn4 0->1
+   tick P+56 (TickPad sample P+56): flag4 5->1
+   tick P+57 (TickPad sample P+57): snd1
+   tick P+57 (TickPad sample P+57): sel4 0->2
+== open, L1 at P+19, Right at P+57  presses(rel P): +0:0x800, +19:0x4, +57:0x2000
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+   tick P+20 (TickPad sample P+20): snd5
+   tick P+20 (TickPad sample P+20): flag6 1->3
+   tick P+20 (TickPad sample P+20): post 0->1
+   tick P+38 (TickPad sample P+38): snd4
+   tick P+38 (TickPad sample P+38): flag6 3->0
+   tick P+38 (TickPad sample P+38): flag4 0->5
+   tick P+38 (TickPad sample P+38): post 1->0
+   tick P+38 (TickPad sample P+38): drawn6 1->0
+   tick P+39 (TickPad sample P+39): drawn4 0->1
+   tick P+56 (TickPad sample P+56): flag4 5->1
+   tick P+58 (TickPad sample P+58): snd1
+   tick P+58 (TickPad sample P+58): sel4 0->2
+== open, L1 at P+19, Start at P+56 (close sub)  presses(rel P): +0:0x800, +19:0x4, +56:0x800
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+   tick P+20 (TickPad sample P+20): snd5
+   tick P+20 (TickPad sample P+20): flag6 1->3
+   tick P+20 (TickPad sample P+20): post 0->1
+   tick P+38 (TickPad sample P+38): snd4
+   tick P+38 (TickPad sample P+38): flag6 3->0
+   tick P+38 (TickPad sample P+38): flag4 0->5
+   tick P+38 (TickPad sample P+38): post 1->0
+   tick P+38 (TickPad sample P+38): drawn6 1->0
+   tick P+39 (TickPad sample P+39): drawn4 0->1
+   tick P+56 (TickPad sample P+56): flag4 5->1
+   tick P+57 (TickPad sample P+57): snd5
+   tick P+57 (TickPad sample P+57): flag4 1->3
+   tick P+75 (TickPad sample P+75): flag4 3->0
+   tick P+75 (TickPad sample P+75): menuOpen 1->0
+   tick P+75 (TickPad sample P+75): drawn4 1->0
+== open, L1 at P+19, L1 at P+56 (back to main)  presses(rel P): +0:0x800, +19:0x4, +56:0x4
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+   tick P+20 (TickPad sample P+20): snd5
+   tick P+20 (TickPad sample P+20): flag6 1->3
+   tick P+20 (TickPad sample P+20): post 0->1
+   tick P+38 (TickPad sample P+38): snd4
+   tick P+38 (TickPad sample P+38): flag6 3->0
+   tick P+38 (TickPad sample P+38): flag4 0->5
+   tick P+38 (TickPad sample P+38): post 1->0
+   tick P+38 (TickPad sample P+38): drawn6 1->0
+   tick P+39 (TickPad sample P+39): drawn4 0->1
+   tick P+56 (TickPad sample P+56): flag4 5->1
+   tick P+57 (TickPad sample P+57): snd5
+   tick P+57 (TickPad sample P+57): flag4 1->3
+   tick P+57 (TickPad sample P+57): post 0->2
+   tick P+75 (TickPad sample P+75): snd4
+   tick P+75 (TickPad sample P+75): flag4 3->0
+   tick P+75 (TickPad sample P+75): post 2->0
+   tick P+75 (TickPad sample P+75): drawn4 1->0
+   tick P+76 (TickPad sample P+76): flag6 0->5
+   tick P+77 (TickPad sample P+77): drawn6 0->1
+   tick P+94 (TickPad sample P+94): flag6 5->1
+== open, L1 at P+19, L1 at P+56, Down at P+93  presses(rel P): +0:0x800, +19:0x4, +56:0x4, +93:0x4000
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+   tick P+20 (TickPad sample P+20): snd5
+   tick P+20 (TickPad sample P+20): flag6 1->3
+   tick P+20 (TickPad sample P+20): post 0->1
+   tick P+38 (TickPad sample P+38): snd4
+   tick P+38 (TickPad sample P+38): flag6 3->0
+   tick P+38 (TickPad sample P+38): flag4 0->5
+   tick P+38 (TickPad sample P+38): post 1->0
+   tick P+38 (TickPad sample P+38): drawn6 1->0
+   tick P+39 (TickPad sample P+39): drawn4 0->1
+   tick P+56 (TickPad sample P+56): flag4 5->1
+   tick P+57 (TickPad sample P+57): snd5
+   tick P+57 (TickPad sample P+57): flag4 1->3
+   tick P+57 (TickPad sample P+57): post 0->2
+   tick P+75 (TickPad sample P+75): snd4
+   tick P+75 (TickPad sample P+75): flag4 3->0
+   tick P+75 (TickPad sample P+75): post 2->0
+   tick P+75 (TickPad sample P+75): drawn4 1->0
+   tick P+76 (TickPad sample P+76): flag6 0->5
+   tick P+77 (TickPad sample P+77): drawn6 0->1
+   tick P+94 (TickPad sample P+94): flag6 5->1
+== open, L1 at P+19, L1 at P+56, Down at P+94  presses(rel P): +0:0x800, +19:0x4, +56:0x4, +94:0x4000
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+   tick P+20 (TickPad sample P+20): snd5
+   tick P+20 (TickPad sample P+20): flag6 1->3
+   tick P+20 (TickPad sample P+20): post 0->1
+   tick P+38 (TickPad sample P+38): snd4
+   tick P+38 (TickPad sample P+38): flag6 3->0
+   tick P+38 (TickPad sample P+38): flag4 0->5
+   tick P+38 (TickPad sample P+38): post 1->0
+   tick P+38 (TickPad sample P+38): drawn6 1->0
+   tick P+39 (TickPad sample P+39): drawn4 0->1
+   tick P+56 (TickPad sample P+56): flag4 5->1
+   tick P+57 (TickPad sample P+57): snd5
+   tick P+57 (TickPad sample P+57): flag4 1->3
+   tick P+57 (TickPad sample P+57): post 0->2
+   tick P+75 (TickPad sample P+75): snd4
+   tick P+75 (TickPad sample P+75): flag4 3->0
+   tick P+75 (TickPad sample P+75): post 2->0
+   tick P+75 (TickPad sample P+75): drawn4 1->0
+   tick P+76 (TickPad sample P+76): flag6 0->5
+   tick P+77 (TickPad sample P+77): drawn6 0->1
+   tick P+94 (TickPad sample P+94): flag6 5->1
+   tick P+95 (TickPad sample P+95): snd1
+   tick P+95 (TickPad sample P+95): sel6 0->6
+== open with L2 at P  presses(rel P): +0:0x1
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+== open with R2 at P  presses(rel P): +0:0x2
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+== Start+Select held at P (Select guard)  presses(rel P): +0:0x900
+== Triangle at P (does not open)  presses(rel P): +0:0x10
+== open, Down held P+10..P+45 (repeat)  presses(rel P): +0:0x800, +10:0x4000, +11:0x4000, +12:0x4000, +13:0x4000, +14:0x4000, +15:0x4000, +16:0x4000, +17:0x4000, +18:0x4000, +19:0x4000, +20:0x4000, +21:0x4000, +22:0x4000, +23:0x4000, +24:0x4000, +25:0x4000, +26:0x4000, +27:0x4000, +28:0x4000, +29:0x4000, +30:0x4000, +31:0x4000, +32:0x4000, +33:0x4000, +34:0x4000, +35:0x4000, +36:0x4000, +37:0x4000, +38:0x4000, +39:0x4000, +40:0x4000, +41:0x4000, +42:0x4000, +43:0x4000, +44:0x4000, +45:0x4000
+   tick P+0 (TickPad sample P+0): snd4
+   tick P+0 (TickPad sample P+0): flag6 0->5
+   tick P+0 (TickPad sample P+0): menuOpen 0->1
+   tick P+1 (TickPad sample P+1): drawn6 0->1
+   tick P+18 (TickPad sample P+18): flag6 5->1
+   tick P+32 (TickPad sample P+32): snd1
+   tick P+32 (TickPad sample P+32): sel6 0->6
+   tick P+33 (TickPad sample P+33): snd1
+   tick P+33 (TickPad sample P+33): sel6 6->12
+   tick P+34 (TickPad sample P+34): snd1
+   tick P+34 (TickPad sample P+34): sel6 12->18
+   tick P+35 (TickPad sample P+35): snd1
+   tick P+35 (TickPad sample P+35): sel6 18->0
+   tick P+36 (TickPad sample P+36): snd1
+   tick P+36 (TickPad sample P+36): sel6 0->6
+   tick P+37 (TickPad sample P+37): snd1
+   tick P+37 (TickPad sample P+37): sel6 6->12
+   tick P+38 (TickPad sample P+38): snd1
+   tick P+38 (TickPad sample P+38): sel6 12->18
+   tick P+39 (TickPad sample P+39): snd1
+   tick P+39 (TickPad sample P+39): sel6 18->0
+   tick P+40 (TickPad sample P+40): snd1
+   tick P+40 (TickPad sample P+40): sel6 0->6
+   tick P+41 (TickPad sample P+41): snd1
+   tick P+41 (TickPad sample P+41): sel6 6->12
+   tick P+42 (TickPad sample P+42): snd1
+   tick P+42 (TickPad sample P+42): sel6 12->18
+   tick P+43 (TickPad sample P+43): snd1
+   tick P+43 (TickPad sample P+43): sel6 18->0
+   tick P+44 (TickPad sample P+44): snd1
+   tick P+44 (TickPad sample P+44): sel6 0->6
+   tick P+45 (TickPad sample P+45): snd1
+   tick P+45 (TickPad sample P+45): sel6 6->12
+   tick P+46 (TickPad sample P+46): snd1
+   tick P+46 (TickPad sample P+46): sel6 12->18

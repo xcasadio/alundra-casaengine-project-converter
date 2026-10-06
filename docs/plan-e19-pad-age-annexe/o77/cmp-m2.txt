@@ -1,0 +1,54 @@
+EQUAL     open only  (4 events)
+DIFFERENT open + Down at P+18
+    binary only: []
+    port only:   [(19, 'sel6 0->6'), (19, 'snd1')]
+DIFFERENT open + Down at P+19
+    binary only: [(19, 'sel6 0->6'), (19, 'snd1')]
+    port only:   [(20, 'sel6 0->6'), (20, 'snd1')]
+DIFFERENT open + Down at P+20
+    binary only: [(20, 'sel6 0->6'), (20, 'snd1')]
+    port only:   [(21, 'sel6 0->6'), (21, 'snd1')]
+DIFFERENT open + Start at P+19 (close)
+    binary only: [(19, 'flag6 1->3'), (19, 'snd5'), (37, 'MenuOpen off'), (37, 'flag6 3->0')]
+    port only:   [(20, 'flag6 1->3'), (20, 'snd5'), (38, 'MenuOpen off'), (38, 'flag6 3->0')]
+DIFFERENT open, close at P+19, Start again at P+37
+    binary only: [(19, 'flag6 1->3'), (19, 'snd5'), (37, 'MenuOpen off'), (37, 'flag6 3->0')]
+    port only:   [(20, 'flag6 1->3'), (20, 'snd5'), (38, 'MenuOpen off'), (38, 'flag6 3->0')]
+DIFFERENT open, close at P+19, Start again at P+38
+    binary only: [(19, 'flag6 1->3'), (19, 'snd5'), (37, 'MenuOpen off'), (37, 'flag6 3->0'), (38, 'MenuOpen on'), (38, 'flag6 0->5'), (38, 'snd4')]
+    port only:   [(20, 'flag6 1->3'), (20, 'snd5'), (38, 'MenuOpen off'), (38, 'flag6 3->0')]
+DIFFERENT open, Triangle at P+19
+    binary only: [(19, 'flag6 1->3'), (19, 'snd5'), (37, 'MenuOpen off'), (37, 'flag6 3->0')]
+    port only:   [(20, 'flag6 1->3'), (20, 'snd5'), (38, 'MenuOpen off'), (38, 'flag6 3->0')]
+DIFFERENT open, L1 at P+19 (to sub-inventory)
+    binary only: [(19, 'flag6 1->3'), (19, 'post 0->1'), (19, 'snd5'), (37, 'flag4 0->5'), (37, 'flag6 3->0'), (37, 'post 1->0'), (37, 'snd4'), (55, 'flag4 5->1')]
+    port only:   [(20, 'flag6 1->3'), (20, 'post 0->1'), (20, 'snd5'), (38, 'flag4 0->5'), (38, 'flag6 3->0'), (38, 'post 1->0'), (38, 'snd4'), (56, 'flag4 5->1')]
+DIFFERENT open, L1 at P+19, Right at P+55
+    binary only: [(19, 'flag6 1->3'), (19, 'post 0->1'), (19, 'snd5'), (37, 'flag4 0->5'), (37, 'flag6 3->0'), (37, 'post 1->0'), (37, 'snd4'), (55, 'flag4 5->1')]
+    port only:   [(20, 'flag6 1->3'), (20, 'post 0->1'), (20, 'snd5'), (38, 'flag4 0->5'), (38, 'flag6 3->0'), (38, 'post 1->0'), (38, 'snd4'), (56, 'flag4 5->1')]
+DIFFERENT open, L1 at P+19, Right at P+56
+    binary only: [(19, 'flag6 1->3'), (19, 'post 0->1'), (19, 'snd5'), (37, 'flag4 0->5'), (37, 'flag6 3->0'), (37, 'post 1->0'), (37, 'snd4'), (55, 'flag4 5->1'), (56, 'sel4 0->2'), (56, 'snd1')]
+    port only:   [(20, 'flag6 1->3'), (20, 'post 0->1'), (20, 'snd5'), (38, 'flag4 0->5'), (38, 'flag6 3->0'), (38, 'post 1->0'), (38, 'snd4'), (56, 'flag4 5->1'), (57, 'sel4 0->2'), (57, 'snd1')]
+DIFFERENT open, L1 at P+19, Right at P+57
+    binary only: [(19, 'flag6 1->3'), (19, 'post 0->1'), (19, 'snd5'), (37, 'flag4 0->5'), (37, 'flag6 3->0'), (37, 'post 1->0'), (37, 'snd4'), (55, 'flag4 5->1'), (57, 'sel4 0->2'), (57, 'snd1')]
+    port only:   [(20, 'flag6 1->3'), (20, 'post 0->1'), (20, 'snd5'), (38, 'flag4 0->5'), (38, 'flag6 3->0'), (38, 'post 1->0'), (38, 'snd4'), (56, 'flag4 5->1'), (58, 'sel4 0->2'), (58, 'snd1')]
+DIFFERENT open, L1 at P+19, Start at P+56 (close sub)
+    binary only: [(19, 'flag6 1->3'), (19, 'post 0->1'), (19, 'snd5'), (37, 'flag4 0->5'), (37, 'flag6 3->0'), (37, 'post 1->0'), (37, 'snd4'), (55, 'flag4 5->1'), (56, 'flag4 1->3'), (56, 'snd5'), (74, 'MenuOpen off'), (74, 'flag4 3->0')]
+    port only:   [(20, 'flag6 1->3'), (20, 'post 0->1'), (20, 'snd5'), (38, 'flag4 0->5'), (38, 'flag6 3->0'), (38, 'post 1->0'), (38, 'snd4'), (56, 'flag4 5->1'), (57, 'flag4 1->3'), (57, 'snd5'), (75, 'MenuOpen off'), (75, 'flag4 3->0')]
+DIFFERENT open, L1 at P+19, L1 at P+56 (back to main)
+    binary only: [(19, 'flag6 1->3'), (19, 'post 0->1'), (19, 'snd5'), (37, 'flag4 0->5'), (37, 'flag6 3->0'), (37, 'post 1->0'), (37, 'snd4'), (55, 'flag4 5->1'), (56, 'flag4 1->3'), (56, 'post 0->2'), (56, 'snd5'), (74, 'flag4 3->0'), (74, 'post 2->0'), (74, 'snd4'), (75, 'flag6 0->5'), (93, 'flag6 5->1')]
+    port only:   [(20, 'flag6 1->3'), (20, 'post 0->1'), (20, 'snd5'), (38, 'flag4 0->5'), (38, 'flag6 3->0'), (38, 'post 1->0'), (38, 'snd4'), (56, 'flag4 5->1'), (57, 'flag4 1->3'), (57, 'post 0->2'), (57, 'snd5'), (75, 'flag4 3->0'), (75, 'post 2->0'), (75, 'snd4'), (76, 'flag6 0->5'), (94, 'flag6 5->1')]
+DIFFERENT open, L1 at P+19, L1 at P+56, Down at P+93
+    binary only: [(19, 'flag6 1->3'), (19, 'post 0->1'), (19, 'snd5'), (37, 'flag4 0->5'), (37, 'flag6 3->0'), (37, 'post 1->0'), (37, 'snd4'), (55, 'flag4 5->1'), (56, 'flag4 1->3'), (56, 'post 0->2'), (56, 'snd5'), (74, 'flag4 3->0'), (74, 'post 2->0'), (74, 'snd4'), (75, 'flag6 0->5'), (93, 'flag6 5->1')]
+    port only:   [(20, 'flag6 1->3'), (20, 'post 0->1'), (20, 'snd5'), (38, 'flag4 0->5'), (38, 'flag6 3->0'), (38, 'post 1->0'), (38, 'snd4'), (56, 'flag4 5->1'), (57, 'flag4 1->3'), (57, 'post 0->2'), (57, 'snd5'), (75, 'flag4 3->0'), (75, 'post 2->0'), (75, 'snd4'), (76, 'flag6 0->5'), (94, 'flag6 5->1')]
+DIFFERENT open, L1 at P+19, L1 at P+56, Down at P+94
+    binary only: [(19, 'flag6 1->3'), (19, 'post 0->1'), (19, 'snd5'), (37, 'flag4 0->5'), (37, 'flag6 3->0'), (37, 'post 1->0'), (37, 'snd4'), (55, 'flag4 5->1'), (56, 'flag4 1->3'), (56, 'post 0->2'), (56, 'snd5'), (74, 'flag4 3->0'), (74, 'post 2->0'), (74, 'snd4'), (75, 'flag6 0->5'), (93, 'flag6 5->1'), (94, 'sel6 0->6'), (94, 'snd1')]
+    port only:   [(20, 'flag6 1->3'), (20, 'post 0->1'), (20, 'snd5'), (38, 'flag4 0->5'), (38, 'flag6 3->0'), (38, 'post 1->0'), (38, 'snd4'), (56, 'flag4 5->1'), (57, 'flag4 1->3'), (57, 'post 0->2'), (57, 'snd5'), (75, 'flag4 3->0'), (75, 'post 2->0'), (75, 'snd4'), (76, 'flag6 0->5'), (94, 'flag6 5->1'), (95, 'sel6 0->6'), (95, 'snd1')]
+EQUAL     open with L2 at P  (4 events)
+EQUAL     open with R2 at P  (4 events)
+EQUAL     Start+Select held at P (Select guard)  (0 events)
+EQUAL     Triangle at P (does not open)  (0 events)
+DIFFERENT open, Down held P+10..P+45 (repeat)
+    binary only: [(31, 'sel6 0->6'), (31, 'snd1'), (32, 'sel6 6->12'), (33, 'sel6 12->18'), (34, 'sel6 18->0'), (35, 'sel6 0->6'), (36, 'sel6 6->12'), (37, 'sel6 12->18'), (38, 'sel6 18->0'), (39, 'sel6 0->6'), (40, 'sel6 6->12'), (41, 'sel6 12->18'), (42, 'sel6 18->0'), (43, 'sel6 0->6'), (44, 'sel6 6->12'), (45, 'sel6 12->18')]
+    port only:   [(32, 'sel6 0->6'), (33, 'sel6 6->12'), (34, 'sel6 12->18'), (35, 'sel6 18->0'), (36, 'sel6 0->6'), (37, 'sel6 6->12'), (38, 'sel6 12->18'), (39, 'sel6 18->0'), (40, 'sel6 0->6'), (41, 'sel6 6->12'), (42, 'sel6 12->18'), (43, 'sel6 18->0'), (44, 'sel6 0->6'), (45, 'sel6 6->12'), (46, 'sel6 12->18'), (46, 'snd1')]
+21 schedules, 16 different

@@ -1,0 +1,148 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Alundra.Scripts;
+using Xunit;
+
+namespace Alundra.Tests;
+
+/// <summary>O-E19-77 discovery probe (scratch copy only, never in the repository): the REAL AlundraWorldProxy.Update, one logic
+/// tick per frame (0.02 s), the physical pad word of frame f published as LastPadState before frame f's Update (as the hero's
+/// own script does). Records, after each frame, the inventory directors' state and the sounds, and writes events relative to P.</summary>
+[Collection("O77Probe")]
+public sealed class O77InventoryPadAgeProbeTests : IDisposable
+{
+    private const string OutDir = @"C:\Users\casad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\night-o77-disc\probe-out";
+    private const int P = 5;
+
+    private sealed class Rec : IAlundraSoundPlayer
+    {
+        public readonly List<int> Requests = new();
+        public void PlaySfx(int sfxId) => Requests.Add(sfxId);
+        public void RemixVoice(int sfxId, int left, int right) { }
+        public void FlushFrameSounds() { }
+        public void StopAllSfx() { }
+    }
+
+    public O77InventoryPadAgeProbeTests() => Reset();
+
+    public void Dispose() => Reset();
+
+    private static void Reset()
+    {
+        AlundraInventoryDirector.Instance.ResetForTests();
+        AlundraSubInventoryDirector.Instance.ResetForTests();
+        AlundraInventoryPostProcess.Instance.ResetForTests();
+        AlundraHudDirector.Instance.ResetForTests();
+        AlundraDialogueDirector.Instance.ResetForTests();
+        AlundraGameState.Instance.ResetForTests();
+        SpriteRecordCatalog.ResetForTests();
+        AlundraSoundBank.ResetForTests();
+        AlundraWarpDirector.Instance.ResetForTests();
+        AlundraScreenFadeDirector.Instance.ResetForTests();
+        AlundraMusicPlayer.Instance.ResetForTests();
+        AlundraBgmFadeDirector.Instance.ResetForTests();
+        AlundraEtcStringTable.ResetForTests();
+    }
+
+    private static List<string> Run(Dictionary<int, uint> presses, int frames)
+    {
+        Reset();
+        var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
+        var proxy = new AlundraWorldProxy();
+        proxy.InitializeWithWorld(world);
+        proxy.PlayerEntity = new AlundraEntityScriptProxy();
+        var rec = new Rec();
+        var tables = ItemTablesFixture.LoadReal();
+        AlundraInventoryDirector.Instance.AttachToWorld(proxy.GameState, tables, rec);
+        AlundraSubInventoryDirector.Instance.AttachToWorld(proxy.GameState, tables, rec);
+
+        var inv = AlundraInventoryDirector.Instance;
+        var sub = AlundraSubInventoryDirector.Instance;
+        var post = AlundraInventoryPostProcess.Instance;
+        var events = new List<string>();
+        var prev = new Dictionary<string, long> { ["flag6"] = 0, ["sel6"] = 0, ["flag4"] = 0, ["sel4"] = 0, ["post"] = 0, ["menuOpen"] = 0, ["drawn6"] = 0, ["drawn4"] = 0 };
+        for (var f = 1; f <= P + frames; f++)
+        {
+            presses.TryGetValue(f - P, out var word);
+            proxy.GameState.LastPadState = new AlundraPadState { ButtonsHold = word };
+            rec.Requests.Clear();
+            proxy.Update(0.02f);
+            foreach (var s in rec.Requests)
+            {
+                events.Add($"tick P{f - P:+0;-0} (TickPad sample P{f - P:+0;-0}): snd{s}");
+            }
+
+            var now = new Dictionary<string, long>
+            {
+                ["flag6"] = inv.ForbiddenWarpFlag,
+                ["sel6"] = inv.SelectedSlotId,
+                ["flag4"] = sub.State,
+                ["sel4"] = sub.SelectedPosition,
+                ["post"] = post.State,
+                ["menuOpen"] = (proxy.GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.MenuOpen) != 0 ? 1 : 0,
+                ["drawn6"] = inv.IsDrawn ? 1 : 0,
+                ["drawn4"] = sub.IsDrawn ? 1 : 0,
+            };
+            foreach (var k in now.Keys.Where(k => now[k] != prev[k]))
+            {
+                events.Add($"tick P{f - P:+0;-0} (TickPad sample P{f - P:+0;-0}): {k} {prev[k]}->{now[k]}");
+            }
+
+            prev = now;
+        }
+
+        return events;
+    }
+
+    private static void Show(string name, Dictionary<int, uint> presses, int frames)
+    {
+        var lines = new List<string> { $"== {name}  presses(rel P): " + string.Join(", ", presses.OrderBy(kv => kv.Key).Select(kv => $"{kv.Key:+0;-0}:0x{kv.Value:x}")) };
+        lines.AddRange(Run(presses, frames).Select(l => "   " + l));
+        Directory.CreateDirectory(OutDir);
+        File.AppendAllLines(Path.Combine(OutDir, "port-events" + (Environment.GetEnvironmentVariable("O77MUT") ?? "") + ".txt"), lines);
+    }
+
+    [Fact]
+    public void Probe_AllSchedules()
+    {
+        const uint start = AlundraPadState.Start, down = AlundraPadState.Down, right = AlundraPadState.Right, l1 = AlundraPadState.L1, tri = AlundraPadState.Triangle;
+        File.Delete(Path.Combine(OutDir, "port-events" + (Environment.GetEnvironmentVariable("O77MUT") ?? "") + ".txt"));
+        Show("open only", new() { [0] = start }, 30);
+        foreach (var q in new[] { 18, 19, 20 })
+        {
+            Show($"open + Down at P+{q}", new() { [0] = start, [q] = down }, 30);
+        }
+
+        Show("open + Start at P+19 (close)", new() { [0] = start, [19] = start }, 60);
+        Show("open, close at P+19, Start again at P+37", new() { [0] = start, [19] = start, [37] = start }, 70);
+        Show("open, close at P+19, Start again at P+38", new() { [0] = start, [19] = start, [38] = start }, 70);
+        Show("open, Triangle at P+19", new() { [0] = start, [19] = tri }, 60);
+        Show("open, L1 at P+19 (to sub-inventory)", new() { [0] = start, [19] = l1 }, 60);
+        foreach (var q in new[] { 55, 56, 57 })
+        {
+            Show($"open, L1 at P+19, Right at P+{q}", new() { [0] = start, [19] = l1, [q] = right }, 62);
+        }
+
+        Show("open, L1 at P+19, Start at P+56 (close sub)", new() { [0] = start, [19] = l1, [56] = start }, 80);
+        Show("open, L1 at P+19, L1 at P+56 (back to main)", new() { [0] = start, [19] = l1, [56] = l1 }, 120);
+        foreach (var q in new[] { 93, 94 })
+        {
+            Show($"open, L1 at P+19, L1 at P+56, Down at P+{q}", new() { [0] = start, [19] = l1, [56] = l1, [q] = down }, 100);
+        }
+
+        Show("open with L2 at P", new() { [0] = AlundraPadState.L2 }, 22);
+        Show("open with R2 at P", new() { [0] = AlundraPadState.R2 }, 22);
+        Show("Start+Select held at P (Select guard)", new() { [0] = start | AlundraPadState.Select }, 6);
+        Show("Triangle at P (does not open)", new() { [0] = tri }, 6);
+        var hold = new Dictionary<int, uint> { [0] = start };
+        for (var k = 10; k <= 45; k++)
+        {
+            hold[k] = down;
+        }
+
+        Show("open, Down held P+10..P+45 (repeat)", hold, 50);
+    }
+}

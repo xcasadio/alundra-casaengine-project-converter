@@ -18,4 +18,5 @@ Plan: `docs/plan-e19-opcodes.md`, section "E19.f3d".
   - cite the anchor text `var (screenPressed, screenInterval) = _choicePadOfTick[tick];`, not a line number (G3c edits the same file).
   - the main inventory (slot 6) and the sub-inventory (slot 4, `0x80053328`) also read their pad words in `RenderScene` (one sample
     old) while the port reads the current tick: a separate open point, not part of f3d.
+    Closed on 2026-10-07 as "no gap" (see `o77/README.md`); the frame-order difference it revealed is open point O-E19-78.
 - The scripts read the game binary through absolute paths of the session scratchpad and of the author's machine: adapt them first.
