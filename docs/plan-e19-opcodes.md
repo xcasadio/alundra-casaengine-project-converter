@@ -9322,7 +9322,7 @@ Déclencheur de risque : rendu de jeu nouveau et preuve au pixel (relecture et v
   posé, caméra non résolue (aucune élimination). **En pause** : une nouvelle relecture seulement sur décision de l'auteur. G2e et
   G3d, READY, ne dépendent pas de G3c et continuent.
 
-###### E19.g G3d — Créateurs natifs et vase de vie `0x82 0x53` (DLL) ⏳ (découverte de nuit du 2026-10-06 faite et contre-vérifiée ; O-E19-39 établi ; planifiée le 2026-10-06 ; relecture n°1 : READY (faits), REVISE (exécution : contrôle de la prévision), révisée ; relecture n°2 READY (deux angles))
+###### E19.g G3d — Créateurs natifs et vase de vie `0x82 0x53` (DLL) 🧪 (faite le 2026-10-07 (`0c98bf4` tests, `73a3414` vase et ADR-0048, `615d610` modes 1 et 3), vérification à faire ; découverte de nuit du 2026-10-06 faite et contre-vérifiée ; O-E19-39 établi ; planifiée le 2026-10-06 ; relecture n°1 : READY (faits), REVISE (exécution : contrôle de la prévision), révisée ; relecture n°2 READY (deux angles))
 
 DLL seule (aucun export : l'effet global 14 est exporté) ; après G3a et G3b ; ne dépend pas de G3c (rien ne se voit avant G3c).
 Déclencheur de risque : comportement de script nouveau, vie du héros (relecture et vérificateur neuf). Faits et valeurs :
@@ -9375,11 +9375,11 @@ sur 8 cartes ; que ceux-là passent par ces appelants n'est pas confirmé (traje
   (G3D-R4) ; tests : nouveau `Alundra.Tests/AlundraNativeEffectTests.cs` (collection `AlundraRandomStaticStateCollection`) et
   `Alundra.Tests/AlundraItemAndMoneyOpcodesTests.cs` (`Give_0x82_Id0x53_AnswersOne_WritesNothing_AndTracesDegraded` réécrit, plus un test
   où `0x50` reste dégradé ; sans stage, il ne tire aucun nombre) ; ce plan (O-E19-39 réduit à `0x50`-`0x52` et `0x54`-`0x56`) ; l'ADR du parent et son index.
-- ⏳ **G3d-0 — Prévision** : déjà versionnée (`discovery/lib/g3d-golden.tsv` et `g3d-modes13.tsv`, générées par le vrai code dans
+- ✅ **G3d-0 — Prévision** : déjà versionnée (`discovery/lib/g3d-golden.tsv` et `g3d-modes13.tsv`, générées par le vrai code dans
   l'interpréteur ; la contre-vérification redonne le vrai gestionnaire sur 800 cas) ; les générateurs à interpréteur ne sont pas
   relancés (chemins absolus, fichiers de travail non versionnés) ; contrôle de reproductibilité : `python
   docs/plan-e19-g3d-annexe/discovery/lib/rules_check.py` (Python pur, lit `g3d-golden.tsv` à côté de lui) : 0 écart. Aucune copie.
-- ⏳ **G3d-1 — Tests d'abord** (rouges) : lignes `V`/`S`/`T`/`F` rejouées par le stage (`RunFrame(0)` pour `S`, `RunFrame(1)` pour `T`) ;
+- ✅ **G3d-1 — Tests d'abord** (rouges) : lignes `V`/`S`/`T`/`F` rejouées par le stage (`RunFrame(0)` pour `S`, `RunFrame(1)` pour `T`) ;
   `[0x82, 0x53, 0x1A, 9, 0xFF]` par le vrai exécuteur : `Result` 1, l'animation 9 prouve l'absence de suspension, stats 10/10 → 11/11, son
   `[0x31]` joué avant les effets, 12 créneaux, `(uint)AlundraRandom.RandomSeed` = `0xC5BF9705` depuis la graine par défaut ; plafond
   (HpMax 49 → 50/50 ; à 50 → 50/50, sauvegarde valide) ; HUD (après quelques ticks du directeur, le HpMax affiché atteint 11) ; garde sur
@@ -9387,7 +9387,17 @@ sur 8 cartes ; que ceux-là passent par ces appelants n'est pas confirmé (traje
   `Result` 1 dégradé) ; G3D-R4 contre `g3d-modes13.tsv`. Tout test qui tire dans `AlundraRandom` (l'exécuteur à 12 créneaux, la graine, les lignes
   `S`/`T`) vit dans `AlundraNativeEffectTests.cs` (collection `AlundraRandomStaticStateCollection`) ; les tests y lisent les tables
   de `discovery/lib/` par leur chemin dans le dépôt.
-- ⏳ **G3d-2 — Code** (G3D-R1 à R3, puis G3D-R4 en second commit), ADR du parent.
+- ✅ **G3d-2 — Code** (G3D-R1 à R3, puis G3D-R4 en second commit), ADR du parent.
+**Fait le 2026-10-07 (G3d-0 à G3d-2).** `rules_check.py` : 31 cas, 0 écart. `0c98bf4` (tests : 86 des 90 nouveaux rouges sur le code
+d'avant, les 4 verts sont des gardes vides ; le test du `0x53` réécrit, rouge ; les modes 1 et 3 par des bouts vides, 9 rouges sur 12),
+`73a3414` (G3D-R1 à R3 : `AlundraNativeEffects.CreateLifeVesselEffects(réserve, hx, hy, hz)`, `AlundraPlayerManager.IncreaseHpMaxAndFill`,
+`case 0x53` avant la plage, trace dégradée de clé `0x182` au patron de `0x1A4` ; ADR-0048, plus grand numéro de toutes les branches 0047),
+`615d610` (G3D-R4 : `IAlundraEffectAnchor`, `CreateAttached`, `CreateDetached`, `Move` des modes 1 et 3 avec la chute dans le code du
+mode 3). Mesures : `Alundra.Tests` **3158** en Release puis en Debug (3051 + 107 : 101 de `AlundraNativeEffectTests`, 6 cas d'une théorie
+où `0x50` à `0x52` et `0x54` à `0x56` restent dégradés) ; seul `Give_0x82_Id0x53_...` bouge (renommé
+`Give_0x82_Id0x53_WithoutAStage_AnswersOne_RaisesTheLife_GivesNoItem_AndTracesDegraded`) ; HUD : le HpMax affiché atteint 11 en 40 ticks ;
+`cmp` égal, traces. Choix de l'exécuteur : la garde des 8 sites vérifie aussi le début du programme `B[k]`/`C[k]` ; tests en plus (sans
+lecteur de son, réserve pleine, créateur de mode 0 après un créneau de mode 1 ou 3) ; le test de sauvegarde valide pose `WeaponId = 1`.
 - ⏳ **G3d-3 — Vérification** par un vérificateur neuf.
 - **Acceptation** : tests rouges puis verts ; seul le test du `0x53` nommé ci-dessus bouge ; aucun arc, aucune trace, aucune ligne de la
   liste fermée ; `Alundra.Tests` en Release puis en Debug, `cmp`, six traces identiques. **Arrêts** : une valeur qui contredit l'annexe,
