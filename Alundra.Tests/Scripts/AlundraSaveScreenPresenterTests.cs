@@ -64,10 +64,10 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         for (var i = 0; i < count; i++)
         {
             State.TickPad.Update(hold);
+            AlundraDialogueDirector.Instance.Tick(); // E19.f3c (D-E19-93): the pass of the dialogue director (its choice box) first, the order of the world proxy
+            _choicePresenter.Tick(); // E19.f3b: right after the pass, as the choice screen is pushed above the save screen's
             Director.Tick();
-            AlundraDialogueDirector.Instance.Tick(); // E19.f3a: the pass of the dialogue director (its choice box) after the screen, the order of the world proxy
             _presenter.Tick();
-            _choicePresenter.Tick(); // E19.f3b: after the save screen's presenter, as the choice screen is pushed above it
         }
     }
 
@@ -162,7 +162,7 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
 
         Assert.Equal(38, taken); // NON, armed in the tick of the Cross: taken 38 ticks later
         Assert.Equal(new IUIScreen[] { _screen, _choiceScreen }, _uiView.Pushed); // E19.f3b: the choice screen went up at N+2, above the save screen
-        Assert.Equal(new IUIScreen[] { _choiceScreen }, _uiView.Removed); // and went at its close pass, the tick before the save screen read the answer (O-E19-69)
+        Assert.Equal(new IUIScreen[] { _choiceScreen }, _uiView.Removed); // and went at its close pass, the tick the save screen read the answer (D-E19-93)
         Assert.True(_presenter.IsPushedForTests);
 
         TickUntilIdle();

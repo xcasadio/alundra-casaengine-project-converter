@@ -70,14 +70,14 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
 
     private readonly List<int> _stateLog = new();
 
-    /// <summary>One logic tick as the frame runs it: the pad, then the director, then (E19.f3a, the order of the world proxy) the pass of the dialogue director,
-    /// whose choice box answers. Records the state the tick starts in.</summary>
+    /// <summary>One logic tick as the frame runs it (E19.f3c, D-E19-93, the order of the world proxy): the pass of the dialogue director, whose choice box
+    /// answers, then the pad and the screen. Records the state the tick starts in.</summary>
     private void Tick(int count = 1, uint hold = 0)
     {
         for (var i = 0; i < count; i++)
         {
-            TickScreen(hold);
             Dialogue.Tick();
+            TickScreen(hold);
         }
     }
 
@@ -610,7 +610,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
             taken++;
         }
 
-        Assert.Equal(20, taken); // E19.f3a: armed 26 ticks after the Cross, past the first interactive pass (18): pressed at the next pass; 20 ticks in the order of the proxy (19 in the binary's)
+        Assert.Equal(19, taken); // E19.f3c (D-E19-93): armed 26 ticks after the Cross, past the first interactive pass (19): pressed at the next pass, answered in the tick of the close pass
 
         TickUntilState(AlundraSaveScreenDirector.StateWaitSquare);
         Assert.Equal("slot2", Assert.Single(_slots.SaveCalls).Slot);

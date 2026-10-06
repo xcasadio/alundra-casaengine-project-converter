@@ -5559,7 +5559,7 @@ convertisseur n'a pas changé (pas de tests du convertisseur). Restent la vérif
   248 texels ; liste fermée tenue ; export re-dérivé (les trois fichiers, l'entrée d'`AssetInfos.json`, les compteurs) et double
   export ; `Alundra.Tests` 2802/2802 en Release puis en Debug, `cmp` sans écart, six traces.
 
-###### E19.f3c — Ordre de l'écran de sauvegarde (D-E19-93) ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (liste des fichiers de test), révisée ; relecture n°2 READY ; exécution après la recette et l'approbation de l'auteur)
+###### E19.f3c — Ordre de l'écran de sauvegarde (D-E19-93) 🚧 (planifiée le 2026-10-06 ; relecture n°1 REVISE (liste des fichiers de test), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06, exécutée en mode AUTO ; F3C-1 faite)
 
 **Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais et en français, dans `docs/plan-e19-save-order-annexe/` :
 `notes.md`, `verify.md`, le modèle `hostmodel.py`, les preuves `slotorder*.py`, le correctif proposé `patch-proposal.diff.txt` et les tests
@@ -5601,15 +5601,25 @@ armement après le tick 0/1/17/18/26/26, réponse OUI/NON/OUI/OUI/OUI/NON → an
 de deux ticks : armement 0/2/18/26/26/28, OUI/NON/OUI/OUI/NON/OUI → ancien 19/19/11/11/11/11, nouveau 19/18/10/10/10/10).
 
 **Tâches.**
-- ⏳ **F3C-1 — Tests d'abord** : les grilles ci-dessus par le vrai mandataire (rouges sur l'ordre d'aujourd'hui aux cases qui changent) ;
+- ✅ **F3C-1 — Tests d'abord** : les grilles ci-dessus par le vrai mandataire (rouges sur l'ordre d'aujourd'hui aux cases qui changent) ;
   `TwoTickFrame_CrossHeldFromItsFirstTick_StillOpensTheQuestion` (Croix tenue dès le premier tick d'une image de deux ticks) et le
   même pour **Carré** (`StartFailure`, image de 2 ou 3 ticks à l'état d'attente) : verts sur le code d'aujourd'hui et sur la cible,
   rouges sur la variante naïve (`Tick()` sans argument, ou Carré encore lu dans `TickPad`) ; un test de **gel** (un événement de carte
   avec un compteur, `Director.Start`, un `Update`, le compteur ne bouge pas ; au patron de `AlundraSaveGameDirectorLoadTests.cs:373`) ;
   l'aide `Tick` de `AlundraSaveScreenDirectorTests.cs:75-82` passe à `Dialogue.Tick(); TickScreen(hold);` et `:613` à 19 ; l'aide de
   `Alundra.Tests/Scripts/AlundraSaveScreenPresenterTests.cs:62-72` suit le nouvel ordre ; commentaires `:73-74`, `:68`, `:165` réécrits.
-- ⏳ **F3C-2 — Code** (F3C-R1, F3C-R2), docs, ADR.
+- 🚧 **F3C-2 — Code** (F3C-R1, F3C-R2), docs, ADR.
 - ⏳ **F3C-3 — Vérification** (vérificateur neuf).
+
+**Fait le 2026-10-06 (F3C-1)** : tests écrits d'abord, nouveau fichier `Alundra.Tests/AlundraSaveScreenTickOrderTests.cs` (18 tests : les 12 cases des
+grilles par le vrai `AlundraWorldProxy.Update`, Croix tenue sur une image de deux ticks, Carré sur 1, 2 et 3 ticks (`StartFailure`), gel des événements de
+carte sur 1 et 2 ticks). **Rouges sur le code d'avant** : 8 cases sur 12 des grilles, exactement celles qui changent (1 tick : armement 18 OUI 20 attendu 19,
+26 OUI 20 attendu 19, 26 NON 21 attendu 20 ; 2 ticks : armement 2 NON 19 attendu 18, 18 OUI 11 attendu 10, 26 OUI et 26 NON 11 attendu 10, 28 OUI 11 attendu
+10) ; les 4 autres cases (37, 37, 20, 19), le test de Croix, ceux de Carré et ceux de gel sont verts d'emblée. Aides existantes mises dans le nouvel ordre
+(`AlundraSaveScreenDirectorTests.Tick` : `Dialogue.Tick(); TickScreen(hold)` ; `AlundraSaveScreenPresenterTests.Tick` : passe du dialogue, présentateur du
+choix, écran, présentateur de l'écran), commentaires `:73-74`, `:68`, `:165` réécrits, `DownDuringTheQuestion` 20 → 19 : seule valeur existante qui bouge
+(`AnswerAndClose` 55/56, `Carousel_Closing` 37, `Cross_AsksOuiNon` 37, `Question_TheDialogueScreenGoesOverTheSaveScreen` 38 inchangés). Aucune valeur mesurée
+ne contredit le plan ou son annexe.
 
 **Acceptation** : nouveaux tests rouges puis verts (les cases des grilles qui changent sont rouges sur l'ordre d'aujourd'hui ; les tests de
 Croix, de Carré et de gel sont verts sur le code d'aujourd'hui et rouges sur leur mutant) ; mutants rejoués : `Tick()` sans argument dans la seconde boucle, Carré lu dans
