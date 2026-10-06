@@ -157,4 +157,18 @@ public sealed class AlundraScreensFollowTheWindowTests : IDisposable
 
         AssertFollowsTheDesktop(screen, () => screen.BuildWindow(desktop), runtime, desktop);
     }
+
+    /// <summary>E19.f2b1c (F2B1C-R3): the text box screen is modal like the engine's dialogue box (D-E19-80) and follows the window the same way.</summary>
+    [Fact]
+    public void TheTextBoxScreen_RescalesItsCanvas_WhenTheDesktopBoundsChange()
+    {
+        var assets = NewAssets(AlundraTextBoxScreen.ScreenAssetId, "TextBoxScreen");
+        using var screen = new AlundraTextBoxScreen(assets, new UIFontRegistry(assets));
+        var (desktop, runtime) = HeadlessUiTestHarness.NewDesktop();
+
+        Assert.True(screen.IsModal);
+        Assert.Equal(UILayer.Modal, screen.Layer);
+
+        AssertFollowsTheDesktop(screen, () => screen.BuildWindow(desktop), runtime, desktop);
+    }
 }

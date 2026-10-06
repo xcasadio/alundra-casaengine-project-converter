@@ -1,0 +1,33 @@
+{
+  "view_model_type": "AlundraTextBoxViewModel",
+  "values": {
+    "RootVisibility": "Visible",
+    "Frame": {
+      "Top": 168
+    },
+    "Clip": {
+      "Top": 172,
+      "Height": 50
+    },
+    "Row0": {
+      "Text": "Bonjour, Alundra !",
+      "Left": 0,
+      "Top": 1
+    },
+    "Row1": {
+      "Text": "deuxième ligne",
+      "Left": 0,
+      "Top": 17
+    },
+    "Row2": {
+      "Text": "",
+      "Left": 0,
+      "Top": 33
+    },
+    "Cursor": {
+      "SourceName": "wind_150",
+      "Top": 200,
+      "Visibility": "Visible"
+    }
+  }
+}

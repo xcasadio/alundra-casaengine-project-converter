@@ -136,7 +136,7 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
     /// world.Game.GameManager.ViewManager.GetActiveUIView() traverses.
     /// </summary>
     [Fact]
-    public void InstallDialogueSystems_WithAnActiveUiView_WiresAPresenterThatPushesOnOpen()
+    public void InstallDialogueSystems_WithAnActiveUiView_WiresAPresenterThatPushesOnOpenChoice()
     {
         AlundraDialogueDirector.Instance.ResetForTests();
         try
@@ -176,8 +176,10 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
                 "the real install path must construct and attach the UI presenter when an active UI view exists.");
 
             AlundraDialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", 1);
+            Assert.Empty(recorder.Pushed); // E19.f2b1c: the box is drawn by the text box screen, the engine's window is the choices'
+            AlundraDialogueDirector.Instance.OpenChoice(new[] { "OUI", "NON" });
             Assert.True(recorder.Pushed.Count > 0,
-                "opening a dialogue after the real install must push the screen on the game's active UI view.");
+                "opening a choice after the real install must push the screen on the game's active UI view.");
         }
         finally
         {
@@ -254,8 +256,9 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
                 "Update's per-frame retry must wire the presenter once the bootstrapped view exists.");
 
             AlundraDialogueDirector.Instance.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", 1);
+            AlundraDialogueDirector.Instance.OpenChoice(new[] { "OUI", "NON" });
             Assert.True(recorder.Pushed.Count > 0,
-                "opening a dialogue after the late wiring must push the screen on the game's UI view.");
+                "opening a choice after the late wiring must push the screen on the game's UI view.");
         }
         finally
         {

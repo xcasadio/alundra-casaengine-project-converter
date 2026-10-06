@@ -98,9 +98,6 @@ internal sealed class AlundraDialogueBox
     private readonly IAlundraDialogueBoxHost _host;
     private readonly List<DialogueToken> _tokens = new();
     private int _next;
-    private readonly StringBuilder _typed = new();
-    private int _pendingNewLines;
-    private bool _typedChanged;
 
     // The slide in progress (UpdateUiBoxesPosition 0x80047DD0): from, to, step, passes left to settle.
     private int _slideFrom;
@@ -214,9 +211,6 @@ internal sealed class AlundraDialogueBox
     /// <summary>The line (0 to 2) the next glyph goes to.</summary>
     public int LineIndex => _lineIndex;
 
-    /// <summary>The page typed so far: the glyphs in font3 and the line breaks reached (a break comes with the glyph that follows it).</summary>
-    public string TypedText => _typed.ToString();
-
     /// <summary>The three visible lines (the text of each band of the box, top to bottom).</summary>
     public string[] Lines => new[]
     {
@@ -257,22 +251,11 @@ internal sealed class AlundraDialogueBox
     /// <summary>The x of row <paramref name="r"/>: 32, or <c>16 + (288 - width) / 2</c> for a centred row (0x80045640-0x800456B8).</summary>
     public int RowX(int r) => _rowWidth[r] == 0 ? RowTextX : FrameX + (FrameWidthPx - _rowWidth[r]) / 2;
 
-    /// <summary>True once, after a pass that changed <see cref="TypedText"/> or began a page: the view asks for it to be shown.</summary>
-    public bool TakeTypedChanged()
-    {
-        var changed = _typedChanged;
-        _typedChanged = false;
-        return changed;
-    }
-
     /// <summary>InitializeDialogMessage 0x800450F0: a new box, every text state at its start; the timer of the close and the counters of the scroll are NOT reset.</summary>
     public void Open()
     {
         _tokens.Clear();
         _next = 0;
-        _typed.Clear();
-        _pendingNewLines = 0;
-        _typedChanged = true;
         for (var band = 0; band < 3; band++)
         {
             ClearBand(band);
@@ -320,8 +303,6 @@ internal sealed class AlundraDialogueBox
         Y = ClosedY;
         _tokens.Clear();
         _next = 0;
-        _typed.Clear();
-        _pendingNewLines = 0;
         _cursorShown = false;
         _typingDone = false;
         _scrollPending = false;
@@ -665,17 +646,12 @@ internal sealed class AlundraDialogueBox
 
         NewLine();
 
-        // The page that follows starts a fresh typed text (the engine's box shows one page at a time until the view of E19.f2b takes over).
-        _typed.Clear();
-        _pendingNewLines = 0;
-        _typedChanged = true;
         _host.PageTurned();
     }
 
     private void NewLine()
     {
         _voiceRank = 0;
-        _pendingNewLines++;
         if (_lineIndex == 2)
         {
             _scrollPending = true;
@@ -764,17 +740,10 @@ internal sealed class AlundraDialogueBox
 
     private void Draw(char display, bool counted)
     {
-        for (; _pendingNewLines > 0; _pendingNewLines--)
-        {
-            _typed.Append('\n');
-        }
-
-        _typed.Append(display);
         GlyphCount++;
         var band = (_bufferShift + _lineIndex) % 3;
         _bands[band].Append(display);
         _bandDirty[band] = true;
-        _typedChanged = true;
         if (!counted)
         {
             return;

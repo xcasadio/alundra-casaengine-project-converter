@@ -369,6 +369,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// it the same way <see cref="_subInventoryScreen"/> does.</summary>
     private AlundraSaveScreen? _saveScreen;
 
+    /// <summary>E19.f2b1c F2B1C-R4: the per-proxy retry gate of <see cref="TryWireTextBoxScreenOnce"/>, the shape of <see cref="_saveScreenWired"/>.</summary>
+    private bool _textBoxScreenWired;
+
+    /// <summary>E19.f2b1c F2B1C-R4: the presenter that pushes/removes <see cref="AlundraTextBoxScreen"/> and writes its view model after each pass of the dialogue
+    /// box - null until <see cref="TryWireTextBoxScreenOnce"/> succeeds, or a test attaches one (<see cref="AttachTextBoxPresenterForTests"/>).</summary>
+    private AlundraTextBoxPresenter? _textBoxPresenter;
+
+    /// <summary>E19.f2b1c F2B1C-R4: the text box screen this proxy built; it holds font3, and <see cref="OnEndPlay"/> disposes it like <see cref="_saveScreen"/>.</summary>
+    private AlundraTextBoxScreen? _textBoxScreen;
+
     /// <summary>Engine ADR-0037: the HUD screen this proxy built. It holds its glyph and icon sprites, and
     /// <see cref="OnEndPlay"/> disposes it so they are given back when this world ends.</summary>
     private AlundraHudScreen? _hudScreen;
@@ -1418,12 +1428,64 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         Logs.WriteInfo("AlundraWorldProxy: save screen wired to the active UI view (post-bootstrap retry).");
     }
 
+    /// <summary>
+    /// E19.f2b1c F2B1C-R4 (docs/plan-e19-opcodes.md): <see cref="TryWireSaveScreenOnce"/>'s shape for the text box screen - retry-until-success, once per frame, since
+    /// the UI view appears after <see cref="InitializeWithWorld"/>. The screen is pushed by its presenter at the first drawn pass of the box. Unlike the save screen's, a
+    /// failure to build it (the export has no text box screen or no font3) is logged once and ends the retries: the box machine runs without a view, the way the
+    /// engine's dialogue presenter degrades (<see cref="AlundraDialoguePresenter"/>).
+    /// </summary>
+    internal void TryWireTextBoxScreenOnce()
+    {
+        if (_textBoxScreenWired)
+        {
+            return;
+        }
+
+        var uiView = _world?.Game?.GameManager?.ViewManager?.GetActiveUIView();
+        var assetContentManager = _world?.Game?.AssetContentManager;
+        var fonts = _world?.Game?.UIFonts;
+        if (uiView == null || assetContentManager == null || fonts == null)
+        {
+            return; // retry next frame.
+        }
+
+        _textBoxScreenWired = true;
+        try
+        {
+            var textBoxScreen = new AlundraTextBoxScreen(assetContentManager, fonts);
+            _textBoxScreen = textBoxScreen;
+            _textBoxPresenter = new AlundraTextBoxPresenter(AlundraDialogueDirector.Instance, textBoxScreen.ViewModel, textBoxScreen, uiView);
+            Logs.WriteInfo("AlundraWorldProxy: text box screen wired to the active UI view (post-bootstrap retry).");
+        }
+        catch (Exception ex)
+        {
+            Logs.WriteError($"AlundraWorldProxy: the text box screen could not be built, the dialogue box will not be drawn: {ex.Message}");
+        }
+    }
+
     /// <summary>Test-only seam: attaches an <see cref="AlundraSaveScreenPresenter"/> over the session's
     /// <see cref="AlundraSaveScreenDirector.Instance"/>, against any view model, screen and UI view - the shape of
     /// <see cref="AttachSubInventoryPresenterForTests"/>.</summary>
     internal void AttachSaveScreenPresenterForTests(AlundraSaveScreenViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
     {
         _saveScreenPresenter = new AlundraSaveScreenPresenter(AlundraSaveScreenDirector.Instance, viewModel, screen, uiView);
+    }
+
+    /// <summary>Test-only seam: attaches an <see cref="AlundraTextBoxPresenter"/> over the session's <see cref="AlundraDialogueDirector.Instance"/>, against any view
+    /// model, screen and UI view - the shape of <see cref="AttachSaveScreenPresenterForTests"/>.</summary>
+    internal void AttachTextBoxPresenterForTests(AlundraTextBoxViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
+    {
+        _textBoxPresenter = new AlundraTextBoxPresenter(AlundraDialogueDirector.Instance, viewModel, screen, uiView);
+    }
+
+    /// <summary>Test-only seam: the text box screen this proxy holds (built by <see cref="TryWireTextBoxScreenOnce"/> or attached by a test), null once <see cref="OnEndPlay"/> gave it back.</summary>
+    internal AlundraTextBoxScreen? TextBoxScreenForTests => _textBoxScreen;
+
+    /// <summary>Test-only seam: the text box screen <see cref="OnEndPlay"/> disposes, as <see cref="TryWireTextBoxScreenOnce"/> would have built it (which needs a live
+    /// game).</summary>
+    internal void AttachTextBoxScreenForTests(AlundraTextBoxScreen screen)
+    {
+        _textBoxScreen = screen;
     }
 
     /// <summary>docs/plan-portrait-inventaire.md PI8: refreshes <see cref="AlundraInventoryPortrait"/>'s head point
@@ -2088,6 +2150,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         TryWireInventoryScreenOnce();
         TryWireSubInventoryScreenOnce();
         TryWireSaveScreenOnce();
+        TryWireTextBoxScreenOnce();
 
         // C1 (docs/plan-camera-ordre-frame.md §3): map-events run FIRST, before the camera block - a
         // faithful port of the original's own frame order (GameEngine.cs:1638-1664/1743-1753:
@@ -2111,6 +2174,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         {
             var (squareHeld, squarePressed) = tick == 0 ? _squareOfLastTick : _squareOfTick[tick - 1];
             AlundraDialogueDirector.Instance.Pass(squareHeld, squarePressed);
+
+            // E19.f2b1c F2B1C-R4: the text box screen reads what the pass just drew, before the gate is read and before the `continue` below (the pass runs whether the
+            // hero exists and the gate is open or not), and once per pass: a frame of several ticks draws only its last pass, but each pass is applied in order.
+            _textBoxPresenter?.Tick();
 
             var tickBlocked = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
                 || AlundraWarpDirector.Instance.IsTransitionInProgress;
@@ -2775,6 +2842,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // E16.e T4: the save screen gives font3 back the same way.
         _saveScreen?.Dispose();
         _saveScreen = null;
+
+        // E19.f2b1c F2B1C-R4: so does the text box screen.
+        _textBoxScreen?.Dispose();
+        _textBoxScreen = null;
+        _textBoxPresenter = null;
 
         // Engine ADR-0037: the HUD screen gives back its sprites the same way.
         _hudScreen?.Dispose();

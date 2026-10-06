@@ -351,19 +351,19 @@ public sealed class AlundraDialogueBoxOrderTests
             {
                 Assert.Equal(new[] { "OUI", "NON" }, montage.Director.ChoicesForTests); // the typing did not wipe the engine's list
                 Assert.True(montage.Director.IsAwaitingChoice);
+                Assert.Equal("bonjour", montage.Director.Box.Row(0)); // E19.f2b1c: the text typed during the choice is the row the box draws, while the choice waits
             }
         }
 
         Assert.Equal(new[] { 28, 32, 36, 40, 44, 48, 52 }, glyphFrames);
         Assert.Equal((56, 90, 108), (timeline.E, timeline.T, timeline.R));
         Assert.Equal(109, seen);
-        Assert.Equal("bonjour", montage.Presenter.Shown.Last(s => s.Text != string.Empty).Text); // the text typed during the choice is sent after the answer
     }
 
-    // ---- K-6: the presenter receives the text typed so far ----------------------------------------------------------------
+    // ---- K-6: the box draws the text typed so far --------------------------------------------------------------------------------
 
     [Fact]
-    public void K6_ThePresenterReceivesTheTypedPrefix_ThatGrowsAtEachStepThatChangesTheVisibleText_AndTheDirectorHoldsTheWholePage()
+    public void K6_TheBoxDrawsTheRowsTypedSoFar_ThatGrowAtEachStepThatChangesTheVisibleText_AndTheDirectorHoldsTheWholePage()
     {
         using var montage = new DialogueBoxMontage();
         var asset = DialogueTestAssets.BuildRaw("Prefix", "Start", "ab[br trimwhitespace=false/]cd");
@@ -373,10 +373,23 @@ public sealed class AlundraDialogueBoxOrderTests
         passes.RunTo(20);
         Assert.Equal("ab\ncd", montage.Director.CurrentLineForTests?.Text); // the whole page, during the typing
 
-        passes.RunTo(60);
+        // E19.f2b1c: the rows the box draws at each pass (F2B1C-R1), where the engine's window used to be sent a growing prefix.
+        var drawn = new List<(int Pass, string Row0, string Row1, string Row2)>();
+        var box = montage.Director.Box;
+        for (var pass = 21; pass <= 60; pass++)
+        {
+            passes.RunTo(pass);
+            var rows = (pass, box.Row(0), box.Row(1), box.Row(2));
+            if (drawn.Count == 0 || drawn[^1].Row0 != rows.Item2 || drawn[^1].Row1 != rows.Item3 || drawn[^1].Row2 != rows.Item4)
+            {
+                drawn.Add(rows);
+            }
+        }
 
-        // The opening shows the empty prefix (the box appears); then the passes 19 (a), 23 (ab), 31 (ab / c), 35 (ab / cd); the step of the line break (27) sends nothing.
-        Assert.Equal(new[] { (0, string.Empty), (19, "a"), (23, "ab"), (31, "ab\nc"), (35, "ab\ncd") }, montage.Presenter.Shown.ToArray());
+        // The passes 19 (a, drawn before 21), 23 (ab), 31 (ab / c), 35 (ab / cd); the step of the line break (27) changes nothing visible.
+        Assert.Equal(("a", string.Empty, string.Empty), (drawn[0].Row0, drawn[0].Row1, drawn[0].Row2));
+        Assert.Equal(new[] { (21, "a", string.Empty, string.Empty), (23, "ab", string.Empty, string.Empty), (31, "ab", "c", string.Empty), (35, "ab", "cd", string.Empty) }, drawn.ToArray());
+        Assert.Empty(montage.Presenter.Shown); // nothing is sent to the engine's presenter any more
         Assert.Equal("ab\ncd", montage.Director.CurrentLineForTests?.Text);
     }
 

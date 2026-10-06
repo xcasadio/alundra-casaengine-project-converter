@@ -1,0 +1,42 @@
+<Window xmlns="clr-namespace:MGUI.Core.UI.XAML;assembly=MGUI.Core"
+        xmlns:dataBinding="clr-namespace:MGUI.Core.UI.DataBinding;assembly=MGUI.Core"
+        Left="0" Top="0" Width="320" Height="240"
+        TitleText=""
+        IsTitleBarVisible="False"
+        IsTopmost="True"
+        IsUserResizable="False"
+        Padding="0"
+        BorderThickness="0"
+        Background="rgba(0,0,0,0)">
+
+  <!-- E19.f2b1c F2B1C-R3 (docs/plan-e19-opcodes.md, D-E19-80): the dialogue box of the original, versioned as a project asset (parent ADR-0002): this file,
+       TextBoxScreen.uiscreen and TextBoxScreen.design.json live in alundra-project/UI/Screens/, the only part of the generated project kept in git; the converter
+       catalogues the envelope and never writes here. No title bar, so no close button. A full-screen transparent window whose sole content is a Canvas authored in
+       NATIVE pixels (320x240) - same shell as SaveScreen.xaml: the code (AlundraTextBoxScreen) resizes this window to the real screen bounds and applies the whole
+       integer pixel scale ONCE as the canvas own RenderTransform.Scale (engine ADR-0006). Every value that changes is bound to the window data context, an
+       AlundraTextBoxViewModel the presenter writes after each pass of the box.
+
+       The window carries BorderThickness="0" itself (the screens before this one set it in code): a window draws a border and insets its content otherwise.
+
+       Draw order (back to front) is the binary's: slot 0, the frame then the cursor, never clipped by the text; slot 2, the clip of the text then its three bands. The
+       frame is the inventory's description box, g_uiBoxesInventoryDescriptionBackground (288x56), by its fixed id (its name is shared by three assets); the cursor is
+       one of four sprites by name (wind_150, wind_173, wind_201, wind_228).
+
+       The three rows are font3 texts drawn pixel for pixel (annex view-notes.md, section 1.2): Padding="0" (the default 1 pixel padding would shift the glyphs one right
+       and one down), WrapText="False" (a long row would wrap to two lines), Width="255" (the band of the binary is 255 wide: the row is cut there), inline formatting off
+       (the texts come from the game). The clip canvas is 258 wide from x 32; a row's position is relative to it, a negative Top above its top is fine. -->
+
+  <Canvas Name="RootCanvas" Width="320" Height="240" Visibility="{dataBinding:MGBinding Path=RootVisibility}">
+
+    <Image Name="Frame" Stretch="None" SourceName="973a9208-c867-57fe-bee3-cf30237221ef" CanvasLeft="16" CanvasTop="{dataBinding:MGBinding Path=Frame.Top}" />
+
+    <Image Name="Cursor" Stretch="None" SourceName="{dataBinding:MGBinding Path=Cursor.SourceName}" CanvasLeft="288" CanvasTop="{dataBinding:MGBinding Path=Cursor.Top}" Visibility="{dataBinding:MGBinding Path=Cursor.Visibility}" />
+
+    <Canvas Name="TextClip" Width="258" Height="{dataBinding:MGBinding Path=Clip.Height}" CanvasLeft="32" CanvasTop="{dataBinding:MGBinding Path=Clip.Top}" ClipToBounds="True">
+      <TextBlock Name="Row0" Text="{dataBinding:MGBinding Path=Row0.Text}" CanvasLeft="{dataBinding:MGBinding Path=Row0.Left}" CanvasTop="{dataBinding:MGBinding Path=Row0.Top}" FontFamily="font3" Foreground="White" AllowsInlineFormatting="False" Padding="0" LinePadding="0" WrapText="False" VerticalContentAlignment="Top" Width="255" />
+      <TextBlock Name="Row1" Text="{dataBinding:MGBinding Path=Row1.Text}" CanvasLeft="{dataBinding:MGBinding Path=Row1.Left}" CanvasTop="{dataBinding:MGBinding Path=Row1.Top}" FontFamily="font3" Foreground="White" AllowsInlineFormatting="False" Padding="0" LinePadding="0" WrapText="False" VerticalContentAlignment="Top" Width="255" />
+      <TextBlock Name="Row2" Text="{dataBinding:MGBinding Path=Row2.Text}" CanvasLeft="{dataBinding:MGBinding Path=Row2.Left}" CanvasTop="{dataBinding:MGBinding Path=Row2.Top}" FontFamily="font3" Foreground="White" AllowsInlineFormatting="False" Padding="0" LinePadding="0" WrapText="False" VerticalContentAlignment="Top" Width="255" />
+    </Canvas>
+
+  </Canvas>
+</Window>

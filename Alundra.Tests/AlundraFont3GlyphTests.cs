@@ -123,106 +123,31 @@ public sealed class AlundraFont3GlyphTests
         return result;
     }
 
-    // ── A dedicated, single-threaded, real (but never shown) GraphicsDevice ─────────────────────────────
+    // ── The one real (but never shown) GraphicsDevice of the process ───────────────────────────────────
     // Mirrors MGUI.Tests.Integration.GpuDeviceHost (internal to MGUI.Tests, so re-implemented here rather
     // than referenced) purely to satisfy StaticSpriteFont.FromBMFont's non-null-Texture2D requirement.
-
-    private sealed class HiddenGame : Game
-    {
-        public readonly GraphicsDeviceManager Gdm;
-
-        public HiddenGame()
-        {
-            Gdm = new GraphicsDeviceManager(this)
-            {
-                PreferredBackBufferWidth = 128,
-                PreferredBackBufferHeight = 128,
-                PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8,
-                SynchronizeWithVerticalRetrace = false,
-            };
-            IsFixedTimeStep = false;
-        }
-    }
+    // E19.f2b1c: MonoGame records the thread that first touches it as its "UI thread" and a second hidden Game
+    // on another thread cannot create a device, so the pixel test of the text box screen and this file share ONE
+    // dedicated thread and device (Alundra.Tests.UI.TextBoxGpu, UI/TextBoxGpuHarness.cs); this shim keeps the
+    // shape the tests below use.
 
     private sealed class GpuThread
     {
         public static readonly GpuThread Instance = new();
 
-        private readonly BlockingCollection<Action> _work = new();
-        private readonly Thread _thread;
-        private HiddenGame? _game;
-
-        private GpuThread()
-        {
-            _thread = new Thread(RunLoop) { IsBackground = true, Name = "Alundra-Font3-Test-GPU-Thread" };
-            _thread.Start();
-        }
-
-        public GraphicsDevice GraphicsDevice => _game!.GraphicsDevice;
+        public GraphicsDevice GraphicsDevice => Alundra.Tests.UI.TextBoxGpu.Device;
 
         public void EnsureDevice()
         {
-            Invoke(() =>
+            if (!Alundra.Tests.UI.TextBoxGpu.IsAvailable)
             {
-                if (_game == null)
-                {
-                    _game = new HiddenGame();
-                    _game.RunOneFrame();
-                    if (_game.GraphicsDevice == null)
-                    {
-                        throw new InvalidOperationException($"{nameof(HiddenGame)}.GraphicsDevice was still null after RunOneFrame().");
-                    }
-                }
-            });
-        }
-
-        public void Invoke(Action action)
-        {
-            // Re-entrant: work queued from the GPU thread itself would wait on a queue only this thread
-            // drains - a deadlock - so it runs inline instead.
-            if (Thread.CurrentThread == _thread)
-            {
-                action();
-                return;
-            }
-
-            ExceptionDispatchInfo? capturedError = null;
-            using ManualResetEventSlim done = new(false);
-
-            _work.Add(() =>
-            {
-                try
-                {
-                    action();
-                }
-                catch (Exception ex)
-                {
-                    capturedError = ExceptionDispatchInfo.Capture(ex);
-                }
-                finally
-                {
-                    done.Set();
-                }
-            });
-
-            done.Wait();
-            capturedError?.Throw();
-        }
-
-        public T Invoke<T>(Func<T> func)
-        {
-            T result = default!;
-            Invoke(() => { result = func(); });
-            return result;
-        }
-
-        private void RunLoop()
-        {
-            foreach (Action action in _work.GetConsumingEnumerable())
-            {
-                action();
+                throw new InvalidOperationException(Alundra.Tests.UI.TextBoxGpu.UnavailableReason);
             }
         }
+
+        public void Invoke(Action action) => Alundra.Tests.UI.TextBoxGpu.Invoke(action);
+
+        public T Invoke<T>(Func<T> func) => Alundra.Tests.UI.TextBoxGpu.Invoke(func);
     }
 
     // ── Minimal IUIDesktopRuntime carrying a REAL FontStashSharpTextEngine (no CasaEngine game/world) ────

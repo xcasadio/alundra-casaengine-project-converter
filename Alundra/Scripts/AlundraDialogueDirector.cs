@@ -105,8 +105,8 @@ public interface IAlundraDialogueDirector
 /// E19.f2a (docs/plan-e19-opcodes.md section 1.2j.3, F2-R1 to F2-R6, ADR-0029): the box is the binary's, to the tick. The director owns an
 /// <see cref="AlundraDialogueBox"/> (the machine: slides, typing steps, lines and scroll, cursor, voices, close and release) and feeds it the
 /// pages the Yarn runner delivers, cut into steps from their text and markers; the world proxy runs <see cref="Pass"/> once per logic tick
-/// BEFORE the scripts of that tick. The presenter receives, at each step that changes the visible text, the page typed so far (the view of
-/// E19.f2b will draw the box itself); the text flags of a page are set at their glyph, not at the display of the page.
+/// BEFORE the scripts of that tick. The box is drawn by the text box screen (E19.f2b1c, <see cref="AlundraTextBoxPresenter"/> reads the box after each pass); the
+/// engine's presenter is only the choices' window (until E19.f3). The text flags of a page are set at their glyph, not at the display of the page.
 /// </summary>
 public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundraDialogueBoxHost
 {
@@ -129,7 +129,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     // E15.c T5 (docs/plan-e15-yarn.md, contract item 2): this director's own Yarn runner, built on a
     // capture presenter (AlundraDialogueCapturePresenter) - NEVER built directly on _presenter, which is
     // reattached on every AttachToWorld while these two persist. The capture presenter hands each page the runner delivers to
-    // OnPageShown (E19.f2a); only the typed prefix reaches _presenter. Rebuilt only when the game state
+    // OnPageShown (E19.f2a); _presenter only gets the choices. Rebuilt only when the game state
     // actually changes (a new world/map - InstallForMapEntry resets open/page state right after anyway);
     // a same-game-state re-point (TryWireDialoguePresenterOnce's "presenter appears later this frame")
     // just re-points the capture presenter's own WorldPresenter, keeping any dialogue already running.
@@ -264,8 +264,6 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
             // out-of-range/never-loaded local string did before E15.c.
             _pageCount = 1;
         }
-
-        ShowTypedText();
     }
 
     /// <summary>
@@ -391,22 +389,6 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
         }
     }
 
-    /// <summary>Sends the presenter the page typed so far, when the last pass (or the opening) changed it (F2-R6). Not while a choice list waits: the
-    /// engine's service drops its choices when it is shown a line, and the list stays the engine's until E19.f3 (F2-R2) - the box keeps typing and
-    /// the text is sent after the answer.</summary>
-    private void ShowTypedText()
-    {
-        if (_awaitingChoice)
-        {
-            return;
-        }
-
-        if (_box.TakeTypedChanged())
-        {
-            _presenter?.ShowLine(new DialogueLine(_box.TypedText));
-        }
-    }
-
     // ---- the box's own opcodes
 
     /// <inheritdoc/>
@@ -431,14 +413,13 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
 
     /// <summary>
     /// One pass of the box (F2-R1, step 1 of a logic tick): the world proxy calls it at the start of every tick, before the gate is re-read and
-    /// before the map events of the tick, with the square button of the tick BEFORE. Runs the machine, then sends the presenter the typed text if
-    /// the pass changed it.
+    /// before the map events of the tick, with the square button of the tick BEFORE. Runs the machine; what it drew is read by the text box screen's presenter
+    /// (E19.f2b1c), the engine's presenter only ever gets the choices.
     /// </summary>
     public void Pass(bool squareHeld, bool squarePressed)
     {
         PassCountForTests++;
         _box.Pass(squareHeld, squarePressed);
-        ShowTypedText();
     }
 
     /// <inheritdoc/>
@@ -551,6 +532,14 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
         _pendingChoiceResult = null;
         _awaitingChoice = false;
         UnsubscribeChoiceHandler();
+
+        // E19.f2b1c F2B1C-R5: the engine's window holds only the buttons now, and after an answer its service stays open: it goes with the answer when a box is active
+        // (the box has its own screen). A lone choice, asked without a box, is closed by CloseStandaloneChoice.
+        if (_box.IsActive)
+        {
+            _presenter?.Close();
+        }
+
         return result;
     }
 
@@ -637,11 +626,8 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     internal int PageIndexForTests => _pageIndex;
 
     /// <summary>Test-only accessor: the WHOLE current page as the director holds it (the text of the line the runner delivered, in font3), or null when no
-    /// presenter is attached - the presenter itself only ever sees the typed prefix (F2-R6).</summary>
+    /// presenter is attached - the presenter itself never sees the text (E19.f2b1c: the box is drawn by the text box screen).</summary>
     internal DialogueLine? CurrentLineForTests => _presenter == null ? null : _pageLine;
-
-    /// <summary>Test-only accessor: the page typed so far, as the presenter received it last (F2-R6): the glyphs in font3 and the line breaks reached.</summary>
-    internal string TypedTextForTests => _box.TypedText;
 
     /// <summary>Test-only accessor: the attached presenter's own currently displayed choice labels (empty
     /// when none is awaiting selection).</summary>

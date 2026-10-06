@@ -26,11 +26,13 @@ internal static class HeadlessUiTestHarness
     public const int DefaultSurfaceWidth = 640;
     public const int DefaultSurfaceHeight = 480;
 
+    /// <param name="imageSizes">E19.f2b1c: the size of the images a test measures (by asset name or id), the others being 16 x 16.</param>
     public static (MGDesktop Desktop, HeadlessRuntime Runtime) NewDesktop(
         int width = DefaultSurfaceWidth,
-        int height = DefaultSurfaceHeight)
+        int height = DefaultSurfaceHeight,
+        IReadOnlyDictionary<string, (int Width, int Height)>? imageSizes = null)
     {
-        HeadlessRuntime runtime = new(new Rectangle(0, 0, width, height));
+        HeadlessRuntime runtime = new(new Rectangle(0, 0, width, height), imageSizes);
         MGDesktop desktop = new(runtime);
         desktop.LoadDefaultResources();
         return (desktop, runtime);
@@ -65,10 +67,10 @@ internal static class HeadlessUiTestHarness
             }
         }
 
-        public HeadlessRuntime(Rectangle surfaceBounds)
+        public HeadlessRuntime(Rectangle surfaceBounds, IReadOnlyDictionary<string, (int Width, int Height)>? imageSizes = null)
         {
             Surface = new HeadlessSurface(surfaceBounds, new HeadlessRenderTarget(surfaceBounds.Width, surfaceBounds.Height));
-            AssetProvider = new HeadlessAssetProvider();
+            AssetProvider = new HeadlessAssetProvider(imageSizes);
             _textEngine = new MeasuringTextEngine(DefaultFontFamily);
         }
 
@@ -110,12 +112,16 @@ internal static class HeadlessUiTestHarness
     private sealed class HeadlessAssetProvider : IUIAssetProvider
     {
         private readonly Dictionary<string, HeadlessImageResource> _images = new(StringComparer.OrdinalIgnoreCase);
+        private readonly IReadOnlyDictionary<string, (int Width, int Height)>? _sizes;
+
+        public HeadlessAssetProvider(IReadOnlyDictionary<string, (int Width, int Height)>? sizes) => _sizes = sizes;
 
         public IUIImageResource LoadImage(string assetName)
         {
             if (!_images.TryGetValue(assetName, out HeadlessImageResource? image))
             {
-                image = new HeadlessImageResource(assetName, 16, 16);
+                var (width, height) = _sizes != null && _sizes.TryGetValue(assetName, out var size) ? size : (16, 16);
+                image = new HeadlessImageResource(assetName, width, height);
                 _images[assetName] = image;
             }
 
@@ -125,6 +131,20 @@ internal static class HeadlessUiTestHarness
         public bool TryLoadImage(string assetName, out IUIImageResource image)
         {
             image = LoadImage(assetName);
+            return true;
+        }
+
+        /// <summary>E19.f2b1c: a name a test gave a size to is an image of that size (a sprite, as the host resolves a catalogued name); any other name resolves nothing, as before.</summary>
+        public bool TryResolveImage(string name, out IUIImageResource? image, out Rectangle? sourceRect)
+        {
+            sourceRect = null;
+            image = null;
+            if (_sizes == null || !_sizes.ContainsKey(name))
+            {
+                return false;
+            }
+
+            image = LoadImage(name);
             return true;
         }
     }
