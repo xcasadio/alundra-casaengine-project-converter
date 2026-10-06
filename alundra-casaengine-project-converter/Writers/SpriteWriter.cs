@@ -641,6 +641,16 @@ public static class SpriteWriter
 
                 if (partIndex >= frame.Quads.Count)
                 {
+                    // Zero-duration Loop (E19.m7, O-E19-9): the only displayed frame lasts 0 ticks (Delay 0x80),
+                    // and the binary holds it (UpdateAnimation decrements its countdown before testing it, so
+                    // the frame stays up for 2^32 - 1 ticks and the loop counter stays 0). The terminator would
+                    // put a hide key at the same instant 0 as the frame's show key and win, so it emits nothing
+                    // and every part keeps [true@0], duration 0. A Loop with a non-zero duration is unchanged.
+                    if (endKind == AnimationEndKind.Loop && frame.IsTerminator && cumulativeSeconds == 0f)
+                    {
+                        continue;
+                    }
+
                     visibleTrack.VisibleKeyframes.Add(new Animation2dBoolKeyframeData(time, false));
                     continue;
                 }
