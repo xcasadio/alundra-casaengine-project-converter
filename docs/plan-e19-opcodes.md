@@ -5290,7 +5290,7 @@ annulation ni souris, compteur du curseur persistant) ; découpage en f3a (machi
 la fenêtre du moteur n'est plus poussée pour un choix) puis f3b (l'écran XAML du choix et sa preuve au pixel), exécutées l'une après
 l'autre (entre les deux, le choix fonctionne à la manette sans être dessiné) ; les invites de carte mémoire restent hors périmètre.
 
-###### E19.f3a — Logique du choix au tick près 🧪 (faite le 2026-10-06, vérification à faire)
+###### E19.f3a — Logique du choix au tick près ✅ (relectures n°1 et n°2 REVISE, FIX ; relecture de clôture READY ; faite et CONFIRMED le 2026-10-06 ; recette avec f3b)
 
 **Règles.**
 - **F3A-R1 — Machine** : nouvelle classe interne `AlundraChoiceBox`, portage de `ChoiceBox` de `docs/plan-e19-f3-annexe/model/choice_model.py`
@@ -5366,8 +5366,7 @@ l'autre (entre les deux, le choix fonctionne à la manette sans être dessiné) 
 **Acceptation** : la machine égale le modèle sur V1 à V7 ; chaque aide fait exactement une passe du choix par tick ; les tests de la
 liste fermée prennent les valeurs fidèles de la table ;
 aucune autre assertion ne bouge ; suites, `cmp`, traces. **Retour arrière** : revert des commits. **Risques** : entre f3a et f3b, un
-choix n'est pas dessiné (f3b suit) ; le placement en tête de la première boucle fait passer, aux images de rattrapage (plusieurs ticks
-par image), toutes les passes du choix avant les programmes de cartes de l'image ; le chemin réel de la manette jusqu'à la passe du
+choix n'est pas dessiné (f3b suit) ; l'écran de sauvegarde reçoit une réponse tardive un tick après le binaire (O-E19-69) ; le chemin réel de la manette jusqu'à la passe du
 choix pendant qu'une boîte est ouverte n'est prouvé que par la recette (le crochet injecte les appuis).
 
 **Fait le 2026-10-06** (un commit, tests et code ensemble). Code : `Alundra/Scripts/AlundraChoiceBox.cs` (la machine, portage de `ChoiceBox`, et
@@ -5391,6 +5390,18 @@ marin 12 : choix en attente après 96, pris à l'image 133, boîte de la questio
 `TickScreen(hold)` (la moitié écran de l'ancienne aide) leur est donnée pour qu'ils gardent leur `Dialogue.Tick()` et leur ordre, une passe du
 choix par tick ; (2) la machine ne porte ni largeur de libellé ni décodage des paires `{c` et `}c` du binaire (aucun libellé du corpus n'en a ;
 les largeurs 19 et 23 sont celles du binaire, à poser en f3b).
+
+- ✅ **Vérification d'E19.f3a** (F3A-3, 2026-10-06) : vérificateur neuf **CONFIRMED** (`5a0b1de`) : la machine compilée telle quelle
+  égale `choice_model.py` sur V1 à V7 et 600 cas tirés (607 cas, 92 842 passes, 0 écart ; une mutation du son du déplacement donne 27
+  écarts) ; rouges d'abord rejoués dans une copie isolée (exactement les 13 tests annoncés, avec 37, 38, 20, l'état 6 au lieu de 5,
+  les listes de K5 et les six assertions de la fenêtre du moteur ; le test épinglé du `0x44` sans présentateur vert avant et après) ;
+  liste fermée égale à `sim-pins.md` §0 à §4 (30 lignes `Assert` retirées, toutes de la liste ; aucun test sauté ni supprimé) ;
+  `CancelChoice` mutée rougit son test (`Closed` attendu, `SlideIn` lu) ; câblage F3A-R3 tenu (une passe du choix par tick dans
+  chaque aide ; les blocs `BookTick` passent par une aide `TickScreen` séparée pour ne pas en faire deux) ; les cinq séquences de
+  manette réelles (50, 52, 37, 80, jamais) ; `Alundra.Tests` 2768/2768 en Release puis en Debug, `cmp` sans écart, six traces ;
+  observations du §5 remesurées par l'exécution, égales à la simulation (A17 fin 1194, marin 12 pris à 133, livre 139 et 116).
+  Écart de l'exécution : la machine ne décode pas les échappements `{c` et `}c` des libellés (aucun libellé du corpus n'en porte) ;
+  les largeurs des libellés (19 et 23) vont à f3b.
 
 ###### E19.f3b — Écran du choix et preuve au pixel ⏳ (esquisse, après E19.f3a)
 
