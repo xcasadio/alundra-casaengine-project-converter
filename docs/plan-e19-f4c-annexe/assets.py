@@ -1,8 +1,15 @@
-"""Read-only access to the exported project: sprite id/name -> (RGBA array of the sheet, (x, y, w, h))."""
+"""Read-only access to the exported project: sprite id/name -> (RGBA array of the sheet, (x, y, w, h)).
+
+All paths are relative to this file (the annex lives in <repo>/docs/plan-e19-f4c-annexe/); the exported project is <repo>/alundra-project (not versioned,
+produced by the converter), the portraits table is the one of the f4 annex.
+"""
 import json, os
 import numpy as np
 from PIL import Image
-PROJ = r'D:\development\repo\alundra-casaengine-project-converter\alundra-project'
+HERE = os.path.dirname(os.path.abspath(__file__))
+REPO = os.path.dirname(os.path.dirname(HERE))
+PROJ = os.path.join(REPO, 'alundra-project')
+PORTRAITS_TSV = os.path.join(REPO, 'docs', 'plan-e19-f4-annexe', 'portraits_table.tsv')
 _ai = json.load(open(os.path.join(PROJ, 'AssetInfos.json'), encoding='utf-8'))['asset_infos']
 BY_ID = {e['id']: e for e in _ai}
 BY_NAME = {}
@@ -24,7 +31,7 @@ def sprite_pixels(name_or_id):
     return img[y:y+h, x:x+w].copy()
 def portraits():
     rows = []
-    for ln in open(r'D:\development\repo\alundra-casaengine-project-converter\docs\plan-e19-f4-annexe\portraits_table.tsv', encoding='utf-8').read().splitlines()[1:]:
+    for ln in open(PORTRAITS_TSV, encoding='utf-8').read().splitlines()[1:]:
         p = ln.split('\t')
         rows.append(dict(bank=int(p[0]), map=int(p[1]), sig=p[2], id=p[3], w=int(p[4]), h=int(p[5]), ax=int(p[6]), ay=int(p[7]), etc=p[8], name=p[9]))
     return rows

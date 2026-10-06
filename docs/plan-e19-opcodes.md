@@ -6001,7 +6001,7 @@ MGUI (sous-module du moteur ; branche `chantier/e19f4c1-image-brightness` créé
   `notes.md`) est sans effet : les tests suivent la règle du centre, D-E19-101 fait foi. Nouvelle époque ; une seule relecture de
   clôture.
 
-###### E19.f4c2 — Vue du nom et du portrait du dialogue ⏳ (planifiée le 2026-10-06, après f4c1)
+###### E19.f4c2 — Vue du nom et du portrait du dialogue 🚧 (planifiée le 2026-10-06, après f4c1 ; F4C2-0 faite le 2026-10-06)
 
 DLL et écran XAML seulement (aucun export : `UI/Screens/*` est versionné à la main).
 - **F4C2-R1 — XAML** (`proposal-TextBoxScreen.xaml`) : après `TextClip`, `PortraitImage` (repos (8, 116) dans la XAML, vol par
@@ -6046,6 +6046,19 @@ DLL et écran XAML seulement (aucun export : `UI/Screens/*` est versionné à la
   `ApplyingTheSameStateTwice_...` gagne `NameBox` et `Portrait` dans la liste des écouteurs. Rouges d'abord.
 - **F4C2-2 — Code**, docs, ADR ; **F4C2-3 — Vérification** ; **Recette F4C2-4** : Jess (carte 6), Miming (banque 122, 48 × 72), deux
   locuteurs de suite, un nom sans portrait, un site `0xC4`.
+
+- **Fait le 2026-10-06 (mode AUTO, rien poussé, rien mergé) : F4C2-0, la prévision.** Le générateur de l'annexe est complété (chemins relatifs au dépôt, variantes `_psx` retirées,
+  `Brightness` écrit, références teintées) : `gen_cases.py` écrit `states.json` (53 images épinglées, `portrait.brightness` = Rgb / 128), `classes.tsv` (la classe de chaque image,
+  son Rgb, le quad du portrait, son fichier), `refs/*.png` (444 Ko) et `names-digests.tsv` (60 noms × x 64, 303, 150 : 180 empreintes SHA-1) ; `README.md` de l'annexe.
+  - **Classes** : 17 images exactes (Rgb 128, ou pas de portrait), 36 à 8/255 (`tint8` : toute passe d'ouverture et de retour, la passe de T à Rgb 127 comprise). Répartition :
+    S1 35 images (N+1, N+2, N+8, N+13, N+16, N+21, N+22, N+25, N+36 à N+40 à × 1 ; N+2, N+8, N+16, N+21, N+22, N+36 à × 2 et × 3 ; N+1, N+2, N+3, N+37, N+38 à × 2 et × 3 dans la vue
+    décalée (97, 41)), S8 7 (Miming 48 × 72, banque 122), S5 6 (N+37 à N+42), S2 2, S3 3.
+  - **Points d'ordre recalculés** (S1 N+16, `refs/S1_N16_x1.png`) : (19, 168) (72, 48, 32), (17, 170) (16, 8, 8), (20, 171) (144, 120, 72), (71, 171) et (161, 171) (72, 64, 56),
+    (64, 140) = couleur de fond, (66, 142) (152, 160, 128), (110, 149) (41, 49, 16) : égaux aux valeurs du plan. L'image N+16 est égale à l'octet à la référence de la découverte.
+  - **Un écart de la découverte, corrigé ici** : à Rgb = 128 la modulation `psx_modulate` n'est pas l'identité sur les texels exportés (72 devient 74 : l'export écrit `t5 << 3`, la
+    modèle rend `(o5 << 3) | (o5 >> 2)`) ; la référence du portrait au repos est donc le texel tel quel (« exacte », comme le plan l'écrit) ; la modulation ne vaut que pour Rgb ≠ 128, où
+    les 8/255 la couvrent.
+  - Tâches : ✅ F4C2-0 ; ⏳ F4C2-1 tests d'abord ; ⏳ F4C2-2 code, docs, ADR ; ⏳ F4C2-3 vérification ; ⏳ F4C2-4 recette.
 
 ###### E19.f4c3 — Rampe du portrait de l'inventaire (D-E19-100) ⏳ (planifiée le 2026-10-06, **après f4c2**, qui ajoute la propriété ; relecture n°1 REVISE (liste fermée, prévisions), révisée ; relecture n°2 à faire)
 

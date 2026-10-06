@@ -1,23 +1,59 @@
-"""Reference compositor of the E19.f4c discovery (pure Python, numpy + PIL): the text box screen WITH the speaker name box and portrait, one pass at a time.
+"""Reference compositor of E19.f4c (pure Python, numpy + PIL): the text box screen WITH the speaker name box and portrait, one pass at a time.
 
 Independent of the C# side (machine, view model, XAML, MGUI, GPU): it reads only
   - the binary's value model (docs/plan-e19-f4-annexe/model/f4_model*.py, validated against the real binary code by the f4 discovery) lock-stepped with the f2b1 text box
     drawn-state model (docs/plan-e19-f2b1-annexe/scripts/model_drawn.py),
   - the exported PNGs / sprites of alundra-project (the same caveat as f2b1 and f3b: the textures are the exports, not VRAM),
-  - the binary's glyph table (via refcompose2) for the text of the rows AND of the name.
+  - the binary's glyph table (via refcompose2, which asserts it against the executable when the discovery's `lib` is importable) for the text of the rows AND of the name.
 The compositing order is the binary's ordering table: slots 0 and 2 (text box frame, cursor, rows), slot 3 (portrait), slot 5 (name frame), slot 6 (name text, cut by its DR_AREA).
+
+Every path is relative to this file. The two f2b1/f4 sources are imported from their own annex folders; the f2b1 `refcompose2` needs a module named `lib` that exposes the
+executable (a discovery tool kept outside the repository): when it is not importable, a stand-in built from the versioned glyph table (docs/plan-e19-f2b0-annexe/glyph_table.txt)
+is installed, so that its import-time check against the executable (done once by the f2b0 slice) is the only thing skipped.
+
+E19.f4c2 (D-E19-100, D-E19-101): the portrait is sampled at the CENTRE of the screen pixels (what the GPU does, floor((i + 0.5) * src / dst)) at the screen resolution
+(`k` x the native size), then modulated like the PS1 does (`psx_modulate`: 5-bit texel x rgb / 128, saturated). The PS1 own texel rule (floor(i * src / dst)) is NOT a reference.
 """
 import os
+import struct
 import sys
+import types
 
 sys.dont_write_bytecode = True
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(HERE, 'f4model'))
-sys.path.insert(0, os.path.join(HERE, 'f2b1scripts'))
+DOCS = os.path.dirname(HERE)
+sys.path.insert(0, os.path.join(DOCS, 'plan-e19-f4-annexe', 'model'))
+sys.path.insert(0, os.path.join(DOCS, 'plan-e19-f2b1-annexe', 'scripts'))
 sys.path.insert(0, HERE)
 
 import numpy as np
 from PIL import Image
+
+
+def _install_lib_stand_in():
+    try:
+        import lib  # the discovery's executable reader, when the machine has it (a namespace package of another tool is not it)
+        if hasattr(lib, 'DATA'):
+            return 'binary'
+        del sys.modules['lib']
+    except ImportError:
+        pass
+    table = {}
+    for ln in open(os.path.join(DOCS, 'plan-e19-f2b0-annexe', 'glyph_table.txt'), encoding='utf-8').read().splitlines()[1:]:
+        p = ln.split()
+        if len(p) == 6:
+            table[int(p[0], 16)] = tuple(int(x) for x in p[1:])
+    base, off, at = 0x80020000, 0x800, 0x800993C4
+    data = bytearray(off + (at - base) + 20 * 256)
+    for c in range(256):
+        struct.pack_into('<5i', data, at - base + off + 20 * c, *table[c])
+    lib = types.ModuleType('lib')
+    lib.DATA, lib.BASE, lib.OFF = bytes(data), base, off
+    sys.modules['lib'] = lib
+    return 'glyph-table stand-in'
+
+
+LIB_SOURCE = _install_lib_stand_in()
 
 import model as M
 import f4_model as F
@@ -32,7 +68,7 @@ BG = R.BACKGROUND[:3]
 
 def load_names():
     import json
-    d = json.load(open(os.path.join(HERE, 'names_widths.json'), encoding='utf-8'))
+    d = json.load(open(os.path.join(DOCS, 'plan-e19-f4-annexe', 'names_widths.json'), encoding='utf-8'))
     return {int(k, 16): v['name'].encode('cp1252') for k, v in d.items()}
 
 
@@ -111,14 +147,11 @@ def psx_modulate(px, rgb):
     return res
 
 
-def sample(px, w, h, rule):
+def sample(px, w, h):
+    """The centre rule: nearest sampling at pixel centres, what a GPU point sampler does (floor((i + 0.5) * src / dst), D-E19-101)."""
     H, W = px.shape[:2]
-    if rule == 'psx':      # floor(i * src / dst): texel under the pixel's top-left corner [hyp, PSX rasteriser]
-        ys = (np.arange(h) * H) // h
-        xs = (np.arange(w) * W) // w
-    else:                  # 'center': nearest sampling at pixel centres, what a GPU point sampler does
-        ys = np.floor((np.arange(h) + 0.5) * H / h).astype(int)
-        xs = np.floor((np.arange(w) + 0.5) * W / w).astype(int)
+    ys = np.floor((np.arange(h) + 0.5) * H / h).astype(int)
+    xs = np.floor((np.arange(w) + 0.5) * W / w).astype(int)
     return px[np.ix_(ys, xs)]
 
 
@@ -135,34 +168,45 @@ def blit_rgba(canvas, img, dx, dy, clip=None):
     canvas[Y[ok], X[ok]] = img[..., :3][ok]
 
 
-def compose(rec, portrait_px=None, rule='center', tint=False, layers=('box', 'portrait', 'nameframe', 'nametext')):
-    """One frame record of run() -> a 240 x 320 x 3 uint8 image."""
-    canvas = np.empty((240, 320, 3), dtype=np.uint8)
-    canvas[:, :] = BG
+def up(arr, k):
+    return np.repeat(np.repeat(arr, k, axis=0), k, axis=1) if k > 1 else arr
+
+
+def compose(rec, portrait_px=None, k=1, ox=0, oy=0, layers=('box', 'portrait', 'nameframe', 'nametext')):
+    """One frame record of run() -> a (240 k + 2 oy) x (320 k + 2 ox) x 3 uint8 image: the screen at the integer scale k (every layer point-sampled, the portrait sampled
+    at the centre of the screen pixels then modulated), in a view offset by (ox, oy) inside a target of the background colour (the view offset of a window that is not 4:3)."""
+    base = np.empty((240, 320, 3), dtype=np.uint8)
+    base[:, :] = BG
     if 'box' in layers and rec['drawn'] is not None:
         img, _ = R.compose(rec['drawn'])
-        canvas[:, :] = np.array(img.convert('RGB'))
+        base[:, :] = np.array(img.convert('RGB'))
+    canvas = up(base, k).copy()
     p = rec['portrait']
     if 'portrait' in layers and p is not None and p['w'] > 0 and p['h'] > 0 and portrait_px is not None:
-        s = sample(portrait_px, p['w'], p['h'], rule)
-        if tint:
+        s = sample(portrait_px, p['w'] * k, p['h'] * k)
+        if p['rgb'] != 128:     # 128 is the neutral colour of the PS1: the texel as it is (the plan: the portrait at rest is exact)
             s = psx_modulate(s, p['rgb'])
-        blit_rgba(canvas, s, p['x'], p['y'])
+        blit_rgba(canvas, s, p['x'] * k, p['y'] * k)
     n = rec['name']
     if n is not None:
         if 'nameframe' in layers:
-            blit_rgba(canvas, NAMEFRAME, n['frame'][0], n['frame'][1])
+            blit_rgba(canvas, up(NAMEFRAME, k), n['frame'][0] * k, n['frame'][1] * k)
         if 'nametext' in layers:
             glyphs = list(NAMES[rec['name_id']])
             band, _ = R.band_image(glyphs)
             arr = np.array(band.crop((0, 0, 255, 16)))
-            blit_rgba(canvas, arr, n['text'][0], n['text'][1], clip=(n['clip'][0], n['clip'][1], n['clip'][2], n['clip'][3]))
+            c = n['clip']
+            blit_rgba(canvas, up(arr, k), n['text'][0] * k, n['text'][1] * k, clip=(c[0] * k, c[1] * k, c[2] * k, c[3] * k))
+    if ox or oy:
+        target = np.empty((240 * k + 2 * oy, 320 * k + 2 * ox, 3), dtype=np.uint8)
+        target[:, :] = BG
+        target[oy:oy + 240 * k, ox:ox + 320 * k] = canvas
+        canvas = target
     return canvas
 
 
-def save(canvas, path, k=1):
-    arr = np.repeat(np.repeat(canvas, k, axis=0), k, axis=1) if k > 1 else canvas
-    Image.fromarray(arr).save(path)
+def save(canvas, path):
+    Image.fromarray(canvas).save(path)
 
 
 if __name__ == '__main__':
@@ -170,9 +214,9 @@ if __name__ == '__main__':
     jess = bank[4]
     px = sprite_pixels(jess['id'])
     recs = run([(0x0D, entity(0x104, True), b'AB', True, None)], frames=60)
-    os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)
+    outdir = os.path.join(HERE, 'refs')
+    os.makedirs(outdir, exist_ok=True)
     for f in (4, 5, 11, 16, 19, 24, 25, 28, 39, 40, 42):
         r = recs[f]
-        save(compose(r, px), os.path.join(HERE, 'out', 'S1_N%+d.png' % r['rel']))
         print(f, 'N%+d' % r['rel'], r['phase'], 'box y', None if r['drawn'] is None else r['drawn']['y'], 'name', None if r['name'] is None else r['name']['frame'][0],
               'portrait', None if r['portrait'] is None else (r['portrait']['x'], r['portrait']['y'], r['portrait']['w'], r['portrait']['h'], r['portrait']['rgb']))

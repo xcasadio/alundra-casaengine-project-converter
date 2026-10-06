@@ -1,5 +1,7 @@
-import struct, json
+import os, struct, json
+# `lib` is the discovery's executable reader (a tool kept outside the repository: it reads ALUN_CD.EXE, France); this probe is the only file of the annex that needs the executable.
 import lib
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from PIL import Image
 import numpy as np
 def rd(a, n): 
@@ -21,8 +23,8 @@ for p in (ptrA, ptrB):
     else: B=cells
 print('A==B uv:', all((a['u'],a['v'])==(b['u'],b['v']) for a,b in zip(A,B)))
 # compose from wind.png
-wind = np.array(Image.open(r'D:\development\repo\alundra-casaengine-project-converter\data-extracted\ui\wind.png').convert('RGBA'))
-wj = json.load(open(r'D:\development\repo\alundra-casaengine-project-converter\data-extracted\ui\wind.json', encoding='utf-8'))
+wind = np.array(Image.open(os.path.join(REPO, 'data-extracted', 'ui', 'wind.png')).convert('RGBA'))
+wj = json.load(open(os.path.join(REPO, 'data-extracted', 'ui', 'wind.json'), encoding='utf-8'))
 print('wind.png', wind.shape)
 out = np.zeros((rows*8, cols*8, 4), dtype=np.uint8)
 pal=set()
@@ -33,6 +35,6 @@ for i,c in enumerate(A):
     ent=[e for e in wj if e['U0']==c['u'] and e['V0']==c['v']]
     pal.add(tuple((e['Width'],e['Height'],e['PaletteIndex']) for e in ent))
 print('wind.json palette entries for the cells:', pal)
-png = np.array(Image.open(r'D:\development\repo\alundra-casaengine-project-converter\alundra-project\UI\Textures\g_textTilesConfiguration.png').convert('RGBA'))
+png = np.array(Image.open(os.path.join(REPO, 'alundra-project', 'UI', 'Textures', 'g_textTilesConfiguration.png')).convert('RGBA'))
 print('baked', png.shape, 'equal to the composition:', np.array_equal(png, out))
 Image.fromarray(out).save('namebox_from_binary_cells.png')
