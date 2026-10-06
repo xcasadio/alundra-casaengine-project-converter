@@ -8595,6 +8595,10 @@ G2b-3 compile, et un export avec `Corners` n'est jamais lu par un moteur qui ne 
 - **Arrêts** : une valeur qui contredit `g2b3-prediction.json`, un fichier modifié hors de la liste des 1923, un test existant qui bouge.
   **Retour arrière** : revert, export complet égal au manifeste « avant ».
 
+**État d'exécution** (2026-10-06, mode AUTO, branche `chantier/e19-suite2` du parent ; ni push ni merge) :
+- ✅ **G2b3-0** prévision commitée avant le code : `docs/plan-e19-g2b-annexe/g2b3-predict.py` (indépendant du convertisseur : il lit `data-extracted/` et ne lit l'export que pour le dossier de chaque fichier et la durée du fichier de garde) et sa sortie `g2b3-prediction.json` (2 741 259 octets, déterministe : deux exécutions égales à l'octet). Valeurs : `Sprites.QuadsDeformed` 49 348, `Sprites.CornerTracks` 6 432, `Sprites.CornerKeyframes` 45 237 (38 910 actives et 6 327 désactivées) ; 1923 fichiers modifiés, liste égale à celle de `predicted_anim2d_changes.tsv` (0 écart) ; chaque temps de clé est un temps de clé `Sprite` de la même partie. Fichier de garde (`Entities/Coffre d’Anzes/bankalundra_227_anim1_down.anim2d`) : 10 pistes `Corners` (`part0` à `part9`), 7, 4, 1, 1, 1, 1, 1, 1, 3 et 2 clés ; première clé de `part0` : t = 0,36, active, coins (−7 ; 7), (7 ; 7), (−7 ; −7), (7 ; −7), `source_offset` (0 ; 0) ; `DurationSeconds` de l'export d'aujourd'hui 1,1.
+- ⏳ **G2b3-1** tests d'abord · ⏳ **G2b3-R1/R2** code · ⏳ **G2b3-2** export et preuves · ⏳ docs et ADR · ⏳ **G2b3-3** vérification.
+
 **Retour arrière** (chaque tranche) : revert du sous-module et du pointeur ; pour G2b-3, export complet égal au manifeste « avant ».
 **Arrêts** : un test existant qui bouge, une valeur mesurée qui contredit l'oracle ou la prévision, un fichier hors de la liste.
 **Risques** : 30,8 % des références d'entités changent d'aspect (recette nécessaire) ; à k > 1, un quad déformé est plus lisse que la PS1
