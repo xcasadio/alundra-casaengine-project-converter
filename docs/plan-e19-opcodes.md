@@ -5550,7 +5550,7 @@ convertisseur n'a pas changé (pas de tests du convertisseur). Restent la vérif
   248 texels ; liste fermée tenue ; export re-dérivé (les trois fichiers, l'entrée d'`AssetInfos.json`, les compteurs) et double
   export ; `Alundra.Tests` 2802/2802 en Release puis en Debug, `cmp` sans écart, six traces.
 
-###### E19.f3c — Ordre de l'écran de sauvegarde (D-E19-93) ⏳ (planifiée le 2026-10-06 ; relecture à faire ; exécution après la recette et l'approbation de l'auteur)
+###### E19.f3c — Ordre de l'écran de sauvegarde (D-E19-93) ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (liste des fichiers de test), révisée ; relecture n°2 à faire ; exécution après la recette et l'approbation de l'auteur)
 
 **Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais et en français, dans `docs/plan-e19-save-order-annexe/` :
 `notes.md`, `verify.md`, le modèle `hostmodel.py`, les preuves `slotorder*.py`, le correctif proposé `patch-proposal.diff.txt` et les tests
@@ -5570,7 +5570,13 @@ l'ordre du répartiteur). **[dépôt]** : `AlundraWorldProxy.cs:2189` ticke l'é
   par une surcharge `AlundraSaveScreenDirector.Tick(uint justPressed, uint justPressedByInterval)` (l'enregistrement par tick
   `_choicePadOfTick`, `:159`, existe déjà) ; ses deux lectures de manette (`:541` Carré, `:951` Croix) lisent ces champs ; `Tick()` sans
   argument reste pour les hôtes de test.
-- **Fichiers de production** (liste fermée) : `Alundra/Scripts/AlundraWorldProxy.cs`, `Alundra/Scripts/AlundraSaveScreenDirector.cs`.
+- **Fichiers** (liste fermée, production, tests et documents) : production `Alundra/Scripts/AlundraWorldProxy.cs`,
+  `Alundra/Scripts/AlundraSaveScreenDirector.cs` ; tests : un nouveau fichier `Alundra.Tests/AlundraSaveScreenTickOrderTests.cs` qui
+  porte tous les tests nouveaux de F3C-1 (les grilles par le vrai mandataire, le test de Croix et celui de Carré sur une image de
+  plusieurs ticks, le test de gel), et les deux fichiers existants dont les aides et les commentaires changent,
+  `Alundra.Tests/AlundraSaveScreenDirectorTests.cs` et `Alundra.Tests/Scripts/AlundraSaveScreenPresenterTests.cs` ; documents :
+  `docs/plan-e19-opcodes.md`, `docs/plan-e19-f3-annexe/sim-pins.md`, `docs/plan-e19-f3-annexe/sim-notes.md`,
+  `docs/plan-e19-f3-annexe/census-notes.md`, la nouvelle ADR du parent et sa ligne dans `docs/decisions/README.md`.
 - **Documents** : D-E19-88, F3A-R3 et les lignes du plan qui décrivent l'ancien ordre (`verify.md` en donne la liste), la ligne
   O-E19-69, `docs/plan-e19-f3-annexe/sim-pins.md:60`, `sim-notes.md:100`, `census-notes.md:66/92/187` ; une ADR du parent (prochain numéro
   libre, revérifié avant le commit) : l'écran de sauvegarde tourne après la passe du dialogue, comme le créneau 10 après le créneau 3 ;
@@ -5596,10 +5602,12 @@ de deux ticks : armement 0/2/18/26/26/28, OUI/NON/OUI/OUI/NON/OUI → ancien 19/
 - ⏳ **F3C-2 — Code** (F3C-R1, F3C-R2), docs, ADR.
 - ⏳ **F3C-3 — Vérification** (vérificateur neuf).
 
-**Acceptation** : nouveaux tests rouges puis verts ; mutants rejoués : `Tick()` sans argument dans la seconde boucle, Carré lu dans
+**Acceptation** : nouveaux tests rouges puis verts (les cases des grilles qui changent sont rouges sur l'ordre d'aujourd'hui ; les tests de
+Croix, de Carré et de gel sont verts sur le code d'aujourd'hui et rouges sur leur mutant) ; mutants rejoués : `Tick()` sans argument dans la seconde boucle, Carré lu dans
 `TickPad`, tick de l'écran remis dans la première boucle, écran déplacé après les événements de carte (chacun rougit au moins un test) ;
 `Alundra.Tests` en Release puis en Debug, `cmp`, six traces. Aucun export, aucun moteur. **Retour arrière** : revert. **Arrêts** : une
-valeur qui contredit les grilles, un test existant qui bouge en dehors de `:613`, un fichier hors de la liste. **Recette F3C-4** : livre
+valeur qui contredit les grilles, un test existant qui bouge en dehors de `:613`, un fichier de production, de test ou de document
+hors de la liste fermée ci-dessus. **Recette F3C-4** : livre
 de sauvegarde, répondre tard à la question « sauvegarder ? » (OUI puis NON).
 
 ###### E19.f4 — Nom et portrait du locuteur : découverte du 2026-10-06, découpée en E19.f4a, E19.f4b et E19.f4c ⏳
