@@ -1,0 +1,120 @@
+--- orig/Alundra/Scripts/AlundraSaveScreenDirector.cs	2026-10-06 08:05:39.220394500 +0200
++++ new/Alundra/Scripts/AlundraSaveScreenDirector.cs	2026-10-06 08:09:40.415475400 +0200
+@@ -422,6 +422,16 @@
+     /// </summary>
+     public void Tick()
+     {
++        var pad = _gameState?.TickPad;
++        Tick(pad?.ButtonsJustPressed ?? 0, pad?.ButtonsJustPressedByInterval ?? 0);
++    }
++
++    private uint _padPressed;
++    private uint _padInterval;
++
++    /// <summary>SIM D-E19-93: the same tick on the pad words of THIS tick (the world proxy records them per tick: the tick now runs after the dialogue pass, in the loop of the passes).</summary>
++    public void Tick(uint buttonsJustPressed, uint buttonsJustPressedByInterval)
++    {
+         if (_gameState == null || !IsActive)
+         {
+             _messageBoxDrawn = false;
+@@ -429,6 +439,8 @@
+             return;
+         }
+ 
++        _padPressed = buttonsJustPressed;
++        _padInterval = buttonsJustPressedByInterval;
+         RunState(_gameState);
+         RunTransition(_gameState);
+     }
+@@ -538,7 +550,7 @@
+                     _fadeSubstate = 1;
+                 }
+ 
+-                if ((state.TickPad.ButtonsJustPressed & AlundraPadState.Square) != 0)
++                if ((_padPressed & AlundraPadState.Square) != 0)
+                 {
+                     RequestMessageClose();
+                     _fadeSubstate = 1;
+@@ -948,7 +960,7 @@
+     /// (<c>ButtonsJustPressedByInterval</c>, the key repeat).</summary>
+     private void RunPickerInput(AlundraGameState state)
+     {
+-        var pad = state.TickPad.ButtonsJustPressedByInterval;
++        var pad = _padInterval;
+ 
+         if ((pad & AlundraPadState.Cross) != 0)
+         {
+--- orig/Alundra/Scripts/AlundraWorldProxy.cs	2026-10-06 08:05:39.305218600 +0200
++++ new/Alundra/Scripts/AlundraWorldProxy.cs	2026-10-06 08:09:40.426592000 +0200
+@@ -2182,12 +2182,6 @@
+             AlundraSubInventoryDirector.Instance.Tick();
+             AlundraInventoryPostProcess.Instance.Run();
+ 
+-            // E16.e L5 (docs/plan-e16-etat-partie.md): the save screen - its state machine then its transition's
+-            // render, as UpdateMemoryCardProcess then UpdateUserInterface in the original's RenderScene
+-            // (GraphicManager.cs:62-63). It reads TickPad's edges, so it runs inside this loop too. Never open
+-            // together with an inventory: the inventory's trigger refuses while it is active (J9).
+-            AlundraSaveScreenDirector.Instance.Tick();
+-
+             // docs/plan-portrait-inventaire.md P4/PI8: the portrait steps once per tick HERE, after both
+             // directors' per-frame work and the post-process and before the presenters - the original's own
+             // DisplayUserInterface (0x8002be64) runs right after the callbacks and the post-process
+@@ -2209,10 +2203,6 @@
+             // screens are never pushed together (D-E13D-26), so their push/remove order here never matters,
+             // but running both inside the loop keeps every presenter reading this SAME tick's director state.
+             _subInventoryPresenter?.Tick();
+-
+-            // E16.e T4 (docs/plan-e16-etat-partie.md, L5): the save screen's presenter, reading the state its
+-            // director reached earlier in this same tick.
+-            _saveScreenPresenter?.Tick();
+         }
+ 
+         // E12.a wiring fix: must run BEFORE the map-events pass below - a scripted dialogue opened
+@@ -2258,6 +2248,11 @@
+             // in one tick the text box is pushed first, and the choice above it.
+             _choicePresenter?.Tick();
+ 
++            // SIM D-E19-93: the save screen after the dialogue pass (the binary's slot 10 after slot 3), on the pad words of THIS tick.
++            var (screenPressed, screenInterval) = _choicePadOfTick[tick];
++            AlundraSaveScreenDirector.Instance.Tick(screenPressed, screenInterval);
++            _saveScreenPresenter?.Tick();
++
+             var tickBlocked = (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0
+                 || AlundraWarpDirector.Instance.IsTransitionInProgress;
+             if (PlayerEntity == null || tickBlocked)
+--- orig/Alundra.Tests/AlundraSaveScreenDirectorTests.cs	2026-10-06 08:05:39.388612600 +0200
++++ new/Alundra.Tests/AlundraSaveScreenDirectorTests.cs	2026-10-06 08:17:01.411609600 +0200
+@@ -76,8 +76,8 @@
+     {
+         for (var i = 0; i < count; i++)
+         {
+-            TickScreen(hold);
+             Dialogue.Tick();
++            TickScreen(hold);
+         }
+     }
+ 
+@@ -610,7 +610,7 @@
+             taken++;
+         }
+ 
+-        Assert.Equal(20, taken); // E19.f3a: armed 26 ticks after the Cross, past the first interactive pass (18): pressed at the next pass; 20 ticks in the order of the proxy (19 in the binary's)
++        Assert.Equal(19, taken); // SIM D-E19-93: armed 26 ticks after the Cross, past the first interactive pass (19): pressed at the next pass, answered in the tick of the close pass
+ 
+         TickUntilState(AlundraSaveScreenDirector.StateWaitSquare);
+         Assert.Equal("slot2", Assert.Single(_slots.SaveCalls).Slot);
+--- orig/Alundra.Tests/Scripts/AlundraSaveScreenPresenterTests.cs	2026-10-06 08:05:39.493092700 +0200
++++ new/Alundra.Tests/Scripts/AlundraSaveScreenPresenterTests.cs	2026-10-06 08:17:01.579634400 +0200
+@@ -64,10 +64,10 @@
+         for (var i = 0; i < count; i++)
+         {
+             State.TickPad.Update(hold);
++            AlundraDialogueDirector.Instance.Tick(); // SIM D-E19-93: the pass of the dialogue director (its choice box) first, the order of the world proxy
++            _choicePresenter.Tick();
+             Director.Tick();
+-            AlundraDialogueDirector.Instance.Tick(); // E19.f3a: the pass of the dialogue director (its choice box) after the screen, the order of the world proxy
+             _presenter.Tick();
+-            _choicePresenter.Tick(); // E19.f3b: after the save screen's presenter, as the choice screen is pushed above it
+         }
+     }
+ 

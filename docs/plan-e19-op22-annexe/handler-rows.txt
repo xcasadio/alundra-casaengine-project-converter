@@ -1,0 +1,37 @@
+== 0x22 Height 20: literal 10485760 -> DLL target 10485759
+  PosZ  10484999 ForceZ         0 contact 0 -> result 0  ForceZ out         0  memo(DLL frame) 10485759
+  PosZ  10484999 ForceZ     32768 contact 0 -> result 0  ForceZ out       760  memo(DLL frame) 10485759
+  PosZ  10484999 ForceZ       700 contact 0 -> result 0  ForceZ out       700  memo(DLL frame) 10485759
+  PosZ  10485759 ForceZ         0 contact 0 -> result 1  ForceZ out         0  memo(DLL frame) 10485759
+  PosZ  10485760 ForceZ        -5 contact 0 -> result 0  ForceZ out        -1  memo(DLL frame) 10485759
+  PosZ  10485760 ForceZ         0 contact 0 -> result 0  ForceZ out         0  memo(DLL frame) 10485759
+  PosZ   9999999 ForceZ    -32768 contact 0 -> result 0  ForceZ out    -32768  memo(DLL frame) 10485759
+  PosZ   9999999 ForceZ    600000 contact 0 -> result 0  ForceZ out    485760  memo(DLL frame) 10485759
+  PosZ  10485759 ForceZ     32768 contact 1 -> result 1  ForceZ out     32768  memo(DLL frame) 10485759
+  PosZ  10485760 ForceZ    -32768 contact 0 -> result 0  ForceZ out        -1  memo(DLL frame) 10485759
+  PosZ  10518528 ForceZ    -32768 contact 0 -> result 0  ForceZ out    -32768  memo(DLL frame) 10485759
+  PosZ  10485765 ForceZ    -32768 contact 0 -> result 0  ForceZ out        -6  memo(DLL frame) 10485759
+== 0x23 Height 30: literal 15728640 -> DLL target 15728639
+  PosZ  15000000 ForceZ         0 contact 0 -> result 0  ForceZ out         0  memo(DLL frame) 15728639
+  PosZ  15000000 ForceZ     32768 contact 0 -> result 0  ForceZ out     32768  memo(DLL frame) 15728639
+  PosZ  15000000 ForceZ     32768 contact 1 -> result 1  ForceZ out     32768  memo(DLL frame) 15728639
+  PosZ  15728639 ForceZ         0 contact 0 -> result 1  ForceZ out         0  memo(DLL frame) 15728639
+== 0x22 Height 38 (no controller): DLL target 19922943
+  PosZ  19890175 ForceZ     32768 contact 0 -> result 0  ForceZ out     32768  memo(DLL frame) 19922943
+  PosZ  19922943 ForceZ         0 contact 0 -> result 1  ForceZ out         0  memo(DLL frame) 19922943
+  PosZ  19922944 ForceZ        -5 contact 0 -> result 0  ForceZ out        -1  memo(DLL frame) 19922943
+Height  6: literal   3145728 (  48.0 px)  DLL shifted target   3145727  controller target   3145727
+Height 10: literal   5242880 (  80.0 px)  DLL shifted target   5242879  controller target   5242879
+Height 12: literal   6291456 (  96.0 px)  DLL shifted target   6291455  controller target   6291455
+Height 14: literal   7340032 ( 112.0 px)  DLL shifted target   7340031  controller target   7340031
+Height 20: literal  10485760 ( 160.0 px)  DLL shifted target  10485759  controller target  10485759
+Height 22: literal  11534336 ( 176.0 px)  DLL shifted target  11534335  controller target  11534335
+Height 30: literal  15728640 ( 240.0 px)  DLL shifted target  15728639  controller target  15728639
+Height 32: literal  16777216 ( 256.0 px)  DLL shifted target  16777215  controller target  16777215
+Height 33: literal  17301504 ( 264.0 px)  DLL shifted target  17301503  controller target  17301504
+Height 38: literal  19922944 ( 304.0 px)  DLL shifted target  19922943  controller target  19922944
+== 0x22 Height 38, CONTROLLER (literal target 19922944, deviation above 256 px)
+  PosZ  19890176 ForceZ     32768 contact 0 -> result 0  ForceZ out     32768  memo(DLL frame) 19922944
+  PosZ  19922944 ForceZ     32768 contact 0 -> result 1  ForceZ out     32768  memo(DLL frame) 19922944
+  PosZ  19922943 ForceZ     32768 contact 0 -> result 0  ForceZ out         1  memo(DLL frame) 19922944
+  PosZ  19921000 ForceZ     32768 contact 0 -> result 0  ForceZ out      1944  memo(DLL frame) 19922944

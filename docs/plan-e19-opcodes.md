@@ -298,7 +298,7 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     simulation ; l'ordre du mandataire entre l'écran de sauvegarde et le dialogue ne change pas (O-E19-69).
   - **D-E19-89** — (2026-10-06, choix de la session, E19.f4, précédent de la décision D2 de l'auteur pour le portrait de
     l'inventaire) La rampe de couleur du portrait (255 → 128, au-dessus de 1) n'est pas rendue : teinte normale, manque de MGUI
-    consigné (G11), pas contourné.
+    consigné (G11), pas contourné. **Remplacée le 2026-10-06 par D-E19-100.**
   - **D-E19-90** — (2026-10-06, choix de la session, E19.f4b, prolonge D-E19-49 ; **confirmé par l'auteur le 2026-10-06**) Un portrait de 48 × 72 vole
     comme un 48 × 56, ancre haut-gauche, vers le repos (8, 172 − h) = (8, 100) : il finit bas aligné sur le bas des autres (172) ; les
     tailles du vol suivent h = 72 ; sa passe dégénérée est posée en (8, 100) (invisible).
@@ -314,7 +314,7 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     sont ré-épinglées.
   - **D-E19-94** — (2026-10-06, l'auteur, O-E19-68) La **cible de `0x22`** se corrige : une règle par sens de déplacement, exacte
     au tick sur les 17 sites (cible décalée sous 256 px, littérale au-dessus, d'après la contre-vérification d'E19.h1b2) ; nouvelle
-    ADR qui remplace en partie l'exception d'ADR-0026.
+    ADR qui remplace en partie l'exception d'ADR-0026. **Remplacée en partie le 2026-10-06 par D-E19-98.**
   - **D-E19-95** — (2026-10-06, l'auteur, O-E19-67) Les **autres espaces de bord perdues** à l'export Yarn (hors S025) restent un
     écart consigné, sans correction.
   - **D-E19-96** — (2026-10-06, l'auteur, O-E19-72) **Remplace en partie D-E19-54**, qui reposait sur une lecture fausse (aucun
@@ -323,6 +323,21 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     consommateur (E14 pour les objets et l'IA, le code de déplacement, E18 pour `0xBB`).
   - **D-E19-97** — (2026-10-06, l'auteur, O-E19-73) D-E19-92 vaut aussi pour les **quads d'effets** : ils passent par le même
     quad libre du moteur que les entités, à la résolution de l'écran.
+  - **D-E19-98** — (2026-10-06, l'auteur, après la découverte d'E19.h1b3) **Remplace en partie D-E19-94.** La cible de `0x22` est la
+    comparaison du binaire dans le repère de la DLL : cible décalée `(H << 19) − 1` **dans tous les sens** (la « règle par sens » de
+    D-E19-94 n'était qu'un ajustement aux 17 sites) ; repli sur la cible littérale pour une entité à contrôleur quand la cible atteint
+    2²⁴ (la racine flottante du contrôleur ne représente plus une valeur impaire au-dessus de 256 px : 127 rec17/rec18). Le dernier
+    pas de la descente de la 115 (1/65536 px) exige un **réglage du moteur** : un seuil de déplacement minimal par contrôleur
+    (inchangé par défaut, 0 pour les entités poussées par script, comme le binaire qui applique tout déplacement) ; ADR du moteur et
+    ADR du parent (remplace en partie ADR-0026).
+  - **D-E19-99** — (2026-10-06, l'auteur, O-E19-75) L'**âge du mot de manette** lu par l'écran de sauvegarde (binaire 19
+    échantillons, portage 18 après D-E19-93) se traite dans une **tranche à part**, après E19.f3c.
+  - **D-E19-100** — (2026-10-06, l'auteur) **Remplace D2** (plan du portrait de l'inventaire) **et D-E19-89** : la rampe de couleur des
+    portraits (au-dessus de 1, jusqu'à ×2) est **rendue**, pour le portrait de l'inventaire comme pour celui du dialogue ; le manque
+    G11 de MGUI (une image ne sait pas dépasser une teinte de 1) se corrige dans MGUI (ADR de MGUI).
+  - **D-E19-101** — (2026-10-06, l'auteur) Le **vol du portrait** (image MGUI réduite, lue au centre des pixels) est lu à la résolution
+    de l'écran : l'écart à la règle de la PS1 (`floor(u + 0,5)`) pendant les 0,3 s du vol est accepté et écrit dans l'ADR ; au repos,
+    le portrait est exact.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -5535,6 +5550,58 @@ convertisseur n'a pas changé (pas de tests du convertisseur). Restent la vérif
   248 texels ; liste fermée tenue ; export re-dérivé (les trois fichiers, l'entrée d'`AssetInfos.json`, les compteurs) et double
   export ; `Alundra.Tests` 2802/2802 en Release puis en Debug, `cmp` sans écart, six traces.
 
+###### E19.f3c — Ordre de l'écran de sauvegarde (D-E19-93) ⏳ (planifiée le 2026-10-06 ; relecture à faire ; exécution après la recette et l'approbation de l'auteur)
+
+**Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais et en français, dans `docs/plan-e19-save-order-annexe/` :
+`notes.md`, `verify.md`, le modèle `hostmodel.py`, les preuves `slotorder*.py`, le correctif proposé `patch-proposal.diff.txt` et les tests
+sondes `probe-tests.cs.txt`). Faits porteurs **[binaire]** : `RenderScene` (`0x8002BD60`) appelle l'automate de la carte mémoire
+(`0x8005EC98`) puis le répartiteur `0x80048054`, qui parcourt les créneaux 0 à 12 **en ordre croissant** ; `Update(0)` (manette,
+événements de carte, entités) vient ensuite ; le créneau 10 (menu de fichier) lit Croix, remet le mot résultat `0x80180124` à zéro et
+ouvre la question (`0x80050BA8`) : la première passe du créneau 3 est donc S+1 ; il sonde le résultat que le créneau 3 écrit à C+18 **dans
+la même boucle** : OUI au plus tôt accepté à S+37, NON à S+38, OUI tardif S+48, NON tardif S+49 (vrai code des deux créneaux exécuté dans
+l'ordre du répartiteur). **[dépôt]** : `AlundraWorldProxy.cs:2189` ticke l'écran dans la première boucle de ticks, son présentateur à
+`:2215`, la passe du dialogue à `:2251` dans la seconde : une réponse tardive arrive un tick trop tard.
+
+**Règles.**
+- **F3C-R1** : le tick de l'écran et son présentateur passent dans la **seconde boucle**, juste après `_choicePresenter?.Tick()` (`:2259`)
+  et avant `var tickBlocked` (`:2261`) : le gel des événements de carte par `MenuOpen` reste dans le même tick, et l'écran est toujours
+  tické avant le `continue` quand le héros manque ou que la porte est fermée.
+- **F3C-R2** : dans la seconde boucle, `GameState.TickPad` ne porte que les fronts du dernier tick : l'écran reçoit la manette **du tick**
+  par une surcharge `AlundraSaveScreenDirector.Tick(uint justPressed, uint justPressedByInterval)` (l'enregistrement par tick
+  `_choicePadOfTick`, `:159`, existe déjà) ; ses deux lectures de manette (`:541` Carré, `:951` Croix) lisent ces champs ; `Tick()` sans
+  argument reste pour les hôtes de test.
+- **Fichiers de production** (liste fermée) : `Alundra/Scripts/AlundraWorldProxy.cs`, `Alundra/Scripts/AlundraSaveScreenDirector.cs`.
+- **Documents** : D-E19-88, F3A-R3 et les lignes du plan qui décrivent l'ancien ordre (`verify.md` en donne la liste), la ligne
+  O-E19-69, `docs/plan-e19-f3-annexe/sim-pins.md:60`, `sim-notes.md:100`, `census-notes.md:66/92/187` ; une ADR du parent (prochain numéro
+  libre, revérifié avant le commit) : l'écran de sauvegarde tourne après la passe du dialogue, comme le créneau 10 après le créneau 3 ;
+  conséquences : l'automate de l'écran passe aussi après la passe (inobservable dans les flux réels), le déclencheur de l'inventaire
+  (`AlundraInventoryDirector.cs:441`) ne voit plus, aux ticks 1 et suivants d'une image à plusieurs ticks, l'état de l'écran de la même
+  image (négligeable), l'âge du mot de manette reste un écart (O-E19-75).
+
+**Valeurs écrites d'avance** (modèle validé : il redonne toutes les épingles d'aujourd'hui dans l'ordre actuel ; le vrai mandataire,
+mesuré deux fois, donne les mêmes nombres) : `AlundraSaveScreenDirectorTests.cs:613` `DownDuringTheQuestion` **20 → 19** (seule valeur
+existante qui bouge) ; `AnswerAndClose` 55/56, `Carousel_Closing` 37, `Cross_AsksOuiNon` 37,
+`Question_TheDialogueScreenGoesOverTheSaveScreen` 38 inchangés. Grilles par le vrai `AlundraWorldProxy.Update` (images d'un tick :
+armement après le tick 0/1/17/18/26/26, réponse OUI/NON/OUI/OUI/OUI/NON → ancien 37/37/20/20/20/21, nouveau 37/37/20/19/19/20 ; images
+de deux ticks : armement 0/2/18/26/26/28, OUI/NON/OUI/OUI/NON/OUI → ancien 19/19/11/11/11/11, nouveau 19/18/10/10/10/10).
+
+**Tâches.**
+- ⏳ **F3C-1 — Tests d'abord** : les grilles ci-dessus par le vrai mandataire (rouges sur l'ordre d'aujourd'hui aux cases qui changent) ;
+  `TwoTickFrame_CrossHeldFromItsFirstTick_StillOpensTheQuestion` (Croix tenue dès le premier tick d'une image de deux ticks) et le
+  même pour **Carré** (`StartFailure`, image de 2 ou 3 ticks à l'état d'attente) : verts sur le code d'aujourd'hui et sur la cible,
+  rouges sur la variante naïve (`Tick()` sans argument, ou Carré encore lu dans `TickPad`) ; un test de **gel** (un événement de carte
+  avec un compteur, `Director.Start`, un `Update`, le compteur ne bouge pas ; au patron de `AlundraSaveGameDirectorLoadTests.cs:373`) ;
+  l'aide `Tick` de `AlundraSaveScreenDirectorTests.cs:75-82` passe à `Dialogue.Tick(); TickScreen(hold);` et `:613` à 19 ; l'aide de
+  `Alundra.Tests/Scripts/AlundraSaveScreenPresenterTests.cs:62-72` suit le nouvel ordre ; commentaires `:73-74`, `:68`, `:165` réécrits.
+- ⏳ **F3C-2 — Code** (F3C-R1, F3C-R2), docs, ADR.
+- ⏳ **F3C-3 — Vérification** (vérificateur neuf).
+
+**Acceptation** : nouveaux tests rouges puis verts ; mutants rejoués : `Tick()` sans argument dans la seconde boucle, Carré lu dans
+`TickPad`, tick de l'écran remis dans la première boucle, écran déplacé après les événements de carte (chacun rougit au moins un test) ;
+`Alundra.Tests` en Release puis en Debug, `cmp`, six traces. Aucun export, aucun moteur. **Retour arrière** : revert. **Arrêts** : une
+valeur qui contredit les grilles, un test existant qui bouge en dehors de `:613`, un fichier hors de la liste. **Recette F3C-4** : livre
+de sauvegarde, répondre tard à la question « sauvegarder ? » (OUI puis NON).
+
 ###### E19.f4 — Nom et portrait du locuteur : découverte du 2026-10-06, découpée en E19.f4a, E19.f4b et E19.f4c ⏳
 
 **Découverte** (2026-10-06, lecture seule, deux surfaces, chacune contre-vérifiée ; versionnée, en anglais, dans
@@ -5800,12 +5867,98 @@ une extension sans vérité binaire (D-E19-90) ; `GetMatchingEntitiesBySearchTyp
   `cmp` sans écart, six traces. Avis P4 : la remise avant la garde de `NotifyPresenterClosed` n'est vérifiée que par lecture (à
   voir en jeu : deux dialogues de suite avec le même locuteur).
 
-###### E19.f4c — Vue du nom et du portrait ⏳ (esquisse, après E19.f4b)
+###### E19.f4c — Vue du nom et du portrait ⏳ (découverte du 2026-10-06 faite et contre-vérifiée ; D-E19-100, D-E19-101 ; planifiée en f4c1, f4c2, f4c3 ; relecture à faire ; exécution après la recette et l'approbation de l'auteur)
 
-`PortraitImage`, `NameFrame` et `NameText` ajoutés à `TextBoxScreen.xaml` (l'idiome du portrait de l'inventaire : repos dans la XAML, vol
-par translation et échelle liées, ADR-0020 de MGUI), sous-view models appliqués après `Apply(box)` ; préchargement des feuilles ; test au
-pixel sur GPU ; rapport du manque G11 (rampe au-dessus de 1).
+**Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais, dans `docs/plan-e19-f4c-annexe/` : `notes*.md`,
+`verify.md`, la XAML proposée `proposal-TextBoxScreen.xaml` validée par une sonde sur GPU hors du dépôt, et le générateur
+`assets.py`, `f4c_ref.py`, `gen_cases.py`, `compare_gpu.py`). Faits porteurs **[binaire]** :
+- **Cadre du nom** : configuration `0x800A58BC`, x 64, y 140, 14 × 4 cases de 8 × 8, opaques, non modulées, palette 0, posées une fois au
+  démarrage (`0x8005A0C8`) ; composées depuis `wind.png`, égales à l'octet au `g_textTilesConfiguration.png` exporté (112 × 32, sprite
+  `91ca17ae-e279-5a45-bb45-b15fbabdde68`).
+- **Texte du nom** : palette 8 (celle des lignes et des étiquettes du choix), replacé à chaque passe en x = x du cadre + `trunc((112 − w) / 2)`,
+  y 148 ; son rectangle de découpe ne coupe jamais un nom (ni une étiquette du choix) : non porté.
+- **Ordre** (vrai code `0x800481F8`, `0x80044C5C`) : cadre et curseur du texte, lignes, portrait, cases du nom, texte du nom ; la fenêtre
+  du choix au-dessus ; aucun tramage.
+- **Portrait** : une `POLY_FT4` modulée opaque (`0x2C`), (x, y) à (x + w, y + h) bords droit et bas exclus, UV de l'image entière (48 × 56 ou
+  48 × 72) : 1:1 au repos ; position, taille et couleur par passe = les formes closes d'E19.f4b (`values.json`) ; la couleur
+  r = g = b = `Rgb` déjà calculée par `AlundraInventoryPortrait` (`:234`, `:241`) : k = Rgb / 128 va de 1,99 à 1,05 à l'ouverture, 1 au
+  repos, 0,99 à 1,92 au retour ; la PS1 multiplie et sature : éclair visible sur les petites tailles (D-E19-100).
+- **Rendu proposé du dépassement** : l'image dessinée normalement, puis une seconde fois en mélange additif avec la couleur (k − 1) :
+  égal au modèle de la PS1 à 8/255 près par canal sur les 25 portraits et pour tout Rgb de 127 à 255.
+- **Vol** : une image MGUI réduite lit au centre des pixels (`floor((i + 0,5) · src / dst)`, sauf égalités flottantes) ; la PS1 lit
+  `floor(u + 0,5)` au point entier : à × 1, environ un tiers des pixels du portrait en vol diffèrent (D-E19-101 : accepté).
+- **Sonde sur GPU** (hors du dépôt, harnais de `TextBoxGpuHarness.cs`, XAML proposée) : repos exact à × 1, × 2, × 3 ; les 60 noms à trois
+  positions : 0 écart avec la table de glyphes du binaire ; vue décalée sans débordement ; constat : quand l'écran reste pour le seul nom
+  et portrait (deuxième locuteur de suite), le cadre du texte se dessinait en (16, 0) : `Frame`, `Cursor` et `TextClip` doivent être
+  repliés par liaison.
+- **Préchargement** : 13 feuilles ; deux mesurées (3,5 à 5 ms) ; les plus grandes (Melzas 512 × 1188, cartes 321 et 10) estimées à 10 à 18 ms,
+  près d'un tick : **à mesurer** dans les tests avant de renoncer au préchargement.
 
+###### E19.f4c1 — Teinte au-dessus de 1 dans MGUI (manque G11) ⏳ (planifiée le 2026-10-06)
+
+MGUI (sous-module du moteur, branche dédiée) ; inerte tant qu'aucune image ne pose la propriété. Déclencheur : manque d'une
+bibliothèque partagée (MGUI ADR).
+- **F4C1-R1** : une propriété `MGImage.Brightness` (défaut 1, liable, attribut XAML de l'élément `Image`, `Controls.cs:1264-1312`) :
+  à k ≤ 1, la couleur de texture multipliée par k (comme aujourd'hui avec une couleur) ; à k > 1, l'image dessinée normalement puis une
+  seconde fois en `BlendType.Additive` avec la couleur (k − 1), en réglant le `DrawSettings` le temps du second dessin (précédent :
+  `MGImage.cs:239-262`, le filtre de réduction).
+- **Tâches** : tests d'abord (MGUI : propriété, défaut, analyse XAML, liaison ; dessin au niveau des appels : un seul dessin à k ≤ 1, deux
+  à k > 1 avec le mélange additif et la couleur (k − 1)) ; ADR de MGUI (prochain numéro, 0021 aujourd'hui, revérifié) ; entrée G11 du
+  rapport des manques du moteur (`ai-agent/audits/mgui-gaps-from-xaml-screens.md`, en français) close ; vérification ; suites MGUI et
+  moteur, montée des pointeurs (MGUI dans le moteur, moteur dans le parent), `Alundra.Tests` en Release puis en Debug, `cmp`, six traces.
+
+###### E19.f4c2 — Vue du nom et du portrait du dialogue ⏳ (planifiée le 2026-10-06, après f4c1)
+
+DLL et écran XAML seulement (aucun export : `UI/Screens/*` est versionné à la main).
+- **F4C2-R1 — XAML** (`proposal-TextBoxScreen.xaml`) : après `TextClip`, `PortraitImage` (repos (8, 116) dans la XAML, vol par
+  `RenderTransformTranslation` et `RenderTransformScale` liés, idiome du portrait de l'inventaire, ADR-0020 de MGUI ; `Brightness` lié),
+  `NameFrame` et `NameText` (font3, `Padding` 0, sans retour à la ligne, `CanvasTop` 148, liés à `Left`, `TextLeft`, `Text`, `Visibility`) ;
+  `Visibility` liée sur `Frame`, `Cursor` et `TextClip` (défaut visible, les états des tests existants ne changent pas).
+- **F4C2-R2 — View models** : `TextBoxNameViewModel` (`Left`, `TextLeft`, `Text`, `Visibility`) ; `InventoryPortraitViewModel.ApplyDialogue(portrait,
+  DialoguePortraitRef?)` (méthode ajoutée) : translation (X − 8, Y − 116) (un 48 × 72 garde `CanvasTop` 116, l'écart est dans la translation),
+  échelle (largeur dessinée / 48, hauteur dessinée / hauteur de l'image), `Brightness` = Rgb / 128 ; une passe 0 × 0 reste visible à l'échelle 0.
+- **F4C2-R3 — Présentateur** : surcharge `Apply(box, speakerDrawn)` ; l'écran est poussé à la première passe où la boîte, le nom ou le
+  portrait est dessiné, un `Apply` par tick, retiré quand plus rien n'est dessiné (le cas S5 : à N+40 seuls le nom et le portrait sont
+  dessinés) ; quand seuls le nom et le portrait sont dessinés, `Frame`, `Cursor` et `TextClip` sont repliés ; un portrait laissé au repos sans
+  boîte garde l'écran (comme le binaire, jusqu'à l'entrée de carte ou `NotifyPresenterClosed`).
+- **F4C2-R4 — Source verrouillée** : `AlundraDialogueNameBox.Text` et une source de portrait (`DialoguePortraitRef` accepté) mémorisée par
+  `AlundraDialogueDirector.OpenSpeaker` (ajouts) : la vue ne lit jamais le champ vivant du locuteur (un locuteur recyclé changerait l'image
+  pendant le retour).
+- **Fichiers** (liste fermée) : `alundra-project/UI/Screens/TextBoxScreen.xaml` et `TextBoxScreen.design.json` (seulement `SourceName` et
+  `Visibility` du portrait), `Alundra/Scripts/AlundraTextBoxViewModel.cs`, `AlundraInventoryViewModel.cs` (méthode ajoutée),
+  `AlundraTextBoxPresenter.cs`, `AlundraDialogueNameBox.cs`, `AlundraDialogueDirector.cs` ; tests `UI/AlundraTextBoxScreenXamlTests.cs`,
+  `AlundraTextBoxViewModelTests.cs`, `AlundraTextBoxWiringTests.cs`, nouveau `UI/AlundraSpeakerPixelTests.cs`, aides ajoutées dans
+  `UI/TextBoxGpuHarness.cs`, `AlundraScreenBindingReleaseTests` (l'écran de la boîte) ; annexe ; ADR du parent (prochain numéro libre,
+  revérifié) : vue du nom et du portrait, rampe rendue (D-E19-100), vol lu à la résolution de l'écran (D-E19-101).
+- **F4C2-0 — Prévision d'abord** : le générateur de l'annexe (chemins relatifs au dépôt, variantes `_psx` retirées) écrit les états des
+  view models par image et les images de référence : S1 Jess (entité (200, 150, 0), caméra (40, 20)) aux images N+1, N+2, N+8, N+13, N+16, N+21,
+  N+22, N+25, N+36, N+37, N+38 à N+40 ; S8 (48 × 72, Miming) ; S5 N+37 à N+42 ; S2 (portrait seul), S3 (nom seul) ; les 60 noms à x 64, 303 et
+  150 ; la vue décalée (97, 41) à × 2 et × 3 ; référence du vol : la règle du centre à la résolution de l'écran, les rangées et colonnes à
+  égalité flottante listées et exclues ; référence de la rampe : le modèle de la PS1 (texel × k saturé), tolérance 8/255 par canal ; les
+  portraits énumérés par identifiant (`portraits_table.tsv`, le portrait de la banque 15 est dans `Entities/`).
+- **F4C2-1 — Tests d'abord** : correspondance des view models par passe contre `values.json` S1 à S9 ; durée de vie en union sur S5 ;
+  verrou de la source ; test XAML des trois éléments (ordre, attributs, identifiants) ; données de conception ; tests sur GPU (repos exacts,
+  noms exacts, vol égal à la référence hors égalités, rampe à 8/255, ordre : (19, 168) portrait (72, 48, 32) sur (88, 96, 72), (71, 171) nom
+  (72, 64, 56) sur (144, 136, 112), (110, 149) premier texel d'encre de « Jess » (41, 49, 16)) ; mesure du temps de chargement des trois plus
+  grandes feuilles (au-delà de 20 ms : arrêt, préchargement à décider). Test existant qui bouge, seul : `RootCanvas_..._HoldsTheFrameTheCursorThenTheTextClip`
+  (enfants `[Frame, Cursor, TextClip]` → `[Frame, Cursor, TextClip, PortraitImage, NameFrame, NameText]`, tailles d'images ajoutées) ;
+  `ApplyingTheSameStateTwice_...` gagne `NameBox` et `Portrait` dans la liste des écouteurs. Rouges d'abord.
+- **F4C2-2 — Code**, docs, ADR ; **F4C2-3 — Vérification** ; **Recette F4C2-4** : Jess (carte 6), Miming (banque 122, 48 × 72), deux
+  locuteurs de suite, un nom sans portrait, un site `0xC4`.
+
+###### E19.f4c3 — Rampe du portrait de l'inventaire (D-E19-100) ⏳ (planifiée le 2026-10-06, après f4c1)
+
+DLL et écrans XAML de l'inventaire : `Brightness` = Rgb / 128 lié sur le portrait de l'inventaire (le `Rgb` est déjà calculé,
+`AlundraInventoryPortrait.cs:234`, `:241`) ; fichiers : `AlundraInventoryViewModel.cs`, les deux XAML qui portent le portrait ; tests : la
+correspondance Rgb → `Brightness` par passe, un test sur GPU à 8/255 sur une passe d'ouverture et une de retour ; la ligne D2 du plan du
+portrait de l'inventaire annotée (« remplacée par D-E19-100 ») ; vérification ; recette : ouvrir et fermer l'inventaire, l'éclair du
+portrait.
+
+**Acceptation** (chaque tranche) : tests rouges puis verts, aucun test existant ne bouge hors ceux nommés ; tests sur GPU verts sur le GPU de
+l'auteur (ils sont ignorés sans GPU : leur exécution est la preuve) ; `Alundra.Tests` en Release puis en Debug, `cmp`, six traces. **Retour
+arrière** : revert (et des pointeurs pour f4c1). **Arrêts** : un fichier hors de la liste, un test existant non nommé qui bouge, une valeur
+qui contredit la prévision. **Risques** : modèles de texel et de modulation de la PS1 tirés de la documentation publique (pas de matériel
+ici) ; références tirées des PNG exportés, pas de la VRAM (même réserve que f2b1 et f3b).
 
 ### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) — E19.k1 ✅ (recette K5 en attente) ; E19.k2 🧪 (faite et vérifiée le 2026-10-03, recette K2-4 en attente)
 
@@ -6836,6 +6989,62 @@ trappes, boules, la chute de Sara).
   programme de Sara demande cinq drapeaux et trois dialogues ; les tests mesurent c0 et la fin par les changements de `ForceZ` (égal au
   compte d'appels, un appel par image) ; le pas fait deux recherches d'appui bornées (atterrissage, puis sol de fin de tick, comme la
   passe de fin du binaire).
+
+##### 1.2n.1d E19.h1b3 — Cible de `0x22` du binaire (D-E19-94, D-E19-98) ⏳ (planifiée le 2026-10-06 ; relecture à faire ; exécution après la recette et l'approbation de l'auteur)
+
+**Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais, dans `docs/plan-e19-op22-annexe/` : `notes.md`,
+`verify.md`, `site-table.txt`, `handler-rows.txt`, `gen_rows.py`, `all17.py`, `rand_rules.py`). Faits porteurs **[binaire]** : le
+gestionnaire `0x8003DA70` mémorise au premier appel `octet(enregistrement + 9) << 19` et rend 0 ; ensuite il teste l'égalité exacte avec
+`PosZ` (`+0x11C`), sinon il borne `ForceZ` à l'écart seulement s'il le dépasse dans son sens (jamais de force créée ni inversée) ; `0x23`
+(`0x8003DB28`) rend aussi 1 sur le drapeau de contact, dès le premier appel. Le pas `PosZ += F`, l'atterrissage `ModdedPosZ + F <= T` puis
+`PosZ = T + 1 − ModZ`, l'apparition `z − ModZ + 1` : toute position du binaire porte un +1, la cible non ; dans le repère d'ADR-0026
+(`PosZ_dll = PosZ_b − 1`) la comparaison est `PosZ_dll == (H << 19) − 1`, dans tous les sens (modèle aléatoire de 38 478 attentes, et
+60 000 dans la contre-vérification : 100 %). Repli : la racine d'un contrôleur est un flottant 32 bits en pixels, qui ne représente plus
+une valeur impaire au-dessus de 256 px (127 rec17/rec18, hauteur 38) : la cible décalée y fait monter la boule sans fin. Le moteur jette
+tout déplacement de 0,001 px ou moins (`MinMoveDistanceSquared`, `CharacterControllerComponent.cs:16`, utilisé `:258`, `:277`, `:444`,
+`:1055`, `:1072`, `:1384`) : le dernier pas de −1 (1/65536 px) de la descente de la 115 est perdu, l'attente ne finit jamais (blocage
+mesuré sur la vraie DLL). 17 sites (aucun sur la chaîne) : avec la règle et le réglage du moteur, tous égaux au binaire, sur
+l'interpréteur et sur la vraie DLL ; les 12 plafonds suspendus de la 36 (`0x23`) finissent en 0 appel des deux côtés (le contact
+est posé dès le premier appel : ils ne montent jamais).
+
+**Règles.**
+- **H1B3-R1 — Moteur** (d'abord, sous-module, branche dédiée) : `CharacterControllerSettings.MinMoveDistance` (défaut égal à aujourd'hui,
+  clé `min_move_distance`) remplace la constante aux six usages ; clonage, chargement, validation et sérialiseur
+  (`CasaEngine.EditorServices/EditorEntityJsonSerializer.cs:495`) le suivent ; ligne au tableau des réglages
+  (`docs/engine/character-controller-features.md:161-162`) ; ADR du moteur (numéro : O-E19-74) ; fichier de tâches du moteur.
+- **H1B3-R2 — DLL** : au premier appel de `WaitHeightTarget` (`AlundraEventProgramRunner.cs:2530-2565`) : `littérale = hauteur << 19`,
+  `cible = littérale − 1`, et si l'entité a un contrôleur et `cible >= 1 << 24`, `cible = littérale` ; `Parameters[2] = cible` ; les appels
+  suivants ne changent pas. `AlundraEntitySpawnFactory.cs:626` pose `MinMoveDistance = 0` à côté d'`IsVerticalOwnedExternally = true`.
+- **Fichiers** (liste fermée) : moteur `CasaEngine/Framework/Scene/Entities/Components/CharacterControllerSettings.cs`,
+  `CharacterControllerComponent.cs`, `CasaEngine.EditorServices/EditorEntityJsonSerializer.cs`, `CasaEngine.Tests/Physics/CharacterControllerSettingsTests.cs`,
+  `CharacterControllerComponentTests.cs`, `CasaEngine.Tests/EditorServices/CharacterControllerComponentSerializationTests.cs`,
+  `docs/engine/character-controller-features.md`, l'ADR et l'index, le fichier de tâches ; parent `Alundra/Scripts/AlundraEventProgramRunner.cs`,
+  `AlundraEntitySpawnFactory.cs`, commentaires seulement dans `AlundraEntityScriptProxy.cs:84-88` et `EntityRecordMapper.cs:196-199`,
+  `Alundra.Tests/AlundraHeightWaitOpcodesTests.cs`, nouveau `Alundra.Tests/AlundraHeightTargetSitesTests.cs`, ADR du parent (prochain numéro
+  libre, revérifié ; remplace en partie la première exception d'ADR-0026, dont seule la ligne d'état change), le pointeur, ce plan.
+
+**Valeurs écrites d'avance** (`handler-rows.txt`, tirées du vrai gestionnaire avec `PosZ_b = PosZ_dll + 1`) : hauteur 20 → cible 10485759 ;
+(10484999, 32768) → `ForceZ` 760 ; (10485760, −5) → −1 ; (10485759, 0) → résultat 1 ; mémos : hauteur 38 avec contrôleur 19922944 (littérale),
+sans 19922943 ; 33 avec 17301504, sans 17301503 ; 32 → 16777215. Sites réels : 115 B[2] 321 appels, fin 3145727 (aujourd'hui 320, 3145728) ;
+127 rec6 fin 10485759 ; 127 rec17 192 appels, 19922944 (inchangé, garde du repli). Tests existants qui bougent, tous dans
+`AlundraHeightWaitOpcodesTests.cs` : `TZ22_TheFirstCallMemorises...` `:174` 10485760 → 10485759 (renommé) ; `TZ22_ClampsTheForce...`
+`:182`-`:193` chaque `PosZ` moins 1 (10485000 → 10484999, 10485760 → 10485759, 10485761 → 10485760, 10000000 → 9999999), résultats
+inchangés ; `TZ23_IsTheHeightWait...` `:233` 15728640 → 15728639 ; `TZ23_TheTargetEndsItToo...` `:254` et `:269` 15728640 → 15728639.
+
+**Tâches.**
+- ⏳ **H1B3-1 — Moteur** : tests d'abord (par défaut un déplacement de moins de 0,001 px est jeté, à 0 il est appliqué ; clonage, chargement,
+  validation, sérialiseur) ; code ; docs ; ADR ; suites du moteur (`CasaEngine.Tests` buildé explicitement) ; vérification ; montée du pointeur.
+- ⏳ **H1B3-2 — DLL** : tests d'abord (lignes du gestionnaire, une `Theory` (hauteur, contrôleur, mémo), sites réels 115 (rouge aujourd'hui), 127
+  rec6, 127 rec17 (vert avant et après)) ; les quatre tests existants ré-épinglés ; code ; ADR du parent ; `Alundra.Tests` en Release puis
+  en Debug, `cmp`, six traces ; vérification. **Ordre** : moteur, pointeur, DLL (jamais la règle avant le réglage).
+
+**Acceptation** : rouges d'abord ; les 17 sites égaux au binaire (nombre d'appels) ; aucun autre test ni arc ne bouge ; six traces. **Retour
+arrière** : revert de la DLL, puis du pointeur et du moteur. **Arrêts** : un test non nommé qui bouge, un site qui diffère du binaire.
+**Risques** : le réglage à 0 vaut pour tous les déplacements des entités poussées par script (aussi l'horizontal et l'héritage du sol) :
+neutre sur tous les tests et arcs mesurés, pas sur une recette ; la position finale d'une montée est un cran plus bas (repère d'ADR-0026),
+d'où une `TileZ` d'un cran plus bas (lue par aucun opcode sur les cinq cartes) ; une descente d'entité à contrôleur au-dessus de 256 px
+n'est pas exacte (aucune dans le corpus) ; les passagers d'une plateforme n'ont pas été mesurés. **Recette H1B3-3** : carte 115, la
+plateforme `B[2]` qui descend, le héros reprend la main.
 
 ##### 1.2n.2 E19.h2 — État en l'air des PNJ ⏳ (esquisse)
 
@@ -10000,6 +10209,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-72 | **Tranché le 2026-10-06 (D-E19-96 : interface des créateurs et `0x82 0x53`).** **Portée de D-E19-54 (effets natifs)** (découverte d'E19.g G1/G3, 2026-10-06) : D-E19-54 repose sur une lecture fausse : il n'existe aucun effet de warp sur un changement de carte (les « effets de warp » sont des effets d'objets, bombes et magies, E14) ; les scripts n'atteignent que `0x82 0x53` (vase de vie, 8 sites hors de la chaîne ; il change aussi la vie, O-E19-39) et `0xBB` (E18). **Choix** : (A) E19.g livre l'interface des créateurs natifs et l'effet de `0x82 0x53` (avec sa vie max + 1, vie pleine, son `0x31`), le reste avec son consommateur (E14, déplacement, E18) ; (B) E19.g ne livre que les effets des enregistrements et des scripts, tous les natifs et `0x82 0x53` avec E14. | Auteur |
 | O-E19-73 | **Tranché le 2026-10-06 (D-E19-97 : même règle).** **D-E19-92 pour les quads d'effets** (découverte d'E19.g G1/G3, 2026-10-06) : D-E19-92 (quads déformés à la résolution de l'écran) nomme les sprites d'entités ; 63 % des références de quads d'effets sont déformées (l'aura de 476). La même règle vaut-elle pour les effets ? | Auteur |
 | O-E19-74 | **Numéros d'ADR du moteur en double** (2026-10-06) : l'ADR-0056 du moteur existe deux fois, sur `chantier/e19g2d-overlay-blend` (teinte des fonds, G2d, cette session) et sur `chantier/audio-modern` de l'auteur (0056 à 0060). Proposition : renuméroter celle de G2d en 0061 (références : l'ADR, l'index, `scrolling-layers.md`, `sprite-psx-semi-transparency.md`, quatre commentaires C#, le plan, ADR-0037 du parent) après la recette, et prendre les suivantes (G2b-1, G2b-2) après le dernier numéro des deux lignées, revérifié avant chaque commit. | Auteur |
+| O-E19-75 | **Âge du mot de manette de l'écran de sauvegarde** (contre-vérification de la découverte d'E19.f3c, 2026-10-06) : les créneaux 3 et 10 du binaire lisent le même mot de manette ; dans le portage, l'écran lit celui du tick courant et la passe du dialogue celui du tick d'avant ; entre l'appui qui ouvre la question et la réponse la plus rapide, le binaire compte 19 échantillons, le portage 17 aujourd'hui, 18 après E19.f3c. Tranche à part après E19.f3c (D-E19-99) ; les épingles qui dépendent de la manette du sélecteur bougeront. | Session (D-E19-99) |
 
 ## 4. Hors périmètre
 
