@@ -7453,7 +7453,7 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
 au sud (O-E19-28 b, aussi contre les cellules) demande l'étape 2 (O-E19-42) ; l'image d'A10J `@2462` peut bouger d'un tick
 (retards connus de la DLL).
 
-### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2c 🧪 (CONFIRMED le 2026-10-05, recette G2c-6 en attente) ; G2d 🧪 (CONFIRMED le 2026-10-06, recette G2d-6 en attente) ; G2b ⏳ (planifiée, enveloppe et G2b-1 READY) ; G1/G3 ⏳ (découverte faite, D-E19-96 et D-E19-97 ; G1 ✅ ; G3a et G3b planifiées le 2026-10-06) ; G4 à planifier)
+### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2c 🧪 (CONFIRMED le 2026-10-05, recette G2c-6 en attente) ; G2d 🧪 (CONFIRMED le 2026-10-06, recette G2d-6 en attente) ; G2b ⏳ (planifiée, enveloppe et G2b-1 READY) ; G1/G3 ⏳ (découverte faite, D-E19-96 et D-E19-97 ; G1 ✅ ; G3a ✅ ; G3b ✅ ; G2e, G3c, G3d à planifier) ; G4 à planifier)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B les données, le convertisseur,
 l'analyseur, le moteur et la DLL ; notes, rendus et scripts dans le scratchpad de la session, `e19g-disc/A/notes.md` et
@@ -8933,7 +8933,7 @@ fait sur la pile seule, la lecture par tick dans la boucle des événements est 
   à sa création dans `InitializeWithWorld`, un test où elle change pendant la première image. Nouvelle époque ; une seule relecture de
   clôture.
 
-###### E19.g G3b — Les neuf opcodes d'effets (DLL) ⚠️ (code, arcs et ADR-0046 faits le 2026-10-06 ; vérificateur neuf REFUTED sur deux tests de G3a hors de la liste fermée ; disposition FIX de la session, correction bornée et nouvelle vérification en cours ; **arrêt** : deux tests de G3a, hors de la liste fermée, bougent, décision de l'auteur attendue (voir « Arrêt de G3b-2 ») ; approuvée par l'auteur le 2026-10-06 ; planifiée le 2026-10-06, après G3a ; relecture n°1 REVISE (binaire : ticks gelés, créneau placé par `0xA2`/`0xA3` ; code : liste fermée), révisée ; relecture n°2 : READY (code), REVISE (binaire : valeurs de la 391), disposition FIX ; nouvelle époque, relecture de clôture REVISE (début de l'écart du second instantané de la 391) : **⚠️ en pause** (règle des relectures : pas de nouveau tour sans l'auteur) ; correctif écrit ci-dessous, une nouvelle relecture sur décision de l'auteur)
+###### E19.g G3b — Les neuf opcodes d'effets (DLL) ✅ (faite et CONFIRMED le 2026-10-06 : `b351005` prévision, `785881c` tests, `90e6e1d` code (ADR-0046), `b98b609` correction des deux tests de la 391 (disposition FIX) ; vérificateur neuf : prévision rejouée, rouges d'abord rejoués (45 sur 59, puis les 12 arcs et l'audit), gestionnaires, file, valeurs de 476, 391, 162, 135 et 10, liste fermée 102 → 3, `MapsWithoutSkippedSite` 28, `Alundra.Tests` 3034 en Release puis en Debug, `cmp`, traces ; avis P4 seulement ; rien ne se voit encore : le dessin est G3c ; planifiée le 2026-10-06, relectures n°1 et n°2 REVISE, clôture REVISE puis nouvelle relecture READY sur décision de l'auteur)
 
 DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (liste fermée et arcs). Faits : `dll-notes.md` §4 et §6,
 `binary-data-verify.md` (sites, valeurs), `README.md` de l'annexe (391 : cinq `0xA2`).
