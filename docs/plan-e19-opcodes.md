@@ -5561,7 +5561,7 @@ convertisseur n'a pas changé (pas de tests du convertisseur). Restent la vérif
   248 texels ; liste fermée tenue ; export re-dérivé (les trois fichiers, l'entrée d'`AssetInfos.json`, les compteurs) et double
   export ; `Alundra.Tests` 2802/2802 en Release puis en Debug, `cmp` sans écart, six traces.
 
-###### E19.f3c — Ordre de l'écran de sauvegarde (D-E19-93) 🧪 (faite le 2026-10-06, vérification à faire ; planifiée le 2026-10-06 ; relecture n°1 REVISE (liste des fichiers de test), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06, exécutée en mode AUTO)
+###### E19.f3c — Ordre de l'écran de sauvegarde (D-E19-93) 🧪 (faite et CONFIRMED le 2026-10-06, recette F3C-4 en attente ; planifiée le 2026-10-06 ; relecture n°1 REVISE (liste des fichiers de test), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06, exécutée en mode AUTO)
 
 **Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais et en français, dans `docs/plan-e19-save-order-annexe/` :
 `notes.md`, `verify.md`, le modèle `hostmodel.py`, les preuves `slotorder*.py`, le correctif proposé `patch-proposal.diff.txt` et les tests
@@ -5611,7 +5611,10 @@ de deux ticks : armement 0/2/18/26/26/28, OUI/NON/OUI/OUI/NON/OUI → ancien 19/
   l'aide `Tick` de `AlundraSaveScreenDirectorTests.cs:75-82` passe à `Dialogue.Tick(); TickScreen(hold);` et `:613` à 19 ; l'aide de
   `Alundra.Tests/Scripts/AlundraSaveScreenPresenterTests.cs:62-72` suit le nouvel ordre ; commentaires `:73-74`, `:68`, `:165` réécrits.
 - ✅ **F3C-2 — Code** (F3C-R1, F3C-R2), docs, ADR.
-- ⏳ **F3C-3 — Vérification** (vérificateur neuf).
+- ✅ **F3C-3 — Vérification** (2026-10-06) : vérificateur neuf **CONFIRMED** (`616e7f3`, `41ffc10`) : rouges d'abord rejoués dans une copie
+  isolée (les 8 cases qui changent, aux valeurs de l'ancienne grille ; les autres vertes) ; grilles par le vrai mandataire égales au plan ;
+  les cinq mutants rougissent chacun au moins un test ; seule valeur déplacée `DownDuringTheQuestion` 20 → 19 ; liste fermée tenue ;
+  `Alundra.Tests` 2875/2875 en Release puis en Debug, `cmp` sans écart, six traces. Avis P4 seulement.
 
 **Fait le 2026-10-06 (F3C-1)** : tests écrits d'abord, nouveau fichier `Alundra.Tests/AlundraSaveScreenTickOrderTests.cs` (18 tests : les 12 cases des
 grilles par le vrai `AlundraWorldProxy.Update`, Croix tenue sur une image de deux ticks, Carré sur 1, 2 et 3 ticks (`StartFailure`), gel des événements de
@@ -5938,7 +5941,7 @@ une extension sans vérité binaire (D-E19-90) ; `GetMatchingEntitiesBySearchTyp
 - **Préchargement** : 13 feuilles ; deux mesurées (3,5 à 5 ms) ; les plus grandes (Melzas 512 × 1188, cartes 321 et 10) estimées à 10 à 18 ms,
   près d'un tick : **à mesurer** dans les tests avant de renoncer au préchargement.
 
-###### E19.f4c1 — Teinte au-dessus de 1 dans MGUI (manque G11) 🧪 (faite le 2026-10-06, vérification à faire)
+###### E19.f4c1 — Teinte au-dessus de 1 dans MGUI (manque G11) ✅ (faite et CONFIRMED le 2026-10-06 : MGUI `39f2405`, moteur `010a2c2f`, parent `fbc46c8` ; vérificateur neuf : rouges d'abord rejoués, masques exacts par k, test au pixel sur GPU exécuté (le mutant d'alpha de masque rougit à k = 1,5), exemple lancé, G11 clos, MGUI 3120, moteur 2748, `Alundra.Tests` 2916 en Release puis en Debug, `cmp`, six traces ; avis P4 seulement)
 
 MGUI (sous-module du moteur ; branche `chantier/e19f4c1-image-brightness` créée par la règle R-BR (1) depuis le commit de MGUI que le moteur
 épingle) ; inerte tant qu'aucune image ne pose la propriété. Déclencheur : manque d'une bibliothèque partagée (ADR de MGUI).
@@ -7112,7 +7115,7 @@ trappes, boules, la chute de Sara).
   compte d'appels, un appel par image) ; le pas fait deux recherches d'appui bornées (atterrissage, puis sol de fin de tick, comme la
   passe de fin du binaire).
 
-##### 1.2n.1d E19.h1b3 — Cible de `0x22` du binaire (D-E19-94, D-E19-98) 🧪 (faite le 2026-10-06, vérification à faire ; planifiée le 2026-10-06 ; relecture n°1 REVISE (17 sites testés, branche du moteur, numéro d'ADR), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06)
+##### 1.2n.1d E19.h1b3 — Cible de `0x22` du binaire (D-E19-94, D-E19-98) 🧪 (faite et CONFIRMED le 2026-10-06 (moteur `9c75c872`, ADR-0065 du moteur, ADR-0041 du parent ; vérificateur neuf : rouges d'abord rejoués, les 33 instances égales à l'annexe, sans le réglage du moteur la 115 bloque, moteur 2748, `Alundra.Tests` 2916 en Release puis en Debug, `cmp`, six traces ; avis P4 seulement), recette H1B3-3 en attente ; planifiée le 2026-10-06 ; relecture n°1 REVISE (17 sites testés, branche du moteur, numéro d'ADR), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06)
 
 **Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais, dans `docs/plan-e19-op22-annexe/` : `notes.md`,
 `verify.md`, `site-table.txt`, `handler-rows.txt`, `gen_rows.py`, `all17.py`, `rand_rules.py`, et la sonde sur la vraie DLL
