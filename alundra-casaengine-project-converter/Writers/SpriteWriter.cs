@@ -38,6 +38,16 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    placement (from its X1..Y4 destination corners) becomes the part's per-frame Position
 ///    instead, at the corners' geometric center. Center-based, not corner-based, so flipping
 ///    (which mirrors around Origin) doesn't shift the visible position.
+///  - Per-frame quad corners (E19.g G2b-3, ADR-0069 of the engine): the PS1 draws every image as a free
+///    four-vertex quad, so a part with at least one deformed image (anything but a rectangle of the
+///    source size, mirrors included) gets a Corners track APPENDED after every existing track (no
+///    existing track name moves). Its keys sit on the times of the part's Sprite keys, only where the
+///    state changes (corners active or disabled; a plain image after a deformed one writes a disabled
+///    key; hidden frames and the repeated last image of a Hold/Chain animation write none). An active
+///    key holds the raw PS1 corners (y flipped) minus the image's Position, in the data order top-left,
+///    top-right, bottom-left, bottom-right, and source_offset = (-mx, -my), mx = X1 > X2, my = Y1 > Y3
+///    (a mirrored axis names its source window one texel early). Nothing else changes: the Sprite,
+///    Position, Visible and flip tracks, the .sprite and .texture files stay as they were.
 ///  - Per-frame 3D collision (SiFrame.CollisionData) becomes Animation2dData.CollisionKeyframes,
 ///    one Box fixture per keyframe. Alundra stores the box's MIN CORNER plus its extents, the
 ///    engine poses a fixture by its CENTRE, hence the +Size/2 shift; sizes stay in pixels and the
@@ -120,6 +130,22 @@ public static class SpriteWriter
     /// </summary>
     private readonly record struct AnimDirIdsv(
         int Anim, int Direction, List<int> Frames, AnimationEndKind End, int? ChainTo);
+
+    /// <summary>One part's active corner state (the four offsets from the part Position and the source window offset), compared to write keys only at changes.</summary>
+    private readonly record struct CornerState(
+        Vector2 TopLeft, Vector2 TopRight, Vector2 BottomLeft, Vector2 BottomRight, Point SourceOffset);
+
+    /// <summary>
+    /// True when the image is not a rectangle of the source size: a plain image and a mirrored one (corners swapped on an
+    /// axis) keep the rectangle path, everything else (scaled, sheared, rotated, free) needs the Corners track.
+    /// </summary>
+    private static bool IsDeformedQuad(SpriteQuad quad)
+    {
+        var axisAligned = quad.X1 == quad.X3 && quad.X2 == quad.X4 && quad.Y1 == quad.Y2 && quad.Y3 == quad.Y4;
+        return !(axisAligned
+                 && Math.Abs(quad.X2 - quad.X1) == quad.Width
+                 && Math.Abs(quad.Y3 - quad.Y1) == quad.Height);
+    }
 
     /// <summary>
     /// Converts every sprite bank and returns the prefab asset id each one got, keyed by
@@ -566,6 +592,9 @@ public static class SpriteWriter
         var lastDisplayedFrameIndex = animation.Frames.Count - 2;
 
         var convertedQuadCount = 0;
+        var deformedQuadCount = 0;
+        var cornerKeyframeCount = 0;
+        var cornersTracks = new List<Animation2dTrackData>();
 
         for (var partIndex = 0; partIndex < maxQuadCount; partIndex++)
         {
@@ -594,6 +623,9 @@ public static class SpriteWriter
             var flipYTrack = NewTrack(partId, Animation2dTrackProperty.FlipY);
             var usesFlipX = false;
             var usesFlipY = false;
+            var cornersTrack = NewTrack(partId, Animation2dTrackProperty.Corners);
+            CornerState? activeCorners = null;
+            var partHasDeformedQuad = false;
 
             for (var frameIndex = 0; frameIndex < animation.Frames.Count; frameIndex++)
             {
@@ -666,6 +698,34 @@ public static class SpriteWriter
                 flipYTrack.FlipKeyframes.Add(new Animation2dBoolKeyframeData(time, flipY));
                 usesFlipX |= flipX;
                 usesFlipY |= flipY;
+
+                // Free quad corners: raw PS1 corners (y flipped) relative to this image's Position, written only when the
+                // state (active corners or the rectangle) changes. The initial state is the rectangle.
+                var deformed = IsDeformedQuad(quad);
+                if (deformed && !isTerminalRepeatFrame)
+                {
+                    deformedQuadCount++;
+                }
+
+                CornerState? cornerState = deformed
+                    ? new CornerState(
+                        new Vector2(quad.X1 - center.X, -quad.Y1 - center.Y),
+                        new Vector2(quad.X2 - center.X, -quad.Y2 - center.Y),
+                        new Vector2(quad.X3 - center.X, -quad.Y3 - center.Y),
+                        new Vector2(quad.X4 - center.X, -quad.Y4 - center.Y),
+                        new Point(quad.X1 > quad.X2 ? -1 : 0, quad.Y1 > quad.Y3 ? -1 : 0))
+                    : null;
+                if (cornerState != activeCorners)
+                {
+                    cornersTrack.CornerKeyframes.Add(cornerState is { } state
+                        ? new Animation2dCornersKeyframeData(
+                            time, true, state.TopLeft, state.TopRight, state.BottomLeft, state.BottomRight, state.SourceOffset)
+                        : new Animation2dCornersKeyframeData(
+                            time, false, Vector2.Zero, Vector2.Zero, Vector2.Zero, Vector2.Zero, Point.Zero));
+                    activeCorners = cornerState;
+                }
+
+                partHasDeformedQuad |= deformed;
             }
 
             animationAsset.Tracks.Add(spriteTrack);
@@ -680,6 +740,25 @@ public static class SpriteWriter
             {
                 animationAsset.Tracks.Add(flipYTrack);
             }
+
+            if (partHasDeformedQuad)
+            {
+                cornersTracks.Add(cornersTrack);
+            }
+        }
+
+        // The Corners tracks come after every existing track, so no existing track name moves.
+        foreach (var cornersTrack in cornersTracks)
+        {
+            animationAsset.Tracks.Add(cornersTrack);
+            cornerKeyframeCount += cornersTrack.CornerKeyframes.Count;
+        }
+
+        if (deformedQuadCount > 0)
+        {
+            report.Increment("Sprites.QuadsDeformed", deformedQuadCount);
+            report.Increment("Sprites.CornerTracks", cornersTracks.Count);
+            report.Increment("Sprites.CornerKeyframes", cornerKeyframeCount);
         }
 
         var collisionKeyframeCount = ConvertCollisionKeyframes(animation, frameTimes, cumulativeSeconds, animationAsset, animationName);
