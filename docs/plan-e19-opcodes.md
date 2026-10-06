@@ -9138,7 +9138,7 @@ carte dont la première image ne crée rien. Le reste de la suite est vert.
   1 280 000 venait du scénario synthétique S1. Correctif écrit (écart depuis pc 503 sur N ticks non gelés, forces des vrais opérandes).
   **En pause** : une nouvelle relecture seulement sur décision de l'auteur.
 
-###### E19.g G2e — Service des quads d'effets (moteur) ⏳ (découverte de nuit du 2026-10-06 faite et contre-vérifiée ; planifiée le 2026-10-06 ; relecture n°1 REVISE (zone de bruit, pixels mêlés et comparateur), révisée ; relecture n°2 READY (deux angles))
+###### E19.g G2e — Service des quads d'effets (moteur) 🧪 (faite le 2026-10-07 (prévision `6072de4` ; moteur `87bc8e6d` tests, `96862da3` code, démo, docs et ADR-0071 du moteur ; pointeur `5c3d538`), vérification à faire ; découverte de nuit du 2026-10-06 faite et contre-vérifiée ; planifiée le 2026-10-06 ; relecture n°1 REVISE (zone de bruit, pixels mêlés et comparateur), révisée ; relecture n°2 READY (deux angles))
 
 Moteur seul (sous-module `CasaEngineMonogame`, branche `chantier/e19-suite2` du moteur, empilée sur la pointe épinglée `dd1f8afa` ; la
 branche existe depuis le merge du 2026-10-06 et est réutilisée, pas créée : écart consigné à R-BR (1), l'empilement et le contrôle
@@ -9177,7 +9177,7 @@ moteur et preuve au pixel (relecture et vérificateur neuf). Faits : `docs/plan-
   `CasaEngine.Launcher/Program.cs` (modification de l'auteur) ; indexer fichier par fichier.
 - **Numéro d'ADR du moteur** : 1 + le plus grand numéro de **toutes** les branches locales du moteur (`chantier/demo-browser` de l'auteur
   porte 0070) : 0071 aujourd'hui, revérifié juste avant le commit ; écart à R-BR (2), qui ne balaie pas `demo-browser`, consigné ici.
-- ⏳ **G2e-0 — Prévision d'abord** (parent, commitée avant le code du moteur) : `docs/plan-e19-g3c-annexe/g2e-predict.py` et ses
+- ✅ **G2e-0 — Prévision d'abord** (parent, commitée avant le code du moteur) : `docs/plan-e19-g3c-annexe/g2e-predict.py` et ses
   sorties : les scènes de la démo (géométrie, fenêtres, modes, clés, facteurs), B(k) avec la **règle haut-gauche** pour les égalités
   exactes de couverture (texte d'ADR-0068 du moteur ; jamais `tie_sign` ni `bk` de `g2b1_predict.py`, verify R1), les empreintes et les
   zones de bruit, à × 1 et × 3 ; **zone de bruit** comme G2b-1 : texel à moins de 2⁻¹⁰ de texel d'une frontière (égalités exactes
@@ -9189,14 +9189,27 @@ moteur et preuve au pixel (relecture et vérificateur neuf). Faits : `docs/plan-
   synthétique de 512 × 1105, un quad à la structure réelle de l'aura (9 images, axes miroir, ABR 0 à 2 et opaque), une image miroir à
   l'origine de fenêtre −1 (texel −1 pincé à la colonne 0), des pixels d'égalité exacte près de v ≈ 1100 ; le script rejoue les cas de
   G2b-1 sans écart (garde contre une régression de la règle). La démo reproduit ces scènes telles quelles.
-- ⏳ **G2e-1 — Tests d'abord** (rouges sur des types vides) : un quad `None` donne 1 entrée, un quad d'un mode en donne 2 de même clé,
+- ✅ **G2e-1 — Tests d'abord** (rouges sur des types vides) : un quad `None` donne 1 entrée, un quad d'un mode en donne 2 de même clé,
   z et coins ; l'ordre des clés gardé (image 0 en dernier) ; une image poussée reste jusqu'à la suivante ; `Clear` vide ; une résolution
   par version, poignées libérées à la suivante et à `Dispose` ; une planche en échec (un avertissement, ses quads sautés) ; index hors
   plage et planche absente sautés ; ciseau transmis ; la couture `ResolveTextures`.
-- ⏳ **G2e-2 — Code, démo, doc, ADR** ; la démo est capturée par la route de vidage de `PsxFreeQuadDemo` (back-buffer en processus ;
+- ✅ **G2e-2 — Code, démo, doc, ADR** ; la démo est capturée par la route de vidage de `PsxFreeQuadDemo` (back-buffer en processus ;
   la route est privée à cette démo : `EffectQuadDemo` la recopie avec ses propres variables d'environnement, sur le modèle de
   `CASAENGINE_PSXQUAD_DUMP_PATH`) à × 1 et × 3 et comparée à G2e-0 par `g2e_compare.py`.
-- ⏳ **G2e-3 — Pointeur** : montée du pointeur du sous-module dans le parent ; `git merge-base --is-ancestor dd1f8afa <nouveau>`.
+- ✅ **G2e-3 — Pointeur** : montée du pointeur du sous-module dans le parent ; `git merge-base --is-ancestor dd1f8afa <nouveau>`.
+**Fait le 2026-10-07 (G2e-0 à G2e-3).** Prévision `6072de4` (parent) : `docs/plan-e19-g3c-annexe/g2e_predict.py` (nommé avec un tiret bas
+pour être importable, écart au nom du plan), `g2e_expected.json`, `g2e_compare.py`, références ; quatre scènes sur la texture d'adresses de
+512 × 1105 (`a_aura_real` : les 9 images réelles de l'image 0 de l'aura ; `a_aura_mix` : miroirs et ABR 0 à 2 synthétiques ;
+`b_mirror_clamp` : fenêtres miroir à l'origine −1 ; `c_ties_tall` : égalités près de v ≈ 1100) ; les cas de G2b-1 rejoués sous la règle
+haut-gauche sans écart. Moteur `87bc8e6d` (22 tests rouges sur des types vides) puis `96862da3` (`EffectQuad`, `EffectQuadService`,
+`EffectQuadComponent`, `ComponentUpdateOrder.EffectQuads`, `CasaEngineGame.EffectQuadComponent`, démo, `docs/engine/effect-quads.md`, ADR-0071
+du moteur, plus grand numéro de toutes les branches : 0070 sur `chantier/demo-browser`). Mesures : `CasaEngine.Tests` **4148** (4126 + 22) ;
+la couture `ResolveTextures` privée de l'enregistrement de version rougit 3 tests ; les 8 captures (4 scènes × k = 1 et 3, back-buffer
+1024 × 768) passent `g2e_compare.py` (0 différence hors bruit, écart maximal 1 sur des pixels mêlés, égalités exactes gardées : 123 à
+47 049) ; pointeur du parent `5c3d538` (`dd1f8afa` ancêtre) ; `Alundra.Tests` **3051** en Release puis en Debug, `cmp` égal, traces.
+Écarts de l'exécuteur : `ResolveTextures` attrape aussi une exception du chargeur (un avertissement, quads sautés, comme une texture
+nulle) ; le chargeur de production n'appelle `Texture.Load` que si `Resource` est nul (texture déjà chargée utilisable sans GPU dans les
+tests ; `Texture` inchangé, consigné dans l'ADR) ; la démo s'arrête seule après sa capture (`CASAENGINE_CAPTURE_SCREENSHOT_PATH`).
 - ⏳ **G2e-4 — Vérification** par un vérificateur neuf.
 - **Acceptation** : prévision commitée avant le code ; tests rouges puis verts ; `g2e_compare.py` sort 0 à × 1 et × 3 (pixels opaques
   exacts, pixels mêlés d'un mode PSX à ±1 par canal ; toute autre différence hors de la zone de bruit est un arrêt, tranché par preuve,
