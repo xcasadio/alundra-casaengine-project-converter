@@ -8809,7 +8809,7 @@ fichiers hors catalogue pour `AssetVerifier.CheckCatalogCoverage`), puis export 
 prévision, un test existant qui bouge, un fichier hors de la liste. **Risques** : le compagnon de carte ne sert à rien tant que G3a ne
 le lit pas (aucun effet visible avant G3c) ; 748 images ont une case toute transparente (légitime : la PS1 ne les dessine pas non plus).
 
-###### E19.g G3a — Réserve des effets, apparition au chargement et tick (DLL) 🧪 (faite le 2026-10-06, vérification à faire ; planifiée le 2026-10-06 ; relecture n°1 : READY (code), REVISE (binaire : moment de l'apparition), révisée ; relecture n°2 : READY (binaire), REVISE (code : tuile du héros), disposition FIX ; nouvelle époque, relecture de clôture READY)
+###### E19.g G3a — Réserve des effets, apparition au chargement et tick (DLL) ✅ (faite et CONFIRMED le 2026-10-06 (`32a4e70`, `032f3a1`, `d28210c`, ADR-0045 ; vérificateur neuf : prévision rejouée, rouges d'abord rejoués (37 sur 37), 12 mutants tués, 363 animations, 245 créneaux sur 79 cartes, `Alundra.Tests` 2987 en Release puis en Debug, `cmp`, traces ; avis P4 : le test « dedans » de la tuile d'arrivée ne distingue pas les deux lectures, celui « dehors » si ; pas de test au niveau du mandataire d'une porte qui change entre deux ticks d'une image) ; planifiée le 2026-10-06 ; relecture n°1 : READY (code), REVISE (binaire : moment de l'apparition), révisée ; relecture n°2 : READY (binaire), REVISE (code : tuile du héros), disposition FIX ; nouvelle époque, relecture de clôture READY)
 
 DLL seule (ni moteur, ni export : G1 est livré, ADR-0043) ; rien ne se voit encore (le dessin est G3c) et aucun opcode n'est porté (G3b).
 Déclencheur de risque : modèle d'état nouveau tiré du binaire (relecture et vérificateur neuf). Faits et valeurs : `docs/plan-e19-g1g3-annexe/`
@@ -8876,7 +8876,7 @@ Déclencheur de risque : modèle d'état nouveau tiré du binaire (relecture et 
   de tuile pendant la mise à jour des entités de la première image (avant le premier `Update` du mandataire) : l'apparition d'un
   enregistrement à zone restreinte suit la tuile d'arrivée relevée, pas la nouvelle.
 - ✅ **G3a-2 — Code**, ADR du parent (la réserve des effets vit dans la DLL, au tick, comme le binaire ; le moteur ne la connaît pas) ;
-  ⏳ **G3a-3 — Vérification**.
+  ✅ **G3a-3 — Vérification** (2026-10-06) : vérificateur neuf **CONFIRMED** (voir l'en-tête).
 
 **Fait le 2026-10-06 (G3a-0).** `docs/plan-e19-g1g3-annexe/g3a-golden.py` et `g3a-golden.tsv` (643 lignes, généré ; `--check` rejoue la
 génération) commités avant tout code. Tirés des oracles du binaire (`anims_oracle.json`, `load_oracle.json`, `scenarios_out.txt`) et, pour
@@ -8933,7 +8933,7 @@ fait sur la pile seule, la lecture par tick dans la boucle des événements est 
   à sa création dans `InitializeWithWorld`, un test où elle change pendant la première image. Nouvelle époque ; une seule relecture de
   clôture.
 
-###### E19.g G3b — Les neuf opcodes d'effets (DLL) ⚠️ (code, arcs et ADR-0046 faits le 2026-10-06, vérification à faire ; **arrêt** : deux tests de G3a, hors de la liste fermée, bougent, décision de l'auteur attendue (voir « Arrêt de G3b-2 ») ; approuvée par l'auteur le 2026-10-06 ; planifiée le 2026-10-06, après G3a ; relecture n°1 REVISE (binaire : ticks gelés, créneau placé par `0xA2`/`0xA3` ; code : liste fermée), révisée ; relecture n°2 : READY (code), REVISE (binaire : valeurs de la 391), disposition FIX ; nouvelle époque, relecture de clôture REVISE (début de l'écart du second instantané de la 391) : **⚠️ en pause** (règle des relectures : pas de nouveau tour sans l'auteur) ; correctif écrit ci-dessous, une nouvelle relecture sur décision de l'auteur)
+###### E19.g G3b — Les neuf opcodes d'effets (DLL) ⚠️ (code, arcs et ADR-0046 faits le 2026-10-06 ; vérificateur neuf REFUTED sur deux tests de G3a hors de la liste fermée ; disposition FIX de la session, correction bornée et nouvelle vérification en cours ; **arrêt** : deux tests de G3a, hors de la liste fermée, bougent, décision de l'auteur attendue (voir « Arrêt de G3b-2 ») ; approuvée par l'auteur le 2026-10-06 ; planifiée le 2026-10-06, après G3a ; relecture n°1 REVISE (binaire : ticks gelés, créneau placé par `0xA2`/`0xA3` ; code : liste fermée), révisée ; relecture n°2 : READY (code), REVISE (binaire : valeurs de la 391), disposition FIX ; nouvelle époque, relecture de clôture REVISE (début de l'écart du second instantané de la 391) : **⚠️ en pause** (règle des relectures : pas de nouveau tour sans l'auteur) ; correctif écrit ci-dessous, une nouvelle relecture sur décision de l'auteur)
 
 DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (liste fermée et arcs). Faits : `dll-notes.md` §4 et §6,
 `binary-data-verify.md` (sites, valeurs), `README.md` de l'annexe (391 : cinq `0xA2`).
@@ -9054,6 +9054,13 @@ les quatre `0xA2` les créneaux 6 à 9). Ce n'est pas une contradiction de l'ann
 opcodes déplace et que la liste fermée de G3b n'avait pas prévue : rien n'a été repointé. **Décision de l'auteur attendue** : soit ajouter `AlundraEffectStageWiringTests.cs` à la liste
 et repointer ces deux assertions (9 créneaux dont les cinq du chargement aux positions de l'oracle ; 10 avec la création en file au créneau 5), soit faire monter ces deux tests sur une
 carte dont la première image ne crée rien. Le reste de la suite est vert.
+- **Vérification de G3b et disposition** (2026-10-06) : vérificateur neuf **REFUTED** sur ce seul point (P2 introduit : la suite
+  est rouge, 3032 sur 3034) ; tout le reste de G3b confirmé (gestionnaires, file, instantanés de la 391, liste fermée, audit, arcs).
+  Disposition de la session : **FIX** (régression introduite par G3b, correction bornée) : `Alundra.Tests/AlundraEffectStageWiringTests.cs`
+  entre dans la liste fermée de G3b ; ses deux tests de la 391 suivent le binaire avec les opcodes portés : après la première image, les
+  créneaux 0 à 4 du chargement à leurs positions et les quatre `0xA2` de `B1` (pc 228, 236, 244, 252) aux créneaux 5 à 8, positions des
+  lignes `S391a` 5 à 8 de `g3b-golden.tsv` (9 créneaux) ; la création mise en file par une entité avant le premier `Update` vient après les
+  créations des événements de carte du même tick (rang) : créneau 9, rien d'effacé (10 créneaux). Puis un vérificateur neuf sur G3b entière.
 
 - **Acceptation** : rouges puis verts ; les ensembles de sauts autorisés des arcs nommés vidés de leurs opcodes d'effets et remplacés par
   les assertions de la réserve ; aucune autre assertion ne bouge (A10/A11 sur 165/164 ne bougent pas) ; `Alundra.Tests` en Release puis
