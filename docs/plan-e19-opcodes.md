@@ -8293,7 +8293,7 @@ quads quelconques).
 numéro de l'ADR du moteur par R-BR (2) : le plus grand numéro trouvé est 0067 (`main` et `chantier/audio-modern`), donc **0068**, à revérifier
 juste avant le commit.
 - ✅ **G2b1-0** prévision (annexe `docs/plan-e19-g2b-annexe/` : `g2b1_predict.py`, `g2b1_predictions.json`, `g2b1-predictions.md`).
-- ✅ **G2b1-1** tests d'abord (puis le code de la soumission, du lot et du shader) · ⏳ **G2b1-2** démo sur GPU · ⏳ **G2b1-3** docs, ADR, fichier de tâches · ⏳ **G2b1-4** pointeur et suites.
+- ✅ **G2b1-1** tests d'abord (puis le code de la soumission, du lot et du shader) · ✅ **G2b1-2** démo sur GPU · ⏳ **G2b1-3** docs, ADR, fichier de tâches · ⏳ **G2b1-4** pointeur et suites.
 
 **G2b1-0 faite le 2026-10-06** : `g2b1_predict.py` (modèle exact B(k) en rationnels, `redux.py` pour R, sans virgule flottante) ; texture
 d'adresse de 16 × 16 (couleur unique par texel, STP aux texels où (i + j) % 4 == 1, texel (15, 15) = fond) ; 14 cas (huit quads : agrandissement
@@ -8320,6 +8320,23 @@ Actual: 0 » : file vide ; le douzième, l'inverse (une entrée de quad reprise 
 `SpriteRendererComponent.cs`, `PsxQuad.fx`, `Content.mgcb`) : `DrawPsxQuad` en quatre surcharges (avec ou sans clé de tri, ciseau explicite ou
 celui du périphérique), chaque champ de l'entrée assigné ; boucle de dessin : séries `NoCull` en `CullNone`, entrées `PsxQuad` par l'effet
 `PsxQuad` chargé à la première entrée (un projet qui ne s'en sert pas ne le charge pas). Commit moteur `7c637dd5`.
+
+**G2b1-2 faite le 2026-10-06** (démo sur GPU) : scène `PSX free quads` (`CasaEngine.Demos/Demos/PsxSemiTransparency/PsxFreeQuadDemo.cs`, inscrite dans
+`DemosGame.cs`), lancée depuis `CasaEngine.Demos` avec `CASAENGINE_PSXQUAD_ZOOM` = 1 puis 3 (caméra à `Zoom` = k, origine de la PS1 sur le pixel
+haut-gauche du tampon d'image, fenêtre 1024 × 768) ; elle écrit le tampon d'image lu en processus (`GetBackBufferData`, jamais de capture du bureau)
+dans un fichier que `docs/plan-e19-g2b-annexe/g2b1_compare.py` compare à `g2b1_predictions.json`. **Constat à la première exécution : × 1 égal à la
+prévision, × 3 faux sur les lignes** (1536 pixels de l'agrandissement × 4, 384 de chaque ligne 1:1 : le texel de la ligne d'en dessous) : la
+cause est le **signe de `ddy`**, que le moteur exécute sous OpenGL (MonoGame DesktopGL) avec la fenêtre y vers le haut, donc opposé à Direct3D ;
+le terme de pente de G2b1-R6 était appliqué à l'envers sur y. Correction dans le moteur (pas contournée dans la démo) : le vertex shader
+passe la rangée d'écran (croissante vers le bas, une unité par pixel) et le pixel shader prend le signe de son `ddy`, donc la dérivée est toujours
+celle d'une rangée d'écran descendante ; commit moteur `760c9f61`. **Après** : × 1 : 3160 pixels couverts hors zone de bruit, tous égaux à B(1) (le
+dénominateur par cas égal à la prévision), 88 sondes égales, 0 différence ; × 3 : 28 488 pixels couverts, tous égaux à B(3), 106 sondes égales, 0 différence ;
+les pixels non couverts lus au fond partout ; les trois lignes 1:1 (a) quad = (b) chemin rectangle pixel pour pixel aux deux facteurs (144 et 1296 pixels
+par paire, 0 différence). **Exécution rouge** (`DrawPsxQuad` temporairement réduit au rectangle englobant par le chemin d'aujourd'hui, restauré,
+`cmp` fait) : × 1 2728 différences, × 3 23 441 (agrandissement × 4 768 et 6080, miroir × 1,5 122 et 1118, parallélogramme 409 et 3678, trapèze 521 et
+4698, `Mode1` et `Mode0` 66 et 652 chacun, miroirs 1:1 64 et 576) ; les lignes 1:1 non miroir (a) restent égales (le rectangle englobant les dessine
+comme le quad), les miroirs échouent. Zone de bruit vide (géométrie entière) : aucun pixel ignoré. Commits moteur `760c9f61`
+(shader) et `e56db3bc` (démo).
 
 Moteur seul (sous-module, branche `chantier/e19g2b-free-quads` empilée sur la pointe de G2d `33324030`, que le parent épingle) ; inerte
 pour Alundra tant que rien ne l'appelle ; aucun chemin existant ne change (ni `SpriteBatch.fx`, ni les tuiles, ni les fonds, ni
