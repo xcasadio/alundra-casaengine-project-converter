@@ -8293,7 +8293,7 @@ quads quelconques).
 numéro de l'ADR du moteur par R-BR (2) : le plus grand numéro trouvé est 0067 (`main` et `chantier/audio-modern`), donc **0068**, à revérifier
 juste avant le commit.
 - ✅ **G2b1-0** prévision (annexe `docs/plan-e19-g2b-annexe/` : `g2b1_predict.py`, `g2b1_predictions.json`, `g2b1-predictions.md`).
-- ⏳ **G2b1-1** tests d'abord · ⏳ **G2b1-2** code et démo sur GPU · ⏳ **G2b1-3** docs, ADR, fichier de tâches · ⏳ **G2b1-4** pointeur et suites.
+- ✅ **G2b1-1** tests d'abord (puis le code de la soumission, du lot et du shader) · ⏳ **G2b1-2** démo sur GPU · ⏳ **G2b1-3** docs, ADR, fichier de tâches · ⏳ **G2b1-4** pointeur et suites.
 
 **G2b1-0 faite le 2026-10-06** : `g2b1_predict.py` (modèle exact B(k) en rationnels, `redux.py` pour R, sans virgule flottante) ; texture
 d'adresse de 16 × 16 (couleur unique par texel, STP aux texels où (i + j) % 4 == 1, texel (15, 15) = fond) ; 14 cas (huit quads : agrandissement
@@ -8306,6 +8306,20 @@ le shader choisit le texel) ; B contre R à × 1 : 0 pixel de différence partou
 tronquées de R, comme l'annexe l'attendait) ; mutations : chacune est vue par au moins une sonde (autre diagonale : trapèze 298 sondes à × 1 ;
 sans demi-pixel de géométrie : 68 sondes (miroir × 1,5, × 1) ; sans demi-texel ; sans recul du miroir : 110 (miroir × 1,5, × 1) ; sans terme de
 pente : 1320 (agrandissement × 4, × 3)) ; égalité 1:1 (a) = (b) pixel pour pixel aux facteurs × 1 et × 3 pour les trois paires.
+
+**G2b1-1 faite le 2026-10-06** (moteur, branche `chantier/e19g2b-free-quads`, partie de `face4b1e`) : fichier de tests
+`CasaEngine.Tests/Rendering/SpriteRendererComponentPsxQuadTests.cs`, 12 tests au niveau du lot, sans GPU (ordre des cases TR, BR, BL, TL et
+décalages depuis le centre ; coordonnées de texture = coins de la fenêtre décalés de 0,5 + 1/4096 texel ; coins de miroir sans retournement ;
+matrice de translation seule ; une entrée sans mode ; deux entrées par mode (0, 1, 2) de même clé, même z, mêmes coins, fenêtres 0,75-1 puis
+0,25-0,75 ; mode 3 en couleur (64, 64, 64) ; chemin sans clé ; une entrée du réservoir amorcée avec `IgnoresDepth` vrai, ciseau, fenêtre non neutre et
+mélange additif puis reprise par `DrawPsxQuad` ; l'inverse). **Rouge d'abord**, avec `DrawPsxQuad` présent et vide et les deux champs
+`NoCull` et `PsxQuad` ajoutés : 11 tests rouges sur 12 (valeurs lues : « Expected: 4, Actual: 0 », « Expected: 2, Actual: 0 », « Expected: 1,
+Actual: 0 » : file vide ; le douzième, l'inverse (une entrée de quad reprise par un sprite), est une garde verte d'avance). **Vert après** :
+`SpriteRendererComponent*` 36 sur 36 (12 nouveaux et les 24 existants `BlendMode`, `Capacity`, `PsxSemiTransparency`, aucun ne bouge) ; mutation
+« sans epsilon » (décalage 0,5 au lieu de 0,5 + 1/4096) : 2 tests rouges (coordonnées de texture et miroir), restaurée. Code (moteur,
+`SpriteRendererComponent.cs`, `PsxQuad.fx`, `Content.mgcb`) : `DrawPsxQuad` en quatre surcharges (avec ou sans clé de tri, ciseau explicite ou
+celui du périphérique), chaque champ de l'entrée assigné ; boucle de dessin : séries `NoCull` en `CullNone`, entrées `PsxQuad` par l'effet
+`PsxQuad` chargé à la première entrée (un projet qui ne s'en sert pas ne le charge pas). Commit moteur `7c637dd5`.
 
 Moteur seul (sous-module, branche `chantier/e19g2b-free-quads` empilée sur la pointe de G2d `33324030`, que le parent épingle) ; inerte
 pour Alundra tant que rien ne l'appelle ; aucun chemin existant ne change (ni `SpriteBatch.fx`, ni les tuiles, ni les fonds, ni
