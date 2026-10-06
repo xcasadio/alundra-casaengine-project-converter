@@ -334,6 +334,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
         0x24, // E19.d D4 (wait until ForceAdjusted of the logic entity is nonzero).
         0x25, // E19.d2c1 R4 (wait until CollidedWithEntityZ or IsOnGround of the logic entity is nonzero; trace label only).
         0x21, 0x26, 0x47, 0x48, 0x6F, // E19.h1 H1-1 (Z waits and the Z contact reader).
+        0x20, 0x22, 0x23, // E19.h1b2 H1B2-R1 (the Z distance wait and the two height waits; trace label only).
         0x45, 0x46, // E19.h4 H4-R1 (clear and set NoObstacleSlide).
         0x8E, 0x8F, // E19.k1 K1 (camera sway start and stop).
         0xA4, // E19.k2 K2-2 (background layer mask; the palette cycle of a bank above 0 stays degraded, O-E19-43).

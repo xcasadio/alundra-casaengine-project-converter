@@ -178,6 +178,19 @@ public class EntityRecordMapperTests
     }
 
     [Fact]
+    public void Map_Height_IsKeptRawAsTheRecordHeight_OnlyWhenTheRecordCarriesOne()
+    {
+        // E19.h1b2 (H1B2-R2): the target of 0x22/0x23 is the record's own Height byte (record byte 9); the mapper's PosZ is overwritten by the spawn, this is not.
+        var withHeight = new AlundraEntityScriptProxy();
+        EntityRecordMapper.Map("Entity_0", new Dictionary<string, string> { ["Height"] = "46" }, withHeight);
+        Assert.Equal(46, withHeight.RecordHeight);
+
+        var withoutHeight = new AlundraEntityScriptProxy();
+        EntityRecordMapper.Map("Entity_missing", new Dictionary<string, string>(), withoutHeight);
+        Assert.Null(withoutHeight.RecordHeight);
+    }
+
+    [Fact]
     public void Map_MissingXPosYPosHeight_LeavePositionFieldsAtDefault()
     {
         var proxy = new AlundraEntityScriptProxy();

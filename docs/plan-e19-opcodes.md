@@ -5855,7 +5855,7 @@ dans l'exécutable, la plupart non portés) ; `0x28`/`0x29` libèrent 15 marches
 s'ouvrent, ce qu'E14 seul fera (aujourd'hui un `Result` périmé peut lancer la scène d'après coffre aussitôt) ; les sous-cas
 `0x50`-`0x56` de `0x82` (8 sites `0x53`, hors chaîne) ne donnent ni vie ni effet (O-E19-39).
 
-### 1.2n E19.h — Attentes en Z, contacts, saut et murs ⏳ (E19.h1, E19.h3, E19.h4 ✅, recettes en attente ; E19.h1b1 planifiée ; E19.h1b2 et E19.h2 esquissées ; O-E19-41 et O-E19-42 tranchés)
+### 1.2n E19.h — Attentes en Z, contacts, saut et murs ⏳ (E19.h1, E19.h3, E19.h4 ✅, recettes en attente ; E19.h1b1 planifiée ; E19.h1b2 faite, vérification à faire ; E19.h2 esquissée ; O-E19-41 et O-E19-42 tranchés)
 
 **Découverte** (2026-10-03, lecture seule, trois surfaces : A attentes et contacts en Z, B murs et glissement, C reste du
 saut ; notes, émulations du code du binaire et recensements dans le scratchpad de la session, `e19h-disc/A`, `B`, `C`). Hors
@@ -6101,7 +6101,7 @@ d'intro, qui relit la fabrique (garde des six traces).
   l'apparition (`0x80039EF8`), la DLL au premier tick seulement, si bien que `0x8D` (`PosZ <= TerrainHeight + 1`,
   `AlundraEventProgramRunner.cs:1808`) lit 0 avant le premier tick d'une entité → E19.h1b2.
 
-##### 1.2n.1c E19.h1b2 — `0x20`, `0x22`, `0x23`, Z des entités sans contrôleur ⏳ (découverte du 2026-10-06 faite ; planifiée le 2026-10-06 ; relecture n°1 REVISE, révisée ; relecture n°2 à faire)
+##### 1.2n.1c E19.h1b2 — `0x20`, `0x22`, `0x23`, Z des entités sans contrôleur 🧪 (faite le 2026-10-06, vérification à faire)
 
 
 Portée : `0x20` (attente de distance en Z, 266 sites), `0x22`/`0x23` (attente d'une hauteur d'enregistrement, 17 sites) et
@@ -6213,7 +6213,7 @@ fin de l'attente.
   (le binaire fait Z puis XY ; aucune entité sans contrôleur du corpus ne bouge dans les deux).
 
 **Tâches.**
-- **H1B2-1 — Tests d'abord** (valeurs de l'annexe, écrites d'avance ; une valeur lue différente est un arrêt) :
+- ✅ **H1B2-1 — Tests d'abord, puis règles** (valeurs de l'annexe, écrites d'avance ; une valeur lue différente est un arrêt) :
   - gestionnaires (au patron d'`AlundraZWaitOpcodesTests`), lignes de `handlers_emu.txt` : `0x20 [16,0]` depuis 3145728 : 4194303 → 0,
     4194304 → 3, 2097152 → 3, contact seul → 0 ; `[0,1]` finit à 19922944 ; `0x22` hauteur 20 : cible 10485760 ; (10485000, 32768) → `ForceZ`
     760 ; (10485760, 0) → 1 ; (10485761, −5) → −1 ; (10485761, 0) : attente sans fin ; `ForceZ` de mauvais signe : attente sans fin ;
@@ -6245,9 +6245,13 @@ fin de l'attente.
     la 390 ne les lit, et les assertions d'A1c, `AlundraShipArcTests.cs:195-207`, non plus ; A4p, A17 et TH4-A17, T-A19 et TH4-A19
     font tourner des entités sans contrôleur dans un monde : inchangés), le TSV des opcodes sautés (aucune ligne pour ces trois opcodes) ; toute autre assertion
     qui bouge est un arrêt.
-- **H1B2-2 — Suites** : `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp`, six traces à l'octet (le harnais est
+  Commit : `feat(alundra): the Z waits 0x20, 0x22, 0x23 and the vertical step of entities without a controller`
+  - Fait le 2026-10-06 : 25 tests (9 dans `AlundraHeightWaitOpcodesTests`, 15 dans `AlundraControllerlessVerticalStepTests`, 1 dans `EntityRecordMapperTests`), tous écrits avant le code, **rouges d'abord aux valeurs de l'annexe** : les trois opcodes sautés (`0x20 [16,0]` rend 3 au premier appel au lieu de 0, genre `UnknownSkipped`, mémoire `Parameters[2]` à 0) ; Z-1 `PosZ` 0 au tick 1 (plan 32768), Z-2 10485760 (plan 10452992), Z-3 327680 (plan 294912), Z-4 `FinalForceZ` 0, contact 0, `IsOnGround` 0 (plan -32768, 1, 1), Z-5 et Z-6b `IsOnGround` 0 (plan 1), Z-6 `PosZ` 1048575 (plan 1048576), Z-7 39321600 (plan 39288832), Z-7b 19660800 (plan 19660032), Z-8 `ForceZ` 32768 (plan 0), Z-9 117440512 (plan 121634816) ; la garde (mandataire nu sans monde) verte avant et après ; `MapGravityRaw`/`MapZViscosityRaw` 0/0 sur 260 rec17 et 47 rec3 (plan 128/4096) ; `RecordHeight` nul (plan 46) ; cas réels : `0x20 @747` et `0x20 @442` « UnknownSkipped », l'attente ne se termine jamais (400 et 4000 images). **Verts après, aucune valeur ré-épinglée** : les valeurs de l'annexe sont lues telles quelles (Z-1 à Z-9 de `traces.out`, les lignes de `handlers_emu.txt`), la 260 rec17 finit son attente à l'appel c0 + **64** (montée 2097152 exacte, ni contact ni `IsOnGround`) et la 47 rec3 à c0 + **192** (`PosZ` 4194304, ni contact ni `IsOnGround`), `PosZ` stable les images suivantes ; la garde levée donne 128/4096 sur les deux préfabs réels. Règles : `case 0x20` (`WaitZDistance`), `case 0x22` et `0x23` (`WaitHeightTarget` : cible `hauteur << 19` littérale, serrage à sens unique, sans enregistrement un avertissement et la fin de l'attente), `RecordHeight` sur le mandataire (posé par le mappeur, copié par `Clone`), la fabrique pose les quatre mots de carte dès que `tileMapData != null` (les lignes du contrôleur restent sous sa garde), `StepVerticalWithoutController` appelé par `EvaluateEntitySupport` quand `Controller == null && !immediateAtSpawn && Status.IsActive() && Owner?.World?.CollisionField != null` (la décroissance et l'impulsion partagées sous le même critère ; `EntitySupport.AbsoluteCeiling` passe en `internal`). Liste fermée tenue : seule l'assertion de `IntroTraceHarnessTests.ImplementedOpcodes` bouge (+ `0x20`, `0x22`, `0x23`) ; tous les autres tests existants inchangés et verts (A1c, A4p, A17, A19, `AlundraTerrainHeightTests`, `AlundraCollidedWithEntityZTests`, `AlundraMovementObstacleProbeTests`, les appelants d'`immediateAtSpawn`, le TSV des opcodes sautés).
+  - Écarts de montage et de lecture, sans valeur contredite : (a) la 260 rec17 et la 47 rec3 ont un `SpriteDirection` sans le bit 0x40 : la zone d'apparition du chargement de carte ne les prend pas (un programme de la carte les fait apparaître en jeu) ; les deux tests les font apparaître par l'appel de production des opcodes `0x2D`/`0x8B` (`SpawnEntityByRecordId`) puis tournent par la vraie boucle (`World.Update`, `proxy.Update`) ; (b) le programme de Sara (C[4] @352) attend cinq drapeaux (33778, 33779, 33780, 33783 et 32819, posés à chaque image par le montage : les programmes du rêve les posent en jeu) et passe trois dialogues (bouton pressé comme un joueur) avant la chute à @426 ; ses `0x86` @435, @462 et @468 sont des opcodes sautés d'un autre slice, sans effet ici ; (c) `IsOnGround` est écrit `PosZ <= sol` comme H1B2-R4 (sans `ModZ`, le binaire compare `PosZ` ; les 12 préfabs ont `OffsetZ` 0, non discriminant) ; (d) le pas fait deux recherches d'appui bornées : celle de l'atterrissage (`F <= 0`, portée du tick) et celle du sol de fin de tick (sans portée), toutes deux `EntitySupport.TryFindSupport` ; la recherche du bloc « trouvé » sans contrôleur n'est plus faite pour une entité qui pas.
+- ✅ **H1B2-2 — Suites** : `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp`, six traces à l'octet (le harnais est
   exclu par le critère ; `docs/intro-programs-389.txt` ne nomme pas ces opcodes) ; pas d'export (DLL seule).
-- **H1B2-3 — Vérification** (vérificateur neuf). **H1B2-4 — Recette** (auteur, hors de la chaîne) : la 47 (Sara descend de 96 px), la
+  - Fait le 2026-10-06 : `Alundra.Tests` 2744/2744 en Release (1 min 5 s) puis en Debug (58 s), la Debug en dernier, 0 échec (+25 tests) ; `cmp` de `Alundra/bin/Debug/net9.0-windows/Alundra.dll` et de `alundra-project/Alundra.dll` sans écart ; les six traces à l'octet (`git diff --ignore-cr-at-eol` vide), les quatre traces du héros restaurées par `git checkout` après la suite, jamais commitées ; aucun export.
+- ⏳ **H1B2-3 — Vérification** (vérificateur neuf). 🧪 **H1B2-4 — Recette** (auteur, hors de la chaîne) : la 47 (Sara descend de 96 px), la
   260 (l'armure monte de 32 px), un ascenseur de la 22.
 
 **Acceptation** : tests de H1B2-1 rouges d'abord (opcodes sautés, entité figée), sauf la garde nommée, puis verts avec les valeurs

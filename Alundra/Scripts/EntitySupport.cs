@@ -184,7 +184,7 @@ internal static class EntitySupport
     /// <summary>
     /// The absolute ceiling of the binary (<c>0x80036D94</c>, the constant <c>0x7800000</c>, 1920 px), tested before every entity: the top of a box may not go above it.
     /// </summary>
-    private const int AbsoluteCeiling = 0x7800000;
+    internal const int AbsoluteCeiling = 0x7800000;
 
     /// <summary>
     /// E19.h3 (H3-R2), port of the ceiling half of the binary's vertical step (<c>0x80036D94</c>) for a rising entity, in the DLL's convention (<c>ModdedPosZ = PosZ + ModZ</c>,

@@ -600,9 +600,17 @@ internal static class AlundraEntitySpawnFactory
         // ApplyGravitySettingsToController's own Gravity-bit gate need the real header flags. A no-op
         // without a controller (11 sprite-only prefabs, E4.a) or without this world's tilemap
         // (tileMapData null - a caller that never resolved one, e.g. an older test fixture).
-        if (proxy.Controller != null && tileMapData != null)
+        //
+        // E19.h1b2 (H1B2-R3, docs/plan-e19-opcodes.md §1.2n.1c): the four map words (the gravity and the viscosity of THIS map, raw and in engine units) are posed for
+        // EVERY entity whose map is known, controller or not: an entity without a controller steps its own Z with the raw words (the binary has no notion of a
+        // controller, it reads the header of the map every tick for every entity with the gravity bit). Only the lines that touch the controller stay under its guard.
+        if (tileMapData != null)
         {
             (proxy.MapGravity, proxy.MapMaxFallSpeed, proxy.MapGravityRaw, proxy.MapZViscosityRaw) = ResolveMapGravitySettings(tileMapData);
+        }
+
+        if (proxy.Controller != null && tileMapData != null)
+        {
             proxy.ApplyGravitySettingsToController();
             proxy.Controller.Settings.WalkabilityMask = AlundraCellsCollisionField.WalkabilityMaskFor(proxy.Flags);
 

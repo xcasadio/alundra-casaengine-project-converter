@@ -195,6 +195,8 @@ public static class EntityRecordMapper
         // -ModZ+1 offset and ground-height clamp (EntityManager.cs:119,130-136) - see the XML doc above.
         if (TryGetInt(recordName, customProperties, "Height", out var height))
         {
+            // E19.h1b2 (H1B2-R2): the record's own Height byte, kept raw for 0x22/0x23 (the spawn overwrites PosZ below, this stays).
+            proxy.RecordHeight = height;
             proxy.PosZ = height << 0x13;
             // PhysicsEngine.cs:1700: entity.TileZ = entity.PosZ >> 20.
             proxy.TileZ = proxy.PosZ >> 20;

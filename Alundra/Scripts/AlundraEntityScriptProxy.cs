@@ -80,6 +80,14 @@ public class AlundraEntityScriptProxy : GameplayProxy
     public uint ContentsItemId; //3c
     public int ContentsGameFlag;
     //public SiEntityRecord? EntityRecord;
+
+    /// <summary>
+    /// E19.h1b2 (H1B2-R2, docs/plan-e19-opcodes.md §1.2n.1c): the <c>Height</c> byte of the entity's record (record byte 9, which the binary reads at
+    /// <c>+0x44</c> + 9), raw: the target of <c>0x22</c>/<c>0x23</c> is this value shifted left by 19, literally (ADR-0026). Set by
+    /// <see cref="EntityRecordMapper"/> only when the record carries a <c>Height</c>; null for the hero and the bare proxies of the tests ("no record").
+    /// </summary>
+    public int? RecordHeight;
+
     public int EntityRefId;
     public readonly int[] ProgramIndexes = new int[6]; //4c
     //public SpriteRecord? SpriteRecord;
@@ -665,6 +673,13 @@ public class AlundraEntityScriptProxy : GameplayProxy
         // "found"/"not found" tail (see that variable's own use).
         var eligible = EntitySupport.IsEligibleSubject(this);
 
+        // E19.h1b2 (H1B2-R4, docs/plan-e19-opcodes.md §1.2n.1c): an entity without a controller, ticked in a world that has a collision field, steps its own Z like
+        // every entity of the binary (which has no notion of a controller): decay, then the step below instead of the support block of the controller. The criterion is
+        // the data dependency of the step itself (a field to read the terrain from) and it is what keeps out the entities of the intro harness, which are bare, never in
+        // a world, and run their own vertical pass: it guards EVERY write below (decay, contact, IsOnGround, TileZ, PosZ). A destroyed entity is skipped, as in the
+        // motion tick (D-E19-29).
+        var stepsWithoutController = Controller == null && !immediateAtSpawn && Status.IsActive() && Owner?.World?.CollisionField != null;
+
         // Single decay site (verifier A1/A6 follow-up, reconciled with the timing bug fix above): a
         // controller-driven entity's own ForceZ is never decayed by AlundraScriptedMotion.RunOneKinematicTick
         // (horizontal-only, shared with the player) - this is the ONE place it decays, port of
@@ -682,7 +697,10 @@ public class AlundraEntityScriptProxy : GameplayProxy
         // E19.d2c1 R3 (the binary, 0x80036AB8-0x80036B60): an impulse taken this tick (IsZForceApplied, R1) sets the force with no decay: IZF << 8, or 0 for the
         // stop marker of the iron grids (the 16 low bits of IZF equal 0x8000) on an entity without gravity (148 records of 58 maps). Without an impulse, an
         // entity with gravity decays its force and the result is bounded on BOTH sides to +-(ZViscosity << 8), as the binary does (the DLL bounded one side).
-        if (Controller != null && !immediateAtSpawn)
+        //
+        // E19.h1b2 (H1B2-R4): the same impulse and decay for an entity without a controller that steps its own Z (stepsWithoutController). The impulse is shared as in
+        // the binary (inert in production: none of the 6 prefabs without a controller has an animation with one).
+        if ((Controller != null || stepsWithoutController) && !immediateAtSpawn)
         {
             var gravity = (Flags & EntityFlags.Gravity) != 0;
             if (IsZForceApplied != 0)
@@ -753,6 +771,12 @@ public class AlundraEntityScriptProxy : GameplayProxy
         // gate: it drives different, unrelated physics (the entity-support seed/landing test), out of this
         // task's scope (contract item 3: "rien d'autre ne change dans la physique").
         TerrainHeight = ComputeTerrainHeight();
+
+        if (stepsWithoutController)
+        {
+            StepVerticalWithoutController(collidables, eligible);
+            return;
+        }
 
         var terrainHeight = 0;
         if (Controller != null && !immediateAtSpawn)
@@ -935,6 +959,77 @@ public class AlundraEntityScriptProxy : GameplayProxy
         {
             Controller.SetExternalVerticalDisplacement(FinalForceZ / 65536f);
         }
+    }
+
+    /// <summary>
+    /// E19.h1b2 (H1B2-R4, docs/plan-e19-opcodes.md §1.2n.1c): the vertical step of an entity without a controller, the rules of the binary (<c>ComputeZPosition
+    /// 0x800375E0</c>, the end pass <c>0x80038064</c>) in the DLL's convention (the binary's <c>PosZ - 1</c>: <c>docs/plan-e19-h1b2-annexe/binary-notes.md</c> §2.3 to §2.7),
+    /// run after the decay of <see cref="EvaluateEntitySupport"/> and after this tick's script and XY step, from <see cref="TerrainHeight"/> (the probe of the box at
+    /// the position of the tick). <see cref="FinalForceZ"/> is the force of the tick. A rise (<c>F &gt; 0</c>) stops under the absolute ceiling of 1920 px (contact, and
+    /// <see cref="ForceZ"/> to 0 with the gravity), else adds <c>F</c>. A fall or rest (<c>F &lt;= 0</c>, zero included) lands on the highest entity top at or above the
+    /// reach of the tick (<see cref="EntitySupport.TryFindSupport"/>, a subject of the search only when eligible), else on the terrain when
+    /// <c>PosZ + ModZ + F &lt; T</c> (STRICT: reaching <c>T</c> exactly is not a landing, the contact comes one tick later), else adds <c>F</c>; a landing raises
+    /// <see cref="CollidedWithEntityZ"/> and zeroes <see cref="ForceZ"/> with the gravity only (<see cref="FinalForceZ"/> keeps the force of the tick: at rest with the
+    /// gravity it is -G &lt;&lt; 8 and the contact is raised at every tick). <see cref="IsOnGround"/> is positional, <c>PosZ &lt;= floor</c>, the floor being <c>T</c> or the top
+    /// of the highest entity below plus one. Not ported (no case in the corpus): the ceilings that other entities form during a rise, and the binary's order Z before XY.
+    /// </summary>
+    private void StepVerticalWithoutController(IReadOnlyList<AlundraEntityScriptProxy> collidables, bool eligible)
+    {
+        var gravity = (Flags & EntityFlags.Gravity) != 0;
+        var terrain = TerrainHeight;
+        var force = ForceZ;
+        FinalForceZ = force;
+
+        var supportedByEntity = false;
+        if (force > 0)
+        {
+            if (PosZ + ModZ + Depth + 1 + force > EntitySupport.AbsoluteCeiling)
+            {
+                PosZ = EntitySupport.AbsoluteCeiling - 2 - ModZ - Depth;
+                CollidedWithEntityZ = 1;
+                if (gravity)
+                {
+                    ForceZ = 0;
+                }
+            }
+            else
+            {
+                PosZ += force;
+            }
+        }
+        else
+        {
+            var moddedPosZ = PosZ + ModZ;
+            var supportTopZ = 0;
+            var landsOnEntity = eligible
+                && EntitySupport.TryFindSupport(this, collidables, Math.Max(moddedPosZ + force, terrain), out _, out supportTopZ);
+            if (landsOnEntity || moddedPosZ + force < terrain)
+            {
+                PosZ = (landsOnEntity ? supportTopZ : terrain) - ModZ;
+                CollidedWithEntityZ = 1;
+                supportedByEntity = landsOnEntity;
+                if (gravity)
+                {
+                    ForceZ = 0;
+                }
+            }
+            else
+            {
+                PosZ += force;
+            }
+        }
+
+        WasEntitySupportedLastTick = supportedByEntity;
+        TileZ = PosZ >> 20;
+
+        // The end pass of the binary: the floor of the box after the step, the terrain raised to the top + 1 of the highest entity below (a subject only).
+        var floor = terrain;
+        if (eligible && EntitySupport.TryFindSupport(this, collidables, terrain, out _, out var floorTopZ) && floorTopZ > floor)
+        {
+            floor = floorTopZ;
+        }
+
+        IsOnGround = PosZ <= floor ? 1 : 0;
     }
 
     /// <summary>
@@ -2261,6 +2356,7 @@ public class AlundraEntityScriptProxy : GameplayProxy
             ContentsItemId = ContentsItemId,
             ContentsGameFlag = ContentsGameFlag,
             EntityRefId = EntityRefId,
+            RecordHeight = RecordHeight,
             SpriteTableIndex = SpriteTableIndex,
             SpriteType = SpriteType,
             Flags = Flags,

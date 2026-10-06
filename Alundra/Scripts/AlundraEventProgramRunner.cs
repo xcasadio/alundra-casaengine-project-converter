@@ -718,11 +718,23 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
                        // skipped, so every jump or fall script ran on without waiting for the landing.
                 return entity.CollidedWithEntityZ != 0 || entity.IsOnGround != 0 ? 1 : 0;
 
+            case 0x20: // Wait Z distance - Script_32_020 @ 0x8003D9BC (E19.h1b2 H1B2-R1, docs/plan-e19-opcodes.md §1.2n.1c), PER THE BINARY: a pure wait on the
+                       // PosZ of the LOGIC entity (WaitZDistance: the first call at a pc memorises the pc and PosZ and returns 0, even with a limit of 0;
+                       // then 3 once |memo - PosZ| >> 16 reaches v1 | v2 << 8 pixels). It does not read the contact. Size 3.
+                return WaitZDistance(entity, v, state);
+
             case 0x21: // Wait Z distance or Z contact - Script_33_021 @ 0x8003DA28 (E19.h1 H1-1, docs/plan-e19-opcodes.md §1.2n.1), PER THE BINARY:
                        // calls the 0x20 handler (WaitZDistance, same operands) and returns 3 when it ends, else 3 when the LOGIC entity's
                        // CollidedWithEntityZ (+0x140) is nonzero - from its very first call too - else 0. The 0x20 memo is written in every case.
-                       // No other effect. (0x20 itself stays skipped until E19.h1b.) Size 3.
+                       // No other effect. Size 3.
                 return WaitZDistance(entity, v, state) != 0 || entity.CollidedWithEntityZ != 0 ? 3 : 0;
+
+            case 0x22: // Wait height target - Script_34_022 @ 0x8003DA70 (E19.h1b2 H1B2-R1, docs/plan-e19-opcodes.md §1.2n.1c), PER THE BINARY: see WaitHeightTarget. Size 1.
+                return WaitHeightTarget(entity, state);
+
+            case 0x23: // Wait height target or Z contact - Script_35_023 @ 0x8003DB28 (E19.h1b2 H1B2-R1), PER THE BINARY: the 0x22 handler first (its memo and its
+                       // clamp always run, from the first call), then 1 when the LOGIC entity's CollidedWithEntityZ (+0x140) is nonzero. Size 1.
+                return WaitHeightTarget(entity, state) != 0 || entity.CollidedWithEntityZ != 0 ? 1 : 0;
 
             case 0x26: // Wait force adjusted or Z contact - Script_38_026 @ 0x8003DBA8 (E19.h1 H1-1), PER THE BINARY: returns 1 when the LOGIC
                        // entity's ForceAdjusted (+0x13C) or CollidedWithEntityZ (+0x140) is nonzero, else 0. Same shape as 0x24/0x25. Size 1.
@@ -2468,7 +2480,7 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
     }
 
     /// <summary>
-    /// The Z wait of <c>0x20</c> (<c>0x8003D9BC</c>, E19.h1 H1-1; shared with 0x21, which is the only caller dispatched so far): the first
+    /// The Z wait of <c>0x20</c> (<c>0x8003D9BC</c>, E19.h1 H1-1; dispatched by 0x20 itself since E19.h1b2 and shared with 0x21): the first
     /// call at a pc (the key is <c>CodeIndex</c>, in <c>Parameters[1]</c>) memorises the pc and the entity's PosZ
     /// (<c>Parameters[2]</c>) and returns 0. Later calls return 3 once <c>|PosZ - memo| &gt;&gt; 16</c> reaches
     /// <c>v1 | v2 &lt;&lt; 8</c>, else 0. A difference, so no PosZ convention is involved. Reads nothing else.
@@ -2490,6 +2502,58 @@ public sealed class AlundraEventProgramRunner : IEventProgramRunner
 
         return (distance >> 16) >= ((v[1] & 0xFF) | ((v[2] & 0xFF) << 8)) ? 3 : 0;
     }
+
+    /// <summary>
+    /// The height wait of <c>0x22</c> (<c>0x8003DA70</c>, E19.h1b2 H1B2-R1; <c>0x23</c> calls it first), PER THE BINARY. The first call at a pc (the key is
+    /// <c>CodeIndex</c>, in <c>Parameters[1]</c>) memorises the target, the record's <c>Height</c> byte shifted left by 19 (<c>Parameters[2]</c>, literally: no conversion
+    /// of the DLL's convention, ADR-0026), and returns 0 without testing anything. Later calls return 1 when <c>PosZ</c> equals the target exactly, else bring
+    /// <c>ForceZ</c> back to the gap only when it overshoots in the direction of the gap (it never creates or reverses a force: an entity at rest or moving away
+    /// waits for ever, as in the binary) and return 0. An entity with no record (the hero, a bare proxy of a test; no site in the corpus, the binary
+    /// prints an error and reads a null record) logs one warning and ends the wait at once.
+    /// </summary>
+    private int WaitHeightTarget(AlundraEntityScriptProxy entity, EventProgramState state)
+    {
+        if (state.Parameters[1] != state.CodeIndex)
+        {
+            if (entity.RecordHeight is not { } height)
+            {
+                if (!_loggedRecordlessHeightWait)
+                {
+                    _loggedRecordlessHeightWait = true;
+                    Logs.WriteWarning("AlundraEventProgramRunner: Opcode 0x22 without an entity record: the wait ends.");
+                }
+
+                return 1;
+            }
+
+            state.Parameters[1] = state.CodeIndex;
+            state.Parameters[2] = height << 19;
+            return 0;
+        }
+
+        var target = state.Parameters[2];
+        if (entity.PosZ == target)
+        {
+            return 1;
+        }
+
+        var gap = target - entity.PosZ;
+        if (gap > 0)
+        {
+            if (gap < entity.ForceZ)
+            {
+                entity.ForceZ = gap;
+            }
+        }
+        else if (entity.ForceZ < gap)
+        {
+            entity.ForceZ = gap;
+        }
+
+        return 0;
+    }
+
+    private bool _loggedRecordlessHeightWait;
 
     /// <summary>
     /// Script_28_01C (0x1C, E19.c1 T4), exactly as <c>0x8003D7FC</c>: waits until the entity's animation ended v1 times. The
