@@ -284,9 +284,16 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-85** — (2026-10-05, choix technique de la session) L'épingle MonoGame d'`Alundra.Tests` suit celle du moteur (3.8.4.1 →
     3.8.5.1) : sans elle, un test ne peut pas créer le runtime du bureau sur GPU (« This MGFX effect seems to be for a newer release
     of MonoGame »).
+  - **D-E19-86** — (2026-10-06, choix de la session sous la règle de l'auteur « le binaire tranche », D-E19-72, D-E19-81 ; à confirmer
+    par l'auteur) La **boîte de choix suit le binaire** : disposition horizontale OUI/NON, Gauche et Droite, validation à la Croix seule,
+    ni annulation ni souris (la liste verticale de boutons du moteur n'est plus utilisée pour les choix), compteur du curseur
+    persistant d'une boîte à l'autre ; les invites de carte mémoire du binaire restent hors périmètre (ADR-0014).
   - **D-E19-87** — (2026-10-06, choix technique de la session, E19.h1b2) Pour une entité sans contrôleur : atterrissage strict et
     `IsOnGround` de position (convention de la DLL, exacte), impulsion partagée par le pas vertical comme dans le binaire ; `0x22`
     garde la cible littérale d'ADR-0026 ; `0x22` sans enregistrement journalise une fois et finit l'attente.
+  - **D-E19-88** — (2026-10-06, choix technique de la session, E19.f3a) Le crochet de test `SelectChoiceForTests` garde son nom et
+    répond **à la manette** (appuis armés, consommés par les passes actives) ; la passe du choix tourne en tête de la première boucle
+    de ticks du mandataire, avant la manette et l'écran de sauvegarde, comme le créneau 3 du binaire avant le créneau 10.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -5242,6 +5249,111 @@ touché ; `Alundra.Tests` en Release puis en Debug avec la nouvelle épingle, `c
   `report.json` ; `cmp` sans écart, six traces. Avis P4 : `OnEndPlay` libère l'écran sans le retirer de la vue (comme l'écran de
   sauvegarde ; à voir en recette en quittant un monde au milieu d'un dialogue) ; le chemin de production et un seul GPU, déjà en
   risque.
+
+###### E19.f3 — Choix fidèle : découverte des 2026-10-05 et 06, découpée en E19.f3a (logique) et E19.f3b (vue) ⏳
+
+**Découverte** (lecture seule et simulation hors du dépôt, chaque surface contre-vérifiée ; versionnée, en anglais, dans
+`docs/plan-e19-f3-annexe/`) ; faits porteurs **[binaire]** (`binary-notes.md`, `binary-verify.md`, code réel exécuté par un interpréteur
+MIPS) :
+- **Ouvreur** `0x80050BA8(libellé 1, libellé 2, &résultat)`, six sites : `0x44` (ETC 0x43/0x44 « OUI »/« NON »), le livre de sauvegarde
+  (0x41/0x42), le menu de fichier de l'écran de sauvegarde (0x4A/0x4B), deux invites de carte mémoire (0x81/0x82, non portées, ADR-0014)
+  et un code mort ; une variante `0x80050C00` (défaut NON) ne sert qu'au formatage d'une carte mémoire. Les libellés sont coupés à 6
+  octets.
+- **Machine** (créneau 3 de la table `0x800A731C`, cadre `0x800A4FEC`) : son 4 au tick N de l'ouvreur ; passe d'initialisation N+1 sans
+  dessin ; glissement d'entrée N+2 à N+18 (x 311, 301, 292, 282, 272, 263, 253, 244, 234, 224, 215, 205, 196, 186, puis 176) ; active dès
+  N+19 ; une Croix vue avant est perdue ; **horizontale** : OUI à gauche, NON à droite, OUI par défaut ; Gauche et Droite lisent le mot
+  « par intervalle » (première répétition à la 21e passe d'affilée, remise à zéro à tout changement des boutons tenus), son 1 quand la
+  sélection change ; seule une Croix **naissante** valide (pas d'annulation, aucun autre bouton) : sons 5 puis 2 (OUI) ou 3 (NON) à
+  l'image C de l'appui, glissement de sortie C+1 à C+17 (la manette n'est plus lue), fermeture et résultat écrit à C+18, vu par son
+  consommateur dans cette même image (`0x44` continue dans le même tick : OUI → `Result` 1, NON → 0) ; réponse la plus tôt : OUI à N+37,
+  NON à N+38 ; Croix et Droite à la même passe : le résultat garde l'ancienne sélection. Le compteur du curseur (image = compteur / 10,
+  bouclé à 40) n'est pas remis à l'ouverture. Le marqueur de `0x44` est effacé après le retour (l'interpréteur remet l'état du programme
+  à zéro) : un `0x44` revisité redemande (la note contraire de `binary-notes.md` est réfutée par `binary-verify.md`).
+- **Dessin** : cadre en (176, 144), 128 × 32 (le sprite cuit par E19.f1 `829f31a7-…`) ; libellés en (192, 152) et (240, 152), largeurs 19
+  et 23 ; curseur 16 × 16 au-dessus du libellé choisi, (196, 136) ou (244, 136) au repos ; pas de découpe ; le choix est dessiné
+  **par-dessus** la boîte de texte, qui ne l'attend pas et n'est pas touchée (il en couvre les 8 rangées du haut).
+- **DLL et corpus** (`dll-notes.md`, `dll-verify.md`, `census-notes.md`, `census-verify.md`) : 101 sites `0x44` dans 39 cartes, tous
+  après une ouverture en mode boîte et suivis d'un `0x51` ; libellés toujours OUI/NON ; l'ouvreur de la DLL est
+  `AlundraDialogueDirector.OpenChoice`, trois appelants (`0x44`, le livre, l'écran) ; aujourd'hui la réponse arrive au tick suivant
+  par la fenêtre du moteur ; le mot « par intervalle » existe déjà (`AlundraTickPad.ButtonsJustPressedByInterval`, `AlundraTickPad.cs:49`,
+  `Update` `:53-97`, égal au modèle du binaire sur 2090 séquences) ; le héros est verrouillé chez les trois appelants (la Croix ne
+  le fait pas sauter, `AlundraPlayerManager.cs:211`) ; les sons passent par `_soundPlayer?.PlaySfx`.
+- **Simulation** (`sim-notes.md`, `sim-pins.md`, `sim-verify.md`) : la machine portée en C# ligne à ligne depuis
+  `model/choice_model.py`, dans une copie de la DLL hors du dépôt, égale le modèle sur 610 cas (46 534 passes, 0 écart ; 14 mutants sur
+  14 pris) ; V8 (marin 12, manettes A et B) et V9 (livre) retrouvés par le vrai directeur ; avec les tests d'aujourd'hui, 44 tests
+  rouges (31 méthodes) ; avec les tests pilotés par la manette, 2720/2720 ; la table « test, assertion, aujourd'hui, fidèle » est
+  `sim-pins.md`, rejouée à l'identique par la contre-vérification.
+
+**Choix de conduite** (session, D-E19-86, D-E19-88) : la boîte de choix suit le binaire (disposition horizontale, Croix seule, ni
+annulation ni souris, compteur du curseur persistant) ; découpage en f3a (machine, branchement, crochet de test, tests qui bougent ;
+la fenêtre du moteur n'est plus poussée pour un choix) puis f3b (l'écran XAML du choix et sa preuve au pixel), exécutées l'une après
+l'autre (entre les deux, le choix fonctionne à la manette sans être dessiné) ; les invites de carte mémoire restent hors périmètre.
+
+###### E19.f3a — Logique du choix au tick près ⏳ (planifiée le 2026-10-06 ; relecture à faire)
+
+**Règles.**
+- **F3A-R1 — Machine** : nouvelle classe interne `AlundraChoiceBox`, portage de `ChoiceBox` de `docs/plan-e19-f3-annexe/model/choice_model.py`
+  (jamais d'invention : chaque état, position, son et tick vient du modèle ; le portage de la simulation,
+  `scratchpad/f3-sim/repo/Alundra/Scripts/AlundraChoiceBox.cs`, peut servir de point de départ, relu contre le modèle) ; entrées par
+  passe : Croix naissante, Gauche et Droite « par intervalle », lues sur le mot de manette du tick précédent (`AlundraTickPad`, comme
+  le Carré de la boîte de texte) ; état exposé aux tests et à f3b : phase, x du cadre, sélection, image du curseur, dessiné ou non,
+  résultat.
+- **F3A-R2 — Directeur** (`AlundraDialogueDirector.cs`) : `OpenChoice` ouvre la machine (deux libellés d'au plus 6 octets, son 4 au tick de
+  l'ouverture) ; la fenêtre du moteur n'est plus utilisée pour un choix (ni `ShowChoices` ni écran poussé ; la fermeture ajoutée par
+  E19.f2b1c dans `TakeChoiceResult` n'a plus d'objet) ; `TakeChoiceResult` ne rend le résultat qu'une fois écrit par la machine (C+18),
+  et `IsAwaitingChoice` reste vrai jusqu'à sa lecture (c'est ce qui fait redemander un `0x44` revisité) ; `CloseStandaloneChoice`
+  ferme la machine (`IsAwaitingChoice` faux, `TakeChoiceResult` nul) ; `Open` annule un choix en attente, comme aujourd'hui (aucun cas du
+  corpus) ; `InstallForMapEntry` remet la machine à zéro ; le compteur du curseur n'est remis que par `ResetForTests` ; un `Tick()` sans
+  choix ouvert ne fait rien. `HasPresenter` garde son sens (un présentateur du moteur est attaché). Le gestionnaire `0x44`, le livre et
+  l'écran de sauvegarde ne changent pas (seule la latence de `TakeChoiceResult` bouge).
+- **F3A-R3 — Placement** (`AlundraWorldProxy.Update`) : la passe du choix tourne une fois par tick **en tête de la première boucle**, avant
+  `TickPad.Update` (`:2106`) et avant le tick de l'écran de sauvegarde (`:2117`) : le créneau 3 du binaire passe avant le créneau 10 et
+  avant la phase des programmes (`binary-notes.md` §5) ; elle précède aussi la passe de la boîte de texte (seconde boucle) : sans état
+  partagé, seul l'ordre de deux sons d'un même tick en dépend. Les aides de test qui font tourner l'écran de sauvegarde font tourner
+  la passe du choix avant lui.
+- **F3A-R4 — Crochet de test** : `SelectChoiceForTests(i)` garde son nom et devient une réponse **à la manette** : il arme des appuis
+  consommés seulement par les passes actives (Gauche ou Droite jusqu'à l'option i, puis Croix, un appui par passe, à partir de la
+  première passe active qui suit l'armement) ; il rend vrai tant que `IsAwaitingChoice` ; il est idempotent. `ChoicesForTests` rend les
+  libellés tant que la machine tourne (de l'ouvreur à la passe de fermeture). Tout test qui attend une réponse fait tourner le
+  directeur une fois par tick.
+
+**Tâches.**
+- **F3A-1 — Tests d'abord** :
+  - machine : V1 à V7 de `docs/plan-e19-f3-annexe/values.json` (par passe : fonction de mise à jour, dessin, x du cadre, des libellés et du
+    curseur, image, sélection, sons ; tick de résolution et `Result`) ; cinq séquences de manette réelles par le mandataire (fin à N+50,
+    N+52, N+37, N+80, jamais ; `sim-notes.md`) ; un `0x44` avec un directeur sans présentateur (aujourd'hui aucun test : à épingler avant
+    le changement, valeur d'aujourd'hui gardée) ; une sortie de monde pendant un choix (`InstallForMapEntry` remet la machine) ;
+  - tests existants qui bougent, liste fermée = `docs/plan-e19-f3-annexe/sim-pins.md` §0 à §5, avec ses valeurs « fidèles », dans
+    l'ordre du binaire (choix avant écran) : en particulier la répartie à 37 ou 38 ticks de l'ouvreur (OUI, NON) ; K5 (`(E, T, R)` =
+    (56, 67, 85), vu à 86) ; le livre (OUI pris au Tick 99, capture au Tick 160, libération de la boîte au Tick 134 avant la capture, NON au
+    Tick 100, `Tick(37 + Wait)` = 98) ; l'aide `AnswerAndClose` (`Tick(37 + 18)` = 55 pour OUI, `Tick(38 + 18)` = 56 pour NON) ;
+    `DownDuringTheQuestion_ThenOui_…` **19** ticks (ordre du binaire ; 20 dans l'ordre d'aujourd'hui) ; A17 (`0x03 @1059` à 637, `0x11
+    @1115` à 1162, `0x05 @1120` à 1193, fin à 1194, budget 2500 inchangé) ; le marin 12 (choix pris à l'image 133, boîte suivante après
+    152, fin après 354, budget 400) ; le livre de bout en bout (sélecteur après 139, écran après 116) ; les assertions de la fenêtre du
+    moteur (§4 de la table) disparaissent ou passent à `ChoicesForTests` ; l'aide `AlundraArcSupport.OneFrameWithTheDialogueButton`
+    et le bloc du harnais d'intro (`IntroTraceHarnessTests.cs` ~594-600) pilotent la Croix quand un choix attend ; restent verts sans
+    changement : les lecteurs de `ChoicesForTests` et d'`IsAwaitingChoice`, `RunToTheQuestion` et ses appelants, l'oracle de la boîte
+    (K5 de `AlundraTextBoxOracleTests.cs:320`, les trois `O20_Sailor12Of389_*`, qui modélisent `0x44` par un `Hold(1)` et ne lisent pas
+    le directeur) ; toute autre assertion qui bouge, ou une valeur lue qui diffère de la table, est un arrêt.
+- **F3A-2 — Suites** : `Alundra.Tests` en Release puis en Debug, la Debug en dernier, `cmp`, six traces (le harnais d'intro et les traces du
+  héros n'ouvrent aucun choix) ; pas d'export.
+- **F3A-3 — Vérification** (vérificateur neuf). La recette se fait avec f3b.
+
+**Acceptation** : la machine égale le modèle sur V1 à V7 ; les tests de la liste fermée prennent les valeurs fidèles de la table ;
+aucune autre assertion ne bouge ; suites, `cmp`, traces. **Retour arrière** : revert des commits. **Risques** : entre f3a et f3b, un
+choix n'est pas dessiné (f3b suit) ; le placement en tête de la première boucle fait passer, aux images de rattrapage (plusieurs ticks
+par image), toutes les passes du choix avant les programmes de cartes de l'image ; le chemin réel de la manette jusqu'à la passe du
+choix pendant qu'une boîte est ouverte n'est prouvé que par la recette (le crochet injecte les appuis).
+
+###### E19.f3b — Écran du choix et preuve au pixel ⏳ (esquisse, après E19.f3a)
+
+Au patron d'E19.f2b1c : `AlundraChoiceScreen` (XAML, `ChoiceScreen.xaml`, son enveloppe et ses données de conception, versionnés),
+`AlundraChoiceViewModel`, un présentateur appelé après chaque passe du choix ; cadre par son GUID (`829f31a7-…`), deux libellés font3
+(OUI, NON) aux positions du binaire, curseur `wind_150` à `wind_228` selon l'image du compteur, glissement horizontal ; écran séparé de
+la boîte de texte (créneau séparé dans le binaire ; la question de l'écran de sauvegarde est seule), poussé après elle, au-dessus ;
+test au pixel sur GPU réel (harnais d'E19.f2b1c), valeurs écrites d'avance par un compositeur indépendant ; export : l'enveloppe
+cataloguée.
+
 
 ### 1.2k E19.k — Caméra : balancement `0x8E`/`0x8F` (E19.k1), masque des fonds `0xA4` (E19.k2) — E19.k1 ✅ (recette K5 en attente) ; E19.k2 🧪 (faite et vérifiée le 2026-10-03, recette K2-4 en attente)
 
