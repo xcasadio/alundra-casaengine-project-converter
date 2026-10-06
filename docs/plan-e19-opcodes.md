@@ -194,7 +194,7 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-53** — (2026-10-03, l'auteur, Q-G3) Les **251 effets d'ambiance** qui apparaissent au chargement s'allument sur toutes
     les cartes.
   - **D-E19-54** — (2026-10-03, l'auteur, Q-G4) Les **effets natifs du warp et du ramassage** viennent avec E19.g ; ceux du combat
-    avec E14.
+    avec E14. **Remplacée en partie le 2026-10-06 par D-E19-96.**
   - **D-E19-55** — (2026-10-03, l'auteur, Q-G5) Les **rais de lumière de la 163** gardent le comportement de l'original (ils
     s'éteignent 11 ticks après l'arrivée).
   - **D-E19-56** — (2026-10-03, l'auteur) **D5 d'E19.d2c2 reprend** avec sa révision (relecture de clôture, puis exécution).
@@ -317,6 +317,12 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
     ADR qui remplace en partie l'exception d'ADR-0026.
   - **D-E19-95** — (2026-10-06, l'auteur, O-E19-67) Les **autres espaces de bord perdues** à l'export Yarn (hors S025) restent un
     écart consigné, sans correction.
+  - **D-E19-96** — (2026-10-06, l'auteur, O-E19-72) **Remplace en partie D-E19-54**, qui reposait sur une lecture fausse (aucun
+    effet de warp sur un changement de carte). E19.g livre l'**interface des créateurs natifs** et le sous-cas **`0x82 0x53`**
+    entier (vase de vie : vie max + 1, vie pleine, son `0x31`, effets ; O-E19-39) ; les autres effets natifs suivent leur
+    consommateur (E14 pour les objets et l'IA, le code de déplacement, E18 pour `0xBB`).
+  - **D-E19-97** — (2026-10-06, l'auteur, O-E19-73) D-E19-92 vaut aussi pour les **quads d'effets** : ils passent par le même
+    quad libre du moteur que les entités, à la résolution de l'écran.
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -7023,7 +7029,7 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
 au sud (O-E19-28 b, aussi contre les cellules) demande l'étape 2 (O-E19-42) ; l'image d'A10J `@2462` peut bouger d'un tick
 (retards connus de la DLL).
 
-### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2c 🧪 (CONFIRMED le 2026-10-05, recette G2c-6 en attente) ; G2d 🧪 (CONFIRMED le 2026-10-06, recette G2d-6 en attente) ; G2b ⏳ (découverte faite, D-E19-92, plan à écrire) ; G1/G3, G4 à planifier)
+### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2c 🧪 (CONFIRMED le 2026-10-05, recette G2c-6 en attente) ; G2d 🧪 (CONFIRMED le 2026-10-06, recette G2d-6 en attente) ; G2b ⏳ (découverte faite, D-E19-92, plan à écrire) ; G1/G3 ⏳ (découverte faite, D-E19-96 et D-E19-97, plans à écrire) ; G4 à planifier)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B les données, le convertisseur,
 l'analyseur, le moteur et la DLL ; notes, rendus et scripts dans le scratchpad de la session, `e19g-disc/A/notes.md` et
@@ -7843,6 +7849,72 @@ impossible aujourd'hui).
   pixels de la PS1 (D-E19-60 : « tous les pixels restent égaux ») : 99,2 % des rectangles mis à l'échelle diffèrent de la PS1 à k = 4
   quelle que soit la convention ; l'exactitude à tout facteur demande de dessiner la scène dans une cible de 320 × 240 puis de
   l'agrandir, ce qu'ADR-0048 a écarté (O-E19-71).
+
+
+##### 1.2o.6 E19.g G1/G3 — Export, réserve et opcodes des effets ⏳ (découverte du 2026-10-06 faite, deux surfaces contre-vérifiées ; l'auteur a tranché O-E19-72 et O-E19-73 : D-E19-96, D-E19-97 ; plans à écrire)
+
+**Découverte** (2026-10-06, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B le convertisseur, le moteur et la DLL ;
+chacune contre-vérifiée par un relecteur neuf qui a re-dérivé les faits de son côté ; versionnée, en anglais, dans
+`docs/plan-e19-g1g3-annexe/`, dont le `README.md` liste les corrections qui l'emportent sur les notes). Faits porteurs, tous
+prouvés par l'exécution du vrai code du binaire dans l'interpréteur MIPS (0 écart) :
+- **[binaire] Réserve** : 128 créneaux de 0x80 octets en `0x80138608`, le plus petit libre gagne, réserve pleine : la création ne
+  fait rien ; ordre du tick : événements de carte, entités, effets, puis le dessin ; sous `PlayerControlFlags & 0x48` les effets
+  sont figés mais toujours dessinés (`0x01`, `0x07`, `0x37`, `0x80` ne figent pas). Une animation qui finit par « détruire » est
+  dessinée des ticks 0 à S et libérée au tick S + 1 (S, somme des délais ; 130 sur 130), les 233 autres bouclent. Les enregistrements
+  et les scripts ne créent que le mode 0 (libre avec forces) ; les modes 1 et 3 ne viennent que de 6 sites natifs.
+- **[binaire] Opcodes** `0x90`-`0x94`, `0xA0`-`0xA3` : tailles 2, 2, 3, 8, 8, 8, 9, 8, 9 ; aucune écriture hors de la réserve (et
+  du tampon de recherche), aucun `Result`, aucune suspension ; `+1` sur z pour `0x93` et `0xA2` seulement. **1435 sites sur 135
+  cartes** ; les 99 lignes `EFFET` de la liste fermée sont retrouvées, plus deux sites morts de 476 (pc 504 et 512) ; les 344
+  opérandes de `0x92` désignent des animations valides.
+- **[binaire, données] Chargement** : 544 enregistrements (350 de table de carte, 194 de table globale, 0 non résolu) ; **251
+  apparaissent au chargement sur 82 cartes** (246 bouclent ; 5 finissent : les quatre rais de la 163, libérés au tick 11 comme le
+  veut D-E19-55, et un sur la 13) ; zone inclusive autour de la tuile du héros (le héros existe avant l'apparition, établi ;
+  6 enregistrements hors de la chaîne en dépendent) ; position `(X × 12 + 12, Y × 8 + 8, Z × 8)`.
+- **[binaire, données] Recensement** : 165 tables (136 de carte, 29 globales), 363 animations (83 cases de remplissage en fin de
+  table, écartées : index d'animation = index de case), 5148 images, 2832 ensembles d'images, 12 307 images (23 dégénérées, 46
+  références, toutes sur la 161, écartées) ; 20 315 références de quads, 15 768 semi-transparentes, **63 % des références non
+  vides déformées** (contre 31 % pour les entités) ; le drapeau de miroir égale l'ordre des coins sur les 20 315 ; le JSON de
+  `data-extracted` égale `DATAS.BIN` octet par octet (aucune ré-extraction) ; les délais du JSON valent `0x80 | ticks`.
+- **[binaire] Rendu** : l'émetteur `0x8002DB48` (le même que les entités, G2b) redonne sommets, uv, bit semi, page, palette et case
+  `16 × min(clé >> 20, 59) + 6` (décalage arithmétique ; aucune clé négative dans le corpus) sur toutes les références ; l'image 0
+  est dessinée en dernier, une clé plus grande plus tard.
+- **[binaire] Chaîne** : seules l'aura de 476 (992 références déformées sur 1185) et les effets globaux 3, 8, 12, 13 et 14 sont
+  déformés ; la 10 crée aussi les globaux 12 et 3 par `0x90`, et le `0xA3 [1]` de la 135 désigne le global 13. Scénarios épinglés :
+  l'aura de 476 dessinée aux ticks 0 à 222, libérée à 223, un `0x92 [0,1]` la ranime avant 223 mises à jour et pas après ; 391 cinq
+  `0xA2` (pc 228, 236, 244, 252, 408), réserve finale de 10 créneaux ; 163 rais actifs aux ticks 0 à 10.
+- **D-E19-54 repose sur une lecture fausse** : `AnimateWarpEffect` ne concerne pas les transitions de carte ; `g_warpLockTimer`
+  (`0x80127164`) tient l'identifiant de l'objet utilisé (écrit seulement dans `UseItem`) : les cinq sites sont des effets de bombes
+  et de magies (E14) ; aucun effet n'existe sur un changement de carte ou une porte. Côté « ramassage », les scripts n'atteignent que
+  **`0x82 0x53`** (vase de vie : vie max + 1, vie pleine, son `0x31`, effets ; 8 sites sur les cartes 134, 258, 298, 302, 398,
+  hors de la chaîne ; validé contre le vrai code sur 60 cas, générateur pseudo-aléatoire partagé compris) et **`0xBB`** (réessayer
+  ou fin de partie, cartes 347 et 477, E18) ; les autres effets natifs (80 sites) vivent dans le code du joueur, des objets et de
+  l'IA que la DLL n'a pas (O-E19-72, tranché : D-E19-96).
+- **[dépôt] Portage** : le convertisseur n'exporte que `hero_effects.json` (copie brute que rien ne lit) ; le moteur n'a ni quad
+  libre (G2b) ni service de quads d'effets ; les neuf opcodes tombent dans `UnknownOpcode` et sont sautés à leur taille ;
+  `AlundraEventProgramRunnerTests.UnknownOpcode_KnownSize_SkipsBySize` prend `0x93` pour exemple (à repointer) ; la boucle des
+  événements de carte d'`AlundraWorldProxy` sort tôt sans joueur ou sur un tick bloqué : la passe des effets doit être une boucle
+  à part ; les scripts d'entités de la DLL tournent avant le mandataire du monde (l'inverse du binaire) : un effet créé par un
+  script d'entité au tick k d'une image à plusieurs ticks doit porter son tick de création (17 des 99 lignes de la chaîne sont des
+  programmes d'entités) ; aucune donnée d'effet dans la sauvegarde, comme dans le binaire.
+
+**Découpage proposé** (chaque tranche, un plan relu et vérifié ; le rendu attend le plan de G2b) :
+- **G1 — Convertisseur** : un document d'effets par carte (157) et un global, les 87 planches d'effets en textures (174 entrées
+  du catalogue), des données brutes (pas de `.sprite` : les coins sont libres ; choix de conduite de la section 1.2o), délais
+  `& 0x7F`, invariants ci-dessus prédits avant le code ; `hero_effects.json` gardé jusqu'à G3 ; nouvelle ADR du parent.
+  Ne dépend de rien.
+- **G3a — DLL** : banque, réserve, apparition au chargement, mise à jour par tick (sans opcode ni rendu), seuils de gel ;
+  valeurs de l'oracle (`anims_oracle.json`, `load_oracle.json`) écrites avant le code ; aucune trace ne bouge. Après G1.
+- **G3b — DLL** : les neuf opcodes ; la liste fermée perd ses 99 lignes `EFFET` (102 → 3), `MapsWithoutSkippedSite` passe de 19 à
+  28, arcs A2/A4, A6, A20, A10J/T-A10v/T-B9, saut du héros, A13/A15/A17 ré-épinglés ; A10/A11 ne bougent pas. Après G3a.
+- **G2b-1 — Moteur** : le quad libre (partie moteur de G2b, D-E19-92, D-E19-97 : le même pour les effets), sans élimination des
+  faces pour les quads miroir.
+- **G2e — Moteur** : service et composant de quads d'effets poussés par image (patron des couches cellulaires), clé de tri des
+  entités. Après G2b-1.
+- **G3c — DLL** : poussée par image, preuve au pixel (sondes intérieures, ou image de référence régénérée avec la règle de texel de
+  G2b), livraison verrouillée comme G2c. Après G3a et G2e.
+- **G3d — DLL** (D-E19-96) : l'interface des créateurs natifs (banque, sprite, animation, index d'enregistrement ; modes 1 et 3)
+  et `0x82 0x53` entier (l'emplacement de la vie du héros est à établir dans le binaire, O-E19-39). Après G3a.
+- **G4 — Recette** de l'auteur : 476 d'abord.
 
 
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
@@ -9681,6 +9753,8 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-69 | **Tranché le 2026-10-06 (D-E19-93 : à corriger).** **L'écran de sauvegarde tourne avant le dialogue dans le mandataire** (relecture d'E19.f3a, 2026-10-06) : le binaire fait le créneau 3 (choix) avant le créneau 10 (menu de fichier de l'écran de sauvegarde) dans la même image ; le mandataire fait l'écran dans la première boucle de ticks (`AlundraWorldProxy.cs:2117`) et la passe du dialogue (boîte puis choix) dans la seconde : une réponse donnée tard parvient à l'écran un tick plus tard (`DownDuringTheQuestion` 20 au lieu de 19) ; une réponse au plus tôt, au même tick. Corriger demande de déplacer le tick de l'écran après la passe du dialogue (valeurs d'E16 à reprendre). | Auteur, puis tranche à part |
 | O-E19-70 | **Image périmée à la remise d'une fenêtre** (découverte d'E19.f3b, 2026-10-06) : une fenêtre MGUI retirée puis remise sur le bureau n'est mise en page qu'au `Desktop.Update` suivant ; après un choix annulé en plein glissement, la première image du choix suivant montre l'ancien cadre (1898 à 3556 texels) ; aucun cas du corpus connu. Même famille qu'O-E19-65 ; côté moteur : mettre en page une fenêtre remise avant son premier dessin ; le pire cas est une annulation au repos (3556 texels). | Moteur (rapport), auteur |
 | O-E19-71 | **Tranché le 2026-10-06 (D-E19-92 : résolution de l'écran).** **Quads déformés et facteur d'agrandissement** (découverte d'E19.g G2b, 2026-10-06) : 49 348 quads d'entités (30,8 %) sont déformés dans le binaire (échelle, miroir tourné, parallélogramme, quad quelconque) ; la scène est dessinée directement dans l'écran agrandi (ADR-0048 du moteur), donc à k > 1 un quad déformé ne donne pas des blocs k × k de pixels de la PS1 (D-E19-60). **Choix** : (A) quads dessinés à la résolution de l'écran, exacts à k = 1 et pour les quads 1:1, plus lisses que la PS1 aux autres facteurs, écart écrit dans l'ADR ; (C) la scène dessinée dans une cible de 320 × 240 puis agrandie, exacte à tout facteur, ADR-0048 révisée et travail du moteur en plus. Recommandation de la session : (C), seule fidèle à D-E19-60, si le coût moteur est acceptable. | Auteur |
+| O-E19-72 | **Tranché le 2026-10-06 (D-E19-96 : interface des créateurs et `0x82 0x53`).** **Portée de D-E19-54 (effets natifs)** (découverte d'E19.g G1/G3, 2026-10-06) : D-E19-54 repose sur une lecture fausse : il n'existe aucun effet de warp sur un changement de carte (les « effets de warp » sont des effets d'objets, bombes et magies, E14) ; les scripts n'atteignent que `0x82 0x53` (vase de vie, 8 sites hors de la chaîne ; il change aussi la vie, O-E19-39) et `0xBB` (E18). **Choix** : (A) E19.g livre l'interface des créateurs natifs et l'effet de `0x82 0x53` (avec sa vie max + 1, vie pleine, son `0x31`), le reste avec son consommateur (E14, déplacement, E18) ; (B) E19.g ne livre que les effets des enregistrements et des scripts, tous les natifs et `0x82 0x53` avec E14. | Auteur |
+| O-E19-73 | **Tranché le 2026-10-06 (D-E19-97 : même règle).** **D-E19-92 pour les quads d'effets** (découverte d'E19.g G1/G3, 2026-10-06) : D-E19-92 (quads déformés à la résolution de l'écran) nomme les sprites d'entités ; 63 % des références de quads d'effets sont déformées (l'aura de 476). La même règle vaut-elle pour les effets ? | Auteur |
 
 ## 4. Hors périmètre
 

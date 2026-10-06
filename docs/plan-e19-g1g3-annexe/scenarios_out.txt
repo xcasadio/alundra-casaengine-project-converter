@@ -1,0 +1,38 @@
+S1 map 391 after map load (hero tile 26,30): active slots [0, 1, 2, 3, 4]
+  slot 0: record 0 x=65273856 y=33030144 z=0 (px 996 504 0) target sprite 0 anim 0 bank 1 status 2
+  slot 1: record 1 x=65273856 y=39321600 z=0 (px 996 600 0) target sprite 0 anim 1 bank 1 status 2
+  slot 2: record 2 x=65273856 y=45613056 z=0 (px 996 696 0) target sprite 0 anim 2 bank 1 status 2
+  slot 3: record 3 x=65273856 y=51904512 z=0 (px 996 792 0) target sprite 0 anim 3 bank 1 status 2
+  slot 4: record 4 x=66846720 y=51904512 z=0 (px 1020 792 0) target sprite 0 anim 3 bank 1 status 2
+S1 after tick 0:
+  slot 0: set@24 bias 0 n 1 cnt 10 depth 33030144 (0x01F80000) OT 502
+  slot 1: set@40 bias 0 n 1 cnt 10 depth 39321600 (0x02580000) OT 598
+  slot 2: set@56 bias 69 n 3 cnt 10 depth 50135040 (0x02FD0000) OT 758
+  slot 3: set@100 bias 11 n 1 cnt 10 depth 52625408 (0x03230000) OT 806
+  slot 4: set@100 bias 11 n 1 cnt 10 depth 52625408 (0x03230000) OT 806
+S1 after the four 0x94 and 100 ticks: y delta (16.16) per slot: {0: 1280000, 1: 921600, 2: 2560000, 3: 1280000}
+  e.g. record 0: forces (0, 12800, 0), 100 ticks -> 1280000 = 19.5312 px
+
+S2 map 476 after map load: active [] (record 0 has flags 0x80 only: not spawned at load)
+  after 0xA2 [0 @ (960,160,48)] and 0x93 same: x=62914560 y=10485760 z=3145729 (z low 16 bits = 1) ta=1 recidx=0 mode=0
+  after 0x92 [0, 0]: ta=0 ca=254 (the switch happens at the next update)
+  tick 0: {'status': 2, 'x': 62914560, 'y': 10485760, 'z': 3145729, 'ta': 0, 'ca': 0, 'cnt': 2, 'dead': 0, 'set': 552, 'bias': 52, 'n': 1, 'depth': 13893680, 'ot': 214, 'forces': (0, 0, 0), 'frame': 1}
+  tick 1 cnt 1, tick 2 cnt 2 (delay 2: the frame changes every 2 ticks) set offsets t0..t5: [552, 552, 568, 568, 584, 584]
+  first tick with dead flag: 222 ; last tick drawn (status != 0): 222
+  slot freed at tick: 223
+  depth at tick 0: 13893680 OT 214
+  0x92 [0, 1] applied after 219 ticks -> slot status after 60 more ticks: 2 (anim 1, dead 0)
+  0x92 [0, 1] applied after 220 ticks -> slot status after 60 more ticks: 2 (anim 1, dead 0)
+  0x92 [0, 1] applied after 221 ticks -> slot status after 60 more ticks: 2 (anim 1, dead 0)
+  0x92 [0, 1] applied after 222 ticks -> slot status after 60 more ticks: 2 (anim 1, dead 0)
+  0x92 [0, 1] applied after 223 ticks -> slot status after 60 more ticks: 0 (anim 0, dead 1)
+
+S3 map 163 after load: active [0, 1, 2, 3]
+  active slots per tick: [(0, 4), (1, 4), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4), (7, 4), (8, 4), (9, 4), (10, 4), (11, 0), (12, 0), (13, 0), (14, 0)]
+
+S4 map 135: altar slot [0] at x=30670848 y=24641536
+  after 0xA0 dy=+8 and dx=0xFFB8: dx=-4718592 (= -72 px) dy=524288 (= 8 px)
+
+S5 pool: after load (5) + 123 x 0x90 [3] active = 128 (full)
+  one more 0x90: active still 128
+  0x91 [4] (record 4 has 1 slot): active 127 ; next 0x90 [3] takes slot [4]
