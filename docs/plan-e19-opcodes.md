@@ -10641,7 +10641,7 @@ pas de `cmp` changé, traces non touchées.
   l'octet. Avis P4 : TSL7, TSL8 et TSL10 portent quelques assertions de plus que le plan (X aux ticks 1 à 8, Y au tick 24, 0 glissade
   au tick 1), vertes et sans masquer de mutation ; le nom de TSL9 (« ForceAdjustedFromTheNextTick ») est indirect.
 
-#### 1.2s.8 E19.m7 — Boucles de durée nulle visibles (O-E19-9) ⏳ (découverte de nuit du 2026-10-07 faite ; planifiée le 2026-10-07 ; relecture à faire)
+#### 1.2s.8 E19.m7 — Boucles de durée nulle visibles (O-E19-9) ⏳ (découverte de nuit du 2026-10-07 faite ; planifiée le 2026-10-07 ; relecture n°1 READY (deux angles) ; exécution après G2e et G3d)
 
 Convertisseur et export (ni moteur, ni DLL en production). Déclencheur de risque : format exporté (relecture et vérificateur neuf).
 Faits : `docs/plan-e19-o9-annexe/` (`notes.md` ; le vrai code du binaire exécuté dans l'interpréteur, `run_update_animation.py` et
