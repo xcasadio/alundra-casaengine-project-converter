@@ -1,25 +1,130 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using CasaEngine.Core.Logging;
 
 namespace Alundra.Scripts;
 
-/// <summary>The effect stage of a world: bank, reservoir, load-time spawn, queue of operations and the per-tick loop.</summary>
+/// <summary>
+/// The effect stage of a world (E19.g G3a, docs/plan-e19-opcodes.md section 1.2o.6, ADR-0045): the bank read from the exported companions, the reservoir, the load-time
+/// spawn, the queue of operations and the per-tick loop. Owned by <see cref="AlundraWorldProxy"/> as a FIELD INITIALIZER like <c>_backdropStage</c> (trap 9: <c>Clone()</c> returns a bare
+/// proxy); one world, one reservoir (the binary clears the pool at every map load, <c>0x8003C1A4</c>, and an effect is never saved). Nothing here touches the engine: the draw is
+/// E19.g G3c and the opcodes are G3b.
+/// <para>
+/// <b>Load-time spawn</b> (<see cref="SpawnLoadEffects"/>): once, at the first <c>Update</c> of the proxy, before its tick loop and before any queued operation is applied, with the tile of
+/// the hero captured when the hero was created (<see cref="CaptureHeroTile"/>, in <c>InitializeWithWorld</c> right after <c>AdoptPlayerPawn</c>): the binary creates the hero and writes its
+/// tile before <c>0x8003C1A4</c>, and the scripts and the physics of the hero rewrite the tile from the tick 0. Without a hero the tile is (0, 0), with one warning.
+/// </para>
+/// <para>
+/// <b>Queue</b> (<see cref="Queue"/>): the scripts of the entities run before the proxy in the engine's order (the reverse of the binary's), so an operation on the reservoir is queued with
+/// the logic tick that emits it and a source rank, and applied in <see cref="RunFrame"/> before the update of that tick, in the order (tick, rank, emission). An operation of a frozen
+/// tick is applied too (the binary writes the reservoir at once; only the update is skipped). What is left at the end of the frame (a frame without tick, a tick beyond the frame) is applied
+/// in the same order without update: the queue is empty when <see cref="RunFrame"/> returns.
+/// </para>
+/// </summary>
 internal sealed class AlundraEffectStage
 {
-    public AlundraEffectReservoir Reservoir => throw new NotImplementedException();
+    private readonly List<PendingOperation> _queue = new();
+    private AlundraEffectBank _bank = AlundraEffectBank.Empty;
+    private AlundraEffectReservoir _reservoir;
+    private int _heroTileX;
+    private int _heroTileY;
+    private bool _heroTileCaptured;
+    private bool _loadSpawned;
+    private bool _warnedNoHero;
+    private long _sequence;
 
-    public bool HeroTileCaptured => throw new NotImplementedException();
+    public AlundraEffectStage()
+    {
+        _reservoir = new AlundraEffectReservoir(_bank, Logs.WriteWarning);
+    }
 
-    public void Load(string? worldName, string? projectPath) => throw new NotImplementedException();
+    /// <summary>The reservoir of the world: the active slots, in the order of the slots, are what G3c draws.</summary>
+    public AlundraEffectReservoir Reservoir => _reservoir;
 
-    public void Load(AlundraEffectBank bank) => throw new NotImplementedException();
+    /// <summary>True once <see cref="CaptureHeroTile"/> has been called since the last load.</summary>
+    public bool HeroTileCaptured => _heroTileCaptured;
 
-    public void CaptureHeroTile(int tileX, int tileY) => throw new NotImplementedException();
+    /// <summary>Loads the bank of the world named <paramref name="worldName"/> from the exported project (<see cref="AlundraEffectBankLoader"/>) and starts a fresh reservoir.</summary>
+    public void Load(string? worldName, string? projectPath) => Load(AlundraEffectBankLoader.Load(projectPath, worldName));
 
-    public void SpawnLoadEffects() => throw new NotImplementedException();
+    /// <summary>Starts a fresh reservoir over <paramref name="bank"/> (the world's own, or a test's): nothing is spawned, queued or captured any more.</summary>
+    public void Load(AlundraEffectBank bank)
+    {
+        _bank = bank;
+        _reservoir = new AlundraEffectReservoir(bank, Logs.WriteWarning);
+        _queue.Clear();
+        _heroTileCaptured = false;
+        _loadSpawned = false;
+        _warnedNoHero = false;
+    }
 
-    public void Queue(int tick, int rank, Action<AlundraEffectReservoir> operation) => throw new NotImplementedException();
+    /// <summary>The tile of the hero when it was created, the one the zone test of the load-time spawn reads.</summary>
+    public void CaptureHeroTile(int tileX, int tileY)
+    {
+        _heroTileX = tileX;
+        _heroTileY = tileY;
+        _heroTileCaptured = true;
+    }
 
-    public void RunFrame(int ticks, IReadOnlyList<bool> frozenOfTick) => throw new NotImplementedException();
+    /// <summary>The map-entry spawn (<see cref="AlundraEffectReservoir.SpawnAtLoad"/>), once: later calls do nothing.</summary>
+    public void SpawnLoadEffects()
+    {
+        if (_loadSpawned)
+        {
+            return;
+        }
+
+        _loadSpawned = true;
+        var tileX = _heroTileX;
+        var tileY = _heroTileY;
+        if (!_heroTileCaptured)
+        {
+            tileX = 0;
+            tileY = 0;
+            if (!_warnedNoHero && _bank.Records.Any(r => (r.Flags & 0x40) != 0))
+            {
+                _warnedNoHero = true;
+                Logs.WriteWarning("AlundraEffectStage: no hero to read the arrival tile from; the effects that appear at load are placed for the tile (0, 0).");
+            }
+        }
+
+        _reservoir.SpawnAtLoad(tileX, tileY);
+    }
+
+    /// <summary>Queues an operation on the reservoir, marked with the logic <paramref name="tick"/> of the frame that emits it and the <paramref name="rank"/> of its source (the map events
+    /// first, then the entities, then the pending triggers, like the binary's order).</summary>
+    public void Queue(int tick, int rank, Action<AlundraEffectReservoir> operation)
+    {
+        _queue.Add(new PendingOperation(tick, rank, _sequence++, operation));
+    }
+
+    /// <summary>
+    /// One rendered frame of <paramref name="ticks"/> logic ticks: at each tick the operations marked with it are applied, then the reservoir is updated unless that tick is frozen
+    /// (<paramref name="frozenOfTick"/>: <c>PlayerControlFlags &amp; 0x48</c> read after the map events of the tick); the operations left are applied at the end, and the queue is empty.
+    /// </summary>
+    public void RunFrame(int ticks, IReadOnlyList<bool> frozenOfTick)
+    {
+        var pending = _queue.OrderBy(o => o.Tick).ThenBy(o => o.Rank).ThenBy(o => o.Sequence).ToList();
+        _queue.Clear();
+
+        var next = 0;
+        for (var tick = 0; tick < ticks; tick++)
+        {
+            while (next < pending.Count && pending[next].Tick <= tick)
+            {
+                pending[next++].Operation(_reservoir);
+            }
+
+            _reservoir.Tick(tick < frozenOfTick.Count && frozenOfTick[tick]);
+        }
+
+        while (next < pending.Count)
+        {
+            pending[next++].Operation(_reservoir);
+        }
+    }
+
+    private readonly record struct PendingOperation(int Tick, int Rank, long Sequence, Action<AlundraEffectReservoir> Operation);
 }

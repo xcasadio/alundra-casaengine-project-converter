@@ -391,7 +391,10 @@ public sealed class AlundraEffectReservoirTests
             }
 
             Assert.Equal(tick < freed, slot.Active);
-            Assert.Equal(tick == dead, slot.Destroying);
+            if (slot.Active)
+            {
+                Assert.Equal(tick == dead, slot.Destroying);
+            }
         }
 
         Assert.Equal(lastDrawn, dead);

@@ -586,6 +586,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <see cref="_backdropStage"/> (trap 9 above).</summary>
     internal readonly AlundraEffectStage _effectStage = new();
 
+    /// <summary>E19.g G3a (G3A-R6): for each logic tick of the frame, the gate of the effects <c>PlayerControlFlags &amp; 0x48</c> read in the loop of the map events of that tick, after its events (the
+    /// <c>continue</c> paths included); read by <see cref="AlundraEffectStage.RunFrame"/>.</summary>
+    private readonly List<bool> _effectFrozenOfTick = new();
+
+    private bool EffectGateOfThisTick() => (GameState.PlayerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0;
+
     /// <summary>Bug fix (see <see cref="AlundraLogicClock"/>'s own class doc for the full diagnosis): this
     /// world's ONE shared 50 Hz logic clock - every spawned entity's own <see cref="AlundraEntityScriptProxy.Update"/>
     /// and this proxy's own <see cref="Update"/> read <see cref="LogicTicksThisFrame"/> off this SAME
@@ -690,6 +696,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
         _backdropStage.Load(world, EngineEnvironment.ProjectPath);
 
+        // E19.g G3a (docs/plan-e19-opcodes.md section 1.2o.6, G3A-R1): the effect companions of this world (the map's and the global one), a fresh reservoir. No companion: no effect.
+        _effectStage.Load(world.Name, EngineEnvironment.ProjectPath);
+
         var tileMapEntity = world.Entities.FirstOrDefault(entity => entity.Name == TileMapEntityName);
         if (tileMapEntity == null)
         {
@@ -766,6 +775,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // BEFORE any record is spawned - the spawn-zone gate below reads its tile) instead of spawning a
         // second, separate hero entity ourselves.
         AdoptPlayerPawn(world, tileMapData);
+
+        // E19.g G3a (G3A-R5): the tile of the hero right after its creation, the one the load-time spawn of the effects reads at the first Update (the binary creates the hero and
+        // writes its tile before the map-entry spawn 0x8003C1A4; the scripts and the physics of the hero rewrite the tile from the tick 0, as the entity pass below does for its zone test).
+        if (PlayerEntity != null)
+        {
+            _effectStage.CaptureHeroTile(PlayerEntity.TileX, PlayerEntity.TileY);
+        }
 
         // MapEvents (port of InitializeMapEvents, GameEngine.cs:476-583) - always against PlayerEntity;
         // empty when there is none (see PlayerEntity's own doc).
@@ -2136,6 +2152,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // after it.
         var ticksThisFrame = LogicTicksThisFrame(elapsedTime);
 
+        // E19.g G3a (G3A-R5): the effects that appear at load, once, at the first Update of this proxy and before its tick loop (and so before any operation queued by the scripts of the
+        // entities of the first frame is applied), for the tile the hero had when it was created.
+        _effectStage.SpawnLoadEffects();
+
         // T2 (docs/plan-transitions-carte.md §1.5/§3, D-T-6): port of EntityManager.cs:377's
         // "g_playerControlFlags & GameplayBlockedMask" gate over UpdateEntities, read once and reused by
         // every "dedans" pass below (RunMapEventsPass, RunPendingEventTriggers) - the exhaustive table in
@@ -2237,6 +2257,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         // the gate is open, the map events then the recycling (R3). Frame-counted map-event chronology (GameEngine.RunMapEvents originally ran once per the
         // fixed 50 Hz frame). A frame of several ticks interleaves the box and the map events tick by tick (B0 M0 B1 M1), like the binary. The scripts of the
         // entities already ran this frame, before this proxy (see this method's own doc): the origin table of F2-R1 follows from that order.
+        _effectFrozenOfTick.Clear();
         for (var tick = 0; tick < ticksThisFrame; tick++)
         {
             var (squareHeld, squarePressed) = tick == 0 ? _squareOfLastTick : _squareOfTick[tick - 1];
@@ -2266,6 +2287,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 || AlundraWarpDirector.Instance.IsTransitionInProgress;
             if (PlayerEntity == null || tickBlocked)
             {
+                _effectFrozenOfTick.Add(EffectGateOfThisTick()); // E19.g G3a (G3A-R6): the gate of the tick, `continue` paths included.
                 continue;
             }
 
@@ -2282,6 +2304,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // E19.r R3 (docs/plan-e19-opcodes.md section 1.2p, D-E19-45, ADR-0024): the recycling of the destroyed entities, right after each pass of the map
             // events, as the binary's UpdateEntities (0x8003B3A0) opens with UpdateDestroyedEntities (0x80038634) after RunMapEvents.
             RecycleDestroyedEntities();
+
+            _effectFrozenOfTick.Add(EffectGateOfThisTick()); // E19.g G3a (G3A-R6): read after the map events of the tick.
         }
 
         if (ticksThisFrame > 0)
@@ -2335,6 +2359,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 AlundraFrameSyncPasses.RunWallInterleaveSortKeyPass(_spawnedEntities);
             }
         }
+
+        // E19.g G3a (G3A-R6, docs/plan-e19-opcodes.md section 1.2o.6): the effects, one pass per logic tick, after the map events and the pending triggers and before the camera block
+        // (the binary: map events, entities, effects, then the draw, 0x8002E058). Its own loop: the map-events loop above stops early without a hero or on a blocked tick. No tick during a
+        // warp departure (the transition loop never calls the tick), like the backdrops (E19.m4, ADR-0034); a tick frozen by PlayerControlFlags & 0x48 updates nothing but keeps its slots.
+        // The operations queued by the scripts are applied in it, tick by tick (and at the end of the frame, whatever the ticks).
+        _effectStage.RunFrame(AlundraWarpDirector.Instance.IsTransitionInProgress ? 0 : ticksThisFrame, _effectFrozenOfTick);
 
         // E5.a: resolve the camera once, then run the scripted follow BEFORE the debug pan - see
         // UpdateCameraFollow's own doc on why this order lets the pan's base-adoption mechanism pick up

@@ -352,6 +352,7 @@ public sealed class AlundraEffectStageWiringTests : IDisposable
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
         var proxy = new AlundraWorldProxy();
         proxy.InitializeWithWorld(world);
+        BackdropWarpDepartureSupport.SetPrivateField(proxy._backdropStage, "_clearColorApplied", true); // the headless montage has no view for the clear colour.
         var stage = proxy._effectStage;
         stage.Load(Alternating());
         var slot = stage.Reservoir.Create(true, 0, 0, 0, 0, 0)!;

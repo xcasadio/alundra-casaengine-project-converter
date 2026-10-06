@@ -1,6 +1,11 @@
 #nullable enable
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Text.Json;
+using CasaEngine.Core.Logging;
 
 namespace Alundra.Scripts;
 
@@ -63,29 +68,146 @@ public sealed class AlundraEffectDocument
     public string? SheetTextureAssetId { get; set; }
     public List<AlundraEffectRecord> Records { get; set; } = new();
     public List<AlundraEffectTable> Effects { get; set; } = new();
+
+    /// <summary>A member written as <c>null</c> reads as an empty list.</summary>
+    internal void Normalize()
+    {
+        Records ??= new();
+        Effects ??= new();
+        foreach (var table in Effects)
+        {
+            table.Animations ??= new();
+            table.ImageSets ??= new();
+            foreach (var animation in table.Animations)
+            {
+                animation.Frames ??= Array.Empty<int[]>();
+                animation.End ??= string.Empty;
+            }
+
+            foreach (var set in table.ImageSets)
+            {
+                set.Images ??= new();
+            }
+        }
+    }
 }
 
-/// <summary>The effect data of a world: the map companion (records and map tables) and the global tables.</summary>
+/// <summary>
+/// The effect data of a world (E19.g G3a, docs/plan-e19-opcodes.md section 1.2o.6): the records and the map table of the map companion, and the global tables
+/// (a record's <c>0x80</c> flag selects the map table, otherwise the global one). Data only; the reservoir reads it.
+/// </summary>
 public sealed class AlundraEffectBank
 {
     public static AlundraEffectBank Empty { get; } = new(null, null);
 
+    private readonly AlundraEffectDocument? _map;
+    private readonly AlundraEffectDocument? _global;
+
     public AlundraEffectBank(AlundraEffectDocument? map, AlundraEffectDocument? global)
     {
-        throw new NotImplementedException();
+        _map = map;
+        _global = global;
     }
 
-    public AlundraEffectDocument? Map => throw new NotImplementedException();
-    public AlundraEffectDocument? Global => throw new NotImplementedException();
-    public IReadOnlyList<AlundraEffectRecord> Records => throw new NotImplementedException();
+    public AlundraEffectDocument? Map => _map;
 
-    public bool TryGetTable(bool mapTable, int effect, out AlundraEffectTable table) => throw new NotImplementedException();
+    public AlundraEffectDocument? Global => _global;
+
+    public IReadOnlyList<AlundraEffectRecord> Records => (IReadOnlyList<AlundraEffectRecord>?)_map?.Records ?? Array.Empty<AlundraEffectRecord>();
+
+    /// <summary>The table <paramref name="effect"/> of the map table (<paramref name="mapTable"/>) or of the global one; false when there is none.</summary>
+    public bool TryGetTable(bool mapTable, int effect, [NotNullWhen(true)] out AlundraEffectTable? table)
+    {
+        var tables = (mapTable ? _map : _global)?.Effects;
+        if (tables != null && effect >= 0 && effect < tables.Count)
+        {
+            table = tables[effect];
+            return true;
+        }
+
+        table = null;
+        return false;
+    }
 }
 
-/// <summary>Loads the effect data of a world (see <see cref="AlundraEffectBank"/>).</summary>
+/// <summary>
+/// Loads the effect data of a world (see <see cref="AlundraEffectBank"/>, G3A-R1). The map companion is found like the backdrop one, through
+/// <c>Maps/world-index.json</c> and the trailing "-{mapId}" of the world name (<see cref="BackdropLoader"/>), at
+/// <c>effects/{worldName}.effects.json</c> in the map's folder; the global companion (<c>Data/effects/effects-global.json</c>) is read once per game (static cache, like
+/// <c>AlundraEtcStringTable.EnsureLoaded</c>). A map without companion has no effect and no warning; an unreadable companion has one warning and no effect.
+/// </summary>
 public static class AlundraEffectBankLoader
 {
-    public static AlundraEffectBank Load(string? projectPath, string? worldName) => throw new NotImplementedException();
+    private static readonly ConcurrentDictionary<string, AlundraEffectDocument?> GlobalCache = new();
 
-    public static void ResetForTests() => throw new NotImplementedException();
+    public static AlundraEffectBank Load(string? projectPath, string? worldName)
+    {
+        if (string.IsNullOrEmpty(projectPath) || worldName == null || !BackdropLoader.TryParseMapIndex(worldName, out var mapIndex))
+        {
+            return AlundraEffectBank.Empty;
+        }
+
+        return new AlundraEffectBank(LoadMap(projectPath, worldName, mapIndex), LoadGlobal(projectPath));
+    }
+
+    /// <summary>Forgets the cached global companion (tests).</summary>
+    public static void ResetForTests() => GlobalCache.Clear();
+
+    private static AlundraEffectDocument? LoadMap(string projectPath, string worldName, int mapIndex)
+    {
+        string? path = null;
+        try
+        {
+            var worldIndexPath = Path.Combine(projectPath, "Maps", "world-index.json");
+            if (!File.Exists(worldIndexPath))
+            {
+                return null;
+            }
+
+            var index = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(worldIndexPath));
+            if (index == null || !index.TryGetValue(mapIndex.ToString(), out var worldRelativePath))
+            {
+                return null;
+            }
+
+            var mapFolder = Path.GetDirectoryName(Path.Combine(projectPath, worldRelativePath));
+            if (mapFolder == null)
+            {
+                return null;
+            }
+
+            path = Path.Combine(mapFolder, "effects", $"{worldName}.effects.json");
+            return File.Exists(path) ? Read(path) : null;
+        }
+        catch (Exception ex)
+        {
+            Logs.WriteWarning($"AlundraEffectBankLoader: failed to load the effect companion of world '{worldName}'{(path == null ? string.Empty : $" ('{path}')")} ({ex.Message}); no effect in this world.");
+            return null;
+        }
+    }
+
+    private static AlundraEffectDocument? LoadGlobal(string projectPath)
+    {
+        return GlobalCache.GetOrAdd(projectPath, key =>
+        {
+            var path = Path.Combine(key, "Data", "effects", "effects-global.json");
+            try
+            {
+                return File.Exists(path) ? Read(path) : null;
+            }
+            catch (Exception ex)
+            {
+                Logs.WriteWarning($"AlundraEffectBankLoader: failed to load the global effect companion '{path}' ({ex.Message}); no global effect.");
+                return null;
+            }
+        });
+    }
+
+    private static AlundraEffectDocument Read(string path)
+    {
+        var document = JsonSerializer.Deserialize<AlundraEffectDocument>(File.ReadAllText(path))
+            ?? throw new InvalidDataException($"'{path}' parsed to nothing");
+        document.Normalize();
+        return document;
+    }
 }

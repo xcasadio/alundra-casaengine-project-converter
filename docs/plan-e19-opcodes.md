@@ -8809,7 +8809,7 @@ fichiers hors catalogue pour `AssetVerifier.CheckCatalogCoverage`), puis export 
 prévision, un test existant qui bouge, un fichier hors de la liste. **Risques** : le compagnon de carte ne sert à rien tant que G3a ne
 le lit pas (aucun effet visible avant G3c) ; 748 images ont une case toute transparente (légitime : la PS1 ne les dessine pas non plus).
 
-###### E19.g G3a — Réserve des effets, apparition au chargement et tick (DLL) ⏳ (planifiée le 2026-10-06 ; relecture n°1 : READY (code), REVISE (binaire : moment de l'apparition), révisée ; relecture n°2 : READY (binaire), REVISE (code : tuile du héros), disposition FIX ; nouvelle époque, relecture de clôture READY)
+###### E19.g G3a — Réserve des effets, apparition au chargement et tick (DLL) 🧪 (faite le 2026-10-06, vérification à faire ; planifiée le 2026-10-06 ; relecture n°1 : READY (code), REVISE (binaire : moment de l'apparition), révisée ; relecture n°2 : READY (binaire), REVISE (code : tuile du héros), disposition FIX ; nouvelle époque, relecture de clôture READY)
 
 DLL seule (ni moteur, ni export : G1 est livré, ADR-0043) ; rien ne se voit encore (le dessin est G3c) et aucun opcode n'est porté (G3b).
 Déclencheur de risque : modèle d'état nouveau tiré du binaire (relecture et vérificateur neuf). Faits et valeurs : `docs/plan-e19-g1g3-annexe/`
@@ -8875,8 +8875,8 @@ Déclencheur de risque : modèle d'état nouveau tiré du binaire (relecture et 
   créneaux du chargement restent 0 à 4 aux positions de l'oracle et la nouvelle prend le créneau 5, rien n'est effacé ; le héros qui change
   de tuile pendant la mise à jour des entités de la première image (avant le premier `Update` du mandataire) : l'apparition d'un
   enregistrement à zone restreinte suit la tuile d'arrivée relevée, pas la nouvelle.
-- **G3a-2 — Code**, ADR du parent (la réserve des effets vit dans la DLL, au tick, comme le binaire ; le moteur ne la connaît pas) ;
-  **G3a-3 — Vérification**.
+- ✅ **G3a-2 — Code**, ADR du parent (la réserve des effets vit dans la DLL, au tick, comme le binaire ; le moteur ne la connaît pas) ;
+  ⏳ **G3a-3 — Vérification**.
 
 **Fait le 2026-10-06 (G3a-0).** `docs/plan-e19-g1g3-annexe/g3a-golden.py` et `g3a-golden.tsv` (643 lignes, généré ; `--check` rejoue la
 génération) commités avant tout code. Tirés des oracles du binaire (`anims_oracle.json`, `load_oracle.json`, `scenarios_out.txt`) et, pour
@@ -8909,6 +8909,21 @@ au premier `Update`, la tuile d'arrivée relevée à la création du héros (car
 et avec arrivée), les effets sans héros, la porte `0x48` seule (`0x08`, `0x40` figent ; `0x01`, `0x07`, `0x37`, `0x80` non), une image de
 deux ticks et une image sans tick, un départ de warp (0 tick, la file appliquée). Aucun test existant ni fichier de test existant
 modifié.
+
+**Fait le 2026-10-06 (G3a-2, code).** `AlundraEffectBank` (types du compagnon, banque, chargeur : carte par `Maps/world-index.json` et `effects/{nom}.effects.json`,
+global en cache statique par chemin ; un compagnon illisible : un avertissement, aucun effet), `AlundraEffectReservoir` (128 créneaux, plus petit libre, pleine :
+rien ; `Spawn`, `SpawnAtLoad`, `Create`, `Free`, `Tick` ; machine d'animation du binaire, mode 0, clé de profondeur ; règle défensive : un avertissement par
+réserve et destruction), `AlundraEffectStage` (banque, réserve, tuile du héros relevée, apparition une fois, file des opérations marquées (tick, rang, émission),
+`RunFrame`), et dans `AlundraWorldProxy` : `Load` en tête d'`InitializeWithWorld` (à côté du fond), la tuile du héros relevée juste après `AdoptPlayerPawn`,
+l'apparition en tête du premier `Update` (avant la boucle des ticks), la porte `& 0x48` relevée à chaque tick de la boucle des événements de carte (chemins
+`continue` compris), et la passe des effets après les déclencheurs en attente et avant la caméra (0 tick pendant un départ de warp ; la file est appliquée et
+vidée). ADR-0045 du parent (numéro libre revérifié : 0043 sur `main`, 0044 sur `chantier/e19-suite2`) et son index. **Mesures** : les 37 tests de G3a **verts 37 sur
+37** (Release) ; `Alundra.Tests` **2987** en Release puis en Debug (2950 existants, aucun ne bouge, plus les 37), `cmp` de la DLL égal, six traces
+identiques (garde `--ignore-cr-at-eol`, quatre traces de héros restaurées par `checkout`). Deux corrections de tests de G3a faites en passant du rouge au vert, sans
+toucher une valeur de l'oracle : l'aura de la 476 lisait le drapeau de destruction d'un créneau déjà libéré (le drapeau reste posé après la libération ; il ne
+se lit que sur un créneau actif), et le montage du départ de warp pose `_clearColorApplied` comme les tests des fonds (pas de vue en montage). Non couvert : la
+porte lue par tick quand elle change entre deux ticks d'une même image (aucun montage ne pose `MenuOpen` au milieu d'une image : le test de la file par tick est
+fait sur la pile seule, la lecture par tick dans la boucle des événements est celle du code), à voir à la vérification.
 
 - **Acceptation** : prévision commitée avant le code ; tests rouges puis verts ; aucun test existant ne bouge (rien ne lit la réserve) ;
   `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (identiques : les effets n'ont aucun effet de jeu). **Arrêts** : une valeur
