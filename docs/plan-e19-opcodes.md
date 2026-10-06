@@ -7453,7 +7453,7 @@ d'aujourd'hui pour tout appel direct (T-R4 et les tests de mobiles inchangés) ;
 au sud (O-E19-28 b, aussi contre les cellules) demande l'étape 2 (O-E19-42) ; l'image d'A10J `@2462` peut bouger d'un tick
 (retards connus de la DLL).
 
-### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2c 🧪 (CONFIRMED le 2026-10-05, recette G2c-6 en attente) ; G2d 🧪 (CONFIRMED le 2026-10-06, recette G2d-6 en attente) ; G2b ⏳ (planifiée, enveloppe et G2b-1 READY) ; G1/G3 ⏳ (découverte faite, D-E19-96 et D-E19-97 ; G1 READY ; G3 à planifier) ; G4 à planifier)
+### 1.2o E19.g — Effets visuels ⏳ (D-E19-51 à D-E19-55, D-E19-65 ; G0 ✅ ; G0b ✅ ; G2a 🧪 (G2a-1 et G2a-2 faites le 2026-10-03, recette G2a-4 en attente) ; G2c 🧪 (CONFIRMED le 2026-10-05, recette G2c-6 en attente) ; G2d 🧪 (CONFIRMED le 2026-10-06, recette G2d-6 en attente) ; G2b ⏳ (planifiée, enveloppe et G2b-1 READY) ; G1/G3 ⏳ (découverte faite, D-E19-96 et D-E19-97 ; G1 ✅ ; G3a et G3b planifiées le 2026-10-06) ; G4 à planifier)
 
 **Découverte** (2026-10-03, lecture seule, deux surfaces : A le binaire et `DATAS.BIN`, B les données, le convertisseur,
 l'analyseur, le moteur et la DLL ; notes, rendus et scripts dans le scratchpad de la session, `e19g-disc/A/notes.md` et
@@ -8808,6 +8808,117 @@ fichiers hors catalogue pour `AssetVerifier.CheckCatalogCoverage`), puis export 
 `Verify.UncataloguedFiles`. **Arrêts** : une valeur mesurée qui contredit la
 prévision, un test existant qui bouge, un fichier hors de la liste. **Risques** : le compagnon de carte ne sert à rien tant que G3a ne
 le lit pas (aucun effet visible avant G3c) ; 748 images ont une case toute transparente (légitime : la PS1 ne les dessine pas non plus).
+
+###### E19.g G3a — Réserve des effets, apparition au chargement et tick (DLL) ⏳ (planifiée le 2026-10-06 ; relecture à faire)
+
+DLL seule (ni moteur, ni export : G1 est livré, ADR-0043) ; rien ne se voit encore (le dessin est G3c) et aucun opcode n'est porté (G3b).
+Déclencheur de risque : modèle d'état nouveau tiré du binaire (relecture et vérificateur neuf). Faits et valeurs : `docs/plan-e19-g1g3-annexe/`
+(`dll-notes.md` sections 0 à 3 et 5, `binary-data-notes.md`, `binary-data-verify.md`, `README.md` pour les corrections qui l'emportent),
+`docs/formats/effects.md` (format des compagnons de G1).
+- **G3A-R1 — Banque** : un chargeur au patron de `BackdropLoader` lit le compagnon de la carte (`Maps/{Zone}/{Name}-{id}/effects/{Name}-{id}.effects.json`,
+  trouvé par `Maps/world-index.json` comme les fonds) une fois par monde, et le compagnon global (`Data/effects/effects-global.json`) une
+  fois par partie (cache statique, comme `AlundraEtcStringTable.EnsureLoaded`) ; carte sans compagnon : aucun effet, sans avertissement ;
+  compagnon illisible : un avertissement et aucun effet.
+- **G3A-R2 — Réserve** [binaire, `dll-notes.md` §2] : 128 créneaux ; le plus petit libre gagne ; réserve pleine : la création ne fait
+  rien (pas de journal) ; un créneau porte l'index d'enregistrement (−1 hors enregistrement), le mode (0 libre avec forces, 2 figé ; 1 et
+  3 réservés à G3d), x, y, z en 16.16, les forces, la banque, l'effet, l'animation cible et courante, l'image courante, le compteur, le
+  drapeau de destruction, l'IDSV et la clé de profondeur `(y & 0xFFFF0000) + (z >> 16) + (IDSV << 16)`. Créateurs : `Spawn(record,
+  force)` (sans test de zone ni du bit `0x40` quand `force`, enregistrement hors de la table : rien) et le créateur générique de mode 0
+  (`banque, effet, animation, x, y, z`, pour G3d, D-E19-96).
+- **G3A-R3 — Animation et mouvement** : au premier tick d'un créneau, l'entrée de table est chargée et l'image 0 traitée ; changement
+  d'animation cible : image 0 au même tick, drapeau de destruction effacé ; sinon le compteur décroît et l'image suivante vient à 0 ;
+  chaque image dure `Delay` ticks (le compagnon porte déjà `Delay & 0x7F` ; 0 vaudrait 256 ticks, jamais vu dans le corpus) ; fin
+  `Destroy` : drapeau posé (le créneau est encore dessiné ce tick), libéré au tick suivant sans être dessiné ; fin `Loop` : retour à l'image
+  0 ; effet, animation ou fin introuvables : un avertissement une fois et destruction (règle défensive, jamais vue sur les données réelles).
+  Mode 0 : `pos += forces`, puis la clé de profondeur.
+- **G3A-R4 — Convention de tick** : le tick 0 d'un créneau est sa première mise à jour (le tick même de sa création, puisque les effets
+  passent après les événements de carte et les entités). Une animation `Destroy` de durée S (somme des délais) est dessinée aux ticks 0 à
+  S et libérée au tick S + 1. `anims_oracle.json` compte à partir de 1 : `observed_destroy_tick` = S + 1 et `observed_free_tick` = S + 2.
+- **G3A-R5 — Apparition au chargement** [binaire] : à l'entrée dans la carte, la réserve est vidée puis chaque enregistrement à `Flags & 0x40`
+  dont la zone inclusive contient la tuile du héros apparaît, dans l'ordre des enregistrements, aux créneaux 0 à n − 1 ; position
+  `x = (X × 12 + 12) << 16`, `y = (Y × 8 + 8) << 16`, `z = Z << 19` ; banque = `Flags & 0x80`. L'apparition se fait **une fois le héros
+  posé sur sa tuile d'arrivée et avant le premier tick d'effet du monde** (le binaire crée le héros et écrit sa tuile avant
+  `0x8003C1A4`) : au premier `Update` du mandataire, avant sa boucle de ticks. Sans héros (montages sans héros) : la tuile (0, 0) et un
+  avertissement une fois (les 41 enregistrements de la chaîne ont la zone entière (0, 0)-(51, 59) ; seuls 6 enregistrements hors de la
+  chaîne en dépendent).
+- **G3A-R6 — Tick dans le mandataire** : une boucle des ticks logiques de l'image, après la boucle des événements de carte et celle des
+  déclencheurs en attente, avant le bloc de la caméra ; pendant un départ de warp (`IsTransitionInProgress`), 0 tick (comme les fonds,
+  ADR-0034 du parent) ; au tick t, si `PlayerControlFlags & 0x48` (la porte de ce tick, relevée dans la boucle des événements de carte
+  après ses événements, chemins `continue` compris) : rien ne bouge (les créneaux restent dessinables) ; sinon chaque créneau actif, dans
+  l'ordre des créneaux : libéré si son drapeau de destruction est posé, sinon animé puis déplacé. L'absence du héros ne gèle pas les
+  effets (le binaire ne teste que `& 0x48`).
+- **G3A-R7 — Lecture** : la réserve expose, pour les tests et pour G3c, les créneaux actifs dans l'ordre des créneaux avec leur ensemble
+  d'images courant, leur position et leur clé de profondeur.
+- **Fichiers** (liste fermée) : nouveaux `Alundra/Scripts/AlundraEffectBank.cs` (types et chargeur), `Alundra/Scripts/AlundraEffectReservoir.cs`
+  (réserve pure, sans type du moteur), `Alundra/Scripts/AlundraEffectStage.cs` (banque, réserve, apparition, tick ; initialiseur de
+  champ du mandataire, comme `_backdropStage`) ; `Alundra/Scripts/AlundraWorldProxy.cs` (le champ, l'apparition, la boucle, la porte par tick) ;
+  nouveaux tests `Alundra.Tests/AlundraEffectReservoirTests.cs`, `Alundra.Tests/AlundraEffectBankLoaderTests.cs`,
+  `Alundra.Tests/AlundraEffectStageWiringTests.cs` ; l'annexe (`docs/plan-e19-g1g3-annexe/g3a-golden.tsv`, table générée depuis
+  `anims_oracle.json` et `load_oracle.json`, et son script) ; l'ADR du parent (prochain numéro libre) et son index ; ce plan.
+- **G3a-0 — Prévision d'abord** (commitée avant le code) : `g3a-golden.tsv` tiré des oracles du binaire (pas de littéraux recopiés à la
+  main) : pour les 363 animations, la fin, S, le dernier tick dessiné (S, ou infini en boucle) et le tick de libération (S + 1) ; pour
+  chaque carte, les créneaux à l'entrée (enregistrement, x, y, z) à la tuile (0, 0) (245 créneaux sur 79 cartes) ; les scénarios : rais de
+  la 163 (animation 1, dessinés aux ticks 0 à 10, libérés au tick 11, D-E19-55) ; 391 (5 créneaux à l'entrée, enregistrements 0 à 4 en
+  (996, 504, 0), (996, 600, 0), (996, 696, 0), (996, 792, 0), (1020, 792, 0), animations 0, 1, 2, 3, 3) ; 162 (7 créneaux à l'entrée) ;
+  les 6 enregistrements à zone restreinte.
+- **G3a-1 — Tests d'abord**, rouges sur des types vides : la réserve contre `g3a-golden.tsv` (chaque animation jouée jusqu'à sa
+  libération ou deux périodes) ; l'apparition sur les 157 cartes du vrai export contre la table ; la 129e création sans effet ; libérer
+  le créneau 5 puis créer reprend le 5 ; la porte `0x48` (rien ne bouge, créneau gardé) ; 0 tick pendant un départ de warp ; les 6 zones
+  restreintes par un montage synthétique (tuile dedans, tuile dehors) ; le chargeur (compagnon absent, illisible, global en cache) ;
+  l'apparition avant le premier tick (les rais de la 163 libérés au tick 11, pas 10 ni 12) ; une image à deux ticks donne le même état
+  que deux images d'un tick.
+- **G3a-2 — Code**, ADR du parent (la réserve des effets vit dans la DLL, au tick, comme le binaire ; le moteur ne la connaît pas) ;
+  **G3a-3 — Vérification**.
+- **Acceptation** : prévision commitée avant le code ; tests rouges puis verts ; aucun test existant ne bouge (rien ne lit la réserve) ;
+  `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (identiques : les effets n'ont aucun effet de jeu). **Arrêts** : une valeur
+  qui contredit les oracles, un test existant qui bouge, un fichier hors de la liste. **Retour arrière** : revert.
+
+###### E19.g G3b — Les neuf opcodes d'effets (DLL) ⏳ (planifiée le 2026-10-06, après G3a ; relecture à faire)
+
+DLL seule. Déclencheur de risque : comportement des scripts de la chaîne (liste fermée et arcs). Faits : `dll-notes.md` §4 et §6,
+`binary-data-verify.md` (sites, valeurs), `README.md` de l'annexe (391 : cinq `0xA2`).
+- **G3B-R1 — Gestionnaires** [binaire, `dll-notes.md` §4] dans `AlundraEventProgramRunner.Dispatch` : `0x90` (2) `Spawn(v1, force)` ;
+  `0x91` (2) libère tout de suite chaque créneau de l'enregistrement `v1` (non dessiné) ; `0x92` (3) animation cible `v2` sur chaque créneau
+  de `v1` ; `0x93` (8) `x = u16 << 16`, `y = u16 << 16`, `z = (u16 << 16) + 1` ; `0x94` (8) forces `s16 << 8` ; `0xA0` (8) `x, y, z += u16 << 16`
+  (complément à deux, sans + 1) ; `0xA1` (9) première entité de la recherche `v2` (aucune : rien), `pos = sa position + d << 16` sur chaque
+  créneau de `v1`, sans + 1 ; `0xA2` (8) `Spawn(v1, force)` puis, si créé, la position de `0x93` (+ 1 sur z), l'animation reste celle de
+  l'enregistrement ; `0xA3` (9) recherche puis apparition et `pos = position de la première entité + d << 16`, sans + 1. Chaque opération
+  agit sur **tous** les créneaux actifs dont l'index d'enregistrement vaut `v1`, celui de son tick de destruction compris ; aucune ne rend de
+  `Result` ni ne suspend. La recherche de `0xA1`/`0xA3` passe par `EntitySearchService.GetMatchingEntitiesBySearchType`, comme `0x9F`.
+  Règles défensives : enregistrement hors de la table : rien (comme le binaire) ; animation hors de la table : un avertissement une fois,
+  l'opération ignorée.
+- **G3B-R2 — Hôte** : `IEntityWorldContext.EffectReservoir` (membre par défaut nul, comme `CameraSway`) ; sans hôte, le gestionnaire se
+  dégrade (trace `Degraded`, avance de sa taille).
+- **G3B-R3 — Ordre dans une image à plusieurs ticks** : chaque opération est **marquée** du tick logique qui l'émet (l'indice de la boucle
+  des événements de carte, de celle des déclencheurs en attente, ou de la boucle de ticks de l'entité, `AlundraEntityScriptProxy.cs:1313`)
+  et d'un rang de source (événements de carte, puis entités, puis déclencheurs en attente, comme l'ordre du binaire : événements de
+  carte, puis entités) ; au tick t de la boucle des effets (G3A-R6), les opérations marquées t sont appliquées dans l'ordre (rang, ordre
+  d'émission) **avant** la mise à jour du tick t. Les scripts ne lisent jamais l'état des effets : ce report est invisible pour eux. À un
+  tick par image (le cas courant), c'est l'ordre d'émission.
+- **Fichiers** (liste fermée) : `Alundra/Scripts/AlundraEventProgramRunner.cs` (gestionnaires, marque du tick), `Alundra/Scripts/IEntityWorldContext.cs`,
+  `Alundra/Scripts/AlundraWorldProxy.cs` (l'hôte, la marque des boucles), `Alundra/Scripts/AlundraEntityScriptProxy.cs` (la marque du tick de
+  l'entité), `Alundra/Scripts/AlundraEffectStage.cs` (la file des opérations) ; tests : nouveau `Alundra.Tests/AlundraEffectOpcodeTests.cs` ;
+  `Alundra.Tests/Data/story-chain-skipped-opcodes.tsv` (les 99 lignes `EFFET` retirées, 102 → 3 : la 10 garde ses 3 lignes `PREDICAT coup
+  reçu`) ; `AlundraStoryChainOpcodeAudit.cs` (`MapsWithoutSkippedSite` 19 → 28 : + 135, 162, 169, 174, 176, 181, 183, 391, 476) et
+  `AlundraStoryChainSkippedOpcodesTests.cs` (l'assertion 19 → 28) ; les arcs `AlundraVisionArcTests.cs` (A2/A4), `AlundraShipBlockArcTests.cs`
+  (A6), `AlundraInoaDayOneArcTests.cs` (A20), `AlundraEntityContactArcTests.cs` (A10J, T-A10v, T-B9), `AlundraHeroJumpArcTests.cs`,
+  `AlundraDay3SceneArcTests.cs` (A13, A15, A17 par la règle 5) ; `AlundraEventProgramRunnerTests.cs`
+  (`UnknownOpcode_KnownSize_SkipsBySize` repointé vers un opcode encore non porté) ; ce plan ; l'ADR du parent (prochain numéro libre).
+- **G3b-0 — Prévision d'abord** (annexe, commitée avant le code, tirée de `oracle_ops`/`scenarios` du binaire) : 476 `0xA2 [0, 960, 160, 48]`
+  → un créneau de l'enregistrement 0, brut (62 914 560, 10 485 760, 3 145 729), animation 1 ; `0x92 [0, 0]` puis l'aura dessinée aux ticks
+  0 à 222 et libérée au tick 223 ; `0x92 [0, 1]` appliqué avant 223 mises à jour la ranime en animation 1 ; la suite des animations de l'arc
+  A2/A4 ; `0x91 [0]` à la fin libère le créneau. 391 : 5 créneaux à l'entrée, les cinq `0xA2` (pc 228, 236, 244, 252, 408) et les forces
+  (0, 50, 0), (0, 36, 0), (0, 100, 0), (0, 50, 0), (0, 50, 0) ; réserve finale de 10 créneaux. 162 : 7 + 11 = 18 créneaux, l'enregistrement 5
+  en porte 12. 135 : `0xA0 [0, −72, 0, 0]` x 468 → 396, `[0, 0, 8, 0]` y 376 → 384. 10 : un créneau à l'entrée (enregistrement 4),
+  `0x92 [0, 1]` @2864 (le rocher : 62 images puis fin). Une image de deux ticks avec une opération d'entité au tick 1 : le même état qu'à un
+  tick par image.
+- **G3b-1 — Tests d'abord** (les valeurs ci-dessus, rouges sur le code d'aujourd'hui où les opcodes sont sautés) ; les lignes de la liste
+  fermée, l'audit et les arcs **dans le même commit que les gestionnaires** (convention du plan) ; **G3b-2 — Code**, ADR ; **G3b-3 —
+  Vérification**.
+- **Acceptation** : rouges puis verts ; les ensembles de sauts autorisés des arcs nommés vidés de leurs opcodes d'effets et remplacés par
+  les assertions de la réserve ; aucune autre assertion ne bouge (A10/A11 sur 165/164 ne bougent pas) ; `Alundra.Tests` en Release puis
+  en Debug, `cmp`, six traces identiques. **Arrêts** : une valeur qui contredit la prévision, une assertion hors de la liste qui bouge, un
+  fichier hors de la liste. **Retour arrière** : revert.
 
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 validée le 2026-10-06 : HUD à la sortie de la chambre, pièces de la 476, contrôle rendu à la 15 (recette du 2026-10-06, §1.2x))
 
