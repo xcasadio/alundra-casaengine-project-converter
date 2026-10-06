@@ -7917,6 +7917,80 @@ prouvés par l'exécution du vrai code du binaire dans l'interpréteur MIPS (0 �
 - **G4 — Recette** de l'auteur : 476 d'abord.
 
 
+###### E19.g G1 — Export des effets (convertisseur) ⏳ (planifiée le 2026-10-06 ; relecture à faire ; exécution après la recette de l'auteur)
+
+Parent seul : ni moteur, ni DLL. Déclencheur de risque : nouveau format de données exporté (relecture du plan et vérificateur neuf
+obligatoires). Données de départ : `data-extracted/` tel quel (G0 a déjà tout extrait : aucune ré-extraction, aucun changement de
+l'extracteur). Faits et valeurs : `docs/plan-e19-g1g3-annexe/` (`converter-notes.md`, `predict.py`, `README.md`).
+
+**Règles.**
+- **G1-R1 — Lecture** : un nouveau lecteur `EffectBankReader` lit `SpriteInfo.MapEffectRecords` et `SpriteInfo.SpriteEffectRecords` de
+  chaque `map_N.json` et de `map_alundra.json` (table globale) ; il ne réutilise pas `SpriteBankReader` (dédoublonnage et champs
+  orientés entités). Il tolère les données vides ou réduites des fixtures existantes (une quinzaine de fixtures portent
+  `{ "EffectId": 1 }` ou rien).
+- **G1-R2 — Animations** : index d'animation = index de case ; les cases de remplissage (décalage 0) sont **toutes en fin de table**
+  (83, aucun trou) : elles sont retirées et comptées ; un trou (décalage 0 suivi d'un décalage non nul) est une erreur du rapport.
+  Chaque image affichée exporte `Delay & 0x7F` ticks (le JSON vaut `0x80 | ticks`, 1 à 127, aucun 0 dans le corpus ; la règle
+  « 0 vaut 256 ticks » vit dans la DLL) et l'index de son ensemble d'images ; la pseudo-image de fin donne `End` : délai brut 0 →
+  `Destroy`, 1 → `Loop` ; tout autre délai de fin est une erreur.
+- **G1-R3 — Ensembles d'images** : dédoublonnés **par table** sur `ImageSetPointer` (décalage relatif à la table), dans l'ordre de première
+  utilisation ; chacun garde son `DepthSortValue` (IDSV, le biais de profondeur `<< 16` de la clé de tri) et ses images dans l'ordre du
+  binaire. Image : `U`, `V`, `W`, `H` = `AtlasX`, `AtlasY`, `Swidth`, `Sheight` (la case de G0, fenêtre `SourceX`/`SourceY`, décalage des
+  miroirs compris) ; `C` = les huit octets signés des coins dans l'ordre de la PS1 (`X1, Y1, X2, Y2, X3, Y3, X4, Y4` : haut-gauche,
+  haut-droit, bas-gauche, bas-droit, y vers le bas) ; `Semi` = bit 3 de `Spritesheet`, `Abr` = bits 4-5 bruts. Les miroirs ne sont pas
+  exportés (l'ordre des coins les porte : égalité vérifiée sur les 20 315 références). Les 23 images dégénérées (fenêtre 0 × 0, coins
+  tous nuls, carte 161, 46 références) sont retirées de leur ensemble et comptées ; un ensemble qui devient vide reste (index stables).
+  Aucun champ dérivé d'un pointeur (`ImageSetId`, `MemoryAddress`, `BinOffset`, `Signature`) n'est exporté.
+- **G1-R4 — Enregistrements** : dans l'ordre de la carte (index = position, celui que désignent les opcodes) : `X1`, `X2`, `Y1`, `Y2`,
+  `Flags` (brut : `0x80` table de carte, `0x40` apparition au chargement), `Effect`, `X`, `Y`, `Z` (unités du binaire), `Anim` ; `U1`/`U2`
+  (jamais lus par le binaire) ne sont pas exportés ; un enregistrement qui désigne une table ou une animation absente est une erreur
+  (0 dans le corpus).
+- **G1-R5 — Fichiers** (choix de la session, au patron des fonds de `BackdropWriter`, ADR à écrire) : pour chacune des 157 cartes à
+  enregistrements, `Maps/{Zone}/{Name}-{id}/effects/{Name}-{id}.effects.json` (compagnon brut, pas un asset) ; pour les 86 cartes à table,
+  la planche `map_<n>_effectsheet.png` copiée dans le même dossier par `TextureAssetWriter.EnsureTexture` (+ `.texture`, deux entrées du
+  catalogue) ; la table globale dans `Data/effects/effects-global.json` et sa planche `Data/effects/map_alundra_effectsheet.png` (+
+  `.texture`). Compagnon de carte : `MapIndex`, `SheetTextureAssetId` (nul sans table), `Records`, `Effects` (par table :
+  `Animations` [{ `Frames` [[ticks, ensemble]…], `End` }], `ImageSets` [{ `Idsv`, `Images` [{ `U`, `V`, `W`, `H`, `C`, `Semi`, `Abr` }] }]) ;
+  compagnon global : `SheetTextureAssetId`, `Effects` (les 29 tables). Ordre des clés et formats de nombres stables (double export).
+- **G1-R6 — Phase** : `Phase9.Effects`, juste après `Phase9.Backdrops` et avant `Phase8.Verify` ; elle appelle
+  `EditorAssetCatalogService.Save()` (piège de `BackdropWriter.cs:62-68` : sans lui, les entrées du catalogue sont perdues).
+- **G1-R7 — Compteurs et invariants** (au patron de `BackdropWriter.CheckInvariants`, sur une exécution complète seulement) :
+  `Effects.Records` 544, `Effects.RecordsSpawnAtLoad` 251, `Effects.RecordsMapTable` 350, `Effects.RecordsGlobalTable` 194,
+  `Effects.Tables` 165, `Effects.Animations` 363, `Effects.AnimationSlotsDropped` 83, `Effects.Frames` 5148, `Effects.ImageSets` 2832,
+  `Effects.Images` 12 307, `Effects.ImagesDegenerateDropped` 23, `Effects.Companions` 157, `Effects.Sheets` 87, `Effects.UnresolvedRecords` 0.
+- **G1-R8 — `hero_effects.json`** gardé (G3 le retire avec son test et sa doc quand la DLL lit le compagnon global).
+- **G1-R9 — Documents** : `docs/formats/effects.md` (nouveau, en anglais) et sa ligne dans `docs/formats/README.md` ; dans
+  `docs/formats/misc-data.md`, la phrase réfutée « les index de `Spritesheet` dépassent 0-7 » corrigée (bit 3 semi, bits 4-5 ABR, page
+  bits 0-2) ; ADR du parent (prochain numéro libre, 0040 aujourd'hui, à revérifier) : les effets s'exportent en compagnons bruts et en
+  planches, pas en `.sprite` (coins libres, mode par quad ; choix de conduite de la section 1.2o).
+
+**Tâches.**
+- ⏳ **G1-0 — Prévision d'abord** (script hors du dépôt, depuis `data-extracted/` et l'export du moment) : `docs/plan-e19-g1g3-annexe/g1-predict.py`
+  et `g1-export-prediction.md`, commités avant G1-1 : **ajoutés** exactement 157 compagnons de carte, le compagnon global, 87 PNG et 87
+  `.texture` (chemins listés) ; **modifiés** exactement `AssetInfos.json` (+ 174 entrées, identifiants `Ids.For("texture-raw:…")` et
+  `Ids.For("texture-wrapper:…")` recalculés par un uuid5 indépendant) et `report.json` ; **supprimés** aucun ; pour chaque compagnon, l'empreinte
+  SHA-1 de son contenu canonique (valeurs analysées, pas les octets) ; chaque compteur de `report.json` qui change avec sa valeur prévue
+  (les `Effects.*`, `Assets.Texture`, `Verify.*`, `Metrics.OutputFileCount`), `Warnings`, `Errors` et les autres compteurs inchangés ; un
+  ré-export de référence avant tout code ne doit changer que `report.json`.
+- ⏳ **G1-1 — Tests d'abord** (convertisseur, au patron des tests de `BackdropWriter`) : table synthétique avec cases de remplissage en fin,
+  ensembles partagés, image dégénérée, quad miroir (coins inversés), délai brut `0x80 | n` ; erreurs : trou dans les décalages, délai de
+  fin inconnu, enregistrement sans table ; données réelles : 476 (1 enregistrement `0x80`, effet 0, animation 1, tuile (80, 22, 6) ; 4
+  animations de 111, 16, 21, 32 images, fins `Destroy`, `Loop`, `Destroy`, `Loop`, périodes 222, 32, 34, 64 ; IDSV 52), 391 (5
+  enregistrements `0xC0`, 4 animations d'une image en boucle, délai 10), 163 (4 enregistrements, une animation `[10]` puis `Destroy`), 161
+  (les 23 images dégénérées retirées) ; garde des invariants de l'exécution complète. Rouges d'abord ; aucun test existant ne bouge (un
+  test existant qui bouge est un arrêt).
+- ⏳ **G1-2 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place (sans `Alundra.dll`, `Alundra.pdb`, `.casaeditor/`) :
+  exactement la prévision de G1-0 ; chaque compagnon analysé égal à son empreinte prévue ; preuve référentielle (chaque fenêtre dans sa
+  planche, chaque `SheetTextureAssetId` résolu dans `AssetInfos.json` vers un `.texture` dont le PNG a l'empreinte de
+  `docs/plan-e19-g0-annexe/expected_effect_sheets.tsv`) ; double export (seul `report.json` diffère) ; suite du convertisseur ;
+  `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (la DLL ne change pas).
+- ⏳ **G1-3 — Vérification** : vérificateur neuf (rouges d'abord rejoués, prévision re-dérivée, invariants, double export).
+
+**Acceptation** : prévision commitée avant le code ; tests rouges puis verts ; export égal à la prévision ; double export ; suites,
+`cmp`, traces. **Retour arrière** : revert, export complet égal au manifeste « avant ». **Arrêts** : une valeur mesurée qui contredit la
+prévision, un test existant qui bouge, un fichier hors de la liste. **Risques** : le compagnon de carte ne sert à rien tant que G3a ne
+le lit pas (aucun effet visible avant G3c) ; 748 images ont une case toute transparente (légitime : la PS1 ne les dessine pas non plus).
+
 ### 1.2p E19.r — Recette de l'auteur du 2026-10-03 ✅ (R1 à R4 ; recette R5 en attente)
 
 **Constat de l'auteur** (conversion relancée, DLL reconstruite) : contacts avec les PNJ bons ; sons et musique bons ; boîtes de
