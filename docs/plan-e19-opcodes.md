@@ -7065,7 +7065,7 @@ trappes, boules, la chute de Sara).
   compte d'appels, un appel par image) ; le pas fait deux recherches d'appui bornées (atterrissage, puis sol de fin de tick, comme la
   passe de fin du binaire).
 
-##### 1.2n.1d E19.h1b3 — Cible de `0x22` du binaire (D-E19-94, D-E19-98) ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (17 sites testés, branche du moteur, numéro d'ADR), révisée ; relecture n°2 READY ; exécution après la recette et l'approbation de l'auteur)
+##### 1.2n.1d E19.h1b3 — Cible de `0x22` du binaire (D-E19-94, D-E19-98) 🚧 (planifiée le 2026-10-06 ; relecture n°1 REVISE (17 sites testés, branche du moteur, numéro d'ADR), révisée ; relecture n°2 READY ; approuvée par l'auteur le 2026-10-06 ; H1B3-1 faite, H1B3-2 en cours)
 
 **Découverte** (2026-10-06, lecture seule, contre-vérifiée ; versionnée, en anglais, dans `docs/plan-e19-op22-annexe/` : `notes.md`,
 `verify.md`, `site-table.txt`, `handler-rows.txt`, `gen_rows.py`, `all17.py`, `rand_rules.py`, et la sonde sur la vraie DLL
@@ -7111,7 +7111,7 @@ sans 19922943 ; 33 avec 17301504, sans 17301503 ; 32 → 16777215. Sites réels 
 inchangés ; `TZ23_IsTheHeightWait...` `:233` 15728640 → 15728639 ; `TZ23_TheTargetEndsItToo...` `:254` et `:269` 15728640 → 15728639.
 
 **Tâches.**
-- ⏳ **H1B3-1 — Moteur** : tests d'abord (par défaut un déplacement de moins de 0,001 px est jeté, à 0 il est appliqué ; clonage, chargement,
+- ✅ **H1B3-1 — Moteur** : tests d'abord (par défaut un déplacement de moins de 0,001 px est jeté, à 0 il est appliqué ; clonage, chargement,
   validation, sérialiseur) ; code ; docs ; ADR ; suites du moteur (`CasaEngine.Tests` buildé explicitement) ; vérification ; montée du pointeur.
 - ⏳ **H1B3-2 — DLL** : tests d'abord : lignes du gestionnaire et une `Theory` (hauteur, contrôleur, mémo) dans `AlundraHeightWaitOpcodesTests.cs` ;
   dans le nouveau `AlundraHeightTargetSitesTests.cs`, **une `Theory` sur les 33 instances des 17 sites** de `site-table.txt` (par le vrai
@@ -7126,6 +7126,16 @@ inchangés ; `TZ23_IsTheHeightWait...` `:233` 15728640 → 15728639 ; `TZ23_TheT
   toutes les fins de `PosZ` qui baissent d'un cran ; verts avant et après : 127 rec17, rec18 et les 12 plafonds de la 36 (gardes). Les
   quatre tests existants ré-épinglés ; code ; ADR du parent ; `Alundra.Tests` en Release puis en Debug, `cmp`, six traces ; vérification.
   **Ordre** : moteur, pointeur, DLL (jamais la règle avant le réglage).
+
+**Fait le 2026-10-06 (H1B3-1, moteur).** Branche `chantier/e19h1b3-min-move-distance` créée depuis `33324030` (pointeur d'alors), deux commits : `32e6168f`
+(`feat(character-controller): the minimum move distance is a per-controller setting` : réglage, six usages, chargement, validation, sérialiseur, tests, fichier
+de tâches et ligne d'`ai-agent/README.md`) et `9c75c872` (`docs(adr): ADR-0065 ...`, ligne du tableau des réglages, index). **Numéro d'ADR : 0065, pas 0062** :
+par la règle R-BR (2), 1 + le plus grand numéro trouvé (`main` et `chantier/audio-modern` du moteur portent 0064, les branches `chantier/e19*` 0056 au plus),
+revérifié juste avant le commit, aucune collision. Rouges d'abord sur la propriété ajoutée sans comportement : 5 tests rouges (`Move` à 0 : attendu
+(0,0005, 0, 0), lu (0, 0, 0) ; chargement : attendu 0, lu 0,001 ; clonage : attendu 0,25, lu 0,001 ; validation négative : aucune exception ; sérialiseur :
+attendu 0, lu 0,001), les gardes (défaut, `Move` par défaut, `Move` nul à 0) verts d'avance. Verts après : suite du moteur 2748/2748. Le commentaire du
+défaut de `0,001f * 0,001f` (non identique au bit près à l'ancienne constante `0.000001f`) ne change aucun cas atteignable (pas de `n / 65536f` égal à 0,001).
+Pointeur du parent monté de `33324030` à `9c75c872` ; `git merge-base --is-ancestor 33324030 9c75c872` (dans le sous-module) réussit.
 
 **Acceptation** : rouges d'abord ; les 33 instances des 17 sites égales aux valeurs ci-dessus (nombre d'appels du binaire) ; aucun autre
 test ni arc ne bouge ; six traces ; après la montée du pointeur, `git merge-base --is-ancestor` de l'ancien pointeur vers le nouveau réussit.
