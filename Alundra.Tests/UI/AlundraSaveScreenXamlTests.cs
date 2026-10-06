@@ -210,4 +210,25 @@ public sealed class AlundraSaveScreenXamlTests
         Assert.Equal(new Color(255, 255, 255, 255), box.TextureColor);
         Assert.Equal(-57, box.CanvasTop);
     }
+
+    /// <summary>O-E19-64: every font3 text of the save screen zeroes the MGTextBlock defaults (padding, line padding, wrapping, vertical centring), as the text box screen does, so the glyphs are not drawn one pixel right and down.</summary>
+    [Fact]
+    public void Font3_TextBlocks_Zero_The_Default_Padding_And_Wrapping()
+    {
+        var window = LoadSaveScreen();
+        var texts = Element<MGCanvas>(window, "RootCanvas").Children.OfType<MGTextBlock>().Where(text => text.FontFamily == "font3").ToList();
+        Assert.NotEmpty(texts);
+
+        foreach (var text in texts)
+        {
+            var name = text.Name;
+            Assert.False(text.WrapText, $"'{name}' wraps");
+            Assert.Equal(0f, text.LinePadding);
+            Assert.Equal(0, text.Padding.Left);
+            Assert.Equal(0, text.Padding.Top);
+            Assert.Equal(0, text.Padding.Right);
+            Assert.Equal(0, text.Padding.Bottom);
+            Assert.Equal(VerticalAlignment.Top, text.VerticalContentAlignment);
+        }
+    }
 }
