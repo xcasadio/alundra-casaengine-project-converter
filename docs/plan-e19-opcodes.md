@@ -300,6 +300,9 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-89** — (2026-10-06, choix de la session, E19.f4, précédent de la décision D2 de l'auteur pour le portrait de
     l'inventaire) La rampe de couleur du portrait (255 → 128, au-dessus de 1) n'est pas rendue : teinte normale, manque de MGUI
     consigné (G11), pas contourné.
+  - **D-E19-90** — (2026-10-06, choix de la session, E19.f4b, prolonge D-E19-49 ; à confirmer par l'auteur) Un portrait de 48 × 72 vole
+    comme un 48 × 56, ancre haut-gauche, vers le repos (8, 172 − h) = (8, 100) : il finit bas aligné sur le bas des autres (172) ; les
+    tailles du vol suivent h = 72 ; sa passe dégénérée est posée en (8, 100) (invisible).
 
 ### 0.2 Faits établis (lecture seule, 2026-09-29)
 
@@ -5476,8 +5479,9 @@ pixel, rapport de manque).
   `None` pour les 25 signatures (le bit 3 n'est jamais posé) : rien à forcer.
 - **F4A-R3 — Lien** : un champ facultatif `DialoguePortrait` (`SpriteAssetId`, `Width`, `Height`) par préfab dans
   `Data/sprite-records.json` (une entrée par préfab, `SpriteWriter.cs:1006-1015`), **omis quand il est nul** (condition d'omission sur la
-  propriété : les 370 autres entrées restent identiques à l'octet) ; lu par la DLL en tolérant son absence (`SpriteRecordCatalog.cs:263-338`,
-  `SpriteRecordHeader` `:20-65`) ; compteur `Sprites.DialoguePortrait` (25) au patron de `Sprites.InventoryPortrait` ; doc : un nouveau
+  propriété : les 370 autres entrées restent identiques à l'octet) ; lu par la DLL en tolérant son absence (`SpriteRecordCatalog.cs:263-338`) :
+  nouveau type `DialoguePortraitRef(Guid SpriteAssetId, int Width, int Height)` et membre nullable `DialoguePortrait` de
+  `SpriteRecordHeader` (`:20-65`), qu'E19.f4b reprend tels quels ; compteur `Sprites.DialoguePortrait` (25) au patron de `Sprites.InventoryPortrait` ; doc : un nouveau
   fichier de format pour `sprite-records.json` dans `docs/formats/` et sa ligne dans l'index `docs/formats/README.md` (aucun document ne
   le décrit aujourd'hui) ; ADR du parent (prochain numéro libre, 0039 aujourd'hui, à revérifier) qui étend ADR-0005.
 
@@ -5505,60 +5509,111 @@ pixel, rapport de manque).
 revert, export complet égal au manifeste « avant ». **Risques** : 13 feuilles distinctes portent les portraits : le premier locuteur de
 chaque feuille fera charger la feuille au premier affichage (f4c décide d'un préchargement).
 
-###### E19.f4b — Locuteur, boîte de nom et vol du portrait (logique) ⏳ (planifiée le 2026-10-06 ; relecture à faire ; après E19.f4a)
+###### E19.f4b — Locuteur, boîte de nom et vol du portrait (logique) ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (contrat de T1, vol en 48 × 72, entrées de la DLL), révisée après une passe de conception contre-vérifiée ; relecture n°2 à faire ; après E19.f4a)
+
+**Conception** (2026-10-06, `docs/plan-e19-f4-annexe/f4b-design-notes.md` et sa contre-vérification `f4b-design-verify.md` ; scripts versionnés
+dans `model/`, lancés depuis l'annexe : `check_regression.py` redonne S1 à S7 sans écart, `gen_sequences.py` redonne
+`sequences-raw-digests.json` à l'octet). Fichiers de production touchés (liste fermée) : `AlundraEventProgramRunner.cs`,
+`AlundraDialogueBox.cs`, `AlundraDialogueDirector.cs`, `AlundraInventoryPortrait.cs`, un nouveau `AlundraDialogueNameBox.cs`,
+`AlundraEntityScriptProxy.cs`, `AlundraEntitySpawnFactory.cs`, `AlundraWorldProxy.cs` (et le type de `SpriteRecordCatalog.cs` posé par f4a).
 
 **Règles** (`binary-notes.md` §1 à §4 et §7, contre-vérifiées ; DLL seule, sans vue : f4c dessine).
-- **F4B-R1 — Locuteur, à chaque tentative** (`AlundraEventProgramRunner.cs`, `0x0D`, `0x5C`, `0xC4`) : avant le test « déjà ouverte » de
-  l'ouverture de la boîte (ordre du binaire : portrait, nom, puis la boîte), un appel séparé du directeur (nom indicatif
-  `OpenSpeaker(...)`, les appels d'`Open` existants ne changent pas) : `0x0D` prend **l'entité logique** du programme (celle que
-  `Dispatch` reçoit) ; `0x5C` la première entité trouvée par la recherche `v1` (indice le plus bas, `EntitySearchService`) ; rien trouvé :
-  ni nom ni portrait (la boîte s'ouvre) ; `0xC4` : même recherche et même porte, nom pris des opérandes `v2 | v3 << 8`. Identifiant du
-  nom : `SpriteType` du locuteur (`0x100` + octet pour un sprite de carte, 0 pour le héros) ; portrait si `Flags & 0x800000` et que
-  l'enregistrement de sprite porte un `DialoguePortrait` (champ d'E19.f4a ; absent : avertissement une fois, le nom reste). Comme le
-  binaire, ces ouvertures sont refaites à chaque tick de tentative (une ouverture refusée ne fait rien).
-- **F4B-R2 — Boîte de nom** (nouvelle classe interne, portage de `model/f4_model.py`) : refusée si une boîte de nom est ouverte ou se
-  ferme (drapeaux 5, 4 ou 6), si l'identifiant sort de `0x100..0x1FF`, ou si la chaîne ETC (`AlundraEtcStringTable.TryResolveText`) est
-  vide ; ouverte au tick de l'opcode ; passe k : x = 320 + trunc(−256 · (k − 1) / 15), 64 dès la passe 16, drapeaux 5 → 4 à la passe 18 ;
-  texte en x = x du cadre + trunc((112 − w) / 2), w par `AlundraFont3Advances` (égales aux largeurs du binaire, `names_widths.json`),
-  y 148 ; fermée au déclencheur de fermeture T de la boîte de texte (même tick que le son 7) : 64, 81, 98, … 302, 320, 320, libérée à T+17,
-  sans dessin à la passe de libération ; une fermeture pendant l'entrée repart de l'x courant.
-- **F4B-R3 — Portrait** : la machine d'`AlundraInventoryPortrait` généralisée **par addition** (le constructeur et `Start(headX, headY)`
-  de l'inventaire gardent leur repos (248, 104) et leur taille) : repos, taille de la texture et ancre en paramètres ; une **seconde
-  instance** pour le dialogue (le binaire partage un seul bloc entre inventaire et dialogue, mais leur croisement est inatteignable en
-  jeu : choix de la session) ; repos (8, 116) ; ouverture ignorée tant que l'état n'est pas 0 ; point de tête pris **au départ** (`sx =
-  x − camX`, `sy = y − camY − z − 0x20`, entiers des 16.16 du locuteur) et **au retour** (la position du locuteur à cet instant) ; passes
-  c = 15 … 1 : position `repos + trunc(écart · c / 15)`, taille trunc(48 · (15 − c) / 15) × trunc(56 · (15 − c) / 15) à l'aller et
-  trunc(48 · c / 15) × trunc(56 · c / 15) au retour ; couleur 127 + trunc(128 · c / 15) à l'aller, 127 + trunc(128 · (15 − c) / 15) au retour,
-  128 au repos (calculée et exposée ; rendue en teinte normale, D-E19-89) ; dernière passe du retour dégénérée (0 × 0) à T+15, plus rien
-  dès T+16 ; un portrait de 48 × 72 s'affiche entier, bas aligné au repos (haut 100, bas 172, D-E19-49), tailles du vol à h = 72 :
-  (0,0) (3,4) (6,9) (9,14) (12,19) (16,24) (19,28) (22,33) (25,38) (28,43) (32,48) (35,52) (38,57) (41,62) (44,67) (choix dérivé).
-- **F4B-R4 — Ordre et remises** : les passes du nom et du portrait du dialogue tournent à la fin de `Pass(bool, bool)`, après la boîte de
-  texte et le choix (créneaux 0, 3, 12, puis le portrait), avant les programmes du tick ; l'entrée de carte, la fermeture hors bande et le
-  chargement d'une partie remettent les deux à zéro (le binaire en `0x80044C28` et `0x80044C40`) ; sans présentateur
-  (`HasPresenter` faux) : ni nom ni portrait, comme la boîte.
+- **F4B-R1 — Locuteur, à chaque tentative** : un appel du directeur `OpenSpeaker(AlundraEntityScriptProxy? locuteur, int? nomId = null)`
+  (nom indicatif ; les appels d'`Open` ne changent pas), placé dans `OpenDialog` (`AlundraEventProgramRunner.cs` ~:1880-1903) **après** la
+  sortie `HasPresenter` (sans présentateur : ni nom ni portrait, comme la boîte) et **avant** `if (director.IsOpen)` (~:1896) : le binaire
+  ouvre portrait puis nom à chaque tentative, avant le test « déjà ouverte » (S5 le montre : le portrait de la seconde boîte part trois
+  ticks avant elle). `0x0D` passe **l'entité logique** que `Dispatch` reçoit, jamais le propriétaire ; `0x5C` et `0xC4` passent
+  `GetMatchingEntitiesBySearchType(entity, v[1], …)[0]` (l'appel de ~:1083 ; ordre de `SpawnedEntities`, égal à l'ordre du tableau du
+  binaire tant qu'aucun recyclage ne réordonne) ; rien trouvé : `null` (ni nom ni portrait) ; `0xC4` : `nomId = v[2] | v[3] << 8`
+  seulement si une entité est trouvée. Identifiant du nom par défaut : `SpriteType` du locuteur. Ordre des refus du nom, du moins cher au
+  plus cher : occupé (drapeaux 5, 4 ou 6), puis hors de `0x100..0x1FF`, puis seulement le texte ETC (`TryResolveText` rend vrai avec `""`
+  pour une entrée vide : vide = refus) ; ainsi une entité nue, un sprite commun ou un tick de nouvelle tentative ne résout jamais l'ETC.
+  Commentaires périmés mis à jour : `AlundraEventProgramRunner.cs:1036` (`0x5C`) et `:1043-1044` (`0xC4`).
+- **F4B-R2 — Boîte de nom** (nouvelle classe interne `AlundraDialogueNameBox`, portage de `model/f4_model.py`) : ouverte au tick de l'opcode ;
+  passe k : x du cadre = 320 + trunc(−256 · (k − 1) / 15), 64 dès la passe 16, drapeaux 5 → 4 à la passe 18 ; texte en x = x du cadre +
+  trunc((112 − w) / 2), w par `AlundraFont3Advances` ; y du cadre 140, y du texte 148 ; fermée au déclencheur de fermeture (F4B-R4) :
+  64, 81, 98, … 302, 320, 320, libérée à T+17 sans dessin à la passe de libération ; une fermeture pendant l'entrée repart de l'x
+  courant ; la découpe du binaire n'est pas portée (sans effet : 60 noms × 30 positions, 0 coupe, marge 12 px).
+- **F4B-R3 — Portrait** : la machine d'`AlundraInventoryPortrait` généralisée **par addition** (ses `public const RestX`, `RestY`,
+  `FullWidth`, `FullHeight` et son constructeur public sans paramètre restent ; nouveaux membres d'instance d'autres noms ; surcharge
+  `Start(headX, headY, restX, restY, w, h)` qui rend vrai si le départ est accepté) ; une **seconde instance** pour le dialogue (choix de
+  la session : le bloc partagé du binaire n'est croisé entre inventaire et dialogue que dans des cas inatteignables) ; repos **(8, 172 − h)**
+  (8, 116) pour 56, (8, 100) pour 72, ancre haut-gauche ; départ ignoré tant que l'état n'est pas 0, et le directeur ne retient le
+  locuteur (et sa taille) que si le départ est **accepté** (comme le binaire et le modèle) ; point de tête `(x − camX, y − camY − z − 0x20)`
+  sur les entiers des 16.16 du locuteur, pris au départ (à l'opcode) et au retour (au déclencheur) ; aller, c = 15 … 1 : position `repos +
+  trunc((tête − repos) · c / 15)`, taille trunc(48 · (15 − c) / 15) × trunc(h · (15 − c) / 15), couleur 127 + trunc(128 · c / 15) ; repos :
+  128 ; retour : position `tête + trunc((repos − tête) · c / 15)`, taille trunc(48 · c / 15) × trunc(h · c / 15), couleur 127 + trunc(128 ·
+  (15 − c) / 15) ; passe dégénérée à T+15 au repos, 0 × 0, couleur 0 ; plus rien dès T+16. État exposé : dessiné ou non à la passe, x, y,
+  largeur, hauteur, couleur (calculée, rendue en teinte normale, D-E19-89), phase (aller, repos, retour, fini). Le portrait du locuteur :
+  champ `public DialoguePortraitRef? DialoguePortrait` sur `AlundraEntityScriptProxy`, écrit par
+  `AlundraEntitySpawnFactory.ApplySpawnInitialization` juste après `proxy.Flags = …` (~:572) depuis l'en-tête de son enregistrement
+  (f4a), copié par `Clone` (~:2335-2380), nul pour le héros (`ApplyHeroSpriteHeader` n'y touche pas) ; portrait si `Flags & HasPortrait`
+  et champ présent ; drapeau sans champ : le nom s'ouvre et un avertissement est journalisé une fois par `SpriteType`. Un locuteur détruit
+  puis recyclé garde ses dernières `PosX`, `PosY`, `PosZ` : le retour part de ce point.
+- **F4B-R4 — Défilement, déclencheur, ordre et remises** : défilement par une propriété `AlundraDialogueDirector.ScrollSource`
+  (`Func<(int X, int Y)>?`, nulle = (0, 0)), réglée par `AlundraWorldProxy.InstallDialogueSystems` (~:1214) avec
+  `ToOriginalScrollSpace(_cameraDirector.ResolvedCamera?.Target ?? Vector3.Zero)` (la formule de ~:1510), survivant aux rattachements
+  (`AttachToWorld`), remise à nulle par `ResetForTests` ; rien n'est ajouté à `IEntityWorldContext` (aucun faux contexte de test ne
+  change) ; lue à l'ouverture et au retour seulement (le suivi caméra du binaire tourne avant le répartiteur de l'interface, la DLL lit la
+  caméra de l'image précédente dans les deux cas). Déclencheur : `void CloseTriggered();` ajouté à `IAlundraDialogueBoxHost` (son seul
+  implémenteur est le directeur ; aucun test n'en implémente), appelé dans `EvaluateClose` de `AlundraDialogueBox.cs` entre
+  `PlaySound(CloseSound)` (~:529) et `BeginSlide` (~:530) : son 7, fermeture du nom, retour du portrait, puis glissement. `Director.Pass`
+  fait, après la boîte et le choix, la passe du nom puis celle du portrait. Remises : le binaire ne remet ces blocs qu'au démarrage
+  (`0x80044BE4`, appelé une fois par `main`) ; la DLL les remet là où elle remet la boîte (choix de la DLL) : `InstallForMapEntry`,
+  `NotifyPresenterClosed` (la remise du nom et du portrait est faite **avant** sa garde « boîte inactive », pour qu'un portrait laissé par
+  une tentative abandonnée soit nettoyé), `ResetForTests` (nom, instance de portrait, locuteur accepté, avertissements émis,
+  `ScrollSource` ; sans toucher `AlundraInventoryPortrait.Instance`) ; le chargement passe par l'entrée de carte (`ApplyPendingLoad` puis
+  `InstallDialogueSystems`). Journal : le nouveau code ne journalise qu'en avertissement, jamais en erreur (les arcs exigent zéro
+  erreur, `AlundraArcChecks.cs:63`).
 
 **Tâches.**
 - **F4B-1 — Tests d'abord** :
-  - oracle de test porté de `docs/plan-e19-f4-annexe/model/f4_model.py` (jamais du code de la DLL) ; T1 : la DLL égale `values.json` S1 à
-    S7 image par image sur les colonnes du nom et du portrait (nom et portrait, portrait seul, nom seul, ni l'un ni l'autre, deux
-    dialogues de suite, `0xC4` avec un nom explicite, `0x5C` sans trouvaille), puis l'oracle sur des suites tirées comme `validate.py` ;
-  - règles : locuteur des trois opcodes (dont deux entités au même `EntityRefId` : la plus basse gagne ; aucune trouvaille ; l'entité
-    logique après un `0x43`) ; refus (hors plage, chaîne vide, déjà ouverte ou en fermeture) ; `SpriteType` d'un PNJ réel ; le 48 × 72 ;
-    les points de tête au départ et au retour ; les remises ; le cas dégradé sans présentateur ;
-  - corpus : chaque site de `speaker_sites.tsv` hors des programmes qui contiennent un `0x43` donne la classe de locuteur attendue ;
-  - tests existants qui bougent : aucun (les tests du portrait de l'inventaire, `AlundraInventoryPortraitTests.cs`,
-    `AlundraInventoryPortraitWiringTests.cs:74-257`, les tests XAML de l'inventaire et du sous-inventaire, `AlundraSaveGameLoadResetTests.cs:267-325`
-    et `AlundraSaveGameApplyTests.cs:285` restent verts par l'addition ; `AlundraDialogueSpeakerOpcodeTests.cs` reste vert : son entité
-    logique nue a `SpriteType` −1 et `Flags` 0, ni nom ni portrait ; son commentaire d'en-tête « ignored until E19.f » et celui de
-    `AlundraEventProgramRunner.cs:1043-1044` sont mis à jour) ; toute assertion qui bouge est un arrêt. Rouges d'abord.
-- **F4B-2 — Suites** : `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (la boîte, le nom et le portrait sont de la présentation ;
-  aucune trace ne bouge) ; pas d'export.
+  - **T1, contrat fermé** (montage au niveau du directeur, ordre du binaire) : à chaque itération f, le test déplace d'abord le monde
+    (S9 et les suites tirées), puis `director.Pass(true, true)` (la manette A du modèle), on relève les tracés du nom et du portrait, le
+    son 7 (= `close-trigger`) et la chute d'`IsOpen` (= `DialogClosed`) ; puis, si f ≥ 3 et qu'un programme attend, un
+    `EventProgramState` neuf et `runner.RunOneScriptCall(locuteur, état)` sur un code synthétique, avec un contexte au `SpawnedEntities`
+    réglable (« ouverte » ⇔ le compteur d'ouvertures a augmenté, sinon « retry (0) ») ; puis `Box.Phase`. L'image f de `values.json`
+    est l'itération f (`n0 = 3`) ; les colonnes `name` et `portrait` sont nulles sur la ligne de l'opcode. Clés comparées : `phase`
+    (garde du décalage), nom présent ou non, `frame[0]` et `text[0]` (x), `frame[1]` 140 et `text[1]` 148 (une fois), portrait présent ou
+    non, `x`, `y`, `w`, `h`, `rgb` (0 sur la passe dégénérée), `phase`, les événements `opened`/`retry (0)`, `close-trigger`, `DialogClosed`
+    **comparés comme un ensemble par image** ; exclues : `name.clip` (non porté, sans effet), `box_y` (colonne d'E19.f2a ; le modèle garde
+    l'ancien y à la ligne d'ouverture d'une seconde boîte, S5 image 43), `typing-done` (interne à la boîte, couvert par f2a). Dans S5, le
+    second programme est tenté à partir de l'itération qui suit l'ouverture du premier. Mise en place : largeurs par le fournisseur de
+    l'oracle (`AlundraTextBoxOracle.GlyphWidth`), noms par `AlundraEtcStringTable.SetEtcDialogueAssetForTests`, `ScrollSource = () => cam`.
+    Tables : `values.json` S1 à S7, plus `values-s8-72.json` (S1 avec un portrait de 48 × 72 : repos (8, 100) ; aller N+1 … N+16 :
+    (160,98) 0×0 255, (149,99) 3×4 246, (139,99) 6×9 237, (129,99) 9×14 229, (119,99) 12×19 220, (109,99) 16×24 212, (99,99) 19×28
+    203, (89,99) 22×33 195, (78,100) 25×38 186, (68,100) 28×43 178, (58,100) 32×48 169, (48,100) 35×52 161, (38,100) 38×57 152,
+    (28,100) 41×62 144, (18,100) 44×67 135, (8,100) 48×72 128 ; retour T … T+15 : (8,100) 48×72 127, (19,99) 44×67 135, (29,99)
+    41×62 144, (39,99) 38×57 152, (49,99) 35×52 161, (59,99) 32×48 169, (69,99) 28×43 178, (79,99) 25×38 186, (90,98) 22×33 195,
+    (100,98) 19×28 203, (110,98) 16×24 212, (120,98) 12×19 220, (130,98) 9×14 229, (140,98) 6×9 237, (150,98) 3×4 246, (8,100) 0×0 0)
+    et `values-s9-moving.json` (locuteur et caméra qui bougent : têtes (160, 98) au départ puis (182, 98) au retour) ;
+  - **oracle et suites** : un oracle C# porté de `model/f4_model.py` et `model/f4_model_h.py` (jamais du code de la DLL) égal aux
+    empreintes et compteurs de `sequences-raw-digests.json` (40 graines × 400 images, générateur SplitMix64 de `model/gen_sequences.py`,
+    les cinq premières sorties de la graine 1 pour valider le portage), puis les machines de la DLL égales à l'oracle image par image (nom :
+    dessiné, x du cadre et du texte, drapeaux ; portrait : dessiné, x, y, largeur, hauteur, couleur, phase, état) ;
+  - **règles** : les trois opcodes (deux entités au même `EntityRefId` : la première de `SpawnedEntities` ; aucune trouvaille ; l'entité
+    logique après un `0x43`) ; refus dans leur ordre (occupé, plage, chaîne vide) ; départ ignoré : le locuteur du retour reste celui du
+    départ accepté ; locuteur détruit et recyclé : retour depuis son dernier point ; `DialoguePortrait` du proxy (copié à l'apparition,
+    copié par `Clone`, nul pour le héros) ; drapeau sans champ (un avertissement) ; `ScrollSource` nulle = (0, 0), câblage du
+    mandataire égal à `ToOriginalScrollSpace(ResolvedCamera.Target)` et gardé après un rattachement ; `CloseTriggered` appelé après le
+    son 7, une fois par fermeture, jamais à `Open`, `Reset` ou à une passe sans déclencheur ; remises (entrée de carte, fermeture hors bande
+    avec un portrait de tentative abandonnée, `ResetForTests` sans toucher l'instance de l'inventaire) ; sans présentateur : ni nom ni
+    portrait ; en production, `AlundraFont3Advances` sur le vrai `font3.fnt` redonne les 60 largeurs de `names_widths.json` ;
+  - **corpus** : les 2273 sites décidables de `speaker_sites.tsv` (les 574 de `speaker_sites_retarget.tsv` exclus : programmes qui
+    contiennent un `0x43`, et 3 sites `0x0D` dont un autre programme du propriétaire en a un ; l'exclusion locale au programme vaut pour
+    les événements de carte parce qu'aucune instruction `0x40` à v1 = 1 n'existe dans les 483 cartes) donnent la classe attendue ; les
+    25 banques à portrait ont `Width` 48 ;
+  - tests existants qui bougent : aucun (inventaire, sous-inventaire, `AlundraSaveGameLoadResetTests.cs:267-325`,
+    `AlundraSaveGameApplyTests.cs:285`, `AlundraDialogueSpeakerOpcodeTests.cs` restent verts) ; toute assertion qui bouge est un arrêt.
+    Rouges d'abord.
+- **F4B-2 — Suites** : `Alundra.Tests` en Release puis en Debug, `cmp`, six traces (aucune ne bouge) ; pas d'export.
 - **F4B-3 — Vérification**.
 
-**Acceptation** : T1 égal aux tables ; règles et corpus verts ; liste fermée ; suites. **Retour arrière** : revert. **Risques** : un
-locuteur détruit ou recyclé au retour (ADR-0024) lit des données périmées dans le binaire : la DLL prend le dernier point connu ;
-le croisement inventaire/dialogue du bloc partagé n'est pas reproduit (inatteignable) ; l'ordre de dessin et les durées de vie
-indépendantes de la vue sont pour f4c.
+**Acceptation** : T1 égal aux tables S1 à S9 ; l'oracle égal aux empreintes ; les machines égales à l'oracle ; règles et corpus verts ; liste
+fermée ; suites. **Retour arrière** : revert. **Risques** : la boîte de texte de la DLL doit donner « typing-done » à N+21 et le déclencheur
+à N+22 sur « AB » (valeurs d'E19.f2a, non rejouées ici : la colonne `phase` le dira au premier rouge) ; la règle du vol en 48 × 72 est
+une extension sans vérité binaire (D-E19-90) ; `GetMatchingEntitiesBySearchType` alloue une liste à chaque tick de nouvelle tentative de
+`0x5C`/`0xC4` (au plus une quarantaine par boîte) ; l'ordre de dessin et les durées de vie indépendantes de la vue sont pour f4c.
 
 ###### E19.f4c — Vue du nom et du portrait ⏳ (esquisse, après E19.f4b)
 
