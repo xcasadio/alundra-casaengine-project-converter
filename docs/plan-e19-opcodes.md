@@ -7826,7 +7826,7 @@ impossible aujourd'hui).
   2663/2663 en Release puis en Debug, `cmp` sans écart, six traces à l'octet. Avis P4 : la couverture de la 293 par la teinte reste à
   voir en recette ; `OutputSizeBytes` varie de quelques dizaines d'octets entre deux exports du même code (fichiers hors manifeste).
 
-##### 1.2o.5 E19.g G2b — Quads à quatre sommets libres (sprites d'entités déformés) ⏳ (découverte du 2026-10-06 faite ; l'auteur a tranché O-E19-71 : résolution de l'écran, D-E19-92 ; plan à écrire)
+##### 1.2o.5 E19.g G2b — Quads à quatre sommets libres (sprites d'entités déformés) ⏳ (découverte du 2026-10-06 faite ; l'auteur a tranché O-E19-71 : résolution de l'écran, D-E19-92 ; planifiée le 2026-10-06 en G2b-1, G2b-2, G2b-3 ; relecture à faire ; exécution après la recette de l'auteur)
 
 **Découverte** (2026-10-06, lecture seule, deux surfaces, chacune contre-vérifiée ; versionnée, en anglais, dans `docs/plan-e19-g2b-annexe/`)
 ; faits porteurs :
@@ -7850,6 +7850,108 @@ impossible aujourd'hui).
   quelle que soit la convention ; l'exactitude à tout facteur demande de dessiner la scène dans une cible de 320 × 240 puis de
   l'agrandir, ce qu'ADR-0048 a écarté (O-E19-71).
 
+
+**Règle de texel corrigée** (contre-vérification, `data-verify.md` C1, faits de PCSX-Redux vérifiés sur matériel) : au pixel entier x, la
+PS1 lit le texel `floor(u + 0,5)` ; la couverture suit la règle haut-gauche aux positions entières. Un GPU qui échantillonne au centre
+des pixels lit le même texel si le quad est **décalé d'un demi-pixel** (+0,5 en x, +0,5 vers le bas) et ses coordonnées de texture
+**d'un demi-texel** (+0,5), la fenêtre de la case **reculée d'un texel sur un axe miroir** (`X1 > X2`, `Y1 > Y3`, la règle de
+l'extracteur : la case est la fenêtre `SourceX`/`SourceY`) ; égalité tranchée vers le haut (epsilon 1/4096 de texel). Pour un quad 1:1
+les deux demi-décalages s'annulent : le chemin d'aujourd'hui est retrouvé au bit près, à tout facteur. Écart restant à × 1 contre le
+marcheur matériel (pentes 16.16 tronquées) : 0,56 % des texels, 0,12 % des couleurs ; débordement d'un texel hors de la case : 0,0035 %
+des pixels montrent un texel que la gouttière transparente cache (accepté, documenté, ni extracteur ni bornage). Oracle : le portage du
+marcheur de PCSX-Redux `docs/plan-e19-g2b-annexe/redux.py` (validé sur 49 sondes matérielles).
+
+**Choix de conduite** (techniques, de la session ; D-E19-92, D-E19-97) :
+- Le moteur reçoit **une seule entrée de quad libre**, générale : texture, fenêtre source en texels (flottants), quatre coins, couleur,
+  profondeur, clé de tri, mode PSX ; elle sert aux parties d'entités (G2b) et aux effets (G2e). Le moteur ne connaît pas la convention de
+  la PS1 : les **producteurs** (le convertisseur pour les entités, la DLL pour les effets) écrivent les coins avec le demi-pixel et le
+  décalage de fenêtre (+0,5 − miroir) ; seule l'égalité tranchée vers le haut est une règle du moteur.
+- Les quads 1:1 (simples et miroirs alignés, 69,2 %) restent sur le chemin d'aujourd'hui : les 7697 `.anim2d` sans quad déformé ne
+  changent pas.
+- Rendu à la résolution de l'écran (ADR-0048 du moteur gardée) : exact à × 1, plus lisse que la PS1 aux autres facteurs.
+
+###### E19.g G2b-1 — Quad libre du moteur ⏳ (planifiée le 2026-10-06)
+
+Moteur seul (sous-module, branche `chantier/e19g2b-free-quads` empilée sur la pointe de G2d `33324030`, que le parent épingle) ; inerte
+pour Alundra tant que rien ne l'appelle. Déclencheur de risque : acceptation inter-composants (le même quad sert G2b-2, G2b-3, G2e).
+- **G2b1-R1 — Soumission** : une entrée `DrawQuad` de `SpriteRendererComponent` (texture, fenêtre source en texels flottants, coins
+  haut-gauche, haut-droit, bas-gauche, bas-droit en coordonnées du monde, y vers le haut, couleur, z, clé de tri facultative, mode PSX) ;
+  matrice du monde = translation seule (le centre), sommets = décalages depuis le centre ; coordonnées de texture = coins de la fenêtre,
+  **jamais retournées** (le miroir est dans la géométrie). Les deux chemins de tri (clé et `zOrder`) l'acceptent.
+- **G2b1-R2 — Diagonale** : les coins sont écrits dans les cases TR, BR, BL, TL du lot, si bien que le tampon d'index existant
+  (`{0,1,2, 0,2,3}`, `SpriteRendererComponent.cs:150`) et `FillVertices` (`:485-513`) donnent les triangles (TR, BR, BL) et (TR, BL, TL) :
+  la diagonale TR-BL de la PS1 ; ni le tampon d'index ni `FillVertices` ne changent.
+- **G2b1-R3 — Élimination des faces** : un champ `NoCull` par entrée (posé par `DrawQuad`, **remis à faux** dans le cœur commun pour une
+  entrée réutilisée du réservoir, patron d'`IgnoresDepth`, ADR-0034) ; les séries contiguës d'entrées `NoCull` sont dessinées en
+  `RasterizerState.CullNone`, l'état d'avant restauré ; les autres entrées ne changent pas.
+- **G2b1-R4 — Mode PSX** : la règle des deux entrées d'ADR-0051 (texels opaques puis texels STP, même clé, même z), les deux avec les
+  mêmes coins.
+- **G2b1-R5 — Égalité** : une coordonnée de texture exactement sur une frontière de texel lit le texel supérieur (epsilon 1/4096 de texel,
+  dans le shader ou sur les coordonnées des sommets ; le plan d'exécution du moteur choisit et le teste).
+- **Tâches** : G2b1-0 prévision d'abord (annexe : valeurs attendues des cas synthétiques et des six échantillons réels S1 à S6 régénérées par
+  `redux.py` avec la règle corrigée, et les comptes de mutation : autre diagonale, sans demi-pixel, sans demi-texel, sans recul du miroir,
+  sans epsilon) ; G2b1-1 tests d'abord au niveau du lot, sans GPU (ordre des cases et coordonnées lues case par case, coordonnées non
+  retournées, `NoCull` posé et remis à faux sur une entrée réutilisée, deux entrées pour un mode, matrice de translation seule) ; rouges
+  avec l'API sans comportement ; G2b1-2 démo du moteur sur GPU (nouvelle scène à côté de `PsxSemiTransparencyDemo`, sonde du tampon
+  d'image, × 1, un pixel par unité du monde) : agrandissement × 4 (contrôle), miroir × 1,5, parallélogramme, trapèze (les deux diagonales
+  diffèrent), un quad `Mode1` et un `Mode0` (valeurs de G2a), un quad miroir visible (élimination), un quad aux coins 1:1 égal au chemin
+  rectangle au pixel près à × 1 et à × 3 ; sondes à plus de 1,5 px des bords et de la diagonale, égales à l'oracle ; image entière : au
+  plus 0,15 % de couleurs différentes de l'oracle ; une exécution rouge sur le code d'avant ; G2b1-3 docs (`docs/engine/sprite-psx-semi-transparency.md`,
+  la ligne « Quads with four free vertices are not covered » remplacée), ADR du moteur (numéro : O-E19-74), fichier de tâches du moteur
+  (`ai-agent/tasks/e19g2b-free-quads-tasks.md`) ; G2b1-4 vérification.
+- **Acceptation** : suites du moteur (`CasaEngine.Tests` buildé explicitement, `--blame-hang-timeout 300s`), aucun test existant ne bouge
+  (`SpriteRendererComponent{BlendMode,Capacity,PsxSemiTransparency}Tests`, tests de tri et des couches : un test qui bouge est un arrêt) ;
+  démo égale à l'oracle ; `Alundra.Tests` en Release puis en Debug après la montée du pointeur, `cmp`, six traces (rien ne doit bouger).
+
+###### E19.g G2b-2 — Piste de coins de `.anim2d` (moteur) ⏳ (planifiée le 2026-10-06, après G2b-1)
+
+Changement de format du moteur (ADR) ; inerte tant qu'aucun fichier ne porte la piste (un fichier d'aujourd'hui se relit et se
+réécrit à l'octet). Déclencheur de risque : format sérialisé.
+- **G2b2-R1 — Modèle** : `Animation2dTrackProperty.Corners` ajouté **en fin** d'énumération ; une image clé `time_seconds`, `enabled`,
+  `top_left`, `top_right`, `bottom_left`, `bottom_right` (décalages en pixels, y vers le haut, depuis la valeur de la piste `Position` de la
+  partie, multipliés par l'échelle de l'entité comme la position) et `uv_offset` (décalage de la fenêtre source en texels) ; interpolation
+  par pas ; liste JSON `corner_keyframes` écrite seulement si elle n'est pas vide ; avant la première clé et sur une clé `enabled = false`,
+  la partie se dessine en rectangle comme aujourd'hui.
+- **G2b2-R2 — Sites qui doivent suivre** (pièges de perte silencieuse, `engine-notes.md` 2.3 et `data-verify.md` C6) : `Animation2dTrackData.Load`,
+  `Animation2dCompositionAdapter.CloneTrack`, l'aiguillage de l'échantillonneur (`Animation2dCompositionSampler`) et l'état de partie
+  (`HasCorners` remis à faux par `ApplyDefaults`), `Animation2dData.GetDurationSeconds`, `EditorAssetJsonSerializer.SaveAnimation2dTrackData`,
+  l'instantané d'annulation de l'éditeur (`Animation2dAssetInspectorPanel.SerializeAnimationTrack`), `AnimationAssetDataConverter` et
+  `AnimationClipAsset` (empreinte de la propriété `Rotation`) ; la piste n'est pas montrée dans la frise de l'éditeur (documenté).
+- **G2b2-R3 — Dessin** : `AnimatedSpriteComponent.DrawComposedAnimation` appelle `DrawQuad` pour une partie aux coins actifs (fenêtre source du
+  sprite décalée de `uv_offset`, coins = position de la partie + coins, mêmes clé, z et mode PSX qu'aujourd'hui) ; la rotation et les
+  retournements de la partie sont ignorés pour cette image ; les autres parties ne changent pas.
+- **G2b2-R4 — Bornes** : `Animation2dBoundsCalculator` prend la boîte des coins d'une partie qui en a (sinon le rectangle d'aujourd'hui).
+- **Tâches** : tests d'abord (chargement et réécriture d'un fichier sans piste identiques à l'octet, aller-retour d'une piste, échantillonneur :
+  désactivée avant la première clé, valeurs, clé de désactivation, remise à zéro ; `CloneTrack` ; durées inchangées ; bornes ; instantané
+  de l'éditeur ; dessin d'une partie aux coins par le chemin du quad, au niveau du lot) ; docs (`docs/engine/animation2d-composed-format-v1.md`,
+  `docs/editor/animation2d_editor_casaengine.md`) ; ADR du moteur ; vérification. Aucun test existant ne bouge.
+
+###### E19.g G2b-3 — Export des coins et livraison verrouillée (convertisseur) ⏳ (planifiée le 2026-10-06, après G2b-2)
+
+Parent : convertisseur, export, pointeur du moteur montés ensemble (un moteur d'avant ne relit pas un fichier qui porte `Corners` :
+`Enum.Parse` lève, livraison verrouillée comme G2c). Déclencheur de risque : format exporté.
+- **G2b3-R1 — Coins** : dans `SpriteWriter.ConvertAnimation`, une partie qui a au moins une image déformée (tout sauf un rectangle de la
+  taille de la source, miroir compris) reçoit une piste `Corners` **ajoutée après toutes les pistes existantes** (aucun nom de piste existant
+  ne change) ; clés aux mêmes temps que les clés `Sprite` de la partie, **seulement aux changements** d'état (coins actifs ou désactivés),
+  aucune clé pour l'image finale répétée d'une animation `Hold`/`Chain` (même état) ; coins = coins de la PS1 (y retourné) + (0,5 ; −0,5) −
+  `Position` de l'image ; `uv_offset` = (0,5 − mx ; 0,5 − my) avec mx = `X1 > X2`, my = `Y1 > Y3`. Les pistes d'aujourd'hui (`Sprite`,
+  `Position`, `Visible`, retournements) ne changent pas ; aucun `.sprite`, `.texture` ni entrée du catalogue ne change.
+- **G2b3-R2 — Compteurs** : `Sprites.QuadsDeformed` 49 348, `Sprites.CornerTracks`, `Sprites.CornerKeyframes` (valeurs de la prévision).
+- **Tâches** : G2b3-0 prévision d'abord, régénérée avec la règle finale (l'annexe d'aujourd'hui, `predicted_corner_tracks_per_file.json`,
+  date d'avant la règle corrigée) : exactement les 1923 `.anim2d` de `predicted_anim2d_changes.tsv` et `report.json` modifiés, 7697 identiques
+  à l'octet ; par fichier, les pistes ajoutées (partie, temps, état, coins, décalage) ; les compteurs ; G2b3-1 tests d'abord (convertisseur :
+  les cas de `engine-notes.md` 3.2 recalculés avec le demi-pixel et le décalage ; une animation sans quad déformé n'a pas de piste ;
+  `Alundra.Tests` : garde sur l'export réel (une animation déformée connue porte sa piste, durée inchangée)) ; G2b3-2 montée du pointeur du
+  moteur, export complet en place, manifeste avant/après égal à la prévision, chaque `.anim2d` modifié privé de ses pistes ajoutées égal à
+  l'ancien, double export, suites, `cmp`, six traces ; docs (classe `SpriteWriter`, paragraphe « Per-frame quad corners » du `README.md`
+  racine, ligne de risque de G2a « les quads déformés restent dessinés en rectangle jusqu'à G2b » close) ; ADR du parent ; G2b3-3 vérification.
+- **Recette G2b-4** (auteur) : Rancune de Melzas sur la 476, ouverture du coffre d'Anzes (163, 170, 177, 184), le héros (entrée dans le
+  sable `0x20`, pose de victoire `0x5B`), à × 1 si possible puis au facteur de jeu.
+
+**Retour arrière** (chaque tranche) : revert du sous-module et du pointeur ; pour G2b-3, export complet égal au manifeste « avant ».
+**Arrêts** : un test existant qui bouge, une valeur mesurée qui contredit l'oracle ou la prévision, un fichier hors de la liste.
+**Risques** : 30,8 % des références d'entités changent d'aspect (recette nécessaire) ; le drapeau « sale » des bornes d'entités ne suit que
+le premier sprite visible (faiblesse d'avant, documentée, non corrigée ici) ; la frise de l'éditeur ne montre pas la piste.
 
 ##### 1.2o.6 E19.g G1/G3 — Export, réserve et opcodes des effets ⏳ (découverte du 2026-10-06 faite, deux surfaces contre-vérifiées ; l'auteur a tranché O-E19-72 et O-E19-73 : D-E19-96, D-E19-97 ; plans à écrire)
 
@@ -7917,7 +8019,7 @@ prouvés par l'exécution du vrai code du binaire dans l'interpréteur MIPS (0 �
 - **G4 — Recette** de l'auteur : 476 d'abord.
 
 
-###### E19.g G1 — Export des effets (convertisseur) ⏳ (planifiée le 2026-10-06 ; relecture à faire ; exécution après la recette de l'auteur)
+###### E19.g G1 — Export des effets (convertisseur) ⏳ (planifiée le 2026-10-06 ; relecture n°1 REVISE (compteur des textures, cases d'animation, valeurs de la 163, retour arrière), révisée ; relecture n°2 à faire ; exécution après la recette de l'auteur)
 
 Parent seul : ni moteur, ni DLL. Déclencheur de risque : nouveau format de données exporté (relecture du plan et vérificateur neuf
 obligatoires). Données de départ : `data-extracted/` tel quel (G0 a déjà tout extrait : aucune ré-extraction, aucun changement de
@@ -7928,11 +8030,14 @@ l'extracteur). Faits et valeurs : `docs/plan-e19-g1g3-annexe/` (`converter-notes
   chaque `map_N.json` et de `map_alundra.json` (table globale) ; il ne réutilise pas `SpriteBankReader` (dédoublonnage et champs
   orientés entités). Il tolère les données vides ou réduites des fixtures existantes (une quinzaine de fixtures portent
   `{ "EffectId": 1 }` ou rien).
-- **G1-R2 — Animations** : index d'animation = index de case ; les cases de remplissage (décalage 0) sont **toutes en fin de table**
-  (83, aucun trou) : elles sont retirées et comptées ; un trou (décalage 0 suivi d'un décalage non nul) est une erreur du rapport.
-  Chaque image affichée exporte `Delay & 0x7F` ticks (le JSON vaut `0x80 | ticks`, 1 à 127, aucun 0 dans le corpus ; la règle
-  « 0 vaut 256 ticks » vit dans la DLL) et l'index de son ensemble d'images ; la pseudo-image de fin donne `End` : délai brut 0 →
-  `Destroy`, 1 → `Loop` ; tout autre délai de fin est une erreur.
+- **G1-R2 — Animations** : les cases d'une table sont `AnimationOffsets[0 .. AnimationCount)` (`AnimationCount` lu dans le JSON ; le
+  tableau `AnimationOffsets` est plus long et les entrées au-delà ne sont pas des cases) ; la case i est `PreloadedAnims[i]` ; 446 cases en
+  tout = 363 animations + 83 cases de remplissage (décalage 0 dans cette plage). Index d'animation = index de case ; les 83 cases de
+  remplissage sont **toutes en fin de plage** (aucun trou) : elles sont retirées et comptées ; un trou (décalage 0 suivi d'un décalage
+  non nul dans la plage) est une erreur du rapport. La dernière entrée de `Frames` est la pseudo-image de fin (`Delay` brut 0 →
+  `End` = `Destroy`, 1 → `Loop` ; tout autre délai de fin est une erreur) ; chaque autre entrée est une image affichée, qui exporte
+  `Delay & 0x7F` ticks (le JSON vaut `0x80 | ticks`, 1 à 127, aucun 0 dans le corpus ; la règle « 0 vaut 256 ticks » vit dans la DLL)
+  et l'index de son ensemble d'images.
 - **G1-R3 — Ensembles d'images** : dédoublonnés **par table** sur `ImageSetPointer` (décalage relatif à la table), dans l'ordre de première
   utilisation ; chacun garde son `DepthSortValue` (IDSV, le biais de profondeur `<< 16` de la clé de tri) et ses images dans l'ordre du
   binaire. Image : `U`, `V`, `W`, `H` = `AtlasX`, `AtlasY`, `Swidth`, `Sheight` (la case de G0, fenêtre `SourceX`/`SourceY`, décalage des
@@ -7958,6 +8063,8 @@ l'extracteur). Faits et valeurs : `docs/plan-e19-g1g3-annexe/` (`converter-notes
   `Effects.Records` 544, `Effects.RecordsSpawnAtLoad` 251, `Effects.RecordsMapTable` 350, `Effects.RecordsGlobalTable` 194,
   `Effects.Tables` 165, `Effects.Animations` 363, `Effects.AnimationSlotsDropped` 83, `Effects.Frames` 5148, `Effects.ImageSets` 2832,
   `Effects.Images` 12 307, `Effects.ImagesDegenerateDropped` 23, `Effects.Companions` 157, `Effects.Sheets` 87, `Effects.UnresolvedRecords` 0.
+  `Assets.Texture` **ne change pas** : comme `BackdropWriter` (`BackdropWriter.cs:166-171`), la phase n'incrémente que ses propres
+  compteurs (`Assets.Texture` n'est incrémenté que par `TileMapWriter.CountCreatedAsset`, `TileMapWriter.cs:276-287`).
 - **G1-R8 — `hero_effects.json`** gardé (G3 le retire avec son test et sa doc quand la DLL lit le compagnon global).
 - **G1-R9 — Documents** : `docs/formats/effects.md` (nouveau, en anglais) et sa ligne dans `docs/formats/README.md` ; dans
   `docs/formats/misc-data.md`, la phrase réfutée « les index de `Spritesheet` dépassent 0-7 » corrigée (bit 3 semi, bits 4-5 ABR, page
@@ -7970,13 +8077,14 @@ l'extracteur). Faits et valeurs : `docs/plan-e19-g1g3-annexe/` (`converter-notes
   `.texture` (chemins listés) ; **modifiés** exactement `AssetInfos.json` (+ 174 entrées, identifiants `Ids.For("texture-raw:…")` et
   `Ids.For("texture-wrapper:…")` recalculés par un uuid5 indépendant) et `report.json` ; **supprimés** aucun ; pour chaque compagnon, l'empreinte
   SHA-1 de son contenu canonique (valeurs analysées, pas les octets) ; chaque compteur de `report.json` qui change avec sa valeur prévue
-  (les `Effects.*`, `Assets.Texture`, `Verify.*`, `Metrics.OutputFileCount`), `Warnings`, `Errors` et les autres compteurs inchangés ; un
+  (les `Effects.*`, `Verify.*`, `Metrics.OutputFileCount`), `Assets.Texture`, `Warnings`, `Errors` et les autres compteurs inchangés ; un
   ré-export de référence avant tout code ne doit changer que `report.json`.
 - ⏳ **G1-1 — Tests d'abord** (convertisseur, au patron des tests de `BackdropWriter`) : table synthétique avec cases de remplissage en fin,
   ensembles partagés, image dégénérée, quad miroir (coins inversés), délai brut `0x80 | n` ; erreurs : trou dans les décalages, délai de
   fin inconnu, enregistrement sans table ; données réelles : 476 (1 enregistrement `0x80`, effet 0, animation 1, tuile (80, 22, 6) ; 4
   animations de 111, 16, 21, 32 images, fins `Destroy`, `Loop`, `Destroy`, `Loop`, périodes 222, 32, 34, 64 ; IDSV 52), 391 (5
-  enregistrements `0xC0`, 4 animations d'une image en boucle, délai 10), 163 (4 enregistrements, une animation `[10]` puis `Destroy`), 161
+  enregistrements `0xC0`, 4 animations d'une image en boucle, délai 10), 163 (4 enregistrements `0xC0`, effet 0, animation 1 ; 3
+  animations : 0 `Loop`, 1 et 2 `Destroy`, chacune une image de 10 ticks ; 1 case de remplissage retirée), 161
   (les 23 images dégénérées retirées) ; garde des invariants de l'exécution complète. Rouges d'abord ; aucun test existant ne bouge (un
   test existant qui bouge est un arrêt).
 - ⏳ **G1-2 — Export et preuves** : manifeste SHA-1 avant et après l'export complet en place (sans `Alundra.dll`, `Alundra.pdb`, `.casaeditor/`) :
@@ -7987,7 +8095,10 @@ l'extracteur). Faits et valeurs : `docs/plan-e19-g1g3-annexe/` (`converter-notes
 - ⏳ **G1-3 — Vérification** : vérificateur neuf (rouges d'abord rejoués, prévision re-dérivée, invariants, double export).
 
 **Acceptation** : prévision commitée avant le code ; tests rouges puis verts ; export égal à la prévision ; double export ; suites,
-`cmp`, traces. **Retour arrière** : revert, export complet égal au manifeste « avant ». **Arrêts** : une valeur mesurée qui contredit la
+`cmp`, traces. **Retour arrière** : revert, puis suppression exacte des chemins ajoutés listés par G1-0 (les dossiers `effects/` des cartes
+et `Data/effects/` : la phase 0 ne vide que le catalogue, `ProjectWriter.cs:95-98`, et des `.texture` restés sur le disque seraient des
+fichiers hors catalogue pour `AssetVerifier.CheckCatalogCoverage`), puis export complet égal au manifeste « avant », sans
+`Verify.UncataloguedFiles`. **Arrêts** : une valeur mesurée qui contredit la
 prévision, un test existant qui bouge, un fichier hors de la liste. **Risques** : le compagnon de carte ne sert à rien tant que G3a ne
 le lit pas (aucun effet visible avant G3c) ; 748 images ont une case toute transparente (légitime : la PS1 ne les dessine pas non plus).
 
@@ -9829,6 +9940,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-71 | **Tranché le 2026-10-06 (D-E19-92 : résolution de l'écran).** **Quads déformés et facteur d'agrandissement** (découverte d'E19.g G2b, 2026-10-06) : 49 348 quads d'entités (30,8 %) sont déformés dans le binaire (échelle, miroir tourné, parallélogramme, quad quelconque) ; la scène est dessinée directement dans l'écran agrandi (ADR-0048 du moteur), donc à k > 1 un quad déformé ne donne pas des blocs k × k de pixels de la PS1 (D-E19-60). **Choix** : (A) quads dessinés à la résolution de l'écran, exacts à k = 1 et pour les quads 1:1, plus lisses que la PS1 aux autres facteurs, écart écrit dans l'ADR ; (C) la scène dessinée dans une cible de 320 × 240 puis agrandie, exacte à tout facteur, ADR-0048 révisée et travail du moteur en plus. Recommandation de la session : (C), seule fidèle à D-E19-60, si le coût moteur est acceptable. | Auteur |
 | O-E19-72 | **Tranché le 2026-10-06 (D-E19-96 : interface des créateurs et `0x82 0x53`).** **Portée de D-E19-54 (effets natifs)** (découverte d'E19.g G1/G3, 2026-10-06) : D-E19-54 repose sur une lecture fausse : il n'existe aucun effet de warp sur un changement de carte (les « effets de warp » sont des effets d'objets, bombes et magies, E14) ; les scripts n'atteignent que `0x82 0x53` (vase de vie, 8 sites hors de la chaîne ; il change aussi la vie, O-E19-39) et `0xBB` (E18). **Choix** : (A) E19.g livre l'interface des créateurs natifs et l'effet de `0x82 0x53` (avec sa vie max + 1, vie pleine, son `0x31`), le reste avec son consommateur (E14, déplacement, E18) ; (B) E19.g ne livre que les effets des enregistrements et des scripts, tous les natifs et `0x82 0x53` avec E14. | Auteur |
 | O-E19-73 | **Tranché le 2026-10-06 (D-E19-97 : même règle).** **D-E19-92 pour les quads d'effets** (découverte d'E19.g G1/G3, 2026-10-06) : D-E19-92 (quads déformés à la résolution de l'écran) nomme les sprites d'entités ; 63 % des références de quads d'effets sont déformées (l'aura de 476). La même règle vaut-elle pour les effets ? | Auteur |
+| O-E19-74 | **Numéros d'ADR du moteur en double** (2026-10-06) : l'ADR-0056 du moteur existe deux fois, sur `chantier/e19g2d-overlay-blend` (teinte des fonds, G2d, cette session) et sur `chantier/audio-modern` de l'auteur (0056 à 0060). Proposition : renuméroter celle de G2d en 0061 (références : l'ADR, l'index, `scrolling-layers.md`, `sprite-psx-semi-transparency.md`, quatre commentaires C#, le plan, ADR-0037 du parent) après la recette, et prendre les suivantes (G2b-1, G2b-2) après le dernier numéro des deux lignées, revérifié avant chaque commit. | Auteur |
 
 ## 4. Hors périmètre
 

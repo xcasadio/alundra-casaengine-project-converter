@@ -30,6 +30,8 @@ facts that carry the plan are restated in the plan section with their proof.
   (200,150) becomes (8,0,24).
 - **Map 391** has five `0xA2` (pc 228, 236, 244, 252, 408), not four; the pool ends with 10 slots.
 - **Delays**: the JSON `Delay` is `0x80 | ticks`; the export writes `Delay & 0x7F`.
+- **Map 163** has 3 real animations (0 loop, 1 and 2 destroy, one 10-tick frame each) plus 1 padding slot; its 4 records
+  (`0xC0`, effect 0) name animation 1. `converter-notes.md` section 3 says "1 animation": stale.
 - **Depth slot**: `16 * min(key >> 20, 59) + 6` with an arithmetic shift; negative keys clamp at 0 (no corpus operand
   produces one).
 - **Scripts reaching native creators**: `0x82 0x53` (8 sites, maps 134, 258, 298, 302, 398) and also `0xBB` (retry or
